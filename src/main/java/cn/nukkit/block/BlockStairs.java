@@ -5,28 +5,38 @@ import cn.nukkit.item.Item;
 import cn.nukkit.item.ItemTool;
 import cn.nukkit.math.AxisAlignedBB;
 import cn.nukkit.math.BlockFace;
-import cn.nukkit.math.SimpleAxisAlignedBB;
 
 /**
  * author: MagicDroidX
  * Nukkit Project
  */
-public abstract class BlockStairs extends BlockTransparentMeta {
+public abstract class BlockStairs extends BlockTransparent {
 
     protected BlockStairs(int meta) {
         super(meta);
     }
 
     @Override
-    public double getMinY() {
-        // TODO: this seems wrong
-        return this.y + (getDamage() & 0x04) > 0 ? 0.5 : 0;
-    }
-
-    @Override
-    public double getMaxY() {
-        // TODO: this seems wrong
-        return this.y + (getDamage() & 0x04) > 0 ? 1 : 0.5;
+    protected AxisAlignedBB recalculateBoundingBox() {
+        if ((this.getDamage() & 0x04) > 0) {
+            return new AxisAlignedBB(
+                    this.x,
+                    this.y + 0.5,
+                    this.z,
+                    this.x + 1,
+                    this.y + 1,
+                    this.z + 1
+            );
+        } else {
+            return new AxisAlignedBB(
+                    this.x,
+                    this.y,
+                    this.z,
+                    this.x + 1,
+                    this.y + 0.5,
+                    this.z + 1
+            );
+        }
     }
 
     @Override
@@ -37,9 +47,9 @@ public abstract class BlockStairs extends BlockTransparentMeta {
     @Override
     public boolean place(Item item, Block block, Block target, BlockFace face, double fx, double fy, double fz, Player player) {
         int[] faces = new int[]{2, 1, 3, 0};
-        this.setDamage(faces[player != null ? player.getDirection().getHorizontalIndex() : 0]);
+        this.meta = faces[player != null ? player.getDirection().getHorizontalIndex() : 0];
         if ((fy > 0.5 && face != BlockFace.UP) || face == BlockFace.DOWN) {
-            this.setDamage(this.getDamage() | 0x04); //Upside-down stairs
+            this.meta |= 0x04; //Upside-down stairs
         }
         this.getLevel().setBlock(block, this, true, true);
 
@@ -79,7 +89,7 @@ public abstract class BlockStairs extends BlockTransparentMeta {
             f3 = 0.5;
         }
 
-        if (bb.intersectsWith(new SimpleAxisAlignedBB(
+        if (bb.intersectsWith(new AxisAlignedBB(
                 this.x,
                 this.y + f,
                 this.z,
@@ -92,7 +102,7 @@ public abstract class BlockStairs extends BlockTransparentMeta {
 
 
         if (side == 0) {
-            if (bb.intersectsWith(new SimpleAxisAlignedBB(
+            if (bb.intersectsWith(new AxisAlignedBB(
                     this.x + 0.5,
                     this.y + f2,
                     this.z,
@@ -103,7 +113,7 @@ public abstract class BlockStairs extends BlockTransparentMeta {
                 return true;
             }
         } else if (side == 1) {
-            if (bb.intersectsWith(new SimpleAxisAlignedBB(
+            if (bb.intersectsWith(new AxisAlignedBB(
                     this.x,
                     this.y + f2,
                     this.z,
@@ -114,7 +124,7 @@ public abstract class BlockStairs extends BlockTransparentMeta {
                 return true;
             }
         } else if (side == 2) {
-            if (bb.intersectsWith(new SimpleAxisAlignedBB(
+            if (bb.intersectsWith(new AxisAlignedBB(
                     this.x,
                     this.y + f2,
                     this.z + 0.5,
@@ -125,7 +135,7 @@ public abstract class BlockStairs extends BlockTransparentMeta {
                 return true;
             }
         } else if (side == 3) {
-            if (bb.intersectsWith(new SimpleAxisAlignedBB(
+            if (bb.intersectsWith(new AxisAlignedBB(
                     this.x,
                     this.y + f2,
                     this.z,

@@ -1,10 +1,7 @@
 package cn.nukkit.network.protocol;
 
-import cn.nukkit.Server;
 import cn.nukkit.raknet.protocol.EncapsulatedPacket;
-import cn.nukkit.utils.Binary;
 import cn.nukkit.utils.BinaryStream;
-import cn.nukkit.utils.Zlib;
 
 /**
  * author: MagicDroidX
@@ -27,11 +24,10 @@ public abstract class DataPacket extends BinaryStream implements Cloneable {
     public abstract void encode();
 
     @Override
-    public DataPacket reset() {
+    public void reset() {
         super.reset();
         this.putByte(this.pid());
         this.putShort(0);
-        return this;
     }
 
     public void setChannel(int channel) {
@@ -56,24 +52,5 @@ public abstract class DataPacket extends BinaryStream implements Cloneable {
         } catch (CloneNotSupportedException e) {
             return null;
         }
-    }
-
-    public BatchPacket compress() {
-        return compress(Server.getInstance().networkCompressionLevel);
-    }
-
-    public BatchPacket compress(int level) {
-        BatchPacket batch = new BatchPacket();
-        byte[][] batchPayload = new byte[2][];
-        byte[] buf = getBuffer();
-        batchPayload[0] = Binary.writeUnsignedVarInt(buf.length);
-        batchPayload[1] = buf;
-        byte[] data = Binary.appendBytes(batchPayload);
-        try {
-            batch.payload = Zlib.deflate(data, level);
-        } catch (Exception e) {
-            throw new RuntimeException(e);
-        }
-        return batch;
     }
 }

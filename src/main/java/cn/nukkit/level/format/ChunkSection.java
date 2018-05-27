@@ -1,7 +1,5 @@
 package cn.nukkit.level.format;
 
-import cn.nukkit.block.Block;
-
 /**
  * author: MagicDroidX
  * Nukkit Project
@@ -19,13 +17,11 @@ public interface ChunkSection extends Cloneable {
 
     int getFullBlock(int x, int y, int z);
 
-    Block getAndSetBlock(int x, int y, int z, Block block);
+    boolean setBlock(int x, int y, int z);
 
-    boolean setFullBlockId(int x, int y, int z, int fullId);
+    boolean setBlock(int x, int y, int z, Integer blockId);
 
-    boolean setBlock(int x, int y, int z, int blockId);
-
-    boolean setBlock(int x, int y, int z, int blockId, int meta);
+    boolean setBlock(int x, int y, int z, Integer blockId, Integer meta);
 
     int getBlockSkyLight(int x, int y, int z);
 
@@ -34,6 +30,14 @@ public interface ChunkSection extends Cloneable {
     int getBlockLight(int x, int y, int z);
 
     void setBlockLight(int x, int y, int z, int level);
+
+    byte[] getBlockIdColumn(int x, int z);
+
+    byte[] getBlockDataColumn(int x, int z);
+
+    byte[] getBlockSkyLightColumn(int x, int z);
+
+    byte[] getBlockLightColumn(int x, int z);
 
     byte[] getIdArray();
 
@@ -47,5 +51,9 @@ public interface ChunkSection extends Cloneable {
 
     byte[] getBytes();
 
+    byte[] getBytes11();
+
     ChunkSection clone();
+
+    byte[] toFastBinary();
 }

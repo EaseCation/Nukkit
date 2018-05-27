@@ -9,7 +9,6 @@ import cn.nukkit.item.Item;
 import cn.nukkit.math.NukkitMath;
 import cn.nukkit.network.protocol.ContainerClosePacket;
 import cn.nukkit.network.protocol.types.ContainerIds;
-import cn.nukkit.scheduler.Task;
 
 import java.util.Arrays;
 import java.util.List;
@@ -126,10 +125,9 @@ public class CraftingTransaction extends InventoryTransaction {
         for (int y = 0; y < reindexed.length; y++) {
             Item[] row = reindexed[y];
 
-            System.arraycopy(this.inputs[y + yOffset], xOffset, reindexed[y], 0, row.length); //hope I converted it right :D
-            /*for (int x = 0; x < row.length; x++) {
+            for (int x = 0; x < row.length; x++) {
                 reindexed[y][x] = this.inputs[y + yOffset][x + xOffset];
-            }*/
+            }
         }
 
         return reindexed;
@@ -161,14 +159,7 @@ public class CraftingTransaction extends InventoryTransaction {
 		 */
         ContainerClosePacket pk = new ContainerClosePacket();
         pk.windowId = ContainerIds.NONE;
-        source.getServer().getScheduler().scheduleDelayedTask(new Task() {
-            @Override
-            public void onRun(int currentTick) {
-                source.dataPacket(pk);
-            }
-        }, 20);
-
-        this.source.resetCraftingGridType();
+        this.source.dataPacket(pk);
     }
 
     public boolean execute() {

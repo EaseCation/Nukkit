@@ -2,7 +2,6 @@ package cn.nukkit.inventory;
 
 import cn.nukkit.item.Item;
 import cn.nukkit.utils.Utils;
-import io.netty.util.collection.CharObjectHashMap;
 
 import java.util.*;
 
@@ -15,11 +14,11 @@ public class ShapedRecipe implements CraftingRecipe {
     private Item primaryResult;
     private List<Item> extraResults = new ArrayList<>();
 
-    private long least,most;
+    private UUID uuid = null;
 
     private final String[] shape;
 
-    private final CharObjectHashMap<Item> ingredients = new CharObjectHashMap<>();
+    private final Map<Character, Item> ingredients = new HashMap<>();
 
     /**
      * Constructs a ShapedRecipe instance.
@@ -90,13 +89,15 @@ public class ShapedRecipe implements CraftingRecipe {
 
     @Override
     public UUID getId() {
-        return new UUID(least, most);
+        return uuid;
     }
 
     @Override
-    public void setId(UUID uuid) {
-        this.least = uuid.getLeastSignificantBits();
-        this.most = uuid.getMostSignificantBits();
+    public void setId(UUID id) {
+        if (this.uuid != null) {
+            throw new IllegalStateException("Id is already set");
+        }
+        this.uuid = id;
     }
 
     public ShapedRecipe setIngredient(String key, Item item) {
@@ -110,16 +111,6 @@ public class ShapedRecipe implements CraftingRecipe {
 
         this.ingredients.put(key, item);
         return this;
-    }
-
-    public List<Item> getIngredientList() {
-        List<Item> items = new ArrayList<>();
-        for (int y = 0, y2 = getHeight(); y < y2; ++y) {
-            for (int x = 0, x2 = getWidth(); x < x2; ++x) {
-                items.add(getIngredient(x, y));
-            }
-        }
-        return items;
     }
 
     public Map<Integer, Map<Integer, Item>> getIngredientMap() {
@@ -207,7 +198,7 @@ public class ShapedRecipe implements CraftingRecipe {
             }
 
             for (Item needItem : new ArrayList<>(needItems)) {
-                if (needItem.equals(haveItem, needItem.hasMeta(), needItem.hasCompoundTag()) && needItem.getCount() == haveItem.getCount()) {
+                if (needItem.equals(haveItem, !needItem.hasAnyDamageValue(), needItem.hasCompoundTag()) && needItem.getCount() == haveItem.getCount()) {
                     haveItems.remove(haveItem);
                     needItems.remove(needItem);
                     break;
@@ -227,7 +218,7 @@ public class ShapedRecipe implements CraftingRecipe {
                 Item given = input[y][x];
                 Item required = map.get(y).get(x);
 
-                if (given == null || !required.equals(given, required.hasMeta(), required.hasCompoundTag()) || required.getCount() != given.getCount()) {
+                if (given == null || !required.equals(given, !required.hasAnyDamageValue(), required.hasCompoundTag()) || required.getCount() != given.getCount()) {
                     return false;
                 }
 

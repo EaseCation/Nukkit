@@ -10,7 +10,6 @@ import cn.nukkit.event.entity.EntityCombustByBlockEvent;
 import cn.nukkit.event.entity.EntityDamageByBlockEvent;
 import cn.nukkit.event.entity.EntityDamageEvent.DamageCause;
 import cn.nukkit.item.Item;
-import cn.nukkit.level.GameRule;
 import cn.nukkit.level.Level;
 import cn.nukkit.math.AxisAlignedBB;
 import cn.nukkit.math.BlockFace;
@@ -19,7 +18,6 @@ import cn.nukkit.potion.Effect;
 import cn.nukkit.utils.BlockColor;
 
 import java.util.Random;
-import java.util.concurrent.ThreadLocalRandom;
 
 /**
  * author: MagicDroidX
@@ -94,10 +92,10 @@ public class BlockFire extends BlockFlowable {
             }
 
             return Level.BLOCK_UPDATE_NORMAL;
-        } else if (type == Level.BLOCK_UPDATE_SCHEDULED && this.level.gameRules.getBoolean(GameRule.DO_FIRE_TICK)) {
+        } else if (type == Level.BLOCK_UPDATE_SCHEDULED && this.level.gameRules.getBoolean("doFireTick")) {
             boolean forever = this.down().getId() == Block.NETHERRACK;
 
-            ThreadLocalRandom random = ThreadLocalRandom.current();
+            Random random = this.getLevel().rand;
 
             //TODO: END
 
@@ -117,8 +115,7 @@ public class BlockFire extends BlockFlowable {
                 int meta = this.getDamage();
 
                 if (meta < 15) {
-                    int newMeta = meta + random.nextInt(3);
-                    this.setDamage(newMeta > 15 ? 15 : newMeta);
+                    this.meta = meta + random.nextInt(3);
                     this.getLevel().setBlock(this, this, true);
                 }
 
@@ -190,7 +187,7 @@ public class BlockFire extends BlockFlowable {
     private void tryToCatchBlockOnFire(Block block, int bound, int damage) {
         int burnAbility = block.getBurnAbility();
 
-        Random random = ThreadLocalRandom.current();
+        Random random = this.getLevel().rand;
 
         if (random.nextInt(bound) < burnAbility) {
 
@@ -284,6 +281,13 @@ public class BlockFire extends BlockFlowable {
 
     @Override
     protected AxisAlignedBB recalculateCollisionBoundingBox() {
-        return this;
+        return new AxisAlignedBB(
+                this.x,
+                this.y,
+                this.z,
+                this.x + 1,
+                this.y + 1,
+                this.z + 1
+        );
     }
 }

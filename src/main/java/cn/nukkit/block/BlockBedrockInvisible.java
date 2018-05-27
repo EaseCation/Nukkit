@@ -9,6 +9,11 @@ import cn.nukkit.utils.BlockColor;
 public class BlockBedrockInvisible extends BlockSolid {
 
     public BlockBedrockInvisible() {
+        this(0);
+    }
+
+    public BlockBedrockInvisible(int meta) {
+        super(0);
     }
 
     @Override

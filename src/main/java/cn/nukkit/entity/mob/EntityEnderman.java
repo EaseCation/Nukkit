@@ -29,12 +29,12 @@ public class EntityEnderman extends EntityMob {
 
     @Override
     public float getWidth() {
-        return 0.6f;
+        return 0.72f;
     }
 
     @Override
     public float getHeight() {
-        return 2.9f;
+        return 2.8f;
     }
 
     @Override

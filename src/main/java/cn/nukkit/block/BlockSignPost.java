@@ -16,7 +16,7 @@ import cn.nukkit.utils.BlockColor;
 /**
  * @author Nukkit Project Team
  */
-public class BlockSignPost extends BlockTransparentMeta {
+public class BlockSignPost extends BlockTransparent {
 
     public BlockSignPost() {
         this(0);
@@ -70,11 +70,11 @@ public class BlockSignPost extends BlockTransparentMeta {
                     .putString("Text4", "");
 
             if (face == BlockFace.UP) {
-                setDamage((int) Math.floor(((player.yaw + 180) * 16 / 360) + 0.5) & 0x0f);
-                getLevel().setBlock(block, new BlockSignPost(getDamage()), true);
+                meta = (int) Math.floor(((player.yaw + 180) * 16 / 360) + 0.5) & 0x0f;
+                getLevel().setBlock(block, new BlockSignPost(meta), true);
             } else {
-                setDamage(face.getIndex());
-                getLevel().setBlock(block, new BlockWallSign(getDamage()), true);
+                meta = face.getIndex();
+                getLevel().setBlock(block, new BlockWallSign(meta), true);
             }
 
             if (player != null) {

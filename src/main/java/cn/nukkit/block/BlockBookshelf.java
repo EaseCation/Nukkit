@@ -8,7 +8,7 @@ import cn.nukkit.utils.BlockColor;
 /**
  * @author Nukkit Project Team
  */
-public class BlockBookshelf extends BlockSolidMeta {
+public class BlockBookshelf extends BlockSolid {
 
     public BlockBookshelf(int meta) {
         super(meta);

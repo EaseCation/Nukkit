@@ -22,7 +22,6 @@ import cn.nukkit.event.inventory.InventoryCloseEvent;
 import cn.nukkit.event.inventory.InventoryPickupArrowEvent;
 import cn.nukkit.event.inventory.InventoryPickupItemEvent;
 import cn.nukkit.event.player.*;
-import cn.nukkit.event.player.PlayerAsyncPreLoginEvent.LoginResult;
 import cn.nukkit.event.player.PlayerInteractEvent.Action;
 import cn.nukkit.event.player.PlayerTeleportEvent.TeleportCause;
 import cn.nukkit.event.server.DataPacketReceiveEvent;
@@ -33,6 +32,7 @@ import cn.nukkit.inventory.*;
 import cn.nukkit.inventory.transaction.CraftingTransaction;
 import cn.nukkit.inventory.transaction.InventoryTransaction;
 import cn.nukkit.inventory.transaction.action.InventoryAction;
+import cn.nukkit.inventory.transaction.action.SlotChangeAction;
 import cn.nukkit.inventory.transaction.data.ReleaseItemData;
 import cn.nukkit.inventory.transaction.data.UseItemData;
 import cn.nukkit.inventory.transaction.data.UseItemOnEntityData;
@@ -41,11 +41,18 @@ import cn.nukkit.item.enchantment.Enchantment;
 import cn.nukkit.item.food.Food;
 import cn.nukkit.lang.TextContainer;
 import cn.nukkit.lang.TranslationContainer;
-import cn.nukkit.level.*;
+import cn.nukkit.level.ChunkLoader;
+import cn.nukkit.level.Level;
+import cn.nukkit.level.Location;
+import cn.nukkit.level.Position;
 import cn.nukkit.level.format.FullChunk;
 import cn.nukkit.level.format.generic.BaseFullChunk;
 import cn.nukkit.level.particle.CriticalParticle;
+import cn.nukkit.level.particle.GenericParticle;
+import cn.nukkit.level.particle.Particle;
 import cn.nukkit.level.particle.PunchBlockParticle;
+import cn.nukkit.level.sound.ExperienceOrbSound;
+import cn.nukkit.level.sound.ItemFrameItemRemovedSound;
 import cn.nukkit.math.*;
 import cn.nukkit.metadata.MetadataValue;
 import cn.nukkit.nbt.NBTIO;
@@ -63,17 +70,9 @@ import cn.nukkit.potion.Effect;
 import cn.nukkit.potion.Potion;
 import cn.nukkit.resourcepacks.ResourcePack;
 import cn.nukkit.scheduler.AsyncTask;
-import cn.nukkit.scheduler.Task;
 import cn.nukkit.utils.*;
 import co.aikar.timings.Timing;
 import co.aikar.timings.Timings;
-import it.unimi.dsi.fastutil.ints.Int2ObjectOpenHashMap;
-import it.unimi.dsi.fastutil.ints.IntOpenHashSet;
-import it.unimi.dsi.fastutil.longs.Long2ObjectLinkedOpenHashMap;
-import it.unimi.dsi.fastutil.longs.Long2ObjectMap;
-import it.unimi.dsi.fastutil.longs.Long2ObjectOpenHashMap;
-import it.unimi.dsi.fastutil.longs.LongIterator;
-import it.unimi.dsi.fastutil.objects.ObjectIterator;
 
 import java.awt.*;
 import java.io.IOException;
@@ -127,8 +126,8 @@ public class Player extends EntityHuman implements CommandSender, InventoryHolde
 
     protected Map<Inventory, Integer> windows;
 
-    protected final Map<Integer, Inventory> windowIndex = new Int2ObjectOpenHashMap<>();
-    protected final Set<Integer> permanentWindows = new IntOpenHashSet();
+    protected Map<Integer, Inventory> windowIndex = new HashMap<>();
+    protected Set<Integer> permanentWindows = new HashSet<>();
 
     protected int messageCounter = 2;
 
@@ -166,17 +165,17 @@ public class Player extends EntityHuman implements CommandSender, InventoryHolde
     protected Vector3 sleeping = null;
     protected Long clientID = null;
 
-    private int loaderId;
+    private Integer loaderId = null;
 
     protected float stepHeight = 0.6f;
 
-    public final Map<Long, Boolean> usedChunks = new Long2ObjectOpenHashMap<>();
+    public Map<Long, Boolean> usedChunks = new HashMap<>();
 
     protected int chunkLoadCount = 0;
-    protected final Long2ObjectLinkedOpenHashMap<Boolean> loadQueue = new Long2ObjectLinkedOpenHashMap<>();
-    protected int nextChunkOrderRun = 1;
+    protected Map<Long, Integer> loadQueue = new HashMap<>();
+    protected int nextChunkOrderRun = 5;
 
-    protected final Map<UUID, Player> hiddenPlayers = new HashMap<>();
+    protected Map<UUID, Player> hiddenPlayers = new HashMap<>();
 
     protected Vector3 newPosition = null;
 
@@ -194,9 +193,9 @@ public class Player extends EntityHuman implements CommandSender, InventoryHolde
 
     protected boolean checkMovement = true;
 
-    private final Int2ObjectOpenHashMap<Boolean> needACK = new Int2ObjectOpenHashMap<>();
+    private final Map<Integer, Boolean> needACK = new HashMap<>();
 
-    private final Map<Integer, List<DataPacket>> batchedPackets = new TreeMap<>();
+    private Map<Integer, List<DataPacket>> batchedPackets = new TreeMap<>();
 
     private PermissibleBase perm = null;
 
@@ -225,14 +224,13 @@ public class Player extends EntityHuman implements CommandSender, InventoryHolde
 
     public int pickedXPOrb = 0;
 
+    protected int protocol;
+
     protected int formWindowCount = 0;
-    protected Map<Integer, FormWindow> formWindows = new Int2ObjectOpenHashMap<>();
-    protected Map<Integer, FormWindow> serverSettings = new Int2ObjectOpenHashMap<>();
+    protected Map<Integer, FormWindow> formWindows = new HashMap<>();
+    protected Map<Integer, FormWindow> serverSettings = new HashMap<>();
 
-    protected Map<Long, DummyBossBar> dummyBossBars = new Long2ObjectLinkedOpenHashMap<>();
-
-    private AsyncTask preLoginEventTask = null;
-    protected boolean shouldLogin = false;
+    protected Map<Long, DummyBossBar> dummyBossBars = new HashMap<>();
 
     public int getStartActionTick() {
         return startAction;
@@ -533,7 +531,7 @@ public class Player extends EntityHuman implements CommandSender, InventoryHolde
             this.server.getPluginManager().subscribeToPermission(Server.BROADCAST_CHANNEL_ADMINISTRATIVE, this);
         }
 
-        if (this.isEnableClientCommand() && spawned) this.sendCommandData();
+        if (this.isEnableClientCommand()) this.sendCommandData();
     }
 
     public boolean isEnableClientCommand() {
@@ -549,9 +547,6 @@ public class Player extends EntityHuman implements CommandSender, InventoryHolde
     }
 
     public void sendCommandData() {
-        if (!spawned) {
-            return;
-        }
         AvailableCommandsPacket pk = new AvailableCommandsPacket();
         Map<String, CommandDataVersions> data = new HashMap<>();
         int count = 0;
@@ -567,15 +562,21 @@ public class Player extends EntityHuman implements CommandSender, InventoryHolde
             //TODO: structure checking
             pk.commands = data;
             int identifier = this.dataPacket(pk, true); // We *need* ACK so we can be sure that the client received the packet or not
-            Server.getInstance().getScheduler().scheduleDelayedTask(new Task() {
-                @Override
-                public void onRun(int currentTick) {
-                    Boolean status = needACK.get(identifier);
-                    if ((status == null || !status) && isOnline()) {
-                        sendCommandData();
+            Thread t = new Thread() {
+                public void run() {
+                    // We are going to wait 3 seconds, if after 3 seconds we didn't receive a reply from the client, resend the packet.
+                    try {
+                        Thread.sleep(3000);
+                        boolean status = needACK.get(identifier);
+                        if (!status && isOnline()) {
+                            sendCommandData();
+                            return;
+                        }
+                    } catch (InterruptedException e) {
                     }
                 }
-            }, 60, true);
+            };
+            t.start();
         }
     }
 
@@ -603,7 +604,7 @@ public class Player extends EntityHuman implements CommandSender, InventoryHolde
         this.viewDistance = this.server.getViewDistance();
         this.chunkRadius = viewDistance;
         //this.newPosition = new Vector3(0, 0, 0);
-        this.boundingBox = new SimpleAxisAlignedBB(0, 0, 0, 0, 0, 0);
+        this.boundingBox = new AxisAlignedBB(0, 0, 0, 0, 0, 0);
 
         this.uuid = null;
         this.rawUUID = null;
@@ -696,6 +697,29 @@ public class Player extends EntityHuman implements CommandSender, InventoryHolde
         this.setDataProperty(new StringEntityData(Entity.DATA_INTERACTIVE_TAG, this.buttonText));
     }
 
+    @Override
+    protected boolean switchLevel(Level targetLevel) {
+        Level oldLevel = this.level;
+        if (super.switchLevel(targetLevel)) {
+            for (long index : new ArrayList<>(this.usedChunks.keySet())) {
+                int chunkX = Level.getHashX(index);
+                int chunkZ = Level.getHashZ(index);
+                this.unloadChunk(chunkX, chunkZ, oldLevel);
+            }
+
+            this.usedChunks = new HashMap<>();
+            SetTimePacket pk = new SetTimePacket();
+            pk.time = this.level.getTime();
+            this.dataPacket(pk);
+
+            // TODO: Remove this hack
+            int distance = this.viewDistance * 2 * 16 * 2;
+            this.sendPosition(this.add(distance, 0, distance), this.yaw, this.pitch, MovePlayerPacket.MODE_RESET);
+            return true;
+        }
+        return false;
+    }
+
     public void unloadChunk(int x, int z) {
         this.unloadChunk(x, z, null);
     }
@@ -729,7 +753,7 @@ public class Player extends EntityHuman implements CommandSender, InventoryHolde
             return;
         }
 
-        this.usedChunks.put(Level.chunkHash(x, z), Boolean.TRUE);
+        this.usedChunks.put(Level.chunkHash(x, z), true);
         this.chunkLoadCount++;
 
         this.dataPacket(packet);
@@ -774,39 +798,38 @@ public class Player extends EntityHuman implements CommandSender, InventoryHolde
 
         Timings.playerChunkSendTimer.startTiming();
 
-        if (!loadQueue.isEmpty()) {
-            int count = 0;
-            ObjectIterator<Long2ObjectMap.Entry<Boolean>> iter = loadQueue.long2ObjectEntrySet().fastIterator();
-            while (iter.hasNext()) {
-                Long2ObjectMap.Entry<Boolean> entry = iter.next();
-                long index = entry.getLongKey();
+        int count = 0;
 
-                if (count >= this.chunksPerTick) {
+        List<Map.Entry<Long, Integer>> entryList = new ArrayList<>(this.loadQueue.entrySet());
+        entryList.sort(Comparator.comparingInt(Map.Entry::getValue));
+
+        for (Map.Entry<Long, Integer> entry : entryList) {
+            long index = entry.getKey();
+            if (count >= this.chunksPerTick) {
+                break;
+            }
+            int chunkX = Level.getHashX(index);
+            int chunkZ = Level.getHashZ(index);
+
+            ++count;
+
+            this.usedChunks.put(index, false);
+            this.level.registerChunkLoader(this, chunkX, chunkZ, false);
+
+            if (!this.level.populateChunk(chunkX, chunkZ)) {
+                if (this.spawned && this.teleportPosition == null) {
+                    continue;
+                } else {
                     break;
                 }
-                int chunkX = Level.getHashX(index);
-                int chunkZ = Level.getHashZ(index);
+            }
 
-                ++count;
+            this.loadQueue.remove(index);
 
-                this.usedChunks.put(index, false);
-                this.level.registerChunkLoader(this, chunkX, chunkZ, false);
-
-                if (!this.level.populateChunk(chunkX, chunkZ)) {
-                    if (this.spawned && this.teleportPosition == null) {
-                        continue;
-                    } else {
-                        break;
-                    }
-                }
-
-                iter.remove();
-
-                PlayerChunkRequestEvent ev = new PlayerChunkRequestEvent(this, chunkX, chunkZ);
-                this.server.getPluginManager().callEvent(ev);
-                if (!ev.isCancelled()) {
-                    this.level.requestChunk(chunkX, chunkZ, this);
-                }
+            PlayerChunkRequestEvent ev = new PlayerChunkRequestEvent(this, chunkX, chunkZ);
+            this.server.getPluginManager().callEvent(ev);
+            if (!ev.isCancelled()) {
+                this.level.requestChunk(chunkX, chunkZ, this);
             }
         }
         if (this.chunkLoadCount >= this.spawnThreshold && !this.spawned && this.teleportPosition == null) {
@@ -817,8 +840,6 @@ public class Player extends EntityHuman implements CommandSender, InventoryHolde
 
     protected void doFirstSpawn() {
         this.spawned = true;
-
-        this.setEnableClientCommand(true);
 
         this.getAdventureSettings().update();
 
@@ -839,20 +860,11 @@ public class Player extends EntityHuman implements CommandSender, InventoryHolde
 
         pos = respawnEvent.getRespawnPosition();
 
-        if (this.getHealth() <= 0) {
-            RespawnPacket  respawnPacket = new RespawnPacket();
-            pos = this.getSpawn();
-            respawnPacket.x = (float) pos.x;
-            respawnPacket.y = (float) pos.y;
-            respawnPacket.z = (float) pos.z;
-            this.dataPacket(respawnPacket);
-        } else {
-            RespawnPacket respawnPacket = new RespawnPacket();
-            respawnPacket.x = (float) pos.x;
-            respawnPacket.y = (float) pos.y;
-            respawnPacket.z = (float) pos.z;
-            this.dataPacket(respawnPacket);
-        }
+        RespawnPacket respawnPacket = new RespawnPacket();
+        respawnPacket.x = (float) pos.x;
+        respawnPacket.y = (float) pos.y;
+        respawnPacket.z = (float) pos.z;
+        this.dataPacket(respawnPacket);
 
         this.sendPlayStatus(PlayStatusPacket.PLAYER_SPAWN);
 
@@ -890,15 +902,8 @@ public class Player extends EntityHuman implements CommandSender, InventoryHolde
             }
         }
 
-        int experience = this.getExperience();
-        if (experience != 0) {
-            this.sendExperience(experience);
-        }
-
-        int level = this.getExperienceLevel();
-        if (level != 0) {
-            this.sendExperienceLevel(this.getExperienceLevel());
-        }
+        this.sendExperience(this.getExperience());
+        this.sendExperienceLevel(this.getExperienceLevel());
 
         this.teleport(pos, null); // Prevent PlayerTeleportEvent during player spawn
 
@@ -908,17 +913,20 @@ public class Player extends EntityHuman implements CommandSender, InventoryHolde
 
         //todo Updater
 
-        //Weather
-        if (this.level.isRaining() || this.level.isThundering()) {
-            this.getLevel().sendWeather(this);
+        if (this.getHealth() <= 0) {
+            respawnPacket = new RespawnPacket();
+            pos = this.getSpawn();
+            respawnPacket.x = (float) pos.x;
+            respawnPacket.y = (float) pos.y;
+            respawnPacket.z = (float) pos.z;
+            this.dataPacket(respawnPacket);
         }
+
+        //Weather
         this.getLevel().sendWeather(this);
 
         //FoodLevel
-        PlayerFood food = this.getFoodData();
-        if (food.getLevel() != food.getMaxLevel()) {
-            food.sendFoodLevel();
-        }
+        this.getFoodData().sendFoodLevel();
     }
 
     protected boolean orderChunks() {
@@ -930,75 +938,32 @@ public class Player extends EntityHuman implements CommandSender, InventoryHolde
 
         this.nextChunkOrderRun = 200;
 
-        loadQueue.clear();
-        Long2ObjectOpenHashMap<Boolean> lastChunk = new Long2ObjectOpenHashMap<>(this.usedChunks);
+        Map<Long, Integer> newOrder = new HashMap<>();
+        Map<Long, Boolean> lastChunk = new HashMap<>(this.usedChunks);
 
         int centerX = (int) this.x >> 4;
         int centerZ = (int) this.z >> 4;
 
-        int radius = spawned ? this.chunkRadius : (int) Math.ceil(Math.sqrt(spawnThreshold));
-        int radiusSqr = radius * radius;
-
-
-
-        long index;
-        for (int x = 0; x <= radius; x++) {
-            int xx = x * x;
-            for (int z = 0; z <= x; z++) {
-                int distanceSqr = xx + z * z;
-                if (distanceSqr > radiusSqr) continue;
-
-                /* Top right quadrant */
-                if(this.usedChunks.get(index = Level.chunkHash(centerX + x, centerZ + z)) != Boolean.TRUE) {
-                    this.loadQueue.put(index, Boolean.TRUE);
-                }
-                lastChunk.remove(index);
-                /* Top left quadrant */
-                if(this.usedChunks.get(index = Level.chunkHash(centerX - x - 1, centerZ + z)) != Boolean.TRUE) {
-                    this.loadQueue.put(index, Boolean.TRUE);
-                }
-                lastChunk.remove(index);
-                /* Bottom right quadrant */
-                if(this.usedChunks.get(index = Level.chunkHash(centerX + x, centerZ - z - 1)) != Boolean.TRUE) {
-                    this.loadQueue.put(index, Boolean.TRUE);
-                }
-                lastChunk.remove(index);
-                /* Bottom left quadrant */
-                if(this.usedChunks.get(index = Level.chunkHash(centerX - x - 1, centerZ - z - 1)) != Boolean.TRUE) {
-                    this.loadQueue.put(index, Boolean.TRUE);
-                }
-                lastChunk.remove(index);
-                if(x != z){
-                    /* Top right quadrant mirror */
-                    if(this.usedChunks.get(index = Level.chunkHash(centerX + z, centerZ + x)) != Boolean.TRUE) {
-                        this.loadQueue.put(index, Boolean.TRUE);
-                    }
-                    lastChunk.remove(index);
-                    /* Top left quadrant mirror */
-                    if(this.usedChunks.get(index = Level.chunkHash(centerX - z - 1, centerZ + x)) != Boolean.TRUE) {
-                        this.loadQueue.put(index, Boolean.TRUE);
-                    }
-                    lastChunk.remove(index);
-                    /* Bottom right quadrant mirror */
-                    if(this.usedChunks.get(index = Level.chunkHash(centerX + z, centerZ - x - 1)) != Boolean.TRUE) {
-                        this.loadQueue.put(index, Boolean.TRUE);
-                    }
-                    lastChunk.remove(index);
-                    /* Bottom left quadrant mirror */
-                    if(this.usedChunks.get(index = Level.chunkHash(centerX - z - 1, centerZ - x - 1)) != Boolean.TRUE) {
-                        this.loadQueue.put(index, Boolean.TRUE);
+        for (int x = -this.chunkRadius; x <= this.chunkRadius; x++) {
+            for (int z = -this.chunkRadius; z <= this.chunkRadius; z++) {
+                int chunkX = x + centerX;
+                int chunkZ = z + centerZ;
+                int distance = (int) Math.sqrt((double) x * x + (double) z * z);
+                if (distance <= this.chunkRadius) {
+                    long index;
+                    if (!(this.usedChunks.containsKey(index = Level.chunkHash(chunkX, chunkZ))) || !this.usedChunks.get(index)) {
+                        newOrder.put(index, distance);
                     }
                     lastChunk.remove(index);
                 }
             }
         }
 
-        LongIterator keys = lastChunk.keySet().iterator();
-        while (keys.hasNext()) {
-            index = keys.nextLong();
+        for (long index : new ArrayList<>(lastChunk.keySet())) {
             this.unloadChunk(Level.getHashX(index), Level.getHashZ(index));
         }
 
+        this.loadQueue = newOrder;
         Timings.playerChunkOrderTimer.stopTiming();
         return true;
     }
@@ -1012,6 +977,7 @@ public class Player extends EntityHuman implements CommandSender, InventoryHolde
             DataPacketSendEvent event = new DataPacketSendEvent(this, packet);
             this.server.getPluginManager().callEvent(event);
             if (event.isCancelled()) {
+                timing.stopTiming();
                 return false;
             }
 
@@ -1042,13 +1008,15 @@ public class Player extends EntityHuman implements CommandSender, InventoryHolde
             DataPacketSendEvent ev = new DataPacketSendEvent(this, packet);
             this.server.getPluginManager().callEvent(ev);
             if (ev.isCancelled()) {
+                timing.stopTiming();
                 return -1;
             }
 
             Integer identifier = this.interfaz.putPacket(this, packet, needACK, false);
 
             if (needACK && identifier != null) {
-                this.needACK.put(identifier, Boolean.FALSE);
+                this.needACK.put(identifier, false);
+                timing.stopTiming();
                 return identifier;
             }
         }
@@ -1073,13 +1041,15 @@ public class Player extends EntityHuman implements CommandSender, InventoryHolde
             DataPacketSendEvent ev = new DataPacketSendEvent(this, packet);
             this.server.getPluginManager().callEvent(ev);
             if (ev.isCancelled()) {
+                timing.stopTiming();
                 return -1;
             }
 
             Integer identifier = this.interfaz.putPacket(this, packet, needACK, true);
 
             if (needACK && identifier != null) {
-                this.needACK.put(identifier, Boolean.FALSE);
+                this.needACK.put(identifier, false);
+                timing.stopTiming();
                 return identifier;
             }
         }
@@ -1271,11 +1241,14 @@ public class Player extends EntityHuman implements CommandSender, InventoryHolde
 
         this.resetFallDistance();
 
-        this.inventory.sendContents(this);
-        this.inventory.sendContents(this.getViewers().values());
-        this.inventory.sendHeldItem(this.hasSpawned.values());
+        if (this.inventory != null) {
+            this.inventory.sendContents(this);
+            this.inventory.sendContents(this.getViewers().values());
+            this.inventory.sendHeldItem(this.hasSpawned.values());
 
-        this.inventory.sendCreativeContents();
+            this.inventory.sendCreativeContents();
+        }
+
         return true;
     }
 
@@ -1329,19 +1302,19 @@ public class Player extends EntityHuman implements CommandSender, InventoryHolde
             boolean onGround = false;
 
             AxisAlignedBB bb = this.boundingBox.clone();
-            bb.setMaxY(bb.getMinY() + 0.5);
-            bb.setMinY(bb.getMinY() - 1);
+            bb.maxY = bb.minY + 0.5;
+            bb.minY -= 1;
 
             AxisAlignedBB realBB = this.boundingBox.clone();
-            realBB.setMaxY(realBB.getMinY() + 0.1);
-            realBB.setMinY(realBB.getMinY() - 0.2);
+            realBB.maxY = realBB.minY + 0.1;
+            realBB.minY -= 0.2;
 
-            int minX = NukkitMath.floorDouble(bb.getMinX());
-            int minY = NukkitMath.floorDouble(bb.getMinY());
-            int minZ = NukkitMath.floorDouble(bb.getMinZ());
-            int maxX = NukkitMath.ceilDouble(bb.getMaxX());
-            int maxY = NukkitMath.ceilDouble(bb.getMaxY());
-            int maxZ = NukkitMath.ceilDouble(bb.getMaxZ());
+            int minX = NukkitMath.floorDouble(bb.minX);
+            int minY = NukkitMath.floorDouble(bb.minY);
+            int minZ = NukkitMath.floorDouble(bb.minZ);
+            int maxX = NukkitMath.ceilDouble(bb.maxX);
+            int maxY = NukkitMath.ceilDouble(bb.maxY);
+            int maxZ = NukkitMath.ceilDouble(bb.maxZ);
 
             for (int z = minZ; z <= maxZ; ++z) {
                 for (int x = minX; x <= maxX; ++x) {
@@ -1510,8 +1483,6 @@ public class Player extends EntityHuman implements CommandSender, InventoryHolde
                     } else {
                         this.addMovement(this.x, this.y + this.getEyeHeight(), this.z, this.yaw, this.pitch, this.yaw);
                     }
-                    //Biome biome = Biome.biomes[level.getBiomeId(this.getFloorX(), this.getFloorZ())];
-                    //sendTip(biome.getName() + " (" + biome.doesOverhang() + " " + biome.getBaseHeight() + "-" + biome.getHeightVariation() + ")");
                 } else {
                     this.blocksAround = blocksAround;
                     this.collisionBlocks = collidingBlocks;
@@ -1560,7 +1531,7 @@ public class Player extends EntityHuman implements CommandSender, InventoryHolde
             this.lastYaw = from.yaw;
             this.lastPitch = from.pitch;
 
-            this.sendPosition(from, from.yaw, from.pitch, MovePlayerPacket.MODE_RESET);
+            this.sendPosition(from, from.yaw, from.pitch, MovePlayerPacket.MODE_TELEPORT);
             //this.sendSettings();
             this.forceMovement = new Vector3(from.x, from.y, from.z);
         } else {
@@ -1639,7 +1610,7 @@ public class Player extends EntityHuman implements CommandSender, InventoryHolde
 
             this.entityBaseTick(tickDiff);
 
-            if (this.getServer().getDifficulty() == 0 && this.level.getGameRules().getBoolean(GameRule.NATURAL_REGENERATION)) {
+            if (this.getServer().getDifficulty() == 0 && this.level.getGameRules().getBoolean("naturalRegeneration")) {
                 if (this.getHealth() < this.getMaxHealth() && this.ticksLived % 20 == 0) {
                     this.heal(1);
                 }
@@ -1709,7 +1680,10 @@ public class Player extends EntityHuman implements CommandSender, InventoryHolde
         return true;
     }
 
+    public boolean checkInteractNearby = true;
+
     public void checkInteractNearby() {
+        if (!checkInteractNearby) return;
         int interactDistance = isCreative() ? 5 : 3;
         if (canInteract(this, interactDistance)) {
             if (getEntityPlayerLookingAt(interactDistance) != null) {
@@ -1777,25 +1751,19 @@ public class Player extends EntityHuman implements CommandSender, InventoryHolde
             return;
         }
 
-        if (!this.batchedPackets.isEmpty()) {
-            Player[] pArr = new Player[]{this};
-            Iterator<Entry<Integer, List<DataPacket>>> iter = this.batchedPackets.entrySet().iterator();
-            while (iter.hasNext()) {
-                Entry<Integer, List<DataPacket>> entry = iter.next();
-                List<DataPacket> packets = entry.getValue();
-                DataPacket[] arr = packets.toArray(new DataPacket[packets.size()]);
-                packets.clear();
-                this.server.batchPackets(pArr, arr, false);
-            }
-            this.batchedPackets.clear();
-        }
-
         if (this.nextChunkOrderRun-- <= 0 || this.chunk == null) {
             this.orderChunks();
         }
 
         if (!this.loadQueue.isEmpty() || !this.spawned) {
             this.sendNextChunk();
+        }
+
+        if (!this.batchedPackets.isEmpty()) {
+            for (int channel : this.batchedPackets.keySet()) {
+                this.server.batchPackets(new Player[]{this}, batchedPackets.get(channel).stream().toArray(DataPacket[]::new), false);
+            }
+            this.batchedPackets = new TreeMap<>();
         }
 
     }
@@ -1975,10 +1943,10 @@ public class Player extends EntityHuman implements CommandSender, InventoryHolde
         startGamePacket.rainLevel = 0;
         startGamePacket.lightningLevel = 0;
         startGamePacket.commandsEnabled = this.isEnableClientCommand();
-        startGamePacket.gameRules = getLevel().getGameRules();
         startGamePacket.levelId = "";
         startGamePacket.worldName = this.getServer().getNetwork().getName();
         startGamePacket.generator = 1; //0 old, 1 infinite, 2 flat
+        startGamePacket.gameRules = this.level.gameRules;
         this.dataPacket(startGamePacket);
 
         this.loggedIn = true;
@@ -2005,6 +1973,8 @@ public class Player extends EntityHuman implements CommandSender, InventoryHolde
             this.setRemoveFormat(false);
         }
 
+        this.setEnableClientCommand(true);
+
         this.server.addOnlinePlayer(this);
         this.server.onPlayerCompleteLoginSequence(this);
     }
@@ -2018,10 +1988,12 @@ public class Player extends EntityHuman implements CommandSender, InventoryHolde
             DataPacketReceiveEvent ev = new DataPacketReceiveEvent(this, packet);
             this.server.getPluginManager().callEvent(ev);
             if (ev.isCancelled()) {
+                timing.stopTiming();
                 return;
             }
 
             if (packet.pid() == ProtocolInfo.BATCH_PACKET) {
+                timing.stopTiming();
                 this.server.getNetwork().processBatch((BatchPacket) packet, this);
                 return;
             }
@@ -2036,7 +2008,7 @@ public class Player extends EntityHuman implements CommandSender, InventoryHolde
                     LoginPacket loginPacket = (LoginPacket) packet;
 
                     String message;
-                    if (!ProtocolInfo.SUPPORTED_PROTOCOLS.contains(loginPacket.getProtocol())) {
+                    if (loginPacket.getProtocol() < ProtocolInfo.CURRENT_PROTOCOL) {
                         if (loginPacket.getProtocol() < ProtocolInfo.CURRENT_PROTOCOL) {
                             message = "disconnectionScreen.outdatedClient";
 
@@ -2046,29 +2018,17 @@ public class Player extends EntityHuman implements CommandSender, InventoryHolde
 
                             this.sendPlayStatus(PlayStatusPacket.LOGIN_FAILED_SERVER);
                         }
-                        if (((LoginPacket) packet).protocol < 137) {
-                            DisconnectPacket disconnectPacket = new DisconnectPacket();
-                            disconnectPacket.message = message;
-                            disconnectPacket.encode();
-                            BatchPacket batch = new BatchPacket();
-                            batch.payload = disconnectPacket.getBuffer();
-                            this.directDataPacket(batch);
-                            // Still want to run close() to allow the player to be removed properly
-                        }
                         this.close("", message, false);
                         break;
                     }
 
+                    this.protocol = loginPacket.protocol;
                     this.username = TextFormat.clean(loginPacket.username);
                     this.displayName = this.username;
                     this.iusername = this.username.toLowerCase();
                     this.setDataProperty(new StringEntityData(DATA_NAMETAG, this.username), false);
 
                     this.loginChainData = ClientChainData.read(loginPacket);
-
-                    if (!loginChainData.isXboxAuthed() && server.getPropertyBoolean("xbox-auth")) {
-                        kick(PlayerKickEvent.Reason.UNKNOWN, "disconnectionScreen.notAuthenticated", false);
-                    }
 
                     if (this.server.getOnlinePlayers().size() >= this.server.getMaxPlayers() && this.kick(PlayerKickEvent.Reason.SERVER_FULL, "disconnectionScreen.serverFull", false)) {
                         break;
@@ -2120,31 +2080,6 @@ public class Player extends EntityHuman implements CommandSender, InventoryHolde
                         break;
                     }
 
-                    Player playerInstance = this;
-                    this.preLoginEventTask = new AsyncTask() {
-
-                        private PlayerAsyncPreLoginEvent e;
-
-                        @Override
-                        public void onRun() {
-                            e = new PlayerAsyncPreLoginEvent(username, uuid, ip, port);
-                            server.getPluginManager().callEvent(e);
-                        }
-
-                        @Override
-                        public void onCompletion(Server server) {
-                            if (!playerInstance.closed) {
-                                if (e.getLoginResult() == LoginResult.KICK) {
-                                    playerInstance.close(e.getKickMessage(), e.getKickMessage());
-                                } else if (playerInstance.shouldLogin) {
-                                    playerInstance.completeLoginSequence();
-                                }
-                            }
-                        }
-                    };
-
-                    this.server.getScheduler().scheduleAsyncTask(this.preLoginEventTask);
-
                     this.processLogin();
                     break;
                 case ProtocolInfo.RESOURCE_PACK_CLIENT_RESPONSE_PACKET:
@@ -2177,11 +2112,7 @@ public class Player extends EntityHuman implements CommandSender, InventoryHolde
                             this.dataPacket(stackPacket);
                             break;
                         case ResourcePackClientResponsePacket.STATUS_COMPLETED:
-                            if (this.preLoginEventTask.isFinished()) {
-                                this.completeLoginSequence();
-                            } else {
-                                this.shouldLogin = true;
-                            }
+                            this.completeLoginSequence();
                             break;
                     }
                     break;
@@ -2228,7 +2159,7 @@ public class Player extends EntityHuman implements CommandSender, InventoryHolde
                     }
 
                     if (this.forceMovement != null && (newPos.distanceSquared(this.forceMovement) > 0.1 || revert)) {
-                        this.sendPosition(this.forceMovement, movePlayerPacket.yaw, movePlayerPacket.pitch, MovePlayerPacket.MODE_RESET);
+                        this.sendPosition(this.forceMovement, movePlayerPacket.yaw, movePlayerPacket.pitch, MovePlayerPacket.MODE_TELEPORT);
                     } else {
 
                         movePlayerPacket.yaw %= 360;
@@ -2468,12 +2399,6 @@ public class Player extends EntityHuman implements CommandSender, InventoryHolde
                                 this.level.addParticle(new PunchBlockParticle(pos, block, face));
                             }
                             break;
-                        case PlayerActionPacket.ACTION_START_SWIMMING:
-                            this.setSwimming(true);
-                            break;
-                        case PlayerActionPacket.ACTION_STOP_SWIMMING:
-                            this.setSwimming(false);
-                            break;
                     }
 
                     this.startAction = -1;
@@ -2490,11 +2415,13 @@ public class Player extends EntityHuman implements CommandSender, InventoryHolde
                     ModalFormResponsePacket modalFormPacket = (ModalFormResponsePacket) packet;
 
                     if (formWindows.containsKey(modalFormPacket.formId)) {
-                        FormWindow window = formWindows.remove(modalFormPacket.formId);
+                        FormWindow window = formWindows.get(modalFormPacket.formId);
                         window.setResponse(modalFormPacket.data.trim());
 
                         PlayerFormRespondedEvent event = new PlayerFormRespondedEvent(this, modalFormPacket.formId, window);
                         getServer().getPluginManager().callEvent(event);
+
+                        formWindows.remove(modalFormPacket.formId);
                     } else if (serverSettings.containsKey(modalFormPacket.formId)) {
                         FormWindow window = serverSettings.get(modalFormPacket.formId);
                         window.setResponse(modalFormPacket.data.trim());
@@ -2515,7 +2442,7 @@ public class Player extends EntityHuman implements CommandSender, InventoryHolde
                     }
 
                     this.craftingType = CRAFTING_SMALL;
-                    //this.resetCraftingGridType();
+                    this.resetCraftingGridType();
 
                     InteractPacket interactPacket = (InteractPacket) packet;
 
@@ -2601,7 +2528,7 @@ public class Player extends EntityHuman implements CommandSender, InventoryHolde
                         break;
                     }
                     this.craftingType = CRAFTING_SMALL;
-                    //this.resetCraftingGridType();
+                    this.resetCraftingGridType();
 
                     EntityEventPacket entityEventPacket = (EntityEventPacket) packet;
 
@@ -2724,7 +2651,7 @@ public class Player extends EntityHuman implements CommandSender, InventoryHolde
                                 this.level.dropItem(vector3, itemDrop);
                                 itemFrame.setItem(new ItemBlock(new BlockAir()));
                                 itemFrame.setItemRotation(0);
-                                this.getLevel().addSound(this, Sound.BLOCK_ITEMFRAME_REMOVE_ITEM);
+                                this.getLevel().addSound(new ItemFrameItemRemovedSound(this));
                             }
                         } else {
                             itemFrame.spawnTo(this);
@@ -2767,14 +2694,10 @@ public class Player extends EntityHuman implements CommandSender, InventoryHolde
                 case ProtocolInfo.LEVEL_SOUND_EVENT_PACKET:
                     //LevelSoundEventPacket levelSoundEventPacket = (LevelSoundEventPacket) packet;
                     //We just need to broadcast this packet to all viewers.
-                    this.level.addChunkPacket(this.getFloorX() >> 4, this.getFloorZ() >> 4, packet);
+                    Server.broadcastPacket(this.getViewers().values(), packet);
+                    this.dataPacket(packet);
                     break;
                 case ProtocolInfo.INVENTORY_TRANSACTION_PACKET:
-                    if (this.isSpectator()) {
-                        this.sendAllInventories();
-                        break;
-                    }
-
                     InventoryTransactionPacket transactionPacket = (InventoryTransactionPacket) packet;
 
                     List<InventoryAction> actions = new ArrayList<>();
@@ -2790,7 +2713,7 @@ public class Player extends EntityHuman implements CommandSender, InventoryHolde
                         actions.add(a);
                     }
 
-                    if (transactionPacket.isCraftingPart) {
+                    if (!this.isSpectator() && transactionPacket.isCraftingPart) {
                         if (this.craftingTransaction == null) {
                             this.craftingTransaction = new CraftingTransaction(this, actions);
                         } else {
@@ -3010,7 +2933,7 @@ public class Player extends EntityHuman implements CommandSender, InventoryHolde
                                     Map<DamageModifier, Float> damage = new EnumMap<>(DamageModifier.class);
                                     damage.put(DamageModifier.BASE, itemDamage);
 
-                                    if (!this.canInteract(target, isCreative() ? 8 : 5)) {
+                                    if (!this.canInteract(target, isCreative() ? 8 : 3.5)) {
                                         break;
                                     } else if (target instanceof Player) {
                                         if ((((Player) target).getGamemode() & 0x01) > 0) {
@@ -3022,10 +2945,6 @@ public class Player extends EntityHuman implements CommandSender, InventoryHolde
 
                                     EntityDamageByEntityEvent entityDamageByEntityEvent = new EntityDamageByEntityEvent(this, target, DamageCause.ENTITY_ATTACK, damage);
                                     if (this.isSpectator()) entityDamageByEntityEvent.setCancelled();
-                                    if ((target instanceof Player) && !this.level.getGameRules().getBoolean(GameRule.PVP)) {
-                                        entityDamageByEntityEvent.setCancelled();
-                                    }
-
                                     if (!target.attack(entityDamageByEntityEvent)) {
                                         if (item.isTool() && this.isSurvival()) {
                                             this.inventory.sendContents(this);
@@ -3446,7 +3365,7 @@ public class Player extends EntityHuman implements CommandSender, InventoryHolde
                 }
             }
 
-            this.hiddenPlayers.clear();
+            this.hiddenPlayers = new HashMap<>();
 
             this.removeAllWindows(true);
 
@@ -3455,12 +3374,6 @@ public class Player extends EntityHuman implements CommandSender, InventoryHolde
                 int chunkZ = Level.getHashZ(index);
                 this.level.unregisterChunkLoader(this, chunkX, chunkZ);
                 this.usedChunks.remove(index);
-
-                for (Entity entity : level.getChunkEntities(chunkX, chunkZ).values()) {
-                    if (entity != this) {
-                        entity.getViewers().remove(getLoaderId());
-                    }
-                }
             }
 
             super.close();
@@ -3485,10 +3398,10 @@ public class Player extends EntityHuman implements CommandSender, InventoryHolde
                     String.valueOf(this.port),
                     this.getServer().getLanguage().translateString(reason)));
             this.windows = new HashMap<>();
-            this.windowIndex.clear();
-            this.usedChunks.clear();
-            this.loadQueue.clear();
-            this.hasSpawned.clear();
+            this.windowIndex = new HashMap<>();
+            this.usedChunks = new HashMap<>();
+            this.loadQueue = new HashMap<>();
+            this.hasSpawned = new HashMap<>();
             this.spawnPosition = null;
 
             if (this.riding instanceof EntityRideable) {
@@ -3504,7 +3417,8 @@ public class Player extends EntityHuman implements CommandSender, InventoryHolde
         }
 
         if (this.inventory != null) {
-            this.inventory = null;
+            //总是发生this.inventory == null的现象
+            //this.inventory = null;
         }
 
         this.chunk = null;
@@ -3560,13 +3474,17 @@ public class Player extends EntityHuman implements CommandSender, InventoryHolde
         return this.username;
     }
 
+    public int getProtocol() {
+        return this.protocol;
+    }
+
     @Override
     public void kill() {
         if (!this.spawned) {
             return;
         }
 
-        boolean showMessages = this.level.getGameRules().getBoolean(GameRule.SHOW_DEATH_MESSAGE);
+        boolean showMessages = this.level.getGameRules().getBoolean("showDeathMessages");
         String message = "death.attack.generic";
 
         List<String> params = new ArrayList<>();
@@ -3692,11 +3610,11 @@ public class Player extends EntityHuman implements CommandSender, InventoryHolde
 
         PlayerDeathEvent ev = new PlayerDeathEvent(this, this.getDrops(), new TranslationContainer(message, params.stream().toArray(String[]::new)), this.getExperienceLevel());
 
-        ev.setKeepExperience(this.level.gameRules.getBoolean(GameRule.KEEP_INVENTORY));
+        ev.setKeepExperience(this.level.gameRules.getBoolean("keepInventory"));
         ev.setKeepInventory(ev.getKeepExperience());
         this.server.getPluginManager().callEvent(ev);
 
-        if (!ev.getKeepInventory() && this.level.getGameRules().getBoolean(GameRule.DO_ENTITY_DROPS)) {
+        if (!ev.getKeepInventory() && this.level.getGameRules().getBoolean("doEntityDrops")) {
             for (Item item : ev.getDrops()) {
                 this.level.dropItem(this, item, null, true, 40);
             }
@@ -3706,7 +3624,7 @@ public class Player extends EntityHuman implements CommandSender, InventoryHolde
             }
         }
 
-        if (!ev.getKeepExperience() && this.level.getGameRules().getBoolean(GameRule.DO_ENTITY_DROPS)) {
+        if (!ev.getKeepExperience() && this.level.getGameRules().getBoolean("doEntityDrops")) {
             if (this.isSurvival() || this.isAdventure()) {
                 int exp = ev.getExperience() * 7;
                 if (exp > 100) exp = 100;
@@ -3729,12 +3647,6 @@ public class Player extends EntityHuman implements CommandSender, InventoryHolde
         pk.x = (float) pos.x;
         pk.y = (float) pos.y;
         pk.z = (float) pos.z;
-
-        //this is a dirty hack to prevent dying in a different level than the respawn point from breaking everything
-        if (this.level != pos.level)   {
-            this.teleportImmediate(new Location(0, -100, 0, pos.level));
-        }
-
         this.dataPacket(pk);
     }
 
@@ -3821,7 +3733,6 @@ public class Player extends EntityHuman implements CommandSender, InventoryHolde
     public void sendExperience(int exp) {
         if (this.spawned) {
             float percent = ((float) exp) / calculateRequireExperience(this.getExperienceLevel());
-            percent = Math.max(0f, Math.min(1f, percent));
             this.setAttribute(Attribute.getAttribute(Attribute.EXPERIENCE).setValue(percent));
         }
     }
@@ -3881,24 +3792,16 @@ public class Player extends EntityHuman implements CommandSender, InventoryHolde
                 }
             }
         }
-
+        boolean add = false;
         if (source instanceof EntityDamageByEntityEvent) {
             Entity damager = ((EntityDamageByEntityEvent) source).getDamager();
             if (damager instanceof Player) {
                 ((Player) damager).getFoodData().updateFoodExpLevel(0.3);
             }
             //Critical hit
-            boolean add = false;
-            if (!damager.onGround) {
-                NukkitRandom random = new NukkitRandom();
-                for (int i = 0; i < 5; i++) {
-                    CriticalParticle par = new CriticalParticle(new Vector3(this.x + random.nextRange(-15, 15) / 10, this.y + random.nextRange(0, 20) / 10, this.z + random.nextRange(-15, 15) / 10));
-                    this.getLevel().addParticle(par);
-                }
 
-                add = true;
-            }
-            if (add) source.setDamage((float) (source.getDamage() * 1.5));
+            if (!damager.onGround && damager instanceof Player && (this.getLoginChainData().getDeviceOS() == 7 || (((Player) damager).speed != null && ((Player) damager).speed.y > 0))) add = true;
+            if (add) source.setDamage((float) (source.getDamage() * 1.3));
         }
 
         if (super.attack(source)) { //!source.isCancelled()
@@ -3907,7 +3810,19 @@ public class Player extends EntityHuman implements CommandSender, InventoryHolde
                 EntityEventPacket pk = new EntityEventPacket();
                 pk.eid = this.id;
                 pk.event = EntityEventPacket.HURT_ANIMATION;
+                Server.broadcastPacket(this.hasSpawned.values(), pk);
                 this.dataPacket(pk);
+                if (add) {
+                    if (((EntityDamageByEntityEvent) source).getDamager() instanceof Player) {
+                        if (((Player) ((EntityDamageByEntityEvent) source).getDamager()).getLoginChainData().getDeviceOS() == 7)  //win10
+                            (((EntityDamageByEntityEvent) source).getDamager()).addEffect(Effect.getEffect(Effect.SLOWNESS).setDuration(10).setAmplifier(1).setVisible(false));
+                    }
+                    Random random = new Random();
+                    for (int i = 0; i < 10; i++) {
+                        CriticalParticle par = new CriticalParticle(new Vector3(this.x + random.nextDouble() * 2 - 1, this.y + random.nextDouble() * 2, this.z + random.nextDouble() * 2 - 1));
+                        this.getLevel().addParticle(par);
+                    }
+                }
             }
             return true;
         } else {
@@ -4060,6 +3975,15 @@ public class Player extends EntityHuman implements CommandSender, InventoryHolde
             this.server.getPluginManager().callEvent(event);
             if (event.isCancelled()) return false;
             to = event.getTo();
+            if (from.getLevel().getId() != to.getLevel().getId()) { //Different level, update compass position
+                SetSpawnPositionPacket pk = new SetSpawnPositionPacket();
+                pk.spawnType = SetSpawnPositionPacket.TYPE_WORLD_SPAWN;
+                Position spawn = to.getLevel().getSpawnLocation();
+                pk.x = spawn.getFloorX();
+                pk.y = spawn.getFloorY();
+                pk.z = spawn.getFloorZ();
+                dataPacket(pk);
+            }
         }
 
         //TODO Remove it! A hack to solve the client-side teleporting bug! (inside into the block)
@@ -4091,8 +4015,8 @@ public class Player extends EntityHuman implements CommandSender, InventoryHolde
     protected void forceSendEmptyChunks() {
         int chunkPositionX = this.getFloorX() >> 4;
         int chunkPositionZ = this.getFloorZ() >> 4;
-        for (int x = -chunkRadius; x < chunkRadius; x++) {
-            for (int z = -chunkRadius; z < chunkRadius; z++) {
+        for (int x = -3; x < 3; x++) {
+            for (int z = -3; z < 3; z++) {
                 FullChunkDataPacket chunk = new FullChunkDataPacket();
                 chunk.chunkX = chunkPositionX + x;
                 chunk.chunkZ = chunkPositionZ + z;
@@ -4128,7 +4052,7 @@ public class Player extends EntityHuman implements CommandSender, InventoryHolde
             }
 
             this.forceMovement = new Vector3(this.x, this.y, this.z);
-            this.sendPosition(this, this.yaw, this.pitch, MovePlayerPacket.MODE_RESET);
+            this.sendPosition(this, this.yaw, this.pitch, MovePlayerPacket.MODE_TELEPORT);
 
             this.resetFallDistance();
             this.orderChunks();
@@ -4147,14 +4071,8 @@ public class Player extends EntityHuman implements CommandSender, InventoryHolde
      * You can find out FormWindow result by listening to PlayerFormRespondedEvent
      */
     public int showFormWindow(FormWindow window) {
-        return showFormWindow(window, this.formWindowCount++);
-    }
+        int id = this.formWindowCount++;
 
-    /**
-     * Shows a new FormWindow to the player
-     * You can find out FormWindow result by listening to PlayerFormRespondedEvent
-     */
-    public int showFormWindow(FormWindow window, int id) {
         ModalFormRequestPacket packet = new ModalFormRequestPacket();
         packet.formId = id;
         packet.data = window.getJSONData();
@@ -4340,33 +4258,13 @@ public class Player extends EntityHuman implements CommandSender, InventoryHolde
     }
 
     public void resetCraftingGridType() {
-        if (this.craftingGrid != null) {
+        if (this.craftingGrid instanceof BigCraftingGrid) {
             Item[] drops = this.inventory.addItem(this.craftingGrid.getContents().values().stream().toArray(Item[]::new));
-
-            if (drops.length > 0) {
-                for (Item drop : drops) {
-                    this.dropItem(drop);
-                }
+            for (Item drop : drops) {
+                this.dropItem(drop);
             }
 
-            drops = this.inventory.addItem(this.cursorInventory.getItem(0));
-            if (drops.length > 0) {
-                for (Item drop : drops) {
-                    this.dropItem(drop);
-                }
-            }
-
-            this.cursorInventory.clearAll();
-            this.craftingGrid.clearAll();
-
-            if (this.craftingGrid instanceof BigCraftingGrid) {
-                this.craftingGrid = new CraftingGrid(this);
-
-                ContainerClosePacket pk = new ContainerClosePacket(); //be sure, big crafting is really closed
-                pk.windowId = ContainerIds.NONE;
-                this.dataPacket(pk);
-            }
-
+            this.craftingGrid = new CraftingGrid(this);
             this.craftingType = 0;
         }
     }
@@ -4431,7 +4329,7 @@ public class Player extends EntityHuman implements CommandSender, InventoryHolde
     }
 
     @Override
-    public int getLoaderId() {
+    public Integer getLoaderId() {
         return this.loaderId;
     }
 
@@ -4440,13 +4338,13 @@ public class Player extends EntityHuman implements CommandSender, InventoryHolde
         return this.isConnected();
     }
 
-
     public static BatchPacket getChunkCacheFromData(int chunkX, int chunkZ, byte[] payload) {
         FullChunkDataPacket pk = new FullChunkDataPacket();
         pk.chunkX = chunkX;
         pk.chunkZ = chunkZ;
         pk.data = payload;
         pk.encode();
+        pk.isEncoded = true;
 
         BatchPacket batch = new BatchPacket();
         byte[][] batchPayload = new byte[2][];
@@ -4478,44 +4376,10 @@ public class Player extends EntityHuman implements CommandSender, InventoryHolde
 
     //todo a lot on dimension
 
-    private void setDimension(int dimension) {
+    public void setDimension(int dimension) {
         ChangeDimensionPacket pk = new ChangeDimensionPacket();
-        pk.dimension = dimension;
-        this.directDataPacket(pk);
-    }
-
-    @Override
-    public boolean switchLevel(Level level) {
-        Level oldLevel = this.level;
-        if (super.switchLevel(level)) {
-            SetSpawnPositionPacket spawnPosition = new SetSpawnPositionPacket();
-            spawnPosition.spawnType = SetSpawnPositionPacket.TYPE_WORLD_SPAWN;
-            Position spawn = level.getSpawnLocation();
-            spawnPosition.x = spawn.getFloorX();
-            spawnPosition.y = spawn.getFloorY();
-            spawnPosition.z = spawn.getFloorZ();
-            this.dataPacket(spawnPosition);
-
-            // Remove old chunks
-            for (long index : new ArrayList<>(this.usedChunks.keySet())) {
-                int chunkX = Level.getHashX(index);
-                int chunkZ = Level.getHashZ(index);
-                this.unloadChunk(chunkX, chunkZ, oldLevel);
-            }
-            this.usedChunks.clear();
-
-            forceSendEmptyChunks();
-
-            SetTimePacket pk = new SetTimePacket();
-            pk.time = level.getTime();
-            this.dataPacket(pk);
-
-            int distance = this.viewDistance * 2 * 16 * 2;
-            this.sendPosition(this.add(distance, 0, distance), this.yaw, this.pitch, MovePlayerPacket.MODE_RESET);
-            return true;
-        }
-
-        return false;
+        pk.dimension = getLevel().getDimension();
+        this.dataPacket(pk);
     }
 
     public void setCheckMovement(boolean checkMovement) {
@@ -4638,7 +4502,7 @@ public class Player extends EntityHuman implements CommandSender, InventoryHolde
                 int exp = xpOrb.getExp();
                 this.addExperience(exp);
                 entity.kill();
-                this.getLevel().addSound(this, Sound.RANDOM_ORB);
+                this.getLevel().addSound(new ExperienceOrbSound(this));
                 pickedXPOrb = tick;
                 return true;
             }
@@ -4671,7 +4535,7 @@ public class Player extends EntityHuman implements CommandSender, InventoryHolde
      * @param identification
      */
     public void notifyACK(int identification) {
-        needACK.put(identification, Boolean.TRUE);
+        needACK.put(identification, true);
     }
 
     public boolean isBreakingBlock() {

@@ -1,12 +1,9 @@
 package cn.nukkit.entity.mob;
 
 import cn.nukkit.Player;
-import cn.nukkit.item.Item;
-import cn.nukkit.item.ItemBow;
 import cn.nukkit.level.format.FullChunk;
 import cn.nukkit.nbt.tag.CompoundTag;
 import cn.nukkit.network.protocol.AddEntityPacket;
-import cn.nukkit.network.protocol.MobEquipmentPacket;
 
 /**
  * @author PikyCZ
@@ -32,22 +29,17 @@ public class EntityStray extends EntityMob {
 
     @Override
     public float getWidth() {
-        return 0.6f;
+        return 0.65f;
     }
 
     @Override
     public float getHeight() {
-        return 1.99f;
+        return 1.8f;
     }
 
     @Override
     public String getName() {
         return "Stray";
-    }
-
-    @Override
-    public Item[] getDrops() {
-        return new Item[]{Item.get(Item.BONE, Item.ARROW)};
     }
 
     @Override
@@ -64,12 +56,6 @@ public class EntityStray extends EntityMob {
         pk.speedZ = (float) this.motionZ;
         pk.metadata = this.dataProperties;
         player.dataPacket(pk);
-
-        MobEquipmentPacket pk1 = new MobEquipmentPacket();
-        pk1.eid = this.getId();
-        pk1.item = new ItemBow();
-        pk1.hotbarSlot = 10;
-        player.dataPacket(pk1);
 
         super.spawnTo(player);
     }

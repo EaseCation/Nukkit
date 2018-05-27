@@ -2,14 +2,13 @@ package cn.nukkit.block;
 
 import cn.nukkit.item.ItemTool;
 import cn.nukkit.math.AxisAlignedBB;
-import cn.nukkit.math.SimpleAxisAlignedBB;
 import cn.nukkit.utils.BlockColor;
 
 /**
  * Created on 2015/12/7 by xtypr.
  * Package cn.nukkit.block in project Nukkit .
  */
-public class BlockFence extends BlockTransparentMeta {
+public class BlockFence extends BlockTransparent {
 
     public static final int FENCE_OAK = 0;
     public static final int FENCE_SPRUCE = 1;
@@ -58,10 +57,9 @@ public class BlockFence extends BlockTransparentMeta {
                 "",
                 ""
         };
-        return names[this.getDamage() & 0x07];
+        return names[this.meta & 0x07];
     }
 
-    @Override
     protected AxisAlignedBB recalculateBoundingBox() {
         boolean north = this.canConnect(this.north());
         boolean south = this.canConnect(this.south());
@@ -71,7 +69,7 @@ public class BlockFence extends BlockTransparentMeta {
         double s = south ? 1 : 0.625;
         double w = west ? 0 : 0.375;
         double e = east ? 1 : 0.625;
-        return new SimpleAxisAlignedBB(
+        return new AxisAlignedBB(
                 this.x + w,
                 this.y,
                 this.z + n,

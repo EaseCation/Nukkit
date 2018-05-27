@@ -1,7 +1,6 @@
 package cn.nukkit.entity.mob;
 
 import cn.nukkit.Player;
-import cn.nukkit.item.Item;
 import cn.nukkit.level.format.FullChunk;
 import cn.nukkit.nbt.tag.CompoundTag;
 import cn.nukkit.network.protocol.AddEntityPacket;
@@ -30,22 +29,22 @@ public class EntitySpider extends EntityMob {
 
     @Override
     public float getWidth() {
-        return 1.4f;
+        return 1.3f;
     }
 
     @Override
     public float getHeight() {
-        return 0.9f;
+        return 1.12f;
+    }
+
+    @Override
+    public float getEyeHeight() {
+        return 1;
     }
 
     @Override
     public String getName() {
         return "Spider";
-    }
-
-    @Override
-    public Item[] getDrops() {
-        return new Item[]{Item.get(Item.STRING, Item.SPIDER_EYE)};
     }
 
     @Override

@@ -15,6 +15,11 @@ import java.util.concurrent.ThreadLocalRandom;
 public class BlockOreQuartz extends BlockSolid {
 
     public BlockOreQuartz() {
+        this(0);
+    }
+
+    public BlockOreQuartz(int meta) {
+        super(0);
     }
 
     @Override

@@ -10,19 +10,18 @@ import cn.nukkit.level.Level;
 import cn.nukkit.level.particle.BoneMealParticle;
 import cn.nukkit.math.AxisAlignedBB;
 import cn.nukkit.math.BlockFace;
-import cn.nukkit.math.SimpleAxisAlignedBB;
+
 import java.util.Random;
 
 /**
  * Created by CreeperFace on 27. 10. 2016.
  */
-public class BlockCocoa extends BlockTransparentMeta {
+public class BlockCocoa extends BlockTransparent {
 
-    protected static final AxisAlignedBB[] EAST = new SimpleAxisAlignedBB[]{new SimpleAxisAlignedBB(0.6875D, 0.4375D, 0.375D, 0.9375D, 0.75D, 0.625D), new SimpleAxisAlignedBB(0.5625D, 0.3125D, 0.3125D, 0.9375D, 0.75D, 0.6875D), new SimpleAxisAlignedBB(0.5625D, 0.3125D, 0.3125D, 0.9375D, 0.75D, 0.6875D)};
-    protected static final AxisAlignedBB[] WEST = new SimpleAxisAlignedBB[]{new SimpleAxisAlignedBB(0.0625D, 0.4375D, 0.375D, 0.3125D, 0.75D, 0.625D), new SimpleAxisAlignedBB(0.0625D, 0.3125D, 0.3125D, 0.4375D, 0.75D, 0.6875D), new SimpleAxisAlignedBB(0.0625D, 0.3125D, 0.3125D, 0.4375D, 0.75D, 0.6875D)};
-    protected static final AxisAlignedBB[] NORTH = new SimpleAxisAlignedBB[]{new SimpleAxisAlignedBB(0.375D, 0.4375D, 0.0625D, 0.625D, 0.75D, 0.3125D), new SimpleAxisAlignedBB(0.3125D, 0.3125D, 0.0625D, 0.6875D, 0.75D, 0.4375D), new SimpleAxisAlignedBB(0.3125D, 0.3125D, 0.0625D, 0.6875D, 0.75D, 0.4375D)};
-    protected static final AxisAlignedBB[] SOUTH = new SimpleAxisAlignedBB[]{new SimpleAxisAlignedBB(0.375D, 0.4375D, 0.6875D, 0.625D, 0.75D, 0.9375D), new SimpleAxisAlignedBB(0.3125D, 0.3125D, 0.5625D, 0.6875D, 0.75D, 0.9375D), new SimpleAxisAlignedBB(0.3125D, 0.3125D, 0.5625D, 0.6875D, 0.75D, 0.9375D)};
-    protected static final AxisAlignedBB[] ALL = new AxisAlignedBB[12];
+    protected static final AxisAlignedBB[] EAST = new AxisAlignedBB[]{new AxisAlignedBB(0.6875D, 0.4375D, 0.375D, 0.9375D, 0.75D, 0.625D), new AxisAlignedBB(0.5625D, 0.3125D, 0.3125D, 0.9375D, 0.75D, 0.6875D), new AxisAlignedBB(0.5625D, 0.3125D, 0.3125D, 0.9375D, 0.75D, 0.6875D)};
+    protected static final AxisAlignedBB[] WEST = new AxisAlignedBB[]{new AxisAlignedBB(0.0625D, 0.4375D, 0.375D, 0.3125D, 0.75D, 0.625D), new AxisAlignedBB(0.0625D, 0.3125D, 0.3125D, 0.4375D, 0.75D, 0.6875D), new AxisAlignedBB(0.0625D, 0.3125D, 0.3125D, 0.4375D, 0.75D, 0.6875D)};
+    protected static final AxisAlignedBB[] NORTH = new AxisAlignedBB[]{new AxisAlignedBB(0.375D, 0.4375D, 0.0625D, 0.625D, 0.75D, 0.3125D), new AxisAlignedBB(0.3125D, 0.3125D, 0.0625D, 0.6875D, 0.75D, 0.4375D), new AxisAlignedBB(0.3125D, 0.3125D, 0.0625D, 0.6875D, 0.75D, 0.4375D)};
+    protected static final AxisAlignedBB[] SOUTH = new AxisAlignedBB[]{new AxisAlignedBB(0.375D, 0.4375D, 0.6875D, 0.625D, 0.75D, 0.9375D), new AxisAlignedBB(0.3125D, 0.3125D, 0.5625D, 0.6875D, 0.75D, 0.9375D), new AxisAlignedBB(0.3125D, 0.3125D, 0.5625D, 0.6875D, 0.75D, 0.9375D)};
 
     public BlockCocoa() {
         this(0);
@@ -43,52 +42,23 @@ public class BlockCocoa extends BlockTransparentMeta {
     }
 
     @Override
-    public void setDamage(int meta) {
-        super.setDamage(meta);
-    }
-
-
-    @Override
-    public double getMinX() {
-        return this.x + getRelativeBoundingBox().getMinX();
-    }
-
-    @Override
-    public double getMaxX() {
-        return this.x + getRelativeBoundingBox().getMaxX();
-    }
-
-    @Override
-    public double getMinY() {
-        return this.y + getRelativeBoundingBox().getMinY();
-    }
-
-    @Override
-    public double getMaxY() {
-        return this.y + getRelativeBoundingBox().getMaxY();
-    }
-
-    @Override
-    public double getMinZ() {
-        return this.z + getRelativeBoundingBox().getMinZ();
-    }
-
-    @Override
-    public double getMaxZ() {
-        return this.z + getRelativeBoundingBox().getMaxZ();
-    }
-
-    private AxisAlignedBB getRelativeBoundingBox() {
-        int damage = this.getDamage();
-        if (damage > 11) {
-            this.setDamage(damage = 11);
+    public AxisAlignedBB getBoundingBox() {
+        if (boundingBox == null) {
+            this.boundingBox = recalculateBoundingBox();
         }
-        AxisAlignedBB boundingBox = ALL[damage];
-        if (boundingBox != null) return boundingBox;
 
+        return this.boundingBox;
+    }
+
+    @Override
+    protected AxisAlignedBB recalculateBoundingBox() {
         AxisAlignedBB[] bbs;
 
-        switch (getDamage()) {
+        if (this.meta > 11) {
+            this.meta = 11;
+        }
+
+        switch (meta) {
             case 0:
             case 4:
             case 8:
@@ -114,7 +84,7 @@ public class BlockCocoa extends BlockTransparentMeta {
                 break;
         }
 
-        return ALL[damage] = bbs[this.getDamage() >> 2];
+        return bbs[this.meta / 4].getOffsetBoundingBox(x, y, z);
     }
 
     @Override
@@ -135,7 +105,7 @@ public class BlockCocoa extends BlockTransparentMeta {
                         1,
                 };
 
-                this.setDamage(faces[face.getIndex()]);
+                this.meta = faces[face.getIndex()];
                 this.level.setBlock(block, this, true, true);
                 return true;
             }
@@ -150,7 +120,7 @@ public class BlockCocoa extends BlockTransparentMeta {
                     3, 4, 2, 5, 3, 4, 2, 5, 3, 4, 2, 5
             };
 
-            Block side = this.getSide(BlockFace.fromIndex(faces[this.getDamage()]));
+            Block side = this.getSide(BlockFace.fromIndex(faces[this.meta]));
 
             if (side.getId() != Block.WOOD && side.getDamage() != BlockWood.JUNGLE) {
                 this.getLevel().useBreakOn(this);
@@ -158,9 +128,9 @@ public class BlockCocoa extends BlockTransparentMeta {
             }
         } else if (type == Level.BLOCK_UPDATE_RANDOM) {
             if (new Random().nextInt(2) == 1) {
-                if (this.getDamage() / 4 < 2) {
+                if (this.meta / 4 < 2) {
                     BlockCocoa block = (BlockCocoa) this.clone();
-                    block.setDamage(block.getDamage() + 4);
+                    block.meta += 4;
                     BlockGrowEvent ev = new BlockGrowEvent(this, block);
                     Server.getInstance().getPluginManager().callEvent(ev);
 
@@ -187,8 +157,8 @@ public class BlockCocoa extends BlockTransparentMeta {
     public boolean onActivate(Item item, Player player) {
         if (item.getId() == Item.DYE && item.getDamage() == 0x0f) {
             Block block = this.clone();
-            if (this.getDamage() / 4 < 2) {
-                block.setDamage(block.getDamage() + 4);
+            if (this.meta / 4 < 2) {
+                block.meta += 4;
                 BlockGrowEvent ev = new BlockGrowEvent(this, block);
                 Server.getInstance().getPluginManager().callEvent(ev);
 
@@ -223,7 +193,7 @@ public class BlockCocoa extends BlockTransparentMeta {
 
     @Override
     public Item[] getDrops(Item item) {
-        if (this.getDamage() >= 8) {
+        if (this.meta >= 8) {
             return new Item[]{
                     new ItemDye(3, 3)
             };

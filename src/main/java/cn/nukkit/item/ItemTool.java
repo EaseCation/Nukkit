@@ -36,15 +36,15 @@ public abstract class ItemTool extends Item {
     public static final int DURABILITY_BOW = 385;
 
     public ItemTool(int id) {
-        this(id, 0, 1, UNKNOWN_STR);
+        this(id, 0, 1, "Unknown");
     }
 
     public ItemTool(int id, Integer meta) {
-        this(id, meta, 1, UNKNOWN_STR);
+        this(id, meta, 1, "Unknown");
     }
 
     public ItemTool(int id, Integer meta, int count) {
-        this(id, meta, count, UNKNOWN_STR);
+        this(id, meta, count, "Unknown");
     }
 
     public ItemTool(int id, Integer meta, int count, String name) {
@@ -58,7 +58,7 @@ public abstract class ItemTool extends Item {
 
     @Override
     public boolean useOn(Block block) {
-        if (this.isUnbreakable() || isDurable()) {
+        if (this.isUnbreakable() || !canReduceDamage()) {
             return true;
         }
 
@@ -83,7 +83,7 @@ public abstract class ItemTool extends Item {
 
     @Override
     public boolean useOn(Entity entity) {
-        if (this.isUnbreakable() || isDurable()) {
+        if (this.isUnbreakable() || !canReduceDamage()) {
             return true;
         }
 
@@ -96,9 +96,9 @@ public abstract class ItemTool extends Item {
         return true;
     }
 
-    private boolean isDurable() {
+    private boolean canReduceDamage() {
         if (!hasEnchantments()) {
-            return false;
+            return true;
         }
 
         Enchantment durability = getEnchantment(Enchantment.ID_DURABILITY);

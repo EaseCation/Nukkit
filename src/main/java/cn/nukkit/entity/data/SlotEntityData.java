@@ -2,7 +2,6 @@ package cn.nukkit.entity.data;
 
 import cn.nukkit.entity.Entity;
 import cn.nukkit.item.Item;
-import cn.nukkit.nbt.tag.CompoundTag;
 
 /**
  * author: MagicDroidX
@@ -12,7 +11,6 @@ public class SlotEntityData extends EntityData<Item> {
     public int blockId;
     public int meta;
     public int count;
-    public byte[] tag;
 
     public SlotEntityData(int id, int blockId, int meta, int count) {
         super(id);
@@ -21,22 +19,13 @@ public class SlotEntityData extends EntityData<Item> {
         this.count = count;
     }
 
-    public SlotEntityData(int id, int blockId, int meta, int count, byte[] tag) {
-        super(id);
-        this.blockId = blockId;
-        this.meta = meta;
-        this.count = count;
-        this.tag = tag;
-    }
-
-
     public SlotEntityData(int id, Item item) {
-        this(id, item.getId(), (byte) (item.hasMeta() ? item.getDamage() : 0), item.getCount(), item.getCompoundTag());
+        this(id, item.getId(), (byte) (item.hasMeta() ? item.getDamage() : 0), item.getCount());
     }
 
     @Override
     public Item getData() {
-        return Item.get(blockId, meta, count, tag);
+        return Item.get(blockId, meta, count);
     }
 
     @Override

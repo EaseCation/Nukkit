@@ -10,6 +10,11 @@ import cn.nukkit.item.ItemTool;
 public class BlockCobblestone extends BlockSolid {
 
     public BlockCobblestone() {
+        this(0);
+    }
+
+    public BlockCobblestone(int meta) {
+        super(meta);
     }
 
     @Override

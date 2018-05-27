@@ -11,6 +11,11 @@ import cn.nukkit.level.Level;
 public class BlockOreRedstoneGlowing extends BlockOreRedstone {
 
     public BlockOreRedstoneGlowing() {
+        this(0);
+    }
+
+    public BlockOreRedstoneGlowing(int meta) {
+        super(0);
     }
 
     @Override
@@ -31,7 +36,7 @@ public class BlockOreRedstoneGlowing extends BlockOreRedstone {
     @Override
     public int onUpdate(int type) {
         if (type == Level.BLOCK_UPDATE_SCHEDULED || type == Level.BLOCK_UPDATE_RANDOM) {
-            this.getLevel().setBlock(this, new BlockOreRedstone(), false, false);
+            this.getLevel().setBlock(this, new BlockOreRedstone(this.meta), false, false);
 
             return Level.BLOCK_UPDATE_WEAK;
         }

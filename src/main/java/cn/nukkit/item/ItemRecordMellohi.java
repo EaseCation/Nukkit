@@ -1,5 +1,7 @@
 package cn.nukkit.item;
 
+import cn.nukkit.network.protocol.LevelSoundEventPacket;
+
 /**
  * @author CreeperFace
  */
@@ -14,11 +16,11 @@ public class ItemRecordMellohi extends ItemRecord {
     }
 
     public ItemRecordMellohi(Integer meta, int count) {
-        super(RECORD_MELLOHI, meta, count);
+        super(meta, count);
     }
 
     @Override
-    public String getSoundId() {
-        return "record.mellohi";
+    public int getSoundId() {
+        return LevelSoundEventPacket.SOUND_RECORD_MELLOHI;
     }
 }

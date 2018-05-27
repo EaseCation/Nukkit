@@ -1,16 +1,13 @@
 package cn.nukkit.network.protocol;
 
+import cn.nukkit.Server;
 import cn.nukkit.entity.data.Skin;
 import com.google.gson.Gson;
 import com.google.gson.JsonObject;
 import com.google.gson.reflect.TypeToken;
 
 import java.nio.charset.StandardCharsets;
-import java.util.Base64;
-import java.util.List;
-import java.util.Map;
-import java.util.UUID;
-
+import java.util.*;
 
 /**
  * Created by on 15-10-13.
@@ -26,7 +23,7 @@ public class LoginPacket extends DataPacket {
 
     public Skin skin;
     public String skinGeometryName;
-    public byte[] skinGeometry;
+    public String skinGeometry;
 
     public byte[] capeData;
 
@@ -38,11 +35,6 @@ public class LoginPacket extends DataPacket {
     @Override
     public void decode() {
         this.protocol = this.getInt();
-        if (protocol >= 0xffff) {
-            this.offset -= 6;
-            this.protocol = this.getInt();
-            this.offset += 1;
-        }
         this.setBuffer(this.getByteArray(), 0);
         decodeChainData();
         decodeSkinData();
@@ -81,14 +73,16 @@ public class LoginPacket extends DataPacket {
         if (skinToken.has("SkinId")) skinId = skinToken.get("SkinId").getAsString();
         if (skinToken.has("SkinData")) {
             this.skin = new Skin(skinToken.get("SkinData").getAsString(), skinId);
-
             if (skinToken.has("CapeData"))
                 this.skin.setCape(this.skin.new Cape(Base64.getDecoder().decode(skinToken.get("CapeData").getAsString())));
         }
 
-        if (skinToken.has("SkinGeometryName")) this.skinGeometryName = skinToken.get("SkinGeometryName").getAsString();
+        if (skinToken.has("SkinGeometryName"))
+            this.skinGeometryName = skinToken.get("SkinGeometryName").getAsString();
         if (skinToken.has("SkinGeometry"))
-            this.skinGeometry = Base64.getDecoder().decode(skinToken.get("SkinGeometry").getAsString());
+            this.skinGeometry = new String(Base64.getDecoder().decode(skinToken.get("SkinGeometry").getAsString()));
+        //JsonObject geometryToken = new Gson().fromJson(this.skinGeometry, JsonObject.class);
+        //Server.getInstance().getLogger().info(this.skinGeometry);
     }
 
     private JsonObject decodeToken(String token) {

@@ -62,10 +62,4 @@ public class BlockStairsWood extends BlockStairs {
     public BlockColor getColor() {
         return BlockColor.WOOD_BLOCK_COLOR;
     }
-    @Override
-    public Item[] getDrops(Item item) {
-         return new Item[]{
-            toItem()
-            };
-    }
 }

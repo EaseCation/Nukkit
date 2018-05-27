@@ -35,7 +35,7 @@ hs_err_pid*
 # Generated files
 banned-ips.json
 banned-players.json
-nukkit.yml
+#nukkit.yml
 ops.txt
 server.log
 server.properties
@@ -50,5 +50,3 @@ logs
 logs/*
 resource_packs
 resource_packs/*
-creativeitems.json
-recipes.json

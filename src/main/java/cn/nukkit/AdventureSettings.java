@@ -4,6 +4,7 @@ import cn.nukkit.network.protocol.AdventureSettingsPacket;
 
 import java.util.EnumMap;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 /**
  * Nukkit Project
@@ -56,9 +57,7 @@ public class AdventureSettings implements Cloneable {
         pk.playerPermission = (player.isOp() ? Player.PERMISSION_OPERATOR : Player.PERMISSION_MEMBER);
         pk.entityUniqueId = player.getId();
 
-        Server.broadcastPacket(player.getViewers().values(), pk);
-        player.dataPacket(pk);
-
+        Server.broadcastPacket(Server.getInstance().getOnlinePlayers().values(), pk);
         player.resetInAirTicks();
     }
 

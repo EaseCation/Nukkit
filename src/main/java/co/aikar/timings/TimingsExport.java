@@ -28,12 +28,12 @@ import cn.nukkit.command.CommandSender;
 import cn.nukkit.command.ConsoleCommandSender;
 import cn.nukkit.command.RemoteConsoleCommandSender;
 import cn.nukkit.lang.TranslationContainer;
-import cn.nukkit.nbt.stream.PGZIPOutputStream;
 import cn.nukkit.timings.JsonUtil;
 import cn.nukkit.utils.TextFormat;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.google.gson.JsonObject;
+
 import java.io.*;
 import java.lang.management.ManagementFactory;
 import java.lang.management.RuntimeMXBean;
@@ -42,8 +42,7 @@ import java.net.InetAddress;
 import java.net.URL;
 import java.text.SimpleDateFormat;
 import java.util.Date;
-import java.util.zip.Deflater;
-
+import java.util.zip.GZIPOutputStream;
 
 import static co.aikar.timings.TimingsManager.HISTORY;
 
@@ -206,8 +205,11 @@ public class TimingsExport extends Thread {
             con.setRequestMethod("POST");
             con.setInstanceFollowRedirects(false);
 
-            PGZIPOutputStream request = new PGZIPOutputStream(con.getOutputStream());
-            request.setLevel(Deflater.BEST_COMPRESSION);
+            OutputStream request = new GZIPOutputStream(con.getOutputStream()) {
+                {
+                    this.def.setLevel(7);
+                }
+            };
 
             request.write(new Gson().toJson(this.out).getBytes("UTF-8"));
             request.close();

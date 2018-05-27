@@ -14,6 +14,11 @@ import cn.nukkit.nbt.tag.CompoundTag;
 public class BlockBeacon extends BlockTransparent {
 
     public BlockBeacon() {
+        this(0);
+    }
+
+    public BlockBeacon(int meta) {
+        super(meta);
     }
 
     @Override

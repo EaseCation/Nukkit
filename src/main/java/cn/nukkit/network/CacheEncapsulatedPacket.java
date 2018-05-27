@@ -8,7 +8,7 @@ import cn.nukkit.raknet.protocol.EncapsulatedPacket;
  */
 public class CacheEncapsulatedPacket extends EncapsulatedPacket {
 
-    public byte[] internalData = null;
+    private byte[] internalData = null;
 
     @Override
     public byte[] toBinary() {

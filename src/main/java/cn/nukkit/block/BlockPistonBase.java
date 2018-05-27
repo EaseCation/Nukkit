@@ -6,7 +6,8 @@ import cn.nukkit.blockentity.BlockEntityPistonArm;
 import cn.nukkit.event.block.BlockPistonChangeEvent;
 import cn.nukkit.item.Item;
 import cn.nukkit.level.Level;
-import cn.nukkit.level.Sound;
+import cn.nukkit.level.sound.PistonInSound;
+import cn.nukkit.level.sound.PistonOutSound;
 import cn.nukkit.math.BlockFace;
 import cn.nukkit.math.Vector3;
 import cn.nukkit.nbt.tag.CompoundTag;
@@ -17,7 +18,7 @@ import java.util.List;
 /**
  * @author CreeperFace
  */
-public abstract class BlockPistonBase extends BlockSolidMeta {
+public abstract class BlockPistonBase extends BlockSolid {
 
     public boolean sticky;
 
@@ -45,14 +46,14 @@ public abstract class BlockPistonBase extends BlockSolidMeta {
             double y = player.y + player.getEyeHeight();
 
             if (y - this.y > 2) {
-                this.setDamage(BlockFace.UP.getIndex());
+                this.meta = BlockFace.UP.getIndex();
             } else if (this.y - y > 0) {
-                this.setDamage(BlockFace.DOWN.getIndex());
+                this.meta = BlockFace.DOWN.getIndex();
             } else {
-                this.setDamage(player.getHorizontalFacing().getIndex());
+                this.meta = player.getHorizontalFacing().getIndex();
             }
         } else {
-            this.setDamage(player.getHorizontalFacing().getIndex());
+            this.meta = player.getHorizontalFacing().getIndex();
         }
         this.level.setBlock(block, this, true, false);
 
@@ -119,7 +120,7 @@ public abstract class BlockPistonBase extends BlockSolidMeta {
                     return;
                 }
 
-                this.level.addSound(this, Sound.TILE_PISTON_OUT);
+                this.level.addSound(new PistonOutSound(this));
             } else {
             }
         } else if (!isPowered && isExtended()) {
@@ -139,12 +140,12 @@ public abstract class BlockPistonBase extends BlockSolidMeta {
                 this.level.setBlock(getLocation().getSide(facing), new BlockAir(), true, false);
             }
 
-            this.level.addSound(this, Sound.TILE_PISTON_IN);
+            this.level.addSound(new PistonInSound(this));
         }
     }
 
     public BlockFace getFacing() {
-        return BlockFace.fromIndex(this.getDamage()).getOpposite();
+        return BlockFace.fromIndex(this.meta).getOpposite();
     }
 
     private boolean isPowered() {
@@ -214,7 +215,7 @@ public abstract class BlockPistonBase extends BlockSolidMeta {
             if (extending) {
                 //extension block entity
 
-                this.level.setBlock(pistonHead, new BlockPistonHead(this.getDamage()));
+                this.level.setBlock(pistonHead, new BlockPistonHead(this.meta));
             }
 
             return true;

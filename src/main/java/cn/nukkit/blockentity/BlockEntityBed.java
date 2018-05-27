@@ -14,17 +14,12 @@ public class BlockEntityBed extends BlockEntitySpawnable {
 
     public BlockEntityBed(FullChunk chunk, CompoundTag nbt) {
         super(chunk, nbt);
-    }
 
-    @Override
-    protected void initBlockEntity() {
         if (!this.namedTag.contains("color")) {
             this.namedTag.putByte("color", 0);
         }
 
         this.color = this.namedTag.getByte("color");
-
-        super.initBlockEntity();
     }
 
     @Override

@@ -4,18 +4,10 @@ import cn.nukkit.Nukkit;
 import cn.nukkit.Server;
 import cn.nukkit.lang.BaseLang;
 import cn.nukkit.utils.Utils;
-import com.sun.management.OperatingSystemMXBean;
+import oshi.SystemInfo;
+import oshi.hardware.HWDiskStore;
 
-import java.io.File;
-import java.io.IOException;
-import java.io.PrintWriter;
-import java.io.StringWriter;
-import java.lang.management.ManagementFactory;
-import java.nio.file.FileStore;
-import java.nio.file.FileSystems;
-import java.nio.file.Files;
-import java.nio.file.Path;
-import java.text.NumberFormat;
+import java.io.*;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.Properties;
@@ -27,7 +19,7 @@ public class BugReportGenerator extends Thread {
 
     private Throwable throwable;
 
-    BugReportGenerator(Throwable throwable) {
+    public BugReportGenerator(Throwable throwable) {
         this.throwable = throwable;
     }
 
@@ -54,47 +46,38 @@ public class BugReportGenerator extends Thread {
         SimpleDateFormat simpleDateFormat = new SimpleDateFormat("yyyyMMddHHmmSS");
         String date = simpleDateFormat.format(new Date());
 
+        SystemInfo systemInfo = new SystemInfo();
+        long totalDiskSize = 0;
         StringBuilder model = new StringBuilder();
-        long totalDiskSpace = 0;
-        int diskNum = 0;
-        for (Path root : FileSystems.getDefault().getRootDirectories()) {
-
-            System.out.print(root + ": ");
-            try {
-                FileStore store = Files.getFileStore(root);
-                model.append("Disk ").append(diskNum++).append(":(avail=").append(getCount(store.getUsableSpace(), true))
-                        .append(", total=").append(getCount(store.getTotalSpace(), true))
-                        .append(") ");
-                totalDiskSpace += store.getTotalSpace();
-            } catch (IOException e) {
-                //
+        for (HWDiskStore hwDiskStore : systemInfo.getHardware().getDiskStores()) {
+            totalDiskSize += hwDiskStore.getSize();
+            if (!model.toString().contains(hwDiskStore.getModel())) {
+                model.append(hwDiskStore.getModel()).append(" ");
             }
         }
 
         StringWriter stringWriter = new StringWriter();
         throwable.printStackTrace(new PrintWriter(stringWriter));
 
-
         File mdReport = new File(reports, date + "_" + throwable.getClass().getSimpleName() + ".md");
         mdReport.createNewFile();
         String content = Utils.readFile(this.getClass().getClassLoader().getResourceAsStream("report_template.md"));
 
         Properties properties = getGitRepositoryState();
-        System.out.println(properties.getProperty("git.commit.id.abbrev"));
+        //System.out.println(properties.getProperty("git.commit.id.abbrev"));
         String abbrev = properties.getProperty("git.commit.id.abbrev");
 
-        String cpuType = System.getenv("PROCESSOR_IDENTIFIER");
-        OperatingSystemMXBean osMXBean = (OperatingSystemMXBean) ManagementFactory.getOperatingSystemMXBean();
         content = content.replace("${NUKKIT_VERSION}", Nukkit.VERSION);
-        content = content.replace("${GIT_COMMIT_ABBREV}", abbrev);
+        content = content.replace("${GIT_COMMIT_ABBREV}", abbrev == null ? "null" : abbrev);
         content = content.replace("${JAVA_VERSION}", System.getProperty("java.vm.name") + " (" + System.getProperty("java.runtime.version") + ")");
-        content = content.replace("${HOSTOS}", osMXBean.getName() + "-" + osMXBean.getArch() + " [" + osMXBean.getVersion() + "]");
-        content = content.replace("${MEMORY}", getCount(osMXBean.getTotalPhysicalMemorySize(), true));
-        content = content.replace("${STORAGE_SIZE}", getCount(totalDiskSpace, true));
-        content = content.replace("${CPU_TYPE}", cpuType == null ? "UNKNOWN" : cpuType);
-        content = content.replace("${AVAILABLE_CORE}", String.valueOf(osMXBean.getAvailableProcessors()));
+        content = content.replace("${HOSTOS}", systemInfo.getOperatingSystem().getFamily() + " [" + systemInfo.getOperatingSystem().getVersion().getVersion() + "]");
+        content = content.replace("${MEMORY}", getCount(systemInfo.getHardware().getMemory().getTotal(), true));
+        content = content.replace("${STORAGE_SIZE}", getCount(totalDiskSize, true));
+        content = content.replace("${CPU_TYPE}", systemInfo.getHardware().getProcessor().getName());
+        content = content.replace("${PHYSICAL_CORE}", String.valueOf(systemInfo.getHardware().getProcessor().getPhysicalProcessorCount()));
+        content = content.replace("${LOGICAL_CORE}", String.valueOf(systemInfo.getHardware().getProcessor().getLogicalProcessorCount()));
         content = content.replace("${STACKTRACE}", stringWriter.toString());
-        content = content.replace("${PLUGIN_ERROR}", String.valueOf(!throwable.getStackTrace()[0].getClassName().startsWith("cn.nukkit")).toUpperCase());
+        content = content.replace("${PLUGIN_ERROR}", throwable.getStackTrace().length > 0 ? (String.valueOf(!throwable.getStackTrace()[0].getClassName().startsWith("cn.nukkit")).toUpperCase()) : "null");
         content = content.replace("${STORAGE_TYPE}", model.toString());
 
         Utils.writeFile(mdReport, content);
@@ -104,7 +87,8 @@ public class BugReportGenerator extends Thread {
 
     public Properties getGitRepositoryState() throws IOException {
         Properties properties = new Properties();
-        properties.load(getClass().getClassLoader().getResourceAsStream("git.properties"));
+        InputStream stream = getClass().getClassLoader().getResourceAsStream("git.properties");
+        if (stream != null) properties.load(stream);
         return properties;
     }
 

@@ -5,7 +5,8 @@ import cn.nukkit.event.block.DoorToggleEvent;
 import cn.nukkit.item.Item;
 import cn.nukkit.item.ItemTool;
 import cn.nukkit.level.Level;
-import cn.nukkit.level.Sound;
+import cn.nukkit.level.sound.DoorSound;
+import cn.nukkit.math.AxisAlignedBB;
 import cn.nukkit.math.BlockFace;
 import cn.nukkit.utils.BlockColor;
 
@@ -13,7 +14,7 @@ import cn.nukkit.utils.BlockColor;
  * Created on 2015/11/23 by xtypr.
  * Package cn.nukkit.block in project Nukkit .
  */
-public class BlockFenceGate extends BlockTransparentMeta {
+public class BlockFenceGate extends BlockTransparent {
 
     public BlockFenceGate() {
         this(0);
@@ -53,56 +54,36 @@ public class BlockFenceGate extends BlockTransparentMeta {
         return ItemTool.TYPE_AXE;
     }
 
-    private static final double[] offMinX = new double[2];
-    private static final double[] offMinZ = new double[2];
-    private static final double[] offMaxX = new double[2];
-    private static final double[] offMaxZ = new double[2];
-
-    static {
-        offMinX[0] = 0;
-        offMinZ[0] = 0.375;
-        offMaxX[0] = 1;
-        offMaxZ[0] = 0.625;
-
-        offMinX[1] = 0.375;
-        offMinZ[1] = 0;
-        offMaxX[1] = 0.625;
-        offMaxZ[1] = 1;
-    }
-
-    private int getOffsetIndex() {
-        switch (this.getDamage() & 0x03) {
-            case 0:
-            case 2:
-                return 0;
-            default:
-                return 1;
+    @Override
+    protected AxisAlignedBB recalculateBoundingBox() {
+        if ((this.getDamage() & 0x04) > 0) {
+            return null;
+        }
+        int i = this.getDamage() & 0x03;
+        if (i == 2 || i == 0) {
+            return new AxisAlignedBB(
+                    x,
+                    y,
+                    z + 0.375,
+                    x + 1,
+                    y + 1.5,
+                    z + 0.625
+            );
+        } else {
+            return new AxisAlignedBB(
+                    x + 0.375,
+                    y,
+                    z,
+                    x + 0.625,
+                    y + 1.5,
+                    z + 1
+            );
         }
     }
 
     @Override
-    public double getMinX() {
-        return this.x + offMinX[getOffsetIndex()];
-    }
-
-    @Override
-    public double getMinZ() {
-        return this.z + offMinZ[getOffsetIndex()];
-    }
-
-    @Override
-    public double getMaxX() {
-        return this.x + offMaxX[getOffsetIndex()];
-    }
-
-    @Override
-    public double getMaxZ() {
-        return this.z + offMaxZ[getOffsetIndex()];
-    }
-
-    @Override
     public boolean place(Item item, Block block, Block target, BlockFace face, double fx, double fy, double fz, Player player) {
-        this.setDamage(player != null ? player.getDirection().getHorizontalIndex() : 0);
+        this.meta = player != null ? player.getDirection().getHorizontalIndex() : 0;
         this.getLevel().setBlock(block, this, true, true);
 
         return true;
@@ -118,7 +99,9 @@ public class BlockFenceGate extends BlockTransparentMeta {
             return false;
         }
 
-        this.level.addSound(this, isOpen() ? Sound.RANDOM_DOOR_OPEN : Sound.RANDOM_DOOR_CLOSE);
+        this.getLevel().setBlock(this, this, true);
+        this.getLevel().addSound(new DoorSound(this));
+
         return true;
     }
 
@@ -173,12 +156,13 @@ public class BlockFenceGate extends BlockTransparentMeta {
         }
 
         this.setDamage(direction | ((~this.getDamage()) & 0x04));
+        this.level.addSound(new DoorSound(this));
         this.level.setBlock(this, this, false, false);
         return true;
     }
 
     public boolean isOpen() {
-        return (this.getDamage() & 0x04) > 0;
+        return (this.meta & 0x04) > 0;
     }
 
     @Override

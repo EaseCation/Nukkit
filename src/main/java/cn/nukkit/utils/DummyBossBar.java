@@ -21,6 +21,7 @@ public class DummyBossBar {
 
     private final Player player;
     private final long bossBarId;
+    private boolean spawned = false;
 
     private String text;
     private float length;
@@ -125,7 +126,7 @@ public class DummyBossBar {
         return this.color;
     }
 
-    private void createBossEntity() {
+    public void createBossEntity() {
         AddEntityPacket pkAdd = new AddEntityPacket();
         pkAdd.type = EntityCreeper.NETWORK_ID;
         pkAdd.entityUniqueId = bossBarId;
@@ -146,6 +147,7 @@ public class DummyBossBar {
                 .putFloat(Entity.DATA_SCALE, 0); // And make it invisible
 
         player.dataPacket(pkAdd);
+        this.spawned = true;
     }
 
     private void sendAttributes() {
@@ -218,6 +220,7 @@ public class DummyBossBar {
         RemoveEntityPacket pkRemove = new RemoveEntityPacket();
         pkRemove.eid = bossBarId;
         player.dataPacket(pkRemove);
+        this.spawned = false;
     }
 
     public void create() {
@@ -231,13 +234,19 @@ public class DummyBossBar {
      * Once the player has teleported, resend Show BossBar
      */
     public void reshow() {
-        updateBossEntityPosition();
-        sendShowBossBar();
+        if (!this.spawned) {
+            this.create();
+        } else {
+            updateBossEntityPosition();
+            sendShowBossBar();
+        }
     }
 
     public void destroy() {
-        sendHideBossBar();
-        removeBossEntity();
+        if (this.spawned) {
+            sendHideBossBar();
+            removeBossEntity();
+        }
     }
 
 }

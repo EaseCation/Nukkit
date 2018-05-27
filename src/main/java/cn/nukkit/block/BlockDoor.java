@@ -5,16 +5,15 @@ import cn.nukkit.event.block.BlockRedstoneEvent;
 import cn.nukkit.event.block.DoorToggleEvent;
 import cn.nukkit.item.Item;
 import cn.nukkit.level.Level;
-import cn.nukkit.level.Sound;
+import cn.nukkit.level.sound.DoorSound;
 import cn.nukkit.math.AxisAlignedBB;
 import cn.nukkit.math.BlockFace;
-import cn.nukkit.math.SimpleAxisAlignedBB;
 
 /**
  * author: MagicDroidX
  * Nukkit Project
  */
-public abstract class BlockDoor extends BlockTransparentMeta {
+public abstract class BlockDoor extends BlockTransparent {
 
     protected BlockDoor(int meta) {
         super(meta);
@@ -30,10 +29,10 @@ public abstract class BlockDoor extends BlockTransparentMeta {
         return false;
     }
 
-    /*@Override
+    @Override
     public boolean canPassThrough() {
         return true;
-    }*/
+    }
 
     private int getFullDamage() {
         int damage = this.getDamage();
@@ -60,7 +59,7 @@ public abstract class BlockDoor extends BlockTransparentMeta {
         double f = 0.1875;
         int damage = this.getFullDamage();
 
-        AxisAlignedBB bb = new SimpleAxisAlignedBB(
+        AxisAlignedBB bb = new AxisAlignedBB(
                 this.x,
                 this.y,
                 this.z,
@@ -293,7 +292,7 @@ public abstract class BlockDoor extends BlockTransparentMeta {
             return false;
         }
 
-        this.level.addSound(this, isOpen() ? Sound.RANDOM_DOOR_OPEN : Sound.RANDOM_DOOR_CLOSE);
+        this.level.addSound(new DoorSound(this));
         return true;
     }
 
@@ -305,7 +304,7 @@ public abstract class BlockDoor extends BlockTransparentMeta {
             return false;
         }
 
-        if (isTop(this.getDamage())) { //Top
+        if (isTop(this.meta)) { //Top
             Block down = this.down();
             if (down.getId() != this.getId()) {
                 return false;
@@ -313,7 +312,7 @@ public abstract class BlockDoor extends BlockTransparentMeta {
 
             this.getLevel().setBlock(down, Block.get(this.getId(), down.getDamage() ^ 0x04), true);
 
-            this.setDamage(this.getDamage() ^ 0x04);
+            this.meta ^= 0x04;
             this.getLevel().setBlock(this, this, true);
         } else { //Down
             Block up = this.up();
@@ -321,15 +320,16 @@ public abstract class BlockDoor extends BlockTransparentMeta {
                 return false;
             }
 
-            this.setDamage(this.getDamage() ^ 0x04);
+            this.meta ^= 0x04;
             this.getLevel().setBlock(this, this, true);
         }
 
+        this.level.addSound(new DoorSound(this));
         return true;
     }
 
     public boolean isOpen() {
-        return (this.getDamage() & 0x04) > 0;
+        return (this.meta & 0x04) > 0;
     }
 
     public boolean isTop(int meta) {

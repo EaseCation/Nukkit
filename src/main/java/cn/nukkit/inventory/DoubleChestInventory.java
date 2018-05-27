@@ -4,9 +4,8 @@ import cn.nukkit.Player;
 import cn.nukkit.blockentity.BlockEntityChest;
 import cn.nukkit.item.Item;
 import cn.nukkit.level.Level;
-import cn.nukkit.level.Sound;
 import cn.nukkit.network.protocol.BlockEventPacket;
-import cn.nukkit.network.protocol.InventorySlotPacket;
+import cn.nukkit.network.protocol.LevelSoundEventPacket;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -16,7 +15,6 @@ import java.util.Map;
  * Nukkit Project
  */
 public class DoubleChestInventory extends ContainerInventory implements InventoryHolder {
-
     private final ChestInventory left;
     private final ChestInventory right;
 
@@ -25,10 +23,7 @@ public class DoubleChestInventory extends ContainerInventory implements Inventor
         this.holder = this;
 
         this.left = left.getRealInventory();
-        this.left.setDoubleInventory(this);
-
         this.right = right.getRealInventory();
-        this.right.setDoubleInventory(this);
 
         Map<Integer, Item> items = new HashMap<>();
         // First we add the items from the left chest
@@ -123,7 +118,7 @@ public class DoubleChestInventory extends ContainerInventory implements Inventor
             pk1.case2 = 2;
             Level level = this.left.getHolder().getLevel();
             if (level != null) {
-                level.addSound(this.left.getHolder().add(0.5, 0.5, 0.5), Sound.RANDOM_CHESTOPEN);
+                level.addLevelSoundEvent(LevelSoundEventPacket.SOUND_CHEST_OPEN, 1, -1, this.left.getHolder().add(0.5, 0.5, 0.5));
                 level.addChunkPacket((int) this.left.getHolder().getX() >> 4, (int) this.left.getHolder().getZ() >> 4, pk1);
             }
 
@@ -136,7 +131,7 @@ public class DoubleChestInventory extends ContainerInventory implements Inventor
 
             level = this.right.getHolder().getLevel();
             if (level != null) {
-                level.addSound(this.right.getHolder().add(0.5, 0.5, 0.5), Sound.RANDOM_CHESTOPEN);
+                level.addLevelSoundEvent(LevelSoundEventPacket.SOUND_CHEST_OPEN, 1, -1, this.right.getHolder().add(0.5, 0.5, 0.5));
                 level.addChunkPacket((int) this.right.getHolder().getX() >> 4, (int) this.right.getHolder().getZ() >> 4, pk2);
             }
         }
@@ -154,7 +149,7 @@ public class DoubleChestInventory extends ContainerInventory implements Inventor
 
             Level level = this.right.getHolder().getLevel();
             if (level != null) {
-                level.addSound(this.right.getHolder().add(0.5, 0.5, 0.5), Sound.RANDOM_CHESTCLOSED);
+                level.addLevelSoundEvent(LevelSoundEventPacket.SOUND_CHEST_CLOSED, 1, -1, this.right.getHolder().add(0.5, 0.5, 0.5));
                 level.addChunkPacket((int) this.right.getHolder().getX() >> 4, (int) this.right.getHolder().getZ() >> 4, pk1);
             }
 
@@ -167,7 +162,7 @@ public class DoubleChestInventory extends ContainerInventory implements Inventor
 
             level = this.left.getHolder().getLevel();
             if (level != null) {
-                level.addSound(this.left.getHolder().add(0.5, 0.5, 0.5), Sound.RANDOM_CHESTCLOSED);
+                level.addLevelSoundEvent(LevelSoundEventPacket.SOUND_CHEST_CLOSED, 1, -1, this.left.getHolder().add(0.5, 0.5, 0.5));
                 level.addChunkPacket((int) this.left.getHolder().getX() >> 4, (int) this.left.getHolder().getZ() >> 4, pk2);
             }
         }
@@ -183,21 +178,5 @@ public class DoubleChestInventory extends ContainerInventory implements Inventor
 
     public ChestInventory getRightSide() {
         return this.right;
-    }
-
-    public void sendSlot(Inventory inv, int index, Player... players) {
-        InventorySlotPacket pk = new InventorySlotPacket();
-        pk.slot = inv == this.right ? this.left.getSize() + index : index;
-        pk.item = inv.getItem(index).clone();
-
-        for (Player player : players) {
-            int id = player.getWindowId(this);
-            if (id == -1) {
-                this.close(player);
-                continue;
-            }
-            pk.inventoryId = id;
-            player.dataPacket(pk);
-        }
     }
 }

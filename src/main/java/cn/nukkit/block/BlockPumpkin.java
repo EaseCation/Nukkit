@@ -10,7 +10,7 @@ import cn.nukkit.utils.BlockColor;
  * Created on 2015/12/8 by xtypr.
  * Package cn.nukkit.block in project Nukkit .
  */
-public class BlockPumpkin extends BlockSolidMeta {
+public class BlockPumpkin extends BlockSolid {
     public BlockPumpkin() {
         this(0);
     }
@@ -46,7 +46,7 @@ public class BlockPumpkin extends BlockSolidMeta {
 
     @Override
     public boolean place(Item item, Block block, Block target, BlockFace face, double fx, double fy, double fz, Player player) {
-        this.setDamage(player != null ? player.getDirection().getOpposite().getHorizontalIndex() : 0);
+        this.meta = player != null ? player.getDirection().getOpposite().getHorizontalIndex() : 0;
         this.getLevel().setBlock(block, this, true, true);
         return true;
     }

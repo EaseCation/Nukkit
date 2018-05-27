@@ -15,7 +15,7 @@ import cn.nukkit.nbt.tag.CompoundTag;
 import cn.nukkit.nbt.tag.Tag;
 
 
-public class BlockSkull extends BlockTransparentMeta {
+public class BlockSkull extends BlockTransparent {
 
     public BlockSkull() {
         this(0);
@@ -47,13 +47,9 @@ public class BlockSkull extends BlockTransparentMeta {
 
     @Override
     public String getName() {
+        BlockEntity blockEntity = getLevel().getBlockEntity(this);
         int itemMeta = 0;
-
-        if (this.level != null) {
-            BlockEntity blockEntity = getLevel().getBlockEntity(this);
-            if (blockEntity != null) itemMeta = blockEntity.namedTag.getByte("SkullType");
-        }
-
+        if (blockEntity != null) itemMeta = blockEntity.namedTag.getByte("SkullType");
         return ItemSkull.getItemSkullName(itemMeta);
     }
 
@@ -70,7 +66,7 @@ public class BlockSkull extends BlockTransparentMeta {
             case EAST:
             case WEST:
             case UP:
-                this.setDamage(face.getIndex());
+                this.meta = face.getIndex();
                 break;
             case DOWN:
             default:

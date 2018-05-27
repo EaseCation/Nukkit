@@ -29,17 +29,17 @@ public class EntityZombieVillager extends EntityMob {
 
     @Override
     public float getWidth() {
-        return 0.6f;
+        return 0.72f;
     }
 
     @Override
     public float getHeight() {
-        return 1.95f;
+        return 1.8f;
     }
 
     @Override
     public String getName() {
-        return "ZombieVillager";
+        return "Zombie Villager";
     }
 
     @Override

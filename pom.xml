@@ -13,38 +13,15 @@
         <junit.jupiter.version>5.0.0-M4</junit.jupiter.version>
         <junit.platform.version>1.0.0-M4</junit.platform.version>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+        <!-- 本地测试服务端插件目录 -->
+        <dir.api>../../_api</dir.api>
+        <dir.server>../../_server</dir.server>
+        <dir.login>../../_login</dir.login>
+        <dir.proxy>../../_proxy</dir.proxy>
+        <dir.login-proxy>../../_proxy0</dir.login-proxy>
     </properties>
 
-    <repositories>
-        <repository>
-            <id>aikar</id>
-            <url>http://ci.emc.gs/nexus/content/groups/aikar/</url>
-        </repository>
-        <repository>
-            <id>daporkchop</id>
-            <url>http://maven.daporkchop.net/</url>
-        </repository>
-    </repositories>
-
-    <distributionManagement>
-        <repository>
-            <id>central</id>
-            <name>potestas-releases</name>
-            <url>https://repo.potestas.xyz/main</url>
-        </repository>
-        <snapshotRepository>
-            <id>snapshots</id>
-            <name>potestas-snapshots</name>
-            <url>https://repo.potestas.xyz/main</url>
-        </snapshotRepository>
-    </distributionManagement>
-
     <dependencies>
-        <dependency>
-            <groupId>it.unimi.dsi</groupId>
-            <artifactId>fastutil</artifactId>
-            <version>8.1.1</version>
-        </dependency>
         <dependency>
             <groupId>org.fusesource.jansi</groupId>
             <artifactId>jansi</artifactId>
@@ -71,22 +48,37 @@
             <version>2.14.2</version>
         </dependency>
         <dependency>
+            <!-- This dependency doesn't seem to be available in public maven repos.
+                 The jar file is included with the project under the lib dir.
+                 You need to manually install it in your local maven repo.
+                 The command below should work if mvn is on your path and you are in the lib dir:
+                 mvn install:install-file -Dfile=leveldb.jar -DgroupId=com.tinfoiled.mcpe.leveldb -DartifactId=leveldb -Dversion=0.8 -Dpackaging=jar
+             -->
             <groupId>com.tinfoiled.mcpe.leveldb</groupId>
             <artifactId>leveldb</artifactId>
             <version>0.8</version>
         </dependency>
+        <!-- https://mvnrepository.com/artifact/io.netty/netty-all -->
         <dependency>
             <groupId>io.netty</groupId>
-            <artifactId>netty-handler</artifactId>
-            <version>4.1.6.Final</version>
-            <scope>compile</scope>
+            <artifactId>netty-all</artifactId>
+            <version>4.1.24.Final</version>
         </dependency>
         <dependency>
-            <groupId>io.netty</groupId>
-            <artifactId>netty-transport-native-epoll</artifactId>
-            <version>4.1.6.Final</version>
-            <scope>compile</scope>
-            <classifier>linux-x86_64</classifier>
+            <groupId>com.github.dblock</groupId>
+            <artifactId>oshi-core</artifactId>
+            <version>3.4.0</version>
+        </dependency>
+        <dependency>
+            <groupId>org.slf4j</groupId>
+            <artifactId>slf4j-nop</artifactId>
+            <version>1.7.25</version>
+            <exclusions>
+                <exclusion>
+                    <groupId>org.slf4j</groupId>
+                    <artifactId>slf4j-api</artifactId>
+                </exclusion>
+            </exclusions>
         </dependency>
         <dependency>
             <groupId>org.junit.jupiter</groupId>
@@ -100,15 +92,10 @@
             <version>${junit.jupiter.version}</version>
             <scope>test</scope>
         </dependency>
-        <dependency>
-            <groupId>com.nimbusds</groupId>
-            <artifactId>nimbus-jose-jwt</artifactId>
-            <version>4.39.2</version>
-            <scope>compile</scope>
-        </dependency>
     </dependencies>
 
     <build>
+        <finalName>${project.artifactId}</finalName>
         <plugins>
             <plugin>
                 <artifactId>maven-compiler-plugin</artifactId>
@@ -155,7 +142,7 @@
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-enforcer-plugin</artifactId>
-                <version>3.0.0-M1</version>
+                <version>1.4.1</version>
                 <executions>
                     <execution>
                         <id>enforce</id>
@@ -238,6 +225,35 @@
                         <forceLongFormat>false</forceLongFormat>
                     </gitDescribe>
                 </configuration>
+            </plugin>
+            <plugin>
+                <artifactId>maven-antrun-plugin</artifactId>
+                <executions>
+                    <execution>
+                        <id>copy</id>
+                        <phase>package</phase>
+                        <configuration>
+                            <tasks>
+                                <echo message="正在复制 ${project.build.finalName} 至本地测试服务端目录..."/>
+                                <mkdir dir="${dir.server}"/>
+                                <copy todir="${dir.server}" overwrite="true">
+                                    <fileset dir="${project.build.directory}">
+                                        <include name="${project.build.finalName}.jar" />
+                                    </fileset>
+                                </copy>
+                                <mkdir dir="${dir.login}"/>
+                                <copy todir="${dir.login}" overwrite="true">
+                                    <fileset dir="${project.build.directory}">
+                                        <include name="${project.build.finalName}.jar" />
+                                    </fileset>
+                                </copy>
+                            </tasks>
+                        </configuration>
+                        <goals>
+                            <goal>run</goal>
+                        </goals>
+                    </execution>
+                </executions>
             </plugin>
         </plugins>
     </build>

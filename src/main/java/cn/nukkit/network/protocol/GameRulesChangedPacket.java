@@ -23,6 +23,6 @@ public class GameRulesChangedPacket extends DataPacket {
     @Override
     public void encode() {
         this.reset();
-        putGameRules(gameRules);
+        this.putGameRules(this.gameRules);
     }
 }

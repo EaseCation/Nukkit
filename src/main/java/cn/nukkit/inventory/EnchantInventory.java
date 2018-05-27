@@ -1,9 +1,23 @@
 package cn.nukkit.inventory;
 
+import cn.nukkit.Player;
+import cn.nukkit.block.Block;
+import cn.nukkit.item.Item;
+import cn.nukkit.item.ItemBookEnchanted;
+import cn.nukkit.item.enchantment.Enchantment;
 import cn.nukkit.item.enchantment.EnchantmentEntry;
+import cn.nukkit.item.enchantment.EnchantmentList;
+import cn.nukkit.level.Level;
+import cn.nukkit.level.Location;
 import cn.nukkit.level.Position;
+import cn.nukkit.math.NukkitRandom;
+import cn.nukkit.network.protocol.CraftingDataPacket;
+import cn.nukkit.utils.DyeColor;
 
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Random;
+import java.util.concurrent.ThreadLocalRandom;
 
 /**
  * author: MagicDroidX
@@ -28,7 +42,7 @@ public class EnchantInventory extends ContainerInventory {
         return (FakeBlockMenu) this.holder;
     }
 
-    /*@Override //TODO: server side enchant
+    @Override
     public void onOpen(Player who) {
         super.onOpen(who);
 
@@ -251,7 +265,7 @@ public class EnchantInventory extends ContainerInventory {
         }
 
         //Server.broadcastPacket(this.getViewers(), pk); //TODO: fix this, causes crash in 1.2
-    }*/
+    }
 
    /*@Override
     public void sendSlot(int index, Player... players) {

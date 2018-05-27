@@ -9,7 +9,6 @@ import cn.nukkit.math.BlockFace;
 import cn.nukkit.math.NukkitRandom;
 import cn.nukkit.utils.BlockColor;
 import cn.nukkit.utils.DyeColor;
-import java.util.concurrent.ThreadLocalRandom;
 
 /**
  * @author Nukkit Project Team
@@ -68,7 +67,7 @@ public class BlockMushroomBrown extends BlockFlowable {
     @Override
     public boolean onActivate(Item item, Player player) {
         if (item.getId() == Item.DYE && item.getDamage() == DyeColor.WHITE.getDyeData()) {
-            if (ThreadLocalRandom.current().nextFloat() < 0.4) {
+            if (this.level.rand.nextFloat() < 0.4) {
                 this.grow();
             }
 

@@ -138,7 +138,7 @@ public class Skin {
 
     public void setData(byte[] data) {
         if (data.length != SINGLE_SKIN_SIZE && data.length != DOUBLE_SKIN_SIZE) {
-            throw new IllegalArgumentException("Invalid skin");
+            //throw new IllegalArgumentException("Invalid skin");
         }
         this.data = data;
     }

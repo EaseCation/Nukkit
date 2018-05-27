@@ -6,7 +6,7 @@ import cn.nukkit.item.ItemBlock;
 import cn.nukkit.item.ItemTool;
 import cn.nukkit.math.BlockFace;
 
-public class BlockPurpur extends BlockSolidMeta {
+public class BlockPurpur extends BlockSolid {
 
     public static final int PURPUR_NORMAL = 0;
     public static final int PURPUR_PILLAR = 2;
@@ -28,7 +28,7 @@ public class BlockPurpur extends BlockSolidMeta {
                 ""
         };
 
-        return names[this.getDamage() & 0x03];
+        return names[this.meta & 0x03];
     }
 
     @Override
@@ -53,7 +53,7 @@ public class BlockPurpur extends BlockSolidMeta {
 
     @Override
     public boolean place(Item item, Block block, Block target, BlockFace face, double fx, double fy, double fz, Player player) {
-        if (this.getDamage() != PURPUR_NORMAL) {
+        if (this.meta != PURPUR_NORMAL) {
             short[] faces = new short[]{
                     0,
                     0,
@@ -63,7 +63,7 @@ public class BlockPurpur extends BlockSolidMeta {
                     0b0100
             };
 
-            this.setDamage(((this.getDamage() & 0x03) | faces[face.getIndex()]));
+            this.meta = ((this.meta & 0x03) | faces[face.getIndex()]);
         }
         this.getLevel().setBlock(block, this, true, true);
 
@@ -83,6 +83,6 @@ public class BlockPurpur extends BlockSolidMeta {
 
     @Override
     public Item toItem() {
-        return new ItemBlock(new BlockPurpur(), this.getDamage() & 0x03, 1);
+        return new ItemBlock(new BlockPurpur(), this.meta & 0x03, 1);
     }
 }

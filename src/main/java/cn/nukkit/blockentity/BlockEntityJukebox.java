@@ -7,8 +7,7 @@ import cn.nukkit.item.ItemRecord;
 import cn.nukkit.level.format.FullChunk;
 import cn.nukkit.nbt.NBTIO;
 import cn.nukkit.nbt.tag.CompoundTag;
-import cn.nukkit.network.protocol.PlaySoundPacket;
-import cn.nukkit.network.protocol.StopSoundPacket;
+import cn.nukkit.network.protocol.LevelSoundEventPacket;
 
 import java.util.Objects;
 
@@ -21,17 +20,8 @@ public class BlockEntityJukebox extends BlockEntitySpawnable {
 
     public BlockEntityJukebox(FullChunk chunk, CompoundTag nbt) {
         super(chunk, nbt);
-    }
 
-    @Override
-    protected void initBlockEntity() {
-        if (namedTag.contains("RecordItem")) {
-            this.recordItem = NBTIO.getItemHelper(namedTag.getCompound("RecordItem"));
-        } else {
-            this.recordItem = Item.get(0);
-        }
-
-        super.initBlockEntity();
+        this.recordItem = NBTIO.getItemHelper(nbt.getCompound("RecordItem"));
     }
 
     @Override
@@ -50,33 +40,20 @@ public class BlockEntityJukebox extends BlockEntitySpawnable {
 
     public void play() {
         if (this.recordItem instanceof ItemRecord) {
-            PlaySoundPacket pk = new PlaySoundPacket();
-            pk.name = ((ItemRecord) this.recordItem).getSoundId();
+            LevelSoundEventPacket pk = new LevelSoundEventPacket();
+            pk.sound = ((ItemRecord) this.recordItem).getSoundId();
             pk.pitch = 1;
-            pk.volume = 1;
-            pk.x = getFloorX();
-            pk.y = getFloorY();
-            pk.z = getFloorZ();
-
-            Server.broadcastPacket(this.level.getPlayers().values(), pk);
-        }
-    }
-
-    public void stop() {
-        if (this.recordItem instanceof ItemRecord) {
-            StopSoundPacket pk = new StopSoundPacket();
-            pk.name = ((ItemRecord) this.recordItem).getSoundId();
+            pk.extraData = -1;
+            pk.x = (float) this.x;
+            pk.y = (float) this.y;
+            pk.z = (float) this.z;
 
             Server.broadcastPacket(this.level.getPlayers().values(), pk);
         }
     }
 
     public void dropItem() {
-        if (this.recordItem.getId() != 0) {
-            stop();
-            this.level.dropItem(this.up(), this.recordItem);
-            this.recordItem = Item.get(0);
-        }
+        this.level.dropItem(this.up(), this.recordItem);
     }
 
     @Override

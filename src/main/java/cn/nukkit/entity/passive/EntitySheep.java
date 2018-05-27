@@ -9,10 +9,12 @@ import cn.nukkit.level.format.FullChunk;
 import cn.nukkit.nbt.tag.CompoundTag;
 import cn.nukkit.network.protocol.AddEntityPacket;
 import cn.nukkit.utils.DyeColor;
+
 import java.util.concurrent.ThreadLocalRandom;
 
 /**
- * Author: BeYkeRYkt Nukkit Project
+ * Author: BeYkeRYkt
+ * Nukkit Project
  */
 public class EntitySheep extends EntityAnimal {
 
@@ -42,8 +44,16 @@ public class EntitySheep extends EntityAnimal {
     }
 
     @Override
+    public float getEyeHeight() {
+        if (isBaby()) {
+            return 0.65f;
+        }
+        return 1.1f;
+    }
+
+    @Override
     public String getName() {
-        return "Sheep";
+        return this.getNameTag();
     }
 
     @Override
@@ -96,7 +106,7 @@ public class EntitySheep extends EntityAnimal {
         this.sheared = true;
         this.setDataFlag(DATA_FLAGS, DATA_FLAG_SHEARED, true);
 
-        this.level.dropItem(this, Item.get(Item.WOOL, getColor(), ThreadLocalRandom.current().nextInt(2) + 1));
+        this.level.dropItem(this, Item.get(Item.WOOL, getColor(), this.level.rand.nextInt(2) + 1));
         return true;
     }
 

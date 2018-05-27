@@ -12,7 +12,6 @@ import cn.nukkit.item.ItemBlock;
 import cn.nukkit.level.format.FullChunk;
 import cn.nukkit.math.AxisAlignedBB;
 import cn.nukkit.math.BlockFace;
-import cn.nukkit.math.SimpleAxisAlignedBB;
 import cn.nukkit.nbt.NBTIO;
 import cn.nukkit.nbt.tag.CompoundTag;
 import cn.nukkit.nbt.tag.ListTag;
@@ -22,7 +21,7 @@ import cn.nukkit.nbt.tag.ListTag;
  */
 public class BlockEntityHopper extends BlockEntitySpawnable implements InventoryHolder, BlockEntityContainer, BlockEntityNameable {
 
-    protected HopperInventory inventory;
+    protected final HopperInventory inventory;
 
     public int transferCooldown = 8;
 
@@ -30,10 +29,7 @@ public class BlockEntityHopper extends BlockEntitySpawnable implements Inventory
 
     public BlockEntityHopper(FullChunk chunk, CompoundTag nbt) {
         super(chunk, nbt);
-    }
 
-    @Override
-    protected void initBlockEntity() {
         if (this.namedTag.contains("TransferCooldown")) {
             this.transferCooldown = this.namedTag.getInt("TransferCooldown");
         }
@@ -48,11 +44,9 @@ public class BlockEntityHopper extends BlockEntitySpawnable implements Inventory
             this.inventory.setItem(i, this.getItem(i));
         }
 
-        this.pickupArea = new SimpleAxisAlignedBB(this.x, this.y, this.z, this.x + 1, this.y + 2, this.z + 1);
+        this.pickupArea = new AxisAlignedBB(this.x, this.y, this.z, this.x + 1, this.y + 2, this.z + 1);
 
         this.scheduleUpdate();
-
-        super.initBlockEntity();
     }
 
     @Override
@@ -90,7 +84,7 @@ public class BlockEntityHopper extends BlockEntitySpawnable implements Inventory
 
     @Override
     public int getSize() {
-        return 5;
+        return 3;
     }
 
     protected int getSlotIndex(int index) {

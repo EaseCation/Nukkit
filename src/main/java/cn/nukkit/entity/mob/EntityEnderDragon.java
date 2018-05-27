@@ -34,12 +34,7 @@ public class EntityEnderDragon extends EntityMob {
     @Override
     public void initEntity() {
         super.initEntity();
-        this.setMaxHealth(200);
-    }
-
-    @Override
-    public String getName() {
-        return "EnderDragon";
+        this.setMaxHealth(100);
     }
 
     @Override

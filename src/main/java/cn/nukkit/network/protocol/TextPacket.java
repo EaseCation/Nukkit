@@ -24,24 +24,19 @@ public class TextPacket extends DataPacket {
     public byte type;
     public String source = "";
     public String message = "";
-    public String thirdPartyName = "";
-    public int platformId = 0;
     public String[] parameters = new String[0];
     public boolean isLocalized = false;
-    public String platformChatId = "";
 
     @Override
     public void decode() {
         this.type = (byte) getByte();
-        this.isLocalized = this.getBoolean() || type == TYPE_TRANSLATION;
+        this.isLocalized = this.getBoolean();
         switch (type) {
             case TYPE_POPUP:
             case TYPE_CHAT:
             case TYPE_WHISPER:
             case TYPE_ANNOUNCEMENT:
                 this.source = this.getString();
-                this.thirdPartyName = this.getString();
-                this.platformId = this.getVarInt();
             case TYPE_RAW:
             case TYPE_TIP:
             case TYPE_SYSTEM:
@@ -56,22 +51,19 @@ public class TextPacket extends DataPacket {
                     this.parameters[i] = this.getString();
                 }
         }
-        this.platformChatId = this.getString();
     }
 
     @Override
     public void encode() {
         this.reset();
         this.putByte(this.type);
-        this.putBoolean(this.isLocalized || type == TYPE_TRANSLATION);
+        this.putBoolean(this.isLocalized);
         switch (this.type) {
             case TYPE_POPUP:
             case TYPE_CHAT:
             case TYPE_WHISPER:
             case TYPE_ANNOUNCEMENT:
                 this.putString(this.source);
-                this.putString(this.thirdPartyName);
-                this.putVarInt(this.platformId);
             case TYPE_RAW:
             case TYPE_TIP:
             case TYPE_SYSTEM:
@@ -85,7 +77,6 @@ public class TextPacket extends DataPacket {
                     this.putString(parameter);
                 }
         }
-        this.putString(this.platformChatId);
     }
 
 }

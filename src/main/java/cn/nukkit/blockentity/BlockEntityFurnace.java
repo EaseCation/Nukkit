@@ -25,7 +25,7 @@ import java.util.HashSet;
  */
 public class BlockEntityFurnace extends BlockEntitySpawnable implements InventoryHolder, BlockEntityContainer, BlockEntityNameable {
 
-    protected FurnaceInventory inventory;
+    protected final FurnaceInventory inventory;
 
     private int burnTime = 0;
     private int burnDuration = 0;
@@ -34,10 +34,6 @@ public class BlockEntityFurnace extends BlockEntitySpawnable implements Inventor
 
     public BlockEntityFurnace(FullChunk chunk, CompoundTag nbt) {
         super(chunk, nbt);
-    }
-
-    @Override
-    protected void initBlockEntity() {
         this.inventory = new FurnaceInventory(this);
 
         if (!this.namedTag.contains("Items") || !(this.namedTag.get("Items") instanceof ListTag)) {
@@ -75,8 +71,6 @@ public class BlockEntityFurnace extends BlockEntitySpawnable implements Inventor
         if (burnTime > 0) {
             this.scheduleUpdate();
         }
-
-        super.initBlockEntity();
     }
 
     @Override

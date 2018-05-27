@@ -47,6 +47,7 @@ public class JsonUtil {
     public static <E> JsonArray mapToArray(Iterable<E> collection, Function<E, Object> mapper) {
         List array = new ArrayList();
         for (E e : collection) {
+            if (e == null) continue;
             Object obj = mapper.apply(e);
             if (obj != null) {
                 array.add(obj);

@@ -2,12 +2,13 @@ package cn.nukkit.item;
 
 import cn.nukkit.Player;
 import cn.nukkit.Server;
+import cn.nukkit.block.BlockAir;
 import cn.nukkit.entity.projectile.EntityArrow;
 import cn.nukkit.entity.projectile.EntityProjectile;
 import cn.nukkit.event.entity.EntityShootBowEvent;
 import cn.nukkit.event.entity.ProjectileLaunchEvent;
 import cn.nukkit.item.enchantment.Enchantment;
-import cn.nukkit.level.Sound;
+import cn.nukkit.level.sound.LaunchSound;
 import cn.nukkit.nbt.tag.CompoundTag;
 import cn.nukkit.nbt.tag.DoubleTag;
 import cn.nukkit.nbt.tag.FloatTag;
@@ -83,7 +84,7 @@ public class ItemBow extends ItemTool {
         int diff = (Server.getInstance().getTick() - player.getStartActionTick());
         double p = (double) diff / 20;
 
-        double f = Math.min((p * p + p * 2) / 3, 1) * 2;
+        double f = Math.min((p * p + p * 2) / 2, 1) * 2;
         EntityShootBowEvent entityShootBowEvent = new EntityShootBowEvent(player, this, new EntityArrow(player.chunk, nbt, player, f == 2), f);
 
         if (f < 0.1 || diff < 5) {
@@ -105,8 +106,10 @@ public class ItemBow extends ItemTool {
                     Enchantment durability = this.getEnchantment(Enchantment.ID_DURABILITY);
                     if (!(durability != null && durability.getLevel() > 0 && (100 / (durability.getLevel() + 1)) <= new Random().nextInt(100))) {
                         this.setDamage(this.getDamage() + 1);
-                        if (this.getDamage() >= getMaxDurability()) {
-                            this.count--;
+                        if (this.getDamage() >= 385) {
+                            player.getInventory().setItemInHand(new ItemBlock(new BlockAir(), 0, 0));
+                        } else {
+                            player.getInventory().setItemInHand(this);
                         }
                     }
                 }
@@ -118,7 +121,7 @@ public class ItemBow extends ItemTool {
                     entityShootBowEvent.getProjectile().kill();
                 } else {
                     entityShootBowEvent.getProjectile().spawnToAll();
-                    player.level.addSound(player, Sound.RANDOM_BOW, 1, 1, player.getViewers().values());
+                    player.level.addSound(new LaunchSound(player), player.getViewers().values());
                 }
             } else {
                 entityShootBowEvent.getProjectile().spawnToAll();

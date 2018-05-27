@@ -10,10 +10,9 @@ import cn.nukkit.event.player.PlayerInteractEvent.Action;
 import cn.nukkit.item.Item;
 import cn.nukkit.item.ItemBlock;
 import cn.nukkit.level.Level;
-import cn.nukkit.level.Sound;
+import cn.nukkit.level.sound.ClickSound;
 import cn.nukkit.math.AxisAlignedBB;
 import cn.nukkit.math.BlockFace;
-import cn.nukkit.math.SimpleAxisAlignedBB;
 
 /**
  * Created by Snake1999 on 2016/1/11.
@@ -43,33 +42,12 @@ public abstract class BlockPressurePlateBase extends BlockFlowable {
     }
 
     @Override
-    public double getMinX() {
-        return this.x + 0.625;
-    }
-
-    @Override
-    public double getMinZ() {
-        return this.z + 0.625;
-    }
-
-    @Override
-    public double getMinY() {
-        return this.y + 0;
-    }
-
-    @Override
-    public double getMaxX() {
-        return this.x + 0.9375;
-    }
-
-    @Override
-    public double getMaxZ() {
-        return this.z + 0.9375;
-    }
-
-    @Override
-    public double getMaxY() {
-        return isActivated() ? this.y + 0.03125 : this.y + 0.0625;
+    protected AxisAlignedBB recalculateBoundingBox() {
+        if (isActivated()) {
+            return new AxisAlignedBB(this.x + 0.0625, this.y, this.z + 0.0625, this.x + 0.9375, this.y + 0.03125, this.z + 0.9375);
+        } else {
+            return new AxisAlignedBB(this.x + 0.0625, this.y, this.z + 0.0625, this.x + 0.9375, this.y + 0.0625, this.z + 0.9375);
+        }
     }
 
     @Override
@@ -78,7 +56,7 @@ public abstract class BlockPressurePlateBase extends BlockFlowable {
     }
 
     public boolean isActivated() {
-        return this.getDamage() == 0;
+        return this.meta == 0;
     }
 
     @Override
@@ -111,7 +89,7 @@ public abstract class BlockPressurePlateBase extends BlockFlowable {
 
     @Override
     protected AxisAlignedBB recalculateCollisionBoundingBox() {
-        return new SimpleAxisAlignedBB(this.x + 0.125, this.y, this.z + 0.125, this.x + 0.875, this.y + 0.25, this.z + 0.875D);
+        return new AxisAlignedBB(this.x + 0.125, this.y, this.z + 0.125, this.x + 0.875, this.y + 0.25, this.z + 0.875D);
     }
 
     @Override
@@ -184,19 +162,19 @@ public abstract class BlockPressurePlateBase extends BlockFlowable {
     }
 
     public int getRedstonePower() {
-        return this.getDamage();
+        return this.meta;
     }
 
     public void setRedstonePower(int power) {
-        this.setDamage(power);
+        this.meta = power;
     }
 
     protected void playOnSound() {
-        this.level.addSound(this, Sound.RANDOM_CLICK, 0.6f, onPitch);
+        this.level.addSound(new ClickSound(this, onPitch));
     }
 
     protected void playOffSound() {
-        this.level.addSound(this, Sound.RANDOM_CLICK, 0.6f, offPitch);
+        this.level.addSound(new ClickSound(this, offPitch));
     }
 
     protected abstract int computeRedstoneStrength();

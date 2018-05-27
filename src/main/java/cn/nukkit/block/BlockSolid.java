@@ -8,7 +8,8 @@ import cn.nukkit.utils.BlockColor;
  */
 public abstract class BlockSolid extends Block {
 
-    protected BlockSolid() {
+    protected BlockSolid(int meta) {
+        super(meta);
     }
 
     @Override

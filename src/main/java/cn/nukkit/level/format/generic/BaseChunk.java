@@ -1,7 +1,6 @@
 package cn.nukkit.level.format.generic;
 
 import cn.nukkit.Server;
-import cn.nukkit.block.Block;
 import cn.nukkit.level.format.Chunk;
 import cn.nukkit.level.format.ChunkSection;
 import cn.nukkit.level.format.LevelProvider;
@@ -19,12 +18,12 @@ import java.util.Arrays;
 
 public abstract class BaseChunk extends BaseFullChunk implements Chunk {
 
-    protected ChunkSection[] sections;
+    protected ChunkSection[] sections = new ChunkSection[SECTION_COUNT];
 
     @Override
     public BaseChunk clone() {
         BaseChunk chunk = (BaseChunk) super.clone();
-        if (this.biomes != null) chunk.biomes = this.biomes.clone();
+        chunk.biomeColors = this.getBiomeColorArray().clone();
         chunk.heightMap = this.getHeightMapArray().clone();
         if (sections != null && sections[0] != null) {
             chunk.sections = new ChunkSection[sections.length];
@@ -41,71 +40,30 @@ public abstract class BaseChunk extends BaseFullChunk implements Chunk {
     }
 
     @Override
-    public boolean setBlock(int x, int y, int z, int blockId) {
-        return this.setBlock(x, y, z, blockId, 0);
+    public boolean setBlock(int x, int y, int z) {
+        return this.setBlock(x, y, z, null, null);
     }
 
     @Override
-    public Block getAndSetBlock(int x, int y, int z, Block block) {
-        int Y = y >> 4;
+    public boolean setBlock(int x, int y, int z, Integer blockId) {
+        return this.setBlock(x, y, z, blockId, null);
+    }
+
+    @Override
+    public boolean setBlock(int x, int y, int z, Integer blockId, Integer meta) {
+        int id = blockId == null ? 0 : blockId;
+        int damage = meta == null ? 0 : meta;
         try {
-            setChanged();
-            return this.sections[Y].getAndSetBlock(x, y & 0x0f, z, block);
+            this.hasChanged = true;
+            return this.sections[y >> 4].setBlock(x, y & 0x0f, z, id, damage);
         } catch (ChunkException e) {
+            int Y = y >> 4;
             try {
                 this.setInternalSection(Y, (ChunkSection) this.providerClass.getMethod("createChunkSection", int.class).invoke(this.providerClass, Y));
             } catch (IllegalAccessException | InvocationTargetException | NoSuchMethodException e1) {
                 Server.getInstance().getLogger().logException(e1);
             }
-            return this.sections[Y].getAndSetBlock(x, y & 0x0f, z, block);
-        }
-    }
-
-    @Override
-    public boolean setFullBlockId(int x, int y, int z, int fullId) {
-        int Y = y >> 4;
-        try {
-            setChanged();
-            return this.sections[Y].setFullBlockId(x, y & 0x0f, z, fullId);
-        } catch (ChunkException e) {
-            try {
-                this.setInternalSection(Y, (ChunkSection) this.providerClass.getMethod("createChunkSection", int.class).invoke(this.providerClass, Y));
-            } catch (IllegalAccessException | InvocationTargetException | NoSuchMethodException e1) {
-                Server.getInstance().getLogger().logException(e1);
-            }
-            return this.sections[Y].setFullBlockId(x, y & 0x0f, z, fullId);
-        }
-    }
-
-    @Override
-    public boolean setBlock(int x, int y, int z, int blockId, int meta) {
-        int Y = y >> 4;
-        try {
-            setChanged();
-            return this.sections[Y].setBlock(x, y & 0x0f, z, blockId, meta);
-        } catch (ChunkException e) {
-            try {
-                this.setInternalSection(Y, (ChunkSection) this.providerClass.getMethod("createChunkSection", int.class).invoke(this.providerClass, Y));
-            } catch (IllegalAccessException | InvocationTargetException | NoSuchMethodException e1) {
-                Server.getInstance().getLogger().logException(e1);
-            }
-            return this.sections[Y].setBlock(x, y & 0x0f, z, blockId, meta);
-        }
-    }
-
-    @Override
-    public void setBlockId(int x, int y, int z, int id) {
-        int Y = y >> 4;
-        try {
-            this.sections[Y].setBlockId(x, y & 0x0f, z, id);
-            setChanged();
-        } catch (ChunkException e) {
-            try {
-                this.setInternalSection(Y, (ChunkSection) this.providerClass.getMethod("createChunkSection", int.class).invoke(this.providerClass, Y));
-            } catch (IllegalAccessException | InvocationTargetException | NoSuchMethodException e1) {
-                Server.getInstance().getLogger().logException(e1);
-            }
-            this.sections[Y].setBlockId(x, y & 0x0f, z, id);
+            return this.sections[y >> 4].setBlock(x, y & 0x0f, z, id, damage);
         }
     }
 
@@ -115,23 +73,39 @@ public abstract class BaseChunk extends BaseFullChunk implements Chunk {
     }
 
     @Override
+    public void setBlockId(int x, int y, int z, int id) {
+        try {
+            this.sections[y >> 4].setBlockId(x, y & 0x0f, z, id);
+            this.hasChanged = true;
+        } catch (ChunkException e) {
+            int Y = y >> 4;
+            try {
+                this.setInternalSection(Y, (ChunkSection) this.providerClass.getMethod("createChunkSection", int.class).invoke(this.providerClass, Y));
+            } catch (IllegalAccessException | InvocationTargetException | NoSuchMethodException e1) {
+                Server.getInstance().getLogger().logException(e1);
+            }
+            this.setBlockId(x, y, z, id);
+        }
+    }
+
+    @Override
     public int getBlockData(int x, int y, int z) {
         return this.sections[y >> 4].getBlockData(x, y & 0x0f, z);
     }
 
     @Override
     public void setBlockData(int x, int y, int z, int data) {
-        int Y = y >> 4;
         try {
-            this.sections[Y].setBlockData(x, y & 0x0f, z, data);
-            setChanged();
+            this.sections[y >> 4].setBlockData(x, y & 0x0f, z, data);
+            this.hasChanged = true;
         } catch (ChunkException e) {
+            int Y = y >> 4;
             try {
                 this.setInternalSection(Y, (ChunkSection) this.providerClass.getMethod("createChunkSection", int.class).invoke(this.providerClass, Y));
             } catch (IllegalAccessException | InvocationTargetException | NoSuchMethodException e1) {
                 Server.getInstance().getLogger().logException(e1);
             }
-            this.sections[Y].setBlockData(x, y & 0x0f, z, data);
+            this.setBlockData(x, y, z, data);
         }
     }
 
@@ -142,17 +116,17 @@ public abstract class BaseChunk extends BaseFullChunk implements Chunk {
 
     @Override
     public void setBlockSkyLight(int x, int y, int z, int level) {
-        int Y = y >> 4;
         try {
-            this.sections[Y].setBlockSkyLight(x, y & 0x0f, z, level);
-            setChanged();
+            this.sections[y >> 4].setBlockSkyLight(x, y & 0x0f, z, level);
+            this.hasChanged = true;
         } catch (ChunkException e) {
+            int Y = y >> 4;
             try {
                 this.setInternalSection(Y, (ChunkSection) this.providerClass.getMethod("createChunkSection", int.class).invoke(this.providerClass, Y));
             } catch (IllegalAccessException | InvocationTargetException | NoSuchMethodException e1) {
                 Server.getInstance().getLogger().logException(e1);
             }
-            this.sections[Y].setBlockSkyLight(x, y & 0x0f, z, level);
+            this.setBlockSkyLight(x, y, z, level);
         }
     }
 
@@ -163,18 +137,54 @@ public abstract class BaseChunk extends BaseFullChunk implements Chunk {
 
     @Override
     public void setBlockLight(int x, int y, int z, int level) {
-        int Y = y >> 4;
         try {
-            this.sections[Y].setBlockLight(x, y & 0x0f, z, level);
-            setChanged();
+            this.sections[y >> 4].setBlockLight(x, y & 0x0f, z, level);
+            this.hasChanged = true;
         } catch (ChunkException e) {
+            int Y = y >> 4;
             try {
                 this.setInternalSection(Y, (ChunkSection) this.providerClass.getMethod("createChunkSection", int.class).invoke(this.providerClass, Y));
             } catch (IllegalAccessException | InvocationTargetException | NoSuchMethodException e1) {
                 Server.getInstance().getLogger().logException(e1);
             }
-            this.sections[Y].setBlockLight(x, y & 0x0f, z, level);
+            this.setBlockLight(x, y, z, level);
         }
+    }
+
+    @Override
+    public byte[] getBlockIdColumn(int x, int z) {
+        ByteBuffer buffer = ByteBuffer.allocate(256);
+        for (int y = 0; y < SECTION_COUNT; y++) {
+            buffer.put(this.sections[y].getBlockIdColumn(x, z));
+        }
+        return buffer.array();
+    }
+
+    @Override
+    public byte[] getBlockDataColumn(int x, int z) {
+        ByteBuffer buffer = ByteBuffer.allocate(64);
+        for (int y = 0; y < SECTION_COUNT; y++) {
+            buffer.put(this.sections[y].getBlockDataColumn(x, z));
+        }
+        return buffer.array();
+    }
+
+    @Override
+    public byte[] getBlockSkyLightColumn(int x, int z) {
+        ByteBuffer buffer = ByteBuffer.allocate(64);
+        for (int y = 0; y < SECTION_COUNT; y++) {
+            buffer.put(this.sections[y].getBlockSkyLightColumn(x, z));
+        }
+        return buffer.array();
+    }
+
+    @Override
+    public byte[] getBlockLightColumn(int x, int z) {
+        ByteBuffer buffer = ByteBuffer.allocate(64);
+        for (int y = 0; y < SECTION_COUNT; y++) {
+            buffer.put(this.sections[y].getBlockLightColumn(x, z));
+        }
+        return buffer.array();
     }
 
     @Override
@@ -192,17 +202,17 @@ public abstract class BaseChunk extends BaseFullChunk implements Chunk {
         byte[] emptyIdArray = new byte[4096];
         byte[] emptyDataArray = new byte[2048];
         if (Arrays.equals(emptyIdArray, section.getIdArray()) && Arrays.equals(emptyDataArray, section.getDataArray())) {
-            this.sections[(int) fY] = EmptyChunkSection.EMPTY[(int) fY];
+            this.sections[(int) fY] = new EmptyChunkSection((int) fY);
         } else {
             this.sections[(int) fY] = section;
         }
-        setChanged();
+        this.hasChanged = true;
         return true;
     }
 
     private void setInternalSection(float fY, ChunkSection section) {
         this.sections[(int) fY] = section;
-        setChanged();
+        this.hasChanged = true;
     }
 
     @Override
@@ -257,7 +267,12 @@ public abstract class BaseChunk extends BaseFullChunk implements Chunk {
     }
 
     @Override
-    public byte[] getHeightMapArray() {
+    public int[] getBiomeColorArray() {
+        return this.biomeColors;
+    }
+
+    @Override
+    public int[] getHeightMapArray() {
         return this.heightMap;
     }
 

@@ -7,6 +7,11 @@ package cn.nukkit.block;
 public class BlockPodzol extends BlockDirt {
 
     public BlockPodzol() {
+        this(0);
+    }
+
+    public BlockPodzol(int meta) {
+        super(0);
     }
 
     @Override

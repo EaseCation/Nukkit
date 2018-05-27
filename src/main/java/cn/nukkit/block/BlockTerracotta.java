@@ -9,7 +9,7 @@ import cn.nukkit.utils.DyeColor;
  * Created on 2015/11/24 by xtypr.
  * Package cn.nukkit.block in project Nukkit .
  */
-public class BlockTerracotta extends BlockSolidMeta {
+public class BlockTerracotta extends BlockSolid {
     public BlockTerracotta() {
         this(0);
     }
@@ -60,10 +60,10 @@ public class BlockTerracotta extends BlockSolidMeta {
 
     @Override
     public BlockColor getColor() {
-        return DyeColor.getByWoolData(getDamage()).getColor();
+        return DyeColor.getByWoolData(meta).getColor();
     }
 
     public DyeColor getDyeColor() {
-        return DyeColor.getByWoolData(getDamage());
+        return DyeColor.getByWoolData(meta);
     }
 }

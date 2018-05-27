@@ -47,7 +47,7 @@ public class BlockCarpet extends BlockFlowable {
 
     @Override
     public String getName() {
-        return DyeColor.getByWoolData(getDamage()) + " Carpet";
+        return DyeColor.getByWoolData(meta) + " Carpet";
     }
 
     @Override
@@ -57,12 +57,15 @@ public class BlockCarpet extends BlockFlowable {
 
     @Override
     protected AxisAlignedBB recalculateBoundingBox() {
-        return this;
-    }
 
-    @Override
-    public double getMaxY() {
-        return this.y + 0.0625;
+        return new AxisAlignedBB(
+                this.x,
+                this.y,
+                this.z,
+                this.x + 1,
+                this.y + 0.0625,
+                this.z + 1
+        );
     }
 
     @Override
@@ -90,11 +93,11 @@ public class BlockCarpet extends BlockFlowable {
 
     @Override
     public BlockColor getColor() {
-        return DyeColor.getByWoolData(getDamage()).getColor();
+        return DyeColor.getByWoolData(meta).getColor();
     }
 
     public DyeColor getDyeColor() {
-        return DyeColor.getByWoolData(getDamage());
+        return DyeColor.getByWoolData(meta);
     }
 
 }

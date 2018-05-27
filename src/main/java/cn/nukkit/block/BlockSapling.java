@@ -10,7 +10,6 @@ import cn.nukkit.math.BlockFace;
 import cn.nukkit.math.NukkitRandom;
 import cn.nukkit.math.Vector3;
 import cn.nukkit.utils.BlockColor;
-import java.util.concurrent.ThreadLocalRandom;
 
 /**
  * author: Angelic47
@@ -20,10 +19,6 @@ public class BlockSapling extends BlockFlowable {
     public static final int OAK = 0;
     public static final int SPRUCE = 1;
     public static final int BIRCH = 2;
-    /**
-     * placeholder
-     */
-    public static final int BIRCH_TALL = 8 | BIRCH;
     public static final int JUNGLE = 3;
     public static final int ACACIA = 4;
     public static final int DARK_OAK = 5;
@@ -53,7 +48,7 @@ public class BlockSapling extends BlockFlowable {
                 "",
                 ""
         };
-        return names[this.getDamage() & 0x07];
+        return names[this.meta & 0x07];
     }
 
     @Override
@@ -79,7 +74,7 @@ public class BlockSapling extends BlockFlowable {
             }
 
             this.level.addParticle(new BoneMealParticle(this));
-            if (ThreadLocalRandom.current().nextFloat() >= 0.45) {
+            if (this.level.rand.nextFloat() >= 0.45) {
                 return true;
             }
 
@@ -89,7 +84,7 @@ public class BlockSapling extends BlockFlowable {
             int x = 0;
             int z = 0;
 
-            switch (this.getDamage()) {
+            switch (this.meta) {
                 case JUNGLE:
                     loop:
                     for (x = 0; x >= -1; --x) {
@@ -103,7 +98,7 @@ public class BlockSapling extends BlockFlowable {
                     }
 
                     if (!bigTree) {
-                        generator = new NewJungleTree(4, 7);
+                        generator = new NewJungleTree(4 + this.level.rand.nextInt(7));
                     }
                     break;
                 case ACACIA:
@@ -129,7 +124,7 @@ public class BlockSapling extends BlockFlowable {
                     break;
                 //TODO: big spruce
                 default:
-                    ObjectTree.growTree(this.getLevel(), (int) this.x, (int) this.y, (int) this.z, new NukkitRandom(), this.getDamage() & 0x07);
+                    ObjectTree.growTree(this.getLevel(), (int) this.x, (int) this.y, (int) this.z, new NukkitRandom(), this.meta & 0x07);
                     return true;
             }
             BlockAir air = new BlockAir();
@@ -155,6 +150,7 @@ public class BlockSapling extends BlockFlowable {
             }
             return true;
         }
+        this.getLevel().loadChunk((int) this.x >> 4, (int) this.z >> 4);
         return false;
     }
 
@@ -166,10 +162,10 @@ public class BlockSapling extends BlockFlowable {
             }
         } else if (type == Level.BLOCK_UPDATE_RANDOM) { //Growth
             if (new NukkitRandom().nextRange(1, 7) == 1) {
-                if ((this.getDamage() & 0x08) == 0x08) {
-                    ObjectTree.growTree(this.getLevel(), (int) this.x, (int) this.y, (int) this.z, new NukkitRandom(), this.getDamage() & 0x07);
+                if ((this.meta & 0x08) == 0x08) {
+                    ObjectTree.growTree(this.getLevel(), (int) this.x, (int) this.y, (int) this.z, new NukkitRandom(), this.meta & 0x07);
                 } else {
-                    this.setDamage(this.getDamage() | 0x08);
+                    this.meta |= 0x08;
                     this.getLevel().setBlock(this, this, true);
                     return Level.BLOCK_UPDATE_RANDOM;
                 }

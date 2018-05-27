@@ -16,7 +16,7 @@ public interface LevelProvider {
     byte ORDER_YZX = 0;
     byte ORDER_ZXY = 1;
 
-    AsyncTask requestChunkTask(int X, int Z);
+    AsyncTask requestChunkTask(int x, int z);
 
     String getPath();
 
@@ -24,37 +24,31 @@ public interface LevelProvider {
 
     Map<String, Object> getGeneratorOptions();
 
-    BaseFullChunk getLoadedChunk(int X, int Z);
+    BaseFullChunk getChunk(int x, int z);
 
-    BaseFullChunk getLoadedChunk(long hash);
-
-    BaseFullChunk getChunk(int X, int Z);
-
-    BaseFullChunk getChunk(int X, int Z, boolean create);
+    BaseFullChunk getChunk(int x, int z, boolean create);
 
     void saveChunks();
 
-    void saveChunk(int X, int Z);
+    void saveChunk(int x, int z);
 
-    void saveChunk(int X, int Z, FullChunk chunk);
+    void saveChunk(int x, int z, FullChunk chunk);
 
     void unloadChunks();
 
-    boolean loadChunk(int X, int Z);
+    boolean loadChunk(int x, int z);
 
-    boolean loadChunk(int X, int Z, boolean create);
+    boolean loadChunk(int x, int z, boolean create);
 
-    boolean unloadChunk(int X, int Z);
+    boolean unloadChunk(int x, int z);
 
-    boolean unloadChunk(int X, int Z, boolean safe);
+    boolean unloadChunk(int x, int z, boolean safe);
 
-    boolean isChunkGenerated(int X, int Z);
+    boolean isChunkGenerated(int x, int z);
 
-    boolean isChunkPopulated(int X, int Z);
+    boolean isChunkPopulated(int x, int z);
 
-    boolean isChunkLoaded(int X, int Z);
-
-    boolean isChunkLoaded(long hash);
+    boolean isChunkLoaded(int x, int z);
 
     void setChunk(int chunkX, int chunkZ, FullChunk chunk);
 
@@ -95,10 +89,6 @@ public interface LevelProvider {
     Map<Long, ? extends FullChunk> getLoadedChunks();
 
     void doGarbageCollection();
-
-    default void doGarbageCollection(long time) {
-
-    }
 
     Level getLevel();
 

@@ -49,8 +49,8 @@ public class CommandReader extends Thread implements InterruptibleThread {
     public String readLine() {
         try {
             return reader.readLine();
-        } catch (IOException e) {
-            e.printStackTrace();
+        } catch (Exception e) {
+            Server.getInstance().getLogger().logException(e);
         }
         return null;
     }
@@ -81,7 +81,7 @@ public class CommandReader extends Thread implements InterruptibleThread {
 
                 } else if (System.currentTimeMillis() - lastLine <= 1) {
                     try {
-                        sleep(250);
+                        sleep(40);
                     } catch (InterruptedException e) {
                         Server.getInstance().getLogger().logException(e);
                     }

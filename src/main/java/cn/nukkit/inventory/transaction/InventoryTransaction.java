@@ -1,7 +1,6 @@
 package cn.nukkit.inventory.transaction;
 
 import cn.nukkit.Player;
-import cn.nukkit.event.inventory.InventoryClickEvent;
 import cn.nukkit.event.inventory.InventoryTransactionEvent;
 import cn.nukkit.inventory.Inventory;
 import cn.nukkit.inventory.PlayerInventory;
@@ -233,40 +232,6 @@ public class InventoryTransaction {
     protected boolean callExecuteEvent() {
         InventoryTransactionEvent ev = new InventoryTransactionEvent(this);
         this.source.getServer().getPluginManager().callEvent(ev);
-
-        SlotChangeAction from = null;
-        SlotChangeAction to = null;
-        Player who = null;
-
-        for (InventoryAction action : this.actions) {
-            if (!(action instanceof SlotChangeAction)) {
-                continue;
-            }
-            SlotChangeAction slotChange = (SlotChangeAction) action;
-
-            if (slotChange.getInventory() instanceof PlayerInventory) {
-                who = (Player) slotChange.getInventory().getHolder();
-            }
-
-            if (from == null) {
-                from = slotChange;
-            } else {
-                to = slotChange;
-            }
-        }
-
-        if (who != null && to != null) {
-            if (from.getTargetItem().getCount() > from.getSourceItem().getCount()) {
-                from = to;
-            }
-
-            InventoryClickEvent ev2 = new InventoryClickEvent(who, from.getInventory(), from.getSlot(), from.getSourceItem(), from.getTargetItem());
-            this.source.getServer().getPluginManager().callEvent(ev2);
-
-            if (ev2.isCancelled()) {
-                return false;
-            }
-        }
 
         return !ev.isCancelled();
     }

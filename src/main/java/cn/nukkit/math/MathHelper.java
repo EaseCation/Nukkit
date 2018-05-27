@@ -5,14 +5,6 @@ import java.util.Random;
 public class MathHelper {
     private static float[] a = new float[65536];
 
-    static {
-        for (int i = 0; i < 65536; i++)
-            a[i] = (float) Math.sin(i * 3.141592653589793D * 2.0D / 65536.0D);
-    }
-
-    private MathHelper() {
-    }
-
     public static float sqrt(float paramFloat) {
         return (float) Math.sqrt(paramFloat);
     }
@@ -22,14 +14,6 @@ public class MathHelper {
     }
 
     public static float cos(float paramFloat) {
-        return a[((int) (paramFloat * 10430.378F + 16384.0F) & 0xFFFF)];
-    }
-
-    public static float sin(double paramFloat) {
-        return a[((int) (paramFloat * 10430.378F) & 0xFFFF)];
-    }
-
-    public static float cos(double paramFloat) {
         return a[((int) (paramFloat * 10430.378F + 16384.0F) & 0xFFFF)];
     }
 
@@ -44,21 +28,12 @@ public class MathHelper {
         return d >= (double) l ? l : l - 1L;
     }
 
-    public static int floor_float_int(float f) {
-        int i = (int) f;
-        return f >= i ? i : i - 1;
-    }
-
     public static int abs(int number) {
         if (number > 0) {
             return number;
         } else {
             return -number;
         }
-    }
-
-    public static int log2(int bits) {
-        return Integer.SIZE - Integer.numberOfLeadingZeros(bits);
     }
 
     /**
@@ -71,6 +46,11 @@ public class MathHelper {
      */
     public static int getRandomNumberInRange(Random random, int min, int max) {
         return min + random.nextInt(max - min + 1);
+    }
+
+    static {
+        for (int i = 0; i < 65536; i++)
+            a[i] = (float) Math.sin(i * 3.141592653589793D * 2.0D / 65536.0D);
     }
 
     public static double max(double first, double second, double third, double fourth) {
@@ -95,11 +75,6 @@ public class MathHelper {
         return check > max ? max : (check < min ? min : check);
     }
 
-    public static double denormalizeClamp(double lowerBnd, double upperBnd, double slide) {
-        return slide < 0.0D ? lowerBnd : (slide > 1.0D ? upperBnd : lowerBnd + (upperBnd - lowerBnd) * slide);
-    }
-
-    public static float denormalizeClamp(float lowerBnd, float upperBnd, float slide) {
-        return slide < 0.0f ? lowerBnd : (slide > 1.0f ? upperBnd : lowerBnd + (upperBnd - lowerBnd) * slide);
+    private MathHelper() {
     }
 }

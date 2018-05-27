@@ -7,16 +7,15 @@ import cn.nukkit.item.Item;
 import cn.nukkit.item.ItemBlock;
 import cn.nukkit.item.ItemTool;
 import cn.nukkit.level.Level;
-import cn.nukkit.level.Sound;
+import cn.nukkit.level.sound.DoorSound;
 import cn.nukkit.math.AxisAlignedBB;
 import cn.nukkit.math.BlockFace;
-import cn.nukkit.math.SimpleAxisAlignedBB;
 import cn.nukkit.utils.BlockColor;
 
 /**
  * Created by Pub4Game on 26.12.2015.
  */
-public class BlockTrapdoor extends BlockTransparentMeta {
+public class BlockTrapdoor extends BlockTransparent {
 
     public BlockTrapdoor() {
         this(0);
@@ -56,108 +55,72 @@ public class BlockTrapdoor extends BlockTransparentMeta {
         return ItemTool.TYPE_AXE;
     }
 
-    private static final AxisAlignedBB[] boundingBoxDamage = new AxisAlignedBB[16];
-
-    static {
-        for (int damage = 0; damage < 16; damage++) {
-            AxisAlignedBB bb;
-            double f = 0.1875;
-            if ((damage & 0x08) > 0) {
-                bb = new SimpleAxisAlignedBB(
-                        0,
-                        0 + 1 - f,
-                        0,
-                        0 + 1,
-                        0 + 1,
-                        0 + 1
-                );
-            } else {
-                bb = new SimpleAxisAlignedBB(
-                        0,
-                        0,
-                        0,
-                        0 + 1,
-                        0 + f,
-                        0 + 1
-                );
-            }
-            if ((damage & 0x04) > 0) {
-                if ((damage & 0x03) == 0) {
-                    bb.setBounds(
-                            0,
-                            0,
-                            0 + 1 - f,
-                            0 + 1,
-                            0 + 1,
-                            0 + 1
-                    );
-                } else if ((damage & 0x03) == 1) {
-                    bb.setBounds(
-                            0,
-                            0,
-                            0,
-                            0 + 1,
-                            0 + 1,
-                            0 + f
-                    );
-                }
-                if ((damage & 0x03) == 2) {
-                    bb.setBounds(
-                            0 + 1 - f,
-                            0,
-                            0,
-                            0 + 1,
-                            0 + 1,
-                            0 + 1
-                    );
-                }
-                if ((damage & 0x03) == 3) {
-                    bb.setBounds(
-                            0,
-                            0,
-                            0,
-                            0 + f,
-                            0 + 1,
-                            0 + 1
-                    );
-                }
-            }
-            boundingBoxDamage[damage] = bb;
+    @Override
+    protected AxisAlignedBB recalculateBoundingBox() {
+        int damage = this.getDamage();
+        AxisAlignedBB bb;
+        double f = 0.1875;
+        if ((damage & 0x08) > 0) {
+            bb = new AxisAlignedBB(
+                    this.x,
+                    this.y + 1 - f,
+                    this.z,
+                    this.x + 1,
+                    this.y + 1,
+                    this.z + 1
+            );
+        } else {
+            bb = new AxisAlignedBB(
+                    this.x,
+                    this.y,
+                    this.z,
+                    this.x + 1,
+                    this.y + f,
+                    this.z + 1
+            );
         }
-    }
-
-    private AxisAlignedBB getRelativeBoundingBox() {
-        return boundingBoxDamage[this.getDamage()];
-    }
-
-    @Override
-    public double getMinX() {
-        return this.x + getRelativeBoundingBox().getMinX();
-    }
-
-    @Override
-    public double getMaxX() {
-        return this.x + getRelativeBoundingBox().getMaxX();
-    }
-
-    @Override
-    public double getMinY() {
-        return this.y + getRelativeBoundingBox().getMinY();
-    }
-
-    @Override
-    public double getMaxY() {
-        return this.y + getRelativeBoundingBox().getMaxY();
-    }
-
-    @Override
-    public double getMinZ() {
-        return this.z + getRelativeBoundingBox().getMinZ();
-    }
-
-    @Override
-    public double getMaxZ() {
-        return this.z + getRelativeBoundingBox().getMaxZ();
+        if ((damage & 0x04) > 0) {
+            if ((damage & 0x03) == 0) {
+                bb.setBounds(
+                        this.x,
+                        this.y,
+                        this.z + 1 - f,
+                        this.x + 1,
+                        this.y + 1,
+                        this.z + 1
+                );
+            } else if ((damage & 0x03) == 1) {
+                bb.setBounds(
+                        this.x,
+                        this.y,
+                        this.z,
+                        this.x + 1,
+                        this.y + 1,
+                        this.z + f
+                );
+            }
+            if ((damage & 0x03) == 2) {
+                bb.setBounds(
+                        this.x + 1 - f,
+                        this.y,
+                        this.z,
+                        this.x + 1,
+                        this.y + 1,
+                        this.z + 1
+                );
+            }
+            if ((damage & 0x03) == 3) {
+                bb.setBounds(
+                        this.x,
+                        this.y,
+                        this.z,
+                        this.x + f,
+                        this.y + 1,
+                        this.z + 1
+                );
+            }
+        }
+        return bb;
     }
 
     @Override
@@ -189,10 +152,10 @@ public class BlockTrapdoor extends BlockTransparentMeta {
         int[] faces = {2, 1, 3, 0};
         int faceBit = faces[facing.getHorizontalIndex()];
 
-        this.setDamage(this.getDamage() | faceBit);
+        this.meta |= faceBit;
 
         if (top) {
-            this.setDamage(this.getDamage() | 0x04);
+            this.meta |= 0x04;
         }
 
         this.getLevel().setBlock(block, this, true, true);
@@ -210,7 +173,8 @@ public class BlockTrapdoor extends BlockTransparentMeta {
             return false;
         }
 
-        this.level.addSound(this, isOpen() ? Sound.RANDOM_DOOR_OPEN : Sound.RANDOM_DOOR_CLOSE);
+        this.getLevel().setBlock(this, this, true);
+        this.level.addSound(new DoorSound(this));
         return true;
     }
 
@@ -228,29 +192,30 @@ public class BlockTrapdoor extends BlockTransparentMeta {
         }
 
 
-        int sideBit = this.getDamage() & 0x07;
+        int sideBit = this.meta & 0x07;
         boolean open = isOpen();
 
-        this.setDamage(sideBit);
+        this.meta = sideBit;
 
         if (open) {
-            this.setDamage(this.getDamage() | 0x08);
+            this.meta |= 0x08;
         }
 
         this.level.setBlock(this, this, false, false);
+        this.level.addSound(new DoorSound(this));
         return true;
     }
 
     public BlockFace getFacing() {
         int[] faces = {3, 1, 0, 2};
-        return BlockFace.fromHorizontalIndex(faces[this.getDamage() & 0x03]);
+        return BlockFace.fromHorizontalIndex(faces[this.meta & 0x03]);
     }
 
     public boolean isOpen() {
-        return (this.getDamage() & 0x08) != 0;
+        return (this.meta & 0x08) != 0;
     }
 
     public boolean isTop() {
-        return (this.getDamage() & 0x04) != 0;
+        return (this.meta & 0x04) != 0;
     }
 }

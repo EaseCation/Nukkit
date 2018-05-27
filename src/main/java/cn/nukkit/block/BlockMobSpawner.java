@@ -9,6 +9,11 @@ import cn.nukkit.item.ItemTool;
 public class BlockMobSpawner extends BlockSolid {
 
     public BlockMobSpawner() {
+        this(0);
+    }
+
+    public BlockMobSpawner(int meta) {
+        super(0);
     }
 
     @Override

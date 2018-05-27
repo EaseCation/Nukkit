@@ -7,7 +7,6 @@ import cn.nukkit.level.format.FullChunk;
 import cn.nukkit.nbt.tag.CompoundTag;
 import cn.nukkit.network.protocol.AddPlayerPacket;
 import cn.nukkit.network.protocol.RemoveEntityPacket;
-import cn.nukkit.network.protocol.SetEntityLinkPacket;
 import cn.nukkit.utils.Utils;
 
 import java.nio.charset.StandardCharsets;
@@ -32,17 +31,17 @@ public class EntityHuman extends EntityHumanType {
 
     @Override
     public float getWidth() {
-        return 0.6f;
+        return 0.6f * this.getScale();
     }
 
     @Override
     public float getLength() {
-        return 0.6f;
+        return 0.6f * this.getScale();
     }
 
     @Override
     public float getHeight() {
-        return 1.8f;
+        return 1.8f * this.getScale();
     }
 
     @Override
@@ -157,16 +156,6 @@ public class EntityHuman extends EntityHumanType {
             player.dataPacket(pk);
 
             this.inventory.sendArmorContents(player);
-
-            if (this.riding != null) {
-                SetEntityLinkPacket pkk = new SetEntityLinkPacket();
-                pkk.rider = this.riding.getId();
-                pkk.riding = this.getId();
-                pkk.type = 1;
-                pkk.unknownByte = 1;
-
-                player.dataPacket(pkk);
-            }
 
             if (!(this instanceof Player)) {
                 this.server.removePlayerListData(this.getUniqueId(), new Player[]{player});

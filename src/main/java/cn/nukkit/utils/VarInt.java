@@ -149,7 +149,7 @@ public final class VarInt {
         return read(stream, 10);
     }
 
-    private static void write(BinaryStream stream, long value) {
+    public static void write(BinaryStream stream, long value) {
         do {
             byte temp = (byte) (value & 0b01111111);
             // Note: >>> means that the sign bit is shifted with the rest of the number rather than being left alone
@@ -159,6 +159,15 @@ public final class VarInt {
             }
             stream.putByte(temp);
         } while (value != 0);
+    }
+
+    public static void writeFromMinet(BinaryStream stream, long value) {
+        while ((value & -128) != 0) {
+            stream.putByte((byte) ((value & 0x7F) | 0x80));
+            value >>= 7;
+        }
+
+        stream.putByte((byte) value);
     }
 
     private static void write(OutputStream stream, long value) throws IOException {

@@ -2,7 +2,10 @@ package cn.nukkit.inventory;
 
 import cn.nukkit.item.Item;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
+import java.util.UUID;
 
 /**
  * author: MagicDroidX
@@ -12,24 +15,12 @@ public class ShapelessRecipe implements CraftingRecipe {
 
     private final Item output;
 
-    private long least,most;
+    private UUID uuid = null;
 
-    private final List<Item> ingredients;
+    private final List<Item> ingredients = new ArrayList<>();
 
-    public ShapelessRecipe(Item result, Collection<Item> ingredients) {
+    public ShapelessRecipe(Item result) {
         this.output = result.clone();
-        if (ingredients.size() > 9) {
-            throw new IllegalArgumentException("Shapeless recipes cannot have more than 9 ingredients");
-        }
-
-        this.ingredients = new ArrayList<>();
-
-        for (Item item : ingredients) {
-            if (item.getCount() > 1) {
-                throw new IllegalArgumentException("Ingredient amount was not 1");
-            }
-            this.ingredients.add(item.clone());
-        }
     }
 
     @Override
@@ -39,13 +30,46 @@ public class ShapelessRecipe implements CraftingRecipe {
 
     @Override
     public UUID getId() {
-        return new UUID(least, most);
+        return this.uuid;
     }
 
     @Override
     public void setId(UUID uuid) {
-        this.least = uuid.getLeastSignificantBits();
-        this.most = uuid.getMostSignificantBits();
+        if (this.uuid != null) {
+            throw new IllegalStateException("Id is already set");
+        }
+        this.uuid = uuid;
+    }
+
+    public ShapelessRecipe addIngredient(Item item) {
+        if (this.ingredients.size() > 9) {
+            throw new IllegalArgumentException("Shapeless recipes cannot have more than 9 ingredients");
+        }
+
+        Item it = item.clone();
+        it.setCount(1);
+
+        while (item.getCount() > 0) {
+            this.ingredients.add(it.clone());
+            item.setCount(item.getCount() - 1);
+        }
+
+        return this;
+    }
+
+    public ShapelessRecipe removeIngredient(Item item) {
+        for (Item ingredient : this.ingredients) {
+            if (item.getCount() <= 0) {
+                break;
+            }
+
+            if (ingredient.equals(item, item.hasMeta(), item.getCompoundTag() != null)) {
+                this.ingredients.remove(ingredient);
+                item.setCount(item.getCount() - 1);
+            }
+        }
+
+        return this;
     }
 
     public List<Item> getIngredientList() {
@@ -58,7 +82,12 @@ public class ShapelessRecipe implements CraftingRecipe {
     }
 
     public int getIngredientCount() {
-        return ingredients.size();
+        int count = 0;
+        for (Item ingredient : this.ingredients) {
+            count += ingredient.getCount();
+        }
+
+        return count;
     }
 
     @Override
@@ -73,7 +102,7 @@ public class ShapelessRecipe implements CraftingRecipe {
 
     @Override
     public List<Item> getExtraResults() {
-        return new ArrayList<>();
+        return null;
     }
 
     @Override
@@ -87,7 +116,6 @@ public class ShapelessRecipe implements CraftingRecipe {
         for (Item[] items : input) {
             haveInputs.addAll(Arrays.asList(items));
         }
-        haveInputs.sort(CraftingManager.recipeComparator);
 
         List<Item> needInputs = this.getIngredientList();
 
@@ -96,10 +124,9 @@ public class ShapelessRecipe implements CraftingRecipe {
         }
 
         List<Item> haveOutputs = new ArrayList<>();
-        for (Item[] items : output) {
+        for (Item[] items : input) {
             haveOutputs.addAll(Arrays.asList(items));
         }
-        haveOutputs.sort(CraftingManager.recipeComparator);
         List<Item> needOutputs = this.getExtraResults();
 
         return this.matchItemList(haveOutputs, needOutputs);
@@ -107,24 +134,22 @@ public class ShapelessRecipe implements CraftingRecipe {
 
 
     private boolean matchItemList(List<Item> haveItems, List<Item> needItems) {
-        // Remove any air blocks that may have gotten through.
-        haveItems.removeIf(Item::isNull);
+        for (Item haveItem : new ArrayList<>(haveItems)) {
+            if (haveItem.isNull()) {
+                haveItems.remove(haveItem);
+                continue;
+            }
 
-        if (haveItems.size() != needItems.size()) {
-            return false;
-        }
 
-        int size = needItems.size();
-        int completed = 0;
-        for (int i = 0; i < size; i++) {
-            Item haveItem = haveItems.get(i);
-            Item needItem = needItems.get(i);
-
-            if (needItem.equals(haveItem, needItem.hasMeta(), needItem.hasCompoundTag())) {
-                completed++;
+            for (Item needItem : new ArrayList<>(needItems)) {
+                if (needItem.equals(haveItem, !needItem.hasAnyDamageValue(), needItem.hasCompoundTag()) && needItem.getCount() == haveItem.getCount()) {
+                    haveItems.remove(haveItem);
+                    needItems.remove(needItem);
+                    break;
+                }
             }
         }
 
-        return completed == size;
+        return haveItems.isEmpty() && haveItems.isEmpty();
     }
 }

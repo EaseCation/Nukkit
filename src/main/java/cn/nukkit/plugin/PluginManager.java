@@ -35,11 +35,11 @@ public class PluginManager {
 
     protected final Map<String, Permission> defaultPermsOp = new HashMap<>();
 
-    protected final Map<String, Set<Permissible>> permSubs = new HashMap<>();
+    protected final Map<String, WeakHashMap<Permissible, Permissible>> permSubs = new HashMap<>();
 
-    protected final Set<Permissible> defSubs = Collections.newSetFromMap(new WeakHashMap<>());
+    protected final Map<Permissible, Permissible> defSubs = new WeakHashMap<>();
 
-    protected final Set<Permissible> defSubsOp = Collections.newSetFromMap(new WeakHashMap<>());
+    protected final Map<Permissible, Permissible> defSubsOp = new WeakHashMap<>();
 
     protected final Map<String, PluginLoader> fileAssociations = new HashMap<>();
 
@@ -105,7 +105,7 @@ public class PluginManager {
                                 return plugin;
                             }
                         } catch (Exception e) {
-                            Server.getInstance().getLogger().critical("Could not load plugin", e);
+                            Server.getInstance().getLogger().debug("Could not load plugin", e);
                             return null;
                         }
                     }
@@ -369,9 +369,9 @@ public class PluginManager {
 
     public void subscribeToPermission(String permission, Permissible permissible) {
         if (!this.permSubs.containsKey(permission)) {
-            this.permSubs.put(permission, Collections.newSetFromMap(new WeakHashMap<>()));
+            this.permSubs.put(permission, new WeakHashMap<>());
         }
-        this.permSubs.get(permission).add(permissible);
+        this.permSubs.get(permission).put(permissible, permissible);
     }
 
     public void unsubscribeFromPermission(String permission, Permissible permissible) {
@@ -385,16 +385,21 @@ public class PluginManager {
 
     public Set<Permissible> getPermissionSubscriptions(String permission) {
         if (this.permSubs.containsKey(permission)) {
-            return new HashSet<>(this.permSubs.get(permission));
+            Set<Permissible> subs = new HashSet<>();
+            for (Permissible p : this.permSubs.get(permission).values()) {
+                subs.add(p);
+            }
+            return subs;
         }
+
         return new HashSet<>();
     }
 
     public void subscribeToDefaultPerms(boolean op, Permissible permissible) {
         if (op) {
-            this.defSubsOp.add(permissible);
+            this.defSubsOp.put(permissible, permissible);
         } else {
-            this.defSubs.add(permissible);
+            this.defSubs.put(permissible, permissible);
         }
     }
 
@@ -407,11 +412,17 @@ public class PluginManager {
     }
 
     public Set<Permissible> getDefaultPermSubscriptions(boolean op) {
+        Set<Permissible> subs = new HashSet<>();
         if (op) {
-            return new HashSet<>(this.defSubsOp);
+            for (Permissible p : this.defSubsOp.values()) {
+                subs.add(p);
+            }
         } else {
-            return new HashSet<>(this.defSubs);
+            for (Permissible p : this.defSubs.values()) {
+                subs.add(p);
+            }
         }
+        return subs;
     }
 
     public Map<String, Permission> getPermissions() {

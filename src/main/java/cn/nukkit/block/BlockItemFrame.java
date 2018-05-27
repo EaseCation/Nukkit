@@ -7,7 +7,10 @@ import cn.nukkit.item.Item;
 import cn.nukkit.item.ItemBlock;
 import cn.nukkit.item.ItemItemFrame;
 import cn.nukkit.level.Level;
-import cn.nukkit.level.Sound;
+import cn.nukkit.level.sound.ItemFrameItemAddedSound;
+import cn.nukkit.level.sound.ItemFrameItemRotated;
+import cn.nukkit.level.sound.ItemFramePlacedSound;
+import cn.nukkit.level.sound.ItemFrameRemovedSound;
 import cn.nukkit.math.BlockFace;
 import cn.nukkit.nbt.tag.CompoundTag;
 import cn.nukkit.nbt.tag.Tag;
@@ -17,7 +20,7 @@ import java.util.Random;
 /**
  * Created by Pub4Game on 03.07.2016.
  */
-public class BlockItemFrame extends BlockTransparentMeta {
+public class BlockItemFrame extends BlockTransparent {
 
     public BlockItemFrame() {
         this(0);
@@ -65,7 +68,7 @@ public class BlockItemFrame extends BlockTransparentMeta {
             itemOnFrame.setCount(1); // Change it to only one item (if we keep +1, visual glitches will happen)
             itemFrame.setItem(itemOnFrame); // And then we set it on the item frame
             // The item will be removed from the player's hand a few lines ahead
-            this.getLevel().addSound(this, Sound.BLOCK_ITEMFRAME_ADD_ITEM);
+            this.getLevel().addSound(new ItemFrameItemAddedSound(this));
             if (player != null && player.isSurvival()) {
                 int count = item.getCount();
                 if (count-- <= 0) {
@@ -83,7 +86,7 @@ public class BlockItemFrame extends BlockTransparentMeta {
                 itemRot++;
             }
             itemFrame.setItemRotation(itemRot);
-            this.getLevel().addSound(this, Sound.BLOCK_ITEMFRAME_ROTATE_ITEM);
+            this.getLevel().addSound(new ItemFrameItemRotated(this));
         }
         return true;
     }
@@ -93,16 +96,16 @@ public class BlockItemFrame extends BlockTransparentMeta {
         if (!target.isTransparent() && face.getIndex() > 1 && !block.isSolid()) {
             switch (face) {
                 case NORTH:
-                    this.setDamage(3);
+                    this.meta = 3;
                     break;
                 case SOUTH:
-                    this.setDamage(2);
+                    this.meta = 2;
                     break;
                 case WEST:
-                    this.setDamage(1);
+                    this.meta = 1;
                     break;
                 case EAST:
-                    this.setDamage(0);
+                    this.meta = 0;
                     break;
                 default:
                     return false;
@@ -121,7 +124,7 @@ public class BlockItemFrame extends BlockTransparentMeta {
                 }
             }
             new BlockEntityItemFrame(this.getLevel().getChunk((int) this.x >> 4, (int) this.z >> 4), nbt);
-            this.getLevel().addSound(this, Sound.BLOCK_ITEMFRAME_PLACE);
+            this.getLevel().addSound(new ItemFramePlacedSound(this));
             return true;
         }
         return false;
@@ -130,7 +133,7 @@ public class BlockItemFrame extends BlockTransparentMeta {
     @Override
     public boolean onBreak(Item item) {
         this.getLevel().setBlock(this, new BlockAir(), true, true);
-        this.getLevel().addSound(this, Sound.BLOCK_ITEMFRAME_REMOVE_ITEM);
+        this.getLevel().addSound(new ItemFrameRemovedSound(this));
         return true;
     }
 
@@ -177,7 +180,7 @@ public class BlockItemFrame extends BlockTransparentMeta {
     }
 
     public BlockFace getFacing() {
-        switch (this.getDamage() % 8) {
+        switch (this.meta % 8) {
             case 0:
                 return BlockFace.WEST;
             case 1:

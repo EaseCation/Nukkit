@@ -29,17 +29,17 @@ public class EntityCaveSpider extends EntityMob {
 
     @Override
     public float getWidth() {
-        return 0.7f;
+        return 0.9f;
     }
 
     @Override
     public float getHeight() {
-        return 0.5f;
+        return 0.8f;
     }
 
     @Override
     public String getName() {
-        return "CaveSpider";
+        return "Cave Spider";
     }
 
     @Override

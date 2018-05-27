@@ -5,7 +5,6 @@ import cn.nukkit.entity.Entity;
 import cn.nukkit.level.format.FullChunk;
 import cn.nukkit.nbt.tag.CompoundTag;
 import cn.nukkit.network.protocol.AddEntityPacket;
-import java.util.concurrent.ThreadLocalRandom;
 
 /**
  * author: MagicDroidX
@@ -38,7 +37,7 @@ public class EntityArrow extends EntityProjectile {
 
     @Override
     public float getGravity() {
-        return 0.05f;
+        return 0.03f;
     }
 
     @Override
@@ -86,7 +85,7 @@ public class EntityArrow extends EntityProjectile {
         int base = super.getResultDamage();
 
         if (this.isCritical()) {
-            base += ThreadLocalRandom.current().nextInt(base / 2 + 2);
+            base += this.level.rand.nextInt(base / 2 + 2);
         }
 
         return base;

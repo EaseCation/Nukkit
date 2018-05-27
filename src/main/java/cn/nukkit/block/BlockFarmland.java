@@ -4,6 +4,7 @@ import cn.nukkit.item.Item;
 import cn.nukkit.item.ItemBlock;
 import cn.nukkit.item.ItemTool;
 import cn.nukkit.level.Level;
+import cn.nukkit.math.AxisAlignedBB;
 import cn.nukkit.math.Vector3;
 import cn.nukkit.utils.BlockColor;
 
@@ -11,7 +12,7 @@ import cn.nukkit.utils.BlockColor;
  * Created on 2015/12/2 by xtypr.
  * Package cn.nukkit.block in project Nukkit .
  */
-public class BlockFarmland extends BlockTransparentMeta {
+public class BlockFarmland extends BlockTransparent {
 
     public BlockFarmland() {
         this(0);
@@ -47,8 +48,15 @@ public class BlockFarmland extends BlockTransparentMeta {
     }
 
     @Override
-    public double getMaxY() {
-        return this.y + 0.9375;
+    protected AxisAlignedBB recalculateBoundingBox() {
+        return new AxisAlignedBB(
+                this.x,
+                this.y,
+                this.z,
+                this.x + 1,
+                this.y + 0.9375,
+                this.z + 1
+        );
     }
 
     @Override
@@ -61,7 +69,7 @@ public class BlockFarmland extends BlockTransparentMeta {
             }
 
             if (this.level.getBlock(v.setComponents(x, this.y + 1, z)).isSolid()) {
-                this.level.setBlock(this, new BlockDirt(), false, true);
+                this.level.setBlock(this, new BlockDirt(), true, true);
 
                 return Level.BLOCK_UPDATE_RANDOM;
             }
@@ -92,18 +100,18 @@ public class BlockFarmland extends BlockTransparentMeta {
 
             Block block = this.level.getBlock(v.setComponents(x, y - 1, z));
             if (found || block instanceof BlockWater) {
-                if (this.getDamage() < 7) {
-                    this.setDamage(7);
-                    this.level.setBlock(this, this, false, false);
+                if (this.meta < 7) {
+                    this.meta = 7;
+                    this.level.setBlock(this, this, true, false);
                 }
                 return Level.BLOCK_UPDATE_RANDOM;
             }
 
-            if (this.getDamage() > 0) {
-                this.setDamage(this.getDamage() - 1);
-                this.level.setBlock(this, this, false, false);
+            if (this.meta > 0) {
+                this.meta--;
+                this.level.setBlock(this, this, true, false);
             } else {
-                this.level.setBlock(this, Block.get(Block.DIRT), false, true);
+                this.level.setBlock(this, new BlockDirt(), true, true);
             }
 
             return Level.BLOCK_UPDATE_RANDOM;

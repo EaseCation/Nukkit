@@ -9,6 +9,11 @@ import cn.nukkit.utils.BlockColor;
 public class BlockDaylightDetector extends BlockTransparent {
 
     public BlockDaylightDetector() {
+        this(0);
+    }
+
+    public BlockDaylightDetector(int meta) {
+        super(meta);
     }
 
     @Override

@@ -12,29 +12,12 @@ public class BlockSand extends BlockFallable {
     public static final int DEFAULT = 0;
     public static final int RED = 1;
 
-    private int meta;
-
     public BlockSand() {
         this(0);
     }
 
     public BlockSand(int meta) {
-        this.meta = meta;
-    }
-
-    @Override
-    public int getFullId() {
-        return (getId() << 4) + getDamage();
-    }
-
-    @Override
-    public final int getDamage() {
-        return this.meta;
-    }
-
-    @Override
-    public final void setDamage(int meta) {
-        this.meta = meta;
+        super(meta);
     }
 
     @Override
@@ -59,7 +42,7 @@ public class BlockSand extends BlockFallable {
 
     @Override
     public String getName() {
-        if (this.getDamage() == 0x01) {
+        if (this.meta == 0x01) {
             return "Red Sand";
         }
 

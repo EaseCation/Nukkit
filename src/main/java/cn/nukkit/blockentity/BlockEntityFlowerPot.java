@@ -11,24 +11,20 @@ import cn.nukkit.nbt.tag.CompoundTag;
 public class BlockEntityFlowerPot extends BlockEntitySpawnable {
     public BlockEntityFlowerPot(FullChunk chunk, CompoundTag nbt) {
         super(chunk, nbt);
-    }
-
-    @Override
-    protected void initBlockEntity() {
-        if (!namedTag.contains("item")) {
-            namedTag.putShort("item", 0);
+        if (!nbt.contains("item")) {
+            nbt.putShort("item", 0);
         }
 
-        if (!namedTag.contains("data")) {
-            if (namedTag.contains("mData")) {
-                namedTag.putInt("data", namedTag.getInt("mData"));
-                namedTag.remove("mData");
+        if (!nbt.contains("data")) {
+            if (nbt.contains("mData")) {
+                nbt.putInt("data", nbt.getInt("mData"));
+                nbt.remove("mData");
             } else {
-                namedTag.putInt("data", 0);
+                nbt.putInt("data", 0);
             }
         }
 
-        super.initBlockEntity();
+        this.namedTag = nbt;
     }
 
     @Override

@@ -12,6 +12,8 @@ import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * Created by CreeperFace on 18.3.2017.
@@ -19,6 +21,8 @@ import java.io.IOException;
 public class ItemMap extends Item {
 
     public static int mapCount = 0;
+
+    public List<ClientboundMapItemDataPacket.MapDecorator> decorators = new ArrayList<>();
 
     public ItemMap() {
         this(0, 1);

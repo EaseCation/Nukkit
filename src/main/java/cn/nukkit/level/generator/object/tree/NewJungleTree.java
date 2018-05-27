@@ -17,8 +17,6 @@ public class NewJungleTree extends TreeGenerator {
      */
     private final int minTreeHeight;
 
-    private final int maxTreeHeight;
-
     /**
      * The metadata value of the wood to use in tree generation.
      */
@@ -29,16 +27,15 @@ public class NewJungleTree extends TreeGenerator {
      */
     private final Block metaLeaves = new BlockLeaves(BlockLeaves.JUNGLE);
 
-    public NewJungleTree(int minTreeHeight, int maxTreeHeight) {
+    public NewJungleTree(int minTreeHeight) {
         this.minTreeHeight = minTreeHeight;
-        this.maxTreeHeight = maxTreeHeight;
     }
 
     @Override
     public boolean generate(ChunkManager worldIn, NukkitRandom rand, Vector3 vectorPosition) {
         BlockVector3 position = new BlockVector3(vectorPosition.getFloorX(), vectorPosition.getFloorY(), vectorPosition.getFloorZ());
 
-        int i = rand.nextBoundedInt(maxTreeHeight) + this.minTreeHeight;
+        int i = rand.nextBoundedInt(3) + this.minTreeHeight;
         boolean flag = true;
 
         if (position.getY() >= 1 && position.getY() + i + 1 <= 256) {

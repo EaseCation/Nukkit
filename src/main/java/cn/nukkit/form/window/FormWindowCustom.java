@@ -57,6 +57,10 @@ public class FormWindowCustom extends FormWindow {
         if (!icon.isEmpty()) this.icon = new ElementButtonImageData(ElementButtonImageData.IMAGE_DATA_TYPE_URL, icon);
     }
 
+    public void setIcon(ElementButtonImageData icon) {
+        this.icon = icon;
+    }
+
     public String getJSONData() {
         String toModify = new Gson().toJson(this);
         //We need to replace this due to Java not supporting declaring class field 'default'

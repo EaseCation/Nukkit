@@ -10,6 +10,11 @@ import cn.nukkit.item.ItemTool;
 public class BlockEndStone extends BlockSolid {
 
     public BlockEndStone() {
+        this(0);
+    }
+
+    public BlockEndStone(int meta) {
+        super(0);
     }
 
     @Override

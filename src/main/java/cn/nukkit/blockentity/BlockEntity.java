@@ -7,9 +7,9 @@ import cn.nukkit.level.format.FullChunk;
 import cn.nukkit.math.Vector3;
 import cn.nukkit.nbt.tag.CompoundTag;
 import cn.nukkit.utils.ChunkException;
-import cn.nukkit.utils.MainLogger;
 import co.aikar.timings.Timing;
 import co.aikar.timings.Timings;
+
 import java.lang.reflect.Constructor;
 import java.util.HashMap;
 import java.util.Map;
@@ -76,14 +76,8 @@ public abstract class BlockEntity extends Position {
         this.z = this.namedTag.getInt("z");
         this.movable = this.namedTag.getBoolean("isMovable");
 
-        this.initBlockEntity();
-
         this.chunk.addBlockEntity(this);
         this.getLevel().addBlockEntity(this);
-    }
-
-    protected void initBlockEntity() {
-
     }
 
     public static BlockEntity createBlockEntity(String type, FullChunk chunk, CompoundTag nbt, Object... args) {
@@ -119,7 +113,7 @@ public abstract class BlockEntity extends Position {
 
                     }
                 } catch (Exception e) {
-                    MainLogger.getLogger().logException(e);
+                    //ignore
                 }
 
             }
@@ -139,9 +133,7 @@ public abstract class BlockEntity extends Position {
     }
 
     public final String getSaveId() {
-        String simpleName = getClass().getName();
-        simpleName = simpleName.substring(22, simpleName.length());
-        return shortNames.getOrDefault(simpleName, "");
+        return shortNames.getOrDefault(this.getClass().getSimpleName(), "");
     }
 
     public long getId() {

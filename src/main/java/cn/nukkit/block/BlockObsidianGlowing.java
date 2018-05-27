@@ -10,6 +10,11 @@ import cn.nukkit.item.ItemTool;
 public class BlockObsidianGlowing extends BlockSolid {
 
     public BlockObsidianGlowing() {
+        this(0);
+    }
+
+    public BlockObsidianGlowing(int meta) {
+        super(meta);
     }
 
     @Override

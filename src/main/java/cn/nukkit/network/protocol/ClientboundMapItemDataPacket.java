@@ -10,7 +10,7 @@ import java.awt.image.BufferedImage;
  */
 public class ClientboundMapItemDataPacket extends DataPacket { //TODO: update to 1.2
 
-    public int[] eids = new int[0];
+    public long[] eids = new long[0];
 
     public long mapId;
     public int update;
@@ -23,6 +23,9 @@ public class ClientboundMapItemDataPacket extends DataPacket { //TODO: update to
     public byte dimensionId;
 
     public MapDecorator[] decorators = new MapDecorator[0];
+
+    public long[] decoratorEntities = new long[0];
+
     public int[] colors = new int[0];
     public BufferedImage image = null;
 
@@ -63,7 +66,7 @@ public class ClientboundMapItemDataPacket extends DataPacket { //TODO: update to
 
         if ((update & 0x08) != 0) { //TODO: find out what these are for
             this.putUnsignedVarInt(eids.length);
-            for (int eid : eids) {
+            for (long eid : eids) {
                 this.putEntityUniqueId(eid);
             }
         }
@@ -72,6 +75,11 @@ public class ClientboundMapItemDataPacket extends DataPacket { //TODO: update to
         }
 
         if ((update & DECORATIONS_UPDATE) != 0) {
+            this.putUnsignedVarInt(decoratorEntities.length);
+            for (long id : this.decoratorEntities) {
+                this.putEntityUniqueId(id);
+            }
+
             this.putUnsignedVarInt(decorators.length);
 
             for (MapDecorator decorator : decorators) {
@@ -80,7 +88,13 @@ public class ClientboundMapItemDataPacket extends DataPacket { //TODO: update to
                 this.putByte(decorator.offsetX);
                 this.putByte(decorator.offsetZ);
                 this.putString(decorator.label);
-                this.putVarInt(decorator.color.getRGB());
+
+                byte red = (byte) decorator.color.getRed();
+                byte green = (byte) decorator.color.getGreen();
+                byte blue = (byte) decorator.color.getBlue();
+
+                this.putUnsignedVarInt(Utils.toRGB(red, green, blue, (byte) 0xff));
+                //this.putUnsignedVarInt(decorator.color.getRGB());
             }
         }
 

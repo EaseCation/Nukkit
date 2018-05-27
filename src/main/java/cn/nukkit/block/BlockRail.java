@@ -9,15 +9,12 @@ import cn.nukkit.math.BlockFace;
 import cn.nukkit.utils.BlockColor;
 import cn.nukkit.utils.Rail;
 import cn.nukkit.utils.Rail.Orientation;
+
 import java.util.*;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
-
-import static cn.nukkit.math.BlockFace.EAST;
-import static cn.nukkit.math.BlockFace.NORTH;
-import static cn.nukkit.math.BlockFace.SOUTH;
-import static cn.nukkit.math.BlockFace.WEST;
+import static cn.nukkit.math.BlockFace.*;
 import static cn.nukkit.utils.Rail.Orientation.*;
 
 /**
@@ -82,13 +79,14 @@ public class BlockRail extends BlockFlowable {
     }
 
     @Override
-    public double getMaxY() {
-        return this.y + 0.125;
-    }
-
-    @Override
     public AxisAlignedBB recalculateBoundingBox() {
-        return this;
+        return new AxisAlignedBB(
+                this.x,
+                this.y,
+                this.z,
+                this.x + 1,
+                this.y + 0.125D,
+                this.z + 1);
     }
 
     @Override
@@ -108,26 +106,26 @@ public class BlockRail extends BlockFlowable {
         List<BlockFace> faces = new ArrayList<>(railsAround.values());
         if (railsAround.size() == 1) {
             BlockRail other = rails.get(0);
-            this.setDamage(this.connect(other, railsAround.get(other)).metadata());
+            this.meta = this.connect(other, railsAround.get(other)).metadata();
         } else if (railsAround.size() == 4) {
             if (this.isAbstract()) {
-                this.setDamage(this.connect(rails.get(faces.indexOf(SOUTH)), SOUTH, rails.get(faces.indexOf(EAST)), EAST).metadata());
+                this.meta = this.connect(rails.get(faces.indexOf(SOUTH)), SOUTH, rails.get(faces.indexOf(EAST)), EAST).metadata();
             } else {
-                this.setDamage(this.connect(rails.get(faces.indexOf(EAST)), EAST, rails.get(faces.indexOf(WEST)), WEST).metadata());
+                this.meta = this.connect(rails.get(faces.indexOf(EAST)), EAST, rails.get(faces.indexOf(WEST)), WEST).metadata();
             }
         } else if (!railsAround.isEmpty()) {
             if (this.isAbstract()) {
                 if (railsAround.size() == 2) {
                     BlockRail rail1 = rails.get(0);
                     BlockRail rail2 = rails.get(1);
-                    this.setDamage(this.connect(rail1, railsAround.get(rail1), rail2, railsAround.get(rail2)).metadata());
+                    this.meta = this.connect(rail1, railsAround.get(rail1), rail2, railsAround.get(rail2)).metadata();
                 } else {
                     List<BlockFace> cd = Stream.of(CURVED_SOUTH_EAST, CURVED_NORTH_EAST, CURVED_SOUTH_WEST)
                             .filter(o -> o.connectingDirections().stream().allMatch(faces::contains))
                             .findFirst().get().connectingDirections();
                     BlockFace f1 = cd.get(0);
                     BlockFace f2 = cd.get(1);
-                    this.setDamage(this.connect(rails.get(faces.indexOf(f1)), f1, rails.get(faces.indexOf(f2)), f2).metadata());
+                    this.meta = this.connect(rails.get(faces.indexOf(f1)), f1, rails.get(faces.indexOf(f2)), f2).metadata();
                 }
             } else {
                 BlockFace f = faces.stream()
@@ -135,9 +133,9 @@ public class BlockRail extends BlockFlowable {
                         .findFirst().get();
                 BlockFace fo = f.getOpposite();
                 if (faces.contains(fo)) { //Opposite connectable
-                    this.setDamage(this.connect(rails.get(faces.indexOf(f)), f, rails.get(faces.indexOf(fo)), fo).metadata());
+                    this.meta = this.connect(rails.get(faces.indexOf(f)), f, rails.get(faces.indexOf(fo)), fo).metadata();
                 } else {
-                    this.setDamage(this.connect(rails.get(faces.indexOf(f)), f).metadata());
+                    this.meta = this.connect(rails.get(faces.indexOf(f)), f).metadata();
                 }
             }
         }
@@ -230,7 +228,7 @@ public class BlockRail extends BlockFlowable {
     public void setOrientation(Orientation o) {
         if (o.metadata() != this.getRealMeta()) {
             this.setDamage(o.metadata());
-            this.level.setBlock(this, this, false, true);
+            this.level.setBlock(this, this, true, true);
         }
     }
 

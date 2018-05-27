@@ -4,14 +4,14 @@ import cn.nukkit.Player;
 import cn.nukkit.item.Item;
 import cn.nukkit.item.ItemTool;
 import cn.nukkit.level.Level;
-import cn.nukkit.level.Sound;
+import cn.nukkit.level.sound.NoteBoxSound;
 import cn.nukkit.network.protocol.BlockEventPacket;
 
 /**
  * Created by Snake1999 on 2016/1/17.
  * Package cn.nukkit.block in project nukkit.
  */
-public class BlockNoteblock extends BlockSolidMeta {
+public class BlockNoteblock extends BlockSolid {
 
     public BlockNoteblock() {
         this(0);
@@ -51,32 +51,32 @@ public class BlockNoteblock extends BlockSolidMeta {
     }
 
     public int getStrength() {
-        return this.getDamage();
+        return this.meta;
     }
 
     public void increaseStrength() {
-        if (this.getDamage() < 24) {
-            this.setDamage(this.getDamage() + 1);
+        if (this.meta < 24) {
+            this.meta++;
         } else {
-            this.setDamage(0);
+            this.meta = 0;
         }
     }
 
-    public Instrument getInstrument() {
+    public int getInstrument() {
         Block below = this.down();
         switch (below.getId()) {
             case WOODEN_PLANK:
             case NOTEBLOCK:
             case CRAFTING_TABLE:
-                return Instrument.BASS;
+                return NoteBoxSound.INSTRUMENT_BASS;
             case SAND:
             case SANDSTONE:
             case SOUL_SAND:
-                return Instrument.DRUM;
+                return NoteBoxSound.INSTRUMENT_TABOUR;
             case GLASS:
             case GLASS_PANEL:
             case GLOWSTONE_BLOCK:
-                return Instrument.STICKS;
+                return NoteBoxSound.INSTRUMENT_CLICK;
             case COAL_ORE:
             case DIAMOND_ORE:
             case EMERALD_ORE:
@@ -85,24 +85,22 @@ public class BlockNoteblock extends BlockSolidMeta {
             case IRON_ORE:
             case LAPIS_ORE:
             case REDSTONE_ORE:
-                return Instrument.BASS_DRUM;
+                return NoteBoxSound.INSTRUMENT_BASS_DRUM;
             default:
-                return Instrument.PIANO;
+                return NoteBoxSound.INSTRUMENT_PIANO;
         }
     }
 
     public void emitSound() {
-        Instrument instrument = getInstrument();
-
         BlockEventPacket pk = new BlockEventPacket();
         pk.x = (int) this.x;
         pk.y = (int) this.y;
         pk.z = (int) this.z;
-        pk.case1 = instrument.ordinal();
+        pk.case1 = this.getInstrument();
         pk.case2 = this.getStrength();
         this.getLevel().addChunkPacket((int) this.x >> 4, (int) this.z >> 4, pk);
 
-        this.getLevel().addSound(this, instrument.getSound(), 1, this.getStrength()); //TODO: correct pitch
+        this.getLevel().addSound(new NoteBoxSound(this, this.getInstrument(), this.getStrength()));
     }
 
     public boolean onActivate(Item item) {
@@ -127,23 +125,5 @@ public class BlockNoteblock extends BlockSolidMeta {
         }
 
         return 0;
-    }
-
-    public enum Instrument {
-        PIANO(Sound.NOTE_HARP),
-        BASS_DRUM(Sound.NOTE_BD),
-        STICKS(Sound.NOTE_HAT),
-        DRUM(Sound.NOTE_SNARE),
-        BASS(Sound.NOTE_BASS);
-
-        private final Sound sound;
-
-        Instrument(Sound sound) {
-            this.sound = sound;
-        }
-
-        public Sound getSound() {
-            return sound;
-        }
     }
 }

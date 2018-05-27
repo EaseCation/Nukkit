@@ -10,15 +10,14 @@ import cn.nukkit.item.ItemTool;
 import cn.nukkit.level.Level;
 import cn.nukkit.math.BlockFace;
 import cn.nukkit.utils.BlockColor;
-import cn.nukkit.utils.Hash;
-import it.unimi.dsi.fastutil.longs.LongArraySet;
-import it.unimi.dsi.fastutil.longs.LongSet;
+
+import java.util.ArrayList;
 
 /**
  * author: Angelic47
  * Nukkit Project
  */
-public class BlockLeaves extends BlockTransparentMeta {
+public class BlockLeaves extends BlockTransparent {
     public static final int OAK = 0;
     public static final int SPRUCE = 1;
     public static final int BRICH = 2;
@@ -57,7 +56,7 @@ public class BlockLeaves extends BlockTransparentMeta {
                 "Birch Leaves",
                 "Jungle Leaves"
         };
-        return names[this.getDamage() & 0x03];
+        return names[this.meta & 0x03];
     }
 
     @Override
@@ -72,7 +71,7 @@ public class BlockLeaves extends BlockTransparentMeta {
 
     @Override
     public boolean place(Item item, Block block, Block target, BlockFace face, double fx, double fy, double fz, Player player) {
-        this.setDamage(this.getDamage() | 0x04);
+        this.meta |= 0x04;
         this.getLevel().setBlock(this, this, true);
         return true;
     }
@@ -89,14 +88,14 @@ public class BlockLeaves extends BlockTransparentMeta {
                     toItem()
             };
         } else {
-            if ((int) ((Math.random()) * 200) == 0 && (this.getDamage() & 0x03) == OAK) {
+            if ((int) ((Math.random()) * 200) == 0 && (this.meta & 0x03) == OAK) {
                 return new Item[]{
                         new ItemApple()
                 };
             }
             if ((int) ((Math.random()) * 20) == 0) {
                 return new Item[]{
-                        new ItemBlock(new BlockSapling(), this.getDamage() & 0x03, 1)
+                        new ItemBlock(new BlockSapling(), this.meta & 0x03, 1)
                 };
             }
         }
@@ -105,18 +104,19 @@ public class BlockLeaves extends BlockTransparentMeta {
 
     @Override
     public int onUpdate(int type) {
-        if (type == Level.BLOCK_UPDATE_RANDOM && (getDamage() & 0b00001100) == 0x00) {
-            setDamage(getDamage() | 0x08);
+        if (type == Level.BLOCK_UPDATE_RANDOM && (meta & 0b00001100) == 0x00) {
+            meta |= 0x08;
             getLevel().setBlock(this, this, false, false);
         } else if (type == Level.BLOCK_UPDATE_RANDOM) {
-            if ((getDamage() & 0b00001100) == 0x08) {
-                setDamage(getDamage() & 0x03);
+            if ((meta & 0b00001100) == 0x08) {
+                meta &= 0x03;
+                ArrayList<String> visited = new ArrayList<>();
                 int check = 0;
 
                 LeavesDecayEvent ev = new LeavesDecayEvent(this);
 
                 Server.getInstance().getPluginManager().callEvent(ev);
-                if (ev.isCancelled() || findLog(this, new LongArraySet(), 0, check)) {
+                if (ev.isCancelled() || findLog(this, visited, 0, check)) {
                     getLevel().setBlock(this, this, false, false);
                 } else {
                     getLevel().useBreakOn(this);
@@ -127,13 +127,13 @@ public class BlockLeaves extends BlockTransparentMeta {
         return 0;
     }
 
-    private Boolean findLog(Block pos, LongSet visited, Integer distance, Integer check) {
+    private Boolean findLog(Block pos, ArrayList<String> visited, Integer distance, Integer check) {
         return findLog(pos, visited, distance, check, null);
     }
 
-    private Boolean findLog(Block pos, LongSet visited, Integer distance, Integer check, BlockFace fromSide) {
+    private Boolean findLog(Block pos, ArrayList<String> visited, Integer distance, Integer check, BlockFace fromSide) {
         ++check;
-        long index = Hash.hashBlock((int) pos.x, (int) pos.y, (int) pos.z);
+        String index = pos.x + "." + pos.y + "." + pos.z;
         if (visited.contains(index)) return false;
         if (pos.getId() == Block.WOOD) return true;
         if (pos.getId() == Block.LEAVES && distance < 4) {
@@ -188,11 +188,11 @@ public class BlockLeaves extends BlockTransparentMeta {
     }
 
     public boolean isChechDecay() {
-        return (this.getDamage() & 0x08) > 0;
+        return (this.meta & 0x08) > 0;
     }
 
     public boolean isDecayable() {
-        return (this.getDamage() & 0x04) == 0;
+        return (this.meta & 0x04) == 0;
     }
 
     @Override

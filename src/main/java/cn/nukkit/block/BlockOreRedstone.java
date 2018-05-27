@@ -16,6 +16,11 @@ import java.util.Random;
 public class BlockOreRedstone extends BlockSolid {
 
     public BlockOreRedstone() {
+        this(0);
+    }
+
+    public BlockOreRedstone(int meta) {
+        super(0);
     }
 
     @Override
@@ -64,7 +69,7 @@ public class BlockOreRedstone extends BlockSolid {
     @Override
     public int onUpdate(int type) {
         if (type == Level.BLOCK_UPDATE_TOUCH) { //type == Level.BLOCK_UPDATE_NORMAL ||
-            this.getLevel().setBlock(this, new BlockOreRedstoneGlowing(), false, false);
+            this.getLevel().setBlock(this, new BlockOreRedstone(this.meta), false, false);
 
             return Level.BLOCK_UPDATE_WEAK;
         }

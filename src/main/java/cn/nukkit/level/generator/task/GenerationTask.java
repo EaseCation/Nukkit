@@ -2,9 +2,9 @@ package cn.nukkit.level.generator.task;
 
 import cn.nukkit.Server;
 import cn.nukkit.level.Level;
+import cn.nukkit.level.SimpleChunkManager;
 import cn.nukkit.level.format.generic.BaseFullChunk;
 import cn.nukkit.level.generator.Generator;
-import cn.nukkit.level.generator.SimpleChunkManager;
 import cn.nukkit.scheduler.AsyncTask;
 
 /**
@@ -12,22 +12,22 @@ import cn.nukkit.scheduler.AsyncTask;
  * Nukkit Project
  */
 public class GenerationTask extends AsyncTask {
-    private final Level level;
     public boolean state;
-    private BaseFullChunk chunk;
-
+    public final int levelId;
+    public BaseFullChunk chunk;
 
     public GenerationTask(Level level, BaseFullChunk chunk) {
         this.state = true;
+        this.levelId = level.getId();
         this.chunk = chunk;
-        this.level = level;
     }
 
     @Override
     public void onRun() {
-        Generator generator = level.getGenerator();
-        this.state = false;
+        Generator generator = GeneratorPool.get(this.levelId);
+
         if (generator == null) {
+            this.state = false;
             return;
         }
 
@@ -38,40 +38,36 @@ public class GenerationTask extends AsyncTask {
             return;
         }
 
-        manager.cleanChunks(level.getSeed());
         synchronized (manager) {
-            try {
-                BaseFullChunk chunk = this.chunk;
+            BaseFullChunk chunk = this.chunk.clone();
 
-                if (chunk == null) {
-                    return;
-                }
-
-                synchronized (chunk) {
-                    if (!chunk.isGenerated()) {
-                        manager.setChunk(chunk.getX(), chunk.getZ(), chunk);
-                        generator.generateChunk(chunk.getX(), chunk.getZ());
-                        chunk = manager.getChunk(chunk.getX(), chunk.getZ());
-                        chunk.setGenerated();
-                    }
-                }
-                this.chunk = chunk;
-                state = true;
-            } finally {
-                manager.cleanChunks(level.getSeed());
+            if (chunk == null) {
+                return;
             }
+
+            manager.setChunk(chunk.getX(), chunk.getZ(), chunk);
+
+            generator.generateChunk(chunk.getX(), chunk.getZ());
+
+            chunk = manager.getChunk(chunk.getX(), chunk.getZ());
+            chunk.setGenerated();
+            this.chunk = chunk.clone();
+
+            manager.setChunk(chunk.getX(), chunk.getZ(), null);
         }
 
     }
 
     @Override
     public void onCompletion(Server server) {
+        Level level = server.getLevel(this.levelId);
         if (level != null) {
             if (!this.state) {
+                level.registerGenerator();
                 return;
             }
 
-            BaseFullChunk chunk = this.chunk;
+            BaseFullChunk chunk = this.chunk.clone();
 
             if (chunk == null) {
                 return;

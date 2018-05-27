@@ -2,6 +2,7 @@ package cn.nukkit.level.format.generic;
 
 import cn.nukkit.level.format.FullChunk;
 import cn.nukkit.level.format.LevelProvider;
+
 import java.io.File;
 import java.io.IOException;
 import java.io.RandomAccessFile;
@@ -21,12 +22,11 @@ abstract public class BaseRegionLoader {
 
     protected int x;
     protected int z;
+    protected String filePath;
+    protected File file;
+    protected RandomAccessFile randomAccessFile;
     protected int lastSector;
     protected LevelProvider levelProvider;
-
-    private RandomAccessFile randomAccessFile;
-
-    // TODO: A simple array will perform better and use less memory
     protected final Map<Integer, Integer[]> locationTable = new HashMap<>();
 
     public long lastUsed;
@@ -36,15 +36,13 @@ abstract public class BaseRegionLoader {
             this.x = regionX;
             this.z = regionZ;
             this.levelProvider = level;
-            String filePath = this.levelProvider.getPath() + "region/r." + regionX + "." + regionZ + "." + ext;
-            File file = new File(filePath);
-            boolean exists = file.exists();
+            this.filePath = this.levelProvider.getPath() + "region/r." + regionX + "." + regionZ + "." + ext;
+            this.file = new File(this.filePath);
+            boolean exists = this.file.exists();
             if (!exists) {
                 file.createNewFile();
             }
-            // TODO: buffering is a temporary solution to chunk reading/writing being poorly optimized
-            //  - need to fix the code where it reads single bytes at a time from disk
-            this.randomAccessFile = new RandomAccessFile(filePath, "rw");
+            this.randomAccessFile = new RandomAccessFile(this.filePath, "rw");
             if (!exists) {
                 this.createBlank();
             } else {
@@ -55,15 +53,9 @@ abstract public class BaseRegionLoader {
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
+
     }
 
-    public void compress() {
-        // TODO
-    }
-
-    public RandomAccessFile getRandomAccessFile() {
-        return randomAccessFile;
-    }
 
     protected abstract boolean isChunkGenerated(int index);
 
@@ -79,9 +71,7 @@ abstract public class BaseRegionLoader {
 
     public abstract void writeChunk(FullChunk chunk) throws Exception;
 
-    public void close() throws IOException {
-        if (randomAccessFile != null) randomAccessFile.close();
-    }
+    public abstract void close() throws IOException;
 
     protected abstract void loadLocationTable() throws IOException;
 

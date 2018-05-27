@@ -2,16 +2,14 @@ package cn.nukkit.entity.item;
 
 import cn.nukkit.Player;
 import cn.nukkit.block.Block;
-import cn.nukkit.block.GlobalBlockPalette;
 import cn.nukkit.entity.Entity;
 import cn.nukkit.entity.data.IntEntityData;
 import cn.nukkit.event.entity.EntityBlockChangeEvent;
 import cn.nukkit.event.entity.EntityDamageEvent;
 import cn.nukkit.event.entity.EntityDamageEvent.DamageCause;
 import cn.nukkit.item.Item;
-import cn.nukkit.level.GameRule;
-import cn.nukkit.level.Sound;
 import cn.nukkit.level.format.FullChunk;
+import cn.nukkit.level.sound.AnvilFallSound;
 import cn.nukkit.math.Vector3;
 import cn.nukkit.nbt.tag.CompoundTag;
 import cn.nukkit.network.protocol.AddEntityPacket;
@@ -87,7 +85,7 @@ public class EntityFallingBlock extends Entity {
             return;
         }
 
-        setDataProperty(new IntEntityData(DATA_VARIANT, GlobalBlockPalette.getOrCreateRuntimeId(this.getBlock(), this.getDamage())));
+        setDataProperty(new IntEntityData(DATA_VARIANT, this.getBlock() | this.getDamage() << 8));
     }
 
     public boolean canCollideWith(Entity entity) {
@@ -134,7 +132,7 @@ public class EntityFallingBlock extends Entity {
                 kill();
                 Block block = level.getBlock(pos);
                 if (block.getId() > 0 && block.isTransparent() && !block.canBeReplaced()) {
-                    if (this.level.getGameRules().getBoolean(GameRule.DO_ENTITY_DROPS)) {
+                    if (this.level.getGameRules().getBoolean("doEntityDrops")) {
                         getLevel().dropItem(this, Item.get(this.getBlock(), this.getDamage(), 1));
                     }
                 } else {
@@ -144,7 +142,7 @@ public class EntityFallingBlock extends Entity {
                         getLevel().setBlock(pos, event.getTo(), true);
 
                         if (event.getTo().getId() == Item.ANVIL) {
-                            getLevel().addSound(pos, Sound.RANDOM_ANVIL_LAND);
+                            getLevel().addSound(new AnvilFallSound(pos));
                         }
                     }
                 }
@@ -196,4 +194,5 @@ public class EntityFallingBlock extends Entity {
         player.dataPacket(packet);
         super.spawnTo(player);
     }
+
 }

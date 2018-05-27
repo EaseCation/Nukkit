@@ -1,9 +1,9 @@
 package cn.nukkit.level.format.generic;
 
-import cn.nukkit.block.Block;
 import cn.nukkit.level.format.ChunkSection;
 import cn.nukkit.utils.ChunkException;
 
+import java.nio.ByteBuffer;
 import java.util.Arrays;
 
 /**
@@ -11,18 +11,6 @@ import java.util.Arrays;
  * Nukkit Project
  */
 public class EmptyChunkSection implements ChunkSection {
-    public static final EmptyChunkSection[] EMPTY = new EmptyChunkSection[16];
-    static {
-        for (int y = 0; y < EMPTY.length; y++) {
-            EMPTY[y] = new EmptyChunkSection(y);
-        }
-    }
-    public static byte[] EMPTY_LIGHT_ARR = new byte[2048];
-    public static byte[] EMPTY_SKY_LIGHT_ARR = new byte[2048];
-    static {
-        Arrays.fill(EMPTY_SKY_LIGHT_ARR, (byte) 255);
-    }
-
     private final int y;
 
     public EmptyChunkSection(int y) {
@@ -40,26 +28,43 @@ public class EmptyChunkSection implements ChunkSection {
     }
 
     @Override
+    public byte[] getBlockIdColumn(int x, int z) {
+        return new byte[16];
+    }
+
+    @Override
+    public byte[] getBlockDataColumn(int x, int z) {
+        return new byte[8];
+    }
+
+    @Override
+    public byte[] getBlockSkyLightColumn(int x, int z) {
+        return new byte[]{(byte) 0xff, (byte) 0xff, (byte) 0xff, (byte) 0xff, (byte) 0xff, (byte) 0xff, (byte) 0xff, (byte) 0xff};
+    }
+
+    @Override
+    public byte[] getBlockLightColumn(int x, int z) {
+        return new byte[8];
+    }
+
+    @Override
     public int getFullBlock(int x, int y, int z) throws ChunkException {
         return 0;
     }
 
     @Override
-    public Block getAndSetBlock(int x, int y, int z, Block block) {
-        if (block.getId() != 0) throw new ChunkException("Tried to modify an empty Chunk");
-        return Block.get(0);
+    public boolean setBlock(int x, int y, int z) throws ChunkException {
+        throw new ChunkException("Tried to modify an empty Chunk");
     }
 
     @Override
-    public boolean setBlock(int x, int y, int z, int blockId) throws ChunkException {
-        if (blockId != 0) throw new ChunkException("Tried to modify an empty Chunk");
-        return false;
+    public boolean setBlock(int x, int y, int z, Integer blockId) throws ChunkException {
+        throw new ChunkException("Tried to modify an empty Chunk");
     }
 
     @Override
-    public boolean setBlock(int x, int y, int z, int blockId, int meta) throws ChunkException {
-        if (blockId != 0) throw new ChunkException("Tried to modify an empty Chunk");
-        return false;
+    public boolean setBlock(int x, int y, int z, Integer blockId, Integer meta) throws ChunkException {
+        throw new ChunkException("Tried to modify an empty Chunk");
     }
 
     @Override
@@ -74,17 +79,19 @@ public class EmptyChunkSection implements ChunkSection {
 
     @Override
     public byte[] getSkyLightArray() {
-        return EMPTY_SKY_LIGHT_ARR;
+        byte[] b = new byte[2048];
+        Arrays.fill(b, (byte) 0xff);
+        return b;
     }
 
     @Override
     public byte[] getLightArray() {
-        return EMPTY_LIGHT_ARR;
+        return new byte[2048];
     }
 
     @Override
     final public void setBlockId(int x, int y, int z, int id) throws ChunkException {
-        if (id != 0) throw new ChunkException("Tried to modify an empty Chunk");
+        throw new ChunkException("Tried to modify an empty Chunk");
     }
 
     @Override
@@ -94,13 +101,7 @@ public class EmptyChunkSection implements ChunkSection {
 
     @Override
     public void setBlockData(int x, int y, int z, int data) throws ChunkException {
-        if (data != 0) throw new ChunkException("Tried to modify an empty Chunk");
-    }
-
-    @Override
-    public boolean setFullBlockId(int x, int y, int z, int fullId) {
-        if (fullId != 0) throw new ChunkException("Tried to modify an empty Chunk");
-        return false;
+        throw new ChunkException("Tried to modify an empty Chunk");
     }
 
     @Override
@@ -110,7 +111,7 @@ public class EmptyChunkSection implements ChunkSection {
 
     @Override
     public void setBlockLight(int x, int y, int z, int level) throws ChunkException {
-        if (level != 0) throw new ChunkException("Tried to modify an empty Chunk");
+        throw new ChunkException("Tried to modify an empty Chunk");
     }
 
     @Override
@@ -120,7 +121,7 @@ public class EmptyChunkSection implements ChunkSection {
 
     @Override
     public void setBlockSkyLight(int x, int y, int z, int level) throws ChunkException {
-        if (level != 15) throw new ChunkException("Tried to modify an empty Chunk");
+        throw new ChunkException("Tried to modify an empty Chunk");
     }
 
     @Override
@@ -131,6 +132,22 @@ public class EmptyChunkSection implements ChunkSection {
     @Override
     public byte[] getBytes() {
         return new byte[6144];
+    }
+
+    @Override
+    public byte[] getBytes11() {
+        ByteBuffer buffer = ByteBuffer.allocate(10240);
+        byte[] skyLight = new byte[2048];
+        Arrays.fill(skyLight, (byte) 0xff);
+        buffer.position(6144);
+        return buffer
+                .put(skyLight)
+                .array();
+    }
+
+    @Override
+    public byte[] toFastBinary() {
+        return new byte[0];
     }
 
     @Override

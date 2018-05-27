@@ -10,7 +10,6 @@ import cn.nukkit.event.vehicle.VehicleMoveEvent;
 import cn.nukkit.event.vehicle.VehicleUpdateEvent;
 import cn.nukkit.item.Item;
 import cn.nukkit.item.ItemBoat;
-import cn.nukkit.level.GameRule;
 import cn.nukkit.level.Location;
 import cn.nukkit.level.format.FullChunk;
 import cn.nukkit.level.particle.SmokeParticle;
@@ -127,7 +126,7 @@ public class EntityBoat extends EntityVehicle {
                 if (instantKill && (!hasCustomName())) {
                     kill();
                 } else {
-                    if (level.getGameRules().getBoolean(GameRule.DO_ENTITY_DROPS)) {
+                    if (level.getGameRules().getBoolean("doEntityDrops")) {
                         this.level.dropItem(this, new ItemBoat());
                     }
                     close();

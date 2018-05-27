@@ -3,14 +3,16 @@ package cn.nukkit.utils;
 import cn.nukkit.entity.Attribute;
 import cn.nukkit.entity.data.Skin;
 import cn.nukkit.item.Item;
-import cn.nukkit.level.GameRule;
 import cn.nukkit.level.GameRules;
 import cn.nukkit.math.BlockFace;
 import cn.nukkit.math.BlockVector3;
 import cn.nukkit.math.Vector3f;
 
 import java.nio.charset.StandardCharsets;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
+import java.util.UUID;
 
 /**
  * author: MagicDroidX
@@ -19,7 +21,7 @@ import java.util.*;
 public class BinaryStream {
 
     public int offset;
-    private byte[] buffer;
+    private byte[] buffer = new byte[32];
     private int count;
 
     private static final int MAX_ARRAY_SIZE = Integer.MAX_VALUE - 8;
@@ -40,10 +42,10 @@ public class BinaryStream {
         this.count = buffer.length;
     }
 
-    public BinaryStream reset() {
+    public void reset() {
+        this.buffer = new byte[32];
         this.offset = 0;
         this.count = 0;
-        return this;
     }
 
     public void setBuffer(byte[] buffer) {
@@ -250,7 +252,6 @@ public class BinaryStream {
     public void putSkin(Skin skin) {
         this.putString(skin.getModel());
         this.putByteArray(skin.getData());
-        this.putByteArray(skin.getCape().getData());
     }
 
     public Skin getSkin() {
@@ -403,13 +404,24 @@ public class BinaryStream {
         this.putLFloat(z);
     }
 
-    public void putGameRules(GameRules gameRules) {
-        Map<GameRule, GameRules.Value> rules = gameRules.getGameRules();
-        this.putUnsignedVarInt(rules.size());
-        rules.forEach((gameRule, value) -> {
-            putString(gameRule.getName().toLowerCase());
-            value.write(this);
-        });
+    public RuleData getRuleData() {
+        RuleData rule = new RuleData();
+        rule.name = this.getString();
+        rule.unknown1 = this.getBoolean();
+        rule.unknown2 = this.getBoolean();
+        return rule;
+    }
+
+    public void putRuleData(RuleData rule) {
+        this.putString(rule.name);
+        this.putBoolean(rule.unknown1);
+        this.putBoolean(rule.unknown2);
+    }
+
+    public void putGameRules(GameRules rules) {
+        if (rules == null) {
+            this.putUnsignedVarInt(0);
+        } else rules.writeBinaryStream(this);
     }
 
     /**

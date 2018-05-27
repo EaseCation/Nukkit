@@ -2,6 +2,7 @@ package cn.nukkit.block;
 
 import cn.nukkit.entity.Entity;
 import cn.nukkit.item.ItemTool;
+import cn.nukkit.math.AxisAlignedBB;
 import cn.nukkit.utils.BlockColor;
 
 /**
@@ -10,6 +11,11 @@ import cn.nukkit.utils.BlockColor;
 public class BlockSoulSand extends BlockSolid {
 
     public BlockSoulSand() {
+        this(0);
+    }
+
+    public BlockSoulSand(int meta) {
+        super(0);
     }
 
     @Override
@@ -38,8 +44,15 @@ public class BlockSoulSand extends BlockSolid {
     }
 
     @Override
-    public double getMaxY() {
-        return this.y + 1 - 0.125;
+    protected AxisAlignedBB recalculateBoundingBox() {
+        return new AxisAlignedBB(
+                this.x,
+                this.y,
+                this.z,
+                this.x + 1,
+                this.y + 1 - 0.125,
+                this.z + 1
+        );
     }
 
     @Override

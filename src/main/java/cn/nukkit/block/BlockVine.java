@@ -8,12 +8,11 @@ import cn.nukkit.item.ItemTool;
 import cn.nukkit.level.Level;
 import cn.nukkit.math.AxisAlignedBB;
 import cn.nukkit.math.BlockFace;
-import cn.nukkit.math.SimpleAxisAlignedBB;
 
 /**
  * Created by Pub4Game on 15.01.2016.
  */
-public class BlockVine extends BlockTransparentMeta {
+public class BlockVine extends BlockTransparent {
 
     public BlockVine(int meta) {
         super(meta);
@@ -82,8 +81,8 @@ public class BlockVine extends BlockTransparentMeta {
         double f4 = 0;
         double f5 = 0;
         double f6 = 0;
-        boolean flag = this.getDamage() > 0;
-        if ((this.getDamage() & 0x02) > 0) {
+        boolean flag = this.meta > 0;
+        if ((this.meta & 0x02) > 0) {
             f4 = Math.max(f4, 0.0625);
             f1 = 0;
             f2 = 0;
@@ -92,7 +91,7 @@ public class BlockVine extends BlockTransparentMeta {
             f6 = 1;
             flag = true;
         }
-        if ((this.getDamage() & 0x08) > 0) {
+        if ((this.meta & 0x08) > 0) {
             f1 = Math.min(f1, 0.9375);
             f4 = 1;
             f2 = 0;
@@ -101,7 +100,7 @@ public class BlockVine extends BlockTransparentMeta {
             f6 = 1;
             flag = true;
         }
-        if ((this.getDamage() & 0x01) > 0) {
+        if ((this.meta & 0x01) > 0) {
             f3 = Math.min(f3, 0.9375);
             f6 = 1;
             f1 = 0;
@@ -118,7 +117,7 @@ public class BlockVine extends BlockTransparentMeta {
             f3 = 0;
             f6 = 1;
         }
-        return new SimpleAxisAlignedBB(
+        return new AxisAlignedBB(
                 this.x + f1,
                 this.y + f2,
                 this.z + f3,
@@ -139,7 +138,7 @@ public class BlockVine extends BlockTransparentMeta {
                     8,
                     2
             };
-            this.setDamage(faces[face.getIndex()]);
+            this.meta = faces[face.getIndex()];
             this.getLevel().setBlock(block, this, true, true);
             return true;
         }
@@ -176,9 +175,9 @@ public class BlockVine extends BlockTransparentMeta {
                     BlockFace.DOWN,
                     BlockFace.EAST
             };
-            if (!this.getSide(faces[this.getDamage()]).isSolid()) {
+            if (!this.getSide(faces[this.meta]).isSolid()) {
                 Block up = this.up();
-                if (up.getId() != this.getId() || up.getDamage() != this.getDamage()) {
+                if (up.getId() != this.getId() || up.meta != this.meta) {
                     this.getLevel().useBreakOn(this);
                     return Level.BLOCK_UPDATE_NORMAL;
                 }

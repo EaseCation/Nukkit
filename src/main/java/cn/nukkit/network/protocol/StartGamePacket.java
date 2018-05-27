@@ -33,7 +33,6 @@ public class StartGamePacket extends DataPacket {
     public boolean hasAchievementsDisabled = true;
     public int dayCycleStopTime = -1; //-1 = not stopped, any positive value = stopped at that time
     public boolean eduMode = false;
-    public boolean hasEduFeaturesEnabled = false;
     public float rainLevel;
     public float lightningLevel;
     public boolean multiplayerGame = true;
@@ -41,23 +40,15 @@ public class StartGamePacket extends DataPacket {
     public boolean broadcastToXboxLive = true;
     public boolean commandsEnabled;
     public boolean isTexturePacksRequired = false;
-    public GameRules gameRules;
+    public GameRules gameRules = null;
     public boolean bonusChest = false;
-    public boolean hasStartWithMapEnabled = false;
     public boolean trustPlayers = false;
     public int permissionLevel = 1;
     public int gamePublish = 4;
-    public int serverChunkTickRange = 4;
-    public boolean broadcastToPlatform;
-    public int platformBroadcastMode = 4;
-    public boolean xblBroadcastIntent = true;
-    public boolean hasLockedBehaviorPack = false;
-    public boolean hasLockedResourcePack = false;
-    public boolean isFromLockedWorldTemplate = false;
     public String levelId = ""; //base64 string, usually the same as world folder name in vanilla
     public String worldName;
     public String premiumWorldTemplateId = "";
-    public boolean isTrial = false;
+    public boolean unknown = false;
     public long currentTick;
 
     public int enchantmentSeed;
@@ -76,7 +67,6 @@ public class StartGamePacket extends DataPacket {
         this.putVector3f(this.x, this.y, this.z);
         this.putLFloat(this.yaw);
         this.putLFloat(this.pitch);
-
         this.putVarInt(this.seed);
         this.putVarInt(this.dimension);
         this.putVarInt(this.generator);
@@ -86,7 +76,6 @@ public class StartGamePacket extends DataPacket {
         this.putBoolean(this.hasAchievementsDisabled);
         this.putVarInt(this.dayCycleStopTime);
         this.putBoolean(this.eduMode);
-        this.putBoolean(this.hasEduFeaturesEnabled);
         this.putLFloat(this.rainLevel);
         this.putLFloat(this.lightningLevel);
         this.putBoolean(this.multiplayerGame);
@@ -94,23 +83,15 @@ public class StartGamePacket extends DataPacket {
         this.putBoolean(this.broadcastToXboxLive);
         this.putBoolean(this.commandsEnabled);
         this.putBoolean(this.isTexturePacksRequired);
-        this.putGameRules(gameRules);
+        this.putGameRules(this.gameRules);
         this.putBoolean(this.bonusChest);
-        this.putBoolean(this.hasStartWithMapEnabled);
         this.putBoolean(this.trustPlayers);
         this.putVarInt(this.permissionLevel);
         this.putVarInt(this.gamePublish);
-        this.putLInt(this.serverChunkTickRange);
-        this.putBoolean(this.broadcastToPlatform);
-        this.putVarInt(this.platformBroadcastMode);
-        this.putBoolean(this.xblBroadcastIntent);
-        this.putBoolean(this.hasLockedBehaviorPack);
-        this.putBoolean(this.hasLockedResourcePack);
-        this.putBoolean(this.isFromLockedWorldTemplate);
         this.putString(this.levelId);
         this.putString(this.worldName);
         this.putString(this.premiumWorldTemplateId);
-        this.putBoolean(this.isTrial);
+        this.putBoolean(this.unknown);
         this.putLLong(this.currentTick);
         this.putVarInt(this.enchantmentSeed);
     }
