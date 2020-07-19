@@ -37,6 +37,7 @@ abstract public class PluginBase implements Plugin {
     private PluginDescription description;
 
     private File dataFolder;
+    private ClassLoader classLoader;
     private Config config;
     private File configFile;
     private File file;
@@ -132,6 +133,7 @@ abstract public class PluginBase implements Plugin {
             this.description = description;
             this.dataFolder = dataFolder;
             this.file = file;
+            this.classLoader = this.getClass().getClassLoader();
             this.configFile = new File(this.dataFolder, "config.yml");
             this.logger = new PluginLogger(this);
         }
@@ -290,5 +292,14 @@ abstract public class PluginBase implements Plugin {
     @Override
     public PluginLoader getPluginLoader() {
         return this.loader;
+    }
+
+    /**
+     * Returns the ClassLoader which holds this plugin
+     *
+     * @return ClassLoader holding this plugin
+     */
+    protected final ClassLoader getClassLoader() {
+        return this.classLoader;
     }
 }

@@ -4,9 +4,9 @@ import java.io.File;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.net.URLClassLoader;
-import java.util.HashMap;
 import java.util.Map;
 import java.util.Set;
+import java.util.concurrent.ConcurrentHashMap;
 
 /**
  * author: MagicDroidX
@@ -14,9 +14,13 @@ import java.util.Set;
  */
 public class PluginClassLoader extends URLClassLoader {
 
-    private JavaPluginLoader loader;
+    private final JavaPluginLoader loader;
 
-    private final Map<String, Class> classes = new HashMap<>();
+    private final Map<String, Class<?>> classes = new ConcurrentHashMap<>();
+
+    static {
+        ClassLoader.registerAsParallelCapable();
+    }
 
     public PluginClassLoader(JavaPluginLoader loader, ClassLoader parent, File file) throws MalformedURLException {
         super(new URL[]{file.toURI().toURL()}, parent);
@@ -46,9 +50,9 @@ public class PluginClassLoader extends URLClassLoader {
                 if (result != null) {
                     loader.setClass(name, result);
                 }
-            }
 
-            classes.put(name, result);
+                classes.put(name, result);
+            }
         }
 
         return result;
