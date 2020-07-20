@@ -13,8 +13,8 @@ import java.awt.image.BufferedImage;
 import java.io.IOException;
 import java.io.InputStream;
 import java.nio.charset.StandardCharsets;
-import java.util.*;
 import java.util.List;
+import java.util.*;
 
 /**
  * author: MagicDroidX
@@ -345,7 +345,7 @@ public class Skin {
         return full; //TODO: Client sends full skin ID as normal skin ID. Find out what this is actually for.
     }
 
-    private static SerializedImage parseBufferedImage(BufferedImage image) {
+    public static SerializedImage parseBufferedImage(BufferedImage image) {
         FastByteArrayOutputStream outputStream = new FastByteArrayOutputStream();
         for (int y = 0; y < image.getHeight(); y++) {
             for (int x = 0; x < image.getWidth(); x++) {
@@ -363,4 +363,5 @@ public class Skin {
     private static String convertLegacyGeometryName(String geometryName) {
         return "{\"geometry\" : {\"default\" : \"" + geometryName + "\"}}";
     }
+
 }

@@ -1,7 +1,9 @@
 package cn.nukkit.utils;
 
+import it.unimi.dsi.fastutil.io.FastByteArrayInputStream;
 import lombok.ToString;
 
+import java.awt.image.BufferedImage;
 import java.util.Objects;
 
 import static cn.nukkit.entity.data.Skin.*;
@@ -35,5 +37,25 @@ public class SerializedImage {
                 return new SerializedImage(128, 128, skinData);
         }
         throw new IllegalArgumentException("Unknown legacy skin size");
+    }
+
+    public BufferedImage toBufferedImage() {
+        BufferedImage image = new BufferedImage(this.width, this.height, BufferedImage.TYPE_4BYTE_ABGR);
+        FastByteArrayInputStream stream = new FastByteArrayInputStream(data);
+        for (int y = 0; y < height; y++) {
+            for (int x = 0; x < width; x++) {
+                int r = stream.read();
+                int g = stream.read();
+                int b = stream.read();
+                int a = stream.read();
+                image.setRGB(x, y,
+                        ((a & 0xFF) << 24) |
+                        ((r & 0xFF) << 16) |
+                        ((g & 0xFF) << 8)  |
+                        ((b & 0xFF))
+                );
+            }
+        }
+        return image;
     }
 }
