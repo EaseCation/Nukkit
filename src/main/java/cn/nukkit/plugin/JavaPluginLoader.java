@@ -9,8 +9,11 @@ import cn.nukkit.utils.Utils;
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
-import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
+import java.util.Set;
+import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.jar.JarEntry;
 import java.util.jar.JarFile;
 import java.util.regex.Pattern;
@@ -21,9 +24,9 @@ import java.util.regex.Pattern;
 public class JavaPluginLoader implements PluginLoader {
 
     private final Server server;
-
-    private final Map<String, Class> classes = new HashMap<>();
-    private final Map<String, PluginClassLoader> classLoaders = new HashMap<>();
+    private final Pattern[] fileFilters = new Pattern[]{Pattern.compile("^.+\\.jar$")};
+    private final Map<String, Class<?>> classes = new ConcurrentHashMap<>();
+    private final List<PluginClassLoader> classLoaders = new CopyOnWriteArrayList<>();
 
     public JavaPluginLoader(Server server) {
         this.server = server;
@@ -41,16 +44,17 @@ public class JavaPluginLoader implements PluginLoader {
 
             String className = description.getMain();
             PluginClassLoader classLoader = new PluginClassLoader(this, this.getClass().getClassLoader(), file);
-            this.classLoaders.put(description.getName(), classLoader);
+            this.classLoaders.add(classLoader);
             PluginBase plugin;
             try {
-                Class javaClass = classLoader.loadClass(className);
+                Class<?> javaClass = Class.forName(className, true, classLoader);
 
                 try {
                     Class<? extends PluginBase> pluginClass = javaClass.asSubclass(PluginBase.class);
 
                     plugin = pluginClass.newInstance();
                     this.initPlugin(plugin, description, dataFolder, file);
+                    plugin.onLoad();
 
                     return plugin;
                 } catch (ClassCastException e) {
@@ -97,18 +101,24 @@ public class JavaPluginLoader implements PluginLoader {
 
     @Override
     public Pattern[] getPluginFilters() {
-        return new Pattern[]{Pattern.compile("^.+\\.jar$")};
+        return this.fileFilters.clone();
     }
 
-    private void initPlugin(PluginBase plugin, PluginDescription description, File dataFolder, File file) {
+    private synchronized void initPlugin(PluginBase plugin, PluginDescription description, File dataFolder, File file) {
         plugin.init(this, this.server, description, dataFolder, file);
-        plugin.onLoad();
     }
 
     @Override
     public void enablePlugin(Plugin plugin) {
         if (plugin instanceof PluginBase && !plugin.isEnabled()) {
             this.server.getLogger().info(this.server.getLanguage().translateString("nukkit.plugin.enable", plugin.getDescription().getFullName()));
+
+            PluginClassLoader pluginLoader = (PluginClassLoader) ((PluginBase) plugin).getClassLoader();
+
+            if (!this.classLoaders.contains(pluginLoader)) {
+                this.classLoaders.add(pluginLoader);
+                this.server.getLogger().warning("Enabled plugin with unregistered PluginClassLoader " + plugin.getDescription().getFullName());
+            }
 
             ((PluginBase) plugin).setEnabled(true);
 
@@ -126,6 +136,19 @@ public class JavaPluginLoader implements PluginLoader {
             this.server.getPluginManager().callEvent(new PluginDisableEvent(plugin));
 
             ((PluginBase) plugin).setEnabled(false);
+
+            ClassLoader cloader = ((PluginBase) plugin).getClassLoader();
+
+            if (cloader instanceof PluginClassLoader) {
+                PluginClassLoader loader = (PluginClassLoader) cloader;
+                this.classLoaders.remove(loader);
+
+                Set<String> names = loader.getClasses();
+
+                for (String name : names) {
+                    removeClass(name);
+                }
+            }
         }
     }
 
@@ -135,7 +158,7 @@ public class JavaPluginLoader implements PluginLoader {
         if (cachedClass != null) {
             return cachedClass;
         } else {
-            for (PluginClassLoader loader : this.classLoaders.values()) {
+            for (PluginClassLoader loader : this.classLoaders) {
 
                 try {
                     cachedClass = loader.findClass(name, false);
