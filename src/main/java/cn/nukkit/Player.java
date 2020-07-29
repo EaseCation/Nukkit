@@ -1747,7 +1747,9 @@ public class Player extends EntityHuman implements CommandSender, InventoryHolde
         }
 
         this.checkTeleportPosition();
-        this.checkInteractNearby();
+        if (currentTick % 10 == 0) {
+            this.checkInteractNearby();
+        }
 
         if (this.spawned && this.dummyBossBars.size() > 0 && currentTick % 100 == 0) {
             this.dummyBossBars.values().forEach(DummyBossBar::updateBossEntityPosition);
