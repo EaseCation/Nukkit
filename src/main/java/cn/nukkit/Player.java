@@ -1747,9 +1747,9 @@ public class Player extends EntityHuman implements CommandSender, InventoryHolde
         }
 
         this.checkTeleportPosition();
-        if (currentTick % 10 == 0) {
-            this.checkInteractNearby();
-        }
+        /*if (currentTick % 10 == 0) {
+            this.checkInteractNearby(); // 在客户端计算, 结果通过 action 为 mouseover 的 InteractPacket 发给服务端 (runtimeEntityId 为 0 表示移开)
+        }*/
 
         if (this.spawned && this.dummyBossBars.size() > 0 && currentTick % 100 == 0) {
             this.dummyBossBars.values().forEach(DummyBossBar::updateBossEntityPosition);
@@ -2566,6 +2566,11 @@ public class Player extends EntityHuman implements CommandSender, InventoryHolde
 
                     InteractPacket interactPacket = (InteractPacket) packet;
 
+                    if (interactPacket.target == 0 && interactPacket.action == InteractPacket.ACTION_MOUSEOVER) {
+                        this.setButtonText("");
+                        break;
+                    }
+
                     Entity targetEntity = this.level.getEntity(interactPacket.target);
 
                     if (targetEntity == null || !this.isAlive() || !targetEntity.isAlive()) {
@@ -2578,10 +2583,14 @@ public class Player extends EntityHuman implements CommandSender, InventoryHolde
                         break;
                     }
 
-                    item = this.inventory.getItemInHand();
+                    //item = this.inventory.getItemInHand();
 
                     switch (interactPacket.action) {
                         case InteractPacket.ACTION_MOUSEOVER:
+                            if (targetEntity instanceof EntityInteractable) {
+                                this.setButtonText(((EntityInteractable) targetEntity).getInteractButtonText());
+                            }
+
                             this.getServer().getPluginManager().callEvent(new PlayerMouseOverEntityEvent(this, targetEntity));
                             break;
                         case InteractPacket.ACTION_VEHICLE_EXIT:
