@@ -50,6 +50,7 @@ import cn.nukkit.level.particle.PunchBlockParticle;
 import cn.nukkit.level.sound.ExperienceOrbSound;
 import cn.nukkit.level.sound.ItemFrameItemRemovedSound;
 import cn.nukkit.level.sound.LaunchSound;
+import cn.nukkit.level.util.AroundPlayerChunkComparator;
 import cn.nukkit.math.*;
 import cn.nukkit.metadata.MetadataValue;
 import cn.nukkit.nbt.NBTIO;
@@ -71,6 +72,9 @@ import cn.nukkit.utils.*;
 import co.aikar.timings.Timing;
 import co.aikar.timings.Timings;
 import com.nukkitx.network.raknet.RakNetReliability;
+import it.unimi.dsi.fastutil.longs.Long2IntMap;
+import it.unimi.dsi.fastutil.longs.Long2IntOpenHashMap;
+import it.unimi.dsi.fastutil.longs.LongArrayList;
 
 import java.awt.*;
 import java.io.IOException;
@@ -153,6 +157,9 @@ public class Player extends EntityHuman implements CommandSender, InventoryHolde
     protected Vector3 forceMovement = null;
 
     protected Vector3 teleportPosition = null;
+    protected long teleportChunkIndex;
+    protected boolean teleportChunkLoaded = true;
+    protected boolean lastImmobile = false;
 
     protected boolean connected = true;
     protected final InetSocketAddress socketAddress;
@@ -174,8 +181,9 @@ public class Player extends EntityHuman implements CommandSender, InventoryHolde
     public Map<Long, Boolean> usedChunks = new HashMap<>();
 
     protected int chunkLoadCount = 0;
-    protected Map<Long, Integer> loadQueue = new HashMap<>();
+    protected Long2IntMap loadQueue = new Long2IntOpenHashMap();
     protected int nextChunkOrderRun = 5;
+    protected final AroundPlayerChunkComparator chunkComparator = new AroundPlayerChunkComparator(this);
 
     protected Map<UUID, Player> hiddenPlayers = new ConcurrentHashMap<>();
 
@@ -608,8 +616,8 @@ public class Player extends EntityHuman implements CommandSender, InventoryHolde
         this.socketAddress = socketAddress;
         this.clientID = clientID;
         this.loaderId = Level.generateChunkLoaderId(this);
-        this.chunksPerTick = (int) this.server.getConfig("chunk-sending.per-tick", 4);
-        this.spawnThreshold = (int) this.server.getConfig("chunk-sending.spawn-threshold", 56);
+        this.chunksPerTick = this.server.getConfig("chunk-sending.per-tick", 4);
+        this.spawnThreshold = this.server.getConfig("chunk-sending.spawn-threshold", 56);
         this.spawnPosition = null;
         this.gamemode = this.server.getGamemode();
         this.setLevel(this.server.getDefaultLevel());
@@ -839,16 +847,40 @@ public class Player extends EntityHuman implements CommandSender, InventoryHolde
 
         Timings.playerChunkSendTimer.startTiming();
 
+        this.sendQueuedChunk();
+
+        if ((this.canDoFirstSpawn() || System.currentTimeMillis() - this.creationTime > 15000) && !this.spawned && this.teleportPosition == null) {
+            this.doFirstSpawn();
+        }
+        Timings.playerChunkSendTimer.stopTiming();
+    }
+
+    protected boolean canDoFirstSpawn() {
+        return this.chunkLoadCount >= this.spawnThreshold;
+    }
+
+    protected boolean canSendQueuedChunk() {
+        return true;
+    }
+
+    protected boolean sendQueuedChunk() {
+        if (!this.canSendQueuedChunk()) {
+            return false;
+        }
+        boolean success = false;
         int count = 0;
 
-        List<Map.Entry<Long, Integer>> entryList = new ArrayList<>(this.loadQueue.entrySet());
+        /*List<Map.Entry<Long, Integer>> entryList = new ArrayList<>(this.loadQueue.entrySet());
         if (entryList.size() + chunkLoadCount > spawnThreshold) {
             entryList.sort(Comparator.comparingInt(Map.Entry::getValue));
-        }
+        }*/
+        LongArrayList indexes = new LongArrayList(this.loadQueue.keySet());
+        indexes.unstableSort(this.chunkComparator);
 
-        for (Map.Entry<Long, Integer> entry : entryList) {
-            long index = entry.getKey();
+        for (long index : indexes.elements()) {
             if (count >= this.chunksPerTick) {
+                // You should count the active transactions for each client, and only send new LevelChunkPackets if there aren't too many active transactions.
+                // In Vanilla, depending on the connection quality, we only allow between 1 and 9 concurrent transactions.
                 break;
             }
             int chunkX = Level.getHashX(index);
@@ -881,12 +913,11 @@ public class Player extends EntityHuman implements CommandSender, InventoryHolde
             this.server.getPluginManager().callEvent(ev);
             if (!ev.isCancelled()) {
                 this.level.requestChunk(chunkX, chunkZ, this);
+                success = true;
             }
         }
-        if ((this.chunkLoadCount >= this.spawnThreshold || System.currentTimeMillis() - this.creationTime > 15000) && !this.spawned && this.teleportPosition == null) {
-            this.doFirstSpawn();
-        }
-        Timings.playerChunkSendTimer.stopTiming();
+
+        return success;
     }
 
     protected void sendRecipeList() {
@@ -3570,7 +3601,7 @@ public class Player extends EntityHuman implements CommandSender, InventoryHolde
             this.windows = new HashMap<>();
             this.windowIndex = new HashMap<>();
             this.usedChunks = new HashMap<>();
-            this.loadQueue = new HashMap<>();
+            this.loadQueue = new Long2IntOpenHashMap();
             this.hasSpawned = new HashMap<>();
             this.spawnPosition = null;
 
@@ -4139,6 +4170,16 @@ public class Player extends EntityHuman implements CommandSender, InventoryHolde
         if (this.teleportPosition != null) {
             int chunkX = (int) this.teleportPosition.x >> 4;
             int chunkZ = (int) this.teleportPosition.z >> 4;
+
+            long centerChunkIndex = Level.chunkHash(chunkX, chunkZ);
+            if (!this.usedChunks.containsKey(centerChunkIndex) || !this.usedChunks.get(centerChunkIndex)) {
+                if (this.teleportChunkLoaded) {
+                    this.lastImmobile = this.isImmobile();
+                }
+
+                this.teleportChunkIndex = centerChunkIndex;
+                this.teleportChunkLoaded = false;
+            }
 
             for (int X = -1; X <= 1; ++X) {
                 for (int Z = -1; Z <= 1; ++Z) {
