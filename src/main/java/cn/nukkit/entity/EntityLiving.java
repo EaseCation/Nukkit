@@ -138,9 +138,11 @@ public abstract class EntityLiving extends Entity implements EntityDamageable {
                     this.setOnFire(2 * this.server.getDifficulty());
                 }
 
-                double deltaX = this.x - e.x;
-                double deltaZ = this.z - e.z;
-                this.knockBack(e, source.getDamage(), deltaX, deltaZ, ((EntityDamageByEntityEvent) source).getKnockBack());
+                if (((EntityDamageByEntityEvent) source).getKnockBack() >= 0) {
+                    double deltaX = this.x - e.x;
+                    double deltaZ = this.z - e.z;
+                    this.knockBack(e, source.getDamage(), deltaX, deltaZ, ((EntityDamageByEntityEvent) source).getKnockBack());
+                }
             }
 
             EntityEventPacket pk = new EntityEventPacket();
@@ -179,6 +181,30 @@ public abstract class EntityLiving extends Entity implements EntityDamageable {
 
         if (motion.y > base) {
             motion.y = base;
+        }
+
+        this.setMotion(motion);
+    }
+
+    public void knockBack(Entity attacker, double damage, double x, double z, double baseH, double baseV) {
+        double f = Math.sqrt(x * x + z * z);
+        if (f <= 0) {
+            return;
+        }
+
+        f = 1 / f;
+
+        Vector3 motion = new Vector3(this.motionX, this.motionY, this.motionZ);
+
+        motion.x /= 2d;
+        motion.y /= 2d;
+        motion.z /= 2d;
+        motion.x += x * f * baseH;
+        motion.y += baseV;
+        motion.z += z * f * baseH;
+
+        if (motion.y > baseV) {
+            motion.y = baseV;
         }
 
         this.setMotion(motion);
