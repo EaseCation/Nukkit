@@ -230,7 +230,7 @@ public abstract class EntityMinecartAbstract extends EntityVehicle {
     public boolean attack(EntityDamageEvent source) {
         if (invulnerable) {
             return false;
-        } else {
+        } else if (source instanceof EntityDamageByEntityEvent) {
             Entity damager = ((EntityDamageByEntityEvent) source).getDamager();
             boolean instantKill = damager instanceof Player && ((Player) damager).isCreative();
             if (!instantKill) performHurtAnimation((int) source.getFinalDamage());
