@@ -132,4 +132,9 @@ public enum CharacterIcon {
     public char getChar() {
         return this.character;
     }
+
+    @Override
+    public String toString() {
+        return String.valueOf(this.character);
+    }
 }
