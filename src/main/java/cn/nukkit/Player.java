@@ -4925,4 +4925,11 @@ public class Player extends EntityHuman implements CommandSender, InventoryHolde
         }
         return -1;
     }
+
+    @Override
+    public void setImmobile(boolean value) {
+        super.setImmobile(value);
+        if (this.teleportChunkLoaded)
+            this.lastImmobile = value;
+    }
 }
