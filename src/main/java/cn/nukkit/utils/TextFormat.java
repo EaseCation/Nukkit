@@ -173,10 +173,33 @@ public enum TextFormat {
             return null;
         }
 
-        String result = CLEAN_PATTERN.matcher(input).replaceAll("");
+        String result = CLEAN_PATTERN.matcher(cleanIcon(input, recursive)).replaceAll("");
 
         if (recursive && CLEAN_PATTERN.matcher(result).find()) {
             return clean(result, true);
+        }
+        return result;
+    }
+
+    /**
+     * Cleans the given message of all magic characters.
+     *
+     * @param input String to clean.
+     * @return A copy of the input string, without any icons.
+     */
+    public static String cleanIcon(String input) {
+        return cleanIcon(input, false);
+    }
+
+    public static String cleanIcon(String input, boolean recursive) {
+        if (input == null) {
+            return null;
+        }
+
+        String result = CharacterIcon.CLEAN_PATTERN.matcher(input).replaceAll("");
+
+        if (recursive &&  CharacterIcon.CLEAN_PATTERN.matcher(result).find()) {
+            return cleanIcon(result, true);
         }
         return result;
     }
