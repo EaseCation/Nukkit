@@ -86,6 +86,7 @@ import java.net.UnknownHostException;
 import java.nio.ByteOrder;
 import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.atomic.AtomicBoolean;
 
 /**
  * @author MagicDroidX
@@ -107,7 +108,7 @@ public class Server {
 
     private Config whitelist = null;
 
-    private boolean isRunning = true;
+    private AtomicBoolean isRunning = new AtomicBoolean(true);
 
     private boolean hasStopped = false;
 
@@ -559,7 +560,7 @@ public class Server {
 
 
     public static void broadcastPacket(Collection<Player> players, DataPacket packet) {
-        broadcastPacket(players.stream().toArray(Player[]::new), packet);
+        broadcastPacket(players.toArray(new Player[0]), packet);
     }
 
     public static void broadcastPacket(Player[] players, DataPacket packet) {
@@ -719,11 +720,7 @@ public class Server {
     }
 
     public void shutdown() {
-        if (this.isRunning) {
-            ServerKiller killer = new ServerKiller(90);
-            killer.start();
-        }
-        this.isRunning = false;
+        isRunning.compareAndSet(true, false);
     }
 
     public void forceShutdown() {
@@ -732,13 +729,9 @@ public class Server {
         }
 
         try {
-            if (!this.isRunning) {
-                //todo sendUsage
-            }
+            isRunning.compareAndSet(true, false);
 
             this.hasStopped = true;
-
-            this.shutdown();
 
             if (this.rcon != null) {
                 this.rcon.close();
@@ -776,8 +769,7 @@ public class Server {
             Timings.stopServer();
             //todo other things
         } catch (Exception e) {
-            log.fatal("Exception happened while shutting down, exiting the process", e);
-            System.exit(1);
+            log.fatal("Exception happened while shutting down", e);
         }
     }
 
@@ -830,7 +822,7 @@ public class Server {
     public void tickProcessor() {
         this.nextTick = System.currentTimeMillis();
         try {
-            while (this.isRunning) {
+            while (this.isRunning.get()) {
                 try {
                     this.tick();
                 } catch (RuntimeException e) {
@@ -917,7 +909,7 @@ public class Server {
     }
 
     public void removePlayerListData(UUID uuid, Collection<Player> players) {
-        this.removePlayerListData(uuid, players.stream().toArray(Player[]::new));
+        this.removePlayerListData(uuid, players.toArray(new Player[0]));
     }
 
     public void sendFullPlayerListData(Player player) {
@@ -980,7 +972,7 @@ public class Server {
                         this.getLogger().debug("Raising level \"" + level.getName() + "\" tick rate to " + level.getTickRate() + " ticks");
                     } else if (tickMs >= 50) {
                         if (level.getTickRate() == this.baseTickRate) {
-                            level.setTickRate((int) Math.max(this.baseTickRate + 1, Math.min(this.autoTickRateLimit, Math.floor(tickMs / 50))));
+                            level.setTickRate(Math.max(this.baseTickRate + 1, Math.min(this.autoTickRateLimit, tickMs / 50)));
                             this.getLogger().debug("Level \"" + level.getName() + "\" took " + NukkitMath.round(tickMs, 2) + "ms, setting tick rate to " + level.getTickRate() + " ticks");
                         } else if ((tickMs / level.getTickRate()) >= 50 && level.getTickRate() < this.autoTickRateLimit) {
                             level.setTickRate(level.getTickRate() + 1);
@@ -1148,7 +1140,7 @@ public class Server {
     }
 
     public boolean isRunning() {
-        return isRunning;
+        return isRunning.get();
     }
 
     public String getNukkitVersion() {
@@ -1531,7 +1523,7 @@ public class Server {
             }
         }
 
-        return matchedPlayer.toArray(new Player[matchedPlayer.size()]);
+        return matchedPlayer.toArray(new Player[0]);
     }
 
     public void removePlayer(Player player) {
