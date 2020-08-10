@@ -583,6 +583,36 @@ public class BinaryStream {
         }
     }
 
+    /**
+     * 适用于 1.9 以下版本. 兼容 1.9 以下的版本要修改很多地方所以先不改了.
+     */
+    public void putSlotLegacy(Item item) {
+        if (item == null || item.getId() == 0) {
+            this.putVarInt(0);
+            return;
+        }
+
+        this.putVarInt(item.getId());
+
+        int auxValue = (((item.hasMeta() ? item.getDamage() : -1) & 0x7fff) << 8) | item.getCount();
+        this.putVarInt(auxValue);
+
+        byte[] nbt = item.getCompoundTag();
+        this.putLShort(nbt.length);
+        this.put(nbt);
+
+        List<String> canPlaceOn = extractStringList(item, "CanPlaceOn");
+        List<String> canDestroy = extractStringList(item, "CanDestroy");
+        this.putVarInt(canPlaceOn.size());
+        for (String block : canPlaceOn) {
+            this.putString(block);
+        }
+        this.putVarInt(canDestroy.size());
+        for (String block : canDestroy) {
+            this.putString(block);
+        }
+    }
+
     public Item getRecipeIngredient() {
         int id = this.getVarInt();
 
