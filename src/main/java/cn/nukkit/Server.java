@@ -100,23 +100,23 @@ public class Server {
 
     private static Server instance = null;
 
-    private BanList banByName = null;
+    private BanList banByName;
 
-    private BanList banByIP = null;
+    private BanList banByIP;
 
-    private Config operators = null;
+    private Config operators;
 
-    private Config whitelist = null;
+    private Config whitelist;
 
     private AtomicBoolean isRunning = new AtomicBoolean(true);
 
     private boolean hasStopped = false;
 
-    private PluginManager pluginManager = null;
+    private PluginManager pluginManager;
 
     private int profilingTickrate = 20;
 
-    private ServerScheduler scheduler = null;
+    private ServerScheduler scheduler;
 
     private int tickCounter;
 
@@ -201,6 +201,16 @@ public class Server {
     private Level defaultLevel = null;
 
     private Thread currentThread;
+
+    private boolean enableJmxMonitoring = false;
+    /**
+     * 过去 100 tick 的耗时 (ns). 用于 JMX Monitoring.
+     */
+    public final long[] tickTimes = new long[100];
+    /**
+     * 过去 100 tick 的平均耗时 (ms). 用于 JMX Monitoring.
+     */
+    public float averageTickTime;
 
     Server(final String filePath, String dataPath, String pluginPath) {
         Preconditions.checkState(instance == null, "Already initialized!");
@@ -299,11 +309,12 @@ public class Server {
                 put("auto-save", true);
                 put("force-resources", false);
                 put("bug-report", true);
+                put("enable-jmx-monitoring", false);
             }
         });
 
-        this.forceLanguage = (Boolean) this.getConfig("settings.force-language", false);
-        this.baseLang = new BaseLang((String) this.getConfig("settings.language", BaseLang.FALLBACK_LANGUAGE));
+        this.forceLanguage = this.getConfig("settings.force-language", false);
+        this.baseLang = new BaseLang(this.getConfig("settings.language", BaseLang.FALLBACK_LANGUAGE));
         log.info(this.getLanguage().translateString("language.selected", new String[]{getLanguage().getName(), getLanguage().getLang()}));
         log.info(getLanguage().translateString("nukkit.server.start", TextFormat.AQUA + this.getVersion() + TextFormat.RESET));
 
@@ -318,16 +329,16 @@ public class Server {
 
         ServerScheduler.WORKERS = (int) poolSize;
 
-        this.networkCompressionLevel = (int) this.getConfig("network.compression-level", 7);
-        this.networkCompressionAsync = (boolean) this.getConfig("network.async-compression", true);
+        this.networkCompressionLevel = this.getConfig("network.compression-level", 7);
+        this.networkCompressionAsync = this.getConfig("network.async-compression", true);
 
-        this.networkCompressionLevel = (int) this.getConfig("network.compression-level", 7);
-        this.networkCompressionAsync = (boolean) this.getConfig("network.async-compression", true);
+        this.networkCompressionLevel = this.getConfig("network.compression-level", 7);
+        this.networkCompressionAsync = this.getConfig("network.async-compression", true);
 
-        this.autoTickRate = (boolean) this.getConfig("level-settings.auto-tick-rate", true);
-        this.autoTickRateLimit = (int) this.getConfig("level-settings.auto-tick-rate-limit", 20);
-        this.alwaysTickPlayers = (boolean) this.getConfig("level-settings.always-tick-players", false);
-        this.baseTickRate = (int) this.getConfig("level-settings.base-tick-rate", 1);
+        this.autoTickRate = this.getConfig("level-settings.auto-tick-rate", true);
+        this.autoTickRateLimit = this.getConfig("level-settings.auto-tick-rate-limit", 20);
+        this.alwaysTickPlayers = this.getConfig("level-settings.always-tick-players", false);
+        this.baseTickRate = this.getConfig("level-settings.base-tick-rate", 1);
 
         this.scheduler = new ServerScheduler();
 
@@ -357,7 +368,12 @@ public class Server {
             this.setPropertyInt("difficulty", 3);
         }
 
-        Nukkit.DEBUG = NukkitMath.clamp((int) this.getConfig("debug.level", 1), 1, 3);
+        this.enableJmxMonitoring = this.getPropertyBoolean("enable-jmx-monitoring", false);
+        if (this.enableJmxMonitoring) {
+            ServerStatistics.registerJmxMonitoring(this);
+        }
+
+        Nukkit.DEBUG = NukkitMath.clamp(this.getConfig("debug.level", 1), 1, 3);
 
         int logLevel = (Nukkit.DEBUG + 3) * 100;
         org.apache.logging.log4j.Level currentLevel = Nukkit.getLogLevel();
@@ -437,13 +453,13 @@ public class Server {
                 String[] opts = ((String) this.getConfig("worlds." + name + ".generator", Generator.getGenerator("default").getSimpleName())).split(":");
                 Class<? extends Generator> generator = Generator.getGenerator(opts[0]);
                 if (opts.length > 1) {
-                    String preset = "";
+                    StringBuilder preset = new StringBuilder();
                     for (int i = 1; i < opts.length; i++) {
-                        preset += opts[i] + ":";
+                        preset.append(opts[i]).append(":");
                     }
-                    preset = preset.substring(0, preset.length() - 1);
+                    preset = new StringBuilder(preset.substring(0, preset.length() - 1));
 
-                    options.put("preset", preset);
+                    options.put("preset", preset.toString());
                 }
 
                 this.generateLevel(name, seed, generator, options);
@@ -462,7 +478,7 @@ public class Server {
                 long seed;
                 String seedString = String.valueOf(this.getProperty("level-seed", System.currentTimeMillis()));
                 try {
-                    seed = Long.valueOf(seedString);
+                    seed = Long.parseLong(seedString);
                 } catch (NumberFormatException e) {
                     seed = seedString.hashCode();
                 }
@@ -741,7 +757,7 @@ public class Server {
             this.pluginManager.disablePlugins();
 
             for (Player player : new ArrayList<>(this.players.values())) {
-                player.close(player.getLeaveMessage(), (String) this.getConfig("settings.shutdown-message", "Server closed"));
+                player.close(player.getLeaveMessage(), this.getConfig("settings.shutdown-message", "Server closed"));
             }
 
             this.getLogger().debug("Unloading all levels");
@@ -1097,6 +1113,12 @@ public class Server {
 
         System.arraycopy(this.useAverage, 1, this.useAverage, 0, this.useAverage.length - 1);
         this.useAverage[this.useAverage.length - 1] = use;
+
+        if (this.enableJmxMonitoring) {
+            long diffNano = nowNano - tickTimeNano;
+            this.tickTimes[this.tickCounter % 100] = diffNano;
+            this.averageTickTime = this.averageTickTime * .8f + (float) diffNano / 1000000f * .19999999f;
+        }
 
         if ((this.nextTick - tickTime) < -1000) {
             this.nextTick = tickTime;
@@ -1932,7 +1954,7 @@ public class Server {
     }
 
     public boolean shouldSavePlayerData() {
-        return (Boolean) this.getConfig("player.save-player-data", true);
+        return this.getConfig("player.save-player-data", true);
     }
 
     public int getPlayerSkinChangeCooldown() {
