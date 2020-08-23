@@ -3,8 +3,10 @@ package cn.nukkit.network;
 import cn.nukkit.Nukkit;
 import cn.nukkit.Player;
 import cn.nukkit.Server;
+import cn.nukkit.nbt.stream.FastByteArrayOutputStream;
 import cn.nukkit.network.protocol.*;
 import cn.nukkit.utils.BinaryStream;
+import cn.nukkit.utils.ThreadCache;
 import cn.nukkit.utils.Utils;
 import cn.nukkit.utils.Zlib;
 import io.netty.buffer.ByteBuf;
@@ -12,12 +14,16 @@ import io.netty.buffer.ByteBufUtil;
 import io.netty.buffer.Unpooled;
 import lombok.extern.log4j.Log4j2;
 
+import java.io.IOException;
 import java.net.InetAddress;
 import java.net.InetSocketAddress;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
+import java.util.zip.DataFormatException;
+import java.util.zip.Deflater;
+import java.util.zip.Inflater;
 
 /**
  * author: MagicDroidX
@@ -25,6 +31,10 @@ import java.util.Set;
  */
 @Log4j2
 public class Network {
+
+    private static final ThreadLocal<Inflater> INFLATER_RAW = ThreadLocal.withInitial(() -> new Inflater(true));
+    private static final ThreadLocal<Deflater> DEFLATER_RAW = ThreadLocal.withInitial(() -> new Deflater(Server.getInstance().networkCompressionLevel, true));
+    private static final ThreadLocal<byte[]> BUFFER = ThreadLocal.withInitial(() -> new byte[2 * 1024 * 1024]);
 
     public static final byte CHANNEL_NONE = 0;
     public static final byte CHANNEL_PRIORITY = 1; //Priority channel, only to be used when it matters
@@ -54,6 +64,67 @@ public class Network {
         this.registerPackets();
         this.server = server;
     }
+
+    public static byte[] inflateRaw(byte[] data) throws IOException, DataFormatException {
+        Inflater inflater = INFLATER_RAW.get();
+        inflater.reset();
+        inflater.setInput(data);
+        inflater.finished();
+
+        FastByteArrayOutputStream bos = ThreadCache.fbaos.get();
+        bos.reset();
+        byte[] buf = BUFFER.get();
+        while (!inflater.finished()) {
+            int i = inflater.inflate(buf);
+            if (i == 0) {
+                throw new IOException("Could not decompress the data. Needs input: "+inflater.needsInput()+", Needs Dictionary: "+inflater.needsDictionary());
+            }
+            bos.write(buf, 0, i);
+        }
+        return bos.toByteArray();
+    }
+
+    public static byte[] deflateRaw(byte[] data, int level) throws IOException {
+        Deflater deflater = DEFLATER_RAW.get();
+        deflater.reset();
+        deflater.setLevel(level);
+        deflater.setInput(data);
+        deflater.finish();
+        FastByteArrayOutputStream bos = ThreadCache.fbaos.get();
+        bos.reset();
+        byte[] buffer = BUFFER.get();
+        while (!deflater.finished()) {
+            int i = deflater.deflate(buffer);
+            bos.write(buffer, 0, i);
+        }
+
+        return bos.toByteArray();
+    }
+
+    public static byte[] deflateRaw(byte[][] datas, int level) throws IOException {
+        Deflater deflater = DEFLATER_RAW.get();
+        deflater.reset();
+        deflater.setLevel(level);
+        FastByteArrayOutputStream bos = ThreadCache.fbaos.get();
+        bos.reset();
+        byte[] buffer = BUFFER.get();
+
+        for (byte[] data : datas) {
+            deflater.setInput(data);
+            while (!deflater.needsInput()) {
+                int i = deflater.deflate(buffer);
+                bos.write(buffer, 0, i);
+            }
+        }
+        deflater.finish();
+        while (!deflater.finished()) {
+            int i = deflater.deflate(buffer);
+            bos.write(buffer, 0, i);
+        }
+        //Deflater::end is called the time when the process exits.
+        return bos.toByteArray();
+    }
+
 
     public void addStatistics(double upload, double download) {
         this.upload += upload;

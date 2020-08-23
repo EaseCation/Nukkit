@@ -45,6 +45,7 @@ import cn.nukkit.metadata.MetadataValue;
 import cn.nukkit.metadata.Metadatable;
 import cn.nukkit.nbt.NBTIO;
 import cn.nukkit.nbt.tag.*;
+import cn.nukkit.network.Network;
 import cn.nukkit.network.protocol.*;
 import cn.nukkit.plugin.Plugin;
 import cn.nukkit.potion.Effect;
@@ -2621,7 +2622,8 @@ public class Level implements ChunkManager, Metadatable {
             for (Player player : this.chunkSendQueue.get(index).values()) {
                 if (player.isConnected() && player.usedChunks.containsKey(index)) {
                     if (player.getProtocol() < 361) player.sendChunk(x, z, subChunkCount, chunkBlobCache, chunkPacketCache.getPacketOld());
-                    else player.sendChunk(x, z, subChunkCount, chunkBlobCache, chunkPacketCache.getPacket());
+                    else if (player.getProtocol() < 407) player.sendChunk(x, z, subChunkCount, chunkBlobCache, chunkPacketCache.getPacket());
+                    else player.sendChunk(x, z, subChunkCount, chunkBlobCache, chunkPacketCache.getPacket116());
                 }
             }
 
@@ -2675,8 +2677,9 @@ public class Level implements ChunkManager, Metadatable {
         if (this.cacheChunks) {
             if (chunkPacketCache == null) {
                 chunkPacketCache = new ChunkPacketCache(
-                        getChunkCacheFromData(x, z, subChunkCount, payload),
-                        getChunkCacheFromData(x, z, subChunkCount, payloadOld, true)
+                        getChunkCacheFromData(x, z, subChunkCount, payload, false, true),
+                        getChunkCacheFromData(x, z, subChunkCount, payload, false, false),
+                        getChunkCacheFromData(x, z, subChunkCount, payloadOld, true, false)
                 );
             }
             BaseFullChunk chunk = getChunk(x, z, false);
@@ -3646,12 +3649,7 @@ public class Level implements ChunkManager, Metadatable {
         return false;
     }
 
-
-    public static BatchPacket getChunkCacheFromData(int x, int z, int subChunkCount, byte[] payload) {
-        return getChunkCacheFromData(x, z, subChunkCount, payload, false);
-    }
-
-    public static BatchPacket getChunkCacheFromData(int x, int z, int subChunkCount, byte[] payload, boolean isOld) {
+    public static BatchPacket getChunkCacheFromData(int x, int z, int subChunkCount, byte[] payload, boolean isOld, boolean zlibRaw) {
         DataPacket packet;
         if (isOld) {
             FullChunkDataPacket pk = new FullChunkDataPacket() {
@@ -3684,7 +3682,8 @@ public class Level implements ChunkManager, Metadatable {
         batchPayload[1] = buf;
         byte[] data = Binary.appendBytes(batchPayload);
         try {
-            batch.payload = Zlib.deflate(data, Server.getInstance().networkCompressionLevel);
+            if (zlibRaw) batch.payload = Network.deflateRaw(data, Server.getInstance().networkCompressionLevel);
+            else batch.payload = Zlib.deflate(data, Server.getInstance().networkCompressionLevel);
         } catch (Exception e) {
             throw new RuntimeException(e);
         }

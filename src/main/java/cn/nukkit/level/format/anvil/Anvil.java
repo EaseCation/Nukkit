@@ -200,8 +200,9 @@ public class Anvil extends BaseLevelProvider {
 
                     if (level.isCacheChunks()) {
                         chunkPacketCache = new ChunkPacketCache(
-                                Level.getChunkCacheFromData(x, z, count, payload),
-                                Level.getChunkCacheFromData(x, z, count, payloadOld, true)
+                                Level.getChunkCacheFromData(x, z, count, payload, false, true),
+                                Level.getChunkCacheFromData(x, z, count, payload, false, false),
+                                Level.getChunkCacheFromData(x, z, count, payloadOld, true, false)
                         );
                     }
                     success = true;
