@@ -201,6 +201,8 @@ public class Server {
 
     private Thread currentThread;
 
+    private Watchdog watchdog;
+
     private boolean enableJmxMonitoring = false;
     /**
      * 过去 100 tick 的耗时 (ns). 用于 JMX Monitoring.
@@ -502,6 +504,11 @@ public class Server {
 
         this.enablePlugins(PluginLoadOrder.POSTWORLD);
 
+        if (Nukkit.DEBUG < 2) {
+            this.watchdog = new Watchdog(this, 60000);
+            this.watchdog.start();
+        }
+
         this.start();
     }
 
@@ -781,6 +788,9 @@ public class Server {
 
             log.debug("Disabling timings");
             Timings.stopServer();
+            if (this.watchdog != null) {
+                this.watchdog.kill();
+            }
             //todo other things
         } catch (Exception e) {
             log.fatal("Exception happened while shutting down", e);
@@ -1125,6 +1135,10 @@ public class Server {
         }
 
         return true;
+    }
+
+    public long getNextTick() {
+        return nextTick;
     }
 
     // TODO: Fix title tick
@@ -1971,6 +1985,10 @@ public class Server {
      */
     public boolean isPrimaryThread() {
         return (Thread.currentThread() == currentThread);
+    }
+
+    public Thread getPrimaryThread() {
+        return currentThread;
     }
 
     private void registerEntities() {
