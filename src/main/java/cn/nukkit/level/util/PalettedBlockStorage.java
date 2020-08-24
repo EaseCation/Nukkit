@@ -6,7 +6,6 @@ import cn.nukkit.nbt.tag.CompoundTag;
 import cn.nukkit.utils.BinaryStream;
 import it.unimi.dsi.fastutil.ints.IntArrayList;
 import it.unimi.dsi.fastutil.ints.IntList;
-import lombok.extern.log4j.Log4j2;
 
 import java.io.IOException;
 import java.nio.ByteOrder;
@@ -14,7 +13,6 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.function.IntConsumer;
 
-@Log4j2
 public class PalettedBlockStorage {
 
     private static final int SIZE = 4096;

@@ -1,9 +1,6 @@
 package cn.nukkit.inventory;
 
 import cn.nukkit.Player;
-import cn.nukkit.inventory.FakeBlockUIComponent;
-import cn.nukkit.inventory.InventoryType;
-import cn.nukkit.inventory.PlayerUIInventory;
 import cn.nukkit.level.Position;
 
 /**

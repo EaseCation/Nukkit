@@ -43,7 +43,6 @@ abstract public class PluginBase implements Plugin {
     private File file;
     private PluginLogger logger;
 
-
     public void onLoad() {
 
     }
@@ -225,7 +224,7 @@ abstract public class PluginBase implements Plugin {
     @Override
     public void saveConfig() {
         if (!this.getConfig().save()) {
-            this.getLogger().critical("Could not save config to " + this.configFile.toString());
+            this.getLogger().error("Could not save config to " + this.configFile.toString());
         }
     }
 

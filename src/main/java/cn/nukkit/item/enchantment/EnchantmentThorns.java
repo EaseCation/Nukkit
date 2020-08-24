@@ -4,10 +4,8 @@ import cn.nukkit.entity.Entity;
 import cn.nukkit.entity.EntityHumanType;
 import cn.nukkit.event.entity.EntityDamageByEntityEvent;
 import cn.nukkit.event.entity.EntityDamageEvent;
-import cn.nukkit.event.entity.EntityDamageEvent.DamageCause;
 import cn.nukkit.item.Item;
 
-import java.util.Random;
 import java.util.concurrent.ThreadLocalRandom;
 
 /**

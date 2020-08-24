@@ -3,6 +3,7 @@ package cn.nukkit.scheduler;
 import cn.nukkit.Server;
 import cn.nukkit.plugin.Plugin;
 import cn.nukkit.utils.PluginException;
+import lombok.extern.log4j.Log4j2;
 
 import java.util.Map;
 import java.util.Optional;
@@ -15,6 +16,7 @@ import java.util.concurrent.atomic.AtomicInteger;
 /**
  * @author Nukkit Project Team
  */
+@Log4j2
 public class ServerScheduler {
 
     public static int WORKERS = 4;
@@ -196,7 +198,7 @@ public class ServerScheduler {
             try {
                 taskMap.remove(taskId).cancel();
             } catch (RuntimeException ex) {
-                Server.getInstance().getLogger().critical("Exception while invoking onCancel", ex);
+                log.fatal("Exception while invoking onCancel", ex);
             }
         }
     }
@@ -213,7 +215,7 @@ public class ServerScheduler {
                 try {
                     taskHandler.cancel(); /* It will remove from task map automatic in next main heartbeat. */
                 } catch (RuntimeException ex) {
-                    Server.getInstance().getLogger().critical("Exception while invoking onCancel", ex);
+                   log.fatal("Exception while invoking onCancel", ex);
                 }
             }
         }
@@ -224,7 +226,7 @@ public class ServerScheduler {
             try {
                 entry.getValue().cancel();
             } catch (RuntimeException ex) {
-                Server.getInstance().getLogger().critical("Exception while invoking onCancel", ex);
+                log.fatal("Exception while invoking onCancel", ex);
             }
         }
         this.taskMap.clear();
@@ -282,8 +284,8 @@ public class ServerScheduler {
                 try {
                     taskHandler.run(currentTick);
                 } catch (Throwable e) {
-                    Server.getInstance().getLogger().critical("Could not execute taskHandler " + taskHandler.getTaskId() + ": " + e.getMessage());
-                    Server.getInstance().getLogger().logException(e instanceof Exception ? (Exception) e : new RuntimeException(e));
+                    log.fatal("Could not execute taskHandler " + taskHandler.getTaskId() + ": " + e.getMessage());
+                    Server.getInstance().getLogger().logException(e instanceof Exception ? e : new RuntimeException(e));
                 }
                 taskHandler.timing.stopTiming();
             }
@@ -294,7 +296,7 @@ public class ServerScheduler {
                 try {
                     Optional.ofNullable(taskMap.remove(taskHandler.getTaskId())).ifPresent(TaskHandler::cancel);
                 } catch (RuntimeException ex) {
-                    Server.getInstance().getLogger().critical("Exception while invoking onCancel", ex);
+                    log.fatal("Exception while invoking onCancel", ex);
                 }
             }
         }

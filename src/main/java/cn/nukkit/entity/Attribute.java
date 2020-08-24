@@ -7,9 +7,9 @@ package cn.nukkit.entity;
  */
 
 import cn.nukkit.utils.ServerException;
+import it.unimi.dsi.fastutil.ints.Int2ObjectMap;
+import it.unimi.dsi.fastutil.ints.Int2ObjectOpenHashMap;
 
-import java.util.HashMap;
-import java.util.Map;
 import java.util.Objects;
 
 public class Attribute implements Cloneable {
@@ -27,7 +27,7 @@ public class Attribute implements Cloneable {
     public static final int EXPERIENCE_LEVEL = 9;
     public static final int EXPERIENCE = 10;
 
-    protected static Map<Integer, Attribute> attributes = new HashMap<>();
+    protected static Int2ObjectMap<Attribute> attributes = new Int2ObjectOpenHashMap<>();
 
     protected float minValue;
     protected float maxValue;
@@ -35,7 +35,7 @@ public class Attribute implements Cloneable {
     protected float currentValue;
     protected String name;
     protected boolean shouldSend;
-    private int id;
+    private final int id;
 
     private Attribute(int id, String name, float minValue, float maxValue, float defaultValue, boolean shouldSend) {
         this.id = id;

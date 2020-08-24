@@ -14,6 +14,7 @@ import cn.nukkit.nbt.tag.CompoundTag;
 import cn.nukkit.scheduler.AsyncTask;
 import cn.nukkit.utils.BinaryStream;
 import cn.nukkit.utils.ChunkException;
+import it.unimi.dsi.fastutil.ints.Int2IntMap;
 
 import java.io.File;
 import java.io.FileOutputStream;
@@ -75,7 +76,7 @@ public class McRegion extends BaseLevelProvider {
                 .putLong("DayTime", 0)
                 .putInt("GameType", 0)
                 .putString("generatorName", Generator.getGeneratorName(generator))
-                .putString("generatorOptions", options.containsKey("preset") ? options.get("preset") : "")
+                .putString("generatorOptions", options.getOrDefault("preset", ""))
                 .putInt("generatorVersion", 1)
                 .putBoolean("hardcore", false)
                 .putBoolean("initialized", true)
@@ -123,14 +124,14 @@ public class McRegion extends BaseLevelProvider {
             }
         }
 
-        Map<Integer, Integer> extra = chunk.getBlockExtraDataArray();
+        Int2IntMap extra = chunk.getBlockExtraDataArray();
         BinaryStream extraData;
         if (!extra.isEmpty()) {
             extraData = new BinaryStream();
             extraData.putLInt(extra.size());
-            for (Map.Entry<Integer, Integer> entry : extra.entrySet()) {
-                extraData.putLInt(entry.getKey());
-                extraData.putLShort(entry.getValue());
+            for (Int2IntMap.Entry entry : extra.int2IntEntrySet()) {
+                extraData.putLInt(entry.getIntKey());
+                extraData.putLShort(entry.getIntValue());
             }
         } else {
             extraData = null;

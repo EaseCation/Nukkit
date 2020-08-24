@@ -8,14 +8,16 @@ import cn.nukkit.inventory.PlayerInventory;
 import cn.nukkit.inventory.transaction.action.InventoryAction;
 import cn.nukkit.inventory.transaction.action.SlotChangeAction;
 import cn.nukkit.item.Item;
-import cn.nukkit.utils.MainLogger;
+import it.unimi.dsi.fastutil.ints.Int2ObjectMap;
+import it.unimi.dsi.fastutil.ints.Int2ObjectOpenHashMap;
+import lombok.extern.log4j.Log4j2;
 
 import java.util.*;
-import java.util.Map.Entry;
 
 /**
  * @author CreeperFace
  */
+@Log4j2
 public class InventoryTransaction {
 
     private long creationTime;
@@ -139,7 +141,7 @@ public class InventoryTransaction {
      * @return successful
      */
     protected boolean squashDuplicateSlotChanges() {
-        Map<Integer, List<SlotChangeAction>> slotChanges = new HashMap<>();
+        Int2ObjectMap<List<SlotChangeAction>> slotChanges = new Int2ObjectOpenHashMap<>();
 
         for (InventoryAction action : this.actions) {
             if (action instanceof SlotChangeAction) {
@@ -156,8 +158,8 @@ public class InventoryTransaction {
             }
         }
 
-        for (Entry<Integer, List<SlotChangeAction>> entry : new ArrayList<>(slotChanges.entrySet())) {
-            int hash = entry.getKey();
+        for (Int2ObjectMap.Entry<List<SlotChangeAction>> entry : new ArrayList<>(slotChanges.int2ObjectEntrySet())) {
+            int hash = entry.getIntKey();
             List<SlotChangeAction> list = entry.getValue();
 
             if (list.size() == 1) { //No need to compact inventorySlot changes if there is only one on this inventorySlot
@@ -207,7 +209,7 @@ public class InventoryTransaction {
             } while (sortedThisLoop > 0);
 
             if (list.size() > 0) { //couldn't chain all the actions together
-                MainLogger.getLogger().debug("Failed to compact " + originalList.size() + " actions for " + this.source.getName());
+                log.debug("Failed to compact " + originalList.size() + " actions for " + this.source.getName());
                 return false;
             }
 
@@ -217,7 +219,7 @@ public class InventoryTransaction {
 
             this.addAction(new SlotChangeAction(originalAction.getInventory(), originalAction.getSlot(), originalAction.getSourceItem(), lastTargetItem));
 
-            MainLogger.getLogger().debug("Successfully compacted " + originalList.size() + " actions for " + this.source.getName());
+            log.debug("Successfully compacted " + originalList.size() + " actions for " + this.source.getName());
         }
 
         return true;

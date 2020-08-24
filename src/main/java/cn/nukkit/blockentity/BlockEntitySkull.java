@@ -25,7 +25,7 @@ public class BlockEntitySkull extends BlockEntitySpawnable {
         super.initBlockEntity();
     }
 
-            @Override
+    @Override
     public void saveNBT() {
         super.saveNBT();
         this.namedTag.remove("Creator");

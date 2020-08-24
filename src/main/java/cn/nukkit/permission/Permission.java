@@ -1,6 +1,8 @@
 package cn.nukkit.permission;
 
 import cn.nukkit.Server;
+import it.unimi.dsi.fastutil.objects.Object2BooleanMap;
+import it.unimi.dsi.fastutil.objects.Object2BooleanOpenHashMap;
 
 import java.util.*;
 
@@ -47,26 +49,26 @@ public class Permission {
 
     private String description;
 
-    private Map<String, Boolean> children = new HashMap<>();
+    private final Object2BooleanMap<String> children;
 
     private String defaultValue;
 
     public Permission(String name) {
-        this(name, null, null, new HashMap<>());
+        this(name, null, null, new Object2BooleanOpenHashMap<>());
     }
 
     public Permission(String name, String description) {
-        this(name, description, null, new HashMap<>());
+        this(name, description, null, new Object2BooleanOpenHashMap<>());
     }
 
-    public Permission(String name, String description, String defualtValue) {
-        this(name, description, defualtValue, new HashMap<>());
+    public Permission(String name, String description, String defaultValue) {
+        this(name, description, defaultValue, new Object2BooleanOpenHashMap<>());
     }
 
-    public Permission(String name, String description, String defualtValue, Map<String, Boolean> children) {
+    public Permission(String name, String description, String defaultValue, Object2BooleanMap<String> children) {
         this.name = name;
         this.description = description != null ? description : "";
-        this.defaultValue = defualtValue != null ? defualtValue : DEFAULT_PERMISSION;
+        this.defaultValue = defaultValue != null ? defaultValue : DEFAULT_PERMISSION;
         this.children = children;
 
         this.recalculatePermissibles();
@@ -76,7 +78,7 @@ public class Permission {
         return name;
     }
 
-    public Map<String, Boolean> getChildren() {
+    public Object2BooleanMap<String> getChildren() {
         return children;
     }
 
@@ -156,7 +158,7 @@ public class Permission {
 
     public static Permission loadPermission(String name, Map<String, Object> data, String defaultValue, List<Permission> output) {
         String desc = null;
-        Map<String, Boolean> children = new HashMap<>();
+        Object2BooleanMap<String> children = new Object2BooleanOpenHashMap<>();
         if (data.containsKey("default")) {
             String value = Permission.getByName(String.valueOf(data.get("default")));
             if (value != null) {

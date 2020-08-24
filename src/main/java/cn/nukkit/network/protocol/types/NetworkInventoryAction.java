@@ -1,7 +1,6 @@
 package cn.nukkit.network.protocol.types;
 
 import cn.nukkit.Player;
-import cn.nukkit.Server;
 import cn.nukkit.inventory.AnvilInventory;
 import cn.nukkit.inventory.BeaconInventory;
 import cn.nukkit.inventory.EnchantInventory;
@@ -10,10 +9,12 @@ import cn.nukkit.inventory.transaction.action.*;
 import cn.nukkit.item.Item;
 import cn.nukkit.network.protocol.InventoryTransactionPacket;
 import lombok.ToString;
+import lombok.extern.log4j.Log4j2;
 
 /**
  * @author CreeperFace
  */
+@Log4j2
 @ToString
 public class NetworkInventoryAction {
 
@@ -136,11 +137,11 @@ public class NetworkInventoryAction {
                     return new SlotChangeAction(window, this.inventorySlot, this.oldItem, this.newItem);
                 }
 
-                player.getServer().getLogger().debug("Player " + player.getName() + " has no open container with window ID " + this.windowId);
+                log.debug("Player " + player.getName() + " has no open container with window ID " + this.windowId);
                 return null;
             case SOURCE_WORLD:
                 if (this.inventorySlot != InventoryTransactionPacket.ACTION_MAGIC_SLOT_DROP_ITEM) {
-                    player.getServer().getLogger().debug("Only expecting drop-item world actions from the client!");
+                    log.debug("Only expecting drop-item world actions from the client!");
                     return null;
                 }
 
@@ -156,7 +157,7 @@ public class NetworkInventoryAction {
                         type = CreativeInventoryAction.TYPE_CREATE_ITEM;
                         break;
                     default:
-                        player.getServer().getLogger().debug("Unexpected creative action type " + this.inventorySlot);
+                        log.debug("Unexpected creative action type " + this.inventorySlot);
                         return null;
                 }
 
@@ -188,7 +189,7 @@ public class NetworkInventoryAction {
                     Inventory inv = player.getWindowById(Player.ANVIL_WINDOW_ID);
 
                     if (!(inv instanceof AnvilInventory)) {
-                        player.getServer().getLogger().debug("Player " + player.getName() + " has no open anvil inventory");
+                        log.debug("Player " + player.getName() + " has no open anvil inventory");
                         return null;
                     }
                     AnvilInventory anvil = (AnvilInventory) inv;
@@ -227,7 +228,7 @@ public class NetworkInventoryAction {
                     Inventory inv = player.getWindowById(Player.ENCHANT_WINDOW_ID);
 
                     if (!(inv instanceof EnchantInventory)) {
-                        player.getServer().getLogger().debug("Player " + player.getName() + " has no open enchant inventory");
+                        log.debug("Player " + player.getName() + " has no open enchant inventory");
                         return null;
                     }
                     EnchantInventory enchant = (EnchantInventory) inv;
@@ -287,7 +288,7 @@ public class NetworkInventoryAction {
                     Inventory inv = player.getWindowById(Player.BEACON_WINDOW_ID);
 
                     if (!(inv instanceof BeaconInventory)) {
-                        player.getServer().getLogger().debug("Player " + player.getName() + " has no open beacon inventory");
+                        log.debug("Player " + player.getName() + " has no open beacon inventory");
                         return null;
                     }
                     BeaconInventory beacon = (BeaconInventory) inv;
@@ -297,10 +298,10 @@ public class NetworkInventoryAction {
                 }
 
                 //TODO: more stuff
-                player.getServer().getLogger().debug("Player " + player.getName() + " has no open container with window ID " + this.windowId);
+                log.debug("Player " + player.getName() + " has no open container with window ID " + this.windowId);
                 return null;
             default:
-                player.getServer().getLogger().debug("Unknown inventory source type " + this.sourceType);
+                log.debug("Unknown inventory source type " + this.sourceType);
                 return null;
         }
     }

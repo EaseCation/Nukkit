@@ -3,7 +3,6 @@ package cn.nukkit.item;
 import cn.nukkit.Player;
 import cn.nukkit.Server;
 import cn.nukkit.block.Block;
-import cn.nukkit.block.BlockAir;
 import cn.nukkit.block.BlockID;
 import cn.nukkit.entity.Entity;
 import cn.nukkit.inventory.Fuel;
@@ -21,7 +20,6 @@ import cn.nukkit.utils.Config;
 import cn.nukkit.utils.MainLogger;
 import cn.nukkit.utils.Utils;
 
-import java.io.File;
 import java.io.IOException;
 import java.nio.ByteOrder;
 import java.util.*;
@@ -33,6 +31,7 @@ import java.util.regex.Pattern;
  */
 public class Item implements Cloneable, BlockID, ItemID {
 
+    protected static String UNKNOWN_STR = "Unknown";
     public static Class[] list = null;
 
     protected Block block = null;
@@ -46,15 +45,15 @@ public class Item implements Cloneable, BlockID, ItemID {
     protected String name;
 
     public Item(int id) {
-        this(id, 0, 1, "Unknown");
+        this(id, 0, 1, UNKNOWN_STR);
     }
 
     public Item(int id, Integer meta) {
-        this(id, meta, 1, "Unknown");
+        this(id, meta, 1, UNKNOWN_STR);
     }
 
     public Item(int id, Integer meta, int count) {
-        this(id, meta, count, "Unknown");
+        this(id, meta, count, UNKNOWN_STR);
     }
 
     public Item(int id, Integer meta, int count, String name) {
@@ -325,7 +324,7 @@ public class Item implements Cloneable, BlockID, ItemID {
     private static void initCreativeItems() {
         clearCreativeItems();
 
-        Config config = new Config(Config.YAML);
+        Config config = new Config(Config.JSON);
         config.load(Server.class.getClassLoader().getResourceAsStream("creativeitems.json"));
         List<Map> list = config.getMapList("items");
 
@@ -426,7 +425,7 @@ public class Item implements Cloneable, BlockID, ItemID {
 
         Pattern integerPattern = Pattern.compile("^[1-9]\\d*$");
         if (integerPattern.matcher(b[0]).matches()) {
-            id = Integer.valueOf(b[0]);
+            id = Integer.parseInt(b[0]);
         } else {
             try {
                 id = Item.class.getField(b[0].toUpperCase()).getInt(null);
@@ -435,7 +434,7 @@ public class Item implements Cloneable, BlockID, ItemID {
         }
 
         id = id & 0xFFFF;
-        if (b.length != 1) meta = Integer.valueOf(b[1]) & 0xFFFF;
+        if (b.length != 1) meta = Integer.parseInt(b[1]) & 0xFFFF;
 
         return get(id, meta);
     }
@@ -552,9 +551,7 @@ public class Item implements Cloneable, BlockID, ItemID {
 
         if (tag.contains("ench")) {
             Tag enchTag = tag.get("ench");
-            if (enchTag instanceof ListTag) {
-                return true;
-            }
+            return enchTag instanceof ListTag;
         }
 
         return false;
@@ -641,7 +638,7 @@ public class Item implements Cloneable, BlockID, ItemID {
             }
         }
 
-        return enchantments.stream().toArray(Enchantment[]::new);
+        return enchantments.toArray(new Enchantment[0]);
     }
 
     public boolean hasCustomName() {
@@ -652,9 +649,7 @@ public class Item implements Cloneable, BlockID, ItemID {
         CompoundTag tag = this.getNamedTag();
         if (tag.contains("display")) {
             Tag tag1 = tag.get("display");
-            if (tag1 instanceof CompoundTag && ((CompoundTag) tag1).contains("Name") && ((CompoundTag) tag1).get("Name") instanceof StringTag) {
-                return true;
-            }
+            return tag1 instanceof CompoundTag && ((CompoundTag) tag1).contains("Name") && ((CompoundTag) tag1).get("Name") instanceof StringTag;
         }
 
         return false;
@@ -840,7 +835,7 @@ public class Item implements Cloneable, BlockID, ItemID {
         if (this.block != null) {
             return this.block.clone();
         } else {
-            return new BlockAir();
+            return Block.get(BlockID.AIR);
         }
     }
 
@@ -982,6 +977,10 @@ public class Item implements Cloneable, BlockID, ItemID {
     /**
      * Called when a player uses the item on air, for example throwing a projectile.
      * Returns whether the item was changed, for example count decrease or durability change.
+     *
+     * @param player player
+     * @param directionVector direction
+     * @return item changed
      */
     public boolean onClickAir(Player player, Vector3 directionVector) {
         return false;
@@ -1014,6 +1013,9 @@ public class Item implements Cloneable, BlockID, ItemID {
 
     /**
      * Returns whether the specified item stack has the same ID, damage, NBT and count as this item stack.
+     *
+     * @param other item
+     * @return equal
      */
     public final boolean equalsExact(Item other) {
         return this.equals(other, true, true) && this.count == other.count;

@@ -149,7 +149,7 @@ public class Timing implements AutoCloseable {
 
     @Override
     public boolean equals(Object o) {
-        return (o instanceof Timing && this == o);
+        return (this == o);
     }
 
     @Override

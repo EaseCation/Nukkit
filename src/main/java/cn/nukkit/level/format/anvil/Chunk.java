@@ -15,6 +15,8 @@ import cn.nukkit.utils.BinaryStream;
 import cn.nukkit.utils.BlockUpdateEntry;
 import cn.nukkit.utils.ChunkException;
 import cn.nukkit.utils.Zlib;
+import it.unimi.dsi.fastutil.ints.Int2IntMap;
+import it.unimi.dsi.fastutil.ints.Int2IntOpenHashMap;
 
 import java.io.ByteArrayInputStream;
 import java.io.DataInputStream;
@@ -61,9 +63,7 @@ public class Chunk extends BaseChunk {
         if (nbt == null) {
             this.biomes = new byte[16 * 16];
             this.sections = new cn.nukkit.level.format.ChunkSection[16];
-            for (int layer = 0; layer < 16; layer++) {
-                this.sections[layer] = EmptyChunkSection.EMPTY[layer];
-            }
+            System.arraycopy(EmptyChunkSection.EMPTY, 0, this.sections, 0, 16);
             return;
         }
 
@@ -83,10 +83,10 @@ public class Chunk extends BaseChunk {
             }
         }
 
-        Map<Integer, Integer> extraData = new HashMap<>();
+        Int2IntMap extraData = new Int2IntOpenHashMap();
 
         Tag extra = nbt.get("ExtraData");
-        if (extra != null && extra instanceof ByteArrayTag) {
+        if (extra instanceof ByteArrayTag) {
             BinaryStream stream = new BinaryStream(((ByteArrayTag) extra).data);
             for (int i = 0; i < stream.getInt(); i++) {
                 int key = stream.getInt();
@@ -327,9 +327,9 @@ public class Chunk extends BaseChunk {
         }
 
         BinaryStream extraData = new BinaryStream();
-        Map<Integer, Integer> extraDataArray = this.getBlockExtraDataArray();
+        Int2IntMap extraDataArray = this.getBlockExtraDataArray();
         extraData.putInt(extraDataArray.size());
-        for (Integer key : extraDataArray.keySet()) {
+        for (int key : extraDataArray.keySet()) {
             extraData.putInt(key);
             extraData.putShort(extraDataArray.get(key));
         }
@@ -419,9 +419,9 @@ public class Chunk extends BaseChunk {
         }
 
         BinaryStream extraData = new BinaryStream();
-        Map<Integer, Integer> extraDataArray = this.getBlockExtraDataArray();
+        Int2IntMap extraDataArray = this.getBlockExtraDataArray();
         extraData.putInt(extraDataArray.size());
-        for (Integer key : extraDataArray.keySet()) {
+        for (int key : extraDataArray.keySet()) {
             extraData.putInt(key);
             extraData.putShort(extraDataArray.get(key));
         }

@@ -19,7 +19,6 @@ import cn.nukkit.nbt.tag.ListTag;
 import cn.nukkit.network.protocol.AddEntityPacket;
 import cn.nukkit.network.protocol.LevelSoundEventPacket;
 
-import java.util.Random;
 import java.util.concurrent.ThreadLocalRandom;
 
 /**
@@ -213,7 +212,7 @@ public class EntityThrownTrident extends EntityProjectile {
                         .add(new DoubleTag("", 0))
                         .add(new DoubleTag("", 0)))
                 .putList(new ListTag<FloatTag>("Rotation")
-                        .add(new FloatTag("", new Random().nextFloat() * 360))
+                        .add(new FloatTag("", ThreadLocalRandom.current().nextFloat() * 360))
                         .add(new FloatTag("", 0)));
 
         return Entity.createEntity(type.toString(), chunk, nbt, args);

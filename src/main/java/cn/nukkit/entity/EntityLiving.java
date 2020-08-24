@@ -4,7 +4,6 @@ import cn.nukkit.Player;
 import cn.nukkit.Server;
 import cn.nukkit.block.Block;
 import cn.nukkit.entity.data.ShortEntityData;
-import cn.nukkit.entity.item.EntityVehicle;
 import cn.nukkit.entity.passive.EntityWaterAnimal;
 import cn.nukkit.event.entity.*;
 import cn.nukkit.event.entity.EntityDamageEvent.DamageCause;
@@ -16,7 +15,6 @@ import cn.nukkit.math.Vector3;
 import cn.nukkit.nbt.tag.CompoundTag;
 import cn.nukkit.nbt.tag.FloatTag;
 import cn.nukkit.network.protocol.EntityEventPacket;
-import cn.nukkit.network.protocol.LevelSoundEventPacket;
 import cn.nukkit.potion.Effect;
 import cn.nukkit.utils.BlockIterator;
 import co.aikar.timings.Timings;
@@ -87,7 +85,7 @@ public abstract class EntityLiving extends Entity implements EntityDamageable {
         if (this.isAlive() && !wasAlive) {
             EntityEventPacket pk = new EntityEventPacket();
             pk.eid = this.getId();
-            pk.eid = EntityEventPacket.RESPAWN;
+            pk.event = EntityEventPacket.RESPAWN;
             Server.broadcastPacket(this.hasSpawned.values(), pk);
         }
     }
@@ -319,7 +317,7 @@ public abstract class EntityLiving extends Entity implements EntityDamageable {
 
     @Deprecated
     public Block[] getLineOfSight(int maxDistance, int maxLength, Map<Integer, Object> transparent) {
-        return this.getLineOfSight(maxDistance, maxLength, transparent.keySet().stream().toArray(Integer[]::new));
+        return this.getLineOfSight(maxDistance, maxLength, transparent.keySet().toArray(new Integer[0]));
     }
 
     public Block[] getLineOfSight(int maxDistance, int maxLength, Integer[] transparent) {
@@ -356,7 +354,7 @@ public abstract class EntityLiving extends Entity implements EntityDamageable {
             }
         }
 
-        return blocks.stream().toArray(Block[]::new);
+        return blocks.toArray(new Block[0]);
     }
 
     public Block getTargetBlock(int maxDistance) {
@@ -365,7 +363,7 @@ public abstract class EntityLiving extends Entity implements EntityDamageable {
 
     @Deprecated
     public Block getTargetBlock(int maxDistance, Map<Integer, Object> transparent) {
-        return getTargetBlock(maxDistance, transparent.keySet().stream().toArray(Integer[]::new));
+        return getTargetBlock(maxDistance, transparent.keySet().toArray(new Integer[0]));
     }
 
     public Block getTargetBlock(int maxDistance, Integer[] transparent) {
@@ -394,5 +392,13 @@ public abstract class EntityLiving extends Entity implements EntityDamageable {
 
     public float getMovementSpeed() {
         return this.movementSpeed;
+    }
+
+    public int getAirTicks() {
+        return this.getDataPropertyShort(DATA_AIR);
+    }
+
+    public void setAirTicks(int ticks) {
+        this.setDataProperty(new ShortEntityData(DATA_AIR, ticks));
     }
 }

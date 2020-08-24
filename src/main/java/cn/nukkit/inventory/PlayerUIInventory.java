@@ -5,8 +5,7 @@ import cn.nukkit.item.Item;
 import cn.nukkit.network.protocol.InventoryContentPacket;
 import cn.nukkit.network.protocol.InventorySlotPacket;
 import cn.nukkit.network.protocol.types.ContainerIds;
-
-import java.util.HashMap;
+import it.unimi.dsi.fastutil.ints.Int2ObjectOpenHashMap;
 
 public class PlayerUIInventory extends BaseInventory {
     private final Player player;
@@ -16,7 +15,7 @@ public class PlayerUIInventory extends BaseInventory {
     private final BigCraftingGrid bigCraftingGrid;
 
     public PlayerUIInventory(Player player) {
-        super(player, InventoryType.UI, new HashMap<>(), 51);
+        super(player, InventoryType.UI, new Int2ObjectOpenHashMap<>(), 51);
         this.player = player;
 
         this.cursorInventory = new PlayerCursorInventory(this);

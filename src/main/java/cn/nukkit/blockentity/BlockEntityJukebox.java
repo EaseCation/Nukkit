@@ -2,7 +2,6 @@ package cn.nukkit.blockentity;
 
 import cn.nukkit.block.Block;
 import cn.nukkit.item.Item;
-import cn.nukkit.item.ItemRecord;
 import cn.nukkit.level.format.FullChunk;
 import cn.nukkit.nbt.NBTIO;
 import cn.nukkit.nbt.tag.CompoundTag;
@@ -44,24 +43,6 @@ public class BlockEntityJukebox extends BlockEntitySpawnable {
 
     public Item getRecordItem() {
         return recordItem;
-    }
-
-    public void dropItem() {
-        this.level.dropItem(this.up(), this.recordItem);
-        this.recordItem = Item.get(0);
-        this.stop();
-    }
-
-    @Override
-    public void saveNBT() {
-        super.saveNBT();
-        this.namedTag.putCompound("RecordItem", NBTIO.putItemHelper(this.recordItem));
-    }
-
-    @Override
-    public CompoundTag getSpawnCompound() {
-        return getDefaultCompound(this, JUKEBOX)
-                .putCompound("RecordItem", NBTIO.putItemHelper(this.recordItem));
     }
 
     public void play() {
@@ -109,5 +90,23 @@ public class BlockEntityJukebox extends BlockEntitySpawnable {
 
     public void stop() {
         this.getLevel().addLevelSoundEvent(this, LevelSoundEventPacket.SOUND_STOP_RECORD);
+    }
+
+    public void dropItem() {
+        this.level.dropItem(this.up(), this.recordItem);
+        this.recordItem = Item.get(0);
+        this.stop();
+    }
+
+    @Override
+    public void saveNBT() {
+        super.saveNBT();
+        this.namedTag.putCompound("RecordItem", NBTIO.putItemHelper(this.recordItem));
+    }
+
+    @Override
+    public CompoundTag getSpawnCompound() {
+        return getDefaultCompound(this, JUKEBOX)
+                .putCompound("RecordItem", NBTIO.putItemHelper(this.recordItem));
     }
 }

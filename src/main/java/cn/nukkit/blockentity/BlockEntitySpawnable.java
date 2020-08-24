@@ -14,6 +14,7 @@ import java.nio.ByteOrder;
  * Nukkit Project
  */
 public abstract class BlockEntitySpawnable extends BlockEntity {
+
     public BlockEntitySpawnable(FullChunk chunk, CompoundTag nbt) {
         super(chunk, nbt);
     }
@@ -61,6 +62,8 @@ public abstract class BlockEntitySpawnable extends BlockEntity {
      * Called when a player updates a block entity's NBT data
      * for example when writing on a sign.
      *
+     * @param nbt tag
+     * @param player player
      * @return bool indication of success, will respawn the tile to the player if false.
      */
     public boolean updateCompoundTag(CompoundTag nbt, Player player) {

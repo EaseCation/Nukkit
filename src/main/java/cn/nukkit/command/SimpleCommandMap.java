@@ -8,20 +8,18 @@ import cn.nukkit.lang.TranslationContainer;
 import cn.nukkit.utils.MainLogger;
 import cn.nukkit.utils.TextFormat;
 import cn.nukkit.utils.Utils;
-import com.google.common.collect.Sets;
+import lombok.extern.log4j.Log4j2;
 
 import java.lang.reflect.Method;
 import java.util.*;
 import java.util.Map.Entry;
-import java.util.function.Function;
-import java.util.stream.Collector;
 import java.util.stream.Collectors;
-import java.util.stream.Stream;
 
 /**
  * author: MagicDroidX
  * Nukkit Project
  */
+@Log4j2
 public class SimpleCommandMap implements CommandMap {
     protected final Map<String, Command> knownCommands = new HashMap<>();
 
@@ -109,7 +107,7 @@ public class SimpleCommandMap implements CommandMap {
                 iterator.remove();
             }
         }
-        command.setAliases(aliases.stream().toArray(String[]::new));
+        command.setAliases(aliases.toArray(new String[0]));
 
         if (!registered) {
             command.setLabel(fallbackPrefix + ":" + label);
@@ -185,7 +183,7 @@ public class SimpleCommandMap implements CommandMap {
         }
 
         // Then we need to check if there isn't any command conflicts with vanilla commands
-        ArrayList<String> toRemove = new ArrayList<String>();
+        ArrayList<String> toRemove = new ArrayList<>();
 
         for (Entry<String, Command> entry : knownCommands.entrySet()) {
             Command cmd = entry.getValue();
@@ -247,7 +245,7 @@ public class SimpleCommandMap implements CommandMap {
         }
 
         String sentCommandLabel = parsed.remove(0).toLowerCase();
-        String[] args = parsed.toArray(new String[parsed.size()]);
+        String[] args = parsed.toArray(new String[0]);
         Command target = this.getCommand(sentCommandLabel);
 
         if (target == null) {
@@ -259,7 +257,7 @@ public class SimpleCommandMap implements CommandMap {
             target.execute(sender, sentCommandLabel, args);
         } catch (Exception e) {
             sender.sendMessage(new TranslationContainer(TextFormat.RED + "%commands.generic.exception"));
-            this.server.getLogger().critical(this.server.getLanguage().translateString("nukkit.command.exception", cmdLine, target.toString(), Utils.getExceptionMessage(e)));
+            log.fatal(this.server.getLanguage().translateString("nukkit.command.exception", cmdLine, target.toString(), Utils.getExceptionMessage(e)));
             MainLogger logger = sender.getServer().getLogger();
             if (logger != null) {
                 logger.logException(e);
@@ -297,12 +295,12 @@ public class SimpleCommandMap implements CommandMap {
             String alias = entry.getKey();
             List<String> commandStrings = entry.getValue();
             if (alias.contains(" ") || alias.contains(":")) {
-                this.server.getLogger().warning(this.server.getLanguage().translateString("nukkit.command.alias.illegal", alias));
+                log.warn(this.server.getLanguage().translateString("nukkit.command.alias.illegal", alias));
                 continue;
             }
             List<String> targets = new ArrayList<>();
 
-            String bad = "";
+            StringBuilder bad = new StringBuilder();
 
             for (String commandString : commandStrings) {
                 String[] args = commandString.split(" ");
@@ -310,16 +308,16 @@ public class SimpleCommandMap implements CommandMap {
 
                 if (command == null) {
                     if (bad.length() > 0) {
-                        bad += ", ";
+                        bad.append(", ");
                     }
-                    bad += commandString;
+                    bad.append(commandString);
                 } else {
                     targets.add(commandString);
                 }
             }
 
             if (bad.length() > 0) {
-                this.server.getLogger().warning(this.server.getLanguage().translateString("nukkit.command.alias.notFound", new String[]{alias, bad}));
+                log.warn(this.server.getLanguage().translateString("nukkit.command.alias.notFound", new String[]{alias, bad.toString()}));
                 continue;
             }
 

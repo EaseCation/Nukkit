@@ -1,7 +1,6 @@
 package cn.nukkit.network.protocol;
 
 import cn.nukkit.command.data.*;
-import cn.nukkit.utils.BinaryStream;
 
 import java.util.*;
 import java.util.stream.Collectors;

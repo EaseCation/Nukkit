@@ -3,6 +3,9 @@ package cn.nukkit.inventory;
 import cn.nukkit.item.Item;
 import cn.nukkit.utils.Utils;
 import io.netty.util.collection.CharObjectHashMap;
+import it.unimi.dsi.fastutil.chars.Char2ObjectMap;
+import it.unimi.dsi.fastutil.ints.Int2ObjectLinkedOpenHashMap;
+import it.unimi.dsi.fastutil.ints.Int2ObjectMap;
 
 import java.util.*;
 
@@ -24,7 +27,7 @@ public class ShapedRecipe implements CraftingRecipe {
     private final CharObjectHashMap<Item> ingredients = new CharObjectHashMap<>();
 
 
-    public ShapedRecipe(Item primaryResult, String[] shape, Map<Character, Item> ingredients, List<Item> extraResults) {
+    public ShapedRecipe(Item primaryResult, String[] shape, Char2ObjectMap<Item> ingredients, List<Item> extraResults) {
         this(null, 1, primaryResult, shape, ingredients, extraResults);
     }
 
@@ -43,7 +46,7 @@ public class ShapedRecipe implements CraftingRecipe {
      *                         <p>
      *                         Note: Recipes **do not** need to be square. Do NOT add padding for empty rows/columns.
      */
-    public ShapedRecipe(String recipeId, int priority, Item primaryResult, String[] shape, Map<Character, Item> ingredients, List<Item> extraResults) {
+    public ShapedRecipe(String recipeId, int priority, Item primaryResult, String[] shape, Char2ObjectMap<Item> ingredients, List<Item> extraResults) {
         this.recipeId = recipeId;
         this.priority = priority;
         int rowCount = shape.length;
@@ -77,8 +80,8 @@ public class ShapedRecipe implements CraftingRecipe {
 
         this.shape = shape;
 
-        for (Map.Entry<Character, Item> entry : ingredients.entrySet()) {
-            this.setIngredient(entry.getKey(), entry.getValue());
+        for (Char2ObjectMap.Entry<Item> entry : ingredients.char2ObjectEntrySet()) {
+            this.setIngredient(entry.getCharKey(), entry.getValue());
         }
     }
 
@@ -138,10 +141,10 @@ public class ShapedRecipe implements CraftingRecipe {
     }
 
     public Map<Integer, Map<Integer, Item>> getIngredientMap() {
-        Map<Integer, Map<Integer, Item>> ingredients = new LinkedHashMap<>();
+        Int2ObjectMap<Map<Integer, Item>> ingredients = new Int2ObjectLinkedOpenHashMap<>();
 
         for (int y = 0, y2 = getHeight(); y < y2; ++y) {
-            Map<Integer, Item> m = new LinkedHashMap<>();
+            Int2ObjectMap<Item> m = new Int2ObjectLinkedOpenHashMap<>();
 
             for (int x = 0, x2 = getWidth(); x < x2; ++x) {
                 m.put(x, getIngredient(x, y));

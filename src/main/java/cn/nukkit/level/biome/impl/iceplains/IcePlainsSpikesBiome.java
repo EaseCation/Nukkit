@@ -76,7 +76,7 @@ public class IcePlainsSpikesBiome extends IcePlainsBiome {
                     level.setBlockAt(x - 1, maxY, z, PACKED_ICE);
                     level.setBlockAt(x, maxY, z + 1, PACKED_ICE);
                     level.setBlockAt(x, maxY, z - 1, PACKED_ICE);
-                    for (int y = maxY; y < maxY + 3; maxY++) {
+                    for (int y = maxY; y < maxY + 3; y++) {
                         level.setBlockAt(x, y, z, PACKED_ICE);
                     }
                 } else {
@@ -88,7 +88,7 @@ public class IcePlainsSpikesBiome extends IcePlainsBiome {
                         for (int xx = (int) -currWidth; xx < currWidth; xx++) {
                             for (int zz = (int) -currWidth; zz < currWidth; zz++) {
                                 int currDist = (int) Math.sqrt(xx * xx + zz * zz);
-                                if ((int) currWidth != (int) currDist && random.nextBoolean()) {
+                                if ((int) currWidth != currDist && random.nextBoolean()) {
                                     level.setBlockAt(x + xx, y, z + zz, PACKED_ICE);
                                 }
                             }

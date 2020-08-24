@@ -7,9 +7,9 @@ import cn.nukkit.network.protocol.BatchPacket;
 import cn.nukkit.network.protocol.CraftingDataPacket;
 import cn.nukkit.utils.BinaryStream;
 import cn.nukkit.utils.Config;
-import cn.nukkit.utils.MainLogger;
 import cn.nukkit.utils.Utils;
-import io.netty.util.collection.CharObjectHashMap;
+import it.unimi.dsi.fastutil.chars.Char2ObjectMap;
+import it.unimi.dsi.fastutil.chars.Char2ObjectOpenHashMap;
 import it.unimi.dsi.fastutil.ints.Int2ObjectOpenHashMap;
 import lombok.extern.log4j.Log4j2;
 
@@ -69,13 +69,13 @@ public class CraftingManager {
         }
         this.rebuildPacket();
 
-        MainLogger.getLogger().info("Loaded " + this.recipes.size() + " recipes.");
+        log.info("Loaded " + this.recipes.size() + " recipes.");
     }
 
     @SuppressWarnings("unchecked")
     private void loadRecipes(Config config) {
         List<Map> recipes = config.getMapList("recipes");
-        MainLogger.getLogger().info("Loading recipes...");
+        log.info("Loading recipes...");
         for (Map<String, Object> recipe : recipes) {
             try {
                 switch (Utils.toInt(recipe.get("type"))) {
@@ -115,7 +115,7 @@ public class CraftingManager {
 
                         first = outputs.remove(0);
                         String[] shape = ((List<String>) recipe.get("shape")).toArray(new String[0]);
-                        Map<Character, Item> ingredients = new CharObjectHashMap<>();
+                        Char2ObjectMap<Item> ingredients = new Char2ObjectOpenHashMap<>();
                         List<Item> extraResults = new ArrayList<>();
 
                         Map<String, Map<String, Object>> input = (Map) recipe.get("input");
@@ -157,7 +157,7 @@ public class CraftingManager {
                         break;
                 }
             } catch (Exception e) {
-                MainLogger.getLogger().error("Exception during registering recipe", e);
+                log.error("Exception during registering recipe", e);
             }
         }
 
