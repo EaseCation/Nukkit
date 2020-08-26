@@ -4,9 +4,10 @@ import cn.nukkit.inventory.transaction.data.ReleaseItemData;
 import cn.nukkit.inventory.transaction.data.TransactionData;
 import cn.nukkit.inventory.transaction.data.UseItemData;
 import cn.nukkit.inventory.transaction.data.UseItemOnEntityData;
+import cn.nukkit.network.protocol.types.InventoryTransactionPacketInterface;
 import cn.nukkit.network.protocol.types.NetworkInventoryAction;
 
-public class InventoryTransactionPacket extends DataPacket {
+public class InventoryTransactionPacket extends DataPacket implements InventoryTransactionPacketInterface {
 
     public static final int TYPE_NORMAL = 0;
     public static final int TYPE_MISMATCH = 1;
@@ -34,12 +35,31 @@ public class InventoryTransactionPacket extends DataPacket {
     public int transactionType;
     public NetworkInventoryAction[] actions;
     public TransactionData transactionData;
+    public boolean hasNetworkIds;
+    public int legacyRequestId;
 
     /**
      * NOTE: THIS FIELD DOES NOT EXIST IN THE PROTOCOL, it's merely used for convenience for PocketMine-MP to easily
      * determine whether we're doing a crafting transaction.
      */
     public boolean isCraftingPart = false;
+    public boolean isEnchantingPart = false;
+
+    public void setCraftingPart(boolean craftingPart) {
+        isCraftingPart = craftingPart;
+    }
+
+    public boolean isCraftingPart() {
+        return isCraftingPart;
+    }
+
+    public void setEnchantingPart(boolean enchantingPart) {
+        isEnchantingPart = enchantingPart;
+    }
+
+    public boolean isEnchantingPart() {
+        return isEnchantingPart;
+    }
 
     @Override
     public int pid() {
@@ -100,7 +120,7 @@ public class InventoryTransactionPacket extends DataPacket {
 
         this.actions = new NetworkInventoryAction[(int) this.getUnsignedVarInt()];
         for (int i = 0; i < this.actions.length; i++) {
-            this.actions[i] = new NetworkInventoryAction().read(this);
+            this.actions[i] = new NetworkInventoryAction().read(this, this);
         }
 
         switch (this.transactionType) {

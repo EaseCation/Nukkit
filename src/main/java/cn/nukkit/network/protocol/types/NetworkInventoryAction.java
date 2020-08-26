@@ -8,7 +8,9 @@ import cn.nukkit.inventory.EnchantInventory;
 import cn.nukkit.inventory.Inventory;
 import cn.nukkit.inventory.transaction.action.*;
 import cn.nukkit.item.Item;
+import cn.nukkit.network.protocol.DataPacket;
 import cn.nukkit.network.protocol.InventoryTransactionPacket;
+import cn.nukkit.utils.BinaryStream;
 import lombok.ToString;
 
 /**
@@ -67,7 +69,7 @@ public class NetworkInventoryAction {
     public Item oldItem;
     public Item newItem;
 
-    public NetworkInventoryAction read(InventoryTransactionPacket packet) {
+    public NetworkInventoryAction read(DataPacket packet, InventoryTransactionPacketInterface interfaze) {
         this.sourceType = (int) packet.getUnsignedVarInt();
 
         switch (this.sourceType) {
@@ -82,11 +84,10 @@ public class NetworkInventoryAction {
             case SOURCE_TODO:
             case SOURCE_CRAFT_SLOT:
                 this.windowId = packet.getVarInt();
-
                 switch (this.windowId) {
                     case SOURCE_TYPE_CRAFTING_RESULT:
                     case SOURCE_TYPE_CRAFTING_USE_INGREDIENT:
-                        packet.isCraftingPart = true;
+                        interfaze.setCraftingPart(true);
                         break;
                 }
                 break;
@@ -99,7 +100,7 @@ public class NetworkInventoryAction {
         return this;
     }
 
-    public void write(InventoryTransactionPacket packet) {
+    public void write(BinaryStream packet) {
         packet.putUnsignedVarInt(this.sourceType);
 
         switch (this.sourceType) {
