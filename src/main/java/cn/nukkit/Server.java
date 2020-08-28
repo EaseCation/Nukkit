@@ -626,10 +626,10 @@ public class Server {
         }
 
         if (!forceSync && this.networkCompressionAsync) {
-            this.getScheduler().scheduleAsyncTask(new CompressBatchedTask(data, targets, this.networkCompressionLevel));
+            this.getScheduler().scheduleAsyncTask(new CompressBatchedTask(data, targets, this.networkCompressionLevel)); //TODO: zlibRaw? 2020/08/27
         } else {
             try {
-                this.broadcastPacketsCallback(Zlib.deflate(data, this.networkCompressionLevel), targets);
+                this.broadcastPacketsCallback(Zlib.deflate(data, this.networkCompressionLevel), targets); //TODO: zlibRaw? 2020/08/27
             } catch (Exception e) {
                 throw new RuntimeException(e);
             }

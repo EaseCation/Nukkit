@@ -1,6 +1,7 @@
 package cn.nukkit.network.protocol;
 
 import cn.nukkit.Server;
+import cn.nukkit.network.Network;
 import cn.nukkit.utils.Binary;
 import cn.nukkit.utils.BinaryStream;
 import cn.nukkit.utils.Zlib;
@@ -73,6 +74,14 @@ public abstract class DataPacket extends BinaryStream implements Cloneable {
     }
 
     public BatchPacket compress(int level) {
+        return compress(level, false);
+    }
+
+    public BatchPacket compress(boolean zlibRaw) {
+        return compress(Server.getInstance().networkCompressionLevel, zlibRaw);
+    }
+
+    public BatchPacket compress(int level, boolean zlibRaw) {
         BatchPacket batch = new BatchPacket();
         byte[][] batchPayload = new byte[2][];
         byte[] buf = getBuffer();
@@ -80,7 +89,7 @@ public abstract class DataPacket extends BinaryStream implements Cloneable {
         batchPayload[1] = buf;
         byte[] data = Binary.appendBytes(batchPayload);
         try {
-            batch.payload = Zlib.deflate(data, level);
+            batch.payload = zlibRaw ? Network.deflateRaw(data, level) : Zlib.deflate(data, level);
         } catch (Exception e) {
             throw new RuntimeException(e);
         }

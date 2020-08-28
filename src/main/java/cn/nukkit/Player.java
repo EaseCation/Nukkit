@@ -55,6 +55,7 @@ import cn.nukkit.math.*;
 import cn.nukkit.metadata.MetadataValue;
 import cn.nukkit.nbt.NBTIO;
 import cn.nukkit.nbt.tag.*;
+import cn.nukkit.network.Network;
 import cn.nukkit.network.SourceInterface;
 import cn.nukkit.network.protocol.*;
 import cn.nukkit.network.protocol.types.ContainerIds;
@@ -4639,7 +4640,19 @@ public class Player extends EntityHuman implements CommandSender, InventoryHolde
         return this.isConnected();
     }
 
+    /**
+     * @deprecated Use {@link Level#getChunkCacheFromData}.
+     */
+    @Deprecated
     public static BatchPacket getChunkCacheFromData(int chunkX, int chunkZ, byte[] payload) {
+        return getChunkCacheFromData(chunkX, chunkZ, payload, false);
+    }
+
+    /**
+     * @deprecated Use {@link Level#getChunkCacheFromData}.
+     */
+    @Deprecated
+    public static BatchPacket getChunkCacheFromData(int chunkX, int chunkZ, byte[] payload, boolean zlibRaw) {
         FullChunkDataPacket pk = new FullChunkDataPacket();
         pk.chunkX = chunkX;
         pk.chunkZ = chunkZ;
@@ -4654,7 +4667,7 @@ public class Player extends EntityHuman implements CommandSender, InventoryHolde
         batchPayload[1] = buf;
         byte[] data = Binary.appendBytes(batchPayload);
         try {
-            batch.payload = Zlib.deflate(data, Server.getInstance().networkCompressionLevel);
+            batch.payload = zlibRaw ? Network.deflateRaw(data, Server.getInstance().networkCompressionLevel) : Zlib.deflate(data, Server.getInstance().networkCompressionLevel);
         } catch (Exception e) {
             throw new RuntimeException(e);
         }

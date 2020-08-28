@@ -214,7 +214,7 @@ public class Network {
     public void processBatch(BatchPacket packet, Player player) {
         byte[] data;
         try {
-            data = Zlib.inflate(packet.payload, 2 * 1024 * 1024); // Max 2MB
+            data = Zlib.inflate(packet.payload, 2 * 1024 * 1024); // Max 2MB //TODO: zlibRaw? 2020/08/27
         } catch (Exception e) {
             return;
         }

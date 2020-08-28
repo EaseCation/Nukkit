@@ -28,6 +28,8 @@ public class CraftingManager {
     public final Collection<Recipe> recipes = new ArrayDeque<>();
 
     public static BatchPacket packet = null;
+    public static BatchPacket packetRaw;
+
     protected final Map<Integer, Map<UUID, ShapedRecipe>> shapedRecipes = new Int2ObjectOpenHashMap<>();
 
     public final Map<Integer, FurnaceRecipe> furnaceRecipes = new Int2ObjectOpenHashMap<>();
@@ -210,6 +212,7 @@ public class CraftingManager {
         pk.encode();
 
         packet = pk.compress(Deflater.BEST_COMPRESSION);
+        packetRaw = pk.compress(Deflater.BEST_COMPRESSION, true);
     }
 
     public Collection<Recipe> getRecipes() {
