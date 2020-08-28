@@ -62,6 +62,11 @@ public class InventoryTransactionPacket extends DataPacket implements InventoryT
     }
 
     @Override
+    public boolean hasNetworkIds() {
+        return false;
+    }
+
+    @Override
     public int pid() {
         return ProtocolInfo.INVENTORY_TRANSACTION_PACKET;
     }
@@ -73,7 +78,7 @@ public class InventoryTransactionPacket extends DataPacket implements InventoryT
 
         this.putUnsignedVarInt(this.actions.length);
         for (NetworkInventoryAction action : this.actions) {
-            action.write(this);
+            action.write(this, this);
         }
 
         switch (this.transactionType) {

@@ -68,6 +68,7 @@ public class NetworkInventoryAction {
     public int inventorySlot;
     public Item oldItem;
     public Item newItem;
+    public int stackNetworkId;
 
     public NetworkInventoryAction read(DataPacket packet, InventoryTransactionPacketInterface interfaze) {
         this.sourceType = (int) packet.getUnsignedVarInt();
@@ -89,6 +90,11 @@ public class NetworkInventoryAction {
                     case SOURCE_TYPE_CRAFTING_USE_INGREDIENT:
                         interfaze.setCraftingPart(true);
                         break;
+                    case SOURCE_TYPE_ENCHANT_INPUT:
+                    case SOURCE_TYPE_ENCHANT_OUTPUT:
+                    case SOURCE_TYPE_ENCHANT_MATERIAL:
+                        interfaze.setEnchantingPart(true);
+                        break;
                 }
                 break;
         }
@@ -97,10 +103,13 @@ public class NetworkInventoryAction {
         this.oldItem = packet.getSlot();
         this.newItem = packet.getSlot();
 
+        if (interfaze.hasNetworkIds()) {
+            this.stackNetworkId = packet.getVarInt();
+        }
         return this;
     }
 
-    public void write(BinaryStream packet) {
+    public void write(BinaryStream packet, InventoryTransactionPacketInterface interfaze) {
         packet.putUnsignedVarInt(this.sourceType);
 
         switch (this.sourceType) {
@@ -121,6 +130,10 @@ public class NetworkInventoryAction {
         packet.putUnsignedVarInt(this.inventorySlot);
         packet.putSlot(this.oldItem);
         packet.putSlot(this.newItem);
+
+        if (interfaze.hasNetworkIds()) {
+            packet.putVarInt(this.stackNetworkId);
+        }
     }
 
     public InventoryAction createInventoryAction(Player player) {

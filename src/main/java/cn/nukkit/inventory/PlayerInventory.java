@@ -11,6 +11,8 @@ import cn.nukkit.event.player.PlayerItemHeldEvent;
 import cn.nukkit.item.Item;
 import cn.nukkit.item.ItemBlock;
 import cn.nukkit.item.ItemFishingRod;
+import cn.nukkit.network.protocol.ContainerClosePacket;
+import cn.nukkit.network.protocol.ContainerOpenPacket;
 import cn.nukkit.network.protocol.InventoryContentPacket;
 import cn.nukkit.network.protocol.InventorySlotPacket;
 import cn.nukkit.network.protocol.MobArmorEquipmentPacket;
@@ -497,5 +499,29 @@ public class PlayerInventory extends BaseInventory {
     @Override
     public EntityHuman getHolder() {
         return (EntityHuman) super.getHolder();
+    }
+
+    @Override
+    public void onOpen(Player who) {
+        super.onOpen(who);
+        ContainerOpenPacket pk = new ContainerOpenPacket();
+        pk.windowId = who.getWindowId(this);
+        pk.type = this.getType().getNetworkType();
+        pk.x = who.getFloorX();
+        pk.y = who.getFloorY();
+        pk.z = who.getFloorZ();
+        pk.entityId = who.getId();
+        who.dataPacket(pk);
+    }
+
+    @Override
+    public void onClose(Player who) {
+        ContainerClosePacket pk = new ContainerClosePacket();
+        pk.windowId = who.getWindowId(this);
+        who.dataPacket(pk);
+        // player can never stop viewing their own inventory
+        if (who != holder) {
+            super.onClose(who);
+        }
     }
 }
