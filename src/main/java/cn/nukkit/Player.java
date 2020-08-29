@@ -817,7 +817,7 @@ public class Player extends EntityHuman implements CommandSender, InventoryHolde
         this.usedChunks.put(Level.chunkHash(x, z), true);
         this.chunkLoadCount++;
 
-        this.dataPacket(packet.setReliability(RakNetReliability.RELIABLE));
+        this.dataPacket(packet.setReliability(RakNetReliability.RELIABLE_ORDERED));
 
         if (this.spawned) {
             for (Entity entity : this.level.getChunkEntities(x, z).values()) {
