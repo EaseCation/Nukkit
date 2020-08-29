@@ -145,5 +145,4 @@ public class BlockEntitySign extends BlockEntitySpawnable {
             }
         }
     }
-
 }

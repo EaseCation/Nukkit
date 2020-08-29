@@ -42,6 +42,12 @@ public final class CommandOriginData {
         ENTITY,
         VIRTUAL,
         GAME_ARGUMENT,
-        ENTITY_SERVER
+        ENTITY_SERVER;
+
+        private static final Origin[] $VALUES0 = values();
+
+        public static Origin[] values0() {
+            return $VALUES0;
+        }
     }
 }

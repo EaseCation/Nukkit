@@ -5,6 +5,9 @@ import cn.nukkit.scheduler.FileWriteTask;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.google.gson.reflect.TypeToken;
+import it.unimi.dsi.fastutil.objects.Object2IntMap;
+import it.unimi.dsi.fastutil.objects.Object2IntRBTreeMap;
+import lombok.extern.log4j.Log4j2;
 import org.yaml.snakeyaml.DumperOptions;
 import org.yaml.snakeyaml.Yaml;
 
@@ -19,6 +22,7 @@ import java.util.regex.Pattern;
  * author: MagicDroidX
  * Nukkit
  */
+@Log4j2
 public class Config {
 
     public static final int DETECT = -1; //Detect by file extension
@@ -33,12 +37,11 @@ public class Config {
 
     //private LinkedHashMap<String, Object> config = new LinkedHashMap<>();
     private ConfigSection config = new ConfigSection();
-    private final Map<String, Object> nestedCache = new HashMap<>();
     private File file;
     private boolean correct = false;
     private int type = Config.DETECT;
 
-    public static final Map<String, Integer> format = new TreeMap<>();
+    public static final Object2IntMap<String> format = new Object2IntRBTreeMap<>();
 
     static {
         format.put("properties", Config.PROPERTIES);
@@ -110,7 +113,6 @@ public class Config {
 
     public void reload() {
         this.config.clear();
-        this.nestedCache.clear();
         this.correct = false;
         //this.load(this.file.toString());
         if (this.file == null) throw new IllegalStateException("Failed to reload Config. File object is undefined.");
@@ -126,7 +128,6 @@ public class Config {
         return this.load(file, type, new ConfigSection());
     }
 
-    @SuppressWarnings("unchecked")
     public boolean load(String file, int type, ConfigSection defaultMap) {
         this.correct = true;
         this.type = type;
@@ -136,7 +137,7 @@ public class Config {
                 this.file.getParentFile().mkdirs();
                 this.file.createNewFile();
             } catch (IOException e) {
-                MainLogger.getLogger().error("Could not create Config " + this.file.toString(), e);
+                log.error("Could not create Config " + this.file.toString(), e);
             }
             this.config = defaultMap;
             this.save();
@@ -147,7 +148,7 @@ public class Config {
                     extension = this.file.getName().substring(this.file.getName().lastIndexOf(".") + 1);
                 }
                 if (format.containsKey(extension)) {
-                    this.type = format.get(extension);
+                    this.type = format.getInt(extension);
                 } else {
                     this.correct = false;
                 }
@@ -218,33 +219,33 @@ public class Config {
     public boolean save(Boolean async) {
         if (this.file == null) throw new IllegalStateException("Failed to save Config. File object is undefined.");
         if (this.correct) {
-            String content = "";
+            StringBuilder content = new StringBuilder();
             switch (this.type) {
                 case Config.PROPERTIES:
-                    content = this.writeProperties();
+                    content = new StringBuilder(this.writeProperties());
                     break;
                 case Config.JSON:
-                    content = new GsonBuilder().setPrettyPrinting().create().toJson(this.config);
+                    content = new StringBuilder(new GsonBuilder().setPrettyPrinting().create().toJson(this.config));
                     break;
                 case Config.YAML:
                     DumperOptions dumperOptions = new DumperOptions();
                     dumperOptions.setDefaultFlowStyle(DumperOptions.FlowStyle.BLOCK);
                     Yaml yaml = new Yaml(dumperOptions);
-                    content = yaml.dump(this.config);
+                    content = new StringBuilder(yaml.dump(this.config));
                     break;
                 case Config.ENUM:
                     for (Object o : this.config.entrySet()) {
                         Map.Entry entry = (Map.Entry) o;
-                        content += String.valueOf(entry.getKey()) + "\r\n";
+                        content.append(entry.getKey()).append("\r\n");
                     }
                     break;
             }
             if (async) {
-                Server.getInstance().getScheduler().scheduleAsyncTask(new FileWriteTask(this.file, content));
+                Server.getInstance().getScheduler().scheduleAsyncTask(new FileWriteTask(this.file, content.toString()));
 
             } else {
                 try {
-                    Utils.writeFile(this.file, content);
+                    Utils.writeFile(this.file, content.toString());
                 } catch (IOException e) {
                     Server.getInstance().getLogger().logException(e);
                 }
@@ -263,7 +264,6 @@ public class Config {
         return this.get(key, null);
     }
 
-    @SuppressWarnings("unchecked")
     public <T> T get(String key, T defaultValue) {
         return this.correct ? this.config.get(key, defaultValue) : defaultValue;
     }
@@ -460,7 +460,7 @@ public class Config {
     }
 
     private String writeProperties() {
-        String content = "#Properties Config file\r\n#" + new SimpleDateFormat("yyyy-MM-dd hh:mm:ss").format(new Date()) + "\r\n";
+        StringBuilder content = new StringBuilder("#Properties Config file\r\n#" + new SimpleDateFormat("yyyy-MM-dd hh:mm:ss").format(new Date()) + "\r\n");
         for (Object o : this.config.entrySet()) {
             Map.Entry entry = (Map.Entry) o;
             Object v = entry.getValue();
@@ -468,34 +468,37 @@ public class Config {
             if (v instanceof Boolean) {
                 v = (Boolean) v ? "on" : "off";
             }
-            content += String.valueOf(k) + "=" + String.valueOf(v) + "\r\n";
+            content.append(k).append("=").append(v).append("\r\n");
         }
-        return content;
+        return content.toString();
     }
 
     private void parseProperties(String content) {
-        for (String line : content.split("\n")) {
-            if (Pattern.compile("[a-zA-Z0-9\\-_\\.]*+=+[^\\r\\n]*").matcher(line).matches()) {
-                String[] b = line.split("=", -1);
-                String k = b[0];
-                String v = b[1].trim();
-                String v_lower = v.toLowerCase();
-                if (this.config.containsKey(k)) {
-                    MainLogger.getLogger().debug("[Config] Repeated property " + k + " on file " + this.file.toString());
+        for (final String line : content.split("\n")) {
+            if (Pattern.compile("[a-zA-Z0-9\\-_.]*+=+[^\\r\\n]*").matcher(line).matches()) {
+                final int splitIndex = line.indexOf('=');
+                if (splitIndex == -1) {
+                    continue;
                 }
-                switch (v_lower) {
+                final String key = line.substring(0, splitIndex);
+                final String value = line.substring(splitIndex + 1);
+                final String valueLower = value.toLowerCase();
+                if (this.config.containsKey(key)) {
+                    log.debug("[Config] Repeated property " + key + " on file " + this.file.toString());
+                }
+                switch (valueLower) {
                     case "on":
                     case "true":
                     case "yes":
-                        this.config.put(k, true);
+                        this.config.put(key, true);
                         break;
                     case "off":
                     case "false":
                     case "no":
-                        this.config.put(k, false);
+                        this.config.put(key, false);
                         break;
                     default:
-                        this.config.put(k, v);
+                        this.config.put(key, value);
                         break;
                 }
             }
@@ -511,7 +514,7 @@ public class Config {
     }
 
     /**
-     * @deprecated use {@link #get(String, T)} instead
+     * @deprecated use {@link #get(String, Object)} instead
      */
     @Deprecated
     public <T> T getNested(String key, T defaultValue) {
@@ -551,9 +554,6 @@ public class Config {
                 dumperOptions.setDefaultFlowStyle(DumperOptions.FlowStyle.BLOCK);
                 Yaml yaml = new Yaml(dumperOptions);
                 this.config = new ConfigSection(yaml.loadAs(content, LinkedHashMap.class));
-                if (this.config == null) {
-                    this.config = new ConfigSection();
-                }
                 break;
             // case Config.SERIALIZED
             case Config.ENUM:

@@ -28,6 +28,17 @@ public class EntityEndCrystal extends Entity implements EntityExplosive {
     @Override
     protected void initEntity() {
         super.initEntity();
+
+        if (this.namedTag.contains("ShowBottom")) {
+            this.setShowBase(this.namedTag.getBoolean("ShowBottom"));
+        }
+    }
+
+    @Override
+    public void saveNBT() {
+        super.saveNBT();
+
+        this.namedTag.putBoolean("ShowBottom", this.showBase());
     }
 
     @Override

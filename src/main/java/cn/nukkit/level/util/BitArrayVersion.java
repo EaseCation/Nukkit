@@ -23,7 +23,7 @@ public enum BitArrayVersion {
     }
 
     public static BitArrayVersion get(int version, boolean read) {
-        for (BitArrayVersion ver : values()) {
+        for (BitArrayVersion ver : values0()) {
             if ((!read && ver.entriesPerWord <= version) || (read && ver.bits == version)) {
                 return ver;
             }
@@ -58,5 +58,11 @@ public enum BitArrayVersion {
         } else {
             return new Pow2BitArray(this, size, words);
         }
+    }
+
+    private static final BitArrayVersion[] $VALUES0 = values();
+
+    public static BitArrayVersion[] values0() {
+        return $VALUES0;
     }
 }

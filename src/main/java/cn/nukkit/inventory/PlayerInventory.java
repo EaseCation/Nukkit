@@ -2,7 +2,8 @@ package cn.nukkit.inventory;
 
 import cn.nukkit.Player;
 import cn.nukkit.Server;
-import cn.nukkit.block.BlockAir;
+import cn.nukkit.block.Block;
+import cn.nukkit.block.BlockID;
 import cn.nukkit.entity.EntityHuman;
 import cn.nukkit.entity.EntityHumanType;
 import cn.nukkit.event.entity.EntityArmorChangeEvent;
@@ -10,7 +11,6 @@ import cn.nukkit.event.entity.EntityInventoryChangeEvent;
 import cn.nukkit.event.player.PlayerItemHeldEvent;
 import cn.nukkit.item.Item;
 import cn.nukkit.item.ItemBlock;
-import cn.nukkit.item.ItemFishingRod;
 import cn.nukkit.network.protocol.ContainerClosePacket;
 import cn.nukkit.network.protocol.ContainerOpenPacket;
 import cn.nukkit.network.protocol.InventoryContentPacket;
@@ -66,7 +66,7 @@ public class PlayerInventory extends BaseInventory {
 
         if (this.getHolder() instanceof Player) {
             Player player = (Player) this.getHolder();
-            PlayerItemHeldEvent ev = new PlayerItemHeldEvent((Player) this.getHolder(), this.getItem(slot), slot);
+            PlayerItemHeldEvent ev = new PlayerItemHeldEvent(player, this.getItem(slot), slot);
             this.getHolder().getLevel().getServer().getPluginManager().callEvent(ev);
 
             if (ev.isCancelled()) {
@@ -124,7 +124,7 @@ public class PlayerInventory extends BaseInventory {
         if (item != null) {
             return item;
         } else {
-            return new ItemBlock(new BlockAir(), 0, 0);
+            return new ItemBlock(Block.get(BlockID.AIR), 0, 0);
         }
     }
 
@@ -170,7 +170,7 @@ public class PlayerInventory extends BaseInventory {
     }
 
     public void sendHeldItem(Collection<Player> players) {
-        this.sendHeldItem(players.stream().toArray(Player[]::new));
+        this.sendHeldItem(players.toArray(new Player[0]));
     }
 
     @Override
@@ -275,7 +275,7 @@ public class PlayerInventory extends BaseInventory {
     @Override
     public boolean clear(int index, boolean send) {
         if (this.slots.containsKey(index)) {
-            Item item = new ItemBlock(new BlockAir(), null, 0);
+            Item item = new ItemBlock(Block.get(BlockID.AIR), null, 0);
             Item old = this.slots.get(index);
             if (index >= this.getSize() && index < this.size) {
                 EntityArmorChangeEvent ev = new EntityArmorChangeEvent(this.getHolder(), old, item, index);
@@ -366,7 +366,7 @@ public class PlayerInventory extends BaseInventory {
 
         for (int i = 0; i < 4; ++i) {
             if (items[i] == null) {
-                items[i] = new ItemBlock(new BlockAir(), null, 0);
+                items[i] = new ItemBlock(Block.get(BlockID.AIR), null, 0);
             }
 
             if (items[i].getId() == Item.AIR) {
@@ -378,7 +378,7 @@ public class PlayerInventory extends BaseInventory {
     }
 
     public void sendArmorContents(Collection<Player> players) {
-        this.sendArmorContents(players.stream().toArray(Player[]::new));
+        this.sendArmorContents(players.toArray(new Player[0]));
     }
 
     public void sendArmorSlot(int index, Player player) {
@@ -408,7 +408,7 @@ public class PlayerInventory extends BaseInventory {
     }
 
     public void sendArmorSlot(int index, Collection<Player> players) {
-        this.sendArmorSlot(index, players.stream().toArray(Player[]::new));
+        this.sendArmorSlot(index, players.toArray(new Player[0]));
     }
 
     @Override
@@ -418,7 +418,7 @@ public class PlayerInventory extends BaseInventory {
 
     @Override
     public void sendContents(Collection<Player> players) {
-        this.sendContents(players.stream().toArray(Player[]::new));
+        this.sendContents(players.toArray(new Player[0]));
     }
 
     @Override
@@ -431,9 +431,9 @@ public class PlayerInventory extends BaseInventory {
 
         /*//Because PE is stupid and shows 9 less slots than you send it, give it 9 dummy slots so it shows all the REAL slots.
         for(int i = this.getSize(); i < this.getSize() + this.getHotbarSize(); ++i){
-            pk.slots[i] = new ItemBlock(new BlockAir());
+            pk.slots[i] = new ItemBlock(Block.get(BlockID.AIR));
         }
-            pk.slots[i] = new ItemBlock(new BlockAir());
+            pk.slots[i] = new ItemBlock(Block.get(BlockID.AIR));
         }*/
 
         for (Player player : players) {
@@ -455,7 +455,7 @@ public class PlayerInventory extends BaseInventory {
 
     @Override
     public void sendSlot(int index, Collection<Player> players) {
-        this.sendSlot(index, players.stream().toArray(Player[]::new));
+        this.sendSlot(index, players.toArray(new Player[0]));
     }
 
     @Override

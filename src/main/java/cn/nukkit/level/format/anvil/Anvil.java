@@ -10,15 +10,16 @@ import cn.nukkit.level.generator.Generator;
 import cn.nukkit.math.XXHash64;
 import cn.nukkit.nbt.NBTIO;
 import cn.nukkit.nbt.tag.CompoundTag;
-import cn.nukkit.network.protocol.BatchPacket;
 import cn.nukkit.scheduler.AsyncTask;
 import cn.nukkit.utils.BinaryStream;
 import cn.nukkit.utils.ChunkException;
 import cn.nukkit.utils.ThreadCache;
+import it.unimi.dsi.fastutil.ints.Int2IntMap;
 import it.unimi.dsi.fastutil.longs.Long2ObjectOpenHashMap;
 import it.unimi.dsi.fastutil.longs.LongArrayList;
 import it.unimi.dsi.fastutil.longs.LongList;
 import it.unimi.dsi.fastutil.objects.ObjectIterator;
+import lombok.extern.log4j.Log4j2;
 
 import java.io.File;
 import java.io.FileOutputStream;
@@ -34,6 +35,7 @@ import java.util.regex.Pattern;
  * author: MagicDroidX
  * Nukkit Project
  */
+@Log4j2
 public class Anvil extends BaseLevelProvider {
     public static final int VERSION = 19133;
     static private final byte[] PAD_256 = new byte[256];
@@ -82,7 +84,7 @@ public class Anvil extends BaseLevelProvider {
                 .putLong("DayTime", 0)
                 .putInt("GameType", 0)
                 .putString("generatorName", Generator.getGeneratorName(generator))
-                .putString("generatorOptions", options.containsKey("preset") ? options.get("preset") : "")
+                .putString("generatorOptions", options.getOrDefault("preset", ""))
                 .putInt("generatorVersion", 1)
                 .putBoolean("hardcore", false)
                 .putBoolean("initialized", true)
@@ -148,14 +150,14 @@ public class Anvil extends BaseLevelProvider {
                         }
                     }
 
-                    Map<Integer, Integer> extra = chunk.getBlockExtraDataArray();
+                    Int2IntMap extra = chunk.getBlockExtraDataArray();
                     BinaryStream extraData;
                     if (!extra.isEmpty()) {
                         extraData = new BinaryStream();
                         extraData.putVarInt(extra.size());
-                        for (Map.Entry<Integer, Integer> entry : extra.entrySet()) {
-                            extraData.putVarInt(entry.getKey());
-                            extraData.putLShort(entry.getValue());
+                        for (Int2IntMap.Entry entry : extra.int2IntEntrySet()) {
+                            extraData.putVarInt(entry.getIntKey());
+                            extraData.putLShort(entry.getIntValue());
                         }
                     } else {
                         extraData = null;
@@ -207,7 +209,7 @@ public class Anvil extends BaseLevelProvider {
                     }
                     success = true;
                 } catch (Exception e) {
-                    Server.getInstance().getLogger().alert("Chunk async load failed", e);
+                    log.warn("Chunk async load failed", e);
                 }
             }
 

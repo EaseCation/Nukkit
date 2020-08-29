@@ -14,7 +14,7 @@ import cn.nukkit.nbt.tag.FloatTag;
 import cn.nukkit.nbt.tag.ListTag;
 import cn.nukkit.network.protocol.LevelSoundEventPacket;
 
-import java.util.Random;
+import java.util.concurrent.ThreadLocalRandom;
 
 /**
  * author: MagicDroidX
@@ -46,7 +46,7 @@ public class ItemBow extends ItemTool {
 
     @Override
     public boolean onClickAir(Player player, Vector3 directionVector) {
-        return player.getInventory().contains(Item.get(Item.ARROW)) || player.isCreative();
+        return player.getInventory().contains(Item.get(ItemID.ARROW)) || player.isCreative();
     }
 
     @Override
@@ -110,7 +110,7 @@ public class ItemBow extends ItemTool {
                 }
                 if (!this.isUnbreakable()) {
                     Enchantment durability = this.getEnchantment(Enchantment.ID_DURABILITY);
-                    if (!(durability != null && durability.getLevel() > 0 && (100 / (durability.getLevel() + 1)) <= new Random().nextInt(100))) {
+                    if (!(durability != null && durability.getLevel() > 0 && (100 / (durability.getLevel() + 1)) <= ThreadLocalRandom.current().nextInt(100))) {
                         this.setDamage(this.getDamage() + 1);
                         if (this.getDamage() >= getMaxDurability()) {
                             this.count--;

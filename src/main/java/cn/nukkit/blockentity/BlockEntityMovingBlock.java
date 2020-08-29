@@ -15,8 +15,6 @@ public class BlockEntityMovingBlock extends BlockEntitySpawnable {
     public BlockVector3 piston;
     public int progress;
 
-    public boolean isMovable;
-
     public BlockEntityMovingBlock(FullChunk chunk, CompoundTag nbt) {
         super(chunk, nbt);
     }
@@ -49,12 +47,7 @@ public class BlockEntityMovingBlock extends BlockEntitySpawnable {
 
     @Override
     public CompoundTag getSpawnCompound() {
-        return new CompoundTag()
-                .putString("id", BlockEntity.MOVING_BLOCK)
-                .putInt("x", (int) this.x)
-                .putInt("y", (int) this.y)
-                .putInt("z", (int) this.z)
-                .putBoolean("isMovable", this.isMovable)
+        return getDefaultCompound(this, MOVING_BLOCK)
                 .putFloat("movingBlockId", this.block.getId())
                 .putFloat("movingBlockData", this.block.getDamage())
                 .putInt("pistonPosX", this.piston.x)

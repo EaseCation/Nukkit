@@ -7,6 +7,7 @@ import cn.nukkit.item.enchantment.Enchantment;
 import cn.nukkit.utils.BlockColor;
 
 import java.util.Random;
+import java.util.concurrent.ThreadLocalRandom;
 
 /**
  * Created on 2015/12/11 by Pub4Game.
@@ -38,7 +39,7 @@ public class BlockMelon extends BlockSolid {
 
     @Override
     public Item[] getDrops(Item item) {
-        Random random = new Random();
+        Random random = ThreadLocalRandom.current();
         int count = 3 + random.nextInt(5);
 
         Enchantment fortune = item.getEnchantment(Enchantment.ID_FORTUNE_DIGGING);

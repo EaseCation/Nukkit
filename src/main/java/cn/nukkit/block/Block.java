@@ -18,6 +18,7 @@ import cn.nukkit.metadata.Metadatable;
 import cn.nukkit.plugin.Plugin;
 import cn.nukkit.potion.Effect;
 import cn.nukkit.utils.BlockColor;
+import lombok.extern.log4j.Log4j2;
 
 import java.lang.reflect.Constructor;
 import java.util.List;
@@ -28,6 +29,7 @@ import java.util.Optional;
  * author: MagicDroidX
  * Nukkit Project
  */
+@Log4j2
 public abstract class Block extends Position implements Metadatable, Cloneable, AxisAlignedBB, BlockID {
     public static Class[] list = null;
     public static Block[] fullList = null;
@@ -319,7 +321,7 @@ public abstract class Block extends Position implements Metadatable, Cloneable, 
                             }
                         }
                     } catch (Exception e) {
-                        Server.getInstance().getLogger().error("Error while registering " + c.getName(), e);
+                        log.error("Error while registering " + c.getName(), e);
                         for (int data = 0; data < 16; ++data) {
                             fullList[(id << 4) | data] = new BlockUnknown(id, data);
                         }
@@ -366,7 +368,6 @@ public abstract class Block extends Position implements Metadatable, Cloneable, 
         }
     }
 
-    @SuppressWarnings("unchecked")
     public static Block get(int id, Integer meta, Position pos) {
         Block block = fullList[(id << 4) | (meta == null ? 0 : meta)].clone();
         if (pos != null) {
@@ -409,7 +410,7 @@ public abstract class Block extends Position implements Metadatable, Cloneable, 
     }
 
     public boolean onBreak(Item item) {
-        return this.getLevel().setBlock(this, new BlockAir(), true, true);
+        return this.getLevel().setBlock(this, Block.get(BlockID.AIR), true, true);
     }
 
     public int onUpdate(int type) {

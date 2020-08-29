@@ -2,13 +2,12 @@ package cn.nukkit.blockentity;
 
 import cn.nukkit.Player;
 import cn.nukkit.block.Block;
-import cn.nukkit.block.BlockAir;
+import cn.nukkit.block.BlockID;
 import cn.nukkit.inventory.BeaconInventory;
 import cn.nukkit.item.ItemBlock;
 import cn.nukkit.level.format.FullChunk;
 import cn.nukkit.level.sound.SoundEnum;
 import cn.nukkit.nbt.tag.CompoundTag;
-import cn.nukkit.network.protocol.LevelSoundEventPacket;
 import cn.nukkit.potion.Effect;
 
 import java.util.Map;
@@ -188,7 +187,7 @@ public class BlockEntityBeacon extends BlockEntitySpawnable {
                                     testBlockId != Block.GOLD_BLOCK &&
                                     testBlockId != Block.EMERALD_BLOCK &&
                                     testBlockId != Block.DIAMOND_BLOCK
-                    ) {
+                            ) {
                         return powerLevel - 1;
                     }
 
@@ -252,7 +251,7 @@ public class BlockEntityBeacon extends BlockEntitySpawnable {
 
         BeaconInventory inv = (BeaconInventory)player.getWindowById(Player.BEACON_WINDOW_ID);
 
-        inv.setItem(0, new ItemBlock(new BlockAir(), 0, 0));
+        inv.setItem(0, new ItemBlock(Block.get(BlockID.AIR), 0, 0));
         return true;
     }
 }

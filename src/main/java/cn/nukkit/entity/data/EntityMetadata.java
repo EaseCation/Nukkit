@@ -1,12 +1,12 @@
 package cn.nukkit.entity.data;
 
-import cn.nukkit.block.BlockAir;
+import cn.nukkit.block.Block;
+import cn.nukkit.block.BlockID;
 import cn.nukkit.item.Item;
 import cn.nukkit.item.ItemBlock;
 import cn.nukkit.math.Vector3;
-
-import java.util.HashMap;
-import java.util.Map;
+import it.unimi.dsi.fastutil.ints.Int2ObjectMap;
+import it.unimi.dsi.fastutil.ints.Int2ObjectOpenHashMap;
 
 /**
  * author: MagicDroidX
@@ -14,7 +14,7 @@ import java.util.Map;
  */
 public class EntityMetadata {
 
-    private final Map<Integer, EntityData> map = new HashMap<>();
+    private final Int2ObjectMap<EntityData> map = new Int2ObjectOpenHashMap<>();
 
     public EntityData get(int id) {
         return this.getOrDefault(id, null);
@@ -65,7 +65,7 @@ public class EntityMetadata {
     }
 
     public Item getSlot(int id) {
-        return (Item) this.getOrDefault(id, new SlotEntityData(id, new ItemBlock(new BlockAir()))).getData();
+        return (Item) this.getOrDefault(id, new SlotEntityData(id, new ItemBlock(Block.get(BlockID.AIR)))).getData();
     }
 
     public String getString(int id) {
@@ -112,7 +112,7 @@ public class EntityMetadata {
         return this.put(new StringEntityData(id, value));
     }
 
-    public Map<Integer, EntityData> getMap() {
-        return new HashMap<>(map);
+    public Int2ObjectMap<EntityData> getMap() {
+        return new Int2ObjectOpenHashMap<>(map);
     }
 }

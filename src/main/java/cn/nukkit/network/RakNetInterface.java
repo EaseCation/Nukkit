@@ -7,7 +7,6 @@ import cn.nukkit.event.server.QueryRegenerateEvent;
 import cn.nukkit.network.protocol.BatchPacket;
 import cn.nukkit.network.protocol.DataPacket;
 import cn.nukkit.network.protocol.ProtocolInfo;
-import cn.nukkit.utils.Binary;
 import cn.nukkit.utils.Utils;
 import com.google.common.base.Strings;
 import com.nukkitx.network.raknet.*;

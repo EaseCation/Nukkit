@@ -50,7 +50,7 @@ public class ItemBucket extends Item {
         }
     }
 
-    protected int getDamageByTarget(int target) {
+    public static int getDamageByTarget(int target) {
         switch (target) {
             case 2:
             case 3:
@@ -83,18 +83,18 @@ public class ItemBucket extends Item {
 
         if (targetBlock instanceof BlockAir) {
             if (target instanceof BlockLiquid && target.getDamage() == 0) {
-                Item result = Item.get(BUCKET, this.getDamageByTarget(target.getId()), 1);
+                Item result = Item.get(BUCKET, getDamageByTarget(target.getId()), 1);
                 PlayerBucketFillEvent ev;
                 player.getServer().getPluginManager().callEvent(ev = new PlayerBucketFillEvent(player, block, face, this, result));
                 if (!ev.isCancelled()) {
-                    player.getLevel().setBlock(target, new BlockAir(), true, true);
+                    player.getLevel().setBlock(target, Block.get(BlockID.AIR), true, true);
 
                     // When water is removed ensure any adjacent still water is
                     // replaced with water that can flow.
                     for (BlockFace side : Plane.HORIZONTAL) {
                         Block b = target.getSide(side);
                         if (b.getId() == STILL_WATER) {
-                            level.setBlock(b, new BlockWater());
+                            level.setBlock(b, Block.get(BlockID.WATER));
                         }
                     }
 
@@ -118,12 +118,14 @@ public class ItemBucket extends Item {
             }
         } else if (targetBlock instanceof BlockLiquid) {
             Item result = Item.get(BUCKET, 0, 1);
-            PlayerBucketEmptyEvent ev;
-            player.getServer().getPluginManager().callEvent(ev = new PlayerBucketEmptyEvent(player, block, face, this, result));
+            PlayerBucketEmptyEvent ev = new PlayerBucketEmptyEvent(player, block, face, this, result);
+            ev.setCancelled(!block.canBeFlowedInto());
 
-            if (player.getLevel().getName().equals("nether") && this.getDamage() != 10) {
+            if (player.getLevel().getDimension() == Level.DIMENSION_NETHER && this.getDamage() != 10) {
                 ev.setCancelled(true);
             }
+
+            player.getServer().getPluginManager().callEvent(ev);
 
             if (!ev.isCancelled()) {
                 player.getLevel().setBlock(block, targetBlock, true, true);

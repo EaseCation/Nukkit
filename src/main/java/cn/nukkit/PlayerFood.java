@@ -151,7 +151,7 @@ public class PlayerFood {
             } else if (this.getLevel() == 0) {
                 this.foodTickTimer += tickDiff;
                 if (this.foodTickTimer >= 80) {
-                    EntityDamageEvent ev = new EntityDamageEvent(this.getPlayer(), DamageCause.VOID, 1);
+                    EntityDamageEvent ev = new EntityDamageEvent(this.getPlayer(), DamageCause.HUNGER, 1);
                     float now = this.getPlayer().getHealth();
                     if (diff == 1) {
                         if (now > 10) this.getPlayer().attack(ev);
@@ -183,6 +183,7 @@ public class PlayerFood {
 
     /**
      * @deprecated use {@link #setLevel(int)} instead
+     * @param foodLevel level
      **/
     @Deprecated
     public void setFoodLevel(int foodLevel) {
@@ -191,6 +192,8 @@ public class PlayerFood {
 
     /**
      * @deprecated use {@link #setLevel(int, float)} instead
+     * @param foodLevel level
+     * @param saturationLevel saturation
      **/
     @Deprecated
     public void setFoodLevel(int foodLevel, float saturationLevel) {

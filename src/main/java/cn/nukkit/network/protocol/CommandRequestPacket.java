@@ -35,7 +35,7 @@ public class CommandRequestPacket extends DataPacket {
     @Override
     public void decode() {
         this.command = this.getString();
-        CommandOriginData.Origin type = CommandOriginData.Origin.values()[this.getVarInt()];
+        CommandOriginData.Origin type = CommandOriginData.Origin.values0()[this.getVarInt()];
         UUID uuid = null;
         try {
             uuid = this.getUUID();

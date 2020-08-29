@@ -19,6 +19,7 @@ import cn.nukkit.network.protocol.EntityEventPacket;
 import cn.nukkit.network.protocol.LevelSoundEventPacket;
 
 import java.util.Random;
+import java.util.concurrent.ThreadLocalRandom;
 
 /**
  * @author CreeperFace
@@ -36,7 +37,7 @@ public class EntityFirework extends Entity {
 
         this.fireworkAge = 0;
 
-        Random rand = new Random();
+        Random rand = ThreadLocalRandom.current();
         this.motionX = rand.nextGaussian() * 0.001D;
         this.motionZ = rand.nextGaussian() * 0.001D;
         this.motionY = 0.05D;
@@ -91,7 +92,7 @@ public class EntityFirework extends Entity {
             float f = (float) Math.sqrt(this.motionX * this.motionX + this.motionZ * this.motionZ);
             this.yaw = (float) (Math.atan2(this.motionX, this.motionZ) * (180D / Math.PI));
 
-            this.pitch = (float) (Math.atan2(this.motionY, (double) f) * (180D / Math.PI));
+            this.pitch = (float) (Math.atan2(this.motionY, f) * (180D / Math.PI));
 
 
             if (this.fireworkAge == 0) {

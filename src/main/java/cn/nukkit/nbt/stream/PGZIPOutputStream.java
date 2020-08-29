@@ -72,7 +72,7 @@ public class PGZIPOutputStream extends FilterOutputStream {
         super(out);
         this.executor = executor;
         this.nthreads = nthreads;
-        this.emitQueue = new ArrayBlockingQueue<Future<byte[]>>(nthreads);
+        this.emitQueue = new ArrayBlockingQueue<>(nthreads);
         writeHeader();
     }
 
@@ -81,7 +81,7 @@ public class PGZIPOutputStream extends FilterOutputStream {
      * using {@link PGZIPOutputStream#getSharedThreadPool()}.
      *
      * @param out the eventual output stream for the compressed data.
-     * @throws IOException if it all goes wrong.
+     * @throws java.io.IOException if it all goes wrong.
      */
     public PGZIPOutputStream(OutputStream out, int nthreads) throws IOException {
         this(out, PGZIPOutputStream.getSharedThreadPool(), nthreads);
@@ -93,7 +93,7 @@ public class PGZIPOutputStream extends FilterOutputStream {
      * and {@link Runtime#availableProcessors()}.
      *
      * @param out the eventual output stream for the compressed data.
-     * @throws IOException if it all goes wrong.
+     * @throws java.io.IOException if it all goes wrong.
      */
     public PGZIPOutputStream(OutputStream out) throws IOException {
         this(out, Runtime.getRuntime().availableProcessors());

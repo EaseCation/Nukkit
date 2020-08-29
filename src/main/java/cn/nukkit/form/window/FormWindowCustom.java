@@ -5,10 +5,16 @@ import cn.nukkit.form.response.FormResponseCustom;
 import cn.nukkit.form.response.FormResponseData;
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
+import it.unimi.dsi.fastutil.ints.Int2BooleanMap;
+import it.unimi.dsi.fastutil.ints.Int2BooleanOpenHashMap;
+import it.unimi.dsi.fastutil.ints.Int2FloatMap;
+import it.unimi.dsi.fastutil.ints.Int2FloatOpenHashMap;
+import it.unimi.dsi.fastutil.ints.Int2ObjectMap;
+import it.unimi.dsi.fastutil.ints.Int2ObjectOpenHashMap;
 
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 public class FormWindowCustom extends FormWindow {
 
@@ -65,15 +71,6 @@ public class FormWindowCustom extends FormWindow {
         this.icon = icon;
     }
 
-    public String getJSONData() {
-        String toModify = new Gson().toJson(this);
-        //We need to replace this due to Java not supporting declaring class field 'default'
-        return toModify.replace("defaultOptionIndex", "default")
-                .replace("defaultText", "default")
-                .replace("defaultValue", "default")
-                .replace("defaultStepIndex", "default");
-    }
-
     public FormResponseCustom getResponse() {
         return response;
     }
@@ -90,13 +87,13 @@ public class FormWindowCustom extends FormWindow {
 
         int i = 0;
 
-        HashMap<Integer, FormResponseData> dropdownResponses = new HashMap<>();
-        HashMap<Integer, String> inputResponses = new HashMap<>();
-        HashMap<Integer, Float> sliderResponses = new HashMap<>();
-        HashMap<Integer, FormResponseData> stepSliderResponses = new HashMap<>();
-        HashMap<Integer, Boolean> toggleResponses = new HashMap<>();
-        HashMap<Integer, Object> responses = new HashMap<>();
-        HashMap<Integer, String> labelResponses = new HashMap<>();
+        Int2ObjectMap<FormResponseData> dropdownResponses = new Int2ObjectOpenHashMap<>();
+        Int2ObjectMap<String> inputResponses = new Int2ObjectOpenHashMap<>();
+        Int2FloatMap sliderResponses = new Int2FloatOpenHashMap();
+        Int2ObjectMap<FormResponseData> stepSliderResponses = new Int2ObjectOpenHashMap<>();
+        Int2BooleanMap toggleResponses = new Int2BooleanOpenHashMap();
+        Map<Integer, Object> responses = new Int2ObjectOpenHashMap<>();
+        Int2ObjectMap<String> labelResponses = new Int2ObjectOpenHashMap<>();
 
         for (String elementData : elementResponses) {
             if (i >= content.size()) {
@@ -116,7 +113,7 @@ public class FormWindowCustom extends FormWindow {
                 inputResponses.put(i, elementData);
                 responses.put(i, elementData);
             } else if (e instanceof ElementSlider) {
-                Float answer = Float.parseFloat(elementData);
+                float answer = Float.parseFloat(elementData);
                 sliderResponses.put(i, answer);
                 responses.put(i, answer);
             } else if (e instanceof ElementStepSlider) {
@@ -125,7 +122,7 @@ public class FormWindowCustom extends FormWindow {
                 stepSliderResponses.put(i, new FormResponseData(Integer.parseInt(elementData), answer));
                 responses.put(i, answer);
             } else if (e instanceof ElementToggle) {
-                Boolean answer = Boolean.parseBoolean(elementData);
+                boolean answer = Boolean.parseBoolean(elementData);
                 toggleResponses.put(i, answer);
                 responses.put(i, answer);
             }

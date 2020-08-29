@@ -1,6 +1,5 @@
 package cn.nukkit.plugin.service;
 
-
 import cn.nukkit.plugin.Plugin;
 
 import java.util.List;
@@ -45,7 +44,7 @@ public interface ServiceManager {
      * Return the service's provider.
      *
      * @param service the target service
-     * @return a {@lingetProvider()k RegisteredService<T>} registered highest priority, or
+     * @return a {@link RegisteredServiceProvider} registered highest priority, or
      * {@code null} if not exists
      */
     <T> RegisteredServiceProvider<T> getProvider(Class<T> service);
@@ -58,4 +57,9 @@ public interface ServiceManager {
      */
     List<Class<?>> getKnownService();
 
+    List<RegisteredServiceProvider<?>> getRegistrations(Plugin plugin);
+
+    <T> List<RegisteredServiceProvider<T>> getRegistrations(Class<T> service);
+
+    <T> boolean isProvidedFor(Class<T> service);
 }
