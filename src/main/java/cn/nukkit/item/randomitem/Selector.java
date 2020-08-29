@@ -1,6 +1,6 @@
 package cn.nukkit.item.randomitem;
 
-import java.util.Map;
+import it.unimi.dsi.fastutil.objects.Object2FloatMap;
 
 /**
  * Created by Snake1999 on 2016/1/15.
@@ -27,9 +27,11 @@ public class Selector {
         return this;
     }
 
-    public static Selector selectRandom(Map<Selector, Float> selectorChanceMap) {
+    public static Selector selectRandom(Object2FloatMap<Selector> selectorChanceMap) {
         final float[] totalChance = {0};
-        selectorChanceMap.values().forEach(f -> totalChance[0] += f);
+        for (float f : selectorChanceMap.values()) {
+            totalChance[0] += f;
+        }
         float resultChance = (float) (Math.random() * totalChance[0]);
         final float[] flag = {0};
         final boolean[] found = {false};

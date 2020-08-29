@@ -3,8 +3,8 @@ package cn.nukkit.entity;
 import cn.nukkit.Player;
 import cn.nukkit.Server;
 import cn.nukkit.block.Block;
-import cn.nukkit.block.BlockDirt;
 import cn.nukkit.block.BlockFire;
+import cn.nukkit.block.BlockID;
 import cn.nukkit.block.BlockWater;
 import cn.nukkit.entity.data.*;
 import cn.nukkit.event.Event;
@@ -35,10 +35,12 @@ import co.aikar.timings.Timing;
 import co.aikar.timings.Timings;
 import co.aikar.timings.TimingsHistory;
 import co.aikar.timings.TimingsManager;
+import it.unimi.dsi.fastutil.ints.Int2ObjectMap;
 
 import java.lang.reflect.Constructor;
 import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.ThreadLocalRandom;
 
 /**
  * @author MagicDroidX
@@ -288,6 +290,8 @@ public abstract class Entity extends Location implements Metadatable {
 
     private final Timing fullEntityUpdateTiming;
 
+    private volatile boolean initialized;
+
     public float getHeight() {
         return 0;
     }
@@ -353,6 +357,9 @@ public abstract class Entity extends Location implements Metadatable {
             if (this.namedTag.contains("CustomNameVisible")) {
                 this.setNameTagVisible(this.namedTag.getBoolean("CustomNameVisible"));
             }
+            if(this.namedTag.contains("CustomNameAlwaysVisible")){
+                this.setNameTagAlwaysVisible(this.namedTag.getBoolean("CustomNameAlwaysVisible"));
+            }
         }
 
         this.scheduleUpdate();
@@ -362,6 +369,12 @@ public abstract class Entity extends Location implements Metadatable {
         if ((chunk == null || chunk.getProvider() == null)) {
             throw new ChunkException("Invalid garbage Chunk given to Entity");
         }
+
+        if (this.initialized) {
+            // We've already initialized this entity
+            return;
+        }
+        this.initialized = true;
 
         this.timing = Timings.getEntityTiming(this);
 
@@ -453,7 +466,7 @@ public abstract class Entity extends Location implements Metadatable {
     }
 
     public boolean isNameTagAlwaysVisible() {
-        return this.getDataFlag(DATA_FLAGS, DATA_FLAG_ALWAYS_SHOW_NAMETAG);
+        return this.getDataPropertyByte(DATA_ALWAYS_SHOW_NAMETAG) == 1;
     }
 
     public void setNameTag(String name) {
@@ -657,6 +670,14 @@ public abstract class Entity extends Location implements Metadatable {
         }
     }
 
+    public static Entity createEntity(String name, Position pos, Object... args) {
+        return createEntity(name, pos.getChunk(), getDefaultNBT(pos), args);
+    }
+
+    public static Entity createEntity(int type, Position pos, Object... args) {
+        return createEntity(String.valueOf(type), pos.getChunk(), getDefaultNBT(pos), args);
+    }
+
     public static Entity createEntity(String name, FullChunk chunk, CompoundTag nbt, Object... args) {
         Entity entity = null;
 
@@ -724,15 +745,46 @@ public abstract class Entity extends Location implements Metadatable {
         return true;
     }
 
+    public static CompoundTag getDefaultNBT(Vector3 pos) {
+        return getDefaultNBT(pos, null);
+    }
+
+    public static CompoundTag getDefaultNBT(Vector3 pos, Vector3 motion) {
+        Location loc = pos instanceof Location ? (Location) pos : null;
+
+        if (loc != null) {
+            return getDefaultNBT(pos, motion, (float) loc.getYaw(), (float) loc.getPitch());
+        }
+
+        return getDefaultNBT(pos, motion, 0, 0);
+    }
+
+    public static CompoundTag getDefaultNBT(Vector3 pos, Vector3 motion, float yaw, float pitch) {
+        return new CompoundTag()
+                .putList(new ListTag<DoubleTag>("Pos")
+                        .add(new DoubleTag("", pos.x))
+                        .add(new DoubleTag("", pos.y))
+                        .add(new DoubleTag("", pos.z)))
+                .putList(new ListTag<DoubleTag>("Motion")
+                        .add(new DoubleTag("", motion != null ? motion.x : 0))
+                        .add(new DoubleTag("", motion != null ? motion.y : 0))
+                        .add(new DoubleTag("", motion != null ? motion.z : 0)))
+                .putList(new ListTag<FloatTag>("Rotation")
+                        .add(new FloatTag("", yaw))
+                        .add(new FloatTag("", pitch)));
+    }
+
     public void saveNBT() {
         if (!(this instanceof Player)) {
             this.namedTag.putString("id", this.getSaveId());
             if (!this.getNameTag().equals("")) {
                 this.namedTag.putString("CustomName", this.getNameTag());
                 this.namedTag.putBoolean("CustomNameVisible", this.isNameTagVisible());
+                this.namedTag.putBoolean("CustomNameAlwaysVisible", this.isNameTagAlwaysVisible());
             } else {
                 this.namedTag.remove("CustomName");
                 this.namedTag.remove("CustomNameVisible");
+                this.namedTag.remove("CustomNameAlwaysVisible");
             }
         }
 
@@ -933,7 +985,7 @@ public abstract class Entity extends Location implements Metadatable {
             return;
         }
 
-        if (health <= 0) {
+        if (health < 1) {
             if (this.isAlive()) {
                 this.kill();
             }
@@ -1017,7 +1069,7 @@ public abstract class Entity extends Location implements Metadatable {
                 direction = 5;
             }
 
-            double force = new Random().nextDouble() * 0.2 + 0.1;
+            double force = ThreadLocalRandom.current().nextDouble() * 0.2 + 0.1;
 
             if (direction == 0) {
                 this.motionX = -force;
@@ -1317,7 +1369,8 @@ public abstract class Entity extends Location implements Metadatable {
     public void setAbsorption(float absorption) {
         if (absorption != this.absorption) {
             this.absorption = absorption;
-            if (this instanceof Player) ((Player) this).setAttribute(Attribute.getAttribute(Attribute.ABSORPTION).setValue(absorption));
+            if (this instanceof Player)
+                ((Player) this).setAttribute(Attribute.getAttribute(Attribute.ABSORPTION).setValue(absorption));
         }
     }
 
@@ -1394,7 +1447,7 @@ public abstract class Entity extends Location implements Metadatable {
                 if (ev.isCancelled()) {
                     return;
                 }
-                this.level.setBlock(down, new BlockDirt(), true, true);
+                this.level.setBlock(down, Block.get(BlockID.DIRT), false, true);
             }
         }
     }
@@ -1456,10 +1509,10 @@ public abstract class Entity extends Location implements Metadatable {
     }
 
     public void onStruckByLightning(Entity entity) {
-        this.attack(new EntityDamageByEntityEvent(entity, this, DamageCause.LIGHTNING, 5));
-
-        if (this.fireTicks < 8 * 20) {
-            this.setOnFire(8);
+        if (this.attack(new EntityDamageByEntityEvent(entity, this, DamageCause.LIGHTNING, 5))) {
+            if (this.fireTicks < 8 * 20) {
+                this.setOnFire(8);
+            }
         }
     }
 
@@ -1762,7 +1815,11 @@ public abstract class Entity extends Location implements Metadatable {
         }
 
         if (portal) {
-            inPortalTicks++;
+            if (this.inPortalTicks < 80) {
+                this.inPortalTicks = 80;
+            } else {
+                this.inPortalTicks++;
+            }
         } else {
             this.inPortalTicks = 0;
         }
@@ -1798,6 +1855,10 @@ public abstract class Entity extends Location implements Metadatable {
         return true;
     }
 
+    public boolean canPassThrough() {
+        return true;
+    }
+
     protected void checkChunks() {
         if (this.chunk == null || (this.chunk.getX() != ((int) this.x >> 4)) || this.chunk.getZ() != ((int) this.z >> 4)) {
             if (this.chunk != null) {
@@ -1806,7 +1867,7 @@ public abstract class Entity extends Location implements Metadatable {
             this.chunk = this.level.getChunk((int) this.x >> 4, (int) this.z >> 4, true);
 
             if (!this.justCreated) {
-                Map<Integer, Player> newChunk = this.level.getChunkPlayers((int) this.x >> 4, (int) this.z >> 4);
+                Int2ObjectMap<Player> newChunk = this.level.getChunkPlayers((int) this.x >> 4, (int) this.z >> 4);
                 for (Player player : new ArrayList<>(this.hasSpawned.values())) {
                     if (!newChunk.containsKey(player.getLoaderId())) {
                         this.despawnFrom(player);
@@ -1968,8 +2029,8 @@ public abstract class Entity extends Location implements Metadatable {
 
     public void close() {
         if (!this.closed) {
-            this.server.getPluginManager().callEvent(new EntityDespawnEvent(this));
             this.closed = true;
+            this.server.getPluginManager().callEvent(new EntityDespawnEvent(this));
             this.despawnFromAll();
             if (this.chunk != null) {
                 this.chunk.removeEntity(this);
@@ -1989,7 +2050,7 @@ public abstract class Entity extends Location implements Metadatable {
         if (!Objects.equals(data, this.getDataProperties().get(data.getId()))) {
             this.getDataProperties().put(data);
             if (send) {
-                this.sendData(this.hasSpawned.values().stream().toArray(Player[]::new), new EntityMetadata().put(this.dataProperties.get(data.getId())));
+                this.sendData(this.hasSpawned.values().toArray(new Player[0]), new EntityMetadata().put(this.dataProperties.get(data.getId())));
             }
             return true;
         }

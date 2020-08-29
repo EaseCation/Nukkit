@@ -25,7 +25,7 @@ public class BlockCocoa extends BlockTransparentMeta implements Faceable {
     protected static final AxisAlignedBB[] WEST = new SimpleAxisAlignedBB[]{new SimpleAxisAlignedBB(0.0625D, 0.4375D, 0.375D, 0.3125D, 0.75D, 0.625D), new SimpleAxisAlignedBB(0.0625D, 0.3125D, 0.3125D, 0.4375D, 0.75D, 0.6875D), new SimpleAxisAlignedBB(0.0625D, 0.3125D, 0.3125D, 0.4375D, 0.75D, 0.6875D)};
     protected static final AxisAlignedBB[] NORTH = new SimpleAxisAlignedBB[]{new SimpleAxisAlignedBB(0.375D, 0.4375D, 0.0625D, 0.625D, 0.75D, 0.3125D), new SimpleAxisAlignedBB(0.3125D, 0.3125D, 0.0625D, 0.6875D, 0.75D, 0.4375D), new SimpleAxisAlignedBB(0.3125D, 0.3125D, 0.0625D, 0.6875D, 0.75D, 0.4375D)};
     protected static final AxisAlignedBB[] SOUTH = new SimpleAxisAlignedBB[]{new SimpleAxisAlignedBB(0.375D, 0.4375D, 0.6875D, 0.625D, 0.75D, 0.9375D), new SimpleAxisAlignedBB(0.3125D, 0.3125D, 0.5625D, 0.6875D, 0.75D, 0.9375D), new SimpleAxisAlignedBB(0.3125D, 0.3125D, 0.5625D, 0.6875D, 0.75D, 0.9375D)};
-    protected static final AxisAlignedBB[] ALL = new SimpleAxisAlignedBB[12];
+    protected static final AxisAlignedBB[] ALL = new AxisAlignedBB[12];
 
     public BlockCocoa() {
         this(0);
@@ -92,11 +92,6 @@ public class BlockCocoa extends BlockTransparentMeta implements Faceable {
         AxisAlignedBB[] bbs;
 
         switch (getDamage()) {
-            case 0:
-            case 4:
-            case 8:
-                bbs = NORTH;
-                break;
             case 1:
             case 5:
             case 9:

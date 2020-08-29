@@ -28,6 +28,7 @@ import cn.nukkit.network.protocol.EntityEventPacket;
 import cn.nukkit.network.protocol.SetEntityLinkPacket;
 
 import java.util.Random;
+import java.util.concurrent.ThreadLocalRandom;
 
 
 /**
@@ -119,7 +120,7 @@ public class EntityFishingHook extends EntityProjectile {
             hasUpdate = false;
         }
 
-        Random random = new Random();
+        Random random = ThreadLocalRandom.current();
 
         if (this.isInsideOfWater()) {
             if (!this.attracted) {
@@ -183,7 +184,7 @@ public class EntityFishingHook extends EntityProjectile {
         teasePk.event = EntityEventPacket.FISH_HOOK_TEASE;
         Server.broadcastPacket(this.level.getPlayers().values(), teasePk);
 
-        Random random = new Random();
+        Random random = ThreadLocalRandom.current();
         for (int i = 0; i < 5; i++) {
             this.level.addParticle(new BubbleParticle(this.setComponents(
                     this.x + random.nextDouble() * 0.5 - 0.25,
@@ -194,7 +195,7 @@ public class EntityFishingHook extends EntityProjectile {
     }
 
     public void spawnFish() {
-        Random random = new Random();
+        Random random = ThreadLocalRandom.current();
         this.fish = new Vector3(
                 this.x + (random.nextDouble() * 1.2 + 1) * (random.nextBoolean() ? -1 : 1),
                 this.getWaterHeight(),
@@ -209,7 +210,7 @@ public class EntityFishingHook extends EntityProjectile {
                 this.fish.y,
                 this.fish.z + (this.z - this.fish.z) * multiply
         );
-        if (new Random().nextInt(100) < 85) {
+        if (ThreadLocalRandom.current().nextInt(100) < 85) {
             this.level.addParticle(new WaterParticle(this.fish));
         }
         double dist = Math.abs(Math.sqrt(this.x * this.x + this.z * this.z) - Math.sqrt(this.fish.x * this.fish.x + this.fish.z * this.fish.z));
@@ -223,7 +224,7 @@ public class EntityFishingHook extends EntityProjectile {
         if (this.shootingEntity instanceof Player && this.caught) {
             this.level.addSound(new LaunchSound(this.shootingEntity));
             Item item = Fishing.getFishingResult(this.rod);
-            int experience = new Random().nextInt((3 - 1) + 1) + 1;
+            int experience = ThreadLocalRandom.current().nextInt((3 - 1) + 1) + 1;
             Vector3 motion;
 
             if (this.shootingEntity != null) {
@@ -248,7 +249,7 @@ public class EntityFishingHook extends EntityProjectile {
                                     .add(new DoubleTag("", motion.y))
                                     .add(new DoubleTag("", motion.z)))
                             .putList(new ListTag<FloatTag>("Rotation")
-                                    .add(new FloatTag("", new Random().nextFloat() * 360))
+                                    .add(new FloatTag("", ThreadLocalRandom.current().nextFloat() * 360))
                                     .add(new FloatTag("", 0)))
                             .putShort("Health", 5).putCompound("Item", itemTag).putShort("PickupDelay", 1));
 

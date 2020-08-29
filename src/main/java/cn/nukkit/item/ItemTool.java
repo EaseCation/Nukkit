@@ -6,7 +6,7 @@ import cn.nukkit.item.enchantment.Enchantment;
 import cn.nukkit.nbt.tag.ByteTag;
 import cn.nukkit.nbt.tag.Tag;
 
-import java.util.Random;
+import java.util.concurrent.ThreadLocalRandom;
 
 /**
  * author: MagicDroidX
@@ -38,15 +38,15 @@ public abstract class ItemTool extends Item implements ItemDurable {
     public static final int DURABILITY_FISHING_ROD = 65;
 
     public ItemTool(int id) {
-        this(id, 0, 1, "Unknown");
+        this(id, 0, 1, UNKNOWN_STR);
     }
 
     public ItemTool(int id, Integer meta) {
-        this(id, meta, 1, "Unknown");
+        this(id, meta, 1, UNKNOWN_STR);
     }
 
     public ItemTool(int id, Integer meta, int count) {
-        this(id, meta, count, "Unknown");
+        this(id, meta, count, UNKNOWN_STR);
     }
 
     public ItemTool(int id, Integer meta, int count, String name) {
@@ -104,7 +104,7 @@ public abstract class ItemTool extends Item implements ItemDurable {
         }
 
         Enchantment durability = getEnchantment(Enchantment.ID_DURABILITY);
-        return durability != null && durability.getLevel() > 0 && (100 / (durability.getLevel() + 1)) <= new Random().nextInt(100);
+        return durability != null && durability.getLevel() > 0 && (100 / (durability.getLevel() + 1)) <= ThreadLocalRandom.current().nextInt(100);
     }
 
     @Override

@@ -8,6 +8,7 @@ import cn.nukkit.level.Level;
 import cn.nukkit.math.NukkitRandom;
 
 import java.util.Random;
+import java.util.concurrent.ThreadLocalRandom;
 
 /**
  * author: MagicDroidX
@@ -46,11 +47,12 @@ public class BlockOreRedstone extends BlockSolid {
     @Override
     public Item[] getDrops(Item item) {
         if (item.isPickaxe() && item.getTier() >= ItemTool.TIER_IRON) {
-            int count = new Random().nextInt(2) + 4;
+            Random random = ThreadLocalRandom.current();
+            int count = random.nextInt(2) + 4;
 
             Enchantment fortune = item.getEnchantment(Enchantment.ID_FORTUNE_DIGGING);
             if (fortune != null && fortune.getLevel() >= 1) {
-                count += new Random().nextInt(fortune.getLevel() + 1);
+                count += random.nextInt(fortune.getLevel() + 1);
             }
 
             return new Item[]{
@@ -64,7 +66,7 @@ public class BlockOreRedstone extends BlockSolid {
     @Override
     public int onUpdate(int type) {
         if (type == Level.BLOCK_UPDATE_TOUCH) { //type == Level.BLOCK_UPDATE_NORMAL ||
-            this.getLevel().setBlock(this, new BlockOreRedstoneGlowing(), false, false);
+            this.getLevel().setBlock(this, Block.get(BlockID.GLOWING_REDSTONE_ORE), false, false);
 
             return Level.BLOCK_UPDATE_WEAK;
         }

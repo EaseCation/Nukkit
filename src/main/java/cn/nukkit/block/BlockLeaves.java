@@ -88,17 +88,18 @@ public class BlockLeaves extends BlockTransparentMeta {
                     toItem()
             };
         } else {
-            if (this.canDropApple() && ThreadLocalRandom.current().nextInt(200) == 0) {
+            ThreadLocalRandom random = ThreadLocalRandom.current();
+            if (this.canDropApple() && random.nextInt(200) == 0) {
                 return new Item[]{
                         Item.get(Item.APPLE)
                 };
             }
-            if (ThreadLocalRandom.current().nextInt(20) == 0) {
-                if (ThreadLocalRandom.current().nextBoolean()) {
+            if (random.nextInt(20) == 0) {
+                if (random.nextBoolean()) {
                     return new Item[]{
-                            Item.get(Item.STICK, 0, ThreadLocalRandom.current().nextInt(1, 2))
+                            Item.get(Item.STICK, 0, random.nextInt(1, 2))
                     };
-                } else if ((this.getDamage() & 0x03) != JUNGLE || ThreadLocalRandom.current().nextInt(20) == 0) {
+                } else if ((this.getDamage() & 0x03) != JUNGLE || random.nextInt(20) == 0) {
                     return new Item[]{
                             this.getSapling()
                     };

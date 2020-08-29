@@ -79,7 +79,7 @@ public class ItemMap extends Item {
     }
 
     public long getMapId() {
-        return Long.valueOf(getNamedTag().getString("map_uuid"));
+        return Long.parseLong(getNamedTag().getString("map_uuid"));
     }
 
     public void sendImage(Player p) {

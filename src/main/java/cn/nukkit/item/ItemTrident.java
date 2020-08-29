@@ -2,7 +2,6 @@ package cn.nukkit.item;
 
 import cn.nukkit.Player;
 import cn.nukkit.Server;
-import cn.nukkit.entity.projectile.EntityProjectile;
 import cn.nukkit.entity.projectile.EntityThrownTrident;
 import cn.nukkit.event.entity.EntityShootBowEvent;
 import cn.nukkit.event.entity.ProjectileLaunchEvent;
@@ -12,7 +11,6 @@ import cn.nukkit.nbt.tag.CompoundTag;
 import cn.nukkit.nbt.tag.DoubleTag;
 import cn.nukkit.nbt.tag.FloatTag;
 import cn.nukkit.nbt.tag.ListTag;
-import cn.nukkit.network.protocol.LevelSoundEventPacket;
 
 /**
  * Created by PetteriM1
@@ -72,6 +70,11 @@ public class ItemTrident extends ItemTool {
 
         double f = Math.min((p * p + p * 2) / 3, 1) * 2;
         EntityThrownTrident trident = new EntityThrownTrident(player.chunk, nbt, player, f == 2);
+
+        if (trident == null) {
+            return false;
+        }
+
         trident.setItem(this);
 
         EntityShootBowEvent entityShootBowEvent = new EntityShootBowEvent(player, this, trident, f);

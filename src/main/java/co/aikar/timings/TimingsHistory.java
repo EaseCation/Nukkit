@@ -28,21 +28,20 @@ import cn.nukkit.Server;
 import cn.nukkit.blockentity.BlockEntity;
 import cn.nukkit.entity.Entity;
 import cn.nukkit.level.Level;
-import cn.nukkit.level.format.generic.BaseFullChunk;
+import cn.nukkit.level.format.FullChunk;
 import cn.nukkit.timings.JsonUtil;
-
 import com.google.gson.Gson;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
-
-import static co.aikar.timings.Timings.fullServerTickTimer;
-import static co.aikar.timings.TimingsManager.MINUTE_REPORTS;
 
 import java.lang.management.ManagementFactory;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.concurrent.atomic.AtomicInteger;
+
+import static co.aikar.timings.Timings.fullServerTickTimer;
+import static co.aikar.timings.TimingsManager.MINUTE_REPORTS;
 
 public class TimingsHistory {
     public static long lastMinuteTime;
@@ -75,7 +74,7 @@ public class TimingsHistory {
             this.minuteReports = MINUTE_REPORTS.toArray(new MinuteReport[MINUTE_REPORTS.size() + 1]);
             this.minuteReports[this.minuteReports.length - 1] = new MinuteReport();
         } else {
-            this.minuteReports = MINUTE_REPORTS.toArray(new MinuteReport[MINUTE_REPORTS.size()]);
+            this.minuteReports = MINUTE_REPORTS.toArray(new MinuteReport[0]);
         }
 
         long ticks = 0;
@@ -98,7 +97,7 @@ public class TimingsHistory {
         // Information about all loaded entities/block entities
         for (Level level : Server.getInstance().getLevels().values()) {
             JsonArray jsonLevel = new JsonArray();
-            for (BaseFullChunk chunk : level.getChunks().values()) {
+            for (FullChunk chunk : level.getChunks().values()) {
                 entityCounts.clear();
                 blockEntityCounts.clear();
 
@@ -216,7 +215,7 @@ public class TimingsHistory {
                 totalPing += player.getPing();
             }
 
-            this.avg = onlinePlayers.isEmpty() ? 0 : totalPing / onlinePlayers.size();
+            this.avg = onlinePlayers.isEmpty() ? 0 : (float) totalPing / onlinePlayers.size();
         }
     }
 }

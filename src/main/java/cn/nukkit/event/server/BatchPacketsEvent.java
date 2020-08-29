@@ -5,9 +5,6 @@ import cn.nukkit.event.Cancellable;
 import cn.nukkit.event.HandlerList;
 import cn.nukkit.network.protocol.DataPacket;
 
-/**
- * @author CreeperFace
- */
 public class BatchPacketsEvent extends ServerEvent implements Cancellable {
 
     private static final HandlerList handlers = new HandlerList();

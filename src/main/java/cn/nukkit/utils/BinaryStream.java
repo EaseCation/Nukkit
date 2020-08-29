@@ -16,9 +16,11 @@ import cn.nukkit.nbt.tag.StringTag;
 import it.unimi.dsi.fastutil.io.FastByteArrayInputStream;
 
 import java.io.IOException;
+import java.lang.reflect.Array;
 import java.nio.ByteOrder;
 import java.nio.charset.StandardCharsets;
 import java.util.*;
+import java.util.function.Function;
 
 /**
  * author: MagicDroidX
@@ -27,7 +29,7 @@ import java.util.*;
 public class BinaryStream {
 
     public int offset;
-    private byte[] buffer = new byte[32];
+    private byte[] buffer;
     private int count;
 
     private static final int MAX_ARRAY_SIZE = Integer.MAX_VALUE - 8;
@@ -237,7 +239,7 @@ public class BinaryStream {
             }
         }
 
-        return list.stream().toArray(Attribute[]::new);
+        return list.toArray(new Attribute[0]);
     }
 
     /**
@@ -814,6 +816,16 @@ public class BinaryStream {
 
     public void putBlockFace(BlockFace face) {
         this.putVarInt(face.getIndex());
+    }
+
+    @SuppressWarnings("unchecked")
+    public <T> T[] getArray(Class<T> clazz, Function<BinaryStream, T> function) {
+        ArrayDeque<T> deque = new ArrayDeque<>();
+        int count = (int) getUnsignedVarInt();
+        for (int i = 0; i < count; i++) {
+            deque.add(function.apply(this));
+        }
+        return deque.toArray((T[]) Array.newInstance(clazz, 0));
     }
 
     public boolean feof() {

@@ -17,6 +17,7 @@ import cn.nukkit.utils.DyeColor;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
+import java.util.concurrent.ThreadLocalRandom;
 
 /**
  * @author CreeperFace
@@ -42,7 +43,7 @@ public class ItemFirework extends Item {
             if (tag == null) {
                 tag = new CompoundTag();
 
-                Random rand = new Random();
+                Random rand = ThreadLocalRandom.current();
                 CompoundTag ex = new CompoundTag()
                         .putByteArray("FireworkColor", new byte[]{(byte) DyeColor.BLACK.getDyeData()})
                         .putByteArray("FireworkFade", new byte[]{})
@@ -109,7 +110,7 @@ public class ItemFirework extends Item {
     public int getLifeTime() {
         initNamedTag();
         if (!this.getNamedTag().getCompound("Fireworks").exist("LifeTime")) {
-            Random rand = new Random();
+            Random rand = ThreadLocalRandom.current();
             this.getNamedTag().getCompound("Fireworks").putInt("LifeTime", 30 + rand.nextInt(6) + rand.nextInt(7));
         }
 
@@ -227,7 +228,13 @@ public class ItemFirework extends Item {
             LARGE_BALL,
             STAR_SHAPED,
             CREEPER_SHAPED,
-            BURST
+            BURST;
+
+            private static final ExplosionType[] $VALUES0 = values();
+
+            public static ExplosionType[] values0() {
+                return $VALUES0;
+            }
         }
     }
 }

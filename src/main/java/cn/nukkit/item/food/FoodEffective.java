@@ -2,11 +2,11 @@ package cn.nukkit.item.food;
 
 import cn.nukkit.Player;
 import cn.nukkit.potion.Effect;
+import it.unimi.dsi.fastutil.objects.Object2FloatLinkedOpenHashMap;
+import it.unimi.dsi.fastutil.objects.Object2FloatMap;
 
-import java.util.LinkedHashMap;
 import java.util.LinkedList;
 import java.util.List;
-import java.util.Map;
 
 /**
  * Created by Snake1999 on 2016/1/13.
@@ -14,7 +14,7 @@ import java.util.Map;
  */
 public class FoodEffective extends Food {
 
-    protected final Map<Effect, Float> effects = new LinkedHashMap<>();
+    protected final Object2FloatMap<Effect> effects = new Object2FloatLinkedOpenHashMap<>();
 
     public FoodEffective(int restoreFood, float restoreSaturation) {
         this.setRestoreFood(restoreFood);

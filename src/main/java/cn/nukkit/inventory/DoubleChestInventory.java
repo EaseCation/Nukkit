@@ -6,8 +6,9 @@ import cn.nukkit.item.Item;
 import cn.nukkit.level.Level;
 import cn.nukkit.network.protocol.BlockEventPacket;
 import cn.nukkit.network.protocol.LevelSoundEventPacket;
+import it.unimi.dsi.fastutil.ints.Int2ObjectMap;
+import it.unimi.dsi.fastutil.ints.Int2ObjectOpenHashMap;
 
-import java.util.HashMap;
 import java.util.Map;
 
 /**
@@ -25,7 +26,7 @@ public class DoubleChestInventory extends ContainerInventory implements Inventor
         this.left = left.getRealInventory();
         this.right = right.getRealInventory();
 
-        Map<Integer, Item> items = new HashMap<>();
+        Int2ObjectMap<Item> items = new Int2ObjectOpenHashMap<>();
         // First we add the items from the left chest
         for (int idx = 0; idx < this.left.getSize(); idx++) {
             if (this.left.getContents().containsKey(idx)) { // Don't forget to skip empty slots!
@@ -69,7 +70,7 @@ public class DoubleChestInventory extends ContainerInventory implements Inventor
 
     @Override
     public Map<Integer, Item> getContents() {
-        Map<Integer, Item> contents = new HashMap<>();
+        Int2ObjectMap<Item> contents = new Int2ObjectOpenHashMap<>();
 
         for (int i = 0; i < this.getSize(); ++i) {
             contents.put(i, this.getItem(i));
@@ -81,7 +82,7 @@ public class DoubleChestInventory extends ContainerInventory implements Inventor
     @Override
     public void setContents(Map<Integer, Item> items) {
         if (items.size() > this.size) {
-            Map<Integer, Item> newItems = new HashMap<>();
+            Int2ObjectMap<Item> newItems = new Int2ObjectOpenHashMap<>();
             for (int i = 0; i < this.size; i++) {
                 newItems.put(i, items.get(i));
             }

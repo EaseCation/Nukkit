@@ -1,22 +1,26 @@
 package cn.nukkit.form.response;
 
-import java.util.HashMap;
+import it.unimi.dsi.fastutil.ints.Int2BooleanMap;
+import it.unimi.dsi.fastutil.ints.Int2FloatMap;
+import it.unimi.dsi.fastutil.ints.Int2ObjectMap;
+
+import java.util.Map;
 
 public class FormResponseCustom extends FormResponse {
 
-    private final HashMap<Integer, Object> responses;
-    private final HashMap<Integer, FormResponseData> dropdownResponses;
-    private final HashMap<Integer, String> inputResponses;
-    private final HashMap<Integer, Float> sliderResponses;
-    private final HashMap<Integer, FormResponseData> stepSliderResponses;
-    private final HashMap<Integer, Boolean> toggleResponses;
-    private final HashMap<Integer, String> labelResponses;
+    private final Map<Integer, Object> responses;
+    private final Int2ObjectMap<FormResponseData> dropdownResponses;
+    private final Int2ObjectMap<String> inputResponses;
+    private final Int2FloatMap sliderResponses;
+    private final Int2ObjectMap<FormResponseData> stepSliderResponses;
+    private final Int2BooleanMap toggleResponses;
+    private final Int2ObjectMap<String> labelResponses;
 
-    public FormResponseCustom(HashMap<Integer, Object> responses, HashMap<Integer, FormResponseData> dropdownResponses,
-                              HashMap<Integer, String> inputResponses, HashMap<Integer, Float> sliderResponses,
-                              HashMap<Integer, FormResponseData> stepSliderResponses,
-                              HashMap<Integer, Boolean> toggleResponses,
-                              HashMap<Integer, String> labelResponses) {
+    public FormResponseCustom(Map<Integer, Object> responses, Int2ObjectMap<FormResponseData> dropdownResponses,
+                              Int2ObjectMap<String> inputResponses, Int2FloatMap sliderResponses,
+                              Int2ObjectMap<FormResponseData> stepSliderResponses,
+                              Int2BooleanMap toggleResponses,
+                              Int2ObjectMap<String> labelResponses) {
         this.responses = responses;
         this.dropdownResponses = dropdownResponses;
         this.inputResponses = inputResponses;
@@ -26,7 +30,7 @@ public class FormResponseCustom extends FormResponse {
         this.labelResponses = labelResponses;
     }
 
-    public HashMap<Integer, Object> getResponses() {
+    public Map<Integer, Object> getResponses() {
         return responses;
     }
 

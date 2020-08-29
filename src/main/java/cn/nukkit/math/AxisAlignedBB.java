@@ -128,8 +128,7 @@ public interface AxisAlignedBB extends Cloneable {
             }
         }
         if (y < 0 && bb.getMinY() >= this.getMaxY()) {
-            double maxY = this.getMaxY();
-            double y2 = maxY - bb.getMinY();
+            double y2 = this.getMaxY() - bb.getMinY();
             if (y2 > y) {
                 y = y2;
             }

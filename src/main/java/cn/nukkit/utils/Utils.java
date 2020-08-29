@@ -6,7 +6,9 @@ import java.lang.management.ThreadInfo;
 import java.nio.channels.FileChannel;
 import java.nio.charset.StandardCharsets;
 import java.util.Arrays;
+import java.util.Map;
 import java.util.UUID;
+import java.util.concurrent.ConcurrentHashMap;
 
 /**
  * author: MagicDroidX
@@ -33,13 +35,13 @@ public class Utils {
         if (!file.exists()) {
             file.createNewFile();
         }
-        FileOutputStream stream = new FileOutputStream(file);
-        byte[] buffer = new byte[1024];
-        int length;
-        while ((length = content.read(buffer)) != -1) {
-            stream.write(buffer, 0, length);
+        try (FileOutputStream stream = new FileOutputStream(file)) {
+            byte[] buffer = new byte[1024];
+            int length;
+            while ((length = content.read(buffer)) != -1) {
+                stream.write(buffer, 0, length);
+            }
         }
-        stream.close();
         content.close();
     }
 
@@ -63,20 +65,19 @@ public class Utils {
     }
 
     private static String readFile(Reader reader) throws IOException {
-        BufferedReader br = new BufferedReader(reader);
-        String temp;
-        StringBuilder stringBuilder = new StringBuilder();
-        temp = br.readLine();
-        while (temp != null) {
-            if (stringBuilder.length() != 0) {
-                stringBuilder.append("\n");
-            }
-            stringBuilder.append(temp);
+        try (BufferedReader br = new BufferedReader(reader)) {
+            String temp;
+            StringBuilder stringBuilder = new StringBuilder();
             temp = br.readLine();
+            while (temp != null) {
+                if (stringBuilder.length() != 0) {
+                    stringBuilder.append("\n");
+                }
+                stringBuilder.append(temp);
+                temp = br.readLine();
+            }
+            return stringBuilder.toString();
         }
-        br.close();
-        reader.close();
-        return stringBuilder.toString();
     }
 
     public static void copyFile(File from, File to) throws IOException {
@@ -119,8 +120,10 @@ public class Utils {
 
     public static String getExceptionMessage(Throwable e) {
         StringWriter stringWriter = new StringWriter();
-        PrintWriter printWriter = new PrintWriter(stringWriter);
-        e.printStackTrace(printWriter);
+        try (PrintWriter printWriter = new PrintWriter(stringWriter)) {
+            e.printStackTrace(printWriter);
+            printWriter.flush();
+        }
         return stringWriter.toString();
     }
 
@@ -169,6 +172,13 @@ public class Utils {
         return result & 0xFFFFFFFFL;
     }
 
+    public static long toABGR(int argb) {
+        long result = argb & 0xFF00FF00L;
+        result |= (argb << 16) & 0x00FF0000L; // B to R
+        result |= (argb >>> 16) & 0xFFL; // R to B
+        return result & 0xFFFFFFFFL;
+    }
+
     public static Object[][] splitArray(Object[] arrayToSplit, int chunkSize) {
         if (chunkSize <= 0) {
             return null;
@@ -193,6 +203,7 @@ public class Utils {
 
     public static <T> T[] reverseArray(T[] array, boolean copy) {
         T[] data = array;
+
         if (copy) {
             data = Arrays.copyOf(array, array.length);
         }
@@ -215,6 +226,35 @@ public class Utils {
         }
 
         return newArray;
+    }
+
+    public static <T,U,V> Map<U,V> getOrCreate(Map<T, Map<U, V>> map, T key) {
+        Map<U, V> existing = map.get(key);
+        if (existing == null) {
+            ConcurrentHashMap<U, V> toPut = new ConcurrentHashMap<>();
+            existing = map.putIfAbsent(key, toPut);
+            if (existing == null) {
+                existing = toPut;
+            }
+        }
+        return existing;
+    }
+
+    public static <T, U, V extends U> U getOrCreate(Map<T, U> map, Class<V> clazz, T key) {
+        U existing = map.get(key);
+        if (existing != null) {
+            return existing;
+        }
+        try {
+            U toPut = clazz.newInstance();
+            existing = map.putIfAbsent(key, toPut);
+            if (existing == null) {
+                return toPut;
+            }
+            return existing;
+        } catch (InstantiationException | IllegalAccessException e) {
+            throw new RuntimeException(e);
+        }
     }
 
     public static int toInt(Object number) {

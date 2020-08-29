@@ -4,20 +4,21 @@ import cn.nukkit.level.format.FullChunk;
 import cn.nukkit.level.format.LevelProvider;
 import cn.nukkit.level.format.generic.BaseRegionLoader;
 import cn.nukkit.utils.*;
+import it.unimi.dsi.fastutil.ints.Int2IntMap;
+import it.unimi.dsi.fastutil.ints.Int2IntRBTreeMap;
+import it.unimi.dsi.fastutil.ints.IntArrayList;
+import lombok.extern.log4j.Log4j2;
 
 import java.io.IOException;
 import java.io.RandomAccessFile;
 import java.nio.ByteBuffer;
-import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Map;
-import java.util.TreeMap;
 
 /**
  * author: MagicDroidX
  * Nukkit Project
  */
-
+@Log4j2
 public class RegionLoader extends BaseRegionLoader {
 
     public RegionLoader(LevelProvider level, int regionX, int regionZ) {
@@ -51,19 +52,19 @@ public class RegionLoader extends BaseRegionLoader {
                 table[0] = ++this.lastSector;
                 table[1] = 1;
                 this.locationTable.put(index, table);
-                MainLogger.getLogger().error("Corrupted chunk header detected");
+                log.error("Corrupted chunk header detected");
             }
             return null;
         }
 
         byte compression = raf.readByte();
         if (length > (table[1] << 12)) {
-            MainLogger.getLogger().error("Corrupted bigger chunk detected");
+            log.error("Corrupted bigger chunk detected");
             table[1] = length >> 12;
             this.locationTable.put(index, table);
             this.writeLocationIndex(index);
         } else if (compression != COMPRESSION_ZLIB && compression != COMPRESSION_GZIP) {
-            MainLogger.getLogger().error("Invalid compression type");
+            log.error("Invalid compression type");
             return null;
         }
 
@@ -73,7 +74,7 @@ public class RegionLoader extends BaseRegionLoader {
         if (chunk != null) {
             return chunk;
         } else {
-            MainLogger.getLogger().error("Corrupted chunk detected");
+            log.error("Corrupted chunk detected");
             return null;
         }
     }
@@ -240,14 +241,14 @@ public class RegionLoader extends BaseRegionLoader {
     }
 
     private int cleanGarbage() throws IOException {
-        Map<Integer, Integer> sectors = new TreeMap<>();
-        for (int index : new ArrayList<>(this.locationTable.keySet())) {
+        Int2IntMap sectors = new Int2IntRBTreeMap();
+        for (int index : new IntArrayList(this.locationTable.keySet())) {
             Integer[] data = this.locationTable.get(index);
             if (data[0] == 0 || data[1] == 0) {
                 this.locationTable.put(index, new Integer[]{0, 0, 0});
                 continue;
             }
-            sectors.put(data[0], index);
+            sectors.put(data[0], (Integer) index);
         }
 
         if (sectors.size() == (this.lastSector - 2)) {

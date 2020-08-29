@@ -3,17 +3,19 @@ package cn.nukkit.level.format.generic;
 import cn.nukkit.Server;
 import cn.nukkit.level.format.FullChunk;
 import cn.nukkit.level.format.LevelProvider;
+import it.unimi.dsi.fastutil.ints.Int2ObjectMap;
+import it.unimi.dsi.fastutil.ints.Int2ObjectOpenHashMap;
+import lombok.extern.log4j.Log4j2;
 
 import java.io.File;
 import java.io.IOException;
 import java.io.RandomAccessFile;
-import java.util.HashMap;
-import java.util.Map;
 
 /**
  * author: MagicDroidX
  * Nukkit Project
  */
+@Log4j2
 abstract public class BaseRegionLoader {
     public static final int VERSION = 1;
     public static final byte COMPRESSION_GZIP = 1;
@@ -29,7 +31,7 @@ abstract public class BaseRegionLoader {
     private RandomAccessFile randomAccessFile;
 
     // TODO: A simple array will perform better and use less memory
-    protected final Map<Integer, Integer[]> locationTable = new HashMap<>();
+    protected final Int2ObjectMap<Integer[]> locationTable = new Int2ObjectOpenHashMap<>();
 
     public long lastUsed;
 
@@ -58,7 +60,7 @@ abstract public class BaseRegionLoader {
             try {
                 if (this.randomAccessFile != null) this.randomAccessFile.close();
             } catch (IOException e0) {
-                Server.getInstance().getLogger().alert("Level BaseRegionLoader close error", e);
+                log.warn("Level BaseRegionLoader close error", e);
             }
             throw new RuntimeException("Level BaseRegionLoader throws IOException", e);
         }

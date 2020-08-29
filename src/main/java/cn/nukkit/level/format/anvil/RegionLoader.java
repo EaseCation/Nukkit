@@ -4,19 +4,22 @@ import cn.nukkit.level.format.FullChunk;
 import cn.nukkit.level.format.LevelProvider;
 import cn.nukkit.level.format.generic.BaseRegionLoader;
 import cn.nukkit.utils.*;
+import it.unimi.dsi.fastutil.ints.Int2IntMap;
+import it.unimi.dsi.fastutil.ints.Int2IntRBTreeMap;
+import it.unimi.dsi.fastutil.ints.Int2ObjectMap;
+import lombok.extern.log4j.Log4j2;
 
 import java.io.EOFException;
 import java.io.IOException;
 import java.io.RandomAccessFile;
 import java.nio.ByteBuffer;
 import java.util.Arrays;
-import java.util.Map;
-import java.util.TreeMap;
 
 /**
  * author: MagicDroidX
  * Nukkit Project
  */
+@Log4j2
 public class RegionLoader extends BaseRegionLoader {
     public RegionLoader(LevelProvider level, int regionX, int regionZ) throws IOException {
         super(level, regionX, regionZ, "mca");
@@ -52,18 +55,18 @@ public class RegionLoader extends BaseRegionLoader {
                     table[0] = ++this.lastSector;
                     table[1] = 1;
                     this.locationTable.put(index, table);
-                    MainLogger.getLogger().error("Corrupted chunk header detected");
+                    log.error("Corrupted chunk header detected");
                 }
                 return null;
             }
 
             if (length > (table[1] << 12)) {
-                MainLogger.getLogger().error("Corrupted bigger chunk detected");
+                log.error("Corrupted bigger chunk detected");
                 table[1] = length >> 12;
                 this.locationTable.put(index, table);
                 this.writeLocationIndex(index);
             } else if (compression != COMPRESSION_ZLIB && compression != COMPRESSION_GZIP) {
-                MainLogger.getLogger().error("Invalid compression type");
+                log.error("Invalid compression type");
                 return null;
             }
 
@@ -73,11 +76,11 @@ public class RegionLoader extends BaseRegionLoader {
             if (chunk != null) {
                 return chunk;
             } else {
-                MainLogger.getLogger().error("Corrupted chunk detected at (" + x + ", " + z + ") in " + levelProvider.getName());
+                log.error("Corrupted chunk detected at (" + x + ", " + z + ") in " + levelProvider.getName());
                 return null;
             }
         } catch (EOFException e) {
-            MainLogger.getLogger().error("Your world is corrupt, because some code is bad and corrupted it. oops. ");
+            log.error("Your world is corrupt, because some code is bad and corrupted it. oops. ");
             return null;
         }
     }
@@ -243,15 +246,15 @@ public class RegionLoader extends BaseRegionLoader {
 
     private int cleanGarbage() throws IOException {
         RandomAccessFile raf = this.getRandomAccessFile();
-        Map<Integer, Integer> sectors = new TreeMap<>();
-        for (Map.Entry entry : this.locationTable.entrySet()) {
-            Integer index = (Integer) entry.getKey();
-            Integer[] data = (Integer[]) entry.getValue();
+        Int2IntMap sectors = new Int2IntRBTreeMap();
+        for (Int2ObjectMap.Entry<Integer[]> entry : this.locationTable.int2ObjectEntrySet()) {
+            int index = entry.getIntKey();
+            Integer[] data = entry.getValue();
             if (data[0] == 0 || data[1] == 0) {
                 this.locationTable.put(index, new Integer[]{0, 0, 0});
                 continue;
             }
-            sectors.put(data[0], index);
+            sectors.put(data[0], (Integer) index);
         }
 
         if (sectors.size() == (this.lastSector - 2)) {

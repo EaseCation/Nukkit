@@ -11,26 +11,29 @@ import cn.nukkit.level.format.LevelProvider;
 import cn.nukkit.nbt.tag.CompoundTag;
 import cn.nukkit.nbt.tag.ListTag;
 import cn.nukkit.nbt.tag.NumberTag;
-import cn.nukkit.network.protocol.BatchPacket;
+import it.unimi.dsi.fastutil.ints.Int2IntMap;
+import it.unimi.dsi.fastutil.ints.Int2IntMaps;
+import it.unimi.dsi.fastutil.ints.Int2IntOpenHashMap;
+import it.unimi.dsi.fastutil.ints.Int2ObjectMap;
 import it.unimi.dsi.fastutil.ints.Int2ObjectOpenHashMap;
+import it.unimi.dsi.fastutil.longs.Long2ObjectMap;
+import it.unimi.dsi.fastutil.longs.Long2ObjectMaps;
 import it.unimi.dsi.fastutil.longs.Long2ObjectOpenHashMap;
 
 import java.io.IOException;
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
-import java.util.Map;
 
 /**
  * author: MagicDroidX
  * Nukkit Project
  */
 public abstract class BaseFullChunk implements FullChunk, ChunkManager {
-    protected Map<Long, Entity> entities;
+    protected Long2ObjectMap<Entity> entities;
 
-    protected Map<Long, BlockEntity> tiles;
+    protected Long2ObjectMap<BlockEntity> tiles;
 
-    protected Map<Integer, BlockEntity> tileList;
+    protected Int2ObjectMap<BlockEntity> tileList;
 
     /**
      * encoded as:
@@ -53,7 +56,7 @@ public abstract class BaseFullChunk implements FullChunk, ChunkManager {
 
     protected List<CompoundTag> NBTentities;
 
-    protected Map<Integer, Integer> extraData;
+    protected Int2IntMap extraData;
 
     protected LevelProvider provider;
     protected Class<? extends LevelProvider> providerClass;
@@ -261,7 +264,7 @@ public abstract class BaseFullChunk implements FullChunk, ChunkManager {
                 this.extraData.remove(Level.chunkBlockHash(x, y, z));
             }
         } else {
-            if (this.extraData == null) this.extraData = new Int2ObjectOpenHashMap<>();
+            if (this.extraData == null) this.extraData = new Int2IntOpenHashMap();
             this.extraData.put(Level.chunkBlockHash(x, y, z), data);
         }
 
@@ -362,18 +365,18 @@ public abstract class BaseFullChunk implements FullChunk, ChunkManager {
     }
 
     @Override
-    public Map<Long, Entity> getEntities() {
-        return entities == null ? Collections.emptyMap() : entities;
+    public Long2ObjectMap<Entity> getEntities() {
+        return entities == null ? Long2ObjectMaps.emptyMap() : entities;
     }
 
     @Override
-    public Map<Long, BlockEntity> getBlockEntities() {
-        return tiles == null ? Collections.emptyMap() : tiles;
+    public Long2ObjectMap<BlockEntity> getBlockEntities() {
+        return tiles == null ? Long2ObjectMaps.emptyMap() : tiles;
     }
 
     @Override
-    public Map<Integer, Integer> getBlockExtraDataArray() {
-        return extraData == null ? Collections.emptyMap() : extraData;
+    public Int2IntMap getBlockExtraDataArray() {
+        return extraData == null ? Int2IntMaps.EMPTY_MAP : extraData;
     }
 
     @Override

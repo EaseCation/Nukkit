@@ -79,7 +79,7 @@ public class BlockRedstoneTorch extends BlockTorch {
 
         BlockFace face = getBlockFace().getOpposite();
 
-        for (BlockFace side : BlockFace.values()) {
+        for (BlockFace side : BlockFace.values0()) {
             if (side == face) {
                 continue;
             }
@@ -116,9 +116,9 @@ public class BlockRedstoneTorch extends BlockTorch {
             BlockFace face = getBlockFace().getOpposite();
             Vector3 pos = getLocation();
 
-            this.level.setBlock(pos, new BlockRedstoneTorchUnlit(getDamage()), false, true);
+            this.level.setBlock(pos, Block.get(BlockID.UNLIT_REDSTONE_TORCH, getDamage()), false, true);
 
-            for (BlockFace side : BlockFace.values()) {
+            for (BlockFace side : BlockFace.values0()) {
                 if (side == face) {
                     continue;
                 }

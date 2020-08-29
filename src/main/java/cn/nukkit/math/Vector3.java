@@ -255,6 +255,10 @@ public class Vector3 implements Cloneable {
     /**
      * Returns a new vector with x value equal to the second parameter, along the line between this vector and the
      * passed in vector, or null if not possible.
+     *
+     * @param v vector
+     * @param x x value
+     * @return intermediate vector
      */
     public Vector3 getIntermediateWithXValue(Vector3 v, double x) {
         double xDiff = v.x - this.x;
@@ -274,6 +278,10 @@ public class Vector3 implements Cloneable {
     /**
      * Returns a new vector with y value equal to the second parameter, along the line between this vector and the
      * passed in vector, or null if not possible.
+     *
+     * @param v vector
+     * @param y y value
+     * @return intermediate vector
      */
     public Vector3 getIntermediateWithYValue(Vector3 v, double y) {
         double xDiff = v.x - this.x;
@@ -293,6 +301,10 @@ public class Vector3 implements Cloneable {
     /**
      * Returns a new vector with z value equal to the second parameter, along the line between this vector and the
      * passed in vector, or null if not possible.
+     *
+     * @param v vector
+     * @param z z value
+     * @return intermediate vector
      */
     public Vector3 getIntermediateWithZValue(Vector3 v, double z) {
         double xDiff = v.x - this.x;
@@ -334,12 +346,7 @@ public class Vector3 implements Cloneable {
 
     @Override
     public int hashCode() {
-        int hash = 7;
-
-        hash = 79 * hash + (int) (Double.doubleToLongBits(this.x) ^ Double.doubleToLongBits(this.x) >>> 32);
-        hash = 79 * hash + (int) (Double.doubleToLongBits(this.y) ^ Double.doubleToLongBits(this.y) >>> 32);
-        hash = 79 * hash + (int) (Double.doubleToLongBits(this.z) ^ Double.doubleToLongBits(this.z) >>> 32);
-        return hash;
+        return ((int) x ^ ((int) z << 12)) ^ ((int) y << 24);
     }
 
     public int rawHashCode() {

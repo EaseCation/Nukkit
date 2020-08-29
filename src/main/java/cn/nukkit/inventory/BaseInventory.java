@@ -2,7 +2,8 @@ package cn.nukkit.inventory;
 
 import cn.nukkit.Player;
 import cn.nukkit.Server;
-import cn.nukkit.block.BlockAir;
+import cn.nukkit.block.Block;
+import cn.nukkit.block.BlockID;
 import cn.nukkit.blockentity.BlockEntity;
 import cn.nukkit.entity.Entity;
 import cn.nukkit.event.entity.EntityInventoryChangeEvent;
@@ -11,6 +12,11 @@ import cn.nukkit.item.Item;
 import cn.nukkit.item.ItemBlock;
 import cn.nukkit.network.protocol.InventoryContentPacket;
 import cn.nukkit.network.protocol.InventorySlotPacket;
+import it.unimi.dsi.fastutil.ints.Int2ObjectMap;
+import it.unimi.dsi.fastutil.ints.Int2ObjectOpenHashMap;
+import it.unimi.dsi.fastutil.ints.Int2ObjectRBTreeMap;
+import it.unimi.dsi.fastutil.ints.IntArrayList;
+import it.unimi.dsi.fastutil.ints.IntList;
 
 import java.util.*;
 
@@ -30,14 +36,14 @@ public abstract class BaseInventory implements Inventory {
 
     protected final String title;
 
-    public final Map<Integer, Item> slots = new HashMap<>();
+    public final Int2ObjectMap<Item> slots = new Int2ObjectOpenHashMap<>();
 
     protected final Set<Player> viewers = new HashSet<>();
 
     protected InventoryHolder holder;
 
     public BaseInventory(InventoryHolder holder, InventoryType type) {
-        this(holder, type, new HashMap<>());
+        this(holder, type, new Int2ObjectOpenHashMap<>());
     }
 
     public BaseInventory(InventoryHolder holder, InventoryType type, Map<Integer, Item> items) {
@@ -98,23 +104,23 @@ public abstract class BaseInventory implements Inventory {
 
     @Override
     public Item getItem(int index) {
-        return this.slots.containsKey(index) ? this.slots.get(index).clone() : new ItemBlock(new BlockAir(), null, 0);
+        return this.slots.containsKey(index) ? this.slots.get(index).clone() : new ItemBlock(Block.get(BlockID.AIR), null, 0);
     }
 
     @Override
     public Map<Integer, Item> getContents() {
-        return new HashMap<>(this.slots);
+        return new Int2ObjectOpenHashMap<>(this.slots);
     }
 
     @Override
     public void setContents(Map<Integer, Item> items) {
         if (items.size() > this.size) {
-            TreeMap<Integer, Item> newItems = new TreeMap<>();
+            Map<Integer, Item> newItems = new Int2ObjectRBTreeMap<>();
             for (Map.Entry<Integer, Item> entry : items.entrySet()) {
                 newItems.put(entry.getKey(), entry.getValue());
             }
             items = newItems;
-            newItems = new TreeMap<>();
+            newItems = new Int2ObjectRBTreeMap<>();
             int i = 0;
             for (Map.Entry<Integer, Item> entry : items.entrySet()) {
                 newItems.put(entry.getKey(), entry.getValue());
@@ -190,7 +196,7 @@ public abstract class BaseInventory implements Inventory {
 
     @Override
     public Map<Integer, Item> all(Item item) {
-        Map<Integer, Item> slots = new HashMap<>();
+        Map<Integer, Item> slots = new Int2ObjectOpenHashMap<>();
         boolean checkDamage = item.hasMeta() && item.getDamage() >= 0;
         boolean checkTag = item.getCompoundTag() != null;
         for (Map.Entry<Integer, Item> entry : this.getContents().entrySet()) {
@@ -281,7 +287,7 @@ public abstract class BaseInventory implements Inventory {
             }
         }
 
-        List<Integer> emptySlots = new ArrayList<>();
+        IntList emptySlots = new IntArrayList();
 
         for (int i = 0; i < this.getSize(); ++i) {
             Item item = this.getItem(i);
@@ -367,7 +373,7 @@ public abstract class BaseInventory implements Inventory {
     @Override
     public boolean clear(int index, boolean send) {
         if (this.slots.containsKey(index)) {
-            Item item = new ItemBlock(new BlockAir(), null, 0);
+            Item item = new ItemBlock(Block.get(BlockID.AIR), null, 0);
             Item old = this.slots.get(index);
             InventoryHolder holder = this.getHolder();
             if (holder instanceof Entity) {

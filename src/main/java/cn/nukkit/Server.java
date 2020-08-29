@@ -6,7 +6,6 @@ import cn.nukkit.command.*;
 import cn.nukkit.console.NukkitConsole;
 import cn.nukkit.entity.Attribute;
 import cn.nukkit.entity.Entity;
-import cn.nukkit.entity.item.EntityFirework;
 import cn.nukkit.entity.EntityHuman;
 import cn.nukkit.entity.data.Skin;
 import cn.nukkit.entity.item.*;
@@ -25,7 +24,6 @@ import cn.nukkit.item.enchantment.Enchantment;
 import cn.nukkit.lang.BaseLang;
 import cn.nukkit.lang.TextContainer;
 import cn.nukkit.lang.TranslationContainer;
-import cn.nukkit.level.GlobalBlockPalette;
 import cn.nukkit.level.Level;
 import cn.nukkit.level.Position;
 import cn.nukkit.level.biome.EnumBiome;
@@ -86,6 +84,7 @@ import java.net.UnknownHostException;
 import java.nio.ByteOrder;
 import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.ThreadLocalRandom;
 import java.util.concurrent.atomic.AtomicBoolean;
 
 /**
@@ -202,6 +201,8 @@ public class Server {
 
     private Thread currentThread;
 
+    private Watchdog watchdog;
+
     private boolean enableJmxMonitoring = false;
     /**
      * 过去 100 tick 的耗时 (ns). 用于 JMX Monitoring.
@@ -240,11 +241,11 @@ public class Server {
         //todo: VersionString 现在不必要
 
         if (!new File(this.dataPath + "nukkit.yml").exists()) {
-            this.getLogger().info(TextFormat.GREEN + "Welcome! Please choose a language first!");
+            log.info(TextFormat.GREEN + "Welcome! Please choose a language first!");
             try {
                 String[] lines = Utils.readFile(this.getClass().getClassLoader().getResourceAsStream("lang/language.list")).split("\n");
                 for (String line : lines) {
-                    this.getLogger().info(line);
+                    log.info(line);
                 }
             } catch (IOException e) {
                 throw new RuntimeException(e);
@@ -388,15 +389,15 @@ public class Server {
             ExceptionHandler.registerExceptionHandler();
         }
 
-        this.getLogger().info(this.getLanguage().translateString("nukkit.server.networkStart", new String[]{this.getIp().equals("") ? "*" : this.getIp(), String.valueOf(this.getPort())}));
+        log.info(this.getLanguage().translateString("nukkit.server.networkStart", new String[]{this.getIp().equals("") ? "*" : this.getIp(), String.valueOf(this.getPort())}));
         this.serverID = UUID.randomUUID();
 
         this.network = new Network(this);
         this.network.setName(this.getMotd());
         this.network.setSubName(this.getSubMotd());
 
-        this.getLogger().info(this.getLanguage().translateString("nukkit.server.info", this.getName(), TextFormat.YELLOW + this.getNukkitVersion() + TextFormat.WHITE, TextFormat.AQUA + this.getCodename() + TextFormat.WHITE, this.getApiVersion()));
-        this.getLogger().info(this.getLanguage().translateString("nukkit.server.license", this.getName()));
+        log.info(this.getLanguage().translateString("nukkit.server.info", this.getName(), TextFormat.YELLOW + this.getNukkitVersion() + TextFormat.WHITE, TextFormat.AQUA + this.getCodename() + TextFormat.WHITE, this.getApiVersion()));
+        log.info(this.getLanguage().translateString("nukkit.server.license", this.getName()));
 
 
         this.consoleSender = new ConsoleCommandSender();
@@ -450,7 +451,7 @@ public class Server {
                 }
 
                 Map<String, Object> options = new HashMap<>();
-                String[] opts = ((String) this.getConfig("worlds." + name + ".generator", Generator.getGenerator("default").getSimpleName())).split(":");
+                String[] opts = this.getConfig("worlds." + name + ".generator", Generator.getGenerator("default").getSimpleName()).split(":");
                 Class<? extends Generator> generator = Generator.getGenerator(opts[0]);
                 if (opts.length > 1) {
                     StringBuilder preset = new StringBuilder();
@@ -469,7 +470,7 @@ public class Server {
         if (this.getDefaultLevel() == null) {
             String defaultName = this.getPropertyString("level-name", "world");
             if (defaultName == null || defaultName.trim().isEmpty()) {
-                this.getLogger().warning("level-name cannot be null, using default");
+                log.warn("level-name cannot be null, using default");
                 defaultName = "world";
                 this.setPropertyString("level-name", defaultName);
             }
@@ -491,7 +492,7 @@ public class Server {
         this.properties.save(true);
 
         if (this.getDefaultLevel() == null) {
-            this.getLogger().emergency(this.getLanguage().translateString("nukkit.level.defaultError"));
+            log.fatal(this.getLanguage().translateString("nukkit.level.defaultError"));
             this.forceShutdown();
 
             return;
@@ -502,6 +503,11 @@ public class Server {
         }
 
         this.enablePlugins(PluginLoadOrder.POSTWORLD);
+
+        if (Nukkit.DEBUG < 2) {
+            this.watchdog = new Watchdog(this, 60000);
+            this.watchdog.start();
+        }
 
         this.start();
     }
@@ -522,7 +528,7 @@ public class Server {
         return recipients.length;
     }
 
-    public int broadcastMessage(String message, Collection<CommandSender> recipients) {
+    public int broadcastMessage(String message, Collection<? extends CommandSender> recipients) {
         for (CommandSender recipient : recipients) {
             recipient.sendMessage(message);
         }
@@ -530,7 +536,7 @@ public class Server {
         return recipients.size();
     }
 
-    public int broadcastMessage(TextContainer message, Collection<CommandSender> recipients) {
+    public int broadcastMessage(TextContainer message, Collection<? extends CommandSender> recipients) {
         for (CommandSender recipient : recipients) {
             recipient.sendMessage(message);
         }
@@ -573,7 +579,6 @@ public class Server {
 
         return recipients.size();
     }
-
 
     public static void broadcastPacket(Collection<Player> players, DataPacket packet) {
         broadcastPacket(players.toArray(new Player[0]), packet);
@@ -672,8 +677,8 @@ public class Server {
     public boolean dispatchCommand(CommandSender sender, String commandLine) throws ServerException {
         // First we need to check if this command is on the main thread or not, if not, warn the user
         if (!this.isPrimaryThread()) {
-            getLogger().warning("Command Dispatched Async: " + commandLine);
-            getLogger().warning("Please notify author of plugin causing this execution to fix this bug!", new Throwable());
+            log.warn("Command Dispatched Async: " + commandLine);
+            log.warn("Please notify author of plugin causing this execution to fix this bug!", new Throwable());
             // TODO: We should sync the command to the main thread too!
         }
         if (sender == null) {
@@ -695,9 +700,9 @@ public class Server {
     }
 
     public void reload() {
-        this.getLogger().info("Reloading...");
+        log.info("Reloading...");
 
-        this.getLogger().info("Saving levels...");
+        log.info("Saving levels...");
 
         for (Level level : this.levels.values()) {
             level.save();
@@ -707,7 +712,7 @@ public class Server {
         this.pluginManager.clearPlugins();
         this.commandMap.clearCommands();
 
-        this.getLogger().info("Reloading properties...");
+        log.info("Reloading properties...");
         this.properties.reload();
         this.maxPlayers = this.getPropertyInt("max-players", 20);
 
@@ -753,36 +758,39 @@ public class Server {
                 this.rcon.close();
             }
 
-            this.getLogger().debug("Disabling all plugins");
+            log.debug("Disabling all plugins");
             this.pluginManager.disablePlugins();
 
             for (Player player : new ArrayList<>(this.players.values())) {
                 player.close(player.getLeaveMessage(), this.getConfig("settings.shutdown-message", "Server closed"));
             }
 
-            this.getLogger().debug("Unloading all levels");
+            log.debug("Unloading all levels");
             for (Level level : new ArrayList<>(this.getLevels().values())) {
                 this.unloadLevel(level, true);
             }
 
-            this.getLogger().debug("Removing event handlers");
+            log.debug("Removing event handlers");
             HandlerList.unregisterAll();
 
-            this.getLogger().debug("Stopping all tasks");
+            log.debug("Stopping all tasks");
             this.scheduler.cancelAllTasks();
             this.scheduler.mainThreadHeartbeat(Integer.MAX_VALUE);
 
-            this.getLogger().debug("Closing console");
+            log.debug("Closing console");
             this.consoleThread.interrupt();
 
-            this.getLogger().debug("Stopping network interfaces");
+            log.debug("Stopping network interfaces");
             for (SourceInterface interfaz : this.network.getInterfaces()) {
                 interfaz.shutdown();
                 this.network.unregisterInterface(interfaz);
             }
 
-            this.getLogger().debug("Disabling timings");
+            log.debug("Disabling timings");
             Timings.stopServer();
+            if (this.watchdog != null) {
+                this.watchdog.kill();
+            }
             //todo other things
         } catch (Exception e) {
             log.fatal("Exception happened while shutting down", e);
@@ -806,9 +814,9 @@ public class Server {
 
         this.tickCounter = 0;
 
-        this.getLogger().info(this.getLanguage().translateString("nukkit.server.defaultGameMode", getGamemodeString(this.getGamemode())));
+        log.info(this.getLanguage().translateString("nukkit.server.defaultGameMode", getGamemodeString(this.getGamemode())));
 
-        this.getLogger().info(this.getLanguage().translateString("nukkit.server.startFinished", String.valueOf((double) (System.currentTimeMillis() - Nukkit.START_TIME) / 1000)));
+        log.info(this.getLanguage().translateString("nukkit.server.startFinished", String.valueOf((double) (System.currentTimeMillis() - Nukkit.START_TIME) / 1000)));
 
         this.tickProcessor();
         this.forceShutdown();
@@ -842,7 +850,7 @@ public class Server {
                 try {
                     this.tick();
                 } catch (RuntimeException e) {
-                    this.getLogger().alert("tickProcessor ROOT RuntimeException", e);
+                    log.warn("tickProcessor ROOT RuntimeException", e);
                 } finally {
                     long next = this.nextTick;
                     long current = System.currentTimeMillis();
@@ -933,11 +941,11 @@ public class Server {
         pk.type = PlayerListPacket.TYPE_ADD;
         pk.entries = this.playerList.values().stream()
                 .map(p -> new PlayerListPacket.Entry(
-                        p.getUniqueId(),
-                        p.getId(),
-                        p.getDisplayName(),
-                        p.getSkin(),
-                        p.getLoginChainData().getXUID()))
+                p.getUniqueId(),
+                p.getId(),
+                p.getDisplayName(),
+                p.getSkin(),
+                p.getLoginChainData().getXUID()))
                 .toArray(PlayerListPacket.Entry[]::new);
 
         player.dataPacket(pk);
@@ -985,14 +993,14 @@ public class Server {
                         if (r > this.baseTickRate) {
                             level.tickRateCounter = level.getTickRate();
                         }
-                        this.getLogger().debug("Raising level \"" + level.getName() + "\" tick rate to " + level.getTickRate() + " ticks");
+                        log.debug("Raising level \"" + level.getName() + "\" tick rate to " + level.getTickRate() + " ticks");
                     } else if (tickMs >= 50) {
                         if (level.getTickRate() == this.baseTickRate) {
                             level.setTickRate(Math.max(this.baseTickRate + 1, Math.min(this.autoTickRateLimit, tickMs / 50)));
-                            this.getLogger().debug("Level \"" + level.getName() + "\" took " + NukkitMath.round(tickMs, 2) + "ms, setting tick rate to " + level.getTickRate() + " ticks");
+                            log.debug("Level \"" + level.getName() + "\" took " + NukkitMath.round(tickMs, 2) + "ms, setting tick rate to " + level.getTickRate() + " ticks");
                         } else if ((tickMs / level.getTickRate()) >= 50 && level.getTickRate() < this.autoTickRateLimit) {
                             level.setTickRate(level.getTickRate() + 1);
-                            this.getLogger().debug("Level \"" + level.getName() + "\" took " + NukkitMath.round(tickMs, 2) + "ms, setting tick rate to " + level.getTickRate() + " ticks");
+                            log.debug("Level \"" + level.getName() + "\" took " + NukkitMath.round(tickMs, 2) + "ms, setting tick rate to " + level.getTickRate() + " ticks");
                         }
                         level.tickRateCounter = level.getTickRate();
                     }
@@ -1002,7 +1010,7 @@ public class Server {
                     this.getLogger().logException(e);
                 }
 
-                this.getLogger().critical(this.getLanguage().translateString("nukkit.level.tickError", new String[]{level.getName(), e.toString()}));
+                log.fatal(this.getLanguage().translateString("nukkit.level.tickError", new String[]{level.getName(), e.toString()}));
                 this.getLogger().logException(e);
             }
         }
@@ -1127,6 +1135,10 @@ public class Server {
         }
 
         return true;
+    }
+
+    public long getNextTick() {
+        return nextTick;
     }
 
     // TODO: Fix title tick
@@ -1446,10 +1458,10 @@ public class Server {
                 return NBTIO.readCompressed(new FileInputStream(file));
             } catch (Exception e) {
                 file.renameTo(new File(path + name + ".dat.bak"));
-                this.getLogger().notice(this.getLanguage().translateString("nukkit.data.playerCorrupted", name));
+                log.warn(this.getLanguage().translateString("nukkit.data.playerCorrupted", name));
             }
         } else {
-            this.getLogger().notice(this.getLanguage().translateString("nukkit.data.playerNotFound", name));
+            log.warn(this.getLanguage().translateString("nukkit.data.playerNotFound", name));
         }
 
         Position spawn = this.getDefaultLevel().getSafeSpawn();
@@ -1495,7 +1507,7 @@ public class Server {
                     Utils.writeFile(this.getDataPath() + "players/" + name.toLowerCase() + ".dat", new ByteArrayInputStream(NBTIO.writeGZIPCompressed(tag, ByteOrder.BIG_ENDIAN)));
                 }
             } catch (Exception e) {
-                this.getLogger().critical(this.getLanguage().translateString("nukkit.data.saveError", new String[]{name, e.getMessage()}));
+                log.fatal(this.getLanguage().translateString("nukkit.data.saveError", new String[]{name, e.getMessage()}));
                 if (Nukkit.DEBUG > 1) {
                     this.getLogger().logException(e);
                 }
@@ -1618,7 +1630,7 @@ public class Server {
         if (this.isLevelLoaded(name)) {
             return true;
         } else if (!this.isLevelGenerated(name)) {
-            this.getLogger().notice(this.getLanguage().translateString("nukkit.level.notFound", name));
+            log.warn(this.getLanguage().translateString("nukkit.level.notFound", name));
 
             return false;
         }
@@ -1634,7 +1646,7 @@ public class Server {
         Class<? extends LevelProvider> provider = LevelProviderManager.getProvider(path);
 
         if (provider == null) {
-            this.getLogger().error(this.getLanguage().translateString("nukkit.level.loadError", new String[]{name, "Unknown provider"}));
+            log.error(this.getLanguage().translateString("nukkit.level.loadError", new String[]{name, "Unknown provider"}));
 
             return false;
         }
@@ -1643,7 +1655,7 @@ public class Server {
         try {
             level = new Level(this, name, path, provider);
         } catch (Exception e) {
-            this.getLogger().error(this.getLanguage().translateString("nukkit.level.loadError", new String[]{name, e.getMessage()}));
+            log.error(this.getLanguage().translateString("nukkit.level.loadError", new String[]{name, e.getMessage()}));
             this.getLogger().logException(e);
             return false;
         }
@@ -1660,7 +1672,7 @@ public class Server {
     }
 
     public boolean generateLevel(String name) {
-        return this.generateLevel(name, new java.util.Random().nextLong());
+        return this.generateLevel(name, ThreadLocalRandom.current().nextLong());
     }
 
     public boolean generateLevel(String name, long seed) {
@@ -1938,9 +1950,7 @@ public class Server {
                 String key = (String) entry.getKey();
                 Object value = entry.getValue();
                 if (value instanceof List) {
-                    for (String string : (List<String>) value) {
-                        commands.add(string);
-                    }
+                    commands.addAll((List<String>) value);
                 } else {
                     commands.add((String) value);
                 }
@@ -1962,14 +1972,23 @@ public class Server {
     }
 
     /**
-     * Checks the current thread against the expected primary thread for the server.
+     * Checks the current thread against the expected primary thread for the
+     * server.
      * <p>
-     * <b>Note:</b> this method should not be used to indicate the current synchronized state of the runtime. A current thread matching the main thread indicates that it is synchronized, but a mismatch does not preclude the same assumption.
+     * <b>Note:</b> this method should not be used to indicate the current
+     * synchronized state of the runtime. A current thread matching the main
+     * thread indicates that it is synchronized, but a mismatch does not
+     * preclude the same assumption.
      *
-     * @return true if the current thread matches the expected primary thread, false otherwise
+     * @return true if the current thread matches the expected primary thread,
+     * false otherwise
      */
     public boolean isPrimaryThread() {
         return (Thread.currentThread() == currentThread);
+    }
+
+    public Thread getPrimaryThread() {
+        return currentThread;
     }
 
     private void registerEntities() {

@@ -15,13 +15,13 @@ import cn.nukkit.nbt.tag.ListTag;
 import cn.nukkit.utils.Binary;
 import cn.nukkit.utils.BinaryStream;
 import cn.nukkit.utils.Zlib;
+import it.unimi.dsi.fastutil.ints.Int2IntMap;
+import it.unimi.dsi.fastutil.ints.Int2IntOpenHashMap;
 
 import java.io.ByteArrayInputStream;
 import java.nio.ByteOrder;
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.HashMap;
-import java.util.Map;
 
 /**
  * author: MagicDroidX
@@ -87,7 +87,7 @@ public class Chunk extends BaseFullChunk {
             this.nbt.putByteArray("BlockLight", new byte[16384]);
         }
 
-        Map<Integer, Integer> extraData = new HashMap<>();
+        Int2IntMap extraData = new Int2IntOpenHashMap();
 
         if (!this.nbt.contains("ExtraData") || !(this.nbt.get("ExtraData") instanceof ByteArrayTag)) {
             this.nbt.putByteArray("ExtraData", Binary.writeInt(0));
@@ -477,9 +477,9 @@ public class Chunk extends BaseFullChunk {
         nbt.putList(tileListTag);
 
         BinaryStream extraData = new BinaryStream();
-        Map<Integer, Integer> extraDataArray = this.getBlockExtraDataArray();
+        Int2IntMap extraDataArray = this.getBlockExtraDataArray();
         extraData.putInt(extraDataArray.size());
-        for (Integer key : extraDataArray.keySet()) {
+        for (int key : extraDataArray.keySet()) {
             extraData.putInt(key);
             extraData.putShort(extraDataArray.get(key));
         }

@@ -104,14 +104,15 @@ public class BlockFlower extends BlockFlowable {
 
             this.level.addParticle(new BoneMealParticle(this));
 
+            ThreadLocalRandom random = ThreadLocalRandom.current();
             for (int i = 0; i < 8; i++) {
                 Vector3 vec = this.add(
-                        ThreadLocalRandom.current().nextInt(-3, 4),
-                        ThreadLocalRandom.current().nextInt(-1, 2),
-                        ThreadLocalRandom.current().nextInt(-3, 4));
+                        random.nextInt(-3, 4),
+                        random.nextInt(-1, 2),
+                        random.nextInt(-3, 4));
 
                 if (level.getBlock(vec).getId() == AIR && level.getBlock(vec.down()).getId() == GRASS && vec.getY() >= 0 && vec.getY() < 256) {
-                    if (ThreadLocalRandom.current().nextInt(10) == 0) {
+                    if (random.nextInt(10) == 0) {
                         this.level.setBlock(vec, this.getUncommonFlower(), true);
                     } else {
                         this.level.setBlock(vec, get(this.getId()), true);

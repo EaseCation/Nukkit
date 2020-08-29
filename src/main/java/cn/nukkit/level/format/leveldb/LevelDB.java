@@ -19,6 +19,7 @@ import cn.nukkit.nbt.NBTIO;
 import cn.nukkit.nbt.tag.CompoundTag;
 import cn.nukkit.scheduler.AsyncTask;
 import cn.nukkit.utils.*;
+import it.unimi.dsi.fastutil.ints.Int2IntMap;
 import org.iq80.leveldb.DB;
 import org.iq80.leveldb.Options;
 import org.iq80.leveldb.impl.Iq80DBFactory;
@@ -26,6 +27,7 @@ import org.iq80.leveldb.impl.Iq80DBFactory;
 import java.io.*;
 import java.nio.ByteOrder;
 import java.util.*;
+import java.util.concurrent.ThreadLocalRandom;
 
 /**
  * author: MagicDroidX
@@ -103,6 +105,7 @@ public class LevelDB implements LevelProvider {
             new File(path + "/db").mkdirs();
         }
 
+        Random random = ThreadLocalRandom.current();
         CompoundTag levelData = new CompoundTag("")
                 .putLong("currentTick", 0)
                 .putInt("DayCycleStopTime", -1)
@@ -112,13 +115,13 @@ public class LevelDB implements LevelProvider {
                 .putLong("LastPlayed", System.currentTimeMillis() / 1000)
                 .putString("LevelName", name)
                 .putFloat("lightningLevel", 0)
-                .putInt("lightningTime", new Random().nextInt())
+                .putInt("lightningTime", random.nextInt())
                 .putInt("limitedWorldOriginX", 128)
                 .putInt("limitedWorldOriginY", 70)
                 .putInt("limitedWorldOriginZ", 128)
                 .putInt("Platform", 0)
                 .putFloat("rainLevel", 0)
-                .putInt("rainTime", new Random().nextInt())
+                .putInt("rainTime", random.nextInt())
                 .putLong("RandomSeed", seed)
                 .putByte("spawnMobs", 0)
                 .putInt("SpawnX", 128)
@@ -182,12 +185,12 @@ public class LevelDB implements LevelProvider {
             }
         }
 
-        Map<Integer, Integer> extra = chunk.getBlockExtraDataArray();
+        Int2IntMap extra = chunk.getBlockExtraDataArray();
         BinaryStream extraData;
         if (!extra.isEmpty()) {
             extraData = new BinaryStream();
             extraData.putLInt(extra.size());
-            for (Integer key : extra.values()) {
+            for (int key : extra.values()) {
                 extraData.putLInt(key);
                 extraData.putLShort(extra.get(key));
             }

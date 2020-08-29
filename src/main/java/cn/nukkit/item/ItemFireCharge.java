@@ -1,6 +1,7 @@
 package cn.nukkit.item;
 
 import cn.nukkit.block.Block;
+import cn.nukkit.block.BlockID;
 import cn.nukkit.level.sound.SoundEnum;
 import cn.nukkit.math.BlockFace;
 import cn.nukkit.level.Level;
@@ -42,7 +43,7 @@ public class ItemFireCharge extends Item {
                 }
             }
 
-            BlockFire fire = new BlockFire();
+            BlockFire fire = (BlockFire) Block.get(BlockID.FIRE);
             fire.x = block.x;
             fire.y = block.y;
             fire.z = block.z;

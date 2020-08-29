@@ -60,7 +60,7 @@ public class BlockTrapdoor extends BlockTransparentMeta implements Faceable {
         return ItemTool.TYPE_AXE;
     }
 
-    private static final AxisAlignedBB[] boundingBoxDamage = new SimpleAxisAlignedBB[16];
+    private static final AxisAlignedBB[] boundingBoxDamage = new AxisAlignedBB[16];
 
     static {
         for (int damage = 0; damage < 16; damage++) {

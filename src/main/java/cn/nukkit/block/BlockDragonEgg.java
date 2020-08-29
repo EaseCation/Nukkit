@@ -54,8 +54,9 @@ public class BlockDragonEgg extends BlockFallable {
     }
 
     public void teleport() {
+        ThreadLocalRandom random = ThreadLocalRandom.current();
         for (int i = 0; i < 1000; ++i) {
-            Block t = this.getLevel().getBlock(this.add(ThreadLocalRandom.current().nextInt(-16, 16), ThreadLocalRandom.current().nextInt(-16, 16), ThreadLocalRandom.current().nextInt(-16, 16)));
+            Block t = this.getLevel().getBlock(this.add(random.nextInt(-16, 16), ThreadLocalRandom.current().nextInt(-16, 16), ThreadLocalRandom.current().nextInt(-16, 16)));
             if (t.getId() == AIR) {
                 int diffX = this.getFloorX() - t.getFloorX();
                 int diffY = this.getFloorY() - t.getFloorY();

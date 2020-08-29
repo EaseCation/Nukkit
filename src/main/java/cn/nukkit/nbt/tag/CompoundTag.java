@@ -132,6 +132,7 @@ public class CompoundTag extends Tag implements Cloneable {
         return (T) tags.remove(name);
     }
 
+
     public int getByte(String name) {
         if (!tags.containsKey(name)) return (byte) 0;
         return ((NumberTag) tags.get(name)).getData().intValue();
@@ -148,7 +149,7 @@ public class CompoundTag extends Tag implements Cloneable {
     }
 
     public long getLong(String name) {
-        if (!tags.containsKey(name)) return (long) 0;
+        if (!tags.containsKey(name)) return 0;
         return ((NumberTag) tags.get(name)).getData().longValue();
     }
 
@@ -158,7 +159,7 @@ public class CompoundTag extends Tag implements Cloneable {
     }
 
     public double getDouble(String name) {
-        if (!tags.containsKey(name)) return (double) 0;
+        if (!tags.containsKey(name)) return 0;
         return ((NumberTag) tags.get(name)).getData().doubleValue();
     }
 
@@ -186,7 +187,6 @@ public class CompoundTag extends Tag implements Cloneable {
         return (CompoundTag) tags.get(name);
     }
 
-    @SuppressWarnings("unchecked")
     public ListTag<? extends Tag> getList(String name) {
         if (!tags.containsKey(name)) return new ListTag<>(name);
         return (ListTag<? extends Tag>) tags.get(name);

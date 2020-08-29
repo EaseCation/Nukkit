@@ -1,7 +1,8 @@
 package cn.nukkit.item.randomitem;
 
-import java.util.HashMap;
-import java.util.Map;
+import it.unimi.dsi.fastutil.objects.Object2FloatMap;
+import it.unimi.dsi.fastutil.objects.Object2FloatOpenHashMap;
+
 import java.util.Objects;
 
 /**
@@ -9,7 +10,7 @@ import java.util.Objects;
  * Package cn.nukkit.item.randomitem in project nukkit.
  */
 public final class RandomItem {
-    private static final Map<Selector, Float> selectors = new HashMap<>();
+    private static final Object2FloatMap<Selector> selectors = new Object2FloatOpenHashMap<>();
 
     public static final Selector ROOT = new Selector(null);
 
@@ -25,7 +26,7 @@ public final class RandomItem {
 
     static Object selectFrom(Selector selector) {
         Objects.requireNonNull(selector);
-        Map<Selector, Float> child = new HashMap<>();
+        Object2FloatMap<Selector> child = new Object2FloatOpenHashMap<>();
         selectors.forEach((s, f) -> {
             if (s.getParent() == selector) child.put(s, f);
         });

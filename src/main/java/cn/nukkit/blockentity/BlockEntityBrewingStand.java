@@ -3,8 +3,8 @@ package cn.nukkit.blockentity;
 import cn.nukkit.Player;
 import cn.nukkit.Server;
 import cn.nukkit.block.Block;
-import cn.nukkit.block.BlockAir;
 import cn.nukkit.block.BlockBrewingStand;
+import cn.nukkit.block.BlockID;
 import cn.nukkit.event.inventory.BrewEvent;
 import cn.nukkit.event.inventory.StartBrewEvent;
 import cn.nukkit.inventory.BrewingInventory;
@@ -18,12 +18,11 @@ import cn.nukkit.nbt.NBTIO;
 import cn.nukkit.nbt.tag.CompoundTag;
 import cn.nukkit.nbt.tag.ListTag;
 import cn.nukkit.network.protocol.ContainerSetDataPacket;
-import cn.nukkit.network.protocol.LevelSoundEventPacket;
+import it.unimi.dsi.fastutil.ints.IntArrayList;
+import it.unimi.dsi.fastutil.ints.IntList;
 
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashSet;
-import java.util.List;
 
 public class BlockEntityBrewingStand extends BlockEntitySpawnable implements InventoryHolder, BlockEntityContainer, BlockEntityNameable {
 
@@ -35,7 +34,7 @@ public class BlockEntityBrewingStand extends BlockEntitySpawnable implements Inv
     public int fuelTotal;
     public int fuelAmount;
 
-    public static final List<Integer> ingredients = new ArrayList<Integer>() {
+    public static final IntList ingredients = new IntArrayList() {
         {
             addAll(Arrays.asList(Item.NETHER_WART, Item.GHAST_TEAR, Item.GLOWSTONE_DUST, Item.REDSTONE_DUST, Item.GUNPOWDER, Item.MAGMA_CREAM, Item.BLAZE_POWDER, Item.GOLDEN_CARROT, Item.SPIDER_EYE, Item.FERMENTED_SPIDER_EYE, Item.GLISTERING_MELON, Item.SUGAR, Item.RABBIT_FOOT, Item.PUFFERFISH, 469, 470, 437));
         }
@@ -104,6 +103,14 @@ public class BlockEntityBrewingStand extends BlockEntitySpawnable implements Inv
     }
 
     @Override
+    public void onBreak() {
+        for (Item content : inventory.getContents().values()) {
+            level.dropItem(this, content);
+        }
+        this.inventory.clearAll();
+    }
+
+    @Override
     public void saveNBT() {
         namedTag.putList(new ListTag<CompoundTag>("Items"));
         for (int index = 0; index < getSize(); index++) {
@@ -122,7 +129,7 @@ public class BlockEntityBrewingStand extends BlockEntitySpawnable implements Inv
 
     @Override
     public int getSize() {
-        return 4;
+        return 5;
     }
 
     protected int getSlotIndex(int index) {
@@ -140,7 +147,7 @@ public class BlockEntityBrewingStand extends BlockEntitySpawnable implements Inv
     public Item getItem(int index) {
         int i = this.getSlotIndex(index);
         if (i < 0) {
-            return new ItemBlock(new BlockAir(), 0, 0);
+            return new ItemBlock(Block.get(BlockID.AIR), 0, 0);
         } else {
             CompoundTag data = (CompoundTag) this.namedTag.getList("Items").get(i);
             return NBTIO.getItemHelper(data);
@@ -313,7 +320,7 @@ public class BlockEntityBrewingStand extends BlockEntitySpawnable implements Inv
 
             int id = potion.getId();
             if ((id == Item.POTION || id == Item.SPLASH_POTION || id == Item.LINGERING_POTION) && potion.getCount() > 0) {
-                meta |= 1 << i;
+                meta |= 1 << (i - 1);
             }
         }
 
