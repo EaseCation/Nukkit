@@ -3404,7 +3404,7 @@ public class Player extends EntityHuman implements CommandSender, InventoryHolde
     public void sendChat(String source, String message) {
         TextPacket pk = new TextPacket();
         pk.type = TextPacket.TYPE_CHAT;
-        pk.source = source;
+        pk.primaryName = source;
         pk.message = this.server.getLanguage().translateString(message);
         pk.setChannel(DataPacket.CHANNEL_TEXT);
         this.dataPacket(pk);
@@ -3417,8 +3417,8 @@ public class Player extends EntityHuman implements CommandSender, InventoryHolde
     public void sendPopup(String message, String subtitle) {
         TextPacket pk = new TextPacket();
         pk.type = TextPacket.TYPE_POPUP;
-        pk.source = message;
-        pk.message = subtitle;
+        pk.primaryName = subtitle;
+        pk.message = message;
         pk.setChannel(DataPacket.CHANNEL_TEXT);
         this.dataPacket(pk);
     }
