@@ -22,10 +22,14 @@ public class TextPacket extends DataPacket {
     public static final byte TYPE_ANNOUNCEMENT = 7;
 
     public byte type;
-    public String source = "";
+    public boolean isLocalized = false;
+
     public String message = "";
     public String[] parameters = new String[0];
-    public boolean isLocalized = false;
+    public String primaryName = "";
+
+    public String sendersXUID = "";
+    public String platformIdString = "";
 
     @Override
     public void decode() {
@@ -36,7 +40,7 @@ public class TextPacket extends DataPacket {
             case TYPE_CHAT:
             case TYPE_WHISPER:
             case TYPE_ANNOUNCEMENT:
-                this.source = this.getString();
+                this.primaryName = this.getString();
             case TYPE_RAW:
             case TYPE_TIP:
             case TYPE_SYSTEM:
@@ -63,7 +67,7 @@ public class TextPacket extends DataPacket {
             case TYPE_CHAT:
             case TYPE_WHISPER:
             case TYPE_ANNOUNCEMENT:
-                this.putString(this.source);
+                this.putString(this.primaryName);
             case TYPE_RAW:
             case TYPE_TIP:
             case TYPE_SYSTEM:
