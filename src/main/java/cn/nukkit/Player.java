@@ -4968,4 +4968,11 @@ public class Player extends EntityHuman implements CommandSender, InventoryHolde
         if (this.teleportChunkLoaded)
             this.lastImmobile = value;
     }
+
+    /**
+     * {@link PlayerInventory} 被打开时调用. 1.16+需要重写此方法.
+     */
+    public void onInventoryOpen() {
+
+    }
 }

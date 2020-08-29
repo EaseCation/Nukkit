@@ -504,14 +504,15 @@ public class PlayerInventory extends BaseInventory {
     @Override
     public void onOpen(Player who) {
         super.onOpen(who);
-        ContainerOpenPacket pk = new ContainerOpenPacket();
+        /*ContainerOpenPacket pk = new ContainerOpenPacket();
         pk.windowId = who.getWindowId(this);
         pk.type = this.getType().getNetworkType();
         pk.x = who.getFloorX();
         pk.y = who.getFloorY();
         pk.z = who.getFloorZ();
         pk.entityId = who.getId();
-        who.dataPacket(pk);
+        who.dataPacket(pk);*/
+        who.onInventoryOpen(); //避免1.16前的版本跨服后自动打开背包
     }
 
     @Override
