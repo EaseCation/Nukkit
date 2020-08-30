@@ -32,6 +32,7 @@ import cn.nukkit.form.window.FormWindow;
 import cn.nukkit.form.window.FormWindowCustom;
 import cn.nukkit.inventory.*;
 import cn.nukkit.inventory.transaction.CraftingTransaction;
+import cn.nukkit.inventory.transaction.EnchantTransaction;
 import cn.nukkit.inventory.transaction.InventoryTransaction;
 import cn.nukkit.inventory.transaction.action.InventoryAction;
 import cn.nukkit.inventory.transaction.data.ReleaseItemData;
@@ -161,6 +162,7 @@ public class Player extends EntityHuman implements CommandSender, InventoryHolde
     protected PlayerOffhandInventory offhandInventory;
     protected CraftingGrid craftingGrid;
     protected CraftingTransaction craftingTransaction;
+    protected EnchantTransaction enchantTransaction;
 
     public long creationTime = 0;
 
