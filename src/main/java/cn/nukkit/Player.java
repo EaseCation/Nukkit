@@ -2891,7 +2891,7 @@ public class Player extends EntityHuman implements CommandSender, InventoryHolde
 
                     List<InventoryAction> actions = new ArrayList<>();
                     for (NetworkInventoryAction networkInventoryAction : transactionPacket.actions) {
-                        InventoryAction a = networkInventoryAction.createInventoryAction(this);
+                        InventoryAction a = networkInventoryAction.createInventoryActionLegacy(this);
 
                         if (a == null) {
                             log.debug("Unmatched inventory action from " + this.getName() + ": " + networkInventoryAction);
