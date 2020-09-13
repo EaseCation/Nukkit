@@ -207,6 +207,10 @@ public class Network {
         this.packetPool[id] = clazz;
     }
 
+    public void registerPacket(byte id, Class<? extends DataPacket> clazz) {
+        this.registerPacket((int) id, clazz);
+    }
+
     public Server getServer() {
         return server;
     }
