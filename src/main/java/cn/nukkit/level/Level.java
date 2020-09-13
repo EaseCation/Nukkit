@@ -2519,14 +2519,14 @@ public class Level implements ChunkManager, Metadatable {
 
                 this.provider.setChunk(chunkX, chunkZ, chunk);
             } else {
-                Long2ObjectMap<Entity> oldEntities = oldChunk != null ? oldChunk.getEntities() : Long2ObjectMaps.emptyMap();
+                Map<Long, Entity> oldEntities = oldChunk != null ? oldChunk.getEntities() : Long2ObjectMaps.emptyMap();
 
-                Long2ObjectMap<BlockEntity> oldBlockEntities = oldChunk != null ? oldChunk.getBlockEntities() : Long2ObjectMaps.emptyMap();
+                Map<Long, BlockEntity> oldBlockEntities = oldChunk != null ? oldChunk.getBlockEntities() : Long2ObjectMaps.emptyMap();
 
                 if (!oldEntities.isEmpty()) {
-                    Iterator<Long2ObjectMap.Entry<Entity>> iter = oldEntities.long2ObjectEntrySet().iterator();
+                    Iterator<Map.Entry<Long, Entity>> iter = oldEntities.entrySet().iterator();
                     while (iter.hasNext()) {
-                        Long2ObjectMap.Entry<Entity> entry = iter.next();
+                        Map.Entry<Long, Entity> entry = iter.next();
                         Entity entity = entry.getValue();
                         chunk.addEntity(entity);
                         if (oldChunk != null) {
@@ -2538,9 +2538,9 @@ public class Level implements ChunkManager, Metadatable {
                 }
 
                 if (!oldBlockEntities.isEmpty()) {
-                    Iterator<Long2ObjectMap.Entry<BlockEntity>> iter = oldBlockEntities.long2ObjectEntrySet().iterator();
+                    Iterator<Map.Entry<Long, BlockEntity>> iter = oldBlockEntities.entrySet().iterator();
                     while (iter.hasNext()) {
-                        Long2ObjectMap.Entry<BlockEntity> entry = iter.next();
+                        Map.Entry<Long, BlockEntity> entry = iter.next();
                         BlockEntity blockEntity = entry.getValue();
                         chunk.addBlockEntity(blockEntity);
                         if (oldChunk != null) {
