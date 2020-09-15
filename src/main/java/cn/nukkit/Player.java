@@ -3400,9 +3400,9 @@ public class Player extends EntityHuman implements CommandSender, InventoryHolde
         if (!this.server.isLanguageForced()) {
             pk.type = TextPacket.TYPE_TRANSLATION;
             pk.message = this.server.getLanguage().translateString(message, parameters, "nukkit.");
+            pk.isLocalized = true;
             for (int i = 0; i < parameters.length; i++) {
                 parameters[i] = this.server.getLanguage().translateString(parameters[i], parameters, "nukkit.");
-
             }
             pk.parameters = parameters;
         } else {
