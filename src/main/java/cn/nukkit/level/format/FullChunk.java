@@ -8,6 +8,7 @@ import it.unimi.dsi.fastutil.ints.Int2IntMap;
 import it.unimi.dsi.fastutil.longs.Long2ObjectMap;
 
 import java.io.IOException;
+import java.util.Map;
 
 /**
  * author: MagicDroidX
@@ -116,9 +117,9 @@ public interface FullChunk extends Cloneable {
 
     void removeBlockEntity(BlockEntity blockEntity);
 
-    Long2ObjectMap<Entity> getEntities();
+    Map<Long, Entity> getEntities();
 
-    Long2ObjectMap<BlockEntity> getBlockEntities();
+    Map<Long, BlockEntity> getBlockEntities();
 
     BlockEntity getTile(int x, int y, int z);
 
