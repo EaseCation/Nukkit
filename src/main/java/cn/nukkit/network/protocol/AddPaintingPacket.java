@@ -1,8 +1,11 @@
 package cn.nukkit.network.protocol;
 
+import lombok.ToString;
+
 /**
  * @author Nukkit Project Team
  */
+@ToString
 public class AddPaintingPacket extends DataPacket {
 
     public static final int NETWORK_ID = ProtocolInfo.ADD_PAINTING_PACKET;

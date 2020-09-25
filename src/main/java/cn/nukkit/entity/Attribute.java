@@ -9,9 +9,11 @@ package cn.nukkit.entity;
 import cn.nukkit.utils.ServerException;
 import it.unimi.dsi.fastutil.ints.Int2ObjectMap;
 import it.unimi.dsi.fastutil.ints.Int2ObjectOpenHashMap;
+import lombok.ToString;
 
 import java.util.Objects;
 
+@ToString
 public class Attribute implements Cloneable {
 
     public static final int ABSORPTION = 0;

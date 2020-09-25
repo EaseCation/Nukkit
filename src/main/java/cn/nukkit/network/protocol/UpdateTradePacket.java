@@ -1,5 +1,8 @@
 package cn.nukkit.network.protocol;
 
+import lombok.ToString;
+
+@ToString(exclude = "offers")
 public class UpdateTradePacket extends DataPacket {
 
     public static final int NETWORK_ID = ProtocolInfo.UPDATE_TRADE_PACKET;

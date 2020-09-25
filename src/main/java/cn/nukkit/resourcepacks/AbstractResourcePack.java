@@ -2,7 +2,9 @@ package cn.nukkit.resourcepacks;
 
 import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
+import lombok.ToString;
 
+@ToString
 public abstract class AbstractResourcePack implements ResourcePack {
     protected JsonObject manifest;
 

@@ -1,8 +1,11 @@
 package cn.nukkit.network.protocol;
 
+import lombok.ToString;
+
 /**
  * @author Nukkit Project Team
  */
+@ToString
 public class SetSpawnPositionPacket extends DataPacket {
 
     public static final int NETWORK_ID = ProtocolInfo.SET_SPAWN_POSITION_PACKET;

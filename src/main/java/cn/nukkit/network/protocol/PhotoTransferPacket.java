@@ -1,5 +1,8 @@
 package cn.nukkit.network.protocol;
 
+import lombok.ToString;
+
+@ToString
 public class PhotoTransferPacket extends DataPacket {
 
     public static final int NETWORK_ID = ProtocolInfo.PHOTO_TRANSFER_PACKET;

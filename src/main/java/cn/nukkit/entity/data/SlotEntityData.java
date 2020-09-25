@@ -2,11 +2,13 @@ package cn.nukkit.entity.data;
 
 import cn.nukkit.entity.Entity;
 import cn.nukkit.item.Item;
+import lombok.ToString;
 
 /**
  * author: MagicDroidX
  * Nukkit Project
  */
+@ToString(exclude = "tag")
 public class SlotEntityData extends EntityData<Item> {
     public int blockId;
     public int meta;

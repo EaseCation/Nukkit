@@ -1,11 +1,13 @@
 package cn.nukkit.entity.data;
 
 import cn.nukkit.entity.Entity;
+import lombok.ToString;
 
 /**
  * author: MagicDroidX
  * Nukkit Project
  */
+@ToString
 public class IntEntityData extends EntityData<Integer> {
     public int data;
 

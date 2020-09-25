@@ -1,6 +1,7 @@
 package cn.nukkit.inventory;
 
 import cn.nukkit.item.Item;
+import lombok.ToString;
 
 import java.util.*;
 
@@ -8,6 +9,7 @@ import java.util.*;
  * author: MagicDroidX
  * Nukkit Project
  */
+@ToString
 public class ShapelessRecipe implements CraftingRecipe {
 
     private String recipeId;

@@ -1,5 +1,8 @@
 package cn.nukkit.network.protocol;
 
+import lombok.ToString;
+
+@ToString
 public class SetHealthPacket extends DataPacket {
 
     public static final int NETWORK_ID = ProtocolInfo.SET_HEALTH_PACKET;

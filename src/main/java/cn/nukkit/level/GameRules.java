@@ -5,6 +5,7 @@ import cn.nukkit.nbt.tag.CompoundTag;
 import cn.nukkit.utils.BinaryStream;
 import com.google.common.base.Preconditions;
 import com.google.common.collect.ImmutableMap;
+import lombok.ToString;
 
 import java.util.EnumMap;
 import java.util.Map;
@@ -14,6 +15,7 @@ import java.util.Optional;
 import static cn.nukkit.level.GameRule.*;
 
 @SuppressWarnings({"unchecked"})
+@ToString
 public class GameRules {
     private final EnumMap<GameRule, Value> gameRules = new EnumMap<>(GameRule.class);
     private boolean stale;
@@ -195,6 +197,7 @@ public class GameRules {
         abstract void write(BinaryStream pk, Value value);
     }
 
+    @ToString
     public static class Value<T> {
         private final Type type;
         private T value;
