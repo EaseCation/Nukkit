@@ -34,6 +34,7 @@ import cn.nukkit.inventory.*;
 import cn.nukkit.inventory.transaction.CraftingTransaction;
 import cn.nukkit.inventory.transaction.EnchantTransaction;
 import cn.nukkit.inventory.transaction.InventoryTransaction;
+import cn.nukkit.inventory.transaction.RepairItemTransaction;
 import cn.nukkit.inventory.transaction.action.InventoryAction;
 import cn.nukkit.inventory.transaction.data.ReleaseItemData;
 import cn.nukkit.inventory.transaction.data.UseItemData;
@@ -163,6 +164,7 @@ public class Player extends EntityHuman implements CommandSender, InventoryHolde
     protected CraftingGrid craftingGrid;
     protected CraftingTransaction craftingTransaction;
     protected EnchantTransaction enchantTransaction;
+    protected RepairItemTransaction repairItemTransaction;
 
     public long creationTime = 0;
 
@@ -2712,10 +2714,10 @@ public class Player extends EntityHuman implements CommandSender, InventoryHolde
                     if (!this.spawned || !this.isAlive()) {
                         break;
                     }
-                    this.craftingType = CRAFTING_SMALL;
-                    //this.resetCraftingGridType();
-
                     EntityEventPacket entityEventPacket = (EntityEventPacket) packet;
+                    if (entityEventPacket.event != EntityEventPacket.ENCHANT)
+                        this.craftingType = CRAFTING_SMALL;
+                        //this.resetCraftingGridType();
 
                     switch (entityEventPacket.event) {
                         case EntityEventPacket.EATING_ITEM:
@@ -2729,6 +2731,20 @@ public class Player extends EntityHuman implements CommandSender, InventoryHolde
                             this.dataPacket(entityEventPacket);
                             Server.broadcastPacket(this.getViewers().values(), entityEventPacket);
 
+                            break;
+                        case EntityEventPacket.ENCHANT:
+                            if (entityEventPacket.eid != this.id) {
+                                break;
+                            }
+
+                            Inventory inventory = this.getWindowById(ANVIL_WINDOW_ID);
+                            if (inventory instanceof AnvilInventory) {
+                                ((AnvilInventory) inventory).setCost(-entityEventPacket.data);
+                            } else if (this.getWindowById(ENCHANT_WINDOW_ID) != null) {
+                                int levels = entityEventPacket.data; // Sent as negative number of levels lost
+                                if (levels < 0) this.setExperience(this.exp, this.expLevel + levels);
+                                break;
+                            }
                             break;
                     }
                     break;

@@ -5,5 +5,7 @@ public interface InventoryTransactionPacketInterface {
     boolean isCraftingPart();
     void setEnchantingPart(boolean enchantingPart);
     boolean isEnchantingPart();
+    void setRepairItemPart(boolean repairItemPart);
+    boolean isRepairItemPart();
     boolean hasNetworkIds();
 }

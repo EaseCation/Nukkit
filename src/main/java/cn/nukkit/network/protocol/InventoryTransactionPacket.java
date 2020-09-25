@@ -46,6 +46,7 @@ public class InventoryTransactionPacket extends DataPacket implements InventoryT
      */
     public boolean isCraftingPart = false;
     public boolean isEnchantingPart = false;
+    public boolean isRepairItemPart = false;
 
     public void setCraftingPart(boolean craftingPart) {
         isCraftingPart = craftingPart;
@@ -61,6 +62,16 @@ public class InventoryTransactionPacket extends DataPacket implements InventoryT
 
     public boolean isEnchantingPart() {
         return isEnchantingPart;
+    }
+
+    @Override
+    public void setRepairItemPart(boolean repairItemPart) {
+        this.isRepairItemPart = repairItemPart;
+    }
+
+    @Override
+    public boolean isRepairItemPart() {
+        return this.isRepairItemPart;
     }
 
     @Override
