@@ -6,7 +6,9 @@ import cn.nukkit.inventory.transaction.data.UseItemData;
 import cn.nukkit.inventory.transaction.data.UseItemOnEntityData;
 import cn.nukkit.network.protocol.types.InventoryTransactionPacketInterface;
 import cn.nukkit.network.protocol.types.NetworkInventoryAction;
+import lombok.ToString;
 
+@ToString
 public class InventoryTransactionPacket extends DataPacket implements InventoryTransactionPacketInterface {
 
     public static final int TYPE_NORMAL = 0;

@@ -15,6 +15,7 @@ import cn.nukkit.item.enchantment.loot.EnchantmentLootFishing;
 import cn.nukkit.item.enchantment.loot.EnchantmentLootWeapon;
 import cn.nukkit.item.enchantment.protection.*;
 import cn.nukkit.item.enchantment.trident.*;
+import lombok.ToString;
 
 import java.util.ArrayList;
 import java.util.HashSet;
@@ -24,6 +25,7 @@ import java.util.concurrent.ThreadLocalRandom;
  * author: MagicDroidX
  * Nukkit Project
  */
+@ToString
 public abstract class Enchantment implements Cloneable {
 
     protected static Enchantment[] enchantments;

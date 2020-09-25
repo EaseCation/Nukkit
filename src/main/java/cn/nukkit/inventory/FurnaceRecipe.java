@@ -1,11 +1,13 @@
 package cn.nukkit.inventory;
 
 import cn.nukkit.item.Item;
+import lombok.ToString;
 
 /**
  * author: MagicDroidX
  * Nukkit Project
  */
+@ToString
 public class FurnaceRecipe implements Recipe {
 
     private final Item output;

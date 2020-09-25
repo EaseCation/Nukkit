@@ -3,11 +3,13 @@ package cn.nukkit.entity.data;
 import cn.nukkit.entity.Entity;
 import cn.nukkit.math.BlockVector3;
 import cn.nukkit.math.Vector3;
+import lombok.ToString;
 
 /**
  * author: MagicDroidX
  * Nukkit Project
  */
+@ToString
 public class IntPositionEntityData extends EntityData<BlockVector3> {
     public int x;
     public int y;

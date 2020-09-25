@@ -2,11 +2,13 @@ package cn.nukkit.entity.data;
 
 import cn.nukkit.entity.Entity;
 import cn.nukkit.nbt.tag.CompoundTag;
+import lombok.ToString;
 
 /**
  * author: MagicDroidX
  * Nukkit Project
  */
+@ToString
 public class NBTEntityData extends EntityData<CompoundTag> {
     public CompoundTag tag;
 

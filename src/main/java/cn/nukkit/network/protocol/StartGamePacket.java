@@ -1,12 +1,14 @@
 package cn.nukkit.network.protocol;
 
 import cn.nukkit.level.GameRules;
+import lombok.ToString;
 
 import java.util.Arrays;
 
 /**
  * Created on 15-10-13.
  */
+@ToString
 public class StartGamePacket extends DataPacket {
 
     public static final int NETWORK_ID = ProtocolInfo.START_GAME_PACKET;

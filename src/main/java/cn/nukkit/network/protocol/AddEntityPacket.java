@@ -3,11 +3,13 @@ package cn.nukkit.network.protocol;
 import cn.nukkit.entity.Attribute;
 import cn.nukkit.entity.data.EntityMetadata;
 import cn.nukkit.utils.Binary;
+import lombok.ToString;
 
 /**
  * author: MagicDroidX
  * Nukkit Project
  */
+@ToString
 public class AddEntityPacket extends DataPacket {
     public static final int NETWORK_ID = ProtocolInfo.ADD_ENTITY_PACKET;
 

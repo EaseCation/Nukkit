@@ -1,6 +1,7 @@
 package cn.nukkit.network.protocol;
 
 import cn.nukkit.utils.Utils;
+import lombok.ToString;
 
 import java.awt.*;
 import java.awt.image.BufferedImage;
@@ -11,6 +12,7 @@ import java.util.stream.Collectors;
 /**
  * Created by CreeperFace on 5.3.2017.
  */
+@ToString
 public class ClientboundMapItemDataPacket extends DataPacket { //TODO: update to 1.2
 
     public long[] eids = new long[0];
@@ -132,6 +134,7 @@ public class ClientboundMapItemDataPacket extends DataPacket { //TODO: update to
         }
     }
 
+    @ToString
     public static class MapDecorator {
         public byte img;
         public byte rot;
@@ -141,6 +144,7 @@ public class ClientboundMapItemDataPacket extends DataPacket { //TODO: update to
         public Color color;
     }
 
+    @ToString
     public static class MapTrackedObject {
         public static final int TYPE_ENTITY = 0;
         public static final int TYPE_BLOCK = 1;

@@ -2,11 +2,13 @@ package cn.nukkit.entity.data;
 
 import cn.nukkit.entity.Entity;
 import cn.nukkit.math.Vector3f;
+import lombok.ToString;
 
 /**
  * author: MagicDroidX
  * Nukkit Project
  */
+@ToString
 public class Vector3fEntityData extends EntityData<Vector3f> {
     public float x;
     public float y;

@@ -1,10 +1,13 @@
 package cn.nukkit.network.protocol;
 
 
+import lombok.ToString;
+
 /**
  * author: MagicDroidX
  * Nukkit Project
  */
+@ToString
 public class UpdateBlockPacket extends DataPacket {
     public static final int NETWORK_ID = ProtocolInfo.UPDATE_BLOCK_PACKET;
 

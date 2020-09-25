@@ -1,9 +1,12 @@
 package cn.nukkit.network.protocol;
 
+import lombok.ToString;
+
 /**
  * author: MagicDroidX
  * Nukkit Project
  */
+@ToString
 public class SetTimePacket extends DataPacket {
     public static final int NETWORK_ID = ProtocolInfo.SET_TIME_PACKET;
 

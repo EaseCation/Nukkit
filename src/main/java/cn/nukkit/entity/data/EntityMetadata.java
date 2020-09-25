@@ -7,11 +7,13 @@ import cn.nukkit.item.ItemBlock;
 import cn.nukkit.math.Vector3;
 import it.unimi.dsi.fastutil.ints.Int2ObjectMap;
 import it.unimi.dsi.fastutil.ints.Int2ObjectOpenHashMap;
+import lombok.ToString;
 
 /**
  * author: MagicDroidX
  * Nukkit Project
  */
+@ToString
 public class EntityMetadata {
 
     private final Int2ObjectMap<EntityData> map = new Int2ObjectOpenHashMap<>();

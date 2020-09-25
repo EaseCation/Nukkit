@@ -1,8 +1,11 @@
 package cn.nukkit.item.enchantment;
 
+import lombok.ToString;
+
 /**
  * @author Nukkit Project Team
  */
+@ToString
 public class EnchantmentEntry {
 
     private final Enchantment[] enchantments;

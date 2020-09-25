@@ -2,10 +2,12 @@ package cn.nukkit.network.protocol;
 
 import it.unimi.dsi.fastutil.ints.Int2ObjectMap;
 import it.unimi.dsi.fastutil.ints.Int2ObjectOpenHashMap;
+import lombok.ToString;
 
 /**
  * @author Nukkit Project Team
  */
+@ToString
 public class AnimatePacket extends DataPacket {
 
     public static final int NETWORK_ID = ProtocolInfo.ANIMATE_PACKET;

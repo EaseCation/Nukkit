@@ -1,6 +1,7 @@
 package cn.nukkit.network.protocol;
 
 import cn.nukkit.command.data.*;
+import lombok.ToString;
 
 import java.util.*;
 import java.util.stream.Collectors;
@@ -9,6 +10,7 @@ import java.util.stream.Collectors;
  * author: MagicDroidX
  * Nukkit Project
  */
+@ToString
 public class AvailableCommandsPacket extends DataPacket {
 
     public static final int NETWORK_ID = ProtocolInfo.AVAILABLE_COMMANDS_PACKET;
