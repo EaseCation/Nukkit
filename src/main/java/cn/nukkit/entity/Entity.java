@@ -371,8 +371,9 @@ public abstract class Entity extends Location implements Metadatable {
         }
 
         this.setDataFlag(DATA_FLAGS, DATA_FLAG_HAS_COLLISION, true);
-        this.dataProperties.putFloat(DATA_BOUNDING_BOX_HEIGHT, this.getHeight());
-        this.dataProperties.putFloat(DATA_BOUNDING_BOX_WIDTH, this.getWidth());
+        //Some entities may have default bounding box (0)
+        if (this.getHeight() > 0) this.dataProperties.putFloat(DATA_BOUNDING_BOX_HEIGHT, this.getHeight());
+        if (this.getWidth() > 0) this.dataProperties.putFloat(DATA_BOUNDING_BOX_WIDTH, this.getWidth());
 
         this.scheduleUpdate();
     }
