@@ -533,6 +533,11 @@ public class BinaryStream {
             return;
         }
 
+        if (item.getId() == 513) { //TODO: fix isBlockingItem - 1.16.100
+            this.putVarInt(0);
+            return;
+        }
+
         boolean isDurable = item instanceof ItemDurable;
 
         this.putVarInt(item.getId());
