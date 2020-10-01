@@ -385,9 +385,6 @@ public abstract class BaseInventory implements Inventory {
                 }
                 item = ev.getNewItem();
             }
-            if (holder instanceof BlockEntity) {
-                ((BlockEntity) holder).setDirty();
-            }
 
             if (item.getId() != Item.AIR) {
                 this.slots.put(index, item.clone());
@@ -454,6 +451,10 @@ public abstract class BaseInventory implements Inventory {
     public void onSlotChange(int index, Item before, boolean send) {
         if (send) {
             this.sendSlot(index, this.getViewers());
+        }
+
+        if (holder instanceof BlockEntity) {
+            ((BlockEntity) holder).setDirty();
         }
     }
 

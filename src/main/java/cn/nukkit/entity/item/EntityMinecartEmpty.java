@@ -22,8 +22,18 @@ public class EntityMinecartEmpty extends EntityMinecartAbstract {
     }
 
     @Override
+    public String getName() {
+        return getType().getName();
+    }
+
+    @Override
     public MinecartType getType() {
         return MinecartType.valueOf(0);
+    }
+
+    @Override
+    public boolean isRideable() {
+        return true;
     }
 
     @Override

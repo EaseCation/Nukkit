@@ -32,6 +32,8 @@ public class GlobalBlockPalette implements GlobalBlockPaletteInterface {
 
     private final Int2IntMap legacyToRuntimeId = new Int2IntOpenHashMap();
     private final Int2IntMap runtimeIdToLegacy = new Int2IntOpenHashMap();
+    private final Int2ObjectMap<String> legacyIdToString = new Int2ObjectOpenHashMap<>();
+    private final Object2IntMap<String> stringToLegacyId = new Object2IntOpenHashMap<>();
     private final Int2ObjectMap<String> runtimeIdToString = new Int2ObjectOpenHashMap<>();
     private final Object2IntMap<String> stringToRuntimeId = new Object2IntOpenHashMap<>();
     private final Int2ObjectMap<CompoundTag> runtimeIdToState = new Int2ObjectOpenHashMap<>();
@@ -69,6 +71,9 @@ public class GlobalBlockPalette implements GlobalBlockPaletteInterface {
             // Resolve to first legacy id
             CompoundTag firstState = legacyStates.get(0);
             runtimeIdToLegacy.put(runtimeId, firstState.getInt("id") << 6 | firstState.getShort("val"));
+
+            stringToLegacyId.put(name, firstState.getInt("id"));
+            legacyIdToString.put(firstState.getInt("id"), name);
 
             for (CompoundTag legacyState : legacyStates) {
                 int legacyId = legacyState.getInt("id") << 6 | legacyState.getShort("val");
@@ -131,7 +136,11 @@ public class GlobalBlockPalette implements GlobalBlockPaletteInterface {
         return instance.getLegacyId0(runtimeId);
     }
 
-    public static String getName(int id) {
-        return instance.getName0(id);
+    /**
+     * 注意这里要求的参数是{@code runtimeId}, 而社区版是{@code blockId}.
+     * 可以用{@link #getOrCreateRuntimeId(int, int)}将{@code blockId}转为{@code runtimeId}.
+     */
+    public static String getName(int runtimeId) {
+        return instance.getName0(runtimeId);
     }
 }

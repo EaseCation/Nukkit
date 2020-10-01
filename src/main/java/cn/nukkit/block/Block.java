@@ -298,7 +298,7 @@ public abstract class Block extends Position implements Metadatable, Cloneable, 
             list[GLOWING_OBSIDIAN] = BlockObsidianGlowing.class; //246
             list[NETHER_REACTOR] = BlockNetherReactor.class; //247 Should not be removed
 
-            //TODO: list[PISTON_EXTENSION] = BlockPistonExtension.class; //250
+            list[MOVING_BLOCK] = BlockMoving.class; //250
 
             list[OBSERVER] = BlockObserver.class; //251
 
@@ -486,6 +486,18 @@ public abstract class Block extends Position implements Metadatable, Cloneable, 
     }
 
     public boolean canBePushed() {
+        return true;
+    }
+
+    public boolean canBePulled() {
+        return true;
+    }
+
+    public boolean breaksWhenMoved() {
+        return false;
+    }
+
+    public boolean sticksToPiston() {
         return true;
     }
 
@@ -697,6 +709,10 @@ public abstract class Block extends Position implements Metadatable, Cloneable, 
     }
 
     public Block getSide(BlockFace face, int step) {
+        if (step == 0) {
+            return this;
+        }
+
         if (this.isValid()) {
             if (step == 1) {
                 return this.getLevel().getBlock((int) x + face.getXOffset(), (int) y + face.getYOffset(), (int) z + face.getZOffset());
@@ -977,6 +993,14 @@ public abstract class Block extends Position implements Metadatable, Cloneable, 
     @Override
     public boolean equals(Object obj) {
         return obj instanceof Block && equals(this, (Block) obj);
+    }
+
+    public boolean equalsBlock(Object obj) { //RollingFramesWall?
+        return obj instanceof Block && equals(this, (Block) obj);
+    }
+
+    public boolean superEquals(Object obj) {
+        return super.equals(obj);
     }
 
     public Item toItem() {

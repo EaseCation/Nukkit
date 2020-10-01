@@ -3,10 +3,12 @@ package cn.nukkit.block;
 import cn.nukkit.Player;
 import cn.nukkit.event.block.BlockRedstoneEvent;
 import cn.nukkit.item.Item;
+import cn.nukkit.level.GlobalBlockPalette;
 import cn.nukkit.level.Level;
 import cn.nukkit.level.sound.SoundEnum;
 import cn.nukkit.math.BlockFace;
 import cn.nukkit.math.Vector3;
+import cn.nukkit.network.protocol.LevelSoundEventPacket;
 import cn.nukkit.utils.Faceable;
 
 /**
@@ -54,15 +56,21 @@ public abstract class BlockButton extends BlockFlowable implements Faceable {
             return false;
         }
 
-        this.level.getServer().getPluginManager().callEvent(new BlockRedstoneEvent(this, 0, 15));
+        this.level.scheduleUpdate(this, 30);
+
         this.setDamage(this.getDamage() ^ 0x08);
         this.level.setBlock(this, this, true, false);
-        this.level.addSound(this.add(0.5, 0.5, 0.5), SoundEnum.RANDOM_CLICK);
-        this.level.scheduleUpdate(this, 30);
-        Vector3 pos = getLocation();
 
-        level.updateAroundRedstone(pos, null);
-        level.updateAroundRedstone(pos.getSide(getFacing().getOpposite()), null);
+        if (this.level.getServer().isRedstoneEnabled()) {
+            this.level.getServer().getPluginManager().callEvent(new BlockRedstoneEvent(this, 0, 15));
+
+            Vector3 pos = getLocation();
+
+            level.updateAroundRedstone(pos, null);
+            level.updateAroundRedstone(pos.getSide(getFacing().getOpposite()), null);
+        }
+
+        this.level.addSound(this.add(0.5, 0.5, 0.5), SoundEnum.RANDOM_CLICK);
         return true;
     }
 
@@ -75,15 +83,17 @@ public abstract class BlockButton extends BlockFlowable implements Faceable {
             }
         } else if (type == Level.BLOCK_UPDATE_SCHEDULED) {
             if (this.isActivated()) {
-                this.level.getServer().getPluginManager().callEvent(new BlockRedstoneEvent(this, 15, 0));
-
                 this.setDamage(this.getDamage() ^ 0x08);
                 this.level.setBlock(this, this, true, false);
                 this.level.addSound(this.add(0.5, 0.5, 0.5), SoundEnum.RANDOM_CLICK);
 
-                Vector3 pos = getLocation();
-                level.updateAroundRedstone(pos, null);
-                level.updateAroundRedstone(pos.getSide(getFacing().getOpposite()), null);
+                if (this.level.getServer().isRedstoneEnabled()) {
+                    this.level.getServer().getPluginManager().callEvent(new BlockRedstoneEvent(this, 15, 0));
+
+                    Vector3 pos = getLocation();
+                    level.updateAroundRedstone(pos, null);
+                    level.updateAroundRedstone(pos.getSide(getFacing().getOpposite()), null);
+                }
             }
 
             return Level.BLOCK_UPDATE_SCHEDULED;

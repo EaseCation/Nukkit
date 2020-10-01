@@ -43,7 +43,6 @@ import java.util.Objects;
  */
 public abstract class EntityMinecartAbstract extends EntityVehicle {
 
-    private String entityName;
     private static final int[][][] matrix = new int[][][]{
             {{0, 0, -1}, {0, 0, 1}},
             {{-1, 0, 0}, {1, 0, 0}},
@@ -71,6 +70,8 @@ public abstract class EntityMinecartAbstract extends EntityVehicle {
 
     public abstract MinecartType getType();
 
+    public abstract boolean isRideable();
+
     public EntityMinecartAbstract(FullChunk chunk, CompoundTag nbt) {
         super(chunk, nbt);
     }
@@ -90,23 +91,9 @@ public abstract class EntityMinecartAbstract extends EntityVehicle {
         return 0.1F;
     }
 
-    public void setName(String name) {
-        entityName = name;
-    }
-
-    @Override
-    public String getName() {
-        return entityName;
-    }
-
     @Override
     public float getBaseOffset() {
         return 0.35F;
-    }
-
-    @Override
-    public boolean hasCustomName() {
-        return entityName != null;
     }
 
     @Override
@@ -273,7 +260,7 @@ public abstract class EntityMinecartAbstract extends EntityVehicle {
 
     @Override
     public boolean onInteract(Player p, Item item) {
-        if (linkedEntity != null) {
+        if (linkedEntity != null && isRideable()) {
             return false;
         }
 
@@ -722,13 +709,31 @@ public abstract class EntityMinecartAbstract extends EntityVehicle {
     }
 
     /**
+     * Set the minecart display block
+     *
+     * @param block The block that will changed. Set {@code null} for BlockAir
+     * @return {@code true} if the block is normal block
+     */
+    public boolean setDisplayBlock(Block block){
+        return setDisplayBlock(block, true);
+    }
+
+    /**
      * Set the minecart display block!
      *
      * @param block The block that will changed. Set {@code null} for BlockAir
      * @return {@code true} if the block is normal block
      */
     @API(usage = Usage.MAINTAINED, definition = Definition.UNIVERSAL)
-    public boolean setDisplayBlock(Block block) {
+    public boolean setDisplayBlock(Block block, boolean update) {
+        if(!update){
+            if (block.isNormalBlock()) {
+                blockInside = block;
+            } else {
+                blockInside = null;
+            }
+            return true;
+        }
         if (block != null) {
             if (block.isNormalBlock()) {
                 blockInside = block;

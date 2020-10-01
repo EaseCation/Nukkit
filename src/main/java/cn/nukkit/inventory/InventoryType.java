@@ -15,13 +15,15 @@ public enum InventoryType {
     BREWING_STAND(5, "Brewing", 4), //1 INPUT, 3 POTION, 1 fuel
     ANVIL(3, "Anvil", 5), //2 INPUT, 1 OUTPUT
     ENCHANT_TABLE(2, "Enchant", 3), //1 INPUT/OUTPUT, 1 LAPIS
-    DISPENSER(0, "Dispenser", 6), //9 CONTAINER
+    DISPENSER(9, "Dispenser", 6), //9 CONTAINER
     DROPPER(9, "Dropper", 7), //9 CONTAINER
     HOPPER(5, "Hopper", 8), //5 CONTAINER
     UI(1, "UI", -1),
     OFFHAND(1, "Offhand", -1),
     SHULKER_BOX(27, "Shulker Box", 0),
-    BEACON(1, "Beacon", 13);
+    BEACON(1, "Beacon", 13),
+    MINECART_CHEST(27, "Minecart with Chest", 0),
+    MINECART_HOPPER(5, "Minecart with Hopper", 8);
 
     private final int size;
     private final String title;
