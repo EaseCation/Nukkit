@@ -13,7 +13,6 @@ import cn.nukkit.entity.EntityHuman;
 import cn.nukkit.entity.EntityLiving;
 import cn.nukkit.entity.data.ByteEntityData;
 import cn.nukkit.entity.data.IntEntityData;
-import cn.nukkit.event.entity.EntityDamageByEntityEvent;
 import cn.nukkit.event.entity.EntityDamageEvent;
 import cn.nukkit.event.vehicle.VehicleMoveEvent;
 import cn.nukkit.event.vehicle.VehicleUpdateEvent;
@@ -32,6 +31,7 @@ import cn.nukkit.utils.MinecartType;
 import cn.nukkit.utils.Rail;
 import cn.nukkit.utils.Rail.Orientation;
 
+import java.util.Iterator;
 import java.util.Objects;
 
 /**
@@ -74,6 +74,9 @@ public abstract class EntityMinecartAbstract extends EntityVehicle {
 
     public EntityMinecartAbstract(FullChunk chunk, CompoundTag nbt) {
         super(chunk, nbt);
+
+        setMaxHealth(40);
+        setHealth(40);
     }
 
     @Override
@@ -98,17 +101,14 @@ public abstract class EntityMinecartAbstract extends EntityVehicle {
 
     @Override
     public boolean canDoInteraction() {
-        return linkedEntity == null && this.getDisplayBlock() == null;
-    }
-
-    @Override
-    public float getMountedYOffset() {
-        return 0.45F; // Real minecart offset
+        return passengers.isEmpty() && this.getDisplayBlock() == null;
     }
 
     @Override
     public void initEntity() {
         super.initEntity();
+
+        this.dataProperties.putInt(DATA_HEALTH, (int) this.getHealth());
 
         prepareDataProperty();
     }
@@ -139,6 +139,11 @@ public abstract class EntityMinecartAbstract extends EntityVehicle {
         if (isAlive()) {
             super.onUpdate(currentTick);
 
+            // The damage token
+            if (getHealth() < 20) {
+                setHealth(getHealth() + 1);
+            }
+
             // Entity variables
             lastX = x;
             lastY = y;
@@ -158,8 +163,8 @@ public abstract class EntityMinecartAbstract extends EntityVehicle {
             // Ensure that the block is a rail
             if (Rail.isRailBlock(block)) {
                 processMovement(dx, dy, dz, (BlockRail) block);
-                if (block instanceof BlockRailActivator) {
-                    // Activate the minecart/TNT
+                // Activate the minecart/TNT
+                if (block instanceof BlockRailActivator && ((BlockRailActivator) block).isActive()) {
                     activate(dx, dy, dz, (block.getDamage() & 0x8) != 0);
                 }
             } else {
@@ -173,7 +178,7 @@ public abstract class EntityMinecartAbstract extends EntityVehicle {
             double diffZ = this.lastZ - this.z;
             double yawToChange = yaw;
             if (diffX * diffX + diffZ * diffZ > 0.001D) {
-                yawToChange = (Math.atan2(diffZ, diffX) * 180 / 3.141592653589793D);
+                yawToChange = (Math.atan2(diffZ, diffX) * 180 / Math.PI);
             }
 
             // Reverse yaw if yaw is below 0
@@ -195,21 +200,29 @@ public abstract class EntityMinecartAbstract extends EntityVehicle {
 
             // Collisions
             for (Entity entity : level.getNearbyEntities(boundingBox.grow(0.2D, 0, 0.2D), this)) {
-                if (entity != linkedEntity && entity instanceof EntityMinecartAbstract) {
+                if (!passengers.contains(entity) && entity instanceof EntityMinecartAbstract) {
                     entity.applyEntityCollision(this);
                 }
             }
 
-            // Easier
-            if ((linkedEntity != null) && (!linkedEntity.isAlive())) {
-                if (linkedEntity.riding == this) {
-                    linkedEntity.riding = null;
+            Iterator<Entity> linkedIterator = this.passengers.iterator();
+
+            while (linkedIterator.hasNext()) {
+                Entity linked = linkedIterator.next();
+
+                if (!linked.isAlive()) {
+                    if (linked.riding == this) {
+                        linked.riding = null;
+                    }
+
+                    linkedIterator.remove();
                 }
-                linkedEntity = null;
             }
+
             // No need to onGround or Motion diff! This always have an update
             return true;
         }
+
         return false;
     }
 
@@ -217,28 +230,17 @@ public abstract class EntityMinecartAbstract extends EntityVehicle {
     public boolean attack(EntityDamageEvent source) {
         if (invulnerable) {
             return false;
-        } else if (source instanceof EntityDamageByEntityEvent) {
-            Entity damager = ((EntityDamageByEntityEvent) source).getDamager();
-            boolean instantKill = damager instanceof Player && ((Player) damager).isCreative();
-            if (!instantKill) performHurtAnimation((int) source.getFinalDamage());
+        } else {
+            source.setDamage(source.getDamage() * 15);
 
-            if (instantKill || getDamage() > 40) {
-                if (linkedEntity != null) {
-                    mountEntity(linkedEntity);
-                }
+            boolean attack = super.attack(source);
 
-                if (instantKill && (!hasCustomName())) {
-                    kill();
-                } else {
-                    if (level.getGameRules().getBoolean(GameRule.DO_ENTITY_DROPS)) {
-                        dropItem();
-                    }
-                    close();
-                }
+            if (isAlive()) {
+                performHurtAnimation();
             }
-        }
 
-        return true;
+            return attack;
+        }
     }
 
     public void dropItem() {
@@ -246,12 +248,22 @@ public abstract class EntityMinecartAbstract extends EntityVehicle {
     }
 
     @Override
+    public void kill() {
+        super.kill();
+
+        if (level.getGameRules().getBoolean(GameRule.DO_ENTITY_DROPS)) {
+            dropItem();
+        }
+    }
+
+    @Override
     public void close() {
         super.close();
 
-        if (linkedEntity instanceof Player) {
-            linkedEntity.riding = null;
-            linkedEntity = null;
+        for (Entity entity : passengers) {
+            if (entity instanceof Player) {
+                entity.riding = null;
+            }
         }
 
         SmokeParticle particle = new SmokeParticle(this);
@@ -260,13 +272,14 @@ public abstract class EntityMinecartAbstract extends EntityVehicle {
 
     @Override
     public boolean onInteract(Player p, Item item) {
-        if (linkedEntity != null && isRideable()) {
+        if (!passengers.isEmpty() && isRideable()) {
             return false;
         }
 
         if (blockInside == null) {
-            mountEntity(p); // Simple
+            mountEntity(p);
         }
+
         return super.onInteract(p, item);
     }
 
@@ -292,11 +305,11 @@ public abstract class EntityMinecartAbstract extends EntityVehicle {
 
     @Override
     public void applyEntityCollision(Entity entity) {
-        if (entity != riding) {
+        if (entity != riding && !(entity instanceof Player && ((Player) entity).getGamemode() == Player.SPECTATOR)) {
             if (entity instanceof EntityLiving
                     && !(entity instanceof EntityHuman)
                     && motionX * motionX + motionZ * motionZ > 0.01D
-                    && linkedEntity == null
+                    && passengers.isEmpty()
                     && entity.riding == null
                     && blockInside == null) {
                 if (riding == null && devs) {
@@ -395,11 +408,13 @@ public abstract class EntityMinecartAbstract extends EntityVehicle {
         motionX = NukkitMath.clamp(motionX, -getMaxSpeed(), getMaxSpeed());
         motionZ = NukkitMath.clamp(motionZ, -getMaxSpeed(), getMaxSpeed());
 
-        if (linkedEntity != null && !hasUpdated) {
-            updateRiderPosition(getMountedYOffset() + 0.35F);
+        if (!hasUpdated) {
+            for (Entity linked : passengers) {
+                linked.setSeatPosition(getMountedOffset(linked).add(0, 0.35f));
+                updatePassengerPosition(linked);
+            }
+
             hasUpdated = true;
-        } else {
-            hasUpdated = false;
         }
 
         if (onGround) {
@@ -472,12 +487,14 @@ public abstract class EntityMinecartAbstract extends EntityVehicle {
         double playerYawPos; // PlayerYawPositive
         double motion;
 
-        if (linkedEntity != null && linkedEntity instanceof EntityLiving) {
+        Entity linked = getPassenger();
+
+        if (linked instanceof EntityLiving) {
             expectedSpeed = currentSpeed;
             if (expectedSpeed > 0) {
                 // This is a trajectory (Angle of elevation)
-                playerYawNeg = -Math.sin(linkedEntity.yaw * 3.1415927F / 180.0F);
-                playerYawPos = Math.cos(linkedEntity.yaw * 3.1415927F / 180.0F);
+                playerYawNeg = -Math.sin(linked.yaw * Math.PI / 180.0F);
+                playerYawPos = Math.cos(linked.yaw * Math.PI / 180.0F);
                 motion = motionX * motionX + motionZ * motionZ;
                 if (motion < 0.01D) {
                     motionX += playerYawNeg * 0.1D;
@@ -530,7 +547,7 @@ public abstract class EntityMinecartAbstract extends EntityVehicle {
 
         motX = motionX;
         motZ = motionZ;
-        if (linkedEntity != null) {
+        if (!passengers.isEmpty()) {
             motX *= 0.75D;
             motZ *= 0.75D;
         }
@@ -594,7 +611,7 @@ public abstract class EntityMinecartAbstract extends EntityVehicle {
     }
 
     private void applyDrag() {
-        if (linkedEntity != null || !slowWhenEmpty) {
+        if (!passengers.isEmpty() || !slowWhenEmpty) {
             motionX *= 0.996999979019165D;
             motionY *= 0.0D;
             motionZ *= 0.996999979019165D;
@@ -670,7 +687,6 @@ public abstract class EntityMinecartAbstract extends EntityVehicle {
     private void prepareDataProperty() {
         setRollingAmplitude(0);
         setRollingDirection(1);
-        setDamage(0);
         if (namedTag.contains("CustomDisplayTile")) {
             if (namedTag.getBoolean("CustomDisplayTile")) {
                 int display = namedTag.getInt("DisplayTile");
@@ -719,9 +735,10 @@ public abstract class EntityMinecartAbstract extends EntityVehicle {
     }
 
     /**
-     * Set the minecart display block!
+     * Set the minecart display block
      *
      * @param block The block that will changed. Set {@code null} for BlockAir
+     * @param update Do update for the block. (This state changes if you want to show the block)
      * @return {@code true} if the block is normal block
      */
     @API(usage = Usage.MAINTAINED, definition = Definition.UNIVERSAL)
@@ -827,5 +844,12 @@ public abstract class EntityMinecartAbstract extends EntityVehicle {
 
     public void setMaximumSpeed(double speed) {
         maxSpeed = speed;
+    }
+
+    @Override
+    public void setHealth(float health) {
+        super.setHealth(health);
+
+        setDataProperty(new IntEntityData(DATA_HEALTH, (int) this.health));
     }
 }

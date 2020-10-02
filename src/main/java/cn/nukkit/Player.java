@@ -2701,6 +2701,17 @@ public class Player extends EntityHuman implements CommandSender, InventoryHolde
                         break;
                     }
 
+                    AnimatePacket.Action animation = animationEvent.getAnimationType();
+
+                    switch (animation) {
+                        case ROW_RIGHT:
+                        case ROW_LEFT:
+                            if (this.riding instanceof EntityBoat) {
+                                ((EntityBoat) this.riding).onPaddle(animation, ((AnimatePacket) packet).rowingTime);
+                            }
+                            break;
+                    }
+
                     AnimatePacket animatePacket = new AnimatePacket();
                     animatePacket.eid = this.getId();
                     animatePacket.action = animationEvent.getAnimationType();
@@ -3639,7 +3650,7 @@ public class Player extends EntityHuman implements CommandSender, InventoryHolde
             this.spawnPosition = null;
 
             if (this.riding instanceof EntityRideable) {
-                this.riding.linkedEntity = null;
+                this.riding.passengers.remove(this);
             }
 
             this.riding = null;

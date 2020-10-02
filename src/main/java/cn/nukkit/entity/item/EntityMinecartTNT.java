@@ -114,7 +114,8 @@ public class EntityMinecartTNT extends EntityMinecartAbstract implements EntityE
 
     @Override
     public void dropItem() {
-        level.dropItem(this, new ItemMinecartTNT());
+        super.dropItem();
+        this.level.dropItem(this, Item.get(Item.TNT));
     }
 
     @Override
