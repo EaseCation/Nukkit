@@ -14,7 +14,7 @@ import java.util.concurrent.ThreadLocalRandom;
  */
 public class DefaultDispenseBehavior implements DispenseBehavior {
 
-    public boolean success = true;
+    public boolean success = true; //TODO: ???
 
     @Override
     public Item dispense(BlockDispenser block, BlockFace face, Item item) {

@@ -3,7 +3,7 @@ package cn.nukkit.dispenser;
 import cn.nukkit.block.Block;
 import cn.nukkit.block.BlockDispenser;
 import cn.nukkit.block.BlockID;
-import cn.nukkit.block.BlockShulkerBox;
+import cn.nukkit.block.BlockUndyedShulkerBox;
 import cn.nukkit.blockentity.BlockEntity;
 import cn.nukkit.blockentity.BlockEntityShulkerBox;
 import cn.nukkit.item.Item;
@@ -14,12 +14,21 @@ public class ShulkerBoxDispenseBehavior extends DefaultDispenseBehavior {
 
     @Override
     public Item dispense(BlockDispenser block, BlockFace face, Item item) {
-        Block shulkerBox = new BlockShulkerBox();
         Block target = block.getSide(face);
+        Block shulkerBox = item.getBlock();
 
-        this.success = block.level.getCollidingEntities(shulkerBox.getBoundingBox()).length == 0;
+        if (shulkerBox instanceof BlockUndyedShulkerBox) {
+            shulkerBox = shulkerBox.clone();
+        } else {
+            return super.dispense(block, face, item);
+        }
 
-        if (this.success) {
+        boolean success = target.getId() == BlockID.AIR;
+        this.success = success;
+
+        if (success) {
+            block.level.setBlock(target, shulkerBox, true);
+
             BlockFace shulkerBoxFace = target.down().getId() == BlockID.AIR ? face : BlockFace.UP;
 
             CompoundTag nbt = BlockEntity.getDefaultCompound(target, BlockEntity.SHULKER_BOX);
@@ -39,6 +48,8 @@ public class ShulkerBoxDispenseBehavior extends DefaultDispenseBehavior {
 
             new BlockEntityShulkerBox(block.level.getChunk(target.getChunkX(), target.getChunkZ()), nbt);
             block.level.updateComparatorOutputLevel(target);
+        } else {
+            item.count++;
         }
 
         return null;

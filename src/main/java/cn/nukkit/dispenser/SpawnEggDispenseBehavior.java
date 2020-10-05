@@ -16,9 +16,10 @@ public class SpawnEggDispenseBehavior extends DefaultDispenseBehavior {
         Entity entity = Entity.createEntity(item.getDamage(), block.level.getChunk(pos.getChunkX(), pos.getChunkZ()),
                 Entity.getDefaultNBT(pos));
 
-        this.success = entity != null;
+        boolean success = entity != null;
+        this.success = success;
 
-        if (this.success) {
+        if (success) {
             if (item.hasCustomName() && entity instanceof EntityLiving) {
                 entity.setNameTag(item.getCustomName());
             }

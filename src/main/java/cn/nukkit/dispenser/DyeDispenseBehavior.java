@@ -18,6 +18,7 @@ public class DyeDispenseBehavior extends DefaultDispenseBehavior {
 
             } else {
                 this.success = false;
+                item.count++;
             }
 
             return null;

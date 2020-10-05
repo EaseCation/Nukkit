@@ -1,7 +1,6 @@
 package cn.nukkit.dispenser;
 
 import cn.nukkit.block.Block;
-import cn.nukkit.block.BlockAir;
 import cn.nukkit.block.BlockDispenser;
 import cn.nukkit.block.BlockLiquid;
 import cn.nukkit.item.Item;
@@ -23,12 +22,12 @@ public class BucketDispenseBehavior extends DefaultDispenseBehavior {
                 Block replace = Block.get(ItemBucket.getDamageByTarget(item.getDamage()));
 
                 if (replace instanceof BlockLiquid) {
-                    block.level.setBlock(target, replace);
+                    block.level.setBlock(target, replace, true);
                     return Item.get(ItemID.BUCKET);
                 }
             }
         } else if (target instanceof BlockLiquid && target.getDamage() == 0) {
-            target.level.setBlock(target, new BlockAir());
+            target.level.setBlock(target, Block.get(Block.AIR), true);
             return new ItemBucket(ItemBucket.getDamageByTarget(target.getId()));
         }
 
