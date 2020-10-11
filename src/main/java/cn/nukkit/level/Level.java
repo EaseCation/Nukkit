@@ -1419,10 +1419,15 @@ public class Level implements ChunkManager, Metadatable {
 
         List<Block> collides = new ArrayList<>();
 
+        long loopTimes = 0;
         if (targetFirst) {
             for (int z = minZ; z <= maxZ; ++z) {
                 for (int x = minX; x <= maxX; ++x) {
                     for (int y = minY; y <= maxY; ++y) {
+                        if (loopTimes++ > 1000000) {
+                            this.server.getLogger().logException(new RuntimeException("Level.getCollisionBlocks 循环溢出 " + loopTimes));
+                            return new Block[0];
+                        }
                         Block block = this.getBlock(this.temporalVector.setComponents(x, y, z));
                         if (block.getId() != 0 && block.collidesWithBB(bb)) {
                             return new Block[]{block};
@@ -1434,6 +1439,10 @@ public class Level implements ChunkManager, Metadatable {
             for (int z = minZ; z <= maxZ; ++z) {
                 for (int x = minX; x <= maxX; ++x) {
                     for (int y = minY; y <= maxY; ++y) {
+                        if (loopTimes++ > 1000000) {
+                            this.server.getLogger().logException(new RuntimeException("Level.getCollisionBlocks 循环溢出 " + loopTimes));
+                            return collides.toArray(new Block[0]);
+                        }
                         Block block = this.getBlock(this.temporalVector.setComponents(x, y, z));
                         if (block.getId() != 0 && block.collidesWithBB(bb)) {
                             collides.add(block);
