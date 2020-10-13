@@ -1425,7 +1425,7 @@ public class Level implements ChunkManager, Metadatable {
                 for (int x = minX; x <= maxX; ++x) {
                     for (int y = minY; y <= maxY; ++y) {
                         if (loopTimes++ > 1000000) {
-                            this.server.getLogger().logException(new RuntimeException("Level.getCollisionBlocks 循环溢出 " + loopTimes));
+                            this.server.getLogger().logException(new AxisAlignedBBLoopException("Level.getCollisionBlocks bb=" + bb.toString() + " minX=" + minX + " maxX=" + maxX + " minY=" + minY + " maxY=" + maxY + " minZ=" + minZ + " maxZ=" + maxZ + " x=" + x + " y=" + y + " z=" + z));
                             return new Block[0];
                         }
                         Block block = this.getBlock(this.temporalVector.setComponents(x, y, z));
@@ -1440,7 +1440,7 @@ public class Level implements ChunkManager, Metadatable {
                 for (int x = minX; x <= maxX; ++x) {
                     for (int y = minY; y <= maxY; ++y) {
                         if (loopTimes++ > 1000000) {
-                            this.server.getLogger().logException(new RuntimeException("Level.getCollisionBlocks 循环溢出 " + loopTimes));
+                            this.server.getLogger().logException(new AxisAlignedBBLoopException("Level.getCollisionBlocks bb=" + bb.toString() + " minX=" + minX + " maxX=" + maxX + " minY=" + minY + " maxY=" + maxY + " minZ=" + minZ + " maxZ=" + maxZ + " x=" + x + " y=" + y + " z=" + z));
                             return collides.toArray(new Block[0]);
                         }
                         Block block = this.getBlock(this.temporalVector.setComponents(x, y, z));
@@ -2314,8 +2314,13 @@ public class Level implements ChunkManager, Metadatable {
         int minZ = NukkitMath.floorDouble((bb.getMinZ() - 2) / 16);
         int maxZ = NukkitMath.ceilDouble((bb.getMaxZ() + 2) / 16);
 
+        long loops = 0;
         for (int x = minX; x <= maxX; ++x) {
             for (int z = minZ; z <= maxZ; ++z) {
+                if (loops++ > 1000000) {
+                    this.server.getLogger().logException(new AxisAlignedBBLoopException("Level.getNearbyEntities bb=" + bb.toString() + " minX=" + minX + " maxX=" + maxX + " minZ=" + minZ + " maxZ=" + maxZ + " x=" + x + " z=" + z));
+                    return nearby.toArray(new Entity[0]);
+                }
                 for (Entity ent : this.getChunkEntities(x, z).values()) {
                     if (ent != entity && ent.boundingBox.intersectsWith(bb)) {
                         nearby.add(ent);
