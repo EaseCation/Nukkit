@@ -1,6 +1,7 @@
 package cn.nukkit.entity.item;
 
 import cn.nukkit.Player;
+import cn.nukkit.Server;
 import cn.nukkit.entity.Entity;
 import cn.nukkit.event.entity.EntityDamageEvent;
 import cn.nukkit.event.entity.EntityDamageEvent.DamageCause;
@@ -11,6 +12,7 @@ import cn.nukkit.level.format.FullChunk;
 import cn.nukkit.nbt.NBTIO;
 import cn.nukkit.nbt.tag.CompoundTag;
 import cn.nukkit.network.protocol.AddItemEntityPacket;
+import cn.nukkit.network.protocol.EntityEventPacket;
 
 /**
  * @author MagicDroidX
@@ -132,6 +134,38 @@ public class EntityItem extends Entity {
 
         this.timing.startTiming();
 
+        if (this.age % 60 == 0 && this.onGround && this.pickupDelay <= 0 && this.getItem() != null && this.isAlive()) {
+            if (this.getItem().getCount() < this.getItem().getMaxStackSize()) {
+                for (Entity entity : this.getLevel().getNearbyEntities(getBoundingBox().grow(1, 1, 1), this)) {
+                    if (entity instanceof EntityItem) {
+                        if (!entity.isAlive()) {
+                            continue;
+                        }
+                        if (!entity.isOnGround()) {
+                            continue;
+                        }
+                        if (((EntityItem) entity).pickupDelay > 0) {
+                            continue;
+                        }
+                        Item closeItem = ((EntityItem) entity).getItem();
+                        if (!closeItem.equals(getItem(), true, true)) {
+                            continue;
+                        }
+                        int newAmount = this.getItem().getCount() + closeItem.getCount();
+                        if (newAmount > this.getItem().getMaxStackSize()) {
+                            continue;
+                        }
+                        entity.close();
+                        this.getItem().setCount(newAmount);
+                        EntityEventPacket packet = new EntityEventPacket();
+                        packet.eid = getId();
+                        packet.data = newAmount;
+                        packet.event = EntityEventPacket.MERGE_ITEMS;
+                        Server.broadcastPacket(this.getViewers().values(), packet);
+                    }
+                }
+            }
+        }
 
         boolean hasUpdate = this.entityBaseTick(tickDiff);
 
