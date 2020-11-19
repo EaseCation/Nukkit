@@ -33,6 +33,8 @@ public class BinaryStream {
     private byte[] buffer;
     private int count;
 
+    protected BinaryStreamHelper helper;
+
     private static final int MAX_ARRAY_SIZE = Integer.MAX_VALUE - 8;
 
     public BinaryStream() {
@@ -49,6 +51,10 @@ public class BinaryStream {
         this.buffer = buffer;
         this.offset = offset;
         this.count = buffer.length;
+    }
+
+    public void setHelper(BinaryStreamHelper helper) {
+        this.helper = helper;
     }
 
     public void reset() {
@@ -535,7 +541,7 @@ public class BinaryStream {
         return new SerializedImage(width, height, data);
     }
 
-    public Item getSlot() {
+    public Item getSlotV3() {
         int networkId = this.getVarInt();
 
         if (networkId == 0) {
@@ -631,7 +637,7 @@ public class BinaryStream {
         return item;
     }
 
-    public void putSlot(Item item) {
+    public void putSlotV3(Item item) {
         if (item == null || item.getId() == 0) {
             this.putVarInt(0);
             return;
@@ -692,6 +698,221 @@ public class BinaryStream {
         if (item.getId() == 513) { // TODO: Shields
             this.putVarLong(0);
         }
+    }
+
+    public Item getSlot() {
+        if (this.helper != null) {
+            return this.helper.getSlot(this);
+        }
+
+        int id = this.getVarInt();
+
+        if (id == 0) {
+            return Item.get(0, 0, 0);
+        }
+        int auxValue = this.getVarInt();
+        int data = auxValue >> 8;
+        if (data == Short.MAX_VALUE) {
+            data = -1;
+        }
+        int cnt = auxValue & 0xff;
+
+        int nbtLen = this.getLShort();
+        byte[] nbt = new byte[0];
+        if (nbtLen < Short.MAX_VALUE) {
+            nbt = this.get(nbtLen);
+        } else if (nbtLen == 65535) {
+            int nbtTagCount = (int) getUnsignedVarInt();
+            int offset = getOffset();
+            FastByteArrayInputStream stream = new FastByteArrayInputStream(get());
+            for (int i = 0; i < nbtTagCount; i++) {
+                try {
+                    // TODO: 05/02/2019 This hack is necessary because we keep the raw NBT tag. Try to remove it.
+                    CompoundTag tag = NBTIO.read(stream, ByteOrder.LITTLE_ENDIAN, true);
+                    // tool damage hack
+                    if (tag.contains("Damage")) {
+                        data = tag.getInt("Damage");
+                        tag.remove("Damage");
+                    }
+                    if (tag.contains("__DamageConflict__")) {
+                        tag.put("Damage", tag.removeAndGet("__DamageConflict__"));
+                    }
+                    if (tag.getAllTags().size() > 0) {
+                        nbt = NBTIO.write(tag, ByteOrder.LITTLE_ENDIAN, false);
+                    }
+                } catch (IOException e) {
+                    throw new RuntimeException(e);
+                }
+            }
+            setOffset(offset + (int) stream.position());
+        }
+
+        String[] canPlaceOn = new String[this.getVarInt()];
+        for (int i = 0; i < canPlaceOn.length; ++i) {
+            canPlaceOn[i] = this.getString();
+        }
+
+        String[] canDestroy = new String[this.getVarInt()];
+        for (int i = 0; i < canDestroy.length; ++i) {
+            canDestroy[i] = this.getString();
+        }
+
+        Item item = Item.get(
+                id, data, cnt, nbt
+        );
+
+        if (canDestroy.length > 0 || canPlaceOn.length > 0) {
+            CompoundTag namedTag = item.getNamedTag();
+            if (namedTag == null) {
+                namedTag = new CompoundTag();
+            }
+
+            if (canDestroy.length > 0) {
+                ListTag<StringTag> listTag = new ListTag<>("CanDestroy");
+                for (String blockName : canDestroy) {
+                    listTag.add(new StringTag("", blockName));
+                }
+                namedTag.put("CanDestroy", listTag);
+            }
+
+            if (canPlaceOn.length > 0) {
+                ListTag<StringTag> listTag = new ListTag<>("CanPlaceOn");
+                for (String blockName : canPlaceOn) {
+                    listTag.add(new StringTag("", blockName));
+                }
+                namedTag.put("CanPlaceOn", listTag);
+            }
+            item.setNamedTag(namedTag);
+        }
+
+        if (item.getId() == 513) { // TODO: Shields
+            this.getVarLong();
+        }
+
+        return item;
+    }
+
+    public void putSlot(Item item) {
+        if (this.helper != null) {
+            this.helper.putSlot(this, item);
+            return;
+        }
+
+        if (item == null || item.getId() == 0) {
+            this.putVarInt(0);
+            return;
+        }
+
+        boolean isDurable = item instanceof ItemDurable;
+
+        this.putVarInt(item.getId());
+
+        int auxValue = item.getCount();
+        if (!isDurable) {
+            auxValue |= (((item.hasMeta() ? item.getDamage() : -1) & 0x7fff) << 8);
+        }
+        this.putVarInt(auxValue);
+
+        if (item.hasCompoundTag() || isDurable) {
+            try {
+                // hack for tool damage
+                byte[] nbt = item.getCompoundTag();
+                CompoundTag tag;
+                if (nbt == null || nbt.length == 0) {
+                    tag = new CompoundTag();
+                } else {
+                    tag = NBTIO.read(nbt, ByteOrder.LITTLE_ENDIAN, false);
+                }
+                if (tag.contains("Damage")) {
+                    tag.put("__DamageConflict__", tag.removeAndGet("Damage"));
+                }
+                if (isDurable) {
+                    tag.putInt("Damage", item.getDamage());
+                }
+
+                this.putLShort(0xffff);
+                this.putByte((byte) 1);
+                this.put(NBTIO.write(tag, ByteOrder.LITTLE_ENDIAN, true));
+            } catch (IOException e) {
+                throw new RuntimeException(e);
+            }
+        } else {
+            this.putLShort(0);
+        }
+        List<String> canPlaceOn = extractStringList(item, "CanPlaceOn");
+        List<String> canDestroy = extractStringList(item, "CanDestroy");
+        this.putVarInt(canPlaceOn.size());
+        for (String block : canPlaceOn) {
+            this.putString(block);
+        }
+        this.putVarInt(canDestroy.size());
+        for (String block : canDestroy) {
+            this.putString(block);
+        }
+
+        if (item.getId() == 513) { // TODO: Shields
+            this.putVarLong(0);
+        }
+    }
+
+    public Item getSlotLegacy() {
+        int id = this.getVarInt();
+
+        if (id <= 0) {
+            return Item.get(0, 0, 0);
+        }
+        int auxValue = this.getVarInt();
+        int data = auxValue >> 8;
+        if (data == Short.MAX_VALUE) {
+            data = -1;
+        }
+        int cnt = auxValue & 0xff;
+
+        int nbtLen = this.getLShort();
+        byte[] nbt = new byte[0];
+        if (nbtLen > 0) {
+            nbt = this.get(nbtLen);
+        }
+
+        String[] canPlaceOn = new String[this.getVarInt()];
+        for (int i = 0; i < canPlaceOn.length; ++i) {
+            canPlaceOn[i] = this.getString();
+        }
+
+        String[] canDestroy = new String[this.getVarInt()];
+        for (int i = 0; i < canDestroy.length; ++i) {
+            canDestroy[i] = this.getString();
+        }
+
+        Item item = Item.get(
+                id, data, cnt, nbt
+        );
+
+        if (canDestroy.length > 0 || canPlaceOn.length > 0) {
+            CompoundTag namedTag = item.getNamedTag();
+            if (namedTag == null) {
+                namedTag = new CompoundTag();
+            }
+
+            if (canDestroy.length > 0) {
+                ListTag<StringTag> listTag = new ListTag<>("CanDestroy");
+                for (String blockName : canDestroy) {
+                    listTag.add(new StringTag("", blockName));
+                }
+                namedTag.put("CanDestroy", listTag);
+            }
+
+            if (canPlaceOn.length > 0) {
+                ListTag<StringTag> listTag = new ListTag<>("CanPlaceOn");
+                for (String blockName : canPlaceOn) {
+                    listTag.add(new StringTag("", blockName));
+                }
+                namedTag.put("CanPlaceOn", listTag);
+            }
+            item.setNamedTag(namedTag);
+        }
+
+        return item;
     }
 
     /**
@@ -970,5 +1191,39 @@ public class BinaryStream {
         return (minCapacity > MAX_ARRAY_SIZE) ?
                 Integer.MAX_VALUE :
                 MAX_ARRAY_SIZE;
+    }
+
+    public static class BinaryStreamHelper {
+
+        private static final BinaryStreamHelper INSTANCE = new BinaryStreamHelper();
+
+        public static BinaryStreamHelper getInstance() {
+            return INSTANCE;
+        }
+
+        //TODO: get/putSkin也能用helper重写
+        public void putSkin(BinaryStream stream, Skin skin) {
+            stream.putSkinLegacy(skin);
+        }
+
+        public Skin getSkin(BinaryStream stream) {
+            return stream.getSkinLegacy();
+        }
+
+        public Item getSlot(BinaryStream stream) {
+            return stream.getSlotLegacy();
+        }
+
+        public void putSlot(BinaryStream stream, Item item) {
+            stream.putSlotLegacy(item);
+        }
+
+        protected final List<String> extractStringList(BinaryStream stream, Item item, String tagName) {
+            return stream.extractStringList(item, tagName);
+        }
+
+        protected BinaryStreamHelper() {
+
+        }
     }
 }
