@@ -444,7 +444,7 @@ public class BinaryStream {
             this.putImage(animation.image);
             this.putLInt(animation.type);
             this.putLFloat(animation.frames);
-            this.putLInt(animation.expressionType);
+            this.putLInt(animation.expression);
         }
 
         this.putImage(skin.getCapeData());
@@ -490,8 +490,8 @@ public class BinaryStream {
             SerializedImage image = this.getImage();
             int type = this.getLInt();
             float frames = this.getLFloat();
-            int expressionType = this.getLInt();
-            skin.getAnimations().add(new SkinAnimation(image, type, frames, expressionType));
+            int expression = this.getLInt();
+            skin.getAnimations().add(new SkinAnimation(image, type, frames, expression));
         }
 
         skin.setCapeData(this.getImage());

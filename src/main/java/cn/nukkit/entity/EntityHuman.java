@@ -159,7 +159,8 @@ public class EntityHuman extends EntityHumanType {
                         byte[] image = animationTag.getByteArray("Image");
                         int width = animationTag.getInt("ImageWidth");
                         int height = animationTag.getInt("ImageHeight");
-                        skin.getAnimations().add(new SkinAnimation(new SerializedImage(width, height, image), type, frames));
+                        int expression = animationTag.getInt("AnimationExpression");
+                        skin.getAnimations().add(new SkinAnimation(new SerializedImage(width, height, image), type, frames, expression));
                     }
                 }
                 this.setSkin(newSkin);
@@ -207,6 +208,7 @@ public class EntityHuman extends EntityHumanType {
                             .putInt("Type", animation.type)
                             .putInt("ImageWidth", animation.image.width)
                             .putInt("ImageHeight", animation.image.height)
+                            .putInt("AnimationExpression", animation.expression)
                             .putByteArray("Image", animation.image.data));
                 }
                 skinTag.putList(animationsTag);
