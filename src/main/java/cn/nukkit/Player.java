@@ -145,6 +145,8 @@ public class Player extends EntityHuman implements CommandSender, InventoryHolde
 
     protected int windowCnt = 4;
 
+    public int closingWindowId = Integer.MIN_VALUE;
+
     protected final BiMap<Inventory, Integer> windows = HashBiMap.create();
     protected final BiMap<Integer, Inventory> windowIndex = windows.inverse();
     protected IntSet permanentWindows = new IntOpenHashSet();
