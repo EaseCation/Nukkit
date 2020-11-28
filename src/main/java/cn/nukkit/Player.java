@@ -999,7 +999,7 @@ public class Player extends EntityHuman implements CommandSender, InventoryHolde
             inventoryContentPacket.inventoryId = ContainerIds.CREATIVE;
             this.dataPacket(inventoryContentPacket);
         } else {
-            inventory.sendCreativeContents();
+            this.sendCreativeContents();
         }
 
         for (long index : this.usedChunks.keySet()) {
@@ -1357,7 +1357,7 @@ public class Player extends EntityHuman implements CommandSender, InventoryHolde
             this.inventory.sendContents(this.getViewers().values());
             this.inventory.sendHeldItem(this.hasSpawned.values());
 
-            this.inventory.sendCreativeContents();
+            this.sendCreativeContents();
         }
 
         return true;
@@ -4992,5 +4992,9 @@ public class Player extends EntityHuman implements CommandSender, InventoryHolde
      */
     public void onInventoryOpen() {
 
+    }
+
+    public void sendCreativeContents() {
+        this.inventory.sendCreativeContents();
     }
 }
