@@ -145,7 +145,7 @@ public class Player extends EntityHuman implements CommandSender, InventoryHolde
 
     protected int windowCnt = 4;
 
-    public int closingWindowId = Integer.MIN_VALUE;
+    protected int closingWindowId = Integer.MIN_VALUE;
 
     protected final BiMap<Inventory, Integer> windows = HashBiMap.create();
     protected final BiMap<Integer, Inventory> windowIndex = windows.inverse();
@@ -4622,6 +4622,10 @@ public class Player extends EntityHuman implements CommandSender, InventoryHolde
             }
             this.removeWindow(entry.getValue());
         }
+    }
+
+    public int getClosingWindowId() {
+        return this.closingWindowId;
     }
 
     @Override

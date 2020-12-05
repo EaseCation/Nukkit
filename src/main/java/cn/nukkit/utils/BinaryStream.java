@@ -543,22 +543,21 @@ public class BinaryStream {
 
     public Item getSlotV3() {
         int networkId = this.getVarInt();
-
         if (networkId == 0) {
             return Item.get(0, 0, 0);
         }
 
-        int fullId = RuntimeItems.getLegacyFullId(networkId);
-        boolean hasData = RuntimeItems.hasData(fullId);
-        int id = RuntimeItems.getId(fullId);
+        int legacyFullId = RuntimeItems.getLegacyFullId(networkId);
+        int id = RuntimeItems.getId(legacyFullId);
+        boolean hasData = RuntimeItems.hasData(legacyFullId);
 
         int auxValue = this.getVarInt();
         int data = auxValue >> 8;
-        if (data == Short.MAX_VALUE) {
-            data = -1;
-        }
         if (hasData) {
-            data = RuntimeItems.getData(fullId);
+            // Swap data using legacy full id
+            data = RuntimeItems.getData(legacyFullId);
+        } else if (data == Short.MAX_VALUE) {
+            data = -1;
         }
         int cnt = auxValue & 0xff;
 
@@ -643,15 +642,13 @@ public class BinaryStream {
             return;
         }
 
-        boolean isDurable = item instanceof ItemDurable;
-
         int networkFullId = RuntimeItems.getNetworkFullId(item);
-        boolean clearData = RuntimeItems.hasData(networkFullId);
         int networkId = RuntimeItems.getNetworkId(networkFullId);
-
+        boolean clearData = RuntimeItems.hasData(networkFullId);
         this.putVarInt(networkId);
 
         int auxValue = item.getCount();
+        boolean isDurable = item instanceof ItemDurable;
         if (!isDurable) {
             int meta = clearData ? 0 : item.hasMeta() ? item.getDamage() : -1;
             auxValue |= ((meta & 0x7fff) << 8);
@@ -946,6 +943,10 @@ public class BinaryStream {
     }
 
     public Item getRecipeIngredient() {
+        if (this.helper != null) {
+            return this.helper.getRecipeIngredient(this);
+        }
+
         int id = this.getVarInt();
 
         if (id == 0) {
@@ -960,6 +961,11 @@ public class BinaryStream {
     }
 
     public void putRecipeIngredient(Item ingredient) {
+        if (this.helper != null) {
+            this.helper.putRecipeIngredient(this, ingredient);
+            return;
+        }
+
         if (ingredient == null || ingredient.getId() == 0) {
             this.putVarInt(0);
             return;
@@ -971,6 +977,45 @@ public class BinaryStream {
         } else {
             damage = 0x7fff;
         }
+        this.putVarInt(damage);
+        this.putVarInt(ingredient.getCount());
+    }
+
+    public Item getRecipeIngredientV2() {
+        int networkId = this.getVarInt();
+        if (networkId == 0) {
+            return Item.get(0, 0, 0);
+        }
+
+        int legacyFullId = RuntimeItems.getLegacyFullId(networkId);
+        int id = RuntimeItems.getId(legacyFullId);
+        boolean hasData = RuntimeItems.hasData(legacyFullId);
+
+        int damage = this.getVarInt();
+        if (hasData) {
+            damage = RuntimeItems.getData(legacyFullId);
+        } else if (damage == 0x7fff) {
+            damage = -1;
+        }
+
+        int count = this.getVarInt();
+        return Item.get(id, damage, count);
+    }
+
+    public void putRecipeIngredientV2(Item ingredient) {
+        if (ingredient == null || ingredient.getId() == 0) {
+            this.putVarInt(0);
+            return;
+        }
+
+        int networkFullId = RuntimeItems.getNetworkFullId(ingredient);
+        int networkId = RuntimeItems.getNetworkId(networkFullId);
+        int damage = ingredient.hasMeta() ? ingredient.getDamage() : 0x7fff;
+        if (RuntimeItems.hasData(networkFullId)) {
+            damage = 0;
+        }
+
+        this.putVarInt(networkId);
         this.putVarInt(damage);
         this.putVarInt(ingredient.getCount());
     }
@@ -1216,6 +1261,36 @@ public class BinaryStream {
 
         public void putSlot(BinaryStream stream, Item item) {
             stream.putSlotLegacy(item);
+        }
+
+        public Item getRecipeIngredient(BinaryStream stream) {
+            int id = stream.getVarInt();
+
+            if (id == 0) {
+                return Item.get(0, 0, 0);
+            }
+
+            int damage = stream.getVarInt();
+            if (damage == 0x7fff) damage = -1;
+            int count = stream.getVarInt();
+
+            return Item.get(id, damage, count);
+        }
+
+        public void putRecipeIngredient(BinaryStream stream, Item ingredient) {
+            if (ingredient == null || ingredient.getId() == 0) {
+                stream.putVarInt(0);
+                return;
+            }
+            stream.putVarInt(ingredient.getId());
+            int damage;
+            if (ingredient.hasMeta()) {
+                damage = ingredient.getDamage();
+            } else {
+                damage = 0x7fff;
+            }
+            stream.putVarInt(damage);
+            stream.putVarInt(ingredient.getCount());
         }
 
         protected final List<String> extractStringList(BinaryStream stream, Item item, String tagName) {

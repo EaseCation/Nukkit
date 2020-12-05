@@ -67,7 +67,7 @@ public class FakeBlockUIComponent extends PlayerUIComponent {
         ContainerClosePacket pk = new ContainerClosePacket();
         pk.windowId = who.getWindowId(this);
         //pk.wasServerInitiated = false;
-        pk.wasServerInitiated = who.closingWindowId != pk.windowId;
+        pk.wasServerInitiated = who.getClosingWindowId() != pk.windowId;
         who.dataPacket(pk);
         super.onClose(who);
     }
