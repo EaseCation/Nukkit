@@ -60,11 +60,6 @@ public class BlockBed extends BlockTransparentMeta implements Faceable {
     }
 
     @Override
-    public boolean onActivate(Item item) {
-        return this.onActivate(item, null);
-    }
-
-    @Override
     public boolean onActivate(Item item, Player player) {
 
         if (this.level.getDimension() == Level.DIMENSION_NETHER || this.level.getDimension() == Level.DIMENSION_THE_END) {

@@ -5,10 +5,10 @@ import cn.nukkit.event.block.BlockRedstoneEvent;
 import cn.nukkit.event.block.DoorToggleEvent;
 import cn.nukkit.item.Item;
 import cn.nukkit.level.Level;
-import cn.nukkit.level.sound.SoundEnum;
 import cn.nukkit.math.AxisAlignedBB;
 import cn.nukkit.math.BlockFace;
 import cn.nukkit.math.SimpleAxisAlignedBB;
+import cn.nukkit.network.protocol.LevelEventPacket;
 import cn.nukkit.utils.Faceable;
 
 /**
@@ -274,17 +274,12 @@ public abstract class BlockDoor extends BlockTransparentMeta implements Faceable
     }
 
     @Override
-    public boolean onActivate(Item item) {
-        return this.onActivate(item, null);
-    }
-
-    @Override
     public boolean onActivate(Item item, Player player) {
         if (!this.toggle(player)) {
             return false;
         }
 
-        this.level.addSound(this, isOpen() ? SoundEnum.RANDOM_DOOR_OPEN : SoundEnum.RANDOM_DOOR_CLOSE);
+        this.getLevel().addLevelEvent(this.add(0.5, 0.5, 0.5), LevelEventPacket.EVENT_SOUND_DOOR);
         return true;
     }
 
