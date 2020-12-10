@@ -15,7 +15,8 @@ import java.util.Arrays;
  */
 public class EmptyChunkSection implements ChunkSection {
     public static final EmptyChunkSection[] EMPTY = new EmptyChunkSection[16];
-    private static final PalettedBlockStorage EMPTY_STORAGE = new PalettedBlockStorage(BitArrayVersion.V1);
+    public static final PalettedBlockStorage EMPTY_STORAGE = new PalettedBlockStorage(BitArrayVersion.V1);
+    public static final PalettedBlockStorage EMPTY_STORAGE_CACHE = new PalettedBlockStorage(BitArrayVersion.V1, true);
 
     static {
         for (int y = 0; y < EMPTY.length; y++) {
@@ -149,8 +150,8 @@ public class EmptyChunkSection implements ChunkSection {
     public void writeToCache(BinaryStream stream) {
         stream.putByte((byte) 8);
         stream.putByte((byte) 2);
-        EMPTY_STORAGE.writeToCache(stream);
-        EMPTY_STORAGE.writeToCache(stream);
+        EMPTY_STORAGE_CACHE.writeToCache(stream);
+        EMPTY_STORAGE_CACHE.writeToCache(stream);
     }
 
     @Override

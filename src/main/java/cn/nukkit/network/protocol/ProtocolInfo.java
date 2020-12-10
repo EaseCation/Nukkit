@@ -140,8 +140,8 @@ public interface ProtocolInfo {
     int LEVEL_EVENT_GENERIC_PACKET = 0x7c;
     int LECTERN_UPDATE_PACKET = 0x7d;
     int VIDEO_STREAM_CONNECT_PACKET = 0x7e;
-    //byte ADD_ENTITY_PACKET = 0x7f;
-    //byte REMOVE_ENTITY_PACKET = 0x80;
+    //int ADD_ENTITY_PACKET = 0x7f;
+    //int REMOVE_ENTITY_PACKET = 0x80;
     int CLIENT_CACHE_STATUS_PACKET = 0x81;
     int ON_SCREEN_TEXTURE_ANIMATION_PACKET = 0x82;
     int MAP_CREATE_LOCKED_COPY_PACKET = 0x83;
@@ -176,6 +176,7 @@ public interface ProtocolInfo {
     int PLAYER_FOG_PACKET = 0xa0;
     int CORRECT_PLAYER_MOVE_PREDICTION_PACKET = 0xa1;
     int ITEM_COMPONENT_PACKET = 0xa2;
+    int FILTER_TEXT_PACKET = 0xa3;
 
     //NetEase Common Mod
     int PACKET_CHANGE_MODEL = 0xc9;

@@ -5,6 +5,7 @@ import cn.nukkit.nbt.NBTIO;
 import cn.nukkit.nbt.tag.CompoundTag;
 import cn.nukkit.nbt.tag.ListTag;
 import com.google.common.io.ByteStreams;
+import com.google.gson.Gson;
 import it.unimi.dsi.fastutil.ints.Int2IntMap;
 import it.unimi.dsi.fastutil.ints.Int2IntOpenHashMap;
 import it.unimi.dsi.fastutil.ints.Int2ObjectMap;
@@ -16,6 +17,7 @@ import lombok.extern.log4j.Log4j2;
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.InputStreamReader;
 import java.nio.ByteOrder;
 import java.util.List;
 import java.util.NoSuchElementException;
@@ -32,8 +34,6 @@ public class GlobalBlockPalette implements GlobalBlockPaletteInterface {
 
     private final Int2IntMap legacyToRuntimeId = new Int2IntOpenHashMap();
     private final Int2IntMap runtimeIdToLegacy = new Int2IntOpenHashMap();
-    private final Int2ObjectMap<String> runtimeIdToString = new Int2ObjectOpenHashMap<>();
-    private final Object2IntMap<String> stringToRuntimeId = new Object2IntOpenHashMap<>();
     private final Int2ObjectMap<CompoundTag> runtimeIdToState = new Int2ObjectOpenHashMap<>();
     private final AtomicInteger runtimeIdAllocator = new AtomicInteger(0);
     public final byte[] BLOCK_PALETTE;
@@ -41,7 +41,6 @@ public class GlobalBlockPalette implements GlobalBlockPaletteInterface {
     public GlobalBlockPalette() {
         legacyToRuntimeId.defaultReturnValue(-1);
         runtimeIdToLegacy.defaultReturnValue(-1);
-        stringToRuntimeId.defaultReturnValue(-1);
 
         ListTag<CompoundTag> tag;
         try (InputStream stream = Server.class.getClassLoader().getResourceAsStream("runtime_block_states.dat")) {
@@ -58,10 +57,6 @@ public class GlobalBlockPalette implements GlobalBlockPaletteInterface {
             int runtimeId = runtimeIdAllocator.getAndIncrement();
             runtimeIdToState.put(runtimeId, state);
 
-            String name = state.getCompound("block").getString("name");
-            stringToRuntimeId.putIfAbsent(name, runtimeId);
-            runtimeIdToString.putIfAbsent(runtimeId, name);
-
             if (!state.contains("LegacyStates")) continue;
 
             List<CompoundTag> legacyStates = state.getList("LegacyStates", CompoundTag.class).getAll();
@@ -72,7 +67,7 @@ public class GlobalBlockPalette implements GlobalBlockPaletteInterface {
 
             for (CompoundTag legacyState : legacyStates) {
                 int legacyId = legacyState.getInt("id") << 6 | legacyState.getShort("val");
-                legacyToRuntimeId.put(legacyId, runtimeId);
+                legacyToRuntimeId.putIfAbsent(legacyId, runtimeId);
             }
             //state.remove("LegacyStates"); // No point in sending this since the client doesn't use it.
         }
@@ -107,12 +102,6 @@ public class GlobalBlockPalette implements GlobalBlockPaletteInterface {
         return runtimeIdToLegacy.get(runtimeId);
     }
 
-    @Override
-    public String getName0(int runtimeId) {
-        String name = runtimeIdToString.get(runtimeId);
-        return name == null ? "minecraft:air" : name;
-    }
-
     public CompoundTag getState0(int runtimeId) {
         return runtimeIdToState.get(runtimeId);
     }
@@ -131,7 +120,33 @@ public class GlobalBlockPalette implements GlobalBlockPaletteInterface {
         return instance.getLegacyId0(runtimeId);
     }
 
-    public static String getName(int id) {
-        return instance.getName0(id);
+    private static final Object2IntMap<String> stringToId;
+    private static final Int2ObjectMap<String> idToString = new Int2ObjectOpenHashMap<>();
+
+    static {
+        try (InputStream stream = Server.class.getClassLoader().getResourceAsStream("block_id_map.json");
+             InputStreamReader reader = new InputStreamReader(stream)) {
+            stringToId = new Gson().fromJson(reader, Object2IntOpenHashMap.class);
+        } catch (NullPointerException | IOException e) {
+            throw new AssertionError("Unable to load block_id_map.json", e);
+        }
+        stringToId.forEach((name, id) -> idToString.put(id, name));
+        stringToId.defaultReturnValue(-1);
+    }
+
+    public static int getBlockIdByName(String blockName) {
+        int blockId = stringToId.getInt(blockName);
+        if (blockId == -1) {
+            throw new NoSuchElementException("Unmapped block name: " + blockName);
+        }
+        return stringToId.getInt(blockName);
+    }
+
+    public static String getNameByBlockId(int blockId) {
+        String blockName = idToString.get(blockId);
+        if (blockName == null) {
+            throw new NoSuchElementException("Unmapped block id: " + blockId);
+        }
+        return blockName;
     }
 }

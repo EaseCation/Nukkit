@@ -112,17 +112,9 @@ public class BlockStorage {
     }
 
     public void writeToCache(BinaryStream stream) {
-        PalettedBlockStorage storage = new PalettedBlockStorage();
-        int airBlockRuntimeId = GlobalBlockPalette.getOrCreateRuntimeId(Block.AIR, 0);
+        PalettedBlockStorage storage = new PalettedBlockStorage(true);
         for (int i = 0; i < SECTION_SIZE; i++) {
-            int runtimeId;
-            try {
-                runtimeId = GlobalBlockPalette.getOrCreateRuntimeId(blockIds[i] & 0xff, blockData.get(i));
-            } catch (Exception e) {
-                runtimeId = airBlockRuntimeId;
-                //Server.getInstance().getLogger().logException(e);
-            }
-            storage.setBlock(i, runtimeId);
+            storage.setBlock(i, (blockIds[i] & 0xff) << 4 | blockData.get(i));
         }
         storage.writeToCache(stream);
     }

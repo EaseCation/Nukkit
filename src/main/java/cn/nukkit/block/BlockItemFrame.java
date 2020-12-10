@@ -56,6 +56,9 @@ public class BlockItemFrame extends BlockTransparentMeta {
     @Override
     public boolean onActivate(Item item, Player player) {
         BlockEntity blockEntity = this.getLevel().getBlockEntity(this);
+        if (!(blockEntity instanceof BlockEntityItemFrame)) {
+            return false;
+        }
         BlockEntityItemFrame itemFrame = (BlockEntityItemFrame) blockEntity;
         if (itemFrame.getItem().getId() == Item.AIR) {
         	Item itemOnFrame = item.clone();
