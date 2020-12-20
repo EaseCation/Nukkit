@@ -256,7 +256,9 @@ public class Skin {
     public Skin setGeometryData(String geometryData) {
         Preconditions.checkNotNull(geometryData, "geometryData");
         if (!geometryData.equals(this.geometryData)) {
-            this.geometryData = geometryData;
+            if (!geometryData.startsWith("null")) {
+                this.geometryData = geometryData;
+            }
         }
         return this;
     }
