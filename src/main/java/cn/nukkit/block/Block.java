@@ -985,7 +985,7 @@ public abstract class Block extends Position implements Metadatable, Cloneable, 
 
     @Override
     public boolean equals(Object obj) {
-        return obj instanceof Block && equals(this, (Block) obj);
+        return obj instanceof Block && equals(this, (Block) obj) && (this.level == null || (this.level == ((Block) obj).level && super.equals(obj)));
     }
 
     public Item toItem() {
