@@ -1246,6 +1246,14 @@ public class BinaryStream {
             return INSTANCE;
         }
 
+        /**
+         * 用于1.13+. (e.g. "1.14.60")
+         * @return network game version
+         */
+        public String getGameVersion() {
+            return "1.12.0";
+        }
+
         //TODO: get/putSkin也能用helper重写
         public void putSkin(BinaryStream stream, Skin skin) {
             stream.putSkinLegacy(skin);
