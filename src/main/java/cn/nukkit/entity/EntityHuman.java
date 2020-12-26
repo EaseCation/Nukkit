@@ -36,17 +36,17 @@ public class EntityHuman extends EntityHumanType {
 
     @Override
     public float getWidth() {
-        return 0.6f * this.getScale();
+        return 0.6f;
     }
 
     @Override
     public float getLength() {
-        return 0.6f * this.getScale();
+        return 0.6f;
     }
 
     @Override
     public float getHeight() {
-        return 1.8f * this.getScale();
+        return 1.8f;
     }
 
     @Override
