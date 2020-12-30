@@ -257,8 +257,8 @@ public class Player extends EntityHuman implements CommandSender, InventoryHolde
 
     protected Long2ObjectMap<DummyBossBar> dummyBossBars = new Long2ObjectOpenHashMap<>();
 
-    protected Map<String, ResourcePack> resourcePacks;
-    protected Map<String, ResourcePack> behaviourPacks;
+    protected Map<String, ResourcePack> resourcePacks = new LinkedHashMap<>();
+    protected Map<String, ResourcePack> behaviourPacks = new LinkedHashMap<>();
     protected boolean forceResources = false;
 
     protected AsyncTask preLoginEventTask = null;
