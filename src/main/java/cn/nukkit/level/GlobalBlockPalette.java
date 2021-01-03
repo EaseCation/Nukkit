@@ -113,9 +113,19 @@ public class GlobalBlockPalette implements GlobalBlockPaletteInterface {
     }
 
     @Override
-    public String getName0(int runtimeId) {
+    public String getNameByRuntimeId0(int runtimeId) {
         String name = runtimeIdToString.get(runtimeId);
         return name == null ? "minecraft:air" : name;
+    }
+
+    @Override
+    public String getNameByBlockId0(int blockId) {
+        return null;
+    }
+
+    @Override
+    public int getBlockIdByName0(String name) {
+        return stringToLegacyId.getInt(name);
     }
 
     public CompoundTag getState0(int runtimeId) {
@@ -140,7 +150,15 @@ public class GlobalBlockPalette implements GlobalBlockPaletteInterface {
      * 注意这里要求的参数是{@code runtimeId}, 而社区版是{@code blockId}.
      * 可以用{@link #getOrCreateRuntimeId(int, int)}将{@code blockId}转为{@code runtimeId}.
      */
-    public static String getName(int runtimeId) {
-        return instance.getName0(runtimeId);
+    public static String getNameByRuntimeId(int runtimeId) {
+        return instance.getNameByRuntimeId0(runtimeId);
+    }
+
+    public static String getNameByBlockId(int blockId) {
+        return instance.getNameByBlockId0(blockId);
+    }
+
+    public static int getBlockIdByName(String name) {
+        return instance.getBlockIdByName0(name);
     }
 }

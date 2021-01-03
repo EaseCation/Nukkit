@@ -223,7 +223,7 @@ public abstract class BlockPistonBase extends BlockSolidMeta implements Faceable
                                 .putInt("id", newBlock.getId()) //only for nukkit purpose
                                 .putInt("meta", newBlock.getDamage()) //only for nukkit purpose
                                 .putShort("val", newBlock.getDamage())
-                                .putString("name", GlobalBlockPalette.getName(GlobalBlockPalette.getOrCreateRuntimeId(newBlock.getId(), newBlock.getDamage()))) //先获取runtimeId
+                                .putString("name", GlobalBlockPalette.getNameByRuntimeId(GlobalBlockPalette.getOrCreateRuntimeId(newBlock.getId(), newBlock.getDamage()))) //先获取runtimeId
                         );
 
                 if (blockEntity != null && !(blockEntity instanceof BlockEntityMovingBlock)) {
