@@ -5,8 +5,8 @@ import cn.nukkit.event.block.BlockRedstoneEvent;
 import cn.nukkit.item.Item;
 import cn.nukkit.item.ItemBlock;
 import cn.nukkit.level.Level;
-import cn.nukkit.level.sound.SoundEnum;
 import cn.nukkit.math.BlockFace;
+import cn.nukkit.network.protocol.LevelEventPacket;
 import cn.nukkit.utils.BlockColor;
 import cn.nukkit.utils.Faceable;
 
@@ -70,7 +70,7 @@ public class BlockLever extends BlockFlowable implements Faceable {
         boolean redstone = this.level.getServer().isRedstoneEnabled();
 
         this.getLevel().setBlock(this, this, false, true);
-        this.getLevel().addSound(this, SoundEnum.RANDOM_CLICK); //TODO: correct pitch
+        this.getLevel().addLevelEvent(this.add(0.5, 0.5, 0.5), LevelEventPacket.EVENT_SOUND_BUTTON_CLICK, this.isPowerOn() ? 600 : 500);
 
         LeverOrientation orientation = LeverOrientation.byMetadata(this.isPowerOn() ? this.getDamage() ^ 0x08 : this.getDamage());
         BlockFace face = orientation.getFacing();

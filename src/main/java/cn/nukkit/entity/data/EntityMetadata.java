@@ -122,4 +122,8 @@ public class EntityMetadata {
     public Int2ObjectMap<EntityData> getMap() {
         return new Int2ObjectOpenHashMap<>(map);
     }
+
+    public boolean isEmpty() {
+        return this.map.isEmpty();
+    }
 }

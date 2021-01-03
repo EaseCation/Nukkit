@@ -1,5 +1,6 @@
 package cn.nukkit.level.util;
 
+import cn.nukkit.block.Block;
 import cn.nukkit.level.GlobalBlockPalette;
 import cn.nukkit.nbt.NBTIO;
 import cn.nukkit.nbt.tag.CompoundTag;
@@ -17,7 +18,7 @@ public class PalettedBlockStorage {
 
     private static final int SIZE = 4096;
 
-    private final IntList palette;
+    private final IntList palette; // cache用fullId代替runtimeId
     private BitArray bitArray;
 
     public PalettedBlockStorage() {
@@ -25,9 +26,21 @@ public class PalettedBlockStorage {
     }
 
     public PalettedBlockStorage(BitArrayVersion version) {
+        this(version, false);
+    }
+
+    public PalettedBlockStorage(boolean cache) {
+        this(BitArrayVersion.V2, cache);
+    }
+
+    public PalettedBlockStorage(BitArrayVersion version, boolean cache) {
         this.bitArray = version.createPalette(SIZE);
         this.palette = new IntArrayList(16);
-        this.palette.add(0); // Air is at the start of every palette.
+        if (!cache) {
+            this.palette.add(GlobalBlockPalette.getOrCreateRuntimeId(Block.AIR, 0)); // Air is at the start of every palette.
+        } else {
+            this.palette.add(0);
+        }
     }
 
     private PalettedBlockStorage(BitArray bitArray, IntList palette) {
@@ -68,12 +81,11 @@ public class PalettedBlockStorage {
 
         stream.putVarInt(palette.size());
         List<CompoundTag> tagList = new ArrayList<>();
-        for (int runtimeId : palette) {
+        for (int legacyId : palette) {
             //tagList.add(GlobalBlockPalette.getState(runtimeId));
-            int legacyId = GlobalBlockPalette.getLegacyId(runtimeId);
             tagList.add(new CompoundTag()
-                    .putString("name", GlobalBlockPalette.getName(runtimeId))
-                    .putShort("val", legacyId & 0x3f));
+                    .putString("name", GlobalBlockPalette.getNameByBlockId(legacyId >> 4))
+                    .putShort("val", legacyId & 0xf));
         }
         try {
             stream.put(NBTIO.write(tagList, ByteOrder.LITTLE_ENDIAN, true));

@@ -56,7 +56,7 @@ public class AdventureSettings implements Cloneable {
         pk.playerPermission = (player.isOp() ? Player.PERMISSION_OPERATOR : Player.PERMISSION_MEMBER);
         pk.entityUniqueId = player.getId();
 
-        Server.broadcastPacket(player.getViewers().values(), pk);
+        //Server.broadcastPacket(player.getViewers().values(), pk); wtf Bug?
         player.dataPacket(pk);
 
         player.resetInAirTicks();

@@ -42,4 +42,13 @@ public abstract class AbstractResourcePack implements ResourcePack {
                 version.get(1).getAsString(),
                 version.get(2).getAsString());
     }
+
+    @Override
+    public String getPackType() {
+        if (this.manifest.has("modules") && this.manifest.getAsJsonArray("modules").size() > 0) {
+            return this.manifest.getAsJsonArray("modules").get(0).getAsJsonObject().get("type").getAsString();
+        } else {
+            return "resources";
+        }
+    }
 }

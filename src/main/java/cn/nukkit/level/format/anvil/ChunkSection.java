@@ -4,7 +4,6 @@ import cn.nukkit.block.Block;
 import cn.nukkit.level.format.anvil.util.BlockStorage;
 import cn.nukkit.level.format.anvil.util.NibbleArray;
 import cn.nukkit.level.format.generic.EmptyChunkSection;
-import cn.nukkit.level.util.PalettedBlockStorage;
 import cn.nukkit.nbt.tag.CompoundTag;
 import cn.nukkit.utils.*;
 
@@ -16,8 +15,6 @@ import java.util.Arrays;
  * Nukkit Project
  */
 public class ChunkSection implements cn.nukkit.level.format.ChunkSection {
-
-    private static final PalettedBlockStorage EMPTY_STORAGE = new PalettedBlockStorage();
 
     private final int y;
 
@@ -335,7 +332,7 @@ public class ChunkSection implements cn.nukkit.level.format.ChunkSection {
             stream.putByte((byte) 8); // Paletted chunk because Mojang messed up the old one
             stream.putByte((byte) 2);
             this.storage.writeTo(stream);
-            EMPTY_STORAGE.writeTo(stream);
+            EmptyChunkSection.EMPTY_STORAGE.writeTo(stream);
         }
     }
 
@@ -345,7 +342,7 @@ public class ChunkSection implements cn.nukkit.level.format.ChunkSection {
             stream.putByte((byte) 8); // Paletted chunk because Mojang messed up the old one
             stream.putByte((byte) 2);
             this.storage.writeToCache(stream);
-            EMPTY_STORAGE.writeToCache(stream);
+            EmptyChunkSection.EMPTY_STORAGE_CACHE.writeToCache(stream);
         }
     }
 

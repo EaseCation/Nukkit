@@ -9,6 +9,4 @@ public interface GlobalBlockPaletteInterface {
     int getOrCreateRuntimeId0(int legacyId) throws NoSuchElementException;
 
     int getLegacyId0(int runtimeId);
-
-    String getName0(int runtimeId);
 }

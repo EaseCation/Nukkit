@@ -814,7 +814,7 @@ public class Level implements ChunkManager, Metadatable {
         }
 
         // Tick Weather
-        if (gameRules.getBoolean(GameRule.DO_WEATHER_CYCLE)) {
+        if (this.dimension != DIMENSION_NETHER && this.dimension != DIMENSION_THE_END && gameRules.getBoolean(GameRule.DO_WEATHER_CYCLE)) {
             this.rainTime--;
             if (this.rainTime <= 0) {
                 if (!this.setRaining(!this.raining)) {
@@ -1391,10 +1391,15 @@ public class Level implements ChunkManager, Metadatable {
 
         List<Block> collides = new ArrayList<>();
 
+        long loopTimes = 0;
         if (targetFirst) {
             for (int z = minZ; z <= maxZ; ++z) {
                 for (int x = minX; x <= maxX; ++x) {
                     for (int y = minY; y <= maxY; ++y) {
+                        if (loopTimes++ > 1000000) {
+                            this.server.getLogger().logException(new AxisAlignedBBLoopException("Level.getCollisionBlocks bb=" + bb.toString() + " minX=" + minX + " maxX=" + maxX + " minY=" + minY + " maxY=" + maxY + " minZ=" + minZ + " maxZ=" + maxZ + " x=" + x + " y=" + y + " z=" + z));
+                            return new Block[0];
+                        }
                         Block block = this.getBlock(this.temporalVector.setComponents(x, y, z));
                         if (block.getId() != 0 && block.collidesWithBB(bb)) {
                             return new Block[]{block};
@@ -1406,6 +1411,10 @@ public class Level implements ChunkManager, Metadatable {
             for (int z = minZ; z <= maxZ; ++z) {
                 for (int x = minX; x <= maxX; ++x) {
                     for (int y = minY; y <= maxY; ++y) {
+                        if (loopTimes++ > 1000000) {
+                            this.server.getLogger().logException(new AxisAlignedBBLoopException("Level.getCollisionBlocks bb=" + bb.toString() + " minX=" + minX + " maxX=" + maxX + " minY=" + minY + " maxY=" + maxY + " minZ=" + minZ + " maxZ=" + maxZ + " x=" + x + " y=" + y + " z=" + z));
+                            return collides.toArray(new Block[0]);
+                        }
                         Block block = this.getBlock(this.temporalVector.setComponents(x, y, z));
                         if (block.getId() != 0 && block.collidesWithBB(bb)) {
                             collides.add(block);
@@ -2287,8 +2296,13 @@ public class Level implements ChunkManager, Metadatable {
         int minZ = NukkitMath.floorDouble((bb.getMinZ() - 2) / 16);
         int maxZ = NukkitMath.ceilDouble((bb.getMaxZ() + 2) / 16);
 
+        long loops = 0;
         for (int x = minX; x <= maxX; ++x) {
             for (int z = minZ; z <= maxZ; ++z) {
+                if (loops++ > 1000000) {
+                    this.server.getLogger().logException(new AxisAlignedBBLoopException("Level.getNearbyEntities bb=" + bb.toString() + " minX=" + minX + " maxX=" + maxX + " minZ=" + minZ + " maxZ=" + maxZ + " x=" + x + " z=" + z));
+                    return nearby.toArray(new Entity[0]);
+                }
                 for (Entity ent : this.getChunkEntities(x, z).values()) {
                     if (ent != entity && ent.boundingBox.intersectsWith(bb)) {
                         nearby.add(ent);
@@ -2938,7 +2952,7 @@ public class Level implements ChunkManager, Metadatable {
             FullChunk chunk = this.getChunk((int) v.x >> 4, (int) v.z >> 4, false);
             int x = (int) v.x & 0x0f;
             int z = (int) v.z & 0x0f;
-            if (chunk != null) {
+            if (chunk != null && chunk.isGenerated()) {
                 int y = (int) Math.max(Math.min(254, v.y), 1);
                 boolean wasAir = chunk.getBlockId(x, y - 1, z) == 0;
                 for (; y > 0; --y) {

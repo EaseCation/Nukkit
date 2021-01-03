@@ -49,8 +49,6 @@ import cn.nukkit.level.format.FullChunk;
 import cn.nukkit.level.format.generic.BaseFullChunk;
 import cn.nukkit.level.format.generic.ChunkBlobCache;
 import cn.nukkit.level.particle.PunchBlockParticle;
-import cn.nukkit.level.sound.ExperienceOrbSound;
-import cn.nukkit.level.sound.ItemFrameItemRemovedSound;
 import cn.nukkit.level.sound.LaunchSound;
 import cn.nukkit.level.util.AroundPlayerChunkComparator;
 import cn.nukkit.math.*;
@@ -144,6 +142,8 @@ public class Player extends EntityHuman implements CommandSender, InventoryHolde
     public long lastBreak;
 
     protected int windowCnt = 4;
+
+    protected int closingWindowId = Integer.MIN_VALUE;
 
     protected final BiMap<Inventory, Integer> windows = HashBiMap.create();
     protected final BiMap<Integer, Inventory> windowIndex = windows.inverse();
@@ -257,8 +257,8 @@ public class Player extends EntityHuman implements CommandSender, InventoryHolde
 
     protected Long2ObjectMap<DummyBossBar> dummyBossBars = new Long2ObjectOpenHashMap<>();
 
-    protected Map<String, ResourcePack> resourcePacks;
-    protected Map<String, ResourcePack> behaviourPacks;
+    protected Map<String, ResourcePack> resourcePacks = new LinkedHashMap<>();
+    protected Map<String, ResourcePack> behaviourPacks = new LinkedHashMap<>();
     protected boolean forceResources = false;
 
     protected AsyncTask preLoginEventTask = null;
@@ -999,7 +999,7 @@ public class Player extends EntityHuman implements CommandSender, InventoryHolde
             inventoryContentPacket.inventoryId = ContainerIds.CREATIVE;
             this.dataPacket(inventoryContentPacket);
         } else {
-            inventory.sendCreativeContents();
+            this.sendCreativeContents();
         }
 
         for (long index : this.usedChunks.keySet()) {
@@ -1357,7 +1357,7 @@ public class Player extends EntityHuman implements CommandSender, InventoryHolde
             this.inventory.sendContents(this.getViewers().values());
             this.inventory.sendHeldItem(this.hasSpawned.values());
 
-            this.inventory.sendCreativeContents();
+            this.sendCreativeContents();
         }
 
         return true;
@@ -2026,7 +2026,7 @@ public class Player extends EntityHuman implements CommandSender, InventoryHolde
 
         this.forceMovement = this.teleportPosition = this.getPosition();
 
-        PlayerRequestResourcePackEvent resourcePackEvent = new PlayerRequestResourcePackEvent(this, this.server.getResourcePackManager().getResourcePacksMap(), new HashMap<>(), this.server.getForceResources());
+        PlayerRequestResourcePackEvent resourcePackEvent = new PlayerRequestResourcePackEvent(this, this.server.getResourcePackManager().getResourcePacksMap(), this.server.getResourcePackManager().getBehaviorPacksMap(), this.server.getForceResources());
         this.server.getPluginManager().callEvent(resourcePackEvent);
         this.resourcePacks = resourcePackEvent.getResourcePacks();
         this.behaviourPacks = resourcePackEvent.getResourcePacks();
@@ -2386,7 +2386,7 @@ public class Player extends EntityHuman implements CommandSender, InventoryHolde
                     break;
                 case ProtocolInfo.PLAYER_ACTION_PACKET:
                     PlayerActionPacket playerActionPacket = (PlayerActionPacket) packet;
-                    if (!this.spawned || (!this.isAlive() && playerActionPacket.action != PlayerActionPacket.ACTION_RESPAWN && playerActionPacket.action != PlayerActionPacket.ACTION_DIMENSION_CHANGE_REQUEST)) {
+                    if (!this.spawned || (!this.isAlive() && playerActionPacket.action != PlayerActionPacket.ACTION_RESPAWN /*&& playerActionPacket.action != PlayerActionPacket.ACTION_DIMENSION_CHANGE_REQUEST*/)) {
                         break;
                     }
 
@@ -2867,7 +2867,7 @@ public class Player extends EntityHuman implements CommandSender, InventoryHolde
                                 this.level.dropItem(vector3, itemDrop);
                                 itemFrame.setItem(new ItemBlock(Block.get(BlockID.AIR)));
                                 itemFrame.setItemRotation(0);
-                                this.getLevel().addSound(new ItemFrameItemRemovedSound(this));
+                                this.getLevel().addLevelEvent(this, LevelEventPacket.EVENT_SOUND_ITEM_FRAME_ITEM_REMOVED);
                             }
                         } else {
                             itemFrame.spawnTo(this);
@@ -3873,11 +3873,7 @@ public class Player extends EntityHuman implements CommandSender, InventoryHolde
             if (this.isSurvival() || this.isAdventure()) {
                 int exp = ev.getExperience() * 7;
                 if (exp > 100) exp = 100;
-                int add = 1;
-                for (int ii = 1; ii < exp; ii += add) {
-                    this.getLevel().dropExpOrb(this, add);
-                    add = new NukkitRandom().nextRange(1, 3);
-                }
+                this.getLevel().dropExpOrb(this, exp);
             }
             this.setExperience(0, 0);
         }
@@ -4633,6 +4629,10 @@ public class Player extends EntityHuman implements CommandSender, InventoryHolde
         }
     }
 
+    public int getClosingWindowId() {
+        return this.closingWindowId;
+    }
+
     @Override
     public void setMetadata(String metadataKey, MetadataValue newMetadataValue) {
         this.server.getPlayerMetadata().setMetadata(this, metadataKey, newMetadataValue);
@@ -4771,8 +4771,6 @@ public class Player extends EntityHuman implements CommandSender, InventoryHolde
         pk.address = hostName;
         pk.port = port;
         this.dataPacket(pk);
-        String message = "Transferred to " + hostName + ":" + port;
-        this.close("", message, false);
     }
 
     public LoginChainData getLoginChainData() {
@@ -4867,7 +4865,7 @@ public class Player extends EntityHuman implements CommandSender, InventoryHolde
             if (xpOrb.getPickupDelay() <= 0) {
                 int exp = xpOrb.getExp();
                 entity.kill();
-                this.getLevel().addSound(new ExperienceOrbSound(this));
+                this.getLevel().addLevelEvent(this, LevelEventPacket.EVENT_SOUND_EXPERIENCE_ORB);
                 pickedXPOrb = tick;
                 this.addExperience(exp);
                 return true;
@@ -5003,5 +5001,9 @@ public class Player extends EntityHuman implements CommandSender, InventoryHolde
      */
     public void onInventoryOpen() {
 
+    }
+
+    public void sendCreativeContents() {
+        this.inventory.sendCreativeContents();
     }
 }

@@ -146,6 +146,47 @@ public abstract class Entity extends Location implements Metadatable {
 
     public static final int DATA_ALWAYS_SHOW_NAMETAG = 80; // byte
 
+    public static final int DATA_COLOR_2 = 81; // byte
+    public static final int DATA_NAME_AUTHOR = 82;
+    public static final int DATA_SCORE_TAG = 83; //String
+    public static final int DATA_BALLOON_ATTACHED_ENTITY = 84; // long
+    public static final int DATA_PUFFERFISH_SIZE = 85;
+    public static final int DATA_BUBBLE_TIME = 86;
+    public static final int DATA_AGENT = 87;
+    public static final int DATA_SITTING_AMOUNT = 88;
+    public static final int DATA_SITTING_AMOUNT_PREVIOUS = 89;
+    public static final int DATA_EATING_COUNTER = 90;
+    public static final int DATA_FLAGS_EXTENDED = 91;
+    public static final int DATA_LAYING_AMOUNT = 92;
+    public static final int DATA_LAYING_AMOUNT_PREVIOUS = 93;
+    public static final int DATA_DURATION = 94;
+    public static final int DATA_SPAWN_TIME = 95;
+    public static final int DATA_CHANGE_RATE = 96;
+    public static final int DATA_CHANGE_ON_PICKUP = 97;
+    public static final int DATA_PICKUP_COUNT = 98;
+    public static final int DATA_INTERACT_TEXT = 99;
+    public static final int DATA_TRADE_TIER = 100;
+    public static final int DATA_MAX_TRADE_TIER = 101;
+    public static final int DATA_TRADE_EXPERIENCE = 102;
+    public static final int DATA_SKIN_ID = 103; // int ???
+    public static final int DATA_SPAWNING_FRAMES = 104;
+    public static final int DATA_COMMAND_BLOCK_TICK_DELAY = 105;
+    public static final int DATA_COMMAND_BLOCK_EXECUTE_ON_FIRST_TICK = 106;
+    public static final int DATA_AMBIENT_SOUND_INTERVAL = 107;
+    public static final int DATA_AMBIENT_SOUND_INTERVAL_RANGE = 108;
+    public static final int DATA_AMBIENT_SOUND_EVENT_NAME = 109;
+    public static final int DATA_FALL_DAMAGE_MULTIPLIER = 110;
+    public static final int DATA_NAME_RAW_TEXT = 111;
+    public static final int DATA_CAN_RIDE_TARGET = 112;
+    public static final int DATA_LOW_TIER_CURED_DISCOUNT = 113;
+    public static final int DATA_HIGH_TIER_CURED_DISCOUNT = 114;
+    public static final int DATA_NEARBY_CURED_DISCOUNT = 115;
+    public static final int DATA_NEARBY_CURED_DISCOUNT_TIMESTAMP = 116;
+    public static final int DATA_HITBOX = 117;
+    public static final int DATA_IS_BUOYANT = 118;
+    public static final int DATA_BUOYANCY_DATA = 119;
+
+
     public static final int DATA_FLAG_ONFIRE = 0;
     public static final int DATA_FLAG_SNEAKING = 1;
     public static final int DATA_FLAG_RIDING = 2;
@@ -505,6 +546,14 @@ public abstract class Entity extends Location implements Metadatable {
         this.setDataProperty(new ByteEntityData(DATA_ALWAYS_SHOW_NAMETAG, value ? 1 : 0));
     }
 
+    public void setScoreTag(String score) {
+        this.setDataProperty(new StringEntityData(DATA_SCORE_TAG, score));
+    }
+
+    public String getScoreTag() {
+        return this.getDataPropertyString(DATA_SCORE_TAG);
+    }
+
     public boolean isSneaking() {
         return this.getDataFlag(DATA_FLAGS, DATA_FLAG_SNEAKING);
     }
@@ -592,11 +641,7 @@ public abstract class Entity extends Location implements Metadatable {
     public void setScale(float scale) {
         this.scale = scale;
         this.setDataProperty(new FloatEntityData(DATA_SCALE, this.scale));
-
-        float height = this.getHeight() * this.scale;
-        double radius = (this.getWidth() * this.scale) / 2d;
-
-        this.boundingBox.setBounds(x - radius, y, z - radius, x + radius, y + height, z + radius);
+        this.recalculateBoundingBox();
     }
 
     public float getScale() {
@@ -699,6 +744,33 @@ public abstract class Entity extends Location implements Metadatable {
         } else {
             this.setDataProperty(new IntEntityData(Entity.DATA_POTION_COLOR, 0));
             this.setDataProperty(new ByteEntityData(Entity.DATA_POTION_AMBIENT, 0));
+        }
+    }
+
+    public void recalculateBoundingBox() {
+        this.recalculateBoundingBox(true);
+    }
+
+    public void recalculateBoundingBox(boolean send) {
+        float height = this.getHeight() * this.scale;
+        double radius = (this.getWidth() * this.scale) / 2d;
+        this.boundingBox.setBounds(x - radius, y, z - radius, x + radius, y + height, z + radius);
+
+        EntityMetadata metadata = new EntityMetadata();
+
+        if (this.getHeight() > 0) {
+            FloatEntityData bbH = new FloatEntityData(DATA_BOUNDING_BOX_HEIGHT, this.getHeight());
+            this.dataProperties.put(bbH);
+            metadata.put(bbH);
+        }
+        if (this.getWidth() > 0) {
+            FloatEntityData bbW = new FloatEntityData(DATA_BOUNDING_BOX_WIDTH, this.getWidth());
+            this.dataProperties.put(bbW);
+            metadata.put(bbW);
+        }
+
+        if (send && !metadata.isEmpty()) {
+            sendData(this.hasSpawned.values().toArray(new Player[0]), metadata);
         }
     }
 
@@ -2008,10 +2080,7 @@ public abstract class Entity extends Location implements Metadatable {
         this.y = pos.y;
         this.z = pos.z;
 
-        double radius = this.getWidth() / 2d;
-
-        this.boundingBox.setBounds(pos.x - radius, pos.y, pos.z - radius, pos.x + radius, pos.y + (this.getHeight() * this.scale), pos.z
-                + radius);
+        this.recalculateBoundingBox(false); // Don't need to send BB height/width to client on position change
 
         this.checkChunks();
 

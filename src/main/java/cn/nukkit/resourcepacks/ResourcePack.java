@@ -7,6 +7,8 @@ public interface ResourcePack {
 
     String getPackVersion();
 
+    String getPackType();
+
     int getPackSize();
 
     byte[] getSha256();

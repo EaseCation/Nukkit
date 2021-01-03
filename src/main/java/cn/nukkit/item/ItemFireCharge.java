@@ -1,16 +1,17 @@
 package cn.nukkit.item;
 
-import cn.nukkit.block.Block;
-import cn.nukkit.block.BlockID;
-import cn.nukkit.level.sound.SoundEnum;
-import cn.nukkit.math.BlockFace;
-import cn.nukkit.level.Level;
 import cn.nukkit.Player;
+import cn.nukkit.block.Block;
+import cn.nukkit.block.BlockFire;
+import cn.nukkit.block.BlockID;
 import cn.nukkit.block.BlockSolid;
 import cn.nukkit.block.BlockSolidMeta;
-import java.util.concurrent.ThreadLocalRandom;
 import cn.nukkit.event.block.BlockIgniteEvent;
-import cn.nukkit.block.BlockFire;
+import cn.nukkit.level.Level;
+import cn.nukkit.math.BlockFace;
+import cn.nukkit.network.protocol.LevelEventPacket;
+
+import java.util.concurrent.ThreadLocalRandom;
 
 /**
  * Created by PetteriM1
@@ -55,7 +56,7 @@ public class ItemFireCharge extends Item {
 
                 if (!e.isCancelled()) {
                     level.setBlock(fire, fire, true);
-                    level.addSound(block, SoundEnum.MOB_GHAST_FIREBALL);
+                    level.addLevelEvent(block, LevelEventPacket.EVENT_SOUND_BLAZE_SHOOT, 78642);
                     level.scheduleUpdate(fire, fire.tickRate() + ThreadLocalRandom.current().nextInt(10));
                 }
                 if (player.isSurvival()) {

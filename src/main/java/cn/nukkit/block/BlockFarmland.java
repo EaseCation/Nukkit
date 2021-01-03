@@ -47,11 +47,6 @@ public class BlockFarmland extends BlockTransparentMeta {
     }
 
     @Override
-    public double getMaxY() {
-        return this.y + 0.9375;
-    }
-
-    @Override
     public int onUpdate(int type) {
         if (type == Level.BLOCK_UPDATE_RANDOM) {
             Vector3 v = new Vector3();

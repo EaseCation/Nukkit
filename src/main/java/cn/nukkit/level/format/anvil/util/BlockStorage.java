@@ -1,5 +1,6 @@
 package cn.nukkit.level.format.anvil.util;
 
+import cn.nukkit.block.Block;
 import cn.nukkit.level.GlobalBlockPalette;
 import cn.nukkit.level.util.PalettedBlockStorage;
 import cn.nukkit.utils.BinaryStream;
@@ -96,11 +97,13 @@ public class BlockStorage {
 
     public void writeTo(BinaryStream stream) {
         PalettedBlockStorage storage = new PalettedBlockStorage();
+        int airBlockRuntimeId = GlobalBlockPalette.getOrCreateRuntimeId(Block.AIR, 0);
         for (int i = 0; i < SECTION_SIZE; i++) {
-            int runtimeId = 0;
+            int runtimeId;
             try {
                 runtimeId = GlobalBlockPalette.getOrCreateRuntimeId(blockIds[i] & 0xff, blockData.get(i));
             } catch (Exception e) {
+                runtimeId = airBlockRuntimeId;
                 //Server.getInstance().getLogger().logException(e);
             }
             storage.setBlock(i, runtimeId);
@@ -109,15 +112,9 @@ public class BlockStorage {
     }
 
     public void writeToCache(BinaryStream stream) {
-        PalettedBlockStorage storage = new PalettedBlockStorage();
+        PalettedBlockStorage storage = new PalettedBlockStorage(true);
         for (int i = 0; i < SECTION_SIZE; i++) {
-            int runtimeId = 0;
-            try {
-                runtimeId = GlobalBlockPalette.getOrCreateRuntimeId(blockIds[i] & 0xff, blockData.get(i));
-            } catch (Exception e) {
-                //Server.getInstance().getLogger().logException(e);
-            }
-            storage.setBlock(i, runtimeId);
+            storage.setBlock(i, (blockIds[i] & 0xff) << 4 | blockData.get(i));
         }
         storage.writeToCache(stream);
     }
