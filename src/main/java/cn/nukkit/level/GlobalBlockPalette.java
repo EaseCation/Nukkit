@@ -25,6 +25,7 @@ import java.util.concurrent.atomic.AtomicInteger;
 public class GlobalBlockPalette implements GlobalBlockPaletteInterface {
 
     private static GlobalBlockPaletteInterface instance = new GlobalBlockPalette();
+    private static GlobalBlockPaletteInterface rootInstance = new GlobalBlockPalette();
 
     public static void setInstance(GlobalBlockPaletteInterface instance) {
         GlobalBlockPalette.instance = instance;
@@ -120,7 +121,8 @@ public class GlobalBlockPalette implements GlobalBlockPaletteInterface {
 
     @Override
     public String getNameByBlockId0(int blockId) {
-        return null;
+        String name = legacyIdToString.get(blockId);
+        return name == null ? "minecraft:air" : name;
     }
 
     @Override
@@ -160,5 +162,13 @@ public class GlobalBlockPalette implements GlobalBlockPaletteInterface {
 
     public static int getBlockIdByName(String name) {
         return instance.getBlockIdByName0(name);
+    }
+
+    public static int getBlockIdByNameRoot(String blockName) {
+        return rootInstance.getBlockIdByName0(blockName);
+    }
+
+    public static String getNameByBlockIdRoot(int blockId) {
+        return rootInstance.getNameByBlockId0(blockId);
     }
 }
