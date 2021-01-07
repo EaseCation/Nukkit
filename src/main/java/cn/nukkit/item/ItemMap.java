@@ -22,6 +22,9 @@ public class ItemMap extends Item {
 
     public static int mapCount = 0;
 
+    // not very pretty but definitely better than before.
+    private BufferedImage image;
+
     public List<ClientboundMapItemDataPacket.MapDecorator> decorators = new ArrayList<>();
 
     public ItemMap() {
@@ -37,7 +40,7 @@ public class ItemMap extends Item {
 
         if (!hasCompoundTag() || !getNamedTag().contains("map_uuid")) {
             CompoundTag tag = new CompoundTag();
-            tag.putString("map_uuid", "" + mapCount++);
+            tag.putLong("map_uuid", mapCount++);
             tag.putBoolean("map_display_players", true);
             this.setNamedTag(tag);
         }
@@ -49,17 +52,17 @@ public class ItemMap extends Item {
 
     public void setImage(BufferedImage img) {
         try {
-            BufferedImage image = img;
-
             if (img.getHeight() != 128 || img.getWidth() != 128) { //resize
-                image = new BufferedImage(128, 128, img.getType());
-                Graphics2D g = image.createGraphics();
+                this.image = new BufferedImage(128, 128, img.getType());
+                Graphics2D g = this.image.createGraphics();
                 g.drawImage(img, 0, 0, 128, 128, null);
                 g.dispose();
+            } else {
+                this.image = img;
             }
 
             ByteArrayOutputStream baos = new ByteArrayOutputStream();
-            ImageIO.write(image, "png", baos);
+            ImageIO.write(this.image, "png", baos);
 
             this.getNamedTag().putByteArray("Colors", baos.toByteArray());
         } catch (IOException e) {
@@ -70,7 +73,8 @@ public class ItemMap extends Item {
     protected BufferedImage loadImageFromNBT() {
         try {
             byte[] data = getNamedTag().getByteArray("Colors");
-            return ImageIO.read(new ByteArrayInputStream(data));
+            this.image = ImageIO.read(new ByteArrayInputStream(data));
+            return image;
         } catch (IOException e) {
             MainLogger.getLogger().logException(e);
         }
@@ -83,7 +87,8 @@ public class ItemMap extends Item {
     }
 
     public void sendImage(Player p) {
-        BufferedImage image = loadImageFromNBT();
+        // don't load the image from NBT if it has been done before.
+        BufferedImage image = this.image != null ? this.image : loadImageFromNBT();
 
         ClientboundMapItemDataPacket pk = new ClientboundMapItemDataPacket();
         pk.mapId = getMapId();
