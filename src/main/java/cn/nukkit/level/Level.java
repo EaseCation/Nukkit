@@ -1858,19 +1858,19 @@ public class Level implements ChunkManager, Metadatable {
         }
     }
 
-    public void dropItem(Vector3 source, Item item) {
-        this.dropItem(source, item, null);
+    public EntityItem dropItem(Vector3 source, Item item) {
+        return this.dropItem(source, item, null);
     }
 
-    public void dropItem(Vector3 source, Item item, Vector3 motion) {
-        this.dropItem(source, item, motion, 10);
+    public EntityItem dropItem(Vector3 source, Item item, Vector3 motion) {
+        return this.dropItem(source, item, motion, 10);
     }
 
-    public void dropItem(Vector3 source, Item item, Vector3 motion, int delay) {
-        this.dropItem(source, item, motion, false, delay);
+    public EntityItem dropItem(Vector3 source, Item item, Vector3 motion, int delay) {
+        return this.dropItem(source, item, motion, false, delay);
     }
 
-    public void dropItem(Vector3 source, Item item, Vector3 motion, boolean dropAround, int delay) {
+    public EntityItem dropItem(Vector3 source, Item item, Vector3 motion, boolean dropAround, int delay) {
         Random random = ThreadLocalRandom.current();
         if (motion == null) {
             if (dropAround) {
@@ -1903,7 +1903,9 @@ public class Level implements ChunkManager, Metadatable {
                             .putShort("Health", 5).putCompound("Item", itemTag).putShort("PickupDelay", delay));
 
             itemEntity.spawnToAll();
+            return itemEntity;
         }
+        return null;
     }
 
     public Item useBreakOn(Vector3 vector) {
