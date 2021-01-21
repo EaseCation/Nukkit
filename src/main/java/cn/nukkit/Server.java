@@ -160,6 +160,7 @@ public class Server {
 
     private boolean networkCompressionAsync = true;
     public int networkCompressionLevel = 7;
+    private int networkZlibProvider = 0;
 
     private boolean autoTickRate = true;
     private int autoTickRateLimit = 20;
@@ -329,6 +330,9 @@ public class Server {
         }
 
         ServerScheduler.WORKERS = (int) poolSize;
+
+        this.networkZlibProvider = this.getConfig("network.zlib-provider", 2);
+        Zlib.setProvider(this.networkZlibProvider);
 
         this.networkCompressionLevel = this.getConfig("network.compression-level", 7);
         this.networkCompressionAsync = this.getConfig("network.async-compression", true);
@@ -613,12 +617,13 @@ public class Server {
         byte[][] payload = new byte[packets.length * 2][];
         for (int i = 0; i < packets.length; i++) {
             DataPacket p = packets[i];
+            int idx = i * 2;
             if (!p.isEncoded) {
                 p.encode();
             }
             byte[] buf = p.getBuffer();
-            payload[i * 2] = Binary.writeUnsignedVarInt(buf.length);
-            payload[i * 2 + 1] = buf;
+            payload[idx] = Binary.writeUnsignedVarInt(buf.length);
+            payload[idx + 1] = buf;
         }
         byte[] data;
         data = Binary.appendBytes(payload);
@@ -1831,8 +1836,8 @@ public class Server {
         return this.getPropertyString(variable, null);
     }
 
-    public String getPropertyString(String variable, String defaultValue) {
-        return this.properties.exists(variable) ? (String) this.properties.get(variable) : defaultValue;
+    public String getPropertyString(String key, String defaultValue) {
+        return this.properties.exists(key) ? this.properties.get(key).toString() : defaultValue;
     }
 
     public int getPropertyInt(String variable) {

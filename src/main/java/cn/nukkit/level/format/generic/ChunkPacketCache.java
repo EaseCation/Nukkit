@@ -27,6 +27,7 @@ public class ChunkPacketCache {
     }
 
     public void compress() {
+        this.packet116.trim();
         this.packet.trim();
         this.packetOld.trim();
     }

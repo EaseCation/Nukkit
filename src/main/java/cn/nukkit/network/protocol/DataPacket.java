@@ -19,7 +19,7 @@ public abstract class DataPacket extends BinaryStream implements Cloneable {
     public static final int CHANNEL_TEXT = 3;
     public static final int CHANNEL_BATCH = 4;
 
-    public boolean isEncoded = false;
+    public volatile boolean isEncoded = false;
     private int channel = CHANNEL_BASE;
 
     public RakNetReliability reliability = RakNetReliability.RELIABLE_ORDERED;
@@ -31,6 +31,13 @@ public abstract class DataPacket extends BinaryStream implements Cloneable {
     public abstract void decode();
 
     public abstract void encode();
+
+    public void tryEncode() {
+        if (!this.isEncoded) {
+            this.isEncoded = true;
+            this.encode();
+        }
+    }
 
     @Override
     public void reset() {
@@ -87,9 +94,8 @@ public abstract class DataPacket extends BinaryStream implements Cloneable {
         byte[] buf = getBuffer();
         batchPayload[0] = Binary.writeUnsignedVarInt(buf.length);
         batchPayload[1] = buf;
-        byte[] data = Binary.appendBytes(batchPayload);
         try {
-            batch.payload = zlibRaw ? Network.deflateRaw(data, level) : Zlib.deflate(data, level);
+            batch.payload = zlibRaw ? Network.deflateRaw(batchPayload, level) : Zlib.deflate(batchPayload, level);
         } catch (Exception e) {
             throw new RuntimeException(e);
         }
