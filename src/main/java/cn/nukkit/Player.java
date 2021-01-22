@@ -219,8 +219,6 @@ public class Player extends EntityHuman implements CommandSender, InventoryHolde
 
     protected boolean checkMovement = true;
 
-    private Int2ObjectMap<List<DataPacket>> batchedPackets = new Int2ObjectRBTreeMap<>();
-
     private PermissibleBase perm = null;
 
     private int exp = 0;
@@ -845,7 +843,7 @@ public class Player extends EntityHuman implements CommandSender, InventoryHolde
         pk.chunkZ = z;
         pk.data = payload;
 
-        this.batchDataPacket(pk);
+        this.dataPacket(pk);
 
         if (this.spawned) {
             for (Entity entity : this.level.getChunkEntities(x, z).values()) {
@@ -1086,26 +1084,9 @@ public class Player extends EntityHuman implements CommandSender, InventoryHolde
         return true;
     }
 
+    @Deprecated
     public boolean batchDataPacket(DataPacket packet) {
-        if (!this.connected) {
-            return false;
-        }
-
-        try (Timing timing = Timings.getSendDataPacketTiming(packet)) {
-            DataPacketSendEvent event = new DataPacketSendEvent(this, packet);
-            this.server.getPluginManager().callEvent(event);
-            if (event.isCancelled()) {
-                timing.stopTiming();
-                return false;
-            }
-
-            if (!this.batchedPackets.containsKey(packet.getChannel())) {
-                this.batchedPackets.put(packet.getChannel(), new ArrayList<>());
-            }
-
-            this.batchedPackets.get(packet.getChannel()).add(packet.clone());
-        }
-        return true;
+        return this.dataPacket(packet);
     }
 
     /**
@@ -1116,34 +1097,6 @@ public class Player extends EntityHuman implements CommandSender, InventoryHolde
      * @return packet successfully sent
      */
     public boolean dataPacket(DataPacket packet) {
-        if (!this.connected) {
-            return false;
-        }
-        try (Timing timing = Timings.getSendDataPacketTiming(packet)) {
-            DataPacketSendEvent ev = new DataPacketSendEvent(this, packet);
-            this.server.getPluginManager().callEvent(ev);
-            if (ev.isCancelled()) {
-                return false;
-            }
-
-            this.interfaz.putPacket(this, packet, false, false);
-        }
-        return true;
-    }
-
-    @Deprecated
-    public int dataPacket(DataPacket packet, boolean needACK) {
-        return this.dataPacket(packet) ? 0 : -1;
-    }
-
-    /**
-     * 0 is true
-     * -1 is false
-     * other is identifer
-     * @param packet packet to send
-     * @return packet successfully sent
-     */
-    public boolean directDataPacket(DataPacket packet) {
         if (!this.connected) {
             return false;
         }
@@ -1161,8 +1114,25 @@ public class Player extends EntityHuman implements CommandSender, InventoryHolde
     }
 
     @Deprecated
+    public int dataPacket(DataPacket packet, boolean needACK) {
+        return dataPacket(packet) ? 1 : 0;
+    }
+
+    /**
+     * 0 is true
+     * -1 is false
+     * other is identifer
+     * @param packet packet to send
+     * @return packet successfully sent
+     */
+    @Deprecated
+    public boolean directDataPacket(DataPacket packet) {
+        return this.dataPacket(packet);
+    }
+
+    @Deprecated
     public int directDataPacket(DataPacket packet, boolean needACK) {
-        return this.directDataPacket(packet) ? 0 : -1;
+        return this.dataPacket(packet) ? 1 : 0;
     }
 
     public int getPing() {
@@ -1877,13 +1847,6 @@ public class Player extends EntityHuman implements CommandSender, InventoryHolde
             return;
         }
 
-        if (!this.batchedPackets.isEmpty()) {
-            for (int channel : this.batchedPackets.keySet()) {
-                this.server.batchPackets(new Player[]{this}, batchedPackets.get(channel).toArray(new DataPacket[0]), false);
-            }
-            this.batchedPackets = new Int2ObjectRBTreeMap<>();
-        }
-
         if (this.nextChunkOrderRun-- <= 0 || this.chunk == null) {
             this.orderChunks();
         }
@@ -1891,7 +1854,6 @@ public class Player extends EntityHuman implements CommandSender, InventoryHolde
         if (!this.loadQueue.isEmpty() || !this.spawned) {
             this.sendNextChunk();
         }
-
     }
 
     public boolean canInteract(Vector3 pos, double maxDistance) {
@@ -3572,7 +3534,7 @@ public class Player extends EntityHuman implements CommandSender, InventoryHolde
             if (notify && reason.length() > 0) {
                 DisconnectPacket pk = new DisconnectPacket();
                 pk.message = reason;
-                this.directDataPacket(pk);
+                this.dataPacket(pk);
             }
 
             this.connected = false;
@@ -4237,11 +4199,7 @@ public class Player extends EntityHuman implements CommandSender, InventoryHolde
         PlayStatusPacket pk = new PlayStatusPacket();
         pk.status = status;
 
-        if (immediate) {
-            this.directDataPacket(pk);
-        } else {
-            this.dataPacket(pk);
-        }
+        this.dataPacket(pk);
     }
 
     @Override
@@ -4694,8 +4652,7 @@ public class Player extends EntityHuman implements CommandSender, InventoryHolde
         pk.chunkX = chunkX;
         pk.chunkZ = chunkZ;
         pk.data = payload;
-        pk.encode();
-        pk.isEncoded = true;
+        pk.tryEncode();
 
         BatchPacket batch = new BatchPacket();
         byte[][] batchPayload = new byte[2][];

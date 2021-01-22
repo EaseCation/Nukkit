@@ -3723,8 +3723,7 @@ public class Level implements ChunkManager, Metadatable {
             pk.chunkX = x;
             pk.chunkZ = z;
             pk.data = payload;
-            pk.encode();
-            pk.isEncoded = true;
+            pk.tryEncode();
             packet = pk;
         } else {
             LevelChunkPacket pk = new LevelChunkPacket();
@@ -3732,8 +3731,7 @@ public class Level implements ChunkManager, Metadatable {
             pk.chunkZ = z;
             pk.subChunkCount = subChunkCount;
             pk.data = payload;
-            pk.encode();
-            pk.isEncoded = true;
+            pk.tryEncode();
             packet = pk;
         }
         BatchPacket batch = new BatchPacket();

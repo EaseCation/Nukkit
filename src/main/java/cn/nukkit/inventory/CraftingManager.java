@@ -209,7 +209,7 @@ public class CraftingManager {
             pk.addContainerRecipe(recipe);
         }
 
-        pk.encode();
+        pk.tryEncode();
 
         packet = pk.compress(Deflater.BEST_COMPRESSION);
         packetRaw = pk.compress(Deflater.BEST_COMPRESSION, true);
