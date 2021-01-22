@@ -223,7 +223,7 @@ public class Anvil extends BaseLevelProvider {
     }
 
     private byte[] encodeChunk(boolean isOld, Chunk chunk, cn.nukkit.level.format.ChunkSection[] sections, int count, BinaryStream extraData, byte[] blockEntities) {
-        BinaryStream stream = ThreadCache.binaryStream.get();
+        BinaryStream stream = new BinaryStream();//ThreadCache.binaryStream.get();
         stream.reset();
         if (isOld) {
             stream.putByte((byte) count);  //count is now sent in packet

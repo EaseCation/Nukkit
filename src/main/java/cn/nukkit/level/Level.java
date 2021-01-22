@@ -3741,7 +3741,10 @@ public class Level implements ChunkManager, Metadatable {
         batchPayload[1] = buf;
         byte[] data = Binary.appendBytes(batchPayload);
         try {
-            if (zlibRaw) batch.payload = Network.deflateRaw(data, Server.getInstance().networkCompressionLevel);
+            if (zlibRaw) {
+                byte[] d = Network.deflateRaw(data, Server.getInstance().networkCompressionLevel);
+                batch.payload = Arrays.copyOf(d, d.length);
+            }
             else batch.payload = Zlib.deflate(data, Server.getInstance().networkCompressionLevel);
         } catch (Exception e) {
             throw new RuntimeException(e);
