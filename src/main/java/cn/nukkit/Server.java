@@ -1335,7 +1335,7 @@ public class Server {
     }
 
     public int getDifficulty() {
-        return getDifficultyFromString(this.getPropertyString("difficulty", "1"));
+        return getDifficultyFromString(this.getProperties().isInt("difficulty") ? String.valueOf(this.getPropertyInt("difficulty", 1)) : this.getPropertyString("difficulty", "1"));
     }
 
     public boolean hasWhitelist() {
