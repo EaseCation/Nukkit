@@ -1,58 +1,83 @@
 package cn.nukkit.inventory;
 
 import cn.nukkit.Player;
+import cn.nukkit.entity.EntityHuman;
+import cn.nukkit.entity.EntityHumanType;
+import cn.nukkit.item.Item;
+import cn.nukkit.network.protocol.InventoryContentPacket;
 import cn.nukkit.network.protocol.InventorySlotPacket;
+import cn.nukkit.network.protocol.MobEquipmentPacket;
 import cn.nukkit.network.protocol.types.ContainerIds;
 
-/**
- * @author CreeperFace
- */
 public class PlayerOffhandInventory extends BaseInventory {
 
-    public PlayerOffhandInventory(Player holder) {
+    public PlayerOffhandInventory(EntityHumanType holder) {
         super(holder, InventoryType.OFFHAND);
     }
 
-    public String getName() {
-        return "Offhand";
-    }
-
-    public int getSize() {
-        return 1;
-    }
-
+    @Override
     public void setSize(int size) {
-        throw new RuntimeException("Offhand can only carry one item at a time");
+        throw new UnsupportedOperationException("Offhand can only carry one item at a time");
     }
 
-    public void sendSlot(int index, Player... target) {
-        InventorySlotPacket pk = new InventorySlotPacket();
-        pk.slot = index;
-        pk.item = this.getItem(index);
+    @Override
+    public void onSlotChange(int index, Item before, boolean send) {
+        EntityHuman holder = this.getHolder();
+        if (holder instanceof Player && !((Player) holder).spawned) {
+            return;
+        }
 
-        for (Player p : target) {
-            if (p == this.getHolder()) {
-                pk.inventoryId = ContainerIds.OFFHAND;
-                p.dataPacket(pk);
+        this.sendContents(this.getViewers());
+        this.sendContents(holder.getViewers().values());
+    }
+
+    @Override
+    public void sendContents(Player... players) {
+        Item item = this.getItem(0);
+        MobEquipmentPacket pk = this.createMobEquipmentPacket(item);
+
+        for (Player player : players) {
+            if (player == this.getHolder()) {
+                InventoryContentPacket pk2 = new InventoryContentPacket();
+                pk2.inventoryId = ContainerIds.OFFHAND;
+                pk2.slots = new Item[]{item};
+                player.dataPacket(pk2);
             } else {
-                int id;
-
-                if ((id = p.getWindowId(this)) == ContainerIds.NONE) {
-                    this.close(p);
-                    continue;
-                }
-                pk.inventoryId = id;
-                p.dataPacket(pk);
+                player.dataPacket(pk);
             }
         }
     }
 
-    /**
-     * This override is here for documentation and code completion purposes only.
-     *
-     * @return Player
-     */
-    public Player getHolder() {
-        return (Player) this.holder;
+    @Override
+    public void sendSlot(int index, Player... players) {
+        Item item = this.getItem(0);
+        MobEquipmentPacket pk = this.createMobEquipmentPacket(item);
+
+        for (Player player : players) {
+            if (player == this.getHolder()) {
+                InventorySlotPacket pk2 = new InventorySlotPacket();
+                pk2.inventoryId = ContainerIds.OFFHAND;
+                pk2.item = item;
+                player.dataPacket(pk2);
+            } else {
+                player.dataPacket(pk);
+            }
+        }
+    }
+
+    private MobEquipmentPacket createMobEquipmentPacket(Item item) {
+        MobEquipmentPacket pk = new MobEquipmentPacket();
+        pk.eid = this.getHolder().getId();
+        pk.item = item;
+        pk.inventorySlot = 1;
+        pk.windowId = ContainerIds.OFFHAND;
+        pk.encode();
+        pk.isEncoded = true;
+        return pk;
+    }
+
+    @Override
+    public EntityHuman getHolder() {
+        return (EntityHuman) super.getHolder();
     }
 }

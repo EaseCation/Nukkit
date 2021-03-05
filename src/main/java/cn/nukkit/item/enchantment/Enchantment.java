@@ -14,8 +14,11 @@ import cn.nukkit.item.enchantment.loot.EnchantmentLootDigging;
 import cn.nukkit.item.enchantment.loot.EnchantmentLootFishing;
 import cn.nukkit.item.enchantment.loot.EnchantmentLootWeapon;
 import cn.nukkit.item.enchantment.protection.*;
-import cn.nukkit.item.enchantment.trident.*;
-import lombok.ToString;
+import cn.nukkit.item.enchantment.trident.EnchantmentTridentChanneling;
+import cn.nukkit.item.enchantment.trident.EnchantmentTridentImpaling;
+import cn.nukkit.item.enchantment.trident.EnchantmentTridentLoyalty;
+import cn.nukkit.item.enchantment.trident.EnchantmentTridentRiptide;
+import cn.nukkit.math.NukkitMath;
 
 import java.util.ArrayList;
 import java.util.HashSet;
@@ -25,7 +28,6 @@ import java.util.concurrent.ThreadLocalRandom;
  * author: MagicDroidX
  * Nukkit Project
  */
-@ToString
 public abstract class Enchantment implements Cloneable {
 
     protected static Enchantment[] enchantments;
@@ -105,7 +107,14 @@ public abstract class Enchantment implements Cloneable {
     }
 
     public static Enchantment get(int id) {
-        return id >= 0 && id < enchantments.length ? enchantments[id] : null;
+        Enchantment enchantment = null;
+        if (id >= 0 && id < enchantments.length) {
+            enchantment = enchantments[id];
+        }
+        if (enchantment == null) {
+            return new UnknownEnchantment(id);
+        }
+        return enchantment;
     }
 
     public static Enchantment getEnchantment(int id) {
@@ -155,13 +164,7 @@ public abstract class Enchantment implements Cloneable {
             return this;
         }
 
-        if (level > this.getMaxLevel()) {
-            this.level = this.getMaxLevel();
-        } else if (level < this.getMinLevel()) {
-            this.level = this.getMaxLevel();
-        } else {
-            this.level = level;
-        }
+        this.level = NukkitMath.clamp(level, this.getMinLevel(), this.getMaxLevel());
 
         return this;
     }
@@ -194,7 +197,7 @@ public abstract class Enchantment implements Cloneable {
         return this.getMinEnchantAbility(level) + 5;
     }
 
-    public float getDamageProtection(EntityDamageEvent event) {
+    public float getProtectionFactor(EntityDamageEvent event) {
         return 0;
     }
 
@@ -238,14 +241,20 @@ public abstract class Enchantment implements Cloneable {
     public static final String[] words = {"the", "elder", "scrolls", "klaatu", "berata", "niktu", "xyzzy", "bless", "curse", "light", "darkness", "fire", "air", "earth", "water", "hot", "dry", "cold", "wet", "ignite", "snuff", "embiggen", "twist", "shorten", "stretch", "fiddle", "destroy", "imbue", "galvanize", "enchant", "free", "limited", "range", "of", "towards", "inside", "sphere", "cube", "self", "other", "ball", "mental", "physical", "grow", "shrink", "demon", "elemental", "spirit", "animal", "creature", "beast", "humanoid", "undead", "fresh", "stale"};
 
     public static String getRandomName() {
-        ThreadLocalRandom random = ThreadLocalRandom.current();
-        int count = random.nextInt(3, 6);
+        int count = ThreadLocalRandom.current().nextInt(3, 6);
         HashSet<String> set = new HashSet<>();
         while (set.size() < count) {
-            set.add(Enchantment.words[random.nextInt(0, Enchantment.words.length)]);
+            set.add(Enchantment.words[ThreadLocalRandom.current().nextInt(0, Enchantment.words.length)]);
         }
 
         String[] words = set.toArray(new String[0]);
         return String.join(" ", words);
+    }
+
+    private static class UnknownEnchantment extends Enchantment {
+
+        protected UnknownEnchantment(int id) {
+            super(id, "unknown", 0, EnchantmentType.ALL);
+        }
     }
 }

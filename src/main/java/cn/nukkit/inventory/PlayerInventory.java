@@ -11,12 +11,7 @@ import cn.nukkit.event.entity.EntityInventoryChangeEvent;
 import cn.nukkit.event.player.PlayerItemHeldEvent;
 import cn.nukkit.item.Item;
 import cn.nukkit.item.ItemBlock;
-import cn.nukkit.network.protocol.ContainerClosePacket;
-import cn.nukkit.network.protocol.ContainerOpenPacket;
-import cn.nukkit.network.protocol.InventoryContentPacket;
-import cn.nukkit.network.protocol.InventorySlotPacket;
-import cn.nukkit.network.protocol.MobArmorEquipmentPacket;
-import cn.nukkit.network.protocol.MobEquipmentPacket;
+import cn.nukkit.network.protocol.*;
 import cn.nukkit.network.protocol.types.ContainerIds;
 
 import java.util.Collection;
@@ -330,6 +325,7 @@ public class PlayerInventory extends BaseInventory {
         for (int index = 0; index < limit; ++index) {
             this.clear(index);
         }
+        getHolder().getOffhandInventory().clearAll();
     }
 
     public void sendArmorContents(Player player) {
@@ -342,7 +338,8 @@ public class PlayerInventory extends BaseInventory {
         MobArmorEquipmentPacket pk = new MobArmorEquipmentPacket();
         pk.eid = this.getHolder().getId();
         pk.slots = armor;
-        pk.tryEncode();
+        pk.encode();
+        pk.isEncoded = true;
 
         for (Player player : players) {
             if (player.equals(this.getHolder())) {
@@ -390,7 +387,8 @@ public class PlayerInventory extends BaseInventory {
         MobArmorEquipmentPacket pk = new MobArmorEquipmentPacket();
         pk.eid = this.getHolder().getId();
         pk.slots = armor;
-        pk.tryEncode();
+        pk.encode();
+        pk.isEncoded = true;
 
         for (Player player : players) {
             if (player.equals(this.getHolder())) {
@@ -484,6 +482,7 @@ public class PlayerInventory extends BaseInventory {
         }
         Player p = (Player) this.getHolder();
 
+        //TODO CreativeContentPacket
         InventoryContentPacket pk = new InventoryContentPacket();
         pk.inventoryId = ContainerIds.CREATIVE;
 
@@ -502,23 +501,20 @@ public class PlayerInventory extends BaseInventory {
     @Override
     public void onOpen(Player who) {
         super.onOpen(who);
-        /*ContainerOpenPacket pk = new ContainerOpenPacket();
+        ContainerOpenPacket pk = new ContainerOpenPacket();
         pk.windowId = who.getWindowId(this);
         pk.type = this.getType().getNetworkType();
         pk.x = who.getFloorX();
         pk.y = who.getFloorY();
         pk.z = who.getFloorZ();
         pk.entityId = who.getId();
-        who.dataPacket(pk);*/
-        who.onInventoryOpen(); //避免1.16前的版本跨服后自动打开背包
+        who.dataPacket(pk);
     }
 
     @Override
     public void onClose(Player who) {
         ContainerClosePacket pk = new ContainerClosePacket();
         pk.windowId = who.getWindowId(this);
-        //pk.wasServerInitiated = false;
-        pk.wasServerInitiated = who.getClosingWindowId() != pk.windowId;
         who.dataPacket(pk);
         // player can never stop viewing their own inventory
         if (who != holder) {
