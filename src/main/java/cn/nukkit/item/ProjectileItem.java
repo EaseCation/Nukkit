@@ -51,9 +51,6 @@ public abstract class ProjectileItem extends Item {
             }
 
             projectile.setMotion(projectile.getMotion().multiply(this.getThrowForce()));
-            if (!player.isCreative()) {
-                this.count--;
-            }
 
             if (projectile instanceof EntityProjectile) {
                 ProjectileLaunchEvent ev = new ProjectileLaunchEvent((EntityProjectile) projectile);
@@ -62,14 +59,15 @@ public abstract class ProjectileItem extends Item {
                 if (ev.isCancelled()) {
                     projectile.kill();
                 } else {
+                    if (!player.isCreative()) {
+                        this.count--;
+                    }
                     if (projectile instanceof EntityEnderPearl) {
                         player.onThrowEnderPearl();
                     }
                     projectile.spawnToAll();
                     player.getLevel().addLevelSoundEvent(player, LevelSoundEventPacket.SOUND_BOW);
                 }
-            } else {
-                projectile.spawnToAll();
             }
         } else {
             return false;
