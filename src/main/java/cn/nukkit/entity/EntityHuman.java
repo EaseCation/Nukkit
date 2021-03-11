@@ -107,6 +107,9 @@ public class EntityHuman extends EntityHumanType {
                 if (skinTag.contains("ModelId")) {
                     newSkin.setSkinId(skinTag.getString("ModelId"));
                 }
+                if (skinTag.contains("PlayFabID")) {
+                    newSkin.setPlayFabId(skinTag.getString("PlayFabID"));
+                }
                 if (skinTag.contains("Data")) {
                     byte[] data = skinTag.getByteArray("Data");
                     if (skinTag.contains("SkinImageWidth") && skinTag.contains("SkinImageHeight")) {
@@ -212,6 +215,9 @@ public class EntityHuman extends EntityHumanType {
                             .putByteArray("Image", animation.image.data));
                 }
                 skinTag.putList(animationsTag);
+            }
+            if (!this.getSkin().getPlayFabId().isEmpty()) {
+                skinTag.putString("PlayFabID", this.getSkin().getPlayFabId());
             }
             this.namedTag.putCompound("Skin", skinTag);
         }

@@ -293,6 +293,11 @@ public class BinaryStream {
     }
 
     public void putSkin(Skin skin) {
+        if (helper != null) helper.putSkin(this, skin);
+        else this.putSkinV2(skin);
+    }
+
+    public void putSkinV2(Skin skin) {
         this.putString(skin.getSkinId());
         this.putString(skin.getSkinResourcePatch());
         this.putImage(skin.getSkinData());
@@ -316,6 +321,11 @@ public class BinaryStream {
     }
 
     public Skin getSkin() {
+        if (helper != null) return helper.getSkin(this);
+        else return this.getSkinV2();
+    }
+
+    public Skin getSkinV2() {
         Skin skin = new Skin();
         skin.setSkinId(this.getString());
         skin.setSkinResourcePatch(this.getString());
@@ -337,194 +347,6 @@ public class BinaryStream {
         skin.setCapeOnClassic(this.getBoolean());
         skin.setCapeId(this.getString());
         this.getString(); // TODO: Full skin id
-        return skin;
-    }
-
-    public void putSkinNew(Skin skin) {
-        this.putString(skin.getSkinId());
-        this.putString(skin.getSkinResourcePatch());
-        this.putImage(skin.getSkinData());
-
-        List<SkinAnimation> animations = skin.getAnimations();
-        this.putLInt(animations.size());
-        for (SkinAnimation animation : animations) {
-            this.putImage(animation.image);
-            this.putLInt(animation.type);
-            this.putLFloat(animation.frames);
-        }
-
-        this.putImage(skin.getCapeData());
-        this.putString(skin.getGeometryData());
-        this.putString(skin.getAnimationData());
-        this.putBoolean(skin.isPremium());
-        this.putBoolean(skin.isPersona());
-        this.putBoolean(skin.isCapeOnClassic());
-        this.putString(skin.getCapeId());
-        this.putString(skin.getFullSkinId());
-        this.putString(skin.getArmSize());
-        this.putString(skin.getSkinColor());
-        List<PersonaPiece> pieces = skin.getPersonaPieces();
-        this.putLInt(pieces.size());
-        for (PersonaPiece piece : pieces) {
-            this.putString(piece.id);
-            this.putString(piece.type);
-            this.putString(piece.packId);
-            this.putBoolean(piece.isDefault);
-            this.putString(piece.productId);
-        }
-
-        List<PersonaPieceTint> tints = skin.getTintColors();
-        this.putLInt(tints.size());
-        for (PersonaPieceTint tint : tints) {
-            this.putString(tint.pieceType);
-            List<String> colors = tint.colors;
-            this.putLInt(colors.size());
-            for (String color : colors) {
-                this.putString(color);
-            }
-        }
-    }
-
-    public Skin getSkinNew() {
-        Skin skin = new Skin();
-        skin.setSkinId(this.getString());
-        skin.setSkinResourcePatch(this.getString());
-        skin.setSkinData(this.getImage());
-
-        int animationCount = this.getLInt();
-        for (int i = 0; i < animationCount; i++) {
-            SerializedImage image = this.getImage();
-            int type = this.getLInt();
-            float frames = this.getLFloat();
-            skin.getAnimations().add(new SkinAnimation(image, type, frames));
-        }
-
-        skin.setCapeData(this.getImage());
-        skin.setGeometryData(this.getString());
-        skin.setAnimationData(this.getString());
-        skin.setPremium(this.getBoolean());
-        skin.setPersona(this.getBoolean());
-        skin.setCapeOnClassic(this.getBoolean());
-        skin.setCapeId(this.getString());
-        this.getString(); // TODO: Full skin id
-        skin.setArmSize(this.getString());
-        skin.setSkinColor(this.getString());
-
-        int piecesLength = this.getLInt();
-        for (int i = 0; i < piecesLength; i++) {
-            String pieceId = this.getString();
-            String pieceType = this.getString();
-            String packId = this.getString();
-            boolean isDefault = this.getBoolean();
-            String productId = this.getString();
-            skin.getPersonaPieces().add(new PersonaPiece(pieceId, pieceType, packId, isDefault, productId));
-        }
-
-        int tintsLength = this.getLInt();
-        for (int i = 0; i < tintsLength; i++) {
-            String pieceType = this.getString();
-            List<String> colors = new ArrayList<>();
-            int colorsLength = this.getLInt();
-            for (int i2 = 0; i2 < colorsLength; i2++) {
-                colors.add(this.getString());
-            }
-            skin.getTintColors().add(new PersonaPieceTint(pieceType, colors));
-        }
-        return skin;
-    }
-
-    public void putSkinV4(Skin skin) {
-        this.putString(skin.getSkinId());
-        this.putString(skin.getSkinResourcePatch());
-        this.putImage(skin.getSkinData());
-
-        List<SkinAnimation> animations = skin.getAnimations();
-        this.putLInt(animations.size());
-        for (SkinAnimation animation : animations) {
-            this.putImage(animation.image);
-            this.putLInt(animation.type);
-            this.putLFloat(animation.frames);
-            this.putLInt(animation.expression);
-        }
-
-        this.putImage(skin.getCapeData());
-        this.putString(skin.getGeometryData());
-        this.putString(skin.getAnimationData());
-        this.putBoolean(skin.isPremium());
-        this.putBoolean(skin.isPersona());
-        this.putBoolean(skin.isCapeOnClassic());
-        this.putString(skin.getCapeId());
-        this.putString(skin.getFullSkinId());
-        this.putString(skin.getArmSize());
-        this.putString(skin.getSkinColor());
-        List<PersonaPiece> pieces = skin.getPersonaPieces();
-        this.putLInt(pieces.size());
-        for (PersonaPiece piece : pieces) {
-            this.putString(piece.id);
-            this.putString(piece.type);
-            this.putString(piece.packId);
-            this.putBoolean(piece.isDefault);
-            this.putString(piece.productId);
-        }
-
-        List<PersonaPieceTint> tints = skin.getTintColors();
-        this.putLInt(tints.size());
-        for (PersonaPieceTint tint : tints) {
-            this.putString(tint.pieceType);
-            List<String> colors = tint.colors;
-            this.putLInt(colors.size());
-            for (String color : colors) {
-                this.putString(color);
-            }
-        }
-    }
-
-    public Skin getSkinV4() {
-        Skin skin = new Skin();
-        skin.setSkinId(this.getString());
-        skin.setSkinResourcePatch(this.getString());
-        skin.setSkinData(this.getImage());
-
-        int animationCount = this.getLInt();
-        for (int i = 0; i < animationCount; i++) {
-            SerializedImage image = this.getImage();
-            int type = this.getLInt();
-            float frames = this.getLFloat();
-            int expression = this.getLInt();
-            skin.getAnimations().add(new SkinAnimation(image, type, frames, expression));
-        }
-
-        skin.setCapeData(this.getImage());
-        skin.setGeometryData(this.getString());
-        skin.setAnimationData(this.getString());
-        skin.setPremium(this.getBoolean());
-        skin.setPersona(this.getBoolean());
-        skin.setCapeOnClassic(this.getBoolean());
-        skin.setCapeId(this.getString());
-        this.getString(); // TODO: Full skin id
-        skin.setArmSize(this.getString());
-        skin.setSkinColor(this.getString());
-
-        int piecesLength = this.getLInt();
-        for (int i = 0; i < piecesLength; i++) {
-            String pieceId = this.getString();
-            String pieceType = this.getString();
-            String packId = this.getString();
-            boolean isDefault = this.getBoolean();
-            String productId = this.getString();
-            skin.getPersonaPieces().add(new PersonaPiece(pieceId, pieceType, packId, isDefault, productId));
-        }
-
-        int tintsLength = this.getLInt();
-        for (int i = 0; i < tintsLength; i++) {
-            String pieceType = this.getString();
-            List<String> colors = new ArrayList<>();
-            int colorsLength = this.getLInt();
-            for (int i2 = 0; i2 < colorsLength; i2++) {
-                colors.add(this.getString());
-            }
-            skin.getTintColors().add(new PersonaPieceTint(pieceType, colors));
-        }
         return skin;
     }
 
@@ -1254,13 +1076,13 @@ public class BinaryStream {
             return "1.12.0";
         }
 
-        //TODO: get/putSkin也能用helper重写
+        //get/putSkin也能用helper重写
         public void putSkin(BinaryStream stream, Skin skin) {
-            stream.putSkinLegacy(skin);
+            stream.putSkinV2(skin);
         }
 
         public Skin getSkin(BinaryStream stream) {
-            return stream.getSkinLegacy();
+            return stream.getSkinV2();
         }
 
         public Item getSlot(BinaryStream stream) {

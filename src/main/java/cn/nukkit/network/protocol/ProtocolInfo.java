@@ -177,6 +177,7 @@ public interface ProtocolInfo {
     int CORRECT_PLAYER_MOVE_PREDICTION_PACKET = 0xa1;
     int ITEM_COMPONENT_PACKET = 0xa2;
     int FILTER_TEXT_PACKET = 0xa3;
+    int CLIENTBOUND_DEBUG_RENDERER_PACKET = (byte) 0xa4;
 
     //NetEase Common Mod
     int PACKET_CHANGE_MODEL = 0xc9;

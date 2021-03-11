@@ -36,6 +36,7 @@ public class Skin {
 
     private boolean playerSkin = false; //如果是玩家皮肤，那么需要根据中国版规则进行皮肤反作弊检测
     private String skinId;
+    private String playFabId = "";
     private String skinResourcePatch = GEOMETRY_CUSTOM;
     private SerializedImage skinData;
     private final List<SkinAnimation> animations = new ArrayList<>();
@@ -345,6 +346,14 @@ public class Skin {
         String skinId = getSkinId();
         String full = UUID.nameUUIDFromBytes(Binary.appendBytes(skinId.getBytes(), getSkinData().data)).toString();
         return full; //TODO: Client sends full skin ID as normal skin ID. Find out what this is actually for.
+    }
+
+    public void setPlayFabId(String playFabId) {
+        this.playFabId = playFabId;
+    }
+
+    public String getPlayFabId() {
+        return this.playFabId;
     }
 
     public static SerializedImage parseBufferedImage(BufferedImage image) {
