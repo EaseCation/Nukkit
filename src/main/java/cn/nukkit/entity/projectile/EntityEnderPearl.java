@@ -1,13 +1,15 @@
 package cn.nukkit.entity.projectile;
 
 import cn.nukkit.Player;
+import cn.nukkit.block.Block;
 import cn.nukkit.entity.Entity;
+import cn.nukkit.event.entity.EntityDamageByEntityEvent;
+import cn.nukkit.event.entity.EntityDamageEvent;
 import cn.nukkit.event.player.PlayerTeleportEvent.TeleportCause;
 import cn.nukkit.level.format.FullChunk;
 import cn.nukkit.math.NukkitMath;
 import cn.nukkit.math.Vector3;
 import cn.nukkit.nbt.tag.CompoundTag;
-import cn.nukkit.network.protocol.AddEntityPacket;
 import cn.nukkit.network.protocol.LevelEventPacket;
 
 public class EntityEnderPearl extends EntityProjectile {
@@ -62,11 +64,15 @@ public class EntityEnderPearl extends EntityProjectile {
         boolean hasUpdate = super.onUpdate(currentTick);
 
         if (this.isCollided && this.shootingEntity instanceof Player) {
-            this.level.addLevelEvent(this.shootingEntity.add(0.5, 0.5, 0.5), LevelEventPacket.EVENT_SOUND_PORTAL);
-            this.shootingEntity.teleport(new Vector3(NukkitMath.floorDouble(this.x) + 0.5, this.y, NukkitMath.floorDouble(this.z) + 0.5), TeleportCause.ENDER_PEARL);
-            if ((((Player) this.shootingEntity).getGamemode() & 0x01) == 0) this.shootingEntity.attack(5);
-            this.level.addLevelEvent(this, LevelEventPacket.EVENT_PARTICLE_ENDERMAN_TELEPORT);
-            this.level.addLevelEvent(this.shootingEntity.add(0.5, 0.5, 0.5), LevelEventPacket.EVENT_SOUND_PORTAL);
+            boolean portal = false;
+            for (Block collided : this.getCollisionBlocks()) {
+                if (collided.getId() == Block.NETHER_PORTAL) {
+                    portal = true;
+                }
+            }
+            if (!portal) {
+                teleport();
+            }
         }
 
         if (this.age > 1200 || this.isCollided) {
@@ -80,25 +86,24 @@ public class EntityEnderPearl extends EntityProjectile {
     }
 
     @Override
-    public boolean canCollideWith(Entity entity) {
-        return false;
+    public void onCollideWithEntity(Entity entity) {
+        if (this.shootingEntity instanceof Player) {
+            teleport();
+        }
+        super.onCollideWithEntity(entity);
     }
 
-    @Override
-    public void spawnTo(Player player) {
-        AddEntityPacket pk = new AddEntityPacket();
-        pk.type = NETWORK_ID;
-        pk.entityUniqueId = this.getId();
-        pk.entityRuntimeId = this.getId();
-        pk.x = (float) this.x;
-        pk.y = (float) this.y;
-        pk.z = (float) this.z;
-        pk.speedX = (float) this.motionX;
-        pk.speedY = (float) this.motionY;
-        pk.speedZ = (float) this.motionZ;
-        pk.metadata = this.dataProperties;
-        player.dataPacket(pk);
+    private void teleport() {
+        if (!this.level.equals(this.shootingEntity.getLevel())) {
+            return;
+        }
 
-        super.spawnTo(player);
+        this.level.addLevelEvent(this.shootingEntity.add(0.5, 0.5, 0.5), LevelEventPacket.EVENT_SOUND_PORTAL);
+        this.shootingEntity.teleport(new Vector3(NukkitMath.floorDouble(this.x) + 0.5, this.y, NukkitMath.floorDouble(this.z) + 0.5), TeleportCause.ENDER_PEARL);
+        if ((((Player) this.shootingEntity).getGamemode() & 0x01) == 0) {
+            this.shootingEntity.attack(new EntityDamageByEntityEvent(this, shootingEntity, EntityDamageEvent.DamageCause.PROJECTILE, 5f, 0f));
+        }
+        this.level.addLevelEvent(this, LevelEventPacket.EVENT_PARTICLE_ENDERMAN_TELEPORT);
+        this.level.addLevelEvent(this.shootingEntity.add(0.5, 0.5, 0.5), LevelEventPacket.EVENT_SOUND_PORTAL);
     }
 }
