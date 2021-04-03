@@ -1,6 +1,7 @@
 package cn.nukkit.level.format.anvil;
 
 import cn.nukkit.block.Block;
+import cn.nukkit.level.GlobalBlockPaletteInterface.HardcodedVersion;
 import cn.nukkit.level.format.anvil.util.BlockStorage;
 import cn.nukkit.level.format.anvil.util.NibbleArray;
 import cn.nukkit.level.format.generic.EmptyChunkSection;
@@ -327,23 +328,33 @@ public class ChunkSection implements cn.nukkit.level.format.ChunkSection {
     }
 
     @Override
-    public void writeTo(BinaryStream stream) {
+    public void writeTo(BinaryStream stream, HardcodedVersion version) {
+        stream.putByte((byte) 8); // Paletted chunk because Mojang messed up the old one
+        stream.putByte((byte) 2);
         synchronized (storage) {
-            stream.putByte((byte) 8); // Paletted chunk because Mojang messed up the old one
-            stream.putByte((byte) 2);
-            this.storage.writeTo(stream);
-            EmptyChunkSection.EMPTY_STORAGE.writeTo(stream);
+            this.storage.writeTo(stream, version);
         }
+        EmptyChunkSection.EMPTY_STORAGE.writeTo(stream);
+    }
+
+    @Override
+    public void writeTo(BinaryStream stream) {
+        stream.putByte((byte) 8); // Paletted chunk because Mojang messed up the old one
+        stream.putByte((byte) 2);
+        synchronized (storage) {
+            this.storage.writeTo(stream);
+        }
+        EmptyChunkSection.EMPTY_STORAGE.writeTo(stream);
     }
 
     @Override
     public void writeToCache(BinaryStream stream) {
+        stream.putByte((byte) 8); // Paletted chunk because Mojang messed up the old one
+        stream.putByte((byte) 2);
         synchronized (storage) {
-            stream.putByte((byte) 8); // Paletted chunk because Mojang messed up the old one
-            stream.putByte((byte) 2);
             this.storage.writeToCache(stream);
-            EmptyChunkSection.EMPTY_STORAGE_CACHE.writeToCache(stream);
         }
+        EmptyChunkSection.EMPTY_STORAGE_CACHE.writeToCache(stream);
     }
 
     public boolean compress() {

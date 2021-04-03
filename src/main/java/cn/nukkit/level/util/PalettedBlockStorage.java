@@ -18,7 +18,7 @@ public class PalettedBlockStorage {
 
     private static final int SIZE = 4096;
 
-    private final IntList palette; // cache用fullId代替runtimeId
+    private final IntList palette; //HACK: cache版本用的是fullId而不是runtimeId
     private BitArray bitArray;
 
     public PalettedBlockStorage() {
@@ -26,21 +26,17 @@ public class PalettedBlockStorage {
     }
 
     public PalettedBlockStorage(BitArrayVersion version) {
-        this(version, false);
+        this(version, GlobalBlockPalette.getOrCreateRuntimeId(Block.AIR, 0));
     }
 
-    public PalettedBlockStorage(boolean cache) {
-        this(BitArrayVersion.V2, cache);
+    public PalettedBlockStorage(int airBlockId) {
+        this(BitArrayVersion.V2, airBlockId);
     }
 
-    public PalettedBlockStorage(BitArrayVersion version, boolean cache) {
+    public PalettedBlockStorage(BitArrayVersion version, int airBlockId) {
         this.bitArray = version.createPalette(SIZE);
         this.palette = new IntArrayList(16);
-        if (!cache) {
-            this.palette.add(GlobalBlockPalette.getOrCreateRuntimeId(Block.AIR, 0)); // Air is at the start of every palette.
-        } else {
-            this.palette.add(0);
-        }
+        this.palette.add(airBlockId); // Air is at the start of every palette.
     }
 
     private PalettedBlockStorage(BitArray bitArray, IntList palette) {

@@ -21,6 +21,7 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.nio.ByteOrder;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -151,7 +152,7 @@ public class McRegion extends BaseLevelProvider {
         }
         stream.put(tiles);
 
-        this.getLevel().chunkRequestCallback(timestamp, x, z, 16, null, null, stream.getBuffer(), stream.getBuffer());
+        this.getLevel().chunkRequestCallback(timestamp, x, z, 16, null, null, stream.getBuffer(), stream.getBuffer(), Collections.emptyMap());
 
         return null;
     }

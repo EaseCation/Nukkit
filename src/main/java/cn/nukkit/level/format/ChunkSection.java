@@ -1,6 +1,7 @@
 package cn.nukkit.level.format;
 
 import cn.nukkit.block.Block;
+import cn.nukkit.level.GlobalBlockPaletteInterface.HardcodedVersion;
 import cn.nukkit.utils.BinaryStream;
 
 /**
@@ -45,6 +46,8 @@ public interface ChunkSection {
     byte[] getLightArray();
 
     boolean isEmpty();
+
+    void writeTo(BinaryStream stream, HardcodedVersion version);
 
     void writeTo(BinaryStream stream);
 

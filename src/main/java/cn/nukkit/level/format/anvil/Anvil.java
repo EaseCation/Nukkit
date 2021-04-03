@@ -3,6 +3,7 @@ package cn.nukkit.level.format.anvil;
 import cn.nukkit.Server;
 import cn.nukkit.blockentity.BlockEntity;
 import cn.nukkit.blockentity.BlockEntitySpawnable;
+import cn.nukkit.level.GlobalBlockPaletteInterface.HardcodedVersion;
 import cn.nukkit.level.Level;
 import cn.nukkit.level.format.FullChunk;
 import cn.nukkit.level.format.generic.*;
@@ -10,6 +11,7 @@ import cn.nukkit.level.generator.Generator;
 import cn.nukkit.math.XXHash64;
 import cn.nukkit.nbt.NBTIO;
 import cn.nukkit.nbt.tag.CompoundTag;
+import cn.nukkit.network.protocol.BatchPacket;
 import cn.nukkit.scheduler.AsyncTask;
 import cn.nukkit.utils.BinaryStream;
 import cn.nukkit.utils.ChunkException;
@@ -26,6 +28,7 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.nio.ByteOrder;
 import java.util.ArrayList;
+import java.util.EnumMap;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -125,6 +128,7 @@ public class Anvil extends BaseLevelProvider {
 
             ChunkBlobCache chunkBlobCache;
 
+            final Map<HardcodedVersion, byte[]> payloads = new EnumMap<>(HardcodedVersion.class);
             byte[] payload;
             byte[] payloadOld;
             ChunkPacketCache chunkPacketCache;
@@ -195,13 +199,21 @@ public class Anvil extends BaseLevelProvider {
                     byte[] clientBlobCachedPayload = new byte[1 + blockEntities.length]; // borderBlocks + blockEntities
                     System.arraycopy(blockEntities, 0, clientBlobCachedPayload, 1, blockEntities.length); // borderBlocks array size is always 0, skip it
 
-                    chunkBlobCache = new ChunkBlobCache(count, blobIds.toLongArray(), clientBlobs, clientBlobCachedPayload);
+                    chunkBlobCache = new ChunkBlobCache(count, blobIds.toLongArray(), clientBlobs, clientBlobCachedPayload); //TODO: 1.16.100+
+
+                    for (HardcodedVersion version : HardcodedVersion.values0()) {
+                        payloads.put(version, encodeChunk(chunk, sections, count, extraData, blockEntities, version));
+                    }
 
                     payload = encodeChunk(false, chunk, sections, count, extraData, blockEntities);
                     payloadOld = encodeChunk(true, chunk, sections, count, extraData, blockEntities);
 
                     if (level.isCacheChunks()) {
+                        Map<HardcodedVersion, BatchPacket> packets = new EnumMap<>(HardcodedVersion.class);
+                        payloads.forEach((version, payload) -> packets.put(version, Level.getChunkCacheFromData(x, z, count, payload, false, true)));
+
                         chunkPacketCache = new ChunkPacketCache(
+                                packets,
                                 Level.getChunkCacheFromData(x, z, count, payload, false, true),
                                 Level.getChunkCacheFromData(x, z, count, payload, false, false),
                                 Level.getChunkCacheFromData(x, z, count, payloadOld, true, false)
@@ -216,7 +228,7 @@ public class Anvil extends BaseLevelProvider {
             @Override
             public void onCompletion(Server server) {
                 if (success) {
-                    getLevel().chunkRequestCallback(timestamp, x, z, count, chunkBlobCache, chunkPacketCache, payload, payloadOld);
+                    getLevel().chunkRequestCallback(timestamp, x, z, count, chunkBlobCache, chunkPacketCache, payload, payloadOld, payloads);
                 }
             }
         };
@@ -253,6 +265,18 @@ public class Anvil extends BaseLevelProvider {
         }*/
         stream.put(blockEntities);
 
+        return stream.getBuffer();
+    }
+
+    private byte[] encodeChunk(Chunk chunk, cn.nukkit.level.format.ChunkSection[] sections, int count, BinaryStream extraData, byte[] blockEntities, HardcodedVersion version) {
+        BinaryStream stream = ThreadCache.binaryStream.get();
+        stream.reset();
+        for (int i = 0; i < count; i++) {
+            sections[i].writeTo(stream, version);
+        }
+        stream.put(chunk.getBiomeIdArray());
+        stream.putByte((byte) 0);
+        stream.put(blockEntities);
         return stream.getBuffer();
     }
 

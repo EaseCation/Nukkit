@@ -120,6 +120,10 @@ public class GlobalBlockPalette implements GlobalBlockPaletteInterface {
         return instance.getLegacyId0(runtimeId);
     }
 
+    public static GlobalBlockPaletteInterface getHardcodedBlockPalette(HardcodedVersion version) {
+        return instance.getHardcodedBlockPalette0(version);
+    }
+
     private static final Object2IntMap<String> stringToId;
     private static final Int2ObjectMap<String> idToString = new Int2ObjectOpenHashMap<>();
 
