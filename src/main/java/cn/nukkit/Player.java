@@ -1323,7 +1323,7 @@ public class Player extends EntityHuman implements CommandSender, InventoryHolde
 
         if (this.inventory != null) {
             this.inventory.sendContents(this);
-            this.inventory.sendContents(this.getViewers().values());
+//            this.inventory.sendContents(this.getViewers().values());
             this.inventory.sendHeldItem(this.hasSpawned.values());
 
             this.sendCreativeContents();
