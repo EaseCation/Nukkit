@@ -116,13 +116,12 @@ public class BlockStorage {
 
     public void writeTo(BinaryStream stream) {
         PalettedBlockStorage storage = new PalettedBlockStorage();
-        int airBlockRuntimeId = GlobalBlockPalette.getOrCreateRuntimeId(Block.AIR, 0);
         for (int i = 0; i < SECTION_SIZE; i++) {
             int runtimeId;
             try {
-                runtimeId = GlobalBlockPalette.getOrCreateRuntimeId(blockIds[i] & 0xff, blockData.get(i));
+                runtimeId = GlobalBlockPalette.getOrCreateRuntimeIdGeneral(blockIds[i] & 0xff, blockData.get(i));
             } catch (Exception e) {
-                runtimeId = airBlockRuntimeId;
+                runtimeId = 0;
                 //Server.getInstance().getLogger().logException(e);
             }
             storage.setBlock(i, runtimeId);

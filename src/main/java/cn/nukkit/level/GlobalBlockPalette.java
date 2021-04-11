@@ -116,6 +116,14 @@ public class GlobalBlockPalette implements GlobalBlockPaletteInterface {
         return instance.getOrCreateRuntimeId0(legacyId);
     }
 
+    public static int getOrCreateRuntimeIdGeneral(int id, int meta) {
+        return instance.getOrCreateRuntimeIdGeneral0(id, meta);
+    }
+
+    public static int getOrCreateRuntimeIdGeneral(int legacyId) throws NoSuchElementException {
+        return instance.getOrCreateRuntimeIdGeneral0(legacyId);
+    }
+
     public static int getLegacyId(int runtimeId) {
         return instance.getLegacyId0(runtimeId);
     }

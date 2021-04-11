@@ -11,6 +11,14 @@ public interface GlobalBlockPaletteInterface {
 
     int getOrCreateRuntimeId0(int legacyId) throws NoSuchElementException;
 
+    default int getOrCreateRuntimeIdGeneral0(int id, int meta) {
+        return getOrCreateRuntimeId0(id, meta);
+    }
+
+    default int getOrCreateRuntimeIdGeneral0(int legacyId) throws NoSuchElementException {
+        return getOrCreateRuntimeId0(legacyId);
+    }
+
     int getLegacyId0(int runtimeId);
 
     default GlobalBlockPaletteInterface getHardcodedBlockPalette0(HardcodedVersion version) {
@@ -18,7 +26,7 @@ public interface GlobalBlockPaletteInterface {
     }
 
     enum HardcodedVersion {
-//        V1_16_100(419),
+        V1_16_100(419),
         V1_16_210(428),
         ;
 

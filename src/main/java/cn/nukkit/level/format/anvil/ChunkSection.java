@@ -1,10 +1,13 @@
 package cn.nukkit.level.format.anvil;
 
 import cn.nukkit.block.Block;
+import cn.nukkit.level.GlobalBlockPalette;
 import cn.nukkit.level.GlobalBlockPaletteInterface.HardcodedVersion;
 import cn.nukkit.level.format.anvil.util.BlockStorage;
 import cn.nukkit.level.format.anvil.util.NibbleArray;
 import cn.nukkit.level.format.generic.EmptyChunkSection;
+import cn.nukkit.level.util.BitArrayVersion;
+import cn.nukkit.level.util.PalettedBlockStorage;
 import cn.nukkit.nbt.tag.CompoundTag;
 import cn.nukkit.utils.*;
 
@@ -334,7 +337,8 @@ public class ChunkSection implements cn.nukkit.level.format.ChunkSection {
         synchronized (storage) {
             this.storage.writeTo(stream, version);
         }
-        EmptyChunkSection.EMPTY_STORAGE.writeTo(stream);
+        new PalettedBlockStorage(BitArrayVersion.V1, GlobalBlockPalette.getHardcodedBlockPalette(version).getOrCreateRuntimeId0(Block.AIR, 0))
+                .writeTo(stream);
     }
 
     @Override
@@ -354,7 +358,7 @@ public class ChunkSection implements cn.nukkit.level.format.ChunkSection {
         synchronized (storage) {
             this.storage.writeToCache(stream);
         }
-        EmptyChunkSection.EMPTY_STORAGE_CACHE.writeToCache(stream);
+        EmptyChunkSection.EMPTY_STORAGE.writeToCache(stream);
     }
 
     public boolean compress() {

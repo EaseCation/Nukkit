@@ -2666,7 +2666,7 @@ public class Level implements ChunkManager, Metadatable {
                 if (player.isConnected() && player.usedChunks.containsKey(index)) {
                     if (player.getProtocol() < 361) player.sendChunk(x, z, subChunkCount, chunkBlobCache, chunkPacketCache.getPacketOld());
                     else if (player.getProtocol() < 407) player.sendChunk(x, z, subChunkCount, chunkBlobCache, chunkPacketCache.getPacket());
-                    else if (player.getProtocol() < GlobalBlockPaletteInterface.HardcodedVersion.values0()[0].getProtocol())
+                    else if (player.getProtocol() < HardcodedVersion.values0()[0].getProtocol())
                         player.sendChunk(x, z, subChunkCount, chunkBlobCache, chunkPacketCache.getPacket116());
                     else player.sendChunk(x, z, subChunkCount, chunkBlobCache, chunkPacketCache.getPacket(HardcodedVersion.fromProtocol(player.getProtocol())));
                 }
@@ -2715,13 +2715,13 @@ public class Level implements ChunkManager, Metadatable {
      * Chunk request callback on main thread
      * If this.cacheChunks == false, the ChunkPacketCache can be null;
      */
-    public void chunkRequestCallback(long timestamp, int x, int z, int subChunkCount, ChunkBlobCache chunkBlobCache, ChunkPacketCache chunkPacketCache, byte[] payload, byte[] payloadOld, Map<GlobalBlockPaletteInterface.HardcodedVersion, byte[]> payloads) {
+    public void chunkRequestCallback(long timestamp, int x, int z, int subChunkCount, ChunkBlobCache chunkBlobCache, ChunkPacketCache chunkPacketCache, byte[] payload, byte[] payloadOld, Map<HardcodedVersion, byte[]> payloads) {
         this.timings.syncChunkSendTimer.startTiming();
         long index = Level.chunkHash(x, z);
 
         if (this.cacheChunks) {
             if (chunkPacketCache == null) {
-                Map<GlobalBlockPaletteInterface.HardcodedVersion, BatchPacket> packets = new EnumMap<>(GlobalBlockPaletteInterface.HardcodedVersion.class);
+                Map<HardcodedVersion, BatchPacket> packets = new EnumMap<>(HardcodedVersion.class);
                 payloads.forEach((version, data) -> packets.put(version, getChunkCacheFromData(x, z, subChunkCount, data, false, true)));
 
                 chunkPacketCache = new ChunkPacketCache(
@@ -2745,7 +2745,9 @@ public class Level implements ChunkManager, Metadatable {
             for (Player player : this.chunkSendQueue.get(index).values()) {
                 if (player.isConnected() && player.usedChunks.containsKey(index)) {
                     if (player.getProtocol() < 361) player.sendChunk(x, z, subChunkCount, chunkBlobCache, payloadOld);
-                    else player.sendChunk(x, z, subChunkCount, chunkBlobCache, payload);
+                    else if (player.getProtocol() < HardcodedVersion.values0()[0].getProtocol())
+                        player.sendChunk(x, z, subChunkCount, chunkBlobCache, payload);
+                    else player.sendChunk(x, z, subChunkCount, chunkBlobCache, payloads.get(HardcodedVersion.fromProtocol(player.getProtocol())));
                 }
             }
 

@@ -199,7 +199,7 @@ public class Anvil extends BaseLevelProvider {
                     byte[] clientBlobCachedPayload = new byte[1 + blockEntities.length]; // borderBlocks + blockEntities
                     System.arraycopy(blockEntities, 0, clientBlobCachedPayload, 1, blockEntities.length); // borderBlocks array size is always 0, skip it
 
-                    chunkBlobCache = new ChunkBlobCache(count, blobIds.toLongArray(), clientBlobs, clientBlobCachedPayload); //TODO: 1.16.100+
+                    chunkBlobCache = new ChunkBlobCache(count, blobIds.toLongArray(), clientBlobs, clientBlobCachedPayload);
 
                     for (HardcodedVersion version : HardcodedVersion.values0()) {
                         payloads.put(version, encodeChunk(chunk, sections, count, extraData, blockEntities, version));

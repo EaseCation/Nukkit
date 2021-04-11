@@ -1,6 +1,5 @@
 package cn.nukkit.level.util;
 
-import cn.nukkit.block.Block;
 import cn.nukkit.level.GlobalBlockPalette;
 import cn.nukkit.nbt.NBTIO;
 import cn.nukkit.nbt.tag.CompoundTag;
@@ -18,7 +17,7 @@ public class PalettedBlockStorage {
 
     private static final int SIZE = 4096;
 
-    private final IntList palette; //HACK: cache版本用的是fullId而不是runtimeId
+    private final IntList palette; //HACK: cache 版本用的是 fullId 而不是 runtimeId
     private BitArray bitArray;
 
     public PalettedBlockStorage() {
@@ -26,7 +25,7 @@ public class PalettedBlockStorage {
     }
 
     public PalettedBlockStorage(BitArrayVersion version) {
-        this(version, GlobalBlockPalette.getOrCreateRuntimeId(Block.AIR, 0));
+        this(version, 0);
     }
 
     public PalettedBlockStorage(int airBlockId) {
@@ -79,7 +78,7 @@ public class PalettedBlockStorage {
         List<CompoundTag> tagList = new ArrayList<>();
         for (int legacyId : palette) {
             //tagList.add(GlobalBlockPalette.getState(runtimeId));
-            tagList.add(new CompoundTag()
+            tagList.add(new CompoundTag() // 1.12 的格式, 可向前兼容
                     .putString("name", GlobalBlockPalette.getNameByBlockId(legacyId >> 4))
                     .putShort("val", legacyId & 0xf));
         }
