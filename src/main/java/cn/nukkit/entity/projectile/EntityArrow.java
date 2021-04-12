@@ -3,6 +3,7 @@ package cn.nukkit.entity.projectile;
 import cn.nukkit.Player;
 import cn.nukkit.entity.Entity;
 import cn.nukkit.level.format.FullChunk;
+import cn.nukkit.level.sound.SoundEnum;
 import cn.nukkit.nbt.tag.CompoundTag;
 import cn.nukkit.network.protocol.AddEntityPacket;
 
@@ -22,6 +23,7 @@ public class EntityArrow extends EntityProjectile {
     public static final int PICKUP_CREATIVE = 2;
 
     protected int pickupMode;
+    protected boolean playedHitSound = false;
 
     @Override
     public int getNetworkId() {
@@ -30,17 +32,17 @@ public class EntityArrow extends EntityProjectile {
 
     @Override
     public float getWidth() {
-        return 0.5f;
+        return 0.1f;
     }
 
     @Override
     public float getLength() {
-        return 0.5f;
+        return 0.1f;
     }
 
     @Override
     public float getHeight() {
-        return 0.5f;
+        return 0.1f;
     }
 
     @Override
@@ -117,6 +119,10 @@ public class EntityArrow extends EntityProjectile {
 
         if (this.onGround || this.hadCollision) {
             this.setCritical(false);
+            if (!this.playedHitSound) {
+                this.getLevel().addSound(this, SoundEnum.RANDOM_BOWHIT);
+                this.playedHitSound = true;
+            }
         }
 
         if (this.age > 1200) {

@@ -179,6 +179,7 @@ public abstract class EntityProjectile extends Entity {
                 this.motionY = 0;
                 this.motionZ = 0;
 
+                this.addMovement(this.x, this.y + this.getBaseOffset(), this.z, this.yaw, this.pitch, this.yaw);
                 this.server.getPluginManager().callEvent(new ProjectileHitEvent(this, MovingObjectPosition.fromBlock(this.getFloorX(), this.getFloorY(), this.getFloorZ(), -1, this)));
                 return false;
             } else if (!this.isCollided && this.hadCollision) {
