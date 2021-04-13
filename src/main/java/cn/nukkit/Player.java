@@ -1323,7 +1323,7 @@ public class Player extends EntityHuman implements CommandSender, InventoryHolde
 
         if (this.inventory != null) {
             this.inventory.sendContents(this);
-            this.inventory.sendContents(this.getViewers().values());
+//            this.inventory.sendContents(this.getViewers().values());
             this.inventory.sendHeldItem(this.hasSpawned.values());
 
             this.sendCreativeContents();
@@ -4731,7 +4731,7 @@ public class Player extends EntityHuman implements CommandSender, InventoryHolde
         }
 
         if (near) {
-            if (entity instanceof EntityArrow && ((EntityArrow) entity).hadCollision) {
+            if (entity instanceof EntityArrow && ((EntityArrow) entity).hadCollision && entity.ticksLived > 5) {
                 ItemArrow item = new ItemArrow();
                 if (this.isSurvival() && !this.inventory.canAddItem(item)) {
                     return false;
