@@ -764,6 +764,18 @@ public class BinaryStream {
         }
     }
 
+    /**
+     * 用于没有 NetID 的虚拟 ItemStack (Creative Content and Recipe Book).
+     */
+    public void putSlotDummy(Item item) {
+        if (this.helper != null) {
+            this.helper.putSlotDummy(this, item);
+            return;
+        }
+
+        this.putSlot(item);
+    }
+
     public Item getRecipeIngredient() {
         if (this.helper != null) {
             return this.helper.getRecipeIngredient(this);
@@ -1068,6 +1080,10 @@ public class BinaryStream {
             return INSTANCE;
         }
 
+        public Enum<? extends Enum<?>> getProtocol() {
+            return null;
+        }
+
         /**
          * 用于1.13+. (e.g. "1.14.60")
          * @return network game version
@@ -1091,6 +1107,10 @@ public class BinaryStream {
 
         public void putSlot(BinaryStream stream, Item item) {
             stream.putSlotLegacy(item);
+        }
+
+        public void putSlotDummy(BinaryStream stream, Item item) {
+            this.putSlot(stream, item);
         }
 
         public Item getRecipeIngredient(BinaryStream stream) {
@@ -1121,6 +1141,10 @@ public class BinaryStream {
             }
             stream.putVarInt(damage);
             stream.putVarInt(ingredient.getCount());
+        }
+
+        public int getItemNetworkId(Item item) {
+            return RuntimeItems.getNetworkId(RuntimeItems.getNetworkFullId(item));
         }
 
         protected final List<String> extractStringList(BinaryStream stream, Item item, String tagName) {
