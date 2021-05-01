@@ -109,7 +109,7 @@ public abstract class EntityLiving extends Entity implements EntityDamageable {
     public boolean attack(EntityDamageEvent source) {
         if (this.attackTime > 0) {
             EntityDamageEvent lastCause = this.getLastDamageCause();
-            if (lastCause != null && (lastCause.getFinalDamage() == 0)) {
+            if (lastCause != null && (lastCause.getFinalDamage() == 0 || lastCause.getCause() == DamageCause.FIRE_TICK)) {
                 //上次伤害是0，这次允许输出
             } else {
                 //叠刀时的自我安慰
