@@ -128,8 +128,7 @@ public class BlockItemFrame extends BlockTransparentMeta {
     public Item[] getDrops(Item item) {
         BlockEntity blockEntity = this.getLevel().getBlockEntity(this);
         BlockEntityItemFrame itemFrame = (BlockEntityItemFrame) blockEntity;
-        int chance = ThreadLocalRandom.current().nextInt(100) + 1;
-        if (itemFrame != null && chance <= (itemFrame.getItemDropChance() * 100)) {
+        if (itemFrame != null && ThreadLocalRandom.current().nextFloat() <= itemFrame.getItemDropChance()) {
             return new Item[]{
                     toItem(), itemFrame.getItem().clone()
             };
