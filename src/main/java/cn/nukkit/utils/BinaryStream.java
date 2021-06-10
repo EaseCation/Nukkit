@@ -363,162 +363,6 @@ public class BinaryStream {
         return new SerializedImage(width, height, data);
     }
 
-    public Item getSlotV3() {
-        int networkId = this.getVarInt();
-        if (networkId == 0) {
-            return Item.get(0, 0, 0);
-        }
-
-        int legacyFullId = RuntimeItems.getLegacyFullId(networkId);
-        int id = RuntimeItems.getId(legacyFullId);
-        boolean hasData = RuntimeItems.hasData(legacyFullId);
-
-        int auxValue = this.getVarInt();
-        int data = auxValue >> 8;
-        if (hasData) {
-            // Swap data using legacy full id
-            data = RuntimeItems.getData(legacyFullId);
-        } else if (data == Short.MAX_VALUE) {
-            data = -1;
-        }
-        int cnt = auxValue & 0xff;
-
-        int nbtLen = this.getLShort();
-        byte[] nbt = new byte[0];
-        if (nbtLen < Short.MAX_VALUE) {
-            nbt = this.get(nbtLen);
-        } else if (nbtLen == 65535) {
-            int nbtTagCount = (int) getUnsignedVarInt();
-            int offset = getOffset();
-            FastByteArrayInputStream stream = new FastByteArrayInputStream(get());
-            for (int i = 0; i < nbtTagCount; i++) {
-                try {
-                    // TODO: 05/02/2019 This hack is necessary because we keep the raw NBT tag. Try to remove it.
-                    CompoundTag tag = NBTIO.read(stream, ByteOrder.LITTLE_ENDIAN, true);
-                    // tool damage hack
-                    if (tag.contains("Damage")) {
-                        data = tag.getInt("Damage");
-                        tag.remove("Damage");
-                    }
-                    if (tag.contains("__DamageConflict__")) {
-                        tag.put("Damage", tag.removeAndGet("__DamageConflict__"));
-                    }
-                    if (tag.getAllTags().size() > 0) {
-                        nbt = NBTIO.write(tag, ByteOrder.LITTLE_ENDIAN, false);
-                    }
-                } catch (IOException e) {
-                    throw new RuntimeException(e);
-                }
-            }
-            setOffset(offset + (int) stream.position());
-        }
-
-        String[] canPlaceOn = new String[this.getVarInt()];
-        for (int i = 0; i < canPlaceOn.length; ++i) {
-            canPlaceOn[i] = this.getString();
-        }
-
-        String[] canDestroy = new String[this.getVarInt()];
-        for (int i = 0; i < canDestroy.length; ++i) {
-            canDestroy[i] = this.getString();
-        }
-
-        Item item = Item.get(
-                id, data, cnt, nbt
-        );
-
-        if (canDestroy.length > 0 || canPlaceOn.length > 0) {
-            CompoundTag namedTag = item.getNamedTag();
-            if (namedTag == null) {
-                namedTag = new CompoundTag();
-            }
-
-            if (canDestroy.length > 0) {
-                ListTag<StringTag> listTag = new ListTag<>("CanDestroy");
-                for (String blockName : canDestroy) {
-                    listTag.add(new StringTag("", blockName));
-                }
-                namedTag.put("CanDestroy", listTag);
-            }
-
-            if (canPlaceOn.length > 0) {
-                ListTag<StringTag> listTag = new ListTag<>("CanPlaceOn");
-                for (String blockName : canPlaceOn) {
-                    listTag.add(new StringTag("", blockName));
-                }
-                namedTag.put("CanPlaceOn", listTag);
-            }
-            item.setNamedTag(namedTag);
-        }
-
-        if (item.getId() == 513) { // TODO: Shields
-            this.getVarLong();
-        }
-
-        return item;
-    }
-
-    public void putSlotV3(Item item) {
-        if (item == null || item.getId() == 0) {
-            this.putVarInt(0);
-            return;
-        }
-
-        int networkFullId = RuntimeItems.getNetworkFullId(item);
-        int networkId = RuntimeItems.getNetworkId(networkFullId);
-        boolean clearData = RuntimeItems.hasData(networkFullId);
-        this.putVarInt(networkId);
-
-        int auxValue = item.getCount();
-        boolean isDurable = item instanceof ItemDurable;
-        if (!isDurable) {
-            int meta = clearData ? 0 : item.hasMeta() ? item.getDamage() : -1;
-            auxValue |= ((meta & 0x7fff) << 8);
-        }
-        this.putVarInt(auxValue);
-
-        if (item.hasCompoundTag() || isDurable) {
-            try {
-                // hack for tool damage
-                byte[] nbt = item.getCompoundTag();
-                CompoundTag tag;
-                if (nbt == null || nbt.length == 0) {
-                    tag = new CompoundTag();
-                } else {
-                    tag = NBTIO.read(nbt, ByteOrder.LITTLE_ENDIAN, false);
-                }
-                if (tag.contains("Damage")) {
-                    tag.put("__DamageConflict__", tag.removeAndGet("Damage"));
-                }
-                if (isDurable) {
-                    tag.putInt("Damage", item.getDamage());
-                }
-
-                this.putLShort(0xffff);
-                this.putByte((byte) 1);
-                this.put(NBTIO.write(tag, ByteOrder.LITTLE_ENDIAN, true));
-            } catch (IOException e) {
-                throw new RuntimeException(e);
-            }
-        } else {
-            this.putLShort(0);
-        }
-        List<String> canPlaceOn = extractStringList(item, "CanPlaceOn");
-        List<String> canDestroy = extractStringList(item, "CanDestroy");
-        this.putVarInt(canPlaceOn.size());
-        for (String block : canPlaceOn) {
-            this.putString(block);
-        }
-        this.putVarInt(canDestroy.size());
-        for (String block : canDestroy) {
-            this.putString(block);
-        }
-
-        if (item.getId() == 513) { // TODO: Shields
-            this.putVarLong(0);
-        }
-    }
-
     public Item getSlot() {
         if (this.helper != null) {
             return this.helper.getSlot(this);
@@ -815,45 +659,6 @@ public class BinaryStream {
         this.putVarInt(ingredient.getCount());
     }
 
-    public Item getRecipeIngredientV2() {
-        int networkId = this.getVarInt();
-        if (networkId == 0) {
-            return Item.get(0, 0, 0);
-        }
-
-        int legacyFullId = RuntimeItems.getLegacyFullId(networkId);
-        int id = RuntimeItems.getId(legacyFullId);
-        boolean hasData = RuntimeItems.hasData(legacyFullId);
-
-        int damage = this.getVarInt();
-        if (hasData) {
-            damage = RuntimeItems.getData(legacyFullId);
-        } else if (damage == 0x7fff) {
-            damage = -1;
-        }
-
-        int count = this.getVarInt();
-        return Item.get(id, damage, count);
-    }
-
-    public void putRecipeIngredientV2(Item ingredient) {
-        if (ingredient == null || ingredient.getId() == 0) {
-            this.putVarInt(0);
-            return;
-        }
-
-        int networkFullId = RuntimeItems.getNetworkFullId(ingredient);
-        int networkId = RuntimeItems.getNetworkId(networkFullId);
-        int damage = ingredient.hasMeta() ? ingredient.getDamage() : 0x7fff;
-        if (RuntimeItems.hasData(networkFullId)) {
-            damage = 0;
-        }
-
-        this.putVarInt(networkId);
-        this.putVarInt(damage);
-        this.putVarInt(ingredient.getCount());
-    }
-
     private List<String> extractStringList(Item item, String tagName) {
         CompoundTag namedTag = item.getNamedTag();
         if (namedTag == null) {
@@ -965,22 +770,17 @@ public class BinaryStream {
         this.putLFloat(z);
     }
 
-    public RuleData getRuleData() {
-        RuleData rule = new RuleData();
-        rule.name = this.getString();
-        rule.unknown1 = this.getBoolean();
-        rule.unknown2 = this.getBoolean();
-        return rule;
-    }
-
-    public void putRuleData(RuleData rule) {
-        this.putString(rule.name);
-        this.putBoolean(rule.unknown1);
-        this.putBoolean(rule.unknown2);
-    }
-
-
     public void putGameRules(GameRules gameRules) {
+        if (this.helper != null) {
+            this.helper.putGameRules(this, gameRules);
+            return;
+        }
+
+        if (gameRules == null) {
+            this.putUnsignedVarInt(0);
+            return;
+        }
+
         Map<GameRule, GameRules.Value> rules = gameRules.getGameRules();
         this.putUnsignedVarInt(rules.size());
         rules.forEach((gameRule, value) -> {
@@ -1092,13 +892,26 @@ public class BinaryStream {
             return "1.12.0";
         }
 
-        //get/putSkin也能用helper重写
         public void putSkin(BinaryStream stream, Skin skin) {
             stream.putSkinV2(skin);
         }
 
         public Skin getSkin(BinaryStream stream) {
             return stream.getSkinV2();
+        }
+
+        public void putGameRules(BinaryStream stream, GameRules gameRules) {
+            if (gameRules == null) {
+                stream.putUnsignedVarInt(0);
+                return;
+            }
+
+            Map<GameRule, GameRules.Value> rules = gameRules.getGameRules();
+            stream.putUnsignedVarInt(rules.size());
+            rules.forEach((gameRule, value) -> {
+                stream.putString(gameRule.getName().toLowerCase());
+                value.write(stream);
+            });
         }
 
         public Item getSlot(BinaryStream stream) {

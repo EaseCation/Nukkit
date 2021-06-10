@@ -28,6 +28,7 @@ public interface GlobalBlockPaletteInterface {
     enum HardcodedVersion {
         V1_16_100(419),
         V1_16_210(428),
+        V1_17(440),
         ;
 
         private static final HardcodedVersion[] VALUES = HardcodedVersion.values();

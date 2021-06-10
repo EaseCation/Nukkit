@@ -244,21 +244,4 @@ public class GameRules {
             type.write(pk, this);
         }
     }
-
-    public void writeBinaryStream14(BinaryStream stream) {
-        stream.putUnsignedVarInt(this.gameRules.size());
-        this.gameRules.forEach((e, rule) -> {
-            stream.putString(e.getName().toLowerCase());
-            if (rule.type == Type.BOOLEAN) {
-                stream.putUnsignedVarInt(1);
-                stream.putBoolean(rule.getValueAsBoolean());
-            } else if (rule.type == Type.INTEGER) {
-                stream.putUnsignedVarInt(2);
-                stream.putVarInt(rule.getValueAsInteger());
-            }else if (rule.type == Type.FLOAT) {
-                stream.putUnsignedVarInt(3);
-                stream.putFloat(rule.getValueAsFloat());
-            }
-        });
-    }
 }
