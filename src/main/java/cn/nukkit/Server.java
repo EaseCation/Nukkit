@@ -1366,7 +1366,11 @@ public class Server {
     }
 
     public String getSubMotd() {
-        return this.getPropertyString("sub-motd", "Powered by Nukkit");
+        String subMotd = this.getPropertyString("sub-motd", "Powered by Nukkit");
+        if (subMotd.isEmpty()) {
+            subMotd = "Powered by Nukkit"; // The client doesn't allow empty sub-motd in 1.16.210
+        }
+        return subMotd;
     }
 
     public boolean getForceResources() {

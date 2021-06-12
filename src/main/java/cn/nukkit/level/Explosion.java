@@ -5,8 +5,13 @@ import cn.nukkit.block.Block;
 import cn.nukkit.block.BlockID;
 import cn.nukkit.block.BlockTNT;
 import cn.nukkit.blockentity.BlockEntity;
+import cn.nukkit.blockentity.BlockEntityBrewingStand;
 import cn.nukkit.blockentity.BlockEntityChest;
+import cn.nukkit.blockentity.BlockEntityFurnace;
+import cn.nukkit.blockentity.BlockEntityHopper;
+import cn.nukkit.blockentity.BlockEntityShulkerBox;
 import cn.nukkit.entity.Entity;
+import cn.nukkit.entity.EntityExplosive;
 import cn.nukkit.entity.item.EntityItem;
 import cn.nukkit.entity.item.EntityXPOrb;
 import cn.nukkit.event.block.BlockUpdateEvent;
@@ -15,6 +20,7 @@ import cn.nukkit.event.entity.EntityDamageByEntityEvent;
 import cn.nukkit.event.entity.EntityDamageEvent;
 import cn.nukkit.event.entity.EntityDamageEvent.DamageCause;
 import cn.nukkit.event.entity.EntityExplodeEvent;
+import cn.nukkit.inventory.InventoryHolder;
 import cn.nukkit.item.Item;
 import cn.nukkit.item.ItemBlock;
 import cn.nukkit.level.particle.HugeExplodeSeedParticle;
@@ -42,6 +48,7 @@ public class Explosion {
     private final double stepLen = 0.3d;
 
     private final Object what;
+    private boolean doesDamage = true;
 
     public Explosion(Position center, double size, Entity what) {
         this.level = center.getLevel();
@@ -65,6 +72,15 @@ public class Explosion {
      * @return bool
      */
     public boolean explodeA() {
+        if (what instanceof EntityExplosive) {
+            Entity entity = (Entity) what;
+            int block = level.getBlockIdAt(entity.getFloorX(), entity.getFloorY(), entity.getFloorZ());
+            if (block == BlockID.WATER || block == BlockID.STILL_WATER) {
+                this.doesDamage = false;
+                return true;
+            }
+        }
+
         if (this.size < 0.1) {
             return false;
         }
@@ -73,6 +89,7 @@ public class Explosion {
         Vector3 vBlock = new Vector3(0, 0, 0);
 
         int mRays = this.rays - 1;
+        ThreadLocalRandom random = ThreadLocalRandom.current();
         for (int i = 0; i < this.rays; ++i) {
             for (int j = 0; j < this.rays; ++j) {
                 for (int k = 0; k < this.rays; ++k) {
@@ -84,7 +101,7 @@ public class Explosion {
                         double pointerY = this.source.y;
                         double pointerZ = this.source.z;
 
-                        for (double blastForce = this.size * (ThreadLocalRandom.current().nextInt(700, 1301)) / 1000d; blastForce > 0; blastForce -= this.stepLen * 0.75d) {
+                        for (double blastForce = this.size * (random.nextInt(700, 1301)) / 1000d; blastForce > 0; blastForce -= this.stepLen * 0.75d) {
                             int x = (int) pointerX;
                             int y = (int) pointerY;
                             int z = (int) pointerZ;
@@ -119,7 +136,7 @@ public class Explosion {
     public boolean explodeB() {
 
         LongArraySet updateBlocks = new LongArraySet();
-        List<Vector3> send = new ArrayList<>();
+//        List<Vector3> send = new ArrayList<>();
 
         Vector3 source = (new Vector3(this.source.x, this.source.y, this.source.z)).floor();
         double yield = (1d / this.size) * 100d;
@@ -144,7 +161,6 @@ public class Explosion {
         double maxZ = NukkitMath.ceilDouble(this.source.z + explosionSize + 1);
 
         AxisAlignedBB explosionBB = new SimpleAxisAlignedBB(minX, minY, minZ, maxX, maxY, maxZ);
-
         Entity[] list = this.level.getNearbyEntities(explosionBB, this.what instanceof Entity ? (Entity) this.what : null);
         for (Entity entity : list) {
             double distance = entity.distance(this.source) / explosionSize;
@@ -153,7 +169,7 @@ public class Explosion {
                 Vector3 motion = entity.subtract(this.source).normalize();
                 int exposure = 1;
                 double impact = (1 - distance) * exposure;
-                int damage = (int) (((impact * impact + impact) / 2) * 8 * explosionSize + 1);
+                int damage = this.doesDamage ? (int) (((impact * impact + impact) / 2) * 8 * explosionSize + 1) : 0;
 
                 if (this.what instanceof Entity) {
                     entity.attack(new EntityDamageByEntityEvent((Entity) this.what, entity, DamageCause.ENTITY_EXPLOSION, damage));
@@ -178,11 +194,41 @@ public class Explosion {
                 ((BlockTNT) block).prime(new NukkitRandom().nextRange(10, 30), this.what instanceof Entity ? (Entity) this.what : null);
             } else if (block.getId() == Block.CHEST || block.getId() == Block.TRAPPED_CHEST) {
                 BlockEntity chest = block.getLevel().getBlockEntity(block);
-                if (chest != null) {
+                if (chest instanceof BlockEntityChest) {
                     for (Item drop : ((BlockEntityChest) chest).getInventory().getContents().values()) {
                         this.level.dropItem(block.add(0.5, 0.5, 0.5), drop);
                     }
                     ((BlockEntityChest) chest).getInventory().clearAll();
+                }
+            } else if (block.getId() == Block.FURNACE || block.getId() == Block.LIT_FURNACE) {
+                BlockEntity container = block.getLevel().getBlockEntity(block);
+                if (container instanceof BlockEntityFurnace) {
+                    for (Item drop : ((InventoryHolder) container).getInventory().getContents().values()) {
+                        this.level.dropItem(block.add(0.5, 0.5, 0.5), drop);
+                    }
+                    ((InventoryHolder) container).getInventory().clearAll();
+                }
+            } else if (block.getId() == Block.BREWING_STAND_BLOCK) {
+                BlockEntity container = block.getLevel().getBlockEntity(block);
+                if (container instanceof BlockEntityBrewingStand) {
+                    for (Item drop : ((InventoryHolder) container).getInventory().getContents().values()) {
+                        this.level.dropItem(block.add(0.5, 0.5, 0.5), drop);
+                    }
+                    ((InventoryHolder) container).getInventory().clearAll();
+                }
+            } else if (block.getId() == Block.HOPPER_BLOCK) {
+                BlockEntity container = block.getLevel().getBlockEntity(block);
+                if (container instanceof BlockEntityHopper) {
+                    for (Item drop : ((InventoryHolder) container).getInventory().getContents().values()) {
+                        this.level.dropItem(block.add(0.5, 0.5, 0.5), drop);
+                    }
+                    ((InventoryHolder) container).getInventory().clearAll();
+                }
+            } else if (block.getId() == Block.SHULKER_BOX || block.getId() == Block.UNDYED_SHULKER_BOX) { // brewing_stand/furnace/hopper
+                BlockEntity shulkerBox = block.getLevel().getBlockEntity(block);
+                if (shulkerBox instanceof BlockEntityShulkerBox) {
+                    this.level.dropItem(block.add(0.5, 0.5, 0.5), block.toItem());
+                    ((BlockEntityShulkerBox) shulkerBox).getInventory().clearAll();
                 }
             } else if (Math.random() * 100 < yield) {
                 for (Item drop : block.getDrops(air)) {
@@ -194,7 +240,7 @@ public class Explosion {
 
             Vector3 pos = new Vector3(block.x, block.y, block.z);
 
-            for (BlockFace side : BlockFace.values()) {
+            for (BlockFace side : BlockFace.values0()) {
                 Vector3 sideBlock = pos.getSide(side);
                 long index = Hash.hashBlock((int) sideBlock.x, (int) sideBlock.y, (int) sideBlock.z);
                 if (!this.affectedBlocks.contains(sideBlock) && !updateBlocks.contains(index)) {
@@ -206,7 +252,7 @@ public class Explosion {
                     updateBlocks.add(index);
                 }
             }
-            send.add(new Vector3(block.x - source.x, block.y - source.y, block.z - source.z));
+//            send.add(new Vector3(block.x - source.x, block.y - source.y, block.z - source.z));
         }
 
         this.level.addParticle(new HugeExplodeSeedParticle(this.source));

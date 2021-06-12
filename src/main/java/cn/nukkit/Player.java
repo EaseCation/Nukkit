@@ -1026,9 +1026,6 @@ public class Player extends EntityHuman implements CommandSender, InventoryHolde
         //todo Updater
 
         //Weather
-        if (this.level.isRaining() || this.level.isThundering()) {
-            this.getLevel().sendWeather(this);
-        }
         this.getLevel().sendWeather(this);
 
         //FoodLevel
@@ -1495,7 +1492,7 @@ public class Player extends EntityHuman implements CommandSender, InventoryHolde
                 if (this.checkMovement && !server.getAllowFlight() && this.isSurvival()) {
                     // Some say: I cant move my head when riding because the server
                     // blocked my movement
-                    if (!this.isSleeping() && this.riding == null && !this.hasEffect(Effect.LEVITATION)) {
+                    if (!this.isSleeping() && this.riding == null && !this.hasEffect(Effect.LEVITATION) && !this.hasEffect(Effect.SLOW_FALLING)) {
                         double diffHorizontalSqr = (diffX * diffX + diffZ * diffZ) / ((double) (tickDiff * tickDiff));
                         if (diffHorizontalSqr > 0.5) {
                             PlayerInvalidMoveEvent ev;
@@ -1725,7 +1722,7 @@ public class Player extends EntityHuman implements CommandSender, InventoryHolde
                     this.inAirTicks = 0;
                     this.highestPosition = this.y;
                 } else {
-                    if (this.checkMovement && !this.isGliding() && !server.getAllowFlight() && !this.getAdventureSettings().get(Type.ALLOW_FLIGHT) && this.inAirTicks > 20 && !this.isSleeping() && !this.isImmobile() && !this.isSwimming() && this.riding == null && !this.hasEffect(Effect.LEVITATION)) {
+                    if (this.checkMovement && !this.isGliding() && !server.getAllowFlight() && !this.getAdventureSettings().get(Type.ALLOW_FLIGHT) && this.inAirTicks > 20 && !this.isSleeping() && !this.isImmobile() && !this.isSwimming() && this.riding == null && !this.hasEffect(Effect.LEVITATION) && !this.hasEffect(Effect.SLOW_FALLING)) {
                         double expectedVelocity = (-this.getGravity()) / ((double) this.getDrag()) - ((-this.getGravity()) / ((double) this.getDrag())) * Math.exp(-((double) this.getDrag()) * ((double) (this.inAirTicks - this.startAirTicks)));
                         double diff = (this.speed.y - expectedVelocity) * (this.speed.y - expectedVelocity);
 
@@ -3798,7 +3795,9 @@ public class Player extends EntityHuman implements CommandSender, InventoryHolde
 
         if (!ev.getKeepInventory() && this.level.getGameRules().getBoolean(GameRule.DO_ENTITY_DROPS)) {
             for (Item item : ev.getDrops()) {
-                this.level.dropItem(this, item, null, true, 40);
+                if (!item.hasEnchantment(Enchantment.ID_VANISHING_CURSE)) {
+                    this.level.dropItem(this, item, null, true, 40);
+                }
             }
 
             if (this.inventory != null) {
@@ -4850,6 +4849,10 @@ public class Player extends EntityHuman implements CommandSender, InventoryHolde
         return this.forceResources;
     }
 
+    /**
+     * Start fishing
+     * @param fishingRod fishing rod item
+     */
     public void startFishing(Item fishingRod) {
         Vector3 motion = this.getDirectionVector();
         CompoundTag nbt = new CompoundTag()
@@ -4869,7 +4872,7 @@ public class Player extends EntityHuman implements CommandSender, InventoryHolde
         ProjectileLaunchEvent ev = new ProjectileLaunchEvent(fishingHook);
         this.getServer().getPluginManager().callEvent(ev);
         if (ev.isCancelled()) {
-            fishingHook.kill();
+            fishingHook.close();
         } else {
             fishingHook.spawnToAll();
             this.fishing = fishingHook;
@@ -4878,8 +4881,12 @@ public class Player extends EntityHuman implements CommandSender, InventoryHolde
         }
     }
 
+    /**
+     * Stop fishing
+     * @param click clicked or forced
+     */
     public void stopFishing(boolean click) {
-        if (click) {
+        if (this.fishing != null && click) {
             fishing.reelLine();
         } else if (this.fishing != null) {
             this.fishing.kill();

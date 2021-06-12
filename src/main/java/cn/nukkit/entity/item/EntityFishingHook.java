@@ -284,10 +284,7 @@ public class EntityFishingHook extends EntityProjectile {
             pk.event = EntityEventPacket.FISH_HOOK_TEASE;
             Server.broadcastPacket(this.getViewers().values(), pk);
         }
-        if (!this.closed) {
-            this.kill();
-            this.close();
-        }
+        this.close();
     }
 
     @Override
