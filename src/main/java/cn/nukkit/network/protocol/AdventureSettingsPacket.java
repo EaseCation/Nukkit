@@ -36,6 +36,7 @@ public class AdventureSettingsPacket extends DataPacket {
     public static final int FLYING = 1 << 9;
     public static final int MUTED = 1 << 10;
     public static final int BUILD_AND_MINE = 1 | BITFLAG_SECOND_SET;
+    public static final int MINE = 1 | BITFLAG_SECOND_SET;
     public static final int DOORS_AND_SWITCHES = (1 << 1) | BITFLAG_SECOND_SET;
     public static final int OPEN_CONTAINERS = (1 << 2) | BITFLAG_SECOND_SET;
     public static final int ATTACK_PLAYERS = (1 << 3) | BITFLAG_SECOND_SET;

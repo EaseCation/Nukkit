@@ -400,7 +400,8 @@ public class Player extends EntityHuman implements CommandSender, InventoryHolde
 
     public void setAllowModifyWorld(boolean value) {
         this.getAdventureSettings().set(Type.WORLD_IMMUTABLE, !value);
-        this.getAdventureSettings().set(Type.BUILD_AND_MINE, value);
+        this.getAdventureSettings().set(Type.MINE, value);
+        this.getAdventureSettings().set(Type.BUILD, value);
         this.getAdventureSettings().set(Type.WORLD_BUILDER, value);
         this.getAdventureSettings().update();
     }
@@ -935,6 +936,14 @@ public class Player extends EntityHuman implements CommandSender, InventoryHolde
         this.dataPacket(CraftingManager.packet);
     }
 
+    protected void firstRespawn(Position pos) {
+        RespawnPacket respawnPacket = new RespawnPacket();
+        respawnPacket.x = (float) pos.x;
+        respawnPacket.y = (float) pos.y + this.getEyeHeight();
+        respawnPacket.z = (float) pos.z;
+        this.dataPacket(respawnPacket);
+    }
+
     protected void doFirstSpawn() {
         this.sendPotionEffects(this);
         this.sendData(this);
@@ -952,19 +961,10 @@ public class Player extends EntityHuman implements CommandSender, InventoryHolde
         pos = respawnEvent.getRespawnPosition();
 
         if (this.getHealth() < 1) {
-            RespawnPacket respawnPacket = new RespawnPacket();
             pos = this.getSpawn();
-            respawnPacket.x = (float) pos.x;
-            respawnPacket.y = (float) pos.y + this.getEyeHeight();
-            respawnPacket.z = (float) pos.z;
-            this.dataPacket(respawnPacket);
-        } else {
-            RespawnPacket respawnPacket = new RespawnPacket();
-            respawnPacket.x = (float) pos.x;
-            respawnPacket.y = (float) pos.y + this.getEyeHeight();
-            respawnPacket.z = (float) pos.z;
-            this.dataPacket(respawnPacket);
         }
+
+        this.firstRespawn(pos);
 
         this.sendPlayStatus(PlayStatusPacket.PLAYER_SPAWN);
 
@@ -1263,7 +1263,8 @@ public class Player extends EntityHuman implements CommandSender, InventoryHolde
         if (newSettings == null) {
             newSettings = this.getAdventureSettings().clone(this);
             newSettings.set(Type.WORLD_IMMUTABLE, (gamemode & 0x02) > 0);
-            newSettings.set(Type.BUILD_AND_MINE, (gamemode & 0x02) <= 0);
+            newSettings.set(Type.MINE, (gamemode & 0x02) <= 0);
+            newSettings.set(Type.BUILD, (gamemode & 0x02) <= 0);
             newSettings.set(Type.WORLD_BUILDER, (gamemode & 0x02) <= 0);
             newSettings.set(Type.ALLOW_FLIGHT, (gamemode & 0x01) > 0);
             newSettings.set(Type.NO_CLIP, gamemode == 0x03);
@@ -1927,6 +1928,8 @@ public class Player extends EntityHuman implements CommandSender, InventoryHolde
 
         this.adventureSettings = new AdventureSettings(this)
                 .set(Type.WORLD_IMMUTABLE, isAdventure())
+                .set(Type.MINE, !isAdventure())
+                .set(Type.BUILD, !isAdventure())
                 .set(Type.WORLD_BUILDER, !isAdventure())
                 .set(Type.AUTO_JUMP, true)
                 .set(Type.ALLOW_FLIGHT, isCreative())

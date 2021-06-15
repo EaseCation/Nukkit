@@ -92,17 +92,17 @@ public class NetworkInventoryAction {
                 switch (this.windowId) {
                     case SOURCE_TYPE_CRAFTING_RESULT:
                     case SOURCE_TYPE_CRAFTING_USE_INGREDIENT:
-                        interfaze.setCraftingPart(true);
+                        if (interfaze != null) interfaze.setCraftingPart(true);
                         break;
                     case SOURCE_TYPE_ENCHANT_INPUT:
                     case SOURCE_TYPE_ENCHANT_OUTPUT:
                     case SOURCE_TYPE_ENCHANT_MATERIAL:
-                        interfaze.setEnchantingPart(true);
+                        if (interfaze != null) interfaze.setEnchantingPart(true);
                         break;
                     case SOURCE_TYPE_ANVIL_INPUT:
                     case SOURCE_TYPE_ANVIL_MATERIAL:
                     case SOURCE_TYPE_ANVIL_RESULT:
-                        interfaze.setRepairItemPart(true);
+                        if (interfaze != null) interfaze.setRepairItemPart(true);
                         break;
                 }
                 break;
@@ -112,7 +112,7 @@ public class NetworkInventoryAction {
         this.oldItem = packet.getSlot();
         this.newItem = packet.getSlot();
 
-        if (interfaze.hasNetworkIds()) {
+        if (interfaze != null && interfaze.hasNetworkIds()) {
             this.stackNetworkId = packet.getVarInt();
         }
         return this;

@@ -70,13 +70,14 @@ public class AdventureSettings implements Cloneable {
         WORLD_BUILDER(AdventureSettingsPacket.WORLD_BUILDER, true),
         FLYING(AdventureSettingsPacket.FLYING, false),
         MUTED(AdventureSettingsPacket.MUTED, false),
-        BUILD_AND_MINE(AdventureSettingsPacket.BUILD_AND_MINE, true),
+        MINE(AdventureSettingsPacket.MINE, true),
         DOORS_AND_SWITCHED(AdventureSettingsPacket.DOORS_AND_SWITCHES, true),
         OPEN_CONTAINERS(AdventureSettingsPacket.OPEN_CONTAINERS, true),
         ATTACK_PLAYERS(AdventureSettingsPacket.ATTACK_PLAYERS, true),
         ATTACK_MOBS(AdventureSettingsPacket.ATTACK_MOBS, true),
         OPERATOR(AdventureSettingsPacket.OPERATOR, false),
-        TELEPORT(AdventureSettingsPacket.TELEPORT, false);
+        TELEPORT(AdventureSettingsPacket.TELEPORT, false),
+        BUILD(AdventureSettingsPacket.BUILD, true);
 
         private final int id;
         private final boolean defaultValue;
