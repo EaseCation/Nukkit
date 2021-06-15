@@ -11,8 +11,8 @@ public interface ProtocolInfo {
      */
     int CURRENT_PROTOCOL = Integer.valueOf("141"); //plugins can change it
 
-    String MINECRAFT_VERSION = "v1.14.60";
-    String MINECRAFT_VERSION_NETWORK = "1.14.60";
+    String MINECRAFT_VERSION = "v1.17.0";
+    String MINECRAFT_VERSION_NETWORK = "1.17.0";
 
     int LOGIN_PACKET = 0x01;
     int PLAY_STATUS_PACKET = 0x02;
