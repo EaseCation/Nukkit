@@ -23,7 +23,7 @@ public enum GameRule {
     SEND_COMMAND_FEEDBACK("sendCommandFeedback"),
     SHOW_COORDINATES("showCoordinates"),
     TNT_EXPLODES("tntExplodes"),
-    SHOW_DEATH_MESSAGE("showDeathMessage");
+    SHOW_DEATH_MESSAGES("showDeathMessages");
 
     private final String name;
 
