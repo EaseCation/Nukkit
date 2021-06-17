@@ -35,6 +35,8 @@ public class BinaryStream {
 
     protected BinaryStreamHelper helper;
 
+    public boolean neteaseMode = false;
+
     private static final int MAX_ARRAY_SIZE = Integer.MAX_VALUE - 8;
 
     public BinaryStream() {
@@ -956,7 +958,7 @@ public class BinaryStream {
             stream.putVarInt(ingredient.getCount());
         }
 
-        public int getItemNetworkId(Item item) {
+        public int getItemNetworkId(BinaryStream stream, Item item) {
             return RuntimeItems.getNetworkId(RuntimeItems.getNetworkFullId(item));
         }
 

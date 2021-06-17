@@ -26,58 +26,44 @@ public interface GlobalBlockPaletteInterface {
     }
 
     enum HardcodedVersion {
-        V1_16_100(419),
-        V1_16_210(428),
-        V1_17(440),
-        ;
-
-        private static final HardcodedVersion[] VALUES = HardcodedVersion.values();
-        private static final Int2ObjectMap<HardcodedVersion> versionMap = new Int2ObjectOpenHashMap<>();
-
-        static {
-            for (HardcodedVersion version : VALUES) {
-                versionMap.put(version.protocol, version);
-            }
-        }
-
-        private final int protocol;
-
-        HardcodedVersion(int protocol) {
-            this.protocol = protocol;
-        }
-
-        public int getProtocol() {
-            return this.protocol;
-        }
-
-        public static HardcodedVersion fromProtocol(int protocol) {
-            return versionMap.getOrDefault(protocol, VALUES[VALUES.length - 1]);
-        }
-
-        public static HardcodedVersion[] values0() {
-            return VALUES;
-        }
-    }
-
-    /*enum HardcodedVersion {
         V1_16_100(419, false),
-        V1_16_200_NE(422, false),
+        V1_16_200_NETEASE(422, true),
         V1_16_210(428, false),
         V1_17(440, false),
         ;
 
         private static final HardcodedVersion[] VALUES = HardcodedVersion.values();
-        private static final Int2ObjectMap<HardcodedVersion[]> versionMap = new Int2ObjectOpenHashMap<>();
+        private static final Int2ObjectMap<HardcodedVersion> versionMap = new Int2ObjectOpenHashMap<>();
+        private static final Int2ObjectMap<HardcodedVersion> versionMapNetEase = new Int2ObjectOpenHashMap<>();
 
         static {
-            for (HardcodedVersion version : VALUES) {
-                versionMap.putIfAbsent(version.protocol, new HardcodedVersion[2]);
+            for (int i = 0; i < VALUES.length; i++) {
+                HardcodedVersion version = VALUES[i];
                 if (!version.netease) {
-                    versionMap.get(version.protocol)[0] = version;
-                } else {
-                    versionMap.get(version.protocol)[1] = version;
+                    versionMap.put(version.protocol, version);
+                    HardcodedVersion nextIntl = findNextVersion(version, false);
+                    if (nextIntl != null) { //还有下一个
+                        for (int p = version.protocol; p < nextIntl.protocol; p++) {
+                            versionMap.put(p, version);
+                        }
+                    }
+                }
+                HardcodedVersion nextNE = findNextVersion(version, true);
+                versionMapNetEase.put(version.protocol, version);
+                if (nextNE != null) { //还有下一个
+                    for (int p = version.protocol; p < nextNE.protocol; p++) {
+                        versionMapNetEase.put(p, version);
+                    }
                 }
             }
+        }
+
+        private static HardcodedVersion findNextVersion(HardcodedVersion version, boolean netease) {
+            for (int i = version.ordinal() + 1; i < VALUES.length; i++) {
+                HardcodedVersion v = VALUES[i];
+                if (netease || !v.netease) return v;
+            }
+            return null;
         }
 
         private final int protocol;
@@ -93,14 +79,18 @@ public interface GlobalBlockPaletteInterface {
         }
 
         public static HardcodedVersion fromProtocol(int protocol, boolean netease) {
-            HardcodedVersion[] versions = versionMap.get(protocol);
-            if (versions == null) return VALUES[VALUES.length - 1];
-            if (!netease || versions[1] == null) return versions[0];
-            else return versions[1];
+            if (netease) {
+                return versionMapNetEase.getOrDefault(protocol, VALUES[VALUES.length - 1]);
+            }
+            else {
+                return versionMap.getOrDefault(protocol, VALUES[VALUES.length - 1]);
+            }
         }
 
         public static HardcodedVersion[] values0() {
             return VALUES;
         }
-    }*/
+
+    }
+
 }

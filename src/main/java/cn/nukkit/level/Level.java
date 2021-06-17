@@ -2668,7 +2668,7 @@ public class Level implements ChunkManager, Metadatable {
                     else if (player.getProtocol() < 407) player.sendChunk(x, z, subChunkCount, chunkBlobCache, chunkPacketCache.getPacket());
                     else if (player.getProtocol() < HardcodedVersion.values0()[0].getProtocol())
                         player.sendChunk(x, z, subChunkCount, chunkBlobCache, chunkPacketCache.getPacket116());
-                    else player.sendChunk(x, z, subChunkCount, chunkBlobCache, chunkPacketCache.getPacket(HardcodedVersion.fromProtocol(player.getProtocol())));
+                    else player.sendChunk(x, z, subChunkCount, chunkBlobCache, chunkPacketCache.getPacket(HardcodedVersion.fromProtocol(player.getProtocol(), player.isNetEaseClient())));
                 }
             }
 
@@ -2747,7 +2747,7 @@ public class Level implements ChunkManager, Metadatable {
                     if (player.getProtocol() < 361) player.sendChunk(x, z, subChunkCount, chunkBlobCache, payloadOld);
                     else if (player.getProtocol() < HardcodedVersion.values0()[0].getProtocol())
                         player.sendChunk(x, z, subChunkCount, chunkBlobCache, payload);
-                    else player.sendChunk(x, z, subChunkCount, chunkBlobCache, payloads.get(HardcodedVersion.fromProtocol(player.getProtocol())));
+                    else player.sendChunk(x, z, subChunkCount, chunkBlobCache, payloads.get(HardcodedVersion.fromProtocol(player.getProtocol(), player.isNetEaseClient())));
                 }
             }
 

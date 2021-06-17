@@ -266,6 +266,8 @@ public class Player extends EntityHuman implements CommandSender, InventoryHolde
     protected double lastRightClickTime = 0.0;
     protected Vector3 lastRightClickPos = null;
 
+    protected boolean isNetEaseClient = false;
+
     public int getStartActionTick() {
         return startAction;
     }
@@ -4947,4 +4949,16 @@ public class Player extends EntityHuman implements CommandSender, InventoryHolde
     public void sendCreativeContents() {
         this.inventory.sendCreativeContents();
     }
+
+    /**
+     * 由于万恶的Hardcode，中国版玩家标识移至Player类
+     */
+    public boolean isNetEaseClient() {
+        return isNetEaseClient;
+    }
+
+    public void setIsNetEaseClient(boolean netEaseClient) {
+        isNetEaseClient = netEaseClient;
+    }
+
 }
