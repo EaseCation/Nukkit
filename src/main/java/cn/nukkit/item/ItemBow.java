@@ -68,6 +68,12 @@ public class ItemBow extends ItemTool {
         Enchantment flameEnchant = this.getEnchantment(Enchantment.ID_BOW_FLAME);
         boolean flame = flameEnchant != null && flameEnchant.getLevel() > 0;
 
+        float knockback = 0.29f;
+        Enchantment knockbackEnchant = this.getEnchantment(Enchantment.ID_BOW_KNOCKBACK);
+        if (knockbackEnchant != null) {
+            knockback += 0.1 * knockbackEnchant.getLevel();
+        }
+
         CompoundTag nbt = new CompoundTag()
                 .putList(new ListTag<DoubleTag>("Pos")
                         .add(new DoubleTag("", player.x))
@@ -81,7 +87,8 @@ public class ItemBow extends ItemTool {
                         .add(new FloatTag("", (player.yaw > 180 ? 360 : 0) - (float) player.yaw))
                         .add(new FloatTag("", (float) -player.pitch)))
                 .putShort("Fire", flame ? 45 * 60 : 0)
-                .putDouble("damage", damage);
+                .putDouble("damage", damage)
+                .putFloat("Knockback", knockback);
 
         double p = (double) ticksUsed / 20;
 

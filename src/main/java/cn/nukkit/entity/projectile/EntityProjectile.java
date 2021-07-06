@@ -38,6 +38,8 @@ public abstract class EntityProjectile extends Entity {
 
     protected double damage = 0;
 
+    protected float knockBack = 0.29f;
+
     public EntityProjectile(FullChunk chunk, CompoundTag nbt) {
         this(chunk, nbt, null);
     }
@@ -91,6 +93,9 @@ public abstract class EntityProjectile extends Entity {
         this.setHealth(1);
         if (this.namedTag.contains("Age")) {
             this.age = this.namedTag.getShort("Age");
+        }
+        if (this.namedTag.contains("Knockback")) {
+            this.knockBack = this.namedTag.getFloat("Knockback");
         }
     }
 
