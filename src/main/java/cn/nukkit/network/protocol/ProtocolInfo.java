@@ -181,6 +181,8 @@ public interface ProtocolInfo {
     int SYNC_ENTITY_PROPERTY_PACKET = 0xa5;
     int ADD_VOLUME_ENTITY_PACKET = 0xa6;
     int REMOVE_VOLUME_ENTITY_PACKET = 0xa7;
+    int SIMULATION_TYPE_PACKET = 0xa8;
+    int NPC_DIALOGUE_PACKET = 0xa9;
 
     //NetEase Common Mod
     int PACKET_CHANGE_MODEL = 0xc9;

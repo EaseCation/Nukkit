@@ -1,5 +1,8 @@
 package cn.nukkit.utils;
 
+import cn.nukkit.command.data.CommandDataVersions;
+import cn.nukkit.command.data.CommandEnum;
+import cn.nukkit.command.data.CommandParamType;
 import cn.nukkit.entity.Attribute;
 import cn.nukkit.entity.data.Skin;
 import cn.nukkit.item.Item;
@@ -882,6 +885,20 @@ public class BinaryStream {
             return INSTANCE;
         }
 
+        private final EnumMap<CommandParamType, Integer> commandParameterType2Id = new EnumMap<>(CommandParamType.class);
+
+        protected BinaryStreamHelper() {
+            this.registerCommandParameterTypes();
+        }
+
+        protected void registerCommandParameterTypes() {
+            //TODO: 1.13前的重构
+        }
+
+        protected final void registerCommandParameterType(CommandParamType type, int id) {
+            this.commandParameterType2Id.put(type, id);
+        }
+
         public Enum<? extends Enum<?>> getProtocol() {
             return null;
         }
@@ -958,16 +975,25 @@ public class BinaryStream {
             stream.putVarInt(ingredient.getCount());
         }
 
+        public void putCommandData(BinaryStream stream, Map<String, CommandDataVersions> commands, List<CommandEnum> enums, List<String> postFixes) {
+            //TODO: 1.13前的重构
+            stream.putUnsignedVarInt(0);
+        }
+
         public int getItemNetworkId(BinaryStream stream, Item item) {
             return RuntimeItems.getNetworkId(RuntimeItems.getNetworkFullId(item));
         }
 
-        protected final List<String> extractStringList(BinaryStream stream, Item item, String tagName) {
-            return stream.extractStringList(item, tagName);
+        public final int getCommandParameterTypeId(CommandParamType type) {
+            return this.getCommandParameterTypeId(type, type.getId());
         }
 
-        protected BinaryStreamHelper() {
+        public final int getCommandParameterTypeId(CommandParamType type, int defaultValue) {
+            return this.commandParameterType2Id.getOrDefault(type, defaultValue);
+        }
 
+        protected final List<String> extractStringList(BinaryStream stream, Item item, String tagName) {
+            return stream.extractStringList(item, tagName);
         }
     }
 }
