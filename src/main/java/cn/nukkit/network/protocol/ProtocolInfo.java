@@ -185,6 +185,7 @@ public interface ProtocolInfo {
     int NPC_DIALOGUE_PACKET = 0xa9;
 
     //NetEase Common Mod
+    int PACKET_PY_PRC = 0xc8;
     int PACKET_CHANGE_MODEL = 0xc9;
     int PACKET_STORE_BUY_SUCC = 0xca;
     int PACKET_NETEASE_JSON = 0xcb;
