@@ -80,7 +80,7 @@ public class Skin {
     }
 
     public boolean isValid() {
-        return isValidSkin() && isValidResourcePatch();
+        return /*isValidSkin() && */isValidResourcePatch();
     }
 
     private boolean isValidSkin() {

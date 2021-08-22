@@ -10,6 +10,7 @@ import cn.nukkit.event.entity.EntityExplosionPrimeEvent;
 import cn.nukkit.level.Explosion;
 import cn.nukkit.level.GameRule;
 import cn.nukkit.level.format.FullChunk;
+import cn.nukkit.level.particle.SmokeParticle;
 import cn.nukkit.nbt.tag.CompoundTag;
 import cn.nukkit.network.protocol.AddEntityPacket;
 import cn.nukkit.network.protocol.LevelSoundEventPacket;
@@ -118,9 +119,9 @@ public class EntityPrimedTNT extends Entity implements EntityExplosive {
             return true;
         }
 
-        if (fuse % 5 == 0) {
-            this.setDataProperty(new IntEntityData(DATA_FUSE_LENGTH, fuse));
-        }
+        this.setDataProperty(new IntEntityData(DATA_FUSE_LENGTH, fuse));
+        this.getLevel().addParticle(new SmokeParticle(this.add(0, 1, 0)));
+        this.getLevel().addLevelSoundEvent(this, LevelSoundEventPacket.SOUND_FIZZ);
 
         lastUpdate = currentTick;
 
