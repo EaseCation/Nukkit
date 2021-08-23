@@ -17,6 +17,8 @@ public interface LoginChainData {
 
     String getServerAddress();
 
+    String getDeviceId();
+
     String getDeviceModel();
 
     int getDeviceOS();
