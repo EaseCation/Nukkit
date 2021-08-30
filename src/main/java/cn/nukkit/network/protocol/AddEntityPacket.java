@@ -21,6 +21,7 @@ public class AddEntityPacket extends DataPacket {
     public long entityUniqueId;
     public long entityRuntimeId;
     public int type;
+    public String id;
     public float x;
     public float y;
     public float z;
