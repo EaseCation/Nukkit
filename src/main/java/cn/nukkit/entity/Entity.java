@@ -411,11 +411,21 @@ public abstract class Entity extends Location implements Metadatable {
                 this.setNameTagAlwaysVisible(this.namedTag.getBoolean("CustomNameAlwaysVisible"));
             }
         }
+        if (this.namedTag.contains("ScoreTag")) {
+            this.setScoreTag(this.namedTag.getString("ScoreTag"));
+        }
 
         this.setDataFlag(DATA_FLAGS, DATA_FLAG_HAS_COLLISION, true);
         //Some entities may have default bounding box (0)
         if (this.getHeight() > 0) this.dataProperties.putFloat(DATA_BOUNDING_BOX_HEIGHT, this.getHeight());
         if (this.getWidth() > 0) this.dataProperties.putFloat(DATA_BOUNDING_BOX_WIDTH, this.getWidth());
+
+        if (this.namedTag.contains("BoundingBoxWidth")) {
+            this.setDataProperty(new FloatEntityData(DATA_BOUNDING_BOX_WIDTH, this.namedTag.getFloat("BoundingBoxWidth")), false);
+        }
+        if (this.namedTag.contains("BoundingBoxHeight")) {
+            this.setDataProperty(new FloatEntityData(DATA_BOUNDING_BOX_HEIGHT, this.namedTag.getFloat("BoundingBoxHeight")), false);
+        }
 
         this.scheduleUpdate();
     }
@@ -872,6 +882,11 @@ public abstract class Entity extends Location implements Metadatable {
                 this.namedTag.remove("CustomNameVisible");
                 this.namedTag.remove("CustomNameAlwaysVisible");
             }
+            if (!this.getScoreTag().equals("")) {
+                this.namedTag.putString("ScoreTag", this.getScoreTag());
+            } else {
+                this.namedTag.remove("ScoreTag");
+            }
         }
 
         this.namedTag.putList(new ListTag<DoubleTag>("Pos")
@@ -897,6 +912,8 @@ public abstract class Entity extends Location implements Metadatable {
         this.namedTag.putBoolean("OnGround", this.onGround);
         this.namedTag.putBoolean("Invulnerable", this.invulnerable);
         this.namedTag.putFloat("Scale", this.scale);
+        this.namedTag.putFloat("BoundingBoxWidth", this.getDataPropertyFloat(DATA_BOUNDING_BOX_WIDTH));
+        this.namedTag.putFloat("BoundingBoxHeight", this.getDataPropertyFloat(DATA_BOUNDING_BOX_HEIGHT));
 
         if (!this.effects.isEmpty()) {
             ListTag<CompoundTag> list = new ListTag<>("ActiveEffects");
