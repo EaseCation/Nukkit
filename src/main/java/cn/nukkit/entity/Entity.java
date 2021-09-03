@@ -912,8 +912,12 @@ public abstract class Entity extends Location implements Metadatable {
         this.namedTag.putBoolean("OnGround", this.onGround);
         this.namedTag.putBoolean("Invulnerable", this.invulnerable);
         this.namedTag.putFloat("Scale", this.scale);
-        this.namedTag.putFloat("BoundingBoxWidth", this.getDataPropertyFloat(DATA_BOUNDING_BOX_WIDTH));
-        this.namedTag.putFloat("BoundingBoxHeight", this.getDataPropertyFloat(DATA_BOUNDING_BOX_HEIGHT));
+        if (this.getDataProperties().exists(DATA_BOUNDING_BOX_WIDTH)) {
+            this.namedTag.putFloat("BoundingBoxWidth", this.getDataPropertyFloat(DATA_BOUNDING_BOX_WIDTH));
+        }
+        if (this.getDataProperties().exists(DATA_BOUNDING_BOX_HEIGHT)) {
+            this.namedTag.putFloat("BoundingBoxHeight", this.getDataPropertyFloat(DATA_BOUNDING_BOX_HEIGHT));
+        }
 
         if (!this.effects.isEmpty()) {
             ListTag<CompoundTag> list = new ListTag<>("ActiveEffects");
