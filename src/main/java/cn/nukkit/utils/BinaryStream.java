@@ -885,7 +885,7 @@ public class BinaryStream {
             return INSTANCE;
         }
 
-        private final EnumMap<CommandParamType, Integer> commandParameterType2Id = new EnumMap<>(CommandParamType.class);
+        private final Map<CommandParamType, Integer> commandParameterType2Id = new EnumMap<>(CommandParamType.class);
 
         protected BinaryStreamHelper() {
             this.registerCommandParameterTypes();

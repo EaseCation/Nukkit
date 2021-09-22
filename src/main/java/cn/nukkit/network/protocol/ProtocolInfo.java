@@ -183,6 +183,10 @@ public interface ProtocolInfo {
     int REMOVE_VOLUME_ENTITY_PACKET = 0xa7;
     int SIMULATION_TYPE_PACKET = 0xa8;
     int NPC_DIALOGUE_PACKET = 0xa9;
+    int EDU_URI_RESOURCE_PACKET = 0xaa;
+    int CREATE_PHOTO_PACKET = 0xab;
+    int UPDATE_SUB_CHUNK_BLOCKS_PACKET = 0xac;
+    int PHOTO_INFO_REQUEST_PACKET = 0xad;
 
     //NetEase Common Mod
     int PACKET_PY_PRC = 0xc8;
