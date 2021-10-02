@@ -65,6 +65,11 @@ public abstract class Command {
         this.label = name;
         this.description = description;
         this.usageMessage = usageMessage == null ? "/" + name : usageMessage;
+        if (aliases != null && aliases.length > 0) {
+            for (int i = 0; i < aliases.length; i++) {
+                aliases[i] = aliases[i].toLowerCase();
+            }
+        }
         this.aliases = aliases;
         this.activeAliases = aliases;
         this.timing = Timings.getCommandTiming(this);

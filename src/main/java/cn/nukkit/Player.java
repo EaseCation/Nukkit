@@ -4967,4 +4967,10 @@ public class Player extends EntityHuman implements CommandSender, InventoryHolde
         isNetEaseClient = netEaseClient;
     }
 
+    /**
+     * 使用 AnimateEntityPacket 播放动画. 1.16.100+需要重写此方法.
+     */
+    public void playAnimation(String animation, long entityRuntimeIds) {
+
+    }
 }

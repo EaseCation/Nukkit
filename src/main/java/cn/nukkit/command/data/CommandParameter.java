@@ -1,10 +1,15 @@
 package cn.nukkit.command.data;
 
+import cn.nukkit.NukkitSharedConstants;
+import com.google.common.base.CaseFormat;
 import lombok.ToString;
+import lombok.extern.log4j.Log4j2;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Objects;
 
+@Log4j2
 @ToString
 public class CommandParameter {
 
@@ -39,7 +44,7 @@ public class CommandParameter {
     }
 
     public CommandParameter(String name, CommandParamType type, boolean optional) {
-        this.name = name;
+        this.name = bedrockStyleParamName(name);
         this.type = type;
         this.optional = optional;
     }
@@ -53,14 +58,14 @@ public class CommandParameter {
     }
 
     public CommandParameter(String name, boolean optional, String enumType) {
-        this.name = name;
+        this.name = bedrockStyleParamName(name);
         this.type = CommandParamType.RAWTEXT;
         this.optional = optional;
         this.enumData = new CommandEnum(enumType, new ArrayList<>());
     }
 
     public CommandParameter(String name, boolean optional, String[] enumValues) {
-        this.name = name;
+        this.name = bedrockStyleParamName(name);
         this.type = CommandParamType.RAWTEXT;
         this.optional = optional;
         this.enumData = new CommandEnum(name + "Enums", Arrays.asList(enumValues));
@@ -91,5 +96,16 @@ public class CommandParameter {
         }
 
         return CommandParamType.RAWTEXT;
+    }
+
+    private static String bedrockStyleParamName(String name) {
+        Objects.requireNonNull(name);
+        if (NukkitSharedConstants.ENABLE_COMMAND_PARAMETER_NAME_WARNING) {
+            if (!name.matches("[a-zA-Z]+")) {
+                log.warn("Unexpected command parameter name: {}", name, new Throwable());
+            }
+        }
+        return CaseFormat.LOWER_UNDERSCORE.to(CaseFormat.LOWER_CAMEL, name.trim().replace(" ", "_")
+                .replace("|", "_or_"));
     }
 }

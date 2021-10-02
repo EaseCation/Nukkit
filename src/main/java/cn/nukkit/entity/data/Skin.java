@@ -53,7 +53,7 @@ public class Skin {
     private String skinColor = "#0";
     private String armSize = "wide";
     private boolean trusted = true;
-    private String geometryDataEngineVersion = "";
+    private String geometryDataEngineVersion = "0.0.0";
 
     static {
         Arrays.fill(FULL_WHITE_SKIN, (byte) 0xff);
