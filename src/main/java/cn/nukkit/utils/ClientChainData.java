@@ -102,6 +102,11 @@ public final class ClientChainData implements LoginChainData {
     }
 
     @Override
+    public void setCurrentInputMode(int mode) {
+        this.currentInputMode = mode;
+    }
+
+    @Override
     public int getDefaultInputMode() {
         return defaultInputMode;
     }
@@ -113,6 +118,11 @@ public final class ClientChainData implements LoginChainData {
 
     public final static int UI_PROFILE_CLASSIC = 0;
     public final static int UI_PROFILE_POCKET = 1;
+
+    public final static int INPUT_MOUSE = 1;
+    public final static int INPUT_TOUCH = 2;
+    public final static int INPUT_GAME_PAD = 3;
+    public final static int INPUT_MOTION_CONTROLLER = 4;
 
     @Override
     public int getUIProfile() {
