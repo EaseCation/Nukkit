@@ -35,6 +35,8 @@ public interface LoginChainData {
 
     int getCurrentInputMode();
 
+    void setCurrentInputMode(int mode);
+
     int getDefaultInputMode();
 
     String getCapeData();
