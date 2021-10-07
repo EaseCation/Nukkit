@@ -14,8 +14,8 @@ public class SetEntityLinkPacket extends DataPacket {
     public static final byte TYPE_RIDE = 1;
     public static final byte TYPE_PASSENGER = 2;
 
-    public long vehicleUniqueId;
-    public long riderUniqueId;
+    public long vehicleUniqueId; //from
+    public long riderUniqueId; //to
     public byte type;
     public byte immediate;
 

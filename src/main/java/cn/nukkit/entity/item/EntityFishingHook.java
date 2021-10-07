@@ -342,7 +342,7 @@ public class EntityFishingHook extends EntityProjectile {
             Server.broadcastPacket(this.hasSpawned.values(), pk);
 
             this.setDataProperty(new Vector3fEntityData(DATA_RIDER_SEAT_POSITION,
-                    new Vector3f(0, entity instanceof EntityHuman ? entity.getMountedYOffset() - entity.getEyeHeight() : entity.getMountedYOffset(), 0)));
+                    entity.getMountedOffset(this).add(0, -entity.getEyeHeight())));
         }
     }
 }
