@@ -269,6 +269,7 @@ public class Effect implements Cloneable {
                     player.setMovementSpeed(player.getMovementSpeed() / (1 - 0.15f * (oldEffect.amplifier + 1)), false);
                 }
                 player.setMovementSpeed(player.getMovementSpeed() * (1 - 0.15f * (this.amplifier + 1)));
+                player.setSprinting(false);
             }
         }
 
@@ -293,10 +294,11 @@ public class Effect implements Cloneable {
             ((Player) entity).dataPacket(pk);
 
             if (this.id == Effect.SPEED) {
-                ((Player) entity).setMovementSpeed(((Player) entity).getMovementSpeed() / (1 + 0.2f * (this.amplifier + 1)));
+                ((Player) entity).setMovementSpeed(Player.DEFAULT_SPEED);
             }
             if (this.id == Effect.SLOWNESS) {
-                ((Player) entity).setMovementSpeed(((Player) entity).getMovementSpeed() / (1 - 0.15f * (this.amplifier + 1)));
+                entity.setSprinting(false);
+                ((Player) entity).setMovementSpeed(Player.DEFAULT_SPEED);
             }
         }
 
