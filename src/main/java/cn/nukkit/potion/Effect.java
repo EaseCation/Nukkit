@@ -294,6 +294,7 @@ public class Effect implements Cloneable {
             ((Player) entity).dataPacket(pk);
 
             if (this.id == Effect.SPEED) {
+                entity.setSprinting(false);
                 ((Player) entity).setMovementSpeed(Player.DEFAULT_SPEED);
             }
             if (this.id == Effect.SLOWNESS) {
