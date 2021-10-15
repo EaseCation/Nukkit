@@ -10,9 +10,12 @@ public class InteractPacket extends DataPacket {
 
     public static final int NETWORK_ID = ProtocolInfo.INTERACT_PACKET;
 
+    public static final int ACTION_NONE = 0;
+    public static final int ACTION_INTERACT = 1;
+    public static final int ACTION_DAMAGE = 2;
     public static final int ACTION_VEHICLE_EXIT = 3;
     public static final int ACTION_MOUSEOVER = 4;
-
+    public static final int ACTION_OPEN_NPC = 5;
     public static final int ACTION_OPEN_INVENTORY = 6;
 
     public int action;
