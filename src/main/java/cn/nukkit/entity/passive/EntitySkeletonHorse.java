@@ -12,6 +12,7 @@ import cn.nukkit.inventory.InventoryHolder;
 import cn.nukkit.inventory.SkeletonHorseInventory;
 import cn.nukkit.item.Item;
 import cn.nukkit.level.format.FullChunk;
+import cn.nukkit.math.Vector3;
 import cn.nukkit.math.Vector3f;
 import cn.nukkit.nbt.NBTIO;
 import cn.nukkit.nbt.tag.CompoundTag;
@@ -176,5 +177,10 @@ public class EntitySkeletonHorse extends EntityAnimal implements EntityRideable,
                 }
             }
         }
+    }
+
+    @Override
+    public void onPlayerRiding(Vector3 pos, double yaw, double pitch) {
+        setPositionAndRotation(pos, yaw, pitch);
     }
 }

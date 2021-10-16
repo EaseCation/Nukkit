@@ -1,5 +1,7 @@
 package cn.nukkit.entity;
 
+import cn.nukkit.math.Vector3;
+
 /**
  * author: MagicDroidX
  * Nukkit Project
@@ -15,4 +17,9 @@ public interface EntityRideable {
     boolean mountEntity(Entity entity);
 
     boolean dismountEntity(Entity entity);
+
+    default void onPlayerRiding(Vector3 pos, double yaw, double pitch) {
+        // Do nothing by default
+    }
+
 }

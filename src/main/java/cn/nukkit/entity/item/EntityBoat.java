@@ -455,4 +455,9 @@ public class EntityBoat extends EntityVehicle {
 
         this.namedTag.putByte("woodID", this.woodID);
     }
+
+    @Override
+    public void onPlayerRiding(Vector3 pos, double yaw, double pitch) {
+        this.setPositionAndRotation(pos, yaw, pitch);
+    }
 }
