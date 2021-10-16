@@ -2314,7 +2314,8 @@ public class Player extends EntityHuman implements CommandSender, InventoryHolde
 
                     if (riding != null) {
                         if (riding instanceof EntityRideable) {
-                            ((EntityRideable) riding).onPlayerRiding(this.temporalVector.setComponents(movePlayerPacket.x, movePlayerPacket.y - 1, movePlayerPacket.z), (movePlayerPacket.headYaw + 90) % 360, 0);
+                            Vector3f offset = riding.getMountedOffset(this);
+                            ((EntityRideable) riding).onPlayerRiding(this.temporalVector.setComponents(movePlayerPacket.x - offset.x, movePlayerPacket.y - offset.y, movePlayerPacket.z - offset.z), (movePlayerPacket.headYaw + 90) % 360, 0);
                         }
                     }
 

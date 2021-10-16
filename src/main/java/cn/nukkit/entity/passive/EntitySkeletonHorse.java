@@ -180,6 +180,47 @@ public class EntitySkeletonHorse extends EntityAnimal implements EntityRideable,
     }
 
     @Override
+    public boolean onUpdate(int currentTick) {
+        if (this.closed) return false;
+
+        int tickDiff = currentTick - this.lastUpdate;
+        if (tickDiff <= 0 && !this.justCreated) return true;
+
+        this.lastUpdate = currentTick;
+        boolean hasUpdate = this.entityBaseTick(tickDiff);
+
+        if (this.isAlive()) {
+            super.onUpdate(currentTick);
+
+            if (this.checkObstruction(this.x, this.y, this.z)) hasUpdate = true;
+
+            this.move(this.motionX, this.motionY, this.motionZ);
+
+            this.motionY -= this.getGravity();
+
+            double friction = 1 - this.getDrag();
+
+            if (this.onGround && (Math.abs(this.motionX) > 0.00001 || Math.abs(this.motionZ) > 0.00001)) {
+                friction *= this.getLevel().getBlock(this.temporalVector.setComponents((int) Math.floor(this.x), (int) Math.floor(this.y - 1), (int) Math.floor(this.z) - 1)).getFrictionFactor();
+            }
+
+            this.motionX *= friction;
+            this.motionY *= friction;
+            this.motionZ *= friction;
+
+            this.updateMovement();
+
+            if (hasControllingPassenger()) {
+                for (Entity passenger : this.getPassengers()) {
+                    passenger.addMovement(this.x, this.y, this.z, this.yaw, this.pitch, this.y);
+                }
+            }
+        }
+
+        return hasUpdate || !this.onGround || Math.abs(this.motionX) > 0.00001 || Math.abs(this.motionY) > 0.00001 || Math.abs(this.motionZ) > 0.00001;
+    }
+
+    @Override
     public void onPlayerRiding(Vector3 pos, double yaw, double pitch) {
         setPositionAndRotation(pos, yaw, pitch);
     }
