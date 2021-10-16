@@ -2619,6 +2619,13 @@ public class Player extends EntityHuman implements CommandSender, InventoryHolde
 
                             ((EntityRideable) riding).mountEntity(this);
                             break;
+                        case InteractPacket.ACTION_OPEN_INVENTORY:
+                            if (!(targetEntity instanceof InventoryHolder)) {
+                                break;
+                            }
+
+                            ((InventoryHolder) targetEntity).openInventory(this);
+                            break;
                     }
                     break;
                 case ProtocolInfo.BLOCK_PICK_REQUEST_PACKET:

@@ -28,6 +28,8 @@ public class Attribute implements Cloneable {
     public static final int ATTACK_DAMAGE = 8;
     public static final int EXPERIENCE_LEVEL = 9;
     public static final int EXPERIENCE = 10;
+    public static final int JUMP_STRENGTH = 11;
+    public static final int LUCK = 12;
 
     protected static Int2ObjectMap<Attribute> attributes = new Int2ObjectOpenHashMap<>();
 
@@ -61,7 +63,8 @@ public class Attribute implements Cloneable {
         addAttribute(ATTACK_DAMAGE, "minecraft:attack_damage", 0.00f, 340282346638528859811704183484516925440.00f, 1.00f, false);
         addAttribute(EXPERIENCE_LEVEL, "minecraft:player.level", 0.00f, 24791.00f, 0.00f);
         addAttribute(EXPERIENCE, "minecraft:player.experience", 0.00f, 1.00f, 0.00f);
-        //TODO: minecraft:luck (for fishing?)
+        addAttribute(JUMP_STRENGTH, "minecraft:horse.jump_strength", 0.0f, 2.0f, 0.7f);
+        addAttribute(LUCK, "minecraft:luck", -1024f, 1024f, 0f);
     }
 
     public static Attribute addAttribute(int id, String name, float minValue, float maxValue, float defaultValue) {

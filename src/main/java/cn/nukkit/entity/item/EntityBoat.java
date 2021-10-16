@@ -185,7 +185,7 @@ public class EntityBoat extends EntityVehicle {
             }
 
 //            if (this.hasControllingPassenger() && waterDiff > 1.7) {
-//                for (Entity passenger : this.passengers) {
+//                for (Entity passenger : new ArrayList<>(this.passengers)) {
 //                    this.dismountEntity(passenger);
 //                }
 //            }
