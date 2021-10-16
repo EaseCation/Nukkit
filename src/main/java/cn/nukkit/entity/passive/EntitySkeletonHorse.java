@@ -82,8 +82,10 @@ public class EntitySkeletonHorse extends EntityAnimal implements EntityRideable,
         this.setDataProperty(new IntEntityData(DATA_CONTAINER_BASE_SIZE, inventory.getSize()));
         this.setDataProperty(new IntEntityData(DATA_CONTAINER_EXTRA_SLOTS_PER_STRENGTH, 0));
 
+        this.setDataFlag(DATA_FLAGS, DATA_FLAG_CAN_WALK, true);
         this.setDataFlag(DATA_FLAGS, DATA_FLAG_TAMED, true);
         this.setDataFlag(DATA_FLAGS, DATA_FLAG_WASD_CONTROLLED, true);
+        this.setDataFlag(DATA_FLAGS, DATA_FLAG_GRAVITY, true);
     }
 
     @Override

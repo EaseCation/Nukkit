@@ -220,35 +220,45 @@ public abstract class Entity extends Location implements Metadatable {
     public static final int DATA_FLAG_CAN_CLIMB = 19;
     public static final int DATA_FLAG_SWIMMER = 20;
     public static final int DATA_FLAG_CAN_FLY = 21;
-    public static final int DATA_FLAG_RESTING = 22;
-    public static final int DATA_FLAG_SITTING = 23;
-    public static final int DATA_FLAG_ANGRY = 24;
-    public static final int DATA_FLAG_INTERESTED = 25;
-    public static final int DATA_FLAG_CHARGED = 26;
-    public static final int DATA_FLAG_TAMED = 27;
-    public static final int DATA_FLAG_LEASHED = 28;
-    public static final int DATA_FLAG_SHEARED = 29;
-    public static final int DATA_FLAG_GLIDING = 30;
-    public static final int DATA_FLAG_ELDER = 31;
-    public static final int DATA_FLAG_MOVING = 32;
-    public static final int DATA_FLAG_BREATHING = 33;
-    public static final int DATA_FLAG_CHESTED = 34;
-    public static final int DATA_FLAG_STACKABLE = 35;
-    public static final int DATA_FLAG_SHOWBASE = 36;
-    public static final int DATA_FLAG_REARING = 37;
-    public static final int DATA_FLAG_VIBRATING = 38;
-    public static final int DATA_FLAG_IDLING = 39;
-    public static final int DATA_FLAG_EVOKER_SPELL = 40;
-    public static final int DATA_FLAG_CHARGE_ATTACK = 41;
-    public static final int DATA_FLAG_WASD_CONTROLLED = 42;
-    public static final int DATA_FLAG_CAN_POWER_JUMP = 43;
-    public static final int DATA_FLAG_LINGER = 44;
-    public static final int DATA_FLAG_HAS_COLLISION = 45;
-    public static final int DATA_FLAG_GRAVITY = 46;
-    public static final int DATA_FLAG_FIRE_IMMUNE = 47;
-    public static final int DATA_FLAG_DANCING = 48;
-
-    public static final int DATA_FLAG_SWIMMING = 55;  //1.4+ only
+    public static final int DATA_FLAG_CAN_WALK = 22;
+    public static final int DATA_FLAG_RESTING = 23;
+    public static final int DATA_FLAG_SITTING = 24;
+    public static final int DATA_FLAG_ANGRY = 25;
+    public static final int DATA_FLAG_INTERESTED = 26;
+    public static final int DATA_FLAG_CHARGED = 27;
+    public static final int DATA_FLAG_TAMED = 28;
+    public static final int DATA_FLAG_ORPHANED = 29;
+    public static final int DATA_FLAG_LEASHED = 30;
+    public static final int DATA_FLAG_SHEARED = 31;
+    public static final int DATA_FLAG_GLIDING = 32;
+    public static final int DATA_FLAG_ELDER = 33;
+    public static final int DATA_FLAG_MOVING = 34;
+    public static final int DATA_FLAG_BREATHING = 35;
+    public static final int DATA_FLAG_CHESTED = 36;
+    public static final int DATA_FLAG_STACKABLE = 37;
+    public static final int DATA_FLAG_SHOWBASE = 38;
+    public static final int DATA_FLAG_REARING = 39;
+    public static final int DATA_FLAG_VIBRATING = 40;
+    public static final int DATA_FLAG_IDLING = 41;
+    public static final int DATA_FLAG_EVOKER_SPELL = 42;
+    public static final int DATA_FLAG_CHARGE_ATTACK = 43;
+    public static final int DATA_FLAG_WASD_CONTROLLED = 44;
+    public static final int DATA_FLAG_CAN_POWER_JUMP = 45;
+    public static final int DATA_FLAG_LINGER = 46;
+    public static final int DATA_FLAG_HAS_COLLISION = 47;
+    public static final int DATA_FLAG_GRAVITY = 48;
+    public static final int DATA_FLAG_FIRE_IMMUNE = 49;
+    public static final int DATA_FLAG_DANCING = 50;
+	public static final int DATA_FLAG_ENCHANTED = 51;
+	public static final int DATA_FLAG_RETURN_TRIDENT = 52;
+	public static final int DATA_FLAG_CONTAINER_IS_PRIVATE = 53;
+	public static final int DATA_FLAG_TRANSFORMING = 54;
+	public static final int DATA_FLAG_SPIN_ATTACK = 55;
+	public static final int DATA_FLAG_SWIMMING = 56;
+	public static final int DATA_FLAG_BRIBED = 57;
+	public static final int DATA_FLAG_PREGNANT = 58;
+	public static final int DATA_FLAG_LAYING_EGG = 59;
+	public static final int DATA_FLAG_RIDER_CAN_PICK = 60;
 
     public static long entityCount = 2;
 
@@ -625,7 +635,7 @@ public abstract class Entity extends Location implements Metadatable {
     }
 
     public boolean isImmobile() {
-        return this.getDataFlag(DATA_FLAGS, DATA_FLAG_IMMOBILE);
+        return this.getDataFlag(DATA_FLAGS, DATA_FLAG_NO_AI);
     }
 
     public void setImmobile() {
@@ -633,7 +643,7 @@ public abstract class Entity extends Location implements Metadatable {
     }
 
     public void setImmobile(boolean value) {
-        this.setDataFlag(DATA_FLAGS, DATA_FLAG_IMMOBILE, value);
+        this.setDataFlag(DATA_FLAGS, DATA_FLAG_NO_AI, value);
     }
 
     public boolean canClimb() {
