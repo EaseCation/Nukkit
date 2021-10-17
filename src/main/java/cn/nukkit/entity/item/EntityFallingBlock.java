@@ -87,6 +87,7 @@ public class EntityFallingBlock extends Entity {
             return;
         }
 
+        this.dataProperties.putLong(DATA_NUKKIT_FLAGS, NUKKIT_FLAG_VARIANT_BLOCK); //HACK: multi-version handle
         setDataProperty(new IntEntityData(DATA_VARIANT, this.getBlock() | this.getDamage() << 8));
     }
 

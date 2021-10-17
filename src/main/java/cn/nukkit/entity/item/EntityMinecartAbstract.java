@@ -8,6 +8,7 @@ import cn.nukkit.block.Block;
 import cn.nukkit.block.BlockRail;
 import cn.nukkit.block.BlockRailActivator;
 import cn.nukkit.block.BlockRailPowered;
+import cn.nukkit.entity.Entity;
 import cn.nukkit.entity.EntityHuman;
 import cn.nukkit.entity.EntityLiving;
 import cn.nukkit.entity.data.ByteEntityData;
@@ -20,7 +21,6 @@ import cn.nukkit.item.ItemMinecart;
 import cn.nukkit.level.GameRule;
 import cn.nukkit.level.Location;
 import cn.nukkit.level.format.FullChunk;
-import cn.nukkit.level.particle.SmokeParticle;
 import cn.nukkit.math.MathHelper;
 import cn.nukkit.math.NukkitMath;
 import cn.nukkit.math.Vector3;
@@ -42,7 +42,6 @@ import java.util.Objects;
  */
 public abstract class EntityMinecartAbstract extends EntityVehicle {
 
-    private String entityName;
     private static final int[][][] matrix = new int[][][]{
             {{0, 0, -1}, {0, 0, 1}},
             {{-1, 0, 0}, {1, 0, 0}},
@@ -94,23 +93,9 @@ public abstract class EntityMinecartAbstract extends EntityVehicle {
         return 0.1F;
     }
 
-    public void setName(String name) {
-        entityName = name;
-    }
-
-    @Override
-    public String getName() {
-        return entityName;
-    }
-
     @Override
     public float getBaseOffset() {
         return 0.35F;
-    }
-
-    @Override
-    public boolean hasCustomName() {
-        return entityName != null;
     }
 
     @Override
@@ -211,16 +196,16 @@ public abstract class EntityMinecartAbstract extends EntityVehicle {
             }
 
             // Collisions
-            for (cn.nukkit.entity.Entity entity : level.getNearbyEntities(boundingBox.grow(0.2D, 0, 0.2D), this)) {
+            for (Entity entity : level.getNearbyEntities(boundingBox.grow(0.2D, 0, 0.2D), this)) {
                 if (!passengers.contains(entity) && entity instanceof EntityMinecartAbstract) {
                     entity.applyEntityCollision(this);
                 }
             }
 
-            Iterator<cn.nukkit.entity.Entity> linkedIterator = this.passengers.iterator();
+            Iterator<Entity> linkedIterator = this.passengers.iterator();
 
             while (linkedIterator.hasNext()) {
-                cn.nukkit.entity.Entity linked = linkedIterator.next();
+                Entity linked = linkedIterator.next();
 
                 if (!linked.isAlive()) {
                     if (linked.riding == this) {
@@ -292,14 +277,11 @@ public abstract class EntityMinecartAbstract extends EntityVehicle {
     public void close() {
         super.close();
 
-        for (cn.nukkit.entity.Entity entity : passengers) {
+        for (Entity entity : passengers) {
             if (entity instanceof Player) {
                 entity.riding = null;
             }
         }
-
-        SmokeParticle particle = new SmokeParticle(this);
-        level.addParticle(particle);
     }
 
     @Override
@@ -309,15 +291,15 @@ public abstract class EntityMinecartAbstract extends EntityVehicle {
         }
 
         if (blockInside == null) {
-            mountEntity(p);
+            mountEntity(p, true);
         }
 
         return super.onInteract(p, item, clickedPos);
     }
 
     @Override
-    public void applyEntityCollision(cn.nukkit.entity.Entity entity) {
-        if (entity != riding && !(entity instanceof Player && ((Player) entity).getGamemode() == Player.SPECTATOR)) {
+    public void applyEntityCollision(Entity entity) {
+        if (entity != riding && !(entity instanceof Player && ((Player) entity).isSpectator())) {
             if (entity instanceof EntityLiving
                     && !(entity instanceof EntityHuman)
                     && motionX * motionX + motionZ * motionZ > 0.01D
@@ -356,7 +338,7 @@ public abstract class EntityMinecartAbstract extends EntityVehicle {
                     double desinityX = mine.x - x;
                     double desinityZ = mine.z - z;
                     Vector3 vector = new Vector3(desinityX, 0, desinityZ).normalize();
-                    Vector3 vec = new Vector3((double) MathHelper.cos((float) yaw * 0.017453292F), 0, (double) MathHelper.sin((float) yaw * 0.017453292F)).normalize();
+                    Vector3 vec = new Vector3(MathHelper.cos((float) yaw * 0.017453292F), 0, MathHelper.sin((float) yaw * 0.017453292F)).normalize();
                     double desinityXZ = Math.abs(vector.dot(vec));
 
                     if (desinityXZ < 0.800000011920929D) {
@@ -421,7 +403,7 @@ public abstract class EntityMinecartAbstract extends EntityVehicle {
         motionZ = NukkitMath.clamp(motionZ, -getMaxSpeed(), getMaxSpeed());
 
         if (!hasUpdated) {
-            for (cn.nukkit.entity.Entity linked : passengers) {
+            for (Entity linked : passengers) {
                 linked.setSeatPosition(getMountedOffset(linked).add(0, 0.35f));
                 updatePassengerPosition(linked);
             }
@@ -447,7 +429,7 @@ public abstract class EntityMinecartAbstract extends EntityVehicle {
         fallDistance = 0.0F;
         Vector3 vector = getNextRail(x, y, z);
 
-        y = (double) dy;
+        y = dy;
         boolean isPowered = false;
         boolean isSlowed = false;
 
@@ -476,8 +458,8 @@ public abstract class EntityMinecartAbstract extends EntityVehicle {
         }
 
         int[][] facing = matrix[block.getRealMeta()];
-        double facing1 = (double) (facing[1][0] - facing[0][0]);
-        double facing2 = (double) (facing[1][2] - facing[0][2]);
+        double facing1 = facing[1][0] - facing[0][0];
+        double facing2 = facing[1][2] - facing[0][2];
         double speedOnTurns = Math.sqrt(facing1 * facing1 + facing2 * facing2);
         double realFacing = motionX * facing1 + motionZ * facing2;
 
@@ -499,7 +481,7 @@ public abstract class EntityMinecartAbstract extends EntityVehicle {
         double playerYawPos; // PlayerYawPositive
         double motion;
 
-        cn.nukkit.entity.Entity linked = getPassenger();
+        Entity linked = getPassenger();
 
         if (linked instanceof EntityLiving) {
             expectedSpeed = currentSpeed;

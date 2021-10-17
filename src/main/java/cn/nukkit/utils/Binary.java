@@ -11,7 +11,6 @@ import it.unimi.dsi.fastutil.ints.Int2ObjectMap;
 import it.unimi.dsi.fastutil.io.FastByteArrayInputStream;
 
 import java.io.IOException;
-import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
 import java.nio.charset.StandardCharsets;
 import java.util.Arrays;
@@ -103,6 +102,7 @@ public class Binary {
     public static byte[] writeMetadata(EntityMetadata metadata) {
         BinaryStream stream = new BinaryStream();
         Int2ObjectMap<EntityData> map = metadata.getMap();
+        map.remove(Entity.DATA_NUKKIT_FLAGS);
         stream.putUnsignedVarInt(map.size());
         for (int id : map.keySet()) {
             EntityData d = map.get(id);

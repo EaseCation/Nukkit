@@ -1475,6 +1475,10 @@ public class Level implements ChunkManager, Metadatable {
     }
 
     public AxisAlignedBB[] getCollisionCubes(Entity entity, AxisAlignedBB bb, boolean entities) {
+        return getCollisionCubes(entity, bb, entities, false);
+    }
+
+    public AxisAlignedBB[] getCollisionCubes(Entity entity, AxisAlignedBB bb, boolean entities, boolean solidEntities) {
         int minX = NukkitMath.floorDouble(bb.getMinX());
         int minY = NukkitMath.floorDouble(bb.getMinY());
         int minZ = NukkitMath.floorDouble(bb.getMinZ());
@@ -1495,9 +1499,11 @@ public class Level implements ChunkManager, Metadatable {
             }
         }
 
-        if (entities) {
+        if (entities || solidEntities) {
             for (Entity ent : this.getCollidingEntities(bb.grow(0.25f, 0.25f, 0.25f), entity)) {
-                collides.add(ent.boundingBox.clone());
+                if (solidEntities && !ent.canPassThrough()) {
+                    collides.add(ent.boundingBox.clone());
+                }
             }
         }
 

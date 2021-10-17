@@ -14,10 +14,12 @@ public class SetEntityLinkPacket extends DataPacket {
     public static final byte TYPE_RIDE = 1;
     public static final byte TYPE_PASSENGER = 2;
 
+    //TODO: 使用EntityLink类以便在多版本助手中直接重写putEntityLink方法
     public long vehicleUniqueId; //from
     public long riderUniqueId; //to
     public byte type;
     public byte immediate;
+    public boolean riderInitiated;
 
     @Override
     public void decode() {

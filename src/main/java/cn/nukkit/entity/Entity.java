@@ -126,7 +126,7 @@ public abstract class Entity extends Location implements Metadatable {
     public static final int DATA_RIDER_SEAT_POSITION = 57; //vector3f
     public static final int DATA_RIDER_ROTATION_LOCKED = 58; //byte
     public static final int DATA_RIDER_MAX_ROTATION = 59; //float
-    public static final int DATA_RIDER_MIN_ROTATION = 59; //float
+    public static final int DATA_RIDER_MIN_ROTATION = 60; //float
     public static final int DATA_SEAT_LOCK_RIDER_ROTATION_DEGREES = 59; //float
     public static final int DATA_SEAT_ROTATION_OFFSET = 60; //float
     public static final int DATA_AREA_EFFECT_CLOUD_RADIUS = 61; //float
@@ -147,9 +147,9 @@ public abstract class Entity extends Location implements Metadatable {
     public static final int DATA_MAX_STRENGTH = 76; //int
     public static final int DATA_SPELL_CASTING_COLOR = 77; //int
     public static final int DATA_LIMITED_LIFE = 78;
-
+    public static final int DATA_ARMOR_STAND_POSE_INDEX = 1000; // int //TODO: use enum
+    public static final int DATA_ENDER_CRYSTAL_TIME_OFFSET = 1001; // int
     public static final int DATA_ALWAYS_SHOW_NAMETAG = 80; // byte
-
     public static final int DATA_COLOR_2 = 81; // byte
     public static final int DATA_NAME_AUTHOR = 82;
     public static final int DATA_SCORE_TAG = 83; //String
@@ -188,8 +188,15 @@ public abstract class Entity extends Location implements Metadatable {
     public static final int DATA_NEARBY_CURED_DISCOUNT_TIMESTAMP = 116;
     public static final int DATA_HITBOX = 117;
     public static final int DATA_IS_BUOYANT = 118;
-    public static final int DATA_BUOYANCY_DATA = 119;
+    public static final int DATA_FREEZING_EFFECT_STRENGTH = 119;
+    public static final int DATA_BUOYANCY_DATA = 120;
+    public static final int DATA_GOAT_HORN_COUNT = 121;
+    public static final int DATA_BASE_RUNTIME_ID = 122;
+    public static final int DATA_DEFINE_PROPERTIES = 123;
+    public static final int DATA_UPDATE_PROPERTIES = 124;
+    public static final int DATA_NUKKIT_FLAGS = 999; // custom
 
+    public static final long NUKKIT_FLAG_VARIANT_BLOCK = 1L << 1;
 
     public static final int DATA_FLAG_ONFIRE = 0;
     public static final int DATA_FLAG_SNEAKING = 1;
@@ -432,6 +439,7 @@ public abstract class Entity extends Location implements Metadatable {
         if (this.namedTag.contains("BoundingBoxHeight")) {
             this.setDataProperty(new FloatEntityData(DATA_BOUNDING_BOX_HEIGHT, this.namedTag.getFloat("BoundingBoxHeight")), false);
         }
+        this.dataProperties.putInt(DATA_HEALTH, (int) this.getHealth());
 
         this.scheduleUpdate();
     }
@@ -978,10 +986,10 @@ public abstract class Entity extends Location implements Metadatable {
         /*
         if (this.riding != null) {
             SetEntityLinkPacket pkk = new SetEntityLinkPacket();
-            pkk.rider = this.riding.getId();
-            pkk.riding = this.getId();
+            pkk.vehicleUniqueId = this.riding.getId();
+            pkk.riderUniqueId = this.getId();
             pkk.type = 1;
-            pkk.unknownByte = 1;
+            pkk.immediate = 1;
 
             player.dataPacket(pkk);
         }*/
@@ -1001,6 +1009,12 @@ public abstract class Entity extends Location implements Metadatable {
         addEntity.speedY = (float) this.motionY;
         addEntity.speedZ = (float) this.motionZ;
         addEntity.metadata = this.dataProperties;
+
+//        addEntity.links = new EntityLink[this.passengers.size()];
+//        for (int i = 0; i < addEntity.links.length; i++) {
+//            addEntity.links[i] = new EntityLink(this.getId(), this.passengers.get(i).getId(), i == 0 ? EntityLink.TYPE_RIDER : EntityLink.TYPE_PASSENGER, false, false);
+//        }
+
         return addEntity;
     }
 
@@ -1042,6 +1056,10 @@ public abstract class Entity extends Location implements Metadatable {
         SetEntityDataPacket pk = new SetEntityDataPacket();
         pk.eid = this.getId();
         pk.metadata = data == null ? this.dataProperties : data;
+
+        if (this.dataProperties.exists(DATA_NUKKIT_FLAGS)) {
+            pk.metadata.put(this.dataProperties.get(DATA_NUKKIT_FLAGS));
+        }
 
         for (Player player : players) {
             if (player == this) {
@@ -1264,6 +1282,8 @@ public abstract class Entity extends Location implements Metadatable {
             ((EntityRideable) riding).mountEntity(this);
         }
 
+        updatePassengers();
+
         if (!this.effects.isEmpty()) {
             for (Effect effect : this.effects.values()) {
                 if (effect.canTick()) {
@@ -1431,13 +1451,21 @@ public abstract class Entity extends Location implements Metadatable {
         return mountEntity(entity, TYPE_RIDE);
     }
 
+    public boolean mountEntity(Entity entity, byte mode) {
+        return mountEntity(entity, mode, false);
+    }
+
+    public boolean mountEntity(Entity entity, boolean riderInitiated) {
+        return mountEntity(entity, TYPE_RIDE, riderInitiated);
+    }
+
     /**
      * Mount or Dismounts an Entity from a/into vehicle
      *
      * @param entity The target Entity
      * @return {@code true} if the mounting successful
      */
-    public boolean mountEntity(Entity entity, byte mode) {
+    public boolean mountEntity(Entity entity, byte mode, boolean riderInitiated) {
         Objects.requireNonNull(entity, "The target of the mounting entity can't be null");
 
         if (entity.riding != null) {
@@ -1454,7 +1482,7 @@ public abstract class Entity extends Location implements Metadatable {
                 return false;
             }
 
-            broadcastLinkPacket(entity, mode);
+            broadcastLinkPacket(entity, mode, riderInitiated);
 
             // Add variables to entity
             entity.riding = this;
@@ -1489,10 +1517,15 @@ public abstract class Entity extends Location implements Metadatable {
     }
 
     public void broadcastLinkPacket(Entity rider, byte type) {
+        broadcastLinkPacket(rider, type, false);
+    }
+
+    public void broadcastLinkPacket(Entity rider, byte type, boolean riderInitiated) {
         SetEntityLinkPacket pk = new SetEntityLinkPacket();
         pk.vehicleUniqueId = getId();         // To the?
         pk.riderUniqueId = rider.getId(); // From who?
         pk.type = type;
+        pk.riderInitiated = riderInitiated;
 
         Server.broadcastPacket(this.hasSpawned.values(), pk);
     }
@@ -1836,7 +1869,7 @@ public abstract class Entity extends Location implements Metadatable {
 
             AxisAlignedBB axisalignedbb = this.boundingBox.clone();
 
-            AxisAlignedBB[] list = this.level.getCollisionCubes(this, this.level.getTickRate() > 1 ? this.boundingBox.getOffsetBoundingBox(dx, dy, dz) : this.boundingBox.addCoord(dx, dy, dz), false);
+            AxisAlignedBB[] list = this.level.getCollisionCubes(this, this.boundingBox.addCoord(dx, dy, dz), false);
 
             for (AxisAlignedBB bb : list) {
                 dy = bb.calculateYOffset(this.boundingBox, dy);
@@ -2126,6 +2159,10 @@ public abstract class Entity extends Location implements Metadatable {
     public void kill() {
         this.health = 0;
         this.scheduleUpdate();
+
+//        for (Entity passenger : new ArrayList<>(this.passengers)) {
+//            dismountEntity(passenger);
+//        }
     }
 
     public boolean teleport(Vector3 pos) {

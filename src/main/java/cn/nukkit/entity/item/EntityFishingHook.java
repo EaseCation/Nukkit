@@ -338,7 +338,7 @@ public class EntityFishingHook extends EntityProjectile {
             pk = new SetEntityLinkPacket();
             pk.vehicleUniqueId = entity.getId();
             pk.riderUniqueId = this.getId();
-            pk.type = 2;
+            pk.type = SetEntityLinkPacket.TYPE_PASSENGER;
             Server.broadcastPacket(this.hasSpawned.values(), pk);
 
             this.setDataProperty(new Vector3fEntityData(DATA_RIDER_SEAT_POSITION,

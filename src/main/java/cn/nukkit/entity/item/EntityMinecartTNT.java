@@ -8,7 +8,6 @@ import cn.nukkit.entity.EntityExplosive;
 import cn.nukkit.entity.data.IntEntityData;
 import cn.nukkit.event.entity.EntityExplosionPrimeEvent;
 import cn.nukkit.item.Item;
-import cn.nukkit.item.ItemMinecartTNT;
 import cn.nukkit.level.Explosion;
 import cn.nukkit.level.GameRule;
 import cn.nukkit.level.format.FullChunk;
@@ -114,7 +113,13 @@ public class EntityMinecartTNT extends EntityMinecartAbstract implements EntityE
 
     @Override
     public void dropItem() {
-        level.dropItem(this, new ItemMinecartTNT());
+        super.dropItem();
+        this.level.dropItem(this, Item.get(Item.TNT));
+    }
+
+    @Override
+    public String getName() {
+        return getType().getName();
     }
 
     @Override

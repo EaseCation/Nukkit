@@ -17,6 +17,7 @@ import cn.nukkit.nbt.NBTIO;
 import cn.nukkit.nbt.tag.CompoundTag;
 import cn.nukkit.nbt.tag.ListTag;
 import cn.nukkit.nbt.tag.StringTag;
+import cn.nukkit.network.protocol.types.EntityLink;
 import it.unimi.dsi.fastutil.io.FastByteArrayInputStream;
 
 import java.io.IOException;
@@ -832,6 +833,18 @@ public class BinaryStream {
         this.putVarInt(face.getIndex());
     }
 
+    public void putEntityLink(EntityLink link) {
+        if (this.helper != null) {
+            this.helper.putEntityLink(this, link);
+            return;
+        }
+
+        putEntityUniqueId(link.fromEntityUniquieId);
+        putEntityUniqueId(link.toEntityUniquieId);
+        putByte(link.type);
+        putBoolean(link.immediate);
+    }
+
     @SuppressWarnings("unchecked")
     public <T> T[] getArray(Class<T> clazz, Function<BinaryStream, T> function) {
         ArrayDeque<T> deque = new ArrayDeque<>();
@@ -973,6 +986,13 @@ public class BinaryStream {
             }
             stream.putVarInt(damage);
             stream.putVarInt(ingredient.getCount());
+        }
+
+        public void putEntityLink(BinaryStream stream, EntityLink link) {
+            stream.putEntityUniqueId(link.fromEntityUniquieId);
+            stream.putEntityUniqueId(link.toEntityUniquieId);
+            stream.putByte(link.type);
+            stream.putBoolean(link.immediate);
         }
 
         public void putCommandData(BinaryStream stream, Map<String, CommandDataVersions> commands, List<CommandEnum> enums, List<String> postFixes) {

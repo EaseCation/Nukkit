@@ -2,6 +2,7 @@ package cn.nukkit.network.protocol;
 
 import cn.nukkit.entity.Attribute;
 import cn.nukkit.entity.data.EntityMetadata;
+import cn.nukkit.network.protocol.types.EntityLink;
 import cn.nukkit.utils.Binary;
 import lombok.ToString;
 
@@ -32,7 +33,7 @@ public class AddEntityPacket extends DataPacket {
     public float pitch;
     public EntityMetadata metadata = new EntityMetadata();
     public Attribute[] attributes = new Attribute[0];
-    public final Object[][] links = new Object[0][3];
+    public EntityLink[] links = new EntityLink[0];
 
     @Override
     public void decode() {
@@ -52,10 +53,8 @@ public class AddEntityPacket extends DataPacket {
         this.putAttributeList(this.attributes);
         this.put(Binary.writeMetadata(this.metadata));
         this.putUnsignedVarInt(this.links.length);
-        for (Object[] link : this.links) {
-            this.putVarLong((long) link[0]);
-            this.putVarLong((long) link[1]);
-            this.putByte((byte) link[2]);
+        for (EntityLink link : this.links) {
+            this.putEntityLink(link);
         }
     }
 }

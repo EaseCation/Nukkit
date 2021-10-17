@@ -16,7 +16,6 @@ import cn.nukkit.item.ItemBoat;
 import cn.nukkit.level.GameRule;
 import cn.nukkit.level.Location;
 import cn.nukkit.level.format.FullChunk;
-import cn.nukkit.level.particle.SmokeParticle;
 import cn.nukkit.math.AxisAlignedBB;
 import cn.nukkit.math.NukkitMath;
 import cn.nukkit.math.Vector3;
@@ -35,8 +34,6 @@ public class EntityBoat extends EntityVehicle {
 
     public static final int NETWORK_ID = 90;
 
-    public static final int DATA_WOOD_ID = 20;
-
     public static final Vector3f RIDER_PLAYER_OFFSET = new Vector3f(0, 1.02001f, 0);
     public static final Vector3f RIDER_OFFSET = new Vector3f(0, -0.2f, 0);
 
@@ -51,6 +48,7 @@ public class EntityBoat extends EntityVehicle {
     public static final double SINKING_MAX_SPEED = 0.005;
 
     protected boolean sinking = true;
+    public int woodID;
 
     public EntityBoat(FullChunk chunk, CompoundTag nbt) {
         super(chunk, nbt);
@@ -63,7 +61,11 @@ public class EntityBoat extends EntityVehicle {
     protected void initEntity() {
         super.initEntity();
 
-        this.dataProperties.putByte(DATA_WOOD_ID, this.namedTag.getByte("woodID"));
+        this.setDataFlag(DATA_FLAGS, DATA_FLAG_STACKABLE, true, false);
+        this.setDataFlag(DATA_FLAGS, DATA_FLAG_GRAVITY, true, false);
+        this.dataProperties.putInt(DATA_VARIANT, woodID = this.namedTag.getByte("woodID"));
+        this.dataProperties.putBoolean(DATA_IS_BUOYANT, true);
+        this.dataProperties.putString(DATA_BUOYANCY_DATA, "{\"apply_gravity\":true,\"base_buoyancy\":1.0,\"big_wave_probability\":0.02999999932944775,\"big_wave_speed\":10.0,\"drag_down_on_buoyancy_removed\":0.0,\"liquid_blocks\":[\"minecraft:water\",\"minecraft:flowing_water\"],\"simulate_waves\":true}");
     }
 
     @Override
@@ -140,9 +142,6 @@ public class EntityBoat extends EntityVehicle {
         for (Entity linkedEntity : this.passengers) {
             linkedEntity.riding = null;
         }
-
-        SmokeParticle particle = new SmokeParticle(this);
-        this.level.addParticle(particle);
     }
 
     @Override
@@ -185,11 +184,11 @@ public class EntityBoat extends EntityVehicle {
                 hasUpdate = true;
             }
 
-            if (this.hasControllingPassenger() && waterDiff > 1.7) {
-                for (Entity passenger : this.passengers) {
-                    this.dismountEntity(passenger);
-                }
-            }
+//            if (this.hasControllingPassenger() && waterDiff > 1.7) {
+//                for (Entity passenger : this.passengers) {
+//                    this.dismountEntity(passenger);
+//                }
+//            }
 
             this.move(this.motionX, this.motionY, this.motionZ);
 
@@ -221,11 +220,11 @@ public class EntityBoat extends EntityVehicle {
             //TODO: lily pad collision
             this.updateMovement();
 
-            if (hasControllingPassenger()) {
-                for (Entity passenger : this.getPassengers()) {
-                    passenger.addMovement(this.x, this.y, this.z, this.yaw, this.pitch, this.y);
-                }
-            }
+//            if (hasControllingPassenger()) {
+//                for (Entity passenger : this.getPassengers()) {
+//                    passenger.addMovement(this.x, this.y, this.z, this.yaw, this.pitch, this.y);
+//                }
+//            }
             if (this.passengers.size() < 2) {
                 for (Entity entity : this.level.getCollidingEntities(this.boundingBox.grow(0.20000000298023224, 0.0D, 0.20000000298023224), this)) {
                     if (entity.riding != null || !(entity instanceof EntityLiving) || entity instanceof Player || entity instanceof EntityWaterAnimal || isPassenger(entity)) {
@@ -348,10 +347,10 @@ public class EntityBoat extends EntityVehicle {
 
             entity.setDataProperty(new ByteEntityData(DATA_RIDER_ROTATION_LOCKED, 1));
             entity.setDataProperty(new FloatEntityData(DATA_RIDER_MAX_ROTATION, 90));
+//            entity.setDataProperty(new FloatEntityData(DATA_RIDER_ROTATION_OFFSET, -90)); //TODO: 多版本映射数据不正确需要修改
+            entity.setDataProperty(new FloatEntityData(DATA_RIDER_MIN_ROTATION, this.passengers.indexOf(entity) == 1 ? -90 : 1));
 
-            entity.setDataProperty(new FloatEntityData(DATA_RIDER_MIN_ROTATION, this.passengers.indexOf(entity) == 1 ? -90 : 0));
-
-            //            if(entity instanceof Player && mode == SetEntityLinkPacket.TYPE_RIDE){ //TODO: controlling?
+//            if(entity instanceof Player && mode == SetEntityLinkPacket.TYPE_RIDE){ //TODO: controlling?
 //                entity.setDataProperty(new ByteEntityData(DATA_FLAG_WASD_CONTROLLED))
 //            }
         }
@@ -385,7 +384,7 @@ public class EntityBoat extends EntityVehicle {
             return false;
         }
 
-        super.mountEntity(player);
+        super.mountEntity(player, true);
         return super.onInteract(player, item, clickedPos);
     }
 
@@ -406,7 +405,7 @@ public class EntityBoat extends EntityVehicle {
     public void applyEntityCollision(Entity entity) {
         if (this.riding == null && entity.riding != this && !entity.passengers.contains(this)) {
             if (!entity.boundingBox.intersectsWith(this.boundingBox.grow(0.20000000298023224, -0.1, 0.20000000298023224))
-                    || entity instanceof Player && ((Player) entity).getGamemode() == Player.SPECTATOR) {
+                    || entity instanceof Player && ((Player) entity).isSpectator()) {
                 return;
             }
 
@@ -446,7 +445,14 @@ public class EntityBoat extends EntityVehicle {
         super.kill();
 
         if (level.getGameRules().getBoolean(GameRule.DO_ENTITY_DROPS)) {
-            this.level.dropItem(this, new ItemBoat());
+            this.level.dropItem(this, new ItemBoat(this.woodID));
         }
+    }
+
+    @Override
+    public void saveNBT() {
+        super.saveNBT();
+
+        this.namedTag.putByte("woodID", this.woodID);
     }
 }
