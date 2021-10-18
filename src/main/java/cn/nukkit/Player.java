@@ -4120,6 +4120,9 @@ public class Player extends EntityHuman implements CommandSender, InventoryHolde
         pk.pitch = (float) pitch;
         pk.yaw = (float) yaw;
         pk.mode = mode;
+        if (this.riding != null) {
+            pk.ridingEid = this.riding.getId();
+        }
         pk.setChannel(DataPacket.CHANNEL_PLAYER_MOVING);
 
         if (targets != null) {
