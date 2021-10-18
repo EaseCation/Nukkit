@@ -12,13 +12,11 @@ import cn.nukkit.inventory.InventoryHolder;
 import cn.nukkit.inventory.SkeletonHorseInventory;
 import cn.nukkit.item.Item;
 import cn.nukkit.level.format.FullChunk;
-import cn.nukkit.math.Vector3;
 import cn.nukkit.math.Vector3f;
 import cn.nukkit.nbt.NBTIO;
 import cn.nukkit.nbt.tag.CompoundTag;
 import cn.nukkit.nbt.tag.ListTag;
 import cn.nukkit.network.protocol.AddEntityPacket;
-import cn.nukkit.network.protocol.UpdateAttributesPacket;
 import java.util.stream.Stream;
 
 /**
@@ -50,6 +48,11 @@ public class EntitySkeletonHorse extends EntityAnimal implements EntityRideable,
     }
 
     @Override
+    protected double getStepHeight() {
+        return 1;
+    }
+
+    @Override
     public Vector3f getMountedOffset(Entity entity) {
         if (entity instanceof EntityHuman) {
             float mountedYOffset = getHeight() * 0.75f - 0.1875f;
@@ -61,8 +64,9 @@ public class EntitySkeletonHorse extends EntityAnimal implements EntityRideable,
     }
 
     public void updateSaddled(boolean saddled) {
-        this.setDataFlag(DATA_FLAGS, DATA_FLAG_SADDLED, saddled);
-        this.setDataFlag(DATA_FLAGS, DATA_FLAG_CAN_POWER_JUMP, saddled);
+        // Not working at now for some reason. Disable temporary
+        // this.setDataFlag(DATA_FLAGS, DATA_FLAG_SADDLED, saddled);
+        // this.setDataFlag(DATA_FLAGS, DATA_FLAG_CAN_POWER_JUMP, saddled);
     }
 
     @Override
@@ -84,7 +88,8 @@ public class EntitySkeletonHorse extends EntityAnimal implements EntityRideable,
 
         this.setDataFlag(DATA_FLAGS, DATA_FLAG_CAN_WALK, true);
         this.setDataFlag(DATA_FLAGS, DATA_FLAG_TAMED, true);
-        this.setDataFlag(DATA_FLAGS, DATA_FLAG_WASD_CONTROLLED, true);
+        // Disable due to protocol compatibility issues. Only temporary measures.
+        // this.setDataFlag(DATA_FLAGS, DATA_FLAG_WASD_CONTROLLED, true);
         this.setDataFlag(DATA_FLAGS, DATA_FLAG_GRAVITY, true);
     }
 
@@ -150,13 +155,10 @@ public class EntitySkeletonHorse extends EntityAnimal implements EntityRideable,
         pk.speedY = (float) this.motionY;
         pk.speedZ = (float) this.motionZ;
         pk.metadata = this.dataProperties;
-        player.dataPacket(pk);
-
-        UpdateAttributesPacket pk0 = new UpdateAttributesPacket();
-        pk0.entityId = getId();
-		pk0.entries = new Attribute[]{
+        pk.attributes = new Attribute[]{
 				Attribute.getAttribute(Attribute.JUMP_STRENGTH).setMaxValue(2.0f).setValue(0.5f),
 		};
+        player.dataPacket(pk);
 
         super.spawnTo(player);
     }
@@ -183,47 +185,78 @@ public class EntitySkeletonHorse extends EntityAnimal implements EntityRideable,
 
     @Override
     public boolean onUpdate(int currentTick) {
-        if (this.closed) return false;
+        if (this.closed) {
+            return false;
+        }
 
         int tickDiff = currentTick - this.lastUpdate;
-        if (tickDiff <= 0 && !this.justCreated) return true;
-
+        if (tickDiff <= 0 && !this.justCreated) {
+            return true;
+        }
         this.lastUpdate = currentTick;
+
+        this.timing.startTiming();
+
         boolean hasUpdate = this.entityBaseTick(tickDiff);
 
         if (this.isAlive()) {
-            super.onUpdate(currentTick);
+            this.motionY -= this.getGravity();
 
-            if (this.checkObstruction(this.x, this.y, this.z)) hasUpdate = true;
+            if (this.checkObstruction(this.x, this.y, this.z)) {
+                hasUpdate = true;
+            }
 
             this.move(this.motionX, this.motionY, this.motionZ);
 
-            this.motionY -= this.getGravity();
-
-            double friction = 1 - this.getDrag();
+            double friction = 1d - this.getDrag();
 
             if (this.onGround && (Math.abs(this.motionX) > 0.00001 || Math.abs(this.motionZ) > 0.00001)) {
-                friction *= this.getLevel().getBlock(this.temporalVector.setComponents((int) Math.floor(this.x), (int) Math.floor(this.y - 1), (int) Math.floor(this.z) - 1)).getFrictionFactor();
+                friction = this.getLevel().getBlock(this.temporalVector.setComponents((int) Math.floor(this.x), (int) Math.floor(this.y - 1), (int) Math.floor(this.z) - 1)).getFrictionFactor() * friction;
             }
 
             this.motionX *= friction;
-            this.motionY *= friction;
+            this.motionY *= 1 - this.getDrag();
             this.motionZ *= friction;
 
             this.updateMovement();
-
-            if (hasControllingPassenger()) {
-                for (Entity passenger : this.getPassengers()) {
-                    passenger.addMovement(this.x, this.y, this.z, this.yaw, this.pitch, this.y);
-                }
-            }
         }
+
+        this.timing.stopTiming();
 
         return hasUpdate || !this.onGround || Math.abs(this.motionX) > 0.00001 || Math.abs(this.motionY) > 0.00001 || Math.abs(this.motionZ) > 0.00001;
     }
 
     @Override
-    public void onPlayerRiding(Vector3 pos, double yaw, double pitch) {
-        setPositionAndRotation(pos, yaw, pitch);
+    public void onPlayerInput(Player player, double motionX, double motionY) {
+        // Player cannot ride horse without saddle
+        if (getInventory().getItem(0).getId() != Item.SADDLE) {
+            return;
+        }
+
+        motionX *= 0.4;
+
+        double f = motionX * motionX + motionY * motionY;
+        double friction = 0.6;
+
+        this.yaw = player.yaw;
+
+        if (f >= 1.0E-4) {
+            f = Math.sqrt(f);
+
+            if (f < 1) {
+                f = 1;
+            }
+
+            f = friction / f;
+            motionX = motionX * f;
+            motionY = motionY * f;
+            double f1 = Math.sin(this.yaw * 0.017453292);
+            double f2 = Math.cos(this.yaw * 0.017453292);
+            this.motionX = (motionX * f2 - motionY * f1);
+            this.motionZ = (motionY * f2 + motionX * f1);
+        } else {
+            this.motionX = 0;
+            this.motionZ = 0;
+        }
     }
 }

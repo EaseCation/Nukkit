@@ -1,5 +1,6 @@
 package cn.nukkit.entity;
 
+import cn.nukkit.Player;
 import cn.nukkit.math.Vector3;
 
 /**
@@ -22,4 +23,7 @@ public interface EntityRideable {
         // Do nothing by default
     }
 
+    default void onPlayerInput(Player player, double motionX, double motionY) {
+        // Do nothing by default
+    }
 }
