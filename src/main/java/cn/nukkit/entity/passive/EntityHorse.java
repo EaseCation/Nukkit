@@ -5,11 +5,13 @@ import cn.nukkit.item.Item;
 import cn.nukkit.level.format.FullChunk;
 import cn.nukkit.nbt.tag.CompoundTag;
 import cn.nukkit.network.protocol.AddEntityPacket;
+import java.util.Arrays;
+import java.util.stream.Stream;
 
 /**
  * @author PikyCZ
  */
-public class EntityHorse extends EntityAnimal {
+public class EntityHorse extends EntityAbstractHorse {
 
     public static final int NETWORK_ID = 23;
 
@@ -46,7 +48,10 @@ public class EntityHorse extends EntityAnimal {
 
     @Override
     public Item[] getDrops() {
-        return new Item[]{Item.get(Item.LEATHER)};
+        return Stream.concat(
+                Stream.of(Item.get(Item.LEATHER)),
+                Arrays.stream(super.getDrops())
+        ).toArray(Item[]::new);
     }
 
     @Override

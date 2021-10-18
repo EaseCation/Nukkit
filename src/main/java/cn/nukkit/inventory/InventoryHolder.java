@@ -10,7 +10,7 @@ public interface InventoryHolder {
 
     Inventory getInventory();
 
-    default int openInventory(Player player) {
-        return player.addWindow(getInventory());
+    default void openInventory(Player player) {
+        player.addWindow(getInventory());
     }
 }

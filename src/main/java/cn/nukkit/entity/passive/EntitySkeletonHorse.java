@@ -1,32 +1,17 @@
 package cn.nukkit.entity.passive;
 
 import cn.nukkit.Player;
-import cn.nukkit.entity.Attribute;
-import cn.nukkit.entity.Entity;
-import cn.nukkit.entity.EntityHuman;
-import cn.nukkit.entity.EntityRideable;
-import cn.nukkit.entity.data.ByteEntityData;
-import cn.nukkit.entity.data.FloatEntityData;
-import cn.nukkit.entity.data.IntEntityData;
-import cn.nukkit.inventory.InventoryHolder;
-import cn.nukkit.inventory.SkeletonHorseInventory;
 import cn.nukkit.item.Item;
 import cn.nukkit.level.format.FullChunk;
-import cn.nukkit.math.Vector3f;
-import cn.nukkit.nbt.NBTIO;
 import cn.nukkit.nbt.tag.CompoundTag;
-import cn.nukkit.nbt.tag.ListTag;
 import cn.nukkit.network.protocol.AddEntityPacket;
-import java.util.stream.Stream;
 
 /**
  * @author PikyCZ
  */
-public class EntitySkeletonHorse extends EntityAnimal implements EntityRideable, InventoryHolder {
+public class EntitySkeletonHorse extends EntityAbstractHorse {
 
     public static final int NETWORK_ID = 26;
-
-    protected SkeletonHorseInventory inventory;
 
     public EntitySkeletonHorse(FullChunk chunk, CompoundTag nbt) {
         super(chunk, nbt);
@@ -48,98 +33,26 @@ public class EntitySkeletonHorse extends EntityAnimal implements EntityRideable,
     }
 
     @Override
-    protected double getStepHeight() {
-        return 1;
-    }
-
-    @Override
-    public Vector3f getMountedOffset(Entity entity) {
-        if (entity instanceof EntityHuman) {
-            float mountedYOffset = getHeight() * 0.75f - 0.1875f;
-            float playerYOffset = entity.getEyeHeight() - 0.35f;
-            return new Vector3f(0.0f, mountedYOffset + playerYOffset, 0.0f);
-        } else {
-            return super.getMountedOffset(entity);
-        }
-    }
-
-    public void updateSaddled(boolean saddled) {
-        // Not working at now for some reason. Disable temporary
-        // this.setDataFlag(DATA_FLAGS, DATA_FLAG_SADDLED, saddled);
-        // this.setDataFlag(DATA_FLAGS, DATA_FLAG_CAN_POWER_JUMP, saddled);
-    }
-
-    @Override
     public void initEntity() {
         super.initEntity();
-
         this.setMaxHealth(15);
-
-        this.inventory = new SkeletonHorseInventory(this);
-        if (this.namedTag.contains("Items") && this.namedTag.get("Items") instanceof ListTag) {
-            ListTag<CompoundTag> inventoryList = this.namedTag.getList("Items", CompoundTag.class);
-            for (CompoundTag item : inventoryList.getAll()) {
-                this.inventory.setItem(item.getByte("Slot"), NBTIO.getItemHelper(item));
-            }
-        }
-        this.setDataProperty(new ByteEntityData(DATA_CONTAINER_TYPE, inventory.getType().getNetworkType()));
-        this.setDataProperty(new IntEntityData(DATA_CONTAINER_BASE_SIZE, inventory.getSize()));
-        this.setDataProperty(new IntEntityData(DATA_CONTAINER_EXTRA_SLOTS_PER_STRENGTH, 0));
-
-        this.setDataFlag(DATA_FLAGS, DATA_FLAG_CAN_WALK, true);
-        this.setDataFlag(DATA_FLAGS, DATA_FLAG_TAMED, true);
-        // Disable due to protocol compatibility issues. Only temporary measures.
-        // this.setDataFlag(DATA_FLAGS, DATA_FLAG_WASD_CONTROLLED, true);
-        this.setDataFlag(DATA_FLAGS, DATA_FLAG_GRAVITY, true);
-    }
-
-    @Override
-    public boolean mountEntity(Entity entity) {
-        boolean mounted = super.mountEntity(entity) && entity.riding != null;
-        if (mounted) {
-            entity.setDataProperty(new ByteEntityData(DATA_RIDER_ROTATION_LOCKED, 0));
-            entity.setDataProperty(new FloatEntityData(DATA_RIDER_MAX_ROTATION, 0f));
-            entity.setDataProperty(new FloatEntityData(DATA_RIDER_MIN_ROTATION, 0f));
-            entity.setDataProperty(new FloatEntityData(DATA_SEAT_ROTATION_OFFSET, 0f));
-        }
-        return mounted;
-    }
-
-    @Override
-    public boolean dismountEntity(Entity entity) {
-        boolean dismounted = super.dismountEntity(entity) && entity.riding == null;
-        if (dismounted) {
-            entity.setDataProperty(new ByteEntityData(DATA_RIDER_ROTATION_LOCKED, 0));
-            entity.setDataProperty(new FloatEntityData(DATA_RIDER_MAX_ROTATION, 0f));
-            entity.setDataProperty(new FloatEntityData(DATA_RIDER_MIN_ROTATION, 0f));
-            entity.setDataProperty(new FloatEntityData(DATA_SEAT_ROTATION_OFFSET, 0f));
-        }
-        return dismounted;
-    }
-
-    @Override
-    public boolean onInteract(Player player, Item item) {
-        if (player.isSneaking()) {
-            openInventory(player);
-        } else {
-            if (passengers.size() >= 1) return false;
-            this.mountEntity(player);
-        }
-        return super.onInteract(player, item);
-    }
-
-    @Override
-    public void kill() {
-        super.kill();
-        this.inventory.clearAll();
     }
 
     @Override
     public Item[] getDrops() {
-        return Stream.concat(
-                Stream.of(Item.get(Item.BONE)),
-                this.inventory.getContents().values().stream()
-        ).toArray(Item[]::new);
+        // Skeleton horse doesn't drop inventory
+        return new Item[] { Item.get(Item.BONE) };
+    }
+
+    @Override
+    public void openInventory(Player player) {
+        // Skeleton horse doesn't have inventory. So do not open it
+    }
+
+    @Override
+    public boolean canRide() {
+        // Skeleton horse can ride without saddle
+        return true;
     }
 
     @Override
@@ -155,108 +68,8 @@ public class EntitySkeletonHorse extends EntityAnimal implements EntityRideable,
         pk.speedY = (float) this.motionY;
         pk.speedZ = (float) this.motionZ;
         pk.metadata = this.dataProperties;
-        pk.attributes = new Attribute[]{
-				Attribute.getAttribute(Attribute.JUMP_STRENGTH).setMaxValue(2.0f).setValue(0.5f),
-		};
         player.dataPacket(pk);
 
         super.spawnTo(player);
-    }
-
-    @Override
-    public SkeletonHorseInventory getInventory() {
-        return inventory;
-    }
-
-    @Override
-    public void saveNBT() {
-        super.saveNBT();
-
-        this.namedTag.putList(new ListTag<CompoundTag>("Items"));
-        if (this.inventory != null) {
-            for (int slot = 0; slot < inventory.getSize(); ++slot) {
-                Item item = this.inventory.getItem(slot);
-                if (item != null && item.getId() != Item.AIR) {
-                    this.namedTag.getList("Items", CompoundTag.class).add(NBTIO.putItemHelper(item, slot));
-                }
-            }
-        }
-    }
-
-    @Override
-    public boolean onUpdate(int currentTick) {
-        if (this.closed) {
-            return false;
-        }
-
-        int tickDiff = currentTick - this.lastUpdate;
-        if (tickDiff <= 0 && !this.justCreated) {
-            return true;
-        }
-        this.lastUpdate = currentTick;
-
-        this.timing.startTiming();
-
-        boolean hasUpdate = this.entityBaseTick(tickDiff);
-
-        if (this.isAlive()) {
-            this.motionY -= this.getGravity();
-
-            if (this.checkObstruction(this.x, this.y, this.z)) {
-                hasUpdate = true;
-            }
-
-            this.move(this.motionX, this.motionY, this.motionZ);
-
-            double friction = 1d - this.getDrag();
-
-            if (this.onGround && (Math.abs(this.motionX) > 0.00001 || Math.abs(this.motionZ) > 0.00001)) {
-                friction = this.getLevel().getBlock(this.temporalVector.setComponents((int) Math.floor(this.x), (int) Math.floor(this.y - 1), (int) Math.floor(this.z) - 1)).getFrictionFactor() * friction;
-            }
-
-            this.motionX *= friction;
-            this.motionY *= 1 - this.getDrag();
-            this.motionZ *= friction;
-
-            this.updateMovement();
-        }
-
-        this.timing.stopTiming();
-
-        return hasUpdate || !this.onGround || Math.abs(this.motionX) > 0.00001 || Math.abs(this.motionY) > 0.00001 || Math.abs(this.motionZ) > 0.00001;
-    }
-
-    @Override
-    public void onPlayerInput(Player player, double motionX, double motionY) {
-        // Player cannot ride horse without saddle
-        if (getInventory().getItem(0).getId() != Item.SADDLE) {
-            return;
-        }
-
-        motionX *= 0.4;
-
-        double f = motionX * motionX + motionY * motionY;
-        double friction = 0.6;
-
-        this.yaw = player.yaw;
-
-        if (f >= 1.0E-4) {
-            f = Math.sqrt(f);
-
-            if (f < 1) {
-                f = 1;
-            }
-
-            f = friction / f;
-            motionX = motionX * f;
-            motionY = motionY * f;
-            double f1 = Math.sin(this.yaw * 0.017453292);
-            double f2 = Math.cos(this.yaw * 0.017453292);
-            this.motionX = (motionX * f2 - motionY * f1);
-            this.motionZ = (motionY * f2 + motionX * f1);
-        } else {
-            this.motionX = 0;
-            this.motionZ = 0;
-        }
     }
 }

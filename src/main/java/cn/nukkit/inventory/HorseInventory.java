@@ -1,15 +1,15 @@
 package cn.nukkit.inventory;
 
 import cn.nukkit.Player;
-import cn.nukkit.entity.passive.EntitySkeletonHorse;
+import cn.nukkit.entity.passive.EntityAbstractHorse;
 import cn.nukkit.item.Item;
 import cn.nukkit.nbt.tag.CompoundTag;
 import cn.nukkit.nbt.tag.ListTag;
 import cn.nukkit.network.protocol.UpdateEquipmentPacket;
 
-public class SkeletonHorseInventory extends ContainerInventory {
+public class HorseInventory extends ContainerInventory {
 
-    public SkeletonHorseInventory(EntitySkeletonHorse horse) {
+    public HorseInventory(EntityAbstractHorse horse) {
         super(horse, InventoryType.HORSE);
     }
 
@@ -82,7 +82,7 @@ public class SkeletonHorseInventory extends ContainerInventory {
     }
 
     @Override
-    public EntitySkeletonHorse getHolder() {
-        return (EntitySkeletonHorse) this.holder;
+    public EntityAbstractHorse getHolder() {
+        return (EntityAbstractHorse) this.holder;
     }
 }
