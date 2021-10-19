@@ -32,6 +32,7 @@ public interface ProtocolInfo {
     int ADD_HANGING_ENTITY_PACKET = 0x10;
     int TAKE_ITEM_ENTITY_PACKET = 0x11;
     int MOVE_ENTITY_PACKET = 0x12;
+    int MOVE_ENTITY_ABSOLUTE_PACKET = 0x12;
     int MOVE_PLAYER_PACKET = 0x13;
     int RIDER_JUMP_PACKET = 0x14;
     int UPDATE_BLOCK_PACKET = 0x15;
@@ -80,6 +81,7 @@ public interface ProtocolInfo {
     int PLAYER_LIST_PACKET = 0x3f;
     int SIMPLE_EVENT_PACKET = 0x40;
     int TELEMETRY_EVENT_PACKET = 0x41;
+    int EVENT_PACKET = 0x41;
     int SPAWN_EXPERIENCE_ORB_PACKET = 0x42;
     int CLIENTBOUND_MAP_ITEM_DATA_PACKET = 0x43;
     int MAP_INFO_REQUEST_PACKET = 0x44;

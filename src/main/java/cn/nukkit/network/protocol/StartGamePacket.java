@@ -71,8 +71,8 @@ public class StartGamePacket extends DataPacket {
         this.putEntityRuntimeId(this.entityRuntimeId);
         this.putVarInt(this.playerGamemode);
         this.putVector3f(this.x, this.y, this.z);
-        this.putLFloat(this.yaw);
         this.putLFloat(this.pitch);
+        this.putLFloat(this.yaw);
         this.putVarInt(this.seed);
         this.putVarInt(this.dimension);
         this.putVarInt(this.generator);

@@ -31,6 +31,7 @@ public class AddEntityPacket extends DataPacket {
     public float speedZ = 0f;
     public float yaw;
     public float pitch;
+    public float headYaw;
     public EntityMetadata metadata = new EntityMetadata();
     public Attribute[] attributes = new Attribute[0];
     public EntityLink[] links = new EntityLink[0];

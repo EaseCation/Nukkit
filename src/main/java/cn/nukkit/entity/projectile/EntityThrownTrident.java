@@ -166,6 +166,7 @@ public class EntityThrownTrident extends EntityProjectile {
         pk.speedY = (float) this.motionY;
         pk.speedZ = (float) this.motionZ;
         pk.yaw = (float) this.yaw;
+        pk.headYaw = (float) this.yaw;
         pk.pitch = (float) this.pitch;
         pk.metadata = this.dataProperties;
         player.dataPacket(pk);

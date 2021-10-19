@@ -125,10 +125,10 @@ public abstract class Entity extends Location implements Metadatable {
     public static final int DATA_FUSE_LENGTH = 56; //int
     public static final int DATA_RIDER_SEAT_POSITION = 57; //vector3f
     public static final int DATA_RIDER_ROTATION_LOCKED = 58; //byte
+    public static final int DATA_SEAT_LOCK_RIDER_ROTATION_DEGREES = 59; //float
     public static final int DATA_RIDER_MAX_ROTATION = 59; //float
     public static final int DATA_RIDER_MIN_ROTATION = 60; //float
-    public static final int DATA_SEAT_LOCK_RIDER_ROTATION_DEGREES = 59; //float
-    public static final int DATA_SEAT_ROTATION_OFFSET = 60; //float
+    public static final int DATA_SEAT_ROTATION_OFFSET = 127; //float
     public static final int DATA_AREA_EFFECT_CLOUD_RADIUS = 61; //float
     public static final int DATA_AREA_EFFECT_CLOUD_WAITING = 62; //int
     public static final int DATA_AREA_EFFECT_CLOUD_PARTICLE_ID = 63; //int
@@ -147,8 +147,8 @@ public abstract class Entity extends Location implements Metadatable {
     public static final int DATA_MAX_STRENGTH = 76; //int
     public static final int DATA_SPELL_CASTING_COLOR = 77; //int
     public static final int DATA_LIMITED_LIFE = 78;
-    public static final int DATA_ARMOR_STAND_POSE_INDEX = 1000; // int //TODO: use enum
-    public static final int DATA_ENDER_CRYSTAL_TIME_OFFSET = 1001; // int
+    public static final int DATA_ARMOR_STAND_POSE_INDEX = 125; // int //TODO: use enum
+    public static final int DATA_ENDER_CRYSTAL_TIME_OFFSET = 126; // int
     public static final int DATA_ALWAYS_SHOW_NAMETAG = 80; // byte
     public static final int DATA_COLOR_2 = 81; // byte
     public static final int DATA_NAME_AUTHOR = 82;
@@ -168,7 +168,7 @@ public abstract class Entity extends Location implements Metadatable {
     public static final int DATA_CHANGE_RATE = 96;
     public static final int DATA_CHANGE_ON_PICKUP = 97;
     public static final int DATA_PICKUP_COUNT = 98;
-    public static final int DATA_INTERACT_TEXT = 99;
+    public static final int DATA_HAS_NPC_COMPONENT = 99;
     public static final int DATA_TRADE_TIER = 100;
     public static final int DATA_MAX_TRADE_TIER = 101;
     public static final int DATA_TRADE_EXPERIENCE = 102;
@@ -195,6 +195,7 @@ public abstract class Entity extends Location implements Metadatable {
     public static final int DATA_DEFINE_PROPERTIES = 123;
     public static final int DATA_UPDATE_PROPERTIES = 124;
     public static final int DATA_NUKKIT_FLAGS = 999; // custom
+    public static final int DATA_UNDEFINED = 128;
 
     public static final long NUKKIT_FLAG_VARIANT_BLOCK = 1L << 1;
 
@@ -249,6 +250,8 @@ public abstract class Entity extends Location implements Metadatable {
     public static final int DATA_FLAG_DANCING = 48;
 
     public static final int DATA_FLAG_SWIMMING = 55;  //1.4+ only
+
+    public static final int DATA_FLAG_UNDEFINED = 100;
 
     public static long entityCount = 2;
 
@@ -1001,6 +1004,7 @@ public abstract class Entity extends Location implements Metadatable {
         addEntity.entityUniqueId = this.getId();
         addEntity.entityRuntimeId = this.getId();
         addEntity.yaw = (float) this.yaw;
+        addEntity.headYaw = (float) this.yaw;
         addEntity.pitch = (float) this.pitch;
         addEntity.x = (float) this.x;
         addEntity.y = (float) this.y;
@@ -1381,7 +1385,7 @@ public abstract class Entity extends Location implements Metadatable {
         pk.y = (float) y;
         pk.z = (float) z;
         pk.yaw = (float) yaw;
-        pk.headYaw = (float) yaw;
+        pk.headYaw = (float) headYaw;
         pk.pitch = (float) pitch;
         pk.setChannel(DataPacket.CHANNEL_MOVING);
         Server.broadcastPacket(this.getViewers().values(), pk);
@@ -1482,17 +1486,22 @@ public abstract class Entity extends Location implements Metadatable {
                 return false;
             }
 
+            entity.setSeatPosition(getMountedOffset(entity));
+            this.onMountEntity(entity);
+
             broadcastLinkPacket(entity, mode, riderInitiated);
 
             // Add variables to entity
             entity.riding = this;
-            entity.setDataFlag(DATA_FLAGS, DATA_FLAG_RIDING, true);
             passengers.add(entity);
 
-            entity.setSeatPosition(getMountedOffset(entity));
             updatePassengerPosition(entity);
         }
         return true;
+    }
+
+    protected void onMountEntity(Entity entity) {
+        entity.setDataFlag(DATA_FLAGS, DATA_FLAG_RIDING, true);
     }
 
     public boolean dismountEntity(Entity entity) {
@@ -1507,13 +1516,17 @@ public abstract class Entity extends Location implements Metadatable {
 
         // Refurbish the entity
         entity.riding = null;
-        entity.setDataFlag(DATA_FLAGS, DATA_FLAG_RIDING, false);
+        this.onDismountEntity(entity);
         passengers.remove(entity);
 
         entity.setSeatPosition(new Vector3f());
         updatePassengerPosition(entity);
 
         return true;
+    }
+
+    protected void onDismountEntity(Entity entity) {
+        entity.setDataFlag(DATA_FLAGS, DATA_FLAG_RIDING, false);
     }
 
     public void broadcastLinkPacket(Entity rider, byte type) {
