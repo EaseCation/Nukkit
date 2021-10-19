@@ -107,7 +107,6 @@ public class CraftingTransaction extends InventoryTransaction {
          */
         ContainerClosePacket pk = new ContainerClosePacket();
         pk.windowId = ContainerIds.NONE;
-        pk.wasServerInitiated = true;
         source.getServer().getScheduler().scheduleDelayedTask(new Task() {
             @Override
             public void onRun(int currentTick) {
