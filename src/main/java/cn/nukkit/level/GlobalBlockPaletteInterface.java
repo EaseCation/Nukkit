@@ -32,6 +32,7 @@ public interface GlobalBlockPaletteInterface {
         V1_17(440, false),
         V1_17_10(448, false),
         V1_17_30(465, false),
+        V1_17_40(471, false),
         ;
 
         private static final HardcodedVersion[] VALUES = HardcodedVersion.values();
