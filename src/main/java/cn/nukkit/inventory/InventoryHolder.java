@@ -1,5 +1,7 @@
 package cn.nukkit.inventory;
 
+import cn.nukkit.Player;
+
 /**
  * author: MagicDroidX
  * Nukkit Project
@@ -7,4 +9,8 @@ package cn.nukkit.inventory;
 public interface InventoryHolder {
 
     Inventory getInventory();
+
+    default void openInventory(Player player) {
+        player.addWindow(getInventory());
+    }
 }

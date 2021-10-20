@@ -189,6 +189,8 @@ public interface ProtocolInfo {
     int CREATE_PHOTO_PACKET = 0xab;
     int UPDATE_SUB_CHUNK_BLOCKS_PACKET = 0xac;
     int PHOTO_INFO_REQUEST_PACKET = 0xad;
+    int SUB_CHUNK_PACKET = 0xae;
+    int SUB_CHUNK_REQUEST_PACKET = 0xaf;
 
     //NetEase Common Mod
     int PACKET_PY_PRC = 0xc8;

@@ -7,7 +7,7 @@ public class RiderJumpPacket extends DataPacket {
 
     public static final int NETWORK_ID = ProtocolInfo.RIDER_JUMP_PACKET;
 
-    public int unknown;
+    public int strength;
 
     @Override
     public int pid() {
@@ -16,12 +16,12 @@ public class RiderJumpPacket extends DataPacket {
 
     @Override
     public void decode() {
-        this.unknown = this.getVarInt();
+        this.strength = this.getVarInt();
     }
 
     @Override
     public void encode() {
         this.reset();
-        this.putVarInt(this.unknown);
+        this.putVarInt(this.strength);
     }
 }

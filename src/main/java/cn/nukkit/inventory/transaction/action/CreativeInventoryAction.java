@@ -24,14 +24,19 @@ public class CreativeInventoryAction extends InventoryAction {
 
     /**
      * Checks that the player is in creative, and (if creating an item) that the item exists in the creative inventory.
+     *
+     * @param source player
+     * @return valid
      */
     public boolean isValid(Player source) {
         return source.isCreative() &&
-                (this.actionType == TYPE_DELETE_ITEM || source.getCreativeItemIndex(this.sourceItem) != -1);
+                (this.actionType == TYPE_DELETE_ITEM || Item.getCreativeItemIndex(this.sourceItem) != -1);
     }
 
     /**
      * Returns the type of the action.
+     *
+     * @return action type
      */
     public int getActionType() {
         return actionType;
@@ -39,6 +44,9 @@ public class CreativeInventoryAction extends InventoryAction {
 
     /**
      * No need to do anything extra here: this type just provides a place for items to disappear or appear from.
+     *
+     * @param source playere
+     * @return successfully executed
      */
     public boolean execute(Player source) {
         return true;

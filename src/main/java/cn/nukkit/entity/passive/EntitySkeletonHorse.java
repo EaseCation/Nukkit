@@ -9,7 +9,7 @@ import cn.nukkit.network.protocol.AddEntityPacket;
 /**
  * @author PikyCZ
  */
-public class EntitySkeletonHorse extends EntityAnimal {
+public class EntitySkeletonHorse extends EntityAbstractHorse {
 
     public static final int NETWORK_ID = 26;
 
@@ -40,7 +40,19 @@ public class EntitySkeletonHorse extends EntityAnimal {
 
     @Override
     public Item[] getDrops() {
-        return new Item[]{Item.get(Item.BONE)};
+        // Skeleton horse doesn't drop inventory
+        return new Item[] { Item.get(Item.BONE) };
+    }
+
+    @Override
+    public void openInventory(Player player) {
+        // Skeleton horse doesn't have inventory. So do not open it
+    }
+
+    @Override
+    public boolean canRide() {
+        // Skeleton horse can ride without saddle
+        return true;
     }
 
     @Override

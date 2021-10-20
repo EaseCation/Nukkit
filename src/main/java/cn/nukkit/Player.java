@@ -2276,6 +2276,8 @@ public class Player extends EntityHuman implements CommandSender, InventoryHolde
                     PlayerInputPacket ipk = (PlayerInputPacket) packet;
                     if (riding instanceof EntityMinecartAbstract) {
                         ((EntityMinecartEmpty) riding).setCurrentSpeed(ipk.motionY);
+                    } else if (riding instanceof EntityRideable) {
+                        ((EntityRideable) riding).onPlayerInput(this, ipk.motionX, ipk.motionY);
                     }
                     break;
                 case ProtocolInfo.MOVE_PLAYER_PACKET:
@@ -2312,11 +2314,12 @@ public class Player extends EntityHuman implements CommandSender, InventoryHolde
                         this.forceMovement = null;
                     }
 
-//                    if (riding != null) {
-//                        if (riding instanceof EntityBoat) {
-//                            riding.setPositionAndRotation(this.temporalVector.setComponents(movePlayerPacket.x, movePlayerPacket.y - 1, movePlayerPacket.z), (movePlayerPacket.headYaw + 90) % 360, 0);
-//                        }
-//                    }
+                    if (riding != null) {
+                        if (riding instanceof EntityRideable && !(riding instanceof EntityBoat)) {
+                            Vector3f offset = riding.getMountedOffset(this);
+                            ((EntityRideable) riding).onPlayerRiding(this.temporalVector.setComponents(movePlayerPacket.x - offset.x, movePlayerPacket.y - offset.y, movePlayerPacket.z - offset.z), (movePlayerPacket.headYaw + 90) % 360, 0);
+                        }
+                    }
 
                     break;
                 case ProtocolInfo.MOVE_ENTITY_ABSOLUTE_PACKET:
@@ -2627,6 +2630,13 @@ public class Player extends EntityHuman implements CommandSender, InventoryHolde
                             }
 
                             ((EntityRideable) riding).mountEntity(this);
+                            break;
+                        case InteractPacket.ACTION_OPEN_INVENTORY:
+                            if (!(targetEntity instanceof InventoryHolder)) {
+                                break;
+                            }
+
+                            ((InventoryHolder) targetEntity).openInventory(this);
                             break;
                     }
                     break;
