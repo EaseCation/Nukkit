@@ -75,6 +75,7 @@ public class EntityThrownTrident extends EntityProjectile {
 
     public EntityThrownTrident(FullChunk chunk, CompoundTag nbt, Entity shootingEntity, boolean critical) {
         super(chunk, nbt, shootingEntity);
+        this.setCritical(critical);
     }
 
     @Override
