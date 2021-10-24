@@ -319,4 +319,14 @@ public class BlockVine extends BlockTransparentMeta {
     public boolean canSilkTouch() {
         return true;
     }
+
+    @Override
+    public boolean breaksWhenMoved() {
+        return true;
+    }
+
+    @Override
+    public boolean sticksToPiston() {
+        return false;
+    }
 }

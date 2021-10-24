@@ -31,4 +31,14 @@ public class BlockChorusFlower extends BlockTransparent {
     public int getToolType() {
         return ItemTool.TYPE_NONE;
     }
+
+    @Override
+    public boolean breaksWhenMoved() {
+        return true;
+    }
+
+    @Override
+    public boolean sticksToPiston() {
+        return false;
+    }
 }
