@@ -4,6 +4,7 @@ import cn.nukkit.block.Block;
 import cn.nukkit.blockentity.*;
 import cn.nukkit.command.*;
 import cn.nukkit.console.NukkitConsole;
+import cn.nukkit.dispenser.DispenseBehaviorRegister;
 import cn.nukkit.entity.Attribute;
 import cn.nukkit.entity.Entity;
 import cn.nukkit.entity.EntityHuman;
@@ -147,6 +148,8 @@ public class Server {
     private int maxPlayers;
 
     private boolean autoSave;
+
+    private boolean redstoneEnabled = true;
 
     private RCON rcon;
 
@@ -344,6 +347,7 @@ public class Server {
         this.autoTickRateLimit = this.getConfig("level-settings.auto-tick-rate-limit", 20);
         this.alwaysTickPlayers = this.getConfig("level-settings.always-tick-players", false);
         this.baseTickRate = this.getConfig("level-settings.base-tick-rate", 1);
+        this.redstoneEnabled = this.getConfig("level-settings.tick-redstone", true);
 
         this.scheduler = new ServerScheduler();
 
@@ -417,6 +421,7 @@ public class Server {
         Effect.init();
         Potion.init();
         Attribute.init();
+        DispenseBehaviorRegister.init();
         //GlobalBlockPalette.getOrCreateRuntimeId(0, 0); //Force it to load
 
         this.craftingManager = new CraftingManager();
@@ -1803,6 +1808,14 @@ public class Server {
         return forceLanguage;
     }
 
+    public boolean isRedstoneEnabled() {
+        return redstoneEnabled;
+    }
+
+    public void setRedstoneEnabled(boolean redstoneEnabled) {
+        this.redstoneEnabled = redstoneEnabled;
+    }
+
     public Network getNetwork() {
         return network;
     }
@@ -2113,6 +2126,9 @@ public class Server {
         BlockEntity.registerBlockEntity(BlockEntity.SHULKER_BOX, BlockEntityShulkerBox.class);
         BlockEntity.registerBlockEntity(BlockEntity.BANNER, BlockEntityBanner.class);
         BlockEntity.registerBlockEntity(BlockEntity.MUSIC, BlockEntityMusic.class);
+        BlockEntity.registerBlockEntity(BlockEntity.DISPENSER, BlockEntityDispenser.class);
+        BlockEntity.registerBlockEntity(BlockEntity.DROPPER, BlockEntityDropper.class);
+        BlockEntity.registerBlockEntity(BlockEntity.MOVING_BLOCK, BlockEntityMovingBlock.class);
     }
 
     public static Server getInstance() {

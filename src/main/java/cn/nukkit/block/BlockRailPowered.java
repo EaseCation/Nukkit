@@ -44,6 +44,10 @@ public class BlockRailPowered extends BlockRail {
             if (super.onUpdate(type) == Level.BLOCK_UPDATE_NORMAL) {
                 return 0; // Already broken
             }
+
+            if (!this.level.getServer().isRedstoneEnabled()) {
+                return 0;
+            }
             boolean wasPowered = isActive();
             boolean isPowered = level.isBlockPowered(this.getLocation())
                     || checkSurrounding(this, true, 0)
