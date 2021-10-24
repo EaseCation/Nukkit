@@ -71,6 +71,7 @@ public class EnchantCommand extends VanillaCommand {
     }
 
     public int getIdByName(String value) throws NumberFormatException {
+        value = value.toLowerCase();
         switch (value) {
             case "protection":
                 return 0;

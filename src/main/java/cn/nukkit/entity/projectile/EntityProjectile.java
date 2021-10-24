@@ -40,6 +40,10 @@ public abstract class EntityProjectile extends Entity {
 
     protected float knockBack = 0.29f;
 
+    public static final int PICKUP_NONE = 0;
+    public static final int PICKUP_ANY = 1;
+    public static final int PICKUP_CREATIVE = 2;
+
     public EntityProjectile(FullChunk chunk, CompoundTag nbt) {
         this(chunk, nbt, null);
     }

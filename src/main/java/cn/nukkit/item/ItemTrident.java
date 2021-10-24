@@ -85,14 +85,14 @@ public class ItemTrident extends ItemTool {
 
         Server.getInstance().getPluginManager().callEvent(entityShootBowEvent);
         if (entityShootBowEvent.isCancelled()) {
-            entityShootBowEvent.getProjectile().kill();
+            entityShootBowEvent.getProjectile().close();
         } else {
             entityShootBowEvent.getProjectile().setMotion(entityShootBowEvent.getProjectile().getMotion().multiply(entityShootBowEvent.getForce()));
             if (entityShootBowEvent.getProjectile() != null) {
                 ProjectileLaunchEvent ev = new ProjectileLaunchEvent(entityShootBowEvent.getProjectile());
                 Server.getInstance().getPluginManager().callEvent(ev);
                 if (ev.isCancelled()) {
-                    entityShootBowEvent.getProjectile().kill();
+                    entityShootBowEvent.getProjectile().close();
                 } else {
                     entityShootBowEvent.getProjectile().spawnToAll();
                     player.getLevel().addSound(player, SoundEnum.ITEM_TRIDENT_THROW);
