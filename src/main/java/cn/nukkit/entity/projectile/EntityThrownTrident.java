@@ -116,11 +116,11 @@ public class EntityThrownTrident extends EntityProjectile {
     }
 
     @Override
-    public int getResultDamage() {
-        int base = super.getResultDamage();
+    public float getResultDamage() {
+        float base = super.getResultDamage();
 
         if (this.isCritical()) {
-            base += ThreadLocalRandom.current().nextInt(base / 2 + 2);
+            base += ThreadLocalRandom.current().nextInt((int) (base / 2) + 2);
         }
 
         return base;

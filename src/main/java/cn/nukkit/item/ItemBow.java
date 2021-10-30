@@ -2,10 +2,12 @@ package cn.nukkit.item;
 
 import cn.nukkit.Player;
 import cn.nukkit.Server;
+import cn.nukkit.entity.Entity;
 import cn.nukkit.entity.projectile.EntityArrow;
 import cn.nukkit.entity.projectile.EntityProjectile;
 import cn.nukkit.event.entity.EntityShootBowEvent;
 import cn.nukkit.event.entity.ProjectileLaunchEvent;
+import cn.nukkit.inventory.Inventory;
 import cn.nukkit.item.enchantment.Enchantment;
 import cn.nukkit.math.Vector3;
 import cn.nukkit.nbt.tag.CompoundTag;
@@ -53,8 +55,11 @@ public class ItemBow extends ItemTool {
     public boolean onRelease(Player player, int ticksUsed) {
         Item itemArrow = Item.get(Item.ARROW, 0, 1);
 
-        if (player.isSurvival() && !player.getInventory().contains(itemArrow)) {
-            player.getInventory().sendContents(player);
+        Inventory inventory = player.getOffhandInventory();
+
+        if (!inventory.contains(itemArrow) && !(inventory = player.getInventory()).contains(itemArrow) && (player.isAdventure() || player.isSurvival())) {
+            player.getOffhandInventory().sendContents(player);
+            inventory.sendContents(player);
             return false;
         }
 
@@ -91,9 +96,15 @@ public class ItemBow extends ItemTool {
                 .putFloat("Knockback", knockback);
 
         double p = (double) ticksUsed / 20;
+        double f = Math.min((p * p + p * 2) / 3, 1) * 2;
 
-        double f = Math.min((p * p + p * 2) / 2, 1) * 2;
-        EntityShootBowEvent entityShootBowEvent = new EntityShootBowEvent(player, this, new EntityArrow(player.chunk, nbt, player, f == 2), f);
+        EntityArrow arrow = (EntityArrow) Entity.createEntity("Arrow", player.chunk, nbt, player, f == 2);
+
+        if (arrow == null) {
+            return false;
+        }
+
+        EntityShootBowEvent entityShootBowEvent = new EntityShootBowEvent(player, this, arrow, f);
 
         if (f < 0.1 || ticksUsed < 3) {
             entityShootBowEvent.setCancelled();
@@ -103,6 +114,7 @@ public class ItemBow extends ItemTool {
         if (entityShootBowEvent.isCancelled()) {
             entityShootBowEvent.getProjectile().kill();
             player.getInventory().sendContents(player);
+            player.getOffhandInventory().sendContents(player);
         } else {
             entityShootBowEvent.getProjectile().setMotion(entityShootBowEvent.getProjectile().getMotion().multiply(entityShootBowEvent.getForce()));
             Enchantment infinityEnchant = this.getEnchantment(Enchantment.ID_BOW_INFINITY);
@@ -111,9 +123,9 @@ public class ItemBow extends ItemTool {
             if (infinity && (projectile = entityShootBowEvent.getProjectile()) instanceof EntityArrow) {
                 ((EntityArrow) projectile).setPickupMode(EntityArrow.PICKUP_CREATIVE);
             }
-            if (player.isSurvival()) {
+            if (player.isAdventure() || player.isSurvival()) {
                 if (!infinity) {
-                    player.getInventory().removeItem(itemArrow);
+                    inventory.removeItem(itemArrow);
                 }
                 if (!this.isUnbreakable()) {
                     Enchantment durability = this.getEnchantment(Enchantment.ID_DURABILITY);
