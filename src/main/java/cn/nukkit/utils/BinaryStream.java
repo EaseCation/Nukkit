@@ -617,6 +617,17 @@ public class BinaryStream {
     /**
      * 用于没有 NetID 的虚拟 ItemStack (Creative Content and Recipe Book).
      */
+    public Item getSlotDummy() {
+        if (this.helper != null) {
+            return this.helper.getSlotDummy(this);
+        }
+
+        return this.getSlot();
+    }
+
+    /**
+     * 用于没有 NetID 的虚拟 ItemStack (Creative Content and Recipe Book).
+     */
     public void putSlotDummy(Item item) {
         if (this.helper != null) {
             this.helper.putSlotDummy(this, item);
@@ -952,6 +963,10 @@ public class BinaryStream {
 
         public void putSlot(BinaryStream stream, Item item) {
             stream.putSlotLegacy(item);
+        }
+
+        public Item getSlotDummy(BinaryStream stream) {
+            return this.getSlot(stream);
         }
 
         public void putSlotDummy(BinaryStream stream, Item item) {
