@@ -1,26 +1,26 @@
 package cn.nukkit.level.format.generic;
 
-import cn.nukkit.level.GlobalBlockPaletteInterface.HardcodedVersion;
+import cn.nukkit.level.GlobalBlockPaletteInterface.StaticVersion;
 import cn.nukkit.network.protocol.BatchPacket;
 
 import java.util.Map;
 
 public class ChunkPacketCache {
 
-    private final Map<HardcodedVersion, BatchPacket> packets; //1.16.100+ hardcode
+    private final Map<StaticVersion, BatchPacket> packets; //1.16.100+ static runtime block palette
 
     private final BatchPacket packet116;
     private final BatchPacket packet;
     private final BatchPacket packetOld;
 
-    public ChunkPacketCache(Map<HardcodedVersion, BatchPacket> packets, BatchPacket packet116, BatchPacket packet, BatchPacket packetOld) {
+    public ChunkPacketCache(Map<StaticVersion, BatchPacket> packets, BatchPacket packet116, BatchPacket packet, BatchPacket packetOld) {
         this.packets = packets;
         this.packet116 = packet116;
         this.packet = packet;
         this.packetOld = packetOld;
     }
 
-    public BatchPacket getPacket(HardcodedVersion version) {
+    public BatchPacket getPacket(StaticVersion version) {
         return this.packets.get(version);
     }
 

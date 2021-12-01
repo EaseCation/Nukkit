@@ -128,8 +128,8 @@ public class GlobalBlockPalette implements GlobalBlockPaletteInterface {
         return instance.getLegacyId0(runtimeId);
     }
 
-    public static GlobalBlockPaletteInterface getHardcodedBlockPalette(HardcodedVersion version) {
-        return instance.getHardcodedBlockPalette0(version);
+    public static GlobalBlockPaletteInterface getStaticBlockPalette(StaticVersion version) {
+        return instance.getStaticBlockPalette0(version);
     }
 
     private static final Object2IntMap<String> stringToId;

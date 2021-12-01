@@ -21,11 +21,11 @@ public interface GlobalBlockPaletteInterface {
 
     int getLegacyId0(int runtimeId);
 
-    default GlobalBlockPaletteInterface getHardcodedBlockPalette0(HardcodedVersion version) {
+    default GlobalBlockPaletteInterface getStaticBlockPalette0(StaticVersion version) {
         return this;
     }
 
-    enum HardcodedVersion {
+    enum StaticVersion {
         V1_16_100(419, false),
         V1_16_200_NETEASE(422, true),
         V1_16_210(428, false),
@@ -33,26 +33,26 @@ public interface GlobalBlockPaletteInterface {
         V1_17_10(448, false),
         V1_17_30(465, false),
         V1_17_40(471, false),
-        V1_18(475, false),
+        V1_18(475, false), // same palette, but chunk format changed
         ;
 
-        private static final HardcodedVersion[] VALUES = HardcodedVersion.values();
-        private static final Int2ObjectMap<HardcodedVersion> versionMap = new Int2ObjectOpenHashMap<>();
-        private static final Int2ObjectMap<HardcodedVersion> versionMapNetEase = new Int2ObjectOpenHashMap<>();
+        private static final StaticVersion[] VALUES = StaticVersion.values();
+        private static final Int2ObjectMap<StaticVersion> versionMap = new Int2ObjectOpenHashMap<>();
+        private static final Int2ObjectMap<StaticVersion> versionMapNetEase = new Int2ObjectOpenHashMap<>();
 
         static {
             for (int i = 0; i < VALUES.length; i++) {
-                HardcodedVersion version = VALUES[i];
+                StaticVersion version = VALUES[i];
                 if (!version.netease) {
                     versionMap.put(version.protocol, version);
-                    HardcodedVersion nextIntl = findNextVersion(version, false);
+                    StaticVersion nextIntl = findNextVersion(version, false);
                     if (nextIntl != null) { //还有下一个
                         for (int p = version.protocol; p < nextIntl.protocol; p++) {
                             versionMap.put(p, version);
                         }
                     }
                 }
-                HardcodedVersion nextNE = findNextVersion(version, true);
+                StaticVersion nextNE = findNextVersion(version, true);
                 versionMapNetEase.put(version.protocol, version);
                 if (nextNE != null) { //还有下一个
                     for (int p = version.protocol; p < nextNE.protocol; p++) {
@@ -62,9 +62,9 @@ public interface GlobalBlockPaletteInterface {
             }
         }
 
-        private static HardcodedVersion findNextVersion(HardcodedVersion version, boolean netease) {
+        private static StaticVersion findNextVersion(StaticVersion version, boolean netease) {
             for (int i = version.ordinal() + 1; i < VALUES.length; i++) {
-                HardcodedVersion v = VALUES[i];
+                StaticVersion v = VALUES[i];
                 if (netease || !v.netease) return v;
             }
             return null;
@@ -73,7 +73,7 @@ public interface GlobalBlockPaletteInterface {
         private final int protocol;
         private final boolean netease;
 
-        HardcodedVersion(int protocol, boolean netease) {
+        StaticVersion(int protocol, boolean netease) {
             this.protocol = protocol;
             this.netease = netease;
         }
@@ -82,7 +82,7 @@ public interface GlobalBlockPaletteInterface {
             return this.protocol;
         }
 
-        public static HardcodedVersion fromProtocol(int protocol, boolean netease) {
+        public static StaticVersion fromProtocol(int protocol, boolean netease) {
             if (netease) {
                 return versionMapNetEase.getOrDefault(protocol, VALUES[VALUES.length - 1]);
             }
@@ -91,7 +91,7 @@ public interface GlobalBlockPaletteInterface {
             }
         }
 
-        public static HardcodedVersion[] values0() {
+        public static StaticVersion[] getValues() {
             return VALUES;
         }
 

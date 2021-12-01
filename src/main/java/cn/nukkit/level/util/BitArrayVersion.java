@@ -8,7 +8,8 @@ public enum BitArrayVersion {
     V4(4, 8, V5),
     V3(3, 10, V4), // 2 bit padding
     V2(2, 16, V3),
-    V1(1, 32, V2);
+    V1(1, 32, V2),
+    V0(0, 1, V2);
 
     final byte bits;
     final byte entriesPerWord;
@@ -23,7 +24,7 @@ public enum BitArrayVersion {
     }
 
     public static BitArrayVersion get(int version, boolean read) {
-        for (BitArrayVersion ver : values0()) {
+        for (BitArrayVersion ver : VALUES) {
             if ((!read && ver.entriesPerWord <= version) || (read && ver.bits == version)) {
                 return ver;
             }
@@ -32,7 +33,7 @@ public enum BitArrayVersion {
     }
 
     public BitArray createPalette(int size) {
-        return this.createPalette(size, new int[this.getWordsForSize(size)]);
+        return this == V0 ? new SingletonBitArray(size) : this.createPalette(size, new int[this.getWordsForSize(size)]);
     }
 
     public byte getId() {
@@ -60,9 +61,13 @@ public enum BitArrayVersion {
         }
     }
 
-    private static final BitArrayVersion[] $VALUES0 = values();
+    public boolean isSingleton() {
+        return this == V0 || this == V1;
+    }
 
-    public static BitArrayVersion[] values0() {
-        return $VALUES0;
+    private static final BitArrayVersion[] VALUES = values();
+
+    public static BitArrayVersion[] getValues() {
+        return VALUES;
     }
 }

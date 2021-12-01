@@ -63,6 +63,11 @@ public class BinaryStream {
         this.helper = helper;
     }
 
+    public void reuse() {
+        this.offset = 0;
+        this.count = 0;
+    }
+
     public void reset() {
         this.buffer = new byte[32];
         this.offset = 0;
