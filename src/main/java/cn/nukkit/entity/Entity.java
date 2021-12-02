@@ -2432,7 +2432,5 @@ public abstract class Entity extends Location implements Metadatable {
         hash = (int) (29 * hash + this.getId());
         return hash;
     }
-    public boolean canInteract(){
-        return true;
-    }
+
 }
