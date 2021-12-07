@@ -19,7 +19,7 @@ import cn.nukkit.event.weather.LightningStrikeEvent;
 import cn.nukkit.item.Item;
 import cn.nukkit.item.ItemBlock;
 import cn.nukkit.item.enchantment.Enchantment;
-import cn.nukkit.level.GlobalBlockPaletteInterface.HardcodedVersion;
+import cn.nukkit.level.GlobalBlockPaletteInterface.StaticVersion;
 import cn.nukkit.level.biome.Biome;
 import cn.nukkit.level.format.Chunk;
 import cn.nukkit.level.format.ChunkSection;
@@ -2650,11 +2650,20 @@ public class Level implements ChunkManager, Metadatable {
         if (this.chunkSendTasks.contains(index)) {
             for (Player player : this.chunkSendQueue.get(index).values()) {
                 if (player.isConnected() && player.usedChunks.containsKey(index)) {
-                    if (player.getProtocol() < 361) player.sendChunk(x, z, subChunkCount, chunkBlobCache, chunkPacketCache.getPacketOld());
-                    else if (player.getProtocol() < 407) player.sendChunk(x, z, subChunkCount, chunkBlobCache, chunkPacketCache.getPacket());
-                    else if (player.getProtocol() < HardcodedVersion.values0()[0].getProtocol())
+                    int protocol = player.getProtocol();
+                    if (protocol < 361) {
+                        player.sendChunk(x, z, subChunkCount, chunkBlobCache, chunkPacketCache.getPacketOld());
+                    } else if (protocol < 407) {
+                        player.sendChunk(x, z, subChunkCount, chunkBlobCache, chunkPacketCache.getPacket());
+                    } else if (protocol < StaticVersion.getValues()[0].getProtocol()) {
                         player.sendChunk(x, z, subChunkCount, chunkBlobCache, chunkPacketCache.getPacket116());
-                    else player.sendChunk(x, z, subChunkCount, chunkBlobCache, chunkPacketCache.getPacket(HardcodedVersion.fromProtocol(player.getProtocol(), player.isNetEaseClient())));
+                    } else if (protocol < 475) {
+                        player.sendChunk(x, z, subChunkCount, chunkBlobCache, chunkPacketCache.getPacket(
+                                StaticVersion.fromProtocol(protocol, player.isNetEaseClient())));
+                    } else {
+                        player.sendChunk(x, z, subChunkCount + Anvil.LOWER_PADDING_SUB_CHUNK_COUNT, chunkBlobCache,
+                                chunkPacketCache.getPacket(StaticVersion.fromProtocol(protocol, player.isNetEaseClient())));
+                    }
                 }
             }
 
@@ -2701,14 +2710,20 @@ public class Level implements ChunkManager, Metadatable {
      * Chunk request callback on main thread
      * If this.cacheChunks == false, the ChunkPacketCache can be null;
      */
-    public void chunkRequestCallback(long timestamp, int x, int z, int subChunkCount, ChunkBlobCache chunkBlobCache, ChunkPacketCache chunkPacketCache, byte[] payload, byte[] payloadOld, Map<HardcodedVersion, byte[]> payloads) {
+    public void chunkRequestCallback(long timestamp, int x, int z, int subChunkCount, ChunkBlobCache chunkBlobCache, ChunkPacketCache chunkPacketCache, byte[] payload, byte[] payloadOld, Map<StaticVersion, byte[]> payloads) {
         this.timings.syncChunkSendTimer.startTiming();
         long index = Level.chunkHash(x, z);
 
         if (this.cacheChunks) {
             if (chunkPacketCache == null) {
-                Map<HardcodedVersion, BatchPacket> packets = new EnumMap<>(HardcodedVersion.class);
-                payloads.forEach((version, data) -> packets.put(version, getChunkCacheFromData(x, z, subChunkCount, data, false, true)));
+                Map<StaticVersion, BatchPacket> packets = new EnumMap<>(StaticVersion.class);
+                payloads.forEach((version, data) -> {
+                    int actualCount = subChunkCount;
+                    if (version.getProtocol() >= StaticVersion.V1_18.getProtocol()) {
+                        actualCount += Anvil.LOWER_PADDING_SUB_CHUNK_COUNT;
+                    }
+                    packets.put(version, getChunkCacheFromData(x, z, actualCount, data, false, true));
+                });
 
                 chunkPacketCache = new ChunkPacketCache(
                         packets,
@@ -2730,10 +2745,18 @@ public class Level implements ChunkManager, Metadatable {
         if (this.chunkSendTasks.contains(index)) {
             for (Player player : this.chunkSendQueue.get(index).values()) {
                 if (player.isConnected() && player.usedChunks.containsKey(index)) {
-                    if (player.getProtocol() < 361) player.sendChunk(x, z, subChunkCount, chunkBlobCache, payloadOld);
-                    else if (player.getProtocol() < HardcodedVersion.values0()[0].getProtocol())
+                    int protocol = player.getProtocol();
+                    if (protocol < 361) {
+                        player.sendChunk(x, z, subChunkCount, chunkBlobCache, payloadOld);
+                    } else if (protocol < StaticVersion.getValues()[0].getProtocol()) {
                         player.sendChunk(x, z, subChunkCount, chunkBlobCache, payload);
-                    else player.sendChunk(x, z, subChunkCount, chunkBlobCache, payloads.get(HardcodedVersion.fromProtocol(player.getProtocol(), player.isNetEaseClient())));
+                    } else if (protocol < 475) {
+                        player.sendChunk(x, z, subChunkCount, chunkBlobCache,
+                                payloads.get(StaticVersion.fromProtocol(protocol, player.isNetEaseClient())));
+                    } else {
+                        player.sendChunk(x, z, subChunkCount + Anvil.LOWER_PADDING_SUB_CHUNK_COUNT, chunkBlobCache,
+                                payloads.get(StaticVersion.fromProtocol(protocol, player.isNetEaseClient())));
+                    }
                 }
             }
 

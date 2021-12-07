@@ -3,8 +3,8 @@ package cn.nukkit.level.format.anvil.util;
 import cn.nukkit.block.Block;
 import cn.nukkit.level.GlobalBlockPalette;
 import cn.nukkit.level.GlobalBlockPaletteInterface;
-import cn.nukkit.level.GlobalBlockPaletteInterface.HardcodedVersion;
-import cn.nukkit.level.util.PalettedBlockStorage;
+import cn.nukkit.level.GlobalBlockPaletteInterface.StaticVersion;
+import cn.nukkit.level.util.PalettedSubChunkStorage;
 import cn.nukkit.utils.BinaryStream;
 import com.google.common.base.Preconditions;
 
@@ -97,10 +97,10 @@ public class BlockStorage {
         return blockData.getData();
     }
 
-    public void writeTo(BinaryStream stream, HardcodedVersion version) {
-        GlobalBlockPaletteInterface palette = GlobalBlockPalette.getHardcodedBlockPalette(version);
+    public void writeTo(BinaryStream stream, StaticVersion version) {
+        GlobalBlockPaletteInterface palette = GlobalBlockPalette.getStaticBlockPalette(version);
         int airBlockRuntimeId = palette.getOrCreateRuntimeId0(Block.AIR, 0);
-        PalettedBlockStorage storage = new PalettedBlockStorage(airBlockRuntimeId);
+        PalettedSubChunkStorage storage = PalettedSubChunkStorage.ofBlock(airBlockRuntimeId);
         for (int i = 0; i < SECTION_SIZE; i++) {
             int runtimeId;
             try {
@@ -109,13 +109,13 @@ public class BlockStorage {
                 runtimeId = airBlockRuntimeId;
                 //Server.getInstance().getLogger().logException(e);
             }
-            storage.setBlock(i, runtimeId);
+            storage.set(i, runtimeId);
         }
         storage.writeTo(stream);
     }
 
     public void writeTo(BinaryStream stream) {
-        PalettedBlockStorage storage = new PalettedBlockStorage();
+        PalettedSubChunkStorage storage = PalettedSubChunkStorage.ofBlock();
         for (int i = 0; i < SECTION_SIZE; i++) {
             int runtimeId;
             try {
@@ -124,15 +124,15 @@ public class BlockStorage {
                 runtimeId = 0;
                 //Server.getInstance().getLogger().logException(e);
             }
-            storage.setBlock(i, runtimeId);
+            storage.set(i, runtimeId);
         }
         storage.writeTo(stream);
     }
 
     public void writeToCache(BinaryStream stream) {
-        PalettedBlockStorage storage = new PalettedBlockStorage(Block.AIR);
+        PalettedSubChunkStorage storage = PalettedSubChunkStorage.ofBlock(Block.AIR);
         for (int i = 0; i < SECTION_SIZE; i++) {
-            storage.setBlock(i, (blockIds[i] & 0xff) << 4 | blockData.get(i));
+            storage.set(i, (blockIds[i] & 0xff) << 4 | blockData.get(i));
         }
         storage.writeToCache(stream);
     }

@@ -1,11 +1,18 @@
 package cn.nukkit.level.biome;
 
+import cn.nukkit.Server;
 import cn.nukkit.block.BlockID;
 import cn.nukkit.level.ChunkManager;
 import cn.nukkit.level.format.FullChunk;
 import cn.nukkit.level.generator.populator.type.Populator;
 import cn.nukkit.math.NukkitRandom;
+import com.google.gson.Gson;
+import it.unimi.dsi.fastutil.objects.Object2IntMap;
+import it.unimi.dsi.fastutil.objects.Object2IntOpenHashMap;
 
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -17,6 +24,9 @@ public abstract class Biome implements BlockID {
     public static final int MAX_BIOMES = 256;
     public static final Biome[] biomes = new Biome[MAX_BIOMES];
     public static final List<Biome> unorderedBiomes = new ArrayList<>();
+
+    private static final Object2IntMap<String> nameToId;
+    private static final String[] idToName = new String[MAX_BIOMES];
 
     private final ArrayList<Populator> populators = new ArrayList<>();
     private int id;
@@ -133,5 +143,20 @@ public abstract class Biome implements BlockID {
 
     public boolean canRain() {
         return true;
+    }
+
+    public static String getNameById(int id) {
+        return idToName[id];
+    }
+
+    static {
+        try (InputStream stream = Server.class.getClassLoader().getResourceAsStream("biome_id_map.json");
+             InputStreamReader reader = new InputStreamReader(stream)) {
+            nameToId = new Gson().fromJson(reader, Object2IntOpenHashMap.class);
+        } catch (NullPointerException | IOException e) {
+            throw new AssertionError("Unable to load block_id_map.json", e);
+        }
+        nameToId.forEach((name, id) -> idToName[id] = name);
+        nameToId.defaultReturnValue(-1);
     }
 }

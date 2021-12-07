@@ -2,12 +2,12 @@ package cn.nukkit.level.format.anvil;
 
 import cn.nukkit.block.Block;
 import cn.nukkit.level.GlobalBlockPalette;
-import cn.nukkit.level.GlobalBlockPaletteInterface.HardcodedVersion;
+import cn.nukkit.level.GlobalBlockPaletteInterface.StaticVersion;
 import cn.nukkit.level.format.anvil.util.BlockStorage;
 import cn.nukkit.level.format.anvil.util.NibbleArray;
 import cn.nukkit.level.format.generic.EmptyChunkSection;
 import cn.nukkit.level.util.BitArrayVersion;
-import cn.nukkit.level.util.PalettedBlockStorage;
+import cn.nukkit.level.util.PalettedSubChunkStorage;
 import cn.nukkit.nbt.tag.CompoundTag;
 import cn.nukkit.utils.*;
 
@@ -331,13 +331,13 @@ public class ChunkSection implements cn.nukkit.level.format.ChunkSection {
     }
 
     @Override
-    public void writeTo(BinaryStream stream, HardcodedVersion version) {
+    public void writeTo(BinaryStream stream, StaticVersion version) {
         stream.putByte((byte) 8); // Paletted chunk because Mojang messed up the old one
         stream.putByte((byte) 2);
         synchronized (storage) {
             this.storage.writeTo(stream, version);
         }
-        new PalettedBlockStorage(BitArrayVersion.V1, GlobalBlockPalette.getHardcodedBlockPalette(version).getOrCreateRuntimeId0(Block.AIR, 0))
+        PalettedSubChunkStorage.ofBlock(BitArrayVersion.V1, GlobalBlockPalette.getStaticBlockPalette(version).getOrCreateRuntimeId0(Block.AIR, 0))
                 .writeTo(stream);
     }
 

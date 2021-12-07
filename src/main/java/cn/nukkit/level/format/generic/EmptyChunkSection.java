@@ -2,10 +2,10 @@ package cn.nukkit.level.format.generic;
 
 import cn.nukkit.block.Block;
 import cn.nukkit.level.GlobalBlockPalette;
-import cn.nukkit.level.GlobalBlockPaletteInterface.HardcodedVersion;
+import cn.nukkit.level.GlobalBlockPaletteInterface.StaticVersion;
 import cn.nukkit.level.format.ChunkSection;
 import cn.nukkit.level.util.BitArrayVersion;
-import cn.nukkit.level.util.PalettedBlockStorage;
+import cn.nukkit.level.util.PalettedSubChunkStorage;
 import cn.nukkit.utils.BinaryStream;
 import cn.nukkit.utils.ChunkException;
 
@@ -17,7 +17,7 @@ import java.util.Arrays;
  */
 public class EmptyChunkSection implements ChunkSection {
     public static final EmptyChunkSection[] EMPTY = new EmptyChunkSection[16];
-    public static final PalettedBlockStorage EMPTY_STORAGE = new PalettedBlockStorage(BitArrayVersion.V1);
+    public static final PalettedSubChunkStorage EMPTY_STORAGE = PalettedSubChunkStorage.ofBlock(BitArrayVersion.V1);
 
     static {
         for (int y = 0; y < EMPTY.length; y++) {
@@ -140,10 +140,10 @@ public class EmptyChunkSection implements ChunkSection {
     }
 
     @Override
-    public void writeTo(BinaryStream stream, HardcodedVersion version) {
+    public void writeTo(BinaryStream stream, StaticVersion version) {
         stream.putByte((byte) 8);
         stream.putByte((byte) 2);
-        PalettedBlockStorage storage = new PalettedBlockStorage(BitArrayVersion.V1, GlobalBlockPalette.getHardcodedBlockPalette(version)
+        PalettedSubChunkStorage storage = PalettedSubChunkStorage.ofBlock(BitArrayVersion.V1, GlobalBlockPalette.getStaticBlockPalette(version)
                 .getOrCreateRuntimeId0(Block.AIR, 0));
         storage.writeTo(stream);
         storage.writeTo(stream);
