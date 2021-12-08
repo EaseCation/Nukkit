@@ -41,9 +41,11 @@ import cn.nukkit.item.food.Food;
 import cn.nukkit.lang.TextContainer;
 import cn.nukkit.lang.TranslationContainer;
 import cn.nukkit.level.*;
+import cn.nukkit.level.GlobalBlockPaletteInterface.StaticVersion;
 import cn.nukkit.level.format.FullChunk;
 import cn.nukkit.level.format.generic.BaseFullChunk;
 import cn.nukkit.level.format.generic.ChunkBlobCache;
+import cn.nukkit.level.format.generic.ChunkPacketCache;
 import cn.nukkit.level.particle.PunchBlockParticle;
 import cn.nukkit.level.sound.LaunchSound;
 import cn.nukkit.level.util.AroundPlayerChunkComparator;
@@ -827,7 +829,7 @@ public class Player extends EntityHuman implements CommandSender, InventoryHolde
         }
     }
 
-    public void sendChunk(int x, int z, int subChunkCount, ChunkBlobCache chunkBlobCache, byte[] payload) {
+    public void sendChunk(int x, int z, int subChunkCount, ChunkBlobCache chunkBlobCache, byte[] payload, byte[] subModePayload) {
         if (!this.connected) {
             return;
         }
@@ -891,7 +893,7 @@ public class Player extends EntityHuman implements CommandSender, InventoryHolde
         for (long index : indexes.elements()) {
             if (count >= this.chunksPerTick) {
                 // You should count the active transactions for each client, and only send new LevelChunkPackets if there aren't too many active transactions.
-                // In Vanilla, depending on the connection quality, we only allow between 1 and 9 concurrent transactions.
+                // In Vanilla, depending on the connection quality, we only allow between 1 and 8 concurrent transactions.
                 break;
             }
             int chunkX = Level.getHashX(index);
@@ -1846,6 +1848,10 @@ public class Player extends EntityHuman implements CommandSender, InventoryHolde
 
         if (!this.loadQueue.isEmpty() || !this.spawned) {
             this.sendNextChunk();
+        }
+
+        if (this.hasSubChunkRequest()) {
+            this.processSubChunkRequest();
         }
     }
 
@@ -5057,7 +5063,36 @@ public class Player extends EntityHuman implements CommandSender, InventoryHolde
     /**
      * 使用 AnimateEntityPacket 播放动画. 1.16.100+需要重写此方法.
      */
-    public void playAnimation(String animation, long entityRuntimeIds) {
+    public void playAnimation(String animation, long entityRuntimeId) {
+
+    }
+
+    /**
+     * 1.18及以上版本支持子区块请求.
+     */
+    public boolean isSubChunkRequestAvailable() {
+        return false;
+    }
+
+    /**
+     * 发送未缓存在内存的子区块. 1.18+需要重写此方法.
+     */
+    public void sendSubChunks(int dimension, int x, int z, int subChunkCount, ChunkBlobCache blobCache, Map<StaticVersion, byte[][]> payload, byte[] heightMapType, byte[][] heightMap) {
+
+    }
+
+    /**
+     * 发送缓存在内存的子区块. 1.18+需要重写此方法.
+     */
+    public void sendSubChunks(int dimension, int x, int z, int subChunkCount, ChunkBlobCache blobCache, ChunkPacketCache packetCache, byte[] heightMapType, byte[][] heightMap) {
+
+    }
+
+    protected boolean hasSubChunkRequest() {
+        return false;
+    }
+
+    protected void processSubChunkRequest() {
 
     }
 }

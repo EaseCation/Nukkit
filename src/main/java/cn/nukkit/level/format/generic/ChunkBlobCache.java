@@ -1,27 +1,44 @@
 package cn.nukkit.level.format.generic;
 
-import it.unimi.dsi.fastutil.longs.Long2ObjectOpenHashMap;
+import it.unimi.dsi.fastutil.longs.Long2ObjectMap;
 
 public class ChunkBlobCache {
 
+    private static final byte[] BORDER_BLOCKS = new byte[1];
+
     private final int subChunkCount;
+    private final byte[] heightMapType;
+    private final byte[][] heightMapData;
+
     private final long[] blobIds;
     private final long[] extendedBlobIds; // 1.18+
-    private final Long2ObjectOpenHashMap<byte[]> clientBlobs;
-    private final Long2ObjectOpenHashMap<byte[]> extendedClientBlobs; // 1.18+
-    private final byte[] clientBlobCachedPayload;
+    private final Long2ObjectMap<byte[]> clientBlobs;
+    private final Long2ObjectMap<byte[]> extendedClientBlobs; // 1.18+
+    private final byte[] fullChunkCachedPayload;
+    private final byte[][] subChunkCachedPayload;
 
-    public ChunkBlobCache(int subChunkCount, long[] blobIds, long[] extendedBlobIds, Long2ObjectOpenHashMap<byte[]> clientBlobs, Long2ObjectOpenHashMap<byte[]> extendedClientBlobs, byte[] clientBlobCachedPayload) {
+    public ChunkBlobCache(int subChunkCount, byte[] heightMapType, byte[][] heightMapData, long[] blobIds, long[] extendedBlobIds, Long2ObjectMap<byte[]> clientBlobs, Long2ObjectMap<byte[]> extendedClientBlobs, byte[] fullChunkCachedPayload, byte[][] subChunkCachedPayload) {
         this.subChunkCount = subChunkCount;
+        this.heightMapType = heightMapType;
+        this.heightMapData = heightMapData;
         this.blobIds = blobIds;
         this.extendedBlobIds = extendedBlobIds;
         this.clientBlobs = clientBlobs;
         this.extendedClientBlobs = extendedClientBlobs;
-        this.clientBlobCachedPayload = clientBlobCachedPayload;
+        this.fullChunkCachedPayload = fullChunkCachedPayload;
+        this.subChunkCachedPayload = subChunkCachedPayload;
     }
 
     public int getSubChunkCount() {
         return subChunkCount;
+    }
+
+    public byte[] getHeightMapType() {
+        return heightMapType;
+    }
+
+    public byte[][] getHeightMapData() {
+        return heightMapData;
     }
 
     public long[] getBlobIds() {
@@ -32,17 +49,23 @@ public class ChunkBlobCache {
         return extendedBlobIds;
     }
 
-    public Long2ObjectOpenHashMap<byte[]> getClientBlobs() {
+    public Long2ObjectMap<byte[]> getClientBlobs() {
         return clientBlobs;
     }
 
-    public Long2ObjectOpenHashMap<byte[]> getExtendedClientBlobs() {
+    public Long2ObjectMap<byte[]> getExtendedClientBlobs() {
         return extendedClientBlobs;
     }
 
-    public byte[] getClientBlobCachedPayload() {
-        return clientBlobCachedPayload;
+    public byte[] getFullChunkCachedPayload() {
+        return fullChunkCachedPayload;
     }
 
-    //TODO: add support for 1.18 sub-chunk requests later -- 11/27/2021
+    public byte[] getSubModeCachedPayload() {
+        return BORDER_BLOCKS;
+    }
+
+    public byte[][] getSubChunkCachedPayload() {
+        return subChunkCachedPayload;
+    }
 }

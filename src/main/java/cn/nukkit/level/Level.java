@@ -197,6 +197,8 @@ public class Level implements ChunkManager, Metadatable {
 //    private final List<BlockUpdateEntry> nextTickUpdates = Lists.newArrayList();
     //private final Map<BlockVector3, Integer> updateQueueIndex = new HashMap<>();
 
+    private final Long2ObjectMap<Int2ObjectMap<Player>> subChunkSendQueue = new Long2ObjectOpenHashMap<>();
+
     private final ConcurrentMap<Long, Int2ObjectMap<Player>> chunkSendQueue = new ConcurrentHashMap<>();
     private final LongSet chunkSendTasks = new LongOpenHashSet();
 
@@ -2639,6 +2641,24 @@ public class Level implements ChunkManager, Metadatable {
         for (Player p : getPlayers().values()) p.dataPacket(pk);
     }
 
+    public boolean requestSubChunks(int x, int z, Player player) {
+        int loaderId = player.getLoaderId();
+        if (loaderId <= 0) {
+            return false;
+        }
+        long index = Level.chunkHash(x, z);
+
+        Int2ObjectMap<Player> loaders = this.subChunkSendQueue.get(index);
+        if (loaders == null) {
+            loaders = new Int2ObjectOpenHashMap<>();
+            this.subChunkSendQueue.put(index, loaders);
+        }
+        loaders.put(loaderId, player);
+
+        this.chunkSendQueue.putIfAbsent(index, new Int2ObjectOpenHashMap<>());
+        return true;
+    }
+
     public void requestChunk(int x, int z, Player player) {
         Preconditions.checkState(player.getLoaderId() > 0, player.getName() + " has no chunk loader");
         long index = Level.chunkHash(x, z);
@@ -2660,8 +2680,11 @@ public class Level implements ChunkManager, Metadatable {
                     } else if (protocol < 475) {
                         player.sendChunk(x, z, subChunkCount, chunkBlobCache, chunkPacketCache.getPacket(
                                 StaticVersion.fromProtocol(protocol, player.isNetEaseClient())));
+                    } else if (player.isSubChunkRequestAvailable()) {
+                        player.sendChunk(x, z, subChunkCount + Anvil.PADDING_SUB_CHUNK_COUNT, chunkBlobCache,
+                                chunkPacketCache.getSubModePacket());
                     } else {
-                        player.sendChunk(x, z, subChunkCount + Anvil.LOWER_PADDING_SUB_CHUNK_COUNT, chunkBlobCache,
+                        player.sendChunk(x, z, subChunkCount + Anvil.PADDING_SUB_CHUNK_COUNT, chunkBlobCache,
                                 chunkPacketCache.getPacket(StaticVersion.fromProtocol(protocol, player.isNetEaseClient())));
                     }
                 }
@@ -2689,6 +2712,17 @@ public class Level implements ChunkManager, Metadatable {
                 ChunkPacketCache packetCache = chunk.getPacketCache();
                 if (blobCache != null && packetCache != null) {
                     this.sendChunk(x, z, index, blobCache.getSubChunkCount(), blobCache, packetCache);
+
+                    Int2ObjectMap<Player> loaders = this.subChunkSendQueue.remove(index);
+                    if (loaders != null) {
+                        for (Player player : loaders.values()) {
+                            if (!player.isConnected()) {
+                                continue;
+                            }
+                            player.sendSubChunks(this.getDimension(), x, z, blobCache.getSubChunkCount(), blobCache, packetCache, blobCache.getHeightMapType(), blobCache.getHeightMapData());
+                        }
+                    }
+
                     continue;
                 }
             }
@@ -2710,23 +2744,34 @@ public class Level implements ChunkManager, Metadatable {
      * Chunk request callback on main thread
      * If this.cacheChunks == false, the ChunkPacketCache can be null;
      */
-    public void chunkRequestCallback(long timestamp, int x, int z, int subChunkCount, ChunkBlobCache chunkBlobCache, ChunkPacketCache chunkPacketCache, byte[] payload, byte[] payloadOld, Map<StaticVersion, byte[]> payloads) {
+    public void chunkRequestCallback(long timestamp, int x, int z, int subChunkCount, ChunkBlobCache chunkBlobCache, ChunkPacketCache chunkPacketCache, byte[] payload, byte[] payloadOld, byte[] subModePayload, Map<StaticVersion, byte[]> payloads, Map<StaticVersion, byte[][]> subChunkPayloads, byte[] heightMapType, byte[][] heightMapData) {
         this.timings.syncChunkSendTimer.startTiming();
         long index = Level.chunkHash(x, z);
 
         if (this.cacheChunks) {
             if (chunkPacketCache == null) {
                 Map<StaticVersion, BatchPacket> packets = new EnumMap<>(StaticVersion.class);
+                Map<StaticVersion, BatchPacket[]> subPackets = new EnumMap<>(StaticVersion.class);
+
                 payloads.forEach((version, data) -> {
                     int actualCount = subChunkCount;
                     if (version.getProtocol() >= StaticVersion.V1_18.getProtocol()) {
-                        actualCount += Anvil.LOWER_PADDING_SUB_CHUNK_COUNT;
+                        actualCount += Anvil.PADDING_SUB_CHUNK_COUNT;
+
+                        byte[][] subChunkData = subChunkPayloads.get(version);
+                        BatchPacket[] compressed = new BatchPacket[subChunkCount];
+                        for (int y = 0; y < subChunkCount; y++) {
+                            compressed[y] = Level.getSubChunkCacheFromData(Level.DIMENSION_OVERWORLD, x, y, z, subChunkData[y], heightMapType[y], heightMapData[y]);
+                        }
+                        subPackets.put(version, compressed);
                     }
                     packets.put(version, getChunkCacheFromData(x, z, actualCount, data, false, true));
                 });
 
                 chunkPacketCache = new ChunkPacketCache(
                         packets,
+                        subPackets,
+                        getChunkCacheFromData(x, z, -1, subModePayload, false, true),
                         getChunkCacheFromData(x, z, subChunkCount, payload, false, true),
                         getChunkCacheFromData(x, z, subChunkCount, payload, false, false),
                         getChunkCacheFromData(x, z, subChunkCount, payloadOld, true, false)
@@ -2738,6 +2783,17 @@ public class Level implements ChunkManager, Metadatable {
                 chunk.setPacketCache(chunkPacketCache);
             }
             this.sendChunk(x, z, index, subChunkCount, chunkBlobCache, chunkPacketCache);
+
+            Int2ObjectMap<Player> loaders = this.subChunkSendQueue.remove(index);
+            if (loaders != null) {
+                for (Player player : loaders.values()) {
+                    if (!player.isConnected()) {
+                        continue;
+                    }
+                    player.sendSubChunks(this.getDimension(), x, z, subChunkCount, chunkBlobCache, chunkPacketCache, heightMapType, heightMapData);
+                }
+            }
+
             this.timings.syncChunkSendTimer.stopTiming();
             return;
         }
@@ -2747,15 +2803,15 @@ public class Level implements ChunkManager, Metadatable {
                 if (player.isConnected() && player.usedChunks.containsKey(index)) {
                     int protocol = player.getProtocol();
                     if (protocol < 361) {
-                        player.sendChunk(x, z, subChunkCount, chunkBlobCache, payloadOld);
+                        player.sendChunk(x, z, subChunkCount, chunkBlobCache, payloadOld, subModePayload);
                     } else if (protocol < StaticVersion.getValues()[0].getProtocol()) {
-                        player.sendChunk(x, z, subChunkCount, chunkBlobCache, payload);
+                        player.sendChunk(x, z, subChunkCount, chunkBlobCache, payload, subModePayload);
                     } else if (protocol < 475) {
                         player.sendChunk(x, z, subChunkCount, chunkBlobCache,
-                                payloads.get(StaticVersion.fromProtocol(protocol, player.isNetEaseClient())));
+                                payloads.get(StaticVersion.fromProtocol(protocol, player.isNetEaseClient())), subModePayload);
                     } else {
-                        player.sendChunk(x, z, subChunkCount + Anvil.LOWER_PADDING_SUB_CHUNK_COUNT, chunkBlobCache,
-                                payloads.get(StaticVersion.fromProtocol(protocol, player.isNetEaseClient())));
+                        player.sendChunk(x, z, subChunkCount + Anvil.PADDING_SUB_CHUNK_COUNT, chunkBlobCache,
+                                payloads.get(StaticVersion.fromProtocol(protocol, player.isNetEaseClient())), subModePayload);
                     }
                 }
             }
@@ -2763,6 +2819,17 @@ public class Level implements ChunkManager, Metadatable {
             this.chunkSendQueue.remove(index);
             this.chunkSendTasks.remove(index);
         }
+
+        Int2ObjectMap<Player> loaders = this.subChunkSendQueue.remove(index);
+        if (loaders != null) {
+            for (Player player : loaders.values()) {
+                if (!player.isConnected()) {
+                    continue;
+                }
+                player.sendSubChunks(this.getDimension(), x, z, subChunkCount, chunkBlobCache, subChunkPayloads, heightMapType, heightMapData);
+            }
+        }
+
         this.timings.syncChunkSendTimer.stopTiming();
     }
 
@@ -3779,4 +3846,29 @@ public class Level implements ChunkManager, Metadatable {
         return batch;
     }
 
+    public static BatchPacket getSubChunkCacheFromData(int dimension, int subChunkX, int subChunkY, int subChunkZ, byte[] payload, byte heightMapType, byte[] heightMap) {
+        SubChunkPacket packet = new SubChunkPacket();
+        packet.dimension = dimension;
+        packet.subChunkX = subChunkX;
+        packet.subChunkY = subChunkY;
+        packet.subChunkZ = subChunkZ;
+        packet.data = payload;
+        packet.heightMapType = heightMapType;
+        packet.heightMap = heightMap;
+        packet.tryEncode();
+
+        BatchPacket batch = new BatchPacket();
+        byte[][] batchPayload = new byte[2][];
+        byte[] buf = packet.getBuffer();
+        batchPayload[0] = Binary.writeUnsignedVarInt(buf.length);
+        batchPayload[1] = buf;
+        byte[] data = Binary.appendBytes(batchPayload);
+        try {
+            byte[] d = Network.deflateRaw(data, Server.getInstance().networkCompressionLevel);
+            batch.payload = Arrays.copyOf(d, d.length);
+        } catch (Exception e) {
+            throw new RuntimeException(e);
+        }
+        return batch;
+    }
 }

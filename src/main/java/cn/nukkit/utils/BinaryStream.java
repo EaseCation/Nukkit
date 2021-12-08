@@ -102,6 +102,14 @@ public class BinaryStream {
         return Arrays.copyOf(buffer, count);
     }
 
+    public byte[] getBuffer(int from) {
+        return Arrays.copyOfRange(buffer, from, count);
+    }
+
+    public byte[] getBuffer(int from, int to) {
+        return Arrays.copyOfRange(buffer, from, to);
+    }
+
     public int getCount() {
         return count;
     }
@@ -121,7 +129,7 @@ public class BinaryStream {
     }
 
     public void put(byte[] bytes) {
-        if (bytes == null) {
+        if (bytes == null || bytes.length == 0) {
             return;
         }
 
@@ -766,6 +774,12 @@ public class BinaryStream {
         putVarInt(v.x);
         putVarInt(v.y);
         putVarInt(v.z);
+    }
+
+    public void putSignedBlockPosition(int x, int y, int z) {
+        this.putVarInt(x);
+        this.putVarInt(y);
+        this.putVarInt(z);
     }
 
     public void putBlockVector3(BlockVector3 v) {

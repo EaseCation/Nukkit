@@ -8,6 +8,7 @@ import cn.nukkit.nbt.tag.CompoundTag;
 import cn.nukkit.utils.BinaryStream;
 import it.unimi.dsi.fastutil.ints.IntArrayList;
 import it.unimi.dsi.fastutil.ints.IntList;
+import it.unimi.dsi.fastutil.ints.IntLists;
 
 import java.io.IOException;
 import java.nio.ByteOrder;
@@ -24,6 +25,10 @@ public class PalettedSubChunkStorage {
 
     private PalettedSubChunkStorage(BitArrayVersion version, int firstId) {
         this.bitArray = version.createPalette(SIZE);
+        if (version == BitArrayVersion.EMPTY) {
+            this.palette = IntLists.EMPTY_LIST;
+            return;
+        }
         this.palette = new IntArrayList(version.isSingleton() ? 1 : 16);
         this.palette.add(firstId); // Air is at the start of every block palette.
     }
@@ -66,6 +71,9 @@ public class PalettedSubChunkStorage {
     }
 
     private static int getPaletteHeader(BitArrayVersion version, boolean runtime) {
+//        if (version == BitArrayVersion.EMPTY) {
+//            runtime = true;
+//        }
         return (version.getId() << 1) | (runtime ? 1 : 0);
     }
 
@@ -79,9 +87,13 @@ public class PalettedSubChunkStorage {
     }
 
     public void writeTo(BinaryStream stream) {
-        stream.putByte((byte) getPaletteHeader(bitArray.getVersion(), true));
+        BitArrayVersion version = bitArray.getVersion();
+        stream.putByte((byte) getPaletteHeader(version, true));
+        if (version == BitArrayVersion.EMPTY) {
+            return;
+        }
 
-        if (this.bitArray.getVersion() != BitArrayVersion.V0) {
+        if (version != BitArrayVersion.V0) {
             for (int word : bitArray.getWords()) {
                 stream.putLInt(word);
             }
@@ -93,9 +105,13 @@ public class PalettedSubChunkStorage {
     }
 
     public void writeToCache(BinaryStream stream) {
-        stream.putByte((byte) getPaletteHeader(bitArray.getVersion(), false));
+        BitArrayVersion version = bitArray.getVersion();
+        stream.putByte((byte) getPaletteHeader(version, false));
+        if (version == BitArrayVersion.EMPTY) {
+            return;
+        }
 
-        if (this.bitArray.getVersion() != BitArrayVersion.V0) {
+        if (version != BitArrayVersion.V0) {
             for (int word : bitArray.getWords()) {
                 stream.putLInt(word);
             }

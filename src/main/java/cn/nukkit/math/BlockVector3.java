@@ -33,6 +33,18 @@ public class BlockVector3 implements Cloneable {
         return this.z;
     }
 
+    public int getChunkX() {
+        return this.x >> 4;
+    }
+
+    public int getSubChunkY() {
+        return this.y >> 4;
+    }
+
+    public int getChunkZ() {
+        return this.z >> 4;
+    }
+
     public Vector3 add(double x) {
         return this.add(x, 0, 0);
     }

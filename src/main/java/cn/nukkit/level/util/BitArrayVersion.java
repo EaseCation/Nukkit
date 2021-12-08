@@ -9,7 +9,8 @@ public enum BitArrayVersion {
     V3(3, 10, V4), // 2 bit padding
     V2(2, 16, V3),
     V1(1, 32, V2),
-    V0(0, 1, V2);
+    V0(0, 1, V2),
+    EMPTY(-1, -1, V0);
 
     final byte bits;
     final byte entriesPerWord;
@@ -33,14 +34,15 @@ public enum BitArrayVersion {
     }
 
     public BitArray createPalette(int size) {
-        return this == V0 ? new SingletonBitArray(size) : this.createPalette(size, new int[this.getWordsForSize(size)]);
+        return this == EMPTY ? EmptyBitArray.INSTANCE : this == V0 ? new SingletonBitArray(size)
+                : this.createPalette(size, new int[this.getWordsForSize(size)]);
     }
 
     public byte getId() {
         return bits;
     }
 
-    public int getWordsForSize(int size) {
+    private int getWordsForSize(int size) {
         return (size / entriesPerWord) + (size % entriesPerWord == 0 ? 0 : 1);
     }
 
@@ -52,7 +54,7 @@ public enum BitArrayVersion {
         return next;
     }
 
-    public BitArray createPalette(int size, int[] words) {
+    private BitArray createPalette(int size, int[] words) {
         if (this == V3 || this == V5 || this == V6) {
             // Padded palettes aren't able to use bitwise operations due to their padding.
             return new PaddedBitArray(this, size, words);

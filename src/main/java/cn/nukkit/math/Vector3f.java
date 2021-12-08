@@ -54,6 +54,18 @@ public class Vector3f implements Cloneable {
         return NukkitMath.floorFloat(this.z);
     }
 
+    public int getChunkX() {
+        return this.getFloorX() >> 4;
+    }
+
+    public int getSubChunkY() {
+        return this.getFloorY() >> 4;
+    }
+
+    public int getChunkZ() {
+        return this.getFloorZ() >> 4;
+    }
+
     public float getRight() {
         return this.x;
     }

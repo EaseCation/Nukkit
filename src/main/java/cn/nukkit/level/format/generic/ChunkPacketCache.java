@@ -8,13 +8,20 @@ import java.util.Map;
 public class ChunkPacketCache {
 
     private final Map<StaticVersion, BatchPacket> packets; //1.16.100+ static runtime block palette
+    private final Map<StaticVersion, BatchPacket[]> subChunkPackets; // 1.18+ sub chunk packet
 
+    /**
+     * LevelChunkPacket in sub-chunk request mode.
+     */
+    private final BatchPacket subModePacket;
     private final BatchPacket packet116;
     private final BatchPacket packet;
     private final BatchPacket packetOld;
 
-    public ChunkPacketCache(Map<StaticVersion, BatchPacket> packets, BatchPacket packet116, BatchPacket packet, BatchPacket packetOld) {
+    public ChunkPacketCache(Map<StaticVersion, BatchPacket> packets, Map<StaticVersion, BatchPacket[]> subChunkPackets, BatchPacket subModePacket, BatchPacket packet116, BatchPacket packet, BatchPacket packetOld) {
         this.packets = packets;
+        this.subChunkPackets = subChunkPackets;
+        this.subModePacket = subModePacket;
         this.packet116 = packet116;
         this.packet = packet;
         this.packetOld = packetOld;
@@ -22,6 +29,14 @@ public class ChunkPacketCache {
 
     public BatchPacket getPacket(StaticVersion version) {
         return this.packets.get(version);
+    }
+
+    public BatchPacket[] getSubPackets(StaticVersion version) {
+        return this.subChunkPackets.get(version);
+    }
+
+    public BatchPacket getSubModePacket() {
+        return subModePacket;
     }
 
     public BatchPacket getPacket116() {
@@ -38,6 +53,8 @@ public class ChunkPacketCache {
 
     public void compress() {
         this.packets.clear();
+        this.subChunkPackets.clear();
+        this.subModePacket.trim();
         this.packet116.trim();
         this.packet.trim();
         this.packetOld.trim();

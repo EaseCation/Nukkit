@@ -15,11 +15,13 @@ import cn.nukkit.math.XXHash64;
 import cn.nukkit.nbt.NBTIO;
 import cn.nukkit.nbt.tag.CompoundTag;
 import cn.nukkit.network.protocol.BatchPacket;
+import cn.nukkit.network.protocol.SubChunkPacket;
 import cn.nukkit.scheduler.AsyncTask;
 import cn.nukkit.utils.BinaryStream;
 import cn.nukkit.utils.ChunkException;
 import cn.nukkit.utils.ThreadCache;
 import it.unimi.dsi.fastutil.ints.Int2IntMap;
+import it.unimi.dsi.fastutil.longs.Long2ObjectMap;
 import it.unimi.dsi.fastutil.longs.Long2ObjectOpenHashMap;
 import it.unimi.dsi.fastutil.longs.LongArrayList;
 import it.unimi.dsi.fastutil.longs.LongList;
@@ -31,6 +33,7 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.nio.ByteOrder;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.EnumMap;
 import java.util.HashMap;
 import java.util.List;
@@ -44,14 +47,17 @@ import java.util.regex.Pattern;
 @Log4j2
 public class Anvil extends BaseLevelProvider {
     public static final int VERSION = 19133;
-    static private final byte[] PAD_256 = new byte[256];
+    public static final byte[] PAD_256 = new byte[256];
+    private static final byte[] EMPTY = new byte[0];
 
-    public static final int LOWER_PADDING_SUB_CHUNK_COUNT = 4;
-    public static final byte[] LOWER_PADDING_SUB_CHUNK_BLOB = new byte[]{
+    public static final int PADDING_SUB_CHUNK_COUNT = 4;
+    public static final byte[] PADDING_SUB_CHUNK_BLOB = new byte[]{
             8, // sub chunk version
             0, // no layers - client will treat this as all-air
     };
-    public static final long LOWER_PADDING_SUB_CHUNK_HASH = XXHash64.getHash(LOWER_PADDING_SUB_CHUNK_BLOB);
+    public static final long PADDING_SUB_CHUNK_HASH = XXHash64.getHash(PADDING_SUB_CHUNK_BLOB);
+
+    private static final int HEIGHT_MAP_LENGTH = 16 * 16;
 
     public Anvil(Level level, String path) throws IOException {
         super(level, path);
@@ -139,33 +145,20 @@ public class Anvil extends BaseLevelProvider {
             ChunkBlobCache chunkBlobCache;
 
             final Map<StaticVersion, byte[]> payloads = new EnumMap<>(StaticVersion.class);
+            final Map<StaticVersion, byte[][]> subChunkPayloads = new EnumMap<>(StaticVersion.class);
+            byte[] subModePayload;
             byte[] payload;
             byte[] payloadOld;
             ChunkPacketCache chunkPacketCache;
+            byte[] heightMapType;
+            byte[][] heightMapData;
 
             @Override
             public void onRun() {
                 try {
                     BinaryStream stream = ThreadCache.binaryStream.get();
+
                     stream.reuse();
-
-                    byte[] blockEntities = new byte[0];
-                    if (!chunk.getBlockEntities().isEmpty()) {
-                        List<CompoundTag> tagList = new ArrayList<>();
-
-                        for (BlockEntity blockEntity : chunk.getBlockEntities().values()) {
-                            if (blockEntity instanceof BlockEntitySpawnable) {
-                                tagList.add(((BlockEntitySpawnable) blockEntity).getSpawnCompound());
-                            }
-                        }
-
-                        try {
-                            blockEntities = NBTIO.write(tagList, ByteOrder.LITTLE_ENDIAN, true);
-                        } catch (IOException e) {
-                            throw new RuntimeException(e);
-                        }
-                    }
-
                     byte[] biomePalette;
                     PalettedSubChunkStorage storage = PalettedSubChunkStorage.ofBiome(toValidBiome(chunk.getBiomeId(0, 0)));
                     for (int x = 0; x < 16; x++) {
@@ -207,25 +200,106 @@ public class Anvil extends BaseLevelProvider {
                             break;
                         }
                     }
+                    boolean emptyChunk = count == 0;
+                    int extendedCount = emptyChunk ? 0 : PADDING_SUB_CHUNK_COUNT + count;
 
-                    Long2ObjectOpenHashMap<byte[]> clientBlobs = new Long2ObjectOpenHashMap<>(16 + 1); // 16 subChunks + 1 biome
-                    Long2ObjectOpenHashMap<byte[]> extendedClientBlobs = new Long2ObjectOpenHashMap<>(4 + 16 + 4 + 1); // 4 + 16 + 4 subChunks + 1 biome
+                    byte[][] subChunkBlockEntities = new byte[PADDING_SUB_CHUNK_COUNT + 16 /*+ 4*/][];
+                    byte[] fullChunkBlockEntities = EMPTY;
+                    Arrays.fill(subChunkBlockEntities, EMPTY);
+                    if (!emptyChunk && !chunk.getBlockEntities().isEmpty()) {
+                        stream.reuse();
+                        List<CompoundTag>[] tagLists = new List[count];
 
-                    LongList blobIds = new LongArrayList(16 + 1);
-                    LongList extendedBlobIds = new LongArrayList(4 + 16 + 4 + 1);
+                        for (BlockEntity blockEntity : chunk.getBlockEntities().values()) {
+                            if (blockEntity instanceof BlockEntitySpawnable) {
+                                int subChunkY = blockEntity.getSubChunkY();
+                                List<CompoundTag> tagList = tagLists[subChunkY];
+                                if (tagList == null) {
+                                    tagList = new ArrayList<>();
+                                    tagLists[subChunkY] = tagList;
+                                }
+                                tagList.add(((BlockEntitySpawnable) blockEntity).getSpawnCompound());
+                            }
+                        }
 
-                    for (int i = 0; i < LOWER_PADDING_SUB_CHUNK_COUNT; i++) {
-                        extendedBlobIds.add(LOWER_PADDING_SUB_CHUNK_HASH);
+                        for (int i = PADDING_SUB_CHUNK_COUNT; i < extendedCount; i++) {
+                            List<CompoundTag> tagList = tagLists[i - PADDING_SUB_CHUNK_COUNT];
+                            if (tagList == null) {
+                                continue;
+                            }
+
+                            byte[] data;
+                            try {
+                                data = NBTIO.write(tagList, ByteOrder.LITTLE_ENDIAN, true);
+                            } catch (IOException e) {
+                                throw new RuntimeException(e);
+                            }
+                            subChunkBlockEntities[i] = data;
+
+                            stream.put(data);
+                        }
+
+                        fullChunkBlockEntities = stream.getBuffer();
                     }
-                    extendedClientBlobs.put(LOWER_PADDING_SUB_CHUNK_HASH, LOWER_PADDING_SUB_CHUNK_BLOB);
+
+                    byte[] heightMap = chunk.getHeightMapArray();
+                    heightMapType = new byte[extendedCount /*+ 4*/];
+                    heightMapData = new byte[extendedCount /*+ 4*/][];
+
+                    for (int i = 0; i < heightMapData.length; i++) {
+                        int chunkY = i - PADDING_SUB_CHUNK_COUNT;
+                        int minY = chunkY << 4;
+                        int maxY = ((chunkY + 1) << 4) - 1;
+                        int tooLowCount = 0;
+                        int tooHighCount = 0;
+                        byte[] subChunkHeightMap = new byte[HEIGHT_MAP_LENGTH];
+                        for (int j = 0; j < HEIGHT_MAP_LENGTH; j++) {
+                            int height = heightMap[j];
+                            if (height == 0) {
+                                height = -4 << 4;
+                            }
+
+                            if (height < minY) {
+                                subChunkHeightMap[j] = -1;
+                                ++tooLowCount;
+                            } else if (height > maxY) {
+                                subChunkHeightMap[j] = 0xf + 1;
+                                ++tooHighCount;
+                            } else {
+                                subChunkHeightMap[j] = (byte) (height & 0xf);
+                            }
+                        }
+                        if (tooLowCount == HEIGHT_MAP_LENGTH) {
+                            heightMapType[i] = SubChunkPacket.HEIGHT_MAP_TYPE_ALL_TOO_LOW;
+                        } else if (tooHighCount == HEIGHT_MAP_LENGTH) {
+                            heightMapType[i] = SubChunkPacket.HEIGHT_MAP_TYPE_ALL_TOO_HIGH;
+                        } else {
+                            heightMapType[i] = SubChunkPacket.HEIGHT_MAP_TYPE_HAS_DATA;
+                            heightMapData[i] = subChunkHeightMap;
+                        }
+                    }
+
+                    Long2ObjectMap<byte[]> clientBlobs = new Long2ObjectOpenHashMap<>(count + 1); // 16 subChunks + 1 biome
+                    Long2ObjectMap<byte[]> extendedClientBlobs = new Long2ObjectOpenHashMap<>(extendedCount /*+ 4*/ + 1); // 4 + 16 + 4 subChunks + 1 biome
+
+                    LongList blobIds = new LongArrayList(count + 1);
+                    LongList extendedBlobIds = new LongArrayList(extendedCount /*+ 4*/ + 1);
+
+                    if (!emptyChunk) {
+                        for (int i = 0; i < PADDING_SUB_CHUNK_COUNT; i++) {
+                            extendedBlobIds.add(PADDING_SUB_CHUNK_HASH);
+                        }
+                        extendedClientBlobs.put(PADDING_SUB_CHUNK_HASH, PADDING_SUB_CHUNK_BLOB);
+                    }
 
                     for (int i = 0; i < count; i++) {
-                        //byte[] subChunk = new byte[6145]; // 1 subChunkVersion (always 0) + 4096 blockIds + 2048 blockMeta
+                        //byte[] subChunk = new byte[6145]; // 1 subChunkVersion (0) + 4096 blockIds + 2048 blockMeta
                         stream.reuse();
-                        //bs.putByte((byte) 0);
+                        //stream.putByte((byte) 0);
                         sections[i].writeToCache(stream);
                         //System.arraycopy(sections[i].getBytes(), 0, subChunk, 1, 6144); // skip subChunkVersion
                         byte[] subChunk = stream.getBuffer();
+
                         long hash = XXHash64.getHash(subChunk);
                         blobIds.add(hash);
                         extendedBlobIds.add(hash);
@@ -240,32 +314,69 @@ public class Anvil extends BaseLevelProvider {
 
                     hash = XXHash64.getHash(biomePalette);
                     extendedBlobIds.add(hash);
-                    extendedClientBlobs.put(hash, biome);
+                    extendedClientBlobs.put(hash, biomePalette);
 
-                    byte[] clientBlobCachedPayload = new byte[1 + blockEntities.length]; // borderBlocks + blockEntities
-                    System.arraycopy(blockEntities, 0, clientBlobCachedPayload, 1, blockEntities.length); // borderBlocks array size is always 0, skip it
+                    stream.reuse();
+                    stream.putByte((byte) 0);
+                    stream.put(fullChunkBlockEntities);
+                    byte[] clientBlobCachedPayload = stream.getBuffer(); // borderBlocks + blockEntities
 
-                    chunkBlobCache = new ChunkBlobCache(count, blobIds.toLongArray(), extendedBlobIds.toLongArray(), clientBlobs, extendedClientBlobs, clientBlobCachedPayload);
+                    stream.reuse();
+                    stream.put(biomePalette);
+                    stream.putByte((byte) 0);
+                    subModePayload = stream.getBuffer(); // biomePalettes + borderBlocks
+
+                    chunkBlobCache = new ChunkBlobCache(count, heightMapType, heightMapData, blobIds.toLongArray(), extendedBlobIds.toLongArray(), clientBlobs, extendedClientBlobs, clientBlobCachedPayload, subChunkBlockEntities);
 
                     for (StaticVersion version : StaticVersion.getValues()) {
-                        payloads.put(version, encodeChunk(chunk, sections, count, biomePalette, blockEntities, version));
+                        byte[][] blockStorages = new byte[extendedCount /*+ 4*/][];
+                        payloads.put(version, encodeChunk(chunk, sections, count, blockStorages, biomePalette, fullChunkBlockEntities, version));
+
+                        if (version.getProtocol() >= StaticVersion.V1_18.getProtocol()) {
+                            if (!emptyChunk && fullChunkBlockEntities.length != 0) {
+                                for (int y = PADDING_SUB_CHUNK_COUNT; y < extendedCount; y++) {
+                                    byte[] blockEntities = subChunkBlockEntities[y];
+                                    if (blockEntities.length == 0) {
+                                        continue;
+                                    }
+                                    byte[] blockStorage = blockStorages[y];
+
+                                    stream.reuse();
+                                    stream.put(blockStorage);
+                                    stream.put(blockEntities);
+                                    blockStorages[y] = stream.getBuffer(); // subChunkBlocks + subChunkBlockEntities
+                                }
+                            }
+                            this.subChunkPayloads.put(version, blockStorages);
+                        }
                     }
 
-                    payload = encodeChunk(false, chunk, sections, count, extraData, blockEntities);
-                    payloadOld = encodeChunk(true, chunk, sections, count, extraData, blockEntities);
+                    payload = encodeChunk(false, chunk, sections, count, extraData, fullChunkBlockEntities);
+                    payloadOld = encodeChunk(true, chunk, sections, count, extraData, fullChunkBlockEntities);
 
                     if (level.isCacheChunks()) {
                         Map<StaticVersion, BatchPacket> packets = new EnumMap<>(StaticVersion.class);
+                        Map<StaticVersion, BatchPacket[]> subPackets = new EnumMap<>(StaticVersion.class);
+
                         payloads.forEach((version, payload) -> {
                             int actualCount = count;
                             if (version.getProtocol() >= StaticVersion.V1_18.getProtocol()) {
-                                actualCount += LOWER_PADDING_SUB_CHUNK_COUNT;
+                                actualCount += PADDING_SUB_CHUNK_COUNT;
+
+                                byte[][] subChunkData = subChunkPayloads.get(version);
+                                BatchPacket[] compressed = new BatchPacket[extendedCount];
+                                for (int y = 0; y < extendedCount; y++) {
+                                    compressed[y] = Level.getSubChunkCacheFromData(Level.DIMENSION_OVERWORLD, x, y, z, subChunkData[y], heightMapType[y], heightMapData[y]);
+                                }
+                                subPackets.put(version, compressed);
                             }
                             packets.put(version, Level.getChunkCacheFromData(x, z, actualCount, payload, false, true));
                         });
 
                         chunkPacketCache = new ChunkPacketCache(
                                 packets,
+                                subPackets,
+                                Level.getChunkCacheFromData(x, z, -1, subModePayload, false, true),
                                 Level.getChunkCacheFromData(x, z, count, payload, false, true),
                                 Level.getChunkCacheFromData(x, z, count, payload, false, false),
                                 Level.getChunkCacheFromData(x, z, count, payloadOld, true, false)
@@ -280,13 +391,13 @@ public class Anvil extends BaseLevelProvider {
             @Override
             public void onCompletion(Server server) {
                 if (success) {
-                    getLevel().chunkRequestCallback(timestamp, x, z, count, chunkBlobCache, chunkPacketCache, payload, payloadOld, payloads);
+                    getLevel().chunkRequestCallback(timestamp, x, z, count, chunkBlobCache, chunkPacketCache, payload, payloadOld, subModePayload, payloads, subChunkPayloads, heightMapType, heightMapData);
                 }
             }
         };
     }
 
-    private byte[] encodeChunk(boolean isOld, Chunk chunk, cn.nukkit.level.format.ChunkSection[] sections, int count, byte[] extraData, byte[] blockEntities) {
+    private static byte[] encodeChunk(boolean isOld, Chunk chunk, cn.nukkit.level.format.ChunkSection[] sections, int count, byte[] extraData, byte[] blockEntities) {
         BinaryStream stream = ThreadCache.binaryStream.get();
         stream.reuse();
         if (isOld) {
@@ -302,9 +413,7 @@ public class Anvil extends BaseLevelProvider {
             }
         }
         if (isOld) {
-            for (byte height : chunk.getHeightMapArray()) {
-                stream.putByte(height);
-            } //computed client side?
+            stream.put(chunk.getHeightMapArray());
             stream.put(PAD_256);
         }
         stream.put(chunk.getBiomeIdArray());
@@ -320,18 +429,21 @@ public class Anvil extends BaseLevelProvider {
         return stream.getBuffer();
     }
 
-    private byte[] encodeChunk(Chunk chunk, cn.nukkit.level.format.ChunkSection[] sections, int count, byte[] biomePalette, byte[] blockEntities, StaticVersion version) {
+    private static byte[] encodeChunk(Chunk chunk, cn.nukkit.level.format.ChunkSection[] sections, int count, byte[][] blockStorages, byte[] biomePalette, byte[] blockEntities, StaticVersion version) {
         BinaryStream stream = ThreadCache.binaryStream.get();
         stream.reuse();
         boolean extendedLevel = version.getProtocol() >= StaticVersion.V1_18.getProtocol();
-        if (extendedLevel) {
+        if (extendedLevel && blockStorages.length != 0) {
             //HACK: fill in fake sub chunks to make up for the new negative space client-side
-            for (int i = 0; i < LOWER_PADDING_SUB_CHUNK_COUNT; i++) {
-                stream.put(LOWER_PADDING_SUB_CHUNK_BLOB);
+            for (int i = 0; i < PADDING_SUB_CHUNK_COUNT && i < count; i++) {
+                stream.put(PADDING_SUB_CHUNK_BLOB);
+                blockStorages[i] = PADDING_SUB_CHUNK_BLOB;
             }
         }
         for (int i = 0; i < count; i++) {
+            int mark = stream.getCount();
             sections[i].writeTo(stream, version);
+            blockStorages[PADDING_SUB_CHUNK_COUNT + i] = stream.getBuffer(mark);
         }
         if (extendedLevel) {
             stream.put(biomePalette);
