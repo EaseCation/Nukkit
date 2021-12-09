@@ -435,7 +435,7 @@ public class Anvil extends BaseLevelProvider {
         boolean extendedLevel = version.getProtocol() >= StaticVersion.V1_18.getProtocol();
         if (extendedLevel && blockStorages.length != 0) {
             //HACK: fill in fake sub chunks to make up for the new negative space client-side
-            for (int i = 0; i < PADDING_SUB_CHUNK_COUNT && i < count; i++) {
+            for (int i = 0; i < PADDING_SUB_CHUNK_COUNT; i++) {
                 stream.put(PADDING_SUB_CHUNK_BLOB);
                 blockStorages[i] = PADDING_SUB_CHUNK_BLOB;
             }
