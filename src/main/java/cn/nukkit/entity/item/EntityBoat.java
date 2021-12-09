@@ -64,7 +64,7 @@ public class EntityBoat extends EntityVehicle {
         this.setDataFlag(DATA_FLAGS, DATA_FLAG_STACKABLE, true, false);
         this.setDataFlag(DATA_FLAGS, DATA_FLAG_GRAVITY, true, false);
         this.dataProperties.putInt(DATA_VARIANT, woodID = this.namedTag.getByte("woodID"));
-        this.dataProperties.putByte(DATA_CONTROLLING_RIDER_SEAT_NUMBER, 0);
+        this.dataProperties.putByte(DATA_CONTROLLING_RIDER_SEAT_NUMBER, RIDER_INDEX);
         this.dataProperties.putBoolean(DATA_IS_BUOYANT, true);
         this.dataProperties.putString(DATA_BUOYANCY_DATA, "{\"apply_gravity\":true,\"base_buoyancy\":1.0,\"big_wave_probability\":0.02999999932944775,\"big_wave_speed\":10.0,\"drag_down_on_buoyancy_removed\":0.0,\"liquid_blocks\":[\"minecraft:water\",\"minecraft:flowing_water\"],\"simulate_waves\":true}");
     }
@@ -346,8 +346,8 @@ public class EntityBoat extends EntityVehicle {
     }
 
     @Override
-    public boolean dismountEntity(Entity entity) {
-        boolean r = super.dismountEntity(entity);
+    public boolean dismountEntity(Entity entity, boolean sendLinks) {
+        boolean r = super.dismountEntity(entity, sendLinks);
 
         updatePassengers();
         entity.setDataProperty(new ByteEntityData(DATA_RIDER_ROTATION_LOCKED, 0));

@@ -1294,7 +1294,7 @@ public abstract class Entity extends Location implements Metadatable {
             return false;
         }
         if (riding != null && !riding.isAlive() && riding instanceof EntityRideable) {
-            ((EntityRideable) riding).mountEntity(this);
+            ((EntityRideable) riding).dismountEntity(this);
         }
 
         updatePassengers();
@@ -1475,7 +1475,7 @@ public abstract class Entity extends Location implements Metadatable {
     }
 
     /**
-     * Mount or Dismounts an Entity from a/into vehicle
+     * Mount an Entity from a/into vehicle
      *
      * @param entity The target Entity
      * @return {@code true} if the mounting successful
@@ -1483,31 +1483,27 @@ public abstract class Entity extends Location implements Metadatable {
     public boolean mountEntity(Entity entity, byte mode, boolean riderInitiated) {
         Objects.requireNonNull(entity, "The target of the mounting entity can't be null");
 
-        if (entity.riding != null) {
-            dismountEntity(entity);
-        } else {
-            if (isPassenger(entity)) {
-                return false;
-            }
-
-            // Entity entering a vehicle
-            EntityVehicleEnterEvent ev = new EntityVehicleEnterEvent(entity, this);
-            server.getPluginManager().callEvent(ev);
-            if (ev.isCancelled()) {
-                return false;
-            }
-
-            entity.setSeatPosition(getMountedOffset(entity));
-            this.onMountEntity(entity);
-
-            broadcastLinkPacket(entity, mode, riderInitiated);
-
-            // Add variables to entity
-            entity.riding = this;
-            passengers.add(entity);
-
-            updatePassengerPosition(entity);
+        if (isPassenger(entity) || entity.riding != null && !entity.riding.dismountEntity(entity, false)) {
+            return false;
         }
+
+        // Entity entering a vehicle
+        EntityVehicleEnterEvent ev = new EntityVehicleEnterEvent(entity, this);
+        server.getPluginManager().callEvent(ev);
+        if (ev.isCancelled()) {
+            return false;
+        }
+
+        entity.setSeatPosition(getMountedOffset(entity));
+        this.onMountEntity(entity);
+
+        broadcastLinkPacket(entity, mode, riderInitiated);
+
+        // Add variables to entity
+        entity.riding = this;
+        passengers.add(entity);
+
+        updatePassengerPosition(entity);
         return true;
     }
 
@@ -1516,14 +1512,26 @@ public abstract class Entity extends Location implements Metadatable {
     }
 
     public boolean dismountEntity(Entity entity) {
+        return this.dismountEntity(entity, true);
+    }
+
+    public boolean dismountEntity(Entity entity, boolean sendLinks) {
         // Run the events
         EntityVehicleExitEvent ev = new EntityVehicleExitEvent(entity, this);
         server.getPluginManager().callEvent(ev);
         if (ev.isCancelled()) {
+            int seatIndex = this.passengers.indexOf(entity);
+            if (seatIndex == 0) {
+                this.broadcastLinkPacket(entity, TYPE_RIDE);
+            } else if (seatIndex != -1) {
+                this.broadcastLinkPacket(entity, SetEntityLinkPacket.TYPE_PASSENGER);
+            }
             return false;
         }
 
-        broadcastLinkPacket(entity, TYPE_REMOVE);
+        if (sendLinks) {
+            broadcastLinkPacket(entity, TYPE_REMOVE);
+        }
 
         // Refurbish the entity
         entity.riding = null;
@@ -2230,6 +2238,10 @@ public abstract class Entity extends Location implements Metadatable {
                 return false;
             }
             to = ev.getTo();
+        }
+
+        if (this.riding != null && !this.riding.dismountEntity(this)) {
+            return false;
         }
 
         this.ySize = 0;
