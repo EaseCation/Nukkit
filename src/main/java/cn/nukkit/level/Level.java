@@ -2643,7 +2643,7 @@ public class Level implements ChunkManager, Metadatable {
 
     public boolean requestSubChunks(int x, int z, Player player) {
         int loaderId = player.getLoaderId();
-        if (loaderId <= 0) {
+        if (loaderId <= 0 || this.provider.getChunk(x, z, false) == null) {
             return false;
         }
         long index = Level.chunkHash(x, z);
