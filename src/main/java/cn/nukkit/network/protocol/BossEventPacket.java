@@ -25,7 +25,7 @@ public class BossEventPacket extends DataPacket {
     public static final int TYPE_TITLE = 5;
     /* S2C: Not sure on this. Includes color and overlay fields, plus an unknown short. TODO: check this */
     public static final int TYPE_UNKNOWN_6 = 6;
-    /* S2C: Not implemented :( Intended to alter bar appearance, but these currently produce no effect on clientside whatsoever. */
+    /* S2C: Sets color and overlay of the bar. */
     public static final int TYPE_TEXTURE = 7;
 
     public long bossEid;
@@ -34,9 +34,9 @@ public class BossEventPacket extends DataPacket {
     public float healthPercent;
     public String title = "";
     public short unknown;
-    public int color;
+    public BossBarColor color = BossBarColor.PINK;
     public int overlay;
-    
+
     @Override
     public int pid() {
         return NETWORK_ID;
@@ -57,7 +57,7 @@ public class BossEventPacket extends DataPacket {
             case TYPE_UNKNOWN_6:
                 this.unknown = (short) this.getShort();
             case TYPE_TEXTURE:
-                this.color = (int) this.getUnsignedVarInt();
+                this.color = BossBarColor.VALUES[(int) this.getUnsignedVarInt()];
                 this.overlay = (int) this.getUnsignedVarInt();
                 break;
             case TYPE_HEALTH_PERCENT:
@@ -85,7 +85,7 @@ public class BossEventPacket extends DataPacket {
             case TYPE_UNKNOWN_6:
                 this.putShort(this.unknown);
             case TYPE_TEXTURE:
-                this.putUnsignedVarInt(this.color);
+                this.putUnsignedVarInt(this.color.ordinal());
                 this.putUnsignedVarInt(this.overlay);
                 break;
             case TYPE_HEALTH_PERCENT:
@@ -95,5 +95,17 @@ public class BossEventPacket extends DataPacket {
                 this.putString(this.title);
                 break;
         }
+    }
+
+    public enum BossBarColor {
+        PINK,
+        BLUE,
+        RED,
+        GREEN,
+        YELLOW,
+        PURPLE,
+        WHITE;
+
+        static final BossBarColor[] VALUES = values();
     }
 }

@@ -6,8 +6,8 @@ import cn.nukkit.entity.Entity;
 import cn.nukkit.entity.data.EntityMetadata;
 import cn.nukkit.entity.mob.EntityCreeper;
 import cn.nukkit.network.protocol.*;
+import cn.nukkit.network.protocol.BossEventPacket.BossBarColor;
 
-import java.awt.*;
 import java.util.concurrent.ThreadLocalRandom;
 
 /**
@@ -25,7 +25,7 @@ public class DummyBossBar {
 
     private String text;
     private float length;
-    private Color color;
+    private BossBarColor color;
 
     private DummyBossBar(Builder builder) {
         this.player = builder.player;
@@ -41,7 +41,7 @@ public class DummyBossBar {
 
         private String text = "";
         private float length = 100;
-        private Color color = null;
+        private BossBarColor color = null;
 
         public Builder(Player player) {
             this.player = player;
@@ -58,13 +58,9 @@ public class DummyBossBar {
             return this;
         }
 
-        public Builder color(Color color) {
+        public Builder color(BossBarColor color) {
             this.color = color;
             return this;
-        }
-
-        public Builder color(int red, int green, int blue) {
-            return color(new Color(red, green, blue));
         }
 
         public DummyBossBar build() {
@@ -108,22 +104,14 @@ public class DummyBossBar {
      * Color is not working in the current version. We are keep waiting for client support.
      * @param color the boss bar color
      */
-    public void setColor(Color color) {
-        if (this.color == null || !this.color.equals(color)) {
+    public void setColor(BossBarColor color) {
+        if (this.color != color) {
             this.color = color;
             this.sendSetBossBarTexture();
         }
     }
 
-    public void setColor(int red, int green, int blue) {
-        this.setColor(new Color(red, green, blue));
-    }
-
-    public int getMixedColor() {
-        return this.color.getRGB();//(this.color.getRed() << 16 | this.color.getGreen() << 8 | this.color.getBlue()) & 0xffffff;
-    }
-
-    public Color getColor() {
+    public BossBarColor getColor() {
         return this.color;
     }
 
@@ -181,7 +169,7 @@ public class DummyBossBar {
         BossEventPacket pk = new BossEventPacket();
         pk.bossEid = this.bossBarId;
         pk.type = BossEventPacket.TYPE_TEXTURE;
-        pk.color = this.getMixedColor();
+        pk.color = this.color == null ? BossBarColor.PINK : this.color;
         player.dataPacket(pk);
     }
 
