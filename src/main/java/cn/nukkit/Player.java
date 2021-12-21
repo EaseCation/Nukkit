@@ -129,7 +129,7 @@ public class Player extends EntityHuman implements CommandSender, InventoryHolde
     public static final int ENCHANT_WINDOW_ID = 3;
     public static final int BEACON_WINDOW_ID = 4;
 
-    protected static final int RESOURCE_PACK_CHUNK_SIZE = 100 * 1024; // 100KB
+    protected static final int RESOURCE_PACK_CHUNK_SIZE = 8 * 1024; // 8KB
 
     protected final SourceInterface interfaz;
 
