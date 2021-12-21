@@ -129,6 +129,8 @@ public class Player extends EntityHuman implements CommandSender, InventoryHolde
     public static final int ENCHANT_WINDOW_ID = 3;
     public static final int BEACON_WINDOW_ID = 4;
 
+    protected static final int RESOURCE_PACK_CHUNK_SIZE = 100 * 1024; // 100KB
+
     protected final SourceInterface interfaz;
 
     public boolean playedBefore;
@@ -2227,8 +2229,8 @@ public class Player extends EntityHuman implements CommandSender, InventoryHolde
 
                                 ResourcePackDataInfoPacket dataInfoPacket = new ResourcePackDataInfoPacket();
                                 dataInfoPacket.packId = resourcePack.getPackId();
-                                dataInfoPacket.maxChunkSize = 1048576; //megabyte
-                                dataInfoPacket.chunkCount = resourcePack.getPackSize() / dataInfoPacket.maxChunkSize;
+                                dataInfoPacket.maxChunkSize = RESOURCE_PACK_CHUNK_SIZE;
+                                dataInfoPacket.chunkCount = MathHelper.ceil(resourcePack.getPackSize() / (float) RESOURCE_PACK_CHUNK_SIZE);
                                 dataInfoPacket.compressedPackSize = resourcePack.getPackSize();
                                 dataInfoPacket.sha256 = resourcePack.getSha256();
                                 if (resourcePack.getPackType().equals("resources")) {
@@ -2267,8 +2269,8 @@ public class Player extends EntityHuman implements CommandSender, InventoryHolde
                     ResourcePackChunkDataPacket dataPacket = new ResourcePackChunkDataPacket();
                     dataPacket.packId = resourcePack.getPackId();
                     dataPacket.chunkIndex = requestPacket.chunkIndex;
-                    dataPacket.data = resourcePack.getPackChunk(1048576 * requestPacket.chunkIndex, 1048576);
-                    dataPacket.progress = 1048576 * requestPacket.chunkIndex;
+                    dataPacket.data = resourcePack.getPackChunk(RESOURCE_PACK_CHUNK_SIZE * requestPacket.chunkIndex, RESOURCE_PACK_CHUNK_SIZE);
+                    dataPacket.progress = (long) RESOURCE_PACK_CHUNK_SIZE * requestPacket.chunkIndex;
                     this.dataPacket(dataPacket);
                     break;
                 case ProtocolInfo.PLAYER_INPUT_PACKET:
