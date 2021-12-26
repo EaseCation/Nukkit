@@ -257,6 +257,9 @@ public class Anvil extends BaseLevelProvider {
                             int height = heightMap[j];
                             if (height == 0) {
                                 height = -4 << 4;
+//                                ++height; //FIXME: if the block is at 0
+                            } else {
+                                ++height; // Y of air
                             }
 
                             if (height < minY) {
