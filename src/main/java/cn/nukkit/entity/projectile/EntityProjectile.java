@@ -59,7 +59,7 @@ public abstract class EntityProjectile extends Entity {
         }
     }
 
-    public float getResultDamage() {
+    public int getResultDamage() {
         return NukkitMath.ceilDouble(Math.sqrt(this.motionX * this.motionX + this.motionY * this.motionY + this.motionZ * this.motionZ) * getDamage());
     }
 
