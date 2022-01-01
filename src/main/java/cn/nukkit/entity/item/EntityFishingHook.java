@@ -126,17 +126,19 @@ public class EntityFishingHook extends EntityProjectile {
             this.motionX = 0;
             this.motionY -= getGravity() * -0.04;
             this.motionZ = 0;
-            this.setImmobile();
-            this.addMovement(this.x, this.y + this.getBaseOffset() + 0.5, this.z, this.yaw, this.pitch, this.yaw);
+//            this.setImmobile();
+//            this.addMovement(this.x, this.y + this.getBaseOffset() + 0.5, this.z, this.yaw, this.pitch, this.yaw);
             hasUpdate = true;
-        } else if (this.isCollided || this.isOnGround() || this.isInsideOfSolid()) {
+//        } else if (this.isCollided || this.isOnGround() || this.isInsideOfSolid()) {
+        } else if (this.isCollided && this.keepMovement) {
             this.motionX = 0;
             this.motionY = 0;
             this.motionZ = 0;
             this.keepMovement = false;
-            this.updateMovement();
-            this.setImmobile();
+//            this.updateMovement();
+//            this.setImmobile();
 //            hasUpdate = false;
+            hasUpdate = true;
         }
 
         Random random = ThreadLocalRandom.current();
