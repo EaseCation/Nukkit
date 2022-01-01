@@ -117,27 +117,17 @@ public class EntityFishingHook extends EntityProjectile {
             hasUpdate = true;
         }
 
-        if (hasUpdate) {
-            return false;
-        }
-
         boolean inWater = this.isInsideOfWater();
         if (inWater) {
             this.motionX = 0;
             this.motionY -= getGravity() * -0.04;
             this.motionZ = 0;
-//            this.setImmobile();
-//            this.addMovement(this.x, this.y + this.getBaseOffset() + 0.5, this.z, this.yaw, this.pitch, this.yaw);
             hasUpdate = true;
-//        } else if (this.isCollided || this.isOnGround() || this.isInsideOfSolid()) {
         } else if (this.isCollided && this.keepMovement) {
             this.motionX = 0;
             this.motionY = 0;
             this.motionZ = 0;
             this.keepMovement = false;
-//            this.updateMovement();
-//            this.setImmobile();
-//            hasUpdate = false;
             hasUpdate = true;
         }
 
@@ -181,6 +171,7 @@ public class EntityFishingHook extends EntityProjectile {
             }
         }
 
+        this.getServer().getLogger().info("hasUpdate" + hasUpdate);
         return hasUpdate;
     }
 
