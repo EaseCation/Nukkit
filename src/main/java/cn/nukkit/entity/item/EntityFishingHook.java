@@ -114,7 +114,7 @@ public class EntityFishingHook extends EntityProjectile {
             } else {
                 this.setPosition(new Vector3(ent.x, ent.y + (getHeight() * 0.75f), ent.z));
             }
-            hasUpdate = true;
+            return false;
         }
 
         boolean inWater = this.isInsideOfWater();
@@ -122,6 +122,7 @@ public class EntityFishingHook extends EntityProjectile {
             this.motionX = 0;
             this.motionY -= getGravity() * -0.04;
             this.motionZ = 0;
+            this.addMovement(this.x, this.getWaterHeight() - 0.1, this.z, this.yaw, this.pitch, this.yaw);
             hasUpdate = true;
         } else if (this.isCollided && this.keepMovement) {
             this.motionX = 0;
@@ -171,7 +172,6 @@ public class EntityFishingHook extends EntityProjectile {
             }
         }
 
-        this.getServer().getLogger().info("hasUpdate" + hasUpdate);
         return hasUpdate;
     }
 
@@ -318,7 +318,8 @@ public class EntityFishingHook extends EntityProjectile {
             this.setTarget(entity.getId());
 
             if (this.shootingEntity != null) {
-                entity.setMotion(entity.subtract(this.shootingEntity).divide(15).add(0, 0.3, 0));
+                entity.setMotion(entity.subtract(this.shootingEntity).divide(15).add(0, 0.3, 0)); // 这边还是用EC的特殊钩回motion，营造EC的特殊手感
+                //entity.setMotion(entity.getMotion().add(entity.subtract(this.shootingEntity).multiply(0.1)));
             }
         }
     }
