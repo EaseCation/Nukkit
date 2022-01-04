@@ -167,7 +167,13 @@ public abstract class BaseInventory implements Inventory {
         }
 
         if (holder instanceof BlockEntity) {
-            ((BlockEntity) holder).setDirty();
+            try {
+                ((BlockEntity) holder).setDirty();
+            } catch (Exception e) {
+                Server.getInstance().getLogger().info(holder.getClass().getName());
+                Server.getInstance().getLogger().logException(e);
+                return false;
+            }
         }
 
         Item old = this.getItem(index);
