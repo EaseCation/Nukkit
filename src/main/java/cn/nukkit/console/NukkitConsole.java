@@ -2,6 +2,7 @@ package cn.nukkit.console;
 
 import cn.nukkit.Server;
 import cn.nukkit.event.server.ServerCommandEvent;
+import cn.nukkit.event.server.ServerInterruptEvent;
 import co.aikar.timings.Timings;
 import net.minecrell.terminalconsole.SimpleTerminalConsole;
 import org.jline.reader.LineReader;
@@ -52,7 +53,11 @@ public class NukkitConsole extends SimpleTerminalConsole {
 
     @Override
     protected void shutdown() {
-        server.shutdown();
+        ServerInterruptEvent event = new ServerInterruptEvent();
+        this.server.getPluginManager().callEvent(event);
+        if (!event.isCancelled()) {
+            server.shutdown();
+        }
     }
 
     @Override
