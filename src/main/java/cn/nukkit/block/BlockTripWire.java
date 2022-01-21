@@ -11,7 +11,7 @@ import cn.nukkit.math.BlockFace;
 /**
  * @author CreeperFace
  */
-public class BlockTripWire extends BlockTransparentMeta {
+public class BlockTripWire extends BlockFlowable {
 
     public BlockTripWire(int meta) {
         super(meta);

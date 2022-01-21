@@ -55,4 +55,9 @@ public abstract class BlockTerracottaGlazed extends BlockSolidMeta implements Fa
     public BlockFace getBlockFace() {
         return BlockFace.fromHorizontalIndex(this.getDamage() & 0x07);
     }
+
+    @Override
+    public boolean canBePulled() {
+        return false;
+    }
 }

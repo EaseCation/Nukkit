@@ -4,14 +4,10 @@ import cn.nukkit.item.Item;
 import cn.nukkit.item.ItemBlock;
 import cn.nukkit.utils.BlockColor;
 
-public class BlockEndPortal extends BlockFlowable {
+public class BlockEndPortal extends BlockTransparent {
 
     public BlockEndPortal() {
-        this(0);
-    }
 
-    public BlockEndPortal(int meta) {
-        super(0);
     }
 
     @Override
@@ -65,12 +61,22 @@ public class BlockEndPortal extends BlockFlowable {
     }
 
     @Override
-    public boolean canBeFlowedInto() {
+    public Item toItem() {
+        return new ItemBlock(Block.get(BlockID.AIR));
+    }
+
+    @Override
+    public boolean isSolid() {
         return false;
     }
 
     @Override
-    public Item toItem() {
-        return new ItemBlock(Block.get(BlockID.AIR));
+    public boolean canBePushed() {
+        return false;
+    }
+
+    @Override
+    public boolean canBePulled() {
+        return false;
     }
 }

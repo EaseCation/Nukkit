@@ -155,4 +155,9 @@ public class BlockEntityShulkerBox extends BlockEntitySpawnable implements Inven
 
         return c;
     }
+
+    @Override
+    public void onBreak() {
+        this.inventory.clearAll();
+    }
 }

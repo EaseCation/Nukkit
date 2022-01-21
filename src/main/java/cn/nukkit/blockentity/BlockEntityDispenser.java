@@ -138,5 +138,6 @@ public class BlockEntityDispenser extends BlockEntitySpawnable implements BlockE
         for (Item content : inventory.getContents().values()) {
             level.dropItem(this, content);
         }
+        this.inventory.clearAll();
     }
 }

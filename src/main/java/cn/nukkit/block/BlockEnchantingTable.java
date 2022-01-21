@@ -50,7 +50,7 @@ public class BlockEnchantingTable extends BlockTransparent {
 
     @Override
     public int getLightLevel() {
-        return 12;
+        return 7;
     }
 
     @Override
@@ -134,5 +134,15 @@ public class BlockEnchantingTable extends BlockTransparent {
     @Override
     public BlockColor getColor() {
         return BlockColor.RED_BLOCK_COLOR;
+    }
+
+    @Override
+    public boolean canBePushed() {
+        return false;
+    }
+
+    @Override
+    public boolean canBePulled() {
+        return false;
     }
 }

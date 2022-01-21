@@ -186,4 +186,14 @@ public class BlockSnowLayer extends BlockFallable {
         }
         return false;
     }
+
+    @Override
+    public boolean breaksWhenMoved() {
+        return true;
+    }
+
+    @Override
+    public boolean sticksToPiston() {
+        return false;
+    }
 }

@@ -5,6 +5,7 @@ import cn.nukkit.blockentity.BlockEntity;
 import cn.nukkit.blockentity.BlockEntityMovingBlock;
 import cn.nukkit.blockentity.BlockEntityPistonArm;
 import cn.nukkit.event.block.BlockPistonEvent;
+import cn.nukkit.inventory.InventoryHolder;
 import cn.nukkit.item.Item;
 import cn.nukkit.item.ItemBlock;
 import cn.nukkit.level.GlobalBlockPalette;
@@ -232,6 +233,11 @@ public abstract class BlockPistonBase extends BlockSolidMeta implements Faceable
                     CompoundTag t = new CompoundTag(blockEntity.namedTag.getTags());
 
                     nbt.putCompound("movingEntity", t);
+
+                    if (blockEntity instanceof InventoryHolder) {
+                        ((InventoryHolder) blockEntity).getInventory().clearAll();
+                    }
+
                     blockEntity.close();
                 }
 

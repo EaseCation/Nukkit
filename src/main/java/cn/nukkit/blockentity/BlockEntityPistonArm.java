@@ -69,13 +69,13 @@ public class BlockEntityPistonArm extends BlockEntitySpawnable {
         attachedBlocks = new ArrayList<>();
 
         if (namedTag.contains("AttachedBlocks")) {
-            ListTag blocks = namedTag.getList("AttachedBlocks", IntTag.class);
+            ListTag<IntTag> blocks = namedTag.getList("AttachedBlocks", IntTag.class);
             if (blocks != null && blocks.size() > 0) {
                 for (int i = 0; i < blocks.size(); i += 3) {
                     this.attachedBlocks.add(new BlockVector3(
-                            ((IntTag) blocks.get(i)).data,
-                            ((IntTag) blocks.get(i + 1)).data,
-                            ((IntTag) blocks.get(i + 1)).data
+                            blocks.get(i).data,
+                            blocks.get(i + 1).data,
+                            blocks.get(i + 2).data
                     ));
                 }
             }

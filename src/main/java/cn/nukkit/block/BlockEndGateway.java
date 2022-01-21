@@ -7,7 +7,7 @@ import cn.nukkit.utils.BlockColor;
 /**
  * @author PikyCZ
  */
-public class BlockEndGateway extends BlockSolid {
+public class BlockEndGateway extends BlockTransparent {
 
     public BlockEndGateway() {
     }
@@ -58,8 +58,27 @@ public class BlockEndGateway extends BlockSolid {
     }
 
     @Override
+    public boolean canHarvestWithHand() {
+        return false;
+    }
+
+    @Override
     public Item toItem() {
         return new ItemBlock(Block.get(BlockID.AIR));
     }
 
+    @Override
+    public boolean isSolid() {
+        return false;
+    }
+
+    @Override
+    public boolean canBePushed() {
+        return false;
+    }
+
+    @Override
+    public boolean canBePulled() {
+        return false;
+    }
 }

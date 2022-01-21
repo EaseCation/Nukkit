@@ -138,5 +138,6 @@ public class BlockEntityDropper extends BlockEntitySpawnable implements BlockEnt
         for (Item content : inventory.getContents().values()) {
             level.dropItem(this, content);
         }
+        this.inventory.clearAll();
     }
 }

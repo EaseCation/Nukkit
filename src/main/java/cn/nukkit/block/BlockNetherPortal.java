@@ -4,7 +4,6 @@ import cn.nukkit.item.Item;
 import cn.nukkit.item.ItemBlock;
 import cn.nukkit.level.Level;
 import cn.nukkit.level.Position;
-import cn.nukkit.math.AxisAlignedBB;
 import cn.nukkit.math.BlockFace;
 import cn.nukkit.utils.BlockColor;
 import cn.nukkit.utils.Faceable;
@@ -14,7 +13,7 @@ import cn.nukkit.utils.Faceable;
  * Package cn.nukkit.block in project nukkit .
  * The name NetherPortalBlock comes from minecraft wiki.
  */
-public class BlockNetherPortal extends BlockFlowable implements Faceable {
+public class BlockNetherPortal extends BlockTransparentMeta implements Faceable {
 
     public BlockNetherPortal() {
         this(0);
@@ -32,11 +31,6 @@ public class BlockNetherPortal extends BlockFlowable implements Faceable {
     @Override
     public int getId() {
         return NETHER_PORTAL;
-    }
-
-    @Override
-    public boolean canBeFlowedInto() {
-        return false;
     }
 
     @Override
@@ -93,11 +87,6 @@ public class BlockNetherPortal extends BlockFlowable implements Faceable {
         return false;
     }
 
-    @Override
-    protected AxisAlignedBB recalculateBoundingBox() {
-        return this;
-    }
-
     public static void spawnPortal(Position pos)   {
         Level lvl = pos.level;
         int x = pos.getFloorX(), y = pos.getFloorY(), z = pos.getFloorZ();
@@ -152,5 +141,20 @@ public class BlockNetherPortal extends BlockFlowable implements Faceable {
     @Override
     public BlockFace getBlockFace() {
         return BlockFace.fromHorizontalIndex(this.getDamage() & 0x07);
+    }
+
+    @Override
+    public boolean isSolid() {
+        return false;
+    }
+
+    @Override
+    public boolean canBePushed() {
+        return false;
+    }
+
+    @Override
+    public boolean canBePulled() {
+        return false;
     }
 }
