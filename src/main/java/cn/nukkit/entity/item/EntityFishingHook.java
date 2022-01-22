@@ -94,7 +94,7 @@ public class EntityFishingHook extends EntityProjectile {
 
     @Override
     public float getDrag() {
-        return 0.04f;
+        return 0.03f;
     }
 
     @Override
