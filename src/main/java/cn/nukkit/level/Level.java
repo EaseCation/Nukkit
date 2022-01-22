@@ -267,6 +267,8 @@ public class Level implements ChunkManager, Metadatable {
 
     public GameRules gameRules;
 
+    private boolean redstoneEnabled = true;
+
     public Level(Server server, String name, String path, Class<? extends LevelProvider> provider) {
         this.blockStates = Block.fullList;
         this.levelId = levelIdCounter++;
@@ -3802,6 +3804,14 @@ public class Level implements ChunkManager, Metadatable {
         }
 
         return false;
+    }
+
+    public boolean isRedstoneEnabled() {
+        return this.server.isRedstoneEnabled() && this.redstoneEnabled;
+    }
+
+    public void setRedstoneEnabled(boolean redstoneEnabled) {
+        this.redstoneEnabled = redstoneEnabled;
     }
 
     public static BatchPacket getChunkCacheFromData(int x, int z, int subChunkCount, byte[] payload, boolean isOld, boolean zlibRaw) {

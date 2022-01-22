@@ -89,7 +89,7 @@ public class BlockTripWireHook extends BlockFlowable {
     }
 
     public void calculateState(boolean onBreak, boolean updateAround, int pos, Block block) {
-        if (!this.level.getServer().isRedstoneEnabled()) {
+        if (!this.level.isRedstoneEnabled()) {
             return;
         }
 

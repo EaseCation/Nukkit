@@ -45,7 +45,7 @@ public class BlockRailPowered extends BlockRail {
                 return 0; // Already broken
             }
 
-            if (!this.level.getServer().isRedstoneEnabled()) {
+            if (!this.level.isRedstoneEnabled()) {
                 return 0;
             }
             boolean wasPowered = isActive();

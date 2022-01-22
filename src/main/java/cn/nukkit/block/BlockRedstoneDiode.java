@@ -31,7 +31,7 @@ public abstract class BlockRedstoneDiode extends BlockFlowable implements Faceab
         Vector3 pos = getLocation();
         this.level.setBlock(this, Block.get(BlockID.AIR), true, true);
 
-        if (this.level.getServer().isRedstoneEnabled()) {
+        if (this.level.isRedstoneEnabled()) {
             for (BlockFace face : BlockFace.values0()) {
                 this.level.updateAroundRedstone(pos.getSide(face), null);
             }
@@ -48,7 +48,7 @@ public abstract class BlockRedstoneDiode extends BlockFlowable implements Faceab
         this.setDamage(player != null ? player.getDirection().getOpposite().getHorizontalIndex() : 0);
         this.level.setBlock(block, this, true, true);
 
-        if (this.level.getServer().isRedstoneEnabled()) {
+        if (this.level.isRedstoneEnabled()) {
             if (shouldBePowered()) {
                 this.level.scheduleUpdate(this, 1);
             }
@@ -59,7 +59,7 @@ public abstract class BlockRedstoneDiode extends BlockFlowable implements Faceab
     @Override
     public int onUpdate(int type) {
         if (type == Level.BLOCK_UPDATE_SCHEDULED) {
-            if (!this.level.getServer().isRedstoneEnabled()) {
+            if (!this.level.isRedstoneEnabled()) {
                 return 0;
             }
 
@@ -84,7 +84,7 @@ public abstract class BlockRedstoneDiode extends BlockFlowable implements Faceab
             if (type == Level.BLOCK_UPDATE_NORMAL && this.getSide(BlockFace.DOWN).isTransparent()) {
                 this.level.useBreakOn(this);
                 return Level.BLOCK_UPDATE_NORMAL;
-            } else if (this.level.getServer().isRedstoneEnabled()) {
+            } else if (this.level.isRedstoneEnabled()) {
                 // Redstone event
                 RedstoneUpdateEvent ev = new RedstoneUpdateEvent(this);
                 getLevel().getServer().getPluginManager().callEvent(ev);

@@ -36,7 +36,7 @@ public class BlockRedstoneLampLit extends BlockRedstoneLamp {
     @Override
     public int onUpdate(int type) {
         if ((type == Level.BLOCK_UPDATE_NORMAL || type == Level.BLOCK_UPDATE_REDSTONE) && !this.level.isBlockPowered(this.getLocation())) {
-            if (!this.level.getServer().isRedstoneEnabled()) {
+            if (!this.level.isRedstoneEnabled()) {
                 return 0;
             }
 

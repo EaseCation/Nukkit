@@ -210,7 +210,7 @@ public abstract class BlockDoor extends BlockTransparentMeta implements Faceable
         }
 
         if (type == Level.BLOCK_UPDATE_REDSTONE) {
-            if (!this.level.getServer().isRedstoneEnabled()) {
+            if (!this.level.isRedstoneEnabled()) {
                 return 0;
             }
 
@@ -247,7 +247,7 @@ public abstract class BlockDoor extends BlockTransparentMeta implements Faceable
             this.getLevel().setBlock(block, this, true, false); //Bottom
             this.getLevel().setBlock(blockUp, Block.get(this.getId(), metaUp), true, true); //Top
 
-            if (this.level.getServer().isRedstoneEnabled()) {
+            if (this.level.isRedstoneEnabled()) {
                 if (!this.isOpen() && this.level.isBlockPowered(this.getLocation())) {
                     this.toggle(null);
                     metaUp |= DOOR_POWERED_BIT;

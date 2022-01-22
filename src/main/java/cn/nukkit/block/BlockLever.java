@@ -67,7 +67,7 @@ public class BlockLever extends BlockFlowable implements Faceable {
         this.level.getServer().getPluginManager().callEvent(new BlockRedstoneEvent(this, isPowerOn() ? 15 : 0, isPowerOn() ? 0 : 15));
         this.setDamage(this.getDamage() ^ 0x08);
 
-        boolean redstone = this.level.getServer().isRedstoneEnabled();
+        boolean redstone = this.level.isRedstoneEnabled();
 
         this.getLevel().setBlock(this, this, false, true);
         this.getLevel().addLevelEvent(this.add(0.5, 0.5, 0.5), LevelEventPacket.EVENT_SOUND_BUTTON_CLICK, this.isPowerOn() ? 600 : 500);

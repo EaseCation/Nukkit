@@ -88,7 +88,7 @@ public class BlockTripWire extends BlockFlowable {
 
     @Override
     public void onEntityCollide(Entity entity) {
-        if (!this.level.getServer().isRedstoneEnabled()) {
+        if (!this.level.isRedstoneEnabled()) {
             return;
         }
 
@@ -108,7 +108,7 @@ public class BlockTripWire extends BlockFlowable {
     }
 
     public void updateHook(boolean scheduleUpdate) {
-        if (!this.level.getServer().isRedstoneEnabled()) {
+        if (!this.level.isRedstoneEnabled()) {
             return;
         }
 
@@ -138,7 +138,7 @@ public class BlockTripWire extends BlockFlowable {
 
     @Override
     public int onUpdate(int type) {
-        if (!this.level.getServer().isRedstoneEnabled()) {
+        if (!this.level.isRedstoneEnabled()) {
             return 0;
         }
 

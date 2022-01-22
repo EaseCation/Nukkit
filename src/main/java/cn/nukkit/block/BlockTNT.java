@@ -94,7 +94,7 @@ public class BlockTNT extends BlockSolid {
 
     @Override
     public int onUpdate(int type) {
-        if (!this.level.getServer().isRedstoneEnabled()) {
+        if (!this.level.isRedstoneEnabled()) {
             return 0;
         }
 

@@ -53,7 +53,7 @@ public class BlockRedstoneTorchUnlit extends BlockTorch {
     @Override
     public int onUpdate(int type) {
         if (super.onUpdate(type) == 0) {
-            if (!this.level.getServer().isRedstoneEnabled()) {
+            if (!this.level.isRedstoneEnabled()) {
                 return 0;
             }
 

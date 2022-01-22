@@ -52,7 +52,7 @@ public class BlockRedstoneWire extends BlockFlowable {
             return false;
         }
 
-        if (this.level.getServer().isRedstoneEnabled()) {
+        if (this.level.isRedstoneEnabled()) {
             this.getLevel().setBlock(block, this, true, false);
 
             this.updateSurroundingRedstone(true);
@@ -176,7 +176,7 @@ public class BlockRedstoneWire extends BlockFlowable {
 
         Vector3 pos = getLocation();
 
-        if (this.level.getServer().isRedstoneEnabled()) {
+        if (this.level.isRedstoneEnabled()) {
             this.updateSurroundingRedstone(false);
 
             for (BlockFace blockFace : BlockFace.values()) {
@@ -212,7 +212,7 @@ public class BlockRedstoneWire extends BlockFlowable {
             return 0;
         }
 
-        if (!this.level.getServer().isRedstoneEnabled()) {
+        if (!this.level.isRedstoneEnabled()) {
             return 0;
         }
 

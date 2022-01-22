@@ -104,7 +104,7 @@ public abstract class BlockPistonBase extends BlockSolidMeta implements Faceable
         if (type != Level.BLOCK_UPDATE_NORMAL && type != Level.BLOCK_UPDATE_REDSTONE && type != Level.BLOCK_UPDATE_SCHEDULED) {
             return 0;
         } else {
-            if (!this.level.getServer().isRedstoneEnabled()) {
+            if (!this.level.isRedstoneEnabled()) {
                 return 0;
             }
 
@@ -127,7 +127,7 @@ public abstract class BlockPistonBase extends BlockSolidMeta implements Faceable
     }
 
     private boolean checkState(Boolean isPowered) {
-        if (!this.level.getServer().isRedstoneEnabled()) {
+        if (!this.level.isRedstoneEnabled()) {
             return false;
         }
 

@@ -43,7 +43,7 @@ public class BlockRedstoneTorch extends BlockTorch {
             return false;
         }
 
-        if (this.level.getServer().isRedstoneEnabled()) {
+        if (this.level.isRedstoneEnabled()) {
             if (!checkState()) {
                 BlockFace facing = getBlockFace().getOpposite();
                 Vector3 pos = getLocation();
@@ -81,7 +81,7 @@ public class BlockRedstoneTorch extends BlockTorch {
 
         BlockFace face = getBlockFace().getOpposite();
 
-        if (this.level.getServer().isRedstoneEnabled()) {
+        if (this.level.isRedstoneEnabled()) {
             for (BlockFace side : BlockFace.values0()) {
                 if (side == face) {
                     continue;
@@ -96,7 +96,7 @@ public class BlockRedstoneTorch extends BlockTorch {
     @Override
     public int onUpdate(int type) {
         if (super.onUpdate(type) == 0) {
-            if (!this.level.getServer().isRedstoneEnabled()) {
+            if (!this.level.isRedstoneEnabled()) {
                 return 0;
             }
 
