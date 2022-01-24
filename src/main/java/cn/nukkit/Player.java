@@ -5004,7 +5004,7 @@ public class Player extends EntityHuman implements CommandSender, InventoryHolde
      * @param fishingRod fishing rod item
      */
     public void startFishing(Item fishingRod) {
-        Vector3 motion = this.getDirectionVector();
+        Vector3 motion = this.getDirectionVector().multiply(1.2);
         CompoundTag nbt = new CompoundTag()
                 .putList(new ListTag<DoubleTag>("Pos")
                         .add(new DoubleTag("", x))
