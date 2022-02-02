@@ -62,10 +62,8 @@ public abstract class BlockButton extends BlockFlowable implements Faceable {
         if (this.level.isRedstoneEnabled()) {
             this.level.getServer().getPluginManager().callEvent(new BlockRedstoneEvent(this, 0, 15));
 
-            Vector3 pos = getLocation();
-
-            level.updateAroundRedstone(pos, null);
-            level.updateAroundRedstone(pos.getSide(getFacing().getOpposite()), null);
+            level.updateAroundRedstone(this, null);
+            level.updateAroundRedstone(this.getSideVec(getFacing().getOpposite()), null);
         }
 
         this.level.addSound(this.add(0.5, 0.5, 0.5), SoundEnum.RANDOM_CLICK);
@@ -76,7 +74,7 @@ public abstract class BlockButton extends BlockFlowable implements Faceable {
     public int onUpdate(int type) {
         if (type == Level.BLOCK_UPDATE_NORMAL) {
             if (this.getSide(getFacing().getOpposite()).isTransparent()) {
-                this.level.useBreakOn(this);
+                this.level.useBreakOn(this, Item.get(Item.WOODEN_PICKAXE));
                 return Level.BLOCK_UPDATE_NORMAL;
             }
         } else if (type == Level.BLOCK_UPDATE_SCHEDULED) {
@@ -88,9 +86,8 @@ public abstract class BlockButton extends BlockFlowable implements Faceable {
                 if (this.level.isRedstoneEnabled()) {
                     this.level.getServer().getPluginManager().callEvent(new BlockRedstoneEvent(this, 15, 0));
 
-                    Vector3 pos = getLocation();
-                    level.updateAroundRedstone(pos, null);
-                    level.updateAroundRedstone(pos.getSide(getFacing().getOpposite()), null);
+                    level.updateAroundRedstone(this, null);
+                    level.updateAroundRedstone(this.getSideVec(getFacing().getOpposite()), null);
                 }
             }
 

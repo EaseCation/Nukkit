@@ -1,15 +1,9 @@
 package cn.nukkit.level;
 
-import cn.nukkit.Server;
 import cn.nukkit.block.Block;
 import cn.nukkit.block.BlockID;
 import cn.nukkit.block.BlockTNT;
-import cn.nukkit.blockentity.BlockEntity;
-import cn.nukkit.blockentity.BlockEntityBrewingStand;
-import cn.nukkit.blockentity.BlockEntityChest;
-import cn.nukkit.blockentity.BlockEntityFurnace;
-import cn.nukkit.blockentity.BlockEntityHopper;
-import cn.nukkit.blockentity.BlockEntityShulkerBox;
+import cn.nukkit.blockentity.*;
 import cn.nukkit.entity.Entity;
 import cn.nukkit.entity.EntityExplosive;
 import cn.nukkit.entity.item.EntityItem;
@@ -22,7 +16,7 @@ import cn.nukkit.event.entity.EntityDamageEvent.DamageCause;
 import cn.nukkit.event.entity.EntityExplodeEvent;
 import cn.nukkit.inventory.InventoryHolder;
 import cn.nukkit.item.Item;
-import cn.nukkit.item.ItemBlock;
+import cn.nukkit.item.ItemTool;
 import cn.nukkit.level.particle.HugeExplodeSeedParticle;
 import cn.nukkit.math.*;
 import cn.nukkit.network.protocol.LevelSoundEventPacket;
@@ -134,7 +128,6 @@ public class Explosion {
     }
 
     public boolean explodeB() {
-
         LongArraySet updateBlocks = new LongArraySet();
 //        List<Vector3> send = new ArrayList<>();
 
@@ -185,13 +178,12 @@ public class Explosion {
             }
         }
 
-        ItemBlock air = new ItemBlock(Block.get(BlockID.AIR));
-
+        ThreadLocalRandom random = ThreadLocalRandom.current();
         //Iterator iter = this.affectedBlocks.entrySet().iterator();
         for (Block block : this.affectedBlocks) {
             //Block block = (Block) ((HashMap.Entry) iter.next()).getValue();
             if (block.getId() == Block.TNT) {
-                ((BlockTNT) block).prime(new NukkitRandom().nextRange(10, 30), this.what instanceof Entity ? (Entity) this.what : null);
+                ((BlockTNT) block).prime(random.nextInt(10, 31), this.what instanceof Entity ? (Entity) this.what : null);
             } else if (block.getId() == Block.CHEST || block.getId() == Block.TRAPPED_CHEST) {
                 BlockEntity chest = block.getLevel().getBlockEntity(block);
                 if (chest instanceof BlockEntityChest) {
@@ -224,14 +216,30 @@ public class Explosion {
                     }
                     ((InventoryHolder) container).getInventory().clearAll();
                 }
-            } else if (block.getId() == Block.SHULKER_BOX || block.getId() == Block.UNDYED_SHULKER_BOX) { // brewing_stand/furnace/hopper
+            } else if (block.getId() == Block.DROPPER) {
+                BlockEntity container = block.getLevel().getBlockEntity(block);
+                if (container instanceof BlockEntityDropper) {
+                    for (Item drop : ((InventoryHolder) container).getInventory().getContents().values()) {
+                        this.level.dropItem(block.add(0.5, 0.5, 0.5), drop);
+                    }
+                    ((InventoryHolder) container).getInventory().clearAll();
+                }
+            } else if (block.getId() == Block.DISPENSER) {
+                BlockEntity container = block.getLevel().getBlockEntity(block);
+                if (container instanceof BlockEntityDispenser) {
+                    for (Item drop : ((InventoryHolder) container).getInventory().getContents().values()) {
+                        this.level.dropItem(block.add(0.5, 0.5, 0.5), drop);
+                    }
+                    ((InventoryHolder) container).getInventory().clearAll();
+                }
+            } else if (block.getId() == Block.SHULKER_BOX || block.getId() == Block.UNDYED_SHULKER_BOX) {
                 BlockEntity shulkerBox = block.getLevel().getBlockEntity(block);
                 if (shulkerBox instanceof BlockEntityShulkerBox) {
                     this.level.dropItem(block.add(0.5, 0.5, 0.5), block.toItem());
                     ((BlockEntityShulkerBox) shulkerBox).getInventory().clearAll();
                 }
-            } else if (Math.random() * 100 < yield) {
-                for (Item drop : block.getDrops(air)) {
+            } else if (random.nextDouble() * 100 < yield) {
+                for (Item drop : block.getDrops(ItemTool.getUniversalTool())) {
                     this.level.dropItem(block.add(0.5, 0.5, 0.5), drop);
                 }
             }

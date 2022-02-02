@@ -167,4 +167,45 @@ public abstract class ItemTool extends Item implements ItemDurable {
 
         return 0;
     }
+
+    public static ItemTool getUniversalTool() {
+        return UniversalTool.INSTANCE;
+    }
+
+    /**
+     * Internal item.
+     */
+    private static class UniversalTool extends ItemTool {
+
+        private static final UniversalTool INSTANCE = new UniversalTool();
+
+        public UniversalTool() {
+            super(AIR, 0, 0);
+        }
+
+        @Override
+        public boolean isUnbreakable() {
+            return true;
+        }
+
+        @Override
+        public int getTier() {
+            return ItemTool.TIER_DIAMOND;
+        }
+
+        @Override
+        public boolean isPickaxe() {
+            return true;
+        }
+
+        @Override
+        public boolean isSword() {
+            return true;
+        }
+
+        @Override
+        public boolean isShovel() {
+            return true;
+        }
+    }
 }

@@ -49,16 +49,16 @@ public class BlockRailPowered extends BlockRail {
                 return 0;
             }
             boolean wasPowered = isActive();
-            boolean isPowered = level.isBlockPowered(this.getLocation())
+            boolean isPowered = level.isBlockPowered(this)
                     || checkSurrounding(this, true, 0)
                     || checkSurrounding(this, false, 0);
 
             // Avoid Block minstake
             if (wasPowered != isPowered) {
                 setActive(isPowered);
-                level.updateAround(down());
+                level.updateAround(downVec());
                 if (getOrientation().isAscending()) {
-                    level.updateAround(up());
+                    level.updateAround(upVec());
                 }
             }
             return type;

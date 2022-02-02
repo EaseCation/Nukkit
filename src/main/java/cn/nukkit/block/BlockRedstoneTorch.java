@@ -46,14 +46,13 @@ public class BlockRedstoneTorch extends BlockTorch {
         if (this.level.isRedstoneEnabled()) {
             if (!checkState()) {
                 BlockFace facing = getBlockFace().getOpposite();
-                Vector3 pos = getLocation();
 
                 for (BlockFace side : BlockFace.values0()) {
                     if (facing == side) {
                         continue;
                     }
 
-                    this.level.updateAroundRedstone(pos.getSide(side), null);
+                    this.level.updateAroundRedstone(this.getSideVec(side), null);
                 }
             }
 
@@ -77,8 +76,6 @@ public class BlockRedstoneTorch extends BlockTorch {
     public boolean onBreak(Item item) {
         super.onBreak(item);
 
-        Vector3 pos = getLocation();
-
         BlockFace face = getBlockFace().getOpposite();
 
         if (this.level.isRedstoneEnabled()) {
@@ -87,7 +84,7 @@ public class BlockRedstoneTorch extends BlockTorch {
                     continue;
                 }
 
-                this.level.updateAroundRedstone(pos.getSide(side), null);
+                this.level.updateAroundRedstone(this.getSideVec(side), null);
             }
         }
         return true;
@@ -122,16 +119,15 @@ public class BlockRedstoneTorch extends BlockTorch {
     protected boolean checkState() {
         if (isPoweredFromSide()) {
             BlockFace face = getBlockFace().getOpposite();
-            Vector3 pos = getLocation();
 
-            this.level.setBlock(pos, Block.get(BlockID.UNLIT_REDSTONE_TORCH, getDamage()), false, true);
+            this.level.setBlock(this, Block.get(BlockID.UNLIT_REDSTONE_TORCH, getDamage()), false, true);
 
             for (BlockFace side : BlockFace.values0()) {
                 if (side == face) {
                     continue;
                 }
 
-                this.level.updateAroundRedstone(pos.getSide(side), null);
+                this.level.updateAroundRedstone(this.getSideVec(side), null);
             }
 
             return true;
@@ -142,7 +138,7 @@ public class BlockRedstoneTorch extends BlockTorch {
 
     protected boolean isPoweredFromSide() {
         BlockFace face = getBlockFace().getOpposite();
-        return this.level.isSidePowered(this.getLocation().getSide(face), face);
+        return this.level.isSidePowered(this.getSideVec(face), face);
     }
 
     @Override

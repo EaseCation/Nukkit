@@ -120,7 +120,7 @@ public class BlockEnchantingTable extends BlockTransparent {
                 }
             }
 
-            player.addWindow(new EnchantInventory(player.getUIInventory(), this.getLocation()), Player.ENCHANT_WINDOW_ID);
+            player.addWindow(new EnchantInventory(player.getUIInventory(), this), Player.ENCHANT_WINDOW_ID);
         }
 
         return true;

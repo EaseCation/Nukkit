@@ -189,7 +189,7 @@ public class BlockFenceGate extends BlockTransparentMeta implements Faceable {
         }
 
         if (type == Level.BLOCK_UPDATE_REDSTONE) {
-            if ((!isOpen() && this.level.isBlockPowered(this.getLocation())) || (isOpen() && !this.level.isBlockPowered(this.getLocation()))) {
+            if ((!isOpen() && this.level.isBlockPowered(this)) || (isOpen() && !this.level.isBlockPowered(this))) {
                 this.toggle(null);
                 return type;
             }

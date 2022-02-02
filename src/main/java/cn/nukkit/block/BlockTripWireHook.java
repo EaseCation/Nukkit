@@ -82,7 +82,7 @@ public class BlockTripWireHook extends BlockFlowable {
 
         if (powered) {
             this.level.updateAroundRedstone(this, null);
-            this.level.updateAroundRedstone(this.getLocation().getSide(getFacing().getOpposite()), null);
+            this.level.updateAroundRedstone(this.getSideVec(getFacing().getOpposite()), null);
         }
 
         return true;
@@ -94,7 +94,6 @@ public class BlockTripWireHook extends BlockFlowable {
         }
 
         BlockFace facing = getFacing();
-        Vector3 v = this.getLocation();
         boolean attached = isAttached();
         boolean powered = isPowered();
         boolean canConnect = !onBreak;
@@ -103,7 +102,7 @@ public class BlockTripWireHook extends BlockFlowable {
         Block[] blocks = new Block[42];
 
         for (int i = 1; i < 42; ++i) {
-            Vector3 vector = v.getSide(facing, i);
+            Vector3 vector = this.getSideVec(facing, i);
             Block b = this.level.getBlock(vector);
 
             if (b instanceof BlockTripWireHook) {
@@ -143,30 +142,30 @@ public class BlockTripWireHook extends BlockFlowable {
 
 
         if (distance > 0) {
-            Vector3 vec = v.getSide(facing, distance);
+            Vector3 vec = this.getSideVec(facing, distance);
             BlockFace face = facing.getOpposite();
             hook.setFace(face);
             this.level.setBlock(vec, hook, true, false);
             this.level.updateAroundRedstone(vec, null);
-            this.level.updateAroundRedstone(vec.getSide(face.getOpposite()), null);
+            this.level.updateAroundRedstone(vec.getSideVec(face.getOpposite()), null);
             this.addSound(vec, canConnect, nextPowered, attached, powered);
         }
 
-        this.addSound(v, canConnect, nextPowered, attached, powered);
+        this.addSound(this, canConnect, nextPowered, attached, powered);
 
         if (!onBreak) {
             hook.setFace(facing);
-            this.level.setBlock(v, hook, true, false);
+            this.level.setBlock(this, hook, true, false);
 
             if (updateAround) {
-                this.level.updateAroundRedstone(v, null);
-                this.level.updateAroundRedstone(v.getSide(facing.getOpposite()), null);
+                this.level.updateAroundRedstone(this, null);
+                this.level.updateAroundRedstone(this.getSideVec(facing.getOpposite()), null);
             }
         }
 
         if (attached != canConnect) {
             for (int i = 1; i < distance; i++) {
-                Vector3 vc = v.getSide(facing, i);
+                Vector3 vc = this.getSideVec(facing, i);
                 block = blocks[i];
 
                 if (block != null && this.level.getBlockIdAt(vc.getFloorX(), vc.getFloorY(), vc.getFloorZ()) != Block.AIR) {

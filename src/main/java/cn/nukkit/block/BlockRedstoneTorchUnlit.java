@@ -77,17 +77,16 @@ public class BlockRedstoneTorchUnlit extends BlockTorch {
 
     protected boolean checkState() {
         BlockFace face = getBlockFace().getOpposite();
-        Vector3 pos = getLocation();
 
-        if (!this.level.isSidePowered(pos.getSide(face), face)) {
-            this.level.setBlock(pos, Block.get(BlockID.REDSTONE_TORCH, getDamage()), false, true);
+        if (!this.level.isSidePowered(this.getSideVec(face), face)) {
+            this.level.setBlock(this, Block.get(BlockID.REDSTONE_TORCH, getDamage()), false, true);
 
             for (BlockFace side : BlockFace.values()) {
                 if (side == face) {
                     continue;
                 }
 
-                this.level.updateAroundRedstone(pos.getSide(side), null);
+                this.level.updateAroundRedstone(this.getSideVec(side), null);
             }
             return true;
         }

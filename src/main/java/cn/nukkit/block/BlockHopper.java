@@ -57,7 +57,7 @@ public class BlockHopper extends BlockTransparentMeta implements Faceable {
         this.setDamage(facing.getIndex());
 
         if (this.level.isRedstoneEnabled()) {
-            boolean powered = this.level.isBlockPowered(this.getLocation());
+            boolean powered = this.level.isBlockPowered(this);
 
             if (powered == this.isEnabled()) {
                 this.setEnabled(!powered);
@@ -129,7 +129,7 @@ public class BlockHopper extends BlockTransparentMeta implements Faceable {
         }
 
         if (type == Level.BLOCK_UPDATE_NORMAL || type == Level.BLOCK_UPDATE_REDSTONE) {
-            boolean powered = this.level.isBlockPowered(this.getLocation());
+            boolean powered = this.level.isBlockPowered(this);
 
             if (powered == this.isEnabled()) {
                 this.setEnabled(!powered);

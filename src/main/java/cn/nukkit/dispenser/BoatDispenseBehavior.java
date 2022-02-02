@@ -14,7 +14,7 @@ public class BoatDispenseBehavior extends DefaultDispenseBehavior {
 
     @Override
     public Item dispense(BlockDispenser block, BlockFace face, Item item) {
-        Vector3 pos = block.getSide(face).multiply(1.125);
+        Vector3 pos = block.getSideVec(face).multiply(1.125);
 
         Block target = block.getSide(face);
 

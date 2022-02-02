@@ -1295,13 +1295,13 @@ public class Level implements ChunkManager, Metadatable {
                 continue;
             }
 
-            this.getBlock(pos.getSide(side)).onUpdate(BLOCK_UPDATE_REDSTONE);
+            this.getBlock(pos.getSideVec(side)).onUpdate(BLOCK_UPDATE_REDSTONE);
         }
     }
 
     public void updateComparatorOutputLevel(Vector3 v) {
         for (BlockFace face : Plane.HORIZONTAL) {
-            Vector3 pos = v.getSide(face);
+            Vector3 pos = v.getSideVec(face);
 
             if (this.isChunkLoaded((int) pos.x >> 4, (int) pos.z >> 4)) {
                 Block block1 = this.getBlock(pos);
@@ -1309,7 +1309,7 @@ public class Level implements ChunkManager, Metadatable {
                 if (BlockRedstoneDiode.isDiode(block1)) {
                     block1.onUpdate(BLOCK_UPDATE_REDSTONE);
                 } else if (block1.isNormalBlock()) {
-                    pos = pos.getSide(face);
+                    pos = pos.getSideVec(face);
                     block1 = this.getBlock(pos);
 
                     if (BlockRedstoneDiode.isDiode(block1)) {
@@ -1322,7 +1322,7 @@ public class Level implements ChunkManager, Metadatable {
 
     public void updateAround(Vector3 pos) {
         for (BlockFace face : BlockFace.values0()) {
-            normalUpdateQueue.add(pos.getSide(face));
+            normalUpdateQueue.add(pos.getSideVec(face));
         }
     }
 
@@ -2157,7 +2157,7 @@ public class Level implements ChunkManager, Metadatable {
         }
         Block hand;
         if (item.canBePlaced()) {
-            hand = item.getBlock();
+            hand = item.getBlock().clone();
             hand.position(block);
         } else {
             return null;
@@ -3477,7 +3477,7 @@ public class Level implements ChunkManager, Metadatable {
         int i = 0;
 
         for (BlockFace face : BlockFace.values0()) {
-            i = Math.max(i, this.getStrongPower(pos.getSide(face), face));
+            i = Math.max(i, this.getStrongPower(pos.getSideVec(face), face));
 
             if (i >= 15) {
                 return i;
@@ -3528,7 +3528,7 @@ public class Level implements ChunkManager, Metadatable {
 
         if (pos instanceof Block) {
             block = (Block) pos;
-            pos = pos.add(0);
+//            pos = pos.add(0);
         } else {
             block = this.getBlock(pos);
         }

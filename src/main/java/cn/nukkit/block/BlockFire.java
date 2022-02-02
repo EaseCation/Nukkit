@@ -116,10 +116,10 @@ public class BlockFire extends BlockFlowable {
 
             if (!forever && this.getLevel().isRaining() &&
                     (this.getLevel().canBlockSeeSky(this) ||
-                            this.getLevel().canBlockSeeSky(this.east()) ||
-                            this.getLevel().canBlockSeeSky(this.west()) ||
-                            this.getLevel().canBlockSeeSky(this.south()) ||
-                            this.getLevel().canBlockSeeSky(this.north()))
+                            this.getLevel().canBlockSeeSky(this.eastVec()) ||
+                            this.getLevel().canBlockSeeSky(this.westVec()) ||
+                            this.getLevel().canBlockSeeSky(this.southVec()) ||
+                            this.getLevel().canBlockSeeSky(this.northVec()))
                     ) {
                 BlockFadeEvent event = new BlockFadeEvent(this, get(AIR));
                 level.getServer().getPluginManager().callEvent(event);
