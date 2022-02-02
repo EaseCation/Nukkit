@@ -185,6 +185,7 @@ public class Player extends EntityHuman implements CommandSender, InventoryHolde
     protected String displayName;
 
     protected int startAction = -1;
+    protected long startActionTimestamp = -1;
 
     protected Vector3 sleeping = null;
     protected Long clientID = null;
@@ -274,12 +275,18 @@ public class Player extends EntityHuman implements CommandSender, InventoryHolde
         return startAction;
     }
 
+    public long getStartActionTimestamp() {
+        return startActionTimestamp;
+    }
+
     public void startAction() {
         this.startAction = this.server.getTick();
+        this.startActionTimestamp = System.currentTimeMillis();
     }
 
     public void stopAction() {
         this.startAction = -1;
+        this.startActionTimestamp = -1;
     }
 
     public int getLastEnderPearlThrowingTick() {
@@ -726,6 +733,7 @@ public class Player extends EntityHuman implements CommandSender, InventoryHolde
 
     public void setUsingItem(boolean value) {
         this.startAction = value ? this.server.getTick() : -1;
+        this.startActionTimestamp = value ? System.currentTimeMillis() : -1;
         this.setDataFlag(DATA_FLAGS, DATA_FLAG_ACTION, value);
     }
 
@@ -2556,6 +2564,7 @@ public class Player extends EntityHuman implements CommandSender, InventoryHolde
                     }
 
                     this.startAction = -1;
+                    this.startActionTimestamp = -1;
                     this.setDataFlag(Player.DATA_FLAGS, Player.DATA_FLAG_ACTION, false);
                     break;
                 case ProtocolInfo.MOB_ARMOR_EQUIPMENT_PACKET:
@@ -3077,6 +3086,7 @@ public class Player extends EntityHuman implements CommandSender, InventoryHolde
 
                                     this.setDataFlag(DATA_FLAGS, DATA_FLAG_ACTION, true);
                                     this.startAction = this.server.getTick();
+                                    this.startActionTimestamp = System.currentTimeMillis();
 
                                     break packetswitch;
                                 default:
@@ -3204,7 +3214,8 @@ public class Player extends EntityHuman implements CommandSender, InventoryHolde
                                         if (this.isUsingItem()) {
                                             item = this.inventory.getItemInHand();
                                             // Used item
-                                            int ticksUsed = this.server.getTick() - this.startAction;
+                                            //int ticksUsed = this.server.getTick() - this.startAction;
+                                            int ticksUsed = (int) (System.currentTimeMillis() - this.startActionTimestamp) / 50;
 
                                             if (item.onRelease(this, ticksUsed)) {
                                                 this.inventory.setItemInHand(item);
