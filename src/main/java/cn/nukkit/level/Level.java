@@ -2683,8 +2683,13 @@ public class Level implements ChunkManager, Metadatable {
                         player.sendChunk(x, z, subChunkCount, chunkBlobCache, chunkPacketCache.getPacket(
                                 StaticVersion.fromProtocol(protocol, player.isNetEaseClient())));
                     } else if (player.isSubChunkRequestAvailable()) {
-                        player.sendChunk(x, z, subChunkCount + Anvil.PADDING_SUB_CHUNK_COUNT, chunkBlobCache,
-                                chunkPacketCache.getSubModePacket());
+                        if (protocol < 486) {
+                            player.sendChunk(x, z, subChunkCount + Anvil.PADDING_SUB_CHUNK_COUNT, chunkBlobCache,
+                                    chunkPacketCache.getSubModePacket());
+                        } else {
+                            player.sendChunk(x, z, subChunkCount + Anvil.PADDING_SUB_CHUNK_COUNT, chunkBlobCache,
+                                    chunkPacketCache.getSubModePacketTruncated());
+                        }
                     } else {
                         player.sendChunk(x, z, subChunkCount + Anvil.PADDING_SUB_CHUNK_COUNT, chunkBlobCache,
                                 chunkPacketCache.getPacket(StaticVersion.fromProtocol(protocol, player.isNetEaseClient())));
@@ -2746,12 +2751,13 @@ public class Level implements ChunkManager, Metadatable {
      * Chunk request callback on main thread
      * If this.cacheChunks == false, the ChunkPacketCache can be null;
      */
-    public void chunkRequestCallback(long timestamp, int x, int z, int subChunkCount, ChunkBlobCache chunkBlobCache, ChunkPacketCache chunkPacketCache, byte[] payload, byte[] payloadOld, byte[] subModePayload, Map<StaticVersion, byte[]> payloads, Map<StaticVersion, byte[][]> subChunkPayloads, byte[] heightMapType, byte[][] heightMapData) {
+    public void chunkRequestCallback(long timestamp, int x, int z, int subChunkCount, ChunkBlobCache chunkBlobCache, ChunkPacketCache chunkPacketCache, byte[] payload, byte[] payloadOld, byte[] subModePayload, Map<StaticVersion, byte[]> payloads, Map<StaticVersion, byte[][]> subChunkPayloads, byte[] heightMapType, byte[][] heightMapData, boolean[] emptySection) {
         this.timings.syncChunkSendTimer.startTiming();
         long index = Level.chunkHash(x, z);
 
         if (this.cacheChunks) {
             if (chunkPacketCache == null) {
+                int extendedCount = subChunkCount == 0 ? 0 : Anvil.PADDING_SUB_CHUNK_COUNT + subChunkCount;
                 Map<StaticVersion, BatchPacket> packets = new EnumMap<>(StaticVersion.class);
                 Map<StaticVersion, BatchPacket[]> subPackets = new EnumMap<>(StaticVersion.class);
 
@@ -2761,9 +2767,18 @@ public class Level implements ChunkManager, Metadatable {
                         actualCount += Anvil.PADDING_SUB_CHUNK_COUNT;
 
                         byte[][] subChunkData = subChunkPayloads.get(version);
-                        BatchPacket[] compressed = new BatchPacket[subChunkCount];
-                        for (int y = 0; y < subChunkCount; y++) {
-                            compressed[y] = Level.getSubChunkCacheFromData(Level.DIMENSION_OVERWORLD, x, y, z, subChunkData[y], heightMapType[y], heightMapData[y]);
+                        BatchPacket[] compressed = new BatchPacket[extendedCount];
+                        for (int y = 0; y < extendedCount; y++) {
+                            SubChunkPacket packet;
+                            if (version.getProtocol() >= StaticVersion.V1_18_10.getProtocol()) {
+                                packet = new SubChunkPacket11810();
+                                if (y < subChunkCount && emptySection[y]) {
+                                    packet.requestResult = SubChunkPacket.REQUEST_RESULT_SUCCESS_ALL_AIR;
+                                }
+                            } else {
+                                packet = new SubChunkPacket();
+                            }
+                            compressed[y] = Level.getSubChunkCacheFromData(packet, Level.DIMENSION_OVERWORLD, x, y, z, subChunkData[y], heightMapType[y], heightMapData[y]);
                         }
                         subPackets.put(version, compressed);
                     }
@@ -2773,7 +2788,8 @@ public class Level implements ChunkManager, Metadatable {
                 chunkPacketCache = new ChunkPacketCache(
                         packets,
                         subPackets,
-                        getChunkCacheFromData(x, z, -1, subModePayload, false, true),
+                        getChunkCacheFromData(x, z, LevelChunkPacket.CLIENT_REQUEST_FULL_COLUMN_FAKE_COUNT, subModePayload, false, true),
+                        getChunkCacheFromData(x, z, LevelChunkPacket.CLIENT_REQUEST_TRUNCATED_COLUMN_FAKE_COUNT, subChunkCount, subModePayload, false, true),
                         getChunkCacheFromData(x, z, subChunkCount, payload, false, true),
                         getChunkCacheFromData(x, z, subChunkCount, payload, false, false),
                         getChunkCacheFromData(x, z, subChunkCount, payloadOld, true, false)
@@ -3815,6 +3831,10 @@ public class Level implements ChunkManager, Metadatable {
     }
 
     public static BatchPacket getChunkCacheFromData(int x, int z, int subChunkCount, byte[] payload, boolean isOld, boolean zlibRaw) {
+        return getChunkCacheFromData(x, z, subChunkCount, 0, payload, isOld, zlibRaw);
+    }
+
+    public static BatchPacket getChunkCacheFromData(int x, int z, int subChunkCount, int subChunkRequestLimit, byte[] payload, boolean isOld, boolean zlibRaw) {
         DataPacket packet;
         if (isOld) {
             FullChunkDataPacket pk = new FullChunkDataPacket() {
@@ -3834,6 +3854,7 @@ public class Level implements ChunkManager, Metadatable {
             pk.chunkX = x;
             pk.chunkZ = z;
             pk.subChunkCount = subChunkCount;
+            pk.subChunkRequestLimit = subChunkRequestLimit;
             pk.data = payload;
             pk.tryEncode();
             packet = pk;
@@ -3856,8 +3877,7 @@ public class Level implements ChunkManager, Metadatable {
         return batch;
     }
 
-    public static BatchPacket getSubChunkCacheFromData(int dimension, int subChunkX, int subChunkY, int subChunkZ, byte[] payload, byte heightMapType, byte[] heightMap) {
-        SubChunkPacket packet = new SubChunkPacket();
+    public static BatchPacket getSubChunkCacheFromData(SubChunkPacket packet, int dimension, int subChunkX, int subChunkY, int subChunkZ, byte[] payload, byte heightMapType, byte[] heightMap) {
         packet.dimension = dimension;
         packet.subChunkX = subChunkX;
         packet.subChunkY = subChunkY;

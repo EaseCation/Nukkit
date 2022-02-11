@@ -24,9 +24,14 @@ public class BossEventPacket extends DataPacket {
     /* S2C: Also appears to not be implemented. Title clientside sticks as the target entity's nametag, or their entity type name if not set. */
     public static final int TYPE_TITLE = 5;
     /* S2C: Not sure on this. Includes color and overlay fields, plus an unknown short. TODO: check this */
-    public static final int TYPE_UNKNOWN_6 = 6;
+    public static final int TYPE_UPDATE_PROPERTIES = 6;
     /* S2C: Sets color and overlay of the bar. */
     public static final int TYPE_TEXTURE = 7;
+    /**
+     * @since 1.18.10
+     */
+    /* C2S: Client asking the server to resend all boss data. */
+    public static final int TYPE_QUERY = 8;
 
     public long bossEid;
     public int type;
@@ -49,12 +54,13 @@ public class BossEventPacket extends DataPacket {
         switch (this.type) {
             case TYPE_REGISTER_PLAYER:
             case TYPE_UNREGISTER_PLAYER:
+            case TYPE_QUERY:
                 this.playerEid = this.getEntityUniqueId();
                 break;
             case TYPE_SHOW:
                 this.title = this.getString();
                 this.healthPercent = this.getLFloat();
-            case TYPE_UNKNOWN_6:
+            case TYPE_UPDATE_PROPERTIES:
                 this.unknown = (short) this.getShort();
             case TYPE_TEXTURE:
                 this.color = BossBarColor.VALUES[(int) this.getUnsignedVarInt()];
@@ -77,12 +83,13 @@ public class BossEventPacket extends DataPacket {
         switch (this.type) {
             case TYPE_REGISTER_PLAYER:
             case TYPE_UNREGISTER_PLAYER:
+            case TYPE_QUERY:
                 this.putEntityUniqueId(this.playerEid);
                 break;
             case TYPE_SHOW:
                 this.putString(this.title);
                 this.putLFloat(this.healthPercent);
-            case TYPE_UNKNOWN_6:
+            case TYPE_UPDATE_PROPERTIES:
                 this.putShort(this.unknown);
             case TYPE_TEXTURE:
                 this.putUnsignedVarInt(this.color.ordinal());
@@ -107,5 +114,9 @@ public class BossEventPacket extends DataPacket {
         WHITE;
 
         static final BossBarColor[] VALUES = values();
+
+        public BossBarColor[] getValues() {
+            return VALUES;
+        }
     }
 }

@@ -235,6 +235,10 @@ public class BinaryStream {
         this.putByte((byte) (bool ? 1 : 0));
     }
 
+    public byte getByteRaw() {
+        return this.buffer[this.offset++];
+    }
+
     public int getByte() {
         return this.buffer[this.offset++] & 0xff;
     }
@@ -879,6 +883,16 @@ public class BinaryStream {
     public <T> T[] getArray(Class<T> clazz, Function<BinaryStream, T> function) {
         ArrayDeque<T> deque = new ArrayDeque<>();
         int count = (int) getUnsignedVarInt();
+        for (int i = 0; i < count; i++) {
+            deque.add(function.apply(this));
+        }
+        return deque.toArray((T[]) Array.newInstance(clazz, 0));
+    }
+
+    @SuppressWarnings("unchecked")
+    public <T> T[] getArrayLInt(Class<T> clazz, Function<BinaryStream, T> function) {
+        ArrayDeque<T> deque = new ArrayDeque<>();
+        int count = this.getLInt();
         for (int i = 0; i < count; i++) {
             deque.add(function.apply(this));
         }

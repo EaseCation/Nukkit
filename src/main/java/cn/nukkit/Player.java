@@ -742,14 +742,6 @@ public class Player extends EntityHuman implements CommandSender, InventoryHolde
     protected boolean switchLevel(Level targetLevel) {
         Level oldLevel = this.level;
         if (super.switchLevel(targetLevel)) {
-            SetSpawnPositionPacket spawnPosition = new SetSpawnPositionPacket();
-            spawnPosition.spawnType = SetSpawnPositionPacket.TYPE_WORLD_SPAWN;
-            Position spawn = level.getSpawnLocation();
-            spawnPosition.x = spawn.getFloorX();
-            spawnPosition.y = spawn.getFloorY();
-            spawnPosition.z = spawn.getFloorZ();
-            this.dataPacket(spawnPosition);
-
             // Remove old chunks
             for (long index : new ArrayList<>(this.usedChunks.keySet())) {
                 int chunkX = Level.getHashX(index);
@@ -758,6 +750,18 @@ public class Player extends EntityHuman implements CommandSender, InventoryHolde
             }
 
             this.usedChunks = new Long2BooleanOpenHashMap();
+
+            if (this.onLevelSwitch()) {
+                return true;
+            }
+
+            SetSpawnPositionPacket spawnPosition = new SetSpawnPositionPacket();
+            spawnPosition.spawnType = SetSpawnPositionPacket.TYPE_WORLD_SPAWN;
+            Position spawn = level.getSpawnLocation();
+            spawnPosition.x = spawn.getFloorX();
+            spawnPosition.y = spawn.getFloorY();
+            spawnPosition.z = spawn.getFloorZ();
+            this.dataPacket(spawnPosition);
 
             //forceSendEmptyChunks();
 
@@ -778,7 +782,7 @@ public class Player extends EntityHuman implements CommandSender, InventoryHolde
 
     // Remove old chunks
     public void removeAllChunks() {
-        for(long index :new ArrayList<>(this.usedChunks.keySet())) {
+        for (long index :new ArrayList<>(this.usedChunks.keySet())) {
             int chunkX = Level.getHashX(index);
             int chunkZ = Level.getHashZ(index);
             this.unloadChunk(chunkX, chunkZ, this.level);
@@ -2528,6 +2532,7 @@ public class Player extends EntityHuman implements CommandSender, InventoryHolde
                             }
                             break packetswitch;
                         case PlayerActionPacket.ACTION_DIMENSION_CHANGE_ACK:
+                            this.onDimensionChangeSuccess();
                             break; //TODO
                         case PlayerActionPacket.ACTION_START_GLIDE:
                             PlayerToggleGlideEvent playerToggleGlideEvent = new PlayerToggleGlideEvent(this, true);
@@ -5139,6 +5144,14 @@ public class Player extends EntityHuman implements CommandSender, InventoryHolde
     }
 
     protected void processSubChunkRequest() {
+
+    }
+
+    protected boolean onLevelSwitch() {
+        return false;
+    }
+
+    protected void onDimensionChangeSuccess() {
 
     }
 }

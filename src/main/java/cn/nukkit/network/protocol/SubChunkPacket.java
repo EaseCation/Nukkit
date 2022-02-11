@@ -12,6 +12,10 @@ public class SubChunkPacket extends DataPacket {
     public static final int REQUEST_RESULT_WRONG_DIMENSION = 3;
     public static final int REQUEST_RESULT_PLAYER_NOT_FOUND = 4;
     public static final int REQUEST_RESULT_Y_INDEX_OUT_OF_BOUNDS = 5;
+    /**
+     * @since 1.18.10
+     */
+    public static final int REQUEST_RESULT_SUCCESS_ALL_AIR = 6;
 
     public static final byte HEIGHT_MAP_TYPE_NO_DATA = 0;
     public static final byte HEIGHT_MAP_TYPE_HAS_DATA = 1;

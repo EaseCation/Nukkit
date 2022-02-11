@@ -51,7 +51,10 @@ public interface ChunkSection {
 
     void writeTo(BinaryStream stream);
 
-    void writeToCache(BinaryStream stream);
+    /**
+     * @return all air
+     */
+    boolean writeToCache(BinaryStream stream);
 
     ChunkSection copy();
 }

@@ -14,14 +14,16 @@ public class ChunkPacketCache {
      * LevelChunkPacket in sub-chunk request mode.
      */
     private final BatchPacket subModePacket;
+    private final BatchPacket subModePacketTruncated;
     private final BatchPacket packet116;
     private final BatchPacket packet;
     private final BatchPacket packetOld;
 
-    public ChunkPacketCache(Map<StaticVersion, BatchPacket> packets, Map<StaticVersion, BatchPacket[]> subChunkPackets, BatchPacket subModePacket, BatchPacket packet116, BatchPacket packet, BatchPacket packetOld) {
+    public ChunkPacketCache(Map<StaticVersion, BatchPacket> packets, Map<StaticVersion, BatchPacket[]> subChunkPackets, BatchPacket subModePacket, BatchPacket subModePacketTruncated, BatchPacket packet116, BatchPacket packet, BatchPacket packetOld) {
         this.packets = packets;
         this.subChunkPackets = subChunkPackets;
         this.subModePacket = subModePacket;
+        this.subModePacketTruncated = subModePacketTruncated;
         this.packet116 = packet116;
         this.packet = packet;
         this.packetOld = packetOld;
@@ -37,6 +39,10 @@ public class ChunkPacketCache {
 
     public BatchPacket getSubModePacket() {
         return subModePacket;
+    }
+
+    public BatchPacket getSubModePacketTruncated() {
+        return subModePacketTruncated;
     }
 
     public BatchPacket getPacket116() {
@@ -55,6 +61,7 @@ public class ChunkPacketCache {
         this.packets.clear();
         this.subChunkPackets.clear();
         this.subModePacket.trim();
+        this.subModePacketTruncated.trim();
         this.packet116.trim();
         this.packet.trim();
         this.packetOld.trim();

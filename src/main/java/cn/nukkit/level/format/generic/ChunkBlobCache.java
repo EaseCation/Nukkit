@@ -9,6 +9,7 @@ public class ChunkBlobCache {
     private final int subChunkCount;
     private final byte[] heightMapType;
     private final byte[][] heightMapData;
+    private final boolean[] emptySection;
 
     private final long[] blobIds;
     private final long[] extendedBlobIds; // 1.18+
@@ -17,10 +18,11 @@ public class ChunkBlobCache {
     private final byte[] fullChunkCachedPayload;
     private final byte[][] subChunkCachedPayload;
 
-    public ChunkBlobCache(int subChunkCount, byte[] heightMapType, byte[][] heightMapData, long[] blobIds, long[] extendedBlobIds, Long2ObjectMap<byte[]> clientBlobs, Long2ObjectMap<byte[]> extendedClientBlobs, byte[] fullChunkCachedPayload, byte[][] subChunkCachedPayload) {
+    public ChunkBlobCache(int subChunkCount, byte[] heightMapType, byte[][] heightMapData, boolean[] emptySection, long[] blobIds, long[] extendedBlobIds, Long2ObjectMap<byte[]> clientBlobs, Long2ObjectMap<byte[]> extendedClientBlobs, byte[] fullChunkCachedPayload, byte[][] subChunkCachedPayload) {
         this.subChunkCount = subChunkCount;
         this.heightMapType = heightMapType;
         this.heightMapData = heightMapData;
+        this.emptySection = emptySection;
         this.blobIds = blobIds;
         this.extendedBlobIds = extendedBlobIds;
         this.clientBlobs = clientBlobs;
@@ -39,6 +41,10 @@ public class ChunkBlobCache {
 
     public byte[][] getHeightMapData() {
         return heightMapData;
+    }
+
+    public boolean[] getEmptySection() {
+        return emptySection;
     }
 
     public long[] getBlobIds() {

@@ -129,12 +129,21 @@ public class BlockStorage {
         storage.writeTo(stream);
     }
 
-    public void writeToCache(BinaryStream stream) {
+    /**
+     * @return all air
+     */
+    public boolean writeToCache(BinaryStream stream) {
         PalettedSubChunkStorage storage = PalettedSubChunkStorage.ofBlock(Block.AIR);
+        int airCount = 0;
         for (int i = 0; i < SECTION_SIZE; i++) {
-            storage.set(i, (blockIds[i] & 0xff) << 4 | blockData.get(i));
+            int blockId = blockIds[i] & 0xff;
+            if (blockId == Block.AIR) {
+                ++airCount;
+            }
+            storage.set(i, blockId << 4 | blockData.get(i));
         }
         storage.writeToCache(stream);
+        return airCount == SECTION_SIZE;
     }
 
     public BlockStorage copy() {

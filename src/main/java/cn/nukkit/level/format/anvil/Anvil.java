@@ -10,12 +10,15 @@ import cn.nukkit.level.biome.EnumBiome;
 import cn.nukkit.level.format.FullChunk;
 import cn.nukkit.level.format.generic.*;
 import cn.nukkit.level.generator.Generator;
+import cn.nukkit.level.util.BitArrayVersion;
 import cn.nukkit.level.util.PalettedSubChunkStorage;
 import cn.nukkit.math.XXHash64;
 import cn.nukkit.nbt.NBTIO;
 import cn.nukkit.nbt.tag.CompoundTag;
 import cn.nukkit.network.protocol.BatchPacket;
+import cn.nukkit.network.protocol.LevelChunkPacket;
 import cn.nukkit.network.protocol.SubChunkPacket;
+import cn.nukkit.network.protocol.SubChunkPacket11810;
 import cn.nukkit.scheduler.AsyncTask;
 import cn.nukkit.utils.BinaryStream;
 import cn.nukkit.utils.ChunkException;
@@ -58,6 +61,40 @@ public class Anvil extends BaseLevelProvider {
     public static final long PADDING_SUB_CHUNK_HASH = XXHash64.getHash(PADDING_SUB_CHUNK_BLOB);
 
     private static final int HEIGHT_MAP_LENGTH = 16 * 16;
+
+    public static final int FULL_COLUMN_NORMAL = 16;
+    public static final int FULL_COLUMN_HALF = FULL_COLUMN_NORMAL / 2; // nether, the end and old world
+
+    public static final long MINIMIZE_BIOME_PALETTES_HASH;
+    public static final byte[] MINIMIZE_BIOME_PALETTES;
+    public static final byte[] MINIMIZE_CHUNK_DATA_NO_CACHE; // biomePalettes + borderBlocks
+    public static final byte[] MINIMIZE_CHUNK_DATA_OLD;
+
+    static {
+        BinaryStream stream = ThreadCache.binaryStream.get();
+        stream.reuse();
+        PalettedSubChunkStorage emptyBiomeStorage = PalettedSubChunkStorage.ofBiome(BitArrayVersion.EMPTY, EnumBiome.OCEAN.id);
+        emptyBiomeStorage.writeTo(stream);
+        byte[] emptyPalette = stream.getBuffer();
+
+        stream.reuse();
+        PalettedSubChunkStorage singletonBiomeStorage = PalettedSubChunkStorage.ofBiome(BitArrayVersion.V0, EnumBiome.OCEAN.id);
+        singletonBiomeStorage.writeTo(stream);
+
+        for (int i = 0; i < 4 + 16 + 4; i++) {
+            stream.put(emptyPalette);
+        }
+        MINIMIZE_BIOME_PALETTES = stream.getBuffer();
+        MINIMIZE_BIOME_PALETTES_HASH = XXHash64.getHash(MINIMIZE_BIOME_PALETTES);
+
+        stream.putVarInt(0); // borderBlocks
+        MINIMIZE_CHUNK_DATA_NO_CACHE = stream.getBuffer();
+
+        stream.reuse();
+        stream.put(PAD_256);
+        stream.putVarInt(0); // borderBlocks
+        MINIMIZE_CHUNK_DATA_OLD = stream.getBuffer();
+    }
 
     public Anvil(Level level, String path) throws IOException {
         super(level, path);
@@ -152,6 +189,7 @@ public class Anvil extends BaseLevelProvider {
             ChunkPacketCache chunkPacketCache;
             byte[] heightMapType;
             byte[][] heightMapData;
+            boolean[] emptySection;
 
             @Override
             public void onRun() {
@@ -202,6 +240,7 @@ public class Anvil extends BaseLevelProvider {
                     }
                     boolean emptyChunk = count == 0;
                     int extendedCount = emptyChunk ? 0 : PADDING_SUB_CHUNK_COUNT + count;
+                    emptySection = new boolean[count];
 
                     byte[][] subChunkBlockEntities = new byte[PADDING_SUB_CHUNK_COUNT + 16 /*+ 4*/][];
                     byte[] fullChunkBlockEntities = EMPTY;
@@ -299,7 +338,7 @@ public class Anvil extends BaseLevelProvider {
                         //byte[] subChunk = new byte[6145]; // 1 subChunkVersion (0) + 4096 blockIds + 2048 blockMeta
                         stream.reuse();
                         //stream.putByte((byte) 0);
-                        sections[i].writeToCache(stream);
+                        emptySection[i] = sections[i].writeToCache(stream);
                         //System.arraycopy(sections[i].getBytes(), 0, subChunk, 1, 6144); // skip subChunkVersion
                         byte[] subChunk = stream.getBuffer();
 
@@ -329,7 +368,7 @@ public class Anvil extends BaseLevelProvider {
                     stream.putByte((byte) 0);
                     subModePayload = stream.getBuffer(); // biomePalettes + borderBlocks
 
-                    chunkBlobCache = new ChunkBlobCache(count, heightMapType, heightMapData, blobIds.toLongArray(), extendedBlobIds.toLongArray(), clientBlobs, extendedClientBlobs, clientBlobCachedPayload, subChunkBlockEntities);
+                    chunkBlobCache = new ChunkBlobCache(count, heightMapType, heightMapData, emptySection, blobIds.toLongArray(), extendedBlobIds.toLongArray(), clientBlobs, extendedClientBlobs, clientBlobCachedPayload, subChunkBlockEntities);
 
                     for (StaticVersion version : StaticVersion.getValues()) {
                         byte[][] blockStorages = new byte[extendedCount /*+ 4*/][];
@@ -369,7 +408,16 @@ public class Anvil extends BaseLevelProvider {
                                 byte[][] subChunkData = subChunkPayloads.get(version);
                                 BatchPacket[] compressed = new BatchPacket[extendedCount];
                                 for (int y = 0; y < extendedCount; y++) {
-                                    compressed[y] = Level.getSubChunkCacheFromData(Level.DIMENSION_OVERWORLD, x, y, z, subChunkData[y], heightMapType[y], heightMapData[y]);
+                                    SubChunkPacket packet;
+                                    if (version.getProtocol() >= StaticVersion.V1_18_10.getProtocol()) {
+                                        packet = new SubChunkPacket11810();
+                                        if (y < count && emptySection[y]) {
+                                            packet.requestResult = SubChunkPacket.REQUEST_RESULT_SUCCESS_ALL_AIR;
+                                        }
+                                    } else {
+                                        packet = new SubChunkPacket();
+                                    }
+                                    compressed[y] = Level.getSubChunkCacheFromData(packet, Level.DIMENSION_OVERWORLD, x, y, z, subChunkData[y], heightMapType[y], heightMapData[y]);
                                 }
                                 subPackets.put(version, compressed);
                             }
@@ -379,7 +427,8 @@ public class Anvil extends BaseLevelProvider {
                         chunkPacketCache = new ChunkPacketCache(
                                 packets,
                                 subPackets,
-                                Level.getChunkCacheFromData(x, z, -1, subModePayload, false, true),
+                                Level.getChunkCacheFromData(x, z, LevelChunkPacket.CLIENT_REQUEST_FULL_COLUMN_FAKE_COUNT, subModePayload, false, true),
+                                Level.getChunkCacheFromData(x, z, LevelChunkPacket.CLIENT_REQUEST_TRUNCATED_COLUMN_FAKE_COUNT, count, subModePayload, false, true),
                                 Level.getChunkCacheFromData(x, z, count, payload, false, true),
                                 Level.getChunkCacheFromData(x, z, count, payload, false, false),
                                 Level.getChunkCacheFromData(x, z, count, payloadOld, true, false)
@@ -394,7 +443,7 @@ public class Anvil extends BaseLevelProvider {
             @Override
             public void onCompletion(Server server) {
                 if (success) {
-                    getLevel().chunkRequestCallback(timestamp, x, z, count, chunkBlobCache, chunkPacketCache, payload, payloadOld, subModePayload, payloads, subChunkPayloads, heightMapType, heightMapData);
+                    getLevel().chunkRequestCallback(timestamp, x, z, count, chunkBlobCache, chunkPacketCache, payload, payloadOld, subModePayload, payloads, subChunkPayloads, heightMapType, heightMapData, emptySection);
                 }
             }
         };

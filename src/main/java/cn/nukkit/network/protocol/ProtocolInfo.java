@@ -191,6 +191,9 @@ public interface ProtocolInfo {
     int PHOTO_INFO_REQUEST_PACKET = 0xad;
     int SUB_CHUNK_PACKET = 0xae;
     int SUB_CHUNK_REQUEST_PACKET = 0xaf;
+    int PLAYER_START_ITEM_COOLDOWN_PACKET = 0xb0;
+    int SCRIPT_MESSAGE_PACKET = 0xb1;
+    int CODE_BUILDER_SOURCE_PACKET = 0xb2;
 
     //NetEase Common Mod
     int PACKET_PY_PRC = 0xc8;

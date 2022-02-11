@@ -158,11 +158,12 @@ public class EmptyChunkSection implements ChunkSection {
     }
 
     @Override
-    public void writeToCache(BinaryStream stream) {
+    public boolean writeToCache(BinaryStream stream) {
         stream.putByte((byte) 8);
         stream.putByte((byte) 2);
         EMPTY_STORAGE.writeToCache(stream);
         EMPTY_STORAGE.writeToCache(stream);
+        return true;
     }
 
     @Override
