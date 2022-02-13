@@ -85,13 +85,13 @@ public class BlockRailDetector extends BlockRail {
         if (isPowered && !wasPowered) {
             setActive(true);
             level.scheduleUpdate(this, this, 0);
-            level.scheduleUpdate(this, this.down(), 0);
+            level.scheduleUpdate(this, this.downVec(), 0);
         }
 
         if (!isPowered && wasPowered) {
             setActive(false);
             level.scheduleUpdate(this, this, 0);
-            level.scheduleUpdate(this, this.down(), 0);
+            level.scheduleUpdate(this, this.downVec(), 0);
         }
 
         level.updateComparatorOutputLevel(this);

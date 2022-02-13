@@ -85,7 +85,7 @@ public abstract class BlockPressurePlateBase extends BlockFlowable {
     public int onUpdate(int type) {
         if (type == Level.BLOCK_UPDATE_NORMAL) {
             if (this.down().isTransparent()) {
-                this.level.useBreakOn(this);
+                this.level.useBreakOn(this, Item.get(Item.WOODEN_PICKAXE));
             }
         } else if (type == Level.BLOCK_UPDATE_SCHEDULED) {
             int power = this.getRedstonePower();
@@ -148,7 +148,7 @@ public abstract class BlockPressurePlateBase extends BlockFlowable {
             this.level.setBlock(this, this, false, false);
 
             this.level.updateAroundRedstone(this, null);
-            this.level.updateAroundRedstone(this.getLocation().down(), null);
+            this.level.updateAroundRedstone(this.downVec(), null);
 
             if (!isPowered && wasPowered) {
                 this.playOffSound();
@@ -170,7 +170,7 @@ public abstract class BlockPressurePlateBase extends BlockFlowable {
 
         if (this.getRedstonePower() > 0) {
             this.level.updateAroundRedstone(this, null);
-            this.level.updateAroundRedstone(this.getLocation().down(), null);
+            this.level.updateAroundRedstone(this.downVec(), null);
         }
 
         return true;

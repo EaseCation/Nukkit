@@ -28,12 +28,11 @@ public abstract class BlockRedstoneDiode extends BlockFlowable implements Faceab
 
     @Override
     public boolean onBreak(Item item) {
-        Vector3 pos = getLocation();
         this.level.setBlock(this, Block.get(BlockID.AIR), true, true);
 
         if (this.level.isRedstoneEnabled()) {
             for (BlockFace face : BlockFace.values0()) {
-                this.level.updateAroundRedstone(pos.getSide(face), null);
+                this.level.updateAroundRedstone(this.getSideVec(face), null);
             }
         }
         return true;
@@ -64,16 +63,15 @@ public abstract class BlockRedstoneDiode extends BlockFlowable implements Faceab
             }
 
             if (!this.isLocked()) {
-                Vector3 pos = getLocation();
                 boolean shouldBePowered = this.shouldBePowered();
 
                 if (this.isPowered && !shouldBePowered) {
-                    this.level.setBlock(pos, this.getUnpowered(), true, true);
+                    this.level.setBlock(this, this.getUnpowered(), true, true);
 
-                    this.level.updateAroundRedstone(this.getLocation().getSide(getFacing().getOpposite()), null);
+                    this.level.updateAroundRedstone(this.getSideVec(getFacing().getOpposite()), null);
                 } else if (!this.isPowered) {
-                    this.level.setBlock(pos, this.getPowered(), true, true);
-                    this.level.updateAroundRedstone(this.getLocation().getSide(getFacing().getOpposite()), null);
+                    this.level.setBlock(this, this.getPowered(), true, true);
+                    this.level.updateAroundRedstone(this.getSideVec(getFacing().getOpposite()), null);
 
                     if (!shouldBePowered) {
                         level.scheduleUpdate(getPowered(), this, this.getDelay());
@@ -123,7 +121,7 @@ public abstract class BlockRedstoneDiode extends BlockFlowable implements Faceab
 
     protected int calculateInputStrength() {
         BlockFace face = getFacing();
-        Vector3 pos = this.getLocation().getSide(face);
+        Vector3 pos = this.getSideVec(face);
         int power = this.level.getRedstonePower(pos, face);
 
         if (power >= 15) {
@@ -135,12 +133,10 @@ public abstract class BlockRedstoneDiode extends BlockFlowable implements Faceab
     }
 
     protected int getPowerOnSides() {
-        Vector3 pos = getLocation();
-
         BlockFace face = getFacing();
         BlockFace face1 = face.rotateY();
         BlockFace face2 = face.rotateYCCW();
-        return Math.max(this.getPowerOnSide(pos.getSide(face1), face1), this.getPowerOnSide(pos.getSide(face2), face2));
+        return Math.max(this.getPowerOnSide(this.getSideVec(face1), face1), this.getPowerOnSide(this.getSideVec(face2), face2));
     }
 
     protected int getPowerOnSide(Vector3 pos, BlockFace side) {

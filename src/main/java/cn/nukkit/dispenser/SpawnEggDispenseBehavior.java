@@ -11,7 +11,7 @@ public class SpawnEggDispenseBehavior extends DefaultDispenseBehavior {
 
     @Override
     public Item dispense(BlockDispenser block, BlockFace face, Item item) {
-        Vector3 pos = block.getSide(face).add(0.5, 0.7, 0.5);
+        Vector3 pos = block.getSideVec(face).add(0.5, 0.7, 0.5);
 
         Entity entity = Entity.createEntity(item.getDamage(), block.level.getChunk(pos.getChunkX(), pos.getChunkZ()),
                 Entity.getDefaultNBT(pos));

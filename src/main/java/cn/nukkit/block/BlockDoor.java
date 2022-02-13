@@ -202,7 +202,7 @@ public abstract class BlockDoor extends BlockTransparentMeta implements Faceable
 
                 if (up instanceof BlockDoor) {
                     this.getLevel().setBlock(up, Block.get(BlockID.AIR), false);
-                    this.getLevel().useBreakOn(this);
+                    this.getLevel().useBreakOn(this, Item.get(Item.WOODEN_PICKAXE));
                 }
 
                 return Level.BLOCK_UPDATE_NORMAL;
@@ -214,7 +214,7 @@ public abstract class BlockDoor extends BlockTransparentMeta implements Faceable
                 return 0;
             }
 
-            if ((!isOpen() && this.level.isBlockPowered(this.getLocation())) || (isOpen() && !this.level.isBlockPowered(this.getLocation()))) {
+            if ((!isOpen() && this.level.isBlockPowered(this)) || (isOpen() && !this.level.isBlockPowered(this))) {
                 this.level.getServer().getPluginManager().callEvent(new BlockRedstoneEvent(this, isOpen() ? 15 : 0, isOpen() ? 0 : 15));
 
                 this.toggle(null);
@@ -248,7 +248,7 @@ public abstract class BlockDoor extends BlockTransparentMeta implements Faceable
             this.getLevel().setBlock(blockUp, Block.get(this.getId(), metaUp), true, true); //Top
 
             if (this.level.isRedstoneEnabled()) {
-                if (!this.isOpen() && this.level.isBlockPowered(this.getLocation())) {
+                if (!this.isOpen() && this.level.isBlockPowered(this)) {
                     this.toggle(null);
                     metaUp |= DOOR_POWERED_BIT;
                     this.getLevel().setBlockDataAt(blockUp.getFloorX(), blockUp.getFloorY(), blockUp.getFloorZ(), metaUp);
@@ -303,7 +303,7 @@ public abstract class BlockDoor extends BlockTransparentMeta implements Faceable
         } else {
             down = this;
         }
-        if( down.up().getId() != down.getId() ) {
+        if (down.up().getId() != down.getId()) {
             return false;
         }
         down.setDamage(down.getDamage() ^ DOOR_OPEN_BIT);

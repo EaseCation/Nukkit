@@ -319,7 +319,7 @@ public abstract class BlockPistonBase extends BlockSolidMeta implements Faceable
 
             BlockFace face = getBlockFace();
             if (!extending) {
-                this.armPos = pistonPos.getSide(face);
+                this.armPos = pistonPos.getSideVec(face);
             }
 
             if (extending) {

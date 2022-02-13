@@ -152,12 +152,24 @@ public class Vector3 implements Cloneable {
         return new Vector3(this.getX() + face.getXOffset() * step, this.getY() + face.getYOffset() * step, this.getZ() + face.getZOffset() * step);
     }
 
+    public final Vector3 getSideVec(BlockFace face) {
+        return new Vector3(this.getX() + face.getXOffset(), this.getY() + face.getYOffset(), this.getZ() + face.getZOffset());
+    }
+
+    public final Vector3 getSideVec(BlockFace face, int step) {
+        return new Vector3(this.getX() + face.getXOffset() * step, this.getY() + face.getYOffset() * step, this.getZ() + face.getZOffset() * step);
+    }
+
     public Vector3 up() {
         return up(1);
     }
 
     public Vector3 up(int step) {
         return getSide(BlockFace.UP, step);
+    }
+
+    public final Vector3 upVec() {
+        return this.getSideVec(BlockFace.UP);
     }
 
     public Vector3 down() {
@@ -168,12 +180,20 @@ public class Vector3 implements Cloneable {
         return getSide(BlockFace.DOWN, step);
     }
 
+    public final Vector3 downVec() {
+        return this.getSideVec(BlockFace.DOWN);
+    }
+
     public Vector3 north() {
         return north(1);
     }
 
     public Vector3 north(int step) {
         return getSide(BlockFace.NORTH, step);
+    }
+
+    public final Vector3 northVec() {
+        return this.getSideVec(BlockFace.NORTH);
     }
 
     public Vector3 south() {
@@ -184,6 +204,10 @@ public class Vector3 implements Cloneable {
         return getSide(BlockFace.SOUTH, step);
     }
 
+    public final Vector3 southVec() {
+        return this.getSideVec(BlockFace.SOUTH);
+    }
+
     public Vector3 east() {
         return east(1);
     }
@@ -192,12 +216,20 @@ public class Vector3 implements Cloneable {
         return getSide(BlockFace.EAST, step);
     }
 
+    public final Vector3 eastVec() {
+        return this.getSideVec(BlockFace.EAST);
+    }
+
     public Vector3 west() {
         return west(1);
     }
 
     public Vector3 west(int step) {
         return getSide(BlockFace.WEST, step);
+    }
+
+    public final Vector3 westVec() {
+        return this.getSideVec(BlockFace.WEST);
     }
 
     public double distance(Vector3 pos) {

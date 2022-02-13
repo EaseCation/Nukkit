@@ -12,7 +12,6 @@ import cn.nukkit.math.Vector3;
 import cn.nukkit.utils.BlockColor;
 
 import java.util.EnumSet;
-import java.util.HashSet;
 import java.util.Set;
 
 /**
@@ -22,7 +21,6 @@ import java.util.Set;
 public class BlockRedstoneWire extends BlockFlowable {
 
     private boolean canProvidePower = true;
-    private final Set<Vector3> blocksNeedingUpdate = new HashSet<>();
 
     public BlockRedstoneWire() {
         this(0);
@@ -56,18 +54,17 @@ public class BlockRedstoneWire extends BlockFlowable {
             this.getLevel().setBlock(block, this, true, false);
 
             this.updateSurroundingRedstone(true);
-            Vector3 pos = getLocation();
 
             for (BlockFace blockFace : Plane.VERTICAL) {
-                this.level.updateAroundRedstone(pos.getSide(blockFace), blockFace.getOpposite());
+                this.level.updateAroundRedstone(this.getSideVec(blockFace), blockFace.getOpposite());
             }
 
             for (BlockFace blockFace : Plane.VERTICAL) {
-                this.updateAround(pos.getSide(blockFace), blockFace.getOpposite());
+                this.updateAround(this.getSideVec(blockFace), blockFace.getOpposite());
             }
 
             for (BlockFace blockFace : Plane.HORIZONTAL) {
-                Vector3 v = pos.getSide(blockFace);
+                Vector3 v = this.getSideVec(blockFace);
 
                 if (this.level.getBlock(v).isNormalBlock()) {
                     this.updateAround(v.up(), BlockFace.DOWN);
@@ -86,7 +83,7 @@ public class BlockRedstoneWire extends BlockFlowable {
             this.level.updateAroundRedstone(pos, face);
 
             for (BlockFace side : BlockFace.values0()) {
-                this.level.updateAroundRedstone(pos.getSide(side), side.getOpposite());
+                this.level.updateAroundRedstone(pos.getSideVec(side), side.getOpposite());
             }
         }
     }
@@ -96,8 +93,6 @@ public class BlockRedstoneWire extends BlockFlowable {
     }
 
     private void calculateCurrentChanges(boolean force) {
-        Vector3 pos = this.getLocation();
-
         int meta = this.getDamage();
         int maxStrength = meta;
         this.canProvidePower = false;
@@ -112,7 +107,7 @@ public class BlockRedstoneWire extends BlockFlowable {
         int strength = 0;
 
         for (BlockFace face : Plane.HORIZONTAL) {
-            Vector3 v = pos.getSide(face);
+            Vector3 v = this.getSideVec(face);
 
             if (v.getX() == this.getX() && v.getZ() == this.getZ()) {
                 continue;
@@ -123,10 +118,10 @@ public class BlockRedstoneWire extends BlockFlowable {
 
             boolean vNormal = this.level.getBlock(v).isNormalBlock();
 
-            if (vNormal && !this.level.getBlock(pos.up()).isNormalBlock()) {
-                strength = this.getMaxCurrentStrength(v.up(), strength);
+            if (vNormal && !this.up().isNormalBlock()) {
+                strength = this.getMaxCurrentStrength(v.upVec(), strength);
             } else if (!vNormal) {
-                strength = this.getMaxCurrentStrength(v.down(), strength);
+                strength = this.getMaxCurrentStrength(v.downVec(), strength);
             }
         }
 
@@ -152,11 +147,11 @@ public class BlockRedstoneWire extends BlockFlowable {
 
             this.level.updateAroundRedstone(this, null);
             for (BlockFace face : BlockFace.values0()) {
-                this.level.updateAroundRedstone(pos.getSide(face), face.getOpposite());
+                this.level.updateAroundRedstone(this.getSideVec(face), face.getOpposite());
             }
         } else if (force) {
             for (BlockFace face : BlockFace.values0()) {
-                this.level.updateAroundRedstone(pos.getSide(face), face.getOpposite());
+                this.level.updateAroundRedstone(this.getSideVec(face), face.getOpposite());
             }
         }
     }
@@ -174,17 +169,19 @@ public class BlockRedstoneWire extends BlockFlowable {
     public boolean onBreak(Item item) {
         this.getLevel().setBlock(this, Block.get(BlockID.AIR), true, true);
 
-        Vector3 pos = getLocation();
-
         if (this.level.isRedstoneEnabled()) {
-            this.updateSurroundingRedstone(false);
+//            this.updateSurroundingRedstone(false);
+            this.level.updateAroundRedstone(this, null);
+            for (BlockFace face : BlockFace.values0()) {
+                this.level.updateAroundRedstone(this.getSideVec(face), face.getOpposite());
+            }
 
-            for (BlockFace blockFace : BlockFace.values()) {
-                this.level.updateAroundRedstone(pos.getSide(blockFace), null);
+            for (BlockFace blockFace : BlockFace.values0()) {
+                this.level.updateAroundRedstone(this.getSideVec(blockFace), null);
             }
 
             for (BlockFace blockFace : Plane.HORIZONTAL) {
-                Vector3 v = pos.getSide(blockFace);
+                Vector3 v = this.getSideVec(blockFace);
 
                 if (this.level.getBlock(v).isNormalBlock()) {
                     this.updateAround(v.up(), BlockFace.DOWN);
@@ -252,7 +249,7 @@ public class BlockRedstoneWire extends BlockFlowable {
             } else if (side == BlockFace.UP) {
                 return power;
             } else {
-                EnumSet<BlockFace> faces = EnumSet.noneOf(BlockFace.class);
+                Set<BlockFace> faces = EnumSet.noneOf(BlockFace.class);
 
                 for (BlockFace face : Plane.HORIZONTAL) {
                     if (this.isPowerSourceAt(face)) {
@@ -272,12 +269,11 @@ public class BlockRedstoneWire extends BlockFlowable {
     }
 
     private boolean isPowerSourceAt(BlockFace side) {
-        Vector3 pos = getLocation();
-        Vector3 v = pos.getSide(side);
+        Vector3 v = this.getSideVec(side);
         Block block = this.level.getBlock(v);
         boolean flag = block.isNormalBlock();
-        boolean flag1 = this.level.getBlock(pos.up()).isNormalBlock();
-        return !flag1 && flag && canConnectUpwardsTo(this.level, v.up()) || (canConnectTo(block, side) || !flag && canConnectUpwardsTo(this.level, block.down()));
+        boolean flag1 = this.up().isNormalBlock();
+        return !flag1 && flag && canConnectUpwardsTo(this.level, v.upVec()) || (canConnectTo(block, side) || !flag && canConnectUpwardsTo(this.level, block.downVec()));
     }
 
     protected static boolean canConnectUpwardsTo(Level level, Vector3 pos) {
@@ -309,10 +305,9 @@ public class BlockRedstoneWire extends BlockFlowable {
 
     private int getIndirectPower() {
         int power = 0;
-        Vector3 pos = getLocation();
 
         for (BlockFace face : BlockFace.values()) {
-            int blockPower = this.getIndirectPower(pos.getSide(face), face);
+            int blockPower = this.getIndirectPower(this.getSideVec(face), face);
 
             if (blockPower >= 15) {
                 return 15;
@@ -331,7 +326,7 @@ public class BlockRedstoneWire extends BlockFlowable {
         if (block.getId() == Block.REDSTONE_WIRE) {
             return 0;
         }
-        return block.isNormalBlock() ? getStrongPower(pos.getSide(face), face) : block.getWeakPower(face);
+        return block.isNormalBlock() ? getStrongPower(pos.getSideVec(face), face) : block.getWeakPower(face);
     }
 
     private int getStrongPower(Vector3 pos, BlockFace direction) {
