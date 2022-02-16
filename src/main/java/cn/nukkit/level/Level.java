@@ -73,6 +73,8 @@ import java.lang.ref.SoftReference;
 import java.util.*;
 import java.util.concurrent.*;
 
+import static cn.nukkit.NukkitSharedConstants.*;
+
 /**
  * author: MagicDroidX Nukkit Project
  */
@@ -2683,7 +2685,7 @@ public class Level implements ChunkManager, Metadatable {
                         player.sendChunk(x, z, subChunkCount, chunkBlobCache, chunkPacketCache.getPacket(
                                 StaticVersion.fromProtocol(protocol, player.isNetEaseClient())));
                     } else if (player.isSubChunkRequestAvailable()) {
-                        if (protocol < 486) {
+                        if (protocol < 486 || !ENABLE_SUB_CHUNK_NETWORK_OPTIMIZATION) {
                             player.sendChunk(x, z, subChunkCount + Anvil.PADDING_SUB_CHUNK_COUNT, chunkBlobCache,
                                     chunkPacketCache.getSubModePacket());
                         } else {
