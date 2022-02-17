@@ -332,8 +332,14 @@ public class ChunkSection implements cn.nukkit.level.format.ChunkSection {
 
     @Override
     public void writeTo(BinaryStream stream, StaticVersion version) {
-        stream.putByte((byte) 8); // Paletted chunk because Mojang messed up the old one
-        stream.putByte((byte) 2);
+        if (version.getProtocol() >= StaticVersion.V1_18.getProtocol()) {
+            stream.putByte((byte) 9);
+            stream.putByte((byte) 2);
+            stream.putByte((byte) this.y);
+        } else {
+            stream.putByte((byte) 8); // Paletted chunk because Mojang messed up the old one
+            stream.putByte((byte) 2);
+        }
         synchronized (storage) {
             this.storage.writeTo(stream, version);
         }

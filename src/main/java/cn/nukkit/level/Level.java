@@ -2774,7 +2774,7 @@ public class Level implements ChunkManager, Metadatable {
                             SubChunkPacket packet;
                             if (version.getProtocol() >= StaticVersion.V1_18_10.getProtocol()) {
                                 packet = new SubChunkPacket11810();
-                                if (y < subChunkCount && emptySection[y]) {
+                                if (ENABLE_EMPTY_SUB_CHUNK_NETWORK_OPTIMIZATION && y < subChunkCount && emptySection[y]) {
                                     packet.requestResult = SubChunkPacket.REQUEST_RESULT_SUCCESS_ALL_AIR;
                                 }
                             } else {

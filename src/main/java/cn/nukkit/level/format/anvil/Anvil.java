@@ -43,6 +43,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.regex.Pattern;
 
+import static cn.nukkit.NukkitSharedConstants.*;
+
 /**
  * author: MagicDroidX
  * Nukkit Project
@@ -411,7 +413,7 @@ public class Anvil extends BaseLevelProvider {
                                     SubChunkPacket packet;
                                     if (version.getProtocol() >= StaticVersion.V1_18_10.getProtocol()) {
                                         packet = new SubChunkPacket11810();
-                                        if (y < count && emptySection[y]) {
+                                        if (ENABLE_EMPTY_SUB_CHUNK_NETWORK_OPTIMIZATION && y < count && emptySection[y]) {
                                             packet.requestResult = SubChunkPacket.REQUEST_RESULT_SUCCESS_ALL_AIR;
                                         }
                                     } else {

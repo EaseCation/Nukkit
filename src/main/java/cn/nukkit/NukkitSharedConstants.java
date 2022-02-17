@@ -7,6 +7,8 @@ public final class NukkitSharedConstants {
     //FIXME: broken in memory chunk cache
     public static final boolean ENABLE_SUB_CHUNK_NETWORK_OPTIMIZATION = false;
 
+    public static final boolean ENABLE_EMPTY_SUB_CHUNK_NETWORK_OPTIMIZATION = true;
+
     private NukkitSharedConstants() {
         throw new IllegalStateException();
     }
