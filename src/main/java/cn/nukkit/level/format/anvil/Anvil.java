@@ -1,5 +1,6 @@
 package cn.nukkit.level.format.anvil;
 
+import cn.nukkit.Nukkit;
 import cn.nukkit.Server;
 import cn.nukkit.blockentity.BlockEntity;
 import cn.nukkit.blockentity.BlockEntitySpawnable;
@@ -34,7 +35,11 @@ import lombok.extern.log4j.Log4j2;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.io.OutputStream;
 import java.nio.ByteOrder;
+import java.nio.file.Files;
+import java.nio.file.Paths;
+import java.nio.file.StandardOpenOption;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.EnumMap;
@@ -391,6 +396,14 @@ public class Anvil extends BaseLevelProvider {
                                     blockStorages[y] = stream.getBuffer(); // subChunkBlocks + subChunkBlockEntities
                                 }
                             }
+                            if (SUB_CHUNK_DEBUG && version == StaticVersion.getValues()[StaticVersion.getValues().length - 1]) {
+                                for (int y = 0; y < extendedCount; y++) {
+                                    try (OutputStream out = Files.newOutputStream(Paths.get(Nukkit.DATA_PATH).resolve("debug")
+                                            .resolve("subchunk_"+x+"_"+y+"_"+z+".blob"), StandardOpenOption.CREATE, StandardOpenOption.TRUNCATE_EXISTING)) {
+                                        out.write(blockStorages[y]);
+                                    }
+                                }
+                            }
                             this.subChunkPayloads.put(version, blockStorages);
                         }
                     }
@@ -409,17 +422,18 @@ public class Anvil extends BaseLevelProvider {
 
                                 byte[][] subChunkData = subChunkPayloads.get(version);
                                 BatchPacket[] compressed = new BatchPacket[extendedCount];
-                                for (int y = 0; y < extendedCount; y++) {
+                                for (int i = 0; i < extendedCount; i++) {
+                                    int y = i - PADDING_SUB_CHUNK_COUNT;
                                     SubChunkPacket packet;
                                     if (version.getProtocol() >= StaticVersion.V1_18_10.getProtocol()) {
                                         packet = new SubChunkPacket11810();
-                                        if (ENABLE_EMPTY_SUB_CHUNK_NETWORK_OPTIMIZATION && y < count && emptySection[y]) {
+                                        if (ENABLE_EMPTY_SUB_CHUNK_NETWORK_OPTIMIZATION && (y < 0 || emptySection[y])) {
                                             packet.requestResult = SubChunkPacket.REQUEST_RESULT_SUCCESS_ALL_AIR;
                                         }
                                     } else {
                                         packet = new SubChunkPacket();
                                     }
-                                    compressed[y] = Level.getSubChunkCacheFromData(packet, Level.DIMENSION_OVERWORLD, x, y, z, subChunkData[y], heightMapType[y], heightMapData[y]);
+                                    compressed[i] = Level.getSubChunkCacheFromData(packet, Level.DIMENSION_OVERWORLD, x, y, z, subChunkData[i], heightMapType[i], heightMapData[i]);
                                 }
                                 subPackets.put(version, compressed);
                             }
@@ -430,7 +444,7 @@ public class Anvil extends BaseLevelProvider {
                                 packets,
                                 subPackets,
                                 Level.getChunkCacheFromData(x, z, LevelChunkPacket.CLIENT_REQUEST_FULL_COLUMN_FAKE_COUNT, subModePayload, false, true),
-                                Level.getChunkCacheFromData(x, z, LevelChunkPacket.CLIENT_REQUEST_TRUNCATED_COLUMN_FAKE_COUNT, count, subModePayload, false, true),
+                                Level.getChunkCacheFromData(x, z, LevelChunkPacket.CLIENT_REQUEST_TRUNCATED_COLUMN_FAKE_COUNT, extendedCount, subModePayload, false, true),
                                 Level.getChunkCacheFromData(x, z, count, payload, false, true),
                                 Level.getChunkCacheFromData(x, z, count, payload, false, false),
                                 Level.getChunkCacheFromData(x, z, count, payloadOld, true, false)

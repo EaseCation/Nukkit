@@ -2770,17 +2770,18 @@ public class Level implements ChunkManager, Metadatable {
 
                         byte[][] subChunkData = subChunkPayloads.get(version);
                         BatchPacket[] compressed = new BatchPacket[extendedCount];
-                        for (int y = 0; y < extendedCount; y++) {
+                        for (int i = 0; i < extendedCount; i++) {
+                            int y = i - Anvil.PADDING_SUB_CHUNK_COUNT;
                             SubChunkPacket packet;
                             if (version.getProtocol() >= StaticVersion.V1_18_10.getProtocol()) {
                                 packet = new SubChunkPacket11810();
-                                if (ENABLE_EMPTY_SUB_CHUNK_NETWORK_OPTIMIZATION && y < subChunkCount && emptySection[y]) {
+                                if (ENABLE_EMPTY_SUB_CHUNK_NETWORK_OPTIMIZATION && (y < 0 || emptySection[y])) {
                                     packet.requestResult = SubChunkPacket.REQUEST_RESULT_SUCCESS_ALL_AIR;
                                 }
                             } else {
                                 packet = new SubChunkPacket();
                             }
-                            compressed[y] = Level.getSubChunkCacheFromData(packet, Level.DIMENSION_OVERWORLD, x, y, z, subChunkData[y], heightMapType[y], heightMapData[y]);
+                            compressed[i] = Level.getSubChunkCacheFromData(packet, Level.DIMENSION_OVERWORLD, x, y, z, subChunkData[i], heightMapType[i], heightMapData[i]);
                         }
                         subPackets.put(version, compressed);
                     }
@@ -2791,7 +2792,7 @@ public class Level implements ChunkManager, Metadatable {
                         packets,
                         subPackets,
                         getChunkCacheFromData(x, z, LevelChunkPacket.CLIENT_REQUEST_FULL_COLUMN_FAKE_COUNT, subModePayload, false, true),
-                        getChunkCacheFromData(x, z, LevelChunkPacket.CLIENT_REQUEST_TRUNCATED_COLUMN_FAKE_COUNT, subChunkCount, subModePayload, false, true),
+                        getChunkCacheFromData(x, z, LevelChunkPacket.CLIENT_REQUEST_TRUNCATED_COLUMN_FAKE_COUNT, extendedCount, subModePayload, false, true),
                         getChunkCacheFromData(x, z, subChunkCount, payload, false, true),
                         getChunkCacheFromData(x, z, subChunkCount, payload, false, false),
                         getChunkCacheFromData(x, z, subChunkCount, payloadOld, true, false)
