@@ -252,7 +252,7 @@ public class EntityItem extends Entity {
 
         this.timing.stopTiming();
 
-        return hasUpdate || !this.onGround || Math.abs(this.motionX) > 0.00001 || Math.abs(this.motionY) > 0.00001 || Math.abs(this.motionZ) > 0.00001;
+        return hasUpdate || this.age <= 60 || !this.onGround || Math.abs(this.motionX) > 0.00001 || Math.abs(this.motionY) > 0.00001 || Math.abs(this.motionZ) > 0.00001;
     }
 
     @Override
