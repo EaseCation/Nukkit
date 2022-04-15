@@ -181,7 +181,7 @@ public class EntityPrimedTNT extends Entity implements EntityExplosive {
         packet.entityUniqueId = this.getId();
         packet.entityRuntimeId = getId();
         packet.x = (float) x;
-        packet.y = (float) y;
+        packet.y = (float) y + this.getBaseOffset();
         packet.z = (float) z;
         packet.speedX = (float) motionX;
         packet.speedY = (float) motionY;
