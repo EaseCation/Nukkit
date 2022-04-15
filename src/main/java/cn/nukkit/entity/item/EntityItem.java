@@ -322,7 +322,7 @@ public class EntityItem extends Entity {
         pk.entityUniqueId = this.getId();
         pk.entityRuntimeId = this.getId();
         pk.x = (float) this.x;
-        pk.y = (float) this.y;
+        pk.y = (float) this.y + this.getBaseOffset();
         pk.z = (float) this.z;
         pk.speedX = (float) this.motionX;
         pk.speedY = (float) this.motionY;

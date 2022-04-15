@@ -172,10 +172,6 @@ public class BlockRedstoneWire extends BlockFlowable {
         if (this.level.isRedstoneEnabled()) {
 //            this.updateSurroundingRedstone(false);
             this.level.updateAroundRedstone(this, null);
-            for (BlockFace face : BlockFace.values0()) {
-                this.level.updateAroundRedstone(this.getSideVec(face), face.getOpposite());
-            }
-
             for (BlockFace blockFace : BlockFace.values0()) {
                 this.level.updateAroundRedstone(this.getSideVec(blockFace), null);
             }

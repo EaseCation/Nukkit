@@ -40,4 +40,9 @@ public class BlockButtonStone extends BlockButton {
         }
         return new Item[0];
     }
+
+    @Override
+    public boolean canHarvestWithHand() {
+        return false;
+    }
 }
