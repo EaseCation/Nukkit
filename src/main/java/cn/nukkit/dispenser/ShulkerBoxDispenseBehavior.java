@@ -17,9 +17,7 @@ public class ShulkerBoxDispenseBehavior extends DefaultDispenseBehavior {
         Block target = block.getSide(face);
         Block shulkerBox = item.getBlock();
 
-        if (shulkerBox instanceof BlockUndyedShulkerBox) {
-            shulkerBox = shulkerBox.clone();
-        } else {
+        if (!(shulkerBox instanceof BlockUndyedShulkerBox)) {
             return super.dispense(block, face, item);
         }
 

@@ -230,7 +230,7 @@ public abstract class EntityMinecartAbstract extends EntityVehicle {
         pk.entityRuntimeId = getId();
         pk.type = getNetworkId();
         pk.x = (float) x;
-        pk.y = (float) y;
+        pk.y = (float) y + this.getBaseOffset();
         pk.z = (float) z;
         pk.speedX = 0;
         pk.speedY = 0;

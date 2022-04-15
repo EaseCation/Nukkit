@@ -64,7 +64,7 @@ public enum EnchantmentType {
                 case FISHING_ROD:
                     return item instanceof ItemFishingRod;
                 case WEARABLE:
-                    return item instanceof ItemArmor || item instanceof ItemElytra || item instanceof ItemSkull || item.getBlock() instanceof BlockPumpkin;
+                    return item instanceof ItemArmor || item instanceof ItemElytra || item instanceof ItemSkull || item.getBlockUnsafe() instanceof BlockPumpkin;
                 case TRIDENT:
                     return item instanceof ItemTrident;
                 default:

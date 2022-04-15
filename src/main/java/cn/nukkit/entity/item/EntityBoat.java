@@ -123,7 +123,7 @@ public class EntityBoat extends EntityVehicle {
         pk.entityRuntimeId = this.getId();
         pk.type = EntityBoat.NETWORK_ID;
         pk.x = (float) this.x;
-        pk.y = (float) this.y;
+        pk.y = (float) this.y + this.getBaseOffset();
         pk.z = (float) this.z;
         pk.speedX = 0;
         pk.speedY = 0;
