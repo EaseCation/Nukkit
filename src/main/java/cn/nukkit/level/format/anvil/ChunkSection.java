@@ -13,6 +13,7 @@ import cn.nukkit.utils.*;
 
 import java.io.IOException;
 import java.util.Arrays;
+import java.util.function.Function;
 
 /**
  * author: MagicDroidX
@@ -359,11 +360,16 @@ public class ChunkSection implements cn.nukkit.level.format.ChunkSection {
 
     @Override
     public boolean writeToCache(BinaryStream stream) {
+        return writeToCache(stream, GlobalBlockPalette::getNameByBlockId);
+    }
+
+    @Override
+    public boolean writeToCache(BinaryStream stream, Function<Integer, String> blockIdToName) {
         stream.putByte((byte) 8); // Paletted chunk because Mojang messed up the old one
         stream.putByte((byte) 2);
         boolean allAir;
         synchronized (storage) {
-            allAir = this.storage.writeToCache(stream);
+            allAir = this.storage.writeToCache(stream, blockIdToName);
         }
         EmptyChunkSection.EMPTY_STORAGE.writeToCache(stream);
         return allAir;

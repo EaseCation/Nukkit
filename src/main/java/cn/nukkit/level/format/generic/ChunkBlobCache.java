@@ -13,20 +13,24 @@ public class ChunkBlobCache {
 
     private final long[] blobIds;
     private final long[] extendedBlobIds; // 1.18+
+    private final long[] extendedBlobIdsNew; // 1.18.30+
     private final Long2ObjectMap<byte[]> clientBlobs;
     private final Long2ObjectMap<byte[]> extendedClientBlobs; // 1.18+
+    private final Long2ObjectMap<byte[]> extendedClientBlobsNew; // 1.18.30+
     private final byte[] fullChunkCachedPayload;
     private final byte[][] subChunkCachedPayload;
 
-    public ChunkBlobCache(int subChunkCount, byte[] heightMapType, byte[][] heightMapData, boolean[] emptySection, long[] blobIds, long[] extendedBlobIds, Long2ObjectMap<byte[]> clientBlobs, Long2ObjectMap<byte[]> extendedClientBlobs, byte[] fullChunkCachedPayload, byte[][] subChunkCachedPayload) {
+    public ChunkBlobCache(int subChunkCount, byte[] heightMapType, byte[][] heightMapData, boolean[] emptySection, long[] blobIds, long[] extendedBlobIds, long[] extendedBlobIdsNew, Long2ObjectMap<byte[]> clientBlobs, Long2ObjectMap<byte[]> extendedClientBlobs, Long2ObjectMap<byte[]> extendedClientBlobsNew, byte[] fullChunkCachedPayload, byte[][] subChunkCachedPayload) {
         this.subChunkCount = subChunkCount;
         this.heightMapType = heightMapType;
         this.heightMapData = heightMapData;
         this.emptySection = emptySection;
         this.blobIds = blobIds;
         this.extendedBlobIds = extendedBlobIds;
+        this.extendedBlobIdsNew = extendedBlobIdsNew;
         this.clientBlobs = clientBlobs;
         this.extendedClientBlobs = extendedClientBlobs;
+        this.extendedClientBlobsNew = extendedClientBlobsNew;
         this.fullChunkCachedPayload = fullChunkCachedPayload;
         this.subChunkCachedPayload = subChunkCachedPayload;
     }
@@ -55,12 +59,20 @@ public class ChunkBlobCache {
         return extendedBlobIds;
     }
 
+    public long[] getExtendedBlobIdsNew() {
+        return extendedBlobIdsNew;
+    }
+
     public Long2ObjectMap<byte[]> getClientBlobs() {
         return clientBlobs;
     }
 
     public Long2ObjectMap<byte[]> getExtendedClientBlobs() {
         return extendedClientBlobs;
+    }
+
+    public Long2ObjectMap<byte[]> getExtendedClientBlobsNew() {
+        return extendedClientBlobsNew;
     }
 
     public byte[] getFullChunkCachedPayload() {

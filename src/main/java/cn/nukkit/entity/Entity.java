@@ -195,8 +195,20 @@ public abstract class Entity extends Location implements Metadatable {
     public static final int DATA_BASE_RUNTIME_ID = 122;
     public static final int DATA_DEFINE_PROPERTIES = 123;
     public static final int DATA_UPDATE_PROPERTIES = 124;
+    /**
+     * @since 1.18.30
+     */
+    public static final int DATA_MOVEMENT_SOUND_DISTANCE_OFFSET = 128;
+    /**
+     * @since 1.18.30
+     */
+    public static final int DATA_HEARTBEAT_INTERVAL_TICKS = 129;
+    /**
+     * @since 1.18.30
+     */
+    public static final int DATA_HEARTBEAT_SOUND_EVENT = 130;
     public static final int DATA_NUKKIT_FLAGS = 999; // custom
-    public static final int DATA_UNDEFINED = 128;
+    public static final int DATA_UNDEFINED = 131;
 
     public static final long NUKKIT_FLAG_VARIANT_BLOCK = 1L << 1;
 
