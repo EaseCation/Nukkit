@@ -88,6 +88,7 @@ import it.unimi.dsi.fastutil.longs.Long2ObjectOpenHashMap;
 import it.unimi.dsi.fastutil.longs.LongArrayList;
 import lombok.extern.log4j.Log4j2;
 
+import javax.annotation.Nullable;
 import java.io.IOException;
 import java.net.InetSocketAddress;
 import java.nio.ByteOrder;
@@ -5172,5 +5173,29 @@ public class Player extends EntityHuman implements CommandSender, InventoryHolde
 
     protected void onDimensionChangeSuccess() {
 
+    }
+
+    /**
+     * 使用 SpawnParticleEffectPacket 生成粒子效果. 1.8+需要重写此方法.
+     */
+    public void spawnParticleEffect(Vector3f position, String identifier) {
+    }
+
+    /**
+     * 使用 SpawnParticleEffectPacket 生成粒子效果. 1.8+需要重写此方法.
+     */
+    public void spawnParticleEffect(Vector3f position, String identifier, long entityUniqueId) {
+    }
+
+    /**
+     * 使用 SpawnParticleEffectPacket 生成粒子效果. 1.8+需要重写此方法.
+     */
+    public void spawnParticleEffect(Vector3f position, String identifier, long entityUniqueId, int dimension) {
+    }
+
+    /**
+     * 使用 SpawnParticleEffectPacket 生成粒子效果. 1.8+需要重写此方法.
+     */
+    public void spawnParticleEffect(Vector3f position, String identifier, long entityUniqueId, int dimension, @Nullable String molangVariables) {
     }
 }

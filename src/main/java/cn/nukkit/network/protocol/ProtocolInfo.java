@@ -194,6 +194,10 @@ public interface ProtocolInfo {
     int PLAYER_START_ITEM_COOLDOWN_PACKET = 0xb0;
     int SCRIPT_MESSAGE_PACKET = 0xb1;
     int CODE_BUILDER_SOURCE_PACKET = 0xb2;
+    int TICKING_AREAS_LOAD_STATUS_PACKET = 0xb3;
+    int DIMENSION_DATA_PACKET = 0xb4;
+    int AGENT_ACTION_EVENT_PACKET = 0xb5;
+    int CHANGE_MOB_PROPERTY_PACKET = 0xb6;
 
     //NetEase Common Mod
     int PACKET_PY_PRC = 0xc8;

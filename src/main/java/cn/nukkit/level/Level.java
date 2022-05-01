@@ -2686,11 +2686,19 @@ public class Level implements ChunkManager, Metadatable {
                                 StaticVersion.fromProtocol(protocol, player.isNetEaseClient())));
                     } else if (player.isSubChunkRequestAvailable()) {
                         if (protocol < 486 || !ENABLE_SUB_CHUNK_NETWORK_OPTIMIZATION) {
-                            player.sendChunk(x, z, subChunkCount + Anvil.PADDING_SUB_CHUNK_COUNT, chunkBlobCache,
-                                    chunkPacketCache.getSubModePacket());
-                        } else {
+                            if (protocol < 503) {
+                                player.sendChunk(x, z, subChunkCount + Anvil.PADDING_SUB_CHUNK_COUNT, chunkBlobCache,
+                                        chunkPacketCache.getSubModePacket());
+                            } else {
+                                player.sendChunk(x, z, subChunkCount + Anvil.PADDING_SUB_CHUNK_COUNT, chunkBlobCache,
+                                        chunkPacketCache.getSubModePacketNew());
+                            }
+                        } else if (protocol < 503) {
                             player.sendChunk(x, z, subChunkCount + Anvil.PADDING_SUB_CHUNK_COUNT, chunkBlobCache,
                                     chunkPacketCache.getSubModePacketTruncated());
+                        } else {
+                            player.sendChunk(x, z, subChunkCount + Anvil.PADDING_SUB_CHUNK_COUNT, chunkBlobCache,
+                                    chunkPacketCache.getSubModePacketTruncatedNew());
                         }
                     } else {
                         player.sendChunk(x, z, subChunkCount + Anvil.PADDING_SUB_CHUNK_COUNT, chunkBlobCache,
@@ -2753,7 +2761,7 @@ public class Level implements ChunkManager, Metadatable {
      * Chunk request callback on main thread
      * If this.cacheChunks == false, the ChunkPacketCache can be null;
      */
-    public void chunkRequestCallback(long timestamp, int x, int z, int subChunkCount, ChunkBlobCache chunkBlobCache, ChunkPacketCache chunkPacketCache, byte[] payload, byte[] payloadOld, byte[] subModePayload, Map<StaticVersion, byte[]> payloads, Map<StaticVersion, byte[][]> subChunkPayloads, byte[] heightMapType, byte[][] heightMapData, boolean[] emptySection) {
+    public void chunkRequestCallback(long timestamp, int x, int z, int subChunkCount, ChunkBlobCache chunkBlobCache, ChunkPacketCache chunkPacketCache, byte[] payload, byte[] payloadOld, byte[] subModePayload, byte[] subModePayloadNew, Map<StaticVersion, byte[]> payloads, Map<StaticVersion, byte[][]> subChunkPayloads, byte[] heightMapType, byte[][] heightMapData, boolean[] emptySection) {
         this.timings.syncChunkSendTimer.startTiming();
         long index = Level.chunkHash(x, z);
 
@@ -2791,7 +2799,9 @@ public class Level implements ChunkManager, Metadatable {
                 chunkPacketCache = new ChunkPacketCache(
                         packets,
                         subPackets,
+                        getChunkCacheFromData(x, z, LevelChunkPacket.CLIENT_REQUEST_FULL_COLUMN_FAKE_COUNT, subModePayloadNew, false, true),
                         getChunkCacheFromData(x, z, LevelChunkPacket.CLIENT_REQUEST_FULL_COLUMN_FAKE_COUNT, subModePayload, false, true),
+                        getChunkCacheFromData(x, z, LevelChunkPacket.CLIENT_REQUEST_TRUNCATED_COLUMN_FAKE_COUNT, extendedCount, subModePayloadNew, false, true),
                         getChunkCacheFromData(x, z, LevelChunkPacket.CLIENT_REQUEST_TRUNCATED_COLUMN_FAKE_COUNT, extendedCount, subModePayload, false, true),
                         getChunkCacheFromData(x, z, subChunkCount, payload, false, true),
                         getChunkCacheFromData(x, z, subChunkCount, payload, false, false),
@@ -2830,9 +2840,12 @@ public class Level implements ChunkManager, Metadatable {
                     } else if (protocol < 475) {
                         player.sendChunk(x, z, subChunkCount, chunkBlobCache,
                                 payloads.get(StaticVersion.fromProtocol(protocol, player.isNetEaseClient())), subModePayload);
-                    } else {
+                    } else if (protocol < 503) {
                         player.sendChunk(x, z, subChunkCount + Anvil.PADDING_SUB_CHUNK_COUNT, chunkBlobCache,
                                 payloads.get(StaticVersion.fromProtocol(protocol, player.isNetEaseClient())), subModePayload);
+                    } else {
+                        player.sendChunk(x, z, subChunkCount + Anvil.PADDING_SUB_CHUNK_COUNT, chunkBlobCache,
+                                payloads.get(StaticVersion.fromProtocol(protocol, player.isNetEaseClient())), subModePayloadNew);
                     }
                 }
             }

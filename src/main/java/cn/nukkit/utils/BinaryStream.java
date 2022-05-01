@@ -139,6 +139,21 @@ public class BinaryStream {
         this.count += bytes.length;
     }
 
+    public void put(byte[] bytes, int length) {
+        if (bytes == null) {
+            return;
+        }
+        length = Math.min(bytes.length, length);
+        if (length <= 0) {
+            return;
+        }
+
+        this.ensureCapacity(this.count + length);
+
+        System.arraycopy(bytes, 0, this.buffer, this.count, length);
+        this.count += length;
+    }
+
     public long getLong() {
         return Binary.readLong(this.get(8));
     }
