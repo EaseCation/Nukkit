@@ -36,6 +36,7 @@ public interface GlobalBlockPaletteInterface {
         V1_17_40(471, false),
         V1_18(475, false), // same palette, but chunk format changed
         V1_18_10(486, false),
+        V1_18_30(503, false),
         ;
 
         private static final StaticVersion[] VALUES = StaticVersion.values();

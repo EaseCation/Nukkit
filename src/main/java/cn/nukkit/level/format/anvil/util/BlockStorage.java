@@ -9,6 +9,7 @@ import cn.nukkit.utils.BinaryStream;
 import com.google.common.base.Preconditions;
 
 import java.util.Arrays;
+import java.util.function.Function;
 
 public class BlockStorage {
     private static final int SECTION_SIZE = 4096;
@@ -133,6 +134,13 @@ public class BlockStorage {
      * @return all air
      */
     public boolean writeToCache(BinaryStream stream) {
+        return writeToCache(stream, GlobalBlockPalette::getNameByBlockId);
+    }
+
+    /**
+     * @return all air
+     */
+    public boolean writeToCache(BinaryStream stream, Function<Integer, String> blockIdToName) {
         PalettedSubChunkStorage storage = PalettedSubChunkStorage.ofBlock(Block.AIR);
         int airCount = 0;
         for (int i = 0; i < SECTION_SIZE; i++) {
@@ -142,7 +150,7 @@ public class BlockStorage {
             }
             storage.set(i, blockId << 4 | blockData.get(i));
         }
-        storage.writeToCache(stream);
+        storage.writeToCache(stream, blockIdToName);
         return airCount == SECTION_SIZE;
     }
 

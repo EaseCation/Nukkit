@@ -4,6 +4,8 @@ import cn.nukkit.block.Block;
 import cn.nukkit.level.GlobalBlockPaletteInterface.StaticVersion;
 import cn.nukkit.utils.BinaryStream;
 
+import java.util.function.Function;
+
 /**
  * author: MagicDroidX
  * Nukkit Project
@@ -55,6 +57,13 @@ public interface ChunkSection {
      * @return all air
      */
     boolean writeToCache(BinaryStream stream);
+
+    /**
+     * @return all air
+     */
+    default boolean writeToCache(BinaryStream stream, Function<Integer, String> blockIdToName) {
+        return writeToCache(stream);
+    }
 
     ChunkSection copy();
 }

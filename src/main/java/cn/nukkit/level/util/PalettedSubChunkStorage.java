@@ -14,6 +14,7 @@ import java.io.IOException;
 import java.nio.ByteOrder;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.function.Function;
 import java.util.function.IntConsumer;
 
 public class PalettedSubChunkStorage {
@@ -105,6 +106,14 @@ public class PalettedSubChunkStorage {
     }
 
     public void writeToCache(BinaryStream stream) {
+        writeToCache(stream, GlobalBlockPalette::getNameByBlockId);
+    }
+
+    public void writeToCache(BinaryStream stream, Function<Integer, String> blockIdToName) {
+        if (blockIdToName == null) {
+            blockIdToName = GlobalBlockPalette::getNameByBlockId;
+        }
+
         BitArrayVersion version = bitArray.getVersion();
         stream.putByte((byte) getPaletteHeader(version, false));
         if (version == BitArrayVersion.EMPTY) {
@@ -123,7 +132,8 @@ public class PalettedSubChunkStorage {
         for (int legacyId : palette) {
             //tagList.add(GlobalBlockPalette.getState(runtimeId));
             tagList.add(new CompoundTag() // 1.12 的格式, 可向前兼容
-                    .putString("name", GlobalBlockPalette.getNameByBlockId(legacyId >> 4))
+//                    .putString("name", GlobalBlockPalette.getNameByBlockId(legacyId >> 4))
+                    .putString("name", blockIdToName.apply(legacyId >> 4))
                     .putShort("val", legacyId & 0xf));
         }
         try {
