@@ -17,6 +17,7 @@ import cn.nukkit.metadata.Metadatable;
 import cn.nukkit.plugin.Plugin;
 import cn.nukkit.potion.Effect;
 import cn.nukkit.utils.BlockColor;
+import java.util.regex.Pattern;
 import lombok.extern.log4j.Log4j2;
 
 import java.lang.reflect.Constructor;
@@ -388,6 +389,28 @@ public abstract class Block extends Position implements Metadatable, Cloneable, 
         block.z = z;
         block.level = level;
         return block;
+    }
+
+    public static Block fromString(String str) {
+        String[] b = str.trim().replace(' ', '_').replace("minecraft:", "").split(":");
+
+        int id = 0;
+        int meta = 0;
+
+        Pattern integerPattern = Pattern.compile("^[1-9]\\d*$");
+        if (integerPattern.matcher(b[0]).matches()) {
+            id = Integer.parseInt(b[0]);
+        } else {
+            try {
+                id = Block.class.getField(b[0].toUpperCase()).getInt(null);
+            } catch (Exception ignore) {
+            }
+        }
+
+        id = id & 0xFF;
+        if (b.length != 1) meta = Integer.parseInt(b[1]) & 0xF;
+
+        return get(id, meta);
     }
 
     public boolean place(Item item, Block block, Block target, BlockFace face, double fx, double fy, double fz, Player player) {
