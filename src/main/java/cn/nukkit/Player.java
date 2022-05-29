@@ -3945,7 +3945,12 @@ public class Player extends EntityHuman implements CommandSender, InventoryHolde
             }
 
             if (this.inventory != null) {
-                this.inventory.clearAll();
+                for (int slot = 0; slot < inventory.getSize(); slot++) {
+                    Item item = inventory.getItem(slot);
+                    if (!item.isKeepOnDeath()) {
+                        inventory.setItem(slot, Item.get(Item.AIR));
+                    }
+                }
             }
         }
 

@@ -686,6 +686,108 @@ public class Item implements Cloneable, BlockID, ItemID {
         return this.setNamedTag(tag.putInt("RepairCost", cost));
     }
 
+    public boolean isKeepOnDeath() {
+        if (!this.hasCompoundTag()) {
+            return false;
+        }
+
+        CompoundTag tag = this.getNamedTag();
+        if (!tag.contains("minecraft:keep_on_death")) {
+            return false;
+        }
+
+        return tag.getBoolean("minecraft:keep_on_death");
+    }
+
+    public Item setKeepOnDeath(boolean keepOnDeath) {
+        if (!keepOnDeath) {
+            if (hasCompoundTag()) {
+                return setNamedTag(getNamedTag().remove("minecraft:keep_on_death"));
+            }
+            return this;
+        }
+
+        return setNamedTag(getOrCreateNamedTag().putBoolean("minecraft:keep_on_death", true));
+    }
+
+    /**
+     * @since 1.16.100
+     */
+    public boolean hasLock() {
+        if (!hasCompoundTag()) {
+            return false;
+        }
+
+        CompoundTag tag = getNamedTag();
+        if (!tag.contains("minecraft:item_lock")) {
+            return false;
+        }
+
+        return tag.getByte("minecraft:item_lock") != 0;
+    }
+
+    /**
+     * @since 1.16.100
+     */
+    public Item lockInSlot() {
+        return setNamedTag(getOrCreateNamedTag().putByte("minecraft:item_lock", 1));
+    }
+
+    /**
+     * @since 1.16.100
+     */
+    public boolean isLockInSlot() {
+        if (!hasCompoundTag()) {
+            return false;
+        }
+
+        CompoundTag tag = getNamedTag();
+        if (!tag.contains("minecraft:item_lock")) {
+            return false;
+        }
+
+        return tag.getByte("minecraft:item_lock") == 1;
+    }
+
+    /**
+     * @since 1.16.100
+     */
+    public Item lockInInventory() {
+        return setNamedTag(getOrCreateNamedTag().putByte("minecraft:item_lock", 2));
+    }
+
+    /**
+     * @since 1.16.100
+     */
+    public boolean isLockInInventory() {
+        if (!hasCompoundTag()) {
+            return false;
+        }
+
+        CompoundTag tag = getNamedTag();
+        if (!tag.contains("minecraft:item_lock")) {
+            return false;
+        }
+
+        return tag.getByte("minecraft:item_lock") == 2;
+    }
+
+    /**
+     * @since 1.16.100
+     */
+    public Item unlock() {
+        if (!hasCompoundTag()) {
+            return this;
+        }
+
+        CompoundTag tag = getNamedTag();
+        if (!tag.contains("minecraft:item_lock")) {
+            return this;
+        }
+
+        return setNamedTag(tag.remove("minecraft:item_lock"));
+    }
+
     public boolean hasCustomName() {
         if (!this.hasCompoundTag()) {
             return false;
@@ -805,6 +907,13 @@ public class Item implements Cloneable, BlockID, ItemID {
         }
 
         return null;
+    }
+
+    public CompoundTag getOrCreateNamedTag() {
+        if (!this.hasCompoundTag()) {
+            return new CompoundTag();
+        }
+        return this.getNamedTag();
     }
 
     public CompoundTag getNamedTag() {
