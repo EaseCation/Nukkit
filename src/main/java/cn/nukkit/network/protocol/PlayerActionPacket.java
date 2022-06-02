@@ -40,6 +40,14 @@ public class PlayerActionPacket extends DataPacket {
     public static final int ACTION_BLOCK_INTERACT = 25;
     public static final int ACTION_BLOCK_PREDICT_DESTROY = 26;
     public static final int ACTION_BLOCK_CONTINUE_DESTROY = 27;
+    /**
+     * @since 1.19.0
+     */
+    public static final int ACTION_ITEM_USE_ON_START = 28;
+    /**
+     * @since 1.19.0
+     */
+    public static final int ACTION_ITEM_USE_ON_STOP = 29;
 
     public long entityId;
     public int action;
@@ -47,7 +55,6 @@ public class PlayerActionPacket extends DataPacket {
     public int y;
     public int z;
     public int face;
-
 
     @Override
     public void decode() {

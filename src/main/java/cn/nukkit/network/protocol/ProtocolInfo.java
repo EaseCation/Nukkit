@@ -198,15 +198,25 @@ public interface ProtocolInfo {
     int DIMENSION_DATA_PACKET = 0xb4;
     int AGENT_ACTION_EVENT_PACKET = 0xb5;
     int CHANGE_MOB_PROPERTY_PACKET = 0xb6;
+    int LESSON_PROGRESS_PACKET = 0xb7;
+    int REQUEST_ABILITY_PACKET = 0xb8;
+    int REQUEST_PERMISSIONS_PACKET = 0xb9;
+    int TOAST_REQUEST_PACKET = 0xba;
 
     //NetEase Common Mod
-    int PACKET_PY_PRC = 0xc8;
+    int PACKET_PY_RPC = 0xc8;
     int PACKET_CHANGE_MODEL = 0xc9;
     int PACKET_STORE_BUY_SUCC = 0xca;
     int PACKET_NETEASE_JSON = 0xcb;
     int PACKET_CHANGE_MODEL_TEXTURE = 0xcc;
 
-    int CONFIRM_SKIN_PACKET = 0xe4;
+    int PACKET_SET_DIMENSION_LOCAL_TIME = 0xd0;
+
+    int PACKET_SET_DIMENSION_LOCAL_WEATHER = 0xd2;
+
+    int PACKET_CONFIRM_SKIN = 0xe4;
+
+    int PACKET_MOD_EFFECT = 0xe6;
 
     int BATCH_PACKET = 0xfe;
 }

@@ -18,6 +18,7 @@ import cn.nukkit.nbt.tag.CompoundTag;
 import cn.nukkit.nbt.tag.ListTag;
 import cn.nukkit.nbt.tag.StringTag;
 import cn.nukkit.network.protocol.types.EntityLink;
+import cn.nukkit.network.protocol.types.InputInteractionModel;
 import it.unimi.dsi.fastutil.io.FastByteArrayInputStream;
 
 import java.io.IOException;
@@ -647,22 +648,22 @@ public class BinaryStream {
     }
 
     /**
-     * 用于没有 NetID 的虚拟 ItemStack (Creative Content and Recipe Book).
+     * 用于没有 NetID 的物品实例 (Creative Content and Recipe Book).
      */
-    public Item getSlotDummy() {
+    public Item getItemInstance() {
         if (this.helper != null) {
-            return this.helper.getSlotDummy(this);
+            return this.helper.getItemInstance(this);
         }
 
         return this.getSlot();
     }
 
     /**
-     * 用于没有 NetID 的虚拟 ItemStack (Creative Content and Recipe Book).
+     * 用于没有 NetID 的物品实例 (Creative Content and Recipe Book).
      */
-    public void putSlotDummy(Item item) {
+    public void putItemInstance(Item item) {
         if (this.helper != null) {
-            this.helper.putSlotDummy(this, item);
+            this.helper.putItemInstance(this, item);
             return;
         }
 
@@ -1013,11 +1014,11 @@ public class BinaryStream {
             stream.putSlotLegacy(item);
         }
 
-        public Item getSlotDummy(BinaryStream stream) {
+        public Item getItemInstance(BinaryStream stream) {
             return this.getSlot(stream);
         }
 
-        public void putSlotDummy(BinaryStream stream, Item item) {
+        public void putItemInstance(BinaryStream stream, Item item) {
             this.putSlot(stream, item);
         }
 
@@ -1065,6 +1066,10 @@ public class BinaryStream {
 
         public int getItemNetworkId(BinaryStream stream, Item item) {
             return RuntimeItems.getNetworkId(RuntimeItems.getNetworkFullId(item));
+        }
+
+        public InputInteractionModel getInteractionModel(BinaryStream stream) {
+            return null;
         }
 
         public final int getCommandParameterTypeId(CommandParamType type) {

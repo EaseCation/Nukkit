@@ -200,16 +200,33 @@ public abstract class Entity extends Location implements Metadatable {
      */
     public static final int DATA_MOVEMENT_SOUND_DISTANCE_OFFSET = 128;
     /**
+     * int.
      * @since 1.18.30
      */
     public static final int DATA_HEARTBEAT_INTERVAL_TICKS = 129;
     /**
+     * int.
      * @since 1.18.30
      */
     public static final int DATA_HEARTBEAT_SOUND_EVENT = 130;
-    public static final int DATA_NUKKIT_FLAGS = 999; // custom
-    public static final int DATA_UNDEFINED = 131;
+    /**
+     * block pos.
+     * @since 1.19.0
+     */
+    public static final int DATA_PLAYER_LAST_DEATH_POS = 131;
+    /**
+     * int.
+     * @since 1.19.0
+     */
+    public static final int DATA_PLAYER_LAST_DEATH_DIMENSION = 132;
+    /**
+     * bool.
+     * @since 1.19.0
+     */
+    public static final int DATA_PLAYER_HAS_DIED = 133;
+    public static final int DATA_UNDEFINED = 134;
 
+    public static final int DATA_NUKKIT_FLAGS = 999; // custom
     public static final long NUKKIT_FLAG_VARIANT_BLOCK = 1L << 1;
 
     public static final int DATA_FLAG_ONFIRE = 0;

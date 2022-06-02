@@ -119,7 +119,7 @@ public class BlockCauldron extends BlockSolidMeta {
                             this.setDamage(6);//fill
                             cauldron.clearCustomColor();
                             this.level.setBlock(this, this, true);
-                            this.level.addLevelEvent(this.add(0.5, 0.375 + this.getDamage() * 0.125, 0.5), LevelEventPacket.EVENT_SOUND_CAULDRON_FILL_WATER);
+                            this.level.addLevelEvent(this.add(0.5, 0.375 + this.getDamage() * 0.125, 0.5), LevelEventPacket.EVENT_SOUND_SPLASH);
                         }
                         //this.update();
                     }
