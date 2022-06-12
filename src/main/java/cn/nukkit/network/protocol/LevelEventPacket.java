@@ -127,6 +127,7 @@ public class LevelEventPacket extends DataPacket {
     public static final int EVENT_SET_DATA = 4000;
 
     public static final int EVENT_PLAYERS_SLEEPING = 9800;
+    public static final int EVENT_SLEEPING_PLAYERS = 9801;
 
     public static final int EVENT_JUMP_PREVENTED = 9810;
 

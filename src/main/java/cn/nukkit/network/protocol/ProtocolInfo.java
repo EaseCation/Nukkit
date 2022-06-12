@@ -209,14 +209,23 @@ public interface ProtocolInfo {
     int PACKET_STORE_BUY_SUCC = 0xca;
     int PACKET_NETEASE_JSON = 0xcb;
     int PACKET_CHANGE_MODEL_TEXTURE = 0xcc;
-
+    int PACKET_CHANGE_MODEL_OFFSET = 0xcd;
+    int PACKET_CHANGE_MODEL_BIND = 0xce;
+    int PACKET_HUNGER_ATTR = 0xcf;
     int PACKET_SET_DIMENSION_LOCAL_TIME = 0xd0;
-
+    int PACKET_WITHDRAW_FURNACE_XP = 0xd1;
     int PACKET_SET_DIMENSION_LOCAL_WEATHER = 0xd2;
 
+    //int PACKET_CUSTOM = 0xdf;
+    int PACKET_COMBINE = 0xe0;
+    int PACKET_V_CONNECTION = 0xe1;
+    int PACKET_TRANSPORT = 0xe2;
+    //int PACKET_CUSTOM = 0xe3;
     int PACKET_CONFIRM_SKIN = 0xe4;
-
+    int PACKET_TRANSPORT_NO_COMPRESS = 0xe5;
     int PACKET_MOD_EFFECT = 0xe6;
+    int PACKET_MOD_BLOCK_ACTOR_CHANGED = 0xe7;
+    int PACKET_CHANGE_ENTITY_MOTION = 0xe8;
 
     int BATCH_PACKET = 0xfe;
 }
