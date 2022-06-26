@@ -32,6 +32,10 @@ public class AvailableCommandsPacket extends DataPacket {
     public static final int ARG_TYPE_JSON = 0x16;
     public static final int ARG_TYPE_COMMAND = 0x1d;
 
+    public static final int ARG_TYPE_BLOCK_STATES = 67;
+    public static final int ARG_TYPE_BLOCK_POSITION = 47;
+    public static final int ARG_TYPE_EQUIPMENT_SLOT = 38;
+
     public static final int ARG_FLAG_ENUM = 0x200000;
     public static final int ARG_FLAG_POSTFIX = 0x1000000;
 

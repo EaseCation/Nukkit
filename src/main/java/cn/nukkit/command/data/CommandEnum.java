@@ -1,29 +1,49 @@
 package cn.nukkit.command.data;
 
-import cn.nukkit.NukkitSharedConstants;
-import com.google.common.base.CaseFormat;
-import lombok.ToString;
-import lombok.extern.log4j.Log4j2;
+import cn.nukkit.block.BlockID;
+import cn.nukkit.item.ItemID;
+import com.google.common.collect.ImmutableList;
 
+import java.lang.reflect.Field;
+import java.util.Arrays;
 import java.util.List;
-import java.util.Objects;
-import java.util.stream.Collectors;
 
 /**
  * @author CreeperFace
  */
-@Log4j2
-@ToString
 public class CommandEnum {
+
+    public static final CommandEnum ENUM_BOOLEAN = new CommandEnum("Boolean", ImmutableList.of("true", "false"));
+    public static final CommandEnum ENUM_GAMEMODE = new CommandEnum("GameMode",
+            ImmutableList.of("survival", "creative", "s", "c", "adventure", "a", "spectator", "view", "v", "spc"));
+    public static final CommandEnum ENUM_BLOCK;
+    public static final CommandEnum ENUM_ITEM;
+
+    static {
+        ImmutableList.Builder<String> blocks = ImmutableList.builder();
+        for (Field field : BlockID.class.getDeclaredFields()) {
+            blocks.add(field.getName().toLowerCase());
+        }
+        ENUM_BLOCK = new CommandEnum("Block", blocks.build());
+
+        ImmutableList.Builder<String> items = ImmutableList.builder();
+        for (Field field : ItemID.class.getDeclaredFields()) {
+            items.add(field.getName().toLowerCase());
+        }
+        items.addAll(ENUM_BLOCK.getValues());
+        ENUM_ITEM = new CommandEnum("Item", items.build());
+    }
 
     private String name;
     private List<String> values;
 
+    public CommandEnum(String name, String... values) {
+        this(name, Arrays.asList(values));
+    }
+
     public CommandEnum(String name, List<String> values) {
-        this.name = bedrockStyleEnumName(name);
-        this.values = values.stream()
-                .map(String::toLowerCase) // Keywords in commands need to be lower case.
-                .collect(Collectors.toList());
+        this.name = name;
+        this.values = values;
     }
 
     public String getName() {
@@ -36,15 +56,5 @@ public class CommandEnum {
 
     public int hashCode() {
         return name.hashCode();
-    }
-
-    private static String bedrockStyleEnumName(String name) {
-        Objects.requireNonNull(name);
-        if (NukkitSharedConstants.ENABLE_COMMAND_PARAMETER_NAME_WARNING) {
-            if (!name.matches("[a-zA-Z]+")) {
-                log.warn("Unexpected command enum name: {}", name, new Throwable());
-            }
-        }
-        return CaseFormat.LOWER_UNDERSCORE.to(CaseFormat.UPPER_CAMEL, name.trim().replace(" ", "_"));
     }
 }

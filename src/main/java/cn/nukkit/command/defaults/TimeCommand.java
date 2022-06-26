@@ -3,6 +3,8 @@ package cn.nukkit.command.defaults;
 import cn.nukkit.Player;
 import cn.nukkit.command.Command;
 import cn.nukkit.command.CommandSender;
+import cn.nukkit.command.data.CommandEnum;
+import cn.nukkit.command.data.CommandParamType;
 import cn.nukkit.command.data.CommandParameter;
 import cn.nukkit.lang.TranslationContainer;
 import cn.nukkit.level.Level;
@@ -22,15 +24,19 @@ public class TimeCommand extends VanillaCommand {
                 "nukkit.command.time.stop");
         this.commandParameters.clear();
         this.commandParameters.put("1arg", new CommandParameter[]{
-                new CommandParameter("start|stop", CommandParameter.ARG_TYPE_STRING, false)
+                CommandParameter.newEnum("mode", new CommandEnum("TimeMode", "query", "start", "stop"))
         });
-        this.commandParameters.put("2args", new CommandParameter[]{
-                new CommandParameter("add|set", CommandParameter.ARG_TYPE_STRING, false),
-                new CommandParameter("value", CommandParameter.ARG_TYPE_INT, false)
+        this.commandParameters.put("add", new CommandParameter[]{
+                CommandParameter.newEnum("mode", new CommandEnum("TimeModeAdd", "add")),
+                CommandParameter.newType("amount", CommandParamType.INT)
         });
-        this.commandParameters.put("2args_", new CommandParameter[]{
-                new CommandParameter("add|set", CommandParameter.ARG_TYPE_STRING, false),
-                new CommandParameter("value", CommandParameter.ARG_TYPE_STRING, false)
+        this.commandParameters.put("setAmount", new CommandParameter[]{
+                CommandParameter.newEnum("mode", false, new CommandEnum("TimeModeSet", "set")),
+                CommandParameter.newType("amount", CommandParamType.INT)
+        });
+        this.commandParameters.put("setTime", new CommandParameter[]{
+                CommandParameter.newEnum("mode", new CommandEnum("TimeModeSet", "set")),
+                CommandParameter.newEnum("time", new CommandEnum("TimeSpec", "day", "night", "midnight", "noon", "sunrise", "sunset"))
         });
     }
 
@@ -80,7 +86,7 @@ public class TimeCommand extends VanillaCommand {
             } else {
                 level = sender.getServer().getDefaultLevel();
             }
-            sender.sendMessage(new TranslationContainer("commands.time.query", String.valueOf(level.getTime())));
+            sender.sendMessage(new TranslationContainer("commands.time.query.gametime", String.valueOf(level.getTime())));
             return true;
         }
 
@@ -103,6 +109,14 @@ public class TimeCommand extends VanillaCommand {
                 value = Level.TIME_DAY;
             } else if ("night".equals(args[1])) {
                 value = Level.TIME_NIGHT;
+            } else if ("midnight".equals(args[1])) {
+                value = Level.TIME_MIDNIGHT;
+            } else if ("noon".equals(args[1])) {
+                value = Level.TIME_NOON;
+            } else if ("sunrise".equals(args[1])) {
+                value = Level.TIME_SUNRISE;
+            } else if ("sunset".equals(args[1])) {
+                value = Level.TIME_SUNSET;
             } else {
                 try {
                     value = Math.max(0, Integer.parseInt(args[1]));

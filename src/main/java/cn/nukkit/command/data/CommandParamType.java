@@ -19,6 +19,9 @@ public enum CommandParamType {
     JSON(ARG_TYPE_JSON),
     TEXT(ARG_TYPE_RAWTEXT), // backwards compatibility
     COMMAND(ARG_TYPE_COMMAND),
+    BLOCK_STATES(ARG_TYPE_BLOCK_STATES),
+    BLOCK_POSITION(ARG_TYPE_BLOCK_POSITION),
+    EQUIPMENT_SLOT(ARG_TYPE_EQUIPMENT_SLOT),
     ;
 
     private final int id;

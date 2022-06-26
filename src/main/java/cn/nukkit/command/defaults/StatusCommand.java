@@ -8,12 +8,17 @@ import cn.nukkit.math.NukkitMath;
 import cn.nukkit.utils.TextFormat;
 
 import java.util.Objects;
+import java.util.concurrent.TimeUnit;
 
 /**
  * Created on 2015/11/11 by xtypr.
  * Package cn.nukkit.command.defaults in project Nukkit .
  */
 public class StatusCommand extends VanillaCommand {
+    private static final String UPTIME_FORMAT = TextFormat.RED + "%d" + TextFormat.GOLD + " days " +
+            TextFormat.RED + "%d" + TextFormat.GOLD + " hours " +
+            TextFormat.RED + "%d" + TextFormat.GOLD + " minutes " +
+            TextFormat.RED + "%d" + TextFormat.GOLD + " seconds";
 
     public StatusCommand(String name) {
         super(name, "%nukkit.command.status.description", "%nukkit.command.status.usage");
@@ -30,16 +35,9 @@ public class StatusCommand extends VanillaCommand {
         Server server = sender.getServer();
         sender.sendMessage(TextFormat.GREEN + "---- " + TextFormat.WHITE + "Server status" + TextFormat.GREEN + " ----");
 
-        long time = (System.currentTimeMillis() - Nukkit.START_TIME) / 1000;
-        int seconds = NukkitMath.floorDouble(time % 60);
-        int minutes = NukkitMath.floorDouble((time % 3600) / 60);
-        int hours = NukkitMath.floorDouble(time % (3600 * 24) / 3600);
-        int days = NukkitMath.floorDouble(time / (3600 * 24));
-        String upTimeString = TextFormat.RED + "" + days + TextFormat.GOLD + " days " +
-                TextFormat.RED + hours + TextFormat.GOLD + " hours " +
-                TextFormat.RED + minutes + TextFormat.GOLD + " minutes " +
-                TextFormat.RED + seconds + TextFormat.GOLD + " seconds";
-        sender.sendMessage(TextFormat.GOLD + "Uptime: " + upTimeString);
+        long time = System.currentTimeMillis() - Nukkit.START_TIME;
+
+        sender.sendMessage(TextFormat.GOLD + "Uptime: " + formatUptime(time));
 
         TextFormat tpsColor = TextFormat.GREEN;
         float tps = server.getTicksPerSecond();
@@ -100,5 +98,16 @@ public class StatusCommand extends VanillaCommand {
         }
 
         return true;
+    }
+
+    private static String formatUptime(long uptime) {
+        long days = TimeUnit.MILLISECONDS.toDays(uptime);
+        uptime -= TimeUnit.DAYS.toMillis(days);
+        long hours = TimeUnit.MILLISECONDS.toHours(uptime);
+        uptime -= TimeUnit.HOURS.toMillis(hours);
+        long minutes = TimeUnit.MILLISECONDS.toMinutes(uptime);
+        uptime -= TimeUnit.MINUTES.toMillis(minutes);
+        long seconds = TimeUnit.MILLISECONDS.toSeconds(uptime);
+        return String.format(UPTIME_FORMAT, days, hours, minutes, seconds);
     }
 }

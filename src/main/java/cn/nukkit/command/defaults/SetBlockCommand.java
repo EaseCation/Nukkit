@@ -4,6 +4,8 @@ import cn.nukkit.Player;
 import cn.nukkit.block.Block;
 import cn.nukkit.command.Command;
 import cn.nukkit.command.CommandSender;
+import cn.nukkit.command.data.CommandEnum;
+import cn.nukkit.command.data.CommandParamType;
 import cn.nukkit.command.data.CommandParameter;
 import cn.nukkit.lang.TranslationContainer;
 import cn.nukkit.math.Vector3;
@@ -14,8 +16,8 @@ public class SetBlockCommand extends Command {
         this.setPermission("nukkit.command.setblock");
         this.commandParameters.clear();
         this.commandParameters.put("default", new CommandParameter[]{
-                new CommandParameter("position", CommandParameter.ARG_TYPE_BLOCK_POS, true),
-                new CommandParameter("block", CommandParameter.ARG_TYPE_STRING, true)
+				CommandParameter.newType("position", true, CommandParamType.POSITION),
+				CommandParameter.newEnum("block", true, CommandEnum.ENUM_BLOCK)
         });
 	}
 

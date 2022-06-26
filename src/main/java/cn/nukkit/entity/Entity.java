@@ -914,6 +914,10 @@ public abstract class Entity extends Location implements Metadatable {
         return true;
     }
 
+    public static String[] getKnownEntities() {
+        return knownEntities.keySet().toArray(new String[0]);
+    }
+
     public static CompoundTag getDefaultNBT(Vector3 pos) {
         return getDefaultNBT(pos, null);
     }

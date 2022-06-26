@@ -3,12 +3,19 @@ package cn.nukkit.command.defaults;
 import cn.nukkit.Player;
 import cn.nukkit.command.Command;
 import cn.nukkit.command.CommandSender;
+import cn.nukkit.command.data.CommandEnum;
+import cn.nukkit.command.data.CommandParamType;
 import cn.nukkit.command.data.CommandParameter;
 import cn.nukkit.lang.TranslationContainer;
 import cn.nukkit.potion.Effect;
 import cn.nukkit.potion.InstantEffect;
 import cn.nukkit.utils.ServerException;
 import cn.nukkit.utils.TextFormat;
+
+import java.lang.reflect.Field;
+import java.lang.reflect.Modifier;
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * Created by Snake1999 and Pub4Game on 2016/1/23.
@@ -19,16 +26,24 @@ public class EffectCommand extends Command {
         super(name, "%nukkit.command.effect.description", "%commands.effect.usage");
         this.setPermission("nukkit.command.effect");
         this.commandParameters.clear();
+
+        List<String> effects = new ArrayList<>();
+        for (Field field : Effect.class.getDeclaredFields()) {
+            if (field.getType() == int.class && field.getModifiers() == (Modifier.PUBLIC | Modifier.STATIC | Modifier.FINAL)) {
+                effects.add(field.getName().toLowerCase());
+            }
+        }
+
         this.commandParameters.put("default", new CommandParameter[]{
-                new CommandParameter("player", CommandParameter.ARG_TYPE_TARGET, false),
-                new CommandParameter("effect", CommandParameter.ARG_TYPE_STRING, false), //Do not use Enum here because of buggy behavior
-                new CommandParameter("seconds", CommandParameter.ARG_TYPE_INT, true),
-                new CommandParameter("amplifier", true),
-                new CommandParameter("hideParticle", CommandParameter.ARG_TYPE_BOOL, true)
+                CommandParameter.newType("player", CommandParamType.TARGET),
+                CommandParameter.newEnum("effect", new CommandEnum("Effect", effects)),
+                CommandParameter.newType("seconds", true, CommandParamType.INT),
+                CommandParameter.newType("amplifier", true, CommandParamType.INT),
+                CommandParameter.newEnum("hideParticle", true, CommandEnum.ENUM_BOOLEAN)
         });
         this.commandParameters.put("clear", new CommandParameter[]{
-                new CommandParameter("player", CommandParameter.ARG_TYPE_TARGET, false),
-                new CommandParameter("clear", new String[]{"clear"})
+                CommandParameter.newType("player", CommandParamType.TARGET),
+                CommandParameter.newEnum("clear", new CommandEnum("ClearEffects", "clear"))
         });
     }
 
@@ -98,16 +113,16 @@ public class EffectCommand extends Command {
                 if (player.getEffects().size() == 0) {
                     sender.sendMessage(new TranslationContainer("commands.effect.failure.notActive.all", player.getDisplayName()));
                 } else {
-                    sender.sendMessage(new TranslationContainer("commands.effect.failure.notActive", new String[]{effect.getName(), player.getDisplayName()}));
+                    sender.sendMessage(new TranslationContainer("commands.effect.failure.notActive", effect.getName(), player.getDisplayName()));
                 }
                 return true;
             }
             player.removeEffect(effect.getId());
-            sender.sendMessage(new TranslationContainer("commands.effect.success.removed", new String[]{effect.getName(), player.getDisplayName()}));
+            sender.sendMessage(new TranslationContainer("commands.effect.success.removed", effect.getName(), player.getDisplayName()));
         } else {
             effect.setDuration(duration).setAmplifier(amplification);
             player.addEffect(effect);
-            Command.broadcastCommandMessage(sender, new TranslationContainer("%commands.effect.success", new String[]{effect.getName(), String.valueOf(effect.getId()), String.valueOf(effect.getAmplifier()), player.getDisplayName(), String.valueOf(effect.getDuration() / 20)}));
+            Command.broadcastCommandMessage(sender, new TranslationContainer("%commands.effect.success", effect.getName(), String.valueOf(effect.getAmplifier()), player.getDisplayName(), String.valueOf(effect.getDuration() / 20)));
         }
         return true;
     }

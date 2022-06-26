@@ -73,8 +73,12 @@ public abstract class Command {
         this.aliases = aliases;
         this.activeAliases = aliases;
         this.timing = Timings.getCommandTiming(this);
-        this.commandParameters.put("default", new CommandParameter[]{new CommandParameter("args", "rawtext", true)});
+        this.commandParameters.put("default", new CommandParameter[]{CommandParameter.newType("args", true, CommandParamType.RAWTEXT)});
     }
+
+    /**
+
+     }
 
     /**
      * Returns an CommandData containing command data

@@ -3,6 +3,8 @@ package cn.nukkit.command.defaults;
 import cn.nukkit.Player;
 import cn.nukkit.command.Command;
 import cn.nukkit.command.CommandSender;
+import cn.nukkit.command.data.CommandEnum;
+import cn.nukkit.command.data.CommandParamType;
 import cn.nukkit.command.data.CommandParameter;
 import cn.nukkit.entity.Entity;
 import cn.nukkit.lang.TranslationContainer;
@@ -16,12 +18,12 @@ public class SummonCommand extends Command {
         this.setPermission("nukkit.command.summon");
         this.commandParameters.clear();
         this.commandParameters.put("pos", new CommandParameter[]{
-                new CommandParameter("entityType", false, CommandParameter.ENUM_TYPE_ENTITY_LIST),
-                new CommandParameter("spawnPos", CommandParameter.ARG_TYPE_BLOCK_POS, true),
+				CommandParameter.newEnum("entityType", false, new CommandEnum("entity", Entity.getKnownEntities())),
+				CommandParameter.newType("spawnPos", true, CommandParamType.POSITION)
         });
         this.commandParameters.put("nbt", new CommandParameter[]{
-                new CommandParameter("entityType", false, CommandParameter.ENUM_TYPE_ENTITY_LIST),
-                new CommandParameter("nbt", CommandParameter.ARG_TYPE_STRING, true)
+				CommandParameter.newEnum("entityType", false, new CommandEnum("entity", Entity.getKnownEntities())),
+				CommandParameter.newType("nbt", true, CommandParamType.JSON)
         });
 	}
 

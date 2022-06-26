@@ -3,6 +3,8 @@ package cn.nukkit.command.defaults;
 import cn.nukkit.Player;
 import cn.nukkit.command.Command;
 import cn.nukkit.command.CommandSender;
+import cn.nukkit.command.data.CommandEnum;
+import cn.nukkit.command.data.CommandParamType;
 import cn.nukkit.command.data.CommandParameter;
 import cn.nukkit.item.Item;
 import cn.nukkit.lang.TranslationContainer;
@@ -18,23 +20,22 @@ public class GiveCommand extends VanillaCommand {
         this.setPermission("nukkit.command.give");
         this.commandParameters.clear();
         this.commandParameters.put("default", new CommandParameter[]{
-                new CommandParameter("player", CommandParameter.ARG_TYPE_TARGET, false),
-                new CommandParameter("item", false, CommandParameter.ENUM_TYPE_ITEM_LIST),
-                new CommandParameter("amount", CommandParameter.ARG_TYPE_INT, true),
-                new CommandParameter("meta", CommandParameter.ARG_TYPE_INT, true),
-                new CommandParameter("tags...", CommandParameter.ARG_TYPE_RAW_TEXT, true)
+                CommandParameter.newType("player", CommandParamType.TARGET),
+                CommandParameter.newEnum("itemName", CommandEnum.ENUM_ITEM),
+                CommandParameter.newType("amount", true, CommandParamType.INT),
+                CommandParameter.newType("tags", true, CommandParamType.RAWTEXT)
         });
         this.commandParameters.put("toPlayerById", new CommandParameter[]{
-                new CommandParameter("player", CommandParameter.ARG_TYPE_TARGET, false),
-                new CommandParameter("item ID", CommandParameter.ARG_TYPE_INT, false),
-                new CommandParameter("amount", CommandParameter.ARG_TYPE_INT, true),
-                new CommandParameter("tags...", CommandParameter.ARG_TYPE_RAW_TEXT, true)
+                CommandParameter.newType("player", CommandParamType.TARGET),
+                CommandParameter.newType("itemId", CommandParamType.INT),
+                CommandParameter.newType("amount", true, CommandParamType.INT),
+                CommandParameter.newType("tags", true, CommandParamType.RAWTEXT)
         });
         this.commandParameters.put("toPlayerByIdMeta", new CommandParameter[]{
-                new CommandParameter("player", CommandParameter.ARG_TYPE_TARGET, false),
-                new CommandParameter("item ID:meta", CommandParameter.ARG_TYPE_RAW_TEXT, false),
-                new CommandParameter("amount", CommandParameter.ARG_TYPE_INT, true),
-                new CommandParameter("tags...", CommandParameter.ARG_TYPE_RAW_TEXT, true)
+                CommandParameter.newType("player", CommandParamType.TARGET),
+                CommandParameter.newType("itemAndData", CommandParamType.STRING),
+                CommandParameter.newType("amount", true, CommandParamType.INT),
+                CommandParameter.newType("tags", true, CommandParamType.RAWTEXT)
         });
     }
 
@@ -79,12 +80,9 @@ public class GiveCommand extends VanillaCommand {
         }
         Command.broadcastCommandMessage(sender, new TranslationContainer(
                 "%commands.give.success",
-                new String[]{
-                        item.getName() + " (" + item.getId() + ":" + item.getDamage() + ")",
-                        String.valueOf(item.getCount()),
-                        player.getName()
-                }
-        ));
+                item.getName() + " (" + item.getId() + ":" + item.getDamage() + ")",
+                String.valueOf(item.getCount()),
+                player.getName()));
         return true;
     }
 }
