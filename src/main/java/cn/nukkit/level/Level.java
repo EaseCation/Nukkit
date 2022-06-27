@@ -2808,7 +2808,7 @@ public class Level implements ChunkManager, Metadatable {
                 payloads.forEach((version, data) -> {
                     int actualCount = subChunkCount;
                     if (version.getProtocol() >= StaticVersion.V1_18.getProtocol()) {
-                        actualCount += Anvil.PADDING_SUB_CHUNK_COUNT;
+                        actualCount = extendedCount;
 
                         byte[][] subChunkData = subChunkPayloads.get(version);
                         BatchPacket[] compressed = new BatchPacket[extendedCount];

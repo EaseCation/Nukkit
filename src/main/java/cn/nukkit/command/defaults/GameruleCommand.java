@@ -9,10 +9,10 @@ import cn.nukkit.lang.TranslationContainer;
 import cn.nukkit.level.GameRule;
 import cn.nukkit.level.GameRules;
 
-import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.List;
+import java.util.HashSet;
 import java.util.Optional;
+import java.util.Set;
 import java.util.StringJoiner;
 
 public class GameruleCommand extends VanillaCommand {
@@ -23,10 +23,10 @@ public class GameruleCommand extends VanillaCommand {
         this.commandParameters.clear();
 
         GameRules rules = GameRules.getDefault();
-        List<String> boolGameRules = new ArrayList<>();
-        List<String> intGameRules = new ArrayList<>();
-        List<String> floatGameRules = new ArrayList<>();
-        List<String> unknownGameRules = new ArrayList<>();
+        Set<String> boolGameRules = new HashSet<>();
+        Set<String> intGameRules = new HashSet<>();
+        Set<String> floatGameRules = new HashSet<>();
+        Set<String> unknownGameRules = new HashSet<>();
 
         rules.getGameRules().forEach((rule, value) -> {
             switch (value.getType()) {

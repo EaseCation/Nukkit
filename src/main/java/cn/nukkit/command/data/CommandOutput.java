@@ -5,6 +5,6 @@ import lombok.ToString;
 @ToString
 public class CommandOutput {
 
-    public String[] format_strings = new String[0];
+    public String[] formatStrings = new String[0];
 
 }

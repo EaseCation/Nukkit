@@ -605,14 +605,11 @@ public class Player extends EntityHuman implements CommandSender, InventoryHolde
     }
 
     public void sendCommandData() {
-        if (!spawned) {
-            return;
-        }
         AvailableCommandsPacket pk = new AvailableCommandsPacket();
         Map<String, CommandDataVersions> data = new HashMap<>();
         int count = 0;
         for (Command command : this.server.getCommandMap().getCommands().values()) {
-            if (!command.testPermissionSilent(this) || !command.isRegistered()) {
+            if (!command.testPermissionSilent(this) || !command.isRegistered() || "help".equals(command.getName())) {
                 continue;
             }
             ++count;
@@ -620,7 +617,6 @@ public class Player extends EntityHuman implements CommandSender, InventoryHolde
             data.put(command.getName(), data0);
         }
         if (count > 0) {
-            //TODO: structure checking
             pk.commands = data;
             this.dataPacket(pk);
         }

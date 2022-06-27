@@ -28,15 +28,15 @@ public abstract class Command {
 
     private String label;
 
-    private String[] aliases = new String[0];
+    private String[] aliases;
 
-    private String[] activeAliases = new String[0];
+    private String[] activeAliases;
 
     private CommandMap commandMap = null;
 
-    protected String description = "";
+    protected String description;
 
-    protected String usageMessage = "";
+    protected String usageMessage;
 
     private String permission = null;
 
@@ -75,10 +75,6 @@ public abstract class Command {
         this.timing = Timings.getCommandTiming(this);
         this.commandParameters.put("default", new CommandParameter[]{CommandParameter.newType("args", true, CommandParamType.RAWTEXT)});
     }
-
-    /**
-
-     }
 
     /**
      * Returns an CommandData containing command data
@@ -120,10 +116,8 @@ public abstract class Command {
         CommandData customData = this.commandData.clone();
 
         if (getAliases().length > 0) {
-            List<String> aliases = new ArrayList<>(Arrays.asList(getAliases()));
-            if (!aliases.contains(this.name)) {
-                aliases.add(this.name);
-            }
+            Set<String> aliases = new HashSet<>(Arrays.asList(getAliases()));
+            aliases.add(this.name);
 
             customData.aliases = new CommandEnum(this.name + "Aliases", aliases);
         }
@@ -134,7 +128,7 @@ public abstract class Command {
             overload.input.parameters = par;
             customData.overloads.put(key, overload);
         });
-        if (customData.overloads.size() == 0) customData.overloads.put("default", new CommandOverload());
+        if (customData.overloads.isEmpty()) customData.overloads.put("default", new CommandOverload());
         CommandDataVersions versions = new CommandDataVersions();
         versions.versions.add(customData);
         return versions;

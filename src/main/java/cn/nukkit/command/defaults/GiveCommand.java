@@ -4,6 +4,7 @@ import cn.nukkit.Player;
 import cn.nukkit.command.Command;
 import cn.nukkit.command.CommandSender;
 import cn.nukkit.command.data.CommandEnum;
+import cn.nukkit.command.data.CommandParamOption;
 import cn.nukkit.command.data.CommandParamType;
 import cn.nukkit.command.data.CommandParameter;
 import cn.nukkit.item.Item;
@@ -21,7 +22,8 @@ public class GiveCommand extends VanillaCommand {
         this.commandParameters.clear();
         this.commandParameters.put("default", new CommandParameter[]{
                 CommandParameter.newType("player", CommandParamType.TARGET),
-                CommandParameter.newEnum("itemName", CommandEnum.ENUM_ITEM),
+                CommandParameter.newEnum("itemName", CommandEnum.ENUM_ITEM)
+                        .addOption(CommandParamOption.HAS_SEMANTIC_CONSTRAINT),
                 CommandParameter.newType("amount", true, CommandParamType.INT),
                 CommandParameter.newType("tags", true, CommandParamType.RAWTEXT)
         });
@@ -31,12 +33,13 @@ public class GiveCommand extends VanillaCommand {
                 CommandParameter.newType("amount", true, CommandParamType.INT),
                 CommandParameter.newType("tags", true, CommandParamType.RAWTEXT)
         });
-        this.commandParameters.put("toPlayerByIdMeta", new CommandParameter[]{
+        //TODO: parser table collision
+        /*this.commandParameters.put("toPlayerByIdMeta", new CommandParameter[]{
                 CommandParameter.newType("player", CommandParamType.TARGET),
                 CommandParameter.newType("itemAndData", CommandParamType.STRING),
                 CommandParameter.newType("amount", true, CommandParamType.INT),
                 CommandParameter.newType("tags", true, CommandParamType.RAWTEXT)
-        });
+        });*/
     }
 
     @Override

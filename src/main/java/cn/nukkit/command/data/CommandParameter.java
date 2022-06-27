@@ -1,13 +1,15 @@
 package cn.nukkit.command.data;
 
-import java.util.ArrayList;
+import java.util.EnumSet;
+import java.util.HashSet;
+import java.util.Set;
 
 public class CommandParameter {
 
     public String name;
     public CommandParamType type;
     public boolean optional;
-    public byte options = 0;
+    public Set<CommandParamOption> options = EnumSet.noneOf(CommandParamOption.class);
 
     public CommandEnum enumData;
     public String postFix;
@@ -54,7 +56,7 @@ public class CommandParameter {
         this.name = name;
         this.type = CommandParamType.RAWTEXT;
         this.optional = optional;
-        this.enumData = new CommandEnum(enumType, new ArrayList<>());
+        this.enumData = new CommandEnum(enumType, new HashSet<>());
     }
 
     /**
@@ -113,7 +115,7 @@ public class CommandParameter {
     }
 
     public static CommandParameter newEnum(String name, boolean optional, String type) {
-        return newEnum(name, optional, new CommandEnum(type, new ArrayList<>()));
+        return newEnum(name, optional, new CommandEnum(type, new HashSet<>()));
     }
 
     public static CommandParameter newEnum(String name, CommandEnum data) {
@@ -130,6 +132,11 @@ public class CommandParameter {
 
     public static CommandParameter newPostfix(String name, boolean optional, String postfix) {
         return new CommandParameter(name, optional, CommandParamType.RAWTEXT, null, postfix);
+    }
+
+    public CommandParameter addOption(CommandParamOption option) {
+        this.options.add(option);
+        return this;
     }
 
     protected static CommandParamType fromString(String param) {

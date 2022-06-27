@@ -446,7 +446,7 @@ public class Anvil extends BaseLevelProvider {
                         payloads.forEach((version, payload) -> {
                             int actualCount = count;
                             if (version.getProtocol() >= StaticVersion.V1_18.getProtocol()) {
-                                actualCount += PADDING_SUB_CHUNK_COUNT;
+                                actualCount = extendedCount;
 
                                 byte[][] subChunkData = subChunkPayloads.get(version);
                                 BatchPacket[] compressed = new BatchPacket[extendedCount];

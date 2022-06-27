@@ -5,6 +5,7 @@ import cn.nukkit.block.Block;
 import cn.nukkit.command.Command;
 import cn.nukkit.command.CommandSender;
 import cn.nukkit.command.data.CommandEnum;
+import cn.nukkit.command.data.CommandParamOption;
 import cn.nukkit.command.data.CommandParamType;
 import cn.nukkit.command.data.CommandParameter;
 import cn.nukkit.lang.TranslationContainer;
@@ -16,8 +17,9 @@ public class SetBlockCommand extends Command {
         this.setPermission("nukkit.command.setblock");
         this.commandParameters.clear();
         this.commandParameters.put("default", new CommandParameter[]{
-				CommandParameter.newType("position", true, CommandParamType.POSITION),
+				CommandParameter.newType("position", true, CommandParamType.BLOCK_POSITION),
 				CommandParameter.newEnum("block", true, CommandEnum.ENUM_BLOCK)
+						.addOption(CommandParamOption.HAS_SEMANTIC_CONSTRAINT),
         });
 	}
 

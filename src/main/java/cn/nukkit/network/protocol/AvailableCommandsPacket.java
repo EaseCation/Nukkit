@@ -15,9 +15,11 @@ public class AvailableCommandsPacket extends DataPacket {
 
     public static final int NETWORK_ID = ProtocolInfo.AVAILABLE_COMMANDS_PACKET;
     public Map<String, CommandDataVersions> commands;
-    public final List<CommandEnum> softEnums = new ArrayList<>();
 
     public static final int ARG_FLAG_VALID = 0x100000;
+    public static final int ARG_FLAG_ENUM = 0x200000;
+    public static final int ARG_FLAG_POSTFIX = 0x1000000;
+
     public static final int ARG_TYPE_INT = 0x01;
     public static final int ARG_TYPE_FLOAT = 0x02;
     public static final int ARG_TYPE_VALUE = 0x03;
@@ -35,9 +37,6 @@ public class AvailableCommandsPacket extends DataPacket {
     public static final int ARG_TYPE_BLOCK_STATES = 67;
     public static final int ARG_TYPE_BLOCK_POSITION = 47;
     public static final int ARG_TYPE_EQUIPMENT_SLOT = 38;
-
-    public static final int ARG_FLAG_ENUM = 0x200000;
-    public static final int ARG_FLAG_POSTFIX = 0x1000000;
 
     @Override
     public int pid() {
@@ -57,6 +56,12 @@ public class AvailableCommandsPacket extends DataPacket {
         LinkedHashSet<String> postFixes = new LinkedHashSet<>();
         LinkedHashSet<CommandEnum> enums = new LinkedHashSet<>();
 
+        // List of enums which aren't directly referenced by any vanilla command.
+        // This is used for the "CommandName" enum, which is a magic enum used by the "command" argument type.
+        Set<String> commandNames = new HashSet<>(commands.keySet());
+        commandNames.add("help");
+        commandNames.add("?");
+
         commands.forEach((name, data) -> {
             CommandData cmdData = data.versions.get(0);
 
@@ -64,6 +69,8 @@ public class AvailableCommandsPacket extends DataPacket {
                 enums.add(new CommandEnum(cmdData.aliases.getName(), cmdData.aliases.getValues()));
 
                 enumValues.addAll(cmdData.aliases.getValues());
+
+                commandNames.addAll(cmdData.aliases.getValues());
             }
 
             for (CommandOverload overload : cmdData.overloads.values()) {
@@ -80,6 +87,9 @@ public class AvailableCommandsPacket extends DataPacket {
                 }
             }
         });
+
+        enums.add(new CommandEnum("CommandName", commandNames));
+        enumValues.addAll(commandNames);
 
         List<String> enumIndexes = new ArrayList<>(enumValues);
         List<String> enumDataIndexes = enums.stream().map(CommandEnum::getName).collect(Collectors.toList());
@@ -99,7 +109,7 @@ public class AvailableCommandsPacket extends DataPacket {
         enums.forEach((cmdEnum) -> {
             putString(cmdEnum.getName());
 
-            List<String> values = cmdEnum.getValues();
+            Set<String> values = cmdEnum.getValues();
             putUnsignedVarInt(values.size());
 
             for (String val : values) {
@@ -126,8 +136,12 @@ public class AvailableCommandsPacket extends DataPacket {
 
             putString(name);
             putString(data.description);
-            putByte((byte) data.flags);
-            putByte((byte) data.permission);
+            int flags = 0;
+            for (CommandFlag flag : data.flags) {
+                flags |= 1 << flag.ordinal();
+            }
+            putByte((byte) flags);
+            putByte((byte) data.permission.ordinal());
 
             putLInt(data.aliases == null ? -1 : enumDataIndexes.indexOf(data.aliases.getName()));
 

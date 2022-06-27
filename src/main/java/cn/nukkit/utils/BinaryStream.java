@@ -1059,7 +1059,7 @@ public class BinaryStream {
             stream.putBoolean(link.immediate);
         }
 
-        public void putCommandData(BinaryStream stream, Map<String, CommandDataVersions> commands, List<CommandEnum> enums, List<String> postFixes) {
+        public void putCommandData(BinaryStream stream, Map<String, CommandDataVersions> commands, List<CommandEnum> enums, List<String> postFixes, List<CommandEnum> softEnums) {
             //TODO: 1.13前的重构
             stream.putUnsignedVarInt(0);
         }

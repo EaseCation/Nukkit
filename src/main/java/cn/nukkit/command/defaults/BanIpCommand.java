@@ -27,16 +27,16 @@ public class BanIpCommand extends VanillaCommand {
     public BanIpCommand(String name) {
         super(name, "%nukkit.command.ban.ip.description", "%commands.banip.usage");
         this.setPermission("nukkit.command.ban.ip");
-        this.setAliases(new String[]{"banip"});
         this.commandParameters.clear();
         this.commandParameters.put("default", new CommandParameter[]{
                 CommandParameter.newType("player", CommandParamType.TARGET),
                 CommandParameter.newType("reason", true, CommandParamType.STRING)
         });
-        this.commandParameters.put("byIp", new CommandParameter[]{
-                CommandParameter.newType("ip", CommandParamType.STRING),
+        //TODO: parser table collision
+        /*this.commandParameters.put("byIp", new CommandParameter[]{
+                CommandParameter.newType("ip", CommandParamType.TEXT),
                 CommandParameter.newType("reason", true, CommandParamType.STRING)
-        });
+        });*/
     }
 
     @Override

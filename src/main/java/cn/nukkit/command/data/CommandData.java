@@ -2,8 +2,10 @@ package cn.nukkit.command.data;
 
 import lombok.ToString;
 
+import java.util.EnumSet;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Set;
 
 @ToString
 public class CommandData implements Cloneable {
@@ -12,8 +14,8 @@ public class CommandData implements Cloneable {
     public String description = "description";
     public Map<String, CommandOverload> overloads = new HashMap<>();
 
-    public int flags;
-    public int permission;
+    public Set<CommandFlag> flags = EnumSet.noneOf(CommandFlag.class);
+    public CommandPermission permission = CommandPermission.ALL;
 
     @Override
     public CommandData clone() {

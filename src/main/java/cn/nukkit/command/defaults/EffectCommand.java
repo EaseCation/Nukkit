@@ -14,8 +14,8 @@ import cn.nukkit.utils.TextFormat;
 
 import java.lang.reflect.Field;
 import java.lang.reflect.Modifier;
-import java.util.ArrayList;
-import java.util.List;
+import java.util.HashSet;
+import java.util.Set;
 
 /**
  * Created by Snake1999 and Pub4Game on 2016/1/23.
@@ -27,7 +27,7 @@ public class EffectCommand extends Command {
         this.setPermission("nukkit.command.effect");
         this.commandParameters.clear();
 
-        List<String> effects = new ArrayList<>();
+        Set<String> effects = new HashSet<>();
         for (Field field : Effect.class.getDeclaredFields()) {
             if (field.getType() == int.class && field.getModifiers() == (Modifier.PUBLIC | Modifier.STATIC | Modifier.FINAL)) {
                 effects.add(field.getName().toLowerCase());
