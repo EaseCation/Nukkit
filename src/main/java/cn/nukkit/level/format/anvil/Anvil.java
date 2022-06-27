@@ -251,7 +251,7 @@ public class Anvil extends BaseLevelProvider {
                         }
                     }
                     boolean emptyChunk = count == 0;
-                    int extendedCount = emptyChunk ? 0 : PADDING_SUB_CHUNK_COUNT + count;
+                    int extendedCount = emptyChunk ? PADDING_SUB_CHUNK_COUNT : PADDING_SUB_CHUNK_COUNT + count;
                     emptySection = new boolean[count];
 
                     byte[][] subChunkBlockEntities = new byte[PADDING_SUB_CHUNK_COUNT + 16 /*+ 4*/][];
@@ -554,6 +554,9 @@ public class Anvil extends BaseLevelProvider {
         }
         stream.putByte((byte) 0);
         stream.put(blockEntities);
+        if (version == StaticVersion.V1_18_NETEASE && stream.getBuffer().length == 25676) {
+            Server.getInstance().getLogger().warning("===== FullChunkPacket" + " version=" + version + " chunkX=" + chunk.getX() + " chunkZ=" + chunk.getZ() + " length=" + stream.getBuffer().length);
+        }
         return stream.getBuffer();
     }
 
