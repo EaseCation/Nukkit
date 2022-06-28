@@ -454,4 +454,13 @@ public class EntityBoat extends EntityVehicle {
     public void addMovement(double x, double y, double z, double yaw, double pitch, double headYaw) {
         super.addMovement(x, y, z, yaw, 0, 0);
     }
+
+    public boolean isFull() {
+        return this.passengers.size() >= 2;
+    }
+
+    @Override
+    public String getInteractButtonText() {
+        return !this.isFull() ? "action.interact.ride.boat" : "";
+    }
 }

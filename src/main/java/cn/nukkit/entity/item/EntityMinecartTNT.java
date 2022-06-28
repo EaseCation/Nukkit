@@ -154,4 +154,9 @@ public class EntityMinecartTNT extends EntityMinecartAbstract implements EntityE
     public boolean mountEntity(Entity entity, byte mode) {
         return false;
     }
+
+    @Override
+    public String getInteractButtonText() {
+        return "";
+    }
 }
