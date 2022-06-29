@@ -68,7 +68,8 @@ public class FloatingTextParticle extends Particle {
         ArrayList<DataPacket> packets = new ArrayList<>();
 
         if (this.entityId == -1) {
-            this.entityId = 1095216660480L + ThreadLocalRandom.current().nextLong(0, 0x7fffffffL);
+//            this.entityId = 1095216660480L + ThreadLocalRandom.current().nextLong(0, 0x7fffffffL);
+            this.entityId = Entity.entityCount++;
         } else {
             RemoveEntityPacket pk = new RemoveEntityPacket();
             pk.eid = this.entityId;

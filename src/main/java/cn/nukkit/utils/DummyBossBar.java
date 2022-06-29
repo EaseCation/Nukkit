@@ -45,7 +45,8 @@ public class DummyBossBar {
 
         public Builder(Player player) {
             this.player = player;
-            this.bossBarId = 1095216660480L + ThreadLocalRandom.current().nextLong(0, 0x7fffffffL);
+//            this.bossBarId = 1095216660480L + ThreadLocalRandom.current().nextLong(0, 0x7fffffffL);
+            this.bossBarId = Entity.entityCount++;
         }
 
         public Builder text(String text) {
