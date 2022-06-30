@@ -139,6 +139,7 @@ public class Player extends EntityHuman implements CommandSender, InventoryHolde
     public boolean playedBefore;
     public boolean spawned = false;
     public boolean loggedIn = false;
+    public boolean locallyInitialized = false;
     public int gamemode;
     public long lastBreak;
 
@@ -961,6 +962,7 @@ public class Player extends EntityHuman implements CommandSender, InventoryHolde
     }
 
     protected void doFirstSpawn() {
+        this.locallyInitialized = true;  // 在1.6及以上版本，doFirstSpawn 后，收到客户端的 SetLocalPositionAndLookPacket 后，会设置locallyInitialized为true。
         this.sendPotionEffects(this);
         this.sendData(this);
 
