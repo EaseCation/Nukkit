@@ -27,16 +27,20 @@ import com.google.gson.JsonArray;
 
 import cn.nukkit.timings.JsonUtil;
 
+import java.util.ArrayList;
+import java.util.HashMap;
+
 class TimingsHistoryEntry {
     final TimingData data;
     final TimingData[] children;
 
     TimingsHistoryEntry(Timing timing) {
         this.data = timing.record.clone();
-        this.children = new TimingData[timing.children.size()];
+        HashMap<Integer, TimingData> timingChildren = new HashMap<>(timing.children);
+        this.children = new TimingData[timingChildren.size()];
 
         int i = 0;
-        for (TimingData child : timing.children.values()) {
+        for (TimingData child : timingChildren.values()) {
             this.children[i++] = child.clone();
         }
     }
