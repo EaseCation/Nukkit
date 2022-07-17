@@ -23,6 +23,9 @@
  */
 package co.aikar.timings;
 
+import cn.nukkit.Nukkit;
+import cn.nukkit.Server;
+
 import java.util.HashMap;
 import java.util.Map;
 
@@ -83,6 +86,11 @@ public class Timing implements AutoCloseable {
             return this;
         }
 
+        if (Thread.currentThread() != Nukkit.getMainThread()) {
+            // Server.getInstance().getLogger().warning("Timing started from non-main thread: " + Thread.currentThread().getName(), new Throwable());
+            return this;
+        }
+
         if (++this.timingDepth == 1) {
             this.start = System.nanoTime();
             this.parent = TimingsManager.CURRENT;
@@ -94,6 +102,11 @@ public class Timing implements AutoCloseable {
 
     public void stopTiming() {
         if (!this.enabled) {
+            return;
+        }
+
+        if (Thread.currentThread() != Nukkit.getMainThread()) {
+            // Server.getInstance().getLogger().warning("Timing stopped from non-main thread: " + Thread.currentThread().getName(), new Throwable());
             return;
         }
 
