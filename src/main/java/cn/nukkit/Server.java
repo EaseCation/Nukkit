@@ -881,6 +881,9 @@ public class Server {
     public void onPlayerCompleteLoginSequence(Player player) {
         //在EntityHuman中会发送各自的皮肤的，这里不需要发送全部
         //this.sendFullPlayerListData(player);
+        // 发给自己自己的皮肤
+        this.updatePlayerListData(player.getUniqueId(), player.getId(), player.getDisplayName(), player.getSkin(), player.getLoginChainData().getXUID(), new Player[]{player});
+        player.sentSkins.add(player.getUniqueId());
     }
 
     public void onPlayerLogin(Player player) {
@@ -895,6 +898,7 @@ public class Server {
 
     public void addOnlinePlayer(Player player) {
         this.playerList.put(player.getUniqueId(), player);
+        //移到了玩家的生成中，这里不发送全部
         //this.updatePlayerListData(player.getUniqueId(), player.getId(), player.getDisplayName(), player.getSkin(), player.getLoginChainData().getXUID(), player.getLevel().getPlayers().values());
     }
 
