@@ -2,6 +2,7 @@ package cn.nukkit.network.protocol;
 
 import cn.nukkit.entity.data.EntityMetadata;
 import cn.nukkit.item.Item;
+import cn.nukkit.network.protocol.types.EntityLink;
 import cn.nukkit.utils.Binary;
 import lombok.ToString;
 
@@ -35,6 +36,7 @@ public class AddPlayerPacket extends DataPacket {
     public float headYaw;
     public Item item;
     public EntityMetadata metadata = new EntityMetadata();
+    public EntityLink[] links = new EntityLink[0];
 
     @Override
     public void decode() {
