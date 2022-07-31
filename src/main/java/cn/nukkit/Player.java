@@ -4229,7 +4229,8 @@ public class Player extends EntityHuman implements CommandSender, InventoryHolde
                 //正在叠刀
                 Player damagerPlayer = (Player)((EntityDamageByEntityEvent) source).getDamager();
                 if (damagerPlayer.attackCriticalThisJump < 2) {
-                    this.attackTime = 0;
+                    this.nextAllowAttack = 0;
+                    // this.attackTime = 0;
                     source.setDamage((float) (source.getDamage() * 0.2));
                 }
                 damagerPlayer.sendPopup("叠刀 × " + damagerPlayer.attackCriticalThisJump);
