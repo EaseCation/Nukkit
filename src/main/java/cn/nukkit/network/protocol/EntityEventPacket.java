@@ -32,11 +32,27 @@ public class EntityEventPacket extends DataPacket {
 
     public static final int ENCHANT = 34;
 
-    public static final byte EATING_ITEM = 57;
+    public static final int EATING_ITEM = 57;
 
-    public static final byte UNKNOWN1 = 66;
-
-    public static final byte MERGE_ITEMS = 69;
+    public static final int BABY_ANIMAL_FEED = 60;
+    public static final int DEATH_SMOKE_CLOUD = 61;
+    public static final int COMPLETE_TRADE = 62;
+    public static final int REMOVE_LEASH = 63;
+    public static final int CARAVAN_UPDATED = 64;
+    public static final int CONSUME_TOTEM = 65;
+    public static final int PLAYER_CHECK_TREASURE_HUNTER_ACHIEVEMENT = 66;
+    public static final int ENTITY_SPAWN = 67;
+    public static final int DRAGON_PUKE = 68;
+    public static final int MERGE_ITEMS = 69;
+    public static final int START_SWIM = 70;
+    public static final int BALLOON_POP = 71;
+    public static final int TREASURE_HUNT = 72;
+    public static final int AGENT_SUMMON = 73;
+    public static final int CHARGED_CROSSBOW = 74;
+    public static final int FALL = 75;
+    public static final int GROW_UP = 76;
+    public static final int VIBRATION_DETECTED = 77;
+    public static final int DRINK_MILK = 78;
 
     @Override
     public int pid() {
