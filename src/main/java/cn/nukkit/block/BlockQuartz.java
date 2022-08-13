@@ -16,8 +16,23 @@ public class BlockQuartz extends BlockSolidMeta {
     public static final int QUARTZ_NORMAL = 0;
     public static final int QUARTZ_CHISELED = 1;
     public static final int QUARTZ_PILLAR = 2;
-    public static final int QUARTZ_PILLAR2 = 3;
+    public static final int SMOOTH_QUARTZ = 3;
 
+    private static final String[] NAMES = new String[]{
+            "Quartz Block",
+            "Chiseled Quartz Block",
+            "Quartz Pillar",
+            "Smooth Quartz Block",
+    };
+
+    private static final short[] FACES = new short[]{
+            0,
+            0,
+            0b1000,
+            0b1000,
+            0b0100,
+            0b0100
+    };
 
     public BlockQuartz() {
         this(0);
@@ -44,29 +59,13 @@ public class BlockQuartz extends BlockSolidMeta {
 
     @Override
     public String getName() {
-        String[] names = new String[]{
-                "Quartz Block",
-                "Chiseled Quartz Block",
-                "Quartz Pillar",
-                "Quartz Pillar"
-        };
-
-        return names[this.getDamage() & 0x03];
+        return NAMES[this.getDamage() & 0x03];
     }
 
     @Override
     public boolean place(Item item, Block block, Block target, BlockFace face, double fx, double fy, double fz, Player player) {
         if (this.getDamage() != QUARTZ_NORMAL) {
-            short[] faces = new short[]{
-                    0,
-                    0,
-                    0b1000,
-                    0b1000,
-                    0b0100,
-                    0b0100
-            };
-
-            this.setDamage(((this.getDamage() & 0x03) | faces[face.getIndex()]));
+            this.setDamage(((this.getDamage() & 0x03) | FACES[face.getIndex()]));
         }
         this.getLevel().setBlock(block, this, true, true);
 
@@ -77,7 +76,7 @@ public class BlockQuartz extends BlockSolidMeta {
     public Item[] getDrops(Item item) {
         if (item.isPickaxe() && item.getTier() >= ItemTool.TIER_WOODEN) {
             return new Item[]{
-                    toItem()
+                    toItem(true)
             };
         } else {
             return new Item[0];
@@ -85,7 +84,7 @@ public class BlockQuartz extends BlockSolidMeta {
     }
 
     @Override
-    public Item toItem() {
+    public Item toItem(boolean addUserData) {
         return new ItemBlock(Block.get(BlockID.QUARTZ_BLOCK), this.getDamage() & 0x03, 1);
     }
 

@@ -23,7 +23,7 @@ public class BlockPressurePlateWood extends BlockPressurePlateBase {
 
     @Override
     public String getName() {
-        return "Wooden Pressure Plate";
+        return "Oak Pressure Plate";
     }
 
     @Override
@@ -49,7 +49,7 @@ public class BlockPressurePlateWood extends BlockPressurePlateBase {
     @Override
     public Item[] getDrops(Item item) {
         return new Item[]{
-                toItem()
+                toItem(true)
         };
     }
 

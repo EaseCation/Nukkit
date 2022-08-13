@@ -14,14 +14,14 @@ import cn.nukkit.utils.LevelException;
 import com.google.common.collect.ImmutableMap;
 import it.unimi.dsi.fastutil.longs.Long2ObjectMap;
 import it.unimi.dsi.fastutil.longs.Long2ObjectOpenHashMap;
+import it.unimi.dsi.fastutil.objects.Object2ObjectOpenHashMap;
 import it.unimi.dsi.fastutil.objects.ObjectIterator;
 
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileOutputStream;
 import java.io.IOException;
 import java.nio.ByteOrder;
-import java.util.HashMap;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.Map;
 import java.util.concurrent.atomic.AtomicReference;
 
@@ -49,11 +49,9 @@ public abstract class BaseLevelProvider implements LevelProvider {
     public BaseLevelProvider(Level level, String path) throws IOException {
         this.level = level;
         this.path = path;
-        File file_path = new File(this.path);
-        if (!file_path.exists()) {
-            file_path.mkdirs();
-        }
-        CompoundTag levelData = NBTIO.readCompressed(new FileInputStream(new File(this.getPath(), "level.dat")), ByteOrder.BIG_ENDIAN);
+        Path dirPath = Paths.get(path);
+        Files.createDirectories(dirPath);
+        CompoundTag levelData = NBTIO.readCompressed(Files.newInputStream(dirPath.resolve("level.dat")), ByteOrder.BIG_ENDIAN);
         if (levelData.get("Data") instanceof CompoundTag) {
             this.levelData = levelData.getCompound("Data");
         } else {
@@ -95,11 +93,9 @@ public abstract class BaseLevelProvider implements LevelProvider {
 
     @Override
     public Map<String, Object> getGeneratorOptions() {
-        return new HashMap<String, Object>() {
-            {
-                put("preset", levelData.getString("generatorOptions"));
-            }
-        };
+        Map<String, Object> options = new Object2ObjectOpenHashMap<>();
+        options.put("preset", levelData.getString("generatorOptions"));
+        return options;
     }
 
     @Override
@@ -256,7 +252,9 @@ public abstract class BaseLevelProvider implements LevelProvider {
 
     @Override
     public void setGameRules(GameRules rules) {
-        this.levelData.putCompound("GameRules", rules.writeNBT());
+        CompoundTag tag = new CompoundTag();
+        rules.writeNBT(tag);
+        this.levelData.putCompound("GameRules", tag);
     }
 
     @Override
@@ -304,7 +302,7 @@ public abstract class BaseLevelProvider implements LevelProvider {
     @Override
     public void saveLevelData() {
         try {
-            NBTIO.writeGZIPCompressed(new CompoundTag().putCompound("Data", this.levelData), new FileOutputStream(new File(this.getPath(), "level.dat")));
+            NBTIO.writeGZIPCompressed(new CompoundTag().putCompound("Data", this.levelData), Files.newOutputStream(Paths.get(this.getPath(), "level.dat")));
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
@@ -407,12 +405,19 @@ public abstract class BaseLevelProvider implements LevelProvider {
         }
         chunk.setProvider(this);
         chunk.setPosition(chunkX, chunkZ);
-        long index = Level.chunkHash(chunkX, chunkZ);
+        long index = chunk.getIndex();
+
         synchronized (chunks) {
-            if (this.chunks.containsKey(index) && !this.chunks.get(index).equals(chunk)) {
-                this.unloadChunk(chunkX, chunkZ, false);
+            BaseFullChunk oldChunk = this.chunks.get(index);
+            if (!chunk.equals(oldChunk)) {
+                if (oldChunk != null) {
+                    oldChunk.unload(false, false);
+                }
+
+                BaseFullChunk newChunk = (BaseFullChunk) chunk;
+                this.chunks.put(index, newChunk);
+                this.lastChunk.set(newChunk);
             }
-            this.chunks.put(index, (BaseFullChunk) chunk);
         }
     }
 

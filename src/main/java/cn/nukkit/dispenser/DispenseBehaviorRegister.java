@@ -30,7 +30,7 @@ public final class DispenseBehaviorRegister {
         registerBehavior(ItemID.BOAT, new BoatDispenseBehavior());
         registerBehavior(ItemID.BUCKET, new BucketDispenseBehavior());
         registerBehavior(ItemID.DYE, new DyeDispenseBehavior());
-        registerBehavior(ItemID.FIREWORKS, new FireworksDispenseBehavior());
+        registerBehavior(ItemID.FIREWORK_ROCKET, new FireworksDispenseBehavior());
         registerBehavior(ItemID.FLINT_AND_STEEL, new FlintAndSteelDispenseBehavior());
         registerBehavior(BlockID.SHULKER_BOX, new ShulkerBoxDispenseBehavior());
         registerBehavior(BlockID.UNDYED_SHULKER_BOX, new ShulkerBoxDispenseBehavior());
@@ -81,9 +81,9 @@ public final class DispenseBehaviorRegister {
         });
         registerBehavior(ItemID.GLASS_BOTTLE, new GlassBottleDispenseBehavior());
         registerBehavior(ItemID.MINECART, new MinecartDispenseBehavior("MinecartRideable"));
-        registerBehavior(ItemID.MINECART_WITH_CHEST, new MinecartDispenseBehavior("MinecartChest"));
-        registerBehavior(ItemID.MINECART_WITH_HOPPER, new MinecartDispenseBehavior("MinecartHopper"));
-        registerBehavior(ItemID.MINECART_WITH_TNT, new MinecartDispenseBehavior("MinecartTnt"));
+        registerBehavior(ItemID.CHEST_MINECART, new MinecartDispenseBehavior("MinecartChest"));
+        registerBehavior(ItemID.HOPPER_MINECART, new MinecartDispenseBehavior("MinecartHopper"));
+        registerBehavior(ItemID.TNT_MINECART, new MinecartDispenseBehavior("MinecartTnt"));
 //        registerBehavior(ItemID.COMMAND_BLOCK_MINECART, new MinecartDispenseBehavior("MinecartCommandBlock")); //TODO
     }
 }

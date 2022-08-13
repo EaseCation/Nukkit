@@ -1,5 +1,7 @@
 package cn.nukkit.item;
 
+import cn.nukkit.block.Block;
+
 /**
  * author: MagicDroidX
  * Nukkit Project
@@ -25,6 +27,11 @@ public class ItemShears extends ItemTool {
 
     @Override
     public boolean isShears() {
+        return true;
+    }
+
+    @Override
+    public boolean noDamageOnAttack() {
         return true;
     }
 }

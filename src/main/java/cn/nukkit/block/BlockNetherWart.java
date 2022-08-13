@@ -26,10 +26,13 @@ public class BlockNetherWart extends BlockFlowable {
 
     @Override
     public boolean place(Item item, Block block, Block target, BlockFace face, double fx, double fy, double fz, Player player) {
+        if (block.isLiquid() || !block.isAir() && level.getExtraBlock(this).isWater()) {
+            return false;
+        }
+
         Block down = this.down();
         if (down.getId() == SOUL_SAND) {
-            this.getLevel().setBlock(block, this, true, true);
-            return true;
+            return level.setBlock(block, this, true);
         }
         return false;
     }
@@ -75,7 +78,7 @@ public class BlockNetherWart extends BlockFlowable {
 
     @Override
     public int getId() {
-        return NETHER_WART_BLOCK;
+        return BLOCK_NETHER_WART;
     }
 
     @Override
@@ -92,8 +95,13 @@ public class BlockNetherWart extends BlockFlowable {
     }
 
     @Override
-    public Item toItem() {
+    public Item toItem(boolean addUserData) {
         return new ItemNetherWart();
+    }
+
+    @Override
+    public boolean isVegetation() {
+        return true;
     }
 }
 

@@ -32,15 +32,15 @@ public class ObjectBigSpruceTree extends ObjectSpruceTree {
     @Override
     protected void placeTrunk(ChunkManager level, int x, int y, int z, NukkitRandom random, int trunkHeight) {
         // The base dirt block
-        level.setBlockAt(x, y - 1, z, Block.DIRT);
+        level.setBlockAt(0, x, y - 1, z, Block.DIRT);
         int radius = 2;
 
         for (int yy = 0; yy < trunkHeight; ++yy) {
             for (int xx = 0; xx < radius; xx++) {
                 for (int zz = 0; zz < radius; zz++) {
-                    int blockId = level.getBlockIdAt(x, y + yy, z);
+                    int blockId = level.getBlockIdAt(0, x, y + yy, z);
                     if (this.overridable(blockId)) {
-                        level.setBlockAt(x + xx, y + yy, z + zz, this.getTrunkBlock(), this.getType());
+                        level.setBlockAt(0, x + xx, y + yy, z + zz, this.getTrunkBlock(), this.getType());
                     }
                 }
             }

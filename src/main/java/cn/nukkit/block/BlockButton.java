@@ -4,15 +4,19 @@ import cn.nukkit.Player;
 import cn.nukkit.event.block.BlockRedstoneEvent;
 import cn.nukkit.item.Item;
 import cn.nukkit.level.Level;
-import cn.nukkit.level.sound.SoundEnum;
+import cn.nukkit.math.AxisAlignedBB;
 import cn.nukkit.math.BlockFace;
-import cn.nukkit.math.Vector3;
+import cn.nukkit.network.protocol.LevelSoundEventPacket;
+import cn.nukkit.utils.BlockColor;
 import cn.nukkit.utils.Faceable;
 
 /**
  * Created by CreeperFace on 27. 11. 2016.
  */
-public abstract class BlockButton extends BlockFlowable implements Faceable {
+public abstract class BlockButton extends BlockTransparentMeta implements Faceable {
+
+    public static final int FACING_DIRECTION_MASK = 0b111;
+    public static final int BUTTON_PRESSED_BIT = 0b1000;
 
     public BlockButton() {
         this(0);
@@ -20,6 +24,31 @@ public abstract class BlockButton extends BlockFlowable implements Faceable {
 
     public BlockButton(int meta) {
         super(meta);
+    }
+
+    @Override
+    public boolean canPassThrough() {
+        return true;
+    }
+
+    @Override
+    public boolean isSolid() {
+        return false;
+    }
+
+    @Override
+    public boolean breaksWhenMoved() {
+        return true;
+    }
+
+    @Override
+    public boolean sticksToPiston() {
+        return false;
+    }
+
+    @Override
+    protected AxisAlignedBB recalculateBoundingBox() {
+        return null;
     }
 
     @Override
@@ -34,7 +63,7 @@ public abstract class BlockButton extends BlockFlowable implements Faceable {
 
     @Override
     public boolean place(Item item, Block block, Block target, BlockFace face, double fx, double fy, double fz, Player player) {
-        if (target.isTransparent()) {
+        if (!SupportType.hasCenterSupport(target, face)) {
             return false;
         }
 
@@ -49,45 +78,46 @@ public abstract class BlockButton extends BlockFlowable implements Faceable {
     }
 
     @Override
-    public boolean onActivate(Item item, Player player) {
+    public boolean onActivate(Item item, BlockFace face, Player player) {
         if (this.isActivated()) {
             return false;
         }
 
         this.level.scheduleUpdate(this, 30);
 
-        this.setDamage(this.getDamage() ^ 0x08);
+        this.setDamage(this.getDamage() ^ BUTTON_PRESSED_BIT);
         this.level.setBlock(this, this, true, false);
 
         if (this.level.isRedstoneEnabled()) {
             this.level.getServer().getPluginManager().callEvent(new BlockRedstoneEvent(this, 0, 15));
 
             level.updateAroundRedstone(this, null);
-            level.updateAroundRedstone(this.getSideVec(getFacing().getOpposite()), null);
+            level.updateAroundRedstone(this.getSideVec(getBlockFace().getOpposite()), null);
         }
 
-        this.level.addSound(this.add(0.5, 0.5, 0.5), SoundEnum.RANDOM_CLICK);
+        this.level.addLevelSoundEvent(this.add(0.5, 0.5, 0.5), LevelSoundEventPacket.SOUND_POWER_ON, (this.getId() << BLOCK_META_BITS) | this.getDamage());
         return true;
     }
 
     @Override
     public int onUpdate(int type) {
         if (type == Level.BLOCK_UPDATE_NORMAL) {
-            if (this.getSide(getFacing().getOpposite()).isTransparent()) {
+            BlockFace face = getBlockFace();
+            if (!SupportType.hasCenterSupport(getSide(face.getOpposite()), face)) {
                 this.level.useBreakOn(this, Item.get(Item.WOODEN_PICKAXE));
                 return Level.BLOCK_UPDATE_NORMAL;
             }
         } else if (type == Level.BLOCK_UPDATE_SCHEDULED) {
             if (this.isActivated()) {
-                this.setDamage(this.getDamage() ^ 0x08);
+                this.setDamage(this.getDamage() ^ BUTTON_PRESSED_BIT);
                 this.level.setBlock(this, this, true, false);
-                this.level.addSound(this.add(0.5, 0.5, 0.5), SoundEnum.RANDOM_CLICK);
+                this.level.addLevelSoundEvent(this.add(0.5, 0.5, 0.5), LevelSoundEventPacket.SOUND_POWER_OFF, (this.getId() << BLOCK_META_BITS) | this.getDamage());
 
                 if (this.level.isRedstoneEnabled()) {
                     this.level.getServer().getPluginManager().callEvent(new BlockRedstoneEvent(this, 15, 0));
 
                     level.updateAroundRedstone(this, null);
-                    level.updateAroundRedstone(this.getSideVec(getFacing().getOpposite()), null);
+                    level.updateAroundRedstone(this.getSideVec(getBlockFace().getOpposite()), null);
                 }
             }
 
@@ -98,7 +128,7 @@ public abstract class BlockButton extends BlockFlowable implements Faceable {
     }
 
     public boolean isActivated() {
-        return ((this.getDamage() & 0x08) == 0x08);
+        return ((this.getDamage() & BUTTON_PRESSED_BIT) == BUTTON_PRESSED_BIT);
     }
 
     @Override
@@ -111,12 +141,7 @@ public abstract class BlockButton extends BlockFlowable implements Faceable {
     }
 
     public int getStrongPower(BlockFace side) {
-        return !isActivated() ? 0 : (getFacing() == side ? 15 : 0);
-    }
-
-    public BlockFace getFacing() {
-        int side = isActivated() ? getDamage() ^ 0x08 : getDamage();
-        return BlockFace.fromIndex(side);
+        return !isActivated() ? 0 : (getBlockFace() == side ? 15 : 0);
     }
 
     @Override
@@ -129,12 +154,32 @@ public abstract class BlockButton extends BlockFlowable implements Faceable {
     }
 
     @Override
-    public Item toItem() {
-        return Item.get(this.getId(), 0);
+    public Item toItem(boolean addUserData) {
+        return Item.get(getItemId());
     }
 
     @Override
     public BlockFace getBlockFace() {
-        return BlockFace.fromHorizontalIndex(this.getDamage() & 0x7);
+        return BlockFace.fromIndex(this.getDamage() & FACING_DIRECTION_MASK);
+    }
+
+    @Override
+    public BlockColor getColor() {
+        return BlockColor.AIR_BLOCK_COLOR;
+    }
+
+    @Override
+    public boolean canContainWater() {
+        return true;
+    }
+
+    @Override
+    public boolean canProvideSupport(BlockFace face, SupportType type) {
+        return false;
+    }
+
+    @Override
+    public boolean isButton() {
+        return true;
     }
 }

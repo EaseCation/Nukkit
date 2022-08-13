@@ -27,11 +27,6 @@ public class ResourcePackDataInfoPacket extends DataPacket {
 
     @Override
     public void decode() {
-        this.packId = this.getString();
-        this.maxChunkSize = this.getLInt();
-        this.chunkCount = this.getLInt();
-        this.compressedPackSize = this.getLLong();
-        this.sha256 = this.getByteArray();
     }
 
     @Override

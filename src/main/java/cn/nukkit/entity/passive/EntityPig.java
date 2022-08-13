@@ -55,7 +55,7 @@ public class EntityPig extends EntityAnimal {
 
     @Override
     public Item[] getDrops() {
-        return new Item[]{Item.get(Item.RAW_PORKCHOP)};
+        return new Item[]{Item.get(Item.PORKCHOP)};
     }
 
     @Override

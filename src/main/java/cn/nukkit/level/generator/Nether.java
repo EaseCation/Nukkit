@@ -44,7 +44,7 @@ public class Nether extends Generator {
 
     @Override
     public int getId() {
-        return Generator.TYPE_NETHER;
+        return 3;
     }
 
     @Override
@@ -87,7 +87,7 @@ public class Nether extends Generator {
                 new OreType(Block.get(BlockID.QUARTZ_ORE), 20, 16, 0, 128),
                 new OreType(Block.get(BlockID.SOUL_SAND), 5, 64, 0, 128),
                 new OreType(Block.get(BlockID.GRAVEL), 5, 64, 0, 128),
-                new OreType(Block.get(BlockID.LAVA), 1, 16, 0, (int) this.lavaHeight),
+                new OreType(Block.get(BlockID.FLOWING_LAVA), 1, 16, 0, (int) this.lavaHeight),
         });
         this.populators.add(ores);
 
@@ -105,7 +105,7 @@ public class Nether extends Generator {
         ore.setOreTypes(new OreType[]{
                 new OreType(Block.get(BlockID.QUARTZ_ORE), 40, 16, 0, 128, NETHERRACK),
                 new OreType(Block.get(BlockID.SOUL_SAND), 1, 64, 30, 35, NETHERRACK),
-                new OreType(Block.get(BlockID.LAVA), 32, 1, 0, 32, NETHERRACK),
+                new OreType(Block.get(BlockID.FLOWING_LAVA), 32, 1, 0, 32, NETHERRACK),
                 new OreType(Block.get(BlockID.MAGMA), 32, 16, 26, 37, NETHERRACK),
         });
         this.populators.add(ore);
@@ -124,16 +124,16 @@ public class Nether extends Generator {
                 Biome biome = EnumBiome.HELL.biome;
                 chunk.setBiomeId(x, z, biome.getId());
 
-                chunk.setBlockId(x, 0, z, Block.BEDROCK);
+                chunk.setBlock(0, x, 0, z, Block.BEDROCK);
                 for (int y = 115; y < 127; ++y) {
-                    chunk.setBlockId(x, y, z, Block.NETHERRACK);
+                    chunk.setBlock(0, x, y, z, Block.NETHERRACK);
                 }
-                chunk.setBlockId(x, 127, z, Block.BEDROCK);
+                chunk.setBlock(0, x, 127, z, Block.BEDROCK);
                 for (int y = 1; y < 127; ++y) {
                     if (getNoise(baseX | x, y, baseZ | z) > 0) {
-                        chunk.setBlockId(x, y, z, Block.NETHERRACK);
+                        chunk.setBlock(0, x, y, z, Block.NETHERRACK);
                     } else if (y <= this.lavaHeight) {
-                        chunk.setBlockId(x, y, z, Block.STILL_LAVA);
+                        chunk.setBlock(0, x, y, z, Block.LAVA);
                         chunk.setBlockLight(x, y + 1, z, 15);
                     }
                 }

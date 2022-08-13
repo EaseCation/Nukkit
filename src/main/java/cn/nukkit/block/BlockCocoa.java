@@ -19,13 +19,26 @@ import java.util.concurrent.ThreadLocalRandom;
 /**
  * Created by CreeperFace on 27. 10. 2016.
  */
-public class BlockCocoa extends BlockTransparentMeta implements Faceable {
+public class BlockCocoa extends BlockFlowable implements Faceable {
 
     protected static final AxisAlignedBB[] EAST = new SimpleAxisAlignedBB[]{new SimpleAxisAlignedBB(0.6875D, 0.4375D, 0.375D, 0.9375D, 0.75D, 0.625D), new SimpleAxisAlignedBB(0.5625D, 0.3125D, 0.3125D, 0.9375D, 0.75D, 0.6875D), new SimpleAxisAlignedBB(0.5625D, 0.3125D, 0.3125D, 0.9375D, 0.75D, 0.6875D)};
     protected static final AxisAlignedBB[] WEST = new SimpleAxisAlignedBB[]{new SimpleAxisAlignedBB(0.0625D, 0.4375D, 0.375D, 0.3125D, 0.75D, 0.625D), new SimpleAxisAlignedBB(0.0625D, 0.3125D, 0.3125D, 0.4375D, 0.75D, 0.6875D), new SimpleAxisAlignedBB(0.0625D, 0.3125D, 0.3125D, 0.4375D, 0.75D, 0.6875D)};
     protected static final AxisAlignedBB[] NORTH = new SimpleAxisAlignedBB[]{new SimpleAxisAlignedBB(0.375D, 0.4375D, 0.0625D, 0.625D, 0.75D, 0.3125D), new SimpleAxisAlignedBB(0.3125D, 0.3125D, 0.0625D, 0.6875D, 0.75D, 0.4375D), new SimpleAxisAlignedBB(0.3125D, 0.3125D, 0.0625D, 0.6875D, 0.75D, 0.4375D)};
     protected static final AxisAlignedBB[] SOUTH = new SimpleAxisAlignedBB[]{new SimpleAxisAlignedBB(0.375D, 0.4375D, 0.6875D, 0.625D, 0.75D, 0.9375D), new SimpleAxisAlignedBB(0.3125D, 0.3125D, 0.5625D, 0.6875D, 0.75D, 0.9375D), new SimpleAxisAlignedBB(0.3125D, 0.3125D, 0.5625D, 0.6875D, 0.75D, 0.9375D)};
     protected static final AxisAlignedBB[] ALL = new AxisAlignedBB[12];
+
+    private static final int[] FACES = new int[]{
+            0,
+            0,
+            0,
+            2,
+            3,
+            1,
+    };
+
+    private static final int[] FACING = new int[]{
+            3, 4, 2, 5,
+    };
 
     public BlockCocoa() {
         this(0);
@@ -44,12 +57,6 @@ public class BlockCocoa extends BlockTransparentMeta implements Faceable {
     public String getName() {
         return "Cocoa";
     }
-
-    @Override
-    public void setDamage(int meta) {
-        super.setDamage(meta);
-    }
-
 
     @Override
     public double getMinX() {
@@ -117,20 +124,14 @@ public class BlockCocoa extends BlockTransparentMeta implements Faceable {
 
     @Override
     public boolean place(Item item, Block block, Block target, BlockFace face, double fx, double fy, double fz, Player player) {
-        if (target.getId() == Block.WOOD && (target.getDamage() & 0x03) == BlockWood.JUNGLE) {
-            if (face != BlockFace.DOWN && face != BlockFace.UP) {
-                int[] faces = new int[]{
-                        0,
-                        0,
-                        0,
-                        2,
-                        3,
-                        1,
-                };
+        if (block.isLiquid() || !block.isAir() && level.getExtraBlock(this).isWater()) {
+            return false;
+        }
 
-                this.setDamage(faces[face.getIndex()]);
-                this.level.setBlock(block, this, true, true);
-                return true;
+        if (target.getId() == Block.LOG && (target.getDamage() & 0x03) == BlockWood.JUNGLE) {
+            if (face != BlockFace.DOWN && face != BlockFace.UP) {
+                this.setDamage(FACES[face.getIndex()]);
+                return level.setBlock(block, this, true);
             }
         }
         return false;
@@ -139,13 +140,9 @@ public class BlockCocoa extends BlockTransparentMeta implements Faceable {
     @Override
     public int onUpdate(int type) {
         if (type == Level.BLOCK_UPDATE_NORMAL) {
-            int[] faces = new int[]{
-                    3, 4, 2, 5, 3, 4, 2, 5, 3, 4, 2, 5
-            };
+            Block side = this.getSide(BlockFace.fromIndex(FACING[this.getDamage() & 0x3]));
 
-            Block side = this.getSide(BlockFace.fromIndex(faces[this.getDamage()]));
-
-            if (side.getId() != Block.WOOD && side.getDamage() != BlockWood.JUNGLE) {
+            if (side.getId() != Block.LOG && side.getDamage() != BlockWood.JUNGLE) {
                 this.getLevel().useBreakOn(this);
                 return Level.BLOCK_UPDATE_NORMAL;
             }
@@ -177,7 +174,7 @@ public class BlockCocoa extends BlockTransparentMeta implements Faceable {
     }
 
     @Override
-    public boolean onActivate(Item item, Player player) {
+    public boolean onActivate(Item item, BlockFace face, Player player) {
         if (item.getId() == Item.DYE && item.getDamage() == 0x0f) {
             Block block = this.clone();
             if (this.getDamage() / 4 < 2) {
@@ -218,7 +215,7 @@ public class BlockCocoa extends BlockTransparentMeta implements Faceable {
     }
 
     @Override
-    public Item toItem() {
+    public Item toItem(boolean addUserData) {
         return new ItemDye(DyeColor.BROWN.getDyeData());
     }
 
@@ -248,5 +245,15 @@ public class BlockCocoa extends BlockTransparentMeta implements Faceable {
     @Override
     public boolean sticksToPiston() {
         return false;
+    }
+
+    @Override
+    public boolean canProvideSupport(BlockFace face, SupportType type) {
+        return false;
+    }
+
+    @Override
+    public boolean isVegetation() {
+        return true;
     }
 }

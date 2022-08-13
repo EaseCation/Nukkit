@@ -5,6 +5,8 @@ import cn.nukkit.entity.Entity;
 import cn.nukkit.item.Item;
 import cn.nukkit.item.enchantment.Enchantment;
 import cn.nukkit.level.Level;
+import cn.nukkit.math.BlockFace;
+import cn.nukkit.math.Mth;
 import cn.nukkit.math.NukkitRandom;
 import cn.nukkit.nbt.tag.CompoundTag;
 import cn.nukkit.nbt.tag.DoubleTag;
@@ -17,9 +19,16 @@ import cn.nukkit.utils.BlockColor;
  * Created on 2015/12/8 by xtypr.
  * Package cn.nukkit.block in project Nukkit .
  */
-public class BlockTNT extends BlockSolid {
+public class BlockTNT extends BlockSolidMeta {
 
     public BlockTNT() {
+        this(0);
+    }
+
+    public BlockTNT(int meta) {
+        // 0b1 allow_underwater_bit
+        // 0b10 explode_bit
+        super(meta & 0b11);
     }
 
     @Override
@@ -74,9 +83,9 @@ public class BlockTNT extends BlockSolid {
                         .add(new DoubleTag("", this.y))
                         .add(new DoubleTag("", this.z + 0.5)))
                 .putList(new ListTag<DoubleTag>("Motion")
-                        .add(new DoubleTag("", -Math.sin(mot) * 0.02))
+                        .add(new DoubleTag("", -Mth.sin(mot) * 0.02))
                         .add(new DoubleTag("", 0.2))
-                        .add(new DoubleTag("", -Math.cos(mot) * 0.02)))
+                        .add(new DoubleTag("", -Mth.cos(mot) * 0.02)))
                 .putList(new ListTag<FloatTag>("Rotation")
                         .add(new FloatTag("", 0))
                         .add(new FloatTag("", 0)))
@@ -106,17 +115,21 @@ public class BlockTNT extends BlockSolid {
     }
 
     @Override
-    public boolean onActivate(Item item, Player player) {
-        if (item.getId() == Item.FLINT_STEEL) {
-            item.useOn(this);
+    public boolean onActivate(Item item, BlockFace face, Player player) {
+        if (item.getId() == Item.FLINT_AND_STEEL) {
+            if (player != null && !player.isCreative()) {
+                item.useOn(this);
+            }
             this.prime(80, player);
             return true;
         } else if (item.getId() == Item.FIRE_CHARGE) {
-            if (!player.isCreative()) item.count--;
+            if (player != null && !player.isCreative()) item.count--;
             this.prime(80, player);
             return true;
         } else if (item.hasEnchantment(Enchantment.ID_FIRE_ASPECT)) {
-            item.useOn(this);
+            if (player != null && !player.isCreative()) {
+                item.useOn(this);
+            }
             this.prime(80, player);
             return true;
         }
@@ -125,6 +138,6 @@ public class BlockTNT extends BlockSolid {
 
     @Override
     public BlockColor getColor() {
-        return BlockColor.TNT_BLOCK_COLOR;
+        return BlockColor.FIRE_BLOCK_COLOR;
     }
 }

@@ -1,9 +1,12 @@
 package cn.nukkit.block;
 
 import cn.nukkit.Player;
+import cn.nukkit.inventory.RecipeTag;
 import cn.nukkit.item.Item;
 import cn.nukkit.item.ItemTool;
+import cn.nukkit.math.BlockFace;
 import cn.nukkit.network.protocol.ContainerOpenPacket;
+import cn.nukkit.network.protocol.types.ContainerType;
 import cn.nukkit.utils.BlockColor;
 
 /**
@@ -21,7 +24,7 @@ public class BlockCraftingTable extends BlockSolid {
 
     @Override
     public int getId() {
-        return WORKBENCH;
+        return CRAFTING_TABLE;
     }
 
     @Override
@@ -45,17 +48,19 @@ public class BlockCraftingTable extends BlockSolid {
     }
 
     @Override
-    public boolean onActivate(Item item, Player player) {
+    public boolean onActivate(Item item, BlockFace face, Player player) {
         if (player != null) {
             player.craftingType = Player.CRAFTING_BIG;
+            player.recipeTag = RecipeTag.CRAFTING_TABLE;
             player.setCraftingGrid(player.getUIInventory().getBigCraftingGrid());
+
             ContainerOpenPacket pk = new ContainerOpenPacket();
+//            pk.windowId = Player.WORKBENCH_WINDOW_ID;
             pk.windowId = -1;
-            pk.type = 1;
+            pk.type = ContainerType.WORKBENCH;
             pk.x = (int) x;
             pk.y = (int) y;
             pk.z = (int) z;
-            pk.entityId = player.getId();
             player.dataPacket(pk);
         }
         return true;

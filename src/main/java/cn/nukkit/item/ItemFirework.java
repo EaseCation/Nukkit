@@ -6,6 +6,7 @@ import cn.nukkit.entity.Entity;
 import cn.nukkit.entity.item.EntityFirework;
 import cn.nukkit.level.Level;
 import cn.nukkit.math.BlockFace;
+import cn.nukkit.math.Mth;
 import cn.nukkit.math.Vector3;
 import cn.nukkit.nbt.NBTIO;
 import cn.nukkit.nbt.tag.CompoundTag;
@@ -33,7 +34,7 @@ public class ItemFirework extends Item {
     }
 
     public ItemFirework(Integer meta, int count) {
-        super(FIREWORKS, meta, count, "Fireworks");
+        super(FIREWORK_ROCKET, meta, count, "Fireworks");
         initNamedTag();
     }
 
@@ -69,6 +70,10 @@ public class ItemFirework extends Item {
 
     @Override
     public boolean onActivate(Level level, Player player, Block block, Block target, BlockFace face, double fx, double fy, double fz) {
+        if (player.isAdventure()) {
+            return false;
+        }
+
         if (block.canPassThrough()) {
             this.spawnFirework(level, block);
 
@@ -88,9 +93,9 @@ public class ItemFirework extends Item {
             this.spawnFirework(player.getLevel(), player);
 
             player.setMotion(new Vector3(
-                    -Math.sin(Math.toRadians(player.yaw)) * Math.cos(Math.toRadians(player.pitch)) * 2,
-                    -Math.sin(Math.toRadians(player.pitch)) * 2,
-                    Math.cos(Math.toRadians(player.yaw)) * Math.cos(Math.toRadians(player.pitch)) * 2));
+                    -Mth.sin(Math.toRadians(player.yaw)) * Mth.cos(Math.toRadians(player.pitch)) * 2,
+                    -Mth.sin(Math.toRadians(player.pitch)) * 2,
+                    Mth.cos(Math.toRadians(player.yaw)) * Mth.cos(Math.toRadians(player.pitch)) * 2));
 
             if (!player.isCreative()) {
                 this.count--;

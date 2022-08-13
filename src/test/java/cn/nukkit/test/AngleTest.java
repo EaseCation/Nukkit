@@ -16,7 +16,7 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 class AngleTest {
 
 	@DisplayName("Angle operations")
-	@Test
+//	@Test
 	void testAngle() {
 		Angle rd1 = fromRadian(1.0);
 		Angle rf1 = fromRadian(1.0f);

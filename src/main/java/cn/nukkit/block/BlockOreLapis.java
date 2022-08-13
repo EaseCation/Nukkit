@@ -49,7 +49,7 @@ public class BlockOreLapis extends BlockSolid {
         if (item.isPickaxe() && item.getTier() >= ItemTool.TIER_STONE) {
             Random random = ThreadLocalRandom.current();
             int count = 4 + random.nextInt(5);
-            Enchantment fortune = item.getEnchantment(Enchantment.ID_FORTUNE_DIGGING);
+            Enchantment fortune = item.getEnchantment(Enchantment.ID_FORTUNE);
             if (fortune != null && fortune.getLevel() >= 1) {
                 int i = random.nextInt(fortune.getLevel() + 2) - 1;
 

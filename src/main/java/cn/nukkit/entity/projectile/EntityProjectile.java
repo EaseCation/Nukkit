@@ -10,7 +10,7 @@ import cn.nukkit.event.entity.EntityDamageEvent.DamageCause;
 import cn.nukkit.level.MovingObjectPosition;
 import cn.nukkit.level.format.FullChunk;
 import cn.nukkit.math.AxisAlignedBB;
-import cn.nukkit.math.NukkitMath;
+import cn.nukkit.math.Mth;
 import cn.nukkit.math.Vector3;
 import cn.nukkit.nbt.tag.CompoundTag;
 
@@ -60,7 +60,7 @@ public abstract class EntityProjectile extends Entity {
     }
 
     public int getResultDamage() {
-        return NukkitMath.ceilDouble(Math.sqrt(this.motionX * this.motionX + this.motionY * this.motionY + this.motionZ * this.motionZ) * getDamage());
+        return Mth.ceil(Math.sqrt(this.motionX * this.motionX + this.motionY * this.motionY + this.motionZ * this.motionZ) * getDamage());
     }
 
     public boolean attack(EntityDamageEvent source) {
@@ -214,8 +214,8 @@ public abstract class EntityProjectile extends Entity {
 
     public void updateRotation() {
         double f = Math.sqrt((this.motionX * this.motionX) + (this.motionZ * this.motionZ));
-        this.yaw = Math.atan2(this.motionX, this.motionZ) * 180 / Math.PI;
-        this.pitch = Math.atan2(this.motionY, f) * 180 / Math.PI;
+        this.yaw = Mth.atan2(this.motionX, this.motionZ) * 180 / Math.PI;
+        this.pitch = Mth.atan2(this.motionY, f) * 180 / Math.PI;
     }
 
     public void inaccurate(float modifier) {

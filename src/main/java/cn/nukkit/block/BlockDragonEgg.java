@@ -2,6 +2,7 @@ package cn.nukkit.block;
 
 import cn.nukkit.event.block.BlockFromToEvent;
 import cn.nukkit.level.Level;
+import cn.nukkit.math.BlockFace;
 import cn.nukkit.network.protocol.LevelEventPacket;
 import cn.nukkit.utils.BlockColor;
 
@@ -39,7 +40,12 @@ public class BlockDragonEgg extends BlockFallable {
 
     @Override
     public BlockColor getColor() {
-        return BlockColor.OBSIDIAN_BLOCK_COLOR;
+        return BlockColor.BLACK_BLOCK_COLOR;
+    }
+
+    @Override
+    public boolean isSolid() {
+        return false;
     }
 
     @Override
@@ -60,7 +66,7 @@ public class BlockDragonEgg extends BlockFallable {
         for (int i = 0; i < 1000; ++i) {
             Block to = this.getLevel().getBlock(this.add(random.nextInt(-16, 16), random.nextInt(-16, 16), random.nextInt(-16, 16)));
             if (to.getId() == AIR) {
-                BlockFromToEvent event = new BlockFromToEvent(this, to);
+                BlockFromToEvent event = new BlockFromToEvent(this, 0, to);
                 this.level.getServer().getPluginManager().callEvent(event);
                 if (event.isCancelled()) return;
                 to = event.getTo();
@@ -89,6 +95,16 @@ public class BlockDragonEgg extends BlockFallable {
 
     @Override
     public boolean sticksToPiston() {
+        return false;
+    }
+
+    @Override
+    public boolean canContainWater() {
+        return true;
+    }
+
+    @Override
+    public boolean canProvideSupport(BlockFace face, SupportType type) {
         return false;
     }
 }

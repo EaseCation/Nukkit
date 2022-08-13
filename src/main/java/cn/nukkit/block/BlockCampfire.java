@@ -1,0 +1,375 @@
+package cn.nukkit.block;
+
+import cn.nukkit.Player;
+import cn.nukkit.blockentity.BlockEntity;
+import cn.nukkit.blockentity.BlockEntityCampfire;
+import cn.nukkit.blockentity.BlockEntityType;
+import cn.nukkit.entity.Entity;
+import cn.nukkit.entity.EntityLiving;
+import cn.nukkit.event.entity.EntityCombustByBlockEvent;
+import cn.nukkit.event.entity.EntityDamageByBlockEvent;
+import cn.nukkit.event.entity.EntityDamageEvent.DamageCause;
+import cn.nukkit.item.Item;
+import cn.nukkit.item.ItemID;
+import cn.nukkit.item.ItemTool;
+import cn.nukkit.item.enchantment.Enchantment;
+import cn.nukkit.item.enchantment.EnchantmentID;
+import cn.nukkit.level.GameRule;
+import cn.nukkit.level.Level;
+import cn.nukkit.math.BlockFace;
+import cn.nukkit.nbt.tag.CompoundTag;
+import cn.nukkit.network.protocol.LevelEventPacket;
+import cn.nukkit.network.protocol.LevelSoundEventPacket;
+import cn.nukkit.utils.BlockColor;
+import cn.nukkit.utils.Faceable;
+
+import javax.annotation.Nullable;
+
+public class BlockCampfire extends BlockTransparentMeta implements Faceable {
+
+    public static final int DIRECTION_MASK = 0b11;
+    public static final int EXTINGUISHED_BIT = 0b100;
+
+    public BlockCampfire() {
+        this(0);
+    }
+
+    public BlockCampfire(int meta) {
+        super(meta);
+    }
+
+    @Override
+    public int getId() {
+        return BLOCK_CAMPFIRE;
+    }
+
+    @Override
+    public String getName() {
+        return "Campfire";
+    }
+
+    @Override
+    public int getBlockEntityType() {
+        return BlockEntityType.CAMPFIRE;
+    }
+
+    @Override
+    public int getToolType() {
+        return ItemTool.TYPE_AXE;
+    }
+
+    @Override
+    public double getHardness() {
+        return 5;
+    }
+
+    @Override
+    public double getResistance() {
+        return 25;
+    }
+
+    @Override
+    public int getBurnChance() {
+        return 5;
+    }
+
+    @Override
+    public int getBurnAbility() {
+        return 20;
+    }
+
+    @Override
+    public int getLightLevel() {
+        return isExtinguished() ? 0 : 15;
+    }
+
+    @Override
+    public boolean isSolid() {
+        return false;
+    }
+
+    @Override
+    public boolean breaksWhenMoved() {
+        return true;
+    }
+
+    @Override
+    public boolean sticksToPiston() {
+        return false;
+    }
+
+    @Override
+    public double getMaxY() {
+        return this.y + (7 + 1) / 16.0; // + 1 pixel
+    }
+
+    @Override
+    public double getMinX() {
+        return this.x + 1 / 16.0; // + 1 pixel
+    }
+
+    @Override
+    public double getMinZ() {
+        return this.z + 1 / 16.0; // + 1 pixel
+    }
+
+    @Override
+    public double getMaxX() {
+        return this.x + 1 - 1 / 16.0; // - 1 pixel
+    }
+
+    @Override
+    public double getMaxZ() {
+        return this.z + 1 - 1 / 16.0; // - 1 pixel
+    }
+
+    @Override
+    public boolean canProvideSupport(BlockFace face, SupportType type) {
+        return false;
+    }
+
+    @Override
+    public BlockColor getColor() {
+        return BlockColor.PODZOL_BLOCK_COLOR;
+    }
+
+    @Override
+    public boolean canSilkTouch() {
+        return true;
+    }
+
+    @Override
+    public Item toItem(boolean addUserData) {
+        Item item = Item.get(ItemID.CAMPFIRE);
+        if (addUserData) {
+            BlockEntityCampfire blockEntity = getBlockEntity();
+            if (blockEntity != null) {
+                item.setCustomName(blockEntity.getName());
+                item.setRepairCost(blockEntity.getRepairCost());
+            }
+        }
+        return item;
+    }
+
+    @Override
+    public Item[] getDrops(Item item) {
+        return new Item[]{
+                Item.get(ItemID.COAL, 1, 2)
+        };
+    }
+
+    @Override
+    public boolean place(Item item, Block block, Block target, BlockFace face, double fx, double fy, double fz, Player player) {
+        if (player != null) {
+            setDamage(player.getHorizontalFacing().getOpposite().getHorizontalIndex());
+        }
+
+        if (block.isWaterSource()) {
+            setExtinguished(true);
+        }
+
+        if (!super.place(item, block, target, face, fx, fy, fz, player)) {
+            return false;
+        }
+        createBlockEntity(item);
+        return true;
+    }
+
+    @Override
+    public boolean canBeActivated() {
+        return true;
+    }
+
+    @Override
+    public boolean onActivate(Item item, BlockFace face, Player player) {
+        if (item.isShovel()) {
+            if (!tryDouseFire()) {
+                return false;
+            }
+
+            if (player != null && !player.isCreative()) {
+                item.useOn(this);
+            }
+
+            return true;
+        }
+
+        int id = item.getId();
+        if (id == Item.FLINT_AND_STEEL) {
+            if (player != null && !player.isCreative()) {
+                item.useOn(this); //FIXME: item.meta += 1; -- 07/31/2022
+            }
+
+            tryLightFire();
+
+            return true;
+        }
+        if (id == Item.FIRE_CHARGE) {
+            if (!tryLightFire()) {
+                return true;
+            }
+
+            if (player != null && !player.isCreative()) {
+                item.count--;
+            }
+
+            return true;
+        }
+        if (item.hasEnchantment(Enchantment.ID_FIRE_ASPECT)) {
+            if (!tryLightFire()) {
+                return false;
+            }
+
+            if (player != null && !player.isCreative()) {
+                item.useOn(this); //FIXME: item.meta += 1;
+            }
+
+            return true;
+        }
+
+        if (level.getExtraBlock(this).isWater()) {
+            return false;
+        }
+
+        BlockEntityCampfire blockEntity = getBlockEntity();
+        if (blockEntity == null) {
+            blockEntity = createBlockEntity(null);
+            if (blockEntity == null) {
+                return false;
+            }
+        }
+
+        if (!blockEntity.tryAddItem(item)) {
+            return false;
+        }
+
+        if (player != null && !player.isCreative()) {
+            item.count--;
+        }
+
+        level.addLevelEvent(this, LevelEventPacket.EVENT_SOUND_ITEM_FRAME_ITEM_ADDED);
+
+        blockEntity.spawnToAll();
+        return true;
+    }
+
+    @Override
+    public int onUpdate(int type) {
+        if (type == Level.BLOCK_UPDATE_NORMAL) {
+            boolean containWater = level.getExtraBlock(this).isWater();
+
+            if (containWater) {
+                BlockEntityCampfire blockEntity = getBlockEntity();
+                if (blockEntity != null) {
+                    blockEntity.dropAllItems();
+                }
+            }
+
+            if (!isExtinguished() && (containWater || up().isWater() || level.getExtraBlock(upVec()).isWater())) {
+                tryDouseFire();
+                return type;
+            }
+        }
+        return 0;
+    }
+
+    @Override
+    public boolean hasEntityCollision() {
+        return true;
+    }
+
+    @Override
+    public void onEntityCollide(Entity entity) {
+        if (isExtinguished()) {
+            if (entity instanceof EntityLiving && entity.isOnFire()) {
+                setExtinguished(false);
+                level.setBlock(this, this, true);
+            }
+            return;
+        }
+
+        if (!(entity instanceof EntityLiving) || entity instanceof Player && ((Player) entity).getInventory().getBoots().hasEnchantment(EnchantmentID.ID_FROST_WALKER)) {
+            return;
+        }
+
+        if (entity.level.gameRules.getBoolean(GameRule.FIRE_DAMAGE)) {
+            entity.attack(new EntityDamageByBlockEvent(this, entity, DamageCause.FIRE, 1));
+        }
+
+        EntityCombustByBlockEvent event = new EntityCombustByBlockEvent(this, entity, 8);
+        level.getServer().getPluginManager().callEvent(event);
+        if (!event.isCancelled() && entity.isAlive() && entity.noDamageTicks == 0) {
+            entity.setOnFire(event.getDuration());
+        }
+    }
+
+    @Override
+    public boolean canContainWater() {
+        return true;
+    }
+
+    @Override
+    public BlockFace getBlockFace() {
+        return BlockFace.fromHorizontalIndex(getDamage() & DIRECTION_MASK);
+    }
+
+    protected BlockEntityCampfire createBlockEntity(@Nullable Item item) {
+        CompoundTag nbt = BlockEntity.getDefaultCompound(this, BlockEntity.CAMPFIRE);
+
+        if (item != null && item.hasCustomName()) {
+            nbt.putString("CustomName", item.getCustomName());
+        }
+
+        return (BlockEntityCampfire) BlockEntity.createBlockEntity(BlockEntity.CAMPFIRE, getChunk(), nbt);
+    }
+
+    protected BlockEntityCampfire getBlockEntity() {
+        if (level == null) {
+            return null;
+        }
+        BlockEntity blockEntity = level.getBlockEntity(this);
+        if (blockEntity instanceof BlockEntityCampfire) {
+            return (BlockEntityCampfire) blockEntity;
+        }
+        return null;
+    }
+
+    public boolean isExtinguished() {
+        return (getDamage() & EXTINGUISHED_BIT) == EXTINGUISHED_BIT;
+    }
+
+    public void setExtinguished(boolean extinguished) {
+        setDamage(extinguished ? getDamage() | EXTINGUISHED_BIT : getDamage() & DIRECTION_MASK);
+    }
+
+    public boolean tryLightFire() {
+        if (!isExtinguished()) {
+            return false;
+        }
+
+        level.addLevelSoundEvent(this, LevelSoundEventPacket.SOUND_IGNITE);
+
+        setExtinguished(false);
+        if (!level.setBlock(this, this, true)) {
+            return false;
+        }
+
+        BlockEntityCampfire blockEntity = getBlockEntity();
+        if (blockEntity != null) {
+            blockEntity.scheduleUpdate();
+        }
+
+        return true;
+    }
+
+    public boolean tryDouseFire() {
+        if (isExtinguished()) {
+            return false;
+        }
+
+        level.addLevelSoundEvent(this, LevelSoundEventPacket.SOUND_EXTINGUISH_FIRE);
+
+        setExtinguished(true);
+        return level.setBlock(this, this, true);
+    }
+}

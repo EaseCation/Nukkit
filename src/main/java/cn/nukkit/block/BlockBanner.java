@@ -3,12 +3,13 @@ package cn.nukkit.block;
 import cn.nukkit.Player;
 import cn.nukkit.blockentity.BlockEntity;
 import cn.nukkit.blockentity.BlockEntityBanner;
+import cn.nukkit.blockentity.BlockEntityType;
 import cn.nukkit.item.Item;
 import cn.nukkit.item.ItemTool;
 import cn.nukkit.level.Level;
 import cn.nukkit.math.AxisAlignedBB;
 import cn.nukkit.math.BlockFace;
-import cn.nukkit.math.NukkitMath;
+import cn.nukkit.math.Mth;
 import cn.nukkit.nbt.tag.CompoundTag;
 import cn.nukkit.nbt.tag.IntTag;
 import cn.nukkit.nbt.tag.ListTag;
@@ -33,6 +34,11 @@ public class BlockBanner extends BlockTransparentMeta implements Faceable {
     @Override
     public int getId() {
         return STANDING_BANNER;
+    }
+
+    @Override
+    public int getBlockEntityType() {
+        return BlockEntityType.BANNER;
     }
 
     @Override
@@ -69,7 +75,7 @@ public class BlockBanner extends BlockTransparentMeta implements Faceable {
     public boolean place(Item item, Block block, Block target, BlockFace face, double fx, double fy, double fz, Player player) {
         if (face != BlockFace.DOWN) {
             if (face == BlockFace.UP) {
-                this.setDamage(NukkitMath.floorDouble(((player.yaw + 180) * 16 / 360) + 0.5) & 0x0f);
+                this.setDamage(Mth.floor(((player.yaw + 180) * 16 / 360) + 0.5) & 0x0f);
                 this.getLevel().setBlock(block, this, true);
             } else {
                 this.setDamage(face.getIndex());
@@ -108,7 +114,7 @@ public class BlockBanner extends BlockTransparentMeta implements Faceable {
     }
 
     @Override
-    public Item toItem() {
+    public Item toItem(boolean addUserData) {
         BlockEntity blockEntity = this.getLevel().getBlockEntity(this);
         Item item = Item.get(Item.BANNER);
         if (blockEntity instanceof BlockEntityBanner) {
@@ -153,5 +159,20 @@ public class BlockBanner extends BlockTransparentMeta implements Faceable {
         }
 
         return DyeColor.WHITE;
+    }
+
+    @Override
+    public boolean isSolid() {
+        return false;
+    }
+
+    @Override
+    public boolean canContainWater() {
+        return true;
+    }
+
+    @Override
+    public boolean canProvideSupport(BlockFace face, SupportType type) {
+        return false;
     }
 }

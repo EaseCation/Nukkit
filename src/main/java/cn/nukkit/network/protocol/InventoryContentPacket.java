@@ -16,13 +16,6 @@ public class InventoryContentPacket extends DataPacket {
         return NETWORK_ID;
     }
 
-    public static final int SPECIAL_INVENTORY = 0;
-    public static final int SPECIAL_OFFHAND = 0x77;
-    public static final int SPECIAL_ARMOR = 0x78;
-    public static final int SPECIAL_CREATIVE = 0x79;
-    public static final int SPECIAL_HOTBAR = 0x7a;
-    public static final int SPECIAL_FIXED_INVENTORY = 0x7b;
-
     public int inventoryId;
     public Item[] slots = new Item[0];
 
@@ -34,13 +27,6 @@ public class InventoryContentPacket extends DataPacket {
 
     @Override
     public void decode() {
-        this.inventoryId = (int) this.getUnsignedVarInt();
-        int count = (int) this.getUnsignedVarInt();
-        this.slots = new Item[count];
-
-        for (int s = 0; s < count && !this.feof(); ++s) {
-            this.slots[s] = this.getSlot();
-        }
     }
 
     @Override

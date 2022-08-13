@@ -15,6 +15,6 @@ public class ItemSlimeball extends Item {
     }
 
     public ItemSlimeball(Integer meta, int count) {
-        super(SLIMEBALL, meta, count, "Slimeball");
+        super(SLIME_BALL, meta, count, "Slimeball");
     }
 }

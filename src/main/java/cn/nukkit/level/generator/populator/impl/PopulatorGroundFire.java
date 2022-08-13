@@ -19,12 +19,12 @@ public class PopulatorGroundFire extends PopulatorSurfaceBlock {
 
     @Override
     protected int getBlockId(int x, int z, NukkitRandom random, FullChunk chunk) {
-        return FIRE << 4;
+        return FIRE;
     }
 
     @Override
-    protected void placeBlock(int x, int y, int z, int id, FullChunk chunk, NukkitRandom random) {
-        super.placeBlock(x, y, z, id, chunk, random);
+    protected void placeBlock(int x, int y, int z, int id, int meta, FullChunk chunk, NukkitRandom random) {
+        super.placeBlock(x, y, z, id, meta, chunk, random);
         chunk.setBlockLight(x, y, z, Block.light[FIRE]);
     }
 
@@ -32,7 +32,7 @@ public class PopulatorGroundFire extends PopulatorSurfaceBlock {
     protected int getHighestWorkableBlock(ChunkManager level, int x, int z, FullChunk chunk) {
         int y;
         for (y = 0; y <= 127; ++y) {
-            int b = chunk.getBlockId(x, y, z);
+            int b = chunk.getBlockId(0, x, y, z);
             if (b == Block.AIR) {
                 break;
             }

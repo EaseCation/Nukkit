@@ -34,9 +34,9 @@ public class PopulatorLava extends Populator {
                 int x = random.nextRange(0, 15);
                 int z = random.nextRange(0, 15);
                 int y = this.getHighestWorkableBlock(chunk, x, z);
-                if (y != -1 && chunk.getBlockId(x, y, z) == Block.AIR) {
-                    chunk.setBlock(x, y, z, Block.LAVA);
-                    chunk.setBlockLight(x, y, z, Block.light[Block.LAVA]);
+                if (y != -1 && chunk.getBlockId(0, x, y, z) == Block.AIR) {
+                    chunk.setBlock(0, x, y, z, Block.FLOWING_LAVA);
+                    chunk.setBlockLight(x, y, z, Block.light[Block.FLOWING_LAVA]);
                     this.lavaSpread(bx + x, y, bz + z);
                 }
             }
@@ -44,10 +44,10 @@ public class PopulatorLava extends Populator {
     }
 
     private int getFlowDecay(int x1, int y1, int z1, int x2, int y2, int z2) {
-        if (this.level.getBlockIdAt(x1, y1, z1) != this.level.getBlockIdAt(x2, y2, z2)) {
+        if (this.level.getBlockIdAt(0, x1, y1, z1) != this.level.getBlockIdAt(0, x2, y2, z2)) {
             return -1;
         } else {
-            return this.level.getBlockDataAt(x2, y2, z2);
+            return this.level.getBlockDataAt(0, x2, y2, z2);
         }
     }
 
@@ -81,9 +81,9 @@ public class PopulatorLava extends Populator {
             if (k != decay) {
                 decay = k;
                 if (decay < 0) {
-                    this.level.setBlockAt(x, y, z, 0);
+                    this.level.setBlockAt(0, x, y, z, 0);
                 } else {
-                    this.level.setBlockAt(x, y, z, Block.LAVA, decay);
+                    this.level.setBlockAt(0, x, y, z, Block.FLOWING_LAVA, decay);
                     this.lavaSpread(x, y, z);
                     return;
                 }
@@ -120,15 +120,15 @@ public class PopulatorLava extends Populator {
     }
 
     private void flowIntoBlock(int x, int y, int z, int newFlowDecay) {
-        if (this.level.getBlockIdAt(x, y, z) == Block.AIR) {
-            this.level.setBlockAt(x, y, z, Block.LAVA, newFlowDecay);
+        if (this.level.getBlockIdAt(0, x, y, z) == Block.AIR) {
+            this.level.setBlockAt(0, x, y, z, Block.FLOWING_LAVA, newFlowDecay);
             this.lavaSpread(x, y, z);
         }
     }
 
     private boolean canFlowInto(int x, int y, int z) {
-        int id = this.level.getBlockIdAt(x, y, z);
-        return id == Block.AIR || id == Block.LAVA || id == Block.STILL_LAVA;
+        int id = this.level.getBlockIdAt(0, x, y, z);
+        return id == Block.AIR || id == Block.FLOWING_LAVA || id == Block.LAVA;
     }
 
     private int calculateFlowCost(int xx, int yy, int zz, int accumulatedCost, int previousDirection) {
@@ -154,7 +154,7 @@ public class PopulatorLava extends Populator {
                 }
                 if (!this.canFlowInto(x, y, z)) {
                     continue;
-                } else if (this.canFlowInto(x, y, z) && this.level.getBlockDataAt(x, y, z) == 0) {
+                } else if (this.canFlowInto(x, y, z) && this.level.getBlockDataAt(0, x, y, z) == 0) {
                     continue;
                 } else if (this.canFlowInto(x, y - 1, z)) {
                     return accumulatedCost;
@@ -220,7 +220,7 @@ public class PopulatorLava extends Populator {
     private int getHighestWorkableBlock(FullChunk chunk, int x, int z) {
         int y;
         for (y = 127; y >= 0; y--) {
-            int b = chunk.getBlockId(x, y, z);
+            int b = chunk.getBlockId(0, x, y, z);
             if (b == Block.AIR) {
                 break;
             }

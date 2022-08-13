@@ -17,7 +17,7 @@ public abstract class PopulatorSurfaceBlock extends PopulatorCount {
         int z = random.nextBoundedInt(16);
         int y = getHighestWorkableBlock(level, x, z, chunk);
         if (y > 0 && canStay(x, y, z, chunk)) {
-            placeBlock(x, y, z, getBlockId(x, z, random, chunk), chunk, random);
+            placeBlock(x, y, z, getBlockId(x, z, random, chunk), getBlockMeta(x, z, random, chunk), chunk, random);
         }
     }
 
@@ -25,12 +25,16 @@ public abstract class PopulatorSurfaceBlock extends PopulatorCount {
 
     protected abstract int getBlockId(int x, int z, NukkitRandom random, FullChunk chunk);
 
+    protected int getBlockMeta(int x, int z, NukkitRandom random, FullChunk chunk) {
+        return 0;
+    }
+
     @Override
     protected int getHighestWorkableBlock(ChunkManager level, int x, int z, FullChunk chunk) {
         int y;
         //start at 254 because we add one afterwards
         for (y = 254; y >= 0; --y) {
-            if (!PopulatorHelpers.isNonSolid(chunk.getBlockId(x, y, z))) {
+            if (!PopulatorHelpers.isNonSolid(chunk.getBlockId(0, x, y, z))) {
                 break;
             }
         }
@@ -38,7 +42,7 @@ public abstract class PopulatorSurfaceBlock extends PopulatorCount {
         return y == 0 ? -1 : ++y;
     }
 
-    protected void placeBlock(int x, int y, int z, int id, FullChunk chunk, NukkitRandom random) {
-        chunk.setFullBlockId(x, y, z, id);
+    protected void placeBlock(int x, int y, int z, int id, int meta, FullChunk chunk, NukkitRandom random) {
+        chunk.setBlock(0, x, y, z, id, meta);
     }
 }

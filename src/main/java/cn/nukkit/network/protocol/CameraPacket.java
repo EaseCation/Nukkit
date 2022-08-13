@@ -15,8 +15,6 @@ public class CameraPacket extends DataPacket {
 
     @Override
     public void decode() {
-        this.cameraUniqueId = this.getVarLong();
-        this.playerUniqueId = this.getVarLong();
     }
 
     @Override

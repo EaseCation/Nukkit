@@ -1,8 +1,15 @@
 package cn.nukkit.block;
 
+import cn.nukkit.Player;
+import cn.nukkit.blockentity.BlockEntity;
+import cn.nukkit.blockentity.BlockEntityEndGateway;
+import cn.nukkit.blockentity.BlockEntityType;
 import cn.nukkit.item.Item;
 import cn.nukkit.item.ItemBlock;
+import cn.nukkit.math.BlockFace;
 import cn.nukkit.utils.BlockColor;
+
+import javax.annotation.Nullable;
 
 /**
  * @author PikyCZ
@@ -20,6 +27,11 @@ public class BlockEndGateway extends BlockTransparent {
     @Override
     public int getId() {
         return END_GATEWAY;
+    }
+
+    @Override
+    public int getBlockEntityType() {
+        return BlockEntityType.END_GATEWAY;
     }
 
     @Override
@@ -63,7 +75,7 @@ public class BlockEndGateway extends BlockTransparent {
     }
 
     @Override
-    public Item toItem() {
+    public Item toItem(boolean addUserData) {
         return new ItemBlock(Block.get(BlockID.AIR));
     }
 
@@ -80,5 +92,35 @@ public class BlockEndGateway extends BlockTransparent {
     @Override
     public boolean canBePulled() {
         return false;
+    }
+
+    @Override
+    public boolean canProvideSupport(BlockFace face, SupportType type) {
+        return false;
+    }
+
+    @Override
+    public boolean place(Item item, Block block, Block target, BlockFace face, double fx, double fy, double fz, Player player) {
+        if (!super.place(item, block, target, face, fx, fy, fz, player)) {
+            return false;
+        }
+        createBlockEntity(item);
+        return true;
+    }
+
+    protected BlockEntityEndGateway createBlockEntity(@Nullable Item item) {
+        return (BlockEntityEndGateway) BlockEntity.createBlockEntity(BlockEntity.END_GATEWAY, getChunk(),
+                BlockEntity.getDefaultCompound(this, BlockEntity.END_GATEWAY));
+    }
+
+    protected BlockEntityEndGateway getBlockEntity() {
+        if (level == null) {
+            return null;
+        }
+        BlockEntity blockEntity = level.getBlockEntity(this);
+        if (blockEntity instanceof BlockEntityEndGateway) {
+            return (BlockEntityEndGateway) blockEntity;
+        }
+        return null;
     }
 }

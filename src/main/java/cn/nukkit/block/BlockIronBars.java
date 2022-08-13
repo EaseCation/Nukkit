@@ -40,7 +40,7 @@ public class BlockIronBars extends BlockThin {
     }
 
     @Override
-    public Item toItem() {
+    public Item toItem(boolean addUserData) {
         return new ItemBlock(this, 0);
     }
 
@@ -48,7 +48,7 @@ public class BlockIronBars extends BlockThin {
     public Item[] getDrops(Item item) {
         if (item.isPickaxe() && item.getTier() >= ItemTool.TIER_WOODEN) {
             return new Item[]{
-                    this.toItem()
+                    this.toItem(true)
             };
         } else {
             return new Item[0];
@@ -57,7 +57,7 @@ public class BlockIronBars extends BlockThin {
 
     @Override
     public BlockColor getColor() {
-        return BlockColor.IRON_BLOCK_COLOR;
+        return BlockColor.METAL_BLOCK_COLOR;
     }
 
     @Override

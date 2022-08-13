@@ -28,9 +28,4 @@ public class BlockFurnace extends BlockFurnaceBurning {
     public int getLightLevel() {
         return 0;
     }
-
-    @Override
-    public boolean canHarvestWithHand() {
-        return false;
-    }
 }

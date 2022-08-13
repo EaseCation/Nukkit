@@ -1,6 +1,7 @@
 package cn.nukkit.inventory;
 
 import cn.nukkit.item.Item;
+import it.unimi.dsi.fastutil.objects.ObjectArrayList;
 import lombok.ToString;
 
 import java.util.*;
@@ -16,18 +17,20 @@ public class ShapelessRecipe implements CraftingRecipe {
 
     private final Item output;
 
-    private long least,most;
+    private long least, most;
 
     private final List<Item> ingredients;
     private final List<Item> ingredientsAggregate;
 
     private final int priority;
 
-    public ShapelessRecipe(Item result, Collection<Item> ingredients) {
-        this(null, 10, result, ingredients);
+    private final RecipeTag tag;
+
+    public ShapelessRecipe(Item result, Collection<Item> ingredients, RecipeTag tag) {
+        this(null, 10, result, ingredients, tag);
     }
 
-    public ShapelessRecipe(String recipeId, int priority, Item result, Collection<Item> ingredients) {
+    public ShapelessRecipe(String recipeId, int priority, Item result, Collection<Item> ingredients, RecipeTag tag) {
         this.recipeId = recipeId;
         this.priority = priority;
         this.output = result.clone();
@@ -35,8 +38,8 @@ public class ShapelessRecipe implements CraftingRecipe {
             throw new IllegalArgumentException("Shapeless recipes cannot have more than 9 ingredients");
         }
 
-        this.ingredients = new ArrayList<>();
-        this.ingredientsAggregate = new ArrayList<>();
+        this.ingredients = new ObjectArrayList<>();
+        this.ingredientsAggregate = new ObjectArrayList<>();
 
         for (Item item : ingredients) {
             if (item.getCount() < 1) {
@@ -56,6 +59,8 @@ public class ShapelessRecipe implements CraftingRecipe {
         }
 
         this.ingredientsAggregate.sort(CraftingManager.recipeComparator);
+
+        this.tag = tag;
     }
 
     @Override
@@ -84,7 +89,7 @@ public class ShapelessRecipe implements CraftingRecipe {
     }
 
     public List<Item> getIngredientList() {
-        List<Item> ingredients = new ArrayList<>();
+        List<Item> ingredients = new ObjectArrayList<>();
         for (Item ingredient : this.ingredients) {
             ingredients.add(ingredient.clone());
         }
@@ -107,13 +112,18 @@ public class ShapelessRecipe implements CraftingRecipe {
     }
 
     @Override
+    public RecipeTag getTag() {
+        return tag;
+    }
+
+    @Override
     public boolean requiresCraftingTable() {
         return this.ingredients.size() > 4;
     }
 
     @Override
     public List<Item> getExtraResults() {
-        return new ArrayList<>();
+        return new ObjectArrayList<>();
     }
 
     @Override
@@ -127,14 +137,14 @@ public class ShapelessRecipe implements CraftingRecipe {
     }
 
     public boolean matchItems(List<Item> inputList, List<Item> extraOutputList, int multiplier) {
-        List<Item> haveInputs = new ArrayList<>();
+        List<Item> haveInputs = new ObjectArrayList<>();
         for (Item item : inputList) {
             if (item.isNull())
                 continue;
             haveInputs.add(item.clone());
         }
-        List<Item> needInputs = new ArrayList<>();
-        if(multiplier != 1){
+        List<Item> needInputs = new ObjectArrayList<>();
+        if (multiplier != 1) {
             for (Item item : ingredientsAggregate) {
                 if (item.isNull())
                     continue;
@@ -154,15 +164,15 @@ public class ShapelessRecipe implements CraftingRecipe {
             return false;
         }
 
-        List<Item> haveOutputs = new ArrayList<>();
+        List<Item> haveOutputs = new ObjectArrayList<>();
         for (Item item : extraOutputList) {
             if (item.isNull())
                 continue;
             haveOutputs.add(item.clone());
         }
         haveOutputs.sort(CraftingManager.recipeComparator);
-        List<Item> needOutputs = new ArrayList<>();
-        if(multiplier != 1){
+        List<Item> needOutputs = new ObjectArrayList<>();
+        if (multiplier != 1) {
             for (Item item : getExtraResults()) {
                 if (item.isNull())
                     continue;
@@ -196,8 +206,8 @@ public class ShapelessRecipe implements CraftingRecipe {
     }
 
     private boolean matchItemList(List<Item> haveItems, List<Item> needItems) {
-        for (Item needItem : new ArrayList<>(needItems)) {
-            for (Item haveItem : new ArrayList<>(haveItems)) {
+        for (Item needItem : new ObjectArrayList<>(needItems)) {
+            for (Item haveItem : new ObjectArrayList<>(haveItems)) {
                 if (needItem.equals(haveItem, needItem.hasMeta(), needItem.hasCompoundTag())) {
                     int amount = Math.min(haveItem.getCount(), needItem.getCount());
                     needItem.setCount(needItem.getCount() - amount);

@@ -1,8 +1,12 @@
 package cn.nukkit.block;
 
+import cn.nukkit.Player;
 import cn.nukkit.item.Item;
 import cn.nukkit.item.ItemClay;
+import cn.nukkit.item.ItemDye;
+import cn.nukkit.item.ItemID;
 import cn.nukkit.item.ItemTool;
+import cn.nukkit.math.BlockFace;
 import cn.nukkit.utils.BlockColor;
 
 /**
@@ -30,7 +34,7 @@ public class BlockClay extends BlockSolid {
 
     @Override
     public int getId() {
-        return CLAY_BLOCK;
+        return CLAY;
     }
 
     @Override
@@ -53,5 +57,19 @@ public class BlockClay extends BlockSolid {
     @Override
     public boolean canSilkTouch() {
         return true;
+    }
+
+    @Override
+    public boolean canBeActivated() {
+        return true;
+    }
+
+    @Override
+    public boolean onActivate(Item item, BlockFace face, Player player) {
+        if (item.getId() == ItemID.DYE && item.getDamage() == ItemDye.BONE_MEAL) {
+            //TODO: generate seagrass, coral and coral fan
+            return false;
+        }
+        return false;
     }
 }

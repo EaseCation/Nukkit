@@ -4,6 +4,7 @@ import com.google.common.collect.Iterators;
 
 import java.util.Iterator;
 import java.util.Random;
+import java.util.concurrent.ThreadLocalRandom;
 import java.util.function.Predicate;
 
 public enum BlockFace {
@@ -87,7 +88,7 @@ public enum BlockFace {
      * @return block face
      */
     public static BlockFace fromIndex(int index) {
-        return VALUES[MathHelper.abs(index % VALUES.length)];
+        return VALUES[Math.abs(index % VALUES.length)];
     }
 
     /**
@@ -97,7 +98,11 @@ public enum BlockFace {
      * @return block face
      */
     public static BlockFace fromHorizontalIndex(int index) {
-        return HORIZONTALS[MathHelper.abs(index % HORIZONTALS.length)];
+        return HORIZONTALS[index & 0x3];
+    }
+
+    public static BlockFace fromReversedHorizontalIndex(int index) {
+        return VALUES[5 - (index & 0x3)];
     }
 
     /**
@@ -107,7 +112,7 @@ public enum BlockFace {
      * @return block face
      */
     public static BlockFace fromHorizontalAngle(double angle) {
-        return fromHorizontalIndex(NukkitMath.floorDouble(angle / 90.0D + 0.5D) & 3);
+        return fromHorizontalIndex(Mth.floor(angle / 90.0D + 0.5D) & 3);
     }
 
     public static BlockFace fromAxis(AxisDirection axisDirection, Axis axis) {
@@ -130,6 +135,14 @@ public enum BlockFace {
         return VALUES[rand.nextInt(VALUES.length)];
     }
 
+    public static BlockFace random() {
+        return random(ThreadLocalRandom.current());
+    }
+
+    public static BlockFace random(NukkitRandom rand) {
+        return VALUES[rand.nextBoundedInt(VALUES.length)];
+    }
+
     /**
      * Get the index of this BlockFace (0-5). The order is D-U-N-S-W-E
      *
@@ -146,6 +159,10 @@ public enum BlockFace {
      */
     public int getHorizontalIndex() {
         return horizontalIndex;
+    }
+
+    public int getReversedHorizontalIndex() {
+        return 5 - index;
     }
 
     /**
@@ -269,6 +286,15 @@ public enum BlockFace {
         }
     }
 
+    public boolean isHorizontal() {
+        return horizontalIndex != -1;
+    }
+
+    public boolean isVertical() {
+        return horizontalIndex == -1;
+    }
+
+    @Override
     public String toString() {
         return name;
     }
@@ -308,10 +334,12 @@ public enum BlockFace {
             return name;
         }
 
+        @Override
         public boolean test(BlockFace face) {
             return face != null && face.getAxis() == this;
         }
 
+        @Override
         public String toString() {
             return name;
         }
@@ -333,6 +361,7 @@ public enum BlockFace {
             return offset;
         }
 
+        @Override
         public String toString() {
             return description;
         }
@@ -350,20 +379,30 @@ public enum BlockFace {
 
         private BlockFace[] faces;
 
-        public BlockFace random(NukkitRandom rand) { //todo Default Random?
+        public BlockFace random(NukkitRandom rand) {
             return faces[rand.nextBoundedInt(faces.length)];
         }
 
+        public BlockFace random(Random rand) {
+            return faces[rand.nextInt(faces.length)];
+        }
+
+        public BlockFace random() {
+            return random(ThreadLocalRandom.current());
+        }
+
+        @Override
         public boolean test(BlockFace face) {
             return face != null && face.getAxis().getPlane() == this;
         }
 
+        @Override
         public Iterator<BlockFace> iterator() {
             return Iterators.forArray(faces);
         }
     }
 
-    public static BlockFace[] values0() {
+    public static BlockFace[] getValues() {
         return VALUES;
     }
 }

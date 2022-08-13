@@ -1,6 +1,12 @@
 package cn.nukkit.event;
 
+import cn.nukkit.Server;
 import cn.nukkit.utils.EventException;
+
+import java.util.Deque;
+import java.util.concurrent.ConcurrentLinkedDeque;
+
+import static cn.nukkit.SharedConstants.*;
 
 /**
  * 描述服务器中可能发生的事情的类。<br>
@@ -26,8 +32,20 @@ public abstract class Event {
     protected String eventName = null;
     private boolean isCancelled = false;
 
-    final public String getEventName() {
+    // debug
+    private final Throwable createStackTrace;
+    private final Deque<Throwable> cancelStackTrace = EVENT_CANCEL_STACK_TRACE ? new ConcurrentLinkedDeque<>() : null;
+
+    protected Event() {
+        createStackTrace = EVENT_CREATE_STACK_TRACE ? new Throwable() : null;
+    }
+
+    public final String getEventName() {
         return eventName == null ? getClass().getName() : eventName;
+    }
+
+    public final void call() {
+        Server.getInstance().getPluginManager().callEvent(this);
     }
 
     public boolean isCancelled() {
@@ -46,5 +64,17 @@ public abstract class Event {
             throw new EventException("Event is not Cancellable");
         }
         isCancelled = value;
+
+        if (EVENT_CANCEL_STACK_TRACE) {
+            cancelStackTrace.add(new Throwable());
+        }
+    }
+
+    public final Throwable debugCreateStackTrace() {
+        return createStackTrace;
+    }
+
+    public final Deque<Throwable> debugCancelStackTrace() {
+        return cancelStackTrace;
     }
 }

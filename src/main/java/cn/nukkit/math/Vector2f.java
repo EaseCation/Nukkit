@@ -30,11 +30,11 @@ public class Vector2f {
     }
 
     public int getFloorX() {
-        return NukkitMath.floorFloat(this.x);
+        return Mth.floor(this.x);
     }
 
     public int getFloorY() {
-        return NukkitMath.floorFloat(this.y);
+        return Mth.floor(this.y);
     }
 
     public Vector2f add(float x) {
@@ -102,7 +102,9 @@ public class Vector2f {
     }
 
     public double distanceSquared(float x, float y) {
-        return Math.pow(this.x - x, 2) + Math.pow(this.y - y, 2);
+        double xDiff = this.x - x;
+        double yDiff = this.y - y;
+        return xDiff * xDiff + yDiff * yDiff;
     }
 
     public double distanceSquared(Vector2f vector) {

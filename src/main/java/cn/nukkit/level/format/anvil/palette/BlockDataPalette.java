@@ -1,7 +1,7 @@
 package cn.nukkit.level.format.anvil.palette;
 
 import cn.nukkit.Server;
-import cn.nukkit.math.MathHelper;
+import cn.nukkit.math.Mth;
 import cn.nukkit.utils.ThreadCache;
 import com.google.common.base.Preconditions;
 
@@ -196,7 +196,7 @@ public final class BlockDataPalette implements Cloneable {
             CharPalette palette = new CharPalette();
             palette.set(keys);
 
-            int bits = MathHelper.log2(unique - 1);
+            int bits = Mth.log2(unique - 1);
             BitArray4096 encodedData = new BitArray4096(bits);
 
             for (int i = 0; i < raw.length; i++) {

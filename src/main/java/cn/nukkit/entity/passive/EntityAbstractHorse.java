@@ -11,6 +11,7 @@ import cn.nukkit.inventory.HorseInventory;
 import cn.nukkit.inventory.InventoryHolder;
 import cn.nukkit.item.Item;
 import cn.nukkit.level.format.FullChunk;
+import cn.nukkit.math.Mth;
 import cn.nukkit.math.Vector3f;
 import cn.nukkit.nbt.NBTIO;
 import cn.nukkit.nbt.tag.CompoundTag;
@@ -161,7 +162,7 @@ public abstract class EntityAbstractHorse extends EntityAnimal implements Entity
             double friction = 1d - this.getDrag();
 
             if (this.onGround && (Math.abs(this.motionX) > 0.00001 || Math.abs(this.motionZ) > 0.00001)) {
-                friction = this.getLevel().getBlock(this.temporalVector.setComponents((int) Math.floor(this.x), (int) Math.floor(this.y - 1), (int) Math.floor(this.z) - 1)).getFrictionFactor() * friction;
+                friction = this.getLevel().getBlock(this.temporalVector.setComponents(Mth.floor(this.x), Mth.floor(this.y - 1), Mth.floor(this.z) - 1)).getFrictionFactor() * friction;
             }
 
             this.motionX *= friction;
@@ -202,8 +203,8 @@ public abstract class EntityAbstractHorse extends EntityAnimal implements Entity
             f = friction / f;
             motionX = motionX * f;
             motionY = motionY * f;
-            double f1 = Math.sin(this.yaw * 0.017453292);
-            double f2 = Math.cos(this.yaw * 0.017453292);
+            double f1 = Mth.sin(this.yaw * 0.017453292);
+            double f2 = Mth.cos(this.yaw * 0.017453292);
             this.motionX = (motionX * f2 - motionY * f1);
             this.motionZ = (motionY * f2 + motionX * f1);
         } else {

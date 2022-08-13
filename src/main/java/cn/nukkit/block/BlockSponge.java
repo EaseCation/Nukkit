@@ -3,15 +3,13 @@ package cn.nukkit.block;
 import cn.nukkit.Player;
 import cn.nukkit.item.Item;
 import cn.nukkit.level.Level;
-import cn.nukkit.level.particle.SmokeParticle;
+import cn.nukkit.level.particle.DestroyBlockParticle;
 import cn.nukkit.math.BlockFace;
 import cn.nukkit.network.protocol.LevelEventPacket;
 import cn.nukkit.utils.BlockColor;
 
 import java.util.ArrayDeque;
 import java.util.Queue;
-import java.util.Random;
-import java.util.concurrent.ThreadLocalRandom;
 
 /**
  * author: Angelic47
@@ -63,27 +61,15 @@ public class BlockSponge extends BlockSolidMeta {
     public boolean place(Item item, Block block, Block target, BlockFace face, double fx, double fy, double fz, Player player) {
         if (this.getDamage() == WET && level.getDimension() == Level.DIMENSION_NETHER) {
             level.setBlock(block, Block.get(BlockID.SPONGE, DRY), true, true);
+
             this.getLevel().addLevelEvent(block.add(0.5, 0.875, 0.5), LevelEventPacket.EVENT_SOUND_EXPLODE);
-
-            Random random = ThreadLocalRandom.current();
-            for (int i = 0; i < 8; ++i) {
-                level.addParticle(new SmokeParticle(block.add(random.nextDouble(), 1, random.nextDouble())));
-            }
-
             return true;
-        } else if (this.getDamage() == DRY && block instanceof BlockWater && performWaterAbsorb(block)) {
+        }
+
+        if (this.getDamage() == DRY && block instanceof BlockWater && performWaterAbsorb(block)) { //TODO: addToRandomTickingQueue(1)
             level.setBlock(block, Block.get(BlockID.SPONGE, WET), true, true);
 
-            for (int i = 0; i < 4; i++) {
-                LevelEventPacket packet = new LevelEventPacket();
-                packet.evid = LevelEventPacket.EVENT_PARTICLE_DESTROY;
-                packet.x = (float) block.getX() + 0.5f;
-                packet.y = (float) block.getY() + 1f;
-                packet.z = (float) block.getZ() + 0.5f;
-                packet.data = BlockID.WATER;
-                level.addChunkPacket(getChunkX(), getChunkZ(), packet);
-            }
-
+            level.addParticle(new DestroyBlockParticle(this.add(0.5, 1, 0.5), Block.get(BlockID.WATER)));
             return true;
         }
 
@@ -101,8 +87,8 @@ public class BlockSponge extends BlockSolidMeta {
             for (BlockFace face : BlockFace.values()) {
 
                 Block faceBlock = entry.block.getSide(face);
-                if (faceBlock.getId() == BlockID.WATER || faceBlock.getId() == BlockID.STILL_WATER) {
-                    this.level.setBlock(faceBlock, Block.get(BlockID.AIR));
+                if (faceBlock.getId() == BlockID.FLOWING_WATER || faceBlock.getId() == BlockID.WATER) {
+                    this.level.setBlock(faceBlock, Block.get(BlockID.AIR), true);
                     ++waterRemoved;
                     if (entry.distance < 6) {
                         entries.add(new Entry(faceBlock, entry.distance + 1));

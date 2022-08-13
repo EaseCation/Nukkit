@@ -11,6 +11,8 @@ import cn.nukkit.utils.Faceable;
  */
 public abstract class BlockTerracottaGlazed extends BlockSolidMeta implements Faceable {
 
+    private static final int[] FACES = {2, 5, 3, 4};
+
     public BlockTerracottaGlazed() {
         this(0);
     }
@@ -36,13 +38,12 @@ public abstract class BlockTerracottaGlazed extends BlockSolidMeta implements Fa
 
     @Override
     public Item[] getDrops(Item item) {
-        return item.getTier() >= ItemTool.TIER_WOODEN ? new Item[]{this.toItem()} : new Item[0];
+        return item.getTier() >= ItemTool.TIER_WOODEN ? new Item[]{this.toItem(true)} : new Item[0];
     }
 
     @Override
     public boolean place(Item item, Block block, Block target, BlockFace face, double fx, double fy, double fz, Player player) {
-        int[] faces = {2, 5, 3, 4};
-        this.setDamage(faces[player != null ? player.getDirection().getHorizontalIndex() : 0]);
+        this.setDamage(FACES[player != null ? player.getDirection().getHorizontalIndex() : 0]);
         return this.getLevel().setBlock(block, this, true, true);
     }
 

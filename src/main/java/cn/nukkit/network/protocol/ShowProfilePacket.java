@@ -19,7 +19,6 @@ public class ShowProfilePacket extends DataPacket {
 
     @Override
     public void decode() {
-        this.xuid = this.getString();
     }
 
     @Override

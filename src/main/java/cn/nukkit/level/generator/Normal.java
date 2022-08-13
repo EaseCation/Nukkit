@@ -11,7 +11,7 @@ import cn.nukkit.level.generator.noise.vanilla.f.NoiseGeneratorPerlinF;
 import cn.nukkit.level.generator.object.ore.OreType;
 import cn.nukkit.level.generator.populator.impl.*;
 import cn.nukkit.level.generator.populator.type.Populator;
-import cn.nukkit.math.MathHelper;
+import cn.nukkit.math.Mth;
 import cn.nukkit.math.NukkitRandom;
 import cn.nukkit.math.Vector3;
 import java.util.*;
@@ -306,7 +306,7 @@ public class Normal extends Generator {
                     float minScaled = minLimitRegion[horizCounter] / 512f;
                     float maxScaled = maxLimitRegion[horizCounter] / 512f;
                     float noiseScaled = (mainNoiseRegion[horizCounter] / 10.0f + 1.0f) / 2.0f;
-                    float clamp = MathHelper.denormalizeClamp(minScaled, maxScaled, noiseScaled) - baseScale;
+                    float clamp = Mth.clampedLerp(minScaled, maxScaled, noiseScaled) - baseScale;
 
                     if (ySeg > 29) {
                         float yScaled = ((float) (ySeg - 29) / 3.0F);
@@ -352,9 +352,9 @@ public class Normal extends Generator {
 
                             for (int xIn = 0; xIn < 4; ++xIn) {
                                 if ((scaleZ2 += scaleZ) > 0.0f) {
-                                    chunk.setBlockId(xSeg * 4 + zIn, ySeg * 8 + yIn, zSeg * 4 + xIn, STONE);
+                                    chunk.setBlock(0, xSeg * 4 + zIn, ySeg * 8 + yIn, zSeg * 4 + xIn, STONE);
                                 } else if (ySeg * 8 + yIn <= seaHeight) {
-                                    chunk.setBlockId(xSeg * 4 + zIn, ySeg * 8 + yIn, zSeg * 4 + xIn, STILL_WATER);
+                                    chunk.setBlock(0, xSeg * 4 + zIn, ySeg * 8 + yIn, zSeg * 4 + xIn, WATER);
                                 }
                             }
 

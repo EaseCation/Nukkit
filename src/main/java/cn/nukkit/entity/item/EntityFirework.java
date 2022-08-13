@@ -12,6 +12,7 @@ import cn.nukkit.event.entity.EntityDamageEvent.DamageCause;
 import cn.nukkit.item.Item;
 import cn.nukkit.item.ItemFirework;
 import cn.nukkit.level.format.FullChunk;
+import cn.nukkit.math.Mth;
 import cn.nukkit.math.Vector3f;
 import cn.nukkit.nbt.NBTIO;
 import cn.nukkit.nbt.tag.CompoundTag;
@@ -91,9 +92,9 @@ public class EntityFirework extends Entity {
 
 
             float f = (float) Math.sqrt(this.motionX * this.motionX + this.motionZ * this.motionZ);
-            this.yaw = (float) (Math.atan2(this.motionX, this.motionZ) * (180D / Math.PI));
+            this.yaw = (float) (Mth.atan2(this.motionX, this.motionZ) * (180D / Math.PI));
 
-            this.pitch = (float) (Math.atan2(this.motionY, f) * (180D / Math.PI));
+            this.pitch = (float) (Mth.atan2(this.motionY, f) * (180D / Math.PI));
 
 
             if (this.fireworkAge == 0) {

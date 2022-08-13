@@ -15,7 +15,7 @@ public class BlockNetherWartBlock extends BlockSolid {
 
     @Override
     public int getId() {
-        return BLOCK_NETHER_WART_BLOCK;
+        return NETHER_WART_BLOCK;
     }
 
     @Override
@@ -31,7 +31,7 @@ public class BlockNetherWartBlock extends BlockSolid {
     @Override
     public Item[] getDrops(Item item) {
         return new Item[]{
-                toItem()
+                toItem(true)
         };
     }
 

@@ -3,6 +3,7 @@ package cn.nukkit.block;
 import cn.nukkit.Player;
 import cn.nukkit.blockentity.BlockEntity;
 import cn.nukkit.blockentity.BlockEntityBed;
+import cn.nukkit.blockentity.BlockEntityType;
 import cn.nukkit.entity.item.EntityPrimedTNT;
 import cn.nukkit.item.Item;
 import cn.nukkit.item.ItemBed;
@@ -11,6 +12,7 @@ import cn.nukkit.level.Level;
 import cn.nukkit.math.BlockFace;
 import cn.nukkit.math.Vector3;
 import cn.nukkit.nbt.tag.CompoundTag;
+import cn.nukkit.potion.Effect;
 import cn.nukkit.utils.BlockColor;
 import cn.nukkit.utils.DyeColor;
 import cn.nukkit.utils.Faceable;
@@ -31,7 +33,12 @@ public class BlockBed extends BlockTransparentMeta implements Faceable {
 
     @Override
     public int getId() {
-        return BED_BLOCK;
+        return BLOCK_BED;
+    }
+
+    @Override
+    public int getBlockEntityType() {
+        return BlockEntityType.BED;
     }
 
     @Override
@@ -60,7 +67,11 @@ public class BlockBed extends BlockTransparentMeta implements Faceable {
     }
 
     @Override
-    public boolean onActivate(Item item, Player player) {
+    public boolean onActivate(Item item, BlockFace face, Player player) {
+        if (player != null && !player.hasEffect(Effect.WATER_BREATHING) && !player.hasEffect(Effect.CONDUIT_POWER)
+                && this.level.getExtraBlock(this).isWater()) {
+            return false;
+        }
 
         if (this.level.getDimension() == Level.DIMENSION_NETHER || this.level.getDimension() == Level.DIMENSION_THE_END) {
             CompoundTag tag = EntityPrimedTNT.getDefaultNBT(this).putShort("Fuse", 0);
@@ -141,13 +152,13 @@ public class BlockBed extends BlockTransparentMeta implements Faceable {
         Block blockWest = this.west();
 
         if ((this.getDamage() & 0x08) == 0x08) { //This is the Top part of bed
-            if (blockNorth.getId() == BED_BLOCK && (blockNorth.getDamage() & 0x08) != 0x08) { //Checks if the block ID&&meta are right
+            if (blockNorth.getId() == BLOCK_BED && (blockNorth.getDamage() & 0x08) != 0x08) { //Checks if the block ID&&meta are right
                 this.getLevel().setBlock(blockNorth, Block.get(BlockID.AIR), true, true);
-            } else if (blockSouth.getId() == BED_BLOCK && (blockSouth.getDamage() & 0x08) != 0x08) {
+            } else if (blockSouth.getId() == BLOCK_BED && (blockSouth.getDamage() & 0x08) != 0x08) {
                 this.getLevel().setBlock(blockSouth, Block.get(BlockID.AIR), true, true);
-            } else if (blockEast.getId() == BED_BLOCK && (blockEast.getDamage() & 0x08) != 0x08) {
+            } else if (blockEast.getId() == BLOCK_BED && (blockEast.getDamage() & 0x08) != 0x08) {
                 this.getLevel().setBlock(blockEast, Block.get(BlockID.AIR), true, true);
-            } else if (blockWest.getId() == BED_BLOCK && (blockWest.getDamage() & 0x08) != 0x08) {
+            } else if (blockWest.getId() == BLOCK_BED && (blockWest.getDamage() & 0x08) != 0x08) {
                 this.getLevel().setBlock(blockWest, Block.get(BlockID.AIR), true, true);
             }
         } else { //Bottom Part of Bed
@@ -175,7 +186,7 @@ public class BlockBed extends BlockTransparentMeta implements Faceable {
     }
 
     @Override
-    public Item toItem() {
+    public Item toItem(boolean addUserData) {
         return new ItemBed(this.getDyeColor().getWoolData());
     }
 
@@ -208,6 +219,16 @@ public class BlockBed extends BlockTransparentMeta implements Faceable {
 
     @Override
     public boolean sticksToPiston() {
+        return false;
+    }
+
+    @Override
+    public boolean canContainWater() {
+        return true;
+    }
+
+    @Override
+    public boolean canProvideSupport(BlockFace face, SupportType type) {
         return false;
     }
 }

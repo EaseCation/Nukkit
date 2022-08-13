@@ -5,7 +5,6 @@ package cn.nukkit.entity;
  */
 public interface EntityInteractable {
 
-    // Todo: Passive entity?? i18n and boat leaving text
     String getInteractButtonText();
 
     boolean canDoInteraction();

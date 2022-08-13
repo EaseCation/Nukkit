@@ -3,6 +3,7 @@ package cn.nukkit.blockentity;
 import cn.nukkit.block.Block;
 import cn.nukkit.level.format.FullChunk;
 import cn.nukkit.nbt.tag.CompoundTag;
+import cn.nukkit.nbt.tag.ListTag;
 
 public class BlockEntityEnderChest extends BlockEntitySpawnable {
 
@@ -11,21 +12,13 @@ public class BlockEntityEnderChest extends BlockEntitySpawnable {
     }
 
     @Override
-    public boolean isBlockEntityValid() {
-        return this.getBlock().getId() == Block.ENDER_CHEST;
-    }
-
-    @Override
-    public String getName() {
-        return "EnderChest";
+    public boolean isValidBlock(int blockId) {
+        return blockId == Block.ENDER_CHEST;
     }
 
     @Override
     public CompoundTag getSpawnCompound() {
-        return new CompoundTag()
-                .putString("id", BlockEntity.ENDER_CHEST)
-                .putInt("x", (int) this.x)
-                .putInt("y", (int) this.y)
-                .putInt("z", (int) this.z);
+        return getDefaultCompound(this, ENDER_CHEST)
+                .putList(new ListTag<>("Items"));
     }
 }

@@ -3,7 +3,7 @@ package cn.nukkit.block;
 import cn.nukkit.item.Item;
 import cn.nukkit.item.ItemGlowstoneDust;
 import cn.nukkit.item.enchantment.Enchantment;
-import cn.nukkit.math.MathHelper;
+import cn.nukkit.math.Mth;
 import cn.nukkit.utils.BlockColor;
 
 import java.util.Random;
@@ -24,7 +24,7 @@ public class BlockGlowstone extends BlockTransparent {
 
     @Override
     public int getId() {
-        return GLOWSTONE_BLOCK;
+        return GLOWSTONE;
     }
 
     @Override
@@ -47,13 +47,13 @@ public class BlockGlowstone extends BlockTransparent {
         Random random = ThreadLocalRandom.current();
         int count = 2 + random.nextInt(3);
 
-        Enchantment fortune = item.getEnchantment(Enchantment.ID_FORTUNE_DIGGING);
+        Enchantment fortune = item.getEnchantment(Enchantment.ID_FORTUNE);
         if (fortune != null && fortune.getLevel() >= 1) {
             count += random.nextInt(fortune.getLevel() + 1);
         }
 
         return new Item[]{
-                new ItemGlowstoneDust(0, MathHelper.clamp(count, 1, 4))
+                new ItemGlowstoneDust(0, Mth.clamp(count, 1, 4))
         };
     }
 

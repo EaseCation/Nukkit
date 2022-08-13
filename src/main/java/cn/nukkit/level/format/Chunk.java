@@ -15,6 +15,10 @@ public interface Chunk extends FullChunk {
 
     ChunkSection[] getSections();
 
+    default long getChanges() {
+        return 0;
+    }
+
     class Entry {
         public final int chunkX;
         public final int chunkZ;

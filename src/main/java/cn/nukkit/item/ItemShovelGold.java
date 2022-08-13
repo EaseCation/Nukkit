@@ -15,7 +15,7 @@ public class ItemShovelGold extends ItemTool {
     }
 
     public ItemShovelGold(Integer meta, int count) {
-        super(GOLD_SHOVEL, meta, count, "Gold Shovel");
+        super(GOLDEN_SHOVEL, meta, count, "Gold Shovel");
     }
 
     @Override

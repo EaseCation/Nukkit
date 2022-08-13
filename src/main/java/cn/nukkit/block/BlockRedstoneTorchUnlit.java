@@ -5,7 +5,6 @@ import cn.nukkit.item.Item;
 import cn.nukkit.item.ItemBlock;
 import cn.nukkit.level.Level;
 import cn.nukkit.math.BlockFace;
-import cn.nukkit.math.Vector3;
 
 /**
  * Created by CreeperFace on 10.4.2017.
@@ -46,7 +45,7 @@ public class BlockRedstoneTorchUnlit extends BlockTorch {
     }
 
     @Override
-    public Item toItem() {
+    public Item toItem(boolean addUserData) {
         return new ItemBlock(Block.get(BlockID.REDSTONE_TORCH));
     }
 

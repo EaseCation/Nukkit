@@ -32,11 +32,11 @@ public class Vector2 {
     }
 
     public int getFloorX() {
-        return (int) Math.floor(this.x);
+        return Mth.floor(this.x);
     }
 
     public int getFloorY() {
-        return (int) Math.floor(this.y);
+        return Mth.floor(this.y);
     }
 
     public Vector2 add(double x) {
@@ -68,7 +68,7 @@ public class Vector2 {
     }
 
     public Vector2 floor() {
-        return new Vector2((int) Math.floor(this.x), (int) Math.floor(this.y));
+        return new Vector2(Mth.floor(this.x), Mth.floor(this.y));
     }
 
     public Vector2 round() {
@@ -104,7 +104,9 @@ public class Vector2 {
     }
 
     public double distanceSquared(double x, double y) {
-        return Math.pow(this.x - x, 2) + Math.pow(this.y - y, 2);
+        double xDiff = this.x - x;
+        double yDiff = this.y - y;
+        return xDiff * xDiff + yDiff * yDiff;
     }
 
     public double distanceSquared(Vector2 vector) {

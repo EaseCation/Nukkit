@@ -5,6 +5,7 @@ import cn.nukkit.block.Block;
 import cn.nukkit.block.BlockID;
 import cn.nukkit.level.Position;
 import cn.nukkit.level.format.FullChunk;
+import cn.nukkit.math.BlockVector3;
 import cn.nukkit.math.Vector3;
 import cn.nukkit.nbt.tag.CompoundTag;
 import cn.nukkit.utils.ChunkException;
@@ -19,46 +20,23 @@ import java.lang.reflect.Constructor;
 /**
  * @author MagicDroidX
  */
-public abstract class BlockEntity extends Position {
-    //WARNING: DO NOT CHANGE ANY NAME HERE, OR THE CLIENT WILL CRASH
-    public static final String CHEST = "Chest";
-    public static final String ENDER_CHEST = "EnderChest";
-    public static final String FURNACE = "Furnace";
-    public static final String SIGN = "Sign";
-    public static final String MOB_SPAWNER = "MobSpawner";
-    public static final String ENCHANT_TABLE = "EnchantTable";
-    public static final String SKULL = "Skull";
-    public static final String FLOWER_POT = "FlowerPot";
-    public static final String BREWING_STAND = "BrewingStand";
-    public static final String DAYLIGHT_DETECTOR = "DaylightDetector";
-    public static final String MUSIC = "Music";
-    public static final String ITEM_FRAME = "ItemFrame";
-    public static final String CAULDRON = "Cauldron";
-    public static final String BEACON = "Beacon";
-    public static final String PISTON_ARM = "PistonArm";
-    public static final String MOVING_BLOCK = "MovingBlock";
-    public static final String COMPARATOR = "Comparator";
-    public static final String HOPPER = "Hopper";
-    public static final String BED = "Bed";
-    public static final String JUKEBOX = "Jukebox";
-    public static final String SHULKER_BOX = "ShulkerBox";
-    public static final String BANNER = "Banner";
-    public static final String DISPENSER = "Dispenser";
-    public static final String DROPPER = "Dropper";
+public abstract class BlockEntity extends Position implements BlockEntityID {
 
     public static long count = 1;
 
-    private static final BiMap<String, Class<? extends BlockEntity>> knownBlockEntities = HashBiMap.create(24);
+    private static final BiMap<String, Class<? extends BlockEntity>> knownBlockEntities = HashBiMap.create(BlockEntityType.UNDEFINED);
 
     public FullChunk chunk;
-    public String name;
-    public long id;
+    private String name;
+    public final long id;
+    private int repairCost;
+    protected boolean movable;
 
-    public boolean movable;
-
-    public boolean closed = false;
+    private boolean initialized;
+    private boolean closed = false;
     public CompoundTag namedTag;
-    protected long lastUpdate;
+
+    protected int lastUpdate;
     protected Server server;
     protected Timing timing;
 
@@ -72,8 +50,7 @@ public abstract class BlockEntity extends Position {
         this.chunk = chunk;
         this.setLevel(chunk.getProvider().getLevel());
         this.namedTag = nbt;
-        this.name = "";
-        this.lastUpdate = System.currentTimeMillis();
+        this.lastUpdate = server.getTick();
         this.id = BlockEntity.count++;
         this.x = this.namedTag.getInt("x");
         this.y = this.namedTag.getInt("y");
@@ -86,7 +63,20 @@ public abstract class BlockEntity extends Position {
             namedTag.putBoolean("isMovable", true);
         }
 
+        if (namedTag.contains("CustomName")) {
+            this.name = this.namedTag.getString("CustomName");
+        } else {
+            this.name = "";
+        }
+
+        if (namedTag.contains("RepairCost")) {
+            this.repairCost = this.namedTag.getInt("RepairCost");
+        } else {
+            this.repairCost = 0;
+        }
+
         this.initBlockEntity();
+        initialized = true;
 
         this.chunk.addBlockEntity(this);
         this.getLevel().addBlockEntity(this);
@@ -107,7 +97,7 @@ public abstract class BlockEntity extends Position {
                 return null;
             }
 
-            for (Constructor constructor : clazz.getConstructors()) {
+            for (Constructor<?> constructor : clazz.getConstructors()) {
                 if (blockEntity != null) {
                     break;
                 }
@@ -161,12 +151,26 @@ public abstract class BlockEntity extends Position {
         this.namedTag.putInt("y", (int) this.getY());
         this.namedTag.putInt("z", (int) this.getZ());
         this.namedTag.putBoolean("isMovable", this.movable);
+
+        if (!name.isEmpty()) {
+            namedTag.putString("CustomName", name);
+        } else {
+            namedTag.remove("CustomName");
+        }
+        if (repairCost != 0) {
+            namedTag.putInt("RepairCost", repairCost);
+        } else {
+            namedTag.remove("RepairCost");
+        }
     }
 
     public CompoundTag getCleanedNBT() {
         this.saveNBT();
         CompoundTag tag = this.namedTag.clone();
-        tag.remove("x").remove("y").remove("z").remove("id");
+        tag.remove("x").remove("y").remove("z").remove("id")
+                .remove("isMovable")
+                .remove("CustomName")
+                .remove("RepairCost");
         if (tag.getTags().size() > 0) {
             return tag;
         } else {
@@ -178,7 +182,11 @@ public abstract class BlockEntity extends Position {
         return this.getLevelBlock();
     }
 
-    public abstract boolean isBlockEntityValid();
+    public abstract boolean isValidBlock(int blockId);
+
+    public final boolean isBlockEntityValid() {
+        return this.isValidBlock(this.getBlock().getId());
+    }
 
     public boolean onUpdate() {
         return false;
@@ -205,27 +213,75 @@ public abstract class BlockEntity extends Position {
 
     }
 
-    public void setDirty() {
+    public final void setDirty() {
         chunk.setChanged();
 
-        if (this.getLevelBlock().getId() != BlockID.AIR) {
+        if (level.isInitialized() && !this.getLevelBlock().isAir()) {
             this.level.updateComparatorOutputLevel(this);
         }
     }
 
-    public String getName() {
+    /**
+     * Get custom name.
+     * @return custom name
+     */
+    public final String getName() {
         return name;
     }
 
-    public boolean isMovable() {
+    /**
+     * Set custom name.
+     * @param name custom name
+     */
+    public final void setName(String name) {
+        this.name = name != null ? name : "";
+    }
+
+    /**
+     * Has custom name.
+     * @return has custom name
+     */
+    public final boolean hasName() {
+        return !name.isEmpty();
+    }
+
+    public final int getRepairCost() {
+        return repairCost;
+    }
+
+    public final void setRepairCost(int repairCost) {
+        this.repairCost = Math.max(repairCost, 0);
+    }
+
+    public final boolean isMovable() {
         return movable;
     }
 
+    public final void setMovable(boolean movable) {
+        this.movable = movable;
+    }
+
+    public final boolean isClosed() {
+        return closed;
+    }
+
+    public boolean isInitialized() {
+        return initialized;
+    }
+
     public static CompoundTag getDefaultCompound(Vector3 pos, String id) {
-        return new CompoundTag("")
+        return getDefaultCompound(pos.getFloorX(), pos.getFloorY(), pos.getFloorZ(), id);
+    }
+
+    public static CompoundTag getDefaultCompound(BlockVector3 pos, String id) {
+        return getDefaultCompound(pos.getX(), pos.getY(), pos.getZ(), id);
+    }
+
+    public static CompoundTag getDefaultCompound(int x, int y, int z, String id) {
+        return new CompoundTag()
                 .putString("id", id)
-                .putInt("x", pos.getFloorX())
-                .putInt("y", pos.getFloorY())
-                .putInt("z", pos.getFloorZ());
+                .putInt("x", x)
+                .putInt("y", y)
+                .putInt("z", z);
     }
 }

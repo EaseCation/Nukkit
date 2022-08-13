@@ -15,7 +15,7 @@ public class ItemBootsChain extends ItemArmor {
     }
 
     public ItemBootsChain(Integer meta, int count) {
-        super(CHAIN_BOOTS, meta, count, "Chainmail Boots");
+        super(CHAINMAIL_BOOTS, meta, count, "Chainmail Boots");
     }
 
     @Override

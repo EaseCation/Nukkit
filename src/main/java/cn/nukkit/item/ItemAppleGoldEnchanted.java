@@ -17,7 +17,7 @@ public class ItemAppleGoldEnchanted extends ItemEdible {
     }
 
     public ItemAppleGoldEnchanted(Integer meta, int count) {
-        super(GOLDEN_APPLE_ENCHANTED, meta, count, "Enchanted Golden Apple");
+        super(ENCHANTED_GOLDEN_APPLE, meta, count, "Enchanted Golden Apple");
     }
 
     @Override

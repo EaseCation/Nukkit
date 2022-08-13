@@ -5,7 +5,6 @@ import cn.nukkit.inventory.AnvilInventory;
 import cn.nukkit.item.Item;
 import cn.nukkit.item.ItemBlock;
 import cn.nukkit.item.ItemTool;
-import cn.nukkit.level.sound.SoundEnum;
 import cn.nukkit.math.BlockFace;
 import cn.nukkit.utils.BlockColor;
 import cn.nukkit.utils.Faceable;
@@ -30,6 +29,8 @@ public class BlockAnvil extends BlockFallable implements Faceable {
             "Very Damaged Anvil"
     };
 
+    private static final int[] FACES = {1, 2, 3, 0};
+
     private int meta;
 
     public BlockAnvil() {
@@ -42,7 +43,7 @@ public class BlockAnvil extends BlockFallable implements Faceable {
 
     @Override
     public int getFullId() {
-        return (getId() << 4) + getDamage();
+        return (getId() << BLOCK_META_BITS) | getDamage();
     }
 
     @Override
@@ -52,7 +53,7 @@ public class BlockAnvil extends BlockFallable implements Faceable {
 
     @Override
     public final void setDamage(int meta) {
-        this.meta = meta;
+        this.meta = meta & BLOCK_META_MASK;
     }
 
     @Override
@@ -94,22 +95,20 @@ public class BlockAnvil extends BlockFallable implements Faceable {
     public boolean place(Item item, Block block, Block target, BlockFace face, double fx, double fy, double fz, Player player) {
         if (!target.isTransparent() || target.getId() == Block.SNOW_LAYER) {
             int damage = this.getDamage();
-            int[] faces = {1, 2, 3, 0};
-            this.setDamage(faces[player != null ? player.getDirection().getHorizontalIndex() : 0]);
+            this.setDamage(FACES[player != null ? player.getDirection().getHorizontalIndex() : 0]);
             if (damage >= 4 && damage <= 7) {
                 this.setDamage(this.getDamage() | 0x04);
             } else if (damage >= 8 && damage <= 11) {
                 this.setDamage(this.getDamage() | 0x08);
             }
             this.getLevel().setBlock(block, this, true);
-            this.getLevel().addSound(this, SoundEnum.RANDOM_ANVIL_LAND, 1, 0.8F);
             return true;
         }
         return false;
     }
 
     @Override
-    public boolean onActivate(Item item, Player player) {
+    public boolean onActivate(Item item, BlockFace face, Player player) {
         if (player != null) {
             player.addWindow(new AnvilInventory(player.getUIInventory(), this), Player.ANVIL_WINDOW_ID);
         }
@@ -117,22 +116,15 @@ public class BlockAnvil extends BlockFallable implements Faceable {
     }
 
     @Override
-    public Item toItem() {
-        int damage = this.getDamage();
-        if (damage >= 4 && damage <= 7) {
-            return new ItemBlock(this, this.getDamage() & 0x04);
-        } else if (damage >= 8 && damage <= 11) {
-            return new ItemBlock(this, this.getDamage() & 0x08);
-        } else {
-            return new ItemBlock(this);
-        }
+    public Item toItem(boolean addUserData) {
+        return new ItemBlock(this, (getDamage() >> 2) << 2);
     }
 
     @Override
     public Item[] getDrops(Item item) {
         if (item.isPickaxe() && item.getTier() >= ItemTool.TIER_WOODEN) {
             return new Item[]{
-                    this.toItem()
+                    this.toItem(true)
             };
         }
         return new Item[0];
@@ -140,7 +132,7 @@ public class BlockAnvil extends BlockFallable implements Faceable {
 
     @Override
     public BlockColor getColor() {
-        return BlockColor.IRON_BLOCK_COLOR;
+        return BlockColor.METAL_BLOCK_COLOR;
     }
 
     @Override
@@ -150,6 +142,41 @@ public class BlockAnvil extends BlockFallable implements Faceable {
 
     @Override
     public BlockFace getBlockFace() {
-        return BlockFace.fromHorizontalIndex(this.getDamage() & 0x7);
+        return BlockFace.fromHorizontalIndex(this.getDamage() & 0x3);
+    }
+
+    @Override
+    public double getMinX() {
+        return this.x + (this.getBlockFace().getAxis() == BlockFace.Axis.X ? 0 : 2 / 16.0);
+    }
+
+    @Override
+    public double getMinZ() {
+        return this.z + (this.getBlockFace().getAxis() == BlockFace.Axis.Z ? 0 : 2 / 16.0);
+    }
+
+    @Override
+    public double getMaxX() {
+        return this.x + (this.getBlockFace().getAxis() == BlockFace.Axis.X ? 1 : 1 - 2 / 16.0);
+    }
+
+    @Override
+    public double getMaxZ() {
+        return this.z + (this.getBlockFace().getAxis() == BlockFace.Axis.Z ? 1 : 1 - 2 / 16.0);
+    }
+
+    @Override
+    public boolean isSolid() {
+        return false;
+    }
+
+    @Override
+    public boolean canContainWater() {
+        return true;
+    }
+
+    @Override
+    public boolean canProvideSupport(BlockFace face, SupportType type) {
+        return false;
     }
 }

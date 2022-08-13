@@ -3,6 +3,7 @@ package cn.nukkit.block;
 import cn.nukkit.Player;
 import cn.nukkit.blockentity.BlockEntity;
 import cn.nukkit.blockentity.BlockEntityHopper;
+import cn.nukkit.blockentity.BlockEntityType;
 import cn.nukkit.inventory.ContainerInventory;
 import cn.nukkit.item.Item;
 import cn.nukkit.item.ItemHopper;
@@ -28,12 +29,17 @@ public class BlockHopper extends BlockTransparentMeta implements Faceable {
 
     @Override
     public int getId() {
-        return HOPPER_BLOCK;
+        return BLOCK_HOPPER;
     }
 
     @Override
     public String getName() {
         return "Hopper Block";
+    }
+
+    @Override
+    public int getBlockEntityType() {
+        return BlockEntityType.HOPPER;
     }
 
     @Override
@@ -64,7 +70,7 @@ public class BlockHopper extends BlockTransparentMeta implements Faceable {
             }
         }
 
-        this.level.setBlock(this, this);
+        this.level.setBlock(this, this, true);
 
         CompoundTag nbt = new CompoundTag()
                 .putList(new ListTag<>("Items"))
@@ -78,7 +84,7 @@ public class BlockHopper extends BlockTransparentMeta implements Faceable {
     }
 
     @Override
-    public boolean onActivate(Item item, Player player) {
+    public boolean onActivate(Item item, BlockFace face, Player player) {
         BlockEntity blockEntity = this.level.getBlockEntity(this);
 
         if (blockEntity instanceof BlockEntityHopper) {
@@ -158,14 +164,14 @@ public class BlockHopper extends BlockTransparentMeta implements Faceable {
     @Override
     public Item[] getDrops(Item item) {
         if (item.getTier() >= ItemTool.TIER_WOODEN) {
-            return new Item[]{toItem()};
+            return new Item[]{toItem(true)};
         }
 
         return new Item[0];
     }
 
     @Override
-    public Item toItem() {
+    public Item toItem(boolean addUserData) {
         return new ItemHopper();
     }
 
@@ -176,6 +182,16 @@ public class BlockHopper extends BlockTransparentMeta implements Faceable {
 
     @Override
     public BlockFace getBlockFace() {
-        return BlockFace.fromHorizontalIndex(this.getDamage() & 0x07);
+        return BlockFace.fromIndex(this.getDamage() & 0x07);
+    }
+
+    @Override
+    public boolean canContainWater() {
+        return true;
+    }
+
+    @Override
+    public boolean canProvideSupport(BlockFace face, SupportType type) {
+        return face == BlockFace.UP || face == BlockFace.DOWN && type == SupportType.CENTER && getBlockFace() == BlockFace.DOWN;
     }
 }

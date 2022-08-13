@@ -2,13 +2,14 @@ package cn.nukkit.blockentity;
 
 import cn.nukkit.Player;
 import cn.nukkit.block.Block;
-import cn.nukkit.block.BlockID;
 import cn.nukkit.event.block.ItemFrameDropItemEvent;
 import cn.nukkit.item.Item;
-import cn.nukkit.item.ItemBlock;
+import cn.nukkit.item.ItemID;
 import cn.nukkit.level.format.FullChunk;
 import cn.nukkit.nbt.NBTIO;
+import cn.nukkit.nbt.tag.ByteTag;
 import cn.nukkit.nbt.tag.CompoundTag;
+import cn.nukkit.nbt.tag.Tag;
 import cn.nukkit.network.protocol.LevelEventPacket;
 
 import java.util.concurrent.ThreadLocalRandom;
@@ -24,11 +25,20 @@ public class BlockEntityItemFrame extends BlockEntitySpawnable {
 
     @Override
     protected void initBlockEntity() {
-        if (!namedTag.contains("Item")) {
-            namedTag.putCompound("Item", NBTIO.putItemHelper(new ItemBlock(Block.get(BlockID.AIR))));
+        if (this.namedTag.contains("Item")) {
+            CompoundTag item = this.namedTag.getCompound("Item");
+            if (item.getShort("id") == ItemID.AIR) {
+                this.namedTag.remove("Item");
+            }
         }
+
         if (!namedTag.contains("ItemRotation")) {
-            namedTag.putByte("ItemRotation", 0);
+            namedTag.putFloat("ItemRotation", 0);
+        } else {
+            Tag tag = namedTag.get("ItemRotation");
+            if (tag instanceof ByteTag) {
+                namedTag.putFloat("ItemRotation", (((ByteTag) tag).data * 360 / 8) % 360);
+            }
         }
         if (!namedTag.contains("ItemDropChance")) {
             namedTag.putFloat("ItemDropChance", 1.0f);
@@ -40,28 +50,35 @@ public class BlockEntityItemFrame extends BlockEntitySpawnable {
     }
 
     @Override
-    public String getName() {
-        return "Item Frame";
+    public boolean isValidBlock(int blockId) {
+        return blockId == Block.BLOCK_FRAME;
     }
 
-    @Override
-    public boolean isBlockEntityValid() {
-        return this.getBlock().getId() == Block.ITEM_FRAME_BLOCK;
+    public float getItemRotation() {
+        return this.namedTag.getFloat("ItemRotation");
     }
 
-    public int getItemRotation() {
-        return this.namedTag.getByte("ItemRotation");
-    }
-
-    public void setItemRotation(int itemRotation) {
-        this.namedTag.putByte("ItemRotation", itemRotation);
+    public void setItemRotation(float itemRotation) {
+        this.namedTag.putFloat("ItemRotation", itemRotation % 360);
         this.level.updateComparatorOutputLevel(this);
-        this.setChanged();
+        this.setChanged(this.hasItem());
+    }
+
+    public void rotateItem() {
+        this.setItemRotation(this.getItemRotation() + 45);
     }
 
     public Item getItem() {
+        if (!this.hasItem()) {
+            return Item.get(ItemID.AIR);
+        }
+
         CompoundTag NBTTag = this.namedTag.getCompound("Item");
         return NBTIO.getItemHelper(NBTTag);
+    }
+
+    public boolean hasItem() {
+        return this.namedTag.contains("Item");
     }
 
     public void setItem(Item item) {
@@ -69,9 +86,14 @@ public class BlockEntityItemFrame extends BlockEntitySpawnable {
     }
 
     public void setItem(Item item, boolean setChanged) {
-        this.namedTag.putCompound("Item", NBTIO.putItemHelper(item));
+        if (item.isNull()) {
+            this.namedTag.remove("Item");
+        } else {
+            this.namedTag.putCompound("Item", NBTIO.putItemHelper(item));
+        }
+
         if (setChanged) {
-            this.setChanged();
+            this.setChanged(true);
         }
 
         this.level.updateComparatorOutputLevel(this);
@@ -85,8 +107,10 @@ public class BlockEntityItemFrame extends BlockEntitySpawnable {
         this.namedTag.putFloat("ItemDropChance", chance);
     }
 
-    private void setChanged() {
-        this.spawnToAll();
+    private void setChanged(boolean spawn) {
+        if (spawn) {
+            this.spawnToAll();
+        }
         if (this.chunk != null) {
             this.chunk.setChanged();
         }
@@ -94,25 +118,19 @@ public class BlockEntityItemFrame extends BlockEntitySpawnable {
 
     @Override
     public CompoundTag getSpawnCompound() {
-        if (!this.namedTag.contains("Item")) {
-            this.setItem(new ItemBlock(Block.get(BlockID.AIR)), false);
+        CompoundTag nbt = getDefaultCompound(this, ITEM_FRAME);
+
+        if (this.hasItem()) {
+            nbt.putCompound("Item", this.namedTag.getCompound("Item"));
+            nbt.putFloat("ItemRotation", this.getItemRotation());
+            nbt.putFloat("ItemDropChance", this.getItemDropChance());
         }
-        CompoundTag NBTItem = namedTag.getCompound("Item").copy();
-        NBTItem.setName("Item");
-        boolean item = NBTItem.getShort("id") == Item.AIR;
-        return new CompoundTag()
-                .putString("id", BlockEntity.ITEM_FRAME)
-                .putInt("x", (int) this.x)
-                .putInt("y", (int) this.y)
-                .putInt("z", (int) this.z)
-                .putCompound("Item", item ? NBTIO.putItemHelper(new ItemBlock(Block.get(BlockID.AIR))) : NBTItem)
-                .putByte("ItemRotation", item ? 0 : this.getItemRotation());
-        // TODO: This crashes the client, why?
-        // .putFloat("ItemDropChance", this.getItemDropChance());
+
+        return nbt;
     }
 
     public int getAnalogOutput() {
-        return this.getItem() == null || this.getItem().getId() == 0 ? 0 : this.getItemRotation() % 8 + 1;
+        return this.getItem() == null || this.getItem().getId() == ItemID.AIR ? 0 : (int) this.getItemRotation() / 45 + 1;
     }
 
     public boolean dropItem(Player player) {

@@ -75,7 +75,7 @@ public class BlockStemMelon extends BlockCrops {
     }
 
     @Override
-    public Item toItem() {
+    public Item toItem(boolean addUserData) {
         return new ItemSeedsMelon();
     }
 
@@ -85,5 +85,10 @@ public class BlockStemMelon extends BlockCrops {
         return new Item[]{
                 new ItemSeedsMelon(0, random.nextRange(0, 3))
         };
+    }
+
+    @Override
+    public boolean isStem() {
+        return true;
     }
 }

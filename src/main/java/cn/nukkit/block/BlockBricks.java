@@ -19,7 +19,7 @@ public class BlockBricks extends BlockSolid {
 
     @Override
     public int getId() {
-        return BRICKS_BLOCK;
+        return BRICK_BLOCK;
     }
 
     @Override
@@ -41,7 +41,7 @@ public class BlockBricks extends BlockSolid {
     public Item[] getDrops(Item item) {
         if (item.isPickaxe() && item.getTier() >= ItemTool.TIER_WOODEN) {
             return new Item[]{
-                    Item.get(Item.BRICKS_BLOCK, 0, 1)
+                    Item.get(Item.BRICK_BLOCK, 0, 1)
             };
         } else {
             return new Item[0];

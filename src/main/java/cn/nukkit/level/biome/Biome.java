@@ -149,6 +149,10 @@ public abstract class Biome implements BlockID {
         return idToName[id];
     }
 
+    public static int toValidBiome(int id) {
+        return idToName[id] == null ? EnumBiome.OCEAN.id : id;
+    }
+
     static {
         try (InputStream stream = Server.class.getClassLoader().getResourceAsStream("biome_id_map.json");
              InputStreamReader reader = new InputStreamReader(stream)) {

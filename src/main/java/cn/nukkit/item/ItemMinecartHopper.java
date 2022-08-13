@@ -23,7 +23,7 @@ public class ItemMinecartHopper extends Item {
     }
 
     public ItemMinecartHopper(Integer meta, int count) {
-        super(MINECART_WITH_HOPPER, meta, count, "Minecart with Hopper");
+        super(HOPPER_MINECART, meta, count, "Minecart with Hopper");
     }
 
     @Override
@@ -58,11 +58,12 @@ public class ItemMinecartHopper extends Item {
                 return false;
             }
 
-            if (player.isSurvival()) {
+            if (player.isAdventure() || player.isSurvival()) {
                 Item item = player.getInventory().getItemInHand();
                 item.setCount(item.getCount() - 1);
                 player.getInventory().setItemInHand(item);
             }
+
             minecart.spawnToAll();
             return true;
         }

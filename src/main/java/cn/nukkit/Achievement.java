@@ -6,7 +6,9 @@ import java.util.HashMap;
 
 /**
  * Created by CreeperFace on 9. 11. 2016.
+ * @deprecated will be removed in the future
  */
+@Deprecated
 public class Achievement {
 
     public static final HashMap<String, Achievement> achievements = new HashMap<String, Achievement>() {

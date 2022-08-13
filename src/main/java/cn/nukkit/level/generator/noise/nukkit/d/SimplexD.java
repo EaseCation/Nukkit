@@ -7,28 +7,27 @@ import cn.nukkit.math.NukkitRandom;
  * Nukkit Project
  */
 public class SimplexD extends PerlinD {
-    protected static double SQRT_3;
-    protected static double SQRT_5;
-    protected static double F2;
-    protected static double G2;
-    protected static double G22;
-    protected static double F3;
-    protected static double G3;
-    protected static double F4;
-    protected static double G4;
-    protected static double G42;
-    protected static double G43;
-    protected static double G44;
+    protected static final double SQRT_3;
+    protected static final double SQRT_5;
+    protected static final double F2;
+    protected static final double G2;
+    protected static final double G22;
+    protected static final double F3;
+    protected static final double G3;
+    protected static final double F4;
+    protected static final double G4;
+    protected static final double G42;
+    protected static final double G43;
+    protected static final double G44;
     public static final int[][] grad3 = {
             {1, 1, 0}, {-1, 1, 0}, {1, -1, 0}, {-1, -1, 0},
             {1, 0, 1}, {-1, 0, 1}, {1, 0, -1}, {-1, 0, -1},
             {0, 1, 1}, {0, -1, 1}, {0, 1, -1}, {0, -1, -1}
     };
+
     protected final double offsetW;
 
-    public SimplexD(NukkitRandom random, double octaves, double persistence) {
-        super(random, octaves, persistence);
-        this.offsetW = random.nextDouble() * 256;
+    static {
         SQRT_3 = Math.sqrt(3);
         SQRT_5 = Math.sqrt(5);
         F2 = 0.5 * (SQRT_3 - 1);
@@ -43,21 +42,14 @@ public class SimplexD extends PerlinD {
         G44 = G4 * 4.0 - 1.0;
     }
 
+    public SimplexD(NukkitRandom random, double octaves, double persistence) {
+        super(random, octaves, persistence);
+        this.offsetW = random.nextDouble() * 256;
+    }
+
     public SimplexD(NukkitRandom random, double octaves, double persistence, double expansion) {
         super(random, octaves, persistence, expansion);
         this.offsetW = random.nextDouble() * 256;
-        SQRT_3 = Math.sqrt(3);
-        SQRT_5 = Math.sqrt(5);
-        F2 = 0.5 * (SQRT_3 - 1);
-        G2 = (3 - SQRT_3) / 6;
-        G22 = G2 * 2.0 - 1;
-        F3 = 1.0 / 3.0;
-        G3 = 1.0 / 6.0;
-        F4 = (SQRT_5 - 1.0) / 4.0;
-        G4 = (5.0 - SQRT_5) / 20.0;
-        G42 = G4 * 2.0;
-        G43 = G4 * 3.0;
-        G44 = G4 * 4.0 - 1.0;
     }
 
 

@@ -59,9 +59,9 @@ public class StartGamePacket extends DataPacket {
 
     @Override
     public void decode() {
-        this.entityUniqueId = this.getEntityUniqueId();
-        this.entityRuntimeId = this.getEntityRuntimeId();
-        this.playerGamemode = this.getVarInt();
+//        this.entityUniqueId = this.getEntityUniqueId();
+//        this.entityRuntimeId = this.getEntityRuntimeId();
+//        this.playerGamemode = this.getVarInt();
     }
 
     @Override

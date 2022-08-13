@@ -7,28 +7,27 @@ import cn.nukkit.math.NukkitRandom;
  * Nukkit Project
  */
 public class SimplexF extends PerlinF {
-    protected static float SQRT_3;
-    protected static float SQRT_5;
-    protected static float F2;
-    protected static float G2;
-    protected static float G22;
-    protected static float F3;
-    protected static float G3;
-    protected static float F4;
-    protected static float G4;
-    protected static float G42;
-    protected static float G43;
-    protected static float G44;
+    protected static final float SQRT_3;
+    protected static final float SQRT_5;
+    protected static final float F2;
+    protected static final float G2;
+    protected static final float G22;
+    protected static final float F3;
+    protected static final float G3;
+    protected static final float F4;
+    protected static final float G4;
+    protected static final float G42;
+    protected static final float G43;
+    protected static final float G44;
     public static final int[][] grad3 = {
             {1, 1, 0}, {-1, 1, 0}, {1, -1, 0}, {-1, -1, 0},
             {1, 0, 1}, {-1, 0, 1}, {1, 0, -1}, {-1, 0, -1},
             {0, 1, 1}, {0, -1, 1}, {0, 1, -1}, {0, -1, -1}
     };
+
     protected final float offsetW;
 
-    public SimplexF(NukkitRandom random, float octaves, float persistence) {
-        super(random, octaves, persistence);
-        this.offsetW = random.nextFloat() * 256;
+    static {
         SQRT_3 = (float) Math.sqrt(3);
         SQRT_5 = (float) Math.sqrt(5);
         F2 = 0.5f * (SQRT_3 - 1f);
@@ -43,21 +42,14 @@ public class SimplexF extends PerlinF {
         G44 = G4 * 4.0f - 1.0f;
     }
 
+    public SimplexF(NukkitRandom random, float octaves, float persistence) {
+        super(random, octaves, persistence);
+        this.offsetW = random.nextFloat() * 256;
+    }
+
     public SimplexF(NukkitRandom random, float octaves, float persistence, float expansion) {
         super(random, octaves, persistence, expansion);
         this.offsetW = random.nextFloat() * 256;
-        SQRT_3 = (float) Math.sqrt(3);
-        SQRT_5 = (float) Math.sqrt(5);
-        F2 = 0.5f * (SQRT_3 - 1f);
-        G2 = (3f - SQRT_3) / 6f;
-        G22 = G2 * 2.0f - 1f;
-        F3 = 1.0f / 3.0f;
-        G3 = 1.0f / 6.0f;
-        F4 = (SQRT_5 - 1.0f) / 4.0f;
-        G4 = (5.0f - SQRT_5) / 20.0f;
-        G42 = G4 * 2.0f;
-        G43 = G4 * 3.0f;
-        G44 = G4 * 4.0f - 1.0f;
     }
 
 

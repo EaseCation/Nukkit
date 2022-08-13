@@ -4,11 +4,16 @@ import cn.nukkit.Player;
 import cn.nukkit.event.inventory.InventoryClickEvent;
 import cn.nukkit.event.inventory.InventoryTransactionEvent;
 import cn.nukkit.inventory.Inventory;
+import cn.nukkit.inventory.PlayerUIInventory;
 import cn.nukkit.inventory.transaction.action.InventoryAction;
 import cn.nukkit.inventory.transaction.action.SlotChangeAction;
 import cn.nukkit.item.Item;
+import it.unimi.dsi.fastutil.objects.ObjectArrayList;
+import it.unimi.dsi.fastutil.objects.ObjectOpenHashSet;
 
 import java.util.*;
+
+import static cn.nukkit.network.protocol.types.UiContainerSlots.*;
 
 /**
  * @author CreeperFace
@@ -20,9 +25,11 @@ public class InventoryTransaction {
 
     protected Player source;
 
-    protected Set<Inventory> inventories = new HashSet<>();
+    protected Set<Inventory> inventories = new ObjectOpenHashSet<>();
 
-    protected List<InventoryAction> actions = new ArrayList<>();
+    protected List<InventoryAction> actions = new ObjectArrayList<>();
+
+    protected boolean uiTransaction;
 
     public InventoryTransaction(Player source, List<InventoryAction> actions) {
         this(source, actions, true);
@@ -60,12 +67,17 @@ public class InventoryTransaction {
     }
 
     public Set<InventoryAction> getActions() {
-        return new HashSet<>(actions);
+        return new ObjectOpenHashSet<>(actions);
     }
 
     public void addAction(InventoryAction action) {
         if (action instanceof SlotChangeAction) {
             SlotChangeAction slotChangeAction = (SlotChangeAction) action;
+
+            if (slotChangeAction.getInventory() instanceof PlayerUIInventory
+                    && slotChangeAction.getSlot() != CURSOR && slotChangeAction.getSlot() != CREATED_ITEM_OUTPUT) {
+                uiTransaction = true;
+            }
 
             ListIterator<InventoryAction> iterator = this.actions.listIterator();
 
@@ -93,6 +105,7 @@ public class InventoryTransaction {
                 }
             }
         }
+
         this.actions.add(action);
         action.onAddToTransaction(this);
     }
@@ -122,8 +135,8 @@ public class InventoryTransaction {
             }
         }
 
-        for (Item needItem : new ArrayList<>(needItems)) {
-            for (Item haveItem : new ArrayList<>(haveItems)) {
+        for (Item needItem : new ObjectArrayList<>(needItems)) {
+            for (Item haveItem : new ObjectArrayList<>(haveItems)) {
                 if (needItem.equals(haveItem)) {
                     int amount = Math.min(haveItem.getCount(), needItem.getCount());
                     needItem.setCount(needItem.getCount() - amount);
@@ -139,7 +152,7 @@ public class InventoryTransaction {
             }
         }
 
-        return haveItems.isEmpty() && needItems.isEmpty();
+        return haveItems.isEmpty() && needItems.isEmpty() || uiTransaction;
     }
 
     protected void sendInventories() {
@@ -153,9 +166,9 @@ public class InventoryTransaction {
     }
 
     public boolean canExecute() {
-        List<Item> haveItems = new ArrayList<>();
-        List<Item> needItems = new ArrayList<>();
-        return matchItems(needItems, haveItems) && this.actions.size() > 0 && haveItems.size() == 0 && needItems.size() == 0;
+        List<Item> haveItems = new ObjectArrayList<>();
+        List<Item> needItems = new ObjectArrayList<>();
+        return matchItems(needItems, haveItems) && !this.actions.isEmpty() && (haveItems.isEmpty() && needItems.isEmpty() || uiTransaction);
     }
 
     protected boolean callExecuteEvent() {
@@ -204,7 +217,6 @@ public class InventoryTransaction {
             this.sendInventories();
             return false;
         }
-
 
         if (!callExecuteEvent()) {
             this.sendInventories();

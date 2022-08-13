@@ -2,6 +2,7 @@ package cn.nukkit.blockentity;
 
 import cn.nukkit.block.Block;
 import cn.nukkit.level.format.FullChunk;
+import cn.nukkit.math.Mth;
 import cn.nukkit.nbt.tag.CompoundTag;
 
 /**
@@ -18,8 +19,19 @@ public class BlockEntitySkull extends BlockEntitySpawnable {
         if (!namedTag.contains("SkullType")) {
             namedTag.putByte("SkullType", 0);
         }
-        if (!namedTag.contains("Rot")) {
-            namedTag.putByte("Rot", 0);
+        if (!namedTag.contains("Rotation")) {
+            if (namedTag.contains("Rot")) {
+                namedTag.putFloat("Rotation", Mth.wrapDegrees(namedTag.getByte("Rot") * 360 / 16));
+                namedTag.remove("Rot");
+            } else {
+                namedTag.putFloat("Rotation", 0);
+            }
+        }
+        if (!namedTag.contains("MouthMoving")) {
+            namedTag.putBoolean("MouthMoving", false);
+        }
+        if (!namedTag.contains("MouthTickCount")) {
+            namedTag.putInt("MouthTickCount", 0);
         }
 
         super.initBlockEntity();
@@ -32,19 +44,17 @@ public class BlockEntitySkull extends BlockEntitySpawnable {
     }
 
     @Override
-    public boolean isBlockEntityValid() {
-        return getBlock().getId() == Block.SKULL_BLOCK;
+    public boolean isValidBlock(int blockId) {
+        return blockId == Block.BLOCK_SKULL;
     }
 
     @Override
     public CompoundTag getSpawnCompound() {
-        return new CompoundTag()
-                .putString("id", BlockEntity.SKULL)
-                .put("SkullType", this.namedTag.get("SkullType"))
-                .putInt("x", (int) this.x)
-                .putInt("y", (int) this.y)
-                .putInt("z", (int) this.z)
-                .put("Rot", this.namedTag.get("Rot"));
+        return getDefaultCompound(this, SKULL)
+                .putByte("SkullType", this.namedTag.getByte("SkullType"))
+                .putFloat("Rotation", namedTag.getFloat("Rotation"))
+                .putBoolean("MouthMoving", namedTag.getBoolean("MouthMoving"))
+                .putInt("MouthTickCount", namedTag.getInt("MouthTickCount"));
     }
 
 }

@@ -3,6 +3,7 @@ package cn.nukkit.level;
 import cn.nukkit.block.Block;
 import cn.nukkit.level.format.FullChunk;
 import cn.nukkit.math.BlockFace;
+import cn.nukkit.math.Mth;
 import cn.nukkit.math.Vector3;
 import cn.nukkit.utils.LevelException;
 
@@ -34,6 +35,16 @@ public class Position extends Vector3 {
         this.y = y;
         this.z = z;
         this.level = level;
+    }
+
+    public Position(Position other) {
+        if (other == null) {
+            return;
+        }
+        this.x = other.getX();
+        this.y = other.getY();
+        this.z = other.getZ();
+        this.level = other.getLevel();
     }
 
     public static Position fromObject(Vector3 pos) {
@@ -156,7 +167,7 @@ public class Position extends Vector3 {
 
     @Override
     public Position ceil() {
-        return new Position((int) Math.ceil(this.x), (int) Math.ceil(this.y), (int) Math.ceil(this.z), this.level);
+        return new Position(Mth.ceil(this.x), Mth.ceil(this.y), Mth.ceil(this.z), this.level);
     }
 
     @Override

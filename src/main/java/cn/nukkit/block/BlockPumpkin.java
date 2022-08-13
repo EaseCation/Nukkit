@@ -47,7 +47,7 @@ public class BlockPumpkin extends BlockSolidMeta implements Faceable {
     }
 
     @Override
-    public Item toItem() {
+    public Item toItem(boolean addUserData) {
         return new ItemBlock(this, 0);
     }
 
@@ -75,6 +75,11 @@ public class BlockPumpkin extends BlockSolidMeta implements Faceable {
 
     @Override
     public BlockFace getBlockFace() {
-        return BlockFace.fromHorizontalIndex(this.getDamage() & 0x7);
+        return BlockFace.fromHorizontalIndex(this.getDamage() & 0x3);
+    }
+
+    @Override
+    public boolean isVegetation() {
+        return true;
     }
 }

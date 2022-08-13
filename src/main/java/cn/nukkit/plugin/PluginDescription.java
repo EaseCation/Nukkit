@@ -7,15 +7,6 @@ import org.yaml.snakeyaml.Yaml;
 
 import java.util.*;
 
-/* TODO Add these to Javadoc：
- *     <li><i>softdepend</i><br>
- *     <br>
- *     </li>
- *     <li><i>loadbefore</i><br>
- *     <br>
- *     </li>
- */
-
 /**
  * 描述一个Nukkit插件的类。<br>
  * Describes a Nukkit plugin.
@@ -317,9 +308,6 @@ public class PluginDescription {
         return description;
     }
 
-    /**
-     * TODO finish javadoc
-     */
     public List<String> getLoadBefore() {
         return loadBefore;
     }
@@ -378,9 +366,6 @@ public class PluginDescription {
         return permissions;
     }
 
-    /**
-     * TODO finish javadoc
-     */
     public List<String> getSoftDepend() {
         return softDepend;
     }

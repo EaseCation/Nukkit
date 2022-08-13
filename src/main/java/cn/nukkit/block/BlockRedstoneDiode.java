@@ -14,7 +14,7 @@ import cn.nukkit.utils.Faceable;
 /**
  * @author CreeperFace
  */
-public abstract class BlockRedstoneDiode extends BlockFlowable implements Faceable {
+public abstract class BlockRedstoneDiode extends BlockTransparentMeta implements Faceable {
 
     protected boolean isPowered = false;
 
@@ -27,11 +27,36 @@ public abstract class BlockRedstoneDiode extends BlockFlowable implements Faceab
     }
 
     @Override
+    public double getHardness() {
+        return 0;
+    }
+
+    @Override
+    public double getResistance() {
+        return 0;
+    }
+
+    @Override
+    public boolean isSolid() {
+        return false;
+    }
+
+    @Override
+    public boolean breaksWhenMoved() {
+        return true;
+    }
+
+    @Override
+    public boolean sticksToPiston() {
+        return false;
+    }
+
+    @Override
     public boolean onBreak(Item item) {
         this.level.setBlock(this, Block.get(BlockID.AIR), true, true);
 
         if (this.level.isRedstoneEnabled()) {
-            for (BlockFace face : BlockFace.values0()) {
+            for (BlockFace face : BlockFace.getValues()) {
                 this.level.updateAroundRedstone(this.getSideVec(face), null);
             }
         }
@@ -40,7 +65,7 @@ public abstract class BlockRedstoneDiode extends BlockFlowable implements Faceab
 
     @Override
     public boolean place(Item item, Block block, Block target, BlockFace face, double fx, double fy, double fz, Player player) {
-        if (block.getSide(BlockFace.DOWN).isTransparent()) {
+        if (!SupportType.hasCenterSupport(block.getSide(BlockFace.DOWN), BlockFace.UP)) {
             return false;
         }
 
@@ -78,22 +103,33 @@ public abstract class BlockRedstoneDiode extends BlockFlowable implements Faceab
                     }
                 }
             }
-        } else if (type == Level.BLOCK_UPDATE_NORMAL || type == Level.BLOCK_UPDATE_REDSTONE) {
-            if (type == Level.BLOCK_UPDATE_NORMAL && this.getSide(BlockFace.DOWN).isTransparent()) {
-                this.level.useBreakOn(this);
-                return Level.BLOCK_UPDATE_NORMAL;
-            } else if (this.level.isRedstoneEnabled()) {
-                // Redstone event
-                RedstoneUpdateEvent ev = new RedstoneUpdateEvent(this);
-                getLevel().getServer().getPluginManager().callEvent(ev);
-                if (ev.isCancelled()) {
-                    return 0;
-                }
-
-                this.updateState();
-                return Level.BLOCK_UPDATE_NORMAL;
-            }
+            return type;
         }
+
+        if (type == Level.BLOCK_UPDATE_NORMAL) {
+            if (SupportType.hasCenterSupport(down(), BlockFace.UP)) {
+                return 0;
+            }
+
+            this.level.useBreakOn(this);
+            return type;
+        }
+
+        if (type == Level.BLOCK_UPDATE_REDSTONE) {
+            if (!this.level.isRedstoneEnabled()) {
+                return 0;
+            }
+
+            RedstoneUpdateEvent ev = new RedstoneUpdateEvent(this);
+            getLevel().getServer().getPluginManager().callEvent(ev);
+            if (ev.isCancelled()) {
+                return 0;
+            }
+
+            this.updateState();
+            return Level.BLOCK_UPDATE_NORMAL;
+        }
+
         return 0;
     }
 
@@ -219,5 +255,25 @@ public abstract class BlockRedstoneDiode extends BlockFlowable implements Faceab
     @Override
     public BlockColor getColor() {
         return BlockColor.AIR_BLOCK_COLOR;
+    }
+
+    @Override
+    public boolean canContainWater() {
+        return true;
+    }
+
+    @Override
+    public boolean canContainFlowingWater() {
+        return true;
+    }
+
+    @Override
+    public boolean canProvideSupport(BlockFace face, SupportType type) {
+        return false;
+    }
+
+    @Override
+    public boolean isDiode() {
+        return true;
     }
 }

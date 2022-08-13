@@ -1,16 +1,28 @@
 package cn.nukkit.block;
 
+import cn.nukkit.Player;
+import cn.nukkit.blockentity.BlockEntity;
+import cn.nukkit.blockentity.BlockEntityDaylightDetector;
+import cn.nukkit.blockentity.BlockEntityType;
 import cn.nukkit.item.Item;
-import cn.nukkit.item.ItemBlock;
+import cn.nukkit.math.BlockFace;
+import cn.nukkit.nbt.tag.CompoundTag;
 import cn.nukkit.utils.BlockColor;
+
+import javax.annotation.Nullable;
 
 /**
  * Created on 2015/11/22 by CreeperFace.
  * Package cn.nukkit.block in project Nukkit .
  */
-public class BlockDaylightDetector extends BlockTransparent {
+public class BlockDaylightDetector extends BlockTransparentMeta {
 
     public BlockDaylightDetector() {
+        this(0);
+    }
+
+    public BlockDaylightDetector(int meta) {
+        super(meta);
     }
 
     @Override
@@ -24,8 +36,18 @@ public class BlockDaylightDetector extends BlockTransparent {
     }
 
     @Override
+    public int getBlockEntityType() {
+        return BlockEntityType.DAYLIGHT_DETECTOR;
+    }
+
+    @Override
     public double getHardness() {
         return 0.2;
+    }
+
+    @Override
+    public double getResistance() {
+        return 1;
     }
 
     @Override
@@ -34,8 +56,92 @@ public class BlockDaylightDetector extends BlockTransparent {
     }
 
     @Override
-    public Item toItem() {
-        return new ItemBlock(this, 0);
+    public Item toItem(boolean addUserData) {
+        Item item = Item.get(getItemId(DAYLIGHT_DETECTOR));
+        if (addUserData) {
+            BlockEntity blockEntity = getBlockEntity();
+            if (blockEntity != null) {
+                item.setCustomName(blockEntity.getName());
+                item.setRepairCost(blockEntity.getRepairCost());
+            }
+        }
+        return item;
+    }
+
+    @Override
+    public boolean isSolid() {
+        return false;
+    }
+
+    @Override
+    public double getMaxY() {
+        return this.y + 0.625;
+    }
+
+    @Override
+    public boolean canContainWater() {
+        return true;
+    }
+
+    @Override
+    public boolean canProvideSupport(BlockFace face, SupportType type) {
+        return false;
+    }
+
+    @Override
+    public boolean isPowerSource() {
+        return true;
+    }
+
+    @Override
+    public int getWeakPower(BlockFace side) {
+        return getDamage();
+    }
+
+    @Override
+    public int getStrongPower(BlockFace side) {
+        return 0;
+    }
+
+    @Override
+    public boolean place(Item item, Block block, Block target, BlockFace face, double fx, double fy, double fz, Player player) {
+        if (!super.place(item, block, target, face, fx, fy, fz, player)) {
+            return false;
+        }
+        createBlockEntity(item);
+        return true;
+    }
+
+    @Override
+    public boolean canBeActivated() {
+        return true;
+    }
+
+    @Override
+    public boolean onActivate(Item item, BlockFace face, Player player) {
+        level.setBlock(this, get(DAYLIGHT_DETECTOR_INVERTED), true);
+        return true;
+    }
+
+    protected BlockEntityDaylightDetector createBlockEntity(@Nullable Item item) {
+        CompoundTag nbt = BlockEntity.getDefaultCompound(this, BlockEntity.DAYLIGHT_DETECTOR);
+
+        if (item != null && item.hasCustomName()) {
+            nbt.putString("CustomName", item.getCustomName());
+        }
+
+        return (BlockEntityDaylightDetector) BlockEntity.createBlockEntity(BlockEntity.DAYLIGHT_DETECTOR, getChunk(), nbt);
+    }
+
+    protected BlockEntityDaylightDetector getBlockEntity() {
+        if (level == null) {
+            return null;
+        }
+        BlockEntity blockEntity = level.getBlockEntity(this);
+        if (blockEntity instanceof BlockEntityDaylightDetector) {
+            return (BlockEntityDaylightDetector) blockEntity;
+        }
+        return null;
     }
 
     //This function is a suggestion that can be renamed or deleted

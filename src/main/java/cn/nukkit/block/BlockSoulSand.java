@@ -1,7 +1,10 @@
 package cn.nukkit.block;
 
-import cn.nukkit.entity.Entity;
+import cn.nukkit.Player;
+import cn.nukkit.item.Item;
 import cn.nukkit.item.ItemTool;
+import cn.nukkit.level.Level;
+import cn.nukkit.math.BlockFace;
 import cn.nukkit.utils.BlockColor;
 
 /**
@@ -43,19 +46,44 @@ public class BlockSoulSand extends BlockSolid {
     }
 
     @Override
-    public boolean hasEntityCollision() {
-        return true;
-    }
-
-    @Override
-    public void onEntityCollide(Entity entity) {
-        entity.motionX *= 0.4d;
-        entity.motionZ *= 0.4d;
-    }
-
-    @Override
     public BlockColor getColor() {
         return BlockColor.BROWN_BLOCK_COLOR;
     }
 
+    @Override
+    public boolean place(Item item, Block block, Block target, BlockFace face, double fx, double fy, double fz, Player player) {
+        if (!super.place(item, block, target, face, fx, fy, fz, player)) {
+            return false;
+        }
+
+        level.scheduleUpdate(this, 1);
+        return true;
+    }
+
+    @Override
+    public int onUpdate(int type) {
+        if (type == Level.BLOCK_UPDATE_NORMAL) {
+            if (!up().isWaterSource()) {
+                return 0;
+            }
+
+            level.scheduleRandomUpdate(this, 2);
+            return type;
+        }
+
+        if (type == Level.BLOCK_UPDATE_SCHEDULED) {
+            Block up = up();
+            if (!up.isWaterSource()) {
+                return 0;
+            }
+
+            level.setExtraBlock(up, get(FLOWING_WATER), true, false);
+            Block place = get(BUBBLE_COLUMN);
+            level.scheduleUpdate(place, up, 1);
+            level.setBlock(up, place, true);
+            return type;
+        }
+
+        return 0;
+    }
 }

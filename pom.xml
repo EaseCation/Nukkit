@@ -11,8 +11,8 @@
         <maven.compiler.source>1.8</maven.compiler.source>
         <maven.compiler.target>1.8</maven.compiler.target>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-        <junit.jupiter.version>5.8.2</junit.jupiter.version>
-        <log4j2.version>2.17.1</log4j2.version>
+        <junit.jupiter.version>5.9.0</junit.jupiter.version>
+        <log4j2.version>2.17.2</log4j2.version>
         <jline.version>3.21.0</jline.version>
         <!-- 本地测试服务端插件目录 -->
         <dir.api>../../_api</dir.api>
@@ -20,6 +20,7 @@
         <dir.login>../../_login</dir.login>
         <dir.proxy>../../_proxy</dir.proxy>
         <dir.login-proxy>../../_proxy0</dir.login-proxy>
+        <dir.server1>../../_server1</dir.server1>
     </properties>
 
     <repositories>
@@ -71,15 +72,20 @@
             <scope>compile</scope>
         </dependency>
         <dependency>
-            <!-- This dependency doesn't seem to be available in public maven repos.
-                 The jar file is included with the project under the lib dir.
-                 You need to manually install it in your local maven repo.
-                 The command below should work if mvn is on your path and you are in the lib dir:
-                 mvn install:install-file -Dfile=leveldb.jar -DgroupId=com.tinfoiled.mcpe.leveldb -DartifactId=leveldb -Dversion=0.8 -Dpackaging=jar
-             -->
-            <groupId>com.tinfoiled.mcpe.leveldb</groupId>
-            <artifactId>leveldb</artifactId>
-            <version>0.8</version>
+            <groupId>net.daporkchop</groupId>
+            <artifactId>leveldb-mcpe-jni</artifactId>
+            <version>0.0.10-SNAPSHOT</version>
+            <scope>compile</scope>
+            <exclusions>
+                <exclusion>
+                    <groupId>com.google.guava</groupId>
+                    <artifactId>guava</artifactId>
+                </exclusion>
+                <exclusion>
+                    <groupId>io.netty</groupId>
+                    <artifactId>netty-buffer</artifactId>
+                </exclusion>
+            </exclusions>
         </dependency>
         <dependency>
             <groupId>org.junit.jupiter</groupId>
@@ -96,7 +102,7 @@
         <dependency>
             <groupId>com.nimbusds</groupId>
             <artifactId>nimbus-jose-jwt</artifactId>
-            <version>9.21</version>
+            <version>9.23</version>
             <scope>compile</scope>
         </dependency>
         <dependency>
@@ -144,7 +150,7 @@
         <dependency>
             <groupId>org.projectlombok</groupId>
             <artifactId>lombok</artifactId>
-            <version>1.18.22</version>
+            <version>1.18.24</version>
             <scope>provided</scope>
         </dependency>
         <dependency>
@@ -198,7 +204,7 @@
         <dependency>
             <groupId>net.openhft</groupId>
             <artifactId>zero-allocation-hashing</artifactId>
-            <version>0.15</version>
+            <version>0.16</version>
             <scope>compile</scope>
         </dependency>
         <dependency>
@@ -207,11 +213,44 @@
             <version>3.0.2</version>
             <scope>provided</scope>
         </dependency>
+        <dependency>
+            <groupId>org.apache.commons</groupId>
+            <artifactId>commons-lang3</artifactId>
+            <version>3.12.0</version>
+            <scope>compile</scope>
+        </dependency>
+        <dependency>
+            <groupId>commons-io</groupId>
+            <artifactId>commons-io</artifactId>
+            <version>2.11.0</version>
+            <scope>compile</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.apache.commons</groupId>
+            <artifactId>commons-compress</artifactId>
+            <version>1.21</version>
+            <scope>compile</scope>
+        </dependency>
     </dependencies>
 
     <build>
         <finalName>${project.artifactId}</finalName>
         <plugins>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-jar-plugin</artifactId>
+                <version>3.2.2</version>
+                <configuration>
+                    <archive>
+                        <manifestEntries>
+                            <addClasspath>true</addClasspath>
+                            <classpathPrefix>lib/</classpathPrefix>
+                            <Main-Class>cn.nukkit.Nukkit</Main-Class>
+                            <Multi-Release>true</Multi-Release>
+                        </manifestEntries>
+                    </archive>
+                </configuration>
+            </plugin>
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-surefire-plugin</artifactId>
@@ -245,7 +284,7 @@
                     <dependency>
                         <groupId>io.github.edwgiz</groupId>
                         <artifactId>log4j-maven-shade-plugin-extensions</artifactId>
-                        <version>2.17.1</version>
+                        <version>2.17.2</version>
                     </dependency>
                 </dependencies>
                 <executions>
@@ -257,21 +296,16 @@
                     </execution>
                 </executions>
                 <configuration>
-                    <filters>
+                    <!--<filters>
                         <filter>
                             <artifact>*:*</artifact>
                             <excludes>
                                 <exclude>META-INF/versions/9/module-info.class</exclude>
                             </excludes>
                         </filter>
-                    </filters>
+                    </filters>-->
                     <transformers>
-                        <transformer implementation="org.apache.maven.plugins.shade.resource.ManifestResourceTransformer">
-                            <mainClass>cn.nukkit.Nukkit</mainClass>
-                        </transformer>
-                        <transformer
-                                implementation="io.github.edwgiz.log4j.maven.plugins.shade.transformer.Log4j2PluginCacheFileTransformer">
-                        </transformer>
+                        <transformer implementation="io.github.edwgiz.log4j.maven.plugins.shade.transformer.Log4j2PluginCacheFileTransformer"/>
                     </transformers>
                     <dependencyReducedPomLocation>${project.build.directory}/dependency-reduced-pom.xml</dependencyReducedPomLocation>
                 </configuration>
@@ -294,6 +328,12 @@
                                 </copy>
                                 <mkdir dir="${dir.login}"/>
                                 <copy todir="${dir.login}" overwrite="true">
+                                    <fileset dir="${project.build.directory}">
+                                        <include name="${project.build.finalName}.jar" />
+                                    </fileset>
+                                </copy>
+                                <mkdir dir="${dir.server1}"/>
+                                <copy todir="${dir.server1}" overwrite="true">
                                     <fileset dir="${project.build.directory}">
                                         <include name="${project.build.finalName}.jar" />
                                     </fileset>

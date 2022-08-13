@@ -1,6 +1,7 @@
 package cn.nukkit.block;
 
 import cn.nukkit.math.AxisAlignedBB;
+import cn.nukkit.math.BlockFace;
 import cn.nukkit.math.SimpleAxisAlignedBB;
 import cn.nukkit.utils.LevelException;
 
@@ -18,6 +19,7 @@ public abstract class BlockThin extends BlockTransparent {
         return false;
     }
 
+    @Override
     protected AxisAlignedBB recalculateBoundingBox() {
         final double offNW = 7.0 / 16.0;
         final double offSE = 9.0 / 16.0;
@@ -47,6 +49,16 @@ public abstract class BlockThin extends BlockTransparent {
                 this.y + 1,
                 this.z + s
         );
+    }
+
+    @Override
+    public boolean canContainWater() {
+        return true;
+    }
+
+    @Override
+    public boolean canProvideSupport(BlockFace face, SupportType type) {
+        return false;
     }
 
     public boolean canConnect(Block block) {

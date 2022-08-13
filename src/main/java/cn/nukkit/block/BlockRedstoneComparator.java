@@ -3,14 +3,13 @@ package cn.nukkit.block;
 import cn.nukkit.Player;
 import cn.nukkit.blockentity.BlockEntity;
 import cn.nukkit.blockentity.BlockEntityComparator;
+import cn.nukkit.blockentity.BlockEntityType;
 import cn.nukkit.item.Item;
 import cn.nukkit.item.ItemRedstoneComparator;
 import cn.nukkit.level.Level;
 import cn.nukkit.math.BlockFace;
 import cn.nukkit.nbt.tag.CompoundTag;
-import cn.nukkit.nbt.tag.ListTag;
 import cn.nukkit.network.protocol.LevelEventPacket;
-import cn.nukkit.utils.BlockColor;
 
 /**
  * @author CreeperFace
@@ -23,6 +22,11 @@ public abstract class BlockRedstoneComparator extends BlockRedstoneDiode {
 
     public BlockRedstoneComparator(int meta) {
         super(meta);
+    }
+
+    @Override
+    public int getBlockEntityType() {
+        return BlockEntityType.COMPARATOR;
     }
 
     @Override
@@ -111,7 +115,7 @@ public abstract class BlockRedstoneComparator extends BlockRedstoneDiode {
     }
 
     @Override
-    public boolean onActivate(Item item, Player player) {
+    public boolean onActivate(Item item, BlockFace face, Player player) {
         if (getMode() == Mode.SUBTRACT) {
             this.setDamage(this.getDamage() - 4);
         } else {
@@ -168,12 +172,7 @@ public abstract class BlockRedstoneComparator extends BlockRedstoneDiode {
     @Override
     public boolean place(Item item, Block block, Block target, BlockFace face, double fx, double fy, double fz, Player player) {
         if (super.place(item, block, target, face, fx, fy, fz, player)) {
-            CompoundTag nbt = new CompoundTag()
-                    .putList(new ListTag<>("Items"))
-                    .putString("id", BlockEntity.COMPARATOR)
-                    .putInt("x", (int) this.x)
-                    .putInt("y", (int) this.y)
-                    .putInt("z", (int) this.z);
+            CompoundTag nbt = BlockEntity.getDefaultCompound(this, BlockEntity.COMPARATOR);
             BlockEntityComparator comparator = (BlockEntityComparator) BlockEntity.createBlockEntity(BlockEntity.COMPARATOR, this.level.getChunk((int) this.x >> 4, (int) this.z >> 4), nbt);
             if (comparator == null) {
                 return false;
@@ -191,17 +190,12 @@ public abstract class BlockRedstoneComparator extends BlockRedstoneDiode {
     }
 
     @Override
-    public Item toItem() {
+    public Item toItem(boolean addUserData) {
         return new ItemRedstoneComparator();
     }
 
     public enum Mode {
         COMPARE,
         SUBTRACT
-    }
-
-    @Override
-    public BlockColor getColor() {
-        return BlockColor.AIR_BLOCK_COLOR;
     }
 }

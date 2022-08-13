@@ -14,28 +14,30 @@ import cn.nukkit.utils.Faceable;
  */
 public abstract class BlockStairs extends BlockTransparentMeta implements Faceable {
 
+    public static final int DIRECTION_MASK = 0b11;
+    public static final int UPSIDE_DOWN_BIT = 0b100;
+
     protected BlockStairs(int meta) {
-        super(meta);
+        super(meta & 0b111);
     }
 
     @Override
     public double getMinY() {
         // TODO: this seems wrong
-        return this.y + ((getDamage() & 0x04) > 0 ? 0.5 : 0);
+        return this.y + (isUpsideDown() ? 0.5 : 0);
     }
 
     @Override
     public double getMaxY() {
         // TODO: this seems wrong
-        return this.y + ((getDamage() & 0x04) > 0 ? 1 : 0.5);
+        return this.y + (isUpsideDown() ? 1 : 0.5);
     }
 
     @Override
     public boolean place(Item item, Block block, Block target, BlockFace face, double fx, double fy, double fz, Player player) {
-        int[] faces = new int[]{2, 1, 3, 0};
-        this.setDamage(faces[player != null ? player.getDirection().getHorizontalIndex() : 0]);
+        this.setDamage(player != null ? player.getDirection().getReversedHorizontalIndex() : 0);
         if ((fy > 0.5 && face != BlockFace.UP) || face == BlockFace.DOWN) {
-            this.setDamage(this.getDamage() | 0x04); //Upside-down stairs
+            this.setDamage(this.getDamage() | UPSIDE_DOWN_BIT); //Upside-down stairs
         }
         this.getLevel().setBlock(block, this, true, true);
 
@@ -46,7 +48,7 @@ public abstract class BlockStairs extends BlockTransparentMeta implements Faceab
     public Item[] getDrops(Item item) {
         if (item.isPickaxe() && item.getTier() >= ItemTool.TIER_WOODEN) {
             return new Item[]{
-                    toItem()
+                    toItem(true)
             };
         } else {
             return new Item[0];
@@ -54,8 +56,8 @@ public abstract class BlockStairs extends BlockTransparentMeta implements Faceab
     }
 
     @Override
-    public Item toItem() {
-        Item item = super.toItem();
+    public Item toItem(boolean addUserData) {
+        Item item = super.toItem(addUserData);
         item.setDamage(0);
         return item;
     }
@@ -63,12 +65,12 @@ public abstract class BlockStairs extends BlockTransparentMeta implements Faceab
     @Override
     public boolean collidesWithBB(AxisAlignedBB bb) {
         int damage = this.getDamage();
-        int side = damage & 0x03;
+        int side = damage & DIRECTION_MASK;
         double f = 0;
         double f1 = 0.5;
         double f2 = 0.5;
         double f3 = 1;
-        if ((damage & 0x04) > 0) {
+        if ((damage & UPSIDE_DOWN_BIT) == UPSIDE_DOWN_BIT) {
             f = 0.5;
             f1 = 1;
             f2 = 0;
@@ -85,7 +87,6 @@ public abstract class BlockStairs extends BlockTransparentMeta implements Faceab
         ))) {
             return true;
         }
-
 
         if (side == 0) {
             if (bb.intersectsWith(new SimpleAxisAlignedBB(
@@ -138,6 +139,31 @@ public abstract class BlockStairs extends BlockTransparentMeta implements Faceab
 
     @Override
     public BlockFace getBlockFace() {
-        return BlockFace.fromHorizontalIndex(this.getDamage() & 0x7);
+        return BlockFace.fromReversedHorizontalIndex(this.getDamage() & DIRECTION_MASK);
+    }
+
+    @Override
+    public boolean canContainWater() {
+        return true;
+    }
+
+    @Override
+    public boolean canProvideSupport(BlockFace face, SupportType type) {
+        switch (face) {
+            case UP:
+                return isUpsideDown();
+            case DOWN:
+                return !isUpsideDown();
+        }
+        return face == getBlockFace();
+    }
+
+    public boolean isUpsideDown() {
+        return (getDamage() & UPSIDE_DOWN_BIT) == UPSIDE_DOWN_BIT;
+    }
+
+    @Override
+    public boolean isStairs() {
+        return true;
     }
 }

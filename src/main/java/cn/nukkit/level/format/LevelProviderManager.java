@@ -1,8 +1,8 @@
 package cn.nukkit.level.format;
 
 import cn.nukkit.Server;
+import it.unimi.dsi.fastutil.objects.Object2ObjectOpenHashMap;
 
-import java.util.HashMap;
 import java.util.Map;
 
 /**
@@ -10,7 +10,7 @@ import java.util.Map;
  * Nukkit Project
  */
 public abstract class LevelProviderManager {
-    protected static final Map<String, Class<? extends LevelProvider>> providers = new HashMap<>();
+    protected static final Map<String, Class<? extends LevelProvider>> providers = new Object2ObjectOpenHashMap<>();
 
     public static void addProvider(Server server, Class<? extends LevelProvider> clazz) {
         try {
@@ -35,7 +35,7 @@ public abstract class LevelProviderManager {
 
     public static Class<? extends LevelProvider> getProviderByName(String name) {
         name = name.trim().toLowerCase();
-        return providers.getOrDefault(name, null);
+        return providers.get(name);
     }
 
 }

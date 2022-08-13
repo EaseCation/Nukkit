@@ -2,6 +2,8 @@ package cn.nukkit.inventory;
 
 import cn.nukkit.Player;
 
+import static cn.nukkit.network.protocol.types.UiContainerSlots.*;
+
 /**
  * @author CreeperFace
  */
@@ -9,7 +11,7 @@ public class PlayerCursorInventory extends PlayerUIComponent {
     private final PlayerUIInventory playerUI;
 
     PlayerCursorInventory(PlayerUIInventory playerUI) {
-        super(playerUI, 0, 1);
+        super(playerUI, CURSOR, 1);
         this.playerUI = playerUI;
     }
 

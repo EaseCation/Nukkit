@@ -18,7 +18,7 @@ public class BlockFenceGateAcacia extends BlockFenceGate {
 
     @Override
     public int getId() {
-        return FENCE_GATE_ACACIA;
+        return ACACIA_FENCE_GATE;
     }
 
     @Override
@@ -27,8 +27,8 @@ public class BlockFenceGateAcacia extends BlockFenceGate {
     }
 
     @Override
-    public Item toItem() {
-        return Item.get(Item.FENCE_GATE_ACACIA, 0, 1);
+    public Item toItem(boolean addUserData) {
+        return Item.get(Item.ACACIA_FENCE_GATE, 0, 1);
     }
 
     @Override

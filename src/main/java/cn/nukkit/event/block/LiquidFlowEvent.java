@@ -14,12 +14,14 @@ public class LiquidFlowEvent extends BlockEvent implements Cancellable {
     }
 
     private final Block to;
+    private final Block extra;
     private final BlockLiquid source;
     private final int newFlowDecay;
 
-    public LiquidFlowEvent(Block to, BlockLiquid source, int newFlowDecay) {
+    public LiquidFlowEvent(Block to, Block extra, BlockLiquid source, int newFlowDecay) {
         super(to);
         this.to = to;
+        this.extra = extra;
         this.source = source;
         this.newFlowDecay = newFlowDecay;
     }
@@ -34,5 +36,9 @@ public class LiquidFlowEvent extends BlockEvent implements Cancellable {
 
     public Block getTo() {
         return this.to;
+    }
+
+    public Block getExtraBlock() {
+        return this.extra;
     }
 }

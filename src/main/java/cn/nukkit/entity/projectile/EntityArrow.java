@@ -3,9 +3,9 @@ package cn.nukkit.entity.projectile;
 import cn.nukkit.Player;
 import cn.nukkit.entity.Entity;
 import cn.nukkit.level.format.FullChunk;
-import cn.nukkit.level.sound.SoundEnum;
 import cn.nukkit.nbt.tag.CompoundTag;
 import cn.nukkit.network.protocol.AddEntityPacket;
+import cn.nukkit.network.protocol.LevelSoundEventPacket;
 
 import java.util.concurrent.ThreadLocalRandom;
 
@@ -114,7 +114,7 @@ public class EntityArrow extends EntityProjectile {
         if (this.onGround || this.hadCollision) {
             this.setCritical(false);
             if (!this.playedHitSound) {
-                this.getLevel().addSound(this, SoundEnum.RANDOM_BOWHIT);
+                this.getLevel().addLevelSoundEvent(this, LevelSoundEventPacket.SOUND_BOW_HIT);
                 this.playedHitSound = true;
             }
         }

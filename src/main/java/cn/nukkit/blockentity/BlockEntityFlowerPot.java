@@ -15,6 +15,13 @@ public class BlockEntityFlowerPot extends BlockEntitySpawnable {
 
     @Override
     protected void initBlockEntity() {
+        //TODO: upgrade
+        /*if (!namedTag.contains("PlantBlock")) {
+            namedTag.putCompound("PlantBlock", new CompoundTag()
+                    .putString("name", GlobalBlockPalette.getNameByBlockId(BlockID.AIR))
+                    .putShort("val", 0));
+        }*/
+
         if (!namedTag.contains("item")) {
             namedTag.putShort("item", 0);
         }
@@ -32,22 +39,17 @@ public class BlockEntityFlowerPot extends BlockEntitySpawnable {
     }
 
     @Override
-    public boolean isBlockEntityValid() {
-        int blockID = getBlock().getId();
-        return blockID == Block.FLOWER_POT_BLOCK;
+    public boolean isValidBlock(int blockId) {
+        return blockId == Block.BLOCK_FLOWER_POT;
     }
 
     @Override
     public CompoundTag getSpawnCompound() {
-        CompoundTag tag = new CompoundTag()
-                .putString("id", BlockEntity.FLOWER_POT)
-                .putInt("x", (int) this.x)
-                .putInt("y", (int) this.y)
-                .putInt("z", (int) this.z);
+        CompoundTag tag = getDefaultCompound(this, FLOWER_POT);
 
         int item = namedTag.getShort("item");
         if (item != Block.AIR) {
-            tag.putShort("item", this.namedTag.getShort("item"))
+            tag.putShort("item", item)
                     .putInt("mData", this.namedTag.getInt("data"));
         }
         return tag;

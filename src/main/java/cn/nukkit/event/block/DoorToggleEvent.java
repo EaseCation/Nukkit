@@ -20,7 +20,7 @@ public class DoorToggleEvent extends BlockUpdateEvent implements Cancellable {
     private Player player;
 
     public DoorToggleEvent(Block block, Player player) {
-        super(block);
+        super(block, 0);
         this.player = player;
     }
 

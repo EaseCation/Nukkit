@@ -8,8 +8,6 @@ import cn.nukkit.entity.mob.EntityCreeper;
 import cn.nukkit.network.protocol.*;
 import cn.nukkit.network.protocol.BossEventPacket.BossBarColor;
 
-import java.util.concurrent.ThreadLocalRandom;
-
 /**
  * DummyBossBar
  * ===============
@@ -143,7 +141,7 @@ public class DummyBossBar {
     private void sendAttributes() {
         UpdateAttributesPacket pkAttributes = new UpdateAttributesPacket();
         pkAttributes.entityId = bossBarId;
-        Attribute attr = Attribute.getAttribute(Attribute.MAX_HEALTH);
+        Attribute attr = Attribute.getAttribute(Attribute.HEALTH);
         attr.setMaxValue(100); // Max value - We need to change the max value first, or else the "setValue" will return a IllegalArgumentException
         attr.setValue(length); // Entity health
         pkAttributes.entries = new Attribute[]{attr};

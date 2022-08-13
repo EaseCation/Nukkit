@@ -1,5 +1,6 @@
 package cn.nukkit.level.generator.populator.impl;
 
+import cn.nukkit.block.BlockDoublePlant;
 import cn.nukkit.level.format.FullChunk;
 import cn.nukkit.level.generator.populator.helper.EnsureCover;
 import cn.nukkit.level.generator.populator.helper.EnsureGrassBelow;
@@ -31,12 +32,12 @@ public class PopulatorFlower extends PopulatorSurfaceBlock {
     }
 
     @Override
-    protected void placeBlock(int x, int y, int z, int id, FullChunk chunk, NukkitRandom random) {
+    protected void placeBlock(int x, int y, int z, int id, int meta, FullChunk chunk, NukkitRandom random) {
         if (flowerTypes.size() != 0) {
             int[] type = flowerTypes.get(ThreadLocalRandom.current().nextInt(flowerTypes.size()));
-            chunk.setFullBlockId(x, y, z, (type[0] << 4) | type[1]);
+            chunk.setBlock(0, x, y, z, type[0], type[1]);
             if (type[0] == DOUBLE_PLANT) {
-                chunk.setFullBlockId(x, y + 1, z, (type[0] << 4) | (8 | type[1]));
+                chunk.setBlock(0, x, y + 1, z, type[0], type[1] | BlockDoublePlant.TOP_HALF_BITMASK);
             }
         }
     }

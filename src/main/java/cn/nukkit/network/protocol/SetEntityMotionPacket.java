@@ -1,5 +1,6 @@
 package cn.nukkit.network.protocol;
 
+import cn.nukkit.math.Vector3f;
 import lombok.ToString;
 
 /**
@@ -22,7 +23,11 @@ public class SetEntityMotionPacket extends DataPacket {
 
     @Override
     public void decode() {
-
+        this.eid = this.getEntityRuntimeId();
+        Vector3f v = this.getVector3f();
+        this.motionX = v.x;
+        this.motionY = v.y;
+        this.motionZ = v.z;
     }
 
     @Override

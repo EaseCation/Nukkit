@@ -3,6 +3,7 @@ package cn.nukkit.potion;
 import cn.nukkit.Player;
 import cn.nukkit.entity.Entity;
 import cn.nukkit.entity.EntityLiving;
+import cn.nukkit.entity.EntitySmite;
 import cn.nukkit.event.entity.EntityDamageEvent;
 import cn.nukkit.event.entity.EntityDamageEvent.DamageCause;
 import cn.nukkit.event.entity.EntityRegainHealthEvent;
@@ -52,6 +53,13 @@ public class Potion implements Cloneable {
     public static final int STRENGTH_II = 33;
     public static final int WEAKNESS = 34;
     public static final int WEAKNESS_LONG = 35;
+    public static final int WITHER_II = 36;
+    public static final int TURTLE_MASTER = 37; //TODO
+    public static final int TURTLE_MASTER_LONG = 38;
+    public static final int TURTLE_MASTER_II = 39;
+    public static final int SLOW_FALLING = 40;
+    public static final int SLOW_FALLING_LONG = 41;
+    public static final int SLOWNESS_IV = 42;
 
     protected static Potion[] potions;
 
@@ -94,6 +102,8 @@ public class Potion implements Cloneable {
         potions[Potion.STRENGTH_II] = new Potion(Potion.STRENGTH_II, 2);
         potions[Potion.WEAKNESS] = new Potion(Potion.WEAKNESS);
         potions[Potion.WEAKNESS_LONG] = new Potion(Potion.WEAKNESS_LONG);
+
+        Potions.registerVanillaPotions();
     }
 
     public static Potion getPotion(int id) {
@@ -187,11 +197,19 @@ public class Potion implements Cloneable {
         switch (this.getId()) {
             case INSTANT_HEALTH:
             case INSTANT_HEALTH_II:
-                entity.heal(new EntityRegainHealthEvent(entity, (float) (health * (double) (4 << (applyEffect.getAmplifier() + 1))), EntityRegainHealthEvent.CAUSE_MAGIC));
+                if (entity instanceof EntitySmite) {
+                    entity.attack(new EntityDamageEvent(entity, DamageCause.MAGIC, (float) (health * (double) (6 << (applyEffect.getAmplifier() + 1)))));
+                } else {
+                    entity.heal(new EntityRegainHealthEvent(entity, (float) (health * (double) (4 << (applyEffect.getAmplifier() + 1))), EntityRegainHealthEvent.CAUSE_MAGIC));
+                }
                 break;
             case HARMING:
             case HARMING_II:
-                entity.attack(new EntityDamageEvent(entity, DamageCause.MAGIC, (float) (health * (double) (6 << (applyEffect.getAmplifier() + 1)))));
+                if (entity instanceof EntitySmite) {
+                    entity.heal(new EntityRegainHealthEvent(entity, (float) (health * (double) (4 << (applyEffect.getAmplifier() + 1))), EntityRegainHealthEvent.CAUSE_MAGIC));
+                } else {
+                    entity.attack(new EntityDamageEvent(entity, DamageCause.MAGIC, (float) (health * (double) (6 << (applyEffect.getAmplifier() + 1)))));
+                }
                 break;
             default:
                 int duration = (int) ((isSplash() ? health : 1) * (double) applyEffect.getDuration() + 0.5);
@@ -229,7 +247,7 @@ public class Potion implements Cloneable {
             case LEAPING:
             case LEAPING_LONG:
             case LEAPING_II:
-                effect = Effect.getEffect(Effect.JUMP);
+                effect = Effect.getEffect(Effect.JUMP_BOOST);
                 break;
             case FIRE_RESISTANCE:
             case FIRE_RESISTANCE_LONG:
@@ -242,6 +260,7 @@ public class Potion implements Cloneable {
                 break;
             case SLOWNESS:
             case SLOWNESS_LONG:
+            case SLOWNESS_IV:
                 effect = Effect.getEffect(Effect.SLOWNESS);
                 break;
             case WATER_BREATHING:
@@ -250,10 +269,10 @@ public class Potion implements Cloneable {
                 break;
             case INSTANT_HEALTH:
             case INSTANT_HEALTH_II:
-                return Effect.getEffect(Effect.HEALING);
+                return Effect.getEffect(Effect.INSTANT_HEALTH);
             case HARMING:
             case HARMING_II:
-                return Effect.getEffect(Effect.HARMING);
+                return Effect.getEffect(Effect.INSTANT_DAMAGE);
             case POISON:
             case POISON_LONG:
             case POISON_II:
@@ -272,6 +291,9 @@ public class Potion implements Cloneable {
             case WEAKNESS:
             case WEAKNESS_LONG:
                 effect = Effect.getEffect(Effect.WEAKNESS);
+                break;
+            case WITHER_II:
+                effect = Effect.getEffect(Effect.WITHER);
                 break;
             default:
                 return null;
@@ -298,7 +320,11 @@ public class Potion implements Cloneable {
             case POISON_II:
             case REGENERATION_II:
             case STRENGTH_II:
+            case WITHER_II:
+            case TURTLE_MASTER_II:
                 return 2;
+            case SLOWNESS_IV:
+                return 4;
             default:
                 return 1;
         }
@@ -391,6 +417,10 @@ public class Potion implements Cloneable {
                     return 67;
                 case WEAKNESS_LONG:
                     return 180;
+                case WITHER_II:
+                    return 30;
+                case SLOWNESS_IV:
+                    return 15;
                 default:
                     return 0;
             }
@@ -468,6 +498,10 @@ public class Potion implements Cloneable {
                     return 90;
                 case WEAKNESS_LONG:
                     return 240;
+                case WITHER_II:
+                    return 30;
+                case SLOWNESS_IV:
+                    return 20;
                 default:
                     return 0;
             }

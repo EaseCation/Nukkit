@@ -15,6 +15,6 @@ public class ItemClownfish extends ItemFish {
     }
 
     public ItemClownfish(Integer meta, int count) {
-        super(CLOWNFISH, meta, count, "Clownfish");
+        super(TROPICAL_FISH, meta, count, "Clownfish");
     }
 }

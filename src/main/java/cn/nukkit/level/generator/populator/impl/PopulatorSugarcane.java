@@ -21,8 +21,8 @@ public class PopulatorSugarcane extends PopulatorSurfaceBlock {
         int count = 0;
         for (int i = x - 4; i < (x + 4); i++) {
             for (int j = z - 4; j < (z + 4); j++) {
-                int b = level.getBlockIdAt(i, y, j);
-                if (b == Block.WATER || b == Block.STILL_WATER) {
+                int b = level.getBlockIdAt(0, i, y, j);
+                if (b == Block.FLOWING_WATER || b == Block.WATER) {
                     count++;
                 }
                 if (count > 10) {
@@ -40,6 +40,11 @@ public class PopulatorSugarcane extends PopulatorSurfaceBlock {
 
     @Override
     protected int getBlockId(int x, int z, NukkitRandom random, FullChunk chunk) {
-        return (SUGARCANE_BLOCK << 4) | 1;
+        return BLOCK_REEDS;
+    }
+
+    @Override
+    protected int getBlockMeta(int x, int z, NukkitRandom random, FullChunk chunk) {
+        return 1;
     }
 }

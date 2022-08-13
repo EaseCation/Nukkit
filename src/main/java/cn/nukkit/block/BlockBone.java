@@ -58,10 +58,15 @@ public class BlockBone extends BlockSolidMeta implements Faceable {
     @Override
     public Item[] getDrops(Item item) {
         if (item.isPickaxe() && item.getTier() >= ItemTool.TIER_WOODEN) {
-            return new Item[]{new ItemBlock(this)};
+            return new Item[]{toItem(true)};
         }
 
         return new Item[0];
+    }
+
+    @Override
+    public Item toItem(boolean addUserData) {
+        return new ItemBlock(this, 0);
     }
 
     @Override

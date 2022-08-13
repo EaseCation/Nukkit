@@ -9,15 +9,26 @@ import cn.nukkit.utils.BlockColor;
  * author: MagicDroidX
  * Nukkit Project
  */
-public class BlockDoubleSlabStone extends BlockSolidMeta {
-    public static final int STONE = 0;
+public class BlockDoubleSlabStone extends BlockDoubleSlab {
+    public static final int SMOOTH_STONE = 0;
     public static final int SANDSTONE = 1;
-    public static final int WOODEN = 2;
+    public static final int WOOD = 2;
     public static final int COBBLESTONE = 3;
     public static final int BRICK = 4;
     public static final int STONE_BRICK = 5;
     public static final int QUARTZ = 6;
     public static final int NETHER_BRICK = 7;
+
+    private static final String[] NAMES = new String[]{
+            "Double Smooth Stone Slab",
+            "Double Sandstone Slab",
+            "Double Wooden Slab",
+            "Double Cobblestone Slab",
+            "Double Brick Slab",
+            "Double Stone Brick Slab",
+            "Double Quartz Slab",
+            "Double Nether Brick Slab",
+    };
 
     public BlockDoubleSlabStone() {
         this(0);
@@ -29,17 +40,12 @@ public class BlockDoubleSlabStone extends BlockSolidMeta {
 
     @Override
     public int getId() {
-        return DOUBLE_SLAB;
+        return DOUBLE_STONE_SLAB;
     }
 
     @Override
     public double getResistance() {
-        return getToolType() > ItemTool.TIER_WOODEN ? 30 : 15;
-    }
-
-    @Override
-    public double getHardness() {
-        return 2;
+        return 30;
     }
 
     @Override
@@ -49,29 +55,19 @@ public class BlockDoubleSlabStone extends BlockSolidMeta {
 
     @Override
     public String getName() {
-        String[] names = new String[]{
-                "Stone",
-                "Sandstone",
-                "Wooden",
-                "Cobblestone",
-                "Brick",
-                "Stone Brick",
-                "Quartz",
-                "Nether Brick"
-        };
-        return "Double " + names[this.getDamage() & 0x07] + " Slab";
+        return NAMES[this.getDamage() & TYPE_MASK];
     }
 
     @Override
-    public Item toItem() {
-        return new ItemBlock(Block.get(BlockID.STONE_SLAB), this.getDamage() & 0x07);
+    public Item toItem(boolean addUserData) {
+        return new ItemBlock(Block.get(BlockID.STONE_SLAB), this.getDamage() & TYPE_MASK);
     }
 
     @Override
     public Item[] getDrops(Item item) {
         if (item.isPickaxe() && item.getTier() >= ItemTool.TIER_WOODEN) {
             return new Item[]{
-                    Item.get(Item.SLAB, this.getDamage() & 0x07, 2)
+                    Item.get(Item.STONE_SLAB, this.getDamage() & TYPE_MASK, 2)
             };
         } else {
             return new Item[0];
@@ -80,21 +76,21 @@ public class BlockDoubleSlabStone extends BlockSolidMeta {
 
     @Override
     public BlockColor getColor() {
-        switch (this.getDamage() & 0x07) {
+        switch (this.getDamage() & TYPE_MASK) {
             default:
-                case BlockDoubleSlabStone.STONE:
-                case BlockDoubleSlabStone.COBBLESTONE:
-                case BlockDoubleSlabStone.BRICK:
-                case BlockDoubleSlabStone.STONE_BRICK:
-                    return BlockColor.STONE_BLOCK_COLOR;
-            case BlockDoubleSlabStone.SANDSTONE:
+            case SMOOTH_STONE:
+            case COBBLESTONE:
+            case BRICK:
+            case STONE_BRICK:
+                return BlockColor.STONE_BLOCK_COLOR;
+            case SANDSTONE:
                 return BlockColor.SAND_BLOCK_COLOR;
-            case BlockDoubleSlabStone.WOODEN:
+            case WOOD:
                 return BlockColor.WOOD_BLOCK_COLOR;
-            case BlockDoubleSlabStone.QUARTZ:
+            case QUARTZ:
                 return BlockColor.QUARTZ_BLOCK_COLOR;
-            case BlockDoubleSlabStone.NETHER_BRICK:
-                return BlockColor.NETHERRACK_BLOCK_COLOR;
+            case NETHER_BRICK:
+                return BlockColor.NETHER_BLOCK_COLOR;
         }
     }
 

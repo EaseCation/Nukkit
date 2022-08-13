@@ -3,16 +3,22 @@ package cn.nukkit.inventory.transaction;
 import cn.nukkit.Player;
 import cn.nukkit.event.inventory.RepairItemEvent;
 import cn.nukkit.inventory.AnvilInventory;
+import cn.nukkit.inventory.GrindstoneInventory;
 import cn.nukkit.inventory.Inventory;
+import cn.nukkit.inventory.SmithingTableInventory;
 import cn.nukkit.inventory.transaction.action.InventoryAction;
 import cn.nukkit.inventory.transaction.action.RepairItemAction;
 import cn.nukkit.item.Item;
 import cn.nukkit.item.ItemDurable;
+import cn.nukkit.item.ItemID;
 import cn.nukkit.item.enchantment.Enchantment;
+import cn.nukkit.math.Mth;
 import cn.nukkit.network.protocol.LevelEventPacket;
 import cn.nukkit.network.protocol.types.NetworkInventoryAction;
 
+import java.util.Arrays;
 import java.util.List;
+import java.util.concurrent.ThreadLocalRandom;
 
 public class RepairItemTransaction extends InventoryTransaction {
 
@@ -32,11 +38,40 @@ public class RepairItemTransaction extends InventoryTransaction {
         if (inventory == null) {
             return false;
         }
-        AnvilInventory anvilInventory = (AnvilInventory) inventory;
-        this.cost = anvilInventory.getCost();
-        return this.inputItem != null && this.outputItem != null && this.inputItem.equals(anvilInventory.getInputSlot(), true, true)
-                && (!this.hasMaterial() || this.materialItem.equals(anvilInventory.getMaterialSlot(), true, true))
-                && this.checkRecipeValid() && this.checkRenameValid();
+        if (inventory instanceof AnvilInventory) {
+            AnvilInventory anvilInventory = (AnvilInventory) inventory;
+            this.cost = anvilInventory.getCost();
+            return this.hasInput() && this.hasOutput() && this.inputItem.equals(anvilInventory.getInputSlot(), true, true)
+                    && (!this.hasMaterial() || this.materialItem.equals(anvilInventory.getMaterialSlot(), true, true))
+                    && this.checkRecipeValid() && this.checkRenameValid();
+        } else if (inventory instanceof GrindstoneInventory) {
+            GrindstoneInventory grindstoneInventory = (GrindstoneInventory) inventory;
+
+            boolean hasItem = false;
+            if (hasInput()) {
+                hasItem = true;
+                if (!inputItem.equals(grindstoneInventory.getInputSlot(), true, true)) {
+                    return false;
+                }
+            }
+            if (hasMaterial()) {
+                hasItem = true;
+                if (!materialItem.equals(grindstoneInventory.getMaterialSlot(), true, true)) {
+                    return false;
+                }
+            }
+            if (!hasItem) {
+                return false;
+            }
+            return hasOutput() && checkGrindstoneValid();
+        } else if (inventory instanceof SmithingTableInventory) {
+            SmithingTableInventory smithingInventory = (SmithingTableInventory) inventory;
+            return inputItem instanceof ItemDurable && hasMaterial() && hasOutput()
+                    && inputItem.equals(smithingInventory.getInputSlot(), true, true)
+                    && materialItem.equals(smithingInventory.getMaterialSlot(), true, true)
+                    && checkSmithingValid();
+        }
+        return false;
     }
 
     @Override
@@ -46,29 +81,82 @@ public class RepairItemTransaction extends InventoryTransaction {
             this.sendInventories();
             return false;
         }
-        AnvilInventory inventory = (AnvilInventory) getSource().getWindowById(Player.ANVIL_WINDOW_ID);
 
-        RepairItemEvent event = new RepairItemEvent(inventory, this.inputItem, this.outputItem, this.materialItem, this.cost, this.source);
-        this.source.getServer().getPluginManager().callEvent(event);
-        if (event.isCancelled()) {
-            this.source.removeAllWindows(false);
-            this.sendInventories();
+        Inventory inventory = getSource().getWindowById(Player.ANVIL_WINDOW_ID);
+        if (inventory instanceof AnvilInventory) {
+            AnvilInventory anvilInventory = (AnvilInventory) getSource().getWindowById(Player.ANVIL_WINDOW_ID);
+
+            RepairItemEvent event = new RepairItemEvent(anvilInventory, this.inputItem, this.outputItem, this.materialItem, this.cost, this.source);
+            this.source.getServer().getPluginManager().callEvent(event);
+            if (event.isCancelled()) {
+                this.source.removeAllWindows(false);
+                this.sendInventories();
+                return true;
+            }
+
+            for (InventoryAction action : this.actions) {
+                if (action.execute(this.source)) {
+                    action.onExecuteSuccess(this.source);
+                } else {
+                    action.onExecuteFail(this.source);
+                }
+            }
+
+            if (!this.source.isCreative()) {
+                this.source.setExperience(this.source.getExperience(), this.source.getExperienceLevel() - event.getCost());
+            }
+            this.source.level.addLevelEvent(anvilInventory.getHolder(), LevelEventPacket.EVENT_SOUND_ANVIL_USE);
+            return true;
+        } else if (inventory instanceof GrindstoneInventory) {
+            GrindstoneInventory grindstoneInventory = (GrindstoneInventory) inventory;
+
+            for (InventoryAction action : this.actions) {
+                if (action.execute(this.source)) {
+                    action.onExecuteSuccess(this.source);
+                } else {
+                    action.onExecuteFail(this.source);
+                }
+            }
+
+            // we don't use SpawnExperienceOrbPacket
+            int xp = 0;
+            if (hasInput()) {
+                for (Enchantment ench : inputItem.getEnchantments()) {
+                    if (ench.isCurse() || ench.getLevel() <= 0) {
+                        continue;
+                    }
+                    int min = Mth.ceil(ench.getMinEnchantAbility(ench.getLevel()) / 2.0);
+                    xp += ThreadLocalRandom.current().nextInt(min, min * 2);
+                }
+            }
+            if (hasMaterial()) {
+                for (Enchantment ench : materialItem.getEnchantments()) {
+                    if (ench.isCurse() || ench.getLevel() <= 0) {
+                        continue;
+                    }
+                    int min = Mth.ceil(ench.getMinEnchantAbility(ench.getLevel()) / 2.0);
+                    xp += ThreadLocalRandom.current().nextInt(min, min * 2);
+                }
+            }
+            if (xp != 0) {
+                source.level.dropExpOrb(source, xp);
+            }
+            return true;
+        } else if (inventory instanceof SmithingTableInventory) {
+            SmithingTableInventory smithingInventory = (SmithingTableInventory) inventory;
+
+            for (InventoryAction action : this.actions) {
+                if (action.execute(this.source)) {
+                    action.onExecuteSuccess(this.source);
+                } else {
+                    action.onExecuteFail(this.source);
+                }
+            }
+
             return true;
         }
 
-        for (InventoryAction action : this.actions) {
-            if (action.execute(this.source)) {
-                action.onExecuteSuccess(this.source);
-            } else {
-                action.onExecuteFail(this.source);
-            }
-        }
-
-        if (!this.source.isCreative()) {
-            this.source.setExperience(this.source.getExperience(), this.source.getExperienceLevel() - event.getCost());
-        }
-        this.source.level.addLevelEvent(inventory.getHolder(), LevelEventPacket.EVENT_SOUND_ANVIL_USE);
-        return true;
+        return false;
     }
 
     @Override
@@ -104,8 +192,16 @@ public class RepairItemTransaction extends InventoryTransaction {
                 && this.inputItem.getCount() == this.outputItem.getCount()) && (this.cost < 40 || this.source.isCreative());
     }
 
+    private boolean hasInput() {
+        return this.inputItem != null && !this.inputItem.isNull();
+    }
+
     private boolean hasMaterial() {
         return this.materialItem != null && !this.materialItem.isNull();
+    }
+
+    private boolean hasOutput() {
+        return this.outputItem != null && !this.outputItem.isNull();
     }
 
     private boolean checkRenameValid() {
@@ -173,7 +269,7 @@ public class RepairItemTransaction extends InventoryTransaction {
     }
 
     private boolean isMapRecipe() {
-        return this.hasMaterial() && (this.inputItem.getId() == Item.MAP || this.inputItem.getId() == Item.EMPTY_MAP)
+        return this.hasMaterial() && (this.inputItem.getId() == Item.FILLED_MAP || this.inputItem.getId() == Item.EMPTY_MAP)
                 && (this.materialItem.getId() == Item.EMPTY_MAP || this.materialItem.getId() == Item.PAPER || this.materialItem.getId() == Item.COMPASS);
     }
 
@@ -181,18 +277,117 @@ public class RepairItemTransaction extends InventoryTransaction {
         if (this.inputItem.getId() == Item.EMPTY_MAP) {
             return this.inputItem.getDamage() != 2 && this.materialItem.getId() == Item.COMPASS // locator
                     && this.outputItem.getId() == Item.EMPTY_MAP && this.outputItem.getDamage() == 2 && this.outputItem.getCount() == 1;
-        } else if (this.inputItem.getId() == Item.MAP) {
+        } else if (this.inputItem.getId() == Item.FILLED_MAP) {
             if (this.materialItem.getId() == Item.COMPASS) { // locator
-                return this.inputItem.getDamage() < 2 && this.outputItem.getId() == Item.MAP
+                return this.inputItem.getDamage() < 2 && this.outputItem.getId() == Item.FILLED_MAP
                         && this.outputItem.getDamage() == 2 && this.outputItem.getCount() == 1;
             } else if (this.materialItem.getId() == Item.EMPTY_MAP) { // clone
-                return this.outputItem.getId() == Item.MAP && this.outputItem.getDamage() == this.inputItem.getDamage() && this.outputItem.getCount() == 2;
+                return this.outputItem.getId() == Item.FILLED_MAP && this.outputItem.getDamage() == this.inputItem.getDamage() && this.outputItem.getCount() == 2;
             } else if (this.materialItem.getId() == Item.PAPER && this.materialItem.getCount() >= 8) { // zoom out
-                return this.inputItem.getDamage() < 3 && this.outputItem.getId() == Item.MAP
+                return this.inputItem.getDamage() < 3 && this.outputItem.getId() == Item.FILLED_MAP
                         && this.outputItem.getDamage() == this.inputItem.getDamage() && this.outputItem.getCount() == 1;
             }
         }
         return false;
+    }
+
+    private boolean checkGrindstoneValid() {
+        boolean hasEnchant = false;
+        for (Enchantment ench : outputItem.getEnchantments()) {
+            if (!ench.isCurse()) {
+                return false;
+            }
+            hasEnchant = true;
+        }
+
+        Item input;
+        Item material;
+        if (hasInput()) {
+            input = inputItem;
+            material = materialItem;
+        } else {
+            input = materialItem;
+            material = null;
+        }
+
+        int outputId = outputItem.getId();
+        int inputId = input.getId();
+
+        if (inputId == ItemID.ENCHANTED_BOOK) {
+            if (hasEnchant) {
+                if (outputId != ItemID.ENCHANTED_BOOK) {
+                    return false;
+                }
+            } else if (outputId != ItemID.BOOK) {
+                return false;
+            }
+
+            return material == null || material.isNull();
+        }
+
+        if (outputId != inputId) {
+            return false;
+        }
+
+        return (material == null || material.isNull() || inputId == material.getId())
+                && input.getCustomName().equals(outputItem.getCustomName());
+    }
+
+    private boolean checkSmithingValid() {
+        int materialId = Integer.MIN_VALUE;
+        switch (inputItem.getId()) {
+            case ItemID.DIAMOND_SWORD:
+                if (outputItem.getId() == ItemID.NETHERITE_SWORD) {
+                    materialId = ItemID.NETHERITE_INGOT;
+                }
+                break;
+            case ItemID.DIAMOND_SHOVEL:
+                if (outputItem.getId() == ItemID.NETHERITE_SHOVEL) {
+                    materialId = ItemID.NETHERITE_INGOT;
+                }
+                break;
+            case ItemID.DIAMOND_PICKAXE:
+                if (outputItem.getId() == ItemID.NETHERITE_PICKAXE) {
+                    materialId = ItemID.NETHERITE_INGOT;
+                }
+                break;
+            case ItemID.DIAMOND_AXE:
+                if (outputItem.getId() == ItemID.NETHERITE_AXE) {
+                    materialId = ItemID.NETHERITE_INGOT;
+                }
+                break;
+            case ItemID.DIAMOND_HOE:
+                if (outputItem.getId() == ItemID.NETHERITE_HOE) {
+                    materialId = ItemID.NETHERITE_INGOT;
+                }
+                break;
+            case ItemID.DIAMOND_HELMET:
+                if (outputItem.getId() == ItemID.NETHERITE_HELMET) {
+                    materialId = ItemID.NETHERITE_INGOT;
+                }
+                break;
+            case ItemID.DIAMOND_CHESTPLATE:
+                if (outputItem.getId() == ItemID.NETHERITE_CHESTPLATE) {
+                    materialId = ItemID.NETHERITE_INGOT;
+                }
+                break;
+            case ItemID.DIAMOND_LEGGINGS:
+                if (outputItem.getId() == ItemID.NETHERITE_LEGGINGS) {
+                    materialId = ItemID.NETHERITE_INGOT;
+                }
+                break;
+            case ItemID.DIAMOND_BOOTS:
+                if (outputItem.getId() == ItemID.NETHERITE_BOOTS) {
+                    materialId = ItemID.NETHERITE_INGOT;
+                }
+                break;
+        }
+        if (materialId == Integer.MIN_VALUE) {
+            return false;
+        }
+
+        return materialId == materialItem.getId() && inputItem.getDamage() == outputItem.getDamage()
+                && Arrays.equals(inputItem.getCompoundTag(), outputItem.getCompoundTag());
     }
 
     public Item getInputItem() {

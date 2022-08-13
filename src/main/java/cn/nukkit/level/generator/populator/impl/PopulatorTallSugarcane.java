@@ -14,10 +14,10 @@ import java.util.concurrent.ThreadLocalRandom;
 
 public class PopulatorTallSugarcane extends PopulatorSugarcane {
     @Override
-    protected void placeBlock(int x, int y, int z, int id, FullChunk chunk, NukkitRandom random) {
+    protected void placeBlock(int x, int y, int z, int id, int meta, FullChunk chunk, NukkitRandom random) {
         int height = ThreadLocalRandom.current().nextInt(3) + 1;
         for (int i = 0; i < height; i++)    {
-            chunk.setFullBlockId(x, y + i, z, id);
+            chunk.setBlock(0, x, y + i, z, id, meta);
         }
     }
 }

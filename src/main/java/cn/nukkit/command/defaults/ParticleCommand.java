@@ -155,7 +155,7 @@ public class ParticleCommand extends VanillaCommand {
             case "snowballpoof":
                 return new ItemBreakParticle(pos, Item.get(Item.SNOWBALL));
             case "slime":
-                return new ItemBreakParticle(pos, Item.get(Item.SLIMEBALL));
+                return new ItemBreakParticle(pos, Item.get(Item.SLIME_BALL));
             case "itembreak":
                 if (data != -1 && data != 0) {
                     return new ItemBreakParticle(pos, Item.get(data));

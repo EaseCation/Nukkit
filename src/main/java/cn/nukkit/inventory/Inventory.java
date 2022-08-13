@@ -98,4 +98,29 @@ public interface Inventory {
     void onClose(Player who);
 
     void onSlotChange(int index, Item before, boolean send);
+
+    default Item split(int index, int count) {
+        Item item = getItem(index);
+        Item split = item.split(count);
+        setItem(index, item);
+        return split;
+    }
+
+    default void grow(int index, int count) {
+        Item item = getItem(index);
+        item.grow(count);
+        setItem(index, item);
+    }
+
+    default void shrink(int index, int count) {
+        Item item = getItem(index);
+        item.shrink(count);
+        setItem(index, item);
+    }
+
+    default void pop(int index) {
+        Item item = getItem(index);
+        item.pop();
+        setItem(index, item);
+    }
 }

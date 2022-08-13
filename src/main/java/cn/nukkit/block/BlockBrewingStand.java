@@ -1,9 +1,9 @@
 package cn.nukkit.block;
 
-
 import cn.nukkit.Player;
 import cn.nukkit.blockentity.BlockEntity;
 import cn.nukkit.blockentity.BlockEntityBrewingStand;
+import cn.nukkit.blockentity.BlockEntityType;
 import cn.nukkit.inventory.ContainerInventory;
 import cn.nukkit.item.Item;
 import cn.nukkit.item.ItemBrewingStand;
@@ -17,7 +17,7 @@ import cn.nukkit.utils.BlockColor;
 
 import java.util.Map;
 
-public class BlockBrewingStand extends BlockSolidMeta {
+public class BlockBrewingStand extends BlockTransparentMeta {
 
     public BlockBrewingStand() {
         this(0);
@@ -54,7 +54,12 @@ public class BlockBrewingStand extends BlockSolidMeta {
 
     @Override
     public int getId() {
-        return BREWING_STAND_BLOCK;
+        return BLOCK_BREWING_STAND;
+    }
+
+    @Override
+    public int getBlockEntityType() {
+        return BlockEntityType.BREWING_STAND;
     }
 
     @Override
@@ -92,7 +97,7 @@ public class BlockBrewingStand extends BlockSolidMeta {
     }
 
     @Override
-    public boolean onActivate(Item item, Player player) {
+    public boolean onActivate(Item item, BlockFace face, Player player) {
         if (player != null) {
             BlockEntity t = getLevel().getBlockEntity(this);
             BlockEntityBrewingStand brewing;
@@ -124,7 +129,7 @@ public class BlockBrewingStand extends BlockSolidMeta {
     }
 
     @Override
-    public Item toItem() {
+    public Item toItem(boolean addUserData) {
         return new ItemBrewingStand();
     }
 
@@ -132,7 +137,7 @@ public class BlockBrewingStand extends BlockSolidMeta {
     public Item[] getDrops(Item item) {
         if (item.isPickaxe() && item.getTier() >= ItemTool.TIER_WOODEN) {
             return new Item[]{
-                    toItem()
+                    toItem(true)
             };
         } else {
             return new Item[0];
@@ -141,9 +146,40 @@ public class BlockBrewingStand extends BlockSolidMeta {
 
     @Override
     public BlockColor getColor() {
-        return BlockColor.IRON_BLOCK_COLOR;
+        return BlockColor.METAL_BLOCK_COLOR;
     }
 
+    @Override
+    public boolean isSolid() {
+        return false;
+    }
+
+    @Override
+    public double getMinX() {
+        return this.x + 7 / 16.0;
+    }
+
+    @Override
+    public double getMinZ() {
+        return this.z + 7 / 16.0;
+    }
+
+    @Override
+    public double getMaxX() {
+        return this.x + 1 - 7 / 16.0;
+    }
+
+    @Override
+    public double getMaxY() {
+        return this.y + 1 - 2 / 16.0;
+    }
+
+    @Override
+    public double getMaxZ() {
+        return this.z + 1 - 7 / 16.0;
+    }
+
+    @Override
     public boolean hasComparatorInputOverride() {
         return true;
     }
@@ -162,5 +198,10 @@ public class BlockBrewingStand extends BlockSolidMeta {
     @Override
     public boolean canHarvestWithHand() {
         return false;
+    }
+
+    @Override
+    public boolean canContainWater() {
+        return true;
     }
 }

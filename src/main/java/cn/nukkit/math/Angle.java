@@ -39,11 +39,11 @@ public final class Angle implements Comparable<Angle> {
     }
 
     public double sin() {
-        return Math.sin(asDoubleRadian());
+        return Mth.sin(asDoubleRadian());
     }
 
     public double cos() {
-        return Math.cos(asDoubleRadian());
+        return Mth.cos(asDoubleRadian());
     }
 
     public double tan() {

@@ -15,7 +15,7 @@ public class ItemHelmetLeather extends ItemColorArmor {
     }
 
     public ItemHelmetLeather(Integer meta, int count) {
-        super(LEATHER_CAP, meta, count, "Leather Cap");
+        super(LEATHER_HELMET, meta, count, "Leather Cap");
     }
 
     @Override

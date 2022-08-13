@@ -23,7 +23,7 @@ public class BossEventPacket extends DataPacket {
     public static final int TYPE_HEALTH_PERCENT = 4;
     /* S2C: Also appears to not be implemented. Title clientside sticks as the target entity's nametag, or their entity type name if not set. */
     public static final int TYPE_TITLE = 5;
-    /* S2C: Not sure on this. Includes color and overlay fields, plus an unknown short. TODO: check this */
+    /* S2C: Not sure on this. Includes color and overlay fields, plus an unknown short. */
     public static final int TYPE_UPDATE_PROPERTIES = 6;
     /* S2C: Sets color and overlay of the bar. */
     public static final int TYPE_TEXTURE = 7;

@@ -6,21 +6,35 @@ package cn.nukkit.math;
  */
 public class NukkitMath {
 
+    /**
+     * @deprecated use Mth
+     */
+    @Deprecated
     public static int floorDouble(double n) {
-        int i = (int) n;
-        return n >= i ? i : i - 1;
+        return Mth.floor(n);
     }
 
+    /**
+     * @deprecated 返回结果与标准 Math.ceil 不一致, 例如 0.5
+     */
+    @Deprecated
     public static int ceilDouble(double n) {
         int i = (int) (n + 1);
         return n >= i ? i : i - 1;
     }
 
+    /**
+     * @deprecated use Mth
+     */
+    @Deprecated
     public static int floorFloat(float n) {
-        int i = (int) n;
-        return n >= i ? i : i - 1;
+        return Mth.floor(n);
     }
 
+    /**
+     * @deprecated 返回结果与标准 Math.ceil 不一致, 例如 0.5f
+     */
+    @Deprecated
     public static int ceilFloat(float n) {
         int i = (int) (n + 1);
         return n >= i ? i : i - 1;
@@ -46,16 +60,28 @@ public class NukkitMath {
         return ((double) Math.round(d * Math.pow(10, precision))) / Math.pow(10, precision);
     }
 
+    /**
+     * @deprecated use Mth
+     */
+    @Deprecated
     public static double clamp(double value, double min, double max) {
-        return value < min ? min : (Math.min(value, max));
+        return Mth.clamp(value, min, max);
     }
 
+    /**
+     * @deprecated use Mth
+     */
+    @Deprecated
     public static int clamp(int value, int min, int max) {
-        return value < min ? min : (Math.min(value, max));
+        return Mth.clamp(value, min, max);
     }
 
+    /**
+     * @deprecated use Mth
+     */
+    @Deprecated
     public static float clamp(float value, float min, float max) {
-        return value < min ? min : (Math.min(value, max));
+        return Mth.clamp(value, min, max);
     }
 
     public static double getDirection(double diffX, double diffZ) {

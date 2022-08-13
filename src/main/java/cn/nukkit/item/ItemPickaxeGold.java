@@ -15,7 +15,7 @@ public class ItemPickaxeGold extends ItemTool {
     }
 
     public ItemPickaxeGold(Integer meta, int count) {
-        super(GOLD_PICKAXE, meta, count, "Gold Pickaxe");
+        super(GOLDEN_PICKAXE, meta, count, "Gold Pickaxe");
     }
 
     @Override

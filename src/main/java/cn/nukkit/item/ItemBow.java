@@ -9,6 +9,7 @@ import cn.nukkit.event.entity.EntityShootBowEvent;
 import cn.nukkit.event.entity.ProjectileLaunchEvent;
 import cn.nukkit.inventory.Inventory;
 import cn.nukkit.item.enchantment.Enchantment;
+import cn.nukkit.math.Mth;
 import cn.nukkit.math.Vector3;
 import cn.nukkit.nbt.tag.CompoundTag;
 import cn.nukkit.nbt.tag.DoubleTag;
@@ -65,16 +66,16 @@ public class ItemBow extends ItemTool {
 
         double damage = 2;
 
-        Enchantment bowDamage = this.getEnchantment(Enchantment.ID_BOW_POWER);
+        Enchantment bowDamage = this.getEnchantment(Enchantment.ID_POWER);
         if (bowDamage != null && bowDamage.getLevel() > 0) {
             damage += (double) bowDamage.getLevel() * 0.5 + 0.5;
         }
 
-        Enchantment flameEnchant = this.getEnchantment(Enchantment.ID_BOW_FLAME);
+        Enchantment flameEnchant = this.getEnchantment(Enchantment.ID_FLAME);
         boolean flame = flameEnchant != null && flameEnchant.getLevel() > 0;
 
         float knockback = 0.29f;
-        Enchantment knockbackEnchant = this.getEnchantment(Enchantment.ID_BOW_KNOCKBACK);
+        Enchantment knockbackEnchant = this.getEnchantment(Enchantment.ID_PUNCH);
         if (knockbackEnchant != null) {
             knockback += 0.1 * knockbackEnchant.getLevel();
         }
@@ -85,9 +86,9 @@ public class ItemBow extends ItemTool {
                         .add(new DoubleTag("", player.y + player.getEyeHeight()))
                         .add(new DoubleTag("", player.z)))
                 .putList(new ListTag<DoubleTag>("Motion")
-                        .add(new DoubleTag("", -Math.sin(player.yaw / 180 * Math.PI) * Math.cos(player.pitch / 180 * Math.PI) * 1.2))
-                        .add(new DoubleTag("", -Math.sin(player.pitch / 180 * Math.PI) * 1.2))
-                        .add(new DoubleTag("", Math.cos(player.yaw / 180 * Math.PI) * Math.cos(player.pitch / 180 * Math.PI) * 1.2)))
+                        .add(new DoubleTag("", -Mth.sin(player.yaw / 180 * Math.PI) * Mth.cos(player.pitch / 180 * Math.PI) * 1.2))
+                        .add(new DoubleTag("", -Mth.sin(player.pitch / 180 * Math.PI) * 1.2))
+                        .add(new DoubleTag("", Mth.cos(player.yaw / 180 * Math.PI) * Mth.cos(player.pitch / 180 * Math.PI) * 1.2)))
                 .putList(new ListTag<FloatTag>("Rotation")
                         .add(new FloatTag("", (player.yaw > 180 ? 360 : 0) - (float) player.yaw))
                         .add(new FloatTag("", (float) -player.pitch)))
@@ -117,7 +118,7 @@ public class ItemBow extends ItemTool {
             player.getOffhandInventory().sendContents(player);
         } else {
             entityShootBowEvent.getProjectile().setMotion(entityShootBowEvent.getProjectile().getMotion().multiply(entityShootBowEvent.getForce()));
-            Enchantment infinityEnchant = this.getEnchantment(Enchantment.ID_BOW_INFINITY);
+            Enchantment infinityEnchant = this.getEnchantment(Enchantment.ID_INFINITY);
             boolean infinity = infinityEnchant != null && infinityEnchant.getLevel() > 0;
             EntityProjectile projectile;
             if (infinity && (projectile = entityShootBowEvent.getProjectile()) instanceof EntityArrow) {
@@ -128,7 +129,7 @@ public class ItemBow extends ItemTool {
                     inventory.removeItem(itemArrow);
                 }
                 if (!this.isUnbreakable()) {
-                    Enchantment durability = this.getEnchantment(Enchantment.ID_DURABILITY);
+                    Enchantment durability = this.getEnchantment(Enchantment.ID_UNBREAKING);
                     if (!(durability != null && durability.getLevel() > 0 && (100 / (durability.getLevel() + 1)) <= ThreadLocalRandom.current().nextInt(100))) {
                         this.setDamage(this.getDamage() + 1);
                         if (this.getDamage() >= getMaxDurability()) {
@@ -150,6 +151,16 @@ public class ItemBow extends ItemTool {
             }
         }
 
+        return true;
+    }
+
+    @Override
+    public boolean noDamageOnAttack() {
+        return true;
+    }
+
+    @Override
+    public boolean noDamageOnBreak() {
         return true;
     }
 }

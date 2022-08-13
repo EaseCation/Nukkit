@@ -35,7 +35,7 @@ public class BlockLava extends BlockLiquid {
 
     @Override
     public int getId() {
-        return LAVA;
+        return FLOWING_LAVA;
     }
 
     @Override
@@ -53,7 +53,7 @@ public class BlockLava extends BlockLiquid {
         entity.highestPosition -= (entity.highestPosition - entity.y) * 0.5;
 
         // Always setting the duration to 15 seconds? TODO
-        EntityCombustByBlockEvent ev = new EntityCombustByBlockEvent(this, entity, 15);
+        EntityCombustByBlockEvent ev = new EntityCombustByBlockEvent(this, entity, 8);
         Server.getInstance().getPluginManager().callEvent(ev);
         if (!ev.isCancelled()
                 // Making sure the entity is actually alive and not invulnerable.
@@ -132,7 +132,7 @@ public class BlockLava extends BlockLiquid {
     }
 
     protected boolean isSurroundingBlockFlammable(Block block) {
-        for (BlockFace face : BlockFace.values0()) {
+        for (BlockFace face : BlockFace.getValues()) {
             if (block.getSide(face).getBurnChance() > 0) {
                 return true;
             }
@@ -143,12 +143,12 @@ public class BlockLava extends BlockLiquid {
 
     @Override
     public BlockColor getColor() {
-        return BlockColor.LAVA_BLOCK_COLOR;
+        return BlockColor.FIRE_BLOCK_COLOR;
     }
 
     @Override
     public BlockLiquid getBlock(int meta) {
-        return (BlockLiquid) Block.get(BlockID.LAVA, meta);
+        return (BlockLiquid) Block.get(BlockID.FLOWING_LAVA, meta);
     }
 
     @Override
@@ -168,29 +168,39 @@ public class BlockLava extends BlockLiquid {
     }
 
     @Override
-    protected void checkForHarden(){ 
+    protected void checkForHarden() {
         Block colliding = null;
-        for(int side = 1; side < 6; ++side){ //don't check downwards side
+        int layer = -1;
+        for (int side = 1; side < 6; ++side) { //don't check downwards side
             Block blockSide = this.getSide(BlockFace.fromIndex(side));
-            if(blockSide instanceof BlockWater){
+            if (blockSide.isWater()) {
                 colliding = blockSide;
+                layer = 0;
+                break;
+            }
+
+            Block extra = level.getExtraBlock(blockSide);
+            if (extra.isWater()) {
+                colliding = extra;
+                layer = 1;
                 break;
             }
         }
-        if(colliding != null){
-            if(this.getDamage() == 0){
-                this.liquidCollide(colliding, Block.get(BlockID.OBSIDIAN));
-            }else if(this.getDamage() <= 4){
-                this.liquidCollide(colliding, Block.get(BlockID.COBBLESTONE));
+
+        if (colliding != null) {
+            if (this.getDamage() == 0) {
+                this.liquidCollide(colliding, Block.get(BlockID.OBSIDIAN), layer);
+            } else if (this.getDamage() <= 4) {
+                this.liquidCollide(colliding, Block.get(BlockID.COBBLESTONE), layer);
             }
         }
     }
 
     @Override
-    protected void flowIntoBlock(Block block, int newFlowDecay){
-        if(block instanceof BlockWater){
-            ((BlockLiquid) block).liquidCollide(this, Block.get(BlockID.STONE));
-        }else{
+    protected void flowIntoBlock(Block block, int newFlowDecay) {
+        if (block.isWater()) {
+            ((BlockLiquid) block).liquidCollide(this, Block.get(BlockID.STONE), 0);
+        } else {
             super.flowIntoBlock(block, newFlowDecay);
         }
     }
@@ -200,5 +210,15 @@ public class BlockLava extends BlockLiquid {
         if (!(entity instanceof EntityPrimedTNT)) {
             super.addVelocityToEntity(entity, vector);
         }
+    }
+
+    @Override
+    public boolean isLava() {
+        return true;
+    }
+
+    @Override
+    public boolean isSameLiquid(Block block) {
+        return block.isLava();
     }
 }

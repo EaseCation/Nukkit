@@ -2,11 +2,13 @@ package cn.nukkit.block;
 
 import cn.nukkit.Player;
 import cn.nukkit.item.Item;
+import cn.nukkit.item.ItemDye;
 import cn.nukkit.item.ItemSeedsWheat;
 import cn.nukkit.item.ItemTool;
 import cn.nukkit.level.Level;
 import cn.nukkit.level.particle.BoneMealParticle;
 import cn.nukkit.math.BlockFace;
+import cn.nukkit.network.protocol.LevelSoundEventPacket;
 import cn.nukkit.utils.BlockColor;
 
 import java.util.concurrent.ThreadLocalRandom;
@@ -16,6 +18,13 @@ import java.util.concurrent.ThreadLocalRandom;
  * Nukkit Project
  */
 public class BlockTallGrass extends BlockFlowable {
+
+    private static final String[] NAMES = new String[]{
+            "Grass",
+            "Grass",
+            "Fern",
+            "Fern",
+    };
 
     public BlockTallGrass() {
         this(1);
@@ -27,18 +36,12 @@ public class BlockTallGrass extends BlockFlowable {
 
     @Override
     public int getId() {
-        return TALL_GRASS;
+        return TALLGRASS;
     }
 
     @Override
     public String getName() {
-        String[] names = new String[]{
-                "Grass",
-                "Grass",
-                "Fern",
-                "Fern"
-        };
-        return names[this.getDamage() & 0x03];
+        return NAMES[this.getDamage() & 0x03];
     }
 
     @Override
@@ -63,6 +66,10 @@ public class BlockTallGrass extends BlockFlowable {
 
     @Override
     public boolean place(Item item, Block block, Block target, BlockFace face, double fx, double fy, double fz, Player player) {
+        if (block.isLiquid() || !block.isAir() && level.getExtraBlock(this).isWater()) {
+            return false;
+        }
+
         Block down = this.down();
         int id = down.getId();
         if (id == Block.GRASS || id == Block.DIRT || id == Block.PODZOL || id == FARMLAND || id == MYCELIUM) {
@@ -84,8 +91,8 @@ public class BlockTallGrass extends BlockFlowable {
     }
 
     @Override
-    public boolean onActivate(Item item, Player player) {
-        if (item.getId() == Item.DYE && item.getDamage() == 0x0f) {
+    public boolean onActivate(Item item, BlockFace face, Player player) {
+        if (item.getId() == Item.DYE && item.getDamage() == ItemDye.BONE_MEAL) {
             Block up = this.up();
 
             if (up.getId() == AIR) {
@@ -118,6 +125,18 @@ public class BlockTallGrass extends BlockFlowable {
             return true;
         }
 
+        if (item.getId() == getItemId(SNOW_LAYER)) {
+            level.setExtraBlock(this, this, true, false);
+            level.setBlock(this, Block.get(SNOW_LAYER), true);
+
+            if (player != null && !player.isCreative()) {
+                item.count--;
+            }
+
+            level.addLevelSoundEvent(this, LevelSoundEventPacket.SOUND_PLACE, SNOW_LAYER << Block.BLOCK_META_BITS);
+            return true;
+        }
+
         return false;
     }
 
@@ -129,11 +148,11 @@ public class BlockTallGrass extends BlockFlowable {
             if (dropSeeds) {
                 return new Item[]{
                         new ItemSeedsWheat(),
-                        Item.get(Item.TALL_GRASS, this.getDamage(), 1)
+                        Item.get(Item.TALLGRASS, this.getDamage(), 1)
                 };
             } else {
                 return new Item[]{
-                        Item.get(Item.TALL_GRASS, this.getDamage(), 1)
+                        Item.get(Item.TALLGRASS, this.getDamage(), 1)
                 };
             }
         }
@@ -154,6 +173,16 @@ public class BlockTallGrass extends BlockFlowable {
 
     @Override
     public BlockColor getColor() {
-        return BlockColor.FOLIAGE_BLOCK_COLOR;
+        return BlockColor.PLANT_BLOCK_COLOR;
+    }
+
+    @Override
+    public boolean canContainSnow() {
+        return true;
+    }
+
+    @Override
+    public boolean isVegetation() {
+        return true;
     }
 }

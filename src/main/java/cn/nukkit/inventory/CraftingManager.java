@@ -7,10 +7,14 @@ import cn.nukkit.network.protocol.BatchPacket;
 import cn.nukkit.network.protocol.CraftingDataPacket;
 import cn.nukkit.utils.BinaryStream;
 import cn.nukkit.utils.Config;
+import cn.nukkit.utils.Hash;
 import cn.nukkit.utils.Utils;
 import it.unimi.dsi.fastutil.chars.Char2ObjectMap;
 import it.unimi.dsi.fastutil.chars.Char2ObjectOpenHashMap;
-import it.unimi.dsi.fastutil.ints.Int2ObjectOpenHashMap;
+import it.unimi.dsi.fastutil.longs.Long2ObjectMap;
+import it.unimi.dsi.fastutil.longs.Long2ObjectOpenHashMap;
+import it.unimi.dsi.fastutil.objects.Object2ObjectMap;
+import it.unimi.dsi.fastutil.objects.Object2ObjectOpenHashMap;
 import lombok.extern.log4j.Log4j2;
 
 import java.io.File;
@@ -25,20 +29,32 @@ import java.util.zip.Deflater;
 @Log4j2
 public class CraftingManager {
 
-    public final Collection<Recipe> recipes = new ArrayDeque<>();
-
     public static BatchPacket packet = null;
     public static BatchPacket packetRaw;
 
-    protected final Map<Integer, Map<UUID, ShapedRecipe>> shapedRecipes = new Int2ObjectOpenHashMap<>();
+    private static long RECIPE_COUNT = 1;
 
-    public final Map<Integer, FurnaceRecipe> furnaceRecipes = new Int2ObjectOpenHashMap<>();
+    public final Collection<Recipe> recipes = new ArrayDeque<>();
 
-    public final Map<Integer, BrewingRecipe> brewingRecipes = new Int2ObjectOpenHashMap<>();
-    public final Map<Integer, ContainerRecipe> containerRecipes = new Int2ObjectOpenHashMap<>();
+    protected final Long2ObjectMap<Long2ObjectMap<ShapelessRecipe>> shapelessBasedRecipes = new Long2ObjectOpenHashMap<>();
+    protected final Long2ObjectMap<Long2ObjectMap<ShapelessRecipe>> shapelessRecipes = new Long2ObjectOpenHashMap<>();
+    protected final Map<RecipeTag, Long2ObjectMap<Long2ObjectMap<ShapelessRecipe>>> taggedShapelessRecipes = new EnumMap<>(RecipeTag.class);
+    protected final Long2ObjectMap<Long2ObjectMap<ShulkerBoxRecipe>> shulkerBoxRecipes = new Long2ObjectOpenHashMap<>();
+    protected final Long2ObjectMap<Long2ObjectMap<ShapelessChemistryRecipe>> shapelessChemistryRecipes = new Long2ObjectOpenHashMap<>();
 
-    private static int RECIPE_COUNT = 0;
-    protected final Map<Integer, Map<UUID, ShapelessRecipe>> shapelessRecipes = new Int2ObjectOpenHashMap<>();
+    protected final Long2ObjectMap<Long2ObjectMap<ShapedRecipe>> shapedBasedRecipes = new Long2ObjectOpenHashMap<>();
+    protected final Long2ObjectMap<Long2ObjectMap<ShapedRecipe>> shapedRecipes = new Long2ObjectOpenHashMap<>();
+    protected final Long2ObjectMap<Long2ObjectMap<ShapedChemistryRecipe>> shapedChemistryRecipes = new Long2ObjectOpenHashMap<>();
+
+    protected final Long2ObjectMap<FurnaceRecipe> furnaceRecipes = new Long2ObjectOpenHashMap<>();
+    protected final Map<RecipeTag, Long2ObjectMap<FurnaceRecipe>> taggedFurnaceRecipes = new EnumMap<>(RecipeTag.class);
+
+    protected final Object2ObjectMap<UUID, MultiRecipe> multiRecipes = new Object2ObjectOpenHashMap<>();
+
+    protected final Long2ObjectMap<BrewingRecipe> brewingRecipes = new Long2ObjectOpenHashMap<>();
+    protected final Long2ObjectMap<ContainerRecipe> containerRecipes = new Long2ObjectOpenHashMap<>();
+
+    protected final Long2ObjectMap<MaterialReducerRecipe> materialReducerRecipes = new Long2ObjectOpenHashMap<>();
 
     public static final Comparator<Item> recipeComparator = (i1, i2) -> {
         if (i1.getId() > i2.getId()) {
@@ -80,11 +96,15 @@ public class CraftingManager {
         log.info("Loading recipes...");
         for (Map<String, Object> recipe : recipes) {
             try {
-                switch (Utils.toInt(recipe.get("type"))) {
-                    case 0:
+                int type = Utils.toInt(recipe.get("type"));
+                switch (type) {
+                    case 0: // shapeless
+//                    case 5: // shapeless Shulker Box //TODO: nbt
+                    case 6: // shapeless chemistry
                         String craftingBlock = (String) recipe.get("block");
-                        if (!"crafting_table".equals(craftingBlock)) {
-                            // Ignore other recipes than crafting table ones
+                        RecipeTag tag = RecipeTag.byName(craftingBlock);
+                        if (tag != RecipeTag.CRAFTING_TABLE && (type != 0 || tag != RecipeTag.CARTOGRAPHY_TABLE && tag != RecipeTag.STONECUTTER && tag != RecipeTag.SMITHING_TABLE)) {
+                            log.trace("Skip an unknown shapeless recipe (type {}) tag: {}", type, craftingBlock);
                             continue;
                         }
                         // TODO: handle multiple result items
@@ -103,14 +123,24 @@ public class CraftingManager {
                         String recipeId = (String) recipe.get("id");
                         int priority = Utils.toInt(recipe.get("priority"));
 
-                        ShapelessRecipe result = new ShapelessRecipe(recipeId, priority, Item.fromJson(first), sorted);
-
-                        this.registerRecipe(result);
+                        switch (type) {
+                            case 0:
+                                this.registerRecipe(new ShapelessRecipe(recipeId, priority, Item.fromJson(first), sorted, tag));
+                                break;
+                            case 5:
+                                this.registerRecipe(new ShulkerBoxRecipe(recipeId, priority, Item.fromJson(first), sorted, tag));
+                                break;
+                            case 6:
+                                this.registerRecipe(new ShapelessChemistryRecipe(recipeId, priority, Item.fromJson(first), sorted, tag));
+                                break;
+                        }
                         break;
-                    case 1:
+                    case 1: // shaped
+                    case 7: // shaped chemistry
                         craftingBlock = (String) recipe.get("block");
-                        if (!"crafting_table".equals(craftingBlock)) {
-                            // Ignore other recipes than crafting table ones
+                        tag = RecipeTag.byName(craftingBlock);
+                        if (tag != RecipeTag.CRAFTING_TABLE) {
+                            log.warn("Unexpected shaped recipe (type {}) tag: {}", type, craftingBlock);
                             continue;
                         }
                         outputs = (List<Map>) recipe.get("output");
@@ -135,13 +165,21 @@ public class CraftingManager {
                         recipeId = (String) recipe.get("id");
                         priority = Utils.toInt(recipe.get("priority"));
 
-                        this.registerRecipe(new ShapedRecipe(recipeId, priority, Item.fromJson(first), shape, ingredients, extraResults));
+                        switch (type) {
+                            case 1:
+                                this.registerRecipe(new ShapedRecipe(recipeId, priority, Item.fromJson(first), shape, ingredients, extraResults, tag));
+                                break;
+                            case 7:
+                                this.registerRecipe(new ShapedChemistryRecipe(recipeId, priority, Item.fromJson(first), shape, ingredients, extraResults, tag));
+                                break;
+                        }
                         break;
-                    case 2:
-                    case 3:
+                    case 2: // smelting
+                    case 3: // smelting data
                         craftingBlock = (String) recipe.get("block");
-                        if (!"furnace".equals(craftingBlock)) {
-                            // Ignore other recipes than furnaces
+                        tag = RecipeTag.byName(craftingBlock);
+                        if (tag != RecipeTag.FURNACE && tag != RecipeTag.BLAST_FURNACE && tag != RecipeTag.SMOKER && tag != RecipeTag.CAMPFIRE && tag != RecipeTag.SOUL_CAMPFIRE) {
+                            log.trace("Skip an unknown smelting recipe tag: {}", craftingBlock);
                             continue;
                         }
                         Map<String, Object> resultMap = (Map) recipe.get("output");
@@ -153,7 +191,10 @@ public class CraftingManager {
                         } catch (Exception old) {
                             inputItem = Item.get(Utils.toInt(recipe.get("inputId")), recipe.containsKey("inputDamage") ? Utils.toInt(recipe.get("inputDamage")) : -1, 1);
                         }
-                        this.registerRecipe(new FurnaceRecipe(resultItem, inputItem));
+                        this.registerRecipe(new FurnaceRecipe(resultItem, inputItem, tag));
+                        break;
+                    case 4: // special hardcoded (e.g. Anvil)
+                        this.registerRecipe(new MultiRecipe(UUID.fromString((String) recipe.get("uuid"))));
                         break;
                     default:
                         break;
@@ -197,8 +238,12 @@ public class CraftingManager {
             }
         }
 
-        for (FurnaceRecipe recipe : this.getFurnaceRecipes().values()) {
+        for (FurnaceRecipe recipe : this.furnaceRecipes.values()) {
             pk.addFurnaceRecipe(recipe);
+        }
+
+        for (MultiRecipe recipe : multiRecipes.values()) {
+            pk.addMultiRecipe(recipe);
         }
 
         for (BrewingRecipe recipe : brewingRecipes.values()) {
@@ -207,6 +252,10 @@ public class CraftingManager {
 
         for (ContainerRecipe recipe : containerRecipes.values()) {
             pk.addContainerRecipe(recipe);
+        }
+
+        for (MaterialReducerRecipe recipe : materialReducerRecipes.values()) {
+            pk.addMaterialReducerRecipe(recipe);
         }
 
         pk.tryEncode();
@@ -219,79 +268,93 @@ public class CraftingManager {
         return recipes;
     }
 
-    public Map<Integer, FurnaceRecipe> getFurnaceRecipes() {
+    public Long2ObjectMap<FurnaceRecipe> getFurnaceRecipes() {
         return furnaceRecipes;
     }
 
-    public Map<Integer, BrewingRecipe> getBrewingRecipes() {
+    public Object2ObjectMap<UUID, MultiRecipe> getMultiRecipes() {
+        return multiRecipes;
+    }
+
+    public Long2ObjectMap<BrewingRecipe> getBrewingRecipes() {
         return brewingRecipes;
     }
 
-    public Map<Integer, ContainerRecipe> getContainerRecipes() {
+    public Long2ObjectMap<ContainerRecipe> getContainerRecipes() {
         return containerRecipes;
     }
 
+    public Long2ObjectMap<MaterialReducerRecipe> getMaterialReducerRecipes() {
+        return materialReducerRecipes;
+    }
+
+    /**
+     * @deprecated use {#matchFurnaceRecipe(Item, RecipeTag)} instead
+     */
+    @Deprecated
     public FurnaceRecipe matchFurnaceRecipe(Item input) {
-        FurnaceRecipe recipe = this.furnaceRecipes.get(getItemHash(input));
-        if (recipe == null) recipe = this.furnaceRecipes.get(getItemHash(input.getId(), 0));
+        return matchFurnaceRecipe(input, RecipeTag.FURNACE);
+    }
+
+    public FurnaceRecipe matchFurnaceRecipe(Item input, RecipeTag tag) {
+        Long2ObjectMap<FurnaceRecipe> recipes = taggedFurnaceRecipes.get(tag);
+        if (recipes == null) {
+            return null;
+        }
+
+        FurnaceRecipe recipe = recipes.get(input.asHash());
+        if (recipe == null) recipe = recipes.get(Item.toHash(input.getId(), 0));
         return recipe;
     }
 
-    private static UUID getMultiItemHash(Collection<Item> items) {
+    private static long getMultiItemHash(Collection<Item> items) {
+        if (items.isEmpty()) {
+            return Hash.xxh64Void();
+        }
+
         BinaryStream stream = new BinaryStream();
         for (Item item : items) {
-            stream.putVarInt(getFullItemHash(item));
+            stream.putLong(item.asHashWithCount());
         }
-        return UUID.nameUUIDFromBytes(stream.getBuffer());
-    }
-
-    private static int getFullItemHash(Item item) {
-        return 31 * getItemHash(item) + item.getCount();
+        return Hash.xxh64(stream.getBufferUnsafe(), 0, stream.getCount());
     }
 
     public void registerFurnaceRecipe(FurnaceRecipe recipe) {
-        Item input = recipe.getInput();
-        this.furnaceRecipes.put(getItemHash(input), recipe);
-    }
+        long hash = recipe.getInput().asHash();
+        this.furnaceRecipes.put(hash, recipe);
 
-    private static int getItemHash(Item item) {
-        return getItemHash(item.getId(), item.getDamage());
-    }
-
-    private static int getItemHash(int id, int meta) {
-        return (id << 4) | (meta & 0xf);
+        RecipeTag tag = recipe.getTag();
+        Long2ObjectMap<FurnaceRecipe> recipes = taggedFurnaceRecipes.get(tag);
+        if (recipes == null) {
+            recipes = new Long2ObjectOpenHashMap<>();
+            taggedFurnaceRecipes.put(tag, recipes);
+        }
+        recipes.put(hash, recipe);
     }
 
     public void registerShapedRecipe(ShapedRecipe recipe) {
-        int resultHash = getItemHash(recipe.getResult());
-        Map<UUID, ShapedRecipe> map = shapedRecipes.computeIfAbsent(resultHash, k -> new HashMap<>());
-        map.put(getMultiItemHash(recipe.getIngredientList()), recipe);
-    }
+        long inputHash = getMultiItemHash(recipe.getIngredientList());
+        long outputHash = recipe.getResult().asHash();
+        shapedBasedRecipes.computeIfAbsent(outputHash, k -> new Long2ObjectOpenHashMap<>())
+                .put(inputHash, recipe);
 
-    private Item[][] cloneItemMap(Item[][] map) {
-        Item[][] newMap = new Item[map.length][];
-        for (int i = 0; i < newMap.length; i++) {
-            Item[] old = map[i];
-            Item[] n = new Item[old.length];
-
-            System.arraycopy(old, 0, n, 0, n.length);
-            newMap[i] = n;
+        switch (recipe.getType()) {
+            case SHAPED:
+                shapedRecipes.computeIfAbsent(outputHash, k -> new Long2ObjectOpenHashMap<>())
+                        .put(inputHash, recipe);
+                break;
+            case SHAPED_CHEMISTRY:
+                shapedChemistryRecipes.computeIfAbsent(outputHash, k -> new Long2ObjectOpenHashMap<>())
+                        .put(inputHash, (ShapedChemistryRecipe) recipe);
+                break;
         }
-
-        for (int y = 0; y < newMap.length; y++) {
-            Item[] row = newMap[y];
-            for (int x = 0; x < row.length; x++) {
-                Item item = newMap[y][x];
-                newMap[y][x] = item.clone();
-            }
-        }
-        return newMap;
     }
 
     public void registerRecipe(Recipe recipe) {
         if (recipe instanceof CraftingRecipe) {
-            UUID id = Utils.dataToUUID(String.valueOf(++RECIPE_COUNT), String.valueOf(recipe.getResult().getId()), String.valueOf(recipe.getResult().getDamage()), String.valueOf(recipe.getResult().getCount()), Arrays.toString(recipe.getResult().getCompoundTag()));
-
+//            UUID id = Utils.dataToUUID(String.valueOf(++RECIPE_COUNT), String.valueOf(recipe.getResult().getId()), String.valueOf(recipe.getResult().getDamage()), String.valueOf(recipe.getResult().getCount()), Arrays.toString(recipe.getResult().getCompoundTag()));
+            long runtimeId = ++RECIPE_COUNT;
+            UUID id = new UUID(Hash.xxh64(runtimeId), runtimeId);
             ((CraftingRecipe) recipe).setId(id);
             this.recipes.add(recipe);
         }
@@ -303,27 +366,49 @@ public class CraftingManager {
         List<Item> list = recipe.getIngredientList();
         list.sort(recipeComparator);
 
-        UUID hash = getMultiItemHash(list);
+        long inputHash = getMultiItemHash(list);
+        long outputHash = recipe.getResult().asHash();
+        shapelessBasedRecipes.computeIfAbsent(outputHash, k -> new Long2ObjectOpenHashMap<>())
+                .put(inputHash, recipe);
 
-        int resultHash = getItemHash(recipe.getResult());
-        Map<UUID, ShapelessRecipe> map = shapelessRecipes.computeIfAbsent(resultHash, k -> new HashMap<>());
+        switch (recipe.getType()) {
+            case SHAPELESS:
+                shapelessRecipes.computeIfAbsent(outputHash, k -> new Long2ObjectOpenHashMap<>())
+                        .put(inputHash, recipe);
+                break;
+            case SHULKER_BOX:
+                shulkerBoxRecipes.computeIfAbsent(outputHash, k -> new Long2ObjectOpenHashMap<>())
+                        .put(inputHash, (ShulkerBoxRecipe) recipe);
+                break;
+            case SHAPELESS_CHEMISTRY:
+                shapelessChemistryRecipes.computeIfAbsent(outputHash, k -> new Long2ObjectOpenHashMap<>())
+                        .put(inputHash, (ShapelessChemistryRecipe) recipe);
+                break;
+        }
 
-        map.put(hash, recipe);
+        RecipeTag tag = recipe.getTag();
+        Long2ObjectMap<Long2ObjectMap<ShapelessRecipe>> shapelessRecipes = taggedShapelessRecipes.get(tag);
+        if (shapelessRecipes == null) {
+            shapelessRecipes = new Long2ObjectOpenHashMap<>();
+            taggedShapelessRecipes.put(tag, shapelessRecipes);
+        }
+        Long2ObjectMap<ShapelessRecipe> recipes = shapelessRecipes.get(outputHash);
+        if (recipes == null) {
+            recipes = new Long2ObjectOpenHashMap<>();
+            shapelessRecipes.put(outputHash, recipes);
+        }
+        recipes.put(inputHash, recipe);
     }
 
-    private static int getPotionHash(int ingredientId, int potionType) {
-        return (ingredientId << 6) | potionType;
-    }
-
-    private static int getContainerHash(int ingredientId, int containerId) {
-        return (ingredientId << 9) | containerId;
+    private static long getContainerHash(int ingredientId, int containerId) {
+        return ((long) ingredientId << 32) | (containerId & 0xffffffffL);
     }
 
     public void registerBrewingRecipe(BrewingRecipe recipe) {
         Item input = recipe.getIngredient();
         Item potion = recipe.getInput();
 
-        this.brewingRecipes.put(getPotionHash(input.getId(), potion.getDamage()), recipe);
+        this.brewingRecipes.put(Item.toHash(input.getId(), potion.getDamage()), recipe);
     }
 
     public void registerContainerRecipe(ContainerRecipe recipe) {
@@ -336,7 +421,7 @@ public class CraftingManager {
     public BrewingRecipe matchBrewingRecipe(Item input, Item potion) {
         int id = potion.getId();
         if (id == Item.POTION || id == Item.SPLASH_POTION || id == Item.LINGERING_POTION) {
-            return this.brewingRecipes.get(getPotionHash(input.getId(), potion.getDamage()));
+            return this.brewingRecipes.get(Item.toHash(input.getId(), potion.getDamage()));
         }
 
         return null;
@@ -346,20 +431,29 @@ public class CraftingManager {
         return this.containerRecipes.get(getContainerHash(input.getId(), potion.getId()));
     }
 
+    /**
+     * @deprecated use {#matchRecipe(List, Item, List, RecipeTag)} instead
+     */
+    @Deprecated
     public CraftingRecipe matchRecipe(List<Item> inputList, Item primaryOutput, List<Item> extraOutputList) {
+        return matchRecipe(inputList, primaryOutput, extraOutputList, RecipeTag.CRAFTING_TABLE);
+    }
+
+    public CraftingRecipe matchRecipe(List<Item> inputList, Item primaryOutput, List<Item> extraOutputList, RecipeTag tag) {
         //TODO: try to match special recipes before anything else (first they need to be implemented!)
 
-        int outputHash = getItemHash(primaryOutput);
-        if (this.shapedRecipes.containsKey(outputHash)) {
-            inputList.sort(recipeComparator);
+        long outputHash = primaryOutput.asHash();
+        long inputHash = -1;
+        boolean tried = false;
 
-            UUID inputHash = getMultiItemHash(inputList);
-
-            Map<UUID, ShapedRecipe> recipeMap = shapedRecipes.get(outputHash);
-
+        if (tag == RecipeTag.CRAFTING_TABLE) {
+            Long2ObjectMap<ShapedRecipe> recipeMap = shapedBasedRecipes.get(outputHash);
             if (recipeMap != null) {
-                ShapedRecipe recipe = recipeMap.get(inputHash);
+                inputList.sort(recipeComparator);
+                inputHash = getMultiItemHash(inputList);
+                tried = true;
 
+                ShapedRecipe recipe = recipeMap.get(inputHash);
                 if (recipe != null && (recipe.matchItems(inputList, extraOutputList) || matchItemsAccumulation(recipe, inputList, primaryOutput, extraOutputList))) {
                     return recipe;
                 }
@@ -372,19 +466,19 @@ public class CraftingManager {
             }
         }
 
-        if (shapelessRecipes.containsKey(outputHash)) {
-            inputList.sort(recipeComparator);
+        Long2ObjectMap<Long2ObjectMap<ShapelessRecipe>> shapelessRecipes = taggedShapelessRecipes.get(tag);
+        if (shapelessRecipes == null) {
+            return null;
+        }
 
-            UUID inputHash = getMultiItemHash(inputList);
-
-            Map<UUID, ShapelessRecipe> recipes = shapelessRecipes.get(outputHash);
-
-            if (recipes == null) {
-                return null;
+        Long2ObjectMap<ShapelessRecipe> recipes = shapelessRecipes.get(outputHash);
+        if (recipes != null) {
+            if (!tried) {
+                inputList.sort(recipeComparator);
+                inputHash = getMultiItemHash(inputList);
             }
 
             ShapelessRecipe recipe = recipes.get(inputHash);
-
             if (recipe != null && (recipe.matchItems(inputList, extraOutputList) || matchItemsAccumulation(recipe, inputList, primaryOutput, extraOutputList))) {
                 return recipe;
             }
@@ -406,6 +500,14 @@ public class CraftingManager {
             return recipe.matchItems(inputList, extraOutputList, multiplier);
         }
         return false;
+    }
+
+    public void registerMultiRecipe(MultiRecipe recipe) {
+        this.multiRecipes.put(recipe.getId(), recipe);
+    }
+
+    public void registerMaterialReducerRecipe(MaterialReducerRecipe recipe) {
+        this.materialReducerRecipes.put(recipe.getInput().asHash(), recipe);
     }
 
     public static class Entry {

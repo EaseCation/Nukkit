@@ -19,7 +19,7 @@ import java.util.concurrent.ThreadLocalRandom;
 /**
  * Created by Pub4Game on 15.01.2016.
  */
-public class BlockVine extends BlockTransparentMeta {
+public class BlockVine extends BlockFlowable {
 
     public BlockVine(int meta) {
         super(meta);
@@ -149,7 +149,7 @@ public class BlockVine extends BlockTransparentMeta {
     public Item[] getDrops(Item item) {
         if (item.isShears()) {
             return new Item[]{
-                    toItem()
+                    toItem(true)
             };
         } else {
             return new Item[0];
@@ -157,7 +157,7 @@ public class BlockVine extends BlockTransparentMeta {
     }
 
     @Override
-    public Item toItem() {
+    public Item toItem(boolean addUserData) {
         return new ItemBlock(this, 0);
     }
 
@@ -312,7 +312,8 @@ public class BlockVine extends BlockTransparentMeta {
 
     @Override
     public BlockColor getColor() {
-        return BlockColor.FOLIAGE_BLOCK_COLOR;
+        //TODO: biome blend
+        return BlockColor.PLANT_BLOCK_COLOR;
     }
 
     @Override
@@ -328,5 +329,30 @@ public class BlockVine extends BlockTransparentMeta {
     @Override
     public boolean sticksToPiston() {
         return false;
+    }
+
+    @Override
+    public int getBurnChance() {
+        return 15;
+    }
+
+    @Override
+    public int getBurnAbility() {
+        return 100;
+    }
+
+    @Override
+    public boolean canContainWater() {
+        return true;
+    }
+
+    @Override
+    public boolean canProvideSupport(BlockFace face, SupportType type) {
+        return false;
+    }
+
+    @Override
+    public boolean isVegetation() {
+        return true;
     }
 }

@@ -40,7 +40,7 @@ public class BlockShulkerBox extends BlockUndyedShulkerBox {
 
     @Override
     public int getFullId() {
-        return (this.getId() << 4) + this.getDamage();
+        return (this.getId() << BLOCK_META_BITS) | this.getDamage();
     }
 
     @Override
@@ -50,6 +50,6 @@ public class BlockShulkerBox extends BlockUndyedShulkerBox {
 
     @Override
     public void setDamage(int meta) {
-        this.meta = meta;
+        this.meta = meta & BLOCK_META_MASK;
     }
 }

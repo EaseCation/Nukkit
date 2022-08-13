@@ -10,6 +10,13 @@ import cn.nukkit.utils.BlockColor;
  */
 public class BlockRedSandstone extends BlockSandstone {
 
+    private static final String[] NAMES = new String[]{
+            "Red Sandstone",
+            "Chiseled Red Sandstone",
+            "Smooth Red Sandstone",
+            "",
+    };
+
     public BlockRedSandstone() {
         this(0);
     }
@@ -25,21 +32,14 @@ public class BlockRedSandstone extends BlockSandstone {
 
     @Override
     public String getName() {
-        String[] names = new String[]{
-                "Red Sandstone",
-                "Chiseled Red Sandstone",
-                "Smooth Red Sandstone",
-                ""
-        };
-
-        return names[this.getDamage() & 0x03];
+        return NAMES[this.getDamage() & 0x03];
     }
 
     @Override
     public Item[] getDrops(Item item) {
         if (item.isPickaxe() && item.getTier() >= ItemTool.TIER_WOODEN) {
             return new Item[]{
-                    toItem()
+                    toItem(true)
             };
         } else {
             return new Item[0];
@@ -47,7 +47,7 @@ public class BlockRedSandstone extends BlockSandstone {
     }
 
     @Override
-    public Item toItem() {
+    public Item toItem(boolean addUserData) {
         return new ItemBlock(this, this.getDamage() & 0x03);
     }
 

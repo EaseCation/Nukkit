@@ -4,10 +4,13 @@ import lombok.ToString;
 
 @ToString
 public class SetLastHurtByPacket extends DataPacket {
+    public static final int NETWORK_ID = ProtocolInfo.SET_LAST_HURT_BY_PACKET;
+
+    public int entityType;
 
     @Override
     public int pid() {
-        return ProtocolInfo.SET_LAST_HURT_BY_PACKET;
+        return NETWORK_ID;
     }
 
     @Override
@@ -17,6 +20,7 @@ public class SetLastHurtByPacket extends DataPacket {
 
     @Override
     public void encode() {
-        //TODO
+        this.reset();
+        this.putVarInt(this.entityType);
     }
 }

@@ -15,7 +15,7 @@ public class ItemFish extends ItemEdible {
     }
 
     public ItemFish(Integer meta, int count) {
-        super(RAW_FISH, meta, count, "Raw Fish");
+        super(COD, meta, count, "Raw Fish");
     }
 
     protected ItemFish(int id, Integer meta, int count, String name) {

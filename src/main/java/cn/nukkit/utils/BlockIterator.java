@@ -3,6 +3,7 @@ package cn.nukkit.utils;
 import cn.nukkit.block.Block;
 import cn.nukkit.level.Level;
 import cn.nukkit.math.BlockFace;
+import cn.nukkit.math.Mth;
 import cn.nukkit.math.Vector3;
 
 import java.util.Iterator;
@@ -63,7 +64,7 @@ public class BlockIterator implements Iterator<Block> {
         double thirdPosition = 0;
 
         Vector3 pos = new Vector3(startClone.x, startClone.y, startClone.z);
-        Block startBlock = this.level.getBlock(new Vector3(Math.floor(pos.x), Math.floor(pos.y), Math.floor(pos.z)));
+        Block startBlock = this.level.getBlock(new Vector3(Mth.floor(pos.x), Mth.floor(pos.y), Mth.floor(pos.z)));
 
         if (this.getXLength(direction) > mainDirection) {
             this.mainFace = this.getXFace(direction);
@@ -109,9 +110,9 @@ public class BlockIterator implements Iterator<Block> {
         double secondd = secondPosition - secondDirection * d;
         double thirdd = thirdPosition - thirdDirection * d;
 
-        this.secondError = (int) Math.floor(secondd * gridSize);
+        this.secondError = Mth.floor(secondd * gridSize);
         this.secondStep = (int) Math.round(secondDirection / mainDirection * gridSize);
-        this.thirdError = (int) Math.floor(thirdd * gridSize);
+        this.thirdError = Mth.floor(thirdd * gridSize);
         this.thirdStep = (int) Math.round(thirdDirection / mainDirection * gridSize);
 
         if (this.secondError + this.secondStep <= 0) {

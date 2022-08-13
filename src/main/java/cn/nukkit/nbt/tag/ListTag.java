@@ -2,26 +2,31 @@ package cn.nukkit.nbt.tag;
 
 import cn.nukkit.nbt.stream.NBTInputStream;
 import cn.nukkit.nbt.stream.NBTOutputStream;
+import it.unimi.dsi.fastutil.objects.ObjectArrayList;
 
 import java.io.IOException;
 import java.io.PrintStream;
-import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 import java.util.StringJoiner;
 
 public class ListTag<T extends Tag> extends Tag {
 
-    private List<T> list = new ArrayList<>();
+    private List<T> list;
 
     public byte type;
 
     public ListTag() {
-        super("");
+        this("");
     }
 
     public ListTag(String name) {
+        this(name, null);
+    }
+
+    public ListTag(String name, List<T> list) {
         super(name);
+        this.list = list != null ? new ObjectArrayList<>(list) : new ObjectArrayList<>();
     }
 
     @Override
@@ -40,7 +45,7 @@ public class ListTag<T extends Tag> extends Tag {
         type = dis.readByte();
         int size = dis.readInt();
 
-        list = new ArrayList<>(size);
+        list = new ObjectArrayList<>(size);
         for (int i = 0; i < size; i++) {
             Tag tag = Tag.newTag(type, null);
             tag.load(dis);
@@ -58,7 +63,7 @@ public class ListTag<T extends Tag> extends Tag {
     public String toString() {
         StringJoiner joiner = new StringJoiner(",\n\t");
         list.forEach(tag -> joiner.add(tag.toString().replace("\n", "\n\t")));
-        return "ListTag '" + this.getName() + "' (" + list.size() + " entries of type " + Tag.getTagName(type) + ") {\n\t" + joiner.toString() + "\n}";
+        return "ListTag '" + this.getName() + "' (" + list.size() + " entries of type " + Tag.getTagName(type) + ") {\n\t" + joiner + "\n}";
     }
 
     public void print(String prefix, PrintStream out) {
@@ -92,7 +97,7 @@ public class ListTag<T extends Tag> extends Tag {
 
     @Override
     public List<Object> parseValue() {
-        List<Object> value = new ArrayList<>(this.list.size());
+        List<Object> value = new ObjectArrayList<>(this.list.size());
 
         for (T t : this.list) {
             value.add(t.parseValue());
@@ -106,11 +111,15 @@ public class ListTag<T extends Tag> extends Tag {
     }
 
     public List<T> getAll() {
-        return new ArrayList<>(list);
+        return new ObjectArrayList<>(list);
+    }
+
+    public List<T> getAllUnsafe() {
+        return list;
     }
 
     public void setAll(List<T> tags) {
-        this.list = new ArrayList<>(tags);
+        this.list = new ObjectArrayList<>(tags);
     }
 
     public void remove(T tag) {
@@ -122,11 +131,15 @@ public class ListTag<T extends Tag> extends Tag {
     }
 
     public void removeAll(Collection<T> tags) {
-        list.remove(tags);
+        list.removeAll(tags);
     }
 
     public int size() {
         return list.size();
+    }
+
+    public boolean isEmpty() {
+        return list.isEmpty();
     }
 
     @Override

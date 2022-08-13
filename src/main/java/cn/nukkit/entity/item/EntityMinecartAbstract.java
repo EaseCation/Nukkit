@@ -21,8 +21,7 @@ import cn.nukkit.item.ItemMinecart;
 import cn.nukkit.level.GameRule;
 import cn.nukkit.level.Location;
 import cn.nukkit.level.format.FullChunk;
-import cn.nukkit.math.MathHelper;
-import cn.nukkit.math.NukkitMath;
+import cn.nukkit.math.Mth;
 import cn.nukkit.math.Vector3;
 import cn.nukkit.nbt.tag.CompoundTag;
 import cn.nukkit.network.protocol.AddEntityPacket;
@@ -146,12 +145,12 @@ public abstract class EntityMinecartAbstract extends EntityVehicle {
             lastY = y;
             lastZ = z;
             motionY -= 0.03999999910593033D;
-            int dx = MathHelper.floor(x);
-            int dy = MathHelper.floor(y);
-            int dz = MathHelper.floor(z);
+            int dx = Mth.floor(x);
+            int dy = Mth.floor(y);
+            int dz = Mth.floor(z);
 
             // Some hack to check rails
-            if (Rail.isRailBlock(level.getBlockIdAt(dx, dy - 1, dz))) {
+            if (Rail.isRailBlock(level.getBlockIdAt(0, dx, dy - 1, dz))) {
                 --dy;
             }
 
@@ -175,7 +174,7 @@ public abstract class EntityMinecartAbstract extends EntityVehicle {
             double diffZ = this.lastZ - this.z;
             double yawToChange = yaw;
             if (diffX * diffX + diffZ * diffZ > 0.001D) {
-                yawToChange = (Math.atan2(diffZ, diffX) * 180 / Math.PI);
+                yawToChange = (Mth.atan2(diffZ, diffX) * 180 / Math.PI);
             }
 
             // Reverse yaw if yaw is below 0
@@ -338,7 +337,7 @@ public abstract class EntityMinecartAbstract extends EntityVehicle {
                     double desinityX = mine.x - x;
                     double desinityZ = mine.z - z;
                     Vector3 vector = new Vector3(desinityX, 0, desinityZ).normalize();
-                    Vector3 vec = new Vector3(MathHelper.cos((float) yaw * 0.017453292F), 0, MathHelper.sin((float) yaw * 0.017453292F)).normalize();
+                    Vector3 vec = new Vector3(Mth.cos((float) yaw * 0.017453292F), 0, Mth.sin((float) yaw * 0.017453292F)).normalize();
                     double desinityXZ = Math.abs(vector.dot(vec));
 
                     if (desinityXZ < 0.800000011920929D) {
@@ -399,8 +398,8 @@ public abstract class EntityMinecartAbstract extends EntityVehicle {
     private boolean hasUpdated = false;
 
     private void setFalling() {
-        motionX = NukkitMath.clamp(motionX, -getMaxSpeed(), getMaxSpeed());
-        motionZ = NukkitMath.clamp(motionZ, -getMaxSpeed(), getMaxSpeed());
+        motionX = Mth.clamp(motionX, -getMaxSpeed(), getMaxSpeed());
+        motionZ = Mth.clamp(motionZ, -getMaxSpeed(), getMaxSpeed());
 
         if (!hasUpdated) {
             for (Entity linked : passengers) {
@@ -487,8 +486,8 @@ public abstract class EntityMinecartAbstract extends EntityVehicle {
             expectedSpeed = currentSpeed;
             if (expectedSpeed > 0) {
                 // This is a trajectory (Angle of elevation)
-                playerYawNeg = -Math.sin(linked.yaw * Math.PI / 180.0F);
-                playerYawPos = Math.cos(linked.yaw * Math.PI / 180.0F);
+                playerYawNeg = -Mth.sin(linked.yaw * Math.PI / 180.0F);
+                playerYawPos = Mth.cos(linked.yaw * Math.PI / 180.0F);
                 motion = motionX * motionX + motionZ * motionZ;
                 if (motion < 0.01D) {
                     motionX += playerYawNeg * 0.1D;
@@ -545,13 +544,13 @@ public abstract class EntityMinecartAbstract extends EntityVehicle {
             motX *= 0.75D;
             motZ *= 0.75D;
         }
-        motX = NukkitMath.clamp(motX, -getMaxSpeed(), getMaxSpeed());
-        motZ = NukkitMath.clamp(motZ, -getMaxSpeed(), getMaxSpeed());
+        motX = Mth.clamp(motX, -getMaxSpeed(), getMaxSpeed());
+        motZ = Mth.clamp(motZ, -getMaxSpeed(), getMaxSpeed());
 
         move(motX, 0, motZ);
-        if (facing[0][1] != 0 && MathHelper.floor(x) - dx == facing[0][0] && MathHelper.floor(z) - dz == facing[0][2]) {
+        if (facing[0][1] != 0 && Mth.floor(x) - dx == facing[0][0] && Mth.floor(z) - dz == facing[0][2]) {
             setPosition(new Vector3(x, y + (double) facing[0][1], z));
-        } else if (facing[1][1] != 0 && MathHelper.floor(x) - dx == facing[1][0] && MathHelper.floor(z) - dz == facing[1][2]) {
+        } else if (facing[1][1] != 0 && Mth.floor(x) - dx == facing[1][0] && Mth.floor(z) - dz == facing[1][2]) {
             setPosition(new Vector3(x, y + (double) facing[1][1], z));
         }
 
@@ -570,8 +569,8 @@ public abstract class EntityMinecartAbstract extends EntityVehicle {
             setPosition(new Vector3(x, vector1.y, z));
         }
 
-        int floorX = MathHelper.floor(x);
-        int floorZ = MathHelper.floor(z);
+        int floorX = Mth.floor(x);
+        int floorZ = Mth.floor(z);
 
         if (floorX != dx || floorZ != dz) {
             squareOfFame = Math.sqrt(motionX * motionX + motionZ * motionZ);
@@ -617,11 +616,11 @@ public abstract class EntityMinecartAbstract extends EntityVehicle {
     }
 
     private Vector3 getNextRail(double dx, double dy, double dz) {
-        int checkX = MathHelper.floor(dx);
-        int checkY = MathHelper.floor(dy);
-        int checkZ = MathHelper.floor(dz);
+        int checkX = Mth.floor(dx);
+        int checkY = Mth.floor(dy);
+        int checkZ = Mth.floor(dz);
 
-        if (Rail.isRailBlock(level.getBlockIdAt(checkX, checkY - 1, checkZ))) {
+        if (Rail.isRailBlock(level.getBlockIdAt(0, checkX, checkY - 1, checkZ))) {
             --checkY;
         }
 

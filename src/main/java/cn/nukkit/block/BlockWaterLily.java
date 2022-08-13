@@ -30,7 +30,7 @@ public class BlockWaterLily extends BlockFlowable {
 
     @Override
     public int getId() {
-        return WATER_LILY;
+        return WATERLILY;
     }
 
     @Override
@@ -68,8 +68,7 @@ public class BlockWaterLily extends BlockFlowable {
         if (target instanceof BlockWater) {
             Block up = target.up();
             if (up.getId() == Block.AIR) {
-                this.getLevel().setBlock(up, this, true, true);
-                return true;
+                return level.setBlock(up, this, true);
             }
         }
         return false;
@@ -87,13 +86,13 @@ public class BlockWaterLily extends BlockFlowable {
     }
 
     @Override
-    public Item toItem() {
+    public Item toItem(boolean addUserData) {
         return new ItemBlock(this, 0);
     }
 
     @Override
     public BlockColor getColor() {
-        return BlockColor.FOLIAGE_BLOCK_COLOR;
+        return BlockColor.PLANT_BLOCK_COLOR;
     }
 
     @Override
@@ -103,11 +102,16 @@ public class BlockWaterLily extends BlockFlowable {
 
     @Override
     public int getFullId() {
-        return this.getId() << 4;
+        return this.getId() << BLOCK_META_BITS;
     }
 
     @Override
     public void setDamage(int meta) {
 
+    }
+
+    @Override
+    public boolean isVegetation() {
+        return true;
     }
 }

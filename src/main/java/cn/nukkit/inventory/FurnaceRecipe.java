@@ -14,9 +14,12 @@ public class FurnaceRecipe implements Recipe {
 
     private Item ingredient;
 
-    public FurnaceRecipe(Item result, Item ingredient) {
+    private final RecipeTag tag;
+
+    public FurnaceRecipe(Item result, Item ingredient, RecipeTag tag) {
         this.output = result.clone();
         this.ingredient = ingredient.clone();
+        this.tag = tag;
     }
 
     public void setInput(Item item) {
@@ -40,5 +43,10 @@ public class FurnaceRecipe implements Recipe {
     @Override
     public RecipeType getType() {
         return this.ingredient.hasMeta() ? RecipeType.FURNACE_DATA : RecipeType.FURNACE;
+    }
+
+    @Override
+    public RecipeTag getTag() {
+        return tag;
     }
 }

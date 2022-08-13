@@ -20,7 +20,7 @@ public class ItemBed extends Item {
 
     public ItemBed(Integer meta, int count) {
         super(BED, meta, count, DyeColor.getByWoolData(meta).getName() + " Bed");
-        this.block = Block.get(BlockID.BED_BLOCK);
+        this.block = Block.get(BlockID.BLOCK_BED);
     }
 
     @Override

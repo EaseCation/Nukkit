@@ -46,7 +46,7 @@ public class BlockOreEmerald extends BlockSolid {
     public Item[] getDrops(Item item) {
         if (item.isPickaxe() && item.getTier() >= ItemTool.TIER_IRON) {
             int count = 1;
-            Enchantment fortune = item.getEnchantment(Enchantment.ID_FORTUNE_DIGGING);
+            Enchantment fortune = item.getEnchantment(Enchantment.ID_FORTUNE);
             if (fortune != null && fortune.getLevel() >= 1) {
                 int i = ThreadLocalRandom.current().nextInt(fortune.getLevel() + 2) - 1;
 

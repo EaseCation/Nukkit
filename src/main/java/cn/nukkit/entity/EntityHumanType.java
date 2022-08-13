@@ -16,7 +16,7 @@ import cn.nukkit.item.ItemBlock;
 import cn.nukkit.item.ItemSkull;
 import cn.nukkit.item.enchantment.Enchantment;
 import cn.nukkit.level.format.FullChunk;
-import cn.nukkit.math.NukkitMath;
+import cn.nukkit.math.Mth;
 import cn.nukkit.nbt.NBTIO;
 import cn.nukkit.nbt.tag.CompoundTag;
 import cn.nukkit.nbt.tag.ListTag;
@@ -50,8 +50,8 @@ public abstract class EntityHumanType extends EntityCreature implements Inventor
 
     @Override
     protected void initEntity() {
-        this.inventory = new PlayerInventory(this);
         this.offhandInventory = new PlayerOffhandInventory(this);
+        this.inventory = new PlayerInventory(this);
 
         if (this.namedTag.contains("Inventory") && this.namedTag.get("Inventory") instanceof ListTag) {
             ListTag<CompoundTag> inventoryList = this.namedTag.getList("Inventory", CompoundTag.class);
@@ -168,7 +168,7 @@ public abstract class EntityHumanType extends EntityCreature implements Inventor
                 source.setDamage(-source.getFinalDamage() * armorPoints * 0.04f, DamageModifier.ARMOR);
             }
 
-            source.setDamage(-source.getFinalDamage() * Math.min(NukkitMath.ceilFloat(Math.min(epf, 25) * ((float) ThreadLocalRandom.current().nextInt(50, 100) / 100)), 20) * 0.04f,
+            source.setDamage(-source.getFinalDamage() * Math.min(Mth.ceil(Math.min(epf, 25) * ((float) ThreadLocalRandom.current().nextInt(50, 100) / 100)), 20) * 0.04f,
                     DamageModifier.ARMOR_ENCHANTMENTS);
 
             source.setDamage(-Math.min(this.getAbsorption(), source.getFinalDamage()), DamageModifier.ABSORPTION);
@@ -191,7 +191,7 @@ public abstract class EntityHumanType extends EntityCreature implements Inventor
                         }
                     }
 
-                    Enchantment durability = armor.getEnchantment(Enchantment.ID_DURABILITY);
+                    Enchantment durability = armor.getEnchantment(Enchantment.ID_UNBREAKING);
                     if (durability != null && durability.getLevel() > 0 && (100 / (durability.getLevel() + 1)) <= ThreadLocalRandom.current().nextInt(100))
                         continue;
                 }
@@ -234,7 +234,7 @@ public abstract class EntityHumanType extends EntityCreature implements Inventor
         int level = 0;
 
         for (Item armor : this.inventory.getArmorContents()) {
-            Enchantment fireProtection = armor.getEnchantment(Enchantment.ID_PROTECTION_FIRE);
+            Enchantment fireProtection = armor.getEnchantment(Enchantment.ID_FIRE_PROTECTION);
 
             if (fireProtection != null && fireProtection.getLevel() > 0) {
                 level = Math.max(level, fireProtection.getLevel());

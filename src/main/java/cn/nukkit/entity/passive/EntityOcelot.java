@@ -65,7 +65,7 @@ public class EntityOcelot extends EntityAnimal {
 
     @Override
     public boolean isBreedingItem(Item item) {
-        return item.getId() == Item.RAW_FISH;
+        return item.getId() == Item.COD;
     }
 
     @Override

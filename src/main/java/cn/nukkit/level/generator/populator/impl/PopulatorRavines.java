@@ -4,7 +4,7 @@ import cn.nukkit.block.Block;
 import cn.nukkit.level.ChunkManager;
 import cn.nukkit.level.format.FullChunk;
 import cn.nukkit.level.generator.populator.type.Populator;
-import cn.nukkit.math.MathHelper;
+import cn.nukkit.math.Mth;
 import cn.nukkit.math.NukkitRandom;
 
 import java.util.Random;
@@ -93,17 +93,17 @@ public class PopulatorRavines extends Populator {
         }
 
         for (int stepCount = 0; stepCount < size; stepCount++) {
-            double d3 = 1.5D + MathHelper.sin(stepCount * 3.141593F / size) * paramFloat1 * 1.0F;
+            double d3 = 1.5D + Mth.sin(stepCount * 3.141593F / size) * paramFloat1 * 1.0F;
             double d4 = d3 * paramDouble4;
 
             d3 *= (localRandom.nextFloat() * 0.25D + 0.75D);
             d4 *= (localRandom.nextFloat() * 0.25D + 0.75D);
 
-            float f4 = MathHelper.cos(paramFloat3);
-            float f5 = MathHelper.sin(paramFloat3);
-            paramDouble1 += MathHelper.cos(paramFloat2) * f4;
+            float f4 = Mth.cos(paramFloat3);
+            float f5 = Mth.sin(paramFloat3);
+            paramDouble1 += Mth.cos(paramFloat2) * f4;
             paramDouble2 += f5;
-            paramDouble3 += MathHelper.sin(paramFloat2) * f4;
+            paramDouble3 += Mth.sin(paramFloat2) * f4;
 
             paramFloat3 *= 0.7F;
 
@@ -128,14 +128,14 @@ public class PopulatorRavines extends Populator {
 
             if ((paramDouble1 < d1 - 16.0D - d3 * 2.0D) || (paramDouble3 < d2 - 16.0D - d3 * 2.0D) || (paramDouble1 > d1 + 16.0D + d3 * 2.0D) || (paramDouble3 > d2 + 16.0D + d3 * 2.0D))
                 continue;
-            int k = MathHelper.floor(paramDouble1 - d3) - (chunkX * 16) - 1;
-            int m = MathHelper.floor(paramDouble1 + d3) - (chunkZ * 16) + 1;
+            int k = Mth.floor(paramDouble1 - d3) - (chunkX * 16) - 1;
+            int m = Mth.floor(paramDouble1 + d3) - (chunkZ * 16) + 1;
 
-            int maxY = MathHelper.floor(paramDouble2 - d4) - 1;
-            int minY = MathHelper.floor(paramDouble2 + d4) + 1;
+            int maxY = Mth.floor(paramDouble2 - d4) - 1;
+            int minY = Mth.floor(paramDouble2 + d4) + 1;
 
-            int i2 = MathHelper.floor(paramDouble3 - d3) - (chunkX * 16) - 1;
-            int i3 = MathHelper.floor(paramDouble3 + d3) - (chunkZ * 16) + 1;
+            int i2 = Mth.floor(paramDouble3 - d3) - (chunkX * 16) - 1;
+            int i3 = Mth.floor(paramDouble3 + d3) - (chunkZ * 16) + 1;
 
             if (k < 0)
                 k = 0;
@@ -159,9 +159,9 @@ public class PopulatorRavines extends Populator {
                         if (localY < 0)
                             continue;
                         if (localY < this.worldHeightCap) {
-                            int materialAtPosition = generatingChunkBuffer.getBlockId(localX, localY, localZ);
-                            if (materialAtPosition == Block.WATER
-                                    || materialAtPosition == Block.STILL_WATER) {
+                            int materialAtPosition = generatingChunkBuffer.getBlockId(0, localX, localY, localZ);
+                            if (materialAtPosition == Block.FLOWING_WATER
+                                    || materialAtPosition == Block.WATER) {
                                 i4 = 1;
                             }
                             if ((localY != maxY - 1) && (localX != k) && (localX != m - 1) && (localZ != i2) && (localZ != i3 - 1))
@@ -181,12 +181,12 @@ public class PopulatorRavines extends Populator {
                         for (int localY = minY; localY >= maxY; localY--) {
                             double d11 = ((localY - 1) + 0.5D - paramDouble2) / d4;
                             if ((d9 * d9 + d10 * d10) * this.a[localY - 1] + d11 * d11 / 6.0D < 1.0D) {
-                                int material = generatingChunkBuffer.getBlockId(localX, localY, localZ);
+                                int material = generatingChunkBuffer.getBlockId(0, localX, localY, localZ);
                                 if (material == Block.GRASS) {
                                     if (localY - 1 < 10) {
-                                        generatingChunkBuffer.setBlock(localX, localY, localZ, Block.LAVA);
+                                        generatingChunkBuffer.setBlock(0, localX, localY, localZ, Block.FLOWING_LAVA);
                                     } else {
-                                        generatingChunkBuffer.setBlock(localX, localY, localZ, Block.AIR);
+                                        generatingChunkBuffer.setBlock(0, localX, localY, localZ, Block.AIR);
                                     }
                                 }
                             }

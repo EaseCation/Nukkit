@@ -3,7 +3,7 @@ package cn.nukkit.block;
 import cn.nukkit.item.Item;
 import cn.nukkit.item.ItemBlock;
 import cn.nukkit.item.ItemTool;
-import cn.nukkit.math.NukkitMath;
+import cn.nukkit.math.Mth;
 import cn.nukkit.utils.BlockColor;
 
 /**
@@ -50,7 +50,7 @@ public class BlockWeightedPressurePlateHeavy extends BlockPressurePlateBase {
     public Item[] getDrops(Item item) {
         if (item.isPickaxe() && item.getTier() >= ItemTool.TIER_WOODEN) {
             return new Item[]{
-                    toItem()
+                    toItem(true)
             };
         } else {
             return new Item[0];
@@ -58,13 +58,13 @@ public class BlockWeightedPressurePlateHeavy extends BlockPressurePlateBase {
     }
 
     @Override
-    public Item toItem() {
+    public Item toItem(boolean addUserData) {
         return new ItemBlock(this, 0);
     }
 
     @Override
     public BlockColor getColor() {
-        return BlockColor.IRON_BLOCK_COLOR;
+        return BlockColor.METAL_BLOCK_COLOR;
     }
 
     @Override
@@ -73,7 +73,7 @@ public class BlockWeightedPressurePlateHeavy extends BlockPressurePlateBase {
 
         if (count > 0) {
             float f = (float) Math.min(this.getMaxWeight(), count) / (float) this.getMaxWeight();
-            return Math.max(1, NukkitMath.ceilFloat(f * 15.0F));
+            return Math.max(1, Mth.ceil(f * 15.0F));
         } else {
             return 0;
         }

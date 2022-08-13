@@ -2,6 +2,7 @@ package cn.nukkit.block;
 
 import cn.nukkit.Player;
 import cn.nukkit.item.Item;
+import cn.nukkit.math.BlockFace;
 import cn.nukkit.utils.BlockColor;
 
 /**
@@ -40,13 +41,13 @@ public class BlockPodzol extends BlockDirt {
     }
 
     @Override
-    public boolean onActivate(Item item, Player player) {
+    public boolean onActivate(Item item, BlockFace face, Player player) {
         return false;
     }
 
     @Override
     public int getFullId() {
-        return this.getId() << 4;
+        return this.getId() << BLOCK_META_BITS;
     }
 
     @Override
@@ -56,6 +57,6 @@ public class BlockPodzol extends BlockDirt {
 
     @Override
     public BlockColor getColor() {
-        return BlockColor.SPRUCE_BLOCK_COLOR;
+        return BlockColor.PODZOL_BLOCK_COLOR;
     }
 }

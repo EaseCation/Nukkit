@@ -6,6 +6,7 @@ import cn.nukkit.nbt.NBTIO;
 import cn.nukkit.nbt.tag.CompoundTag;
 import cn.nukkit.network.protocol.BlockEntityDataPacket;
 
+import javax.annotation.Nullable;
 import java.io.IOException;
 import java.nio.ByteOrder;
 
@@ -31,20 +32,30 @@ public abstract class BlockEntitySpawnable extends BlockEntity {
     }
 
     public void spawnTo(Player player) {
-        if (this.closed) {
+        if (this.isClosed()) {
             return;
         }
 
-        player.dataPacket(getSpawnPacket());
+        BlockEntityDataPacket packet = this.getSpawnPacket();
+        if (packet == null) {
+            return;
+        }
+        player.dataPacket(packet);
     }
 
+    @Nullable
     public BlockEntityDataPacket getSpawnPacket() {
         return getSpawnPacket(null);
     }
 
+    @Nullable
     public BlockEntityDataPacket getSpawnPacket(CompoundTag nbt) {
         if (nbt == null) {
             nbt = this.getSpawnCompound();
+        }
+
+        if (nbt.isEmpty()) {
+            return null;
         }
 
         BlockEntityDataPacket pk = new BlockEntityDataPacket();
@@ -61,7 +72,7 @@ public abstract class BlockEntitySpawnable extends BlockEntity {
     }
 
     public void spawnToAll() {
-        if (this.closed) {
+        if (this.isClosed()) {
             return;
         }
 
@@ -82,9 +93,5 @@ public abstract class BlockEntitySpawnable extends BlockEntity {
      */
     public boolean updateCompoundTag(CompoundTag nbt, Player player) {
         return false;
-    }
-
-    public CompoundTag getSpawnCompound11() {
-        return getSpawnCompound();
     }
 }

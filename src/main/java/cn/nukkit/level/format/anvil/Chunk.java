@@ -145,9 +145,9 @@ public class Chunk extends BaseChunk {
                         @SuppressWarnings("unchecked")
                         Class<? extends Block> clazz = (Class<? extends Block>) Class.forName("cn.nukkit.block." + name);
 
-                        Constructor constructor = clazz.getDeclaredConstructor();
+                        Constructor<? extends Block> constructor = clazz.getDeclaredConstructor();
                         constructor.setAccessible(true);
-                        block = (Block) constructor.newInstance();
+                        block = constructor.newInstance();
                     }
                 } catch (Throwable e) {
                     continue;
@@ -239,7 +239,6 @@ public class Chunk extends BaseChunk {
         }
     }
 
-
     public static Chunk fromFastBinary(byte[] data) {
         return fromFastBinary(data, null);
     }
@@ -256,7 +255,6 @@ public class Chunk extends BaseChunk {
             return null;
         }
     }
-
 
     @Override
     public byte[] toFastBinary() {
@@ -286,7 +284,7 @@ public class Chunk extends BaseChunk {
             nbt.getList("Sections", CompoundTag.class).add(s);
         }
 
-        ArrayList<CompoundTag> entities = new ArrayList<>();
+        List<CompoundTag> entities = new ArrayList<>();
         for (Entity entity : this.getEntities().values()) {
             if (!(entity instanceof Player) && !entity.closed) {
                 entity.saveNBT();
@@ -297,7 +295,7 @@ public class Chunk extends BaseChunk {
         entityListTag.setAll(entities);
         nbt.putList(entityListTag);
 
-        ArrayList<CompoundTag> tiles = new ArrayList<>();
+        List<CompoundTag> tiles = new ArrayList<>();
         for (BlockEntity blockEntity : this.getBlockEntities().values()) {
             blockEntity.saveNBT();
             tiles.add(blockEntity.namedTag);
@@ -306,12 +304,23 @@ public class Chunk extends BaseChunk {
         tileListTag.setAll(tiles);
         nbt.putList(tileListTag);
 
+        ListTag<CompoundTag> tileTickTag = new ListTag<>("TileTicks");
+        long totalTime = this.provider.getLevel().getCurrentTick();
+        Set<BlockUpdateEntry> randomEntries = this.provider.getLevel().getPendingRandomBlockUpdates(this);
+        if (randomEntries != null) {
+            for (BlockUpdateEntry entry : randomEntries) {
+                CompoundTag entryNBT = new CompoundTag()
+                        .putString("i", entry.block.getSaveId())
+                        .putInt("x", entry.pos.getFloorX())
+                        .putInt("y", entry.pos.getFloorY())
+                        .putInt("z", entry.pos.getFloorZ())
+                        .putInt("t", (int) (entry.delay - totalTime))
+                        .putInt("p", entry.priority);
+                tileTickTag.add(entryNBT);
+            }
+        }
         Set<BlockUpdateEntry> entries = this.provider.getLevel().getPendingBlockUpdates(this);
-
         if (entries != null) {
-            ListTag<CompoundTag> tileTickTag = new ListTag<>("TileTicks");
-            long totalTime = this.provider.getLevel().getCurrentTick();
-
             for (BlockUpdateEntry entry : entries) {
                 CompoundTag entryNBT = new CompoundTag()
                         .putString("i", entry.block.getSaveId())
@@ -322,7 +331,8 @@ public class Chunk extends BaseChunk {
                         .putInt("p", entry.priority);
                 tileTickTag.add(entryNBT);
             }
-
+        }
+        if (!tileTickTag.isEmpty()) {
             nbt.putList(tileTickTag);
         }
 
@@ -452,7 +462,7 @@ public class Chunk extends BaseChunk {
                 if (height < y) {
                     return 15;
                 } else if (height == y) {
-                    return Block.transparent[getBlockId(x, y, z)] ? 15 : 0;
+                    return Block.transparent[getBlockId(0, x, y, z)] ? 15 : 0;
                 } else {
                     return section.getBlockSkyLight(x, y & 0x0f, z);
                 }
@@ -479,6 +489,7 @@ public class Chunk extends BaseChunk {
         }
     }
 
+    @SuppressWarnings("unused")
     public static Chunk getEmptyChunk(int chunkX, int chunkZ) {
         return getEmptyChunk(chunkX, chunkZ, null);
     }

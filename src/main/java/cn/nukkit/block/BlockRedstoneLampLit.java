@@ -29,7 +29,7 @@ public class BlockRedstoneLampLit extends BlockRedstoneLamp {
     }
 
     @Override
-    public Item toItem() {
+    public Item toItem(boolean addUserData) {
         return new ItemBlock(Block.get(BlockID.REDSTONE_LAMP));
     }
 

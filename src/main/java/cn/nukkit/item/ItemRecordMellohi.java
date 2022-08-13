@@ -16,11 +16,16 @@ public class ItemRecordMellohi extends ItemRecord {
     }
 
     public ItemRecordMellohi(Integer meta, int count) {
-        super(meta, count);
+        super(Item.MUSIC_DISC_MELLOHI, meta, count);
     }
 
     @Override
-    public int getSoundId() {
+    public int getSoundEvent() {
         return LevelSoundEventPacket.SOUND_RECORD_MELLOHI;
+    }
+
+    @Override
+    public String getTranslationIdentifier() {
+        return "record_mellohi";
     }
 }

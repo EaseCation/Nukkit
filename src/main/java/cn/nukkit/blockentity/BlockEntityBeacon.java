@@ -6,8 +6,8 @@ import cn.nukkit.block.BlockID;
 import cn.nukkit.inventory.BeaconInventory;
 import cn.nukkit.item.ItemBlock;
 import cn.nukkit.level.format.FullChunk;
-import cn.nukkit.level.sound.SoundEnum;
 import cn.nukkit.nbt.tag.CompoundTag;
+import cn.nukkit.network.protocol.LevelSoundEventPacket;
 import cn.nukkit.potion.Effect;
 
 import java.util.Map;
@@ -23,20 +23,26 @@ public class BlockEntityBeacon extends BlockEntitySpawnable {
 
     @Override
     protected void initBlockEntity() {
-        if (!namedTag.contains("Lock")) {
-            namedTag.putString("Lock", "");
-        }
-
         if (!namedTag.contains("Levels")) {
-            namedTag.putInt("Levels", 0);
+            namedTag.putInt("Levels", 0); // Nukkit only
         }
 
-        if (!namedTag.contains("Primary")) {
-            namedTag.putInt("Primary", 0);
+        if (!namedTag.contains("primary")) {
+            if (namedTag.contains("Primary")) {
+                namedTag.putInt("primary", namedTag.getInt("Primary"));
+                namedTag.remove("Primary");
+            } else {
+                namedTag.putInt("primary", 0);
+            }
         }
 
-        if (!namedTag.contains("Secondary")) {
-            namedTag.putInt("Secondary", 0);
+        if (!namedTag.contains("secondary")) {
+            if (namedTag.contains("Secondary")) {
+                namedTag.putInt("secondary", namedTag.getInt("Secondary"));
+                namedTag.remove("Secondary");
+            } else {
+                namedTag.putInt("secondary", 0);
+            }
         }
 
         scheduleUpdate();
@@ -45,22 +51,15 @@ public class BlockEntityBeacon extends BlockEntitySpawnable {
     }
 
     @Override
-    public boolean isBlockEntityValid() {
-        int blockID = getBlock().getId();
-        return blockID == Block.BEACON;
+    public boolean isValidBlock(int blockId) {
+        return blockId == Block.BEACON;
     }
 
     @Override
     public CompoundTag getSpawnCompound() {
-        return new CompoundTag()
-                .putString("id", BlockEntity.BEACON)
-                .putInt("x", (int) this.x)
-                .putInt("y", (int) this.y)
-                .putInt("z", (int) this.z)
-                .putString("Lock", this.namedTag.getString("Lock"))
-                .putInt("Levels", this.namedTag.getInt("Levels"))
-                .putInt("Primary", this.namedTag.getInt("Primary"))
-                .putInt("Secondary", this.namedTag.getInt("Secondary"));
+        return getDefaultCompound(this, BEACON)
+                .putInt("primary", this.namedTag.getInt("primary"))
+                .putInt("secondary", this.namedTag.getInt("secondary"));
     }
 
     private long currentTick = 0;
@@ -80,16 +79,13 @@ public class BlockEntityBeacon extends BlockEntitySpawnable {
         //Skip beacons that do not have a pyramid or sky access
         if (newPowerLevel < 1 || !hasSkyAccess()) {
             if (oldPowerLevel > 0) {
-                this.getLevel().addSound(this, SoundEnum.BEACON_DEACTIVATE);
-                //this.getLevel().addLevelSoundEvent(this, LevelSoundEventPacket.SOUND_BEACON_DEACTIVATE);
+                this.getLevel().addLevelSoundEvent(this, LevelSoundEventPacket.SOUND_BEACON_DEACTIVATE);
             }
             return true;
         } else if (oldPowerLevel < 1) {
-            this.getLevel().addSound(this, SoundEnum.BEACON_ACTIVATE);
-            //this.getLevel().addLevelSoundEvent(this, LevelSoundEventPacket.SOUND_BEACON_ACTIVATE);
+            this.getLevel().addLevelSoundEvent(this, LevelSoundEventPacket.SOUND_BEACON_ACTIVATE);
         } else {
-            this.getLevel().addSound(this, SoundEnum.BEACON_AMBIENT);
-            //this.getLevel().addLevelSoundEvent(this, LevelSoundEventPacket.SOUND_BEACON_AMBIENT);
+            this.getLevel().addLevelSoundEvent(this, LevelSoundEventPacket.SOUND_BEACON_AMBIENT);
         }
 
         //Get all players in game
@@ -99,7 +95,7 @@ public class BlockEntityBeacon extends BlockEntitySpawnable {
         int range = 10 + getPowerLevel() * 10;
         int duration = 9 + getPowerLevel() * 2;
 
-        for(Map.Entry<Long, Player> entry : players.entrySet()) {
+        for (Map.Entry<Long, Player> entry : players.entrySet()) {
             Player p = entry.getValue();
 
             //If the player is in range
@@ -159,7 +155,7 @@ public class BlockEntityBeacon extends BlockEntitySpawnable {
 
         //Check every block from our y coord to the top of the world
         for (int y = tileY + 1; y <= 255; y++) {
-            int testBlockId = level.getBlockIdAt(tileX, y, tileZ);
+            int testBlockId = level.getBlockIdAt(0, tileX, y, tileZ);
             if (!Block.transparent[testBlockId]) {
                 //There is no sky access
                 return false;
@@ -181,7 +177,7 @@ public class BlockEntityBeacon extends BlockEntitySpawnable {
             for (int queryX = tileX - powerLevel; queryX <= tileX + powerLevel; queryX++) {
                 for (int queryZ = tileZ - powerLevel; queryZ <= tileZ + powerLevel; queryZ++) {
 
-                    int testBlockId = level.getBlockIdAt(queryX, queryY, queryZ);
+                    int testBlockId = level.getBlockIdAt(0, queryX, queryY, queryZ);
                     if (
                             testBlockId != Block.IRON_BLOCK &&
                                     testBlockId != Block.GOLD_BLOCK &&
@@ -207,31 +203,30 @@ public class BlockEntityBeacon extends BlockEntitySpawnable {
         if (level != currentLevel) {
             namedTag.putInt("Level", level);
             setDirty();
-            this.spawnToAll();
         }
     }
 
     public int getPrimaryPower() {
-        return namedTag.getInt("Primary");
+        return namedTag.getInt("primary");
     }
 
     public void setPrimaryPower(int power) {
         int currentPower = getPrimaryPower();
         if (power != currentPower) {
-            namedTag.putInt("Primary", power);
+            namedTag.putInt("primary", power);
             setDirty();
             this.spawnToAll();
         }
     }
 
     public int getSecondaryPower() {
-        return namedTag.getInt("Secondary");
+        return namedTag.getInt("secondary");
     }
 
     public void setSecondaryPower(int power) {
         int currentPower = getSecondaryPower();
         if (power != currentPower) {
-            namedTag.putInt("Secondary", power);
+            namedTag.putInt("secondary", power);
             setDirty();
             this.spawnToAll();
         }
@@ -246,10 +241,9 @@ public class BlockEntityBeacon extends BlockEntitySpawnable {
         this.setPrimaryPower(nbt.getInt("primary"));
         this.setSecondaryPower(nbt.getInt("secondary"));
 
-        this.getLevel().addSound(this, SoundEnum.BEACON_POWER);
-        //this.getLevel().addLevelSoundEvent(this, LevelSoundEventPacket.SOUND_BEACON_POWER);
+        this.getLevel().addLevelSoundEvent(this, LevelSoundEventPacket.SOUND_BEACON_POWER);
 
-        BeaconInventory inv = (BeaconInventory)player.getWindowById(Player.BEACON_WINDOW_ID);
+        BeaconInventory inv = (BeaconInventory) player.getWindowById(Player.BEACON_WINDOW_ID);
 
         inv.setItem(0, new ItemBlock(Block.get(BlockID.AIR), 0, 0));
         return true;

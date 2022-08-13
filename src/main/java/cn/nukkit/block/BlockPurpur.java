@@ -12,6 +12,22 @@ public class BlockPurpur extends BlockSolidMeta {
     public static final int PURPUR_NORMAL = 0;
     public static final int PURPUR_PILLAR = 2;
 
+    private static final String[] NAMES = new String[]{
+            "Purpur Block",
+            "",
+            "Purpur Pillar",
+            ""
+    };
+
+    private static final short[] FACES = new short[]{
+            0,
+            0,
+            0b1000,
+            0b1000,
+            0b0100,
+            0b0100
+    };
+
     public BlockPurpur() {
         this(0);
     }
@@ -22,14 +38,7 @@ public class BlockPurpur extends BlockSolidMeta {
 
     @Override
     public String getName() {
-        String[] names = new String[]{
-                "Purpur Block",
-                "",
-                "Purpur Pillar",
-                ""
-        };
-
-        return names[this.getDamage() & 0x03];
+        return NAMES[this.getDamage() & 0x03];
     }
 
     @Override
@@ -55,16 +64,7 @@ public class BlockPurpur extends BlockSolidMeta {
     @Override
     public boolean place(Item item, Block block, Block target, BlockFace face, double fx, double fy, double fz, Player player) {
         if (this.getDamage() != PURPUR_NORMAL) {
-            short[] faces = new short[]{
-                    0,
-                    0,
-                    0b1000,
-                    0b1000,
-                    0b0100,
-                    0b0100
-            };
-
-            this.setDamage(((this.getDamage() & 0x03) | faces[face.getIndex()]));
+            this.setDamage(((this.getDamage() & 0x03) | FACES[face.getIndex()]));
         }
         this.getLevel().setBlock(block, this, true, true);
 
@@ -75,7 +75,7 @@ public class BlockPurpur extends BlockSolidMeta {
     public Item[] getDrops(Item item) {
         if (item.isPickaxe() && item.getTier() >= ItemTool.TIER_WOODEN) {
             return new Item[]{
-                    toItem()
+                    toItem(true)
             };
         } else {
             return new Item[0];
@@ -83,7 +83,7 @@ public class BlockPurpur extends BlockSolidMeta {
     }
 
     @Override
-    public Item toItem() {
+    public Item toItem(boolean addUserData) {
         return new ItemBlock(Block.get(BlockID.PURPUR_BLOCK), this.getDamage() & 0x03, 1);
     }
 

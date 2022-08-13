@@ -1,9 +1,8 @@
 package cn.nukkit.block;
 
-import cn.nukkit.item.Item;
-import cn.nukkit.item.ItemBlock;
 import cn.nukkit.item.ItemTool;
 import cn.nukkit.math.AxisAlignedBB;
+import cn.nukkit.math.BlockFace;
 import cn.nukkit.math.SimpleAxisAlignedBB;
 import cn.nukkit.utils.BlockColor;
 
@@ -19,6 +18,17 @@ public class BlockFence extends BlockTransparentMeta {
     public static final int FENCE_JUNGLE = 3;
     public static final int FENCE_ACACIA = 4;
     public static final int FENCE_DARK_OAK = 5;
+
+    private static final String[] NAMES = new String[]{
+            "Oak Fence",
+            "Spruce Fence",
+            "Birch Fence",
+            "Jungle Fence",
+            "Acacia Fence",
+            "Dark Oak Fence",
+            "Fence",
+            "Fence",
+    };
 
     public BlockFence() {
         this(0);
@@ -50,17 +60,7 @@ public class BlockFence extends BlockTransparentMeta {
 
     @Override
     public String getName() {
-        String[] names = new String[]{
-                "Oak Fence",
-                "Spruce Fence",
-                "Birch Fence",
-                "Jungle Fence",
-                "Acacia Fence",
-                "Dark Oak Fence",
-                "",
-                ""
-        };
-        return names[this.getDamage() & 0x07];
+        return NAMES[this.getDamage() & 0x07];
     }
 
     @Override
@@ -99,12 +99,12 @@ public class BlockFence extends BlockTransparentMeta {
 
     @Override
     public BlockColor getColor() {
-        switch(this.getDamage() & 0x07){
+        switch (this.getDamage() & 0x07) {
             default:
             case BlockFence.FENCE_OAK: //OAK
                 return BlockColor.WOOD_BLOCK_COLOR;
             case BlockFence.FENCE_SPRUCE: //SPRUCE
-                return BlockColor.SPRUCE_BLOCK_COLOR;
+                return BlockColor.PODZOL_BLOCK_COLOR;
             case BlockFence.FENCE_BIRCH: //BIRCH
                 return BlockColor.SAND_BLOCK_COLOR;
             case BlockFence.FENCE_JUNGLE: //JUNGLE
@@ -117,7 +117,12 @@ public class BlockFence extends BlockTransparentMeta {
     }
 
     @Override
-    public Item toItem() {
-        return new ItemBlock(this, this.getDamage());
+    public boolean canContainWater() {
+        return true;
+    }
+
+    @Override
+    public boolean canProvideSupport(BlockFace face, SupportType type) {
+        return face.isVertical() && type == SupportType.CENTER;
     }
 }

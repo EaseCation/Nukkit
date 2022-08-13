@@ -2,13 +2,12 @@ package cn.nukkit.command.data;
 
 import cn.nukkit.block.BlockID;
 import cn.nukkit.item.ItemID;
-import com.google.common.collect.ImmutableList;
+import cn.nukkit.item.enchantment.EnchantmentID;
 import com.google.common.collect.ImmutableSet;
 
 import java.lang.reflect.Field;
 import java.util.Arrays;
 import java.util.HashSet;
-import java.util.List;
 import java.util.Set;
 
 /**
@@ -21,6 +20,7 @@ public class CommandEnum {
             ImmutableSet.of("survival", "creative", "s", "c", "adventure", "a", "spectator", "view", "v", "spc"));
     public static final CommandEnum ENUM_BLOCK;
     public static final CommandEnum ENUM_ITEM;
+    public static final CommandEnum ENUM_ENCHANT;
 
     static {
         ImmutableSet.Builder<String> blocks = ImmutableSet.builder();
@@ -35,6 +35,12 @@ public class CommandEnum {
         }
         items.addAll(ENUM_BLOCK.getValues());
         ENUM_ITEM = new CommandEnum("Item", items.build());
+
+        ImmutableSet.Builder<String> enchants = ImmutableSet.builder();
+        for (Field field : EnchantmentID.class.getDeclaredFields()) {
+            enchants.add(field.getName().substring(3).toLowerCase());
+        }
+        ENUM_ENCHANT = new CommandEnum("Enchant", enchants.build());
     }
 
     private final String name;

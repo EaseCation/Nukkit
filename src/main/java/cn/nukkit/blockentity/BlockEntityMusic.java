@@ -23,8 +23,8 @@ public class BlockEntityMusic extends BlockEntity {
     }
 
     @Override
-    public boolean isBlockEntityValid() {
-        return this.getBlock().getId() == Block.NOTEBLOCK;
+    public boolean isValidBlock(int blockId) {
+        return blockId == Block.NOTEBLOCK;
     }
 
     public void changePitch() {

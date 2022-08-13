@@ -7,11 +7,12 @@ import cn.nukkit.item.ItemString;
 import cn.nukkit.level.Level;
 import cn.nukkit.math.AxisAlignedBB;
 import cn.nukkit.math.BlockFace;
+import cn.nukkit.utils.BlockColor;
 
 /**
  * @author CreeperFace
  */
-public class BlockTripWire extends BlockFlowable {
+public class BlockTripWire extends BlockTransparentMeta {
 
     public BlockTripWire(int meta) {
         super(meta);
@@ -23,7 +24,7 @@ public class BlockTripWire extends BlockFlowable {
 
     @Override
     public int getId() {
-        return TRIPWIRE;
+        return TRIP_WIRE;
     }
 
     @Override
@@ -34,6 +35,26 @@ public class BlockTripWire extends BlockFlowable {
     @Override
     public boolean canPassThrough() {
         return true;
+    }
+
+    @Override
+    public boolean isSolid() {
+        return false;
+    }
+
+    @Override
+    public boolean breaksWhenMoved() {
+        return true;
+    }
+
+    @Override
+    public boolean sticksToPiston() {
+        return false;
+    }
+
+    @Override
+    protected AxisAlignedBB recalculateBoundingBox() {
+        return null;
     }
 
     @Override
@@ -52,7 +73,7 @@ public class BlockTripWire extends BlockFlowable {
     }
 
     @Override
-    public Item toItem() {
+    public Item toItem(boolean addUserData) {
         return new ItemString();
     }
 
@@ -129,7 +150,7 @@ public class BlockTripWire extends BlockFlowable {
                     break;
                 }
 
-                if (block.getId() != Block.TRIPWIRE) {
+                if (block.getId() != Block.TRIP_WIRE) {
                     break;
                 }
             }
@@ -201,5 +222,25 @@ public class BlockTripWire extends BlockFlowable {
     @Override
     protected AxisAlignedBB recalculateCollisionBoundingBox() {
         return this;
+    }
+
+    @Override
+    public BlockColor getColor() {
+        return BlockColor.AIR_BLOCK_COLOR;
+    }
+
+    @Override
+    public boolean canContainWater() {
+        return true;
+    }
+
+    @Override
+    public boolean canContainFlowingWater() {
+        return true;
+    }
+
+    @Override
+    public boolean canProvideSupport(BlockFace face, SupportType type) {
+        return false;
     }
 }

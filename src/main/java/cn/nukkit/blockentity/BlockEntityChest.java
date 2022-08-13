@@ -14,8 +14,7 @@ import cn.nukkit.math.Vector3;
 import cn.nukkit.nbt.NBTIO;
 import cn.nukkit.nbt.tag.CompoundTag;
 import cn.nukkit.nbt.tag.ListTag;
-
-import java.util.HashSet;
+import it.unimi.dsi.fastutil.objects.ObjectArrayList;
 
 /**
  * author: MagicDroidX
@@ -25,7 +24,7 @@ public class BlockEntityChest extends BlockEntitySpawnable implements InventoryH
 
     protected ChestInventory inventory;
 
-    protected DoubleChestInventory doubleInventory = null;
+    protected DoubleChestInventory doubleInventory;
 
     public BlockEntityChest(FullChunk chunk, CompoundTag nbt) {
         super(chunk, nbt);
@@ -33,7 +32,12 @@ public class BlockEntityChest extends BlockEntitySpawnable implements InventoryH
 
     @Override
     protected void initBlockEntity() {
+        this.doubleInventory = null;
         this.inventory = new ChestInventory(this);
+
+        //TODO: "ConvertedFromConsole"
+        //TODO: bool "pairlead"
+        //TODO: bool "forceunpair"
 
         if (!this.namedTag.contains("Items") || !(this.namedTag.get("Items") instanceof ListTag)) {
             this.namedTag.putList(new ListTag<CompoundTag>("Items"));
@@ -43,7 +47,7 @@ public class BlockEntityChest extends BlockEntitySpawnable implements InventoryH
             this.inventory.setItem(i, this.getItem(i));
         } */
 
-        ListTag<CompoundTag> list = (ListTag<CompoundTag>) this.namedTag.getList("Items");
+        ListTag<CompoundTag> list = this.namedTag.getList("Items", CompoundTag.class);
         for (CompoundTag compound : list.getAll()) {
             Item item = NBTIO.getItemHelper(compound);
             this.inventory.slots.put(compound.getByte("Slot"), item);
@@ -54,14 +58,14 @@ public class BlockEntityChest extends BlockEntitySpawnable implements InventoryH
 
     @Override
     public void close() {
-        if (!closed) {
+        if (!isClosed()) {
             unpair();
 
-            for (Player player : new HashSet<>(this.getInventory().getViewers())) {
+            for (Player player : new ObjectArrayList<>(this.getInventory().getViewers())) {
                 player.removeWindow(this.getInventory());
             }
 
-            for (Player player : new HashSet<>(this.getInventory().getViewers())) {
+            for (Player player : new ObjectArrayList<>(this.getInventory().getViewers())) {
                 player.removeWindow(this.getRealInventory());
             }
             super.close();
@@ -78,6 +82,8 @@ public class BlockEntityChest extends BlockEntitySpawnable implements InventoryH
 
     @Override
     public void saveNBT() {
+        super.saveNBT();
+
         this.namedTag.putList(new ListTag<CompoundTag>("Items"));
         for (int index = 0; index < this.getSize(); index++) {
             this.setItem(index, this.inventory.getItem(index));
@@ -85,9 +91,8 @@ public class BlockEntityChest extends BlockEntitySpawnable implements InventoryH
     }
 
     @Override
-    public boolean isBlockEntityValid() {
-        int blockID = this.getBlock().getId();
-        return blockID == Block.CHEST || blockID == Block.TRAPPED_CHEST;
+    public boolean isValidBlock(int blockId) {
+        return blockId == Block.CHEST || blockId == Block.TRAPPED_CHEST;
     }
 
     @Override
@@ -177,26 +182,6 @@ public class BlockEntityChest extends BlockEntitySpawnable implements InventoryH
         }
     }
 
-    @Override
-    public String getName() {
-        return this.hasName() ? this.namedTag.getString("CustomName") : "Chest";
-    }
-
-    @Override
-    public boolean hasName() {
-        return this.namedTag.contains("CustomName");
-    }
-
-    @Override
-    public void setName(String name) {
-        if (name == null || name.equals("")) {
-            this.namedTag.remove("CustomName");
-            return;
-        }
-
-        this.namedTag.putString("CustomName", name);
-    }
-
     public boolean isPaired() {
         return this.namedTag.contains("pairx") && this.namedTag.contains("pairz");
     }
@@ -260,28 +245,18 @@ public class BlockEntityChest extends BlockEntitySpawnable implements InventoryH
 
     @Override
     public CompoundTag getSpawnCompound() {
-        CompoundTag c;
+        CompoundTag nbt = getDefaultCompound(this, CHEST);
+
         if (this.isPaired()) {
-            c = new CompoundTag()
-                    .putString("id", BlockEntity.CHEST)
-                    .putInt("x", (int) this.x)
-                    .putInt("y", (int) this.y)
-                    .putInt("z", (int) this.z)
-                    .putInt("pairx", this.namedTag.getInt("pairx"))
-                    .putInt("pairz", this.namedTag.getInt("pairz"));
-        } else {
-            c = new CompoundTag()
-                    .putString("id", BlockEntity.CHEST)
-                    .putInt("x", (int) this.x)
-                    .putInt("y", (int) this.y)
-                    .putInt("z", (int) this.z);
+            nbt.putInt("pairx", this.namedTag.getInt("pairx"));
+            nbt.putInt("pairz", this.namedTag.getInt("pairz"));
         }
 
         if (this.hasName()) {
-            c.put("CustomName", this.namedTag.get("CustomName"));
+            nbt.put("CustomName", this.namedTag.get("CustomName"));
         }
 
-        return c;
+        return nbt;
     }
 
 }

@@ -18,7 +18,7 @@ public class BlockFenceGateBirch extends BlockFenceGate {
 
     @Override
     public int getId() {
-        return FENCE_GATE_BIRCH;
+        return BIRCH_FENCE_GATE;
     }
 
     @Override
@@ -27,8 +27,8 @@ public class BlockFenceGateBirch extends BlockFenceGate {
     }
 
     @Override
-    public Item toItem() {
-        return Item.get(Item.FENCE_GATE_BIRCH, 0, 1);
+    public Item toItem(boolean addUserData) {
+        return Item.get(Item.BIRCH_FENCE_GATE, 0, 1);
     }
 
     @Override

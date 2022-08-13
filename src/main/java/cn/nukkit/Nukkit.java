@@ -42,7 +42,7 @@ public class Nukkit {
 
     public final static Properties GIT_INFO = getGitInfo();
     public final static String VERSION = getVersion();
-    public final static String API_VERSION = "1.0.8";
+    public final static String API_VERSION = "1.1.0";
     public final static String CODENAME = "EC大法好";
     @Deprecated
     public final static String MINECRAFT_VERSION = ProtocolInfo.MINECRAFT_VERSION;
@@ -139,8 +139,10 @@ public class Nukkit {
             }
         }
 
-        ServerKiller killer = new ServerKiller(16);
-        killer.start();
+        if (!SharedConstants.BREAKPOINT_DEBUGGING) {
+            ServerKiller killer = new ServerKiller(16);
+            killer.start();
+        }
 
         if (TITLE) {
             System.out.print((char) 0x1b + "]0;Server Stopped" + (char) 0x07);

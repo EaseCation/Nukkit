@@ -9,13 +9,15 @@ import cn.nukkit.math.BlockFace;
 import cn.nukkit.math.BlockVector3;
 import cn.nukkit.nbt.tag.CompoundTag;
 
+import javax.annotation.Nullable;
+
 /**
  * Created by CreeperFace on 11.4.2017.
  */
 public class BlockEntityMovingBlock extends BlockEntitySpawnable {
 
-    protected String blockString;
     protected Block block;
+    protected Block blockExtra;
 
     protected BlockVector3 piston;
 
@@ -27,11 +29,21 @@ public class BlockEntityMovingBlock extends BlockEntitySpawnable {
     protected void initBlockEntity() {
         if (namedTag.contains("movingBlock")) {
             CompoundTag blockData = namedTag.getCompound("movingBlock");
-
-            this.blockString = blockData.getString("name");
             this.block = Block.get(blockData.getInt("id"), blockData.getInt("meta"));
         } else {
             this.close();
+        }
+
+        if (this.namedTag.contains("movingBlockExtra")) {
+            CompoundTag blockState = this.namedTag.getCompound("movingBlockExtra");
+            this.blockExtra = Block.get(blockState.getInt("id"), blockState.getInt("meta"));
+        } else {
+            this.namedTag.put("movingBlockExtra", new CompoundTag()
+                    .putString("name", "minecraft:air")
+                    .putShort("val", 0)
+                    .putInt("id", BlockID.AIR) // only for Nukkit purpose
+                    .putInt("meta", 0)); // only for Nukkit purpose
+            this.blockExtra = Block.get(BlockID.AIR);
         }
 
         if (namedTag.contains("pistonPosX") && namedTag.contains("pistonPosY") && namedTag.contains("pistonPosZ")) {
@@ -43,6 +55,7 @@ public class BlockEntityMovingBlock extends BlockEntitySpawnable {
         super.initBlockEntity();
     }
 
+    @Nullable
     public CompoundTag getBlockEntity() {
         if (this.namedTag.contains("movingEntity")) {
             return this.namedTag.getCompound("movingEntity");
@@ -55,8 +68,8 @@ public class BlockEntityMovingBlock extends BlockEntitySpawnable {
         return this.block;
     }
 
-    public String getMovingBlockString() {
-        return this.blockString;
+    public Block getMovingBlockExtra() {
+        return this.blockExtra;
     }
 
     public void moveCollidedEntities(BlockEntityPistonArm piston, BlockFace moveDirection) {
@@ -80,7 +93,24 @@ public class BlockEntityMovingBlock extends BlockEntitySpawnable {
     }
 
     @Override
-    public boolean isBlockEntityValid() {
-        return this.level.getBlockIdAt(getFloorX(), getFloorY(), getFloorZ()) == BlockID.MOVING_BLOCK;
+    public boolean isValidBlock(int blockId) {
+        return blockId == BlockID.MOVING_BLOCK;
+    }
+
+    @Override
+    public CompoundTag getSpawnCompound() {
+        CompoundTag movingBlock = this.namedTag.getCompound("movingBlock");
+        CompoundTag movingBlockExtra = this.namedTag.getCompound("movingBlockExtra");
+
+        return getDefaultCompound(this, MOVING_BLOCK)
+                .putCompound("movingBlock", new CompoundTag()
+                        .putString("name", movingBlock.getString("name"))
+                        .putShort("val", movingBlock.getShort("val")))
+                .putCompound("movingBlockExtra", new CompoundTag()
+                        .putString("name", movingBlockExtra.getString("name"))
+                        .putShort("val", movingBlockExtra.getShort("val")))
+                .putInt("pistonPosX", this.piston.getX())
+                .putInt("pistonPosY", this.piston.getY())
+                .putInt("pistonPosZ", this.piston.getZ());
     }
 }

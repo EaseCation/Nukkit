@@ -20,16 +20,16 @@ public class ObjectTallGrass {
 
             while (true) {
                 if (num >= i / 16) {
-                    if (level.getBlockIdAt(x, y, z) == Block.AIR) {
+                    if (level.getBlockIdAt(0, x, y, z) == Block.AIR) {
                         if (random.nextBoundedInt(8) == 0) {
                             //porktodo: biomes have specific flower types that can grow in them
                             if (random.nextBoolean()) {
-                                level.setBlockAt(x, y, z, Block.DANDELION);
+                                level.setBlockAt(0, x, y, z, Block.YELLOW_FLOWER);
                             } else {
-                                level.setBlockAt(x, y, z, Block.POPPY);
+                                level.setBlockAt(0, x, y, z, Block.RED_FLOWER);
                             }
                         } else {
-                            level.setBlockAt(x, y, z, Block.TALL_GRASS, 1);
+                            level.setBlockAt(0, x, y, z, Block.TALLGRASS, 1);
                         }
                     }
 
@@ -40,7 +40,7 @@ public class ObjectTallGrass {
                 y += random.nextRange(-1, 1) * random.nextBoundedInt(3) / 2;
                 z += random.nextRange(-1, 1);
 
-                if (level.getBlockIdAt(x, y - 1, z) != Block.GRASS || y > 255 || y < 0) {
+                if (level.getBlockIdAt(0, x, y - 1, z) != Block.GRASS || y > 255 || y < 0) {
                     break;
                 }
 

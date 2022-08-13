@@ -2,6 +2,7 @@ package cn.nukkit.block;
 
 import cn.nukkit.Player;
 import cn.nukkit.blockentity.BlockEntity;
+import cn.nukkit.blockentity.BlockEntityType;
 import cn.nukkit.blockentity.BlockEntityJukebox;
 import cn.nukkit.item.Item;
 import cn.nukkit.item.ItemBlock;
@@ -30,27 +31,32 @@ public class BlockJukebox extends BlockSolid {
     }
 
     @Override
+    public int getBlockEntityType() {
+        return BlockEntityType.JUKEBOX;
+    }
+
+    @Override
     public boolean canBeActivated() {
         return true;
     }
 
     @Override
-    public Item toItem() {
+    public Item toItem(boolean addUserData) {
         return new ItemBlock(this, 0);
     }
 
     @Override
-    public boolean onActivate(Item item, Player player) {
+    public boolean onActivate(Item item, BlockFace face, Player player) {
         BlockEntity blockEntity = this.getLevel().getBlockEntity(this);
         if (!(blockEntity instanceof BlockEntityJukebox)) {
             blockEntity = this.createBlockEntity();
         }
 
         BlockEntityJukebox jukebox = (BlockEntityJukebox) blockEntity;
-        if (jukebox.getRecordItem().getId() != 0) {
+        if (jukebox.getRecordItem() != null) {
             jukebox.dropItem();
         } else if (item instanceof ItemRecord) {
-            jukebox.setRecordItem(item);
+            jukebox.setRecordItem((ItemRecord) item);
             jukebox.play();
             player.getInventory().decreaseCount(player.getInventory().getHeldItemIndex());
         }
@@ -83,14 +89,10 @@ public class BlockJukebox extends BlockSolid {
     }
 
     private BlockEntity createBlockEntity() {
-        CompoundTag nbt = new CompoundTag()
-                .putList(new ListTag<>("Items"))
-                .putString("id", BlockEntity.JUKEBOX)
-                .putInt("x", getFloorX())
-                .putInt("y", getFloorY())
-                .putInt("z", getFloorZ());
+        CompoundTag nbt = BlockEntity.getDefaultCompound(this, BlockEntity.JUKEBOX)
+                .putList(new ListTag<>("Items"));
 
-        return BlockEntity.createBlockEntity(BlockEntity.JUKEBOX, this.level.getChunk(getFloorX() >> 4, getFloorZ() >> 4), nbt);
+        return BlockEntity.createBlockEntity(BlockEntity.JUKEBOX, getChunk(), nbt);
     }
 
     @Override

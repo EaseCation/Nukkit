@@ -1,6 +1,7 @@
 package cn.nukkit.level.format.generic;
 
 import cn.nukkit.block.Block;
+import cn.nukkit.block.BlockID;
 import cn.nukkit.level.GlobalBlockPalette;
 import cn.nukkit.level.GlobalBlockPaletteInterface.StaticVersion;
 import cn.nukkit.level.format.ChunkSection;
@@ -15,18 +16,22 @@ import java.util.Arrays;
  * author: MagicDroidX
  * Nukkit Project
  */
-public class EmptyChunkSection implements ChunkSection {
+public final class EmptyChunkSection implements ChunkSection {
     public static final EmptyChunkSection[] EMPTY = new EmptyChunkSection[16];
     public static final PalettedSubChunkStorage EMPTY_STORAGE = PalettedSubChunkStorage.ofBlock(BitArrayVersion.V1);
+
+    private static final byte[] EMPTY_2048 = new byte[2048];
+    public static final byte[] EMPTY_BLOCK_ARR = new byte[4096];
+    public static final byte[] EMPTY_META_ARR = EMPTY_2048;
+    public static final short[] EMPTY_HEIGHTMAP_ARR = new short[256];
+    public static final byte[] EMPTY_LIGHT_ARR = EMPTY_2048;
+    public static final byte[] EMPTY_SKY_LIGHT_ARR = new byte[2048];
 
     static {
         for (int y = 0; y < EMPTY.length; y++) {
             EMPTY[y] = new EmptyChunkSection(y);
         }
-    }
-    public static byte[] EMPTY_LIGHT_ARR = new byte[2048];
-    public static byte[] EMPTY_SKY_LIGHT_ARR = new byte[2048];
-    static {
+
         Arrays.fill(EMPTY_SKY_LIGHT_ARR, (byte) 255);
     }
 
@@ -42,41 +47,41 @@ public class EmptyChunkSection implements ChunkSection {
     }
 
     @Override
-    final public int getBlockId(int x, int y, int z) {
-        return 0;
+    public int getBlockId(int layer, int x, int y, int z) {
+        return BlockID.AIR;
     }
 
     @Override
-    public int getFullBlock(int x, int y, int z) throws ChunkException {
-        return 0;
+    public int getFullBlock(int layer, int x, int y, int z) {
+        return BlockID.AIR;
     }
 
     @Override
-    public Block getAndSetBlock(int x, int y, int z, Block block) {
-        if (block.getId() != 0) throw new ChunkException("Tried to modify an empty Chunk");
-        return Block.get(0);
+    public Block getAndSetBlock(int layer, int x, int y, int z, Block block) throws ChunkException {
+        if (block.getId() != BlockID.AIR) throw new ChunkException("Attempted to modify an empty Chunk");
+        return Block.get(BlockID.AIR);
     }
 
     @Override
-    public boolean setBlock(int x, int y, int z, int blockId) throws ChunkException {
-        if (blockId != 0) throw new ChunkException("Tried to modify an empty Chunk");
+    public boolean setBlock(int layer, int x, int y, int z, int blockId) throws ChunkException {
+        if (blockId != BlockID.AIR) throw new ChunkException("Attempted to modify an empty Chunk");
         return false;
     }
 
     @Override
-    public boolean setBlock(int x, int y, int z, int blockId, int meta) throws ChunkException {
-        if (blockId != 0) throw new ChunkException("Tried to modify an empty Chunk");
+    public boolean setBlock(int layer, int x, int y, int z, int blockId, int meta) throws ChunkException {
+        if (blockId != BlockID.AIR) throw new ChunkException("Attempted to modify an empty Chunk");
         return false;
     }
 
     @Override
     public byte[] getIdArray() {
-        return new byte[4096];
+        return EMPTY_BLOCK_ARR;
     }
 
     @Override
     public byte[] getDataArray() {
-        return new byte[2048];
+        return EMPTY_META_ARR;
     }
 
     @Override
@@ -90,23 +95,23 @@ public class EmptyChunkSection implements ChunkSection {
     }
 
     @Override
-    final public void setBlockId(int x, int y, int z, int id) throws ChunkException {
-        if (id != 0) throw new ChunkException("Tried to modify an empty Chunk");
+    public void setBlockId(int layer, int x, int y, int z, int id) throws ChunkException {
+        if (id != BlockID.AIR) throw new ChunkException("Attempted to modify an empty Chunk");
     }
 
     @Override
-    final public int getBlockData(int x, int y, int z) {
+    public int getBlockData(int layer, int x, int y, int z) {
         return 0;
     }
 
     @Override
-    public void setBlockData(int x, int y, int z, int data) throws ChunkException {
-        if (data != 0) throw new ChunkException("Tried to modify an empty Chunk");
+    public void setBlockData(int layer, int x, int y, int z, int data) throws ChunkException {
+        if (data != 0) throw new ChunkException("Attempted to modify an empty Chunk");
     }
 
     @Override
-    public boolean setFullBlockId(int x, int y, int z, int fullId) {
-        if (fullId != 0) throw new ChunkException("Tried to modify an empty Chunk");
+    public boolean setFullBlockId(int layer, int x, int y, int z, int fullId) throws ChunkException {
+        if (fullId != BlockID.AIR) throw new ChunkException("Attempted to modify an empty Chunk");
         return false;
     }
 
@@ -117,7 +122,7 @@ public class EmptyChunkSection implements ChunkSection {
 
     @Override
     public void setBlockLight(int x, int y, int z, int level) throws ChunkException {
-        if (level != 0) throw new ChunkException("Tried to modify an empty Chunk");
+        if (level != 0) throw new ChunkException("Attempted to modify an empty Chunk");
     }
 
     @Override
@@ -127,7 +132,7 @@ public class EmptyChunkSection implements ChunkSection {
 
     @Override
     public void setBlockSkyLight(int x, int y, int z, int level) throws ChunkException {
-        if (level != 15) throw new ChunkException("Tried to modify an empty Chunk");
+        if (level != 15) throw new ChunkException("Attempted to modify an empty Chunk");
     }
 
     @Override
@@ -135,8 +140,15 @@ public class EmptyChunkSection implements ChunkSection {
         return true;
     }
 
-    public void writeToOld(BinaryStream stream) {
-        stream.put(new byte[6144]);
+    @Override
+    public boolean hasLayer(int layer) {
+        return false;
+    }
+
+    @Override
+    public void writeToLegacy(BinaryStream stream) {
+        stream.put(EMPTY_BLOCK_ARR);
+        stream.put(EMPTY_META_ARR);
     }
 
     @Override
@@ -164,6 +176,21 @@ public class EmptyChunkSection implements ChunkSection {
         EMPTY_STORAGE.writeToCache(stream);
         EMPTY_STORAGE.writeToCache(stream);
         return true;
+    }
+
+    @Override
+    public void writeToDisk(BinaryStream stream) {
+        stream.putByte((byte) 8);
+        stream.putByte((byte) 0);
+    }
+
+    @Override
+    public boolean isDirty() {
+        return false;
+    }
+
+    @Override
+    public void setDirty() {
     }
 
     @Override

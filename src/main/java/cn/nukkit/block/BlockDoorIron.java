@@ -4,6 +4,7 @@ import cn.nukkit.Player;
 import cn.nukkit.item.Item;
 import cn.nukkit.item.ItemDoorIron;
 import cn.nukkit.item.ItemTool;
+import cn.nukkit.math.BlockFace;
 import cn.nukkit.utils.BlockColor;
 
 /**
@@ -27,7 +28,7 @@ public class BlockDoorIron extends BlockDoor {
 
     @Override
     public int getId() {
-        return IRON_DOOR_BLOCK;
+        return BLOCK_IRON_DOOR;
     }
 
     @Override
@@ -54,7 +55,7 @@ public class BlockDoorIron extends BlockDoor {
     public Item[] getDrops(Item item) {
         if (item.isPickaxe() && item.getTier() >= ItemTool.TIER_WOODEN) {
             return new Item[]{
-                    toItem()
+                    toItem(true)
             };
         } else {
             return new Item[0];
@@ -62,17 +63,17 @@ public class BlockDoorIron extends BlockDoor {
     }
 
     @Override
-    public Item toItem() {
+    public Item toItem(boolean addUserData) {
         return new ItemDoorIron();
     }
 
     @Override
     public BlockColor getColor() {
-        return BlockColor.IRON_BLOCK_COLOR;
+        return BlockColor.METAL_BLOCK_COLOR;
     }
 
     @Override
-    public boolean onActivate(Item item, Player player) {
+    public boolean onActivate(Item item, BlockFace face, Player player) {
         return false;
     }
 

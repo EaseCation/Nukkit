@@ -4,15 +4,49 @@ import cn.nukkit.item.ItemTool;
 import cn.nukkit.math.AxisAlignedBB;
 import cn.nukkit.math.BlockFace;
 import cn.nukkit.math.SimpleAxisAlignedBB;
+import cn.nukkit.utils.BlockColor;
 
 /**
  * author: MagicDroidX
  * Nukkit Project
  */
 public class BlockWall extends BlockTransparentMeta {
-    public static final int NONE_MOSSY_WALL = 0;
-    public static final int MOSSY_WALL = 1;
 
+    public static final int NORMAL_COBBLESTONE_WALL = 0;
+    public static final int MOSSY_COBBLESTONE_WALL = 1;
+    public static final int GRANITE_WALL = 2;
+    public static final int DIORITE_WALL = 3;
+    public static final int ANDESITE_WALL = 4;
+    public static final int SANDSTONE_WALL = 5;
+    public static final int BRICK_WALL = 6;
+    public static final int STONE_BRICK_WALL = 7;
+    public static final int MOSSY_STONE_BRICK_WALL = 8;
+    public static final int NETHER_BRICK_WALL = 9;
+    public static final int END_BRICK_WALL = 10;
+    public static final int PRISMARINE_WALL = 11;
+    public static final int RED_SANDSTONE_WALL = 12;
+    public static final int RED_NETHER_BRICK_WALL = 13;
+
+    private static final String[] NAMES = new String[]{
+            "Cobblestone Wall",
+            "Mossy Cobblestone Wall",
+            "Granite Wall",
+            "Diorite Wall",
+            "Andesite Wall",
+            "Sandstone Wall",
+            "Brick Wall",
+            "Stone Brick Wall",
+            "Mossy Stone Brick Wall",
+            "Nether Brick Wall",
+            "End Stone Brick Wall",
+            "Prismarine Wall",
+            "Red Sandstone Wall",
+            "Red Nether Brick Wall",
+            "Wall",
+            "Wall",
+    };
+
+    //TODO: connections 1.16.0
 
     public BlockWall() {
         this(0);
@@ -24,7 +58,7 @@ public class BlockWall extends BlockTransparentMeta {
 
     @Override
     public int getId() {
-        return STONE_WALL;
+        return COBBLESTONE_WALL;
     }
 
     @Override
@@ -44,16 +78,11 @@ public class BlockWall extends BlockTransparentMeta {
 
     @Override
     public String getName() {
-        if (this.getDamage() == 0x01) {
-            return "Mossy Cobblestone Wall";
-        }
-
-        return "Cobblestone Wall";
+        return NAMES[this.getDamage() & 0xf];
     }
 
     @Override
     protected AxisAlignedBB recalculateBoundingBox() {
-
         boolean north = this.canConnect(this.getSide(BlockFace.NORTH));
         boolean south = this.canConnect(this.getSide(BlockFace.SOUTH));
         boolean west = this.canConnect(this.getSide(BlockFace.WEST));
@@ -83,7 +112,7 @@ public class BlockWall extends BlockTransparentMeta {
     }
 
     public boolean canConnect(Block block) {
-        return (!(block.getId() != COBBLE_WALL && block.getId() != FENCE_GATE)) || block.isSolid() && !block.isTransparent();
+        return (!(block.getId() != COBBLESTONE_WALL && block.getId() != FENCE_GATE)) || block.isSolid() && !block.isTransparent();
     }
 
     @Override
@@ -94,5 +123,49 @@ public class BlockWall extends BlockTransparentMeta {
     @Override
     public boolean canHarvestWithHand() {
         return false;
+    }
+
+    @Override
+    public boolean canContainWater() {
+        return true;
+    }
+
+    @Override
+    public boolean canProvideSupport(BlockFace face, SupportType type) {
+        return face.isVertical() && type == SupportType.CENTER;
+    }
+
+    @Override
+    public boolean isWall() {
+        return true;
+    }
+
+    @Override
+    public BlockColor getColor() {
+        switch (getDamage()) {
+            default:
+            case NORMAL_COBBLESTONE_WALL:
+            case MOSSY_COBBLESTONE_WALL:
+            case ANDESITE_WALL:
+            case STONE_BRICK_WALL:
+            case MOSSY_STONE_BRICK_WALL:
+                return BlockColor.STONE_BLOCK_COLOR;
+            case GRANITE_WALL:
+                return BlockColor.DIRT_BLOCK_COLOR;
+            case DIORITE_WALL:
+                return BlockColor.QUARTZ_BLOCK_COLOR;
+            case SANDSTONE_WALL:
+            case END_BRICK_WALL:
+                return BlockColor.SAND_BLOCK_COLOR;
+            case BRICK_WALL:
+                return BlockColor.RED_BLOCK_COLOR;
+            case NETHER_BRICK_WALL:
+            case RED_NETHER_BRICK_WALL:
+                return BlockColor.NETHER_BLOCK_COLOR;
+            case PRISMARINE_WALL:
+                return BlockColor.CYAN_BLOCK_COLOR;
+            case RED_SANDSTONE_WALL:
+                return BlockColor.ORANGE_BLOCK_COLOR;
+        }
     }
 }

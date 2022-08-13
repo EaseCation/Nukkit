@@ -20,9 +20,7 @@ import cn.nukkit.nbt.tag.ListTag;
 import cn.nukkit.network.protocol.ContainerSetDataPacket;
 import it.unimi.dsi.fastutil.ints.IntArrayList;
 import it.unimi.dsi.fastutil.ints.IntList;
-
-import java.util.Arrays;
-import java.util.HashSet;
+import it.unimi.dsi.fastutil.objects.ObjectArrayList;
 
 public class BlockEntityBrewingStand extends BlockEntitySpawnable implements InventoryHolder, BlockEntityContainer, BlockEntityNameable {
 
@@ -34,11 +32,24 @@ public class BlockEntityBrewingStand extends BlockEntitySpawnable implements Inv
     public int fuelTotal;
     public int fuelAmount;
 
-    public static final IntList ingredients = new IntArrayList() {
-        {
-            addAll(Arrays.asList(Item.NETHER_WART, Item.GHAST_TEAR, Item.GLOWSTONE_DUST, Item.REDSTONE_DUST, Item.GUNPOWDER, Item.MAGMA_CREAM, Item.BLAZE_POWDER, Item.GOLDEN_CARROT, Item.SPIDER_EYE, Item.FERMENTED_SPIDER_EYE, Item.GLISTERING_MELON, Item.SUGAR, Item.RABBIT_FOOT, Item.PUFFERFISH, 469, 470, 437));
-        }
-    };
+    public static final IntList ingredients = IntArrayList.of(
+            Item.NETHER_WART,
+            Item.GHAST_TEAR,
+            Item.GLOWSTONE_DUST,
+            Item.REDSTONE,
+            Item.GUNPOWDER,
+            Item.MAGMA_CREAM,
+            Item.BLAZE_POWDER,
+            Item.GOLDEN_CARROT,
+            Item.SPIDER_EYE,
+            Item.FERMENTED_SPIDER_EYE,
+            Item.GLISTERING_MELON_SLICE,
+            Item.SUGAR,
+            Item.RABBIT_FOOT,
+            Item.PUFFERFISH,
+            Item.TURTLE_HELMET,
+            Item.PHANTOM_MEMBRANE,
+            Item.DRAGON_BREATH);
 
     public BlockEntityBrewingStand(FullChunk chunk, CompoundTag nbt) {
         super(chunk, nbt);
@@ -73,29 +84,9 @@ public class BlockEntityBrewingStand extends BlockEntitySpawnable implements Inv
     }
 
     @Override
-    public String getName() {
-        return this.hasName() ? this.namedTag.getString("CustomName") : "Brewing Stand";
-    }
-
-    @Override
-    public boolean hasName() {
-        return namedTag.contains("CustomName");
-    }
-
-    @Override
-    public void setName(String name) {
-        if (name == null || name.equals("")) {
-            namedTag.remove("CustomName");
-            return;
-        }
-
-        namedTag.putString("CustomName", name);
-    }
-
-    @Override
     public void close() {
-        if (!closed) {
-            for (Player player : new HashSet<>(getInventory().getViewers())) {
+        if (!isClosed()) {
+            for (Player player : new ObjectArrayList<>(getInventory().getViewers())) {
                 player.removeWindow(getInventory());
             }
             super.close();
@@ -112,6 +103,8 @@ public class BlockEntityBrewingStand extends BlockEntitySpawnable implements Inv
 
     @Override
     public void saveNBT() {
+        super.saveNBT();
+
         namedTag.putList(new ListTag<CompoundTag>("Items"));
         for (int index = 0; index < getSize(); index++) {
             this.setItem(index, inventory.getItem(index));
@@ -123,8 +116,8 @@ public class BlockEntityBrewingStand extends BlockEntitySpawnable implements Inv
     }
 
     @Override
-    public boolean isBlockEntityValid() {
-        return getBlock().getId() == Block.BREWING_STAND_BLOCK;
+    public boolean isValidBlock(int blockId) {
+        return blockId == Block.BLOCK_BREWING_STAND;
     }
 
     @Override
@@ -182,9 +175,17 @@ public class BlockEntityBrewingStand extends BlockEntitySpawnable implements Inv
 
     @Override
     public boolean onUpdate() {
-        if (closed) {
+        if (isClosed()) {
             return false;
         }
+
+        int currentTick = server.getTick();
+        int tickDiff = currentTick - lastUpdate;
+        if (tickDiff <= 0) {
+            return true;
+        }
+        lastUpdate = currentTick;
+        timing.startTiming();
 
         boolean ret = false;
 
@@ -267,8 +268,8 @@ public class BlockEntityBrewingStand extends BlockEntitySpawnable implements Inv
         }
 
         //this.sendBrewTime();
-        lastUpdate = System.currentTimeMillis();
 
+        timing.stopTiming();
         return ret;
     }
 
@@ -307,6 +308,10 @@ public class BlockEntityBrewingStand extends BlockEntitySpawnable implements Inv
     }
 
     public void updateBlock() {
+        if (!level.isInitialized()) {
+            return;
+        }
+
         Block block = this.getLevelBlock();
 
         if (!(block instanceof BlockBrewingStand)) {
@@ -338,11 +343,7 @@ public class BlockEntityBrewingStand extends BlockEntitySpawnable implements Inv
 
     @Override
     public CompoundTag getSpawnCompound() {
-        CompoundTag nbt = new CompoundTag()
-                .putString("id", BlockEntity.BREWING_STAND)
-                .putInt("x", (int) this.x)
-                .putInt("y", (int) this.y)
-                .putInt("z", (int) this.z)
+        CompoundTag nbt = getDefaultCompound(this, BREWING_STAND)
                 .putShort("FuelTotal", this.fuelTotal)
                 .putShort("FuelAmount", this.fuelAmount);
 

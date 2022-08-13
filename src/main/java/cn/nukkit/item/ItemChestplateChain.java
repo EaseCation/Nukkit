@@ -15,7 +15,7 @@ public class ItemChestplateChain extends ItemArmor {
     }
 
     public ItemChestplateChain(Integer meta, int count) {
-        super(CHAIN_CHESTPLATE, meta, count, "Chain Chestplate");
+        super(CHAINMAIL_CHESTPLATE, meta, count, "Chain Chestplate");
     }
 
     @Override

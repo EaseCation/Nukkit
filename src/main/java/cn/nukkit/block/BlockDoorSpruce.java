@@ -21,16 +21,16 @@ public class BlockDoorSpruce extends BlockDoorWood {
 
     @Override
     public int getId() {
-        return SPRUCE_DOOR_BLOCK;
+        return BLOCK_SPRUCE_DOOR;
     }
 
     @Override
-    public Item toItem() {
+    public Item toItem(boolean addUserData) {
         return new ItemDoorSpruce();
     }
 
     @Override
     public BlockColor getColor() {
-        return BlockColor.SPRUCE_BLOCK_COLOR;
+        return BlockColor.PODZOL_BLOCK_COLOR;
     }
 }

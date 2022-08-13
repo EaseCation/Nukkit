@@ -9,6 +9,8 @@ import cn.nukkit.level.Position;
 import cn.nukkit.math.BlockFace;
 import cn.nukkit.math.Vector3;
 
+import javax.annotation.Nullable;
+
 /**
  * author: MagicDroidX
  * Nukkit Project
@@ -37,7 +39,7 @@ public class PlayerInteractEvent extends PlayerEvent implements Cancellable {
         this(player, item, block, face, Action.RIGHT_CLICK_BLOCK);
     }
 
-    public PlayerInteractEvent(Player player, Item item, Vector3 block, BlockFace face, Action action) {
+    public PlayerInteractEvent(Player player, Item item, Vector3 block, @Nullable BlockFace face, Action action) {
         if (block instanceof Block) {
             this.blockTouched = (Block) block;
             this.touchVector = new Vector3(0, 0, 0);
@@ -68,6 +70,10 @@ public class PlayerInteractEvent extends PlayerEvent implements Cancellable {
         return touchVector;
     }
 
+    /**
+     * 方块交互面. 右击空气时为 {@code null}.
+     */
+    @Nullable
     public BlockFace getFace() {
         return blockFace;
     }

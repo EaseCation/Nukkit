@@ -18,6 +18,6 @@ public class ItemHopper extends Item {
 
     public ItemHopper(Integer meta, int count) {
         super(HOPPER, 0, count, "Hopper");
-        this.block = Block.get(BlockID.HOPPER_BLOCK);
+        this.block = Block.get(BlockID.BLOCK_HOPPER);
     }
 }

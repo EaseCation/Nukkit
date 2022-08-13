@@ -30,7 +30,7 @@ public class BlockTerracottaStained extends BlockSolidMeta {
 
     @Override
     public int getId() {
-        return STAINED_TERRACOTTA;
+        return STAINED_HARDENED_CLAY;
     }
 
     @Override
@@ -51,7 +51,7 @@ public class BlockTerracottaStained extends BlockSolidMeta {
     @Override
     public Item[] getDrops(Item item) {
         if (item.isPickaxe() && item.getTier() >= ItemTool.TIER_WOODEN) {
-            return new Item[]{toItem()};
+            return new Item[]{toItem(true)};
         } else {
             return new Item[0];
         }

@@ -50,7 +50,7 @@ public class BlockOreRedstone extends BlockSolid {
             Random random = ThreadLocalRandom.current();
             int count = random.nextInt(2) + 4;
 
-            Enchantment fortune = item.getEnchantment(Enchantment.ID_FORTUNE_DIGGING);
+            Enchantment fortune = item.getEnchantment(Enchantment.ID_FORTUNE);
             if (fortune != null && fortune.getLevel() >= 1) {
                 count += random.nextInt(fortune.getLevel() + 1);
             }
@@ -66,7 +66,7 @@ public class BlockOreRedstone extends BlockSolid {
     @Override
     public int onUpdate(int type) {
         if (type == Level.BLOCK_UPDATE_TOUCH) { //type == Level.BLOCK_UPDATE_NORMAL ||
-            this.getLevel().setBlock(this, Block.get(BlockID.GLOWING_REDSTONE_ORE), false, false);
+            this.getLevel().setBlock(this, Block.get(BlockID.LIT_REDSTONE_ORE), false, false);
 
             return Level.BLOCK_UPDATE_WEAK;
         }

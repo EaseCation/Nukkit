@@ -38,6 +38,11 @@ public class BlockBedrockInvisible extends BlockSolid {
     }
 
     @Override
+    public boolean isTransparent() {
+        return true;
+    }
+
+    @Override
     public BlockColor getColor() {
         return BlockColor.TRANSPARENT_BLOCK_COLOR;
     }
@@ -53,7 +58,12 @@ public class BlockBedrockInvisible extends BlockSolid {
     }
 
     @Override
-    public Item toItem() {
+    public Item toItem(boolean addUserData) {
         return new ItemBlock(Block.get(BlockID.AIR));
+    }
+
+    @Override
+    public boolean canHarvestWithHand() {
+        return false;
     }
 }

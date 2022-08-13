@@ -13,6 +13,13 @@ public class BlockBricksStone extends BlockSolidMeta {
     public static final int CRACKED = 2;
     public static final int CHISELED = 3;
 
+    private static final String[] NAMES = new String[]{
+            "Stone Bricks",
+            "Mossy Stone Bricks",
+            "Cracked Stone Bricks",
+            "Chiseled Stone Bricks",
+    };
+
     public BlockBricksStone() {
         this(0);
     }
@@ -23,7 +30,7 @@ public class BlockBricksStone extends BlockSolidMeta {
 
     @Override
     public int getId() {
-        return STONE_BRICKS;
+        return STONEBRICK;
     }
 
     @Override
@@ -38,21 +45,14 @@ public class BlockBricksStone extends BlockSolidMeta {
 
     @Override
     public String getName() {
-        String[] names = new String[]{
-                "Stone Bricks",
-                "Mossy Stone Bricks",
-                "Cracked Stone Bricks",
-                "Chiseled Stone Bricks"
-        };
-
-        return names[this.getDamage() & 0x03];
+        return NAMES[this.getDamage() & 0x03];
     }
 
     @Override
     public Item[] getDrops(Item item) {
         if (item.isPickaxe() && item.getTier() >= ItemTool.TIER_WOODEN) {
             return new Item[]{
-                    Item.get(Item.STONE_BRICKS, this.getDamage() & 0x03, 1)
+                    Item.get(Item.STONEBRICK, this.getDamage() & 0x03, 1)
             };
         } else {
             return new Item[0];

@@ -14,8 +14,8 @@ public class BlockRedstoneEvent extends BlockEvent {
         return handlers;
     }
 
-    private int oldPower;
-    private int newPower;
+    private final int oldPower;
+    private final int newPower;
 
     public BlockRedstoneEvent(Block block, int oldPower, int newPower) {
         super(block);

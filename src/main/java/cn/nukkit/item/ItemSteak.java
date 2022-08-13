@@ -15,6 +15,6 @@ public class ItemSteak extends ItemEdible {
     }
 
     public ItemSteak(Integer meta, int count) {
-        super(STEAK, meta, count, "Steak");
+        super(COOKED_BEEF, meta, count, "Steak");
     }
 }

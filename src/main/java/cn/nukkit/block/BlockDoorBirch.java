@@ -21,11 +21,11 @@ public class BlockDoorBirch extends BlockDoorWood {
 
     @Override
     public int getId() {
-        return BIRCH_DOOR_BLOCK;
+        return BLOCK_BIRCH_DOOR;
     }
 
     @Override
-    public Item toItem() {
+    public Item toItem(boolean addUserData) {
         return new ItemDoorBirch();
     }
 

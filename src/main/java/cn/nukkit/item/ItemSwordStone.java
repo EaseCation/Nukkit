@@ -37,4 +37,9 @@ public class ItemSwordStone extends ItemTool {
     public int getAttackDamage() {
         return 5;
     }
+
+    @Override
+    public boolean additionalDamageOnBreak() {
+        return true;
+    }
 }

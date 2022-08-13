@@ -15,7 +15,7 @@ public class ItemSwordGold extends ItemTool {
     }
 
     public ItemSwordGold(Integer meta, int count) {
-        super(GOLD_SWORD, meta, count, "Gold Sword");
+        super(GOLDEN_SWORD, meta, count, "Gold Sword");
     }
 
     @Override
@@ -36,5 +36,10 @@ public class ItemSwordGold extends ItemTool {
     @Override
     public int getAttackDamage() {
         return 4;
+    }
+
+    @Override
+    public boolean additionalDamageOnBreak() {
+        return true;
     }
 }

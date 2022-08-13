@@ -5,8 +5,6 @@ import cn.nukkit.event.redstone.RedstoneUpdateEvent;
 import cn.nukkit.item.Item;
 import cn.nukkit.level.Level;
 import cn.nukkit.math.BlockFace;
-import cn.nukkit.math.Vector3;
-import cn.nukkit.utils.BlockColor;
 
 /**
  * author: Angelic47
@@ -47,7 +45,7 @@ public class BlockRedstoneTorch extends BlockTorch {
             if (!checkState()) {
                 BlockFace facing = getBlockFace().getOpposite();
 
-                for (BlockFace side : BlockFace.values0()) {
+                for (BlockFace side : BlockFace.getValues()) {
                     if (facing == side) {
                         continue;
                     }
@@ -79,7 +77,7 @@ public class BlockRedstoneTorch extends BlockTorch {
         BlockFace face = getBlockFace().getOpposite();
 
         if (this.level.isRedstoneEnabled()) {
-            for (BlockFace side : BlockFace.values0()) {
+            for (BlockFace side : BlockFace.getValues()) {
                 if (side == face) {
                     continue;
                 }
@@ -122,7 +120,7 @@ public class BlockRedstoneTorch extends BlockTorch {
 
             this.level.setBlock(this, Block.get(BlockID.UNLIT_REDSTONE_TORCH, getDamage()), false, true);
 
-            for (BlockFace side : BlockFace.values0()) {
+            for (BlockFace side : BlockFace.getValues()) {
                 if (side == face) {
                     continue;
                 }
@@ -149,10 +147,5 @@ public class BlockRedstoneTorch extends BlockTorch {
     @Override
     public boolean isPowerSource() {
         return true;
-    }
-
-    @Override
-    public BlockColor getColor() {
-        return BlockColor.AIR_BLOCK_COLOR;
     }
 }

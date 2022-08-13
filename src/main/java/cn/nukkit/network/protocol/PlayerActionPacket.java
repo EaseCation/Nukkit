@@ -54,7 +54,7 @@ public class PlayerActionPacket extends DataPacket {
     public int x;
     public int y;
     public int z;
-    public int face;
+    public int data;
 
     @Override
     public void decode() {
@@ -64,16 +64,11 @@ public class PlayerActionPacket extends DataPacket {
         this.x = v.x;
         this.y = v.y;
         this.z = v.z;
-        this.face = this.getVarInt();
+        this.data = this.getVarInt();
     }
 
     @Override
     public void encode() {
-        this.reset();
-        this.putEntityRuntimeId(this.entityId);
-        this.putVarInt(this.action);
-        this.putBlockVector3(this.x, this.y, this.z);
-        this.putVarInt(this.face);
     }
 
     @Override

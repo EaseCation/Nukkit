@@ -16,11 +16,16 @@ public class ItemRecordBlocks extends ItemRecord {
     }
 
     public ItemRecordBlocks(Integer meta, int count) {
-        super(meta, count);
+        super(Item.MUSIC_DISC_BLOCKS, meta, count);
     }
 
     @Override
-    public int getSoundId() {
+    public int getSoundEvent() {
         return LevelSoundEventPacket.SOUND_RECORD_BLOCKS;
+    }
+
+    @Override
+    public String getTranslationIdentifier() {
+        return "record_blocks";
     }
 }

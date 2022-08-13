@@ -25,7 +25,7 @@ public class BlockCarrot extends BlockCrops {
 
     @Override
     public int getId() {
-        return CARROT_BLOCK;
+        return CARROTS;
     }
 
     @Override
@@ -41,7 +41,7 @@ public class BlockCarrot extends BlockCrops {
     }
 
     @Override
-    public Item toItem() {
+    public Item toItem(boolean addUserData) {
         return new ItemCarrot();
     }
 }

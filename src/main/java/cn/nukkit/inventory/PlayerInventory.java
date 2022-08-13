@@ -23,16 +23,9 @@ import java.util.Collection;
 public class PlayerInventory extends BaseInventory {
 
     protected int itemInHandIndex = 0;
-    private int[] hotbar;
 
     public PlayerInventory(EntityHumanType player) {
         super(player, InventoryType.PLAYER);
-        this.hotbar = new int[this.getHotbarSize()];
-
-        for (int i = 0; i < this.hotbar.length; i++) {
-            this.hotbar[i] = i;
-        }
-
     }
 
     @Override
@@ -118,9 +111,8 @@ public class PlayerInventory extends BaseInventory {
         Item item = this.getItem(this.getHeldItemIndex());
         if (item != null) {
             return item;
-        } else {
-            return new ItemBlock(Block.get(BlockID.AIR), 0, 0);
         }
+        return new ItemBlock(Block.get(BlockID.AIR), 0, 0);
     }
 
     public boolean setItemInHand(Item item) {
@@ -152,12 +144,19 @@ public class PlayerInventory extends BaseInventory {
         MobEquipmentPacket pk = new MobEquipmentPacket();
         pk.item = item;
         pk.inventorySlot = pk.hotbarSlot = this.getHeldItemIndex();
+        pk.eid = this.getHolder().getId();
+        pk.tryEncode();
 
         for (Player player : players) {
-            pk.eid = this.getHolder().getId();
             if (player.equals(this.getHolder())) {
-                pk.eid = player.getId();
                 this.sendSlot(this.getHeldItemIndex(), player);
+
+                MobEquipmentPacket pk0 = new MobEquipmentPacket();
+                pk0.item = item;
+                pk0.inventorySlot = pk0.hotbarSlot = this.getHeldItemIndex();
+                pk0.eid = player.getId();
+                player.dataPacket(pk0);
+                continue;
             }
 
             player.dataPacket(pk);
@@ -239,7 +238,8 @@ public class PlayerInventory extends BaseInventory {
     private boolean setItem(int index, Item item, boolean send, boolean ignoreArmorEvents) {
         if (index < 0 || index >= this.size) {
             return false;
-        } else if (item.getId() == 0 || item.getCount() <= 0) {
+        }
+        if (item.isNull()) {
             return this.clear(index);
         }
 
@@ -269,9 +269,9 @@ public class PlayerInventory extends BaseInventory {
 
     @Override
     public boolean clear(int index, boolean send) {
-        if (this.slots.containsKey(index)) {
+        Item old = this.slots.get(index);
+        if (old != null) {
             Item item = new ItemBlock(Block.get(BlockID.AIR), null, 0);
-            Item old = this.slots.get(index);
             if (index >= this.getSize() && index < this.size) {
                 EntityArmorChangeEvent ev = new EntityArmorChangeEvent(this.getHolder(), old, item, index);
                 Server.getInstance().getPluginManager().callEvent(ev);
@@ -298,7 +298,7 @@ public class PlayerInventory extends BaseInventory {
                 item = ev.getNewItem();
             }
 
-            if (item.getId() != Item.AIR) {
+            if (!item.isNull()) {
                 this.slots.put(index, item.clone());
             } else {
                 this.slots.remove(index);
@@ -338,13 +338,12 @@ public class PlayerInventory extends BaseInventory {
         MobArmorEquipmentPacket pk = new MobArmorEquipmentPacket();
         pk.eid = this.getHolder().getId();
         pk.slots = armor;
-        pk.encode();
-        pk.isEncoded = true;
+        pk.tryEncode();
 
         for (Player player : players) {
             if (player.equals(this.getHolder())) {
                 InventoryContentPacket pk2 = new InventoryContentPacket();
-                pk2.inventoryId = InventoryContentPacket.SPECIAL_ARMOR;
+                pk2.inventoryId = ContainerIds.ARMOR;
                 pk2.slots = armor;
                 player.dataPacket(pk2);
             } else {
@@ -365,7 +364,7 @@ public class PlayerInventory extends BaseInventory {
                 items[i] = new ItemBlock(Block.get(BlockID.AIR), null, 0);
             }
 
-            if (items[i].getId() == Item.AIR) {
+            if (items[i].isNull()) {
                 this.clear(this.getSize() + i);
             } else {
                 this.setItem(this.getSize() + i, items[i]);
@@ -387,13 +386,12 @@ public class PlayerInventory extends BaseInventory {
         MobArmorEquipmentPacket pk = new MobArmorEquipmentPacket();
         pk.eid = this.getHolder().getId();
         pk.slots = armor;
-        pk.encode();
-        pk.isEncoded = true;
+        pk.tryEncode();
 
         for (Player player : players) {
             if (player.equals(this.getHolder())) {
                 InventorySlotPacket pk2 = new InventorySlotPacket();
-                pk2.inventoryId = InventoryContentPacket.SPECIAL_ARMOR;
+                pk2.inventoryId = ContainerIds.ARMOR;
                 pk2.slot = index - this.getSize();
                 pk2.item = this.getItem(index);
                 player.dataPacket(pk2);
@@ -425,13 +423,6 @@ public class PlayerInventory extends BaseInventory {
             pk.slots[i] = this.getItem(i);
         }
 
-        /*//Because PE is stupid and shows 9 less slots than you send it, give it 9 dummy slots so it shows all the REAL slots.
-        for(int i = this.getSize(); i < this.getSize() + this.getHotbarSize(); ++i){
-            pk.slots[i] = new ItemBlock(Block.get(BlockID.AIR));
-        }
-            pk.slots[i] = new ItemBlock(Block.get(BlockID.AIR));
-        }*/
-
         for (Player player : players) {
             int id = player.getWindowId(this);
             if (id == -1 || !player.spawned) {
@@ -440,7 +431,6 @@ public class PlayerInventory extends BaseInventory {
             }
             pk.inventoryId = id;
             player.dataPacket(pk.clone());
-
         }
     }
 
@@ -482,7 +472,6 @@ public class PlayerInventory extends BaseInventory {
         }
         Player p = (Player) this.getHolder();
 
-        //TODO CreativeContentPacket
         InventoryContentPacket pk = new InventoryContentPacket();
         pk.inventoryId = ContainerIds.CREATIVE;
 
@@ -507,7 +496,6 @@ public class PlayerInventory extends BaseInventory {
         pk.x = who.getFloorX();
         pk.y = who.getFloorY();
         pk.z = who.getFloorZ();
-        pk.entityId = who.getId();
         who.dataPacket(pk);
     }
 

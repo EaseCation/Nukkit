@@ -1,5 +1,6 @@
 package cn.nukkit.block;
 
+import cn.nukkit.blockentity.BlockEntityType;
 import cn.nukkit.item.Item;
 
 public class BlockMoving extends BlockTransparent {
@@ -14,12 +15,17 @@ public class BlockMoving extends BlockTransparent {
 
     @Override
     public String getName() {
-        return "MovingBlock";
+        return "Moving Block";
     }
 
     @Override
     public int getId() {
         return BlockID.MOVING_BLOCK;
+    }
+
+    @Override
+    public int getBlockEntityType() {
+        return BlockEntityType.MOVING_BLOCK;
     }
 
     @Override

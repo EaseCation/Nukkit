@@ -28,7 +28,7 @@ public class BlockCake extends BlockTransparentMeta {
 
     @Override
     public int getId() {
-        return CAKE_BLOCK;
+        return BLOCK_CAKE;
     }
 
     @Override
@@ -105,12 +105,12 @@ public class BlockCake extends BlockTransparentMeta {
     }
 
     @Override
-    public Item toItem() {
+    public Item toItem(boolean addUserData) {
         return new ItemCake();
     }
 
     @Override
-    public boolean onActivate(Item item, Player player) {
+    public boolean onActivate(Item item, BlockFace face, Player player) {
         if (player != null && player.getFoodData().getLevel() < player.getFoodData().getMaxLevel()) {
             if (getDamage() <= 0x06) setDamage(getDamage() + 1);
             if (getDamage() >= 0x06) {
@@ -144,6 +144,16 @@ public class BlockCake extends BlockTransparentMeta {
 
     @Override
     public boolean sticksToPiston() {
+        return false;
+    }
+
+    @Override
+    public boolean canContainWater() {
+        return true;
+    }
+
+    @Override
+    public boolean canProvideSupport(BlockFace face, SupportType type) {
         return false;
     }
 }

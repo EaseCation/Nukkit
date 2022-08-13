@@ -42,7 +42,7 @@ public class BlockMelon extends BlockSolid {
         Random random = ThreadLocalRandom.current();
         int count = 3 + random.nextInt(5);
 
-        Enchantment fortune = item.getEnchantment(Enchantment.ID_FORTUNE_DIGGING);
+        Enchantment fortune = item.getEnchantment(Enchantment.ID_FORTUNE);
         if (fortune != null && fortune.getLevel() >= 1) {
             count += random.nextInt(fortune.getLevel() + 1);
         }
@@ -75,5 +75,10 @@ public class BlockMelon extends BlockSolid {
     @Override
     public boolean sticksToPiston() {
         return false;
+    }
+
+    @Override
+    public boolean isVegetation() {
+        return true;
     }
 }

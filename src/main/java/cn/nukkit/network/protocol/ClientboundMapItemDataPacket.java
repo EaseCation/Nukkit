@@ -13,7 +13,7 @@ import java.util.stream.Collectors;
  * Created by CreeperFace on 5.3.2017.
  */
 @ToString
-public class ClientboundMapItemDataPacket extends DataPacket { //TODO: update to 1.2
+public class ClientboundMapItemDataPacket extends DataPacket {
 
     public long[] eids = new long[0];
 
@@ -68,7 +68,7 @@ public class ClientboundMapItemDataPacket extends DataPacket { //TODO: update to
         this.putUnsignedVarInt(update);
         this.putByte(this.dimensionId);
 
-        if ((update & 0x08) != 0) { //TODO: find out what these are for
+        if ((update & 0x08) != 0) {
             this.putUnsignedVarInt(eids.length);
             for (long eid : eids) {
                 this.putEntityUniqueId(eid);

@@ -60,28 +60,8 @@ public class BlockEntityHopper extends BlockEntitySpawnable implements Inventory
     }
 
     @Override
-    public boolean isBlockEntityValid() {
-        return this.level.getBlockIdAt(this.getFloorX(), this.getFloorY(), this.getFloorZ()) == Block.HOPPER_BLOCK;
-    }
-
-    @Override
-    public String getName() {
-        return this.hasName() ? this.namedTag.getString("CustomName") : "Hopper";
-    }
-
-    @Override
-    public boolean hasName() {
-        return this.namedTag.contains("CustomName");
-    }
-
-    @Override
-    public void setName(String name) {
-        if (name == null || name.equals("")) {
-            this.namedTag.remove("CustomName");
-            return;
-        }
-
-        this.namedTag.putString("CustomName", name);
+    public boolean isValidBlock(int blockId) {
+        return blockId == Block.BLOCK_HOPPER;
     }
 
     public boolean isOnTransferCooldown() {
@@ -138,6 +118,8 @@ public class BlockEntityHopper extends BlockEntitySpawnable implements Inventory
 
     @Override
     public void saveNBT() {
+        super.saveNBT();
+
         this.namedTag.putList(new ListTag<CompoundTag>("Items"));
         for (int index = 0; index < this.getSize(); index++) {
             this.setItem(index, this.inventory.getItem(index));
@@ -153,7 +135,7 @@ public class BlockEntityHopper extends BlockEntitySpawnable implements Inventory
 
     @Override
     public boolean onUpdate() {
-        if (this.closed) {
+        if (this.isClosed()) {
             return false;
         }
 
@@ -164,7 +146,7 @@ public class BlockEntityHopper extends BlockEntitySpawnable implements Inventory
         }
 
         if (!this.isOnTransferCooldown()) {
-            if ((this.level.getBlockDataAt(getFloorX(), getFloorY(), getFloorZ()) & 0x08) == 8) { //is hopper disabled?
+            if ((this.level.getBlock(this).getDamage() & 0x08) == 8) { //is hopper disabled?
                 return false;
             }
 
@@ -311,7 +293,7 @@ public class BlockEntityHopper extends BlockEntitySpawnable implements Inventory
 
     @Override
     public void close() {
-        if (!closed) {
+        if (!isClosed()) {
             for (Player player : new HashSet<>(this.getInventory().getViewers())) {
                 player.removeWindow(this.getInventory());
             }
@@ -332,7 +314,7 @@ public class BlockEntityHopper extends BlockEntitySpawnable implements Inventory
             return false;
         }
 
-        BlockEntity be = this.level.getBlockEntity(this.getSide(BlockFace.fromIndex(this.level.getBlockDataAt(this.getFloorX(), this.getFloorY(), this.getFloorZ()))));
+        BlockEntity be = this.level.getBlockEntity(this.getSide(BlockFace.fromIndex(this.level.getBlock(this).getDamage())));
 
         if (be instanceof BlockEntityHopper && this.getBlock().getDamage() == 0 || !(be instanceof InventoryHolder))
             return false;
@@ -453,16 +435,12 @@ public class BlockEntityHopper extends BlockEntitySpawnable implements Inventory
 
     @Override
     public CompoundTag getSpawnCompound() {
-        CompoundTag c = new CompoundTag()
-                .putString("id", BlockEntity.HOPPER)
-                .putInt("x", (int) this.x)
-                .putInt("y", (int) this.y)
-                .putInt("z", (int) this.z);
+        CompoundTag nbt = getDefaultCompound(this, BlockEntity.HOPPER);
 
         if (this.hasName()) {
-            c.put("CustomName", this.namedTag.get("CustomName"));
+            nbt.put("CustomName", this.namedTag.get("CustomName"));
         }
 
-        return c;
+        return nbt;
     }
 }

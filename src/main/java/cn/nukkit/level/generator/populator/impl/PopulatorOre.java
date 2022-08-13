@@ -35,7 +35,7 @@ public class PopulatorOre extends Populator {
                 int x = NukkitMath.randomRange(random, sx, ex);
                 int z = NukkitMath.randomRange(random, sz, ez);
                 int y = NukkitMath.randomRange(random, type.minHeight, type.maxHeight);
-                if (level.getBlockIdAt(x, y, z) != replaceId) {
+                if (level.getBlockIdAt(0, x, y, z) != replaceId) {
                     continue;
                 }
                 type.spawn(level, random, replaceId, x, y, z);

@@ -3,6 +3,7 @@ package cn.nukkit.block;
 import cn.nukkit.Player;
 import cn.nukkit.blockentity.BlockEntity;
 import cn.nukkit.blockentity.BlockEntityChest;
+import cn.nukkit.blockentity.BlockEntityType;
 import cn.nukkit.inventory.ContainerInventory;
 import cn.nukkit.item.Item;
 import cn.nukkit.item.ItemBlock;
@@ -22,6 +23,8 @@ import java.util.Map;
  * Nukkit Project
  */
 public class BlockChest extends BlockTransparentMeta implements Faceable {
+
+    protected static final int[] FACES = {2, 5, 3, 4};
 
     public BlockChest() {
         this(0);
@@ -44,6 +47,11 @@ public class BlockChest extends BlockTransparentMeta implements Faceable {
     @Override
     public String getName() {
         return "Chest";
+    }
+
+    @Override
+    public int getBlockEntityType() {
+        return BlockEntityType.CHEST;
     }
 
     @Override
@@ -91,12 +99,10 @@ public class BlockChest extends BlockTransparentMeta implements Faceable {
         return this.z + 0.9375;
     }
 
-
     @Override
     public boolean place(Item item, Block block, Block target, BlockFace face, double fx, double fy, double fz, Player player) {
         BlockEntityChest chest = null;
-        int[] faces = {2, 5, 3, 4};
-        this.setDamage(faces[player != null ? player.getDirection().getHorizontalIndex() : 0]);
+        this.setDamage(FACES[player != null ? player.getDirection().getHorizontalIndex() : 0]);
 
         for (int side = 2; side <= 5; ++side) {
             if ((this.getDamage() == 4 || this.getDamage() == 5) && (side == 4 || side == 5)) {
@@ -115,12 +121,8 @@ public class BlockChest extends BlockTransparentMeta implements Faceable {
         }
 
         this.getLevel().setBlock(block, this, true, true);
-        CompoundTag nbt = new CompoundTag("")
-                .putList(new ListTag<>("Items"))
-                .putString("id", BlockEntity.CHEST)
-                .putInt("x", (int) this.x)
-                .putInt("y", (int) this.y)
-                .putInt("z", (int) this.z);
+        CompoundTag nbt = BlockEntity.getDefaultCompound(this, BlockEntity.CHEST)
+                .putList(new ListTag<>("Items"));
 
         if (item.hasCustomName()) {
             nbt.putString("CustomName", item.getCustomName());
@@ -133,7 +135,7 @@ public class BlockChest extends BlockTransparentMeta implements Faceable {
             }
         }
 
-        BlockEntityChest blockEntity = (BlockEntityChest) BlockEntity.createBlockEntity(BlockEntity.CHEST, this.getLevel().getChunk((int) (this.x) >> 4, (int) (this.z) >> 4), nbt);
+        BlockEntityChest blockEntity = (BlockEntityChest) BlockEntity.createBlockEntity(BlockEntity.CHEST, getChunk(), nbt);
 
         if (blockEntity == null) {
             return false;
@@ -159,7 +161,7 @@ public class BlockChest extends BlockTransparentMeta implements Faceable {
     }
 
     @Override
-    public boolean onActivate(Item item, Player player) {
+    public boolean onActivate(Item item, BlockFace face, Player player) {
         if (player != null) {
             Block top = up();
             if (!top.isTransparent()) {
@@ -171,13 +173,9 @@ public class BlockChest extends BlockTransparentMeta implements Faceable {
             if (t instanceof BlockEntityChest) {
                 chest = (BlockEntityChest) t;
             } else {
-                CompoundTag nbt = new CompoundTag("")
-                        .putList(new ListTag<>("Items"))
-                        .putString("id", BlockEntity.CHEST)
-                        .putInt("x", (int) this.x)
-                        .putInt("y", (int) this.y)
-                        .putInt("z", (int) this.z);
-                chest = (BlockEntityChest) BlockEntity.createBlockEntity(BlockEntity.CHEST, this.getLevel().getChunk((int) (this.x) >> 4, (int) (this.z) >> 4), nbt);
+                CompoundTag nbt = BlockEntity.getDefaultCompound(this, BlockEntity.CHEST)
+                        .putList(new ListTag<>("Items"));
+                chest = (BlockEntityChest) BlockEntity.createBlockEntity(BlockEntity.CHEST, getChunk(), nbt);
                 if (chest == null) {
                     return false;
                 }
@@ -215,12 +213,22 @@ public class BlockChest extends BlockTransparentMeta implements Faceable {
     }
 
     @Override
-    public Item toItem() {
+    public Item toItem(boolean addUserData) {
         return new ItemBlock(this, 0);
     }
 
     @Override
     public BlockFace getBlockFace() {
         return BlockFace.fromHorizontalIndex(this.getDamage() & 0x7);
+    }
+
+    @Override
+    public boolean canContainWater() {
+        return true;
+    }
+
+    @Override
+    public boolean canProvideSupport(BlockFace face, SupportType type) {
+        return false;
     }
 }

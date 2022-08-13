@@ -16,7 +16,7 @@ public class PunchBlockParticle extends Particle {
 
     public PunchBlockParticle(Vector3 pos, int blockId, int blockDamage, BlockFace face) {
         super(pos.x, pos.y, pos.z);
-        this.data = blockId | (blockDamage << 8) | (face.getIndex() << 16);
+        this.data = (blockId << Block.BLOCK_META_BITS) | (blockDamage & Block.BLOCK_META_MASK) | (face.getIndex() << 30);
     }
 
     @Override

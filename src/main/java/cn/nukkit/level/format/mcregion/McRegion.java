@@ -3,6 +3,7 @@ package cn.nukkit.level.format.mcregion;
 import cn.nukkit.blockentity.BlockEntity;
 import cn.nukkit.blockentity.BlockEntitySpawnable;
 import cn.nukkit.level.Level;
+import cn.nukkit.level.LevelCreationOptions;
 import cn.nukkit.level.format.ChunkSection;
 import cn.nukkit.level.format.FullChunk;
 import cn.nukkit.level.format.generic.BaseFullChunk;
@@ -15,16 +16,14 @@ import cn.nukkit.scheduler.AsyncTask;
 import cn.nukkit.utils.BinaryStream;
 import cn.nukkit.utils.ChunkException;
 import it.unimi.dsi.fastutil.ints.Int2IntMap;
+import it.unimi.dsi.fastutil.objects.ObjectArrayList;
 
 import java.io.File;
-import java.io.FileOutputStream;
 import java.io.IOException;
 import java.nio.ByteOrder;
-import java.util.ArrayList;
+import java.nio.file.Files;
 import java.util.Collections;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 import java.util.regex.Pattern;
 
 /**
@@ -37,18 +36,22 @@ public class McRegion extends BaseLevelProvider {
         super(level, path);
     }
 
+    @SuppressWarnings("unused")
     public static String getProviderName() {
         return "mcregion";
     }
 
+    @SuppressWarnings("unused")
     public static byte getProviderOrder() {
         return ORDER_ZXY;
     }
 
+    @SuppressWarnings("unused")
     public static boolean usesChunkSection() {
         return false;
     }
 
+    @SuppressWarnings("unused")
     public static boolean isValid(String path) {
         boolean isValid = (new File(path, "level.dat").exists()) && new File(path + "/region/").isDirectory();
         if (isValid) {
@@ -62,22 +65,22 @@ public class McRegion extends BaseLevelProvider {
         return isValid;
     }
 
-    public static void generate(String path, String name, long seed, Class<? extends Generator> generator) throws IOException {
-        generate(path, name, seed, generator, new HashMap<>());
+    @SuppressWarnings("unused")
+    public static void generate(String path, String name) throws IOException {
+        generate(path, name, LevelCreationOptions.builder().build());
     }
 
-    public static void generate(String path, String name, long seed, Class<? extends Generator> generator, Map<String, String> options) throws IOException {
+    public static void generate(String path, String name, LevelCreationOptions options) throws IOException {
         if (!new File(path, "region").exists()) {
             new File(path, "region").mkdirs();
         }
 
         CompoundTag levelData = new CompoundTag("Data")
                 .putCompound("GameRules", new CompoundTag())
-
                 .putLong("DayTime", 0)
                 .putInt("GameType", 0)
-                .putString("generatorName", Generator.getGeneratorName(generator))
-                .putString("generatorOptions", options.getOrDefault("preset", ""))
+                .putString("generatorName", Generator.getGeneratorName(options.getGenerator()))
+                .putString("generatorOptions", String.valueOf(options.getOptions().getOrDefault("preset", "")))
                 .putInt("generatorVersion", 1)
                 .putBoolean("hardcore", false)
                 .putBoolean("initialized", true)
@@ -85,7 +88,7 @@ public class McRegion extends BaseLevelProvider {
                 .putString("LevelName", name)
                 .putBoolean("raining", false)
                 .putInt("rainTime", 0)
-                .putLong("RandomSeed", seed)
+                .putLong("RandomSeed", options.getSeed())
                 .putInt("SpawnX", 128)
                 .putInt("SpawnY", 70)
                 .putInt("SpawnZ", 128)
@@ -95,9 +98,10 @@ public class McRegion extends BaseLevelProvider {
                 .putLong("Time", 0)
                 .putLong("SizeOnDisk", 0);
 
-        NBTIO.writeGZIPCompressed(new CompoundTag().putCompound("Data", levelData), new FileOutputStream(new File(path, "level.dat")), ByteOrder.BIG_ENDIAN);
+        NBTIO.writeGZIPCompressed(new CompoundTag().putCompound("Data", levelData), Files.newOutputStream(new File(path, "level.dat").toPath()), ByteOrder.BIG_ENDIAN);
     }
 
+    @Deprecated
     @Override
     public AsyncTask requestChunkTask(int x, int z) throws ChunkException {
         BaseFullChunk chunk = this.getChunk(x, z, false);
@@ -110,11 +114,15 @@ public class McRegion extends BaseLevelProvider {
         byte[] tiles = new byte[0];
 
         if (!chunk.getBlockEntities().isEmpty()) {
-            List<CompoundTag> tagList = new ArrayList<>();
+            List<CompoundTag> tagList = new ObjectArrayList<>();
 
             for (BlockEntity blockEntity : chunk.getBlockEntities().values()) {
                 if (blockEntity instanceof BlockEntitySpawnable) {
-                    tagList.add(((BlockEntitySpawnable) blockEntity).getSpawnCompound());
+                    CompoundTag nbt = ((BlockEntitySpawnable) blockEntity).getSpawnCompound();
+                    if (nbt.isEmpty()) {
+                        continue;
+                    }
+                    tagList.add(nbt);
                 }
             }
 
@@ -211,6 +219,7 @@ public class McRegion extends BaseLevelProvider {
         }
     }
 
+    @SuppressWarnings("unused")
     public static ChunkSection createChunkSection(int y) {
         return null;
     }

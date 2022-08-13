@@ -84,7 +84,9 @@ public class BlockCactus extends BlockTransparentMeta {
 
     @Override
     public void onEntityCollide(Entity entity) {
-        entity.attack(new EntityDamageByBlockEvent(this, entity, DamageCause.CONTACT, 1));
+        if (this.level.getServer().getTick() % 10 == 0) {
+            entity.attack(new EntityDamageByBlockEvent(this, entity, DamageCause.CONTACT, 1));
+        }
     }
 
     @Override
@@ -115,10 +117,10 @@ public class BlockCactus extends BlockTransparentMeta {
                         }
                     }
                     this.setDamage(0);
-                    this.getLevel().setBlock(this, this);
+                    this.getLevel().setBlock(this, this, true);
                 } else {
                     this.setDamage(this.getDamage() + 1);
-                    this.getLevel().setBlock(this, this);
+                    this.getLevel().setBlock(this, this, true);
                 }
             }
         }
@@ -150,7 +152,7 @@ public class BlockCactus extends BlockTransparentMeta {
 
     @Override
     public BlockColor getColor() {
-        return BlockColor.FOLIAGE_BLOCK_COLOR;
+        return BlockColor.PLANT_BLOCK_COLOR;
     }
     
     @Override
@@ -168,5 +170,20 @@ public class BlockCactus extends BlockTransparentMeta {
     @Override
     public boolean sticksToPiston() {
         return false;
+    }
+
+    @Override
+    public boolean canContainWater() {
+        return true;
+    }
+
+    @Override
+    public boolean canProvideSupport(BlockFace face, SupportType type) {
+        return false;
+    }
+
+    @Override
+    public boolean isVegetation() {
+        return true;
     }
 }

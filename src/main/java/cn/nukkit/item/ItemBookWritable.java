@@ -2,6 +2,7 @@ package cn.nukkit.item;
 
 import cn.nukkit.nbt.tag.CompoundTag;
 import cn.nukkit.nbt.tag.ListTag;
+import cn.nukkit.nbt.tag.Tag;
 import com.google.common.base.Preconditions;
 
 import java.util.List;
@@ -200,6 +201,19 @@ public abstract class ItemBookWritable extends Item {
             pages = tag.getList("pages", CompoundTag.class);
         }
         return pages.parseValue();
+    }
+
+    public int getTotalPages() {
+        if (!this.hasCompoundTag()) {
+            return 0;
+        }
+
+        Tag tag = this.getNamedTag().get("pages");
+        if (!(tag instanceof ListTag)) {
+            return 0;
+        }
+
+        return ((ListTag<?>) tag).size();
     }
 
     protected static CompoundTag createPageTag() {

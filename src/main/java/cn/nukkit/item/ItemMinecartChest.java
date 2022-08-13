@@ -23,7 +23,7 @@ public class ItemMinecartChest extends Item {
     }
 
     public ItemMinecartChest(Integer meta, int count) {
-        super(MINECART_WITH_CHEST, meta, count, "Minecart with Chest");
+        super(CHEST_MINECART, meta, count, "Minecart with Chest");
     }
 
     @Override
@@ -58,11 +58,12 @@ public class ItemMinecartChest extends Item {
                 return false;
             }
 
-            if (player.isSurvival()) {
+            if (player.isAdventure() || player.isSurvival()) {
                 Item item = player.getInventory().getItemInHand();
                 item.setCount(item.getCount() - 1);
                 player.getInventory().setItemInHand(item);
             }
+
             minecart.spawnToAll();
             return true;
         }

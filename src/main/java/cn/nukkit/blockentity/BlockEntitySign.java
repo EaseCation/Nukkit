@@ -4,11 +4,14 @@ import cn.nukkit.Player;
 import cn.nukkit.block.Block;
 import cn.nukkit.event.block.SignChangeEvent;
 import cn.nukkit.level.format.FullChunk;
+import cn.nukkit.nbt.tag.ByteTag;
 import cn.nukkit.nbt.tag.CompoundTag;
+import cn.nukkit.nbt.tag.IntTag;
+import cn.nukkit.utils.BlockColor;
+import cn.nukkit.utils.DyeColor;
 import cn.nukkit.utils.TextFormat;
 
 import java.util.Arrays;
-import java.util.Objects;
 
 /**
  * author: MagicDroidX
@@ -27,7 +30,6 @@ public class BlockEntitySign extends BlockEntitySpawnable {
         text = new String[4];
 
         if (!namedTag.contains("Text")) {
-
             for (int i = 1; i <= 4; i++) {
                 String key = "Text" + i;
 
@@ -55,6 +57,19 @@ public class BlockEntitySign extends BlockEntitySpawnable {
             sanitizeText(text);
         }
 
+        if (!this.namedTag.contains("SignTextColor") || !(this.namedTag.get("SignTextColor") instanceof IntTag)) {
+            this.setColor(DyeColor.BLACK.getSignColor());
+        }
+        if (!this.namedTag.contains("IgnoreLighting") || !(this.namedTag.get("IgnoreLighting") instanceof ByteTag)) {
+            this.setGlowing(false);
+        }
+        if (!this.namedTag.contains("PersistFormatting") || !(this.namedTag.get("PersistFormatting") instanceof ByteTag)) {
+            this.namedTag.putBoolean("PersistFormatting", true);
+        }
+        if (!this.namedTag.contains("TextIgnoreLegacyBugResolved") || !(this.namedTag.get("TextIgnoreLegacyBugResolved") instanceof ByteTag)) {
+            this.namedTag.putBoolean("TextIgnoreLegacyBugResolved", false);
+        }
+
         super.initBlockEntity();
     }
 
@@ -62,12 +77,20 @@ public class BlockEntitySign extends BlockEntitySpawnable {
     public void saveNBT() {
         super.saveNBT();
         this.namedTag.remove("Creator");
+//        this.namedTag.remove("TextOwner");
     }
 
     @Override
-    public boolean isBlockEntityValid() {
-        int blockID = getBlock().getId();
-        return blockID == Block.SIGN_POST || blockID == Block.WALL_SIGN;
+    public boolean isValidBlock(int blockId) {
+        return blockId == Block.STANDING_SIGN || blockId == Block.WALL_SIGN
+                || blockId == Block.SPRUCE_STANDING_SIGN || blockId == Block.SPRUCE_WALL_SIGN
+                || blockId == Block.BIRCH_STANDING_SIGN || blockId == Block.BIRCH_WALL_SIGN
+                || blockId == Block.JUNGLE_STANDING_SIGN || blockId == Block.JUNGLE_WALL_SIGN
+                || blockId == Block.ACACIA_STANDING_SIGN || blockId == Block.ACACIA_WALL_SIGN
+                || blockId == Block.DARKOAK_STANDING_SIGN || blockId == Block.DARKOAK_WALL_SIGN
+                || blockId == Block.CRIMSON_STANDING_SIGN || blockId == Block.CRIMSON_WALL_SIGN
+                || blockId == Block.WARPED_STANDING_SIGN || blockId == Block.WARPED_WALL_SIGN
+                || blockId == Block.MANGROVE_STANDING_SIGN || blockId == Block.MANGROVE_WALL_SIGN;
     }
 
     public boolean setText(String... lines) {
@@ -92,6 +115,22 @@ public class BlockEntitySign extends BlockEntitySpawnable {
         return text;
     }
 
+    public BlockColor getColor() {
+        return new BlockColor(this.namedTag.getInt("SignTextColor"), true);
+    }
+
+    public void setColor(BlockColor color) {
+        this.namedTag.putInt("SignTextColor", color.getRGB());
+    }
+
+    public boolean isGlowing() {
+        return this.namedTag.getBoolean("IgnoreLighting");
+    }
+
+    public void setGlowing(boolean glowing) {
+        this.namedTag.putBoolean("IgnoreLighting", glowing);
+    }
+
     @Override
     public boolean updateCompoundTag(CompoundTag nbt, Player player) {
         if (!nbt.getString("id").equals(BlockEntity.SIGN)) {
@@ -106,9 +145,10 @@ public class BlockEntitySign extends BlockEntitySpawnable {
 
         SignChangeEvent signChangeEvent = new SignChangeEvent(this.getBlock(), player, lines);
 
-        if (!this.namedTag.contains("Creator") || !Objects.equals(player.getUniqueId().toString(), this.namedTag.getString("Creator"))) {
-            signChangeEvent.setCancelled();
-        }
+        //TODO: XUID "TextOwner"
+//        if (!this.namedTag.contains("Creator") || !Objects.equals(player.getUniqueId().toString(), this.namedTag.getString("Creator"))) {
+//            signChangeEvent.setCancelled();
+//        }
 
         if (player.getRemoveFormat()) {
             for (int i = 0; i < lines.length; i++) {
@@ -128,13 +168,12 @@ public class BlockEntitySign extends BlockEntitySpawnable {
 
     @Override
     public CompoundTag getSpawnCompound() {
-        return new CompoundTag()
-                .putString("id", BlockEntity.SIGN)
+        return getDefaultCompound(this, SIGN)
                 .putString("Text", this.namedTag.getString("Text"))
-                .putInt("x", (int) this.x)
-                .putInt("y", (int) this.y)
-                .putInt("z", (int) this.z);
-
+                .putInt("SignTextColor", this.getColor().getRGB())
+                .putBoolean("IgnoreLighting", this.isGlowing())
+                .putBoolean("PersistFormatting", this.namedTag.getBoolean("PersistFormatting"))
+                .putBoolean("TextIgnoreLegacyBugResolved", this.namedTag.getBoolean("TextIgnoreLegacyBugResolved"));
     }
 
     private static void sanitizeText(String[] lines) {

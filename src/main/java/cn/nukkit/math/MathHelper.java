@@ -2,13 +2,11 @@ package cn.nukkit.math;
 
 import java.util.Random;
 
+/**
+ * @deprecated use Mth
+ */
+@Deprecated
 public class MathHelper {
-    private static final float[] a = new float[65536];
-
-    static {
-        for (int i = 0; i < 65536; i++)
-            a[i] = (float) Math.sin(i * 3.141592653589793D * 2.0D / 65536.0D);
-    }
 
     private MathHelper() {
     }
@@ -18,47 +16,35 @@ public class MathHelper {
     }
 
     public static float sin(float paramFloat) {
-        return a[((int) (paramFloat * 10430.378F) & 0xFFFF)];
+        return Mth.sin(paramFloat);
     }
 
     public static float cos(float paramFloat) {
-        return a[((int) (paramFloat * 10430.378F + 16384.0F) & 0xFFFF)];
+        return Mth.cos(paramFloat);
     }
 
     public static float sin(double paramFloat) {
-        return a[((int) (paramFloat * 10430.378F) & 0xFFFF)];
+        return Mth.sin((float) paramFloat);
     }
 
     public static float cos(double paramFloat) {
-        return a[((int) (paramFloat * 10430.378F + 16384.0F) & 0xFFFF)];
+        return Mth.cos((float) paramFloat);
     }
 
     public static int floor(double d0) {
-        int i = (int) d0;
-
-        return d0 < (double) i ? i - 1 : i;
+        return Mth.floor(d0);
     }
 
     public static long floor_double_long(double d) {
-        long l = (long) d;
-        return d >= (double) l ? l : l - 1L;
+        return Mth.lfloor(d);
     }
 
     public static int floor_float_int(float f) {
-        int i = (int) f;
-        return f >= i ? i : i - 1;
-    }
-
-    public static int abs(int number) {
-        if (number > 0) {
-            return number;
-        } else {
-            return -number;
-        }
+        return Mth.floor(f);
     }
 
     public static int log2(int bits) {
-        return Integer.SIZE - Integer.numberOfLeadingZeros(bits);
+        return Mth.log2PowerOfTwo(bits);
     }
 
     /**
@@ -73,30 +59,19 @@ public class MathHelper {
         return min + random.nextInt(max - min + 1);
     }
 
-    public static double max(double first, double second, double third, double fourth) {
-        if (first > second && first > third && first > fourth) {
-            return first;
-        }
-        if (second > third && second > fourth) {
-            return second;
-        }
-        return Math.max(third, fourth);
-    }
-
     public static int ceil(float floatNumber) {
-        int truncated = (int) floatNumber;
-        return floatNumber > truncated ? truncated + 1 : truncated;
+        return Mth.ceil(floatNumber);
     }
 
     public static int clamp(int check, int min, int max) {
-        return check > max ? max : (Math.max(check, min));
+        return Mth.clamp(check, min, max);
     }
 
     public static double denormalizeClamp(double lowerBnd, double upperBnd, double slide) {
-        return slide < 0.0D ? lowerBnd : (slide > 1.0D ? upperBnd : lowerBnd + (upperBnd - lowerBnd) * slide);
+        return Mth.clampedLerp(lowerBnd, upperBnd, slide);
     }
 
     public static float denormalizeClamp(float lowerBnd, float upperBnd, float slide) {
-        return slide < 0.0f ? lowerBnd : (slide > 1.0f ? upperBnd : lowerBnd + (upperBnd - lowerBnd) * slide);
+        return Mth.clampedLerp(lowerBnd, upperBnd, slide);
     }
 }

@@ -3,9 +3,11 @@ package cn.nukkit.network.protocol.types;
 import cn.nukkit.Player;
 import cn.nukkit.inventory.AnvilInventory;
 import cn.nukkit.inventory.BeaconInventory;
+import cn.nukkit.inventory.CartographyTableInventory;
 import cn.nukkit.inventory.EnchantInventory;
 import cn.nukkit.inventory.Inventory;
-import cn.nukkit.inventory.PlayerUIComponent;
+import cn.nukkit.inventory.LoomInventory;
+import cn.nukkit.inventory.StonecutterInventory;
 import cn.nukkit.inventory.transaction.action.*;
 import cn.nukkit.item.Item;
 import cn.nukkit.item.ItemID;
@@ -16,6 +18,8 @@ import lombok.extern.log4j.Log4j2;
 
 import java.util.Optional;
 
+import static cn.nukkit.network.protocol.types.UiContainerSlots.*;
+
 /**
  * @author CreeperFace
  */
@@ -24,7 +28,7 @@ import java.util.Optional;
 public class NetworkInventoryAction {
 
     public static final int SOURCE_CONTAINER = 0;
-
+    public static final int SOURCE_GLOBAL = 1;
     public static final int SOURCE_WORLD = 2; //drop/pickup item entity
     public static final int SOURCE_CREATIVE = 3;
     public static final int SOURCE_TODO = 99999;
@@ -42,11 +46,11 @@ public class NetworkInventoryAction {
     public static final int SOURCE_TYPE_CRAFTING_ADD_INGREDIENT = -2;
     public static final int SOURCE_TYPE_CRAFTING_REMOVE_INGREDIENT = -3;
     public static final int SOURCE_TYPE_CRAFTING_RESULT = -4;
-    public static final int SOURCE_TYPE_CRAFTING_USE_INGREDIENT = -5;
+    public static final int SOURCE_TYPE_CRAFTING_USE_INGREDIENT = -5; // crafting, stonecutter, loom, cartography_table
 
-    public static final int SOURCE_TYPE_ANVIL_INPUT = -10;
-    public static final int SOURCE_TYPE_ANVIL_MATERIAL = -11;
-    public static final int SOURCE_TYPE_ANVIL_RESULT = -12;
+    public static final int SOURCE_TYPE_ANVIL_INPUT = -10; // anvil, grindstone, smithing_table
+    public static final int SOURCE_TYPE_ANVIL_MATERIAL = -11; // anvil, grindstone
+    public static final int SOURCE_TYPE_ANVIL_RESULT = -12; // anvil, grindstone, smithing_table
     public static final int SOURCE_TYPE_ANVIL_OUTPUT = -13;
 
     public static final int SOURCE_TYPE_ENCHANT_INPUT = -15;
@@ -65,10 +69,12 @@ public class NetworkInventoryAction {
      */
     public static final int SOURCE_TYPE_CONTAINER_DROP_CONTENTS = -100;
 
+    public static final int SOURCE_FLAG_NONE = 0;
+    public static final int SOURCE_FLAG_RANDOM = 1;
 
     public int sourceType;
     public int windowId;
-    public long unknown;
+    public long sourceFlags;
     public int inventorySlot;
     public Item oldItem;
     public Item newItem;
@@ -81,8 +87,10 @@ public class NetworkInventoryAction {
             case SOURCE_CONTAINER:
                 this.windowId = packet.getVarInt();
                 break;
+            case SOURCE_GLOBAL:
+                break;
             case SOURCE_WORLD:
-                this.unknown = packet.getUnsignedVarInt();
+                this.sourceFlags = packet.getUnsignedVarInt();
                 break;
             case SOURCE_CREATIVE:
                 break;
@@ -125,8 +133,10 @@ public class NetworkInventoryAction {
             case SOURCE_CONTAINER:
                 packet.putVarInt(this.windowId);
                 break;
+            case SOURCE_GLOBAL:
+                break;
             case SOURCE_WORLD:
-                packet.putUnsignedVarInt(this.unknown);
+                packet.putUnsignedVarInt(this.sourceFlags);
                 break;
             case SOURCE_CREATIVE:
                 break;
@@ -150,51 +160,42 @@ public class NetworkInventoryAction {
             case SOURCE_CONTAINER:
                 if (this.windowId == ContainerIds.ARMOR) {
                     //TODO: HACK!
-                    this.inventorySlot += 36;
+                    this.inventorySlot += Player.SURVIVAL_SLOTS;
                     this.windowId = ContainerIds.INVENTORY;
-                }
-
-                // ID 124 with slot 14/15 is enchant inventory
-                if (this.windowId == ContainerIds.UI) {
+                } else if (this.windowId == ContainerIds.UI) {
                     switch (this.inventorySlot) {
-                        case PlayerUIComponent.CREATED_ITEM_OUTPUT_UI_SLOT:
-                            if (player.getWindowById(Player.ANVIL_WINDOW_ID) != null) {
-                                this.windowId = Player.ANVIL_WINDOW_ID;
-                                this.inventorySlot = 2;
-                            }
-                            break;
-                        case EnchantInventory.ENCHANT_INPUT_ITEM_UI_SLOT:
+                        case ENCHANTING_TABLE_INPUT:
                             if (player.getWindowById(Player.ENCHANT_WINDOW_ID) == null) {
-                                player.getServer().getLogger().error("Player " + player.getName() + " does not have enchant window open");
+                                log.error("Player " + player.getName() + " does not have enchant window open");
                                 return null;
                             }
                             this.windowId = Player.ENCHANT_WINDOW_ID;
                             this.inventorySlot = 0;
                             // TODO, check if unenchanted item and send EnchantOptionsPacket
                             break;
-                        case EnchantInventory.ENCHANT_REAGENT_UI_SLOT:
+                        case ENCHANTING_TABLE_LAPIS_LAZULI:
                             if (player.getWindowById(Player.ENCHANT_WINDOW_ID) == null) {
-                                player.getServer().getLogger().error("Player " + player.getName() + " does not have enchant window open");
+                                log.error("Player " + player.getName() + " does not have enchant window open");
                                 return null;
                             }
                             this.windowId = Player.ENCHANT_WINDOW_ID;
                             this.inventorySlot = 1;
                             break;
-                        case AnvilInventory.ANVIL_INPUT_UI_SLOT:
+                        case ANVIL_INPUT:
                             if (player.getWindowById(Player.ANVIL_WINDOW_ID) == null) {
-                                player.getServer().getLogger().error("Player " + player.getName() + " does not have anvil window open");
+                                log.error("Player " + player.getName() + " does not have anvil window open");
                                 return null;
                             }
                             this.windowId = Player.ANVIL_WINDOW_ID;
-                            this.inventorySlot = 0;
+                            this.inventorySlot = AnvilInventory.INPUT_SLOT;
                             break;
-                        case AnvilInventory.ANVIL_MATERIAL_UI_SLOT:
+                        case ANVIL_INGREDIENT:
                             if (player.getWindowById(Player.ANVIL_WINDOW_ID) == null) {
-                                player.getServer().getLogger().error("Player " + player.getName() + " does not have anvil window open");
+                                log.error("Player " + player.getName() + " does not have anvil window open");
                                 return null;
                             }
                             this.windowId = Player.ANVIL_WINDOW_ID;
-                            this.inventorySlot = 1;
+                            this.inventorySlot = AnvilInventory.INGREDIENT_SLOT;
                             break;
                     }
                 }
@@ -246,54 +247,73 @@ public class NetworkInventoryAction {
                     case SOURCE_TYPE_CRAFTING_RESULT:
                         return new CraftingTakeResultAction(this.oldItem, this.newItem);
                     case SOURCE_TYPE_CRAFTING_USE_INGREDIENT:
+                        Inventory inv = player.getWindowById(Player.WORKBENCH_WINDOW_ID);
+                        if (inv instanceof StonecutterInventory) {
+                            if (!oldItem.isNull()) {
+                                return new CraftingTakeResultAction(oldItem, newItem);
+                            }
+                        } else if (inv instanceof CartographyTableInventory) {
+                            if (!oldItem.isNull()) {
+                                return new TakeResultAction(oldItem, newItem, (CartographyTableInventory) inv);
+                            }
+                            return null;
+                        } else if (inv instanceof LoomInventory) {
+                            if (!oldItem.isNull()) {
+                                return new TakeResultAction(oldItem, newItem, (LoomInventory) inv);
+                            }
+                            return null;
+                        }
                         return new CraftingTransferMaterialAction(this.oldItem, this.newItem, this.inventorySlot);
                 }
 
                 if (this.windowId >= SOURCE_TYPE_ANVIL_OUTPUT && this.windowId <= SOURCE_TYPE_ANVIL_INPUT) { //anvil actions
                     Inventory inv = player.getWindowById(Player.ANVIL_WINDOW_ID);
 
-                    if (!(inv instanceof AnvilInventory)) {
-                        player.getServer().getLogger().debug("Player " + player.getName() + " has no open anvil inventory");
+//                    if (!(inv instanceof AnvilInventory)) {
+                    if (inv == null) {
+                        log.debug("Player " + player.getName() + " has no open anvil type inventory");
                         return null;
                     }
-                    AnvilInventory anvil = (AnvilInventory) inv;
+//                    AnvilInventory anvil = (AnvilInventory) inv;
 
                     switch (this.windowId) {
                         case SOURCE_TYPE_ANVIL_INPUT:
                         case SOURCE_TYPE_ANVIL_MATERIAL:
-                        case SOURCE_TYPE_ANVIL_RESULT:
                             return new RepairItemAction(this.oldItem, this.newItem, this.windowId);
+                        case SOURCE_TYPE_ANVIL_RESULT:
+                            return new RepairItemAction(this.oldItem, this.newItem, this.inventorySlot == 1 ? SOURCE_TYPE_ANVIL_MATERIAL : this.windowId);
                     }
 
-                    return new SlotChangeAction(anvil, this.inventorySlot, this.oldItem, this.newItem);
+//                    return new SlotChangeAction(anvil, this.inventorySlot, this.oldItem, this.newItem);
+                    return null;
                 }
 
                 if (this.windowId >= SOURCE_TYPE_ENCHANT_OUTPUT && this.windowId <= SOURCE_TYPE_ENCHANT_INPUT) {
                     Inventory inv = player.getWindowById(Player.ENCHANT_WINDOW_ID);
 
                     if (!(inv instanceof EnchantInventory)) {
-                        player.getServer().getLogger().debug("Player " + player.getName() + " has no open enchant inventory");
+                        log.debug("Player " + player.getName() + " has no open enchant inventory");
                         return null;
                     }
                     EnchantInventory enchant = (EnchantInventory) inv;
 
                     switch (this.windowId) {
                         case SOURCE_TYPE_ENCHANT_INPUT:
-                            return new EnchantingAction(this.oldItem, this.newItem, SOURCE_TYPE_ENCHANT_INPUT);
-                        case SOURCE_TYPE_ENCHANT_MATERIAL:
-                            return new EnchantingAction(this.newItem, this.oldItem, SOURCE_TYPE_ENCHANT_MATERIAL); // Mojang ish backwards?
                         case SOURCE_TYPE_ENCHANT_OUTPUT:
-                            return new EnchantingAction(this.oldItem, this.newItem, SOURCE_TYPE_ENCHANT_OUTPUT);
+                            return new EnchantingAction(this.oldItem, this.newItem, this.windowId);
+                        case SOURCE_TYPE_ENCHANT_MATERIAL:
+                            return new EnchantingAction(this.newItem, this.oldItem, this.windowId); // Mojang ish backwards?
                     }
 
-                    return new SlotChangeAction(enchant, this.inventorySlot, this.oldItem, this.newItem);
+//                    return new SlotChangeAction(enchant, this.inventorySlot, this.oldItem, this.newItem);
+                    return null;
                 }
 
                 if (this.windowId == SOURCE_TYPE_BEACON) {
                     Inventory inv = player.getWindowById(Player.BEACON_WINDOW_ID);
 
                     if (!(inv instanceof BeaconInventory)) {
-                        player.getServer().getLogger().debug("Player " + player.getName() + " has no open beacon inventory");
+                        log.debug("Player " + player.getName() + " has no open beacon inventory");
                         return null;
                     }
                     BeaconInventory beacon = (BeaconInventory) inv;
@@ -302,8 +322,7 @@ public class NetworkInventoryAction {
                     return new SlotChangeAction(beacon, this.inventorySlot, this.oldItem, this.newItem);
                 }
 
-                //TODO: more stuff
-                player.getServer().getLogger().debug("Player " + player.getName() + " has no open container with window ID " + this.windowId);
+                log.debug("Player " + player.getName() + " has no open container with window ID " + this.windowId);
                 return null;
             default:
                 log.debug("Unknown inventory source type " + this.sourceType);
@@ -316,7 +335,7 @@ public class NetworkInventoryAction {
             case SOURCE_CONTAINER:
                 if (this.windowId == ContainerIds.ARMOR) {
                     //TODO: HACK!
-                    this.inventorySlot += 36;
+                    this.inventorySlot += Player.SURVIVAL_SLOTS;
                     this.windowId = ContainerIds.INVENTORY;
                 }
 
@@ -325,11 +344,11 @@ public class NetworkInventoryAction {
                     return new SlotChangeAction(window, this.inventorySlot, this.oldItem, this.newItem);
                 }
 
-                player.getServer().getLogger().debug("Player " + player.getName() + " has no open container with window ID " + this.windowId);
+                log.debug("Player " + player.getName() + " has no open container with window ID " + this.windowId);
                 return null;
             case SOURCE_WORLD:
                 if (this.inventorySlot != InventoryTransactionPacket.ACTION_MAGIC_SLOT_DROP_ITEM) {
-                    player.getServer().getLogger().debug("Only expecting drop-item world actions from the client!");
+                    log.debug("Only expecting drop-item world actions from the client!");
                     return null;
                 }
 
@@ -345,7 +364,7 @@ public class NetworkInventoryAction {
                         type = CreativeInventoryAction.TYPE_CREATE_ITEM;
                         break;
                     default:
-                        player.getServer().getLogger().debug("Unexpected creative action type " + this.inventorySlot);
+                        log.debug("Unexpected creative action type " + this.inventorySlot);
                         return null;
                 }
 
@@ -374,7 +393,7 @@ public class NetworkInventoryAction {
                     Inventory inv = player.getWindowById(Player.ANVIL_WINDOW_ID);
 
                     if (!(inv instanceof AnvilInventory)) {
-                        player.getServer().getLogger().debug("Player " + player.getName() + " has no open anvil inventory");
+                        log.debug("Player " + player.getName() + " has no open anvil inventory");
                         return null;
                     }
                     AnvilInventory anvil = (AnvilInventory) inv;
@@ -393,7 +412,7 @@ public class NetworkInventoryAction {
                     Inventory inv = player.getWindowById(Player.ENCHANT_WINDOW_ID);
 
                     if (!(inv instanceof EnchantInventory)) {
-                        player.getServer().getLogger().debug("Player " + player.getName() + " has no open enchant inventory");
+                        log.debug("Player " + player.getName() + " has no open enchant inventory");
                         return null;
                     }
                     EnchantInventory enchant = (EnchantInventory) inv;
@@ -453,7 +472,7 @@ public class NetworkInventoryAction {
                     Inventory inv = player.getWindowById(Player.BEACON_WINDOW_ID);
 
                     if (!(inv instanceof BeaconInventory)) {
-                        player.getServer().getLogger().debug("Player " + player.getName() + " has no open beacon inventory");
+                        log.debug("Player " + player.getName() + " has no open beacon inventory");
                         return null;
                     }
                     BeaconInventory beacon = (BeaconInventory) inv;
@@ -462,11 +481,10 @@ public class NetworkInventoryAction {
                     return new SlotChangeAction(beacon, this.inventorySlot, this.oldItem, this.newItem);
                 }
 
-                //TODO: more stuff
-                player.getServer().getLogger().debug("Player " + player.getName() + " has no open container with window ID " + this.windowId);
+                log.debug("Player " + player.getName() + " has no open container with window ID " + this.windowId);
                 return null;
             default:
-                player.getServer().getLogger().debug("Unknown inventory source type " + this.sourceType);
+                log.debug("Unknown inventory source type " + this.sourceType);
                 return null;
         }
     }

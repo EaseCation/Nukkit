@@ -2,7 +2,6 @@ package cn.nukkit.blockentity;
 
 import cn.nukkit.Player;
 import cn.nukkit.block.Block;
-import cn.nukkit.block.BlockAir;
 import cn.nukkit.block.BlockID;
 import cn.nukkit.entity.Entity;
 import cn.nukkit.level.format.FullChunk;
@@ -13,6 +12,7 @@ import cn.nukkit.math.SimpleAxisAlignedBB;
 import cn.nukkit.nbt.tag.CompoundTag;
 import cn.nukkit.nbt.tag.IntTag;
 import cn.nukkit.nbt.tag.ListTag;
+import cn.nukkit.network.protocol.BlockEntityDataPacket;
 import cn.nukkit.utils.Faceable;
 
 import java.util.ArrayList;
@@ -23,10 +23,10 @@ import java.util.List;
  */
 public class BlockEntityPistonArm extends BlockEntitySpawnable {
 
-    public static final float MOVE_STEP = Float.valueOf(0.5f);
+    public static final float MOVE_STEP = 0.5f;
 
     public float progress;
-    public float lastProgress = 1;
+    public float lastProgress;
     public BlockFace facing;
     public boolean extending;
     public boolean sticky;
@@ -47,23 +47,25 @@ public class BlockEntityPistonArm extends BlockEntitySpawnable {
 
         if (namedTag.contains("LastProgress")) {
             this.lastProgress = (float) namedTag.getInt("LastProgress");
+        } else {
+            this.lastProgress = 1;
         }
 
         this.sticky = namedTag.getBoolean("Sticky");
         this.extending = namedTag.getBoolean("Extending");
         this.powered = namedTag.getBoolean("powered");
 
-
         if (namedTag.contains("facing")) {
             this.facing = BlockFace.fromIndex(namedTag.getInt("facing"));
-        } else {
-            Block b = this.getLevelBlock();
-
-            if (b instanceof Faceable) {
-                this.facing = ((Faceable) b).getBlockFace();
+        } else if (level.isInitialized()) {
+            Block block = this.getLevelBlock();
+            if (block instanceof Faceable) {
+                this.facing = ((Faceable) block).getBlockFace();
             } else {
                 this.facing = BlockFace.NORTH;
             }
+        } else {
+            this.facing = BlockFace.NORTH;
         }
 
         attachedBlocks = new ArrayList<>();
@@ -140,7 +142,10 @@ public class BlockEntityPistonArm extends BlockEntitySpawnable {
         this.attachedBlocks = attachedBlocks;
         this.movable = false;
 
-        this.level.addChunkPacket(getChunkX(), getChunkZ(), getSpawnPacket());
+        BlockEntityDataPacket packet = this.getSpawnPacket();
+        if (packet != null) {
+            this.level.addChunkPacket(getChunkX(), getChunkZ(), packet);
+        }
         this.lastProgress = extending ? -MOVE_STEP : 1 + MOVE_STEP;
         this.moveCollidedEntities();
         this.scheduleUpdate();
@@ -170,23 +175,26 @@ public class BlockEntityPistonArm extends BlockEntitySpawnable {
 
                 if (movingBlock instanceof BlockEntityMovingBlock) {
                     movingBlock.close();
-                    Block moved = ((BlockEntityMovingBlock) movingBlock).getMovingBlock();
 
-                    CompoundTag blockEntity = ((BlockEntityMovingBlock) movingBlock).getBlockEntity();
+                    BlockEntityMovingBlock movingBlockBlockEntity = (BlockEntityMovingBlock) movingBlock;
+                    Block moved = movingBlockBlockEntity.getMovingBlock();
+                    Block movedExtra = movingBlockBlockEntity.getMovingBlockExtra();
 
-                    if (blockEntity != null) {
-                        blockEntity.putInt("x", movingBlock.getFloorX());
-                        blockEntity.putInt("y", movingBlock.getFloorY());
-                        blockEntity.putInt("z", movingBlock.getFloorZ());
-                        BlockEntity.createBlockEntity(blockEntity.getString("id"), this.level.getChunk(movingBlock.getChunkX(), movingBlock.getChunkZ()), blockEntity);
+                    CompoundTag movedBlockEntity = movingBlockBlockEntity.getBlockEntity();
+                    if (movedBlockEntity != null) {
+                        movedBlockEntity.putInt("x", movingBlock.getFloorX());
+                        movedBlockEntity.putInt("y", movingBlock.getFloorY());
+                        movedBlockEntity.putInt("z", movingBlock.getFloorZ());
+                        BlockEntity.createBlockEntity(movedBlockEntity.getString("id"), this.level.getChunk(movingBlock.getChunkX(), movingBlock.getChunkZ()), movedBlockEntity);
                     }
 
-                    this.level.setBlock(movingBlock, moved);
+                    this.level.setBlock(movingBlock, moved, true);
+                    this.level.setExtraBlock(movingBlock, movedExtra, true);
                 }
             }
 
-            if (!extending && this.level.getBlock(getSide(facing)).getId() == BlockID.PISTON_HEAD) {
-                this.level.setBlock(getSide(facing), new BlockAir());
+            if (!extending && this.level.getBlock(getSide(facing)).getId() == BlockID.PISTON_ARM_COLLISION) {
+                this.level.setBlock(getSide(facing), Block.get(Block.AIR), true);
                 this.movable = true;
             }
 
@@ -195,7 +203,10 @@ public class BlockEntityPistonArm extends BlockEntitySpawnable {
             hasUpdate = false;
         }
 
-        this.level.addChunkPacket(getChunkX(), getChunkZ(), getSpawnPacket());
+        BlockEntityDataPacket packet = this.getSpawnPacket();
+        if (packet != null) {
+            this.level.addChunkPacket(getChunkX(), getChunkZ(), packet);
+        }
 
         return super.onUpdate() || hasUpdate;
     }
@@ -204,8 +215,8 @@ public class BlockEntityPistonArm extends BlockEntitySpawnable {
         return this.extending ? progress - 1 : 1 - progress;
     }
 
-    public boolean isBlockEntityValid() {
-        return true;
+    public boolean isValidBlock(int blockId) {
+        return blockId == BlockID.PISTON || blockId == BlockID.STICKY_PISTON;
     }
 
     public void saveNBT() {
@@ -220,11 +231,7 @@ public class BlockEntityPistonArm extends BlockEntitySpawnable {
     }
 
     public CompoundTag getSpawnCompound() {
-        return new CompoundTag()
-                .putString("id", BlockEntity.PISTON_ARM)
-                .putInt("x", (int) this.x)
-                .putInt("y", (int) this.y)
-                .putInt("z", (int) this.z)
+        return getDefaultCompound(this, PISTON_ARM)
                 .putFloat("Progress", this.progress)
                 .putFloat("LastProgress", this.lastProgress)
                 .putBoolean("isMovable", this.movable)

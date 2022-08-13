@@ -15,8 +15,6 @@ public class TakeItemEntityPacket extends DataPacket {
 
     @Override
     public void decode() {
-        this.target = this.getEntityRuntimeId();
-        this.entityId = this.getEntityRuntimeId();
     }
 
     @Override

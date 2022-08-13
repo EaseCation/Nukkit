@@ -25,11 +25,11 @@ public class BlockWheat extends BlockCrops {
 
     @Override
     public int getId() {
-        return WHEAT_BLOCK;
+        return BLOCK_WHEAT;
     }
 
     @Override
-    public Item toItem() {
+    public Item toItem(boolean addUserData) {
         return new ItemSeedsWheat();
     }
 

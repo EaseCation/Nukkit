@@ -7,7 +7,7 @@ import cn.nukkit.event.entity.EntityDamageByEntityEvent;
 import cn.nukkit.event.entity.EntityDamageEvent;
 import cn.nukkit.event.player.PlayerTeleportEvent.TeleportCause;
 import cn.nukkit.level.format.FullChunk;
-import cn.nukkit.math.NukkitMath;
+import cn.nukkit.math.Mth;
 import cn.nukkit.math.Vector3;
 import cn.nukkit.nbt.tag.CompoundTag;
 import cn.nukkit.network.protocol.AddEntityPacket;
@@ -67,7 +67,7 @@ public class EntityEnderPearl extends EntityProjectile {
         if (this.isCollided && this.shootingEntity instanceof Player) {
             boolean portal = false;
             for (Block collided : this.getCollisionBlocks()) {
-                if (collided.getId() == Block.NETHER_PORTAL) {
+                if (collided.getId() == Block.PORTAL) {
                     portal = true;
                 }
             }
@@ -100,7 +100,7 @@ public class EntityEnderPearl extends EntityProjectile {
         }
 
         this.level.addLevelEvent(this.shootingEntity.add(0.5, 0.5, 0.5), LevelEventPacket.EVENT_SOUND_PORTAL);
-        this.shootingEntity.teleport(new Vector3(NukkitMath.floorDouble(this.x) + 0.5, this.y, NukkitMath.floorDouble(this.z) + 0.5), TeleportCause.ENDER_PEARL);
+        this.shootingEntity.teleport(new Vector3(Mth.floor(this.x) + 0.5, this.y, Mth.floor(this.z) + 0.5), TeleportCause.ENDER_PEARL);
         if ((((Player) this.shootingEntity).getGamemode() & 0x01) == 0) {
             this.shootingEntity.attack(new EntityDamageByEntityEvent(this, shootingEntity, EntityDamageEvent.DamageCause.PROJECTILE, 5f, 0f));
         }

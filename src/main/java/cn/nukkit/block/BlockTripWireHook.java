@@ -5,14 +5,16 @@ import cn.nukkit.event.block.BlockRedstoneEvent;
 import cn.nukkit.item.Item;
 import cn.nukkit.item.ItemBlock;
 import cn.nukkit.level.Level;
+import cn.nukkit.math.AxisAlignedBB;
 import cn.nukkit.math.BlockFace;
 import cn.nukkit.math.Vector3;
 import cn.nukkit.network.protocol.LevelSoundEventPacket;
+import cn.nukkit.utils.BlockColor;
 
 /**
  * @author CreeperFace
  */
-public class BlockTripWireHook extends BlockFlowable {
+public class BlockTripWireHook extends BlockTransparentMeta {
 
     public BlockTripWireHook() {
         this(0);
@@ -30,6 +32,41 @@ public class BlockTripWireHook extends BlockFlowable {
     @Override
     public int getId() {
         return TRIPWIRE_HOOK;
+    }
+
+    @Override
+    public double getHardness() {
+        return 0;
+    }
+
+    @Override
+    public double getResistance() {
+        return 0;
+    }
+
+    @Override
+    public boolean canPassThrough() {
+        return true;
+    }
+
+    @Override
+    public boolean isSolid() {
+        return false;
+    }
+
+    @Override
+    public boolean breaksWhenMoved() {
+        return true;
+    }
+
+    @Override
+    public boolean sticksToPiston() {
+        return false;
+    }
+
+    @Override
+    protected AxisAlignedBB recalculateBoundingBox() {
+        return null;
     }
 
     public BlockFace getFacing() {
@@ -62,7 +99,7 @@ public class BlockTripWireHook extends BlockFlowable {
             this.setFace(face);
         }
 
-        this.level.setBlock(this, this);
+        this.level.setBlock(this, this, true);
 
         if (player != null) {
             this.calculateState(false, false, -1, null);
@@ -112,7 +149,7 @@ public class BlockTripWireHook extends BlockFlowable {
                 break;
             }
 
-            if (b.getId() != Block.TRIPWIRE && i != pos) {
+            if (b.getId() != Block.TRIP_WIRE && i != pos) {
                 blocks[i] = null;
                 canConnect = false;
             } else {
@@ -168,7 +205,7 @@ public class BlockTripWireHook extends BlockFlowable {
                 Vector3 vc = this.getSideVec(facing, i);
                 block = blocks[i];
 
-                if (block != null && this.level.getBlockIdAt(vc.getFloorX(), vc.getFloorY(), vc.getFloorZ()) != Block.AIR) {
+                if (block != null && this.level.getBlockIdAt(0, vc.getFloorX(), vc.getFloorY(), vc.getFloorZ()) != Block.AIR) {
                     if (canConnect ^ ((block.getDamage() & 0x04) > 0)) {
                         block.setDamage(block.getDamage() ^ 0x04);
                     }
@@ -181,10 +218,10 @@ public class BlockTripWireHook extends BlockFlowable {
 
     private void addSound(Vector3 pos, boolean canConnect, boolean nextPowered, boolean attached, boolean powered) {
         if (nextPowered && !powered) {
-            this.level.addLevelSoundEvent(pos, LevelSoundEventPacket.SOUND_POWER_ON);
+            this.level.addLevelSoundEvent(pos, LevelSoundEventPacket.SOUND_POWER_ON, (this.getId() << BLOCK_META_BITS) | this.getDamage());
             this.level.getServer().getPluginManager().callEvent(new BlockRedstoneEvent(this, 0, 15));
         } else if (!nextPowered && powered) {
-            this.level.addLevelSoundEvent(pos, LevelSoundEventPacket.SOUND_POWER_OFF);
+            this.level.addLevelSoundEvent(pos, LevelSoundEventPacket.SOUND_POWER_OFF, (this.getId() << BLOCK_META_BITS) | this.getDamage());
             this.level.getServer().getPluginManager().callEvent(new BlockRedstoneEvent(this, 15, 0));
         } else if (canConnect && !attached) {
             this.level.addLevelSoundEvent(pos, LevelSoundEventPacket.SOUND_ATTACH);
@@ -234,7 +271,27 @@ public class BlockTripWireHook extends BlockFlowable {
     }
 
     @Override
-    public Item toItem() {
+    public Item toItem(boolean addUserData) {
         return new ItemBlock(this, 0);
+    }
+
+    @Override
+    public BlockColor getColor() {
+        return BlockColor.AIR_BLOCK_COLOR;
+    }
+
+    @Override
+    public boolean canContainWater() {
+        return true;
+    }
+
+    @Override
+    public boolean canContainFlowingWater() {
+        return true;
+    }
+
+    @Override
+    public boolean canProvideSupport(BlockFace face, SupportType type) {
+        return false;
     }
 }

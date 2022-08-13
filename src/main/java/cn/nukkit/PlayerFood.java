@@ -67,7 +67,6 @@ public class PlayerFood {
         }
         int foodLevel0 = ev.getFoodLevel();
         float fsl = ev.getFoodSaturationLevel();
-        this.foodLevel = foodLevel;
         if (fsl != -1) {
             if (fsl > foodLevel) fsl = foodLevel;
             this.foodSaturationLevel = fsl;
@@ -130,7 +129,7 @@ public class PlayerFood {
 
     public void sendFoodLevel(int foodLevel) {
         if (this.getPlayer().spawned) {
-            this.getPlayer().setAttribute(Attribute.getAttribute(Attribute.MAX_HUNGER).setValue(foodLevel));
+            this.getPlayer().setAttribute(Attribute.getAttribute(Attribute.PLAYER_HUNGER).setValue(foodLevel));
         }
     }
 

@@ -8,13 +8,31 @@ import cn.nukkit.command.data.CommandParamType;
 import cn.nukkit.command.data.CommandParameter;
 import cn.nukkit.item.Item;
 import cn.nukkit.item.enchantment.Enchantment;
+import cn.nukkit.item.enchantment.EnchantmentID;
 import cn.nukkit.lang.TranslationContainer;
 import cn.nukkit.utils.TextFormat;
+import it.unimi.dsi.fastutil.objects.Object2ByteMap;
+import it.unimi.dsi.fastutil.objects.Object2ByteOpenHashMap;
+
+import java.lang.reflect.Field;
 
 /**
  * Created by Pub4Game on 23.01.2016.
  */
 public class EnchantCommand extends VanillaCommand {
+
+    private static final Object2ByteMap<String> NAME_TO_ID = new Object2ByteOpenHashMap<>();
+
+    static {
+        NAME_TO_ID.defaultReturnValue((byte) -1);
+        try {
+            for (Field field : EnchantmentID.class.getDeclaredFields()) {
+                NAME_TO_ID.put(field.getName().substring(3).toLowerCase(), (byte) field.getInt(null));
+            }
+        } catch (IllegalAccessException e) {
+            throw new RuntimeException(e);
+        }
+    }
 
     public EnchantCommand(String name) {
         super(name, "%nukkit.command.enchant.description", "%commands.enchant.usage");
@@ -27,11 +45,7 @@ public class EnchantCommand extends VanillaCommand {
         });
         this.commandParameters.put("byName", new CommandParameter[]{
                 CommandParameter.newType("player", CommandParamType.TARGET),
-                CommandParameter.newEnum("enchantmentName", new CommandEnum("Enchant",
-                        "protection", "fire_protection", "feather_falling", "blast_protection", "projectile_projection", "thorns", "respiration",
-                        "aqua_affinity", "depth_strider", "sharpness", "smite", "bane_of_arthropods", "knockback", "fire_aspect", "looting", "efficiency",
-                        "silk_touch", "durability", "fortune", "power", "punch", "flame", "infinity", "luck_of_the_sea", "lure", "frost_walker", "mending",
-                        "binding_curse", "vanishing_curse", "impaling", "loyality", "riptide", "channeling")),
+                CommandParameter.newEnum("enchantmentName", CommandEnum.ENUM_ENCHANT),
                 CommandParameter.newType("level", true, CommandParamType.INT)
         });
     }
@@ -50,10 +64,12 @@ public class EnchantCommand extends VanillaCommand {
             sender.sendMessage(new TranslationContainer(TextFormat.RED + "%commands.generic.player.notFound"));
             return true;
         }
-        int enchantId;
+        int enchantId = NAME_TO_ID.getByte(args[1].toLowerCase());
         int enchantLevel;
         try {
-            enchantId = getIdByName(args[1]);
+            if (enchantId == -1) {
+                enchantId = Integer.parseInt(args[1]);
+            }
             enchantLevel = args.length == 3 ? Integer.parseInt(args[2]) : 1;
         } catch (NumberFormatException e) {
             sender.sendMessage(new TranslationContainer("commands.generic.usage", this.usageMessage));
@@ -74,78 +90,5 @@ public class EnchantCommand extends VanillaCommand {
         player.getInventory().setItemInHand(item);
         Command.broadcastCommandMessage(sender, new TranslationContainer("%commands.enchant.success"));
         return true;
-    }
-
-    public int getIdByName(String value) throws NumberFormatException {
-        switch (value) {
-            case "protection":
-                return 0;
-            case "fire_protection":
-                return 1;
-            case "feather_falling":
-                return 2;
-            case "blast_protection":
-                return 3;
-            case "projectile_projection":
-                return 4;
-            case "thorns":
-                return 5;
-            case "respiration":
-                return 6;
-            case "aqua_affinity":
-                return 7;
-            case "depth_strider":
-                return 8;
-            case "sharpness":
-                return 9;
-            case "smite":
-                return 10;
-            case "bane_of_arthropods":
-                return 11;
-            case "knockback":
-                return 12;
-            case "fire_aspect":
-                return 13;
-            case "looting":
-                return 14;
-            case "efficiency":
-                return 15;
-            case "silk_touch":
-                return 16;
-            case "durability":
-                return 17;
-            case "fortune":
-                return 18;
-            case "power":
-                return 19;
-            case "punch":
-                return 20;
-            case "flame":
-                return 21;
-            case "infinity":
-                return 22;
-            case "luck_of_the_sea":
-                return 23;
-            case "lure":
-                return 24;
-            case "frost_walker":
-                return 25;
-            case "mending":
-                return 26;
-            case "binding_curse":
-                return 27;
-            case "vanishing_curse":
-                return 28;
-            case "impaling":
-                return 29;
-            case "loyality":
-                return 30;
-            case "riptide":
-                return 31;
-            case "channeling":
-                return 32;
-            default:
-                return Integer.parseInt(value);
-        }
     }
 }

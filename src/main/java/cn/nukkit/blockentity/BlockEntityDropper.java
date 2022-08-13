@@ -1,5 +1,6 @@
 package cn.nukkit.blockentity;
 
+import cn.nukkit.block.Block;
 import cn.nukkit.block.BlockAir;
 import cn.nukkit.block.BlockID;
 import cn.nukkit.inventory.DropperInventory;
@@ -54,7 +55,7 @@ public class BlockEntityDropper extends BlockEntitySpawnable implements BlockEnt
     public Item getItem(int index) {
         int i = this.getSlotIndex(index);
         if (i < 0) {
-            return new ItemBlock(new BlockAir(), 0, 0);
+            return new ItemBlock(Block.get(Block.AIR), 0, 0);
         } else {
             CompoundTag data = (CompoundTag) this.namedTag.getList("Items").get(i);
             return NBTIO.getItemHelper(data);
@@ -85,17 +86,13 @@ public class BlockEntityDropper extends BlockEntitySpawnable implements BlockEnt
 
     @Override
     public CompoundTag getSpawnCompound() {
-        CompoundTag c = new CompoundTag()
-                .putString("id", BlockEntity.DROPPER)
-                .putInt("x", (int) this.x)
-                .putInt("y", (int) this.y)
-                .putInt("z", (int) this.z);
+        CompoundTag nbt = getDefaultCompound(this, DROPPER);
 
         if (this.hasName()) {
-            c.put("CustomName", this.namedTag.get("CustomName"));
+            nbt.put("CustomName", this.namedTag.get("CustomName"));
         }
 
-        return c;
+        return nbt;
     }
 
     @Override
@@ -109,28 +106,8 @@ public class BlockEntityDropper extends BlockEntitySpawnable implements BlockEnt
     }
 
     @Override
-    public boolean isBlockEntityValid() {
-        return this.getLevelBlock().getId() == BlockID.DROPPER;
-    }
-
-    @Override
-    public String getName() {
-        return this.hasName() ? this.namedTag.getString("CustomName") : "Dropper";
-    }
-
-    @Override
-    public boolean hasName() {
-        return this.namedTag.contains("CustomName");
-    }
-
-    @Override
-    public void setName(String name) {
-        if (name == null || name.isEmpty()) {
-            this.namedTag.remove("CustomName");
-            return;
-        }
-
-        this.namedTag.putString("CustomName", name);
+    public boolean isValidBlock(int blockId) {
+        return blockId == BlockID.DROPPER;
     }
 
     @Override

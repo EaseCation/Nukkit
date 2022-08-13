@@ -26,7 +26,7 @@ public class BlockFenceGate extends BlockTransparentMeta implements Faceable {
 
     @Override
     public int getId() {
-        return FENCE_GATE_OAK;
+        return FENCE_GATE;
     }
 
     @Override
@@ -110,7 +110,7 @@ public class BlockFenceGate extends BlockTransparentMeta implements Faceable {
     }
 
     @Override
-    public boolean onActivate(Item item, Player player) {
+    public boolean onActivate(Item item, BlockFace face, Player player) {
         if (player == null) {
             return false;
         }
@@ -199,12 +199,27 @@ public class BlockFenceGate extends BlockTransparentMeta implements Faceable {
     }
 
     @Override
-    public Item toItem() {
+    public Item toItem(boolean addUserData) {
         return Item.get(Item.FENCE_GATE, 0, 1);
     }
 
     @Override
     public BlockFace getBlockFace() {
         return BlockFace.fromHorizontalIndex(this.getDamage() & 0x07);
+    }
+
+    @Override
+    public boolean canContainWater() {
+        return true;
+    }
+
+    @Override
+    public boolean canProvideSupport(BlockFace face, SupportType type) {
+        return false;
+    }
+
+    @Override
+    public boolean isFenceGate() {
+        return true;
     }
 }

@@ -28,8 +28,8 @@ public class BlockEntityBed extends BlockEntitySpawnable {
     }
 
     @Override
-    public boolean isBlockEntityValid() {
-        return this.level.getBlockIdAt(this.getFloorX(), this.getFloorY(), this.getFloorZ()) == Item.BED_BLOCK;
+    public boolean isValidBlock(int blockId) {
+        return blockId == Item.BLOCK_BED;
     }
 
     @Override
@@ -40,11 +40,7 @@ public class BlockEntityBed extends BlockEntitySpawnable {
 
     @Override
     public CompoundTag getSpawnCompound() {
-        return new CompoundTag()
-                .putString("id", BlockEntity.BED)
-                .putInt("x", (int) this.x)
-                .putInt("y", (int) this.y)
-                .putInt("z", (int) this.z)
+        return getDefaultCompound(this, BED)
                 .putByte("color", this.color);
     }
 

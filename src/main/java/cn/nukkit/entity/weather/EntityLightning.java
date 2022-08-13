@@ -50,7 +50,7 @@ public class EntityLightning extends Entity implements EntityLightningStrike {
 
         if (isEffect && this.level.gameRules.getBoolean(GameRule.DO_FIRE_TICK) && (this.server.getDifficulty() >= 2)) {
             Block block = this.getLevelBlock();
-            if (block.getId() == 0 || block.getId() == Block.TALL_GRASS) {
+            if (block.getId() == 0 || block.getId() == Block.TALLGRASS) {
                 BlockFire fire = (BlockFire) Block.get(BlockID.FIRE);
                 fire.x = block.x;
                 fire.y = block.y;
@@ -120,13 +120,13 @@ public class EntityLightning extends Entity implements EntityLightningStrike {
                 if (this.isEffect && this.level.gameRules.getBoolean(GameRule.DO_FIRE_TICK)) {
                     Block block = this.getLevelBlock();
 
-                    if (block.getId() == Block.AIR || block.getId() == Block.TALL_GRASS) {
+                    if (block.getId() == Block.AIR || block.getId() == Block.TALLGRASS) {
                         BlockIgniteEvent e = new BlockIgniteEvent(block, null, this, BlockIgniteEvent.BlockIgniteCause.LIGHTNING);
                         getServer().getPluginManager().callEvent(e);
 
                         if (!e.isCancelled()) {
                             Block fire = Block.get(BlockID.FIRE);
-                            this.level.setBlock(block, fire);
+                            this.level.setBlock(block, fire, true);
                             this.getLevel().scheduleUpdate(fire, fire.tickRate());
                         }
                     }

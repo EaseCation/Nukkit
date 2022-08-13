@@ -16,11 +16,16 @@ public class ItemRecord11 extends ItemRecord {
     }
 
     public ItemRecord11(Integer meta, int count) {
-        super(meta, count);
+        super(Item.MUSIC_DISC_11, meta, count);
     }
 
     @Override
-    public int getSoundId() {
+    public int getSoundEvent() {
         return LevelSoundEventPacket.SOUND_RECORD_11;
+    }
+
+    @Override
+    public String getTranslationIdentifier() {
+        return "record_11";
     }
 }

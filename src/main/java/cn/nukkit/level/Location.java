@@ -1,5 +1,6 @@
 package cn.nukkit.level;
 
+import cn.nukkit.math.Mth;
 import cn.nukkit.math.Vector3;
 import cn.nukkit.utils.LevelException;
 
@@ -151,7 +152,7 @@ public class Location extends Position {
 
     @Override
     public Location ceil() {
-        return new Location((int) Math.ceil(this.x), (int) Math.ceil(this.y), (int) Math.ceil(this.z), this.yaw, this.pitch, this.level);
+        return new Location(Mth.ceil(this.x), Mth.ceil(this.y), Mth.ceil(this.z), this.yaw, this.pitch, this.level);
     }
 
     @Override
@@ -172,9 +173,9 @@ public class Location extends Position {
     public Vector3 getDirectionVector() {
         double pitch = ((getPitch() + 90) * Math.PI) / 180;
         double yaw = ((getYaw() + 90) * Math.PI) / 180;
-        double x = Math.sin(pitch) * Math.cos(yaw);
-        double z = Math.sin(pitch) * Math.sin(yaw);
-        double y = Math.cos(pitch);
+        double x = Mth.sin(pitch) * Mth.cos(yaw);
+        double z = Mth.sin(pitch) * Mth.sin(yaw);
+        double y = Mth.cos(pitch);
         return new Vector3(x, y, z).normalize();
     }
 

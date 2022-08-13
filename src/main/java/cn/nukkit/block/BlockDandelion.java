@@ -20,11 +20,20 @@ public class BlockDandelion extends BlockFlower {
 
     @Override
     public int getId() {
-        return DANDELION;
+        return YELLOW_FLOWER;
     }
 
     @Override
     protected Block getUncommonFlower() {
-        return get(POPPY);
+        return get(RED_FLOWER);
+    }
+
+    @Override
+    public int getFullId() {
+        return this.getId() << BLOCK_META_BITS;
+    }
+
+    @Override
+    public void setDamage(int meta) {
     }
 }

@@ -4,8 +4,7 @@ import cn.nukkit.level.format.FullChunk;
 import cn.nukkit.level.format.LevelProvider;
 import cn.nukkit.level.format.anvil.Chunk;
 import cn.nukkit.level.format.anvil.ChunkSection;
-
-import java.util.ArrayList;
+import it.unimi.dsi.fastutil.objects.ObjectArrayList;
 
 public class ChunkConverter {
 
@@ -18,8 +17,8 @@ public class ChunkConverter {
     }
 
     public ChunkConverter from(BaseFullChunk chunk) {
-        if (!(chunk instanceof cn.nukkit.level.format.mcregion.Chunk) && !(chunk instanceof cn.nukkit.level.format.leveldb.Chunk)) {
-            throw new IllegalArgumentException("From type can be only McRegion or LevelDB");
+        if (!(chunk instanceof cn.nukkit.level.format.mcregion.Chunk)) {
+            throw new IllegalArgumentException("From type can be only McRegion");
         }
         this.chunk = chunk;
         return this;
@@ -46,7 +45,7 @@ public class ChunkConverter {
                 for (int x = 0; x < 16; x++) {
                     for (int y = 0; y < 16; y++) {
                         for (int z = 0; z < 16; z++) {
-                            if (chunk.getBlockId(x, (Y << 4) | y, z) != 0) {
+                            if (chunk.getBlockId(0, x, (Y << 4) | y, z) != 0) {
                                 empty = false;
                                 break;
                             }
@@ -60,8 +59,8 @@ public class ChunkConverter {
                     for (int x = 0; x < 16; x++) {
                         for (int y = 0; y < 16; y++) {
                             for (int z = 0; z < 16; z++) {
-                                section.setBlockId(x, y, z, chunk.getBlockId(x, (Y << 4) | y, z));
-                                section.setBlockData(x, y, z, chunk.getBlockData(x, (Y << 4) | y, z));
+                                section.setBlockId(0, x, y, z, chunk.getBlockId(0, x, (Y << 4) | y, z));
+                                section.setBlockData(0, x, y, z, chunk.getBlockData(0, x, (Y << 4) | y, z));
                                 section.setBlockLight(x, y, z, chunk.getBlockLight(x, (Y << 4) | y, z));
                                 section.setBlockSkyLight(x, y, z, chunk.getBlockSkyLight(x, (Y << 4) | y, z));
                             }
@@ -74,12 +73,12 @@ public class ChunkConverter {
         System.arraycopy(chunk.biomes, 0, result.biomes, 0, 256);
         System.arraycopy(chunk.getHeightMapArray(), 0, result.heightMap, 0, 256);
         if (chunk.NBTentities != null && !chunk.NBTentities.isEmpty()) {
-            result.NBTentities = new ArrayList<>(chunk.NBTentities.size());
+            result.NBTentities = new ObjectArrayList<>(chunk.NBTentities.size());
             chunk.NBTentities.forEach((nbt) -> result.NBTentities.add(nbt.copy()));
         }
 
         if (chunk.NBTtiles != null && !chunk.NBTtiles.isEmpty()) {
-            result.NBTtiles = new ArrayList<>(chunk.NBTtiles.size());
+            result.NBTtiles = new ObjectArrayList<>(chunk.NBTtiles.size());
             chunk.NBTtiles.forEach((nbt) -> result.NBTtiles.add(nbt.copy()));
         }
         result.setGenerated();

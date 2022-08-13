@@ -268,6 +268,6 @@ public class NBTIO {
             tmpFile.delete();
         }
         write(tag, tmpFile);
-        Files.move(tmpFile.toPath(), file.toPath(), StandardCopyOption.REPLACE_EXISTING, StandardCopyOption.ATOMIC_MOVE);
+        Files.move(tmpFile.toPath(), file.toPath(), StandardCopyOption.REPLACE_EXISTING);
     }
 }

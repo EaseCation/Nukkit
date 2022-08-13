@@ -19,7 +19,7 @@ public class BlockMossStone extends BlockSolid {
 
     @Override
     public int getId() {
-        return MOSS_STONE;
+        return MOSSY_COBBLESTONE;
     }
 
     @Override
@@ -41,7 +41,7 @@ public class BlockMossStone extends BlockSolid {
     public Item[] getDrops(Item item) {
         if (item.isPickaxe() && item.getTier() >= ItemTool.TIER_WOODEN) {
             return new Item[]{
-                    toItem()
+                    toItem(true)
             };
         } else {
             return new Item[0];

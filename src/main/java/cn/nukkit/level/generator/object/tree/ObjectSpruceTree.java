@@ -60,8 +60,8 @@ public class ObjectSpruceTree extends ObjectTree {
                         continue;
                     }
 
-                    if (!Block.solid[level.getBlockIdAt(xx, yyy, zz)]) {
-                        level.setBlockAt(xx, yyy, zz, this.getLeafBlock(), this.getType());
+                    if (!Block.solid[level.getBlockIdAt(0, xx, yyy, zz)]) {
+                        level.setBlockAt(0, xx, yyy, zz, this.getLeafBlock(), this.getType());
                     }
                 }
             }

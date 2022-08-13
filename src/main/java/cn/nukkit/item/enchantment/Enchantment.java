@@ -14,11 +14,7 @@ import cn.nukkit.item.enchantment.loot.EnchantmentLootDigging;
 import cn.nukkit.item.enchantment.loot.EnchantmentLootFishing;
 import cn.nukkit.item.enchantment.loot.EnchantmentLootWeapon;
 import cn.nukkit.item.enchantment.protection.*;
-import cn.nukkit.item.enchantment.trident.EnchantmentTridentChanneling;
-import cn.nukkit.item.enchantment.trident.EnchantmentTridentImpaling;
-import cn.nukkit.item.enchantment.trident.EnchantmentTridentLoyalty;
-import cn.nukkit.item.enchantment.trident.EnchantmentTridentRiptide;
-import cn.nukkit.math.NukkitMath;
+import cn.nukkit.math.Mth;
 
 import java.util.ArrayList;
 import java.util.HashSet;
@@ -28,82 +24,44 @@ import java.util.concurrent.ThreadLocalRandom;
  * author: MagicDroidX
  * Nukkit Project
  */
-public abstract class Enchantment implements Cloneable {
+public abstract class Enchantment implements Cloneable, EnchantmentID {
 
     protected static Enchantment[] enchantments;
-
-    //http://minecraft.gamepedia.com/Enchanting#Aqua_Affinity
-
-    public static final int ID_PROTECTION_ALL = 0;
-    public static final int ID_PROTECTION_FIRE = 1;
-    public static final int ID_PROTECTION_FALL = 2;
-    public static final int ID_PROTECTION_EXPLOSION = 3;
-    public static final int ID_PROTECTION_PROJECTILE = 4;
-    public static final int ID_THORNS = 5;
-    public static final int ID_WATER_BREATHING = 6;
-    public static final int ID_WATER_WALKER = 7;
-    public static final int ID_WATER_WORKER = 8;
-    public static final int ID_DAMAGE_ALL = 9;
-    public static final int ID_DAMAGE_SMITE = 10;
-    public static final int ID_DAMAGE_ARTHROPODS = 11;
-    public static final int ID_KNOCKBACK = 12;
-    public static final int ID_FIRE_ASPECT = 13;
-    public static final int ID_LOOTING = 14;
-    public static final int ID_EFFICIENCY = 15;
-    public static final int ID_SILK_TOUCH = 16;
-    public static final int ID_DURABILITY = 17;
-    public static final int ID_FORTUNE_DIGGING = 18;
-    public static final int ID_BOW_POWER = 19;
-    public static final int ID_BOW_KNOCKBACK = 20;
-    public static final int ID_BOW_FLAME = 21;
-    public static final int ID_BOW_INFINITY = 22;
-    public static final int ID_FORTUNE_FISHING = 23;
-    public static final int ID_LURE = 24;
-    public static final int ID_FROST_WALKER = 25;
-    public static final int ID_MENDING = 26;
-    public static final int ID_BINDING_CURSE = 27;
-    public static final int ID_VANISHING_CURSE = 28;
-    public static final int ID_TRIDENT_IMPALING = 29;
-    public static final int ID_TRIDENT_RIPTIDE = 30;
-    public static final int ID_TRIDENT_LOYALTY = 31;
-    public static final int ID_TRIDENT_CHANNELING = 32;
 
     public static void init() {
         enchantments = new Enchantment[256];
 
-        enchantments[ID_PROTECTION_ALL] = new EnchantmentProtectionAll();
-        enchantments[ID_PROTECTION_FIRE] = new EnchantmentProtectionFire();
-        enchantments[ID_PROTECTION_FALL] = new EnchantmentProtectionFall();
-        enchantments[ID_PROTECTION_EXPLOSION] = new EnchantmentProtectionExplosion();
-        enchantments[ID_PROTECTION_PROJECTILE] = new EnchantmentProtectionProjectile();
+        enchantments[ID_PROTECTION] = new EnchantmentProtectionAll();
+        enchantments[ID_FIRE_PROTECTION] = new EnchantmentProtectionFire();
+        enchantments[ID_FEATHER_FALLING] = new EnchantmentProtectionFall();
+        enchantments[ID_BLAST_PROTECTION] = new EnchantmentProtectionExplosion();
+        enchantments[ID_PROJECTILE_PROTECTION] = new EnchantmentProtectionProjectile();
         enchantments[ID_THORNS] = new EnchantmentThorns();
-        enchantments[ID_WATER_BREATHING] = new EnchantmentWaterBreath();
-        enchantments[ID_WATER_WORKER] = new EnchantmentWaterWorker();
-        enchantments[ID_WATER_WALKER] = new EnchantmentWaterWalker();
-        enchantments[ID_DAMAGE_ALL] = new EnchantmentDamageAll();
-        enchantments[ID_DAMAGE_SMITE] = new EnchantmentDamageSmite();
-        enchantments[ID_DAMAGE_ARTHROPODS] = new EnchantmentDamageArthropods();
+        enchantments[ID_RESPIRATION] = new EnchantmentWaterBreath();
+        enchantments[ID_AQUA_AFFINITY] = new EnchantmentWaterWorker();
+        enchantments[ID_DEPTH_STRIDER] = new EnchantmentWaterWalker();
+        enchantments[ID_SHARPNESS] = new EnchantmentDamageAll();
+        enchantments[ID_SMITE] = new EnchantmentDamageSmite();
+        enchantments[ID_BANE_OF_ARTHROPODS] = new EnchantmentDamageArthropods();
         enchantments[ID_KNOCKBACK] = new EnchantmentKnockback();
         enchantments[ID_FIRE_ASPECT] = new EnchantmentFireAspect();
         enchantments[ID_LOOTING] = new EnchantmentLootWeapon();
         enchantments[ID_EFFICIENCY] = new EnchantmentEfficiency();
         enchantments[ID_SILK_TOUCH] = new EnchantmentSilkTouch();
-        enchantments[ID_DURABILITY] = new EnchantmentDurability();
-        enchantments[ID_FORTUNE_DIGGING] = new EnchantmentLootDigging();
-        enchantments[ID_BOW_POWER] = new EnchantmentBowPower();
-        enchantments[ID_BOW_KNOCKBACK] = new EnchantmentBowKnockback();
-        enchantments[ID_BOW_FLAME] = new EnchantmentBowFlame();
-        enchantments[ID_BOW_INFINITY] = new EnchantmentBowInfinity();
-        enchantments[ID_FORTUNE_FISHING] = new EnchantmentLootFishing();
+        enchantments[ID_UNBREAKING] = new EnchantmentDurability();
+        enchantments[ID_FORTUNE] = new EnchantmentLootDigging();
+        enchantments[ID_POWER] = new EnchantmentBowPower();
+        enchantments[ID_PUNCH] = new EnchantmentBowKnockback();
+        enchantments[ID_FLAME] = new EnchantmentBowFlame();
+        enchantments[ID_INFINITY] = new EnchantmentBowInfinity();
+        enchantments[ID_LUCK_OF_THE_SEA] = new EnchantmentLootFishing();
         enchantments[ID_LURE] = new EnchantmentLure();
         enchantments[ID_FROST_WALKER] = new EnchantmentFrostWalker();
-        enchantments[ID_MENDING]  = new EnchantmentMending();
-        enchantments[ID_BINDING_CURSE]  = new EnchantmentBindingCurse();
-        enchantments[ID_VANISHING_CURSE]  = new EnchantmentVanishingCurse();
-        enchantments[ID_TRIDENT_IMPALING]  = new EnchantmentTridentImpaling();
-        enchantments[ID_TRIDENT_RIPTIDE]  = new EnchantmentTridentRiptide();
-        enchantments[ID_TRIDENT_LOYALTY]  = new EnchantmentTridentLoyalty();
-        enchantments[ID_TRIDENT_CHANNELING]  = new EnchantmentTridentChanneling();
+        enchantments[ID_MENDING] = new EnchantmentMending();
+        enchantments[ID_BINDING] = new EnchantmentBindingCurse();
+        enchantments[ID_VANISHING] = new EnchantmentVanishingCurse();
+
+        Enchantments.registerVanillaEnchantments();
     }
 
     public static Enchantment get(int id) {
@@ -135,16 +93,16 @@ public abstract class Enchantment implements Cloneable {
     }
 
     public final int id;
-    private final int weight;
+    private final Rarity rarity;
     public EnchantmentType type;
 
     protected int level = 1;
 
     protected final String name;
 
-    protected Enchantment(int id, String name, int weight, EnchantmentType type) {
+    protected Enchantment(int id, String name, Rarity rarity, EnchantmentType type) {
         this.id = id;
-        this.weight = weight;
+        this.rarity = rarity;
         this.type = type;
 
         this.name = name;
@@ -164,7 +122,7 @@ public abstract class Enchantment implements Cloneable {
             return this;
         }
 
-        this.level = NukkitMath.clamp(level, this.getMinLevel(), this.getMaxLevel());
+        this.level = Mth.clamp(level, this.getMinLevel(), this.getMaxLevel());
 
         return this;
     }
@@ -173,8 +131,16 @@ public abstract class Enchantment implements Cloneable {
         return id;
     }
 
+    public Rarity getRarity() {
+        return this.rarity;
+    }
+
+    /**
+     * @deprecated use {@link Rarity#getWeight()} instead
+     */
+    @Deprecated
     public int getWeight() {
-        return weight;
+        return this.rarity.getWeight();
     }
 
     public int getMinLevel() {
@@ -209,11 +175,19 @@ public abstract class Enchantment implements Cloneable {
 
     }
 
+    public void doAttack(Entity attacker, Entity entity) {
+
+    }
+
     public void doPostHurt(Entity attacker, Entity entity) {
 
     }
 
-    public boolean isCompatibleWith(Enchantment enchantment) {
+    public final boolean isCompatibleWith(Enchantment enchantment) {
+        return this.checkCompatibility(enchantment) && enchantment.checkCompatibility(this);
+    }
+
+    protected boolean checkCompatibility(Enchantment enchantment) {
         return this != enchantment;
     }
 
@@ -226,6 +200,10 @@ public abstract class Enchantment implements Cloneable {
     }
 
     public boolean isMajor() {
+        return false;
+    }
+
+    public boolean isCurse() {
         return false;
     }
 
@@ -254,7 +232,35 @@ public abstract class Enchantment implements Cloneable {
     private static class UnknownEnchantment extends Enchantment {
 
         protected UnknownEnchantment(int id) {
-            super(id, "unknown", 0, EnchantmentType.ALL);
+            super(id, "unknown", Rarity.VERY_RARE, EnchantmentType.ALL);
+        }
+    }
+
+    public enum Rarity {
+        COMMON(10),
+        UNCOMMON(5),
+        RARE(2),
+        VERY_RARE(1);
+
+        private final int weight;
+
+        Rarity(int weight) {
+            this.weight = weight;
+        }
+
+        public int getWeight() {
+            return this.weight;
+        }
+
+        public static Rarity fromWeight(int weight) {
+            if (weight < 2) {
+                return VERY_RARE;
+            } else if (weight < 5) {
+                return RARE;
+            } else if (weight < 10) {
+                return UNCOMMON;
+            }
+            return COMMON;
         }
     }
 }

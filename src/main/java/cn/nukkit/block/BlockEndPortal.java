@@ -1,8 +1,15 @@
 package cn.nukkit.block;
 
+import cn.nukkit.Player;
+import cn.nukkit.blockentity.BlockEntity;
+import cn.nukkit.blockentity.BlockEntityEndPortal;
+import cn.nukkit.blockentity.BlockEntityType;
 import cn.nukkit.item.Item;
 import cn.nukkit.item.ItemBlock;
+import cn.nukkit.math.BlockFace;
 import cn.nukkit.utils.BlockColor;
+
+import javax.annotation.Nullable;
 
 public class BlockEndPortal extends BlockTransparent {
 
@@ -18,6 +25,11 @@ public class BlockEndPortal extends BlockTransparent {
     @Override
     public int getId() {
         return END_PORTAL;
+    }
+
+    @Override
+    public int getBlockEntityType() {
+        return BlockEntityType.END_PORTAL;
     }
 
     @Override
@@ -61,7 +73,7 @@ public class BlockEndPortal extends BlockTransparent {
     }
 
     @Override
-    public Item toItem() {
+    public Item toItem(boolean addUserData) {
         return new ItemBlock(Block.get(BlockID.AIR));
     }
 
@@ -78,5 +90,40 @@ public class BlockEndPortal extends BlockTransparent {
     @Override
     public boolean canBePulled() {
         return false;
+    }
+
+    @Override
+    public boolean canContainWater() {
+        return true;
+    }
+
+    @Override
+    public boolean canProvideSupport(BlockFace face, SupportType type) {
+        return false;
+    }
+
+    @Override
+    public boolean place(Item item, Block block, Block target, BlockFace face, double fx, double fy, double fz, Player player) {
+        if (!super.place(item, block, target, face, fx, fy, fz, player)) {
+            return false;
+        }
+        createBlockEntity(item);
+        return true;
+    }
+
+    protected BlockEntityEndPortal createBlockEntity(@Nullable Item item) {
+        return (BlockEntityEndPortal) BlockEntity.createBlockEntity(BlockEntity.END_PORTAL, getChunk(),
+                BlockEntity.getDefaultCompound(this, BlockEntity.END_PORTAL));
+    }
+
+    protected BlockEntityEndPortal getBlockEntity() {
+        if (level == null) {
+            return null;
+        }
+        BlockEntity blockEntity = level.getBlockEntity(this);
+        if (blockEntity instanceof BlockEntityEndPortal) {
+            return (BlockEntityEndPortal) blockEntity;
+        }
+        return null;
     }
 }

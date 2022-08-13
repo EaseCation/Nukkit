@@ -46,7 +46,7 @@ public class EntityMooshroom extends EntityAnimal {
 
     @Override
     public Item[] getDrops() {
-        return new Item[]{Item.get(Item.LEATHER), Item.get(Item.RAW_BEEF)};
+        return new Item[]{Item.get(Item.LEATHER), Item.get(Item.BEEF)};
     }
 
     @Override

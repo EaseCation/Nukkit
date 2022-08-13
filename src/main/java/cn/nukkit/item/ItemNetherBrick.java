@@ -15,6 +15,6 @@ public class ItemNetherBrick extends Item {
     }
 
     public ItemNetherBrick(Integer meta, int count) {
-        super(NETHER_BRICK, meta, count, "Nether Brick");
+        super(NETHERBRICK, meta, count, "Nether Brick");
     }
 }

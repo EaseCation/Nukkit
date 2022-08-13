@@ -1,10 +1,4 @@
 package cn.nukkit.entity;
-/**
- * Attribute
- *
- * @author Box, MagicDroidX(code), PeratX @ Nukkit Project
- * @since Nukkit 1.0 | Nukkit API 1.0.0
- */
 
 import cn.nukkit.utils.ServerException;
 import it.unimi.dsi.fastutil.ints.Int2ObjectMap;
@@ -13,25 +7,30 @@ import lombok.ToString;
 
 import java.util.Objects;
 
+/**
+ * Attribute
+ *
+ * @author Box, MagicDroidX(code), PeratX @ Nukkit Project
+ * @since Nukkit 1.0 | Nukkit API 1.0.0
+ */
 @ToString
 public class Attribute implements Cloneable {
 
     public static final int ABSORPTION = 0;
-    public static final int SATURATION = 1;
-    public static final int EXHAUSTION = 2;
+    public static final int PLAYER_SATURATION = 1;
+    public static final int PLAYER_EXHAUSTION = 2;
     public static final int KNOCKBACK_RESISTANCE = 3;
-    public static final int MAX_HEALTH = 4;
-    public static final int MOVEMENT_SPEED = 5;
+    public static final int HEALTH = 4;
+    public static final int MOVEMENT = 5;
     public static final int FOLLOW_RANGE = 6;
-    public static final int MAX_HUNGER = 7;
-    public static final int FOOD = 7;
+    public static final int PLAYER_HUNGER = 7;
     public static final int ATTACK_DAMAGE = 8;
-    public static final int EXPERIENCE_LEVEL = 9;
-    public static final int EXPERIENCE = 10;
+    public static final int PLAYER_LEVEL = 9;
+    public static final int PLAYER_EXPERIENCE = 10;
     public static final int LUCK = 11;
     public static final int UNDERWATER_MOVEMENT = 12;
     public static final int LAVA_MOVEMENT = 13;
-    public static final int JUMP_STRENGTH = 14;
+    public static final int HORSE_JUMP_STRENGTH = 14;
 
     protected static Int2ObjectMap<Attribute> attributes = new Int2ObjectOpenHashMap<>();
 
@@ -40,7 +39,7 @@ public class Attribute implements Cloneable {
     protected float defaultValue;
     protected float currentValue;
     protected String name;
-    protected boolean shouldSend;
+    protected boolean shouldSend; //TODO: EntityType
     private final int id;
 
     private Attribute(int id, String name, float minValue, float maxValue, float defaultValue, boolean shouldSend) {
@@ -54,21 +53,21 @@ public class Attribute implements Cloneable {
     }
 
     public static void init() {
-        addAttribute(ABSORPTION, "minecraft:absorption", 0.00f, 340282346638528859811704183484516925440.00f, 0.00f);
-        addAttribute(SATURATION, "minecraft:player.saturation", 0.00f, 20.00f, 5.00f);
-        addAttribute(EXHAUSTION, "minecraft:player.exhaustion", 0.00f, 5.00f, 0.41f);
+        addAttribute(ABSORPTION, "minecraft:absorption", 0.00f, 16, 0.00f);
+        addAttribute(PLAYER_SATURATION, "minecraft:player.saturation", 0.00f, 20.00f, 5.00f);
+        addAttribute(PLAYER_EXHAUSTION, "minecraft:player.exhaustion", 0.00f, 20.00f, 0);
         addAttribute(KNOCKBACK_RESISTANCE, "minecraft:knockback_resistance", 0.00f, 1.00f, 0.00f);
-        addAttribute(MAX_HEALTH, "minecraft:health", 0.00f, 20.00f, 20.00f);
-        addAttribute(MOVEMENT_SPEED, "minecraft:movement", 0.00f, 340282346638528859811704183484516925440.00f, 0.10f);
-        addAttribute(FOLLOW_RANGE, "minecraft:follow_range", 0.00f, 2048.00f, 16.00f, false);
-        addAttribute(MAX_HUNGER, "minecraft:player.hunger", 0.00f, 20.00f, 20.00f);
-        addAttribute(ATTACK_DAMAGE, "minecraft:attack_damage", 0.00f, 340282346638528859811704183484516925440.00f, 1.00f, false);
-        addAttribute(EXPERIENCE_LEVEL, "minecraft:player.level", 0.00f, 24791.00f, 0.00f);
-        addAttribute(EXPERIENCE, "minecraft:player.experience", 0.00f, 1.00f, 0.00f);
+        addAttribute(HEALTH, "minecraft:health", 0.00f, 20.00f, 20.00f);
+        addAttribute(MOVEMENT, "minecraft:movement", 0.00f, 3.4028235E38f, 0.10f);
+        addAttribute(FOLLOW_RANGE, "minecraft:follow_range", 0.00f, 2048.00f, 16.00f);
+        addAttribute(PLAYER_HUNGER, "minecraft:player.hunger", 0.00f, 20.00f, 20.00f);
+        addAttribute(ATTACK_DAMAGE, "minecraft:attack_damage", 0.00f, 1, 1.00f);
+        addAttribute(PLAYER_LEVEL, "minecraft:player.level", 0.00f, 24791.00f, 0.00f);
+        addAttribute(PLAYER_EXPERIENCE, "minecraft:player.experience", 0.00f, 1.00f, 0.00f);
         addAttribute(LUCK, "minecraft:luck", -1024, 1024, 0);
         addAttribute(UNDERWATER_MOVEMENT, "minecraft:underwater_movement", 0, 3.4028235E38f, 0.02f);
         addAttribute(LAVA_MOVEMENT, "minecraft:lava_movement", 0, 3.4028235E38f, 0.02f);
-        addAttribute(JUMP_STRENGTH, "minecraft:horse.jump_strength", 0.0f, 2.0f, 0.7f);
+        addAttribute(HORSE_JUMP_STRENGTH, "minecraft:horse.jump_strength", 0.0f, 3.4028235E38f, 0.7f);
     }
 
     public static Attribute addAttribute(int id, String name, float minValue, float maxValue, float defaultValue) {

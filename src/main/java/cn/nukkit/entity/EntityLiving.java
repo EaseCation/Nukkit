@@ -3,6 +3,8 @@ package cn.nukkit.entity;
 import cn.nukkit.Player;
 import cn.nukkit.Server;
 import cn.nukkit.block.Block;
+import cn.nukkit.block.BlockID;
+import cn.nukkit.block.BlockWater;
 import cn.nukkit.entity.data.ShortEntityData;
 import cn.nukkit.entity.passive.EntityWaterAnimal;
 import cn.nukkit.event.entity.*;
@@ -11,6 +13,7 @@ import cn.nukkit.item.Item;
 import cn.nukkit.level.GameRule;
 import cn.nukkit.level.format.FullChunk;
 import cn.nukkit.level.sound.SoundEnum;
+import cn.nukkit.math.Mth;
 import cn.nukkit.math.Vector3;
 import cn.nukkit.nbt.tag.CompoundTag;
 import cn.nukkit.nbt.tag.FloatTag;
@@ -236,21 +239,31 @@ public abstract class EntityLiving extends Entity implements EntityDamageable {
         boolean hasUpdate = super.entityBaseTick(tickDiff);
 
         if (this.isAlive() && this.needLivingBaseTick) {
-            boolean insideOfWater;
-            //始终不窒息也不显示
-            if (this instanceof Player && (((Player) this).isCreative() || ((Player) this).isSpectator())) {
-                insideOfWater = false;
-            } else
-                insideOfWater = this.isInsideOfWater();
-
-            this.setDataFlag(DATA_FLAGS, DATA_FLAG_BREATHING, !insideOfWater);
+            boolean breathing = canBreathe();
+            this.setDataFlag(DATA_FLAGS, DATA_FLAG_BREATHING, breathing);
 
             if (this.isInsideOfSolid()) {
                 hasUpdate = true;
                 this.attack(new EntityDamageEvent(this, DamageCause.SUFFOCATION, 1));
             }
 
-            if (!this.hasEffect(Effect.WATER_BREATHING) && insideOfWater) {
+            if (isPlayer) {
+                int x = getFloorX();
+                int y = getFloorY();
+                int z = getFloorZ();
+                //TODO: getCollisionBlocks
+                boolean inScaffolding = level.getBlock(x, y, z).getId() == BlockID.SCAFFOLDING;
+                boolean overScaffolding = level.getBlock(x, y - 1, z).getId() == BlockID.SCAFFOLDING;
+                setDataFlag(DATA_FLAGS_EXTENDED, DATA_FLAG_IN_SCAFFOLDING, inScaffolding);
+                setDataFlag(DATA_FLAGS_EXTENDED, DATA_FLAG_IN_ASCENDABLE_BLOCK, inScaffolding);
+                setDataFlag(DATA_FLAGS_EXTENDED, DATA_FLAG_OVER_SCAFFOLDING, overScaffolding);
+                setDataFlag(DATA_FLAGS_EXTENDED, DATA_FLAG_OVER_DESCENDABLE_BLOCK, overScaffolding && !level.getBlock(x, y - 2, z).isAir());
+                if (inScaffolding || overScaffolding) {
+                    resetFallDistance();
+                }
+            }
+
+            if (!this.hasEffect(Effect.WATER_BREATHING) && !breathing) {
                 if (this instanceof EntityWaterAnimal) {
                     this.setDataProperty(new ShortEntityData(DATA_AIR, 400));
                 } else {
@@ -271,7 +284,7 @@ public abstract class EntityLiving extends Entity implements EntityDamageable {
 
                     if (airTicks <= -20) {
                         airTicks = 0;
-                        this.attack(new EntityDamageEvent(this, DamageCause.SUFFOCATION, 2));
+                        this.attack(new EntityDamageEvent(this, DamageCause.DROWNING, 2));
                     }
 
                     this.setDataProperty(new ShortEntityData(DATA_AIR, airTicks));
@@ -400,5 +413,23 @@ public abstract class EntityLiving extends Entity implements EntityDamageable {
 
     public void setAirTicks(int ticks) {
         this.setDataProperty(new ShortEntityData(DATA_AIR, ticks));
+    }
+
+    public boolean canBreathe() {
+        double y = this.y + this.getEyeHeight();
+        Block block = level.getBlock(getFloorX(), Mth.floor(y), getFloorZ());
+
+        if (block.getId() == BlockID.BUBBLE_COLUMN) {
+            return true;
+        }
+
+        if (!block.isWater()) {
+            block = level.getExtraBlock(block);
+            if (!block.isWater()) {
+                return true;
+            }
+        }
+
+        return y >= (block.y + 1) - (((BlockWater) block).getFluidHeightPercent() - 0.1111111);
     }
 }

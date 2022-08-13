@@ -26,7 +26,7 @@ public class BlockRailPowered extends BlockRail {
 
     @Override
     public int getId() {
-        return POWERED_RAIL;
+        return GOLDEN_RAIL;
     }
 
     @Override
@@ -189,7 +189,7 @@ public class BlockRailPowered extends BlockRail {
     @Override
     public Item[] getDrops(Item item) {
         return new Item[]{
-                Item.get(Item.POWERED_RAIL, 0, 1)
+                Item.get(Item.GOLDEN_RAIL, 0, 1)
         };
     }
 }

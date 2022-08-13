@@ -15,7 +15,7 @@ public class ItemLeggingsLeather extends ItemColorArmor {
     }
 
     public ItemLeggingsLeather(Integer meta, int count) {
-        super(LEATHER_PANTS, meta, count, "Leather Pants");
+        super(LEATHER_LEGGINGS, meta, count, "Leather Pants");
     }
 
     @Override

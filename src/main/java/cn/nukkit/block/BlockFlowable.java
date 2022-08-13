@@ -1,6 +1,7 @@
 package cn.nukkit.block;
 
 import cn.nukkit.math.AxisAlignedBB;
+import cn.nukkit.math.BlockFace;
 
 /**
  * author: MagicDroidX
@@ -50,5 +51,10 @@ public abstract class BlockFlowable extends BlockTransparentMeta {
     @Override
     protected AxisAlignedBB recalculateBoundingBox() {
         return null;
+    }
+
+    @Override
+    public boolean canProvideSupport(BlockFace face, SupportType type) {
+        return false;
     }
 }

@@ -15,7 +15,7 @@ public class FlintAndSteelDispenseBehavior extends DefaultDispenseBehavior {
         if (target.getId() == BlockID.AIR) {
             block.level.setBlock(target, Block.get(BlockID.FIRE), true);
         } else if (target.getId() == BlockID.TNT) {
-            target.onActivate(item);
+            target.onActivate(item, face, null);
         } else {
             item.count++;
             return null;

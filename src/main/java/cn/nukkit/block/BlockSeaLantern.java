@@ -7,7 +7,7 @@ import cn.nukkit.utils.BlockColor;
 import java.util.concurrent.ThreadLocalRandom;
 
 
-public class BlockSeaLantern extends BlockTransparent {
+public class BlockSeaLantern extends BlockSolid {
     public BlockSeaLantern() {
     }
 

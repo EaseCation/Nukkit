@@ -7,10 +7,12 @@ import cn.nukkit.level.GlobalBlockPaletteInterface.StaticVersion;
 import cn.nukkit.level.util.PalettedSubChunkStorage;
 import cn.nukkit.utils.BinaryStream;
 import com.google.common.base.Preconditions;
+import lombok.extern.log4j.Log4j2;
 
 import java.util.Arrays;
-import java.util.function.Function;
+import java.util.function.IntFunction;
 
+@Log4j2
 public class BlockStorage {
     private static final int SECTION_SIZE = 4096;
     private final byte[] blockIds;
@@ -103,12 +105,15 @@ public class BlockStorage {
         int airBlockRuntimeId = palette.getOrCreateRuntimeId0(Block.AIR, 0);
         PalettedSubChunkStorage storage = PalettedSubChunkStorage.ofBlock(airBlockRuntimeId);
         for (int i = 0; i < SECTION_SIZE; i++) {
+            int id = blockIds[i] & 0xff;
+            int meta = blockData.get(i);
+
             int runtimeId;
             try {
-                runtimeId = palette.getOrCreateRuntimeId0(blockIds[i] & 0xff, blockData.get(i));
+                runtimeId = palette.getOrCreateRuntimeId0(id, meta);
             } catch (Exception e) {
+                log.trace("Unmapped block {}:{} ({})", id, meta, version, e);
                 runtimeId = airBlockRuntimeId;
-                //Server.getInstance().getLogger().logException(e);
             }
             storage.set(i, runtimeId);
         }
@@ -118,12 +123,15 @@ public class BlockStorage {
     public void writeTo(BinaryStream stream) {
         PalettedSubChunkStorage storage = PalettedSubChunkStorage.ofBlock();
         for (int i = 0; i < SECTION_SIZE; i++) {
+            int id = blockIds[i] & 0xff;
+            int meta = blockData.get(i);
+
             int runtimeId;
             try {
-                runtimeId = GlobalBlockPalette.getOrCreateRuntimeIdGeneral(blockIds[i] & 0xff, blockData.get(i));
+                runtimeId = GlobalBlockPalette.getOrCreateRuntimeIdGeneral(id, meta);
             } catch (Exception e) {
+                log.trace("Unmapped block {}:{}", id, meta, e);
                 runtimeId = 0;
-                //Server.getInstance().getLogger().logException(e);
             }
             storage.set(i, runtimeId);
         }
@@ -140,7 +148,7 @@ public class BlockStorage {
     /**
      * @return all air
      */
-    public boolean writeToCache(BinaryStream stream, Function<Integer, String> blockIdToName) {
+    public boolean writeToCache(BinaryStream stream, IntFunction<String> blockIdToName) {
         PalettedSubChunkStorage storage = PalettedSubChunkStorage.ofBlock(Block.AIR);
         int airCount = 0;
         for (int i = 0; i < SECTION_SIZE; i++) {
@@ -152,6 +160,14 @@ public class BlockStorage {
         }
         storage.writeToCache(stream, blockIdToName);
         return airCount == SECTION_SIZE;
+    }
+
+    public void writeToDisk(BinaryStream stream) {
+        PalettedSubChunkStorage storage = PalettedSubChunkStorage.ofBlock(Block.AIR);
+        for (int i = 0; i < SECTION_SIZE; i++) {
+            storage.set(i, ((blockIds[i] & 0xff) << 4) | blockData.get(i));
+        }
+        storage.writeToDisk(stream);
     }
 
     public BlockStorage copy() {

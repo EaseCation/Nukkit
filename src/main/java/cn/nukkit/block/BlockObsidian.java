@@ -42,7 +42,7 @@ public class BlockObsidian extends BlockSolid {
     public Item[] getDrops(Item item) {
         if (item.isPickaxe() && item.getTier() >= ItemTool.TIER_DIAMOND) {
             return new Item[]{
-                    toItem()
+                    toItem(true)
             };
         } else {
             return new Item[0];
@@ -58,7 +58,7 @@ public class BlockObsidian extends BlockSolid {
                 this.west(), this.east(),
         };
         for (Block aNearby : nearby) {
-            if (aNearby != null) if (aNearby.getId() == NETHER_PORTAL) {
+            if (aNearby != null) if (aNearby.getId() == PORTAL) {
                 aNearby.onBreak(item);
             }
         }
@@ -67,7 +67,7 @@ public class BlockObsidian extends BlockSolid {
 
     @Override
     public BlockColor getColor() {
-        return BlockColor.OBSIDIAN_BLOCK_COLOR;
+        return BlockColor.BLACK_BLOCK_COLOR;
     }
 
     @Override

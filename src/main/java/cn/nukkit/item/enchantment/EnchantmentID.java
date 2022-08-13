@@ -1,0 +1,42 @@
+package cn.nukkit.item.enchantment;
+
+public interface EnchantmentID {
+    int ID_PROTECTION = 0;
+    int ID_FIRE_PROTECTION = 1;
+    int ID_FEATHER_FALLING = 2;
+    int ID_BLAST_PROTECTION = 3;
+    int ID_PROJECTILE_PROTECTION = 4;
+    int ID_THORNS = 5;
+    int ID_RESPIRATION = 6;
+    int ID_DEPTH_STRIDER = 7;
+    int ID_AQUA_AFFINITY = 8;
+    int ID_SHARPNESS = 9;
+    int ID_SMITE = 10;
+    int ID_BANE_OF_ARTHROPODS = 11;
+    int ID_KNOCKBACK = 12;
+    int ID_FIRE_ASPECT = 13;
+    int ID_LOOTING = 14;
+    int ID_EFFICIENCY = 15;
+    int ID_SILK_TOUCH = 16;
+    int ID_UNBREAKING = 17;
+    int ID_FORTUNE = 18;
+    int ID_POWER = 19;
+    int ID_PUNCH = 20;
+    int ID_FLAME = 21;
+    int ID_INFINITY = 22;
+    int ID_LUCK_OF_THE_SEA = 23;
+    int ID_LURE = 24;
+    int ID_FROST_WALKER = 25;
+    int ID_MENDING = 26;
+    int ID_BINDING = 27;
+    int ID_VANISHING = 28;
+    int ID_IMPALING = 29;
+    int ID_RIPTIDE = 30;
+    int ID_LOYALTY = 31;
+    int ID_CHANNELING = 32;
+    int ID_MULTISHOT = 33;
+    int ID_PIERCING = 34;
+    int ID_QUICK_CHARGE = 35;
+    int ID_SOUL_SPEED = 36;
+    int ID_SWIFT_SNEAK = 37;
+}

@@ -16,10 +16,11 @@ public class ItemBlock extends Item {
     }
 
     public ItemBlock(Block block, Integer meta, int count) {
-        super(block.getId(), meta, count, block.getName());
+        super(block.getItemId(), meta, count, block.getName());
         this.block = block;
     }
 
+    @Override
     public void setDamage(Integer meta) {
         if (meta != null) {
             this.meta = meta & 0xffff;
@@ -36,6 +37,7 @@ public class ItemBlock extends Item {
         return block;
     }
 
+    @Override
     public Block getBlock() {
         return this.block.clone();
     }
@@ -43,11 +45,16 @@ public class ItemBlock extends Item {
     @Override
     public int getMaxStackSize() {
         //Shulker boxes don't stack!
-        if (this.block.getId() == Block.SHULKER_BOX || this.block.getId() == Block.UNDYED_SHULKER_BOX) {
+        int id = this.getBlockId();
+        if (id == Block.SHULKER_BOX || id == Block.UNDYED_SHULKER_BOX) {
             return 1;
         }
 
         return super.getMaxStackSize();
     }
 
+    @Override
+    public int getBlockId() {
+        return this.block.getId();
+    }
 }

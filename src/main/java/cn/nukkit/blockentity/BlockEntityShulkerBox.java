@@ -3,7 +3,6 @@ package cn.nukkit.blockentity;
 import cn.nukkit.Player;
 import cn.nukkit.block.Block;
 import cn.nukkit.block.BlockID;
-import cn.nukkit.inventory.BaseInventory;
 import cn.nukkit.inventory.InventoryHolder;
 import cn.nukkit.inventory.ShulkerBoxInventory;
 import cn.nukkit.item.Item;
@@ -34,7 +33,7 @@ public class BlockEntityShulkerBox extends BlockEntitySpawnable implements Inven
             this.namedTag.putList(new ListTag<CompoundTag>("Items"));
         }
 
-        ListTag<CompoundTag> list = (ListTag<CompoundTag>) this.namedTag.getList("Items");
+        ListTag<CompoundTag> list = this.namedTag.getList("Items", CompoundTag.class);
         for (CompoundTag compound : list.getAll()) {
             Item item = NBTIO.getItemHelper(compound);
             this.inventory.slots.put(compound.getByte("Slot"), item);
@@ -49,7 +48,7 @@ public class BlockEntityShulkerBox extends BlockEntitySpawnable implements Inven
 
     @Override
     public void close() {
-        if (!closed) {
+        if (!isClosed()) {
             for (Player player : new HashSet<>(this.getInventory().getViewers())) {
                 player.removeWindow(this.getInventory());
             }
@@ -59,6 +58,8 @@ public class BlockEntityShulkerBox extends BlockEntitySpawnable implements Inven
 
     @Override
     public void saveNBT() {
+        super.saveNBT();
+
         this.namedTag.putList(new ListTag<CompoundTag>("Items"));
         for (int index = 0; index < this.getSize(); index++) {
             this.setItem(index, this.inventory.getItem(index));
@@ -66,9 +67,8 @@ public class BlockEntityShulkerBox extends BlockEntitySpawnable implements Inven
     }
 
     @Override
-    public boolean isBlockEntityValid() {
-        int blockID = this.getBlock().getId();
-        return blockID == Block.SHULKER_BOX || blockID == Block.UNDYED_SHULKER_BOX;
+    public boolean isValidBlock(int blockId) {
+        return blockId == Block.SHULKER_BOX || blockId == Block.UNDYED_SHULKER_BOX;
     }
 
     @Override
@@ -116,32 +116,8 @@ public class BlockEntityShulkerBox extends BlockEntitySpawnable implements Inven
     }
 
     @Override
-    public BaseInventory getInventory() {
+    public ShulkerBoxInventory getInventory() {
         return this.inventory;
-    }
-
-    public ShulkerBoxInventory getRealInventory() {
-        return inventory;
-    }
-
-    @Override
-    public String getName() {
-        return this.hasName() ? this.namedTag.getString("CustomName") : "Shulker Box";
-    }
-
-    @Override
-    public boolean hasName() {
-        return this.namedTag.contains("CustomName");
-    }
-
-    @Override
-    public void setName(String name) {
-        if (name == null || name.isEmpty()) {
-            this.namedTag.remove("CustomName");
-            return;
-        }
-
-        this.namedTag.putString("CustomName", name);
     }
 
     @Override

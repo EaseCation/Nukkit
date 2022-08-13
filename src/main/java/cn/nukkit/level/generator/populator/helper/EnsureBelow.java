@@ -7,6 +7,6 @@ import cn.nukkit.level.format.FullChunk;
  */
 public interface EnsureBelow {
     static boolean ensureBelow(int x, int y, int z, int id, FullChunk chunk)    {
-        return chunk.getBlockId(x, y - 1, z) == id;
+        return chunk.getBlockId(0, x, y - 1, z) == id;
     }
 }

@@ -3,6 +3,7 @@ package cn.nukkit.level.format.anvil;
 import cn.nukkit.level.format.FullChunk;
 import cn.nukkit.level.format.LevelProvider;
 import cn.nukkit.level.format.generic.BaseRegionLoader;
+import cn.nukkit.math.Mth;
 import cn.nukkit.utils.*;
 import it.unimi.dsi.fastutil.ints.Int2IntMap;
 import it.unimi.dsi.fastutil.ints.Int2IntRBTreeMap;
@@ -28,7 +29,7 @@ public class RegionLoader extends BaseRegionLoader {
     @Override
     protected boolean isChunkGenerated(int index) {
         Integer[] array = this.locationTable.get(index);
-        return !(array[0] == 0 || array[1] == 0);
+        return array != null && !(array[0] == 0 || array[1] == 0);
     }
 
     @Override
@@ -101,7 +102,7 @@ public class RegionLoader extends BaseRegionLoader {
         if (length + 4 > MAX_SECTOR_LENGTH) {
             throw new ChunkException("Chunk is too big! " + (length + 4) + " > " + MAX_SECTOR_LENGTH);
         }
-        int sectors = (int) Math.ceil((length + 4) / 4096d);
+        int sectors = Mth.ceil((length + 4) / 4096d);
         int index = getChunkOffset(x, z);
         boolean indexChanged = false;
         Integer[] table = this.locationTable.get(index);
@@ -194,7 +195,7 @@ public class RegionLoader extends BaseRegionLoader {
             buffer.put(COMPRESSION_ZLIB);
             buffer.put(chunk);
             chunk = buffer.array();
-            int sectors = (int) Math.ceil(chunk.length / 4096d);
+            int sectors = Mth.ceil(chunk.length / 4096d);
             if (sectors > table[1]) {
                 table[0] = this.lastSector + 1;
                 this.lastSector += sectors;

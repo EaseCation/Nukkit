@@ -28,11 +28,7 @@ public class DropItemAction extends InventoryAction {
             ev.setCancelled();
         }
         source.getServer().getPluginManager().callEvent(ev);
-        if (ev.isCancelled()) {
-            return false;
-        }
-
-        return true;
+        return !ev.isCancelled();
     }
 
     /**

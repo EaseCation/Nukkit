@@ -4,6 +4,7 @@ import cn.nukkit.entity.Entity;
 import cn.nukkit.item.Item;
 import cn.nukkit.item.ItemString;
 import cn.nukkit.item.ItemTool;
+import cn.nukkit.math.BlockFace;
 import cn.nukkit.utils.BlockColor;
 
 /**
@@ -26,7 +27,7 @@ public class BlockCobweb extends BlockFlowable {
 
     @Override
     public int getId() {
-        return COBWEB;
+        return WEB;
     }
 
     @Override
@@ -53,7 +54,7 @@ public class BlockCobweb extends BlockFlowable {
     public Item[] getDrops(Item item) {
         if (item.isShears()) {
             return new Item[]{
-                    this.toItem()
+                    this.toItem(true)
             };
         } else if (item.isSword()) {
             return new Item[]{
@@ -66,11 +67,21 @@ public class BlockCobweb extends BlockFlowable {
 
     @Override
     public BlockColor getColor() {
-        return BlockColor.CLOTH_BLOCK_COLOR;
+        return BlockColor.WOOL_BLOCK_COLOR;
     }
 
     @Override
     public boolean canHarvestWithHand() {
+        return false;
+    }
+
+    @Override
+    public boolean canContainWater() {
+        return true;
+    }
+
+    @Override
+    public boolean canProvideSupport(BlockFace face, SupportType type) {
         return false;
     }
 }

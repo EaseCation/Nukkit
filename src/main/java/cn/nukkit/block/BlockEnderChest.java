@@ -3,6 +3,7 @@ package cn.nukkit.block;
 import cn.nukkit.Player;
 import cn.nukkit.blockentity.BlockEntity;
 import cn.nukkit.blockentity.BlockEntityEnderChest;
+import cn.nukkit.blockentity.BlockEntityType;
 import cn.nukkit.item.Item;
 import cn.nukkit.item.ItemBlock;
 import cn.nukkit.item.ItemTool;
@@ -19,7 +20,9 @@ import java.util.Set;
 
 public class BlockEnderChest extends BlockTransparentMeta implements Faceable {
 
-    private Set<Player> viewers = new HashSet<>();
+    private static final int[] FACES = {2, 5, 3, 4};
+
+    private final Set<Player> viewers = new HashSet<>();
 
     public BlockEnderChest() {
         this(0);
@@ -37,6 +40,11 @@ public class BlockEnderChest extends BlockTransparentMeta implements Faceable {
     @Override
     public int getId() {
         return ENDER_CHEST;
+    }
+
+    @Override
+    public int getBlockEntityType() {
+        return BlockEntityType.ENDER_CHEST;
     }
 
     @Override
@@ -91,15 +99,10 @@ public class BlockEnderChest extends BlockTransparentMeta implements Faceable {
 
     @Override
     public boolean place(Item item, Block block, Block target, BlockFace face, double fx, double fy, double fz, Player player) {
-        int[] faces = {2, 5, 3, 4};
-        this.setDamage(faces[player != null ? player.getDirection().getHorizontalIndex() : 0]);
+        this.setDamage(FACES[player != null ? player.getDirection().getHorizontalIndex() : 0]);
 
         this.getLevel().setBlock(block, this, true, true);
-        CompoundTag nbt = new CompoundTag("")
-                .putString("id", BlockEntity.ENDER_CHEST)
-                .putInt("x", (int) this.x)
-                .putInt("y", (int) this.y)
-                .putInt("z", (int) this.z);
+        CompoundTag nbt = BlockEntity.getDefaultCompound(this, BlockEntity.ENDER_CHEST);
 
         if (item.hasCustomName()) {
             nbt.putString("CustomName", item.getCustomName());
@@ -117,7 +120,7 @@ public class BlockEnderChest extends BlockTransparentMeta implements Faceable {
     }
 
     @Override
-    public boolean onActivate(Item item, Player player) {
+    public boolean onActivate(Item item, BlockFace face, Player player) {
         if (player != null) {
             Block top = this.up();
             if (!top.isTransparent()) {
@@ -166,7 +169,7 @@ public class BlockEnderChest extends BlockTransparentMeta implements Faceable {
 
     @Override
     public BlockColor getColor() {
-        return BlockColor.OBSIDIAN_BLOCK_COLOR;
+        return BlockColor.STONE_BLOCK_COLOR;
     }
 
     public Set<Player> getViewers() {
@@ -194,12 +197,22 @@ public class BlockEnderChest extends BlockTransparentMeta implements Faceable {
     }
 
     @Override
-    public Item toItem() {
+    public Item toItem(boolean addUserData) {
         return new ItemBlock(this, 0);
     }
 
     @Override
     public BlockFace getBlockFace() {
         return BlockFace.fromHorizontalIndex(this.getDamage() & 0x07);
+    }
+
+    @Override
+    public boolean canContainWater() {
+        return true;
+    }
+
+    @Override
+    public boolean canProvideSupport(BlockFace face, SupportType type) {
+        return false;
     }
 }

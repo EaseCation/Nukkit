@@ -1,5 +1,9 @@
 package cn.nukkit.math;
 
+import cn.nukkit.level.ChunkPosition;
+import cn.nukkit.nbt.tag.IntTag;
+import cn.nukkit.nbt.tag.ListTag;
+
 public class BlockVector3 implements Cloneable {
     public int x;
     public int y;
@@ -194,7 +198,10 @@ public class BlockVector3 implements Cloneable {
     }
 
     public double distanceSquared(double x, double y, double z) {
-        return Math.pow(this.x - x, 2) + Math.pow(this.y - y, 2) + Math.pow(this.z - z, 2);
+        double xDiff = this.x - x;
+        double yDiff = this.y - y;
+        double zDiff = this.z - z;
+        return xDiff * xDiff + yDiff * yDiff + zDiff * zDiff;
     }
 
     @Override
@@ -235,5 +242,25 @@ public class BlockVector3 implements Cloneable {
 
     public Vector3f asVector3f() {
         return new Vector3f(this.x, this.y, this.z);
+    }
+
+    public ChunkPosition toChunkPosition() {
+        return new ChunkPosition(this);
+    }
+
+    public Vector3 blockCenter() {
+        return this.add(0.5, 0.5, 0.5);
+    }
+
+    public ListTag<IntTag> toNbt() {
+        ListTag<IntTag> list = new ListTag<>();
+        list.add(new IntTag("", x));
+        list.add(new IntTag("", y));
+        list.add(new IntTag("", z));
+        return list;
+    }
+
+    public static BlockVector3 fromNbt(ListTag<IntTag> list) {
+        return new BlockVector3(list.get(0).data, list.get(1).data, list.get(2).data);
     }
 }

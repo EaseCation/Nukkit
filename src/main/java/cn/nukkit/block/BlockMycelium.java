@@ -64,7 +64,7 @@ public class BlockMycelium extends BlockSolid {
                     BlockSpreadEvent ev = new BlockSpreadEvent(block, this, Block.get(BlockID.MYCELIUM));
                     Server.getInstance().getPluginManager().callEvent(ev);
                     if (!ev.isCancelled()) {
-                        this.getLevel().setBlock(block, ev.getNewState());
+                        this.getLevel().setBlock(block, ev.getNewState(), true);
                     }
                 }
             }

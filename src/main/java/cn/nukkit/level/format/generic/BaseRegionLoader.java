@@ -1,6 +1,5 @@
 package cn.nukkit.level.format.generic;
 
-import cn.nukkit.Server;
 import cn.nukkit.level.format.FullChunk;
 import cn.nukkit.level.format.LevelProvider;
 import it.unimi.dsi.fastutil.ints.Int2ObjectMap;
@@ -16,7 +15,7 @@ import java.io.RandomAccessFile;
  * Nukkit Project
  */
 @Log4j2
-abstract public class BaseRegionLoader {
+public abstract class BaseRegionLoader implements AutoCloseable {
     public static final int VERSION = 1;
     public static final byte COMPRESSION_GZIP = 1;
     public static final byte COMPRESSION_ZLIB = 2;

@@ -25,8 +25,10 @@ import java.util.regex.Pattern;
 @Log4j2
 public class JavaPluginLoader implements PluginLoader {
 
+    private static final Pattern REGEX = Pattern.compile("^.+\\.jar$");
+
     private final Server server;
-    private final Pattern[] fileFilters = new Pattern[]{Pattern.compile("^.+\\.jar$")};
+    private final Pattern[] fileFilters = new Pattern[]{REGEX};
     private final Map<String, Class<?>> classes = new ConcurrentHashMap<>();
     private final List<PluginClassLoader> classLoaders = new CopyOnWriteArrayList<>();
 

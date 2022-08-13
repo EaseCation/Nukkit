@@ -17,8 +17,8 @@ public class SetBlockCommand extends Command {
         this.setPermission("nukkit.command.setblock");
         this.commandParameters.clear();
         this.commandParameters.put("default", new CommandParameter[]{
-				CommandParameter.newType("position", true, CommandParamType.BLOCK_POSITION),
-				CommandParameter.newEnum("block", true, CommandEnum.ENUM_BLOCK)
+				CommandParameter.newType("position", CommandParamType.BLOCK_POSITION),
+				CommandParameter.newEnum("block", CommandEnum.ENUM_BLOCK)
 						.addOption(CommandParamOption.HAS_SEMANTIC_CONSTRAINT),
         });
 	}
@@ -52,7 +52,7 @@ public class SetBlockCommand extends Command {
 				sender.sendMessage(new TranslationContainer("commands.generic.usage", this.usageMessage));
 				return true;
 			}
-			if (!player.getLevel().setBlock(position, block)) {
+			if (!player.getLevel().setBlock(position, block, true)) {
 				sender.sendMessage(new TranslationContainer("commands.generic.usage", this.usageMessage));
 				return true;
 			}

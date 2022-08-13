@@ -4,6 +4,8 @@ import cn.nukkit.Player;
 import cn.nukkit.inventory.Inventory;
 import cn.nukkit.inventory.transaction.InventoryTransaction;
 import cn.nukkit.item.Item;
+import lombok.ToString;
+import lombok.extern.log4j.Log4j2;
 
 import java.util.HashSet;
 import java.util.Set;
@@ -11,10 +13,12 @@ import java.util.Set;
 /**
  * @author CreeperFace
  */
+@Log4j2
+@ToString
 public class SlotChangeAction extends InventoryAction {
 
     protected Inventory inventory;
-    private int inventorySlot;
+    private final int inventorySlot;
 
     public SlotChangeAction(Inventory inventory, int inventorySlot, Item sourceItem, Item targetItem) {
         super(sourceItem, targetItem);

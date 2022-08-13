@@ -2,7 +2,6 @@ package cn.nukkit.block;
 
 import cn.nukkit.Player;
 import cn.nukkit.item.Item;
-import cn.nukkit.item.ItemTool;
 import cn.nukkit.math.BlockFace;
 
 /**
@@ -10,6 +9,9 @@ import cn.nukkit.math.BlockFace;
  * Nukkit Project
  */
 public abstract class BlockSlab extends BlockTransparentMeta {
+
+    public static final int TYPE_MASK = 0b111;
+    public static final int TOP_SLOT_BIT = 0b1000;
 
     protected final int doubleSlab;
 
@@ -20,12 +22,12 @@ public abstract class BlockSlab extends BlockTransparentMeta {
 
     @Override
     public double getMinY() {
-        return ((this.getDamage() & 0x08) > 0) ? this.y + 0.5 : this.y;
+        return ((this.getDamage() & TOP_SLOT_BIT) == TOP_SLOT_BIT) ? this.y + 0.5 : this.y;
     }
 
     @Override
     public double getMaxY() {
-        return ((this.getDamage() & 0x08) > 0) ? this.y + 1 : this.y + 0.5;
+        return ((this.getDamage() & TOP_SLOT_BIT) == TOP_SLOT_BIT) ? this.y + 1 : this.y + 0.5;
     }
 
     @Override
@@ -34,31 +36,26 @@ public abstract class BlockSlab extends BlockTransparentMeta {
     }
 
     @Override
-    public double getResistance() {
-        return getToolType() < ItemTool.TYPE_AXE ? 30 : 15;
-    }
-
-    @Override
     public boolean place(Item item, Block block, Block target, BlockFace face, double fx, double fy, double fz, Player player) {
-        this.setDamage(this.getDamage() & 0x07);
+        this.setDamage(this.getDamage() & TYPE_MASK);
         if (face == BlockFace.DOWN) {
-            if (target instanceof BlockSlab && (target.getDamage() & 0x08) == 0x08 && (target.getDamage() & 0x07) == (this.getDamage() & 0x07)) {
+            if (target instanceof BlockSlab && (target.getDamage() & TOP_SLOT_BIT) == TOP_SLOT_BIT && (target.getDamage() & TYPE_MASK) == (this.getDamage() & TYPE_MASK)) {
                 this.getLevel().setBlock(target, Block.get(doubleSlab, this.getDamage()), true);
 
                 return true;
-            } else if (block instanceof BlockSlab && (block.getDamage() & 0x07) == (this.getDamage() & 0x07)) {
+            } else if (block instanceof BlockSlab && (block.getDamage() & TYPE_MASK) == (this.getDamage() & TYPE_MASK)) {
                 this.getLevel().setBlock(block, Block.get(doubleSlab, this.getDamage()), true);
 
                 return true;
             } else {
-                this.setDamage(this.getDamage() | 0x08);
+                this.setDamage(this.getDamage() | TOP_SLOT_BIT);
             }
         } else if (face == BlockFace.UP) {
-            if (target instanceof BlockSlab && (target.getDamage() & 0x08) == 0 && (target.getDamage() & 0x07) == (this.getDamage() & 0x07)) {
+            if (target instanceof BlockSlab && (target.getDamage() & TOP_SLOT_BIT) == 0 && (target.getDamage() & TYPE_MASK) == (this.getDamage() & TYPE_MASK)) {
                 this.getLevel().setBlock(target, Block.get(doubleSlab, this.getDamage()), true);
 
                 return true;
-            } else if (block instanceof BlockSlab && (block.getDamage() & 0x07) == (this.getDamage() & 0x07)) {
+            } else if (block instanceof BlockSlab && (block.getDamage() & TYPE_MASK) == (this.getDamage() & TYPE_MASK)) {
                 this.getLevel().setBlock(block, Block.get(doubleSlab, this.getDamage()), true);
 
                 return true;
@@ -66,7 +63,7 @@ public abstract class BlockSlab extends BlockTransparentMeta {
             //TODO: check for collision
         } else {
             if (block instanceof BlockSlab) {
-                if ((block.getDamage() & 0x07) == (this.getDamage() & 0x07)) {
+                if ((block.getDamage() & TYPE_MASK) == (this.getDamage() & TYPE_MASK)) {
                     this.getLevel().setBlock(block, Block.get(doubleSlab, this.getDamage()), true);
 
                     return true;
@@ -75,16 +72,50 @@ public abstract class BlockSlab extends BlockTransparentMeta {
                 return false;
             } else {
                 if (fy > 0.5) {
-                    this.setDamage(this.getDamage() | 0x08);
+                    this.setDamage(this.getDamage() | TOP_SLOT_BIT);
                 }
             }
         }
 
-        if (block instanceof BlockSlab && (target.getDamage() & 0x07) != (this.getDamage() & 0x07)) {
+        if (block instanceof BlockSlab && (target.getDamage() & TYPE_MASK) != (this.getDamage() & TYPE_MASK)) {
             return false;
         }
         this.getLevel().setBlock(block, this, true, true);
 
         return true;
+    }
+
+    @Override
+    public Item toItem(boolean addUserData) {
+        return Item.get(getItemId(), getDamage() & TYPE_MASK);
+    }
+
+    @Override
+    public boolean canContainWater() {
+        return true;
+    }
+
+    @Override
+    public boolean canProvideSupport(BlockFace face, SupportType type) {
+        switch (face) {
+            case UP:
+                return (getDamage() & TOP_SLOT_BIT) == TOP_SLOT_BIT;
+            case DOWN:
+                return (getDamage() & TOP_SLOT_BIT) == 0;
+        }
+        return false;
+    }
+
+    @Override
+    public boolean isSlab() {
+        return true;
+    }
+
+    public int getType() {
+        return getDamage() & TYPE_MASK;
+    }
+
+    public boolean isTopSlot() {
+        return (getDamage() & TOP_SLOT_BIT) == TOP_SLOT_BIT;
     }
 }

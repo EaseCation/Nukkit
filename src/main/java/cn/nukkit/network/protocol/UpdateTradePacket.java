@@ -1,5 +1,6 @@
 package cn.nukkit.network.protocol;
 
+import cn.nukkit.network.protocol.types.ContainerType;
 import lombok.ToString;
 
 @ToString(exclude = "offers")
@@ -8,7 +9,7 @@ public class UpdateTradePacket extends DataPacket {
     public static final int NETWORK_ID = ProtocolInfo.UPDATE_TRADE_PACKET;
 
     public byte windowId;
-    public byte windowType = 15; //trading id
+    public byte windowType = ContainerType.TRADING;
     public int unknownVarInt1;
     public int unknownVarInt2;
     public boolean isWilling;

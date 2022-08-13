@@ -18,7 +18,7 @@ public class BlockStairsSpruce extends BlockStairsWood {
 
     @Override
     public int getId() {
-        return SPRUCE_WOOD_STAIRS;
+        return SPRUCE_STAIRS;
     }
 
     @Override
@@ -28,7 +28,7 @@ public class BlockStairsSpruce extends BlockStairsWood {
 
     @Override
     public BlockColor getColor() {
-        return BlockColor.SPRUCE_BLOCK_COLOR;
+        return BlockColor.PODZOL_BLOCK_COLOR;
     }
 
 }

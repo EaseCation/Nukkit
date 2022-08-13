@@ -2,13 +2,13 @@ package cn.nukkit.block;
 
 import cn.nukkit.Player;
 import cn.nukkit.item.Item;
+import cn.nukkit.item.ItemDye;
 import cn.nukkit.level.Level;
 import cn.nukkit.level.generator.object.mushroom.BigMushroom;
 import cn.nukkit.level.particle.BoneMealParticle;
 import cn.nukkit.math.BlockFace;
 import cn.nukkit.math.NukkitRandom;
 import cn.nukkit.utils.BlockColor;
-import cn.nukkit.utils.DyeColor;
 
 import java.util.concurrent.ThreadLocalRandom;
 
@@ -36,6 +36,10 @@ public abstract class BlockMushroom extends BlockFlowable {
 
     @Override
     public boolean place(Item item, Block block, Block target, BlockFace face, double fx, double fy, double fz, Player player) {
+        if (block.isLiquid() || !block.isAir() && level.getExtraBlock(this).isWater()) {
+            return false;
+        }
+
         if (canStay()) {
             getLevel().setBlock(block, this, true, true);
             return true;
@@ -49,8 +53,8 @@ public abstract class BlockMushroom extends BlockFlowable {
     }
 
     @Override
-    public boolean onActivate(Item item, Player player) {
-        if (item.getId() == Item.DYE && item.getDamage() == DyeColor.WHITE.getDyeData()) {
+    public boolean onActivate(Item item, BlockFace face, Player player) {
+        if (item.getId() == Item.DYE && item.getDamage() == ItemDye.BONE_MEAL) {
             if (player != null && (player.gamemode & 0x01) == 0) {
                 item.count--;
             }
@@ -80,12 +84,12 @@ public abstract class BlockMushroom extends BlockFlowable {
 
     public boolean canStay() {
         Block block = this.down();
-        return block.getId() == MYCELIUM || block.getId() == PODZOL || (!block.isTransparent() && this.level.getFullLight(this) < 13);
+        return block.getId() == MYCELIUM || block.getId() == PODZOL || (!block.isTransparent() /*&& this.level.getFullLight(this) < 13*/); //TODO: light
     }
 
     @Override
     public BlockColor getColor() {
-        return BlockColor.FOLIAGE_BLOCK_COLOR;
+        return BlockColor.PLANT_BLOCK_COLOR;
     }
 
     @Override
@@ -93,5 +97,15 @@ public abstract class BlockMushroom extends BlockFlowable {
         return true;
     }
 
+    @Override
+    public boolean canContainSnow() {
+        return true;
+    }
+
     protected abstract int getType();
+
+    @Override
+    public boolean isVegetation() {
+        return true;
+    }
 }

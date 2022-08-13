@@ -3,16 +3,12 @@ package cn.nukkit;
 import cn.nukkit.block.Block;
 import cn.nukkit.blockentity.*;
 import cn.nukkit.command.*;
+import cn.nukkit.command.exceptions.CommandExceptions;
 import cn.nukkit.console.NukkitConsole;
 import cn.nukkit.dispenser.DispenseBehaviorRegister;
 import cn.nukkit.entity.Attribute;
-import cn.nukkit.entity.Entity;
-import cn.nukkit.entity.EntityHuman;
+import cn.nukkit.entity.Entities;
 import cn.nukkit.entity.data.Skin;
-import cn.nukkit.entity.item.*;
-import cn.nukkit.entity.mob.*;
-import cn.nukkit.entity.passive.*;
-import cn.nukkit.entity.projectile.*;
 import cn.nukkit.event.HandlerList;
 import cn.nukkit.event.level.LevelInitEvent;
 import cn.nukkit.event.level.LevelLoadEvent;
@@ -26,6 +22,7 @@ import cn.nukkit.lang.BaseLang;
 import cn.nukkit.lang.TextContainer;
 import cn.nukkit.lang.TranslationContainer;
 import cn.nukkit.level.Level;
+import cn.nukkit.level.LevelCreationOptions;
 import cn.nukkit.level.Position;
 import cn.nukkit.level.biome.EnumBiome;
 import cn.nukkit.level.format.LevelProvider;
@@ -37,6 +34,7 @@ import cn.nukkit.level.generator.Flat;
 import cn.nukkit.level.generator.Generator;
 import cn.nukkit.level.generator.Nether;
 import cn.nukkit.level.generator.Normal;
+import cn.nukkit.math.Mth;
 import cn.nukkit.math.NukkitMath;
 import cn.nukkit.metadata.EntityMetadataStore;
 import cn.nukkit.metadata.LevelMetadataStore;
@@ -76,16 +74,21 @@ import cn.nukkit.utils.bugreport.ExceptionHandler;
 import co.aikar.timings.Timings;
 import com.google.common.base.Preconditions;
 import io.netty.buffer.ByteBuf;
+import it.unimi.dsi.fastutil.objects.Object2ObjectOpenHashMap;
 import lombok.extern.log4j.Log4j2;
 
+import javax.annotation.Nullable;
 import java.io.*;
 import java.net.InetAddress;
 import java.net.InetSocketAddress;
 import java.net.UnknownHostException;
 import java.nio.ByteOrder;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
+import java.nio.file.StandardCopyOption;
 import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
-import java.util.concurrent.ThreadLocalRandom;
 import java.util.concurrent.atomic.AtomicBoolean;
 
 /**
@@ -240,9 +243,8 @@ public class Server {
 
         this.console = new NukkitConsole(this);
         this.consoleThread = new ConsoleThread();
+        this.consoleThread.setName("Console");
         this.consoleThread.start();
-
-        //todo: VersionString 现在不必要
 
         if (!new File(this.dataPath + "nukkit.yml").exists()) {
             log.info(TextFormat.GREEN + "Welcome! Please choose a language first!");
@@ -275,7 +277,6 @@ public class Server {
             } catch (IOException e) {
                 throw new RuntimeException(e);
             }
-
         }
 
         this.console.setExecutingCommands(true);
@@ -292,8 +293,8 @@ public class Server {
                 put("server-ip", "0.0.0.0");
                 put("view-distance", 10);
                 put("white-list", false);
-                put("achievements", true);
-                put("announce-player-achievements", true);
+//                put("achievements", true);
+//                put("announce-player-achievements", true);
                 put("spawn-protection", 16);
                 put("max-players", 20);
                 put("allow-flight", false);
@@ -324,21 +325,16 @@ public class Server {
         log.info(getLanguage().translateString("nukkit.server.start", TextFormat.AQUA + this.getVersion() + TextFormat.RESET));
 
         Object poolSize = this.getConfig("settings.async-workers", "auto");
-        if (!(poolSize instanceof Integer)) {
-            try {
-                poolSize = Integer.valueOf((String) poolSize);
-            } catch (Exception e) {
-                poolSize = Math.max(Runtime.getRuntime().availableProcessors() + 1, 4);
-            }
+        try {
+            poolSize = Integer.valueOf((String) poolSize);
+        } catch (Exception e) {
+            poolSize = Math.max(Runtime.getRuntime().availableProcessors() + 1, 4);
         }
-
         ServerScheduler.WORKERS = (int) poolSize;
+        log.info("Workers: {}", ServerScheduler.WORKERS);
 
         this.networkZlibProvider = this.getConfig("network.zlib-provider", 2);
         Zlib.setProvider(this.networkZlibProvider);
-
-        this.networkCompressionLevel = this.getConfig("network.compression-level", 7);
-        this.networkCompressionAsync = this.getConfig("network.async-compression", true);
 
         this.networkCompressionLevel = this.getConfig("network.compression-level", 7);
         this.networkCompressionAsync = this.getConfig("network.async-compression", true);
@@ -379,10 +375,10 @@ public class Server {
 
         this.enableJmxMonitoring = this.getPropertyBoolean("enable-jmx-monitoring", false);
         if (this.enableJmxMonitoring) {
-            ServerStatistics.registerJmxMonitoring(this);
+//            ServerStatistics.registerJmxMonitoring(this);
         }
 
-        Nukkit.DEBUG = NukkitMath.clamp(this.getConfig("debug.level", 1), 1, 3);
+        Nukkit.DEBUG = Mth.clamp(this.getConfig("debug.level", 1), 1, 3);
 
         int logLevel = (Nukkit.DEBUG + 3) * 100;
         org.apache.logging.log4j.Level currentLevel = Nukkit.getLogLevel();
@@ -400,6 +396,9 @@ public class Server {
         log.info(this.getLanguage().translateString("nukkit.server.networkStart", new String[]{this.getIp().equals("") ? "*" : this.getIp(), String.valueOf(this.getPort())}));
         this.serverID = UUID.randomUUID();
 
+        GameVersion.setFeatureVersion(GameVersion.byName(getConfig("base-game-version", GameVersion.getFeatureVersion().toString())));
+        log.info("Base Game Version: {}", GameVersion.getFeatureVersion());
+
         this.network = new Network(this);
         this.network.setName(this.getMotd());
         this.network.setSubName(this.getSubMotd());
@@ -407,13 +406,12 @@ public class Server {
         log.info(this.getLanguage().translateString("nukkit.server.info", this.getName(), TextFormat.YELLOW + this.getNukkitVersion() + TextFormat.WHITE, TextFormat.AQUA + this.getCodename() + TextFormat.WHITE, this.getApiVersion()));
         log.info(this.getLanguage().translateString("nukkit.server.license", this.getName()));
 
-
+        CommandExceptions.init();
         this.consoleSender = new ConsoleCommandSender();
         this.commandMap = new SimpleCommandMap(this);
 
-        this.registerEntities();
-        this.registerBlockEntities();
-
+        Entities.registerVanillaEntities();
+        BlockEntities.registerVanillaBlockEntities();
         Block.init();
         Enchantment.init();
         Item.init();
@@ -440,26 +438,26 @@ public class Server {
 
         this.enablePlugins(PluginLoadOrder.STARTUP);
 
+        LevelProviderManager.addProvider(this, LevelDB.class);
         LevelProviderManager.addProvider(this, Anvil.class);
         LevelProviderManager.addProvider(this, McRegion.class);
-        LevelProviderManager.addProvider(this, LevelDB.class);
 
         Generator.addGenerator(Flat.class, "flat", Generator.TYPE_FLAT);
         Generator.addGenerator(Normal.class, "normal", Generator.TYPE_INFINITE);
         Generator.addGenerator(Normal.class, "default", Generator.TYPE_INFINITE);
-        Generator.addGenerator(Nether.class, "nether", Generator.TYPE_NETHER);
-        //todo: add old generator and hell generator
+        Generator.addGenerator(Nether.class, "nether", Generator.TYPE_INFINITE);
+        //todo: add old generator
 
         for (String name : this.getConfig("worlds", new HashMap<String, Object>()).keySet()) {
             if (!this.loadLevel(name)) {
                 long seed;
                 try {
-                    seed = ((Integer) this.getConfig("worlds." + name + ".seed")).longValue();
+                    seed = ((Number) this.getConfig("worlds." + name + ".seed")).longValue();
                 } catch (Exception e) {
                     seed = System.currentTimeMillis();
                 }
 
-                Map<String, Object> options = new HashMap<>();
+                Map<String, Object> options = new Object2ObjectOpenHashMap<>();
                 String[] opts = this.getConfig("worlds." + name + ".generator", Generator.getGenerator("default").getSimpleName()).split(":");
                 Class<? extends Generator> generator = Generator.getGenerator(opts[0]);
                 if (opts.length > 1) {
@@ -472,7 +470,11 @@ public class Server {
                     options.put("preset", preset.toString());
                 }
 
-                this.generateLevel(name, seed, generator, options);
+                this.generateLevel(name, LevelCreationOptions.builder()
+                        .seed(seed)
+                        .generator(generator)
+                        .options(options)
+                        .build());
             }
         }
 
@@ -492,7 +494,9 @@ public class Server {
                 } catch (NumberFormatException e) {
                     seed = seedString.hashCode();
                 }
-                this.generateLevel(defaultName, seed == 0 ? System.currentTimeMillis() : seed);
+                this.generateLevel(defaultName, LevelCreationOptions.builder()
+                        .seed(seed == 0 ? System.currentTimeMillis() : seed)
+                        .build());
             }
 
             this.setDefaultLevel(this.getLevelByName(defaultName));
@@ -644,10 +648,10 @@ public class Server {
         }
 
         if (!forceSync && this.networkCompressionAsync) {
-            this.getScheduler().scheduleAsyncTask(new CompressBatchedTask(data, targets, this.networkCompressionLevel)); //TODO: zlibRaw? 2020/08/27
+            this.getScheduler().scheduleAsyncTask(new CompressBatchedTask(data, targets, this.networkCompressionLevel));
         } else {
             try {
-                this.broadcastPacketsCallback(Zlib.deflate(data, this.networkCompressionLevel), targets); //TODO: zlibRaw? 2020/08/27
+                this.broadcastPacketsCallback(Zlib.deflate(data, this.networkCompressionLevel), targets);
             } catch (Exception e) {
                 throw new RuntimeException(e);
             }
@@ -804,7 +808,6 @@ public class Server {
             if (this.watchdog != null) {
                 this.watchdog.kill();
             }
-            //todo other things
         } catch (Exception e) {
             log.fatal("Exception happened while shutting down", e);
         }
@@ -822,8 +825,6 @@ public class Server {
                 // ignore
             }
         }
-
-        //todo send usage setting
 
         this.tickCounter = 0;
 
@@ -1468,13 +1469,17 @@ public class Server {
     public CompoundTag getOfflinePlayerData(String name) {
         name = name.toLowerCase();
         String path = this.getDataPath() + "players/";
-        File file = new File(path + name + ".dat");
+        Path filePath = Paths.get(path, name + ".dat");
 
-        if (this.shouldSavePlayerData() && file.exists()) {
+        if (this.shouldSavePlayerData() && Files.exists(filePath)) {
             try {
-                return NBTIO.readCompressed(new FileInputStream(file));
+                return NBTIO.readCompressed(Files.newInputStream(filePath));
             } catch (Exception e) {
-                file.renameTo(new File(path + name + ".dat.bak"));
+                try {
+                    Files.move(filePath, Paths.get(path, name + ".dat.bak"), StandardCopyOption.REPLACE_EXISTING);
+                } catch (IOException ex) {
+                    throw new RuntimeException(ex);
+                }
                 log.warn(this.getLanguage().translateString("nukkit.data.playerCorrupted", name));
             }
         } else {
@@ -1491,7 +1496,7 @@ public class Server {
                         .add(new DoubleTag("2", spawn.z)))
                 .putString("Level", this.getDefaultLevel().getName())
                 .putList(new ListTag<>("Inventory"))
-                .putCompound("Achievements", new CompoundTag())
+//                .putCompound("Achievements", new CompoundTag())
                 .putInt("playerGameType", this.getGamemode())
                 .putList(new ListTag<DoubleTag>("Motion")
                         .add(new DoubleTag("0", 0))
@@ -1689,36 +1694,65 @@ public class Server {
     }
 
     public boolean generateLevel(String name) {
-        return this.generateLevel(name, ThreadLocalRandom.current().nextLong());
+        return this.generateLevel(name, LevelCreationOptions.builder().build());
     }
 
+    /**
+     * @deprecated use {#generateLevel(String, LevelCreationOptions)} instead
+     */
+    @Deprecated
     public boolean generateLevel(String name, long seed) {
         return this.generateLevel(name, seed, null);
     }
 
+    /**
+     * @deprecated use {#generateLevel(String, LevelCreationOptions)} instead
+     */
+    @Deprecated
     public boolean generateLevel(String name, long seed, Class<? extends Generator> generator) {
         return this.generateLevel(name, seed, generator, new HashMap<>());
     }
 
+    /**
+     * @deprecated use {#generateLevel(String, LevelCreationOptions)} instead
+     */
+    @Deprecated
     public boolean generateLevel(String name, long seed, Class<? extends Generator> generator, Map<String, Object> options) {
         return generateLevel(name, seed, generator, options, null);
     }
 
-    public boolean generateLevel(String name, long seed, Class<? extends Generator> generator, Map<String, Object> options, Class<? extends LevelProvider> provider) {
+    /**
+     * @deprecated use {#generateLevel(String, LevelCreationOptions, Class)} instead
+     */
+    @Deprecated
+    public boolean generateLevel(String name, long seed, Class<? extends Generator> generator, Map<String, Object> options, @Nullable Class<? extends LevelProvider> provider) {
+        return generateLevel(name, LevelCreationOptions.builder()
+                .seed(seed)
+                .generator(generator)
+                .options(options)
+                .build(), provider);
+    }
+
+    public boolean generateLevel(String name, LevelCreationOptions options) {
+        return generateLevel(name, options, null);
+    }
+
+    public boolean generateLevel(String name, LevelCreationOptions options, @Nullable Class<? extends LevelProvider> provider) {
         if (Objects.equals(name.trim(), "") || this.isLevelGenerated(name)) {
             return false;
         }
 
-        if (!options.containsKey("preset")) {
-            options.put("preset", this.getPropertyString("generator-settings", ""));
+        if (!options.getOptions().containsKey("preset")) {
+            options.getOptions().put("preset", this.getPropertyString("generator-settings", ""));
         }
 
-        if (generator == null) {
-            generator = Generator.getGenerator(this.getLevelType());
+        if (options.getGenerator() == null) {
+            options.setGenerator(Generator.getGenerator(this.getLevelType()));
         }
 
         if (provider == null) {
-            provider = LevelProviderManager.getProviderByName(this.getConfig().get("level-settings.default-format", "anvil"));
+//            provider = LevelProviderManager.getProviderByName(this.getConfig().get("level-settings.default-format", "leveldb"));
+            provider = LevelProviderManager.getProviderByName("leveldb"); // force LevelDB
         }
 
         String path;
@@ -1731,7 +1765,7 @@ public class Server {
 
         Level level;
         try {
-            provider.getMethod("generate", String.class, String.class, long.class, Class.class, Map.class).invoke(null, path, name, seed, generator, options);
+            provider.getMethod("generate", String.class, String.class, LevelCreationOptions.class).invoke(null, path, name, options);
 
             level = new Level(this, name, path, provider);
             this.levels.put(level.getId(), level);
@@ -2014,121 +2048,6 @@ public class Server {
 
     public Thread getPrimaryThread() {
         return currentThread;
-    }
-
-    private void registerEntities() {
-        Entity.registerEntity("Arrow", EntityArrow.class);
-        Entity.registerEntity("EnderPearl", EntityEnderPearl.class);
-        Entity.registerEntity("FallingSand", EntityFallingBlock.class);
-        Entity.registerEntity("Firework", EntityFirework.class);
-        Entity.registerEntity("Item", EntityItem.class);
-        Entity.registerEntity("Painting", EntityPainting.class);
-        Entity.registerEntity("PrimedTnt", EntityPrimedTNT.class);
-        Entity.registerEntity("Snowball", EntitySnowball.class);
-        //Monsters
-        Entity.registerEntity("Blaze", EntityBlaze.class);
-        Entity.registerEntity("CaveSpider", EntityCaveSpider.class);
-        Entity.registerEntity("Creeper", EntityCreeper.class);
-        Entity.registerEntity("Drowned", EntityDrowned.class);
-        Entity.registerEntity("ElderGuardian", EntityElderGuardian.class);
-        Entity.registerEntity("EnderDragon", EntityEnderDragon.class);
-        Entity.registerEntity("Enderman", EntityEnderman.class);
-        Entity.registerEntity("Endermite", EntityEndermite.class);
-        Entity.registerEntity("Evoker", EntityEvoker.class);
-        Entity.registerEntity("Ghast", EntityGhast.class);
-        Entity.registerEntity("Guardian", EntityGuardian.class);
-        Entity.registerEntity("Husk", EntityHusk.class);
-        Entity.registerEntity("MagmaCube", EntityMagmaCube.class);
-        Entity.registerEntity("Phantom", EntityPhantom.class);
-        Entity.registerEntity("Pillager", EntityPillager.class);
-        Entity.registerEntity("Ravager", EntityRavager.class);
-        Entity.registerEntity("Shulker", EntityShulker.class);
-        Entity.registerEntity("Silverfish", EntitySilverfish.class);
-        Entity.registerEntity("Skeleton", EntitySkeleton.class);
-        Entity.registerEntity("Slime", EntitySlime.class);
-        Entity.registerEntity("Spider", EntitySpider.class);
-        Entity.registerEntity("Stray", EntityStray.class);
-        Entity.registerEntity("Vex", EntityVex.class);
-        Entity.registerEntity("Vindicator", EntityVindicator.class);
-        Entity.registerEntity("Witch", EntityWitch.class);
-        Entity.registerEntity("Wither", EntityWither.class);
-        Entity.registerEntity("WitherSkeleton", EntityWitherSkeleton.class);
-        Entity.registerEntity("Zombie", EntityZombie.class);
-        Entity.registerEntity("ZombiePigman", EntityZombiePigman.class);
-        Entity.registerEntity("ZombieVillager", EntityZombieVillager.class);
-        Entity.registerEntity("ZombieVillagerV1", EntityZombieVillagerV1.class);
-        //Passive
-        Entity.registerEntity("Bat", EntityBat.class);
-        Entity.registerEntity("Cat", EntityCat.class);
-        Entity.registerEntity("Chicken", EntityChicken.class);
-        Entity.registerEntity("Cod", EntityCod.class);
-        Entity.registerEntity("Cow", EntityCow.class);
-        Entity.registerEntity("Dolphin", EntityDolphin.class);
-        Entity.registerEntity("Donkey", EntityDonkey.class);
-        Entity.registerEntity("Horse", EntityHorse.class);
-        Entity.registerEntity("Llama", EntityLlama.class);
-        Entity.registerEntity("Mooshroom", EntityMooshroom.class);
-        Entity.registerEntity("Mule", EntityMule.class);
-        Entity.registerEntity("Ocelot", EntityOcelot.class);
-        Entity.registerEntity("Panda", EntityPanda.class);
-        Entity.registerEntity("Parrot", EntityParrot.class);
-        Entity.registerEntity("Pig", EntityPig.class);
-        Entity.registerEntity("PolarBear", EntityPolarBear.class);
-        Entity.registerEntity("Pufferfish", EntityPufferfish.class);
-        Entity.registerEntity("Rabbit", EntityRabbit.class);
-        Entity.registerEntity("Salmon", EntitySalmon.class);
-        Entity.registerEntity("Sheep", EntitySheep.class);
-        Entity.registerEntity("SkeletonHorse", EntitySkeletonHorse.class);
-        Entity.registerEntity("Squid", EntitySquid.class);
-        Entity.registerEntity("TropicalFish", EntityTropicalFish.class);
-        Entity.registerEntity("Turtle", EntityTurtle.class);
-        Entity.registerEntity("Villager", EntityVillager.class);
-        Entity.registerEntity("VillagerV1", EntityVillagerV1.class);
-        Entity.registerEntity("WanderingTrader", EntityWanderingTrader.class);
-        Entity.registerEntity("Wolf", EntityWolf.class);
-        Entity.registerEntity("ZombieHorse", EntityZombieHorse.class);
-        //Projectile
-        Entity.registerEntity("Egg", EntityEgg.class);
-        Entity.registerEntity("ThrownExpBottle", EntityExpBottle.class);
-        Entity.registerEntity("ThrownPotion", EntityPotion.class);
-        Entity.registerEntity("ThrownTrident", EntityThrownTrident.class);
-        Entity.registerEntity("XpOrb", EntityXPOrb.class);
-
-        Entity.registerEntity("Human", EntityHuman.class, true);
-        //Vehicle
-        Entity.registerEntity("Boat", EntityBoat.class);
-        Entity.registerEntity("MinecartChest", EntityMinecartChest.class);
-        Entity.registerEntity("MinecartHopper", EntityMinecartHopper.class);
-        Entity.registerEntity("MinecartRideable", EntityMinecartEmpty.class);
-        Entity.registerEntity("MinecartTnt", EntityMinecartTNT.class);
-
-        Entity.registerEntity("EndCrystal", EntityEndCrystal.class);
-        Entity.registerEntity("FishingHook", EntityFishingHook.class);
-    }
-
-    private void registerBlockEntities() {
-        BlockEntity.registerBlockEntity(BlockEntity.FURNACE, BlockEntityFurnace.class);
-        BlockEntity.registerBlockEntity(BlockEntity.CHEST, BlockEntityChest.class);
-        BlockEntity.registerBlockEntity(BlockEntity.SIGN, BlockEntitySign.class);
-        BlockEntity.registerBlockEntity(BlockEntity.ENCHANT_TABLE, BlockEntityEnchantTable.class);
-        BlockEntity.registerBlockEntity(BlockEntity.SKULL, BlockEntitySkull.class);
-        BlockEntity.registerBlockEntity(BlockEntity.FLOWER_POT, BlockEntityFlowerPot.class);
-        BlockEntity.registerBlockEntity(BlockEntity.BREWING_STAND, BlockEntityBrewingStand.class);
-        BlockEntity.registerBlockEntity(BlockEntity.ITEM_FRAME, BlockEntityItemFrame.class);
-        BlockEntity.registerBlockEntity(BlockEntity.CAULDRON, BlockEntityCauldron.class);
-        BlockEntity.registerBlockEntity(BlockEntity.ENDER_CHEST, BlockEntityEnderChest.class);
-        BlockEntity.registerBlockEntity(BlockEntity.BEACON, BlockEntityBeacon.class);
-        BlockEntity.registerBlockEntity(BlockEntity.PISTON_ARM, BlockEntityPistonArm.class);
-        BlockEntity.registerBlockEntity(BlockEntity.COMPARATOR, BlockEntityComparator.class);
-        BlockEntity.registerBlockEntity(BlockEntity.HOPPER, BlockEntityHopper.class);
-        BlockEntity.registerBlockEntity(BlockEntity.BED, BlockEntityBed.class);
-        BlockEntity.registerBlockEntity(BlockEntity.JUKEBOX, BlockEntityJukebox.class);
-        BlockEntity.registerBlockEntity(BlockEntity.SHULKER_BOX, BlockEntityShulkerBox.class);
-        BlockEntity.registerBlockEntity(BlockEntity.BANNER, BlockEntityBanner.class);
-        BlockEntity.registerBlockEntity(BlockEntity.MUSIC, BlockEntityMusic.class);
-        BlockEntity.registerBlockEntity(BlockEntity.DISPENSER, BlockEntityDispenser.class);
-        BlockEntity.registerBlockEntity(BlockEntity.DROPPER, BlockEntityDropper.class);
-        BlockEntity.registerBlockEntity(BlockEntity.MOVING_BLOCK, BlockEntityMovingBlock.class);
     }
 
     public static Server getInstance() {

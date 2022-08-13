@@ -64,4 +64,9 @@ public class BlockHugeMushroomRed extends BlockSolidMeta {
     public BlockColor getColor() {
         return BlockColor.RED_BLOCK_COLOR;
     }
+
+    @Override
+    public boolean isVegetation() {
+        return true;
+    }
 }

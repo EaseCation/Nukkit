@@ -1,20 +1,27 @@
 package cn.nukkit.blockentity;
 
+import cn.nukkit.Player;
 import cn.nukkit.block.Block;
 import cn.nukkit.item.Item;
+import cn.nukkit.item.ItemRecord;
+import cn.nukkit.lang.TranslationContainer;
 import cn.nukkit.level.format.FullChunk;
 import cn.nukkit.nbt.NBTIO;
 import cn.nukkit.nbt.tag.CompoundTag;
 import cn.nukkit.network.protocol.LevelSoundEventPacket;
 
-import java.util.Objects;
+import javax.annotation.Nullable;
 
 /**
  * @author CreeperFace
  */
 public class BlockEntityJukebox extends BlockEntitySpawnable {
 
-    private Item recordItem;
+    @Nullable
+    private ItemRecord recordItem;
+
+    private boolean finishedRecording;
+    private long ticksPlaying;
 
     public BlockEntityJukebox(FullChunk chunk, CompoundTag nbt) {
         super(chunk, nbt);
@@ -22,91 +29,131 @@ public class BlockEntityJukebox extends BlockEntitySpawnable {
 
     @Override
     protected void initBlockEntity() {
+        boolean hasRecord = false;
         if (namedTag.contains("RecordItem")) {
-            this.recordItem = NBTIO.getItemHelper(namedTag.getCompound("RecordItem"));
+            Item item = NBTIO.getItemHelper(namedTag.getCompound("RecordItem"));
+            if (item instanceof ItemRecord && !item.isNull()) {
+                hasRecord = true;
+                this.recordItem = (ItemRecord) item;
+            }
+        }
+
+        if (hasRecord) {
+            if (namedTag.contains("FinishedRecording")) {
+                this.finishedRecording = namedTag.getBoolean("FinishedRecording");
+            } else {
+                this.finishedRecording = true;
+            }
+
+            if (namedTag.contains("TicksPlaying")) {
+                this.ticksPlaying = namedTag.getLong("TicksPlaying");
+            } else {
+                this.ticksPlaying = 0;
+            }
+
+//            this.scheduleUpdate();
         } else {
-            this.recordItem = Item.get(0);
+            this.recordItem = null;
+            this.finishedRecording = true;
+            this.ticksPlaying = 0;
         }
 
         super.initBlockEntity();
     }
 
     @Override
-    public boolean isBlockEntityValid() {
-        return this.getLevel().getBlockIdAt(getFloorX(), getFloorY(), getFloorZ()) == Block.JUKEBOX;
+    public boolean isValidBlock(int blockId) {
+        return blockId == Block.JUKEBOX;
     }
 
-    public void setRecordItem(Item recordItem) {
-        Objects.requireNonNull(recordItem, "Record item cannot be null");
+    public void setRecordItem(@Nullable ItemRecord recordItem) {
+        if (recordItem == null || recordItem.isNull()) {
+            this.recordItem = null;
+            this.finishedRecording = true;
+            this.ticksPlaying = 0;
+            return;
+        }
+
         this.recordItem = recordItem;
+        this.finishedRecording = false;
+        this.ticksPlaying = 1;
     }
 
+    @Nullable
     public Item getRecordItem() {
         return recordItem;
     }
 
     public void play() {
-        if (this.recordItem.getId() >= 500 && this.recordItem.getId() <= 511) {
-            switch (this.recordItem.getId()) {
-                case Item.RECORD_13:
-                    this.getLevel().addLevelSoundEvent(this, LevelSoundEventPacket.SOUND_RECORD_13);
-                    break;
-                case Item.RECORD_CAT:
-                    this.getLevel().addLevelSoundEvent(this, LevelSoundEventPacket.SOUND_RECORD_CAT);
-                    break;
-                case Item.RECORD_BLOCKS:
-                    this.getLevel().addLevelSoundEvent(this, LevelSoundEventPacket.SOUND_RECORD_BLOCKS);
-                    break;
-                case Item.RECORD_CHIRP:
-                    this.getLevel().addLevelSoundEvent(this, LevelSoundEventPacket.SOUND_RECORD_CHIRP);
-                    break;
-                case Item.RECORD_FAR:
-                    this.getLevel().addLevelSoundEvent(this, LevelSoundEventPacket.SOUND_RECORD_FAR);
-                    break;
-                case Item.RECORD_MALL:
-                    this.getLevel().addLevelSoundEvent(this, LevelSoundEventPacket.SOUND_RECORD_MALL);
-                    break;
-                case Item.RECORD_MELLOHI:
-                    this.getLevel().addLevelSoundEvent(this, LevelSoundEventPacket.SOUND_RECORD_MELLOHI);
-                    break;
-                case Item.RECORD_STAL:
-                    this.getLevel().addLevelSoundEvent(this, LevelSoundEventPacket.SOUND_RECORD_STAL);
-                    break;
-                case Item.RECORD_STRAD:
-                    this.getLevel().addLevelSoundEvent(this, LevelSoundEventPacket.SOUND_RECORD_STRAD);
-                    break;
-                case Item.RECORD_WARD:
-                    this.getLevel().addLevelSoundEvent(this, LevelSoundEventPacket.SOUND_RECORD_WARD);
-                    break;
-                case Item.RECORD_11:
-                    this.getLevel().addLevelSoundEvent(this, LevelSoundEventPacket.SOUND_RECORD_11);
-                    break;
-                case Item.RECORD_WAIT:
-                    this.getLevel().addLevelSoundEvent(this, LevelSoundEventPacket.SOUND_RECORD_WAIT);
-                    break;
-            }
+        if (this.recordItem == null) {
+            this.stop();
+            return;
         }
+
+        this.finishedRecording = false;
+        this.ticksPlaying = 1;
+        this.getLevel().addLevelSoundEvent(this.blockCenter(), recordItem.getSoundEvent());
+
+        for (Player player : this.getLevel().getChunkPlayers(this.getChunkX(), this.getChunkZ()).values()) {
+            player.sendJukeboxPopup(new TranslationContainer("record.nowPlaying", "%item." + recordItem.getTranslationIdentifier() + ".desc"));
+        }
+
+//        this.scheduleUpdate();
     }
 
     public void stop() {
-        this.getLevel().addLevelSoundEvent(this, LevelSoundEventPacket.SOUND_STOP_RECORD);
+        this.finishedRecording = true;
+        this.ticksPlaying = 0;
+        this.getLevel().addLevelSoundEvent(this.blockCenter(), LevelSoundEventPacket.SOUND_STOP_RECORD);
     }
 
     public void dropItem() {
+        if (this.recordItem == null) {
+            return;
+        }
+
         this.level.dropItem(this.up(), this.recordItem);
-        this.recordItem = Item.get(0);
+        this.recordItem = null;
         this.stop();
     }
 
     @Override
     public void saveNBT() {
         super.saveNBT();
-        this.namedTag.putCompound("RecordItem", NBTIO.putItemHelper(this.recordItem));
+
+        if (this.recordItem == null) {
+            this.namedTag.remove("RecordItem");
+        } else {
+            this.namedTag.putCompound("RecordItem", NBTIO.putItemHelper(this.recordItem));
+//            this.namedTag.putBoolean("FinishedRecording", this.finishedRecording);
+//            this.namedTag.putLong("TicksPlaying", this.ticksPlaying);
+        }
+
+        this.namedTag.remove("FinishedRecording"); // runtime only
+        this.namedTag.remove("TicksPlaying"); // runtime only
     }
 
     @Override
     public CompoundTag getSpawnCompound() {
-        return getDefaultCompound(this, JUKEBOX)
-                .putCompound("RecordItem", NBTIO.putItemHelper(this.recordItem));
+        CompoundTag nbt = getDefaultCompound(this, JUKEBOX)
+                .putBoolean("FinishedRecording", this.finishedRecording)
+                .putLong("TicksPlaying", this.ticksPlaying);
+
+        if (this.recordItem != null) {
+            nbt.putCompound("RecordItem", NBTIO.putItemHelper(this.recordItem));
+        }
+
+        return nbt;
+    }
+
+    @Override
+    public boolean onUpdate() {
+        if (this.finishedRecording) {
+            this.ticksPlaying = 0;
+            return false;
+        }
+
+        ++this.ticksPlaying;
+        return true;
     }
 }

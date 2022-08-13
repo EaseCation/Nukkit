@@ -21,11 +21,11 @@ public class BlockDoorJungle extends BlockDoorWood {
 
     @Override
     public int getId() {
-        return JUNGLE_DOOR_BLOCK;
+        return BLOCK_JUNGLE_DOOR;
     }
 
     @Override
-    public Item toItem() {
+    public Item toItem(boolean addUserData) {
         return new ItemDoorJungle();
     }
 

@@ -1,12 +1,11 @@
 package cn.nukkit.level.format.anvil.util;
 
-
 import com.google.common.base.Preconditions;
 
 import java.util.Arrays;
 
 public class NibbleArray implements Cloneable {
-    private final byte[] data;
+    private byte[] data;
 
     public NibbleArray(int length) {
         data = new byte[length / 2];
@@ -45,6 +44,14 @@ public class NibbleArray implements Cloneable {
         Arrays.fill(data, (byte) ((value << 4) | value));
     }
 
+    public void fillMin() {
+        Arrays.fill(data, (byte) 0x00);
+    }
+
+    public void fillMax() {
+        Arrays.fill(data, (byte) 0xff);
+    }
+
     public void copyFrom(byte[] bytes) {
         Preconditions.checkNotNull(bytes, "bytes");
         Preconditions.checkArgument(bytes.length == data.length, "length of provided byte array is %s but expected %s", bytes.length,
@@ -63,5 +70,16 @@ public class NibbleArray implements Cloneable {
 
     public NibbleArray copy() {
         return new NibbleArray(getData().clone());
+    }
+
+    @Override
+    public NibbleArray clone() {
+        try {
+            NibbleArray clone = (NibbleArray) super.clone();
+            clone.data = this.data.clone();
+            return clone;
+        } catch (CloneNotSupportedException e) {
+            return null;
+        }
     }
 }

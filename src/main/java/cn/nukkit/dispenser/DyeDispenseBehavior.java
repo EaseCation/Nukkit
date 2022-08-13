@@ -14,7 +14,7 @@ public class DyeDispenseBehavior extends DefaultDispenseBehavior {
         if (DyeColor.getByDyeData(item.getDamage()) == DyeColor.WHITE) {
             if (target instanceof BlockCrops || target instanceof BlockSapling || target instanceof BlockTallGrass
                     || target instanceof BlockDoublePlant || target instanceof BlockMushroom) {
-                target.onActivate(item);
+                target.onActivate(item, face, null);
 
             } else {
                 item.count++;

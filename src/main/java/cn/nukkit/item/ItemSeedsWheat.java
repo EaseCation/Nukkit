@@ -19,6 +19,6 @@ public class ItemSeedsWheat extends Item {
 
     public ItemSeedsWheat(Integer meta, int count) {
         super(WHEAT_SEEDS, 0, count, "Wheat Seeds");
-        this.block = Block.get(BlockID.WHEAT_BLOCK);
+        this.block = Block.get(BlockID.BLOCK_WHEAT);
     }
 }

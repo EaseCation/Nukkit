@@ -23,7 +23,6 @@ public class GameRules {
     private GameRules() {
     }
 
-
     public static GameRules getDefault() {
         GameRules gameRules = new GameRules();
 
@@ -151,15 +150,15 @@ public class GameRules {
         return gameRules.keySet().toArray(new GameRule[0]);
     }
 
-    // TODO: This needs to be moved out since there is not a separate compound tag in the LevelDB format for Game Rules.
-    public CompoundTag writeNBT() {
-        CompoundTag nbt = new CompoundTag();
+    public void writeNBT(CompoundTag nbt) {
+        writeNBT(nbt, false);
+    }
 
+    public void writeNBT(CompoundTag nbt, boolean lowercase) {
         for (Entry<GameRule, Value> entry : gameRules.entrySet()) {
-            nbt.putString(entry.getKey().getName(), entry.getValue().value.toString());
+            String name = entry.getKey().getName();
+            nbt.putString(lowercase ? name.toLowerCase() : name, entry.getValue().value.toString());
         }
-
-        return nbt;
     }
 
     public void readNBT(CompoundTag nbt) {

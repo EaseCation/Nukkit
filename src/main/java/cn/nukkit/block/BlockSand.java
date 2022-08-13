@@ -1,6 +1,11 @@
 package cn.nukkit.block;
 
+import cn.nukkit.Player;
+import cn.nukkit.item.Item;
+import cn.nukkit.item.ItemDye;
+import cn.nukkit.item.ItemID;
 import cn.nukkit.item.ItemTool;
+import cn.nukkit.math.BlockFace;
 import cn.nukkit.utils.BlockColor;
 
 /**
@@ -24,7 +29,7 @@ public class BlockSand extends BlockFallable {
 
     @Override
     public int getFullId() {
-        return (getId() << 4) + getDamage();
+        return (getId() << BLOCK_META_BITS) | getDamage();
     }
 
     @Override
@@ -34,7 +39,7 @@ public class BlockSand extends BlockFallable {
 
     @Override
     public final void setDamage(int meta) {
-        this.meta = meta;
+        this.meta = meta & BLOCK_META_MASK;
     }
 
     @Override
@@ -73,5 +78,19 @@ public class BlockSand extends BlockFallable {
         }
 
         return BlockColor.SAND_BLOCK_COLOR;
+    }
+
+    @Override
+    public boolean canBeActivated() {
+        return true;
+    }
+
+    @Override
+    public boolean onActivate(Item item, BlockFace face, Player player) {
+        if (item.getId() == ItemID.DYE && item.getDamage() == ItemDye.BONE_MEAL) {
+            //TODO: generate seagrass, coral and coral fan
+            return false;
+        }
+        return false;
     }
 }

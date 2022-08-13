@@ -67,6 +67,10 @@ public class BlockCarpet extends BlockFlowable {
 
     @Override
     public boolean place(Item item, Block block, Block target, BlockFace face, double fx, double fy, double fz, Player player) {
+        if (block.isLiquid() || !block.isAir() && level.getExtraBlock(this).isWater()) {
+            return false;
+        }
+
         Block down = this.down();
         if (down.getId() != Item.AIR) {
             this.getLevel().setBlock(block, this, true, true);
@@ -97,4 +101,13 @@ public class BlockCarpet extends BlockFlowable {
         return DyeColor.getByWoolData(getDamage());
     }
 
+    @Override
+    public boolean canContainWater() {
+        return true;
+    }
+
+    @Override
+    public boolean canProvideSupport(BlockFace face, SupportType type) {
+        return false;
+    }
 }

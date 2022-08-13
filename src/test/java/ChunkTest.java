@@ -38,11 +38,11 @@ public class ChunkTest {
     public static void readSubChunk(String file) throws Exception {
         try (InputStream in = ChunkTest.class.getClassLoader().getResourceAsStream(file)) {
             BinaryStream stream = new BinaryStream(ByteStreams.toByteArray(in));
-            byte ver = stream.getByteRaw();
+            byte ver = stream.getSingedByte();
             System.out.println("ver: "+ver);
-            byte cnt = stream.getByteRaw();
+            byte cnt = stream.getSingedByte();
             System.out.println("cnt: "+cnt);
-            byte idx = stream.getByteRaw();
+            byte idx = stream.getSingedByte();
             System.out.println("idx: "+idx);
 
             readPalette(stream, cnt);
@@ -54,7 +54,7 @@ public class ChunkTest {
     public static void readPalette(BinaryStream stream, int count) {
         for (int i = 0; i < count; i++) {
             System.out.println("===: "+i);
-            byte header = stream.getByteRaw();
+            byte header = stream.getSingedByte();
             System.out.println("header: "+header);
             int type = header >> 1;
             System.out.println("type: "+type);

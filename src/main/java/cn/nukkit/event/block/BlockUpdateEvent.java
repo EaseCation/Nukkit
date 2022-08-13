@@ -12,12 +12,18 @@ public class BlockUpdateEvent extends BlockEvent implements Cancellable {
 
     private static final HandlerList handlers = new HandlerList();
 
+    private final int layer;
+
     public static HandlerList getHandlers() {
         return handlers;
     }
 
-    public BlockUpdateEvent(Block block) {
+    public BlockUpdateEvent(Block block, int layer) {
         super(block);
+        this.layer = layer;
     }
 
+    public int getLayer() {
+        return layer;
+    }
 }

@@ -68,8 +68,8 @@ public class Explosion {
     public boolean explodeA() {
         if (what instanceof EntityExplosive) {
             Entity entity = (Entity) what;
-            int block = level.getBlockIdAt(entity.getFloorX(), entity.getFloorY(), entity.getFloorZ());
-            if (block == BlockID.WATER || block == BlockID.STILL_WATER) {
+            int block = level.getBlock(entity).getId();
+            if (block == BlockID.FLOWING_WATER || block == BlockID.WATER) {
                 this.doesDamage = false;
                 return true;
             }
@@ -146,12 +146,12 @@ public class Explosion {
         }
 
         double explosionSize = this.size * 2d;
-        double minX = NukkitMath.floorDouble(this.source.x - explosionSize - 1);
-        double maxX = NukkitMath.ceilDouble(this.source.x + explosionSize + 1);
-        double minY = NukkitMath.floorDouble(this.source.y - explosionSize - 1);
-        double maxY = NukkitMath.ceilDouble(this.source.y + explosionSize + 1);
-        double minZ = NukkitMath.floorDouble(this.source.z - explosionSize - 1);
-        double maxZ = NukkitMath.ceilDouble(this.source.z + explosionSize + 1);
+        double minX = Mth.floor(this.source.x - explosionSize - 1);
+        double maxX = Mth.floor(this.source.x + explosionSize + 1);
+        double minY = Mth.floor(this.source.y - explosionSize - 1);
+        double maxY = Mth.floor(this.source.y + explosionSize + 1);
+        double minZ = Mth.floor(this.source.z - explosionSize - 1);
+        double maxZ = Mth.floor(this.source.z + explosionSize + 1);
 
         AxisAlignedBB explosionBB = new SimpleAxisAlignedBB(minX, minY, minZ, maxX, maxY, maxZ);
         Entity[] list = this.level.getNearbyEntities(explosionBB, this.what instanceof Entity ? (Entity) this.what : null);
@@ -200,7 +200,7 @@ public class Explosion {
                     }
                     ((InventoryHolder) container).getInventory().clearAll();
                 }
-            } else if (block.getId() == Block.BREWING_STAND_BLOCK) {
+            } else if (block.getId() == Block.BLOCK_BREWING_STAND) {
                 BlockEntity container = block.getLevel().getBlockEntity(block);
                 if (container instanceof BlockEntityBrewingStand) {
                     for (Item drop : ((InventoryHolder) container).getInventory().getContents().values()) {
@@ -208,7 +208,7 @@ public class Explosion {
                     }
                     ((InventoryHolder) container).getInventory().clearAll();
                 }
-            } else if (block.getId() == Block.HOPPER_BLOCK) {
+            } else if (block.getId() == Block.BLOCK_HOPPER) {
                 BlockEntity container = block.getLevel().getBlockEntity(block);
                 if (container instanceof BlockEntityHopper) {
                     for (Item drop : ((InventoryHolder) container).getInventory().getContents().values()) {
@@ -235,7 +235,7 @@ public class Explosion {
             } else if (block.getId() == Block.SHULKER_BOX || block.getId() == Block.UNDYED_SHULKER_BOX) {
                 BlockEntity shulkerBox = block.getLevel().getBlockEntity(block);
                 if (shulkerBox instanceof BlockEntityShulkerBox) {
-                    this.level.dropItem(block.add(0.5, 0.5, 0.5), block.toItem());
+                    this.level.dropItem(block.add(0.5, 0.5, 0.5), block.toItem(true));
                     ((BlockEntityShulkerBox) shulkerBox).getInventory().clearAll();
                 }
             } else if (random.nextDouble() * 100 < yield) {
@@ -244,15 +244,15 @@ public class Explosion {
                 }
             }
 
-            this.level.setBlockAt((int) block.x, (int) block.y, (int) block.z, BlockID.AIR);
+            this.level.setBlockAt(0, (int) block.x, (int) block.y, (int) block.z, BlockID.AIR);
 
             Vector3 pos = new Vector3(block.x, block.y, block.z);
 
-            for (BlockFace side : BlockFace.values0()) {
+            for (BlockFace side : BlockFace.getValues()) {
                 Vector3 sideBlock = pos.getSide(side);
                 long index = Hash.hashBlock((int) sideBlock.x, (int) sideBlock.y, (int) sideBlock.z);
                 if (!this.affectedBlocks.contains(sideBlock) && !updateBlocks.contains(index)) {
-                    BlockUpdateEvent ev = new BlockUpdateEvent(this.level.getBlock(sideBlock));
+                    BlockUpdateEvent ev = new BlockUpdateEvent(this.level.getBlock(sideBlock), 0);
                     this.level.getServer().getPluginManager().callEvent(ev);
                     if (!ev.isCancelled()) {
                         ev.getBlock().onUpdate(Level.BLOCK_UPDATE_NORMAL);

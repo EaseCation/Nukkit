@@ -47,7 +47,7 @@ public class BlockFenceNetherBrick extends BlockFence {
     public Item[] getDrops(Item item) {
         if (item.isPickaxe() && item.getTier() >= ItemTool.TIER_WOODEN) {
             return new Item[]{
-                    toItem()
+                    toItem(true)
             };
         } else {
             return new Item[0];
@@ -61,7 +61,7 @@ public class BlockFenceNetherBrick extends BlockFence {
 
     @Override
     public BlockColor getColor() {
-        return BlockColor.NETHERRACK_BLOCK_COLOR;
+        return BlockColor.NETHER_BLOCK_COLOR;
     }
 
     @Override

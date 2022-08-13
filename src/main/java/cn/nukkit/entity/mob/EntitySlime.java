@@ -45,7 +45,7 @@ public class EntitySlime extends EntityMob {
 
     @Override
     public Item[] getDrops() {
-        return new Item[]{Item.get(Item.SLIMEBALL)};
+        return new Item[]{Item.get(Item.SLIME_BALL)};
     }
 
     @Override

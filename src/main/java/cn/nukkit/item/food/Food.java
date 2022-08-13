@@ -1,5 +1,6 @@
 package cn.nukkit.item.food;
 
+import cn.nukkit.GameVersion;
 import cn.nukkit.Player;
 import cn.nukkit.block.Block;
 import cn.nukkit.event.player.PlayerEatFoodEvent;
@@ -8,6 +9,8 @@ import cn.nukkit.plugin.Plugin;
 import cn.nukkit.potion.Effect;
 
 import java.util.*;
+
+import static cn.nukkit.GameVersion.*;
 
 /**
  * Created by Snake1999 on 2016/1/13.
@@ -26,22 +29,22 @@ public abstract class Food {
     public static final Food apple_golden_enchanted = registerDefaultFood(new FoodEffective(4, 9.6F)
             .addEffect(Effect.getEffect(Effect.REGENERATION).setAmplifier(4).setDuration(30 * 20))
             .addEffect(Effect.getEffect(Effect.ABSORPTION).setDuration(2 * 60 * 20).setAmplifier(3))
-            .addEffect(Effect.getEffect(Effect.DAMAGE_RESISTANCE).setDuration(5 * 60 * 20))
+            .addEffect(Effect.getEffect(Effect.RESISTANCE).setDuration(5 * 60 * 20))
             .addEffect(Effect.getEffect(Effect.FIRE_RESISTANCE).setDuration(5 * 60 * 20))
-            .addRelative(Item.GOLDEN_APPLE_ENCHANTED));
-    public static final Food beef_raw = registerDefaultFood(new FoodNormal(3, 1.8F).addRelative(Item.RAW_BEEF));
+            .addRelative(Item.ENCHANTED_GOLDEN_APPLE));
+    public static final Food beef_raw = registerDefaultFood(new FoodNormal(3, 1.8F).addRelative(Item.BEEF));
     public static final Food beetroot = registerDefaultFood(new FoodNormal(1, 1.2F).addRelative(Item.BEETROOT));
     public static final Food beetroot_soup = registerDefaultFood(new FoodInBowl(6, 7.2F).addRelative(Item.BEETROOT_SOUP));
     public static final Food bread = registerDefaultFood(new FoodNormal(5, 6F).addRelative(Item.BREAD));
     public static final Food cake_slice = registerDefaultFood(new FoodNormal(2, 0.4F)
-            .addRelative(Block.CAKE_BLOCK, 0).addRelative(Block.CAKE_BLOCK, 1).addRelative(Block.CAKE_BLOCK, 2)
-            .addRelative(Block.CAKE_BLOCK, 3).addRelative(Block.CAKE_BLOCK, 4).addRelative(Block.CAKE_BLOCK, 5)
-            .addRelative(Block.CAKE_BLOCK, 6));
+            .addRelative(Block.BLOCK_CAKE, 0).addRelative(Block.BLOCK_CAKE, 1).addRelative(Block.BLOCK_CAKE, 2)
+            .addRelative(Block.BLOCK_CAKE, 3).addRelative(Block.BLOCK_CAKE, 4).addRelative(Block.BLOCK_CAKE, 5)
+            .addRelative(Block.BLOCK_CAKE, 6));
     public static final Food carrot = registerDefaultFood(new FoodNormal(3, 4.8F).addRelative(Item.CARROT));
     public static final Food carrot_golden = registerDefaultFood(new FoodNormal(6, 14.4F).addRelative(Item.GOLDEN_CARROT));
     public static final Food chicken_raw = registerDefaultFood(new FoodEffective(2, 1.2F)
             .addChanceEffect(0.3F, Effect.getEffect(Effect.HUNGER).setDuration(30 * 20))
-            .addRelative(Item.RAW_CHICKEN));
+            .addRelative(Item.CHICKEN));
     public static final Food chicken_cooked = registerDefaultFood(new FoodNormal(6, 7.2F).addRelative(Item.COOKED_CHICKEN));
     public static final Food chorus_fruit = registerDefaultFood(new FoodChorusFruit());
     public static final Food cookie = registerDefaultFood(new FoodNormal(2, 0.4F).addRelative(Item.COOKIE));
@@ -49,9 +52,9 @@ public abstract class Food {
     public static final Food milk = registerDefaultFood(new FoodMilk().addRelative(Item.BUCKET, 1));
     public static final Food mushroom_stew = registerDefaultFood(new FoodInBowl(6, 7.2F).addRelative(Item.MUSHROOM_STEW));
     public static final Food mutton_cooked = registerDefaultFood(new FoodNormal(6, 9.6F).addRelative(Item.COOKED_MUTTON));
-    public static final Food mutton_raw = registerDefaultFood(new FoodNormal(2, 1.2F).addRelative(Item.RAW_MUTTON));
+    public static final Food mutton_raw = registerDefaultFood(new FoodNormal(2, 1.2F).addRelative(Item.MUTTON));
     public static final Food porkchop_cooked = registerDefaultFood(new FoodNormal(8, 12.8F).addRelative(Item.COOKED_PORKCHOP));
-    public static final Food porkchop_raw = registerDefaultFood(new FoodNormal(3, 1.8F).addRelative(Item.RAW_PORKCHOP));
+    public static final Food porkchop_raw = registerDefaultFood(new FoodNormal(3, 1.8F).addRelative(Item.PORKCHOP));
     public static final Food potato_raw = registerDefaultFood(new FoodNormal(1, 0.6F).addRelative(Item.POTATO));
     public static final Food potato_baked = registerDefaultFood(new FoodNormal(5, 7.2F).addRelative(Item.BAKED_POTATO));
     public static final Food potato_poisonous = registerDefaultFood(new FoodEffective(2, 1.2F)
@@ -59,7 +62,7 @@ public abstract class Food {
             .addRelative(Item.POISONOUS_POTATO));
     public static final Food pumpkin_pie = registerDefaultFood(new FoodNormal(8, 4.8F).addRelative(Item.PUMPKIN_PIE));
     public static final Food rabbit_cooked = registerDefaultFood(new FoodNormal(5, 6F).addRelative(Item.COOKED_RABBIT));
-    public static final Food rabbit_raw = registerDefaultFood(new FoodNormal(3, 1.8F).addRelative(Item.RAW_RABBIT));
+    public static final Food rabbit_raw = registerDefaultFood(new FoodNormal(3, 1.8F).addRelative(Item.RABBIT));
     public static final Food rabbit_stew = registerDefaultFood(new FoodInBowl(10, 12F).addRelative(Item.RABBIT_STEW));
     public static final Food rotten_flesh = registerDefaultFood(new FoodEffective(4, 0.8F)
             .addChanceEffect(0.8F, Effect.getEffect(Effect.HUNGER).setDuration(30 * 20))
@@ -69,17 +72,19 @@ public abstract class Food {
             .addRelative(Item.SPIDER_EYE));
     public static final Food steak = registerDefaultFood(new FoodNormal(8, 12.8F).addRelative(Item.COOKED_BEEF));
     //different kinds of fishes
-    public static final Food clownfish = registerDefaultFood(new FoodNormal(1, 0.2F).addRelative(Item.CLOWNFISH));
-    public static final Food fish_cooked = registerDefaultFood(new FoodNormal(5, 6F).addRelative(Item.COOKED_FISH));
-    public static final Food fish_raw = registerDefaultFood(new FoodNormal(2, 0.4F).addRelative(Item.RAW_FISH));
+    public static final Food clownfish = registerDefaultFood(new FoodNormal(1, 0.2F).addRelative(Item.TROPICAL_FISH));
+    public static final Food fish_cooked = registerDefaultFood(new FoodNormal(5, 6F).addRelative(Item.COOKED_COD));
+    public static final Food fish_raw = registerDefaultFood(new FoodNormal(2, 0.4F).addRelative(Item.COD));
     public static final Food salmon_cooked = registerDefaultFood(new FoodNormal(6, 9.6F).addRelative(Item.COOKED_SALMON));
-    public static final Food salmon_raw = registerDefaultFood(new FoodNormal(2, 0.4F).addRelative(Item.RAW_SALMON));
+    public static final Food salmon_raw = registerDefaultFood(new FoodNormal(2, 0.4F).addRelative(Item.SALMON));
     public static final Food pufferfish = registerDefaultFood(new FoodEffective(1, 0.2F)
             .addEffect(Effect.getEffect(Effect.HUNGER).setAmplifier(2).setDuration(15 * 20))
             .addEffect(Effect.getEffect(Effect.NAUSEA).setAmplifier(1).setDuration(15 * 20))
-            .addEffect(Effect.getEffect(Effect.POISON).setAmplifier(4).setDuration(60 * 20))
+            .addEffect(Effect.getEffect(Effect.POISON).setAmplifier(3).setDuration(60 * 20))
             .addRelative(Item.PUFFERFISH));
-    public static final Food dried_kelp = registerDefaultFood(new FoodNormal(1, 0.6F).addRelative(Item.DRIED_KELP));
+    public static final Food dried_kelp = registerDefaultFood(new FoodNormal(1, 0.6F).addRelative(Item.DRIED_KELP), V1_4_0);
+    public static final Food sweet_berries = registerDefaultFood(new FoodNormal(2, 1.2F).addRelative(Item.SWEET_BERRIES), V1_11_0);
+    public static final Food honey_bottle = registerDefaultFood(new FoodNormal(6, 1.2F).addRelative(Item.HONEY_BOTTLE), V1_14_0);
 
     //Opened API for plugins
     public static Food registerFood(Food food, Plugin plugin) {
@@ -92,6 +97,13 @@ public abstract class Food {
     private static Food registerDefaultFood(Food food) {
         food.relativeIDs.forEach(n -> registryDefault.put(n, food));
         return food;
+    }
+
+    private static Food registerDefaultFood(Food food, GameVersion versions) {
+        if (!versions.isAvailable()) {
+            return null;
+        }
+        return registerDefaultFood(food);
     }
 
     public static Food getByRelative(Item item) {

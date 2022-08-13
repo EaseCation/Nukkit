@@ -11,10 +11,11 @@ public class BlockWood2 extends BlockWood {
     public static final int ACACIA = 0;
     public static final int DARK_OAK = 1;
 
+    public static final int TYPE_MASK = 0b1;
+
     private static final String[] NAMES = new String[]{
-            "Acacia Wood",
-            "Dark Oak Wood",
-            ""
+            "Acacia Log",
+            "Dark Oak Log",
     };
 
     public BlockWood2() {
@@ -27,23 +28,38 @@ public class BlockWood2 extends BlockWood {
 
     @Override
     public int getId() {
-        return WOOD2;
+        return LOG2;
     }
 
     @Override
     public String getName() {
-        return NAMES[this.getDamage() > 2 ? 0 : this.getDamage()];
+        return NAMES[this.getDamage() & TYPE_MASK];
     }
 
     @Override
     public BlockColor getColor() {
-        switch(getDamage() & 0x07){
+        switch (getDamage() & TYPE_MASK) {
             case ACACIA:
                 return BlockColor.ORANGE_BLOCK_COLOR;
             case DARK_OAK:
                 return BlockColor.BROWN_BLOCK_COLOR;
-            default:
-                return BlockColor.WOOD_BLOCK_COLOR;
         }
+        return BlockColor.WOOD_BLOCK_COLOR;
+    }
+
+    @Override
+    protected int getStrippedLogId() {
+        switch (getDamage() & TYPE_MASK) {
+            case ACACIA:
+                return STRIPPED_ACACIA_LOG;
+            case DARK_OAK:
+                return STRIPPED_DARK_OAK_LOG;
+        }
+        return STRIPPED_OAK_LOG;
+    }
+
+    @Override
+    protected int getWoodMeta() {
+        return 0b100 | (getDamage() & TYPE_MASK);
     }
 }

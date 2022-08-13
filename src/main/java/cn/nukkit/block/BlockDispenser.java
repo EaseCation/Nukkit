@@ -3,6 +3,7 @@ package cn.nukkit.block;
 import cn.nukkit.Player;
 import cn.nukkit.blockentity.BlockEntity;
 import cn.nukkit.blockentity.BlockEntityDispenser;
+import cn.nukkit.blockentity.BlockEntityType;
 import cn.nukkit.dispenser.DispenseBehavior;
 import cn.nukkit.dispenser.DispenseBehaviorRegister;
 import cn.nukkit.inventory.ContainerInventory;
@@ -49,7 +50,22 @@ public class BlockDispenser extends BlockSolidMeta implements Faceable {
     }
 
     @Override
-    public Item toItem() {
+    public int getBlockEntityType() {
+        return BlockEntityType.DISPENSER;
+    }
+
+    @Override
+    public double getHardness() {
+        return 3.5;
+    }
+
+    @Override
+    public double getResistance() {
+        return 17.5;
+    }
+
+    @Override
+    public Item toItem(boolean addUserData) {
         return new ItemBlock(this, 0);
     }
 
@@ -85,7 +101,7 @@ public class BlockDispenser extends BlockSolidMeta implements Faceable {
     }
 
     @Override
-    public boolean onActivate(Item item, Player player) {
+    public boolean onActivate(Item item, BlockFace face, Player player) {
         if (player == null) {
             return false;
         }
@@ -125,11 +141,13 @@ public class BlockDispenser extends BlockSolidMeta implements Faceable {
     }
 
     protected void createBlockEntity() {
-        new BlockEntityDispenser(this.level.getChunk(getChunkX(), getChunkZ()),
-                BlockEntity.getDefaultCompound(this, BlockEntity.DISPENSER));
+        BlockEntity.createBlockEntity(BlockEntity.DISPENSER, getChunk(), BlockEntity.getDefaultCompound(this, BlockEntity.DISPENSER));
     }
 
     protected InventoryHolder getBlockEntity() {
+        if (level == null) {
+            return null;
+        }
         BlockEntity blockEntity = this.level.getBlockEntity(this);
 
         if (!(blockEntity instanceof BlockEntityDispenser)) {

@@ -15,6 +15,16 @@ public class BlockPlanks extends BlockSolidMeta {
     public static final int ACACIA = 4;
     public static final int DARK_OAK = 5;
 
+    private static final String[] NAMES = new String[]{
+            "Oak Wood Planks",
+            "Spruce Wood Planks",
+            "Birch Wood Planks",
+            "Jungle Wood Planks",
+            "Acacia Wood Planks",
+            "Dark Oak Wood Planks",
+            "Planks",
+            "Planks",
+    };
 
     public BlockPlanks() {
         this(0);
@@ -26,7 +36,7 @@ public class BlockPlanks extends BlockSolidMeta {
 
     @Override
     public int getId() {
-        return WOODEN_PLANKS;
+        return PLANKS;
     }
 
     @Override
@@ -51,16 +61,7 @@ public class BlockPlanks extends BlockSolidMeta {
 
     @Override
     public String getName() {
-        String[] names = new String[]{
-                "Oak Wood Planks",
-                "Spruce Wood Planks",
-                "Birch Wood Planks",
-                "Jungle Wood Planks",
-                "Acacia Wood Planks",
-                "Dark Oak Wood Planks",
-        };
-
-        return this.getDamage() < 0 ? "Unknown" : names[this.getDamage() % 6];
+        return NAMES[this.getDamage() & 0xf];
     }
 
     @Override
@@ -70,12 +71,12 @@ public class BlockPlanks extends BlockSolidMeta {
 
     @Override
     public BlockColor getColor() {
-        switch(getDamage() & 0x07){
+        switch (getDamage() & 0x07) {
             default:
             case OAK:
                 return BlockColor.WOOD_BLOCK_COLOR;
             case SPRUCE:
-                return BlockColor.SPRUCE_BLOCK_COLOR;
+                return BlockColor.PODZOL_BLOCK_COLOR;
             case BIRCH:
                 return BlockColor.SAND_BLOCK_COLOR;
             case JUNGLE:

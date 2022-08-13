@@ -22,7 +22,7 @@ public class BlockConcretePowder extends BlockFallable {
 
     @Override
     public int getFullId() {
-        return (getId() << 4) + getDamage();
+        return (getId() << BLOCK_META_BITS) | getDamage();
     }
 
     @Override
@@ -32,7 +32,7 @@ public class BlockConcretePowder extends BlockFallable {
 
     @Override
     public final void setDamage(int meta) {
-        this.meta = meta;
+        this.meta = meta & BLOCK_META_MASK;
     }
 
     @Override
@@ -63,11 +63,13 @@ public class BlockConcretePowder extends BlockFallable {
     @Override
     public int onUpdate(int type) {
         if (type == Level.BLOCK_UPDATE_NORMAL) {
-            super.onUpdate(Level.BLOCK_UPDATE_NORMAL);
+            if (super.onUpdate(type) == type) {
+                return type;
+            }
 
             for (int side = 1; side <= 5; side++) {
                 Block block = this.getSide(BlockFace.fromIndex(side));
-                if (block.getId() == Block.WATER || block.getId() == Block.STILL_WATER) {
+                if (block.getId() == Block.FLOWING_WATER || block.getId() == Block.WATER) {
                     this.level.setBlock(this, Block.get(Block.CONCRETE, this.meta), true, true);
                 }
             }
@@ -83,7 +85,7 @@ public class BlockConcretePowder extends BlockFallable {
 
         for (int side = 1; side <= 5; side++) {
             Block block = this.getSide(BlockFace.fromIndex(side));
-            if (block.getId() == Block.WATER || block.getId() == Block.STILL_WATER) {
+            if (block.getId() == Block.FLOWING_WATER || block.getId() == Block.WATER) {
                 concrete = true;
                 break;
             }

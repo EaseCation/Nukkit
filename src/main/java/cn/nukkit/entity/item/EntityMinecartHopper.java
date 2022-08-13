@@ -11,6 +11,7 @@ import cn.nukkit.math.Vector3;
 import cn.nukkit.nbt.NBTIO;
 import cn.nukkit.nbt.tag.CompoundTag;
 import cn.nukkit.nbt.tag.ListTag;
+import cn.nukkit.network.protocol.types.ContainerType;
 import cn.nukkit.utils.MinecartType;
 
 public class EntityMinecartHopper extends EntityMinecartAbstract implements InventoryHolder {
@@ -21,7 +22,7 @@ public class EntityMinecartHopper extends EntityMinecartAbstract implements Inve
 
     public EntityMinecartHopper(FullChunk chunk, CompoundTag nbt) {
         super(chunk, nbt);
-        setDisplayBlock(Block.get(Block.HOPPER_BLOCK), false);
+        setDisplayBlock(Block.get(Block.BLOCK_HOPPER), false);
     }
 
     @Override
@@ -84,7 +85,7 @@ public class EntityMinecartHopper extends EntityMinecartAbstract implements Inve
         }
 
         this.dataProperties
-                .putByte(DATA_CONTAINER_TYPE, 11)
+                .putByte(DATA_CONTAINER_TYPE, ContainerType.MINECART_HOPPER)
                 .putInt(DATA_CONTAINER_BASE_SIZE, this.inventory.getSize())
                 .putInt(DATA_CONTAINER_EXTRA_SLOTS_PER_STRENGTH, 0);
     }

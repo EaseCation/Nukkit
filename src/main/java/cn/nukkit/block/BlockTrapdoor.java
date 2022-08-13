@@ -19,8 +19,9 @@ import cn.nukkit.utils.Faceable;
  */
 public class BlockTrapdoor extends BlockTransparentMeta implements Faceable {
 
-    public static final int TRAPDOOR_OPEN_BIT = 0x08;
+    public static final int DIRECTION_MASK = 0b11;
     public static final int TRAPDOOR_TOP_BIT = 0x04;
+    public static final int TRAPDOOR_OPEN_BIT = 0x08;
 
     public BlockTrapdoor() {
         this(0);
@@ -37,7 +38,7 @@ public class BlockTrapdoor extends BlockTransparentMeta implements Faceable {
 
     @Override
     public String getName() {
-        return "Wooden Trapdoor";
+        return "Oak Trapdoor";
     }
 
     @Override
@@ -86,7 +87,7 @@ public class BlockTrapdoor extends BlockTransparentMeta implements Faceable {
                 );
             }
             if ((damage & TRAPDOOR_OPEN_BIT) > 0) {
-                if ((damage & 0x03) == 0) {
+                if ((damage & DIRECTION_MASK) == 0) {
                     bb.setBounds(
                             0,
                             0,
@@ -95,7 +96,7 @@ public class BlockTrapdoor extends BlockTransparentMeta implements Faceable {
                             1,
                             1
                     );
-                } else if ((damage & 0x03) == 1) {
+                } else if ((damage & DIRECTION_MASK) == 1) {
                     bb.setBounds(
                             0,
                             0,
@@ -105,7 +106,7 @@ public class BlockTrapdoor extends BlockTransparentMeta implements Faceable {
                             0 + f
                     );
                 }
-                if ((damage & 0x03) == 2) {
+                if ((damage & DIRECTION_MASK) == 2) {
                     bb.setBounds(
                             1 - f,
                             0,
@@ -115,7 +116,7 @@ public class BlockTrapdoor extends BlockTransparentMeta implements Faceable {
                             1
                     );
                 }
-                if ((damage & 0x03) == 3) {
+                if ((damage & DIRECTION_MASK) == 3) {
                     bb.setBounds(
                             0,
                             0,
@@ -169,7 +170,7 @@ public class BlockTrapdoor extends BlockTransparentMeta implements Faceable {
         if (type == Level.BLOCK_UPDATE_REDSTONE && this.level.isRedstoneEnabled()) {
             if ((!isOpen() && this.level.isBlockPowered(this)) || (isOpen() && !this.level.isBlockPowered(this))) {
                 this.level.getServer().getPluginManager().callEvent(new BlockRedstoneEvent(this, isOpen() ? 15 : 0, isOpen() ? 0 : 15));
-                this.setDamage(this.getDamage() ^ 0x04);
+                this.setDamage(this.getDamage() ^ TRAPDOOR_TOP_BIT);
                 this.level.setBlock(this, this, true);
                 this.level.addLevelEvent(this.add(0.5, 0.5, 0.5), LevelEventPacket.EVENT_SOUND_DOOR);
                 return type;
@@ -193,8 +194,7 @@ public class BlockTrapdoor extends BlockTransparentMeta implements Faceable {
             top = face != BlockFace.UP;
         }
 
-        int[] faces = {2, 1, 3, 0};
-        int faceBit = faces[facing.getHorizontalIndex()];
+        int faceBit = facing.getReversedHorizontalIndex();
         meta |= faceBit;
 
         if (top) {
@@ -206,13 +206,13 @@ public class BlockTrapdoor extends BlockTransparentMeta implements Faceable {
     }
 
     @Override
-    public Item toItem() {
+    public Item toItem(boolean addUserData) {
         return new ItemBlock(this, 0);
     }
 
     @Override
-    public boolean onActivate(Item item, Player player) {
-        if(toggle(player)) {
+    public boolean onActivate(Item item, BlockFace face, Player player) {
+        if (toggle(player)) {
             this.level.addLevelEvent(this.add(0.5, 0.5, 0.5), LevelEventPacket.EVENT_SOUND_DOOR);
             return true;
         }
@@ -236,15 +236,30 @@ public class BlockTrapdoor extends BlockTransparentMeta implements Faceable {
     }
 
     public boolean isOpen() {
-        return (this.getDamage() & TRAPDOOR_OPEN_BIT) != 0;
+        return (this.getDamage() & TRAPDOOR_OPEN_BIT) == TRAPDOOR_OPEN_BIT;
     }
 
     public boolean isTop() {
-        return (this.getDamage() & TRAPDOOR_TOP_BIT) != 0;
+        return (this.getDamage() & TRAPDOOR_TOP_BIT) == TRAPDOOR_TOP_BIT;
     }
 
     @Override
     public BlockFace getBlockFace() {
-        return BlockFace.fromHorizontalIndex(this.getDamage() & 0x07);
+        return BlockFace.fromReversedHorizontalIndex(this.getDamage() & DIRECTION_MASK);
+    }
+
+    @Override
+    public boolean canContainWater() {
+        return true;
+    }
+
+    @Override
+    public boolean canProvideSupport(BlockFace face, SupportType type) {
+        return false;
+    }
+
+    @Override
+    public boolean isTrapdoor() {
+        return true;
     }
 }

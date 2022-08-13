@@ -6,9 +6,9 @@ import cn.nukkit.entity.projectile.EntityProjectile;
 import cn.nukkit.level.format.FullChunk;
 import cn.nukkit.level.particle.Particle;
 import cn.nukkit.level.particle.SpellParticle;
-import cn.nukkit.level.sound.SoundEnum;
 import cn.nukkit.nbt.tag.CompoundTag;
 import cn.nukkit.network.protocol.AddEntityPacket;
+import cn.nukkit.network.protocol.LevelSoundEventPacket;
 
 import java.util.concurrent.ThreadLocalRandom;
 
@@ -65,20 +65,19 @@ public class EntityExpBottle extends EntityProjectile {
 
         this.timing.startTiming();
 
-        int tickDiff = currentTick - this.lastUpdate;
         boolean hasUpdate = super.onUpdate(currentTick);
 
         if (this.age > 1200) {
-            this.kill();
+            this.close();
             hasUpdate = true;
         }
 
         if (this.isCollided) {
-            this.kill();
+            this.close();
             Particle particle2 = new SpellParticle(this, 0x00385dc6);
             this.getLevel().addParticle(particle2);
 
-            this.getLevel().addSound(this, SoundEnum.RANDOM_GLASS);
+            this.getLevel().addLevelSoundEvent(this, LevelSoundEventPacket.SOUND_GLASS);
 
             hasUpdate = true;
 

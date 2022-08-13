@@ -7,6 +7,8 @@ import cn.nukkit.network.protocol.InventorySlotPacket;
 import cn.nukkit.network.protocol.types.ContainerIds;
 import it.unimi.dsi.fastutil.ints.Int2ObjectOpenHashMap;
 
+import static cn.nukkit.network.protocol.types.UiContainerSlots.COUNT;
+
 public class PlayerUIInventory extends BaseInventory {
     private final Player player;
 
@@ -15,7 +17,7 @@ public class PlayerUIInventory extends BaseInventory {
     private final BigCraftingGrid bigCraftingGrid;
 
     public PlayerUIInventory(Player player) {
-        super(player, InventoryType.UI, new Int2ObjectOpenHashMap<>(), 51);
+        super(player, InventoryType.UI, new Int2ObjectOpenHashMap<>(COUNT), COUNT);
         this.player = player;
 
         this.cursorInventory = new PlayerCursorInventory(this);
@@ -90,7 +92,7 @@ public class PlayerUIInventory extends BaseInventory {
 
     @Override
     public int getSize() {
-        return 51;
+        return COUNT;
     }
 
     @Override

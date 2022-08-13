@@ -21,11 +21,11 @@ public class BlockDoorAcacia extends BlockDoorWood {
 
     @Override
     public int getId() {
-        return ACACIA_DOOR_BLOCK;
+        return BLOCK_ACACIA_DOOR;
     }
 
     @Override
-    public Item toItem() {
+    public Item toItem(boolean addUserData) {
         return new ItemDoorAcacia();
     }
 

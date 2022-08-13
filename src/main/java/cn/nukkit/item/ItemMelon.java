@@ -15,6 +15,6 @@ public class ItemMelon extends ItemEdible {
     }
 
     public ItemMelon(Integer meta, int count) {
-        super(MELON, meta, count, "Melon");
+        super(MELON_SLICE, meta, count, "Melon");
     }
 }

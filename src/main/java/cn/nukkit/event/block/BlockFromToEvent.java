@@ -12,10 +12,12 @@ public class BlockFromToEvent extends BlockEvent implements Cancellable {
         return handlers;
     }
 
+    private final int layer;
     private Block to;
 
-    public BlockFromToEvent(Block block, Block to) {
+    public BlockFromToEvent(Block block, int layer, Block to) {
         super(block);
+        this.layer = layer;
         this.to = to;
     }
 
@@ -29,5 +31,9 @@ public class BlockFromToEvent extends BlockEvent implements Cancellable {
 
     public void setTo(Block newTo) {
         to = newTo;
+    }
+
+    public int getLayer() {
+        return layer;
     }
 }

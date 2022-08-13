@@ -17,10 +17,12 @@ import cn.nukkit.utils.Faceable;
  */
 public abstract class BlockDoor extends BlockTransparentMeta implements Faceable {
 
-    public static int DOOR_OPEN_BIT = 0x04;
-    public static int DOOR_TOP_BIT = 0x08;
-    public static int DOOR_HINGE_BIT = 0x01;
-    public static int DOOR_POWERED_BIT = 0x02;
+    public static final int DOOR_OPEN_BIT = 0x04;
+    public static final int DOOR_TOP_BIT = 0x08;
+    public static final int DOOR_HINGE_BIT = 0x01;
+    public static final int DOOR_POWERED_BIT = 0x02;
+
+    private static final int[] FACES = {1, 2, 3, 0};
 
     protected BlockDoor(int meta) {
         super(meta);
@@ -233,27 +235,29 @@ public abstract class BlockDoor extends BlockTransparentMeta implements Faceable
             if (!blockUp.canBeReplaced() || blockDown.isTransparent()) {
                 return false;
             }
-            int[] faces = {1, 2, 3, 0};
-            int direction = faces[player != null ? player.getDirection().getHorizontalIndex() : 0];
 
-            Block left = this.getSide(player.getDirection().rotateYCCW());
-            Block right = this.getSide(player.getDirection().rotateY());
             int metaUp = DOOR_TOP_BIT;
-            if (left.getId() == this.getId() || (!right.isTransparent() && left.isTransparent())) { //Door hinge
-                metaUp |= DOOR_HINGE_BIT;
+            if (player != null) {
+                int direction = FACES[player.getDirection().getHorizontalIndex()];
+
+                Block left = this.getSide(player.getDirection().rotateYCCW());
+                Block right = this.getSide(player.getDirection().rotateY());
+                if (left.getId() == this.getId() || (!right.isTransparent() && left.isTransparent())) { //Door hinge
+                    metaUp |= DOOR_HINGE_BIT;
+                }
+
+                this.setDamage(direction);
             }
 
-            this.setDamage(direction);
             this.getLevel().setBlock(block, this, true, false); //Bottom
-            this.getLevel().setBlock(blockUp, Block.get(this.getId(), metaUp), true, true); //Top
 
             if (this.level.isRedstoneEnabled()) {
                 if (!this.isOpen() && this.level.isBlockPowered(this)) {
                     this.toggle(null);
                     metaUp |= DOOR_POWERED_BIT;
-                    this.getLevel().setBlockDataAt(blockUp.getFloorX(), blockUp.getFloorY(), blockUp.getFloorZ(), metaUp);
                 }
             }
+            this.getLevel().setBlock(blockUp, Block.get(this.getId(), metaUp), true, true); //Top
 
             return true;
         }
@@ -280,7 +284,7 @@ public abstract class BlockDoor extends BlockTransparentMeta implements Faceable
     }
 
     @Override
-    public boolean onActivate(Item item, Player player) {
+    public boolean onActivate(Item item, BlockFace face, Player player) {
         if (!this.toggle(player)) {
             return false;
         }
@@ -347,5 +351,20 @@ public abstract class BlockDoor extends BlockTransparentMeta implements Faceable
     @Override
     public boolean sticksToPiston() {
         return false;
+    }
+
+    @Override
+    public boolean canContainWater() {
+        return true;
+    }
+
+    @Override
+    public boolean canProvideSupport(BlockFace face, SupportType type) {
+        return false;
+    }
+
+    @Override
+    public boolean isDoor() {
+        return true;
     }
 }

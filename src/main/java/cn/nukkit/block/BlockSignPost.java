@@ -2,16 +2,23 @@ package cn.nukkit.block;
 
 import cn.nukkit.Player;
 import cn.nukkit.blockentity.BlockEntity;
+import cn.nukkit.blockentity.BlockEntityType;
 import cn.nukkit.blockentity.BlockEntitySign;
+import cn.nukkit.event.block.SignColorChangeEvent;
+import cn.nukkit.event.block.SignGlowEvent;
 import cn.nukkit.item.Item;
+import cn.nukkit.item.ItemDye;
 import cn.nukkit.item.ItemSign;
 import cn.nukkit.item.ItemTool;
 import cn.nukkit.level.Level;
 import cn.nukkit.math.AxisAlignedBB;
 import cn.nukkit.math.BlockFace;
+import cn.nukkit.math.Mth;
 import cn.nukkit.nbt.tag.CompoundTag;
 import cn.nukkit.nbt.tag.Tag;
+import cn.nukkit.network.protocol.LevelEventPacket;
 import cn.nukkit.utils.BlockColor;
+import cn.nukkit.utils.DyeColor;
 import cn.nukkit.utils.Faceable;
 
 /**
@@ -29,7 +36,12 @@ public class BlockSignPost extends BlockTransparentMeta implements Faceable {
 
     @Override
     public int getId() {
-        return SIGN_POST;
+        return STANDING_SIGN;
+    }
+
+    @Override
+    public int getBlockEntityType() {
+        return BlockEntityType.SIGN;
     }
 
     @Override
@@ -49,7 +61,7 @@ public class BlockSignPost extends BlockTransparentMeta implements Faceable {
 
     @Override
     public String getName() {
-        return "Sign Post";
+        return "Oak Sign";
     }
 
     @Override
@@ -60,22 +72,18 @@ public class BlockSignPost extends BlockTransparentMeta implements Faceable {
     @Override
     public boolean place(Item item, Block block, Block target, BlockFace face, double fx, double fy, double fz, Player player) {
         if (face != BlockFace.DOWN) {
-            CompoundTag nbt = new CompoundTag()
-                    .putString("id", BlockEntity.SIGN)
-                    .putInt("x", (int) block.x)
-                    .putInt("y", (int) block.y)
-                    .putInt("z", (int) block.z)
+            CompoundTag nbt = BlockEntity.getDefaultCompound(this, BlockEntity.SIGN)
                     .putString("Text1", "")
                     .putString("Text2", "")
                     .putString("Text3", "")
                     .putString("Text4", "");
 
             if (face == BlockFace.UP) {
-                setDamage((int) Math.floor(((player.yaw + 180) * 16 / 360) + 0.5) & 0x0f);
-                getLevel().setBlock(block, Block.get(BlockID.SIGN_POST, getDamage()), true);
+                setDamage(Mth.floor(((player.yaw + 180) * 16 / 360) + 0.5) & 0x0f);
+                getLevel().setBlock(block, Block.get(getStandingBlockId(), getDamage()), true);
             } else {
                 setDamage(face.getIndex());
-                getLevel().setBlock(block, Block.get(BlockID.WALL_SIGN, getDamage()), true);
+                getLevel().setBlock(block, Block.get(getWallBlockId(), getDamage()), true);
             }
 
             if (player != null) {
@@ -109,7 +117,7 @@ public class BlockSignPost extends BlockTransparentMeta implements Faceable {
     }
 
     @Override
-    public Item toItem() {
+    public Item toItem(boolean addUserData) {
         return new ItemSign();
     }
 
@@ -129,7 +137,101 @@ public class BlockSignPost extends BlockTransparentMeta implements Faceable {
     }
 
     @Override
+    public boolean canBeActivated() {
+        return true;
+    }
+
+    @Override
+    public boolean onActivate(Item item, BlockFace face, Player player) {
+        if (item.getId() == Item.DYE) {
+            BlockEntity blockEntity = this.level.getBlockEntity(this);
+            if (!(blockEntity instanceof BlockEntitySign)) {
+                return false;
+            }
+            BlockEntitySign sign = (BlockEntitySign) blockEntity;
+
+            int meta = item.getDamage();
+            if (meta == ItemDye.INK_SAC || meta == ItemDye.GLOW_INK_SAC) {
+                boolean glow = meta == ItemDye.GLOW_INK_SAC;
+                if (sign.isGlowing() == glow) {
+                    if (player != null) {
+                        sign.spawnTo(player);
+                    }
+                    return false;
+                }
+
+                SignGlowEvent event = new SignGlowEvent(this, player, glow);
+                this.level.getServer().getPluginManager().callEvent(event);
+                if (event.isCancelled()) {
+                    if (player != null) {
+                        sign.spawnTo(player);
+                    }
+                    return false;
+                }
+
+                sign.setGlowing(glow);
+                sign.spawnToAll();
+
+                this.level.addLevelEvent(this, LevelEventPacket.EVENT_SOUND_INK_SAC_USED);
+
+                if (player != null && (player.getGamemode() & 0x01) == 0) {
+                    item.count--;
+                }
+
+                return true;
+            }
+
+            BlockColor color = DyeColor.getByDyeData(meta).getSignColor();
+            if (color.equals(sign.getColor())) {
+                if (player != null) {
+                    sign.spawnTo(player);
+                }
+                return false;
+            }
+
+            SignColorChangeEvent event = new SignColorChangeEvent(this, player, color);
+            this.level.getServer().getPluginManager().callEvent(event);
+            if (event.isCancelled()) {
+                if (player != null) {
+                    sign.spawnTo(player);
+                }
+                return false;
+            }
+
+            sign.setColor(color);
+            sign.spawnToAll();
+
+            this.level.addLevelEvent(this, LevelEventPacket.EVENT_SOUND_DYE_USED);
+
+            if (player != null && (player.getGamemode() & 0x01) == 0) {
+                item.count--;
+            }
+
+            return true;
+        }
+        return false;
+    }
+
+    @Override
     public boolean breaksWhenMoved() {
         return true;
+    }
+
+    @Override
+    public boolean canContainWater() {
+        return true;
+    }
+
+    @Override
+    public boolean canProvideSupport(BlockFace face, SupportType type) {
+        return false;
+    }
+
+    protected int getStandingBlockId() {
+        return STANDING_SIGN;
+    }
+
+    protected int getWallBlockId() {
+        return WALL_SIGN;
     }
 }

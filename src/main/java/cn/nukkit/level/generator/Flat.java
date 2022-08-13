@@ -1,6 +1,5 @@
 package cn.nukkit.level.generator;
 
-import cn.nukkit.Server;
 import cn.nukkit.block.*;
 import cn.nukkit.level.ChunkManager;
 import cn.nukkit.level.format.FullChunk;
@@ -179,7 +178,7 @@ public class Flat extends Generator {
                 for (int y = 0; y < 256; ++y) {
                     int k = this.structure[y][0];
                     int l = this.structure[y][1];
-                    chunk.setBlock(X, y, Z, this.structure[y][0], this.structure[y][1]);
+                    chunk.setBlock(0, X, y, Z, this.structure[y][0], this.structure[y][1]);
                 }
             }
         }

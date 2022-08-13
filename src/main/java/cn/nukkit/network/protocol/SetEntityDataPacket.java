@@ -22,7 +22,8 @@ public class SetEntityDataPacket extends DataPacket {
 
     @Override
     public void decode() {
-
+        this.eid = this.getEntityRuntimeId();
+//        this.metadata = Binary.readMetadata(this.get()); //FIXME
     }
 
     @Override

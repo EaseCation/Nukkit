@@ -10,16 +10,16 @@ import cn.nukkit.event.player.PlayerInteractEvent.Action;
 import cn.nukkit.item.Item;
 import cn.nukkit.item.ItemBlock;
 import cn.nukkit.level.Level;
-import cn.nukkit.level.sound.SoundEnum;
 import cn.nukkit.math.AxisAlignedBB;
 import cn.nukkit.math.BlockFace;
 import cn.nukkit.math.SimpleAxisAlignedBB;
+import cn.nukkit.network.protocol.LevelSoundEventPacket;
 
 /**
  * Created by Snake1999 on 2016/1/11.
  * Package cn.nukkit.block in project nukkit
  */
-public abstract class BlockPressurePlateBase extends BlockFlowable {
+public abstract class BlockPressurePlateBase extends BlockTransparentMeta {
 
     protected float onPitch;
     protected float offPitch;
@@ -35,6 +35,36 @@ public abstract class BlockPressurePlateBase extends BlockFlowable {
     @Override
     public boolean canPassThrough() {
         return true;
+    }
+
+    @Override
+    public double getHardness() {
+        return 0;
+    }
+
+    @Override
+    public double getResistance() {
+        return 0;
+    }
+
+    @Override
+    public boolean isSolid() {
+        return false;
+    }
+
+    @Override
+    public boolean breaksWhenMoved() {
+        return true;
+    }
+
+    @Override
+    public boolean sticksToPiston() {
+        return false;
+    }
+
+    @Override
+    protected AxisAlignedBB recalculateBoundingBox() {
+        return null;
     }
 
     @Override
@@ -195,17 +225,32 @@ public abstract class BlockPressurePlateBase extends BlockFlowable {
     }
 
     protected void playOnSound() {
-        this.level.addSound(this, SoundEnum.RANDOM_CLICK, 0.6f, onPitch);
+        this.level.addLevelSoundEvent(this.add(0.5, 0.1, 0.5), LevelSoundEventPacket.SOUND_POWER_ON, (this.getId() << BLOCK_META_BITS) | this.getDamage());
     }
 
     protected void playOffSound() {
-        this.level.addSound(this, SoundEnum.RANDOM_CLICK, 0.6f, offPitch);
+        this.level.addLevelSoundEvent(this.add(0.5, 0.1, 0.5), LevelSoundEventPacket.SOUND_POWER_OFF, (this.getId() << BLOCK_META_BITS) | this.getDamage());
     }
 
     protected abstract int computeRedstoneStrength();
 
     @Override
-    public Item toItem() {
+    public Item toItem(boolean addUserData) {
         return new ItemBlock(this, 0, 1);
+    }
+
+    @Override
+    public boolean canContainWater() {
+        return true;
+    }
+
+    @Override
+    public boolean canProvideSupport(BlockFace face, SupportType type) {
+        return false;
+    }
+
+    @Override
+    public boolean isPressurePlate() {
+        return true;
     }
 }

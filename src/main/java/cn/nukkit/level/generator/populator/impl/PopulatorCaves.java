@@ -7,7 +7,7 @@ import cn.nukkit.level.format.FullChunk;
 import cn.nukkit.level.biome.Biome;
 import cn.nukkit.level.biome.type.CoveredBiome;
 import cn.nukkit.level.generator.populator.type.Populator;
-import cn.nukkit.math.MathHelper;
+import cn.nukkit.math.Mth;
 import cn.nukkit.math.NukkitRandom;
 
 import java.util.Random;
@@ -84,14 +84,14 @@ public class PopulatorCaves extends Populator {
         boolean bigAngel = localRandom.nextInt(6) == 0;
 
         for (; angle < maxAngle; angle++) {
-            double offsetXZ = 1.5D + MathHelper.sin(angle * 3.141593F / maxAngle) * radius * 1.0F;
+            double offsetXZ = 1.5D + Mth.sin(angle * 3.141593F / maxAngle) * radius * 1.0F;
             double offsetY = offsetXZ * scale;
 
-            float cos = MathHelper.cos(angel);
-            float sin = MathHelper.sin(angel);
-            x += MathHelper.cos(angelOffset) * cos;
+            float cos = Mth.cos(angel);
+            float sin = Mth.sin(angel);
+            x += Mth.cos(angelOffset) * cos;
             y += sin;
-            z += MathHelper.sin(angelOffset) * cos;
+            z += Mth.sin(angelOffset) * cos;
 
             if (bigAngel)
                 angel *= 0.92F;
@@ -129,14 +129,14 @@ public class PopulatorCaves extends Populator {
                 continue;
 
 
-            int xFrom = MathHelper.floor(x - offsetXZ) - chunkX * 16 - 1;
-            int xTo = MathHelper.floor(x + offsetXZ) - chunkX * 16 + 1;
+            int xFrom = Mth.floor(x - offsetXZ) - chunkX * 16 - 1;
+            int xTo = Mth.floor(x + offsetXZ) - chunkX * 16 + 1;
 
-            int yFrom = MathHelper.floor(y - offsetY) - 1;
-            int yTo = MathHelper.floor(y + offsetY) + 1;
+            int yFrom = Mth.floor(y - offsetY) - 1;
+            int yTo = Mth.floor(y + offsetY) + 1;
 
-            int zFrom = MathHelper.floor(z - offsetXZ) - chunkZ * 16 - 1;
-            int zTo = MathHelper.floor(z + offsetXZ) - chunkZ * 16 + 1;
+            int zFrom = Mth.floor(z - offsetXZ) - chunkZ * 16 - 1;
+            int zTo = Mth.floor(z + offsetXZ) - chunkZ * 16 + 1;
 
             if (xFrom < 0)
                 xFrom = 0;
@@ -159,8 +159,8 @@ public class PopulatorCaves extends Populator {
                 for (int zz = zFrom; (!waterFound) && (zz < zTo); zz++) {
                     for (int yy = yTo + 1; (!waterFound) && (yy >= yFrom - 1); yy--) {
                         if (yy >= 0 && yy < this.worldHeightCap) {
-                            int block = chunk.getBlockId(xx, yy, zz);
-                            if (block == Block.WATER || block == Block.STILL_WATER) {
+                            int block = chunk.getBlockId(0, xx, yy, zz);
+                            if (block == Block.FLOWING_WATER || block == Block.WATER) {
                                 waterFound = true;
                             }
                             if ((yy != yFrom - 1) && (xx != xFrom) && (xx != xTo - 1) && (zz != zFrom) && (zz != zTo - 1))
@@ -190,8 +190,8 @@ public class PopulatorCaves extends Populator {
                                     continue;
                                 }
 
-                                int material = chunk.getBlockId(xx, yy, zz);
-                                int materialAbove = chunk.getBlockId(xx, yy + 1, zz);
+                                int material = chunk.getBlockId(0, xx, yy, zz);
+                                int materialAbove = chunk.getBlockId(0, xx, yy + 1, zz);
                                 if (material == Block.GRASS || material == Block.MYCELIUM) {
                                     grassFound = true;
                                 }
@@ -199,14 +199,14 @@ public class PopulatorCaves extends Populator {
 //								if (this.isSuitableBlock(material, materialAbove, biome))
                                 {
                                     if (yy - 1 < 10) {
-                                        chunk.setBlock(xx, yy, zz, Block.LAVA);
+                                        chunk.setBlock(0, xx, yy, zz, Block.FLOWING_LAVA);
                                     } else {
-                                        chunk.setBlock(xx, yy, zz, Block.AIR);
+                                        chunk.setBlock(0, xx, yy, zz, Block.AIR);
 
                                         // If grass was just deleted, try to
                                         // move it down
-                                        if (grassFound && (chunk.getBlockId(xx, yy - 1, zz) == Block.DIRT)) {
-                                            chunk.setBlock(xx, yy - 1, zz, ((CoveredBiome) biome).getSurfaceBlock(yy - 1));
+                                        if (grassFound && (chunk.getBlockId(0, xx, yy - 1, zz) == Block.DIRT)) {
+                                            chunk.setBlock(0, xx, yy - 1, zz, ((CoveredBiome) biome).getSurfaceBlock(yy - 1));
                                         }
                                     }
                                 }

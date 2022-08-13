@@ -13,4 +13,6 @@ public interface Recipe {
     void registerToCraftingManager(CraftingManager manager);
 
     RecipeType getType();
+
+    RecipeTag getTag();
 }

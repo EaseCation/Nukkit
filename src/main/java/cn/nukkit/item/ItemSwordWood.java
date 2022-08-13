@@ -37,4 +37,9 @@ public class ItemSwordWood extends ItemTool {
     public int getAttackDamage() {
         return 4;
     }
+
+    @Override
+    public boolean additionalDamageOnBreak() {
+        return true;
+    }
 }

@@ -18,7 +18,7 @@ public class BlockFenceGateJungle extends BlockFenceGate {
 
     @Override
     public int getId() {
-        return FENCE_GATE_JUNGLE;
+        return JUNGLE_FENCE_GATE;
     }
 
     @Override
@@ -27,8 +27,8 @@ public class BlockFenceGateJungle extends BlockFenceGate {
     }
 
     @Override
-    public Item toItem() {
-        return Item.get(Item.FENCE_GATE_JUNGLE, 0, 1);
+    public Item toItem(boolean addUserData) {
+        return Item.get(Item.JUNGLE_FENCE_GATE, 0, 1);
     }
 
     @Override

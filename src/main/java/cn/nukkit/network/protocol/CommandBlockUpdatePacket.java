@@ -46,19 +46,5 @@ public class CommandBlockUpdatePacket extends DataPacket {
 
     @Override
     public void encode() {
-        this.reset();
-        this.putBoolean(this.isBlock);
-        if (this.isBlock) {
-            this.putBlockVector3(this.x, this.y, this.z);
-            this.putUnsignedVarInt(this.commandBlockMode);
-            this.putBoolean(this.isRedstoneMode);
-            this.putBoolean(this.isConditional);
-        } else {
-            this.putEntityRuntimeId(this.minecartEid);
-        }
-        this.putString(this.command);
-        this.putString(this.lastOutput);
-        this.putString(this.name);
-        this.putBoolean(this.shouldTrackOutput);
     }
 }

@@ -29,9 +29,6 @@ public class InteractPacket extends DataPacket {
 
     @Override
     public void encode() {
-        this.reset();
-        this.putByte((byte) this.action);
-        this.putEntityRuntimeId(this.target);
     }
 
     @Override

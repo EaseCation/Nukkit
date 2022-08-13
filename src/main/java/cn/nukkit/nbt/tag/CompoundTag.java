@@ -213,6 +213,10 @@ public class CompoundTag extends Tag implements Cloneable {
         return new HashMap<>(this.tags);
     }
 
+    public Map<String, Tag> getTagsUnsafe() {
+        return this.tags;
+    }
+
     @Override
     public Map<String, Object> parseValue() {
         Map<String, Object> value = new HashMap<>(this.tags.size());

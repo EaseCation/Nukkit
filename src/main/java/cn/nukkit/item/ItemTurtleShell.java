@@ -14,7 +14,7 @@ public class ItemTurtleShell extends ItemArmor {
     }
 
     public ItemTurtleShell(Integer meta, int count) {
-        super(TURTLE_SHELL, meta, count, "Turtle Shell");
+        super(TURTLE_HELMET, meta, count, "Turtle Shell");
     }
 
     @Override

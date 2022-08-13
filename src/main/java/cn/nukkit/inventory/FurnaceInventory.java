@@ -13,6 +13,10 @@ public class FurnaceInventory extends ContainerInventory {
         super(furnace, InventoryType.FURNACE);
     }
 
+    protected FurnaceInventory(BlockEntityFurnace furnace, InventoryType type) {
+        super(furnace, type);
+    }
+
     @Override
     public BlockEntityFurnace getHolder() {
         return (BlockEntityFurnace) this.holder;

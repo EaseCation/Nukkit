@@ -153,9 +153,6 @@ abstract public class PluginBase implements Plugin {
         return initialized;
     }
 
-    /**
-     * TODO: FINISH JAVADOC
-     */
     public PluginIdentifiableCommand getCommand(String name) {
         PluginIdentifiableCommand command = this.getServer().getPluginCommand(name);
         if (command == null || !command.getPlugin().equals(this)) {

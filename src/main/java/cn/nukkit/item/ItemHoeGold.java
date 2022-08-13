@@ -15,7 +15,7 @@ public class ItemHoeGold extends ItemTool {
     }
 
     public ItemHoeGold(Integer meta, int count) {
-        super(GOLD_HOE, meta, count, "Gold Hoe");
+        super(GOLDEN_HOE, meta, count, "Gold Hoe");
     }
 
     @Override

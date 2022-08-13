@@ -18,7 +18,7 @@ public class BlockFenceGateDarkOak extends BlockFenceGate {
 
     @Override
     public int getId() {
-        return FENCE_GATE_DARK_OAK;
+        return DARK_OAK_FENCE_GATE;
     }
 
     @Override
@@ -27,8 +27,8 @@ public class BlockFenceGateDarkOak extends BlockFenceGate {
     }
 
     @Override
-    public Item toItem() {
-        return Item.get(Item.FENCE_GATE_DARK_OAK, 0, 1);
+    public Item toItem(boolean addUserData) {
+        return Item.get(Item.DARK_OAK_FENCE_GATE, 0, 1);
     }
 
     @Override

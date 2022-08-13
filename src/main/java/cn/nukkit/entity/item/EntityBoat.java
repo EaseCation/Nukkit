@@ -17,6 +17,7 @@ import cn.nukkit.level.GameRule;
 import cn.nukkit.level.Location;
 import cn.nukkit.level.format.FullChunk;
 import cn.nukkit.math.AxisAlignedBB;
+import cn.nukkit.math.Mth;
 import cn.nukkit.math.NukkitMath;
 import cn.nukkit.math.Vector3;
 import cn.nukkit.math.Vector3f;
@@ -189,7 +190,7 @@ public class EntityBoat extends EntityVehicle {
             double friction = 1 - this.getDrag();
 
             if (this.onGround && (Math.abs(this.motionX) > 0.00001 || Math.abs(this.motionZ) > 0.00001)) {
-                friction *= this.getLevel().getBlock(this.temporalVector.setComponents((int) Math.floor(this.x), (int) Math.floor(this.y - 1), (int) Math.floor(this.z) - 1)).getFrictionFactor();
+                friction *= this.getLevel().getBlock(this.temporalVector.setComponents(Mth.floor(this.x), Mth.floor(this.y - 1), Mth.floor(this.z) - 1)).getFrictionFactor();
             }
 
             this.motionX *= friction;
@@ -427,8 +428,12 @@ public class EntityBoat extends EntityVehicle {
         super.kill();
 
         if (level.getGameRules().getBoolean(GameRule.DO_ENTITY_DROPS)) {
-            this.level.dropItem(this, new ItemBoat(this.woodID));
+            this.dropItem();
         }
+    }
+
+    protected void dropItem() {
+        this.level.dropItem(this, new ItemBoat(this.woodID));
     }
 
     @Override

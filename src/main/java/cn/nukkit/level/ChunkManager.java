@@ -8,21 +8,21 @@ import cn.nukkit.level.format.generic.BaseFullChunk;
  */
 public interface ChunkManager {
 
-    int getBlockIdAt(int x, int y, int z);
+    int getBlockIdAt(int layer, int x, int y, int z);
 
-    void setBlockFullIdAt(int x, int y, int z, int fullId);
+    void setBlockFullIdAt(int layer, int x, int y, int z, int fullId);
 
-    void setBlockIdAt(int x, int y, int z, int id);
+    void setBlockIdAt(int layer, int x, int y, int z, int id);
 
-    default void setBlockAt(int x, int y, int z, int id) {
-        setBlockAt(x, y, z, id, 0);
+    default void setBlockAt(int layer, int x, int y, int z, int id) {
+        setBlockAt(layer, x, y, z, id, 0);
     }
 
-    void setBlockAt(int x, int y, int z, int id, int data);
+    void setBlockAt(int layer, int x, int y, int z, int id, int data);
 
-    int getBlockDataAt(int x, int y, int z);
+    int getBlockDataAt(int layer, int x, int y, int z);
 
-    void setBlockDataAt(int x, int y, int z, int data);
+    void setBlockDataAt(int layer, int x, int y, int z, int data);
 
     BaseFullChunk getChunk(int chunkX, int chunkZ);
 

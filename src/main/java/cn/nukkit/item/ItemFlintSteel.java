@@ -24,7 +24,7 @@ public class ItemFlintSteel extends ItemTool {
     }
 
     public ItemFlintSteel(Integer meta, int count) {
-        super(FLINT_STEEL, meta, count, "Flint and Steel");
+        super(FLINT_AND_STEEL, meta, count, "Flint and Steel");
     }
 
     @Override
@@ -34,6 +34,10 @@ public class ItemFlintSteel extends ItemTool {
 
     @Override
     public boolean onActivate(Level level, Player player, Block block, Block target, BlockFace face, double fx, double fy, double fz) {
+        if (player.isAdventure()) {
+            return false;
+        }
+
         if (block.getId() == AIR && (target instanceof BlockSolid || target instanceof BlockSolidMeta)) {
             if (target.getId() == OBSIDIAN) {
                 if (level.createPortal(target)) {
@@ -72,5 +76,15 @@ public class ItemFlintSteel extends ItemTool {
     @Override
     public int getMaxDurability() {
         return ItemTool.DURABILITY_FLINT_STEEL;
+    }
+
+    @Override
+    public boolean noDamageOnAttack() {
+        return true;
+    }
+
+    @Override
+    public boolean additionalDamageOnBreak() {
+        return true;
     }
 }

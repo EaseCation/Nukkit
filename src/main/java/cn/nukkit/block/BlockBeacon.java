@@ -3,6 +3,7 @@ package cn.nukkit.block;
 import cn.nukkit.Player;
 import cn.nukkit.blockentity.BlockEntity;
 import cn.nukkit.blockentity.BlockEntityBeacon;
+import cn.nukkit.blockentity.BlockEntityType;
 import cn.nukkit.inventory.BeaconInventory;
 import cn.nukkit.item.Item;
 import cn.nukkit.item.ItemTool;
@@ -21,6 +22,11 @@ public class BlockBeacon extends BlockTransparent {
     @Override
     public int getId() {
         return BEACON;
+    }
+
+    @Override
+    public int getBlockEntityType() {
+        return BlockEntityType.BEACON;
     }
 
     @Override
@@ -54,7 +60,7 @@ public class BlockBeacon extends BlockTransparent {
     }
 
     @Override
-    public boolean onActivate(Item item, Player player) {
+    public boolean onActivate(Item item, BlockFace face, Player player) {
         if (player != null) {
             BlockEntity t = this.getLevel().getBlockEntity(this);
             BlockEntityBeacon beacon;
@@ -109,5 +115,10 @@ public class BlockBeacon extends BlockTransparent {
     @Override
     public boolean canBePulled() {
         return false;
+    }
+
+    @Override
+    public boolean canContainWater() {
+        return true;
     }
 }

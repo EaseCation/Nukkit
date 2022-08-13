@@ -6,9 +6,9 @@ import cn.nukkit.item.enchantment.Enchantment;
 import cn.nukkit.item.enchantment.EnchantmentEntry;
 import cn.nukkit.item.enchantment.EnchantmentList;
 import cn.nukkit.utils.BinaryStream;
+import it.unimi.dsi.fastutil.objects.ObjectArrayList;
 import lombok.ToString;
 
-import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
@@ -27,10 +27,11 @@ public class CraftingDataPacket extends DataPacket {
     public static final int ENTRY_ENCHANT_LIST = 4;
     public static final int ENTRY_SHULKER_BOX = 5;
 
-    public List<Object> entries = new ArrayList<>();
-    //private List<Recipe> entries = new ArrayList<>();
-    public List<BrewingRecipe> brewingEntries = new ArrayList<>();
-    public List<ContainerRecipe> containerEntries = new ArrayList<>();
+    public List<Object> entries = new ObjectArrayList<>();
+    //private List<Recipe> entries = new ObjectArrayList<>();
+    public List<BrewingRecipe> brewingEntries = new ObjectArrayList<>();
+    public List<ContainerRecipe> containerEntries = new ObjectArrayList<>();
+    public List<MaterialReducerRecipe> materialReducerEntries = new ObjectArrayList<>();
 
     public boolean cleanRecipes;
 
@@ -58,7 +59,7 @@ public class CraftingDataPacket extends DataPacket {
         stream.putSlot(recipe.getResult());
         stream.putUUID(recipe.getId());
 
-        return CraftingDataPacket.ENTRY_SHAPELESS;
+        return recipe.getType().ordinal();
     }
 
     private static int writeShapedRecipe(ShapedRecipe recipe, BinaryStream stream) {
@@ -76,7 +77,7 @@ public class CraftingDataPacket extends DataPacket {
 
         stream.putUUID(recipe.getId());
 
-        return CraftingDataPacket.ENTRY_SHAPED;
+        return recipe.getType().ordinal();
     }
 
     private static int writeFurnaceRecipe(FurnaceRecipe recipe, BinaryStream stream) {
@@ -110,19 +111,23 @@ public class CraftingDataPacket extends DataPacket {
     }
 
     public void addShapelessRecipe(ShapelessRecipe... recipe) {
-        Collections.addAll(entries, (ShapelessRecipe[]) recipe);
+        Collections.addAll(entries, recipe);
     }
 
     public void addShapedRecipe(ShapedRecipe... recipe) {
-        Collections.addAll(entries, (ShapedRecipe[]) recipe);
+        Collections.addAll(entries, recipe);
     }
 
     public void addFurnaceRecipe(FurnaceRecipe... recipe) {
-        Collections.addAll(entries, (FurnaceRecipe[]) recipe);
+        Collections.addAll(entries, recipe);
     }
 
     public void addEnchantList(EnchantmentList... list) {
-        Collections.addAll(entries, (EnchantmentList[]) list);
+        Collections.addAll(entries, list);
+    }
+
+    public void addMultiRecipe(MultiRecipe... recipe) {
+        Collections.addAll(entries, recipe);
     }
 
     public void addBrewingRecipe(BrewingRecipe... recipe) {
@@ -133,9 +138,13 @@ public class CraftingDataPacket extends DataPacket {
         Collections.addAll(containerEntries, recipe);
     }
 
+    public void addMaterialReducerRecipe(MaterialReducerRecipe... recipe) {
+        Collections.addAll(materialReducerEntries, recipe);
+    }
+
     @Override
     public DataPacket clean() {
-        entries = new ArrayList<>();
+        entries = new ObjectArrayList<>();
         return super.clean();
     }
 

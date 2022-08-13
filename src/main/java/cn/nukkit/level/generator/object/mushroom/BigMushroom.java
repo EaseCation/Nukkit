@@ -67,7 +67,7 @@ public class BigMushroom extends BasicGenerator {
                     for (int i1 = position.getFloorZ() - k; i1 <= position.getZ() + k && flag; ++i1) {
                         if (j >= 0 && j < 256) {
                             pos.setComponents(l, j, i1);
-                            int material = level.getBlockIdAt(pos.getFloorX(), pos.getFloorY(), pos.getFloorZ());
+                            int material = level.getBlockIdAt(0, pos.getFloorX(), pos.getFloorY(), pos.getFloorZ());
 
                             if (material != Block.AIR && material != Block.LEAVES) {
                                 flag = false;
@@ -83,7 +83,7 @@ public class BigMushroom extends BasicGenerator {
                 return false;
             } else {
                 Vector3 pos2 = position.down();
-                int block1 = level.getBlockIdAt(pos2.getFloorX(), pos2.getFloorY(), pos2.getFloorZ());
+                int block1 = level.getBlockIdAt(0, pos2.getFloorX(), pos2.getFloorY(), pos2.getFloorZ());
 
                 if (block1 != Block.DIRT && block1 != Block.GRASS && block1 != Block.MYCELIUM) {
                     return false;
@@ -173,7 +173,7 @@ public class BigMushroom extends BasicGenerator {
                                 if (position.getY() >= position.getY() + i - 1 || meta != ALL_INSIDE) {
                                     Vector3 blockPos = new Vector3(l1, l2, i2);
 
-                                    if (!Block.solid[level.getBlockIdAt(blockPos.getFloorX(), blockPos.getFloorY(), blockPos.getFloorZ())]) {
+                                    if (!Block.solid[level.getBlockIdAt(0, blockPos.getFloorX(), blockPos.getFloorY(), blockPos.getFloorZ())]) {
                                         mushroom.setDamage(meta);
                                         this.setBlockAndNotifyAdequately(level, blockPos, mushroom);
                                     }
@@ -184,7 +184,7 @@ public class BigMushroom extends BasicGenerator {
 
                     for (int i3 = 0; i3 < i; ++i3) {
                         Vector3 pos = position.up(i3);
-                        int id = level.getBlockIdAt(pos.getFloorX(), pos.getFloorY(), pos.getFloorZ());
+                        int id = level.getBlockIdAt(0, pos.getFloorX(), pos.getFloorY(), pos.getFloorZ());
 
                         if (!Block.solid[id]) {
                             mushroom.setDamage(STEM);

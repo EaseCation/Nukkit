@@ -10,13 +10,15 @@ import cn.nukkit.event.entity.EntityInventoryChangeEvent;
 import cn.nukkit.event.inventory.InventoryOpenEvent;
 import cn.nukkit.item.Item;
 import cn.nukkit.item.ItemBlock;
+import cn.nukkit.item.ItemID;
 import cn.nukkit.network.protocol.InventoryContentPacket;
 import cn.nukkit.network.protocol.InventorySlotPacket;
 import it.unimi.dsi.fastutil.ints.Int2ObjectMap;
 import it.unimi.dsi.fastutil.ints.Int2ObjectOpenHashMap;
-import it.unimi.dsi.fastutil.ints.Int2ObjectRBTreeMap;
 import it.unimi.dsi.fastutil.ints.IntArrayList;
 import it.unimi.dsi.fastutil.ints.IntList;
+import it.unimi.dsi.fastutil.objects.ObjectArrayList;
+import lombok.extern.log4j.Log4j2;
 
 import java.util.*;
 
@@ -24,6 +26,7 @@ import java.util.*;
  * author: MagicDroidX
  * Nukkit Project
  */
+@Log4j2
 public abstract class BaseInventory implements Inventory {
 
     protected final InventoryType type;
@@ -104,43 +107,32 @@ public abstract class BaseInventory implements Inventory {
 
     @Override
     public Item getItem(int index) {
-        return this.slots.containsKey(index) ? this.slots.get(index).clone() : new ItemBlock(Block.get(BlockID.AIR), null, 0);
+        Item item = this.slots.get(index);
+        if (item == null) {
+            return Item.get(ItemID.AIR);
+        }
+        return item.clone();
     }
 
     @Override
-    public Map<Integer, Item> getContents() {
+    public Int2ObjectMap<Item> getContents() {
         return new Int2ObjectOpenHashMap<>(this.slots);
     }
 
     @Override
     public void setContents(Map<Integer, Item> items) {
-        if (items.size() > this.size) {
-            Map<Integer, Item> newItems = new Int2ObjectRBTreeMap<>();
-            for (Map.Entry<Integer, Item> entry : items.entrySet()) {
-                newItems.put(entry.getKey(), entry.getValue());
+        if (items.isEmpty()) {
+//            this.clearAll();
+            for (int i = 0; i < this.size; ++i) {
+                this.clear(i);
             }
-            items = newItems;
-            newItems = new Int2ObjectRBTreeMap<>();
-            int i = 0;
-            for (Map.Entry<Integer, Item> entry : items.entrySet()) {
-                newItems.put(entry.getKey(), entry.getValue());
-                i++;
-                if (i >= this.size) {
-                    break;
-                }
-            }
-            items = newItems;
+            return;
         }
 
         for (int i = 0; i < this.size; ++i) {
-            if (!items.containsKey(i)) {
-                if (this.slots.containsKey(i)) {
-                    this.clear(i);
-                }
-            } else {
-                if (!this.setItem(i, items.get(i))) {
-                    this.clear(i);
-                }
+            Item item = items.get(i);
+            if (item == null || !this.setItem(i, item)) {
+                this.clear(i);
             }
         }
     }
@@ -150,7 +142,8 @@ public abstract class BaseInventory implements Inventory {
         item = item.clone();
         if (index < 0 || index >= this.size) {
             return false;
-        } else if (item.getId() == 0 || item.getCount() <= 0) {
+        }
+        if (item.isNull()) {
             return this.clear(index, send);
         }
 
@@ -166,15 +159,14 @@ public abstract class BaseInventory implements Inventory {
             item = ev.getNewItem();
         }
 
-        if (holder instanceof BlockEntity) {
+        /*if (holder instanceof BlockEntity) {
             try {
                 ((BlockEntity) holder).setDirty();
             } catch (Exception e) {
-                Server.getInstance().getLogger().info(holder.getClass().getName());
-                Server.getInstance().getLogger().logException(e);
+                log.error("setDirty {}", holder.getClass().getName(), e);
                 return false;
             }
-        }
+        }*/
 
         Item old = this.getItem(index);
         this.slots.put(index, item.clone());
@@ -202,12 +194,12 @@ public abstract class BaseInventory implements Inventory {
 
     @Override
     public Map<Integer, Item> all(Item item) {
-        Map<Integer, Item> slots = new Int2ObjectOpenHashMap<>();
+        Int2ObjectMap<Item> slots = new Int2ObjectOpenHashMap<>();
         boolean checkDamage = item.hasMeta() && item.getDamage() >= 0;
         boolean checkTag = item.getCompoundTag() != null;
-        for (Map.Entry<Integer, Item> entry : this.getContents().entrySet()) {
+        for (Int2ObjectMap.Entry<Item> entry : this.getContents().int2ObjectEntrySet()) {
             if (item.equals(entry.getValue(), checkDamage, checkTag)) {
-                slots.put(entry.getKey(), entry.getValue());
+                slots.put(entry.getIntKey(), entry.getValue());
             }
         }
 
@@ -218,9 +210,9 @@ public abstract class BaseInventory implements Inventory {
     public void remove(Item item) {
         boolean checkDamage = item.hasMeta();
         boolean checkTag = item.getCompoundTag() != null;
-        for (Map.Entry<Integer, Item> entry : this.getContents().entrySet()) {
+        for (Int2ObjectMap.Entry<Item> entry : this.getContents().int2ObjectEntrySet()) {
             if (item.equals(entry.getValue(), checkDamage, checkTag)) {
-                this.clear(entry.getKey());
+                this.clear(entry.getIntKey());
             }
         }
     }
@@ -230,9 +222,9 @@ public abstract class BaseInventory implements Inventory {
         int count = Math.max(1, item.getCount());
         boolean checkDamage = item.hasMeta();
         boolean checkTag = item.getCompoundTag() != null;
-        for (Map.Entry<Integer, Item> entry : this.getContents().entrySet()) {
+        for (Int2ObjectMap.Entry<Item> entry : this.getContents().int2ObjectEntrySet()) {
             if (item.equals(entry.getValue(), checkDamage, checkTag) && (entry.getValue().getCount() == count || (!exact && entry.getValue().getCount() > count))) {
-                return entry.getKey();
+                return entry.getIntKey();
             }
         }
 
@@ -242,7 +234,7 @@ public abstract class BaseInventory implements Inventory {
     @Override
     public int firstEmpty(Item item) {
         for (int i = 0; i < this.size; ++i) {
-            if (this.getItem(i).getId() == Item.AIR) {
+            if (this.getItem(i).isNull()) {
                 return i;
             }
         }
@@ -272,7 +264,7 @@ public abstract class BaseInventory implements Inventory {
                 if ((diff = slot.getMaxStackSize() - slot.getCount()) > 0) {
                     item.setCount(item.getCount() - diff);
                 }
-            } else if (slot.getId() == Item.AIR) {
+            } else if (slot.isNull()) {
                 item.setCount(item.getCount() - this.getMaxStackSize());
             }
 
@@ -286,9 +278,9 @@ public abstract class BaseInventory implements Inventory {
 
     @Override
     public Item[] addItem(Item... slots) {
-        List<Item> itemSlots = new ArrayList<>();
+        List<Item> itemSlots = new ObjectArrayList<>();
         for (Item slot : slots) {
-            if (slot.getId() != 0 && slot.getCount() > 0) {
+            if (!slot.isNull()) {
                 itemSlots.add(slot.clone());
             }
         }
@@ -297,11 +289,11 @@ public abstract class BaseInventory implements Inventory {
 
         for (int i = 0; i < this.getSize(); ++i) {
             Item item = this.getItem(i);
-            if (item.getId() == Item.AIR || item.getCount() <= 0) {
+            if (item.isNull()) {
                 emptySlots.add(i);
             }
 
-            for (Item slot : new ArrayList<>(itemSlots)) {
+            for (Item slot : new ObjectArrayList<>(itemSlots)) {
                 if (slot.equals(item) && item.getCount() < item.getMaxStackSize()) {
                     int amount = Math.min(item.getMaxStackSize() - item.getCount(), slot.getCount());
                     amount = Math.min(amount, this.getMaxStackSize());
@@ -315,6 +307,7 @@ public abstract class BaseInventory implements Inventory {
                     }
                 }
             }
+
             if (itemSlots.isEmpty()) {
                 break;
             }
@@ -342,7 +335,7 @@ public abstract class BaseInventory implements Inventory {
 
     @Override
     public Item[] removeItem(Item... slots) {
-        List<Item> itemSlots = new ArrayList<>();
+        List<Item> itemSlots = new ObjectArrayList<>();
         for (Item slot : slots) {
             if (slot.getId() != 0 && slot.getCount() > 0) {
                 itemSlots.add(slot.clone());
@@ -351,11 +344,11 @@ public abstract class BaseInventory implements Inventory {
 
         for (int i = 0; i < this.size; ++i) {
             Item item = this.getItem(i);
-            if (item.getId() == Item.AIR || item.getCount() <= 0) {
+            if (item.isNull()) {
                 continue;
             }
 
-            for (Item slot : new ArrayList<>(itemSlots)) {
+            for (Item slot : new ObjectArrayList<>(itemSlots)) {
                 if (slot.equals(item, item.hasMeta(), item.getCompoundTag() != null)) {
                     int amount = Math.min(item.getCount(), slot.getCount());
                     slot.setCount(slot.getCount() - amount);
@@ -378,9 +371,9 @@ public abstract class BaseInventory implements Inventory {
 
     @Override
     public boolean clear(int index, boolean send) {
-        if (this.slots.containsKey(index)) {
+        Item old = this.slots.get(index);
+        if (old != null) {
             Item item = new ItemBlock(Block.get(BlockID.AIR), null, 0);
-            Item old = this.slots.get(index);
             InventoryHolder holder = this.getHolder();
             if (holder instanceof Entity) {
                 EntityInventoryChangeEvent ev = new EntityInventoryChangeEvent((Entity) holder, old, item, index);
@@ -392,7 +385,7 @@ public abstract class BaseInventory implements Inventory {
                 item = ev.getNewItem();
             }
 
-            if (item.getId() != Item.AIR) {
+            if (!item.isNull()) {
                 this.slots.put(index, item.clone());
             } else {
                 this.slots.remove(index);
@@ -406,7 +399,7 @@ public abstract class BaseInventory implements Inventory {
 
     @Override
     public void clearAll() {
-        for (Integer index : this.getContents().keySet()) {
+        for (int index : this.getContents().keySet()) {
             this.clear(index);
         }
     }

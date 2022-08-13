@@ -78,6 +78,10 @@ public class BlockDoublePlant extends BlockFlowable {
 
     @Override
     public boolean place(Item item, Block block, Block target, BlockFace face, double fx, double fy, double fz, Player player) {
+        if (block.isLiquid() || !block.isAir() && level.getExtraBlock(this).isWater()) {
+            return false;
+        }
+
         Block down = down();
         Block up = up();
 
@@ -116,11 +120,11 @@ public class BlockDoublePlant extends BlockFlowable {
                         if (dropSeeds) {
                             return new Item[]{
                                     new ItemSeedsWheat(0, 1),
-                                    toItem()
+                                    toItem(true)
                             };
                         } else {
                             return new Item[]{
-                                    toItem()
+                                    toItem(true)
                             };
                         }
                     }
@@ -134,7 +138,7 @@ public class BlockDoublePlant extends BlockFlowable {
                     }
             }
 
-            return new Item[]{toItem()};
+            return new Item[]{toItem(true)};
         }
 
         return new Item[0];
@@ -142,7 +146,7 @@ public class BlockDoublePlant extends BlockFlowable {
 
     @Override
     public BlockColor getColor() {
-        return BlockColor.FOLIAGE_BLOCK_COLOR;
+        return BlockColor.PLANT_BLOCK_COLOR;
     }
 
     @Override
@@ -151,7 +155,7 @@ public class BlockDoublePlant extends BlockFlowable {
     }
 
     @Override
-    public boolean onActivate(Item item, Player player) {
+    public boolean onActivate(Item item, BlockFace face, Player player) {
         if (item.getId() == Item.DYE && item.getDamage() == 0x0f) { //Bone meal
             switch (this.getDamage() & 0x07) {
                 case SUNFLOWER:
@@ -169,5 +173,10 @@ public class BlockDoublePlant extends BlockFlowable {
         }
 
         return false;
+    }
+
+    @Override
+    public boolean isVegetation() {
+        return true;
     }
 }

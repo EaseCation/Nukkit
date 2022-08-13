@@ -9,9 +9,9 @@ import cn.nukkit.math.Vector3;
 import cn.nukkit.nbt.tag.CompoundTag;
 import cn.nukkit.nbt.tag.ListTag;
 import cn.nukkit.network.protocol.*;
+import cn.nukkit.utils.Hash;
 import cn.nukkit.utils.SerializedImage;
 import cn.nukkit.utils.SkinAnimation;
-import cn.nukkit.utils.Utils;
 
 import java.nio.charset.StandardCharsets;
 import java.util.List;
@@ -169,10 +169,11 @@ public class EntityHuman extends EntityHumanType {
                 this.setSkin(newSkin);
             }
 
-            this.uuid = Utils.dataToUUID(String.valueOf(this.getId()).getBytes(StandardCharsets.UTF_8), this.getSkin()
-                    .getSkinData().data, this.getNameTag().getBytes(StandardCharsets.UTF_8));
+//            this.uuid = Utils.dataToUUID(String.valueOf(this.getId()).getBytes(StandardCharsets.UTF_8), this.getSkin()
+//                    .getSkinData().data, this.getNameTag().getBytes(StandardCharsets.UTF_8));
+            long id = this.getId();
+            this.uuid = new UUID(Hash.xxh64(id), id);
         }
-
 
         super.initEntity();
     }

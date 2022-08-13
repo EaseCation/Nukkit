@@ -1,5 +1,7 @@
 package cn.nukkit.network.protocol;
 
+import cn.nukkit.GameVersion;
+
 /**
  * author: MagicDroidX & iNevet
  * Nukkit Project
@@ -9,10 +11,10 @@ public interface ProtocolInfo {
     /**
      * Actual Minecraft: PE protocol version
      */
-    int CURRENT_PROTOCOL = Integer.valueOf("141"); //plugins can change it
+    int CURRENT_PROTOCOL = GameVersion.getFeatureVersion().getProtocol(); //plugins can change it
 
-    String MINECRAFT_VERSION = "v1.17.0";
-    String MINECRAFT_VERSION_NETWORK = "1.17.0";
+    String MINECRAFT_VERSION_NETWORK = GameVersion.getFeatureVersion().toString();
+    String MINECRAFT_VERSION = 'v' + MINECRAFT_VERSION_NETWORK;
 
     int LOGIN_PACKET = 0x01;
     int PLAY_STATUS_PACKET = 0x02;
@@ -126,13 +128,13 @@ public interface ProtocolInfo {
     int SET_DISPLAY_OBJECTIVE_PACKET = 0x6b;
     int SET_SCORE_PACKET = 0x6c;
     int LAB_TABLE_PACKET = 0x6d;
-    int UPDATE_BLOCK_SYNCED = 0x6e;
+    int UPDATE_BLOCK_SYNCED_PACKET = 0x6e;
     int MOVE_ENTITY_DELTA_PACKET = 0x6f;
     int SET_SCOREBOARD_IDENTITY_PACKET = 0x70;
     int SET_LOCAL_PLAYER_AS_INITIALIZED_PACKET = 0x71;
     int UPDATE_SOFT_ENUM_PACKET = 0x72;
     int NETWORK_STACK_LATENCY_PACKET = 0x73;
-
+    int BLOCK_PALETTE_PACKET = 0x74;
     int SCRIPT_CUSTOM_EVENT_PACKET = 0x75;
     int SPAWN_PARTICLE_EFFECT_PACKET = 0x76;
     int AVAILABLE_ENTITY_IDENTIFIERS_PACKET = 0x77;
@@ -148,9 +150,9 @@ public interface ProtocolInfo {
     int CLIENT_CACHE_STATUS_PACKET = 0x81;
     int ON_SCREEN_TEXTURE_ANIMATION_PACKET = 0x82;
     int MAP_CREATE_LOCKED_COPY_PACKET = 0x83;
-    int STRUCTURE_TEMPLATE_DATA_EXPORT_REQUEST = 0x84;
-    int STRUCTURE_TEMPLATE_DATA_EXPORT_RESPONSE = 0x85;
-    int UPDATE_BLOCK_PROPERTIES = 0x86;
+    int STRUCTURE_TEMPLATE_DATA_EXPORT_REQUEST_PACKET = 0x84;
+    int STRUCTURE_TEMPLATE_DATA_EXPORT_RESPONSE_PACKET = 0x85;
+    int UPDATE_BLOCK_PROPERTIES_PACKET = 0x86;
     int CLIENT_CACHE_BLOB_STATUS_PACKET = 0x87;
     int CLIENT_CACHE_MISS_RESPONSE_PACKET = 0x88;
     int EDUCATION_SETTINGS_PACKET = 0x89;

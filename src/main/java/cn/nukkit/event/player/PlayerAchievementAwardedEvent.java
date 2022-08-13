@@ -4,6 +4,10 @@ import cn.nukkit.Player;
 import cn.nukkit.event.Cancellable;
 import cn.nukkit.event.HandlerList;
 
+/**
+ * @deprecated will be removed in the future
+ */
+@Deprecated
 public class PlayerAchievementAwardedEvent extends PlayerEvent implements Cancellable {
     private static final HandlerList handlers = new HandlerList();
 

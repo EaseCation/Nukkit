@@ -54,7 +54,7 @@ public class BlockPrismarine extends BlockSolidMeta {
     public Item[] getDrops(Item item) {
         if (item.isPickaxe() && item.getTier() >= ItemTool.TIER_WOODEN) {
             return new Item[]{
-                    toItem()
+                    toItem(true)
             };
         } else {
             return new Item[0];
@@ -68,14 +68,13 @@ public class BlockPrismarine extends BlockSolidMeta {
 
     @Override
     public BlockColor getColor() {
-        switch(getDamage() & 0x07){
+        switch (getDamage() & 0x03) {
+            default:
             case NORMAL:
                 return BlockColor.CYAN_BLOCK_COLOR;
             case DARK:
             case BRICKS:
                 return BlockColor.DIAMOND_BLOCK_COLOR;
-            default:
-                return BlockColor.STONE_BLOCK_COLOR;
         }
     }
 }

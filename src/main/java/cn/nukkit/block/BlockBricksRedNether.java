@@ -32,6 +32,6 @@ public class BlockBricksRedNether extends BlockNetherBrick {
 
     @Override
     public BlockColor getColor() {
-        return BlockColor.NETHERRACK_BLOCK_COLOR;
+        return BlockColor.NETHER_BLOCK_COLOR;
     }
 }

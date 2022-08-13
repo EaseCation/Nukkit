@@ -26,12 +26,6 @@ public class ResourcePackClientResponsePacket extends DataPacket {
 
     @Override
     public void encode() {
-        this.reset();
-        this.putByte(this.responseStatus);
-        this.putLShort(this.packIds.length);
-        for (String id : this.packIds) {
-            this.putString(id);
-        }
     }
 
     @Override

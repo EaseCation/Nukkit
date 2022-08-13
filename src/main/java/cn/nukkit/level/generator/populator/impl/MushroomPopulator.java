@@ -38,7 +38,7 @@ public class MushroomPopulator extends PopulatorCount {
         x &= 0xF;
         z &= 0xF;
         for (y = 254; y > 0; --y) {
-            int b = chunk.getBlockId(x, y, z);
+            int b = chunk.getBlockId(0, x, y, z);
             if (b == Block.DIRT || b == Block.GRASS) {
                 break;
             } else if (b != Block.AIR && b != Block.SNOW_LAYER) {

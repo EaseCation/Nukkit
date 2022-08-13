@@ -5,7 +5,7 @@ import lombok.ToString;
 @ToString
 public class AddBehaviorTreePacket extends DataPacket {
 
-    public String unknown;
+    public String behaviorTreeJson;
 
     @Override
     public int pid() {
@@ -20,6 +20,6 @@ public class AddBehaviorTreePacket extends DataPacket {
     @Override
     public void encode() {
         this.reset();
-        this.putString(unknown);
+        this.putString(behaviorTreeJson);
     }
 }

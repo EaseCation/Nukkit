@@ -1,6 +1,7 @@
 package cn.nukkit.level;
 
 import cn.nukkit.Server;
+import cn.nukkit.block.BlockID;
 import cn.nukkit.nbt.NBTIO;
 import cn.nukkit.nbt.tag.CompoundTag;
 import cn.nukkit.nbt.tag.ListTag;
@@ -16,6 +17,7 @@ import it.unimi.dsi.fastutil.objects.Object2ObjectMap;
 import it.unimi.dsi.fastutil.objects.Object2ObjectOpenHashMap;
 import lombok.extern.log4j.Log4j2;
 
+import javax.annotation.Nullable;
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.io.InputStream;
@@ -135,24 +137,26 @@ public class GlobalBlockPalette implements GlobalBlockPaletteInterface {
     }
 
     private static final Object2IntMap<String> stringToId;
-    private static final Int2ObjectMap<String> idToString = new Int2ObjectOpenHashMap<>();
+    private static final String[] idToString = new String[BlockID.UNDEFINED];
 
     private static final Object2ObjectMap<String, String> legacyToNew;
     private static final Object2ObjectMap<String, String> newToLegacy = new Object2ObjectOpenHashMap<>();
 
     static {
+        Gson gson = new Gson();
+
         try (InputStream stream = Server.class.getClassLoader().getResourceAsStream("block_id_map.json");
              InputStreamReader reader = new InputStreamReader(stream)) {
-            stringToId = new Gson().fromJson(reader, Object2IntOpenHashMap.class);
+            stringToId = gson.fromJson(reader, Object2IntOpenHashMap.class);
         } catch (NullPointerException | IOException e) {
             throw new AssertionError("Unable to load block_id_map.json", e);
         }
-        stringToId.forEach((name, id) -> idToString.put(id, name));
+        stringToId.forEach((name, id) -> idToString[id] = name);
         stringToId.defaultReturnValue(-1);
 
         try (InputStream stream = Server.class.getClassLoader().getResourceAsStream("block_rename_map.json");
              InputStreamReader reader = new InputStreamReader(stream)) {
-            legacyToNew = new Gson().fromJson(reader, Object2ObjectOpenHashMap.class);
+            legacyToNew = gson.fromJson(reader, Object2ObjectOpenHashMap.class);
         } catch (NullPointerException | IOException e) {
             throw new AssertionError("Unable to load block_rename_map.json", e);
         }
@@ -162,7 +166,8 @@ public class GlobalBlockPalette implements GlobalBlockPaletteInterface {
     public static int getBlockIdByName(String blockName) {
         int blockId = stringToId.getInt(blockName);
         if (blockId == -1) {
-            throw new NoSuchElementException("Unmapped block name: " + blockName);
+//            throw new NoSuchElementException("Unmapped block name: " + blockName);
+            return -1;
         }
         return stringToId.getInt(blockName);
     }
@@ -172,17 +177,30 @@ public class GlobalBlockPalette implements GlobalBlockPaletteInterface {
         return getBlockIdByName(legacyBlockName != null ? legacyBlockName : blockName);
     }
 
+    @Nullable
     public static String getNameByBlockId(int blockId) {
-        String blockName = idToString.get(blockId);
-        if (blockName == null) {
-            throw new NoSuchElementException("Unmapped block id: " + blockId);
+        if (blockId < 0 || blockId >= BlockID.UNDEFINED) {
+            return null;
         }
-        return blockName;
+        return idToString[blockId];
+        /*String blockName = idToString[blockId];
+        if (blockName == null) {
+//            throw new NoSuchElementException("Unmapped block id: " + blockId);
+            return null;
+//            return "minecraft:info_update";
+        }
+        return blockName;*/
     }
 
+    @Nullable
     public static String getNewNameByBlockId(int blockId) {
         String legacyBlockName = getNameByBlockId(blockId);
+        if (legacyBlockName == null) {
+            return null;
+        }
         String newBlockName = legacyToNew.get(legacyBlockName);
         return newBlockName != null ? newBlockName : legacyBlockName;
     }
+
+    //TODO: move to BlockConverter
 }

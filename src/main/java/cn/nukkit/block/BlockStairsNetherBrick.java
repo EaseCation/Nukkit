@@ -18,7 +18,7 @@ public class BlockStairsNetherBrick extends BlockStairs {
 
     @Override
     public int getId() {
-        return NETHER_BRICKS_STAIRS;
+        return NETHER_BRICK_STAIRS;
     }
 
     @Override
@@ -43,7 +43,7 @@ public class BlockStairsNetherBrick extends BlockStairs {
 
     @Override
     public BlockColor getColor() {
-        return BlockColor.NETHERRACK_BLOCK_COLOR;
+        return BlockColor.NETHER_BLOCK_COLOR;
     }
 
     @Override

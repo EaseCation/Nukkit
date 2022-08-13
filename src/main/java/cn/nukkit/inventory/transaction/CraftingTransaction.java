@@ -10,9 +10,10 @@ import cn.nukkit.inventory.transaction.action.SlotChangeAction;
 import cn.nukkit.item.Item;
 import cn.nukkit.network.protocol.ContainerClosePacket;
 import cn.nukkit.network.protocol.types.ContainerIds;
+import cn.nukkit.network.protocol.types.UiContainerSlots;
 import cn.nukkit.scheduler.Task;
+import it.unimi.dsi.fastutil.objects.ObjectArrayList;
 
-import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -35,9 +36,9 @@ public class CraftingTransaction extends InventoryTransaction {
 
         this.gridSize = (source.getCraftingGrid() instanceof BigCraftingGrid) ? 3 : 2;
 
-        this.inputs = new ArrayList<>();
+        this.inputs = new ObjectArrayList<>();
 
-        this.secondaryOutputs = new ArrayList<>();
+        this.secondaryOutputs = new ObjectArrayList<>();
 
         init(source, actions);
     }
@@ -84,11 +85,13 @@ public class CraftingTransaction extends InventoryTransaction {
         return recipe;
     }
 
+    @Override
     public boolean canExecute() {
-        recipe = source.getServer().getCraftingManager().matchRecipe(inputs, this.primaryOutput, this.secondaryOutputs);
+        recipe = source.getServer().getCraftingManager().matchRecipe(inputs, this.primaryOutput, this.secondaryOutputs, source.recipeTag);
         return this.recipe != null && super.canExecute();
     }
 
+    @Override
     protected boolean callExecuteEvent() {
         CraftItemEvent ev;
 
@@ -96,6 +99,7 @@ public class CraftingTransaction extends InventoryTransaction {
         return !ev.isCancelled();
     }
 
+    @Override
     protected void sendInventories() {
         super.sendInventories();
 
@@ -117,6 +121,7 @@ public class CraftingTransaction extends InventoryTransaction {
         this.source.resetCraftingGridType();
     }
 
+    /*@Override
     public boolean execute() {
         if (super.execute()) {
             switch (this.primaryOutput.getId()) {
@@ -156,13 +161,13 @@ public class CraftingTransaction extends InventoryTransaction {
         }
 
         return false;
-    }
+    }*/
 
-    public boolean checkForCraftingPart(List<InventoryAction> actions) {
+    public static boolean checkForCraftingPart(List<InventoryAction> actions) {
         for (InventoryAction action : actions) {
             if (action instanceof SlotChangeAction) {
                 SlotChangeAction slotChangeAction = (SlotChangeAction) action;
-                if (slotChangeAction.getInventory().getType() == InventoryType.UI && slotChangeAction.getSlot() == 50 &&
+                if (slotChangeAction.getInventory().getType() == InventoryType.UI && slotChangeAction.getSlot() == UiContainerSlots.CREATED_ITEM_OUTPUT &&
                         !slotChangeAction.getSourceItem().equals(slotChangeAction.getTargetItem())) {
                     return true;
                 }

@@ -21,11 +21,11 @@ public class BlockDoorDarkOak extends BlockDoorWood {
 
     @Override
     public int getId() {
-        return DARK_OAK_DOOR_BLOCK;
+        return BLOCK_DARK_OAK_DOOR;
     }
 
     @Override
-    public Item toItem() {
+    public Item toItem(boolean addUserData) {
         return new ItemDoorDarkOak();
     }
 

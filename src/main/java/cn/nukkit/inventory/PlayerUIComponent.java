@@ -2,29 +2,21 @@ package cn.nukkit.inventory;
 
 import cn.nukkit.Player;
 import cn.nukkit.item.Item;
+import it.unimi.dsi.fastutil.ints.Int2ObjectMap;
+import it.unimi.dsi.fastutil.ints.Int2ObjectOpenHashMap;
 
 import java.util.Collections;
-import java.util.Map;
 import java.util.Set;
 
-public class PlayerUIComponent extends BaseInventory {
+public abstract class PlayerUIComponent extends BaseInventory {
 
-    public static final int CREATED_ITEM_OUTPUT_UI_SLOT = 50;
-
-    private final PlayerUIInventory playerUI;
-    private final int offset;
-    private final int size;
+    protected final PlayerUIInventory playerUI;
+    protected final int offset;
 
     PlayerUIComponent(PlayerUIInventory playerUI, int offset, int size) {
         super(playerUI.holder, InventoryType.UI, Collections.emptyMap(), size);
         this.playerUI = playerUI;
         this.offset = offset;
-        this.size = size;
-    }
-
-    @Override
-    public int getSize() {
-        return size;
     }
 
     @Override
@@ -37,7 +29,6 @@ public class PlayerUIComponent extends BaseInventory {
         throw new UnsupportedOperationException();
     }
 
-
     @Override
     public String getTitle() {
         throw new UnsupportedOperationException();
@@ -45,21 +36,34 @@ public class PlayerUIComponent extends BaseInventory {
 
     @Override
     public Item getItem(int index) {
-        return this.playerUI.getItem(index + this.offset);
+        return this.playerUI.getItem(realIndex(index));
     }
 
     @Override
     public boolean setItem(int index, Item item, boolean send) {
-        return this.playerUI.setItem(index + this.offset, item, send);
+        return this.playerUI.setItem(realIndex(index), item, send);
     }
 
     @Override
-    public Map<Integer, Item> getContents() {
-        Map<Integer, Item> contents = playerUI.getContents();
-        contents.keySet().removeIf(slot -> slot < offset || slot > offset + size);
-        return contents;
+    public boolean clear(int index, boolean send) {
+        if (playerUI == null) {
+            return false;
+        }
+        return playerUI.clear(realIndex(index), send);
     }
 
+    @Override
+    public Int2ObjectMap<Item> getContents() {
+        Int2ObjectMap<Item> contents = new Int2ObjectOpenHashMap<>(10);
+        for (Int2ObjectMap.Entry<Item> entry : playerUI.slots.int2ObjectEntrySet()) {
+            int slot = entry.getIntKey();
+            if (slot < offset || slot >= offset + size) {
+                continue;
+            }
+            contents.put(slot, entry.getValue());
+        }
+        return contents;
+    }
 
     @Override
     public void sendContents(Player... players) {
@@ -68,7 +72,7 @@ public class PlayerUIComponent extends BaseInventory {
 
     @Override
     public void sendSlot(int index, Player... players) {
-        playerUI.sendSlot(index + this.offset, players);
+        playerUI.sendSlot(realIndex(index), players);
     }
 
     @Override
@@ -103,6 +107,29 @@ public class PlayerUIComponent extends BaseInventory {
 
     @Override
     public void onSlotChange(int index, Item before, boolean send) {
-        this.playerUI.onSlotChange(index + this.offset, before, send);
+        this.playerUI.onSlotChange(realIndex(index), before, send);
+    }
+
+    protected int realIndex(int index) {
+        return index + this.offset;
+    }
+
+    public boolean canTakeResult(Player player) {
+        return true;
+    }
+
+    public boolean preTakeResult(Player player) {
+        return true;
+    }
+
+    public boolean onTakeResult(Player player, Item result) {
+        return true;
+    }
+
+    public void postTakeResultResolve(Player player) {
+    }
+
+    public void postTakeResultReject(Player player) {
+        sendContents(player);
     }
 }

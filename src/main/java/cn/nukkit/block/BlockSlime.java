@@ -22,7 +22,7 @@ public class BlockSlime extends BlockSolid {
 
     @Override
     public int getId() {
-        return SLIME_BLOCK;
+        return SLIME;
     }
 
     @Override

@@ -38,9 +38,7 @@ public interface AxisAlignedBB extends Cloneable {
         return new SimpleAxisAlignedBB(this.getMinX() - x, this.getMinY() - y, this.getMinZ() - z, this.getMaxX() + x, this.getMaxY() + y, this.getMaxZ() + z);
     }
 
-    default AxisAlignedBB expand(double x, double y, double z)
-
-    {
+    default AxisAlignedBB expand(double x, double y, double z) {
         this.setMinX(this.getMinX() - x);
         this.setMinY(this.getMinY() - y);
         this.setMinZ(this.getMinZ() - z);
@@ -309,16 +307,40 @@ public interface AxisAlignedBB extends Cloneable {
     double getMaxY();
     double getMaxZ();
 
+    default double getMinChunkX() {
+        return Mth.floor(getMinX()) >> 4;
+    }
+
+    default double getMaxChunkX() {
+        return Mth.floor(getMaxX()) >> 4;
+    }
+
+    default double getMinSubChunkY() {
+        return Mth.floor(getMinY()) >> 4;
+    }
+
+    default double getMaxSubChunkY() {
+        return Mth.floor(getMaxY()) >> 4;
+    }
+
+    default double getMinChunkZ() {
+        return Mth.floor(getMinZ()) >> 4;
+    }
+
+    default double getMaxChunkZ() {
+        return Mth.floor(getMaxZ()) >> 4;
+    }
+
     AxisAlignedBB clone();
 
     default void forEach(BBConsumer action) {
-        int minX = NukkitMath.floorDouble(this.getMinX());
-        int minY = NukkitMath.floorDouble(this.getMinY());
-        int minZ = NukkitMath.floorDouble(this.getMinZ());
+        int minX = Mth.floor(this.getMinX());
+        int minY = Mth.floor(this.getMinY());
+        int minZ = Mth.floor(this.getMinZ());
 
-        int maxX = NukkitMath.floorDouble(this.getMaxX());
-        int maxY = NukkitMath.floorDouble(this.getMaxY());
-        int maxZ = NukkitMath.floorDouble(this.getMaxZ());
+        int maxX = Mth.floor(this.getMaxX());
+        int maxY = Mth.floor(this.getMaxY());
+        int maxZ = Mth.floor(this.getMaxZ());
 
         for (int x = minX; x <= maxX; x++) {
             for (int y = minY; y <= maxY; y++) {

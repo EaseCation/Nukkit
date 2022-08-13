@@ -20,7 +20,7 @@ public class BlockPistonHead extends BlockTransparentMeta implements Faceable {
 
     @Override
     public int getId() {
-        return PISTON_HEAD;
+        return PISTON_ARM_COLLISION;
     }
 
     @Override
@@ -77,7 +77,12 @@ public class BlockPistonHead extends BlockTransparentMeta implements Faceable {
     }
 
     @Override
-    public Item toItem() {
+    public Item toItem(boolean addUserData) {
         return new ItemBlock(Block.get(BlockID.AIR));
+    }
+
+    @Override
+    public boolean canContainWater() {
+        return true;
     }
 }

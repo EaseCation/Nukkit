@@ -4,10 +4,13 @@ import lombok.ToString;
 
 @ToString
 public class InitiateWebSocketConnectionPacket extends DataPacket {
+    public static final int NETWORK_ID = ProtocolInfo.INITIATE_WEB_SOCKET_CONNECTION_PACKET;
+
+    private String serverUri;
 
     @Override
     public int pid() {
-        return ProtocolInfo.INITIATE_WEB_SOCKET_CONNECTION_PACKET;
+        return NETWORK_ID;
     }
 
     @Override
@@ -17,6 +20,7 @@ public class InitiateWebSocketConnectionPacket extends DataPacket {
 
     @Override
     public void encode() {
-        //TODO
+        this.reset();
+        this.putString(this.serverUri);
     }
 }

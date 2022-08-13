@@ -7,6 +7,7 @@ import cn.nukkit.entity.Attribute;
 import cn.nukkit.entity.data.Skin;
 import cn.nukkit.item.Item;
 import cn.nukkit.item.ItemDurable;
+import cn.nukkit.item.ItemID;
 import cn.nukkit.item.RuntimeItems;
 import cn.nukkit.level.GameRule;
 import cn.nukkit.level.GameRules;
@@ -21,6 +22,7 @@ import cn.nukkit.network.protocol.types.EntityLink;
 import cn.nukkit.network.protocol.types.InputInteractionModel;
 import it.unimi.dsi.fastutil.io.FastByteArrayInputStream;
 
+import javax.annotation.Nullable;
 import java.io.IOException;
 import java.lang.reflect.Array;
 import java.nio.ByteOrder;
@@ -39,13 +41,18 @@ public class BinaryStream {
     private int count;
 
     protected BinaryStreamHelper helper;
-
     public boolean neteaseMode = false;
 
     private static final int MAX_ARRAY_SIZE = Integer.MAX_VALUE - 8;
 
     public BinaryStream() {
         this.buffer = new byte[32];
+        this.offset = 0;
+        this.count = 0;
+    }
+
+    public BinaryStream(int initialCapacity) {
+        this.buffer = new byte[initialCapacity];
         this.offset = 0;
         this.count = 0;
     }
@@ -111,8 +118,16 @@ public class BinaryStream {
         return Arrays.copyOfRange(buffer, from, to);
     }
 
+    public byte[] getBufferUnsafe() {
+        return buffer;
+    }
+
     public int getCount() {
         return count;
+    }
+
+    public void setCount(int count) {
+        this.count = count;
     }
 
     public byte[] get() {
@@ -124,9 +139,16 @@ public class BinaryStream {
             this.offset = this.count - 1;
             return new byte[0];
         }
-        len = Math.min(len, this.getCount() - this.offset);
+        len = Math.min(len, this.count - this.offset);
         this.offset += len;
         return Arrays.copyOfRange(this.buffer, this.offset - len, this.offset);
+    }
+
+    public void skip(int len) {
+        if (len <= 0) {
+            return;
+        }
+        this.offset += Math.min(len, this.count - this.offset);
     }
 
     public void put(byte[] bytes) {
@@ -153,6 +175,22 @@ public class BinaryStream {
 
         System.arraycopy(bytes, 0, this.buffer, this.count, length);
         this.count += length;
+    }
+
+    /**
+     * 仅用于很小的空数组. 例如1个字节的空数组.
+     */
+    public void putEmptyBytes(int length) {
+        if (length <= 0) {
+            return;
+        }
+        int newLength = this.count + length;
+        this.ensureCapacity(newLength);
+
+        for (int i = this.count; i < newLength; i++) {
+            this.buffer[i] = 0;
+        }
+        this.count = newLength;
     }
 
     public long getLong() {
@@ -251,7 +289,7 @@ public class BinaryStream {
         this.putByte((byte) (bool ? 1 : 0));
     }
 
-    public byte getByteRaw() {
+    public byte getSingedByte() {
         return this.buffer[this.offset++];
     }
 
@@ -409,8 +447,8 @@ public class BinaryStream {
 
         int id = this.getVarInt();
 
-        if (id == 0) {
-            return Item.get(0, 0, 0);
+        if (id == ItemID.AIR) {
+            return Item.get(ItemID.AIR, 0, 0);
         }
         int auxValue = this.getVarInt();
         int data = auxValue >> 8;
@@ -487,7 +525,7 @@ public class BinaryStream {
             item.setNamedTag(namedTag);
         }
 
-        if (item.getId() == 513) { // TODO: Shields
+        if (item.getId() == ItemID.SHIELD) { // TODO: Shields
             this.getVarLong();
         }
 
@@ -500,8 +538,8 @@ public class BinaryStream {
             return;
         }
 
-        if (item == null || item.getId() == 0) {
-            this.putVarInt(0);
+        if (item == null || item.getId() == ItemID.AIR) {
+            this.putVarInt(ItemID.AIR);
             return;
         }
 
@@ -552,7 +590,7 @@ public class BinaryStream {
             this.putString(block);
         }
 
-        if (item.getId() == 513) { // TODO: Shields
+        if (item.getId() == ItemID.SHIELD) { // TODO: Shields
             this.putVarLong(0);
         }
     }
@@ -560,8 +598,8 @@ public class BinaryStream {
     public Item getSlotLegacy() {
         int id = this.getVarInt();
 
-        if (id <= 0) {
-            return Item.get(0, 0, 0);
+        if (id == ItemID.AIR) {
+            return Item.get(ItemID.AIR, 0, 0);
         }
         int auxValue = this.getVarInt();
         int data = auxValue >> 8;
@@ -621,8 +659,8 @@ public class BinaryStream {
      * 适用于 1.9 以下版本. 兼容 1.9 以下的版本要修改很多地方所以先不改了.
      */
     public void putSlotLegacy(Item item) {
-        if (item == null || item.getId() == 0) {
-            this.putVarInt(0);
+        if (item == null || item.getId() == ItemID.AIR) {
+            this.putVarInt(ItemID.AIR);
             return;
         }
 
@@ -670,32 +708,14 @@ public class BinaryStream {
         this.putSlot(item);
     }
 
-    public Item getRecipeIngredient() {
+    public void putCraftingRecipeIngredient(Item ingredient) {
         if (this.helper != null) {
-            return this.helper.getRecipeIngredient(this);
-        }
-
-        int id = this.getVarInt();
-
-        if (id == 0) {
-            return Item.get(0, 0, 0);
-        }
-
-        int damage = this.getVarInt();
-        if (damage == 0x7fff) damage = -1;
-        int count = this.getVarInt();
-
-        return Item.get(id, damage, count);
-    }
-
-    public void putRecipeIngredient(Item ingredient) {
-        if (this.helper != null) {
-            this.helper.putRecipeIngredient(this, ingredient);
+            this.helper.putCraftingRecipeIngredient(this, ingredient);
             return;
         }
 
-        if (ingredient == null || ingredient.getId() == 0) {
-            this.putVarInt(0);
+        if (ingredient == null || ingredient.getId() == ItemID.AIR) {
+            this.putVarInt(ItemID.AIR);
             return;
         }
         this.putVarInt(ingredient.getId());
@@ -738,6 +758,15 @@ public class BinaryStream {
 
     public void putByteArray(byte[] b) {
         this.putUnsignedVarInt(b.length);
+        this.put(b);
+    }
+
+    public byte[] getLByteArray() {
+        return this.get(this.getLInt());
+    }
+
+    public void putLByteArray(byte[] b) {
+        this.putLInt(b.length);
         this.put(b);
     }
 
@@ -875,12 +904,14 @@ public class BinaryStream {
         this.putUnsignedVarLong(eid);
     }
 
+    @Nullable
     public BlockFace getBlockFace() {
-        return BlockFace.fromIndex(this.getVarInt());
+        int face = this.getVarInt();
+        return face != 255 ? BlockFace.fromIndex(face) : null;
     }
 
-    public void putBlockFace(BlockFace face) {
-        this.putVarInt(face.getIndex());
+    public void putBlockFace(@Nullable BlockFace face) {
+        this.putVarInt(face != null ? face.getIndex() : 255);
     }
 
     public void putEntityLink(EntityLink link) {
@@ -1022,23 +1053,9 @@ public class BinaryStream {
             this.putSlot(stream, item);
         }
 
-        public Item getRecipeIngredient(BinaryStream stream) {
-            int id = stream.getVarInt();
-
-            if (id == 0) {
-                return Item.get(0, 0, 0);
-            }
-
-            int damage = stream.getVarInt();
-            if (damage == 0x7fff) damage = -1;
-            int count = stream.getVarInt();
-
-            return Item.get(id, damage, count);
-        }
-
-        public void putRecipeIngredient(BinaryStream stream, Item ingredient) {
-            if (ingredient == null || ingredient.getId() == 0) {
-                stream.putVarInt(0);
+        public void putCraftingRecipeIngredient(BinaryStream stream, Item ingredient) {
+            if (ingredient == null || ingredient.getId() == ItemID.AIR) {
+                stream.putVarInt(ItemID.AIR);
                 return;
             }
             stream.putVarInt(ingredient.getId());
@@ -1050,6 +1067,15 @@ public class BinaryStream {
             }
             stream.putVarInt(damage);
             stream.putVarInt(ingredient.getCount());
+        }
+
+        public void putMaterialReducerRecipeIngredient(BinaryStream stream, Item ingredient) {
+            if (ingredient == null || ingredient.getId() == ItemID.AIR) {
+                stream.putVarInt(ItemID.AIR);
+                return;
+            }
+
+            stream.putVarInt((ingredient.getId() << 16) | ingredient.getDamage());
         }
 
         public void putEntityLink(BinaryStream stream, EntityLink link) {

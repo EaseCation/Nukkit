@@ -18,7 +18,7 @@ public class BlockBeetroot extends BlockCrops {
 
     @Override
     public int getId() {
-        return BEETROOT_BLOCK;
+        return BLOCK_BEETROOT;
     }
 
     @Override
@@ -27,7 +27,7 @@ public class BlockBeetroot extends BlockCrops {
     }
 
     @Override
-    public Item toItem() {
+    public Item toItem(boolean addUserData) {
         return new ItemSeedsBeetroot();
     }
 

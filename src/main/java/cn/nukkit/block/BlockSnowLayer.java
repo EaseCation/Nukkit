@@ -8,6 +8,7 @@ import cn.nukkit.item.ItemTool;
 import cn.nukkit.level.GameRule;
 import cn.nukkit.level.Level;
 import cn.nukkit.math.BlockFace;
+import cn.nukkit.network.protocol.LevelSoundEventPacket;
 import cn.nukkit.utils.BlockColor;
 
 /**
@@ -28,7 +29,7 @@ public class BlockSnowLayer extends BlockFallable {
 
     @Override
     public final int getFullId() {
-        return (this.getId() << 4) + this.getDamage();
+        return (this.getId() << BLOCK_META_BITS) | this.getDamage();
     }
 
     @Override
@@ -38,7 +39,7 @@ public class BlockSnowLayer extends BlockFallable {
 
     @Override
     public final void setDamage(int meta) {
-        this.meta = meta;
+        this.meta = meta & BLOCK_META_MASK;
     }
 
     @Override
@@ -68,35 +69,52 @@ public class BlockSnowLayer extends BlockFallable {
 
     @Override
     public boolean canBeReplaced() {
-        return (this.getDamage() & 0x7) != 0x7;
+        return !isFull() && level.getExtraBlock(this).canBeReplaced();
     }
 
     @Override
     public boolean place(Item item, Block block, Block target, BlockFace face, double fx, double fy, double fz, Player player) {
-        if (this.canSurvive()) {
-            this.getLevel().setBlock(block, this, true);
-
-            return true;
+        if (block.isLiquid() || !block.isAir() && level.getExtraBlock(this).isWater()) {
+            return false;
         }
+
+        if (!canSurvive()) {
+            return false;
+        }
+
+        if (block.isAir()) {
+            return super.place(item, block, target, face, fx, fy, fz, player);
+        }
+
+        if (block.getId() == getId()) {
+            return onActivate(item, face, player);
+        }
+
+        if (block.canContainSnow()) {
+            level.setExtraBlock(this, block, true, false);
+            return super.place(item, block, target, face, fx, fy, fz, player);
+        }
+
         return false;
     }
 
     private boolean canSurvive() {
         Block below = this.down();
-        return below.getId() != ICE && below.getId() != PACKED_ICE && below.getId() != ICE_FROSTED && (below.isSolid() || (this.getDamage() & 0x7) == 0x7);
+        return below.getId() != ICE && below.getId() != FROSTED_ICE && (SupportType.hasFullSupport(below, BlockFace.UP) || isFull());
     }
 
     @Override
     public int onUpdate(int type) {
         if (type == Level.BLOCK_UPDATE_NORMAL) {
-            if ((this.getDamage() & 0x7) != 0x7 || this.up().getId() != SNOW_LAYER) {
-                super.onUpdate(type);
+            if ((!isFull() || this.up().getId() != SNOW_LAYER) && super.onUpdate(type) == type) {
+                return type;
             }
 
-            if (this.level.getBlockIdAt(this.getFloorX(), this.getFloorY(), this.getFloorZ()) == SNOW_LAYER && !this.canSurvive()) {
+            if (!this.canSurvive()) {
                 this.level.useBreakOn(this, null, null, true);
                 if (this.level.getGameRules().getBoolean(GameRule.DO_TILE_DROPS)) {
-                    this.level.dropItem(this, this.toItem());
+                    this.level.dropItem(this, this.toItem(true));
+                    return type;
                 }
             }
         } else if (type == Level.BLOCK_UPDATE_RANDOM) {
@@ -105,22 +123,22 @@ public class BlockSnowLayer extends BlockFallable {
                 level.getServer().getPluginManager().callEvent(event);
                 if (!event.isCancelled()) {
                     level.setBlock(this, event.getNewState(), true);
+                    return Level.BLOCK_UPDATE_NORMAL;
                 }
-                return Level.BLOCK_UPDATE_NORMAL;
             }
         }
         return 0;
     }
 
     @Override
-    public Item toItem() {
+    public Item toItem(boolean addUserData) {
         return new ItemSnowball();
     }
 
     @Override
     public Item[] getDrops(Item item) {
         if (item.isShovel() && item.getTier() >= ItemTool.TIER_WOODEN) {
-            Item drop = this.toItem();
+            Item drop = this.toItem(true);
             int height = this.getDamage() & 0x7;
             drop.setCount(height < 3 ? 1 : height < 5 ? 2 : height == 7 ? 4 : 3);
             return new Item[]{drop};
@@ -141,7 +159,7 @@ public class BlockSnowLayer extends BlockFallable {
     
     @Override
     public boolean isTransparent() {
-        return (this.getDamage() & 0x7) != 0x7;
+        return !isFull();
     }
 
     @Override
@@ -151,7 +169,7 @@ public class BlockSnowLayer extends BlockFallable {
 
     @Override
     public boolean isSolid() {
-        return (this.getDamage() & 0x7) == 0x7;
+        return isFull();
     }
 
     @Override
@@ -166,22 +184,24 @@ public class BlockSnowLayer extends BlockFallable {
     }
 
     @Override
-    public boolean onActivate(Item item, Player player) {
+    public boolean onActivate(Item item, BlockFace face, Player player) {
         if (item.isShovel()) {
-            item.useOn(this);
+            if (player != null && !player.isCreative()) {
+                item.useOn(this);
+            }
             this.level.useBreakOn(this, item.clone().clearNamedTag(), null, true);
             return true;
         } else if (item.getId() == SNOW_LAYER) {
-            if ((this.getDamage() & 0x7) != 0x7) {
+            if (!isFull()) {
                 this.setDamage(this.getDamage() + 1);
                 this.level.setBlock(this ,this, true);
 
                 if (player != null && (player.gamemode & 0x1) == 0) {
                     item.count--;
                 }
+
+                level.addLevelSoundEvent(this, LevelSoundEventPacket.SOUND_PLACE, getFullId());
                 return true;
-            } else {
-                this.level.setBlock(this ,this, true);
             }
         }
         return false;
@@ -195,5 +215,20 @@ public class BlockSnowLayer extends BlockFallable {
     @Override
     public boolean sticksToPiston() {
         return false;
+    }
+
+    @Override
+    public boolean canProvideSupport(BlockFace face, SupportType type) {
+        return isFull();
+    }
+
+    @Override
+    protected boolean canSlide() {
+        Block below = down();
+        return below.canContainSnow() || below.isAir() || below.isLiquid() || below instanceof BlockFire;
+    }
+
+    public boolean isFull() {
+        return (getDamage() & 0x7) == 0x7;
     }
 }

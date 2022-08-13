@@ -3,6 +3,7 @@ package cn.nukkit.block;
 import cn.nukkit.Player;
 import cn.nukkit.blockentity.BlockEntity;
 import cn.nukkit.blockentity.BlockEntityCauldron;
+import cn.nukkit.blockentity.BlockEntityType;
 import cn.nukkit.event.player.PlayerBucketEmptyEvent;
 import cn.nukkit.event.player.PlayerBucketFillEvent;
 import cn.nukkit.item.*;
@@ -20,7 +21,7 @@ import java.util.Map;
 public class BlockCauldron extends BlockSolidMeta {
 
     public BlockCauldron() {
-        super(0);
+        this(0);
     }
 
     public BlockCauldron(int meta) {
@@ -29,11 +30,16 @@ public class BlockCauldron extends BlockSolidMeta {
 
     @Override
     public int getId() {
-        return CAULDRON_BLOCK;
+        return BLOCK_CAULDRON;
     }
 
     public String getName() {
         return "Cauldron Block";
+    }
+
+    @Override
+    public int getBlockEntityType() {
+        return BlockEntityType.CAULDRON;
     }
 
     @Override
@@ -65,7 +71,7 @@ public class BlockCauldron extends BlockSolidMeta {
     }
 
     @Override
-    public boolean onActivate(Item item, Player player) {
+    public boolean onActivate(Item item, BlockFace face, Player player) {
         BlockEntity be = this.level.getBlockEntity(this);
 
         if (!(be instanceof BlockEntityCauldron)) {
@@ -110,8 +116,8 @@ public class BlockCauldron extends BlockSolidMeta {
                         replaceBucket(item, player, ev.getItem());
                         if (cauldron.hasPotion()) {//if has potion
                             this.setDamage(0);//empty
-                            cauldron.setPotionId(0xffff);//reset potion
-                            cauldron.setSplashPotion(false);
+                            cauldron.setPotionId(-1);//reset potion
+                            cauldron.setPotionType(BlockEntityCauldron.POTION_TYPE_NONE);
                             cauldron.clearCustomColor();
                             this.level.setBlock(this, this, true);
                             this.level.addLevelEvent(this.add(0.5, 0.375 + this.getDamage() * 0.125, 0.5), LevelEventPacket.EVENT_SOUND_EXPLODE);
@@ -127,9 +133,9 @@ public class BlockCauldron extends BlockSolidMeta {
                 break;
             case Item.DYE: //TODO
                 break;
-            case Item.LEATHER_CAP:
-            case Item.LEATHER_TUNIC:
-            case Item.LEATHER_PANTS:
+            case Item.LEATHER_HELMET:
+            case Item.LEATHER_CHESTPLATE:
+            case Item.LEATHER_LEGGINGS:
             case Item.LEATHER_BOOTS:
                 break;
             case Item.POTION:
@@ -206,13 +212,9 @@ public class BlockCauldron extends BlockSolidMeta {
     
     @Override
     public boolean place(Item item, Block block, Block target, BlockFace face, double fx, double fy, double fz, Player player) {
-        CompoundTag nbt = new CompoundTag("")
-                .putString("id", BlockEntity.CAULDRON)
-                .putInt("x", (int) this.x)
-                .putInt("y", (int) this.y)
-                .putInt("z", (int) this.z)
-                .putShort("PotionId", 0xffff)
-                .putByte("SplashPotion", 0);
+        CompoundTag nbt = BlockEntity.getDefaultCompound(this, BlockEntity.CAULDRON)
+                .putShort("PotionId", -1)
+                .putShort("PotionType", BlockEntityCauldron.POTION_TYPE_NONE);
 
         if (item.hasCustomBlockData()) {
             Map<String, Tag> customData = item.getCustomBlockData().getTags();
@@ -231,7 +233,7 @@ public class BlockCauldron extends BlockSolidMeta {
 
     @Override
     public Item[] getDrops(Item item) {
-        if (item.getTier() >= ItemTool.TIER_WOODEN) {
+        if (item.isPickaxe() && item.getTier() >= ItemTool.TIER_WOODEN) {
             return new Item[]{new ItemCauldron()};
         }
 
@@ -239,7 +241,7 @@ public class BlockCauldron extends BlockSolidMeta {
     }
 
     @Override
-    public Item toItem() {
+    public Item toItem(boolean addUserData) {
         return new ItemCauldron();
     }
 
@@ -253,6 +255,11 @@ public class BlockCauldron extends BlockSolidMeta {
 
     @Override
     public boolean canHarvestWithHand() {
+        return false;
+    }
+
+    @Override
+    public boolean canProvideSupport(BlockFace face, SupportType type) {
         return false;
     }
 }

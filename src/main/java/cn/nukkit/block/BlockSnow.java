@@ -4,6 +4,7 @@ import cn.nukkit.Player;
 import cn.nukkit.item.Item;
 import cn.nukkit.item.ItemSnowball;
 import cn.nukkit.item.ItemTool;
+import cn.nukkit.math.BlockFace;
 import cn.nukkit.utils.BlockColor;
 
 public class BlockSnow extends BlockSolid {
@@ -18,7 +19,7 @@ public class BlockSnow extends BlockSolid {
 
     @Override
     public int getId() {
-        return SNOW_BLOCK;
+        return SNOW;
     }
 
     @Override
@@ -69,9 +70,11 @@ public class BlockSnow extends BlockSolid {
     }
 
     @Override
-    public boolean onActivate(Item item, Player player) {
+    public boolean onActivate(Item item, BlockFace face, Player player) {
         if (item.isShovel()) {
-            item.useOn(this);
+            if (player != null && !player.isCreative()) {
+                item.useOn(this);
+            }
             this.level.useBreakOn(this, item.clone().clearNamedTag(), null, true);
             return true;
         }

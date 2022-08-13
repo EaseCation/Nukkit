@@ -15,7 +15,7 @@ public class BlockObsidianGlowing extends BlockSolid {
 
     @Override
     public int getId() {
-        return GLOWING_OBSIDIAN;
+        return GLOWINGOBSIDIAN;
     }
 
     @Override
@@ -44,7 +44,7 @@ public class BlockObsidianGlowing extends BlockSolid {
     }
 
     @Override
-    public Item toItem() {
+    public Item toItem(boolean addUserData) {
         return new ItemBlock(Block.get(BlockID.OBSIDIAN));
     }
 
@@ -52,7 +52,7 @@ public class BlockObsidianGlowing extends BlockSolid {
     public Item[] getDrops(Item item) {
         if (item.isPickaxe() && item.getTier() > ItemTool.DIAMOND_PICKAXE) {
             return new Item[]{
-                    toItem()
+                    toItem(true)
             };
         } else {
             return new Item[0];

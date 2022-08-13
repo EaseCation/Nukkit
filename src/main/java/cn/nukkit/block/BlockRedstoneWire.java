@@ -42,8 +42,8 @@ public class BlockRedstoneWire extends BlockFlowable {
 
     @Override
     public boolean place(Item item, Block block, Block target, BlockFace face, double fx, double fy, double fz, Player player) {
-        if (target.canBeReplaced()) {
-            block = target;
+        if (block.isLiquid() || !block.isAir() && level.getExtraBlock(this).isWater()) {
+            return false;
         }
 
         if (!canBePlacedOn(block.down())) {
@@ -82,7 +82,7 @@ public class BlockRedstoneWire extends BlockFlowable {
         if (this.level.getBlock(pos).getId() == Block.REDSTONE_WIRE) {
             this.level.updateAroundRedstone(pos, face);
 
-            for (BlockFace side : BlockFace.values0()) {
+            for (BlockFace side : BlockFace.getValues()) {
                 this.level.updateAroundRedstone(pos.getSideVec(side), side.getOpposite());
             }
         }
@@ -112,7 +112,6 @@ public class BlockRedstoneWire extends BlockFlowable {
             if (v.getX() == this.getX() && v.getZ() == this.getZ()) {
                 continue;
             }
-
 
             strength = this.getMaxCurrentStrength(v, strength);
 
@@ -146,21 +145,22 @@ public class BlockRedstoneWire extends BlockFlowable {
             this.level.setBlock(this, this, false, false);
 
             this.level.updateAroundRedstone(this, null);
-            for (BlockFace face : BlockFace.values0()) {
+            for (BlockFace face : BlockFace.getValues()) {
                 this.level.updateAroundRedstone(this.getSideVec(face), face.getOpposite());
             }
         } else if (force) {
-            for (BlockFace face : BlockFace.values0()) {
+            for (BlockFace face : BlockFace.getValues()) {
                 this.level.updateAroundRedstone(this.getSideVec(face), face.getOpposite());
             }
         }
     }
 
     private int getMaxCurrentStrength(Vector3 pos, int maxStrength) {
-        if (this.level.getBlockIdAt(pos.getFloorX(), pos.getFloorY(), pos.getFloorZ()) != this.getId()) {
+        Block block = level.getBlock(this);
+        if (block.getId() != this.getId()) {
             return maxStrength;
         } else {
-            int strength = this.level.getBlockDataAt(pos.getFloorX(), pos.getFloorY(), pos.getFloorZ());
+            int strength = block.getDamage();
             return Math.max(strength, maxStrength);
         }
     }
@@ -172,7 +172,7 @@ public class BlockRedstoneWire extends BlockFlowable {
         if (this.level.isRedstoneEnabled()) {
 //            this.updateSurroundingRedstone(false);
             this.level.updateAroundRedstone(this, null);
-            for (BlockFace blockFace : BlockFace.values0()) {
+            for (BlockFace blockFace : BlockFace.getValues()) {
                 this.level.updateAroundRedstone(this.getSideVec(blockFace), null);
             }
 
@@ -190,7 +190,7 @@ public class BlockRedstoneWire extends BlockFlowable {
     }
 
     @Override
-    public Item toItem() {
+    public Item toItem(boolean addUserData) {
         return new ItemRedstone();
     }
 
@@ -227,7 +227,7 @@ public class BlockRedstoneWire extends BlockFlowable {
     }
 
     public boolean canBePlacedOn(Block b) {
-        return (b.isSolid() && (!b.isTransparent() || b.getId() == Block.GLOWSTONE)) || b.getId() == HOPPER_BLOCK;
+        return (b.isSolid() && (!b.isTransparent() || b.getId() == Block.GLOWSTONE)) || b.getId() == BLOCK_HOPPER;
     }
 
     public int getStrongPower(BlockFace side) {

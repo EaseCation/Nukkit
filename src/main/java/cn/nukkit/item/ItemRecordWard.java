@@ -16,11 +16,16 @@ public class ItemRecordWard extends ItemRecord {
     }
 
     public ItemRecordWard(Integer meta, int count) {
-        super(meta, count);
+        super(Item.MUSIC_DISC_WARD, meta, count);
     }
 
     @Override
-    public int getSoundId() {
+    public int getSoundEvent() {
         return LevelSoundEventPacket.SOUND_RECORD_WARD;
+    }
+
+    @Override
+    public String getTranslationIdentifier() {
+        return "record_5";
     }
 }

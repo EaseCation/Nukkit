@@ -4,7 +4,7 @@ import cn.nukkit.block.Block;
 import cn.nukkit.block.BlockID;
 import cn.nukkit.level.ChunkManager;
 import cn.nukkit.math.BlockVector3;
-import cn.nukkit.math.MathHelper;
+import cn.nukkit.math.Mth;
 import cn.nukkit.math.NukkitRandom;
 import cn.nukkit.math.Vector3;
 
@@ -23,12 +23,12 @@ public class ObjectJungleBigTree extends HugeTreesGenerator {
 
             for (int j = (int) position.getY() + height - 2 - rand.nextBoundedInt(4); j > position.getY() + height / 2; j -= 2 + rand.nextBoundedInt(4)) {
                 float f = rand.nextFloat() * ((float) Math.PI * 2F);
-                int k = (int) (position.getX() + (0.5F + MathHelper.cos(f) * 4.0F));
-                int l = (int) (position.getZ() + (0.5F + MathHelper.sin(f) * 4.0F));
+                int k = (int) (position.getX() + (0.5F + Mth.cos(f) * 4.0F));
+                int l = (int) (position.getZ() + (0.5F + Mth.sin(f) * 4.0F));
 
                 for (int i1 = 0; i1 < 5; ++i1) {
-                    k = (int) (position.getX() + (1.5F + MathHelper.cos(f) * (float) i1));
-                    l = (int) (position.getZ() + (1.5F + MathHelper.sin(f) * (float) i1));
+                    k = (int) (position.getX() + (1.5F + Mth.cos(f) * (float) i1));
+                    l = (int) (position.getZ() + (1.5F + Mth.sin(f) * (float) i1));
                     this.setBlockAndNotifyAdequately(level, new BlockVector3(k, j - 3 + i1 / 2, l), this.woodMetadata);
                 }
 
@@ -43,7 +43,7 @@ public class ObjectJungleBigTree extends HugeTreesGenerator {
             for (int i2 = 0; i2 < height; ++i2) {
                 Vector3 blockpos = position.up(i2);
 
-                if (this.canGrowInto(level.getBlockIdAt((int) blockpos.x, (int) blockpos.y, (int) blockpos.z))) {
+                if (this.canGrowInto(level.getBlockIdAt(0, (int) blockpos.x, (int) blockpos.y, (int) blockpos.z))) {
                     this.setBlockAndNotifyAdequately(level, blockpos, this.woodMetadata);
 
                     if (i2 > 0) {
@@ -55,7 +55,7 @@ public class ObjectJungleBigTree extends HugeTreesGenerator {
                 if (i2 < height - 1) {
                     Vector3 blockpos1 = blockpos.east();
 
-                    if (this.canGrowInto(level.getBlockIdAt((int) blockpos1.x, (int) blockpos1.y, (int) blockpos1.z))) {
+                    if (this.canGrowInto(level.getBlockIdAt(0, (int) blockpos1.x, (int) blockpos1.y, (int) blockpos1.z))) {
                         this.setBlockAndNotifyAdequately(level, blockpos1, this.woodMetadata);
 
                         if (i2 > 0) {
@@ -66,7 +66,7 @@ public class ObjectJungleBigTree extends HugeTreesGenerator {
 
                     Vector3 blockpos2 = blockpos.south().east();
 
-                    if (this.canGrowInto(level.getBlockIdAt((int) blockpos2.x, (int) blockpos2.y, (int) blockpos2.z))) {
+                    if (this.canGrowInto(level.getBlockIdAt(0, (int) blockpos2.x, (int) blockpos2.y, (int) blockpos2.z))) {
                         this.setBlockAndNotifyAdequately(level, blockpos2, this.woodMetadata);
 
                         if (i2 > 0) {
@@ -77,7 +77,7 @@ public class ObjectJungleBigTree extends HugeTreesGenerator {
 
                     Vector3 blockpos3 = blockpos.south();
 
-                    if (this.canGrowInto(level.getBlockIdAt((int) blockpos3.x, (int) blockpos3.y, (int) blockpos3.z))) {
+                    if (this.canGrowInto(level.getBlockIdAt(0, (int) blockpos3.x, (int) blockpos3.y, (int) blockpos3.z))) {
                         this.setBlockAndNotifyAdequately(level, blockpos3, this.woodMetadata);
 
                         if (i2 > 0) {
@@ -93,7 +93,7 @@ public class ObjectJungleBigTree extends HugeTreesGenerator {
     }
 
     private void placeVine(ChunkManager level, NukkitRandom random, Vector3 pos, int meta) {
-        if (random.nextBoundedInt(3) > 0 && level.getBlockIdAt((int) pos.x, (int) pos.y, (int) pos.z) == 0) {
+        if (random.nextBoundedInt(3) > 0 && level.getBlockIdAt(0, (int) pos.x, (int) pos.y, (int) pos.z) == 0) {
             this.setBlockAndNotifyAdequately(level, pos, Block.get(BlockID.VINE, meta));
         }
     }

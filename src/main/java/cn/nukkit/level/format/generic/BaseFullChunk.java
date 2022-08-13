@@ -2,15 +2,19 @@ package cn.nukkit.level.format.generic;
 
 import cn.nukkit.Player;
 import cn.nukkit.block.Block;
+import cn.nukkit.block.BlockID;
+import cn.nukkit.blockentity.BlockEntities;
 import cn.nukkit.blockentity.BlockEntity;
 import cn.nukkit.entity.Entity;
 import cn.nukkit.level.ChunkManager;
 import cn.nukkit.level.Level;
 import cn.nukkit.level.format.FullChunk;
 import cn.nukkit.level.format.LevelProvider;
+import cn.nukkit.level.util.PalettedSubChunkStorage;
 import cn.nukkit.nbt.tag.CompoundTag;
 import cn.nukkit.nbt.tag.ListTag;
 import cn.nukkit.nbt.tag.NumberTag;
+import cn.nukkit.nbt.tag.Tag;
 import it.unimi.dsi.fastutil.ints.Int2IntMap;
 import it.unimi.dsi.fastutil.ints.Int2IntMaps;
 import it.unimi.dsi.fastutil.ints.Int2IntOpenHashMap;
@@ -19,15 +23,21 @@ import it.unimi.dsi.fastutil.ints.Int2ObjectOpenHashMap;
 import it.unimi.dsi.fastutil.longs.Long2ObjectMap;
 import it.unimi.dsi.fastutil.longs.Long2ObjectMaps;
 import it.unimi.dsi.fastutil.longs.Long2ObjectOpenHashMap;
+import it.unimi.dsi.fastutil.objects.ObjectArrayList;
+import lombok.extern.log4j.Log4j2;
 
 import java.io.IOException;
-import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Iterator;
 import java.util.List;
+
+import static cn.nukkit.level.format.generic.EmptyChunkSection.*;
 
 /**
  * author: MagicDroidX
  * Nukkit Project
  */
+@Log4j2
 public abstract class BaseFullChunk implements FullChunk, ChunkManager {
     protected Long2ObjectMap<Entity> entities;
 
@@ -70,8 +80,8 @@ public abstract class BaseFullChunk implements FullChunk, ChunkManager {
     protected boolean isInit;
 
     /** Cache **/
-    protected ChunkPacketCache packetCache;
-    protected ChunkBlobCache blobCache;
+    protected transient ChunkPacketCache packetCache;
+    protected transient ChunkBlobCache blobCache;
 
     @Override
     public BaseFullChunk clone() {
@@ -123,6 +133,7 @@ public abstract class BaseFullChunk implements FullChunk, ChunkManager {
         return packetCache;
     }
 
+    @Override
     public void initChunk() {
         if (this.getProvider() != null && !this.isInit) {
             boolean changed = false;
@@ -133,8 +144,8 @@ public abstract class BaseFullChunk implements FullChunk, ChunkManager {
                         this.setChanged();
                         continue;
                     }
-                    ListTag pos = nbt.getList("Pos");
-                    if ((((NumberTag) pos.get(0)).getData().intValue() >> 4) != this.getX() || ((((NumberTag) pos.get(2)).getData().intValue() >> 4) != this.getZ())) {
+                    ListTag<? extends Tag> pos = nbt.getList("Pos");
+                    if ((((NumberTag<?>) pos.get(0)).getData().intValue() >> 4) != this.getX() || ((((NumberTag<?>) pos.get(2)).getData().intValue() >> 4) != this.getZ())) {
                         changed = true;
                         continue;
                     }
@@ -252,7 +263,7 @@ public abstract class BaseFullChunk implements FullChunk, ChunkManager {
     }
 
     @Override
-    public int getBlockExtraData(int x, int y, int z) {
+    public int getBlockExtraData(int layer, int x, int y, int z) {
         int index = Level.chunkBlockHash(x, y, z);
         if (this.extraData != null && this.extraData.containsKey(index)) {
             return this.extraData.get(index);
@@ -262,7 +273,7 @@ public abstract class BaseFullChunk implements FullChunk, ChunkManager {
     }
 
     @Override
-    public void setBlockExtraData(int x, int y, int z, int data) {
+    public void setBlockExtraData(int layer, int x, int y, int z, int data) {
         if (data == 0) {
             if (this.extraData != null) {
                 this.extraData.remove(Level.chunkBlockHash(x, y, z));
@@ -284,7 +295,7 @@ public abstract class BaseFullChunk implements FullChunk, ChunkManager {
                     this.setBlockSkyLight(x, y, z, 15);
                 }
                 for (int y = top; y >= 0; --y) {
-                    if (Block.solid[this.getBlockId(x, y, z)]) {
+                    if (Block.solid[this.getBlockId(0, x, y, z)]) {
                         break;
                     }
                     this.setBlockSkyLight(x, y, z, 15);
@@ -308,7 +319,7 @@ public abstract class BaseFullChunk implements FullChunk, ChunkManager {
             }
         }
         for (int y = 255; y >= 0; --y) {
-            if (getBlockId(x, y, z) != 0x00) {
+            if (getBlockId(0, x, y, z) != BlockID.AIR) {
                 this.setHeightMap(x, z, y);
                 return y;
             }
@@ -404,12 +415,12 @@ public abstract class BaseFullChunk implements FullChunk, ChunkManager {
     }
 
     @Override
-    public boolean unload() throws Exception {
+    public boolean unload() {
         return this.unload(true, true);
     }
 
     @Override
-    public boolean unload(boolean save) throws Exception {
+    public boolean unload(boolean save) {
         return this.unload(save, true);
     }
 
@@ -429,14 +440,14 @@ public abstract class BaseFullChunk implements FullChunk, ChunkManager {
                 }
             }
         }
-        for (Entity entity : new ArrayList<>(this.getEntities().values())) {
+        for (Entity entity : new ObjectArrayList<>(this.getEntities().values())) {
             if (entity instanceof Player) {
                 continue;
             }
             entity.close();
         }
 
-        for (BlockEntity blockEntity : new ArrayList<>(this.getBlockEntities().values())) {
+        for (BlockEntity blockEntity : new ObjectArrayList<>(this.getBlockEntities().values())) {
             blockEntity.close();
         }
         this.provider = null;
@@ -469,8 +480,18 @@ public abstract class BaseFullChunk implements FullChunk, ChunkManager {
     }
 
     @Override
+    public PalettedSubChunkStorage[] getBiomes() {
+        return new PalettedSubChunkStorage[0];
+    }
+
+    @Override
     public byte[] getHeightMapArray() {
         return this.heightMap;
+    }
+
+    @Override
+    public short[] getHeightmap() {
+        return EMPTY_HEIGHTMAP_ARR;
     }
 
     public long getChanges() {
@@ -517,48 +538,47 @@ public abstract class BaseFullChunk implements FullChunk, ChunkManager {
 
     }
 
+    @Override
+    public int getBlockIdAt(int layer, int x, int y, int z) {
+        if (x >> 4 == getX() && z >> 4 == getZ()) {
+            return getBlockId(0, x & 15, y, z & 15);
+        }
+        return BlockID.AIR;
+    }
 
     @Override
-    public int getBlockIdAt(int x, int y, int z) {
+    public void setBlockFullIdAt(int layer, int x, int y, int z, int fullId) {
         if (x >> 4 == getX() && z >> 4 == getZ()) {
-            return getBlockId(x & 15, y, z & 15);
+            setFullBlockId(0, x & 15, y, z & 15, fullId);
+        }
+    }
+
+    @Override
+    public void setBlockIdAt(int layer, int x, int y, int z, int id) {
+        if (x >> 4 == getX() && z >> 4 == getZ()) {
+            setBlockId(0, x & 15, y, z & 15, id);
+        }
+    }
+
+    @Override
+    public void setBlockAt(int layer, int x, int y, int z, int id, int data) {
+        if (x >> 4 == getX() && z >> 4 == getZ()) {
+            setBlock(0, x & 15, y, z & 15, id, data);
+        }
+    }
+
+    @Override
+    public int getBlockDataAt(int layer, int x, int y, int z) {
+        if (x >> 4 == getX() && z >> 4 == getZ()) {
+            return getBlockIdAt(0, x & 15, y, z & 15);
         }
         return 0;
     }
 
     @Override
-    public void setBlockFullIdAt(int x, int y, int z, int fullId) {
+    public void setBlockDataAt(int layer, int x, int y, int z, int data) {
         if (x >> 4 == getX() && z >> 4 == getZ()) {
-            setFullBlockId(x & 15, y, z & 15, fullId);
-        }
-    }
-
-    @Override
-    public void setBlockIdAt(int x, int y, int z, int id) {
-        if (x >> 4 == getX() && z >> 4 == getZ()) {
-            setBlockId(x & 15, y, z & 15, id);
-        }
-    }
-
-    @Override
-    public void setBlockAt(int x, int y, int z, int id, int data) {
-        if (x >> 4 == getX() && z >> 4 == getZ()) {
-            setBlock(x & 15, y, z & 15, id, data);
-        }
-    }
-
-    @Override
-    public int getBlockDataAt(int x, int y, int z) {
-        if (x >> 4 == getX() && z >> 4 == getZ()) {
-            return getBlockIdAt(x & 15, y, z & 15);
-        }
-        return 0;
-    }
-
-    @Override
-    public void setBlockDataAt(int x, int y, int z, int data) {
-        if (x >> 4 == getX() && z >> 4 == getZ()) {
-            setBlockData(x & 15, y, z & 15, data);
+            setBlockData(0, x & 15, y, z & 15, data);
         }
     }
 
@@ -583,6 +603,7 @@ public abstract class BaseFullChunk implements FullChunk, ChunkManager {
         throw new UnsupportedOperationException("Chunk does not have a seed");
     }
 
+    @Override
     public boolean compress() {
         ChunkPacketCache pk = this.getPacketCache();
         if (pk != null) {
@@ -590,5 +611,101 @@ public abstract class BaseFullChunk implements FullChunk, ChunkManager {
             return true;
         }
         return false;
+    }
+
+    @Override
+    public void fixCorruptedBlockEntities() {
+        Collection<BlockEntity> blockEntities = new ObjectArrayList<>(this.tiles.values());
+        Iterator<BlockEntity> iter = blockEntities.iterator();
+        while (iter.hasNext()) {
+            BlockEntity blockEntity = iter.next();
+
+            if (blockEntity.getChunkX() != this.getX() || blockEntity.getChunkZ() != this.getZ()) {
+                blockEntity.close();
+                iter.remove();
+                log.debug("Removed an invalid (pos) BlockEntity: {} ({})", blockEntity, blockEntity.getSaveId());
+                continue;
+            }
+
+            if (!blockEntity.isBlockEntityValid()) {
+                blockEntity.close();
+                iter.remove();
+                log.debug("Removed an invalid (block) BlockEntity: {} ({})", blockEntity, blockEntity.getSaveId());
+                continue;
+            }
+
+            for (BlockEntity other : blockEntities) {
+                if (other == blockEntity
+                        || other.getFloorX() != blockEntity.getFloorX()
+                        || other.getFloorY() != blockEntity.getFloorY()
+                        || other.getFloorZ() != blockEntity.getFloorZ()) {
+                    continue;
+                }
+
+                blockEntity.close();
+                iter.remove();
+                log.debug("Removed an duplicate BlockEntity: {} ({})", blockEntity, blockEntity.getSaveId());
+                break;
+            }
+        }
+
+        for (int y = 0; y <= this.getMaxHeight(); y++) {
+            for (int x = 0; x < 16; x++) {
+                for (int z = 0; z < 16; z++) {
+                    int fullId = this.getFullBlock(0, x, y, z);
+                    Block block = Block.fullList[fullId].clone();
+                    int type = block.getBlockEntityType();
+                    if (type == 0) {
+                        continue;
+                    }
+
+                    BlockEntity blockEntity = this.getTile(x, y, z);
+                    if (blockEntity == null) {
+                        String id = BlockEntities.getIdByType(type);
+                        if (id == null) {
+                            log.warn("Unregistered BlockEntity type: {} at {}, {}, {} ({}:{})", type, x, y, z, block.getId(), block.getDamage());
+                            continue;
+                        }
+
+                        blockEntity = BlockEntity.createBlockEntity(id, this, BlockEntity.getDefaultCompound(x, y, z, id));
+
+                        if (blockEntity == null) {
+                            log.warn("Failed to create BlockEntity: {}, {}, {} ({}:{})", x, y, z, block.getId(), block.getDamage());
+                            continue;
+                        }
+
+                        log.debug("Created a missing BlockEntity: {}, {}, {} ({})", x, y, z, blockEntity.getSaveId());
+                    }
+                }
+            }
+        }
+    }
+
+    /**
+     * internal.
+     */
+    public List<CompoundTag> getBlockEntityTags() {
+        return NBTtiles;
+    }
+
+    /**
+     * internal.
+     */
+    public void setBlockEntityTags(List<CompoundTag> tags) {
+        NBTtiles = tags;
+    }
+
+    /**
+     * internal.
+     */
+    public List<CompoundTag> getEntityTags() {
+        return NBTentities;
+    }
+
+    /**
+     * internal.
+     */
+    public void setEntityTags(List<CompoundTag> tags) {
+        NBTentities = tags;
     }
 }

@@ -3,7 +3,10 @@ package cn.nukkit.block;
 import cn.nukkit.Player;
 import cn.nukkit.item.Item;
 import cn.nukkit.item.ItemBlock;
+import cn.nukkit.item.ItemDye;
+import cn.nukkit.item.ItemID;
 import cn.nukkit.item.ItemTool;
+import cn.nukkit.math.BlockFace;
 import cn.nukkit.utils.BlockColor;
 
 /**
@@ -52,19 +55,26 @@ public class BlockDirt extends BlockSolidMeta {
     }
 
     @Override
-    public boolean onActivate(Item item, Player player) {
+    public boolean onActivate(Item item, BlockFace face, Player player) {
         if (item.isHoe()) {
-            if (this.up() instanceof BlockAir) {
-                item.useOn(this);
+            if (this.up().isAir()) {
+                if (player != null && !player.isCreative()) {
+                    item.useOn(this);
+                }
                 this.getLevel().setBlock(this, this.getDamage() == 0 ? get(FARMLAND) : get(DIRT), true);
                 return true;
             }
         } else if (item.isShovel()) {
-            if (this.up() instanceof BlockAir) {
-                item.useOn(this);
-                this.getLevel().setBlock(this, get(GRASS_PATH));
+            if (this.up().isAir()) {
+                if (player != null && !player.isCreative()) {
+                    item.useOn(this);
+                }
+                this.getLevel().setBlock(this, get(GRASS_PATH), true);
                 return true;
             }
+        } else if (item.getId() == ItemID.DYE && item.getDamage() == ItemDye.BONE_MEAL) {
+            //TODO: generate seagrass, coral and coral fan
+            return false;
         }
 
         return false;

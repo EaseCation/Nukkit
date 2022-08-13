@@ -8,13 +8,13 @@ public class EntityFallPacket extends DataPacket {
 
     public long eid;
     public float fallDistance;
-    public boolean unknown;
+    public boolean inVoid;
 
     @Override
     public void decode() {
         this.eid = this.getEntityRuntimeId();
         this.fallDistance = this.getLFloat();
-        this.unknown = this.getBoolean();
+        this.inVoid = this.getBoolean();
     }
 
     @Override

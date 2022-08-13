@@ -73,7 +73,7 @@ public class BlockRail extends BlockFlowable implements Faceable {
         if (type == Level.BLOCK_UPDATE_NORMAL) {
             Optional<BlockFace> ascendingDirection = this.getOrientation().ascendingDirection();
             Block down = this.down();
-            if ((down.isTransparent() && down.getId() != HOPPER_BLOCK) || (ascendingDirection.isPresent() && this.getSide(ascendingDirection.get()).isTransparent())) {
+            if ((down.isTransparent() && down.getId() != BLOCK_HOPPER) || (ascendingDirection.isPresent() && this.getSide(ascendingDirection.get()).isTransparent())) {
                 this.getLevel().useBreakOn(this);
                 return Level.BLOCK_UPDATE_NORMAL;
             }
@@ -100,9 +100,10 @@ public class BlockRail extends BlockFlowable implements Faceable {
     @Override
     public boolean place(Item item, Block block, Block target, BlockFace face, double fx, double fy, double fz, Player player) {
         Block down = this.down();
-        if (down == null || (down.isTransparent() && down.getId() != HOPPER_BLOCK)) {
+        if (down == null || (down.isTransparent() && down.getId() != BLOCK_HOPPER)) {
             return false;
         }
+
         Map<BlockRail, BlockFace> railsAround = this.checkRailsAroundAffected();
         List<BlockRail> rails = new ArrayList<>(railsAround.keySet());
         List<BlockFace> faces = new ArrayList<>(railsAround.values());
@@ -258,7 +259,7 @@ public class BlockRail extends BlockFlowable implements Faceable {
     }
 
     @Override
-    public Item toItem() {
+    public Item toItem(boolean addUserData) {
         return new ItemBlock(this, 0);
     }
 
@@ -281,6 +282,21 @@ public class BlockRail extends BlockFlowable implements Faceable {
 
     @Override
     public boolean canBePulled() {
+        return true;
+    }
+
+    @Override
+    public boolean canContainWater() {
+        return true;
+    }
+
+    @Override
+    public boolean canProvideSupport(BlockFace face, SupportType type) {
+        return false;
+    }
+
+    @Override
+    public boolean isRail() {
         return true;
     }
 }

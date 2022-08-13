@@ -15,7 +15,7 @@ public class ItemChestplateLeather extends ItemColorArmor {
     }
 
     public ItemChestplateLeather(Integer meta, int count) {
-        super(LEATHER_TUNIC, meta, count, "Leather Tunic");
+        super(LEATHER_CHESTPLATE, meta, count, "Leather Tunic");
     }
 
     @Override

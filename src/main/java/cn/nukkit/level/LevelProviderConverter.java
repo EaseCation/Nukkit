@@ -1,33 +1,56 @@
 package cn.nukkit.level;
 
+import cn.nukkit.block.Block;
+import cn.nukkit.block.BlockID;
+import cn.nukkit.block.BlockWood;
+import cn.nukkit.block.BlockWood2;
+import cn.nukkit.blockentity.BlockEntity;
+import cn.nukkit.entity.Entity;
+import cn.nukkit.level.biome.Biome;
+import cn.nukkit.level.format.ChunkSection;
 import cn.nukkit.level.format.FullChunk;
 import cn.nukkit.level.format.LevelProvider;
 import cn.nukkit.level.format.anvil.Anvil;
 import cn.nukkit.level.format.anvil.Chunk;
+import cn.nukkit.level.format.anvil.RegionLoader;
 import cn.nukkit.level.format.generic.BaseFullChunk;
 import cn.nukkit.level.format.generic.ChunkConverter;
 import cn.nukkit.level.format.leveldb.LevelDB;
+import cn.nukkit.level.format.leveldb.LevelDbChunk;
+import cn.nukkit.level.format.leveldb.LevelDbConstants;
+import cn.nukkit.level.format.leveldb.LevelDbSubChunk;
 import cn.nukkit.level.format.mcregion.McRegion;
-import cn.nukkit.level.format.mcregion.RegionLoader;
 import cn.nukkit.nbt.NBTIO;
 import cn.nukkit.nbt.tag.CompoundTag;
+import cn.nukkit.nbt.tag.Tag;
+import cn.nukkit.utils.Binary;
 import cn.nukkit.utils.LevelException;
-import cn.nukkit.utils.Utils;
+import it.unimi.dsi.fastutil.objects.ObjectArrayList;
+import lombok.extern.log4j.Log4j2;
 
 import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileOutputStream;
 import java.io.IOException;
+import java.io.InputStream;
+import java.io.OutputStream;
 import java.nio.ByteOrder;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
+import java.nio.file.StandardCopyOption;
+import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+import java.util.stream.Collectors;
 
+@Log4j2
 class LevelProviderConverter {
+
+    private static final Pattern ANVIL_REGEX = Pattern.compile("^r\\.(-?[0-9]+)\\.(-?[0-9]+)\\.mca$");
 
     private LevelProvider provider;
     private Class<? extends LevelProvider> toClass;
-    private Level level;
-    private String path;
+    private final Level level;
+    private final String path;
 
     LevelProviderConverter(Level level, String path) {
         this.level = level;
@@ -35,50 +58,78 @@ class LevelProviderConverter {
     }
 
     LevelProviderConverter from(LevelProvider provider) {
-        if (!(provider instanceof McRegion) && !(provider instanceof LevelDB)) {
-            throw new IllegalArgumentException("From type can be only McRegion or LevelDB");
+        if (!(provider instanceof McRegion) && !(provider instanceof Anvil)) {
+            throw new IllegalArgumentException("From type can be only McRegion or Anvil");
         }
         this.provider = provider;
         return this;
     }
 
     LevelProviderConverter to(Class<? extends LevelProvider> toClass) {
-        if (toClass != Anvil.class) {
-            throw new IllegalArgumentException("To type can be only Anvil");
+        if (toClass != LevelDB.class) {
+            throw new IllegalArgumentException("To type can be only LevelDB");
         }
         this.toClass = toClass;
         return this;
     }
 
+    private static final Pattern REGEX = Pattern.compile("-?\\d+");
+
     LevelProvider perform() throws IOException {
-        new File(path).mkdir();
-        File dat = new File(provider.getPath(), "level.dat.old");
-        new File(provider.getPath(), "level.dat").renameTo(dat);
-        Utils.copyFile(dat, new File(path, "level.dat"));
+        Path dirPath = Paths.get(path);
+        Path datNew = dirPath.resolve("level.dat");
+        Files.createDirectories(dirPath);
+
+        Path providerPath = Paths.get(provider.getPath());
+        Path dat = providerPath.resolve("level.dat");
+        Path datBak = providerPath.resolve("level.dat.old");
+
+        Files.copy(dat, datNew, StandardCopyOption.REPLACE_EXISTING);
+        Files.move(dat, datBak, StandardCopyOption.REPLACE_EXISTING);
+
         LevelProvider result;
         try {
-            if (provider instanceof LevelDB) {
+            /*if (provider instanceof LevelDB) {
                 try (FileInputStream stream = new FileInputStream(path + "level.dat")) {
                     stream.skip(8);
                     CompoundTag levelData = NBTIO.read(stream, ByteOrder.LITTLE_ENDIAN);
-                    if (levelData != null) {
-                        NBTIO.writeGZIPCompressed(new CompoundTag().putCompound("Data", levelData), new FileOutputStream(path + "level.dat"));
-                    } else {
-                        throw new IOException("LevelData can not be null");
-                    }
+                    NBTIO.writeGZIPCompressed(new CompoundTag().putCompound("Data", levelData), new FileOutputStream(path + "level.dat"));
                 } catch (IOException e) {
                     throw new LevelException("Invalid level.dat");
                 }
+            }*/
+
+            if (toClass == LevelDB.class) {
+                byte[] levelData;
+                try (InputStream stream = Files.newInputStream(datNew)) {
+                    CompoundTag nbt = NBTIO.readCompressed(stream, ByteOrder.BIG_ENDIAN);
+                    Tag tag = nbt.get("Data");
+                    if (!(tag instanceof CompoundTag)) {
+                        throw new IOException("Invalid 'Data' tag");
+                    }
+
+                    levelData = NBTIO.write((CompoundTag) tag, ByteOrder.LITTLE_ENDIAN, false);
+                } catch (IOException e) {
+                    throw new LevelException("Invalid level.dat", e);
+                }
+
+                try (OutputStream stream = Files.newOutputStream(datNew)) {
+                    stream.write(Binary.writeLInt(LevelDbConstants.CURRENT_STORAGE_VERSION));
+                    stream.write(Binary.writeLInt(levelData.length));
+                    stream.write(levelData);
+                }
             }
+
             result = toClass.getConstructor(Level.class, String.class).newInstance(level, path);
         } catch (Exception e) {
             throw new RuntimeException(e);
         }
+
         if (toClass == Anvil.class) {
             if (provider instanceof McRegion) {
-                new File(path, "region").mkdir();
+                Files.createDirectories(dirPath.resolve("region"));
                 for (File file : new File(provider.getPath() + "region/").listFiles()) {
-                    Matcher m = Pattern.compile("-?\\d+").matcher(file.getName());
+                    Matcher m = REGEX.matcher(file.getName());
                     int regionX, regionZ;
                     try {
                         if (m.find()) {
@@ -90,7 +141,7 @@ class LevelProviderConverter {
                     } catch (NumberFormatException e) {
                         continue;
                     }
-                    RegionLoader region = new RegionLoader(provider, regionX, regionZ);
+                    cn.nukkit.level.format.mcregion.RegionLoader region = new cn.nukkit.level.format.mcregion.RegionLoader(provider, regionX, regionZ);
                     for (Integer index : region.getLocationIndexes()) {
                         int chunkX = index & 0x1f;
                         int chunkZ = index >> 5;
@@ -106,9 +157,9 @@ class LevelProviderConverter {
                     }
                     region.close();
                 }
-            }
-            if (provider instanceof LevelDB) {
-                new File(path, "region").mkdir();
+            } else if (provider instanceof LevelDB) {
+                throw new IllegalArgumentException("no longer available");
+                /*new File(path, "region").mkdir();
                 for (byte[] key : ((LevelDB) provider).getTerrainKeys()) {
                     int x = getChunkX(key);
                     int z = getChunkZ(key);
@@ -118,24 +169,195 @@ class LevelProviderConverter {
                             .to(Chunk.class)
                             .perform();
                     result.saveChunk(x, z, chunk);
-                }
+                }*/
+            }
+            result.doGarbageCollection();
+        } else if (toClass == LevelDB.class) {
+            if (provider instanceof McRegion) {
+                throw new IllegalArgumentException("Please convert to Anvil first");
+            }
+            if (provider instanceof Anvil) {
+                int totalChunks = anvilToLevelDb((Anvil) provider, (LevelDB) result);
+                log.info("{} chunks have been converted", totalChunks);
             }
             result.doGarbageCollection();
         }
+
         return result;
     }
 
-    private static int getChunkX(byte[] key) {
-        return (key[3] << 24) |
-                (key[2] << 16) |
-                (key[1] << 8) |
-                key[0];
+    /**
+     * @return success chunk count
+     */
+    private int anvilToLevelDb(Anvil anvil, LevelDB levelDb) {
+        File regionDir = new File(anvil.getPath(), "region");
+        File[] regionFiles = regionDir.listFiles((dir, name) -> name.endsWith(".mca"));
+
+        if (regionFiles == null) {
+            return 0;
+        }
+
+        int totalChunks = 0;
+
+        //TODO: use workers
+        for (File regionFile : regionFiles) {
+            Matcher matcher = ANVIL_REGEX.matcher(regionFile.getName());
+            if (!matcher.matches()) {
+                continue;
+            }
+
+            int regionX;
+            int regionZ;
+            try {
+                regionX = Integer.parseInt(matcher.group(1));
+                regionZ = Integer.parseInt(matcher.group(2));
+            } catch (Exception e) {
+                log.error("Skipped invalid region: {}", regionFile, e);
+                continue;
+            }
+
+            RegionLoader region;
+            try {
+                region = new RegionLoader(anvil, regionX, regionZ);
+            } catch (Exception e) {
+                log.error("Skipped corrupted region: {}", regionFile, e);
+                continue;
+            }
+
+            for (int x = 0; x < 32; x++) {
+                for (int z = 0; z < 32; z++) {
+                    if (!region.chunkExists(x, z)) {
+                        continue;
+                    }
+
+                    Chunk chunk;
+                    try {
+                        chunk = region.readChunk(x, z);
+                    } catch (Exception e) {
+                        log.error("Skipped corrupted chunk: region {},{} pos {},{}", regionX, regionZ, x, z, e);
+                        continue;
+                    }
+
+                    if (chunk == null) {
+                        continue;
+                    }
+
+                    try {
+                        LevelDbChunk dbChunk = anvilChunkToLevelDbChunk(chunk, levelDb);
+                        levelDb.saveChunk(x, z, dbChunk);
+
+                        List<BlockEntity> blockEntities = new ObjectArrayList<>(dbChunk.getBlockEntities().values());
+                        for (BlockEntity blockEntity : blockEntities) {
+                            if (blockEntity == null || blockEntity.isClosed()) {
+                                continue;
+                            }
+                            try {
+                                level.removeBlockEntity(blockEntity);
+                            } catch (Exception e) {
+                                log.debug("Failed to remove block entity {}", blockEntity, e);
+                            }
+                        }
+
+                        List<Entity> entities = new ObjectArrayList<>(dbChunk.getEntities().values());
+                        for (Entity entity : entities) {
+                            if (entity == null || entity.isClosed()) {
+                                continue;
+                            }
+                            try {
+                                level.removeEntityDirect(entity);
+                            } catch (Exception e) {
+                                log.debug("Failed to remove entity {}", entity, e);
+                            }
+                        }
+                    } catch (Exception e) {
+                        log.error("chunk conversion failed: region {},{} pos {},{}", regionX, regionZ, x, z, e);
+                        continue;
+                    }
+
+                    totalChunks++;
+                }
+            }
+
+            try {
+                region.close();
+            } catch (Exception e) {
+                log.error("An error occurred while unloading region: {}", regionFile, e);
+            }
+        }
+
+        return totalChunks;
     }
 
-    private static int getChunkZ(byte[] key) {
-        return (key[7] << 24) |
-                (key[6] << 16) |
-                (key[5] << 8) |
-                key[4];
+    private LevelDbChunk anvilChunkToLevelDbChunk(Chunk oldChunk, LevelDB levelDb) {
+        LevelDbChunk chunk = new LevelDbChunk(levelDb, oldChunk.getX(), oldChunk.getZ());
+
+        ChunkSection[] oldSections = oldChunk.getSections();
+        if (oldSections != null) {
+            for (ChunkSection oldSection : oldSections) {
+                if (oldSection.isEmpty()) {
+                    continue;
+                }
+
+                LevelDbSubChunk subChunk = chunk.getSection(oldSection.getY());
+                for (int y = 0; y < 16; y++) {
+                    for (int x = 0; x < 16; x++) {
+                        for (int z = 0; z < 16; z++) {
+                            int id = oldSection.getBlockId(0, x, y, z);
+                            int meta = oldSection.getBlockData(0, x, y, z);
+
+                            if (Block.list[BlockID.WOOD] != null) {
+                                // special Log upgrade to Wood
+                                if (id == BlockID.LOG) {
+                                    if ((meta & BlockWood.PILLAR_AXIS_MASK) == BlockWood.PILLAR_AXIS_MASK) {
+                                        id = BlockID.WOOD;
+                                        meta = meta & BlockWood.TYPE_MASK;
+                                    }
+                                } else if (id == BlockID.LOG2) {
+                                    if ((meta & BlockWood2.PILLAR_AXIS_MASK) == BlockWood2.PILLAR_AXIS_MASK) {
+                                        id = BlockID.WOOD;
+                                        meta = 0b100 | (meta & BlockWood2.TYPE_MASK);
+                                    }
+                                }
+                            }
+
+                            subChunk.setBlock(0, x, y, z, id, meta);
+                        }
+                    }
+                }
+            }
+
+            chunk.recalculateHeightMap();
+        }
+
+        for (int x = 0; x < 16; x++) {
+            for (int z = 0; z < 16; z++) {
+                chunk.setBiomeId(x, z, Biome.toValidBiome(oldChunk.getBiomeId(x, z)));
+//                chunk.setHeightMap(x, z, oldChunk.getHeightMap(x, z));
+            }
+        }
+
+        List<CompoundTag> blockEntities = oldChunk.getBlockEntityTags();
+        if (blockEntities != null && !blockEntities.isEmpty()) {
+            chunk.setBlockEntityTags(blockEntities.stream()
+                    .map(CompoundTag::copy)
+                    .collect(Collectors.toList()));
+        }
+        List<CompoundTag> entities = oldChunk.getEntityTags();
+        if (entities != null && !entities.isEmpty()) {
+            chunk.setEntityTags(entities.stream()
+                    .map(CompoundTag::copy)
+                    .collect(Collectors.toList()));
+        }
+
+        chunk.setGenerated(oldChunk.isGenerated());
+        chunk.setPopulated(oldChunk.isPopulated());
+        chunk.setLightPopulated(oldChunk.isLightPopulated());
+
+        chunk.initChunk();
+
+//        chunk.fixCorruptedBlockEntities();
+        //TODO: lighting
+
+        return chunk;
     }
 }

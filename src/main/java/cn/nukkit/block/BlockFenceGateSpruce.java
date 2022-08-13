@@ -18,7 +18,7 @@ public class BlockFenceGateSpruce extends BlockFenceGate {
 
     @Override
     public int getId() {
-        return FENCE_GATE_SPRUCE;
+        return SPRUCE_FENCE_GATE;
     }
 
     @Override
@@ -27,12 +27,12 @@ public class BlockFenceGateSpruce extends BlockFenceGate {
     }
 
     @Override
-    public Item toItem() {
-        return Item.get(Item.FENCE_GATE_SPRUCE,0, 1);
+    public Item toItem(boolean addUserData) {
+        return Item.get(Item.SPRUCE_FENCE_GATE,0, 1);
     }
 
     @Override
     public BlockColor getColor() {
-        return BlockColor.SPRUCE_BLOCK_COLOR;
+        return BlockColor.PODZOL_BLOCK_COLOR;
     }
 }

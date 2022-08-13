@@ -75,7 +75,7 @@ public class BlockStemPumpkin extends BlockCrops {
     }
 
     @Override
-    public Item toItem() {
+    public Item toItem(boolean addUserData) {
         return new ItemSeedsPumpkin();
     }
 
@@ -85,5 +85,10 @@ public class BlockStemPumpkin extends BlockCrops {
         return new Item[]{
                 new ItemSeedsPumpkin(0, random.nextRange(0, 3))
         };
+    }
+
+    @Override
+    public boolean isStem() {
+        return true;
     }
 }

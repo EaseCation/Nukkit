@@ -1,6 +1,6 @@
 package cn.nukkit.level.generator.noise.vanilla.f;
 
-import cn.nukkit.math.MathHelper;
+import cn.nukkit.math.Mth;
 import cn.nukkit.math.NukkitRandom;
 
 import java.util.Arrays;
@@ -38,8 +38,8 @@ public class NoiseGeneratorOctavesF {
             float d0 = (float) xOffset * d3 * xScale;
             float d1 = (float) yOffset * d3 * yScale;
             float d2 = (float) zOffset * d3 * zScale;
-            int k = MathHelper.floor_float_int(d0);
-            int l = MathHelper.floor_float_int(d2);
+            int k = Mth.floor(d0);
+            int l = Mth.floor(d2);
             d0 = d0 - (float) k;
             d2 = d2 - (float) l;
             k = k % 16777216;

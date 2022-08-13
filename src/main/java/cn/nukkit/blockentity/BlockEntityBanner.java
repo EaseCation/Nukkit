@@ -9,37 +9,30 @@ import cn.nukkit.utils.DyeColor;
 
 public class BlockEntityBanner extends BlockEntitySpawnable {
 
-    public int color;
-
     public BlockEntityBanner(FullChunk chunk, CompoundTag nbt) {
         super(chunk, nbt);
     }
 
     @Override
     protected void initBlockEntity() {
-        if (!this.namedTag.contains("color")) {
-            this.namedTag.putByte("color", 0);
+        if (!this.namedTag.contains("Base")) {
+            this.namedTag.putInt("Base", 0);
         }
-
-        this.color = this.namedTag.getByte("color");
+        if (!this.namedTag.contains("Type")) {
+            this.namedTag.putInt("Type", 0);
+        }
 
         super.initBlockEntity();
     }
 
     @Override
-    public boolean isBlockEntityValid() {
-        return this.getBlock().getId() == Block.WALL_BANNER || this.getBlock().getId() == Block.STANDING_BANNER;
+    public boolean isValidBlock(int blockId) {
+        return blockId == Block.WALL_BANNER || blockId == Block.STANDING_BANNER;
     }
 
     @Override
     public void saveNBT() {
         super.saveNBT();
-        this.namedTag.putByte("color", this.color);
-    }
-
-    @Override
-    public String getName() {
-        return "Banner";
     }
 
     public int getBaseColor() {
@@ -86,11 +79,10 @@ public class BlockEntityBanner extends BlockEntitySpawnable {
         return getDefaultCompound(this, BANNER)
                 .putInt("Base", getBaseColor())
                 .putList(this.namedTag.getList("Patterns"))
-                .putInt("Type", getType())
-                .putByte("color", this.color);
+                .putInt("Type", getType());
     }
 
     public DyeColor getDyeColor() {
-        return DyeColor.getByWoolData(color);
+        return DyeColor.getByDyeData(getBaseColor());
     }
 }

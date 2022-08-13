@@ -3,7 +3,7 @@ package cn.nukkit.inventory;
 import cn.nukkit.Player;
 import cn.nukkit.entity.Entity;
 import cn.nukkit.item.Item;
-import cn.nukkit.math.NukkitMath;
+import cn.nukkit.math.Mth;
 import cn.nukkit.math.Vector3;
 import cn.nukkit.network.protocol.ContainerClosePacket;
 import cn.nukkit.network.protocol.ContainerOpenPacket;
@@ -45,7 +45,7 @@ public abstract class ContainerInventory extends BaseInventory {
         } else {
             pk.x = pk.y = pk.z = 0;
         }
-        if (holder instanceof Entity) {
+        if (holder instanceof Entity && !(holder instanceof Player)) {
             pk.entityId = ((Entity) holder).getId();
         }
 
@@ -81,7 +81,7 @@ public abstract class ContainerInventory extends BaseInventory {
             }
 
             averageCount = averageCount / (float) inv.getSize();
-            return NukkitMath.floorFloat(averageCount * 14) + (itemCount > 0 ? 1 : 0);
+            return Mth.floor(averageCount * 14) + (itemCount > 0 ? 1 : 0);
         }
     }
 }

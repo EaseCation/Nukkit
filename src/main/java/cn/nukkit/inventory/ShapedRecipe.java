@@ -2,7 +2,8 @@ package cn.nukkit.inventory;
 
 import cn.nukkit.item.Item;
 import io.netty.util.collection.CharObjectHashMap;
-import lombok.ToString;
+import io.netty.util.collection.CharObjectMap;
+import it.unimi.dsi.fastutil.objects.ObjectArrayList;
 
 import java.util.*;
 
@@ -10,12 +11,11 @@ import java.util.*;
  * author: MagicDroidX
  * Nukkit Project
  */
-@ToString
 public class ShapedRecipe implements CraftingRecipe {
 
     private String recipeId;
     private final Item primaryResult;
-    private final List<Item> extraResults = new ArrayList<>();
+    private final List<Item> extraResults = new ObjectArrayList<>();
 
     private final List<Item> ingredientsAggregate;
 
@@ -24,11 +24,12 @@ public class ShapedRecipe implements CraftingRecipe {
     private final String[] shape;
     private final int priority;
 
-    private final CharObjectHashMap<Item> ingredients = new CharObjectHashMap<>();
+    private final CharObjectMap<Item> ingredients = new CharObjectHashMap<>();
 
+    private final RecipeTag tag;
 
-    public ShapedRecipe(Item primaryResult, String[] shape, Map<Character, Item> ingredients, List<Item> extraResults) {
-        this(null, 1, primaryResult, shape, ingredients, extraResults);
+    public ShapedRecipe(Item primaryResult, String[] shape, Map<Character, Item> ingredients, List<Item> extraResults, RecipeTag tag) {
+        this(null, 1, primaryResult, shape, ingredients, extraResults, tag);
     }
 
     /**
@@ -46,7 +47,7 @@ public class ShapedRecipe implements CraftingRecipe {
      *                         <p>
      *                         Note: Recipes **do not** need to be square. Do NOT add padding for empty rows/columns.
      */
-    public ShapedRecipe(String recipeId, int priority, Item primaryResult, String[] shape, Map<Character, Item> ingredients, List<Item> extraResults) {
+    public ShapedRecipe(String recipeId, int priority, Item primaryResult, String[] shape, Map<Character, Item> ingredients, List<Item> extraResults, RecipeTag tag) {
         this.recipeId = recipeId;
         this.priority = priority;
         int rowCount = shape.length;
@@ -84,7 +85,7 @@ public class ShapedRecipe implements CraftingRecipe {
             this.setIngredient(entry.getKey(), entry.getValue());
         }
 
-        this.ingredientsAggregate = new ArrayList<>();
+        this.ingredientsAggregate = new ObjectArrayList<>();
         for (char c : String.join("", this.shape).toCharArray()) {
             if (c == ' ')
                 continue;
@@ -100,6 +101,8 @@ public class ShapedRecipe implements CraftingRecipe {
                 this.ingredientsAggregate.add(ingredient);
         }
         this.ingredientsAggregate.sort(CraftingManager.recipeComparator);
+
+        this.tag = tag;
     }
 
     public int getWidth() {
@@ -148,7 +151,7 @@ public class ShapedRecipe implements CraftingRecipe {
     }
 
     public List<Item> getIngredientList() {
-        List<Item> items = new ArrayList<>();
+        List<Item> items = new ObjectArrayList<>();
         for (int y = 0, y2 = getHeight(); y < y2; ++y) {
             for (int x = 0, x2 = getWidth(); x < x2; ++x) {
                 items.add(getIngredient(x, y));
@@ -194,13 +197,18 @@ public class ShapedRecipe implements CraftingRecipe {
     }
 
     @Override
+    public RecipeTag getTag() {
+        return tag;
+    }
+
+    @Override
     public List<Item> getExtraResults() {
         return extraResults;
     }
 
     @Override
     public List<Item> getAllResults() {
-        List<Item> list = new ArrayList<>();
+        List<Item> list = new ObjectArrayList<>();
         list.add(primaryResult);
         list.addAll(extraResults);
 
@@ -213,14 +221,14 @@ public class ShapedRecipe implements CraftingRecipe {
     }
 
     public boolean matchItems(List<Item> inputList, List<Item> extraOutputList, int multiplier) {
-        List<Item> haveInputs = new ArrayList<>();
+        List<Item> haveInputs = new ObjectArrayList<>();
         for (Item item : inputList) {
             if (item.isNull())
                 continue;
             haveInputs.add(item.clone());
         }
-        List<Item> needInputs = new ArrayList<>();
-        if(multiplier != 1){
+        List<Item> needInputs = new ObjectArrayList<>();
+        if (multiplier != 1) {
             for (Item item : ingredientsAggregate) {
                 if (item.isNull())
                     continue;
@@ -240,15 +248,15 @@ public class ShapedRecipe implements CraftingRecipe {
             return false;
         }
 
-        List<Item> haveOutputs = new ArrayList<>();
+        List<Item> haveOutputs = new ObjectArrayList<>();
         for (Item item : extraOutputList) {
             if (item.isNull())
                 continue;
             haveOutputs.add(item.clone());
         }
         haveOutputs.sort(CraftingManager.recipeComparator);
-        List<Item> needOutputs = new ArrayList<>();
-        if(multiplier != 1){
+        List<Item> needOutputs = new ObjectArrayList<>();
+        if (multiplier != 1) {
             for (Item item : getExtraResults()) {
                 if (item.isNull())
                     continue;
@@ -282,8 +290,8 @@ public class ShapedRecipe implements CraftingRecipe {
     }
 
     private boolean matchItemList(List<Item> haveItems, List<Item> needItems) {
-        for (Item needItem : new ArrayList<>(needItems)) {
-            for (Item haveItem : new ArrayList<>(haveItems)) {
+        for (Item needItem : new ObjectArrayList<>(needItems)) {
+            for (Item haveItem : new ObjectArrayList<>(haveItems)) {
                 if (needItem.equals(haveItem, needItem.hasMeta(), needItem.hasCompoundTag())) {
                     int amount = Math.min(haveItem.getCount(), needItem.getCount());
                     needItem.setCount(needItem.getCount() - amount);

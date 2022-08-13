@@ -7,6 +7,8 @@ import cn.nukkit.math.Vector3;
 import cn.nukkit.math.Vector3f;
 import lombok.ToString;
 
+import javax.annotation.Nullable;
+
 /**
  * @author CreeperFace
  */
@@ -15,6 +17,7 @@ public class UseItemData implements TransactionData {
 
     public int actionType;
     public BlockVector3 blockPos;
+    @Nullable
     public BlockFace face;
     public int hotbarSlot;
     public Item itemInHand;

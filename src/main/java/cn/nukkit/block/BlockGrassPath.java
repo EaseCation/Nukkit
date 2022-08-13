@@ -3,6 +3,7 @@ package cn.nukkit.block;
 import cn.nukkit.Player;
 import cn.nukkit.item.Item;
 import cn.nukkit.item.ItemTool;
+import cn.nukkit.math.BlockFace;
 import cn.nukkit.utils.BlockColor;
 
 /**
@@ -48,9 +49,11 @@ public class BlockGrassPath extends BlockGrass {
     }
 
     @Override
-    public boolean onActivate(Item item, Player player) {
+    public boolean onActivate(Item item, BlockFace face, Player player) {
         if (item.isHoe()) {
-            item.useOn(this);
+            if (player != null && !player.isCreative()) {
+                item.useOn(this);
+            }
             this.getLevel().setBlock(this, get(FARMLAND), true);
             return true;
         }

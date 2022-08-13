@@ -25,11 +25,11 @@ public class BlockPotato extends BlockCrops {
 
     @Override
     public int getId() {
-        return POTATO_BLOCK;
+        return POTATOES;
     }
 
     @Override
-    public Item toItem() {
+    public Item toItem(boolean addUserData) {
         return new ItemPotato();
     }
 

@@ -15,7 +15,7 @@ public class ItemBootsGold extends ItemArmor {
     }
 
     public ItemBootsGold(Integer meta, int count) {
-        super(GOLD_BOOTS, meta, count, "Gold Boots");
+        super(GOLDEN_BOOTS, meta, count, "Gold Boots");
     }
 
     @Override

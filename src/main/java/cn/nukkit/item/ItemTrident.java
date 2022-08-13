@@ -7,11 +7,13 @@ import cn.nukkit.event.entity.EntityShootBowEvent;
 import cn.nukkit.event.entity.ProjectileLaunchEvent;
 import cn.nukkit.item.enchantment.Enchantment;
 import cn.nukkit.level.sound.SoundEnum;
+import cn.nukkit.math.Mth;
 import cn.nukkit.math.Vector3;
 import cn.nukkit.nbt.tag.CompoundTag;
 import cn.nukkit.nbt.tag.DoubleTag;
 import cn.nukkit.nbt.tag.FloatTag;
 import cn.nukkit.nbt.tag.ListTag;
+import cn.nukkit.network.protocol.LevelSoundEventPacket;
 
 /**
  * Created by PetteriM1
@@ -52,7 +54,7 @@ public class ItemTrident extends ItemTool {
 
     @Override
     public boolean onRelease(Player player, int ticksUsed) {
-        if (this.hasEnchantment(Enchantment.ID_TRIDENT_RIPTIDE)) {
+        if (this.hasEnchantment(Enchantment.ID_RIPTIDE)) {
             return true;
         }
 
@@ -64,9 +66,9 @@ public class ItemTrident extends ItemTool {
                         .add(new DoubleTag("", player.y + player.getEyeHeight()))
                         .add(new DoubleTag("", player.z)))
                 .putList(new ListTag<DoubleTag>("Motion")
-                        .add(new DoubleTag("", -Math.sin(player.yaw / 180 * Math.PI) * Math.cos(player.pitch / 180 * Math.PI)))
-                        .add(new DoubleTag("", -Math.sin(player.pitch / 180 * Math.PI)))
-                        .add(new DoubleTag("", Math.cos(player.yaw / 180 * Math.PI) * Math.cos(player.pitch / 180 * Math.PI))))
+                        .add(new DoubleTag("", -Mth.sin(player.yaw / 180 * Math.PI) * Mth.cos(player.pitch / 180 * Math.PI)))
+                        .add(new DoubleTag("", -Mth.sin(player.pitch / 180 * Mth.PI)))
+                        .add(new DoubleTag("", Mth.cos(player.yaw / 180 * Math.PI) * Mth.cos(player.pitch / 180 * Math.PI))))
                 .putList(new ListTag<FloatTag>("Rotation")
                         .add(new FloatTag("", (player.yaw > 180 ? 360 : 0) - (float) player.yaw))
                         .add(new FloatTag("", (float) -player.pitch)));
@@ -94,7 +96,7 @@ public class ItemTrident extends ItemTool {
                 entityShootBowEvent.getProjectile().close();
             } else {
                 entityShootBowEvent.getProjectile().spawnToAll();
-                player.getLevel().addSound(player, SoundEnum.ITEM_TRIDENT_THROW);
+                player.getLevel().addLevelSoundEvent(player, LevelSoundEventPacket.SOUND_ITEM_TRIDENT_THROW);
                 if (!player.isCreative()) {
                     this.count--;
                     player.getInventory().setItemInHand(this);
@@ -102,6 +104,11 @@ public class ItemTrident extends ItemTool {
             }
         }
 
+        return true;
+    }
+
+    @Override
+    public boolean additionalDamageOnBreak() {
         return true;
     }
 }

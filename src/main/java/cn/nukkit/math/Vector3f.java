@@ -1,5 +1,9 @@
 package cn.nukkit.math;
 
+import cn.nukkit.level.ChunkPosition;
+import cn.nukkit.nbt.tag.FloatTag;
+import cn.nukkit.nbt.tag.ListTag;
+
 public class Vector3f implements Cloneable {
     public static final int SIDE_DOWN = 0;
     public static final int SIDE_UP = 1;
@@ -43,15 +47,15 @@ public class Vector3f implements Cloneable {
     }
 
     public int getFloorX() {
-        return NukkitMath.floorFloat(this.x);
+        return Mth.floor(this.x);
     }
 
     public int getFloorY() {
-        return NukkitMath.floorFloat(this.y);
+        return Mth.floor(this.y);
     }
 
     public int getFloorZ() {
-        return NukkitMath.floorFloat(this.z);
+        return Mth.floor(this.z);
     }
 
     public int getChunkX() {
@@ -131,7 +135,7 @@ public class Vector3f implements Cloneable {
     }
 
     public Vector3f ceil() {
-        return new Vector3f((int) Math.ceil(this.x), (int) Math.ceil(this.y), (int) Math.ceil(this.z));
+        return new Vector3f(Mth.ceil(this.x), Mth.ceil(this.y), Mth.ceil(this.z));
     }
 
     public Vector3f floor() {
@@ -193,7 +197,17 @@ public class Vector3f implements Cloneable {
     }
 
     public double distanceSquared(Vector3f pos) {
-        return Math.pow(this.x - pos.x, 2) + Math.pow(this.y - pos.y, 2) + Math.pow(this.z - pos.z, 2);
+        double x = this.x - pos.x;
+        double y = this.y - pos.y;
+        double z = this.z - pos.z;
+        return x * x + y * y + z * z;
+    }
+
+    public double distanceSquared(double x, double y, double z) {
+        double xDiff = this.x - x;
+        double yDiff = this.y - y;
+        double zDiff = this.z - z;
+        return xDiff * xDiff + yDiff * yDiff + zDiff * zDiff;
     }
 
     public float maxPlainDistance() {
@@ -343,5 +357,25 @@ public class Vector3f implements Cloneable {
 
     public BlockVector3 asBlockVector3() {
         return new BlockVector3(getFloorX(), getFloorY(), getFloorZ());
+    }
+
+    public ChunkPosition toChunkPosition() {
+        return new ChunkPosition(this);
+    }
+
+    public Vector3f blockCenter() {
+        return this.add(0.5f, 0.5f, 0.5f);
+    }
+
+    public ListTag<FloatTag> toNbt() {
+        ListTag<FloatTag> list = new ListTag<>();
+        list.add(new FloatTag("", x));
+        list.add(new FloatTag("", y));
+        list.add(new FloatTag("", z));
+        return list;
+    }
+
+    public static Vector3f fromNbt(ListTag<FloatTag> list) {
+        return new Vector3f(list.get(0).data, list.get(1).data, list.get(2).data);
     }
 }

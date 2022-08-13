@@ -10,7 +10,6 @@ import cn.nukkit.utils.BlockColor;
  */
 public class BlockGold extends BlockSolid {
 
-
     public BlockGold() {
     }
 
@@ -43,7 +42,7 @@ public class BlockGold extends BlockSolid {
     public Item[] getDrops(Item item) {
         if (item.isPickaxe() && item.getTier() >= ItemTool.TIER_IRON) {
             return new Item[]{
-                    toItem()
+                    toItem(true)
             };
         } else {
             return new Item[0];

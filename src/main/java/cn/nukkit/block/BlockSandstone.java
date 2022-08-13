@@ -14,6 +14,13 @@ public class BlockSandstone extends BlockSolidMeta {
     public static final int CHISELED = 1;
     public static final int SMOOTH = 2;
 
+    private static final String[] NAMES = new String[]{
+            "Sandstone",
+            "Chiseled Sandstone",
+            "Smooth Sandstone",
+            ""
+    };
+
     public BlockSandstone() {
         this(0);
     }
@@ -39,21 +46,14 @@ public class BlockSandstone extends BlockSolidMeta {
 
     @Override
     public String getName() {
-        String[] names = new String[]{
-                "Sandstone",
-                "Chiseled Sandstone",
-                "Smooth Sandstone",
-                ""
-        };
-
-        return names[this.getDamage() & 0x03];
+        return NAMES[this.getDamage() & 0x03];
     }
 
     @Override
     public Item[] getDrops(Item item) {
         if (item.isPickaxe() && item.getTier() >= ItemTool.TIER_WOODEN) {
             return new Item[]{
-                    toItem()
+                    toItem(true)
             };
         } else {
             return new Item[0];
@@ -61,7 +61,7 @@ public class BlockSandstone extends BlockSolidMeta {
     }
 
     @Override
-    public Item toItem() {
+    public Item toItem(boolean addUserData) {
         return new ItemBlock(this, this.getDamage() & 0x03);
     }
 

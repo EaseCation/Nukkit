@@ -8,11 +8,11 @@ import cn.nukkit.math.Vector3;
 import cn.nukkit.network.protocol.ContainerClosePacket;
 import cn.nukkit.network.protocol.ContainerOpenPacket;
 
-public class FakeBlockUIComponent extends PlayerUIComponent {
+public abstract class FakeBlockUIComponent extends PlayerUIComponent {
     private final InventoryType type;
 
-    FakeBlockUIComponent(PlayerUIInventory playerUI, InventoryType type, int offset, Position position) {
-        super(playerUI, offset, type.getDefaultSize());
+    FakeBlockUIComponent(PlayerUIInventory playerUI, InventoryType type, int offset, int size, Position position) {
+        super(playerUI, offset, size);
         this.type = type;
         this.holder = new FakeBlockMenu(this, position);
     }

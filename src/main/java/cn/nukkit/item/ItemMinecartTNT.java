@@ -23,7 +23,7 @@ public class ItemMinecartTNT extends Item {
     }
 
     public ItemMinecartTNT(Integer meta, int count) {
-        super(MINECART_WITH_TNT, meta, count, "Minecart with TNT");
+        super(TNT_MINECART, meta, count, "Minecart with TNT");
     }
 
     @Override
@@ -58,11 +58,12 @@ public class ItemMinecartTNT extends Item {
                 return false;
             }
 
-            if (player.isSurvival()) {
+            if (player.isAdventure() || player.isSurvival()) {
                 Item item = player.getInventory().getItemInHand();
                 item.setCount(item.getCount() - 1);
                 player.getInventory().setItemInHand(item);
             }
+
             minecart.spawnToAll();
             return true;
         }

@@ -2,6 +2,7 @@ package cn.nukkit.block;
 
 import cn.nukkit.Player;
 import cn.nukkit.blockentity.BlockEntity;
+import cn.nukkit.blockentity.BlockEntityType;
 import cn.nukkit.blockentity.BlockEntityMusic;
 import cn.nukkit.item.Item;
 import cn.nukkit.item.ItemTool;
@@ -30,6 +31,11 @@ public class BlockNoteblock extends BlockSolid {
     @Override
     public int getId() {
         return NOTEBLOCK;
+    }
+
+    @Override
+    public int getBlockEntityType() {
+        return BlockEntityType.MUSIC;
     }
 
     @Override
@@ -74,7 +80,7 @@ public class BlockNoteblock extends BlockSolid {
         switch (this.down().getId()) {
             case GOLD_BLOCK:
                 return Instrument.GLOCKENSPIEL;
-            case CLAY_BLOCK:
+            case CLAY:
                 return Instrument.FLUTE;
             case PACKED_ICE:
                 return Instrument.CHIME;
@@ -90,37 +96,37 @@ public class BlockNoteblock extends BlockSolid {
                 return Instrument.DIDGERIDOO;
             case EMERALD_BLOCK:
                 return Instrument.SQUARE_WAVE;
-            case HAY_BALE:
+            case HAY_BLOCK:
                 return Instrument.BANJO;
-            case GLOWSTONE_BLOCK:
+            case GLOWSTONE:
                 return Instrument.ELECTRIC_PIANO;
             case LOG:
             case LOG2:
             case PLANKS:
             case DOUBLE_WOODEN_SLAB:
             case WOODEN_SLAB:
-            case WOOD_STAIRS:
-            case SPRUCE_WOOD_STAIRS:
-            case BIRCH_WOOD_STAIRS:
-            case JUNGLE_WOOD_STAIRS:
-            case ACACIA_WOOD_STAIRS:
-            case DARK_OAK_WOOD_STAIRS:
+            case OAK_STAIRS:
+            case SPRUCE_STAIRS:
+            case BIRCH_STAIRS:
+            case JUNGLE_STAIRS:
+            case ACACIA_STAIRS:
+            case DARK_OAK_STAIRS:
             case FENCE:
             case FENCE_GATE:
-            case FENCE_GATE_SPRUCE:
-            case FENCE_GATE_BIRCH:
-            case FENCE_GATE_JUNGLE:
-            case FENCE_GATE_DARK_OAK:
-            case FENCE_GATE_ACACIA:
-            case DOOR_BLOCK:
-            case SPRUCE_DOOR_BLOCK:
-            case BIRCH_DOOR_BLOCK:
-            case JUNGLE_DOOR_BLOCK:
-            case ACACIA_DOOR_BLOCK:
-            case DARK_OAK_DOOR_BLOCK:
+            case SPRUCE_FENCE_GATE:
+            case BIRCH_FENCE_GATE:
+            case JUNGLE_FENCE_GATE:
+            case DARK_OAK_FENCE_GATE:
+            case ACACIA_FENCE_GATE:
+            case BLOCK_WOODEN_DOOR:
+            case BLOCK_SPRUCE_DOOR:
+            case BLOCK_BIRCH_DOOR:
+            case BLOCK_JUNGLE_DOOR:
+            case BLOCK_ACACIA_DOOR:
+            case BLOCK_DARK_OAK_DOOR:
             case WOODEN_PRESSURE_PLATE:
             case TRAPDOOR:
-            case SIGN_POST:
+            case STANDING_SIGN:
             case WALL_SIGN:
             case NOTEBLOCK:
             case BOOKSHELF:
@@ -140,7 +146,7 @@ public class BlockNoteblock extends BlockSolid {
             case CONCRETE_POWDER:
                 return Instrument.DRUM;
             case GLASS:
-            case GLASS_PANEL:
+            case GLASS_PANE:
             case STAINED_GLASS_PANE:
             case STAINED_GLASS:
             case BEACON:
@@ -150,25 +156,25 @@ public class BlockNoteblock extends BlockSolid {
             case SANDSTONE:
             case RED_SANDSTONE:
             case COBBLESTONE:
-            case MOSSY_STONE:
-            case BRICKS:
-            case STONE_BRICKS:
-            case NETHER_BRICK_BLOCK:
+            case MOSSY_COBBLESTONE:
+            case BRICK_BLOCK:
+            case STONEBRICK:
+            case NETHER_BRICK:
             case RED_NETHER_BRICK:
             case QUARTZ_BLOCK:
-            case DOUBLE_SLAB:
-            case SLAB:
-            case DOUBLE_RED_SANDSTONE_SLAB:
-            case RED_SANDSTONE_SLAB:
-            case COBBLE_STAIRS:
+            case DOUBLE_STONE_SLAB:
+            case STONE_SLAB:
+            case DOUBLE_STONE_SLAB2:
+            case STONE_SLAB2:
+            case STONE_STAIRS:
             case BRICK_STAIRS:
             case STONE_BRICK_STAIRS:
-            case NETHER_BRICKS_STAIRS:
+            case NETHER_BRICK_STAIRS:
             case SANDSTONE_STAIRS:
             case QUARTZ_STAIRS:
             case RED_SANDSTONE_STAIRS:
             case PURPUR_STAIRS:
-            case COBBLE_WALL:
+            case COBBLESTONE_WALL:
             case NETHER_BRICK_FENCE:
             case BEDROCK:
             case GOLD_ORE:
@@ -177,15 +183,15 @@ public class BlockNoteblock extends BlockSolid {
             case LAPIS_ORE:
             case DIAMOND_ORE:
             case REDSTONE_ORE:
-            case GLOWING_REDSTONE_ORE:
+            case LIT_REDSTONE_ORE:
             case EMERALD_ORE:
             case DROPPER:
             case DISPENSER:
             case FURNACE:
-            case BURNING_FURNACE:
+            case LIT_FURNACE:
             case OBSIDIAN:
-            case GLOWING_OBSIDIAN:
-            case MONSTER_SPAWNER:
+            case GLOWINGOBSIDIAN:
+            case MOB_SPAWNER:
             case STONE_PRESSURE_PLATE:
             case NETHERRACK:
             case QUARTZ_ORE:
@@ -194,8 +200,8 @@ public class BlockNoteblock extends BlockSolid {
             case END_STONE:
             case END_BRICKS:
             case ENDER_CHEST:
-            case STAINED_TERRACOTTA:
-            case TERRACOTTA:
+            case STAINED_HARDENED_CLAY:
+            case HARDENED_CLAY:
             case PRISMARINE:
             case COAL_BLOCK:
             case PURPUR_BLOCK:
@@ -220,13 +226,13 @@ public class BlockNoteblock extends BlockSolid {
         pk.x = this.getFloorX();
         pk.y = this.getFloorY();
         pk.z = this.getFloorZ();
-        pk.case1 = instrument.ordinal();
-        pk.case2 = this.getStrength();
+        pk.eventType = instrument.ordinal();
+        pk.eventData = this.getStrength();
         this.getLevel().addChunkPacket(this.getFloorX() >> 4, this.getFloorZ() >> 4, pk);
     }
 
     @Override
-    public boolean onActivate(Item item, Player player) {
+    public boolean onActivate(Item item, BlockFace face, Player player) {
         this.increaseStrength();
         this.emitSound();
         return true;
@@ -251,6 +257,9 @@ public class BlockNoteblock extends BlockSolid {
     }
 
     private BlockEntityMusic getBlockEntity() {
+        if (level == null) {
+            return null;
+        }
         BlockEntity blockEntity = this.getLevel().getBlockEntity(this);
         if (blockEntity instanceof BlockEntityMusic) {
             return (BlockEntityMusic) blockEntity;
@@ -259,7 +268,7 @@ public class BlockNoteblock extends BlockSolid {
     }
 
     private BlockEntityMusic createBlockEntity() {
-        return (BlockEntityMusic) BlockEntity.createBlockEntity(BlockEntity.MUSIC, this.getLevel().getChunk(this.getFloorX() >> 4, this.getFloorZ() >> 4),
+        return (BlockEntityMusic) BlockEntity.createBlockEntity(BlockEntity.MUSIC, getChunk(),
                                         BlockEntity.getDefaultCompound(this, BlockEntity.MUSIC));
     }
 

@@ -1,22 +1,25 @@
 package cn.nukkit.block;
 
-/**
- * author: Justin
- */
-
 import cn.nukkit.Player;
 import cn.nukkit.blockentity.BlockEntity;
+import cn.nukkit.blockentity.BlockEntityType;
 import cn.nukkit.blockentity.BlockEntitySkull;
 import cn.nukkit.item.Item;
 import cn.nukkit.item.ItemSkull;
 import cn.nukkit.item.ItemTool;
+import cn.nukkit.math.AxisAlignedBB;
 import cn.nukkit.math.BlockFace;
+import cn.nukkit.math.Mth;
+import cn.nukkit.math.SimpleAxisAlignedBB;
 import cn.nukkit.nbt.tag.CompoundTag;
 import cn.nukkit.nbt.tag.Tag;
 import cn.nukkit.utils.BlockColor;
+import cn.nukkit.utils.Faceable;
 
-
-public class BlockSkull extends BlockTransparentMeta {
+/**
+ * author: Justin
+ */
+public class BlockSkull extends BlockFlowable implements Faceable {
 
     public BlockSkull() {
         this(0);
@@ -28,7 +31,12 @@ public class BlockSkull extends BlockTransparentMeta {
 
     @Override
     public int getId() {
-        return SKULL_BLOCK;
+        return BLOCK_SKULL;
+    }
+
+    @Override
+    public int getBlockEntityType() {
+        return BlockEntityType.SKULL;
     }
 
     @Override
@@ -74,19 +82,15 @@ public class BlockSkull extends BlockTransparentMeta {
         }
         this.getLevel().setBlock(block, this, true, true);
 
-        CompoundTag nbt = new CompoundTag()
-                .putString("id", BlockEntity.SKULL)
+        CompoundTag nbt = BlockEntity.getDefaultCompound(this, BlockEntity.SKULL)
                 .putByte("SkullType", item.getDamage())
-                .putInt("x", block.getFloorX())
-                .putInt("y", block.getFloorY())
-                .putInt("z", block.getFloorZ())
-                .putByte("Rot", (int) Math.floor((player.yaw * 16 / 360) + 0.5) & 0x0f);
+                .putByte("Rot", Mth.floor((player.yaw * 16 / 360) + 0.5) & 0x0f);
         if (item.hasCustomBlockData()) {
             for (Tag aTag : item.getCustomBlockData().getAllTags()) {
                 nbt.put(aTag.getName(), aTag);
             }
         }
-        BlockEntitySkull skull = (BlockEntitySkull) BlockEntity.createBlockEntity(BlockEntity.SKULL, getLevel().getChunk((int) block.x >> 4, (int) block.z >> 4), nbt);
+        BlockEntitySkull skull = (BlockEntitySkull) BlockEntity.createBlockEntity(BlockEntity.SKULL, getChunk(), nbt);
         if (skull == null) {
             return false;
         }
@@ -107,7 +111,7 @@ public class BlockSkull extends BlockTransparentMeta {
     }
 
     @Override
-    public Item toItem() {
+    public Item toItem(boolean addUserData) {
         BlockEntity blockEntity = getLevel().getBlockEntity(this);
         int itemMeta = 0;
         if (blockEntity != null) itemMeta = blockEntity.namedTag.getByte("SkullType");
@@ -125,12 +129,43 @@ public class BlockSkull extends BlockTransparentMeta {
     }
 
     @Override
+    public BlockFace getBlockFace() {
+        return BlockFace.fromIndex(this.getDamage() & 0x7);
+    }
+
+    @Override
+    protected AxisAlignedBB recalculateBoundingBox() {
+        AxisAlignedBB bb = new SimpleAxisAlignedBB(this.x + 0.25, this.y, this.z + 0.25, this.x + 1 - 0.25, this.y + 0.5, this.z + 1 - 0.25);
+        switch (this.getBlockFace()) {
+            case NORTH:
+                return bb.offset(0, 0.25, 0.25);
+            case SOUTH:
+                return bb.offset(0, 0.25, -0.25);
+            case WEST:
+                return bb.offset(0.25, 0.25, 0);
+            case EAST:
+                return bb.offset(-0.25, 0.25, 0);
+        }
+        return bb;
+    }
+
+    @Override
     public boolean breaksWhenMoved() {
         return true;
     }
 
     @Override
     public boolean sticksToPiston() {
+        return false;
+    }
+
+    @Override
+    public boolean canContainWater() {
+        return true;
+    }
+
+    @Override
+    public boolean canProvideSupport(BlockFace face, SupportType type) {
         return false;
     }
 }

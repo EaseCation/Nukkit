@@ -15,6 +15,8 @@ import java.util.*;
 import java.util.Map.Entry;
 import java.util.stream.Collectors;
 
+import static cn.nukkit.SharedConstants.*;
+
 /**
  * author: MagicDroidX
  * Nukkit Project
@@ -71,6 +73,7 @@ public class SimpleCommandMap implements CommandMap {
         this.register("nukkit", new XpCommand("xp"));
         this.register("nukkit", new SummonCommand("summon"));
         this.register("nukkit", new SetBlockCommand("setblock"));
+        this.register("nukkit", new TestForBlockCommand("testforblock"));
 
 //        if ((boolean) this.server.getConfig("debug.commands", false)) {
         this.register("nukkit", new StatusCommand("status"));
@@ -78,6 +81,10 @@ public class SimpleCommandMap implements CommandMap {
         this.register("nukkit", new TimingsCommand("timings"));
         //this.register("nukkit", new DumpMemoryCommand("dumpmemory"));
 //        }
+
+        if (ENABLE_TEST_COMMAND) {
+            this.register("nukkit", new DeveloperCommand("developer"));
+        }
     }
 
     @Override

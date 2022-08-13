@@ -74,9 +74,9 @@ public class BlockFarmland extends BlockTransparentMeta {
                             }
 
                             v.setComponents(x, y, z);
-                            int block = this.level.getBlockIdAt(v.getFloorX(), v.getFloorY(), v.getFloorZ());
+                            int block = this.level.getBlockIdAt(0, v.getFloorX(), v.getFloorY(), v.getFloorZ());
 
-                            if (block == WATER || block == STILL_WATER) {
+                            if (block == FLOWING_WATER || block == WATER) {
                                 found = true;
                                 break;
                             }
@@ -108,7 +108,7 @@ public class BlockFarmland extends BlockTransparentMeta {
     }
 
     @Override
-    public Item toItem() {
+    public Item toItem(boolean addUserData) {
         return new ItemBlock(Block.get(BlockID.DIRT));
     }
 

@@ -9,11 +9,9 @@ import cn.nukkit.item.Item;
  */
 public abstract class InventoryAction {
 
-
-    private long creationTime;
+    private final long creationTime;
 
     protected Item sourceItem;
-
     protected Item targetItem;
 
     public InventoryAction(Item sourceItem, Item targetItem) {
@@ -58,7 +56,7 @@ public abstract class InventoryAction {
     /**
      * Returns whether this action is currently valid. This should perform any necessary sanity checks.
      */
-    abstract public boolean isValid(Player source);
+    public abstract boolean isValid(Player source);
 
     /**
      * Called when the action is added to the specified InventoryTransaction.
@@ -72,15 +70,15 @@ public abstract class InventoryAction {
      * false if plugins cancelled events. This will only be called if the transaction which it is part of is considered
      * valid.
      */
-    abstract public boolean execute(Player source);
+    public abstract boolean execute(Player source);
 
     /**
      * Performs additional actions when this inventory-action completed successfully.
      */
-    abstract public void onExecuteSuccess(Player $source);
+    public abstract void onExecuteSuccess(Player source);
 
     /**
      * Performs additional actions when this inventory-action did not complete successfully.
      */
-    abstract public void onExecuteFail(Player source);
+    public abstract void onExecuteFail(Player source);
 }

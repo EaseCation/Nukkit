@@ -3,20 +3,24 @@ package cn.nukkit.scheduler;
 import cn.nukkit.block.Block;
 import cn.nukkit.level.Level;
 import cn.nukkit.math.AxisAlignedBB;
-import cn.nukkit.math.NukkitMath;
+import cn.nukkit.math.Mth;
 import cn.nukkit.math.Vector3;
 import cn.nukkit.utils.BlockUpdateEntry;
 import it.unimi.dsi.fastutil.longs.Long2ObjectMap;
 import it.unimi.dsi.fastutil.longs.Long2ObjectOpenHashMap;
 import it.unimi.dsi.fastutil.longs.LongArrayList;
+import it.unimi.dsi.fastutil.longs.LongIterator;
 import it.unimi.dsi.fastutil.longs.LongList;
+import it.unimi.dsi.fastutil.objects.ObjectLinkedOpenHashSet;
 
-import java.util.*;
+import java.util.Collections;
+import java.util.Iterator;
+import java.util.Set;
 
 public class BlockUpdateScheduler {
     private final Level level;
     private long lastTick;
-    private Long2ObjectMap<LinkedHashSet<BlockUpdateEntry>> queuedUpdates;
+    private final Long2ObjectMap<Set<BlockUpdateEntry>> queuedUpdates;
 
     private Set<BlockUpdateEntry> pendingUpdates;
 
@@ -35,7 +39,9 @@ public class BlockUpdateScheduler {
         } else {
             LongList times = new LongArrayList(queuedUpdates.keySet());
             Collections.sort(times);
-            for (long tick : times) {
+            LongIterator iter = times.iterator();
+            while (iter.hasNext()) {
+                long tick = iter.nextLong();
                 if (tick <= currentTick) {
                     perform(tick);
                 } else {
@@ -57,12 +63,17 @@ public class BlockUpdateScheduler {
                     BlockUpdateEntry entry = updateIterator.next();
 
                     Vector3 pos = entry.pos;
-                    if (level.isChunkLoaded(NukkitMath.floorDouble(pos.x) >> 4, NukkitMath.floorDouble(pos.z) >> 4)) {
+                    if (level.isChunkLoaded(Mth.floor(pos.x) >> 4, Mth.floor(pos.z) >> 4)) {
                         Block block = level.getBlock(entry.pos);
 
                         updateIterator.remove();
                         if (Block.equals(block, entry.block, false)) {
                             block.onUpdate(Level.BLOCK_UPDATE_SCHEDULED);
+                        } else {
+                            block = level.getExtraBlock(entry.pos);
+                            if (Block.equals(block, entry.block, false)) {
+                                block.onUpdate(Level.BLOCK_UPDATE_SCHEDULED);
+                            }
                         }
                     } else {
                         level.scheduleUpdate(entry.block, entry.pos, 0);
@@ -77,14 +88,14 @@ public class BlockUpdateScheduler {
     public Set<BlockUpdateEntry> getPendingBlockUpdates(AxisAlignedBB boundingBox) {
         Set<BlockUpdateEntry> set = null;
 
-        for (Map.Entry<Long, LinkedHashSet<BlockUpdateEntry>> tickEntries : this.queuedUpdates.long2ObjectEntrySet()) {
-            LinkedHashSet<BlockUpdateEntry> tickSet = tickEntries.getValue();
+        for (Long2ObjectMap.Entry<Set<BlockUpdateEntry>> tickEntries : this.queuedUpdates.long2ObjectEntrySet()) {
+            Set<BlockUpdateEntry> tickSet = tickEntries.getValue();
             for (BlockUpdateEntry update : tickSet) {
                 Vector3 pos = update.pos;
 
                 if (pos.getX() >= boundingBox.getMinX() && pos.getX() < boundingBox.getMaxX() && pos.getZ() >= boundingBox.getMinZ() && pos.getZ() < boundingBox.getMaxZ()) {
                     if (set == null) {
-                        set = new LinkedHashSet<>();
+                        set = new ObjectLinkedOpenHashSet<>();
                     }
 
                     set.add(update);
@@ -107,16 +118,16 @@ public class BlockUpdateScheduler {
 
     public void add(BlockUpdateEntry entry) {
         long time = getMinTime(entry);
-        LinkedHashSet<BlockUpdateEntry> updateSet = queuedUpdates.get(time);
+        Set<BlockUpdateEntry> updateSet = queuedUpdates.get(time);
         if (updateSet == null) {
-            LinkedHashSet<BlockUpdateEntry> tmp = queuedUpdates.putIfAbsent(time, updateSet = new LinkedHashSet<>());
-            if (tmp != null) updateSet = tmp;
+            updateSet = new ObjectLinkedOpenHashSet<>();
+            queuedUpdates.put(time, updateSet);
         }
         updateSet.add(entry);
     }
 
     public boolean contains(BlockUpdateEntry entry) {
-        for (Map.Entry<Long, LinkedHashSet<BlockUpdateEntry>> tickUpdateSet : queuedUpdates.long2ObjectEntrySet()) {
+        for (Long2ObjectMap.Entry<Set<BlockUpdateEntry>> tickUpdateSet : queuedUpdates.long2ObjectEntrySet()) {
             if (tickUpdateSet.getValue().contains(entry)) {
                 return true;
             }
@@ -125,7 +136,7 @@ public class BlockUpdateScheduler {
     }
 
     public boolean remove(BlockUpdateEntry entry) {
-        for (Map.Entry<Long, LinkedHashSet<BlockUpdateEntry>> tickUpdateSet : queuedUpdates.long2ObjectEntrySet()) {
+        for (Long2ObjectMap.Entry<Set<BlockUpdateEntry>> tickUpdateSet : queuedUpdates.long2ObjectEntrySet()) {
             if (tickUpdateSet.getValue().remove(entry)) {
                 return true;
             }
@@ -134,11 +145,18 @@ public class BlockUpdateScheduler {
     }
 
     public boolean remove(Vector3 pos) {
-        for (Map.Entry<Long, LinkedHashSet<BlockUpdateEntry>> tickUpdateSet : queuedUpdates.long2ObjectEntrySet()) {
+        for (Long2ObjectMap.Entry<Set<BlockUpdateEntry>> tickUpdateSet : queuedUpdates.long2ObjectEntrySet()) {
             if (tickUpdateSet.getValue().remove(pos)) {
                 return true;
             }
         }
         return false;
+    }
+
+    /**
+     * internal.
+     */
+    public void setLastTick(long currentTick) {
+        lastTick = currentTick;
     }
 }

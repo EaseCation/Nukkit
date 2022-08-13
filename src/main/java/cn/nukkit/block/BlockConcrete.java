@@ -45,7 +45,7 @@ public class BlockConcrete extends BlockSolidMeta {
 
     @Override
     public Item[] getDrops(Item item) {
-        return item.getTier() >= ItemTool.TIER_WOODEN ? new Item[]{toItem()} : new Item[0];
+        return item.getTier() >= ItemTool.TIER_WOODEN ? new Item[]{toItem(true)} : new Item[0];
     }
 
     @Override

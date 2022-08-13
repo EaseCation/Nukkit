@@ -30,7 +30,7 @@ public class BlockDeadBush extends BlockFlowable {
 
     @Override
     public int getId() {
-        return DEAD_BUSH;
+        return DEADBUSH;
     }
     
     @Override
@@ -42,7 +42,7 @@ public class BlockDeadBush extends BlockFlowable {
     public boolean place(Item item, Block block, Block target, BlockFace face, double fx, double fy, double fz, Player player) {
         Block down = this.down();
         int id = down.getId();
-        if (id == SAND || id == TERRACOTTA || id == STAINED_TERRACOTTA || id == DIRT || id == PODZOL || id == MYCELIUM) {
+        if (id == SAND || id == HARDENED_CLAY || id == STAINED_HARDENED_CLAY || id == DIRT || id == PODZOL || id == MYCELIUM) {
             this.getLevel().setBlock(block, this, true, true);
             return true;
         }
@@ -66,7 +66,7 @@ public class BlockDeadBush extends BlockFlowable {
     public Item[] getDrops(Item item) {
         if (item.isShears()) {
             return new Item[]{
-                    toItem()
+                    toItem(true)
             };
         } else {
             return new Item[]{
@@ -76,6 +76,16 @@ public class BlockDeadBush extends BlockFlowable {
     }
 
     public BlockColor getColor() {
-        return BlockColor.FOLIAGE_BLOCK_COLOR;
+        return BlockColor.PLANT_BLOCK_COLOR;
+    }
+
+    @Override
+    public boolean canContainWater() {
+        return true;
+    }
+
+    @Override
+    public boolean isVegetation() {
+        return true;
     }
 }

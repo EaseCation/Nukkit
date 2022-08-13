@@ -5,16 +5,8 @@ package cn.nukkit.item;
  */
 public abstract class ItemRecord extends Item {
 
-    public ItemRecord() {
-        this(0, 1);
-    }
-
-    public ItemRecord(Integer meta) {
-        this(meta, 1);
-    }
-
-    public ItemRecord(Integer meta, int count) {
-        super(meta, count);
+    protected ItemRecord(int id, Integer meta, int count) {
+        super(id, 0, 1, "Music Disc");
     }
 
     @Override
@@ -22,5 +14,7 @@ public abstract class ItemRecord extends Item {
         return 1;
     }
 
-    public abstract int getSoundId();
+    public abstract int getSoundEvent();
+
+    public abstract String getTranslationIdentifier();
 }

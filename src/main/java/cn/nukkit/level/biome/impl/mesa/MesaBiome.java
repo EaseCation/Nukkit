@@ -93,7 +93,7 @@ public class MesaBiome extends CoveredBiome {
             return SAND;
         } else {
             currMeta = colorLayer[(y + randY) & 0x3F];
-            return currMeta == -1 ? TERRACOTTA : STAINED_TERRACOTTA;
+            return currMeta == -1 ? HARDENED_CLAY : STAINED_HARDENED_CLAY;
         }
     }
 

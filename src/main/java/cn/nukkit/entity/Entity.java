@@ -4,7 +4,6 @@ import cn.nukkit.Player;
 import cn.nukkit.Server;
 import cn.nukkit.block.Block;
 import cn.nukkit.block.BlockFire;
-import cn.nukkit.block.BlockHayBale;
 import cn.nukkit.block.BlockID;
 import cn.nukkit.block.BlockWater;
 import cn.nukkit.blockentity.BlockEntityPistonArm;
@@ -32,13 +31,15 @@ import cn.nukkit.network.protocol.*;
 import cn.nukkit.plugin.Plugin;
 import cn.nukkit.potion.Effect;
 import cn.nukkit.utils.ChunkException;
-import cn.nukkit.utils.MainLogger;
 import co.aikar.timings.Timing;
 import co.aikar.timings.Timings;
 import co.aikar.timings.TimingsHistory;
 import co.aikar.timings.TimingsManager;
 import com.google.common.collect.Iterables;
 import it.unimi.dsi.fastutil.ints.Int2ObjectMap;
+import it.unimi.dsi.fastutil.objects.Object2ObjectOpenHashMap;
+import it.unimi.dsi.fastutil.objects.ObjectArrayList;
+import lombok.extern.log4j.Log4j2;
 
 import java.lang.reflect.Constructor;
 import java.util.*;
@@ -51,6 +52,7 @@ import static cn.nukkit.network.protocol.SetEntityLinkPacket.TYPE_RIDE;
 /**
  * @author MagicDroidX
  */
+@Log4j2
 public abstract class Entity extends Location implements Metadatable {
 
     public static final int NETWORK_ID = -1;
@@ -224,7 +226,12 @@ public abstract class Entity extends Location implements Metadatable {
      * @since 1.19.0
      */
     public static final int DATA_PLAYER_HAS_DIED = 133;
-    public static final int DATA_UNDEFINED = 134;
+    /**
+     * string.
+     * @since 1.12.0
+     */
+    public static final int DATA_NPC_DATA = 134;
+    public static final int DATA_UNDEFINED = 135;
 
     public static final int DATA_NUKKIT_FLAGS = 999; // custom
     public static final long NUKKIT_FLAG_VARIANT_BLOCK = 1L << 1;
@@ -290,13 +297,58 @@ public abstract class Entity extends Location implements Metadatable {
 	public static final int DATA_FLAG_PREGNANT = 58;
 	public static final int DATA_FLAG_LAYING_EGG = 59;
 	public static final int DATA_FLAG_RIDER_CAN_PICK = 60;
+    public static final int DATA_FLAG_TRANSITION_SETTING = 61;
+    public static final int DATA_FLAG_EATING = 62;
+    public static final int DATA_FLAG_LAYING_DOWN = 63;
+    public static final int DATA_FLAG_SNEEZING = 64;
+    public static final int DATA_FLAG_TRUSTING = 65;
+    public static final int DATA_FLAG_ROLLING = 66;
+    public static final int DATA_FLAG_SCARED = 67;
+    public static final int DATA_FLAG_IN_SCAFFOLDING = 68;
+    public static final int DATA_FLAG_OVER_SCAFFOLDING = 69;
+    public static final int DATA_FLAG_FALL_THROUGH_SCAFFOLDING = 70;
+    public static final int DATA_FLAG_BLOCKING = 71;
+    public static final int DATA_FLAG_TRANSITION_BLOCKING = 72;
+    public static final int DATA_FLAG_BLOCKED_USING_SHIELD = 73;
+    public static final int DATA_FLAG_BLOCKED_USING_DAMAGED_SHIELD = 74;
+    public static final int DATA_FLAG_SLEEPING = 75;
+    public static final int DATA_FLAG_ENTITY_GROW_UP = 76;
+    public static final int DATA_FLAG_TRADE_INTEREST = 77;
+    public static final int DATA_FLAG_DOOR_BREAKER = 78;
+    public static final int DATA_FLAG_BREAKING_OBSTRUCTION = 79;
+    public static final int DATA_FLAG_DOOR_OPENER = 80;
+    public static final int DATA_FLAG_IS_ILLAGER_CAPTAIN = 81;
+    public static final int DATA_FLAG_STUNNED = 82;
+    public static final int DATA_FLAG_ROARING = 83;
+    public static final int DATA_FLAG_DELAYED_ATTACK = 84;
+    public static final int DATA_FLAG_IS_AVOIDING_MOBS = 85;
+    public static final int DATA_FLAG_IS_AVOIDING_BLOCKS = 86;
+    public static final int DATA_FLAG_FACING_TARGET_TO_RANGE_ATTACK = 87;
+    public static final int DATA_FLAG_HIDDEN_WHEN_INVISIBLE = 88;
+    public static final int DATA_FLAG_IS_IN_UI = 89;
+    public static final int DATA_FLAG_STALKING = 90;
+    public static final int DATA_FLAG_EMOTING = 91;
+    public static final int DATA_FLAG_CELEBRATING = 92;
+    public static final int DATA_FLAG_ADMIRING = 93;
+    public static final int DATA_FLAG_CELEBRATING_SPECIAL = 94;
+    public static final int DATA_FLAG_RAM_ATTACK = 96;
+    public static final int DATA_FLAG_PLAYING_DEAD = 97;
+    public static final int DATA_FLAG_IN_ASCENDABLE_BLOCK = 98;
+    public static final int DATA_FLAG_OVER_DESCENDABLE_BLOCK = 99;
+    public static final int DATA_FLAG_CROAKING = 100;
+    public static final int DATA_FLAG_EAT_MOB = 101;
+    public static final int DATA_FLAG_JUMP_GOAL_JUMP = 102;
+    public static final int DATA_FLAG_EMERGING = 103;
+    public static final int DATA_FLAG_SNIFFING = 104;
+    public static final int DATA_FLAG_DIGGING = 105;
+    public static final int DATA_FLAG_SONIC_BOOM = 106;
+    public static final int DATA_FLAG_UNDEFINED = 107;
 
-    public static final int DATA_FLAG_UNDEFINED = 100;
+    public static long entityCount = 2; // 0 invalid, 1 for Synapse
 
-    public static long entityCount = 2;
-
-    private static final Map<String, Class<? extends Entity>> knownEntities = new HashMap<>();
-    private static final Map<String, String> shortNames = new HashMap<>();
+    private static final Map<String, Class<? extends Entity>> knownEntities = new Object2ObjectOpenHashMap<>();
+    private static final Map<Class<? extends Entity>, String> knownIdentifiers = new Object2ObjectOpenHashMap<>();
+    private static final Map<Class<? extends Entity>, String> shortNames = new Object2ObjectOpenHashMap<>();
 
     protected Map<Integer, Player> hasSpawned = new ConcurrentHashMap<>();
 
@@ -313,7 +365,7 @@ public abstract class Entity extends Location implements Metadatable {
             .putLong(DATA_LEAD_HOLDER_EID, -1)
             .putFloat(DATA_SCALE, 1f);
 
-    public final List<Entity> passengers = new ArrayList<>();
+    public final List<Entity> passengers = new ObjectArrayList<>();
 
     public Entity riding = null;
 
@@ -321,8 +373,8 @@ public abstract class Entity extends Location implements Metadatable {
 
     protected EntityDamageEvent lastDamageCause = null;
 
-    public List<Block> blocksAround = new ArrayList<>();
-    public List<Block> collisionBlocks = new ArrayList<>();
+    public List<Block> blocksAround = new ObjectArrayList<>();
+    public List<Block> collisionBlocks = new ObjectArrayList<>();
 
     public double lastX;
     public double lastY;
@@ -848,6 +900,10 @@ public abstract class Entity extends Location implements Metadatable {
     }
 
     public static Entity createEntity(String name, FullChunk chunk, CompoundTag nbt, Object... args) {
+        if (name.startsWith("minecraft:")) {
+            name = name.substring(10);
+        }
+
         Entity entity = null;
 
         if (knownEntities.containsKey(name)) {
@@ -857,7 +913,7 @@ public abstract class Entity extends Location implements Metadatable {
                 return null;
             }
 
-            for (Constructor constructor : clazz.getConstructors()) {
+            for (Constructor<?> constructor : clazz.getConstructors()) {
                 if (entity != null) {
                     break;
                 }
@@ -879,9 +935,8 @@ public abstract class Entity extends Location implements Metadatable {
 
                     }
                 } catch (Exception e) {
-                    MainLogger.getLogger().logException(e);
+                    log.error("Failed to create entity: {}", name, e);
                 }
-
             }
         }
 
@@ -896,7 +951,15 @@ public abstract class Entity extends Location implements Metadatable {
         return registerEntity(name, clazz, false);
     }
 
+    public static boolean registerEntity(String identifier, String name, Class<? extends Entity> clazz) {
+        return registerEntity(identifier, name, clazz, false);
+    }
+
     public static boolean registerEntity(String name, Class<? extends Entity> clazz, boolean force) {
+        return registerEntity(name, name, clazz, false);
+    }
+
+    public static boolean registerEntity(String identifier, String name, Class<? extends Entity> clazz, boolean force) {
         if (clazz == null) {
             return false;
         }
@@ -910,7 +973,9 @@ public abstract class Entity extends Location implements Metadatable {
         }
 
         knownEntities.put(name, clazz);
-        shortNames.put(clazz.getSimpleName(), name);
+        knownEntities.put(identifier, clazz);
+        knownIdentifiers.put(clazz, identifier);
+        shortNames.put(clazz, name);
         return true;
     }
 
@@ -949,7 +1014,9 @@ public abstract class Entity extends Location implements Metadatable {
 
     public void saveNBT() {
         if (!(this instanceof Player)) {
-            this.namedTag.putString("id", this.getSaveId());
+            this.namedTag.putString("id", this.getSaveId()); // remove?
+            this.namedTag.putString("identifier", this.getIdentifier());
+
             if (!this.getNameTag().equals("")) {
                 this.namedTag.putString("CustomName", this.getNameTag());
                 this.namedTag.putBoolean("CustomNameVisible", this.isNameTagVisible());
@@ -967,20 +1034,20 @@ public abstract class Entity extends Location implements Metadatable {
         }
 
         this.namedTag.putList(new ListTag<DoubleTag>("Pos")
-                .add(new DoubleTag("0", this.x))
-                .add(new DoubleTag("1", this.y))
-                .add(new DoubleTag("2", this.z))
+                .add(new DoubleTag("", this.x))
+                .add(new DoubleTag("", this.y))
+                .add(new DoubleTag("", this.z))
         );
 
         this.namedTag.putList(new ListTag<DoubleTag>("Motion")
-                .add(new DoubleTag("0", this.motionX))
-                .add(new DoubleTag("1", this.motionY))
-                .add(new DoubleTag("2", this.motionZ))
+                .add(new DoubleTag("", this.motionX))
+                .add(new DoubleTag("", this.motionY))
+                .add(new DoubleTag("", this.motionZ))
         );
 
         this.namedTag.putList(new ListTag<FloatTag>("Rotation")
-                .add(new FloatTag("0", (float) this.yaw))
-                .add(new FloatTag("1", (float) this.pitch))
+                .add(new FloatTag("", (float) this.yaw))
+                .add(new FloatTag("", (float) this.pitch))
         );
 
         this.namedTag.putFloat("FallDistance", this.fallDistance);
@@ -1022,8 +1089,12 @@ public abstract class Entity extends Location implements Metadatable {
         }
     }
 
+    public String getIdentifier() {
+        return knownIdentifiers.getOrDefault(this.getClass(), ":");
+    }
+
     public final String getSaveId() {
-        return shortNames.getOrDefault(this.getClass().getSimpleName(), "");
+        return shortNames.getOrDefault(this.getClass(), "");
     }
 
     public void spawnTo(Player player) {
@@ -1214,21 +1285,21 @@ public abstract class Entity extends Location implements Metadatable {
             return false;
         }
 
-        int i = NukkitMath.floorDouble(x);
-        int j = NukkitMath.floorDouble(y);
-        int k = NukkitMath.floorDouble(z);
+        int i = Mth.floor(x);
+        int j = Mth.floor(y);
+        int k = Mth.floor(z);
 
         double diffX = x - i;
         double diffY = y - j;
         double diffZ = z - k;
 
-        if (!Block.transparent[this.level.getBlockIdAt(i, j, k)]) {
-            boolean flag = Block.transparent[this.level.getBlockIdAt(i - 1, j, k)];
-            boolean flag1 = Block.transparent[this.level.getBlockIdAt(i + 1, j, k)];
-            boolean flag2 = Block.transparent[this.level.getBlockIdAt(i, j - 1, k)];
-            boolean flag3 = Block.transparent[this.level.getBlockIdAt(i, j + 1, k)];
-            boolean flag4 = Block.transparent[this.level.getBlockIdAt(i, j, k - 1)];
-            boolean flag5 = Block.transparent[this.level.getBlockIdAt(i, j, k + 1)];
+        if (!Block.transparent[this.level.getBlockIdAt(0, i, j, k)]) {
+            boolean flag = Block.transparent[this.level.getBlockIdAt(0, i - 1, j, k)];
+            boolean flag1 = Block.transparent[this.level.getBlockIdAt(0, i + 1, j, k)];
+            boolean flag2 = Block.transparent[this.level.getBlockIdAt(0, i, j - 1, k)];
+            boolean flag3 = Block.transparent[this.level.getBlockIdAt(0, i, j + 1, k)];
+            boolean flag4 = Block.transparent[this.level.getBlockIdAt(0, i, j, k - 1)];
+            boolean flag5 = Block.transparent[this.level.getBlockIdAt(0, i, j, k + 1)];
 
             int direction = -1;
             double limit = 9999;
@@ -1453,11 +1524,11 @@ public abstract class Entity extends Location implements Metadatable {
     }
 
     public Vector2 getDirectionPlane() {
-        return (new Vector2((float) (-Math.cos(Math.toRadians(this.yaw) - Math.PI / 2)), (float) (-Math.sin(Math.toRadians(this.yaw) - Math.PI / 2)))).normalize();
+        return (new Vector2((float) (-Mth.cos(Math.toRadians(this.yaw) - Math.PI / 2)), (float) (-Mth.sin(Math.toRadians(this.yaw) - Math.PI / 2)))).normalize();
     }
 
     public BlockFace getHorizontalFacing() {
-        return BlockFace.fromHorizontalIndex(NukkitMath.floorDouble((this.yaw * 4.0F / 360.0F) + 0.5D) & 3);
+        return BlockFace.fromHorizontalIndex(Mth.floor((this.yaw * 4.0F / 360.0F) + 0.5D) & 3);
     }
 
     public boolean onUpdate(int currentTick) {
@@ -1600,7 +1671,7 @@ public abstract class Entity extends Location implements Metadatable {
             return;
         }
 
-        for (Entity passenger : new ArrayList<>(this.passengers)) {
+        for (Entity passenger : new ObjectArrayList<>(this.passengers)) {
             if (!passenger.isAlive()) {
                 dismountEntity(passenger);
                 continue;
@@ -1708,11 +1779,15 @@ public abstract class Entity extends Location implements Metadatable {
     public void fall(float fallDistance) {
         float damage;
         if (this.hasEffect(Effect.SLOW_FALLING)) damage = 0;
-        else damage = (float) Math.floor(fallDistance - 3 - (this.hasEffect(Effect.JUMP) ? this.getEffect(Effect.JUMP).getAmplifier() + 1 : 0));
+        else damage = Mth.floor(fallDistance - 3 - (this.hasEffect(Effect.JUMP_BOOST) ? this.getEffect(Effect.JUMP_BOOST).getAmplifier() + 1 : 0));
 
         Block down = this.level.getBlock(this.floor().down());
-        if (down instanceof BlockHayBale) {
-            damage -= (damage * 0.8f);
+        int id = down.getId();
+
+        if (this.level.getBlockIdAt(0, this.getFloorX(), this.getFloorY(), this.getFloorZ()) == BlockID.BLOCK_BED) {
+            damage -= damage * 0.5f;
+        } else if (id == BlockID.HAY_BLOCK || id == BlockID.HONEY_BLOCK) {
+            damage -= damage * 0.8f;
         }
 
         if (damage > 0) {
@@ -1720,7 +1795,7 @@ public abstract class Entity extends Location implements Metadatable {
         }
 
         if (fallDistance > 0.75) {
-            if (down.getId() == Item.FARMLAND) {
+            if (id == Item.FARMLAND) {
                 Event ev;
 
                 if (this instanceof Player) {
@@ -1746,15 +1821,15 @@ public abstract class Entity extends Location implements Metadatable {
         // This is special for Nukkit! :)
         float speed = strafe * strafe + forward * forward;
         if (speed >= 1.0E-4F) {
-            speed = MathHelper.sqrt(speed);
+            speed = (float) Math.sqrt(speed);
             if (speed < 1.0F) {
                 speed = 1.0F;
             }
             speed = friction / speed;
             strafe *= speed;
             forward *= speed;
-            float nest = MathHelper.sin((float) (this.yaw * 3.1415927F / 180.0F));
-            float place = MathHelper.cos((float) (this.yaw * 3.1415927F / 180.0F));
+            float nest = Mth.sin((float) (this.yaw * 3.1415927F / 180.0F));
+            float place = Mth.cos((float) (this.yaw * 3.1415927F / 180.0F));
             this.motionX += strafe * place - forward * nest;
             this.motionZ += forward * place + strafe * nest;
         }
@@ -1771,7 +1846,7 @@ public abstract class Entity extends Location implements Metadatable {
             double dz = NukkitMath.getDirection(dx, dy);
 
             if (dz >= 0.009999999776482582D) {
-                dz = MathHelper.sqrt((float) dz);
+                dz = (float) Math.sqrt((float) dz);
                 dx /= dz;
                 dy /= dz;
                 double d3 = 1.0D / dz;
@@ -1854,9 +1929,12 @@ public abstract class Entity extends Location implements Metadatable {
 
     public boolean isInsideOfWater(boolean eyeHeight) {
         double y = eyeHeight ? (this.y + this.getEyeHeight()) : this.y;
-        Block block = this.level.getBlock(this.temporalVector.setComponents(NukkitMath.floorDouble(this.x), NukkitMath.floorDouble(y), NukkitMath.floorDouble(this.z)));
+        Block block = this.level.getBlock(Mth.floor(this.x), Mth.floor(y), Mth.floor(this.z));
+        if (!block.isWater()) {
+            block = level.getExtraBlock(block);
+        }
 
-        if (block instanceof BlockWater) {
+        if (block.isWater()) {
             double f = (block.y + 1) - (((BlockWater) block).getFluidHeightPercent() - 0.1111111);
             return y < f;
         }
@@ -1866,17 +1944,11 @@ public abstract class Entity extends Location implements Metadatable {
 
     public boolean isInsideOfSolid() {
         double y = this.y + this.getEyeHeight();
-        Block block = this.level.getBlock(
-                this.temporalVector.setComponents(
-                        NukkitMath.floorDouble(this.x),
-                        NukkitMath.floorDouble(y),
-                        NukkitMath.floorDouble(this.z))
-        );
+        Block block = this.level.getBlock(Mth.floor(this.x), Mth.floor(y), Mth.floor(this.z));
 
         AxisAlignedBB bb = block.getBoundingBox();
 
         return bb != null && block.isSolid() && !block.isTransparent() && bb.intersectsWith(this.getBoundingBox());
-
     }
 
     public boolean isInsideOfFire() {
@@ -2045,14 +2117,14 @@ public abstract class Entity extends Location implements Metadatable {
 
     public List<Block> getBlocksAround() {
         if (this.blocksAround == null) {
-            int minX = NukkitMath.floorDouble(this.boundingBox.getMinX());
-            int minY = NukkitMath.floorDouble(this.boundingBox.getMinY());
-            int minZ = NukkitMath.floorDouble(this.boundingBox.getMinZ());
-            int maxX = NukkitMath.ceilDouble(this.boundingBox.getMaxX());
-            int maxY = NukkitMath.ceilDouble(this.boundingBox.getMaxY());
-            int maxZ = NukkitMath.ceilDouble(this.boundingBox.getMaxZ());
+            int minX = Mth.floor(this.boundingBox.getMinX());
+            int minY = Mth.floor(this.boundingBox.getMinY());
+            int minZ = Mth.floor(this.boundingBox.getMinZ());
+            int maxX = Mth.floor(this.boundingBox.getMaxX());
+            int maxY = Mth.floor(this.boundingBox.getMaxY());
+            int maxZ = Mth.floor(this.boundingBox.getMaxZ());
 
-            this.blocksAround = new ArrayList<>();
+            this.blocksAround = new ObjectArrayList<>();
 
             for (int z = minZ; z <= maxZ; ++z) {
                 for (int x = minX; x <= maxX; ++x) {
@@ -2069,7 +2141,7 @@ public abstract class Entity extends Location implements Metadatable {
 
     public List<Block> getCollisionBlocks() {
         if (this.collisionBlocks == null) {
-            this.collisionBlocks = new ArrayList<>();
+            this.collisionBlocks = new ObjectArrayList<>();
 
             for (Block b : getBlocksAround()) {
                 if (b.collidesWithBB(this.getBoundingBox(), true)) {
@@ -2095,7 +2167,7 @@ public abstract class Entity extends Location implements Metadatable {
         boolean portal = false;
 
         for (Block block : this.getCollisionBlocks()) {
-            if (block.getId() == Block.NETHER_PORTAL) {
+            if (block.getId() == Block.PORTAL) {
                 portal = true;
                 continue;
             }
@@ -2158,7 +2230,7 @@ public abstract class Entity extends Location implements Metadatable {
 
             if (!this.justCreated) {
                 Int2ObjectMap<Player> newChunk = this.level.getChunkPlayers((int) this.x >> 4, (int) this.z >> 4);
-                for (Player player : new ArrayList<>(this.hasSpawned.values())) {
+                for (Player player : new ObjectArrayList<>(this.hasSpawned.values())) {
                     if (!newChunk.containsKey(player.getLoaderId())) {
                         this.despawnFrom(player);
                     } else {
@@ -2233,7 +2305,7 @@ public abstract class Entity extends Location implements Metadatable {
         this.health = 0;
         this.scheduleUpdate();
 
-//        for (Entity passenger : new ArrayList<>(this.passengers)) {
+//        for (Entity passenger : new ObjectArrayList<>(this.passengers)) {
 //            dismountEntity(passenger);
 //        }
     }
@@ -2317,7 +2389,7 @@ public abstract class Entity extends Location implements Metadatable {
     }
 
     public void despawnFromAll() {
-        for (Player player : new ArrayList<>(this.hasSpawned.values())) {
+        for (Player player : new ObjectArrayList<>(this.hasSpawned.values())) {
             this.despawnFrom(player);
         }
     }

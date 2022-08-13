@@ -20,7 +20,7 @@ public class BlockStairsWood extends BlockStairs {
 
     @Override
     public int getId() {
-        return WOOD_STAIRS;
+        return OAK_STAIRS;
     }
 
     @Override
@@ -34,7 +34,7 @@ public class BlockStairsWood extends BlockStairs {
     }
 
     @Override
-    public Item toItem() {
+    public Item toItem(boolean addUserData) {
         return new ItemBlock(this, 0);
     }
 
@@ -62,10 +62,11 @@ public class BlockStairsWood extends BlockStairs {
     public BlockColor getColor() {
         return BlockColor.WOOD_BLOCK_COLOR;
     }
+
     @Override
     public Item[] getDrops(Item item) {
          return new Item[]{
-            toItem()
-            };
+                toItem(true)
+         };
     }
 }

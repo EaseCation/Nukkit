@@ -25,6 +25,13 @@ public class BlockLeaves extends BlockTransparentMeta {
     public static final int BIRCH = 2;
     public static final int JUNGLE = 3;
 
+    private static final String[] NAMES = new String[]{
+            "Oak Leaves",
+            "Spruce Leaves",
+            "Birch Leaves",
+            "Jungle Leaves",
+    };
+
     public BlockLeaves() {
         this(0);
     }
@@ -50,13 +57,7 @@ public class BlockLeaves extends BlockTransparentMeta {
 
     @Override
     public String getName() {
-        String[] names = new String[]{
-                "Oak Leaves",
-                "Spruce Leaves",
-                "Birch Leaves",
-                "Jungle Leaves"
-        };
-        return names[this.getDamage() & 0x03];
+        return NAMES[this.getDamage() & 0x03];
     }
 
     @Override
@@ -77,7 +78,7 @@ public class BlockLeaves extends BlockTransparentMeta {
     }
 
     @Override
-    public Item toItem() {
+    public Item toItem(boolean addUserData) {
         return new ItemBlock(this, this.getDamage() & 0x3, 1);
     }
 
@@ -85,7 +86,7 @@ public class BlockLeaves extends BlockTransparentMeta {
     public Item[] getDrops(Item item) {
         if (item.isShears()) {
             return new Item[]{
-                    toItem()
+                    toItem(true)
             };
         } else {
             ThreadLocalRandom random = ThreadLocalRandom.current();
@@ -139,11 +140,11 @@ public class BlockLeaves extends BlockTransparentMeta {
         ++check;
         long index = Hash.hashBlock((int) pos.x, (int) pos.y, (int) pos.z);
         if (visited.contains(index)) return false;
-        if (pos.getId() == WOOD || pos.getId() == WOOD2) return true;
+        if (pos.getId() == LOG || pos.getId() == LOG2) return true;
         if ((pos.getId() == LEAVES || pos.getId() == LEAVES2) && distance <= 4) {
             visited.add(index);
             int down = pos.down().getId();
-            if (down == WOOD || down == WOOD2) {
+            if (down == LOG || down == LOG2) {
                 return true;
             }
             if (fromSide == null) {
@@ -217,7 +218,8 @@ public class BlockLeaves extends BlockTransparentMeta {
 
     @Override
     public BlockColor getColor() {
-        return BlockColor.FOLIAGE_BLOCK_COLOR;
+        //TODO: biome blend
+        return BlockColor.PLANT_BLOCK_COLOR;
     }
 
     @Override
@@ -241,5 +243,25 @@ public class BlockLeaves extends BlockTransparentMeta {
     @Override
     public boolean sticksToPiston() {
         return false;
+    }
+
+    @Override
+    public boolean canContainWater() {
+        return true;
+    }
+
+    @Override
+    public boolean canProvideSupport(BlockFace face, SupportType type) {
+        return false;
+    }
+
+    @Override
+    public boolean isLeaves() {
+        return true;
+    }
+
+    @Override
+    public boolean isVegetation() {
+        return true;
     }
 }

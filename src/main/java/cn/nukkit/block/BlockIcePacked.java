@@ -2,12 +2,13 @@ package cn.nukkit.block;
 
 import cn.nukkit.item.Item;
 import cn.nukkit.item.ItemTool;
+import cn.nukkit.utils.BlockColor;
 
 /**
  * author: MagicDroidX
  * Nukkit Project
  */
-public class BlockIcePacked extends BlockIce {
+public class BlockIcePacked extends BlockSolid {
 
     public BlockIcePacked() {
     }
@@ -28,23 +29,37 @@ public class BlockIcePacked extends BlockIce {
     }
 
     @Override
-    public int onUpdate(int type) {
-        return 0; //not being melted
+    public double getHardness() {
+        return 0.5;
+    }
+
+    @Override
+    public double getResistance() {
+        return 2.5;
+    }
+
+    @Override
+    public double getFrictionFactor() {
+        return 0.98;
+    }
+
+    @Override
+    public BlockColor getColor() {
+        return BlockColor.ICE_BLOCK_COLOR;
     }
 
     @Override
     public boolean canHarvestWithHand() {
         return false;
     }
-    
-    @Override
-    public boolean onBreak(Item item) {
-        this.getLevel().setBlock(this, Block.get(BlockID.AIR), true); //no water
-        return true;
-    }
 
     @Override
     public boolean canSilkTouch() {
         return true;
+    }
+
+    @Override
+    public Item[] getDrops(Item item) {
+        return new Item[0];
     }
 }

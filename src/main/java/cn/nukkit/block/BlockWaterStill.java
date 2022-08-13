@@ -16,7 +16,7 @@ public class BlockWaterStill extends BlockWater {
 
     @Override
     public int getId() {
-        return STILL_WATER;
+        return WATER;
     }
 
     @Override
@@ -26,7 +26,6 @@ public class BlockWaterStill extends BlockWater {
 
     @Override
     public BlockLiquid getBlock(int meta) {
-        return (BlockLiquid) Block.get(BlockID.STILL_WATER, meta);
+        return (BlockLiquid) Block.get(BlockID.WATER, meta);
     }
-
 }

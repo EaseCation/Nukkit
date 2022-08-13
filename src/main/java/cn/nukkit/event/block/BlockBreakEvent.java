@@ -24,11 +24,11 @@ public class BlockBreakEvent extends BlockEvent implements Cancellable {
     protected final Item item;
     protected final BlockFace face;
 
-    protected boolean instaBreak = false;
-    protected Item[] blockDrops = new Item[0];
-    protected int blockXP = 0;
+    protected boolean instaBreak;
+    protected Item[] blockDrops;
+    protected int blockXP;
 
-    protected boolean fastBreak = false;
+    protected boolean fastBreak;
 
     public BlockBreakEvent(Player player, Block block, Item item, Item[] drops) {
         this(player, block, item, drops, false, false);
@@ -77,9 +77,13 @@ public class BlockBreakEvent extends BlockEvent implements Cancellable {
         this.blockDrops = drops;
     }
 
-    public int getDropExp() { return this.blockXP; }
+    public int getDropExp() {
+        return this.blockXP;
+    }
 
-    public void setDropExp(int xp) { this.blockXP = xp; }
+    public void setDropExp(int xp) {
+        this.blockXP = xp;
+    }
 
     public void setInstaBreak(boolean instaBreak) {
         this.instaBreak = instaBreak;

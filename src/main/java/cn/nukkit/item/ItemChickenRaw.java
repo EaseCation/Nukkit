@@ -15,6 +15,6 @@ public class ItemChickenRaw extends ItemEdible {
     }
 
     public ItemChickenRaw(Integer meta, int count) {
-        super(RAW_CHICKEN, meta, count, "Raw Chicken");
+        super(CHICKEN, meta, count, "Raw Chicken");
     }
 }

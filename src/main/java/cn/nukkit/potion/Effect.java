@@ -17,20 +17,13 @@ public class Effect implements Cloneable {
     public static final int SPEED = 1;
     public static final int SLOWNESS = 2;
     public static final int HASTE = 3;
-    public static final int SWIFTNESS = 3;
-    public static final int FATIGUE = 4;
     public static final int MINING_FATIGUE = 4;
     public static final int STRENGTH = 5;
-    public static final int HEALING = 6;
     public static final int INSTANT_HEALTH = 6;
-    public static final int HARMING = 7;
     public static final int INSTANT_DAMAGE = 7;
-    public static final int JUMP = 8;
     public static final int JUMP_BOOST = 8;
     public static final int NAUSEA = 9;
-    public static final int CONFUSION = 9;
     public static final int REGENERATION = 10;
-    public static final int DAMAGE_RESISTANCE = 11;
     public static final int RESISTANCE = 11;
     public static final int FIRE_RESISTANCE = 12;
     public static final int WATER_BREATHING = 13;
@@ -50,6 +43,7 @@ public class Effect implements Cloneable {
     public static final int SLOW_FALLING = 27;
     public static final int BAD_OMEN = 28;
     public static final int VILLAGE_HERO = 29;
+    public static final int DARKNESS = 30;
 
     protected static Effect[] effects;
 
@@ -58,36 +52,31 @@ public class Effect implements Cloneable {
 
         effects[Effect.SPEED] = new Effect(Effect.SPEED, "%potion.moveSpeed", 124, 175, 198);
         effects[Effect.SLOWNESS] = new Effect(Effect.SLOWNESS, "%potion.moveSlowdown", 90, 108, 129, true);
-        effects[Effect.SWIFTNESS] = new Effect(Effect.SWIFTNESS, "%potion.digSpeed", 217, 192, 67);
-        effects[Effect.FATIGUE] = new Effect(Effect.FATIGUE, "%potion.digSlowDown", 74, 66, 23, true);
+        effects[Effect.HASTE] = new Effect(Effect.HASTE, "%potion.digSpeed", 217, 192, 67);
+        effects[Effect.MINING_FATIGUE] = new Effect(Effect.MINING_FATIGUE, "%potion.digSlowDown", 74, 66, 23, true);
         effects[Effect.STRENGTH] = new Effect(Effect.STRENGTH, "%potion.damageBoost", 147, 36, 35);
-        effects[Effect.HEALING] = new InstantEffect(Effect.HEALING, "%potion.heal", 248, 36, 35);
-        effects[Effect.HARMING] = new InstantEffect(Effect.HARMING, "%potion.harm", 67, 10, 9, true);
-        effects[Effect.JUMP] = new Effect(Effect.JUMP, "%potion.jump", 34, 255, 76);
+        effects[Effect.INSTANT_HEALTH] = new InstantEffect(Effect.INSTANT_HEALTH, "%potion.heal", 248, 36, 35);
+        effects[Effect.INSTANT_DAMAGE] = new InstantEffect(Effect.INSTANT_DAMAGE, "%potion.harm", 67, 10, 9, true);
+        effects[Effect.JUMP_BOOST] = new Effect(Effect.JUMP_BOOST, "%potion.jump", 34, 255, 76);
         effects[Effect.NAUSEA] = new Effect(Effect.NAUSEA, "%potion.confusion", 85, 29, 74, true);
         effects[Effect.REGENERATION] = new Effect(Effect.REGENERATION, "%potion.regeneration", 205, 92, 171);
-        effects[Effect.DAMAGE_RESISTANCE] = new Effect(Effect.DAMAGE_RESISTANCE, "%potion.resistance", 153, 69, 58);
+        effects[Effect.RESISTANCE] = new Effect(Effect.RESISTANCE, "%potion.resistance", 153, 69, 58);
         effects[Effect.FIRE_RESISTANCE] = new Effect(Effect.FIRE_RESISTANCE, "%potion.fireResistance", 228, 154, 58);
         effects[Effect.WATER_BREATHING] = new Effect(Effect.WATER_BREATHING, "%potion.waterBreathing", 46, 82, 153);
         effects[Effect.INVISIBILITY] = new Effect(Effect.INVISIBILITY, "%potion.invisibility", 127, 131, 146);
-
         effects[Effect.BLINDNESS] = new Effect(Effect.BLINDNESS, "%potion.blindness", 191, 192, 192);
         effects[Effect.NIGHT_VISION] = new Effect(Effect.NIGHT_VISION, "%potion.nightVision", 0, 0, 139);
         effects[Effect.HUNGER] = new Effect(Effect.HUNGER, "%potion.hunger", 46, 139, 87);
-
         effects[Effect.WEAKNESS] = new Effect(Effect.WEAKNESS, "%potion.weakness", 72, 77, 72, true);
         effects[Effect.POISON] = new Effect(Effect.POISON, "%potion.poison", 78, 147, 49, true);
         effects[Effect.WITHER] = new Effect(Effect.WITHER, "%potion.wither", 53, 42, 39, true);
         effects[Effect.HEALTH_BOOST] = new Effect(Effect.HEALTH_BOOST, "%potion.healthBoost", 248, 125, 35);
-
         effects[Effect.ABSORPTION] = new Effect(Effect.ABSORPTION, "%potion.absorption", 36, 107, 251);
         effects[Effect.SATURATION] = new Effect(Effect.SATURATION, "%potion.saturation", 255, 0, 255);
         effects[Effect.LEVITATION] = new Effect(Effect.LEVITATION, "%potion.levitation", 206, 255, 255, true);
         effects[Effect.FATAL_POISON] = new Effect(Effect.FATAL_POISON, "%potion.poison", 78, 147, 49, true);
-        effects[Effect.CONDUIT_POWER] = new Effect(Effect.CONDUIT_POWER, "%potion.conduitPower", 29, 194, 209);
-        effects[Effect.SLOW_FALLING] = new Effect(Effect.SLOW_FALLING, "%potion.slowFalling", 206, 255, 255);
-        effects[Effect.BAD_OMEN] = new Effect(Effect.BAD_OMEN, "%effect.badOmen", 11, 97, 56, true);
-        effects[Effect.VILLAGE_HERO] = new Effect(Effect.VILLAGE_HERO, "%effect.villageHero", 68, 255, 68);
+
+        Effects.registerVanillaEffects();
     }
 
     public static Effect getEffect(int id) {
@@ -153,7 +142,7 @@ public class Effect implements Cloneable {
     }
 
     public boolean isVisible() {
-        return show && this.id != VILLAGE_HERO;
+        return show;
     }
 
     public Effect setVisible(boolean visible) {
@@ -186,18 +175,14 @@ public class Effect implements Cloneable {
     public boolean canTick() {
         int interval;
         switch (this.id) {
-            case Effect.POISON: //POISON
+            case Effect.POISON:
             case Effect.FATAL_POISON:
                 if ((interval = (25 >> this.amplifier)) > 0) {
                     return (this.duration % interval) == 0;
                 }
                 return true;
-            case Effect.WITHER: //WITHER
-                if ((interval = (50 >> this.amplifier)) > 0) {
-                    return (this.duration % interval) == 0;
-                }
-                return true;
-            case Effect.REGENERATION: //REGENERATION
+            case Effect.WITHER:
+            case Effect.REGENERATION:
                 if ((interval = (40 >> this.amplifier)) > 0) {
                     return (this.duration % interval) == 0;
                 }
@@ -208,16 +193,16 @@ public class Effect implements Cloneable {
 
     public void applyEffect(Entity entity) {
         switch (this.id) {
-            case Effect.POISON: //POISON
+            case Effect.POISON:
             case Effect.FATAL_POISON:
                 if (entity.getHealth() > 1|| this.id == FATAL_POISON) {
                     entity.attack(new EntityDamageEvent(entity, DamageCause.MAGIC, 1));
                 }
                 break;
-            case Effect.WITHER: //WITHER
+            case Effect.WITHER:
                 entity.attack(new EntityDamageEvent(entity, DamageCause.MAGIC, 1));
                 break;
-            case Effect.REGENERATION: //REGENERATION
+            case Effect.REGENERATION:
                 if (entity.getHealth() < entity.getMaxHealth()) {
                     entity.heal(new EntityRegainHealthEvent(entity, 1, EntityRegainHealthEvent.CAUSE_MAGIC));
                 }

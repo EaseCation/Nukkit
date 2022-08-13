@@ -20,7 +20,7 @@ public class BlockNetherBrick extends BlockSolid {
 
     @Override
     public int getId() {
-        return NETHER_BRICKS;
+        return NETHER_BRICK;
     }
 
     @Override
@@ -42,7 +42,7 @@ public class BlockNetherBrick extends BlockSolid {
     public Item[] getDrops(Item item) {
         if (item.isPickaxe() && item.getTier() >= ItemTool.TIER_WOODEN) {
             return new Item[]{
-                    toItem()
+                    toItem(true)
             };
         } else {
             return new Item[0];
@@ -51,7 +51,7 @@ public class BlockNetherBrick extends BlockSolid {
 
     @Override
     public BlockColor getColor() {
-        return BlockColor.NETHERRACK_BLOCK_COLOR;
+        return BlockColor.NETHER_BLOCK_COLOR;
     }
 
     @Override

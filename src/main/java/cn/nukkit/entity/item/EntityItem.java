@@ -9,6 +9,7 @@ import cn.nukkit.event.entity.ItemDespawnEvent;
 import cn.nukkit.event.entity.ItemSpawnEvent;
 import cn.nukkit.item.Item;
 import cn.nukkit.level.format.FullChunk;
+import cn.nukkit.math.Mth;
 import cn.nukkit.nbt.NBTIO;
 import cn.nukkit.nbt.tag.CompoundTag;
 import cn.nukkit.nbt.tag.ListTag;
@@ -208,7 +209,7 @@ public class EntityItem extends Entity {
                 }
             }
 
-            if (this.level.getBlockIdAt((int) this.x, (int) this.boundingBox.getMaxY(), (int) this.z) == 8 || this.level.getBlockIdAt((int) this.x, (int) this.boundingBox.getMaxY(), (int) this.z) == 9) { //item is fully in water or in still water
+            if (this.level.getBlockIdAt(0, (int) this.x, (int) this.boundingBox.getMaxY(), (int) this.z) == 8 || this.level.getBlockIdAt(0, (int) this.x, (int) this.boundingBox.getMaxY(), (int) this.z) == 9) { //item is fully in water or in still water
                 this.motionY -= this.getGravity() * -0.015;
             } else if (this.isInsideOfWater()) {
                 this.motionY = this.getGravity() - 0.06; //item is going up in water, don't let it go back down too fast
@@ -225,7 +226,7 @@ public class EntityItem extends Entity {
             double friction = 1 - this.getDrag();
 
             if (this.onGround && (Math.abs(this.motionX) > 0.00001 || Math.abs(this.motionZ) > 0.00001)) {
-                friction *= this.getLevel().getBlock(this.temporalVector.setComponents((int) Math.floor(this.x), (int) Math.floor(this.y - 1), (int) Math.floor(this.z) - 1)).getFrictionFactor();
+                friction *= this.getLevel().getBlock(this.temporalVector.setComponents(Mth.floor(this.x), Mth.floor(this.y - 1), Mth.floor(this.z) - 1)).getFrictionFactor();
             }
 
             this.motionX *= friction;

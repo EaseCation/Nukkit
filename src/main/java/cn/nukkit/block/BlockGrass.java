@@ -4,9 +4,11 @@ import cn.nukkit.Player;
 import cn.nukkit.Server;
 import cn.nukkit.event.block.BlockSpreadEvent;
 import cn.nukkit.item.Item;
+import cn.nukkit.item.ItemDye;
 import cn.nukkit.level.Level;
 import cn.nukkit.level.generator.object.ObjectTallGrass;
 import cn.nukkit.level.particle.BoneMealParticle;
+import cn.nukkit.math.BlockFace;
 import cn.nukkit.math.NukkitRandom;
 import cn.nukkit.math.Vector3;
 import cn.nukkit.utils.BlockColor;
@@ -47,8 +49,8 @@ public class BlockGrass extends BlockDirt {
     }
 
     @Override
-    public boolean onActivate(Item item, Player player) {
-        if (item.getId() == Item.DYE && item.getDamage() == 0x0F) {
+    public boolean onActivate(Item item, BlockFace face, Player player) {
+        if (item.getId() == Item.DYE && item.getDamage() == ItemDye.BONE_MEAL) {
             if (player != null && (player.gamemode & 0x01) == 0) {
                 item.count--;
             }
@@ -56,12 +58,16 @@ public class BlockGrass extends BlockDirt {
             ObjectTallGrass.growGrass(this.getLevel(), this, new NukkitRandom());
             return true;
         } else if (item.isHoe()) {
-            item.useOn(this);
-            this.getLevel().setBlock(this, Block.get(BlockID.FARMLAND));
+            if (player != null && !player.isCreative()) {
+                item.useOn(this);
+            }
+            this.getLevel().setBlock(this, Block.get(BlockID.FARMLAND), true);
             return true;
         } else if (item.isShovel()) {
-            item.useOn(this);
-            this.getLevel().setBlock(this, Block.get(BlockID.GRASS_PATH));
+            if (player != null && !player.isCreative()) {
+                item.useOn(this);
+            }
+            this.getLevel().setBlock(this, Block.get(BlockID.GRASS_PATH), true);
             return true;
         }
 
@@ -77,19 +83,20 @@ public class BlockGrass extends BlockDirt {
             z = random.nextRange((int) z - 1, (int) z + 1);
             Block block = this.getLevel().getBlock(new Vector3(x, y, z));
             if (block.getId() == Block.DIRT && block.getDamage() == 0) {
-                if (block.up() instanceof BlockAir) {
+                if (block.up().isAir()) {
                     BlockSpreadEvent ev = new BlockSpreadEvent(block, this, Block.get(BlockID.GRASS));
                     Server.getInstance().getPluginManager().callEvent(ev);
                     if (!ev.isCancelled()) {
-                        this.getLevel().setBlock(block, ev.getNewState());
+                        this.getLevel().setBlock(block, ev.getNewState(), true);
                     }
                 }
              } else if (block.getId() == Block.GRASS) {
-                if (block.up() instanceof BlockSolid) {
+                Block up = block.up();
+                if (up.isLiquid() || !up.isTransparent() && up.isSolid() || level.getExtraBlock(up).isWater()) {
                     BlockSpreadEvent ev = new BlockSpreadEvent(block, this, Block.get(BlockID.DIRT));
                     Server.getInstance().getPluginManager().callEvent(ev);
                     if (!ev.isCancelled()) {
-                        this.getLevel().setBlock(block, ev.getNewState());
+                        this.getLevel().setBlock(block, ev.getNewState(), true);
                     }
                 }   
             }
@@ -99,6 +106,7 @@ public class BlockGrass extends BlockDirt {
 
     @Override
     public BlockColor getColor() {
+        //TODO: biome blend
         return BlockColor.GRASS_BLOCK_COLOR;
     }
 
@@ -109,7 +117,7 @@ public class BlockGrass extends BlockDirt {
 
     @Override
     public int getFullId() {
-        return this.getId() << 4;
+        return this.getId() << BLOCK_META_BITS;
     }
 
     @Override

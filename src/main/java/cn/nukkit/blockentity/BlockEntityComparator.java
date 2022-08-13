@@ -1,6 +1,6 @@
 package cn.nukkit.blockentity;
 
-import cn.nukkit.block.BlockRedstoneComparator;
+import cn.nukkit.block.BlockID;
 import cn.nukkit.level.format.FullChunk;
 import cn.nukkit.nbt.tag.CompoundTag;
 
@@ -22,8 +22,8 @@ public class BlockEntityComparator extends BlockEntity {
     }
 
     @Override
-    public boolean isBlockEntityValid() {
-        return this.getLevelBlock() instanceof BlockRedstoneComparator;
+    public boolean isValidBlock(int blockId) {
+        return blockId == BlockID.UNPOWERED_COMPARATOR || blockId == BlockID.POWERED_COMPARATOR;
     }
 
     public int getOutputSignal() {

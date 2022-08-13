@@ -18,9 +18,6 @@ public class ResourcePackChunkRequestPacket extends DataPacket {
 
     @Override
     public void encode() {
-        this.reset();
-        this.putString(this.packId);
-        this.putLInt(this.chunkIndex);
     }
 
     @Override

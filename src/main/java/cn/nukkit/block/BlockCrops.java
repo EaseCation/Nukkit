@@ -26,18 +26,20 @@ public abstract class BlockCrops extends BlockFlowable {
         return true;
     }
 
-
     @Override
     public boolean place(Item item, Block block, Block target, BlockFace face, double fx, double fy, double fz, Player player) {
+        if (block.isLiquid() || !block.isAir() && level.getExtraBlock(this).isWater()) {
+            return false;
+        }
+
         if (block.down().getId() == FARMLAND) {
-            this.getLevel().setBlock(block, this, true, true);
-            return true;
+            return level.setBlock(block, this, true);
         }
         return false;
     }
 
     @Override
-    public boolean onActivate(Item item, Player player) {
+    public boolean onActivate(Item item, BlockFace face, Player player) {
         //Bone meal
         if (item.getId() == Item.DYE && item.getDamage() == 0x0f) {
             if (this.getDamage() < 7) {
@@ -98,6 +100,16 @@ public abstract class BlockCrops extends BlockFlowable {
 
     @Override
     public BlockColor getColor() {
-        return BlockColor.FOLIAGE_BLOCK_COLOR;
+        return BlockColor.PLANT_BLOCK_COLOR;
+    }
+
+    @Override
+    public boolean isVegetation() {
+        return true;
+    }
+
+    @Override
+    public boolean isCrop() {
+        return true;
     }
 }

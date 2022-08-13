@@ -2,6 +2,7 @@ package cn.nukkit.block;
 
 import cn.nukkit.Player;
 import cn.nukkit.blockentity.BlockEntity;
+import cn.nukkit.blockentity.BlockEntityType;
 import cn.nukkit.blockentity.BlockEntityItemFrame;
 import cn.nukkit.item.Item;
 import cn.nukkit.item.ItemItemFrame;
@@ -10,13 +11,20 @@ import cn.nukkit.math.BlockFace;
 import cn.nukkit.nbt.tag.CompoundTag;
 import cn.nukkit.nbt.tag.Tag;
 import cn.nukkit.network.protocol.LevelEventPacket;
+import cn.nukkit.utils.Faceable;
 
 import java.util.concurrent.ThreadLocalRandom;
 
 /**
  * Created by Pub4Game on 03.07.2016.
  */
-public class BlockItemFrame extends BlockTransparentMeta {
+public class BlockItemFrame extends BlockTransparentMeta implements Faceable {
+    private static final int[] FACING = new int[]{4, 5, 3, 2, 1, 0}; // TODO when 1.13 support arrives, add UP/DOWN facings
+
+    private static final int FACING_BITMASK = 0b0111;
+    private static final int MAP_BIT = 0b1000;
+
+    public static final int LEGACY_DIRECTION_MASK = 0b11;
 
     public BlockItemFrame() {
         this(0);
@@ -28,7 +36,7 @@ public class BlockItemFrame extends BlockTransparentMeta {
 
     @Override
     public int getId() {
-        return ITEM_FRAME_BLOCK;
+        return BLOCK_FRAME;
     }
 
     @Override
@@ -37,9 +45,14 @@ public class BlockItemFrame extends BlockTransparentMeta {
     }
 
     @Override
+    public int getBlockEntityType() {
+        return BlockEntityType.ITEM_FRAME;
+    }
+
+    @Override
     public int onUpdate(int type) {
         if (type == Level.BLOCK_UPDATE_NORMAL) {
-            if (!this.getSide(getFacing()).isSolid()) {
+            if (!this.getSide(getBlockFace().getOpposite()).isSolid()) {
                 this.level.useBreakOn(this);
                 return type;
             }
@@ -54,23 +67,23 @@ public class BlockItemFrame extends BlockTransparentMeta {
     }
 
     @Override
-    public boolean onActivate(Item item, Player player) {
+    public boolean onActivate(Item item, BlockFace face, Player player) {
         BlockEntity blockEntity = this.getLevel().getBlockEntity(this);
         if (!(blockEntity instanceof BlockEntityItemFrame)) {
             return false;
         }
         BlockEntityItemFrame itemFrame = (BlockEntityItemFrame) blockEntity;
         if (itemFrame.getItem().getId() == Item.AIR) {
-        	Item itemOnFrame = item.clone();
-        	if (player != null && player.isSurvival()) {
-        		itemOnFrame.setCount(itemOnFrame.getCount() - 1);
+            Item itemOnFrame = item.clone();
+            if (player != null && player.isSurvival()) {
+                itemOnFrame.setCount(itemOnFrame.getCount() - 1);
                 player.getInventory().setItemInHand(itemOnFrame);
-        	}
+            }
             itemOnFrame.setCount(1);
             itemFrame.setItem(itemOnFrame);
             this.getLevel().addLevelEvent(this, LevelEventPacket.EVENT_SOUND_ITEM_FRAME_ITEM_ADDED);
         } else {
-            itemFrame.setItemRotation((itemFrame.getItemRotation() + 1) % 8);
+            itemFrame.rotateItem();
             this.getLevel().addLevelEvent(this, LevelEventPacket.EVENT_SOUND_ITEM_FRAME_ITEM_ROTATED);
         }
         return true;
@@ -79,28 +92,14 @@ public class BlockItemFrame extends BlockTransparentMeta {
     @Override
     public boolean place(Item item, Block block, Block target, BlockFace face, double fx, double fy, double fz, Player player) {
         if (!target.isTransparent() && face.getIndex() > 1 && !block.isSolid()) {
-            switch (face) {
-                case NORTH:
-                    this.setDamage(3);
-                    break;
-                case SOUTH:
-                    this.setDamage(2);
-                    break;
-                case WEST:
-                    this.setDamage(1);
-                    break;
-                case EAST:
-                    this.setDamage(0);
-                    break;
-                default:
-                    return false;
+            if (face.isVertical()) {
+                return false;
             }
+
+            this.setDamage(face.getReversedHorizontalIndex());
             this.getLevel().setBlock(block, this, true, true);
-            CompoundTag nbt = new CompoundTag()
-                    .putString("id", BlockEntity.ITEM_FRAME)
-                    .putInt("x", (int) block.x)
-                    .putInt("y", (int) block.y)
-                    .putInt("z", (int) block.z)
+
+            CompoundTag nbt = BlockEntity.getDefaultCompound(this, BlockEntity.ITEM_FRAME)
                     .putByte("ItemRotation", 0)
                     .putFloat("ItemDropChance", 1.0f);
             if (item.hasCustomBlockData()) {
@@ -130,17 +129,17 @@ public class BlockItemFrame extends BlockTransparentMeta {
         BlockEntityItemFrame itemFrame = (BlockEntityItemFrame) blockEntity;
         if (itemFrame != null && ThreadLocalRandom.current().nextFloat() <= itemFrame.getItemDropChance()) {
             return new Item[]{
-                    toItem(), itemFrame.getItem().clone()
+                    toItem(true), itemFrame.getItem().clone()
             };
         } else {
             return new Item[]{
-                    toItem()
+                    toItem(true)
             };
         }
     }
 
     @Override
-    public Item toItem() {
+    public Item toItem(boolean addUserData) {
         return new ItemItemFrame();
     }
 
@@ -165,24 +164,19 @@ public class BlockItemFrame extends BlockTransparentMeta {
         return super.getComparatorInputOverride();
     }
 
-    public BlockFace getFacing() {
-        switch (this.getDamage() & 3) {
-            case 0:
-                return BlockFace.WEST;
-            case 1:
-                return BlockFace.EAST;
-            case 2:
-                return BlockFace.NORTH;
-            case 3:
-                return BlockFace.SOUTH;
-        }
-
-        return null;
-    }
-
     @Override
     public double getHardness() {
         return 0.25;
+    }
+
+    @Override
+    public BlockFace getBlockFace() {
+        return BlockFace.fromReversedHorizontalIndex(this.getDamage() & LEGACY_DIRECTION_MASK);
+    }
+
+    @Override
+    public boolean isSolid() {
+        return false;
     }
 
     @Override
@@ -192,6 +186,16 @@ public class BlockItemFrame extends BlockTransparentMeta {
 
     @Override
     public boolean sticksToPiston() {
+        return false;
+    }
+
+    @Override
+    public boolean canContainWater() {
+        return true;
+    }
+
+    @Override
+    public boolean canProvideSupport(BlockFace face, SupportType type) {
         return false;
     }
 }

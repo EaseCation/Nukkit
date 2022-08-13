@@ -2,6 +2,7 @@ package cn.nukkit.block;
 
 import cn.nukkit.Player;
 import cn.nukkit.item.Item;
+import cn.nukkit.item.ItemDye;
 import cn.nukkit.level.Level;
 import cn.nukkit.level.generator.object.BasicGenerator;
 import cn.nukkit.level.generator.object.tree.*;
@@ -29,6 +30,17 @@ public class BlockSapling extends BlockFlowable {
     public static final int ACACIA = 4;
     public static final int DARK_OAK = 5;
 
+    private static final String[] NAMES = new String[]{
+            "Oak Sapling",
+            "Spruce Sapling",
+            "Birch Sapling",
+            "Jungle Sapling",
+            "Acacia Sapling",
+            "Dark Oak Sapling",
+            "",
+            "",
+    };
+
     public BlockSapling() {
         this(0);
     }
@@ -44,21 +56,15 @@ public class BlockSapling extends BlockFlowable {
 
     @Override
     public String getName() {
-        String[] names = new String[]{
-                "Oak Sapling",
-                "Spruce Sapling",
-                "Birch Sapling",
-                "Jungle Sapling",
-                "Acacia Sapling",
-                "Dark Oak Sapling",
-                "",
-                ""
-        };
-        return names[this.getDamage() & 0x07];
+        return NAMES[this.getDamage() & 0x07];
     }
 
     @Override
     public boolean place(Item item, Block block, Block target, BlockFace face, double fx, double fy, double fz, Player player) {
+        if (block.isLiquid() || !block.isAir() && level.getExtraBlock(this).isWater()) {
+            return false;
+        }
+
         Block down = this.down();
         int id = down.getId();
         if (id == Block.GRASS || id == Block.DIRT || id == Block.FARMLAND || id == Block.PODZOL || id == MYCELIUM) {
@@ -74,8 +80,8 @@ public class BlockSapling extends BlockFlowable {
         return true;
     }
 
-    public boolean onActivate(Item item, Player player) {
-        if (item.getId() == Item.DYE && item.getDamage() == 0x0F) { //BoneMeal
+    public boolean onActivate(Item item, BlockFace face, Player player) {
+        if (item.getId() == Item.DYE && item.getDamage() == ItemDye.BONE_MEAL) {
             if (player != null && (player.gamemode & 0x01) == 0) {
                 item.count--;
             }
@@ -127,7 +133,7 @@ public class BlockSapling extends BlockFlowable {
                 for (; x >= -1; --x) {
                     for (; z >= -1; --z) {
                         if (this.findSaplings(x, z, JUNGLE)) {
-                            generator = new ObjectJungleBigTree(10, 20, Block.get(BlockID.WOOD, BlockWood.JUNGLE), Block.get(BlockID.LEAVES, BlockLeaves.JUNGLE));
+                            generator = new ObjectJungleBigTree(10, 20, Block.get(BlockID.LOG, BlockWood.JUNGLE), Block.get(BlockID.LEAVES, BlockLeaves.JUNGLE));
                             bigTree = true;
                             break loop;
                         }
@@ -196,12 +202,17 @@ public class BlockSapling extends BlockFlowable {
     }
 
     @Override
-    public Item toItem() {
+    public Item toItem(boolean addUserData) {
         return Item.get(BlockID.SAPLING, this.getDamage() & 0x7);
     }
 
     @Override
     public BlockColor getColor() {
-        return BlockColor.FOLIAGE_BLOCK_COLOR;
+        return BlockColor.PLANT_BLOCK_COLOR;
+    }
+
+    @Override
+    public boolean isVegetation() {
+        return true;
     }
 }

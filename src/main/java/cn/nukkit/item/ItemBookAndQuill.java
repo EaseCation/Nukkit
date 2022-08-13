@@ -11,7 +11,7 @@ public class ItemBookAndQuill extends ItemBookWritable {
     }
 
     public ItemBookAndQuill(Integer meta, int count) {
-        super(Item.BOOK_AND_QUILL, 0, count, "Book & Quill");
+        super(Item.WRITABLE_BOOK, 0, count, "Book & Quill");
     }
 
     @Override

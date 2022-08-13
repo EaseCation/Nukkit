@@ -14,23 +14,11 @@ import cn.nukkit.utils.Faceable;
  */
 public class BlockTorch extends BlockFlowable implements Faceable {
 
-    private static final int[] faces = new int[]{
-            0, //0, never used
-            5, //1
-            4, //2
-            3, //3
-            2, //4
-            1, //5
-    };
+    public static final int FACING_DIRECTION_MASK = 0b111;
+    public static final int FACING_DIRECTION_BITS = 3;
 
-    private static final int[] faces2 = new int[]{
-            0, //0
-            4, //1
-            5, //2
-            2, //3
-            3, //4
-            0, //5
-            0  //6
+    private static final BlockFace[] CHECK_SIDE = {
+            BlockFace.SOUTH, BlockFace.WEST, BlockFace.NORTH, BlockFace.EAST, BlockFace.DOWN, // ordered
     };
 
     public BlockTorch() {
@@ -59,12 +47,8 @@ public class BlockTorch extends BlockFlowable implements Faceable {
     @Override
     public int onUpdate(int type) {
         if (type == Level.BLOCK_UPDATE_NORMAL) {
-            Block below = this.down();
-            int side = this.getDamage();
-            Block block = this.getSide(BlockFace.fromIndex(faces2[side]));
-            int id = block.getId();
-
-            if ((block.isTransparent() && !(side == 0 && (below instanceof BlockFence || below.getId() == COBBLE_WALL))) && id != GLASS && id != STAINED_GLASS) {
+            BlockFace face = this.getBlockFace();
+            if (!canBeSupportedBy(getSide(face.getOpposite()), face)) {
                 this.getLevel().useBreakOn(this);
                 return Level.BLOCK_UPDATE_NORMAL;
             }
@@ -75,25 +59,44 @@ public class BlockTorch extends BlockFlowable implements Faceable {
 
     @Override
     public boolean place(Item item, Block block, Block target, BlockFace face, double fx, double fy, double fz, Player player) {
-        int side = faces[face.getIndex()];
-        int bid = this.getSide(BlockFace.fromIndex(faces2[side])).getId();
-        if ((!target.isTransparent() || bid == GLASS || bid == STAINED_GLASS) && face != BlockFace.DOWN) {
-            this.setDamage(side);
-            this.getLevel().setBlock(block, this, true, true);
-            return true;
+        if (face == BlockFace.DOWN) {
+            return false;
         }
 
-        Block below = this.down();
-        if (!below.isTransparent() || below instanceof BlockFence || below.getId() == COBBLE_WALL || below.getId() == GLASS || below.getId() == STAINED_GLASS) {
-            this.setDamage(0);
-            this.getLevel().setBlock(block, this, true, true);
-            return true;
+        if (block.isLava() || canBeFlowedInto() && (block.isWater() || !block.isAir() && level.getExtraBlock(this).isWater())) {
+            return false;
         }
-        return false;
+
+        BlockFace facing = null;
+        if (canBeSupportedBy(target, face)) {
+            facing = face;
+        } else {
+            for (BlockFace side : CHECK_SIDE) {
+                if (side == face) {
+                    continue;
+                }
+
+                Block sideBlock = getSide(side);
+                if (!canBeSupportedBy(sideBlock, side.getOpposite())) {
+                    continue;
+                }
+
+                facing = side.getOpposite();
+                break;
+            }
+
+            if (facing == null) {
+                return false;
+            }
+        }
+
+        setBlockFace(facing);
+        this.level.setBlock(block, this, true);
+        return true;
     }
 
     @Override
-    public Item toItem() {
+    public Item toItem(boolean addUserData) {
         return new ItemBlock(this, 0);
     }
 
@@ -104,21 +107,20 @@ public class BlockTorch extends BlockFlowable implements Faceable {
 
     @Override
     public BlockFace getBlockFace() {
-        return getBlockFace(this.getDamage() & 0x07);
+        int meta = this.getDamage() & FACING_DIRECTION_MASK;
+        return meta != 0 ? BlockFace.fromIndex(6 - meta) : BlockFace.UP;
     }
 
-    public BlockFace getBlockFace(int meta) {
-        switch (meta) {
-            case 1:
-                return BlockFace.EAST;
-            case 2:
-                return BlockFace.WEST;
-            case 3:
-                return BlockFace.SOUTH;
-            case 4:
-                return BlockFace.NORTH;
-            default:
-                return BlockFace.UP;
+    protected void setBlockFace(BlockFace face) {
+        setDamage(6 - face.getIndex());
+    }
+
+    protected boolean canBeSupportedBy(Block support, BlockFace face) {
+        if (support.getId() == MOB_SPAWNER) {
+            return face != BlockFace.DOWN;
         }
+
+        return face == BlockFace.UP && SupportType.hasCenterSupport(support, BlockFace.UP)
+                || face != BlockFace.DOWN && SupportType.hasFullSupport(support, face);
     }
 }

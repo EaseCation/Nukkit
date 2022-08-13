@@ -14,10 +14,6 @@ public class ResourcePackChunkDataPacket extends DataPacket {
 
     @Override
     public void decode() {
-        this.packId = this.getString();
-        this.chunkIndex = this.getLInt();
-        this.progress = this.getLLong();
-        this.data = this.get(this.getLInt());
     }
 
     @Override

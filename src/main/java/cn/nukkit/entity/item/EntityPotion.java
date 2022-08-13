@@ -1,5 +1,7 @@
 package cn.nukkit.entity.item;
 
+import cn.nukkit.block.Block;
+import cn.nukkit.block.BlockCampfire;
 import cn.nukkit.entity.Entity;
 import cn.nukkit.entity.projectile.EntityProjectile;
 import cn.nukkit.event.potion.PotionCollideEvent;
@@ -135,6 +137,13 @@ public class EntityPotion extends EntityProjectile {
             if (distance < 16) {
                 double d = anEntity.equals(collidedWith) ? 1 : 1 - Math.sqrt(distance) / 4;
                 potion.applyPotion(anEntity, d);
+            }
+        }
+
+        if (potion.getId() == Potion.WATER) {
+            Block block = level.getBlock(this);
+            if (block instanceof BlockCampfire) {
+                ((BlockCampfire) block).tryDouseFire();
             }
         }
     }
