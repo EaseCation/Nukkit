@@ -203,6 +203,11 @@ public interface ProtocolInfo {
     int REQUEST_ABILITY_PACKET = 0xb8;
     int REQUEST_PERMISSIONS_PACKET = 0xb9;
     int TOAST_REQUEST_PACKET = 0xba;
+    int UPDATE_ABILITIES_PACKET = 0xbb;
+    int UPDATE_ADVENTURE_SETTINGS_PACKET = 0xbc;
+    int DEATH_INFO_PACKET = 0xbd;
+    int EDITOR_NETWORK_PACKET = 0xbe;
+    int FEATURE_REGISTRY_PACKET = 0xbf;
 
     //NetEase Common Mod
     int PACKET_PY_RPC = 0xc8;
