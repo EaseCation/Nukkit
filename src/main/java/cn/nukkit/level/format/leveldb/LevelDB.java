@@ -645,7 +645,7 @@ public class LevelDB implements LevelProvider {
         return chunk;
     }
 
-    private void writeChunk(LevelDbChunk chunk) {
+    private void writeChunk(LevelDbChunk chunk, boolean convert) {
         int chunkX = chunk.getX();
         int chunkZ = chunk.getZ();
         BinaryStream stream = new BinaryStream();
@@ -707,11 +707,19 @@ public class LevelDB implements LevelProvider {
                 : chunk.isGenerated() ? FINALISATION_POPULATION_SAVE_DATA : FINALISATION_GENERATION_SAVE_DATA);
 
         //TODO: dirty?
-        List<CompoundTag> blockEntities = new ObjectArrayList<>();
-        for (BlockEntity blockEntity : chunk.getBlockEntities().values()) {
-            if (!blockEntity.isClosed()) {
-                blockEntity.saveNBT();
-                blockEntities.add(blockEntity.namedTag);
+        List<CompoundTag> blockEntities;
+        if (!convert) {
+            blockEntities = new ObjectArrayList<>();
+            for (BlockEntity blockEntity : chunk.getBlockEntities().values()) {
+                if (!blockEntity.isClosed()) {
+                    blockEntity.saveNBT();
+                    blockEntities.add(blockEntity.namedTag);
+                }
+            }
+        } else {
+            blockEntities = chunk.getBlockEntityTags();
+            if (blockEntities == null) {
+                blockEntities = Collections.emptyList();
             }
         }
         byte[] blockEntitiesKey = BLOCK_ENTITIES.getKey(chunkX, chunkZ);
@@ -726,11 +734,19 @@ public class LevelDB implements LevelProvider {
         }
 
         //dirty?
-        List<CompoundTag> entities = new ObjectArrayList<>();
-        for (Entity entity : chunk.getEntities().values()) {
-            if (!(entity instanceof Player) && !entity.closed) {
-                entity.saveNBT();
-                entities.add(entity.namedTag);
+        List<CompoundTag> entities;
+        if (!convert) {
+            entities = new ObjectArrayList<>();
+            for (Entity entity : chunk.getEntities().values()) {
+                if (!(entity instanceof Player) && !entity.closed) {
+                    entity.saveNBT();
+                    entities.add(entity.namedTag);
+                }
+            }
+        } else {
+            entities = chunk.getEntityTags();
+            if (entities == null) {
+                entities = Collections.emptyList();
             }
         }
         byte[] entitiesKey = ENTITIES.getKey(chunkX, chunkZ);
@@ -744,48 +760,58 @@ public class LevelDB implements LevelProvider {
             }
         }
 
-        LevelProvider provider = chunk.getProvider();
-        if (provider != null) {
+        Collection<BlockUpdateEntry> blockUpdateEntries = null;
+        Collection<BlockUpdateEntry> randomBlockUpdateEntries = null;
+        long currentTick = 0;
+
+        LevelProvider provider;
+        if (convert) {
+            blockUpdateEntries = chunk.getBlockUpdateEntries();
+        } else if ((provider = chunk.getProvider()) != null) {
             Level level = provider.getLevel();
-            long currentTick = level.getCurrentTick();
-
+            currentTick = level.getCurrentTick();
             //dirty?
-            Set<BlockUpdateEntry> entries = level.getPendingBlockUpdates(chunk);
-            if (entries != null) {
-                byte[] key = PENDING_SCHEDULED_TICKS.getKey(chunkX, chunkZ);
-                CompoundTag ticks = saveBlockTickingQueue(entries, currentTick);
-                if (ticks != null) {
-                    try {
-                        batch.put(key, NBTIO.write(ticks, ByteOrder.LITTLE_ENDIAN));
-                    } catch (IOException e) {
-                        throw new RuntimeException(e);
-                    }
-                } else {
-                    batch.delete(key);
-                }
-            }
+            blockUpdateEntries = level.getPendingBlockUpdates(chunk);
+            randomBlockUpdateEntries = level.getPendingRandomBlockUpdates(chunk);
+        }
 
-            //dirty?
-            Set<BlockUpdateEntry> randomEntries = level.getPendingRandomBlockUpdates(chunk);
-            if (randomEntries != null) {
-                byte[] key = PENDING_RANDOM_TICKS.getKey(chunkX, chunkZ);
-                CompoundTag ticks = saveBlockTickingQueue(randomEntries, currentTick);
-                if (ticks != null) {
-                    try {
-                        batch.put(key, NBTIO.write(ticks, ByteOrder.LITTLE_ENDIAN));
-                    } catch (IOException e) {
-                        throw new RuntimeException(e);
-                    }
-                } else {
-                    batch.delete(key);
+        byte[] pendingScheduledTicksKey = PENDING_SCHEDULED_TICKS.getKey(chunkX, chunkZ);
+        if (blockUpdateEntries != null && !blockUpdateEntries.isEmpty()) {
+            CompoundTag ticks = saveBlockTickingQueue(blockUpdateEntries, currentTick);
+            if (ticks != null) {
+                try {
+                    batch.put(pendingScheduledTicksKey, NBTIO.write(ticks, ByteOrder.LITTLE_ENDIAN));
+                } catch (IOException e) {
+                    throw new RuntimeException(e);
                 }
+            } else {
+                batch.delete(pendingScheduledTicksKey);
             }
+        } else {
+            batch.delete(pendingScheduledTicksKey);
+        }
+
+        byte[] pendingRandomTicksKey = PENDING_RANDOM_TICKS.getKey(chunkX, chunkZ);
+        if (randomBlockUpdateEntries != null && !randomBlockUpdateEntries.isEmpty()) {
+            CompoundTag ticks = saveBlockTickingQueue(randomBlockUpdateEntries, currentTick);
+            if (ticks != null) {
+                try {
+                    batch.put(pendingRandomTicksKey, NBTIO.write(ticks, ByteOrder.LITTLE_ENDIAN));
+                } catch (IOException e) {
+                    throw new RuntimeException(e);
+                }
+            } else {
+                batch.delete(pendingRandomTicksKey);
+            }
+        } else {
+            batch.delete(pendingRandomTicksKey);
         }
 
         /*stream.reuse();
         stream.putInt(CURRENT_NUKKIT_DATA_VERSION);
         stream.putLLong(NUKKIT_DATA_MAGIC);
         CompoundTag nbt = new CompoundTag();
+        // baked lighting
 //        nbt.putByteArray("BlockLight", chunk.getBlockLightArray());
 //        nbt.putByteArray("SkyLight", chunk.getBlockSkyLightArray());
         try {
@@ -826,7 +852,7 @@ public class LevelDB implements LevelProvider {
     @Override
     public void saveChunk(int chunkX, int chunkZ) {
         if (this.isChunkLoaded(chunkX, chunkZ)) {
-            this.writeChunk(this.getChunk(chunkX, chunkZ));
+            this.writeChunk(this.getChunk(chunkX, chunkZ), false);
         }
     }
 
@@ -836,7 +862,7 @@ public class LevelDB implements LevelProvider {
             throw new ChunkException("Invalid Chunk class");
         }
         LevelDbChunk dbChunk = (LevelDbChunk) chunk;
-        this.writeChunk(dbChunk);
+        this.writeChunk(dbChunk, true);
     }
 
     @Override
@@ -1173,7 +1199,7 @@ public class LevelDB implements LevelProvider {
     }
 
     @Nullable
-    protected CompoundTag saveBlockTickingQueue(Set<BlockUpdateEntry> entries, long currentTick) {
+    protected CompoundTag saveBlockTickingQueue(Collection<BlockUpdateEntry> entries, long currentTick) {
         ListTag<CompoundTag> tickList = new ListTag<>("tickList");
         for (BlockUpdateEntry entry : entries) {
             Block block = entry.block;

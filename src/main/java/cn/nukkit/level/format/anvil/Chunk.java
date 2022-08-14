@@ -17,6 +17,7 @@ import cn.nukkit.utils.ChunkException;
 import cn.nukkit.utils.Zlib;
 import it.unimi.dsi.fastutil.ints.Int2IntMap;
 import it.unimi.dsi.fastutil.ints.Int2IntOpenHashMap;
+import it.unimi.dsi.fastutil.objects.ObjectArrayList;
 
 import java.io.ByteArrayInputStream;
 import java.io.DataInputStream;
@@ -132,8 +133,8 @@ public class Chunk extends BaseChunk {
         if (this.NBTtiles.isEmpty()) this.NBTtiles = null;
 
         ListTag<CompoundTag> updateEntries = nbt.getList("TileTicks", CompoundTag.class);
-
-        if (updateEntries != null && updateEntries.size() > 0) {
+        if (updateEntries != null && !updateEntries.isEmpty()) {
+            blockUpdateEntries = new ObjectArrayList<>();
             for (CompoundTag entryNBT : updateEntries.getAll()) {
                 Block block = null;
 
@@ -161,7 +162,8 @@ public class Chunk extends BaseChunk {
                 block.y = entryNBT.getInt("y");
                 block.z = entryNBT.getInt("z");
 
-                this.provider.getLevel().scheduleUpdate(block, block, entryNBT.getInt("t"), entryNBT.getInt("p"), false);
+//                this.provider.getLevel().scheduleUpdate(block, block, entryNBT.getInt("t"), entryNBT.getInt("p"), false);
+                blockUpdateEntries.add(new BlockUpdateEntry(block, block, entryNBT.getInt("t"), entryNBT.getInt("p")));
             }
         }
 

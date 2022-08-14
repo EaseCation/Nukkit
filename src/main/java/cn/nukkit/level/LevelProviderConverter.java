@@ -4,8 +4,6 @@ import cn.nukkit.block.Block;
 import cn.nukkit.block.BlockID;
 import cn.nukkit.block.BlockWood;
 import cn.nukkit.block.BlockWood2;
-import cn.nukkit.blockentity.BlockEntity;
-import cn.nukkit.entity.Entity;
 import cn.nukkit.level.biome.Biome;
 import cn.nukkit.level.format.ChunkSection;
 import cn.nukkit.level.format.FullChunk;
@@ -25,7 +23,6 @@ import cn.nukkit.nbt.tag.CompoundTag;
 import cn.nukkit.nbt.tag.Tag;
 import cn.nukkit.utils.Binary;
 import cn.nukkit.utils.LevelException;
-import it.unimi.dsi.fastutil.objects.ObjectArrayList;
 import lombok.extern.log4j.Log4j2;
 
 import java.io.File;
@@ -38,6 +35,8 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.nio.file.StandardCopyOption;
 import java.util.List;
+import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.atomic.AtomicInteger;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
@@ -186,6 +185,8 @@ class LevelProviderConverter {
         return result;
     }
 
+    private static final int WORKER_COUNT = Runtime.getRuntime().availableProcessors();
+
     /**
      * @return success chunk count
      */
@@ -193,98 +194,121 @@ class LevelProviderConverter {
         File regionDir = new File(anvil.getPath(), "region");
         File[] regionFiles = regionDir.listFiles((dir, name) -> name.endsWith(".mca"));
 
-        if (regionFiles == null) {
+        if (regionFiles == null || regionFiles.length == 0) {
+            return 0;
+        }
+
+        int fileCount = regionFiles.length;
+        int workerCount = Math.min(fileCount, WORKER_COUNT);
+        CompletableFuture<Integer>[] futures = new CompletableFuture[workerCount];
+        AtomicInteger cursor = new AtomicInteger();
+        for (int i = 0; i < workerCount; i++) {
+            futures[i] = CompletableFuture.supplyAsync(() -> {
+                int count = 0;
+                int index;
+                while ((index = cursor.getAndIncrement()) < fileCount) {
+                    count += processRegionFile(anvil, levelDb, regionFiles[index]);
+                }
+                return count;
+            });
+        }
+        CompletableFuture.allOf(futures).join();
+
+        int totalChunks = 0;
+        for (CompletableFuture<Integer> future : futures) {
+            try {
+                totalChunks += future.get();
+            } catch (Exception e) {
+                log.error("Failed to get conversion count", e);
+            }
+        }
+        return totalChunks;
+    }
+
+    private int processRegionFile(Anvil anvil, LevelDB levelDb, File regionFile) {
+        Matcher matcher = ANVIL_REGEX.matcher(regionFile.getName());
+        if (!matcher.matches()) {
+            return 0;
+        }
+
+        int regionX;
+        int regionZ;
+        try {
+            regionX = Integer.parseInt(matcher.group(1));
+            regionZ = Integer.parseInt(matcher.group(2));
+        } catch (Exception e) {
+            log.error("Skipped invalid region: {}", regionFile, e);
+            return 0;
+        }
+
+        RegionLoader region;
+        try {
+            region = new RegionLoader(anvil, regionX, regionZ);
+        } catch (Exception e) {
+            log.error("Skipped corrupted region: {}", regionFile, e);
             return 0;
         }
 
         int totalChunks = 0;
-
-        //TODO: use workers
-        for (File regionFile : regionFiles) {
-            Matcher matcher = ANVIL_REGEX.matcher(regionFile.getName());
-            if (!matcher.matches()) {
-                continue;
-            }
-
-            int regionX;
-            int regionZ;
-            try {
-                regionX = Integer.parseInt(matcher.group(1));
-                regionZ = Integer.parseInt(matcher.group(2));
-            } catch (Exception e) {
-                log.error("Skipped invalid region: {}", regionFile, e);
-                continue;
-            }
-
-            RegionLoader region;
-            try {
-                region = new RegionLoader(anvil, regionX, regionZ);
-            } catch (Exception e) {
-                log.error("Skipped corrupted region: {}", regionFile, e);
-                continue;
-            }
-
-            for (int x = 0; x < 32; x++) {
-                for (int z = 0; z < 32; z++) {
-                    if (!region.chunkExists(x, z)) {
-                        continue;
-                    }
-
-                    Chunk chunk;
-                    try {
-                        chunk = region.readChunk(x, z);
-                    } catch (Exception e) {
-                        log.error("Skipped corrupted chunk: region {},{} pos {},{}", regionX, regionZ, x, z, e);
-                        continue;
-                    }
-
-                    if (chunk == null) {
-                        continue;
-                    }
-
-                    try {
-                        LevelDbChunk dbChunk = anvilChunkToLevelDbChunk(chunk, levelDb);
-                        levelDb.saveChunk(x, z, dbChunk);
-
-                        List<BlockEntity> blockEntities = new ObjectArrayList<>(dbChunk.getBlockEntities().values());
-                        for (BlockEntity blockEntity : blockEntities) {
-                            if (blockEntity == null || blockEntity.isClosed()) {
-                                continue;
-                            }
-                            try {
-                                level.removeBlockEntity(blockEntity);
-                            } catch (Exception e) {
-                                log.debug("Failed to remove block entity {}", blockEntity, e);
-                            }
-                        }
-
-                        List<Entity> entities = new ObjectArrayList<>(dbChunk.getEntities().values());
-                        for (Entity entity : entities) {
-                            if (entity == null || entity.isClosed()) {
-                                continue;
-                            }
-                            try {
-                                level.removeEntityDirect(entity);
-                            } catch (Exception e) {
-                                log.debug("Failed to remove entity {}", entity, e);
-                            }
-                        }
-                    } catch (Exception e) {
-                        log.error("chunk conversion failed: region {},{} pos {},{}", regionX, regionZ, x, z, e);
-                        continue;
-                    }
-
-                    totalChunks++;
+        for (int x = 0; x < 32; x++) {
+            for (int z = 0; z < 32; z++) {
+                if (!region.chunkExists(x, z)) {
+                    continue;
                 }
-            }
 
-            try {
-                region.close();
-            } catch (Exception e) {
-                log.error("An error occurred while unloading region: {}", regionFile, e);
+                Chunk chunk;
+                try {
+                    chunk = region.readChunk(x, z);
+                } catch (Exception e) {
+                    log.error("Skipped corrupted chunk: region {},{} pos {},{}", regionX, regionZ, x, z, e);
+                    continue;
+                }
+
+                if (chunk == null) {
+                    continue;
+                }
+
+                try {
+                    LevelDbChunk dbChunk = anvilChunkToLevelDbChunk(chunk, levelDb);
+                    levelDb.saveChunk(x, z, dbChunk);
+
+                    /*List<BlockEntity> blockEntities = new ObjectArrayList<>(dbChunk.getBlockEntities().values());
+                    for (BlockEntity blockEntity : blockEntities) {
+                        if (blockEntity == null || blockEntity.isClosed()) {
+                            continue;
+                        }
+                        try {
+                            level.removeBlockEntity(blockEntity);
+                        } catch (Exception e) {
+                            log.debug("Failed to remove block entity {}", blockEntity, e);
+                        }
+                    }
+
+                    List<Entity> entities = new ObjectArrayList<>(dbChunk.getEntities().values());
+                    for (Entity entity : entities) {
+                        if (entity == null || entity.isClosed()) {
+                            continue;
+                        }
+                        try {
+                            level.removeEntityDirect(entity);
+                        } catch (Exception e) {
+                            log.debug("Failed to remove entity {}", entity, e);
+                        }
+                    }*/
+                } catch (Exception e) {
+                    log.error("chunk conversion failed: region {},{} pos {},{}", regionX, regionZ, x, z, e);
+                    continue;
+                }
+
+                totalChunks++;
             }
         }
 
+        try {
+            region.close();
+        } catch (Exception e) {
+            log.error("An error occurred while unloading region: {}", regionFile, e);
+        }
         return totalChunks;
     }
 
@@ -332,7 +356,6 @@ class LevelProviderConverter {
         for (int x = 0; x < 16; x++) {
             for (int z = 0; z < 16; z++) {
                 chunk.setBiomeId(x, z, Biome.toValidBiome(oldChunk.getBiomeId(x, z)));
-//                chunk.setHeightMap(x, z, oldChunk.getHeightMap(x, z));
             }
         }
 
@@ -349,14 +372,14 @@ class LevelProviderConverter {
                     .collect(Collectors.toList()));
         }
 
+        chunk.setBlockUpdateEntries(oldChunk.getBlockUpdateEntries());
+
         chunk.setGenerated(oldChunk.isGenerated());
         chunk.setPopulated(oldChunk.isPopulated());
         chunk.setLightPopulated(oldChunk.isLightPopulated());
 
-        chunk.initChunk();
-
+//        chunk.initChunk();
 //        chunk.fixCorruptedBlockEntities();
-        //TODO: lighting
 
         return chunk;
     }

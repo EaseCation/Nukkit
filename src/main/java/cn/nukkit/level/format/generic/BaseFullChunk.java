@@ -15,6 +15,7 @@ import cn.nukkit.nbt.tag.CompoundTag;
 import cn.nukkit.nbt.tag.ListTag;
 import cn.nukkit.nbt.tag.NumberTag;
 import cn.nukkit.nbt.tag.Tag;
+import cn.nukkit.utils.BlockUpdateEntry;
 import it.unimi.dsi.fastutil.ints.Int2IntMap;
 import it.unimi.dsi.fastutil.ints.Int2IntMaps;
 import it.unimi.dsi.fastutil.ints.Int2IntOpenHashMap;
@@ -26,6 +27,7 @@ import it.unimi.dsi.fastutil.longs.Long2ObjectOpenHashMap;
 import it.unimi.dsi.fastutil.objects.ObjectArrayList;
 import lombok.extern.log4j.Log4j2;
 
+import javax.annotation.Nullable;
 import java.io.IOException;
 import java.util.Collection;
 import java.util.Iterator;
@@ -62,9 +64,14 @@ public abstract class BaseFullChunk implements FullChunk, ChunkManager {
 
     protected byte[] heightMap;
 
+    @Nullable
     protected List<CompoundTag> NBTtiles;
 
+    @Nullable
     protected List<CompoundTag> NBTentities;
+
+    @Nullable
+    protected List<BlockUpdateEntry> blockUpdateEntries;
 
     protected Int2IntMap extraData;
 
@@ -684,6 +691,7 @@ public abstract class BaseFullChunk implements FullChunk, ChunkManager {
     /**
      * internal.
      */
+    @Nullable
     public List<CompoundTag> getBlockEntityTags() {
         return NBTtiles;
     }
@@ -691,13 +699,14 @@ public abstract class BaseFullChunk implements FullChunk, ChunkManager {
     /**
      * internal.
      */
-    public void setBlockEntityTags(List<CompoundTag> tags) {
+    public void setBlockEntityTags(@Nullable List<CompoundTag> tags) {
         NBTtiles = tags;
     }
 
     /**
      * internal.
      */
+    @Nullable
     public List<CompoundTag> getEntityTags() {
         return NBTentities;
     }
@@ -705,7 +714,22 @@ public abstract class BaseFullChunk implements FullChunk, ChunkManager {
     /**
      * internal.
      */
-    public void setEntityTags(List<CompoundTag> tags) {
+    public void setEntityTags(@Nullable List<CompoundTag> tags) {
         NBTentities = tags;
+    }
+
+    /**
+     * internal.
+     */
+    @Nullable
+    public List<BlockUpdateEntry> getBlockUpdateEntries() {
+        return blockUpdateEntries;
+    }
+
+    /**
+     * internal.
+     */
+    public void setBlockUpdateEntries(@Nullable List<BlockUpdateEntry> entries) {
+        blockUpdateEntries = entries;
     }
 }
