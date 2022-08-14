@@ -4,8 +4,8 @@ import cn.nukkit.Server;
 import com.google.gson.JsonParser;
 
 import java.io.File;
-import java.io.FileInputStream;
 import java.io.IOException;
+import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
@@ -73,7 +73,7 @@ public class ZippedResourcePack extends AbstractResourcePack {
             chunk = new byte[this.getPackSize() - off];
         }
 
-        try (FileInputStream fis = new FileInputStream(this.file)) {
+        try (InputStream fis = Files.newInputStream(this.file.toPath())) {
             fis.skip(off);
             fis.read(chunk);
         } catch (Exception e) {

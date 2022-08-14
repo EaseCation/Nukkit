@@ -18,6 +18,7 @@ import java.io.File;
 import java.io.IOException;
 import java.nio.ByteOrder;
 import java.nio.file.Files;
+import java.nio.file.Paths;
 import java.util.regex.Pattern;
 
 /**
@@ -94,7 +95,7 @@ public class Anvil extends BaseLevelProvider {
                 .putLong("Time", 0)
                 .putLong("SizeOnDisk", 0);
 
-        NBTIO.writeGZIPCompressed(new CompoundTag().putCompound("Data", levelData), Files.newOutputStream(new File(path, "level.dat").toPath()), ByteOrder.BIG_ENDIAN);
+        NBTIO.writeGZIPCompressed(new CompoundTag().putCompound("Data", levelData), Files.newOutputStream(Paths.get(path, "level.dat")), ByteOrder.BIG_ENDIAN);
     }
 
     public Chunk getEmptyChunk(int chunkX, int chunkZ) {

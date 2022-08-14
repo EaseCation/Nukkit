@@ -17,8 +17,8 @@ public class BaseLang {
 
     protected final String langName;
 
-    protected Map<String, String> lang = new HashMap<>();
-    protected Map<String, String> fallbackLang = new HashMap<>();
+    protected Map<String, String> lang;
+    protected Map<String, String> fallbackLang;
 
 
     public BaseLang(String lang) {
@@ -40,8 +40,6 @@ public class BaseLang {
             this.lang = this.loadLang(path + this.langName + "/lang.ini");
             this.fallbackLang = this.loadLang(path + fallback + "/lang.ini");
         }
-
-
     }
 
     public Map<String, String> getLangMap() {

@@ -3,8 +3,8 @@ package cn.nukkit.utils;
 import java.io.*;
 import java.lang.management.ManagementFactory;
 import java.lang.management.ThreadInfo;
-import java.nio.channels.FileChannel;
 import java.nio.charset.StandardCharsets;
+import java.nio.file.Files;
 import java.util.Arrays;
 import java.util.Map;
 import java.util.UUID;
@@ -35,7 +35,7 @@ public class Utils {
         if (!file.exists()) {
             file.createNewFile();
         }
-        try (FileOutputStream stream = new FileOutputStream(file)) {
+        try (OutputStream stream = Files.newOutputStream(file.toPath())) {
             byte[] buffer = new byte[1024];
             int length;
             while ((length = content.read(buffer)) != -1) {
@@ -49,7 +49,7 @@ public class Utils {
         if (!file.exists() || file.isDirectory()) {
             throw new FileNotFoundException();
         }
-        return readFile(new FileInputStream(file));
+        return readFile(Files.newInputStream(file.toPath()));
     }
 
     public static String readFile(String filename) throws IOException {
@@ -57,7 +57,7 @@ public class Utils {
         if (!file.exists() || file.isDirectory()) {
             throw new FileNotFoundException();
         }
-        return readFile(new FileInputStream(file));
+        return readFile(Files.newInputStream(file.toPath()));
     }
 
     public static String readFile(InputStream inputStream) throws IOException {
@@ -77,34 +77,6 @@ public class Utils {
                 temp = br.readLine();
             }
             return stringBuilder.toString();
-        }
-    }
-
-    public static void copyFile(File from, File to) throws IOException {
-        if (!from.exists()) {
-            throw new FileNotFoundException();
-        }
-        if (from.isDirectory() || to.isDirectory()) {
-            throw new FileNotFoundException();
-        }
-        FileInputStream fi = null;
-        FileChannel in = null;
-        FileOutputStream fo = null;
-        FileChannel out = null;
-        try {
-            if (!to.exists()) {
-                to.createNewFile();
-            }
-            fi = new FileInputStream(from);
-            in = fi.getChannel();
-            fo = new FileOutputStream(to);
-            out = fo.getChannel();
-            in.transferTo(0, in.size(), out);
-        } finally {
-            if (fi != null) fi.close();
-            if (in != null) in.close();
-            if (fo != null) fo.close();
-            if (out != null) out.close();
         }
     }
 

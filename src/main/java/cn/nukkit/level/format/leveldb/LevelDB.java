@@ -45,6 +45,9 @@ import javax.annotation.Nullable;
 import java.io.*;
 import java.lang.ref.WeakReference;
 import java.nio.ByteOrder;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.*;
 
 import static cn.nukkit.level.format.leveldb.LevelDBKey.*;
@@ -72,12 +75,14 @@ public class LevelDB implements LevelProvider {
     public LevelDB(Level level, String path) {
         this.level = level;
         this.path = path;
-        File filePath = new File(this.path);
-        if (!filePath.exists()) {
-            filePath.mkdirs();
+        Path dirPath = Paths.get(path);
+        try {
+            Files.createDirectories(dirPath);
+        } catch (IOException e) {
+            throw new RuntimeException(e);
         }
 
-        try (FileInputStream stream = new FileInputStream(this.getPath() + "level.dat")) {
+        try (InputStream stream = Files.newInputStream(dirPath.resolve("level.dat"))) {
             stream.skip(8);
             this.levelData = NBTIO.read(stream, ByteOrder.LITTLE_ENDIAN);
         } catch (IOException e) {
@@ -97,7 +102,7 @@ public class LevelDB implements LevelProvider {
                 .compressionType(CompressionType.ZLIB_RAW)
                 .blockSize(64 * 1024);
         try {
-            this.db = PROVIDER.open(new File(this.getPath() + "/db"), options);
+            this.db = PROVIDER.open(dirPath.resolve("db").toFile(), options);
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
@@ -128,9 +133,9 @@ public class LevelDB implements LevelProvider {
     }
 
     public static void generate(String path, String name, LevelCreationOptions options) throws IOException {
-        if (!new File(path + "/db").exists()) {
-            new File(path + "/db").mkdirs();
-        }
+        Path dirPath = Paths.get(path);
+        Path dbPath = dirPath.resolve("db");
+        Files.createDirectories(dbPath);
 
         int generatorType = Generator.getGeneratorType(options.getGenerator());
         Vector3 spawnPosition = options.getSpawnPosition();
@@ -196,15 +201,14 @@ public class LevelDB implements LevelProvider {
                 .putByte("useMsaGamertagsOnly", 0);
         options.getGameRules().writeNBT(levelData, true);
 
-        byte[] data = NBTIO.write(levelData, ByteOrder.LITTLE_ENDIAN);
-        ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
-        outputStream.write(Binary.writeLInt(3));
-        outputStream.write(Binary.writeLInt(data.length));
-        outputStream.write(data);
+        try (OutputStream stream = Files.newOutputStream(dirPath.resolve("level.dat"))) {
+            byte[] data = NBTIO.write(levelData, ByteOrder.LITTLE_ENDIAN);
+            stream.write(Binary.writeLInt(CURRENT_STORAGE_VERSION));
+            stream.write(Binary.writeLInt(data.length));
+            stream.write(data);
+        }
 
-        Utils.writeFile(path + "level.dat", new ByteArrayInputStream(outputStream.toByteArray()));
-
-        DB db = PROVIDER.open(new File(path + "/db"), new Options()
+        DB db = PROVIDER.open(dbPath.toFile(), new Options()
                 .createIfMissing(true)
                 .compressionType(CompressionType.ZLIB_RAW)
                 .blockSize(64 * 1024));
@@ -213,14 +217,11 @@ public class LevelDB implements LevelProvider {
 
     @Override
     public void saveLevelData() {
-        try {
+        try (OutputStream stream = Files.newOutputStream(Paths.get(path, "level.dat"))) {
             byte[] data = NBTIO.write(levelData, ByteOrder.LITTLE_ENDIAN);
-            ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
-            outputStream.write(Binary.writeLInt(CURRENT_STORAGE_VERSION));
-            outputStream.write(Binary.writeLInt(data.length));
-            outputStream.write(data);
-
-            Utils.writeFile(path + "level.dat", new ByteArrayInputStream(outputStream.toByteArray()));
+            stream.write(Binary.writeLInt(CURRENT_STORAGE_VERSION));
+            stream.write(Binary.writeLInt(data.length));
+            stream.write(data);
         } catch (IOException e) {
             throw new RuntimeException(e);
         }

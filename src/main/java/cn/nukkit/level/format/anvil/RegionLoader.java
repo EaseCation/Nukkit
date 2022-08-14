@@ -81,7 +81,7 @@ public class RegionLoader extends BaseRegionLoader {
                 return null;
             }
         } catch (EOFException e) {
-            log.error("Your world is corrupt, because some code is bad and corrupted it. oops. ");
+            log.error("Your world is corrupt, because some code is bad and corrupted it. oops. ({}, {})", x, z);
             return null;
         }
     }

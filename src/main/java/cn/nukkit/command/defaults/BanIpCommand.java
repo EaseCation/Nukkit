@@ -15,6 +15,7 @@ import java.io.FileInputStream;
 import java.io.IOException;
 import java.net.InetAddress;
 import java.net.UnknownHostException;
+import java.nio.file.Files;
 import java.util.ArrayList;
 import java.util.regex.Pattern;
 
@@ -78,7 +79,7 @@ public class BanIpCommand extends VanillaCommand {
                 CompoundTag nbt = null;
                 if (file.exists()) {
                     try {
-                        nbt = NBTIO.readCompressed(new FileInputStream(file));
+                        nbt = NBTIO.readCompressed(Files.newInputStream(file.toPath()));
                     } catch (IOException e) {
                         throw new RuntimeException(e);
                     }

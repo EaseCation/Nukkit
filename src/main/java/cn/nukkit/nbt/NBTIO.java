@@ -71,7 +71,7 @@ public class NBTIO {
 
     public static CompoundTag read(File file, ByteOrder endianness) throws IOException {
         if (!file.exists()) return null;
-        return read(new FileInputStream(file), endianness);
+        return read(Files.newInputStream(file.toPath()), endianness);
     }
 
     public static CompoundTag read(InputStream inputStream) throws IOException {
@@ -185,7 +185,7 @@ public class NBTIO {
     }
 
     public static void write(CompoundTag tag, File file, ByteOrder endianness) throws IOException {
-        write(tag, new FileOutputStream(file), endianness);
+        write(tag, Files.newOutputStream(file.toPath()), endianness);
     }
 
     public static void write(CompoundTag tag, OutputStream outputStream) throws IOException {

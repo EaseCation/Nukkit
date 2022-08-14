@@ -112,17 +112,17 @@ public final class Blocks {
         registerBlock(LAVA_CAULDRON, BlockCauldronLava.class, V1_9_0); //TODO
 
         registerBlock(LECTERN, BlockLectern.class, V1_10_0);
-        registerBlock(LOOM, BlockLoom.class, V1_10_0); //TODO: ui
+        registerBlock(LOOM, BlockLoom.class, V1_10_0);
         registerBlock(LANTERN, BlockLantern.class, V1_10_0);
         registerBlock(JIGSAW, BlockJigsaw.class, V1_10_0);
         registerBlock(WOOD, BlockWoodBark.class, V1_10_0);
 
         registerBlock(GRINDSTONE, BlockGrindstone.class, V1_11_0);
         registerBlock(BLAST_FURNACE, BlockFurnaceBlast.class, V1_11_0);
-        registerBlock(STONECUTTER_BLOCK, BlockStonecutter.class, V1_11_0); //TODO: ui
+        registerBlock(STONECUTTER_BLOCK, BlockStonecutter.class, V1_11_0);
         registerBlock(SMOKER, BlockSmoker.class, V1_11_0);
         registerBlock(LIT_SMOKER, BlockSmokerBurning.class, V1_11_0);
-        registerBlock(CARTOGRAPHY_TABLE, BlockCartographyTable.class, V1_11_0); //TODO: ui
+        registerBlock(CARTOGRAPHY_TABLE, BlockCartographyTable.class, V1_11_0);
         registerBlock(FLETCHING_TABLE, BlockFletchingTable.class, V1_11_0);
         registerBlock(SMITHING_TABLE, BlockSmithingTable.class, V1_11_0); //TODO: 1.16.0 ui
         registerBlock(BARREL, BlockBarrel.class, V1_11_0);

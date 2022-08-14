@@ -295,7 +295,7 @@ public class Level implements ChunkManager, Metadatable {
         if (convert) {
             try {
                 Path dir = Paths.get(path);
-                Path dirBak = dir.getParent().resolve(name + ".bak");
+                Path dirBak = dir.getParent().resolve(dir.getName(dir.getNameCount() - 1) + ".bak");
                 log.info("Backing up pre-conversion level to {}", dirBak);
                 File file = dirBak.toFile();
                 FileUtils.deleteDirectory(file);
@@ -324,7 +324,7 @@ public class Level implements ChunkManager, Metadatable {
         try {
             if (convert) {
                 Path dir = Paths.get(path);
-                Path dirBak = dir.getParent().resolve(name + ".bak");
+                Path dirBak = dir.getParent().resolve(dir.getName(dir.getNameCount() - 1) + ".bak");
                 log.info("Backing up pre-conversion level to {}", dirBak);
                 File file = dirBak.toFile();
                 FileUtils.deleteDirectory(file);
