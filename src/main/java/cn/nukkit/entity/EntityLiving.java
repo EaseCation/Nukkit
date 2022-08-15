@@ -47,7 +47,9 @@ public abstract class EntityLiving extends Entity implements EntityDamageable {
         return 0.02f;
     }
 
+    @Deprecated
     protected int attackTime = 0;
+    protected long nextAllowAttack = 0;  // EC优化，在低TPS时也确保正确的攻击冷却时间
 
     protected boolean invisible = false;
 
@@ -110,7 +112,7 @@ public abstract class EntityLiving extends Entity implements EntityDamageable {
 
     @Override
     public boolean attack(EntityDamageEvent source) {
-        if (this.attackTime > 0) {
+        if (System.currentTimeMillis() < this.nextAllowAttack/*this.attackTime > 0*/) {
             EntityDamageEvent lastCause = this.getLastDamageCause();
             if (lastCause != null && (lastCause.getFinalDamage() == 0 || lastCause.getCause() == DamageCause.FIRE_TICK)) {
                 //上次伤害是0，这次允许输出
@@ -151,7 +153,8 @@ public abstract class EntityLiving extends Entity implements EntityDamageable {
             pk.event = this.getHealth() <= 0 ? EntityEventPacket.DEATH_ANIMATION : EntityEventPacket.HURT_ANIMATION;
             Server.broadcastPacket(this.hasSpawned.values(), pk);
 
-            this.attackTime = source.getAttackCooldown();
+            // this.attackTime = source.getAttackCooldown();
+            this.nextAllowAttack = System.currentTimeMillis() + source.getAttackCooldown() * 50L; // EC优化，在低TPS时也确保正确的攻击冷却时间
 
             return true;
         } else {
@@ -300,9 +303,9 @@ public abstract class EntityLiving extends Entity implements EntityDamageable {
             }
         }
 
-        if (this.attackTime > 0) {
+        /*if (this.attackTime > 0) {
             this.attackTime -= tickDiff;
-        }
+        }*/
         if (this.riding == null && this.needCollidingWithRideable) {
             for (Entity entity : level.getNearbyEntities(this.boundingBox.grow(0.20000000298023224D, 0.0D, 0.20000000298023224D), this)) {
                 if (entity instanceof EntityRideable) {

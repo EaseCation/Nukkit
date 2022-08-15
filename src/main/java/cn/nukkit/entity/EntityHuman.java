@@ -233,10 +233,17 @@ public class EntityHuman extends EntityHumanType {
                 throw new IllegalStateException(this.getClass().getSimpleName() + " must have a valid skin set");
             }
 
-            if (this instanceof Player)
-                this.server.updatePlayerListData(this.getUniqueId(), this.getId(), this.getNameTag(), this.skin, ((Player) this).getLoginChainData().getXUID(), new Player[]{player});
-            else
-                this.server.updatePlayerListData(this.getUniqueId(), this.getId(), this.getNameTag(), this.skin, new Player[]{player});
+            if (!player.sentSkins.contains(this.getUniqueId())) {
+                if (this instanceof Player) {
+                    String uid = ((Player) this).getLoginChainData().getNetEaseUID();
+                    if (uid == null || uid.isEmpty()) uid = ((Player) this).getLoginChainData().getXUID();
+                    this.server.updatePlayerListData(this.getUniqueId(), this.getId(), ((Player) this).getDisplayName(), this.skin, uid, new Player[]{player});
+                } else {
+                    this.server.updatePlayerListData(this.getUniqueId(), this.getId(), this.getNameTag(), this.skin, new Player[]{player});
+                }
+
+                player.sentSkins.add(this.getUniqueId());
+            }
 
             AddPlayerPacket pk = new AddPlayerPacket();
             pk.uuid = this.getUniqueId();
@@ -268,9 +275,10 @@ public class EntityHuman extends EntityHumanType {
                 player.dataPacket(pkk);
             }
 
-            if (!(this instanceof Player)) {
+            // 不再移除皮肤，因为后续可以不再发皮肤，这样可以节省流量
+            /*if (!(this instanceof Player)) {
                 this.server.removePlayerListData(this.getUniqueId(), new Player[]{player});
-            }
+            }*/
         }
     }
 
@@ -283,7 +291,8 @@ public class EntityHuman extends EntityHumanType {
             player.dataPacket(pk);
             this.hasSpawned.remove(player.getLoaderId());
 
-            if (this instanceof Player) this.server.removePlayerListData(this.getUniqueId(), new Player[]{player});
+            // 不再移除实体皮肤，因为后续不用再发实体皮肤了
+            // if (this instanceof Player) this.server.removePlayerListData(this.getUniqueId(), new Player[]{player});
         }
     }
 

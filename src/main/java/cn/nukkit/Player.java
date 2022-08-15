@@ -102,6 +102,7 @@ import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ThreadLocalRandom;
 import java.util.concurrent.atomic.AtomicReference;
 import java.util.function.Consumer;
+import java.util.stream.Collectors;
 
 /**
  * author: MagicDroidX & Box
@@ -292,6 +293,9 @@ public class Player extends EntityHuman implements CommandSender, InventoryHolde
     protected Vector3 lastRightClickPos = null;
 
     protected boolean isNetEaseClient = false;
+
+    // EC：确保在一个服务器中，每个玩家的皮肤只发一遍
+    public final List<UUID> sentSkins = new ArrayList<>();
 
     public int getStartActionTick() {
         return startAction;
@@ -729,7 +733,7 @@ public class Player extends EntityHuman implements CommandSender, InventoryHolde
     public void setSkin(Skin skin) {
         super.setSkin(skin);
         if (this.spawned) {
-            this.server.updatePlayerListData(this.getUniqueId(), this.getId(), this.getDisplayName(), skin, this.getLoginChainData().getXUID(), this.getLevel().getPlayers().values());
+            this.server.updatePlayerListData(this.getUniqueId(), this.getId(), this.getDisplayName(), skin, this.getLoginChainData().getXUID(), this.getServer().getOnlinePlayers().values().stream().filter(p -> p.sentSkins.contains(this.getUniqueId())).collect(Collectors.toList()));
         }
     }
 
@@ -3846,6 +3850,10 @@ public class Player extends EntityHuman implements CommandSender, InventoryHolde
 
             this.removeAllWindows(true);
 
+            List<Player> needRemovePlayerListFrom = this.getServer().getOnlinePlayers().values().stream().filter(p -> p.sentSkins.contains(this.getUniqueId())).collect(Collectors.toList());
+            needRemovePlayerListFrom.forEach(p -> p.sentSkins.remove(this.getUniqueId()));
+            this.getServer().removePlayerListData(this.getUniqueId(), needRemovePlayerListFrom);
+
             for (long index : new LongArrayList(this.usedChunks.keySet())) {
                 int chunkX = Level.getHashX(index);
                 int chunkZ = Level.getHashZ(index);
@@ -4312,7 +4320,8 @@ public class Player extends EntityHuman implements CommandSender, InventoryHolde
                 //正在叠刀
                 Player damagerPlayer = (Player)((EntityDamageByEntityEvent) source).getDamager();
                 if (damagerPlayer.attackCriticalThisJump < 2) {
-                    this.attackTime = 0;
+                    this.nextAllowAttack = 0;
+                    // this.attackTime = 0;
                     source.setDamage((float) (source.getDamage() * 0.2));
                 }
                 damagerPlayer.sendPopup("叠刀 × " + damagerPlayer.attackCriticalThisJump);
