@@ -148,6 +148,11 @@ public abstract class BlockStairs extends BlockTransparentMeta implements Faceab
     }
 
     @Override
+    public boolean isSolid() {
+        return false;
+    }
+
+    @Override
     public boolean canProvideSupport(BlockFace face, SupportType type) {
         switch (face) {
             case UP:

@@ -73,6 +73,10 @@ public class EntitySnowball extends EntityProjectile {
 
     @Override
     public void spawnTo(Player player) {
+        if (this.hasSpawned.containsKey(player.getLoaderId())) {
+            return;
+        }
+
         AddEntityPacket pk = new AddEntityPacket();
         pk.type = EntitySnowball.NETWORK_ID;
         pk.entityUniqueId = this.getId();

@@ -65,10 +65,10 @@ public class BlockFence extends BlockTransparentMeta {
 
     @Override
     protected AxisAlignedBB recalculateBoundingBox() {
-        boolean north = this.canConnect(this.north());
-        boolean south = this.canConnect(this.south());
-        boolean west = this.canConnect(this.west());
-        boolean east = this.canConnect(this.east());
+        boolean north = this.canConnect(this.north(), BlockFace.SOUTH);
+        boolean south = this.canConnect(this.south(), BlockFace.NORTH);
+        boolean west = this.canConnect(this.west(), BlockFace.EAST);
+        boolean east = this.canConnect(this.east(), BlockFace.WEST);
         double n = north ? 0 : 0.375;
         double s = south ? 1 : 0.625;
         double w = west ? 0 : 0.375;
@@ -93,8 +93,8 @@ public class BlockFence extends BlockTransparentMeta {
         return 20;
     }
 
-    public boolean canConnect(Block block) {
-        return (block instanceof BlockFence || block instanceof BlockFenceGate) || block.isSolid() && !block.isTransparent();
+    public boolean canConnect(Block block, BlockFace face) {
+        return block.getId() == FENCE || block.isFenceGate() || SupportType.hasFullSupport(block, face);
     }
 
     @Override
@@ -119,6 +119,11 @@ public class BlockFence extends BlockTransparentMeta {
     @Override
     public boolean canContainWater() {
         return true;
+    }
+
+    @Override
+    public boolean isSolid() {
+        return false;
     }
 
     @Override

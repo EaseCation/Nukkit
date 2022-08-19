@@ -110,6 +110,10 @@ public class EntityEnderPearl extends EntityProjectile {
 
     @Override
     public void spawnTo(Player player) {
+        if (this.hasSpawned.containsKey(player.getLoaderId())) {
+            return;
+        }
+
         AddEntityPacket pk = new AddEntityPacket();
         pk.type = NETWORK_ID;
         pk.entityUniqueId = this.getId();
@@ -122,6 +126,7 @@ public class EntityEnderPearl extends EntityProjectile {
         pk.speedZ = (float) this.motionZ;
         pk.metadata = this.dataProperties;
         player.dataPacket(pk);
+
         super.spawnTo(player);
     }
 }

@@ -4,14 +4,13 @@ import cn.nukkit.item.Item;
 import cn.nukkit.item.ItemBlock;
 import cn.nukkit.item.ItemTool;
 import cn.nukkit.level.Level;
-import cn.nukkit.math.Vector3;
 import cn.nukkit.utils.BlockColor;
 
 /**
  * Created on 2015/12/2 by xtypr.
  * Package cn.nukkit.block in project Nukkit .
  */
-public class BlockFarmland extends BlockTransparentMeta {
+public class BlockFarmland extends BlockSolidMeta {
 
     public BlockFarmland() {
         this(0);
@@ -49,14 +48,14 @@ public class BlockFarmland extends BlockTransparentMeta {
     @Override
     public int onUpdate(int type) {
         if (type == Level.BLOCK_UPDATE_RANDOM) {
-            Vector3 v = new Vector3();
+            Block up = up();
 
-            if (this.level.getBlock(v.setComponents(x, this.y + 1, z)) instanceof BlockCrops) {
+            if (up instanceof BlockCrops) {
                 return 0;
             }
 
-            if (this.level.getBlock(v.setComponents(x, this.y + 1, z)).isSolid()) {
-                this.level.setBlock(this, Block.get(BlockID.DIRT), false, true);
+            if (up.isSolid() && !up.isTransparent()) {
+                this.level.setBlock(this, Block.get(BlockID.DIRT), true, true);
 
                 return Level.BLOCK_UPDATE_RANDOM;
             }
@@ -73,10 +72,8 @@ public class BlockFarmland extends BlockTransparentMeta {
                                 continue;
                             }
 
-                            v.setComponents(x, y, z);
-                            int block = this.level.getBlockIdAt(0, v.getFloorX(), v.getFloorY(), v.getFloorZ());
-
-                            if (block == FLOWING_WATER || block == WATER) {
+                            Block block = this.level.getBlock(x, y, z);
+                            if (block.isWater() || !block.isAir() && block.canContainWater() && level.getExtraBlock(x, y, z).isWater()) {
                                 found = true;
                                 break;
                             }
@@ -85,20 +82,19 @@ public class BlockFarmland extends BlockTransparentMeta {
                 }
             }
 
-            Block block = this.level.getBlock(v.setComponents(x, y - 1, z));
-            if (found || block instanceof BlockWater) {
+            if (found) {
                 if (this.getDamage() < 7) {
                     this.setDamage(7);
-                    this.level.setBlock(this, this, false, false);
+                    this.level.setBlock(this, this, true, false);
                 }
                 return Level.BLOCK_UPDATE_RANDOM;
             }
 
             if (this.getDamage() > 0) {
                 this.setDamage(this.getDamage() - 1);
-                this.level.setBlock(this, this, false, false);
+                this.level.setBlock(this, this, true, false);
             } else {
-                this.level.setBlock(this, Block.get(Block.DIRT), false, true);
+                this.level.setBlock(this, Block.get(Block.DIRT), true, true);
             }
 
             return Level.BLOCK_UPDATE_RANDOM;

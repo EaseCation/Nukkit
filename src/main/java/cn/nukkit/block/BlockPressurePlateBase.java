@@ -114,14 +114,16 @@ public abstract class BlockPressurePlateBase extends BlockTransparentMeta {
     @Override
     public int onUpdate(int type) {
         if (type == Level.BLOCK_UPDATE_NORMAL) {
-            if (this.down().isTransparent()) {
+            if (!SupportType.hasCenterSupport(this.down(), BlockFace.UP)) {
                 this.level.useBreakOn(this, Item.get(Item.WOODEN_PICKAXE));
+                return type;
             }
         } else if (type == Level.BLOCK_UPDATE_SCHEDULED) {
             int power = this.getRedstonePower();
 
             if (power > 0) {
                 this.updateState(power);
+                return type;
             }
         }
 
@@ -130,7 +132,7 @@ public abstract class BlockPressurePlateBase extends BlockTransparentMeta {
 
     @Override
     public boolean place(Item item, Block block, Block target, BlockFace face, double fx, double fy, double fz, Player player) {
-        if (block.down().isTransparent()) {
+        if (!SupportType.hasCenterSupport(down(), BlockFace.UP)) {
             return false;
         }
 

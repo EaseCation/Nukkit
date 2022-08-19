@@ -1,18 +1,15 @@
-package cn.nukkit.event.entity;
+package cn.nukkit.event.block;
 
 import cn.nukkit.block.Block;
-import cn.nukkit.entity.Entity;
 import cn.nukkit.event.Cancellable;
 import cn.nukkit.event.HandlerList;
-import cn.nukkit.level.Position;
 
 import java.util.List;
 
 /**
- * author: Angelic47
- * Nukkit Project
+ * Called when a block explodes.
  */
-public class EntityExplodeEvent extends EntityEvent implements Cancellable {
+public class BlockExplodeEvent extends BlockEvent implements Cancellable {
 
     private static final HandlerList handlers = new HandlerList();
 
@@ -20,39 +17,40 @@ public class EntityExplodeEvent extends EntityEvent implements Cancellable {
         return handlers;
     }
 
-    protected final Position position;
-    protected List<Block> blocks;
+    protected final List<Block> blocks;
     protected double yield;
     protected boolean fire;
 
-    public EntityExplodeEvent(Entity entity, Position position, List<Block> blocks, double yield) {
-        this(entity, position, blocks, yield, false);
-    }
-
-    public EntityExplodeEvent(Entity entity, Position position, List<Block> blocks, double yield, boolean fire) {
-        this.entity = entity;
-        this.position = position;
+    public BlockExplodeEvent(Block source, List<Block> blocks, double yield, boolean fire) {
+        super(source);
         this.blocks = blocks;
         this.yield = yield;
         this.fire = fire;
     }
 
-    public Position getPosition() {
-        return this.position;
-    }
-
+    /**
+     * Returns the list of blocks that would have been removed or were removed from the explosion event.
+     *
+     * @return all blown-up blocks
+     */
     public List<Block> getBlockList() {
         return this.blocks;
     }
 
-    public void setBlockList(List<Block> blocks) {
-        this.blocks = blocks;
-    }
-
+    /**
+     * Returns the percentage of blocks to drop from this explosion.
+     *
+     * @return the yield
+     */
     public double getYield() {
         return this.yield;
     }
 
+    /**
+     * Sets the percentage of blocks to drop from this explosion.
+     *
+     * @param yield the new yield percentage
+     */
     public void setYield(double yield) {
         this.yield = yield;
     }

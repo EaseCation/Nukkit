@@ -150,7 +150,9 @@ public class EntityFirework extends Entity {
 
     @Override
     public void spawnTo(Player player) {
-        super.spawnTo(player);
+        if (this.hasSpawned.containsKey(player.getLoaderId())) {
+            return;
+        }
 
         AddEntityPacket pk = new AddEntityPacket();
         pk.type = NETWORK_ID;
@@ -164,5 +166,7 @@ public class EntityFirework extends Entity {
         pk.speedZ = (float) this.motionZ;
         pk.metadata = this.dataProperties;
         player.dataPacket(pk);
+
+        super.spawnTo(player);
     }
 }

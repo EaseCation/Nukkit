@@ -74,7 +74,7 @@ public class BlockSnowLayer extends BlockFallable {
 
     @Override
     public boolean place(Item item, Block block, Block target, BlockFace face, double fx, double fy, double fz, Player player) {
-        if (block.isLiquid() || !block.isAir() && level.getExtraBlock(this).isWater()) {
+        if (block.isLiquid() || !block.isAir() && block.canContainWater() && level.getExtraBlock(this).isWater()) {
             return false;
         }
 
@@ -100,13 +100,13 @@ public class BlockSnowLayer extends BlockFallable {
 
     private boolean canSurvive() {
         Block below = this.down();
-        return below.getId() != ICE && below.getId() != FROSTED_ICE && (SupportType.hasFullSupport(below, BlockFace.UP) || isFull());
+        return below.getId() != ICE && below.getId() != FROSTED_ICE && SupportType.hasFullSupport(below, BlockFace.UP);
     }
 
     @Override
     public int onUpdate(int type) {
         if (type == Level.BLOCK_UPDATE_NORMAL) {
-            if ((!isFull() || this.up().getId() != SNOW_LAYER) && super.onUpdate(type) == type) {
+            if (super.onUpdate(type) == type) {
                 return type;
             }
 
@@ -223,9 +223,8 @@ public class BlockSnowLayer extends BlockFallable {
     }
 
     @Override
-    protected boolean canSlide() {
-        Block below = down();
-        return below.canContainSnow() || below.isAir() || below.isLiquid() || below instanceof BlockFire;
+    protected boolean canSlide(Block below) {
+        return below.getId() == SNOW_LAYER && (below.getDamage() & 0x7) != 0x7 || super.canSlide(below);
     }
 
     public boolean isFull() {

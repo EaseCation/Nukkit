@@ -90,7 +90,7 @@ public class BlockVine extends BlockFlowable {
         double f6 = 0;
         boolean flag = this.getDamage() > 0;
         if ((this.getDamage() & 0x02) > 0) {
-            f4 = Math.max(f4, 0.0625);
+            f4 = 0.0625;
             f1 = 0;
             f2 = 0;
             f5 = 1;
@@ -117,7 +117,7 @@ public class BlockVine extends BlockFlowable {
             flag = true;
         }
         if (!flag && this.up().isSolid()) {
-            f2 = Math.min(f2, 0.9375);
+            f2 = 0.9375;
             f5 = 1;
             f1 = 0;
             f4 = 1;
@@ -136,7 +136,7 @@ public class BlockVine extends BlockFlowable {
 
     @Override
     public boolean place(Item item, Block block, Block target, BlockFace face, double fx, double fy, double fz, Player player) {
-        if (block.getId() != VINE && target.isSolid() && face.getHorizontalIndex() != -1) {
+        if (block.getId() != VINE && target.isSolid() && face.isHorizontal()) {
             this.setDamage(getMetaFromFace(face.getOpposite()));
             this.getLevel().setBlock(block, this, true, true);
             return true;
@@ -197,7 +197,7 @@ public class BlockVine extends BlockFlowable {
                         }
                         putVineOnHorizontalFace(block, meta, this);
                     }
-                } else if (face.getHorizontalIndex() != -1 && (meta & faceMeta) != faceMeta) {
+                } else if (face.isHorizontal() && (meta & faceMeta) != faceMeta) {
                     if (this.canSpread()) {
                         if (block.getId() == AIR) {
                             BlockFace cwFace = face.rotateY();
@@ -220,7 +220,7 @@ public class BlockVine extends BlockFlowable {
                             } else if (block.up().isSolid()) {
                                 putVine(block, 0, this);
                             }
-                        } else if (!block.isTransparent()) {
+                        } else if (block.isSolid()) {
                             meta |= getMetaFromFace(face);
                             putVine(this, meta, null);
                         }

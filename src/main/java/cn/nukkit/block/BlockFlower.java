@@ -67,13 +67,11 @@ public class BlockFlower extends BlockFlowable {
 
     @Override
     public boolean place(Item item, Block block, Block target, BlockFace face, double fx, double fy, double fz, Player player) {
-        if (block.isLiquid() || !block.isAir() && level.getExtraBlock(this).isWater()) {
+        if (block.isLiquid() || !block.isAir() && block.canContainWater() && level.getExtraBlock(this).isWater()) {
             return false;
         }
 
-        Block down = this.down();
-        int id = down.getId();
-        if (id == Block.GRASS || id == Block.DIRT || id == Block.FARMLAND || id == Block.PODZOL || id == MYCELIUM) {
+        if (canSurvive()) {
             this.getLevel().setBlock(block, this, true);
 
             return true;
@@ -84,7 +82,7 @@ public class BlockFlower extends BlockFlowable {
     @Override
     public int onUpdate(int type) {
         if (type == Level.BLOCK_UPDATE_NORMAL) {
-            if (this.down().isTransparent()) {
+            if (!canSurvive()) {
                 this.getLevel().useBreakOn(this);
 
                 return Level.BLOCK_UPDATE_NORMAL;
@@ -147,5 +145,10 @@ public class BlockFlower extends BlockFlowable {
     @Override
     public boolean isVegetation() {
         return true;
+    }
+
+    private boolean canSurvive() {
+        int id = down().getId();
+        return id == Block.GRASS || id == Block.DIRT || id == Block.FARMLAND || id == Block.PODZOL || id == MYCELIUM;
     }
 }

@@ -231,9 +231,9 @@ public abstract class Entity extends Location implements Metadatable {
      * @since 1.12.0
      */
     public static final int DATA_NPC_DATA = 134;
-    public static final int DATA_UNDEFINED = 135;
+    public static final int DATA_NUKKIT_FLAGS = 135; // custom
+    public static final int DATA_UNDEFINED = 136;
 
-    public static final int DATA_NUKKIT_FLAGS = 999; // custom
     public static final long NUKKIT_FLAG_VARIANT_BLOCK = 1L << 1;
 
     public static final int DATA_FLAG_ONFIRE = 0;
@@ -2492,7 +2492,7 @@ public abstract class Entity extends Location implements Metadatable {
 
     public void setDataFlag(int propertyId, int id, boolean value, boolean send) {
         if (this.getDataFlag(propertyId, id) != value) {
-            if (propertyId == EntityHuman.DATA_PLAYER_FLAGS) {
+            if (propertyId == DATA_PLAYER_FLAGS) {
                 byte flags = (byte) this.getDataPropertyByte(propertyId);
                 flags ^= 1 << id;
                 this.setDataProperty(new ByteEntityData(propertyId, flags), send);
@@ -2506,7 +2506,7 @@ public abstract class Entity extends Location implements Metadatable {
     }
 
     public boolean getDataFlag(int propertyId, int id) {
-        return (((propertyId == EntityHuman.DATA_PLAYER_FLAGS ? this.getDataPropertyByte(propertyId) & 0xff : this.getDataPropertyLong(propertyId))) & (1L << id)) > 0;
+        return (((propertyId == DATA_PLAYER_FLAGS ? this.getDataPropertyByte(propertyId) & 0xff : this.getDataPropertyLong(propertyId))) & (1L << id)) > 0;
     }
 
     @Override

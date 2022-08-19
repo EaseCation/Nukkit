@@ -10,7 +10,6 @@ import cn.nukkit.level.generator.object.ObjectTallGrass;
 import cn.nukkit.level.particle.BoneMealParticle;
 import cn.nukkit.math.BlockFace;
 import cn.nukkit.math.NukkitRandom;
-import cn.nukkit.math.Vector3;
 import cn.nukkit.utils.BlockColor;
 
 /**
@@ -77,29 +76,27 @@ public class BlockGrass extends BlockDirt {
     @Override
     public int onUpdate(int type) {
         if (type == Level.BLOCK_UPDATE_RANDOM) {
+            Block above = up();
+            if (above.isLiquid() || !above.isTransparent() && above.isSolid() || level.getExtraBlock(above).isWater()) {
+                this.getLevel().setBlock(this, get(DIRT), true);
+                return Level.BLOCK_UPDATE_NORMAL;
+            }
+
             NukkitRandom random = new NukkitRandom();
-            x = random.nextRange((int) x - 1, (int) x + 1);
-            y = random.nextRange((int) y - 2, (int) y + 2);
-            z = random.nextRange((int) z - 1, (int) z + 1);
-            Block block = this.getLevel().getBlock(new Vector3(x, y, z));
+            int x = random.nextRange((int) this.x - 1, (int) this.x + 1);
+            int y = random.nextRange((int) this.y - 2, (int) this.y + 2);
+            int z = random.nextRange((int) this.z - 1, (int) this.z + 1);
+            Block block = this.getLevel().getBlock(x, y, z);
             if (block.getId() == Block.DIRT && block.getDamage() == 0) {
-                if (block.up().isAir()) {
+                Block up = block.up();
+                if (!up.isLiquid() && (up.isTransparent() || !up.isSolid()) && !level.getExtraBlock(up).isWater()) {
                     BlockSpreadEvent ev = new BlockSpreadEvent(block, this, Block.get(BlockID.GRASS));
                     Server.getInstance().getPluginManager().callEvent(ev);
                     if (!ev.isCancelled()) {
                         this.getLevel().setBlock(block, ev.getNewState(), true);
                     }
                 }
-             } else if (block.getId() == Block.GRASS) {
-                Block up = block.up();
-                if (up.isLiquid() || !up.isTransparent() && up.isSolid() || level.getExtraBlock(up).isWater()) {
-                    BlockSpreadEvent ev = new BlockSpreadEvent(block, this, Block.get(BlockID.DIRT));
-                    Server.getInstance().getPluginManager().callEvent(ev);
-                    if (!ev.isCancelled()) {
-                        this.getLevel().setBlock(block, ev.getNewState(), true);
-                    }
-                }   
-            }
+             }
         }
         return 0;
     }

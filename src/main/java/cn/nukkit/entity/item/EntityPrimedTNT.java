@@ -9,6 +9,7 @@ import cn.nukkit.event.entity.EntityDamageEvent.DamageCause;
 import cn.nukkit.event.entity.EntityExplosionPrimeEvent;
 import cn.nukkit.level.Explosion;
 import cn.nukkit.level.GameRule;
+import cn.nukkit.level.Level;
 import cn.nukkit.level.format.FullChunk;
 import cn.nukkit.level.particle.SmokeParticle;
 import cn.nukkit.nbt.tag.CompoundTag;
@@ -95,7 +96,6 @@ public class EntityPrimedTNT extends Entity implements EntityExplosive {
         this.getLevel().addLevelSoundEvent(this, LevelSoundEventPacket.SOUND_FIZZ);
     }
 
-
     public boolean canCollideWith(Entity entity) {
         return false;
     }
@@ -106,29 +106,25 @@ public class EntityPrimedTNT extends Entity implements EntityExplosive {
     }
 
     public boolean onUpdate(int currentTick) {
-
         if (closed) {
             return false;
         }
 
-        this.timing.startTiming();
-
         int tickDiff = currentTick - lastUpdate;
-
         if (tickDiff <= 0 && !justCreated) {
             return true;
         }
+        lastUpdate = currentTick;
+
+        this.timing.startTiming();
 
         this.setDataProperty(new IntEntityData(DATA_FUSE_LENGTH, fuse));
         this.getLevel().addParticle(new SmokeParticle(this.add(0, 1, 0)));
         this.getLevel().addLevelSoundEvent(this, LevelSoundEventPacket.SOUND_FIZZ);
 
-        lastUpdate = currentTick;
-
         boolean hasUpdate = entityBaseTick(tickDiff);
 
         if (isAlive()) {
-
             motionY -= getGravity();
 
             move(motionX, motionY, motionZ);
@@ -150,11 +146,11 @@ public class EntityPrimedTNT extends Entity implements EntityExplosive {
             fuse -= tickDiff;
 
             if (fuse <= 0) {
-                if (this.level.getGameRules().getBoolean(GameRule.TNT_EXPLODES))
+                if (this.level.getGameRules().getBoolean(GameRule.TNT_EXPLODES)) {
                     explode();
-                kill();
+                }
+                this.close();
             }
-
         }
 
         this.timing.stopTiming();
@@ -176,6 +172,10 @@ public class EntityPrimedTNT extends Entity implements EntityExplosive {
     }
 
     public void spawnTo(Player player) {
+        if (this.hasSpawned.containsKey(player.getLoaderId())) {
+            return;
+        }
+
         AddEntityPacket packet = new AddEntityPacket();
         packet.type = EntityPrimedTNT.NETWORK_ID;
         packet.entityUniqueId = this.getId();
@@ -188,6 +188,7 @@ public class EntityPrimedTNT extends Entity implements EntityExplosive {
         packet.speedZ = (float) motionZ;
         packet.metadata = dataProperties;
         player.dataPacket(packet);
+
         super.spawnTo(player);
     }
 

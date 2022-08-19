@@ -134,6 +134,11 @@ public class BlockCoralFanHang extends BlockFlowable implements Faceable {
     }
 
     @Override
+    public boolean isVegetation() {
+        return true;
+    }
+
+    @Override
     public BlockFace getBlockFace() {
         switch (getDirection()) {
             default:

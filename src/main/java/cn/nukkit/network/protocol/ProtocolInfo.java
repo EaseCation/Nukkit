@@ -14,7 +14,7 @@ public interface ProtocolInfo {
     int CURRENT_PROTOCOL = GameVersion.getFeatureVersion().getProtocol(); //plugins can change it
 
     String MINECRAFT_VERSION_NETWORK = GameVersion.getFeatureVersion().toString();
-    String MINECRAFT_VERSION = 'v' + MINECRAFT_VERSION_NETWORK;
+    String MINECRAFT_VERSION = "v" + MINECRAFT_VERSION_NETWORK;
 
     int LOGIN_PACKET = 0x01;
     int PLAY_STATUS_PACKET = 0x02;
@@ -232,7 +232,7 @@ public interface ProtocolInfo {
     int PACKET_CONFIRM_SKIN = 0xe4;
     int PACKET_TRANSPORT_NO_COMPRESS = 0xe5;
     int PACKET_MOD_EFFECT = 0xe6;
-    int PACKET_MOD_BLOCK_ACTOR_CHANGED = 0xe7;
+    int PACKET_MOD_BLOCK_ENTITY_CHANGED = 0xe7;
     int PACKET_CHANGE_ENTITY_MOTION = 0xe8;
 
     int BATCH_PACKET = 0xfe;

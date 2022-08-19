@@ -56,6 +56,8 @@ public abstract class Block extends Position implements Metadatable, Cloneable, 
      */
     public static boolean[] hasMeta = null;
 
+    public static Block[][] fullTable = null;
+
     protected Block() {}
 
     @SuppressWarnings("unchecked")
@@ -69,6 +71,8 @@ public abstract class Block extends Position implements Metadatable, Cloneable, 
             hardness = new double[BLOCK_ID_COUNT];
             transparent = new boolean[BLOCK_ID_COUNT];
             hasMeta = new boolean[BLOCK_ID_COUNT];
+
+//            fullTable = new Block[FULL_BLOCK_COUNT][]; //TODO: WIP
 
             list[AIR] = BlockAir.class; //0
             list[STONE] = BlockStone.class; //1

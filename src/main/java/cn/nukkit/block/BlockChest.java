@@ -228,6 +228,11 @@ public class BlockChest extends BlockTransparentMeta implements Faceable {
     }
 
     @Override
+    public boolean isSolid() {
+        return false;
+    }
+
+    @Override
     public boolean canProvideSupport(BlockFace face, SupportType type) {
         return false;
     }

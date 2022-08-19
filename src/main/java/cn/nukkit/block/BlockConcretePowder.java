@@ -69,7 +69,7 @@ public class BlockConcretePowder extends BlockFallable {
 
             for (int side = 1; side <= 5; side++) {
                 Block block = this.getSide(BlockFace.fromIndex(side));
-                if (block.getId() == Block.FLOWING_WATER || block.getId() == Block.WATER) {
+                if (block.isWater()) {
                     this.level.setBlock(this, Block.get(Block.CONCRETE, this.meta), true, true);
                 }
             }
@@ -85,7 +85,7 @@ public class BlockConcretePowder extends BlockFallable {
 
         for (int side = 1; side <= 5; side++) {
             Block block = this.getSide(BlockFace.fromIndex(side));
-            if (block.getId() == Block.FLOWING_WATER || block.getId() == Block.WATER) {
+            if (block.isWater()) {
                 concrete = true;
                 break;
             }

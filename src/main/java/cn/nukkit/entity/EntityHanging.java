@@ -1,7 +1,8 @@
 package cn.nukkit.entity;
 
+import cn.nukkit.event.entity.EntityDamageByEntityEvent;
+import cn.nukkit.event.entity.EntityDamageEvent;
 import cn.nukkit.level.format.FullChunk;
-import cn.nukkit.math.BlockFace;
 import cn.nukkit.nbt.tag.CompoundTag;
 
 /**
@@ -9,7 +10,8 @@ import cn.nukkit.nbt.tag.CompoundTag;
  * Nukkit Project
  */
 public abstract class EntityHanging extends Entity {
-    protected int direction;
+
+    private int checkInterval;
 
     public EntityHanging(FullChunk chunk, CompoundTag nbt) {
         super(chunk, nbt);
@@ -21,33 +23,6 @@ public abstract class EntityHanging extends Entity {
 
         this.setMaxHealth(1);
         this.setHealth(1);
-
-        if (this.namedTag.contains("Direction")) {
-            this.direction = this.namedTag.getByte("Direction");
-        } else if (this.namedTag.contains("Dir")) {
-            int d = this.namedTag.getByte("Dir");
-            if (d == 2) {
-                this.direction = 0;
-            } else if (d == 0) {
-                this.direction = 2;
-            }
-        }
-
-    }
-
-    @Override
-    public void saveNBT() {
-        super.saveNBT();
-
-        this.namedTag.putByte("Direction", this.getDirection().getHorizontalIndex());
-        this.namedTag.putInt("TileX", (int) this.x);
-        this.namedTag.putInt("TileY", (int) this.y);
-        this.namedTag.putInt("TileZ", (int) this.z);
-    }
-
-    @Override
-    public BlockFace getDirection() {
-        return BlockFace.fromIndex(this.direction);
     }
 
     @Override
@@ -56,36 +31,45 @@ public abstract class EntityHanging extends Entity {
             return false;
         }
 
+        int tickDiff = currentTick - this.lastUpdate;
+        if (tickDiff <= 0 && !this.justCreated) {
+            return true;
+        }
+        this.lastUpdate = currentTick;
+
+        this.timing.startTiming();
+
         if (!this.isAlive()) {
+            this.close();
+        } else if ((this.checkInterval += tickDiff) >= 100) {
+            this.checkInterval = 0;
 
-            this.despawnFromAll();
-            if (!this.isPlayer) {
+            if (!this.isSurfaceValid()) {
                 this.close();
+                this.dropItem(null);
             }
-
-            return true;
         }
 
-        if (this.lastYaw != this.yaw || this.lastX != this.x || this.lastY != this.y || this.lastZ != this.z) {
-            this.despawnFromAll();
-
-            this.direction = (int) (this.yaw / 90);
-
-            this.lastYaw = this.yaw;
-            this.lastX = this.x;
-            this.lastY = this.y;
-            this.lastZ = this.z;
-
-            this.spawnToAll();
-
-            return true;
-        }
-
-        return false;
-    }
-
-    protected boolean isSurfaceValid() {
+        this.timing.stopTiming();
         return true;
     }
 
+    @Override
+    public boolean attack(EntityDamageEvent source) {
+        if (!super.attack(source)) {
+            return false;
+        }
+
+        this.dropItem(source instanceof EntityDamageByEntityEvent ? ((EntityDamageByEntityEvent) source).getDamager() : null);
+        this.close();
+        return true;
+    }
+
+    @Override
+    public void updateMovement() {
+    }
+
+    protected abstract boolean isSurfaceValid();
+
+    protected abstract void dropItem(Entity entity);
 }

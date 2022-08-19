@@ -240,6 +240,11 @@ public class BlockCoralFan extends BlockFlowable {
         return 0;
     }
 
+    @Override
+    public boolean isVegetation() {
+        return true;
+    }
+
     protected boolean needCheckAlive() {
         return true;
     }

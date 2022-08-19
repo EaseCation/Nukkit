@@ -183,4 +183,8 @@ public class Location extends Position {
     public Location clone() {
         return (Location) super.clone();
     }
+
+    public final Location copyLocation() {
+        return new Location(x, y, z, yaw, pitch, level);
+    }
 }

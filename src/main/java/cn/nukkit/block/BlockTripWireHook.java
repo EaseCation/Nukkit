@@ -10,11 +10,12 @@ import cn.nukkit.math.BlockFace;
 import cn.nukkit.math.Vector3;
 import cn.nukkit.network.protocol.LevelSoundEventPacket;
 import cn.nukkit.utils.BlockColor;
+import cn.nukkit.utils.Faceable;
 
 /**
  * @author CreeperFace
  */
-public class BlockTripWireHook extends BlockTransparentMeta {
+public class BlockTripWireHook extends BlockTransparentMeta implements Faceable {
 
     public BlockTripWireHook() {
         this(0);
@@ -69,14 +70,16 @@ public class BlockTripWireHook extends BlockTransparentMeta {
         return null;
     }
 
-    public BlockFace getFacing() {
+    @Override
+    public BlockFace getBlockFace() {
         return BlockFace.fromHorizontalIndex(getDamage() & 0b11);
     }
 
     @Override
     public int onUpdate(int type) {
         if (type == Level.BLOCK_UPDATE_NORMAL) {
-            if (!this.getSide(this.getFacing().getOpposite()).isNormalBlock()) {
+            BlockFace face = getBlockFace();
+            if (!SupportType.hasFullSupport(this.getSide(face.getOpposite()), face)) {
                 this.level.useBreakOn(this);
             }
 
@@ -91,13 +94,11 @@ public class BlockTripWireHook extends BlockTransparentMeta {
 
     @Override
     public boolean place(Item item, Block block, Block target, BlockFace face, double fx, double fy, double fz, Player player) {
-        if (!this.getSide(face.getOpposite()).isNormalBlock() || face == BlockFace.DOWN || face == BlockFace.UP) {
+        if (face.isVertical() || !SupportType.hasFullSupport(this.getSide(face.getOpposite()), face)) {
             return false;
         }
 
-        if (face.getAxis().isHorizontal()) {
-            this.setFace(face);
-        }
+        this.setFace(face);
 
         this.level.setBlock(this, this, true);
 
@@ -119,7 +120,7 @@ public class BlockTripWireHook extends BlockTransparentMeta {
 
         if (powered) {
             this.level.updateAroundRedstone(this, null);
-            this.level.updateAroundRedstone(this.getSideVec(getFacing().getOpposite()), null);
+            this.level.updateAroundRedstone(this.getSideVec(getBlockFace().getOpposite()), null);
         }
 
         return true;
@@ -130,7 +131,7 @@ public class BlockTripWireHook extends BlockTransparentMeta {
             return;
         }
 
-        BlockFace facing = getFacing();
+        BlockFace facing = getBlockFace();
         boolean attached = isAttached();
         boolean powered = isPowered();
         boolean canConnect = !onBreak;
@@ -143,7 +144,7 @@ public class BlockTripWireHook extends BlockTransparentMeta {
             Block b = this.level.getBlock(vector);
 
             if (b instanceof BlockTripWireHook) {
-                if (((BlockTripWireHook) b).getFacing() == facing.getOpposite()) {
+                if (((BlockTripWireHook) b).getBlockFace() == facing.getOpposite()) {
                     distance = i;
                 }
                 break;
@@ -267,7 +268,7 @@ public class BlockTripWireHook extends BlockTransparentMeta {
 
     @Override
     public int getStrongPower(BlockFace side) {
-        return !isPowered() ? 0 : getFacing() == side ? 15 : 0;
+        return !isPowered() ? 0 : getBlockFace() == side ? 15 : 0;
     }
 
     @Override

@@ -176,6 +176,11 @@ public class BlockCoral extends BlockFlowable {
         return 0;
     }
 
+    @Override
+    public boolean isVegetation() {
+        return true;
+    }
+
     public int getCoralColor() {
         return getDamage() & COLOR_MASK;
     }
@@ -190,9 +195,5 @@ public class BlockCoral extends BlockFlowable {
 
     public void setDead(boolean dead) {
         setDamage(dead ? getDamage() | DEAD_BIT : getDamage() & ~DEAD_BIT);
-    }
-
-    protected boolean needCheckAlive() {
-        return true;
     }
 }

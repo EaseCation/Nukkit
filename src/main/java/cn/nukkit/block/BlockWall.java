@@ -83,10 +83,10 @@ public class BlockWall extends BlockTransparentMeta {
 
     @Override
     protected AxisAlignedBB recalculateBoundingBox() {
-        boolean north = this.canConnect(this.getSide(BlockFace.NORTH));
-        boolean south = this.canConnect(this.getSide(BlockFace.SOUTH));
-        boolean west = this.canConnect(this.getSide(BlockFace.WEST));
-        boolean east = this.canConnect(this.getSide(BlockFace.EAST));
+        boolean north = this.canConnect(this.getSide(BlockFace.NORTH), BlockFace.SOUTH);
+        boolean south = this.canConnect(this.getSide(BlockFace.SOUTH), BlockFace.NORTH);
+        boolean west = this.canConnect(this.getSide(BlockFace.WEST), BlockFace.EAST);
+        boolean east = this.canConnect(this.getSide(BlockFace.EAST), BlockFace.WEST);
 
         double n = north ? 0 : 0.25;
         double s = south ? 1 : 0.75;
@@ -111,8 +111,8 @@ public class BlockWall extends BlockTransparentMeta {
         );
     }
 
-    public boolean canConnect(Block block) {
-        return (!(block.getId() != COBBLESTONE_WALL && block.getId() != FENCE_GATE)) || block.isSolid() && !block.isTransparent();
+    public boolean canConnect(Block block, BlockFace face) {
+        return block instanceof BlockWall || block.isFenceGate() || SupportType.hasFullSupport(block, face);
     }
 
     @Override

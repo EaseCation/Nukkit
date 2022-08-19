@@ -1,5 +1,6 @@
 package cn.nukkit.entity.item;
 
+import cn.nukkit.Player;
 import cn.nukkit.block.Block;
 import cn.nukkit.block.BlockCampfire;
 import cn.nukkit.entity.Entity;
@@ -168,5 +169,16 @@ public class EntityPotion extends EntityProjectile {
 
         this.timing.stopTiming();
         return hasUpdate;
+    }
+
+    @Override
+    public void spawnTo(Player player) {
+        if (this.hasSpawned.containsKey(player.getLoaderId())) {
+            return;
+        }
+
+        player.dataPacket(createAddEntityPacket());
+
+        super.spawnTo(player);
     }
 }

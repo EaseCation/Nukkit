@@ -38,20 +38,8 @@ public abstract class BlockDoor extends BlockTransparentMeta implements Faceable
         return false;
     }
 
-    public int getFullDamage() {
-        int meta;
-
-        if(isTop()) {
-            meta = this.down().getDamage();
-        } else {
-            meta = this.getDamage();
-        }
-        return (this.getId() << 5 ) + (meta & 0x07 | (isTop() ? 0x08 : 0) | (isRightHinged() ? 0x10 :0));
-    }
-
     @Override
     protected AxisAlignedBB recalculateBoundingBox() {
-
         double f = 0.1875;
 
         AxisAlignedBB bb = new SimpleAxisAlignedBB(
@@ -199,7 +187,7 @@ public abstract class BlockDoor extends BlockTransparentMeta implements Faceable
     @Override
     public int onUpdate(int type) {
         if (type == Level.BLOCK_UPDATE_NORMAL) {
-            if (this.down().getId() == AIR) {
+            if (!isTop() && !SupportType.hasFullSupport(this.down(), BlockFace.UP)) {
                 Block up = this.up();
 
                 if (up instanceof BlockDoor) {
@@ -232,7 +220,7 @@ public abstract class BlockDoor extends BlockTransparentMeta implements Faceable
         if (face == BlockFace.UP) {
             Block blockUp = this.up();
             Block blockDown = this.down();
-            if (!blockUp.canBeReplaced() || blockDown.isTransparent()) {
+            if (!blockUp.canBeReplaced() || !SupportType.hasFullSupport(blockDown, BlockFace.UP)) {
                 return false;
             }
 
@@ -318,9 +306,8 @@ public abstract class BlockDoor extends BlockTransparentMeta implements Faceable
     public boolean isOpen() {
         if (isTop(this.getDamage())) {
             return (this.down().getDamage() & DOOR_OPEN_BIT) > 0;
-        }
-        else{
-            return (this.getDamage() & DOOR_OPEN_BIT) >0;
+        } else {
+            return (this.getDamage() & DOOR_OPEN_BIT) > 0;
         }
     }
     public boolean isTop() {
@@ -333,9 +320,9 @@ public abstract class BlockDoor extends BlockTransparentMeta implements Faceable
 
     public boolean isRightHinged() {
         if (isTop()) {
-            return (this.getDamage() & DOOR_HINGE_BIT ) >0;
+            return (this.getDamage() & DOOR_HINGE_BIT ) > 0;
         }
-        return (this.up().getDamage() & DOOR_HINGE_BIT) >0;
+        return (this.up().getDamage() & DOOR_HINGE_BIT) > 0;
     }
 
     @Override

@@ -21,11 +21,11 @@ public class BlockIterator implements Iterator<Block> {
     private boolean end = false;
 
     private final Block[] blockQueue;
-    private int currentBlock = 0;
+    private int currentBlock;
 
     private Block currentBlockObject = null;
     private int currentDistance;
-    private int maxDistanceInt = 0;
+    private int maxDistanceInt;
 
     private int secondError;
     private int thirdError;
@@ -36,14 +36,6 @@ public class BlockIterator implements Iterator<Block> {
     private BlockFace mainFace;
     private BlockFace secondFace;
     private BlockFace thirdFace;
-
-    public BlockIterator(Level level, Vector3 start, Vector3 direction) {
-        this(level, start, direction, 0);
-    }
-
-    public BlockIterator(Level level, Vector3 start, Vector3 direction, double yOffset) {
-        this(level, start, direction, yOffset, 0);
-    }
 
     public BlockIterator(Level level, Vector3 start, Vector3 direction, double yOffset, int maxDistance) {
         this.level = level;

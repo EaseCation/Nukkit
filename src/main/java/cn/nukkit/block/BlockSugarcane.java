@@ -4,10 +4,12 @@ import cn.nukkit.Player;
 import cn.nukkit.Server;
 import cn.nukkit.event.block.BlockGrowEvent;
 import cn.nukkit.item.Item;
+import cn.nukkit.item.ItemDye;
 import cn.nukkit.item.ItemSugarcane;
 import cn.nukkit.level.Level;
 import cn.nukkit.level.particle.BoneMealParticle;
 import cn.nukkit.math.BlockFace;
+import cn.nukkit.math.BlockFace.Plane;
 import cn.nukkit.math.Vector3;
 import cn.nukkit.utils.BlockColor;
 
@@ -46,7 +48,7 @@ public class BlockSugarcane extends BlockFlowable {
 
     @Override
     public boolean onActivate(Item item, BlockFace face, Player player) {
-        if (item.getId() == Item.DYE && item.getDamage() == 0x0F) { //Bonemeal
+        if (item.getId() == Item.DYE && item.getDamage() == ItemDye.BONE_MEAL) {
             int count = 1;
 
             for (int i = 1; i <= 2; i++) {
@@ -94,7 +96,8 @@ public class BlockSugarcane extends BlockFlowable {
     public int onUpdate(int type) {
         if (type == Level.BLOCK_UPDATE_NORMAL) {
             Block down = this.down();
-            if (down.isTransparent() && down.getId() != BLOCK_REEDS) {
+            int id = down.getId();
+            if (id != BLOCK_REEDS && !canSurvive(id)) { //TODO: check water
                 this.getLevel().useBreakOn(this);
                 return Level.BLOCK_UPDATE_NORMAL;
             }
@@ -127,7 +130,7 @@ public class BlockSugarcane extends BlockFlowable {
 
     @Override
     public boolean place(Item item, Block block, Block target, BlockFace face, double fx, double fy, double fz, Player player) {
-        if (block.isLiquid() || !block.isAir() && !level.getExtraBlock(this).isWater()) {
+        if (block.isLiquid() || !block.isAir() && block.canContainWater() && level.getExtraBlock(this).isWater()) {
             return false;
         }
 
@@ -136,12 +139,16 @@ public class BlockSugarcane extends BlockFlowable {
         if (id == BLOCK_REEDS) {
             this.getLevel().setBlock(block, Block.get(BlockID.BLOCK_REEDS), true);
             return true;
-        } else if (id == GRASS || id == DIRT || id == SAND || id == PODZOL || id == MYCELIUM) {
-            Block block0 = down.north();
-            Block block1 = down.south();
-            Block block2 = down.west();
-            Block block3 = down.east();
-            if ((block0 instanceof BlockWater) || (block1 instanceof BlockWater) || (block2 instanceof BlockWater) || (block3 instanceof BlockWater)) {
+        }
+
+        if (!canSurvive(id)) {
+            return false;
+        }
+
+        for (BlockFace side : Plane.HORIZONTAL) {
+            Block sideBlock = down.getSide(side);
+            if (sideBlock.isWaterSource() || sideBlock.getId() == FROSTED_ICE
+                    || !sideBlock.isAir() && sideBlock.canContainWater() && level.getExtraBlock(sideBlock).isWaterSource()) {
                 this.getLevel().setBlock(block, Block.get(BlockID.BLOCK_REEDS), true);
                 return true;
             }
@@ -157,5 +164,9 @@ public class BlockSugarcane extends BlockFlowable {
     @Override
     public boolean isVegetation() {
         return true;
+    }
+
+    private boolean canSurvive(int id) {
+        return id == GRASS || id == DIRT || id == SAND || id == PODZOL || id == MYCELIUM;
     }
 }

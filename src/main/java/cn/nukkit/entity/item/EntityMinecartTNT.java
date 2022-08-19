@@ -6,8 +6,12 @@ import cn.nukkit.block.BlockID;
 import cn.nukkit.entity.Entity;
 import cn.nukkit.entity.EntityExplosive;
 import cn.nukkit.entity.data.IntEntityData;
+import cn.nukkit.event.entity.EntityDamageByEntityEvent;
+import cn.nukkit.event.entity.EntityDamageEvent;
+import cn.nukkit.event.entity.EntityDamageEvent.DamageCause;
 import cn.nukkit.event.entity.EntityExplosionPrimeEvent;
 import cn.nukkit.item.Item;
+import cn.nukkit.item.enchantment.Enchantment;
 import cn.nukkit.level.Explosion;
 import cn.nukkit.level.GameRule;
 import cn.nukkit.level.format.FullChunk;
@@ -26,6 +30,7 @@ import java.util.concurrent.ThreadLocalRandom;
 public class EntityMinecartTNT extends EntityMinecartAbstract implements EntityExplosive {
 
     public static final int NETWORK_ID = 97;
+
     private int fuse;
 
     public EntityMinecartTNT(FullChunk chunk, CompoundTag nbt) {
@@ -52,12 +57,18 @@ public class EntityMinecartTNT extends EntityMinecartAbstract implements EntityE
 
     @Override
     public boolean onUpdate(int currentTick) {
+        if (this.closed) {
+            return false;
+        }
+
         this.timing.startTiming();
 
-        if (fuse < 80) {
+        if (this.isPrimed()) {
             int tickDiff = currentTick - lastUpdate;
-
-            lastUpdate = currentTick;
+            if (tickDiff <= 0) {
+                this.timing.stopTiming();
+                return false;
+            }
 
             if (fuse % 5 == 0) {
                 setDataProperty(new IntEntityData(DATA_FUSE_LENGTH, fuse));
@@ -67,53 +78,55 @@ public class EntityMinecartTNT extends EntityMinecartAbstract implements EntityE
 
             if (isAlive() && fuse <= 0) {
                 if (this.level.getGameRules().getBoolean(GameRule.TNT_EXPLODES)) {
-                    this.explode(ThreadLocalRandom.current().nextInt(5));
+                    this.explode();
+                } else {
+                    this.close();
                 }
-                this.close();
+
+                this.timing.stopTiming();
                 return false;
             }
         }
 
         this.timing.stopTiming();
-
         return super.onUpdate(currentTick);
     }
 
     @Override
     public void activate(int x, int y, int z, boolean flag) {
+        if (!this.prime()) {
+            return;
+        }
+
         level.addLevelSoundEvent(this, LevelSoundEventPacket.SOUND_IGNITE);
-        this.fuse = 79;
     }
 
     @Override
     public void explode() {
-        explode(0);
-    }
-
-    public void explode(double square) {
-        double root = Math.sqrt(square);
-
-        if (root > 5.0D) {
-            root = 5.0D;
-        }
-
-        EntityExplosionPrimeEvent event = new EntityExplosionPrimeEvent(this, (4.0D + ThreadLocalRandom.current().nextDouble() * 1.5D * root));
+        EntityExplosionPrimeEvent event = new EntityExplosionPrimeEvent(this, 3);
         server.getPluginManager().callEvent(event);
         if (event.isCancelled()) {
             return;
         }
+
+        this.close();
+
         Explosion explosion = new Explosion(this, event.getForce(), this);
         if (event.isBlockBreaking()) {
             explosion.explodeA();
         }
         explosion.explodeB();
-        this.close();
     }
 
     @Override
     public void dropItem() {
-        super.dropItem();
-        this.level.dropItem(this, Item.get(Item.TNT));
+        if (this.lastDamageCause instanceof EntityDamageByEntityEvent) {
+            Entity damager = ((EntityDamageByEntityEvent) this.lastDamageCause).getDamager();
+            if (damager instanceof Player && ((Player) damager).isCreative()) {
+                return;
+            }
+        }
+        this.level.dropItem(this, Item.get(Item.TNT_MINECART));
     }
 
     @Override
@@ -141,9 +154,12 @@ public class EntityMinecartTNT extends EntityMinecartAbstract implements EntityE
     @Override
     public boolean onInteract(Player player, Item item, Vector3 clickedPos) {
         boolean interact = super.onInteract(player, item, clickedPos);
-        if (item.getId() == Item.FLINT_AND_STEEL || item.getId() == Item.FIRE_CHARGE) {
+        if (item.getId() == Item.FLINT_AND_STEEL || item.getId() == Item.FIRE_CHARGE || item.hasEnchantment(Enchantment.ID_FIRE_ASPECT)) {
+            if (!this.prime()) {
+                return interact;
+            }
+
             level.addLevelSoundEvent(this, LevelSoundEventPacket.SOUND_IGNITE);
-            this.fuse = 79;
             return true;
         }
 
@@ -158,5 +174,49 @@ public class EntityMinecartTNT extends EntityMinecartAbstract implements EntityE
     @Override
     public String getInteractButtonText() {
         return "";
+    }
+
+    @Override
+    public boolean attack(EntityDamageEvent source) {
+        DamageCause cause = source.getCause();
+
+        if (this.isPrimed()) {
+            if (cause != DamageCause.VOID) {
+                return false;
+            }
+        } else if (cause == DamageCause.ENTITY_EXPLOSION || cause == DamageCause.BLOCK_EXPLOSION) {
+            float damage = source.getDamage();
+            float health = this.getHealth();
+            if (damage > 0) {
+                if (health - damage * 15 < 1) {
+                    source.setDamage(Math.max(0, health / 15 - 1));
+                }
+
+                this.prime(ThreadLocalRandom.current().nextInt(10, 31));
+            }
+        }
+
+        return super.attack(source);
+    }
+
+    public boolean isPrimed() {
+        return this.fuse < 80;
+    }
+
+    public boolean prime() {
+        return this.prime(79);
+    }
+
+    public boolean prime(int fuse) {
+        if (this.isPrimed()) {
+            return false;
+        }
+
+        if (!this.level.getGameRules().getBoolean(GameRule.TNT_EXPLODES)) {
+            return false;
+        }
+
+        this.fuse = fuse;
+        return true;
     }
 }

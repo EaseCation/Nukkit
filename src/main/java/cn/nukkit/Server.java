@@ -103,23 +103,21 @@ public class Server {
 
     private static Server instance = null;
 
-    private BanList banByName;
+    private final BanList banByName;
 
-    private BanList banByIP;
+    private final BanList banByIP;
 
-    private Config operators;
+    private final Config operators;
 
-    private Config whitelist;
+    private final Config whitelist;
 
-    private AtomicBoolean isRunning = new AtomicBoolean(true);
+    private final AtomicBoolean isRunning = new AtomicBoolean(true);
 
     private boolean hasStopped = false;
 
-    private PluginManager pluginManager;
+    private final PluginManager pluginManager;
 
-    private int profilingTickrate = 20;
-
-    private ServerScheduler scheduler;
+    private final ServerScheduler scheduler;
 
     private int tickCounter;
 
@@ -135,66 +133,64 @@ public class Server {
 
     private int sendUsageTicker = 0;
 
-    private boolean dispatchSignals = false;
-
     private final NukkitConsole console;
     private final ConsoleThread consoleThread;
 
-    private SimpleCommandMap commandMap;
+    private final SimpleCommandMap commandMap;
 
-    private CraftingManager craftingManager;
+    private final CraftingManager craftingManager;
 
-    private ResourcePackManager resourcePackManager;
+    private final ResourcePackManager resourcePackManager;
 
-    private ConsoleCommandSender consoleSender;
+    private final ConsoleCommandSender consoleSender;
 
     private int maxPlayers;
 
     private boolean autoSave;
 
-    private boolean redstoneEnabled = true;
+    private boolean redstoneEnabled;
 
     private RCON rcon;
 
-    private EntityMetadataStore entityMetadata;
+    private final EntityMetadataStore entityMetadata;
 
-    private PlayerMetadataStore playerMetadata;
+    private final PlayerMetadataStore playerMetadata;
 
-    private LevelMetadataStore levelMetadata;
+    private final LevelMetadataStore levelMetadata;
 
-    private Network network;
+    private final Network network;
 
-    private boolean networkCompressionAsync = true;
-    public int networkCompressionLevel = 7;
-    private int networkZlibProvider = 0;
+    private final boolean networkCompressionAsync;
+    public int networkCompressionLevel;
+    private final int networkZlibProvider;
 
-    private boolean autoTickRate = true;
-    private int autoTickRateLimit = 20;
-    private boolean alwaysTickPlayers = false;
-    private int baseTickRate = 1;
+    private final boolean autoTickRate;
+    private final int autoTickRateLimit;
+    private final boolean alwaysTickPlayers;
+    private final int baseTickRate;
     private Boolean getAllowFlight = null;
 
     private int autoSaveTicker = 0;
     private int autoSaveTicks = 6000;
 
-    private BaseLang baseLang;
+    private final BaseLang baseLang;
 
-    private boolean forceLanguage = false;
+    private final boolean forceLanguage;
 
-    private UUID serverID;
+    private final UUID serverID;
 
     private final String filePath;
     private final String dataPath;
     private final String pluginPath;
 
-    private final Set<UUID> uniquePlayers = new HashSet<>();
+//    private final Set<UUID> uniquePlayers = new ObjectOpenHashSet<>();
 
     private QueryHandler queryHandler;
 
     private QueryRegenerateEvent queryRegenerateEvent;
 
-    private Config properties;
-    private Config config;
+    private final Config properties;
+    private final Config config;
 
     private final Map<InetSocketAddress, Player> players = new ConcurrentHashMap<>();
 
@@ -206,11 +202,11 @@ public class Server {
 
     private Level defaultLevel = null;
 
-    private Thread currentThread;
+    private final Thread currentThread;
 
     private Watchdog watchdog;
 
-    private boolean enableJmxMonitoring = false;
+    private final boolean enableJmxMonitoring;
     /**
      * 过去 100 tick 的耗时 (ns). 用于 JMX Monitoring.
      */
@@ -889,7 +885,7 @@ public class Server {
 
     public void onPlayerLogin(Player player) {
         if (this.sendUsageTicker > 0) {
-            this.uniquePlayers.add(player.getUniqueId());
+//            this.uniquePlayers.add(player.getUniqueId());
         }
     }
 

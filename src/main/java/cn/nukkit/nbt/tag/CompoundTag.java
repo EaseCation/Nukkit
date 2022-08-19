@@ -2,11 +2,11 @@ package cn.nukkit.nbt.tag;
 
 import cn.nukkit.nbt.stream.NBTInputStream;
 import cn.nukkit.nbt.stream.NBTOutputStream;
+import it.unimi.dsi.fastutil.objects.Object2ObjectOpenHashMap;
 
 import java.io.IOException;
 import java.io.PrintStream;
 import java.util.Collection;
-import java.util.HashMap;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.StringJoiner;
@@ -19,7 +19,7 @@ public class CompoundTag extends Tag implements Cloneable {
     }
 
     public CompoundTag(String name) {
-        this(name, new HashMap<>());
+        this(name, new Object2ObjectOpenHashMap<>());
     }
 
     public CompoundTag(Map<String, Tag> tags) {
@@ -33,7 +33,6 @@ public class CompoundTag extends Tag implements Cloneable {
 
     @Override
     public void write(NBTOutputStream dos) throws IOException {
-
         for (Map.Entry<String, Tag> entry : this.tags.entrySet()) {
             Tag.writeNamedTag(entry.getValue(), entry.getKey(), dos);
         }
@@ -141,7 +140,6 @@ public class CompoundTag extends Tag implements Cloneable {
         return (T) tags.remove(name);
     }
 
-
     public int getByte(String name) {
         if (!tags.containsKey(name)) return (byte) 0;
         return ((NumberTag) tags.get(name)).getData().intValue();
@@ -210,7 +208,7 @@ public class CompoundTag extends Tag implements Cloneable {
     }
 
     public Map<String, Tag> getTags() {
-        return new HashMap<>(this.tags);
+        return new Object2ObjectOpenHashMap<>(this.tags);
     }
 
     public Map<String, Tag> getTagsUnsafe() {
@@ -219,7 +217,7 @@ public class CompoundTag extends Tag implements Cloneable {
 
     @Override
     public Map<String, Object> parseValue() {
-        Map<String, Object> value = new HashMap<>(this.tags.size());
+        Map<String, Object> value = new Object2ObjectOpenHashMap<>(this.tags.size());
 
         for (Entry<String, Tag> entry : this.tags.entrySet()) {
             value.put(entry.getKey(), entry.getValue().parseValue());
@@ -234,8 +232,8 @@ public class CompoundTag extends Tag implements Cloneable {
 
     public String toString() {
         StringJoiner joiner = new StringJoiner(",\n\t");
-        tags.forEach((key, tag) -> joiner.add('\'' + key + "' : " + tag.toString().replace("\n", "\n\t")));
-        return "CompoundTag '" + this.getName() + "' (" + tags.size() + " entries) {\n\t" + joiner.toString() + "\n}";
+        tags.forEach((key, tag) -> joiner.add("'" + key + "' : " + tag.toString().replace("\n", "\n\t")));
+        return "CompoundTag '" + this.getName() + "' (" + tags.size() + " entries) {\n\t" + joiner + "\n}";
     }
 
     public void print(String prefix, PrintStream out) {

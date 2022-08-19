@@ -4,6 +4,7 @@ import cn.nukkit.Player;
 import cn.nukkit.Server;
 import cn.nukkit.event.block.BlockGrowEvent;
 import cn.nukkit.item.Item;
+import cn.nukkit.item.ItemDye;
 import cn.nukkit.level.Level;
 import cn.nukkit.level.particle.BoneMealParticle;
 import cn.nukkit.math.BlockFace;
@@ -28,7 +29,7 @@ public abstract class BlockCrops extends BlockFlowable {
 
     @Override
     public boolean place(Item item, Block block, Block target, BlockFace face, double fx, double fy, double fz, Player player) {
-        if (block.isLiquid() || !block.isAir() && level.getExtraBlock(this).isWater()) {
+        if (block.isLiquid() || !block.isAir() && block.canContainWater() && level.getExtraBlock(this).isWater()) {
             return false;
         }
 
@@ -40,8 +41,7 @@ public abstract class BlockCrops extends BlockFlowable {
 
     @Override
     public boolean onActivate(Item item, BlockFace face, Player player) {
-        //Bone meal
-        if (item.getId() == Item.DYE && item.getDamage() == 0x0f) {
+        if (item.getId() == Item.DYE && item.getDamage() == ItemDye.BONE_MEAL) {
             if (this.getDamage() < 7) {
                 BlockCrops block = (BlockCrops) this.clone();
                 block.setDamage(block.getDamage() + ThreadLocalRandom.current().nextInt(3) + 2);

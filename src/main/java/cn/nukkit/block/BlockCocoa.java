@@ -124,15 +124,17 @@ public class BlockCocoa extends BlockFlowable implements Faceable {
 
     @Override
     public boolean place(Item item, Block block, Block target, BlockFace face, double fx, double fy, double fz, Player player) {
-        if (block.isLiquid() || !block.isAir() && level.getExtraBlock(this).isWater()) {
+        if (face.isVertical()) {
             return false;
         }
 
-        if (target.getId() == Block.LOG && (target.getDamage() & 0x03) == BlockWood.JUNGLE) {
-            if (face != BlockFace.DOWN && face != BlockFace.UP) {
-                this.setDamage(FACES[face.getIndex()]);
-                return level.setBlock(block, this, true);
-            }
+        if (block.isLiquid() || !block.isAir() && block.canContainWater() && level.getExtraBlock(this).isWater()) {
+            return false;
+        }
+
+        if (canBeSupportedBy(target)) {
+            this.setDamage(FACES[face.getIndex()]);
+            return level.setBlock(block, this, true);
         }
         return false;
     }
@@ -141,8 +143,7 @@ public class BlockCocoa extends BlockFlowable implements Faceable {
     public int onUpdate(int type) {
         if (type == Level.BLOCK_UPDATE_NORMAL) {
             Block side = this.getSide(BlockFace.fromIndex(FACING[this.getDamage() & 0x3]));
-
-            if (side.getId() != Block.LOG && side.getDamage() != BlockWood.JUNGLE) {
+            if (!canBeSupportedBy(side)) {
                 this.getLevel().useBreakOn(this);
                 return Level.BLOCK_UPDATE_NORMAL;
             }
@@ -175,7 +176,7 @@ public class BlockCocoa extends BlockFlowable implements Faceable {
 
     @Override
     public boolean onActivate(Item item, BlockFace face, Player player) {
-        if (item.getId() == Item.DYE && item.getDamage() == 0x0f) {
+        if (item.getId() == Item.DYE && item.getDamage() == ItemDye.BONE_MEAL) {
             Block block = this.clone();
             if (this.getDamage() / 4 < 2) {
                 block.setDamage(block.getDamage() + 4);
@@ -255,5 +256,16 @@ public class BlockCocoa extends BlockFlowable implements Faceable {
     @Override
     public boolean isVegetation() {
         return true;
+    }
+
+    private boolean canBeSupportedBy(Block block) {
+        int id = block.getId();
+        if (id == LOG) {
+            return (block.getDamage() & BlockWood.TYPE_MASK) == BlockWood.JUNGLE;
+        }
+        if (id == WOOD) {
+            return (block.getDamage() & BlockWoodBark.TYPE_MASK) == BlockWoodBark.JUNGLE;
+        }
+        return false;
     }
 }

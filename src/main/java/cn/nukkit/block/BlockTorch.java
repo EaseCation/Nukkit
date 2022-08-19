@@ -63,7 +63,7 @@ public class BlockTorch extends BlockFlowable implements Faceable {
             return false;
         }
 
-        if (block.isLava() || canBeFlowedInto() && (block.isWater() || !block.isAir() && level.getExtraBlock(this).isWater())) {
+        if (block.isLava() || canBeFlowedInto() && (block.isWater() || !block.isAir() && block.canContainWater() && level.getExtraBlock(this).isWater())) {
             return false;
         }
 

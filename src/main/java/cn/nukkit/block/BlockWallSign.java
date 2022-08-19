@@ -1,6 +1,5 @@
 package cn.nukkit.block;
 
-import cn.nukkit.item.Item;
 import cn.nukkit.level.Level;
 import cn.nukkit.math.BlockFace;
 
@@ -38,7 +37,7 @@ public class BlockWallSign extends BlockSignPost {
     public int onUpdate(int type) {
         if (type == Level.BLOCK_UPDATE_NORMAL) {
             if (this.getDamage() >= 2 && this.getDamage() <= 5) {
-                if (this.getSide(BlockFace.fromIndex(FACES[this.getDamage() - 2])).getId() == Item.AIR) {
+                if (this.getSide(BlockFace.fromIndex(FACES[this.getDamage() - 2])).canBeFlowedInto()) {
                     this.getLevel().useBreakOn(this);
                 }
                 return Level.BLOCK_UPDATE_NORMAL;

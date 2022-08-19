@@ -4,10 +4,11 @@ import cn.nukkit.Player;
 import cn.nukkit.blockentity.BlockEntity;
 import cn.nukkit.blockentity.BlockEntityBed;
 import cn.nukkit.blockentity.BlockEntityType;
-import cn.nukkit.entity.item.EntityPrimedTNT;
 import cn.nukkit.item.Item;
 import cn.nukkit.item.ItemBed;
 import cn.nukkit.lang.TranslationContainer;
+import cn.nukkit.level.Explosion;
+import cn.nukkit.level.GameRule;
 import cn.nukkit.level.Level;
 import cn.nukkit.math.BlockFace;
 import cn.nukkit.math.Vector3;
@@ -68,24 +69,20 @@ public class BlockBed extends BlockTransparentMeta implements Faceable {
 
     @Override
     public boolean onActivate(Item item, BlockFace face, Player player) {
+        if (this.level.getDimension() != Level.DIMENSION_OVERWORLD) {
+            if (!this.level.getGameRules().getBoolean(GameRule.RESPAWN_BLOCKS_EXPLODE)) {
+                return true;
+            }
+
+            Explosion explosion = new Explosion(this.add(0.5, 0.5, 0.5), 5, this, true);
+            explosion.explodeA();
+            explosion.explodeB();
+            return true;
+        }
+
         if (player != null && !player.hasEffect(Effect.WATER_BREATHING) && !player.hasEffect(Effect.CONDUIT_POWER)
                 && this.level.getExtraBlock(this).isWater()) {
             return false;
-        }
-
-        if (this.level.getDimension() == Level.DIMENSION_NETHER || this.level.getDimension() == Level.DIMENSION_THE_END) {
-            CompoundTag tag = EntityPrimedTNT.getDefaultNBT(this).putShort("Fuse", 0);
-            new EntityPrimedTNT(this.level.getChunk(this.getFloorX() >> 4, this.getFloorZ() >> 4), tag);
-            return true;
-        }
-
-        int time = this.getLevel().getTime() % Level.TIME_FULL;
-
-        boolean isNight = (time >= Level.TIME_NIGHT && time < Level.TIME_SUNRISE);
-
-        if (player != null && !isNight) {
-            player.sendMessage(new TranslationContainer("tile.bed.noSleep"));
-            return true;
         }
 
         Block blockNorth = this.north();
@@ -114,10 +111,20 @@ public class BlockBed extends BlockTransparentMeta implements Faceable {
             }
         }
 
-        if (player != null && !player.sleepOn(b)) {
-            player.sendMessage(new TranslationContainer("tile.bed.occupied"));
-        }
+        if (player != null) {
+            player.setSpawnBlockPosition(b);
 
+            int time = this.getLevel().getTime() % Level.TIME_FULL;
+            boolean isNight = (time >= Level.TIME_NIGHT && time < Level.TIME_SUNRISE);
+            if (!isNight && !this.level.isRaining()) {
+                player.sendMessage(new TranslationContainer("tile.bed.noSleep"));
+                return true;
+            }
+
+            if (!player.sleepOn(b)) {
+                player.sendMessage(new TranslationContainer("tile.bed.occupied"));
+            }
+        }
 
         return true;
     }
@@ -125,11 +132,11 @@ public class BlockBed extends BlockTransparentMeta implements Faceable {
     @Override
     public boolean place(Item item, Block block, Block target, BlockFace face, double fx, double fy, double fz, Player player) {
         Block down = this.down();
-        if (!down.isTransparent()) {
+        if (SupportType.hasFullSupport(down, BlockFace.UP)) {
             Block next = this.getSide(player.getDirection());
             Block downNext = next.down();
 
-            if (next.canBeReplaced() && !downNext.isTransparent()) {
+            if (next.canBeReplaced() && SupportType.hasFullSupport(downNext, BlockFace.UP)) {
                 int meta = player.getDirection().getHorizontalIndex();
 
                 this.getLevel().setBlock(block, Block.get(this.getId(), meta), true, true);

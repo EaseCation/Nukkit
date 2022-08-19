@@ -27,7 +27,7 @@ public class ItemGlassBottle extends Item {
 
     @Override
     public boolean onActivate(Level level, Player player, Block block, Block target, BlockFace face, double fx, double fy, double fz) {
-        if (target.getId() == FLOWING_WATER || target.getId() == WATER) {
+        if (target.isWater()) {
             Item potion = new ItemPotion();
 
             if (this.count == 1) {

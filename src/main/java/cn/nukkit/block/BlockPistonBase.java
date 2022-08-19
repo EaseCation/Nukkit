@@ -9,6 +9,7 @@ import cn.nukkit.event.block.BlockPistonEvent;
 import cn.nukkit.inventory.InventoryHolder;
 import cn.nukkit.item.Item;
 import cn.nukkit.item.ItemBlock;
+import cn.nukkit.item.ItemTool;
 import cn.nukkit.level.GlobalBlockPalette;
 import cn.nukkit.level.Level;
 import cn.nukkit.math.BlockFace;
@@ -203,7 +204,14 @@ public abstract class BlockPistonBase extends BlockTransparentMeta implements Fa
             List<Block> destroyBlocks = calculator.getBlocksToDestroy();
             for (int i = destroyBlocks.size() - 1; i >= 0; --i) {
                 Block block = destroyBlocks.get(i);
-                this.level.useBreakOn(block, null, null, false);
+                if (block.canContainWater()) {
+                    level.setExtraBlock(block, Blocks.air(), true, false);
+                } else if (block.getId() == SNOW_LAYER) {
+                    if (level.getExtraBlock(block).canContainSnow()) {
+                        level.useBreakOn(block, ItemTool.getUniversalTool());
+                    }
+                }
+                this.level.useBreakOn(block, ItemTool.getUniversalTool());
             }
 
             List<Block> newBlocks = calculator.getBlocksToMove();
@@ -213,12 +221,13 @@ public abstract class BlockPistonBase extends BlockTransparentMeta implements Fa
             BlockFace side = extending ? direction : direction.getOpposite();
 
             for (Block newBlock : newBlocks) {
-                Vector3 oldPos = newBlock.add(0);
-                newBlock.position(newBlock.add(0).getSide(side));
+                Vector3 oldPos = newBlock.copyVec();
+                newBlock.position(newBlock.getSidePos(side));
 
                 BlockEntity blockEntity = this.level.getBlockEntity(oldPos);
-                Block extra = this.level.getExtraBlock(oldPos);
+//                Block extra = this.level.getExtraBlock(oldPos);
 
+                level.setExtraBlock(newBlock, Blocks.air(), true, false);
                 this.level.setBlock(newBlock, Block.get(BlockID.MOVING_BLOCK), true);
 
                 CompoundTag movingBlockTag = new CompoundTag()
@@ -234,16 +243,18 @@ public abstract class BlockPistonBase extends BlockTransparentMeta implements Fa
                 }
 
                 CompoundTag movingBlockExtraTag = new CompoundTag()
-                        .putInt("id", extra.getId()) // only for Nukkit purpose
-                        .putInt("meta", extra.getDamage()); // only for Nukkit purpose
-                String blockExtraName = GlobalBlockPalette.getNameByBlockId(extra.getId());
-                if (blockExtraName == null) {
+//                        .putInt("id", extra.getId()) //only for nukkit purpose
+//                        .putInt("meta", extra.getDamage()) //only for nukkit purpose
+                        .putInt("id", AIR)
+                        .putInt("meta", 0);
+//                String blockExtraName = GlobalBlockPalette.getNameByBlockId(extra.getId());
+//                if (blockExtraName == null) {
                     movingBlockExtraTag.putString("name", "minecraft:air")
                             .putShort("val", 0);
-                } else {
-                    movingBlockExtraTag.putString("name", blockExtraName)
-                            .putShort("val", extra.getDamage());
-                }
+//                } else {
+//                    movingBlockExtraTag.putString("name", blockExtraName)
+//                            .putShort("val", extra.getDamage());
+//                }
 
                 CompoundTag nbt = BlockEntity.getDefaultCompound(newBlock, BlockEntity.MOVING_BLOCK)
                         .putInt("pistonPosX", this.getFloorX())
@@ -269,16 +280,19 @@ public abstract class BlockPistonBase extends BlockTransparentMeta implements Fa
                 new BlockEntityMovingBlock(this.level.getChunk(newBlock.getChunkX(), newBlock.getChunkZ()), nbt);
 
                 if (this.level.getBlockIdAt(0, oldPos.getFloorX(), oldPos.getFloorY(), oldPos.getFloorZ()) != BlockID.MOVING_BLOCK) {
+                    level.setExtraBlock(oldPos, Blocks.air(), true, false);
                     this.level.setBlock(oldPos, Block.get(BlockID.AIR), true);
                 }
             }
         }
 
         if (extending) {
+            Vector3 pos = this.getSide(direction);
+            level.setExtraBlock(pos, Blocks.air(), true, false);
             if (this.sticky && Block.list[STICKY_PISTON_ARM_COLLISION] != null) {
-                this.level.setBlock(this.getSide(direction), new BlockPistonHeadSticky(this.getDamage()), true);
+                this.level.setBlock(pos, new BlockPistonHeadSticky(this.getDamage()), true);
             } else {
-                this.level.setBlock(this.getSide(direction), new BlockPistonHead(this.getDamage()), true);
+                this.level.setBlock(pos, new BlockPistonHead(this.getDamage()), true);
             }
         }
 
@@ -540,5 +554,10 @@ public abstract class BlockPistonBase extends BlockTransparentMeta implements Fa
     @Override
     public boolean canContainWater() {
         return true;
+    }
+
+    @Override
+    public boolean isSolid() {
+        return false;
     }
 }

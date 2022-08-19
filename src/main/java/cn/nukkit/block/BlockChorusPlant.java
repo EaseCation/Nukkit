@@ -60,6 +60,11 @@ public class BlockChorusPlant extends BlockTransparent {
     }
 
     @Override
+    public boolean isSolid() {
+        return false;
+    }
+
+    @Override
     public boolean canProvideSupport(BlockFace face, SupportType type) {
         return false;
     }
@@ -71,7 +76,7 @@ public class BlockChorusPlant extends BlockTransparent {
 
     @Override
     public boolean place(Item item, Block block, Block target, BlockFace face, double fx, double fy, double fz, Player player) {
-        if (block.isLiquid() || !block.isAir() && level.getExtraBlock(this).isWater()) {
+        if (block.isLiquid() || !block.isAir() && block.canContainWater() && level.getExtraBlock(this).isWater()) {
             return false;
         }
 

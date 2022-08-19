@@ -42,7 +42,12 @@ public class EntityPufferfish extends EntityAnimal {
 
     @Override
     public void spawnTo(Player player) {
+        if (this.hasSpawned.containsKey(player.getLoaderId())) {
+            return;
+        }
+
         player.dataPacket(createAddEntityPacket());
+
         super.spawnTo(player);
     }
 }

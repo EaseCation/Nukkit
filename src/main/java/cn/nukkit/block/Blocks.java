@@ -5,10 +5,6 @@ import cn.nukkit.block.edu.*;
 
 import static cn.nukkit.GameVersion.*;
 import static cn.nukkit.block.BlockID.*;
-import static cn.nukkit.block.BlockID.JUNGLE_PRESSURE_PLATE;
-import static cn.nukkit.block.BlockID.JUNGLE_TRAPDOOR;
-import static cn.nukkit.block.BlockID.SPRUCE_PRESSURE_PLATE;
-import static cn.nukkit.block.BlockID.SPRUCE_TRAPDOOR;
 
 public final class Blocks {
 

@@ -140,7 +140,7 @@ public class BlockTripWire extends BlockTransparentMeta {
                 if (block instanceof BlockTripWireHook) {
                     BlockTripWireHook hook = (BlockTripWireHook) block;
 
-                    if (hook.getFacing() == side.getOpposite()) {
+                    if (hook.getBlockFace() == side.getOpposite()) {
                         hook.calculateState(false, true, i, this);
                     }
 

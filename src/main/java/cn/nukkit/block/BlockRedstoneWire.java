@@ -42,7 +42,7 @@ public class BlockRedstoneWire extends BlockFlowable {
 
     @Override
     public boolean place(Item item, Block block, Block target, BlockFace face, double fx, double fy, double fz, Player player) {
-        if (block.isLiquid() || !block.isAir() && level.getExtraBlock(this).isWater()) {
+        if (block.isLiquid() || !block.isAir() && block.canContainWater() && level.getExtraBlock(this).isWater()) {
             return false;
         }
 
@@ -226,8 +226,8 @@ public class BlockRedstoneWire extends BlockFlowable {
         return Level.BLOCK_UPDATE_NORMAL;
     }
 
-    public boolean canBePlacedOn(Block b) {
-        return (b.isSolid() && (!b.isTransparent() || b.getId() == Block.GLOWSTONE)) || b.getId() == BLOCK_HOPPER;
+    public boolean canBePlacedOn(Block block) {
+        return SupportType.hasFullSupport(block, BlockFace.UP);
     }
 
     public int getStrongPower(BlockFace side) {

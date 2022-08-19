@@ -201,6 +201,11 @@ public class BlockUndyedShulkerBox extends BlockTransparent {
     }
 
     @Override
+    public boolean isSolid() {
+        return false;
+    }
+
+    @Override
     public boolean canProvideSupport(BlockFace face, SupportType type) {
         return false;
     }

@@ -103,9 +103,9 @@ public class EntityXPOrb extends Entity {
     public boolean attack(EntityDamageEvent source) {
         return (source.getCause() == DamageCause.VOID ||
                 source.getCause() == DamageCause.FIRE_TICK ||
-                (source.getCause() == DamageCause.ENTITY_EXPLOSION ||
+                source.getCause() == DamageCause.ENTITY_EXPLOSION ||
                 source.getCause() == DamageCause.BLOCK_EXPLOSION) &&
-                !this.isInsideOfWater()) && super.attack(source);
+                super.attack(source);
     }
 
     @Override
@@ -235,6 +235,10 @@ public class EntityXPOrb extends Entity {
 
     @Override
     public void spawnTo(Player player) {
+        if (this.hasSpawned.containsKey(player.getLoaderId())) {
+            return;
+        }
+
         AddEntityPacket packet = new AddEntityPacket();
         packet.type = getNetworkId();
         packet.entityUniqueId = this.getId();
@@ -247,7 +251,6 @@ public class EntityXPOrb extends Entity {
         packet.speedZ = (float) this.motionZ;
         packet.metadata = new EntityMetadata();
         player.dataPacket(packet);
-        //this.sendData(player);
 
         super.spawnTo(player);
     }

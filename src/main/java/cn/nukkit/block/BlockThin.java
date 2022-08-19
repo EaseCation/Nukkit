@@ -30,10 +30,10 @@ public abstract class BlockThin extends BlockTransparent {
         double n = offNW;
         double s = offSE;
         try {
-            boolean north = this.canConnect(this.north());
-            boolean south = this.canConnect(this.south());
-            boolean west = this.canConnect(this.west());
-            boolean east = this.canConnect(this.east());
+            boolean north = this.canConnect(this.north(), BlockFace.SOUTH);
+            boolean south = this.canConnect(this.south(), BlockFace.NORTH);
+            boolean west = this.canConnect(this.west(), BlockFace.EAST);
+            boolean east = this.canConnect(this.east(), BlockFace.WEST);
             w = west ? onNW : offNW;
             e = east ? onSE : offSE;
             n = north ? onNW : offNW;
@@ -61,8 +61,8 @@ public abstract class BlockThin extends BlockTransparent {
         return false;
     }
 
-    public boolean canConnect(Block block) {
-        return block.isSolid() || block.getId() == this.getId() || block.getId() == GLASS_PANE || block.getId() == GLASS;
+    public boolean canConnect(Block block, BlockFace face) {
+        return block instanceof BlockThin || SupportType.hasFullSupport(block, face);
     }
 
 }

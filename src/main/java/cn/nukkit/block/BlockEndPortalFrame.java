@@ -121,6 +121,11 @@ public class BlockEndPortalFrame extends BlockTransparentMeta implements Faceabl
     }
 
     @Override
+    public boolean isSolid() {
+        return false;
+    }
+
+    @Override
     public boolean canProvideSupport(BlockFace face, SupportType type) {
         return false;
     }

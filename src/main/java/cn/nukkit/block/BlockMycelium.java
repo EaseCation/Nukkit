@@ -7,7 +7,6 @@ import cn.nukkit.item.ItemBlock;
 import cn.nukkit.item.ItemTool;
 import cn.nukkit.level.Level;
 import cn.nukkit.math.NukkitRandom;
-import cn.nukkit.math.Vector3;
 import cn.nukkit.utils.BlockColor;
 
 /**
@@ -53,14 +52,21 @@ public class BlockMycelium extends BlockSolid {
     @Override
     public int onUpdate(int type) {
         if (type == Level.BLOCK_UPDATE_RANDOM) {
+            Block above = up();
+            if (!above.isTransparent() && above.isSolid()) {
+                this.getLevel().setBlock(this, get(DIRT), true);
+                return Level.BLOCK_UPDATE_NORMAL;
+            }
+
             //TODO: light levels
             NukkitRandom random = new NukkitRandom();
-            x = random.nextRange((int) x - 1, (int) x + 1);
-            y = random.nextRange((int) y - 1, (int) y + 1);
-            z = random.nextRange((int) z - 1, (int) z + 1);
-            Block block = this.getLevel().getBlock(new Vector3(x, y, z));
+            int x = random.nextRange((int) this.x - 1, (int) this.x + 1);
+            int y = random.nextRange((int) this.y - 1, (int) this.y + 1);
+            int z = random.nextRange((int) this.z - 1, (int) this.z + 1);
+            Block block = this.getLevel().getBlock(x, y, z);
             if (block.getId() == Block.DIRT && block.getDamage() == 0) {
-                if (block.up().isTransparent()) {
+                Block up = block.up();
+                if ((up.isTransparent() || !up.isSolid()) && !up.isLiquid() && !level.getExtraBlock(up).isWater()) {
                     BlockSpreadEvent ev = new BlockSpreadEvent(block, this, Block.get(BlockID.MYCELIUM));
                     Server.getInstance().getPluginManager().callEvent(ev);
                     if (!ev.isCancelled()) {

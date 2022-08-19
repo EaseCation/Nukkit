@@ -52,7 +52,8 @@ public class BlockItemFrame extends BlockTransparentMeta implements Faceable {
     @Override
     public int onUpdate(int type) {
         if (type == Level.BLOCK_UPDATE_NORMAL) {
-            if (!this.getSide(getBlockFace().getOpposite()).isSolid()) {
+            Block block = getSide(getBlockFace().getOpposite());
+            if (block.canBeFlowedInto() || block instanceof BlockItemFrame) {
                 this.level.useBreakOn(this);
                 return type;
             }
@@ -91,8 +92,9 @@ public class BlockItemFrame extends BlockTransparentMeta implements Faceable {
 
     @Override
     public boolean place(Item item, Block block, Block target, BlockFace face, double fx, double fy, double fz, Player player) {
-        if (!target.isTransparent() && face.getIndex() > 1 && !block.isSolid()) {
+        if (!target.canBeFlowedInto() && !(target instanceof BlockItemFrame)) {
             if (face.isVertical()) {
+                //TODO
                 return false;
             }
 
@@ -107,7 +109,7 @@ public class BlockItemFrame extends BlockTransparentMeta implements Faceable {
                     nbt.put(aTag.getName(), aTag);
                 }
             }
-            BlockEntityItemFrame frame = (BlockEntityItemFrame) BlockEntity.createBlockEntity(BlockEntity.ITEM_FRAME, this.getLevel().getChunk((int) this.x >> 4, (int) this.z >> 4), nbt);
+            BlockEntityItemFrame frame = (BlockEntityItemFrame) BlockEntity.createBlockEntity(BlockEntity.ITEM_FRAME, getChunk(), nbt);
             if (frame == null) {
                 return false;
             }

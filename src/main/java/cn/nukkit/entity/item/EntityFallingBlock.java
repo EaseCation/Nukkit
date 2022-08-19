@@ -236,6 +236,10 @@ public class EntityFallingBlock extends Entity {
 
     @Override
     public void spawnTo(Player player) {
+        if (this.hasSpawned.containsKey(player.getLoaderId())) {
+            return;
+        }
+
         AddEntityPacket packet = new AddEntityPacket();
         packet.type = EntityFallingBlock.NETWORK_ID;
         packet.entityUniqueId = this.getId();

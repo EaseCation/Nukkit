@@ -4,6 +4,7 @@ import cn.nukkit.entity.Entity;
 import cn.nukkit.entity.item.EntityFallingBlock;
 import cn.nukkit.event.block.BlockFallEvent;
 import cn.nukkit.level.Level;
+import cn.nukkit.math.BlockFace;
 import cn.nukkit.nbt.tag.CompoundTag;
 
 /**
@@ -18,7 +19,7 @@ public abstract class BlockFallable extends BlockSolid {
     @Override
     public int onUpdate(int type) {
         if (type == Level.BLOCK_UPDATE_NORMAL) {
-            if (canSlide()) {
+            if (canSlide(down())) {
                 BlockFallEvent event = new BlockFallEvent(this);
                 this.level.getServer().getPluginManager().callEvent(event);
                 if (event.isCancelled()) {
@@ -47,8 +48,10 @@ public abstract class BlockFallable extends BlockSolid {
         return true;
     }
 
-    protected boolean canSlide() {
-        Block below = down();
-        return below.isAir() || below.isLiquid() || below instanceof BlockFire;
+    protected boolean canSlide(Block below) {
+        int id = below.getId();
+        return below.isAir() || below.isLiquid() || below instanceof BlockFire
+                || !SupportType.hasFullSupport(below, BlockFace.UP) && below.isVegetation() && !below.isLeaves()
+                && id != CACTUS && id != WATERLILY && id != CHORUS_FLOWER && id != CHORUS_PLANT && id != BAMBOO;
     }
 }

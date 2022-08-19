@@ -2,6 +2,7 @@ package cn.nukkit.block;
 
 import cn.nukkit.item.Item;
 import cn.nukkit.item.ItemTool;
+import cn.nukkit.math.BlockFace;
 import cn.nukkit.utils.BlockColor;
 
 /**
@@ -55,8 +56,8 @@ public class BlockFenceNetherBrick extends BlockFence {
     }
 
     @Override
-    public boolean canConnect(Block block) {
-        return (block instanceof BlockFenceNetherBrick || block instanceof BlockFenceGate) || block.isSolid() && !block.isTransparent();
+    public boolean canConnect(Block block, BlockFace face) {
+        return block.getId() == NETHER_BRICK_FENCE || block instanceof BlockFenceGate || SupportType.hasFullSupport(block, face);
     }
 
     @Override

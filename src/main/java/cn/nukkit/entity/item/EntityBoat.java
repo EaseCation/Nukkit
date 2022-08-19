@@ -8,6 +8,7 @@ import cn.nukkit.entity.EntityLiving;
 import cn.nukkit.entity.data.ByteEntityData;
 import cn.nukkit.entity.data.FloatEntityData;
 import cn.nukkit.entity.passive.EntityWaterAnimal;
+import cn.nukkit.event.entity.EntityDamageByEntityEvent;
 import cn.nukkit.event.entity.EntityDamageEvent;
 import cn.nukkit.event.vehicle.VehicleMoveEvent;
 import cn.nukkit.event.vehicle.VehicleUpdateEvent;
@@ -119,10 +120,14 @@ public class EntityBoat extends EntityVehicle {
 
     @Override
     public void spawnTo(Player player) {
+        if (this.hasSpawned.containsKey(player.getLoaderId())) {
+            return;
+        }
+
         AddEntityPacket pk = new AddEntityPacket();
         pk.entityUniqueId = this.getId();
         pk.entityRuntimeId = this.getId();
-        pk.type = EntityBoat.NETWORK_ID;
+        pk.type = this.getNetworkId();
         pk.x = (float) this.x;
         pk.y = (float) this.y + this.getBaseOffset();
         pk.z = (float) this.z;
@@ -426,6 +431,13 @@ public class EntityBoat extends EntityVehicle {
     @Override
     public void kill() {
         super.kill();
+
+        if (this.lastDamageCause instanceof EntityDamageByEntityEvent) {
+            Entity damager = ((EntityDamageByEntityEvent) this.lastDamageCause).getDamager();
+            if (damager instanceof Player && ((Player) damager).isCreative()) {
+                return;
+            }
+        }
 
         if (level.getGameRules().getBoolean(GameRule.DO_ENTITY_DROPS)) {
             this.dropItem();

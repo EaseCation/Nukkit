@@ -5,6 +5,7 @@ import cn.nukkit.entity.Entity;
 import cn.nukkit.entity.EntityExplosive;
 import cn.nukkit.event.entity.EntityDamageEvent;
 import cn.nukkit.level.Explosion;
+import cn.nukkit.level.GameRule;
 import cn.nukkit.level.Position;
 import cn.nukkit.level.format.FullChunk;
 import cn.nukkit.nbt.tag.CompoundTag;
@@ -71,7 +72,10 @@ public class EntityEndCrystal extends Entity implements EntityExplosive {
         Explosion explode = new Explosion(pos, 6, this);
 
         close();
+
+        if (this.level.getGameRules().getBoolean(GameRule.MOB_GRIEFING)) {
         //explode.explodeA();
+        }
         explode.explodeB();
     }
 
@@ -90,7 +94,12 @@ public class EntityEndCrystal extends Entity implements EntityExplosive {
 
     @Override
     public void spawnTo(Player player) {
+        if (this.hasSpawned.containsKey(player.getLoaderId())) {
+            return;
+        }
+
         player.dataPacket(createAddEntityPacket());
+
         super.spawnTo(player);
     }
 }

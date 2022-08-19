@@ -186,7 +186,7 @@ public class Player extends EntityHuman implements CommandSender, InventoryHolde
     protected EnchantTransaction enchantTransaction;
     protected RepairItemTransaction repairItemTransaction;
 
-    public long creationTime = 0;
+    public long creationTime;
 
     protected long randomClientId;
 
@@ -209,9 +209,9 @@ public class Player extends EntityHuman implements CommandSender, InventoryHolde
     protected long startActionTimestamp = -1;
 
     protected Vector3 sleeping = null;
-    protected Long clientID = null;
+    protected Long clientID;
 
-    private Integer loaderId = null;
+    private Integer loaderId;
 
     protected float stepHeight = 0.6f;
 
@@ -231,7 +231,8 @@ public class Player extends EntityHuman implements CommandSender, InventoryHolde
     protected int chunksPerTick;
     protected final int spawnThreshold;
 
-    protected Position spawnPosition = null;
+    protected Position spawnPosition;
+    protected Position spawnBlockPosition;
 
     protected int inAirTicks = 0;
     protected int startAirTicks = 5;
@@ -240,7 +241,7 @@ public class Player extends EntityHuman implements CommandSender, InventoryHolde
 
     protected boolean checkMovement = true;
 
-    private PermissibleBase perm = null;
+    private PermissibleBase perm;
 
     private int exp = 0;
     private int expLevel = 0;
@@ -295,7 +296,7 @@ public class Player extends EntityHuman implements CommandSender, InventoryHolde
     protected boolean isNetEaseClient = false;
 
     // EC：确保在一个服务器中，每个玩家的皮肤只发一遍
-    public final List<UUID> sentSkins = new ArrayList<>();
+    public final List<UUID> sentSkins = new ObjectArrayList<>();
 
     public int getStartActionTick() {
         return startAction;
@@ -860,10 +861,19 @@ public class Player extends EntityHuman implements CommandSender, InventoryHolde
     }
 
     public Position getSpawn() {
+        if (this.spawnBlockPosition != null && this.spawnBlockPosition.level != null && this.spawnBlockPosition.equalsVec(this.spawnPosition) && this.spawnBlockPosition.level == this.spawnPosition.level) {
+            Block block = this.spawnBlockPosition.level.getBlock(this.spawnBlockPosition);
+            if (block.getId() == Block.BLOCK_BED && (block.getDamage() & 0x8) == 0x8) {
+                return this.spawnPosition.floor().add(0.5, 0.1, 0.5);
+            } else {
+                this.setSpawnBlockPosition(null);
+            }
+        }
+
         if (this.spawnPosition != null && this.spawnPosition.getLevel() != null) {
-            return this.spawnPosition;
+            return this.spawnPosition.floor().add(0.5, 0.1, 0.5);
         } else {
-            return this.server.getDefaultLevel().getSafeSpawn();
+            return this.server.getDefaultLevel().getSafeSpawn().floor().add(0.5, 0.1, 0.5);
         }
     }
 
@@ -1216,21 +1226,25 @@ public class Player extends EntityHuman implements CommandSender, InventoryHolde
             }
         }
 
-        PlayerBedEnterEvent ev;
-        this.server.getPluginManager().callEvent(ev = new PlayerBedEnterEvent(this, this.level.getBlock(pos)));
+        PlayerBedEnterEvent ev = new PlayerBedEnterEvent(this, this.level.getBlock(pos));
+        if (this.riding != null && !this.riding.dismountEntity(this)) {
+            ev.setCancelled();
+        }
+        this.server.getPluginManager().callEvent(ev);
         if (ev.isCancelled()) {
             return false;
         }
 
         this.sleeping = pos.clone();
-        this.teleport(new Location(pos.x + 0.5, pos.y + 0.5, pos.z + 0.5, this.yaw, this.pitch, this.level), null);
 
+        this.setDataProperty(new FloatEntityData(DATA_BOUNDING_BOX_WIDTH, 0.2f));
+        this.setDataProperty(new FloatEntityData(DATA_BOUNDING_BOX_HEIGHT, 0.2f));
         this.setDataProperty(new IntPositionEntityData(DATA_PLAYER_BED_POSITION, (int) pos.x, (int) pos.y, (int) pos.z));
         this.setDataFlag(DATA_PLAYER_FLAGS, DATA_PLAYER_FLAG_SLEEP, true);
 
         this.setSpawn(pos);
 
-        this.level.sleepTicks = 60;
+        this.level.sleepTicks = 100;
 
         return true;
     }
@@ -1253,20 +1267,37 @@ public class Player extends EntityHuman implements CommandSender, InventoryHolde
         }
     }
 
+    public void setSpawnBlockPosition(Position pos) {
+        if (pos == null) {
+            if (this.spawnBlockPosition != null && this.spawnBlockPosition.level != null && this.spawnBlockPosition.equalsVec(this.spawnPosition) && this.spawnBlockPosition.level == this.spawnPosition.level) {
+                this.setSpawn(this.server.getDefaultLevel().getSafeSpawn());
+            }
+            this.spawnBlockPosition = null;
+            return;
+        }
+
+        if (pos.level == null) {
+            pos.level = this.level;
+        }
+        this.spawnBlockPosition = pos;
+        this.setSpawn(pos);
+        this.sendMessage(new TranslationContainer("tile.bed.respawnSet"));
+    }
+
     public void stopSleep() {
         if (this.sleeping != null) {
             this.server.getPluginManager().callEvent(new PlayerBedLeaveEvent(this, this.level.getBlock(this.sleeping)));
 
             this.sleeping = null;
-            this.setDataProperty(new IntPositionEntityData(DATA_PLAYER_BED_POSITION, 0, 0, 0));
             this.setDataFlag(DATA_PLAYER_FLAGS, DATA_PLAYER_FLAG_SLEEP, false);
-
+            this.setDataProperty(new FloatEntityData(DATA_BOUNDING_BOX_WIDTH, this.getWidth()));
+            this.setDataProperty(new FloatEntityData(DATA_BOUNDING_BOX_HEIGHT, this.getHeight()));
 
             this.level.sleepTicks = 0;
 
             AnimatePacket pk = new AnimatePacket();
             pk.eid = this.id;
-            pk.action = AnimatePacket.Action.WAKE_UP; //Wake up
+            pk.action = AnimatePacket.Action.WAKE_UP;
             this.dataPacket(pk);
         }
     }
@@ -1884,6 +1915,13 @@ public class Player extends EntityHuman implements CommandSender, InventoryHolde
                     if (this.getFoodData() != null) this.getFoodData().update(tickDiff);
                 }
             }
+
+            if (this.isSleeping() && spawnBlockPosition != null) {
+                Block block = this.spawnBlockPosition.level.getBlock(this.spawnBlockPosition);
+                if (block.getId() != Block.BLOCK_BED || (block.getDamage() & 0x8) != 0x8) {
+                    this.stopSleep();
+                }
+            }
         }
 
         this.checkTeleportPosition();
@@ -2162,6 +2200,12 @@ public class Player extends EntityHuman implements CommandSender, InventoryHolde
         Level level;
         if (this.spawnPosition == null && this.namedTag.contains("SpawnLevel") && (level = this.server.getLevelByName(this.namedTag.getString("SpawnLevel"))) != null) {
             this.spawnPosition = new Position(this.namedTag.getInt("SpawnX"), this.namedTag.getInt("SpawnY"), this.namedTag.getInt("SpawnZ"), level);
+        }
+        if (this.spawnBlockPosition == null && this.namedTag.contains("SpawnBlockPositionLevel")) {
+            level = this.server.getLevelByName(this.namedTag.getString("SpawnBlockPositionLevel"));
+            if (level != null) {
+                this.spawnBlockPosition = new Position(this.namedTag.getInt("SpawnBlockPositionX"), this.namedTag.getInt("SpawnBlockPositionY"), this.namedTag.getInt("SpawnBlockPositionZ"), level);
+            }
         }
 
         Position spawnPosition = this.getSpawn();
@@ -2510,7 +2554,7 @@ public class Player extends EntityHuman implements CommandSender, InventoryHolde
 
                     Item item = inv.getItem(mobEquipmentPacket.hotbarSlot);
 
-                    if (!item.equals(mobEquipmentPacket.item)) {
+                    if (!item.equals(mobEquipmentPacket.item, !(item instanceof ItemDurable))) {
                         log.debug(this.getName() + " tried to equip " + mobEquipmentPacket.item + " but have " + item + " in target slot");
                         inv.sendContents(this);
                         return;
@@ -3936,6 +3980,12 @@ public class Player extends EntityHuman implements CommandSender, InventoryHolde
                 this.namedTag.putInt("SpawnY", (int) this.spawnPosition.y);
                 this.namedTag.putInt("SpawnZ", (int) this.spawnPosition.z);
             }
+            if (this.spawnBlockPosition != null && this.spawnBlockPosition.level != null) {
+                this.namedTag.putString("SpawnBlockPositionLevel", this.spawnBlockPosition.level.getFolderName());
+                this.namedTag.putInt("SpawnBlockPositionX", this.spawnBlockPosition.getFloorX());
+                this.namedTag.putInt("SpawnBlockPositionY", this.spawnBlockPosition.getFloorY());
+                this.namedTag.putInt("SpawnBlockPositionZ", this.spawnBlockPosition.getFloorZ());
+            }
 
             /*CompoundTag achievements = new CompoundTag();
             for (String achievement : this.achievements) {
@@ -4334,6 +4384,8 @@ public class Player extends EntityHuman implements CommandSender, InventoryHolde
         }
 
         if (super.attack(source)) { //!source.isCancelled()
+            this.stopSleep();
+
             if (this.getLastDamageCause() == source && this.spawned) {
                 this.getFoodData().updateFoodExpLevel(0.3);
                 EntityEventPacket pk = new EntityEventPacket();

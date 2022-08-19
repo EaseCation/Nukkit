@@ -18,7 +18,7 @@ import cn.nukkit.utils.Faceable;
 
 import javax.annotation.Nullable;
 
-public class BlockBell extends BlockSolidMeta implements Faceable {
+public class BlockBell extends BlockTransparentMeta implements Faceable {
 
     public static final int DIRECTION_MASK = 0b11;
     public static final int DIRECTION_BITS = 2;
@@ -218,6 +218,11 @@ public class BlockBell extends BlockSolidMeta implements Faceable {
                         return new SimpleAxisAlignedBB(x, y + 4 / 16.0, z + 4 / 16.0, x + 1, y + 1, z + 1 - 4 / 16.0);
                 }
         }
+    }
+
+    @Override
+    public boolean isSolid() {
+        return false;
     }
 
     @Override

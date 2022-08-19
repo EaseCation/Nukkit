@@ -319,6 +319,10 @@ public class EntityItem extends Entity {
 
     @Override
     public void spawnTo(Player player) {
+        if (this.hasSpawned.containsKey(player.getLoaderId())) {
+            return;
+        }
+
         AddItemEntityPacket pk = new AddItemEntityPacket();
         pk.entityUniqueId = this.getId();
         pk.entityRuntimeId = this.getId();

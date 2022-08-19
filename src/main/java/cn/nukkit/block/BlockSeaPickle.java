@@ -191,6 +191,11 @@ public class BlockSeaPickle extends BlockFlowable {
         return 0;
     }
 
+    @Override
+    public boolean isVegetation() {
+        return true;
+    }
+
     private boolean canBeSupportBy(Block block) {
         int id = block.getId();
         return SupportType.hasFullSupport(block, BlockFace.UP) && id != SNOW_LAYER && id != SCAFFOLDING;

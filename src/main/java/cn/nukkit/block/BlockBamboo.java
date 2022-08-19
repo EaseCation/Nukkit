@@ -99,7 +99,7 @@ public class BlockBamboo extends BlockTransparentMeta {
 
     @Override
     public boolean place(Item item, Block block, Block target, BlockFace face, double fx, double fy, double fz, Player player) {
-        if (block.isLiquid() || level.getExtraBlock(this).isWater() || !canBeSupportedBy(down().getId())) {
+        if (block.isLiquid() || !block.isAir() && block.canContainWater() && level.getExtraBlock(this).isWater() || !canBeSupportedBy(down().getId())) {
             return false;
         }
         return level.setBlock(this, Block.get(BAMBOO_SAPLING), true);

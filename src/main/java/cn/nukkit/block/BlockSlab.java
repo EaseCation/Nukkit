@@ -96,6 +96,11 @@ public abstract class BlockSlab extends BlockTransparentMeta {
     }
 
     @Override
+    public boolean isSolid() {
+        return false;
+    }
+
+    @Override
     public boolean canProvideSupport(BlockFace face, SupportType type) {
         switch (face) {
             case UP:

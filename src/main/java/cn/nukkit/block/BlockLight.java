@@ -117,4 +117,14 @@ public class BlockLight extends BlockTransparentMeta {
     public Item toItem(boolean addUserData) {
         return Item.get(ItemID.AIR);
     }
+
+    @Override
+    public boolean isSolid() {
+        return false;
+    }
+
+    @Override
+    public boolean canProvideSupport(BlockFace face, SupportType type) {
+        return false;
+    }
 }

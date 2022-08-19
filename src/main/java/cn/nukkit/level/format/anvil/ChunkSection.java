@@ -10,6 +10,7 @@ import cn.nukkit.level.util.BitArrayVersion;
 import cn.nukkit.level.util.PalettedSubChunkStorage;
 import cn.nukkit.nbt.tag.CompoundTag;
 import cn.nukkit.utils.*;
+import lombok.extern.log4j.Log4j2;
 
 import java.io.IOException;
 import java.util.Arrays;
@@ -19,6 +20,7 @@ import java.util.function.IntFunction;
  * author: MagicDroidX
  * Nukkit Project
  */
+@Log4j2
 public class ChunkSection implements cn.nukkit.level.format.ChunkSection {
 
     private final int y;
@@ -288,7 +290,7 @@ public class ChunkSection implements cn.nukkit.level.format.ChunkSection {
                 }
             }
         } catch (IOException e) {
-            e.printStackTrace();
+            log.throwing(e);
         }
     }
 
@@ -311,17 +313,6 @@ public class ChunkSection implements cn.nukkit.level.format.ChunkSection {
     @Override
     public boolean hasLayer(int layer) {
         return layer == 0;
-    }
-
-    private byte[] toXZY(char[] raw) {
-        byte[] buffer = ThreadCache.byteCache6144.get();
-        for (int i = 0; i < 4096; i++) {
-            buffer[i] = (byte) (raw[i] >> 4);
-        }
-        for (int i = 0, j = 4096; i < 4096; i += 2, j++) {
-            buffer[j] = (byte) (((raw[i + 1] & 0xF) << 4) | (raw[i] & 0xF));
-        }
-        return buffer;
     }
 
     @Override
@@ -417,7 +408,7 @@ public class ChunkSection implements cn.nukkit.level.format.ChunkSection {
                 try {
                     compressedLight = Zlib.deflate(toDeflate, 1);
                 } catch (Exception e) {
-                    e.printStackTrace();
+                    log.throwing(e);
                 }
             }
             return true;

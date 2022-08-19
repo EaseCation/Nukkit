@@ -395,6 +395,13 @@ public class Vector3 implements Cloneable {
         return this.x == other.x && this.y == other.y && this.z == other.z;
     }
 
+    public final boolean equalsVec(Vector3 vec) {
+        if (vec == null) {
+            return false;
+        }
+        return this.x == vec.x && this.y == vec.y && this.z == vec.z;
+    }
+
     @Override
     public int hashCode() {
         return ((int) x ^ ((int) z << 12)) ^ ((int) y << 24);
@@ -411,6 +418,10 @@ public class Vector3 implements Cloneable {
         } catch (CloneNotSupportedException e) {
             return null;
         }
+    }
+
+    public final Vector3 copyVec() {
+        return new Vector3(x, y, z);
     }
 
     public Vector3f asVector3f() {

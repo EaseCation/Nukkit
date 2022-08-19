@@ -153,6 +153,11 @@ public class BlockCake extends BlockTransparentMeta {
     }
 
     @Override
+    public boolean isSolid() {
+        return false;
+    }
+
+    @Override
     public boolean canProvideSupport(BlockFace face, SupportType type) {
         return false;
     }

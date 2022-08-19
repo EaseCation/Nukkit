@@ -46,18 +46,18 @@ public class LibraryLoader {
     }
 
     public static void load(Library library) {
-        String filePath = library.getGroupId().replace('.', '/') + '/' + library.getArtifactId() + '/' + library.getVersion();
-        String fileName = library.getArtifactId() + '-' + library.getVersion() + SUFFIX;
+        String filePath = library.getGroupId().replace('.', '/') + "/" + library.getArtifactId() + "/" + library.getVersion();
+        String fileName = library.getArtifactId() + "-" + library.getVersion() + SUFFIX;
 
         File folder = new File(BASE_FOLDER, filePath);
         if (folder.mkdirs()) {
-            LOGGER.info("Created " + folder.getPath() + '.');
+            LOGGER.info("Created " + folder.getPath() + ".");
         }
 
         File file = new File(folder, fileName);
         if (!file.isFile()) try {
-            URL url = new URL("https://repo1.maven.org/maven2/" + filePath + '/' + fileName);
-            LOGGER.info("Get library from " + url + '.');
+            URL url = new URL("https://repo1.maven.org/maven2/" + filePath + "/" + fileName);
+            LOGGER.info("Get library from " + url + ".");
             Files.copy(url.openStream(), file.toPath());
             LOGGER.info("Get library " + fileName + " done!");
         } catch (IOException e) {

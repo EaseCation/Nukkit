@@ -144,6 +144,7 @@ public class Level implements ChunkManager, Metadatable {
         randomTickBlocks[Block.FIRE] = true;
         randomTickBlocks[Block.LIT_REDSTONE_ORE] = true;
         randomTickBlocks[Block.COCOA] = true;
+        randomTickBlocks[Block.VINE] = true;
         randomTickBlocks[Block.BLOCK_KELP] = true;
         randomTickBlocks[Block.TURTLE_EGG] = true;
         randomTickBlocks[Block.BAMBOO] = true;
@@ -248,9 +249,9 @@ public class Level implements ChunkManager, Metadatable {
     public int tickRateCounter = 0;
 
     private final Class<? extends Generator> generatorClass;
-    private final IterableThreadLocal<Generator> generators = new IterableThreadLocal<Generator>() {
+    private final ThreadLocal<Generator> generators = new ThreadLocal<Generator>() {
         @Override
-        public Generator init() {
+        public Generator initialValue() {
             try {
                 Generator generator = generatorClass.getConstructor(Map.class).newInstance(provider.getGeneratorOptions());
                 NukkitRandom rand = new NukkitRandom(getSeed());
@@ -260,7 +261,7 @@ public class Level implements ChunkManager, Metadatable {
                 generator.init(new PopChunkManager(getSeed()), rand);
                 return generator;
             } catch (Throwable e) {
-                e.printStackTrace();
+                log.throwing(e);
                 return null;
             }
         }
@@ -576,6 +577,9 @@ public class Level implements ChunkManager, Metadatable {
         packet.z = pos.getFloorZ();
 
         if (players == null || players.length == 0) {
+            if (this.players.isEmpty()) {
+                return;
+            }
             addChunkPacket(pos.getFloorX() >> 4, pos.getFloorZ() >> 4, packet);
         } else {
             Server.broadcastPacket(players, packet);
@@ -587,14 +591,46 @@ public class Level implements ChunkManager, Metadatable {
     }
 
     public void addLevelEvent(Vector3 pos, int event, int data) {
+        if (this.players.isEmpty()) {
+            return;
+        }
         LevelEventPacket pk = new LevelEventPacket();
         pk.evid = event;
-        pk.x = (float) pos.x;
-        pk.y = (float) pos.y;
-        pk.z = (float) pos.z;
+        if (pos != null) {
+            pk.x = (float) pos.x;
+            pk.y = (float) pos.y;
+            pk.z = (float) pos.z;
+        }
         pk.data = data;
 
-        addChunkPacket(pos.getFloorX() >> 4, pos.getFloorZ() >> 4, pk);
+        if (pos == null) {
+            Server.broadcastPacket(this.players.values(), pk);
+        } else {
+            this.addChunkPacket(pos.getChunkX(), pos.getChunkZ(), pk);
+        }
+    }
+
+    public void addLevelEvent(int event, int data) {
+        this.addLevelEvent(null, event, data);
+    }
+
+    public void addLevelEvent(int event, CompoundTag data) {
+        this.addLevelEvent(null, event, data);
+    }
+
+    public void addLevelEvent(Vector3 pos, int event, CompoundTag data) {
+        if (this.players.isEmpty()) {
+            return;
+        }
+        LevelEventGenericPacket pk = new LevelEventGenericPacket();
+        pk.eventId = event;
+        pk.tag = data;
+
+        if (pos == null) {
+            Server.broadcastPacket(this.players.values(), pk);
+        } else {
+            this.addChunkPacket(pos.getChunkX(), pos.getChunkZ(), pk);
+        }
     }
 
     public void addLevelSoundEvent(int type, int pitch, int data, Vector3 pos) {
@@ -602,6 +638,9 @@ public class Level implements ChunkManager, Metadatable {
     }
 
     public void addLevelSoundEvent(int type, int pitch, int data, Vector3 pos, boolean isGlobal) {
+        if (this.players.isEmpty()) {
+            return;
+        }
         LevelSoundEventPacket pk = new LevelSoundEventPacket();
         pk.sound = type;
         pk.pitch = pitch;
@@ -686,7 +725,10 @@ public class Level implements ChunkManager, Metadatable {
     public void addParticle(Particle particle, Player[] players) {
         DataPacket[] packets = particle.encode();
 
-        if (players == null) {
+        if (players == null || players.length == 0) {
+            if (this.players.isEmpty()) {
+                return;
+            }
             if (packets != null) {
                 for (DataPacket packet : packets) {
                     this.addChunkPacket((int) particle.x >> 4, (int) particle.z >> 4, packet);
@@ -735,6 +777,9 @@ public class Level implements ChunkManager, Metadatable {
         pk.position = pos;
 
         if (players == null || players.length == 0) {
+            if (this.players.isEmpty()) {
+                return;
+            }
             addChunkPacket(pos.getFloorX() >> 4, pos.getFloorZ() >> 4, pk);
         } else {
             Server.broadcastPacket(players, pk);
@@ -1067,12 +1112,11 @@ public class Level implements ChunkManager, Metadatable {
     private void performThunder(long index, FullChunk chunk) {
         if (areNeighboringChunksLoaded(index)) return;
         if (ThreadLocalRandom.current().nextInt(10000) == 0) {
-            this.updateLCG = this.updateLCG * 3 + 1013904223;
-            int LCG = this.updateLCG >> 2;
+            int LCG = this.getUpdateLCG() >> 2;
 
             int chunkX = chunk.getX() * 16;
             int chunkZ = chunk.getZ() * 16;
-            Vector3 vector = this.adjustPosToNearbyEntity(new Vector3(chunkX + (LCG & 15), 0, chunkZ + (LCG >> 8 & 15)));
+            Vector3 vector = this.adjustPosToNearbyEntity(new Vector3(chunkX + (LCG & 0xf), 0, chunkZ + (LCG >> 8 & 0xf)));
 
             Biome biome = Biome.getBiome(this.getBiomeId(vector.getFloorX(), vector.getFloorZ()));
             if (!biome.canRain()) {
@@ -1140,14 +1184,19 @@ public class Level implements ChunkManager, Metadatable {
         }
 
         if (resetTime) {
-            int time = this.getTime() % Level.TIME_FULL;
-
-            if (isNight()) {
-                this.setTime(this.getTime() + Level.TIME_FULL - time);
-
-                for (Player p : this.getPlayers().values()) {
-                    p.stopSleep();
+            if (this.gameRules.getBoolean(GameRule.DO_DAYLIGHT_CYCLE)) {
+                int time = this.getTime() % Level.TIME_FULL;
+                if (time >= Level.TIME_NIGHT && time < Level.TIME_SUNRISE) {
+                    this.setTime(this.getTime() + Level.TIME_FULL - time);
                 }
+            }
+
+            if (this.isRaining()) {
+                this.setRaining(false);
+            }
+
+            for (Player p : this.getPlayers().values()) {
+                p.stopSleep();
             }
         }
     }
@@ -1295,18 +1344,17 @@ public class Level implements ChunkManager, Metadatable {
                 int tickSpeed = gameRules.getInteger(GameRule.RANDOM_TICK_SPEED);
 
                 if (tickSpeed > 0) {
-                    if (tickSpeed > 1) tickSpeed = 1; // 性能优化, 静态地图(如大厅)设置为 0 可以关闭随机刻
+                    //TODO: 高负载时自动降低随机刻速度
 
                     if (this.useSections) {
                         for (ChunkSection section : ((Chunk) chunk).getSections()) {
                             if (!(section instanceof EmptyChunkSection)) {
                                 int Y = section.getY();
-                                this.updateLCG = this.updateLCG * 3 + 1013904223;
-                                int k = this.updateLCG >> 2;
-                                for (int i = 0; i < tickSpeed; ++i, k >>= 10) {
-                                    int x = k & 0x0f;
-                                    int y = k >> 8 & 0x0f;
-                                    int z = k >> 16 & 0x0f;
+                                for (int i = 0; i < tickSpeed; ++i) {
+                                    int lcg = this.getUpdateLCG();
+                                    int x = lcg & 0x0f;
+                                    int y = lcg >>> 8 & 0x0f;
+                                    int z = lcg >>> 16 & 0x0f;
 
                                     int fullId = section.getFullBlock(0, x, y, z);
                                     int blockId = fullId >> Block.BLOCK_META_BITS;
@@ -1320,12 +1368,11 @@ public class Level implements ChunkManager, Metadatable {
                     } else {
                         for (int Y = 0; Y < 8 && (Y < 3 || blockTest != 0); ++Y) {
                             blockTest = 0;
-                            this.updateLCG = this.updateLCG * 3 + 1013904223;
-                            int k = this.updateLCG >> 2;
-                            for (int i = 0; i < tickSpeed; ++i, k >>= 10) {
-                                int x = k & 0x0f;
-                                int y = k >> 8 & 0x0f;
-                                int z = k >> 16 & 0x0f;
+                            for (int i = 0; i < tickSpeed; ++i) {
+                                int lcg = this.getUpdateLCG();
+                                int x = lcg & 0x0f;
+                                int y = lcg >>> 8 & 0x0f;
+                                int z = lcg >>> 16 & 0x0f;
 
                                 int fullId = chunk.getFullBlock(0, x, y + (Y << 4), z) & Block.FULL_BLOCK_MASK;
                                 int blockId = fullId >> Block.BLOCK_META_BITS;

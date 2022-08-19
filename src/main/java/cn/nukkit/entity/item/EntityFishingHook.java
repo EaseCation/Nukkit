@@ -278,6 +278,10 @@ public class EntityFishingHook extends EntityProjectile {
 
     @Override
     public void spawnTo(Player player) {
+        if (this.hasSpawned.containsKey(player.getLoaderId())) {
+            return;
+        }
+
         AddEntityPacket pk = new AddEntityPacket();
         pk.entityRuntimeId = this.getId();
         pk.entityUniqueId = this.getId();
@@ -291,9 +295,9 @@ public class EntityFishingHook extends EntityProjectile {
         pk.yaw = (float) this.yaw;
         pk.headYaw = (float) this.yaw;
         pk.pitch = (float) this.pitch;
-
         pk.metadata = this.dataProperties;
         player.dataPacket(pk);
+
         super.spawnTo(player);
     }
 

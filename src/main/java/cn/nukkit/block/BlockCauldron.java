@@ -18,7 +18,7 @@ import java.util.Map;
  * author: CreeperFace
  * Nukkit Project
  */
-public class BlockCauldron extends BlockSolidMeta {
+public class BlockCauldron extends BlockTransparentMeta {
 
     public BlockCauldron() {
         this(0);
@@ -255,6 +255,11 @@ public class BlockCauldron extends BlockSolidMeta {
 
     @Override
     public boolean canHarvestWithHand() {
+        return false;
+    }
+
+    @Override
+    public boolean isSolid() {
         return false;
     }
 

@@ -72,19 +72,27 @@ public class BlockSignPost extends BlockTransparentMeta implements Faceable {
     @Override
     public boolean place(Item item, Block block, Block target, BlockFace face, double fx, double fy, double fz, Player player) {
         if (face != BlockFace.DOWN) {
+            if (face == BlockFace.UP) {
+                if (down().canBeFlowedInto()) {
+                    return false;
+                }
+
+                setDamage(Mth.floor(((player.yaw + 180) * 16 / 360) + 0.5) & 0x0f);
+                getLevel().setBlock(block, Block.get(getStandingBlockId(), getDamage()), true);
+            } else {
+                if (getSide(face.getOpposite()).canBeFlowedInto()) {
+                    return false;
+                }
+
+                setDamage(face.getIndex());
+                getLevel().setBlock(block, Block.get(getWallBlockId(), getDamage()), true);
+            }
+
             CompoundTag nbt = BlockEntity.getDefaultCompound(this, BlockEntity.SIGN)
                     .putString("Text1", "")
                     .putString("Text2", "")
                     .putString("Text3", "")
                     .putString("Text4", "");
-
-            if (face == BlockFace.UP) {
-                setDamage(Mth.floor(((player.yaw + 180) * 16 / 360) + 0.5) & 0x0f);
-                getLevel().setBlock(block, Block.get(getStandingBlockId(), getDamage()), true);
-            } else {
-                setDamage(face.getIndex());
-                getLevel().setBlock(block, Block.get(getWallBlockId(), getDamage()), true);
-            }
 
             if (player != null) {
                 nbt.putString("Creator", player.getUniqueId().toString());
@@ -96,7 +104,7 @@ public class BlockSignPost extends BlockTransparentMeta implements Faceable {
                 }
             }
 
-            BlockEntitySign sign = (BlockEntitySign) BlockEntity.createBlockEntity(BlockEntity.SIGN, getLevel().getChunk((int) block.x >> 4, (int) block.z >> 4), nbt);
+            BlockEntitySign sign = (BlockEntitySign) BlockEntity.createBlockEntity(BlockEntity.SIGN, getChunk(), nbt);
             return sign != null;
         }
 

@@ -72,8 +72,7 @@ public class BlockRail extends BlockFlowable implements Faceable {
     public int onUpdate(int type) {
         if (type == Level.BLOCK_UPDATE_NORMAL) {
             Optional<BlockFace> ascendingDirection = this.getOrientation().ascendingDirection();
-            Block down = this.down();
-            if ((down.isTransparent() && down.getId() != BLOCK_HOPPER) || (ascendingDirection.isPresent() && this.getSide(ascendingDirection.get()).isTransparent())) {
+            if (!canSurvive() || (ascendingDirection.isPresent() && !SupportType.hasFullSupport(this.getSide(ascendingDirection.get()), UP))) {
                 this.getLevel().useBreakOn(this);
                 return Level.BLOCK_UPDATE_NORMAL;
             }
@@ -99,8 +98,7 @@ public class BlockRail extends BlockFlowable implements Faceable {
     //Information from http://minecraft.gamepedia.com/Rail
     @Override
     public boolean place(Item item, Block block, Block target, BlockFace face, double fx, double fy, double fz, Player player) {
-        Block down = this.down();
-        if (down == null || (down.isTransparent() && down.getId() != BLOCK_HOPPER)) {
+        if (!canSurvive()) {
             return false;
         }
 
@@ -298,5 +296,9 @@ public class BlockRail extends BlockFlowable implements Faceable {
     @Override
     public boolean isRail() {
         return true;
+    }
+
+    private boolean canSurvive() {
+        return SupportType.hasFullSupport(down(), UP);
     }
 }

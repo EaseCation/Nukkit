@@ -75,9 +75,17 @@ public class BlockBanner extends BlockTransparentMeta implements Faceable {
     public boolean place(Item item, Block block, Block target, BlockFace face, double fx, double fy, double fz, Player player) {
         if (face != BlockFace.DOWN) {
             if (face == BlockFace.UP) {
+                if (down().canBeFlowedInto()) {
+                    return false;
+                }
+
                 this.setDamage(Mth.floor(((player.yaw + 180) * 16 / 360) + 0.5) & 0x0f);
                 this.getLevel().setBlock(block, this, true);
             } else {
+                if (getSide(face.getOpposite()).canBeFlowedInto()) {
+                    return false;
+                }
+
                 this.setDamage(face.getIndex());
                 this.getLevel().setBlock(block, Block.get(BlockID.WALL_BANNER, this.getDamage()), true);
             }

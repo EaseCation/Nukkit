@@ -3,19 +3,21 @@ package cn.nukkit.blockentity;
 import cn.nukkit.Player;
 import cn.nukkit.block.Block;
 import cn.nukkit.block.BlockID;
+import cn.nukkit.block.Blocks;
 import cn.nukkit.entity.Entity;
 import cn.nukkit.level.format.FullChunk;
 import cn.nukkit.math.AxisAlignedBB;
 import cn.nukkit.math.BlockFace;
 import cn.nukkit.math.BlockVector3;
 import cn.nukkit.math.SimpleAxisAlignedBB;
+import cn.nukkit.math.Vector3;
 import cn.nukkit.nbt.tag.CompoundTag;
 import cn.nukkit.nbt.tag.IntTag;
 import cn.nukkit.nbt.tag.ListTag;
 import cn.nukkit.network.protocol.BlockEntityDataPacket;
 import cn.nukkit.utils.Faceable;
+import it.unimi.dsi.fastutil.objects.ObjectArrayList;
 
-import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -68,7 +70,7 @@ public class BlockEntityPistonArm extends BlockEntitySpawnable {
             this.facing = BlockFace.NORTH;
         }
 
-        attachedBlocks = new ArrayList<>();
+        attachedBlocks = new ObjectArrayList<>();
 
         if (namedTag.contains("AttachedBlocks")) {
             ListTag<IntTag> blocks = namedTag.getList("AttachedBlocks", IntTag.class);
@@ -188,13 +190,15 @@ public class BlockEntityPistonArm extends BlockEntitySpawnable {
                         BlockEntity.createBlockEntity(movedBlockEntity.getString("id"), this.level.getChunk(movingBlock.getChunkX(), movingBlock.getChunkZ()), movedBlockEntity);
                     }
 
+                    this.level.setExtraBlock(movingBlock, movedExtra, true, false);
                     this.level.setBlock(movingBlock, moved, true);
-                    this.level.setExtraBlock(movingBlock, movedExtra, true);
                 }
             }
 
-            if (!extending && this.level.getBlock(getSide(facing)).getId() == BlockID.PISTON_ARM_COLLISION) {
-                this.level.setBlock(getSide(facing), Block.get(Block.AIR), true);
+            Vector3 pos = getSide(facing);
+            if (!extending && this.level.getBlock(pos).getId() == BlockID.PISTON_ARM_COLLISION) {
+                this.level.setExtraBlock(pos, Blocks.air(), true, false);
+                this.level.setBlock(pos, Block.get(Block.AIR), true);
                 this.movable = true;
             }
 
@@ -228,6 +232,7 @@ public class BlockEntityPistonArm extends BlockEntitySpawnable {
         this.namedTag.putBoolean("powered", this.powered);
         this.namedTag.putList(getAttachedBlocks());
         this.namedTag.putInt("facing", this.facing.getIndex());
+        this.namedTag.putBoolean("Sticky", this.sticky);
     }
 
     public CompoundTag getSpawnCompound() {

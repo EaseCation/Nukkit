@@ -4,6 +4,7 @@ import cn.nukkit.Player;
 import cn.nukkit.entity.Entity;
 import cn.nukkit.item.Item;
 import cn.nukkit.item.enchantment.Enchantment;
+import cn.nukkit.level.GameRule;
 import cn.nukkit.level.Level;
 import cn.nukkit.math.BlockFace;
 import cn.nukkit.math.Mth;
@@ -76,6 +77,11 @@ public class BlockTNT extends BlockSolidMeta {
 
     public void prime(int fuse, Entity source) {
         this.getLevel().setBlock(this, Block.get(BlockID.AIR), true);
+
+        if (!this.level.getGameRules().getBoolean(GameRule.TNT_EXPLODES)) {
+            return;
+        }
+
         double mot = (new NukkitRandom()).nextSignedFloat() * Math.PI * 2;
         CompoundTag nbt = new CompoundTag()
                 .putList(new ListTag<DoubleTag>("Pos")
@@ -94,7 +100,7 @@ public class BlockTNT extends BlockSolidMeta {
                 this.getLevel().getChunk(this.getFloorX() >> 4, this.getFloorZ() >> 4),
                 nbt, source
         );
-        if(tnt == null) {
+        if (tnt == null) {
             return;
         }
         tnt.spawnToAll();
@@ -116,6 +122,10 @@ public class BlockTNT extends BlockSolidMeta {
 
     @Override
     public boolean onActivate(Item item, BlockFace face, Player player) {
+        if (!this.level.getGameRules().getBoolean(GameRule.TNT_EXPLODES)) {
+            return false;
+        }
+
         if (item.getId() == Item.FLINT_AND_STEEL) {
             if (player != null && !player.isCreative()) {
                 item.useOn(this);

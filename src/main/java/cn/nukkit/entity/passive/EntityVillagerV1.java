@@ -1,5 +1,6 @@
 package cn.nukkit.entity.passive;
 
+import cn.nukkit.Player;
 import cn.nukkit.entity.Entity;
 import cn.nukkit.entity.EntityAgeable;
 import cn.nukkit.entity.EntityCreature;
@@ -70,5 +71,16 @@ public class EntityVillagerV1 extends EntityCreature implements EntityNPC, Entit
     @Override
     public boolean isBaby() {
         return this.getDataFlag(DATA_FLAGS, Entity.DATA_FLAG_BABY);
+    }
+
+    @Override
+    public void spawnTo(Player player) {
+        if (this.hasSpawned.containsKey(player.getLoaderId())) {
+            return;
+        }
+
+        player.dataPacket(createAddEntityPacket());
+
+        super.spawnTo(player);
     }
 }

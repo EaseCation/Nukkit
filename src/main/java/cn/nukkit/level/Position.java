@@ -87,6 +87,14 @@ public class Position extends Vector3 {
         return Position.fromObject(super.getSide(face, step), this.level);
     }
 
+    public final Position getSidePos(BlockFace face) {
+        return new Position(this.getX() + face.getXOffset(), this.getY() + face.getYOffset(), this.getZ() + face.getZOffset(), this.level);
+    }
+
+    public final Position getSidePos(BlockFace face, int step) {
+        return new Position(this.getX() + face.getXOffset() * step, this.getY() + face.getYOffset() * step, this.getZ() + face.getZOffset() * step, this.level);
+    }
+
     @Override
     public String toString() {
         return "Position(level=" + (this.isValid() ? this.getLevel().getName() : "null") + ",x=" + this.x + ",y=" + this.y + ",z=" + this.z + ")";
@@ -188,6 +196,10 @@ public class Position extends Vector3 {
     @Override
     public Position clone() {
         return (Position) super.clone();
+    }
+
+    public final Position copyPos() {
+        return new Position(x, y, z, level);
     }
 
     public FullChunk getChunk() {

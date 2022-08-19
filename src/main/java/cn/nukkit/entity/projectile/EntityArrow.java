@@ -131,6 +131,10 @@ public class EntityArrow extends EntityProjectile {
 
     @Override
     public void spawnTo(Player player) {
+        if (this.hasSpawned.containsKey(player.getLoaderId())) {
+            return;
+        }
+
         AddEntityPacket pk = new AddEntityPacket();
         pk.type = EntityArrow.NETWORK_ID;
         pk.entityUniqueId = this.getId();
