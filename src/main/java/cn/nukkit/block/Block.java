@@ -1,6 +1,7 @@
 package cn.nukkit.block;
 
 import cn.nukkit.Player;
+import cn.nukkit.Server;
 import cn.nukkit.entity.Entity;
 import cn.nukkit.item.Item;
 import cn.nukkit.item.ItemBlock;
@@ -18,14 +19,22 @@ import cn.nukkit.metadata.Metadatable;
 import cn.nukkit.plugin.Plugin;
 import cn.nukkit.potion.Effect;
 import cn.nukkit.utils.BlockColor;
+import com.google.gson.Gson;
+import it.unimi.dsi.fastutil.objects.Object2IntMap;
+import it.unimi.dsi.fastutil.objects.Object2IntOpenHashMap;
 import lombok.extern.log4j.Log4j2;
 
 import javax.annotation.Nullable;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
 import java.lang.reflect.Constructor;
 import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
 import java.util.regex.Pattern;
+
+import static cn.nukkit.SharedConstants.*;
 
 /**
  * author: MagicDroidX
@@ -37,7 +46,7 @@ public abstract class Block extends Position implements Metadatable, Cloneable, 
     // Nukkit runtime definitions
     public static final int BLOCK_ID_COUNT = Mth.smallestEncompassingPowerOfTwo(UNDEFINED);
     public static final int BLOCK_ID_MASK = BLOCK_ID_COUNT - 1;
-    public static final int BLOCK_META_COUNT = Mth.smallestEncompassingPowerOfTwo(16); //TODO: wtf cobblestone_wall meta 5469
+    public static final int BLOCK_META_COUNT = Mth.smallestEncompassingPowerOfTwo(5469); // wtf cobblestone_wall
     public static final int BLOCK_META_MASK = BLOCK_META_COUNT - 1;
     public static final int BLOCK_META_BITS = Mth.log2PowerOfTwo(BLOCK_META_COUNT);
     public static final int FULL_BLOCK_COUNT = BLOCK_ID_COUNT << BLOCK_META_BITS;
@@ -45,18 +54,18 @@ public abstract class Block extends Position implements Metadatable, Cloneable, 
     public static final int FULL_BLOCK_ID_MASK = BLOCK_ID_MASK << BLOCK_META_BITS;
 
     public static Class<? extends Block>[] list = null;
-    public static Block[] fullList = null;
-    public static int[] light = null;
-    public static int[] lightFilter = null;
-    public static boolean[] solid = null;
-    public static double[] hardness = null;
-    public static boolean[] transparent = null;
+    public static Block[][] variantList = null;
+    public static int[] metaMax = null;
+    public static int[] metaMask = null;
     /**
      * if a block has can have variants
      */
     public static boolean[] hasMeta = null;
 
-    public static Block[][] fullTable = null;
+    public static int[] light = null;
+    public static int[] lightFilter = null;
+    public static boolean[] solid = null;
+    public static boolean[] transparent = null;
 
     protected Block() {}
 
@@ -64,15 +73,52 @@ public abstract class Block extends Position implements Metadatable, Cloneable, 
     public static void init() {
         if (list == null) {
             list = new Class[BLOCK_ID_COUNT];
-            fullList = new Block[FULL_BLOCK_COUNT];
+            variantList = new Block[BLOCK_ID_COUNT][];
+            metaMax = new int[BLOCK_ID_COUNT];
+            metaMask = new int[BLOCK_ID_COUNT];
+            hasMeta = new boolean[BLOCK_ID_COUNT];
+
             light = new int[BLOCK_ID_COUNT];
             lightFilter = new int[BLOCK_ID_COUNT];
             solid = new boolean[BLOCK_ID_COUNT];
-            hardness = new double[BLOCK_ID_COUNT];
             transparent = new boolean[BLOCK_ID_COUNT];
-            hasMeta = new boolean[BLOCK_ID_COUNT];
 
-//            fullTable = new Block[FULL_BLOCK_COUNT][]; //TODO: WIP
+            Object2IntMap<String> metaTable; // auto-generated from development client
+            try (InputStream stream = Server.class.getClassLoader().getResourceAsStream("block_meta_table.json");
+                 InputStreamReader reader = new InputStreamReader(stream)) {
+                metaTable = new Gson().fromJson(reader, Object2IntOpenHashMap.class);
+            } catch (NullPointerException | IOException e) {
+                throw new AssertionError("Unable to load block_meta_table.json", e);
+            }
+
+            metaTable.put(String.valueOf(LEAVES2), 15); //TODO: HACK
+
+            for (Object2IntMap.Entry<String> entry : metaTable.object2IntEntrySet()) {
+                int id;
+                try {
+                    id = Integer.parseInt(entry.getKey());
+                } catch (NumberFormatException e) {
+                    throw new AssertionError("Invalid block_meta_table.json", e);
+                }
+
+                if (id >= UNDEFINED) {
+                    log.trace("Skip unsupported block: {}", id);
+                    continue;
+                }
+
+                int maxMeta = entry.getIntValue();
+                if (maxMeta == 0) {
+                    metaMax[id] = 0;
+                    metaMask[id] = 0;
+                    variantList[id] = new Block[1];
+                } else {
+                    int count = Mth.smallestEncompassingPowerOfTwo(maxMeta + 1);
+                    metaMax[id] = maxMeta;
+                    metaMask[id] = count - 1;
+                    variantList[id] = new Block[count];
+                    hasMeta[id] = true;
+                }
+            }
 
             list[AIR] = BlockAir.class; //0
             list[STONE] = BlockStone.class; //1
@@ -323,37 +369,54 @@ public abstract class Block extends Position implements Metadatable, Cloneable, 
             for (int id = 0; id < BLOCK_ID_COUNT; id++) {
                 Class<?> c = list[id];
                 if (c != null) {
+                    Block[] variants = variantList[id];
+                    if (variants == null) {
+                        variantList[id] = new Block[]{new BlockUnknown(id)};
+                        log.debug("Block {} is not available in current base game version", id);
+                        continue;
+                    }
+
                     Block block;
                     try {
                         block = (Block) c.newInstance();
+                        int defaultMeta = block.getDefaultMeta();
+                        variants[0] = block;
                         try {
                             Constructor<?> constructor = c.getDeclaredConstructor(int.class);
                             constructor.setAccessible(true);
-                            for (int data = 0; data < BLOCK_META_COUNT; ++data) {
-                                fullList[(id << BLOCK_META_BITS) | data] = (Block) constructor.newInstance(data);
+
+                            for (int data = 1; data < variants.length; ++data) {
+                                if (block.isValidMeta(data)) {
+                                    variants[data] = (Block) constructor.newInstance(data);
+                                } else {
+                                    variants[data] = (Block) constructor.newInstance(defaultMeta);
+                                }
                             }
-                            hasMeta[id] = true;
                         } catch (NoSuchMethodException ignore) {
-                            for (int data = 0; data < BLOCK_META_COUNT; ++data) {
-                                fullList[(id << BLOCK_META_BITS) | data] = block;
+                            for (int data = 1; data < variants.length; ++data) {
+                                variants[data] = block;
+                            }
+
+                            if (hasMeta[id]) {
+                                log.warn("meta mismatch: {} (expected 0-{})", id, metaMax[id]);
                             }
                         }
                     } catch (Exception e) {
                         log.error("Error while registering " + c.getName(), e);
-                        for (int data = 0; data < BLOCK_META_COUNT; ++data) {
-                            fullList[(id << BLOCK_META_BITS) | data] = new BlockUnknown(id, data);
+                        variants[0] = new BlockUnknown(id);
+                        for (int data = 1; data < variants.length; ++data) {
+                            variants[data] = new BlockUnknown(id, data);
                         }
-                        return;
+                        continue;
                     }
 
                     solid[id] = block.isSolid();
                     transparent[id] = block.isTransparent();
-                    hardness[id] = block.getHardness();
                     light[id] = block.getLightLevel();
 
                     if (block.isSolid()) {
                         if (block.isTransparent()) {
-                            if (block instanceof BlockLiquid || block instanceof BlockIce) {
+                            if (block.isLiquid() || block.is(ICE)) {
                                 lightFilter[id] = 2;
                             } else {
                                 lightFilter[id] = 1;
@@ -366,8 +429,15 @@ public abstract class Block extends Position implements Metadatable, Cloneable, 
                     }
                 } else {
                     lightFilter[id] = 1;
-                    for (int data = 0; data < BLOCK_META_COUNT; ++data) {
-                        fullList[(id << BLOCK_META_BITS) | data] = new BlockUnknown(id, data);
+
+                    Block[] variants = variantList[id];
+                    if (variants == null) {
+                        variantList[id] = new Block[]{new BlockUnknown(id)};
+                    } else {
+                        variants[0] = new BlockUnknown(id);
+                        for (int i = 1; i < variants.length; i++) {
+                            variants[i] = new BlockUnknown(id, i);
+                        }
                     }
                 }
             }
@@ -375,19 +445,19 @@ public abstract class Block extends Position implements Metadatable, Cloneable, 
     }
 
     public static Block get(int id) {
-        return fullList[id << BLOCK_META_BITS].clone();
+        return get(id, 0);
     }
 
     public static Block get(int id, Integer meta) {
         if (meta != null) {
-            return fullList[(id << BLOCK_META_BITS) | meta].clone();
+            return get(id, (int) meta);
         } else {
-            return fullList[id << BLOCK_META_BITS].clone();
+            return get(id);
         }
     }
 
     public static Block get(int id, Integer meta, Position pos) {
-        Block block = fullList[(id << BLOCK_META_BITS) | (meta == null ? 0 : meta)].clone();
+        Block block = get(id, meta == null ? 0 : meta);
         if (pos != null) {
             block.x = pos.x;
             block.y = pos.y;
@@ -398,16 +468,32 @@ public abstract class Block extends Position implements Metadatable, Cloneable, 
     }
 
     public static Block get(int id, int data) {
-        return fullList[(id << BLOCK_META_BITS) | data].clone();
+        try {
+            Block[] variants = variantList[id];
+            try {
+                return variants[data].clone();
+            } catch (ArrayIndexOutOfBoundsException e) {
+                if (LOG_INVALID_BLOCK_AUX_ACCESS) {
+                    log.warn("Invalid block meta: id {}, meta {}", id, data, new IllegalArgumentException());
+                }
+                return variants[0].clone();
+            }
+        } catch (ArrayIndexOutOfBoundsException e) {
+            throw new IllegalArgumentException("Invalid block id: " + id);
+        }
     }
 
     public static Block get(int fullId, Level level, int x, int y, int z) {
-        Block block = fullList[fullId].clone();
+        Block block = fromFullId(fullId);
         block.x = x;
         block.y = y;
         block.z = z;
         block.level = level;
         return block;
+    }
+
+    public static Block fromFullId(int fullId) {
+        return get(fullId >> BLOCK_META_BITS, fullId & BLOCK_META_MASK);
     }
 
     public static int itemIdToBlockId(int id) {
@@ -442,8 +528,7 @@ public abstract class Block extends Position implements Metadatable, Cloneable, 
             }
         }
 
-        id = id & BLOCK_ID_MASK;
-        if (b.length != 1) meta = Integer.parseInt(b[1]) & BLOCK_META_MASK;
+        if (b.length > 1) meta = Integer.parseInt(b[1]);
 
         return get(id, meta);
     }
@@ -620,6 +705,14 @@ public abstract class Block extends Position implements Metadatable, Cloneable, 
 
     public final void setDamage(Integer meta) {
         setDamage((meta == null ? 0 : meta & 0x0f));
+    }
+
+    public int getDefaultMeta() {
+        return 0;
+    }
+
+    public boolean isValidMeta(int meta) {
+        return meta <= metaMax[getId()];
     }
 
     final public void position(Position v) {
@@ -1154,6 +1247,14 @@ public abstract class Block extends Position implements Metadatable, Cloneable, 
             return null;
         }
         return new AxisAlignedBB[]{aabb};
+    }
+
+    public boolean is(int id) {
+        return getId() == id;
+    }
+
+    public boolean is(Block block) {
+        return getId() == block.getId();
     }
 
     public boolean isAir() {

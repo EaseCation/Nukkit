@@ -50,6 +50,6 @@ public class BlockShulkerBox extends BlockUndyedShulkerBox {
 
     @Override
     public void setDamage(int meta) {
-        this.meta = meta & BLOCK_META_MASK;
+        this.meta = meta;
     }
 }

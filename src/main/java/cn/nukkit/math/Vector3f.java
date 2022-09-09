@@ -3,6 +3,7 @@ package cn.nukkit.math;
 import cn.nukkit.level.ChunkPosition;
 import cn.nukkit.nbt.tag.FloatTag;
 import cn.nukkit.nbt.tag.ListTag;
+import org.checkerframework.checker.units.qual.min;
 
 public class Vector3f implements Cloneable {
     public static final int SIDE_DOWN = 0;
@@ -130,8 +131,16 @@ public class Vector3f implements Cloneable {
         return new Vector3f(this.x * number, this.y * number, this.z * number);
     }
 
+    public Vector3f multiply(Vector3f vec) {
+        return new Vector3f(this.x * vec.x, this.y * vec.y, this.z * vec.z);
+    }
+
     public Vector3f divide(float number) {
         return new Vector3f(this.x / number, this.y / number, this.z / number);
+    }
+
+    public Vector3f divide(Vector3f vec) {
+        return new Vector3f(this.x / vec.x, this.y / vec.y, this.z / vec.z);
     }
 
     public Vector3f ceil() {
@@ -210,6 +219,14 @@ public class Vector3f implements Cloneable {
         return xDiff * xDiff + yDiff * yDiff + zDiff * zDiff;
     }
 
+    public int distanceManhattan(Vector3f pos) {
+        return distanceManhattan(pos.getFloorX(), pos.getFloorY(), pos.getFloorZ());
+    }
+
+    public int distanceManhattan(int x, int y, int z) {
+        return Math.abs(x - getFloorX()) + Math.abs(y - getFloorY()) + Math.abs(z - getFloorZ());
+    }
+
     public float maxPlainDistance() {
         return this.maxPlainDistance(0, 0);
     }
@@ -256,6 +273,72 @@ public class Vector3f implements Cloneable {
                 this.z * v.x - this.x * v.z,
                 this.x * v.y - this.y * v.x
         );
+    }
+
+    public Vector3f min(Vector3f vec) {
+        return new Vector3f(
+                Math.min(this.x, vec.x),
+                Math.min(this.y, vec.y),
+                Math.min(this.z, vec.z)
+        );
+    }
+
+    public Vector3f max(Vector3f vec) {
+        return new Vector3f(
+                Math.max(this.x, vec.x),
+                Math.max(this.y, vec.y),
+                Math.max(this.z, vec.z)
+        );
+    }
+
+    public Vector3f clamp(Vector3f min, Vector3f max) {
+        return new Vector3f(
+                Mth.clamp(this.x, min.x, max.x),
+                Mth.clamp(this.y, min.y, max.y),
+                Mth.clamp(this.z, min.z, max.z)
+        );
+    }
+
+    public Vector3f lerp(Vector3f to, float t) {
+        return new Vector3f(
+                Mth.lerp(t, this.x, to.x),
+                Mth.lerp(t, this.y, to.y),
+                Mth.lerp(t, this.z, to.z)
+        );
+    }
+
+    public Vector3f towards(Vector3f target, float maxDistanceDelta) {
+        float diffX = target.x - this.x;
+        float diffY = target.y - this.y;
+        float diffZ = target.z - this.z;
+        float distanceSquared = diffX * diffX + diffY * diffY + diffZ * diffZ;
+
+        if (distanceSquared == 0 || maxDistanceDelta >= 0 && distanceSquared <= maxDistanceDelta * maxDistanceDelta) {
+            return target.copyVec();
+        }
+
+        float distance = (float) Math.sqrt(distanceSquared);
+        return new Vector3f(this.x + diffX / distance * maxDistanceDelta,
+                this.y + diffY / distance * maxDistanceDelta,
+                this.z + diffZ / distance * maxDistanceDelta);
+    }
+
+    public double angle(Vector3f to) {
+        double denominator = Math.sqrt(this.lengthSquared() * to.lengthSquared());
+        if (denominator < Mth.EPSILON_NORMAL_SQRT) {
+            return 0;
+        }
+
+        double dot = Mth.clamp(this.dot(to) / denominator, -1, 1);
+        return Math.acos(dot) * Mth.RAD_TO_DEG;
+    }
+
+    public double angleSigned(Vector3f to, Vector3f axis) {
+        float crossX = this.y * to.z - this.z * to.y;
+        float crossY = this.z * to.x - this.x * to.z;
+        float crossZ = this.x * to.y - this.y * to.x;
+        int sign = axis.x * crossX + axis.y * crossY + axis.z * crossZ >= 0 ? 1 : -1;
+        return this.angle(to) * sign;
     }
 
     /*
@@ -338,6 +421,13 @@ public class Vector3f implements Cloneable {
         return this.x == other.x && this.y == other.y && this.z == other.z;
     }
 
+    public final boolean equalsVec(Vector3f vec) {
+        if (vec == null) {
+            return false;
+        }
+        return this.x == vec.x && this.y == vec.y && this.z == vec.z;
+    }
+
     public int rawHashCode() {
         return super.hashCode();
     }
@@ -349,6 +439,10 @@ public class Vector3f implements Cloneable {
         } catch (CloneNotSupportedException e) {
             return null;
         }
+    }
+
+    public final Vector3f copyVec() {
+        return new Vector3f(x, y, z);
     }
 
     public Vector3 asVector3() {

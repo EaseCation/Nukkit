@@ -74,6 +74,18 @@ public class SimpleCommandMap implements CommandMap {
         this.register("nukkit", new SummonCommand("summon"));
         this.register("nukkit", new SetBlockCommand("setblock"));
         this.register("nukkit", new TestForBlockCommand("testforblock"));
+        this.register("nukkit", new CloneCommand("clone"));
+        this.register("nukkit", new FillCommand("fill"));
+        this.register("nukkit", new ClearCommand("clear"));
+        this.register("nukkit", new ReplaceItemCommand("replaceitem"));
+        this.register("nukkit", new SpreadPlayersCommand("spreadplayers"));
+        this.register("nukkit", new TestForCommand("testfor"));
+        this.register("nukkit", new TestForBlocksCommand("testforblocks"));
+        this.register("nukkit", new PlaySoundCommand("playsound"));
+        this.register("nukkit", new StopSoundCommand("stopsound"));
+        this.register("nukkit", new SetMaxPlayersCommand("setmaxplayers"));
+        this.register("nukkit", new DayLockCommand("daylock"));
+        this.register("nukkit", new ToggleDownfallCommand("toggledownfall"));
 
 //        if ((boolean) this.server.getConfig("debug.commands", false)) {
         this.register("nukkit", new StatusCommand("status"));

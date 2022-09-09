@@ -53,7 +53,7 @@ public class BlockAnvil extends BlockFallable implements Faceable {
 
     @Override
     public final void setDamage(int meta) {
-        this.meta = meta & BLOCK_META_MASK;
+        this.meta = meta;
     }
 
     @Override

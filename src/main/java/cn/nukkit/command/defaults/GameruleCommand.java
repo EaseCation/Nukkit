@@ -8,9 +8,9 @@ import cn.nukkit.command.data.CommandParameter;
 import cn.nukkit.lang.TranslationContainer;
 import cn.nukkit.level.GameRule;
 import cn.nukkit.level.GameRules;
+import it.unimi.dsi.fastutil.objects.ObjectOpenHashSet;
 
 import java.util.Arrays;
-import java.util.HashSet;
 import java.util.Optional;
 import java.util.Set;
 import java.util.StringJoiner;
@@ -23,10 +23,10 @@ public class GameruleCommand extends VanillaCommand {
         this.commandParameters.clear();
 
         GameRules rules = GameRules.getDefault();
-        Set<String> boolGameRules = new HashSet<>();
-        Set<String> intGameRules = new HashSet<>();
-        Set<String> floatGameRules = new HashSet<>();
-        Set<String> unknownGameRules = new HashSet<>();
+        Set<String> boolGameRules = new ObjectOpenHashSet<>();
+        Set<String> intGameRules = new ObjectOpenHashSet<>();
+        Set<String> floatGameRules = new ObjectOpenHashSet<>();
+        Set<String> unknownGameRules = new ObjectOpenHashSet<>();
 
         rules.getGameRules().forEach((rule, value) -> {
             switch (value.getType()) {

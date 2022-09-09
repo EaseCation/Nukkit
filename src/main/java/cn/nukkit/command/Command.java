@@ -9,6 +9,7 @@ import cn.nukkit.permission.Permissible;
 import cn.nukkit.utils.TextFormat;
 import co.aikar.timings.Timing;
 import co.aikar.timings.Timings;
+import it.unimi.dsi.fastutil.objects.Object2ObjectOpenHashMap;
 
 import java.util.*;
 
@@ -17,8 +18,6 @@ import java.util.*;
  * Nukkit Project
  */
 public abstract class Command {
-
-    private static CommandData defaultDataTemplate = null;
 
     protected CommandData commandData;
 
@@ -42,7 +41,7 @@ public abstract class Command {
 
     private String permissionMessage = null;
 
-    protected Map<String, CommandParameter[]> commandParameters = new HashMap<>();
+    protected Map<String, CommandParameter[]> commandParameters = new Object2ObjectOpenHashMap<>();
 
     public Timing timing;
 
@@ -58,7 +57,7 @@ public abstract class Command {
         this(name, description, usageMessage, new String[0]);
     }
 
-    public Command(String name, String description, String usageMessage, String[] aliases) {
+    public Command(String name, String description, String usageMessage, String... aliases) {
         this.commandData = new CommandData();
         this.name = name.toLowerCase(); // Uppercase letters crash the client?!?
         this.nextLabel = name;
@@ -97,7 +96,7 @@ public abstract class Command {
         this.commandParameters = commandParameters;
     }
 
-    public void addCommandParameters(String key, CommandParameter[] parameters) {
+    public void addCommandParameters(String key, CommandParameter... parameters) {
         this.commandParameters.put(key, parameters);
     }
 
@@ -254,13 +253,6 @@ public abstract class Command {
 
     public void setUsage(String usageMessage) {
         this.usageMessage = usageMessage;
-    }
-
-    public static CommandData generateDefaultData() {
-        if (defaultDataTemplate == null) {
-            //defaultDataTemplate = new Gson().fromJson(new InputStreamReader(Server.class.getClassLoader().getResourceAsStream("command_default.json")));
-        }
-        return defaultDataTemplate.clone();
     }
 
     public static void broadcastCommandMessage(CommandSender source, String message) {

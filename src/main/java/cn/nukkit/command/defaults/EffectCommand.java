@@ -7,14 +7,15 @@ import cn.nukkit.command.data.CommandEnum;
 import cn.nukkit.command.data.CommandParamType;
 import cn.nukkit.command.data.CommandParameter;
 import cn.nukkit.lang.TranslationContainer;
+import cn.nukkit.math.Mth;
 import cn.nukkit.potion.Effect;
 import cn.nukkit.potion.InstantEffect;
 import cn.nukkit.utils.ServerException;
 import cn.nukkit.utils.TextFormat;
+import it.unimi.dsi.fastutil.objects.ObjectOpenHashSet;
 
 import java.lang.reflect.Field;
 import java.lang.reflect.Modifier;
-import java.util.HashSet;
 import java.util.Set;
 
 /**
@@ -27,7 +28,7 @@ public class EffectCommand extends Command {
         this.setPermission("nukkit.command.effect");
         this.commandParameters.clear();
 
-        Set<String> effects = new HashSet<>();
+        Set<String> effects = new ObjectOpenHashSet<>();
         for (Field field : Effect.class.getDeclaredFields()) {
             if (field.getType() == int.class && field.getModifiers() == (Modifier.PUBLIC | Modifier.STATIC | Modifier.FINAL)) {
                 effects.add(field.getName().toLowerCase());
@@ -83,7 +84,7 @@ public class EffectCommand extends Command {
         int amplification = 0;
         if (args.length >= 3) {
             try {
-                duration = Integer.parseInt(args[2]);
+                duration = Mth.clamp(Integer.parseInt(args[2]), 0, 1000000);
             } catch (NumberFormatException a) {
                 sender.sendMessage(new TranslationContainer("commands.generic.usage", this.usageMessage));
                 return true;
@@ -96,7 +97,7 @@ public class EffectCommand extends Command {
         }
         if (args.length >= 4) {
             try {
-                amplification = Integer.parseInt(args[3]);
+                amplification = Mth.clamp(Integer.parseInt(args[3]), 0, 255);
             } catch (NumberFormatException a) {
                 sender.sendMessage(new TranslationContainer("commands.generic.usage", this.usageMessage));
                 return true;
@@ -110,7 +111,7 @@ public class EffectCommand extends Command {
         }
         if (duration == 0) {
             if (!player.hasEffect(effect.getId())) {
-                if (player.getEffects().size() == 0) {
+                if (player.getEffects().isEmpty()) {
                     sender.sendMessage(new TranslationContainer("commands.effect.failure.notActive.all", player.getDisplayName()));
                 } else {
                     sender.sendMessage(new TranslationContainer("commands.effect.failure.notActive", effect.getName(), player.getDisplayName()));

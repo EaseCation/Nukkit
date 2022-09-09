@@ -3,6 +3,7 @@ package cn.nukkit.permission;
 import cn.nukkit.Server;
 import it.unimi.dsi.fastutil.objects.Object2BooleanMap;
 import it.unimi.dsi.fastutil.objects.Object2BooleanOpenHashMap;
+import it.unimi.dsi.fastutil.objects.ObjectArrayList;
 
 import java.util.*;
 
@@ -137,10 +138,10 @@ public class Permission {
     }
 
     public static List<Permission> loadPermissions(Map<String, Object> data, String defaultValue) {
-        List<Permission> result = new ArrayList<>();
+        List<Permission> result = new ObjectArrayList<>();
         if (data != null) {
-            for (Map.Entry e : data.entrySet()) {
-                String key = (String) e.getKey();
+            for (Map.Entry<String, Object> e : data.entrySet()) {
+                String key = e.getKey();
                 Map<String, Object> entry = (Map<String, Object>) e.getValue();
                 result.add(loadPermission(key, entry, defaultValue, result));
             }
@@ -149,11 +150,11 @@ public class Permission {
     }
 
     public static Permission loadPermission(String name, Map<String, Object> data) {
-        return loadPermission(name, data, DEFAULT_OP, new ArrayList<>());
+        return loadPermission(name, data, DEFAULT_OP, new ObjectArrayList<>());
     }
 
     public static Permission loadPermission(String name, Map<String, Object> data, String defaultValue) {
-        return loadPermission(name, data, defaultValue, new ArrayList<>());
+        return loadPermission(name, data, defaultValue, new ObjectArrayList<>());
     }
 
     public static Permission loadPermission(String name, Map<String, Object> data, String defaultValue, List<Permission> output) {
@@ -170,8 +171,8 @@ public class Permission {
 
         if (data.containsKey("children")) {
             if (data.get("children") instanceof Map) {
-                for (Map.Entry entry : ((Map<String, Object>) data.get("children")).entrySet()) {
-                    String k = (String) entry.getKey();
+                for (Map.Entry<String, Object> entry : ((Map<String, Object>) data.get("children")).entrySet()) {
+                    String k = entry.getKey();
                     Object v = entry.getValue();
                     if (v instanceof Map) {
                         Permission permission = loadPermission(k, (Map<String, Object>) v, defaultValue, output);

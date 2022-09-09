@@ -660,7 +660,7 @@ public abstract class BaseFullChunk implements FullChunk, ChunkManager {
             for (int x = 0; x < 16; x++) {
                 for (int z = 0; z < 16; z++) {
                     int fullId = this.getFullBlock(0, x, y, z);
-                    Block block = Block.fullList[fullId].clone();
+                    Block block = Block.fromFullId(fullId);
                     int type = block.getBlockEntityType();
                     if (type == 0) {
                         continue;

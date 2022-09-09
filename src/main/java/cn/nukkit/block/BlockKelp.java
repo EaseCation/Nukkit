@@ -14,7 +14,7 @@ import java.util.concurrent.ThreadLocalRandom;
 
 public class BlockKelp extends BlockTransparentMeta {
 
-    public static final int MAX_AGE = 15; //TODO: 25
+    public static final int MAX_AGE = 25;
 
     public BlockKelp() {
         this(0);

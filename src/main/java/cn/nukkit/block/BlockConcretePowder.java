@@ -32,7 +32,7 @@ public class BlockConcretePowder extends BlockFallable {
 
     @Override
     public final void setDamage(int meta) {
-        this.meta = meta & BLOCK_META_MASK;
+        this.meta = meta;
     }
 
     @Override

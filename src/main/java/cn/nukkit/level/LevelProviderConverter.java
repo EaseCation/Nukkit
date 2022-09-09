@@ -329,7 +329,10 @@ class LevelProviderConverter {
                             int id = oldSection.getBlockId(0, x, y, z);
                             int meta = oldSection.getBlockData(0, x, y, z);
 
-                            if (Block.list[BlockID.WOOD] != null) {
+                            if (id == BlockID.AIR) {
+                                // additional fixes for corrupted meta... (FAWE?)
+                                meta = 0;
+                            } else if (Block.list[BlockID.WOOD] != null) {
                                 // special Log upgrade to Wood
                                 if (id == BlockID.LOG) {
                                     if ((meta & BlockWood.PILLAR_AXIS_MASK) == BlockWood.PILLAR_AXIS_MASK) {

@@ -7,6 +7,7 @@ import static cn.nukkit.GameVersion.*;
 import static cn.nukkit.block.BlockID.*;
 
 public final class Blocks {
+    static final Block AIR = new BlockAir();
 
     public static void registerVanillaBlocks() {
         registerBlock(COMMAND_BLOCK, BlockCommand.class);
@@ -284,7 +285,7 @@ public final class Blocks {
     }
 
     public static Block air() {
-        return Block.get(AIR);
+        return AIR.clone();
     }
 
     private Blocks() {

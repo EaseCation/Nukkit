@@ -73,7 +73,7 @@ public class BlockEndPortalFrame extends BlockTransparentMeta implements Faceabl
     }
 
     public int getComparatorInputOverride() {
-        return (getDamage() & 4) != 0 ? 15 : 0;
+        return (getDamage() & 0x4) != 0 ? 15 : 0;
     }
 
     @Override

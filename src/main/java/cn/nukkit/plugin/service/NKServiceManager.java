@@ -1,10 +1,11 @@
 package cn.nukkit.plugin.service;
 
-
 import cn.nukkit.Server;
 import cn.nukkit.plugin.Plugin;
 import com.google.common.base.Preconditions;
 import com.google.common.collect.ImmutableList;
+import it.unimi.dsi.fastutil.objects.Object2ObjectOpenHashMap;
+import it.unimi.dsi.fastutil.objects.ObjectArrayList;
 
 import java.util.*;
 
@@ -13,7 +14,7 @@ import java.util.*;
  */
 public class NKServiceManager implements ServiceManager {
 
-    private final Map<Class<?>, List<RegisteredServiceProvider<?>>> handle = new HashMap<>();
+    private final Map<Class<?>, List<RegisteredServiceProvider<?>>> handle = new Object2ObjectOpenHashMap<>();
 
     @Override
     public <T> boolean register(Class<T> service, T provider, Plugin plugin, ServicePriority priority) {
@@ -31,7 +32,7 @@ public class NKServiceManager implements ServiceManager {
 
     protected <T> boolean provide(Class<T> service, T instance, Plugin plugin, ServicePriority priority) {
         synchronized (handle) {
-            List<RegisteredServiceProvider<?>> list = handle.computeIfAbsent(service, k -> new ArrayList<>());
+            List<RegisteredServiceProvider<?>> list = handle.computeIfAbsent(service, k -> new ObjectArrayList<>());
 
             RegisteredServiceProvider<T> registered = new RegisteredServiceProvider<>(service, instance, priority, plugin);
 
@@ -130,7 +131,7 @@ public class NKServiceManager implements ServiceManager {
                 return empty;
             }
             for (RegisteredServiceProvider<?> provider : registered) {
-                builder.add((RegisteredServiceProvider<T>)provider);
+                builder.add((RegisteredServiceProvider<T>) provider);
             }
         }
         return builder.build();

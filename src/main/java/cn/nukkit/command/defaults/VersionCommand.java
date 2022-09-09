@@ -21,8 +21,7 @@ public class VersionCommand extends VanillaCommand {
         super(name,
                 "%nukkit.command.version.description",
                 "%nukkit.command.version.usage",
-                new String[]{"ver", "about"}
-        );
+                "ver", "about");
         this.setPermission("nukkit.command.version");
         this.commandParameters.clear();
         this.commandParameters.put("default", new CommandParameter[]{

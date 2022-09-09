@@ -8,12 +8,12 @@ import java.util.concurrent.ThreadLocalRandom;
 import java.util.function.Predicate;
 
 public enum BlockFace {
-    DOWN(0, 1, -1, "down", AxisDirection.NEGATIVE, new Vector3(0, -1, 0)),
-    UP(1, 0, -1, "up", AxisDirection.POSITIVE, new Vector3(0, 1, 0)),
-    NORTH(2, 3, 2, "north", AxisDirection.NEGATIVE, new Vector3(0, 0, -1)),
-    SOUTH(3, 2, 0, "south", AxisDirection.POSITIVE, new Vector3(0, 0, 1)),
-    WEST(4, 5, 1, "west", AxisDirection.NEGATIVE, new Vector3(-1, 0, 0)),
-    EAST(5, 4, 3, "east", AxisDirection.POSITIVE, new Vector3(1, 0, 0));
+    DOWN(0, 1, -1, "down", Axis.Y, AxisDirection.NEGATIVE, new BlockVector3(0, -1, 0)),
+    UP(1, 0, -1, "up", Axis.Y, AxisDirection.POSITIVE, new BlockVector3(0, 1, 0)),
+    NORTH(2, 3, 2, "north", Axis.Z, AxisDirection.NEGATIVE, new BlockVector3(0, 0, -1)),
+    SOUTH(3, 2, 0, "south", Axis.Z, AxisDirection.POSITIVE, new BlockVector3(0, 0, 1)),
+    WEST(4, 5, 1, "west", Axis.X, AxisDirection.NEGATIVE, new BlockVector3(-1, 0, 0)),
+    EAST(5, 4, 3, "east", Axis.X, AxisDirection.POSITIVE, new BlockVector3(1, 0, 0));
 
     /**
      * All faces in D-U-N-S-W-E order
@@ -26,14 +26,6 @@ public enum BlockFace {
     private static final BlockFace[] HORIZONTALS = new BlockFace[4];
 
     static {
-        //Circular dependency
-        DOWN.axis = Axis.Y;
-        UP.axis = Axis.Y;
-        NORTH.axis = Axis.Z;
-        SOUTH.axis = Axis.Z;
-        WEST.axis = Axis.X;
-        EAST.axis = Axis.X;
-
         for (BlockFace face : values()) {
             VALUES[face.index] = face;
 
@@ -64,19 +56,20 @@ public enum BlockFace {
     private final String name;
 
 
-    private Axis axis;
+    private final Axis axis;
     private final AxisDirection axisDirection;
 
     /**
      * Normalized vector that points in the direction of this BlockFace
      */
-    private final Vector3 unitVector;
+    private final BlockVector3 unitVector;
 
-    BlockFace(int index, int opposite, int horizontalIndex, String name, AxisDirection axisDirection, Vector3 unitVector) {
+    BlockFace(int index, int opposite, int horizontalIndex, String name, Axis axis, AxisDirection axisDirection, BlockVector3 unitVector) {
         this.index = index;
         this.opposite = opposite;
         this.horizontalIndex = horizontalIndex;
         this.name = name;
+        this.axis = axis;
         this.axisDirection = axisDirection;
         this.unitVector = unitVector;
     }
@@ -206,7 +199,7 @@ public enum BlockFace {
      *
      * @return vector
      */
-    public Vector3 getUnitVector() {
+    public BlockVector3 getUnitVector() {
         return unitVector;
     }
 

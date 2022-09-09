@@ -6,9 +6,9 @@ import cn.nukkit.utils.PluginException;
 import cn.nukkit.utils.ServerException;
 import co.aikar.timings.Timings;
 import it.unimi.dsi.fastutil.objects.Object2BooleanMap;
+import it.unimi.dsi.fastutil.objects.Object2ObjectOpenHashMap;
+import it.unimi.dsi.fastutil.objects.ObjectOpenHashSet;
 
-import java.util.HashMap;
-import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
 
@@ -18,13 +18,13 @@ import java.util.Set;
  */
 public class PermissibleBase implements Permissible {
 
-    ServerOperator opable = null;
+    ServerOperator opable;
 
     private Permissible parent = null;
 
-    private final Set<PermissionAttachment> attachments = new HashSet<>();
+    private final Set<PermissionAttachment> attachments = new ObjectOpenHashSet<>();
 
-    private final Map<String, PermissionAttachmentInfo> permissions = new HashMap<>();
+    private final Map<String, PermissionAttachmentInfo> permissions = new Object2ObjectOpenHashMap<>();
 
     public PermissibleBase(ServerOperator opable) {
         this.opable = opable;
@@ -70,7 +70,8 @@ public class PermissibleBase implements Permissible {
 
             return Permission.DEFAULT_TRUE.equals(permission) || (this.isOp() && Permission.DEFAULT_OP.equals(permission)) || (!this.isOp() && Permission.DEFAULT_NOT_OP.equals(permission));
         } else {
-            return Permission.DEFAULT_TRUE.equals(Permission.DEFAULT_PERMISSION) || (this.isOp() && Permission.DEFAULT_OP.equals(Permission.DEFAULT_PERMISSION)) || (!this.isOp() && Permission.DEFAULT_NOT_OP.equals(Permission.DEFAULT_PERMISSION));
+//            return Permission.DEFAULT_TRUE.equals(Permission.DEFAULT_PERMISSION) || (this.isOp() && Permission.DEFAULT_OP.equals(Permission.DEFAULT_PERMISSION)) || (!this.isOp() && Permission.DEFAULT_NOT_OP.equals(Permission.DEFAULT_PERMISSION));
+            return this.isOp();
         }
     }
 

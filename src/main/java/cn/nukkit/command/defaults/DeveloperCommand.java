@@ -85,7 +85,7 @@ public class DeveloperCommand extends VanillaCommand {
 
                 if (length > 7) {
                     try {
-                        block = Block.get(block.getId(), Integer.parseInt(args[7]) & Block.BLOCK_META_MASK);
+                        block = Block.get(block.getId(), Integer.parseInt(args[7]));
                     } catch (Exception e) {
                         sendUsage(sender);
                         return false;

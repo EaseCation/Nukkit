@@ -9,6 +9,7 @@ import cn.nukkit.command.data.CommandParamType;
 import cn.nukkit.command.data.CommandParameter;
 import cn.nukkit.item.Item;
 import cn.nukkit.lang.TranslationContainer;
+import cn.nukkit.math.Mth;
 import cn.nukkit.utils.TextFormat;
 
 /**
@@ -33,13 +34,6 @@ public class GiveCommand extends VanillaCommand {
                 CommandParameter.newType("amount", true, CommandParamType.INT),
                 CommandParameter.newType("tags", true, CommandParamType.RAWTEXT)
         });
-        //TODO: parser table collision
-        /*this.commandParameters.put("toPlayerByIdMeta", new CommandParameter[]{
-                CommandParameter.newType("player", CommandParamType.TARGET),
-                CommandParameter.newType("itemAndData", CommandParamType.STRING),
-                CommandParameter.newType("amount", true, CommandParamType.INT),
-                CommandParameter.newType("tags", true, CommandParamType.RAWTEXT)
-        });*/
     }
 
     @Override
@@ -65,7 +59,7 @@ public class GiveCommand extends VanillaCommand {
         }
 
         try {
-            item.setCount(Integer.parseInt(args[2]));
+            item.setCount(Mth.clamp(Integer.parseInt(args[2]), 0, Short.MAX_VALUE));
         } catch (Exception e) {
             item.setCount(item.getMaxStackSize());
         }

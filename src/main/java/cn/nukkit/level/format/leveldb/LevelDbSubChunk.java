@@ -2,6 +2,7 @@ package cn.nukkit.level.format.leveldb;
 
 import cn.nukkit.block.Block;
 import cn.nukkit.block.BlockID;
+import cn.nukkit.block.Blocks;
 import cn.nukkit.level.GlobalBlockPalette;
 import cn.nukkit.level.GlobalBlockPaletteInterface.StaticVersion;
 import cn.nukkit.level.format.ChunkSection;
@@ -202,7 +203,7 @@ public class LevelDbSubChunk implements ChunkSection {
             PalettedSubChunkStorage storage;
             if (!this.hasLayerUnsafe(layer)) {
                 if (block.isAir()) {
-                    return Block.fullList[BlockID.AIR].clone();
+                    return Blocks.air();
                 }
                 previous = BlockID.AIR;
 
@@ -214,7 +215,7 @@ public class LevelDbSubChunk implements ChunkSection {
                 previous = storage.get(x, y, z);
             }
 
-            int fullId = block.getFullId() & Block.FULL_BLOCK_MASK;
+            int fullId = block.getFullId();
             storage.set(x, y, z, fullId);
 
             dirty = true;
@@ -222,12 +223,11 @@ public class LevelDbSubChunk implements ChunkSection {
         } finally {
             this.writeLock.unlock();
         }
-        return Block.fullList[previous].clone();
+        return Block.fromFullId(previous);
     }
 
     @Override
     public boolean setFullBlockId(int layer, int x, int y, int z, int fullId) {
-        fullId &= Block.FULL_BLOCK_MASK;
         try {
             this.writeLock.lock();
 

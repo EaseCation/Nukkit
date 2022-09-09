@@ -41,6 +41,7 @@ import it.unimi.dsi.fastutil.objects.Object2ObjectOpenHashMap;
 import it.unimi.dsi.fastutil.objects.ObjectArrayList;
 import lombok.extern.log4j.Log4j2;
 
+import javax.annotation.Nullable;
 import java.lang.reflect.Constructor;
 import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
@@ -981,6 +982,11 @@ public abstract class Entity extends Location implements Metadatable {
 
     public static String[] getKnownEntities() {
         return knownEntities.keySet().toArray(new String[0]);
+    }
+
+    @Nullable
+    public static Class<? extends Entity> getClassByName(String name) {
+        return knownEntities.get(name);
     }
 
     public static CompoundTag getDefaultNBT(Vector3 pos) {

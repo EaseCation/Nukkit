@@ -1,14 +1,16 @@
 package cn.nukkit.command.data;
 
 import cn.nukkit.block.BlockID;
+import cn.nukkit.entity.EntityID;
 import cn.nukkit.item.ItemID;
 import cn.nukkit.item.enchantment.EnchantmentID;
 import com.google.common.collect.ImmutableSet;
+import it.unimi.dsi.fastutil.objects.ObjectOpenHashSet;
 
 import java.lang.reflect.Field;
 import java.util.Arrays;
-import java.util.HashSet;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 /**
  * @author CreeperFace
@@ -20,6 +22,7 @@ public class CommandEnum {
             ImmutableSet.of("survival", "creative", "s", "c", "adventure", "a", "spectator", "view", "v", "spc"));
     public static final CommandEnum ENUM_BLOCK;
     public static final CommandEnum ENUM_ITEM;
+    public static final CommandEnum ENUM_ENTITY_TYPE;
     public static final CommandEnum ENUM_ENCHANT;
 
     static {
@@ -36,6 +39,12 @@ public class CommandEnum {
         items.addAll(ENUM_BLOCK.getValues());
         ENUM_ITEM = new CommandEnum("Item", items.build());
 
+        ImmutableSet.Builder<String> entities = ImmutableSet.builder();
+        for (Field field : EntityID.class.getDeclaredFields()) {
+            entities.add(field.getName().toLowerCase());
+        }
+        ENUM_ENTITY_TYPE = new CommandEnum("EntityType", entities.build());
+
         ImmutableSet.Builder<String> enchants = ImmutableSet.builder();
         for (Field field : EnchantmentID.class.getDeclaredFields()) {
             enchants.add(field.getName().substring(3).toLowerCase());
@@ -48,12 +57,18 @@ public class CommandEnum {
 
     public boolean soft;
 
+    public CommandEnum(String name, Enum<?>... values) {
+        this(name, false, Arrays.stream(values)
+                .map(value -> value.toString().toLowerCase())
+                .collect(Collectors.toSet()));
+    }
+
     public CommandEnum(String name, String... values) {
         this(name, false, values);
     }
 
     public CommandEnum(String name, boolean soft, String... values) {
-        this(name, soft, new HashSet<>(Arrays.asList(values)));
+        this(name, soft, new ObjectOpenHashSet<>(Arrays.asList(values)));
     }
 
     public CommandEnum(String name, Set<String> values) {

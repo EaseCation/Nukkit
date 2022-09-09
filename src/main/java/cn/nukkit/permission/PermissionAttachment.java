@@ -18,9 +18,9 @@ public class PermissionAttachment {
 
     private final Object2BooleanMap<String> permissions = new Object2BooleanOpenHashMap<>();
 
-    private Permissible permissible;
+    private final Permissible permissible;
 
-    private Plugin plugin;
+    private final Plugin plugin;
 
     public PermissionAttachment(Plugin plugin, Permissible permissible) {
         if (!plugin.isEnabled()) {

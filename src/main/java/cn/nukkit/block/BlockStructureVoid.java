@@ -6,6 +6,9 @@ import cn.nukkit.utils.BlockColor;
 
 public class BlockStructureVoid extends BlockTransparentMeta {
 
+    public static final int TYPE_VOID = 0;
+    public static final int TYPE_AIR = 1;
+
     public BlockStructureVoid() {
         this(0);
     }

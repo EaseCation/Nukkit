@@ -71,14 +71,14 @@ public interface BlockID {
     int FURNACE = 61;
     int LIT_FURNACE = 62;
     int STANDING_SIGN = 63;
-    int BLOCK_WOODEN_DOOR = 64; // meta 31
+    int BLOCK_WOODEN_DOOR = 64; //TODO: meta 31
     int LADDER = 65;
     int RAIL = 66;
     int STONE_STAIRS = 67;
     int WALL_SIGN = 68;
     int LEVER = 69;
     int STONE_PRESSURE_PLATE = 70;
-    int BLOCK_IRON_DOOR = 71; // meta 31
+    int BLOCK_IRON_DOOR = 71; //TODO: meta 31
     int WOODEN_PRESSURE_PLATE = 72;
     int REDSTONE_ORE = 73;
     int LIT_REDSTONE_ORE = 74;
@@ -116,8 +116,8 @@ public interface BlockID {
     int IRON_BARS = 101;
     int GLASS_PANE = 102;
     int MELON_BLOCK = 103;
-    int PUMPKIN_STEM = 104;
-    int MELON_STEM = 105;
+    int PUMPKIN_STEM = 104; //TODO: meta 47
+    int MELON_STEM = 105; //TODO: meta 47
     int VINE = 106;
     int FENCE_GATE = 107;
     int BRICK_STAIRS = 108;
@@ -130,7 +130,7 @@ public interface BlockID {
     int BLOCK_NETHER_WART = 115;
     int ENCHANTING_TABLE = 116;
     int BLOCK_BREWING_STAND = 117;
-    int BLOCK_CAULDRON = 118;
+    int BLOCK_CAULDRON = 118; //TODO: meta 22
     int END_PORTAL = 119;
     int END_PORTAL_FRAME = 120;
     int END_STONE = 121;
@@ -156,7 +156,7 @@ public interface BlockID {
     int JUNGLE_STAIRS = 136;
     int COMMAND_BLOCK = 137;
     int BEACON = 138;
-    int COBBLESTONE_WALL = 139;
+    int COBBLESTONE_WALL = 139; //TODO: meta 5469
     int BLOCK_FLOWER_POT = 140;
     int CARROTS = 141;
     int POTATOES = 142;
@@ -215,13 +215,13 @@ public interface BlockID {
     int HARD_GLASS_PANE = 190;
     int HARD_STAINED_GLASS_PANE = 191;
     int CHEMICAL_HEAT = 192;
-    int BLOCK_SPRUCE_DOOR = 193; // meta 31
-    int BLOCK_BIRCH_DOOR = 194; // meta 31
-    int BLOCK_JUNGLE_DOOR = 195; // meta 31
-    int BLOCK_ACACIA_DOOR = 196; // meta 31
-    int BLOCK_DARK_OAK_DOOR = 197; // meta 31
+    int BLOCK_SPRUCE_DOOR = 193; //TODO: meta 31
+    int BLOCK_BIRCH_DOOR = 194; //TODO: meta 31
+    int BLOCK_JUNGLE_DOOR = 195; //TODO: meta 31
+    int BLOCK_ACACIA_DOOR = 196; //TODO: meta 31
+    int BLOCK_DARK_OAK_DOOR = 197; //TODO: meta 31
     int GRASS_PATH = 198;
-    int BLOCK_FRAME = 199;
+    int BLOCK_FRAME = 199; //TODO: meta 29
     int CHORUS_FLOWER = 200;
     int PURPUR_BLOCK = 201;
     int COLORED_TORCH_RG = 202;
@@ -229,13 +229,12 @@ public interface BlockID {
     int COLORED_TORCH_BP = 204;
     int UNDYED_SHULKER_BOX = 205;
     int END_BRICKS = 206;
-    //Note: frosted ice CAN NOT BE HARVESTED WITH HAND -- canHarvestWithHand method should be overridden FALSE.
     int FROSTED_ICE = 207;
     int END_ROD = 208;
     int END_GATEWAY = 209;
     int ALLOW = 210;
     int DENY = 211;
-    int BORDER_BLOCK = 212;
+    int BORDER_BLOCK = 212; //TODO: meta 341
     int MAGMA = 213;
     int NETHER_WART_BLOCK = 214;
     int RED_NETHER_BRICK = 215;
@@ -496,9 +495,9 @@ public interface BlockID {
     int SWEET_BERRY_BUSH = 462;
     int LANTERN = 463;
     int BLOCK_CAMPFIRE = 464;
-    int LAVA_CAULDRON = 465;
-    int JIGSAW = 466;
-    int WOOD = 467;
+    int LAVA_CAULDRON = 465; //TODO: meta 22
+    int JIGSAW = 466; //TODO: meta 29
+    int WOOD = 467; //TODO: meta 45
     int COMPOSTER = 468;
     int LIT_BLAST_FURNACE = 469;
     int LIGHT_BLOCK = 470;
@@ -509,8 +508,8 @@ public interface BlockID {
      */
     @Deprecated
     int STICKYPISTONARMCOLLISION = 472;
-    int BEE_NEST = 473;
-    int BEEHIVE = 474;
+    int BEE_NEST = 473; //TODO: meta 23
+    int BEEHIVE = 474; //TODO: meta 23
     int HONEY_BLOCK = 475;
     int HONEYCOMB_BLOCK = 476;
     int LODESTONE = 477;

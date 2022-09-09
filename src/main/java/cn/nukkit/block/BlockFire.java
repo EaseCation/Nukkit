@@ -130,9 +130,9 @@ public class BlockFire extends BlockFlowable {
             } else {
                 int meta = this.getDamage();
 
-                if (meta < 15) {
+                if (meta < 0xf) {
                     int newMeta = meta + random.nextInt(3);
-                    this.setDamage(Math.min(newMeta, 15));
+                    this.setDamage(Math.min(newMeta, 0xf));
                     this.getLevel().setBlock(this, this, true);
                 }
 
@@ -146,7 +146,7 @@ public class BlockFire extends BlockFlowable {
                             level.setBlock(this, event.getNewState(), true);
                         }
                     }
-                } else if (!forever && !(this.down().getBurnAbility() > 0) && meta == 15 && random.nextInt(4) == 0) {
+                } else if (!forever && !(this.down().getBurnAbility() > 0) && meta == 0xf && random.nextInt(4) == 0) {
                     BlockFadeEvent event = new BlockFadeEvent(this, get(AIR));
                     level.getServer().getPluginManager().callEvent(event);
                     if (!event.isCancelled()) {
@@ -185,8 +185,8 @@ public class BlockFire extends BlockFlowable {
                                         if (t > 0 && random.nextInt(k) <= t) {
                                             int damage = meta + random.nextInt(5) / 4;
 
-                                            if (damage > 15) {
-                                                damage = 15;
+                                            if (damage > 0xf) {
+                                                damage = 0xf;
                                             }
 
                                             BlockIgniteEvent e = new BlockIgniteEvent(block, this, null, BlockIgniteEvent.BlockIgniteCause.SPREAD);
@@ -222,8 +222,8 @@ public class BlockFire extends BlockFlowable {
             if (random.nextInt(damage + 10) < 5) {
                 int meta = damage + random.nextInt(5) / 4;
 
-                if (meta > 15) {
-                    meta = 15;
+                if (meta > 0xf) {
+                    meta = 0xf;
                 }
 
                 BlockIgniteEvent e = new BlockIgniteEvent(block, this, null, BlockIgniteEvent.BlockIgniteCause.SPREAD);

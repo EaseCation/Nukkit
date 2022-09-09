@@ -182,7 +182,7 @@ public abstract class BlockLiquid extends BlockTransparentMeta {
             }
         }
 
-        if (this.getDamage() >= 8) {
+        if (this.getDamage() >= 0x8) {
             if (!this.canFlowInto(this.level.getBlock((int) this.x, (int) this.y, (int) this.z - 1)) && !level.getExtraBlock((int) this.x, (int) this.y, (int) this.z - 1).isLiquidSource() ||
                     !this.canFlowInto(this.level.getBlock((int) this.x, (int) this.y, (int) this.z + 1)) && !level.getExtraBlock((int) this.x, (int) this.y, (int) this.z + 1).isLiquidSource() ||
                     !this.canFlowInto(this.level.getBlock((int) this.x - 1, (int) this.y, (int) this.z)) && !level.getExtraBlock((int) this.x - 1, (int) this.y, (int) this.z).isLiquidSource() ||

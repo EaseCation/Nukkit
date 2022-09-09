@@ -17,8 +17,7 @@ public class PluginsCommand extends VanillaCommand {
         super(name,
                 "%nukkit.command.plugins.description",
                 "%nukkit.command.plugins.usage",
-                new String[]{"pl"}
-        );
+                "pl");
         this.setPermission("nukkit.command.plugins");
         this.commandParameters.clear();
     }
@@ -38,7 +37,8 @@ public class PluginsCommand extends VanillaCommand {
         Map<String, Plugin> plugins = sender.getServer().getPluginManager().getPlugins();
         for (Plugin plugin : plugins.values()) {
             if (list.length() > 0) {
-                list.append(TextFormat.WHITE + ", ");
+                list.append(TextFormat.WHITE );
+                list.append(", ");
             }
             list.append(plugin.isEnabled() ? TextFormat.GREEN : TextFormat.RED);
             list.append(plugin.getDescription().getFullName());

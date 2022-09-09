@@ -18,7 +18,7 @@ public class TestForBlockCommand extends VanillaCommand {
         super(name, "%nukkit.command.testforblock.description", "%commands.testforblock.usage");
         this.setPermission("nukkit.command.testforblock");
         this.commandParameters.clear();
-        this.addCommandParameters("default", new CommandParameter[]{
+        this.commandParameters.put("default", new CommandParameter[]{
                 CommandParameter.newType("position", CommandParamType.BLOCK_POSITION),
                 CommandParameter.newType("tileId", CommandParamType.INT),
                 CommandParameter.newType("dataValue", true, CommandParamType.INT),

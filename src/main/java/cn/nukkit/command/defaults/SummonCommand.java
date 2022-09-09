@@ -18,11 +18,11 @@ public class SummonCommand extends Command {
         this.setPermission("nukkit.command.summon");
         this.commandParameters.clear();
         this.commandParameters.put("pos", new CommandParameter[]{
-				CommandParameter.newEnum("entityType", false, new CommandEnum("entity", Entity.getKnownEntities())),
+				CommandParameter.newEnum("entityType", CommandEnum.ENUM_ENTITY_TYPE),
 				CommandParameter.newType("spawnPos", true, CommandParamType.POSITION)
         });
         this.commandParameters.put("nbt", new CommandParameter[]{
-				CommandParameter.newEnum("entityType", false, new CommandEnum("entity", Entity.getKnownEntities())),
+				CommandParameter.newEnum("entityType", CommandEnum.ENUM_ENTITY_TYPE),
 				CommandParameter.newType("nbt", true, CommandParamType.JSON)
         });
 	}

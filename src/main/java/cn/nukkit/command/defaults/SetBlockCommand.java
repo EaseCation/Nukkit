@@ -1,15 +1,18 @@
 package cn.nukkit.command.defaults;
 
-import cn.nukkit.Player;
 import cn.nukkit.block.Block;
+import cn.nukkit.block.Blocks;
 import cn.nukkit.command.Command;
+import cn.nukkit.command.CommandParser;
 import cn.nukkit.command.CommandSender;
 import cn.nukkit.command.data.CommandEnum;
 import cn.nukkit.command.data.CommandParamOption;
 import cn.nukkit.command.data.CommandParamType;
 import cn.nukkit.command.data.CommandParameter;
-import cn.nukkit.lang.TranslationContainer;
-import cn.nukkit.math.Vector3;
+import cn.nukkit.command.exceptions.CommandSyntaxException;
+import cn.nukkit.level.Level;
+import cn.nukkit.level.Position;
+import cn.nukkit.utils.TextFormat;
 
 public class SetBlockCommand extends Command {
 	public SetBlockCommand(String name) {
@@ -20,6 +23,7 @@ public class SetBlockCommand extends Command {
 				CommandParameter.newType("position", CommandParamType.BLOCK_POSITION),
 				CommandParameter.newEnum("block", CommandEnum.ENUM_BLOCK)
 						.addOption(CommandParamOption.HAS_SEMANTIC_CONSTRAINT),
+				CommandParameter.newEnum("oldBlockHandling", true, new CommandEnum("SetBlockMode", SetBlockMode.values())),
         });
 	}
 
@@ -28,39 +32,53 @@ public class SetBlockCommand extends Command {
 		if (!this.testPermission(sender)) {
             return true;
         }
-        if (!(sender instanceof Player)) {
-            sender.sendMessage(new TranslationContainer("commands.generic.usage", this.usageMessage));
-            return false;
-		}
 
-		Player player = (Player) sender;
-		if (args.length == 4) {
-			Vector3 position;
-			try {
-				double x = Double.parseDouble(args[0]);
-				double y = Double.parseDouble(args[1]);
-				double z = Double.parseDouble(args[2]);
-				position = new Vector3(x, y, z);
-			} catch (NumberFormatException e) {
-				sender.sendMessage(new TranslationContainer("commands.generic.usage", this.usageMessage));
-				return false;
+		CommandParser parser = new CommandParser(this, sender, args);
+		try {
+			Position position = parser.parsePosition();
+			Block block = parser.parseBlock();
+			SetBlockMode oldBlockHandling = SetBlockMode.REPLACE;
+			if (parser.hasNext()) {
+				oldBlockHandling = parser.parseEnum(SetBlockMode.class);
 			}
-			Block block;
-			try {
-				block = Block.fromString(args[3]);
-			} catch (Exception e) {
-				sender.sendMessage(new TranslationContainer("commands.generic.usage", this.usageMessage));
+
+			if (position.y < 0 || position.y > 255) {
+				sender.sendMessage(TextFormat.RED + "Cannot place block outside of the world");
 				return true;
 			}
-			if (!player.getLevel().setBlock(position, block, true)) {
-				sender.sendMessage(new TranslationContainer("commands.generic.usage", this.usageMessage));
-				return true;
+
+			Level level = position.getLevel();
+
+			boolean changed = false;
+			switch (oldBlockHandling) {
+				case DESTROY:
+					level.useBreakOn(position);
+				case REPLACE:
+					changed = level.setExtraBlock(position, Blocks.air(), true, false);
+					changed |= level.setBlock(position, block, true, false);
+					break;
+				case KEEP:
+					if (level.getBlock(position).getId() == Block.AIR) {
+						changed = level.setBlock(position, block, true, false);
+					}
+					break;
 			}
-			sender.sendMessage(new TranslationContainer("commands.setblock.success"));
-			return true;
-		} else {
-			sender.sendMessage(new TranslationContainer("commands.generic.usage", this.usageMessage));
-            return false;
+
+			if (changed) {
+				sender.sendMessage("Block placed");
+				return true;
+			} else {
+				sender.sendMessage(TextFormat.RED + "The block couldn't be placed");
+			}
+		} catch (CommandSyntaxException e) {
+			sender.sendMessage(parser.getErrorMessage());
 		}
+		return false;
+	}
+
+	enum SetBlockMode {
+		REPLACE,
+		DESTROY,
+		KEEP,
 	}
 }

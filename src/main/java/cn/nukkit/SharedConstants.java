@@ -12,6 +12,8 @@ public final class SharedConstants {
 
     public static final boolean NAN_INF_CHECK = false;
 
+    public static final boolean LOG_INVALID_BLOCK_AUX_ACCESS = true;
+
     public static final boolean EVENT_CREATE_STACK_TRACE = false;
     public static final boolean EVENT_CANCEL_STACK_TRACE = false;
 

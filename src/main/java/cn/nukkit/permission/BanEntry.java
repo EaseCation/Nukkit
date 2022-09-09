@@ -19,7 +19,7 @@ public class BanEntry {
     public static final String format = "yyyy-MM-dd HH:mm:ss Z";
 
     private final String name;
-    private Date creationDate = null;
+    private Date creationDate;
     private String source = "(Unknown)";
     private Date expirationDate = null;
     private String reason = "Banned by an operator.";

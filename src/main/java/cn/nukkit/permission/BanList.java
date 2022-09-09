@@ -4,6 +4,9 @@ import cn.nukkit.utils.Utils;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.google.gson.reflect.TypeToken;
+import it.unimi.dsi.fastutil.objects.Object2ObjectLinkedOpenHashMap;
+import it.unimi.dsi.fastutil.objects.Object2ObjectRBTreeMap;
+import it.unimi.dsi.fastutil.objects.ObjectArrayList;
 import lombok.extern.log4j.Log4j2;
 
 import java.io.ByteArrayInputStream;
@@ -19,7 +22,7 @@ import java.util.*;
 @Log4j2
 public class BanList {
 
-    private LinkedHashMap<String, BanEntry> list = new LinkedHashMap<>();
+    private Map<String, BanEntry> list = new Object2ObjectLinkedOpenHashMap<>();
 
     private final String file;
 
@@ -37,7 +40,7 @@ public class BanList {
         this.enable = enable;
     }
 
-    public LinkedHashMap<String, BanEntry> getEntires() {
+    public Map<String, BanEntry> getEntires() {
         removeExpired();
         return this.list;
     }
@@ -90,7 +93,7 @@ public class BanList {
 
 
     public void removeExpired() {
-        for (String name : new ArrayList<>(this.list.keySet())) {
+        for (String name : new ObjectArrayList<>(this.list.keySet())) {
             BanEntry entry = this.list.get(name);
             if (entry.hasExpired()) {
                 list.remove(name);
@@ -99,17 +102,16 @@ public class BanList {
     }
 
     public void load() {
-        this.list = new LinkedHashMap<>();
+        this.list = new Object2ObjectLinkedOpenHashMap<>();
         File file = new File(this.file);
         try {
             if (!file.exists()) {
                 file.createNewFile();
                 this.save();
             } else {
-
-                LinkedList<TreeMap<String, String>> list = new Gson().fromJson(Utils.readFile(this.file), new TypeToken<LinkedList<TreeMap<String, String>>>() {
+                List<Map<String, String>> list = new Gson().fromJson(Utils.readFile(this.file), new TypeToken<LinkedList<Object2ObjectRBTreeMap<String, String>>>() {
                 }.getType());
-                for (TreeMap<String, String> map : list) {
+                for (Map<String, String> map : list) {
                     BanEntry entry = BanEntry.fromMap(map);
                     this.list.put(entry.getName(), entry);
                 }
@@ -129,7 +131,7 @@ public class BanList {
                 file.createNewFile();
             }
 
-            LinkedList<LinkedHashMap<String, String>> list = new LinkedList<>();
+            List<Map<String, String>> list = new LinkedList<>();
             for (BanEntry entry : this.list.values()) {
                 list.add(entry.getMap());
             }

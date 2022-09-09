@@ -129,8 +129,16 @@ public class Vector3 implements Cloneable {
         return new Vector3(this.x * number, this.y * number, this.z * number);
     }
 
+    public Vector3 multiply(Vector3 vec) {
+        return new Vector3(this.x * vec.x, this.y * vec.y, this.z * vec.z);
+    }
+
     public Vector3 divide(double number) {
         return new Vector3(this.x / number, this.y / number, this.z / number);
+    }
+
+    public Vector3 divide(Vector3 vec) {
+        return new Vector3(this.x / vec.x, this.y / vec.y, this.z / vec.z);
     }
 
     public Vector3 ceil() {
@@ -255,6 +263,14 @@ public class Vector3 implements Cloneable {
         return xDiff * xDiff + yDiff * yDiff + zDiff * zDiff;
     }
 
+    public int distanceManhattan(Vector3 pos) {
+        return distanceManhattan(pos.getFloorX(), pos.getFloorY(), pos.getFloorZ());
+    }
+
+    public int distanceManhattan(int x, int y, int z) {
+        return Math.abs(x - getFloorX()) + Math.abs(y - getFloorY()) + Math.abs(z - getFloorZ());
+    }
+
     public double maxPlainDistance() {
         return this.maxPlainDistance(0, 0);
     }
@@ -301,6 +317,72 @@ public class Vector3 implements Cloneable {
                 this.z * v.x - this.x * v.z,
                 this.x * v.y - this.y * v.x
         );
+    }
+
+    public Vector3 min(Vector3 vec) {
+        return new Vector3(
+                Math.min(this.x, vec.x),
+                Math.min(this.y, vec.y),
+                Math.min(this.z, vec.z)
+        );
+    }
+
+    public Vector3 max(Vector3 vec) {
+        return new Vector3(
+                Math.max(this.x, vec.x),
+                Math.max(this.y, vec.y),
+                Math.max(this.z, vec.z)
+        );
+    }
+
+    public Vector3 clamp(Vector3 min, Vector3 max) {
+        return new Vector3(
+                Mth.clamp(this.x, min.x, max.x),
+                Mth.clamp(this.y, min.y, max.y),
+                Mth.clamp(this.z, min.z, max.z)
+        );
+    }
+
+    public Vector3 lerp(Vector3 to, double t) {
+        return new Vector3(
+                Mth.lerp(t, this.x, to.x),
+                Mth.lerp(t, this.y, to.y),
+                Mth.lerp(t, this.z, to.z)
+        );
+    }
+
+    public Vector3 towards(Vector3 target, double maxDistanceDelta) {
+        double diffX = target.x - this.x;
+        double diffY = target.y - this.y;
+        double diffZ = target.z - this.z;
+        double distanceSquared = diffX * diffX + diffY * diffY + diffZ * diffZ;
+
+        if (distanceSquared == 0 || maxDistanceDelta >= 0 && distanceSquared <= maxDistanceDelta * maxDistanceDelta) {
+            return target.copyVec();
+        }
+
+        double distance = Math.sqrt(distanceSquared);
+        return new Vector3(this.x + diffX / distance * maxDistanceDelta,
+                this.y + diffY / distance * maxDistanceDelta,
+                this.z + diffZ / distance * maxDistanceDelta);
+    }
+
+    public double angle(Vector3 to) {
+        double denominator = Math.sqrt(this.lengthSquared() * to.lengthSquared());
+        if (denominator < Mth.EPSILON_NORMAL_SQRT) {
+            return 0;
+        }
+
+        double dot = Mth.clamp(this.dot(to) / denominator, -1, 1);
+        return Math.acos(dot) * Mth.RAD_TO_DEG;
+    }
+
+    public double angleSigned(Vector3 to, Vector3 axis) {
+        double crossX = this.y * to.z - this.z * to.y;
+        double crossY = this.z * to.x - this.x * to.z;
+        double crossZ = this.x * to.y - this.y * to.x;
+        int sign = axis.x * crossX + axis.y * crossY + axis.z * crossZ >= 0 ? 1 : -1;
+        return this.angle(to) * sign;
     }
 
     /**

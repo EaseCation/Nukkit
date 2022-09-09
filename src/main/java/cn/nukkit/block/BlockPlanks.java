@@ -61,7 +61,7 @@ public class BlockPlanks extends BlockSolidMeta {
 
     @Override
     public String getName() {
-        return NAMES[this.getDamage() & 0xf];
+        return NAMES[this.getDamage() & 0x7];
     }
 
     @Override

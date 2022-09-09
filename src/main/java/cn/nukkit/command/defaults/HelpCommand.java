@@ -7,9 +7,9 @@ import cn.nukkit.command.data.CommandParamType;
 import cn.nukkit.command.data.CommandParameter;
 import cn.nukkit.lang.TranslationContainer;
 import cn.nukkit.utils.TextFormat;
+import it.unimi.dsi.fastutil.objects.Object2ObjectRBTreeMap;
 
 import java.util.Map;
-import java.util.TreeMap;
 
 /**
  * author: MagicDroidX
@@ -18,7 +18,7 @@ import java.util.TreeMap;
 public class HelpCommand extends VanillaCommand {
 
     public HelpCommand(String name) {
-        super(name, "%nukkit.command.help.description", "%commands.help.usage", new String[]{"?"});
+        super(name, "%nukkit.command.help.description", "%commands.help.usage", "?");
         this.setPermission("nukkit.command.help");
         this.commandParameters.clear();
         this.commandParameters.put("default", new CommandParameter[]{
@@ -71,7 +71,7 @@ public class HelpCommand extends VanillaCommand {
         }
 
         if (command.toString().equals("")) {
-            Map<String, Command> commands = new TreeMap<>();
+            Map<String, Command> commands = new Object2ObjectRBTreeMap<>();
             for (Command cmd : sender.getServer().getCommandMap().getCommands().values()) {
                 if (cmd.testPermissionSilent(sender)) {
                     commands.put(cmd.getName(), cmd);
@@ -103,7 +103,8 @@ public class HelpCommand extends VanillaCommand {
                     String[] usages = cmd.getUsage().split("\n");
                     for (String u : usages) {
                         if (!usage.toString().equals("")) {
-                            usage.append("\n" + TextFormat.WHITE);
+                            usage.append("\n");
+                            usage.append(TextFormat.WHITE);
                         }
                         usage.append(u);
                     }

@@ -2,6 +2,9 @@ package cn.nukkit.plugin;
 
 import cn.nukkit.permission.Permission;
 import cn.nukkit.utils.PluginException;
+import it.unimi.dsi.fastutil.objects.Object2ObjectLinkedOpenHashMap;
+import it.unimi.dsi.fastutil.objects.Object2ObjectOpenHashMap;
+import it.unimi.dsi.fastutil.objects.ObjectArrayList;
 import org.yaml.snakeyaml.DumperOptions;
 import org.yaml.snakeyaml.Yaml;
 
@@ -103,18 +106,18 @@ public class PluginDescription {
     private String name;
     private String main;
     private List<String> api;
-    private List<String> depend = new ArrayList<>();
-    private List<String> softDepend = new ArrayList<>();
-    private List<String> loadBefore = new ArrayList<>();
+    private List<String> depend = new ObjectArrayList<>();
+    private List<String> softDepend = new ObjectArrayList<>();
+    private List<String> loadBefore = new ObjectArrayList<>();
     private String version;
-    private Map<String, Object> commands = new HashMap<>();
+    private Map<String, Object> commands = new Object2ObjectOpenHashMap<>();
     private String description;
-    private final List<String> authors = new ArrayList<>();
+    private final List<String> authors = new ObjectArrayList<>();
     private String website;
     private String prefix;
     private PluginLoadOrder order = PluginLoadOrder.POSTWORLD;
 
-    private List<Permission> permissions = new ArrayList<>();
+    private List<Permission> permissions = new ObjectArrayList<>();
 
     public PluginDescription(Map<String, Object> yamlMap) {
         this.loadMap(yamlMap);
@@ -124,7 +127,7 @@ public class PluginDescription {
         DumperOptions dumperOptions = new DumperOptions();
         dumperOptions.setDefaultFlowStyle(DumperOptions.FlowStyle.BLOCK);
         Yaml yaml = new Yaml(dumperOptions);
-        this.loadMap(yaml.loadAs(yamlString, LinkedHashMap.class));
+        this.loadMap(yaml.loadAs(yamlString, Object2ObjectLinkedOpenHashMap.class));
     }
 
     private void loadMap(Map<String, Object> plugin) throws PluginException {
@@ -139,7 +142,7 @@ public class PluginDescription {
         if (api instanceof List) {
             this.api = (List<String>) api;
         } else {
-            List<String> list = new ArrayList<>();
+            List<String> list = new ObjectArrayList<>();
             list.add((String) api);
             this.api = list;
         }

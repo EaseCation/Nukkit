@@ -95,33 +95,17 @@ public class PalettedSubChunkStorage {
             }
 
             if (tag.contains("version")) {
+                //TODO: block state
                 log.warn("Unsupported blockstate version: {}", tag.getInt("version"));
             }
 
-            int id;
             int meta = tag.getShort("val");
-            if (meta <= 0xf) {
-                String name = tag.getString("name");
-                id = GlobalBlockPalette.getBlockIdByName(name);
-                if (id == -1) {
-                    id = Block.INFO_UPDATE;
-                    meta = 0;
-                    log.warn("Unmapped block name: {}", name);
-                }
-            } else { //TODO: meta > 15
-//                id = Block.INFO_UPDATE;
-//                meta = 0;
-
-                String name = tag.getString("name");
-                id = GlobalBlockPalette.getBlockIdByName(name);
-                if (id == -1) {
-                    id = Block.INFO_UPDATE;
-                    meta = 0;
-                    log.warn("Unmapped block name: {}", name);
-                }
-                meta &= 0xf;
-
-                log.warn("Unsupported block meta: {}:{}", id, meta);
+            String name = tag.getString("name");
+            int id = GlobalBlockPalette.getBlockIdByName(name);
+            if (id == -1) {
+                id = Block.INFO_UPDATE;
+                meta = 0;
+                log.warn("Unmapped block name: {}", name);
             }
             palette[i] = (id << Block.BLOCK_META_BITS) | (meta & Block.BLOCK_META_MASK);
         }

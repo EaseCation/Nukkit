@@ -1,9 +1,11 @@
 package cn.nukkit.command;
 
 import cn.nukkit.Player;
+import cn.nukkit.block.Block;
 import cn.nukkit.command.exceptions.CommandExceptions;
 import cn.nukkit.command.exceptions.CommandSyntaxException;
 import cn.nukkit.entity.Entity;
+import cn.nukkit.item.Item;
 import cn.nukkit.level.Level;
 import cn.nukkit.level.Position;
 import cn.nukkit.math.BlockVector3;
@@ -12,9 +14,7 @@ import cn.nukkit.math.Vector3;
 import cn.nukkit.math.Vector3f;
 import cn.nukkit.utils.TextFormat;
 
-import java.util.Arrays;
 import java.util.List;
-import java.util.StringJoiner;
 import java.util.stream.Collectors;
 
 public class CommandParser {
@@ -24,11 +24,31 @@ public class CommandParser {
     private final String[] args;
 
     private int cursor = -1;
+    private int marker = -1;
 
     public CommandParser(Command command, CommandSender sender, String[] args) {
         this.command = command;
         this.sender = sender;
         this.args = args;
+    }
+
+    public void mark() {
+        marker = cursor;
+    }
+
+    public void reset() {
+        cursor = marker;
+    }
+
+    public boolean hasNext() {
+        return this.hasNext(1);
+    }
+
+    public boolean hasNext(int n) {
+        if (n <= 0) {
+            throw new IllegalArgumentException("Number must be greater than 0");
+        }
+        return this.cursor + n < this.args.length;
     }
 
     private String next() throws CommandSyntaxException {
@@ -38,37 +58,59 @@ public class CommandParser {
         return this.args[this.cursor];
     }
 
+    public void back() {
+        this.back(1);
+    }
+
+    public void back(int n) {
+        if (n <= 0) {
+            return;
+        }
+        this.cursor -= n;
+    }
+
     public String getErrorMessage() {
-        String parameter1;
-        try {
-            StringJoiner joiner = new StringJoiner(" ", " ", " ");
-            for (String arg : Arrays.copyOfRange(this.args, 0, this.cursor)) {
-                joiner.add(arg);
+        StringBuilder left = new StringBuilder(10);
+        String current;
+        StringBuilder right = new StringBuilder(10);
+
+        int limit = 10;
+        for (int i = this.cursor - 1; i >= 0 && limit >= 0; i--) {
+            left.insert(0, ' ');
+            limit--;
+
+            String arg = this.args[i];
+            for (int j = arg.length() - 1; j >= 0 && limit-- >= 0; j--) {
+                left.insert(0, arg.charAt(j));
             }
-            parameter1 = joiner.length() < 3 ? "" : joiner.toString();
-        } catch (Exception e) {
-            parameter1 = "";
         }
+        if (limit >= 0) {
+            left.insert(0, ' ');
+            limit--;
 
-        String parameter2;
-        try {
-            parameter2 = this.args[this.cursor];
-        } catch (Exception e) {
-            parameter2 = "";
-        }
-
-        String parameter3;
-        try {
-            StringJoiner joiner = new StringJoiner(" ", " ", "");
-            for (String arg : Arrays.copyOfRange(this.args, this.cursor + 1, this.args.length)) {
-                joiner.add(arg);
+            String command = "/" + this.command.getName();
+            for (int j = command.length() - 1; j >= 0 && limit-- >= 0; j--) {
+                left.insert(0, command.charAt(j));
             }
-            parameter3 = joiner.toString();
-        } catch (Exception e) {
-            parameter3 = "";
         }
 
-        return String.format(TextFormat.RED + "Syntax error: Unexpected \"%2$s\": at \"/%4$s%1$s>>%2$s<<%3$s\"", parameter1, parameter2, parameter3, this.command.getName());
+        if (this.cursor >= this.args.length) {
+            current = "";
+        } else {
+            current = this.args[this.cursor];
+            limit = 10;
+            for (int i = this.cursor + 1; i < this.args.length && limit > 0; i++, limit--) {
+                right.append(' ');
+                limit--;
+
+                String arg = this.args[i];
+                for (int j = 0; j < arg.length() && limit-- > 0; j++) {
+                    right.append(arg.charAt(j));
+                }
+            }
+        }
+
+        return String.format(TextFormat.RED + "Syntax error: Unexpected \"%2$s\": at \"%1$s>>%2$s<<%3$s\"", left, current, right);
     }
 
     public Level getTargetLevel() {
@@ -86,7 +128,7 @@ public class CommandParser {
             String arg = this.next();
             return Integer.parseInt(arg);
         } catch (Exception e) {
-            throw CommandExceptions.COMMAND_SYNTAX_EXCEPTION;
+            throw CommandExceptions.NOT_INT;
         }
     }
 
@@ -95,7 +137,7 @@ public class CommandParser {
             String arg = this.next();
             return Double.parseDouble(arg);
         } catch (Exception e) {
-            throw CommandExceptions.COMMAND_SYNTAX_EXCEPTION;
+            throw CommandExceptions.NOT_FLOAT;
         }
     }
 
@@ -216,6 +258,22 @@ public class CommandParser {
                 return baseCoordinate + Double.parseDouble(relativeCoordinate);
             }
             return Double.parseDouble(arg);
+        } catch (Exception e) {
+            throw CommandExceptions.COMMAND_SYNTAX_EXCEPTION;
+        }
+    }
+
+    public Block parseBlock() throws CommandSyntaxException {
+        try {
+            return Block.fromString(this.next());
+        } catch (Exception e) {
+            throw CommandExceptions.COMMAND_SYNTAX_EXCEPTION;
+        }
+    }
+
+    public Item parseItem() throws CommandSyntaxException {
+        try {
+            return Item.fromString(this.next());
         } catch (Exception e) {
             throw CommandExceptions.COMMAND_SYNTAX_EXCEPTION;
         }

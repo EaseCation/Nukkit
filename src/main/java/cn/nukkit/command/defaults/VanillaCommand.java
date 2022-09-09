@@ -20,7 +20,7 @@ public abstract class VanillaCommand extends Command {
         super(name, description, usageMessage);
     }
 
-    public VanillaCommand(String name, String description, String usageMessage, String[] aliases) {
+    public VanillaCommand(String name, String description, String usageMessage, String... aliases) {
         super(name, description, usageMessage, aliases);
     }
 }

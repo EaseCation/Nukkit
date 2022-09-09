@@ -299,7 +299,6 @@ public interface AxisAlignedBB extends Cloneable {
         throw new UnsupportedOperationException("Not mutable");
     }
 
-
     double getMinX();
     double getMinY();
     double getMinZ();
@@ -307,33 +306,57 @@ public interface AxisAlignedBB extends Cloneable {
     double getMaxY();
     double getMaxZ();
 
-    default double getMinChunkX() {
-        return Mth.floor(getMinX()) >> 4;
+    default int getFloorMinX() {
+        return Mth.floor(getMinX());
     }
 
-    default double getMaxChunkX() {
-        return Mth.floor(getMaxX()) >> 4;
+    default int getFloorMinY() {
+        return Mth.floor(getMinY());
     }
 
-    default double getMinSubChunkY() {
-        return Mth.floor(getMinY()) >> 4;
+    default int getFloorMinZ() {
+        return Mth.floor(getMinZ());
     }
 
-    default double getMaxSubChunkY() {
-        return Mth.floor(getMaxY()) >> 4;
+    default int getFloorMaxX() {
+        return Mth.floor(getMaxX());
     }
 
-    default double getMinChunkZ() {
-        return Mth.floor(getMinZ()) >> 4;
+    default int getFloorMaxY() {
+        return Mth.floor(getMaxY());
     }
 
-    default double getMaxChunkZ() {
-        return Mth.floor(getMaxZ()) >> 4;
+    default int getFloorMaxZ() {
+        return Mth.floor(getMaxZ());
+    }
+
+    default int getMinChunkX() {
+        return getFloorMinX() >> 4;
+    }
+
+    default int getMaxChunkX() {
+        return getFloorMaxX() >> 4;
+    }
+
+    default int getMinSubChunkY() {
+        return getFloorMinY() >> 4;
+    }
+
+    default int getMaxSubChunkY() {
+        return getFloorMaxY() >> 4;
+    }
+
+    default int getMinChunkZ() {
+        return getFloorMinZ() >> 4;
+    }
+
+    default int getMaxChunkZ() {
+        return getFloorMaxZ() >> 4;
     }
 
     AxisAlignedBB clone();
 
-    default void forEach(BBConsumer action) {
+    default void forEach(BBConsumer<?> action) {
         int minX = Mth.floor(this.getMinX());
         int minY = Mth.floor(this.getMinY());
         int minZ = Mth.floor(this.getMinZ());
@@ -350,7 +373,6 @@ public interface AxisAlignedBB extends Cloneable {
             }
         }
     }
-
 
     interface BBConsumer<T> {
 

@@ -39,7 +39,7 @@ public class BlockSnowLayer extends BlockFallable {
 
     @Override
     public final void setDamage(int meta) {
-        this.meta = meta & BLOCK_META_MASK;
+        this.meta = meta;
     }
 
     @Override
@@ -100,7 +100,7 @@ public class BlockSnowLayer extends BlockFallable {
 
     private boolean canSurvive() {
         Block below = this.down();
-        return below.getId() != ICE && below.getId() != FROSTED_ICE && SupportType.hasFullSupport(below, BlockFace.UP);
+        return below.getId() != ICE && below.getId() != FROSTED_ICE && (below.isLeaves() || SupportType.hasFullSupport(below, BlockFace.UP));
     }
 
     @Override

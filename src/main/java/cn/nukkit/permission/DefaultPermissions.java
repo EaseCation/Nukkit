@@ -105,12 +105,30 @@ public abstract class DefaultPermissions {
         registerPermission(new Permission(ROOT + ".command.status", "Allows the user to view the server performance", Permission.DEFAULT_OP), commands);
         registerPermission(new Permission(ROOT + ".command.gc", "Allows the user to fire garbage collection tasks", Permission.DEFAULT_OP), commands);
         registerPermission(new Permission(ROOT + ".command.dumpmemory", "Allows the user to dump memory contents", Permission.DEFAULT_OP), commands);
+        registerPermission(new Permission(ROOT + ".command.gamerule", "Sets or queries a game rule value", Permission.DEFAULT_OP), commands);
         registerPermission(new Permission(ROOT + ".command.timings", "Allows the user to records timings for all plugin events", Permission.DEFAULT_OP), commands);
         registerPermission(new Permission(ROOT + ".command.title", "Allows the user to send titles to players", Permission.DEFAULT_OP), commands);
         registerPermission(new Permission(ROOT + ".command.spawnpoint", "Allows the user to change player's spawnpoint", Permission.DEFAULT_OP), commands);
         registerPermission(new Permission(ROOT + ".command.setworldspawn", "Allows the user to change the world spawn", Permission.DEFAULT_OP), commands);
         registerPermission(new Permission(ROOT + ".command.weather", "Allows the user to change the weather", Permission.DEFAULT_OP), commands);
         registerPermission(new Permission(ROOT + ".command.xp", "Allows the user to give experience", Permission.DEFAULT_OP), commands);
+
+        registerPermission(new Permission(ROOT + ".command.summon", " ", Permission.DEFAULT_OP), commands);
+        registerPermission(new Permission(ROOT + ".command.setblock", " ", Permission.DEFAULT_OP), commands);
+        registerPermission(new Permission(ROOT + ".command.testforblock", " ", Permission.DEFAULT_OP), commands);
+        registerPermission(new Permission(ROOT + ".command.clone", " ", Permission.DEFAULT_OP), commands);
+        registerPermission(new Permission(ROOT + ".command.fill", " ", Permission.DEFAULT_OP), commands);
+        registerPermission(new Permission(ROOT + ".command.clear", " ", Permission.DEFAULT_OP), commands);
+        registerPermission(new Permission(ROOT + ".command.replaceitem", " ", Permission.DEFAULT_OP), commands);
+        registerPermission(new Permission(ROOT + ".command.spreadplayers", " ", Permission.DEFAULT_OP), commands);
+        registerPermission(new Permission(ROOT + ".command.testfor", " ", Permission.DEFAULT_OP), commands);
+        registerPermission(new Permission(ROOT + ".command.testforblocks", " ", Permission.DEFAULT_OP), commands);
+        registerPermission(new Permission(ROOT + ".command.setmaxplayers", " ", Permission.DEFAULT_OP), commands);
+
+        Permission sound = registerPermission(new Permission(ROOT + ".command.sound", " ", Permission.DEFAULT_OP), commands);
+        registerPermission(new Permission(ROOT + ".command.sound.play", " "), sound);
+        registerPermission(new Permission(ROOT + ".command.sound.stop", " "), sound);
+        sound.recalculatePermissibles();
 
         commands.recalculatePermissibles();
 

@@ -121,8 +121,16 @@ public class BlockVector3 implements Cloneable {
         return new BlockVector3(this.x * number, this.y * number, this.z * number);
     }
 
+    public BlockVector3 multiply(BlockVector3 vec) {
+        return new BlockVector3(this.x * vec.x, this.y * vec.y, this.z * vec.z);
+    }
+
     public BlockVector3 divide(int number) {
         return new BlockVector3(this.x / number, this.y / number, this.z / number);
+    }
+
+    public BlockVector3 divide(BlockVector3 vec) {
+        return new BlockVector3(this.x / vec.x, this.y / vec.y, this.z / vec.z);
     }
 
     public BlockVector3 getSide(BlockFace face) {
@@ -204,6 +212,104 @@ public class BlockVector3 implements Cloneable {
         return xDiff * xDiff + yDiff * yDiff + zDiff * zDiff;
     }
 
+    public int distanceManhattan(Vector3 pos) {
+        return distanceManhattan(pos.getFloorX(), pos.getFloorY(), pos.getFloorZ());
+    }
+
+    public int distanceManhattan(BlockVector3 pos) {
+        return distanceManhattan(pos.x, pos.y, pos.z);
+    }
+
+    public int distanceManhattan(int x, int y, int z) {
+        return Math.abs(x - this.x) + Math.abs(y - this.y) + Math.abs(z - this.z);
+    }
+
+    public double length() {
+        return Math.sqrt(this.lengthSquared());
+    }
+
+    public int lengthSquared() {
+        return this.x * this.x + this.y * this.y + this.z * this.z;
+    }
+
+    public int dot(BlockVector3 v) {
+        return this.x * v.x + this.y * v.y + this.z * v.z;
+    }
+
+    public BlockVector3 cross(BlockVector3 v) {
+        return new BlockVector3(
+                this.y * v.z - this.z * v.y,
+                this.z * v.x - this.x * v.z,
+                this.x * v.y - this.y * v.x
+        );
+    }
+
+    public BlockVector3 min(BlockVector3 vec) {
+        return new BlockVector3(
+                Math.min(this.x, vec.x),
+                Math.min(this.y, vec.y),
+                Math.min(this.z, vec.z)
+        );
+    }
+
+    public BlockVector3 max(BlockVector3 vec) {
+        return new BlockVector3(
+                Math.max(this.x, vec.x),
+                Math.max(this.y, vec.y),
+                Math.max(this.z, vec.z)
+        );
+    }
+
+    public BlockVector3 clamp(BlockVector3 min, BlockVector3 max) {
+        return new BlockVector3(
+                Mth.clamp(this.x, min.x, max.x),
+                Mth.clamp(this.y, min.y, max.y),
+                Mth.clamp(this.z, min.z, max.z)
+        );
+    }
+
+    public Vector3 lerp(BlockVector3 to, double t) {
+        return new Vector3(
+                Mth.lerp(t, this.x, to.x),
+                Mth.lerp(t, this.y, to.y),
+                Mth.lerp(t, this.z, to.z)
+        );
+    }
+
+    public Vector3 towards(BlockVector3 target, int maxDistanceDelta) {
+        int diffX = target.x - this.x;
+        int diffY = target.y - this.y;
+        int diffZ = target.z - this.z;
+        int distanceSquared = diffX * diffX + diffY * diffY + diffZ * diffZ;
+
+        if (distanceSquared == 0 || maxDistanceDelta >= 0 && distanceSquared <= maxDistanceDelta * maxDistanceDelta) {
+            return target.asVector3();
+        }
+
+        double distance = Math.sqrt(distanceSquared);
+        return new Vector3(this.x + diffX / distance * maxDistanceDelta,
+                this.y + diffY / distance * maxDistanceDelta,
+                this.z + diffZ / distance * maxDistanceDelta);
+    }
+
+    public double angle(BlockVector3 to) {
+        double denominator = Math.sqrt(this.lengthSquared() * to.lengthSquared());
+        if (denominator < Mth.EPSILON_NORMAL_SQRT) {
+            return 0;
+        }
+
+        double dot = Mth.clamp(this.dot(to) / denominator, -1, 1);
+        return Math.acos(dot) * Mth.RAD_TO_DEG;
+    }
+
+    public double angleSigned(BlockVector3 to, BlockVector3 axis) {
+        int crossX = this.y * to.z - this.z * to.y;
+        int crossY = this.z * to.x - this.x * to.z;
+        int crossZ = this.x * to.y - this.y * to.x;
+        int sign = axis.x * crossX + axis.y * crossY + axis.z * crossZ >= 0 ? 1 : -1;
+        return this.angle(to) * sign;
+    }
+
     @Override
     public boolean equals(Object o) {
         if (o == null) return false;
@@ -217,14 +323,25 @@ public class BlockVector3 implements Cloneable {
                 this.z == that.z;
     }
 
+    public final boolean equalsVec(BlockVector3 vec) {
+        if (vec == null) {
+            return false;
+        }
+        return this.x == vec.x && this.y == vec.y && this.z == vec.z;
+    }
+
     @Override
     public final int hashCode() {
         return (x ^ (z << 12)) ^ (y << 24);
     }
 
+    public int rawHashCode() {
+        return super.hashCode();
+    }
+
     @Override
     public String toString() {
-        return "BlockPosition(level=" + ",x=" + this.x + ",y=" + this.y + ",z=" + this.z + ")";
+        return "BlockVector3(x=" + this.x + ",y=" + this.y + ",z=" + this.z + ")";
     }
 
     @Override
@@ -234,6 +351,10 @@ public class BlockVector3 implements Cloneable {
         } catch (CloneNotSupportedException e) {
             return null;
         }
+    }
+
+    public final BlockVector3 copyVec() {
+        return new BlockVector3(x, y, z);
     }
 
     public Vector3 asVector3() {

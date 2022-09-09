@@ -11,6 +11,10 @@ import cn.nukkit.utils.PluginException;
 import cn.nukkit.utils.Utils;
 import co.aikar.timings.Timing;
 import co.aikar.timings.Timings;
+import it.unimi.dsi.fastutil.objects.Object2ObjectLinkedOpenHashMap;
+import it.unimi.dsi.fastutil.objects.Object2ObjectOpenHashMap;
+import it.unimi.dsi.fastutil.objects.ObjectArrayList;
+import it.unimi.dsi.fastutil.objects.ObjectOpenHashSet;
 import lombok.extern.log4j.Log4j2;
 
 import java.io.File;
@@ -29,21 +33,21 @@ public class PluginManager {
 
     private final SimpleCommandMap commandMap;
 
-    protected final Map<String, Plugin> plugins = new LinkedHashMap<>();
+    protected final Map<String, Plugin> plugins = new Object2ObjectLinkedOpenHashMap<>();
 
-    protected final Map<String, Permission> permissions = new HashMap<>();
+    protected final Map<String, Permission> permissions = new Object2ObjectOpenHashMap<>();
 
-    protected final Map<String, Permission> defaultPerms = new HashMap<>();
+    protected final Map<String, Permission> defaultPerms = new Object2ObjectOpenHashMap<>();
 
-    protected final Map<String, Permission> defaultPermsOp = new HashMap<>();
+    protected final Map<String, Permission> defaultPermsOp = new Object2ObjectOpenHashMap<>();
 
-    protected final Map<String, Set<Permissible>> permSubs = new HashMap<>();
+    protected final Map<String, Set<Permissible>> permSubs = new Object2ObjectOpenHashMap<>();
 
     protected final Set<Permissible> defSubs = Collections.newSetFromMap(new WeakHashMap<>());
 
     protected final Set<Permissible> defSubsOp = Collections.newSetFromMap(new WeakHashMap<>());
 
-    protected final Map<String, PluginLoader> fileAssociations = new HashMap<>();
+    protected final Map<String, PluginLoader> fileAssociations = new Object2ObjectOpenHashMap<>();
 
     public PluginManager(Server server, SimpleCommandMap commandMap) {
         this.server = server;
@@ -60,7 +64,7 @@ public class PluginManager {
     public boolean registerInterface(Class<? extends PluginLoader> loaderClass) {
         if (loaderClass != null) {
             try {
-                Constructor constructor = loaderClass.getDeclaredConstructor(Server.class);
+                Constructor<?> constructor = loaderClass.getDeclaredConstructor(Server.class);
                 constructor.setAccessible(true);
                 this.fileAssociations.put(loaderClass.getName(), (PluginLoader) constructor.newInstance(this.server));
                 return true;
@@ -98,7 +102,7 @@ public class PluginManager {
                             if (plugin != null) {
                                 this.plugins.put(plugin.getDescription().getName(), plugin);
 
-                                List<PluginCommand> pluginCommands = this.parseYamlCommands(plugin);
+                                List<PluginCommand<Plugin>> pluginCommands = this.parseYamlCommands(plugin);
 
                                 if (!pluginCommands.isEmpty()) {
                                     this.commandMap.registerAll(plugin.getDescription().getName(), pluginCommands);
@@ -136,11 +140,11 @@ public class PluginManager {
 
     public Map<String, Plugin> loadPlugins(File dictionary, List<String> newLoaders, boolean includeDir) {
         if (dictionary.isDirectory()) {
-            Map<String, File> plugins = new LinkedHashMap<>();
-            Map<String, Plugin> loadedPlugins = new LinkedHashMap<>();
-            Map<String, List<String>> dependencies = new LinkedHashMap<>();
-            Map<String, List<String>> softDependencies = new LinkedHashMap<>();
-            Map<String, PluginLoader> loaders = new LinkedHashMap<>();
+            Map<String, File> plugins = new Object2ObjectLinkedOpenHashMap<>();
+            Map<String, Plugin> loadedPlugins = new Object2ObjectLinkedOpenHashMap<>();
+            Map<String, List<String>> dependencies = new Object2ObjectLinkedOpenHashMap<>();
+            Map<String, List<String>> softDependencies = new Object2ObjectLinkedOpenHashMap<>();
+            Map<String, PluginLoader> loaders = new Object2ObjectLinkedOpenHashMap<>();
             if (newLoaders != null) {
                 for (String key : newLoaders) {
                     if (this.fileAssociations.containsKey(key)) {
@@ -191,7 +195,7 @@ public class PluginManager {
                                 String[] apiVersion = this.server.getApiVersion().split("\\.");
 
                                 //Completely different API version
-                                if (!Objects.equals(Integer.valueOf(versionArray[0]), Integer.valueOf(apiVersion[0]))) {
+                                if (Integer.parseInt(versionArray[0]) != Integer.parseInt(apiVersion[0])) {
                                     continue;
                                 }
 
@@ -218,7 +222,7 @@ public class PluginManager {
                                 if (softDependencies.containsKey(before)) {
                                     softDependencies.get(before).add(name);
                                 } else {
-                                    List<String> list = new ArrayList<>();
+                                    List<String> list = new ObjectArrayList<>();
                                     list.add(name);
                                     softDependencies.put(before, list);
                                 }
@@ -238,10 +242,10 @@ public class PluginManager {
 
             while (!plugins.isEmpty()) {
                 boolean missingDependency = true;
-                for (String name : new ArrayList<>(plugins.keySet())) {
+                for (String name : new ObjectArrayList<>(plugins.keySet())) {
                     File file = plugins.get(name);
                     if (dependencies.containsKey(name)) {
-                        for (String dependency : new ArrayList<>(dependencies.get(name))) {
+                        for (String dependency : new ObjectArrayList<>(dependencies.get(name))) {
                             if (loadedPlugins.containsKey(dependency) || this.getPlugin(dependency) != null) {
                                 dependencies.get(name).remove(dependency);
                             } else if (!plugins.containsKey(dependency)) {
@@ -278,7 +282,7 @@ public class PluginManager {
                 }
 
                 if (missingDependency) {
-                    for (String name : new ArrayList<>(plugins.keySet())) {
+                    for (String name : new ObjectArrayList<>(plugins.keySet())) {
                         File file = plugins.get(name);
                         if (!dependencies.containsKey(name)) {
                             softDependencies.remove(name);
@@ -304,7 +308,7 @@ public class PluginManager {
 
             return loadedPlugins;
         } else {
-            return new HashMap<>();
+            return new Object2ObjectOpenHashMap<>();
         }
     }
 
@@ -388,9 +392,9 @@ public class PluginManager {
 
     public Set<Permissible> getPermissionSubscriptions(String permission) {
         if (this.permSubs.containsKey(permission)) {
-            return new HashSet<>(this.permSubs.get(permission));
+            return new ObjectOpenHashSet<>(this.permSubs.get(permission));
         }
-        return new HashSet<>();
+        return new ObjectOpenHashSet<>();
     }
 
     public void subscribeToDefaultPerms(boolean op, Permissible permissible) {
@@ -411,9 +415,9 @@ public class PluginManager {
 
     public Set<Permissible> getDefaultPermSubscriptions(boolean op) {
         if (op) {
-            return new HashSet<>(this.defSubsOp);
+            return new ObjectOpenHashSet<>(this.defSubsOp);
         } else {
-            return new HashSet<>(this.defSubs);
+            return new ObjectOpenHashSet<>(this.defSubs);
         }
     }
 
@@ -446,18 +450,18 @@ public class PluginManager {
         }
     }
 
-    protected List<PluginCommand> parseYamlCommands(Plugin plugin) {
-        List<PluginCommand> pluginCmds = new ArrayList<>();
+    protected List<PluginCommand<Plugin>> parseYamlCommands(Plugin plugin) {
+        List<PluginCommand<Plugin>> pluginCmds = new ObjectArrayList<>();
 
-        for (Map.Entry entry : plugin.getDescription().getCommands().entrySet()) {
-            String key = (String) entry.getKey();
+        for (Map.Entry<String, Object> entry : plugin.getDescription().getCommands().entrySet()) {
+            String key = entry.getKey();
             Object data = entry.getValue();
             if (key.contains(":")) {
                 log.fatal(this.server.getLanguage().translateString("nukkit.plugin.commandError", new String[]{key, plugin.getDescription().getFullName()}));
                 continue;
             }
             if (data instanceof Map) {
-                PluginCommand newCmd = new PluginCommand<>(key, plugin);
+                PluginCommand<Plugin> newCmd = new PluginCommand<>(key, plugin);
 
                 if (((Map) data).containsKey("description")) {
                     newCmd.setDescription((String) ((Map) data).get("description"));
@@ -470,7 +474,7 @@ public class PluginManager {
                 if (((Map) data).containsKey("aliases")) {
                     Object aliases = ((Map) data).get("aliases");
                     if (aliases instanceof List) {
-                        List<String> aliasList = new ArrayList<>();
+                        List<String> aliasList = new ObjectArrayList<>();
                         for (String alias : (List<String>) aliases) {
                             if (alias.contains(":")) {
                                 log.fatal(this.server.getLanguage().translateString("nukkit.plugin.aliasError", new String[]{alias, plugin.getDescription().getFullName()}));
@@ -499,7 +503,7 @@ public class PluginManager {
     }
 
     public void disablePlugins() {
-        ListIterator<Plugin> plugins = new ArrayList<>(this.getPlugins().values()).listIterator(this.getPlugins().size());
+        ListIterator<Plugin> plugins = new ObjectArrayList<>(this.getPlugins().values()).listIterator(this.getPlugins().size());
 
         while (plugins.hasPrevious()) {
             this.disablePlugin(plugins.previous());
@@ -558,12 +562,11 @@ public class PluginManager {
             throw new PluginException("Plugin attempted to register " + listener.getClass().getName() + " while not enabled");
         }
 
-        Map<Class<? extends Event>, Set<RegisteredListener>> ret = new HashMap<>();
         Set<Method> methods;
         try {
             Method[] publicMethods = listener.getClass().getMethods();
             Method[] privateMethods = listener.getClass().getDeclaredMethods();
-            methods = new HashSet<>(publicMethods.length + privateMethods.length, 1.0f);
+            methods = new ObjectOpenHashSet<>(publicMethods.length + privateMethods.length, 0.999999f);
             Collections.addAll(methods, publicMethods);
             Collections.addAll(methods, privateMethods);
         } catch (NoClassDefFoundError e) {

@@ -222,7 +222,7 @@ public class BlockCocoa extends BlockFlowable implements Faceable {
 
     @Override
     public Item[] getDrops(Item item) {
-        if (this.getDamage() >= 8) {
+        if (this.getDamage() >= 0x8) {
             return new Item[]{
                     new ItemDye(3, 3)
             };

@@ -11,6 +11,7 @@ public final class Mth {
     public static final float RAD_TO_DEG = 180 / PI;
     public static final float E = (float) Math.E;
     public static final float EPSILON = 1.0E-5f;
+    public static final float EPSILON_NORMAL_SQRT = 1.0E-15f;
     public static final float SQRT_OF_TWO = (float) Math.sqrt(2);
     private static final double LOG_OF_TWO = Math.log(2);
 

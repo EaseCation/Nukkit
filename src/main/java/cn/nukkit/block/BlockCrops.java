@@ -42,11 +42,11 @@ public abstract class BlockCrops extends BlockFlowable {
     @Override
     public boolean onActivate(Item item, BlockFace face, Player player) {
         if (item.getId() == Item.DYE && item.getDamage() == ItemDye.BONE_MEAL) {
-            if (this.getDamage() < 7) {
+            if (this.getDamage() < 0x7) {
                 BlockCrops block = (BlockCrops) this.clone();
                 block.setDamage(block.getDamage() + ThreadLocalRandom.current().nextInt(3) + 2);
-                if (block.getDamage() > 7) {
-                    block.setDamage(7);
+                if (block.getDamage() > 0x7) {
+                    block.setDamage(0x7);
                 }
                 BlockGrowEvent ev = new BlockGrowEvent(this, block);
                 Server.getInstance().getPluginManager().callEvent(ev);

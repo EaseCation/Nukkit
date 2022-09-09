@@ -399,6 +399,29 @@ public class Item implements Cloneable, ItemID {
         }
     }
 
+    private static Item getCraftingItem(int id, int meta, int count, byte[] tags) {
+        try {
+            Class<?> c = id > 0 ? list[id] : Block.list[0xff - id];
+            Item item;
+
+            if (c == null) {
+                item = new Item(id, meta, count);
+            } else if (id < 256 && id != 166) {
+                item = new ItemBlock(Block.fromItemId(id, meta != -1 ? meta : 0), meta, count);
+            } else {
+                item = ((Item) c.getConstructor(Integer.class, int.class).newInstance(meta, count));
+            }
+
+            if (tags.length != 0) {
+                item.setCompoundTag(tags);
+            }
+
+            return item;
+        } catch (Exception e) {
+            return new Item(id, meta, count).setCompoundTag(tags);
+        }
+    }
+
     private static final Pattern integerPattern = Pattern.compile("^[-1-9]\\d*$");
 
     public static Item fromString(String str) {
@@ -447,7 +470,7 @@ public class Item implements Cloneable, ItemID {
 
 //        if (ignoreUnsupported && id < 0) return null;
 
-        return get(id, Utils.toInt(data.getOrDefault("damage", 0)), Utils.toInt(data.getOrDefault("count", 1)), nbtBytes);
+        return getCraftingItem(id, Utils.toInt(data.getOrDefault("damage", 0)), Utils.toInt(data.getOrDefault("count", 1)), nbtBytes);
     }
 
     public static Item[] fromStringMultiple(String str) {

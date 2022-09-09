@@ -9,14 +9,13 @@ import cn.nukkit.event.player.PlayerKickEvent;
 import cn.nukkit.lang.TranslationContainer;
 import cn.nukkit.nbt.NBTIO;
 import cn.nukkit.nbt.tag.CompoundTag;
+import it.unimi.dsi.fastutil.objects.ObjectArrayList;
 
 import java.io.File;
-import java.io.FileInputStream;
 import java.io.IOException;
 import java.net.InetAddress;
 import java.net.UnknownHostException;
 import java.nio.file.Files;
-import java.util.ArrayList;
 import java.util.regex.Pattern;
 
 /**
@@ -102,7 +101,7 @@ public class BanIpCommand extends VanillaCommand {
     private void processIPBan(String ip, CommandSender sender, String reason) {
         sender.getServer().getIPBans().addBan(ip, reason, null, sender.getName());
 
-        for (Player player : new ArrayList<>(sender.getServer().getOnlinePlayers().values())) {
+        for (Player player : new ObjectArrayList<>(sender.getServer().getOnlinePlayers().values())) {
             if (player.getAddress().equals(ip)) {
                 player.kick(PlayerKickEvent.Reason.IP_BANNED, !reason.isEmpty() ? reason : "IP banned");
             }
