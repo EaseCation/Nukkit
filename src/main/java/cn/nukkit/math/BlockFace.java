@@ -8,12 +8,12 @@ import java.util.concurrent.ThreadLocalRandom;
 import java.util.function.Predicate;
 
 public enum BlockFace {
-    DOWN(0, 1, -1, "down", Axis.Y, AxisDirection.NEGATIVE, new BlockVector3(0, -1, 0)),
-    UP(1, 0, -1, "up", Axis.Y, AxisDirection.POSITIVE, new BlockVector3(0, 1, 0)),
-    NORTH(2, 3, 2, "north", Axis.Z, AxisDirection.NEGATIVE, new BlockVector3(0, 0, -1)),
-    SOUTH(3, 2, 0, "south", Axis.Z, AxisDirection.POSITIVE, new BlockVector3(0, 0, 1)),
-    WEST(4, 5, 1, "west", Axis.X, AxisDirection.NEGATIVE, new BlockVector3(-1, 0, 0)),
-    EAST(5, 4, 3, "east", Axis.X, AxisDirection.POSITIVE, new BlockVector3(1, 0, 0));
+    DOWN(0, 1, -1, "down", AxisDirection.NEGATIVE, new BlockVector3(0, -1, 0)),
+    UP(1, 0, -1, "up", AxisDirection.POSITIVE, new BlockVector3(0, 1, 0)),
+    NORTH(2, 3, 2, "north", AxisDirection.NEGATIVE, new BlockVector3(0, 0, -1)),
+    SOUTH(3, 2, 0, "south", AxisDirection.POSITIVE, new BlockVector3(0, 0, 1)),
+    WEST(4, 5, 1, "west", AxisDirection.NEGATIVE, new BlockVector3(-1, 0, 0)),
+    EAST(5, 4, 3, "east", AxisDirection.POSITIVE, new BlockVector3(1, 0, 0));
 
     /**
      * All faces in D-U-N-S-W-E order
@@ -26,6 +26,14 @@ public enum BlockFace {
     private static final BlockFace[] HORIZONTALS = new BlockFace[4];
 
     static {
+        //Circular dependency
+        DOWN.axis = Axis.Y;
+        UP.axis = Axis.Y;
+        NORTH.axis = Axis.Z;
+        SOUTH.axis = Axis.Z;
+        WEST.axis = Axis.X;
+        EAST.axis = Axis.X;
+
         for (BlockFace face : values()) {
             VALUES[face.index] = face;
 
@@ -56,7 +64,7 @@ public enum BlockFace {
     private final String name;
 
 
-    private final Axis axis;
+    private Axis axis;
     private final AxisDirection axisDirection;
 
     /**
@@ -64,12 +72,11 @@ public enum BlockFace {
      */
     private final BlockVector3 unitVector;
 
-    BlockFace(int index, int opposite, int horizontalIndex, String name, Axis axis, AxisDirection axisDirection, BlockVector3 unitVector) {
+    BlockFace(int index, int opposite, int horizontalIndex, String name, AxisDirection axisDirection, BlockVector3 unitVector) {
         this.index = index;
         this.opposite = opposite;
         this.horizontalIndex = horizontalIndex;
         this.name = name;
-        this.axis = axis;
         this.axisDirection = axisDirection;
         this.unitVector = unitVector;
     }
@@ -293,16 +300,22 @@ public enum BlockFace {
     }
 
     public enum Axis implements Predicate<BlockFace> {
-        X("x", Plane.HORIZONTAL),
-        Y("y", Plane.VERTICAL),
-        Z("z", Plane.HORIZONTAL);
+        X("x"),
+        Y("y"),
+        Z("z");
 
         private final String name;
-        private final Plane plane;
+        private Plane plane;
 
-        Axis(String name, Plane plane) {
+        static {
+            //Circular dependency
+            X.plane = Plane.HORIZONTAL;
+            Y.plane = Plane.VERTICAL;
+            Z.plane = Plane.HORIZONTAL;
+        }
+
+        Axis(String name) {
             this.name = name;
-            this.plane = plane;
         }
 
         public boolean isVertical() {
@@ -355,14 +368,16 @@ public enum BlockFace {
     }
 
     public enum Plane implements Predicate<BlockFace>, Iterable<BlockFace> {
-        HORIZONTAL(NORTH, EAST, SOUTH, WEST),
-        VERTICAL(UP, DOWN);
+        HORIZONTAL,
+        VERTICAL;
 
-        private final BlockFace[] faces;
-
-        Plane(BlockFace... faces) {
-            this.faces = faces;
+        static {
+            //Circular dependency
+            HORIZONTAL.faces = new BlockFace[]{NORTH, EAST, SOUTH, WEST};
+            VERTICAL.faces = new BlockFace[]{UP, DOWN};
         }
+
+        private BlockFace[] faces;
 
         public BlockFace random(NukkitRandom rand) {
             return faces[rand.nextBoundedInt(faces.length)];
