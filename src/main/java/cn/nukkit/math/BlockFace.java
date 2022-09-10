@@ -293,22 +293,16 @@ public enum BlockFace {
     }
 
     public enum Axis implements Predicate<BlockFace> {
-        X("x"),
-        Y("y"),
-        Z("z");
+        X("x", Plane.HORIZONTAL),
+        Y("y", Plane.VERTICAL),
+        Z("z", Plane.HORIZONTAL);
 
         private final String name;
-        private Plane plane;
+        private final Plane plane;
 
-        static {
-            //Circular dependency
-            X.plane = Plane.HORIZONTAL;
-            Y.plane = Plane.VERTICAL;
-            Z.plane = Plane.HORIZONTAL;
-        }
-
-        Axis(String name) {
+        Axis(String name, Plane plane) {
             this.name = name;
+            this.plane = plane;
         }
 
         public boolean isVertical() {
@@ -361,16 +355,14 @@ public enum BlockFace {
     }
 
     public enum Plane implements Predicate<BlockFace>, Iterable<BlockFace> {
-        HORIZONTAL,
-        VERTICAL;
+        HORIZONTAL(NORTH, EAST, SOUTH, WEST),
+        VERTICAL(UP, DOWN);
 
-        static {
-            //Circular dependency
-            HORIZONTAL.faces = new BlockFace[]{NORTH, EAST, SOUTH, WEST};
-            VERTICAL.faces = new BlockFace[]{UP, DOWN};
+        private final BlockFace[] faces;
+
+        Plane(BlockFace... faces) {
+            this.faces = faces;
         }
-
-        private BlockFace[] faces;
 
         public BlockFace random(NukkitRandom rand) {
             return faces[rand.nextBoundedInt(faces.length)];

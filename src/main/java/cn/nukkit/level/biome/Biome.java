@@ -10,6 +10,7 @@ import com.google.gson.Gson;
 import it.unimi.dsi.fastutil.objects.Object2IntMap;
 import it.unimi.dsi.fastutil.objects.Object2IntOpenHashMap;
 
+import javax.annotation.Nullable;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
@@ -145,6 +146,7 @@ public abstract class Biome implements BlockID {
         return true;
     }
 
+    @Nullable
     public static String getNameById(int id) {
         return idToName[id];
     }
