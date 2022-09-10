@@ -15,6 +15,8 @@ public interface LoginChainData {
 
     String getNetEaseUID();
 
+    String getNetEaseSid();
+
     long getClientId();
 
     String getServerAddress();
