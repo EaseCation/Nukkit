@@ -37,7 +37,7 @@ public class StopSoundCommand extends VanillaCommand {
             String sound = "";
 
             if (parser.hasNext()) {
-                sound = parser.parseString();
+                sound = parser.literal();
             }
 
             if (targets.isEmpty()) {

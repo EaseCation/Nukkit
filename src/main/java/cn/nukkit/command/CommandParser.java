@@ -13,10 +13,13 @@ import cn.nukkit.math.Vector2;
 import cn.nukkit.math.Vector3;
 import cn.nukkit.math.Vector3f;
 import cn.nukkit.utils.TextFormat;
+import com.google.common.annotations.Beta;
 
+import javax.annotation.Nullable;
 import java.util.List;
 import java.util.stream.Collectors;
 
+@Beta
 public class CommandParser {
 
     private final Command command;
@@ -25,8 +28,9 @@ public class CommandParser {
 
     private int cursor = -1;
     private int marker = -1;
+    private String errorMessage;
 
-    public CommandParser(Command command, CommandSender sender, String[] args) {
+    public CommandParser(Command command, CommandSender sender, String... args) {
         this.command = command;
         this.sender = sender;
         this.args = args;
@@ -69,7 +73,15 @@ public class CommandParser {
         this.cursor -= n;
     }
 
+    public void setErrorMessage(@Nullable String detailMessage) {
+        this.errorMessage = detailMessage;
+    }
+
     public String getErrorMessage() {
+        if (errorMessage != null) {
+            return TextFormat.RED + errorMessage;
+        }
+
         StringBuilder left = new StringBuilder(10);
         String current;
         StringBuilder right = new StringBuilder(10);
@@ -124,58 +136,68 @@ public class CommandParser {
     }
 
     public int parseInt() throws CommandSyntaxException {
+        String arg = this.next();
         try {
-            String arg = this.next();
             return Integer.parseInt(arg);
-        } catch (Exception e) {
+        } catch (NumberFormatException e) {
             throw CommandExceptions.NOT_INT;
         }
     }
 
-    public double parseDouble() throws CommandSyntaxException {
+    public long parseLong() throws CommandSyntaxException {
+        String arg = this.next();
         try {
-            String arg = this.next();
+            return Long.parseLong(arg);
+        } catch (NumberFormatException e) {
+            throw CommandExceptions.NOT_INT;
+        }
+    }
+
+    public float parseFloat() throws CommandSyntaxException {
+        String arg = this.next();
+        try {
+            return Float.parseFloat(arg);
+        } catch (NumberFormatException e) {
+            throw CommandExceptions.NOT_FLOAT;
+        }
+    }
+
+    public double parseDouble() throws CommandSyntaxException {
+        String arg = this.next();
+        try {
             return Double.parseDouble(arg);
-        } catch (Exception e) {
+        } catch (NumberFormatException e) {
             throw CommandExceptions.NOT_FLOAT;
         }
     }
 
     public boolean parseBoolean() throws CommandSyntaxException {
-        try {
-            String arg = this.next();
-            switch (arg.toLowerCase()) {
-                case "true":
-                    return true;
-                case "false":
-                    return false;
-            }
-        } catch (Exception e) {
-            throw CommandExceptions.COMMAND_SYNTAX_EXCEPTION;
+        String arg = this.next();
+        switch (arg.toLowerCase()) {
+            case "true":
+                return true;
+            case "false":
+                return false;
         }
         throw CommandExceptions.COMMAND_SYNTAX_EXCEPTION;
     }
 
-    public String parseString() throws CommandSyntaxException {
-        try {
-            return this.next();
-        } catch (Exception e) {
-            throw CommandExceptions.COMMAND_SYNTAX_EXCEPTION;
-        }
+    public String literal() throws CommandSyntaxException {
+        return this.next();
     }
 
     public <T extends Enum<T>> T parseEnum(Class<T> enumType) throws CommandSyntaxException {
+        String arg = this.next();
         try {
-            String arg = this.next();
             return Enum.valueOf(enumType, arg.toUpperCase());
-        } catch (Exception e) {
+        } catch (IllegalArgumentException e) {
             throw CommandExceptions.COMMAND_SYNTAX_EXCEPTION;
         }
     }
 
     public List<Entity> parseTargets() throws CommandSyntaxException {
+        String arg = this.next();
         try {
-            String arg = this.next();
             return EntitySelector.matchEntities(this.sender, arg);
         } catch (Exception e) {
             throw CommandExceptions.COMMAND_SYNTAX_EXCEPTION;
@@ -183,14 +205,10 @@ public class CommandParser {
     }
 
     public List<Player> parseTargetPlayers() throws CommandSyntaxException {
-        try {
-            return this.parseTargets().stream()
-                    .filter(entity -> entity instanceof Player)
-                    .map(entity -> (Player) entity)
-                    .collect(Collectors.toList());
-        } catch (Exception e) {
-            throw CommandExceptions.COMMAND_SYNTAX_EXCEPTION;
-        }
+        return this.parseTargets().stream()
+                .filter(entity -> entity instanceof Player)
+                .map(entity -> (Player) entity)
+                .collect(Collectors.toList());
     }
 
     public Position parsePosition() throws CommandSyntaxException {
@@ -248,8 +266,8 @@ public class CommandParser {
     }
 
     private double parseCoordinate(double baseCoordinate) throws CommandSyntaxException {
+        String arg = this.next();
         try {
-            String arg = this.next();
             if (arg.startsWith("~")) {
                 String relativeCoordinate = arg.substring(1);
                 if (relativeCoordinate.isEmpty()) {
@@ -264,16 +282,18 @@ public class CommandParser {
     }
 
     public Block parseBlock() throws CommandSyntaxException {
+        String arg = this.next();
         try {
-            return Block.fromString(this.next());
+            return Block.fromString(arg);
         } catch (Exception e) {
             throw CommandExceptions.COMMAND_SYNTAX_EXCEPTION;
         }
     }
 
     public Item parseItem() throws CommandSyntaxException {
+        String arg = this.next();
         try {
-            return Item.fromString(this.next());
+            return Item.fromString(arg);
         } catch (Exception e) {
             throw CommandExceptions.COMMAND_SYNTAX_EXCEPTION;
         }

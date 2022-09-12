@@ -37,7 +37,7 @@ public class PlaySoundCommand extends VanillaCommand {
 
         CommandParser parser = new CommandParser(this, sender, args);
         try {
-            String sound = parser.parseString();
+            String sound = parser.literal();
             List<Player> targets;
             Position position = null;
             double volume = 1;

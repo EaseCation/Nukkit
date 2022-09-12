@@ -371,7 +371,7 @@ public class Server {
 
         this.enableJmxMonitoring = this.getPropertyBoolean("enable-jmx-monitoring", false);
         if (this.enableJmxMonitoring) {
-//            ServerStatistics.registerJmxMonitoring(this);
+            ServerStatistics.registerJmxMonitoring(this);
         }
 
         Nukkit.DEBUG = Mth.clamp(this.getConfig("debug.level", 1), 1, 3);
