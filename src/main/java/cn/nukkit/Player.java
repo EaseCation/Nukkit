@@ -20,6 +20,7 @@ import cn.nukkit.event.inventory.InventoryCloseEvent;
 import cn.nukkit.event.inventory.InventoryPickupArrowEvent;
 import cn.nukkit.event.inventory.InventoryPickupItemEvent;
 import cn.nukkit.event.inventory.InventoryPickupTridentEvent;
+import cn.nukkit.event.inventory.ItemAttackDamageEvent;
 import cn.nukkit.event.level.ChunkLoadExceptionEvent;
 import cn.nukkit.event.player.*;
 import cn.nukkit.event.player.PlayerInteractEvent.Action;
@@ -3241,7 +3242,9 @@ public class Player extends EntityHuman implements CommandSender, InventoryHolde
 
                                     Enchantment[] enchantments = item.getEnchantments();
 
-                                    float itemDamage = item.getAttackDamage();
+                                    ItemAttackDamageEvent event = new ItemAttackDamageEvent(item);
+                                    this.server.getPluginManager().callEvent(event);
+                                    float itemDamage = event.getAttackDamage();
                                     for (Enchantment enchantment : enchantments) {
                                         itemDamage += enchantment.getDamageBonus(target);
                                     }
