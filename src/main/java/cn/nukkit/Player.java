@@ -3335,7 +3335,7 @@ public class Player extends EntityHuman implements CommandSender, InventoryHolde
                                             }
 
                                             if (potion != null) {
-                                                potion.applyPotion(this);
+                                                potion.applyPotion(this, itemInHand);
                                             }
 
                                         } else if (itemInHand.getId() == Item.BUCKET && itemInHand.getDamage() == 1) { //milk

@@ -7,6 +7,7 @@ import cn.nukkit.event.entity.EntityDamageEvent;
 import cn.nukkit.event.entity.EntityDamageEvent.DamageCause;
 import cn.nukkit.event.entity.EntityRegainHealthEvent;
 import cn.nukkit.event.potion.PotionApplyEvent;
+import cn.nukkit.item.Item;
 import cn.nukkit.utils.ServerException;
 
 /**
@@ -155,10 +156,18 @@ public class Potion implements Cloneable {
     }
 
     public void applyPotion(Entity entity) {
-        applyPotion(entity, 0.5);
+        applyPotion(entity, Item.get(Item.POTION, getId()));
+    }
+
+    public void applyPotion(Entity entity, Item potionItem) {
+        applyPotion(entity, potionItem, 0.5);
     }
 
     public void applyPotion(Entity entity, double health) {
+        applyPotion(entity, Item.get(Item.POTION, getId()), health);
+    }
+
+    public void applyPotion(Entity entity, Item potionItem, double health) {
         if (!(entity instanceof EntityLiving)) {
             return;
         }
@@ -175,7 +184,12 @@ public class Potion implements Cloneable {
             }
         }
 
-        PotionApplyEvent event = new PotionApplyEvent(this, applyEffect, entity);
+        if (isSplash()) {
+            int duration = (int) (applyEffect.getDuration() * health + 0.5);
+            applyEffect.setDuration(duration);
+        }
+
+        PotionApplyEvent event = new PotionApplyEvent(this, potionItem, applyEffect, entity);
 
         entity.getServer().getPluginManager().callEvent(event);
         if (event.isCancelled()) {
@@ -194,8 +208,6 @@ public class Potion implements Cloneable {
                 entity.attack(new EntityDamageEvent(entity, DamageCause.MAGIC, (float) (health * (double) (6 << (applyEffect.getAmplifier() + 1)))));
                 break;
             default:
-                int duration = (int) ((isSplash() ? health : 1) * (double) applyEffect.getDuration() + 0.5);
-                applyEffect.setDuration(duration);
                 entity.addEffect(applyEffect);
         }
     }

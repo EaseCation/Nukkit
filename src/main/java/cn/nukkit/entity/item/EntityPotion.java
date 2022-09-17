@@ -3,9 +3,12 @@ package cn.nukkit.entity.item;
 import cn.nukkit.entity.Entity;
 import cn.nukkit.entity.projectile.EntityProjectile;
 import cn.nukkit.event.potion.PotionCollideEvent;
+import cn.nukkit.item.Item;
+import cn.nukkit.item.ItemID;
 import cn.nukkit.level.format.FullChunk;
 import cn.nukkit.level.particle.Particle;
 import cn.nukkit.level.particle.SpellParticle;
+import cn.nukkit.nbt.NBTIO;
 import cn.nukkit.nbt.tag.CompoundTag;
 import cn.nukkit.network.protocol.LevelSoundEventPacket;
 import cn.nukkit.potion.Effect;
@@ -21,6 +24,7 @@ public class EntityPotion extends EntityProjectile {
     public static final int DATA_POTION_ID = 37;
 
     public int potionId;
+    public Item item;
 
     public EntityPotion(FullChunk chunk, CompoundTag nbt) {
         super(chunk, nbt);
@@ -35,6 +39,13 @@ public class EntityPotion extends EntityProjectile {
         super.initEntity();
 
         potionId = this.namedTag.getShort("PotionId");
+        item = NBTIO.getItemHelper(this.namedTag.getCompound("Item"));
+        if (item.getId() != ItemID.SPLASH_POTION) {
+            item = Item.get(ItemID.SPLASH_POTION, potionId);
+        }
+        if (item.getDamage() != potionId) {
+            item.setDamage(potionId);
+        }
 
         this.dataProperties.putShort(DATA_POTION_AUX_VALUE, this.potionId);
 
@@ -134,7 +145,7 @@ public class EntityPotion extends EntityProjectile {
             double distance = anEntity.distanceSquared(this);
             if (distance < 16) {
                 double d = anEntity.equals(collidedWith) ? 1 : 1 - Math.sqrt(distance) / 4;
-                potion.applyPotion(anEntity, d);
+                potion.applyPotion(anEntity, item, d);
             }
         }
     }
