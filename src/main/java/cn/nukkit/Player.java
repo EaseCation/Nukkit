@@ -1414,6 +1414,10 @@ public class Player extends EntityHuman implements CommandSender, InventoryHolde
             }
             this.isCollided = this.onGround;
             this.updateFallState(this.onGround);
+
+            this.motionX = dx;
+            this.motionY = dy;
+            this.motionZ = dz;
         }
 
         Timings.entityMoveTimer.stopTiming();
@@ -3249,13 +3253,15 @@ public class Player extends EntityHuman implements CommandSender, InventoryHolde
                                     Map<DamageModifier, Float> damage = new EnumMap<>(DamageModifier.class);
                                     damage.put(DamageModifier.BASE, itemDamage);
 
-                                    float knockBack = 0.29f;
+                                    float knockBackH = EntityDamageByEntityEvent.GLOBAL_KNOCKBACK_H;
+                                    float knockBackV = EntityDamageByEntityEvent.GLOBAL_KNOCKBACK_V;
                                     Enchantment knockBackEnchantment = item.getEnchantment(Enchantment.ID_KNOCKBACK);
                                     if (knockBackEnchantment != null) {
-                                        knockBack += knockBackEnchantment.getLevel() * 0.1f;
+                                        knockBackH += knockBackEnchantment.getLevel() * 0.1f;
+                                        knockBackV += knockBackEnchantment.getLevel() * 0.1f;
                                     }
 
-                                    EntityDamageByEntityEvent entityDamageByEntityEvent = new EntityDamageByEntityEvent(this, target, DamageCause.ENTITY_ATTACK, damage, knockBack, enchantments);
+                                    EntityDamageByEntityEvent entityDamageByEntityEvent = new EntityDamageByEntityEvent(this, target, DamageCause.ENTITY_ATTACK, damage, knockBackH, knockBackV, enchantments);
                                     if (this.isSpectator()) entityDamageByEntityEvent.setCancelled();
                                     if ((target instanceof Player) && !this.level.getGameRules().getBoolean(GameRule.PVP)) {
                                         entityDamageByEntityEvent.setCancelled();
@@ -5114,12 +5120,13 @@ public class Player extends EntityHuman implements CommandSender, InventoryHolde
      * @param fishingRod fishing rod item
      */
     public void startFishing(Item fishingRod) {
-        Vector3 motion = this.getDirectionVector().multiply(1.2);
+        Vector3 motion = this.getDirectionVector().multiply(2.2);
+
         CompoundTag nbt = new CompoundTag()
                 .putList(new ListTag<DoubleTag>("Pos")
-                        .add(new DoubleTag("", x))
-                        .add(new DoubleTag("", y + this.getEyeHeight()))
-                        .add(new DoubleTag("", z)))
+                        .add(new DoubleTag("", x + motion.x))
+                        .add(new DoubleTag("", y + this.getEyeHeight() + motion.y))
+                        .add(new DoubleTag("", z + motion.z)))
                 .putList(new ListTag<DoubleTag>("Motion")
                         .add(new DoubleTag("", motion.x))
                         .add(new DoubleTag("", motion.y))
