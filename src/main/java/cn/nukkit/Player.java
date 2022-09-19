@@ -1415,6 +1415,10 @@ public class Player extends EntityHuman implements CommandSender, InventoryHolde
             this.isCollided = this.onGround;
             this.updateFallState(this.onGround);
 
+            this.lastMotionX = this.motionX;
+            this.lastMotionY = this.motionY;
+            this.lastMotionZ = this.motionZ;
+
             this.motionX = dx;
             this.motionY = dy;
             this.motionZ = dz;
