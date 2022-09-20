@@ -184,7 +184,6 @@ public abstract class EntityLiving extends Entity implements EntityDamageable {
             motion.y = base;
         }
 
-        this.getServer().getLogger().info("[" + this.getName() + "] base=" + base + " zx=" + new Vector3(motion.x, 0, motion.z).length() + " y=" + motion.y);
         this.setMotion(motion);
     }
 
