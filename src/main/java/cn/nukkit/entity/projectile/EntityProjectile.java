@@ -41,7 +41,8 @@ public abstract class EntityProjectile extends Entity {
 
     protected double damage = 0;
 
-    protected float knockBack = 0.29f;
+    protected float knockBackH = EntityDamageByEntityEvent.GLOBAL_KNOCKBACK_H;
+    protected float knockBackV = EntityDamageByEntityEvent.GLOBAL_KNOCKBACK_V;
 
     public static final int PICKUP_NONE = 0;
     public static final int PICKUP_ANY = 1;
@@ -73,9 +74,10 @@ public abstract class EntityProjectile extends Entity {
 
         EntityDamageEvent ev;
         if (this.shootingEntity == null) {
-            ev = new EntityDamageByEntityEvent(this, entity, DamageCause.PROJECTILE, damage);
+            ev = new EntityDamageByEntityEvent(this, entity, DamageCause.PROJECTILE, damage, knockBackH, knockBackV);
         } else {
             ev = new EntityDamageByChildEntityEvent(this.shootingEntity, this, entity, DamageCause.PROJECTILE, damage);
+            ((EntityDamageByChildEntityEvent) ev).setKnockBack(knockBackH, knockBackV);
         }
         entity.attack(ev);
         this.hadCollision = true;
@@ -102,7 +104,14 @@ public abstract class EntityProjectile extends Entity {
             this.age = this.namedTag.getShort("Age");
         }
         if (this.namedTag.contains("Knockback")) {
-            this.knockBack = this.namedTag.getFloat("Knockback");
+            this.knockBackH = this.namedTag.getFloat("Knockback");
+            this.knockBackV = this.namedTag.getFloat("Knockback");
+        }
+        if (this.namedTag.contains("KnockbackH")) {
+            this.knockBackH = this.namedTag.getFloat("KnockbackH");
+        }
+        if (this.namedTag.contains("KnockbackV")) {
+            this.knockBackV = this.namedTag.getFloat("KnockbackV");
         }
     }
 

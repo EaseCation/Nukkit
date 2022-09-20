@@ -138,10 +138,10 @@ public abstract class EntityLiving extends Entity implements EntityDamageable {
                     this.setOnFire(2 * this.server.getDifficulty());
                 }
 
-                if (((EntityDamageByEntityEvent) source).getKnockBack() >= 0) {
+                if (((EntityDamageByEntityEvent) source).hasKnockBack()) {
                     double deltaX = this.x - e.x;
                     double deltaZ = this.z - e.z;
-                    this.knockBack(e, source.getDamage(), deltaX, deltaZ, ((EntityDamageByEntityEvent) source).getKnockBack());
+                    this.knockBack(e, source.getDamage(), deltaX, deltaZ, ((EntityDamageByEntityEvent) source).getKnockBackH(), ((EntityDamageByEntityEvent) source).getKnockBackV());
                 }
             }
 
