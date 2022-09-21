@@ -12,7 +12,7 @@ import java.util.Map;
  */
 public class EntityDamageByEntityEvent extends EntityDamageEvent {
 
-    public static float GLOBAL_KNOCKBACK_H = 0.45f;
+    public static float GLOBAL_KNOCKBACK_H = 0.48f;
     public static float GLOBAL_KNOCKBACK_V = 0.3f;
 
     private final Entity damager;
