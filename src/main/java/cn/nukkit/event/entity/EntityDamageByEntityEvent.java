@@ -12,8 +12,8 @@ import java.util.Map;
  */
 public class EntityDamageByEntityEvent extends EntityDamageEvent {
 
-    public static float GLOBAL_KNOCKBACK_H = 0.48f;
-    public static float GLOBAL_KNOCKBACK_V = 0.3f;
+    public static float GLOBAL_KNOCKBACK_H = 0.29f;
+    public static float GLOBAL_KNOCKBACK_V = 0.29f;
 
     private final Entity damager;
 

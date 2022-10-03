@@ -1916,9 +1916,9 @@ public abstract class Entity extends Location implements Metadatable {
         }
         this.isCollided = this.onGround;
         this.updateFallState(this.onGround);
-        this.motionX = dx;
+        /*this.motionX = dx;
         this.motionY = dy;
-        this.motionZ = dz;
+        this.motionZ = dz;*/
         Timings.entityMoveTimer.stopTiming();
         return true;
     }

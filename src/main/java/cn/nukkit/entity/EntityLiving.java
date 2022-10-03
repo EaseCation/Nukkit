@@ -11,6 +11,7 @@ import cn.nukkit.item.Item;
 import cn.nukkit.level.GameRule;
 import cn.nukkit.level.format.FullChunk;
 import cn.nukkit.level.sound.SoundEnum;
+import cn.nukkit.math.Vector2;
 import cn.nukkit.math.Vector3;
 import cn.nukkit.nbt.tag.CompoundTag;
 import cn.nukkit.nbt.tag.FloatTag;
@@ -130,9 +131,9 @@ public abstract class EntityLiving extends Entity implements EntityDamageable {
         if (super.attack(source)) {
             if (source instanceof EntityDamageByEntityEvent) {
                 Entity e = ((EntityDamageByEntityEvent) source).getDamager();
-                if (source instanceof EntityDamageByChildEntityEvent) {
+                /*if (source instanceof EntityDamageByChildEntityEvent) {
                     e = ((EntityDamageByChildEntityEvent) source).getChild();
-                }
+                }*/
 
                 if (e.isOnFire() && !(e instanceof Player)) {
                     this.setOnFire(2 * this.server.getDifficulty());
@@ -173,9 +174,9 @@ public abstract class EntityLiving extends Entity implements EntityDamageable {
 
         Vector3 motion = new Vector3(this.motionX, this.motionY, this.motionZ);
 
-        motion.x /= 4d;
-        motion.y /= 4d;
-        motion.z /= 4d;
+        motion.x /= 2d;
+        motion.y /= 2d;
+        motion.z /= 2d;
         motion.x += x * f * base;
         motion.y += base;
         motion.z += z * f * base;
@@ -183,6 +184,14 @@ public abstract class EntityLiving extends Entity implements EntityDamageable {
         if (motion.y > base) {
             motion.y = base;
         }
+
+        double length = Math.sqrt(motion.x * motion.x + motion.z * motion.z);
+        length = Math.min(Math.max(length, 0.2), 0.58);
+        Vector2 multiply = new Vector2(x, z).normalize().multiply(length);
+        motion.x = multiply.x;
+        motion.z = multiply.y;
+
+        //this.getServer().getLogger().debug("[knockback] xz=" + new Vector2(motion.x, motion.z).length() + " y=" + motion.y);
 
         this.setMotion(motion);
     }
@@ -197,9 +206,9 @@ public abstract class EntityLiving extends Entity implements EntityDamageable {
 
         Vector3 motion = new Vector3(this.motionX, this.motionY, this.motionZ);
 
-        motion.x /= 4d;
-        motion.y /= 4d;
-        motion.z /= 4d;
+        motion.x /= 2d;
+        motion.y /= 2d;
+        motion.z /= 2d;
         motion.x += x * f * baseH;
         motion.y += baseV;
         motion.z += z * f * baseH;
@@ -207,6 +216,15 @@ public abstract class EntityLiving extends Entity implements EntityDamageable {
         if (motion.y > baseV) {
             motion.y = baseV;
         }
+
+        // 修正击退方向
+        double length = Math.sqrt(motion.x * motion.x + motion.z * motion.z);
+        length = Math.min(Math.max(length, 0.2), 0.58);
+        Vector2 multiply = new Vector2(x, z).normalize().multiply(length);
+        motion.x = multiply.x;
+        motion.z = multiply.y;
+
+        //this.getServer().getLogger().debug("[knockback] xz=" + new Vector2(motion.x, motion.z).length() + " y=" + motion.y);
 
         this.setMotion(motion);
     }
