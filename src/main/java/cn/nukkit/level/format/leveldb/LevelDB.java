@@ -36,10 +36,12 @@ import it.unimi.dsi.fastutil.longs.Long2ObjectOpenHashMap;
 import it.unimi.dsi.fastutil.objects.Object2ObjectOpenHashMap;
 import it.unimi.dsi.fastutil.objects.ObjectArrayList;
 import lombok.extern.log4j.Log4j2;
+import org.apache.commons.lang3.mutable.MutableInt;
 import org.iq80.leveldb.CompressionType;
 import org.iq80.leveldb.DB;
 import org.iq80.leveldb.Options;
 import org.iq80.leveldb.WriteBatch;
+import org.iq80.leveldb.impl.Iq80DBFactory;
 
 import javax.annotation.Nullable;
 import java.io.*;
@@ -49,7 +51,13 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.*;
+import java.util.Map.Entry;
+import java.util.concurrent.ThreadLocalRandom;
+import java.util.concurrent.locks.Lock;
+import java.util.concurrent.locks.ReentrantLock;
+import java.util.function.Function;
 
+import static cn.nukkit.SharedConstants.*;
 import static cn.nukkit.level.format.leveldb.LevelDBKey.*;
 import static cn.nukkit.level.format.leveldb.LevelDbConstants.*;
 import static net.daporkchop.ldbjni.LevelDB.PROVIDER;
@@ -64,13 +72,16 @@ public class LevelDB implements LevelProvider {
     protected final Long2ObjectMap<LevelDbChunk> chunks = new Long2ObjectOpenHashMap<>();
     protected final ThreadLocal<WeakReference<LevelDbChunk>> lastChunk = new ThreadLocal<>();
 
-    protected DB db;
+    protected final DB db;
 
     protected Level level;
 
     protected final String path;
 
-    protected CompoundTag levelData;
+    protected final CompoundTag levelData;
+
+    protected volatile boolean closed;
+    protected final Lock gcLock;
 
     public LevelDB(Level level, String path) {
         this.level = level;
@@ -97,14 +108,16 @@ public class LevelDB implements LevelProvider {
             this.levelData.putString("generatorOptions", "");
         }
 
-        Options options = new Options()
-                .createIfMissing(true)
-                .compressionType(CompressionType.ZLIB_RAW)
-                .blockSize(64 * 1024);
         try {
-            this.db = PROVIDER.open(dirPath.resolve("db").toFile(), options);
+            this.db = openDB(dirPath.resolve("db").toFile());
         } catch (IOException e) {
             throw new RuntimeException(e);
+        }
+
+        gcLock = new ReentrantLock();
+        if (ENABLE_STORAGE_AUTO_COMPACTION && level.isAutoCompaction()) {
+            int delay = level.getServer().getAutoCompactionTicks();
+            level.getServer().getScheduler().scheduleDelayedTask(null, new AutoCompactionTask(), delay + ThreadLocalRandom.current().nextInt(delay), true);
         }
     }
 
@@ -208,11 +221,16 @@ public class LevelDB implements LevelProvider {
             stream.write(data);
         }
 
-        DB db = PROVIDER.open(dbPath.toFile(), new Options()
+        DB db = openDB(dbPath.toFile());
+        db.close();
+    }
+
+    protected static DB openDB(File dir) throws IOException {
+        Options options = new Options()
                 .createIfMissing(true)
                 .compressionType(CompressionType.ZLIB_RAW)
-                .blockSize(64 * 1024));
-        db.close();
+                .blockSize(64 * 1024);
+        return USE_NATIVE_LEVELDB ? PROVIDER.open(dir, options) : Iq80DBFactory.factory.open(dir, options);
     }
 
     @Override
@@ -239,10 +257,12 @@ public class LevelDB implements LevelProvider {
 
     @Override
     public void unloadChunks() {
-        Iterator<LevelDbChunk> iter = this.chunks.values().iterator();
-        while (iter.hasNext()) {
-            iter.next().unload(true, false);
-            iter.remove();
+        synchronized (this.chunks) {
+            Iterator<LevelDbChunk> iter = this.chunks.values().iterator();
+            while (iter.hasNext()) {
+                iter.next().unload(true, false);
+                iter.remove();
+            }
         }
     }
 
@@ -620,9 +640,9 @@ public class LevelDB implements LevelProvider {
         }
 
         int finalisation;
-        byte[] finalisationData = this.db.get(FINALIZATION.getKey(chunkX, chunkZ)); // intLE
+        byte[] finalisationData = this.db.get(FINALIZATION.getKey(chunkX, chunkZ));
         if (randomTickingData != null && randomTickingData.length != 0) {
-            finalisation = finalisationData[0];
+            finalisation = Binary.readLInt(finalisationData);
         } else {
             finalisation = FINALISATION_DONE; //older versions didn't have this tag
         }
@@ -646,7 +666,7 @@ public class LevelDB implements LevelProvider {
         return chunk;
     }
 
-    private void writeChunk(LevelDbChunk chunk, boolean convert) {
+    private void writeChunk(LevelDbChunk chunk, boolean convert, boolean background) {
         int chunkX = chunk.getX();
         int chunkZ = chunk.getZ();
         BinaryStream stream = new BinaryStream();
@@ -654,178 +674,186 @@ public class LevelDB implements LevelProvider {
         WriteBatch batch = this.db.createWriteBatch();
         batch.put(OLD_VERSION.getKey(chunkX, chunkZ), CHUNK_VERSION_SAVE_DATA);
 
-        if (chunk.isSubChunksDirty()) {
-            ChunkSection[] sections = chunk.getSections();
-            if (sections != null) {
-                for (int y = 0; y < 16; y++) {
-                    ChunkSection section = sections[y];
-                    byte[] key = SUBCHUNK.getSubKey(chunkX, chunkZ, y);
-
-                    if (section == null || section.isEmpty()) {
-                        batch.delete(key);
-                        continue;
-                    }
-
-                    if (!section.isDirty()) {
-                        continue;
-                    }
-
-                    section.writeToDisk(stream);
-                    batch.put(key, stream.getBuffer());
-                    stream.reuse();
-                }
-            }
-        }
-
-        if (chunk.isHeightmapOrBiomesDirty()) {
-            for (short height : chunk.getHeightmap()) {
-                stream.putLShort(height);
-            }
-            int mark = stream.getCount();
-
-            stream.put(chunk.getBiomeIdArray());
-            batch.put(HEIGHTMAP_AND_2D_BIOMES.getKey(chunkX, chunkZ), stream.getBuffer());
-
-            stream.setCount(mark);
-            /*PalettedSubChunkStorage[] biomes3d = chunk.getBiomes();
-            biomes3d[0].writeToDiskBiome(stream);
-            for (int i = 1; i < 24; i++) {
-                if (i >= biomes3d.length) {
-                    stream.putByte((byte) 0xff);
-                    continue;
-                }
-                PalettedSubChunkStorage biome3d = biomes3d[i];
-                if (biome3d == null) {
-                    stream.putByte((byte) 0xff);
-                    continue;
-                }
-                biome3d.writeToDiskBiome(stream);
-            }
-            batch.put(HEIGHTMAP_AND_3D_BIOMES.getKey(chunkX, chunkZ), stream.getBuffer());*/
-        }
-
-        batch.put(FINALIZATION.getKey(chunkX, chunkZ), chunk.isPopulated() ? FINALISATION_DONE_SAVE_DATA
-                : chunk.isGenerated() ? FINALISATION_POPULATION_SAVE_DATA : FINALISATION_GENERATION_SAVE_DATA);
-
-        //TODO: dirty?
-        List<CompoundTag> blockEntities;
-        if (!convert) {
-            blockEntities = new ObjectArrayList<>();
-            for (BlockEntity blockEntity : chunk.getBlockEntities().values()) {
-                if (!blockEntity.isClosed()) {
-                    blockEntity.saveNBT();
-                    blockEntities.add(blockEntity.namedTag);
-                }
-            }
-        } else {
-            blockEntities = chunk.getBlockEntityTags();
-            if (blockEntities == null) {
-                blockEntities = Collections.emptyList();
-            }
-        }
-        byte[] blockEntitiesKey = BLOCK_ENTITIES.getKey(chunkX, chunkZ);
-        if (blockEntities.isEmpty()) {
-            batch.delete(blockEntitiesKey);
-        } else {
-            try {
-                batch.put(blockEntitiesKey, NBTIO.write(blockEntities, ByteOrder.LITTLE_ENDIAN));
-            } catch (IOException e) {
-                throw new RuntimeException(e);
-            }
-        }
-
-        //dirty?
-        List<CompoundTag> entities;
-        if (!convert) {
-            entities = new ObjectArrayList<>();
-            for (Entity entity : chunk.getEntities().values()) {
-                if (!(entity instanceof Player) && !entity.closed) {
-                    entity.saveNBT();
-                    entities.add(entity.namedTag);
-                }
-            }
-        } else {
-            entities = chunk.getEntityTags();
-            if (entities == null) {
-                entities = Collections.emptyList();
-            }
-        }
-        byte[] entitiesKey = ENTITIES.getKey(chunkX, chunkZ);
-        if (entities.isEmpty()) {
-            batch.delete(entitiesKey);
-        } else {
-            try {
-                batch.put(entitiesKey, NBTIO.write(entities, ByteOrder.LITTLE_ENDIAN));
-            } catch (IOException e) {
-                throw new RuntimeException(e);
-            }
-        }
-
-        Collection<BlockUpdateEntry> blockUpdateEntries = null;
-        Collection<BlockUpdateEntry> randomBlockUpdateEntries = null;
-        long currentTick = 0;
-
-        LevelProvider provider;
-        if (convert) {
-            blockUpdateEntries = chunk.getBlockUpdateEntries();
-        } else if ((provider = chunk.getProvider()) != null) {
-            Level level = provider.getLevel();
-            currentTick = level.getCurrentTick();
-            //dirty?
-            blockUpdateEntries = level.getPendingBlockUpdates(chunk);
-            randomBlockUpdateEntries = level.getPendingRandomBlockUpdates(chunk);
-        }
-
-        byte[] pendingScheduledTicksKey = PENDING_SCHEDULED_TICKS.getKey(chunkX, chunkZ);
-        if (blockUpdateEntries != null && !blockUpdateEntries.isEmpty()) {
-            CompoundTag ticks = saveBlockTickingQueue(blockUpdateEntries, currentTick);
-            if (ticks != null) {
-                try {
-                    batch.put(pendingScheduledTicksKey, NBTIO.write(ticks, ByteOrder.LITTLE_ENDIAN));
-                } catch (IOException e) {
-                    throw new RuntimeException(e);
-                }
-            } else {
-                batch.delete(pendingScheduledTicksKey);
-            }
-        } else {
-            batch.delete(pendingScheduledTicksKey);
-        }
-
-        byte[] pendingRandomTicksKey = PENDING_RANDOM_TICKS.getKey(chunkX, chunkZ);
-        if (randomBlockUpdateEntries != null && !randomBlockUpdateEntries.isEmpty()) {
-            CompoundTag ticks = saveBlockTickingQueue(randomBlockUpdateEntries, currentTick);
-            if (ticks != null) {
-                try {
-                    batch.put(pendingRandomTicksKey, NBTIO.write(ticks, ByteOrder.LITTLE_ENDIAN));
-                } catch (IOException e) {
-                    throw new RuntimeException(e);
-                }
-            } else {
-                batch.delete(pendingRandomTicksKey);
-            }
-        } else {
-            batch.delete(pendingRandomTicksKey);
-        }
-
-        /*stream.reuse();
-        stream.putInt(CURRENT_NUKKIT_DATA_VERSION);
-        stream.putLLong(NUKKIT_DATA_MAGIC);
-        CompoundTag nbt = new CompoundTag();
-        // baked lighting
-//        nbt.putByteArray("BlockLight", chunk.getBlockLightArray());
-//        nbt.putByteArray("SkyLight", chunk.getBlockSkyLightArray());
         try {
-            stream.put(NBTIO.write(nbt, ByteOrder.LITTLE_ENDIAN));
-        } catch (IOException e) {
-            throw new RuntimeException(e);
+            chunk.ioLock.lock();
+
+            if (chunk.isSubChunksDirty()) {
+                ChunkSection[] sections = chunk.getSections();
+                if (sections != null) {
+                    for (int y = 0; y < 16; y++) {
+                        ChunkSection section = sections[y];
+                        byte[] key = SUBCHUNK.getSubKey(chunkX, chunkZ, y);
+
+                        if (section == null || section.isEmpty()) {
+                            batch.delete(key);
+                            continue;
+                        }
+
+                        if (!section.isDirty()) {
+                            continue;
+                        }
+
+                        section.writeToDisk(stream);
+                        batch.put(key, stream.getBuffer());
+                        stream.reuse();
+                    }
+                }
+            }
+
+            if (chunk.isHeightmapOrBiomesDirty()) {
+                for (short height : chunk.getHeightmap()) {
+                    stream.putLShort(height);
+                }
+                int mark = stream.getCount();
+
+                stream.put(chunk.getBiomeIdArray());
+                batch.put(HEIGHTMAP_AND_2D_BIOMES.getKey(chunkX, chunkZ), stream.getBuffer());
+
+                stream.setCount(mark);
+                /*PalettedSubChunkStorage[] biomes3d = chunk.getBiomes();
+                biomes3d[0].writeToDiskBiome(stream);
+                for (int i = 1; i < 24; i++) {
+                    if (i >= biomes3d.length) {
+                        stream.putByte((byte) 0xff);
+                        continue;
+                    }
+                    PalettedSubChunkStorage biome3d = biomes3d[i];
+                    if (biome3d == null) {
+                        stream.putByte((byte) 0xff);
+                        continue;
+                    }
+                    biome3d.writeToDiskBiome(stream);
+                }
+                batch.put(HEIGHTMAP_AND_3D_BIOMES.getKey(chunkX, chunkZ), stream.getBuffer());*/
+            }
+
+            if (!background) {
+                batch.put(FINALIZATION.getKey(chunkX, chunkZ), chunk.isPopulated() ? FINALISATION_DONE_SAVE_DATA
+                        : chunk.isGenerated() ? FINALISATION_POPULATION_SAVE_DATA : FINALISATION_GENERATION_SAVE_DATA);
+
+                //TODO: dirty?
+                List<CompoundTag> blockEntities;
+                if (!convert) {
+                    blockEntities = new ObjectArrayList<>();
+                    for (BlockEntity blockEntity : chunk.getBlockEntities().values()) {
+                        if (!blockEntity.isClosed()) {
+                            blockEntity.saveNBT();
+                            blockEntities.add(blockEntity.namedTag);
+                        }
+                    }
+                } else {
+                    blockEntities = chunk.getBlockEntityTags();
+                    if (blockEntities == null) {
+                        blockEntities = Collections.emptyList();
+                    }
+                }
+                byte[] blockEntitiesKey = BLOCK_ENTITIES.getKey(chunkX, chunkZ);
+                if (blockEntities.isEmpty()) {
+                    batch.delete(blockEntitiesKey);
+                } else {
+                    try {
+                        batch.put(blockEntitiesKey, NBTIO.write(blockEntities, ByteOrder.LITTLE_ENDIAN));
+                    } catch (IOException e) {
+                        throw new RuntimeException(e);
+                    }
+                }
+
+                //dirty?
+                List<CompoundTag> entities;
+                if (!convert) {
+                    entities = new ObjectArrayList<>();
+                    for (Entity entity : chunk.getEntities().values()) {
+                        if (!(entity instanceof Player) && !entity.closed) {
+                            entity.saveNBT();
+                            entities.add(entity.namedTag);
+                        }
+                    }
+                } else {
+                    entities = chunk.getEntityTags();
+                    if (entities == null) {
+                        entities = Collections.emptyList();
+                    }
+                }
+                byte[] entitiesKey = ENTITIES.getKey(chunkX, chunkZ);
+                if (entities.isEmpty()) {
+                    batch.delete(entitiesKey);
+                } else {
+                    try {
+                        batch.put(entitiesKey, NBTIO.write(entities, ByteOrder.LITTLE_ENDIAN));
+                    } catch (IOException e) {
+                        throw new RuntimeException(e);
+                    }
+                }
+
+                Collection<BlockUpdateEntry> blockUpdateEntries = null;
+                Collection<BlockUpdateEntry> randomBlockUpdateEntries = null;
+                long currentTick = 0;
+
+                LevelProvider provider;
+                if (convert) {
+                    blockUpdateEntries = chunk.getBlockUpdateEntries();
+                } else if ((provider = chunk.getProvider()) != null) {
+                    Level level = provider.getLevel();
+                    currentTick = level.getCurrentTick();
+                    //dirty?
+                    blockUpdateEntries = level.getPendingBlockUpdates(chunk);
+                    randomBlockUpdateEntries = level.getPendingRandomBlockUpdates(chunk);
+                }
+
+                byte[] pendingScheduledTicksKey = PENDING_SCHEDULED_TICKS.getKey(chunkX, chunkZ);
+                if (blockUpdateEntries != null && !blockUpdateEntries.isEmpty()) {
+                    CompoundTag ticks = saveBlockTickingQueue(blockUpdateEntries, currentTick);
+                    if (ticks != null) {
+                        try {
+                            batch.put(pendingScheduledTicksKey, NBTIO.write(ticks, ByteOrder.LITTLE_ENDIAN));
+                        } catch (IOException e) {
+                            throw new RuntimeException(e);
+                        }
+                    } else {
+                        batch.delete(pendingScheduledTicksKey);
+                    }
+                } else {
+                    batch.delete(pendingScheduledTicksKey);
+                }
+
+                byte[] pendingRandomTicksKey = PENDING_RANDOM_TICKS.getKey(chunkX, chunkZ);
+                if (randomBlockUpdateEntries != null && !randomBlockUpdateEntries.isEmpty()) {
+                    CompoundTag ticks = saveBlockTickingQueue(randomBlockUpdateEntries, currentTick);
+                    if (ticks != null) {
+                        try {
+                            batch.put(pendingRandomTicksKey, NBTIO.write(ticks, ByteOrder.LITTLE_ENDIAN));
+                        } catch (IOException e) {
+                            throw new RuntimeException(e);
+                        }
+                    } else {
+                        batch.delete(pendingRandomTicksKey);
+                    }
+                } else {
+                    batch.delete(pendingRandomTicksKey);
+                }
+
+                /*stream.reuse();
+                stream.putInt(CURRENT_NUKKIT_DATA_VERSION);
+                stream.putLLong(NUKKIT_DATA_MAGIC);
+                CompoundTag nbt = new CompoundTag();
+                // baked lighting
+//                nbt.putByteArray("BlockLight", chunk.getBlockLightArray());
+//                nbt.putByteArray("SkyLight", chunk.getBlockSkyLightArray());
+                try {
+                    stream.put(NBTIO.write(nbt, ByteOrder.LITTLE_ENDIAN));
+                } catch (IOException e) {
+                    throw new RuntimeException(e);
+                }
+                batch.put(NUKKIT_DATA.getKey(chunkX, chunkZ), stream.getBuffer());*/
+            }
+
+            batch.delete(HEIGHTMAP_AND_2D_BIOME_COLORS.getKey(chunkX, chunkZ));
+            batch.delete(LEGACY_TERRAIN.getKey(chunkX, chunkZ));
+
+            this.db.write(batch);
+        } finally {
+            chunk.ioLock.unlock();
         }
-        batch.put(NUKKIT_DATA.getKey(chunkX, chunkZ), stream.getBuffer());*/
-
-        batch.delete(HEIGHTMAP_AND_2D_BIOME_COLORS.getKey(chunkX, chunkZ));
-        batch.delete(LEGACY_TERRAIN.getKey(chunkX, chunkZ));
-
-        this.db.write(batch);
     }
 
     @Override
@@ -853,7 +881,7 @@ public class LevelDB implements LevelProvider {
     @Override
     public void saveChunk(int chunkX, int chunkZ) {
         if (this.isChunkLoaded(chunkX, chunkZ)) {
-            this.writeChunk(this.getChunk(chunkX, chunkZ), false);
+            this.writeChunk(this.getChunk(chunkX, chunkZ), false, false);
         }
     }
 
@@ -863,7 +891,7 @@ public class LevelDB implements LevelProvider {
             throw new ChunkException("Invalid Chunk class");
         }
         LevelDbChunk dbChunk = (LevelDbChunk) chunk;
-        this.writeChunk(dbChunk, true);
+        this.writeChunk(dbChunk, true, false);
     }
 
     @Override
@@ -943,6 +971,7 @@ public class LevelDB implements LevelProvider {
     }
 
     private boolean chunkExists(int chunkX, int chunkZ) {
+        //TODO: NEW_VERSION
         byte[] data = this.db.get(OLD_VERSION.getKey(chunkX, chunkZ));
         return data != null && data.length != 0;
     }
@@ -973,13 +1002,24 @@ public class LevelDB implements LevelProvider {
 
     @Override
     public synchronized void close() {
-        this.unloadChunks();
-        try {
-            this.db.close();
-        } catch (IOException e) {
-            throw new RuntimeException(e);
+        if (closed) {
+            return;
         }
-        this.level = null;
+        closed = true;
+
+        try {
+            gcLock.lock();
+
+            this.unloadChunks();
+            try {
+                this.db.close();
+            } catch (IOException e) {
+                throw new RuntimeException(e);
+            }
+            this.level = null;
+        } finally {
+            gcLock.unlock();
+        }
     }
 
     @Override
@@ -1232,5 +1272,103 @@ public class LevelDB implements LevelProvider {
         return tickList.isEmpty() ? null : new CompoundTag()
                 .putInt("currentTick", 0)
                 .putList(tickList);
+    }
+
+    @Override
+    public void forEachChunks(Function<FullChunk, Boolean> action) {
+        forEachChunks(action, false);
+    }
+
+    @Override
+    public void forEachChunks(Function<FullChunk, Boolean> action, boolean skipCorrupted) {
+        Iterator<Entry<byte[], byte[]>> iter = db.iterator();
+        while (iter.hasNext()) {
+            Entry<byte[], byte[]> entry = iter.next();
+            byte[] key = entry.getKey();
+            if (key.length != 9) {
+                continue;
+            }
+
+            byte type = key[8];
+            if (/*type != NEW_VERSION.getCode() &&*/ type != OLD_VERSION.getCode()) {
+                continue;
+            }
+
+            int chunkX = Binary.readLInt(key);
+            int chunkZ = Binary.readLInt(key, 4);
+            long index = Level.chunkHash(chunkX, chunkZ);
+            LevelDbChunk chunk;
+            synchronized (this.chunks) {
+                chunk = this.chunks.get(index);
+                if (chunk == null) {
+                    try {
+                        chunk = this.readChunk(chunkX, chunkZ);
+                    } catch (Exception e) {
+                        if (!skipCorrupted) {
+                            throw e;
+                        }
+                        log.error("Skipped corrupted chunk {} {}", chunkX, chunkZ, e);
+                        continue;
+                    }
+                }
+            }
+
+            if (chunk == null) {
+                continue;
+            }
+
+            if (!action.apply(chunk)) {
+                break;
+            }
+        }
+    }
+
+    class AutoCompactionTask extends AsyncTask<Void> {
+        @Override
+        public void onRun() {
+            if (!level.isAutoCompaction() || !canRun()) {
+                return;
+            }
+
+            log.info("Running AutoCompaction... ({})", path);
+            try {
+                gcLock.lock();
+
+                if (!canRun()) {
+                    return;
+                }
+
+                MutableInt count = new MutableInt();
+                forEachChunks(chunk -> {
+                    boolean next;
+                    if (chunk.compress()) {
+                        count.increment();
+
+                        next = canRun();
+                        if (next) {
+//                            writeChunk((LevelDbChunk) chunk, true, true); //TODO: save subchunks
+                        }
+                    } else {
+                        next = canRun();
+                    }
+                    return next;
+                }, true);
+                log.info("{} chunks have been compressed ({})", count, path);
+            } finally {
+                gcLock.unlock();
+            }
+        }
+
+        @Override
+        public void onCompletion(Server server) {
+            if (closed || level == null || !level.isAutoCompaction()) {
+                return;
+            }
+            server.getScheduler().scheduleDelayedTask(null, new AutoCompactionTask(), server.getAutoCompactionTicks(), true);
+        }
+
+        boolean canRun() {
+            return !closed && level != null && level.getPlayers().isEmpty();
+        }
     }
 }

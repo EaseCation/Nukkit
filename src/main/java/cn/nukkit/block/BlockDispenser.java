@@ -170,9 +170,7 @@ public class BlockDispenser extends BlockSolidMeta implements Faceable {
             dispense();
             return type;
         } else if (type == Level.BLOCK_UPDATE_REDSTONE) {
-            Vector3 pos = this.add(0);
-
-            boolean powered = level.isBlockPowered(pos) || level.isBlockPowered(pos.up());
+            boolean powered = level.isBlockPowered(this.copyPos()) || level.isBlockPowered(this.upVec());
             boolean triggered = isTriggered();
 
             if (powered && !triggered) {

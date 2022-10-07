@@ -18,14 +18,6 @@ public class Position extends Vector3 {
         this(0, 0, 0, null);
     }
 
-    public Position(double x) {
-        this(x, 0, 0, null);
-    }
-
-    public Position(double x, double y) {
-        this(x, y, 0, null);
-    }
-
     public Position(double x, double y, double z) {
         this(x, y, z, null);
     }
@@ -119,13 +111,8 @@ public class Position extends Vector3 {
     }
 
     @Override
-    public Position add(double x) {
-        return this.add(x, 0, 0);
-    }
-
-    @Override
-    public Position add(double x, double y) {
-        return this.add(x, y, 0);
+    public Position add(double n) {
+        return this.add(n, n, n);
     }
 
     @Override
@@ -139,18 +126,8 @@ public class Position extends Vector3 {
     }
 
     @Override
-    public Position subtract() {
-        return this.subtract(0, 0, 0);
-    }
-
-    @Override
-    public Position subtract(double x) {
-        return this.subtract(x, 0, 0);
-    }
-
-    @Override
-    public Position subtract(double x, double y) {
-        return this.subtract(x, y, 0);
+    public Position subtract(double n) {
+        return this.subtract(n, n, n);
     }
 
     @Override
@@ -169,8 +146,28 @@ public class Position extends Vector3 {
     }
 
     @Override
+    public Position multiply(double x, double y, double z) {
+        return new Position(this.x * x, this.y * y, this.z * z, this.level);
+    }
+
+    @Override
+    public Position multiply(Vector3 vec) {
+        return new Position(this.x * vec.x, this.y * vec.y, this.z * vec.z, this.level);
+    }
+
+    @Override
     public Position divide(double number) {
         return new Position(this.x / number, this.y / number, this.z / number, this.level);
+    }
+
+    @Override
+    public Position divide(double x, double y, double z) {
+        return new Position(this.x / x, this.y / y, this.z / z, this.level);
+    }
+
+    @Override
+    public Position divide(Vector3 vec) {
+        return new Position(this.x / vec.x, this.y / vec.y, this.z / vec.z, this.level);
     }
 
     @Override
@@ -190,7 +187,7 @@ public class Position extends Vector3 {
 
     @Override
     public Position abs() {
-        return new Position((int) Math.abs(this.x), (int) Math.abs(this.y), (int) Math.abs(this.z), this.level);
+        return new Position(Math.abs(this.x), Math.abs(this.y), Math.abs(this.z), this.level);
     }
 
     @Override

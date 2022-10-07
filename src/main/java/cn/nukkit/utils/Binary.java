@@ -235,7 +235,7 @@ public class Binary {
     }
 
     public static int readShort(byte[] bytes) {
-        return ((bytes[0] & 0xFF) << 8) + (bytes[1] & 0xFF);
+        return ((bytes[0] & 0xFF) << 8) | (bytes[1] & 0xFF);
     }
 
     public static short readSignedShort(byte[] bytes) {
@@ -250,7 +250,7 @@ public class Binary {
     }
 
     public static int readLShort(byte[] bytes) {
-        return ((bytes[1] & 0xFF) << 8) + (bytes[0] & 0xFF);
+        return ((bytes[1] & 0xFF) << 8) | (bytes[0] & 0xFF);
     }
 
     public static short readSignedLShort(byte[] bytes) {
@@ -266,9 +266,9 @@ public class Binary {
     }
 
     public static int readInt(byte[] bytes) {
-        return ((bytes[0] & 0xff) << 24) +
-                ((bytes[1] & 0xff) << 16) +
-                ((bytes[2] & 0xff) << 8) +
+        return ((bytes[0] & 0xff) << 24) |
+                ((bytes[1] & 0xff) << 16) |
+                ((bytes[2] & 0xff) << 8) |
                 (bytes[3] & 0xff);
     }
 
@@ -282,10 +282,17 @@ public class Binary {
     }
 
     public static int readLInt(byte[] bytes) {
-        return ((bytes[3] & 0xff) << 24) +
-                ((bytes[2] & 0xff) << 16) +
-                ((bytes[1] & 0xff) << 8) +
+        return ((bytes[3] & 0xff) << 24) |
+                ((bytes[2] & 0xff) << 16) |
+                ((bytes[1] & 0xff) << 8) |
                 (bytes[0] & 0xff);
+    }
+
+    public static int readLInt(byte[] bytes, int offset) {
+        return ((bytes[3 + offset] & 0xff) << 24) |
+                ((bytes[2 + offset] & 0xff) << 16) |
+                ((bytes[1 + offset] & 0xff) << 8) |
+                (bytes[offset] & 0xff);
     }
 
     public static byte[] writeLInt(int i) {
@@ -348,14 +355,14 @@ public class Binary {
     }
 
     public static long readLong(byte[] bytes) {
-        return (((long) bytes[0] << 56) +
-                ((long) (bytes[1] & 0xFF) << 48) +
-                ((long) (bytes[2] & 0xFF) << 40) +
-                ((long) (bytes[3] & 0xFF) << 32) +
-                ((long) (bytes[4] & 0xFF) << 24) +
-                ((bytes[5] & 0xFF) << 16) +
-                ((bytes[6] & 0xFF) << 8) +
-                ((bytes[7] & 0xFF)));
+        return ((long) bytes[0] << 56) |
+                ((long) (bytes[1] & 0xFF) << 48) |
+                ((long) (bytes[2] & 0xFF) << 40) |
+                ((long) (bytes[3] & 0xFF) << 32) |
+                ((long) (bytes[4] & 0xFF) << 24) |
+                ((bytes[5] & 0xFF) << 16) |
+                ((bytes[6] & 0xFF) << 8) |
+                ((bytes[7] & 0xFF));
     }
 
     public static byte[] writeLong(long l) {
@@ -372,14 +379,14 @@ public class Binary {
     }
 
     public static long readLLong(byte[] bytes) {
-        return (((long) bytes[7] << 56) +
-                ((long) (bytes[6] & 0xFF) << 48) +
-                ((long) (bytes[5] & 0xFF) << 40) +
-                ((long) (bytes[4] & 0xFF) << 32) +
-                ((long) (bytes[3] & 0xFF) << 24) +
-                ((bytes[2] & 0xFF) << 16) +
-                ((bytes[1] & 0xFF) << 8) +
-                ((bytes[0] & 0xFF)));
+        return ((long) bytes[7] << 56) |
+                ((long) (bytes[6] & 0xFF) << 48) |
+                ((long) (bytes[5] & 0xFF) << 40) |
+                ((long) (bytes[4] & 0xFF) << 32) |
+                ((long) (bytes[3] & 0xFF) << 24) |
+                ((bytes[2] & 0xFF) << 16) |
+                ((bytes[1] & 0xFF) << 8) |
+                ((bytes[0] & 0xFF));
     }
 
     public static byte[] writeLLong(long l) {
@@ -421,7 +428,7 @@ public class Binary {
 
     public static String bytesToHexString(byte[] src, boolean blank) {
         StringBuilder stringBuilder = new StringBuilder();
-        if (src == null || src.length <= 0) {
+        if (src == null || src.length == 0) {
             return null;
         }
 

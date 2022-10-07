@@ -49,12 +49,8 @@ public class BlockVector3 implements Cloneable {
         return this.z >> 4;
     }
 
-    public Vector3 add(double x) {
-        return this.add(x, 0, 0);
-    }
-
-    public Vector3 add(double x, double y) {
-        return this.add(x, y, 0);
+    public Vector3 add(double n) {
+        return this.add(n, n, n);
     }
 
     public Vector3 add(double x, double y, double z) {
@@ -65,12 +61,8 @@ public class BlockVector3 implements Cloneable {
         return new Vector3(this.x + x.getX(), this.y + x.getY(), this.z + x.getZ());
     }
 
-    public Vector3 subtract(double x) {
-        return this.subtract(x, 0, 0);
-    }
-
-    public Vector3 subtract(double x, double y) {
-        return this.subtract(x, y, 0);
+    public Vector3 subtract(double n) {
+        return this.subtract(n, n, n);
     }
 
     public Vector3 subtract(double x, double y, double z) {
@@ -81,12 +73,8 @@ public class BlockVector3 implements Cloneable {
         return this.add(-x.getX(), -x.getY(), -x.getZ());
     }
 
-    public BlockVector3 add(int x) {
-        return this.add(x, 0, 0);
-    }
-
-    public BlockVector3 add(int x, int y) {
-        return this.add(x, y, 0);
+    public BlockVector3 add(int n) {
+        return this.add(n, n, n);
     }
 
     public BlockVector3 add(int x, int y, int z) {
@@ -97,16 +85,8 @@ public class BlockVector3 implements Cloneable {
         return new BlockVector3(this.x + x.getX(), this.y + x.getY(), this.z + x.getZ());
     }
 
-    public BlockVector3 subtract() {
-        return this.subtract(0, 0, 0);
-    }
-
-    public BlockVector3 subtract(int x) {
-        return this.subtract(x, 0, 0);
-    }
-
-    public BlockVector3 subtract(int x, int y) {
-        return this.subtract(x, y, 0);
+    public BlockVector3 subtract(int n) {
+        return this.subtract(n, n, n);
     }
 
     public BlockVector3 subtract(int x, int y, int z) {
@@ -121,6 +101,10 @@ public class BlockVector3 implements Cloneable {
         return new BlockVector3(this.x * number, this.y * number, this.z * number);
     }
 
+    public BlockVector3 multiply(int x, int y, int z) {
+        return new BlockVector3(this.x * x, this.y * y, this.z * z);
+    }
+
     public BlockVector3 multiply(BlockVector3 vec) {
         return new BlockVector3(this.x * vec.x, this.y * vec.y, this.z * vec.z);
     }
@@ -129,8 +113,16 @@ public class BlockVector3 implements Cloneable {
         return new BlockVector3(this.x / number, this.y / number, this.z / number);
     }
 
+    public BlockVector3 divide(int x, int y, int z) {
+        return new BlockVector3(this.x / x, this.y / y, this.z / z);
+    }
+
     public BlockVector3 divide(BlockVector3 vec) {
         return new BlockVector3(this.x / vec.x, this.y / vec.y, this.z / vec.z);
+    }
+
+    public BlockVector3 abs() {
+        return new BlockVector3(Math.abs(this.x), Math.abs(this.y), Math.abs(this.z));
     }
 
     public BlockVector3 getSide(BlockFace face) {

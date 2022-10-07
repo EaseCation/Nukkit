@@ -44,8 +44,6 @@ import java.util.stream.Collectors;
 @Log4j2
 class LevelProviderConverter {
 
-    private static final Pattern ANVIL_REGEX = Pattern.compile("^r\\.(-?[0-9]+)\\.(-?[0-9]+)\\.mca$");
-
     private LevelProvider provider;
     private Class<? extends LevelProvider> toClass;
     private final Level level;
@@ -226,7 +224,7 @@ class LevelProviderConverter {
     }
 
     private int processRegionFile(Anvil anvil, LevelDB levelDb, File regionFile) {
-        Matcher matcher = ANVIL_REGEX.matcher(regionFile.getName());
+        Matcher matcher = Anvil.ANVIL_REGEX.matcher(regionFile.getName());
         if (!matcher.matches()) {
             return 0;
         }

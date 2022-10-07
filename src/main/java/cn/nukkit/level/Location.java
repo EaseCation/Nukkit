@@ -14,15 +14,7 @@ public class Location extends Position {
     public double pitch;
 
     public Location() {
-        this(0);
-    }
-
-    public Location(double x) {
-        this(x, 0);
-    }
-
-    public Location(double x, double y) {
-        this(x, y, 0);
+        this(0, 0, 0);
     }
 
     public Location(double x, double y, double z, Level level) {
@@ -96,13 +88,8 @@ public class Location extends Position {
     }
 
     @Override
-    public Location add(double x) {
-        return this.add(x, 0, 0);
-    }
-
-    @Override
-    public Location add(double x, double y) {
-        return this.add(x, y, 0);
+    public Location add(double n) {
+        return this.add(n, n, n);
     }
 
     @Override
@@ -116,18 +103,8 @@ public class Location extends Position {
     }
 
     @Override
-    public Location subtract() {
-        return this.subtract(0, 0, 0);
-    }
-
-    @Override
-    public Location subtract(double x) {
-        return this.subtract(x, 0, 0);
-    }
-
-    @Override
-    public Location subtract(double x, double y) {
-        return this.subtract(x, y, 0);
+    public Location subtract(double n) {
+        return this.subtract(n, n, n);
     }
 
     @Override
@@ -146,8 +123,28 @@ public class Location extends Position {
     }
 
     @Override
+    public Location multiply(double x, double y, double z) {
+        return new Location(this.x * x, this.y * y, this.z * z, this.yaw, this.pitch, this.level);
+    }
+
+    @Override
+    public Location multiply(Vector3 vec) {
+        return new Location(this.x * vec.x, this.y * vec.y, this.z * vec.z, this.yaw, this.pitch, this.level);
+    }
+
+    @Override
     public Location divide(double number) {
         return new Location(this.x / number, this.y / number, this.z / number, this.yaw, this.pitch, this.level);
+    }
+
+    @Override
+    public Location divide(double x, double y, double z) {
+        return new Location(this.x / x, this.y / y, this.z / z, this.yaw, this.pitch, this.level);
+    }
+
+    @Override
+    public Location divide(Vector3 vec) {
+        return new Location(this.x / vec.x, this.y / vec.y, this.z / vec.z, this.yaw, this.pitch, this.level);
     }
 
     @Override
@@ -167,7 +164,7 @@ public class Location extends Position {
 
     @Override
     public Location abs() {
-        return new Location((int) Math.abs(this.x), (int) Math.abs(this.y), (int) Math.abs(this.z), this.yaw, this.pitch, this.level);
+        return new Location(Math.abs(this.x), Math.abs(this.y), Math.abs(this.z), this.yaw, this.pitch, this.level);
     }
 
     public Vector3 getDirectionVector() {

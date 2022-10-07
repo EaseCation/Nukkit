@@ -418,6 +418,8 @@ public class PalettedSubChunkStorage {
             return true;
         }
 
+        BitArrayVersion version = BitArrayVersion.V2;
+        BitArray newArray = version.createPalette(SIZE);
         IntList newPalette = new IntArrayList(count);
         newPalette.add(this.palette.getInt(0));
         for (int i = 0; i < SIZE; i++) {
@@ -428,18 +430,21 @@ public class PalettedSubChunkStorage {
             if (newIndex == -1) {
                 newIndex = newPalette.size();
                 newPalette.add(id);
+
+                if (newIndex > version.getMaxEntryValue()) {
+                    version = version.next();
+                    BitArray growArray = version.createPalette(SIZE);
+                    for (int j = 0; j < i; j++) {
+                        growArray.set(j, newArray.get(j));
+                    }
+                    newArray = growArray;
+                }
             }
 
-            if (paletteIndex == newIndex) {
-                continue;
-            }
-
-            this.set(i, newIndex);
+            newArray.set(i, newIndex);
         }
+        this.bitArray = newArray;
         this.palette = newPalette;
-
-        //TODO: shrink bitArray?
-        //this.bitArray = BitArrayVersion.getUniversal(newPalette.size()).createPalette(SIZE);
         return true;
     }
 

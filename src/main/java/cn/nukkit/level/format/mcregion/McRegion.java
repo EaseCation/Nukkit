@@ -17,6 +17,7 @@ import cn.nukkit.utils.BinaryStream;
 import cn.nukkit.utils.ChunkException;
 import it.unimi.dsi.fastutil.ints.Int2IntMap;
 import it.unimi.dsi.fastutil.objects.ObjectArrayList;
+import lombok.extern.log4j.Log4j2;
 
 import java.io.File;
 import java.io.IOException;
@@ -24,13 +25,17 @@ import java.nio.ByteOrder;
 import java.nio.file.Files;
 import java.util.Collections;
 import java.util.List;
+import java.util.function.Function;
+import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 /**
  * author: MagicDroidX
  * Nukkit Project
  */
+@Log4j2
 public class McRegion extends BaseLevelProvider {
+    private static final Pattern REGION_REGEX = Pattern.compile("^r\\.(-?[0-9]+)\\.(-?[0-9]+)\\.mcr$");
 
     public McRegion(Level level, String path) throws IOException {
         super(level, path);
@@ -53,9 +58,9 @@ public class McRegion extends BaseLevelProvider {
 
     @SuppressWarnings("unused")
     public static boolean isValid(String path) {
-        boolean isValid = (new File(path, "level.dat").exists()) && new File(path + "/region/").isDirectory();
+        boolean isValid = (new File(path, "level.dat").exists()) && new File(path, "region").isDirectory();
         if (isValid) {
-            for (File file : new File(path, "region").listFiles((dir, name) -> Pattern.matches("^.+\\.mc[r|a]$", name))) {
+            for (File file : new File(path, "region").listFiles((dir, name) -> REGEX.matcher(name).matches())) {
                 if (!file.getName().endsWith(".mcr")) {
                     isValid = false;
                     break;
@@ -238,6 +243,84 @@ public class McRegion extends BaseLevelProvider {
             }
             lastRegion.set(region);
             return region;
+        }
+    }
+
+    @Override
+    public void forEachChunks(Function<FullChunk, Boolean> action) {
+        forEachChunks(action, false);
+    }
+
+    @Override
+    public void forEachChunks(Function<FullChunk, Boolean> action, boolean skipCorrupted) {
+        File regionDir = new File(path, "region");
+        File[] regionFiles = regionDir.listFiles((dir, name) -> name.endsWith(".mcr"));
+
+        if (regionFiles == null) {
+            return;
+        }
+
+        for (File regionFile : regionFiles) {
+            Matcher matcher = REGION_REGEX.matcher(regionFile.getName());
+            if (!matcher.matches()) {
+                continue;
+            }
+
+            int regionX;
+            int regionZ;
+            try {
+                regionX = Integer.parseInt(matcher.group(1));
+                regionZ = Integer.parseInt(matcher.group(2));
+            } catch (Exception e) {
+                log.error("Skipped invalid region: {}", regionFile, e);
+                continue;
+            }
+
+            RegionLoader region;
+            try {
+                region = new RegionLoader(this, regionX, regionZ);
+            } catch (Exception e) {
+                log.error("Skipped corrupted region: {}", regionFile, e);
+                continue;
+            }
+
+            for (int x = 0; x < 32; x++) {
+                for (int z = 0; z < 32; z++) {
+                    if (!region.chunkExists(x, z)) {
+                        continue;
+                    }
+
+                    Chunk chunk;
+                    try {
+                        chunk = region.readChunk(x, z);
+                    } catch (Exception e) {
+                        if (!skipCorrupted) {
+                            throw new ChunkException(e);
+                        }
+                        log.error("Skipped corrupted chunk: region {},{} pos {},{}", regionX, regionZ, x, z, e);
+                        continue;
+                    }
+
+                    if (chunk == null) {
+                        continue;
+                    }
+
+                    if (!action.apply(chunk)) {
+                        try {
+                            region.close();
+                        } catch (Exception e) {
+                            log.error("An error occurred while unloading region: {}", regionFile, e);
+                        }
+                        return;
+                    }
+                }
+            }
+
+            try {
+                region.close();
+            } catch (Exception e) {
+                log.error("An error occurred while unloading region: {}", regionFile, e);
+            }
         }
     }
 }

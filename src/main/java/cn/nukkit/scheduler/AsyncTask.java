@@ -11,13 +11,13 @@ import java.util.concurrent.ConcurrentLinkedQueue;
  * @author Nukkit Project Team
  */
 @Log4j2
-public abstract class AsyncTask implements Runnable {
+public abstract class AsyncTask<T> implements Runnable {
 
-    public static final Queue<AsyncTask> FINISHED_LIST = new ConcurrentLinkedQueue<>();
+    public static final Queue<AsyncTask<?>> FINISHED_LIST = new ConcurrentLinkedQueue<>();
 
-    private Object result;
-    private int taskId;
-    private boolean finished = false;
+    private volatile T result;
+    private volatile int taskId;
+    private volatile boolean finished;
 
     public void run() {
         this.result = null;
@@ -30,7 +30,7 @@ public abstract class AsyncTask implements Runnable {
         return this.finished;
     }
 
-    public Object getResult() {
+    public T getResult() {
         return this.result;
     }
 
@@ -38,7 +38,7 @@ public abstract class AsyncTask implements Runnable {
         return this.result != null;
     }
 
-    public void setResult(Object result) {
+    public void setResult(T result) {
         this.result = result;
     }
 
@@ -65,7 +65,7 @@ public abstract class AsyncTask implements Runnable {
     public static void collectTask() {
         Timings.schedulerAsyncTimer.startTiming();
         while (!FINISHED_LIST.isEmpty()) {
-            AsyncTask task = FINISHED_LIST.poll();
+            AsyncTask<?> task = FINISHED_LIST.poll();
             try {
                 task.onCompletion(Server.getInstance());
             } catch (Exception e) {

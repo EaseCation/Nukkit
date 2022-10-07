@@ -24,12 +24,15 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.Map;
 import java.util.concurrent.atomic.AtomicReference;
+import java.util.regex.Pattern;
 
 /**
  * author: MagicDroidX
  * Nukkit Project
  */
 public abstract class BaseLevelProvider implements LevelProvider {
+    protected static final Pattern REGEX = Pattern.compile("^.+\\.mc[r|a]$");
+
     protected Level level;
 
     protected final String path;

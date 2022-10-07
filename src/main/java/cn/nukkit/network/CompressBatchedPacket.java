@@ -11,7 +11,7 @@ import java.util.List;
  * author: MagicDroidX
  * Nukkit Project
  */
-public class CompressBatchedPacket extends AsyncTask {
+public class CompressBatchedPacket extends AsyncTask<Void> {
 
     public int level = 7;
     public byte[] data;

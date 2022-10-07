@@ -11,12 +11,12 @@ import java.util.List;
  * author: MagicDroidX
  * Nukkit Project
  */
-public class CompressBatchedTask extends AsyncTask {
+public class CompressBatchedTask extends AsyncTask<Void> {
 
-    public int level = 7;
+    public int level;
     public byte[] data;
     public byte[] finalData;
-    public int channel = 0;
+    public int channel;
     public List<InetSocketAddress> targets;
     public boolean zlibRaw;
 

@@ -14,10 +14,6 @@ public class Vector2 {
         this(0, 0);
     }
 
-    public Vector2(double x) {
-        this(x, 0);
-    }
-
     public Vector2(double x, double y) {
         this.x = x;
         this.y = y;
@@ -39,8 +35,8 @@ public class Vector2 {
         return Mth.floor(this.y);
     }
 
-    public Vector2 add(double x) {
-        return this.add(x, 0);
+    public Vector2 add(double n) {
+        return this.add(n, n);
     }
 
     public Vector2 add(double x, double y) {
@@ -51,8 +47,8 @@ public class Vector2 {
         return this.add(x.getX(), x.getY());
     }
 
-    public Vector2 subtract(double x) {
-        return this.subtract(x, 0);
+    public Vector2 subtract(double n) {
+        return this.subtract(n, n);
     }
 
     public Vector2 subtract(double x, double y) {
@@ -83,8 +79,20 @@ public class Vector2 {
         return new Vector2(this.x * number, this.y * number);
     }
 
+    public Vector2 multiply(double x, double y) {
+        return new Vector2(this.x * x, this.y * y);
+    }
+
+    public Vector2 multiply(Vector2 vec) {
+        return new Vector2(this.x * vec.getX(), this.y * vec.getY());
+    }
+
     public Vector2 divide(double number) {
         return new Vector2(this.x / number, this.y / number);
+    }
+
+    public Vector2 divide(Vector2 vec) {
+        return new Vector2(this.x / vec.getX(), this.y / vec.getY());
     }
 
     public double distance(double x) {

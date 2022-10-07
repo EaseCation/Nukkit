@@ -39,8 +39,8 @@ public class EntityBoat extends EntityVehicle {
     public static final Vector3f RIDER_PLAYER_OFFSET = new Vector3f(0, 1.02001f, 0);
     public static final Vector3f RIDER_OFFSET = new Vector3f(0, -0.2f, 0);
 
-    public static final Vector3f PASSENGER_OFFSET = new Vector3f(-0.6f);
-    public static final Vector3f RIDER_PASSENGER_OFFSET = new Vector3f(0.2f);
+    public static final Vector3f PASSENGER_OFFSET = new Vector3f(-0.6f, 0, 0);
+    public static final Vector3f RIDER_PASSENGER_OFFSET = new Vector3f(0.2f, 0, 0);
 
     public static final int RIDER_INDEX = 0;
     public static final int PASSENGER_INDEX = 1;

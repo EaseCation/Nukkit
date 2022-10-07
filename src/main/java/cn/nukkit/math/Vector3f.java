@@ -3,15 +3,8 @@ package cn.nukkit.math;
 import cn.nukkit.level.ChunkPosition;
 import cn.nukkit.nbt.tag.FloatTag;
 import cn.nukkit.nbt.tag.ListTag;
-import org.checkerframework.checker.units.qual.min;
 
 public class Vector3f implements Cloneable {
-    public static final int SIDE_DOWN = 0;
-    public static final int SIDE_UP = 1;
-    public static final int SIDE_NORTH = 2;
-    public static final int SIDE_SOUTH = 3;
-    public static final int SIDE_WEST = 4;
-    public static final int SIDE_EAST = 5;
 
     public float x;
     public float y;
@@ -19,14 +12,6 @@ public class Vector3f implements Cloneable {
 
     public Vector3f() {
         this(0, 0, 0);
-    }
-
-    public Vector3f(float x) {
-        this(x, 0, 0);
-    }
-
-    public Vector3f(float x, float y) {
-        this(x, y, 0);
     }
 
     public Vector3f(float x, float y, float z) {
@@ -71,32 +56,8 @@ public class Vector3f implements Cloneable {
         return this.getFloorZ() >> 4;
     }
 
-    public float getRight() {
-        return this.x;
-    }
-
-    public float getUp() {
-        return this.y;
-    }
-
-    public float getForward() {
-        return this.z;
-    }
-
-    public float getSouth() {
-        return this.x;
-    }
-
-    public float getWest() {
-        return this.z;
-    }
-
-    public Vector3f add(float x) {
-        return this.add(x, 0, 0);
-    }
-
-    public Vector3f add(float x, float y) {
-        return this.add(x, y, 0);
+    public Vector3f add(float n) {
+        return this.add(n, n, n);
     }
 
     public Vector3f add(float x, float y, float z) {
@@ -107,16 +68,8 @@ public class Vector3f implements Cloneable {
         return new Vector3f(this.x + x.getX(), this.y + x.getY(), this.z + x.getZ());
     }
 
-    public Vector3f subtract() {
-        return this.subtract(0, 0, 0);
-    }
-
-    public Vector3f subtract(float x) {
-        return this.subtract(x, 0, 0);
-    }
-
-    public Vector3f subtract(float x, float y) {
-        return this.subtract(x, y, 0);
+    public Vector3f subtract(float n) {
+        return this.subtract(n, n, n);
     }
 
     public Vector3f subtract(float x, float y, float z) {
@@ -131,12 +84,20 @@ public class Vector3f implements Cloneable {
         return new Vector3f(this.x * number, this.y * number, this.z * number);
     }
 
+    public Vector3f multiply(float x, float y, float z) {
+        return new Vector3f(this.x * x, this.y * y, this.z * z);
+    }
+
     public Vector3f multiply(Vector3f vec) {
         return new Vector3f(this.x * vec.x, this.y * vec.y, this.z * vec.z);
     }
 
     public Vector3f divide(float number) {
         return new Vector3f(this.x / number, this.y / number, this.z / number);
+    }
+
+    public Vector3f divide(float x, float y, float z) {
+        return new Vector3f(this.x / x, this.y / y, this.z / z);
     }
 
     public Vector3f divide(Vector3f vec) {
@@ -156,49 +117,63 @@ public class Vector3f implements Cloneable {
     }
 
     public Vector3f abs() {
-        return new Vector3f((int) Math.abs(this.x), (int) Math.abs(this.y), (int) Math.abs(this.z));
+        return new Vector3f(Math.abs(this.x), Math.abs(this.y), Math.abs(this.z));
     }
 
-    public Vector3f getSide(int side) {
-        return this.getSide(side, 1);
+    public Vector3f getSide(BlockFace face) {
+        return this.getSide(face, 1);
     }
 
-    public Vector3f getSide(int side, int step) {
-        switch (side) {
-            case Vector3f.SIDE_DOWN:
-                return new Vector3f(this.x, this.y - step, this.z);
-            case Vector3f.SIDE_UP:
-                return new Vector3f(this.x, this.y + step, this.z);
-            case Vector3f.SIDE_NORTH:
-                return new Vector3f(this.x, this.y, this.z - step);
-            case Vector3f.SIDE_SOUTH:
-                return new Vector3f(this.x, this.y, this.z + step);
-            case Vector3f.SIDE_WEST:
-                return new Vector3f(this.x - step, this.y, this.z);
-            case Vector3f.SIDE_EAST:
-                return new Vector3f(this.x + step, this.y, this.z);
-            default:
-                return this;
-        }
+    public Vector3f getSide(BlockFace face, int step) {
+        return new Vector3f(this.getX() + face.getXOffset() * step, this.getY() + face.getYOffset() * step, this.getZ() + face.getZOffset() * step);
     }
 
-    public static int getOppositeSide(int side) {
-        switch (side) {
-            case Vector3f.SIDE_DOWN:
-                return Vector3f.SIDE_UP;
-            case Vector3f.SIDE_UP:
-                return Vector3f.SIDE_DOWN;
-            case Vector3f.SIDE_NORTH:
-                return Vector3f.SIDE_SOUTH;
-            case Vector3f.SIDE_SOUTH:
-                return Vector3f.SIDE_NORTH;
-            case Vector3f.SIDE_WEST:
-                return Vector3f.SIDE_EAST;
-            case Vector3f.SIDE_EAST:
-                return Vector3f.SIDE_WEST;
-            default:
-                return -1;
-        }
+    public Vector3f up() {
+        return up(1);
+    }
+
+    public Vector3f up(int step) {
+        return getSide(BlockFace.UP, step);
+    }
+
+    public Vector3f down() {
+        return down(1);
+    }
+
+    public Vector3f down(int step) {
+        return getSide(BlockFace.DOWN, step);
+    }
+
+    public Vector3f north() {
+        return north(1);
+    }
+
+    public Vector3f north(int step) {
+        return getSide(BlockFace.NORTH, step);
+    }
+
+    public Vector3f south() {
+        return south(1);
+    }
+
+    public Vector3f south(int step) {
+        return getSide(BlockFace.SOUTH, step);
+    }
+
+    public Vector3f east() {
+        return east(1);
+    }
+
+    public Vector3f east(int step) {
+        return getSide(BlockFace.EAST, step);
+    }
+
+    public Vector3f west() {
+        return west(1);
+    }
+
+    public Vector3f west(int step) {
+        return getSide(BlockFace.WEST, step);
     }
 
     public double distance(Vector3f pos) {

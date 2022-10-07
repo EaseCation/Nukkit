@@ -7,6 +7,7 @@ import cn.nukkit.math.Vector3;
 import cn.nukkit.scheduler.AsyncTask;
 
 import java.util.Map;
+import java.util.function.Function;
 
 /**
  * author: MagicDroidX
@@ -111,4 +112,8 @@ public interface LevelProvider {
     GameRules getGamerules();
 
     void setGameRules(GameRules rules);
+
+    void forEachChunks(Function<FullChunk, Boolean> action);
+
+    void forEachChunks(Function<FullChunk, Boolean> action, boolean skipCorrupted);
 }

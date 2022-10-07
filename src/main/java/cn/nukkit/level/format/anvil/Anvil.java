@@ -13,21 +13,25 @@ import cn.nukkit.nbt.tag.CompoundTag;
 import cn.nukkit.scheduler.AsyncTask;
 import cn.nukkit.utils.ChunkException;
 import it.unimi.dsi.fastutil.objects.ObjectIterator;
+import lombok.extern.log4j.Log4j2;
 
 import java.io.File;
 import java.io.IOException;
 import java.nio.ByteOrder;
 import java.nio.file.Files;
 import java.nio.file.Paths;
+import java.util.function.Function;
+import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 /**
  * author: MagicDroidX
  * Nukkit Project
  */
+@Log4j2
 public class Anvil extends BaseLevelProvider {
     public static final int VERSION = 19133;
-    protected static final Pattern REGEX = Pattern.compile("^.+\\.mc[r|a]$");
+    public static final Pattern ANVIL_REGEX = Pattern.compile("^r\\.(-?[0-9]+)\\.(-?[0-9]+)\\.mca$");
 
     public Anvil(Level level, String path) throws IOException {
         super(level, path);
@@ -216,6 +220,84 @@ public class Anvil extends BaseLevelProvider {
             }
             lastRegion.set(region);
             return region;
+        }
+    }
+
+    @Override
+    public void forEachChunks(Function<FullChunk, Boolean> action) {
+        forEachChunks(action, false);
+    }
+
+    @Override
+    public void forEachChunks(Function<FullChunk, Boolean> action, boolean skipCorrupted) {
+        File regionDir = new File(path, "region");
+        File[] regionFiles = regionDir.listFiles((dir, name) -> name.endsWith(".mca"));
+
+        if (regionFiles == null) {
+            return;
+        }
+
+        for (File regionFile : regionFiles) {
+            Matcher matcher = ANVIL_REGEX.matcher(regionFile.getName());
+            if (!matcher.matches()) {
+                continue;
+            }
+
+            int regionX;
+            int regionZ;
+            try {
+                regionX = Integer.parseInt(matcher.group(1));
+                regionZ = Integer.parseInt(matcher.group(2));
+            } catch (Exception e) {
+                log.error("Skipped invalid region: {}", regionFile, e);
+                continue;
+            }
+
+            RegionLoader region;
+            try {
+                region = new RegionLoader(this, regionX, regionZ);
+            } catch (Exception e) {
+                log.error("Skipped corrupted region: {}", regionFile, e);
+                continue;
+            }
+
+            for (int x = 0; x < 32; x++) {
+                for (int z = 0; z < 32; z++) {
+                    if (!region.chunkExists(x, z)) {
+                        continue;
+                    }
+
+                    Chunk chunk;
+                    try {
+                        chunk = region.readChunk(x, z);
+                    } catch (Exception e) {
+                        if (!skipCorrupted) {
+                            throw new ChunkException(e);
+                        }
+                        log.error("Skipped corrupted chunk: region {},{} pos {},{}", regionX, regionZ, x, z, e);
+                        continue;
+                    }
+
+                    if (chunk == null) {
+                        continue;
+                    }
+
+                    if (!action.apply(chunk)) {
+                        try {
+                            region.close();
+                        } catch (Exception e) {
+                            log.error("An error occurred while unloading region: {}", regionFile, e);
+                        }
+                        return;
+                    }
+                }
+            }
+
+            try {
+                region.close();
+            } catch (Exception e) {
+                log.error("An error occurred while unloading region: {}", regionFile, e);
+            }
         }
     }
 }

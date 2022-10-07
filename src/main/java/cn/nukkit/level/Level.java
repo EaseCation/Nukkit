@@ -280,6 +280,8 @@ public class Level implements ChunkManager, Metadatable {
 
     private boolean redstoneEnabled = true;
 
+    private boolean autoCompaction;
+
     private boolean initialized;
 
     public Level(Server server, String name, String path, Class<? extends LevelProvider> provider) {
@@ -287,6 +289,7 @@ public class Level implements ChunkManager, Metadatable {
         this.blockMetadata = new BlockMetadataStore(this);
         this.server = server;
         this.autoSave = server.getAutoSave();
+        this.autoCompaction = server.isAutoCompactionEnabled();
         this.folderName = name;
         this.timings = new LevelTimings(this);
         this.updateQueue = new BlockUpdateScheduler(this, 0);
@@ -454,10 +457,6 @@ public class Level implements ChunkManager, Metadatable {
         return new Vector3(hash.x, hash.y, hash.z);
     }
 
-    public static Chunk.Entry getChunkXZ(long hash) {
-        return new Chunk.Entry(getHashX(hash), getHashZ(hash));
-    }
-
     public static int generateChunkLoaderId(ChunkLoader loader) {
         if (loader.getLoaderId() == null || loader.getLoaderId() == 0) {
             return chunkLoaderCounter++;
@@ -509,7 +508,7 @@ public class Level implements ChunkManager, Metadatable {
             this.save();
         }
 
-        for (BaseFullChunk chunk : new ArrayList<>(this.chunks.values())) {
+        for (BaseFullChunk chunk : new ObjectArrayList<>(this.chunks.values())) {
             this.unloadChunk(chunk.getX(), chunk.getZ(), false);
         }
 
@@ -815,7 +814,7 @@ public class Level implements ChunkManager, Metadatable {
                 TextFormat.GREEN + this.getName() + TextFormat.WHITE));
         Level defaultLevel = this.server.getDefaultLevel();
 
-        for (Player player : new ArrayList<>(this.getPlayers().values())) {
+        for (Player player : new ObjectArrayList<>(this.getPlayers().values())) {
             if (this == defaultLevel || defaultLevel == null) {
                 player.close(player.getLeaveMessage(), "Forced default level unload");
             } else {
@@ -853,7 +852,7 @@ public class Level implements ChunkManager, Metadatable {
     public void addChunkPacket(int chunkX, int chunkZ, DataPacket packet) {
         long index = Level.chunkHash(chunkX, chunkZ);
         if (!this.chunkPackets.containsKey(index)) {
-            this.chunkPackets.put(index, new ArrayList<>());
+            this.chunkPackets.put(index, new ObjectArrayList<>());
         }
         this.chunkPackets.get(index).add(packet);
     }
@@ -1024,7 +1023,7 @@ public class Level implements ChunkManager, Metadatable {
         this.timings.entityTick.startTiming();
 
         if (!this.updateEntities.isEmpty()) {
-            for (long id : new ArrayList<>(this.updateEntities.keySet())) {
+            for (long id : new ObjectArrayList<>(this.updateEntities.keySet())) {
                 Entity entity = this.updateEntities.get(id);
                 if (entity == null) {
                     this.updateEntities.remove(id);
@@ -1151,7 +1150,7 @@ public class Level implements ChunkManager, Metadatable {
     public Vector3 adjustPosToNearbyEntity(Vector3 pos) {
         pos.y = this.getHighestBlockAt(pos.getFloorX(), pos.getFloorZ());
         AxisAlignedBB axisalignedbb = new SimpleAxisAlignedBB(pos.x, pos.y, pos.z, pos.getX(), 255, pos.getZ()).expand(3, 3, 3);
-        List<Entity> list = new ArrayList<>();
+        List<Entity> list = new ObjectArrayList<>();
 
         for (Entity entity : this.getCollidingEntities(axisalignedbb)) {
             if (entity.isAlive() && canBlockSeeSky(entity)) {
@@ -1601,7 +1600,7 @@ public class Level implements ChunkManager, Metadatable {
         int maxY = Mth.floor(bb.getMaxY());
         int maxZ = Mth.floor(bb.getMaxZ());
 
-        List<Block> collides = new ArrayList<>();
+        List<Block> collides = new ObjectArrayList<>();
 
         long loopTimes = 0;
         if (targetFirst) {
@@ -1669,7 +1668,7 @@ public class Level implements ChunkManager, Metadatable {
         int maxY = Mth.floor(bb.getMaxY());
         int maxZ = Mth.floor(bb.getMaxZ());
 
-        List<AxisAlignedBB> collides = new ArrayList<>();
+        List<AxisAlignedBB> collides = new ObjectArrayList<>();
 
         for (int z = minZ; z <= maxZ; ++z) {
             for (int x = minX; x <= maxX; ++x) {
@@ -2373,7 +2372,7 @@ public class Level implements ChunkManager, Metadatable {
         if (createParticles) {
             Int2ObjectMap<Player> players = this.getChunkPlayers((int) target.x >> 4, (int) target.z >> 4);
 
-            this.addParticle(new DestroyBlockParticle(target.add(0.5), target), players.values());
+            this.addParticle(new DestroyBlockParticle(target.add(0.5, 0, 0), target), players.values());
 
             if (player != null) {
                 players.remove(player.getLoaderId());
@@ -2634,7 +2633,7 @@ public class Level implements ChunkManager, Metadatable {
     }
 
     public Entity[] getCollidingEntities(AxisAlignedBB bb, Entity entity) {
-        List<Entity> nearby = new ArrayList<>();
+        List<Entity> nearby = new ObjectArrayList<>();
 
         if (entity == null || entity.canCollide()) {
             int minX = Mth.floor(bb.getMinX() - 2) >> 4;
@@ -2662,7 +2661,7 @@ public class Level implements ChunkManager, Metadatable {
     }
 
     public Entity[] getNearbyEntities(AxisAlignedBB bb, Entity entity) {
-        List<Entity> nearby = new ArrayList<>();
+        List<Entity> nearby = new ObjectArrayList<>();
 
         int minX = Mth.floor(bb.getMinX() - 2) >> 4;
         int maxX = Mth.floor(bb.getMaxX() + 2) >> 4;
@@ -2733,12 +2732,12 @@ public class Level implements ChunkManager, Metadatable {
 
     public Map<Long, Entity> getChunkEntities(int X, int Z) {
         FullChunk chunk;
-        return (chunk = this.getChunk(X, Z)) != null ? chunk.getEntities() : new HashMap<>();
+        return (chunk = this.getChunk(X, Z)) != null ? chunk.getEntities() : Long2ObjectMaps.emptyMap();
     }
 
     public Map<Long, BlockEntity> getChunkBlockEntities(int X, int Z) {
         FullChunk chunk;
-        return (chunk = this.getChunk(X, Z)) != null ? chunk.getBlockEntities() : new HashMap<>();
+        return (chunk = this.getChunk(X, Z)) != null ? chunk.getBlockEntities() : Long2ObjectMaps.emptyMap();
     }
 
     @Deprecated
@@ -3674,7 +3673,7 @@ public class Level implements ChunkManager, Metadatable {
             }
         }
 
-        for (FullChunk chunk : new ArrayList<>(this.provider.getLoadedChunks().values())) {
+        for (FullChunk chunk : new ObjectArrayList<>(this.provider.getLoadedChunks().values())) {
             if (!this.chunks.containsKey(Level.chunkHash(chunk.getX(), chunk.getZ()))) {
                 this.provider.unloadChunk(chunk.getX(), chunk.getZ(), false);
             }
@@ -3693,7 +3692,7 @@ public class Level implements ChunkManager, Metadatable {
             int maxUnload = 96;
             long now = System.currentTimeMillis();
 
-            for (long index : new ArrayList<>(this.unloadQueue.keySet())) {
+            for (long index : new ObjectArrayList<>(this.unloadQueue.keySet())) {
                 long time = this.unloadQueue.get(index);
 
                 int X = getHashX(index);
@@ -4372,5 +4371,13 @@ public class Level implements ChunkManager, Metadatable {
             }
         }
         return blocks;
+    }
+
+    public boolean isAutoCompaction() {
+        return autoCompaction && autoSave;
+    }
+
+    public void setAutoCompaction(boolean autoCompaction) {
+        this.autoCompaction = autoCompaction;
     }
 }

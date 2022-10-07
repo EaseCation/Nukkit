@@ -414,7 +414,7 @@ public abstract class EntityMinecartAbstract extends EntityVehicle {
 
         if (!hasUpdated) {
             for (Entity linked : passengers) {
-                linked.setSeatPosition(getMountedOffset(linked).add(0, 0.35f));
+                linked.setSeatPosition(getMountedOffset(linked).add(0, 0.35f, 0));
                 updatePassengerPosition(linked);
             }
 

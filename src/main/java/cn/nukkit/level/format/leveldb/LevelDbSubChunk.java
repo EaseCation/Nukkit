@@ -519,14 +519,25 @@ public class LevelDbSubChunk implements ChunkSection {
                 return false;
             }
 
-            //TODO: remove empty layers
-            for (PalettedSubChunkStorage storage : this.storages) {
+            boolean dirty = false;
+            boolean checkRemove = true;
+            for (int i = this.storages.length - 1; i >= 0; i--) {
+                PalettedSubChunkStorage storage = this.storages[i];
                 if (storage == null) {
                     continue;
                 }
-                this.dirty |= storage.compress();
+                dirty |= storage.compress();
+
+                if (checkRemove) {
+                    if (storage.isEmpty(true) && i > 0) {
+                        this.storages = Arrays.copyOfRange(this.storages, 0, i);
+                    } else {
+                        checkRemove = false;
+                    }
+                }
             }
-            return true;
+            this.dirty |= dirty;
+            return dirty;
         } finally {
             this.writeLock.unlock();
         }

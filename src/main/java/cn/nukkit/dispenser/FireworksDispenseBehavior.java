@@ -11,7 +11,7 @@ public class FireworksDispenseBehavior extends DefaultDispenseBehavior {
 
     @Override
     public Item dispense(BlockDispenser block, BlockFace face, Item item) {
-        Vector3 pos = block.getSideVec(face).add(0, 0.2);
+        Vector3 pos = block.getSideVec(face).add(0, 0.2, 0);
 
         EntityFirework firework = new EntityFirework(block.level.getChunk(pos.getChunkX(), pos.getChunkZ()),
                 Entity.getDefaultNBT(pos));

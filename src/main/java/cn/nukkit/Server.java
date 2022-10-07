@@ -173,6 +173,9 @@ public class Server {
     private int autoSaveTicker = 0;
     private int autoSaveTicks = 6000;
 
+    private final boolean autoCompaction;
+    private int autoCompactionTicks;
+
     private final BaseLang baseLang;
 
     private final boolean forceLanguage;
@@ -340,6 +343,9 @@ public class Server {
         this.alwaysTickPlayers = this.getConfig("level-settings.always-tick-players", false);
         this.baseTickRate = this.getConfig("level-settings.base-tick-rate", 1);
         this.redstoneEnabled = this.getConfig("level-settings.tick-redstone", true);
+
+        this.autoCompaction = this.getConfig("level-settings.auto-compression", true);
+        this.autoCompactionTicks = Math.max(1, this.getConfig("ticks-per.auto-compaction", 30 * 60 * 20));
 
         this.scheduler = new ServerScheduler();
 
@@ -2028,6 +2034,19 @@ public class Server {
 
     public int getPlayerSkinChangeCooldown() {
         return this.getConfig("player.skin-change-cooldown", 30);
+    }
+
+    public boolean isAutoCompactionEnabled() {
+        return autoCompaction;
+    }
+
+    public void setAutoCompactionTicks(int ticks) {
+        Preconditions.checkArgument(ticks > 0, "ticks");
+        autoCompactionTicks = ticks;
+    }
+
+    public int getAutoCompactionTicks() {
+        return autoCompactionTicks;
     }
 
     /**

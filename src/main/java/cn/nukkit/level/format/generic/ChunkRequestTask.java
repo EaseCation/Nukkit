@@ -45,7 +45,7 @@ import static cn.nukkit.level.format.leveldb.LevelDbConstants.*;
 
 //TODO: 接入 GameVersion 按需准备数据
 @Log4j2
-public class ChunkRequestTask extends AsyncTask {
+public class ChunkRequestTask extends AsyncTask<Void> {
     private static final byte[] EMPTY = new byte[0];
 
     public static final int PADDING_SUB_CHUNK_COUNT = 4;
@@ -168,6 +168,9 @@ public class ChunkRequestTask extends AsyncTask {
                 for (BlockEntity blockEntity : chunk.getBlockEntities().values()) {
                     if (blockEntity instanceof BlockEntitySpawnable) {
                         int subChunkY = blockEntity.getSubChunkY();
+                        if (subChunkY >= tagLists.length) {
+                            continue;
+                        }
                         List<CompoundTag> tagList = tagLists[subChunkY];
                         if (tagList == null) {
                             tagList = new ObjectArrayList<>();

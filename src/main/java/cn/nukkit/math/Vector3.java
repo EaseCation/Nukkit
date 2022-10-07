@@ -19,14 +19,6 @@ public class Vector3 implements Cloneable {
         this(0, 0, 0);
     }
 
-    public Vector3(double x) {
-        this(x, 0, 0);
-    }
-
-    public Vector3(double x, double y) {
-        this(x, y, 0);
-    }
-
     public Vector3(double x, double y, double z) {
         this.x = x;
         this.y = y;
@@ -69,32 +61,8 @@ public class Vector3 implements Cloneable {
         return getFloorZ() >> 4;
     }
 
-    public double getRight() {
-        return this.x;
-    }
-
-    public double getUp() {
-        return this.y;
-    }
-
-    public double getForward() {
-        return this.z;
-    }
-
-    public double getSouth() {
-        return this.x;
-    }
-
-    public double getWest() {
-        return this.z;
-    }
-
-    public Vector3 add(double x) {
-        return this.add(x, 0, 0);
-    }
-
-    public Vector3 add(double x, double y) {
-        return this.add(x, y, 0);
+    public Vector3 add(double n) {
+        return this.add(n, n, n);
     }
 
     public Vector3 add(double x, double y, double z) {
@@ -105,16 +73,8 @@ public class Vector3 implements Cloneable {
         return new Vector3(this.x + x.getX(), this.y + x.getY(), this.z + x.getZ());
     }
 
-    public Vector3 subtract() {
-        return this.subtract(0, 0, 0);
-    }
-
-    public Vector3 subtract(double x) {
-        return this.subtract(x, 0, 0);
-    }
-
-    public Vector3 subtract(double x, double y) {
-        return this.subtract(x, y, 0);
+    public Vector3 subtract(double n) {
+        return this.subtract(n, n, n);
     }
 
     public Vector3 subtract(double x, double y, double z) {
@@ -129,12 +89,20 @@ public class Vector3 implements Cloneable {
         return new Vector3(this.x * number, this.y * number, this.z * number);
     }
 
+    public Vector3 multiply(double x, double y, double z) {
+        return new Vector3(this.x * x, this.y * y, this.z * z);
+    }
+
     public Vector3 multiply(Vector3 vec) {
         return new Vector3(this.x * vec.x, this.y * vec.y, this.z * vec.z);
     }
 
     public Vector3 divide(double number) {
         return new Vector3(this.x / number, this.y / number, this.z / number);
+    }
+
+    public Vector3 divide(double x, double y, double z) {
+        return new Vector3(this.x / x, this.y / y, this.z / z);
     }
 
     public Vector3 divide(Vector3 vec) {
@@ -154,7 +122,7 @@ public class Vector3 implements Cloneable {
     }
 
     public Vector3 abs() {
-        return new Vector3((int) Math.abs(this.x), (int) Math.abs(this.y), (int) Math.abs(this.z));
+        return new Vector3(Math.abs(this.x), Math.abs(this.y), Math.abs(this.z));
     }
 
     public Vector3 getSide(BlockFace face) {

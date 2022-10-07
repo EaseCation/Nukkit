@@ -18,14 +18,4 @@ public interface Chunk extends FullChunk {
     default long getChanges() {
         return 0;
     }
-
-    class Entry {
-        public final int chunkX;
-        public final int chunkZ;
-
-        public Entry(int chunkX, int chunkZ) {
-            this.chunkX = chunkX;
-            this.chunkZ = chunkZ;
-        }
-    }
 }

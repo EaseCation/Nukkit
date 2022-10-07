@@ -11,6 +11,8 @@ import cn.nukkit.nbt.tag.CompoundTag;
 import javax.annotation.Nullable;
 import java.util.Arrays;
 import java.util.List;
+import java.util.concurrent.locks.Lock;
+import java.util.concurrent.locks.ReentrantLock;
 
 import static cn.nukkit.level.format.leveldb.LevelDbConstants.*;
 
@@ -32,6 +34,8 @@ public class LevelDbChunk extends BaseChunk {
 //    protected boolean blockEntitiesDirty;
 //    protected boolean entitiesDirty;
 
+    protected final Lock ioLock;
+
     public LevelDbChunk(@Nullable LevelProvider level, int chunkX, int chunkZ) {
         this(level, chunkX, chunkZ, null, null, null, null, null, null);
     }
@@ -39,6 +43,7 @@ public class LevelDbChunk extends BaseChunk {
     public LevelDbChunk(@Nullable LevelProvider level, int chunkX, int chunkZ, @Nullable LevelDbSubChunk[] sections,
                         @Nullable short[] heightmap, @Nullable byte[] biomes2d, @Nullable PalettedSubChunkStorage[] biomes3d,
                         @Nullable List<CompoundTag> entities, @Nullable List<CompoundTag> blockEntities) {
+        this.ioLock = new ReentrantLock();
         this.provider = level;
         this.providerClass = level != null ? level.getClass() : LevelDB.class;
         this.setPosition(chunkX, chunkZ);

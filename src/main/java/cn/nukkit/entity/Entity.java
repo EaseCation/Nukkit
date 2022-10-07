@@ -1700,7 +1700,7 @@ public abstract class Entity extends Location implements Metadatable {
     }
 
     public Vector3f getMountedOffset(Entity entity) {
-        return new Vector3f(0, getHeight() * 0.75f);
+        return new Vector3f(0, getHeight() * 0.75f, 0);
     }
 
     public final void scheduleUpdate() {

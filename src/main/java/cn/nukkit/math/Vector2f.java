@@ -12,10 +12,6 @@ public class Vector2f {
         this(0, 0);
     }
 
-    public Vector2f(float x) {
-        this(x, 0);
-    }
-
     public Vector2f(float x, float y) {
         this.x = x;
         this.y = y;
@@ -37,8 +33,8 @@ public class Vector2f {
         return Mth.floor(this.y);
     }
 
-    public Vector2f add(float x) {
-        return this.add(x, 0);
+    public Vector2f add(float n) {
+        return this.add(n, n);
     }
 
     public Vector2f add(float x, float y) {
@@ -49,8 +45,8 @@ public class Vector2f {
         return this.add(x.getX(), x.getY());
     }
 
-    public Vector2f subtract(float x) {
-        return this.subtract(x, 0);
+    public Vector2f subtract(float n) {
+        return this.subtract(n, n);
     }
 
     public Vector2f subtract(float x, float y) {
@@ -81,8 +77,20 @@ public class Vector2f {
         return new Vector2f(this.x * number, this.y * number);
     }
 
+    public Vector2f multiply(float x, float y) {
+        return new Vector2f(this.x * x, this.y * y);
+    }
+
+    public Vector2f multiply(Vector2f vec) {
+        return new Vector2f(this.x * vec.getX(), this.y * vec.getY());
+    }
+
     public Vector2f divide(float number) {
         return new Vector2f(this.x / number, this.y / number);
+    }
+
+    public Vector2f divide(Vector2f vec) {
+        return new Vector2f(this.x / vec.getX(), this.y / vec.getY());
     }
 
     public double distance(float x) {
