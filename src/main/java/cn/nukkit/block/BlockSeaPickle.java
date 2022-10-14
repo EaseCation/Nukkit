@@ -12,6 +12,8 @@ import cn.nukkit.math.Mth;
 import cn.nukkit.network.protocol.LevelSoundEventPacket;
 import cn.nukkit.utils.BlockColor;
 
+import java.util.concurrent.ThreadLocalRandom;
+
 public class BlockSeaPickle extends BlockFlowable {
 
     public static final int CLUSTER_COUNT_MASK = 0b11;
@@ -141,7 +143,33 @@ public class BlockSeaPickle extends BlockFlowable {
                 level.setBlock(this, this, true);
             }
 
-            //TODO: spread
+            int thisX = getFloorX();
+            int thisY = getFloorY();
+            int thisZ = getFloorZ();
+            int minHeight = level.getMinHeight();
+            ThreadLocalRandom random = ThreadLocalRandom.current();
+            for (int x = thisX - 2; x <= thisX + 2; x++) {
+                for (int z = thisZ - 2; z <= thisZ + 2; z++) {
+                    if (distanceManhattan(x, thisY, z) > 2) {
+                        continue;
+                    }
+                    for (int y = thisY; y >= thisY - 1 && y >= minHeight; y--) {
+                        if (x == thisX && y == thisY && z == thisZ || random.nextInt(3) != 0) {
+                            continue;
+                        }
+                        Block block = level.getBlock(x, y, z);
+                        if (!block.isWater()) {
+                            continue;
+                        }
+                        Block below = level.getBlock(x, y - 1, z);
+                        if (below.getId() != CORAL_BLOCK) {
+                            continue;
+                        }
+                        level.setExtraBlock(x, y, z, block, true, false);
+                        level.setBlock(x, y, z, get(SEA_PICKLE, random.nextInt(4)), true, true);
+                    }
+                }
+            }
 
             if (player != null && !player.isCreative()) {
                 item.count--;

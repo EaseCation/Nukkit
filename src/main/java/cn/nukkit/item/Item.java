@@ -1283,4 +1283,8 @@ public class Item implements Cloneable, ItemID {
     public static int getCount(long hash) {
         return (int) hash & 0x7f;
     }
+
+    public boolean isBoneMeal() {
+        return false;
+    }
 }

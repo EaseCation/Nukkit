@@ -106,4 +106,9 @@ public class ItemDye extends Item {
     public static String getColorName(int meta) {
         return DyeColor.getByDyeData(meta).getName();
     }
+
+    @Override
+    public boolean isBoneMeal() {
+        return getDamage() == BONE_MEAL;
+    }
 }

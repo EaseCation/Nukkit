@@ -70,8 +70,7 @@ public class BlockGravel extends BlockFallable {
     @Override
     public boolean onActivate(Item item, BlockFace face, Player player) {
         if (item.getId() == ItemID.DYE && item.getDamage() == ItemDye.BONE_MEAL) {
-            //TODO: generate seagrass, coral and coral fan
-            return false;
+            return BlockSeagrass.trySpawnSeaGrass(this, item, player);
         }
         return false;
     }

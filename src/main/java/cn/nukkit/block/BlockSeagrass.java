@@ -11,6 +11,9 @@ import cn.nukkit.math.AxisAlignedBB;
 import cn.nukkit.math.BlockFace;
 import cn.nukkit.utils.BlockColor;
 
+import javax.annotation.Nullable;
+import java.util.concurrent.ThreadLocalRandom;
+
 public class BlockSeagrass extends BlockTransparentMeta {
 
     public static final int DEFAULT_SEAGRASS = 0;
@@ -209,5 +212,75 @@ public class BlockSeagrass extends BlockTransparentMeta {
     private boolean canSurvive(Block below) {
         int id = below.getId();
         return id != MAGMA && id != SOUL_SAND && SupportType.hasFullSupport(below, BlockFace.UP);
+    }
+
+    static boolean trySpawnSeaGrass(Block fertilized, Item item, @Nullable Player player) {
+        Block up = fertilized.up();
+        if (!up.isWaterSource()) {
+            return false;
+        }
+
+        if (player != null && !player.isCreative()) {
+            item.count--;
+        }
+
+        Level level = fertilized.level;
+        level.addParticle(new BoneMealParticle(fertilized));
+
+        int thisX = up.getFloorX();
+        int thisY = up.getFloorY();
+        int thisZ = up.getFloorZ();
+        ThreadLocalRandom random = ThreadLocalRandom.current();
+        TRY:
+        for (int i = 16; i < 64; i++) {
+            int x = thisX;
+            int y = thisY;
+            int z = thisZ;
+            for (int j = 0; j < i / 16; j++) {
+                x += random.nextInt(-1, 2);
+                y += random.nextInt(-1, 2) * random.nextInt(3) / 2;
+                z += random.nextInt(-1, 2);
+                Block block = level.getBlock(x, y - 1, z);
+                int id = block.getId();
+                if (id != DIRT && id != SAND && id != GRAVEL && id != CLAY) {
+                    continue TRY;
+                }
+            }
+
+            Block block = level.getBlock(x, y, z);
+            if (!block.isWaterSource()) {
+                continue;
+            }
+            Block above = level.getBlock(x, y + 1, z);
+            if (!above.isWaterSource()) {
+                continue;
+            }
+
+            Block placeBlock;
+            Block placeAbove = null;
+            int num = random.nextInt(8);
+            if (num != 0) {
+                if (--num != 0) {
+                    if (num == 1) {
+                        placeBlock = get(CORAL_FAN, random.nextInt(5));
+                    } else {
+                        placeBlock = get(SEAGRASS);
+                    }
+                } else {
+                    placeBlock = get(CORAL, random.nextInt(5));
+                }
+            } else {
+                placeBlock = get(SEAGRASS, BlockSeagrass.DOUBLE_SEAGRASS_BOTTOM);
+                placeAbove = get(SEAGRASS, BlockSeagrass.DOUBLE_SEAGRASS_TOP);
+            }
+
+            if (placeAbove != null) {
+                level.setExtraBlock(x, y + 1, z, above, true, false);
+                level.setBlock(x, y + 1, z, placeAbove, true, false);
+            }
+            level.setExtraBlock(x, y, z, block, true, false);
+            level.setBlock(x, y, z, placeBlock, true, true);
+        }
+        return true;
     }
 }
