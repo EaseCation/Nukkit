@@ -448,7 +448,6 @@ public class Player extends EntityHuman implements CommandSender, InventoryHolde
         this.getAdventureSettings().set(Type.WORLD_IMMUTABLE, !value);
         this.getAdventureSettings().set(Type.MINE, value);
         this.getAdventureSettings().set(Type.BUILD, value);
-        this.getAdventureSettings().set(Type.WORLD_BUILDER, value);
         this.getAdventureSettings().update();
     }
 
@@ -560,6 +559,8 @@ public class Player extends EntityHuman implements CommandSender, InventoryHolde
         }
 
         this.recalculatePermissions();
+        this.getAdventureSettings().set(Type.TELEPORT, hasPermission("nukkit.command.teleport"));
+        this.getAdventureSettings().set(Type.OPERATOR, value);
         this.getAdventureSettings().update();
         this.sendCommandData();
     }
@@ -1386,17 +1387,24 @@ public class Player extends EntityHuman implements CommandSender, InventoryHolde
 
         if (newSettings == null) {
             newSettings = this.getAdventureSettings().clone(this);
-            newSettings.set(Type.WORLD_IMMUTABLE, (gamemode & 0x02) > 0);
-            newSettings.set(Type.MINE, (gamemode & 0x02) <= 0);
-            newSettings.set(Type.BUILD, (gamemode & 0x02) <= 0);
-            newSettings.set(Type.WORLD_BUILDER, (gamemode & 0x02) <= 0);
-            newSettings.set(Type.ALLOW_FLIGHT, (gamemode & 0x01) > 0);
+            newSettings.set(Type.WORLD_IMMUTABLE, gamemode == ADVENTURE || gamemode == SPECTATOR);
+            newSettings.set(Type.MINE, gamemode != ADVENTURE && gamemode != SPECTATOR);
+            newSettings.set(Type.BUILD, gamemode != ADVENTURE && gamemode != SPECTATOR);
+            newSettings.set(Type.ALLOW_FLIGHT, gamemode == CREATIVE || gamemode == SPECTATOR);
             newSettings.set(Type.NO_CLIP, gamemode == SPECTATOR);
             if (gamemode == SPECTATOR) {
                 newSettings.set(Type.FLYING, true);
-            } else if ((gamemode & 0x1) == 0) {
+            } else if (gamemode != CREATIVE) {
                 newSettings.set(Type.FLYING, false);
             }
+            newSettings.set(Type.NO_PVM, gamemode == SPECTATOR);
+            newSettings.set(Type.NO_MVP, gamemode == SPECTATOR);
+            newSettings.set(Type.DOORS_AND_SWITCHED, gamemode == SPECTATOR);
+            newSettings.set(Type.OPEN_CONTAINERS, gamemode == SPECTATOR);
+            newSettings.set(Type.ATTACK_PLAYERS, gamemode == SPECTATOR);
+            newSettings.set(Type.ATTACK_MOBS, gamemode == SPECTATOR);
+            newSettings.set(Type.INSTABUILD, gamemode == CREATIVE);
+            newSettings.set(Type.INVULNERABLE, gamemode == CREATIVE || gamemode == SPECTATOR);
         }
 
         PlayerGameModeChangeEvent ev;
@@ -1455,11 +1463,6 @@ public class Player extends EntityHuman implements CommandSender, InventoryHolde
         }
 
         return true;
-    }
-
-    @Deprecated
-    public void sendSettings() {
-        this.getAdventureSettings().update();
     }
 
     public boolean isSurvival() {
@@ -2097,23 +2100,32 @@ public class Player extends EntityHuman implements CommandSender, InventoryHolde
         }
 
         this.adventureSettings = new AdventureSettings(this)
-                .set(Type.WORLD_IMMUTABLE, isAdventure())
-                .set(Type.MINE, !isAdventure())
-                .set(Type.BUILD, !isAdventure())
-                .set(Type.WORLD_BUILDER, !isAdventure())
+                .set(Type.WORLD_IMMUTABLE, isAdventure() || isSpectator())
+                .set(Type.MINE, !isAdventure() && !isSpectator())
+                .set(Type.BUILD, !isAdventure() && !isSpectator())
                 .set(Type.AUTO_JUMP, true)
                 .set(Type.ALLOW_FLIGHT, isCreative() || isSpectator())
                 .set(Type.NO_CLIP, isSpectator())
-                .set(Type.FLYING, isSpectator());
+                .set(Type.FLYING, isSpectator())
+                .set(Type.NO_PVM, isSpectator())
+                .set(Type.NO_MVP, isSpectator())
+                .set(Type.DOORS_AND_SWITCHED, !isSpectator())
+                .set(Type.OPEN_CONTAINERS, !isSpectator())
+                .set(Type.ATTACK_PLAYERS, !isSpectator())
+                .set(Type.ATTACK_MOBS, !isSpectator())
+                .set(Type.INSTABUILD, isCreative())
+                .set(Type.INVULNERABLE, isCreative() || isSpectator())
+                .set(Type.OPERATOR, isOp())
+                .set(Type.TELEPORT, hasPermission("nukkit.command.teleport"));
 
         Level level;
         if ((level = this.server.getLevelByName(nbt.getString("Level"))) == null || !alive) {
             this.setLevel(this.server.getDefaultLevel());
             nbt.putString("Level", this.level.getName());
             nbt.getList("Pos", DoubleTag.class)
-                    .add(new DoubleTag("0", this.level.getSpawnLocation().x))
-                    .add(new DoubleTag("1", this.level.getSpawnLocation().y))
-                    .add(new DoubleTag("2", this.level.getSpawnLocation().z));
+                    .add(new DoubleTag("", this.level.getSpawnLocation().x))
+                    .add(new DoubleTag("", this.level.getSpawnLocation().y))
+                    .add(new DoubleTag("", this.level.getSpawnLocation().z));
         } else {
             this.setLevel(level);
         }
@@ -2518,10 +2530,10 @@ public class Player extends EntityHuman implements CommandSender, InventoryHolde
                 case ProtocolInfo.ADVENTURE_SETTINGS_PACKET:
                     //TODO: player abilities, check for other changes
                     AdventureSettingsPacket adventureSettingsPacket = (AdventureSettingsPacket) packet;
-                    if (adventureSettingsPacket.entityUniqueId != this.getId()) {
+                    if (adventureSettingsPacket.entityUniqueId != this.getLocalEntityId()) {
                         break;
                     }
-                    if (adventureSettingsPacket.getFlag(AdventureSettingsPacket.FLYING) && !this.getAdventureSettings().get(Type.ALLOW_FLIGHT)) {
+                    if (adventureSettingsPacket.getFlag(AdventureSettingsPacket.FLYING) && !server.getAllowFlight() && !this.getAdventureSettings().get(Type.ALLOW_FLIGHT)) {
                         this.kick(PlayerKickEvent.Reason.FLYING_DISABLED, "Flying is not enabled on this server");
                         break;
                     }
@@ -2531,7 +2543,7 @@ public class Player extends EntityHuman implements CommandSender, InventoryHolde
                     }
                     this.server.getPluginManager().callEvent(playerToggleFlightEvent);
                     if (playerToggleFlightEvent.isCancelled()) {
-                        this.getAdventureSettings().update();
+                        this.sendAbilities(this, this.getAdventureSettings());
                     } else {
                         this.getAdventureSettings().set(Type.FLYING, playerToggleFlightEvent.isFlying());
                     }
@@ -3044,7 +3056,7 @@ public class Player extends EntityHuman implements CommandSender, InventoryHolde
                         setPlayerGameTypePacket1.gamemode = getClientFriendlyGamemode(this.gamemode);
                         this.dataPacket(setPlayerGameTypePacket1);
 
-                        this.getAdventureSettings().update();
+                        this.sendAbilities(this, this.getAdventureSettings());
                         break;
                     }
 
@@ -5472,5 +5484,38 @@ public class Player extends EntityHuman implements CommandSender, InventoryHolde
      */
     public void updateBlock(Block entry) {
         //TODO: queue
+    }
+
+    public void sendAdventureSettingsAndAbilities(Player player, AdventureSettings settings) {
+        sendAdventureSettings(settings);
+        sendAbilities(player, settings);
+    }
+
+    /**
+     * 1.19.10 后使用 UpdateAbilitiesPacket 代替 AdventureSettingsPacket.
+     */
+    public void sendAbilities(Player player, AdventureSettings settings) {
+        AdventureSettingsPacket packet = new AdventureSettingsPacket();
+        for (Type type : Type.values()) {
+            int id = type.getId();
+            if (id == -1) {
+                continue;
+            }
+            packet.setFlag(id, settings.get(type));
+        }
+        packet.commandPermission = player.isOp() ? AdventureSettingsPacket.PERMISSION_OPERATOR : AdventureSettingsPacket.PERMISSION_NORMAL;
+        packet.playerPermission = player.isOp() ? Player.PERMISSION_OPERATOR : Player.PERMISSION_MEMBER;
+        packet.entityUniqueId = player.getId();
+        dataPacket(packet);
+    }
+
+    /**
+     * 1.19.10 后发送 UpdateAdventureSettingsPacket.
+     */
+    public void sendAdventureSettings(AdventureSettings settings) {
+    }
+
+    public long getLocalEntityId() {
+        return getId();
     }
 }

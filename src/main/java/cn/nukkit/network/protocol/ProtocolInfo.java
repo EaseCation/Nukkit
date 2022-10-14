@@ -210,6 +210,10 @@ public interface ProtocolInfo {
     int DEATH_INFO_PACKET = 0xbd;
     int EDITOR_NETWORK_PACKET = 0xbe;
     int FEATURE_REGISTRY_PACKET = 0xbf;
+    int SERVER_STATS_PACKET = 0xc0;
+    int REQUEST_NETWORK_SETTINGS_PACKET = 0xc1;
+    int GAME_TEST_REQUEST_PACKET = 0xc2;
+    int GAME_TEST_RESULTS_PACKET = 0xc3;
 
     //NetEase Common Mod
     int PACKET_PY_RPC = 0xc8;

@@ -47,27 +47,24 @@ public class AdventureSettings implements Cloneable {
     }
 
     public void update() {
-        AdventureSettingsPacket pk = new AdventureSettingsPacket();
-        for (Type t : Type.values()) {
-            pk.setFlag(t.getId(), get(t));
+        player.sendAdventureSettingsAndAbilities(player, this);
+
+        for (Player viewer : player.getViewers().values()) {
+            viewer.sendAbilities(player, this);
         }
-
-        pk.commandPermission = (player.isOp() ? AdventureSettingsPacket.PERMISSION_OPERATOR : AdventureSettingsPacket.PERMISSION_NORMAL);
-        pk.playerPermission = (player.isOp() ? Player.PERMISSION_OPERATOR : Player.PERMISSION_MEMBER);
-        pk.entityUniqueId = player.getId();
-
-        //Server.broadcastPacket(player.getViewers().values(), pk); wtf Bug?
-        player.dataPacket(pk);
 
         player.resetInAirTicks();
     }
 
     public enum Type {
         WORLD_IMMUTABLE(AdventureSettingsPacket.WORLD_IMMUTABLE, false),
+        NO_PVM(AdventureSettingsPacket.NO_PVM, false),
+        NO_MVP(AdventureSettingsPacket.NO_MVP, false),
+        SHOW_NAME_TAGS(AdventureSettingsPacket.SHOW_NAME_TAGS, false),
         AUTO_JUMP(AdventureSettingsPacket.AUTO_JUMP, true),
         ALLOW_FLIGHT(AdventureSettingsPacket.ALLOW_FLIGHT, false),
         NO_CLIP(AdventureSettingsPacket.NO_CLIP, false),
-        WORLD_BUILDER(AdventureSettingsPacket.WORLD_BUILDER, true),
+        WORLD_BUILDER(AdventureSettingsPacket.WORLD_BUILDER, false),
         FLYING(AdventureSettingsPacket.FLYING, false),
         MUTED(AdventureSettingsPacket.MUTED, false),
         MINE(AdventureSettingsPacket.MINE, true),
@@ -77,7 +74,11 @@ public class AdventureSettings implements Cloneable {
         ATTACK_MOBS(AdventureSettingsPacket.ATTACK_MOBS, true),
         OPERATOR(AdventureSettingsPacket.OPERATOR, false),
         TELEPORT(AdventureSettingsPacket.TELEPORT, false),
-        BUILD(AdventureSettingsPacket.BUILD, true);
+        BUILD(AdventureSettingsPacket.BUILD, true),
+        INVULNERABLE(-1, false),
+        INSTABUILD(-1, false),
+        LIGHTNING(-1, false),
+        ;
 
         private final int id;
         private final boolean defaultValue;

@@ -25,7 +25,7 @@ public class AdventureSettingsPacket extends DataPacket {
     public static final int BITFLAG_SECOND_SET = 1 << 16;
 
     public static final int WORLD_IMMUTABLE = 1;
-    public static final int NO_PVP = 1 << 1;
+    public static final int NO_PVM = 1 << 1;
     public static final int NO_MVP = 1 << 2;
     public static final int UNUSED = 1 << 3;
     public static final int SHOW_NAME_TAGS = 1 << 4;
