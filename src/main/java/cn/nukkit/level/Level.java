@@ -1176,6 +1176,9 @@ public class Level implements ChunkManager, Metadatable {
 
         boolean resetTime = true;
         for (Player p : this.getPlayers().values()) {
+            if (p.isSpectator()) {
+                continue;
+            }
             if (!p.isSleeping()) {
                 resetTime = false;
                 break;
