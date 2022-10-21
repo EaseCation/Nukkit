@@ -1396,7 +1396,7 @@ public class Player extends EntityHuman implements CommandSender, InventoryHolde
 
         AxisAlignedBB newBB = this.boundingBox.getOffsetBoundingBox(dx, dy, dz);
         if (newBB.checkIncorrectIntegerRange()) {
-            this.close("Invalid bounding box", "Invalid bounding box from " + this + " moving by " + dx + ", " + dy + ", " + dz);
+            this.close("Invalid bounding box", "Invalid bounding box from " + this.boundingBox + " moving by " + dx + ", " + dy + ", " + dz);
             return false;
         }
 
@@ -1519,6 +1519,10 @@ public class Player extends EntityHuman implements CommandSender, InventoryHolde
             return;
         }
         Vector3 newPos = this.newPosition;
+        if (newPos.checkIncorrectIntegerRange()) {
+            this.close("Invalid position", "Invalid position from " + this.getLocation() + " moving to " + newPos);
+            return;
+        }
         double distanceSquared = newPos.distanceSquared(this);
         boolean revert = false;
         if ((distanceSquared / ((double) (tickDiff * tickDiff))) > 100 && (newPos.y - this.y) > -5) {

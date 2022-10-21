@@ -405,4 +405,8 @@ public class Vector3 implements Cloneable {
     public BlockVector3 asBlockVector3() {
         return new BlockVector3(this.getFloorX(), this.getFloorY(), this.getFloorZ());
     }
+
+    public boolean checkIncorrectIntegerRange() {
+        return this.x >= Integer.MAX_VALUE || this.x <= Integer.MIN_VALUE || this.y >= Integer.MAX_VALUE || this.y <= Integer.MIN_VALUE || this.z >= Integer.MAX_VALUE || this.z <= Integer.MIN_VALUE;
+    }
 }
