@@ -31,6 +31,7 @@ import cn.nukkit.nbt.tag.ListTag;
 import cn.nukkit.network.protocol.*;
 import cn.nukkit.plugin.Plugin;
 import cn.nukkit.potion.Effect;
+import cn.nukkit.utils.AxisAlignedBBLoopException;
 import cn.nukkit.utils.ChunkException;
 import cn.nukkit.utils.MainLogger;
 import co.aikar.timings.Timing;
@@ -2048,6 +2049,10 @@ public abstract class Entity extends Location implements Metadatable {
 
     public List<Block> getBlocksAround() {
         if (this.blocksAround == null) {
+            if (this.boundingBox.getMinX() <= Integer.MIN_VALUE || this.boundingBox.getMinX() >= Integer.MAX_VALUE || this.boundingBox.getMinY() <= Integer.MIN_VALUE || this.boundingBox.getMinY() >= Integer.MAX_VALUE || this.boundingBox.getMinZ() <= Integer.MIN_VALUE || this.boundingBox.getMinZ() >= Integer.MAX_VALUE || this.boundingBox.getMaxX() <= Integer.MIN_VALUE || this.boundingBox.getMaxX() >= Integer.MAX_VALUE || this.boundingBox.getMaxY() <= Integer.MIN_VALUE || this.boundingBox.getMaxY() >= Integer.MAX_VALUE || this.boundingBox.getMaxZ() <= Integer.MIN_VALUE || this.boundingBox.getMaxZ() >= Integer.MAX_VALUE) {
+                this.server.getLogger().logException(new AxisAlignedBBLoopException("Entity.getBlocksAround bb=" + this.boundingBox.toString()));
+                return new ArrayList<>();
+            }
             int minX = NukkitMath.floorDouble(this.boundingBox.getMinX());
             int minY = NukkitMath.floorDouble(this.boundingBox.getMinY());
             int minZ = NukkitMath.floorDouble(this.boundingBox.getMinZ());
