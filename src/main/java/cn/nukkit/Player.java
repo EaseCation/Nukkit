@@ -1395,10 +1395,6 @@ public class Player extends EntityHuman implements CommandSender, InventoryHolde
         Timings.entityMoveTimer.startTiming();
 
         AxisAlignedBB newBB = this.boundingBox.getOffsetBoundingBox(dx, dy, dz);
-        if (newBB.checkIncorrectIntegerRange()) {
-            this.close("Invalid bounding box", "Invalid bounding box from " + this.boundingBox + " moving by " + dx + ", " + dy + ", " + dz);
-            return false;
-        }
 
         if (this.isSpectator() || server.getAllowFlight() || !this.level.hasCollision(this, newBB, false)) {
             this.boundingBox = newBB;

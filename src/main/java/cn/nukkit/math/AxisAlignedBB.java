@@ -1,8 +1,6 @@
 package cn.nukkit.math;
 
-import cn.nukkit.block.Block;
 import cn.nukkit.level.MovingObjectPosition;
-import cn.nukkit.utils.AxisAlignedBBLoopException;
 
 public interface AxisAlignedBB extends Cloneable {
 

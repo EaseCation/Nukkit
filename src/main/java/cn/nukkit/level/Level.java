@@ -1429,10 +1429,6 @@ public class Level implements ChunkManager, Metadatable {
         int maxX = NukkitMath.ceilDouble(bb.getMaxX());
         int maxY = NukkitMath.ceilDouble(bb.getMaxY());
         int maxZ = NukkitMath.ceilDouble(bb.getMaxZ());
-        if (bb.checkIncorrectIntegerRange()) {
-            this.server.getLogger().logException(new AxisAlignedBBLoopException("Level.getCollisionBlocks bb=" + bb.toString() + " minX=" + minX + " maxX=" + maxX + " minY=" + minY + " maxY=" + maxY + " minZ=" + minZ + " maxZ=" + maxZ));
-            return new Block[0];
-        }
 
         List<Block> collides = new ArrayList<>();
 
