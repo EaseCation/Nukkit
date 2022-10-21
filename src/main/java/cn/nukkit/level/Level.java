@@ -1429,6 +1429,10 @@ public class Level implements ChunkManager, Metadatable {
         int maxX = NukkitMath.ceilDouble(bb.getMaxX());
         int maxY = NukkitMath.ceilDouble(bb.getMaxY());
         int maxZ = NukkitMath.ceilDouble(bb.getMaxZ());
+        if (bb.getMinX() <= Integer.MIN_VALUE || bb.getMinX() >= Integer.MAX_VALUE || bb.getMinY() <= Integer.MIN_VALUE || bb.getMinY() >= Integer.MAX_VALUE || bb.getMinZ() <= Integer.MIN_VALUE || bb.getMinZ() >= Integer.MAX_VALUE || bb.getMaxX() <= Integer.MIN_VALUE || bb.getMaxX() >= Integer.MAX_VALUE || bb.getMaxY() <= Integer.MIN_VALUE || bb.getMaxY() >= Integer.MAX_VALUE || bb.getMaxZ() <= Integer.MIN_VALUE || bb.getMaxZ() >= Integer.MAX_VALUE) {
+            this.server.getLogger().logException(new AxisAlignedBBLoopException("Level.getCollisionBlocks bb=" + bb.toString() + " minX=" + minX + " maxX=" + maxX + " minY=" + minY + " maxY=" + maxY + " minZ=" + minZ + " maxZ=" + maxZ));
+            return new Block[0];
+        }
         if (minX == Integer.MAX_VALUE || minY == Integer.MAX_VALUE || minZ == Integer.MAX_VALUE) {
             this.server.getLogger().logException(new AxisAlignedBBLoopException("Level.getCollisionBlocks bb=" + bb.toString() + " minX=" + minX + " maxX=" + maxX + " minY=" + minY + " maxY=" + maxY + " minZ=" + minZ + " maxZ=" + maxZ));
             return new Block[0];
