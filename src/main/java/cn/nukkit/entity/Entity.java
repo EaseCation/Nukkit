@@ -2049,7 +2049,7 @@ public abstract class Entity extends Location implements Metadatable {
 
     public List<Block> getBlocksAround() {
         if (this.blocksAround == null) {
-            if (this.boundingBox.getMinX() <= Integer.MIN_VALUE || this.boundingBox.getMinX() >= Integer.MAX_VALUE || this.boundingBox.getMinY() <= Integer.MIN_VALUE || this.boundingBox.getMinY() >= Integer.MAX_VALUE || this.boundingBox.getMinZ() <= Integer.MIN_VALUE || this.boundingBox.getMinZ() >= Integer.MAX_VALUE || this.boundingBox.getMaxX() <= Integer.MIN_VALUE || this.boundingBox.getMaxX() >= Integer.MAX_VALUE || this.boundingBox.getMaxY() <= Integer.MIN_VALUE || this.boundingBox.getMaxY() >= Integer.MAX_VALUE || this.boundingBox.getMaxZ() <= Integer.MIN_VALUE || this.boundingBox.getMaxZ() >= Integer.MAX_VALUE) {
+            if (this.boundingBox.checkIncorrectIntegerRange()) {
                 this.server.getLogger().logException(new AxisAlignedBBLoopException("Entity.getBlocksAround bb=" + this.boundingBox.toString()));
                 return new ArrayList<>();
             }

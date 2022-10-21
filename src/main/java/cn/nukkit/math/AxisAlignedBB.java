@@ -1,6 +1,8 @@
 package cn.nukkit.math;
 
+import cn.nukkit.block.Block;
 import cn.nukkit.level.MovingObjectPosition;
+import cn.nukkit.utils.AxisAlignedBBLoopException;
 
 public interface AxisAlignedBB extends Cloneable {
 
@@ -329,6 +331,9 @@ public interface AxisAlignedBB extends Cloneable {
         }
     }
 
+    default boolean checkIncorrectIntegerRange() {
+        return this.getMinX() <= Integer.MIN_VALUE || this.getMinX() >= Integer.MAX_VALUE || this.getMinY() <= Integer.MIN_VALUE || this.getMinY() >= Integer.MAX_VALUE || this.getMinZ() <= Integer.MIN_VALUE || this.getMinZ() >= Integer.MAX_VALUE || this.getMaxX() <= Integer.MIN_VALUE || this.getMaxX() >= Integer.MAX_VALUE || this.getMaxY() <= Integer.MIN_VALUE || this.getMaxY() >= Integer.MAX_VALUE || this.getMaxZ() <= Integer.MIN_VALUE || this.getMaxZ() >= Integer.MAX_VALUE;
+    }
 
     interface BBConsumer<T> {
 
