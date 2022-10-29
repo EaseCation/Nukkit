@@ -3,7 +3,7 @@ package cn.nukkit.network.protocol.types;
 public enum PlayerAbility {
     BUILD,
     MINE,
-    DOORS_AND_SWITCHES,
+    DOORS_AND_SWITCHES, // disabling this also disables dropping items (???)
     OPEN_CONTAINERS,
     ATTACK_PLAYERS,
     ATTACK_MOBS,

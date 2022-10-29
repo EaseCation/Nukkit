@@ -1399,10 +1399,10 @@ public class Player extends EntityHuman implements CommandSender, InventoryHolde
             }
             newSettings.set(Type.NO_PVM, gamemode == SPECTATOR);
             newSettings.set(Type.NO_MVP, gamemode == SPECTATOR);
-            newSettings.set(Type.DOORS_AND_SWITCHED, gamemode == SPECTATOR);
-            newSettings.set(Type.OPEN_CONTAINERS, gamemode == SPECTATOR);
-            newSettings.set(Type.ATTACK_PLAYERS, gamemode == SPECTATOR);
-            newSettings.set(Type.ATTACK_MOBS, gamemode == SPECTATOR);
+            newSettings.set(Type.DOORS_AND_SWITCHED, gamemode != SPECTATOR);
+            newSettings.set(Type.OPEN_CONTAINERS, gamemode != SPECTATOR);
+            newSettings.set(Type.ATTACK_PLAYERS, gamemode != SPECTATOR);
+            newSettings.set(Type.ATTACK_MOBS, gamemode != SPECTATOR);
             newSettings.set(Type.INSTABUILD, gamemode == CREATIVE);
             newSettings.set(Type.INVULNERABLE, gamemode == CREATIVE || gamemode == SPECTATOR);
         }
