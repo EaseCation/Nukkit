@@ -63,6 +63,10 @@ public class CompoundTag extends Tag implements Cloneable {
         return this;
     }
 
+    public Tag putIfAbsent(String name, Tag tag) {
+        return tags.putIfAbsent(name, tag.setName(name));
+    }
+
     public CompoundTag putByte(String name, int value) {
         tags.put(name, new ByteTag(name, value));
         return this;
@@ -247,6 +251,10 @@ public class CompoundTag extends Tag implements Cloneable {
         out.println(orgPrefix + "}");
     }
 
+    public int size() {
+        return tags.size();
+    }
+
     public boolean isEmpty() {
         return tags.isEmpty();
     }
@@ -281,7 +289,7 @@ public class CompoundTag extends Tag implements Cloneable {
     @Override
     public CompoundTag clone() {
         CompoundTag nbt = new CompoundTag();
-        this.getTags().forEach((key, value) -> nbt.put(key, value.copy()));
+        this.tags.forEach((key, value) -> nbt.put(key, value.copy()));
         return nbt;
     }
 }

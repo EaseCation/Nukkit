@@ -3,6 +3,7 @@ package cn.nukkit.block;
 import cn.nukkit.Player;
 import cn.nukkit.item.Item;
 import cn.nukkit.item.ItemTool;
+import cn.nukkit.level.Dimension;
 import cn.nukkit.level.Level;
 import cn.nukkit.math.BlockFace;
 import cn.nukkit.utils.BlockColor;
@@ -76,7 +77,7 @@ public class BlockIceFrosted extends BlockTransparentMeta {
 
     @Override
     public boolean onBreak(Item item) {
-        if (level.getDimension() == Level.DIMENSION_NETHER) {
+        if (level.getDimension() == Dimension.NETHER) {
             return super.onBreak(item);
         }
         return level.setBlock(this, Block.get(BlockID.WATER), true);

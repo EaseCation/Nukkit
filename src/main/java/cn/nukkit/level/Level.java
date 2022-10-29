@@ -274,7 +274,7 @@ public class Level implements ChunkManager, Metadatable {
 
     private long levelCurrentTick;
 
-    private int dimension; //TODO: enum
+    private Dimension dimension;
 
     public GameRules gameRules;
 
@@ -479,7 +479,7 @@ public class Level implements ChunkManager, Metadatable {
 
     public void initLevel() {
         Generator generator = generators.get();
-        this.dimension = generator.getDimension();
+        this.dimension = Dimension.byIdOrDefault(generator.getDimension());
         this.gameRules = this.provider.getGamerules();
     }
 
@@ -749,11 +749,11 @@ public class Level implements ChunkManager, Metadatable {
     }
 
     public void addParticleEffect(Vector3 pos, ParticleEffect particleEffect) {
-        this.addParticleEffect(pos, particleEffect, -1, this.getDimension(), (Player[]) null);
+        this.addParticleEffect(pos, particleEffect, -1, this.getDimension().ordinal(), (Player[]) null);
     }
 
     public void addParticleEffect(Vector3 pos, ParticleEffect particleEffect, long uniqueEntityId) {
-        this.addParticleEffect(pos, particleEffect, uniqueEntityId, this.getDimension(), (Player[]) null);
+        this.addParticleEffect(pos, particleEffect, uniqueEntityId, this.getDimension().ordinal(), (Player[]) null);
     }
 
     public void addParticleEffect(Vector3 pos, ParticleEffect particleEffect, long uniqueEntityId, int dimensionId) {
@@ -946,7 +946,7 @@ public class Level implements ChunkManager, Metadatable {
         }
 
         // Tick Weather
-        if (this.dimension != DIMENSION_NETHER && this.dimension != DIMENSION_THE_END && gameRules.getBoolean(GameRule.DO_WEATHER_CYCLE)) {
+        if (this.dimension != Dimension.NETHER && this.dimension != Dimension.END && gameRules.getBoolean(GameRule.DO_WEATHER_CYCLE)) {
             this.rainTime--;
             if (this.rainTime <= 0) {
                 if (!this.setRaining(!this.raining)) {
@@ -2113,7 +2113,7 @@ public class Level implements ChunkManager, Metadatable {
     }
 
     public synchronized boolean setBlock(int layer, int x, int y, int z, Block block, boolean direct, boolean update, Player[] sends) {
-        if (y < 0 || y >= 256) {
+        if (y < getMinHeight() || y > getMaxHeight()) {
             return false;
         }
 
@@ -2461,11 +2461,7 @@ public class Level implements ChunkManager, Metadatable {
         Block target = this.getBlock(vector);
         Block block = target.getSide(face);
 
-        if (block.y > 255 || block.y < 0) {
-            return null;
-        }
-
-        if (block.y > 127 && this.getDimension() == DIMENSION_NETHER) {
+        if (block.y > getMaxHeight() || block.y < getMinHeight()) {
             return null;
         }
 
@@ -3114,7 +3110,7 @@ public class Level implements ChunkManager, Metadatable {
                             if (!player.isConnected()) {
                                 continue;
                             }
-                            player.sendSubChunks(this.getDimension(), x, z, blobCache.getSubChunkCount(), blobCache, packetCache, blobCache.getHeightMapType(), blobCache.getHeightMapData());
+                            player.sendSubChunks(this.getDimension().ordinal(), x, z, blobCache.getSubChunkCount(), blobCache, packetCache, blobCache.getHeightMapType(), blobCache.getHeightMapData());
                         }
                     }
 
@@ -3199,7 +3195,7 @@ public class Level implements ChunkManager, Metadatable {
                     if (!player.isConnected()) {
                         continue;
                     }
-                    player.sendSubChunks(this.getDimension(), x, z, subChunkCount, chunkBlobCache, chunkPacketCache, heightMapType, heightMapData);
+                    player.sendSubChunks(this.getDimension().ordinal(), x, z, subChunkCount, chunkBlobCache, chunkPacketCache, heightMapType, heightMapData);
                 }
             }
 
@@ -3238,7 +3234,7 @@ public class Level implements ChunkManager, Metadatable {
                 if (!player.isConnected()) {
                     continue;
                 }
-                player.sendSubChunks(this.getDimension(), x, z, subChunkCount, chunkBlobCache, subChunkPayloads, heightMapType, heightMapData);
+                player.sendSubChunks(this.getDimension().ordinal(), x, z, subChunkCount, chunkBlobCache, subChunkPayloads, heightMapType, heightMapData);
             }
         }
 
@@ -3885,7 +3881,7 @@ public class Level implements ChunkManager, Metadatable {
         this.sendWeather(players.toArray(new Player[0]));
     }
 
-    public int getDimension() {
+    public Dimension getDimension() {
         return dimension;
     }
 
@@ -3989,7 +3985,7 @@ public class Level implements ChunkManager, Metadatable {
     }
 
     public boolean isAreaLoaded(AxisAlignedBB bb) {
-        if (bb.getMaxY() < 0 || bb.getMinY() >= 256) {
+        if (bb.getMaxY() < getMinHeight() || bb.getMinY() > getMaxHeight()) {
             return false;
         }
         int minX = Mth.floor(bb.getMinX()) >> 4;
@@ -4013,7 +4009,7 @@ public class Level implements ChunkManager, Metadatable {
     }
 
     public boolean createPortal(Block target) {
-        if (this.dimension == DIMENSION_THE_END) return false;
+        if (this.dimension == Dimension.END) return false;
         int maxPortalSize = 23;
         final int targX = target.getFloorX();
         final int targY = target.getFloorY();
@@ -4319,11 +4315,11 @@ public class Level implements ChunkManager, Metadatable {
     }
 
     public int getMaxHeight() {
-        return Dimension.byIdOrDefault(dimension).getMaxHeight();
+        return dimension.getMaxHeight();
     }
 
     public int getMinHeight() {
-        return Dimension.byIdOrDefault(dimension).getMinHeight();
+        return dimension.getMinHeight();
     }
 
     public boolean isValidHeight(int y) {

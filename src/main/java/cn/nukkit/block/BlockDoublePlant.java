@@ -22,6 +22,7 @@ public class BlockDoublePlant extends BlockFlowable {
     public static final int LARGE_FERN = 3;
     public static final int ROSE_BUSH = 4;
     public static final int PEONY = 5;
+
     public static final int TYPE_MASK = 0b111;
     public static final int TOP_HALF_BITMASK = 0x8;
 

@@ -88,8 +88,23 @@ public class BlockBeehive extends BlockSolidMeta implements Faceable {
     @Override
     public boolean onActivate(Item item, BlockFace face, Player player) {
         if (item.getId() == ItemID.GLASS_BOTTLE) {
-            //TODO
+            int honeyLevel = getHoneyLevel();
+            if (honeyLevel != MAX_HONEY_LEVEL) {
+                return false;
+            }
 
+            setHoneyLevel(0);
+            level.setBlock(this, this, true, true);
+
+            if (player != null) {
+                if (!player.isCreative()) {
+                    item.count--;
+                }
+
+                for (Item drop : player.getInventory().addItem(Item.get(ItemID.HONEY_BOTTLE))) {
+                    player.dropItem(drop);
+                }
+            }
             return true;
         }
         return false;

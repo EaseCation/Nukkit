@@ -6,6 +6,7 @@ import cn.nukkit.entity.Entity;
 import cn.nukkit.event.player.PlayerBucketEmptyEvent;
 import cn.nukkit.event.player.PlayerBucketFillEvent;
 import cn.nukkit.event.player.PlayerItemConsumeEvent;
+import cn.nukkit.level.Dimension;
 import cn.nukkit.level.Level;
 import cn.nukkit.level.particle.ExplodeParticle;
 import cn.nukkit.math.BlockFace;
@@ -239,7 +240,7 @@ public class ItemBucket extends Item {
             }
 
             boolean nether = false;
-            if (player.getLevel().getDimension() == Level.DIMENSION_NETHER && meta != LAVA_BUCKET) {
+            if (player.getLevel().getDimension() == Dimension.NETHER && meta != LAVA_BUCKET) {
                 ev.setCancelled(true);
                 nether = true;
             }

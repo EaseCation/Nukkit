@@ -6,6 +6,8 @@ import javax.annotation.Nullable;
 import java.util.Map;
 import java.util.Objects;
 
+import static cn.nukkit.SharedConstants.*;
+
 public enum GameVersion {
     V1_4_0(261, "1.4.0", "1.4"),
     V1_5_0(270, "1.5.0", "1.5"),
@@ -37,10 +39,10 @@ public enum GameVersion {
     V1_19_20(544, "1.19.20"),
     V1_19_21(545, "1.19.21"),
     V1_19_30(554, "1.19.30"),
+    V1_19_40(557, "1.19.40"),
     ;
 
-    //TODO: 1.12 后的方块状态数据在跨版本中未映射
-    private static GameVersion FEATURE_VERSION = GameVersion.V1_12_0;
+    private static GameVersion FEATURE_VERSION = NEXT_UPDATE_BLOCK_STATE_PREVIEW ? GameVersion.V1_18_0 : GameVersion.V1_12_0;
 
     private final int protocol;
     private final String name;

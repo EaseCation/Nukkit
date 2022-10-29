@@ -2232,7 +2232,7 @@ public class Player extends EntityHuman implements CommandSender, InventoryHolde
         startGamePacket.yaw = (float) this.yaw;
         startGamePacket.pitch = (float) this.pitch;
         startGamePacket.seed = -1;
-        startGamePacket.dimension = (byte) (spawnPosition.level.getDimension() & 0xff);
+        startGamePacket.dimension = (byte) (spawnPosition.level.getDimension().ordinal() & 0xff);
         startGamePacket.worldGamemode = getClientFriendlyGamemode(this.gamemode);
         startGamePacket.difficulty = this.server.getDifficulty();
         startGamePacket.spawnX = (int) spawnPosition.x;
@@ -5054,7 +5054,7 @@ public class Player extends EntityHuman implements CommandSender, InventoryHolde
 
     public void setDimension(int dimension) {
         ChangeDimensionPacket pk = new ChangeDimensionPacket();
-        pk.dimension = getLevel().getDimension();
+        pk.dimension = getLevel().getDimension().ordinal();
         this.dataPacket(pk);
     }
 

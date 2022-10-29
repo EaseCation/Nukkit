@@ -83,8 +83,9 @@ public class CloneCommand extends VanillaCommand {
 
             Position to = new Position(destination.getX() + (blocksAABB.getMaxX() - blocksAABB.getMinX()), destination.getY() + (blocksAABB.getMaxY() - blocksAABB.getMinY()), destination.getZ() + (blocksAABB.getMaxZ() - blocksAABB.getMinZ()));
             AxisAlignedBB destinationAABB = new SimpleAxisAlignedBB(Math.min(destination.getX(), to.getX()), Math.min(destination.getY(), to.getY()), Math.min(destination.getZ(), to.getZ()), Math.max(destination.getX(), to.getX()), Math.max(destination.getY(), to.getY()), Math.max(destination.getZ(), to.getZ()));
+            Level level = begin.getLevel();
 
-            if (blocksAABB.getMinY() < 0 || blocksAABB.getMaxY() > 255 || destinationAABB.getMinY() < 0 || destinationAABB.getMaxY() > 255) {
+            if (blocksAABB.getMinY() < level.getMinHeight() || blocksAABB.getMaxY() > level.getMaxHeight() || destinationAABB.getMinY() < level.getMinHeight() || destinationAABB.getMaxY() > level.getMaxHeight()) {
                 sender.sendMessage(TextFormat.RED + "Cannot access blocks outside of the world");
                 return true;
             }
@@ -92,8 +93,6 @@ public class CloneCommand extends VanillaCommand {
                 sender.sendMessage(TextFormat.RED + "Source and destination can not overlap");
                 return true;
             }
-
-            Level level = begin.getLevel();
 
             for (int sourceChunkX = Mth.floor(blocksAABB.getMinX()) >> 4, destinationChunkX = Mth.floor(destinationAABB.getMinX()) >> 4; sourceChunkX <= Mth.floor(blocksAABB.getMaxX()) >> 4; sourceChunkX++, destinationChunkX++) {
                 for (int sourceChunkZ = Mth.floor(blocksAABB.getMinZ()) >> 4, destinationChunkZ = Mth.floor(destinationAABB.getMinZ()) >> 4; sourceChunkZ <= Mth.floor(blocksAABB.getMaxZ()) >> 4; sourceChunkZ++, destinationChunkZ++) {

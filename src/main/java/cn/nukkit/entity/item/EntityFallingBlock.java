@@ -172,7 +172,7 @@ public class EntityFallingBlock extends Entity {
                     while ((up = top.up()).getId() == BlockID.SCAFFOLDING) {
                         top = up;
                     }
-                    if (top.getFloorY() >= 255) {
+                    if (top.getFloorY() >= level.getMaxHeight()) {
                         if (level.gameRules.getBoolean(GameRule.DO_ENTITY_DROPS)) {
                             level.dropItem(this, Item.get(getBlock(), getDamage()));
                         }

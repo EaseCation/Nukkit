@@ -12,12 +12,14 @@ public class BlockBricksStone extends BlockSolidMeta {
     public static final int MOSSY = 1;
     public static final int CRACKED = 2;
     public static final int CHISELED = 3;
+    public static final int SMOOTH = 4;
 
     private static final String[] NAMES = new String[]{
             "Stone Bricks",
             "Mossy Stone Bricks",
             "Cracked Stone Bricks",
             "Chiseled Stone Bricks",
+            "Smooth Stone Bricks",
     };
 
     public BlockBricksStone() {

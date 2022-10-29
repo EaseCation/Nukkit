@@ -129,19 +129,19 @@ public final class Blocks {
         registerBlock(COMPOSTER, BlockComposter.class, V1_11_0);
         registerBlock(LIT_BLAST_FURNACE, BlockFurnaceBurningBlast.class, V1_11_0);
 
-        // camera
+        registerBlock(BLOCK_CAMERA, BlockCamera.class, V1_13_0);
         registerBlock(LIGHT_BLOCK, BlockLight.class, V1_13_0);
         registerBlock(WITHER_ROSE, BlockWitherRose.class, V1_13_0);
         registerBlock(STICKY_PISTON_ARM_COLLISION, BlockPistonHeadSticky.class, V1_13_0);
 
         registerBlock(BEE_NEST, BlockBeeNest.class, V1_14_0);
-        registerBlock(BEEHIVE, BlockBeehive.class, V1_14_0); //TODO: honey
+        registerBlock(BEEHIVE, BlockBeehive.class, V1_14_0);
         registerBlock(HONEY_BLOCK, BlockHoney.class, V1_14_0);
         registerBlock(HONEYCOMB_BLOCK, BlockHoneycomb.class, V1_14_0);
 
-        // allow
-        // deny
-        // border_block
+        registerBlock(ALLOW, BlockAllow.class, V1_16_0);
+        registerBlock(DENY, BlockDeny.class, V1_16_0);
+        registerBlock(BORDER_BLOCK, BlockBorder.class, V1_16_0);
         registerBlock(STRUCTURE_VOID, BlockStructureVoid.class, V1_16_0);
         // lodestone
         //

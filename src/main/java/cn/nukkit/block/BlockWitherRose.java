@@ -1,5 +1,11 @@
 package cn.nukkit.block;
 
+import cn.nukkit.Player;
+import cn.nukkit.entity.Entity;
+import cn.nukkit.entity.EntityLiving;
+import cn.nukkit.math.AxisAlignedBB;
+import cn.nukkit.potion.Effect;
+
 public class BlockWitherRose extends BlockFlower {
 
     public BlockWitherRose() {
@@ -37,5 +43,19 @@ public class BlockWitherRose extends BlockFlower {
     @Override
     protected Block getUncommonFlower() {
         return this;
+    }
+
+    @Override
+    protected AxisAlignedBB recalculateCollisionBoundingBox() {
+        return this;
+    }
+
+    @Override
+    public void onEntityCollide(Entity entity) {
+        if (!(entity instanceof EntityLiving) || entity instanceof Player && ((Player) entity).isCreative()
+                || entity.getServer().getTick() % 10 != 0) {
+            return;
+        }
+        entity.addEffect(Effect.getEffect(Effect.WITHER).setDuration(20));
     }
 }

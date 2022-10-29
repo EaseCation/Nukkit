@@ -70,8 +70,9 @@ public class FillCommand extends VanillaCommand {
             }
 
             AxisAlignedBB aabb = new SimpleAxisAlignedBB(Math.min(from.getX(), to.getX()), Math.min(from.getY(), to.getY()), Math.min(from.getZ(), to.getZ()), Math.max(from.getX(), to.getX()), Math.max(from.getY(), to.getY()), Math.max(from.getZ(), to.getZ()));
+            Level level = from.getLevel();
 
-            if (aabb.getMinY() < 0 || aabb.getMaxY() > 255) {
+            if (aabb.getMinY() < level.getMinHeight() || aabb.getMaxY() > level.getMaxHeight()) {
                 sender.sendMessage(TextFormat.RED + "Cannot place blocks outside of the world");
                 return true;
             }
@@ -81,8 +82,6 @@ public class FillCommand extends VanillaCommand {
                 sender.sendMessage(String.format(TextFormat.RED + "Too many blocks in the specified area (%1$d > %2$d)", size, 16 * 16 * 16 * 8));
                 return true;
             }
-
-            Level level = from.getLevel();
 
             for (int chunkX = Mth.floor(aabb.getMinX()) >> 4; chunkX <= Mth.floor(aabb.getMaxX()) >> 4; chunkX++) {
                 for (int chunkZ = Mth.floor(aabb.getMinZ()) >> 4; chunkZ <= Mth.floor(aabb.getMaxZ()) >> 4; chunkZ++) {

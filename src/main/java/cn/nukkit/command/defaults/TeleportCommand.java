@@ -106,8 +106,6 @@ public class TeleportCommand extends VanillaCommand {
                 sender.sendMessage(new TranslationContainer("commands.generic.usage", this.usageMessage));
                 return true;
             }
-            if (y < 0) y = 0;
-            if (y > 256) y = 256;
             if (args.length == 6 || (args.length == 5 && pos == 3)) {
                 yaw = Integer.parseInt(args[pos++]);
                 pitch = Integer.parseInt(args[pos++]);

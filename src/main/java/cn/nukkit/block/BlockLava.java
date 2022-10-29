@@ -9,6 +9,7 @@ import cn.nukkit.event.entity.EntityCombustByBlockEvent;
 import cn.nukkit.event.entity.EntityDamageByBlockEvent;
 import cn.nukkit.event.entity.EntityDamageEvent.DamageCause;
 import cn.nukkit.item.Item;
+import cn.nukkit.level.Dimension;
 import cn.nukkit.level.GameRule;
 import cn.nukkit.level.Level;
 import cn.nukkit.math.BlockFace;
@@ -153,7 +154,7 @@ public class BlockLava extends BlockLiquid {
 
     @Override
     public int tickRate() {
-        if (this.level.getDimension() == Level.DIMENSION_NETHER) {
+        if (this.level.getDimension() == Dimension.NETHER) {
             return 1;
         }
         return 30;
@@ -161,7 +162,7 @@ public class BlockLava extends BlockLiquid {
 
     @Override
     public int getFlowDecayPerBlock() {
-        if (this.level.getDimension() == Level.DIMENSION_NETHER) {
+        if (this.level.getDimension() == Dimension.NETHER) {
             return 1;
         }
         return 2;

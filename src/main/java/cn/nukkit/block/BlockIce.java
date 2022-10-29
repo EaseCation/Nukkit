@@ -3,6 +3,7 @@ package cn.nukkit.block;
 import cn.nukkit.event.block.BlockFadeEvent;
 import cn.nukkit.item.Item;
 import cn.nukkit.item.ItemTool;
+import cn.nukkit.level.Dimension;
 import cn.nukkit.level.Level;
 import cn.nukkit.utils.BlockColor;
 
@@ -47,7 +48,7 @@ public class BlockIce extends BlockTransparent {
 
     @Override
     public boolean onBreak(Item item) {
-        if (this.getLevel().getDimension() != Level.DIMENSION_NETHER) {
+        if (this.getLevel().getDimension() != Dimension.NETHER) {
             return this.getLevel().setBlock(this, Block.get(BlockID.WATER), true);
         } else {
             return super.onBreak(item);
@@ -58,7 +59,7 @@ public class BlockIce extends BlockTransparent {
     public int onUpdate(int type) {
         if (type == Level.BLOCK_UPDATE_RANDOM) {
             if (level.getBlockLightAt((int) this.x, (int) this.y, (int) this.z) >= 12) {
-                BlockFadeEvent event = new BlockFadeEvent(this, level.getDimension() == Level.DIMENSION_NETHER ? get(AIR) : get(WATER));
+                BlockFadeEvent event = new BlockFadeEvent(this, level.getDimension() == Dimension.NETHER ? get(AIR) : get(WATER));
                 level.getServer().getPluginManager().callEvent(event);
                 if (!event.isCancelled()) {
                     level.setBlock(this, event.getNewState(), true);

@@ -12,13 +12,14 @@ import cn.nukkit.utils.BlockColor;
 public class BlockSandstone extends BlockSolidMeta {
     public static final int NORMAL = 0;
     public static final int CHISELED = 1;
-    public static final int SMOOTH = 2;
+    public static final int CUT = 2;
+    public static final int SMOOTH = 3;
 
     private static final String[] NAMES = new String[]{
             "Sandstone",
             "Chiseled Sandstone",
+            "Cut Sandstone",
             "Smooth Sandstone",
-            ""
     };
 
     public BlockSandstone() {

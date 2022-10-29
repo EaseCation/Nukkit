@@ -2,6 +2,8 @@ package cn.nukkit.level.util;
 
 import cn.nukkit.block.Block;
 import cn.nukkit.block.BlockID;
+import cn.nukkit.block.BlockSerializer;
+import cn.nukkit.block.BlockUpgrader;
 import cn.nukkit.level.GlobalBlockPalette;
 import cn.nukkit.math.BlockVector3;
 import cn.nukkit.nbt.NBTIO;
@@ -22,6 +24,7 @@ import java.nio.ByteOrder;
 import java.util.List;
 import java.util.function.IntFunction;
 
+import static cn.nukkit.SharedConstants.*;
 import static cn.nukkit.level.format.leveldb.LevelDbConstants.*;
 
 @Log4j2
@@ -94,18 +97,25 @@ public class PalettedSubChunkStorage {
                 throw new ChunkException("Invalid blockstate NBT at offset " + i + " in paletted storage", e);
             }
 
+            if (NEXT_UPDATE_BLOCK_STATE_PREVIEW) {
+                BlockUpgrader.upgrade(tag);
+                palette[i] = BlockSerializer.deserializeRuntime(tag);
+                continue;
+            }
+
             if (tag.contains("version")) {
-                //TODO: block state
                 log.warn("Unsupported blockstate version: {}", tag.getInt("version"));
             }
 
-            int meta = tag.getShort("val");
+            int meta;
             String name = tag.getString("name");
             int id = GlobalBlockPalette.getBlockIdByName(name);
             if (id == -1) {
                 id = Block.INFO_UPDATE;
                 meta = 0;
                 log.warn("Unmapped block name: {}", name);
+            } else {
+                meta = tag.getShort("val");
             }
             palette[i] = (id << Block.BLOCK_META_BITS) | (meta & Block.BLOCK_META_MASK);
         }
@@ -245,7 +255,11 @@ public class PalettedSubChunkStorage {
         List<CompoundTag> tagList = new ObjectArrayList<>();
         for (int i = 0; i < this.palette.size(); i++) {
             int fullId = this.palette.getInt(i);
-            //tagList.add(GlobalBlockPalette.getState(fullId));
+            if (NEXT_UPDATE_BLOCK_STATE_PREVIEW) {
+                tagList.add(BlockSerializer.serializeRuntime(fullId));
+                continue;
+            }
+
             int id = fullId >> Block.BLOCK_META_BITS;
             String name = blockIdToName.apply(id);
             if (name == null) {
@@ -282,7 +296,11 @@ public class PalettedSubChunkStorage {
         List<CompoundTag> tagList = new ObjectArrayList<>();
         for (int i = 0; i < this.palette.size(); i++) {
             int fullId = this.palette.getInt(i);
-            //tagList.add(GlobalBlockPalette.getState(fullId));
+            if (NEXT_UPDATE_BLOCK_STATE_PREVIEW) {
+                tagList.add(BlockSerializer.serializeRuntime(fullId));
+                continue;
+            }
+
             int id = fullId >> Block.BLOCK_META_BITS;
             String name = GlobalBlockPalette.getNameByBlockId(id);
             if (name == null) {

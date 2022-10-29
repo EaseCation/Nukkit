@@ -116,7 +116,7 @@ public class BlockBamboo extends BlockTransparentMeta {
         if (id == ItemID.DYE && item.getDamage() == ItemDye.BONE_MEAL) {
             BlockBamboo top = seekToTop();
             int y = top.getFloorY();
-            if (y >= 255 || !top.grow(getMaxHeight(getFloorX(), getFloorZ()), y == 254 ? 1 : ThreadLocalRandom.current().nextInt(1, 3))) {
+            if (y >= level.getMaxHeight() || !top.grow(getMaxHeight(getFloorX(), getFloorZ()), y == level.getMaxHeight() - 1 ? 1 : ThreadLocalRandom.current().nextInt(1, 3))) {
                 return false;
             }
             //FIXME: unexpected update
@@ -131,7 +131,7 @@ public class BlockBamboo extends BlockTransparentMeta {
 
         if (id == getItemId()) {
             BlockBamboo top = seekToTop();
-            if (top.getFloorY() >= 255 || !top.grow(Short.MAX_VALUE, 1)) {
+            if (top.getFloorY() >= level.getMaxHeight() || !top.grow(Short.MAX_VALUE, 1)) {
                 return true;
             }
 

@@ -2,6 +2,7 @@ package cn.nukkit.block;
 
 import cn.nukkit.Player;
 import cn.nukkit.item.Item;
+import cn.nukkit.level.Dimension;
 import cn.nukkit.level.Level;
 import cn.nukkit.level.particle.DestroyBlockParticle;
 import cn.nukkit.math.BlockFace;
@@ -59,7 +60,7 @@ public class BlockSponge extends BlockSolidMeta {
 
     @Override
     public boolean place(Item item, Block block, Block target, BlockFace face, double fx, double fy, double fz, Player player) {
-        if (this.getDamage() == WET && level.getDimension() == Level.DIMENSION_NETHER) {
+        if (this.getDamage() == WET && level.getDimension() == Dimension.NETHER) {
             level.setBlock(block, Block.get(BlockID.SPONGE, DRY), true, true);
 
             this.getLevel().addLevelEvent(block.add(0.5, 0.875, 0.5), LevelEventPacket.EVENT_SOUND_EXPLODE);

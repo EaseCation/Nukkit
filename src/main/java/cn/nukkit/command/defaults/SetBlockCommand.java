@@ -42,12 +42,12 @@ public class SetBlockCommand extends Command {
 				oldBlockHandling = parser.parseEnum(SetBlockMode.class);
 			}
 
-			if (position.y < 0 || position.y > 255) {
+			Level level = position.getLevel();
+
+			if (position.y < level.getMinHeight() || position.y > level.getMaxHeight()) {
 				sender.sendMessage(TextFormat.RED + "Cannot place block outside of the world");
 				return true;
 			}
-
-			Level level = position.getLevel();
 
 			boolean changed = false;
 			switch (oldBlockHandling) {

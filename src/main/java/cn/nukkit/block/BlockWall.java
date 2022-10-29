@@ -1,5 +1,7 @@
 package cn.nukkit.block;
 
+import cn.nukkit.item.Item;
+import cn.nukkit.item.ItemBlock;
 import cn.nukkit.item.ItemTool;
 import cn.nukkit.math.AxisAlignedBB;
 import cn.nukkit.math.BlockFace;
@@ -112,7 +114,7 @@ public class BlockWall extends BlockTransparentMeta {
     }
 
     public boolean canConnect(Block block, BlockFace face) {
-        return block instanceof BlockWall || block.isFenceGate() || SupportType.hasFullSupport(block, face);
+        return block.isWall() || block.isFenceGate() || SupportType.hasFullSupport(block, face);
     }
 
     @Override
@@ -167,5 +169,10 @@ public class BlockWall extends BlockTransparentMeta {
             case RED_SANDSTONE_WALL:
                 return BlockColor.ORANGE_BLOCK_COLOR;
         }
+    }
+
+    @Override
+    public Item toItem(boolean addUserData) {
+        return Item.get(getItemId(), getDamage() & 0xf);
     }
 }

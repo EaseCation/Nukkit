@@ -7,6 +7,7 @@ import cn.nukkit.blockentity.BlockEntityType;
 import cn.nukkit.item.Item;
 import cn.nukkit.item.ItemBed;
 import cn.nukkit.lang.TranslationContainer;
+import cn.nukkit.level.Dimension;
 import cn.nukkit.level.Explosion;
 import cn.nukkit.level.GameRule;
 import cn.nukkit.level.Level;
@@ -69,7 +70,7 @@ public class BlockBed extends BlockTransparentMeta implements Faceable {
 
     @Override
     public boolean onActivate(Item item, BlockFace face, Player player) {
-        if (this.level.getDimension() != Level.DIMENSION_OVERWORLD) {
+        if (this.level.getDimension() != Dimension.OVERWORLD) {
             if (!this.level.getGameRules().getBoolean(GameRule.RESPAWN_BLOCKS_EXPLODE)) {
                 return true;
             }

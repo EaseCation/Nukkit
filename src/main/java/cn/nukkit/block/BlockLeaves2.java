@@ -20,6 +20,7 @@ public class BlockLeaves2 extends BlockLeaves {
     }
 
     public BlockLeaves2(int meta) {
+        //FIXME
         super(meta);
     }
 

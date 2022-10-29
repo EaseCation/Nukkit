@@ -311,6 +311,11 @@ public class ChunkRequestTask extends AsyncTask<Void> {
             chunkBlobCache = new ChunkBlobCache(count, heightmapType, heightmapData, emptySection, blobIds.toLongArray(), extendedBlobIds.toLongArray(), extendedBlobIdsNew.toLongArray(), clientBlobs, extendedClientBlobs, extendedClientBlobsNew, clientBlobCachedPayload, subChunkBlockEntities);
 
             for (StaticVersion version : StaticVersion.getValues()) {
+                if (NEXT_UPDATE_BLOCK_STATE_PREVIEW && version.getProtocol() < StaticVersion.V1_17_40.getProtocol()) {
+                    // drop support for unavailable versions
+                    continue;
+                }
+
                 byte[][] blockStorages = new byte[extendedCount][];
                 payloads.put(version, encodeChunk(chunk, sections, count, blockStorages, biomePalettesNew, biomePalettes, fullChunkBlockEntities, version));
 
