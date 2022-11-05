@@ -18,6 +18,16 @@ public class BlockWoodBark extends BlockSolidMeta {
 
     public static final int TYPE_MASK = 0b111;
     public static final int STRIPPED_BIT = 0b1000;
+    public static final int PILLAR_AXIS_MASK = 0b110000;
+
+    private static final int[] FACES = {
+            0,
+            0,
+            0b10_0000,
+            0b10_0000,
+            0b01_0000,
+            0b01_0000,
+    };
 
     private static final String[] NAMES = new String[]{
             "Oak Wood",
@@ -130,6 +140,7 @@ public class BlockWoodBark extends BlockSolidMeta {
 
     @Override
     public boolean place(Item item, Block block, Block target, BlockFace face, double fx, double fy, double fz, Player player) {
+        setDamage((getDamage() & 0b1111) | FACES[face.getIndex()]);
         return level.setBlock(this, this, true);
     }
 }

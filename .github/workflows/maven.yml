@@ -19,7 +19,7 @@ jobs:
           cache: maven
       - name: Install dependencies
         run: |
-          git clone --no-tags --depth 1 -b develop https://github.com/EaseCation/Network.git target/Network
+          git clone --no-tags --depth 1 https://github.com/EaseCation/Network.git target/Network
           cd target/Network
           mvn -B clean install
       - name: Build with Maven

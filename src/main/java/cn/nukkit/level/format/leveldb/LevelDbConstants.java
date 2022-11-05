@@ -11,7 +11,7 @@ public final class LevelDbConstants {
     public static final byte FINALISATION_DONE = 2;
 
     public static final byte CURRENT_STORAGE_VERSION = 8;
-    public static final byte CURRENT_LEVEL_CHUNK_VERSION = 7; // ensures vanilla auto-fixes stuff we currently don't
+    public static final byte CURRENT_LEVEL_CHUNK_VERSION = 39; // 1.18.0.25 beta
     public static final byte CURRENT_LEVEL_SUBCHUNK_VERSION = 8;
 
     public static final int CURRENT_NUKKIT_DATA_VERSION = 8;

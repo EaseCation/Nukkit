@@ -1,8 +1,6 @@
 package cn.nukkit.block;
 
-import cn.nukkit.Player;
-import cn.nukkit.item.Item;
-import cn.nukkit.math.BlockFace;
+import cn.nukkit.entity.Entity;
 
 public class BlockCauldronLava extends BlockCauldron {
 
@@ -25,8 +23,7 @@ public class BlockCauldronLava extends BlockCauldron {
     }
 
     @Override
-    public boolean onActivate(Item item, BlockFace face, Player player) {
+    public void onEntityCollide(Entity entity) {
         //TODO
-        return true;
     }
 }

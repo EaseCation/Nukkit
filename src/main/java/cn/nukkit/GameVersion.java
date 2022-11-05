@@ -42,7 +42,7 @@ public enum GameVersion {
     V1_19_40(557, "1.19.40"),
     ;
 
-    private static GameVersion FEATURE_VERSION = NEXT_UPDATE_BLOCK_STATE_PREVIEW ? GameVersion.V1_18_0 : GameVersion.V1_12_0;
+    private static GameVersion FEATURE_VERSION = ENABLE_BLOCK_STATE_PERSISTENCE ? GameVersion.V1_18_0 : GameVersion.V1_12_0;
 
     private final int protocol;
     private final String name;

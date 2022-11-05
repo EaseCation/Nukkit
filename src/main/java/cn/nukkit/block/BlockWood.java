@@ -64,7 +64,7 @@ public class BlockWood extends BlockSolidMeta {
 
     @Override
     public String getName() {
-        return NAMES[this.getDamage() & TYPE_MASK];
+        return NAMES[this.getLogType()];
     }
 
     @Override
@@ -79,7 +79,7 @@ public class BlockWood extends BlockSolidMeta {
 
     @Override
     public boolean place(Item item, Block block, Block target, BlockFace face, double fx, double fy, double fz, Player player) {
-        this.setDamage((this.getDamage() & TYPE_MASK) | FACES[face.getIndex()]);
+        this.setDamage(this.getLogType() | FACES[face.getIndex()]);
         this.getLevel().setBlock(block, this, true, true);
 
         return true;
@@ -87,7 +87,7 @@ public class BlockWood extends BlockSolidMeta {
 
     @Override
     public Item toItem(boolean addUserData) {
-        return new ItemBlock(this, this.getDamage() & TYPE_MASK);
+        return new ItemBlock(this, this.getLogType());
     }
 
     @Override
@@ -97,7 +97,7 @@ public class BlockWood extends BlockSolidMeta {
 
     @Override
     public BlockColor getColor() {
-        switch (getDamage() & TYPE_MASK) {
+        switch (getLogType()) {
             default:
             case OAK:
                 return BlockColor.WOOD_BLOCK_COLOR;
@@ -130,7 +130,7 @@ public class BlockWood extends BlockSolidMeta {
         return true;
     }
 
-    private Block getStrippedBlock() {
+    protected Block getStrippedBlock() {
         int meta = getDamage();
 
         switch (meta & PILLAR_AXIS_MASK) {
@@ -151,7 +151,7 @@ public class BlockWood extends BlockSolidMeta {
     }
 
     protected int getStrippedLogId() {
-        switch (getDamage() & TYPE_MASK) {
+        switch (getLogType()) {
             default:
             case OAK:
                 return STRIPPED_OAK_LOG;
@@ -165,6 +165,10 @@ public class BlockWood extends BlockSolidMeta {
     }
 
     protected int getWoodMeta() {
+        return getLogType();
+    }
+
+    public int getLogType() {
         return getDamage() & TYPE_MASK;
     }
 

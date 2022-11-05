@@ -12,6 +12,8 @@ import cn.nukkit.math.BlockFace;
 import cn.nukkit.math.NukkitRandom;
 import cn.nukkit.utils.BlockColor;
 
+import java.util.concurrent.ThreadLocalRandom;
+
 /**
  * author: Angelic47
  * Nukkit Project
@@ -54,7 +56,7 @@ public class BlockGrass extends BlockDirt {
                 item.count--;
             }
             this.level.addParticle(new BoneMealParticle(this));
-            ObjectTallGrass.growGrass(this.getLevel(), this, new NukkitRandom());
+            ObjectTallGrass.growGrass(this.getLevel(), this, NukkitRandom.current());
             return true;
         } else if (item.isHoe()) {
             if (player != null && !player.isCreative()) {
@@ -82,10 +84,10 @@ public class BlockGrass extends BlockDirt {
                 return Level.BLOCK_UPDATE_NORMAL;
             }
 
-            NukkitRandom random = new NukkitRandom();
-            int x = random.nextRange((int) this.x - 1, (int) this.x + 1);
-            int y = random.nextRange((int) this.y - 2, (int) this.y + 2);
-            int z = random.nextRange((int) this.z - 1, (int) this.z + 1);
+            ThreadLocalRandom random = ThreadLocalRandom.current();
+            int x = random.nextInt((int) this.x - 1, (int) this.x + 2);
+            int y = random.nextInt((int) this.y - 2, (int) this.y + 3);
+            int z = random.nextInt((int) this.z - 1, (int) this.z + 2);
             Block block = this.getLevel().getBlock(x, y, z);
             if (block.getId() == Block.DIRT && block.getDamage() == 0) {
                 Block up = block.up();

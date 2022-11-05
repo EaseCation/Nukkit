@@ -3,8 +3,9 @@ package cn.nukkit.block;
 import cn.nukkit.item.Item;
 import cn.nukkit.item.ItemBlock;
 import cn.nukkit.item.ItemTool;
-import cn.nukkit.math.NukkitRandom;
 import cn.nukkit.utils.BlockColor;
+
+import java.util.concurrent.ThreadLocalRandom;
 
 /**
  * Created by Pub4Game on 28.01.2016.
@@ -46,13 +47,13 @@ public class BlockHugeMushroomRed extends BlockSolidMeta {
 
     @Override
     public Item[] getDrops(Item item) {
-        if (new NukkitRandom().nextRange(1, 20) == 0) {
-            return new Item[]{
-                    new ItemBlock(Block.get(BlockID.RED_MUSHROOM))
-            };
-        } else {
+        int count = ThreadLocalRandom.current().nextInt(-7, 3);
+        if (count <= 0) {
             return new Item[0];
         }
+        return new Item[]{
+                new ItemBlock(Block.get(BlockID.RED_MUSHROOM), 0, count),
+        };
     }
 
     @Override

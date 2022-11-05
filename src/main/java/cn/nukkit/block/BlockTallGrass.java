@@ -18,6 +18,8 @@ import java.util.concurrent.ThreadLocalRandom;
  * Nukkit Project
  */
 public class BlockTallGrass extends BlockFlowable {
+    public static final int GRASS = 1;
+    public static final int FERN = 2;
 
     private static final String[] NAMES = new String[]{
             "Grass",

@@ -97,14 +97,10 @@ public class PalettedSubChunkStorage {
                 throw new ChunkException("Invalid blockstate NBT at offset " + i + " in paletted storage", e);
             }
 
-            if (NEXT_UPDATE_BLOCK_STATE_PREVIEW) {
+            if (ENABLE_BLOCK_STATE_PERSISTENCE) {
                 BlockUpgrader.upgrade(tag);
                 palette[i] = BlockSerializer.deserializeRuntime(tag);
                 continue;
-            }
-
-            if (tag.contains("version")) {
-                log.warn("Unsupported blockstate version: {}", tag.getInt("version"));
             }
 
             int meta;
@@ -255,7 +251,7 @@ public class PalettedSubChunkStorage {
         List<CompoundTag> tagList = new ObjectArrayList<>();
         for (int i = 0; i < this.palette.size(); i++) {
             int fullId = this.palette.getInt(i);
-            if (NEXT_UPDATE_BLOCK_STATE_PREVIEW) {
+            if (ENABLE_BLOCK_STATE_PERSISTENCE) {
                 tagList.add(BlockSerializer.serializeRuntime(fullId));
                 continue;
             }
@@ -296,7 +292,7 @@ public class PalettedSubChunkStorage {
         List<CompoundTag> tagList = new ObjectArrayList<>();
         for (int i = 0; i < this.palette.size(); i++) {
             int fullId = this.palette.getInt(i);
-            if (NEXT_UPDATE_BLOCK_STATE_PREVIEW) {
+            if (ENABLE_BLOCK_STATE_PERSISTENCE) {
                 tagList.add(BlockSerializer.serializeRuntime(fullId));
                 continue;
             }

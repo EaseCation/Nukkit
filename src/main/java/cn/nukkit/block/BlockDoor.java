@@ -16,11 +16,10 @@ import cn.nukkit.utils.Faceable;
  * Nukkit Project
  */
 public abstract class BlockDoor extends BlockTransparentMeta implements Faceable {
-
-    public static final int DOOR_OPEN_BIT = 0x04;
-    public static final int DOOR_TOP_BIT = 0x08;
-    public static final int DOOR_HINGE_BIT = 0x01;
-    public static final int DOOR_POWERED_BIT = 0x02;
+    public static final int DIRECTION_MASK = 0b11;
+    public static final int DOOR_OPEN_BIT = 0b100;
+    public static final int DOOR_TOP_BIT = 0b1000;
+    public static final int DOOR_HINGE_BIT = 0b10000;
 
     private static final int[] FACES = {1, 2, 3, 0};
 
@@ -51,7 +50,7 @@ public abstract class BlockDoor extends BlockTransparentMeta implements Faceable
                 this.z + 1
         );
 
-        int j = isTop() ? (this.down().getDamage() & 0x03) : getDamage() & 0x03;
+        int j = isTop() ? (this.down().getDamage() & DIRECTION_MASK) : getDamage() & DIRECTION_MASK;
         boolean isOpen = isOpen();
         boolean isRight = isRightHinged();
 
@@ -226,12 +225,27 @@ public abstract class BlockDoor extends BlockTransparentMeta implements Faceable
 
             int metaUp = DOOR_TOP_BIT;
             if (player != null) {
-                int direction = FACES[player.getDirection().getHorizontalIndex()];
+                BlockFace facing = player.getDirection();
+                int direction = FACES[facing.getHorizontalIndex()];
 
-                Block left = this.getSide(player.getDirection().rotateYCCW());
-                Block right = this.getSide(player.getDirection().rotateY());
-                if (left.getId() == this.getId() || (!right.isTransparent() && left.isTransparent())) { //Door hinge
+                Block left = this.getSide(facing.rotateYCCW());
+                if (left.getId() == this.getId()) {
                     metaUp |= DOOR_HINGE_BIT;
+                } else {
+                    int leftHinge = 0;
+                    if (!left.isTransparent()) {
+                        leftHinge++;
+                    }
+                    if (!left.up().isTransparent()) {
+                        leftHinge++;
+                    }
+
+                    if (leftHinge < 2) {
+                        Block right = this.getSide(facing.rotateY());
+                        if (!right.isTransparent() && leftHinge == 0 || !right.up().isTransparent()) {
+                            metaUp |= DOOR_HINGE_BIT;
+                        }
+                    }
                 }
 
                 this.setDamage(direction);
@@ -242,7 +256,6 @@ public abstract class BlockDoor extends BlockTransparentMeta implements Faceable
             if (this.level.isRedstoneEnabled()) {
                 if (!this.isOpen() && this.level.isBlockPowered(this)) {
                     this.toggle(null);
-                    metaUp |= DOOR_POWERED_BIT;
                 }
             }
             this.getLevel().setBlock(blockUp, Block.get(this.getId(), metaUp), true, true); //Top
@@ -310,6 +323,7 @@ public abstract class BlockDoor extends BlockTransparentMeta implements Faceable
             return (this.getDamage() & DOOR_OPEN_BIT) > 0;
         }
     }
+
     public boolean isTop() {
         return isTop(this.getDamage());
     }
@@ -320,14 +334,14 @@ public abstract class BlockDoor extends BlockTransparentMeta implements Faceable
 
     public boolean isRightHinged() {
         if (isTop()) {
-            return (this.getDamage() & DOOR_HINGE_BIT ) > 0;
+            return (this.getDamage() & DOOR_HINGE_BIT) > 0;
         }
         return (this.up().getDamage() & DOOR_HINGE_BIT) > 0;
     }
 
     @Override
     public BlockFace getBlockFace() {
-        return BlockFace.fromHorizontalIndex(this.getDamage() & 0x07);
+        return BlockFace.fromHorizontalIndex(this.getDamage() & DIRECTION_MASK);
     }
 
     @Override

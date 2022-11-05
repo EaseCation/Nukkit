@@ -37,13 +37,17 @@ public final class SharedConstants {
 
     public static final boolean ENABLE_STORAGE_AUTO_COMPACTION = !USE_NATIVE_LEVELDB && false; //TODO: native db_iter
 
-    // experimental
+    // misc
 
-    public static final boolean NEXT_UPDATE_BLOCK_STATE_PREVIEW = !PRODUCTION_ENVIRONMENT && false;
+    public static final boolean ENABLE_BLOCK_STATE_PERSISTENCE = true;
+
+    // experimental
 
     public static final boolean NEXT_UPDATE_ITEM_UPGRADE_PREVIEW = !PRODUCTION_ENVIRONMENT && false;
 
     public static final boolean NEXT_UPDATE_NEW_ENTITY_SYSTEM_PREVIEW = !PRODUCTION_ENVIRONMENT && false;
+
+    public static final boolean NEXT_UPDATE_EVENT_POOLING_PREVIEW = !PRODUCTION_ENVIRONMENT && false;
 
     private SharedConstants() {
         throw new IllegalStateException();

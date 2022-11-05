@@ -51,7 +51,6 @@ public class BlockEntityCauldron extends BlockEntitySpawnable {
 
     public void setPotionId(int potionId) {
         namedTag.putShort("PotionId", potionId);
-        this.spawnToAll();
     }
 
     public int getPotionType() {
@@ -64,22 +63,6 @@ public class BlockEntityCauldron extends BlockEntitySpawnable {
 
     public boolean hasPotion() {
         return getPotionId() != -1 && getPotionType() != POTION_TYPE_NONE;
-    }
-
-    public boolean isSplashPotion() {
-        return getPotionType() == POTION_TYPE_SPLASH;
-    }
-
-    public void setSplashPotion() {
-        setPotionType(POTION_TYPE_SPLASH);
-    }
-
-    public boolean isLingeringPotion() {
-        return getPotionType() == POTION_TYPE_LINGERING;
-    }
-
-    public void setLingeringPotion() {
-        setPotionType(POTION_TYPE_LINGERING);
     }
 
     public Color getCustomColor() {
@@ -108,24 +91,34 @@ public class BlockEntityCauldron extends BlockEntitySpawnable {
         int color = (r << 16 | g << 8 | b) & 0xffffff;
 
         namedTag.putInt("CustomColor", color);
-        spawnToAll();
     }
 
     public void clearCustomColor() {
         namedTag.remove("CustomColor");
-        spawnToAll();
     }
 
     @Override
     public boolean isValidBlock(int blockId) {
-        return blockId == Block.BLOCK_CAULDRON;
+        return blockId == Block.BLOCK_CAULDRON || blockId == Block.LAVA_CAULDRON;
     }
 
     @Override
     public CompoundTag getSpawnCompound() {
-        return getDefaultCompound(this, CAULDRON)
+        CompoundTag nbt = getDefaultCompound(this, CAULDRON)
                 .putShort("PotionId", namedTag.getShort("PotionId"))
                 .putShort("PotionType", namedTag.getShort("PotionType"))
                 .putList(namedTag.getList("Items"));
+
+        if (namedTag.contains("CustomColor")) {
+            nbt.putInt("CustomColor", namedTag.getInt("CustomColor"));
+        }
+
+        return nbt;
+    }
+
+    public void resetCauldron() {
+        namedTag.putShort("PotionType", POTION_TYPE_NONE);
+        namedTag.putShort("PotionId", -1);
+        namedTag.remove("CustomColor");
     }
 }

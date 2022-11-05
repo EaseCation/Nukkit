@@ -19,12 +19,9 @@ import java.util.concurrent.ThreadLocalRandom;
  * Created by Pub4Game on 03.07.2016.
  */
 public class BlockItemFrame extends BlockTransparentMeta implements Faceable {
-    private static final int[] FACING = new int[]{4, 5, 3, 2, 1, 0}; // TODO when 1.13 support arrives, add UP/DOWN facings
-
-    private static final int FACING_BITMASK = 0b0111;
-    private static final int MAP_BIT = 0b1000;
-
-    public static final int LEGACY_DIRECTION_MASK = 0b11;
+    public static final int FACING_DIRECTION_MASK = 0b111;
+    public static final int MAP_BIT = 0b1000;
+    public static final int PHOTO_BIT = 0b10000;
 
     public BlockItemFrame() {
         this(0);
@@ -74,7 +71,7 @@ public class BlockItemFrame extends BlockTransparentMeta implements Faceable {
             return false;
         }
         BlockEntityItemFrame itemFrame = (BlockEntityItemFrame) blockEntity;
-        if (itemFrame.getItem().getId() == Item.AIR) {
+        if (itemFrame.getItem().isNull()) {
             Item itemOnFrame = item.clone();
             if (player != null && player.isSurvival()) {
                 itemOnFrame.setCount(itemOnFrame.getCount() - 1);
@@ -93,16 +90,11 @@ public class BlockItemFrame extends BlockTransparentMeta implements Faceable {
     @Override
     public boolean place(Item item, Block block, Block target, BlockFace face, double fx, double fy, double fz, Player player) {
         if (!target.canBeFlowedInto() && !(target instanceof BlockItemFrame)) {
-            if (face.isVertical()) {
-                //TODO
-                return false;
-            }
-
-            this.setDamage(face.getReversedHorizontalIndex());
+            this.setDamage(face.getIndex());
             this.getLevel().setBlock(block, this, true, true);
 
             CompoundTag nbt = BlockEntity.getDefaultCompound(this, BlockEntity.ITEM_FRAME)
-                    .putByte("ItemRotation", 0)
+                    .putFloat("ItemRotation", 0)
                     .putFloat("ItemDropChance", 1.0f);
             if (item.hasCustomBlockData()) {
                 for (Tag aTag : item.getCustomBlockData().getAllTags()) {
@@ -173,7 +165,7 @@ public class BlockItemFrame extends BlockTransparentMeta implements Faceable {
 
     @Override
     public BlockFace getBlockFace() {
-        return BlockFace.fromReversedHorizontalIndex(this.getDamage() & LEGACY_DIRECTION_MASK);
+        return BlockFace.fromIndex(this.getDamage() & FACING_DIRECTION_MASK);
     }
 
     @Override

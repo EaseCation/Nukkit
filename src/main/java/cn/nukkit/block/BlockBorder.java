@@ -44,11 +44,6 @@ public class BlockBorder extends BlockWall {
     }
 
     @Override
-    public Item toItem(boolean addUserData) {
-        return Item.get(getItemId());
-    }
-
-    @Override
     public BlockColor getColor() {
         return BlockColor.RED_BLOCK_COLOR;
     }

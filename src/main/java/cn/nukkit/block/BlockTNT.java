@@ -8,13 +8,14 @@ import cn.nukkit.level.GameRule;
 import cn.nukkit.level.Level;
 import cn.nukkit.math.BlockFace;
 import cn.nukkit.math.Mth;
-import cn.nukkit.math.NukkitRandom;
 import cn.nukkit.nbt.tag.CompoundTag;
 import cn.nukkit.nbt.tag.DoubleTag;
 import cn.nukkit.nbt.tag.FloatTag;
 import cn.nukkit.nbt.tag.ListTag;
 import cn.nukkit.network.protocol.LevelEventPacket;
 import cn.nukkit.utils.BlockColor;
+
+import java.util.concurrent.ThreadLocalRandom;
 
 /**
  * Created on 2015/12/8 by xtypr.
@@ -82,7 +83,7 @@ public class BlockTNT extends BlockSolidMeta {
             return;
         }
 
-        double mot = (new NukkitRandom()).nextSignedFloat() * Math.PI * 2;
+        double mot = ThreadLocalRandom.current().nextDouble() * Math.PI * 2;
         CompoundTag nbt = new CompoundTag()
                 .putList(new ListTag<DoubleTag>("Pos")
                         .add(new DoubleTag("", this.x + 0.5))

@@ -258,7 +258,7 @@ public abstract class Block extends Position implements Metadatable, Cloneable, 
             list[JUNGLE_STAIRS] = BlockStairsJungle.class; //136
 
             list[BEACON] = BlockBeacon.class; //138
-            list[COBBLESTONE_WALL] = BlockWall.class; //139
+            list[COBBLESTONE_WALL] = BlockWallCobblestone.class; //139
             list[BLOCK_FLOWER_POT] = BlockFlowerPot.class; //140
             list[CARROTS] = BlockCarrot.class; //141
             list[POTATOES] = BlockPotato.class; //142

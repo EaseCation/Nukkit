@@ -4,7 +4,6 @@ import cn.nukkit.item.Item;
 import cn.nukkit.item.ItemQuartz;
 import cn.nukkit.item.ItemTool;
 import cn.nukkit.item.enchantment.Enchantment;
-import cn.nukkit.math.NukkitRandom;
 
 import java.util.concurrent.ThreadLocalRandom;
 
@@ -67,7 +66,7 @@ public class BlockOreQuartz extends BlockSolid {
 
     @Override
     public int getDropExp() {
-        return new NukkitRandom().nextRange(1, 5);
+        return ThreadLocalRandom.current().nextInt(1, 6);
     }
 
     @Override

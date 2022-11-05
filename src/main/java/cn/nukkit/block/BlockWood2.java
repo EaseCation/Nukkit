@@ -1,5 +1,8 @@
 package cn.nukkit.block;
 
+import cn.nukkit.Player;
+import cn.nukkit.item.Item;
+import cn.nukkit.math.BlockFace;
 import cn.nukkit.utils.BlockColor;
 
 /**
@@ -12,10 +15,22 @@ public class BlockWood2 extends BlockWood {
     public static final int DARK_OAK = 1;
 
     public static final int TYPE_MASK = 0b1;
+    public static final int PILLAR_X_AXIS_BIT = 0b10;
+    public static final int PILLAR_Z_AXIS_BIT = 0b100;
+    public static final int PILLAR_AXIS_MASK = PILLAR_X_AXIS_BIT | PILLAR_Z_AXIS_BIT;
 
     private static final String[] NAMES = new String[]{
             "Acacia Log",
             "Dark Oak Log",
+    };
+
+    private static final short[] FACES = new short[]{
+            0,
+            0,
+            0b100,
+            0b100,
+            0b10,
+            0b10
     };
 
     public BlockWood2() {
@@ -23,7 +38,7 @@ public class BlockWood2 extends BlockWood {
     }
 
     public BlockWood2(int meta) {
-        super(meta);
+        super(meta & 0x7);
     }
 
     @Override
@@ -33,12 +48,12 @@ public class BlockWood2 extends BlockWood {
 
     @Override
     public String getName() {
-        return NAMES[this.getDamage() & TYPE_MASK];
+        return NAMES[this.getLogType()];
     }
 
     @Override
     public BlockColor getColor() {
-        switch (getDamage() & TYPE_MASK) {
+        switch (getLogType()) {
             case ACACIA:
                 return BlockColor.ORANGE_BLOCK_COLOR;
             case DARK_OAK:
@@ -49,7 +64,7 @@ public class BlockWood2 extends BlockWood {
 
     @Override
     protected int getStrippedLogId() {
-        switch (getDamage() & TYPE_MASK) {
+        switch (getLogType()) {
             case ACACIA:
                 return STRIPPED_ACACIA_LOG;
             case DARK_OAK:
@@ -60,6 +75,19 @@ public class BlockWood2 extends BlockWood {
 
     @Override
     protected int getWoodMeta() {
-        return 0b100 | (getDamage() & TYPE_MASK);
+        return 0b100 | getLogType();
+    }
+
+    @Override
+    public int getLogType() {
+        return getDamage() & TYPE_MASK;
+    }
+
+    @Override
+    public boolean place(Item item, Block block, Block target, BlockFace face, double fx, double fy, double fz, Player player) {
+        this.setDamage(this.getLogType() | FACES[face.getIndex()]);
+        this.getLevel().setBlock(block, this, true, true);
+
+        return true;
     }
 }

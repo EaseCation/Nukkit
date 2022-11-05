@@ -4,6 +4,8 @@ import cn.nukkit.GameVersion;
 import cn.nukkit.Player;
 import cn.nukkit.Server;
 import cn.nukkit.block.Block;
+import cn.nukkit.block.BlockSerializer;
+import cn.nukkit.block.BlockUpgrader;
 import cn.nukkit.blockentity.BlockEntity;
 import cn.nukkit.entity.Entity;
 import cn.nukkit.level.GameRules;
@@ -408,33 +410,35 @@ public class LevelDB implements LevelProvider {
         byte[] biome = null;
         PalettedSubChunkStorage[] biomes3d = null;
 
+        int subChunkKeyOffset = chunkVersion >= 24 && chunkVersion <= 26 ? 4 : 0;
+
         switch (chunkVersion) {
 //            case 40: // 1.18.30
-//            case 39: // 1.18.0.25 beta
-//            case 38: // 1.18.0.24 beta internal_experimental
-//            case 37: // 1.18.0.24 beta experimental
-//            case 36: // 1.18.0.22 beta internal_experimental
-//            case 35: // 1.18.0.22 beta experimental
-//            case 34: // 1.18.0.20 beta internal_experimental
-//            case 33: // 1.18.0.20 beta experimental
-//            case 32: // 1.17.40
-//            case 31: // 1.17.40.20 beta experimental
-//            case 30: // 1.17.30.25 beta internal_experimental
-//            case 29: // 1.17.30.25 beta experimental
-//            case 28: // 1.17.30.23 beta internal_experimental
-//            case 27: // 1.17.30.23 beta experimental
-//            case 26: // 1.16.230.50 beta internal_experimental
-//            case 25: // 1.16.230.50 beta experimental
-//            case 24: // 1.16.220.50 beta internal_experimental
-//            case 23: // 1.16.220.50 beta experimental
-//            case 22: // 1.16.210
-//            case 21: // 1.16.100.57 beta
-//            case 20: // 1.16.100.52 beta
-//            case 19: // 1.16.0
-//            case 18: // 1.16.0.51 beta
+            case 39: // 1.18.0.25 beta
+            case 38: // 1.18.0.24 beta internal_experimental
+            case 37: // 1.18.0.24 beta experimental
+            case 36: // 1.18.0.22 beta internal_experimental
+            case 35: // 1.18.0.22 beta experimental
+            case 34: // 1.18.0.20 beta internal_experimental
+            case 33: // 1.18.0.20 beta experimental
+            case 32: // 1.17.40
+            case 31: // 1.17.40.20 beta experimental
+            case 30: // 1.17.30.25 beta internal_experimental
+            case 29: // 1.17.30.25 beta experimental
+            case 28: // 1.17.30.23 beta internal_experimental
+            case 27: // 1.17.30.23 beta experimental
+            case 26: // 1.16.230.50 beta internal_experimental
+            case 25: // 1.16.230.50 beta experimental
+            case 24: // 1.16.220.50 beta internal_experimental
+            case 23: // 1.16.220.50 beta experimental
+            case 22: // 1.16.210
+            case 21: // 1.16.100.57 beta
+            case 20: // 1.16.100.52 beta
+            case 19: // 1.16.0
+            case 18: // 1.16.0.51 beta
             //TODO: check walls
-//            case 17: // 1.12 hotfix
-//            case 16: // 1.12.0
+            case 17: // 1.12 hotfix
+            case 16: // 1.12.0
             case 15: // 1.12.0.4 beta
             case 14: // 1.11.1.2
             case 13: // 1.11.0.4 beta
@@ -452,7 +456,7 @@ public class LevelDB implements LevelProvider {
                 PalettedSubChunkStorage[] convertedLegacyExtraData = this.deserializeLegacyExtraData(chunkX, chunkZ, chunkVersion);
 
                 for (int y = 0; y <= 15; ++y) {
-                    byte[] subChunkValue = this.db.get(SUBCHUNK.getSubKey(chunkX, chunkZ, y));
+                    byte[] subChunkValue = this.db.get(SUBCHUNK.getSubKey(chunkX, chunkZ, y + subChunkKeyOffset));
                     if (subChunkValue == null) {
                         continue;
                     }
@@ -1198,23 +1202,19 @@ public class LevelDB implements LevelProvider {
 
             CompoundTag blockState = entry.getCompound("blockState");
             if (blockState.contains("name")) {
-                String name = blockState.getString("name");
-                int id = GlobalBlockPalette.getBlockIdByName(name);
-                if (id == -1) {
-                    log.warn("Unmapped block name: {}", name);
-                    continue;
-                }
-
-                int meta;
-                int version = blockState.getInt("version");
-                if (version != 0) {
-                    log.warn("Unsupported block state version: {}", version);
-                    continue;
-                    //TODO: block state
+                if (ENABLE_BLOCK_STATE_PERSISTENCE) {
+                    BlockUpgrader.upgrade(blockState);
+                    int fullId = BlockSerializer.deserializeRuntime(blockState);
+                    block = Block.get(fullId >> Block.BLOCK_META_BITS, fullId & Block.BLOCK_META_MASK);
                 } else {
-                    meta = blockState.getShort("val");
+                    String name = blockState.getString("name");
+                    int id = GlobalBlockPalette.getBlockIdByName(name);
+                    if (id == -1) {
+                        log.warn("Unmapped block name: {}", name);
+                        continue;
+                    }
+                    block = Block.get(id, blockState.getShort("val"));
                 }
-                block = Block.get(id, meta);
             } else if (entry.contains("tileID")) {
                 block = Block.get(entry.getByte("tileID") & 0xff);
             }
@@ -1244,12 +1244,22 @@ public class LevelDB implements LevelProvider {
         ListTag<CompoundTag> tickList = new ListTag<>("tickList");
         for (BlockUpdateEntry entry : entries) {
             Block block = entry.block;
-            int id = block.getId();
-            String name = GlobalBlockPalette.getNameByBlockId(id);
-            if (name == null) {
-                log.warn("Unmapped block ID: {}", id);
-                continue;
+
+            CompoundTag blockTag;
+            if (ENABLE_BLOCK_STATE_PERSISTENCE) {
+                blockTag = BlockSerializer.serializeRuntime(block.getFullId());
+            } else {
+                int id = block.getId();
+                String name = GlobalBlockPalette.getNameByBlockId(id);
+                if (name == null) {
+                    log.warn("Unmapped block ID: {}", id);
+                    continue;
+                }
+                blockTag = new CompoundTag()
+                        .putString("name", name)
+                        .putShort("val", block.getDamage());
             }
+
             Vector3 pos = entry.pos;
             int priority = entry.priority;
 
@@ -1257,9 +1267,7 @@ public class LevelDB implements LevelProvider {
                     .putInt("x", pos.getFloorX())
                     .putInt("y", pos.getFloorY())
                     .putInt("z", pos.getFloorZ())
-                    .putCompound("blockState", new CompoundTag()
-                            .putString("name", name)
-                            .putShort("val", block.getDamage()))
+                    .putCompound("blockState", blockTag)
                     .putLong("time", entry.delay - currentTick);
 
             if (priority != 0) {

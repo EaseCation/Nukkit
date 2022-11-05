@@ -1889,7 +1889,7 @@ public class Player extends EntityHuman implements CommandSender, InventoryHolde
                         double diff = (this.speed.y - expectedVelocity) * (this.speed.y - expectedVelocity);
 
                         int block = level.getBlockIdAt(0, this.getFloorX(), this.getFloorY(), this.getFloorZ());
-                        boolean ignore = block == Block.LADDER || block == Block.VINE || block == Block.WEB || block == BlockID.BUBBLE_COLUMN || block == BlockID.SCAFFOLDING || block == BlockID.SWEET_BERRY_BUSH
+                        boolean ignore = block == Block.LADDER || block == Block.VINE || block == Block.WEB || block == BlockID.BUBBLE_COLUMN || block == BlockID.SCAFFOLDING || block == BlockID.SWEET_BERRY_BUSH || block == BlockID.WEEPING_VINES || block == BlockID.TWISTING_VINES || block == BlockID.CAVE_VINES || block == BlockID.CAVE_VINES_BODY_WITH_BERRIES || block == BlockID.CAVE_VINES_HEAD_WITH_BERRIES || block == BlockID.POWDER_SNOW || block == BlockID.BIG_DRIPLEAF
                                 || block == BlockID.HONEY_BLOCK; //TODO: slide down
 
                         if (!this.hasEffect(Effect.JUMP_BOOST) && diff > 0.6 && expectedVelocity < this.speed.y && !ignore) {

@@ -2,6 +2,7 @@ package cn.nukkit.math;
 
 import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
+import java.util.concurrent.ThreadLocalRandom;
 import java.util.zip.CRC32;
 
 /**
@@ -9,6 +10,8 @@ import java.util.zip.CRC32;
  * Nukkit Project
  */
 public class NukkitRandom {
+    private static final ThreadLocal<NukkitRandom> LOCAL = ThreadLocal.withInitial(() -> new NukkitRandom(ThreadLocalRandom.current().nextLong()));
+
     protected long seed;
 
     public NukkitRandom() {
@@ -74,5 +77,9 @@ public class NukkitRandom {
 
     public int nextBoundedInt(int bound) {
         return bound == 0 ? 0 : this.nextInt() % bound;
+    }
+
+    public static NukkitRandom current() {
+        return LOCAL.get();
     }
 }

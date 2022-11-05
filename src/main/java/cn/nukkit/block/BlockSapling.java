@@ -78,6 +78,7 @@ public class BlockSapling extends BlockFlowable {
         return true;
     }
 
+    @Override
     public boolean onActivate(Item item, BlockFace face, Player player) {
         if (item.getId() == Item.DYE && item.getDamage() == ItemDye.BONE_MEAL) {
             if (player != null && (player.gamemode & 0x01) == 0) {
@@ -96,6 +97,7 @@ public class BlockSapling extends BlockFlowable {
         return false;
     }
 
+    @Override
     public int onUpdate(int type) {
         if (type == Level.BLOCK_UPDATE_NORMAL) {
             if (!canSurvive()) {
@@ -165,7 +167,7 @@ public class BlockSapling extends BlockFlowable {
                 break;
             //TODO: big spruce
             default:
-                ObjectTree.growTree(this.level, this.getFloorX(), this.getFloorY(), this.getFloorZ(), new NukkitRandom(), this.getDamage() & 0x07);
+                ObjectTree.growTree(this.level, this.getFloorX(), this.getFloorY(), this.getFloorZ(), NukkitRandom.current(), this.getDamage() & 0x07);
                 return;
         }
 
@@ -178,7 +180,7 @@ public class BlockSapling extends BlockFlowable {
             this.level.setBlock(this, get(AIR), true, false);
         }
 
-        if (!generator.generate(this.level, new NukkitRandom(), this.add(x, 0, z))) {
+        if (!generator.generate(this.level, NukkitRandom.current(), this.add(x, 0, z))) {
             if (bigTree) {
                 this.level.setBlock(this.add(x, 0, z), this, true, false);
                 this.level.setBlock(this.add(x + 1, 0, z), this, true, false);

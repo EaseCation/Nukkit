@@ -327,22 +327,20 @@ class LevelProviderConverter {
                             int id = oldSection.getBlockId(0, x, y, z);
                             int meta = oldSection.getBlockData(0, x, y, z);
 
-                            if (id == BlockID.AIR) {
+                            // special Log upgrade to Wood
+                            if (id == BlockID.LOG) {
+                                if ((meta & BlockWood.PILLAR_AXIS_MASK) == BlockWood.PILLAR_AXIS_MASK && Block.list[BlockID.WOOD] != null) {
+                                    id = BlockID.WOOD;
+                                    meta = meta & BlockWood.TYPE_MASK;
+                                }
+                            } else if (id == BlockID.LOG2) {
+                                if ((meta & BlockWood.PILLAR_AXIS_MASK) == BlockWood.PILLAR_AXIS_MASK && Block.list[BlockID.WOOD] != null) {
+                                    id = BlockID.WOOD;
+                                    meta = 0b100 | (meta & BlockWood2.TYPE_MASK);
+                                }
+                            } else if (!Block.hasMeta[id]) {
                                 // additional fixes for corrupted meta... (FAWE?)
                                 meta = 0;
-                            } else if (Block.list[BlockID.WOOD] != null) {
-                                // special Log upgrade to Wood
-                                if (id == BlockID.LOG) {
-                                    if ((meta & BlockWood.PILLAR_AXIS_MASK) == BlockWood.PILLAR_AXIS_MASK) {
-                                        id = BlockID.WOOD;
-                                        meta = meta & BlockWood.TYPE_MASK;
-                                    }
-                                } else if (id == BlockID.LOG2) {
-                                    if ((meta & BlockWood2.PILLAR_AXIS_MASK) == BlockWood2.PILLAR_AXIS_MASK) {
-                                        id = BlockID.WOOD;
-                                        meta = 0b100 | (meta & BlockWood2.TYPE_MASK);
-                                    }
-                                }
                             }
 
                             subChunk.setBlock(0, x, y, z, id, meta);

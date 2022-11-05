@@ -6,8 +6,9 @@ import cn.nukkit.item.Item;
 import cn.nukkit.item.ItemBlock;
 import cn.nukkit.item.ItemTool;
 import cn.nukkit.level.Level;
-import cn.nukkit.math.NukkitRandom;
 import cn.nukkit.utils.BlockColor;
+
+import java.util.concurrent.ThreadLocalRandom;
 
 /**
  * Created by Pub4Game on 03.01.2016.
@@ -59,10 +60,10 @@ public class BlockMycelium extends BlockSolid {
             }
 
             //TODO: light levels
-            NukkitRandom random = new NukkitRandom();
-            int x = random.nextRange((int) this.x - 1, (int) this.x + 1);
-            int y = random.nextRange((int) this.y - 1, (int) this.y + 1);
-            int z = random.nextRange((int) this.z - 1, (int) this.z + 1);
+            ThreadLocalRandom random = ThreadLocalRandom.current();
+            int x = random.nextInt((int) this.x - 1, (int) this.x + 2);
+            int y = random.nextInt((int) this.y - 1, (int) this.y + 2);
+            int z = random.nextInt((int) this.z - 1, (int) this.z + 2);
             Block block = this.getLevel().getBlock(x, y, z);
             if (block.getId() == Block.DIRT && block.getDamage() == 0) {
                 Block up = block.up();

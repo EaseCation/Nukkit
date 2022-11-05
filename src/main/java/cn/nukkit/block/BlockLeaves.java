@@ -25,6 +25,10 @@ public class BlockLeaves extends BlockTransparentMeta {
     public static final int BIRCH = 2;
     public static final int JUNGLE = 3;
 
+    public static final int TYPE_MASK = 0b11;
+    public static final int UPDATE_BIT = 0b100;
+    public static final int PERSISTENT_BIT = 0b1000;
+
     private static final String[] NAMES = new String[]{
             "Oak Leaves",
             "Spruce Leaves",
@@ -57,7 +61,7 @@ public class BlockLeaves extends BlockTransparentMeta {
 
     @Override
     public String getName() {
-        return NAMES[this.getDamage() & 0x03];
+        return NAMES[this.getLeafType()];
     }
 
     @Override
@@ -79,7 +83,7 @@ public class BlockLeaves extends BlockTransparentMeta {
 
     @Override
     public Item toItem(boolean addUserData) {
-        return new ItemBlock(this, this.getDamage() & 0x3, 1);
+        return new ItemBlock(this, this.getLeafType(), 1);
     }
 
     @Override
@@ -100,7 +104,7 @@ public class BlockLeaves extends BlockTransparentMeta {
                     return new Item[]{
                             Item.get(Item.STICK, 0, random.nextInt(1, 2))
                     };
-                } else if ((this.getDamage() & 0x03) != JUNGLE || random.nextInt(20) == 0) {
+                } else if (getId() != LEAVES || this.getLeafType() != JUNGLE || random.nextInt(20) == 0) {
                     return new Item[]{
                             this.getSapling()
                     };
@@ -116,7 +120,7 @@ public class BlockLeaves extends BlockTransparentMeta {
             setCheckDecay(true);
             getLevel().setBlock(this, this, false, false);
         } else if (type == Level.BLOCK_UPDATE_RANDOM && isCheckDecay() && !isPersistent()) {
-            setDamage(getDamage() & 0x03);
+            setDamage(getLeafType());
             int check = 0;
 
             LeavesDecayEvent ev = new LeavesDecayEvent(this);
@@ -140,11 +144,11 @@ public class BlockLeaves extends BlockTransparentMeta {
         ++check;
         long index = Hash.hashBlock((int) pos.x, (int) pos.y, (int) pos.z);
         if (visited.contains(index)) return false;
-        if (pos.getId() == LOG || pos.getId() == LOG2) return true;
-        if ((pos.getId() == LEAVES || pos.getId() == LEAVES2) && distance <= 4) {
+        if (pos.isLog()) return true;
+        if (pos.isLeaves() && distance <= 6) {
             visited.add(index);
-            int down = pos.down().getId();
-            if (down == LOG || down == LOG2) {
+            Block down = pos.down();
+            if (down.isLog()) {
                 return true;
             }
             if (fromSide == null) {
@@ -192,28 +196,24 @@ public class BlockLeaves extends BlockTransparentMeta {
         return false;
     }
 
+    public int getLeafType() {
+        return getDamage() & TYPE_MASK;
+    }
+
     public boolean isCheckDecay() {
-        return (this.getDamage() & 0x08) != 0;
+        return (getDamage() & UPDATE_BIT) != 0;
     }
 
     public void setCheckDecay(boolean checkDecay) {
-        if (checkDecay) {
-            this.setDamage(this.getDamage() | 0x08);
-        } else {
-            this.setDamage(this.getDamage() & ~0x08);
-        }
+        setDamage(checkDecay ? getDamage() | UPDATE_BIT : getDamage() & ~UPDATE_BIT);
     }
 
     public boolean isPersistent() {
-        return (this.getDamage() & 0x04) != 0;
+        return (getDamage() & PERSISTENT_BIT) != 0;
     }
 
     public void setPersistent(boolean persistent) {
-        if (persistent) {
-            this.setDamage(this.getDamage() | 0x04);
-        } else {
-            this.setDamage(this.getDamage() & ~0x04);
-        }
+        setDamage(persistent ? getDamage() | PERSISTENT_BIT : getDamage() & ~PERSISTENT_BIT);
     }
 
     @Override
@@ -228,11 +228,11 @@ public class BlockLeaves extends BlockTransparentMeta {
     }
 
     protected boolean canDropApple() {
-        return (this.getDamage() & 0x03) == OAK;
+        return this.getLeafType() == OAK;
     }
 
     protected Item getSapling() {
-        return Item.get(BlockID.SAPLING, this.getDamage() & 0x03);
+        return Item.get(BlockID.SAPLING, this.getLeafType());
     }
 
     @Override
