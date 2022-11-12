@@ -39,4 +39,9 @@ public class BlockGlassHard extends BlockGlass {
                 this.toItem(true)
         };
     }
+
+    @Override
+    public boolean isChemistryFeature() {
+        return true;
+    }
 }

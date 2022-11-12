@@ -44,4 +44,9 @@ public class BlockGlassPaneStainedHard extends BlockGlassPaneStained {
                 this.toItem(true)
         };
     }
+
+    @Override
+    public boolean isChemistryFeature() {
+        return true;
+    }
 }

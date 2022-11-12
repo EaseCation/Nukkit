@@ -32,7 +32,7 @@ public class CraftingManager {
     public static BatchPacket packet = null;
     public static BatchPacket packetRaw;
 
-    private static long RECIPE_COUNT = 1;
+    protected static long RECIPE_COUNT = 1;
 
     public final Collection<Recipe> recipes = new ArrayDeque<>();
 
@@ -69,6 +69,10 @@ public class CraftingManager {
     };
 
     public CraftingManager() {
+        initialize();
+    }
+
+    protected void initialize() {
         InputStream recipesStream = Server.class.getClassLoader().getResourceAsStream("recipes.json");
         if (recipesStream == null) {
             throw new AssertionError("Unable to find recipes.json");
@@ -307,7 +311,7 @@ public class CraftingManager {
         return recipe;
     }
 
-    private static long getMultiItemHash(Collection<Item> items) {
+    protected static long getMultiItemHash(Collection<Item> items) {
         if (items.isEmpty()) {
             return Hash.xxh64Void();
         }
@@ -400,7 +404,7 @@ public class CraftingManager {
         recipes.put(inputHash, recipe);
     }
 
-    private static long getContainerHash(int ingredientId, int containerId) {
+    protected static long getContainerHash(int ingredientId, int containerId) {
         return ((long) ingredientId << 32) | (containerId & 0xffffffffL);
     }
 

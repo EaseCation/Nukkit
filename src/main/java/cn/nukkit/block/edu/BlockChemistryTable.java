@@ -122,4 +122,9 @@ public class BlockChemistryTable extends BlockSolidMeta {
         }
         return null;
     }
+
+    @Override
+    public boolean isChemistryFeature() {
+        return true;
+    }
 }

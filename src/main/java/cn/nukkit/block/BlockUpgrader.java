@@ -16,7 +16,13 @@ public final class BlockUpgrader {
         INSTANCE.upgrade(tag);
     }
 
+    public static int getCurrentVersion() {
+        return INSTANCE.getCurrentVersion();
+    }
+
     public interface BedrockBlockUpgrader {
         void upgrade(CompoundTag tag);
+
+        int getCurrentVersion();
     }
 }

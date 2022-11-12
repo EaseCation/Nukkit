@@ -82,4 +82,9 @@ public class BlockChemicalHeat extends BlockTransparent {
     public BlockColor getColor() {
         return BlockColor.BLACK_BLOCK_COLOR;
     }
+
+    @Override
+    public boolean isChemistryFeature() {
+        return true;
+    }
 }

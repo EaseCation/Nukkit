@@ -29,4 +29,9 @@ public abstract class BlockElement extends BlockSolid {
     public BlockColor getColor() {
         return BlockColor.BLACK_BLOCK_COLOR; //TODO: check ElementBlock::getMapColor -- 07/30/2022
     }
+
+    @Override
+    public boolean isChemistryFeature() {
+        return true;
+    }
 }

@@ -472,7 +472,7 @@ public class BlockCauldron extends BlockTransparentMeta {
         }
 
         if (type == Level.BLOCK_UPDATE_SCHEDULED) {
-            if (getCauldronType() != LIQUID_WATER || getFillLevel() == FILL_LEVEL_FULL) {
+            if (getCauldronType() != LIQUID_WATER) {
                 return 0;
             }
 
@@ -481,10 +481,14 @@ public class BlockCauldron extends BlockTransparentMeta {
                 return 0;
             }
 
+            BlockEntityCauldron cauldron = getBlockEntity();
+            if (cauldron.getPotionType() == BlockEntityCauldron.POTION_TYPE_NONE && getFillLevel() == FILL_LEVEL_FULL) {
+                return 0;
+            }
+
             setFillLevel(FILL_LEVEL_FULL);
             level.setBlock(this, this, true);
 
-            BlockEntityCauldron cauldron = getBlockEntity();
             cauldron.resetCauldron();
             cauldron.spawnToAll();
 

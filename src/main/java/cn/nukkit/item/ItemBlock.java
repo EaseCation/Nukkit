@@ -57,4 +57,9 @@ public class ItemBlock extends Item {
     public int getBlockId() {
         return this.block.getId();
     }
+
+    @Override
+    public boolean isChemistryFeature() {
+        return block.isChemistryFeature();
+    }
 }

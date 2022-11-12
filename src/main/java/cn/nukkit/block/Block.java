@@ -1240,6 +1240,10 @@ public abstract class Block extends Position implements Metadatable, Cloneable, 
         return 0;
     }
 
+    public boolean isChemistryFeature() {
+        return false;
+    }
+
     //TODO: brewing stand, cauldron and composter
     public AxisAlignedBB[] getCollisionShape() {
         AxisAlignedBB aabb = this.getCollisionBoundingBox();

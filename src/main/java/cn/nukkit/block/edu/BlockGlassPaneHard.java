@@ -39,4 +39,9 @@ public class BlockGlassPaneHard extends BlockGlassPane {
                 this.toItem(true)
         };
     }
+
+    @Override
+    public boolean isChemistryFeature() {
+        return true;
+    }
 }

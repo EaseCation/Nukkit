@@ -5,6 +5,8 @@ import cn.nukkit.blockentity.*;
 import cn.nukkit.command.*;
 import cn.nukkit.command.exceptions.CommandExceptions;
 import cn.nukkit.console.NukkitConsole;
+import cn.nukkit.data.BlockItemConverter;
+import cn.nukkit.data.ItemIdMap;
 import cn.nukkit.dispenser.DispenseBehaviorRegister;
 import cn.nukkit.entity.Attribute;
 import cn.nukkit.entity.Entities;
@@ -75,6 +77,7 @@ import co.aikar.timings.Timings;
 import com.google.common.base.Preconditions;
 import io.netty.buffer.ByteBuf;
 import it.unimi.dsi.fastutil.objects.Object2ObjectOpenHashMap;
+import lombok.Setter;
 import lombok.extern.log4j.Log4j2;
 
 import javax.annotation.Nullable;
@@ -138,7 +141,8 @@ public class Server {
 
     private final SimpleCommandMap commandMap;
 
-    private final CraftingManager craftingManager;
+    @Setter
+    private CraftingManager craftingManager;
 
     private final ResourcePackManager resourcePackManager;
 
@@ -412,6 +416,8 @@ public class Server {
         this.consoleSender = new ConsoleCommandSender();
         this.commandMap = new SimpleCommandMap(this);
 
+        ItemIdMap.init();
+        BlockItemConverter.init();
         Entities.registerVanillaEntities();
         BlockEntities.registerVanillaBlockEntities();
         Block.init();

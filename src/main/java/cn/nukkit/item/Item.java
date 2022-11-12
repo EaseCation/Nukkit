@@ -399,7 +399,7 @@ public class Item implements Cloneable, ItemID {
         }
     }
 
-    private static Item getCraftingItem(int id, int meta, int count, byte[] tags) {
+    public static Item getCraftingItem(int id, int meta, int count, byte[] tags) {
         try {
             Class<?> c = id > 0 ? list[id] : Block.list[0xff - id];
             Item item;
@@ -1282,6 +1282,10 @@ public class Item implements Cloneable, ItemID {
 
     public static int getCount(long hash) {
         return (int) hash & 0x7f;
+    }
+
+    public boolean isChemistryFeature() {
+        return false;
     }
 
     public boolean isBoneMeal() {

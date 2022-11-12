@@ -25,4 +25,9 @@ public abstract class BlockTorchColored extends BlockTorch {
     protected void setBlockFace(BlockFace face) {
         setDamage((6 - face.getIndex()) | (getDamage() & COLOR_BIT));
     }
+
+    @Override
+    public boolean isChemistryFeature() {
+        return true;
+    }
 }

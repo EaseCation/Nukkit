@@ -31,4 +31,9 @@ public class BlockTorchUnderwater extends BlockTorch {
     public boolean canContainWater() {
         return true;
     }
+
+    @Override
+    public boolean isChemistryFeature() {
+        return true;
+    }
 }
