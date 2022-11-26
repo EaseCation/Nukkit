@@ -2,12 +2,6 @@ package cn.nukkit.entity.item;
 
 import cn.nukkit.Player;
 import cn.nukkit.block.Block;
-import cn.nukkit.block.BlockFire;
-import cn.nukkit.block.BlockFlowable;
-import cn.nukkit.block.BlockItemFrame;
-import cn.nukkit.block.BlockRedstoneDiode;
-import cn.nukkit.block.BlockTorch;
-import cn.nukkit.block.BlockWallSign;
 import cn.nukkit.blockentity.BlockEntityPistonArm;
 import cn.nukkit.entity.Entity;
 import cn.nukkit.entity.EntityHanging;
@@ -253,10 +247,10 @@ public class EntityPainting extends EntityHanging {
                     if (block.isAir() || id == Block.SNOW_LAYER) {
                         continue;
                     }
-                    if (block instanceof BlockFire || block.isLava() || block instanceof BlockRedstoneDiode) {
+                    if (block.isFire() || block.isLava() || block.isDiode()) {
                         return false;
                     }
-                    if (block instanceof BlockWallSign || id == Block.WALL_BANNER || block instanceof BlockItemFrame || block instanceof BlockTorch) {
+                    if (block.isWallSign() || id == Block.WALL_BANNER || block.isItemFrame() || block.isTorch()) {
                         BlockFace direction = ((Faceable) block).getBlockFace();
                         if (direction == this.direction) {
                             return false;

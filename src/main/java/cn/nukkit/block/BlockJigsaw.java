@@ -153,6 +153,7 @@ public class BlockJigsaw extends BlockSolidMeta implements Faceable {
         return (BlockEntityJigsawBlock) BlockEntity.createBlockEntity(BlockEntity.JIGSAW_BLOCK, getChunk(), nbt);
     }
 
+    @Nullable
     protected BlockEntityJigsawBlock getBlockEntity() {
         if (level == null) {
             return null;

@@ -2,6 +2,7 @@ package cn.nukkit.block;
 
 import cn.nukkit.Player;
 import cn.nukkit.item.Item;
+import cn.nukkit.item.ItemTool;
 import cn.nukkit.level.Dimension;
 import cn.nukkit.level.Level;
 import cn.nukkit.level.particle.DestroyBlockParticle;
@@ -49,6 +50,11 @@ public class BlockSponge extends BlockSolidMeta {
     }
 
     @Override
+    public int getToolType() {
+        return ItemTool.TYPE_HOE;
+    }
+
+    @Override
     public String getName() {
         return NAMES[this.getDamage() & 0b1];
     }
@@ -85,7 +91,7 @@ public class BlockSponge extends BlockSolidMeta {
         Entry entry;
         int waterRemoved = 0;
         while (waterRemoved < 64 && (entry = entries.poll()) != null) {
-            for (BlockFace face : BlockFace.values()) {
+            for (BlockFace face : BlockFace.getValues()) {
 
                 Block faceBlock = entry.block.getSide(face);
                 if (faceBlock.isWater()) {

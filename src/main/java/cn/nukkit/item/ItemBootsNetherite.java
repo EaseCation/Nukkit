@@ -38,4 +38,9 @@ public class ItemBootsNetherite extends ItemArmor {
     public int getToughness() {
         return 2;
     }
+
+    @Override
+    public boolean isFireResistant() {
+        return true;
+    }
 }

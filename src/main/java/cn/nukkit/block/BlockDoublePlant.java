@@ -52,12 +52,13 @@ public class BlockDoublePlant extends BlockFlowable {
 
     @Override
     public boolean canBeReplaced() {
-        return this.getDamage() == TALL_GRASS || this.getDamage() == LARGE_FERN;
+        int type = getPlantType();
+        return type == TALL_GRASS || type == LARGE_FERN;
     }
 
     @Override
     public String getName() {
-        return NAMES[this.getDamage() & TYPE_MASK];
+        return NAMES[this.getPlantType()];
     }
 
     @Override
@@ -117,7 +118,7 @@ public class BlockDoublePlant extends BlockFlowable {
     @Override
     public Item[] getDrops(Item item) {
         if ((this.getDamage() & TOP_HALF_BITMASK) != TOP_HALF_BITMASK) {
-            switch (this.getDamage() & TYPE_MASK) {
+            switch (this.getPlantType()) {
                 case TALL_GRASS:
                 case LARGE_FERN:
                     boolean dropSeeds = ThreadLocalRandom.current().nextInt(10) == 0;
@@ -162,7 +163,7 @@ public class BlockDoublePlant extends BlockFlowable {
     @Override
     public boolean onActivate(Item item, BlockFace face, Player player) {
         if (item.getId() == Item.DYE && item.getDamage() == ItemDye.BONE_MEAL) {
-            switch (this.getDamage() & TYPE_MASK) {
+            switch (this.getPlantType()) {
                 case SUNFLOWER:
                 case LILAC:
                 case ROSE_BUSH:
@@ -183,6 +184,10 @@ public class BlockDoublePlant extends BlockFlowable {
     @Override
     public boolean isVegetation() {
         return true;
+    }
+
+    public int getPlantType() {
+        return getDamage() & TYPE_MASK;
     }
 
     private boolean canSurvive() {

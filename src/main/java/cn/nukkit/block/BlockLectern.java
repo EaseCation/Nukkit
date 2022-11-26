@@ -238,6 +238,7 @@ public class BlockLectern extends BlockTransparentMeta implements Faceable {
         return (BlockEntityLectern) BlockEntity.createBlockEntity(BlockEntity.LECTERN, getChunk(), nbt);
     }
 
+    @Nullable
     protected BlockEntityLectern getBlockEntity() {
         if (level == null) {
             return null;

@@ -4,7 +4,7 @@ import cn.nukkit.Player;
 import cn.nukkit.Server;
 import cn.nukkit.entity.Entity;
 import cn.nukkit.entity.item.EntityPrimedTNT;
-import cn.nukkit.event.block.BlockIgniteEvent;
+import cn.nukkit.event.block.BlockIgniteEvent.BlockIgniteCause;
 import cn.nukkit.event.entity.EntityCombustByBlockEvent;
 import cn.nukkit.event.entity.EntityDamageByBlockEvent;
 import cn.nukkit.event.entity.EntityDamageEvent.DamageCause;
@@ -94,13 +94,7 @@ public class BlockLava extends BlockLiquid {
 
                     if (block.getId() == AIR) {
                         if (this.isSurroundingBlockFlammable(block)) {
-                            BlockIgniteEvent e = new BlockIgniteEvent(block, this, null, BlockIgniteEvent.BlockIgniteCause.LAVA);
-                            this.level.getServer().getPluginManager().callEvent(e);
-
-                            if (!e.isCancelled()) {
-                                Block fire = Block.get(BlockID.FIRE);
-                                this.getLevel().setBlock(v, fire, true);
-                                this.getLevel().scheduleUpdate(fire, fire.tickRate());
+                            if (BlockFire.tryIgnite(block, this, null, BlockIgniteCause.LAVA)) {
                                 return Level.BLOCK_UPDATE_RANDOM;
                             }
 
@@ -116,14 +110,7 @@ public class BlockLava extends BlockLiquid {
                     Block block = this.getLevel().getBlock(v);
 
                     if (block.up().getId() == AIR && block.getBurnChance() > 0) {
-                        BlockIgniteEvent e = new BlockIgniteEvent(block, this, null, BlockIgniteEvent.BlockIgniteCause.LAVA);
-                        this.level.getServer().getPluginManager().callEvent(e);
-
-                        if (!e.isCancelled()) {
-                            Block fire = Block.get(BlockID.FIRE);
-                            this.getLevel().setBlock(v, fire, true);
-                            this.getLevel().scheduleUpdate(fire, fire.tickRate());
-                        }
+                        BlockFire.tryIgnite(block, this, null, BlockIgniteCause.LAVA);
                     }
                 }
             }
@@ -172,6 +159,8 @@ public class BlockLava extends BlockLiquid {
     protected void checkForHarden() {
         Block colliding = null;
         int layer = -1;
+        Block blueIce = null;
+
         for (int side = 1; side < 6; ++side) { //don't check downwards side
             Block blockSide = this.getSide(BlockFace.fromIndex(side));
             if (blockSide.isWater()) {
@@ -186,14 +175,24 @@ public class BlockLava extends BlockLiquid {
                 layer = 1;
                 break;
             }
+
+            if (blockSide.getId() == BLUE_ICE) {
+                blueIce = blockSide;
+            }
         }
 
         if (colliding != null) {
             if (this.getDamage() == 0) {
                 this.liquidCollide(colliding, Block.get(BlockID.OBSIDIAN), layer);
+                return;
             } else if (this.getDamage() <= 4) {
                 this.liquidCollide(colliding, Block.get(BlockID.COBBLESTONE), layer);
+                return;
             }
+        }
+
+        if (blueIce != null && down().getId() == SOUL_SOIL) {
+            liquidCollide(blueIce, get(BASALT), 0);
         }
     }
 

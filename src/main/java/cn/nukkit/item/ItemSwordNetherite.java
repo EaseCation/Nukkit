@@ -38,4 +38,9 @@ public class ItemSwordNetherite extends ItemTool {
     public boolean additionalDamageOnBreak() {
         return true;
     }
+
+    @Override
+    public boolean isFireResistant() {
+        return true;
+    }
 }

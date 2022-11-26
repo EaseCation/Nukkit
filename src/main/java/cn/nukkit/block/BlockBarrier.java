@@ -1,6 +1,5 @@
 package cn.nukkit.block;
 
-import cn.nukkit.blockentity.BlockEntityType;
 import cn.nukkit.item.Item;
 import cn.nukkit.utils.BlockColor;
 
@@ -17,11 +16,6 @@ public class BlockBarrier extends BlockTransparent {
     @Override
     public String getName() {
         return "Barrier";
-    }
-
-    @Override
-    public int getBlockEntityType() {
-        return BlockEntityType.BARREL;
     }
 
     @Override

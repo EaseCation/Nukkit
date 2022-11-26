@@ -62,22 +62,23 @@ public final class Items {
         registerItem(NETHERITE_LEGGINGS, ItemLeggingsNetherite.class, V1_16_0);
         registerItem(NETHERITE_BOOTS, ItemBootsNetherite.class, V1_16_0);
         registerItem(NETHERITE_SCRAP, ItemScrapNetherite.class, V1_16_0);
-        // crimson_sign
-        // warped_sign
-        // crimson_door
-        // warped_door
+        registerItem(CRIMSON_SIGN, ItemSignCrimson.class, V1_16_0);
+        registerItem(WARPED_SIGN, ItemSignWarped.class, V1_16_0);
+        registerItem(CRIMSON_DOOR, ItemDoorCrimson.class, V1_16_0);
+        registerItem(WARPED_DOOR, ItemDoorWarped.class, V1_16_0);
         registerItem(WARPED_FUNGUS_ON_A_STICK, ItemWarpedFungusOnAStick.class, V1_16_0);
-        // chain
+        registerItem(CHAIN, ItemChain.class, V1_16_0);
         registerItem(MUSIC_DISC_PIGSTEP, ItemRecordPigstep.class, V1_16_0);
-        // nether_sprouts
-        // soul_campfire
-
+        registerItem(NETHER_SPROUTS, ItemNetherSprouts.class, V1_16_0);
+        registerItem(SOUL_CAMPFIRE, ItemCampfireSoul.class, V1_16_0);
+/*
         registerItem(RAW_IRON, ItemRawIron.class, V1_17_0);
         registerItem(RAW_GOLD, ItemRawGold.class, V1_17_0);
         registerItem(RAW_COPPER, ItemRawCopper.class, V1_17_0);
         registerItem(AMETHYST_SHARD, ItemAmethystShard.class, V1_17_0);
         registerItem(SPYGLASS, ItemSpyglass.class, V1_17_0);
-        // glow_frame
+        registerItem(GLOW_FRAME, ItemItemFrameGlow.class, V1_17_0);
+        // copper_ingot
         // glow_berries
 
         registerItem(MUSIC_DISC_OTHERSIDE, ItemRecordOtherside.class, V1_18_0);
@@ -87,9 +88,10 @@ public final class Items {
         registerItem(DISC_FRAGMENT_5, ItemDiscFragment5.class, V1_19_0);
         registerItem(RECOVERY_COMPASS, ItemCompassRecovery.class, V1_19_0);
         registerItem(ECHO_SHARD, ItemEchoShard.class, V1_19_0);
-        // mangrove_door
-        // mangrove_sign
-
+        registerItem(MANGROVE_DOOR, ItemDoorMangrove.class, V1_19_0);
+        registerItem(MANGROVE_SIGN, ItemSignMangrove.class, V1_19_0);
+        // chest_boat
+*/
     }
 
     private static Class<? extends Item> registerItem(int id, Class<? extends Item> clazz) {

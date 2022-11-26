@@ -45,6 +45,6 @@ public class BlockBorder extends BlockWall {
 
     @Override
     public BlockColor getColor() {
-        return BlockColor.RED_BLOCK_COLOR;
+        return BlockColor.FIRE_BLOCK_COLOR;
     }
 }

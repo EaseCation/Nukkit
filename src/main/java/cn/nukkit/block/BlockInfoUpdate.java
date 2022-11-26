@@ -1,5 +1,7 @@
 package cn.nukkit.block;
 
+import cn.nukkit.utils.BlockColor;
+
 public class BlockInfoUpdate extends BlockSolid {
 
     public BlockInfoUpdate() {
@@ -23,5 +25,10 @@ public class BlockInfoUpdate extends BlockSolid {
     @Override
     public double getResistance() {
         return 5;
+    }
+
+    @Override
+    public BlockColor getColor() {
+        return BlockColor.DIRT_BLOCK_COLOR;
     }
 }

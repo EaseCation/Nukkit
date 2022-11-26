@@ -85,4 +85,9 @@ public class BlockPistonHead extends BlockTransparentMeta implements Faceable {
     public boolean canContainWater() {
         return true;
     }
+
+    @Override
+    public boolean canProvideSupport(BlockFace face, SupportType type) {
+        return face == getBlockFace();
+    }
 }

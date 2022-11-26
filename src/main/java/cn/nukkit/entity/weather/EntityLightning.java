@@ -1,11 +1,12 @@
 package cn.nukkit.entity.weather;
 
+import cn.nukkit.Difficulty;
 import cn.nukkit.Player;
 import cn.nukkit.block.Block;
+import cn.nukkit.block.BlockCampfire;
 import cn.nukkit.block.BlockFire;
-import cn.nukkit.block.BlockID;
 import cn.nukkit.entity.Entity;
-import cn.nukkit.event.block.BlockIgniteEvent;
+import cn.nukkit.event.block.BlockIgniteEvent.BlockIgniteCause;
 import cn.nukkit.event.entity.EntityDamageEvent;
 import cn.nukkit.level.GameRule;
 import cn.nukkit.level.format.FullChunk;
@@ -28,7 +29,6 @@ public class EntityLightning extends Entity implements EntityLightningStrike {
     public int state;
     public int liveTime;
 
-
     @Override
     public int getNetworkId() {
         return NETWORK_ID;
@@ -49,27 +49,7 @@ public class EntityLightning extends Entity implements EntityLightningStrike {
         Random random = ThreadLocalRandom.current();
         this.liveTime = random.nextInt(3) + 1;
 
-        if (isEffect && this.level.gameRules.getBoolean(GameRule.DO_FIRE_TICK) && (this.server.getDifficulty() >= 2)) {
-            Block block = this.getLevelBlock();
-            if (block.getId() == 0 || block.getId() == Block.TALLGRASS) {
-                BlockFire fire = (BlockFire) Block.get(BlockID.FIRE);
-                fire.x = block.x;
-                fire.y = block.y;
-                fire.z = block.z;
-                fire.level = level;
-                this.getLevel().setBlock(fire, fire, true);
-                if (fire.isBlockTopFacingSurfaceSolid(fire.down()) || fire.canNeighborBurn()) {
-
-                    BlockIgniteEvent e = new BlockIgniteEvent(block, null, this, BlockIgniteEvent.BlockIgniteCause.LIGHTNING);
-                    getServer().getPluginManager().callEvent(e);
-
-                    if (!e.isCancelled()) {
-                        level.setBlock(fire, fire, true);
-                        level.scheduleUpdate(fire, fire.tickRate() + random.nextInt(10));
-                    }
-                }
-            }
-        }
+        tryIgniteBlock();
     }
 
     public boolean isEffect() {
@@ -82,9 +62,7 @@ public class EntityLightning extends Entity implements EntityLightningStrike {
 
     @Override
     public boolean attack(EntityDamageEvent source) {
-        //false?
-        source.setDamage(0);
-        return super.attack(source);
+        return false;
     }
 
     @Override
@@ -118,27 +96,13 @@ public class EntityLightning extends Entity implements EntityLightningStrike {
                 this.liveTime--;
                 this.state = 1;
 
-                if (this.isEffect && this.level.gameRules.getBoolean(GameRule.DO_FIRE_TICK)) {
-                    Block block = this.getLevelBlock();
-
-                    if (block.getId() == Block.AIR || block.getId() == Block.TALLGRASS) {
-                        BlockIgniteEvent e = new BlockIgniteEvent(block, null, this, BlockIgniteEvent.BlockIgniteCause.LIGHTNING);
-                        getServer().getPluginManager().callEvent(e);
-
-                        if (!e.isCancelled()) {
-                            Block fire = Block.get(BlockID.FIRE);
-                            this.level.setBlock(block, fire, true);
-                            this.getLevel().scheduleUpdate(fire, fire.tickRate());
-                        }
-                    }
-                }
+                tryIgniteBlock();
             }
         }
 
         if (this.state >= 0) {
             if (this.isEffect) {
                 AxisAlignedBB bb = getBoundingBox().grow(3, 3, 3);
-                bb.setMaxX(bb.getMaxX() + 6);
 
                 for (Entity entity : this.level.getCollidingEntities(bb, this)) {
                     entity.onStruckByLightning(this);
@@ -158,5 +122,22 @@ public class EntityLightning extends Entity implements EntityLightningStrike {
         player.dataPacket(createAddEntityPacket());
 
         super.spawnTo(player);
+    }
+
+    private void tryIgniteBlock() {
+        if (!isEffect || !level.gameRules.getBoolean(GameRule.DO_FIRE_TICK) || server.getDifficulty() < Difficulty.NORMAL.ordinal()) {
+            return;
+        }
+        Block block = getLevelBlock();
+
+        if (block.isCampfire()) {
+            ((BlockCampfire) block).tryLightFire(null, this, BlockIgniteCause.LIGHTNING);
+            return;
+        }
+
+        if (!block.isAir()) {
+            return;
+        }
+        BlockFire.tryIgnite(block, null, this, BlockIgniteCause.LIGHTNING);
     }
 }

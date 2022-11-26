@@ -24,6 +24,6 @@ public class BlockUnknown extends BlockMeta {
 
     @Override
     public String getName() {
-        return "Unknown";
+        return "Missing";
     }
 }

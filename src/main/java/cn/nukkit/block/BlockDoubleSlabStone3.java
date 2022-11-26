@@ -1,10 +1,8 @@
 package cn.nukkit.block;
 
-import cn.nukkit.item.Item;
-import cn.nukkit.item.ItemTool;
 import cn.nukkit.utils.BlockColor;
 
-public class BlockDoubleSlabStone3 extends BlockDoubleSlab {
+public class BlockDoubleSlabStone3 extends BlockDoubleSlabStone {
 
     public static final int END_STONE_BRICK = 0;
     public static final int SMOOTH_RED_SANDSTONE = 1;
@@ -41,42 +39,12 @@ public class BlockDoubleSlabStone3 extends BlockDoubleSlab {
 
     @Override
     public String getName() {
-        return NAMES[getDamage() & TYPE_MASK];
-    }
-
-    @Override
-    public double getResistance() {
-        return 30;
-    }
-
-    @Override
-    public int getToolType() {
-        return ItemTool.TYPE_PICKAXE;
-    }
-
-    @Override
-    public boolean canHarvestWithHand() {
-        return false;
-    }
-
-    @Override
-    public Item[] getDrops(Item item) {
-        if (item.isPickaxe() && item.getTier() >= ItemTool.TIER_WOODEN) {
-            return new Item[]{
-                    Item.get(getItemId(STONE_SLAB3), getDamage() & TYPE_MASK, 2)
-            };
-        }
-        return new Item[0];
-    }
-
-    @Override
-    public Item toItem(boolean addUserData) {
-        return Item.get(getItemId(STONE_SLAB3), getDamage() & TYPE_MASK);
+        return NAMES[getSlabType()];
     }
 
     @Override
     public BlockColor getColor() {
-        switch (this.getDamage() & TYPE_MASK) {
+        switch (this.getSlabType()) {
             default:
             case END_STONE_BRICK:
                 return BlockColor.SAND_BLOCK_COLOR;
@@ -92,5 +60,10 @@ public class BlockDoubleSlabStone3 extends BlockDoubleSlab {
             case POLISHED_GRANITE:
                 return BlockColor.DIRT_BLOCK_COLOR;
         }
+    }
+
+    @Override
+    protected int getSlabBlockId() {
+        return STONE_SLAB3;
     }
 }

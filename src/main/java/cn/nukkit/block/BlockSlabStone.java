@@ -33,7 +33,7 @@ public class BlockSlabStone extends BlockSlab {
     }
 
     public BlockSlabStone(int meta) {
-        super(meta, DOUBLE_STONE_SLAB);
+        super(meta);
     }
 
     @Override
@@ -43,7 +43,12 @@ public class BlockSlabStone extends BlockSlab {
 
     @Override
     public String getName() {
-        return ((this.getDamage() & TOP_SLOT_BIT) == TOP_SLOT_BIT ? "Upper " : "") + NAMES[this.getDamage() & TYPE_MASK];
+        return (isTopSlot() ? "Upper " : "") + NAMES[this.getSlabType()];
+    }
+
+    @Override
+    public double getHardness() {
+        return 2;
     }
 
     @Override
@@ -69,7 +74,7 @@ public class BlockSlabStone extends BlockSlab {
 
     @Override
     public BlockColor getColor() {
-        switch (this.getDamage() & TYPE_MASK) {
+        switch (this.getSlabType()) {
             default:
             case SMOOTH_STONE:
             case COBBLESTONE:
@@ -90,5 +95,10 @@ public class BlockSlabStone extends BlockSlab {
     @Override
     public boolean canHarvestWithHand() {
         return false;
+    }
+
+    @Override
+    protected int getDoubleSlabBlockId() {
+        return DOUBLE_STONE_SLAB;
     }
 }

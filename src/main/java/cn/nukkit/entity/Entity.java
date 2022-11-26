@@ -3,7 +3,6 @@ package cn.nukkit.entity;
 import cn.nukkit.Player;
 import cn.nukkit.Server;
 import cn.nukkit.block.Block;
-import cn.nukkit.block.BlockFire;
 import cn.nukkit.block.BlockID;
 import cn.nukkit.block.BlockWater;
 import cn.nukkit.blockentity.BlockEntityPistonArm;
@@ -1959,7 +1958,7 @@ public abstract class Entity extends Location implements Metadatable {
 
     public boolean isInsideOfFire() {
         for (Block block : this.getCollisionBlocks()) {
-            if (block instanceof BlockFire) {
+            if (block.isFire()) {
                 return true;
             }
         }

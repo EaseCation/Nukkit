@@ -31,12 +31,12 @@ public final class Blocks {
         registerBlock(PRISMARINE_STAIRS, BlockStairsPrismarine.class, V1_4_0);
         registerBlock(DARK_PRISMARINE_STAIRS, BlockStairsDarkPrismarine.class, V1_4_0);
         registerBlock(PRISMARINE_BRICKS_STAIRS, BlockStairsPrismarineBrick.class, V1_4_0);
-        registerBlock(STRIPPED_SPRUCE_LOG, BlockWoodStrippedSpruce.class, V1_4_0);
-        registerBlock(STRIPPED_BIRCH_LOG, BlockWoodStrippedBirch.class, V1_4_0);
-        registerBlock(STRIPPED_JUNGLE_LOG, BlockWoodStrippedJungle.class, V1_4_0);
-        registerBlock(STRIPPED_ACACIA_LOG, BlockWoodStrippedAcacia.class, V1_4_0);
-        registerBlock(STRIPPED_DARK_OAK_LOG, BlockWoodStrippedDarkOak.class, V1_4_0);
-        registerBlock(STRIPPED_OAK_LOG, BlockWoodStrippedOak.class, V1_4_0);
+        registerBlock(STRIPPED_SPRUCE_LOG, BlockLogStrippedSpruce.class, V1_4_0);
+        registerBlock(STRIPPED_BIRCH_LOG, BlockLogStrippedBirch.class, V1_4_0);
+        registerBlock(STRIPPED_JUNGLE_LOG, BlockLogStrippedJungle.class, V1_4_0);
+        registerBlock(STRIPPED_ACACIA_LOG, BlockLogStrippedAcacia.class, V1_4_0);
+        registerBlock(STRIPPED_DARK_OAK_LOG, BlockLogStrippedDarkOak.class, V1_4_0);
+        registerBlock(STRIPPED_OAK_LOG, BlockLogStrippedOak.class, V1_4_0);
         registerBlock(BLUE_ICE, BlockIceBlue.class, V1_4_0);
         registerElements();
         registerBlock(SEAGRASS, BlockSeagrass.class, V1_4_0);
@@ -143,8 +143,124 @@ public final class Blocks {
         registerBlock(DENY, BlockDeny.class, V1_16_0);
         registerBlock(BORDER_BLOCK, BlockBorder.class, V1_16_0);
         registerBlock(STRUCTURE_VOID, BlockStructureVoid.class, V1_16_0);
-        // lodestone
-        //
+        registerBlock(LODESTONE, BlockLodestone.class, V1_16_0);
+        registerBlock(CRIMSON_ROOTS, BlockNetherRootsCrimson.class, V1_16_0);
+        registerBlock(WARPED_ROOTS, BlockNetherRootsWarped.class, V1_16_0);
+        registerBlock(CRIMSON_STEM, BlockFungusStemCrimson.class, V1_16_0);
+        registerBlock(WARPED_STEM, BlockFungusStemWarped.class, V1_16_0);
+        registerBlock(WARPED_WART_BLOCK, BlockNetherWartBlockWarped.class, V1_16_0);
+        registerBlock(CRIMSON_FUNGUS, BlockNetherFungusCrimson.class, V1_16_0);
+        registerBlock(WARPED_FUNGUS, BlockNetherFungusWarped.class, V1_16_0);
+        registerBlock(SHROOMLIGHT, BlockShroomlight.class, V1_16_0);
+        registerBlock(WEEPING_VINES, BlockNetherVinesWeeping.class, V1_16_0);
+        registerBlock(CRIMSON_NYLIUM, BlockNyliumCrimson.class, V1_16_0);
+        registerBlock(WARPED_NYLIUM, BlockNyliumWarped.class, V1_16_0);
+        registerBlock(BASALT, BlockBasalt.class, V1_16_0);
+        registerBlock(POLISHED_BASALT, BlockBasaltPolished.class, V1_16_0);
+        registerBlock(SOUL_SOIL, BlockSoulSoil.class, V1_16_0);
+        registerBlock(SOUL_FIRE, BlockFireBlue.class, V1_16_0);
+        registerBlock(BLOCK_NETHER_SPROUTS, BlockNetherSprouts.class, V1_16_0);
+        registerBlock(TARGET, BlockTarget.class, V1_16_0);
+        registerBlock(STRIPPED_CRIMSON_STEM, BlockFungusStemStrippedCrimson.class, V1_16_0);
+        registerBlock(STRIPPED_WARPED_STEM, BlockFungusStemStrippedWarped.class, V1_16_0);
+        registerBlock(CRIMSON_PLANKS, BlockPlanksCrimson.class, V1_16_0);
+        registerBlock(WARPED_PLANKS, BlockPlanksWarped.class, V1_16_0);
+        registerBlock(BLOCK_CRIMSON_DOOR, BlockDoorCrimson.class, V1_16_0);
+        registerBlock(BLOCK_WARPED_DOOR, BlockDoorWarped.class, V1_16_0);
+        registerBlock(CRIMSON_TRAPDOOR, BlockTrapdoorCrimson.class, V1_16_0);
+        registerBlock(WARPED_TRAPDOOR, BlockTrapdoorWarped.class, V1_16_0);
+        registerBlock(CRIMSON_STANDING_SIGN, BlockSignPostCrimson.class, V1_16_0);
+        registerBlock(WARPED_STANDING_SIGN, BlockSignPostWarped.class, V1_16_0);
+        registerBlock(CRIMSON_WALL_SIGN, BlockWallSignCrimson.class, V1_16_0);
+        registerBlock(WARPED_WALL_SIGN, BlockWallSignWarped.class, V1_16_0);
+        registerBlock(CRIMSON_STAIRS, BlockStairsCrimson.class, V1_16_0);
+        registerBlock(WARPED_STAIRS, BlockStairsWarped.class, V1_16_0);
+        registerBlock(CRIMSON_FENCE, BlockFenceCrimson.class, V1_16_0);
+        registerBlock(WARPED_FENCE, BlockFenceWarped.class, V1_16_0);
+        registerBlock(CRIMSON_FENCE_GATE, BlockFenceGateCrimson.class, V1_16_0);
+        registerBlock(WARPED_FENCE_GATE, BlockFenceGateWarped.class, V1_16_0);
+        registerBlock(CRIMSON_BUTTON, BlockButtonCrimson.class, V1_16_0);
+        registerBlock(WARPED_BUTTON, BlockButtonWarped.class, V1_16_0);
+        registerBlock(CRIMSON_PRESSURE_PLATE, BlockPressurePlateCrimson.class, V1_16_0);
+        registerBlock(WARPED_PRESSURE_PLATE, BlockPressurePlateWarped.class, V1_16_0);
+        registerBlock(CRIMSON_SLAB, BlockSlabCrimson.class, V1_16_0);
+        registerBlock(WARPED_SLAB, BlockSlabWarped.class, V1_16_0);
+        registerBlock(CRIMSON_DOUBLE_SLAB, BlockDoubleSlabCrimson.class, V1_16_0);
+        registerBlock(WARPED_DOUBLE_SLAB, BlockDoubleSlabWarped.class, V1_16_0);
+        registerBlock(SOUL_TORCH, BlockTorchSoul.class, V1_16_0);
+        registerBlock(SOUL_LANTERN, BlockLanternSoul.class, V1_16_0);
+        registerBlock(NETHERITE_BLOCK, BlockNetherite.class, V1_16_0);
+        registerBlock(ANCIENT_DEBRIS, BlockAncientDebris.class, V1_16_0);
+        registerBlock(RESPAWN_ANCHOR, BlockRespawnAnchor.class, V1_16_0);
+        registerBlock(BLACKSTONE, BlockBlackstone.class, V1_16_0);
+        registerBlock(POLISHED_BLACKSTONE_BRICKS, BlockBricksBlackstonePolished.class, V1_16_0);
+        registerBlock(POLISHED_BLACKSTONE_BRICK_STAIRS, BlockStairsPolishedBlackstoneBrick.class, V1_16_0);
+        registerBlock(BLACKSTONE_STAIRS, BlockStairsBlackstone.class, V1_16_0);
+        registerBlock(BLACKSTONE_WALL, BlockWallBlackstone.class, V1_16_0);
+        registerBlock(POLISHED_BLACKSTONE_BRICK_WALL, BlockWallBlackstoneBrickPolished.class, V1_16_0);
+        registerBlock(CHISELED_POLISHED_BLACKSTONE, BlockBlackstonePolishedChiseled.class, V1_16_0);
+        registerBlock(CRACKED_POLISHED_BLACKSTONE_BRICKS, BlockBricksBlackstonePolishedCracked.class, V1_16_0);
+        registerBlock(GILDED_BLACKSTONE, BlockBlackstoneGilded.class, V1_16_0);
+        registerBlock(BLACKSTONE_SLAB, BlockSlabBlackstone.class, V1_16_0);
+        registerBlock(BLACKSTONE_DOUBLE_SLAB, BlockDoubleSlabBlackstone.class, V1_16_0);
+        registerBlock(POLISHED_BLACKSTONE_BRICK_SLAB, BlockSlabBlackstoneBrickPolished.class, V1_16_0);
+        registerBlock(POLISHED_BLACKSTONE_BRICK_DOUBLE_SLAB, BlockDoubleSlabBlackstoneBrickPolished.class, V1_16_0);
+        registerBlock(BLOCK_CHAIN, BlockChain.class, V1_16_0);
+        registerBlock(TWISTING_VINES, BlockNetherVinesTwisting.class, V1_16_0);
+        registerBlock(NETHER_GOLD_ORE, BlockOreGoldNether.class, V1_16_0);
+        registerBlock(CRYING_OBSIDIAN, BlockObsidianCrying.class, V1_16_0);
+        registerBlock(BLOCK_SOUL_CAMPFIRE, BlockCampfireSoul.class, V1_16_0);
+        registerBlock(POLISHED_BLACKSTONE, BlockBlackstonePolished.class, V1_16_0);
+        registerBlock(POLISHED_BLACKSTONE_STAIRS, BlockStairsPolishedBlackstone.class, V1_16_0);
+        registerBlock(POLISHED_BLACKSTONE_SLAB, BlockSlabBlackstonePolished.class, V1_16_0);
+        registerBlock(POLISHED_BLACKSTONE_DOUBLE_SLAB, BlockDoubleSlabBlackstonePolished.class, V1_16_0);
+        registerBlock(POLISHED_BLACKSTONE_PRESSURE_PLATE, BlockPressurePlateBlackstonePolished.class, V1_16_0);
+        registerBlock(POLISHED_BLACKSTONE_BUTTON, BlockButtonBlackstonePolished.class, V1_16_0);
+        registerBlock(POLISHED_BLACKSTONE_WALL, BlockWallBlackstonePolished.class, V1_16_0);
+        registerBlock(WARPED_HYPHAE, BlockHyphaeWarped.class, V1_16_0);
+        registerBlock(CRIMSON_HYPHAE, BlockHyphaeCrimson.class, V1_16_0);
+        registerBlock(STRIPPED_CRIMSON_HYPHAE, BlockHyphaeStrippedCrimson.class, V1_16_0);
+        registerBlock(STRIPPED_WARPED_HYPHAE, BlockHyphaeStrippedWarped.class, V1_16_0);
+        registerBlock(CHISELED_NETHER_BRICKS, BlockBricksNetherChiseled.class, V1_16_0);
+        registerBlock(CRACKED_NETHER_BRICKS, BlockBricksNetherCracked.class, V1_16_0);
+        registerBlock(QUARTZ_BRICKS, BlockBricksQuartz.class, V1_16_0);
+
+        registerBlock(UNKNOWN, BlockUnknownBlock.class, V1_16_100);
+/*
+        // powder_snow... 1.17.0
+
+        registerBlock(COPPER_ORE, BlockOreCopper.class, V1_17_0);
+        registerBlock(BLOCK_GLOW_FRAME, BlockItemFrameGlow.class, V1_17_0);
+
+        registerBlock(SMOOTH_BASALT, BlockBasaltSmooth.class, V1_17_0);
+
+        // ...infested_deepslate
+
+        // candle... 1.17.10
+        // ...black_candle_cake
+
+        registerBlock(CLIENT_REQUEST_PLACEHOLDER_BLOCK, BlockClientRequestPlaceholder.class, V1_17_40);
+
+        // sculk_sensor... 1.19.0
+        registerBlock(MANGROVE_LEAVES, BlockLeavesMangrove.class, V1_19_0);
+
+        registerBlock(MANGROVE_LOG, BlockLogMangrove.class, V1_19_0);
+        registerBlock(STRIPPED_MANGROVE_LOG, BlockLogStrippedMangrove.class, V1_19_0);
+        registerBlock(MANGROVE_PLANKS, BlockPlanksMangrove.class, V1_19_0);
+        registerBlock(MANGROVE_BUTTON, BlockButtonMangrove.class, V1_19_0);
+        registerBlock(MANGROVE_STAIRS, BlockStairsMangrove.class, V1_19_0);
+        registerBlock(MANGROVE_SLAB, BlockSlabMangrove.class, V1_19_0);
+        registerBlock(MANGROVE_PRESSURE_PLATE, BlockPressurePlateMangrove.class, V1_19_0);
+        registerBlock(MANGROVE_FENCE, BlockFenceMangrove.class, V1_19_0);
+        registerBlock(MANGROVE_FENCE_GATE, BlockFenceGateMangrove.class, V1_19_0);
+        registerBlock(BLOCK_MANGROVE_DOOR, BlockDoorMangrove.class, V1_19_0);
+        registerBlock(MANGROVE_STANDING_SIGN, BlockSignPostMangrove.class, V1_19_0);
+        registerBlock(MANGROVE_WALL_SIGN, BlockWallSignMangrove.class, V1_19_0);
+        registerBlock(MANGROVE_TRAPDOOR, BlockTrapdoorMangrove.class, V1_19_0);
+        registerBlock(MANGROVE_WOOD, BlockWoodMangrove.class, V1_19_0);
+        registerBlock(STRIPPED_MANGROVE_WOOD, BlockWoodStrippedMangrove.class, V1_19_0);
+        registerBlock(MANGROVE_DOUBLE_SLAB, BlockDoubleSlabMangrove.class, V1_19_0);
+*/
     }
 
     public static void registerElements() {

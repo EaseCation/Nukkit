@@ -1,5 +1,7 @@
 package cn.nukkit.block;
 
+import cn.nukkit.utils.BlockColor;
+
 public class BlockTrapdoorDarkOak extends BlockTrapdoor {
 
     public BlockTrapdoorDarkOak() {
@@ -18,5 +20,10 @@ public class BlockTrapdoorDarkOak extends BlockTrapdoor {
     @Override
     public String getName() {
         return "Dark Oak Trapdoor";
+    }
+
+    @Override
+    public BlockColor getColor() {
+        return BlockColor.BROWN_BLOCK_COLOR;
     }
 }

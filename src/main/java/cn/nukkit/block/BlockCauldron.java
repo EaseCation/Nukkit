@@ -513,6 +513,7 @@ public class BlockCauldron extends BlockTransparentMeta {
         return (BlockEntityCauldron) BlockEntity.createBlockEntity(BlockEntity.CAULDRON, getChunk(), nbt);
     }
 
+    @Nullable
     protected BlockEntityCauldron getBlockEntity() {
         if (level == null) {
             return null;

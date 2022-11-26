@@ -32,17 +32,22 @@ public class BlockSlabWood extends BlockSlab {
     }
 
     public BlockSlabWood(int meta) {
-        super(meta, DOUBLE_WOODEN_SLAB);
+        super(meta);
     }
 
     @Override
     public String getName() {
-        return (((this.getDamage() & TOP_SLOT_BIT) == TOP_SLOT_BIT) ? "Upper " : "") + NAMES[this.getDamage() & TYPE_MASK];
+        return (isTopSlot() ? "Upper " : "") + NAMES[this.getSlabType()];
     }
 
     @Override
     public int getId() {
         return WOODEN_SLAB;
+    }
+
+    @Override
+    public double getHardness() {
+        return 2;
     }
 
     @Override
@@ -67,7 +72,7 @@ public class BlockSlabWood extends BlockSlab {
 
     @Override
     public BlockColor getColor() {
-        switch (getDamage() & TYPE_MASK) {
+        switch (getSlabType()) {
             default:
             case OAK:
                 return BlockColor.WOOD_BLOCK_COLOR;
@@ -82,5 +87,10 @@ public class BlockSlabWood extends BlockSlab {
             case DARK_OAK:
                 return BlockColor.BROWN_BLOCK_COLOR;
         }
+    }
+
+    @Override
+    protected int getDoubleSlabBlockId() {
+        return DOUBLE_WOODEN_SLAB;
     }
 }

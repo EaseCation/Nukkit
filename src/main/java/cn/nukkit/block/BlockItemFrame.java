@@ -5,7 +5,6 @@ import cn.nukkit.blockentity.BlockEntity;
 import cn.nukkit.blockentity.BlockEntityType;
 import cn.nukkit.blockentity.BlockEntityItemFrame;
 import cn.nukkit.item.Item;
-import cn.nukkit.item.ItemItemFrame;
 import cn.nukkit.level.Level;
 import cn.nukkit.math.BlockFace;
 import cn.nukkit.nbt.tag.CompoundTag;
@@ -13,6 +12,7 @@ import cn.nukkit.nbt.tag.Tag;
 import cn.nukkit.network.protocol.LevelEventPacket;
 import cn.nukkit.utils.Faceable;
 
+import javax.annotation.Nullable;
 import java.util.concurrent.ThreadLocalRandom;
 
 /**
@@ -50,7 +50,7 @@ public class BlockItemFrame extends BlockTransparentMeta implements Faceable {
     public int onUpdate(int type) {
         if (type == Level.BLOCK_UPDATE_NORMAL) {
             Block block = getSide(getBlockFace().getOpposite());
-            if (block.canBeFlowedInto() || block instanceof BlockItemFrame) {
+            if (block.canBeFlowedInto() || block.isItemFrame()) {
                 this.level.useBreakOn(this);
                 return type;
             }
@@ -66,11 +66,11 @@ public class BlockItemFrame extends BlockTransparentMeta implements Faceable {
 
     @Override
     public boolean onActivate(Item item, BlockFace face, Player player) {
-        BlockEntity blockEntity = this.getLevel().getBlockEntity(this);
-        if (!(blockEntity instanceof BlockEntityItemFrame)) {
+        BlockEntityItemFrame itemFrame = getBlockEntity();
+        if (itemFrame == null) {
             return false;
         }
-        BlockEntityItemFrame itemFrame = (BlockEntityItemFrame) blockEntity;
+
         if (itemFrame.getItem().isNull()) {
             Item itemOnFrame = item.clone();
             if (player != null && player.isSurvival()) {
@@ -89,22 +89,11 @@ public class BlockItemFrame extends BlockTransparentMeta implements Faceable {
 
     @Override
     public boolean place(Item item, Block block, Block target, BlockFace face, double fx, double fy, double fz, Player player) {
-        if (!target.canBeFlowedInto() && !(target instanceof BlockItemFrame)) {
+        if (!target.canBeFlowedInto() && !target.isItemFrame()) {
             this.setDamage(face.getIndex());
             this.getLevel().setBlock(block, this, true, true);
 
-            CompoundTag nbt = BlockEntity.getDefaultCompound(this, BlockEntity.ITEM_FRAME)
-                    .putFloat("ItemRotation", 0)
-                    .putFloat("ItemDropChance", 1.0f);
-            if (item.hasCustomBlockData()) {
-                for (Tag aTag : item.getCustomBlockData().getAllTags()) {
-                    nbt.put(aTag.getName(), aTag);
-                }
-            }
-            BlockEntityItemFrame frame = (BlockEntityItemFrame) BlockEntity.createBlockEntity(BlockEntity.ITEM_FRAME, getChunk(), nbt);
-            if (frame == null) {
-                return false;
-            }
+            createBlockEntity(item);
             return true;
         }
         return false;
@@ -119,8 +108,7 @@ public class BlockItemFrame extends BlockTransparentMeta implements Faceable {
 
     @Override
     public Item[] getDrops(Item item) {
-        BlockEntity blockEntity = this.getLevel().getBlockEntity(this);
-        BlockEntityItemFrame itemFrame = (BlockEntityItemFrame) blockEntity;
+        BlockEntityItemFrame itemFrame = getBlockEntity();
         if (itemFrame != null && ThreadLocalRandom.current().nextFloat() <= itemFrame.getItemDropChance()) {
             return new Item[]{
                     toItem(true), itemFrame.getItem().clone()
@@ -134,7 +122,15 @@ public class BlockItemFrame extends BlockTransparentMeta implements Faceable {
 
     @Override
     public Item toItem(boolean addUserData) {
-        return new ItemItemFrame();
+        Item item = Item.get(Item.FRAME);
+        if (addUserData) {
+            BlockEntity blockEntity = getBlockEntity();
+            if (blockEntity != null) {
+                item.setCustomName(blockEntity.getName());
+                item.setRepairCost(blockEntity.getRepairCost());
+            }
+        }
+        return item;
     }
 
     @Override
@@ -149,18 +145,23 @@ public class BlockItemFrame extends BlockTransparentMeta implements Faceable {
 
     @Override
     public int getComparatorInputOverride() {
-        BlockEntity blockEntity = this.level.getBlockEntity(this);
+        BlockEntityItemFrame blockEntity = getBlockEntity();
 
-        if (blockEntity instanceof BlockEntityItemFrame) {
-            return ((BlockEntityItemFrame) blockEntity).getAnalogOutput();
+        if (blockEntity == null) {
+            return 0;
         }
 
-        return super.getComparatorInputOverride();
+        return blockEntity.getAnalogOutput();
     }
 
     @Override
     public double getHardness() {
         return 0.25;
+    }
+
+    @Override
+    public double getResistance() {
+        return 1.25;
     }
 
     @Override
@@ -191,5 +192,44 @@ public class BlockItemFrame extends BlockTransparentMeta implements Faceable {
     @Override
     public boolean canProvideSupport(BlockFace face, SupportType type) {
         return false;
+    }
+
+    @Override
+    public boolean isItemFrame() {
+        return true;
+    }
+
+    protected BlockEntityItemFrame createBlockEntity(@Nullable Item item) {
+        CompoundTag nbt = BlockEntity.getDefaultCompound(this, getBlockEntityId());
+
+        if (item != null) {
+            if (item.hasCustomName()) {
+                nbt.putString("CustomName", item.getCustomName());
+            }
+
+            if (item.hasCustomBlockData()) {
+                for (Tag tag : item.getCustomBlockData().getAllTags()) {
+                    nbt.put(tag.getName(), tag);
+                }
+            }
+        }
+
+        return (BlockEntityItemFrame) BlockEntity.createBlockEntity(getBlockEntityId(), getChunk(), nbt);
+    }
+
+    @Nullable
+    protected BlockEntityItemFrame getBlockEntity() {
+        if (level == null) {
+            return null;
+        }
+        BlockEntity blockEntity = level.getBlockEntity(this);
+        if (blockEntity instanceof BlockEntityItemFrame) {
+            return (BlockEntityItemFrame) blockEntity;
+        }
+        return null;
+    }
+
+    protected String getBlockEntityId() {
+        return BlockEntity.ITEM_FRAME;
     }
 }

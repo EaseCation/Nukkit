@@ -102,9 +102,9 @@ public class BlockLeaves extends BlockTransparentMeta {
             if (random.nextInt(20) == 0) {
                 if (random.nextBoolean()) {
                     return new Item[]{
-                            Item.get(Item.STICK, 0, random.nextInt(1, 2))
+                            Item.get(Item.STICK, 0, random.nextInt(1, 3))
                     };
-                } else if (getId() != LEAVES || this.getLeafType() != JUNGLE || random.nextInt(20) == 0) {
+                } else if (canDropSapling() && getId() != LEAVES || this.getLeafType() != JUNGLE || random.nextInt(20) == 0) {
                     return new Item[]{
                             this.getSapling()
                     };
@@ -229,6 +229,10 @@ public class BlockLeaves extends BlockTransparentMeta {
 
     protected boolean canDropApple() {
         return this.getLeafType() == OAK;
+    }
+
+    protected boolean canDropSapling() {
+        return true;
     }
 
     protected Item getSapling() {

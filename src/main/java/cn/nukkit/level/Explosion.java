@@ -1,6 +1,7 @@
 package cn.nukkit.level;
 
 import cn.nukkit.block.Block;
+import cn.nukkit.block.BlockFire;
 import cn.nukkit.block.BlockID;
 import cn.nukkit.block.BlockTNT;
 import cn.nukkit.block.Blocks;
@@ -9,6 +10,7 @@ import cn.nukkit.entity.Entity;
 import cn.nukkit.entity.item.EntityItem;
 import cn.nukkit.entity.item.EntityXPOrb;
 import cn.nukkit.event.block.BlockExplodeEvent;
+import cn.nukkit.event.block.BlockIgniteEvent.BlockIgniteCause;
 import cn.nukkit.event.block.BlockUpdateEvent;
 import cn.nukkit.event.entity.EntityDamageByBlockEvent;
 import cn.nukkit.event.entity.EntityDamageByEntityEvent;
@@ -198,6 +200,7 @@ public class Explosion {
         LongSet updateBlocks = new LongArraySet();
 
         boolean underwater = false;
+        boolean dealDamage = true;
         double yield = (1d / this.size) * 100d;
 
         if (this.what instanceof Entity) {
@@ -212,8 +215,9 @@ public class Explosion {
 
             Entity entity = (Entity) this.what;
             Block block = this.level.getBlock(entity);
-            if (block.isWater() || this.level.getExtraBlock(entity).isWater()) {
+            if (block.isWater() || !block.isAir() && block.canContainWater() && this.level.getExtraBlock(block).isWater()) {
                 underwater = true;
+                dealDamage = false;
             }
         } else if (this.what instanceof Block) {
             BlockExplodeEvent event = new BlockExplodeEvent((Block) this.what, this.affectedBlocks, yield, this.fire);
@@ -223,6 +227,11 @@ public class Explosion {
             }
             yield = event.getYield();
             this.fire = event.isOnFire();
+
+            Block block = (Block) this.what;
+            if (block.canContainWater() && this.level.getExtraBlock(block).isWater()) {
+                underwater = true;
+            }
         }
 
         double explosionSize = this.size * 2d;
@@ -242,7 +251,7 @@ public class Explosion {
                 Vector3 motion = entity.subtract(this.source).normalize();
                 int exposure = 1;
                 double impact = (1 - distance) * exposure;
-                int damage = !underwater || entity instanceof EntityXPOrb ? (int) (((impact * impact + impact) / 2) * 7 * explosionSize + 1) : 0;
+                int damage = dealDamage || entity instanceof EntityXPOrb ? (int) (((impact * impact + impact) / 2) * 7 * explosionSize + 1) : 0;
 
                 if (this.what instanceof Entity) {
                     entity.attack(new EntityDamageByEntityEvent((Entity) this.what, entity, DamageCause.ENTITY_EXPLOSION, damage));
@@ -376,14 +385,22 @@ public class Explosion {
         }
 
         if (this.fire) {
+            Block sourceBlock = null;
+            Entity sourceEntity = null;
+            if (what instanceof Block) {
+                sourceBlock = (Block) what;
+            } else if (what instanceof Entity) {
+                sourceEntity = (Entity) what;
+            }
+
             for (Block block : this.affectedBlocks) {
-                if (random.nextInt(3) == 0 && this.level.getBlock(block).isAir() && block.down().isSolid()) {
-                    this.level.setBlock(block, Block.get(BlockID.FIRE), true);
+                if (random.nextInt(3) == 0 && this.level.getBlock(block).isAir()) {
+                    BlockFire.tryIgnite(block, sourceBlock, sourceEntity, BlockIgniteCause.EXPLOSION);
                 }
             }
             for (Block block : this.affectedAirs) {
-                if (random.nextInt(3) == 0 && this.level.getBlock(block).isAir() && block.down().isSolid()) {
-                    this.level.setBlock(block, Block.get(BlockID.FIRE), true);
+                if (random.nextInt(3) == 0 && this.level.getBlock(block).isAir()) {
+                    BlockFire.tryIgnite(block, sourceBlock, sourceEntity, BlockIgniteCause.EXPLOSION);
                 }
             }
         }

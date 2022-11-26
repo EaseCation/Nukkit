@@ -66,7 +66,7 @@ public abstract class BlockWall extends BlockTransparentMeta {
     }
 
     public boolean canConnect(Block block, BlockFace face) {
-        return block.isWall() || block.isFenceGate() || SupportType.hasFullSupport(block, face);
+        return block.isWall() || block.isFenceGate() || block instanceof BlockThin || SupportType.hasFullSupport(block, face);
     }
 
     @Override

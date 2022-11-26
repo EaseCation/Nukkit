@@ -17,6 +17,7 @@ import cn.nukkit.math.Vector3;
 import cn.nukkit.network.protocol.LevelEventPacket;
 import cn.nukkit.utils.Faceable;
 
+import javax.annotation.Nullable;
 import java.util.Map.Entry;
 import java.util.Random;
 import java.util.concurrent.ThreadLocalRandom;
@@ -144,6 +145,7 @@ public class BlockDispenser extends BlockSolidMeta implements Faceable {
         BlockEntity.createBlockEntity(BlockEntity.DISPENSER, getChunk(), BlockEntity.getDefaultCompound(this, BlockEntity.DISPENSER));
     }
 
+    @Nullable
     protected InventoryHolder getBlockEntity() {
         if (level == null) {
             return null;

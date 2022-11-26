@@ -17,4 +17,6 @@ public class ItemCompass extends Item {
     public ItemCompass(Integer meta, int count) {
         super(COMPASS, meta, count, "Compass");
     }
+
+    //TODO: lodestone
 }

@@ -146,6 +146,7 @@ public class BlockCommand extends BlockSolidMeta implements Faceable {
         return (BlockEntityCommandBlock) BlockEntity.createBlockEntity(BlockEntity.COMMAND_BLOCK, getChunk(), nbt);
     }
 
+    @Nullable
     protected BlockEntityCommandBlock getBlockEntity() {
         if (level == null) {
             return null;

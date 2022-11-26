@@ -1,7 +1,6 @@
 package cn.nukkit.block;
 
 import cn.nukkit.item.Item;
-import cn.nukkit.item.ItemBlock;
 import cn.nukkit.item.ItemTool;
 import cn.nukkit.utils.BlockColor;
 
@@ -44,6 +43,11 @@ public class BlockDoubleSlabStone extends BlockDoubleSlab {
     }
 
     @Override
+    public double getHardness() {
+        return 2;
+    }
+
+    @Override
     public double getResistance() {
         return 30;
     }
@@ -55,19 +59,14 @@ public class BlockDoubleSlabStone extends BlockDoubleSlab {
 
     @Override
     public String getName() {
-        return NAMES[this.getDamage() & TYPE_MASK];
-    }
-
-    @Override
-    public Item toItem(boolean addUserData) {
-        return new ItemBlock(Block.get(BlockID.STONE_SLAB), this.getDamage() & TYPE_MASK);
+        return NAMES[this.getSlabType()];
     }
 
     @Override
     public Item[] getDrops(Item item) {
         if (item.isPickaxe() && item.getTier() >= ItemTool.TIER_WOODEN) {
             return new Item[]{
-                    Item.get(Item.STONE_SLAB, this.getDamage() & TYPE_MASK, 2)
+                    Item.get(getItemId(getSlabBlockId()), this.getSlabType(), 2)
             };
         } else {
             return new Item[0];
@@ -76,7 +75,7 @@ public class BlockDoubleSlabStone extends BlockDoubleSlab {
 
     @Override
     public BlockColor getColor() {
-        switch (this.getDamage() & TYPE_MASK) {
+        switch (this.getSlabType()) {
             default:
             case SMOOTH_STONE:
             case COBBLESTONE:
@@ -97,5 +96,10 @@ public class BlockDoubleSlabStone extends BlockDoubleSlab {
     @Override
     public boolean canHarvestWithHand() {
         return false;
+    }
+
+    @Override
+    protected int getSlabBlockId() {
+        return STONE_SLAB;
     }
 }

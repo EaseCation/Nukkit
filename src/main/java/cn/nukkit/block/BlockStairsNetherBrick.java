@@ -28,7 +28,7 @@ public class BlockStairsNetherBrick extends BlockStairs {
 
     @Override
     public double getResistance() {
-        return 10;
+        return 30;
     }
 
     @Override

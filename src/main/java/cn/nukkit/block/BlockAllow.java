@@ -40,6 +40,16 @@ public class BlockAllow extends BlockSolid {
 
     @Override
     public BlockColor getColor() {
-        return BlockColor.BROWN_BLOCK_COLOR;
+        return BlockColor.WOOD_BLOCK_COLOR;
+    }
+
+    @Override
+    public boolean canBePushed() {
+        return false;
+    }
+
+    @Override
+    public boolean canBePulled() {
+        return false;
     }
 }

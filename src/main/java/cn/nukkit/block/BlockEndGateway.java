@@ -113,6 +113,7 @@ public class BlockEndGateway extends BlockTransparent {
                 BlockEntity.getDefaultCompound(this, BlockEntity.END_GATEWAY));
     }
 
+    @Nullable
     protected BlockEntityEndGateway getBlockEntity() {
         if (level == null) {
             return null;

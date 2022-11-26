@@ -1,5 +1,6 @@
 package cn.nukkit.block;
 
+import cn.nukkit.GameVersion;
 import cn.nukkit.item.Item;
 import cn.nukkit.item.ItemTool;
 
@@ -8,7 +9,6 @@ import cn.nukkit.item.ItemTool;
  * Nukkit Project
  */
 public class BlockOreIron extends BlockSolid {
-
 
     public BlockOreIron() {
     }
@@ -25,7 +25,7 @@ public class BlockOreIron extends BlockSolid {
 
     @Override
     public double getResistance() {
-        return 5;
+        return 15;
     }
 
     @Override
@@ -41,8 +41,13 @@ public class BlockOreIron extends BlockSolid {
     @Override
     public Item[] getDrops(Item item) {
         if (item.isPickaxe() && item.getTier() >= ItemTool.TIER_STONE) {
+            if (GameVersion.V1_19_0.isAvailable()) { // V1_17_0
+                return new Item[]{
+                        Item.get(Item.RAW_IRON),
+                };
+            }
             return new Item[]{
-                    Item.get(IRON_ORE)
+                    toItem(true)
             };
         } else {
             return new Item[0];
@@ -52,5 +57,10 @@ public class BlockOreIron extends BlockSolid {
     @Override
     public boolean canHarvestWithHand() {
         return false;
+    }
+
+    @Override
+    public boolean canSilkTouch() {
+        return true;
     }
 }

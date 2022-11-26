@@ -33,7 +33,7 @@ public class BlockOreQuartz extends BlockSolid {
 
     @Override
     public double getResistance() {
-        return 5;
+        return 15;
     }
 
     @Override

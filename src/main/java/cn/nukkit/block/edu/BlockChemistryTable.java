@@ -112,6 +112,7 @@ public class BlockChemistryTable extends BlockSolidMeta {
         return (BlockEntityChemistryTable) BlockEntity.createBlockEntity(BlockEntity.CHEMISTRY_TABLE, getChunk(), nbt);
     }
 
+    @Nullable
     protected BlockEntityChemistryTable getBlockEntity() {
         if (level == null) {
             return null;

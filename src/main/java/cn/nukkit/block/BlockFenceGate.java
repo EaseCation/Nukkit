@@ -200,7 +200,7 @@ public class BlockFenceGate extends BlockTransparentMeta implements Faceable {
 
     @Override
     public Item toItem(boolean addUserData) {
-        return Item.get(Item.FENCE_GATE, 0, 1);
+        return Item.get(getItemId());
     }
 
     @Override
@@ -226,5 +226,15 @@ public class BlockFenceGate extends BlockTransparentMeta implements Faceable {
     @Override
     public boolean isFenceGate() {
         return true;
+    }
+
+    @Override
+    public int getBurnChance() {
+        return 5;
+    }
+
+    @Override
+    public int getBurnAbility() {
+        return 20;
     }
 }

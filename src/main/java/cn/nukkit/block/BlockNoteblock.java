@@ -13,6 +13,8 @@ import cn.nukkit.network.protocol.BlockEventPacket;
 import cn.nukkit.network.protocol.LevelSoundEventPacket;
 import cn.nukkit.utils.BlockColor;
 
+import javax.annotation.Nullable;
+
 /**
  * Created by Snake1999 on 2016/1/17.
  * Package cn.nukkit.block in project nukkit.
@@ -256,6 +258,7 @@ public class BlockNoteblock extends BlockSolid {
         return super.onUpdate(type);
     }
 
+    @Nullable
     private BlockEntityMusic getBlockEntity() {
         if (level == null) {
             return null;

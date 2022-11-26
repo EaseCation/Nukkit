@@ -1,0 +1,42 @@
+package cn.nukkit.block;
+
+import cn.nukkit.Player;
+import cn.nukkit.item.Item;
+import cn.nukkit.math.BlockFace;
+
+public abstract class BlockNetherRoots extends BlockFlower {
+    protected BlockNetherRoots() {
+        super(0);
+    }
+
+    @Override
+    public int getFullId() {
+        return getId() << BLOCK_META_BITS;
+    }
+
+    @Override
+    public void setDamage(int meta) {
+    }
+
+    @Override
+    public boolean canBeReplaced() {
+        return true;
+    }
+
+    @Override
+    public boolean canBeActivated() {
+        return false;
+    }
+
+    @Override
+    public boolean onActivate(Item item, BlockFace face, Player player) {
+        return false;
+    }
+
+    @Override
+    protected boolean canSurvive() {
+        int id = down().getId();
+        return id == GRASS || id == DIRT || id == FARMLAND || id == PODZOL || id == MYCELIUM
+                || id == CRIMSON_NYLIUM || id == WARPED_NYLIUM || id == SOUL_SOIL;
+    }
+}

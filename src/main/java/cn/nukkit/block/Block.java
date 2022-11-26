@@ -715,7 +715,7 @@ public abstract class Block extends Position implements Metadatable, Cloneable, 
         return meta <= metaMax[getId()];
     }
 
-    final public void position(Position v) {
+    public final void position(Position v) {
         this.x = (int) v.x;
         this.y = (int) v.y;
         this.z = (int) v.z;
@@ -1212,6 +1212,10 @@ public abstract class Block extends Position implements Metadatable, Cloneable, 
         return new ItemBlock(this, this.getDamage(), 1);
     }
 
+    public Item getSilkTouchResource() {
+        return toItem(true);
+    }
+
     public boolean canSilkTouch() {
         return false;
     }
@@ -1238,6 +1242,14 @@ public abstract class Block extends Position implements Metadatable, Cloneable, 
 
     public int getBlockEntityType() {
         return 0;
+    }
+
+    public boolean isFireResistant() {
+        return false;
+    }
+
+    public boolean isExplodable() {
+        return true;
     }
 
     public boolean isChemistryFeature() {
@@ -1335,6 +1347,10 @@ public abstract class Block extends Position implements Metadatable, Cloneable, 
         return false;
     }
 
+    public boolean isFence() {
+        return false;
+    }
+
     public boolean isDoor() {
         return false;
     }
@@ -1360,6 +1376,34 @@ public abstract class Block extends Position implements Metadatable, Cloneable, 
     }
 
     public boolean isHeavyBlock() {
+        return false;
+    }
+
+    public boolean isCampfire() {
+        return false;
+    }
+
+    public boolean isFire() {
+        return false;
+    }
+
+    public boolean isTorch() {
+        return false;
+    }
+
+    public boolean isSign() {
+        return false;
+    }
+
+    public boolean isStandingSign() {
+        return false;
+    }
+
+    public boolean isWallSign() {
+        return false;
+    }
+
+    public boolean isItemFrame() {
         return false;
     }
 }

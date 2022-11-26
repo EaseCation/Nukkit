@@ -50,7 +50,7 @@ public abstract class BlockFallable extends BlockSolid {
 
     protected boolean canSlide(Block below) {
         int id = below.getId();
-        return below.isAir() || below.isLiquid() || below instanceof BlockFire
+        return below.isAir() || below.isLiquid() || below.isFire()
                 || !SupportType.hasFullSupport(below, BlockFace.UP) && below.isVegetation() && !below.isLeaves()
                 && id != CACTUS && id != WATERLILY && id != CHORUS_FLOWER && id != CHORUS_PLANT && id != BAMBOO;
     }

@@ -129,6 +129,7 @@ public class BlockConduit extends BlockTransparent {
         return (BlockEntityConduit) BlockEntity.createBlockEntity(BlockEntity.CONDUIT, getChunk(), nbt);
     }
 
+    @Nullable
     protected BlockEntityConduit getBlockEntity() {
         if (level == null) {
             return null;

@@ -45,4 +45,14 @@ public class BlockWallSign extends BlockSignPost {
         }
         return 0;
     }
+
+    @Override
+    public boolean isStandingSign() {
+        return false;
+    }
+
+    @Override
+    public boolean isWallSign() {
+        return true;
+    }
 }

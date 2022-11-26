@@ -133,6 +133,7 @@ public class BlockDaylightDetector extends BlockTransparentMeta {
         return (BlockEntityDaylightDetector) BlockEntity.createBlockEntity(BlockEntity.DAYLIGHT_DETECTOR, getChunk(), nbt);
     }
 
+    @Nullable
     protected BlockEntityDaylightDetector getBlockEntity() {
         if (level == null) {
             return null;

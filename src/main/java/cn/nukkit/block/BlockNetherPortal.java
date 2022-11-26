@@ -64,7 +64,7 @@ public class BlockNetherPortal extends BlockTransparentMeta implements Faceable 
     @Override
     public boolean onBreak(Item item) {
         boolean result = super.onBreak(item);
-        for (BlockFace face : BlockFace.values()) {
+        for (BlockFace face : BlockFace.getValues()) {
             Block b = this.getSide(face);
             if (b != null) {
                 if (b instanceof BlockNetherPortal) {

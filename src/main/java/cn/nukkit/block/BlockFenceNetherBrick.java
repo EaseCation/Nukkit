@@ -12,11 +12,7 @@ import cn.nukkit.utils.BlockColor;
 public class BlockFenceNetherBrick extends BlockFence {
 
     public BlockFenceNetherBrick() {
-        this(0);
-    }
-
-    public BlockFenceNetherBrick(int meta) {
-        super(meta);
+        super(0);
     }
 
     @Override
@@ -41,7 +37,7 @@ public class BlockFenceNetherBrick extends BlockFence {
 
     @Override
     public double getResistance() {
-        return 10;
+        return 30;
     }
 
     @Override
@@ -57,7 +53,7 @@ public class BlockFenceNetherBrick extends BlockFence {
 
     @Override
     public boolean canConnect(Block block, BlockFace face) {
-        return block.getId() == NETHER_BRICK_FENCE || block instanceof BlockFenceGate || SupportType.hasFullSupport(block, face);
+        return block.getId() == NETHER_BRICK_FENCE || block.isFenceGate() || SupportType.hasFullSupport(block, face);
     }
 
     @Override
@@ -78,5 +74,14 @@ public class BlockFenceNetherBrick extends BlockFence {
     @Override
     public int getBurnAbility() {
         return 0;
+    }
+
+    @Override
+    public int getFullId() {
+        return getId() << BLOCK_META_BITS;
+    }
+
+    @Override
+    public void setDamage(int meta) {
     }
 }

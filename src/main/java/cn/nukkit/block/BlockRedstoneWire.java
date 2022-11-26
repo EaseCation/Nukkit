@@ -156,7 +156,7 @@ public class BlockRedstoneWire extends BlockFlowable {
     }
 
     private int getMaxCurrentStrength(Vector3 pos, int maxStrength) {
-        Block block = level.getBlock(this);
+        Block block = level.getBlock(pos);
         if (block.getId() != this.getId()) {
             return maxStrength;
         } else {
@@ -302,7 +302,7 @@ public class BlockRedstoneWire extends BlockFlowable {
     private int getIndirectPower() {
         int power = 0;
 
-        for (BlockFace face : BlockFace.values()) {
+        for (BlockFace face : BlockFace.getValues()) {
             int blockPower = this.getIndirectPower(this.getSideVec(face), face);
 
             if (blockPower >= 15) {

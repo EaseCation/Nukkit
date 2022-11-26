@@ -94,6 +94,9 @@ public class EntityFallingBlock extends Entity {
             return;
         }
 
+        this.fireProof = true;
+        this.setDataFlag(DATA_FLAGS, DATA_FLAG_FIRE_IMMUNE, true, false);
+
         this.dataProperties.putLong(DATA_NUKKIT_FLAGS, NUKKIT_FLAG_VARIANT_BLOCK); //HACK: multi-version handle
         setDataProperty(new IntEntityData(DATA_VARIANT, (this.getBlock() << Block.BLOCK_META_BITS) | this.getDamage()));
     }

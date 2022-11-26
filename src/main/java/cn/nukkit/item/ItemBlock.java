@@ -59,6 +59,16 @@ public class ItemBlock extends Item {
     }
 
     @Override
+    public boolean isFireResistant() {
+        return block.isFireResistant();
+    }
+
+    @Override
+    public boolean isExplodable() {
+        return block.isExplodable();
+    }
+
+    @Override
     public boolean isChemistryFeature() {
         return block.isChemistryFeature();
     }

@@ -2,6 +2,7 @@ package cn.nukkit.block;
 
 import cn.nukkit.item.Item;
 import cn.nukkit.item.ItemID;
+import cn.nukkit.utils.BlockColor;
 
 public class BlockWallSignJungle extends BlockWallSign {
 
@@ -26,6 +27,11 @@ public class BlockWallSignJungle extends BlockWallSign {
     @Override
     public Item toItem(boolean addUserData) {
         return Item.get(ItemID.JUNGLE_SIGN);
+    }
+
+    @Override
+    public BlockColor getColor() {
+        return BlockColor.DIRT_BLOCK_COLOR;
     }
 
     @Override

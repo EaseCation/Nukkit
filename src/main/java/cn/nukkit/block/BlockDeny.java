@@ -40,6 +40,16 @@ public class BlockDeny extends BlockSolid {
 
     @Override
     public BlockColor getColor() {
-        return BlockColor.GRAY_BLOCK_COLOR;
+        return BlockColor.STONE_BLOCK_COLOR;
+    }
+
+    @Override
+    public boolean canBePushed() {
+        return false;
+    }
+
+    @Override
+    public boolean canBePulled() {
+        return false;
     }
 }

@@ -2,6 +2,7 @@ package cn.nukkit.block;
 
 import cn.nukkit.item.Item;
 import cn.nukkit.item.ItemID;
+import cn.nukkit.utils.BlockColor;
 
 public class BlockSignPostAcacia extends BlockSignPost {
 
@@ -20,12 +21,17 @@ public class BlockSignPostAcacia extends BlockSignPost {
 
     @Override
     public String getName() {
-        return "Acacia Oak Sign";
+        return "Acacia Sign";
     }
 
     @Override
     public Item toItem(boolean addUserData) {
         return Item.get(ItemID.ACACIA_SIGN);
+    }
+
+    @Override
+    public BlockColor getColor() {
+        return BlockColor.ORANGE_BLOCK_COLOR;
     }
 
     @Override

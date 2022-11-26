@@ -33,4 +33,9 @@ public class ItemPickaxeNetherite extends ItemTool {
     public int getMaxDurability() {
         return ItemTool.DURABILITY_NETHERITE;
     }
+
+    @Override
+    public boolean isFireResistant() {
+        return true;
+    }
 }

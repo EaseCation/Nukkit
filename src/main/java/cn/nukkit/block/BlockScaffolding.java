@@ -119,6 +119,11 @@ public class BlockScaffolding extends BlockTransparentMeta { // extends BlockFal
     }
 
     @Override
+    public boolean canBeClimbed() {
+        return true;
+    }
+
+    @Override
     public boolean canContainWater() {
         return true;
     }

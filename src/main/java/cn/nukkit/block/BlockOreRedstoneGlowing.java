@@ -52,12 +52,7 @@ public class BlockOreRedstoneGlowing extends BlockOreRedstone {
     }
 
     @Override
-    public boolean canHarvestWithHand() {
-        return false;
-    }
-
-    @Override
-    public boolean canSilkTouch() {
-        return true;
+    public Item getSilkTouchResource() {
+        return Item.get(BlockID.REDSTONE_ORE);
     }
 }

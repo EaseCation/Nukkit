@@ -1,10 +1,6 @@
 package cn.nukkit.block;
 
-import cn.nukkit.item.Item;
-import cn.nukkit.item.ItemTool;
-import cn.nukkit.utils.BlockColor;
-
-public class BlockBricksRedNether extends BlockNetherBrick {
+public class BlockBricksRedNether extends BlockBricksNether {
 
     public BlockBricksRedNether() {
     }
@@ -17,21 +13,5 @@ public class BlockBricksRedNether extends BlockNetherBrick {
     @Override
     public int getId() {
         return RED_NETHER_BRICK;
-    }
-
-    @Override
-    public Item[] getDrops(Item item) {
-        if (item.isPickaxe() && item.getTier() >= ItemTool.TIER_WOODEN) {
-            return new Item[]{
-                    Item.get(Item.RED_NETHER_BRICK, 0, 1)
-            };
-        } else {
-            return new Item[0];
-        }
-    }
-
-    @Override
-    public BlockColor getColor() {
-        return BlockColor.NETHER_BLOCK_COLOR;
     }
 }

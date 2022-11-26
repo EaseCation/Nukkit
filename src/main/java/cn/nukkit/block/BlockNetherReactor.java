@@ -95,6 +95,7 @@ public class BlockNetherReactor extends BlockSolid {
         return (BlockEntityNetherReactor) BlockEntity.createBlockEntity(BlockEntity.NETHER_REACTOR, getChunk(), nbt);
     }
 
+    @Nullable
     protected BlockEntityNetherReactor getBlockEntity() {
         if (level == null) {
             return null;

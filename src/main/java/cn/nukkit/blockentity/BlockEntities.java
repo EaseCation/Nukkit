@@ -57,7 +57,7 @@ public final class BlockEntities {
 
         registerBlockEntity(BlockEntityType.BEEHIVE, BEEHIVE, BlockEntityBeehive.class, V1_14_0);
 
-//        registerBlockEntity(BlockEntityType.LODESTONE, LODESTONE, BlockEntityLodestone.class, V1_16_0);
+        registerBlockEntity(BlockEntityType.LODESTONE, LODESTONE, BlockEntityLodestone.class, V1_16_0);
 
         registerBlockEntity(BlockEntityType.GLOW_ITEM_FRAME, GLOW_ITEM_FRAME, BlockEntityGlowItemFrame.class, V1_17_0);
 

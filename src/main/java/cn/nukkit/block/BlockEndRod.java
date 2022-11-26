@@ -4,7 +4,9 @@ import cn.nukkit.Player;
 import cn.nukkit.item.Item;
 import cn.nukkit.item.ItemBlock;
 import cn.nukkit.item.ItemTool;
+import cn.nukkit.math.AxisAlignedBB;
 import cn.nukkit.math.BlockFace;
+import cn.nukkit.math.SimpleAxisAlignedBB;
 import cn.nukkit.utils.BlockColor;
 import cn.nukkit.utils.Faceable;
 
@@ -56,23 +58,16 @@ public class BlockEndRod extends BlockTransparentMeta implements Faceable {
     }
 
     @Override
-    public double getMinX() {
-        return this.x + 0.4;
-    }
-
-    @Override
-    public double getMinZ() {
-        return this.z + 0.4;
-    }
-
-    @Override
-    public double getMaxX() {
-        return this.x + 0.6;
-    }
-
-    @Override
-    public double getMaxZ() {
-        return this.z + 0.6;
+    protected AxisAlignedBB recalculateBoundingBox() {
+        switch (getBlockFace().getAxis()) {
+            default:
+            case Y:
+                return new SimpleAxisAlignedBB(this.x + 6.0 / 16, this.y, this.z + 6.0 / 16, this.x + 1 - 6.0 / 16, this.y + 1, this.z + 1 - 6.0 / 16);
+            case X:
+                return new SimpleAxisAlignedBB(this.x, this.y + 6.0 / 16, this.z + 6.0 / 16, this.x + 1, this.y + 1 - 6.0 / 16, this.z + 1 - 6.0 / 16);
+            case Z:
+                return new SimpleAxisAlignedBB(this.x + 6.0 / 16, this.y + 6.0 / 16, this.z, this.x + 1 - 6.0 / 16, this.y + 1 - 6.0 / 16, this.z + 1);
+        }
     }
 
     @Override

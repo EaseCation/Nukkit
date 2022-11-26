@@ -80,7 +80,7 @@ public class BlockRedstoneTorchUnlit extends BlockTorch {
         if (!this.level.isSidePowered(this.getSideVec(face), face)) {
             this.level.setBlock(this, Block.get(BlockID.REDSTONE_TORCH, getDamage()), false, true);
 
-            for (BlockFace side : BlockFace.values()) {
+            for (BlockFace side : BlockFace.getValues()) {
                 if (side == face) {
                     continue;
                 }

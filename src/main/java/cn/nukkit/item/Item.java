@@ -1284,6 +1284,14 @@ public class Item implements Cloneable, ItemID {
         return (int) hash & 0x7f;
     }
 
+    public boolean isFireResistant() {
+        return false;
+    }
+
+    public boolean isExplodable() {
+        return true;
+    }
+
     public boolean isChemistryFeature() {
         return false;
     }

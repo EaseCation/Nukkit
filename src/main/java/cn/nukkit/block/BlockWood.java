@@ -109,6 +109,7 @@ public class BlockWood extends BlockSolidMeta {
                 return BlockColor.DIRT_BLOCK_COLOR;
         }
     }
+
     @Override
     public boolean canBeActivated() {
         return true;
@@ -135,15 +136,15 @@ public class BlockWood extends BlockSolidMeta {
 
         switch (meta & PILLAR_AXIS_MASK) {
             case PILLAR_X_AXIS_BIT:
-                meta = BlockWoodStripped.PILLAR_X_AXIS;
+                meta = BlockLogStripped.PILLAR_AXIS_X;
                 break;
             case PILLAR_Z_AXIS_BIT:
-                meta = BlockWoodStripped.PILLAR_Z_AXIS;
+                meta = BlockLogStripped.PILLAR_AXIS_Z;
                 break;
             case PILLAR_AXIS_MASK:
                 return get(WOOD, getWoodMeta());
             default:
-                meta = BlockWoodStripped.PILLAR_Y_AXIS;
+                meta = BlockLogStripped.PILLAR_AXIS_Y;
                 break;
         }
 

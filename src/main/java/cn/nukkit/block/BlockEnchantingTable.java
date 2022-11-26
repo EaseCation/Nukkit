@@ -174,6 +174,7 @@ public class BlockEnchantingTable extends BlockTransparent {
         return (BlockEntityEnchantTable) BlockEntity.createBlockEntity(BlockEntity.ENCHANT_TABLE, getChunk(), nbt);
     }
 
+    @Nullable
     protected BlockEntityEnchantTable getBlockEntity() {
         if (level == null) {
             return null;

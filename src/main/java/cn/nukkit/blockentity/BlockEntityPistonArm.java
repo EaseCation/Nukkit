@@ -3,6 +3,7 @@ package cn.nukkit.blockentity;
 import cn.nukkit.Player;
 import cn.nukkit.block.Block;
 import cn.nukkit.block.BlockID;
+import cn.nukkit.block.BlockPistonHead;
 import cn.nukkit.block.Blocks;
 import cn.nukkit.entity.Entity;
 import cn.nukkit.level.format.FullChunk;
@@ -196,7 +197,7 @@ public class BlockEntityPistonArm extends BlockEntitySpawnable {
             }
 
             Vector3 pos = getSide(facing);
-            if (!extending && this.level.getBlock(pos).getId() == BlockID.PISTON_ARM_COLLISION) {
+            if (!extending && this.level.getBlock(pos) instanceof BlockPistonHead) {
                 this.level.setExtraBlock(pos, Blocks.air(), true, false);
                 this.level.setBlock(pos, Block.get(Block.AIR), true);
                 this.movable = true;

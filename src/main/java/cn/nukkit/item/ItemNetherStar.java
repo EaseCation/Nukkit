@@ -13,4 +13,14 @@ public class ItemNetherStar extends Item {
     public ItemNetherStar(Integer meta, int count) {
         super(NETHER_STAR, 0, count, "Nether Star");
     }
+
+    @Override
+    public boolean isFireResistant() {
+        return true;
+    }
+
+    @Override
+    public boolean isExplodable() {
+        return false;
+    }
 }

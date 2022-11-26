@@ -116,6 +116,7 @@ public class BlockEndPortal extends BlockTransparent {
                 BlockEntity.getDefaultCompound(this, BlockEntity.END_PORTAL));
     }
 
+    @Nullable
     protected BlockEntityEndPortal getBlockEntity() {
         if (level == null) {
             return null;

@@ -1,14 +1,11 @@
 package cn.nukkit.block;
 
-import cn.nukkit.item.Item;
-import cn.nukkit.item.ItemBlock;
-import cn.nukkit.item.ItemTool;
 import cn.nukkit.utils.BlockColor;
 
 /**
  * Created by CreeperFace on 26. 11. 2016.
  */
-public class BlockDoubleSlabRedSandstone extends BlockDoubleSlab {
+public class BlockDoubleSlabRedSandstone extends BlockDoubleSlabStone {
 
     public static final int RED_SANDSTONE = 0;
     public static final int PURPUR = 1;
@@ -44,44 +41,13 @@ public class BlockDoubleSlabRedSandstone extends BlockDoubleSlab {
     }
 
     @Override
-    public double getResistance() {
-        return 30;
-    }
-
-    @Override
-    public int getToolType() {
-        return ItemTool.TYPE_PICKAXE;
-    }
-
-    @Override
     public String getName() {
-        return NAMES[this.getDamage() & TYPE_MASK];
-    }
-
-    @Override
-    public Item toItem(boolean addUserData) {
-        return new ItemBlock(Block.get(BlockID.STONE_SLAB2), this.getDamage() & TYPE_MASK);
-    }
-
-    @Override
-    public Item[] getDrops(Item item) {
-        if (item.isPickaxe() && item.getTier() >= ItemTool.TIER_WOODEN) {
-            return new Item[]{
-                    Item.get(Item.STONE_SLAB2, this.getDamage() & TYPE_MASK, 2)
-            };
-        } else {
-            return new Item[0];
-        }
-    }
-
-    @Override
-    public boolean canHarvestWithHand() {
-        return false;
+        return NAMES[this.getSlabType()];
     }
 
     @Override
     public BlockColor getColor() {
-        switch (this.getDamage() & TYPE_MASK) {
+        switch (this.getSlabType()) {
             default:
             case RED_SANDSTONE:
                 return BlockColor.ORANGE_BLOCK_COLOR;
@@ -99,5 +65,10 @@ public class BlockDoubleSlabRedSandstone extends BlockDoubleSlab {
             case RED_NETHER_BRICK:
                 return BlockColor.NETHER_BLOCK_COLOR;
         }
+    }
+
+    @Override
+    protected int getSlabBlockId() {
+        return STONE_SLAB2;
     }
 }

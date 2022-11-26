@@ -149,6 +149,7 @@ public class BlockBarrel extends BlockSolidMeta implements Faceable {
         return (BlockEntityBarrel) BlockEntity.createBlockEntity(BlockEntity.BARREL, getChunk(), nbt);
     }
 
+    @Nullable
     protected BlockEntityBarrel getBlockEntity() {
         if (level == null) {
             return null;

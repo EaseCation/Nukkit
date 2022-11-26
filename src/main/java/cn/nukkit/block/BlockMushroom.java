@@ -93,11 +93,6 @@ public abstract class BlockMushroom extends BlockFlowable {
     }
 
     @Override
-    public boolean canSilkTouch() {
-        return true;
-    }
-
-    @Override
     public boolean canContainSnow() {
         return true;
     }

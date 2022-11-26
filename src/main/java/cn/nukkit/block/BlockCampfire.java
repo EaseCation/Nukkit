@@ -6,9 +6,12 @@ import cn.nukkit.blockentity.BlockEntityCampfire;
 import cn.nukkit.blockentity.BlockEntityType;
 import cn.nukkit.entity.Entity;
 import cn.nukkit.entity.EntityLiving;
+import cn.nukkit.event.block.BlockIgniteEvent;
+import cn.nukkit.event.block.BlockIgniteEvent.BlockIgniteCause;
 import cn.nukkit.event.entity.EntityCombustByBlockEvent;
 import cn.nukkit.event.entity.EntityDamageByBlockEvent;
 import cn.nukkit.event.entity.EntityDamageEvent.DamageCause;
+import cn.nukkit.inventory.RecipeTag;
 import cn.nukkit.item.Item;
 import cn.nukkit.item.ItemID;
 import cn.nukkit.item.ItemTool;
@@ -239,7 +242,7 @@ public class BlockCampfire extends BlockTransparentMeta implements Faceable {
             }
         }
 
-        if (!blockEntity.tryAddItem(item)) {
+        if (!blockEntity.tryAddItem(item, getRecipeTag())) {
             return false;
         }
 
@@ -323,6 +326,7 @@ public class BlockCampfire extends BlockTransparentMeta implements Faceable {
         return (BlockEntityCampfire) BlockEntity.createBlockEntity(BlockEntity.CAMPFIRE, getChunk(), nbt);
     }
 
+    @Nullable
     protected BlockEntityCampfire getBlockEntity() {
         if (level == null) {
             return null;
@@ -371,5 +375,28 @@ public class BlockCampfire extends BlockTransparentMeta implements Faceable {
 
         setExtinguished(true);
         return level.setBlock(this, this, true);
+    }
+
+    @Override
+    public boolean isCampfire() {
+        return true;
+    }
+
+    public boolean tryLightFire(@Nullable Block sourceBlock, @Nullable Entity sourceEntity, BlockIgniteCause cause) {
+        if (!isExtinguished()) {
+            return false;
+        }
+
+        BlockIgniteEvent event = new BlockIgniteEvent(this, sourceBlock, sourceEntity, cause);
+        level.getServer().getPluginManager().callEvent(event);
+        if (event.isCancelled()) {
+            return false;
+        }
+
+        return tryLightFire();
+    }
+
+    protected RecipeTag getRecipeTag() {
+        return RecipeTag.CAMPFIRE;
     }
 }

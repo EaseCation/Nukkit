@@ -35,6 +35,11 @@ public class BlockBricksEndStone extends BlockSolid {
     }
 
     @Override
+    public boolean canHarvestWithHand() {
+        return false;
+    }
+
+    @Override
     public Item[] getDrops(Item item) {
         if (item.isPickaxe() && item.getTier() >= ItemTool.TIER_WOODEN) {
             return new Item[]{

@@ -1,16 +1,11 @@
 package cn.nukkit.block;
 
-import cn.nukkit.item.Item;
-import cn.nukkit.item.ItemBlock;
-import cn.nukkit.item.ItemTool;
 import cn.nukkit.utils.BlockColor;
-
-import java.util.concurrent.ThreadLocalRandom;
 
 /**
  * Created by Pub4Game on 28.01.2016.
  */
-public class BlockHugeMushroomRed extends BlockSolidMeta {
+public class BlockHugeMushroomRed extends BlockHugeMushroom {
 
     public BlockHugeMushroomRed() {
         this(0);
@@ -31,43 +26,12 @@ public class BlockHugeMushroomRed extends BlockSolidMeta {
     }
 
     @Override
-    public int getToolType() {
-        return ItemTool.TYPE_AXE;
-    }
-
-    @Override
-    public double getHardness() {
-        return 0.2;
-    }
-
-    @Override
-    public double getResistance() {
-        return 1;
-    }
-
-    @Override
-    public Item[] getDrops(Item item) {
-        int count = ThreadLocalRandom.current().nextInt(-7, 3);
-        if (count <= 0) {
-            return new Item[0];
-        }
-        return new Item[]{
-                new ItemBlock(Block.get(BlockID.RED_MUSHROOM), 0, count),
-        };
-    }
-
-    @Override
-    public boolean canSilkTouch() {
-        return true;
-    }
-
-    @Override
     public BlockColor getColor() {
         return BlockColor.RED_BLOCK_COLOR;
     }
 
     @Override
-    public boolean isVegetation() {
-        return true;
+    protected int getSmallMushroomId() {
+        return RED_MUSHROOM;
     }
 }

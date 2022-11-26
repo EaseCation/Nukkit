@@ -123,4 +123,9 @@ public class BlockTorch extends BlockFlowable implements Faceable {
         return face == BlockFace.UP && SupportType.hasCenterSupport(support, BlockFace.UP)
                 || face != BlockFace.DOWN && SupportType.hasFullSupport(support, face);
     }
+
+    @Override
+    public boolean isTorch() {
+        return true;
+    }
 }

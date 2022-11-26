@@ -76,7 +76,9 @@ public class BlockBed extends BlockTransparentMeta implements Faceable {
             }
 
             Explosion explosion = new Explosion(this.add(0.5, 0.5, 0.5), 5, this, true);
-            explosion.explodeA();
+            if (!level.getExtraBlock(this).isWater()) { //TODO: check head block only
+                explosion.explodeA();
+            }
             explosion.explodeB();
             return true;
         }

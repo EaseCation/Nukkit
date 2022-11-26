@@ -2,6 +2,8 @@ package cn.nukkit.entity.item;
 
 import cn.nukkit.Player;
 import cn.nukkit.Server;
+import cn.nukkit.block.Block;
+import cn.nukkit.block.BlockLiquid;
 import cn.nukkit.entity.Entity;
 import cn.nukkit.event.entity.EntityDamageEvent;
 import cn.nukkit.event.entity.EntityDamageEvent.DamageCause;
@@ -102,7 +104,12 @@ public class EntityItem extends Entity {
         }
 
         this.item = NBTIO.getItemHelper(this.namedTag.getCompound("Item"));
-        this.setDataFlag(DATA_FLAGS, DATA_FLAG_IMMOBILE, true);
+        this.setDataFlag(DATA_FLAGS, DATA_FLAG_IMMOBILE, true, false);
+
+        if (item != null && item.isFireResistant()) {
+            fireProof = true;
+            setDataFlag(DATA_FLAGS, DATA_FLAG_FIRE_IMMUNE, true, false);
+        }
 
         this.server.getPluginManager().callEvent(new ItemSpawnEvent(this));
     }
@@ -110,9 +117,26 @@ public class EntityItem extends Entity {
     @Override
     public boolean attack(EntityDamageEvent source) {
         DamageCause cause = source.getCause();
-        if ((cause == DamageCause.VOID || cause == DamageCause.CONTACT || cause == DamageCause.FIRE_TICK
-                || (cause == DamageCause.ENTITY_EXPLOSION || cause == DamageCause.BLOCK_EXPLOSION) && !this.isInsideOfWater()
-                && (this.item == null || this.item.getId() != Item.NETHER_STAR)) && super.attack(source)) {
+        switch (cause) {
+            case FIRE_TICK:
+                if (item != null && item.isFireResistant()) {
+                    return false;
+                }
+                break;
+            case ENTITY_EXPLOSION:
+            case BLOCK_EXPLOSION:
+                if (item != null && !item.isExplodable() || isInsideOfWater()) {
+                    return false;
+                }
+                break;
+            case VOID:
+            case CONTACT:
+                break;
+            default:
+                return false;
+        }
+
+        if (super.attack(source)) {
             if (this.item == null || this.isAlive()) {
                 return true;
             }
@@ -209,13 +233,7 @@ public class EntityItem extends Entity {
                 }
             }
 
-            if (this.level.getBlockIdAt(0, (int) this.x, (int) this.boundingBox.getMaxY(), (int) this.z) == 8 || this.level.getBlockIdAt(0, (int) this.x, (int) this.boundingBox.getMaxY(), (int) this.z) == 9) { //item is fully in water or in still water
-                this.motionY -= this.getGravity() * -0.015;
-            } else if (this.isInsideOfWater()) {
-                this.motionY = this.getGravity() - 0.06; //item is going up in water, don't let it go back down too fast
-            } else {
-                this.motionY -= this.getGravity(); //item is not in water
-            }
+            updateLiquidMovement();
 
             if (this.checkObstruction(this.x, this.y, this.z)) {
                 hasUpdate = true;
@@ -254,6 +272,30 @@ public class EntityItem extends Entity {
         this.timing.stopTiming();
 
         return hasUpdate || this.age <= 60 || !this.onGround || Math.abs(this.motionX) > 0.00001 || Math.abs(this.motionY) > 0.00001 || Math.abs(this.motionZ) > 0.00001;
+    }
+
+    private void updateLiquidMovement() {
+        double y = this.y + getEyeHeight();
+
+        Block block = level.getBlock((int) x, (int) boundingBox.getMaxY(), (int) z);
+        if (block.isLiquidSource()) {
+            //item is fully in liquid
+            motionY -= getGravity() * -0.015;
+            return;
+        }
+
+        Block floor = getLevelBlock();
+        if (floor.isLiquidSource() || (floor = level.getExtraBlock(floor)).isWaterSource()) {
+            double height = floor.y + 1 - ((BlockLiquid) floor).getFluidHeightPercent() - 0.1111111;
+            if (y < height) {
+                //item is going up in liquid, don't let it go back down too fast
+                motionY = getGravity() - 0.06;
+                return;
+            }
+        }
+
+        //item is not in liquid
+        motionY -= getGravity();
     }
 
     @Override

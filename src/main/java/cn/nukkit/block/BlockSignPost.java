@@ -136,7 +136,7 @@ public class BlockSignPost extends BlockTransparentMeta implements Faceable {
 
     @Override
     public BlockColor getColor() {
-        return BlockColor.AIR_BLOCK_COLOR;
+        return BlockColor.WOOD_BLOCK_COLOR;
     }
 
     @Override
@@ -241,5 +241,15 @@ public class BlockSignPost extends BlockTransparentMeta implements Faceable {
 
     protected int getWallBlockId() {
         return WALL_SIGN;
+    }
+
+    @Override
+    public boolean isSign() {
+        return true;
+    }
+
+    @Override
+    public boolean isStandingSign() {
+        return true;
     }
 }

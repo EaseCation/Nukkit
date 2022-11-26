@@ -147,7 +147,7 @@ public class BlockFlower extends BlockFlowable {
         return true;
     }
 
-    private boolean canSurvive() {
+    protected boolean canSurvive() {
         int id = down().getId();
         return id == Block.GRASS || id == Block.DIRT || id == Block.FARMLAND || id == Block.PODZOL || id == MYCELIUM;
     }

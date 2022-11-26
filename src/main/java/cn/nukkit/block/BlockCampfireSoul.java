@@ -1,0 +1,56 @@
+package cn.nukkit.block;
+
+import cn.nukkit.blockentity.BlockEntityCampfire;
+import cn.nukkit.inventory.RecipeTag;
+import cn.nukkit.item.Item;
+import cn.nukkit.item.ItemID;
+
+public class BlockCampfireSoul extends BlockCampfire {
+    public BlockCampfireSoul() {
+        this(0);
+    }
+
+    public BlockCampfireSoul(int meta) {
+        super(meta);
+    }
+
+    @Override
+    public int getId() {
+        return BLOCK_SOUL_CAMPFIRE;
+    }
+
+    @Override
+    public String getName() {
+        return "Soul Campfire";
+    }
+
+    @Override
+    public int getLightLevel() {
+        return isExtinguished() ? 0 : 10;
+    }
+
+    @Override
+    public Item toItem(boolean addUserData) {
+        Item item = Item.get(ItemID.SOUL_CAMPFIRE);
+        if (addUserData) {
+            BlockEntityCampfire blockEntity = getBlockEntity();
+            if (blockEntity != null) {
+                item.setCustomName(blockEntity.getName());
+                item.setRepairCost(blockEntity.getRepairCost());
+            }
+        }
+        return item;
+    }
+
+    @Override
+    public Item[] getDrops(Item item) {
+        return new Item[]{
+                Item.get(ItemID.SOUL_SOIL),
+        };
+    }
+
+    @Override
+    protected RecipeTag getRecipeTag() {
+        return RecipeTag.SOUL_CAMPFIRE;
+    }
+}

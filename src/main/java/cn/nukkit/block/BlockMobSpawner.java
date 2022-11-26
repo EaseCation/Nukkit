@@ -137,6 +137,7 @@ public class BlockMobSpawner extends BlockSolid {
         return (BlockEntityMobSpawner) BlockEntity.createBlockEntity(BlockEntity.MOB_SPAWNER, getChunk(), nbt);
     }
 
+    @Nullable
     protected BlockEntityMobSpawner getBlockEntity() {
         if (level == null) {
             return null;

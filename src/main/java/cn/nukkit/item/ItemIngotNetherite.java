@@ -13,4 +13,9 @@ public class ItemIngotNetherite extends Item {
     public ItemIngotNetherite(Integer meta, int count) {
         super(NETHERITE_INGOT, 0, count, "Netherite Ingot");
     }
+
+    @Override
+    public boolean isFireResistant() {
+        return true;
+    }
 }

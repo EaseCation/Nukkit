@@ -150,6 +150,10 @@ public class Level implements ChunkManager, Metadatable {
         randomTickBlocks[Block.BAMBOO] = true;
         randomTickBlocks[Block.BAMBOO_SAPLING] = true;
         randomTickBlocks[Block.SWEET_BERRY_BUSH] = true;
+        randomTickBlocks[Block.CRIMSON_NYLIUM] = true;
+        randomTickBlocks[Block.WARPED_NYLIUM] = true;
+        randomTickBlocks[Block.WEEPING_VINES] = true;
+        randomTickBlocks[Block.TWISTING_VINES] = true;
     }
 
     private final Long2ObjectOpenHashMap<BlockEntity> blockEntities = new Long2ObjectOpenHashMap<>();
@@ -2332,7 +2336,7 @@ public class Level implements ChunkManager, Metadatable {
             if (!player.isSurvival()) {
                 eventDrops = new Item[0];
             } else if (isSilkTouch && target.canSilkTouch()) {
-                eventDrops = new Item[]{target.toItem(true)};
+                eventDrops = new Item[]{target.getSilkTouchResource()};
             } else {
                 eventDrops = target.getDrops(item);
             }
@@ -2367,7 +2371,7 @@ public class Level implements ChunkManager, Metadatable {
         } else if (!target.isBreakable(item)) {
             return null;
         } else if (isSilkTouch && target.canSilkTouch()) {
-            drops = new Item[]{target.toItem(true)};
+            drops = new Item[]{target.getSilkTouchResource()};
         } else {
             drops = target.getDrops(item);
         }

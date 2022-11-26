@@ -1,7 +1,6 @@
 package cn.nukkit.block;
 
 import cn.nukkit.item.Item;
-import cn.nukkit.item.ItemBlock;
 import cn.nukkit.item.ItemTool;
 import cn.nukkit.utils.BlockColor;
 
@@ -25,17 +24,12 @@ public class BlockStairsWood extends BlockStairs {
 
     @Override
     public String getName() {
-        return "Wood Stairs";
+        return "Oak Stairs";
     }
 
     @Override
     public int getToolType() {
         return ItemTool.TYPE_AXE;
-    }
-
-    @Override
-    public Item toItem(boolean addUserData) {
-        return new ItemBlock(this, 0);
     }
 
     @Override

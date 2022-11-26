@@ -18,4 +18,6 @@ public class ItemCompassLodestone extends Item {
     public int getMaxStackSize() {
         return 1;
     }
+
+    //TODO: lodestone
 }

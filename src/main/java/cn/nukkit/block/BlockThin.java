@@ -62,7 +62,7 @@ public abstract class BlockThin extends BlockTransparent {
     }
 
     public boolean canConnect(Block block, BlockFace face) {
-        return block instanceof BlockThin || SupportType.hasFullSupport(block, face);
+        return block instanceof BlockThin || block.isWall() || SupportType.hasFullSupport(block, face);
     }
 
 }

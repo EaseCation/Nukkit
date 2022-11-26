@@ -57,9 +57,7 @@ public abstract class BlockStairs extends BlockTransparentMeta implements Faceab
 
     @Override
     public Item toItem(boolean addUserData) {
-        Item item = super.toItem(addUserData);
-        item.setDamage(0);
-        return item;
+        return Item.get(getItemId());
     }
 
     @Override

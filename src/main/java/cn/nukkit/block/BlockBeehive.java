@@ -135,6 +135,7 @@ public class BlockBeehive extends BlockSolidMeta implements Faceable {
         return (BlockEntityBeehive) BlockEntity.createBlockEntity(BlockEntity.BEEHIVE, getChunk(), nbt);
     }
 
+    @Nullable
     protected BlockEntityBeehive getBlockEntity() {
         if (level == null) {
             return null;

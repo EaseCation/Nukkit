@@ -35,14 +35,19 @@ public class BlockBricksNether extends BlockSolid {
 
     @Override
     public double getResistance() {
-        return 10;
+        return 30;
+    }
+
+    @Override
+    public boolean canHarvestWithHand() {
+        return false;
     }
 
     @Override
     public Item[] getDrops(Item item) {
         if (item.isPickaxe() && item.getTier() >= ItemTool.TIER_WOODEN) {
             return new Item[]{
-                    Item.get(Item.NETHER_BRICK, 0, 1)
+                    toItem(true)
             };
         } else {
             return new Item[0];

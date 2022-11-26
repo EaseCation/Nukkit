@@ -252,6 +252,7 @@ public class BlockBell extends BlockTransparentMeta implements Faceable {
         return (BlockEntityBell) BlockEntity.createBlockEntity(BlockEntity.BELL, getChunk(), nbt);
     }
 
+    @Nullable
     protected BlockEntityBell getBlockEntity() {
         if (level == null) {
             return null;

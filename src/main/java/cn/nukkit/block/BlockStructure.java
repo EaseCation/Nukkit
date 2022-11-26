@@ -135,6 +135,7 @@ public class BlockStructure extends BlockSolidMeta {
         return (BlockEntityStructureBlock) BlockEntity.createBlockEntity(BlockEntity.STRUCTURE_BLOCK, getChunk(), nbt);
     }
 
+    @Nullable
     protected BlockEntityStructureBlock getBlockEntity() {
         if (level == null) {
             return null;

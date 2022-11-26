@@ -106,9 +106,16 @@ public abstract class BlockPistonBase extends BlockTransparentMeta implements Fa
 
     @Override
     public int onUpdate(int type) {
-        if (type != Level.BLOCK_UPDATE_NORMAL && type != Level.BLOCK_UPDATE_REDSTONE && type != Level.BLOCK_UPDATE_SCHEDULED) {
-            return 0;
-        } else {
+        if (type == Level.BLOCK_UPDATE_REDSTONE) {
+            if (!this.level.isRedstoneEnabled()) {
+                return 0;
+            }
+
+            level.scheduleUpdate(this, 1);
+            return type;
+        }
+
+        if (type == Level.BLOCK_UPDATE_NORMAL || type == Level.BLOCK_UPDATE_SCHEDULED) {
             if (!this.level.isRedstoneEnabled()) {
                 return 0;
             }
@@ -129,6 +136,8 @@ public abstract class BlockPistonBase extends BlockTransparentMeta implements Fa
 
             return type;
         }
+
+        return 0;
     }
 
     private boolean checkState(Boolean isPowered) {
@@ -140,14 +149,28 @@ public abstract class BlockPistonBase extends BlockTransparentMeta implements Fa
             isPowered = this.isPowered();
         }
 
-        if (isPowered && !isExtended()) {
+        BlockFace face = getBlockFace();
+        Block block = getSide(face);
+
+        boolean isExtended;
+        if (block instanceof BlockPistonHead) {
+            if (((BlockPistonHead) block).getBlockFace() != face) {
+                return false;
+            }
+
+            isExtended = true;
+        } else {
+            isExtended = false;
+        }
+
+        if (isPowered && !isExtended) {
             if (!this.doMove(true)) {
                 return false;
             }
 
             this.getLevel().addLevelSoundEvent(this, LevelSoundEventPacket.SOUND_PISTON_OUT);
             return true;
-        } else if (!isPowered && isExtended()) {
+        } else if (!isPowered && isExtended) {
             if (!this.doMove(false)) {
                 return false;
             }
@@ -183,6 +206,12 @@ public abstract class BlockPistonBase extends BlockTransparentMeta implements Fa
 
     private boolean doMove(boolean extending) {
         BlockFace direction = getBlockFace();
+//        Block extendBlock = getSide(direction);
+//
+//        if (extending && extendBlock instanceof BlockPistonHead && ((BlockPistonHead) extendBlock).getBlockFace() != direction) {
+//            return false;
+//        }
+
         BlocksCalculator calculator = new BlocksCalculator(extending);
 
         boolean canMove = calculator.canMove();
@@ -279,7 +308,7 @@ public abstract class BlockPistonBase extends BlockTransparentMeta implements Fa
 
                 new BlockEntityMovingBlock(this.level.getChunk(newBlock.getChunkX(), newBlock.getChunkZ()), nbt);
 
-                if (this.level.getBlockIdAt(0, oldPos.getFloorX(), oldPos.getFloorY(), oldPos.getFloorZ()) != BlockID.MOVING_BLOCK) {
+                if (/*(!extending || !oldPos.equalsVec(getSideVec(direction))) &&*/ this.level.getBlockIdAt(0, oldPos.getFloorX(), oldPos.getFloorY(), oldPos.getFloorZ()) != BlockID.MOVING_BLOCK) {
                     level.setExtraBlock(oldPos, Blocks.air(), true, false);
                     this.level.setBlock(oldPos, Block.get(BlockID.AIR), true);
                 }
@@ -290,9 +319,9 @@ public abstract class BlockPistonBase extends BlockTransparentMeta implements Fa
             Vector3 pos = this.getSide(direction);
             level.setExtraBlock(pos, Blocks.air(), true, false);
             if (this.sticky && Block.list[STICKY_PISTON_ARM_COLLISION] != null) {
-                this.level.setBlock(pos, new BlockPistonHeadSticky(this.getDamage()), true);
+                this.level.setBlock(pos, get(STICKY_PISTON_ARM_COLLISION, this.getDamage()), true);
             } else {
-                this.level.setBlock(pos, new BlockPistonHead(this.getDamage()), true);
+                this.level.setBlock(pos, get(PISTON_ARM_COLLISION, this.getDamage()), true);
             }
         }
 

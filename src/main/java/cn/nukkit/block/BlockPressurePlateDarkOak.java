@@ -1,5 +1,7 @@
 package cn.nukkit.block;
 
+import cn.nukkit.utils.BlockColor;
+
 public class BlockPressurePlateDarkOak extends BlockPressurePlateWood {
 
     public BlockPressurePlateDarkOak() {
@@ -18,5 +20,10 @@ public class BlockPressurePlateDarkOak extends BlockPressurePlateWood {
     @Override
     public String getName() {
         return "Dark Oak Pressure Plate";
+    }
+
+    @Override
+    public BlockColor getColor() {
+        return BlockColor.BROWN_BLOCK_COLOR;
     }
 }

@@ -8,6 +8,8 @@ import cn.nukkit.dispenser.DispenseBehavior;
 import cn.nukkit.inventory.InventoryHolder;
 import cn.nukkit.item.Item;
 
+import javax.annotation.Nullable;
+
 public class BlockDropper extends BlockDispenser {
 
     public BlockDropper() {
@@ -44,6 +46,7 @@ public class BlockDropper extends BlockDispenser {
     }
 
     @Override
+    @Nullable
     protected InventoryHolder getBlockEntity() {
         if (level == null) {
             return null;

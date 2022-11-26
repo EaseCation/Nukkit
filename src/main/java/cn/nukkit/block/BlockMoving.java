@@ -2,6 +2,7 @@ package cn.nukkit.block;
 
 import cn.nukkit.blockentity.BlockEntityType;
 import cn.nukkit.item.Item;
+import cn.nukkit.math.BlockFace;
 
 public class BlockMoving extends BlockTransparent {
 
@@ -50,6 +51,11 @@ public class BlockMoving extends BlockTransparent {
 
     @Override
     public boolean isSolid() {
+        return false;
+    }
+
+    @Override
+    public boolean canProvideSupport(BlockFace face, SupportType type) {
         return false;
     }
 }

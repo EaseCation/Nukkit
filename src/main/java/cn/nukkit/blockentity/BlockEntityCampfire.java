@@ -200,8 +200,8 @@ public class BlockEntityCampfire extends BlockEntitySpawnable {
     /**
      * @return success
      */
-    public boolean tryAddItem(Item item) {
-        if (server.getCraftingManager().matchFurnaceRecipe(item, RecipeTag.CAMPFIRE) == null) {
+    public boolean tryAddItem(Item item, RecipeTag recipeTag) {
+        if (server.getCraftingManager().matchFurnaceRecipe(item, recipeTag) == null) {
             return false;
         }
 

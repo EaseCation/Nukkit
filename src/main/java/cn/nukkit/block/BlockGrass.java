@@ -98,7 +98,7 @@ public class BlockGrass extends BlockDirt {
                         this.getLevel().setBlock(block, ev.getNewState(), true);
                     }
                 }
-             }
+            }
         }
         return 0;
     }

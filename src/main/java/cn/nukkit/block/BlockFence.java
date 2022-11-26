@@ -94,24 +94,24 @@ public class BlockFence extends BlockTransparentMeta {
     }
 
     public boolean canConnect(Block block, BlockFace face) {
-        return block.getId() == FENCE || block.isFenceGate() || SupportType.hasFullSupport(block, face);
+        return block.isFence() && block.getId() != NETHER_BRICK_FENCE || block.isFenceGate() || SupportType.hasFullSupport(block, face);
     }
 
     @Override
     public BlockColor getColor() {
         switch (this.getDamage() & 0x07) {
             default:
-            case BlockFence.FENCE_OAK: //OAK
+            case BlockFence.FENCE_OAK:
                 return BlockColor.WOOD_BLOCK_COLOR;
-            case BlockFence.FENCE_SPRUCE: //SPRUCE
+            case BlockFence.FENCE_SPRUCE:
                 return BlockColor.PODZOL_BLOCK_COLOR;
-            case BlockFence.FENCE_BIRCH: //BIRCH
+            case BlockFence.FENCE_BIRCH:
                 return BlockColor.SAND_BLOCK_COLOR;
-            case BlockFence.FENCE_JUNGLE: //JUNGLE
+            case BlockFence.FENCE_JUNGLE:
                 return BlockColor.DIRT_BLOCK_COLOR;
-            case BlockFence.FENCE_ACACIA: //ACACIA
+            case BlockFence.FENCE_ACACIA:
                 return BlockColor.ORANGE_BLOCK_COLOR;
-            case BlockFence.FENCE_DARK_OAK: //DARK OAK
+            case BlockFence.FENCE_DARK_OAK:
                 return BlockColor.BROWN_BLOCK_COLOR;
         }
     }
@@ -129,5 +129,10 @@ public class BlockFence extends BlockTransparentMeta {
     @Override
     public boolean canProvideSupport(BlockFace face, SupportType type) {
         return face.isVertical() && type == SupportType.CENTER;
+    }
+
+    @Override
+    public boolean isFence() {
+        return true;
     }
 }
