@@ -3,6 +3,7 @@ package cn.nukkit.event.potion;
 import cn.nukkit.entity.Entity;
 import cn.nukkit.event.Cancellable;
 import cn.nukkit.event.HandlerList;
+import cn.nukkit.item.Item;
 import cn.nukkit.potion.Effect;
 import cn.nukkit.potion.Potion;
 
@@ -18,14 +19,20 @@ public class PotionApplyEvent extends PotionEvent implements Cancellable {
         return handlers;
     }
 
+    private Item potionItem;
     private Effect applyEffect;
 
     private final Entity entity;
 
-    public PotionApplyEvent(Potion potion, Effect applyEffect, Entity entity) {
+    public PotionApplyEvent(Potion potion, Item potionItem, Effect applyEffect, Entity entity) {
         super(potion);
+        this.potionItem = potionItem;
         this.applyEffect = applyEffect;
         this.entity = entity;
+    }
+
+    public Item getPotionItem() {
+        return potionItem;
     }
 
     public Entity getEntity() {

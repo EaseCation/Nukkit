@@ -5,6 +5,7 @@ import cn.nukkit.Server;
 import cn.nukkit.entity.Entity;
 import cn.nukkit.entity.projectile.EntityArrow;
 import cn.nukkit.entity.projectile.EntityProjectile;
+import cn.nukkit.event.entity.EntityDamageByEntityEvent;
 import cn.nukkit.event.entity.EntityShootBowEvent;
 import cn.nukkit.event.entity.ProjectileLaunchEvent;
 import cn.nukkit.inventory.Inventory;
@@ -74,10 +75,12 @@ public class ItemBow extends ItemTool {
         Enchantment flameEnchant = this.getEnchantment(Enchantment.ID_FLAME);
         boolean flame = flameEnchant != null && flameEnchant.getLevel() > 0;
 
-        float knockback = 0.29f;
+        float knockbackH = EntityDamageByEntityEvent.GLOBAL_KNOCKBACK_H;
+        float knockbackV = EntityDamageByEntityEvent.GLOBAL_KNOCKBACK_V;
         Enchantment knockbackEnchant = this.getEnchantment(Enchantment.ID_PUNCH);
         if (knockbackEnchant != null) {
-            knockback += 0.1 * knockbackEnchant.getLevel();
+            knockbackH += 0.1 * knockbackEnchant.getLevel();
+            knockbackV += 0.1 * knockbackEnchant.getLevel();
         }
 
         CompoundTag nbt = new CompoundTag()
@@ -94,7 +97,8 @@ public class ItemBow extends ItemTool {
                         .add(new FloatTag("", (float) -player.pitch)))
                 .putShort("Fire", flame ? 45 * 60 : 0)
                 .putDouble("damage", damage)
-                .putFloat("Knockback", knockback);
+                .putFloat("KnockbackH", knockbackH)
+                .putFloat("KnockbackV", knockbackV);
 
         double p = (double) ticksUsed / 20;
         double f = Math.min((p * p + p * 2) / 3, 1) * 2;

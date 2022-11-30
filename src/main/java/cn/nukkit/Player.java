@@ -20,6 +20,7 @@ import cn.nukkit.event.inventory.InventoryCloseEvent;
 import cn.nukkit.event.inventory.InventoryPickupArrowEvent;
 import cn.nukkit.event.inventory.InventoryPickupItemEvent;
 import cn.nukkit.event.inventory.InventoryPickupTridentEvent;
+import cn.nukkit.event.inventory.ItemAttackDamageEvent;
 import cn.nukkit.event.level.ChunkLoadExceptionEvent;
 import cn.nukkit.event.player.*;
 import cn.nukkit.event.player.PlayerInteractEvent.Action;
@@ -1519,6 +1520,14 @@ public class Player extends EntityHuman implements CommandSender, InventoryHolde
             }
             this.isCollided = this.onGround;
             this.updateFallState(this.onGround);
+
+            /*this.lastMotionX = this.motionX;
+            this.lastMotionY = this.motionY;
+            this.lastMotionZ = this.motionZ;
+
+            this.motionX = dx;
+            this.motionY = dy;
+            this.motionZ = dz;*/
         }
 
         Timings.entityMoveTimer.stopTiming();
@@ -1611,6 +1620,10 @@ public class Player extends EntityHuman implements CommandSender, InventoryHolde
             return;
         }
         Vector3 newPos = this.newPosition;
+        if (newPos.checkIncorrectIntegerRange()) {
+            this.close("Invalid position", "Invalid position from " + this.getLocation() + " moving to " + newPos);
+            return;
+        }
         double distanceSquared = newPos.distanceSquared(this);
         boolean revert = false;
         if ((distanceSquared / ((double) (tickDiff * tickDiff))) > 100 && (newPos.y - this.y) > -5) {
@@ -3388,7 +3401,9 @@ public class Player extends EntityHuman implements CommandSender, InventoryHolde
 
                                     Enchantment[] enchantments = item.getEnchantments();
 
-                                    float itemDamage = item.getAttackDamage();
+                                    ItemAttackDamageEvent event = new ItemAttackDamageEvent(item);
+                                    this.server.getPluginManager().callEvent(event);
+                                    float itemDamage = event.getAttackDamage();
                                     for (Enchantment enchantment : enchantments) {
                                         itemDamage += enchantment.getDamageBonus(target);
                                     }
@@ -3396,13 +3411,15 @@ public class Player extends EntityHuman implements CommandSender, InventoryHolde
                                     Map<DamageModifier, Float> damage = new EnumMap<>(DamageModifier.class);
                                     damage.put(DamageModifier.BASE, itemDamage);
 
-                                    float knockBack = 0.29f;
+                                    float knockBackH = EntityDamageByEntityEvent.GLOBAL_KNOCKBACK_H;
+                                    float knockBackV = EntityDamageByEntityEvent.GLOBAL_KNOCKBACK_V;
                                     Enchantment knockBackEnchantment = item.getEnchantment(Enchantment.ID_KNOCKBACK);
                                     if (knockBackEnchantment != null) {
-                                        knockBack += knockBackEnchantment.getLevel() * 0.1f;
+                                        knockBackH += knockBackEnchantment.getLevel() * 0.1f;
+                                        knockBackV += knockBackEnchantment.getLevel() * 0.1f;
                                     }
 
-                                    EntityDamageByEntityEvent entityDamageByEntityEvent = new EntityDamageByEntityEvent(this, target, DamageCause.ENTITY_ATTACK, damage, knockBack, enchantments);
+                                    EntityDamageByEntityEvent entityDamageByEntityEvent = new EntityDamageByEntityEvent(this, target, DamageCause.ENTITY_ATTACK, damage, knockBackH, knockBackV, enchantments);
                                     if (this.isSpectator()) entityDamageByEntityEvent.setCancelled();
                                     if ((target instanceof Player) && !this.level.getGameRules().getBoolean(GameRule.PVP)) {
                                         entityDamageByEntityEvent.setCancelled();
@@ -3479,7 +3496,7 @@ public class Player extends EntityHuman implements CommandSender, InventoryHolde
                                             }
 
                                             if (potion != null) {
-                                                potion.applyPotion(this);
+                                                potion.applyPotion(this, itemInHand);
                                             }
 
                                         } else if (itemInHand.getId() == Item.BUCKET && itemInHand.getDamage() == 1) { //milk
@@ -5259,12 +5276,13 @@ public class Player extends EntityHuman implements CommandSender, InventoryHolde
      * @param fishingRod fishing rod item
      */
     public void startFishing(Item fishingRod) {
-        Vector3 motion = this.getDirectionVector().multiply(1.2);
+        Vector3 motion = this.getDirectionVector().multiply(2);
+
         CompoundTag nbt = new CompoundTag()
                 .putList(new ListTag<DoubleTag>("Pos")
-                        .add(new DoubleTag("", x))
-                        .add(new DoubleTag("", y + this.getEyeHeight()))
-                        .add(new DoubleTag("", z)))
+                        .add(new DoubleTag("", x + motion.x))
+                        .add(new DoubleTag("", y + this.getEyeHeight() + motion.y))
+                        .add(new DoubleTag("", z + motion.z)))
                 .putList(new ListTag<DoubleTag>("Motion")
                         .add(new DoubleTag("", motion.x))
                         .add(new DoubleTag("", motion.y))
