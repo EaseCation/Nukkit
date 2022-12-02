@@ -2545,7 +2545,8 @@ public class Level implements ChunkManager, Metadatable {
             if (player != null) {
                 Vector3 diff = player.getNextPosition().subtract(player.getPosition());
                 AxisAlignedBB bb = player.getBoundingBox().getOffsetBoundingBox(diff.x, diff.y, diff.z);
-                bb.setMinY(bb.getMinY() + 0.2);
+                bb.expand(-0.01, -0.01, -0.01);
+                bb.setMinY(bb.getMinY() + 0.05);
                 if (hand.getBoundingBox().intersectsWith(bb)) {
                     return null;
                 }
@@ -2608,8 +2609,7 @@ public class Level implements ChunkManager, Metadatable {
 
         if (player != null) {
             BlockPlaceSound sound = new BlockPlaceSound(block.blockCenter(), hand.getId(), hand.getDamage());
-            Int2ObjectMap<Player> players = getChunkPlayers(block.getChunkX(), block.getChunkZ());
-            addSound(sound, players.values());
+            addSound(sound, player.getViewers().values());
 
             if (!player.isCreative()) {
                 item.setCount(item.getCount() - 1);

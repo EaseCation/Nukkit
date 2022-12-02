@@ -89,12 +89,12 @@ public class EntityFishingHook extends EntityProjectile {
 
     @Override
     public float getGravity() {
-        return 0.05f;
+        return 0.06f;
     }
 
     @Override
     public float getDrag() {
-        return 0.03f;
+        return 0.05f;
     }
 
     @Override
@@ -312,10 +312,10 @@ public class EntityFishingHook extends EntityProjectile {
 
         EntityDamageEvent ev;
         if (this.shootingEntity == null) {
-            ev = new EntityDamageByEntityEvent(this, entity, DamageCause.PROJECTILE, damage, 0f);
+            ev = new EntityDamageByEntityEvent(this, entity, DamageCause.PROJECTILE, damage, 0f, 0f);
         } else {
             ev = new EntityDamageByChildEntityEvent(this.shootingEntity, this, entity, DamageCause.PROJECTILE, damage);
-            ((EntityDamageByChildEntityEvent) ev).setKnockBack(0f);
+            ((EntityDamageByChildEntityEvent) ev).clearKnockBack();
         }
 
         if (entity.attack(ev)) {

@@ -1,5 +1,6 @@
 package cn.nukkit.item;
 
+import cn.nukkit.nbt.NBTIO;
 import cn.nukkit.nbt.tag.CompoundTag;
 
 /**
@@ -39,5 +40,6 @@ public class ItemPotionSplash extends ProjectileItem {
     @Override
     protected void correctNBT(CompoundTag nbt) {
         nbt.putInt("PotionId", this.meta);
+        nbt.putCompound("Item", NBTIO.putItemHelper(this));
     }
 }

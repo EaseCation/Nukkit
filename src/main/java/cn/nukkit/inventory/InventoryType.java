@@ -20,6 +20,8 @@ public enum InventoryType {
     DISPENSER(9, "Dispenser", ContainerType.DISPENSER),
     DROPPER(9, "Dropper", ContainerType.DROPPER),
     HOPPER(5, "Hopper", ContainerType.HOPPER),
+    ENTITY_EQUIPMENT(36, "Entity Equipment", -1), //36 CONTAINER
+    ENTITY_ARMOR(4, "Entity Armor", -1), //4 ARMOR
     UI(1, "UI", ContainerType.INVENTORY),
     SHULKER_BOX(27, "Shulker Box", ContainerType.CONTAINER),
     BEACON(1, "Beacon", ContainerType.BEACON),

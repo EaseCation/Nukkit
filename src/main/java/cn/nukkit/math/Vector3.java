@@ -513,4 +513,8 @@ public class Vector3 implements Cloneable {
     public static Vector3 fromNbtf(ListTag<FloatTag> list) {
         return new Vector3(list.get(0).data, list.get(1).data, list.get(2).data);
     }
+
+    public boolean checkIncorrectIntegerRange() {
+        return this.x >= Integer.MAX_VALUE || this.x <= Integer.MIN_VALUE || this.y >= Integer.MAX_VALUE || this.y <= Integer.MIN_VALUE || this.z >= Integer.MAX_VALUE || this.z <= Integer.MIN_VALUE;
+    }
 }

@@ -80,7 +80,7 @@ public class ItemPotion extends Item {
         Potion potion = Potion.getPotion(this.getDamage()).setSplash(false);
 
         if (potion != null) {
-            potion.applyPotion(player);
+            potion.applyPotion(player, this);
         }
 
         if (player.isSurvival() || player.isAdventure()) {

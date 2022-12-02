@@ -12,35 +12,41 @@ import java.util.Map;
  */
 public class EntityDamageByEntityEvent extends EntityDamageEvent {
 
+    public static float GLOBAL_KNOCKBACK_H = 0.29f;
+    public static float GLOBAL_KNOCKBACK_V = 0.29f;
+
     private final Entity damager;
 
-    private float knockBack;
+    private float knockBackH;
+    private float knockBackV;
 
     private Enchantment[] enchantments;
 
     public EntityDamageByEntityEvent(Entity damager, Entity entity, DamageCause cause, float damage) {
-        this(damager, entity, cause, damage, 0.29f);
+        this(damager, entity, cause, damage, GLOBAL_KNOCKBACK_H, GLOBAL_KNOCKBACK_V);
     }
 
     public EntityDamageByEntityEvent(Entity damager, Entity entity, DamageCause cause, Map<DamageModifier, Float> modifiers) {
-        this(damager, entity, cause, modifiers, 0.29f);
+        this(damager, entity, cause, modifiers, GLOBAL_KNOCKBACK_H, GLOBAL_KNOCKBACK_V);
     }
 
-    public EntityDamageByEntityEvent(Entity damager, Entity entity, DamageCause cause, float damage, float knockBack) {
+    public EntityDamageByEntityEvent(Entity damager, Entity entity, DamageCause cause, float damage, float knockBackH, float knockBackV) {
         super(entity, cause, damage);
         this.damager = damager;
-        this.knockBack = knockBack;
+        this.knockBackH = knockBackH;
+        this.knockBackV = knockBackV;
         this.addAttackerModifiers(damager);
     }
 
-    public EntityDamageByEntityEvent(Entity damager, Entity entity, DamageCause cause, Map<DamageModifier, Float> modifiers, float knockBack) {
-        this(damager, entity, cause, modifiers, knockBack, new Enchantment[0]);
+    public EntityDamageByEntityEvent(Entity damager, Entity entity, DamageCause cause, Map<DamageModifier, Float> modifiers, float knockBackH, float knockBackV) {
+        this(damager, entity, cause, modifiers, knockBackH, knockBackV, new Enchantment[0]);
     }
 
-    public EntityDamageByEntityEvent(Entity damager, Entity entity, DamageCause cause, Map<DamageModifier, Float> modifiers, float knockBack, Enchantment[] enchantments) {
+    public EntityDamageByEntityEvent(Entity damager, Entity entity, DamageCause cause, Map<DamageModifier, Float> modifiers, float knockBackH, float knockBackV, Enchantment[] enchantments) {
         super(entity, cause, modifiers);
         this.damager = damager;
-        this.knockBack = knockBack;
+        this.knockBackH = knockBackH;
+        this.knockBackV = knockBackV;
         this.enchantments = enchantments;
         this.addAttackerModifiers(damager);
     }
@@ -59,12 +65,38 @@ public class EntityDamageByEntityEvent extends EntityDamageEvent {
         return damager;
     }
 
-    public float getKnockBack() {
-        return knockBack;
+    public boolean hasKnockBack() {
+        return knockBackH != 0 || knockBackV != 0;
+    }
+
+    public float getKnockBackH() {
+        return knockBackH;
+    }
+
+    public void setKnockBackH(float knockBackH) {
+        this.knockBackH = knockBackH;
+    }
+
+    public float getKnockBackV() {
+        return knockBackV;
+    }
+
+    public void setKnockBackV(float knockBackV) {
+        this.knockBackV = knockBackV;
     }
 
     public void setKnockBack(float knockBack) {
-        this.knockBack = knockBack;
+        this.setKnockBack(knockBack, knockBack);
+    }
+
+    public void setKnockBack(float knockBackH, float knockBackV) {
+        this.knockBackH = knockBackH;
+        this.knockBackV = knockBackV;
+    }
+
+    public void clearKnockBack() {
+        this.knockBackH = 0;
+        this.knockBackV = 0;
     }
 
     public Enchantment[] getWeaponEnchantments() {
