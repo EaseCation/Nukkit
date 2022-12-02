@@ -118,7 +118,7 @@ public class BlockEntityItemFrame extends BlockEntitySpawnable {
 
     @Override
     public CompoundTag getSpawnCompound() {
-        CompoundTag nbt = getDefaultCompound(this, ITEM_FRAME);
+        CompoundTag nbt = getDefaultCompound(this, getBlockEntityId());
 
         if (this.hasItem()) {
             nbt.putCompound("Item", this.namedTag.getCompound("Item"));
@@ -154,5 +154,9 @@ public class BlockEntityItemFrame extends BlockEntitySpawnable {
             return true;
         }
         return false;
+    }
+
+    protected String getBlockEntityId() {
+        return ITEM_FRAME;
     }
 }

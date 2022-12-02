@@ -84,7 +84,7 @@ public class BlockChemistryTable extends BlockSolidMeta {
     @Override
     public boolean place(Item item, Block block, Block target, BlockFace face, double fx, double fy, double fz, Player player) {
         if (player != null) {
-            setDamage(((getDamage() >> DIRECTION_BITS) << DIRECTION_BITS) | player.getHorizontalFacing().getOpposite().getHorizontalIndex());
+            setDamage(((getDamage() >> DIRECTION_BITS) << DIRECTION_BITS) | player.getHorizontalFacing().getHorizontalIndex());
         }
         level.setBlock(this, this, true);
         createBlockEntity(item);

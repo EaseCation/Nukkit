@@ -71,7 +71,7 @@ public final class Items {
         registerItem(MUSIC_DISC_PIGSTEP, ItemRecordPigstep.class, V1_16_0);
         registerItem(NETHER_SPROUTS, ItemNetherSprouts.class, V1_16_0);
         registerItem(SOUL_CAMPFIRE, ItemCampfireSoul.class, V1_16_0);
-/*
+
         registerItem(RAW_IRON, ItemRawIron.class, V1_17_0);
         registerItem(RAW_GOLD, ItemRawGold.class, V1_17_0);
         registerItem(RAW_COPPER, ItemRawCopper.class, V1_17_0);
@@ -91,7 +91,7 @@ public final class Items {
         registerItem(MANGROVE_DOOR, ItemDoorMangrove.class, V1_19_0);
         registerItem(MANGROVE_SIGN, ItemSignMangrove.class, V1_19_0);
         // chest_boat
-*/
+
     }
 
     private static Class<? extends Item> registerItem(int id, Class<? extends Item> clazz) {

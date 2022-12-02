@@ -437,6 +437,23 @@ public class LevelSoundEventPacket extends DataPacket {
 	public static final int SOUND_ITEM_THROWN = 438;
 	public static final int SOUND_RECORD_5 = 439;
 	public static final int SOUND_CONVERT_TO_FROG = 440;
+	public static final int SOUND_RECORD_PLAYING = 441;
+	public static final int SOUND_ENCHANTING_TABLE_USE = 442;
+	public static final int SOUND_STEP_SAND = 443;
+	public static final int SOUND_DASH_READY = 444;
+	public static final int SOUND_BUNDLE_DROP_CONTENTS = 445;
+	public static final int SOUND_BUNDLE_INSERT = 446;
+	public static final int SOUND_BUNDLE_REMOVE_ONE = 447;
+	public static final int SOUND_PRESSURE_PLATE_CLICK_OFF = 448;
+	public static final int SOUND_PRESSURE_PLATE_CLICK_ON = 449;
+	public static final int SOUND_BUTTON_CLICK_OFF = 450;
+	public static final int SOUND_BUTTON_CLICK_ON = 451;
+	public static final int SOUND_DOOR_OPEN = 452;
+	public static final int SOUND_DOOR_CLOSE = 453;
+	public static final int SOUND_TRAPDOOR_OPEN = 454;
+	public static final int SOUND_TRAPDOOR_CLOSE = 455;
+	public static final int SOUND_FENCE_GATE_OPEN = 456;
+	public static final int SOUND_FENCE_GATE_CLOSE = 457;
 
 	// 插入的 ID 由跨版本转换处理: 1000 + ID
 	public static final int SOUND_MOB_ARMOR_STAND_PLACE = 1000 + 38;

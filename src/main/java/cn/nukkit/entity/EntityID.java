@@ -126,6 +126,9 @@ public interface EntityID {
     int FROG = 132;
     int TADPOLE = 133;
     int ALLAY = 134;
+    int FIREFLY = 135;
+
+    int CAMEL = 138;
 
     int TRADER_LLAMA = 157;
 

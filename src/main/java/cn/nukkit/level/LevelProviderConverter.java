@@ -2,6 +2,7 @@ package cn.nukkit.level;
 
 import cn.nukkit.block.Block;
 import cn.nukkit.block.BlockID;
+import cn.nukkit.block.BlockItemFrame;
 import cn.nukkit.block.BlockWood;
 import cn.nukkit.block.BlockWood2;
 import cn.nukkit.level.biome.Biome;
@@ -338,6 +339,9 @@ class LevelProviderConverter {
                                     id = BlockID.WOOD;
                                     meta = 0b100 | (meta & BlockWood2.TYPE_MASK);
                                 }
+                            } else if (id == BlockID.BLOCK_FRAME) {
+                                // frame 1.13 upgrade
+                                meta = ((meta & ~0b11) << 1) | BlockItemFrame.LEGACY_DIRECTION_BITS_TO_FACING_DIRECTION_BITS[meta & 0b11];
                             } else if (!Block.hasMeta[id]) {
                                 // additional fixes for corrupted meta... (FAWE?)
                                 meta = 0;

@@ -331,6 +331,7 @@ public abstract class Entity extends Location implements Metadatable {
     public static final int DATA_FLAG_CELEBRATING = 92;
     public static final int DATA_FLAG_ADMIRING = 93;
     public static final int DATA_FLAG_CELEBRATING_SPECIAL = 94;
+    public static final int DATA_FLAG_OUT_OF_CONTROL = 95;
     public static final int DATA_FLAG_RAM_ATTACK = 96;
     public static final int DATA_FLAG_PLAYING_DEAD = 97;
     public static final int DATA_FLAG_IN_ASCENDABLE_BLOCK = 98;
@@ -342,7 +343,19 @@ public abstract class Entity extends Location implements Metadatable {
     public static final int DATA_FLAG_SNIFFING = 104;
     public static final int DATA_FLAG_DIGGING = 105;
     public static final int DATA_FLAG_SONIC_BOOM = 106;
-    public static final int DATA_FLAG_UNDEFINED = 107;
+    /**
+     * @since 1.19.50
+     */
+    public static final int DATA_FLAG_CAN_DASH = 107;
+    /**
+     * @since 1.19.50
+     */
+    public static final int DATA_FLAG_HAS_DASH_COOLDOWN = 108;
+    /**
+     * @since 1.19.50
+     */
+    public static final int DATA_FLAG_PUSH_TOWARDS_CLOSEST_SPACE = 109;
+    public static final int DATA_FLAG_UNDEFINED = 110;
 
     public static long entityCount = 2; // 0 invalid, 1 for Synapse
 

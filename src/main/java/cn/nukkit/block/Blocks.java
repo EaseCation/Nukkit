@@ -226,7 +226,7 @@ public final class Blocks {
         registerBlock(QUARTZ_BRICKS, BlockBricksQuartz.class, V1_16_0);
 
         registerBlock(UNKNOWN, BlockUnknownBlock.class, V1_16_100);
-/*
+
         // powder_snow... 1.17.0
 
         registerBlock(COPPER_ORE, BlockOreCopper.class, V1_17_0);
@@ -260,7 +260,7 @@ public final class Blocks {
         registerBlock(MANGROVE_WOOD, BlockWoodMangrove.class, V1_19_0);
         registerBlock(STRIPPED_MANGROVE_WOOD, BlockWoodStrippedMangrove.class, V1_19_0);
         registerBlock(MANGROVE_DOUBLE_SLAB, BlockDoubleSlabMangrove.class, V1_19_0);
-*/
+
     }
 
     public static void registerElements() {

@@ -14,4 +14,9 @@ public class BlockEntityGlowItemFrame extends BlockEntityItemFrame {
     public boolean isValidBlock(int blockId) {
         return blockId == Block.BLOCK_GLOW_FRAME;
     }
+
+    @Override
+    protected String getBlockEntityId() {
+        return GLOW_ITEM_FRAME;
+    }
 }

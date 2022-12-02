@@ -214,6 +214,7 @@ public interface ProtocolInfo {
     int REQUEST_NETWORK_SETTINGS_PACKET = 0xc1;
     int GAME_TEST_REQUEST_PACKET = 0xc2;
     int GAME_TEST_RESULTS_PACKET = 0xc3;
+    int UPDATE_CLIENT_INPUT_LOCKS_PACKET = 0xc4;
 
     //NetEase Common Mod
     int PACKET_PY_RPC = 0xc8;

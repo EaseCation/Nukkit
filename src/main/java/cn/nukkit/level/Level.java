@@ -1174,6 +1174,9 @@ public class Level implements ChunkManager, Metadatable {
     }
 
     public void checkSleep() {
+        if (dimension != Dimension.OVERWORLD) {
+            return;
+        }
         if (this.players.isEmpty()) {
             return;
         }

@@ -151,7 +151,13 @@ public class GlobalBlockPalette implements GlobalBlockPaletteInterface {
         } catch (NullPointerException | IOException e) {
             throw new AssertionError("Unable to load block_id_map.json", e);
         }
-        stringToId.forEach((name, id) -> idToString[id] = name);
+        stringToId.forEach((name, id) -> {
+            if (id >= BlockID.UNDEFINED) {
+                log.debug("Skip unsupported block: {}", id);
+                return;
+            }
+            idToString[id] = name;
+        });
         stringToId.defaultReturnValue(-1);
 
         try (InputStream stream = Server.class.getClassLoader().getResourceAsStream("block_rename_map.json");
