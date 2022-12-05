@@ -23,7 +23,7 @@ public class BlockItemFrame extends BlockTransparentMeta implements Faceable {
     public static final int MAP_BIT = 0b1000;
     public static final int PHOTO_BIT = 0b10000;
 
-    public static final int[] LEGACY_DIRECTION_BITS_TO_FACING_DIRECTION_BITS = {4, 5, 3, 2}; // 1.12 to 1.13
+    public static final int[] LEGACY_DIRECTION_BITS_TO_FACING_DIRECTION_BITS = {5, 4, 3, 2}; // 1.12 to 1.13
 
     public BlockItemFrame() {
         this(0);
