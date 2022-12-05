@@ -3,7 +3,7 @@ package cn.nukkit;
 @SuppressWarnings("all")
 public final class SharedConstants {
 
-    public static final boolean PRODUCTION_ENVIRONMENT = false;
+    public static final boolean PRODUCTION_ENVIRONMENT = true;
 
     // general
 
