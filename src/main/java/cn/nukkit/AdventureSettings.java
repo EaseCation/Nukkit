@@ -49,9 +49,9 @@ public class AdventureSettings implements Cloneable {
     public void update() {
         player.sendAdventureSettingsAndAbilities(player, this);
 
-        for (Player viewer : player.getViewers().values()) {
+        /*for (Player viewer : player.getViewers().values()) {
             viewer.sendAbilities(player, this);
-        }
+        }*/
 
         player.resetInAirTicks();
     }
