@@ -71,6 +71,7 @@ public class BlockColor extends Color {
     public static final BlockColor WARPED_STEM_BLOCK_COLOR = new BlockColor(0x3a, 0x8e, 0x8c);
     public static final BlockColor WARPED_HYPHAE_BLOCK_COLOR = new BlockColor(0x56, 0x2c, 0x3e);
     public static final BlockColor WARPED_WART_BLOCK_BLOCK_COLOR = new BlockColor(0x14, 0xb4, 0x85);
+    public static final BlockColor SCULK_BLOCK_COLOR = new BlockColor(0x0d, 0x12, 0x17);
     public static final BlockColor DEEPSLATE_BLOCK_COLOR = new BlockColor(0x64, 0x64, 0x64);
     public static final BlockColor RAW_IRON_BLOCK_COLOR = new BlockColor(0xd8, 0xaf, 0x93);
     public static final BlockColor GLOW_LICHEN_BLOCK_COLOR = new BlockColor(0x7f, 0xa7, 0x96);
@@ -97,10 +98,5 @@ public class BlockColor extends Color {
 
     public BlockColor(int r, int g, int b) {
         super(r, g, b);
-    }
-
-    @Deprecated
-    public static BlockColor getDyeColor(int dyeColorMeta) {
-        return DyeColor.getByDyeData(dyeColorMeta).getColor();
     }
 }

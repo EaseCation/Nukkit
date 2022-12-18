@@ -269,6 +269,6 @@ public class BlockBamboo extends BlockTransparentMeta {
     }
 
     static boolean canBeSupportedBy(int id) {
-        return id == GRASS || id == DIRT || id == SAND || id == GRAVEL || id == MYCELIUM || id == PODZOL;
+        return id == GRASS || id == DIRT || id == SAND || id == GRAVEL || id == MYCELIUM || id == PODZOL || id == DIRT_WITH_ROOTS;
     }
 }

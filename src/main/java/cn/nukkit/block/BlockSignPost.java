@@ -159,16 +159,15 @@ public class BlockSignPost extends BlockTransparentMeta implements Faceable {
             BlockEntitySign sign = (BlockEntitySign) blockEntity;
 
             int meta = item.getDamage();
-            if (meta == ItemDye.INK_SAC || meta == ItemDye.GLOW_INK_SAC) {
-                boolean glow = meta == ItemDye.GLOW_INK_SAC;
-                if (sign.isGlowing() == glow) {
+            if (meta == ItemDye.INK_SAC) {
+                if (!sign.isGlowing()) {
                     if (player != null) {
                         sign.spawnTo(player);
                     }
                     return false;
                 }
 
-                SignGlowEvent event = new SignGlowEvent(this, player, glow);
+                SignGlowEvent event = new SignGlowEvent(this, player, false);
                 this.level.getServer().getPluginManager().callEvent(event);
                 if (event.isCancelled()) {
                     if (player != null) {
@@ -177,7 +176,7 @@ public class BlockSignPost extends BlockTransparentMeta implements Faceable {
                     return false;
                 }
 
-                sign.setGlowing(glow);
+                sign.setGlowing(false);
                 sign.spawnToAll();
 
                 this.level.addLevelEvent(this, LevelEventPacket.EVENT_SOUND_INK_SAC_USED);
@@ -189,7 +188,7 @@ public class BlockSignPost extends BlockTransparentMeta implements Faceable {
                 return true;
             }
 
-            BlockColor color = DyeColor.getByDyeData(meta).getSignColor();
+            BlockColor color = DyeColor.getByDyeNewData(meta).getSignColor();
             if (color.equals(sign.getColor())) {
                 if (player != null) {
                     sign.spawnTo(player);
@@ -217,6 +216,42 @@ public class BlockSignPost extends BlockTransparentMeta implements Faceable {
 
             return true;
         }
+
+        if (item.getId() == Item.GLOW_INK_SAC) {
+            BlockEntity blockEntity = this.level.getBlockEntity(this);
+            if (!(blockEntity instanceof BlockEntitySign)) {
+                return false;
+            }
+            BlockEntitySign sign = (BlockEntitySign) blockEntity;
+
+            if (sign.isGlowing()) {
+                if (player != null) {
+                    sign.spawnTo(player);
+                }
+                return false;
+            }
+
+            SignGlowEvent event = new SignGlowEvent(this, player, true);
+            this.level.getServer().getPluginManager().callEvent(event);
+            if (event.isCancelled()) {
+                if (player != null) {
+                    sign.spawnTo(player);
+                }
+                return false;
+            }
+
+            sign.setGlowing(true);
+            sign.spawnToAll();
+
+            this.level.addLevelEvent(this, LevelEventPacket.EVENT_SOUND_INK_SAC_USED);
+
+            if (player != null && !player.isCreative()) {
+                item.pop();
+            }
+
+            return true;
+        }
+
         return false;
     }
 

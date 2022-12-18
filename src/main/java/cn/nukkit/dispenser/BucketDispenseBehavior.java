@@ -30,6 +30,7 @@ public class BucketDispenseBehavior extends DefaultDispenseBehavior {
             target.level.setBlock(target, Block.get(Block.AIR), true);
             return new ItemBucket(ItemBucket.getPlaceBlockFromMeta(target.getId()));
         }
+        //TODO: power snow
 
         return super.dispense(block, face, item);
     }

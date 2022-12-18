@@ -9,7 +9,9 @@ import cn.nukkit.entity.data.ShortEntityData;
 import cn.nukkit.entity.passive.EntityWaterAnimal;
 import cn.nukkit.event.entity.*;
 import cn.nukkit.event.entity.EntityDamageEvent.DamageCause;
+import cn.nukkit.inventory.PlayerInventory;
 import cn.nukkit.item.Item;
+import cn.nukkit.item.ItemID;
 import cn.nukkit.level.GameRule;
 import cn.nukkit.level.format.FullChunk;
 import cn.nukkit.level.sound.SoundEnum;
@@ -273,13 +275,19 @@ public abstract class EntityLiving extends Entity implements EntityDamageable {
                 int y = getFloorY();
                 int z = getFloorZ();
                 //TODO: getCollisionBlocks
-                boolean inScaffolding = level.getBlock(x, y, z).getId() == BlockID.SCAFFOLDING;
-                boolean overScaffolding = level.getBlock(x, y - 1, z).getId() == BlockID.SCAFFOLDING;
+                int block = level.getBlock(x, y, z).getId();
+                int below = level.getBlock(x, y - 1, z).getId();
+                boolean inScaffolding = block == BlockID.SCAFFOLDING;
+                boolean inPowderSnow = block == BlockID.POWDER_SNOW;
+                boolean overScaffolding = below == BlockID.SCAFFOLDING;
+                boolean overPowderSnow = below == BlockID.POWDER_SNOW; //TODO: check
+                PlayerInventory inventory = ((EntityHumanType) this).getInventory();
+                boolean leatherBoots = inventory != null && inventory.getBoots().getId() == ItemID.LEATHER_BOOTS;
                 setDataFlag(DATA_FLAGS_EXTENDED, DATA_FLAG_IN_SCAFFOLDING, inScaffolding);
-                setDataFlag(DATA_FLAGS_EXTENDED, DATA_FLAG_IN_ASCENDABLE_BLOCK, inScaffolding);
+                setDataFlag(DATA_FLAGS_EXTENDED, DATA_FLAG_IN_ASCENDABLE_BLOCK, inScaffolding || leatherBoots && inPowderSnow);
                 setDataFlag(DATA_FLAGS_EXTENDED, DATA_FLAG_OVER_SCAFFOLDING, overScaffolding);
-                setDataFlag(DATA_FLAGS_EXTENDED, DATA_FLAG_OVER_DESCENDABLE_BLOCK, overScaffolding && !level.getBlock(x, y - 2, z).isAir());
-                if (inScaffolding || overScaffolding) {
+                setDataFlag(DATA_FLAGS_EXTENDED, DATA_FLAG_OVER_DESCENDABLE_BLOCK, leatherBoots && overPowderSnow || overScaffolding && !level.getBlock(x, y - 2, z).isAir());
+                if (inScaffolding || overScaffolding || inPowderSnow || overPowderSnow) {
                     resetFallDistance();
                 }
             }

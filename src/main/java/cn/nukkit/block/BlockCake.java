@@ -2,11 +2,13 @@ package cn.nukkit.block;
 
 import cn.nukkit.Player;
 import cn.nukkit.item.Item;
-import cn.nukkit.item.ItemCake;
 import cn.nukkit.item.food.Food;
 import cn.nukkit.level.Level;
 import cn.nukkit.math.BlockFace;
+import cn.nukkit.network.protocol.LevelSoundEventPacket;
 import cn.nukkit.utils.BlockColor;
+
+import javax.annotation.Nullable;
 
 /**
  * @author Nukkit Project Team
@@ -48,12 +50,7 @@ public class BlockCake extends BlockTransparentMeta {
 
     @Override
     public double getMinX() {
-        return this.x + (1 + getDamage() * 2) / 16;
-    }
-
-    @Override
-    public double getMinY() {
-        return this.y;
+        return this.x + (1 + getDamage() * 2) / 16.0;
     }
 
     @Override
@@ -78,7 +75,7 @@ public class BlockCake extends BlockTransparentMeta {
 
     @Override
     public boolean place(Item item, Block block, Block target, BlockFace face, double fx, double fy, double fz, Player player) {
-        if (down().getId() != Block.AIR) {
+        if (canSurvive()) {
             getLevel().setBlock(block, this, true, true);
 
             return true;
@@ -89,7 +86,7 @@ public class BlockCake extends BlockTransparentMeta {
     @Override
     public int onUpdate(int type) {
         if (type == Level.BLOCK_UPDATE_NORMAL) {
-            if (down().getId() == Block.AIR) {
+            if (!canSurvive()) {
                 getLevel().setBlock(this, Block.get(BlockID.AIR), true);
 
                 return Level.BLOCK_UPDATE_NORMAL;
@@ -106,21 +103,81 @@ public class BlockCake extends BlockTransparentMeta {
 
     @Override
     public Item toItem(boolean addUserData) {
-        return new ItemCake();
+        return Item.get(Item.CAKE);
     }
 
     @Override
     public boolean onActivate(Item item, BlockFace face, Player player) {
-        if (player != null && player.getFoodData().getLevel() < player.getFoodData().getMaxLevel()) {
-            if (getDamage() <= 0x06) setDamage(getDamage() + 1);
-            if (getDamage() >= 0x06) {
-                getLevel().setBlock(this, Block.get(BlockID.AIR), true);
-            } else {
-                Food.getByRelative(this).eatenBy(player);
-                getLevel().setBlock(this, this, true);
+        if (item.isBlockItem()) {
+            switch (item.getBlockId()) {
+                case CANDLE:
+                    tryAddCandle(item, player, CANDLE_CAKE);
+                    return true;
+                case WHITE_CANDLE:
+                    tryAddCandle(item, player, WHITE_CANDLE_CAKE);
+                    return true;
+                case ORANGE_CANDLE:
+                    tryAddCandle(item, player, ORANGE_CANDLE_CAKE);
+                    return true;
+                case MAGENTA_CANDLE:
+                    tryAddCandle(item, player, MAGENTA_CANDLE_CAKE);
+                    return true;
+                case LIGHT_BLUE_CANDLE:
+                    tryAddCandle(item, player, LIGHT_BLUE_CANDLE_CAKE);
+                    return true;
+                case YELLOW_CANDLE:
+                    tryAddCandle(item, player, YELLOW_CANDLE_CAKE);
+                    return true;
+                case LIME_CANDLE:
+                    tryAddCandle(item, player, LIME_CANDLE_CAKE);
+                    return true;
+                case PINK_CANDLE:
+                    tryAddCandle(item, player, PINK_CANDLE_CAKE);
+                    return true;
+                case GRAY_CANDLE:
+                    tryAddCandle(item, player, GRAY_CANDLE_CAKE);
+                    return true;
+                case LIGHT_GRAY_CANDLE:
+                    tryAddCandle(item, player, LIGHT_GRAY_CANDLE_CAKE);
+                    return true;
+                case CYAN_CANDLE:
+                    tryAddCandle(item, player, CYAN_CANDLE_CAKE);
+                    return true;
+                case PURPLE_CANDLE:
+                    tryAddCandle(item, player, PURPLE_CANDLE_CAKE);
+                    return true;
+                case BLUE_CANDLE:
+                    tryAddCandle(item, player, BLUE_CANDLE_CAKE);
+                    return true;
+                case BROWN_CANDLE:
+                    tryAddCandle(item, player, BROWN_CANDLE_CAKE);
+                    return true;
+                case GREEN_CANDLE:
+                    tryAddCandle(item, player, GREEN_CANDLE_CAKE);
+                    return true;
+                case RED_CANDLE:
+                    tryAddCandle(item, player, RED_CANDLE_CAKE);
+                    return true;
+                case BLACK_CANDLE:
+                    tryAddCandle(item, player, BLACK_CANDLE_CAKE);
+                    return true;
             }
+        }
+
+        if (player != null && (player.getFoodData().getLevel() < player.getFoodData().getMaxLevel() || player.isCreative() || player.getServer().getDifficulty() == 0)) {
+            Food.getByRelative(this).eatenBy(player);
+
+            int bite = getDamage();
+            if (bite >= 0x6) {
+                level.useBreakOn(this);
+                return true;
+            }
+
+            setDamage(bite + 1);
+            level.setBlock(this, this, true);
             return true;
         }
+
         return false;
     }
 
@@ -129,10 +186,12 @@ public class BlockCake extends BlockTransparentMeta {
         return BlockColor.AIR_BLOCK_COLOR;
     }
 
+    @Override
     public int getComparatorInputOverride() {
         return (7 - this.getDamage()) * 2;
     }
 
+    @Override
     public boolean hasComparatorInputOverride() {
         return true;
     }
@@ -160,5 +219,30 @@ public class BlockCake extends BlockTransparentMeta {
     @Override
     public boolean canProvideSupport(BlockFace face, SupportType type) {
         return false;
+    }
+
+    @Override
+    public boolean isCake() {
+        return true;
+    }
+
+    private boolean tryAddCandle(Item item, @Nullable Player player, int candleCakeBlockId) {
+        if (getDamage() != 0) {
+            return false;
+        }
+
+        if (player != null && !player.isCreative()) {
+            item.pop();
+        }
+
+        level.addLevelSoundEvent(this, LevelSoundEventPacket.SOUND_AMBIENT_CANDLE);
+
+        level.setBlock(this, get(candleCakeBlockId), true);
+        return true;
+    }
+
+    protected boolean canSurvive() {
+        Block below = down();
+        return !below.isAir() && !below.isLiquid();
     }
 }

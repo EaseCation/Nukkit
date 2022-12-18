@@ -32,7 +32,7 @@ public class BlockDeadBush extends BlockFlowable {
     public int getId() {
         return DEADBUSH;
     }
-    
+
     @Override
     public boolean canBeReplaced() {
         return true;
@@ -89,6 +89,6 @@ public class BlockDeadBush extends BlockFlowable {
 
     private boolean canSurvive() {
         int id = down().getId();
-        return id == SAND || id == HARDENED_CLAY || id == STAINED_HARDENED_CLAY || id == DIRT || id == PODZOL || id == MYCELIUM;
+        return id == SAND || id == HARDENED_CLAY || id == STAINED_HARDENED_CLAY || id == DIRT || id == PODZOL || id == MYCELIUM || id == DIRT_WITH_ROOTS;
     }
 }

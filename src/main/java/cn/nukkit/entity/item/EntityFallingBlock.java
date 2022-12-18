@@ -2,6 +2,7 @@ package cn.nukkit.entity.item;
 
 import cn.nukkit.Player;
 import cn.nukkit.block.Block;
+import cn.nukkit.block.BlockDripstonePointed;
 import cn.nukkit.block.BlockID;
 import cn.nukkit.block.BlockLiquid;
 import cn.nukkit.block.SupportType;
@@ -16,6 +17,7 @@ import cn.nukkit.item.Item;
 import cn.nukkit.level.GameRule;
 import cn.nukkit.level.format.FullChunk;
 import cn.nukkit.math.BlockFace;
+import cn.nukkit.math.Mth;
 import cn.nukkit.math.Vector3;
 import cn.nukkit.nbt.tag.CompoundTag;
 import cn.nukkit.network.protocol.AddEntityPacket;
@@ -136,7 +138,7 @@ public class EntityFallingBlock extends Entity {
             motionY *= 1 - getDrag();
             motionZ *= friction;
 
-            Vector3 pos = (new Vector3(x - 0.5, y, z - 0.5)).round();
+            Vector3 pos = new Vector3(x - 0.5, y, z - 0.5).round();
 
             if (onGround) {
                 close();
@@ -144,7 +146,24 @@ public class EntityFallingBlock extends Entity {
 
                 Vector3 floorPos = new Vector3(x - 0.5, y, z - 0.5).floor();
                 Block floorBlock = this.level.getBlock(floorPos);
-                if (this.getBlock() == Block.SNOW_LAYER && floorBlock.getId() == Block.SNOW_LAYER && (floorBlock.getDamage() & 0x7) != 0x7) {
+                if (getBlock() == Block.POINTED_DRIPSTONE) {
+                    getLevel().addLevelEvent(block, LevelEventPacket.EVENT_SOUND_POINTED_DRIPSTONE_LAND);
+
+                    float damage = (float) Math.min(40, Math.max(0, (highestPosition - y) * 2));
+                    if (damage > 0) {
+                        Entity[] entities = level.getCollidingEntities(getBoundingBox(), this);
+                        for (Entity entity : entities) {
+                            if (!(entity instanceof EntityLiving) || highestPosition <= y) {
+                                continue;
+                            }
+                            entity.attack(new EntityDamageByBlockEvent(Block.get(Block.POINTED_DRIPSTONE, getDamage()), entity, DamageCause.CONTACT, damage));
+                        }
+                    }
+
+                    if (level.getGameRules().getBoolean(GameRule.DO_TILE_DROPS)) {
+                        level.dropItem(this, Item.get(Block.getItemId(Block.POINTED_DRIPSTONE), BlockDripstonePointed.HANGING_BIT));
+                    }
+                } else if (this.getBlock() == Block.SNOW_LAYER && floorBlock.getId() == Block.SNOW_LAYER && (floorBlock.getDamage() & 0x7) != 0x7) {
                     int mergedHeight = (floorBlock.getDamage() & 0x7) + 1 + (this.getDamage() & 0x7) + 1;
                     if (mergedHeight > 8) {
                         EntityBlockChangeEvent event = new EntityBlockChangeEvent(this, floorBlock, Block.get(Block.SNOW_LAYER, 0x7));
@@ -177,7 +196,7 @@ public class EntityFallingBlock extends Entity {
                     }
                     if (top.getFloorY() >= level.getMaxHeight()) {
                         if (level.gameRules.getBoolean(GameRule.DO_ENTITY_DROPS)) {
-                            level.dropItem(this, Item.get(getBlock(), getDamage()));
+                            level.dropItem(this, Item.get(Block.getItemId(getBlock()), getDamage()));
                         }
                     } else {
                         setBlock(up, top.clone());
@@ -198,12 +217,17 @@ public class EntityFallingBlock extends Entity {
                         if (event.getTo().getId() == Item.ANVIL) {
                             getLevel().addLevelEvent(block, LevelEventPacket.EVENT_SOUND_ANVIL_FALL);
 
-                            Entity[] e = level.getCollidingEntities(this.getBoundingBox(), this);
-                            for (Entity entity : e) {
-                                if (entity instanceof EntityLiving && highestPosition > y) {
-                                    entity.attack(new EntityDamageByBlockEvent(event.getTo(), entity, DamageCause.CONTACT, (float) Math.min(40, Math.max(0, (highestPosition - y) * 2))));
+                            float damage = (float) Math.min(40, Math.max(0, (highestPosition - y) * 2));
+                            if (damage > 0) {
+                                Entity[] entities = level.getCollidingEntities(getBoundingBox(), this);
+                                for (Entity entity : entities) {
+                                    if (!(entity instanceof EntityLiving) || highestPosition <= y) {
+                                        continue;
+                                    }
+                                    entity.attack(new EntityDamageByBlockEvent(event.getTo(), entity, DamageCause.CONTACT, damage));
                                 }
                             }
+
                         }
                     }
                 }

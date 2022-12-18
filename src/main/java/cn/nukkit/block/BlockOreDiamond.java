@@ -1,7 +1,6 @@
 package cn.nukkit.block;
 
 import cn.nukkit.item.Item;
-import cn.nukkit.item.ItemDiamond;
 import cn.nukkit.item.ItemTool;
 import cn.nukkit.item.enchantment.Enchantment;
 
@@ -58,7 +57,7 @@ public class BlockOreDiamond extends BlockSolid {
             }
 
             return new Item[]{
-                    new ItemDiamond(0, count)
+                    Item.get(Item.DIAMOND, 0, count)
             };
         } else {
             return new Item[0];

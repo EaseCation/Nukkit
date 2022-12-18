@@ -154,6 +154,33 @@ public class Level implements ChunkManager, Metadatable {
         randomTickBlocks[Block.WARPED_NYLIUM] = true;
         randomTickBlocks[Block.WEEPING_VINES] = true;
         randomTickBlocks[Block.TWISTING_VINES] = true;
+        randomTickBlocks[Block.POINTED_DRIPSTONE] = true;
+        randomTickBlocks[Block.AZALEA_LEAVES] = true;
+        randomTickBlocks[Block.AZALEA_LEAVES_FLOWERED] = true;
+        randomTickBlocks[Block.BUDDING_AMETHYST] = true;
+        randomTickBlocks[Block.LARGE_AMETHYST_BUD] = true;
+        randomTickBlocks[Block.MEDIUM_AMETHYST_BUD] = true;
+        randomTickBlocks[Block.SMALL_AMETHYST_BUD] = true;
+        randomTickBlocks[Block.COPPER_BLOCK] = true;
+        randomTickBlocks[Block.EXPOSED_COPPER] = true;
+        randomTickBlocks[Block.WEATHERED_COPPER] = true;
+        randomTickBlocks[Block.CUT_COPPER] = true;
+        randomTickBlocks[Block.EXPOSED_CUT_COPPER] = true;
+        randomTickBlocks[Block.WEATHERED_CUT_COPPER] = true;
+        randomTickBlocks[Block.CUT_COPPER_STAIRS] = true;
+        randomTickBlocks[Block.EXPOSED_CUT_COPPER_STAIRS] = true;
+        randomTickBlocks[Block.WEATHERED_CUT_COPPER_STAIRS] = true;
+        randomTickBlocks[Block.CUT_COPPER_SLAB] = true;
+        randomTickBlocks[Block.EXPOSED_CUT_COPPER_SLAB] = true;
+        randomTickBlocks[Block.WEATHERED_CUT_COPPER_SLAB] = true;
+        randomTickBlocks[Block.DOUBLE_CUT_COPPER_SLAB] = true;
+        randomTickBlocks[Block.EXPOSED_DOUBLE_CUT_COPPER_SLAB] = true;
+        randomTickBlocks[Block.WEATHERED_DOUBLE_CUT_COPPER_SLAB] = true;
+        randomTickBlocks[Block.CAVE_VINES] = true;
+        randomTickBlocks[Block.CAVE_VINES_BODY_WITH_BERRIES] = true;
+        randomTickBlocks[Block.CAVE_VINES_HEAD_WITH_BERRIES] = true;
+        randomTickBlocks[Block.MANGROVE_LEAVES] = true;
+        randomTickBlocks[Block.MANGROVE_PROPAGULE] = true;
     }
 
     private final Long2ObjectOpenHashMap<BlockEntity> blockEntities = new Long2ObjectOpenHashMap<>();
@@ -2523,11 +2550,15 @@ public class Level implements ChunkManager, Metadatable {
         }
 
         boolean snowLayer = hand.getId() == BlockID.SNOW_LAYER && block.canContainSnow();
-        if (!(block.canBeReplaced() || snowLayer || (hand.isSlab() && block.isSlab()))) {
+        if (!(block.canBeReplaced() || snowLayer || hand.isSlab() && block.isSlab() || block.isCandle() && hand.getId() == block.getId())) {
             return null;
         }
 
         if (target.canBeReplaced()) {
+            if (target.getId() == hand.getId() && !(target instanceof BlockMultiface)) {
+                return null;
+            }
+
             block = target;
             hand.position(block);
         }

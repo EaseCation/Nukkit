@@ -2,7 +2,6 @@ package cn.nukkit.block;
 
 import cn.nukkit.event.block.BlockFadeEvent;
 import cn.nukkit.item.Item;
-import cn.nukkit.item.ItemBlock;
 import cn.nukkit.level.Level;
 
 //和pm源码有点出入，这里参考了wiki
@@ -33,13 +32,13 @@ public class BlockOreRedstoneGlowing extends BlockOreRedstone {
 
     @Override
     public Item toItem(boolean addUserData) {
-        return new ItemBlock(Block.get(BlockID.REDSTONE_ORE));
+        return Item.get(getItemId(getUnlitBlockId()));
     }
 
     @Override
     public int onUpdate(int type) {
         if (type == Level.BLOCK_UPDATE_SCHEDULED || type == Level.BLOCK_UPDATE_RANDOM) {
-            BlockFadeEvent event = new BlockFadeEvent(this, get(REDSTONE_ORE));
+            BlockFadeEvent event = new BlockFadeEvent(this, get(getUnlitBlockId()));
             level.getServer().getPluginManager().callEvent(event);
             if (!event.isCancelled()) {
                 level.setBlock(this, event.getNewState(), false, false);
@@ -53,6 +52,15 @@ public class BlockOreRedstoneGlowing extends BlockOreRedstone {
 
     @Override
     public Item getSilkTouchResource() {
-        return Item.get(BlockID.REDSTONE_ORE);
+        return toItem(true);
+    }
+
+    @Override
+    protected int getLitBlockId() {
+        throw new UnsupportedOperationException();
+    }
+
+    protected int getUnlitBlockId() {
+        return REDSTONE_ORE;
     }
 }

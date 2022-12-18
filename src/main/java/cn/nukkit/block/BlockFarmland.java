@@ -112,4 +112,9 @@ public class BlockFarmland extends BlockSolidMeta {
     public BlockColor getColor() {
         return BlockColor.DIRT_BLOCK_COLOR;
     }
+
+    @Override
+    public double getMaxY() {
+        return this.y + 1 - 1.0 / 16;
+    }
 }

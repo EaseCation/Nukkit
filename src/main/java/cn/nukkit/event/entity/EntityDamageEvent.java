@@ -113,8 +113,10 @@ public class EntityDamageEvent extends EntityEvent implements Cancellable {
     public boolean canBeReducedByArmor() {
         switch (this.cause) {
             case FIRE_TICK:
+            case FREEZE:
             case SUFFOCATION:
             case DROWNING:
+            case DRY_OUT:
             case HUNGER:
             case FALL:
             case VOID:
@@ -202,6 +204,10 @@ public class EntityDamageEvent extends EntityEvent implements Cancellable {
          */
         DROWNING,
         /**
+         * Damage caused when an entity that should be in water is not.
+         */
+        DRY_OUT,
+        /**
          * Block explosion damage
          */
         BLOCK_EXPLOSION,
@@ -232,6 +238,10 @@ public class EntityDamageEvent extends EntityEvent implements Cancellable {
         /**
          * Damage caused by hunger
          */
-        HUNGER
+        HUNGER,
+        /**
+         * Damage caused from freezing.
+         */
+        FREEZE,
     }
 }

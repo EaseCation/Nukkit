@@ -149,8 +149,8 @@ public final class Blocks {
         registerBlock(CRIMSON_STEM, BlockFungusStemCrimson.class, V1_16_0);
         registerBlock(WARPED_STEM, BlockFungusStemWarped.class, V1_16_0);
         registerBlock(WARPED_WART_BLOCK, BlockNetherWartBlockWarped.class, V1_16_0);
-        registerBlock(CRIMSON_FUNGUS, BlockNetherFungusCrimson.class, V1_16_0);
-        registerBlock(WARPED_FUNGUS, BlockNetherFungusWarped.class, V1_16_0);
+        registerBlock(CRIMSON_FUNGUS, BlockNetherFungusCrimson.class, V1_16_0); //TODO: onFertilized
+        registerBlock(WARPED_FUNGUS, BlockNetherFungusWarped.class, V1_16_0); //TODO: onFertilized
         registerBlock(SHROOMLIGHT, BlockShroomlight.class, V1_16_0);
         registerBlock(WEEPING_VINES, BlockNetherVinesWeeping.class, V1_16_0);
         registerBlock(CRIMSON_NYLIUM, BlockNyliumCrimson.class, V1_16_0);
@@ -227,23 +227,173 @@ public final class Blocks {
 
         registerBlock(UNKNOWN, BlockUnknownBlock.class, V1_16_100);
 
-        // powder_snow... 1.17.0
-
+        registerBlock(POWDER_SNOW, BlockSnowPowder.class, V1_17_0); //TODO: entity interaction
+        registerBlock(POINTED_DRIPSTONE, BlockDripstonePointed.class, V1_17_0); //TODO: stalagmite damage
         registerBlock(COPPER_ORE, BlockOreCopper.class, V1_17_0);
+        registerBlock(LIGHTNING_ROD, BlockLightningRod.class, V1_17_0);
+        registerBlock(DRIPSTONE_BLOCK, BlockDripstone.class, V1_17_0);
+        registerBlock(DIRT_WITH_ROOTS, BlockDirtRooted.class, V1_17_0);
+        registerBlock(HANGING_ROOTS, BlockHangingRoots.class, V1_17_0);
+        registerBlock(MOSS_BLOCK, BlockMoss.class, V1_17_0); //TODO: onFertilized
+        registerBlock(SPORE_BLOSSOM, BlockSporeBlossom.class, V1_17_0);
+        registerBlock(CAVE_VINES, BlockCaveVines.class, V1_17_0); //TODO: item upgrade
+        registerBlock(BIG_DRIPLEAF, BlockDripleafBig.class, V1_17_0);
+        registerBlock(AZALEA_LEAVES, BlockLeavesAzalea.class, V1_17_0);
+        registerBlock(AZALEA_LEAVES_FLOWERED, BlockLeavesAzaleaFlowered.class, V1_17_0);
+        registerBlock(CALCITE, BlockCalcite.class, V1_17_0);
+        registerBlock(AMETHYST_BLOCK, BlockAmethyst.class, V1_17_0);
+        registerBlock(BUDDING_AMETHYST, BlockAmethystBudding.class, V1_17_0);
+        registerBlock(AMETHYST_CLUSTER, BlockAmethystCluster.class, V1_17_0);
+        registerBlock(LARGE_AMETHYST_BUD, BlockAmethystBudLarge.class, V1_17_0);
+        registerBlock(MEDIUM_AMETHYST_BUD, BlockAmethystBudMedium.class, V1_17_0);
+        registerBlock(SMALL_AMETHYST_BUD, BlockAmethystBudSmall.class, V1_17_0);
+        registerBlock(TUFF, BlockTuff.class, V1_17_0);
+        registerBlock(TINTED_GLASS, BlockGlassTinted.class, V1_17_0);
+        registerBlock(MOSS_CARPET, BlockCarpetMoss.class, V1_17_0);
+        registerBlock(SMALL_DRIPLEAF_BLOCK, BlockDripleafSmall.class, V1_17_0);
+        registerBlock(AZALEA, BlockAzalea.class, V1_17_0); //TODO: onFertilized
+        registerBlock(FLOWERING_AZALEA, BlockAzaleaFlowering.class, V1_17_0); //TODO: onFertilized
         registerBlock(BLOCK_GLOW_FRAME, BlockItemFrameGlow.class, V1_17_0);
-
+        registerBlock(COPPER_BLOCK, BlockCopper.class, V1_17_0);
+        registerBlock(EXPOSED_COPPER, BlockCopperExposed.class, V1_17_0);
+        registerBlock(WEATHERED_COPPER, BlockCopperWeathered.class, V1_17_0);
+        registerBlock(OXIDIZED_COPPER, BlockCopperOxidized.class, V1_17_0);
+        registerBlock(WAXED_COPPER, BlockCopperWaxed.class, V1_17_0);
+        registerBlock(WAXED_EXPOSED_COPPER, BlockCopperExposedWaxed.class, V1_17_0);
+        registerBlock(WAXED_WEATHERED_COPPER, BlockCopperWeatheredWaxed.class, V1_17_0);
+        registerBlock(CUT_COPPER, BlockCopperCut.class, V1_17_0);
+        registerBlock(EXPOSED_CUT_COPPER, BlockCopperCutExposed.class, V1_17_0);
+        registerBlock(WEATHERED_CUT_COPPER, BlockCopperCutWeathered.class, V1_17_0);
+        registerBlock(OXIDIZED_CUT_COPPER, BlockCopperCutOxidized.class, V1_17_0);
+        registerBlock(WAXED_CUT_COPPER, BlockCopperCutWaxed.class, V1_17_0);
+        registerBlock(WAXED_EXPOSED_CUT_COPPER, BlockCopperCutExposedWaxed.class, V1_17_0);
+        registerBlock(WAXED_WEATHERED_CUT_COPPER, BlockCopperCutWeatheredWaxed.class, V1_17_0);
+        registerBlock(CUT_COPPER_STAIRS, BlockStairsCopperCut.class, V1_17_0);
+        registerBlock(EXPOSED_CUT_COPPER_STAIRS, BlockStairsCopperCutExposed.class, V1_17_0);
+        registerBlock(WEATHERED_CUT_COPPER_STAIRS, BlockStairsCopperCutWeathered.class, V1_17_0);
+        registerBlock(OXIDIZED_CUT_COPPER_STAIRS, BlockStairsCopperCutOxidized.class, V1_17_0);
+        registerBlock(WAXED_CUT_COPPER_STAIRS, BlockStairsCopperCutWaxed.class, V1_17_0);
+        registerBlock(WAXED_EXPOSED_CUT_COPPER_STAIRS, BlockStairsCopperCutExposedWaxed.class, V1_17_0);
+        registerBlock(WAXED_WEATHERED_CUT_COPPER_STAIRS, BlockStairsCopperCutWeatheredWaxed.class, V1_17_0);
+        registerBlock(CUT_COPPER_SLAB, BlockSlabCopperCut.class, V1_17_0);
+        registerBlock(EXPOSED_CUT_COPPER_SLAB, BlockSlabCopperCutExposed.class, V1_17_0);
+        registerBlock(WEATHERED_CUT_COPPER_SLAB, BlockSlabCopperCutWeathered.class, V1_17_0);
+        registerBlock(OXIDIZED_CUT_COPPER_SLAB, BlockSlabCopperCutOxidized.class, V1_17_0);
+        registerBlock(WAXED_CUT_COPPER_SLAB, BlockSlabCopperCutWaxed.class, V1_17_0);
+        registerBlock(WAXED_EXPOSED_CUT_COPPER_SLAB, BlockSlabCopperCutExposedWaxed.class, V1_17_0);
+        registerBlock(WAXED_WEATHERED_CUT_COPPER_SLAB, BlockSlabCopperCutWeatheredWaxed.class, V1_17_0);
+        registerBlock(DOUBLE_CUT_COPPER_SLAB, BlockDoubleSlabCopperCut.class, V1_17_0);
+        registerBlock(EXPOSED_DOUBLE_CUT_COPPER_SLAB, BlockDoubleSlabCopperCutExposed.class, V1_17_0);
+        registerBlock(WEATHERED_DOUBLE_CUT_COPPER_SLAB, BlockDoubleSlabCopperCutWeathered.class, V1_17_0);
+        registerBlock(OXIDIZED_DOUBLE_CUT_COPPER_SLAB, BlockDoubleSlabCopperCutOxidized.class, V1_17_0);
+        registerBlock(WAXED_DOUBLE_CUT_COPPER_SLAB, BlockDoubleSlabCopperCutWaxed.class, V1_17_0);
+        registerBlock(WAXED_EXPOSED_DOUBLE_CUT_COPPER_SLAB, BlockDoubleSlabCopperCutExposedWaxed.class, V1_17_0);
+        registerBlock(WAXED_WEATHERED_DOUBLE_CUT_COPPER_SLAB, BlockDoubleSlabCopperCutWeatheredWaxed.class, V1_17_0);
+        registerBlock(CAVE_VINES_BODY_WITH_BERRIES, BlockCaveVinesBerriesBody.class, V1_17_0);
+        registerBlock(CAVE_VINES_HEAD_WITH_BERRIES, BlockCaveVinesBerriesHead.class, V1_17_0);
         registerBlock(SMOOTH_BASALT, BlockBasaltSmooth.class, V1_17_0);
+        registerBlock(DEEPSLATE, BlockDeepslate.class, V1_17_0);
+        registerBlock(COBBLED_DEEPSLATE, BlockDeepslateCobbled.class, V1_17_0);
+        registerBlock(COBBLED_DEEPSLATE_SLAB, BlockSlabDeepslateCobbled.class, V1_17_0);
+        registerBlock(COBBLED_DEEPSLATE_STAIRS, BlockStairsDeepslateCobbled.class, V1_17_0);
+        registerBlock(COBBLED_DEEPSLATE_WALL, BlockWallDeepslateCobbled.class, V1_17_0);
+        registerBlock(POLISHED_DEEPSLATE, BlockDeepslatePolished.class, V1_17_0);
+        registerBlock(POLISHED_DEEPSLATE_SLAB, BlockSlabDeepslatePolished.class, V1_17_0);
+        registerBlock(POLISHED_DEEPSLATE_STAIRS, BlockStairsDeepslatePolished.class, V1_17_0);
+        registerBlock(POLISHED_DEEPSLATE_WALL, BlockWallDeepslatePolished.class, V1_17_0);
+        registerBlock(DEEPSLATE_TILES, BlockDeepslateTiles.class, V1_17_0);
+        registerBlock(DEEPSLATE_TILE_SLAB, BlockSlabDeepslateTile.class, V1_17_0);
+        registerBlock(DEEPSLATE_TILE_STAIRS, BlockStairsDeepslateTile.class, V1_17_0);
+        registerBlock(DEEPSLATE_TILE_WALL, BlockWallDeepslateTile.class, V1_17_0);
+        registerBlock(DEEPSLATE_BRICKS, BlockBricksDeepslate.class, V1_17_0);
+        registerBlock(DEEPSLATE_BRICK_SLAB, BlockSlabDeepslateBrick.class, V1_17_0);
+        registerBlock(DEEPSLATE_BRICK_STAIRS, BlockStairsDeepslateBrick.class, V1_17_0);
+        registerBlock(DEEPSLATE_BRICK_WALL, BlockWallDeepslateBrick.class, V1_17_0);
+        registerBlock(CHISELED_DEEPSLATE, BlockDeepslateChiseled.class, V1_17_0);
+        registerBlock(COBBLED_DEEPSLATE_DOUBLE_SLAB, BlockDoubleSlabDeepslateCobbled.class, V1_17_0);
+        registerBlock(POLISHED_DEEPSLATE_DOUBLE_SLAB, BlockDoubleSlabDeepslatePolished.class, V1_17_0);
+        registerBlock(DEEPSLATE_TILE_DOUBLE_SLAB, BlockDoubleSlabDeepslateTile.class, V1_17_0);
+        registerBlock(DEEPSLATE_BRICK_DOUBLE_SLAB, BlockDoubleSlabDeepslateBrick.class, V1_17_0);
+        registerBlock(DEEPSLATE_LAPIS_ORE, BlockOreLapisDeepslate.class, V1_17_0);
+        registerBlock(DEEPSLATE_IRON_ORE, BlockOreIronDeepslate.class, V1_17_0);
+        registerBlock(DEEPSLATE_GOLD_ORE, BlockOreGoldDeepslate.class, V1_17_0);
+        registerBlock(DEEPSLATE_REDSTONE_ORE, BlockOreRedstoneDeepslate.class, V1_17_0);
+        registerBlock(LIT_DEEPSLATE_REDSTONE_ORE, BlockOreRedstoneGlowingDeepslate.class, V1_17_0);
+        registerBlock(DEEPSLATE_DIAMOND_ORE, BlockOreDiamondDeepslate.class, V1_17_0);
+        registerBlock(DEEPSLATE_COAL_ORE, BlockOreCoalDeepslate.class, V1_17_0);
+        registerBlock(DEEPSLATE_EMERALD_ORE, BlockOreEmeraldDeepslate.class, V1_17_0);
+        registerBlock(DEEPSLATE_COPPER_ORE, BlockOreCopperDeepslate.class, V1_17_0);
+        registerBlock(CRACKED_DEEPSLATE_TILES, BlockDeepslateTilesCracked.class, V1_17_0);
+        registerBlock(CRACKED_DEEPSLATE_BRICKS, BlockBricksDeepslateCracked.class, V1_17_0);
+        registerBlock(GLOW_LICHEN, BlockGlowLichen.class, V1_17_0); //TODO: onFertilized
+        registerBlock(WAXED_OXIDIZED_COPPER, BlockCopperOxidizedWaxed.class, V1_17_0);
+        registerBlock(WAXED_OXIDIZED_CUT_COPPER, BlockCopperCutOxidizedWaxed.class, V1_17_0);
+        registerBlock(WAXED_OXIDIZED_CUT_COPPER_STAIRS, BlockStairsCopperCutOxidizedWaxed.class, V1_17_0);
+        registerBlock(WAXED_OXIDIZED_CUT_COPPER_SLAB, BlockSlabCopperCutOxidizedWaxed.class, V1_17_0);
+        registerBlock(WAXED_OXIDIZED_DOUBLE_CUT_COPPER_SLAB, BlockDoubleSlabCopperCutOxidizedWaxed.class, V1_17_0);
+        registerBlock(RAW_IRON_BLOCK, BlockIronRaw.class, V1_17_0);
+        registerBlock(RAW_COPPER_BLOCK, BlockCopperRaw.class, V1_17_0);
+        registerBlock(RAW_GOLD_BLOCK, BlockGoldRaw.class, V1_17_0);
+        registerBlock(INFESTED_DEEPSLATE, BlockDeepslateInfested.class, V1_17_0);
 
-        // ...infested_deepslate
-
-        // candle... 1.17.10
-        // ...black_candle_cake
+        registerBlock(CANDLE, BlockCandle.class, V1_17_10);
+        registerBlock(WHITE_CANDLE, BlockCandleWhite.class, V1_17_10);
+        registerBlock(ORANGE_CANDLE, BlockCandleOrange.class, V1_17_10);
+        registerBlock(MAGENTA_CANDLE, BlockCandleMagenta.class, V1_17_10);
+        registerBlock(LIGHT_BLUE_CANDLE, BlockCandleLightBlue.class, V1_17_10);
+        registerBlock(YELLOW_CANDLE, BlockCandleYellow.class, V1_17_10);
+        registerBlock(LIME_CANDLE, BlockCandleLime.class, V1_17_10);
+        registerBlock(PINK_CANDLE, BlockCandlePink.class, V1_17_10);
+        registerBlock(GRAY_CANDLE, BlockCandleGray.class, V1_17_10);
+        registerBlock(LIGHT_GRAY_CANDLE, BlockCandleLightGray.class, V1_17_10);
+        registerBlock(CYAN_CANDLE, BlockCandleCyan.class, V1_17_10);
+        registerBlock(PURPLE_CANDLE, BlockCandlePurple.class, V1_17_10);
+        registerBlock(BLUE_CANDLE, BlockCandleBlue.class, V1_17_10);
+        registerBlock(BROWN_CANDLE, BlockCandleBrown.class, V1_17_10);
+        registerBlock(GREEN_CANDLE, BlockCandleGreen.class, V1_17_10);
+        registerBlock(RED_CANDLE, BlockCandleRed.class, V1_17_10);
+        registerBlock(BLACK_CANDLE, BlockCandleBlack.class, V1_17_10);
+        registerBlock(CANDLE_CAKE, BlockCakeCandle.class, V1_17_10);
+        registerBlock(WHITE_CANDLE_CAKE, BlockCakeCandleWhite.class, V1_17_10);
+        registerBlock(ORANGE_CANDLE_CAKE, BlockCakeCandleOrange.class, V1_17_10);
+        registerBlock(MAGENTA_CANDLE_CAKE, BlockCakeCandleMagenta.class, V1_17_10);
+        registerBlock(LIGHT_BLUE_CANDLE_CAKE, BlockCakeCandleLightBlue.class, V1_17_10);
+        registerBlock(YELLOW_CANDLE_CAKE, BlockCakeCandleYellow.class, V1_17_10);
+        registerBlock(LIME_CANDLE_CAKE, BlockCakeCandleLime.class, V1_17_10);
+        registerBlock(PINK_CANDLE_CAKE, BlockCakeCandlePink.class, V1_17_10);
+        registerBlock(GRAY_CANDLE_CAKE, BlockCakeCandleGray.class, V1_17_10);
+        registerBlock(LIGHT_GRAY_CANDLE_CAKE, BlockCakeCandleLightGray.class, V1_17_10);
+        registerBlock(CYAN_CANDLE_CAKE, BlockCakeCandleCyan.class, V1_17_10);
+        registerBlock(PURPLE_CANDLE_CAKE, BlockCakeCandlePurple.class, V1_17_10);
+        registerBlock(BLUE_CANDLE_CAKE, BlockCakeCandleBlue.class, V1_17_10);
+        registerBlock(BROWN_CANDLE_CAKE, BlockCakeCandleBrown.class, V1_17_10);
+        registerBlock(GREEN_CANDLE_CAKE, BlockCakeCandleGreen.class, V1_17_10);
+        registerBlock(RED_CANDLE_CAKE, BlockCakeCandleRed.class, V1_17_10);
+        registerBlock(BLACK_CANDLE_CAKE, BlockCakeCandleBlack.class, V1_17_10);
 
         registerBlock(CLIENT_REQUEST_PLACEHOLDER_BLOCK, BlockClientRequestPlaceholder.class, V1_17_40);
 
-        // sculk_sensor... 1.19.0
+        registerBlock(SCULK_SENSOR, BlockSculkSensor.class, V1_19_0);
+        registerBlock(SCULK, BlockSculk.class, V1_19_0);
+        registerBlock(SCULK_VEIN, BlockSculkVein.class, V1_19_0);
+        registerBlock(SCULK_CATALYST, BlockSculkCatalyst.class, V1_19_0);
+        registerBlock(SCULK_SHRIEKER, BlockSculkShrieker.class, V1_19_0);
+        registerBlock(REINFORCED_DEEPSLATE, BlockDeepslateReinforced.class, V1_19_0);
+        registerBlock(FROG_SPAWN, BlockFrogSpawn.class, V1_19_0);
+        registerBlock(PEARLESCENT_FROGLIGHT, BlockFroglightPearlescent.class, V1_19_0);
+        registerBlock(VERDANT_FROGLIGHT, BlockFroglightVerdant.class, V1_19_0);
+        registerBlock(OCHRE_FROGLIGHT, BlockFroglightOchre.class, V1_19_0);
         registerBlock(MANGROVE_LEAVES, BlockLeavesMangrove.class, V1_19_0);
-
+        registerBlock(MUD, BlockMud.class, V1_19_0);
+        registerBlock(MANGROVE_PROPAGULE, BlockMangrovePropagule.class, V1_19_0); //TODO: onFertilized
+        registerBlock(MUD_BRICKS, BlockBricksMud.class, V1_19_0);
+        registerBlock(PACKED_MUD, BlockMudPacked.class, V1_19_0);
+        registerBlock(MUD_BRICK_SLAB, BlockSlabMudBrick.class, V1_19_0);
+        registerBlock(MUD_BRICK_DOUBLE_SLAB, BlockDoubleSlabMudBrick.class, V1_19_0);
+        registerBlock(MUD_BRICK_STAIRS, BlockStairsMudBrick.class, V1_19_0);
+        registerBlock(MUD_BRICK_WALL, BlockWallMudBrick.class, V1_19_0);
+        registerBlock(MANGROVE_ROOTS, BlockMangroveRoots.class, V1_19_0);
+        registerBlock(MUDDY_MANGROVE_ROOTS, BlockMangroveRootsMuddy.class, V1_19_0);
         registerBlock(MANGROVE_LOG, BlockLogMangrove.class, V1_19_0);
         registerBlock(STRIPPED_MANGROVE_LOG, BlockLogStrippedMangrove.class, V1_19_0);
         registerBlock(MANGROVE_PLANKS, BlockPlanksMangrove.class, V1_19_0);
@@ -261,6 +411,7 @@ public final class Blocks {
         registerBlock(STRIPPED_MANGROVE_WOOD, BlockWoodStrippedMangrove.class, V1_19_0);
         registerBlock(MANGROVE_DOUBLE_SLAB, BlockDoubleSlabMangrove.class, V1_19_0);
 
+        // oak_hanging_sign... 1.20.0
     }
 
     public static void registerElements() {

@@ -60,6 +60,11 @@ public class BlockMagma extends BlockSolid {
     }
 
     @Override
+    public boolean hasEntityCollision() {
+        return true;
+    }
+
+    @Override
     public void onEntityCollide(Entity entity) {
         if (!entity.hasEffect(Effect.FIRE_RESISTANCE)) {
             if (entity instanceof Player) {

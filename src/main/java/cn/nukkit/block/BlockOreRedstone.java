@@ -1,7 +1,6 @@
 package cn.nukkit.block;
 
 import cn.nukkit.item.Item;
-import cn.nukkit.item.ItemRedstone;
 import cn.nukkit.item.ItemTool;
 import cn.nukkit.item.enchantment.Enchantment;
 import cn.nukkit.level.Level;
@@ -55,7 +54,7 @@ public class BlockOreRedstone extends BlockSolid {
             }
 
             return new Item[]{
-                    new ItemRedstone(0, count)
+                    Item.get(Item.REDSTONE, 0, count)
             };
         } else {
             return new Item[0];
@@ -65,7 +64,7 @@ public class BlockOreRedstone extends BlockSolid {
     @Override
     public int onUpdate(int type) {
         if (type == Level.BLOCK_UPDATE_TOUCH) { //type == Level.BLOCK_UPDATE_NORMAL ||
-            this.getLevel().setBlock(this, Block.get(BlockID.LIT_REDSTONE_ORE), false, false);
+            this.getLevel().setBlock(this, Block.get(getLitBlockId()), false, false);
 
             return Level.BLOCK_UPDATE_WEAK;
         }
@@ -86,5 +85,9 @@ public class BlockOreRedstone extends BlockSolid {
     @Override
     public boolean canSilkTouch() {
         return true;
+    }
+
+    protected int getLitBlockId() {
+        return LIT_REDSTONE_ORE;
     }
 }

@@ -51,6 +51,11 @@ public class BlockWitherRose extends BlockFlower {
     }
 
     @Override
+    public boolean hasEntityCollision() {
+        return true;
+    }
+
+    @Override
     public void onEntityCollide(Entity entity) {
         if (!(entity instanceof EntityLiving) || entity instanceof Player && ((Player) entity).isCreative()
                 || entity.getServer().getTick() % 10 != 0) {

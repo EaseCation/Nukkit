@@ -108,6 +108,11 @@ public class BlockTripWire extends BlockTransparentMeta {
     }
 
     @Override
+    public boolean hasEntityCollision() {
+        return true;
+    }
+
+    @Override
     public void onEntityCollide(Entity entity) {
         if (!this.level.isRedstoneEnabled()) {
             return;

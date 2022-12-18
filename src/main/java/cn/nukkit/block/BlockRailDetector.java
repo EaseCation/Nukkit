@@ -61,6 +61,11 @@ public class BlockRailDetector extends BlockRail {
     }
 
     @Override
+    public boolean hasEntityCollision() {
+        return true;
+    }
+
+    @Override
     public void onEntityCollide(Entity entity) {
         updateState();
     }

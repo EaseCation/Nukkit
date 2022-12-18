@@ -59,13 +59,15 @@ public final class BlockEntities {
 
         registerBlockEntity(BlockEntityType.LODESTONE, LODESTONE, BlockEntityLodestone.class, V1_16_0);
 
+        registerBlockEntity(BlockEntityType.SPORE_BLOSSOM, SPORE_BLOSSOM, BlockEntitySporeBlossom.class, V1_17_0);
         registerBlockEntity(BlockEntityType.GLOW_ITEM_FRAME, GLOW_ITEM_FRAME, BlockEntityGlowItemFrame.class, V1_17_0);
 
-//        registerBlockEntity(BlockEntityType.SCULK_SENSOR, SCULK_SENSOR, BlockEntitySculkSensor.class, V1_19_0);
-//        registerBlockEntity(BlockEntityType.SPORE_BLOSSOM, SPORE_BLOSSOM, BlockEntitySporeBlossom.class, V1_19_0);
-//        registerBlockEntity(BlockEntityType.SCULK_CATALYST, SCULK_CATALYST, BlockEntitySculkCatalyst.class, V1_19_0);
-//        registerBlockEntity(BlockEntityType.SCULK_SHRIEKER, SCULK_SHRIEKER, BlockEntitySculkShrieker.class, V1_19_0);
+        registerBlockEntity(BlockEntityType.SCULK_SENSOR, SCULK_SENSOR, BlockEntitySculkSensor.class, V1_19_0);
+        registerBlockEntity(BlockEntityType.SCULK_CATALYST, SCULK_CATALYST, BlockEntitySculkCatalyst.class, V1_19_0);
+        registerBlockEntity(BlockEntityType.SCULK_SHRIEKER, SCULK_SHRIEKER, BlockEntitySculkShrieker.class, V1_19_0);
 
+//        registerBlockEntity(BlockEntityType.HANGING_SIGN, HANGING_SIGN, BlockEntityHangingSign.class, V1_20_0);
+//        registerBlockEntity(BlockEntityType.CHISELED_BOOKSHELF, CHISELED_BOOKSHELF, BlockEntityChiseledBookshelf.class, V1_20_0);
     }
 
     private static Class<? extends BlockEntity> registerBlockEntity(int type, String name, Class<? extends BlockEntity> clazz) {

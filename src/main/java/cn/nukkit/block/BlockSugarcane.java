@@ -167,6 +167,6 @@ public class BlockSugarcane extends BlockFlowable {
     }
 
     private boolean canSurvive(int id) {
-        return id == GRASS || id == DIRT || id == SAND || id == PODZOL || id == MYCELIUM;
+        return id == GRASS || id == DIRT || id == SAND || id == PODZOL || id == MYCELIUM || id == DIRT_WITH_ROOTS;
     }
 }

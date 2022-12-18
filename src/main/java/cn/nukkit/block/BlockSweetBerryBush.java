@@ -62,11 +62,6 @@ public class BlockSweetBerryBush extends BlockFlowable {
     }
 
     @Override
-    public boolean isSolid() {
-        return false;
-    }
-
-    @Override
     public BlockColor getColor() {
         return BlockColor.PLANT_BLOCK_COLOR;
     }
@@ -207,14 +202,9 @@ public class BlockSweetBerryBush extends BlockFlowable {
         }*/
     }
 
-    @Override
-    public boolean canProvideSupport(BlockFace face, SupportType type) {
-        return false;
-    }
-
     private boolean canSurvive() {
         int below = down().getId();
-        return below == Block.GRASS || below == Block.DIRT || below == Block.PODZOL || below == MYCELIUM || below == MOSS_BLOCK || below == FARMLAND;
+        return below == Block.GRASS || below == Block.DIRT || below == Block.PODZOL || below == MYCELIUM || below == DIRT_WITH_ROOTS || below == MOSS_BLOCK || below == FARMLAND;
     }
 
     private int getBerryDropAmount(int meta) {

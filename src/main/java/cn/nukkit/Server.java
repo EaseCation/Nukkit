@@ -74,6 +74,7 @@ import cn.nukkit.scheduler.ServerScheduler;
 import cn.nukkit.utils.*;
 import cn.nukkit.utils.bugreport.ExceptionHandler;
 import co.aikar.timings.Timings;
+import com.dosse.upnp.UPnP;
 import com.google.common.base.Preconditions;
 import io.netty.buffer.ByteBuf;
 import it.unimi.dsi.fastutil.objects.Object2ObjectOpenHashMap;
@@ -191,6 +192,8 @@ public class Server {
     private final String pluginPath;
 
 //    private final Set<UUID> uniquePlayers = new ObjectOpenHashSet<>();
+
+    private boolean upnpEnabled;
 
     private QueryHandler queryHandler;
 
@@ -312,6 +315,7 @@ public class Server {
                 put("level-name", "world");
                 put("level-seed", "");
                 put("level-type", "DEFAULT");
+                put("enable-upnp", false);
                 put("enable-query", true);
                 put("enable-rcon", false);
                 put("rcon.password", Base64.getEncoder().encodeToString(UUID.randomUUID().toString().replace("-", "").getBytes()).substring(3, 13));
@@ -805,6 +809,13 @@ public class Server {
             log.debug("Closing console");
             this.consoleThread.interrupt();
 
+            if (this.upnpEnabled) {
+                log.debug("Closing UPnP port");
+                if (UPnP.closePortUDP(this.getPort())) {
+                    log.info("Removed forwarding rule for UDP Port {} using UPnP.", getPort());
+                }
+            }
+
             log.debug("Stopping network interfaces");
             for (SourceInterface interfaz : this.network.getInterfaces()) {
                 interfaz.shutdown();
@@ -822,6 +833,25 @@ public class Server {
     }
 
     public void start() {
+        if (this.getPropertyBoolean("enable-upnp", false)) {
+            if (UPnP.isUPnPAvailable()) {
+                log.debug("UPnP enabled. Attempting to port-forward with UPnP.");
+                if (UPnP.openPortUDP(getPort(), "Cloudburst")) {
+                    this.upnpEnabled = true; // Saved to disable the port-forwarding on shutdown
+                    log.info("Successfully forwarded UDP Port {} using UPnP.", getPort());
+                } else {
+                    this.upnpEnabled = false;
+                    log.warn("cloudburst.server.upnp.fail");
+                }
+            } else {
+                this.upnpEnabled = false;
+                log.warn("UPnP is enabled, but no UPnP enabled gateway was found.");
+            }
+        } else {
+            this.upnpEnabled = false;
+            log.debug("UPnP is disabled.");
+        }
+
         if (this.getPropertyBoolean("enable-query", true)) {
             this.queryHandler = new QueryHandler();
         }

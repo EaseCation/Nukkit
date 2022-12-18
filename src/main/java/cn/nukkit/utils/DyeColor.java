@@ -1,7 +1,11 @@
 package cn.nukkit.utils;
 
+import cn.nukkit.item.ItemDye;
+
+import java.util.Arrays;
+
 public enum DyeColor {
-    BLACK(0, 15, "Black", "Ink Sack", BlockColor.BLACK_BLOCK_COLOR, new BlockColor(0x00, 0x00, 0x00)),
+    BLACK(0, 15, "Black", "Ink Sac", BlockColor.BLACK_BLOCK_COLOR, new BlockColor(0x00, 0x00, 0x00)),
     RED(1, 14, "Red", BlockColor.RED_BLOCK_COLOR, new BlockColor(0xb0, 0x2e, 0x26)),
     GREEN(2, 13, "Green", BlockColor.GREEN_BLOCK_COLOR, new BlockColor(0x5e, 0x7c, 0x16)),
     BROWN(3, 12, "Brown", "Cocoa Beans", BlockColor.BROWN_BLOCK_COLOR, new BlockColor(0x83, 0x54, 0x32)),
@@ -27,6 +31,7 @@ public enum DyeColor {
 
     private final static DyeColor[] BY_WOOL_DATA;
     private final static DyeColor[] BY_DYE_DATA;
+    private final static DyeColor[] BY_DYE_NEW_DATA;
 
     DyeColor(int dyeColorMeta, int woolColorMeta, String colorName, BlockColor blockColor, BlockColor signColor) {
         this(dyeColorMeta, woolColorMeta, colorName, colorName + " Dye", blockColor, signColor);
@@ -73,10 +78,20 @@ public enum DyeColor {
             BY_WOOL_DATA[color.woolColorMeta & 0x0f] = color;
             BY_DYE_DATA[color.dyeColorMeta & 0x0f] = color;
         }
+
+        BY_DYE_NEW_DATA = Arrays.copyOf(BY_DYE_DATA, BY_DYE_DATA.length + 4);
+        BY_DYE_NEW_DATA[ItemDye.BLACK_NEW] = DyeColor.BLACK;
+        BY_DYE_NEW_DATA[ItemDye.BROWN_NEW] = DyeColor.BROWN;
+        BY_DYE_NEW_DATA[ItemDye.BLUE_NEW] = DyeColor.BLUE;
+        BY_DYE_NEW_DATA[ItemDye.WHITE_NEW] = DyeColor.WHITE;
     }
 
     public static DyeColor getByDyeData(int dyeColorMeta) {
         return BY_DYE_DATA[dyeColorMeta & 0x0f];
+    }
+
+    public static DyeColor getByDyeNewData(int dyeMeta) {
+        return BY_DYE_NEW_DATA[dyeMeta];
     }
 
     public static DyeColor getByWoolData(int woolColorMeta) {

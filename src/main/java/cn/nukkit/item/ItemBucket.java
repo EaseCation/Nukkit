@@ -91,7 +91,7 @@ public class ItemBucket extends Item {
             case LAVA_BUCKET:
                 return FLOWING_LAVA;
             case POWDER_SNOW_BUCKET:
-//                return POWDER_SNOW; //TODO
+                return POWDER_SNOW;
             default:
                 return AIR;
         }
@@ -139,8 +139,8 @@ public class ItemBucket extends Item {
         if (placeBlock.isAir()) {
             if (target.isLiquidSource()) {
                 Item result = Item.get(BUCKET, getMetaFromBlock(target.getId()));
-                PlayerBucketFillEvent ev;
-                player.getServer().getPluginManager().callEvent(ev = new PlayerBucketFillEvent(player, block, face, this, result));
+                PlayerBucketFillEvent ev = new PlayerBucketFillEvent(player, block, face, this, result);
+                player.getServer().getPluginManager().callEvent(ev);
                 if (!ev.isCancelled()) {
                     player.getLevel().setBlock(target, Block.get(AIR), true);
 
@@ -185,8 +185,8 @@ public class ItemBucket extends Item {
                 }
             } else if (extra.isWaterSource()) {
                 Item result = Item.get(BUCKET, getMetaFromBlock(extra.getId()));
-                PlayerBucketFillEvent ev;
-                player.getServer().getPluginManager().callEvent(ev = new PlayerBucketFillEvent(player, block, face, this, result));
+                PlayerBucketFillEvent ev = new PlayerBucketFillEvent(player, block, face, this, result);
+                player.getServer().getPluginManager().callEvent(ev);
                 if (!ev.isCancelled()) {
                     player.getLevel().setExtraBlock(extra, Block.get(AIR), true);
 
@@ -224,6 +224,34 @@ public class ItemBucket extends Item {
                 } else {
                     player.getInventory().sendContents(player);
                 }
+            } else if (target.getId() == BlockID.POWDER_SNOW) {
+                Item result = Item.get(BUCKET, getMetaFromBlock(target.getId()));
+                PlayerBucketFillEvent ev = new PlayerBucketFillEvent(player, block, face, this, result);
+                player.getServer().getPluginManager().callEvent(ev);
+
+                if (ev.isCancelled()) {
+                    player.getInventory().sendContents(player);
+                    return false;
+                }
+
+                level.setBlock(target, Blocks.air(), true);
+
+                if (player.isSurvival()) {
+                    if (getCount() - 1 <= 0) {
+                        player.getInventory().setItemInHand(ev.getItem());
+                    } else {
+                        Item clone = clone();
+                        clone.setCount(getCount() - 1);
+                        player.getInventory().setItemInHand(clone);
+                        if (player.getInventory().canAddItem(ev.getItem())) {
+                            player.getInventory().addItem(ev.getItem());
+                        } else {
+                            player.dropItem(ev.getItem());
+                        }
+                    }
+                }
+
+                level.addLevelSoundEvent(target, LevelSoundEventPacket.SOUND_BUCKET_FILL_POWDER_SNOW);
             }
         } else if (placeBlock.isLiquid()) {
             if (target.canContainWater() && placeBlock.isWater()) {
@@ -277,6 +305,7 @@ public class ItemBucket extends Item {
                     level.addLevelSoundEvent(block, LevelSoundEventPacket.SOUND_BUCKET_EMPTY_WATER);
                 }
 
+                /* //TODO: entity
                 switch (meta) {
                     case COD_BUCKET:
                         Entity cod = Entity.createEntity("Cod", block);
@@ -303,6 +332,7 @@ public class ItemBucket extends Item {
                         if (tadpole != null) tadpole.spawnToAll();
                         break;
                 }
+                */
 
                 return true;
             } else if (nether) {
@@ -318,7 +348,40 @@ public class ItemBucket extends Item {
                 player.getInventory().sendContents(player);
             }
         } else if (!placeBlock.isAir()) {
-            //TODO
+            if (!block.canBeReplaced()) {
+                return false;
+            }
+
+            Item result = Item.get(BUCKET, EMPTY_BUCKET);
+            PlayerBucketEmptyEvent ev = new PlayerBucketEmptyEvent(player, block, face, this, result);
+            player.getServer().getPluginManager().callEvent(ev);
+            if (ev.isCancelled()) {
+                return false;
+            }
+
+            level.setExtraBlock(block, Blocks.air(), true, false);
+            level.setBlock(block, placeBlock, true);
+
+            if (player.isSurvival()) {
+                if (getCount() - 1 <= 0) {
+                    player.getInventory().setItemInHand(ev.getItem());
+                } else {
+                    Item clone = clone();
+                    clone.setCount(getCount() - 1);
+                    player.getInventory().setItemInHand(clone);
+                    if (player.getInventory().canAddItem(ev.getItem())) {
+                        player.getInventory().addItem(ev.getItem());
+                    } else {
+                        player.dropItem(ev.getItem());
+                    }
+                }
+            }
+
+            if (meta == POWDER_SNOW_BUCKET) {
+                level.addLevelSoundEvent(block, LevelSoundEventPacket.SOUND_BUCKET_EMPTY_POWDER_SNOW);
+            }
+
+            return true;
         }
 
         return false;

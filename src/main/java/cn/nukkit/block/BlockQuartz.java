@@ -19,9 +19,9 @@ public class BlockQuartz extends BlockSolidMeta {
     public static final int SMOOTH_QUARTZ = 3;
 
     private static final String[] NAMES = new String[]{
-            "Quartz Block",
+            "Block of Quartz",
             "Chiseled Quartz Block",
-            "Quartz Pillar",
+            "Pillar Quartz Block",
             "Smooth Quartz Block",
     };
 

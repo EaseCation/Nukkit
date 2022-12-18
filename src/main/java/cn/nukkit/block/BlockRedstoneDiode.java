@@ -15,6 +15,7 @@ import cn.nukkit.utils.Faceable;
  * @author CreeperFace
  */
 public abstract class BlockRedstoneDiode extends BlockTransparentMeta implements Faceable {
+    public static final int DIRECTION_MASK = 0b11;
 
     protected boolean isPowered = false;
 
@@ -249,7 +250,7 @@ public abstract class BlockRedstoneDiode extends BlockTransparentMeta implements
 
     @Override
     public BlockFace getBlockFace() {
-        return BlockFace.fromHorizontalIndex(this.getDamage() & 0x07);
+        return BlockFace.fromHorizontalIndex(this.getDamage() & DIRECTION_MASK);
     }
 
     @Override

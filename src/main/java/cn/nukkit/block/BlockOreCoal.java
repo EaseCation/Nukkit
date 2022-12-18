@@ -1,7 +1,6 @@
 package cn.nukkit.block;
 
 import cn.nukkit.item.Item;
-import cn.nukkit.item.ItemCoal;
 import cn.nukkit.item.ItemTool;
 import cn.nukkit.item.enchantment.Enchantment;
 import cn.nukkit.utils.BlockColor;
@@ -58,7 +57,7 @@ public class BlockOreCoal extends BlockSolid {
             }
 
             return new Item[]{
-                    new ItemCoal(0, count)
+                    Item.get(Item.COAL, 0, count)
             };
         } else {
             return new Item[0];

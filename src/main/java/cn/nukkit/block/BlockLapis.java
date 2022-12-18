@@ -21,7 +21,7 @@ public class BlockLapis extends BlockSolid {
 
     @Override
     public String getName() {
-        return "Lapis Lazuli Block";
+        return "Block of Lapis Lazuli";
     }
 
     @Override

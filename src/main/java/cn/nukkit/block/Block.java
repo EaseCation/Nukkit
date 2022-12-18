@@ -319,7 +319,7 @@ public abstract class Block extends Position implements Metadatable, Cloneable, 
             list[PURPUR_BLOCK] = BlockPurpur.class; //201
 
             list[PURPUR_STAIRS] = BlockStairsPurpur.class; //203
-            
+
             list[UNDYED_SHULKER_BOX] = BlockUndyedShulkerBox.class; //205
             list[END_BRICKS] = BlockBricksEndStone.class; //206
 
@@ -1319,6 +1319,10 @@ public abstract class Block extends Position implements Metadatable, Cloneable, 
         return false;
     }
 
+    public boolean isSapling() {
+        return false;
+    }
+
     public boolean isVegetation() {
         return false;
     }
@@ -1405,5 +1409,29 @@ public abstract class Block extends Position implements Metadatable, Cloneable, 
 
     public boolean isItemFrame() {
         return false;
+    }
+
+    public boolean isCake() {
+        return false;
+    }
+
+    public boolean isCandle() {
+        return false;
+    }
+
+    public boolean isCaveVines() {
+        return false;
+    }
+
+    public boolean isWaxed() {
+        return false;
+    }
+
+    public boolean hasCopperBehavior() {
+        return false;
+    }
+
+    public int getCopperAge() {
+        return -1;
     }
 }

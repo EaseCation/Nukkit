@@ -46,6 +46,11 @@ public class BlockCobweb extends BlockFlowable {
     }
 
     @Override
+    public boolean hasEntityCollision() {
+        return true;
+    }
+
+    @Override
     public void onEntityCollide(Entity entity) {
         entity.resetFallDistance();
     }
@@ -83,5 +88,14 @@ public class BlockCobweb extends BlockFlowable {
     @Override
     public boolean canProvideSupport(BlockFace face, SupportType type) {
         return false;
+    }
+
+    @Override
+    public int getFullId() {
+        return getId() << BLOCK_META_BITS;
+    }
+
+    @Override
+    public void setDamage(int meta) {
     }
 }

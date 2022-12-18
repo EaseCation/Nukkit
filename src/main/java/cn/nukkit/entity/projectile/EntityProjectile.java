@@ -4,7 +4,9 @@ import cn.nukkit.Player;
 import cn.nukkit.entity.Entity;
 import cn.nukkit.entity.EntityLiving;
 import cn.nukkit.entity.data.LongEntityData;
+import cn.nukkit.entity.item.EntityBoat;
 import cn.nukkit.entity.item.EntityEndCrystal;
+import cn.nukkit.entity.item.EntityMinecartAbstract;
 import cn.nukkit.event.entity.*;
 import cn.nukkit.event.entity.EntityDamageEvent.DamageCause;
 import cn.nukkit.level.MovingObjectPosition;
@@ -122,7 +124,7 @@ public abstract class EntityProjectile extends Entity {
             if (entity instanceof Player) {
                 return !((Player) entity).isSpectator() && !entity.getDataFlag(Entity.DATA_FLAGS, Entity.DATA_FLAG_INVISIBLE);
             } else return true;
-        } else return entity instanceof EntityEndCrystal;
+        } else return entity instanceof EntityEndCrystal || entity instanceof EntityMinecartAbstract || entity instanceof EntityBoat;
     }
 
     @Override

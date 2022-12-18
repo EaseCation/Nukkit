@@ -72,6 +72,7 @@ public final class Items {
         registerItem(NETHER_SPROUTS, ItemNetherSprouts.class, V1_16_0);
         registerItem(SOUL_CAMPFIRE, ItemCampfireSoul.class, V1_16_0);
 
+        registerItem(GLOW_INK_SAC, ItemGlowInkSac.class, V1_17_0);
         registerItem(RAW_IRON, ItemRawIron.class, V1_17_0);
         registerItem(RAW_GOLD, ItemRawGold.class, V1_17_0);
         registerItem(RAW_COPPER, ItemRawCopper.class, V1_17_0);

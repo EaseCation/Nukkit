@@ -6,7 +6,6 @@ import cn.nukkit.item.ItemDye;
 import cn.nukkit.item.ItemID;
 import cn.nukkit.level.Level;
 import cn.nukkit.level.particle.BoneMealParticle;
-import cn.nukkit.math.AxisAlignedBB;
 import cn.nukkit.math.BlockFace;
 import cn.nukkit.math.Mth;
 import cn.nukkit.network.protocol.LevelSoundEventPacket;
@@ -38,48 +37,13 @@ public class BlockSeaPickle extends BlockFlowable {
     }
 
     @Override
-    public double getHardness() {
-        return 0;
-    }
-
-    @Override
-    public double getResistance() {
-        return 0;
-    }
-
-    @Override
     public int getLightLevel() {
-        return (getClusterCount() + 1) * 3;
+        return isDead() ? 0 : (getClusterCount() + 1) * 3;
     }
 
     @Override
     public BlockColor getColor() {
         return BlockColor.GREEN_BLOCK_COLOR;
-    }
-
-    @Override
-    public boolean isSolid() {
-        return false;
-    }
-
-    @Override
-    public boolean breaksWhenMoved() {
-        return true;
-    }
-
-    @Override
-    public boolean sticksToPiston() {
-        return false;
-    }
-
-    @Override
-    protected AxisAlignedBB recalculateBoundingBox() {
-        return null;
-    }
-
-    @Override
-    public boolean canProvideSupport(BlockFace face, SupportType type) {
-        return false;
     }
 
     @Override
@@ -182,7 +146,7 @@ public class BlockSeaPickle extends BlockFlowable {
         if (id == getItemId()) {
             int count = getClusterCount();
             if (count == 4) {
-                return true;
+                return false;
             }
 
             if (player != null && !player.isCreative()) {

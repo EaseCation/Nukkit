@@ -3,7 +3,7 @@ package cn.nukkit.item;
 import cn.nukkit.block.BlockID;
 
 // 弃用的名称用于旧版本命令补全, 不要移除
-public interface ItemID extends BlockID {
+public interface ItemID extends BlockID, ItemRuntimeID {
     int GLOW_STICK = 166;
 
     int IRON_SHOVEL = 256;
@@ -434,9 +434,14 @@ public interface ItemID extends BlockID {
 
     int SHIELD = 513;
 
+//    int AXOLOTL_BUCKET = 517;
+    int GLOW_INK_SAC = 518;
+
     int RAW_IRON = 520;
     int RAW_GOLD = 521;
     int RAW_COPPER = 522;
+
+//    int TADPOLE_BUCKET = 523;
 
     int CAMPFIRE = 720;
 
@@ -477,6 +482,7 @@ public interface ItemID extends BlockID {
     int NETHER_SPROUTS = 760;
     int GOAT_HORN = 761;
 
+//    int POWDER_SNOW_BUCKET = 770;
     int AMETHYST_SHARD = 771;
     int SPYGLASS = 772;
     int MUSIC_DISC_OTHERSIDE = 773;

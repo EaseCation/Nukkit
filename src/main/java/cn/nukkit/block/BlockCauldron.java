@@ -499,6 +499,11 @@ public class BlockCauldron extends BlockTransparentMeta {
     }
 
     @Override
+    public boolean hasEntityCollision() {
+        return true;
+    }
+
+    @Override
     public void onEntityCollide(Entity entity) {
         //TODO
     }

@@ -20,7 +20,7 @@ public interface BlockEntityType {
     int ITEM_FRAME = 17;
     int PISTON_ARM = 18;
     int MOVING_BLOCK = 19;
-
+    int CHALKBOARD = 20;
     int BEACON = 21;
     int END_PORTAL = 22;
     int ENDER_CHEST = 23;
@@ -48,7 +48,9 @@ public interface BlockEntityType {
     int GLOW_ITEM_FRAME = 47;
     int SCULK_CATALYST = 48;
     int SCULK_SHRIEKER = 49;
+    int HANGING_SIGN = 50;
+    int CHISELED_BOOKSHELF = 51;
 
 
-    int UNDEFINED = 50;
+    int UNDEFINED = 52;
 }

@@ -2,9 +2,9 @@ package cn.nukkit.utils;
 
 public enum TerracottaColor {
 
-    BLACK(0, 15, "Black", "Ink Sack", BlockColor.BLACK_TERRACOTA_BLOCK_COLOR),
-    RED(1, 14, "Red", "Rose Red", BlockColor.RED_TERRACOTA_BLOCK_COLOR),
-    GREEN(2, 13, "Green", "Cactus Green", BlockColor.GREEN_TERRACOTA_BLOCK_COLOR),
+    BLACK(0, 15, "Black", "Ink Sac", BlockColor.BLACK_TERRACOTA_BLOCK_COLOR),
+    RED(1, 14, "Red", BlockColor.RED_TERRACOTA_BLOCK_COLOR),
+    GREEN(2, 13, "Green", BlockColor.GREEN_TERRACOTA_BLOCK_COLOR),
     BROWN(3, 12, "Brown", "Cocoa Beans", BlockColor.BROWN_TERRACOTA_BLOCK_COLOR),
     BLUE(4, 11, "Blue", "Lapis Lazuli", BlockColor.BLUE_TERRACOTA_BLOCK_COLOR),
     PURPLE(5, 10, "Purple", BlockColor.PURPLE_TERRACOTA_BLOCK_COLOR),
@@ -13,7 +13,7 @@ public enum TerracottaColor {
     GRAY(8, 7, "Gray", BlockColor.GRAY_TERRACOTA_BLOCK_COLOR),
     PINK(9, 6, "Pink", BlockColor.PINK_TERRACOTA_BLOCK_COLOR),
     LIME(10, 5, "Lime", BlockColor.LIME_TERRACOTA_BLOCK_COLOR),
-    YELLOW(11, 4, "Yellow", "Dandelion Yellow", BlockColor.YELLOW_TERRACOTA_BLOCK_COLOR),
+    YELLOW(11, 4, "Yellow", BlockColor.YELLOW_TERRACOTA_BLOCK_COLOR),
     LIGHT_BLUE(12, 3, "Light Blue", BlockColor.LIGHT_BLUE_TERRACOTA_BLOCK_COLOR),
     MAGENTA(13, 2, "Magenta", BlockColor.MAGENTA_TERRACOTA_BLOCK_COLOR),
     ORANGE(14, 1, "Orange", BlockColor.ORANGE_TERRACOTA_BLOCK_COLOR),

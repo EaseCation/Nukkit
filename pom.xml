@@ -13,6 +13,7 @@
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <junit.jupiter.version>5.9.1</junit.jupiter.version>
         <log4j2.version>2.17.2</log4j2.version>
+        <jackson.version>2.14.1</jackson.version>
         <jline.version>3.21.0</jline.version>
         <!-- 本地测试服务端插件目录 -->
         <dir.api>../../_api</dir.api>
@@ -66,9 +67,39 @@
             <scope>compile</scope>
         </dependency>
         <dependency>
+            <groupId>com.fasterxml.jackson.core</groupId>
+            <artifactId>jackson-databind</artifactId>
+            <version>${jackson.version}</version>
+            <scope>compile</scope>
+        </dependency>
+        <dependency>
+            <groupId>com.fasterxml.jackson.datatype</groupId>
+            <artifactId>jackson-datatype-jdk8</artifactId>
+            <version>${jackson.version}</version>
+            <scope>compile</scope>
+        </dependency>
+        <dependency>
+            <groupId>com.fasterxml.jackson.datatype</groupId>
+            <artifactId>jackson-datatype-guava</artifactId>
+            <version>${jackson.version}</version>
+            <scope>compile</scope>
+            <exclusions>
+                <exclusion>
+                    <groupId>com.google.guava</groupId>
+                    <artifactId>guava</artifactId>
+                </exclusion>
+            </exclusions>
+        </dependency>
+        <dependency>
             <groupId>org.yaml</groupId>
             <artifactId>snakeyaml</artifactId>
             <version>1.33</version>
+            <scope>compile</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.snakeyaml</groupId>
+            <artifactId>snakeyaml-engine</artifactId>
+            <version>2.5</version>
             <scope>compile</scope>
         </dependency>
         <dependency>
@@ -199,6 +230,12 @@
             <groupId>com.nukkitx.network</groupId>
             <artifactId>raknet</artifactId>
             <version>1.6.28-SNAPSHOT</version>
+            <scope>compile</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.cloudburstmc</groupId>
+            <artifactId>upnp</artifactId>
+            <version>1.1.1</version>
             <scope>compile</scope>
         </dependency>
         <dependency>

@@ -6,6 +6,7 @@ import cn.nukkit.blockentity.BlockEntityCampfire;
 import cn.nukkit.blockentity.BlockEntityType;
 import cn.nukkit.entity.Entity;
 import cn.nukkit.entity.EntityLiving;
+import cn.nukkit.entity.projectile.EntityProjectile;
 import cn.nukkit.event.block.BlockIgniteEvent;
 import cn.nukkit.event.block.BlockIgniteEvent.BlockIgniteCause;
 import cn.nukkit.event.entity.EntityCombustByBlockEvent;
@@ -284,9 +285,8 @@ public class BlockCampfire extends BlockTransparentMeta implements Faceable {
     @Override
     public void onEntityCollide(Entity entity) {
         if (isExtinguished()) {
-            if (entity instanceof EntityLiving && entity.isOnFire()) {
-                setExtinguished(false);
-                level.setBlock(this, this, true);
+            if ((entity instanceof EntityLiving || entity instanceof EntityProjectile) && entity.isOnFire()) {
+                tryLightFire();
             }
             return;
         }
@@ -348,6 +348,10 @@ public class BlockCampfire extends BlockTransparentMeta implements Faceable {
 
     public boolean tryLightFire() {
         if (!isExtinguished()) {
+            return false;
+        }
+
+        if (level.getExtraBlock(this).isWaterSource()) {
             return false;
         }
 

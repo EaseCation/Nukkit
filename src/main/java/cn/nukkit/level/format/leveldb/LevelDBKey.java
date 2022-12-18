@@ -22,9 +22,10 @@ public enum LevelDBKey {
     XXHASH_CHECKSUMS(';'), // obsolete since 1.18
     GENERATION_SEED('<'),
     GENERATED_BEFORE_CNC_BLENDING('='),
+    BLENDING_BIOME_HEIGHT('>'),
     META_DATA_HASH('?'),
-    // ('@'),
-    // ('A'),
+    BLENDING_DATA('@'),
+    ENTITY_DIGEST_VERSION('A'),
     OLD_VERSION('v'),
     NUKKIT_DATA('f'), // Nukkit only
     ;
