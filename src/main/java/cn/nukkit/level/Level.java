@@ -300,6 +300,7 @@ public class Level implements ChunkManager, Metadatable {
 
     private boolean raining;
     private int rainTime;
+    private int rainingIntensity;
     private boolean thundering;
     private int thunderTime;
 
@@ -3801,6 +3802,11 @@ public class Level implements ChunkManager, Metadatable {
     }
 
     public boolean setRaining(boolean raining) {
+        Random random = ThreadLocalRandom.current();
+        return this.setRaining(raining, random.nextInt(50000) + 10000);
+    }
+
+    public boolean setRaining(boolean raining, int intensity) {
         WeatherChangeEvent ev = new WeatherChangeEvent(this, raining);
         this.getServer().getPluginManager().callEvent(ev);
 
@@ -3809,6 +3815,7 @@ public class Level implements ChunkManager, Metadatable {
         }
 
         this.raining = raining;
+        this.rainingIntensity = intensity;
 
         LevelEventPacket pk = new LevelEventPacket();
         // These numbers are from Minecraft
@@ -3816,7 +3823,7 @@ public class Level implements ChunkManager, Metadatable {
         Random random = ThreadLocalRandom.current();
         if (raining) {
             pk.evid = LevelEventPacket.EVENT_START_RAIN;
-            pk.data = random.nextInt(50000) + 10000;
+            pk.data = this.rainingIntensity;
             setRainTime(random.nextInt(12000) + 12000);
         } else {
             pk.evid = LevelEventPacket.EVENT_STOP_RAIN;
@@ -3889,7 +3896,7 @@ public class Level implements ChunkManager, Metadatable {
         Random random = ThreadLocalRandom.current();
         if (this.isRaining()) {
             pk.evid = LevelEventPacket.EVENT_START_RAIN;
-            pk.data = random.nextInt(50000) + 10000;
+            pk.data = this.rainingIntensity;
         } else {
             pk.evid = LevelEventPacket.EVENT_STOP_RAIN;
         }
