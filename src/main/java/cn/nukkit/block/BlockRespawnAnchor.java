@@ -9,6 +9,7 @@ import cn.nukkit.level.Explosion;
 import cn.nukkit.level.GameRule;
 import cn.nukkit.math.BlockFace;
 import cn.nukkit.math.Mth;
+import cn.nukkit.network.protocol.LevelSoundEventPacket;
 import cn.nukkit.utils.BlockColor;
 
 public class BlockRespawnAnchor extends BlockSolidMeta {
@@ -103,6 +104,7 @@ public class BlockRespawnAnchor extends BlockSolidMeta {
         if (charge < MAX_CHARGE && item.getId() == GLOWSTONE) {
             setDamage(charge + 1);
             level.setBlock(this, this, true);
+            level.addLevelSoundEvent(this, LevelSoundEventPacket.SOUND_RESPAWN_ANCHOR_CHARGE);
 
             item.pop();
             return true;
