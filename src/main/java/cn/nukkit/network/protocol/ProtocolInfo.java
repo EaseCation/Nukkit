@@ -215,6 +215,7 @@ public interface ProtocolInfo {
     int GAME_TEST_REQUEST_PACKET = 0xc2;
     int GAME_TEST_RESULTS_PACKET = 0xc3;
     int UPDATE_CLIENT_INPUT_LOCKS_PACKET = 0xc4;
+    int CLIENT_CHEAT_ABILITY_PACKET = 0xc5;
 
     //NetEase Common Mod
     int PACKET_PY_RPC = 0xc8;
@@ -239,6 +240,7 @@ public interface ProtocolInfo {
     int PACKET_MOD_EFFECT = 0xe6;
     int PACKET_MOD_BLOCK_ENTITY_CHANGED = 0xe7;
     int PACKET_CHANGE_ENTITY_MOTION = 0xe8;
+    int PACKET_ANIMATE_EMOTE_ENTITY = 0xe9;
 
     int BATCH_PACKET = 0xfe;
 }

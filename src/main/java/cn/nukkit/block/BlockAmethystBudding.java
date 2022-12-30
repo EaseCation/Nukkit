@@ -71,6 +71,19 @@ public class BlockAmethystBudding extends BlockSolid {
 
             BlockFace face = BlockFace.random();
             Block block = getSide(face);
+
+            switch (block.getId()) {
+                case SMALL_AMETHYST_BUD:
+                    level.setBlock(block, get(MEDIUM_AMETHYST_BUD, block.getDamage()), true);
+                    return Level.BLOCK_UPDATE_RANDOM;
+                case MEDIUM_AMETHYST_BUD:
+                    level.setBlock(block, get(LARGE_AMETHYST_BUD, block.getDamage()), true);
+                    return Level.BLOCK_UPDATE_RANDOM;
+                case LARGE_AMETHYST_BUD:
+                    level.setBlock(block, get(AMETHYST_CLUSTER, block.getDamage()), true);
+                    return Level.BLOCK_UPDATE_RANDOM;
+            }
+
             if (!block.isAir() && !block.isWaterSource()) {
                 return 0;
             }

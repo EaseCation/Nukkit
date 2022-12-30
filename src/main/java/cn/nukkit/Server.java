@@ -841,7 +841,7 @@ public class Server {
                     log.info("Successfully forwarded UDP Port {} using UPnP.", getPort());
                 } else {
                     this.upnpEnabled = false;
-                    log.warn("cloudburst.server.upnp.fail");
+                    log.warn("Failed to forward UDP Port {} using UPnP.", getPort());
                 }
             } else {
                 this.upnpEnabled = false;
