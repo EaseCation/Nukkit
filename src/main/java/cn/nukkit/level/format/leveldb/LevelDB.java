@@ -1318,6 +1318,10 @@ public class LevelDB implements LevelProvider {
                         log.error("Skipped corrupted chunk {} {}", chunkX, chunkZ, e);
                         continue;
                     }
+
+//                    if (chunk != null) {
+//                        this.chunks.put(index, chunk);
+//                    }
                 }
             }
 
@@ -1350,6 +1354,8 @@ public class LevelDB implements LevelProvider {
                 forEachChunks(chunk -> {
                     boolean next;
                     if (chunk.compress()) {
+                        chunk.setChanged();
+
                         count.increment();
 
                         next = canRun();
@@ -1378,5 +1384,9 @@ public class LevelDB implements LevelProvider {
         boolean canRun() {
             return !closed && level != null && level.getPlayers().isEmpty();
         }
+    }
+
+    static {
+        log.info("native LevelDB provider: {}", USE_NATIVE_LEVELDB && PROVIDER.isNative());
     }
 }
