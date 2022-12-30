@@ -45,9 +45,4 @@ public class BlockAmethystBudSmall extends BlockAmethystBud {
                 return new SimpleAxisAlignedBB(this.x, this.y + 4.0 / 16, this.z + 4.0 / 16, this.x + 1 - 13.0 / 16, this.y + 1 - 4.0 / 16, this.z + 1 - 4.0 / 16);
         }
     }
-
-    @Override
-    protected int getNextStageBlockId() {
-        return MEDIUM_AMETHYST_BUD;
-    }
 }
