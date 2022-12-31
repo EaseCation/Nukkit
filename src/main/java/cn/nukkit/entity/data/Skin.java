@@ -2,9 +2,10 @@ package cn.nukkit.entity.data;
 
 import cn.nukkit.nbt.stream.FastByteArrayOutputStream;
 import cn.nukkit.utils.*;
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.node.JsonNodeType;
 import com.google.common.base.Preconditions;
-import com.nimbusds.jose.shaded.json.JSONObject;
-import com.nimbusds.jose.shaded.json.JSONValue;
 import lombok.ToString;
 
 import javax.imageio.ImageIO;
@@ -95,10 +96,14 @@ public class Skin {
             return false;
         }
         try {
-            JSONObject object = (JSONObject) JSONValue.parse(skinResourcePatch);
-            JSONObject geometry = (JSONObject) object.get("geometry");
-            return geometry.containsKey("default") && geometry.get("default") instanceof String;
-        } catch (ClassCastException | NullPointerException e) {
+            JsonNode object = JsonUtil.COMMON_JSON_MAPPER.readTree(skinResourcePatch);
+            JsonNode geometry = object.get("geometry");
+            if (geometry == null) {
+                return false;
+            }
+            JsonNode def = geometry.get("default");
+            return def != null && def.getNodeType() == JsonNodeType.STRING;
+        } catch (ClassCastException | NullPointerException | JsonProcessingException e) {
             return false;
         }
     }
@@ -175,10 +180,18 @@ public class Skin {
             return "geometry.humanoid.custom";
         }
         try {
-            JSONObject object = (JSONObject) JSONValue.parse(skinResourcePatch);
-            JSONObject geometry = (JSONObject) object.get("geometry");
-            return geometry.getAsString("default");
-        } catch (ClassCastException | NullPointerException e) {
+            //TODO: 这里可以做个缓存 -- 12/31/2022
+            JsonNode object = JsonUtil.COMMON_JSON_MAPPER.readTree(skinResourcePatch);
+            JsonNode geometry = object.get("geometry");
+            if (geometry == null) {
+                return "geometry.humanoid.custom";
+            }
+            JsonNode def = geometry.get("default");
+            if (def == null || def.getNodeType() != JsonNodeType.STRING) {
+                return "geometry.humanoid.custom";
+            }
+            return def.textValue();
+        } catch (ClassCastException | NullPointerException | JsonProcessingException e) {
             return "geometry.humanoid.custom";
         }
     }
