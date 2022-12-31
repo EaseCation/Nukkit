@@ -1,85 +1,95 @@
 package cn.nukkit.resourcepacks;
 
 import cn.nukkit.Server;
-import com.google.gson.JsonParser;
+import cn.nukkit.math.Mth;
+import cn.nukkit.resourcepacks.PackManifest.Module;
 
 import java.io.File;
 import java.io.IOException;
-import java.io.InputStream;
-import java.io.InputStreamReader;
-import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.security.MessageDigest;
+import java.security.NoSuchAlgorithmException;
+import java.util.Arrays;
 import java.util.Optional;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipFile;
 
-public class ZippedResourcePack extends AbstractResourcePack {
-    private File file;
-    private byte[] sha256 = null;
+import static cn.nukkit.SharedConstants.*;
 
-    public ZippedResourcePack(File file) {
+public class ZippedResourcePack extends AbstractResourcePack {
+    private final int size;
+    private final byte[][] chunks;
+    private final byte[] sha256;
+
+    public ZippedResourcePack(File file) throws IOException {
         if (!file.exists()) {
             throw new IllegalArgumentException(Server.getInstance().getLanguage()
                     .translateString("nukkit.resources.zip.not-found", file.getName()));
         }
 
-        this.file = file;
-
         try (ZipFile zip = new ZipFile(file)) {
-            ZipEntry entry = Optional.ofNullable(zip.getEntry("manifest.json")).orElse(zip.getEntry("pack_manifest.json"));
+            ZipEntry entry = Optional.ofNullable(zip.getEntry("manifest.json"))
+                    .orElse(zip.getEntry("pack_manifest.json"));
+
             if (entry == null) {
                 throw new IllegalArgumentException(Server.getInstance().getLanguage()
                         .translateString("nukkit.resources.zip.no-manifest"));
-            } else {
-                this.manifest = new JsonParser()
-                        .parse(new InputStreamReader(zip.getInputStream(entry), StandardCharsets.UTF_8))
-                        .getAsJsonObject();
             }
-        } catch (IOException e) {
-            Server.getInstance().getLogger().logException(e);
+
+            manifest = PackManifest.load(zip.getInputStream(entry));
         }
 
-        if (!this.verifyManifest()) {
+        if (!manifest.isValid()) {
             throw new IllegalArgumentException(Server.getInstance().getLanguage()
                     .translateString("nukkit.resources.zip.invalid-manifest"));
+        }
+
+        id = manifest.getHeader().getUuid().toString();
+        version = manifest.getHeader().getVersion().toString();
+        type = manifest.getModules().stream()
+                .findFirst()
+                .map(Module::getType)
+                .orElse("resources");
+
+        byte[] bytes = Files.readAllBytes(file.toPath());
+        size = bytes.length;
+
+        int count = Mth.ceil(size / (float) RESOURCE_PACK_CHUNK_SIZE);
+        chunks = new byte[count][];
+        for (int i = 0; i < count; i++) {
+            int offset = i * RESOURCE_PACK_CHUNK_SIZE;
+            int length = Math.min(size - offset, RESOURCE_PACK_CHUNK_SIZE);
+            chunks[i] = Arrays.copyOfRange(bytes, offset, offset + length);
+        }
+
+        try {
+            sha256 = MessageDigest.getInstance("SHA-256").digest(bytes);
+        } catch (NoSuchAlgorithmException e) {
+            throw new RuntimeException(e);
         }
     }
 
     @Override
     public int getPackSize() {
-        return (int) this.file.length();
+        return size;
     }
 
     @Override
     public byte[] getSha256() {
-        if (this.sha256 == null) {
-            try {
-                this.sha256 = MessageDigest.getInstance("SHA-256").digest(Files.readAllBytes(this.file.toPath()));
-            } catch (Exception e) {
-                Server.getInstance().getLogger().logException(e);
-            }
-        }
-
         return this.sha256;
     }
 
     @Override
-    public byte[] getPackChunk(int off, int len) {
-        byte[] chunk;
-        if (this.getPackSize() - off > len) {
-            chunk = new byte[len];
-        } else {
-            chunk = new byte[this.getPackSize() - off];
+    public int getChunkCount() {
+        return chunks.length;
+    }
+
+    @Override
+    public byte[] getPackChunk(int index) {
+        if (index < 0 || index >= chunks.length) {
+            return new byte[0];
         }
 
-        try (InputStream fis = Files.newInputStream(this.file.toPath())) {
-            fis.skip(off);
-            fis.read(chunk);
-        } catch (Exception e) {
-            Server.getInstance().getLogger().logException(e);
-        }
-
-        return chunk;
+        return chunks[index];
     }
 }

@@ -39,6 +39,8 @@ public final class SharedConstants {
 
     // misc
 
+    public static final int RESOURCE_PACK_CHUNK_SIZE = 8 * 1024; // 8KB
+
     public static final boolean ENABLE_BLOCK_STATE_PERSISTENCE = true;
 
     // experimental

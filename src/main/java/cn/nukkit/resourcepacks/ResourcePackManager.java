@@ -2,11 +2,12 @@ package cn.nukkit.resourcepacks;
 
 import cn.nukkit.Server;
 import com.google.common.io.Files;
+import it.unimi.dsi.fastutil.objects.Object2ObjectOpenHashMap;
+import it.unimi.dsi.fastutil.objects.ObjectArrayList;
 import lombok.extern.log4j.Log4j2;
 
 import java.io.File;
-import java.util.ArrayList;
-import java.util.HashMap;
+import java.io.IOException;
 import java.util.List;
 import java.util.Map;
 
@@ -14,9 +15,9 @@ import java.util.Map;
 public class ResourcePackManager {
     private final ResourcePack[] resourcePacks;
     private final ResourcePack[] behaviorPacks;
-    private final Map<String, ResourcePack> allPacksById = new HashMap<>();
-    private final Map<String, ResourcePack> resourcePacksById = new HashMap<>();
-    private final Map<String, ResourcePack> behaviorPacksById = new HashMap<>();
+    private final Map<String, ResourcePack> allPacksById = new Object2ObjectOpenHashMap<>();
+    private final Map<String, ResourcePack> resourcePacksById = new Object2ObjectOpenHashMap<>();
+    private final Map<String, ResourcePack> behaviorPacksById = new Object2ObjectOpenHashMap<>();
 
     public ResourcePackManager(File path) {
         if (!path.exists()) {
@@ -26,8 +27,8 @@ public class ResourcePackManager {
                     .translateString("nukkit.resources.invalid-path", path.getName()));
         }
 
-        List<ResourcePack> loadedResourcePacks = new ArrayList<>();
-        List<ResourcePack> loadedBehaviorPacks = new ArrayList<>();
+        List<ResourcePack> loadedResourcePacks = new ObjectArrayList<>();
+        List<ResourcePack> loadedBehaviorPacks = new ObjectArrayList<>();
         for (File pack : path.listFiles()) {
             try {
                 ResourcePack resourcePack = null;
@@ -50,8 +51,7 @@ public class ResourcePackManager {
                         loadedResourcePacks.add(resourcePack);
                         this.resourcePacksById.put(resourcePack.getPackId(), resourcePack);
                         this.allPacksById.put(resourcePack.getPackId(), resourcePack);
-                    }
-                    else if (resourcePack.getPackType().equals("data")) {
+                    } else if (resourcePack.getPackType().equals("data")) {
                         loadedBehaviorPacks.add(resourcePack);
                         this.behaviorPacksById.put(resourcePack.getPackId(), resourcePack);
                         this.allPacksById.put(resourcePack.getPackId(), resourcePack);
@@ -60,7 +60,7 @@ public class ResourcePackManager {
                                 .translateString("nukkit.resources.unknown-format", pack.getName()));
                     }
                 }
-            } catch (IllegalArgumentException e) {
+            } catch (IllegalArgumentException | IOException e) {
                 log.warn(Server.getInstance().getLanguage()
                         .translateString("nukkit.resources.fail", pack.getName(), e.getMessage()));
             }

@@ -105,6 +105,8 @@ import java.util.concurrent.atomic.AtomicReference;
 import java.util.function.Consumer;
 import java.util.stream.Collectors;
 
+import static cn.nukkit.SharedConstants.*;
+
 /**
  * author: MagicDroidX & Box
  * Nukkit Project
@@ -145,8 +147,6 @@ public class Player extends EntityHuman implements CommandSender, InventoryHolde
     public static final int BEACON_WINDOW_ID = 4;
     public static final int TRADE_WINDOW_ID = 5;
     public static final int FIRST_AVAILABLE_WINDOW_ID = 6;
-
-    protected static final int RESOURCE_PACK_CHUNK_SIZE = 8 * 1024; // 8KB
 
     /**
      * Prevent the player inside into unloaded chunks.
@@ -2433,13 +2433,12 @@ public class Player extends EntityHuman implements CommandSender, InventoryHolde
                                 ResourcePackDataInfoPacket dataInfoPacket = new ResourcePackDataInfoPacket();
                                 dataInfoPacket.packId = resourcePack.getPackId();
                                 dataInfoPacket.maxChunkSize = RESOURCE_PACK_CHUNK_SIZE;
-                                dataInfoPacket.chunkCount = Mth.ceil(resourcePack.getPackSize() / (float) RESOURCE_PACK_CHUNK_SIZE);
+                                dataInfoPacket.chunkCount = resourcePack.getChunkCount();
                                 dataInfoPacket.compressedPackSize = resourcePack.getPackSize();
                                 dataInfoPacket.sha256 = resourcePack.getSha256();
                                 if (resourcePack.getPackType().equals("resources")) {
                                     dataInfoPacket.type = ResourcePackDataInfoPacket.TYPE_RESOURCE;
-                                }
-                                else if (resourcePack.getPackType().equals("data")) {
+                                } else if (resourcePack.getPackType().equals("data")) {
                                     dataInfoPacket.type = ResourcePackDataInfoPacket.TYPE_BEHAVIOR;
                                 }
                                 this.dataPacket(dataInfoPacket);
@@ -2472,7 +2471,7 @@ public class Player extends EntityHuman implements CommandSender, InventoryHolde
                     ResourcePackChunkDataPacket dataPacket = new ResourcePackChunkDataPacket();
                     dataPacket.packId = resourcePack.getPackId();
                     dataPacket.chunkIndex = requestPacket.chunkIndex;
-                    dataPacket.data = resourcePack.getPackChunk(RESOURCE_PACK_CHUNK_SIZE * requestPacket.chunkIndex, RESOURCE_PACK_CHUNK_SIZE);
+                    dataPacket.data = resourcePack.getPackChunk(requestPacket.chunkIndex);
                     dataPacket.progress = (long) RESOURCE_PACK_CHUNK_SIZE * requestPacket.chunkIndex;
                     this.dataPacket(dataPacket);
                     break;

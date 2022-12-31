@@ -1,54 +1,37 @@
 package cn.nukkit.resourcepacks;
 
-import com.google.gson.JsonArray;
-import com.google.gson.JsonObject;
 import lombok.ToString;
 
 @ToString
 public abstract class AbstractResourcePack implements ResourcePack {
-    protected JsonObject manifest;
+    protected PackManifest manifest;
 
-    protected boolean verifyManifest() {
-        if (this.manifest.has("format_version") && this.manifest.has("header") && this.manifest.has("modules")) {
-            JsonObject header = this.manifest.getAsJsonObject("header");
-            return header.has("description") &&
-                    header.has("name") &&
-                    header.has("uuid") &&
-                    header.has("version") &&
-                    header.getAsJsonArray("version").size() == 3;
-        } else {
-            return false;
-        }
-    }
+    protected String id;
+    protected String version;
+    protected String type;
 
     @Override
     public String getPackName() {
-        return this.manifest.getAsJsonObject("header")
-                .get("name").getAsString();
+        return this.manifest.getHeader().getName();
     }
 
     @Override
     public String getPackId() {
-        return this.manifest.getAsJsonObject("header")
-                .get("uuid").getAsString();
+        return id;
     }
 
     @Override
     public String getPackVersion() {
-        JsonArray version = this.manifest.getAsJsonObject("header")
-                .get("version").getAsJsonArray();
-
-        return String.join(".", version.get(0).getAsString(),
-                version.get(1).getAsString(),
-                version.get(2).getAsString());
+        return version;
     }
 
     @Override
     public String getPackType() {
-        if (this.manifest.has("modules") && this.manifest.getAsJsonArray("modules").size() > 0) {
-            return this.manifest.getAsJsonArray("modules").get(0).getAsJsonObject().get("type").getAsString();
-        } else {
-            return "resources";
-        }
+        return type;
+    }
+
+    @Override
+    public String getEncryptionKey() {
+        return "";
     }
 }
