@@ -1,5 +1,6 @@
 package cn.nukkit.utils;
 
+import cn.nukkit.Server;
 import cn.nukkit.nbt.stream.FastByteArrayOutputStream;
 import java.io.IOException;
 import java.util.zip.DataFormatException;
@@ -8,7 +9,7 @@ import java.util.zip.Inflater;
 
 public final class ZlibThreadLocal implements ZlibProvider {
     private static final ThreadLocal<Inflater> INFLATER = ThreadLocal.withInitial(Inflater::new);
-    private static final ThreadLocal<Deflater> DEFLATER = ThreadLocal.withInitial(Deflater::new);
+    private static final ThreadLocal<Deflater> DEFLATER = ThreadLocal.withInitial(() -> new Deflater(Server.getInstance().networkCompressionLevel));
     private static final ThreadLocal<byte[]> BUFFER = ThreadLocal.withInitial(() -> new byte[8192]);
 
     @Override
