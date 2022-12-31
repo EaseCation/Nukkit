@@ -18,6 +18,7 @@ import org.apache.logging.log4j.core.config.LoggerConfig;
 
 import java.io.IOException;
 import java.io.InputStream;
+import java.util.Locale;
 import java.util.Properties;
 
 /*
@@ -63,11 +64,13 @@ public class Nukkit {
     public static void main(String[] args) {
         mainThread = Thread.currentThread();
 
+        Locale.setDefault(Locale.ENGLISH);
+
         // Force IPv4 since Nukkit is not compatible with IPv6
         System.setProperty("java.net.preferIPv4Stack" , "true");
         System.setProperty("log4j.skipJansi", "false");
         System.getProperties().putIfAbsent("io.netty.allocator.type", "unpooled"); // Disable memory pooling unless specified
-
+        System.setProperty("porklib.native.printStackTraces", "true");
         // Force Mapped ByteBuffers for LevelDB till fixed.
         System.setProperty("leveldb.mmap", "true");
 
