@@ -114,6 +114,10 @@ public class EntityArrow extends EntityProjectile {
         if (this.onGround || this.hadCollision) {
             this.setCritical(false);
             if (!this.playedHitSound) {
+                /*EntityEventPacket pk = new EntityEventPacket();
+                pk.eid = this.getId();
+                pk.event = EntityEventPacket.ARROW_SHAKE;
+                Server.broadcastPacket(this.getViewers().values(), pk);*/
                 this.getLevel().addLevelSoundEvent(this, LevelSoundEventPacket.SOUND_BOW_HIT);
                 this.playedHitSound = true;
             }
