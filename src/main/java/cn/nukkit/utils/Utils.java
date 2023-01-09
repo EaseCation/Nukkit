@@ -264,4 +264,20 @@ public class Utils {
         if('a' <= ch && ch <= 'f')    return ch - 'a' + 10;
         return -1;
     }
+
+    public static int[] toPrimitive(Integer[] array) {
+        if (array == null) {
+            return null;
+        } else if (array.length == 0) {
+            return new int[0];
+        } else {
+            int[] result = new int[array.length];
+
+            for(int i = 0; i < array.length; ++i) {
+                result[i] = array[i];
+            }
+
+            return result;
+        }
+    }
 }

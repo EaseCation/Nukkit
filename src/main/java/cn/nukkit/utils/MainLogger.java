@@ -73,7 +73,7 @@ public class MainLogger extends ThreadedLogger {
 
     public void logException(Throwable t) {
         log.throwing(t);
-        if (exceptionLogHandler != null) exceptionLogHandler.log(t);
+        if (t != null && exceptionLogHandler != null) exceptionLogHandler.log(t);
     }
 
     @Override
@@ -88,41 +88,49 @@ public class MainLogger extends ThreadedLogger {
     @Override
     public void emergency(String message, Throwable t) {
         log.fatal(message, t);
+        if (t != null && exceptionLogHandler != null) exceptionLogHandler.log(t);
     }
 
     @Override
     public void alert(String message, Throwable t) {
         log.warn(message, t);
+        if (t != null && exceptionLogHandler != null) exceptionLogHandler.log(t);
     }
 
     @Override
     public void critical(String message, Throwable t) {
         log.fatal(message, t);
+        if (t != null && exceptionLogHandler != null) exceptionLogHandler.log(t);
     }
 
     @Override
     public void error(String message, Throwable t) {
         log.error(message, t);
+        if (t != null && exceptionLogHandler != null) exceptionLogHandler.log(t);
     }
 
     @Override
     public void warning(String message, Throwable t) {
         log.warn(message, t);
+        if (t != null && exceptionLogHandler != null) exceptionLogHandler.log(t);
     }
 
     @Override
     public void notice(String message, Throwable t) {
         log.warn(message, t);
+        if (t != null && exceptionLogHandler != null) exceptionLogHandler.log(t);
     }
 
     @Override
     public void info(String message, Throwable t) {
         log.info(message, t);
+        if (t != null && exceptionLogHandler != null) exceptionLogHandler.log(t);
     }
 
     @Override
     public void debug(String message, Throwable t) {
         log.debug(message, t);
+        if (t != null && exceptionLogHandler != null) exceptionLogHandler.log(t);
     }
 
     @Override
