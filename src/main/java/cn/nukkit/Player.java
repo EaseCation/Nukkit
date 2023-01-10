@@ -1627,7 +1627,7 @@ public class Player extends EntityHuman implements CommandSender, InventoryHolde
         }
         double distanceSquared = newPos.distanceSquared(this);
         boolean revert = false;
-        if ((distanceSquared / ((double) (tickDiff * tickDiff))) > 100 && (newPos.y - this.y) > -5) {
+        if ((distanceSquared / ((double) (tickDiff * tickDiff))) > 100) {
             revert = true;
         } else {
             if (this.chunk == null || !this.chunk.isGenerated()) {
