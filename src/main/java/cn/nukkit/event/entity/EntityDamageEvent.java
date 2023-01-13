@@ -163,7 +163,15 @@ public class EntityDamageEvent extends EntityEvent implements Cancellable {
         /**
          * Damage reduction caused by the armor enchantments worn.
          */
-        ARMOR_ENCHANTMENTS
+        ARMOR_ENCHANTMENTS,
+        /**
+         * Enchantment: Bane of Arthropods
+         */
+        BANE_OF_ARTHROPODS,
+        /**
+         * Enchantment: Smite
+         */
+        SMITE
     }
 
     public enum DamageCause {
