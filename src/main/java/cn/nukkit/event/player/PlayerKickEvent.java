@@ -18,6 +18,7 @@ public class PlayerKickEvent extends PlayerEvent implements Cancellable {
         LOGIN_TIMEOUT,
         SERVER_FULL,
         FLYING_DISABLED,
+        PACKET_VIOLATION,
         UNKNOWN;
 
         @Override

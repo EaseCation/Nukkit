@@ -243,4 +243,7 @@ public interface ProtocolInfo {
     int PACKET_ANIMATE_EMOTE_ENTITY = 0xe9;
 
     int BATCH_PACKET = 0xfe;
+
+
+    int COUNT = 0xff;
 }
