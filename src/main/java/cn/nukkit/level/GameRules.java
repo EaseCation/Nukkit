@@ -102,9 +102,9 @@ public class GameRules {
 
         switch (getGameRuleType(gameRule)) {
             case BOOLEAN:
-                if (value.equalsIgnoreCase("true")) {
+                if (value.equalsIgnoreCase("true") || value.equalsIgnoreCase("1")) {
                     setGameRule(gameRule, true);
-                } else if (value.equalsIgnoreCase("false")) {
+                } else if (value.equalsIgnoreCase("false") || value.equalsIgnoreCase("0")) {
                     setGameRule(gameRule, false);
                 } else {
                     throw new IllegalArgumentException("Was not a boolean");
