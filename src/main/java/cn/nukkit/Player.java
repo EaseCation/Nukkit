@@ -293,7 +293,8 @@ public class Player extends EntityHuman implements CommandSender, InventoryHolde
     public long lastSkinChange;
 
     protected double lastRightClickTime = 0.0;
-    protected Vector3 lastRightClickPos = null;
+    @Nullable
+    protected UseItemData lastRightClickData;
 
     protected boolean isNetEaseClient = false;
 
@@ -3263,10 +3264,9 @@ public class Player extends EntityHuman implements CommandSender, InventoryHolde
 
                                     if (target instanceof BlockDoor) {
                                         BlockDoor door = (BlockDoor) target;
-
                                         Block part;
 
-                                        if ((door.getDamage() & 0x08) > 0) { //up
+                                        if (door.isTop()) {
                                             part = target.down();
 
                                             if (part.getId() == target.getId()) {

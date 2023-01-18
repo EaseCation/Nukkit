@@ -23,5 +23,8 @@ public class UseItemData implements TransactionData {
     public Item itemInHand;
     public Vector3 playerPos;
     public Vector3f clickPos;
-
+    /**
+     * Runtime ID.
+     */
+    public int blockId;
 }
