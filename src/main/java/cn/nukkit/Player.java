@@ -2949,6 +2949,12 @@ public class Player extends EntityHuman implements CommandSender, InventoryHolde
                                 ((EntityBoat) this.riding).onPaddle(animation, ((AnimatePacket) packet).rowingTime);
                             }
                             break;
+                        case SWING_ARM:
+                        case WAKE_UP:
+                            break;
+                        default:
+                            onPacketViolation(PacketViolationReason.IMPOSSIBLE_BEHAVIOR);
+                            return;
                     }
 
                     AnimatePacket animatePacket = new AnimatePacket();
