@@ -24,6 +24,7 @@ import cn.nukkit.event.inventory.ItemAttackDamageEvent;
 import cn.nukkit.event.level.ChunkLoadExceptionEvent;
 import cn.nukkit.event.player.*;
 import cn.nukkit.event.player.PlayerInteractEvent.Action;
+import cn.nukkit.event.player.PlayerKickEvent.Reason;
 import cn.nukkit.event.player.PlayerTeleportEvent.TeleportCause;
 import cn.nukkit.event.server.DataPacketReceiveEvent;
 import cn.nukkit.event.server.DataPacketSendEvent;
@@ -57,6 +58,7 @@ import cn.nukkit.metadata.MetadataValue;
 import cn.nukkit.nbt.NBTIO;
 import cn.nukkit.nbt.tag.*;
 import cn.nukkit.network.Network;
+import cn.nukkit.network.PacketViolationReason;
 import cn.nukkit.network.SourceInterface;
 import cn.nukkit.network.protocol.*;
 import cn.nukkit.network.protocol.types.ContainerIds;
@@ -152,6 +154,9 @@ public class Player extends EntityHuman implements CommandSender, InventoryHolde
      * Prevent the player inside into unloaded chunks.
      */
     public static final int TELEPORT_TEMP_Y = Short.MAX_VALUE;
+
+    public static final int VIOLATION_THRESHOLD = 70;
+    public static final int VIOLATION_KICK_THRESHOLD = 100;
 
     protected final SourceInterface interfaz;
 
@@ -300,6 +305,8 @@ public class Player extends EntityHuman implements CommandSender, InventoryHolde
 
     // EC：确保在一个服务器中，每个玩家的皮肤只发一遍
     public final List<UUID> sentSkins = new ObjectArrayList<>();
+
+    public int violation;
 
     public int getStartActionTick() {
         return startAction;
@@ -2025,6 +2032,8 @@ public class Player extends EntityHuman implements CommandSender, InventoryHolde
             return;
         }
 
+        checkViolation();
+
         if (this.nextChunkOrderRun-- <= 0 || this.chunk == null) {
             this.orderChunks();
         }
@@ -2312,7 +2321,9 @@ public class Player extends EntityHuman implements CommandSender, InventoryHolde
 
             if (packet.pid() == ProtocolInfo.BATCH_PACKET) {
                 timing.stopTiming();
-                this.server.getNetwork().processBatch((BatchPacket) packet, this);
+//                this.server.getNetwork().processBatch((BatchPacket) packet, this);
+                // Batch packets are already decoded in Synapse
+                onPacketViolation(PacketViolationReason.NESTED_BATCH);
                 return;
             }
 
@@ -2320,6 +2331,7 @@ public class Player extends EntityHuman implements CommandSender, InventoryHolde
             switch (packet.pid()) {
                 case ProtocolInfo.LOGIN_PACKET:
                     if (this.loggedIn) {
+                        onPacketViolation(PacketViolationReason.ALREADY_LOGGED_IN);
                         break;
                     }
 
@@ -2938,6 +2950,12 @@ public class Player extends EntityHuman implements CommandSender, InventoryHolde
                                 ((EntityBoat) this.riding).onPaddle(animation, ((AnimatePacket) packet).rowingTime);
                             }
                             break;
+                        case SWING_ARM:
+                        case WAKE_UP:
+                            break;
+                        default:
+                            onPacketViolation(PacketViolationReason.IMPOSSIBLE_BEHAVIOR);
+                            return;
                     }
 
                     AnimatePacket animatePacket = new AnimatePacket();
@@ -5533,5 +5551,26 @@ public class Player extends EntityHuman implements CommandSender, InventoryHolde
 
     public long getLocalEntityId() {
         return getId();
+    }
+
+    public void onPacketViolation(PacketViolationReason reason) {
+        PlayerServerboundPacketViolationEvent event = new PlayerServerboundPacketViolationEvent(this, reason);
+        event.call();
+
+        if (event.isKick()) {
+            kick(Reason.PACKET_VIOLATION, reason.toString());
+        }
+    }
+
+    protected void checkViolation() {
+        if (BREAKPOINT_DEBUGGING || violation <= 0) {
+            return;
+        }
+
+        if (violation >= VIOLATION_THRESHOLD) {
+            onPacketViolation(PacketViolationReason.VIOLATION_OVER_THRESHOLD);
+        }
+
+        violation--;
     }
 }

@@ -52,6 +52,8 @@ public class AnimatePacket extends DataPacket {
         private static final Int2ObjectMap<Action> ID_LOOKUP = new Int2ObjectOpenHashMap<>();
 
         static {
+            ID_LOOKUP.defaultReturnValue(Action.NO_ACTION);
+
             for (Action value : values()) {
                 ID_LOOKUP.put(value.id, value);
             }
