@@ -307,6 +307,7 @@ public class Player extends EntityHuman implements CommandSender, InventoryHolde
     public final List<UUID> sentSkins = new ObjectArrayList<>();
 
     public int violation;
+    public volatile boolean violated;
 
     public int getStartActionTick() {
         return startAction;
@@ -5554,16 +5555,33 @@ public class Player extends EntityHuman implements CommandSender, InventoryHolde
     }
 
     public void onPacketViolation(PacketViolationReason reason) {
+        violated = true;
+
         PlayerServerboundPacketViolationEvent event = new PlayerServerboundPacketViolationEvent(this, reason);
         event.call();
 
         if (event.isKick()) {
+            if (isClosed()) {
+                return;
+            }
             kick(Reason.PACKET_VIOLATION, reason.toString());
+        } else {
+            violation = 0;
+            violated = false;
         }
     }
 
     protected void checkViolation() {
-        if (BREAKPOINT_DEBUGGING || violation <= 0) {
+        if (BREAKPOINT_DEBUGGING) {
+            return;
+        }
+
+        if (violated) {
+            onPacketViolation(PacketViolationReason.VIOLATION_OVER_THRESHOLD);
+            return;
+        }
+
+        if (violation <= 0) {
             return;
         }
 

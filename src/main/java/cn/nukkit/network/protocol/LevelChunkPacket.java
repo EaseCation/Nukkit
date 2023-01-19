@@ -8,7 +8,7 @@ import lombok.ToString;
  */
 @ToString(exclude = "data")
 public class LevelChunkPacket extends DataPacket {
-    public static final byte NETWORK_ID = ProtocolInfo.FULL_CHUNK_DATA_PACKET;
+    public static final byte NETWORK_ID = ProtocolInfo.LEVEL_CHUNK_PACKET;
 
     /**
      * Client will request all sub-chunks as needed up to the top of the world.
