@@ -29,11 +29,6 @@ public class SetTitlePacket extends DataPacket {
 
     @Override
     public void decode() {
-        this.type = this.getVarInt();
-        this.text = this.getString();
-        this.fadeInTime = this.getVarInt();
-        this.stayTime = this.getVarInt();
-        this.fadeOutTime = this.getVarInt();
     }
 
     @Override

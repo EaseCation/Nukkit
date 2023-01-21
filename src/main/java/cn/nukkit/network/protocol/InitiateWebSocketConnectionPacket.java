@@ -4,7 +4,7 @@ import lombok.ToString;
 
 @ToString
 public class InitiateWebSocketConnectionPacket extends DataPacket {
-    public static final int NETWORK_ID = ProtocolInfo.INITIATE_WEB_SOCKET_CONNECTION_PACKET;
+    public static final int NETWORK_ID = ProtocolInfo.AUTOMATION_CLIENT_CONNECT_PACKET;
 
     private String serverUri;
 

@@ -21,6 +21,7 @@ import cn.nukkit.nbt.tag.StringTag;
 import cn.nukkit.network.protocol.types.EntityLink;
 import cn.nukkit.network.protocol.types.InputInteractionModel;
 import it.unimi.dsi.fastutil.io.FastByteArrayInputStream;
+import it.unimi.dsi.fastutil.objects.ObjectArrayList;
 
 import javax.annotation.Nullable;
 import java.io.IOException;
@@ -307,7 +308,7 @@ public class BinaryStream {
      * @return Attribute[]
      */
     public Attribute[] getAttributeList() throws Exception {
-        List<Attribute> list = new ArrayList<>();
+        List<Attribute> list = new ObjectArrayList<>();
         long count = this.getUnsignedVarInt();
 
         for (int i = 0; i < count; ++i) {
@@ -708,6 +709,25 @@ public class BinaryStream {
         this.putSlot(item);
     }
 
+    public Item getCraftingRecipeIngredient() {
+        if (this.helper != null) {
+            return this.helper.getCraftingRecipeIngredient(this);
+        }
+
+        int id = this.getVarInt();
+        if (id == ItemID.AIR) {
+            return Item.get(ItemID.AIR, 0, 0);
+        }
+
+        int damage = this.getVarInt();
+        if (damage == 0x7fff) {
+            damage = -1;
+        }
+
+        int count = this.getVarInt();
+        return Item.get(id, damage, count);
+    }
+
     public void putCraftingRecipeIngredient(Item ingredient) {
         if (this.helper != null) {
             this.helper.putCraftingRecipeIngredient(this, ingredient);
@@ -718,6 +738,7 @@ public class BinaryStream {
             this.putVarInt(ItemID.AIR);
             return;
         }
+
         this.putVarInt(ingredient.getId());
         int damage;
         if (ingredient.hasMeta()) {
@@ -741,7 +762,7 @@ public class BinaryStream {
         }
 
         int size = listTag.size();
-        List<String> values = new ArrayList<>(size);
+        List<String> values = new ObjectArrayList<>(size);
         for (int i = 0; i < size; i++) {
             StringTag stringTag = listTag.get(i);
             if (stringTag != null) {
@@ -753,7 +774,11 @@ public class BinaryStream {
     }
 
     public byte[] getByteArray() {
-        return this.get((int) this.getUnsignedVarInt());
+        int len = (int) this.getUnsignedVarInt();
+        if (!isReadable(len)) {
+            throw new IndexOutOfBoundsException("array length mismatch");
+        }
+        return this.get(len);
     }
 
     public void putByteArray(byte[] b) {
@@ -762,7 +787,11 @@ public class BinaryStream {
     }
 
     public byte[] getLByteArray() {
-        return this.get(this.getLInt());
+        int len = this.getLInt();
+        if (!isReadable(len)) {
+            throw new IndexOutOfBoundsException("array length mismatch");
+        }
+        return this.get(len);
     }
 
     public void putLByteArray(byte[] b) {
@@ -926,10 +955,17 @@ public class BinaryStream {
         putBoolean(link.immediate);
     }
 
+    /**
+     * @throws IndexOutOfBoundsException if the length of the array is greater than 4096
+     */
     @SuppressWarnings("unchecked")
     public <T> T[] getArray(Class<T> clazz, Function<BinaryStream, T> function) {
-        ArrayDeque<T> deque = new ArrayDeque<>();
         int count = (int) getUnsignedVarInt();
+        if (count > 4096) {
+            throw new IndexOutOfBoundsException("too many array elements");
+        }
+
+        ArrayDeque<T> deque = new ArrayDeque<>();
         for (int i = 0; i < count; i++) {
             deque.add(function.apply(this));
         }
@@ -938,12 +974,26 @@ public class BinaryStream {
 
     @SuppressWarnings("unchecked")
     public <T> T[] getArrayLInt(Class<T> clazz, Function<BinaryStream, T> function) {
-        ArrayDeque<T> deque = new ArrayDeque<>();
         int count = this.getLInt();
+        ArrayDeque<T> deque = new ArrayDeque<>();
         for (int i = 0; i < count; i++) {
             deque.add(function.apply(this));
         }
         return deque.toArray((T[]) Array.newInstance(clazz, 0));
+    }
+
+    @SuppressWarnings("unchecked")
+    public <T> T[] getArrayLShort(Class<T> clazz, Function<BinaryStream, T> function) {
+        int count = this.getLShort();
+        ArrayDeque<T> deque = new ArrayDeque<>();
+        for (int i = 0; i < count; i++) {
+            deque.add(function.apply(this));
+        }
+        return deque.toArray((T[]) Array.newInstance(clazz, 0));
+    }
+
+    public boolean isReadable(int length) {
+        return count - offset >= length;
     }
 
     public boolean feof() {
@@ -1053,11 +1103,27 @@ public class BinaryStream {
             this.putSlot(stream, item);
         }
 
+        public Item getCraftingRecipeIngredient(BinaryStream stream) {
+            int id = stream.getVarInt();
+            if (id == ItemID.AIR) {
+                return Item.get(ItemID.AIR, 0, 0);
+            }
+
+            int damage = stream.getVarInt();
+            if (damage == 0x7fff) {
+                damage = -1;
+            }
+
+            int count = stream.getVarInt();
+            return Item.get(id, damage, count);
+        }
+
         public void putCraftingRecipeIngredient(BinaryStream stream, Item ingredient) {
             if (ingredient == null || ingredient.getId() == ItemID.AIR) {
                 stream.putVarInt(ItemID.AIR);
                 return;
             }
+
             stream.putVarInt(ingredient.getId());
             int damage;
             if (ingredient.hasMeta()) {
@@ -1096,6 +1162,13 @@ public class BinaryStream {
 
         public InputInteractionModel getInteractionModel(BinaryStream stream) {
             return null;
+        }
+
+        /**
+         * @since 1.16.0
+         */
+        public int getItemStackRequest(BinaryStream stream) { //TODO: server authoritative inventory
+            return -1;
         }
 
         public final int getCommandParameterTypeId(CommandParamType type) {

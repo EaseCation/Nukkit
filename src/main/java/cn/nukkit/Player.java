@@ -2543,7 +2543,7 @@ public class Player extends EntityHuman implements CommandSender, InventoryHolde
                     }
 
                     break;
-                case ProtocolInfo.MOVE_ENTITY_ABSOLUTE_PACKET:
+                case ProtocolInfo.MOVE_ACTOR_ABSOLUTE_PACKET:
                     MoveEntityPacket moveEntityPacket = (MoveEntityPacket) packet;
                     if (this.riding == null || this.riding.getId() != moveEntityPacket.eid || !this.riding.isControlling(this)) {
                         break;
@@ -2968,7 +2968,7 @@ public class Player extends EntityHuman implements CommandSender, InventoryHolde
                     //use UpdateAttributePacket instead
                     break;
 
-                case ProtocolInfo.ENTITY_EVENT_PACKET:
+                case ProtocolInfo.ACTOR_EVENT_PACKET:
                     if (!this.spawned || !this.isAlive()) {
                         break;
                     }
@@ -3048,7 +3048,7 @@ public class Player extends EntityHuman implements CommandSender, InventoryHolde
                     break;
                 case ProtocolInfo.CRAFTING_EVENT_PACKET:
                     break;
-                case ProtocolInfo.BLOCK_ENTITY_DATA_PACKET:
+                case ProtocolInfo.BLOCK_ACTOR_DATA_PACKET:
                     if (!this.spawned || !this.isAlive()) {
                         break;
                     }

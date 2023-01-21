@@ -8,7 +8,7 @@ import lombok.ToString;
  */
 @ToString(exclude = "data")
 public class FullChunkDataPacket extends DataPacket {
-    public static final int NETWORK_ID = ProtocolInfo.FULL_CHUNK_DATA_PACKET;
+    public static final int NETWORK_ID = ProtocolInfo.LEVEL_CHUNK_PACKET;
 
     @Override
     public int pid() {

@@ -1,6 +1,5 @@
 package cn.nukkit.network.protocol;
 
-import cn.nukkit.math.BlockVector3;
 import lombok.ToString;
 
 /**
@@ -25,13 +24,6 @@ public class ContainerOpenPacket extends DataPacket {
 
     @Override
     public void decode() {
-        this.windowId = this.getByte();
-        this.type = this.getByte();
-        BlockVector3 v = this.getBlockVector3();
-        this.x = v.x;
-        this.y = v.y;
-        this.z = v.z;
-        this.entityId = this.getEntityUniqueId();
     }
 
     @Override

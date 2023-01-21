@@ -1,5 +1,6 @@
 package cn.nukkit.network.protocol;
 
+import cn.nukkit.utils.BinaryStream;
 import lombok.ToString;
 
 @ToString
@@ -18,10 +19,7 @@ public class ResourcePackClientResponsePacket extends DataPacket {
     @Override
     public void decode() {
         this.responseStatus = (byte) this.getByte();
-        this.packIds = new String[this.getLShort()];
-        for (int i = 0; i < this.packIds.length; i++) {
-            this.packIds[i] = this.getString();
-        }
+        this.packIds = this.getArrayLShort(String.class, BinaryStream::getString);
     }
 
     @Override

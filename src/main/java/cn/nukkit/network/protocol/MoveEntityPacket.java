@@ -9,7 +9,7 @@ import lombok.ToString;
  */
 @ToString
 public class MoveEntityPacket extends DataPacket {
-    public static final int NETWORK_ID = ProtocolInfo.MOVE_ENTITY_PACKET;
+    public static final int NETWORK_ID = ProtocolInfo.MOVE_ACTOR_ABSOLUTE_PACKET;
 
     public long eid;
     public double x;

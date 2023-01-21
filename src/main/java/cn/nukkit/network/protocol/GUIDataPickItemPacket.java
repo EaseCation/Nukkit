@@ -20,6 +20,5 @@ public class GUIDataPickItemPacket extends DataPacket {
 
     @Override
     public void decode() {
-        this.hotbarSlot = this.getLInt();
     }
 }

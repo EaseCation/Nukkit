@@ -12,7 +12,7 @@ import lombok.ToString;
  */
 @ToString
 public class AddEntityPacket extends DataPacket {
-    public static final int NETWORK_ID = ProtocolInfo.ADD_ENTITY_PACKET;
+    public static final int NETWORK_ID = ProtocolInfo.ADD_ACTOR_PACKET;
 
     @Override
     public int pid() {
