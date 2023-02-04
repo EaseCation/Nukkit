@@ -62,4 +62,19 @@ public class BlockBarrier extends BlockTransparent {
     public boolean canContainWater() {
         return true;
     }
+
+    @Override
+    public double getMaxX() {
+        return this.x;
+    }
+
+    @Override
+    public double getMaxY() {
+        return this.y;
+    }
+
+    @Override
+    public double getMaxZ() {
+        return this.z;
+    }
 }
