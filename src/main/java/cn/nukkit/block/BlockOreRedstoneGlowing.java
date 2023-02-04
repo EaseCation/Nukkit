@@ -51,11 +51,6 @@ public class BlockOreRedstoneGlowing extends BlockOreRedstone {
     }
 
     @Override
-    public Item getSilkTouchResource() {
-        return toItem(true);
-    }
-
-    @Override
     protected int getLitBlockId() {
         throw new UnsupportedOperationException();
     }

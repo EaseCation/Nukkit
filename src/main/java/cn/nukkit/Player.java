@@ -77,6 +77,7 @@ import co.aikar.timings.Timing;
 import co.aikar.timings.Timings;
 import com.google.common.collect.BiMap;
 import com.google.common.collect.HashBiMap;
+import com.google.common.primitives.Floats;
 import it.unimi.dsi.fastutil.ints.Int2ObjectMap;
 import it.unimi.dsi.fastutil.ints.Int2ObjectOpenHashMap;
 import it.unimi.dsi.fastutil.ints.IntOpenHashSet;
@@ -2186,8 +2187,8 @@ public class Player extends EntityHuman implements CommandSender, InventoryHolde
             this.namedTag.putInt("foodLevel", 20);
         }
         int foodLevel = this.namedTag.getInt("foodLevel");
-        if (!this.namedTag.contains("FoodSaturationLevel")) {
-            this.namedTag.putFloat("FoodSaturationLevel", 20);
+        if (!this.namedTag.contains("foodSaturationLevel")) {
+            this.namedTag.putFloat("foodSaturationLevel", 5);
         }
         float foodSaturationLevel = this.namedTag.getFloat("foodSaturationLevel");
         this.foodData = new PlayerFood(this, foodLevel, foodSaturationLevel);
@@ -2493,7 +2494,14 @@ public class Player extends EntityHuman implements CommandSender, InventoryHolde
                     if (!this.isAlive() || !this.spawned) {
                         break;
                     }
+
                     PlayerInputPacket ipk = (PlayerInputPacket) packet;
+                    if (!validateVehicleInput(ipk.motionX) || !validateVehicleInput(ipk.motionY)) {
+                        this.getServer().getLogger().warning("Invalid vehicle input received: " + this.getName());
+                        this.close("", "Invalid vehicle input");
+                        return;
+                    }
+
                     if (riding instanceof EntityMinecartAbstract) {
                         ((EntityMinecartEmpty) riding).setCurrentSpeed(ipk.motionY);
                     } else if (riding instanceof EntityRideable) {
@@ -2506,6 +2514,13 @@ public class Player extends EntityHuman implements CommandSender, InventoryHolde
                     }
 
                     MovePlayerPacket movePlayerPacket = (MovePlayerPacket) packet;
+                    if (!validateCoordinate(movePlayerPacket.x) || !validateCoordinate(movePlayerPacket.y) || !validateCoordinate(movePlayerPacket.z)
+                            || !validateFloat(movePlayerPacket.pitch) || !validateFloat(movePlayerPacket.yaw) || !validateFloat(movePlayerPacket.headYaw)) {
+                        this.getServer().getLogger().warning("Invalid movement received: " + this.getName());
+                        this.close("", "Invalid movement");
+                        return;
+                    }
+
                     Vector3 newPos = new Vector3(movePlayerPacket.x, movePlayerPacket.y - this.getEyeHeight(), movePlayerPacket.z);
 
                     if (newPos.distanceSquared(this) == 0 && movePlayerPacket.yaw % 360 == this.yaw && movePlayerPacket.pitch % 360 == this.pitch) {
@@ -2545,9 +2560,17 @@ public class Player extends EntityHuman implements CommandSender, InventoryHolde
                     break;
                 case ProtocolInfo.MOVE_ACTOR_ABSOLUTE_PACKET:
                     MoveEntityPacket moveEntityPacket = (MoveEntityPacket) packet;
+                    if (!validateCoordinate((float) moveEntityPacket.x) || !validateCoordinate((float) moveEntityPacket.y) || !validateCoordinate((float) moveEntityPacket.z)
+                            || !validateFloat((float) moveEntityPacket.pitch) || !validateFloat((float) moveEntityPacket.yaw) || !validateFloat((float) moveEntityPacket.headYaw)) {
+                        this.getServer().getLogger().warning("Invalid vehicle movement received: " + this.getName());
+                        this.close("", "Invalid vehicle movement");
+                        return;
+                    }
+
                     if (this.riding == null || this.riding.getId() != moveEntityPacket.eid || !this.riding.isControlling(this)) {
                         break;
                     }
+
                     if (this.riding instanceof EntityBoat) {
                         if (this.temporalVector.setComponents(moveEntityPacket.x, moveEntityPacket.y, moveEntityPacket.z).distanceSquared(this.riding) < 1000) {
                             ((EntityBoat) this.riding).onInput(moveEntityPacket.x, moveEntityPacket.y, moveEntityPacket.z, moveEntityPacket.yaw);
@@ -5552,6 +5575,18 @@ public class Player extends EntityHuman implements CommandSender, InventoryHolde
 
     public long getLocalEntityId() {
         return getId();
+    }
+
+    protected static boolean validateFloat(float value) {
+        return Floats.isFinite(value);
+    }
+
+    protected static boolean validateCoordinate(float value) {
+        return -30_000_000 <= value & value <= 30_000_000;
+    }
+
+    protected static boolean validateVehicleInput(float value) {
+        return -1 <= value & value <= 1;
     }
 
     public void onPacketViolation(PacketViolationReason reason) {

@@ -249,7 +249,6 @@ public class Server {
 
         this.console = new NukkitConsole(this);
         this.consoleThread = new ConsoleThread();
-        this.consoleThread.setName("Console");
         this.consoleThread.start();
 
         if (!new File(this.dataPath + "nukkit.yml").exists()) {
@@ -865,6 +864,22 @@ public class Server {
         }
 
         this.tickCounter = 0;
+
+        if (Boolean.getBoolean("nukkit.docker")) {
+            Runtime.getRuntime().addShutdownHook(new Thread(() -> {
+                shutdown();
+
+                System.out.println("Shutdown hook triggered...");
+                while (!Nukkit.STOPPED) {
+                    try {
+                        Thread.sleep(500);
+                    } catch (InterruptedException e) {
+                        e.printStackTrace();
+                    }
+                }
+                System.out.println("Server Stopped.");
+            }, "Nukkit Shutdown Hook"));
+        }
 
         log.info(this.getLanguage().translateString("nukkit.server.defaultGameMode", getGamemodeString(this.getGamemode())));
 
@@ -2110,6 +2125,10 @@ public class Server {
     }
 
     private class ConsoleThread extends Thread implements InterruptibleThread {
+        ConsoleThread() {
+            super("Console");
+            setDaemon(true);
+        }
 
         @Override
         public void run() {

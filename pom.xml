@@ -116,6 +116,22 @@
                     <groupId>io.netty</groupId>
                     <artifactId>netty-buffer</artifactId>
                 </exclusion>
+                <exclusion>
+                    <groupId>net.daporkchop.lib</groupId>
+                    <artifactId>natives</artifactId>
+                </exclusion>
+            </exclusions>
+        </dependency>
+        <dependency>
+            <groupId>net.daporkchop.lib</groupId>
+            <artifactId>natives</artifactId>
+            <version>0.5.8-SNAPSHOT</version>
+            <scope>compile</scope>
+            <exclusions>
+                <exclusion>
+                    <groupId>io.netty</groupId>
+                    <artifactId>netty-buffer</artifactId>
+                </exclusion>
             </exclusions>
         </dependency>
         <dependency>
@@ -181,7 +197,7 @@
         <dependency>
             <groupId>org.projectlombok</groupId>
             <artifactId>lombok</artifactId>
-            <version>1.18.24</version>
+            <version>1.18.26</version>
             <scope>provided</scope>
         </dependency>
         <dependency>
@@ -197,14 +213,6 @@
                 <exclusion>
                     <groupId>org.jline</groupId>
                     <artifactId>jline-reader</artifactId>
-                </exclusion>
-                <exclusion>
-                    <groupId>org.jline</groupId>
-                    <artifactId>jline-terminal-jna</artifactId>
-                </exclusion>
-                <exclusion>
-                    <groupId>org.jline</groupId>
-                    <artifactId>jline-terminal</artifactId>
                 </exclusion>
             </exclusions>
         </dependency>
@@ -291,13 +299,13 @@
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-surefire-plugin</artifactId>
-                <version>2.22.2</version>
+                <version>3.0.0-M8</version>
             </plugin>
             <!--
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-enforcer-plugin</artifactId>
-                <version>3.0.0</version>
+                <version>3.1.0</version>
                 <executions>
                     <execution>
                         <id>enforce</id>
@@ -350,12 +358,13 @@
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-antrun-plugin</artifactId>
+                <version>3.1.0</version>
                 <executions>
                     <execution>
                         <id>copy</id>
                         <phase>package</phase>
                         <configuration>
-                            <tasks>
+                            <target>
                                 <echo message="正在复制 ${project.build.finalName} 至本地测试服务端目录..."/>
                                 <mkdir dir="${dir.server}"/>
                                 <copy todir="${dir.server}" overwrite="true">
@@ -375,7 +384,7 @@
                                         <include name="${project.build.finalName}.jar" />
                                     </fileset>
                                 </copy>
-                            </tasks>
+                            </target>
                         </configuration>
                         <goals>
                             <goal>run</goal>
@@ -386,4 +395,30 @@
         </plugins>
     </build>
 
+    <profiles>
+        <profile>
+            <id>java17</id>
+
+            <activation>
+                <jdk>17</jdk>
+            </activation>
+
+            <properties>
+                <maven.compiler.source>17</maven.compiler.source>
+                <maven.compiler.target>17</maven.compiler.target>
+            </properties>
+        </profile>
+        <profile>
+            <id>java-next</id>
+
+            <activation>
+                <jdk>19</jdk>
+            </activation>
+
+            <properties>
+                <maven.compiler.source>19</maven.compiler.source>
+                <maven.compiler.target>19</maven.compiler.target>
+            </properties>
+        </profile>
+    </profiles>
 </project>

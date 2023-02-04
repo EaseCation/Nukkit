@@ -60,6 +60,7 @@ public class Nukkit {
     public static int DEBUG = 1;
 
     private static Thread mainThread;
+    static volatile boolean STOPPED;
 
     public static void main(String[] args) {
         mainThread = Thread.currentThread();
@@ -152,6 +153,11 @@ public class Nukkit {
         }
 
         LogManager.shutdown();
+
+        if (Boolean.getBoolean("nukkit.docker")) {
+            System.out.println("Nukkit has exited.");
+        }
+        STOPPED = true;
 
         System.exit(0);
     }

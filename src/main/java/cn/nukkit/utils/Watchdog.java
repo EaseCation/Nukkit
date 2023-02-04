@@ -16,10 +16,11 @@ public class Watchdog extends Thread {
     private boolean responding = true;
 
     public Watchdog(Server server, long time) {
+        super("Watchdog");
+        setDaemon(true);
         this.server = server;
         this.time = time;
         this.running = true;
-        this.setName("Watchdog");
     }
 
     public void kill() {
@@ -41,7 +42,7 @@ public class Watchdog extends Thread {
                 if (server.isRunning() && diff > time) {
                     if (responding) {
                         log.fatal("--------- Server stopped responding --------- (" + Math.round(diff / 1000d) + "s)");
-                        
+
                         log.fatal("---------------- Main thread ----------------");
                         dumpThread(ManagementFactory.getThreadMXBean().getThreadInfo(this.server.getPrimaryThread().getId(), Integer.MAX_VALUE));
 
