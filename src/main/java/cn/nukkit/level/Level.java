@@ -1709,6 +1709,10 @@ public class Level implements ChunkManager, Metadatable {
             for (int x = minX; x <= maxX; ++x) {
                 for (int y = minY; y <= maxY; ++y) {
                     Block block = this.getBlock(this.temporalVector.setComponents(x, y, z), false);
+                    // EC优化：使投掷物可以穿过屏障方块
+                    if (block.getId() == BlockID.BARRIER && entity.canPassThroughBarrier()) {
+                        continue;
+                    }
                     if (!block.canPassThrough() && block.collidesWithBB(bb)) {
                         collides.add(block.getBoundingBox());
                     }

@@ -236,4 +236,9 @@ public abstract class EntityProjectile extends Entity {
         this.motionY += rand.nextGaussian() * 0.007499999832361937 * modifier;
         this.motionZ += rand.nextGaussian() * 0.007499999832361937 * modifier;
     }
+
+    @Override
+    public boolean canPassThroughBarrier() {
+        return true;
+    }
 }

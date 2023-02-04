@@ -2570,6 +2570,10 @@ public abstract class Entity extends Location implements Metadatable {
         return closed;
     }
 
+    public boolean canPassThroughBarrier() {
+        return false;
+    }
+
     @Override
     public boolean equals(Object obj) {
         if (obj == null) {
