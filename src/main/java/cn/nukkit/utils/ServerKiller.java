@@ -15,8 +15,9 @@ public class ServerKiller extends Thread {
     }
 
     public ServerKiller(long time, TimeUnit unit) {
+        super("Server Killer");
+        setDaemon(true);
         this.sleepTime = unit.toMillis(time);
-        this.setName("Server Killer");
     }
 
     @Override

@@ -25,7 +25,7 @@ import java.util.Date;
 @Log4j2
 public class BugReportGenerator extends Thread {
 
-    private Throwable throwable;
+    private final Throwable throwable;
 
     BugReportGenerator(Throwable throwable) {
         this.throwable = throwable;
@@ -64,8 +64,7 @@ public class BugReportGenerator extends Thread {
                         .append(", total=").append(getCount(store.getTotalSpace(), true))
                         .append(") ");
                 totalDiskSpace += store.getTotalSpace();
-            } catch (IOException e) {
-                //
+            } catch (IOException ignored) {
             }
         }
 
@@ -77,7 +76,6 @@ public class BugReportGenerator extends Thread {
         if (stackTrace.length > 0) {
             pluginError = !throwable.getStackTrace()[0].getClassName().startsWith("cn.nukkit");
         }
-
 
         File mdReport = new File(reports, date + "_" + throwable.getClass().getSimpleName() + ".md");
         mdReport.createNewFile();

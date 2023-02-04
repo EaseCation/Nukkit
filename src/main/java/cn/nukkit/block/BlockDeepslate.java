@@ -47,10 +47,15 @@ public class BlockDeepslate extends BlockRotatedPillar {
     public Item[] getDrops(Item item) {
         if (item.isPickaxe() && item.getTier() >= ItemTool.TIER_WOODEN) {
             return new Item[]{
-                    toItem(true),
+                    Item.get(getItemId(COBBLED_DEEPSLATE)),
             };
         }
         return new Item[0];
+    }
+
+    @Override
+    public boolean canSilkTouch() {
+        return true;
     }
 
     @Override
