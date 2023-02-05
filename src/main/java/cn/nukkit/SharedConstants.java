@@ -53,6 +53,8 @@ public final class SharedConstants {
 
     // experimental
 
+    public static final boolean USE_FUNCTION_EVENT_EXECUTOR = true;
+
     public static final boolean NEXT_UPDATE_NEW_ENTITY_SYSTEM_PREVIEW = !PRODUCTION_ENVIRONMENT && false;
 
     public static final boolean NEXT_UPDATE_EVENT_POOLING_PREVIEW = !PRODUCTION_ENVIRONMENT && false;

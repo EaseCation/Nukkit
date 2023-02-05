@@ -10,6 +10,7 @@ import lombok.extern.log4j.Log4j2;
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
+import java.lang.invoke.MethodHandles;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -49,6 +50,7 @@ public class JavaPluginLoader implements PluginLoader {
             String className = description.getMain();
             PluginClassLoader classLoader = new PluginClassLoader(this, this.getClass().getClassLoader(), file);
             this.classLoaders.add(classLoader);
+            MethodHandles.Lookup lookup = (MethodHandles.Lookup) classLoader.loadClass("NukkitPluginLookup").getField("LOOKUP").get(null);
             PluginBase plugin;
             try {
                 Class<?> javaClass = Class.forName(className, true, classLoader);
@@ -57,7 +59,7 @@ public class JavaPluginLoader implements PluginLoader {
                     Class<? extends PluginBase> pluginClass = javaClass.asSubclass(PluginBase.class);
 
                     plugin = pluginClass.newInstance();
-                    this.initPlugin(plugin, description, dataFolder, file);
+                    this.initPlugin(plugin, description, dataFolder, file, lookup);
                     plugin.onLoad();
 
                     return plugin;
@@ -108,8 +110,8 @@ public class JavaPluginLoader implements PluginLoader {
         return this.fileFilters.clone();
     }
 
-    private synchronized void initPlugin(PluginBase plugin, PluginDescription description, File dataFolder, File file) {
-        plugin.init(this, this.server, description, dataFolder, file);
+    private synchronized void initPlugin(PluginBase plugin, PluginDescription description, File dataFolder, File file, MethodHandles.Lookup lookup) {
+        plugin.init(this, this.server, description, dataFolder, file, lookup);
     }
 
     @Override

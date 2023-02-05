@@ -1,6 +1,10 @@
 package cn.nukkit.plugin;
 
+import cn.nukkit.Server;
+import com.google.common.io.ByteStreams;
+
 import java.io.File;
+import java.io.InputStream;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.net.URLClassLoader;
@@ -25,6 +29,8 @@ public class PluginClassLoader extends URLClassLoader {
     public PluginClassLoader(JavaPluginLoader loader, ClassLoader parent, File file) throws MalformedURLException {
         super(new URL[]{file.toURI().toURL()}, parent);
         this.loader = loader;
+
+        defineClass("NukkitPluginLookup", PLUGIN_LOOKUP_CLASS, 0, PLUGIN_LOOKUP_CLASS.length);
     }
 
     @Override
@@ -62,4 +68,20 @@ public class PluginClassLoader extends URLClassLoader {
         return classes.keySet();
     }
 
+    /**
+     * <code>
+     * public interface NukkitPluginLookup {
+     *     MethodHandles.Lookup LOOKUP = MethodHandles.lookup();
+     * }
+     * </code>
+     */
+    private static final byte[] PLUGIN_LOOKUP_CLASS;
+
+    static {
+        try (InputStream stream = Server.class.getClassLoader().getResourceAsStream("NukkitPluginLookup.class.bin")) {
+            PLUGIN_LOOKUP_CLASS = ByteStreams.toByteArray(stream);
+        } catch (Exception e) {
+            throw new AssertionError("Unable to load NukkitPluginLookup.class", e);
+        }
+    }
 }

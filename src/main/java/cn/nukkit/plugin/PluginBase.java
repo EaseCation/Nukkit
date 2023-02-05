@@ -13,6 +13,7 @@ import org.snakeyaml.engine.v2.api.LoadSettings;
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
+import java.lang.invoke.MethodHandles;
 import java.util.LinkedHashMap;
 
 /**
@@ -27,6 +28,7 @@ import java.util.LinkedHashMap;
 abstract public class PluginBase implements Plugin {
 
     private PluginLoader loader;
+    private MethodHandles.Lookup methodHandlesLookup;
 
     private Server server;
 
@@ -124,10 +126,11 @@ abstract public class PluginBase implements Plugin {
      *                    The {@code File} object of this plugin itself. For jar-packed plugins, it is the jar file itself.
      * @since Nukkit 1.0 | Nukkit API 1.0.0
      */
-    public final void init(PluginLoader loader, Server server, PluginDescription description, File dataFolder, File file) {
+    public final void init(PluginLoader loader, Server server, PluginDescription description, File dataFolder, File file, MethodHandles.Lookup lookup) {
         if (!initialized) {
             initialized = true;
             this.loader = loader;
+            this.methodHandlesLookup = lookup;
             this.server = server;
             this.description = description;
             this.dataFolder = dataFolder;
@@ -291,6 +294,11 @@ abstract public class PluginBase implements Plugin {
     @Override
     public PluginLoader getPluginLoader() {
         return this.loader;
+    }
+
+    @Override
+    public MethodHandles.Lookup getMethodHandlesLookup() {
+        return this.methodHandlesLookup;
     }
 
     /**

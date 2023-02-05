@@ -6,6 +6,7 @@ import cn.nukkit.utils.Config;
 
 import java.io.File;
 import java.io.InputStream;
+import java.lang.invoke.MethodHandles;
 
 /**
  * 所有Nukkit插件必须实现的接口。<br>
@@ -277,4 +278,5 @@ public interface Plugin extends CommandExecutor {
      */
     PluginLoader getPluginLoader();
 
+    MethodHandles.Lookup getMethodHandlesLookup();
 }

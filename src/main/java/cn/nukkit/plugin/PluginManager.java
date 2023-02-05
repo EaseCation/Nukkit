@@ -6,7 +6,7 @@ import cn.nukkit.command.SimpleCommandMap;
 import cn.nukkit.event.*;
 import cn.nukkit.permission.Permissible;
 import cn.nukkit.permission.Permission;
-import cn.nukkit.utils.MainLogger;
+import cn.nukkit.utils.EventException;
 import cn.nukkit.utils.PluginException;
 import cn.nukkit.utils.Utils;
 import it.unimi.dsi.fastutil.objects.Object2ObjectLinkedOpenHashMap;
@@ -16,10 +16,17 @@ import it.unimi.dsi.fastutil.objects.ObjectOpenHashSet;
 import lombok.extern.log4j.Log4j2;
 
 import java.io.File;
+import java.lang.invoke.CallSite;
+import java.lang.invoke.LambdaMetafactory;
+import java.lang.invoke.MethodHandles;
+import java.lang.invoke.MethodType;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.Method;
 import java.util.*;
+import java.util.function.Consumer;
 import java.util.regex.Pattern;
+
+import static cn.nukkit.SharedConstants.*;
 
 /**
  * @author MagicDroidX
@@ -583,7 +590,36 @@ public class PluginManager {
                     break;
                 }
             }
-            this.registerEvent(eventClass, listener, eh.priority(), new MethodEventExecutor(method, eventClass), plugin, eh.ignoreCancelled());
+
+            EventExecutor executor;
+            if (USE_FUNCTION_EVENT_EXECUTOR) {
+                MethodHandles.Lookup lookup = plugin.getMethodHandlesLookup();
+                try {
+                    CallSite site = LambdaMetafactory.metafactory(lookup, "accept",
+                            MethodType.methodType(Consumer.class, listener.getClass()),
+                            MethodType.methodType(void.class, Object.class),
+                            lookup.unreflect(method),
+                            MethodType.methodType(void.class, eventClass));
+                    Consumer<Event> consumer = (Consumer<Event>) site.getTarget().invoke(listener);
+                    executor = (listen, event) -> {
+                        try {
+                            if (!eventClass.isAssignableFrom(event.getClass())) {
+                                return;
+                            }
+                            consumer.accept(event);
+                        } catch (Throwable t) {
+                            throw new EventException(t);
+                        }
+                    };
+                } catch (Throwable e) {
+                    plugin.getLogger().debug("FunctionEventExecutor is not available, fallback to ReflectionEventExecutor: " + method, e);
+                    executor = new MethodEventExecutor(method, eventClass);
+                }
+            } else {
+                executor = new MethodEventExecutor(method, eventClass);
+            }
+
+            this.registerEvent(eventClass, listener, eh.priority(), executor, plugin, eh.ignoreCancelled());
         }
     }
 
