@@ -47,9 +47,6 @@ import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ThreadLocalRandom;
 
-import static cn.nukkit.network.protocol.SetEntityLinkPacket.TYPE_REMOVE;
-import static cn.nukkit.network.protocol.SetEntityLinkPacket.TYPE_RIDE;
-
 /**
  * @author MagicDroidX
  */
@@ -372,6 +369,7 @@ public abstract class Entity extends Location implements Metadatable {
 
     protected final EntityMetadata dataProperties = new EntityMetadata()
             .putLong(DATA_FLAGS, 0)
+            .putLong(DATA_FLAGS_EXTENDED, 0)
             .putByte(DATA_COLOR, 0)
             .putShort(DATA_AIR, 400)
             .putShort(DATA_MAX_AIR, 400)
@@ -1597,7 +1595,7 @@ public abstract class Entity extends Location implements Metadatable {
     }
 
     public boolean mountEntity(Entity entity) {
-        return mountEntity(entity, TYPE_RIDE);
+        return mountEntity(entity, SetEntityLinkPacket.TYPE_RIDE);
     }
 
     public boolean mountEntity(Entity entity, byte mode) {
@@ -1605,7 +1603,7 @@ public abstract class Entity extends Location implements Metadatable {
     }
 
     public boolean mountEntity(Entity entity, boolean riderInitiated) {
-        return mountEntity(entity, TYPE_RIDE, riderInitiated);
+        return mountEntity(entity, SetEntityLinkPacket.TYPE_RIDE, riderInitiated);
     }
 
     /**
@@ -1656,7 +1654,7 @@ public abstract class Entity extends Location implements Metadatable {
         if (ev.isCancelled()) {
             int seatIndex = this.passengers.indexOf(entity);
             if (seatIndex == 0) {
-                this.broadcastLinkPacket(entity, TYPE_RIDE);
+                this.broadcastLinkPacket(entity, SetEntityLinkPacket.TYPE_RIDE);
             } else if (seatIndex != -1) {
                 this.broadcastLinkPacket(entity, SetEntityLinkPacket.TYPE_PASSENGER);
             }
@@ -1664,7 +1662,7 @@ public abstract class Entity extends Location implements Metadatable {
         }
 
         if (sendLinks) {
-            broadcastLinkPacket(entity, TYPE_REMOVE);
+            broadcastLinkPacket(entity, SetEntityLinkPacket.TYPE_REMOVE);
         }
 
         // Refurbish the entity
