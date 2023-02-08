@@ -1375,6 +1375,10 @@ public abstract class Block extends Position implements Metadatable, Cloneable, 
         return false;
     }
 
+    public boolean isDaylightDetector() {
+        return false;
+    }
+
     public boolean isDiode() {
         return false;
     }
@@ -1408,6 +1412,10 @@ public abstract class Block extends Position implements Metadatable, Cloneable, 
     }
 
     public boolean isItemFrame() {
+        return false;
+    }
+
+    public boolean isBeehive() {
         return false;
     }
 

@@ -125,6 +125,11 @@ public class BlockBeehive extends BlockSolidMeta implements Faceable {
         return BlockFace.fromHorizontalIndex(getDamage() & DIRECTION_MASK);
     }
 
+    @Override
+    public boolean isBeehive() {
+        return true;
+    }
+
     protected BlockEntityBeehive createBlockEntity(@Nullable Item item) {
         CompoundTag nbt = BlockEntity.getDefaultCompound(this, BlockEntity.BEEHIVE);
 

@@ -123,6 +123,11 @@ public class BlockDaylightDetector extends BlockTransparentMeta {
         return true;
     }
 
+    @Override
+    public boolean isDaylightDetector() {
+        return true;
+    }
+
     protected BlockEntityDaylightDetector createBlockEntity(@Nullable Item item) {
         CompoundTag nbt = BlockEntity.getDefaultCompound(this, BlockEntity.DAYLIGHT_DETECTOR);
 
