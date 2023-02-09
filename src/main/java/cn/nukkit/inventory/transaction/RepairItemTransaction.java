@@ -333,6 +333,7 @@ public class RepairItemTransaction extends InventoryTransaction {
                 && input.getCustomName().equals(outputItem.getCustomName());
     }
 
+    //TODO: match SmithingTransformRecipe
     private boolean checkSmithingValid() {
         int materialId = Integer.MIN_VALUE;
         switch (inputItem.getId()) {

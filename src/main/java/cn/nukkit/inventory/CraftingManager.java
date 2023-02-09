@@ -17,6 +17,7 @@ import it.unimi.dsi.fastutil.objects.Object2ObjectMap;
 import it.unimi.dsi.fastutil.objects.Object2ObjectOpenHashMap;
 import lombok.extern.log4j.Log4j2;
 
+import javax.annotation.Nullable;
 import java.io.File;
 import java.io.InputStream;
 import java.util.*;
@@ -45,6 +46,9 @@ public class CraftingManager {
     protected final Long2ObjectMap<Long2ObjectMap<ShapedRecipe>> shapedBasedRecipes = new Long2ObjectOpenHashMap<>();
     protected final Long2ObjectMap<Long2ObjectMap<ShapedRecipe>> shapedRecipes = new Long2ObjectOpenHashMap<>();
     protected final Long2ObjectMap<Long2ObjectMap<ShapedChemistryRecipe>> shapedChemistryRecipes = new Long2ObjectOpenHashMap<>();
+
+    protected final Long2ObjectMap<SmithingTransformRecipe> smithingRecipes = new Long2ObjectOpenHashMap<>();
+    protected final Map<RecipeTag, Long2ObjectMap<SmithingTransformRecipe>> taggedSmithingRecipes = new EnumMap<>(RecipeTag.class);
 
     protected final Long2ObjectMap<FurnaceRecipe> furnaceRecipes = new Long2ObjectOpenHashMap<>();
     protected final Map<RecipeTag, Long2ObjectMap<FurnaceRecipe>> taggedFurnaceRecipes = new EnumMap<>(RecipeTag.class);
@@ -242,6 +246,10 @@ public class CraftingManager {
             }
         }
 
+        for (SmithingTransformRecipe recipe : this.smithingRecipes.values()) {
+            pk.addSmithingRecipe(recipe);
+        }
+
         for (FurnaceRecipe recipe : this.furnaceRecipes.values()) {
             pk.addFurnaceRecipe(recipe);
         }
@@ -270,6 +278,10 @@ public class CraftingManager {
 
     public Collection<Recipe> getRecipes() {
         return recipes;
+    }
+
+    public Long2ObjectMap<SmithingTransformRecipe> getSmithingRecipes() {
+        return smithingRecipes;
     }
 
     public Long2ObjectMap<FurnaceRecipe> getFurnaceRecipes() {
@@ -316,9 +328,21 @@ public class CraftingManager {
             return Hash.xxh64Void();
         }
 
-        BinaryStream stream = new BinaryStream();
+        BinaryStream stream = new BinaryStream(items.size() * 8);
         for (Item item : items) {
             stream.putLong(item.asHashWithCount());
+        }
+        return Hash.xxh64(stream.getBufferUnsafe(), 0, stream.getCount());
+    }
+
+    protected static long getMultiItemHashWithoutCount(Item... items) {
+        if (items.length == 0) {
+            return Hash.xxh64Void();
+        }
+
+        BinaryStream stream = new BinaryStream(items.length * 8);
+        for (Item item : items) {
+            stream.putLong(item.asHash());
         }
         return Hash.xxh64(stream.getBufferUnsafe(), 0, stream.getCount());
     }
@@ -402,6 +426,19 @@ public class CraftingManager {
             shapelessRecipes.put(outputHash, recipes);
         }
         recipes.put(inputHash, recipe);
+    }
+
+    public void registerSmithingTransformRecipe(SmithingTransformRecipe recipe) {
+        long hash = getMultiItemHashWithoutCount(recipe.getInput(), recipe.getAddition());
+        this.smithingRecipes.put(hash, recipe);
+
+        RecipeTag tag = recipe.getTag();
+        Long2ObjectMap<SmithingTransformRecipe> recipes = taggedSmithingRecipes.get(tag);
+        if (recipes == null) {
+            recipes = new Long2ObjectOpenHashMap<>();
+            taggedSmithingRecipes.put(tag, recipes);
+        }
+        recipes.put(hash, recipe);
     }
 
     protected static long getContainerHash(int ingredientId, int containerId) {
@@ -512,6 +549,15 @@ public class CraftingManager {
 
     public void registerMaterialReducerRecipe(MaterialReducerRecipe recipe) {
         this.materialReducerRecipes.put(recipe.getInput().asHash(), recipe);
+    }
+
+    @Nullable
+    public SmithingTransformRecipe matchSmithingRecipe(Item input, Item addition, RecipeTag tag) {
+        Long2ObjectMap<SmithingTransformRecipe> recipes = taggedSmithingRecipes.get(tag);
+        if (recipes == null) {
+            return null;
+        }
+        return recipes.get(getMultiItemHashWithoutCount(input, addition));
     }
 
     public static class Entry {

@@ -123,6 +123,10 @@ public class LevelEventPacket extends DataPacket {
     public static final int EVENT_BLOCK_START_BREAK = 3600;
     public static final int EVENT_BLOCK_STOP_BREAK = 3601;
     public static final int EVENT_BLOCK_UPDATE_BREAK = 3602;
+    /**
+     * @since 1.19.60
+     */
+    public static final int EVENT_PLAYERS_SLEEPING_NEW = 3603;
 
     public static final int EVENT_SET_DATA = 4000;
 

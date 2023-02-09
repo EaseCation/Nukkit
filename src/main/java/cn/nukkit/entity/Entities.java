@@ -144,6 +144,10 @@ public final class Entities {
         // 1.19.10
         // trader_llama
 
+        // 1.20.0
+        // camel
+        // sniffer
+
     }
 
     private static Class<? extends Entity> registerEntity(int typeId, String identifier, String name, Class<? extends Entity> clazz) {

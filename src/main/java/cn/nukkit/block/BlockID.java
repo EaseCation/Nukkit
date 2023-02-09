@@ -801,6 +801,8 @@ public interface BlockID {
     int BAMBOO_MOSAIC_SLAB = 779;
     int BAMBOO_MOSAIC_DOUBLE_SLAB = 780;
     int CHISELED_BOOKSHELF = 781;
+    int BAMBOO_BLOCK = 782;
+    int STRIPPED_BAMBOO_BLOCK = 783;
 
 
     int UNDEFINED = 782;

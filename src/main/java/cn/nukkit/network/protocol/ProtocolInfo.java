@@ -213,7 +213,7 @@ public interface ProtocolInfo {
     int GAME_TEST_REQUEST_PACKET = 0xc2; // 194 s
     int GAME_TEST_RESULTS_PACKET = 0xc3; // 195 c
     int UPDATE_CLIENT_INPUT_LOCKS_PACKET = 0xc4; // 196 c
-    int CLIENT_CHEAT_ABILITY_PACKET = 0xc5; // 197
+    int CLIENT_CHEAT_ABILITY_PACKET = 0xc5; // 197 s
 
     //NetEase Common Mod
     int PACKET_PY_RPC = 0xc8; // 200 cs

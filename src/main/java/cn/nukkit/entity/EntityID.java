@@ -129,6 +129,7 @@ public interface EntityID {
     int FIREFLY = 135;
 
     int CAMEL = 138;
+    int SNIFFER = 139;
 
     int TRADER_LLAMA = 157;
 

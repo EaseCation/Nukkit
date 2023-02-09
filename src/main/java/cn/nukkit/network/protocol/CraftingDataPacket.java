@@ -118,6 +118,10 @@ public class CraftingDataPacket extends DataPacket {
         Collections.addAll(entries, recipe);
     }
 
+    public void addSmithingRecipe(SmithingTransformRecipe... recipe) {
+        Collections.addAll(entries, recipe);
+    }
+
     public void addFurnaceRecipe(FurnaceRecipe... recipe) {
         Collections.addAll(entries, recipe);
     }

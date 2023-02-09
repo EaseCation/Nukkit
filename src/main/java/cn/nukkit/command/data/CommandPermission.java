@@ -7,4 +7,11 @@ public enum CommandPermission {
     HOST,
     OWNER,
     INTERNAL,
+    ;
+
+    private static final CommandPermission[] VALUES = values();
+
+    public static CommandPermission[] getValues() {
+        return VALUES;
+    }
 }

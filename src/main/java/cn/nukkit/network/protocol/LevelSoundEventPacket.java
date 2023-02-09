@@ -454,6 +454,10 @@ public class LevelSoundEventPacket extends DataPacket {
 	public static final int SOUND_TRAPDOOR_CLOSE = 455;
 	public static final int SOUND_FENCE_GATE_OPEN = 456;
 	public static final int SOUND_FENCE_GATE_CLOSE = 457;
+	public static final int SOUND_INSERT = 458;
+	public static final int SOUND_PICKUP = 459;
+	public static final int SOUND_INSERT_ENCHANTED = 460;
+	public static final int SOUND_PICKUP_ENCHANTED = 461;
 
 	// 插入的 ID 由跨版本转换处理: 1000 + ID
 	public static final int SOUND_MOB_ARMOR_STAND_PLACE = 1000 + 38;
