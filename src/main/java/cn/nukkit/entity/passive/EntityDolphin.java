@@ -8,7 +8,7 @@ import cn.nukkit.nbt.tag.CompoundTag;
 /**
  * Created by PetteriM1
  */
-public class EntityDolphin extends EntityAnimal {
+public class EntityDolphin extends EntityWaterAnimal {
 
     public static final int NETWORK_ID = 31;
 

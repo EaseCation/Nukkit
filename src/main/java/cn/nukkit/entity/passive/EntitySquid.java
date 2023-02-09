@@ -11,7 +11,7 @@ import cn.nukkit.utils.DyeColor;
 /**
  * @author PikyCZ
  */
-public class EntitySquid extends EntityAnimal {
+public class EntitySquid extends EntityWaterAnimal {
 
     public static final int NETWORK_ID = 17;
 

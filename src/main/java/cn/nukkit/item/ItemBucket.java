@@ -305,7 +305,6 @@ public class ItemBucket extends Item {
                     level.addLevelSoundEvent(block, LevelSoundEventPacket.SOUND_BUCKET_EMPTY_WATER);
                 }
 
-                /* //TODO: entity
                 switch (meta) {
                     case COD_BUCKET:
                         Entity cod = Entity.createEntity("Cod", block);
@@ -332,7 +331,6 @@ public class ItemBucket extends Item {
                         if (tadpole != null) tadpole.spawnToAll();
                         break;
                 }
-                */
 
                 return true;
             } else if (nether) {
