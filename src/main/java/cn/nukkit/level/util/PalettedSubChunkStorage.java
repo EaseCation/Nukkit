@@ -391,6 +391,11 @@ public class PalettedSubChunkStorage {
             return false;
         }
 
+        if (this.palette.getInt(0) != BlockID.AIR) {
+            // Hive Chunker...
+            return false;
+        }
+
         for (int word : this.bitArray.getWords()) {
             if (word != 0) {
                 return false;
