@@ -57,10 +57,13 @@ public class BlockWitherRose extends BlockFlower {
 
     @Override
     public void onEntityCollide(Entity entity) {
-        if (!(entity instanceof EntityLiving) || entity instanceof Player && ((Player) entity).isCreative()
-                || entity.getServer().getTick() % 10 != 0) {
+        if (!(entity instanceof EntityLiving) || entity instanceof Player && ((Player) entity).isCreative()) {
             return;
         }
-        entity.addEffect(Effect.getEffect(Effect.WITHER).setDuration(20));
+        Effect wither = entity.getEffect(Effect.WITHER);
+        if (wither != null && wither.getDuration() > 1) {
+            return;
+        }
+        entity.addEffect(Effect.getEffect(Effect.WITHER).setDuration(40 + 1));
     }
 }
