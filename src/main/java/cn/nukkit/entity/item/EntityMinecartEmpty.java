@@ -2,6 +2,7 @@ package cn.nukkit.entity.item;
 
 import cn.nukkit.Player;
 import cn.nukkit.entity.Entity;
+import cn.nukkit.entity.EntityID;
 import cn.nukkit.entity.EntityLiving;
 import cn.nukkit.entity.passive.EntityWaterAnimal;
 import cn.nukkit.event.entity.EntityDamageByBlockEvent;
@@ -16,7 +17,7 @@ import cn.nukkit.utils.MinecartType;
  */
 public class EntityMinecartEmpty extends EntityMinecartAbstract {
 
-    public static final int NETWORK_ID = 84;
+    public static final int NETWORK_ID = EntityID.MINECART;
 
     @Override
     public int getNetworkId() {

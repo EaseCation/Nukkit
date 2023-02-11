@@ -1,16 +1,17 @@
 package cn.nukkit.entity.mob;
 
 import cn.nukkit.Player;
+import cn.nukkit.entity.EntityID;
+import cn.nukkit.item.Item;
 import cn.nukkit.level.format.FullChunk;
 import cn.nukkit.nbt.tag.CompoundTag;
-import cn.nukkit.network.protocol.AddEntityPacket;
 
 /**
  * @author PikyCZ
  */
 public class EntityMagmaCube extends EntityMob {
 
-    public static final int NETWORK_ID = 42;
+    public static final int NETWORK_ID = EntityID.MAGMA_CUBE;
 
     @Override
     public int getNetworkId() {
@@ -24,17 +25,17 @@ public class EntityMagmaCube extends EntityMob {
     @Override
     protected void initEntity() {
         super.initEntity();
-        this.setMaxHealth(16);
+        this.setMaxHealth(4);
     }
 
     @Override
     public float getWidth() {
-        return 2.04f;
+        return 1.04f;
     }
 
     @Override
     public float getHeight() {
-        return 2.04f;
+        return 1.02f;
     }
 
     @Override
@@ -43,23 +44,19 @@ public class EntityMagmaCube extends EntityMob {
     }
 
     @Override
+    public Item[] getDrops() {
+        return new Item[]{
+//                Item.get(Item.MAGMA_CREAM, 0, ThreadLocalRandom.current().nextInt(2)),
+        };
+    }
+
+    @Override
     public void spawnTo(Player player) {
         if (this.hasSpawned.containsKey(player.getLoaderId())) {
             return;
         }
 
-        AddEntityPacket pk = new AddEntityPacket();
-        pk.type = this.getNetworkId();
-        pk.entityUniqueId = this.getId();
-        pk.entityRuntimeId = this.getId();
-        pk.x = (float) this.x;
-        pk.y = (float) this.y;
-        pk.z = (float) this.z;
-        pk.speedX = (float) this.motionX;
-        pk.speedY = (float) this.motionY;
-        pk.speedZ = (float) this.motionZ;
-        pk.metadata = this.dataProperties;
-        player.dataPacket(pk);
+        player.dataPacket(createAddEntityPacket());
 
         super.spawnTo(player);
     }

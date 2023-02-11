@@ -1,17 +1,17 @@
 package cn.nukkit.entity.mob;
 
 import cn.nukkit.Player;
+import cn.nukkit.entity.EntityID;
 import cn.nukkit.item.Item;
 import cn.nukkit.level.format.FullChunk;
 import cn.nukkit.nbt.tag.CompoundTag;
-import cn.nukkit.network.protocol.AddEntityPacket;
 
 /**
  * @author PikyCZ
  */
 public class EntitySlime extends EntityMob {
 
-    public static final int NETWORK_ID = 37;
+    public static final int NETWORK_ID = EntityID.SLIME;
 
     @Override
     public int getNetworkId() {
@@ -30,12 +30,12 @@ public class EntitySlime extends EntityMob {
 
     @Override
     public float getWidth() {
-        return 1.02f;
+        return 1.04f;
     }
 
     @Override
     public float getHeight() {
-        return 1.02f;
+        return 1.04f;
     }
 
     @Override
@@ -45,7 +45,9 @@ public class EntitySlime extends EntityMob {
 
     @Override
     public Item[] getDrops() {
-        return new Item[]{Item.get(Item.SLIME_BALL)};
+        return new Item[]{
+//                Item.get(Item.SLIME_BALL, 0, ThreadLocalRandom.current().nextInt(3)),
+        };
     }
 
     @Override
@@ -54,18 +56,7 @@ public class EntitySlime extends EntityMob {
             return;
         }
 
-        AddEntityPacket pk = new AddEntityPacket();
-        pk.type = this.getNetworkId();
-        pk.entityUniqueId = this.getId();
-        pk.entityRuntimeId = this.getId();
-        pk.x = (float) this.x;
-        pk.y = (float) this.y;
-        pk.z = (float) this.z;
-        pk.speedX = (float) this.motionX;
-        pk.speedY = (float) this.motionY;
-        pk.speedZ = (float) this.motionZ;
-        pk.metadata = this.dataProperties;
-        player.dataPacket(pk);
+        player.dataPacket(createAddEntityPacket());
 
         super.spawnTo(player);
     }

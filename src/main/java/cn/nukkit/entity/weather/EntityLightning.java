@@ -6,6 +6,7 @@ import cn.nukkit.block.Block;
 import cn.nukkit.block.BlockCampfire;
 import cn.nukkit.block.BlockFire;
 import cn.nukkit.entity.Entity;
+import cn.nukkit.entity.EntityID;
 import cn.nukkit.event.block.BlockIgniteEvent.BlockIgniteCause;
 import cn.nukkit.event.entity.EntityDamageEvent;
 import cn.nukkit.level.GameRule;
@@ -22,7 +23,7 @@ import java.util.concurrent.ThreadLocalRandom;
  */
 public class EntityLightning extends Entity implements EntityLightningStrike {
 
-    public static final int NETWORK_ID = 93;
+    public static final int NETWORK_ID = EntityID.LIGHTNING_BOLT;
 
     protected boolean isEffect = true;
 

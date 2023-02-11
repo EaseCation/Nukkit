@@ -2,12 +2,12 @@ package cn.nukkit.entity.item;
 
 import cn.nukkit.Player;
 import cn.nukkit.entity.Entity;
+import cn.nukkit.entity.EntityID;
 import cn.nukkit.entity.projectile.EntityProjectile;
 import cn.nukkit.level.format.FullChunk;
 import cn.nukkit.level.particle.Particle;
 import cn.nukkit.level.particle.SpellParticle;
 import cn.nukkit.nbt.tag.CompoundTag;
-import cn.nukkit.network.protocol.AddEntityPacket;
 import cn.nukkit.network.protocol.LevelSoundEventPacket;
 
 import java.util.concurrent.ThreadLocalRandom;
@@ -17,7 +17,7 @@ import java.util.concurrent.ThreadLocalRandom;
  */
 public class EntityExpBottle extends EntityProjectile {
 
-    public static final int NETWORK_ID = 68;
+    public static final int NETWORK_ID = EntityID.XP_BOTTLE;
 
     @Override
     public int getNetworkId() {
@@ -95,18 +95,7 @@ public class EntityExpBottle extends EntityProjectile {
             return;
         }
 
-        AddEntityPacket pk = new AddEntityPacket();
-        pk.type = EntityExpBottle.NETWORK_ID;
-        pk.entityUniqueId = this.getId();
-        pk.entityRuntimeId = this.getId();
-        pk.x = (float) this.x;
-        pk.y = (float) this.y;
-        pk.z = (float) this.z;
-        pk.speedX = (float) this.motionX;
-        pk.speedY = (float) this.motionY;
-        pk.speedZ = (float) this.motionZ;
-        pk.metadata = this.dataProperties;
-        player.dataPacket(pk);
+        player.dataPacket(createAddEntityPacket());
 
         super.spawnTo(player);
     }

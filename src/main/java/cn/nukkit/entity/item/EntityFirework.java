@@ -3,6 +3,7 @@ package cn.nukkit.entity.item;
 import cn.nukkit.Player;
 import cn.nukkit.Server;
 import cn.nukkit.entity.Entity;
+import cn.nukkit.entity.EntityID;
 import cn.nukkit.entity.data.LongEntityData;
 import cn.nukkit.entity.data.NBTEntityData;
 import cn.nukkit.entity.data.SlotEntityData;
@@ -16,7 +17,6 @@ import cn.nukkit.math.Mth;
 import cn.nukkit.math.Vector3f;
 import cn.nukkit.nbt.NBTIO;
 import cn.nukkit.nbt.tag.CompoundTag;
-import cn.nukkit.network.protocol.AddEntityPacket;
 import cn.nukkit.network.protocol.EntityEventPacket;
 import cn.nukkit.network.protocol.LevelSoundEventPacket;
 
@@ -28,7 +28,7 @@ import java.util.concurrent.ThreadLocalRandom;
  */
 public class EntityFirework extends Entity {
 
-    public static final int NETWORK_ID = 72;
+    public static final int NETWORK_ID = EntityID.FIREWORKS_ROCKET;
 
     private int fireworkAge;
     private int lifetime;
@@ -51,10 +51,10 @@ public class EntityFirework extends Entity {
         }
 
         this.lifetime = firework instanceof ItemFirework ? ((ItemFirework) firework).getLifeTime() : (30 + rand.nextInt(12));
-        this.setDataProperty(new SlotEntityData(Entity.DATA_DISPLAY_ITEM, firework));
-        //this.setDataProperty(new NBTEntityData(Entity.DATA_DISPLAY_ITEM, firework.getNamedTag()));
-        this.setDataProperty(new Vector3fEntityData(Entity.DATA_DISPLAY_OFFSET, new Vector3f(0, 1, 0)));
-        this.setDataProperty(new LongEntityData(Entity.DATA_HAS_DISPLAY, -1));
+        this.setDataProperty(new SlotEntityData(Entity.DATA_FIREWORK_ITEM, firework));
+        //this.setDataProperty(new NBTEntityData(Entity.DATA_FIREWORK_ITEM, firework.getNamedTag()));
+        this.setDataProperty(new Vector3fEntityData(Entity.DATA_FIREWORK_VELOCITY, new Vector3f(0, 1, 0)));
+        this.setDataProperty(new LongEntityData(Entity.DATA_FIREWORK_ATTACHED_EID, -1));
     }
 
     @Override
@@ -135,7 +135,7 @@ public class EntityFirework extends Entity {
 
     public void setFirework(Item item) {
         this.firework = item;
-        this.setDataProperty(new NBTEntityData(Entity.DATA_DISPLAY_ITEM, item.getNamedTag()));
+        this.setDataProperty(new NBTEntityData(Entity.DATA_FIREWORK_ITEM, item.getNamedTag()));
     }
 
     @Override
@@ -154,18 +154,7 @@ public class EntityFirework extends Entity {
             return;
         }
 
-        AddEntityPacket pk = new AddEntityPacket();
-        pk.type = NETWORK_ID;
-        pk.entityUniqueId = this.getId();
-        pk.entityRuntimeId = this.getId();
-        pk.x = (float) this.x;
-        pk.y = (float) this.y;
-        pk.z = (float) this.z;
-        pk.speedX = (float) this.motionX;
-        pk.speedY = (float) this.motionY;
-        pk.speedZ = (float) this.motionZ;
-        pk.metadata = this.dataProperties;
-        player.dataPacket(pk);
+        player.dataPacket(createAddEntityPacket());
 
         super.spawnTo(player);
     }

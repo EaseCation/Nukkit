@@ -1,10 +1,12 @@
 package cn.nukkit.entity.passive;
 
 import cn.nukkit.Player;
+import cn.nukkit.entity.EntityID;
 import cn.nukkit.item.Item;
 import cn.nukkit.level.format.FullChunk;
 import cn.nukkit.nbt.tag.CompoundTag;
-import cn.nukkit.network.protocol.AddEntityPacket;
+
+import java.util.concurrent.ThreadLocalRandom;
 
 /**
  * Author: BeYkeRYkt
@@ -12,7 +14,7 @@ import cn.nukkit.network.protocol.AddEntityPacket;
  */
 public class EntityRabbit extends EntityAnimal {
 
-    public static final int NETWORK_ID = 18;
+    public static final int NETWORK_ID = EntityID.RABBIT;
 
     public EntityRabbit(FullChunk chunk, CompoundTag nbt) {
         super(chunk, nbt);
@@ -20,36 +22,27 @@ public class EntityRabbit extends EntityAnimal {
 
     @Override
     public float getWidth() {
-        if (this.isBaby()) {
-            return 0.2f;
-        }
-        return 0.4f;
+        return 0.67f;
     }
 
     @Override
     public float getHeight() {
-        if (this.isBaby()) {
-            return 0.25f;
-        }
-        return 0.5f;
-    }
-
-    @Override
-    public float getEyeHeight() {
-        if (isBaby()) {
-            return 0.25f;
-        }
-        return 0.5f;
+        return 0.67f;
     }
 
     @Override
     public String getName() {
-        return this.getNameTag();
+        return "Rabbit";
     }
 
     @Override
     public Item[] getDrops() {
-        return new Item[]{Item.get(Item.RABBIT), Item.get(Item.RABBIT_HIDE), Item.get(Item.RABBIT_FOOT)};
+        ThreadLocalRandom random = ThreadLocalRandom.current();
+        return new Item[]{
+                Item.get(this.isOnFire() ? Item.COOKED_RABBIT : Item.RABBIT, 0, random.nextInt(2)),
+                Item.get(Item.RABBIT_HIDE, 0, random.nextInt(2)),
+//                Item.get(Item.RABBIT_FOOT),
+        };
     }
 
     @Override
@@ -60,7 +53,7 @@ public class EntityRabbit extends EntityAnimal {
     @Override
     protected void initEntity() {
         super.initEntity();
-        setMaxHealth(10);
+        setMaxHealth(3);
     }
 
     @Override
@@ -69,18 +62,7 @@ public class EntityRabbit extends EntityAnimal {
             return;
         }
 
-        AddEntityPacket pk = new AddEntityPacket();
-        pk.type = this.getNetworkId();
-        pk.entityUniqueId = this.getId();
-        pk.entityRuntimeId = this.getId();
-        pk.x = (float) this.x;
-        pk.y = (float) this.y;
-        pk.z = (float) this.z;
-        pk.speedX = (float) this.motionX;
-        pk.speedY = (float) this.motionY;
-        pk.speedZ = (float) this.motionZ;
-        pk.metadata = this.dataProperties;
-        player.dataPacket(pk);
+        player.dataPacket(createAddEntityPacket());
 
         super.spawnTo(player);
     }

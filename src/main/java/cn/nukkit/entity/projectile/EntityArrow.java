@@ -2,9 +2,9 @@ package cn.nukkit.entity.projectile;
 
 import cn.nukkit.Player;
 import cn.nukkit.entity.Entity;
+import cn.nukkit.entity.EntityID;
 import cn.nukkit.level.format.FullChunk;
 import cn.nukkit.nbt.tag.CompoundTag;
-import cn.nukkit.network.protocol.AddEntityPacket;
 import cn.nukkit.network.protocol.LevelSoundEventPacket;
 
 import java.util.concurrent.ThreadLocalRandom;
@@ -14,7 +14,7 @@ import java.util.concurrent.ThreadLocalRandom;
  * Nukkit Project
  */
 public class EntityArrow extends EntityProjectile {
-    public static final int NETWORK_ID = 80;
+    public static final int NETWORK_ID = EntityID.ARROW;
 
     protected int pickupMode;
     protected boolean playedHitSound = false;
@@ -139,21 +139,7 @@ public class EntityArrow extends EntityProjectile {
             return;
         }
 
-        AddEntityPacket pk = new AddEntityPacket();
-        pk.type = EntityArrow.NETWORK_ID;
-        pk.entityUniqueId = this.getId();
-        pk.entityRuntimeId = this.getId();
-        pk.x = (float) this.x;
-        pk.y = (float) this.y;
-        pk.z = (float) this.z;
-        pk.speedX = (float) this.motionX;
-        pk.speedY = (float) this.motionY;
-        pk.speedZ = (float) this.motionZ;
-        pk.yaw = (float) this.yaw;
-        pk.headYaw = (float) this.yaw;
-        pk.pitch = (float) this.pitch;
-        pk.metadata = this.dataProperties;
-        player.dataPacket(pk);
+        player.dataPacket(createAddEntityPacket());
 
         super.spawnTo(player);
     }

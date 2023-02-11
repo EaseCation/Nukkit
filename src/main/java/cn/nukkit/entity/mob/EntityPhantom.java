@@ -1,6 +1,8 @@
 package cn.nukkit.entity.mob;
 
 import cn.nukkit.Player;
+import cn.nukkit.entity.EntityID;
+import cn.nukkit.entity.EntitySmite;
 import cn.nukkit.item.Item;
 import cn.nukkit.level.format.FullChunk;
 import cn.nukkit.nbt.tag.CompoundTag;
@@ -8,9 +10,9 @@ import cn.nukkit.nbt.tag.CompoundTag;
 /**
  * Created by PetteriM1
  */
-public class EntityPhantom extends EntityMob {
+public class EntityPhantom extends EntityMob implements EntitySmite {
 
-    public static final int NETWORK_ID = 58;
+    public static final int NETWORK_ID = EntityID.PHANTOM;
 
     public EntityPhantom(FullChunk chunk, CompoundTag nbt) {
         super(chunk, nbt);
@@ -44,7 +46,9 @@ public class EntityPhantom extends EntityMob {
 
     @Override
     public Item[] getDrops() {
-        return new Item[]{Item.get(470)};
+        return new Item[]{
+//                Item.get(Item.PHANTOM_MEMBRANE, 0, ThreadLocalRandom.current().nextInt(2)),
+        };
     }
 
     @Override

@@ -1,16 +1,20 @@
 package cn.nukkit.entity.mob;
 
 import cn.nukkit.Player;
+import cn.nukkit.entity.EntityID;
+import cn.nukkit.entity.EntitySmite;
+import cn.nukkit.item.Item;
 import cn.nukkit.level.format.FullChunk;
 import cn.nukkit.nbt.tag.CompoundTag;
-import cn.nukkit.network.protocol.AddEntityPacket;
+
+import java.util.concurrent.ThreadLocalRandom;
 
 /**
  * @author PikyCZ
  */
-public class EntityWitherSkeleton extends EntityMob {
+public class EntityWitherSkeleton extends EntityMob implements EntitySmite {
 
-    public static final int NETWORK_ID = 48;
+    public static final int NETWORK_ID = EntityID.WITHER_SKELETON;
 
     @Override
     public int getNetworkId() {
@@ -24,21 +28,22 @@ public class EntityWitherSkeleton extends EntityMob {
     @Override
     protected void initEntity() {
         super.initEntity();
+        this.setMaxHealth(20);
     }
 
     @Override
     public float getWidth() {
-        return 0.65f;
+        return 0.72f;
     }
 
     @Override
     public float getHeight() {
-        return 1.8f;
+        return 2.01f;
     }
 
     @Override
     public String getName() {
-        return "WitherSkeleton";
+        return "Wither Skeleton";
     }
 
     @Override
@@ -47,19 +52,17 @@ public class EntityWitherSkeleton extends EntityMob {
             return;
         }
 
-        AddEntityPacket pk = new AddEntityPacket();
-        pk.type = this.getNetworkId();
-        pk.entityUniqueId = this.getId();
-        pk.entityRuntimeId = this.getId();
-        pk.x = (float) this.x;
-        pk.y = (float) this.y;
-        pk.z = (float) this.z;
-        pk.speedX = (float) this.motionX;
-        pk.speedY = (float) this.motionY;
-        pk.speedZ = (float) this.motionZ;
-        pk.metadata = this.dataProperties;
-        player.dataPacket(pk);
+        player.dataPacket(createAddEntityPacket());
 
         super.spawnTo(player);
+    }
+
+    @Override
+    public Item[] getDrops() {
+        ThreadLocalRandom random = ThreadLocalRandom.current();
+        return new Item[]{
+                Item.get(Item.BONE, 0, random.nextInt(3)),
+                Item.get(Item.COAL, 0, random.nextInt(2)),
+        };
     }
 }

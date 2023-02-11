@@ -2,13 +2,12 @@ package cn.nukkit.entity.item;
 
 import cn.nukkit.Player;
 import cn.nukkit.entity.Entity;
-import cn.nukkit.entity.data.EntityMetadata;
+import cn.nukkit.entity.EntityID;
 import cn.nukkit.event.entity.EntityDamageEvent;
 import cn.nukkit.event.entity.EntityDamageEvent.DamageCause;
 import cn.nukkit.level.format.FullChunk;
 import cn.nukkit.math.Mth;
 import cn.nukkit.nbt.tag.CompoundTag;
-import cn.nukkit.network.protocol.AddEntityPacket;
 import it.unimi.dsi.fastutil.ints.IntArrayList;
 import it.unimi.dsi.fastutil.ints.IntList;
 
@@ -18,7 +17,7 @@ import it.unimi.dsi.fastutil.ints.IntList;
  */
 public class EntityXPOrb extends Entity {
 
-    public static final int NETWORK_ID = 69;
+    public static final int NETWORK_ID = EntityID.XP_ORB;
 
     /**
      * Split sizes used for dropping experience orbs.
@@ -239,18 +238,7 @@ public class EntityXPOrb extends Entity {
             return;
         }
 
-        AddEntityPacket packet = new AddEntityPacket();
-        packet.type = getNetworkId();
-        packet.entityUniqueId = this.getId();
-        packet.entityRuntimeId = getId();
-        packet.x = (float) this.x;
-        packet.y = (float) this.y;
-        packet.z = (float) this.z;
-        packet.speedX = (float) this.motionX;
-        packet.speedY = (float) this.motionY;
-        packet.speedZ = (float) this.motionZ;
-        packet.metadata = new EntityMetadata();
-        player.dataPacket(packet);
+        player.dataPacket(createAddEntityPacket());
 
         super.spawnTo(player);
     }

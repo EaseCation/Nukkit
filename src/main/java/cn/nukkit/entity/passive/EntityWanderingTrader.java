@@ -2,12 +2,13 @@ package cn.nukkit.entity.passive;
 
 import cn.nukkit.Player;
 import cn.nukkit.entity.EntityCreature;
+import cn.nukkit.entity.EntityID;
 import cn.nukkit.level.format.FullChunk;
 import cn.nukkit.nbt.tag.CompoundTag;
 
-public class EntityWanderingTrader extends EntityCreature implements EntityNPC {
+public class EntityWanderingTrader extends EntityCreature {
 
-    public static final int NETWORK_ID = 118;
+    public static final int NETWORK_ID = EntityID.WANDERING_TRADER;
 
     public EntityWanderingTrader(FullChunk chunk, CompoundTag nbt) {
         super(chunk, nbt);
@@ -20,7 +21,7 @@ public class EntityWanderingTrader extends EntityCreature implements EntityNPC {
 
     @Override
     public float getHeight() {
-        return 1.8f;
+        return 1.9f;
     }
 
     @Override

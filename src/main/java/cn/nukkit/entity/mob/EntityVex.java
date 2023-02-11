@@ -1,6 +1,7 @@
 package cn.nukkit.entity.mob;
 
 import cn.nukkit.Player;
+import cn.nukkit.entity.EntityID;
 import cn.nukkit.level.format.FullChunk;
 import cn.nukkit.nbt.tag.CompoundTag;
 
@@ -9,7 +10,7 @@ import cn.nukkit.nbt.tag.CompoundTag;
  */
 public class EntityVex extends EntityMob {
 
-    public static final int NETWORK_ID = 105;
+    public static final int NETWORK_ID = EntityID.VEX;
 
     public EntityVex(FullChunk chunk, CompoundTag nbt) {
         super(chunk, nbt);

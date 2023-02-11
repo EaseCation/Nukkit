@@ -1,17 +1,19 @@
 package cn.nukkit.entity.passive;
 
 import cn.nukkit.Player;
+import cn.nukkit.entity.EntityID;
 import cn.nukkit.item.Item;
 import cn.nukkit.level.format.FullChunk;
 import cn.nukkit.nbt.tag.CompoundTag;
-import cn.nukkit.network.protocol.AddEntityPacket;
+
+import java.util.concurrent.ThreadLocalRandom;
 
 /**
  * @author PikyCZ
  */
 public class EntityDonkey extends EntityAnimal {
 
-    public static final int NETWORK_ID = 24;
+    public static final int NETWORK_ID = EntityID.DONKEY;
 
     public EntityDonkey(FullChunk chunk, CompoundTag nbt) {
         super(chunk, nbt);
@@ -23,18 +25,17 @@ public class EntityDonkey extends EntityAnimal {
     }
 
     @Override
+    public String getName() {
+        return "Donkey";
+    }
+
+    @Override
     public float getWidth() {
-        if (this.isBaby()) {
-            return 0.6982f;
-        }
-        return 1.3965f;
+        return 1.4f;
     }
 
     @Override
     public float getHeight() {
-        if (this.isBaby()) {
-            return 0.8f;
-        }
         return 1.6f;
     }
 
@@ -46,7 +47,9 @@ public class EntityDonkey extends EntityAnimal {
 
     @Override
     public Item[] getDrops() {
-        return new Item[]{Item.get(Item.LEATHER)};
+        return new Item[]{
+                Item.get(Item.LEATHER, 0, ThreadLocalRandom.current().nextInt(3)),
+        };
     }
 
     @Override
@@ -55,18 +58,7 @@ public class EntityDonkey extends EntityAnimal {
             return;
         }
 
-        AddEntityPacket pk = new AddEntityPacket();
-        pk.type = this.getNetworkId();
-        pk.entityUniqueId = this.getId();
-        pk.entityRuntimeId = this.getId();
-        pk.x = (float) this.x;
-        pk.y = (float) this.y;
-        pk.z = (float) this.z;
-        pk.speedX = (float) this.motionX;
-        pk.speedY = (float) this.motionY;
-        pk.speedZ = (float) this.motionZ;
-        pk.metadata = this.dataProperties;
-        player.dataPacket(pk);
+        player.dataPacket(createAddEntityPacket());
 
         super.spawnTo(player);
     }

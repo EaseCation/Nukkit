@@ -1,13 +1,12 @@
 package cn.nukkit.entity.passive;
 
 import cn.nukkit.Player;
+import cn.nukkit.entity.EntityID;
 import cn.nukkit.entity.data.ByteEntityData;
-import cn.nukkit.event.entity.EntityDamageByEntityEvent;
 import cn.nukkit.item.Item;
 import cn.nukkit.item.ItemDye;
 import cn.nukkit.level.format.FullChunk;
 import cn.nukkit.nbt.tag.CompoundTag;
-import cn.nukkit.network.protocol.AddEntityPacket;
 import cn.nukkit.utils.DyeColor;
 
 import java.util.concurrent.ThreadLocalRandom;
@@ -18,10 +17,10 @@ import java.util.concurrent.ThreadLocalRandom;
  */
 public class EntitySheep extends EntityAnimal {
 
-    public static final int NETWORK_ID = 13;
+    public static final int NETWORK_ID = EntityID.SHEEP;
 
-    public boolean sheared = false;
-    public int color = 0;
+    public boolean sheared;
+    public int color;
 
     public EntitySheep(FullChunk chunk, CompoundTag nbt) {
         super(chunk, nbt);
@@ -29,31 +28,17 @@ public class EntitySheep extends EntityAnimal {
 
     @Override
     public float getWidth() {
-        if (this.isBaby()) {
-            return 0.45f;
-        }
         return 0.9f;
     }
 
     @Override
     public float getHeight() {
-        if (isBaby()) {
-            return 0.65f;
-        }
         return 1.3f;
     }
 
     @Override
-    public float getEyeHeight() {
-        if (isBaby()) {
-            return 0.65f;
-        }
-        return 1.1f;
-    }
-
-    @Override
     public String getName() {
-        return this.getNameTag();
+        return "Sheep";
     }
 
     @Override
@@ -63,6 +48,7 @@ public class EntitySheep extends EntityAnimal {
 
     @Override
     public void initEntity() {
+        super.initEntity();
         this.setMaxHealth(8);
 
         if (!this.namedTag.contains("Color")) {
@@ -72,7 +58,8 @@ public class EntitySheep extends EntityAnimal {
         }
 
         if (!this.namedTag.contains("Sheared")) {
-            this.namedTag.putByte("Sheared", 0);
+            this.namedTag.putBoolean("Sheared", false);
+            this.sheared = false;
         } else {
             this.sheared = this.namedTag.getBoolean("Sheared");
         }
@@ -103,29 +90,32 @@ public class EntitySheep extends EntityAnimal {
             return false;
         }
 
+        if (this.isBaby()) {
+            return false;
+        }
+
         this.sheared = true;
         this.setDataFlag(DATA_FLAGS, DATA_FLAG_SHEARED, true);
 
-        this.level.dropItem(this, Item.get(Item.WOOL, getColor(), ThreadLocalRandom.current().nextInt(2) + 1));
+        this.level.dropItem(this, Item.get(Item.WOOL, this.color, ThreadLocalRandom.current().nextInt(1, 3)));
         return true;
     }
 
     @Override
     public Item[] getDrops() {
-        if (this.lastDamageCause instanceof EntityDamageByEntityEvent) {
-            return new Item[]{Item.get(Item.WOOL, getColor(), 1)};
-        }
-        return new Item[0];
+        return new Item[]{
+                Item.get(this.isOnFire() ? Item.COOKED_MUTTON : Item.MUTTON, ThreadLocalRandom.current().nextInt(1, 3)),
+                Item.get(Item.WOOL, this.color, sheared ? 0 : 1),
+        };
     }
 
     public void setColor(int color) {
         this.color = color;
-        this.setDataProperty(new ByteEntityData(DATA_COLOUR, color));
-        this.namedTag.putByte("Color", this.color);
+        this.setDataProperty(new ByteEntityData(DATA_COLOR, color));
     }
 
     public int getColor() {
-        return namedTag.getByte("Color");
+        return color;
     }
 
     private int randomColor() {
@@ -149,18 +139,7 @@ public class EntitySheep extends EntityAnimal {
             return;
         }
 
-        AddEntityPacket pk = new AddEntityPacket();
-        pk.type = this.getNetworkId();
-        pk.entityUniqueId = this.getId();
-        pk.entityRuntimeId = this.getId();
-        pk.x = (float) this.x;
-        pk.y = (float) this.y;
-        pk.z = (float) this.z;
-        pk.speedX = (float) this.motionX;
-        pk.speedY = (float) this.motionY;
-        pk.speedZ = (float) this.motionZ;
-        pk.metadata = this.dataProperties;
-        player.dataPacket(pk);
+        player.dataPacket(createAddEntityPacket());
 
         super.spawnTo(player);
     }

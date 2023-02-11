@@ -65,7 +65,8 @@ public abstract class EntityMinecartAbstract extends EntityVehicle {
     private double flyingY = 0.95;
     private double flyingZ = 0.95;
     private double maxSpeed = 0.4D;
-    private final boolean devs = false; // Avoid maintained features into production
+
+    private static final boolean devs = false; // Avoid maintained features into production
 
     public abstract MinecartType getType();
 
@@ -229,20 +230,7 @@ public abstract class EntityMinecartAbstract extends EntityVehicle {
             return;
         }
 
-        AddEntityPacket pk = new AddEntityPacket();
-        pk.entityUniqueId = getId();
-        pk.entityRuntimeId = getId();
-        pk.type = getNetworkId();
-        pk.x = (float) x;
-        pk.y = (float) y + this.getBaseOffset();
-        pk.z = (float) z;
-        pk.speedX = 0;
-        pk.speedY = 0;
-        pk.speedZ = 0;
-        pk.yaw = 0;
-        pk.pitch = 0;
-        pk.metadata = dataProperties;
-        player.dataPacket(pk);
+        player.dataPacket(createAddEntityPacket());
 
         super.spawnTo(player);
     }
@@ -696,7 +684,7 @@ public abstract class EntityMinecartAbstract extends EntityVehicle {
                 int display = namedTag.getInt("DisplayTile");
                 int offSet = namedTag.getInt("DisplayOffset");
                 setDataProperty(new ByteEntityData(DATA_HAS_DISPLAY, 1));
-                setDataProperty(new IntEntityData(DATA_DISPLAY_ITEM, display));
+                setDataProperty(new IntEntityData(DATA_MINECART_DISPLAY_BLOCK, display));
                 setDataProperty(new IntEntityData(DATA_DISPLAY_OFFSET, offSet));
             }
         } else {
@@ -708,7 +696,7 @@ public abstract class EntityMinecartAbstract extends EntityVehicle {
                 return;
             }
             setDataProperty(new ByteEntityData(DATA_HAS_DISPLAY, 1));
-            setDataProperty(new IntEntityData(DATA_DISPLAY_ITEM, display));
+            setDataProperty(new IntEntityData(DATA_MINECART_DISPLAY_BLOCK, display));
             setDataProperty(new IntEntityData(DATA_DISPLAY_OFFSET, 6));
         }
     }
@@ -761,14 +749,14 @@ public abstract class EntityMinecartAbstract extends EntityVehicle {
                 int display = blockInside.getId()
                         | blockInside.getDamage() << 16;
                 setDataProperty(new ByteEntityData(DATA_HAS_DISPLAY, 1));
-                setDataProperty(new IntEntityData(DATA_DISPLAY_ITEM, display));
+                setDataProperty(new IntEntityData(DATA_MINECART_DISPLAY_BLOCK, display));
                 setDisplayBlockOffset(6);
             }
         } else {
             // Set block to air (default).
             blockInside = null;
             setDataProperty(new ByteEntityData(DATA_HAS_DISPLAY, 0));
-            setDataProperty(new IntEntityData(DATA_DISPLAY_ITEM, 0));
+            setDataProperty(new IntEntityData(DATA_MINECART_DISPLAY_BLOCK, 0));
             setDisplayBlockOffset(0);
         }
         return true;

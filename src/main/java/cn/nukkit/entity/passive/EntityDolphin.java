@@ -1,16 +1,19 @@
 package cn.nukkit.entity.passive;
 
 import cn.nukkit.Player;
+import cn.nukkit.entity.EntityID;
 import cn.nukkit.item.Item;
 import cn.nukkit.level.format.FullChunk;
 import cn.nukkit.nbt.tag.CompoundTag;
+
+import java.util.concurrent.ThreadLocalRandom;
 
 /**
  * Created by PetteriM1
  */
 public class EntityDolphin extends EntityWaterAnimal {
 
-    public static final int NETWORK_ID = 31;
+    public static final int NETWORK_ID = EntityID.DOLPHIN;
 
     public EntityDolphin(FullChunk chunk, CompoundTag nbt) {
         super(chunk, nbt);
@@ -43,7 +46,10 @@ public class EntityDolphin extends EntityWaterAnimal {
 
     @Override
     public Item[] getDrops() {
-        return new Item[]{Item.get(Item.COD)};
+        ThreadLocalRandom random = ThreadLocalRandom.current();
+        return new Item[]{
+                Item.get(this.isOnFire() ? Item.COOKED_COD : Item.COD, 0, random.nextInt(2)),
+        };
     }
 
     @Override

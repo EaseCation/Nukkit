@@ -5,6 +5,7 @@ import cn.nukkit.block.Block;
 import cn.nukkit.block.BlockID;
 import cn.nukkit.entity.Entity;
 import cn.nukkit.entity.EntityExplosive;
+import cn.nukkit.entity.EntityID;
 import cn.nukkit.entity.data.IntEntityData;
 import cn.nukkit.event.entity.EntityDamageByEntityEvent;
 import cn.nukkit.event.entity.EntityDamageEvent;
@@ -29,7 +30,7 @@ import java.util.concurrent.ThreadLocalRandom;
  */
 public class EntityMinecartTNT extends EntityMinecartAbstract implements EntityExplosive {
 
-    public static final int NETWORK_ID = 97;
+    public static final int NETWORK_ID = EntityID.TNT_MINECART;
 
     private int fuse;
 

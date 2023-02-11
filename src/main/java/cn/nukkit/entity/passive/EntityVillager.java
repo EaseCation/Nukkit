@@ -3,12 +3,13 @@ package cn.nukkit.entity.passive;
 import cn.nukkit.Player;
 import cn.nukkit.entity.EntityAgeable;
 import cn.nukkit.entity.EntityCreature;
+import cn.nukkit.entity.EntityID;
 import cn.nukkit.level.format.FullChunk;
 import cn.nukkit.nbt.tag.CompoundTag;
 
-public class EntityVillager extends EntityCreature implements EntityNPC, EntityAgeable {
+public class EntityVillager extends EntityCreature implements EntityAgeable {
 
-    public static final int NETWORK_ID = 115;
+    public static final int NETWORK_ID = EntityID.VILLAGER_V2;
 
     public EntityVillager(FullChunk chunk, CompoundTag nbt) {
         super(chunk, nbt);
@@ -21,18 +22,12 @@ public class EntityVillager extends EntityCreature implements EntityNPC, EntityA
 
     @Override
     public float getWidth() {
-        if (this.isBaby()) {
-            return 0.3f;
-        }
         return 0.6f;
     }
 
     @Override
     public float getHeight() {
-        if (this.isBaby()) {
-            return 0.9f;
-        }
-        return 1.8f;
+        return 1.9f;
     }
 
     @Override
@@ -46,6 +41,7 @@ public class EntityVillager extends EntityCreature implements EntityNPC, EntityA
         this.setMaxHealth(20);
     }
 
+    @Override
     public boolean isBaby() {
         return this.getDataFlag(DATA_FLAGS, DATA_FLAG_BABY);
     }

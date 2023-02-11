@@ -7,6 +7,7 @@ import cn.nukkit.block.BlockID;
 import cn.nukkit.block.BlockLiquid;
 import cn.nukkit.block.SupportType;
 import cn.nukkit.entity.Entity;
+import cn.nukkit.entity.EntityID;
 import cn.nukkit.entity.EntityLiving;
 import cn.nukkit.entity.data.IntEntityData;
 import cn.nukkit.event.entity.EntityBlockChangeEvent;
@@ -17,10 +18,8 @@ import cn.nukkit.item.Item;
 import cn.nukkit.level.GameRule;
 import cn.nukkit.level.format.FullChunk;
 import cn.nukkit.math.BlockFace;
-import cn.nukkit.math.Mth;
 import cn.nukkit.math.Vector3;
 import cn.nukkit.nbt.tag.CompoundTag;
-import cn.nukkit.network.protocol.AddEntityPacket;
 import cn.nukkit.network.protocol.LevelEventPacket;
 
 /**
@@ -28,7 +27,7 @@ import cn.nukkit.network.protocol.LevelEventPacket;
  */
 public class EntityFallingBlock extends Entity {
 
-    public static final int NETWORK_ID = 66;
+    public static final int NETWORK_ID = EntityID.FALLING_BLOCK;
 
     @Override
     public float getWidth() {
@@ -267,18 +266,8 @@ public class EntityFallingBlock extends Entity {
             return;
         }
 
-        AddEntityPacket packet = new AddEntityPacket();
-        packet.type = EntityFallingBlock.NETWORK_ID;
-        packet.entityUniqueId = this.getId();
-        packet.entityRuntimeId = getId();
-        packet.x = (float) x;
-        packet.y = (float) y + this.getBaseOffset();
-        packet.z = (float) z;
-        packet.speedX = (float) motionX;
-        packet.speedY = (float) motionY;
-        packet.speedZ = (float) motionZ;
-        packet.metadata = dataProperties;
-        player.dataPacket(packet);
+        player.dataPacket(createAddEntityPacket());
+
         super.spawnTo(player);
     }
 

@@ -1,10 +1,12 @@
 package cn.nukkit.entity.passive;
 
 import cn.nukkit.Player;
+import cn.nukkit.entity.EntityID;
 import cn.nukkit.item.Item;
 import cn.nukkit.level.format.FullChunk;
 import cn.nukkit.nbt.tag.CompoundTag;
-import cn.nukkit.network.protocol.AddEntityPacket;
+
+import java.util.concurrent.ThreadLocalRandom;
 
 /**
  * Author: BeYkeRYkt
@@ -12,7 +14,7 @@ import cn.nukkit.network.protocol.AddEntityPacket;
  */
 public class EntityChicken extends EntityAnimal {
 
-    public static final int NETWORK_ID = 10;
+    public static final int NETWORK_ID = EntityID.CHICKEN;
 
     public EntityChicken(FullChunk chunk, CompoundTag nbt) {
         super(chunk, nbt);
@@ -20,33 +22,26 @@ public class EntityChicken extends EntityAnimal {
 
     @Override
     public float getWidth() {
-        return 0.4f;
+        return 0.6f;
     }
 
     @Override
     public float getHeight() {
-        if (this.isBaby()) {
-            return 0.51f;
-        }
-        return 0.7f;
-    }
-
-    @Override
-    public float getEyeHeight() {
-        if (this.isBaby()) {
-            return 0.51f;
-        }
-        return 0.7f;
+        return 0.8f;
     }
 
     @Override
     public String getName() {
-        return this.getNameTag();
+        return "Chicken";
     }
 
     @Override
     public Item[] getDrops() {
-        return new Item[]{Item.get(Item.CHICKEN), Item.get(Item.FEATHER)};
+        ThreadLocalRandom random = ThreadLocalRandom.current();
+        return new Item[]{
+                Item.get(this.isOnFire() ? Item.COOKED_CHICKEN : Item.CHICKEN, 0, random.nextInt(2)),
+                Item.get(Item.FEATHER, 0, random.nextInt(3)),
+        };
     }
 
     @Override
@@ -73,18 +68,7 @@ public class EntityChicken extends EntityAnimal {
             return;
         }
 
-        AddEntityPacket pk = new AddEntityPacket();
-        pk.type = this.getNetworkId();
-        pk.entityUniqueId = this.getId();
-        pk.entityRuntimeId = this.getId();
-        pk.x = (float) this.x;
-        pk.y = (float) this.y;
-        pk.z = (float) this.z;
-        pk.speedX = (float) this.motionX;
-        pk.speedY = (float) this.motionY;
-        pk.speedZ = (float) this.motionZ;
-        pk.metadata = this.dataProperties;
-        player.dataPacket(pk);
+        player.dataPacket(createAddEntityPacket());
 
         super.spawnTo(player);
     }

@@ -144,7 +144,7 @@ public final class EntitySelector {
 
         if (type != null) {
             String identifier = type.startsWith("!") ? type.substring(1) : type;
-            return Entities.getTypeByIdentifier(identifier.startsWith("minecraft:") ? identifier.substring(10) : identifier) != 0;
+            return Entities.getTypeByIdentifier(identifier) != 0;
         }
 
         return true;
@@ -165,7 +165,7 @@ public final class EntitySelector {
 
             String identifier = type.startsWith("minecraft:") ? type.substring(10) : type;
             return Collections.singletonList(entity -> entity != null && (entity instanceof Player && identifier.equals("player")
-                    || Entities.getTypeByIdentifier(identifier) == entity.getNetworkId()) != inverted);
+                    || Entities.getTypeByIdentifier(identifier, false) == entity.getNetworkId()) != inverted);
         } else {
             return !selectorType.equals("e") && !selectorType.equals("s") ? Collections.singletonList(entity -> entity instanceof Player) : Collections.emptyList();
         }

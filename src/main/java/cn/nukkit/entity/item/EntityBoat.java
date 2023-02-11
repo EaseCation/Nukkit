@@ -4,6 +4,7 @@ import cn.nukkit.Player;
 import cn.nukkit.block.Block;
 import cn.nukkit.block.BlockWater;
 import cn.nukkit.entity.Entity;
+import cn.nukkit.entity.EntityID;
 import cn.nukkit.entity.EntityLiving;
 import cn.nukkit.entity.data.ByteEntityData;
 import cn.nukkit.entity.data.FloatEntityData;
@@ -23,7 +24,6 @@ import cn.nukkit.math.NukkitMath;
 import cn.nukkit.math.Vector3;
 import cn.nukkit.math.Vector3f;
 import cn.nukkit.nbt.tag.CompoundTag;
-import cn.nukkit.network.protocol.AddEntityPacket;
 import cn.nukkit.network.protocol.AnimatePacket;
 import cn.nukkit.network.protocol.SetEntityLinkPacket;
 
@@ -34,7 +34,7 @@ import java.util.ArrayList;
  */
 public class EntityBoat extends EntityVehicle {
 
-    public static final int NETWORK_ID = 90;
+    public static final int NETWORK_ID = EntityID.BOAT;
 
     public static final Vector3f RIDER_PLAYER_OFFSET = new Vector3f(0, 1.02001f, 0);
     public static final Vector3f RIDER_OFFSET = new Vector3f(0, -0.2f, 0);
@@ -124,19 +124,7 @@ public class EntityBoat extends EntityVehicle {
             return;
         }
 
-        AddEntityPacket pk = new AddEntityPacket();
-        pk.entityUniqueId = this.getId();
-        pk.entityRuntimeId = this.getId();
-        pk.type = this.getNetworkId();
-        pk.x = (float) this.x;
-        pk.y = (float) this.y + this.getBaseOffset();
-        pk.z = (float) this.z;
-        pk.speedX = 0;
-        pk.speedY = 0;
-        pk.speedZ = 0;
-        pk.yaw = (float) this.yaw;
-        pk.metadata = this.dataProperties;
-        player.dataPacket(pk);
+        player.dataPacket(createAddEntityPacket());
 
         super.spawnTo(player);
     }

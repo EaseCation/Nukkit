@@ -1,6 +1,8 @@
 package cn.nukkit.entity.passive;
 
 import cn.nukkit.Player;
+import cn.nukkit.entity.EntityID;
+import cn.nukkit.item.Item;
 import cn.nukkit.level.format.FullChunk;
 import cn.nukkit.nbt.tag.CompoundTag;
 
@@ -9,7 +11,7 @@ import cn.nukkit.nbt.tag.CompoundTag;
  */
 public class EntityPufferfish extends EntityWaterAnimal {
 
-    public static final int NETWORK_ID = 108;
+    public static final int NETWORK_ID = EntityID.PUFFERFISH;
 
     public EntityPufferfish(FullChunk chunk, CompoundTag nbt) {
         super(chunk, nbt);
@@ -26,12 +28,12 @@ public class EntityPufferfish extends EntityWaterAnimal {
 
     @Override
     public float getWidth() {
-        return 0.35f;
+        return 0.8f;
     }
 
     @Override
     public float getHeight() {
-        return 0.35f;
+        return 0.8f;
     }
 
     @Override
@@ -49,5 +51,12 @@ public class EntityPufferfish extends EntityWaterAnimal {
         player.dataPacket(createAddEntityPacket());
 
         super.spawnTo(player);
+    }
+
+    @Override
+    public Item[] getDrops() {
+        return new Item[]{
+                Item.get(Item.PUFFERFISH),
+        };
     }
 }

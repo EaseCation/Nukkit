@@ -1,11 +1,13 @@
 package cn.nukkit.entity.passive;
 
 import cn.nukkit.Player;
+import cn.nukkit.entity.EntityID;
 import cn.nukkit.item.Item;
 import cn.nukkit.level.format.FullChunk;
 import cn.nukkit.nbt.tag.CompoundTag;
-import cn.nukkit.network.protocol.AddEntityPacket;
+
 import java.util.Arrays;
+import java.util.concurrent.ThreadLocalRandom;
 import java.util.stream.Stream;
 
 /**
@@ -13,7 +15,7 @@ import java.util.stream.Stream;
  */
 public class EntityHorse extends EntityAbstractHorse {
 
-    public static final int NETWORK_ID = 23;
+    public static final int NETWORK_ID = EntityID.HORSE;
 
     public EntityHorse(FullChunk chunk, CompoundTag nbt) {
         super(chunk, nbt);
@@ -25,18 +27,17 @@ public class EntityHorse extends EntityAbstractHorse {
     }
 
     @Override
+    public String getName() {
+        return "Horse";
+    }
+
+    @Override
     public float getWidth() {
-        if (this.isBaby()) {
-            return 0.6982f;
-        }
-        return 1.3965f;
+        return 1.4f;
     }
 
     @Override
     public float getHeight() {
-        if (this.isBaby()) {
-            return 0.8f;
-        }
         return 1.6f;
     }
 
@@ -49,7 +50,7 @@ public class EntityHorse extends EntityAbstractHorse {
     @Override
     public Item[] getDrops() {
         return Stream.concat(
-                Stream.of(Item.get(Item.LEATHER)),
+                Stream.of(Item.get(Item.LEATHER, 0, ThreadLocalRandom.current().nextInt(3))),
                 Arrays.stream(super.getDrops())
         ).toArray(Item[]::new);
     }
@@ -60,18 +61,7 @@ public class EntityHorse extends EntityAbstractHorse {
             return;
         }
 
-        AddEntityPacket pk = new AddEntityPacket();
-        pk.type = this.getNetworkId();
-        pk.entityUniqueId = this.getId();
-        pk.entityRuntimeId = this.getId();
-        pk.x = (float) this.x;
-        pk.y = (float) this.y;
-        pk.z = (float) this.z;
-        pk.speedX = (float) this.motionX;
-        pk.speedY = (float) this.motionY;
-        pk.speedZ = (float) this.motionZ;
-        pk.metadata = this.dataProperties;
-        player.dataPacket(pk);
+        player.dataPacket(createAddEntityPacket());
 
         super.spawnTo(player);
     }

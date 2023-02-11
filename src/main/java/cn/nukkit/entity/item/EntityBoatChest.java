@@ -2,6 +2,7 @@ package cn.nukkit.entity.item;
 
 import cn.nukkit.Player;
 import cn.nukkit.entity.Entity;
+import cn.nukkit.entity.EntityID;
 import cn.nukkit.inventory.BoatChestInventory;
 import cn.nukkit.inventory.Inventory;
 import cn.nukkit.inventory.InventoryHolder;
@@ -16,7 +17,7 @@ import cn.nukkit.network.protocol.types.ContainerType;
 
 public class EntityBoatChest extends EntityBoat implements InventoryHolder {
 
-    public static final int NETWORK_ID = 218;
+    public static final int NETWORK_ID = EntityID.CHEST_BOAT;
 
     private static final Vector3f SEAT_OFFSET = new Vector3f(0.2f, -0.2f, 0);
     private static final Vector3f PLAYER_SEAT_OFFSET = new Vector3f(0.2f, 1.02001f, 0);

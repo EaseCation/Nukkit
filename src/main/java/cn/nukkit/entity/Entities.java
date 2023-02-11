@@ -22,6 +22,7 @@ public final class Entities {
     }
 
     public static void registerVanillaEntities() {
+        registerTodo(EntityID.LIGHTNING_BOLT, "lightning_bolt", "Lightning"/*, EntityLightning.class*/); // runtime only
         registerEntity(EntityID.PLAYER, "player", "Human", EntityHuman.class, true);
         registerEntity(EntityID.ITEM, "item", "Item", EntityItem.class);
         registerEntity(EntityID.XP_ORB, "xp_orb", "XpOrb", EntityXPOrb.class);
@@ -77,6 +78,7 @@ public final class Entities {
         registerEntity(EntityID.COW, "cow", "Cow", EntityCow.class);
         registerEntity(EntityID.DONKEY, "donkey", "Donkey", EntityDonkey.class);
         registerEntity(EntityID.HORSE, "horse", "Horse", EntityHorse.class);
+        registerEntity(EntityID.IRON_GOLEM, "iron_golem", "IronGolem", EntityIronGolem.class);
         registerEntity(EntityID.LLAMA, "llama", "Llama", EntityLlama.class);
         registerEntity(EntityID.MOOSHROOM, "mooshroom", "Mooshroom", EntityMooshroom.class);
         registerEntity(EntityID.MULE, "mule", "Mule", EntityMule.class);
@@ -87,10 +89,32 @@ public final class Entities {
         registerEntity(EntityID.RABBIT, "rabbit", "Rabbit", EntityRabbit.class);
         registerEntity(EntityID.SHEEP, "sheep", "Sheep", EntitySheep.class);
         registerEntity(EntityID.SKELETON_HORSE, "skeleton_horse", "SkeletonHorse", EntitySkeletonHorse.class);
+        registerEntity(EntityID.SNOW_GOLEM, "snow_golem", "SnowGolem", EntitySnowGolem.class);
         registerEntity(EntityID.SQUID, "squid", "Squid", EntitySquid.class);
         registerEntity(EntityID.VILLAGER, "villager", "Villager", EntityVillagerV1.class);
         registerEntity(EntityID.WOLF, "wolf", "Wolf", EntityWolf.class);
         registerEntity(EntityID.ZOMBIE_HORSE, "zombie_horse", "ZombieHorse", EntityZombieHorse.class);
+
+        registerTodo(EntityID.ARMOR_STAND, "armor_stand", "ArmorStand");
+        registerTodo(EntityID.EYE_OF_ENDER_SIGNAL, "eye_of_ender_signal", "EyeOfEnder");
+        registerTodo(EntityID.SHULKER_BULLET, "shulker_bullet", "ShulkerBullet");
+        registerTodo(EntityID.DRAGON_FIREBALL, "dragon_fireball", "DragonFireball");
+        registerTodo(EntityID.FIREBALL, "fireball", "Fireball");
+        registerTodo(EntityID.LEASH_KNOT, "leash_knot", "LeashKnot");
+        registerTodo(EntityID.WITHER_SKULL, "wither_skull", "WitherSkull");
+        registerTodo(EntityID.WITHER_SKULL_DANGEROUS, "wither_skull_dangerous", "WitherSkullDangerous");
+        registerTodo(EntityID.SMALL_FIREBALL, "small_fireball", "SmallFireball");
+        registerTodo(EntityID.AREA_EFFECT_CLOUD, "area_effect_cloud", "AreaEffectCloud");
+        registerTodo(EntityID.COMMAND_BLOCK_MINECART, "command_block_minecart", "MinecartCommandBlock");
+        registerTodo(EntityID.LINGERING_POTION, "lingering_potion", "LingeringPotion");
+        registerTodo(EntityID.LLAMA_SPIT, "llama_spit", "LlamaSpit");
+        registerTodo(EntityID.EVOCATION_FANG, "evocation_fang", "EvokerFang");
+
+        registerTodo(EntityID.NPC, "npc", "NPC");
+        registerTodo(EntityID.AGENT, "agent", "Agent");
+        registerTodo(EntityID.TRIPOD_CAMERA, "tripod_camera", "Camera");
+        registerTodo(EntityID.ICE_BOMB, "ice_bomb", "IceBomb");
+        registerTodo(EntityID.BALLOON, "balloon", "Balloon");
 
         registerEntity(EntityID.DOLPHIN, "dolphin", "Dolphin", EntityDolphin.class, V1_4_0);
         registerEntity(EntityID.THROWN_TRIDENT, "thrown_trident", "ThrownTrident", EntityThrownTrident.class, V1_4_0);
@@ -114,40 +138,46 @@ public final class Entities {
         registerEntity(EntityID.ZOMBIE_VILLAGER_V2, "zombie_villager_v2", "ZombieVillagerV2", EntityZombieVillager.class, V1_11_0);
         registerEntity(EntityID.WANDERING_TRADER, "wandering_trader", "WanderingTrader", EntityWanderingTrader.class, V1_11_0);
 
-        // 1.13.0
-        // fox
+        registerTodo(EntityID.ELDER_GUARDIAN_GHOST, "elder_guardian_ghost", "ElderGuardianGhost", V1_13_0); // internal
+        registerEntity(EntityID.FOX, "fox", "Fox", EntityFox.class, V1_13_0);
 
-        // 1.14.0
-        // bee
+        registerEntity(EntityID.BEE, "bee", "Bee", EntityBee.class, V1_14_0);
 
-        // 1.16.0
-        // piglin
-        // hoglin
-        // strider
-        // zoglin
+        registerEntity(EntityID.PIGLIN, "piglin", "Piglin", EntityPiglin.class, V1_16_0);
+        registerEntity(EntityID.HOGLIN, "hoglin", "Hoglin", EntityHoglin.class, V1_16_0);
+        registerEntity(EntityID.STRIDER, "strider", "Strider", EntityStrider.class, V1_16_0);
+        registerEntity(EntityID.ZOGLIN, "zoglin", "Zoglin", EntityZoglin.class, V1_16_0);
 
-        // 1.16.20
-        // piglin_brute
+        registerEntity(EntityID.PIGLIN_BRUTE, "piglin_brute", "PiglinBrute", EntityPiglinBrute.class, V1_16_20);
 
-        // 1.17.0
-        // goat
-        // glow_squid
-        // axolotl
+        registerEntity(EntityID.GOAT, "goat", "Goat", EntityGoat.class, V1_17_0);
+        registerEntity(EntityID.GLOW_SQUID, "glow_squid", "GlowSquid", EntityGlowSquid.class, V1_17_0);
+        registerEntity(EntityID.AXOLOTL, "axolotl", "Axolotl", EntityAxolotl.class, V1_17_0);
 
-        // 1.19.0
-        // warden
-        // frog
-        // tadpole
-        // allay
+        registerEntity(EntityID.WARDEN, "warden", "Warden", EntityWarden.class, V1_19_0);
+        registerEntity(EntityID.FROG, "frog", "Frog", EntityFrog.class, V1_19_0);
+        registerEntity(EntityID.TADPOLE, "tadpole", "Tadpole", EntityTadpole.class, V1_19_0);
+        registerEntity(EntityID.ALLAY, "allay", "Allay", EntityAllay.class, V1_19_0);
         registerEntity(EntityID.CHEST_BOAT, "chest_boat", "BoatChest", EntityBoatChest.class, V1_19_0);
 
-        // 1.19.10
-        // trader_llama
+        registerEntity(EntityID.TRADER_LLAMA, "trader_llama", "TraderLlama", EntityTraderLlama.class, V1_19_10);
 
-        // 1.20.0
-        // camel
-        // sniffer
+//        registerEntity(EntityID.CAMEL, "camel", "Camel", EntityCamel.class, V1_20_0);
+//        registerEntity(EntityID.SNIFFER, "sniffer", "Sniffer", EntitySniffer.class, V1_20_0);
 
+    }
+
+    private static boolean registerTodo(int typeId, String identifier, String name) {
+        TYPE_TO_IDENTIFIER[typeId] = identifier;
+        IDENTIFIER_TO_TYPE.put(identifier, typeId);
+        return true;
+    }
+
+    private static boolean registerTodo(int typeId, String identifier, String name, GameVersion version) {
+        if (!version.isAvailable()) {
+            return false;
+        }
+        return registerTodo(typeId, identifier, name);
     }
 
     private static Class<? extends Entity> registerEntity(int typeId, String identifier, String name, Class<? extends Entity> clazz) {
@@ -175,13 +205,35 @@ public final class Entities {
 
     @Nullable
     public static String getIdentifierByType(int type) {
+        return getIdentifierByType(type, true);
+    }
+
+    @Nullable
+    public static String getIdentifierByType(int type, boolean withNamespace) {
         if (type <= 0 || type >= TYPE_TO_IDENTIFIER.length) {
             return null;
         }
-        return TYPE_TO_IDENTIFIER[type];
+
+        String identifier = TYPE_TO_IDENTIFIER[type];
+        if (identifier == null) {
+            return null;
+        }
+
+        if (!withNamespace) {
+            return identifier;
+        }
+
+        return "minecraft:" + identifier;
     }
 
     public static int getTypeByIdentifier(String identifier) {
+        return getTypeByIdentifier(identifier, true);
+    }
+
+    public static int getTypeByIdentifier(String identifier, boolean namespaced) {
+        if (namespaced && identifier.startsWith("minecraft:")) {
+            identifier = identifier.substring(10);
+        }
         return IDENTIFIER_TO_TYPE.getInt(identifier);
     }
 

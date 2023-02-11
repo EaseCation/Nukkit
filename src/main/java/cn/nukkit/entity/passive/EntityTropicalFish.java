@@ -1,6 +1,8 @@
 package cn.nukkit.entity.passive;
 
 import cn.nukkit.Player;
+import cn.nukkit.entity.EntityID;
+import cn.nukkit.item.Item;
 import cn.nukkit.level.format.FullChunk;
 import cn.nukkit.nbt.tag.CompoundTag;
 
@@ -9,7 +11,7 @@ import cn.nukkit.nbt.tag.CompoundTag;
  */
 public class EntityTropicalFish extends EntityWaterAnimal {
 
-    public static final int NETWORK_ID = 111;
+    public static final int NETWORK_ID = EntityID.TROPICALFISH;
 
     public EntityTropicalFish(FullChunk chunk, CompoundTag nbt) {
         super(chunk, nbt);
@@ -26,7 +28,7 @@ public class EntityTropicalFish extends EntityWaterAnimal {
 
     @Override
     public float getWidth() {
-        return 0.5f;
+        return 0.4f;
     }
 
     @Override
@@ -49,5 +51,12 @@ public class EntityTropicalFish extends EntityWaterAnimal {
         player.dataPacket(createAddEntityPacket());
 
         super.spawnTo(player);
+    }
+
+    @Override
+    public Item[] getDrops() {
+        return new Item[]{
+                Item.get(Item.TROPICAL_FISH),
+        };
     }
 }

@@ -1,17 +1,20 @@
 package cn.nukkit.entity.passive;
 
 import cn.nukkit.Player;
+import cn.nukkit.entity.EntityID;
+import cn.nukkit.entity.EntitySmite;
 import cn.nukkit.item.Item;
 import cn.nukkit.level.format.FullChunk;
 import cn.nukkit.nbt.tag.CompoundTag;
-import cn.nukkit.network.protocol.AddEntityPacket;
+
+import java.util.concurrent.ThreadLocalRandom;
 
 /**
  * @author PikyCZ
  */
-public class EntitySkeletonHorse extends EntityAbstractHorse {
+public class EntitySkeletonHorse extends EntityAbstractHorse implements EntitySmite {
 
-    public static final int NETWORK_ID = 26;
+    public static final int NETWORK_ID = EntityID.SKELETON_HORSE;
 
     public EntitySkeletonHorse(FullChunk chunk, CompoundTag nbt) {
         super(chunk, nbt);
@@ -20,6 +23,11 @@ public class EntitySkeletonHorse extends EntityAbstractHorse {
     @Override
     public int getNetworkId() {
         return NETWORK_ID;
+    }
+
+    @Override
+    public String getName() {
+        return "Skeleton Horse";
     }
 
     @Override
@@ -41,7 +49,9 @@ public class EntitySkeletonHorse extends EntityAbstractHorse {
     @Override
     public Item[] getDrops() {
         // Skeleton horse doesn't drop inventory
-        return new Item[] { Item.get(Item.BONE) };
+        return new Item[] {
+                Item.get(Item.BONE, 0, ThreadLocalRandom.current().nextInt(3)),
+        };
     }
 
     @Override
@@ -61,18 +71,7 @@ public class EntitySkeletonHorse extends EntityAbstractHorse {
             return;
         }
 
-        AddEntityPacket pk = new AddEntityPacket();
-        pk.type = this.getNetworkId();
-        pk.entityUniqueId = this.getId();
-        pk.entityRuntimeId = this.getId();
-        pk.x = (float) this.x;
-        pk.y = (float) this.y;
-        pk.z = (float) this.z;
-        pk.speedX = (float) this.motionX;
-        pk.speedY = (float) this.motionY;
-        pk.speedZ = (float) this.motionZ;
-        pk.metadata = this.dataProperties;
-        player.dataPacket(pk);
+        player.dataPacket(createAddEntityPacket());
 
         super.spawnTo(player);
     }

@@ -1,16 +1,21 @@
 package cn.nukkit.entity.mob;
 
 import cn.nukkit.Player;
+import cn.nukkit.entity.Attribute;
+import cn.nukkit.entity.EntityID;
+import cn.nukkit.entity.EntitySmite;
+import cn.nukkit.item.Item;
 import cn.nukkit.level.format.FullChunk;
 import cn.nukkit.nbt.tag.CompoundTag;
 import cn.nukkit.network.protocol.AddEntityPacket;
+import cn.nukkit.network.protocol.DataPacket;
 
 /**
  * @author PikyCZ
  */
-public class EntityWither extends EntityMob {
+public class EntityWither extends EntityMob implements EntitySmite {
 
-    public static final int NETWORK_ID = 52;
+    public static final int NETWORK_ID = EntityID.WITHER;
 
     @Override
     public int getNetworkId() {
@@ -23,18 +28,18 @@ public class EntityWither extends EntityMob {
 
     @Override
     public float getWidth() {
-        return 0.9f;
+        return 1;
     }
 
     @Override
     public float getHeight() {
-        return 3.5f;
+        return 3;
     }
 
     @Override
     protected void initEntity() {
         super.initEntity();
-        this.setMaxHealth(300);
+        this.setMaxHealth(600);
     }
 
     @Override
@@ -48,19 +53,41 @@ public class EntityWither extends EntityMob {
             return;
         }
 
-        AddEntityPacket pk = new AddEntityPacket();
-        pk.type = this.getNetworkId();
-        pk.entityUniqueId = this.getId();
-        pk.entityRuntimeId = this.getId();
-        pk.x = (float) this.x;
-        pk.y = (float) this.y;
-        pk.z = (float) this.z;
-        pk.speedX = (float) this.motionX;
-        pk.speedY = (float) this.motionY;
-        pk.speedZ = (float) this.motionZ;
-        pk.metadata = this.dataProperties;
-        player.dataPacket(pk);
+        player.dataPacket(createAddEntityPacket());
 
         super.spawnTo(player);
+    }
+
+    @Override
+    protected DataPacket createAddEntityPacket() {
+        AddEntityPacket addEntity = new AddEntityPacket();
+        addEntity.type = this.getNetworkId();
+        addEntity.entityUniqueId = this.getId();
+        addEntity.entityRuntimeId = this.getId();
+        addEntity.yaw = (float) this.yaw;
+        addEntity.headYaw = (float) this.yaw;
+        addEntity.pitch = (float) this.pitch;
+        addEntity.x = (float) this.x;
+        addEntity.y = (float) this.y + this.getBaseOffset();
+        addEntity.z = (float) this.z;
+        addEntity.speedX = (float) this.motionX;
+        addEntity.speedY = (float) this.motionY;
+        addEntity.speedZ = (float) this.motionZ;
+        addEntity.metadata = this.dataProperties;
+
+        addEntity.attributes = new Attribute[]{
+                Attribute.getAttribute(Attribute.HEALTH)
+                        .setMaxValue(getMaxHealth())
+                        .setValue(getHealth()),
+        };
+
+        return addEntity;
+    }
+
+    @Override
+    public Item[] getDrops() {
+        return new Item[]{
+                Item.get(Item.NETHER_STAR),
+        };
     }
 }

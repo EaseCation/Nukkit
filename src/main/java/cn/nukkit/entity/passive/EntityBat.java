@@ -1,17 +1,16 @@
 package cn.nukkit.entity.passive;
 
 import cn.nukkit.Player;
-import cn.nukkit.item.Item;
+import cn.nukkit.entity.EntityID;
 import cn.nukkit.level.format.FullChunk;
 import cn.nukkit.nbt.tag.CompoundTag;
-import cn.nukkit.network.protocol.AddEntityPacket;
 
 /**
  * @author PikyCZ
  */
 public class EntityBat extends EntityAnimal {
 
-    public static final int NETWORK_ID = 19;
+    public static final int NETWORK_ID = EntityID.BAT;
 
     public EntityBat(FullChunk chunk, CompoundTag nbt) {
         super(chunk, nbt);
@@ -20,6 +19,11 @@ public class EntityBat extends EntityAnimal {
     @Override
     public int getNetworkId() {
         return NETWORK_ID;
+    }
+
+    @Override
+    public String getName() {
+        return "Bat";
     }
 
     @Override
@@ -39,28 +43,12 @@ public class EntityBat extends EntityAnimal {
     }
 
     @Override
-    public Item[] getDrops() {
-        return new Item[0];
-    }
-
-    @Override
     public void spawnTo(Player player) {
         if (this.hasSpawned.containsKey(player.getLoaderId())) {
             return;
         }
 
-        AddEntityPacket pk = new AddEntityPacket();
-        pk.type = this.getNetworkId();
-        pk.entityUniqueId = this.getId();
-        pk.entityRuntimeId = this.getId();
-        pk.x = (float) this.x;
-        pk.y = (float) this.y;
-        pk.z = (float) this.z;
-        pk.speedX = (float) this.motionX;
-        pk.speedY = (float) this.motionY;
-        pk.speedZ = (float) this.motionZ;
-        pk.metadata = this.dataProperties;
-        player.dataPacket(pk);
+        player.dataPacket(createAddEntityPacket());
 
         super.spawnTo(player);
     }

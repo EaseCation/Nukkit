@@ -1,15 +1,20 @@
 package cn.nukkit.entity.passive;
 
 import cn.nukkit.Player;
+import cn.nukkit.block.Block;
+import cn.nukkit.entity.EntityID;
+import cn.nukkit.item.Item;
 import cn.nukkit.level.format.FullChunk;
 import cn.nukkit.nbt.tag.CompoundTag;
+
+import java.util.concurrent.ThreadLocalRandom;
 
 /**
  * Created by PetteriM1
  */
 public class EntityTurtle extends EntityAnimal {
 
-    public static final int NETWORK_ID = 74;
+    public static final int NETWORK_ID = EntityID.TURTLE;
 
     public EntityTurtle(FullChunk chunk, CompoundTag nbt) {
         super(chunk, nbt);
@@ -49,5 +54,12 @@ public class EntityTurtle extends EntityAnimal {
         player.dataPacket(createAddEntityPacket());
 
         super.spawnTo(player);
+    }
+
+    @Override
+    public Item[] getDrops() {
+        return new Item[]{
+                Item.get(Block.getItemId(Block.SEAGRASS), 0, ThreadLocalRandom.current().nextInt(3)),
+        };
     }
 }

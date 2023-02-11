@@ -69,58 +69,68 @@ public abstract class Entity extends Location implements Metadatable {
     public static final int DATA_TYPE_VECTOR3F = 8;
 
     public static final int DATA_FLAGS = 0;
-    public static final int DATA_HEALTH = 1; //int (minecart/boat)
+    public static final int DATA_HEALTH = 1; //int structural integrity (minecart/boat)
     public static final int DATA_VARIANT = 2; //int
-    public static final int DATA_COLOR = 3, DATA_COLOUR = 3; //byte
+    public static final int DATA_COLOR = 3; //byte color index
     public static final int DATA_NAMETAG = 4; //string
     public static final int DATA_OWNER_EID = 5; //long
     public static final int DATA_TARGET_EID = 6; //long
     public static final int DATA_AIR = 7; //short
     public static final int DATA_POTION_COLOR = 8; //int (ARGB!)
     public static final int DATA_POTION_AMBIENT = 9; //byte
-    public static final int DATA_JUMP_DURATION = 10; //long
-    public static final int DATA_HURT_TIME = 11; //int (minecart/boat)
-    public static final int DATA_HURT_DIRECTION = 12; //int (minecart/boat)
+    public static final int DATA_JUMP_DURATION = 10; //byte
+    public static final int DATA_HURT_TIME = 11; //int (minecart/boat/armor stand)
+    public static final int DATA_HURT_DIRECTION = 12; //int (minecart/boat/armor stand)
     public static final int DATA_PADDLE_TIME_LEFT = 13; //float
     public static final int DATA_PADDLE_TIME_RIGHT = 14; //float
     public static final int DATA_EXPERIENCE_VALUE = 15; //int (xp orb)
-    public static final int DATA_DISPLAY_ITEM = 16; //int (id | (data << 16))
+    public static final int DATA_MINECART_DISPLAY_BLOCK = 16; //int (block runtime ID)
+    public static final int DATA_HORSE_FLAGS = DATA_MINECART_DISPLAY_BLOCK; //int: 4 = saddle | 16 = bred | 32 = eating | 64 = standing | 128 = open mouth
+    public static final int DATA_FIREWORK_ITEM = DATA_MINECART_DISPLAY_BLOCK; //compoundtag
+    public static final int DATA_WITHER_SKULL_DANGEROUS = DATA_MINECART_DISPLAY_BLOCK; //byte
     public static final int DATA_DISPLAY_OFFSET = 17; //int
+    public static final int DATA_FIREWORK_VELOCITY = DATA_DISPLAY_OFFSET; //vec3f
+    public static final int DATA_ARROW_SHOOTER_EID = DATA_DISPLAY_OFFSET; //long arrow owner
     public static final int DATA_HAS_DISPLAY = 18; //byte (must be 1 for minecart to show block inside)
-    public static final int DATA_SWELL = 19;
-    public static final int DATA_OLD_SWELL = 20;
-    public static final int DATA_SWELL_DIR = 21;
-    public static final int DATA_CHARGE_AMOUNT = 22;
-    public static final int DATA_ENDERMAN_HELD_ITEM_ID = 23; //short
-    public static final int DATA_ENDERMAN_HELD_ITEM_DAMAGE = 24; //short
+    public static final int DATA_FIREWORK_ATTACHED_EID = DATA_HAS_DISPLAY; //long
+    public static final int DATA_ARROW_AUX_VALUE = DATA_HAS_DISPLAY; //byte (tipped arrow item meta)
+    public static final int DATA_CREEPER_SWELL = 19; //int
+    public static final int DATA_HORSE_TYPE = DATA_CREEPER_SWELL; //byte: -1 = unset, 0 = default, 1 = donkey, 2 = mule, 3 = zombie, 4 = skeleton
+    public static final int DATA_CREEPER_OLD_SWELL = 20; //int
+    public static final int DATA_CREEPER_SWELL_DIR = 21; //byte
+    public static final int DATA_CHARGE_AMOUNT = 22; //byte used for ghasts and also crossbow charging
+    public static final int DATA_ENDERMAN_HELD_BLOCK = 23; //int (block runtime ID)
+    public static final int DATA_ENDERMAN_HELD_BLOCK_DAMAGE = 24; //short DEPRECATED
     public static final int DATA_ENTITY_AGE = 25; //short
+    public static final int DATA_SLIME_CLIENT_EVENT = DATA_ENTITY_AGE; //byte: 0 = none, 1 (default) = land, 2 = jump
+    public static final int DATA_WITCH_USING_ITEM = 26; //byte /* TODO: (int) used by horse */
     public static final int DATA_PLAYER_FLAGS = 27; //byte
-    public static final int DATA_PLAYER_INDEX = 28;
+    public static final int DATA_PLAYER_INDEX = 28; //int, used for marker colors and agent nametag colors
     public static final int DATA_PLAYER_BED_POSITION = 29; //block coords
     public static final int DATA_FIREBALL_POWER_X = 30; //float
-    public static final int DATA_FIREBALL_POWER_Y = 31;
-    public static final int DATA_FIREBALL_POWER_Z = 32;
+    public static final int DATA_FIREBALL_POWER_Y = 31; //float
+    public static final int DATA_FIREBALL_POWER_Z = 32; //float
     public static final int DATA_AUX_POWER = 33;
-    public static final int DATA_FISH_X = 34;
-    public static final int DATA_FISH_Z = 35;
-    public static final int DATA_FISH_ANGLE = 36;
-    public static final int DATA_POTION_AUX_VALUE = 37; //short
+    public static final int DATA_FISH_X = 34; //float fishing
+    public static final int DATA_FISH_Z = 35; //float fishing
+    public static final int DATA_FISH_ANGLE = 36; //float fishing
+    public static final int DATA_AUX_VALUE_DATA = 37; //short potion type / zombie type (0 = default, 1 = villager, 2 = husk, 3 = pig, 4 = drowned)
     public static final int DATA_LEAD_HOLDER_EID = 38; //long
     public static final int DATA_SCALE = 39; //float
     public static final int DATA_INTERACTIVE_TAG = 40; //string (button text)
-    public static final int DATA_NPC_SKIN_ID = 41; //string
-    public static final int DATA_URL_TAG = 42; //string
+    public static final int DATA_NPC_SKIN_ID = 41; //string DEPRECATED
+    public static final int DATA_URL_TAG = 42; //string related to npc component - actions (json)
     public static final int DATA_MAX_AIR = 43; //short
     public static final int DATA_MARK_VARIANT = 44; //int
-    public static final int DATA_CONTAINER_TYPE = 45; //byte
-    public static final int DATA_CONTAINER_BASE_SIZE = 46; //int
-    public static final int DATA_CONTAINER_EXTRA_SLOTS_PER_STRENGTH = 47; //int
+    public static final int DATA_CONTAINER_TYPE = 45; //byte container component
+    public static final int DATA_CONTAINER_BASE_SIZE = 46; //int container component
+    public static final int DATA_CONTAINER_EXTRA_SLOTS_PER_STRENGTH = 47; //int container component (used for llamas, inventory size is baseSize + thisProp * strength)
     public static final int DATA_BLOCK_TARGET = 48; //block coords (ender crystal)
     public static final int DATA_WITHER_INVULNERABLE_TICKS = 49; //int
-    public static final int DATA_WITHER_TARGET_1 = 50; //long
-    public static final int DATA_WITHER_TARGET_2 = 51; //long
-    public static final int DATA_WITHER_TARGET_3 = 52; //long
-    public static final int DATA_AERIAL_ATTACK = 53;
+    public static final int DATA_WITHER_TARGET_1_EID = 50; //long
+    public static final int DATA_WITHER_TARGET_2_EID = 51; //long
+    public static final int DATA_WITHER_TARGET_3_EID = 52; //long
+    public static final int DATA_AERIAL_ATTACK = 53; //short
     public static final int DATA_BOUNDING_BOX_WIDTH = 54; //float
     public static final int DATA_BOUNDING_BOX_HEIGHT = 55; //float
     public static final int DATA_FUSE_LENGTH = 56; //int
@@ -138,8 +148,8 @@ public abstract class Entity extends Location implements Metadatable {
     public static final int DATA_SHULKER_ATTACHED = 66; //short
     public static final int DATA_SHULKER_ATTACH_POS = 67; //block coords
     public static final int DATA_TRADING_PLAYER_EID = 68; //long
-    public static final int DATA_TRADING_CAREER = 69;
-    public static final int DATA_HAS_COMMAND_BLOCK = 70;
+    public static final int DATA_TRADING_CAREER = 69; //int
+    public static final int DATA_HAS_COMMAND_BLOCK = 70; //byte
     public static final int DATA_COMMAND_BLOCK_COMMAND = 71; //string
     public static final int DATA_COMMAND_BLOCK_LAST_OUTPUT = 72; //string
     public static final int DATA_COMMAND_BLOCK_TRACK_OUTPUT = 73; //byte
@@ -147,89 +157,89 @@ public abstract class Entity extends Location implements Metadatable {
     public static final int DATA_STRENGTH = 75; //int
     public static final int DATA_MAX_STRENGTH = 76; //int
     public static final int DATA_SPELL_CASTING_COLOR = 77; //int
-    public static final int DATA_LIMITED_LIFE = 78;
-    public static final int DATA_ARMOR_STAND_POSE_INDEX = 125; // int //TODO: use enum
-    public static final int DATA_ENDER_CRYSTAL_TIME_OFFSET = 126; // int
-    public static final int DATA_ALWAYS_SHOW_NAMETAG = 80; // byte
-    public static final int DATA_COLOR_2 = 81; // byte
-    public static final int DATA_NAME_AUTHOR = 82;
-    public static final int DATA_SCORE_TAG = 83; //String
-    public static final int DATA_BALLOON_ATTACHED_ENTITY = 84; // long
-    public static final int DATA_PUFFERFISH_SIZE = 85;
-    public static final int DATA_BUBBLE_TIME = 86;
-    public static final int DATA_AGENT = 87;
-    public static final int DATA_SITTING_AMOUNT = 88;
-    public static final int DATA_SITTING_AMOUNT_PREVIOUS = 89;
-    public static final int DATA_EATING_COUNTER = 90;
-    public static final int DATA_FLAGS_EXTENDED = 91;
-    public static final int DATA_LAYING_AMOUNT = 92;
-    public static final int DATA_LAYING_AMOUNT_PREVIOUS = 93;
-    public static final int DATA_DURATION = 94;
-    public static final int DATA_SPAWN_TIME = 95;
-    public static final int DATA_CHANGE_RATE = 96;
-    public static final int DATA_CHANGE_ON_PICKUP = 97;
-    public static final int DATA_PICKUP_COUNT = 98;
-    public static final int DATA_HAS_NPC_COMPONENT = 99;
-    public static final int DATA_TRADE_TIER = 100;
-    public static final int DATA_MAX_TRADE_TIER = 101;
-    public static final int DATA_TRADE_EXPERIENCE = 102;
-    public static final int DATA_SKIN_ID = 103; // int ???
-    public static final int DATA_SPAWNING_FRAMES = 104;
-    public static final int DATA_COMMAND_BLOCK_TICK_DELAY = 105;
-    public static final int DATA_COMMAND_BLOCK_EXECUTE_ON_FIRST_TICK = 106;
-    public static final int DATA_AMBIENT_SOUND_INTERVAL = 107;
-    public static final int DATA_AMBIENT_SOUND_INTERVAL_RANGE = 108;
-    public static final int DATA_AMBIENT_SOUND_EVENT_NAME = 109;
-    public static final int DATA_FALL_DAMAGE_MULTIPLIER = 110;
-    public static final int DATA_NAME_RAW_TEXT = 111;
-    public static final int DATA_CAN_RIDE_TARGET = 112;
-    public static final int DATA_LOW_TIER_CURED_DISCOUNT = 113;
-    public static final int DATA_HIGH_TIER_CURED_DISCOUNT = 114;
-    public static final int DATA_NEARBY_CURED_DISCOUNT = 115;
-    public static final int DATA_NEARBY_CURED_DISCOUNT_TIMESTAMP = 116;
-    public static final int DATA_HITBOX = 117;
-    public static final int DATA_IS_BUOYANT = 118;
-    public static final int DATA_FREEZING_EFFECT_STRENGTH = 119;
-    public static final int DATA_BUOYANCY_DATA = 120;
-    public static final int DATA_GOAT_HORN_COUNT = 121;
-    public static final int DATA_BASE_RUNTIME_ID = 122;
-    public static final int DATA_DEFINE_PROPERTIES = 123;
-    public static final int DATA_UPDATE_PROPERTIES = 124;
+    public static final int DATA_LIMITED_LIFE = 78; //int
+    public static final int DATA_ARMOR_STAND_POSE_INDEX = 125; //int
+    public static final int DATA_ENDER_CRYSTAL_TIME_OFFSET = 126; //int
+    public static final int DATA_ALWAYS_SHOW_NAMETAG = 80; //byte: -1 = default, 0 = only when looked at, 1 = always
+    public static final int DATA_COLOR_2 = 81; //byte color index 2
+    public static final int DATA_NAME_AUTHOR = 82; //string
+    public static final int DATA_SCORE_TAG = 83; //string
+    public static final int DATA_BALLOON_ATTACHED_EID = 84; //long
+    public static final int DATA_PUFFERFISH_SIZE = 85; //byte
+    public static final int DATA_BOAT_BUBBLE_TIME = 86; //int (time in bubble column)
+    public static final int DATA_PLAYER_AGENT_EID = 87; //long
+    public static final int DATA_SITTING_AMOUNT = 88; //float
+    public static final int DATA_SITTING_AMOUNT_PREVIOUS = 89; //float
+    public static final int DATA_EATING_COUNTER = 90; //int (used by pandas)
+    public static final int DATA_FLAGS_EXTENDED = 91; //long (data flags 2)
+    public static final int DATA_LAYING_AMOUNT = 92; //float (used by pandas)
+    public static final int DATA_LAYING_AMOUNT_PREVIOUS = 93; //float (used by pandas)
+    public static final int DATA_AREA_EFFECT_CLOUD_DURATION = 94; //int
+    public static final int DATA_AREA_EFFECT_CLOUD_SPAWN_TIME = 95; //int
+    public static final int DATA_AREA_EFFECT_CLOUD_CHANGE_RATE = 96; //float, usually negative
+    public static final int DATA_AREA_EFFECT_CLOUD_CHANGE_ON_PICKUP = 97; //float
+    public static final int DATA_AREA_EFFECT_CLOUD_PICKUP_COUNT = 98; //int
+    public static final int DATA_HAS_NPC_COMPONENT = 99; //byte
+    public static final int DATA_TRADE_TIER = 100; //int villager (trade)
+    public static final int DATA_MAX_TRADE_TIER = 101; //int villager (trade)
+    public static final int DATA_TRADE_EXPERIENCE = 102; //int villager (trade)
+    public static final int DATA_SKIN_ID = 103; //int texture index e.g. npc
+    public static final int DATA_SPAWNING_FRAMES = 104; //int - related to wither
+    public static final int DATA_COMMAND_BLOCK_TICK_DELAY = 105; //int
+    public static final int DATA_COMMAND_BLOCK_EXECUTE_ON_FIRST_TICK = 106; //byte
+    public static final int DATA_AMBIENT_SOUND_INTERVAL = 107; //float
+    public static final int DATA_AMBIENT_SOUND_INTERVAL_RANGE = 108; //float
+    public static final int DATA_AMBIENT_SOUND_EVENT_NAME = 109; //string
+    public static final int DATA_FALL_DAMAGE_MULTIPLIER = 110; //float
+    public static final int DATA_NAME_RAW_TEXT = 111; //string npc component
+    public static final int DATA_CAN_RIDE_TARGET = 112; //byte
+    public static final int DATA_LOW_TIER_CURED_DISCOUNT = 113; //int villager (trade)
+    public static final int DATA_HIGH_TIER_CURED_DISCOUNT = 114; //int villager (trade)
+    public static final int DATA_NEARBY_CURED_DISCOUNT = 115; //int villager (trade)
+    public static final int DATA_NEARBY_CURED_DISCOUNT_TIMESTAMP = 116; //int villager (trade)
+    public static final int DATA_HITBOX = 117; //compound
+    public static final int DATA_IS_BUOYANT = 118; //byte buoyant component e.g. boat
+    public static final int DATA_FREEZING_EFFECT_STRENGTH = 119; //float related to powder snow
+    public static final int DATA_BUOYANCY_DATA = 120; //string buoyant component (json) e.g. boat
+    public static final int DATA_GOAT_HORN_COUNT = 121; //int
+    public static final int DATA_BASE_RUNTIME_ID = 122; //string vanilla identifier
+    public static final int DATA_DEFINE_PROPERTIES = 123; // DEPRECATED
+    public static final int DATA_UPDATE_PROPERTIES = 124; // DEPRECATED
     /**
      * @since 1.18.30
      */
-    public static final int DATA_MOVEMENT_SOUND_DISTANCE_OFFSET = 128;
-    /**
-     * int.
-     * @since 1.18.30
-     */
-    public static final int DATA_HEARTBEAT_INTERVAL_TICKS = 129;
+    public static final int DATA_MOVEMENT_SOUND_DISTANCE_OFFSET = 128; // related to warden
     /**
      * int.
      * @since 1.18.30
      */
-    public static final int DATA_HEARTBEAT_SOUND_EVENT = 130;
+    public static final int DATA_HEARTBEAT_INTERVAL_TICKS = 129; //int related to warden
+    /**
+     * int.
+     * @since 1.18.30
+     */
+    public static final int DATA_HEARTBEAT_SOUND_EVENT = 130; //int related to warden (level sound event id)
     /**
      * block pos.
      * @since 1.19.0
      */
-    public static final int DATA_PLAYER_LAST_DEATH_POS = 131;
+    public static final int DATA_PLAYER_LAST_DEATH_POS = 131; //blockpos related to recovery compass
     /**
      * int.
      * @since 1.19.0
      */
-    public static final int DATA_PLAYER_LAST_DEATH_DIMENSION = 132;
+    public static final int DATA_PLAYER_LAST_DEATH_DIMENSION = 132; //int related to recovery compass
     /**
      * bool.
      * @since 1.19.0
      */
-    public static final int DATA_PLAYER_HAS_DIED = 133;
+    public static final int DATA_PLAYER_HAS_DIED = 133; //byte related to recovery compass
     /**
      * string.
      * @since 1.12.0
      */
-    public static final int DATA_NPC_DATA = 134;
-    public static final int DATA_NUKKIT_FLAGS = 135; // custom
+    public static final int DATA_NPC_DATA = 134; //string related to npc component (json)
+    public static final int DATA_NUKKIT_FLAGS = 135; //long cUstOm HACK
     public static final int DATA_UNDEFINED = 136;
 
     public static final long NUKKIT_FLAG_VARIANT_BLOCK = 1L << 1;
@@ -1115,11 +1125,14 @@ public abstract class Entity extends Location implements Metadatable {
     }
 
     public void spawnTo(Player player) {
-        if (!this.hasSpawned.containsKey(player.getLoaderId()) && player.usedChunks.containsKey(Level.chunkHash(this.chunk.getX(), this.chunk.getZ()))) {
+        if (!this.hasSpawned.containsKey(player.getLoaderId()) && this.chunk != null && player.usedChunks.containsKey(Level.chunkHash(this.chunk.getX(), this.chunk.getZ()))) {
             this.hasSpawned.put(player.getLoaderId(), player);
+//            player.dataPacket(createAddEntityPacket());
         }
         /*
         if (this.riding != null) {
+            this.riding.spawnTo(player);
+
             SetEntityLinkPacket pkk = new SetEntityLinkPacket();
             pkk.vehicleUniqueId = this.riding.getId();
             pkk.riderUniqueId = this.getId();
@@ -1139,7 +1152,7 @@ public abstract class Entity extends Location implements Metadatable {
         addEntity.headYaw = (float) this.yaw;
         addEntity.pitch = (float) this.pitch;
         addEntity.x = (float) this.x;
-        addEntity.y = (float) this.y;
+        addEntity.y = (float) this.y + this.getBaseOffset();
         addEntity.z = (float) this.z;
         addEntity.speedX = (float) this.motionX;
         addEntity.speedY = (float) this.motionY;

@@ -3,6 +3,7 @@ package cn.nukkit.entity.item;
 import cn.nukkit.Player;
 import cn.nukkit.entity.Entity;
 import cn.nukkit.entity.EntityExplosive;
+import cn.nukkit.entity.EntityID;
 import cn.nukkit.event.entity.EntityDamageEvent;
 import cn.nukkit.level.Explosion;
 import cn.nukkit.level.GameRule;
@@ -15,7 +16,7 @@ import cn.nukkit.nbt.tag.CompoundTag;
  */
 public class EntityEndCrystal extends Entity implements EntityExplosive {
 
-    public static final int NETWORK_ID = 71;
+    public static final int NETWORK_ID = EntityID.ENDER_CRYSTAL;
 
     @Override
     public int getNetworkId() {
@@ -77,7 +78,7 @@ public class EntityEndCrystal extends Entity implements EntityExplosive {
         close();
 
         if (this.level.getGameRules().getBoolean(GameRule.MOB_GRIEFING)) {
-        //explode.explodeA();
+            //explode.explodeA();
         }
         explode.explodeB();
     }

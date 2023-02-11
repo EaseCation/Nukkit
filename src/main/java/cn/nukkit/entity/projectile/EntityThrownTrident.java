@@ -2,6 +2,7 @@ package cn.nukkit.entity.projectile;
 
 import cn.nukkit.Player;
 import cn.nukkit.entity.Entity;
+import cn.nukkit.entity.EntityID;
 import cn.nukkit.entity.weather.EntityLightning;
 import cn.nukkit.event.entity.EntityDamageEvent;
 import cn.nukkit.event.entity.EntityDamageEvent.DamageCause;
@@ -15,7 +16,6 @@ import cn.nukkit.item.Item;
 import cn.nukkit.level.format.FullChunk;
 import cn.nukkit.nbt.NBTIO;
 import cn.nukkit.nbt.tag.CompoundTag;
-import cn.nukkit.network.protocol.AddEntityPacket;
 import cn.nukkit.network.protocol.LevelSoundEventPacket;
 
 /**
@@ -23,7 +23,7 @@ import cn.nukkit.network.protocol.LevelSoundEventPacket;
  */
 public class EntityThrownTrident extends EntityProjectile {
 
-    public static final int NETWORK_ID = 73;
+    public static final int NETWORK_ID = EntityID.THROWN_TRIDENT;
 
     protected Item trident;
 
@@ -72,7 +72,7 @@ public class EntityThrownTrident extends EntityProjectile {
     protected void initEntity() {
         super.initEntity();
 
-        this.trident = namedTag.contains("Trident") ? NBTIO.getItemHelper(namedTag.getCompound("Trident")) : Item.get(0);
+        this.trident = namedTag.contains("Trident") ? NBTIO.getItemHelper(namedTag.getCompound("Trident")) : Item.get(Item.AIR);
         this.pickupMode = namedTag.contains("pickup") ? namedTag.getByte("pickup") : PICKUP_ANY;
     }
 
@@ -85,7 +85,7 @@ public class EntityThrownTrident extends EntityProjectile {
     }
 
     public Item getItem() {
-        return this.trident != null ? this.trident.clone() : Item.get(0);
+        return this.trident != null ? this.trident.clone() : Item.get(Item.AIR);
     }
 
     public void setItem(Item item) {
@@ -103,21 +103,7 @@ public class EntityThrownTrident extends EntityProjectile {
             return;
         }
 
-        AddEntityPacket pk = new AddEntityPacket();
-        pk.type = NETWORK_ID;
-        pk.entityUniqueId = this.getId();
-        pk.entityRuntimeId = this.getId();
-        pk.x = (float) this.x;
-        pk.y = (float) this.y;
-        pk.z = (float) this.z;
-        pk.speedX = (float) this.motionX;
-        pk.speedY = (float) this.motionY;
-        pk.speedZ = (float) this.motionZ;
-        pk.yaw = (float) this.yaw;
-        pk.headYaw = (float) this.yaw;
-        pk.pitch = (float) this.pitch;
-        pk.metadata = this.dataProperties;
-        player.dataPacket(pk);
+        player.dataPacket(createAddEntityPacket());
 
         super.spawnTo(player);
     }

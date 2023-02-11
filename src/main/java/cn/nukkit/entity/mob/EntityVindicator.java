@@ -1,7 +1,7 @@
 package cn.nukkit.entity.mob;
 
 import cn.nukkit.Player;
-import cn.nukkit.item.Item;
+import cn.nukkit.entity.EntityID;
 import cn.nukkit.level.format.FullChunk;
 import cn.nukkit.nbt.tag.CompoundTag;
 
@@ -10,7 +10,7 @@ import cn.nukkit.nbt.tag.CompoundTag;
  */
 public class EntityVindicator extends EntityMob {
 
-    public static final int NETWORK_ID = 57;
+    public static final int NETWORK_ID = EntityID.VINDICATOR;
 
     public EntityVindicator(FullChunk chunk, CompoundTag nbt) {
         super(chunk, nbt);
@@ -34,17 +34,12 @@ public class EntityVindicator extends EntityMob {
 
     @Override
     public float getHeight() {
-        return 1.95f;
+        return 1.9f;
     }
 
     @Override
     public String getName() {
         return "Vindicator";
-    }
-
-    @Override
-    public Item[] getDrops() {
-        return new Item[]{Item.get(Item.IRON_AXE)};
     }
 
     @Override

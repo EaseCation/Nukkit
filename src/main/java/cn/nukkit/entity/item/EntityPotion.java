@@ -4,6 +4,7 @@ import cn.nukkit.Player;
 import cn.nukkit.block.Block;
 import cn.nukkit.block.BlockCampfire;
 import cn.nukkit.entity.Entity;
+import cn.nukkit.entity.EntityID;
 import cn.nukkit.entity.projectile.EntityProjectile;
 import cn.nukkit.event.potion.PotionCollideEvent;
 import cn.nukkit.item.Item;
@@ -22,9 +23,7 @@ import cn.nukkit.potion.Potion;
  */
 public class EntityPotion extends EntityProjectile {
 
-    public static final int NETWORK_ID = 86;
-
-    public static final int DATA_POTION_ID = 37;
+    public static final int NETWORK_ID = EntityID.SPLASH_POTION;
 
     public int potionId;
     public Item item;
@@ -50,7 +49,7 @@ public class EntityPotion extends EntityProjectile {
             item.setDamage(potionId);
         }
 
-        this.dataProperties.putShort(DATA_POTION_AUX_VALUE, this.potionId);
+        this.dataProperties.putShort(DATA_AUX_VALUE_DATA, this.potionId);
 
         /*Effect effect = Potion.getEffect(potionId, true); TODO: potion color
 

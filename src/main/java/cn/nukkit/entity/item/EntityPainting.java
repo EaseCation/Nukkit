@@ -5,6 +5,7 @@ import cn.nukkit.block.Block;
 import cn.nukkit.blockentity.BlockEntityPistonArm;
 import cn.nukkit.entity.Entity;
 import cn.nukkit.entity.EntityHanging;
+import cn.nukkit.entity.EntityID;
 import cn.nukkit.item.ItemPainting;
 import cn.nukkit.level.GameRule;
 import cn.nukkit.level.GlobalBlockPalette;
@@ -34,7 +35,7 @@ import java.util.concurrent.ThreadLocalRandom;
  */
 public class EntityPainting extends EntityHanging {
 
-    public static final int NETWORK_ID = 83;
+    public static final int NETWORK_ID = EntityID.PAINTING;
 
     public final static Motive[] motives = Motive.values();
     private Motive motive;

@@ -3,6 +3,7 @@ package cn.nukkit.entity.item;
 import cn.nukkit.Player;
 import cn.nukkit.block.Block;
 import cn.nukkit.entity.Entity;
+import cn.nukkit.entity.EntityID;
 import cn.nukkit.event.entity.EntityDamageByEntityEvent;
 import cn.nukkit.inventory.InventoryHolder;
 import cn.nukkit.inventory.MinecartChestInventory;
@@ -21,7 +22,7 @@ import cn.nukkit.utils.MinecartType;
  */
 public class EntityMinecartChest extends EntityMinecartAbstract implements InventoryHolder {
 
-    public static final int NETWORK_ID = 98;
+    public static final int NETWORK_ID = EntityID.CHEST_MINECART;
 
     protected MinecartChestInventory inventory;
 

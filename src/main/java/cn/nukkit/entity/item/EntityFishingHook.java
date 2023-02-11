@@ -4,6 +4,7 @@ import cn.nukkit.Player;
 import cn.nukkit.Server;
 import cn.nukkit.block.Block;
 import cn.nukkit.entity.Entity;
+import cn.nukkit.entity.EntityID;
 import cn.nukkit.entity.data.LongEntityData;
 import cn.nukkit.entity.projectile.EntityProjectile;
 import cn.nukkit.event.entity.*;
@@ -20,7 +21,6 @@ import cn.nukkit.level.sound.LaunchSound;
 import cn.nukkit.math.Vector3;
 import cn.nukkit.nbt.NBTIO;
 import cn.nukkit.nbt.tag.CompoundTag;
-import cn.nukkit.network.protocol.AddEntityPacket;
 import cn.nukkit.network.protocol.EntityEventPacket;
 
 import java.util.Collection;
@@ -32,7 +32,7 @@ import java.util.concurrent.ThreadLocalRandom;
  */
 public class EntityFishingHook extends EntityProjectile {
 
-    public static final int NETWORK_ID = 77;
+    public static final int NETWORK_ID = EntityID.FISHING_HOOK;
 
     public int waitChance = 120;
     public int waitTimer = 240;
@@ -282,21 +282,7 @@ public class EntityFishingHook extends EntityProjectile {
             return;
         }
 
-        AddEntityPacket pk = new AddEntityPacket();
-        pk.entityRuntimeId = this.getId();
-        pk.entityUniqueId = this.getId();
-        pk.type = NETWORK_ID;
-        pk.x = (float) this.x;
-        pk.y = (float) this.y;
-        pk.z = (float) this.z;
-        pk.speedX = (float) this.motionX;
-        pk.speedY = (float) this.motionY;
-        pk.speedZ = (float) this.motionZ;
-        pk.yaw = (float) this.yaw;
-        pk.headYaw = (float) this.yaw;
-        pk.pitch = (float) this.pitch;
-        pk.metadata = this.dataProperties;
-        player.dataPacket(pk);
+        player.dataPacket(createAddEntityPacket());
 
         super.spawnTo(player);
     }

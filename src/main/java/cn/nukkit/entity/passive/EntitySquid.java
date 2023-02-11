@@ -1,19 +1,20 @@
 package cn.nukkit.entity.passive;
 
 import cn.nukkit.Player;
+import cn.nukkit.entity.EntityID;
 import cn.nukkit.item.Item;
 import cn.nukkit.item.ItemDye;
 import cn.nukkit.level.format.FullChunk;
 import cn.nukkit.nbt.tag.CompoundTag;
-import cn.nukkit.network.protocol.AddEntityPacket;
-import cn.nukkit.utils.DyeColor;
+
+import java.util.concurrent.ThreadLocalRandom;
 
 /**
  * @author PikyCZ
  */
 public class EntitySquid extends EntityWaterAnimal {
 
-    public static final int NETWORK_ID = 17;
+    public static final int NETWORK_ID = EntityID.SQUID;
 
     public EntitySquid(FullChunk chunk, CompoundTag nbt) {
         super(chunk, nbt);
@@ -22,6 +23,11 @@ public class EntitySquid extends EntityWaterAnimal {
     @Override
     public int getNetworkId() {
         return NETWORK_ID;
+    }
+
+    @Override
+    public String getName() {
+        return "Squid";
     }
 
     @Override
@@ -35,11 +41,6 @@ public class EntitySquid extends EntityWaterAnimal {
     }
 
     @Override
-    public float getEyeHeight() {
-        return 0.7f;
-    }
-
-    @Override
     public void initEntity() {
         super.initEntity();
         this.setMaxHealth(10);
@@ -47,7 +48,9 @@ public class EntitySquid extends EntityWaterAnimal {
 
     @Override
     public Item[] getDrops() {
-        return new Item[]{new ItemDye(DyeColor.BLACK.getDyeData())};
+        return new Item[]{
+                Item.get(Item.DYE, ItemDye.INK_SAC, ThreadLocalRandom.current().nextInt(1, 4)),
+        };
     }
 
     @Override
@@ -56,18 +59,7 @@ public class EntitySquid extends EntityWaterAnimal {
             return;
         }
 
-        AddEntityPacket pk = new AddEntityPacket();
-        pk.type = this.getNetworkId();
-        pk.entityUniqueId = this.getId();
-        pk.entityRuntimeId = this.getId();
-        pk.x = (float) this.x;
-        pk.y = (float) this.y;
-        pk.z = (float) this.z;
-        pk.speedX = (float) this.motionX;
-        pk.speedY = (float) this.motionY;
-        pk.speedZ = (float) this.motionZ;
-        pk.metadata = this.dataProperties;
-        player.dataPacket(pk);
+        player.dataPacket(createAddEntityPacket());
 
         super.spawnTo(player);
     }

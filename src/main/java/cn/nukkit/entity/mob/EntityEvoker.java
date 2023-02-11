@@ -1,15 +1,19 @@
 package cn.nukkit.entity.mob;
 
 import cn.nukkit.Player;
+import cn.nukkit.entity.EntityID;
+import cn.nukkit.item.Item;
 import cn.nukkit.level.format.FullChunk;
 import cn.nukkit.nbt.tag.CompoundTag;
+
+import java.util.concurrent.ThreadLocalRandom;
 
 /**
  * @author PikyCZ
  */
 public class EntityEvoker extends EntityMob {
 
-    public static final int NETWORK_ID = 104;
+    public static final int NETWORK_ID = EntityID.EVOCATION_ILLAGER;
 
     public EntityEvoker(FullChunk chunk, CompoundTag nbt) {
         super(chunk, nbt);
@@ -33,7 +37,7 @@ public class EntityEvoker extends EntityMob {
 
     @Override
     public float getHeight() {
-        return 1.95f;
+        return 1.9f;
     }
 
     @Override
@@ -50,5 +54,14 @@ public class EntityEvoker extends EntityMob {
         player.dataPacket(createAddEntityPacket());
 
         super.spawnTo(player);
+    }
+
+    @Override
+    public Item[] getDrops() {
+        ThreadLocalRandom random = ThreadLocalRandom.current();
+        return new Item[]{
+                Item.get(Item.EMERALD, 0, random.nextInt(2)),
+                Item.get(Item.TOTEM_OF_UNDYING),
+        };
     }
 }

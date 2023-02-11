@@ -2,14 +2,12 @@ package cn.nukkit.entity.mob;
 
 import cn.nukkit.Player;
 import cn.nukkit.entity.Entity;
-import cn.nukkit.entity.data.ByteEntityData;
+import cn.nukkit.entity.EntityID;
 import cn.nukkit.entity.weather.EntityLightningStrike;
 import cn.nukkit.event.entity.CreeperPowerEvent;
-import cn.nukkit.event.entity.EntityDamageByEntityEvent;
 import cn.nukkit.item.Item;
 import cn.nukkit.level.format.FullChunk;
 import cn.nukkit.nbt.tag.CompoundTag;
-import cn.nukkit.network.protocol.AddEntityPacket;
 
 import java.util.concurrent.ThreadLocalRandom;
 
@@ -18,12 +16,7 @@ import java.util.concurrent.ThreadLocalRandom;
  */
 public class EntityCreeper extends EntityMob {
 
-    public static final int NETWORK_ID = 33;
-
-    public static final int DATA_SWELL_DIRECTION = 16;
-    public static final int DATA_SWELL = 17;
-    public static final int DATA_SWELL_OLD = 18;
-    public static final int DATA_POWERED = 19;
+    public static final int NETWORK_ID = EntityID.CREEPER;
 
     @Override
     public int getNetworkId() {
@@ -32,7 +25,7 @@ public class EntityCreeper extends EntityMob {
 
     @Override
     public float getWidth() {
-        return 0.72f;
+        return 0.6f;
     }
 
     @Override
@@ -45,7 +38,7 @@ public class EntityCreeper extends EntityMob {
     }
 
     public boolean isPowered() {
-        return getDataPropertyBoolean(DATA_POWERED);
+        return getDataFlag(DATA_FLAGS, DATA_FLAG_POWERED);
     }
 
     public void setPowered(EntityLightningStrike bolt) {
@@ -53,7 +46,7 @@ public class EntityCreeper extends EntityMob {
         this.getServer().getPluginManager().callEvent(ev);
 
         if (!ev.isCancelled()) {
-            this.setDataProperty(new ByteEntityData(DATA_POWERED, 1));
+            this.setDataFlag(DATA_FLAGS, DATA_FLAG_POWERED, true);
             this.namedTag.putBoolean("powered", true);
         }
     }
@@ -63,7 +56,7 @@ public class EntityCreeper extends EntityMob {
         this.getServer().getPluginManager().callEvent(ev);
 
         if (!ev.isCancelled()) {
-            this.setDataProperty(new ByteEntityData(DATA_POWERED, powered ? 1 : 0));
+            this.setDataFlag(DATA_FLAGS, DATA_FLAG_POWERED, powered);
             this.namedTag.putBoolean("powered", powered);
         }
     }
@@ -77,17 +70,21 @@ public class EntityCreeper extends EntityMob {
         super.initEntity();
 
         if (this.namedTag.getBoolean("powered") || this.namedTag.getBoolean("IsPowered")) {
-            this.dataProperties.putBoolean(DATA_POWERED, true);
+            this.setDataFlag(DATA_FLAGS, DATA_FLAG_POWERED, true);
         }
         this.setMaxHealth(20);
     }
 
     @Override
+    public String getName() {
+        return "Creeper";
+    }
+
+    @Override
     public Item[] getDrops() {
-        if (this.lastDamageCause instanceof EntityDamageByEntityEvent) {
-            return new Item[]{Item.get(Item.GUNPOWDER, ThreadLocalRandom.current().nextInt(2) + 1)};
-        }
-        return new Item[0];
+        return new Item[]{
+                Item.get(Item.GUNPOWDER, 0, ThreadLocalRandom.current().nextInt(3)),
+        };
     }
 
     @Override
@@ -96,18 +93,7 @@ public class EntityCreeper extends EntityMob {
             return;
         }
 
-        AddEntityPacket pk = new AddEntityPacket();
-        pk.type = this.getNetworkId();
-        pk.entityUniqueId = this.getId();
-        pk.entityRuntimeId = this.getId();
-        pk.x = (float) this.x;
-        pk.y = (float) this.y;
-        pk.z = (float) this.z;
-        pk.speedX = (float) this.motionX;
-        pk.speedY = (float) this.motionY;
-        pk.speedZ = (float) this.motionZ;
-        pk.metadata = this.dataProperties;
-        player.dataPacket(pk);
+        player.dataPacket(createAddEntityPacket());
 
         super.spawnTo(player);
     }
