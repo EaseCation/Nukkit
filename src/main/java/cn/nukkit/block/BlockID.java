@@ -805,5 +805,5 @@ public interface BlockID {
     int STRIPPED_BAMBOO_BLOCK = 783;
 
 
-    int UNDEFINED = 782;
+    int UNDEFINED = 784;
 }
