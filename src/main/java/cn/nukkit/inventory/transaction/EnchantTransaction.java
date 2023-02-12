@@ -41,7 +41,7 @@ public class EnchantTransaction extends InventoryTransaction {
         // This will validate the enchant conditions
         if (this.hasExecuted || !this.canExecute()) {
             source.removeAllWindows(false);
-            source.sendAllInventories();
+            this.sendInventories();
             return false;
         }
         EnchantInventory inv = (EnchantInventory) getSource().getWindowById(Player.ENCHANT_WINDOW_ID);
@@ -49,7 +49,7 @@ public class EnchantTransaction extends InventoryTransaction {
         source.getServer().getPluginManager().callEvent(ev);
         if (ev.isCancelled()) {
             source.removeAllWindows(false);
-            source.sendAllInventories();
+            this.sendInventories();
             // Cancelled by plugin, means handled OK
             return true;
         }

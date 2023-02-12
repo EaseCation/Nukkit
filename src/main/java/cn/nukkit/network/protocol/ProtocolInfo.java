@@ -57,7 +57,7 @@ public interface ProtocolInfo {
     int HURT_ARMOR_PACKET = 0x26; // 38 c
     int SET_ACTOR_DATA_PACKET = 0x27; // 39 cs
     int SET_ACTOR_MOTION_PACKET = 0x28; // 40 cs
-    int SET_ACTOR_LINK_PACKET = 0x29; // 41 c
+    int SET_ACTOR_LINK_PACKET = 0x29; // 41 cs
     int SET_HEALTH_PACKET = 0x2a; // 42 c
     int SET_SPAWN_POSITION_PACKET = 0x2b; // 43 c
     int ANIMATE_PACKET = 0x2c; // 44 cs

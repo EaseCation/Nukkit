@@ -23,7 +23,10 @@ public class SetEntityLinkPacket extends DataPacket {
 
     @Override
     public void decode() {
-
+        this.vehicleUniqueId = this.getEntityUniqueId();
+        this.riderUniqueId = this.getEntityUniqueId();
+        this.type = (byte) this.getByte();
+        this.immediate = (byte) this.getByte();
     }
 
     @Override

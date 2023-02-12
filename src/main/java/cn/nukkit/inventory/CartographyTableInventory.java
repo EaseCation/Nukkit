@@ -81,7 +81,6 @@ public class CartographyTableInventory extends FakeBlockUIComponent {
 
         //TODO: more check
 
-        playerUI.setItem(CURSOR, result, false);
         return true;
     }
 

@@ -65,7 +65,6 @@ public class LoomInventory extends FakeBlockUIComponent {
 
         //TODO: more check
 
-        playerUI.setItem(CURSOR, result);
         return true;
     }
 

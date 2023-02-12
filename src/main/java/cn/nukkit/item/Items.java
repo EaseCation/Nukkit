@@ -111,7 +111,7 @@ public final class Items {
     }
 
     public static Item air() {
-        return Item.get(AIR);
+        return Item.get(AIR, 0, 0);
     }
 
     private Items() {
