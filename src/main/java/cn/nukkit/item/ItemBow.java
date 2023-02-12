@@ -50,12 +50,12 @@ public class ItemBow extends ItemTool {
 
     @Override
     public boolean onClickAir(Player player, Vector3 directionVector) {
-        return player.getInventory().contains(Item.get(ItemID.ARROW)) || player.isCreative();
+        return player.getInventory().contains(Item.get(ItemID.ARROW, null).clearCompoundTag()) || player.isCreative();
     }
 
     @Override
     public boolean onRelease(Player player, int ticksUsed) {
-        Item itemArrow = Item.get(Item.ARROW, 0, 1);
+        Item itemArrow = Item.get(Item.ARROW, null, 1).clearCompoundTag();
 
         Inventory inventory = player.getOffhandInventory();
 

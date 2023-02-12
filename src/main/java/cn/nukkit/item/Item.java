@@ -496,6 +496,11 @@ public class Item implements Cloneable, ItemID {
         return this;
     }
 
+    public Item clearCompoundTag() {
+        tags = null;
+        return this;
+    }
+
     public byte[] getCompoundTag() {
         return tags;
     }
