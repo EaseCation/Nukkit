@@ -65,6 +65,10 @@ public final class EntitySelector {
     }
 
     public static List<Entity> matchEntities(CommandSender sender, String token) throws SelectorSyntaxException {
+        return matchEntities(sender, token, false);
+    }
+
+    public static List<Entity> matchEntities(CommandSender sender, String token, boolean matchPlayerName) throws SelectorSyntaxException {
         Matcher matcher = ENTITY_SELECTOR.matcher(token);
 
         if (matcher.matches()) {
@@ -110,7 +114,7 @@ public final class EntitySelector {
                                     }
                                 }
 
-                                return new ObjectArrayList<>();
+                                return Collections.singletonList(entity);
                             } else {
                                 return Collections.emptyList();
                             }
@@ -121,6 +125,11 @@ public final class EntitySelector {
                 }
 
                 return getEntitiesFromPredicates(matchingEntities, args, sender, selectorType, vec);
+            }
+        } else if (matchPlayerName) {
+            Player player = sender.getServer().getPlayerExact(token);
+            if (player != null) {
+                return Collections.singletonList(player);
             }
         }
 
@@ -254,7 +263,7 @@ public final class EntitySelector {
             double rmSquare = Math.pow(Math.max(rm, 1.0E-4d), 2);
             double rSquare = Math.pow(Math.max(r, 1.0E-4d), 2);
 
-            return ObjectArrayList.of(entity -> {
+            return Collections.singletonList(entity -> {
                 if (entity != null) {
                     double squaredDistance = vec.distanceSquared(entity);
                     return (rmInverted || squaredDistance >= rmSquare) && (rInverted || squaredDistance <= rSquare);

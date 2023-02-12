@@ -41,7 +41,7 @@ public class SpawnpointCommand extends VanillaCommand {
                 return true;
             }
         } else {
-            target = sender.getServer().getPlayer(args[0]);
+            target = sender.getServer().getPlayerExact(args[0]);
             if (target == null) {
                 sender.sendMessage(new TranslationContainer(TextFormat.RED + "%commands.generic.player.notFound"));
                 return true;

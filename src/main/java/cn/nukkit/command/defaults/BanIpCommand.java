@@ -66,7 +66,7 @@ public class BanIpCommand extends VanillaCommand {
 
             Command.broadcastCommandMessage(sender, new TranslationContainer("commands.banip.success", value));
         } else {
-            Player player = sender.getServer().getPlayer(value);
+            Player player = sender.getServer().getPlayerExact(value);
             if (player != null) {
                 this.processIPBan(player.getAddress(), sender, reason.toString());
 

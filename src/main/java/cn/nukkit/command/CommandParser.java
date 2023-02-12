@@ -198,7 +198,7 @@ public class CommandParser {
     public List<Entity> parseTargets() throws CommandSyntaxException {
         String arg = this.next();
         try {
-            return EntitySelector.matchEntities(this.sender, arg);
+            return EntitySelector.matchEntities(this.sender, arg, true);
         } catch (Exception e) {
             throw CommandExceptions.COMMAND_SYNTAX_EXCEPTION;
         }

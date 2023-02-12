@@ -39,7 +39,7 @@ public class TellCommand extends VanillaCommand {
 
         String name = args[0].toLowerCase();
 
-        Player player = sender.getServer().getPlayer(name);
+        Player player = sender.getServer().getPlayerExact(name);
         if (player == null) {
             sender.sendMessage(new TranslationContainer("commands.generic.player.notFound"));
             return true;

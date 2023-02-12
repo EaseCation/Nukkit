@@ -45,7 +45,7 @@ public class XpCommand extends Command {
             }
             amountString = args[0];
             playerName = args[1];
-            player = sender.getServer().getPlayer(playerName);
+            player = sender.getServer().getPlayerExact(playerName);
         } else {
             if (args.length == 1) {
                 amountString = args[0];
@@ -53,7 +53,7 @@ public class XpCommand extends Command {
             } else if (args.length == 2) {
                 amountString = args[0];
                 playerName = args[1];
-                player = sender.getServer().getPlayer(playerName);
+                player = sender.getServer().getPlayerExact(playerName);
             } else {
                 sender.sendMessage(new TranslationContainer("commands.generic.usage", this.usageMessage));
                 return true;
