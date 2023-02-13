@@ -14,6 +14,13 @@ public class BlockLeaves2 extends BlockLeaves {
     public static final int UPDATE_BIT = 0b10;
     public static final int PERSISTENT_BIT = 0b100;
 
+    public static final int[] NUKKIT_LEGACY_META_TO_NUKKIT_RUNTIME_META = {
+            0b000, 0b001,  0b000, 0b001,
+            0b100, 0b101,  0b100, 0b101,
+            0b010, 0b011,  0b010, 0b011,
+            0b110, 0b111,  0b110, 0b111
+    };
+
     private static final String[] NAMES = new String[]{
             "Acacia Leaves",
             "Dark Oak Leaves",

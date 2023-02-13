@@ -3,6 +3,8 @@ package cn.nukkit.level;
 import cn.nukkit.block.Block;
 import cn.nukkit.block.BlockID;
 import cn.nukkit.block.BlockItemFrame;
+import cn.nukkit.block.BlockLeaves;
+import cn.nukkit.block.BlockLeaves2;
 import cn.nukkit.block.BlockWood;
 import cn.nukkit.block.BlockWood2;
 import cn.nukkit.level.biome.Biome;
@@ -338,7 +340,13 @@ class LevelProviderConverter {
                                 if ((meta & BlockWood.PILLAR_AXIS_MASK) == BlockWood.PILLAR_AXIS_MASK && Block.list[BlockID.WOOD] != null) {
                                     id = BlockID.WOOD;
                                     meta = 0b100 | (meta & BlockWood2.TYPE_MASK);
+                                } else {
+                                    meta = BlockWood2.LEGACY_META_TO_NUKKIT_RUNTIME_META[meta & 0xf];
                                 }
+                            } else if (id == BlockID.LEAVES) {
+                                meta = BlockLeaves.NUKKIT_LEGACY_META_TO_NUKKIT_RUNTIME_META[meta & 0xf];
+                            } else if (id == BlockID.LEAVES2) {
+                                meta = BlockLeaves2.NUKKIT_LEGACY_META_TO_NUKKIT_RUNTIME_META[meta & 0xf];
                             } else if (id == BlockID.BLOCK_FRAME) {
                                 // frame 1.13 upgrade
                                 meta = ((meta & ~0b11) << 1) | BlockItemFrame.LEGACY_DIRECTION_BITS_TO_FACING_DIRECTION_BITS[meta & 0b11];

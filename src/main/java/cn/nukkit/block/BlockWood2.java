@@ -19,6 +19,13 @@ public class BlockWood2 extends BlockWood {
     public static final int PILLAR_Z_AXIS_BIT = 0b100;
     public static final int PILLAR_AXIS_MASK = PILLAR_X_AXIS_BIT | PILLAR_Z_AXIS_BIT;
 
+    public static final int[] LEGACY_META_TO_NUKKIT_RUNTIME_META = {
+            0b000, 0b001,  0b000, 0b001,
+            0b010, 0b011,  0b010, 0b011,
+            0b100, 0b101,  0b100, 0b101,
+            0b000, 0b001,  0b000, 0b001 // 0b110, 0b111,  0b110, 0b111
+    };
+
     private static final String[] NAMES = new String[]{
             "Acacia Log",
             "Dark Oak Log",

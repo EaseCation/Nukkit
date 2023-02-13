@@ -29,6 +29,13 @@ public class BlockLeaves extends BlockTransparentMeta {
     public static final int UPDATE_BIT = 0b100;
     public static final int PERSISTENT_BIT = 0b1000;
 
+    public static final int[] NUKKIT_LEGACY_META_TO_NUKKIT_RUNTIME_META = { // different from vanilla...
+            0b0000, 0b0001, 0b0010, 0b0011,
+            0b1000, 0b1001, 0b1010, 0b1011,
+            0b0100, 0b0101, 0b0110, 0b0111,
+            0b1100, 0b1101, 0b1110, 0b1111
+    };
+
     private static final String[] NAMES = new String[]{
             "Oak Leaves",
             "Spruce Leaves",
