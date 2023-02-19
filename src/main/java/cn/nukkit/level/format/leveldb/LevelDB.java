@@ -16,10 +16,13 @@ import cn.nukkit.level.biome.Biome;
 import cn.nukkit.level.format.ChunkSection;
 import cn.nukkit.level.format.FullChunk;
 import cn.nukkit.level.format.LevelProvider;
+import cn.nukkit.level.format.LevelProviderManager;
+import cn.nukkit.level.format.LevelProviderManager.LevelProviderHandle;
 import cn.nukkit.level.format.anvil.util.NibbleArray;
 import cn.nukkit.level.format.generic.BaseFullChunk;
 import cn.nukkit.level.format.generic.ChunkRequestTask;
 import cn.nukkit.level.generator.Generator;
+import cn.nukkit.level.generator.Generators;
 import cn.nukkit.level.util.PalettedSubChunkStorage;
 import cn.nukkit.math.BlockVector3;
 import cn.nukkit.math.Vector3;
@@ -104,8 +107,8 @@ public class LevelDB implements LevelProvider {
             throw new LevelException("Invalid level.dat", e);
         }
 
-        if (!this.levelData.contains("generatorName")) {
-            this.levelData.putString("generatorName", Generator.getGenerator("DEFAULT").getSimpleName().toLowerCase());
+        if (!this.levelData.contains("Generator")) {
+            this.levelData.putInt("Generator", Generator.TYPE_INFINITE);
         }
 
         if (!this.levelData.contains("generatorOptions")) {
@@ -154,7 +157,7 @@ public class LevelDB implements LevelProvider {
         Path dbPath = dirPath.resolve("db");
         Files.createDirectories(dbPath);
 
-        int generatorType = Generator.getGeneratorType(options.getGenerator());
+        int generatorType = Generators.getGeneratorType(options.getGenerator());
         Vector3 spawnPosition = options.getSpawnPosition();
 
         CompoundTag levelData = new CompoundTag()
@@ -250,6 +253,11 @@ public class LevelDB implements LevelProvider {
     }
 
     @Override
+    public LevelProviderHandle getHandle() {
+        return LevelProviderManager.LEVELDB;
+    }
+
+    @Override
     public AsyncTask requestChunkTask(int chunkX, int chunkZ) {
         LevelDbChunk chunk = this.getChunk(chunkX, chunkZ, false);
         if (chunk == null) {
@@ -271,8 +279,8 @@ public class LevelDB implements LevelProvider {
     }
 
     @Override
-    public String getGenerator() {
-        return this.levelData.getString("generatorName");
+    public Class<? extends Generator> getGenerator() {
+        return Generators.getGenerator(levelData.getInt("Generator"));
     }
 
     @Override

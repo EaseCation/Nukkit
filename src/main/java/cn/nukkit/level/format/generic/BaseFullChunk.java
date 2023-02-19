@@ -76,7 +76,6 @@ public abstract class BaseFullChunk implements FullChunk, ChunkManager {
     protected Int2IntMap extraData;
 
     protected LevelProvider provider;
-    protected Class<? extends LevelProvider> providerClass;
 
     private int x;
     private int z;
@@ -233,10 +232,6 @@ public abstract class BaseFullChunk implements FullChunk, ChunkManager {
     @Override
     public void setProvider(LevelProvider provider) {
         this.provider = provider;
-
-        if (provider != null) {
-            this.providerClass = provider.getClass();
-        }
     }
 
     @Override

@@ -5,7 +5,7 @@ import cn.nukkit.item.enchantment.Enchantment;
 
 public class EnchantmentTridentImpaling extends EnchantmentTrident {
     public EnchantmentTridentImpaling() {
-        super(Enchantment.ID_IMPALING, "tridentImpaling", Rarity.RARE);
+        super(Enchantment.IMPALING, "impaling", "tridentImpaling", Rarity.RARE);
     }
 
     @Override

@@ -8,7 +8,7 @@ import cn.nukkit.item.enchantment.Enchantment;
  */
 public class EnchantmentBowKnockback extends EnchantmentBow {
     public EnchantmentBowKnockback() {
-        super(Enchantment.ID_PUNCH, "arrowKnockback", Rarity.RARE);
+        super(Enchantment.PUNCH, "punch", "arrowKnockback", Rarity.RARE);
     }
 
     @Override

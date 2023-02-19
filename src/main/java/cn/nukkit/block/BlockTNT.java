@@ -137,7 +137,7 @@ public class BlockTNT extends BlockSolidMeta {
             if (player != null && !player.isCreative()) item.count--;
             this.prime(80, player);
             return true;
-        } else if (item.hasEnchantment(Enchantment.ID_FIRE_ASPECT)) {
+        } else if (item.hasEnchantment(Enchantment.FIRE_ASPECT)) {
             if (player != null && !player.isCreative()) {
                 item.useOn(this);
             }

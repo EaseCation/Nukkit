@@ -72,7 +72,7 @@ public class EntityMinecartEmpty extends EntityMinecartAbstract {
     }
 
     @Override
-    public String getInteractButtonText() {
+    public String getInteractButtonText(Player player) {
         return this.passengers.isEmpty() ? "action.interact.ride.minecart" : "";
     }
 }

@@ -219,7 +219,7 @@ public class BlockCampfire extends BlockTransparentMeta implements Faceable {
 
             return true;
         }
-        if (item.hasEnchantment(Enchantment.ID_FIRE_ASPECT)) {
+        if (item.hasEnchantment(Enchantment.FIRE_ASPECT)) {
             if (!tryLightFire()) {
                 return false;
             }
@@ -291,7 +291,7 @@ public class BlockCampfire extends BlockTransparentMeta implements Faceable {
             return;
         }
 
-        if (!(entity instanceof EntityLiving) || entity instanceof Player && ((Player) entity).getInventory().getBoots().hasEnchantment(EnchantmentID.ID_FROST_WALKER)) {
+        if (!(entity instanceof EntityLiving) || entity instanceof Player && ((Player) entity).getInventory().getBoots().hasEnchantment(EnchantmentID.FROST_WALKER)) {
             return;
         }
 

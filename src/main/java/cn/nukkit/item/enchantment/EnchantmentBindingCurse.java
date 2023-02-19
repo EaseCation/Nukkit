@@ -2,7 +2,7 @@ package cn.nukkit.item.enchantment;
 
 public class EnchantmentBindingCurse extends Enchantment {
     protected EnchantmentBindingCurse() {
-        super(ID_BINDING, "curse.binding", Rarity.VERY_RARE, EnchantmentType.WEARABLE);
+        super(BINDING, "binding", "curse.binding", Rarity.VERY_RARE, EnchantmentType.WEARABLE);
     }
 
     @Override

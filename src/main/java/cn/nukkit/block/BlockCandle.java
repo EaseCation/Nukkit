@@ -147,7 +147,7 @@ public class BlockCandle extends BlockTransparentMeta {
             level.setBlock(this, this, true);
             return true;
         }
-        if (id == Item.FLINT_AND_STEEL || item.hasEnchantment(Enchantment.ID_FIRE_ASPECT)) {
+        if (id == Item.FLINT_AND_STEEL || item.hasEnchantment(Enchantment.FIRE_ASPECT)) {
             if (isLit()) {
                 return true;
             }

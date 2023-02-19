@@ -18,8 +18,8 @@ public abstract class EnchantmentDamage extends Enchantment {
 
     protected final TYPE damageType;
 
-    protected EnchantmentDamage(int id, String name, Rarity rarity, TYPE type) {
-        super(id, name, rarity, EnchantmentType.SWORD);
+    protected EnchantmentDamage(int id, String identifier, String name, Rarity rarity, TYPE type) {
+        super(id, identifier, name, rarity, EnchantmentType.SWORD);
         this.damageType = type;
     }
 

@@ -90,7 +90,7 @@ public class BlockCakeCandle extends BlockCake {
             level.setBlock(this, this, true);
             return true;
         }
-        if (item.hasEnchantment(Enchantment.ID_FIRE_ASPECT)) {
+        if (item.hasEnchantment(Enchantment.FIRE_ASPECT)) {
             if (isLit()) {
                 return true;
             }

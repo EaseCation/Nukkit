@@ -55,29 +55,36 @@ public class ItemBow extends ItemTool {
 
     @Override
     public boolean onRelease(Player player, int ticksUsed) {
+        Item matched;
+
         Item itemArrow = Item.get(Item.ARROW, null, 1).clearCompoundTag();
-
         Inventory inventory = player.getOffhandInventory();
-
-        if (!inventory.contains(itemArrow) && !(inventory = player.getInventory()).contains(itemArrow) && (player.isAdventure() || player.isSurvival())) {
-            player.getOffhandInventory().sendContents(player);
-            inventory.sendContents(player);
-            return false;
+        matched = inventory.peek(itemArrow);
+        if (matched.isNull()) {
+            inventory = player.getInventory();
+            matched = inventory.peek(itemArrow);
+            if (matched.isNull() && !player.isCreative()) {
+                player.getOffhandInventory().sendContents(player);
+                inventory.sendContents(player);
+                return false;
+            }
         }
+        matched = matched.clone();
+        matched.setCount(1);
 
         double damage = 2;
 
-        Enchantment bowDamage = this.getEnchantment(Enchantment.ID_POWER);
+        Enchantment bowDamage = this.getEnchantment(Enchantment.POWER);
         if (bowDamage != null && bowDamage.getLevel() > 0) {
             damage += (double) bowDamage.getLevel() * 0.5 + 0.5;
         }
 
-        Enchantment flameEnchant = this.getEnchantment(Enchantment.ID_FLAME);
+        Enchantment flameEnchant = this.getEnchantment(Enchantment.FLAME);
         boolean flame = flameEnchant != null && flameEnchant.getLevel() > 0;
 
         float knockbackH = EntityDamageByEntityEvent.GLOBAL_KNOCKBACK_H;
         float knockbackV = EntityDamageByEntityEvent.GLOBAL_KNOCKBACK_V;
-        Enchantment knockbackEnchant = this.getEnchantment(Enchantment.ID_PUNCH);
+        Enchantment knockbackEnchant = this.getEnchantment(Enchantment.PUNCH);
         if (knockbackEnchant != null) {
             knockbackH += 0.1 * knockbackEnchant.getLevel();
             knockbackV += 0.1 * knockbackEnchant.getLevel();
@@ -122,7 +129,7 @@ public class ItemBow extends ItemTool {
             player.getOffhandInventory().sendContents(player);
         } else {
             entityShootBowEvent.getProjectile().setMotion(entityShootBowEvent.getProjectile().getMotion().multiply(entityShootBowEvent.getForce()));
-            Enchantment infinityEnchant = this.getEnchantment(Enchantment.ID_INFINITY);
+            Enchantment infinityEnchant = this.getEnchantment(Enchantment.INFINITY);
             boolean infinity = infinityEnchant != null && infinityEnchant.getLevel() > 0;
             EntityProjectile projectile;
             if (infinity && (projectile = entityShootBowEvent.getProjectile()) instanceof EntityArrow) {
@@ -130,10 +137,10 @@ public class ItemBow extends ItemTool {
             }
             if (player.isAdventure() || player.isSurvival()) {
                 if (!infinity) {
-                    inventory.removeItem(itemArrow);
+                    inventory.removeItem(matched);
                 }
                 if (!this.isUnbreakable()) {
-                    Enchantment durability = this.getEnchantment(Enchantment.ID_UNBREAKING);
+                    Enchantment durability = this.getEnchantment(Enchantment.UNBREAKING);
                     if (!(durability != null && durability.getLevel() > 0 && (100 / (durability.getLevel() + 1)) <= ThreadLocalRandom.current().nextInt(100))) {
                         this.setDamage(this.getDamage() + 1);
                         if (this.getDamage() >= getMaxDurability()) {

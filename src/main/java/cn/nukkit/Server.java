@@ -29,13 +29,9 @@ import cn.nukkit.level.Position;
 import cn.nukkit.level.biome.EnumBiome;
 import cn.nukkit.level.format.LevelProvider;
 import cn.nukkit.level.format.LevelProviderManager;
-import cn.nukkit.level.format.anvil.Anvil;
-import cn.nukkit.level.format.leveldb.LevelDB;
-import cn.nukkit.level.format.mcregion.McRegion;
-import cn.nukkit.level.generator.Flat;
+import cn.nukkit.level.format.LevelProviderManager.LevelProviderHandle;
 import cn.nukkit.level.generator.Generator;
-import cn.nukkit.level.generator.Nether;
-import cn.nukkit.level.generator.Normal;
+import cn.nukkit.level.generator.Generators;
 import cn.nukkit.math.Mth;
 import cn.nukkit.math.NukkitMath;
 import cn.nukkit.metadata.EntityMetadataStore;
@@ -449,15 +445,9 @@ public class Server {
 
         this.enablePlugins(PluginLoadOrder.STARTUP);
 
-        LevelProviderManager.addProvider(this, LevelDB.class);
-        LevelProviderManager.addProvider(this, Anvil.class);
-        LevelProviderManager.addProvider(this, McRegion.class);
+        LevelProviderManager.registerBuiltinProviders();
 
-        Generator.addGenerator(Flat.class, "flat", Generator.TYPE_FLAT);
-        Generator.addGenerator(Normal.class, "normal", Generator.TYPE_INFINITE);
-        Generator.addGenerator(Normal.class, "default", Generator.TYPE_INFINITE);
-        Generator.addGenerator(Nether.class, "nether", Generator.TYPE_INFINITE);
-        //todo: add old generator
+        Generators.registerBuiltinGenerators();
 
         for (String name : this.getConfig("worlds", new HashMap<String, Object>()).keySet()) {
             if (!this.loadLevel(name)) {
@@ -469,8 +459,8 @@ public class Server {
                 }
 
                 Map<String, Object> options = new Object2ObjectOpenHashMap<>();
-                String[] opts = this.getConfig("worlds." + name + ".generator", Generator.getGenerator("default").getSimpleName()).split(":");
-                Class<? extends Generator> generator = Generator.getGenerator(opts[0]);
+                String[] opts = this.getConfig("worlds." + name + ".generator", Generators.getGenerator("default").getSimpleName()).split(":");
+                Class<? extends Generator> generator = Generators.getGenerator(opts[0]);
                 if (opts.length > 1) {
                     StringBuilder preset = new StringBuilder();
                     for (int i = 1; i < opts.length; i++) {
@@ -505,9 +495,12 @@ public class Server {
                 } catch (NumberFormatException e) {
                     seed = seedString.hashCode();
                 }
-                this.generateLevel(defaultName, LevelCreationOptions.builder()
+                LevelCreationOptions options = LevelCreationOptions.builder()
                         .seed(seed == 0 ? System.currentTimeMillis() : seed)
-                        .build());
+                        .generator(Generators.getGenerator(this.getLevelType()))
+//                        .difficulty(Difficulty.byId(this.getDifficulty()))
+                        .build();
+                this.generateLevel(defaultName, options);
             }
 
             this.setDefaultLevel(this.getLevelByName(defaultName));
@@ -1722,7 +1715,7 @@ public class Server {
             path = this.getDataPath() + "worlds/" + name + "/";
         }
 
-        Class<? extends LevelProvider> provider = LevelProviderManager.getProvider(path);
+        LevelProviderHandle provider = LevelProviderManager.getProvider(path);
 
         if (provider == null) {
             log.error(this.getLanguage().translateString("nukkit.level.loadError", new String[]{name, "Unknown provider"}));
@@ -1779,7 +1772,7 @@ public class Server {
     }
 
     /**
-     * @deprecated use {#generateLevel(String, LevelCreationOptions, Class)} instead
+     * @deprecated use {#generateLevel(String, LevelCreationOptions, LevelProviderHandle)} instead
      */
     @Deprecated
     public boolean generateLevel(String name, long seed, Class<? extends Generator> generator, Map<String, Object> options, @Nullable Class<? extends LevelProvider> provider) {
@@ -1787,14 +1780,23 @@ public class Server {
                 .seed(seed)
                 .generator(generator)
                 .options(options)
+//                .difficulty(Difficulty.byId(this.getDifficulty()))
                 .build(), provider);
     }
 
     public boolean generateLevel(String name, LevelCreationOptions options) {
-        return generateLevel(name, options, null);
+        return generateLevel(name, options, (LevelProviderHandle) null);
     }
 
+    /**
+     * @deprecated use {#generateLevel(String, LevelCreationOptions, LevelProviderHandle)} instead
+     */
+    @Deprecated
     public boolean generateLevel(String name, LevelCreationOptions options, @Nullable Class<? extends LevelProvider> provider) {
+        return generateLevel(name, options, LevelProviderManager.getProviderByClass(provider));
+    }
+
+    public boolean generateLevel(String name, LevelCreationOptions options, @Nullable LevelProviderHandle provider) {
         if (Objects.equals(name.trim(), "") || this.isLevelGenerated(name)) {
             return false;
         }
@@ -1804,12 +1806,13 @@ public class Server {
         }
 
         if (options.getGenerator() == null) {
-            options.setGenerator(Generator.getGenerator(this.getLevelType()));
+            options.setGenerator(Generators.getGenerator(this.getLevelType()));
         }
 
         if (provider == null) {
 //            provider = LevelProviderManager.getProviderByName(this.getConfig().get("level-settings.default-format", "leveldb"));
-            provider = LevelProviderManager.getProviderByName("leveldb"); // force LevelDB
+            //provider = LevelProviderManager.getProviderByName("leveldb"); // force LevelDB
+            provider = LevelProviderManager.DEFAULT;
         }
 
         String path;
@@ -1822,7 +1825,7 @@ public class Server {
 
         Level level;
         try {
-            provider.getMethod("generate", String.class, String.class, LevelCreationOptions.class).invoke(null, path, name, options);
+            provider.getInitializer().generate(path, name, options);
 
             level = new Level(this, name, path, provider);
             this.levels.put(level.getId(), level);
@@ -1882,7 +1885,6 @@ public class Server {
         }
 
         if (this.getLevelByName(name) == null) {
-
             if (LevelProviderManager.getProvider(path) == null) {
                 return false;
             }

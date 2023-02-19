@@ -9,14 +9,9 @@ import cn.nukkit.command.data.CommandParameter;
 import cn.nukkit.lang.TranslationContainer;
 import cn.nukkit.math.Mth;
 import cn.nukkit.potion.Effect;
+import cn.nukkit.potion.Effects;
 import cn.nukkit.potion.InstantEffect;
-import cn.nukkit.utils.ServerException;
 import cn.nukkit.utils.TextFormat;
-import it.unimi.dsi.fastutil.objects.ObjectOpenHashSet;
-
-import java.lang.reflect.Field;
-import java.lang.reflect.Modifier;
-import java.util.Set;
 
 /**
  * Created by Snake1999 and Pub4Game on 2016/1/23.
@@ -28,16 +23,9 @@ public class EffectCommand extends Command {
         this.setPermission("nukkit.command.effect");
         this.commandParameters.clear();
 
-        Set<String> effects = new ObjectOpenHashSet<>();
-        for (Field field : Effect.class.getDeclaredFields()) {
-            if (field.getType() == int.class && field.getModifiers() == (Modifier.PUBLIC | Modifier.STATIC | Modifier.FINAL)) {
-                effects.add(field.getName().toLowerCase());
-            }
-        }
-
         this.commandParameters.put("default", new CommandParameter[]{
                 CommandParameter.newType("player", CommandParamType.TARGET),
-                CommandParameter.newEnum("effect", new CommandEnum("Effect", effects)),
+                CommandParameter.newEnum("effect", CommandEnum.ENUM_EFFECT),
                 CommandParameter.newType("seconds", true, CommandParamType.INT),
                 CommandParameter.newType("amplifier", true, CommandParamType.INT),
                 CommandParameter.newEnum("hideParticle", true, CommandEnum.ENUM_BOOLEAN)
@@ -53,15 +41,18 @@ public class EffectCommand extends Command {
         if (!this.testPermission(sender)) {
             return true;
         }
+
         if (args.length < 2) {
             sender.sendMessage(new TranslationContainer("commands.generic.usage", this.usageMessage));
             return true;
         }
+
         Player player = sender.getServer().getPlayerExact(args[0]);
         if (player == null) {
             sender.sendMessage(new TranslationContainer(TextFormat.RED + "%commands.generic.player.notFound"));
             return true;
         }
+
         if (args[1].equalsIgnoreCase("clear")) {
             for (Effect effect : player.getEffects().values()) {
                 player.removeEffect(effect.getId());
@@ -69,19 +60,19 @@ public class EffectCommand extends Command {
             sender.sendMessage(new TranslationContainer("commands.effect.success.removed.all", player.getDisplayName()));
             return true;
         }
+
         Effect effect;
         try {
             effect = Effect.getEffect(Integer.parseInt(args[1]));
-        } catch (NumberFormatException | ServerException a) {
-            try {
-                effect = Effect.getEffectByName(args[1]);
-            } catch (Exception e) {
-                sender.sendMessage(new TranslationContainer("commands.effect.notFound", args[1]));
-                return true;
-            }
+        } catch (NumberFormatException a) {
+            effect = Effects.getEffectByIdentifier(args[1].toLowerCase());
         }
+        if (effect == null) {
+            sender.sendMessage(new TranslationContainer("commands.effect.notFound", args[1]));
+            return true;
+        }
+
         int duration = 300;
-        int amplification = 0;
         if (args.length >= 3) {
             try {
                 duration = Mth.clamp(Integer.parseInt(args[2]), 0, 1000000);
@@ -95,6 +86,8 @@ public class EffectCommand extends Command {
         } else if (effect instanceof InstantEffect) {
             duration = 1;
         }
+
+        int amplification = 0;
         if (args.length >= 4) {
             try {
                 amplification = Mth.clamp(Integer.parseInt(args[3]), 0, 255);
@@ -103,12 +96,14 @@ public class EffectCommand extends Command {
                 return true;
             }
         }
+
         if (args.length >= 5) {
             String v = args[4].toLowerCase();
             if (v.matches("(?i)|on|true|t|1")) {
                 effect.setVisible(false);
             }
         }
+
         if (duration == 0) {
             if (!player.hasEffect(effect.getId())) {
                 if (player.getEffects().isEmpty()) {
@@ -118,6 +113,7 @@ public class EffectCommand extends Command {
                 }
                 return true;
             }
+
             player.removeEffect(effect.getId());
             sender.sendMessage(new TranslationContainer("commands.effect.success.removed", effect.getName(), player.getDisplayName()));
         } else {

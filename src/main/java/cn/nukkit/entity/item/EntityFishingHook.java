@@ -316,7 +316,7 @@ public class EntityFishingHook extends EntityProjectile {
 
     public void checkLure() {
         if (rod != null) {
-            Enchantment ench = rod.getEnchantment(Enchantment.ID_LURE);
+            Enchantment ench = rod.getEnchantment(Enchantment.LURE);
             if (ench != null) {
                 this.waitChance = 120 - (25 * ench.getLevel());
             }

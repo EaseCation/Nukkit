@@ -5,11 +5,11 @@ package cn.nukkit.potion;
  * Nukkit Project
  */
 public class InstantEffect extends Effect {
-    public InstantEffect(int id, String name, int r, int g, int b) {
-        super(id, name, r, g, b);
+    InstantEffect(int id, String identifier, String name, int r, int g, int b) {
+        super(id, identifier, name, r, g, b);
     }
 
-    public InstantEffect(int id, String name, int r, int g, int b, boolean isBad) {
-        super(id, name, r, g, b, isBad);
+    InstantEffect(int id, String identifier, String name, int r, int g, int b, boolean isBad) {
+        super(id, identifier, name, r, g, b, isBad);
     }
 }

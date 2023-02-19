@@ -19,8 +19,8 @@ public abstract class EnchantmentProtection extends Enchantment {
 
     protected final TYPE protectionType;
 
-    protected EnchantmentProtection(int id, String name, Rarity rarity, EnchantmentProtection.TYPE type) {
-        super(id, name, rarity, EnchantmentType.ARMOR);
+    protected EnchantmentProtection(int id, String identifier, String name, Rarity rarity, EnchantmentProtection.TYPE type) {
+        super(id, identifier, name, rarity, EnchantmentType.ARMOR);
         this.protectionType = type;
         if (protectionType == TYPE.FALL) {
             this.type = EnchantmentType.ARMOR_FEET;

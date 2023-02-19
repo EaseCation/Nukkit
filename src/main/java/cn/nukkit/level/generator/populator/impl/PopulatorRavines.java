@@ -11,32 +11,29 @@ import java.util.Random;
 
 public class PopulatorRavines extends Populator {
 
-    protected int checkAreaSize = 8;
+    private static final int checkAreaSize = 8;
 
-    private Random random;
-    private long worldLong1;
-    private long worldLong2;
+    private final Random random = new Random();
 
-    private int ravineRarity = 1;//2
-    private int ravineMinAltitude = 20;
-    private int ravineMaxAltitude = 67;
-    private int ravineMinLength = 84;
-    private int ravineMaxLength = 111;
+    private static final int ravineRarity = 1;//2
+    private static final int ravineMinAltitude = 20;
+    private static final int ravineMaxAltitude = 67;
+    private static final int ravineMinLength = 84;
+    private static final int ravineMaxLength = 111;
 
-    private double ravineDepth = 3;
+    private static final double ravineDepth = 3;
 
-    private int worldHeightCap = 1 << 8;
+    private static final int worldHeightCap = 1 << 8;
 
-    private float[] a = new float[1024];
+    private static final float[] a = new float[1024];
 
     @Override
     public void populate(ChunkManager level, int chunkX, int chunkZ, NukkitRandom random, FullChunk chunk) {
-        this.random = new Random();
         this.random.setSeed(level.getSeed());
-        worldLong1 = this.random.nextLong();
-        worldLong2 = this.random.nextLong();
+        long worldLong1 = this.random.nextLong();
+        long worldLong2 = this.random.nextLong();
 
-        int i = this.checkAreaSize;
+        int i = checkAreaSize;
 
         for (int x = chunkX - i; x <= chunkX + i; x++)
             for (int z = chunkZ - i; z <= chunkZ + i; z++) {
@@ -48,10 +45,10 @@ public class PopulatorRavines extends Populator {
     }
 
     protected void generateChunk(int chunkX, int chunkZ, FullChunk generatingChunkBuffer) {
-        if (this.random.nextInt(300) >= this.ravineRarity)
+        if (this.random.nextInt(300) >= ravineRarity)
             return;
         double d1 = (chunkX * 16) + this.random.nextInt(16);
-        double d2 = numberInRange(random, this.ravineMinAltitude, this.ravineMaxAltitude);
+        double d2 = numberInRange(random, ravineMinAltitude, ravineMaxAltitude);
         double d3 = (chunkZ * 16) + this.random.nextInt(16);
 
         int i = 1;
@@ -61,9 +58,9 @@ public class PopulatorRavines extends Populator {
             float f2 = (this.random.nextFloat() - 0.5F) * 2.0F / 8.0F;
             float f3 = (this.random.nextFloat() * 2.0F + this.random.nextFloat()) * 2.0F;
 
-            int size = numberInRange(random, this.ravineMinLength, this.ravineMaxLength);
+            int size = numberInRange(random, ravineMinLength, ravineMaxLength);
 
-            createRavine(this.random.nextLong(), generatingChunkBuffer, d1, d2, d3, f3, f1, f2, size, this.ravineDepth);
+            createRavine(this.random.nextLong(), generatingChunkBuffer, d1, d2, d3, f3, f1, f2, size, ravineDepth);
         }
     }
 
@@ -89,7 +86,7 @@ public class PopulatorRavines extends Populator {
             if ((j == 0) || (localRandom.nextInt(3) == 0)) {
                 f3 = 1.0F + localRandom.nextFloat() * localRandom.nextFloat() * 1.0F;
             }
-            this.a[j] = (f3 * f3);
+            a[j] = (f3 * f3);
         }
 
         for (int stepCount = 0; stepCount < size; stepCount++) {
@@ -144,8 +141,8 @@ public class PopulatorRavines extends Populator {
 
             if (maxY < 1)
                 maxY = 1;
-            if (minY > this.worldHeightCap - 8)
-                minY = this.worldHeightCap - 8;
+            if (minY > worldHeightCap - 8)
+                minY = worldHeightCap - 8;
 
             if (i2 < 0)
                 i2 = 0;
@@ -158,7 +155,7 @@ public class PopulatorRavines extends Populator {
                     for (int localY = minY + 1; (i4 == 0) && (localY >= maxY - 1); localY--) {
                         if (localY < 0)
                             continue;
-                        if (localY < this.worldHeightCap) {
+                        if (localY < worldHeightCap) {
                             int materialAtPosition = generatingChunkBuffer.getBlockId(0, localX, localY, localZ);
                             if (materialAtPosition == Block.FLOWING_WATER
                                     || materialAtPosition == Block.WATER) {
@@ -180,7 +177,7 @@ public class PopulatorRavines extends Populator {
                     if (d9 * d9 + d10 * d10 < 1.0D) {
                         for (int localY = minY; localY >= maxY; localY--) {
                             double d11 = ((localY - 1) + 0.5D - paramDouble2) / d4;
-                            if ((d9 * d9 + d10 * d10) * this.a[localY - 1] + d11 * d11 / 6.0D < 1.0D) {
+                            if ((d9 * d9 + d10 * d10) * a[localY - 1] + d11 * d11 / 6.0D < 1.0D) {
                                 int material = generatingChunkBuffer.getBlockId(0, localX, localY, localZ);
                                 if (material == Block.GRASS) {
                                     if (localY - 1 < 10) {
@@ -199,7 +196,7 @@ public class PopulatorRavines extends Populator {
         }
     }
 
-    public static int numberInRange(Random random, int min, int max) {
+    private static int numberInRange(Random random, int min, int max) {
         return min + random.nextInt(max - min + 1);
     }
 }

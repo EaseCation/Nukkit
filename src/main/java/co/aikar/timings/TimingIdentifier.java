@@ -23,12 +23,13 @@
  */
 package co.aikar.timings;
 
+import it.unimi.dsi.fastutil.objects.Object2ObjectOpenHashMap;
+
 import java.util.ArrayDeque;
-import java.util.IdentityHashMap;
 import java.util.Map;
 
 class TimingIdentifier {
-    static final Map<String, TimingGroup> GROUP_MAP = new IdentityHashMap<>(64);
+    static final Map<String, TimingGroup> GROUP_MAP = new Object2ObjectOpenHashMap<>(64);
     static final TimingGroup DEFAULT_GROUP = getGroup("Nukkit");
 
     final String group;

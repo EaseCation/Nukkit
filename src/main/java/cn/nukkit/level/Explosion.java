@@ -1,5 +1,6 @@
 package cn.nukkit.level;
 
+import cn.nukkit.Player;
 import cn.nukkit.block.Block;
 import cn.nukkit.block.BlockFire;
 import cn.nukkit.block.BlockID;
@@ -245,8 +246,14 @@ public class Explosion {
         AxisAlignedBB explosionBB = new SimpleAxisAlignedBB(minX, minY, minZ, maxX, maxY, maxZ);
         Entity[] list = this.level.getNearbyEntities(explosionBB, this.what instanceof Entity ? (Entity) this.what : null);
         for (Entity entity : list) {
-            double distance = entity.distance(this.source) / explosionSize;
+            if (entity instanceof Player) {
+                Player player = (Player) entity;
+                if (player.isSpectator()) {
+                    continue;
+                }
+            }
 
+            double distance = entity.distance(this.source) / explosionSize;
             if (distance <= 1) {
                 Vector3 motion = entity.subtract(this.source).normalize();
                 int exposure = 1;
@@ -406,7 +413,7 @@ public class Explosion {
         }
 
         int count = smokePositions.size();
-        CompoundTag data = new CompoundTag(new Object2ObjectOpenHashMap<>(count, 0.999999f))
+        CompoundTag data = new CompoundTag(new Object2ObjectOpenHashMap<>(count + 3 + 2))
                 .putFloat("originX", (float) this.source.x)
                 .putFloat("originY", (float) this.source.y)
                 .putFloat("originZ", (float) this.source.z)

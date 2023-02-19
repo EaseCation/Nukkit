@@ -47,7 +47,7 @@ public class BlockGlowstone extends BlockTransparent {
         Random random = ThreadLocalRandom.current();
         int count = 2 + random.nextInt(3);
 
-        Enchantment fortune = item.getEnchantment(Enchantment.ID_FORTUNE);
+        Enchantment fortune = item.getEnchantment(Enchantment.FORTUNE);
         if (fortune != null && fortune.getLevel() >= 1) {
             count += random.nextInt(fortune.getLevel() + 1);
         }

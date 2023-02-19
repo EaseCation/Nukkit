@@ -1,6 +1,5 @@
 package cn.nukkit.level.format.generic;
 
-import cn.nukkit.Server;
 import cn.nukkit.block.Block;
 import cn.nukkit.block.BlockID;
 import cn.nukkit.blockentity.BlockEntity;
@@ -9,7 +8,6 @@ import cn.nukkit.level.format.ChunkSection;
 import cn.nukkit.utils.ChunkException;
 
 import java.io.IOException;
-import java.lang.reflect.InvocationTargetException;
 import java.nio.ByteBuffer;
 import java.util.Arrays;
 
@@ -59,11 +57,7 @@ public abstract class BaseChunk extends BaseFullChunk implements Chunk {
             setChanged();
             return this.sections[Y].getAndSetBlock(layer, x, y & 0x0f, z, block);
         } catch (ChunkException e) {
-            try {
-                this.setInternalSection(Y, (ChunkSection) this.providerClass.getMethod("createChunkSection", int.class).invoke(this.providerClass, Y));
-            } catch (IllegalAccessException | InvocationTargetException | NoSuchMethodException e1) {
-                Server.getInstance().getLogger().logException(e1);
-            }
+            this.setInternalSection(Y, getProviderHandle().getSubChunkFactory().create(Y));
             return this.sections[Y].getAndSetBlock(layer, x, y & 0x0f, z, block);
         } finally {
             removeInvalidTile(x, y, z);
@@ -77,11 +71,7 @@ public abstract class BaseChunk extends BaseFullChunk implements Chunk {
             setChanged();
             return this.sections[Y].setFullBlockId(layer, x, y & 0x0f, z, fullId);
         } catch (ChunkException e) {
-            try {
-                this.setInternalSection(Y, (ChunkSection) this.providerClass.getMethod("createChunkSection", int.class).invoke(this.providerClass, Y));
-            } catch (IllegalAccessException | InvocationTargetException | NoSuchMethodException e1) {
-                Server.getInstance().getLogger().logException(e1);
-            }
+            this.setInternalSection(Y, getProviderHandle().getSubChunkFactory().create(Y));
             return this.sections[Y].setFullBlockId(layer, x, y & 0x0f, z, fullId);
         } finally {
             removeInvalidTile(x, y, z);
@@ -95,11 +85,7 @@ public abstract class BaseChunk extends BaseFullChunk implements Chunk {
             setChanged();
             return this.sections[Y].setBlock(layer, x, y & 0x0f, z, blockId, meta);
         } catch (ChunkException e) {
-            try {
-                this.setInternalSection(Y, (ChunkSection) this.providerClass.getMethod("createChunkSection", int.class).invoke(this.providerClass, Y));
-            } catch (IllegalAccessException | InvocationTargetException | NoSuchMethodException e1) {
-                Server.getInstance().getLogger().logException(e1);
-            }
+            this.setInternalSection(Y, getProviderHandle().getSubChunkFactory().create(Y));
             return this.sections[Y].setBlock(layer, x, y & 0x0f, z, blockId, meta);
         } finally {
             removeInvalidTile(x, y, z);
@@ -113,11 +99,7 @@ public abstract class BaseChunk extends BaseFullChunk implements Chunk {
             this.sections[Y].setBlockId(layer, x, y & 0x0f, z, id);
             setChanged();
         } catch (ChunkException e) {
-            try {
-                this.setInternalSection(Y, (ChunkSection) this.providerClass.getMethod("createChunkSection", int.class).invoke(this.providerClass, Y));
-            } catch (IllegalAccessException | InvocationTargetException | NoSuchMethodException e1) {
-                Server.getInstance().getLogger().logException(e1);
-            }
+            this.setInternalSection(Y, getProviderHandle().getSubChunkFactory().create(Y));
             this.sections[Y].setBlockId(layer, x, y & 0x0f, z, id);
         } finally {
             removeInvalidTile(x, y, z);
@@ -141,11 +123,7 @@ public abstract class BaseChunk extends BaseFullChunk implements Chunk {
             this.sections[Y].setBlockData(layer, x, y & 0x0f, z, data);
             setChanged();
         } catch (ChunkException e) {
-            try {
-                this.setInternalSection(Y, (ChunkSection) this.providerClass.getMethod("createChunkSection", int.class).invoke(this.providerClass, Y));
-            } catch (IllegalAccessException | InvocationTargetException | NoSuchMethodException e1) {
-                Server.getInstance().getLogger().logException(e1);
-            }
+            this.setInternalSection(Y, getProviderHandle().getSubChunkFactory().create(Y));
             this.sections[Y].setBlockData(layer, x, y & 0x0f, z, data);
         } finally {
             removeInvalidTile(x, y, z);
@@ -164,11 +142,7 @@ public abstract class BaseChunk extends BaseFullChunk implements Chunk {
             this.sections[Y].setBlockSkyLight(x, y & 0x0f, z, level);
             setChanged();
         } catch (ChunkException e) {
-            try {
-                this.setInternalSection(Y, (ChunkSection) this.providerClass.getMethod("createChunkSection", int.class).invoke(this.providerClass, Y));
-            } catch (IllegalAccessException | InvocationTargetException | NoSuchMethodException e1) {
-                Server.getInstance().getLogger().logException(e1);
-            }
+            this.setInternalSection(Y, getProviderHandle().getSubChunkFactory().create(Y));
             this.sections[Y].setBlockSkyLight(x, y & 0x0f, z, level);
         }
     }
@@ -185,11 +159,7 @@ public abstract class BaseChunk extends BaseFullChunk implements Chunk {
             this.sections[Y].setBlockLight(x, y & 0x0f, z, level);
             setChanged();
         } catch (ChunkException e) {
-            try {
-                this.setInternalSection(Y, (ChunkSection) this.providerClass.getMethod("createChunkSection", int.class).invoke(this.providerClass, Y));
-            } catch (IllegalAccessException | InvocationTargetException | NoSuchMethodException e1) {
-                Server.getInstance().getLogger().logException(e1);
-            }
+            this.setInternalSection(Y, getProviderHandle().getSubChunkFactory().create(Y));
             this.sections[Y].setBlockLight(x, y & 0x0f, z, level);
         }
     }

@@ -14,6 +14,9 @@ import cn.nukkit.level.generator.populator.type.Populator;
 import cn.nukkit.math.Mth;
 import cn.nukkit.math.NukkitRandom;
 import cn.nukkit.math.Vector3;
+import it.unimi.dsi.fastutil.objects.Object2ObjectOpenHashMap;
+import it.unimi.dsi.fastutil.objects.ObjectArrayList;
+
 import java.util.*;
 import java.util.concurrent.ThreadLocalRandom;
 
@@ -110,34 +113,34 @@ public class Normal extends Generator {
         }
     }
 
-    private final List<Populator> populators = new ArrayList<>();
-    private final List<Populator> generationPopulators = new ArrayList<>();
+    private final Map<String, Object> options;
+    private final List<Populator> populators = new ObjectArrayList<>();
+    private final List<Populator> generationPopulators = new ObjectArrayList<>();
     public static final int seaHeight = 64;
     public NoiseGeneratorOctavesF scaleNoise;
     public NoiseGeneratorOctavesF depthNoise;
     private ChunkManager level;
-    private Random random;
     private NukkitRandom nukkitRandom;
     private long localSeed1;
     private long localSeed2;
     private BiomeSelector selector;
-    private ThreadLocal<Biome[]> biomes = ThreadLocal.withInitial(() -> new Biome[10 * 10]);
-    private ThreadLocal<float[]> depthRegion = ThreadLocal.withInitial(() -> null);
-    private ThreadLocal<float[]> mainNoiseRegion = ThreadLocal.withInitial(() -> null);
-    private ThreadLocal<float[]> minLimitRegion = ThreadLocal.withInitial(() -> null);
-    private ThreadLocal<float[]> maxLimitRegion = ThreadLocal.withInitial(() -> null);
-    private ThreadLocal<float[]> heightMap = ThreadLocal.withInitial(() -> new float[825]);
+    private final ThreadLocal<Biome[]> biomes = ThreadLocal.withInitial(() -> new Biome[10 * 10]);
+    private final ThreadLocal<float[]> depthRegion = ThreadLocal.withInitial(() -> null);
+    private final ThreadLocal<float[]> mainNoiseRegion = ThreadLocal.withInitial(() -> null);
+    private final ThreadLocal<float[]> minLimitRegion = ThreadLocal.withInitial(() -> null);
+    private final ThreadLocal<float[]> maxLimitRegion = ThreadLocal.withInitial(() -> null);
+    private final ThreadLocal<float[]> heightMap = ThreadLocal.withInitial(() -> new float[825]);
     private NoiseGeneratorOctavesF minLimitPerlinNoise;
     private NoiseGeneratorOctavesF maxLimitPerlinNoise;
     private NoiseGeneratorOctavesF mainPerlinNoise;
     private NoiseGeneratorPerlinF surfaceNoise;
 
     public Normal() {
-        this(new HashMap<>());
+        this(new Object2ObjectOpenHashMap<>());
     }
 
     public Normal(Map<String, Object> options) {
-        //Nothing here. Just used for future update.
+        this.options = options;
     }
 
     @Override
@@ -157,7 +160,7 @@ public class Normal extends Generator {
 
     @Override
     public Map<String, Object> getSettings() {
-        return new HashMap<>();
+        return options;
     }
 
     public Biome pickBiome(int x, int z) {
@@ -168,10 +171,10 @@ public class Normal extends Generator {
     public void init(ChunkManager level, NukkitRandom random) {
         this.level = level;
         this.nukkitRandom = random;
-        this.random = ThreadLocalRandom.current();
         this.nukkitRandom.setSeed(this.level.getSeed());
-        this.localSeed1 = this.random.nextLong();
-        this.localSeed2 = this.random.nextLong();
+        Random localRandom = ThreadLocalRandom.current();
+        this.localSeed1 = localRandom.nextLong();
+        this.localSeed2 = localRandom.nextLong();
         this.nukkitRandom.setSeed(this.level.getSeed());
         this.selector = new BiomeSelector(this.nukkitRandom);
 

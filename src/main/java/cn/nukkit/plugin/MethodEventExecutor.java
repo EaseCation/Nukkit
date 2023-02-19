@@ -14,26 +14,22 @@ import java.lang.reflect.Method;
 public class MethodEventExecutor implements EventExecutor {
 
     private final Method method;
+    private final Class<? extends Event> eventClass;
 
-    public MethodEventExecutor(Method method) {
+    public MethodEventExecutor(Method method, Class<? extends Event> eventClass) {
         this.method = method;
+        this.eventClass = eventClass;
     }
 
-    @SuppressWarnings("unchecked")
     @Override
     public void execute(Listener listener, Event event) throws EventException {
         try {
-            Class<Event>[] params = (Class<Event>[]) method.getParameterTypes();
-            for (Class<Event> param : params) {
-                if (param.isAssignableFrom(event.getClass())) {
-                    method.invoke(listener, event);
-                    break;
-                }
+            if (!eventClass.isAssignableFrom(event.getClass())) {
+                return;
             }
+            method.invoke(listener, event);
         } catch (InvocationTargetException ex) {
             throw new EventException(ex.getCause());
-        } catch (ClassCastException ex) {
-            // We are going to ignore ClassCastException because EntityDamageEvent can't be cast to EntityDamageByEntityEvent
         } catch (Throwable t) {
             throw new EventException(t);
         }

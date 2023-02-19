@@ -4,6 +4,8 @@ import cn.nukkit.block.Block;
 import cn.nukkit.block.BlockID;
 import cn.nukkit.level.format.ChunkSection;
 import cn.nukkit.level.format.LevelProvider;
+import cn.nukkit.level.format.LevelProviderManager;
+import cn.nukkit.level.format.LevelProviderManager.LevelProviderHandle;
 import cn.nukkit.level.format.generic.BaseChunk;
 import cn.nukkit.level.util.PalettedSubChunkStorage;
 import cn.nukkit.nbt.tag.CompoundTag;
@@ -45,7 +47,6 @@ public class LevelDbChunk extends BaseChunk {
                         @Nullable List<CompoundTag> entities, @Nullable List<CompoundTag> blockEntities) {
         this.ioLock = new ReentrantLock();
         this.provider = level;
-        this.providerClass = level != null ? level.getClass() : LevelDB.class;
         this.setPosition(chunkX, chunkZ);
 
         if (sections != null) {
@@ -82,6 +83,11 @@ public class LevelDbChunk extends BaseChunk {
 
         this.NBTentities = entities;
         this.NBTtiles = blockEntities;
+    }
+
+    @Override
+    public LevelProviderHandle getProviderHandle() {
+        return LevelProviderManager.LEVELDB;
     }
 
     @Override

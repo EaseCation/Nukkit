@@ -1481,8 +1481,22 @@ public class Player extends EntityHuman implements CommandSender, InventoryHolde
         return (this.gamemode & 0x01) == 0;
     }
 
+    /**
+     * @return survival or adventure
+     */
+    public boolean isSurvivalLike() {
+        return (this.gamemode & 0x01) == 0;
+    }
+
     public boolean isCreative() {
         return (this.gamemode & 0x01) > 0;
+    }
+
+    /**
+     * @return creative or spectator
+     */
+    public boolean isCreativeLike() {
+        return (this.gamemode & 0x01) == 1;
     }
 
     public boolean isSpectator() {
@@ -1830,7 +1844,7 @@ public class Player extends EntityHuman implements CommandSender, InventoryHolde
         UpdateAttributesPacket pk = new UpdateAttributesPacket();
         pk.entityId = this.getId();
         pk.entries = new Attribute[]{
-                Attribute.getAttribute(Attribute.HEALTH).setMaxValue(this.getMaxHealth()).setValue(health > 0 ? (health < getMaxHealth() ? health : getMaxHealth()) : 0),
+                Attribute.getAttribute(Attribute.HEALTH).setMaxValue(this.getMaxHealth()).setValue(health >= 1 ? (health < getMaxHealth() ? health : getMaxHealth()) : 0),
                 Attribute.getAttribute(Attribute.PLAYER_HUNGER).setValue(this.getFoodData().getLevel()),
                 Attribute.getAttribute(Attribute.MOVEMENT).setValue(this.getMovementSpeed()),
                 Attribute.getAttribute(Attribute.PLAYER_LEVEL).setValue(this.getExperienceLevel()),
@@ -1971,7 +1985,7 @@ public class Player extends EntityHuman implements CommandSender, InventoryHolde
         if (canInteract(this, interactDistance)) {
             if (getEntityPlayerLookingAt(interactDistance) != null) {
                 EntityInteractable onInteract = getEntityPlayerLookingAt(interactDistance);
-                setButtonText(onInteract.getInteractButtonText());
+                setButtonText(onInteract.getInteractButtonText(this));
             } else {
                 setButtonText("");
             }
@@ -2022,7 +2036,7 @@ public class Player extends EntityHuman implements CommandSender, InventoryHolde
         for (Entity nearestEntity : nearbyEntities) {
             if (nearestEntity.getFloorX() == x && nearestEntity.getFloorY() == y && nearestEntity.getFloorZ() == z
                     && nearestEntity instanceof EntityInteractable
-                    && ((EntityInteractable) nearestEntity).canDoInteraction()) {
+                    && ((EntityInteractable) nearestEntity).canDoInteraction(this)) {
                 return (EntityInteractable) nearestEntity;
             }
         }
@@ -2889,7 +2903,7 @@ public class Player extends EntityHuman implements CommandSender, InventoryHolde
                     switch (interactPacket.action) {
                         case InteractPacket.ACTION_MOUSEOVER:
                             if (targetEntity instanceof EntityInteractable) {
-                                this.setButtonText(((EntityInteractable) targetEntity).getInteractButtonText());
+                                this.setButtonText(((EntityInteractable) targetEntity).getInteractButtonText(this));
                             }
 
                             this.getServer().getPluginManager().callEvent(new PlayerMouseOverEntityEvent(this, targetEntity));
@@ -3460,7 +3474,7 @@ public class Player extends EntityHuman implements CommandSender, InventoryHolde
 
                                     float knockBackH = EntityDamageByEntityEvent.GLOBAL_KNOCKBACK_H;
                                     float knockBackV = EntityDamageByEntityEvent.GLOBAL_KNOCKBACK_V;
-                                    Enchantment knockBackEnchantment = item.getEnchantment(Enchantment.ID_KNOCKBACK);
+                                    Enchantment knockBackEnchantment = item.getEnchantment(Enchantment.KNOCKBACK);
                                     if (knockBackEnchantment != null) {
                                         knockBackH += knockBackEnchantment.getLevel() * 0.1f;
                                         knockBackV += knockBackEnchantment.getLevel() * 0.1f;
@@ -4234,7 +4248,7 @@ public class Player extends EntityHuman implements CommandSender, InventoryHolde
 
         if (!ev.getKeepInventory() && this.level.getGameRules().getBoolean(GameRule.DO_ENTITY_DROPS)) {
             for (Item item : ev.getDrops()) {
-                if (!item.hasEnchantment(Enchantment.ID_VANISHING)) {
+                if (!item.hasEnchantment(Enchantment.VANISHING)) {
                     this.level.dropItem(this, item, null, true, 40);
                 }
             }

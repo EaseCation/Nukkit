@@ -11,10 +11,10 @@ import cn.nukkit.math.NukkitRandom;
 import cn.nukkit.math.Vector3;
 import it.unimi.dsi.fastutil.objects.Object2FloatMap;
 import it.unimi.dsi.fastutil.objects.Object2FloatOpenHashMap;
+import it.unimi.dsi.fastutil.objects.Object2ObjectOpenHashMap;
+import it.unimi.dsi.fastutil.objects.ObjectArrayList;
 import lombok.extern.log4j.Log4j2;
 
-import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.regex.Pattern;
@@ -35,7 +35,7 @@ public class Flat extends Generator {
 
     private NukkitRandom random;
 
-    private final List<Populator> populators = new ArrayList<>();
+    private final List<Populator> populators = new ObjectArrayList<>();
 
     private int[][] structure;
 
@@ -65,7 +65,7 @@ public class Flat extends Generator {
     }
 
     public Flat() {
-        this(new HashMap<>());
+        this(new Object2ObjectOpenHashMap<>(4));
     }
 
     public Flat(Map<String, Object> options) {
@@ -195,6 +195,6 @@ public class Flat extends Generator {
 
     @Override
     public Vector3 getSpawn() {
-        return new Vector3(128, this.floorLevel, 128);
+        return new Vector3(0.5, this.floorLevel, 0.5);
     }
 }

@@ -6,7 +6,6 @@ import cn.nukkit.entity.projectile.EntityThrownTrident;
 import cn.nukkit.event.entity.EntityShootBowEvent;
 import cn.nukkit.event.entity.ProjectileLaunchEvent;
 import cn.nukkit.item.enchantment.Enchantment;
-import cn.nukkit.level.sound.SoundEnum;
 import cn.nukkit.math.Mth;
 import cn.nukkit.math.Vector3;
 import cn.nukkit.nbt.tag.CompoundTag;
@@ -54,7 +53,7 @@ public class ItemTrident extends ItemTool {
 
     @Override
     public boolean onRelease(Player player, int ticksUsed) {
-        if (this.hasEnchantment(Enchantment.ID_RIPTIDE)) {
+        if (this.hasEnchantment(Enchantment.RIPTIDE)) {
             return true;
         }
 

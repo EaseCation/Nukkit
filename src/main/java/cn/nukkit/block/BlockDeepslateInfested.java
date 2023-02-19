@@ -35,7 +35,7 @@ public class BlockDeepslateInfested extends BlockDeepslate {
 
     @Override
     public Item[] getDrops(Item item) {
-        if (item.isPickaxe() && item.getTier() >= ItemTool.TIER_WOODEN && item.hasEnchantment(Enchantment.ID_SILK_TOUCH)) {
+        if (item.isPickaxe() && item.getTier() >= ItemTool.TIER_WOODEN && item.hasEnchantment(Enchantment.SILK_TOUCH)) {
             return new Item[]{
                     Item.get(getItemId(DEEPSLATE)),
             };

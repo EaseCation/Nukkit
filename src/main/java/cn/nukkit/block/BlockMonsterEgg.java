@@ -54,7 +54,7 @@ public class BlockMonsterEgg extends BlockSolidMeta {
 
     @Override
     public Item[] getDrops(Item item) {
-        if (item.isPickaxe() && item.getTier() >= ItemTool.TIER_WOODEN && item.hasEnchantment(Enchantment.ID_SILK_TOUCH)) {
+        if (item.isPickaxe() && item.getTier() >= ItemTool.TIER_WOODEN && item.hasEnchantment(Enchantment.SILK_TOUCH)) {
             switch (getDamage()) {
                 case STONE:
                     return new Item[]{Item.get(Block.STONE)};

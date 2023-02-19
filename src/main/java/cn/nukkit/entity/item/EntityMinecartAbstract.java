@@ -25,7 +25,6 @@ import cn.nukkit.level.format.FullChunk;
 import cn.nukkit.math.Mth;
 import cn.nukkit.math.Vector3;
 import cn.nukkit.nbt.tag.CompoundTag;
-import cn.nukkit.network.protocol.AddEntityPacket;
 import cn.nukkit.utils.MinecartType;
 import cn.nukkit.utils.Rail;
 import cn.nukkit.utils.Rail.Orientation;
@@ -100,7 +99,7 @@ public abstract class EntityMinecartAbstract extends EntityVehicle {
     }
 
     @Override
-    public boolean canDoInteraction() {
+    public boolean canDoInteraction(Player player) {
         return passengers.isEmpty() && this.getDisplayBlock() == null;
     }
 

@@ -191,7 +191,7 @@ public abstract class EntityHumanType extends EntityCreature implements Inventor
                         }
                     }
 
-                    Enchantment durability = armor.getEnchantment(Enchantment.ID_UNBREAKING);
+                    Enchantment durability = armor.getEnchantment(Enchantment.UNBREAKING);
                     if (durability != null && durability.getLevel() > 0 && (100 / (durability.getLevel() + 1)) <= ThreadLocalRandom.current().nextInt(100))
                         continue;
                 }
@@ -243,7 +243,7 @@ public abstract class EntityHumanType extends EntityCreature implements Inventor
         int level = 0;
 
         for (Item armor : this.inventory.getArmorContents()) {
-            Enchantment fireProtection = armor.getEnchantment(Enchantment.ID_FIRE_PROTECTION);
+            Enchantment fireProtection = armor.getEnchantment(Enchantment.FIRE_PROTECTION);
 
             if (fireProtection != null && fireProtection.getLevel() > 0) {
                 level = Math.max(level, fireProtection.getLevel());

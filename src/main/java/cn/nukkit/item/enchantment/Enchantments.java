@@ -1,29 +1,67 @@
 package cn.nukkit.item.enchantment;
 
 import cn.nukkit.GameVersion;
-import cn.nukkit.item.enchantment.crossbow.EnchantmentCrossbowMultishot;
-import cn.nukkit.item.enchantment.crossbow.EnchantmentCrossbowPiercing;
-import cn.nukkit.item.enchantment.crossbow.EnchantmentCrossbowQuickCharge;
+import cn.nukkit.item.enchantment.Enchantment.UnknownEnchantment;
+import cn.nukkit.item.enchantment.bow.*;
+import cn.nukkit.item.enchantment.crossbow.*;
+import cn.nukkit.item.enchantment.damage.*;
+import cn.nukkit.item.enchantment.loot.*;
+import cn.nukkit.item.enchantment.protection.*;
 import cn.nukkit.item.enchantment.trident.*;
+import it.unimi.dsi.fastutil.objects.Object2ObjectOpenHashMap;
+
+import javax.annotation.Nullable;
+import java.util.Map;
 
 import static cn.nukkit.GameVersion.*;
 import static cn.nukkit.item.enchantment.EnchantmentID.*;
 
 public final class Enchantments {
+    private static final Map<String, Enchantment> IDENTIFIER_TO_ENCHANTMENT = new Object2ObjectOpenHashMap<>();
 
     public static void registerVanillaEnchantments() {
-        registerEnchantment(ID_IMPALING, new EnchantmentTridentImpaling(), V1_4_0);
-        registerEnchantment(ID_RIPTIDE, new EnchantmentTridentRiptide(), V1_4_0);
-        registerEnchantment(ID_LOYALTY, new EnchantmentTridentLoyalty(), V1_4_0);
-        registerEnchantment(ID_CHANNELING, new EnchantmentTridentChanneling(), V1_4_0);
+        registerEnchantment(PROTECTION, new EnchantmentProtectionAll());
+        registerEnchantment(FIRE_PROTECTION, new EnchantmentProtectionFire());
+        registerEnchantment(FEATHER_FALLING, new EnchantmentProtectionFall());
+        registerEnchantment(BLAST_PROTECTION, new EnchantmentProtectionExplosion());
+        registerEnchantment(PROJECTILE_PROTECTION, new EnchantmentProtectionProjectile());
+        registerEnchantment(THORNS, new EnchantmentThorns());
+        registerEnchantment(RESPIRATION, new EnchantmentWaterBreath());
+        registerEnchantment(AQUA_AFFINITY, new EnchantmentWaterWorker());
+        registerEnchantment(DEPTH_STRIDER, new EnchantmentWaterWalker());
+        registerEnchantment(SHARPNESS, new EnchantmentDamageAll());
+        registerEnchantment(SMITE, new EnchantmentDamageSmite());
+        registerEnchantment(BANE_OF_ARTHROPODS, new EnchantmentDamageArthropods());
+        registerEnchantment(KNOCKBACK, new EnchantmentKnockback());
+        registerEnchantment(FIRE_ASPECT, new EnchantmentFireAspect());
+        registerEnchantment(LOOTING, new EnchantmentLootWeapon());
+        registerEnchantment(EFFICIENCY, new EnchantmentEfficiency());
+        registerEnchantment(SILK_TOUCH, new EnchantmentSilkTouch());
+        registerEnchantment(UNBREAKING, new EnchantmentDurability());
+        registerEnchantment(FORTUNE, new EnchantmentLootDigging());
+        registerEnchantment(POWER, new EnchantmentBowPower());
+        registerEnchantment(PUNCH, new EnchantmentBowKnockback());
+        registerEnchantment(FLAME, new EnchantmentBowFlame());
+        registerEnchantment(INFINITY, new EnchantmentBowInfinity());
+        registerEnchantment(LUCK_OF_THE_SEA, new EnchantmentLootFishing());
+        registerEnchantment(LURE, new EnchantmentLure());
+        registerEnchantment(FROST_WALKER, new EnchantmentFrostWalker());
+        registerEnchantment(MENDING, new EnchantmentMending());
+        registerEnchantment(BINDING, new EnchantmentBindingCurse());
+        registerEnchantment(VANISHING, new EnchantmentVanishingCurse());
 
-        registerEnchantment(ID_MULTISHOT, new EnchantmentCrossbowMultishot(), V1_10_0);
-        registerEnchantment(ID_PIERCING, new EnchantmentCrossbowPiercing(), V1_10_0);
-        registerEnchantment(ID_QUICK_CHARGE, new EnchantmentCrossbowQuickCharge(), V1_10_0);
+        registerEnchantment(IMPALING, new EnchantmentTridentImpaling(), V1_4_0);
+        registerEnchantment(RIPTIDE, new EnchantmentTridentRiptide(), V1_4_0);
+        registerEnchantment(LOYALTY, new EnchantmentTridentLoyalty(), V1_4_0);
+        registerEnchantment(CHANNELING, new EnchantmentTridentChanneling(), V1_4_0);
 
-        registerEnchantment(ID_SOUL_SPEED, new EnchantmentSoulSpeed(), V1_16_0);
+        registerEnchantment(MULTISHOT, new EnchantmentCrossbowMultishot(), V1_10_0);
+        registerEnchantment(PIERCING, new EnchantmentCrossbowPiercing(), V1_10_0);
+        registerEnchantment(QUICK_CHARGE, new EnchantmentCrossbowQuickCharge(), V1_10_0);
 
-        registerEnchantment(ID_SWIFT_SNEAK, new EnchantmentSwiftSneak(), V1_19_0);
+        registerEnchantment(SOUL_SPEED, new EnchantmentSoulSpeed(), V1_16_0);
+
+        registerEnchantment(SWIFT_SNEAK, new EnchantmentSwiftSneak(), V1_19_0);
 
     }
 
@@ -31,6 +69,7 @@ public final class Enchantments {
         if (Enchantment.enchantments[id] == null) {
             Enchantment.enchantments[id] = enchantment;
         }
+        IDENTIFIER_TO_ENCHANTMENT.put(enchantment.getIdentifier(), enchantment);
         return Enchantment.enchantments[id];
     }
 
@@ -42,6 +81,27 @@ public final class Enchantments {
 //            return null;
         }
         return registerEnchantment(id, enchantment);
+    }
+
+    @Nullable
+    public static Enchantment getEnchantmentByIdentifier(String identifier) {
+        return getEnchantmentByIdentifier(identifier, false);
+    }
+
+    @Nullable
+    public static Enchantment getEnchantmentByIdentifier(String identifier, boolean allowUnknown) {
+        Enchantment enchantment = IDENTIFIER_TO_ENCHANTMENT.get(identifier);
+        if (enchantment == null) {
+            if (!allowUnknown) {
+                return null;
+            }
+            return new UnknownEnchantment(Byte.MAX_VALUE);
+        }
+        return enchantment.clone();
+    }
+
+    public static Map<String, Enchantment> getEnchantments() {
+        return IDENTIFIER_TO_ENCHANTMENT;
     }
 
     private Enchantments() {

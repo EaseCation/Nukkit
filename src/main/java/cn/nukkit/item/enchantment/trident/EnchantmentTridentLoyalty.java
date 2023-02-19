@@ -4,7 +4,7 @@ import cn.nukkit.item.enchantment.Enchantment;
 
 public class EnchantmentTridentLoyalty extends EnchantmentTrident {
     public EnchantmentTridentLoyalty() {
-        super(Enchantment.ID_LOYALTY, "tridentLoyalty", Rarity.UNCOMMON);
+        super(Enchantment.LOYALTY, "loyalty", "tridentLoyalty", Rarity.UNCOMMON);
     }
 
     @Override

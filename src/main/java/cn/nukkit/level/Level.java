@@ -27,6 +27,8 @@ import cn.nukkit.level.format.Chunk;
 import cn.nukkit.level.format.ChunkSection;
 import cn.nukkit.level.format.FullChunk;
 import cn.nukkit.level.format.LevelProvider;
+import cn.nukkit.level.format.LevelProviderManager;
+import cn.nukkit.level.format.LevelProviderManager.LevelProviderHandle;
 import cn.nukkit.level.format.anvil.Anvil;
 import cn.nukkit.level.format.generic.*;
 import cn.nukkit.level.format.leveldb.LevelDB;
@@ -313,7 +315,7 @@ public class Level implements ChunkManager, Metadatable {
 
     private boolean initialized;
 
-    public Level(Server server, String name, String path, Class<? extends LevelProvider> provider) {
+    public Level(Server server, String name, String path, LevelProviderHandle providerHandle) {
         this.levelId = levelIdCounter++;
         this.blockMetadata = new BlockMetadataStore(this);
         this.server = server;
@@ -324,6 +326,7 @@ public class Level implements ChunkManager, Metadatable {
         this.updateQueue = new BlockUpdateScheduler(this, 0);
         this.randomUpdateQueue = new BlockUpdateScheduler(this, 0);
 
+        Class<? extends LevelProvider> provider = providerHandle.getClazz();
         boolean convert = provider == McRegion.class; // McRegion to Anvil
         if (convert) {
             try {
@@ -333,7 +336,7 @@ public class Level implements ChunkManager, Metadatable {
                 File file = dirBak.toFile();
                 FileUtils.deleteDirectory(file);
                 FileUtils.moveDirectory(dir.toFile(), file);
-                this.provider = provider.getConstructor(Level.class, String.class).newInstance(this, dirBak.toString());
+                this.provider = new McRegion(this, dirBak.toString());
             } catch (Exception e) {
                 throw new LevelException(e);
             }
@@ -344,7 +347,7 @@ public class Level implements ChunkManager, Metadatable {
             try {
                 this.provider = new LevelProviderConverter(this, path)
                         .from(old)
-                        .to(Anvil.class)
+                        .to(LevelProviderManager.ANVIL)
                         .perform();
             } catch (IOException e) {
                 throw new LevelException(e);
@@ -362,9 +365,9 @@ public class Level implements ChunkManager, Metadatable {
                 File file = dirBak.toFile();
                 FileUtils.deleteDirectory(file);
                 FileUtils.moveDirectory(dir.toFile(), file);
-                this.provider = provider.getConstructor(Level.class, String.class).newInstance(this, dirBak.toString());
+                this.provider = new Anvil(this, dirBak.toString());
             } else {
-                this.provider = provider.getConstructor(Level.class, String.class).newInstance(this, path);
+                this.provider = providerHandle.getInstantiator().create(this, path);
             }
         } catch (Exception e) {
             throw new LevelException(e);
@@ -377,13 +380,17 @@ public class Level implements ChunkManager, Metadatable {
             try {
                 this.provider = new LevelProviderConverter(this, path)
                         .from(old)
-                        .to(LevelDB.class)
+                        .to(LevelProviderManager.LEVELDB)
                         .perform();
             } catch (IOException e) {
                 throw new LevelException(e);
             }
             old.close();
             provider = LevelDB.class;
+        }
+
+        if (provider != providerHandle.getClazz()) {
+            providerHandle = LevelProviderManager.getProviderByClass(provider);
         }
 
         initialized = true;
@@ -393,10 +400,10 @@ public class Level implements ChunkManager, Metadatable {
         log.info(this.server.getLanguage().translateString("nukkit.level.preparing",
                 TextFormat.GREEN + this.provider.getName() + TextFormat.WHITE));
 
-        this.generatorClass = Generator.getGenerator(this.provider.getGenerator());
+        this.generatorClass = this.provider.getGenerator();
 
         try {
-            this.useSections = (boolean) provider.getMethod("usesChunkSection").invoke(null);
+            this.useSections = providerHandle.isUseSubChunk();
         } catch (Exception e) {
             throw new RuntimeException(e);
         }
@@ -2317,7 +2324,7 @@ public class Level implements ChunkManager, Metadatable {
             item = new ItemBlock(Block.get(BlockID.AIR), 0, 0);
         }
 
-        boolean isSilkTouch = item.getEnchantment(Enchantment.ID_SILK_TOUCH) != null;
+        boolean isSilkTouch = item.getEnchantment(Enchantment.SILK_TOUCH) != null;
 
         if (player != null) {
             if (player.getGamemode() == Player.ADVENTURE) {
@@ -2356,7 +2363,7 @@ public class Level implements ChunkManager, Metadatable {
                 breakTime *= 1 - (0.3 * (player.getEffect(Effect.MINING_FATIGUE).getAmplifier() + 1));
             }
 
-            Enchantment eff = item.getEnchantment(Enchantment.ID_EFFICIENCY);
+            Enchantment eff = item.getEnchantment(Enchantment.EFFICIENCY);
 
             if (eff != null && eff.getLevel() > 0) {
                 breakTime *= 1 - (0.3 * eff.getLevel());

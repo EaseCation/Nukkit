@@ -3,21 +3,10 @@ package cn.nukkit.item.enchantment;
 import cn.nukkit.entity.Entity;
 import cn.nukkit.event.entity.EntityDamageEvent;
 import cn.nukkit.item.Item;
-import cn.nukkit.item.enchantment.bow.EnchantmentBowFlame;
-import cn.nukkit.item.enchantment.bow.EnchantmentBowInfinity;
-import cn.nukkit.item.enchantment.bow.EnchantmentBowKnockback;
-import cn.nukkit.item.enchantment.bow.EnchantmentBowPower;
-import cn.nukkit.item.enchantment.damage.EnchantmentDamageAll;
-import cn.nukkit.item.enchantment.damage.EnchantmentDamageArthropods;
-import cn.nukkit.item.enchantment.damage.EnchantmentDamageSmite;
-import cn.nukkit.item.enchantment.loot.EnchantmentLootDigging;
-import cn.nukkit.item.enchantment.loot.EnchantmentLootFishing;
-import cn.nukkit.item.enchantment.loot.EnchantmentLootWeapon;
-import cn.nukkit.item.enchantment.protection.*;
 import cn.nukkit.math.Mth;
+import it.unimi.dsi.fastutil.objects.ObjectOpenHashSet;
 
-import java.util.ArrayList;
-import java.util.HashSet;
+import java.util.Set;
 import java.util.concurrent.ThreadLocalRandom;
 
 /**
@@ -30,36 +19,6 @@ public abstract class Enchantment implements Cloneable, EnchantmentID {
 
     public static void init() {
         enchantments = new Enchantment[256];
-
-        enchantments[ID_PROTECTION] = new EnchantmentProtectionAll();
-        enchantments[ID_FIRE_PROTECTION] = new EnchantmentProtectionFire();
-        enchantments[ID_FEATHER_FALLING] = new EnchantmentProtectionFall();
-        enchantments[ID_BLAST_PROTECTION] = new EnchantmentProtectionExplosion();
-        enchantments[ID_PROJECTILE_PROTECTION] = new EnchantmentProtectionProjectile();
-        enchantments[ID_THORNS] = new EnchantmentThorns();
-        enchantments[ID_RESPIRATION] = new EnchantmentWaterBreath();
-        enchantments[ID_AQUA_AFFINITY] = new EnchantmentWaterWorker();
-        enchantments[ID_DEPTH_STRIDER] = new EnchantmentWaterWalker();
-        enchantments[ID_SHARPNESS] = new EnchantmentDamageAll();
-        enchantments[ID_SMITE] = new EnchantmentDamageSmite();
-        enchantments[ID_BANE_OF_ARTHROPODS] = new EnchantmentDamageArthropods();
-        enchantments[ID_KNOCKBACK] = new EnchantmentKnockback();
-        enchantments[ID_FIRE_ASPECT] = new EnchantmentFireAspect();
-        enchantments[ID_LOOTING] = new EnchantmentLootWeapon();
-        enchantments[ID_EFFICIENCY] = new EnchantmentEfficiency();
-        enchantments[ID_SILK_TOUCH] = new EnchantmentSilkTouch();
-        enchantments[ID_UNBREAKING] = new EnchantmentDurability();
-        enchantments[ID_FORTUNE] = new EnchantmentLootDigging();
-        enchantments[ID_POWER] = new EnchantmentBowPower();
-        enchantments[ID_PUNCH] = new EnchantmentBowKnockback();
-        enchantments[ID_FLAME] = new EnchantmentBowFlame();
-        enchantments[ID_INFINITY] = new EnchantmentBowInfinity();
-        enchantments[ID_LUCK_OF_THE_SEA] = new EnchantmentLootFishing();
-        enchantments[ID_LURE] = new EnchantmentLure();
-        enchantments[ID_FROST_WALKER] = new EnchantmentFrostWalker();
-        enchantments[ID_MENDING] = new EnchantmentMending();
-        enchantments[ID_BINDING] = new EnchantmentBindingCurse();
-        enchantments[ID_VANISHING] = new EnchantmentVanishingCurse();
 
         Enchantments.registerVanillaEnchantments();
     }
@@ -79,20 +38,8 @@ public abstract class Enchantment implements Cloneable, EnchantmentID {
         return get(id).clone();
     }
 
-    public static Enchantment[] getEnchantments() {
-        ArrayList<Enchantment> list = new ArrayList<>();
-        for (Enchantment enchantment : enchantments) {
-            if (enchantment == null) {
-                break;
-            }
-
-            list.add(enchantment);
-        }
-
-        return list.toArray(new Enchantment[0]);
-    }
-
     public final int id;
+    private final String identifier;
     private final Rarity rarity;
     public EnchantmentType type;
 
@@ -100,8 +47,9 @@ public abstract class Enchantment implements Cloneable, EnchantmentID {
 
     protected final String name;
 
-    protected Enchantment(int id, String name, Rarity rarity, EnchantmentType type) {
+    protected Enchantment(int id, String identifier, String name, Rarity rarity, EnchantmentType type) {
         this.id = id;
+        this.identifier = identifier;
         this.rarity = rarity;
         this.type = type;
 
@@ -129,6 +77,10 @@ public abstract class Enchantment implements Cloneable, EnchantmentID {
 
     public int getId() {
         return id;
+    }
+
+    public String getIdentifier() {
+        return identifier;
     }
 
     public Rarity getRarity() {
@@ -220,7 +172,7 @@ public abstract class Enchantment implements Cloneable, EnchantmentID {
 
     public static String getRandomName() {
         int count = ThreadLocalRandom.current().nextInt(3, 6);
-        HashSet<String> set = new HashSet<>();
+        Set<String> set = new ObjectOpenHashSet<>();
         while (set.size() < count) {
             set.add(Enchantment.words[ThreadLocalRandom.current().nextInt(0, Enchantment.words.length)]);
         }
@@ -229,10 +181,10 @@ public abstract class Enchantment implements Cloneable, EnchantmentID {
         return String.join(" ", words);
     }
 
-    private static class UnknownEnchantment extends Enchantment {
+    static class UnknownEnchantment extends Enchantment {
 
         protected UnknownEnchantment(int id) {
-            super(id, "unknown", Rarity.VERY_RARE, EnchantmentType.ALL);
+            super(id, "unknown", "unknown", Rarity.VERY_RARE, EnchantmentType.ALL);
         }
     }
 

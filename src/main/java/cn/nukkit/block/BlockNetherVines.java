@@ -3,7 +3,6 @@ package cn.nukkit.block;
 import cn.nukkit.Player;
 import cn.nukkit.entity.Entity;
 import cn.nukkit.item.Item;
-import cn.nukkit.item.ItemTool;
 import cn.nukkit.item.enchantment.Enchantment;
 import cn.nukkit.level.Level;
 import cn.nukkit.level.particle.BoneMealParticle;
@@ -115,7 +114,7 @@ public abstract class BlockNetherVines extends BlockFlowable {
 
     @Override
     public Item[] getDrops(Item item) {
-        if (item.hasEnchantment(Enchantment.ID_SILK_TOUCH) || ThreadLocalRandom.current().nextInt(3) == 0) {
+        if (item.hasEnchantment(Enchantment.SILK_TOUCH) || ThreadLocalRandom.current().nextInt(3) == 0) {
             return new Item[]{
                     toItem(true),
             };

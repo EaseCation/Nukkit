@@ -11,6 +11,7 @@ import cn.nukkit.level.biome.Biome;
 import cn.nukkit.level.format.ChunkSection;
 import cn.nukkit.level.format.FullChunk;
 import cn.nukkit.level.format.LevelProvider;
+import cn.nukkit.level.format.LevelProviderManager.LevelProviderHandle;
 import cn.nukkit.level.format.anvil.Anvil;
 import cn.nukkit.level.format.anvil.Chunk;
 import cn.nukkit.level.format.anvil.RegionLoader;
@@ -48,7 +49,7 @@ import java.util.stream.Collectors;
 class LevelProviderConverter {
 
     private LevelProvider provider;
-    private Class<? extends LevelProvider> toClass;
+    private LevelProviderHandle to;
     private final Level level;
     private final String path;
 
@@ -65,11 +66,11 @@ class LevelProviderConverter {
         return this;
     }
 
-    LevelProviderConverter to(Class<? extends LevelProvider> toClass) {
-        if (toClass != LevelDB.class) {
+    LevelProviderConverter to(LevelProviderHandle to) {
+        if (to.getClazz() != LevelDB.class) {
             throw new IllegalArgumentException("To type can be only LevelDB");
         }
-        this.toClass = toClass;
+        this.to = to;
         return this;
     }
 
@@ -99,7 +100,7 @@ class LevelProviderConverter {
                 }
             }*/
 
-            if (toClass == LevelDB.class) {
+            if (to.getClazz() == LevelDB.class) {
                 byte[] levelData;
                 try (InputStream stream = Files.newInputStream(datNew)) {
                     CompoundTag nbt = NBTIO.readCompressed(stream, ByteOrder.BIG_ENDIAN);
@@ -120,12 +121,12 @@ class LevelProviderConverter {
                 }
             }
 
-            result = toClass.getConstructor(Level.class, String.class).newInstance(level, path);
+            result = to.getInstantiator().create(level, path);
         } catch (Exception e) {
             throw new RuntimeException(e);
         }
 
-        if (toClass == Anvil.class) {
+        if (to.getClazz() == Anvil.class) {
             if (provider instanceof McRegion) {
                 Files.createDirectories(dirPath.resolve("region"));
                 for (File file : new File(provider.getPath() + "region/").listFiles()) {
@@ -172,7 +173,7 @@ class LevelProviderConverter {
                 }*/
             }
             result.doGarbageCollection();
-        } else if (toClass == LevelDB.class) {
+        } else if (to.getClazz() == LevelDB.class) {
             if (provider instanceof McRegion) {
                 throw new IllegalArgumentException("Please convert to Anvil first");
             }

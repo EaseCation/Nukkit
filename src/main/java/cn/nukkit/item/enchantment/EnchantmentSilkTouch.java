@@ -8,7 +8,7 @@ import cn.nukkit.item.Item;
  */
 public class EnchantmentSilkTouch extends Enchantment {
     protected EnchantmentSilkTouch() {
-        super(ID_SILK_TOUCH, "untouching", Rarity.VERY_RARE, EnchantmentType.DIGGER);
+        super(SILK_TOUCH, "silk_touch", "untouching", Rarity.VERY_RARE, EnchantmentType.DIGGER);
     }
 
     @Override
@@ -23,7 +23,7 @@ public class EnchantmentSilkTouch extends Enchantment {
 
     @Override
     public boolean checkCompatibility(Enchantment enchantment) {
-        return super.checkCompatibility(enchantment) && enchantment.id != ID_FORTUNE;
+        return super.checkCompatibility(enchantment) && enchantment.id != FORTUNE;
     }
 
     @Override

@@ -3,7 +3,8 @@ package cn.nukkit.command.data;
 import cn.nukkit.block.BlockID;
 import cn.nukkit.entity.EntityID;
 import cn.nukkit.item.ItemID;
-import cn.nukkit.item.enchantment.EnchantmentID;
+import cn.nukkit.item.enchantment.Enchantments;
+import cn.nukkit.potion.Effects;
 import com.google.common.collect.ImmutableSet;
 import it.unimi.dsi.fastutil.objects.ObjectOpenHashSet;
 
@@ -23,7 +24,8 @@ public class CommandEnum {
     public static final CommandEnum ENUM_BLOCK;
     public static final CommandEnum ENUM_ITEM;
     public static final CommandEnum ENUM_ENTITY_TYPE;
-    public static final CommandEnum ENUM_ENCHANT;
+    public static final CommandEnum ENUM_ENCHANT = new CommandEnum("Enchant", Enchantments.getEnchantments().keySet());
+    public static final CommandEnum ENUM_EFFECT = new CommandEnum("Effect", Effects.getEffects().keySet());
 
     static {
         ImmutableSet.Builder<String> blocks = ImmutableSet.builder();
@@ -44,12 +46,6 @@ public class CommandEnum {
             entities.add(field.getName().toLowerCase());
         }
         ENUM_ENTITY_TYPE = new CommandEnum("EntityType", entities.build());
-
-        ImmutableSet.Builder<String> enchants = ImmutableSet.builder();
-        for (Field field : EnchantmentID.class.getDeclaredFields()) {
-            enchants.add(field.getName().substring(3).toLowerCase());
-        }
-        ENUM_ENCHANT = new CommandEnum("Enchant", enchants.build());
     }
 
     private final String name;

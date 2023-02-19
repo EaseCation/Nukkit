@@ -424,7 +424,7 @@ public class BinaryStream {
         skin.setPersona(this.getBoolean());
         skin.setCapeOnClassic(this.getBoolean());
         skin.setCapeId(this.getString());
-        this.getString(); // TODO: Full skin id
+        skin.setFullSkinId(this.getString());
         return skin;
     }
 

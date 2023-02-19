@@ -29,6 +29,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.lang.reflect.Constructor;
+import java.lang.reflect.Field;
 import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
@@ -523,7 +524,9 @@ public abstract class Block extends Position implements Metadatable, Cloneable, 
             id = Integer.parseInt(b[0]);
         } else {
             try {
-                id = BlockID.class.getField(b[0].toUpperCase()).getInt(null);
+                Field field = BlockID.class.getField(b[0].toUpperCase());
+                field.setAccessible(true);
+                id = field.getInt(null);
             } catch (Exception ignore) {
             }
         }
@@ -817,12 +820,12 @@ public abstract class Block extends Position implements Metadatable, Cloneable, 
         boolean canHarvestWithHand = canHarvestWithHand();
         int itemToolType = toolType0(item);
         int itemTier = item.getTier();
-        int efficiencyLoreLevel = Optional.ofNullable(item.getEnchantment(Enchantment.ID_EFFICIENCY))
+        int efficiencyLoreLevel = Optional.ofNullable(item.getEnchantment(Enchantment.EFFICIENCY))
                 .map(Enchantment::getLevel).orElse(0);
         int hasteEffectLevel = Optional.ofNullable(player.getEffect(Effect.HASTE))
                 .map(Effect::getAmplifier).orElse(0);
         boolean insideOfWaterWithoutAquaAffinity = player.isInsideOfWater() &&
-                Optional.ofNullable(player.getInventory().getHelmet().getEnchantment(Enchantment.ID_AQUA_AFFINITY))
+                Optional.ofNullable(player.getInventory().getHelmet().getEnchantment(Enchantment.AQUA_AFFINITY))
                         .map(Enchantment::getLevel).map(l -> l >= 1).orElse(false);
         boolean outOfWaterButNotOnGround = (!player.isInsideOfWater()) && (!player.isOnGround());
         return breakTime0(blockHardness, correctTool, canHarvestWithHand, blockId, itemToolType, itemTier,

@@ -18,31 +18,30 @@ import java.util.Random;
  */
 public class PopulatorCaves extends Populator {
 
-    protected int checkAreaSize = 8;
+    private static final int checkAreaSize = 8;
 
-    private Random random;
+    private final Random random = new Random();
 
-    public static int caveRarity = 7;//7
-    public static int caveFrequency = 40;//40
-    public static int caveMinAltitude = 8;
-    public static int caveMaxAltitude = 67;
-    public static int individualCaveRarity = 25;//25
-    public static int caveSystemFrequency = 1;
-    public static int caveSystemPocketChance = 0;
-    public static int caveSystemPocketMinSize = 0;
-    public static int caveSystemPocketMaxSize = 4;
-    public static boolean evenCaveDistribution = false;
+    private static final int caveRarity = 7;
+    private static final int caveFrequency = 40;
+    private static final int caveMinAltitude = 8;
+    private static final int caveMaxAltitude = 67;
+    private static final int individualCaveRarity = 25;
+    private static final int caveSystemFrequency = 1;
+    private static final int caveSystemPocketChance = 0;
+    private static final int caveSystemPocketMinSize = 0;
+    private static final int caveSystemPocketMaxSize = 4;
+    private static final boolean evenCaveDistribution = false;
 
-    public int worldHeightCap = 128;
+    private static final int worldHeightCap = 128;
 
     @Override
     public void populate(ChunkManager level, int chunkX, int chunkZ, NukkitRandom random, FullChunk chunk) {
-        this.random = new Random();
         this.random.setSeed(level.getSeed());
         long worldLong1 = this.random.nextLong();
         long worldLong2 = this.random.nextLong();
 
-        int size = this.checkAreaSize;
+        int size = checkAreaSize;
 
         for (int x = chunkX - size; x <= chunkX + size; x++)
             for (int z = chunkZ - size; z <= chunkZ + size; z++) {
@@ -70,7 +69,7 @@ public class PopulatorCaves extends Populator {
         Random localRandom = new Random(seed);
 
         if (maxAngle <= 0) {
-            int checkAreaSize = this.checkAreaSize * 16 - 16;
+            int checkAreaSize = PopulatorCaves.checkAreaSize * 16 - 16;
             maxAngle = checkAreaSize - localRandom.nextInt(checkAreaSize / 4);
         }
         boolean isLargeCave = false;
@@ -145,8 +144,8 @@ public class PopulatorCaves extends Populator {
 
             if (yFrom < 1)
                 yFrom = 1;
-            if (yTo > this.worldHeightCap - 8) {
-                yTo = this.worldHeightCap - 8;
+            if (yTo > worldHeightCap - 8) {
+                yTo = worldHeightCap - 8;
             }
             if (zFrom < 0)
                 zFrom = 0;
@@ -158,7 +157,7 @@ public class PopulatorCaves extends Populator {
             for (int xx = xFrom; (!waterFound) && (xx < xTo); xx++) {
                 for (int zz = zFrom; (!waterFound) && (zz < zTo); zz++) {
                     for (int yy = yTo + 1; (!waterFound) && (yy >= yFrom - 1); yy--) {
-                        if (yy >= 0 && yy < this.worldHeightCap) {
+                        if (yy >= 0 && yy < worldHeightCap) {
                             int block = chunk.getBlockId(0, xx, yy, zz);
                             if (block == Block.FLOWING_WATER || block == Block.WATER) {
                                 waterFound = true;
@@ -191,7 +190,7 @@ public class PopulatorCaves extends Populator {
                                 }
 
                                 int material = chunk.getBlockId(0, xx, yy, zz);
-                                int materialAbove = chunk.getBlockId(0, xx, yy + 1, zz);
+//                                int materialAbove = chunk.getBlockId(0, xx, yy + 1, zz);
                                 if (material == Block.GRASS || material == Block.MYCELIUM) {
                                     grassFound = true;
                                 }
@@ -248,7 +247,7 @@ public class PopulatorCaves extends Populator {
                 largeCaveSpawned = true;
             }
 
-            if ((largeCaveSpawned) || (this.random.nextInt(100) <= caveSystemPocketChance - 1)) {
+            if ((largeCaveSpawned) || (this.random.nextInt(100) <= caveSystemPocketChance)) {
                 count += numberInRange(random, caveSystemPocketMinSize, caveSystemPocketMaxSize);
             }
             while (count > 0) {
@@ -262,7 +261,7 @@ public class PopulatorCaves extends Populator {
         }
     }
 
-    public static int numberInRange(Random random, int min, int max) {
+    private static int numberInRange(Random random, int min, int max) {
         return min + random.nextInt(max - min + 1);
     }
 }

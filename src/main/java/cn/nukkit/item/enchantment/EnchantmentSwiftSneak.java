@@ -3,7 +3,7 @@ package cn.nukkit.item.enchantment;
 public class EnchantmentSwiftSneak extends Enchantment {
 
     protected EnchantmentSwiftSneak() {
-        super(ID_SWIFT_SNEAK, "swift_sneak", Rarity.VERY_RARE, EnchantmentType.ARMOR_LEGS);
+        super(SWIFT_SNEAK, "swift_sneak", "swift_sneak", Rarity.VERY_RARE, EnchantmentType.ARMOR_LEGS);
     }
 
     @Override

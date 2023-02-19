@@ -9,6 +9,6 @@ import cn.nukkit.item.enchantment.EnchantmentType;
  */
 public class EnchantmentLootDigging extends EnchantmentLoot {
     public EnchantmentLootDigging() {
-        super(Enchantment.ID_FORTUNE, "lootBonusDigger", Rarity.RARE, EnchantmentType.DIGGER);
+        super(Enchantment.FORTUNE, "fortune", "lootBonusDigger", Rarity.RARE, EnchantmentType.DIGGER);
     }
 }

@@ -10,7 +10,7 @@ import cn.nukkit.event.entity.EntityDamageEvent.DamageCause;
 public class EnchantmentProtectionFire extends EnchantmentProtection {
 
     public EnchantmentProtectionFire() {
-        super(ID_FIRE_PROTECTION, "fire", Rarity.UNCOMMON, TYPE.FIRE);
+        super(FIRE_PROTECTION, "fire_protection", "fire", Rarity.UNCOMMON, TYPE.FIRE);
     }
 
     @Override

@@ -129,7 +129,7 @@ public class EntityThrownTrident extends EntityProjectile {
         this.getLevel().addLevelSoundEvent(this, LevelSoundEventPacket.SOUND_ITEM_TRIDENT_HIT);
         this.close();
 
-        if (trident != null && level.isThundering() && trident.hasEnchantment(Enchantment.ID_CHANNELING) && level.canBlockSeeSky(this)) {
+        if (trident != null && level.isThundering() && trident.hasEnchantment(Enchantment.CHANNELING) && level.canBlockSeeSky(this)) {
             EntityLightning bolt = new EntityLightning(this.getChunk(), getDefaultNBT(this));
             LightningStrikeEvent strikeEvent = new LightningStrikeEvent(level, bolt);
             server.getPluginManager().callEvent(strikeEvent);

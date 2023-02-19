@@ -7,6 +7,7 @@ import it.unimi.dsi.fastutil.objects.Object2FloatMap;
 
 import java.util.LinkedList;
 import java.util.List;
+import java.util.concurrent.ThreadLocalRandom;
 
 /**
  * Created by Snake1999 on 2016/1/13.
@@ -36,8 +37,9 @@ public class FoodEffective extends Food {
     protected boolean onEatenBy(Player player) {
         super.onEatenBy(player);
         List<Effect> toApply = new LinkedList<>();
+        ThreadLocalRandom random = ThreadLocalRandom.current();
         effects.forEach((effect, chance) -> {
-            if (chance >= Math.random()) toApply.add(effect.clone());
+            if (chance >= random.nextDouble()) toApply.add(effect.clone());
         });
         toApply.forEach(player::addEffect);
         return true;

@@ -50,7 +50,10 @@ public abstract class SimpleConfig {
             if (skipSave(field)) continue;
             String path = getPath(field);
             try {
-                if (path != null) cfg.set(path, field.get(this));
+                if (path != null) {
+                    field.setAccessible(true);
+                    cfg.set(path, field.get(this));
+                }
             } catch (Exception e) {
                 return false;
             }

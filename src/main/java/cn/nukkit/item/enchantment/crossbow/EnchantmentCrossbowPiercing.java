@@ -5,7 +5,7 @@ import cn.nukkit.item.enchantment.Enchantment;
 public class EnchantmentCrossbowPiercing extends EnchantmentCrossbow {
 
     public EnchantmentCrossbowPiercing() {
-        super(Enchantment.ID_PIERCING, "crossbowPiercing", Rarity.COMMON);
+        super(Enchantment.PIERCING, "piercing", "crossbowPiercing", Rarity.COMMON);
     }
 
     @Override
@@ -25,6 +25,6 @@ public class EnchantmentCrossbowPiercing extends EnchantmentCrossbow {
 
     @Override
     public boolean checkCompatibility(Enchantment enchantment) {
-        return super.checkCompatibility(enchantment) && enchantment.id != ID_MULTISHOT;
+        return super.checkCompatibility(enchantment) && enchantment.id != MULTISHOT;
     }
 }

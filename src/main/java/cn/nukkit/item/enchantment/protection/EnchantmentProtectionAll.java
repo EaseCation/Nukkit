@@ -11,7 +11,7 @@ import cn.nukkit.item.enchantment.Enchantment;
 public class EnchantmentProtectionAll extends EnchantmentProtection {
 
     public EnchantmentProtectionAll() {
-        super(Enchantment.ID_PROTECTION, "all", Rarity.COMMON, TYPE.ALL);
+        super(Enchantment.PROTECTION, "protection", "all", Rarity.COMMON, TYPE.ALL);
     }
 
     @Override

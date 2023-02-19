@@ -155,7 +155,7 @@ public class EntityMinecartTNT extends EntityMinecartAbstract implements EntityE
     @Override
     public boolean onInteract(Player player, Item item, Vector3 clickedPos) {
         boolean interact = super.onInteract(player, item, clickedPos);
-        if (item.getId() == Item.FLINT_AND_STEEL || item.getId() == Item.FIRE_CHARGE || item.hasEnchantment(Enchantment.ID_FIRE_ASPECT)) {
+        if (item.getId() == Item.FLINT_AND_STEEL || item.getId() == Item.FIRE_CHARGE || item.hasEnchantment(Enchantment.FIRE_ASPECT)) {
             if (!this.prime()) {
                 return interact;
             }
@@ -173,7 +173,7 @@ public class EntityMinecartTNT extends EntityMinecartAbstract implements EntityE
     }
 
     @Override
-    public String getInteractButtonText() {
+    public String getInteractButtonText(Player player) {
         return "";
     }
 

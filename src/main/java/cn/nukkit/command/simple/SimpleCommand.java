@@ -22,6 +22,7 @@ public class SimpleCommand extends Command {
         super(name, description, usageMessage, aliases);
         this.object = object;
         this.method = method;
+        method.setAccessible(true);
     }
 
     public void setForbidConsole(boolean forbidConsole) {

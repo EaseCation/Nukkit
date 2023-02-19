@@ -66,14 +66,10 @@ public class LibraryLoader {
 
         try {
             Method method = URLClassLoader.class.getDeclaredMethod("addURL", URL.class);
-            boolean accessible = method.isAccessible();
-            if (!accessible) {
-                method.setAccessible(true);
-            }
+            method.setAccessible(true);
             URLClassLoader classLoader = (URLClassLoader) Thread.currentThread().getContextClassLoader();
             URL url = file.toURI().toURL();
             method.invoke(classLoader, url);
-            method.setAccessible(accessible);
         } catch (NoSuchMethodException | MalformedURLException | IllegalAccessException | InvocationTargetException e) {
             throw new LibraryLoadException(library);
         }

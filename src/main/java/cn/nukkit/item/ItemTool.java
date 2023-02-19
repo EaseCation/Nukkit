@@ -100,7 +100,7 @@ public abstract class ItemTool extends Item implements ItemDurable {
             return false;
         }
 
-        Enchantment durability = getEnchantment(Enchantment.ID_UNBREAKING);
+        Enchantment durability = getEnchantment(Enchantment.UNBREAKING);
         return durability != null && durability.getLevel() > 0 && (100 / (durability.getLevel() + 1)) <= ThreadLocalRandom.current().nextInt(100);
     }
 

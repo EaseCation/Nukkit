@@ -9,8 +9,8 @@ import cn.nukkit.item.enchantment.EnchantmentType;
  */
 public abstract class EnchantmentLoot extends Enchantment {
 
-    protected EnchantmentLoot(int id, String name, Rarity rarity, EnchantmentType type) {
-        super(id, name, rarity, type);
+    protected EnchantmentLoot(int id, String identifier, String name, Rarity rarity, EnchantmentType type) {
+        super(id, identifier, name, rarity, type);
     }
 
     @Override
@@ -30,6 +30,6 @@ public abstract class EnchantmentLoot extends Enchantment {
 
     @Override
     public boolean checkCompatibility(Enchantment enchantment) {
-        return super.checkCompatibility(enchantment) && enchantment.id != Enchantment.ID_SILK_TOUCH;
+        return super.checkCompatibility(enchantment) && enchantment.id != Enchantment.SILK_TOUCH;
     }
 }

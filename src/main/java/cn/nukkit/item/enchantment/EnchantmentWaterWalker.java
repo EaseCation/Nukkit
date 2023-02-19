@@ -6,7 +6,7 @@ package cn.nukkit.item.enchantment;
  */
 public class EnchantmentWaterWalker extends Enchantment {
     protected EnchantmentWaterWalker() {
-        super(ID_DEPTH_STRIDER, "waterWalker", Rarity.RARE, EnchantmentType.ARMOR_FEET);
+        super(DEPTH_STRIDER, "depth_strider", "waterWalker", Rarity.RARE, EnchantmentType.ARMOR_FEET);
     }
 
     @Override

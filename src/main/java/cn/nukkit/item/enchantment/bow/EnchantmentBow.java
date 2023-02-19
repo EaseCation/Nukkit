@@ -8,7 +8,7 @@ import cn.nukkit.item.enchantment.EnchantmentType;
  * Nukkit Project
  */
 public abstract class EnchantmentBow extends Enchantment {
-    protected EnchantmentBow(int id, String name, Rarity rarity) {
-        super(id, name, rarity, EnchantmentType.BOW);
+    protected EnchantmentBow(int id, String identifier, String name, Rarity rarity) {
+        super(id, identifier, name, rarity, EnchantmentType.BOW);
     }
 }

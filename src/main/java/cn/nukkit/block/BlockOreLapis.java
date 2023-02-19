@@ -47,7 +47,7 @@ public class BlockOreLapis extends BlockSolid {
             ThreadLocalRandom random = ThreadLocalRandom.current();
             int count = random.nextInt(4, 10);
 
-            Enchantment fortune = item.getEnchantment(Enchantment.ID_FORTUNE);
+            Enchantment fortune = item.getEnchantment(Enchantment.FORTUNE);
             if (fortune != null && fortune.getLevel() >= 1) {
                 count *= random.nextInt(2, 2 + fortune.getLevel() + 1);
 

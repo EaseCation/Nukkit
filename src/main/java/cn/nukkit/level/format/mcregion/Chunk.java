@@ -5,6 +5,8 @@ import cn.nukkit.block.Block;
 import cn.nukkit.blockentity.BlockEntity;
 import cn.nukkit.entity.Entity;
 import cn.nukkit.level.format.LevelProvider;
+import cn.nukkit.level.format.LevelProviderManager;
+import cn.nukkit.level.format.LevelProviderManager.LevelProviderHandle;
 import cn.nukkit.level.format.anvil.palette.BiomePalette;
 import cn.nukkit.level.format.generic.BaseFullChunk;
 import cn.nukkit.nbt.NBTIO;
@@ -31,25 +33,20 @@ public class Chunk extends BaseFullChunk {
 
     private CompoundTag nbt;
 
+    public Chunk() {
+        this(null, null);
+    }
+
     public Chunk(LevelProvider level) {
         this(level, null);
     }
 
-    public Chunk(Class<? extends LevelProvider> providerClass) {
-        this((LevelProvider) null, null);
-        this.providerClass = providerClass;
-    }
-
-    public Chunk(Class<? extends LevelProvider> providerClass, CompoundTag nbt) {
-        this((LevelProvider) null, nbt);
-        this.providerClass = providerClass;
+    public Chunk(CompoundTag nbt) {
+        this(null, nbt);
     }
 
     public Chunk(LevelProvider level, CompoundTag nbt) {
         this.provider = level;
-        if (level != null) {
-            this.providerClass = level.getClass();
-        }
 
         if (nbt == null) {
             return;
@@ -142,6 +139,11 @@ public class Chunk extends BaseFullChunk {
         this.nbt.remove("BiomeColors");
         this.nbt.remove("HeightMap");
         this.nbt.remove("Biomes");
+    }
+
+    @Override
+    public LevelProviderHandle getProviderHandle() {
+        return LevelProviderManager.MCREGION;
     }
 
     @Override
@@ -521,7 +523,7 @@ public class Chunk extends BaseFullChunk {
             if (provider != null) {
                 chunk = new Chunk(provider, null);
             } else {
-                chunk = new Chunk(McRegion.class, null);
+                chunk = new Chunk();
             }
 
             chunk.setPosition(chunkX, chunkZ);

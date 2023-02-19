@@ -43,6 +43,7 @@ import lombok.extern.log4j.Log4j2;
 
 import javax.annotation.Nullable;
 import java.lang.reflect.Constructor;
+import java.lang.reflect.Field;
 import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ThreadLocalRandom;
@@ -986,7 +987,9 @@ public abstract class Entity extends Location implements Metadatable {
             return false;
         }
         try {
-            int networkId = clazz.getField("NETWORK_ID").getInt(null);
+            Field field = clazz.getField("NETWORK_ID");
+            field.setAccessible(true);
+            int networkId = field.getInt(null);
             knownEntities.put(String.valueOf(networkId), clazz);
         } catch (Exception e) {
             if (!force) {

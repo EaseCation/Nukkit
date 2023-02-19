@@ -10,7 +10,7 @@ import java.util.Random;
  */
 public class EnchantmentDurability extends Enchantment {
     protected EnchantmentDurability() {
-        super(ID_UNBREAKING, "durability", Rarity.UNCOMMON, EnchantmentType.BREAKABLE);
+        super(UNBREAKING, "unbreaking", "durability", Rarity.UNCOMMON, EnchantmentType.BREAKABLE);
     }
 
     @Override
@@ -30,7 +30,7 @@ public class EnchantmentDurability extends Enchantment {
 
     @Override
     public boolean checkCompatibility(Enchantment enchantment) {
-        return super.checkCompatibility(enchantment) && enchantment.id != ID_FORTUNE;
+        return super.checkCompatibility(enchantment) && enchantment.id != FORTUNE;
     }
 
     @Override

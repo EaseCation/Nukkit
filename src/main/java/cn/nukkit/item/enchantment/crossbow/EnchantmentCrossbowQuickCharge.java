@@ -5,7 +5,7 @@ import cn.nukkit.item.enchantment.Enchantment;
 public class EnchantmentCrossbowQuickCharge extends EnchantmentCrossbow {
 
     public EnchantmentCrossbowQuickCharge() {
-        super(Enchantment.ID_QUICK_CHARGE, "crossbowQuickCharge", Rarity.UNCOMMON);
+        super(Enchantment.QUICK_CHARGE, "quick_charge", "crossbowQuickCharge", Rarity.UNCOMMON);
     }
 
     @Override

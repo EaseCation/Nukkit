@@ -2,6 +2,8 @@ package cn.nukkit.item.randomitem;
 
 import it.unimi.dsi.fastutil.objects.Object2FloatMap;
 
+import java.util.concurrent.ThreadLocalRandom;
+
 /**
  * Created by Snake1999 on 2016/1/15.
  * Package cn.nukkit.item.randomitem in project nukkit.
@@ -32,7 +34,7 @@ public class Selector {
         for (float f : selectorChanceMap.values()) {
             totalChance[0] += f;
         }
-        float resultChance = (float) (Math.random() * totalChance[0]);
+        float resultChance = ThreadLocalRandom.current().nextFloat() * totalChance[0];
         final float[] flag = {0};
         final boolean[] found = {false};
         final Selector[] temp = {null};

@@ -19,7 +19,7 @@ public class BlockAmethystBudMedium extends BlockAmethystBud {
 
     @Override
     public String getName() {
-        return "Medium  Amethyst Bud";
+        return "Medium Amethyst Bud";
     }
 
     @Override

@@ -6,10 +6,12 @@ import cn.nukkit.level.Level;
 import cn.nukkit.level.LevelCreationOptions;
 import cn.nukkit.level.format.ChunkSection;
 import cn.nukkit.level.format.FullChunk;
+import cn.nukkit.level.format.LevelProviderManager;
+import cn.nukkit.level.format.LevelProviderManager.LevelProviderHandle;
 import cn.nukkit.level.format.generic.BaseFullChunk;
 import cn.nukkit.level.format.generic.BaseLevelProvider;
 import cn.nukkit.level.format.generic.BaseRegionLoader;
-import cn.nukkit.level.generator.Generator;
+import cn.nukkit.level.generator.Generators;
 import cn.nukkit.nbt.NBTIO;
 import cn.nukkit.nbt.tag.CompoundTag;
 import cn.nukkit.scheduler.AsyncTask;
@@ -84,7 +86,7 @@ public class McRegion extends BaseLevelProvider {
                 .putCompound("GameRules", new CompoundTag())
                 .putLong("DayTime", 0)
                 .putInt("GameType", 0)
-                .putString("generatorName", Generator.getGeneratorName(options.getGenerator()))
+                .putString("generatorName", Generators.getGeneratorName(options.getGenerator()))
                 .putString("generatorOptions", String.valueOf(options.getOptions().getOrDefault("preset", "")))
                 .putInt("generatorVersion", 1)
                 .putBoolean("hardcore", false)
@@ -104,6 +106,11 @@ public class McRegion extends BaseLevelProvider {
                 .putLong("SizeOnDisk", 0);
 
         NBTIO.writeGZIPCompressed(new CompoundTag().putCompound("Data", levelData), Files.newOutputStream(new File(path, "level.dat").toPath()), ByteOrder.BIG_ENDIAN);
+    }
+
+    @Override
+    public LevelProviderHandle getHandle() {
+        return LevelProviderManager.MCREGION;
     }
 
     @Deprecated

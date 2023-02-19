@@ -9,6 +9,6 @@ import cn.nukkit.item.enchantment.EnchantmentType;
  */
 public class EnchantmentLootFishing extends EnchantmentLoot {
     public EnchantmentLootFishing() {
-        super(Enchantment.ID_LUCK_OF_THE_SEA, "lootBonusFishing", Rarity.RARE, EnchantmentType.FISHING_ROD);
+        super(Enchantment.LUCK_OF_THE_SEA, "luck_of_the_sea", "lootBonusFishing", Rarity.RARE, EnchantmentType.FISHING_ROD);
     }
 }

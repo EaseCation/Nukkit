@@ -123,4 +123,6 @@ public interface Inventory {
         item.pop();
         setItem(index, item);
     }
+
+    Item peek(Item item);
 }

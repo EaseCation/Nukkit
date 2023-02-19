@@ -4,6 +4,7 @@ import cn.nukkit.block.Block;
 import cn.nukkit.blockentity.BlockEntity;
 import cn.nukkit.entity.Entity;
 import cn.nukkit.level.biome.Biome;
+import cn.nukkit.level.format.LevelProviderManager.LevelProviderHandle;
 import cn.nukkit.level.util.PalettedSubChunkStorage;
 import com.google.common.annotations.Beta;
 import it.unimi.dsi.fastutil.ints.Int2IntMap;
@@ -31,6 +32,8 @@ public interface FullChunk extends Cloneable {
     void setZ(int z);
 
     long getIndex();
+
+    LevelProviderHandle getProviderHandle();
 
     LevelProvider getProvider();
 

@@ -62,7 +62,7 @@ public class BlockRespawnAnchor extends BlockSolidMeta {
     public Item[] getDrops(Item item) {
         if (item.isPickaxe() && item.getTier() >= ItemTool.TIER_DIAMOND) {
             return new Item[]{
-                    Item.get(getItemId(), item.hasEnchantment(Enchantment.ID_SILK_TOUCH) ? getDamage() : 0),
+                    Item.get(getItemId(), item.hasEnchantment(Enchantment.SILK_TOUCH) ? getDamage() : 0),
             };
         }
         return new Item[0];

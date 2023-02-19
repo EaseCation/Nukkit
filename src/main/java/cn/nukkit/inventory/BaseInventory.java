@@ -11,6 +11,7 @@ import cn.nukkit.event.inventory.InventoryOpenEvent;
 import cn.nukkit.item.Item;
 import cn.nukkit.item.ItemBlock;
 import cn.nukkit.item.ItemID;
+import cn.nukkit.item.Items;
 import cn.nukkit.network.protocol.InventoryContentPacket;
 import cn.nukkit.network.protocol.InventorySlotPacket;
 import it.unimi.dsi.fastutil.ints.Int2ObjectMap;
@@ -564,5 +565,24 @@ public abstract class BaseInventory implements Inventory {
     @Override
     public InventoryType getType() {
         return type;
+    }
+
+    @Override
+    public Item peek(Item target) {
+        boolean checkAux = target.hasMeta() && target.getDamage() >= 0;
+        boolean checkNbt = target.getCompoundTag() != null;
+
+        for (int i = 0; i < this.getSize(); i++) {
+            Item item = this.getItem(i);
+            if (item.isNull()) {
+                continue;
+            }
+
+            if (target.equals(item, checkAux, checkNbt)) {
+                return item;
+            }
+        }
+
+        return Items.air();
     }
 }

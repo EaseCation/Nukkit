@@ -94,7 +94,7 @@ public class EntityPainting extends EntityHanging {
             this.recalculateBoundingBox(false);
         } else {
             List<Motive> validMotives = new ObjectArrayList<>(7);
-            IntSet validTypes = new IntOpenHashSet(2, 0.999999f);
+            IntSet validTypes = new IntOpenHashSet(2);
             IntList invalidTypes = new IntArrayList();
             int maxSize = 0;
             for (Motive motive : motives) {

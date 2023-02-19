@@ -23,6 +23,7 @@ import cn.nukkit.utils.Utils;
 import it.unimi.dsi.fastutil.objects.ObjectArrayList;
 
 import java.io.IOException;
+import java.lang.reflect.Field;
 import java.nio.ByteOrder;
 import java.util.*;
 import java.util.regex.Pattern;
@@ -433,11 +434,15 @@ public class Item implements Cloneable, ItemID {
             id = Integer.parseInt(b[0]);
         } else {
             try {
-                id = BlockID.class.getField(b[0].toUpperCase()).getInt(null);
+                Field field = BlockID.class.getField(b[0].toUpperCase());
+                field.setAccessible(true);
+                id = field.getInt(null);
                 id = Block.getItemId(id);
             } catch (Exception ignored) {
                 try {
-                    id = ItemID.class.getField(b[0].toUpperCase()).getInt(null);
+                    Field field = ItemID.class.getField(b[0].toUpperCase());
+                    field.setAccessible(true);
+                    id = field.getInt(null);
                 } catch (Exception ignore) {
                 }
             }

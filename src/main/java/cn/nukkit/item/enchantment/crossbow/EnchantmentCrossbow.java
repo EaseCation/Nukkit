@@ -5,7 +5,7 @@ import cn.nukkit.item.enchantment.EnchantmentType;
 
 public abstract class EnchantmentCrossbow extends Enchantment {
 
-    protected EnchantmentCrossbow(int id, String name, Rarity rarity) {
-        super(id, name, rarity, EnchantmentType.CROSSBOW);
+    protected EnchantmentCrossbow(int id, String identifier, String name, Rarity rarity) {
+        super(id, identifier, name, rarity, EnchantmentType.CROSSBOW);
     }
 }

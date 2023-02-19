@@ -6,6 +6,8 @@ import cn.nukkit.block.Block;
 import cn.nukkit.blockentity.BlockEntity;
 import cn.nukkit.entity.Entity;
 import cn.nukkit.level.format.LevelProvider;
+import cn.nukkit.level.format.LevelProviderManager;
+import cn.nukkit.level.format.LevelProviderManager.LevelProviderHandle;
 import cn.nukkit.level.format.anvil.palette.BiomePalette;
 import cn.nukkit.level.format.generic.BaseChunk;
 import cn.nukkit.level.format.generic.EmptyChunkSection;
@@ -41,25 +43,20 @@ public class Chunk extends BaseChunk {
         return (Chunk) super.clone();
     }
 
+    public Chunk() {
+        this(null, null);
+    }
+
     public Chunk(LevelProvider level) {
         this(level, null);
     }
 
-    public Chunk(Class<? extends LevelProvider> providerClass) {
-        this((LevelProvider) null, null);
-        this.providerClass = providerClass;
-    }
-
-    public Chunk(Class<? extends LevelProvider> providerClass, CompoundTag nbt) {
-        this((LevelProvider) null, nbt);
-        this.providerClass = providerClass;
+    public Chunk(CompoundTag nbt) {
+        this(null, nbt);
     }
 
     public Chunk(LevelProvider level, CompoundTag nbt) {
         this.provider = level;
-        if (level != null) {
-            this.providerClass = level.getClass();
-        }
 
         if (nbt == null) {
             this.biomes = new byte[16 * 16];
@@ -170,6 +167,11 @@ public class Chunk extends BaseChunk {
         this.inhabitedTime = nbt.getLong("InhabitedTime");
         this.terrainPopulated = nbt.getBoolean("TerrainPopulated");
         this.terrainGenerated = nbt.getBoolean("TerrainGenerated");
+    }
+
+    @Override
+    public LevelProviderHandle getProviderHandle() {
+        return LevelProviderManager.ANVIL;
     }
 
     @Override
@@ -500,9 +502,9 @@ public class Chunk extends BaseChunk {
         try {
             Chunk chunk;
             if (provider != null) {
-                chunk = new Chunk(provider, null);
+                chunk = new Chunk(provider);
             } else {
-                chunk = new Chunk(Anvil.class, null);
+                chunk = new Chunk();
             }
 
             chunk.setPosition(chunkX, chunkZ);

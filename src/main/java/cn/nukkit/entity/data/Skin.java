@@ -36,6 +36,7 @@ public class Skin {
     public static final String GEOMETRY_CUSTOM_SLIM = convertLegacyGeometryName("geometry.humanoid.customSlim");
 
     private boolean playerSkin = false; //如果是玩家皮肤，那么需要根据中国版规则进行皮肤反作弊检测
+    private String fullSkinId;
     private String skinId;
     private String playFabId = "";
     private String skinResourcePatch = GEOMETRY_CUSTOM;
@@ -55,6 +56,7 @@ public class Skin {
     private String armSize = "wide";
     private boolean trusted = true;
     private String geometryDataEngineVersion = "0.0.0";
+    private boolean overridingPlayerAppearance = true;
 
     static {
         Arrays.fill(FULL_WHITE_SKIN, (byte) 0xff);
@@ -251,7 +253,6 @@ public class Skin {
         return setCapeData(new SerializedImage(64, 32, capeData));
     }
 
-
     public Skin setCapeData(BufferedImage image) {
         return setCapeData(parseBufferedImage(image));
     }
@@ -373,10 +374,15 @@ public class Skin {
         this.armSize = armSize;
     }
 
+    public void setFullSkinId(String fullSkinId) {
+        this.fullSkinId = fullSkinId;
+    }
+
     public String getFullSkinId() {
-        String skinId = getSkinId();
-        String full = UUID.nameUUIDFromBytes(Binary.appendBytes(skinId.getBytes(), getSkinData().data)).toString();
-        return full; //TODO: Client sends full skin ID as normal skin ID. Find out what this is actually for.
+        if (this.fullSkinId == null) {
+            this.fullSkinId = this.getSkinId() + this.getCapeId();
+        }
+        return fullSkinId;
     }
 
     public void setPlayFabId(String playFabId) {
@@ -385,13 +391,36 @@ public class Skin {
 
     public String getPlayFabId() {
         if (this.persona && (this.playFabId == null || this.playFabId.isEmpty())) {
-            try {
-                this.playFabId = this.skinId.split("-")[5];
-            } catch (Exception e) {
+            boolean found = false;
+            if (this.skinId != null) {
+                String[] split = this.skinId.split("-", 7);
+                if (split.length > 1) {
+                    String pos1 = split[1];
+                    if (pos1.length() == 16) {
+                        this.playFabId = pos1;
+                        found = true;
+                    } else if (split.length > 5) {
+                        String pos5 = split[5];
+                        if (pos5.length() == 16) {
+                            this.playFabId = pos5;
+                            found = true;
+                        }
+                    }
+                }
+            }
+            if (!found) {
                 this.playFabId = UUID.randomUUID().toString().replace("-", "").substring(16);
             }
         }
         return this.playFabId;
+    }
+
+    public void setOverridingPlayerAppearance(boolean override) {
+        this.overridingPlayerAppearance = override;
+    }
+
+    public boolean isOverridingPlayerAppearance() {
+        return this.overridingPlayerAppearance;
     }
 
     public static SerializedImage parseBufferedImage(BufferedImage image) {

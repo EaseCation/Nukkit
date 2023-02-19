@@ -2,7 +2,9 @@ package cn.nukkit.level.format;
 
 import cn.nukkit.level.GameRules;
 import cn.nukkit.level.Level;
+import cn.nukkit.level.format.LevelProviderManager.LevelProviderHandle;
 import cn.nukkit.level.format.generic.BaseFullChunk;
+import cn.nukkit.level.generator.Generator;
 import cn.nukkit.math.Vector3;
 import cn.nukkit.scheduler.AsyncTask;
 
@@ -17,11 +19,13 @@ public interface LevelProvider {
     byte ORDER_YZX = 0;
     byte ORDER_ZXY = 1;
 
+    LevelProviderHandle getHandle();
+
     AsyncTask requestChunkTask(int X, int Z);
 
     String getPath();
 
-    String getGenerator();
+    Class<? extends Generator> getGenerator();
 
     Map<String, Object> getGeneratorOptions();
 

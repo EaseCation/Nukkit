@@ -6,6 +6,7 @@ import cn.nukkit.level.Level;
 import cn.nukkit.level.format.FullChunk;
 import cn.nukkit.level.format.LevelProvider;
 import cn.nukkit.level.generator.Generator;
+import cn.nukkit.level.generator.Generators;
 import cn.nukkit.math.Vector3;
 import cn.nukkit.nbt.NBTIO;
 import cn.nukkit.nbt.tag.CompoundTag;
@@ -62,7 +63,7 @@ public abstract class BaseLevelProvider implements LevelProvider {
         }
 
         if (!this.levelData.contains("generatorName")) {
-            this.levelData.putString("generatorName", Generator.getGenerator("DEFAULT").getSimpleName().toLowerCase());
+            this.levelData.putString("generatorName", Generators.getGenerator("default").getSimpleName().toLowerCase());
         }
 
         if (!this.levelData.contains("generatorOptions")) {
@@ -90,8 +91,8 @@ public abstract class BaseLevelProvider implements LevelProvider {
     }
 
     @Override
-    public String getGenerator() {
-        return this.levelData.getString("generatorName");
+    public Class<? extends Generator> getGenerator() {
+        return Generators.getGenerator(levelData.getString("generatorName"));
     }
 
     @Override

@@ -15,36 +15,37 @@ import cn.nukkit.level.generator.populator.impl.PopulatorOre;
 import cn.nukkit.level.generator.populator.type.Populator;
 import cn.nukkit.math.NukkitRandom;
 import cn.nukkit.math.Vector3;
+import it.unimi.dsi.fastutil.objects.Object2ObjectOpenHashMap;
+import it.unimi.dsi.fastutil.objects.ObjectArrayList;
+
 import java.util.*;
 import java.util.concurrent.ThreadLocalRandom;
 
 public class Nether extends Generator {
+    private final Map<String, Object> options;
     private ChunkManager level;
-    /**
-     * @var Random
-     */
     private NukkitRandom nukkitRandom;
-    private Random random;
-    private double lavaHeight = 32;
-    private double bedrockDepth = 5;
-    private SimplexF[] noiseGen = new SimplexF[3];
-    private final List<Populator> populators = new ArrayList<>();
-    private List<Populator> generationPopulators = new ArrayList<>();
+
+    private final double lavaHeight = 32;
+    private final double bedrockDepth = 5;
+    private final SimplexF[] noiseGen = new SimplexF[3];
+    private final List<Populator> populators = new ObjectArrayList<>();
+    private final List<Populator> generationPopulators = new ObjectArrayList<>();
 
     private long localSeed1;
     private long localSeed2;
 
     public Nether() {
-        this(new HashMap<>());
+        this(new Object2ObjectOpenHashMap<>(1));
     }
 
     public Nether(Map<String, Object> options) {
-        //Nothing here. Just used for future update.
+        this.options = options;
     }
 
     @Override
     public int getId() {
-        return 3;
+        return TYPE_NETHER;
     }
 
     @Override
@@ -59,7 +60,7 @@ public class Nether extends Generator {
 
     @Override
     public Map<String, Object> getSettings() {
-        return new HashMap<>();
+        return this.options;
     }
 
     @Override
@@ -71,7 +72,6 @@ public class Nether extends Generator {
     public void init(ChunkManager level, NukkitRandom random) {
         this.level = level;
         this.nukkitRandom = random;
-        this.random = ThreadLocalRandom.current();
         this.nukkitRandom.setSeed(this.level.getSeed());
 
         for (int i = 0; i < noiseGen.length; i++)   {
@@ -79,8 +79,9 @@ public class Nether extends Generator {
         }
 
         this.nukkitRandom.setSeed(this.level.getSeed());
-        this.localSeed1 = this.random.nextLong();
-        this.localSeed2 = this.random.nextLong();
+        Random localRandom = ThreadLocalRandom.current();
+        this.localSeed1 = localRandom.nextLong();
+        this.localSeed2 = localRandom.nextLong();
 
         PopulatorOre ores = new PopulatorOre(Block.NETHERRACK);
         ores.setOreTypes(new OreType[]{
@@ -157,7 +158,7 @@ public class Nether extends Generator {
     }
 
     public Vector3 getSpawn() {
-        return new Vector3(0, 64, 0);
+        return new Vector3(0.5, 64, 0.5);
     }
 
     public float getNoise(int x, int y, int z)  {

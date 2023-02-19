@@ -4,6 +4,6 @@ import cn.nukkit.item.enchantment.Enchantment;
 
 public class EnchantmentTridentChanneling extends EnchantmentTrident {
     public EnchantmentTridentChanneling() {
-        super(Enchantment.ID_CHANNELING, "tridentChanneling", Rarity.VERY_RARE);
+        super(Enchantment.CHANNELING, "channeling", "tridentChanneling", Rarity.VERY_RARE);
     }
 }

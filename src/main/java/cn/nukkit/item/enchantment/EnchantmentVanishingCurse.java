@@ -4,7 +4,7 @@ import cn.nukkit.item.Item;
 
 public class EnchantmentVanishingCurse extends Enchantment {
     protected EnchantmentVanishingCurse() {
-        super(ID_VANISHING, "curse.vanishing", Rarity.VERY_RARE, EnchantmentType.BREAKABLE);
+        super(VANISHING, "vanishing", "curse.vanishing", Rarity.VERY_RARE, EnchantmentType.BREAKABLE);
     }
 
     @Override

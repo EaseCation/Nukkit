@@ -47,12 +47,12 @@ public abstract class EntityVehicle extends Entity implements EntityRideable, En
     }
 
     @Override
-    public String getInteractButtonText() {
+    public String getInteractButtonText(Player player) {
         return "action.interact.mount";
     }
 
     @Override
-    public boolean canDoInteraction() {
+    public boolean canDoInteraction(Player player) {
         return passengers.isEmpty();
     }
 

@@ -10,7 +10,7 @@ public class ChunkConverter {
 
     private BaseFullChunk chunk;
     private Class<? extends FullChunk> toClass;
-    private LevelProvider provider;
+    private final LevelProvider provider;
 
     public ChunkConverter(LevelProvider provider) {
         this.provider = provider;
@@ -35,7 +35,7 @@ public class ChunkConverter {
     public FullChunk perform() {
         BaseFullChunk result;
         try {
-            result = (BaseFullChunk) toClass.getMethod("getEmptyChunk", int.class, int.class, LevelProvider.class).invoke(null, chunk.getX(), chunk.getZ(), provider);
+            result = provider.getHandle().getChunkFactory().create(chunk.getX(), chunk.getZ(), provider);
         } catch (Exception e) {
             throw new RuntimeException(e);
         }

@@ -14,7 +14,7 @@ import java.util.concurrent.ThreadLocalRandom;
  */
 public class EnchantmentThorns extends Enchantment {
     protected EnchantmentThorns() {
-        super(ID_THORNS, "thorns", Rarity.RARE, EnchantmentType.ARMOR);
+        super(THORNS, "thorns", "thorns", Rarity.RARE, EnchantmentType.ARMOR);
     }
 
     @Override
@@ -43,7 +43,7 @@ public class EnchantmentThorns extends Enchantment {
         int thornsLevel = 0;
 
         for (Item armor : human.getInventory().getArmorContents()) {
-            Enchantment thorns = armor.getEnchantment(Enchantment.ID_THORNS);
+            Enchantment thorns = armor.getEnchantment(Enchantment.THORNS);
             if (thorns != null) {
                 thornsLevel = Math.max(thorns.getLevel(), thornsLevel);
             }
