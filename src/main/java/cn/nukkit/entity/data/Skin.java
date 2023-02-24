@@ -16,6 +16,7 @@ import java.io.InputStream;
 import java.nio.charset.StandardCharsets;
 import java.util.List;
 import java.util.*;
+import java.util.concurrent.atomic.AtomicInteger;
 
 /**
  * author: MagicDroidX
@@ -34,6 +35,8 @@ public class Skin {
 
     public static final String GEOMETRY_CUSTOM = convertLegacyGeometryName("geometry.humanoid.custom");
     public static final String GEOMETRY_CUSTOM_SLIM = convertLegacyGeometryName("geometry.humanoid.customSlim");
+
+    private static final AtomicInteger SKIN_COUNTER = new AtomicInteger();
 
     private boolean playerSkin = false; //如果是玩家皮肤，那么需要根据中国版规则进行皮肤反作弊检测
     private String fullSkinId;
@@ -380,7 +383,11 @@ public class Skin {
 
     public String getFullSkinId() {
         if (this.fullSkinId == null) {
-            this.fullSkinId = this.getSkinId() + this.getCapeId();
+            if (playerSkin) {
+                this.fullSkinId = this.getSkinId() + this.getCapeId();
+            } else {
+                this.fullSkinId = this.getSkinId() + "_" + SKIN_COUNTER.incrementAndGet();
+            }
         }
         return fullSkinId;
     }
