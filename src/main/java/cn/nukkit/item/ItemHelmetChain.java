@@ -35,6 +35,6 @@ public class ItemHelmetChain extends ItemArmor {
 
     @Override
     public int getMaxDurability() {
-        return 166;
+        return 165;
     }
 }

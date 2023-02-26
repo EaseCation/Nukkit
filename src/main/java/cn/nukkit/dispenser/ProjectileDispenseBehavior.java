@@ -2,6 +2,7 @@ package cn.nukkit.dispenser;
 
 import cn.nukkit.block.BlockDispenser;
 import cn.nukkit.entity.Entity;
+import cn.nukkit.entity.EntityFactory;
 import cn.nukkit.entity.projectile.EntityProjectile;
 import cn.nukkit.item.Item;
 import cn.nukkit.math.BlockFace;
@@ -13,10 +14,10 @@ import cn.nukkit.nbt.tag.CompoundTag;
  */
 public class ProjectileDispenseBehavior extends DefaultDispenseBehavior {
 
-    private final String entityType;
+    private final EntityFactory factory;
 
-    public ProjectileDispenseBehavior(String entity) {
-        this.entityType = entity;
+    public ProjectileDispenseBehavior(EntityFactory factory) {
+        this.factory = factory;
     }
 
     @Override
@@ -26,7 +27,7 @@ public class ProjectileDispenseBehavior extends DefaultDispenseBehavior {
         CompoundTag nbt = Entity.getDefaultNBT(dispensePos);
         this.correctNBT(nbt);
 
-        Entity projectile = Entity.createEntity(getEntityType(), source.level.getChunk(dispensePos.getChunkX(), dispensePos.getChunkZ()), nbt);
+        Entity projectile = factory.create(source.level.getChunk(dispensePos.getChunkX(), dispensePos.getChunkZ()), nbt);
 
         if (!(projectile instanceof EntityProjectile)) {
             return super.dispense(source, face, item);
@@ -51,10 +52,6 @@ public class ProjectileDispenseBehavior extends DefaultDispenseBehavior {
 
     protected float getAccuracy() {
         return 6;
-    }
-
-    protected String getEntityType() {
-        return this.entityType;
     }
 
     /**

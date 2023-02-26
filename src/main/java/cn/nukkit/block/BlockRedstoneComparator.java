@@ -1,6 +1,7 @@
 package cn.nukkit.block;
 
 import cn.nukkit.Player;
+import cn.nukkit.blockentity.BlockEntities;
 import cn.nukkit.blockentity.BlockEntity;
 import cn.nukkit.blockentity.BlockEntityComparator;
 import cn.nukkit.blockentity.BlockEntityType;
@@ -173,7 +174,7 @@ public abstract class BlockRedstoneComparator extends BlockRedstoneDiode {
     public boolean place(Item item, Block block, Block target, BlockFace face, double fx, double fy, double fz, Player player) {
         if (super.place(item, block, target, face, fx, fy, fz, player)) {
             CompoundTag nbt = BlockEntity.getDefaultCompound(this, BlockEntity.COMPARATOR);
-            BlockEntityComparator comparator = (BlockEntityComparator) BlockEntity.createBlockEntity(BlockEntity.COMPARATOR, this.level.getChunk((int) this.x >> 4, (int) this.z >> 4), nbt);
+            BlockEntityComparator comparator = (BlockEntityComparator) BlockEntities.createBlockEntity(BlockEntityType.COMPARATOR, this.level.getChunk((int) this.x >> 4, (int) this.z >> 4), nbt);
             if (comparator == null) {
                 return false;
             }

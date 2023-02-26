@@ -3,6 +3,7 @@ package cn.nukkit.entity.item;
 import cn.nukkit.Player;
 import cn.nukkit.block.Block;
 import cn.nukkit.block.BlockCampfire;
+import cn.nukkit.block.Blocks;
 import cn.nukkit.entity.Entity;
 import cn.nukkit.entity.EntityID;
 import cn.nukkit.entity.projectile.EntityProjectile;
@@ -10,10 +11,12 @@ import cn.nukkit.event.potion.PotionCollideEvent;
 import cn.nukkit.item.Item;
 import cn.nukkit.item.ItemID;
 import cn.nukkit.level.format.FullChunk;
-import cn.nukkit.level.particle.Particle;
 import cn.nukkit.level.particle.SpellParticle;
+import cn.nukkit.math.BlockFace;
+import cn.nukkit.math.BlockFace.Plane;
 import cn.nukkit.nbt.NBTIO;
 import cn.nukkit.nbt.tag.CompoundTag;
+import cn.nukkit.nbt.tag.ListTag;
 import cn.nukkit.network.protocol.LevelSoundEventPacket;
 import cn.nukkit.potion.Effect;
 import cn.nukkit.potion.Potion;
@@ -26,6 +29,7 @@ public class EntityPotion extends EntityProjectile {
     public static final int NETWORK_ID = EntityID.SPLASH_POTION;
 
     public int potionId;
+
     public Item item;
 
     public EntityPotion(FullChunk chunk, CompoundTag nbt) {
@@ -41,6 +45,7 @@ public class EntityPotion extends EntityProjectile {
         super.initEntity();
 
         potionId = this.namedTag.getShort("PotionId");
+
         item = NBTIO.getItemHelper(this.namedTag.getCompound("Item"));
         if (item.getId() != ItemID.SPLASH_POTION) {
             item = Item.get(ItemID.SPLASH_POTION, potionId);
@@ -117,45 +122,65 @@ public class EntityPotion extends EntityProjectile {
             return;
         }
 
-        potion.setSplash(true);
+        boolean isWater = potion.getId() == Potion.WATER;
+        Effect[] effects = potion.getEffects();
 
-        Particle particle;
-        int r;
-        int g;
-        int b;
-
-        Effect effect = Potion.getEffect(potion.getId(), true);
-
-        if (effect == null) {
-            r = 40;
-            g = 40;
-            b = 255;
-        } else {
-            int[] colors = effect.getColor();
-            r = colors[0];
-            g = colors[1];
-            b = colors[2];
-        }
-
-        particle = new SpellParticle(this, r, g, b);
-
-        this.getLevel().addParticle(particle);
+        this.getLevel().addParticle(new SpellParticle(this, Effect.calculateColor(effects)));
         this.getLevel().addLevelSoundEvent(this, LevelSoundEventPacket.SOUND_GLASS);
 
-        Entity[] entities = this.getLevel().getNearbyEntities(this.getBoundingBox().grow(4.125, 2.125, 4.125));
-        for (Entity anEntity : entities) {
-            double distance = anEntity.distanceSquared(this);
-            if (distance < 16) {
-                double d = anEntity.equals(collidedWith) ? 1 : 1 - Math.sqrt(distance) / 4;
-                potion.applyPotion(anEntity, item, d);
-            }
-        }
-
-        if (potion.getId() == Potion.WATER) {
+        if (isWater) {
             Block block = level.getBlock(this);
             if (block instanceof BlockCampfire) {
                 ((BlockCampfire) block).tryDouseFire();
+            } else {
+                if (block.isFire()) {
+                    level.setBlock(block, Blocks.air(), true);
+                }
+
+                for (BlockFace face : Plane.HORIZONTAL) {
+                    Block side = block.getSide(face);
+                    if (side.isFire()) {
+                        level.setBlock(side, Blocks.air(), true);
+                    } else if (side instanceof BlockCampfire) {
+                        ((BlockCampfire) side).tryDouseFire();
+                    }
+                }
             }
+        }
+
+        if (isLinger()) {
+            ListTag<CompoundTag> mobEffects = new ListTag<>("mobEffects");
+            for (Effect effect : effects) {
+                mobEffects.add(effect.save());
+            }
+
+            EntityAreaEffectCloud aoeCloud = new EntityAreaEffectCloud(getChunk(), getDefaultNBT(this)
+                    .putList(mobEffects));
+            aoeCloud.setOwner(shootingEntity);
+            aoeCloud.spawnToAll();
+            return;
+        }
+
+        if (!isWater && effects[0].getId() == Effect.NO_EFFECT) {
+            return;
+        }
+
+        Entity[] entities = this.getLevel().getNearbyEntities(this.getBoundingBox().grow(4.125, 2.125, 4.125), this);
+        for (Entity entity : entities) {
+            double distance = entity.distanceSquared(this);
+            if (distance >= 16) {
+                continue;
+            }
+
+            if (isWater) {
+                if (entity.isOnFire()) {
+                    entity.extinguish();
+                }
+                continue;
+            }
+
+            float d = entity.equals(collidedWith) ? 1 : (float) (1 - Math.sqrt(distance) / 4);
+            potion.applyPotion(entity, item, 0.75f * d, d);
         }
     }
 
@@ -190,5 +215,9 @@ public class EntityPotion extends EntityProjectile {
         player.dataPacket(createAddEntityPacket());
 
         super.spawnTo(player);
+    }
+
+    public boolean isLinger() {
+        return false;
     }
 }

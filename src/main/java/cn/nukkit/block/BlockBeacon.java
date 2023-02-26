@@ -1,6 +1,7 @@
 package cn.nukkit.block;
 
 import cn.nukkit.Player;
+import cn.nukkit.blockentity.BlockEntities;
 import cn.nukkit.blockentity.BlockEntity;
 import cn.nukkit.blockentity.BlockEntityBeacon;
 import cn.nukkit.blockentity.BlockEntityType;
@@ -72,7 +73,7 @@ public class BlockBeacon extends BlockTransparent {
                         .putInt("x", (int) this.x)
                         .putInt("y", (int) this.y)
                         .putInt("z", (int) this.z);
-                beacon = (BlockEntityBeacon) BlockEntity.createBlockEntity(BlockEntity.BEACON, this.getLevel().getChunk((int) (this.x) >> 4, (int) (this.z) >> 4), nbt);
+                beacon = (BlockEntityBeacon) BlockEntities.createBlockEntity(BlockEntityType.BEACON, this.getLevel().getChunk((int) (this.x) >> 4, (int) (this.z) >> 4), nbt);
                 if (beacon == null) {
                     return false;
                 }
@@ -93,7 +94,7 @@ public class BlockBeacon extends BlockTransparent {
                     .putInt("x", (int) this.x)
                     .putInt("y", (int) this.y)
                     .putInt("z", (int) this.z);
-            BlockEntityBeacon beacon = (BlockEntityBeacon) BlockEntity.createBlockEntity(BlockEntity.BEACON, this.getLevel().getChunk((int) (this.x) >> 4, (int) (this.z) >> 4), nbt);
+            BlockEntityBeacon beacon = (BlockEntityBeacon) BlockEntities.createBlockEntity(BlockEntityType.BEACON, this.getLevel().getChunk((int) (this.x) >> 4, (int) (this.z) >> 4), nbt);
             if (beacon == null) {
                 return false;
             }

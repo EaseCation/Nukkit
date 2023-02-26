@@ -32,11 +32,9 @@ public abstract class BlockFallable extends BlockSolid {
                 CompoundTag nbt = Entity.getDefaultNBT(this.add(0.5, 0, 0.5))
                         .putInt("TileID", this.getId())
                         .putByte("Data", this.getDamage());
-                EntityFallingBlock fall = (EntityFallingBlock) Entity.createEntity("FallingSand", getChunk(), nbt);
-                if (fall != null) {
-                    fall.sync = true;
-                    fall.spawnToAll();
-                }
+                EntityFallingBlock fall = new EntityFallingBlock(getChunk(), nbt);
+                fall.sync = true;
+                fall.spawnToAll();
             }
             return type;
         }

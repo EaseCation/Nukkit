@@ -3,7 +3,6 @@ package cn.nukkit.block;
 import cn.nukkit.Player;
 import cn.nukkit.entity.Entity;
 import cn.nukkit.item.Item;
-import cn.nukkit.item.ItemString;
 import cn.nukkit.level.Level;
 import cn.nukkit.math.AxisAlignedBB;
 import cn.nukkit.math.BlockFace;
@@ -74,7 +73,7 @@ public class BlockTripWire extends BlockTransparentMeta {
 
     @Override
     public Item toItem(boolean addUserData) {
-        return new ItemString();
+        return Item.get(Item.STRING);
     }
 
     public boolean isPowered() {

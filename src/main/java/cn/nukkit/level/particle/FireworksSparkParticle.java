@@ -12,6 +12,6 @@ public class FireworksSparkParticle extends GenericParticle {
     }
 
     public FireworksSparkParticle(Vector3 pos, int scale) {
-        super(pos, Particle.TYPE_FIREWORKS_SPARK, scale);
+        super(pos, Particle.FIREWORKS, scale);
     }
 }

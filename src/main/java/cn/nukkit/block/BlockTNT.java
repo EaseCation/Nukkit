@@ -2,6 +2,7 @@ package cn.nukkit.block;
 
 import cn.nukkit.Player;
 import cn.nukkit.entity.Entity;
+import cn.nukkit.entity.item.EntityPrimedTNT;
 import cn.nukkit.item.Item;
 import cn.nukkit.item.enchantment.Enchantment;
 import cn.nukkit.level.GameRule;
@@ -97,13 +98,10 @@ public class BlockTNT extends BlockSolidMeta {
                         .add(new FloatTag("", 0))
                         .add(new FloatTag("", 0)))
                 .putShort("Fuse", fuse);
-        Entity tnt = Entity.createEntity("PrimedTnt",
+        Entity tnt = new EntityPrimedTNT(
                 this.getLevel().getChunk(this.getFloorX() >> 4, this.getFloorZ() >> 4),
                 nbt, source
         );
-        if (tnt == null) {
-            return;
-        }
         tnt.spawnToAll();
         this.getLevel().addLevelEvent(this, LevelEventPacket.EVENT_SOUND_TNT);
     }

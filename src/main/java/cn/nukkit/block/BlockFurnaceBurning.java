@@ -1,6 +1,7 @@
 package cn.nukkit.block;
 
 import cn.nukkit.Player;
+import cn.nukkit.blockentity.BlockEntities;
 import cn.nukkit.blockentity.BlockEntity;
 import cn.nukkit.blockentity.BlockEntityFurnace;
 import cn.nukkit.blockentity.BlockEntityType;
@@ -78,8 +79,7 @@ public class BlockFurnaceBurning extends BlockSolidMeta implements Faceable {
         this.setDamage(FACES[player != null ? player.getDirection().getHorizontalIndex() : 0]);
         this.getLevel().setBlock(block, this, true, true);
 
-        String blockEntityId = getBlockEntityId();
-        CompoundTag nbt = BlockEntity.getDefaultCompound(this, blockEntityId)
+        CompoundTag nbt = BlockEntity.getDefaultCompound(this, getBlockEntityId())
                 .putList(new ListTag<>("Items"));
 
         if (item.hasCustomName()) {
@@ -93,7 +93,7 @@ public class BlockFurnaceBurning extends BlockSolidMeta implements Faceable {
             }
         }
 
-        BlockEntityFurnace furnace = (BlockEntityFurnace) BlockEntity.createBlockEntity(blockEntityId, this.getChunk(), nbt);
+        BlockEntityFurnace furnace = (BlockEntityFurnace) BlockEntities.createBlockEntity(getBlockEntityType(), this.getChunk(), nbt);
         return furnace != null;
     }
 
@@ -111,10 +111,9 @@ public class BlockFurnaceBurning extends BlockSolidMeta implements Faceable {
             if (blockEntity instanceof BlockEntityFurnace) {
                 furnace = (BlockEntityFurnace) blockEntity;
             } else {
-                String blockEntityId = getBlockEntityId();
-                CompoundTag nbt = BlockEntity.getDefaultCompound(this, blockEntityId)
+                CompoundTag nbt = BlockEntity.getDefaultCompound(this, getBlockEntityId())
                         .putList(new ListTag<>("Items"));
-                furnace = (BlockEntityFurnace) BlockEntity.createBlockEntity(blockEntityId, getChunk(), nbt);
+                furnace = (BlockEntityFurnace) BlockEntities.createBlockEntity(getBlockEntityType(), getChunk(), nbt);
                 if (furnace == null) {
                     return true;
                 }

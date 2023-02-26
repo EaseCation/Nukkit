@@ -19,7 +19,7 @@ import cn.nukkit.event.player.PlayerInteractEvent;
 import cn.nukkit.event.player.PlayerInteractEvent.Action;
 import cn.nukkit.event.weather.LightningStrikeEvent;
 import cn.nukkit.item.Item;
-import cn.nukkit.item.ItemBlock;
+import cn.nukkit.item.Items;
 import cn.nukkit.item.enchantment.Enchantment;
 import cn.nukkit.level.GlobalBlockPaletteInterface.StaticVersion;
 import cn.nukkit.level.biome.Biome;
@@ -81,6 +81,7 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.*;
 import java.util.concurrent.*;
+import java.util.function.Predicate;
 
 import static cn.nukkit.SharedConstants.*;
 import static cn.nukkit.level.format.generic.ChunkRequestTask.PADDING_SUB_CHUNK_COUNT;
@@ -2321,7 +2322,7 @@ public class Level implements ChunkManager, Metadatable {
         int dropExp = target.getDropExp();
 
         if (item == null) {
-            item = new ItemBlock(Block.get(BlockID.AIR), 0, 0);
+            item = Items.air();
         }
 
         boolean isSilkTouch = item.getEnchantment(Enchantment.SILK_TOUCH) != null;
@@ -2445,7 +2446,7 @@ public class Level implements ChunkManager, Metadatable {
 
         item.useOn(target);
         if (item.isTool() && item.getDamage() >= item.getMaxDurability()) {
-            item = new ItemBlock(Block.get(BlockID.AIR), 0, 0);
+            item = Items.air();
         }
 
         if (this.gameRules.getBoolean(GameRule.DO_TILE_DROPS)) {
@@ -2485,10 +2486,8 @@ public class Level implements ChunkManager, Metadatable {
             nbt.putShort("Value", split);
             nbt.putShort("PickupDelay", delay);
 
-            Entity entity = Entity.createEntity("XpOrb", this.getChunk(source.getChunkX(), source.getChunkZ()), nbt);
-            if (entity != null) {
-                entity.spawnToAll();
-            }
+            Entity entity = new EntityXPOrb(this.getChunk(source.getChunkX(), source.getChunkZ()), nbt);
+            entity.spawnToAll();
         }
     }
 
@@ -2539,7 +2538,7 @@ public class Level implements ChunkManager, Metadatable {
                 if (!player.isSneaking() && item.canBeActivated()
                         && item.onActivate(this, player, block, target, face, fx, fy, fz)) {
                     if (item.getCount() <= 0) {
-                        item = new ItemBlock(Block.get(BlockID.AIR), 0, 0);
+                        item = Items.air();
                         return item;
                     }
                 }
@@ -2661,7 +2660,7 @@ public class Level implements ChunkManager, Metadatable {
         }
 
         if (item.getCount() <= 0) {
-            item = new ItemBlock(Block.get(BlockID.AIR), 0, 0);
+            item = Items.air();
         }
         return item;
     }
@@ -2730,6 +2729,29 @@ public class Level implements ChunkManager, Metadatable {
         }
 
         return nearby.toArray(new Entity[0]);
+    }
+
+    public boolean hasEntity(AxisAlignedBB aabb) {
+        return hasEntity(aabb, null);
+    }
+
+    public boolean hasEntity(AxisAlignedBB aabb, Entity entity) {
+        int minX = Mth.floor(aabb.getMinX() - 2) >> 4;
+        int maxX = Mth.floor(aabb.getMaxX() + 2) >> 4;
+        int minZ = Mth.floor(aabb.getMinZ() - 2) >> 4;
+        int maxZ = Mth.floor(aabb.getMaxZ() + 2) >> 4;
+
+        for (int x = minX; x <= maxX; ++x) {
+            for (int z = minZ; z <= maxZ; ++z) {
+                for (Entity ent : this.getChunkEntities(x, z).values()) {
+                    if (ent != entity && ent.boundingBox.intersectsWith(aabb)) {
+                        return true;
+                    }
+                }
+            }
+        }
+
+        return false;
     }
 
     public Map<Long, BlockEntity> getBlockEntities() {
@@ -4400,6 +4422,30 @@ public class Level implements ChunkManager, Metadatable {
             }
         }
         return blocks;
+    }
+
+    public boolean containsBlock(AxisAlignedBB bb, Predicate<Block> predicate) {
+        return containsBlock(bb, predicate, true);
+    }
+
+    public boolean containsBlock(AxisAlignedBB bb, Predicate<Block> predicate, boolean load) {
+        int minX = Mth.floor(Math.min(bb.getMinX(), bb.getMaxX()));
+        int minY = Mth.floor(Math.min(bb.getMinY(), bb.getMaxY()));
+        int minZ = Mth.floor(Math.min(bb.getMinZ(), bb.getMaxZ()));
+        int maxX = Mth.floor(Math.max(bb.getMinX(), bb.getMaxX()));
+        int maxY = Mth.floor(Math.max(bb.getMinY(), bb.getMaxY()));
+        int maxZ = Mth.floor(Math.max(bb.getMinZ(), bb.getMaxZ()));
+
+        for (int z = minZ; z <= maxZ; ++z) {
+            for (int x = minX; x <= maxX; ++x) {
+                for (int y = minY; y <= maxY; ++y) {
+                    if (predicate.test(getBlock(x, y, z, load))) {
+                        return true;
+                    }
+                }
+            }
+        }
+        return false;
     }
 
     public List<Block> getExtraBlocks(AxisAlignedBB bb) {

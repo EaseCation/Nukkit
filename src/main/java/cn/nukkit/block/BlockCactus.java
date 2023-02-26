@@ -53,11 +53,6 @@ public class BlockCactus extends BlockTransparentMeta {
     }
 
     @Override
-    public double getMinY() {
-        return this.y;
-    }
-
-    @Override
     public double getMinZ() {
         return this.z + 0.0625;
     }
@@ -65,11 +60,6 @@ public class BlockCactus extends BlockTransparentMeta {
     @Override
     public double getMaxX() {
         return this.x + 0.9375;
-    }
-
-    @Override
-    public double getMaxY() {
-        return this.y + 0.9375;
     }
 
     @Override
@@ -95,11 +85,13 @@ public class BlockCactus extends BlockTransparentMeta {
             Block down = down();
             if (down.getId() != SAND && down.getId() != CACTUS) {
                 this.getLevel().useBreakOn(this);
+                return Level.BLOCK_UPDATE_NORMAL;
             } else {
                 for (int side = 2; side <= 5; ++side) {
                     Block block = getSide(BlockFace.fromIndex(side));
                     if (!block.canBeFlowedInto()) {
                         this.getLevel().useBreakOn(this);
+                        return Level.BLOCK_UPDATE_NORMAL;
                     }
                 }
             }
@@ -114,14 +106,17 @@ public class BlockCactus extends BlockTransparentMeta {
                             if (!event.isCancelled()) {
                                 this.getLevel().setBlock(b, event.getNewState(), true);
                             }
+                            break;
+                        } else if (b.getId() != CACTUS) {
+                            break;
                         }
                     }
                     this.setDamage(0);
-                    this.getLevel().setBlock(this, this, true);
                 } else {
                     this.setDamage(this.getDamage() + 1);
-                    this.getLevel().setBlock(this, this, true);
                 }
+                this.getLevel().setBlock(this, this, true);
+                return Level.BLOCK_UPDATE_RANDOM;
             }
         }
 
@@ -154,7 +149,7 @@ public class BlockCactus extends BlockTransparentMeta {
     public BlockColor getColor() {
         return BlockColor.PLANT_BLOCK_COLOR;
     }
-    
+
     @Override
     public Item[] getDrops(Item item) {
         return new Item[]{

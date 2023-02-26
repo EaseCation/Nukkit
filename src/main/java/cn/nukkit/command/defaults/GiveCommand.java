@@ -58,14 +58,16 @@ public class GiveCommand extends VanillaCommand {
             return true;
         }
 
-        try {
-            item.setCount(Mth.clamp(Integer.parseInt(args[2]), 0, Short.MAX_VALUE));
-        } catch (Exception e) {
-            item.setCount(item.getMaxStackSize());
+        if (args.length > 2) {
+            try {
+                item.setCount(Mth.clamp(Integer.parseInt(args[2]), 0, Short.MAX_VALUE));
+            } catch (Exception e) {
+                item.setCount(item.getMaxStackSize());
+            }
         }
 
         if (player != null) {
-            if (item.getId() == 0) {
+            if (item.getId() == Item.AIR) {
                 sender.sendMessage(new TranslationContainer(TextFormat.RED + "%commands.give.item.notFound", args[1]));
                 return true;
             }

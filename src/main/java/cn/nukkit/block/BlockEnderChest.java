@@ -1,6 +1,7 @@
 package cn.nukkit.block;
 
 import cn.nukkit.Player;
+import cn.nukkit.blockentity.BlockEntities;
 import cn.nukkit.blockentity.BlockEntity;
 import cn.nukkit.blockentity.BlockEntityEnderChest;
 import cn.nukkit.blockentity.BlockEntityType;
@@ -115,7 +116,7 @@ public class BlockEnderChest extends BlockTransparentMeta implements Faceable {
             }
         }
 
-        BlockEntityEnderChest ender = (BlockEntityEnderChest) BlockEntity.createBlockEntity(BlockEntity.ENDER_CHEST, this.getLevel().getChunk((int) this.x >> 4, (int) this.z >> 4), nbt);
+        BlockEntityEnderChest ender = (BlockEntityEnderChest) BlockEntities.createBlockEntity(BlockEntityType.ENDER_CHEST, this.getLevel().getChunk((int) this.x >> 4, (int) this.z >> 4), nbt);
         return ender != null;
     }
 
@@ -137,7 +138,7 @@ public class BlockEnderChest extends BlockTransparentMeta implements Faceable {
                         .putInt("x", (int) this.x)
                         .putInt("y", (int) this.y)
                         .putInt("z", (int) this.z);
-                chest = (BlockEntityEnderChest) BlockEntity.createBlockEntity(BlockEntity.ENDER_CHEST, this.getLevel().getChunk((int) this.x >> 4, (int) this.z >> 4), nbt);
+                chest = (BlockEntityEnderChest) BlockEntities.createBlockEntity(BlockEntityType.ENDER_CHEST, this.getLevel().getChunk((int) this.x >> 4, (int) this.z >> 4), nbt);
                 if (chest == null) {
                     return false;
                 }

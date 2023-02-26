@@ -1,6 +1,7 @@
 package cn.nukkit.block;
 
 import cn.nukkit.Player;
+import cn.nukkit.blockentity.BlockEntities;
 import cn.nukkit.blockentity.BlockEntity;
 import cn.nukkit.blockentity.BlockEntitySculkShrieker;
 import cn.nukkit.blockentity.BlockEntityType;
@@ -120,7 +121,7 @@ public class BlockSculkShrieker extends BlockTransparentMeta {
             nbt.putString("CustomName", item.getCustomName());
         }
 
-        return (BlockEntitySculkShrieker) BlockEntity.createBlockEntity(BlockEntity.SCULK_SHRIEKER, getChunk(), nbt);
+        return (BlockEntitySculkShrieker) BlockEntities.createBlockEntity(BlockEntityType.SCULK_SHRIEKER, getChunk(), nbt);
     }
 
     @Nullable

@@ -1,7 +1,7 @@
 package cn.nukkit.block;
 
 import cn.nukkit.item.Item;
-import cn.nukkit.item.ItemBlock;
+import cn.nukkit.item.Items;
 import cn.nukkit.math.BlockFace;
 import cn.nukkit.utils.Faceable;
 
@@ -78,7 +78,7 @@ public class BlockPistonHead extends BlockTransparentMeta implements Faceable {
 
     @Override
     public Item toItem(boolean addUserData) {
-        return new ItemBlock(Block.get(BlockID.AIR));
+        return Items.air();
     }
 
     @Override

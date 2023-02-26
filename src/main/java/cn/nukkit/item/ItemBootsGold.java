@@ -35,6 +35,6 @@ public class ItemBootsGold extends ItemArmor {
 
     @Override
     public int getMaxDurability() {
-        return 92;
+        return 91;
     }
 }

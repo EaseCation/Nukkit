@@ -223,13 +223,11 @@ public class BlockScaffolding extends BlockTransparentMeta { // extends BlockFal
                     //TODO: sync
                     level.setBlock(this, get(AIR), true);
 
-                    EntityFallingBlock fallingBlock = (EntityFallingBlock) Entity.createEntity("FallingSand", getChunk(), Entity.getDefaultNBT(add(0.5, 0, 0.5))
+                    EntityFallingBlock fallingBlock = new EntityFallingBlock(getChunk(), Entity.getDefaultNBT(add(0.5, 0, 0.5))
                             .putInt("TileID", getId())
                             .putByte("Data", 0));
-                    if (fallingBlock != null) {
-                        fallingBlock.sync = true;
-                        fallingBlock.spawnToAll();
-                    }
+                    fallingBlock.sync = true;
+                    fallingBlock.spawnToAll();
 
                     return type;
                 }

@@ -3,6 +3,7 @@ package cn.nukkit.block.edu;
 import cn.nukkit.Player;
 import cn.nukkit.block.Block;
 import cn.nukkit.block.BlockSolidMeta;
+import cn.nukkit.blockentity.BlockEntities;
 import cn.nukkit.blockentity.BlockEntity;
 import cn.nukkit.blockentity.BlockEntityChemistryTable;
 import cn.nukkit.blockentity.BlockEntityType;
@@ -109,7 +110,7 @@ public class BlockChemistryTable extends BlockSolidMeta {
             nbt.putString("CustomName", item.getCustomName());
         }
 
-        return (BlockEntityChemistryTable) BlockEntity.createBlockEntity(BlockEntity.CHEMISTRY_TABLE, getChunk(), nbt);
+        return (BlockEntityChemistryTable) BlockEntities.createBlockEntity(BlockEntityType.CHEMISTRY_TABLE, getChunk(), nbt);
     }
 
     @Nullable

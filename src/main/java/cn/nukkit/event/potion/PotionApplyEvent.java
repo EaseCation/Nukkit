@@ -19,15 +19,15 @@ public class PotionApplyEvent extends PotionEvent implements Cancellable {
         return handlers;
     }
 
-    private Item potionItem;
-    private Effect applyEffect;
+    private final Item potionItem;
+    private Effect[] applyEffects;
 
     private final Entity entity;
 
-    public PotionApplyEvent(Potion potion, Item potionItem, Effect applyEffect, Entity entity) {
+    public PotionApplyEvent(Potion potion, Item potionItem, Effect[] applyEffects, Entity entity) {
         super(potion);
         this.potionItem = potionItem;
-        this.applyEffect = applyEffect;
+        this.applyEffects = applyEffects;
         this.entity = entity;
     }
 
@@ -39,11 +39,11 @@ public class PotionApplyEvent extends PotionEvent implements Cancellable {
         return entity;
     }
 
-    public Effect getApplyEffect() {
-        return applyEffect;
+    public Effect[] getApplyEffects() {
+        return applyEffects;
     }
 
-    public void setApplyEffect(Effect applyEffect) {
-        this.applyEffect = applyEffect;
+    public void setApplyEffect(Effect... applyEffects) {
+        this.applyEffects = applyEffects;
     }
 }

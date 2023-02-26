@@ -14,11 +14,11 @@ public class ConstantItemSelector extends Selector {
         this(id, 0, parent);
     }
 
-    public ConstantItemSelector(int id, Integer meta, Selector parent) {
+    public ConstantItemSelector(int id, int meta, Selector parent) {
         this(id, meta, 1, parent);
     }
 
-    public ConstantItemSelector(int id, Integer meta, int count, Selector parent) {
+    public ConstantItemSelector(int id, int meta, int count, Selector parent) {
         this(Item.get(id, meta, count), parent);
     }
 

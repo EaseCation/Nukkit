@@ -21,12 +21,16 @@ public class ItemBlock extends Item {
     }
 
     @Override
+    public void setDamage(int meta) {
+        super.setDamage(meta);
+
+        this.block.setDamage(meta);
+    }
+
+    @Override
     public void setDamage(Integer meta) {
-        if (meta != null) {
-            this.meta = meta & 0xffff;
-        } else {
-            this.hasMeta = false;
-        }
+        super.setDamage(meta);
+
         this.block.setDamage(meta);
     }
 

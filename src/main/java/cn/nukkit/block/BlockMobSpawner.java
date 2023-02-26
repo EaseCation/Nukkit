@@ -1,6 +1,7 @@
 package cn.nukkit.block;
 
 import cn.nukkit.Player;
+import cn.nukkit.blockentity.BlockEntities;
 import cn.nukkit.blockentity.BlockEntity;
 import cn.nukkit.blockentity.BlockEntityMobSpawner;
 import cn.nukkit.blockentity.BlockEntityType;
@@ -134,7 +135,7 @@ public class BlockMobSpawner extends BlockSolid {
             nbt.putString("CustomName", item.getCustomName());
         }
 
-        return (BlockEntityMobSpawner) BlockEntity.createBlockEntity(BlockEntity.MOB_SPAWNER, getChunk(), nbt);
+        return (BlockEntityMobSpawner) BlockEntities.createBlockEntity(BlockEntityType.MOB_SPAWNER, getChunk(), nbt);
     }
 
     @Nullable

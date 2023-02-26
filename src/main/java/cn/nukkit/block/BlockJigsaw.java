@@ -1,6 +1,7 @@
 package cn.nukkit.block;
 
 import cn.nukkit.Player;
+import cn.nukkit.blockentity.BlockEntities;
 import cn.nukkit.blockentity.BlockEntity;
 import cn.nukkit.blockentity.BlockEntityJigsawBlock;
 import cn.nukkit.blockentity.BlockEntityType;
@@ -150,7 +151,7 @@ public class BlockJigsaw extends BlockSolidMeta implements Faceable {
             nbt.putString("CustomName", item.getCustomName());
         }
 
-        return (BlockEntityJigsawBlock) BlockEntity.createBlockEntity(BlockEntity.JIGSAW_BLOCK, getChunk(), nbt);
+        return (BlockEntityJigsawBlock) BlockEntities.createBlockEntity(BlockEntityType.JIGSAW_BLOCK, getChunk(), nbt);
     }
 
     @Nullable

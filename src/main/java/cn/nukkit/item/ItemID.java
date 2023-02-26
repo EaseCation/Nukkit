@@ -506,4 +506,7 @@ public interface ItemID extends BlockID, ItemRuntimeID {
 
     int MANGROVE_DOOR = 1004;
     int MANGROVE_SIGN = 1005;
+
+
+    int UNDEFINED_ID = 1006;
 }

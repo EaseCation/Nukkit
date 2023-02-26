@@ -1,6 +1,7 @@
 package cn.nukkit.block;
 
 import cn.nukkit.Player;
+import cn.nukkit.blockentity.BlockEntities;
 import cn.nukkit.blockentity.BlockEntity;
 import cn.nukkit.blockentity.BlockEntityConduit;
 import cn.nukkit.blockentity.BlockEntityType;
@@ -126,7 +127,7 @@ public class BlockConduit extends BlockTransparent {
             nbt.putString("CustomName", item.getCustomName());
         }
 
-        return (BlockEntityConduit) BlockEntity.createBlockEntity(BlockEntity.CONDUIT, getChunk(), nbt);
+        return (BlockEntityConduit) BlockEntities.createBlockEntity(BlockEntityType.CONDUIT, getChunk(), nbt);
     }
 
     @Nullable

@@ -35,6 +35,6 @@ public class ItemChestplateLeather extends ItemColorArmor {
 
     @Override
     public int getMaxDurability() {
-        return 81;
+        return 80;
     }
 }

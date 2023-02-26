@@ -533,7 +533,7 @@ public class Player extends EntityHuman implements CommandSender, InventoryHolde
 
     @Override
     public boolean canCollideWith(Entity entity) {
-        if ((this.isSurvival() || this.isAdventure()) && entity instanceof EntityFishingHook) return true;
+        if (this.isSurvivalLike() && entity instanceof EntityFishingHook) return true;
         return false;
     }
 
@@ -1773,7 +1773,7 @@ public class Player extends EntityHuman implements CommandSender, InventoryHolde
         }
 
         if (!revert && (this.isFoodEnabled() || this.getServer().getDifficulty() == 0)) {
-            if ((this.isSurvival() || this.isAdventure())/* && !this.getRiddingOn() instanceof Entity*/) {
+            if (this.isSurvivalLike()/* && !this.getRiddingOn() instanceof Entity*/) {
                 //UpdateFoodExpLevel
                 if (distance >= 0.05) {
                     double jump = 0;
@@ -1952,7 +1952,7 @@ public class Player extends EntityHuman implements CommandSender, InventoryHolde
 
                 }
 
-                if (this.isSurvival() || this.isAdventure()) {
+                if (this.isSurvivalLike()) {
                     if (this.getFoodData() != null) this.getFoodData().update(tickDiff);
                 }
             }
@@ -3436,13 +3436,13 @@ public class Player extends EntityHuman implements CommandSender, InventoryHolde
                                     if (target.onInteract(this, item) && this.isSurvival()) {
                                         if (item.isTool()) {
                                             if (item.useOn(target) && item.getDamage() >= item.getMaxDurability()) {
-                                                item = new ItemBlock(Block.get(BlockID.AIR));
+                                                item = Items.air();
                                             }
                                         } else {
                                             if (item.count > 1) {
                                                 item.count--;
                                             } else {
-                                                item = new ItemBlock(Block.get(BlockID.AIR));
+                                                item = Items.air();
                                             }
                                         }
 
@@ -3497,7 +3497,7 @@ public class Player extends EntityHuman implements CommandSender, InventoryHolde
                                         enchantment.doPostAttack(this, target);
                                     }
 
-                                    if (item.isTool() && (this.isSurvival() || this.isAdventure())) {
+                                    if (item.isTool() && this.isSurvivalLike()) {
                                         if (item.useOn(target) && item.getDamage() >= item.getMaxDurability()) {
                                             this.inventory.setItemInHand(Item.get(0));
                                         } else {
@@ -3548,18 +3548,18 @@ public class Player extends EntityHuman implements CommandSender, InventoryHolde
                                                 this.inventory.sendContents(this);
                                                 break;
                                             }
-                                            Potion potion = Potion.getPotion(itemInHand.getDamage()).setSplash(false);
+
+                                            Potion potion = Potion.getPotion(itemInHand.getDamage());
 
                                             if (this.getGamemode() == SURVIVAL) {
                                                 --itemInHand.count;
                                                 this.inventory.setItemInHand(itemInHand);
-                                                this.inventory.addItem(new ItemGlassBottle());
+                                                this.inventory.addItem(Item.get(Item.GLASS_BOTTLE));
                                             }
 
                                             if (potion != null) {
                                                 potion.applyPotion(this, itemInHand);
                                             }
-
                                         } else if (itemInHand.getId() == Item.BUCKET && itemInHand.getDamage() == 1) { //milk
                                             this.server.getPluginManager().callEvent(consumeEvent);
                                             if (consumeEvent.isCancelled()) {
@@ -3576,7 +3576,7 @@ public class Player extends EntityHuman implements CommandSender, InventoryHolde
                                             if (this.isSurvival()) {
                                                 itemInHand.count--;
                                                 this.inventory.setItemInHand(itemInHand);
-                                                this.inventory.addItem(new ItemBucket());
+                                                this.inventory.addItem(Item.get(Item.BUCKET));
                                             }
 
                                             this.removeAllEffects();
@@ -4264,7 +4264,7 @@ public class Player extends EntityHuman implements CommandSender, InventoryHolde
         }
 
         if (!ev.getKeepExperience() && this.level.getGameRules().getBoolean(GameRule.DO_ENTITY_DROPS)) {
-            if (this.isSurvival() || this.isAdventure()) {
+            if (this.isSurvivalLike()) {
                 int exp = ev.getExperience() * 7;
                 if (exp > 100) exp = 100;
                 this.getLevel().dropExpOrb(this, exp);
@@ -5169,7 +5169,7 @@ public class Player extends EntityHuman implements CommandSender, InventoryHolde
 
         if (near) {
             if (entity instanceof EntityArrow && ((EntityArrow) entity).hadCollision && entity.ticksLived > 5) {
-                ItemArrow item = new ItemArrow();
+                Item item = Item.get(Item.ARROW);
                 if (!this.isCreative() && !this.inventory.canAddItem(item)) {
                     return false;
                 }

@@ -1,6 +1,7 @@
 package cn.nukkit.block;
 
 import cn.nukkit.Player;
+import cn.nukkit.blockentity.BlockEntities;
 import cn.nukkit.blockentity.BlockEntity;
 import cn.nukkit.blockentity.BlockEntityType;
 import cn.nukkit.blockentity.BlockEntityMovingBlock;
@@ -78,7 +79,7 @@ public abstract class BlockPistonBase extends BlockTransparentMeta implements Fa
                 .putInt("facing", this.getBlockFace().getIndex())
                 .putBoolean("Sticky", this.sticky);
 
-        BlockEntityPistonArm piston = (BlockEntityPistonArm) BlockEntity.createBlockEntity(BlockEntity.PISTON_ARM, this.level.getChunk(getChunkX(), getChunkZ()), nbt);
+        BlockEntityPistonArm piston = (BlockEntityPistonArm) BlockEntities.createBlockEntity(BlockEntityType.PISTON_ARM, this.level.getChunk(getChunkX(), getChunkZ()), nbt);
         piston.powered = isPowered();
 
         this.checkState(piston.powered);

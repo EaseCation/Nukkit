@@ -1,5 +1,8 @@
 package cn.nukkit.item;
 
+import cn.nukkit.entity.projectile.EntityEgg;
+import cn.nukkit.entity.projectile.ProjectileFactory;
+
 /**
  * author: MagicDroidX
  * Nukkit Project
@@ -19,8 +22,8 @@ public class ItemEgg extends ProjectileItem {
     }
 
     @Override
-    public String getProjectileEntityType() {
-        return "Egg";
+    public ProjectileFactory getProjectileEntityFactory() {
+        return EntityEgg::new;
     }
 
     @Override

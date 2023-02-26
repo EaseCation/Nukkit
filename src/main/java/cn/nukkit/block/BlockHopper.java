@@ -1,6 +1,7 @@
 package cn.nukkit.block;
 
 import cn.nukkit.Player;
+import cn.nukkit.blockentity.BlockEntities;
 import cn.nukkit.blockentity.BlockEntity;
 import cn.nukkit.blockentity.BlockEntityHopper;
 import cn.nukkit.blockentity.BlockEntityType;
@@ -79,7 +80,7 @@ public class BlockHopper extends BlockTransparentMeta implements Faceable {
                 .putInt("y", (int) this.y)
                 .putInt("z", (int) this.z);
 
-        BlockEntityHopper hopper = (BlockEntityHopper) BlockEntity.createBlockEntity(BlockEntity.HOPPER, this.level.getChunk(this.getFloorX() >> 4, this.getFloorZ() >> 4), nbt);
+        BlockEntityHopper hopper = (BlockEntityHopper) BlockEntities.createBlockEntity(BlockEntityType.HOPPER, this.level.getChunk(this.getFloorX() >> 4, this.getFloorZ() >> 4), nbt);
         return hopper != null;
     }
 

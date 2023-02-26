@@ -1,9 +1,7 @@
 package cn.nukkit.entity.data;
 
-import cn.nukkit.block.Block;
-import cn.nukkit.block.BlockID;
 import cn.nukkit.item.Item;
-import cn.nukkit.item.ItemBlock;
+import cn.nukkit.item.Items;
 import cn.nukkit.math.Vector3;
 import cn.nukkit.math.Vector3f;
 import it.unimi.dsi.fastutil.ints.Int2ObjectMap;
@@ -68,7 +66,7 @@ public class EntityMetadata {
     }
 
     public Item getSlot(int id) {
-        return (Item) this.getOrDefault(id, new SlotEntityData(id, new ItemBlock(Block.get(BlockID.AIR)))).getData();
+        return (Item) this.getOrDefault(id, new SlotEntityData(id, Items.air())).getData();
     }
 
     public String getString(int id) {

@@ -6,6 +6,7 @@ import cn.nukkit.block.BlockBedrock;
 import cn.nukkit.block.BlockID;
 import cn.nukkit.block.BlockObsidian;
 import cn.nukkit.entity.Entity;
+import cn.nukkit.entity.item.EntityEndCrystal;
 import cn.nukkit.level.Level;
 import cn.nukkit.level.format.FullChunk;
 import cn.nukkit.math.BlockFace;
@@ -64,17 +65,15 @@ public class ItemEndCrystal extends Item {
             nbt.putString("CustomName", this.getCustomName());
         }
 
-        Entity entity = Entity.createEntity("EndCrystal", chunk, nbt);
+        Entity entity = new EntityEndCrystal(chunk, nbt);
 
-        if (entity != null) {
-            if (player.isAdventure() || player.isSurvival()) {
-                Item item = player.getInventory().getItemInHand();
-                item.setCount(item.getCount() - 1);
-                player.getInventory().setItemInHand(item);
-            }
-            entity.spawnToAll();
-            return true;
+        if (player.isSurvivalLike()) {
+            Item item = player.getInventory().getItemInHand();
+            item.setCount(item.getCount() - 1);
+            player.getInventory().setItemInHand(item);
         }
-        return false;
+
+        entity.spawnToAll();
+        return true;
     }
 }

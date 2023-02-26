@@ -1,6 +1,7 @@
 package cn.nukkit.block;
 
 import cn.nukkit.Player;
+import cn.nukkit.blockentity.BlockEntities;
 import cn.nukkit.blockentity.BlockEntity;
 import cn.nukkit.blockentity.BlockEntityStructureBlock;
 import cn.nukkit.blockentity.BlockEntityType;
@@ -132,7 +133,7 @@ public class BlockStructure extends BlockSolidMeta {
             nbt.putString("CustomName", item.getCustomName());
         }
 
-        return (BlockEntityStructureBlock) BlockEntity.createBlockEntity(BlockEntity.STRUCTURE_BLOCK, getChunk(), nbt);
+        return (BlockEntityStructureBlock) BlockEntities.createBlockEntity(BlockEntityType.STRUCTURE_BLOCK, getChunk(), nbt);
     }
 
     @Nullable

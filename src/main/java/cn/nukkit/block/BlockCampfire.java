@@ -1,6 +1,7 @@
 package cn.nukkit.block;
 
 import cn.nukkit.Player;
+import cn.nukkit.blockentity.BlockEntities;
 import cn.nukkit.blockentity.BlockEntity;
 import cn.nukkit.blockentity.BlockEntityCampfire;
 import cn.nukkit.blockentity.BlockEntityType;
@@ -323,7 +324,7 @@ public class BlockCampfire extends BlockTransparentMeta implements Faceable {
             nbt.putString("CustomName", item.getCustomName());
         }
 
-        return (BlockEntityCampfire) BlockEntity.createBlockEntity(BlockEntity.CAMPFIRE, getChunk(), nbt);
+        return (BlockEntityCampfire) BlockEntities.createBlockEntity(BlockEntityType.CAMPFIRE, getChunk(), nbt);
     }
 
     @Nullable

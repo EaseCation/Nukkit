@@ -1,5 +1,6 @@
 package cn.nukkit.block;
 
+import cn.nukkit.blockentity.BlockEntities;
 import cn.nukkit.blockentity.BlockEntity;
 import cn.nukkit.blockentity.BlockEntityDropper;
 import cn.nukkit.blockentity.BlockEntityType;
@@ -42,7 +43,7 @@ public class BlockDropper extends BlockDispenser {
 
     @Override
     protected void createBlockEntity() {
-        BlockEntity.createBlockEntity(BlockEntity.DROPPER, getChunk(), BlockEntity.getDefaultCompound(this, BlockEntity.DROPPER));
+        BlockEntities.createBlockEntity(BlockEntityType.DROPPER, getChunk(), BlockEntity.getDefaultCompound(this, BlockEntity.DROPPER));
     }
 
     @Override

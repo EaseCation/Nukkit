@@ -5,6 +5,7 @@ import cn.nukkit.entity.Entity;
 import cn.nukkit.event.entity.EntityDamageEvent;
 import cn.nukkit.event.entity.EntityDamageEvent.DamageCause;
 import cn.nukkit.event.entity.EntityRegainHealthEvent;
+import cn.nukkit.nbt.tag.CompoundTag;
 import cn.nukkit.network.protocol.MobEffectPacket;
 
 import javax.annotation.Nullable;
@@ -15,11 +16,9 @@ import javax.annotation.Nullable;
  */
 public class Effect implements EffectID, Cloneable {
 
-    protected static Effect[] effects;
+    static final Effect[] effects = new Effect[256];
 
     public static void init() {
-        effects = new Effect[256];
-
         Effects.registerVanillaEffects();
     }
 
@@ -112,6 +111,10 @@ public class Effect implements EffectID, Cloneable {
 
     public boolean isBad() {
         return bad;
+    }
+
+    public boolean isInstantaneous() {
+        return false;
     }
 
     public boolean canTick() {
@@ -247,5 +250,64 @@ public class Effect implements EffectID, Cloneable {
         } catch (CloneNotSupportedException e) {
             return null;
         }
+    }
+
+    public CompoundTag save() {
+        return save(new CompoundTag());
+    }
+
+    public CompoundTag save(CompoundTag tag) {
+        return tag.putByte("Id", id)
+                .putByte("Amplifier", amplifier)
+                .putInt("Duration", duration)
+                .putInt("DurationEasy", duration)
+                .putInt("DurationNormal", duration)
+                .putInt("DurationHard", duration)
+                .putBoolean("Ambient", ambient)
+                .putBoolean("ShowParticles", show)
+                .putBoolean("DisplayOnScreenTextureAnimation", false);
+    }
+
+    @Nullable
+    public static Effect load(CompoundTag tag) {
+        Effect effect = getEffect(tag.getByte("Id"));
+        if (effect == null) {
+            return null;
+        }
+        return effect.setAmplifier(tag.getByte("Amplifier"))
+                .setDuration(tag.getInt("Duration"))
+                .setAmbient(tag.getBoolean("Ambient"))
+                .setVisible(tag.getBoolean("ShowParticles"));
+    }
+
+    public static int calculateColor(Effect... effects) {
+        int total = 0;
+        int r = 0;
+        int g = 0;
+        int b = 0;
+
+        for (Effect effect : effects) {
+            if (!effect.isVisible()) {
+                continue;
+            }
+
+            int level = effect.getAmplifier() + 1;
+
+            int[] color = effect.getColor();
+            r += color[0] * level;
+            g += color[1] * level;
+            b += color[2] * level;
+
+            total += level;
+        }
+
+        if (total == 0) {
+            return 0;
+        }
+
+        r = (r / total) & 0xff;
+        g = (g / total) & 0xff;
+        b = (b / total) & 0xff;
+        return (r << 16) | (g << 8) | b;
     }
 }

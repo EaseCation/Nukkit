@@ -1,5 +1,7 @@
 package cn.nukkit.item;
 
+import cn.nukkit.entity.item.EntityPotion;
+import cn.nukkit.entity.projectile.ProjectileFactory;
 import cn.nukkit.nbt.NBTIO;
 import cn.nukkit.nbt.tag.CompoundTag;
 
@@ -8,6 +10,10 @@ import cn.nukkit.nbt.tag.CompoundTag;
  * Package cn.nukkit.item in project Nukkit .
  */
 public class ItemPotionSplash extends ProjectileItem {
+
+    public ItemPotionSplash() {
+        this(0, 1);
+    }
 
     public ItemPotionSplash(Integer meta) {
         this(meta, 1);
@@ -23,13 +29,8 @@ public class ItemPotionSplash extends ProjectileItem {
     }
 
     @Override
-    public boolean canBeActivated() {
-        return true;
-    }
-
-    @Override
-    public String getProjectileEntityType() {
-        return "ThrownPotion";
+    public ProjectileFactory getProjectileEntityFactory() {
+        return EntityPotion::new;
     }
 
     @Override
@@ -39,7 +40,12 @@ public class ItemPotionSplash extends ProjectileItem {
 
     @Override
     protected void correctNBT(CompoundTag nbt) {
-        nbt.putInt("PotionId", this.meta);
+        nbt.putInt("PotionId", this.getDamage());
+
         nbt.putCompound("Item", NBTIO.putItemHelper(this));
+    }
+
+    public int getPotionId() {
+        return getDamage();
     }
 }

@@ -1,6 +1,7 @@
 package cn.nukkit.block;
 
 import cn.nukkit.Player;
+import cn.nukkit.blockentity.BlockEntities;
 import cn.nukkit.blockentity.BlockEntity;
 import cn.nukkit.blockentity.BlockEntityEnchantTable;
 import cn.nukkit.blockentity.BlockEntityType;
@@ -171,7 +172,7 @@ public class BlockEnchantingTable extends BlockTransparent {
             }
         }
 
-        return (BlockEntityEnchantTable) BlockEntity.createBlockEntity(BlockEntity.ENCHANT_TABLE, getChunk(), nbt);
+        return (BlockEntityEnchantTable) BlockEntities.createBlockEntity(BlockEntityType.ENCHANT_TABLE, getChunk(), nbt);
     }
 
     @Nullable

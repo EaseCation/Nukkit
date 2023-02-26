@@ -1,6 +1,7 @@
 package cn.nukkit.block;
 
 import cn.nukkit.Player;
+import cn.nukkit.blockentity.BlockEntities;
 import cn.nukkit.blockentity.BlockEntity;
 import cn.nukkit.blockentity.BlockEntityBed;
 import cn.nukkit.blockentity.BlockEntityType;
@@ -192,7 +193,7 @@ public class BlockBed extends BlockTransparentMeta implements Faceable {
         CompoundTag nbt = BlockEntity.getDefaultCompound(pos, BlockEntity.BED);
         nbt.putByte("color", color);
 
-        BlockEntity.createBlockEntity(BlockEntity.BED, this.level.getChunk(pos.getFloorX() >> 4, pos.getFloorZ() >> 4), nbt);
+        BlockEntities.createBlockEntity(BlockEntityType.BED, this.level.getChunk(pos.getFloorX() >> 4, pos.getFloorZ() >> 4), nbt);
     }
 
     @Override

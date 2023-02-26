@@ -4,15 +4,16 @@ import cn.nukkit.block.Block;
 import cn.nukkit.block.BlockDispenser;
 import cn.nukkit.block.BlockRail;
 import cn.nukkit.entity.Entity;
+import cn.nukkit.entity.EntityFactory;
 import cn.nukkit.item.Item;
 import cn.nukkit.math.BlockFace;
 
 public class MinecartDispenseBehavior extends DefaultDispenseBehavior {
 
-    private final String entityType;
+    private final EntityFactory factory;
 
-    public MinecartDispenseBehavior(String entity) {
-        this.entityType = entity;
+    public MinecartDispenseBehavior(EntityFactory factory) {
+        this.factory = factory;
     }
 
     @Override
@@ -27,15 +28,9 @@ public class MinecartDispenseBehavior extends DefaultDispenseBehavior {
             return super.dispense(block, face, item);
         }
 
-        Entity minecart = Entity.createEntity(this.getEntityType(), target);
-        if (minecart != null) {
-            minecart.spawnToAll();
-        }
+        Entity minecart = factory.create(target.getChunk(), Entity.getDefaultNBT(target));
+        minecart.spawnToAll();
 
         return null;
-    }
-
-    protected String getEntityType() {
-        return this.entityType;
     }
 }

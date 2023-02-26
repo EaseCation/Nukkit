@@ -20,6 +20,8 @@ public class ItemDye extends Item {
     public static final int BLUE_NEW = 18;
     public static final int WHITE_NEW = 19;
 
+    public static final int DYE_COUNT = 20;
+
     private static final String[] NAMES = new String[20];
 
     static {
@@ -49,15 +51,15 @@ public class ItemDye extends Item {
     }
 
     public ItemDye(Integer meta, int amount) {
-        super(DYE, meta, amount, meta >= 0 && meta <= 19 ? NAMES[meta] : UNKNOWN_STR);
+        super(DYE, meta, amount, meta == null ? "Dye" : meta >= 0 && meta <= 19 ? NAMES[meta] : UNKNOWN_STR);
 
-        if (this.meta == DyeColor.BROWN.getDyeData()) {
+        if (this.getDamage() == DyeColor.BROWN.getDyeData()) {
             this.block = Block.get(BlockID.COCOA);
         }
     }
 
     public DyeColor getDyeColor() {
-        return DyeColor.getByDyeNewData(meta);
+        return DyeColor.getByDyeNewData(getDamage());
     }
 
     @Override

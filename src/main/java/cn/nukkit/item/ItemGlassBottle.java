@@ -1,6 +1,5 @@
 package cn.nukkit.item;
 
-
 import cn.nukkit.Player;
 import cn.nukkit.block.Block;
 import cn.nukkit.level.Level;
@@ -28,7 +27,7 @@ public class ItemGlassBottle extends Item {
     @Override
     public boolean onActivate(Level level, Player player, Block block, Block target, BlockFace face, double fx, double fy, double fz) {
         if (target.isWater()) {
-            Item potion = new ItemPotion();
+            Item potion = get(POTION);
 
             if (this.count == 1) {
                 player.getInventory().setItemInHand(potion);

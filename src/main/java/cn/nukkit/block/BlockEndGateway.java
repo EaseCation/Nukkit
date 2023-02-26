@@ -1,11 +1,13 @@
 package cn.nukkit.block;
 
 import cn.nukkit.Player;
+import cn.nukkit.blockentity.BlockEntities;
 import cn.nukkit.blockentity.BlockEntity;
 import cn.nukkit.blockentity.BlockEntityEndGateway;
 import cn.nukkit.blockentity.BlockEntityType;
 import cn.nukkit.item.Item;
 import cn.nukkit.item.ItemBlock;
+import cn.nukkit.item.Items;
 import cn.nukkit.math.BlockFace;
 import cn.nukkit.utils.BlockColor;
 
@@ -76,7 +78,7 @@ public class BlockEndGateway extends BlockTransparent {
 
     @Override
     public Item toItem(boolean addUserData) {
-        return new ItemBlock(Block.get(BlockID.AIR));
+        return Items.air();
     }
 
     @Override
@@ -109,7 +111,7 @@ public class BlockEndGateway extends BlockTransparent {
     }
 
     protected BlockEntityEndGateway createBlockEntity(@Nullable Item item) {
-        return (BlockEntityEndGateway) BlockEntity.createBlockEntity(BlockEntity.END_GATEWAY, getChunk(),
+        return (BlockEntityEndGateway) BlockEntities.createBlockEntity(BlockEntityType.END_GATEWAY, getChunk(),
                 BlockEntity.getDefaultCompound(this, BlockEntity.END_GATEWAY));
     }
 

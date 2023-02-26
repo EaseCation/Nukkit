@@ -1,5 +1,8 @@
 package cn.nukkit.item;
 
+import cn.nukkit.entity.item.EntityExpBottle;
+import cn.nukkit.entity.projectile.ProjectileFactory;
+
 /**
  * Created on 2015/12/25 by xtypr.
  * Package cn.nukkit.item in project Nukkit .
@@ -19,8 +22,8 @@ public class ItemExpBottle extends ProjectileItem {
     }
 
     @Override
-    public String getProjectileEntityType() {
-        return "ThrownExpBottle";
+    public ProjectileFactory getProjectileEntityFactory() {
+        return EntityExpBottle::new;
     }
 
     @Override

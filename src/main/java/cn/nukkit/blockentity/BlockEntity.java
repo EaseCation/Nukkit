@@ -2,24 +2,22 @@ package cn.nukkit.blockentity;
 
 import cn.nukkit.Server;
 import cn.nukkit.block.Block;
-import cn.nukkit.block.BlockID;
 import cn.nukkit.level.Position;
 import cn.nukkit.level.format.FullChunk;
 import cn.nukkit.math.BlockVector3;
 import cn.nukkit.math.Vector3;
 import cn.nukkit.nbt.tag.CompoundTag;
 import cn.nukkit.utils.ChunkException;
-import cn.nukkit.utils.MainLogger;
 import co.aikar.timings.Timing;
 import co.aikar.timings.Timings;
 import com.google.common.collect.BiMap;
 import com.google.common.collect.HashBiMap;
-
-import java.lang.reflect.Constructor;
+import lombok.extern.log4j.Log4j2;
 
 /**
  * @author MagicDroidX
  */
+@Log4j2
 public abstract class BlockEntity extends Position implements BlockEntityID {
 
     public static long count = 1;
@@ -86,46 +84,20 @@ public abstract class BlockEntity extends Position implements BlockEntityID {
 
     }
 
-    public static BlockEntity createBlockEntity(String type, FullChunk chunk, CompoundTag nbt, Object... args) {
-        type = type.replaceFirst("BlockEntity", ""); //TODO: Remove this after the first release
-        BlockEntity blockEntity = null;
+    public static BlockEntity createBlockEntity(String type, FullChunk chunk, CompoundTag nbt) {
+//        type = type.replaceFirst("BlockEntity", ""); //TODO: Remove this after the first release
 
-        if (knownBlockEntities.containsKey(type)) {
-            Class<? extends BlockEntity> clazz = knownBlockEntities.get(type);
-
-            if (clazz == null) {
-                return null;
-            }
-
-            for (Constructor<?> constructor : clazz.getConstructors()) {
-                if (blockEntity != null) {
-                    break;
-                }
-
-                if (constructor.getParameterCount() != (args == null ? 2 : args.length + 2)) {
-                    continue;
-                }
-
-                try {
-                    if (args == null || args.length == 0) {
-                        blockEntity = (BlockEntity) constructor.newInstance(chunk, nbt);
-                    } else {
-                        Object[] objects = new Object[args.length + 2];
-
-                        objects[0] = chunk;
-                        objects[1] = nbt;
-                        System.arraycopy(args, 0, objects, 2, args.length);
-                        blockEntity = (BlockEntity) constructor.newInstance(objects);
-
-                    }
-                } catch (Exception e) {
-                    MainLogger.getLogger().logException(e);
-                }
-
-            }
+        Class<? extends BlockEntity> clazz = knownBlockEntities.get(type);
+        if (clazz == null) {
+            return null;
         }
 
-        return blockEntity;
+        try {
+            return clazz.getConstructor(FullChunk.class, CompoundTag.class).newInstance(chunk, nbt);
+        } catch (Exception e) {
+            log.error("Failed to create block entity: {}", type, e);
+        }
+        return null;
     }
 
     public static boolean registerBlockEntity(String name, Class<? extends BlockEntity> c) {

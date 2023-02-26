@@ -188,7 +188,7 @@ public class NewJungleTree extends TreeGenerator {
     private void placeCocoa(ChunkManager worldIn, int age, BlockVector3 pos, BlockFace side) {
         int meta = getCocoaMeta(age, side.getIndex());
 
-        this.setBlockAndNotifyAdequately(worldIn, pos, new BlockUnknown(127, meta));
+        this.setBlockAndNotifyAdequately(worldIn, pos, Block.get(Block.COCOA, meta));
     }
 
     private void addVine(ChunkManager worldIn, BlockVector3 pos, int meta) {

@@ -12,20 +12,24 @@ import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.List;
 
 /**
  * Created by CreeperFace on 18.3.2017.
  */
 public class ItemMap extends Item {
+    public static final int NORMAL_MAP = 0;
+    public static final int BASIC_MAP = 1;
+    public static final int ENHANCED_MAP = 2;
+    public static final int OCEAN_EXPLORER_MAP = 3;
+    public static final int WOODLAND_EXPLORER_MAP = 4;
+    public static final int TREASURE_EXPLORER_MAP = 5;
+    public static final int LOCKED_MAP = 6;
+    public static final int UNDEFINED_MAP = 7;
 
     public static int mapCount = 0;
 
     // not very pretty but definitely better than before.
     private BufferedImage image;
-
-    public List<ClientboundMapItemDataPacket.MapDecorator> decorators = new ArrayList<>();
 
     public ItemMap() {
         this(0, 1);

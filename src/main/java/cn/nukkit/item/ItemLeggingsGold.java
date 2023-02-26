@@ -35,6 +35,6 @@ public class ItemLeggingsGold extends ItemArmor {
 
     @Override
     public int getMaxDurability() {
-        return 106;
+        return 105;
     }
 }

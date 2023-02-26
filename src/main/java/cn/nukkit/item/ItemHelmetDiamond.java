@@ -35,7 +35,7 @@ public class ItemHelmetDiamond extends ItemArmor {
 
     @Override
     public int getMaxDurability() {
-        return 364;
+        return 363;
     }
 
     @Override

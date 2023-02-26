@@ -28,7 +28,7 @@ public class BucketDispenseBehavior extends DefaultDispenseBehavior {
             }
         } else if (target instanceof BlockLiquid && target.getDamage() == 0) {
             target.level.setBlock(target, Block.get(Block.AIR), true);
-            return new ItemBucket(ItemBucket.getPlaceBlockFromMeta(target.getId()));
+            return Item.get(Item.BUCKET, ItemBucket.getPlaceBlockFromMeta(target.getId()));
         }
         //TODO: power snow
 

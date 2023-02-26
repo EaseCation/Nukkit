@@ -37,8 +37,13 @@ public class ItemFlintSteel extends ItemTool {
         }
 
         if (block.getId() == AIR) {
-            if (!player.isCreative() && useOn(block)) {
-                if (getDamage() >= getMaxDurability()) {
+            if (!player.isCreative()) {
+                int meta = getDamage();
+                if (!isUnbreakable() && !isDurable()) {
+                    setDamage(++meta);
+                }
+
+                if (meta >= getMaxDurability()) {
                     pop();
                 }
                 player.getInventory().setItemInHand(this);
@@ -56,7 +61,7 @@ public class ItemFlintSteel extends ItemTool {
 
     @Override
     public int getMaxDurability() {
-        return ItemTool.DURABILITY_FLINT_STEEL;
+        return ItemTool.DURABILITY_FLINT_AND_STEEL;
     }
 
     @Override

@@ -39,6 +39,8 @@ import com.google.common.collect.Iterables;
 import it.unimi.dsi.fastutil.ints.Int2ObjectMap;
 import it.unimi.dsi.fastutil.objects.Object2ObjectOpenHashMap;
 import it.unimi.dsi.fastutil.objects.ObjectArrayList;
+import lombok.AllArgsConstructor;
+import lombok.Value;
 import lombok.extern.log4j.Log4j2;
 
 import javax.annotation.Nullable;
@@ -368,9 +370,9 @@ public abstract class Entity extends Location implements Metadatable {
 
     public static long entityCount = 2; // 0 invalid, 1 for Synapse
 
-    private static final Map<String, Class<? extends Entity>> knownEntities = new Object2ObjectOpenHashMap<>();
-    private static final Map<Class<? extends Entity>, String> knownIdentifiers = new Object2ObjectOpenHashMap<>();
-    private static final Map<Class<? extends Entity>, String> shortNames = new Object2ObjectOpenHashMap<>();
+    private static final EntityEntry[] BY_TYPE = new EntityEntry[256];
+    private static final Map<String, EntityEntry> BY_NAME = new Object2ObjectOpenHashMap<>();
+    private static final Map<Class<? extends Entity>, EntityEntry> BY_CLASS = new IdentityHashMap<>();
 
     protected Map<Integer, Player> hasSpawned = new ConcurrentHashMap<>();
 
@@ -522,13 +524,10 @@ public abstract class Entity extends Location implements Metadatable {
         if (this.namedTag.contains("ActiveEffects")) {
             ListTag<CompoundTag> effects = this.namedTag.getList("ActiveEffects", CompoundTag.class);
             for (CompoundTag e : effects.getAll()) {
-                Effect effect = Effect.getEffect(e.getByte("Id"));
+                Effect effect = Effect.load(e);
                 if (effect == null) {
                     continue;
                 }
-
-                effect.setAmplifier(e.getByte("Amplifier")).setDuration(e.getInt("Duration")).setVisible(e.getBoolean("ShowParticles"));
-
                 this.addEffect(effect);
             }
         }
@@ -538,7 +537,7 @@ public abstract class Entity extends Location implements Metadatable {
             if (this.namedTag.contains("CustomNameVisible")) {
                 this.setNameTagVisible(this.namedTag.getBoolean("CustomNameVisible"));
             }
-            if(this.namedTag.contains("CustomNameAlwaysVisible")){
+            if (this.namedTag.contains("CustomNameAlwaysVisible")) {
                 this.setNameTagAlwaysVisible(this.namedTag.getBoolean("CustomNameAlwaysVisible"));
             }
         }
@@ -546,17 +545,22 @@ public abstract class Entity extends Location implements Metadatable {
             this.setScoreTag(this.namedTag.getString("ScoreTag"));
         }
 
-        this.setDataFlag(DATA_FLAGS, DATA_FLAG_HAS_COLLISION, true);
-        //Some entities may have default bounding box (0)
-        if (this.getHeight() > 0) this.dataProperties.putFloat(DATA_BOUNDING_BOX_HEIGHT, this.getHeight());
-        if (this.getWidth() > 0) this.dataProperties.putFloat(DATA_BOUNDING_BOX_WIDTH, this.getWidth());
+        this.setDataFlag(DATA_FLAGS, DATA_FLAG_HAS_COLLISION, true, false);
 
+        float height = this.getHeight();
+        float width = this.getWidth();
+        //Some entities may have default bounding box (0)
+        if (height > 0 && width > 0) {
+            this.dataProperties.putFloat(DATA_BOUNDING_BOX_HEIGHT, height);
+            this.dataProperties.putFloat(DATA_BOUNDING_BOX_WIDTH, width);
+        }
         if (this.namedTag.contains("BoundingBoxWidth")) {
             this.setDataProperty(new FloatEntityData(DATA_BOUNDING_BOX_WIDTH, this.namedTag.getFloat("BoundingBoxWidth")), false);
         }
         if (this.namedTag.contains("BoundingBoxHeight")) {
             this.setDataProperty(new FloatEntityData(DATA_BOUNDING_BOX_HEIGHT, this.namedTag.getFloat("BoundingBoxHeight")), false);
         }
+
         this.dataProperties.putInt(DATA_HEALTH, (int) this.getHealth());
 
         this.scheduleUpdate();
@@ -879,7 +883,7 @@ public abstract class Entity extends Location implements Metadatable {
             int g = (color[1] / count) & 0xff;
             int b = (color[2] / count) & 0xff;
 
-            this.setDataProperty(new IntEntityData(Entity.DATA_POTION_COLOR, (r << 16) + (g << 8) + b));
+            this.setDataProperty(new IntEntityData(Entity.DATA_POTION_COLOR, (r << 16) | (g << 8) | b));
             this.setDataProperty(new ByteEntityData(Entity.DATA_POTION_AMBIENT, ambient ? 1 : 0));
         } else {
             this.setDataProperty(new IntEntityData(Entity.DATA_POTION_COLOR, 0));
@@ -914,12 +918,38 @@ public abstract class Entity extends Location implements Metadatable {
         }
     }
 
+    public static Entity createEntity(String name, Position pos) {
+        return createEntity(name, pos.getChunk(), getDefaultNBT(pos));
+    }
+
     public static Entity createEntity(String name, Position pos, Object... args) {
         return createEntity(name, pos.getChunk(), getDefaultNBT(pos), args);
     }
 
+    public static Entity createEntity(int type, Position pos) {
+        return createEntity(type, pos.getChunk(), getDefaultNBT(pos));
+    }
+
     public static Entity createEntity(int type, Position pos, Object... args) {
-        return createEntity(String.valueOf(type), pos.getChunk(), getDefaultNBT(pos), args);
+        return createEntity(type, pos.getChunk(), getDefaultNBT(pos), args);
+    }
+
+    public static Entity createEntity(String name, FullChunk chunk, CompoundTag nbt) {
+        if (name.startsWith("minecraft:")) {
+            name = name.substring(10);
+        }
+
+        EntityEntry entry = BY_NAME.get(name);
+        if (entry == null) {
+            return null;
+        }
+
+        try {
+            return entry.factory.create(chunk, nbt);
+        } catch (Exception e) {
+            log.error("Failed to create entity: {}", name, e);
+        }
+        return null;
     }
 
     public static Entity createEntity(String name, FullChunk chunk, CompoundTag nbt, Object... args) {
@@ -927,90 +957,133 @@ public abstract class Entity extends Location implements Metadatable {
             name = name.substring(10);
         }
 
-        Entity entity = null;
-
-        if (knownEntities.containsKey(name)) {
-            Class<? extends Entity> clazz = knownEntities.get(name);
-
-            if (clazz == null) {
-                return null;
-            }
-
-            for (Constructor<?> constructor : clazz.getConstructors()) {
-                if (entity != null) {
-                    break;
-                }
-
-                if (constructor.getParameterCount() != (args == null ? 2 : args.length + 2)) {
-                    continue;
-                }
-
-                try {
-                    if (args == null || args.length == 0) {
-                        entity = (Entity) constructor.newInstance(chunk, nbt);
-                    } else {
-                        Object[] objects = new Object[args.length + 2];
-
-                        objects[0] = chunk;
-                        objects[1] = nbt;
-                        System.arraycopy(args, 0, objects, 2, args.length);
-                        entity = (Entity) constructor.newInstance(objects);
-
-                    }
-                } catch (Exception e) {
-                    log.error("Failed to create entity: {}", name, e);
-                }
-            }
+        EntityEntry entry = BY_NAME.get(name);
+        if (entry == null) {
+            return null;
         }
 
-        return entity;
+        boolean more = args != null && args.length != 0;
+        int parameterCount = more ? 2 + args.length : 2;
+        for (Constructor<?> constructor : entry.clazz.getConstructors()) {
+            if (constructor.getParameterCount() != parameterCount) {
+                continue;
+            }
+
+            try {
+                if (!more) {
+                    return (Entity) constructor.newInstance(chunk, nbt);
+                }
+
+                Object[] objects = new Object[parameterCount];
+                objects[0] = chunk;
+                objects[1] = nbt;
+                System.arraycopy(args, 0, objects, 2, args.length);
+                return (Entity) constructor.newInstance(objects);
+            } catch (Exception e) {
+                log.error("Failed to create entity: {}", name, e);
+            }
+        }
+        return null;
+    }
+
+    public static Entity createEntity(int type, FullChunk chunk, CompoundTag nbt) {
+        if (type < 0 || type > 0xff) {
+            return null;
+        }
+
+        EntityEntry entry = BY_TYPE[type];
+        if (entry == null) {
+            return null;
+        }
+
+        try {
+            return entry.factory.create(chunk, nbt);
+        } catch (Exception e) {
+            log.error("Failed to create entity: {}", type, e);
+        }
+        return null;
     }
 
     public static Entity createEntity(int type, FullChunk chunk, CompoundTag nbt, Object... args) {
-        return createEntity(String.valueOf(type), chunk, nbt, args);
+        if (type < 0 || type > 0xff) {
+            return null;
+        }
+
+        EntityEntry entry = BY_TYPE[type];
+        if (entry == null) {
+            return null;
+        }
+
+        boolean more = args != null && args.length != 0;
+        int parameterCount = more ? 2 + args.length : 2;
+        for (Constructor<?> constructor : entry.clazz.getConstructors()) {
+            if (constructor.getParameterCount() != parameterCount) {
+                continue;
+            }
+
+            try {
+                if (!more) {
+                    return (Entity) constructor.newInstance(chunk, nbt);
+                }
+
+                Object[] objects = new Object[parameterCount];
+                objects[0] = chunk;
+                objects[1] = nbt;
+                System.arraycopy(args, 0, objects, 2, args.length);
+                return (Entity) constructor.newInstance(objects);
+            } catch (Exception e) {
+                log.error("Failed to create entity: {}", type, e);
+            }
+        }
+        return null;
     }
 
-    public static boolean registerEntity(String name, Class<? extends Entity> clazz) {
-        return registerEntity(name, clazz, false);
+    public static boolean registerEntity(String name, Class<? extends Entity> clazz, EntityFactory factory) {
+        return registerEntity(name, clazz, factory, false);
     }
 
-    public static boolean registerEntity(String identifier, String name, Class<? extends Entity> clazz) {
-        return registerEntity(identifier, name, clazz, false);
+    public static boolean registerEntity(String identifier, String name, Class<? extends Entity> clazz, EntityFactory factory) {
+        return registerEntity(identifier, name, clazz, factory, false);
     }
 
-    public static boolean registerEntity(String name, Class<? extends Entity> clazz, boolean force) {
-        return registerEntity(name, name, clazz, false);
+    public static boolean registerEntity(String name, Class<? extends Entity> clazz, EntityFactory factory, boolean force) {
+        return registerEntity(name, name, clazz, factory, force);
     }
 
-    public static boolean registerEntity(String identifier, String name, Class<? extends Entity> clazz, boolean force) {
+    public static boolean registerEntity(String identifier, String name, Class<? extends Entity> clazz, EntityFactory factory, boolean force) {
         if (clazz == null) {
             return false;
         }
+
+        int entityType;
         try {
             Field field = clazz.getField("NETWORK_ID");
             field.setAccessible(true);
-            int networkId = field.getInt(null);
-            knownEntities.put(String.valueOf(networkId), clazz);
+            entityType = field.getInt(null);
         } catch (Exception e) {
             if (!force) {
                 return false;
             }
+            entityType = -1;
         }
 
-        knownEntities.put(name, clazz);
-        knownEntities.put(identifier, clazz);
-        knownIdentifiers.put(clazz, identifier);
-        shortNames.put(clazz, name);
+        EntityEntry entry = new EntityEntry(clazz, entityType, identifier, name, factory);
+        BY_NAME.put(name, entry);
+        BY_NAME.put(identifier, entry);
+        BY_CLASS.put(clazz, entry);
+        if (entityType != -1) {
+            BY_TYPE[entityType & 0xff] = entry;
+        }
         return true;
-    }
-
-    public static String[] getKnownEntities() {
-        return knownEntities.keySet().toArray(new String[0]);
     }
 
     @Nullable
     public static Class<? extends Entity> getClassByName(String name) {
-        return knownEntities.get(name);
+        EntityEntry entry = BY_NAME.get(name);
+        if (entry == null) {
+            return null;
+        }
+        return entry.clazz;
     }
 
     public static CompoundTag getDefaultNBT(Vector3 pos) {
@@ -1044,8 +1117,14 @@ public abstract class Entity extends Location implements Metadatable {
 
     public void saveNBT() {
         if (!(this instanceof Player)) {
-            this.namedTag.putString("id", this.getSaveId()); // remove?
-            this.namedTag.putString("identifier", this.getIdentifier());
+            EntityEntry entry = BY_CLASS.get(this.getClass());
+            if (entry != null) {
+                this.namedTag.putString("id", entry.name); // remove?
+                this.namedTag.putString("identifier", entry.identifier);
+            } else {
+                this.namedTag.putString("id", "");
+                this.namedTag.putString("identifier", ":");
+            }
 
             if (!this.getNameTag().equals("")) {
                 this.namedTag.putString("CustomName", this.getNameTag());
@@ -1086,6 +1165,7 @@ public abstract class Entity extends Location implements Metadatable {
         this.namedTag.putBoolean("OnGround", this.onGround);
         this.namedTag.putBoolean("Invulnerable", this.invulnerable);
         this.namedTag.putFloat("Scale", this.scale);
+
         if (this.getDataProperties().exists(DATA_BOUNDING_BOX_WIDTH)) {
             this.namedTag.putFloat("BoundingBoxWidth", this.getDataPropertyFloat(DATA_BOUNDING_BOX_WIDTH));
         }
@@ -1096,15 +1176,8 @@ public abstract class Entity extends Location implements Metadatable {
         if (!this.effects.isEmpty()) {
             ListTag<CompoundTag> list = new ListTag<>("ActiveEffects");
             for (Effect effect : this.effects.values()) {
-                list.add(new CompoundTag(String.valueOf(effect.getId()))
-                        .putByte("Id", effect.getId())
-                        .putByte("Amplifier", effect.getAmplifier())
-                        .putInt("Duration", effect.getDuration())
-                        .putBoolean("Ambient", false)
-                        .putBoolean("ShowParticles", effect.isVisible())
-                );
+                list.add(effect.save());
             }
-
             this.namedTag.putList(list);
         } else {
             this.namedTag.remove("ActiveEffects");
@@ -1120,11 +1193,19 @@ public abstract class Entity extends Location implements Metadatable {
     }
 
     public String getIdentifier() {
-        return knownIdentifiers.getOrDefault(this.getClass(), ":");
+        EntityEntry entry = BY_CLASS.get(this.getClass());
+        if (entry == null) {
+            return ":";
+        }
+        return entry.identifier;
     }
 
     public final String getSaveId() {
-        return shortNames.getOrDefault(this.getClass(), "");
+        EntityEntry entry = BY_CLASS.get(this.getClass());
+        if (entry == null) {
+            return "";
+        }
+        return entry.name;
     }
 
     public void spawnTo(Player player) {
@@ -2605,5 +2686,15 @@ public abstract class Entity extends Location implements Metadatable {
         int hash = 7;
         hash = (int) (29 * hash + this.getId());
         return hash;
+    }
+
+    @AllArgsConstructor
+    @Value
+    private static class EntityEntry {
+        Class<? extends Entity> clazz;
+        int type;
+        String identifier;
+        String name;
+        EntityFactory factory;
     }
 }

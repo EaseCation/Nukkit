@@ -169,10 +169,8 @@ public class ItemFirework extends Item {
                         .add(new FloatTag("", 0)))
                 .putCompound("FireworkItem", NBTIO.putItemHelper(this));
 
-        EntityFirework entity = (EntityFirework) Entity.createEntity("Firework", level.getChunk(pos.getFloorX() >> 4, pos.getFloorZ() >> 4), nbt);
-        if (entity != null) {
-            entity.spawnToAll();
-        }
+        EntityFirework entity = new EntityFirework(level.getChunk(pos.getFloorX() >> 4, pos.getFloorZ() >> 4), nbt);
+        entity.spawnToAll();
     }
 
     public static class FireworkExplosion {

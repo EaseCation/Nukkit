@@ -3,6 +3,7 @@ package cn.nukkit.item;
 import cn.nukkit.Player;
 import cn.nukkit.block.*;
 import cn.nukkit.entity.Entity;
+import cn.nukkit.entity.passive.*;
 import cn.nukkit.event.player.PlayerBucketEmptyEvent;
 import cn.nukkit.event.player.PlayerBucketFillEvent;
 import cn.nukkit.event.player.PlayerItemConsumeEvent;
@@ -14,6 +15,8 @@ import cn.nukkit.math.Vector3;
 import cn.nukkit.network.protocol.LevelSoundEventPacket;
 import cn.nukkit.network.protocol.UpdateBlockPacket;
 import lombok.extern.log4j.Log4j2;
+
+import static cn.nukkit.GameVersion.*;
 
 /**
  * author: MagicDroidX
@@ -33,6 +36,7 @@ public class ItemBucket extends Item {
     public static final int POWDER_SNOW_BUCKET = 11;
     public static final int AXOLOTL_BUCKET = 12;
     public static final int TADPOLE_BUCKET = 13;
+    public static final int UNDEFINED_BUCKET = 14;
 
     public ItemBucket() {
         this(0, 1);
@@ -43,7 +47,7 @@ public class ItemBucket extends Item {
     }
 
     public ItemBucket(Integer meta, int count) {
-        super(BUCKET, meta, count, getName(meta));
+        super(BUCKET, meta, count, getName(meta != null ? meta : 0));
     }
 
     protected static String getName(int meta) {
@@ -307,28 +311,31 @@ public class ItemBucket extends Item {
 
                 switch (meta) {
                     case COD_BUCKET:
-                        Entity cod = Entity.createEntity("Cod", block);
-                        if (cod != null) cod.spawnToAll();
+                        Entity cod = new EntityCod(block.getChunk(), Entity.getDefaultNBT(block));
+                        cod.spawnToAll();
                         break;
                     case SALMON_BUCKET:
-                        Entity salmon = Entity.createEntity("Salmon", block);
-                        if (salmon != null) salmon.spawnToAll();
+                        Entity salmon = new EntitySalmon(block.getChunk(), Entity.getDefaultNBT(block));
+                        salmon.spawnToAll();
                         break;
                     case TROPICAL_FISH_BUCKET:
-                        Entity tropicalFish = Entity.createEntity("TropicalFish", block);
-                        if (tropicalFish != null) tropicalFish.spawnToAll();
+                        Entity tropicalFish = new EntityTropicalFish(block.getChunk(), Entity.getDefaultNBT(block));
+                        tropicalFish.spawnToAll();
                         break;
                     case PUFFERFISH_BUCKET:
-                        Entity pufferfish = Entity.createEntity("Pufferfish", block);
-                        if (pufferfish != null) pufferfish.spawnToAll();
+                        Entity pufferfish = new EntityPufferfish(block.getChunk(), Entity.getDefaultNBT(block));
+                        pufferfish.spawnToAll();
                         break;
                     case AXOLOTL_BUCKET:
-                        Entity axolotl = Entity.createEntity("Axolotl", block);
-                        if (axolotl != null) axolotl.spawnToAll();
+                        Entity axolotl = new EntityAxolotl(block.getChunk(), Entity.getDefaultNBT(block));
+                        axolotl.spawnToAll();
                         break;
                     case TADPOLE_BUCKET:
-                        Entity tadpole = Entity.createEntity("Tadpole", block);
-                        if (tadpole != null) tadpole.spawnToAll();
+                        if (!V1_19_0.isAvailable()) {
+                            break;
+                        }
+                        Entity tadpole = new EntityTadpole(block.getChunk(), Entity.getDefaultNBT(block));
+                        tadpole.spawnToAll();
                         break;
                 }
 
@@ -405,7 +412,7 @@ public class ItemBucket extends Item {
         }
 
         if (!player.isCreative()) {
-            player.getInventory().setItemInHand(new ItemBucket());
+            player.getInventory().setItemInHand(get(BUCKET));
         }
 
         player.removeAllEffects();

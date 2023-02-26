@@ -1,6 +1,7 @@
 package cn.nukkit.block;
 
 import cn.nukkit.Player;
+import cn.nukkit.blockentity.BlockEntities;
 import cn.nukkit.blockentity.BlockEntity;
 import cn.nukkit.blockentity.BlockEntityFlowerPot;
 import cn.nukkit.blockentity.BlockEntityType;
@@ -246,6 +247,6 @@ public class BlockFlowerPot extends BlockFlowable {
             }
         }
 
-        return (BlockEntityFlowerPot) BlockEntity.createBlockEntity(BlockEntity.FLOWER_POT, getChunk(), nbt);
+        return (BlockEntityFlowerPot) BlockEntities.createBlockEntity(BlockEntityType.FLOWER_POT, getChunk(), nbt);
     }
 }

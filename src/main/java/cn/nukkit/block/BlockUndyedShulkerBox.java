@@ -6,6 +6,7 @@
 package cn.nukkit.block;
 
 import cn.nukkit.Player;
+import cn.nukkit.blockentity.BlockEntities;
 import cn.nukkit.blockentity.BlockEntity;
 import cn.nukkit.blockentity.BlockEntityType;
 import cn.nukkit.blockentity.BlockEntityShulkerBox;
@@ -129,7 +130,7 @@ public class BlockUndyedShulkerBox extends BlockTransparent {
             }
         }
 
-        BlockEntityShulkerBox box = (BlockEntityShulkerBox) BlockEntity.createBlockEntity(BlockEntity.SHULKER_BOX, this.getLevel().getChunk(this.getFloorX() >> 4, this.getFloorZ() >> 4), nbt);
+        BlockEntityShulkerBox box = (BlockEntityShulkerBox) BlockEntities.createBlockEntity(BlockEntityType.SHULKER_BOX, this.getLevel().getChunk(this.getFloorX() >> 4, this.getFloorZ() >> 4), nbt);
         return box != null;
     }
 
@@ -147,7 +148,7 @@ public class BlockUndyedShulkerBox extends BlockTransparent {
                 box = (BlockEntityShulkerBox) t;
             } else {
                 CompoundTag nbt = BlockEntity.getDefaultCompound(this, BlockEntity.SHULKER_BOX);
-                box = (BlockEntityShulkerBox) BlockEntity.createBlockEntity(BlockEntity.SHULKER_BOX, getChunk(), nbt);
+                box = (BlockEntityShulkerBox) BlockEntities.createBlockEntity(BlockEntityType.SHULKER_BOX, getChunk(), nbt);
                 if (box == null) {
                     return false;
                 }

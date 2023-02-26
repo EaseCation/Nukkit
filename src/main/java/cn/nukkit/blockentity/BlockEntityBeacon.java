@@ -2,9 +2,8 @@ package cn.nukkit.blockentity;
 
 import cn.nukkit.Player;
 import cn.nukkit.block.Block;
-import cn.nukkit.block.BlockID;
 import cn.nukkit.inventory.BeaconInventory;
-import cn.nukkit.item.ItemBlock;
+import cn.nukkit.item.Items;
 import cn.nukkit.level.format.FullChunk;
 import cn.nukkit.nbt.tag.CompoundTag;
 import cn.nukkit.network.protocol.LevelSoundEventPacket;
@@ -246,7 +245,7 @@ public class BlockEntityBeacon extends BlockEntitySpawnable {
 
         BeaconInventory inv = (BeaconInventory) player.getWindowById(Player.BEACON_WINDOW_ID);
 
-        inv.setItem(0, new ItemBlock(Block.get(BlockID.AIR), 0, 0));
+        inv.setItem(0, Items.air());
         return true;
     }
 }

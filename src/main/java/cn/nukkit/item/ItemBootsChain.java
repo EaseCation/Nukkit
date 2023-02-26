@@ -35,6 +35,6 @@ public class ItemBootsChain extends ItemArmor {
 
     @Override
     public int getMaxDurability() {
-        return 196;
+        return 195;
     }
 }

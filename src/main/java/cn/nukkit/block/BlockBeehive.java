@@ -1,6 +1,7 @@
 package cn.nukkit.block;
 
 import cn.nukkit.Player;
+import cn.nukkit.blockentity.BlockEntities;
 import cn.nukkit.blockentity.BlockEntity;
 import cn.nukkit.blockentity.BlockEntityBeehive;
 import cn.nukkit.blockentity.BlockEntityType;
@@ -137,7 +138,7 @@ public class BlockBeehive extends BlockSolidMeta implements Faceable {
             nbt.putString("CustomName", item.getCustomName());
         }
 
-        return (BlockEntityBeehive) BlockEntity.createBlockEntity(BlockEntity.BEEHIVE, getChunk(), nbt);
+        return (BlockEntityBeehive) BlockEntities.createBlockEntity(BlockEntityType.BEEHIVE, getChunk(), nbt);
     }
 
     @Nullable

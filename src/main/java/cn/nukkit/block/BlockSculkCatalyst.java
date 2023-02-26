@@ -1,5 +1,6 @@
 package cn.nukkit.block;
 
+import cn.nukkit.blockentity.BlockEntities;
 import cn.nukkit.blockentity.BlockEntity;
 import cn.nukkit.blockentity.BlockEntitySculkCatalyst;
 import cn.nukkit.blockentity.BlockEntityType;
@@ -93,7 +94,7 @@ public class BlockSculkCatalyst extends BlockSolidMeta {
             nbt.putString("CustomName", item.getCustomName());
         }
 
-        return (BlockEntitySculkCatalyst) BlockEntity.createBlockEntity(BlockEntity.SCULK_CATALYST, getChunk(), nbt);
+        return (BlockEntitySculkCatalyst) BlockEntities.createBlockEntity(BlockEntityType.SCULK_CATALYST, getChunk(), nbt);
     }
 
     @Nullable

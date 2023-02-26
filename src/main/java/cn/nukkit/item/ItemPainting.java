@@ -50,11 +50,8 @@ public class ItemPainting extends Item {
                 .putInt("TileX", (int) block.x)
                 .putInt("TileY", (int) block.y)
                 .putInt("TileZ", (int) block.z);
-        EntityPainting entity = (EntityPainting) Entity.createEntity("Painting", chunk, nbt);
+        EntityPainting entity = new EntityPainting(chunk, nbt);
 
-        if (entity == null) {
-            return false;
-        }
         if (entity.getMotive() == null) {
             entity.close();
             return false;

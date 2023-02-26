@@ -1,6 +1,7 @@
 package cn.nukkit.block;
 
 import cn.nukkit.Player;
+import cn.nukkit.blockentity.BlockEntities;
 import cn.nukkit.blockentity.BlockEntity;
 import cn.nukkit.blockentity.BlockEntityType;
 import cn.nukkit.blockentity.BlockEntityNetherReactor;
@@ -92,7 +93,7 @@ public class BlockNetherReactor extends BlockSolid {
             nbt.putString("CustomName", item.getCustomName());
         }
 
-        return (BlockEntityNetherReactor) BlockEntity.createBlockEntity(BlockEntity.NETHER_REACTOR, getChunk(), nbt);
+        return (BlockEntityNetherReactor) BlockEntities.createBlockEntity(BlockEntityType.NETHER_REACTOR, getChunk(), nbt);
     }
 
     @Nullable

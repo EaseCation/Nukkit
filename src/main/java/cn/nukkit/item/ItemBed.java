@@ -19,12 +19,16 @@ public class ItemBed extends Item {
     }
 
     public ItemBed(Integer meta, int count) {
-        super(BED, meta, count, DyeColor.getByWoolData(meta).getName() + " Bed");
+        super(BED, meta, count, DyeColor.getByWoolData(meta != null ? meta : 0).getName() + " Bed");
         this.block = Block.get(BlockID.BLOCK_BED);
     }
 
     @Override
     public int getMaxStackSize() {
         return 1;
+    }
+
+    public DyeColor getColor() {
+        return DyeColor.getByWoolData(getDamage());
     }
 }

@@ -13,6 +13,8 @@ public class ItemSkull extends Item {
     public static final int HEAD = 3;
     public static final int CREEPER_HEAD = 4;
     public static final int DRAGON_HEAD = 5;
+    public static final int PIGLIN_HEAD = 6;
+    public static final int UNDEFINED_HEAD = 7;
 
     public ItemSkull() {
         this(0, 1);
@@ -23,7 +25,7 @@ public class ItemSkull extends Item {
     }
 
     public ItemSkull(Integer meta, int count) {
-        super(SKULL, meta, count, getItemSkullName(meta));
+        super(SKULL, meta, count, getItemSkullName(meta != null ? meta : 0));
         this.block = Block.get(Block.BLOCK_SKULL);
     }
 
@@ -39,6 +41,8 @@ public class ItemSkull extends Item {
                 return "Creeper Head";
             case 5:
                 return "Dragon Head";
+            case 6:
+                return "Piglin Head";
             case 0:
             default:
                 return "Skeleton Skull";

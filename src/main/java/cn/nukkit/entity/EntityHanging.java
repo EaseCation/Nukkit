@@ -66,6 +66,11 @@ public abstract class EntityHanging extends Entity {
     }
 
     @Override
+    public boolean canBeMovedByCurrents() {
+        return false;
+    }
+
+    @Override
     public void updateMovement() {
     }
 

@@ -1,8 +1,10 @@
 package cn.nukkit.block;
 
 import cn.nukkit.Player;
+import cn.nukkit.blockentity.BlockEntities;
 import cn.nukkit.blockentity.BlockEntity;
 import cn.nukkit.blockentity.BlockEntityBell;
+import cn.nukkit.blockentity.BlockEntityType;
 import cn.nukkit.item.Item;
 import cn.nukkit.item.ItemID;
 import cn.nukkit.item.ItemTool;
@@ -249,7 +251,7 @@ public class BlockBell extends BlockTransparentMeta implements Faceable {
             nbt.putString("CustomName", item.getCustomName());
         }
 
-        return (BlockEntityBell) BlockEntity.createBlockEntity(BlockEntity.BELL, getChunk(), nbt);
+        return (BlockEntityBell) BlockEntities.createBlockEntity(BlockEntityType.BELL, getChunk(), nbt);
     }
 
     @Nullable

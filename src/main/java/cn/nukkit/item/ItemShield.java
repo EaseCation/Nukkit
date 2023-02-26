@@ -15,8 +15,8 @@ public class ItemShield extends ItemTool {
     }
 
     @Override
-    public int getMaxStackSize() {
-        return 1;
+    public int getMaxDurability() {
+        return ItemTool.DURABILITY_SHIELD;
     }
 
     @Override

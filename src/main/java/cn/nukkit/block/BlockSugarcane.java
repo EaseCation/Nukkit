@@ -5,7 +5,6 @@ import cn.nukkit.Server;
 import cn.nukkit.event.block.BlockGrowEvent;
 import cn.nukkit.item.Item;
 import cn.nukkit.item.ItemDye;
-import cn.nukkit.item.ItemSugarcane;
 import cn.nukkit.level.Level;
 import cn.nukkit.level.particle.BoneMealParticle;
 import cn.nukkit.math.BlockFace;
@@ -38,7 +37,7 @@ public class BlockSugarcane extends BlockFlowable {
 
     @Override
     public Item toItem(boolean addUserData) {
-        return new ItemSugarcane();
+        return Item.get(Item.SUGAR_CANE);
     }
 
     @Override
@@ -111,17 +110,18 @@ public class BlockSugarcane extends BlockFlowable {
                             Server.getInstance().getPluginManager().callEvent(ev);
 
                             if (!ev.isCancelled()) {
-                                this.getLevel().setBlock(b, Block.get(BlockID.BLOCK_REEDS), false);
+                                this.getLevel().setBlock(b, ev.getNewState(), true);
                             }
+                            break;
+                        } else if (b.getId() != BLOCK_REEDS) {
                             break;
                         }
                     }
                     this.setDamage(0);
-                    this.getLevel().setBlock(this, this, false);
                 } else {
                     this.setDamage(this.getDamage() + 1);
-                    this.getLevel().setBlock(this, this, false);
                 }
+                this.getLevel().setBlock(this, this, true);
                 return Level.BLOCK_UPDATE_RANDOM;
             }
         }

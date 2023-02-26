@@ -50,19 +50,18 @@ public class ItemBow extends ItemTool {
 
     @Override
     public boolean onClickAir(Player player, Vector3 directionVector) {
-        return player.getInventory().contains(Item.get(ItemID.ARROW, null).clearCompoundTag()) || player.isCreative();
+        return player.getInventory().contains(LazyHolder.ARROW) || player.isCreative();
     }
 
     @Override
     public boolean onRelease(Player player, int ticksUsed) {
         Item matched;
 
-        Item itemArrow = Item.get(Item.ARROW, null, 1).clearCompoundTag();
         Inventory inventory = player.getOffhandInventory();
-        matched = inventory.peek(itemArrow);
+        matched = inventory.peek(LazyHolder.ARROW);
         if (matched.isNull()) {
             inventory = player.getInventory();
-            matched = inventory.peek(itemArrow);
+            matched = inventory.peek(LazyHolder.ARROW);
             if (matched.isNull() && !player.isCreative()) {
                 player.getOffhandInventory().sendContents(player);
                 inventory.sendContents(player);
@@ -110,11 +109,7 @@ public class ItemBow extends ItemTool {
         double p = (double) ticksUsed / 20;
         double f = Math.min((p * p + p * 2) / 3, 1) * 2;
 
-        EntityArrow arrow = (EntityArrow) Entity.createEntity("Arrow", player.chunk, nbt, player, f == 2);
-
-        if (arrow == null) {
-            return false;
-        }
+        EntityArrow arrow = new EntityArrow(player.chunk, nbt, player, f == 2);
 
         EntityShootBowEvent entityShootBowEvent = new EntityShootBowEvent(player, this, arrow, f);
 
@@ -135,8 +130,8 @@ public class ItemBow extends ItemTool {
             if (infinity && (projectile = entityShootBowEvent.getProjectile()) instanceof EntityArrow) {
                 ((EntityArrow) projectile).setPickupMode(EntityArrow.PICKUP_CREATIVE);
             }
-            if (player.isAdventure() || player.isSurvival()) {
-                if (!infinity) {
+            if (player.isSurvivalLike()) {
+                if (!infinity || matched.getDamage() != ItemArrow.NORMAL_ARROW) {
                     inventory.removeItem(matched);
                 }
                 if (!this.isUnbreakable()) {
@@ -173,5 +168,9 @@ public class ItemBow extends ItemTool {
     @Override
     public boolean noDamageOnBreak() {
         return true;
+    }
+
+    private static class LazyHolder {
+        private static final Item ARROW = Item.get(Item.ARROW, null, 1).clearCompoundTag();
     }
 }

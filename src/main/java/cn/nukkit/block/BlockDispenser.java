@@ -1,6 +1,7 @@
 package cn.nukkit.block;
 
 import cn.nukkit.Player;
+import cn.nukkit.blockentity.BlockEntities;
 import cn.nukkit.blockentity.BlockEntity;
 import cn.nukkit.blockentity.BlockEntityDispenser;
 import cn.nukkit.blockentity.BlockEntityType;
@@ -142,7 +143,7 @@ public class BlockDispenser extends BlockSolidMeta implements Faceable {
     }
 
     protected void createBlockEntity() {
-        BlockEntity.createBlockEntity(BlockEntity.DISPENSER, getChunk(), BlockEntity.getDefaultCompound(this, BlockEntity.DISPENSER));
+        BlockEntities.createBlockEntity(BlockEntityType.DISPENSER, getChunk(), BlockEntity.getDefaultCompound(this, BlockEntity.DISPENSER));
     }
 
     @Nullable

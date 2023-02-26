@@ -374,7 +374,7 @@ public abstract class BaseInventory implements Inventory {
     public boolean clear(int index, boolean send) {
         Item old = this.slots.get(index);
         if (old != null) {
-            Item item = new ItemBlock(Block.get(BlockID.AIR), null, 0);
+            Item item = Items.air();
             InventoryHolder holder = this.getHolder();
             if (holder instanceof Entity) {
                 EntityInventoryChangeEvent ev = new EntityInventoryChangeEvent((Entity) holder, old, item, index);

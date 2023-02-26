@@ -1,6 +1,7 @@
 package cn.nukkit.potion;
 
 public interface EffectID {
+    int NO_EFFECT = 0;
     int SPEED = 1;
     int SLOWNESS = 2;
     int HASTE = 3;
@@ -31,4 +32,7 @@ public interface EffectID {
     int BAD_OMEN = 28;
     int VILLAGE_HERO = 29;
     int DARKNESS = 30;
+
+
+    int UNDEFINED = 31;
 }

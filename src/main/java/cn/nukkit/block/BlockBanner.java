@@ -1,6 +1,7 @@
 package cn.nukkit.block;
 
 import cn.nukkit.Player;
+import cn.nukkit.blockentity.BlockEntities;
 import cn.nukkit.blockentity.BlockEntity;
 import cn.nukkit.blockentity.BlockEntityBanner;
 import cn.nukkit.blockentity.BlockEntityType;
@@ -102,7 +103,7 @@ public class BlockBanner extends BlockTransparentMeta implements Faceable {
                 nbt.put("Patterns", patterns);
             }
 
-            BlockEntityBanner banner = (BlockEntityBanner) BlockEntity.createBlockEntity(BlockEntity.BANNER, this.getChunk(), nbt);
+            BlockEntityBanner banner = (BlockEntityBanner) BlockEntities.createBlockEntity(BlockEntityType.BANNER, this.getChunk(), nbt);
             return banner != null;
         }
         return false;

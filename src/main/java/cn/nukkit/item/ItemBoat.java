@@ -15,6 +15,15 @@ import cn.nukkit.nbt.tag.ListTag;
  * Created by yescallop on 2016/2/13.
  */
 public class ItemBoat extends Item {
+    public static final int OAK_BOAT = 1;
+    public static final int SPRUCE_BOAT = 1;
+    public static final int BIRCH_BOAT = 2;
+    public static final int JUNGLE_BOAT = 3;
+    public static final int ACACIA_BOAT = 4;
+    public static final int DARK_OAK_BOAT = 5;
+    public static final int MANGROVE_BOAT = 6;
+    public static final int BAMBOO_RAFT = 7;
+    public static final int UNDEFINED_BOAT = 8;
 
     public ItemBoat() {
         this(0, 1);
@@ -52,11 +61,7 @@ public class ItemBoat extends Item {
                 .putByte("woodID", this.getDamage())
         );
 
-        if (boat == null) {
-            return false;
-        }
-
-        if (player.isAdventure() || player.isSurvival()) {
+        if (player.isSurvivalLike()) {
             Item item = player.getInventory().getItemInHand();
             item.setCount(item.getCount() - 1);
             player.getInventory().setItemInHand(item);

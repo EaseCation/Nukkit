@@ -1,7 +1,7 @@
 package cn.nukkit.block;
 
 import cn.nukkit.item.Item;
-import cn.nukkit.item.ItemBlock;
+import cn.nukkit.item.Items;
 import cn.nukkit.level.Level;
 import cn.nukkit.level.Position;
 import cn.nukkit.math.BlockFace;
@@ -58,7 +58,7 @@ public class BlockNetherPortal extends BlockTransparentMeta implements Faceable 
 
     @Override
     public Item toItem(boolean addUserData) {
-        return new ItemBlock(Block.get(BlockID.AIR));
+        return Items.air();
     }
 
     @Override

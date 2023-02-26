@@ -14,14 +14,19 @@ import cn.nukkit.math.NukkitRandom;
  */
 public class PopulatorOre extends Populator {
     private final int replaceId;
-    private OreType[] oreTypes = new OreType[0];
+    private OreType[] oreTypes;
 
     public PopulatorOre() {
         this(Block.STONE);
     }
 
     public PopulatorOre(int id) {
-        this.replaceId = id;
+        this(id, new OreType[0]);
+    }
+
+    public PopulatorOre(int replaceId, OreType... oreTypes) {
+        this.replaceId = replaceId;
+        this.oreTypes = oreTypes;
     }
 
     @Override
@@ -38,7 +43,11 @@ public class PopulatorOre extends Populator {
                 if (level.getBlockIdAt(0, x, y, z) != replaceId) {
                     continue;
                 }
-                type.spawn(level, random, replaceId, x, y, z);
+                if (type.clusterSize == 1) {
+                    level.setBlockFullIdAt(0, x, y, z, type.fullId);
+                } else {
+                    type.spawn(level, random, replaceId, x, y, z);
+                }
             }
         }
     }

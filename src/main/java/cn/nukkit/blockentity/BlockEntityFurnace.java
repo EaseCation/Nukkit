@@ -10,7 +10,7 @@ import cn.nukkit.inventory.FurnaceRecipe;
 import cn.nukkit.inventory.InventoryHolder;
 import cn.nukkit.inventory.RecipeTag;
 import cn.nukkit.item.Item;
-import cn.nukkit.item.ItemBlock;
+import cn.nukkit.item.Items;
 import cn.nukkit.level.format.FullChunk;
 import cn.nukkit.math.Mth;
 import cn.nukkit.nbt.NBTIO;
@@ -157,7 +157,7 @@ public class BlockEntityFurnace extends BlockEntitySpawnable implements Inventor
     public Item getItem(int index) {
         int i = this.getSlotIndex(index);
         if (i < 0) {
-            return new ItemBlock(Block.get(BlockID.AIR), 0, 0);
+            return Items.air();
         } else {
             CompoundTag data = (CompoundTag) this.namedTag.getList("Items").get(i);
             return NBTIO.getItemHelper(data);
@@ -208,7 +208,7 @@ public class BlockEntityFurnace extends BlockEntitySpawnable implements Inventor
                     fuel.setDamage(0);
                     fuel.setCount(1);
                 } else {
-                    fuel = new ItemBlock(Block.get(BlockID.AIR), 0, 0);
+                    fuel = Items.air();
                 }
             }
             this.inventory.setFuel(fuel);
@@ -265,7 +265,7 @@ public class BlockEntityFurnace extends BlockEntitySpawnable implements Inventor
                         this.inventory.setResult(ev.getResult());
                         raw.setCount(raw.getCount() - 1);
                         if (raw.getCount() == 0) {
-                            raw = new ItemBlock(Block.get(BlockID.AIR), 0, 0);
+                            raw = Items.air();
                         }
                         this.inventory.setSmelting(raw);
                     }

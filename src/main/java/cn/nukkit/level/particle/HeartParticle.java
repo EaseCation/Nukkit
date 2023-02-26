@@ -12,6 +12,6 @@ public class HeartParticle extends GenericParticle {
     }
 
     public HeartParticle(Vector3 pos, int scale) {
-        super(pos, Particle.TYPE_HEART, scale);
+        super(pos, Particle.HEART, scale);
     }
 }

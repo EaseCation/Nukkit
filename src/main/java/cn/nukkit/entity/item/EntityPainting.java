@@ -6,7 +6,7 @@ import cn.nukkit.blockentity.BlockEntityPistonArm;
 import cn.nukkit.entity.Entity;
 import cn.nukkit.entity.EntityHanging;
 import cn.nukkit.entity.EntityID;
-import cn.nukkit.item.ItemPainting;
+import cn.nukkit.item.Item;
 import cn.nukkit.level.GameRule;
 import cn.nukkit.level.GlobalBlockPalette;
 import cn.nukkit.level.format.FullChunk;
@@ -312,13 +312,13 @@ public class EntityPainting extends EntityHanging {
             }
         }
 
-        this.level.dropItem(this, new ItemPainting());
+        this.level.dropItem(this, Item.get(Item.PAINTING));
     }
 
     @Override
     public void onPushByPiston(BlockEntityPistonArm piston) {
         if (this.level.getGameRules().getBoolean(GameRule.DO_ENTITY_DROPS)) {
-            this.level.dropItem(this, new ItemPainting());
+            this.level.dropItem(this, Item.get(Item.PAINTING));
         }
 
         this.close();

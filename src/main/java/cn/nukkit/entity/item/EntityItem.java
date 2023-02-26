@@ -120,7 +120,9 @@ public class EntityItem extends Entity {
     public boolean attack(EntityDamageEvent source) {
         DamageCause cause = source.getCause();
         switch (cause) {
+            case FIRE:
             case FIRE_TICK:
+            case LAVA:
                 if (item != null && item.isFireResistant()) {
                     return false;
                 }
@@ -215,7 +217,7 @@ public class EntityItem extends Entity {
 
         boolean hasUpdate = this.entityBaseTick(tickDiff);
 
-        if (isInsideOfFire()) {
+        if (isInsideOfFire() && (item == null || !item.isFireResistant())) {
             this.kill();
         }
 

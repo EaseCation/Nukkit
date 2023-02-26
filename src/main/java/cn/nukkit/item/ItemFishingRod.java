@@ -32,7 +32,7 @@ public class ItemFishingRod extends ItemTool {
             player.stopFishing(true);
         } else {
             player.startFishing(this);
-            this.meta++;
+            this.setDamage(this.getDamage() + 1);
         }
         return true;
     }

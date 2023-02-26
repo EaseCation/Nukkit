@@ -1,6 +1,7 @@
 package cn.nukkit.block;
 
 import cn.nukkit.Player;
+import cn.nukkit.blockentity.BlockEntities;
 import cn.nukkit.blockentity.BlockEntity;
 import cn.nukkit.blockentity.BlockEntityChest;
 import cn.nukkit.blockentity.BlockEntityType;
@@ -135,7 +136,7 @@ public class BlockChest extends BlockTransparentMeta implements Faceable {
             }
         }
 
-        BlockEntityChest blockEntity = (BlockEntityChest) BlockEntity.createBlockEntity(BlockEntity.CHEST, getChunk(), nbt);
+        BlockEntityChest blockEntity = (BlockEntityChest) BlockEntities.createBlockEntity(BlockEntityType.CHEST, getChunk(), nbt);
 
         if (blockEntity == null) {
             return false;
@@ -175,7 +176,7 @@ public class BlockChest extends BlockTransparentMeta implements Faceable {
             } else {
                 CompoundTag nbt = BlockEntity.getDefaultCompound(this, BlockEntity.CHEST)
                         .putList(new ListTag<>("Items"));
-                chest = (BlockEntityChest) BlockEntity.createBlockEntity(BlockEntity.CHEST, getChunk(), nbt);
+                chest = (BlockEntityChest) BlockEntities.createBlockEntity(BlockEntityType.CHEST, getChunk(), nbt);
                 if (chest == null) {
                     return false;
                 }

@@ -1,6 +1,7 @@
 package cn.nukkit.block;
 
 import cn.nukkit.Player;
+import cn.nukkit.blockentity.BlockEntities;
 import cn.nukkit.blockentity.BlockEntity;
 import cn.nukkit.blockentity.BlockEntityCommandBlock;
 import cn.nukkit.blockentity.BlockEntityType;
@@ -143,7 +144,7 @@ public class BlockCommand extends BlockSolidMeta implements Faceable {
             nbt.putString("CustomName", item.getCustomName());
         }
 
-        return (BlockEntityCommandBlock) BlockEntity.createBlockEntity(BlockEntity.COMMAND_BLOCK, getChunk(), nbt);
+        return (BlockEntityCommandBlock) BlockEntities.createBlockEntity(BlockEntityType.COMMAND_BLOCK, getChunk(), nbt);
     }
 
     @Nullable

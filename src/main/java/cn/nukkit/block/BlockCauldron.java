@@ -1,6 +1,7 @@
 package cn.nukkit.block;
 
 import cn.nukkit.Player;
+import cn.nukkit.blockentity.BlockEntities;
 import cn.nukkit.blockentity.BlockEntity;
 import cn.nukkit.blockentity.BlockEntityCauldron;
 import cn.nukkit.blockentity.BlockEntityType;
@@ -13,6 +14,7 @@ import cn.nukkit.math.BlockFace;
 import cn.nukkit.nbt.tag.CompoundTag;
 import cn.nukkit.nbt.tag.Tag;
 import cn.nukkit.network.protocol.LevelEventPacket;
+import cn.nukkit.potion.PotionID;
 
 import javax.annotation.Nullable;
 import java.util.Map;
@@ -342,7 +344,7 @@ public class BlockCauldron extends BlockTransparentMeta {
         int fillLevel = getFillLevel();
 
         int potionId = potion.getDamage();
-        if (potionId == ItemPotion.NO_EFFECTS) {
+        if (potionId == PotionID.WATER) {
             if (cauldron.getPotionType() != BlockEntityCauldron.POTION_TYPE_NONE) {
                 mix(cauldron);
                 return true;
@@ -352,14 +354,14 @@ public class BlockCauldron extends BlockTransparentMeta {
             return true;
         }
 
-        if (fillLevel == FILL_LEVEL_FULL && potionId != ItemPotion.NO_EFFECTS) {
+        if (fillLevel == FILL_LEVEL_FULL && potionId != PotionID.WATER) {
             return false;
         }
         fillLevel = Math.min(fillLevel + 2, FILL_LEVEL_FULL);
         setFillLevel(fillLevel);
         level.setBlock(this, this, true);
 
-        if (potionId != ItemPotion.NO_EFFECTS) {
+        if (potionId != PotionID.WATER) {
             cauldron.setPotionType(potionType);
             cauldron.setPotionId(potionId);
             cauldron.spawnToAll();
@@ -409,7 +411,7 @@ public class BlockCauldron extends BlockTransparentMeta {
             }
         }
 
-        BlockEntityCauldron cauldron = (BlockEntityCauldron) BlockEntity.createBlockEntity(BlockEntity.CAULDRON, this.getChunk(), nbt);
+        BlockEntityCauldron cauldron = (BlockEntityCauldron) BlockEntities.createBlockEntity(BlockEntityType.CAULDRON, this.getChunk(), nbt);
         if (cauldron == null) {
             return false;
         }
@@ -515,7 +517,7 @@ public class BlockCauldron extends BlockTransparentMeta {
             nbt.putString("CustomName", item.getCustomName());
         }
 
-        return (BlockEntityCauldron) BlockEntity.createBlockEntity(BlockEntity.CAULDRON, getChunk(), nbt);
+        return (BlockEntityCauldron) BlockEntities.createBlockEntity(BlockEntityType.CAULDRON, getChunk(), nbt);
     }
 
     @Nullable

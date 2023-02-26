@@ -1,6 +1,7 @@
 package cn.nukkit.block;
 
 import cn.nukkit.Player;
+import cn.nukkit.blockentity.BlockEntities;
 import cn.nukkit.blockentity.BlockEntity;
 import cn.nukkit.blockentity.BlockEntityType;
 import cn.nukkit.blockentity.BlockEntityItemFrame;
@@ -216,7 +217,7 @@ public class BlockItemFrame extends BlockTransparentMeta implements Faceable {
             }
         }
 
-        return (BlockEntityItemFrame) BlockEntity.createBlockEntity(getBlockEntityId(), getChunk(), nbt);
+        return (BlockEntityItemFrame) BlockEntities.createBlockEntity(getBlockEntityType(), getChunk(), nbt);
     }
 
     @Nullable

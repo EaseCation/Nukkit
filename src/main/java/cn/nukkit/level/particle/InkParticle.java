@@ -13,6 +13,6 @@ public class InkParticle extends GenericParticle {
     }
 
     public InkParticle(Vector3 pos, int scale) {
-        super(pos, Particle.TYPE_INK, scale);
+        super(pos, Particle.INK, scale);
     }
 }

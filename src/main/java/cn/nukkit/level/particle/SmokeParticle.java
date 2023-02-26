@@ -12,6 +12,6 @@ public class SmokeParticle extends GenericParticle {
     }
 
     public SmokeParticle(Vector3 pos, int scale) {
-        super(pos, Particle.TYPE_SMOKE, scale);
+        super(pos, Particle.SMOKE, scale);
     }
 }

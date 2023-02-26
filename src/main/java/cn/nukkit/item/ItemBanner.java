@@ -30,11 +30,11 @@ public class ItemBanner extends Item {
     }
 
     public int getBaseColor() {
-        return this.getDamage() & 0x0f;
+        return this.getDamage();
     }
 
     public void setBaseColor(DyeColor color) {
-        this.setDamage(color.getDyeData() & 0x0f);
+        this.setDamage(color.getDyeData());
     }
 
     public int getType() {
@@ -73,5 +73,9 @@ public class ItemBanner extends Item {
 
     public int getPatternsSize() {
         return (this.hasCompoundTag() ? this.getNamedTag() : new CompoundTag()).getList("Patterns").size();
+    }
+
+    public DyeColor getColor() {
+        return DyeColor.getByDyeData(this.getDamage());
     }
 }

@@ -2,15 +2,13 @@ package cn.nukkit.inventory;
 
 import cn.nukkit.Player;
 import cn.nukkit.Server;
-import cn.nukkit.block.Block;
-import cn.nukkit.block.BlockID;
 import cn.nukkit.entity.EntityHuman;
 import cn.nukkit.entity.EntityHumanType;
 import cn.nukkit.event.entity.EntityArmorChangeEvent;
 import cn.nukkit.event.entity.EntityInventoryChangeEvent;
 import cn.nukkit.event.player.PlayerItemHeldEvent;
 import cn.nukkit.item.Item;
-import cn.nukkit.item.ItemBlock;
+import cn.nukkit.item.Items;
 import cn.nukkit.network.protocol.*;
 import cn.nukkit.network.protocol.types.ContainerIds;
 
@@ -112,7 +110,7 @@ public class PlayerInventory extends BaseInventory {
         if (item != null) {
             return item;
         }
-        return new ItemBlock(Block.get(BlockID.AIR), 0, 0);
+        return Items.air();
     }
 
     public boolean setItemInHand(Item item) {
@@ -271,7 +269,7 @@ public class PlayerInventory extends BaseInventory {
     public boolean clear(int index, boolean send) {
         Item old = this.slots.get(index);
         if (old != null) {
-            Item item = new ItemBlock(Block.get(BlockID.AIR), null, 0);
+            Item item = Items.air();
             if (index >= this.getSize() && index < this.size) {
                 EntityArmorChangeEvent ev = new EntityArmorChangeEvent(this.getHolder(), old, item, index);
                 Server.getInstance().getPluginManager().callEvent(ev);
@@ -361,7 +359,7 @@ public class PlayerInventory extends BaseInventory {
 
         for (int i = 0; i < 4; ++i) {
             if (items[i] == null) {
-                items[i] = new ItemBlock(Block.get(BlockID.AIR), null, 0);
+                items[i] = Items.air();
             }
 
             if (items[i].isNull()) {

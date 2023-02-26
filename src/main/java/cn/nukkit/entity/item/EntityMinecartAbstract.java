@@ -18,7 +18,6 @@ import cn.nukkit.event.entity.EntityDamageEvent;
 import cn.nukkit.event.vehicle.VehicleMoveEvent;
 import cn.nukkit.event.vehicle.VehicleUpdateEvent;
 import cn.nukkit.item.Item;
-import cn.nukkit.item.ItemMinecart;
 import cn.nukkit.level.GameRule;
 import cn.nukkit.level.Location;
 import cn.nukkit.level.format.FullChunk;
@@ -258,7 +257,7 @@ public abstract class EntityMinecartAbstract extends EntityVehicle {
                 return;
             }
         }
-        level.dropItem(this, new ItemMinecart());
+        level.dropItem(this, Item.get(Item.MINECART));
     }
 
     @Override

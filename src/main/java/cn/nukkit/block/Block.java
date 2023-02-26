@@ -54,391 +54,140 @@ public abstract class Block extends Position implements Metadatable, Cloneable, 
     public static final int FULL_BLOCK_MASK = FULL_BLOCK_COUNT - 1;
     public static final int FULL_BLOCK_ID_MASK = BLOCK_ID_MASK << BLOCK_META_BITS;
 
-    public static Class<? extends Block>[] list = null;
-    public static Block[][] variantList = null;
-    public static int[] metaMax = null;
-    public static int[] metaMask = null;
+    private static boolean initialized;
+    public static final Class<? extends Block>[] list = new Class[BLOCK_ID_COUNT];
+    public static final Block[][] variantList = new Block[BLOCK_ID_COUNT][];
+    public static final int[] metaMax = new int[BLOCK_ID_COUNT];
+    public static final int[] metaMask = new int[BLOCK_ID_COUNT];
     /**
      * if a block has can have variants
      */
-    public static boolean[] hasMeta = null;
+    public static final boolean[] hasMeta = new boolean[BLOCK_ID_COUNT];
 
-    public static int[] light = null;
-    public static int[] lightFilter = null;
-    public static boolean[] solid = null;
-    public static boolean[] transparent = null;
+    public static final int[] light = new int[BLOCK_ID_COUNT];
+    public static final int[] lightFilter = new int[BLOCK_ID_COUNT];
+    public static final boolean[] solid = new boolean[BLOCK_ID_COUNT];
+    public static final boolean[] transparent = new boolean[BLOCK_ID_COUNT];
 
     protected Block() {}
 
     @SuppressWarnings("unchecked")
     public static void init() {
-        if (list == null) {
-            list = new Class[BLOCK_ID_COUNT];
-            variantList = new Block[BLOCK_ID_COUNT][];
-            metaMax = new int[BLOCK_ID_COUNT];
-            metaMask = new int[BLOCK_ID_COUNT];
-            hasMeta = new boolean[BLOCK_ID_COUNT];
+        if (initialized) {
+            return;
+        }
+        initialized = true;
 
-            light = new int[BLOCK_ID_COUNT];
-            lightFilter = new int[BLOCK_ID_COUNT];
-            solid = new boolean[BLOCK_ID_COUNT];
-            transparent = new boolean[BLOCK_ID_COUNT];
+        Object2IntMap<String> metaTable; // auto-generated from development client
+        try (InputStream stream = Server.class.getClassLoader().getResourceAsStream("block_meta_table.json");
+             InputStreamReader reader = new InputStreamReader(stream)) {
+            metaTable = new Gson().fromJson(reader, Object2IntOpenHashMap.class);
+        } catch (NullPointerException | IOException e) {
+            throw new AssertionError("Unable to load block_meta_table.json", e);
+        }
 
-            Object2IntMap<String> metaTable; // auto-generated from development client
-            try (InputStream stream = Server.class.getClassLoader().getResourceAsStream("block_meta_table.json");
-                 InputStreamReader reader = new InputStreamReader(stream)) {
-                metaTable = new Gson().fromJson(reader, Object2IntOpenHashMap.class);
-            } catch (NullPointerException | IOException e) {
-                throw new AssertionError("Unable to load block_meta_table.json", e);
+        metaTable.put(String.valueOf(LEAVES2), 15); //TODO: HACK
+
+        for (Object2IntMap.Entry<String> entry : metaTable.object2IntEntrySet()) {
+            int id;
+            try {
+                id = Integer.parseInt(entry.getKey());
+            } catch (NumberFormatException e) {
+                throw new AssertionError("Invalid block_meta_table.json", e);
             }
 
-            metaTable.put(String.valueOf(LEAVES2), 15); //TODO: HACK
+            if (id >= UNDEFINED) {
+                log.trace("Skip unsupported block: {}", id);
+                continue;
+            }
 
-            for (Object2IntMap.Entry<String> entry : metaTable.object2IntEntrySet()) {
-                int id;
-                try {
-                    id = Integer.parseInt(entry.getKey());
-                } catch (NumberFormatException e) {
-                    throw new AssertionError("Invalid block_meta_table.json", e);
-                }
+            int maxMeta = entry.getIntValue();
+            if (maxMeta == 0) {
+                metaMax[id] = 0;
+                metaMask[id] = 0;
+                variantList[id] = new Block[1];
+            } else {
+                int count = Mth.smallestEncompassingPowerOfTwo(maxMeta + 1);
+                metaMax[id] = maxMeta;
+                metaMask[id] = count - 1;
+                variantList[id] = new Block[count];
+                hasMeta[id] = true;
+            }
+        }
 
-                if (id >= UNDEFINED) {
-                    log.trace("Skip unsupported block: {}", id);
+        Blocks.registerVanillaBlocks();
+
+        for (int id = 0; id < BLOCK_ID_COUNT; id++) {
+            Class<?> c = list[id];
+            if (c != null) {
+                Block[] variants = variantList[id];
+                if (variants == null) {
+                    variantList[id] = new Block[]{new BlockUnknown(id)};
+                    log.debug("Block {} is not available in current base game version", id);
                     continue;
                 }
 
-                int maxMeta = entry.getIntValue();
-                if (maxMeta == 0) {
-                    metaMax[id] = 0;
-                    metaMask[id] = 0;
-                    variantList[id] = new Block[1];
-                } else {
-                    int count = Mth.smallestEncompassingPowerOfTwo(maxMeta + 1);
-                    metaMax[id] = maxMeta;
-                    metaMask[id] = count - 1;
-                    variantList[id] = new Block[count];
-                    hasMeta[id] = true;
-                }
-            }
-
-            list[AIR] = BlockAir.class; //0
-            list[STONE] = BlockStone.class; //1
-            list[GRASS] = BlockGrass.class; //2
-            list[DIRT] = BlockDirt.class; //3
-            list[COBBLESTONE] = BlockCobblestone.class; //4
-            list[PLANKS] = BlockPlanks.class; //5
-            list[SAPLING] = BlockSapling.class; //6
-            list[BEDROCK] = BlockBedrock.class; //7
-            list[FLOWING_WATER] = BlockWater.class; //8
-            list[WATER] = BlockWaterStill.class; //9
-            list[FLOWING_LAVA] = BlockLava.class; //10
-            list[LAVA] = BlockLavaStill.class; //11
-            list[SAND] = BlockSand.class; //12
-            list[GRAVEL] = BlockGravel.class; //13
-            list[GOLD_ORE] = BlockOreGold.class; //14
-            list[IRON_ORE] = BlockOreIron.class; //15
-            list[COAL_ORE] = BlockOreCoal.class; //16
-            list[LOG] = BlockWood.class; //17
-            list[LEAVES] = BlockLeaves.class; //18
-            list[SPONGE] = BlockSponge.class; //19
-            list[GLASS] = BlockGlass.class; //20
-            list[LAPIS_ORE] = BlockOreLapis.class; //21
-            list[LAPIS_BLOCK] = BlockLapis.class; //22
-            list[DISPENSER] = BlockDispenser.class; //23
-            list[SANDSTONE] = BlockSandstone.class; //24
-            list[NOTEBLOCK] = BlockNoteblock.class; //25
-            list[BLOCK_BED] = BlockBed.class; //26
-            list[GOLDEN_RAIL] = BlockRailPowered.class; //27
-            list[DETECTOR_RAIL] = BlockRailDetector.class; //28
-            list[STICKY_PISTON] = BlockPistonSticky.class; //29
-            list[WEB] = BlockCobweb.class; //30
-            list[TALLGRASS] = BlockTallGrass.class; //31
-            list[DEADBUSH] = BlockDeadBush.class; //32
-            list[PISTON] = BlockPiston.class; //33
-            list[PISTON_ARM_COLLISION] = BlockPistonHead.class; //34
-            list[WOOL] = BlockWool.class; //35
-            list[YELLOW_FLOWER] = BlockDandelion.class; //37
-            list[RED_FLOWER] = BlockFlower.class; //38
-            list[BROWN_MUSHROOM] = BlockMushroomBrown.class; //39
-            list[RED_MUSHROOM] = BlockMushroomRed.class; //40
-            list[GOLD_BLOCK] = BlockGold.class; //41
-            list[IRON_BLOCK] = BlockIron.class; //42
-            list[DOUBLE_STONE_SLAB] = BlockDoubleSlabStone.class; //43
-            list[STONE_SLAB] = BlockSlabStone.class; //44
-            list[BRICK_BLOCK] = BlockBricks.class; //45
-            list[TNT] = BlockTNT.class; //46
-            list[BOOKSHELF] = BlockBookshelf.class; //47
-            list[MOSSY_COBBLESTONE] = BlockMossStone.class; //48
-            list[OBSIDIAN] = BlockObsidian.class; //49
-            list[TORCH] = BlockTorch.class; //50
-            list[FIRE] = BlockFire.class; //51
-            list[MOB_SPAWNER] = BlockMobSpawner.class; //52
-            list[OAK_STAIRS] = BlockStairsWood.class; //53
-            list[CHEST] = BlockChest.class; //54
-            list[REDSTONE_WIRE] = BlockRedstoneWire.class; //55
-            list[DIAMOND_ORE] = BlockOreDiamond.class; //56
-            list[DIAMOND_BLOCK] = BlockDiamond.class; //57
-            list[CRAFTING_TABLE] = BlockCraftingTable.class; //58
-            list[BLOCK_WHEAT] = BlockWheat.class; //59
-            list[FARMLAND] = BlockFarmland.class; //60
-            list[FURNACE] = BlockFurnace.class; //61
-            list[LIT_FURNACE] = BlockFurnaceBurning.class; //62
-            list[STANDING_SIGN] = BlockSignPost.class; //63
-            list[BLOCK_WOODEN_DOOR] = BlockDoorWood.class; //64
-            list[LADDER] = BlockLadder.class; //65
-            list[RAIL] = BlockRail.class; //66
-            list[STONE_STAIRS] = BlockStairsCobblestone.class; //67
-            list[WALL_SIGN] = BlockWallSign.class; //68
-            list[LEVER] = BlockLever.class; //69
-            list[STONE_PRESSURE_PLATE] = BlockPressurePlateStone.class; //70
-            list[BLOCK_IRON_DOOR] = BlockDoorIron.class; //71
-            list[WOODEN_PRESSURE_PLATE] = BlockPressurePlateWood.class; //72
-            list[REDSTONE_ORE] = BlockOreRedstone.class; //73
-            list[LIT_REDSTONE_ORE] = BlockOreRedstoneGlowing.class; //74
-            list[UNLIT_REDSTONE_TORCH] = BlockRedstoneTorchUnlit.class;
-            list[REDSTONE_TORCH] = BlockRedstoneTorch.class; //76
-            list[STONE_BUTTON] = BlockButtonStone.class; //77
-            list[SNOW_LAYER] = BlockSnowLayer.class; //78
-            list[ICE] = BlockIce.class; //79
-            list[SNOW] = BlockSnow.class; //80
-            list[CACTUS] = BlockCactus.class; //81
-            list[CLAY] = BlockClay.class; //82
-            list[BLOCK_REEDS] = BlockSugarcane.class; //83
-            list[JUKEBOX] = BlockJukebox.class; //84
-            list[FENCE] = BlockFence.class; //85
-            list[PUMPKIN] = BlockPumpkin.class; //86
-            list[NETHERRACK] = BlockNetherrack.class; //87
-            list[SOUL_SAND] = BlockSoulSand.class; //88
-            list[GLOWSTONE] = BlockGlowstone.class; //89
-            list[PORTAL] = BlockNetherPortal.class; //90
-            list[LIT_PUMPKIN] = BlockPumpkinLit.class; //91
-            list[BLOCK_CAKE] = BlockCake.class; //92
-            list[UNPOWERED_REPEATER] = BlockRedstoneRepeaterUnpowered.class; //93
-            list[POWERED_REPEATER] = BlockRedstoneRepeaterPowered.class; //94
-            list[INVISIBLE_BEDROCK] = BlockBedrockInvisible.class; //95
-            list[TRAPDOOR] = BlockTrapdoor.class; //96
-            list[MONSTER_EGG] = BlockMonsterEgg.class; //97
-            list[STONEBRICK] = BlockBricksStone.class; //98
-            list[BROWN_MUSHROOM_BLOCK] = BlockHugeMushroomBrown.class; //99
-            list[RED_MUSHROOM_BLOCK] = BlockHugeMushroomRed.class; //100
-            list[IRON_BARS] = BlockIronBars.class; //101
-            list[GLASS_PANE] = BlockGlassPane.class; //102
-            list[MELON_BLOCK] = BlockMelon.class; //103
-            list[PUMPKIN_STEM] = BlockStemPumpkin.class; //104
-            list[MELON_STEM] = BlockStemMelon.class; //105
-            list[VINE] = BlockVine.class; //106
-            list[FENCE_GATE] = BlockFenceGate.class; //107
-            list[BRICK_STAIRS] = BlockStairsBrick.class; //108
-            list[STONE_BRICK_STAIRS] = BlockStairsStoneBrick.class; //109
-            list[MYCELIUM] = BlockMycelium.class; //110
-            list[WATERLILY] = BlockWaterLily.class; //111
-            list[NETHER_BRICK] = BlockBricksNether.class; //112
-            list[NETHER_BRICK_FENCE] = BlockFenceNetherBrick.class; //113
-            list[NETHER_BRICK_STAIRS] = BlockStairsNetherBrick.class; //114
-            list[BLOCK_NETHER_WART] = BlockNetherWart.class; //115
-            list[ENCHANTING_TABLE] = BlockEnchantingTable.class; //116
-            list[BLOCK_BREWING_STAND] = BlockBrewingStand.class; //117
-            list[BLOCK_CAULDRON] = BlockCauldron.class; //118
-            list[END_PORTAL] = BlockEndPortal.class; //119
-            list[END_PORTAL_FRAME] = BlockEndPortalFrame.class; //120
-            list[END_STONE] = BlockEndStone.class; //121
-            list[DRAGON_EGG] = BlockDragonEgg.class; //122
-            list[REDSTONE_LAMP] = BlockRedstoneLamp.class; //123
-            list[LIT_REDSTONE_LAMP] = BlockRedstoneLampLit.class; //124
-            list[DROPPER] = BlockDropper.class; //125
-            list[ACTIVATOR_RAIL] = BlockRailActivator.class; //126
-            list[COCOA] = BlockCocoa.class; //127
-            list[SANDSTONE_STAIRS] = BlockStairsSandstone.class; //128
-            list[EMERALD_ORE] = BlockOreEmerald.class; //129
-            list[ENDER_CHEST] = BlockEnderChest.class; //130
-            list[TRIPWIRE_HOOK] = BlockTripWireHook.class;
-            list[TRIP_WIRE] = BlockTripWire.class; //132
-            list[EMERALD_BLOCK] = BlockEmerald.class; //133
-            list[SPRUCE_STAIRS] = BlockStairsSpruce.class; //134
-            list[BIRCH_STAIRS] = BlockStairsBirch.class; //135
-            list[JUNGLE_STAIRS] = BlockStairsJungle.class; //136
-
-            list[BEACON] = BlockBeacon.class; //138
-            list[COBBLESTONE_WALL] = BlockWallCobblestone.class; //139
-            list[BLOCK_FLOWER_POT] = BlockFlowerPot.class; //140
-            list[CARROTS] = BlockCarrot.class; //141
-            list[POTATOES] = BlockPotato.class; //142
-            list[WOODEN_BUTTON] = BlockButtonWooden.class; //143
-            list[BLOCK_SKULL] = BlockSkull.class; //144
-            list[ANVIL] = BlockAnvil.class; //145
-            list[TRAPPED_CHEST] = BlockTrappedChest.class; //146
-            list[LIGHT_WEIGHTED_PRESSURE_PLATE] = BlockWeightedPressurePlateLight.class; //147
-            list[HEAVY_WEIGHTED_PRESSURE_PLATE] = BlockWeightedPressurePlateHeavy.class; //148
-            list[UNPOWERED_COMPARATOR] = BlockRedstoneComparatorUnpowered.class; //149
-            list[POWERED_COMPARATOR] = BlockRedstoneComparatorPowered.class; //149
-            list[DAYLIGHT_DETECTOR] = BlockDaylightDetector.class; //151
-            list[REDSTONE_BLOCK] = BlockRedstone.class; //152
-            list[QUARTZ_ORE] = BlockOreQuartz.class; //153
-            list[BLOCK_HOPPER] = BlockHopper.class; //154
-            list[QUARTZ_BLOCK] = BlockQuartz.class; //155
-            list[QUARTZ_STAIRS] = BlockStairsQuartz.class; //156
-            list[DOUBLE_WOODEN_SLAB] = BlockDoubleSlabWood.class; //157
-            list[WOODEN_SLAB] = BlockSlabWood.class; //158
-            list[STAINED_HARDENED_CLAY] = BlockTerracottaStained.class; //159
-            list[STAINED_GLASS_PANE] = BlockGlassPaneStained.class; //160
-            list[LEAVES2] = BlockLeaves2.class; //161
-            list[LOG2] = BlockWood2.class; //162
-            list[ACACIA_STAIRS] = BlockStairsAcacia.class; //163
-            list[DARK_OAK_STAIRS] = BlockStairsDarkOak.class; //164
-            list[SLIME] = BlockSlime.class; //165
-
-            list[IRON_TRAPDOOR] = BlockTrapdoorIron.class; //167
-            list[PRISMARINE] = BlockPrismarine.class; //168
-            list[SEA_LANTERN] = BlockSeaLantern.class; //169
-            list[HAY_BLOCK] = BlockHayBale.class; //170
-            list[CARPET] = BlockCarpet.class; //171
-            list[HARDENED_CLAY] = BlockTerracotta.class; //172
-            list[COAL_BLOCK] = BlockCoal.class; //173
-            list[PACKED_ICE] = BlockIcePacked.class; //174
-            list[DOUBLE_PLANT] = BlockDoublePlant.class; //175
-            list[STANDING_BANNER] = BlockBanner.class; //176
-            list[WALL_BANNER] = BlockWallBanner.class; //177
-            list[DAYLIGHT_DETECTOR_INVERTED] = BlockDaylightDetectorInverted.class; //178
-            list[RED_SANDSTONE] = BlockRedSandstone.class; //179
-            list[RED_SANDSTONE_STAIRS] = BlockStairsRedSandstone.class; //180
-            list[DOUBLE_STONE_SLAB2] = BlockDoubleSlabRedSandstone.class; //181
-            list[STONE_SLAB2] = BlockSlabRedSandstone.class; //182
-            list[SPRUCE_FENCE_GATE] = BlockFenceGateSpruce.class; //183
-            list[BIRCH_FENCE_GATE] = BlockFenceGateBirch.class; //184
-            list[JUNGLE_FENCE_GATE] = BlockFenceGateJungle.class; //185
-            list[DARK_OAK_FENCE_GATE] = BlockFenceGateDarkOak.class; //186
-            list[ACACIA_FENCE_GATE] = BlockFenceGateAcacia.class; //187
-
-            list[BLOCK_SPRUCE_DOOR] = BlockDoorSpruce.class; //193
-            list[BLOCK_BIRCH_DOOR] = BlockDoorBirch.class; //194
-            list[BLOCK_JUNGLE_DOOR] = BlockDoorJungle.class; //195
-            list[BLOCK_ACACIA_DOOR] = BlockDoorAcacia.class; //196
-            list[BLOCK_DARK_OAK_DOOR] = BlockDoorDarkOak.class; //197
-            list[GRASS_PATH] = BlockGrassPath.class; //198
-            list[BLOCK_FRAME] = BlockItemFrame.class; //199
-            list[CHORUS_FLOWER] = BlockChorusFlower.class; //200
-            list[PURPUR_BLOCK] = BlockPurpur.class; //201
-
-            list[PURPUR_STAIRS] = BlockStairsPurpur.class; //203
-
-            list[UNDYED_SHULKER_BOX] = BlockUndyedShulkerBox.class; //205
-            list[END_BRICKS] = BlockBricksEndStone.class; //206
-
-            list[END_ROD] = BlockEndRod.class; //208
-            list[END_GATEWAY] = BlockEndGateway.class; //209
-
-            list[MAGMA] = BlockMagma.class; //213
-            list[NETHER_WART_BLOCK] = BlockNetherWartBlock.class; //214
-            list[RED_NETHER_BRICK] = BlockBricksRedNether.class; //215
-            list[BONE_BLOCK] = BlockBone.class; //216
-
-            list[SHULKER_BOX] = BlockShulkerBox.class; //218
-            list[PURPLE_GLAZED_TERRACOTTA] = BlockTerracottaGlazedPurple.class; //219
-            list[WHITE_GLAZED_TERRACOTTA] = BlockTerracottaGlazedWhite.class; //220
-            list[ORANGE_GLAZED_TERRACOTTA] = BlockTerracottaGlazedOrange.class; //221
-            list[MAGENTA_GLAZED_TERRACOTTA] = BlockTerracottaGlazedMagenta.class; //222
-            list[LIGHT_BLUE_GLAZED_TERRACOTTA] = BlockTerracottaGlazedLightBlue.class; //223
-            list[YELLOW_GLAZED_TERRACOTTA] = BlockTerracottaGlazedYellow.class; //224
-            list[LIME_GLAZED_TERRACOTTA] = BlockTerracottaGlazedLime.class; //225
-            list[PINK_GLAZED_TERRACOTTA] = BlockTerracottaGlazedPink.class; //226
-            list[GRAY_GLAZED_TERRACOTTA] = BlockTerracottaGlazedGray.class; //227
-            list[SILVER_GLAZED_TERRACOTTA] = BlockTerracottaGlazedSilver.class; //228
-            list[CYAN_GLAZED_TERRACOTTA] = BlockTerracottaGlazedCyan.class; //229
-
-            list[BLUE_GLAZED_TERRACOTTA] = BlockTerracottaGlazedBlue.class; //231
-            list[BROWN_GLAZED_TERRACOTTA] = BlockTerracottaGlazedBrown.class; //232
-            list[GREEN_GLAZED_TERRACOTTA] = BlockTerracottaGlazedGreen.class; //233
-            list[RED_GLAZED_TERRACOTTA] = BlockTerracottaGlazedRed.class; //234
-            list[BLACK_GLAZED_TERRACOTTA] = BlockTerracottaGlazedBlack.class; //235
-            list[CONCRETE] = BlockConcrete.class; //236
-            list[CONCRETE_POWDER] = BlockConcretePowder.class; //237
-
-            list[CHORUS_PLANT] = BlockChorusPlant.class; //240
-            list[STAINED_GLASS] = BlockGlassStained.class; //241
-
-            list[PODZOL] = BlockPodzol.class; //243
-            list[BLOCK_BEETROOT] = BlockBeetroot.class; //244
-            list[STONECUTTER] = BlockStonecutterLegacy.class; //245
-            list[GLOWINGOBSIDIAN] = BlockObsidianGlowing.class; //246
-            list[NETHERREACTOR] = BlockNetherReactor.class; //247 Should not be removed
-
-            list[MOVING_BLOCK] = BlockMoving.class; //250
-            list[OBSERVER] = BlockObserver.class; //251
-
-            Blocks.registerVanillaBlocks();
-
-            for (int id = 0; id < BLOCK_ID_COUNT; id++) {
-                Class<?> c = list[id];
-                if (c != null) {
-                    Block[] variants = variantList[id];
-                    if (variants == null) {
-                        variantList[id] = new Block[]{new BlockUnknown(id)};
-                        log.debug("Block {} is not available in current base game version", id);
-                        continue;
-                    }
-
-                    Block block;
+                Block block;
+                try {
+                    block = (Block) c.newInstance();
+                    int defaultMeta = block.getDefaultMeta();
+                    variants[0] = block;
                     try {
-                        block = (Block) c.newInstance();
-                        int defaultMeta = block.getDefaultMeta();
-                        variants[0] = block;
-                        try {
-                            Constructor<?> constructor = c.getDeclaredConstructor(int.class);
-                            constructor.setAccessible(true);
+                        Constructor<?> constructor = c.getDeclaredConstructor(int.class);
+                        constructor.setAccessible(true);
 
-                            for (int data = 1; data < variants.length; ++data) {
-                                if (block.isValidMeta(data)) {
-                                    variants[data] = (Block) constructor.newInstance(data);
-                                } else {
-                                    variants[data] = (Block) constructor.newInstance(defaultMeta);
-                                }
-                            }
-                        } catch (NoSuchMethodException ignore) {
-                            for (int data = 1; data < variants.length; ++data) {
-                                variants[data] = block;
-                            }
-
-                            if (hasMeta[id]) {
-                                log.warn("meta mismatch: {} (expected 0-{})", id, metaMax[id]);
-                            }
-                        }
-                    } catch (Exception e) {
-                        log.error("Error while registering " + c.getName(), e);
-                        variants[0] = new BlockUnknown(id);
                         for (int data = 1; data < variants.length; ++data) {
-                            variants[data] = new BlockUnknown(id, data);
-                        }
-                        continue;
-                    }
-
-                    solid[id] = block.isSolid();
-                    transparent[id] = block.isTransparent();
-                    light[id] = block.getLightLevel();
-
-                    if (block.isSolid()) {
-                        if (block.isTransparent()) {
-                            if (block.isLiquid() || block.is(ICE)) {
-                                lightFilter[id] = 2;
+                            if (block.isValidMeta(data)) {
+                                variants[data] = (Block) constructor.newInstance(data);
                             } else {
-                                lightFilter[id] = 1;
+                                variants[data] = (Block) constructor.newInstance(defaultMeta);
                             }
+                        }
+                    } catch (NoSuchMethodException ignore) {
+                        for (int data = 1; data < variants.length; ++data) {
+                            variants[data] = block;
+                        }
+
+                        if (hasMeta[id]) {
+                            log.warn("meta mismatch: {} (expected 0-{})", id, metaMax[id]);
+                        }
+                    }
+                } catch (Exception e) {
+                    log.error("Error while registering " + c.getName(), e);
+                    variants[0] = new BlockUnknown(id);
+                    for (int data = 1; data < variants.length; ++data) {
+                        variants[data] = new BlockUnknown(id, data);
+                    }
+                    continue;
+                }
+
+                solid[id] = block.isSolid();
+                transparent[id] = block.isTransparent();
+                light[id] = block.getLightLevel();
+
+                if (block.isSolid()) {
+                    if (block.isTransparent()) {
+                        if (block.isLiquid() || block.is(ICE)) {
+                            lightFilter[id] = 2;
                         } else {
-                            lightFilter[id] = 15;
+                            lightFilter[id] = 1;
                         }
                     } else {
-                        lightFilter[id] = 1;
+                        lightFilter[id] = 15;
                     }
                 } else {
                     lightFilter[id] = 1;
+                }
+            } else {
+                lightFilter[id] = 1;
 
-                    Block[] variants = variantList[id];
-                    if (variants == null) {
-                        variantList[id] = new Block[]{new BlockUnknown(id)};
-                    } else {
-                        variants[0] = new BlockUnknown(id);
-                        for (int i = 1; i < variants.length; i++) {
-                            variants[i] = new BlockUnknown(id, i);
-                        }
+                Block[] variants = variantList[id];
+                if (variants == null) {
+                    variantList[id] = new Block[]{new BlockUnknown(id)};
+                } else {
+                    variants[0] = new BlockUnknown(id);
+                    for (int i = 1; i < variants.length; i++) {
+                        variants[i] = new BlockUnknown(id, i);
                     }
                 }
             }
@@ -471,14 +220,13 @@ public abstract class Block extends Position implements Metadatable, Cloneable, 
     public static Block get(int id, int data) {
         try {
             Block[] variants = variantList[id];
-            try {
-                return variants[data].clone();
-            } catch (ArrayIndexOutOfBoundsException e) {
+            if (data < 0 || data >= variants.length) {
                 if (LOG_INVALID_BLOCK_AUX_ACCESS) {
                     log.warn("Invalid block meta: id {}, meta {}", id, data, new IllegalArgumentException());
                 }
                 return variants[0].clone();
             }
+            return variants[data].clone();
         } catch (ArrayIndexOutOfBoundsException e) {
             throw new IllegalArgumentException("Invalid block id: " + id);
         }
@@ -707,7 +455,7 @@ public abstract class Block extends Position implements Metadatable, Cloneable, 
     }
 
     public final void setDamage(Integer meta) {
-        setDamage((meta == null ? 0 : meta & 0x0f));
+        setDamage(meta == null ? 0 : meta);
     }
 
     public int getDefaultMeta() {

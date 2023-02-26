@@ -1,6 +1,7 @@
 package cn.nukkit.block;
 
 import cn.nukkit.Player;
+import cn.nukkit.blockentity.BlockEntities;
 import cn.nukkit.blockentity.BlockEntity;
 import cn.nukkit.blockentity.BlockEntitySculkSensor;
 import cn.nukkit.blockentity.BlockEntityType;
@@ -151,7 +152,7 @@ public class BlockSculkSensor extends BlockTransparentMeta {
             nbt.putString("CustomName", item.getCustomName());
         }
 
-        return (BlockEntitySculkSensor) BlockEntity.createBlockEntity(BlockEntity.SCULK_SENSOR, getChunk(), nbt);
+        return (BlockEntitySculkSensor) BlockEntities.createBlockEntity(BlockEntityType.SCULK_SENSOR, getChunk(), nbt);
     }
 
     @Nullable

@@ -1,6 +1,7 @@
 package cn.nukkit.block;
 
 import cn.nukkit.Player;
+import cn.nukkit.blockentity.BlockEntities;
 import cn.nukkit.blockentity.BlockEntity;
 import cn.nukkit.blockentity.BlockEntityType;
 import cn.nukkit.blockentity.BlockEntityJukebox;
@@ -92,7 +93,7 @@ public class BlockJukebox extends BlockSolid {
         CompoundTag nbt = BlockEntity.getDefaultCompound(this, BlockEntity.JUKEBOX)
                 .putList(new ListTag<>("Items"));
 
-        return BlockEntity.createBlockEntity(BlockEntity.JUKEBOX, getChunk(), nbt);
+        return BlockEntities.createBlockEntity(BlockEntityType.JUKEBOX, getChunk(), nbt);
     }
 
     @Override

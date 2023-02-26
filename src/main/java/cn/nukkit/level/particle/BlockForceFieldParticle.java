@@ -8,6 +8,6 @@ public class BlockForceFieldParticle extends GenericParticle {
     }
 
     public BlockForceFieldParticle(Vector3 pos, int scale) {
-        super(pos, Particle.TYPE_BLOCK_FORCE_FIELD);
+        super(pos, Particle.BLOCK_FORCE_FIELD);
     }
 }

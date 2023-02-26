@@ -1,6 +1,7 @@
 package cn.nukkit.block;
 
 import cn.nukkit.Player;
+import cn.nukkit.blockentity.BlockEntities;
 import cn.nukkit.blockentity.BlockEntity;
 import cn.nukkit.blockentity.BlockEntityType;
 import cn.nukkit.blockentity.BlockEntitySign;
@@ -104,7 +105,7 @@ public class BlockSignPost extends BlockTransparentMeta implements Faceable {
                 }
             }
 
-            BlockEntitySign sign = (BlockEntitySign) BlockEntity.createBlockEntity(BlockEntity.SIGN, getChunk(), nbt);
+            BlockEntitySign sign = (BlockEntitySign) BlockEntities.createBlockEntity(BlockEntityType.SIGN, getChunk(), nbt);
             return sign != null;
         }
 

@@ -34,7 +34,7 @@ public class ItemTurtleShell extends ItemArmor {
 
     @Override
     public int getMaxDurability() {
-        return 276;
+        return 275;
     }
 
     @Override

@@ -1,6 +1,7 @@
 package cn.nukkit.block;
 
 import cn.nukkit.Player;
+import cn.nukkit.blockentity.BlockEntities;
 import cn.nukkit.blockentity.BlockEntity;
 import cn.nukkit.blockentity.BlockEntityType;
 import cn.nukkit.blockentity.BlockEntitySkull;
@@ -90,7 +91,7 @@ public class BlockSkull extends BlockFlowable implements Faceable {
                 nbt.put(aTag.getName(), aTag);
             }
         }
-        BlockEntitySkull skull = (BlockEntitySkull) BlockEntity.createBlockEntity(BlockEntity.SKULL, getChunk(), nbt);
+        BlockEntitySkull skull = (BlockEntitySkull) BlockEntities.createBlockEntity(BlockEntityType.SKULL, getChunk(), nbt);
         if (skull == null) {
             return false;
         }

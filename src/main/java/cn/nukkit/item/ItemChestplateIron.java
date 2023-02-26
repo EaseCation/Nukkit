@@ -35,6 +35,6 @@ public class ItemChestplateIron extends ItemArmor {
 
     @Override
     public int getMaxDurability() {
-        return 241;
+        return 240;
     }
 }

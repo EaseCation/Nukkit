@@ -4,7 +4,6 @@ import cn.nukkit.Server;
 import cn.nukkit.plugin.Plugin;
 import com.google.common.base.Preconditions;
 import com.google.common.collect.ImmutableList;
-import it.unimi.dsi.fastutil.objects.Object2ObjectOpenHashMap;
 import it.unimi.dsi.fastutil.objects.ObjectArrayList;
 
 import java.util.*;
@@ -14,7 +13,7 @@ import java.util.*;
  */
 public class NKServiceManager implements ServiceManager {
 
-    private final Map<Class<?>, List<RegisteredServiceProvider<?>>> handle = new Object2ObjectOpenHashMap<>();
+    private final Map<Class<?>, List<RegisteredServiceProvider<?>>> handle = new IdentityHashMap<>();
 
     @Override
     public <T> boolean register(Class<T> service, T provider, Plugin plugin, ServicePriority priority) {

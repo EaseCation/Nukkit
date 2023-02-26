@@ -47,7 +47,7 @@ public class EntityFirework extends Entity {
         if (nbt.contains("FireworkItem")) {
             firework = NBTIO.getItemHelper(nbt.getCompound("FireworkItem"));
         } else {
-            firework = new ItemFirework();
+            firework = Item.get(Item.FIREWORK_ROCKET);
         }
 
         this.lifetime = firework instanceof ItemFirework ? ((ItemFirework) firework).getLifeTime() : (30 + rand.nextInt(12));

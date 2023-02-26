@@ -1,5 +1,8 @@
 package cn.nukkit.item;
 
+import cn.nukkit.entity.projectile.EntityEnderPearl;
+import cn.nukkit.entity.projectile.ProjectileFactory;
+
 public class ItemEnderPearl extends ProjectileItem {
 
     public ItemEnderPearl() {
@@ -20,8 +23,8 @@ public class ItemEnderPearl extends ProjectileItem {
     }
 
     @Override
-    public String getProjectileEntityType() {
-        return "EnderPearl";
+    public ProjectileFactory getProjectileEntityFactory() {
+        return EntityEnderPearl::new;
     }
 
     @Override

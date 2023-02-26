@@ -1,6 +1,7 @@
 package cn.nukkit.block;
 
 import cn.nukkit.Player;
+import cn.nukkit.blockentity.BlockEntities;
 import cn.nukkit.blockentity.BlockEntity;
 import cn.nukkit.blockentity.BlockEntityType;
 import cn.nukkit.blockentity.BlockEntityMusic;
@@ -271,7 +272,7 @@ public class BlockNoteblock extends BlockSolid {
     }
 
     private BlockEntityMusic createBlockEntity() {
-        return (BlockEntityMusic) BlockEntity.createBlockEntity(BlockEntity.MUSIC, getChunk(),
+        return (BlockEntityMusic) BlockEntities.createBlockEntity(BlockEntityType.MUSIC, getChunk(),
                                         BlockEntity.getDefaultCompound(this, BlockEntity.MUSIC));
     }
 

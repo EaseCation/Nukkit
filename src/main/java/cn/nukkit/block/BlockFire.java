@@ -12,7 +12,7 @@ import cn.nukkit.event.entity.EntityCombustByBlockEvent;
 import cn.nukkit.event.entity.EntityDamageByBlockEvent;
 import cn.nukkit.event.entity.EntityDamageEvent.DamageCause;
 import cn.nukkit.item.Item;
-import cn.nukkit.item.ItemBlock;
+import cn.nukkit.item.Items;
 import cn.nukkit.level.GameRule;
 import cn.nukkit.level.Level;
 import cn.nukkit.math.AxisAlignedBB;
@@ -299,7 +299,7 @@ public class BlockFire extends BlockFlowable {
 
     @Override
     public Item toItem(boolean addUserData) {
-        return new ItemBlock(Block.get(BlockID.AIR));
+        return Items.air();
     }
 
     @Override

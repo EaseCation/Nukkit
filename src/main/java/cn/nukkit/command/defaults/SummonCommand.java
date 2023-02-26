@@ -41,7 +41,12 @@ public class SummonCommand extends Command {
         if (args.length == 1) {
         	String entityType = args[0];
         	Position position = player.getPosition();
-			Entity entity = Entity.createEntity(entityType, position);
+			Entity entity;
+			try {
+				entity = Entity.createEntity(Integer.parseInt(entityType) & 0xff, position);
+			} catch (NumberFormatException e) {
+				entity = Entity.createEntity(entityType, position);
+			}
 			if (entity == null) {
 				sender.sendMessage(new TranslationContainer("commands.generic.usage", this.usageMessage));
 				return false;
@@ -58,7 +63,12 @@ public class SummonCommand extends Command {
 				sender.sendMessage(e.getMessage());
 				return true;
 			}
-			Entity entity = Entity.createEntity(entityType, player.getChunk(), nbt);
+			Entity entity;
+			try {
+				entity = Entity.createEntity(Integer.parseInt(entityType) & 0xff, player.getChunk(), nbt);
+			} catch (NumberFormatException e) {
+				entity = Entity.createEntity(entityType, player.getChunk(), nbt);
+			}
 			if (entity == null) {
 				sender.sendMessage(new TranslationContainer("commands.generic.usage", this.usageMessage));
 				return false;
@@ -78,7 +88,12 @@ public class SummonCommand extends Command {
 				sender.sendMessage(new TranslationContainer("commands.generic.usage", this.usageMessage));
 				return false;
 			}
-			Entity entity = Entity.createEntity(entityType, position);
+			Entity entity;
+			try {
+				entity = Entity.createEntity(Integer.parseInt(entityType) & 0xff, position);
+			} catch (NumberFormatException e) {
+				entity = Entity.createEntity(entityType, position);
+			}
 			if (entity == null) {
 				sender.sendMessage(new TranslationContainer("commands.generic.usage", this.usageMessage));
 				return false;

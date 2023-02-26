@@ -13,6 +13,8 @@ public final class Effects {
     private static final Map<String, Effect> IDENTIFIER_TO_EFFECT = new Object2ObjectOpenHashMap<>();
 
     public static void registerVanillaEffects() {
+        Effect.effects[NO_EFFECT] = new Effect(NO_EFFECT, "clear", "%potion.empty", 56, 93, 198);
+
         registerEffect(SPEED, new Effect(SPEED, "speed", "%potion.moveSpeed", 124, 175, 198));
         registerEffect(SLOWNESS, new Effect(SLOWNESS, "slowness", "%potion.moveSlowdown", 90, 108, 129, true));
         registerEffect(HASTE, new Effect(HASTE, "haste", "%potion.digSpeed", 217, 192, 67));

@@ -1,6 +1,7 @@
 package cn.nukkit.block;
 
 import cn.nukkit.Player;
+import cn.nukkit.blockentity.BlockEntities;
 import cn.nukkit.blockentity.BlockEntity;
 import cn.nukkit.blockentity.BlockEntityLodestone;
 import cn.nukkit.blockentity.BlockEntityType;
@@ -92,7 +93,7 @@ public class BlockLodestone extends BlockSolid {
             nbt.putString("CustomName", item.getCustomName());
         }
 
-        return (BlockEntityLodestone) BlockEntity.createBlockEntity(BlockEntity.LODESTONE, getChunk(), nbt);
+        return (BlockEntityLodestone) BlockEntities.createBlockEntity(BlockEntityType.LODESTONE, getChunk(), nbt);
     }
 
     @Nullable

@@ -1,6 +1,7 @@
 package cn.nukkit.block;
 
 import cn.nukkit.Player;
+import cn.nukkit.blockentity.BlockEntities;
 import cn.nukkit.blockentity.BlockEntity;
 import cn.nukkit.blockentity.BlockEntityBrewingStand;
 import cn.nukkit.blockentity.BlockEntityType;
@@ -85,7 +86,7 @@ public class BlockBrewingStand extends BlockTransparentMeta {
             }
         }
 
-        BlockEntityBrewingStand brewing = (BlockEntityBrewingStand) BlockEntity.createBlockEntity(BlockEntity.BREWING_STAND, getChunk(), nbt);
+        BlockEntityBrewingStand brewing = (BlockEntityBrewingStand) BlockEntities.createBlockEntity(BlockEntityType.BREWING_STAND, getChunk(), nbt);
         return brewing != null;
     }
 
@@ -99,7 +100,7 @@ public class BlockBrewingStand extends BlockTransparentMeta {
             } else {
                 CompoundTag nbt = BlockEntity.getDefaultCompound(this, BlockEntity.BREWING_STAND)
                         .putList(new ListTag<>("Items"));
-                brewing = (BlockEntityBrewingStand) BlockEntity.createBlockEntity(BlockEntity.BREWING_STAND, getChunk(), nbt);
+                brewing = (BlockEntityBrewingStand) BlockEntities.createBlockEntity(BlockEntityType.BREWING_STAND, getChunk(), nbt);
                 if (brewing == null) {
                     return false;
                 }

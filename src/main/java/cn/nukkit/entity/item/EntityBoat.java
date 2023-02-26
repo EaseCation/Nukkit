@@ -14,7 +14,6 @@ import cn.nukkit.event.entity.EntityDamageEvent;
 import cn.nukkit.event.vehicle.VehicleMoveEvent;
 import cn.nukkit.event.vehicle.VehicleUpdateEvent;
 import cn.nukkit.item.Item;
-import cn.nukkit.item.ItemBoat;
 import cn.nukkit.level.GameRule;
 import cn.nukkit.level.Location;
 import cn.nukkit.level.format.FullChunk;
@@ -433,7 +432,7 @@ public class EntityBoat extends EntityVehicle {
     }
 
     protected void dropItem() {
-        this.level.dropItem(this, new ItemBoat(this.woodID));
+        this.level.dropItem(this, Item.get(Item.BOAT, this.woodID));
     }
 
     @Override
@@ -462,6 +461,11 @@ public class EntityBoat extends EntityVehicle {
 
     public boolean isFull() {
         return this.passengers.size() >= 2;
+    }
+
+    @Override
+    public boolean canDoInteraction(Player player) {
+        return !isFull();
     }
 
     @Override

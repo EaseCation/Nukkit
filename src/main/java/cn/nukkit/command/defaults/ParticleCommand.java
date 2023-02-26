@@ -185,7 +185,7 @@ public class ParticleCommand extends VanillaCommand {
         if (name.startsWith("iconcrack_")) {
             String[] d = name.split("_");
             if (d.length == 3) {
-                return new ItemBreakParticle(pos, Item.get(Integer.parseInt(d[1]), Integer.valueOf(d[2])));
+                return new ItemBreakParticle(pos, Item.get(Integer.parseInt(d[1]), Integer.parseInt(d[2])));
             }
         } else if (name.startsWith("blockcrack_")) {
             String[] d = name.split("_");

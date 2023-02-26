@@ -151,13 +151,10 @@ public class BlockDripstonePointed extends BlockTransparentMeta {
                 //TODO: sync
                 level.setBlock(block, Blocks.air(), true);
 
-                EntityFallingBlock fallingBlock = (EntityFallingBlock) Entity.createEntity("FallingSand", block.getChunk(),
+                EntityFallingBlock fallingBlock = new EntityFallingBlock(block.getChunk(),
                         Entity.getDefaultNBT(block.add(0.5, 0, 0.5))
                                 .putInt("TileID", POINTED_DRIPSTONE)
                                 .putByte("Data", block.getDamage()));
-                if (fallingBlock == null) {
-                    continue;
-                }
                 fallingBlock.sync = true;
                 fallingBlock.spawnToAll();
             }

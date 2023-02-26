@@ -1,6 +1,7 @@
 package cn.nukkit.block;
 
 import cn.nukkit.Player;
+import cn.nukkit.blockentity.BlockEntities;
 import cn.nukkit.blockentity.BlockEntity;
 import cn.nukkit.blockentity.BlockEntityBarrel;
 import cn.nukkit.blockentity.BlockEntityType;
@@ -146,7 +147,7 @@ public class BlockBarrel extends BlockSolidMeta implements Faceable {
             nbt.putString("CustomName", item.getCustomName());
         }
 
-        return (BlockEntityBarrel) BlockEntity.createBlockEntity(BlockEntity.BARREL, getChunk(), nbt);
+        return (BlockEntityBarrel) BlockEntities.createBlockEntity(BlockEntityType.BARREL, getChunk(), nbt);
     }
 
     @Nullable

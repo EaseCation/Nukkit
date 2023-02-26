@@ -1,6 +1,7 @@
 package cn.nukkit.block;
 
 import cn.nukkit.Player;
+import cn.nukkit.blockentity.BlockEntities;
 import cn.nukkit.blockentity.BlockEntity;
 import cn.nukkit.blockentity.BlockEntitySporeBlossom;
 import cn.nukkit.blockentity.BlockEntityType;
@@ -116,7 +117,7 @@ public class BlockSporeBlossom extends BlockFlowable {
             nbt.putString("CustomName", item.getCustomName());
         }
 
-        return (BlockEntitySporeBlossom) BlockEntity.createBlockEntity(BlockEntity.SPORE_BLOSSOM, getChunk(), nbt);
+        return (BlockEntitySporeBlossom) BlockEntities.createBlockEntity(BlockEntityType.SPORE_BLOSSOM, getChunk(), nbt);
     }
 
     @Nullable

@@ -28,20 +28,23 @@ public abstract class ItemTool extends Item implements ItemDurable {
     public static final int TYPE_SHEARS = 5;
     public static final int TYPE_HOE = 6;
 
-    public static final int DURABILITY_WOODEN = 60;
-    public static final int DURABILITY_GOLD = 33;
-    public static final int DURABILITY_STONE = 132;
-    public static final int DURABILITY_IRON = 251;
-    public static final int DURABILITY_DIAMOND = 1562;
-    public static final int DURABILITY_NETHERITE = 2032;
-    public static final int DURABILITY_FLINT_STEEL = 65;
-    public static final int DURABILITY_SHEARS = 239;
-    public static final int DURABILITY_BOW = 385;
-    public static final int DURABILITY_TRIDENT = 251;
+    public static final int DURABILITY_WOODEN = 59;
+    public static final int DURABILITY_GOLD = 32;
+    public static final int DURABILITY_STONE = 131;
+    public static final int DURABILITY_IRON = 250;
+    public static final int DURABILITY_DIAMOND = 1561;
+    public static final int DURABILITY_NETHERITE = 2031;
+    public static final int DURABILITY_FLINT_AND_STEEL = 64;
+    public static final int DURABILITY_SHEARS = 238;
+    public static final int DURABILITY_BOW = 384;
+    public static final int DURABILITY_TRIDENT = 250;
     public static final int DURABILITY_FISHING_ROD = 384;
-    public static final int DURABILITY_CROSSBOW = 465;
-    public static final int DURABILITY_CARROT_ON_A_STICK = 25;
+    public static final int DURABILITY_CROSSBOW = 464;
+    public static final int DURABILITY_SHIELD = 336;
+    public static final int DURABILITY_CARROT_ON_A_STICK = 26;
     public static final int DURABILITY_WARPED_FUNGUS_ON_A_STICK = 100;
+    public static final int DURABILITY_SPARKLER = 100;
+    public static final int DURABILITY_GLOW_STICK = 100;
 
     protected ItemTool(int id) {
         this(id, 0, 1, UNKNOWN_STR);
@@ -71,11 +74,11 @@ public abstract class ItemTool extends Item implements ItemDurable {
         }
 
         if (this.additionalDamageOnBreak()) {
-            if (block.getBreakTime(this) > 0) {
-                this.meta += 2;
+            if (block.getBreakTime(this) > 0 || getId() == FLINT_AND_STEEL) {
+                this.setDamage(this.getDamage() + 2);
             }
         } else if (this.isShears() || block.getBreakTime(this) > 0) {
-            this.meta++;
+            this.setDamage(this.getDamage() + 1);
         }
         return true;
     }
@@ -87,15 +90,15 @@ public abstract class ItemTool extends Item implements ItemDurable {
         }
 
         if (entity != null && !this.isSword()) {
-            this.meta += 2;
+            this.setDamage(this.getDamage() + 2);
         } else {
-            this.meta++;
+            this.setDamage(this.getDamage() + 1);
         }
 
         return true;
     }
 
-    private boolean isDurable() {
+    protected boolean isDurable() {
         if (!hasEnchantments()) {
             return false;
         }

@@ -1,5 +1,8 @@
 package cn.nukkit.item;
 
+import cn.nukkit.entity.projectile.EntitySnowball;
+import cn.nukkit.entity.projectile.ProjectileFactory;
+
 /**
  * author: MagicDroidX
  * Nukkit Project
@@ -24,8 +27,8 @@ public class ItemSnowball extends ProjectileItem {
     }
 
     @Override
-    public String getProjectileEntityType() {
-        return "Snowball";
+    public ProjectileFactory getProjectileEntityFactory() {
+        return EntitySnowball::new;
     }
 
     @Override

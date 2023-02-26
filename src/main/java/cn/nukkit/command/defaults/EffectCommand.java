@@ -72,7 +72,7 @@ public class EffectCommand extends Command {
             return true;
         }
 
-        int duration = 300;
+        int duration = 600;
         if (args.length >= 3) {
             try {
                 duration = Mth.clamp(Integer.parseInt(args[2]), 0, 1000000);
@@ -80,10 +80,10 @@ public class EffectCommand extends Command {
                 sender.sendMessage(new TranslationContainer("commands.generic.usage", this.usageMessage));
                 return true;
             }
-            if (!(effect instanceof InstantEffect)) {
+            if (!effect.isInstantaneous()) {
                 duration *= 20;
             }
-        } else if (effect instanceof InstantEffect) {
+        } else if (effect.isInstantaneous()) {
             duration = 1;
         }
 

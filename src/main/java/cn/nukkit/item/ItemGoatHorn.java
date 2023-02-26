@@ -5,6 +5,15 @@ import cn.nukkit.math.Vector3;
 import cn.nukkit.network.protocol.LevelSoundEventPacket;
 
 public class ItemGoatHorn extends Item {
+    public static final int PONDER_GOAT_HORN = 0;
+    public static final int SING_GOAT_HORN = 1;
+    public static final int SEEK_GOAT_HORN = 2;
+    public static final int FEEL_GOAT_HORN = 3;
+    public static final int ADMIRE_GOAT_HORN = 4;
+    public static final int CALL_GOAT_HORN = 5;
+    public static final int YEARN_GOAT_HORN = 6;
+    public static final int DREAM_GOAT_HORN = 7;
+    public static final int UNDEFINED_GOAT_HORN = 8;
 
     private static final int COOLDOWN = 7 * 20;
 

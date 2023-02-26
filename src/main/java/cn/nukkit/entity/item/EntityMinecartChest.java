@@ -123,6 +123,11 @@ public class EntityMinecartChest extends EntityMinecartAbstract implements Inven
     }
 
     @Override
+    public boolean canDoInteraction(Player player) {
+        return true;
+    }
+
+    @Override
     public String getInteractButtonText(Player player) {
         return "action.interact.opencontainer";
     }

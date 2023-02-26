@@ -1,6 +1,7 @@
 package cn.nukkit.block;
 
 import cn.nukkit.Player;
+import cn.nukkit.blockentity.BlockEntities;
 import cn.nukkit.blockentity.BlockEntity;
 import cn.nukkit.blockentity.BlockEntityDaylightDetector;
 import cn.nukkit.blockentity.BlockEntityType;
@@ -135,7 +136,7 @@ public class BlockDaylightDetector extends BlockTransparentMeta {
             nbt.putString("CustomName", item.getCustomName());
         }
 
-        return (BlockEntityDaylightDetector) BlockEntity.createBlockEntity(BlockEntity.DAYLIGHT_DETECTOR, getChunk(), nbt);
+        return (BlockEntityDaylightDetector) BlockEntities.createBlockEntity(BlockEntityType.DAYLIGHT_DETECTOR, getChunk(), nbt);
     }
 
     @Nullable

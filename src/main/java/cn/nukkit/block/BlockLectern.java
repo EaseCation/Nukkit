@@ -1,6 +1,7 @@
 package cn.nukkit.block;
 
 import cn.nukkit.Player;
+import cn.nukkit.blockentity.BlockEntities;
 import cn.nukkit.blockentity.BlockEntity;
 import cn.nukkit.blockentity.BlockEntityLectern;
 import cn.nukkit.blockentity.BlockEntityType;
@@ -235,7 +236,7 @@ public class BlockLectern extends BlockTransparentMeta implements Faceable {
             nbt.putString("CustomName", item.getCustomName());
         }
 
-        return (BlockEntityLectern) BlockEntity.createBlockEntity(BlockEntity.LECTERN, getChunk(), nbt);
+        return (BlockEntityLectern) BlockEntities.createBlockEntity(BlockEntityType.LECTERN, getChunk(), nbt);
     }
 
     @Nullable

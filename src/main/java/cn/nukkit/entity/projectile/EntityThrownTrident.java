@@ -141,10 +141,9 @@ public class EntityThrownTrident extends EntityProjectile {
             }
         }
 
-        EntityThrownTrident newTrident = (EntityThrownTrident) Entity.createEntity("ThrownTrident", this);
+        EntityThrownTrident newTrident = new EntityThrownTrident(getChunk(), getDefaultNBT(this), this.shootingEntity);
         newTrident.alreadyCollided = true;
         newTrident.pickupMode = this.pickupMode;
-        newTrident.shootingEntity = this.shootingEntity;
         newTrident.setItem(this.trident);
         newTrident.spawnToAll();
     }

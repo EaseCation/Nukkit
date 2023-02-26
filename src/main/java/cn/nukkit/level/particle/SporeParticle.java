@@ -8,6 +8,6 @@ import cn.nukkit.math.Vector3;
  */
 public class SporeParticle extends GenericParticle {
     public SporeParticle(Vector3 pos) {
-        super(pos, Particle.TYPE_TOWN_AURA);
+        super(pos, Particle.TOWN_AURA);
     }
 }

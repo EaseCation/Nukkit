@@ -54,11 +54,7 @@ public class ItemMinecartChest extends Item {
                             .add(new FloatTag("", 0)))
             );
 
-            if(minecart == null) {
-                return false;
-            }
-
-            if (player.isAdventure() || player.isSurvival()) {
+            if (player.isSurvivalLike()) {
                 Item item = player.getInventory().getItemInHand();
                 item.setCount(item.getCount() - 1);
                 player.getInventory().setItemInHand(item);
