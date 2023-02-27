@@ -305,11 +305,11 @@ public final class Items {
         initializeItemBlockCache();
     }
 
-    private static Class<? extends Item> registerItem(int id, Class<? extends Item> clazz, ItemFactory factory) {
+    public static Class<? extends Item> registerItem(int id, Class<? extends Item> clazz, ItemFactory factory) {
         return registerItem(id, clazz, factory, 0);
     }
 
-    private static Class<? extends Item> registerItem(int id, Class<? extends Item> clazz, ItemFactory factory, int maxAuxVal) {
+    public static Class<? extends Item> registerItem(int id, Class<? extends Item> clazz, ItemFactory factory, int maxAuxVal) {
         Item.list[id] = clazz;
         ITEM_FACTORIES[id] = factory;
 
@@ -337,14 +337,14 @@ public final class Items {
     /**
      * @param version min required base game version
      */
-    private static Class<? extends Item> registerItem(int id, Class<? extends Item> clazz, ItemFactory factory, GameVersion version) {
+    public static Class<? extends Item> registerItem(int id, Class<? extends Item> clazz, ItemFactory factory, GameVersion version) {
         return registerItem(id, clazz, factory, 0, version);
     }
 
     /**
      * @param version min required base game version
      */
-    private static Class<? extends Item> registerItem(int id, Class<? extends Item> clazz, ItemFactory factory, int maxAuxVal, GameVersion version) {
+    public static Class<? extends Item> registerItem(int id, Class<? extends Item> clazz, ItemFactory factory, int maxAuxVal, GameVersion version) {
         if (!version.isAvailable()) {
             return null;
         }
