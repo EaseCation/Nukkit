@@ -4,7 +4,6 @@ import cn.nukkit.Player;
 import cn.nukkit.Server;
 import cn.nukkit.entity.Entity;
 import cn.nukkit.item.Item;
-import cn.nukkit.item.ItemBlock;
 import cn.nukkit.item.ItemTool;
 import cn.nukkit.item.enchantment.Enchantment;
 import cn.nukkit.level.Level;
@@ -960,7 +959,7 @@ public abstract class Block extends Position implements Metadatable, Cloneable, 
     }
 
     public Item toItem(boolean addUserData) {
-        return new ItemBlock(this, this.getDamage(), 1);
+        return Item.get(this.getItemId(), this.getDamage(), 1);
     }
 
     public Item getSilkTouchResource() {

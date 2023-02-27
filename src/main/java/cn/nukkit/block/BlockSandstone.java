@@ -1,7 +1,6 @@
 package cn.nukkit.block;
 
 import cn.nukkit.item.Item;
-import cn.nukkit.item.ItemBlock;
 import cn.nukkit.item.ItemTool;
 import cn.nukkit.utils.BlockColor;
 
@@ -63,7 +62,7 @@ public class BlockSandstone extends BlockSolidMeta {
 
     @Override
     public Item toItem(boolean addUserData) {
-        return new ItemBlock(this, this.getDamage() & 0x03);
+        return Item.get(this.getItemId(), this.getDamage() & 0x03);
     }
 
     @Override

@@ -1,7 +1,6 @@
 package cn.nukkit.block;
 
 import cn.nukkit.item.Item;
-import cn.nukkit.item.ItemMelon;
 import cn.nukkit.item.ItemTool;
 import cn.nukkit.item.enchantment.Enchantment;
 import cn.nukkit.utils.BlockColor;
@@ -48,7 +47,7 @@ public class BlockMelon extends BlockSolid {
         }
 
         return new Item[]{
-                new ItemMelon(0, Math.min(9, count))
+                Item.get(Item.MELON_SLICE, 0, Math.min(9, count))
         };
     }
 

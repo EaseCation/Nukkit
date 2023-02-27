@@ -6,7 +6,6 @@ import cn.nukkit.blockentity.BlockEntity;
 import cn.nukkit.blockentity.BlockEntityBed;
 import cn.nukkit.blockentity.BlockEntityType;
 import cn.nukkit.item.Item;
-import cn.nukkit.item.ItemBed;
 import cn.nukkit.lang.TranslationContainer;
 import cn.nukkit.level.Dimension;
 import cn.nukkit.level.Explosion;
@@ -198,7 +197,7 @@ public class BlockBed extends BlockTransparentMeta implements Faceable {
 
     @Override
     public Item toItem(boolean addUserData) {
-        return new ItemBed(this.getDyeColor().getWoolData());
+        return Item.get(Item.BED, this.getDyeColor().getWoolData());
     }
 
     @Override

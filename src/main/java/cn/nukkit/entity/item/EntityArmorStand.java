@@ -173,10 +173,6 @@ public class EntityArmorStand extends EntityLiving implements EntityInteractable
         if (isAlive()) {
             motionY -= getGravity();
 
-            if (checkObstruction(x, y, z)) {
-                hasUpdate = true;
-            }
-
             move(motionX, motionY, motionZ);
 
             double friction = 1 - getDrag();

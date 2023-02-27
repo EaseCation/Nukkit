@@ -4,7 +4,6 @@ import cn.nukkit.Player;
 import cn.nukkit.event.block.BlockRedstoneEvent;
 import cn.nukkit.event.redstone.RedstoneUpdateEvent;
 import cn.nukkit.item.Item;
-import cn.nukkit.item.ItemRedstone;
 import cn.nukkit.level.Level;
 import cn.nukkit.math.BlockFace;
 import cn.nukkit.math.BlockFace.Plane;
@@ -191,7 +190,7 @@ public class BlockRedstoneWire extends BlockFlowable {
 
     @Override
     public Item toItem(boolean addUserData) {
-        return new ItemRedstone();
+        return Item.get(Item.REDSTONE);
     }
 
     @Override

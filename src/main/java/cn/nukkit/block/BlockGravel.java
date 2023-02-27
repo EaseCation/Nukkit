@@ -3,7 +3,6 @@ package cn.nukkit.block;
 import cn.nukkit.Player;
 import cn.nukkit.item.Item;
 import cn.nukkit.item.ItemDye;
-import cn.nukkit.item.ItemFlint;
 import cn.nukkit.item.ItemID;
 import cn.nukkit.item.ItemTool;
 import cn.nukkit.math.BlockFace;
@@ -48,7 +47,7 @@ public class BlockGravel extends BlockFallable {
     public Item[] getDrops(Item item) {
         if (ThreadLocalRandom.current().nextInt(9) == 0) {
             return new Item[]{
-                    new ItemFlint()
+                    Item.get(Item.FLINT)
             };
         } else {
             return new Item[]{

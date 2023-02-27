@@ -125,7 +125,7 @@ public class BlockDoublePlant extends BlockFlowable {
                     if (item.isShears()) {
                         if (dropSeeds) {
                             return new Item[]{
-                                    new ItemSeedsWheat(0, 1),
+                                    Item.get(Item.WHEAT_SEEDS),
                                     toItem(true)
                             };
                         } else {
@@ -137,7 +137,7 @@ public class BlockDoublePlant extends BlockFlowable {
 
                     if (dropSeeds) {
                         return new Item[]{
-                                new ItemSeedsWheat()
+                                Item.get(Item.WHEAT_SEEDS)
                         };
                     } else {
                         return new Item[0];

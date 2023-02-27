@@ -3,7 +3,6 @@ package cn.nukkit.block;
 import cn.nukkit.Player;
 import cn.nukkit.event.block.BlockFadeEvent;
 import cn.nukkit.item.Item;
-import cn.nukkit.item.ItemSnowball;
 import cn.nukkit.item.ItemTool;
 import cn.nukkit.level.GameRule;
 import cn.nukkit.level.Level;
@@ -132,7 +131,7 @@ public class BlockSnowLayer extends BlockFallable {
 
     @Override
     public Item toItem(boolean addUserData) {
-        return new ItemSnowball();
+        return Item.get(Item.SNOWBALL);
     }
 
     @Override
@@ -156,7 +155,7 @@ public class BlockSnowLayer extends BlockFallable {
     public boolean canHarvestWithHand() {
         return false;
     }
-    
+
     @Override
     public boolean isTransparent() {
         return !isFull();

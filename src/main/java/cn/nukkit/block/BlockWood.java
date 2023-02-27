@@ -2,7 +2,6 @@ package cn.nukkit.block;
 
 import cn.nukkit.Player;
 import cn.nukkit.item.Item;
-import cn.nukkit.item.ItemBlock;
 import cn.nukkit.item.ItemTool;
 import cn.nukkit.math.BlockFace;
 import cn.nukkit.network.protocol.LevelSoundEventPacket;
@@ -87,7 +86,7 @@ public class BlockWood extends BlockSolidMeta {
 
     @Override
     public Item toItem(boolean addUserData) {
-        return new ItemBlock(this, this.getLogType());
+        return Item.get(this.getItemId(), this.getLogType());
     }
 
     @Override

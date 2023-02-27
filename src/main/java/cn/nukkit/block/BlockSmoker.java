@@ -3,7 +3,6 @@ package cn.nukkit.block;
 import cn.nukkit.blockentity.BlockEntity;
 import cn.nukkit.blockentity.BlockEntityType;
 import cn.nukkit.item.Item;
-import cn.nukkit.item.ItemBlock;
 
 public class BlockSmoker extends BlockFurnace {
 
@@ -32,7 +31,7 @@ public class BlockSmoker extends BlockFurnace {
 
     @Override
     public Item toItem(boolean addUserData) {
-        return new ItemBlock(Block.get(BlockID.SMOKER));
+        return Item.get(getItemId(SMOKER));
     }
 
     @Override

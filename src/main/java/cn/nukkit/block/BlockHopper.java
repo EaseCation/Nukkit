@@ -7,7 +7,6 @@ import cn.nukkit.blockentity.BlockEntityHopper;
 import cn.nukkit.blockentity.BlockEntityType;
 import cn.nukkit.inventory.ContainerInventory;
 import cn.nukkit.item.Item;
-import cn.nukkit.item.ItemHopper;
 import cn.nukkit.item.ItemTool;
 import cn.nukkit.level.Level;
 import cn.nukkit.math.BlockFace;
@@ -173,7 +172,7 @@ public class BlockHopper extends BlockTransparentMeta implements Faceable {
 
     @Override
     public Item toItem(boolean addUserData) {
-        return new ItemHopper();
+        return Item.get(Item.HOPPER);
     }
 
     @Override

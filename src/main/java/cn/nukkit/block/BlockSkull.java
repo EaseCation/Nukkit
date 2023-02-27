@@ -6,7 +6,6 @@ import cn.nukkit.blockentity.BlockEntity;
 import cn.nukkit.blockentity.BlockEntityType;
 import cn.nukkit.blockentity.BlockEntitySkull;
 import cn.nukkit.item.Item;
-import cn.nukkit.item.ItemSkull;
 import cn.nukkit.item.ItemTool;
 import cn.nukkit.math.AxisAlignedBB;
 import cn.nukkit.math.BlockFace;
@@ -57,6 +56,7 @@ public class BlockSkull extends BlockFlowable implements Faceable {
 
     @Override
     public String getName() {
+        /*
         int itemMeta = 0;
 
         if (this.level != null) {
@@ -65,6 +65,8 @@ public class BlockSkull extends BlockFlowable implements Faceable {
         }
 
         return ItemSkull.getItemSkullName(itemMeta);
+        */
+        return "Skull";
     }
 
     @Override
@@ -107,7 +109,7 @@ public class BlockSkull extends BlockFlowable implements Faceable {
         int dropMeta = 0;
         if (blockEntity != null) dropMeta = blockEntity.namedTag.getByte("SkullType");
         return new Item[]{
-                new ItemSkull(dropMeta)
+                Item.get(Item.SKULL, dropMeta)
         };
     }
 
@@ -116,7 +118,7 @@ public class BlockSkull extends BlockFlowable implements Faceable {
         BlockEntity blockEntity = getLevel().getBlockEntity(this);
         int itemMeta = 0;
         if (blockEntity != null) itemMeta = blockEntity.namedTag.getByte("SkullType");
-        return new ItemSkull(itemMeta);
+        return Item.get(Item.SKULL, itemMeta);
     }
 
     @Override

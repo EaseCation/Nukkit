@@ -2,7 +2,6 @@ package cn.nukkit.block;
 
 import cn.nukkit.Player;
 import cn.nukkit.item.Item;
-import cn.nukkit.item.ItemBlock;
 import cn.nukkit.item.ItemTool;
 import cn.nukkit.math.BlockFace;
 import cn.nukkit.utils.BlockColor;
@@ -85,7 +84,7 @@ public class BlockQuartz extends BlockSolidMeta {
 
     @Override
     public Item toItem(boolean addUserData) {
-        return new ItemBlock(Block.get(BlockID.QUARTZ_BLOCK), this.getDamage() & 0x03, 1);
+        return Item.get(getItemId(), this.getDamage() & 0x03);
     }
 
     @Override

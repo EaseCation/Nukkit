@@ -4,7 +4,6 @@ import cn.nukkit.Player;
 import cn.nukkit.Server;
 import cn.nukkit.event.block.LeavesDecayEvent;
 import cn.nukkit.item.Item;
-import cn.nukkit.item.ItemBlock;
 import cn.nukkit.item.ItemTool;
 import cn.nukkit.level.Level;
 import cn.nukkit.math.BlockFace;
@@ -90,7 +89,7 @@ public class BlockLeaves extends BlockTransparentMeta {
 
     @Override
     public Item toItem(boolean addUserData) {
-        return new ItemBlock(this, this.getLeafType(), 1);
+        return Item.get(this.getItemId(), this.getLeafType());
     }
 
     @Override

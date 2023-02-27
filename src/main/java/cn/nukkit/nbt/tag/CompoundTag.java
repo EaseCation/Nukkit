@@ -22,6 +22,14 @@ public class CompoundTag extends Tag implements Cloneable {
         this(name, new Object2ObjectOpenHashMap<>());
     }
 
+    public CompoundTag(int initialCapacity) {
+        this("", initialCapacity);
+    }
+
+    public CompoundTag(String name, int initialCapacity) {
+        this(name, new Object2ObjectOpenHashMap<>(initialCapacity));
+    }
+
     public CompoundTag(Map<String, Tag> tags) {
         this("", tags);
     }
@@ -260,9 +268,9 @@ public class CompoundTag extends Tag implements Cloneable {
     }
 
     public CompoundTag copy() {
-        CompoundTag tag = new CompoundTag(getName());
-        for (String key : tags.keySet()) {
-            tag.put(key, tags.get(key).copy());
+        CompoundTag tag = new CompoundTag(getName(), tags.size());
+        for (Entry<String, Tag> entry : tags.entrySet()) {
+            tag.put(entry.getKey(), entry.getValue().copy());
         }
         return tag;
     }
@@ -288,7 +296,7 @@ public class CompoundTag extends Tag implements Cloneable {
 
     @Override
     public CompoundTag clone() {
-        CompoundTag nbt = new CompoundTag();
+        CompoundTag nbt = new CompoundTag(this.tags.size());
         this.tags.forEach((key, value) -> nbt.put(key, value.copy()));
         return nbt;
     }

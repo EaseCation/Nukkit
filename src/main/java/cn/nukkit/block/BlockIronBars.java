@@ -1,7 +1,6 @@
 package cn.nukkit.block;
 
 import cn.nukkit.item.Item;
-import cn.nukkit.item.ItemBlock;
 import cn.nukkit.item.ItemTool;
 import cn.nukkit.utils.BlockColor;
 
@@ -41,7 +40,7 @@ public class BlockIronBars extends BlockThin {
 
     @Override
     public Item toItem(boolean addUserData) {
-        return new ItemBlock(this, 0);
+        return Item.get(this.getItemId());
     }
 
     @Override

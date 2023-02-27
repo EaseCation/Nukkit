@@ -3,7 +3,6 @@ package cn.nukkit.block;
 import cn.nukkit.blockentity.BlockEntity;
 import cn.nukkit.blockentity.BlockEntityType;
 import cn.nukkit.item.Item;
-import cn.nukkit.item.ItemBlock;
 
 public class BlockFurnaceBlast extends BlockFurnace {
 
@@ -32,7 +31,7 @@ public class BlockFurnaceBlast extends BlockFurnace {
 
     @Override
     public Item toItem(boolean addUserData) {
-        return new ItemBlock(Block.get(BlockID.BLAST_FURNACE));
+        return Item.get(getItemId(BLAST_FURNACE));
     }
 
     @Override

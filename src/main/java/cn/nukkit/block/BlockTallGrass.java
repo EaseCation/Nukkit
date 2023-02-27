@@ -3,7 +3,6 @@ package cn.nukkit.block;
 import cn.nukkit.Player;
 import cn.nukkit.item.Item;
 import cn.nukkit.item.ItemDye;
-import cn.nukkit.item.ItemSeedsWheat;
 import cn.nukkit.item.ItemTool;
 import cn.nukkit.level.Level;
 import cn.nukkit.level.particle.BoneMealParticle;
@@ -147,7 +146,7 @@ public class BlockTallGrass extends BlockFlowable {
             //todo enchantment
             if (dropSeeds) {
                 return new Item[]{
-                        new ItemSeedsWheat(),
+                        Item.get(Item.WHEAT_SEEDS),
                         Item.get(Item.TALLGRASS, this.getDamage(), 1)
                 };
             } else {
@@ -159,7 +158,7 @@ public class BlockTallGrass extends BlockFlowable {
 
         if (dropSeeds) {
             return new Item[]{
-                    new ItemSeedsWheat()
+                    Item.get(Item.WHEAT_SEEDS)
             };
         } else {
             return new Item[0];

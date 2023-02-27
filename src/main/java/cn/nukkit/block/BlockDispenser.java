@@ -11,7 +11,6 @@ import cn.nukkit.inventory.ContainerInventory;
 import cn.nukkit.inventory.Inventory;
 import cn.nukkit.inventory.InventoryHolder;
 import cn.nukkit.item.Item;
-import cn.nukkit.item.ItemBlock;
 import cn.nukkit.level.Level;
 import cn.nukkit.math.BlockFace;
 import cn.nukkit.math.Vector3;
@@ -68,7 +67,7 @@ public class BlockDispenser extends BlockSolidMeta implements Faceable {
 
     @Override
     public Item toItem(boolean addUserData) {
-        return new ItemBlock(this, 0);
+        return Item.get(this.getItemId());
     }
 
     @Override

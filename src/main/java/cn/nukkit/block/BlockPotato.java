@@ -1,7 +1,6 @@
 package cn.nukkit.block;
 
 import cn.nukkit.item.Item;
-import cn.nukkit.item.ItemPotato;
 
 import java.util.concurrent.ThreadLocalRandom;
 
@@ -30,18 +29,18 @@ public class BlockPotato extends BlockCrops {
 
     @Override
     public Item toItem(boolean addUserData) {
-        return new ItemPotato();
+        return Item.get(Item.POTATO);
     }
 
     @Override
     public Item[] getDrops(Item item) {
         if (getDamage() >= 0x07) {
             return new Item[]{
-                    new ItemPotato(0, ThreadLocalRandom.current().nextInt(3) + 1)
+                    Item.get(Item.POTATO, 0, ThreadLocalRandom.current().nextInt(3) + 1)
             };
         } else {
             return new Item[]{
-                    new ItemPotato()
+                    Item.get(Item.POTATO)
             };
         }
     }

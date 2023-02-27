@@ -1,7 +1,6 @@
 package cn.nukkit.block;
 
 import cn.nukkit.item.Item;
-import cn.nukkit.item.ItemGlowstoneDust;
 import cn.nukkit.item.enchantment.Enchantment;
 import cn.nukkit.math.Mth;
 import cn.nukkit.utils.BlockColor;
@@ -53,7 +52,7 @@ public class BlockGlowstone extends BlockTransparent {
         }
 
         return new Item[]{
-                new ItemGlowstoneDust(0, Mth.clamp(count, 1, 4))
+                Item.get(Item.GLOWSTONE_DUST, 0, Mth.clamp(count, 1, 4))
         };
     }
 

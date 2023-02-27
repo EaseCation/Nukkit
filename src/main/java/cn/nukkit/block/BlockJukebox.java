@@ -6,7 +6,6 @@ import cn.nukkit.blockentity.BlockEntity;
 import cn.nukkit.blockentity.BlockEntityType;
 import cn.nukkit.blockentity.BlockEntityJukebox;
 import cn.nukkit.item.Item;
-import cn.nukkit.item.ItemBlock;
 import cn.nukkit.item.ItemRecord;
 import cn.nukkit.math.BlockFace;
 import cn.nukkit.nbt.tag.CompoundTag;
@@ -43,7 +42,7 @@ public class BlockJukebox extends BlockSolid {
 
     @Override
     public Item toItem(boolean addUserData) {
-        return new ItemBlock(this, 0);
+        return Item.get(this.getItemId());
     }
 
     @Override

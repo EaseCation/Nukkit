@@ -1,7 +1,6 @@
 package cn.nukkit.block;
 
 import cn.nukkit.item.Item;
-import cn.nukkit.item.ItemCarrot;
 
 import java.util.concurrent.ThreadLocalRandom;
 
@@ -32,16 +31,16 @@ public class BlockCarrot extends BlockCrops {
     public Item[] getDrops(Item item) {
         if (getDamage() >= 0x07) {
             return new Item[]{
-                    new ItemCarrot(0, ThreadLocalRandom.current().nextInt(3) + 1)
+                    Item.get(Item.CARROT, 0, ThreadLocalRandom.current().nextInt(3) + 1)
             };
         }
         return new Item[]{
-                new ItemCarrot()
+                Item.get(Item.CARROT)
         };
     }
 
     @Override
     public Item toItem(boolean addUserData) {
-        return new ItemCarrot();
+        return Item.get(Item.CARROT);
     }
 }

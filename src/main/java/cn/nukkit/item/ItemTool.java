@@ -74,7 +74,7 @@ public abstract class ItemTool extends Item implements ItemDurable {
         }
 
         if (this.additionalDamageOnBreak()) {
-            if (block.getBreakTime(this) > 0 || getId() == FLINT_AND_STEEL) {
+            if (block.getBreakTime(this) > 0) {
                 this.setDamage(this.getDamage() + 2);
             }
         } else if (this.isShears() || block.getBreakTime(this) > 0) {

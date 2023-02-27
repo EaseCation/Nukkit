@@ -2,7 +2,6 @@ package cn.nukkit.block;
 
 import cn.nukkit.Player;
 import cn.nukkit.item.Item;
-import cn.nukkit.item.ItemStick;
 import cn.nukkit.level.Level;
 import cn.nukkit.math.BlockFace;
 import cn.nukkit.utils.BlockColor;
@@ -67,7 +66,7 @@ public class BlockDeadBush extends BlockFlowable {
             };
         } else {
             return new Item[]{
-                    new ItemStick(0, ThreadLocalRandom.current().nextInt(3))
+                    Item.get(Item.STICK, 0, ThreadLocalRandom.current().nextInt(3))
             };
         }
     }

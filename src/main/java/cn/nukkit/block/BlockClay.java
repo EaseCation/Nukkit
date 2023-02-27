@@ -2,7 +2,6 @@ package cn.nukkit.block;
 
 import cn.nukkit.Player;
 import cn.nukkit.item.Item;
-import cn.nukkit.item.ItemClay;
 import cn.nukkit.item.ItemDye;
 import cn.nukkit.item.ItemID;
 import cn.nukkit.item.ItemTool;
@@ -45,7 +44,7 @@ public class BlockClay extends BlockSolid {
     @Override
     public Item[] getDrops(Item item) {
         return new Item[]{
-                new ItemClay(0, 4)
+                Item.get(Item.CLAY_BALL, 0, 4)
         };
     }
 

@@ -1047,7 +1047,9 @@ public class Item implements Cloneable, ItemID {
         try {
             Item item = (Item) super.clone();
             item.tags = this.tags != null ? this.tags.clone() : new byte[0];
-            item.cachedNBT = null;
+//            item.cachedNBT = null;
+            //TODO: 临时处理, 确保所有插件的nbt修改调用setCompoundTag后改回去 -- 02/27/2023
+            item.cachedNBT = this.cachedNBT != null ? this.cachedNBT.copy() : null;
             return item;
         } catch (CloneNotSupportedException e) {
             return null;

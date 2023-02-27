@@ -45,10 +45,10 @@ public final class Effects {
 
         registerEffect(SLOW_FALLING, new Effect(SLOW_FALLING, "slow_falling", "%potion.slowFalling", 206, 255, 255), V1_6_0);
 
-        registerEffect(BAD_OMEN, new Effect(BAD_OMEN, "bad_omen", "%badOmen", 11, 97, 56, true), V1_11_0);
-        registerEffect(VILLAGE_HERO, new Effect(VILLAGE_HERO, "village_hero", "%villageHero", 68, 255, 68).setVisible(false), V1_11_0);
+        registerEffect(BAD_OMEN, new Effect(BAD_OMEN, "bad_omen", "%effect.badOmen", 11, 97, 56, true), V1_11_0);
+        registerEffect(VILLAGE_HERO, new Effect(VILLAGE_HERO, "village_hero", "%effect.villageHero", 68, 255, 68).setVisible(false), V1_11_0);
 
-        registerEffect(DARKNESS, new Effect(DARKNESS, "darkness", "%darkness", 41, 39, 33, true).setVisible(false), V1_19_0);
+        registerEffect(DARKNESS, new Effect(DARKNESS, "darkness", "%effect.darkness", 41, 39, 33, true).setVisible(false), V1_19_0);
 
     }
 

@@ -21,12 +21,24 @@ public class ListTag<T extends Tag> extends Tag {
     }
 
     public ListTag(String name) {
-        this(name, null);
+        this(name, new ObjectArrayList<>());
+    }
+
+    public ListTag(int initialCapacity) {
+        this("", initialCapacity);
+    }
+
+    public ListTag(String name, int initialCapacity) {
+        this(name, new ObjectArrayList<>(initialCapacity));
+    }
+
+    public ListTag(List<T> list) {
+        this("", list);
     }
 
     public ListTag(String name, List<T> list) {
         super(name);
-        this.list = list != null ? new ObjectArrayList<>(list) : new ObjectArrayList<>();
+        this.list = list;
     }
 
     @Override
@@ -144,7 +156,7 @@ public class ListTag<T extends Tag> extends Tag {
 
     @Override
     public Tag copy() {
-        ListTag<T> res = new ListTag<>(getName());
+        ListTag<T> res = new ListTag<>(getName(), list.size());
         res.type = type;
         for (T t : list) {
             @SuppressWarnings("unchecked")

@@ -1,7 +1,6 @@
 package cn.nukkit.block;
 
 import cn.nukkit.item.Item;
-import cn.nukkit.item.ItemSeedsPumpkin;
 
 import java.util.concurrent.ThreadLocalRandom;
 
@@ -30,13 +29,13 @@ public class BlockStemPumpkin extends BlockStem {
 
     @Override
     public Item toItem(boolean addUserData) {
-        return new ItemSeedsPumpkin();
+        return Item.get(Item.PUMPKIN_SEEDS);
     }
 
     @Override
     public Item[] getDrops(Item item) {
         return new Item[]{
-                new ItemSeedsPumpkin(0, ThreadLocalRandom.current().nextInt(0, 4))
+                Item.get(Item.PUMPKIN_SEEDS, 0, ThreadLocalRandom.current().nextInt(0, 4))
         };
     }
 

@@ -2,7 +2,6 @@ package cn.nukkit.block;
 
 import cn.nukkit.Player;
 import cn.nukkit.item.Item;
-import cn.nukkit.item.ItemDoorIron;
 import cn.nukkit.item.ItemTool;
 import cn.nukkit.math.BlockFace;
 import cn.nukkit.utils.BlockColor;
@@ -64,7 +63,7 @@ public class BlockDoorIron extends BlockDoor {
 
     @Override
     public Item toItem(boolean addUserData) {
-        return new ItemDoorIron();
+        return Item.get(Item.IRON_DOOR);
     }
 
     @Override

@@ -1,7 +1,6 @@
 package cn.nukkit.block;
 
 import cn.nukkit.item.Item;
-import cn.nukkit.item.ItemEmerald;
 import cn.nukkit.item.ItemTool;
 import cn.nukkit.item.enchantment.Enchantment;
 
@@ -57,7 +56,7 @@ public class BlockOreEmerald extends BlockSolid {
             }
 
             return new Item[]{
-                    new ItemEmerald(0, count)
+                    Item.get(Item.EMERALD, 0, count)
             };
         } else {
             return new Item[0];

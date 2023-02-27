@@ -7,7 +7,6 @@ import cn.nukkit.blockentity.BlockEntityBrewingStand;
 import cn.nukkit.blockentity.BlockEntityType;
 import cn.nukkit.inventory.ContainerInventory;
 import cn.nukkit.item.Item;
-import cn.nukkit.item.ItemBrewingStand;
 import cn.nukkit.item.ItemTool;
 import cn.nukkit.math.BlockFace;
 import cn.nukkit.nbt.tag.CompoundTag;
@@ -120,7 +119,7 @@ public class BlockBrewingStand extends BlockTransparentMeta {
 
     @Override
     public Item toItem(boolean addUserData) {
-        return new ItemBrewingStand();
+        return Item.get(Item.BREWING_STAND);
     }
 
     @Override

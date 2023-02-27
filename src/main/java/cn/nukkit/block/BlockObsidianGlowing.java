@@ -1,7 +1,6 @@
 package cn.nukkit.block;
 
 import cn.nukkit.item.Item;
-import cn.nukkit.item.ItemBlock;
 import cn.nukkit.item.ItemTool;
 
 /**
@@ -45,7 +44,7 @@ public class BlockObsidianGlowing extends BlockSolid {
 
     @Override
     public Item toItem(boolean addUserData) {
-        return new ItemBlock(Block.get(BlockID.OBSIDIAN));
+        return Item.get(OBSIDIAN);
     }
 
     @Override

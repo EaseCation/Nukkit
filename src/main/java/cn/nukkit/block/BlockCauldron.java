@@ -368,7 +368,7 @@ public class BlockCauldron extends BlockTransparentMeta {
         }
 
         if (potion.getCount() == 1 && !player.isCreative()) {
-            player.getInventory().setItemInHand(new ItemBlock(Blocks.air()));
+            player.getInventory().setItemInHand(Items.air());
         } else {
             if (!player.isCreative()) {
                 potion.pop();
@@ -422,7 +422,7 @@ public class BlockCauldron extends BlockTransparentMeta {
     @Override
     public Item[] getDrops(Item item) {
         if (item.isPickaxe() && item.getTier() >= ItemTool.TIER_WOODEN) {
-            return new Item[]{new ItemCauldron()};
+            return new Item[]{Item.get(Item.CAULDRON)};
         }
 
         return new Item[0];
