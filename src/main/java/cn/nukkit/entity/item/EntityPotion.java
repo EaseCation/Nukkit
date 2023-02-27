@@ -167,6 +167,14 @@ public class EntityPotion extends EntityProjectile {
 
         Entity[] entities = this.getLevel().getNearbyEntities(this.getBoundingBox().grow(4.125, 2.125, 4.125), this);
         for (Entity entity : entities) {
+            if (!entity.isAlive()) {
+                continue;
+            }
+
+            if (entity instanceof Player && ((Player) entity).isSpectator()) {
+                continue;
+            }
+
             double distance = entity.distanceSquared(this);
             if (distance >= 16) {
                 continue;

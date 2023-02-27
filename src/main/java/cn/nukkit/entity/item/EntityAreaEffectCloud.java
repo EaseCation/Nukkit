@@ -253,6 +253,14 @@ public class EntityAreaEffectCloud extends Entity {
                 continue;
             }
 
+            if (!entity.isAlive()) {
+                continue;
+            }
+
+            if (entity instanceof Player && ((Player) entity).isSpectator()) {
+                continue;
+            }
+
             long id = entity.getId();
             if (!affectOwner && (id == ownerId || entity == owner)) {
                 continue;

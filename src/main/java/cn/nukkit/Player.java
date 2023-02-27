@@ -4411,8 +4411,7 @@ public class Player extends EntityHuman implements CommandSender, InventoryHolde
             return false;
         }
 
-        if (this.isCreative()
-                && source.getCause() != DamageCause.MAGIC
+        if (this.isCreativeLike()
                 && source.getCause() != DamageCause.SUICIDE
                 && source.getCause() != DamageCause.VOID
                 ) {
