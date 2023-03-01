@@ -3,7 +3,7 @@ package cn.nukkit.math;
 import java.util.Random;
 
 /**
- * @deprecated use Mth
+ * @deprecated use {@link Mth} instead
  */
 @Deprecated
 public class MathHelper {

@@ -7,7 +7,7 @@ package cn.nukkit.math;
 public class NukkitMath {
 
     /**
-     * @deprecated use Mth
+     * @deprecated use {@link Mth#floor(double)} instead
      */
     @Deprecated
     public static int floorDouble(double n) {
@@ -15,16 +15,15 @@ public class NukkitMath {
     }
 
     /**
-     * @deprecated 返回结果与标准 Math.ceil 不一致, 例如 0.5
+     * @deprecated use {@link Mth#ceil(double)} instead
      */
     @Deprecated
     public static int ceilDouble(double n) {
-        int i = (int) (n + 1);
-        return n >= i ? i : i - 1;
+        return Mth.ceil(n);
     }
 
     /**
-     * @deprecated use Mth
+     * @deprecated use {@link Mth#floor(float)} instead
      */
     @Deprecated
     public static int floorFloat(float n) {
@@ -32,12 +31,11 @@ public class NukkitMath {
     }
 
     /**
-     * @deprecated 返回结果与标准 Math.ceil 不一致, 例如 0.5f
+     * @deprecated use {@link Mth#ceil(float)} instead
      */
     @Deprecated
     public static int ceilFloat(float n) {
-        int i = (int) (n + 1);
-        return n >= i ? i : i - 1;
+        return Mth.ceil(n);
     }
 
     public static int randomRange(NukkitRandom random) {
@@ -45,7 +43,7 @@ public class NukkitMath {
     }
 
     public static int randomRange(NukkitRandom random, int start) {
-        return randomRange(random, 0, 0x7fffffff);
+        return randomRange(random, start, 0x7fffffff);
     }
 
     public static int randomRange(NukkitRandom random, int start, int end) {
@@ -61,7 +59,7 @@ public class NukkitMath {
     }
 
     /**
-     * @deprecated use Mth
+     * @deprecated use {@link Mth#clamp(double, double, double)} instead
      */
     @Deprecated
     public static double clamp(double value, double min, double max) {
@@ -69,7 +67,7 @@ public class NukkitMath {
     }
 
     /**
-     * @deprecated use Mth
+     * @deprecated use {@link Mth#clamp(int, int, int)} instead
      */
     @Deprecated
     public static int clamp(int value, int min, int max) {
@@ -77,7 +75,7 @@ public class NukkitMath {
     }
 
     /**
-     * @deprecated use Mth
+     * @deprecated use {@link Mth#clamp(float, float, float)} instead
      */
     @Deprecated
     public static float clamp(float value, float min, float max) {

@@ -81,19 +81,27 @@ public abstract class EntityProjectile extends Entity {
             ev = new EntityDamageByChildEntityEvent(this.shootingEntity, this, entity, DamageCause.PROJECTILE, damage);
             ((EntityDamageByChildEntityEvent) ev).setKnockBack(knockBackH, knockBackV);
         }
-        entity.attack(ev);
+        boolean success = entity.attack(ev);
         this.hadCollision = true;
 
-        if (this.fireTicks > 0) {
-            EntityCombustByEntityEvent event = new EntityCombustByEntityEvent(this, entity, 5);
-            this.server.getPluginManager().callEvent(event);
-            if (!event.isCancelled()) {
-                entity.setOnFire(event.getDuration());
+        if (success) {
+            postHurt(entity);
+
+            if (this.fireTicks > 0) {
+                EntityCombustByEntityEvent event = new EntityCombustByEntityEvent(this, entity, 5);
+                this.server.getPluginManager().callEvent(event);
+                if (!event.isCancelled()) {
+                    entity.setOnFire(event.getDuration());
+                }
             }
         }
+
         if (closeOnCollide) {
             this.close();
         }
+    }
+
+    protected void postHurt(Entity entity) {
     }
 
     @Override

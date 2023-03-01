@@ -1,6 +1,5 @@
 package cn.nukkit.network.protocol;
 
-import cn.nukkit.math.Vector3f;
 import lombok.ToString;
 
 /**
@@ -32,7 +31,7 @@ public class LevelEventPacket extends DataPacket {
     public static final int EVENT_SOUND_ANVIL_USE = 1021;
     public static final int EVENT_SOUND_ANVIL_FALL = 1022;
 
-    public static final int EVENT_SOUND_ITEM_DROP = 1030;
+    public static final int EVENT_SOUND_INFINITY_ARROW_PICKUP = 1030;
     public static final int EVENT_SOUND_ITEM_THROWN = 1031;
     public static final int EVENT_SOUND_PORTAL = 1032;
 

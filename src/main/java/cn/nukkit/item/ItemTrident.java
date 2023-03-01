@@ -2,6 +2,7 @@ package cn.nukkit.item;
 
 import cn.nukkit.Player;
 import cn.nukkit.Server;
+import cn.nukkit.entity.projectile.EntityProjectile;
 import cn.nukkit.entity.projectile.EntityThrownTrident;
 import cn.nukkit.event.entity.EntityShootBowEvent;
 import cn.nukkit.event.entity.ProjectileLaunchEvent;
@@ -94,7 +95,14 @@ public class ItemTrident extends ItemTool {
             if (ev.isCancelled()) {
                 entityShootBowEvent.getProjectile().close();
             } else {
-                entityShootBowEvent.getProjectile().spawnToAll();
+                //TODO: loyalty
+//                Enchantment loyaltyEnchant = this.getEnchantment(Enchantment.LOYALTY);
+//                boolean loyalty = loyaltyEnchant != null && loyaltyEnchant.getLevel() > 0;
+                EntityProjectile projectile = entityShootBowEvent.getProjectile();
+                if (player.isCreative() && projectile instanceof EntityThrownTrident) {
+                    ((EntityThrownTrident) projectile).setPickupMode(EntityThrownTrident.PICKUP_CREATIVE);
+                }
+                projectile.spawnToAll();
                 player.getLevel().addLevelSoundEvent(player, LevelSoundEventPacket.SOUND_ITEM_TRIDENT_THROW);
                 if (!player.isCreative()) {
                     this.count--;

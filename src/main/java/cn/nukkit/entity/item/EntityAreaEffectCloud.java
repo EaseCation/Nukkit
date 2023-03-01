@@ -125,8 +125,8 @@ public class EntityAreaEffectCloud extends Entity {
         potionId = namedTag.getShort("PotionId");
         dataProperties.putShort(DATA_AUX_VALUE_DATA, potionId);
 
-        mobEffects = new Int2ObjectOpenHashMap<>();
         ListTag<CompoundTag> mobEffects = namedTag.getList("mobEffects", CompoundTag.class);
+        this.mobEffects = new Int2ObjectOpenHashMap<>(mobEffects.size());
         for (CompoundTag tag : mobEffects.getAll()) {
             Effect effect = Effect.load(tag);
             if (effect == null) {

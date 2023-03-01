@@ -180,17 +180,17 @@ public class Vector3f implements Cloneable {
         return Math.sqrt(this.distanceSquared(pos));
     }
 
-    public double distanceSquared(Vector3f pos) {
-        double x = this.x - pos.x;
-        double y = this.y - pos.y;
-        double z = this.z - pos.z;
+    public float distanceSquared(Vector3f pos) {
+        float x = this.x - pos.x;
+        float y = this.y - pos.y;
+        float z = this.z - pos.z;
         return x * x + y * y + z * z;
     }
 
-    public double distanceSquared(double x, double y, double z) {
-        double xDiff = this.x - x;
-        double yDiff = this.y - y;
-        double zDiff = this.z - z;
+    public float distanceSquared(float x, float y, float z) {
+        float xDiff = this.x - x;
+        float yDiff = this.y - y;
+        float zDiff = this.z - z;
         return xDiff * xDiff + yDiff * yDiff + zDiff * zDiff;
     }
 
@@ -228,6 +228,14 @@ public class Vector3f implements Cloneable {
 
     public float lengthSquared() {
         return this.x * this.x + this.y * this.y + this.z * this.z;
+    }
+
+    public double horizontalDistance() {
+        return Math.sqrt(this.horizontalDistanceSquared());
+    }
+
+    public float horizontalDistanceSquared() {
+        return this.x * this.x + this.z * this.z;
     }
 
     public Vector3f normalize() {

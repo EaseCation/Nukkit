@@ -224,6 +224,14 @@ public class BlockVector3 implements Cloneable {
         return this.x * this.x + this.y * this.y + this.z * this.z;
     }
 
+    public double horizontalDistance() {
+        return Math.sqrt(this.horizontalDistanceSquared());
+    }
+
+    public int horizontalDistanceSquared() {
+        return this.x * this.x + this.z * this.z;
+    }
+
     public int dot(BlockVector3 v) {
         return this.x * v.x + this.y * v.y + this.z * v.z;
     }

@@ -3,7 +3,13 @@ package cn.nukkit.dispenser;
 import cn.nukkit.block.BlockID;
 import cn.nukkit.entity.item.*;
 import cn.nukkit.entity.projectile.*;
+import cn.nukkit.item.Item;
+import cn.nukkit.item.ItemArrow;
 import cn.nukkit.item.ItemID;
+import cn.nukkit.nbt.tag.CompoundTag;
+import cn.nukkit.nbt.tag.ListTag;
+import cn.nukkit.potion.Effect;
+import cn.nukkit.potion.Potion;
 import it.unimi.dsi.fastutil.objects.Object2ObjectOpenHashMap;
 
 import java.util.Map;
@@ -42,6 +48,23 @@ public final class DispenseBehaviorRegister {
             @Override
             protected double getMotion() {
                 return super.getMotion() * 1.5;
+            }
+
+            @Override
+            protected void correctNBT(CompoundTag nbt, Item item) {
+                nbt.putByte("auxValue", item.getDamage());
+
+                if (item.getDamage() != ItemArrow.NORMAL_ARROW) {
+                    Potion potion = Potion.getPotion(item.getDamage() - ItemArrow.TIPPED_ARROW);
+                    if (potion != null) {
+                        Effect[] effects = potion.getEffects();
+                        ListTag<CompoundTag> mobEffects = new ListTag<>("mobEffects");
+                        for (Effect effect : effects) {
+                            mobEffects.add(effect.save());
+                        }
+                        nbt.putList(mobEffects);
+                    }
+                }
             }
         });
         //TODO: tipped arrow

@@ -3,9 +3,19 @@ package cn.nukkit.entity.projectile;
 import cn.nukkit.Player;
 import cn.nukkit.entity.Entity;
 import cn.nukkit.entity.EntityID;
+import cn.nukkit.entity.EntitySmite;
+import cn.nukkit.event.entity.EntityDamageByEntityEvent;
+import cn.nukkit.event.entity.EntityDamageEvent;
+import cn.nukkit.event.entity.EntityDamageEvent.DamageCause;
+import cn.nukkit.event.entity.EntityRegainHealthEvent;
+import cn.nukkit.item.Item;
 import cn.nukkit.level.format.FullChunk;
 import cn.nukkit.nbt.tag.CompoundTag;
+import cn.nukkit.nbt.tag.ListTag;
 import cn.nukkit.network.protocol.LevelSoundEventPacket;
+import cn.nukkit.potion.Effect;
+import it.unimi.dsi.fastutil.ints.Int2ObjectMap;
+import it.unimi.dsi.fastutil.ints.Int2ObjectOpenHashMap;
 
 import java.util.concurrent.ThreadLocalRandom;
 
@@ -15,6 +25,9 @@ import java.util.concurrent.ThreadLocalRandom;
  */
 public class EntityArrow extends EntityProjectile {
     public static final int NETWORK_ID = EntityID.ARROW;
+
+    private Int2ObjectMap<Effect> mobEffects;
+    private int auxValue;
 
     protected int pickupMode;
     protected boolean playedHitSound = false;
@@ -49,9 +62,6 @@ public class EntityArrow extends EntityProjectile {
         return 0.01f;
     }
 
-    protected float gravity = 0.05f;
-    protected float drag = 0.01f;
-
     public EntityArrow(FullChunk chunk, CompoundTag nbt) {
         this(chunk, nbt, null);
     }
@@ -71,6 +81,19 @@ public class EntityArrow extends EntityProjectile {
 
         this.damage = namedTag.contains("damage") ? namedTag.getDouble("damage") : 2;
         this.pickupMode = namedTag.contains("pickup") ? namedTag.getByte("pickup") : PICKUP_ANY;
+
+        ListTag<CompoundTag> mobEffects = namedTag.getList("mobEffects", CompoundTag.class);
+        this.mobEffects = new Int2ObjectOpenHashMap<>(mobEffects.size());
+        for (CompoundTag tag : mobEffects.getAll()) {
+            Effect effect = Effect.load(tag);
+            if (effect == null) {
+                continue;
+            }
+            this.mobEffects.put(effect.getId(), effect);
+        }
+
+        auxValue = namedTag.getByte("auxValue");
+        dataProperties.putByte(DATA_ARROW_AUX_VALUE, auxValue);
     }
 
     public void setCritical() {
@@ -149,6 +172,14 @@ public class EntityArrow extends EntityProjectile {
         super.saveNBT();
 
         this.namedTag.putByte("pickup", this.pickupMode);
+
+        ListTag<CompoundTag> list = new ListTag<>("mobEffects");
+        for (Effect effect : this.mobEffects.values()) {
+            list.add(effect.save());
+        }
+        namedTag.putList(list);
+
+        namedTag.putByte("auxValue", auxValue);
     }
 
     public int getPickupMode() {
@@ -157,5 +188,42 @@ public class EntityArrow extends EntityProjectile {
 
     public void setPickupMode(int pickupMode) {
         this.pickupMode = pickupMode;
+    }
+
+    public Item getItem() {
+        return Item.get(Item.ARROW, auxValue);
+    }
+
+    @Override
+    protected void postHurt(Entity entity) {
+        for (Effect effect : mobEffects.values()) {
+            switch (effect.getId()) {
+                case Effect.NO_EFFECT:
+                    break;
+                case Effect.INSTANT_HEALTH:
+                    if (entity instanceof EntitySmite) {
+                        if (shootingEntity != null) {
+                            entity.attack(new EntityDamageByEntityEvent(shootingEntity, entity, DamageCause.MAGIC, 0.5f * (6 << effect.getAmplifier())));
+                        } else {
+                            entity.attack(new EntityDamageEvent(entity, DamageCause.MAGIC, 0.5f * (6 << effect.getAmplifier())));
+                        }
+                    } else {
+                        entity.heal(new EntityRegainHealthEvent(entity, 0.5f * (4 << effect.getAmplifier()), EntityRegainHealthEvent.CAUSE_MAGIC));
+                    }
+                    break;
+                case Effect.INSTANT_DAMAGE:
+                    if (entity instanceof EntitySmite) {
+                        entity.heal(new EntityRegainHealthEvent(entity, 0.5f * (4 << effect.getAmplifier()), EntityRegainHealthEvent.CAUSE_MAGIC));
+                    } else if (shootingEntity != null) {
+                        entity.attack(new EntityDamageByEntityEvent(shootingEntity, entity, DamageCause.MAGIC, 0.5f * (6 << effect.getAmplifier())));
+                    } else {
+                        entity.attack(new EntityDamageEvent(entity, DamageCause.MAGIC, 0.5f * (6 << effect.getAmplifier())));
+                    }
+                    break;
+                default:
+                    entity.addEffect(effect.clone().setDuration(effect.getDuration() / 8));
+                    break;
+            }
+        }
     }
 }

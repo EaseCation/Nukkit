@@ -267,6 +267,14 @@ public class Vector3 implements Cloneable {
         return this.x * this.x + this.y * this.y + this.z * this.z;
     }
 
+    public double horizontalDistance() {
+        return Math.sqrt(this.horizontalDistanceSquared());
+    }
+
+    public double horizontalDistanceSquared() {
+        return this.x * this.x + this.z * this.z;
+    }
+
     public Vector3 normalize() {
         double len = this.lengthSquared();
         if (len > 0) {

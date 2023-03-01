@@ -5168,15 +5168,16 @@ public class Player extends EntityHuman implements CommandSender, InventoryHolde
 
         if (near) {
             if (entity instanceof EntityArrow && ((EntityArrow) entity).hadCollision && entity.ticksLived > 5) {
-                Item item = Item.get(Item.ARROW);
+                EntityArrow arrow = (EntityArrow) entity;
+                Item item = arrow.getItem();
                 if (!this.isCreative() && !this.inventory.canAddItem(item)) {
                     return false;
                 }
 
-                InventoryPickupArrowEvent ev = new InventoryPickupArrowEvent(this.inventory, (EntityArrow) entity);
+                InventoryPickupArrowEvent ev = new InventoryPickupArrowEvent(this.inventory, arrow);
 
-                int pickupMode = ((EntityArrow) entity).getPickupMode();
-                if (pickupMode == EntityArrow.PICKUP_NONE || pickupMode == EntityArrow.PICKUP_CREATIVE && !this.isCreative()) {
+                int pickupMode = arrow.getPickupMode();
+                if (pickupMode == EntityArrow.PICKUP_NONE) {
                     ev.setCancelled();
                 }
 
@@ -5185,27 +5186,31 @@ public class Player extends EntityHuman implements CommandSender, InventoryHolde
                     return false;
                 }
 
-                TakeItemEntityPacket pk = new TakeItemEntityPacket();
-                pk.entityId = this.getId();
-                pk.target = entity.getId();
-                Server.broadcastPacket(entity.getViewers().values(), pk);
-                this.dataPacket(pk);
+                if (pickupMode != EntityArrow.PICKUP_CREATIVE) {
+                    TakeItemEntityPacket pk = new TakeItemEntityPacket();
+                    pk.entityId = this.getId();
+                    pk.target = entity.getId();
+                    Server.broadcastPacket(entity.getViewers().values(), pk);
+                    this.dataPacket(pk);
 
-                if (!this.isCreative()) {
-                    this.inventory.addItem(item.clone());
+                    this.inventory.addItem(item);
+                } else {
+                    level.addLevelEvent(entity, LevelEventPacket.EVENT_SOUND_INFINITY_ARROW_PICKUP, (int) ((ThreadLocalRandom.current().nextGaussian() * 0.7 + 1) * 2 * 1000));
                 }
+
                 entity.close();
                 return true;
             } else if (entity instanceof EntityThrownTrident && ((EntityThrownTrident) entity).hadCollision) {
-                Item item = ((EntityThrownTrident) entity).getItem();
+                EntityThrownTrident trident = (EntityThrownTrident) entity;
+                Item item = trident.getItem();
                 if (!this.isCreative() && !this.inventory.canAddItem(item)) {
                     return false;
                 }
 
-                InventoryPickupTridentEvent ev = new InventoryPickupTridentEvent(this.inventory, (EntityThrownTrident) entity);
+                InventoryPickupTridentEvent ev = new InventoryPickupTridentEvent(this.inventory, trident);
 
-                int pickupMode = ((EntityThrownTrident) entity).getPickupMode();
-                if (pickupMode == EntityThrownTrident.PICKUP_NONE || (pickupMode == EntityThrownTrident.PICKUP_CREATIVE && !this.isCreative())) {
+                int pickupMode = trident.getPickupMode();
+                if (pickupMode == EntityThrownTrident.PICKUP_NONE) {
                     ev.setCancelled();
                 }
 
@@ -5214,15 +5219,18 @@ public class Player extends EntityHuman implements CommandSender, InventoryHolde
                     return false;
                 }
 
-                TakeItemEntityPacket pk = new TakeItemEntityPacket();
-                pk.entityId = this.getId();
-                pk.target = entity.getId();
-                Server.broadcastPacket(entity.getViewers().values(), pk);
-                this.dataPacket(pk);
+                if (pickupMode != EntityThrownTrident.PICKUP_CREATIVE && !this.isCreative()) {
+                    TakeItemEntityPacket pk = new TakeItemEntityPacket();
+                    pk.entityId = this.getId();
+                    pk.target = entity.getId();
+                    Server.broadcastPacket(entity.getViewers().values(), pk);
+                    this.dataPacket(pk);
 
-                if (!this.isCreative()) {
-                    this.inventory.addItem(item.clone());
+                    this.inventory.addItem(item);
+                } else {
+                    level.addLevelEvent(entity, LevelEventPacket.EVENT_SOUND_INFINITY_ARROW_PICKUP, (int) ((ThreadLocalRandom.current().nextGaussian() * 0.7 + 1) * 2 * 1000));
                 }
+
                 entity.close();
                 return true;
             } else if (entity instanceof EntityItem) {

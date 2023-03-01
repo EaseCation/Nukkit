@@ -29,6 +29,7 @@ import cn.nukkit.command.Command;
 import cn.nukkit.entity.Entity;
 import cn.nukkit.event.Event;
 import cn.nukkit.event.Listener;
+import cn.nukkit.math.Mth;
 import cn.nukkit.network.protocol.DataPacket;
 import cn.nukkit.plugin.EventExecutor;
 import cn.nukkit.plugin.MethodEventExecutor;
@@ -192,7 +193,7 @@ public final class Timings {
             log.warn(
                     "Timings Length too high. Requested " + length + ", max is " + maxLength
                             + ". To get longer history, you must increase your interval. Set Interval to "
-                            + Math.ceil((float) length / MAX_HISTORY_FRAMES)
+                            + Mth.ceil((float) length / MAX_HISTORY_FRAMES)
                             + " to achieve this length.");
         }
 

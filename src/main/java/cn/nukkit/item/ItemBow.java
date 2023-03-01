@@ -17,6 +17,8 @@ import cn.nukkit.nbt.tag.DoubleTag;
 import cn.nukkit.nbt.tag.FloatTag;
 import cn.nukkit.nbt.tag.ListTag;
 import cn.nukkit.network.protocol.LevelSoundEventPacket;
+import cn.nukkit.potion.Effect;
+import cn.nukkit.potion.Potion;
 
 import java.util.concurrent.ThreadLocalRandom;
 
@@ -104,7 +106,20 @@ public class ItemBow extends ItemTool {
                 .putShort("Fire", flame ? 45 * 60 : 0)
                 .putDouble("damage", damage)
                 .putFloat("KnockbackH", knockbackH)
-                .putFloat("KnockbackV", knockbackV);
+                .putFloat("KnockbackV", knockbackV)
+                .putByte("auxValue", matched.getDamage());
+
+        if (matched.getDamage() != ItemArrow.NORMAL_ARROW) {
+            Potion potion = Potion.getPotion(matched.getDamage() - ItemArrow.TIPPED_ARROW);
+            if (potion != null) {
+                Effect[] effects = potion.getEffects();
+                ListTag<CompoundTag> mobEffects = new ListTag<>("mobEffects");
+                for (Effect effect : effects) {
+                    mobEffects.add(effect.save());
+                }
+                nbt.putList(mobEffects);
+            }
+        }
 
         double p = (double) ticksUsed / 20;
         double f = Math.min((p * p + p * 2) / 3, 1) * 2;
@@ -125,13 +140,13 @@ public class ItemBow extends ItemTool {
         } else {
             entityShootBowEvent.getProjectile().setMotion(entityShootBowEvent.getProjectile().getMotion().multiply(entityShootBowEvent.getForce()));
             Enchantment infinityEnchant = this.getEnchantment(Enchantment.INFINITY);
-            boolean infinity = infinityEnchant != null && infinityEnchant.getLevel() > 0;
+            boolean infinity = infinityEnchant != null && infinityEnchant.getLevel() > 0 && matched.getDamage() == ItemArrow.NORMAL_ARROW;
             EntityProjectile projectile;
-            if (infinity && (projectile = entityShootBowEvent.getProjectile()) instanceof EntityArrow) {
+            if ((infinity || player.isCreative()) && (projectile = entityShootBowEvent.getProjectile()) instanceof EntityArrow) {
                 ((EntityArrow) projectile).setPickupMode(EntityArrow.PICKUP_CREATIVE);
             }
             if (player.isSurvivalLike()) {
-                if (!infinity || matched.getDamage() != ItemArrow.NORMAL_ARROW) {
+                if (!infinity) {
                     inventory.removeItem(matched);
                 }
                 if (!this.isUnbreakable()) {
