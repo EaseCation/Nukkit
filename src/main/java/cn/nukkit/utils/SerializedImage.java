@@ -39,6 +39,23 @@ public class SerializedImage {
         throw new IllegalArgumentException("Unknown legacy skin size");
     }
 
+    public static SerializedImage fromBufferedImage(BufferedImage image) {
+        int width = image.getWidth();
+        int height = image.getHeight();
+        byte[] data = new byte[width * height * 4];
+        int index = 0;
+        for (int y = 0; y < height; y++) {
+            for (int x = 0; x < width; x++) {
+                int rgb = image.getRGB(x, y);
+                data[index++] = (byte) ((rgb >> 16) & 0xFF);
+                data[index++] = (byte) ((rgb >> 8) & 0xFF);
+                data[index++] = (byte) (rgb & 0xFF);
+                data[index++] = (byte) ((rgb >> 24) & 0xFF);
+            }
+        }
+        return new SerializedImage(width, height, data);
+    }
+
     public BufferedImage toBufferedImage() {
         BufferedImage image = new BufferedImage(this.width, this.height, BufferedImage.TYPE_4BYTE_ABGR);
         FastByteArrayInputStream stream = new FastByteArrayInputStream(data);
@@ -58,4 +75,5 @@ public class SerializedImage {
         }
         return image;
     }
+
 }
