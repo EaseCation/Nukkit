@@ -1,7 +1,7 @@
 package cn.nukkit.item;
 
 import cn.nukkit.Player;
-import cn.nukkit.potion.Effect;
+import cn.nukkit.math.Vector3;
 
 /**
  * @author Kaooot
@@ -27,18 +27,7 @@ public class ItemHoneyBottle extends ItemEdible {
     }
 
     @Override
-    public boolean onUse(Player player, int ticksUsed) {
-        super.onUse(player, ticksUsed);
-
-        if (player.hasEffect(Effect.POISON)) {
-            player.removeEffect(Effect.POISON);
-        }
-
-        player.getInventory().setItemInHand(this);
-
-        if (!player.isCreative()) {
-            player.getInventory().addItem(new Item(ItemID.GLASS_BOTTLE, 0, 1));
-        }
+    public boolean onClickAir(Player player, Vector3 directionVector) {
         return true;
     }
 }

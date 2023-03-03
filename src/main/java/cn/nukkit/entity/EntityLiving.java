@@ -330,11 +330,20 @@ public abstract class EntityLiving extends Entity implements EntityDamageable {
                     this.setDataProperty(new ShortEntityData(DATA_AIR, airTicks));
                 }
             }
+
+            int floorY = Mth.floor(y - (4 / 16.0));
+            if (floorY != getFloorY()) {
+                Block block = this.level.getBlock(getFloorX(), floorY, getFloorZ());
+                if (block.getId() == Block.MAGMA || block.getId() == Block.CACTUS) {
+                    block.onEntityCollide(this);
+                }
+            }
         }
 
         /*if (this.attackTime > 0) {
             this.attackTime -= tickDiff;
         }*/
+
         if (this.riding == null && this.needCollidingWithRideable) {
             for (Entity entity : level.getNearbyEntities(this.boundingBox.grow(0.20000000298023224D, 0.0D, 0.20000000298023224D), this)) {
                 if (entity instanceof EntityRideable) {

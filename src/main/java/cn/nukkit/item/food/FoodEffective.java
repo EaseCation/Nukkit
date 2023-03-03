@@ -4,8 +4,8 @@ import cn.nukkit.Player;
 import cn.nukkit.potion.Effect;
 import it.unimi.dsi.fastutil.objects.Object2FloatLinkedOpenHashMap;
 import it.unimi.dsi.fastutil.objects.Object2FloatMap;
+import it.unimi.dsi.fastutil.objects.ObjectArrayList;
 
-import java.util.LinkedList;
 import java.util.List;
 import java.util.concurrent.ThreadLocalRandom;
 
@@ -36,7 +36,7 @@ public class FoodEffective extends Food {
     @Override
     protected boolean onEatenBy(Player player) {
         super.onEatenBy(player);
-        List<Effect> toApply = new LinkedList<>();
+        List<Effect> toApply = new ObjectArrayList<>();
         ThreadLocalRandom random = ThreadLocalRandom.current();
         effects.forEach((effect, chance) -> {
             if (chance >= random.nextDouble()) toApply.add(effect.clone());

@@ -5,6 +5,7 @@ import cn.nukkit.Player;
 import cn.nukkit.block.Block;
 import cn.nukkit.event.player.PlayerEatFoodEvent;
 import cn.nukkit.item.Item;
+import cn.nukkit.item.ItemSuspiciousStew;
 import cn.nukkit.plugin.Plugin;
 import cn.nukkit.potion.Effect;
 
@@ -105,7 +106,41 @@ public abstract class Food {
             .addRelative(Item.PUFFERFISH));
     public static final Food dried_kelp = registerDefaultFood(new FoodNormal(1, 0.6F).addRelative(Item.DRIED_KELP), V1_4_0);
     public static final Food sweet_berries = registerDefaultFood(new FoodNormal(2, 1.2F).addRelative(Item.SWEET_BERRIES), V1_11_0);
-    public static final Food honey_bottle = registerDefaultFood(new FoodNormal(6, 1.2F).addRelative(Item.HONEY_BOTTLE), V1_14_0);
+    public static final Food poppy_stew = registerDefaultFood(new FoodEffectiveInBowl(6, 7.2f)
+            .addEffect(Effect.getEffect(Effect.NIGHT_VISION).setDuration(5 * 20))
+            .addRelative(Item.SUSPICIOUS_STEW, ItemSuspiciousStew.POPPY_STEW), V1_13_0);
+    public static final Food cornflower_stew = registerDefaultFood(new FoodEffectiveInBowl(6, 7.2f)
+            .addEffect(Effect.getEffect(Effect.JUMP_BOOST).setDuration(5 * 20))
+            .addRelative(Item.SUSPICIOUS_STEW, ItemSuspiciousStew.CORNFLOWER_STEW), V1_13_0);
+    public static final Food tulip_stew = registerDefaultFood(new FoodEffectiveInBowl(6, 7.2f)
+            .addEffect(Effect.getEffect(Effect.WEAKNESS).setDuration(8 * 20))
+            .addRelative(Item.SUSPICIOUS_STEW, ItemSuspiciousStew.TULIP_STEW), V1_13_0);
+    public static final Food azure_bluet_stew = registerDefaultFood(new FoodEffectiveInBowl(6, 7.2f)
+            .addEffect(Effect.getEffect(Effect.BLINDNESS).setDuration(7 * 20))
+            .addRelative(Item.SUSPICIOUS_STEW, ItemSuspiciousStew.AZURE_BLUET_STEW), V1_13_0);
+    public static final Food lily_of_the_valley_stew = registerDefaultFood(new FoodEffectiveInBowl(6, 7.2f)
+            .addEffect(Effect.getEffect(Effect.POISON).setDuration(11 * 20))
+            .addRelative(Item.SUSPICIOUS_STEW, ItemSuspiciousStew.LILY_OF_THE_VALLEY_STEW), V1_13_0);
+    public static final Food dandelion_stew = registerDefaultFood(new FoodEffectiveInBowl(6, 7.2f)
+            .addEffect(Effect.getEffect(Effect.SATURATION).setDuration(6))
+            .addRelative(Item.SUSPICIOUS_STEW, ItemSuspiciousStew.DANDELION_STEW)
+            .addRelative(Item.SUSPICIOUS_STEW, ItemSuspiciousStew.BLUE_ORCHID_STEW), V1_13_0);
+    public static final Food allium_stew = registerDefaultFood(new FoodEffectiveInBowl(6, 7.2f)
+            .addEffect(Effect.getEffect(Effect.FIRE_RESISTANCE).setDuration(3 * 20))
+            .addRelative(Item.SUSPICIOUS_STEW, ItemSuspiciousStew.ALLIUM_STEW), V1_13_0);
+    public static final Food oxeye_daisy_stew = registerDefaultFood(new FoodEffectiveInBowl(6, 7.2f)
+            .addEffect(Effect.getEffect(Effect.REGENERATION).setDuration(7 * 20))
+            .addRelative(Item.SUSPICIOUS_STEW, ItemSuspiciousStew.OXEYE_DAISY_STEW), V1_13_0);
+    public static final Food wither_rose_stew = registerDefaultFood(new FoodEffectiveInBowl(6, 7.2f)
+            .addEffect(Effect.getEffect(Effect.WITHER).setDuration(7 * 20))
+            .addRelative(Item.SUSPICIOUS_STEW, ItemSuspiciousStew.WITHER_ROSE_STEW), V1_13_0);
+    public static final Food honey_bottle = registerDefaultFood(new FoodInBottle(6, 1.2F) {
+        @Override
+        protected boolean onEatenBy(Player player) {
+            player.removeEffect(Effect.POISON);
+            return super.onEatenBy(player);
+        }
+    }.addRelative(Item.HONEY_BOTTLE), V1_14_0);
 
     //Opened API for plugins
     public static Food registerFood(Food food, Plugin plugin) {
