@@ -2732,10 +2732,10 @@ public class Level implements ChunkManager, Metadatable {
     }
 
     public boolean hasEntity(AxisAlignedBB aabb) {
-        return hasEntity(aabb, null);
+        return hasEntity(aabb, entity -> !(entity instanceof Player) || !((Player) entity).isSpectator());
     }
 
-    public boolean hasEntity(AxisAlignedBB aabb, Entity entity) {
+    public boolean hasEntity(AxisAlignedBB aabb, Predicate<Entity> predicate) {
         int minX = Mth.floor(aabb.getMinX() - 2) >> 4;
         int maxX = Mth.floor(aabb.getMaxX() + 2) >> 4;
         int minZ = Mth.floor(aabb.getMinZ() - 2) >> 4;
@@ -2744,7 +2744,7 @@ public class Level implements ChunkManager, Metadatable {
         for (int x = minX; x <= maxX; ++x) {
             for (int z = minZ; z <= maxZ; ++z) {
                 for (Entity ent : this.getChunkEntities(x, z).values()) {
-                    if (ent != entity && ent.boundingBox.intersectsWith(aabb)) {
+                    if (ent.boundingBox.intersectsWith(aabb) && predicate.test(ent)) {
                         return true;
                     }
                 }

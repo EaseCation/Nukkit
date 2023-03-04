@@ -103,7 +103,7 @@ public class EntityFallingBlock extends Entity {
     }
 
     public boolean canCollideWith(Entity entity) {
-        return blockId == BlockID.ANVIL;
+        return blockId == BlockID.ANVIL && super.canCollideWith(entity);
     }
 
     @Override

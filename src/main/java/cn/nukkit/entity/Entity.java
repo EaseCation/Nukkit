@@ -1402,6 +1402,9 @@ public abstract class Entity extends Location implements Metadatable {
     }
 
     public boolean canCollideWith(Entity entity) {
+        if (entity instanceof Player && ((Player) entity).isSpectator()) {
+            return false;
+        }
         return !this.justCreated && this != entity;
     }
 
