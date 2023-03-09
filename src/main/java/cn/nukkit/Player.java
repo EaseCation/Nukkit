@@ -3045,9 +3045,27 @@ public class Player extends EntityHuman implements CommandSender, InventoryHolde
                     if (!this.spawned || !this.isAlive()) {
                         break;
                     }
+
+                    this.resetCraftingGridType();
                     this.craftingType = CRAFTING_SMALL;
+
+                    if (this.messageCounter <= 0) {
+                        break;
+                    }
+
                     CommandRequestPacket commandRequestPacket = (CommandRequestPacket) packet;
-                    PlayerCommandPreprocessEvent playerCommandPreprocessEvent = new PlayerCommandPreprocessEvent(this, commandRequestPacket.command);
+                    if (commandRequestPacket.command.length() > 512) {
+                        break;
+                    }
+
+                    this.messageCounter--;
+
+                    String command = commandRequestPacket.command;
+                    if (this.removeFormat) {
+                        command = TextFormat.clean(command, true);
+                    }
+
+                    PlayerCommandPreprocessEvent playerCommandPreprocessEvent = new PlayerCommandPreprocessEvent(this, command);
                     this.server.getPluginManager().callEvent(playerCommandPreprocessEvent);
                     if (playerCommandPreprocessEvent.isCancelled()) {
                         break;
@@ -3693,11 +3711,19 @@ public class Player extends EntityHuman implements CommandSender, InventoryHolde
         this.resetCraftingGridType();
         this.craftingType = CRAFTING_SMALL;
 
+        if (this.messageCounter <= 0) {
+            return false;
+        }
+
+        if (message.length() > this.messageCounter * 512 + 1) {
+            return false;
+        }
+
         if (this.removeFormat) {
             message = TextFormat.clean(message, true);
         }
 
-        for (String msg : message.split("\n")) {
+        for (String msg : message.split("\n", this.messageCounter + 1)) {
             if (!msg.trim().isEmpty() && msg.length() <= 512 && this.messageCounter-- > 0) {
                 PlayerChatEvent chatEvent = new PlayerChatEvent(this, msg);
                 this.server.getPluginManager().callEvent(chatEvent);
