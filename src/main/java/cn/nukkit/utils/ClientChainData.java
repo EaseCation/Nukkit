@@ -22,6 +22,7 @@ import java.util.*;
  * ===============
  */
 public final class ClientChainData implements LoginChainData {
+    private static final Gson GSON = new Gson();
 
     public static ClientChainData of(byte[] buffer) {
         return new ClientChainData(buffer);
@@ -186,7 +187,7 @@ public final class ClientChainData implements LoginChainData {
     }
 
     private void decodeChainData() {
-        Map<String, List<String>> map = new Gson().fromJson(new String(bs.get(bs.getLInt()), StandardCharsets.UTF_8),
+        Map<String, List<String>> map = GSON.fromJson(new String(bs.get(bs.getLInt()), StandardCharsets.UTF_8),
                 new TypeToken<Map<String, List<String>>>() {
                 }.getType());
         if (map.isEmpty() || !map.containsKey("chain") || map.get("chain").isEmpty()) return;
@@ -225,7 +226,7 @@ public final class ClientChainData implements LoginChainData {
     private JsonObject decodeToken(String token) {
         String[] base = token.split("\\.");
         if (base.length < 2) return null;
-        
+
         byte[] decode = null;
     	try {
         	decode = Base64.getUrlDecoder().decode(base[1]);
@@ -234,7 +235,7 @@ public final class ClientChainData implements LoginChainData {
         }
         String json = new String(decode, StandardCharsets.UTF_8);
         //Server.getInstance().getLogger().debug(json);
-        return new Gson().fromJson(json, JsonObject.class);
+        return GSON.fromJson(json, JsonObject.class);
     }
 
 }

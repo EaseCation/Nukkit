@@ -14,6 +14,7 @@ import java.util.*;
  */
 @ToString
 public class LoginPacket extends DataPacket {
+    private static final Gson GSON = new Gson();
 
     public static final int NETWORK_ID = ProtocolInfo.LOGIN_PACKET;
 
@@ -47,7 +48,7 @@ public class LoginPacket extends DataPacket {
     }
 
     private void decodeChainData() {
-        Map<String, List<String>> map = new Gson().fromJson(new String(this.get(getLInt()), StandardCharsets.UTF_8),
+        Map<String, List<String>> map = GSON.fromJson(new String(this.get(getLInt()), StandardCharsets.UTF_8),
                 new TypeToken<Map<String, List<String>>>() {
                 }.getType());
         if (map.isEmpty() || !map.containsKey("chain") || map.get("chain").isEmpty()) return;
@@ -90,14 +91,14 @@ public class LoginPacket extends DataPacket {
     private JsonObject decodeToken(String token) {
         String[] base = token.split("\\.");
         if (base.length < 2) return null;
-        
+
         byte[] decode = null;
     	try {
     		decode = Base64.getUrlDecoder().decode(base[1]);
     	} catch(IllegalArgumentException e) {
     		decode = Base64.getDecoder().decode(base[1]);
     	}
-        return new Gson().fromJson(new String(decode, StandardCharsets.UTF_8), JsonObject.class);
+        return GSON.fromJson(new String(decode, StandardCharsets.UTF_8), JsonObject.class);
     }
 
     @Override

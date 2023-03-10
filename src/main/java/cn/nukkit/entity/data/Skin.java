@@ -89,7 +89,7 @@ public class Skin {
     }
 
     public boolean isValid() {
-        return /*isValidSkin() && */isValidResourcePatch();
+        return /*isValidSkin() && */isValidResourcePatch() && isValidStringLength();
     }
 
     private boolean isValidSkin() {
@@ -112,6 +112,18 @@ public class Skin {
         } catch (ClassCastException | NullPointerException | JsonProcessingException e) {
             return false;
         }
+    }
+
+    /**
+     * @see cn.nukkit.entity.EntityHuman#saveNBT()
+     */
+    private boolean isValidStringLength() {
+        return getSkinId().length() < Short.MAX_VALUE && getCapeId().length() < Short.MAX_VALUE
+//                && (getFullSkinId().length() < Short.MAX_VALUE)
+                && (getPlayFabId().length() < Short.MAX_VALUE)
+                && (skinColor == null || skinColor.length() < 100)
+                && (armSize == null || armSize.length() < 100)
+                && (geometryDataEngineVersion == null || geometryDataEngineVersion.length() < 100);
     }
 
     public SerializedImage getSkinData() {

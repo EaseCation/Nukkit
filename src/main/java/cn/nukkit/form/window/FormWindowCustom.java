@@ -17,6 +17,7 @@ import java.util.List;
 import java.util.Map;
 
 public class FormWindowCustom extends FormWindow {
+    private static final Gson GSON = new Gson();
 
     private final String type = "custom_form"; //This variable is used for JSON import operations. Do NOT delete :) -- @Snake1999
     private String title = "";
@@ -81,7 +82,7 @@ public class FormWindowCustom extends FormWindow {
             return;
         }
 
-        List<String> elementResponses = new Gson().fromJson(data, new TypeToken<List<String>>() {
+        List<String> elementResponses = GSON.fromJson(data, new TypeToken<List<String>>() {
         }.getType());
         //elementResponses.remove(elementResponses.size() - 1); //submit button //maybe mojang removed that?
 

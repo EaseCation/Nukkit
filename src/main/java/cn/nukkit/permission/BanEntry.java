@@ -18,6 +18,8 @@ import java.util.TreeMap;
 public class BanEntry {
     public static final String format = "yyyy-MM-dd HH:mm:ss Z";
 
+    private static final Gson GSON = new Gson();
+
     private final String name;
     private Date creationDate;
     private String source = "(Unknown)";
@@ -94,11 +96,11 @@ public class BanEntry {
     }
 
     public String getString() {
-        return new Gson().toJson(this.getMap());
+        return GSON.toJson(this.getMap());
     }
 
     public static BanEntry fromString(String str) {
-        Map<String, String> map = new Gson().fromJson(str, new TypeToken<TreeMap<String, String>>() {
+        Map<String, String> map = GSON.fromJson(str, new TypeToken<TreeMap<String, String>>() {
         }.getType());
         BanEntry banEntry = new BanEntry(map.get("name"));
         try {
