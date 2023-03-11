@@ -32,11 +32,6 @@ public class TestForCommand extends VanillaCommand {
         try {
             List<Entity> targets = parser.parseTargets();
 
-            if (targets.isEmpty()) {
-                sender.sendMessage(TextFormat.RED + "No targets matched selector");
-                return false;
-            }
-
             sender.sendMessage(String.format("Found %1$s", targets.stream()
                     .map(Entity::getName)
                     .collect(Collectors.joining(", "))));

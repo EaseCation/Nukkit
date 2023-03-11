@@ -52,7 +52,7 @@ public class SummonCommand extends Command {
 				return false;
 			}
 			entity.spawnToAll();
-			sender.sendMessage(new TranslationContainer("commands.summon.success", entity.getSaveId()));
+			sender.sendMessage(new TranslationContainer("commands.summon.success"));
 			return true;
 		} else if (args.length == 2) {
         	String entityType = args[0];
@@ -74,7 +74,7 @@ public class SummonCommand extends Command {
 				return false;
 			}
 			entity.spawnToAll();
-			sender.sendMessage(new TranslationContainer("commands.summon.success", entity.getSaveId()));
+			sender.sendMessage(new TranslationContainer("commands.summon.success"));
 			return true;
 		} else if (args.length == 4) {
         	String entityType = args[0];
@@ -99,7 +99,7 @@ public class SummonCommand extends Command {
 				return false;
 			}
 			entity.spawnToAll();
-			sender.sendMessage(new TranslationContainer("commands.summon.success", entity.getSaveId()));
+			sender.sendMessage(new TranslationContainer("commands.summon.success"));
 			return true;
 		} else {
 			sender.sendMessage(new TranslationContainer("commands.generic.usage", this.usageMessage));

@@ -34,11 +34,11 @@ public class TestForBlockCommand extends VanillaCommand {
         CommandParser parser = new CommandParser(this, sender, args);
         try {
             Position position = parser.parsePosition();
-            int tileId = parser.parseInt();
+            int tileId = parser.parseInt(0);
             int dataValue = 0;
 
-            if (args.length > 4) {
-                dataValue = parser.parseInt();
+            if (parser.hasNext()) {
+                dataValue = parser.parseInt(0);
             }
 
 //            try {

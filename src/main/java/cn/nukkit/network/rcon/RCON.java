@@ -23,7 +23,7 @@ public class RCON {
 
     public RCON(Server server, String password, String address, int port) {
         if (password.isEmpty()) {
-            log.fatal(server.getLanguage().translateString("nukkit.server.rcon.emptyPasswordError"));
+            log.fatal(server.getLanguage().translate("nukkit.server.rcon.emptyPasswordError"));
             return;
         }
 
@@ -33,11 +33,11 @@ public class RCON {
             this.serverThread = new RCONServer(address, port, password);
             this.serverThread.start();
         } catch (IOException exception) {
-            log.fatal(this.server.getLanguage().translateString("nukkit.server.rcon.startupError", exception.getMessage()));
+            log.fatal(this.server.getLanguage().translate("nukkit.server.rcon.startupError", exception.getMessage()));
             return;
         }
 
-        log.info(this.server.getLanguage().translateString("nukkit.server.rcon.running", new String[]{address, String.valueOf(port)}));
+        log.info(this.server.getLanguage().translate("nukkit.server.rcon.running", address, port));
     }
 
     public void check() {

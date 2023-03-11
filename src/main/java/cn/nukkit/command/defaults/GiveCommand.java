@@ -2,15 +2,18 @@ package cn.nukkit.command.defaults;
 
 import cn.nukkit.Player;
 import cn.nukkit.command.Command;
+import cn.nukkit.command.CommandParser;
 import cn.nukkit.command.CommandSender;
 import cn.nukkit.command.data.CommandEnum;
 import cn.nukkit.command.data.CommandParamOption;
 import cn.nukkit.command.data.CommandParamType;
 import cn.nukkit.command.data.CommandParameter;
+import cn.nukkit.command.exceptions.CommandSyntaxException;
 import cn.nukkit.item.Item;
 import cn.nukkit.lang.TranslationContainer;
-import cn.nukkit.math.Mth;
-import cn.nukkit.utils.TextFormat;
+
+import java.util.List;
+import java.util.StringJoiner;
 
 /**
  * Created on 2015/12/9 by xtypr.
@@ -42,46 +45,39 @@ public class GiveCommand extends VanillaCommand {
             return true;
         }
 
-        if (args.length < 2) {
-            sender.sendMessage(new TranslationContainer("commands.generic.usage", this.usageMessage));
-
-            return true;
-        }
-
-        Player player = sender.getServer().getPlayerExact(args[0]);
-        Item item;
-
+        CommandParser parser = new CommandParser(this, sender, args);
         try {
-            item = Item.fromString(args[1]);
-        } catch (Exception e) {
-            sender.sendMessage(new TranslationContainer("commands.generic.usage", this.usageMessage));
+            List<Player> targets = parser.parseTargetPlayers();
+            Item item = parser.parseItem();
+            int count = parser.parseIntOrDefault(1, 1, Short.MAX_VALUE);
+
+            item.setCount(count);
+
+            StringJoiner success = new StringJoiner(",");
+
+            targets.forEach(target -> {
+                success.add(target.getName());
+
+                if (item.getId() == Item.AIR) {
+                    return;
+                }
+
+                Item[] drops = target.getInventory().addItem(item.clone());
+                if (drops.length != 0 && target.isSurvivalLike()) {
+                    for (Item drop : drops) {
+                        target.dropItem(drop);
+                    }
+                }
+            });
+
+            Command.broadcastCommandMessage(sender, new TranslationContainer("%commands.give.success",
+                    item.getName() + " (" + item.getId() + ":" + item.getDamage() + ")",
+                    item.getCount(),
+                    success.toString()));
             return true;
+        } catch (CommandSyntaxException e) {
+            sender.sendMessage(parser.getErrorMessage());
         }
-
-        if (args.length > 2) {
-            try {
-                item.setCount(Mth.clamp(Integer.parseInt(args[2]), 0, Short.MAX_VALUE));
-            } catch (Exception e) {
-                item.setCount(item.getMaxStackSize());
-            }
-        }
-
-        if (player != null) {
-            if (item.getId() == Item.AIR) {
-                sender.sendMessage(new TranslationContainer(TextFormat.RED + "%commands.give.item.notFound", args[1]));
-                return true;
-            }
-            player.getInventory().addItem(item.clone());
-        } else {
-            sender.sendMessage(new TranslationContainer(TextFormat.RED + "%commands.generic.player.notFound"));
-
-            return true;
-        }
-        Command.broadcastCommandMessage(sender, new TranslationContainer(
-                "%commands.give.success",
-                item.getName() + " (" + item.getId() + ":" + item.getDamage() + ")",
-                String.valueOf(item.getCount()),
-                player.getName()));
-        return true;
+        return false;
     }
 }

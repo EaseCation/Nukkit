@@ -24,7 +24,7 @@ public class ResourcePackManager {
             path.mkdirs();
         } else if (!path.isDirectory()) {
             throw new IllegalArgumentException(Server.getInstance().getLanguage()
-                    .translateString("nukkit.resources.invalid-path", path.getName()));
+                    .translate("nukkit.resources.invalid-path", path.getName()));
         }
 
         List<ResourcePack> loadedResourcePacks = new ObjectArrayList<>();
@@ -41,7 +41,7 @@ public class ResourcePackManager {
                             break;
                         default:
                             log.warn(Server.getInstance().getLanguage()
-                                    .translateString("nukkit.resources.unknown-format", pack.getName()));
+                                    .translate("nukkit.resources.unknown-format", pack.getName()));
                             break;
                     }
                 }
@@ -57,19 +57,19 @@ public class ResourcePackManager {
                         this.allPacksById.put(resourcePack.getPackId(), resourcePack);
                     } else {
                         log.warn(Server.getInstance().getLanguage()
-                                .translateString("nukkit.resources.unknown-format", pack.getName()));
+                                .translate("nukkit.resources.unknown-format", pack.getName()));
                     }
                 }
             } catch (IllegalArgumentException | IOException e) {
                 log.warn(Server.getInstance().getLanguage()
-                        .translateString("nukkit.resources.fail", pack.getName(), e.getMessage()));
+                        .translate("nukkit.resources.fail", pack.getName(), e.getMessage()));
             }
         }
 
         this.resourcePacks = loadedResourcePacks.toArray(new ResourcePack[0]);
         this.behaviorPacks = loadedBehaviorPacks.toArray(new ResourcePack[0]);
         log.info(Server.getInstance().getLanguage()
-                .translateString("nukkit.resources.success", String.valueOf(this.allPacksById.size())));
+                .translate("nukkit.resources.success", this.allPacksById.size()));
     }
 
     public Map<String, ResourcePack> getResourcePacksMap() {

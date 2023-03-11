@@ -5,6 +5,7 @@ import cn.nukkit.command.CommandSender;
 import cn.nukkit.command.ConsoleCommandSender;
 import cn.nukkit.command.data.CommandParamType;
 import cn.nukkit.command.data.CommandParameter;
+import cn.nukkit.lang.LiteralContainer;
 import cn.nukkit.lang.TranslationContainer;
 import cn.nukkit.utils.TextFormat;
 
@@ -51,10 +52,9 @@ public class SayCommand extends VanillaCommand {
             msg = new StringBuilder(msg.substring(0, msg.length() - 1));
         }
 
-
         sender.getServer().broadcastMessage(new TranslationContainer(
                 TextFormat.LIGHT_PURPLE + "%chat.type.announcement",
-                senderString, TextFormat.LIGHT_PURPLE + msg.toString()));
+                senderString, new LiteralContainer(TextFormat.LIGHT_PURPLE + msg.toString())));
         return true;
     }
 }

@@ -7,7 +7,7 @@ import java.util.zip.Deflater;
 
 @Log4j2
 public abstract class Zlib {
-    private static ZlibProvider[] providers;
+    private static final ZlibProvider[] providers;
     private static ZlibProvider provider;
 
     static {

@@ -58,9 +58,9 @@ public class BanListCommand extends VanillaCommand {
         }
 
         if (ips) {
-            sender.sendMessage(new TranslationContainer("commands.banlist.ips", String.valueOf(list.getEntires().size())));
+            sender.sendMessage(new TranslationContainer("commands.banlist.ips", list.getEntires().size()));
         } else {
-            sender.sendMessage(new TranslationContainer("commands.banlist.players", String.valueOf(list.getEntires().size())));
+            sender.sendMessage(new TranslationContainer("commands.banlist.players", list.getEntires().size()));
         }
         sender.sendMessage(builder.toString());
         return true;

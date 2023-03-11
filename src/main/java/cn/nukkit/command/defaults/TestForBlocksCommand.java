@@ -7,6 +7,7 @@ import cn.nukkit.command.data.CommandEnum;
 import cn.nukkit.command.data.CommandParamType;
 import cn.nukkit.command.data.CommandParameter;
 import cn.nukkit.command.exceptions.CommandSyntaxException;
+import cn.nukkit.lang.TranslationContainer;
 import cn.nukkit.level.Level;
 import cn.nukkit.level.Position;
 import cn.nukkit.math.AxisAlignedBB;
@@ -114,7 +115,7 @@ public class TestForBlocksCommand extends VanillaCommand {
                     break;
             }
 
-            sender.sendMessage(String.format("%1$d blocks compared", count));
+            sender.sendMessage(new TranslationContainer("commands.compare.success", count));
             return true;
         } catch (CommandSyntaxException e) {
             sender.sendMessage(parser.getErrorMessage());

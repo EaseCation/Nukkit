@@ -4,6 +4,7 @@ import cn.nukkit.Player;
 import cn.nukkit.command.CommandSender;
 import cn.nukkit.command.data.CommandParamType;
 import cn.nukkit.command.data.CommandParameter;
+import cn.nukkit.lang.LiteralContainer;
 import cn.nukkit.lang.TranslationContainer;
 import cn.nukkit.utils.TextFormat;
 
@@ -50,7 +51,7 @@ public class MeCommand extends VanillaCommand {
             msg = new StringBuilder(msg.substring(0, msg.length() - 1));
         }
 
-        sender.getServer().broadcastMessage(new TranslationContainer("chat.type.emote", name, TextFormat.WHITE + msg.toString()));
+        sender.getServer().broadcastMessage(new TranslationContainer("chat.type.emote", name, new LiteralContainer(TextFormat.WHITE + msg.toString())));
 
         return true;
     }

@@ -29,7 +29,7 @@ public class SeedCommand extends VanillaCommand {
             seed = sender.getServer().getDefaultLevel().getSeed();
         }
 
-        sender.sendMessage(new TranslationContainer("commands.seed.success", String.valueOf(seed)));
+        sender.sendMessage(new TranslationContainer("commands.seed.success", seed));
 
         return true;
     }

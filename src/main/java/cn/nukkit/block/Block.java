@@ -263,7 +263,7 @@ public abstract class Block extends Position implements Metadatable, Cloneable, 
     private static final Pattern integerPattern = Pattern.compile("^[1-9]\\d*$");
 
     public static Block fromString(String str) {
-        String[] b = str.trim().replace(' ', '_').replace("minecraft:", "").split(":");
+        String[] b = str.trim().replace(' ', '_').replace("minecraft:", "").split(":", 2);
 
         int id = AIR;
         int meta = 0;

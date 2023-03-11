@@ -70,10 +70,10 @@ public class ReplaceItemCommand extends VanillaCommand {
                 case "block":
                     Position position = parser.parsePosition();
                     BlockEquipmentSlot blockSlotType = parseBlockEquipmentSlot(slotType = parser.literal());
-                    slotId = parser.parseInt();
+                    slotId = parser.parseInt(0);
                     item = parser.parseItem();
                     if (parser.hasNext()) {
-                        amount = parser.parseInt();
+                        amount = parser.parseInt(1);
                     }
 
                     amount = Mth.clamp(amount, 0, item.getMaxStackSize());
@@ -107,10 +107,10 @@ public class ReplaceItemCommand extends VanillaCommand {
                 case "entity":
                     List<Player> targets = parser.parseTargetPlayers(); //TODO: entities
                     EntityEquipmentSlot entitySlotType = parseEntityEquipmentSlot(slotType = parser.literal());
-                    slotId = parser.parseInt();
+                    slotId = parser.parseInt(0);
                     item = parser.parseItem();
                     if (parser.hasNext()) {
-                        amount = parser.parseInt();
+                        amount = parser.parseInt(1);
                     }
 
                     amount = Mth.clamp(amount, 0, item.getMaxStackSize());

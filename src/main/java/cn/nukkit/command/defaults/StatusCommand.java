@@ -41,10 +41,10 @@ public class StatusCommand extends VanillaCommand {
 
         TextFormat tpsColor = TextFormat.GREEN;
         float tps = server.getTicksPerSecond();
-        if (tps < 17) {
-            tpsColor = TextFormat.GOLD;
-        } else if (tps < 12) {
+        if (tps < 12) {
             tpsColor = TextFormat.RED;
+        } else if (tps < 17) {
+            tpsColor = TextFormat.GOLD;
         }
 
         sender.sendMessage(TextFormat.GOLD + "Current TPS: " + tpsColor + NukkitMath.round(tps, 2));
@@ -56,7 +56,6 @@ public class StatusCommand extends VanillaCommand {
         sender.sendMessage(TextFormat.GOLD + "Network download: " + TextFormat.GREEN + NukkitMath.round((server.getNetwork().getDownload() / 1024 * 1000), 2) + " kB/s");
 
         sender.sendMessage(TextFormat.GOLD + "Thread count: " + TextFormat.GREEN + Thread.getAllStackTraces().size());
-
 
         Runtime runtime = Runtime.getRuntime();
         double totalMB = NukkitMath.round(((double) runtime.totalMemory()) / 1024 / 1024, 2);
@@ -77,9 +76,8 @@ public class StatusCommand extends VanillaCommand {
 
         sender.sendMessage(TextFormat.GOLD + "Available processors: " + TextFormat.GREEN + runtime.availableProcessors());
 
-
         TextFormat playerColor = TextFormat.GREEN;
-        if (((float) server.getOnlinePlayers().size() / (float) server.getMaxPlayers()) > 0.85) {
+        if (((float) server.getOnlinePlayers().size() / (float) server.getMaxPlayers()) > 0.85f) {
             playerColor = TextFormat.GOLD;
         }
 

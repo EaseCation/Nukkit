@@ -24,7 +24,7 @@ public class ZippedResourcePack extends AbstractResourcePack {
     public ZippedResourcePack(File file) throws IOException {
         if (!file.exists()) {
             throw new IllegalArgumentException(Server.getInstance().getLanguage()
-                    .translateString("nukkit.resources.zip.not-found", file.getName()));
+                    .translate("nukkit.resources.zip.not-found", file.getName()));
         }
 
         try (ZipFile zip = new ZipFile(file)) {
@@ -33,7 +33,7 @@ public class ZippedResourcePack extends AbstractResourcePack {
 
             if (entry == null) {
                 throw new IllegalArgumentException(Server.getInstance().getLanguage()
-                        .translateString("nukkit.resources.zip.no-manifest"));
+                        .translate("nukkit.resources.zip.no-manifest"));
             }
 
             manifest = PackManifest.load(zip.getInputStream(entry));
@@ -41,7 +41,7 @@ public class ZippedResourcePack extends AbstractResourcePack {
 
         if (!manifest.isValid()) {
             throw new IllegalArgumentException(Server.getInstance().getLanguage()
-                    .translateString("nukkit.resources.zip.invalid-manifest"));
+                    .translate("nukkit.resources.zip.invalid-manifest"));
         }
 
         id = manifest.getHeader().getUuid().toString();

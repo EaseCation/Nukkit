@@ -40,20 +40,20 @@ public class PlaySoundCommand extends VanillaCommand {
             String sound = parser.literal();
             List<Player> targets;
             Position position = null;
-            double volume = 1;
-            double pitch = 1;
-            double minimumVolume = 0;
+            float volume = 1;
+            float pitch = 1;
+            float minimumVolume = 0;
 
             if (parser.hasNext()) {
                 targets = parser.parseTargetPlayers();
                 if (parser.hasNext()) {
                     position = parser.parsePosition();
                     if (parser.hasNext()) {
-                        volume = parser.parseDouble();
+                        volume = parser.parseFloat();
                         if (parser.hasNext()) {
-                            pitch = parser.parseDouble();
+                            pitch = parser.parseFloat();
                             if (parser.hasNext()) {
-                                minimumVolume = Math.max(parser.parseDouble(), 0);
+                                minimumVolume = Math.max(parser.parseFloat(), 0);
                             }
                         }
                     }
@@ -91,19 +91,19 @@ public class PlaySoundCommand extends VanillaCommand {
                         break;
                     }
 
-                    packet.volume = (float) minimumVolume;
+                    packet.volume = minimumVolume;
                     packet.x = player.getFloorX();
                     packet.y = player.getFloorY();
                     packet.z = player.getFloorZ();
                 } else {
-                    packet.volume = (float) volume;
+                    packet.volume = volume;
                     packet.x = position.getFloorX();
                     packet.y = position.getFloorY();
                     packet.z = position.getFloorZ();
                 }
 
                 packet.name = sound;
-                packet.pitch = (float) pitch;
+                packet.pitch = pitch;
                 player.dataPacket(packet);
 
                 successes.add(name);

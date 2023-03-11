@@ -9,8 +9,6 @@ import cn.nukkit.lang.TranslationContainer;
 import cn.nukkit.level.Level;
 import cn.nukkit.math.Vector3;
 
-import java.text.DecimalFormat;
-
 /**
  * Created on 2015/12/13 by xtypr.
  * Package cn.nukkit.command.defaults in project Nukkit .
@@ -53,10 +51,7 @@ public class SetWorldSpawnCommand extends VanillaCommand {
             return true;
         }
         level.setSpawnLocation(pos);
-        DecimalFormat round2 = new DecimalFormat("##0.00");
-        Command.broadcastCommandMessage(sender, new TranslationContainer("commands.setworldspawn.success", round2.format(pos.x),
-                round2.format(pos.y),
-                round2.format(pos.z)));
+        Command.broadcastCommandMessage(sender, new TranslationContainer("commands.setworldspawn.success", pos.getFloorX(), pos.getFloorY(), pos.getFloorZ()));
         return true;
     }
 }

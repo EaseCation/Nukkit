@@ -323,8 +323,8 @@ public class Server {
 
         this.forceLanguage = this.getConfig("settings.force-language", false);
         this.baseLang = new BaseLang(this.getConfig("settings.language", BaseLang.FALLBACK_LANGUAGE));
-        log.info(this.getLanguage().translateString("language.selected", new String[]{getLanguage().getName(), getLanguage().getLang()}));
-        log.info(getLanguage().translateString("nukkit.server.start", TextFormat.AQUA + this.getVersion() + TextFormat.RESET));
+        log.info(this.getLanguage().translate("nukkit.language.selected", getLanguage().getName()));
+        log.info(getLanguage().translate("nukkit.server.start", TextFormat.AQUA + this.getVersion() + TextFormat.RESET));
 
         Object poolSize = this.getConfig("settings.async-workers", "auto");
         try {
@@ -356,7 +356,7 @@ public class Server {
             try {
                 this.rcon = new RCON(this, this.getPropertyString("rcon.password", ""), (!this.getIp().equals("")) ? this.getIp() : "0.0.0.0", this.getPropertyInt("rcon.port", this.getPort()));
             } catch (IllegalArgumentException e) {
-                log.error(getLanguage().translateString(e.getMessage(), e.getCause().getMessage()));
+                log.error(getLanguage().translate(e.getMessage(), e.getCause().getMessage()));
             }
         }
 
@@ -398,7 +398,7 @@ public class Server {
             ExceptionHandler.registerExceptionHandler();
         }
 
-        log.info(this.getLanguage().translateString("nukkit.server.networkStart", new String[]{this.getIp().equals("") ? "*" : this.getIp(), String.valueOf(this.getPort())}));
+        log.info(this.getLanguage().translate("nukkit.server.networkStart", "".equals(this.getIp()) ? "*" : this.getIp(), this.getPort()));
         this.serverID = UUID.randomUUID();
 
         GameVersion.setFeatureVersion(GameVersion.byName(getConfig("base-game-version", GameVersion.getFeatureVersion().toString())));
@@ -408,8 +408,8 @@ public class Server {
         this.network.setName(this.getMotd());
         this.network.setSubName(this.getSubMotd());
 
-        log.info(this.getLanguage().translateString("nukkit.server.info", this.getName(), TextFormat.YELLOW + this.getNukkitVersion() + TextFormat.WHITE, TextFormat.AQUA + this.getCodename() + TextFormat.WHITE, this.getApiVersion()));
-        log.info(this.getLanguage().translateString("nukkit.server.license", this.getName()));
+        log.info(this.getLanguage().translate("nukkit.server.info", this.getName(), TextFormat.YELLOW + this.getNukkitVersion() + TextFormat.WHITE, TextFormat.AQUA + this.getCodename() + TextFormat.WHITE, this.getApiVersion()));
+        log.info(this.getLanguage().translate("nukkit.server.license", this.getName()));
 
         CommandExceptions.init();
         this.consoleSender = new ConsoleCommandSender();
@@ -509,7 +509,7 @@ public class Server {
         this.properties.save(true);
 
         if (this.getDefaultLevel() == null) {
-            log.fatal(this.getLanguage().translateString("nukkit.level.defaultError"));
+            log.fatal(this.getLanguage().translate("nukkit.level.defaultError"));
             this.forceShutdown();
 
             return;
@@ -804,7 +804,7 @@ public class Server {
             if (this.upnpEnabled) {
                 log.debug("Closing UPnP port");
                 if (UPnP.closePortUDP(this.getPort())) {
-                    log.info("Removed forwarding rule for UDP Port {} using UPnP.", getPort());
+                    log.info(this.getLanguage().translate("nukkit.server.upnp.closed", getPort()));
                 }
             }
 
@@ -827,21 +827,21 @@ public class Server {
     public void start() {
         if (this.getPropertyBoolean("enable-upnp", false)) {
             if (UPnP.isUPnPAvailable()) {
-                log.debug("UPnP enabled. Attempting to port-forward with UPnP.");
-                if (UPnP.openPortUDP(getPort(), "Cloudburst")) {
+                log.debug(this.getLanguage().translate("nukkit.server.upnp.enabled"));
+                if (UPnP.openPortUDP(getPort(), "Nukkit")) {
                     this.upnpEnabled = true; // Saved to disable the port-forwarding on shutdown
-                    log.info("Successfully forwarded UDP Port {} using UPnP.", getPort());
+                    log.info(this.getLanguage().translate("nukkit.server.upnp.success", getPort()));
                 } else {
                     this.upnpEnabled = false;
-                    log.warn("Failed to forward UDP Port {} using UPnP.", getPort());
+                    log.warn(this.getLanguage().translate("nukkit.server.upnp.fail", getPort()));
                 }
             } else {
                 this.upnpEnabled = false;
-                log.warn("UPnP is enabled, but no UPnP enabled gateway was found.");
+                log.warn(this.getLanguage().translate("nukkit.server.upnp.unavailable"));
             }
         } else {
             this.upnpEnabled = false;
-            log.debug("UPnP is disabled.");
+            log.debug(this.getLanguage().translate("nukkit.server.upnp.disabled"));
         }
 
         if (this.getPropertyBoolean("enable-query", true)) {
@@ -874,9 +874,9 @@ public class Server {
             }, "Nukkit Shutdown Hook"));
         }
 
-        log.info(this.getLanguage().translateString("nukkit.server.defaultGameMode", getGamemodeString(this.getGamemode())));
+        log.info(this.getLanguage().translate("nukkit.server.defaultGameMode", getGamemodeString(this.getGamemode())));
 
-        log.info(this.getLanguage().translateString("nukkit.server.startFinished", String.valueOf((double) (System.currentTimeMillis() - Nukkit.START_TIME) / 1000)));
+        log.info(this.getLanguage().translate("nukkit.server.startFinished", (double) (System.currentTimeMillis() - Nukkit.START_TIME) / 1000));
 
         this.tickProcessor();
         this.forceShutdown();
@@ -1074,7 +1074,7 @@ public class Server {
                     this.getLogger().logException(e);
                 }
 
-                log.fatal(this.getLanguage().translateString("nukkit.level.tickError", new String[]{level.getName(), e.toString()}));
+                log.fatal(this.getLanguage().translate("nukkit.level.tickError", level.getName(), e.toString()));
                 this.getLogger().logException(e);
             }
         }
@@ -1530,10 +1530,10 @@ public class Server {
                 } catch (IOException ex) {
                     throw new RuntimeException(ex);
                 }
-                log.warn(this.getLanguage().translateString("nukkit.data.playerCorrupted", name));
+                log.warn(this.getLanguage().translate("nukkit.data.playerCorrupted", name));
             }
         } else {
-            log.warn(this.getLanguage().translateString("nukkit.data.playerNotFound", name));
+            log.warn(this.getLanguage().translate("nukkit.data.playerNotFound", name));
         }
 
         Position spawn = this.getDefaultLevel().getSafeSpawn();
@@ -1579,7 +1579,7 @@ public class Server {
                     Utils.writeFile(this.getDataPath() + "players/" + name.toLowerCase() + ".dat", new ByteArrayInputStream(NBTIO.writeGZIPCompressed(tag, ByteOrder.BIG_ENDIAN)));
                 }
             } catch (Exception e) {
-                log.fatal(this.getLanguage().translateString("nukkit.data.saveError", new String[]{name, e.getMessage()}));
+                log.fatal(this.getLanguage().translate("nukkit.data.saveError", name, e.getMessage()));
                 if (Nukkit.DEBUG > 1) {
                     this.getLogger().logException(e);
                 }
@@ -1702,7 +1702,7 @@ public class Server {
         if (this.isLevelLoaded(name)) {
             return true;
         } else if (!this.isLevelGenerated(name)) {
-            log.warn(this.getLanguage().translateString("nukkit.level.notFound", name));
+            log.warn(this.getLanguage().translate("nukkit.level.notFound", name));
 
             return false;
         }
@@ -1718,7 +1718,7 @@ public class Server {
         LevelProviderHandle provider = LevelProviderManager.getProvider(path);
 
         if (provider == null) {
-            log.error(this.getLanguage().translateString("nukkit.level.loadError", new String[]{name, "Unknown provider"}));
+            log.error(this.getLanguage().translate("nukkit.level.loadError", name, "Unknown provider"));
 
             return false;
         }
@@ -1727,7 +1727,7 @@ public class Server {
         try {
             level = new Level(this, name, path, provider);
         } catch (Exception e) {
-            log.error(this.getLanguage().translateString("nukkit.level.loadError", new String[]{name, e.getMessage()}));
+            log.error(this.getLanguage().translate("nukkit.level.loadError", name, e.getMessage()));
             this.getLogger().logException(e);
             return false;
         }
@@ -1833,7 +1833,7 @@ public class Server {
             level.initLevel();
             level.setTickRate(this.baseTickRate);
         } catch (Exception e) {
-            log.error(this.getLanguage().translateString("nukkit.level.generationError", new String[]{name, Utils.getExceptionMessage(e)}));
+            log.error(this.getLanguage().translate("nukkit.level.generationError", name, Utils.getExceptionMessage(e)));
             return false;
         }
 

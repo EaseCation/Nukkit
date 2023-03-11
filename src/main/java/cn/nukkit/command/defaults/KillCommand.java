@@ -121,7 +121,7 @@ public class KillCommand extends VanillaCommand {
                         }
                     }
                 }
-                sender.sendMessage(new TranslationContainer(TextFormat.GOLD + "%commands.kill.all.successful"));
+                sender.sendMessage(new TranslationContainer("commands.kill.all.successful"));
             } else {
                 sender.sendMessage(new TranslationContainer(TextFormat.RED + "%commands.generic.player.notFound"));
             }

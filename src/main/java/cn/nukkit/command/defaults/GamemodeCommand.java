@@ -36,6 +36,10 @@ public class GamemodeCommand extends VanillaCommand {
 
     @Override
     public boolean execute(CommandSender sender, String commandLabel, String[] args) {
+        if (!this.testPermission(sender)) {
+            return false;
+        }
+
         if (args.length == 0) {
             sender.sendMessage(new TranslationContainer("commands.generic.usage", this.usageMessage));
             return false;

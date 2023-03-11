@@ -1,5 +1,6 @@
 package cn.nukkit.command.defaults;
 
+import cn.nukkit.Difficulty;
 import cn.nukkit.Server;
 import cn.nukkit.command.Command;
 import cn.nukkit.command.CommandSender;
@@ -51,7 +52,7 @@ public class DifficultyCommand extends VanillaCommand {
             pk.difficulty = sender.getServer().getDifficulty();
             Server.broadcastPacket(sender.getServer().getOnlinePlayers().values(), pk);
 
-            Command.broadcastCommandMessage(sender, new TranslationContainer("commands.difficulty.success", String.valueOf(difficulty)));
+            Command.broadcastCommandMessage(sender, new TranslationContainer("commands.difficulty.success", Difficulty.byId(difficulty).getTranslationKey()));
         } else {
             sender.sendMessage(new TranslationContainer("commands.generic.usage", this.usageMessage));
 

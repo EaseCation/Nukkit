@@ -6,6 +6,8 @@ import cn.nukkit.command.exceptions.CommandExceptions;
 import cn.nukkit.command.exceptions.CommandSyntaxException;
 import cn.nukkit.entity.Entity;
 import cn.nukkit.item.Item;
+import cn.nukkit.lang.TextContainer;
+import cn.nukkit.lang.TranslationContainer;
 import cn.nukkit.level.Level;
 import cn.nukkit.level.Position;
 import cn.nukkit.math.BlockVector3;
@@ -13,13 +15,12 @@ import cn.nukkit.math.Vector2;
 import cn.nukkit.math.Vector3;
 import cn.nukkit.math.Vector3f;
 import cn.nukkit.utils.TextFormat;
-import com.google.common.annotations.Beta;
 
 import javax.annotation.Nullable;
 import java.util.List;
+import java.util.function.Function;
 import java.util.stream.Collectors;
 
-@Beta
 public class CommandParser {
 
     private final Command command;
@@ -28,7 +29,7 @@ public class CommandParser {
 
     private int cursor = -1;
     private int marker = -1;
-    private String errorMessage;
+    private TextContainer errorMessage;
 
     public CommandParser(Command command, CommandSender sender, String... args) {
         this.command = command;
@@ -73,13 +74,17 @@ public class CommandParser {
         this.cursor -= n;
     }
 
-    public void setErrorMessage(@Nullable String detailMessage) {
+    public void setErrorMessage(@Nullable TextContainer detailMessage) {
         this.errorMessage = detailMessage;
+
+        if (detailMessage != null) {
+            detailMessage.setText(TextFormat.RED + detailMessage.getText());
+        }
     }
 
-    public String getErrorMessage() {
+    public TextContainer getErrorMessage() {
         if (errorMessage != null) {
-            return TextFormat.RED + errorMessage;
+            return errorMessage;
         }
 
         StringBuilder left = new StringBuilder(10);
@@ -122,7 +127,7 @@ public class CommandParser {
             }
         }
 
-        return String.format(TextFormat.RED + "Syntax error: Unexpected \"%2$s\": at \"%1$s>>%2$s<<%3$s\"", left, current, right);
+        return new TranslationContainer(TextFormat.RED + "%commands.generic.syntax", left.toString(), current, right.toString());
     }
 
     public Level getTargetLevel() {
@@ -144,6 +149,46 @@ public class CommandParser {
         }
     }
 
+    public int parseInt(int min) throws CommandSyntaxException {
+        return parseInt(min, Integer.MAX_VALUE);
+    }
+
+    public int parseInt(int min, int max) throws CommandSyntaxException {
+        int num = this.parseInt();
+
+        if (num < min) {
+            this.setErrorMessage(new TranslationContainer("%commands.generic.num.tooSmall", num, min));
+            throw CommandExceptions.NUMBER_TOO_SMALL;
+        }
+        if (num > max) {
+            this.setErrorMessage(new TranslationContainer("%commands.generic.num.tooBig", num, max));
+            throw CommandExceptions.NUMBER_TOO_BIG;
+        }
+
+        return num;
+    }
+
+    public int parseIntOrDefault(int defaultValue) throws CommandSyntaxException {
+        if (!this.hasNext()) {
+            return defaultValue;
+        }
+        return this.parseInt();
+    }
+
+    public int parseIntOrDefault(int defaultValue, int min) throws CommandSyntaxException {
+        if (!this.hasNext()) {
+            return defaultValue;
+        }
+        return this.parseInt(min);
+    }
+
+    public int parseIntOrDefault(int defaultValue, int min, int max) throws CommandSyntaxException {
+        if (!this.hasNext()) {
+            return defaultValue;
+        }
+        return this.parseInt(min, max);
+    }
+
     public long parseLong() throws CommandSyntaxException {
         String arg = this.next();
         try {
@@ -151,6 +196,46 @@ public class CommandParser {
         } catch (NumberFormatException e) {
             throw CommandExceptions.NOT_INT;
         }
+    }
+
+    public long parseLong(long min) throws CommandSyntaxException {
+        return parseLong(min, Long.MAX_VALUE);
+    }
+
+    public long parseLong(long min, long max) throws CommandSyntaxException {
+        long num = this.parseLong();
+
+        if (num < min) {
+            this.setErrorMessage(new TranslationContainer("%commands.generic.num.tooSmall", num, min));
+            throw CommandExceptions.NUMBER_TOO_SMALL;
+        }
+        if (num > max) {
+            this.setErrorMessage(new TranslationContainer("%commands.generic.num.tooBig", num, max));
+            throw CommandExceptions.NUMBER_TOO_BIG;
+        }
+
+        return num;
+    }
+
+    public long parseLongOrDefault(long defaultValue) throws CommandSyntaxException {
+        if (!this.hasNext()) {
+            return defaultValue;
+        }
+        return this.parseLong();
+    }
+
+    public long parseLongOrDefault(long defaultValue, long min) throws CommandSyntaxException {
+        if (!this.hasNext()) {
+            return defaultValue;
+        }
+        return this.parseLong(min);
+    }
+
+    public long parseLongOrDefault(long defaultValue, long min, long max) throws CommandSyntaxException {
+        if (!this.hasNext()) {
+            return defaultValue;
+        }
+        return this.parseLong(min, max);
     }
 
     public float parseFloat() throws CommandSyntaxException {
@@ -162,6 +247,46 @@ public class CommandParser {
         }
     }
 
+    public float parseFloat(float min) throws CommandSyntaxException {
+        return parseFloat(min, Float.MAX_VALUE);
+    }
+
+    public float parseFloat(float min, float max) throws CommandSyntaxException {
+        float num = this.parseFloat();
+
+        if (num < min) {
+            this.setErrorMessage(new TranslationContainer("%commands.generic.double.tooSmall", num, min));
+            throw CommandExceptions.NUMBER_TOO_SMALL;
+        }
+        if (num > max) {
+            this.setErrorMessage(new TranslationContainer("%commands.generic.double.tooBig", num, max));
+            throw CommandExceptions.NUMBER_TOO_BIG;
+        }
+
+        return num;
+    }
+
+    public float parseFloatOrDefault(float defaultValue) throws CommandSyntaxException {
+        if (!this.hasNext()) {
+            return defaultValue;
+        }
+        return this.parseFloat();
+    }
+
+    public float parseFloatOrDefault(float defaultValue, float min) throws CommandSyntaxException {
+        if (!this.hasNext()) {
+            return defaultValue;
+        }
+        return this.parseFloat(min);
+    }
+
+    public float parseFloatOrDefault(float defaultValue, float min, float max) throws CommandSyntaxException {
+        if (!this.hasNext()) {
+            return defaultValue;
+        }
+        return this.parseFloat(min, max);
+    }
+
     public double parseDouble() throws CommandSyntaxException {
         String arg = this.next();
         try {
@@ -169,6 +294,46 @@ public class CommandParser {
         } catch (NumberFormatException e) {
             throw CommandExceptions.NOT_FLOAT;
         }
+    }
+
+    public double parseDouble(double min) throws CommandSyntaxException {
+        return parseDouble(min, Double.MAX_VALUE);
+    }
+
+    public double parseDouble(double min, double max) throws CommandSyntaxException {
+        double num = this.parseDouble();
+
+        if (num < min) {
+            this.setErrorMessage(new TranslationContainer("%commands.generic.double.tooSmall", num, min));
+            throw CommandExceptions.NUMBER_TOO_SMALL;
+        }
+        if (num > max) {
+            this.setErrorMessage(new TranslationContainer("%commands.generic.double.tooBig", num, max));
+            throw CommandExceptions.NUMBER_TOO_BIG;
+        }
+
+        return num;
+    }
+
+    public double parseDoubleOrDefault(double defaultValue) throws CommandSyntaxException {
+        if (!this.hasNext()) {
+            return defaultValue;
+        }
+        return this.parseDouble();
+    }
+
+    public double parseDoubleOrDefault(double defaultValue, double min) throws CommandSyntaxException {
+        if (!this.hasNext()) {
+            return defaultValue;
+        }
+        return this.parseDouble(min);
+    }
+
+    public double parseDoubleOrDefault(double defaultValue, double min, double max) throws CommandSyntaxException {
+        if (!this.hasNext()) {
+            return defaultValue;
+        }
+        return this.parseDouble(min, max);
     }
 
     public boolean parseBoolean() throws CommandSyntaxException {
@@ -182,8 +347,40 @@ public class CommandParser {
         throw CommandExceptions.COMMAND_SYNTAX_EXCEPTION;
     }
 
+    public boolean parseBooleanOrDefault(boolean defaultValue) throws CommandSyntaxException {
+        if (!this.hasNext()) {
+            return defaultValue;
+        }
+        return this.parseBoolean();
+    }
+
     public String literal() throws CommandSyntaxException {
         return this.next();
+    }
+
+    public String literalOrDefault(String defaultValue) throws CommandSyntaxException {
+        if (!this.hasNext()) {
+            return defaultValue;
+        }
+        return this.literal();
+    }
+
+    public <T> T parse(Function<String, T> parser) throws CommandSyntaxException {
+        String arg = this.next();
+        try {
+            return parser.apply(arg);
+        } catch (CommandSyntaxException e) {
+            throw e;
+        } catch (Exception e) {
+            throw CommandExceptions.COMMAND_SYNTAX_EXCEPTION;
+        }
+    }
+
+    public <T> T parseOrDefault(T defaultValue, Function<String, T> parser) throws CommandSyntaxException {
+        if (!this.hasNext()) {
+            return defaultValue;
+        }
+        return this.parse(parser);
     }
 
     public <T extends Enum<T>> T parseEnum(Class<T> enumType) throws CommandSyntaxException {
@@ -195,24 +392,76 @@ public class CommandParser {
         }
     }
 
+    public <T extends Enum<T>> T parseEnumOrDefault(T defaultValue, Class<T> enumType) throws CommandSyntaxException {
+        if (!this.hasNext()) {
+            return defaultValue;
+        }
+        return this.parseEnum(enumType);
+    }
+
     public List<Entity> parseTargets() throws CommandSyntaxException {
         String arg = this.next();
+
+        List<Entity> targets;
         try {
-            return EntitySelector.matchEntities(this.sender, arg, true);
+            targets = EntitySelector.matchEntities(this.sender, arg, true);
         } catch (Exception e) {
             throw CommandExceptions.COMMAND_SYNTAX_EXCEPTION;
         }
+
+        if (targets.isEmpty()) {
+            this.setErrorMessage(new TranslationContainer("%commands.generic.noTargetMatch"));
+            throw CommandExceptions.NO_TARGET;
+        }
+
+        return targets;
+    }
+
+    public List<Entity> parseTargets(int limit) throws CommandSyntaxException {
+        List<Entity> targets = this.parseTargets();
+
+        if (targets.size() > limit) {
+            this.setErrorMessage(new TranslationContainer("%commands.generic.tooManyTargets"));
+            throw CommandExceptions.TOO_MANY_TARGETS;
+        }
+
+        return targets;
     }
 
     public List<Player> parseTargetPlayers() throws CommandSyntaxException {
-        return this.parseTargets().stream()
+        List<Player> targets = this.parseTargets().stream()
                 .filter(entity -> entity instanceof Player)
                 .map(entity -> (Player) entity)
                 .collect(Collectors.toList());
+
+        if (targets.isEmpty()) {
+            this.setErrorMessage(new TranslationContainer("%commands.generic.noTargetMatch"));
+            throw CommandExceptions.NO_TARGET;
+        }
+
+        return targets;
+    }
+
+    public List<Player> parseTargetPlayers(int limit) throws CommandSyntaxException {
+        List<Player> targets = this.parseTargetPlayers();
+
+        if (targets.size() > limit) {
+            this.setErrorMessage(new TranslationContainer("%commands.generic.tooManyTargets"));
+            throw CommandExceptions.TOO_MANY_TARGETS;
+        }
+
+        return targets;
     }
 
     public Position parsePosition() throws CommandSyntaxException {
         return Position.fromObject(this.parseVector3(), this.getTargetLevel());
+    }
+
+    public Position parsePositionOrDefault(Position defaultValue) throws CommandSyntaxException {
+        if (!this.hasNext()) {
+            return defaultValue;
+        }
+        return this.parsePosition();
     }
 
     public Vector3 parseVector3() throws CommandSyntaxException {
@@ -240,6 +489,13 @@ public class CommandParser {
         return new Vector3(this.parseCoordinate(baseX), this.parseCoordinate(baseY), this.parseCoordinate(baseZ));
     }
 
+    public Vector3 parseVectorOrDefault3(Vector3 defaultValue) throws CommandSyntaxException {
+        if (!this.hasNext()) {
+            return defaultValue;
+        }
+        return this.parseVector3();
+    }
+
     public Vector2 parseVector2() throws CommandSyntaxException {
         double baseX = 0;
         double baseZ = 0;
@@ -263,6 +519,13 @@ public class CommandParser {
         }
 
         return new Vector2(this.parseCoordinate(baseX), this.parseCoordinate(baseZ));
+    }
+
+    public Vector2 parseVectorOrDefault2(Vector2 defaultValue) throws CommandSyntaxException {
+        if (!this.hasNext()) {
+            return defaultValue;
+        }
+        return this.parseVector2();
     }
 
     private double parseCoordinate(double baseCoordinate) throws CommandSyntaxException {
@@ -290,6 +553,13 @@ public class CommandParser {
         }
     }
 
+    public Block parseBlockOrDefault(Block defaultValue) throws CommandSyntaxException {
+        if (!this.hasNext()) {
+            return defaultValue;
+        }
+        return this.parseBlock();
+    }
+
     public Item parseItem() throws CommandSyntaxException {
         String arg = this.next();
         try {
@@ -297,5 +567,12 @@ public class CommandParser {
         } catch (Exception e) {
             throw CommandExceptions.COMMAND_SYNTAX_EXCEPTION;
         }
+    }
+
+    public Item parseItemOrDefault(Item defaultValue) throws CommandSyntaxException {
+        if (!this.hasNext()) {
+            return defaultValue;
+        }
+        return this.parseItem();
     }
 }

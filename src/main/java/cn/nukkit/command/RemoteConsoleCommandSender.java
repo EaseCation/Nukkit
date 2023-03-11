@@ -12,7 +12,6 @@ public class RemoteConsoleCommandSender extends ConsoleCommandSender {
 
     @Override
     public void sendMessage(String message) {
-        message = this.getServer().getLanguage().translateString(message);
         this.messages.append(message.trim()).append("\n");
     }
 

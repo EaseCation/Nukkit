@@ -40,11 +40,6 @@ public class StopSoundCommand extends VanillaCommand {
                 sound = parser.literal();
             }
 
-            if (targets.isEmpty()) {
-                sender.sendMessage(TextFormat.RED + "No targets matched selector");
-                return false;
-            }
-
             StopSoundPacket packet = new StopSoundPacket();
             packet.name = sound;
             if (sound.isEmpty()) {

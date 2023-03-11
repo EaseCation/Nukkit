@@ -1,0 +1,120 @@
+## Comments can be added anywhere on a valid line by starting with '##'
+##
+## Note, trailing spaces will NOT be trimmed. If you want room between the end of the string and the start of a
+## comment on the same line, use TABs.
+
+## These are custom localizations that need to be converted before being sent or used in the console.
+
+nukkit.language.selected=Selected %1$2s as the default locale.
+
+nukkit.data.playerNotFound=Player data not found for "%1$2s", creating new profile
+nukkit.data.playerCorrupted=Corrupted data found for "%1$2s", creating new profile
+nukkit.data.playerOld=Old Player data found for "%1$2s", upgrading profile
+nukkit.data.saveError=Could not save player "%1$2s": %2$2s
+
+nukkit.level.notFound=Level "%1$2s" not found
+nukkit.level.loadError=Could not load level "%1$2s": %2$2s
+nukkit.level.generationError=Could not generate level "%1$2s": %2$2s
+nukkit.level.tickError=Could not tick level "%1$2s": %2$2s
+nukkit.level.chunkUnloadError=Error while unloading a chunk: %1$2s
+nukkit.level.backgroundGeneration=Spawn terrain for level "%1$2s" is being generated in the background
+nukkit.level.defaultError=No default level has been loaded
+nukkit.level.preparing=Preparing level "%1$2s"
+nukkit.level.unloading=Unloading level "%1$2s"
+nukkit.level.updating=Old level data found for "%1$2s", converting format
+
+nukkit.server.start=Starting Minecraft: Bedrock Edition server version %1$2s
+nukkit.server.networkError=[Network] Stopped interface %1$2s due to %2$2s
+nukkit.server.networkStart=Opening server on %1$2s:%2$2s
+nukkit.server.info=This server is running %1$2s version %2$2s "%3$2s" (API %4$2s)
+nukkit.server.info.extended=This server is running %1$2s %2$2s implementing API version %3$2s for Minecraft: Bedrock Edition %4$2s (protocol version %5$2s)
+nukkit.server.license=%1$2s is distributed under the GPL License
+nukkit.server.tickOverload=Can't keep up! Is the server overloaded?
+nukkit.server.startFinished=Done (%1$2ss)! For help, type "help" or "?"
+nukkit.server.defaultGameMode=Default game type: %1$2s
+nukkit.server.query.start=Starting GS4 status listener
+nukkit.server.query.info=Setting query port to %1$2s
+nukkit.server.query.running=Query is running on %1$2s:%2$2s
+nukkit.server.rcon.emptyPasswordError=Failed to start RCON: password is empty
+nukkit.server.rcon.startupError=Failed to start RCON: %1$2s
+nukkit.server.rcon.running=RCON is running on %1$2s:%2$2s
+nukkit.server.upnp.enabled=UPnP enabled. Attempting to port-forward with UPnP.
+nukkit.server.upnp.disabled=UPnP is disabled.
+nukkit.server.upnp.unavailable=UPnP is enabled, but no UPnP enabled gateway was found.
+nukkit.server.upnp.success=Successfully forwarded UDP Port %1$2s using UPnP.
+nukkit.server.upnp.fail=Failed to forward UDP Port %1$2s using UPnP.
+nukkit.server.upnp.closed=Removed forwarding rule for UDP Port %1$2s using UPnP.
+
+nukkit.command.alias.illegal=Could not register alias %1$2s because it contains illegal characters
+nukkit.command.alias.notFound=Could not register alias %1$2s because it contains commands that do not exist: %2$2s
+nukkit.command.exception=Unhandled exception executing command '%1$2s' in %2$2s: %3$2s
+
+nukkit.command.version.description=Gets the version of this server including any plugins in use
+nukkit.command.version.usage=/version [plugin name]
+nukkit.command.version.server=This server is running %1$2s version %2$2s (MC: %3$2s) (Implementing API version %4$2s)
+nukkit.command.version.plugin=%1$2s running version %1$2s
+nukkit.command.version.noSuchPlugin=This server is not running any plugin by that name. Use /plugins to get a list of plugins.
+
+nukkit.command.plugins.description=Gets a list of plugins running on the server
+nukkit.command.plugins.success=Plugins (%1$2s): %2$2s
+nukkit.command.plugins.usage=/plugins
+
+nukkit.command.status.description=Reads back the server's performance.
+nukkit.command.status.usage=/status
+
+nukkit.command.timings.description=Records timings to see performance of the server.
+nukkit.command.timings.usage=/timings <reset|report/paste|on|off|verbon|verboff>
+nukkit.command.timings.enable=Enabled timings and reset
+nukkit.command.timings.disable=Disabled timings
+nukkit.command.timings.timingsDisabled=Please enable timings by typing /timings on
+nukkit.command.timings.verboseEnable=Enabled verbose timings
+nukkit.command.timings.verboseDisable=Disabled verbose timings
+nukkit.command.timings.reset=Timings reset
+nukkit.command.timings.rcon=Warning: Timings report done over RCON will cause lag spikes, you should use /timings report in game or console
+nukkit.command.timings.uploadStart=Preparing timings report...
+nukkit.command.timings.uploadError=Upload Error: %1$2s: %2$2s, check logs for more information
+nukkit.command.timings.reportError=An error happened while pasting the report, check logs for more information
+nukkit.command.timings.timingsLocation=View timings report: %1$2s
+nukkit.command.timings.timingsResponse=Timings response: %1$2s
+nukkit.command.timings.timingsWrite=Timings written to %1$2s
+
+nukkit.crash.create=An unrecoverable error has occurred and the server has crashed. Creating a crash dump
+nukkit.crash.error=Could not create crash dump: %1$2s
+nukkit.crash.submit=Please upload the "%1$2s" file to the Crash Archive and submit the link to the Bug Reporting page. Give as much info as you can.
+nukkit.crash.archive=The crash dump has been automatically submitted to the Crash Archive. You can view it on %1$2s or use the ID #%2$2s.
+
+nukkit.debug.enable=LevelDB support enabled
+
+nukkit.bugreport.create=An error has been detected, creating a bug report.
+nukkit.bugreport.error=Could not create bug report: %1$2s
+nukkit.bugreport.archive=A bug report has been created: %1$2s
+
+nukkit.player.invalidMove=%1$2s moved wrongly!
+nukkit.player.logIn=%1$2s[/%2$2s:%3$2s] logged in with entity id %4$2s at (%5$2s, %6$2s, %7$2s, %8$2s)
+nukkit.player.logOut=%1$2s[/%2$2s:%3$2s] logged out due to %4$2s
+nukkit.player.invalidEntity=%1$2s tried to attack an invalid entity
+
+nukkit.plugin.load=Loading %1$2s
+nukkit.plugin.enable=Enabling %1$2s
+nukkit.plugin.disable=Disabling %1$2s
+nukkit.plugin.restrictedName=Restricted name
+nukkit.plugin.incompatibleAPI=Incompatible API version
+nukkit.plugin.unknownDependency=Unknown dependency
+nukkit.plugin.circularDependency=Circular dependency detected
+nukkit.plugin.genericLoadError=Could not load plugin '%1$2s'
+nukkit.plugin.spacesDiscouraged=Plugin '%1$2s' uses spaces in its name, this is discouraged
+nukkit.plugin.loadError=Could not load plugin '%1$2s': %2$2s
+nukkit.plugin.duplicateError=Could not load plugin '%1$2s': plugin exists
+nukkit.plugin.fileError=Could not load '%1$2s' in folder '%2$2s': %3$2s
+nukkit.plugin.commandError=Could not load command %1$2s for plugin %2$2s
+nukkit.plugin.aliasError=Could not load alias %1$2s for plugin %2$2s
+nukkit.plugin.deprecatedEvent=Plugin '%1$2s' has registered a listener for '%2$2s' on method '%3$2s', but the event is Deprecated.
+nukkit.plugin.eventError=Could not pass event '%1$2s' to '%2$2s': %3$2s on %4$2s
+
+nukkit.resources.invalid-path=Resource packs path '%1$2s' exists and is not a directory
+nukkit.resources.unknown-format=Could not load '%1$2s' due to format not recognized
+nukkit.resources.fail=Could not load '%1$2s': %2$2s
+nukkit.resources.success=Successfully loaded %1$2s resource packs
+nukkit.resources.zip.not-found=File '%1$2s' is not found
+nukkit.resources.zip.no-manifest='manifest.json' is not found
+nukkit.resources.zip.invalid-manifest='manifest.json' is invalid or incomplete

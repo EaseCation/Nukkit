@@ -342,7 +342,7 @@ public class Level implements ChunkManager, Metadatable {
                 throw new LevelException(e);
             }
 
-            log.info(this.server.getLanguage().translateString("nukkit.level.updating",
+            log.info(this.server.getLanguage().translate("nukkit.level.updating",
                     TextFormat.GREEN + this.provider.getName() + TextFormat.RESET));
             LevelProvider old = this.provider;
             try {
@@ -375,7 +375,7 @@ public class Level implements ChunkManager, Metadatable {
         }
 
         if (convert) {
-            log.info(this.server.getLanguage().translateString("nukkit.level.updating",
+            log.info(this.server.getLanguage().translate("nukkit.level.updating",
                     TextFormat.GREEN + this.provider.getName() + TextFormat.RESET));
             LevelProvider old = this.provider;
             try {
@@ -398,7 +398,7 @@ public class Level implements ChunkManager, Metadatable {
 
         this.provider.updateLevelName(name);
 
-        log.info(this.server.getLanguage().translateString("nukkit.level.preparing",
+        log.info(this.server.getLanguage().translate("nukkit.level.preparing",
                 TextFormat.GREEN + this.provider.getName() + TextFormat.WHITE));
 
         this.generatorClass = this.provider.getGenerator();
@@ -852,7 +852,7 @@ public class Level implements ChunkManager, Metadatable {
             return false;
         }
 
-        log.info(this.server.getLanguage().translateString("nukkit.level.unloading",
+        log.info(this.server.getLanguage().translate("nukkit.level.unloading",
                 TextFormat.GREEN + this.getName() + TextFormat.WHITE));
         Level defaultLevel = this.server.getDefaultLevel();
 
@@ -3517,7 +3517,7 @@ public class Level implements ChunkManager, Metadatable {
             this.provider.unloadChunk(x, z, safe);
         } catch (Exception e) {
             MainLogger logger = this.server.getLogger();
-            logger.error(this.server.getLanguage().translateString("nukkit.level.chunkUnloadError", e.toString()));
+            logger.error(this.server.getLanguage().translate("nukkit.level.chunkUnloadError", e.toString()));
             logger.logException(e);
         }
 

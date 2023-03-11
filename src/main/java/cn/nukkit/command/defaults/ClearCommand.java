@@ -49,7 +49,7 @@ public class ClearCommand extends VanillaCommand {
                 if (parser.hasNext()) {
                     item = parser.parseItem();
                     if (parser.hasNext()) {
-                        maxCount = parser.parseInt();
+                        maxCount = parser.parseInt(-1);
                     }
                 }
             } else if (sender instanceof Player) {

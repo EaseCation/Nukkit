@@ -6,35 +6,35 @@ package cn.nukkit.lang;
  */
 public class TranslationContainer extends TextContainer implements Cloneable {
 
-    protected String[] params;
+    protected Object[] params;
 
     public TranslationContainer(String text) {
-        this(text, new String[]{});
+        this(text, new Object[0]);
     }
 
-    public TranslationContainer(String text, String params) {
+    public TranslationContainer(String text, Object params) {
         super(text);
-        this.setParameters(new String[]{params});
+        this.setParameters(new Object[]{params});
     }
 
-    public TranslationContainer(String text, String... params) {
+    public TranslationContainer(String text, Object... params) {
         super(text);
         this.setParameters(params);
     }
 
-    public String[] getParameters() {
+    public Object[] getParameters() {
         return params;
     }
 
-    public void setParameters(String[] params) {
+    public void setParameters(Object[] params) {
         this.params = params;
     }
 
-    public String getParameter(int i) {
-        return (i >= 0 && i < this.params.length) ? this.params[i] : null;
+    public Object getParameter(int i) {
+        return i >= 0 && i < this.params.length ? this.params[i] : null;
     }
 
-    public void setParameter(int i, String str) {
+    public void setParameter(int i, Object str) {
         if (i >= 0 && i < this.params.length) {
             this.params[i] = str;
         }

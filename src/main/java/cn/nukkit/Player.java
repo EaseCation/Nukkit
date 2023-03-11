@@ -42,6 +42,7 @@ import cn.nukkit.inventory.transaction.data.UseItemOnEntityData;
 import cn.nukkit.item.*;
 import cn.nukkit.item.enchantment.Enchantment;
 import cn.nukkit.item.food.Food;
+import cn.nukkit.lang.LiteralContainer;
 import cn.nukkit.lang.TextContainer;
 import cn.nukkit.lang.TranslationContainer;
 import cn.nukkit.level.*;
@@ -1064,9 +1065,7 @@ public class Player extends EntityHuman implements CommandSender, InventoryHolde
         this.sendPlayStatus(PlayStatusPacket.PLAYER_SPAWN);
 
         PlayerJoinEvent playerJoinEvent = new PlayerJoinEvent(this,
-                new TranslationContainer(TextFormat.YELLOW + "%multiplayer.player.joined", new String[]{
-                        this.getDisplayName()
-                })
+                new TranslationContainer(TextFormat.YELLOW + "%multiplayer.player.joined", this.getDisplayName())
         );
 
         this.server.getPluginManager().callEvent(playerJoinEvent);
@@ -1704,7 +1703,7 @@ public class Player extends EntityHuman implements CommandSender, InventoryHolde
                                 revert = ev.isRevert();
 
                                 if (revert) {
-                                    log.warn(this.getServer().getLanguage().translateString("nukkit.player.invalidMove", this.getName()));
+                                    log.warn(this.getServer().getLanguage().translate("nukkit.player.invalidMove", this.getName()));
                                 }
                             }
                         }
@@ -2304,15 +2303,15 @@ public class Player extends EntityHuman implements CommandSender, InventoryHolde
             this.setDataFlag(DATA_FLAGS, DATA_FLAG_HAS_COLLISION, false);
         }
 
-        log.info(this.getServer().getLanguage().translateString("nukkit.player.logIn",
+        log.info(this.getServer().getLanguage().translate("nukkit.player.logIn",
                 TextFormat.AQUA + this.username + TextFormat.WHITE,
                 this.getAddress(),
-                String.valueOf(this.getPort()),
-                String.valueOf(this.id),
+                this.getPort(),
+                this.id,
                 this.level.getName(),
-                String.valueOf(NukkitMath.round(this.x, 4)),
-                String.valueOf(NukkitMath.round(this.y, 4)),
-                String.valueOf(NukkitMath.round(this.z, 4))));
+                NukkitMath.round(this.x, 4),
+                NukkitMath.round(this.y, 4),
+                NukkitMath.round(this.z, 4)));
 
         if (this.isOp()) {
             this.setRemoveFormat(false);
@@ -2894,7 +2893,7 @@ public class Player extends EntityHuman implements CommandSender, InventoryHolde
 
                     if (targetEntity instanceof EntityItem || targetEntity instanceof EntityArrow || targetEntity instanceof EntityXPOrb) {
                         this.kick(PlayerKickEvent.Reason.INVALID_PVE, "Attempting to interact with an invalid entity");
-                        log.warn(this.getServer().getLanguage().translateString("nukkit.player.invalidEntity", this.getName()));
+                        log.warn(this.getServer().getLanguage().translate("nukkit.player.invalidEntity", this.getName()));
                         break;
                     }
 
@@ -3728,7 +3727,7 @@ public class Player extends EntityHuman implements CommandSender, InventoryHolde
                 PlayerChatEvent chatEvent = new PlayerChatEvent(this, msg);
                 this.server.getPluginManager().callEvent(chatEvent);
                 if (!chatEvent.isCancelled()) {
-                    this.server.broadcastMessage(this.getServer().getLanguage().translateString(chatEvent.getFormat(), new String[]{chatEvent.getPlayer().getDisplayName(), chatEvent.getMessage()}), chatEvent.getRecipients());
+                    this.server.broadcastMessage(this.getServer().getLanguage().translate(chatEvent.getFormat(), chatEvent.getPlayer().getDisplayName(), new LiteralContainer(chatEvent.getMessage())), chatEvent.getRecipients());
                 }
             }
         }
@@ -3804,7 +3803,7 @@ public class Player extends EntityHuman implements CommandSender, InventoryHolde
     public void sendMessage(String message) {
         TextPacket pk = new TextPacket();
         pk.type = TextPacket.TYPE_RAW;
-        pk.message = this.server.getLanguage().translateString(message);
+        pk.message = message;
         pk.setChannel(DataPacket.CHANNEL_TEXT);
         this.dataPacket(pk);
     }
@@ -3819,22 +3818,23 @@ public class Player extends EntityHuman implements CommandSender, InventoryHolde
     }
 
     public void sendTranslation(String message) {
-        this.sendTranslation(message, new String[0]);
+        this.sendTranslation(message, new Object[0]);
     }
 
-    public void sendTranslation(String message, String[] parameters) {
+    public void sendTranslation(String message, Object[] parameters) {
         TextPacket pk = new TextPacket();
         if (!this.server.isLanguageForced()) {
             pk.type = TextPacket.TYPE_TRANSLATION;
-            pk.message = this.server.getLanguage().translateString(message, parameters, "nukkit.");
+            pk.message = this.server.getLanguage().translateOnly("nukkit.", message, parameters);
             pk.isLocalized = true;
+            String[] params = new String[parameters.length];
             for (int i = 0; i < parameters.length; i++) {
-                parameters[i] = this.server.getLanguage().translateString(parameters[i], parameters, "nukkit.");
+                params[i] = this.server.getLanguage().translateOnly("nukkit.", String.valueOf(parameters[i]), parameters);
             }
-            pk.parameters = parameters;
+            pk.parameters = params;
         } else {
             pk.type = TextPacket.TYPE_RAW;
-            pk.message = this.server.getLanguage().translateString(message, parameters);
+            pk.message = this.server.getLanguage().translate(message, parameters);
         }
         pk.setChannel(DataPacket.CHANNEL_TEXT);
         this.dataPacket(pk);
@@ -3848,7 +3848,7 @@ public class Player extends EntityHuman implements CommandSender, InventoryHolde
         TextPacket pk = new TextPacket();
         pk.type = TextPacket.TYPE_CHAT;
         pk.primaryName = source;
-        pk.message = this.server.getLanguage().translateString(message);
+        pk.message = message;
         pk.setChannel(DataPacket.CHANNEL_TEXT);
         this.dataPacket(pk);
     }
@@ -4041,11 +4041,11 @@ public class Player extends EntityHuman implements CommandSender, InventoryHolde
 
             this.server.getPluginManager().unsubscribeFromPermission(Server.BROADCAST_CHANNEL_USERS, this);
             this.spawned = false;
-            log.info(this.getServer().getLanguage().translateString("nukkit.player.logOut",
+            log.info(this.getServer().getLanguage().translate("nukkit.player.logOut",
                     TextFormat.AQUA + (this.getName() == null ? "" : this.getName()) + TextFormat.WHITE,
                     this.getAddress(),
-                    String.valueOf(this.getPort()),
-                    this.getServer().getLanguage().translateString(reason)));
+                    this.getPort(),
+                    reason));
             this.windows.clear();
             this.windowIndex.clear();
             this.usedChunks = new Long2BooleanOpenHashMap();
@@ -4266,7 +4266,7 @@ public class Player extends EntityHuman implements CommandSender, InventoryHolde
         this.health = 0;
         this.scheduleUpdate();
 
-        PlayerDeathEvent ev = new PlayerDeathEvent(this, this.getDrops(), new TranslationContainer(message, params.toArray(new String[0])), this.getExperienceLevel());
+        PlayerDeathEvent ev = new PlayerDeathEvent(this, this.getDrops(), new TranslationContainer(message, params.toArray()), this.getExperienceLevel());
 
         ev.setKeepExperience(this.level.gameRules.getBoolean(GameRule.KEEP_INVENTORY));
         ev.setKeepInventory(ev.getKeepExperience());

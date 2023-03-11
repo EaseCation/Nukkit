@@ -44,6 +44,6 @@ public class PluginsCommand extends VanillaCommand {
             list.append(plugin.getDescription().getFullName());
         }
 
-        sender.sendMessage(new TranslationContainer("nukkit.command.plugins.success", String.valueOf(plugins.size()), list.toString()));
+        sender.sendMessage(new TranslationContainer("nukkit.command.plugins.success", plugins.size(), list.toString()));
     }
 }

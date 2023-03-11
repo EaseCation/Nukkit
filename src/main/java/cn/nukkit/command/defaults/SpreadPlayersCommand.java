@@ -8,7 +8,6 @@ import cn.nukkit.command.data.CommandParameter;
 import cn.nukkit.command.exceptions.CommandSyntaxException;
 import cn.nukkit.math.Vector2;
 import cn.nukkit.math.Vector3;
-import cn.nukkit.utils.TextFormat;
 
 import java.util.List;
 import java.util.concurrent.ThreadLocalRandom;
@@ -37,22 +36,9 @@ public class SpreadPlayersCommand extends VanillaCommand {
         CommandParser parser = new CommandParser(this, sender, args);
         try {
             Vector2 vec2 = parser.parseVector2();
-            float spreadDistance = (float) parser.parseDouble(); //TODO
-            float maxRange = (float) parser.parseDouble();
+            float spreadDistance = parser.parseFloat(0); //TODO
+            float maxRange = parser.parseFloat(spreadDistance + 1);
             List<Player> targets = parser.parseTargetPlayers();
-
-            if (spreadDistance < 0) {
-                sender.sendMessage(String.format(TextFormat.RED + "The number you have entered (%1$.2f) is too small, it must be at least %2$.2f", spreadDistance, 0f));
-                return false;
-            } else if (maxRange < spreadDistance) {
-                sender.sendMessage(String.format(TextFormat.RED + "The number you have entered (%1$.2f) is too small, it must be at least %2$.2f", maxRange, spreadDistance + 1));
-                return false;
-            }
-
-            if (targets.isEmpty()) {
-                sender.sendMessage(TextFormat.RED + "No targets matched selector");
-                return false;
-            }
 
             ThreadLocalRandom random = ThreadLocalRandom.current();
             for (Player target : targets) {

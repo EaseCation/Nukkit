@@ -69,7 +69,7 @@ public class Network {
         this.server = server;
     }
 
-    public static byte[] inflateRaw(byte[] data) throws IOException, DataFormatException {
+    public static byte[] inflateRaw(byte[] data, int maxSize) throws IOException, DataFormatException {
         Inflater inflater = INFLATER_RAW.get();
         try {
             inflater.setInput(data);
@@ -77,11 +77,17 @@ public class Network {
 
             FastByteArrayOutputStream bos = ThreadCache.fbaos.get();
             bos.reset();
+
             byte[] buf = BUFFER.get();
+            int length = 0;
             while (!inflater.finished()) {
                 int i = inflater.inflate(buf);
                 if (i == 0) {
                     throw new IOException("Could not decompress the data. Needs input: " + inflater.needsInput() + ", Needs Dictionary: " + inflater.needsDictionary());
+                }
+                length += i;
+                if (maxSize > 0 && length >= maxSize) {
+                    throw new IOException("Inflated data exceeds maximum size");
                 }
                 bos.write(buf, 0, i);
             }
@@ -170,7 +176,7 @@ public class Network {
 
                 interfaz.emergencyShutdown();
                 this.unregisterInterface(interfaz);
-                log.fatal(this.server.getLanguage().translateString("nukkit.server.networkError", new String[]{interfaz.getClass().getName(), Utils.getExceptionMessage(e)}));
+                log.fatal(this.server.getLanguage().translate("nukkit.server.networkError", interfaz.getClass().getName(), Utils.getExceptionMessage(e)));
             }
         }
     }
@@ -240,7 +246,7 @@ public class Network {
     public void processBatch(byte[] payload, Collection<DataPacket> packets) throws ProtocolException {
         byte[] data;
         try {
-            data = Zlib.inflate(payload, 2 * 1024 * 1024); // Max 2MB
+            data = Zlib.inflate(payload, 12 * 1024 * 1024); // Max 12MB
         } catch (Exception e) {
             log.debug("Exception while inflating batch packet", e);
             return;

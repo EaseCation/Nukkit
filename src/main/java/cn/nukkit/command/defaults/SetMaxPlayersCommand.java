@@ -5,6 +5,7 @@ import cn.nukkit.command.CommandSender;
 import cn.nukkit.command.data.CommandParamType;
 import cn.nukkit.command.data.CommandParameter;
 import cn.nukkit.command.exceptions.CommandSyntaxException;
+import cn.nukkit.lang.TranslationContainer;
 
 public class SetMaxPlayersCommand extends VanillaCommand {
 
@@ -35,7 +36,7 @@ public class SetMaxPlayersCommand extends VanillaCommand {
 
             sender.getServer().setMaxPlayers(maxPlayers);
 
-            sender.sendMessage(String.format("Set max players to %1$d.", maxPlayers));
+            broadcastCommandMessage(sender, new TranslationContainer("%commands.setmaxplayers.success", maxPlayers));
 
             if (lowerBound) {
                 sender.sendMessage("(Bound to minimum allowed connections)");
