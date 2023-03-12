@@ -239,7 +239,7 @@ class LevelProviderConverter {
             regionX = Integer.parseInt(matcher.group(1));
             regionZ = Integer.parseInt(matcher.group(2));
         } catch (Exception e) {
-            log.error("Skipped invalid region: {}", regionFile, e);
+            log.error("Skipped invalid region: {} in {}", regionFile, anvil.getPath(), e);
             return 0;
         }
 
@@ -247,7 +247,7 @@ class LevelProviderConverter {
         try {
             region = new RegionLoader(anvil, regionX, regionZ);
         } catch (Exception e) {
-            log.error("Skipped corrupted region: {}", regionFile, e);
+            log.error("Skipped corrupted region: {} in {}", regionFile, anvil.getPath(), e);
             return 0;
         }
 
@@ -262,7 +262,7 @@ class LevelProviderConverter {
                 try {
                     chunk = region.readChunk(x, z);
                 } catch (Exception e) {
-                    log.error("Skipped corrupted chunk: region {},{} pos {},{}", regionX, regionZ, x, z, e);
+                    log.error("Skipped corrupted chunk: region {},{} pos {},{} in {}", regionX, regionZ, x, z, anvil.getPath(), e);
                     continue;
                 }
 
@@ -298,7 +298,7 @@ class LevelProviderConverter {
                         }
                     }*/
                 } catch (Exception e) {
-                    log.error("chunk conversion failed: region {},{} pos {},{}", regionX, regionZ, x, z, e);
+                    log.error("chunk conversion failed: region {},{} pos {},{} in {}", regionX, regionZ, x, z, anvil.getPath(), e);
                     continue;
                 }
 
@@ -309,7 +309,7 @@ class LevelProviderConverter {
         try {
             region.close();
         } catch (Exception e) {
-            log.error("An error occurred while unloading region: {}", regionFile, e);
+            log.error("An error occurred while unloading region: {} in {}", regionFile, anvil.getPath(), e);
         }
         return totalChunks;
     }

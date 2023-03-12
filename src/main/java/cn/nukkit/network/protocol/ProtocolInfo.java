@@ -214,6 +214,8 @@ public interface ProtocolInfo {
     int GAME_TEST_RESULTS_PACKET = 0xc3; // 195 c
     int UPDATE_CLIENT_INPUT_LOCKS_PACKET = 0xc4; // 196 c
     int CLIENT_CHEAT_ABILITY_PACKET = 0xc5; // 197 s
+    int CAMERA_PRESETS_PACKET = 0xc6; // 198
+    int UNLOCKED_RECIPES_PACKET = 0xc7; // 199
 
     //NetEase Common Mod
     int PACKET_PY_RPC = 0xc8; // 200 cs
@@ -242,6 +244,8 @@ public interface ProtocolInfo {
 
     int BATCH_PACKET = 0xfe; // 254
 
+    int CAMERA_INSTRUCTION_PACKET = 0x12c; // 300
 
-    int COUNT = 0xff; // 255
+
+    int COUNT = 1024;
 }

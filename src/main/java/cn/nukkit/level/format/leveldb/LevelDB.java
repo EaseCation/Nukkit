@@ -108,7 +108,8 @@ public class LevelDB implements LevelProvider {
         }
 
         if (!this.levelData.contains("Generator")) {
-            this.levelData.putInt("Generator", Generator.TYPE_INFINITE);
+//            this.levelData.putInt("Generator", Generator.TYPE_INFINITE);
+            this.levelData.putInt("Generator", Generator.TYPE_FLAT);
         }
 
         if (!this.levelData.contains("generatorOptions")) {

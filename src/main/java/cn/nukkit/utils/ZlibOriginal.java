@@ -55,6 +55,12 @@ public class ZlibOriginal implements ZlibProvider {
 
     @Override
     public byte[] inflate(byte[] data, int maxSize) throws IOException {
+        if (data.length == 0) {
+            throw new IOException("no data");
+        }
+        if (maxSize > 0 && data.length >= maxSize) {
+            throw new IOException("Input data exceeds maximum size");
+        }
         Inflater inflater = new Inflater();
         inflater.setInput(data);
         inflater.finished();
@@ -66,6 +72,9 @@ public class ZlibOriginal implements ZlibProvider {
             int length = 0;
             while (!inflater.finished()) {
                 int i = inflater.inflate(buffer);
+                if (i == 0) {
+                    throw new IOException("Could not decompress the data. Needs input: " + inflater.needsInput() + ", Needs Dictionary: " + inflater.needsDictionary());
+                }
                 length += i;
                 if (maxSize > 0 && length >= maxSize) {
                     throw new IOException("Inflated data exceeds maximum size");

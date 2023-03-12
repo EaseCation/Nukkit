@@ -56,18 +56,18 @@ public class RegionLoader extends BaseRegionLoader {
                     table[0] = ++this.lastSector;
                     table[1] = 1;
                     this.locationTable.put(index, table);
-                    log.error("Corrupted chunk header detected");
+                    log.error("Corrupted chunk header detected: region {},{} pos {},{} in {}", this.x, this.z, x, z, levelProvider != null ? levelProvider.getPath() : "NULL");
                 }
                 return null;
             }
 
             if (length > (table[1] << 12)) {
-                log.error("Corrupted bigger chunk detected");
+                log.error("Corrupted bigger chunk detected: region {},{} pos {},{} in {}", this.x, this.z, x, z, levelProvider != null ? levelProvider.getPath() : "NULL");
                 table[1] = length >> 12;
                 this.locationTable.put(index, table);
                 this.writeLocationIndex(index);
             } else if (compression != COMPRESSION_ZLIB && compression != COMPRESSION_GZIP) {
-                log.error("Invalid compression type");
+                log.error("Invalid compression type: region {},{} pos {},{} in {}", this.x, this.z, x, z, levelProvider != null ? levelProvider.getPath() : "NULL");
                 return null;
             }
 
@@ -77,11 +77,11 @@ public class RegionLoader extends BaseRegionLoader {
             if (chunk != null) {
                 return chunk;
             } else {
-                log.error("Corrupted chunk detected at (" + x + ", " + z + ") in " + levelProvider.getName());
+                log.error("Corrupted chunk detected at region {},{} pos {},{} in {}", this.x, this.z, x, z, levelProvider != null ? levelProvider.getPath() : "NULL");
                 return null;
             }
         } catch (EOFException e) {
-            log.error("Your world is corrupt, because some code is bad and corrupted it. oops. ({}, {})", x, z);
+            log.error("Your world is corrupt, because some code is bad and corrupted it. oops. region {},{} pos {},{} in {}", this.x, this.z, x, z, levelProvider != null ? levelProvider.getPath() : "NULL");
             return null;
         }
     }

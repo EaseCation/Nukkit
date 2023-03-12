@@ -50,7 +50,7 @@ public class Network {
     public static final byte CHANNEL_TEXT = 7; //Chat and other text stuff
     public static final byte CHANNEL_END = 31;
 
-    private Class<? extends DataPacket>[] packetPool = new Class[1024];
+    private Class<? extends DataPacket>[] packetPool = new Class[ProtocolInfo.COUNT];
 
     private final Server server;
 
@@ -70,6 +70,12 @@ public class Network {
     }
 
     public static byte[] inflateRaw(byte[] data, int maxSize) throws IOException, DataFormatException {
+        if (data.length == 0) {
+            throw new IOException("no data");
+        }
+        if (maxSize > 0 && data.length >= maxSize) {
+            throw new IOException("Input data exceeds maximum size");
+        }
         Inflater inflater = INFLATER_RAW.get();
         try {
             inflater.setInput(data);
@@ -224,10 +230,6 @@ public class Network {
         this.packetPool[id] = clazz;
     }
 
-    public void registerPacket(byte id, Class<? extends DataPacket> clazz) {
-        this.registerPacket((int) id, clazz);
-    }
-
     public Server getServer() {
         return server;
     }
@@ -351,7 +353,7 @@ public class Network {
     }
 
     private void registerPackets() {
-        this.packetPool = new Class[1024];
+        this.packetPool = new Class[ProtocolInfo.COUNT];
 
 //        this.registerPacket(ProtocolInfo.ADD_ACTOR_PACKET, AddEntityPacket.class);
 //        this.registerPacket(ProtocolInfo.ADD_ITEM_ACTOR_PACKET, AddItemEntityPacket.class);
