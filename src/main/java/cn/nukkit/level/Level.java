@@ -259,8 +259,7 @@ public class Level implements ChunkManager, Metadatable {
 
     private final boolean useSections;
 
-    private Position temporalPosition;
-    private Vector3 temporalVector;
+    private final Vector3 temporalVector;
 
     public int sleepTicks = 0;
 
@@ -436,7 +435,6 @@ public class Level implements ChunkManager, Metadatable {
         this.chunkTickList.clear();
         this.clearChunksOnTick = this.server.getConfig("chunk-ticking.clear-tick-list", true);
         this.cacheChunks = this.server.getConfig("chunk-sending.cache-chunks", false);
-        this.temporalPosition = new Position(0, 0, 0, this);
         this.temporalVector = new Vector3(0, 0, 0);
         this.tickRate = 1;
 
@@ -552,7 +550,6 @@ public class Level implements ChunkManager, Metadatable {
         this.provider.close();
         this.provider = null;
         this.blockMetadata = null;
-        this.temporalPosition = null;
         this.server.getLevels().remove(this.levelId);
     }
 
@@ -1363,6 +1360,8 @@ public class Level implements ChunkManager, Metadatable {
         int blockTest = 0;
 
         if (!chunkTickList.isEmpty()) {
+            boolean skipRandomTick = server.getTicksPerSecondRaw() < 19; // 高负载时跳过随机刻
+
             ObjectIterator<Long2IntMap.Entry> iter = chunkTickList.long2IntEntrySet().iterator();
             while (iter.hasNext()) {
                 Long2IntMap.Entry entry = iter.next();
@@ -1372,27 +1371,30 @@ public class Level implements ChunkManager, Metadatable {
                     continue;
                 }
 
-                int loaders = entry.getIntValue();
-
                 int chunkX = getHashX(index);
                 int chunkZ = getHashZ(index);
 
-                FullChunk chunk;
-                if ((chunk = this.getChunk(chunkX, chunkZ, false)) == null) {
+                FullChunk chunk = this.getChunk(chunkX, chunkZ, false);
+                if (chunk == null) {
                     iter.remove();
                     continue;
-                } else if (loaders <= 0) {
+                }
+
+                int loaders = entry.getIntValue();
+                if (loaders <= 0) {
                     iter.remove();
                 }
 
                 for (Entity entity : chunk.getEntities().values()) {
                     entity.scheduleUpdate();
                 }
+
+                if (skipRandomTick) {
+                    continue;
+                }
+
                 int tickSpeed = gameRules.getInteger(GameRule.RANDOM_TICK_SPEED);
-
                 if (tickSpeed > 0) {
-                    //TODO: 高负载时自动降低随机刻速度
-
                     if (this.useSections) {
                         int highestNonAirSectionIndex = -1;
                         ChunkSection[] sections = ((Chunk) chunk).getSections();

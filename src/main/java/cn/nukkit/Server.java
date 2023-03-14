@@ -1473,6 +1473,10 @@ public class Server {
         return ((float) Math.round(this.maxTick * 100)) / 100;
     }
 
+    public float getTicksPerSecondRaw() {
+        return this.maxTick;
+    }
+
     public float getTicksPerSecondAverage() {
         float sum = 0;
         int count = this.tickAverage.length;
@@ -1484,6 +1488,10 @@ public class Server {
 
     public float getTickUsage() {
         return (float) NukkitMath.round(this.maxUse * 100, 2);
+    }
+
+    public float getTickUsageRaw() {
+        return this.maxUse;
     }
 
     public float getTickUsageAverage() {

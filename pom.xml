@@ -341,14 +341,14 @@
                     </execution>
                 </executions>
                 <configuration>
-                    <!--<filters>
+                    <filters>
                         <filter>
                             <artifact>*:*</artifact>
                             <excludes>
                                 <exclude>META-INF/versions/9/module-info.class</exclude>
                             </excludes>
                         </filter>
-                    </filters>-->
+                    </filters>
                     <transformers>
                         <transformer implementation="io.github.edwgiz.log4j.maven.plugins.shade.transformer.Log4j2PluginCacheFileTransformer"/>
                     </transformers>
