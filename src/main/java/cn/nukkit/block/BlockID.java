@@ -19,6 +19,7 @@ public interface BlockID {
     int GOLD_ORE = 14;
     int IRON_ORE = 15;
     int COAL_ORE = 16;
+    int OAK_LOG = 17; //TODO: 1.19.80: flattening
     int LOG = 17;
     int LEAVES = 18;
     int SPONGE = 19;
@@ -42,6 +43,7 @@ public interface BlockID {
      */
     @Deprecated
     int PISTONARMCOLLISION = 34;
+    int WHITE_WOOL = 35; //TODO: 1.19.70: flattening
     int WOOL = 35;
     int ELEMENT_0 = 36;
     int YELLOW_FLOWER = 37;
@@ -92,6 +94,7 @@ public interface BlockID {
     int CLAY = 82;
     int BLOCK_REEDS = 83;
     int JUKEBOX = 84;
+    int OAK_FENCE = 85; //TODO: 1.19.80: flattening
     int FENCE = 85;
     int PUMPKIN = 86;
     int NETHERRACK = 87;
@@ -179,6 +182,7 @@ public interface BlockID {
     int STAINED_HARDENED_CLAY = 159;
     int STAINED_GLASS_PANE = 160;
     int LEAVES2 = 161;
+    int ACACIA_LOG = 162; //TODO: 1.19.80: flattening
     int LOG2 = 162;
     int ACACIA_STAIRS = 163;
     int DARK_OAK_STAIRS = 164;
@@ -803,7 +807,58 @@ public interface BlockID {
     int CHISELED_BOOKSHELF = 781;
     int BAMBOO_BLOCK = 782;
     int STRIPPED_BAMBOO_BLOCK = 783;
+    int SUSPICIOUS_SAND = 784;
+    int CHERRY_BUTTON = 785;
+    int CHERRY_DOOR = 786;
+    int CHERRY_FENCE = 787;
+    int CHERRY_FENCE_GATE = 788;
+    int CHERRY_HANGING_SIGN = 789;
+    int STRIPPED_CHERRY_LOG = 790;
+    int CHERRY_LOG = 791;
+    int CHERRY_PLANKS = 792;
+    int CHERRY_PRESSURE_PLATE = 793;
+    int CHERRY_SLAB = 794;
+    int CHERRY_DOUBLE_SLAB = 795;
+    int CHERRY_STAIRS = 796;
+    int CHERRY_STANDING_SIGN = 797;
+    int CHERRY_TRAPDOOR = 798;
+    int CHERRY_WALL_SIGN = 799;
+    int STRIPPED_CHERRY_WOOD = 800;
+    int CHERRY_WOOD = 801;
+    int CHERRY_SAPLING = 802;
+    int CHERRY_LEAVES = 803;
+    int PINK_PETALS = 804;
+
+    int DECORATED_POT = 806;
+    int LIGHT_GRAY_WOOL = 807;
+    int GRAY_WOOL = 808;
+    int BLACK_WOOL = 809;
+    int BROWN_WOOL = 810;
+    int RED_WOOL = 811;
+    int ORANGE_WOOL = 812;
+    int YELLOW_WOOL = 813;
+    int LIME_WOOL = 814;
+    int GREEN_WOOL = 815;
+    int CYAN_WOOL = 816;
+    int LIGHT_BLUE_WOOL = 817;
+    int BLUE_WOOL = 818;
+    int PURPLE_WOOL = 819;
+    int MAGENTA_WOOL = 820;
+    int PINK_WOOL = 821;
+    int TORCHFLOWER_CROP = 822;
+    int TORCHFLOWER = 823;
+    int SPRUCE_LOG = 824;
+    int BIRCH_LOG = 825;
+    int JUNGLE_LOG = 826;
+    int DARK_OAK_LOG = 827;
+    int SUSPICIOUS_GRAVEL = 828;
+
+    int ACACIA_FENCE = 830;
+    int BIRCH_FENCE = 831;
+    int DARK_OAK_FENCE = 832;
+    int JUNGLE_FENCE = 833;
+    int SPRUCE_FENCE = 834;
 
 
-    int UNDEFINED = 784;
+    int UNDEFINED = 835;
 }

@@ -209,6 +209,7 @@ public abstract class Entity extends Location implements Metadatable {
     public static final int DATA_DEFINE_PROPERTIES = 123; // DEPRECATED
     public static final int DATA_UPDATE_PROPERTIES = 124; // DEPRECATED
     /**
+     * float.
      * @since 1.18.30
      */
     public static final int DATA_MOVEMENT_SOUND_DISTANCE_OFFSET = 128; // related to warden
@@ -366,7 +367,23 @@ public abstract class Entity extends Location implements Metadatable {
      * @since 1.19.50
      */
     public static final int DATA_FLAG_PUSH_TOWARDS_CLOSEST_SPACE = 109;
-    public static final int DATA_FLAG_UNDEFINED = 110;
+    /**
+     * @since 1.19.70
+     */
+    public static final int DATA_FLAG_SCENTING = 110;
+    /**
+     * @since 1.19.70
+     */
+    public static final int DATA_FLAG_RISING = 111;
+    /**
+     * @since 1.19.70
+     */
+    public static final int DATA_FLAG_HAPPY = 112;
+    /**
+     * @since 1.19.70
+     */
+    public static final int DATA_FLAG_SEARCHING = 113;
+    public static final int DATA_FLAG_UNDEFINED = 114;
 
     public static long entityCount = 2; // 0 invalid, 1 for Synapse
 

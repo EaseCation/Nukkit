@@ -22,7 +22,8 @@ public class ItemBoat extends Item {
     public static final int DARK_OAK_BOAT = 5;
     public static final int MANGROVE_BOAT = 6;
     public static final int BAMBOO_RAFT = 7;
-    public static final int UNDEFINED_BOAT = 8;
+    public static final int CHERRY_BOAT = 8;
+    public static final int UNDEFINED_BOAT = 9;
 
     public ItemBoat() {
         this(0, 1);

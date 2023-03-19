@@ -178,4 +178,10 @@ public class ListTag<T extends Tag> extends Tag {
         return false;
     }
 
+    public boolean equalsTags(ListTag<T> o) {
+        if (o == null) {
+            return false;
+        }
+        return list.equals(o.list);
+    }
 }

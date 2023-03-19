@@ -43,6 +43,7 @@ public interface GlobalBlockPaletteInterface {
         V1_19_20(544, false),
         V1_19_50(560, false),
         V1_19_60(567, false),
+        V1_19_70(575, false),
         ;
 
         private static final StaticVersion[] VALUES = StaticVersion.values();

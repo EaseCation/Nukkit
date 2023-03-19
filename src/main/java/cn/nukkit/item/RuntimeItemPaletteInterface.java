@@ -19,10 +19,10 @@ public interface RuntimeItemPaletteInterface {
     @ToString
     class Entry {
 
-        public String name;
-        public int id;
-        public Integer oldId;
-        public Integer oldData;
+        public final String name;
+        public final int id;
+        public final Integer oldId;
+        public final Integer oldData;
 
         public Entry(String name, int id, Integer oldId, Integer oldData) {
             this.name = name;

@@ -50,7 +50,9 @@ public interface BlockEntityType {
     int SCULK_SHRIEKER = 49;
     int HANGING_SIGN = 50;
     int CHISELED_BOOKSHELF = 51;
+    int BRUSHABLE_BLOCK = 52;
+    int DECORATED_POT = 53;
 
 
-    int UNDEFINED = 52;
+    int UNDEFINED = 54;
 }

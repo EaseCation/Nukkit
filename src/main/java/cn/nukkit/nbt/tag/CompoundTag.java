@@ -284,6 +284,13 @@ public class CompoundTag extends Tag implements Cloneable {
         return false;
     }
 
+    public boolean equalsTags(CompoundTag o) {
+        if (o == null) {
+            return false;
+        }
+        return tags.entrySet().equals(o.tags.entrySet());
+    }
+
     /**
      * Check existence of NBT tag
      *

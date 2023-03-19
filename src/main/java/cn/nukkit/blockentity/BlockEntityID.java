@@ -49,4 +49,6 @@ public interface BlockEntityID {
     String SCULK_SHRIEKER = "SculkShrieker";
     String HANGING_SIGN = "HangingSign";
     String CHISELED_BOOKSHELF = "ChiseledBookshelf";
+    String BRUSHABLE_BLOCK = "BrushableBlock";
+    String DECORATED_POT = "DecoratedPot";
 }

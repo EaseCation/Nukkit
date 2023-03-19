@@ -2,6 +2,7 @@ package cn.nukkit.item;
 
 import cn.nukkit.block.BlockID;
 
+// This file is generated automatically, do not edit it manually.
 public interface ItemBlockID {
     int AIR = 0;
     int STONE = 1;
@@ -20,6 +21,7 @@ public interface ItemBlockID {
     int GOLD_ORE = 14;
     int IRON_ORE = 15;
     int COAL_ORE = 16;
+    int OAK_LOG = 17;
     int LOG = 17;
     int LEAVES = 18;
     int SPONGE = 19;
@@ -43,6 +45,7 @@ public interface ItemBlockID {
      */
     @Deprecated
     int PISTONARMCOLLISION = 34;
+    int WHITE_WOOL = 35;
     int WOOL = 35;
     int ELEMENT_0 = 36;
     int YELLOW_FLOWER = 37;
@@ -93,6 +96,7 @@ public interface ItemBlockID {
     int CLAY = 82;
     int BLOCK_REEDS = 83;
     int JUKEBOX = 84;
+    int OAK_FENCE = 85;
     int FENCE = 85;
     int PUMPKIN = 86;
     int NETHERRACK = 87;
@@ -180,6 +184,7 @@ public interface ItemBlockID {
     int STAINED_HARDENED_CLAY = 159;
     int STAINED_GLASS_PANE = 160;
     int LEAVES2 = 161;
+    int ACACIA_LOG = 162;
     int LOG2 = 162;
     int ACACIA_STAIRS = 163;
     int DARK_OAK_STAIRS = 164;
@@ -804,6 +809,57 @@ public interface ItemBlockID {
     int CHISELED_BOOKSHELF = 0xff - BlockID.CHISELED_BOOKSHELF;
     int BAMBOO_BLOCK = 0xff - BlockID.BAMBOO_BLOCK;
     int STRIPPED_BAMBOO_BLOCK = 0xff - BlockID.STRIPPED_BAMBOO_BLOCK;
+    int SUSPICIOUS_SAND = 0xff - BlockID.SUSPICIOUS_SAND;
+    int CHERRY_BUTTON = 0xff - BlockID.CHERRY_BUTTON;
+    int CHERRY_DOOR = 0xff - BlockID.CHERRY_DOOR;
+    int CHERRY_FENCE = 0xff - BlockID.CHERRY_FENCE;
+    int CHERRY_FENCE_GATE = 0xff - BlockID.CHERRY_FENCE_GATE;
+    int CHERRY_HANGING_SIGN = 0xff - BlockID.CHERRY_HANGING_SIGN;
+    int STRIPPED_CHERRY_LOG = 0xff - BlockID.STRIPPED_CHERRY_LOG;
+    int CHERRY_LOG = 0xff - BlockID.CHERRY_LOG;
+    int CHERRY_PLANKS = 0xff - BlockID.CHERRY_PLANKS;
+    int CHERRY_PRESSURE_PLATE = 0xff - BlockID.CHERRY_PRESSURE_PLATE;
+    int CHERRY_SLAB = 0xff - BlockID.CHERRY_SLAB;
+    int CHERRY_DOUBLE_SLAB = 0xff - BlockID.CHERRY_DOUBLE_SLAB;
+    int CHERRY_STAIRS = 0xff - BlockID.CHERRY_STAIRS;
+    int CHERRY_STANDING_SIGN = 0xff - BlockID.CHERRY_STANDING_SIGN;
+    int CHERRY_TRAPDOOR = 0xff - BlockID.CHERRY_TRAPDOOR;
+    int CHERRY_WALL_SIGN = 0xff - BlockID.CHERRY_WALL_SIGN;
+    int STRIPPED_CHERRY_WOOD = 0xff - BlockID.STRIPPED_CHERRY_WOOD;
+    int CHERRY_WOOD = 0xff - BlockID.CHERRY_WOOD;
+    int CHERRY_SAPLING = 0xff - BlockID.CHERRY_SAPLING;
+    int CHERRY_LEAVES = 0xff - BlockID.CHERRY_LEAVES;
+    int PINK_PETALS = 0xff - BlockID.PINK_PETALS;
+
+    int DECORATED_POT = 0xff - BlockID.DECORATED_POT;
+    int LIGHT_GRAY_WOOL = 0xff - BlockID.LIGHT_GRAY_WOOL;
+    int GRAY_WOOL = 0xff - BlockID.GRAY_WOOL;
+    int BLACK_WOOL = 0xff - BlockID.BLACK_WOOL;
+    int BROWN_WOOL = 0xff - BlockID.BROWN_WOOL;
+    int RED_WOOL = 0xff - BlockID.RED_WOOL;
+    int ORANGE_WOOL = 0xff - BlockID.ORANGE_WOOL;
+    int YELLOW_WOOL = 0xff - BlockID.YELLOW_WOOL;
+    int LIME_WOOL = 0xff - BlockID.LIME_WOOL;
+    int GREEN_WOOL = 0xff - BlockID.GREEN_WOOL;
+    int CYAN_WOOL = 0xff - BlockID.CYAN_WOOL;
+    int LIGHT_BLUE_WOOL = 0xff - BlockID.LIGHT_BLUE_WOOL;
+    int BLUE_WOOL = 0xff - BlockID.BLUE_WOOL;
+    int PURPLE_WOOL = 0xff - BlockID.PURPLE_WOOL;
+    int MAGENTA_WOOL = 0xff - BlockID.MAGENTA_WOOL;
+    int PINK_WOOL = 0xff - BlockID.PINK_WOOL;
+    int TORCHFLOWER_CROP = 0xff - BlockID.TORCHFLOWER_CROP;
+    int TORCHFLOWER = 0xff - BlockID.TORCHFLOWER;
+    int SPRUCE_LOG = 0xff - BlockID.SPRUCE_LOG;
+    int BIRCH_LOG = 0xff - BlockID.BIRCH_LOG;
+    int JUNGLE_LOG = 0xff - BlockID.JUNGLE_LOG;
+    int DARK_OAK_LOG = 0xff - BlockID.DARK_OAK_LOG;
+    int SUSPICIOUS_GRAVEL = 0xff - BlockID.SUSPICIOUS_GRAVEL;
+
+    int ACACIA_FENCE = 0xff - BlockID.ACACIA_FENCE;
+    int BIRCH_FENCE = 0xff - BlockID.BIRCH_FENCE;
+    int DARK_OAK_FENCE = 0xff - BlockID.DARK_OAK_FENCE;
+    int JUNGLE_FENCE = 0xff - BlockID.JUNGLE_FENCE;
+    int SPRUCE_FENCE = 0xff - BlockID.SPRUCE_FENCE;
 
 
     int UNDEFINED = 0xff - BlockID.UNDEFINED;

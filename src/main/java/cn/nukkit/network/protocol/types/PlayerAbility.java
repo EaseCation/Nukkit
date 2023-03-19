@@ -18,7 +18,12 @@ public enum PlayerAbility {
     WALK_SPEED,
     MUTED,
     WORLD_BUILDER,
-    NO_CLIP;
+    NO_CLIP,
+    /**
+     * @since 1.19.70
+     */
+    PRIVILEGED_BUILDER,
+    ;
 
     private static final PlayerAbility[] VALUES = values();
 

@@ -6,4 +6,5 @@ public enum ItemDescriptorType {
     MOLANG,
     ITEM_TAG,
     DEFERRED, // name id + meta
+    COMPLEX_ALIAS,
 }

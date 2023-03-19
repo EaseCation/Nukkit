@@ -78,6 +78,7 @@ public class AdventureSettings implements Cloneable {
         INVULNERABLE(-1, false),
         INSTABUILD(-1, false),
         LIGHTNING(-1, false),
+        PRIVILEGED_BUILDER(-1, false),
         ;
 
         private final int id;

@@ -458,6 +458,10 @@ public class LevelSoundEventPacket extends DataPacket {
 	public static final int SOUND_PICKUP = 459;
 	public static final int SOUND_INSERT_ENCHANTED = 460;
 	public static final int SOUND_PICKUP_ENCHANTED = 461;
+	public static final int SOUND_BRUSH = 462;
+	public static final int SOUND_BRUSH_COMPLETED = 463;
+	public static final int SOUND_SHATTER_POT = 464;
+	public static final int SOUND_BREAK_POT = 465;
 
 	// 插入的 ID 由跨版本转换处理: 1000 + ID
 	public static final int SOUND_MOB_ARMOR_STAND_PLACE = 1000 + 38;

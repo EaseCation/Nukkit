@@ -245,6 +245,8 @@ public interface ProtocolInfo {
     int BATCH_PACKET = 0xfe; // 254
 
     int CAMERA_INSTRUCTION_PACKET = 0x12c; // 300
+    int COMPRESSED_BIOME_DEFINITION_LIST_PACKET = 0x12d; // 301
+    int TRIM_DATA_PACKET = 0x12e; // 302
 
 
     int COUNT = 1024;
