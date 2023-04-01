@@ -3317,11 +3317,13 @@ public class Player extends EntityHuman implements CommandSender, InventoryHolde
                                             Item oldItem = i.clone();
                                             //TODO: Implement adventure mode checks
                                             if ((i = this.level.useItemOn(blockVector.asVector3(), i, face, useItemData.clickPos.x, useItemData.clickPos.y, useItemData.clickPos.z, this)) != null) {
-                                                if (!i.equals(oldItem) || i.getCount() != oldItem.getCount()) {
-                                                    inventory.setItemInHand(i);
-                                                    inventory.sendHeldItem(this.getViewers().values());
+                                                if (i.getId() != 10000) {  // Hack
+                                                    if (!i.equals(oldItem) || i.getCount() != oldItem.getCount()) {
+                                                        inventory.setItemInHand(i);
+                                                        inventory.sendHeldItem(this.getViewers().values());
+                                                    }
+                                                    break packetswitch;
                                                 }
-                                                break packetswitch;
                                             }
                                         }
                                     }
