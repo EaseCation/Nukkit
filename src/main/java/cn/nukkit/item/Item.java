@@ -1111,4 +1111,8 @@ public class Item implements Cloneable, ItemID {
     public boolean isBoneMeal() {
         return false;
     }
+
+    public boolean isPotion() {
+        return false;
+    }
 }

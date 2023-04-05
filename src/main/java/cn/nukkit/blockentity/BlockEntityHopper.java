@@ -390,6 +390,9 @@ public class BlockEntityHopper extends BlockEntitySpawnable implements Inventory
             }
 
             return pushedItem;
+        } else if (be instanceof BlockEntityBrewingStand) {
+            //TODO: brewing inputs -- 04/05/2023
+            return false;
         } else {
             Inventory inventory = ((InventoryHolder) be).getInventory();
 

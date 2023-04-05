@@ -41,6 +41,11 @@ public class ItemPotionLingering extends ProjectileItem {
         nbt.putCompound("Item", NBTIO.putItemHelper(this));
     }
 
+    @Override
+    public boolean isPotion() {
+        return true;
+    }
+
     public int getPotionId() {
         return getDamage();
     }

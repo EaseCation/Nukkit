@@ -29,6 +29,10 @@ public abstract class MixRecipe implements Recipe {
         return output.clone();
     }
 
+    public Item getResultUnsafe() {
+        return output;
+    }
+
     @Override
     public RecipeTag getTag() {
         throw new UnsupportedOperationException();

@@ -52,6 +52,11 @@ public class ItemPotion extends Item {
         return true;
     }
 
+    @Override
+    public boolean isPotion() {
+        return true;
+    }
+
     public int getPotionId() {
         return getDamage();
     }
