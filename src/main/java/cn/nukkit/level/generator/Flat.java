@@ -159,8 +159,9 @@ public class Flat extends Generator {
     public void generateChunk(int chunkX, int chunkZ) {
         if (!this.init) {
             init = true;
-            if (this.options.containsKey("preset") && !"".equals(this.options.get("preset"))) {
-                this.parsePreset((String) this.options.get("preset"), chunkX, chunkZ);
+            Object presetOpt = this.options.get("preset");
+            if (presetOpt != null && !"".equals(presetOpt)) {
+                this.parsePreset((String) presetOpt, chunkX, chunkZ);
             } else {
                 this.parsePreset(this.preset, chunkX, chunkZ);
             }

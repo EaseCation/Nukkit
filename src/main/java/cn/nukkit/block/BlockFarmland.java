@@ -108,6 +108,11 @@ public class BlockFarmland extends BlockSolidMeta {
     }
 
     @Override
+    public Item pick(boolean addUserData) {
+        return Item.get(FARMLAND);
+    }
+
+    @Override
     public BlockColor getColor() {
         return BlockColor.DIRT_BLOCK_COLOR;
     }

@@ -221,9 +221,7 @@ public class EntityHuman extends EntityHumanType {
 
     @Override
     public void spawnTo(Player player) {
-        if (this != player && !this.hasSpawned.containsKey(player.getLoaderId())) {
-            this.hasSpawned.put(player.getLoaderId(), player);
-
+        if (this != player && this.hasSpawned.putIfAbsent(player.getLoaderId(), player) == null) {
             if (!this.skin.isValid()) {
                 throw new IllegalStateException(this.getClass().getSimpleName() + " must have a valid skin set");
             }
@@ -277,7 +275,7 @@ public class EntityHuman extends EntityHumanType {
         }
     }
 
-    @Override
+    /*@Override
     public void despawnFrom(Player player) {
         if (this.hasSpawned.containsKey(player.getLoaderId())) {
 
@@ -289,7 +287,7 @@ public class EntityHuman extends EntityHumanType {
             // 不再移除实体皮肤，因为后续不用再发实体皮肤了
             // if (this instanceof Player) this.server.removePlayerListData(this.getUniqueId(), new Player[]{player});
         }
-    }
+    }*/
 
     @Override
     public void close() {

@@ -267,7 +267,7 @@ public abstract class BaseFullChunk implements FullChunk, ChunkManager {
     @Override
     public int getBlockExtraData(int layer, int x, int y, int z) {
         int index = Level.chunkBlockHash(x, y, z);
-        if (this.extraData != null && this.extraData.containsKey(index)) {
+        if (this.extraData != null) {
             return this.extraData.get(index);
         }
 
@@ -358,8 +358,8 @@ public abstract class BaseFullChunk implements FullChunk, ChunkManager {
         }
         this.tiles.put(blockEntity.getId(), blockEntity);
         int index = ((blockEntity.getFloorZ() & 0x0f) << 12) | ((blockEntity.getFloorX() & 0x0f) << 8) | (blockEntity.getFloorY() & 0xff);
-        if (this.tileList.containsKey(index) && !this.tileList.get(index).equals(blockEntity)) {
-            BlockEntity entity = this.tileList.get(index);
+        BlockEntity entity = this.tileList.get(index);
+        if (entity != null && !entity.equals(blockEntity)) {
             this.tiles.remove(entity.getId());
             entity.close();
         }

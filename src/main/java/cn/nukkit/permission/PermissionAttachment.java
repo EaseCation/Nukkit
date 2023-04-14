@@ -76,7 +76,6 @@ public class PermissionAttachment {
             if (this.permissions.getBoolean(name) == value) {
                 return;
             }
-            this.permissions.removeBoolean(name);
         }
         this.permissions.put(name, value);
         this.permissible.recalculatePermissions();

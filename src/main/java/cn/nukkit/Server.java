@@ -47,6 +47,7 @@ import cn.nukkit.network.Network;
 import cn.nukkit.network.RakNetInterface;
 import cn.nukkit.network.SourceInterface;
 import cn.nukkit.network.protocol.BatchPacket;
+import cn.nukkit.network.protocol.BatchPacket.Track;
 import cn.nukkit.network.protocol.DataPacket;
 import cn.nukkit.network.protocol.PlayerListPacket;
 import cn.nukkit.network.protocol.ProtocolInfo;
@@ -632,6 +633,8 @@ public class Server {
             return;
         }
 
+        Track[] tracks = new Track[packets.length];
+
         byte[][] payload = new byte[packets.length * 2][];
         for (int i = 0; i < packets.length; i++) {
             DataPacket p = packets[i];
@@ -640,6 +643,8 @@ public class Server {
             byte[] buf = p.getBuffer();
             payload[idx] = Binary.writeUnsignedVarInt(buf.length);
             payload[idx + 1] = buf;
+
+            tracks[i] = new Track(p.pid(), p.getCount());
         }
         byte[] data;
         data = Binary.appendBytes(payload);
@@ -652,10 +657,10 @@ public class Server {
         }
 
         if (!forceSync && this.networkCompressionAsync) {
-            this.getScheduler().scheduleAsyncTask(new CompressBatchedTask(data, targets, this.networkCompressionLevel));
+            this.getScheduler().scheduleAsyncTask(new CompressBatchedTask(data, targets, this.networkCompressionLevel, tracks));
         } else {
             try {
-                this.broadcastPacketsCallback(Zlib.deflate(data, this.networkCompressionLevel), targets);
+                this.broadcastPacketsCallback(Zlib.deflate(data, this.networkCompressionLevel), targets, tracks);
             } catch (Exception e) {
                 throw new RuntimeException(e);
             }
@@ -664,12 +669,18 @@ public class Server {
     }
 
     public void broadcastPacketsCallback(byte[] data, List<InetSocketAddress> targets) {
+        broadcastPacketsCallback(data, targets, null);
+    }
+
+    public void broadcastPacketsCallback(byte[] data, List<InetSocketAddress> targets, Track[] tracks) {
         BatchPacket pk = new BatchPacket();
         pk.payload = data;
+        pk.tracks = tracks;
 
         for (InetSocketAddress i : targets) {
-            if (this.players.containsKey(i)) {
-                this.players.get(i).dataPacket(pk);
+            Player player = this.players.get(i);
+            if (player != null) {
+                player.dataPacket(pk);
             }
         }
     }
@@ -950,9 +961,7 @@ public class Server {
     }
 
     public void removeOnlinePlayer(Player player) {
-        if (this.playerList.containsKey(player.getUniqueId())) {
-            this.playerList.remove(player.getUniqueId());
-
+        if (this.playerList.remove(player.getUniqueId()) != null) {
             PlayerListPacket pk = new PlayerListPacket();
             pk.type = PlayerListPacket.TYPE_REMOVE;
             pk.entries = new PlayerListPacket.Entry[]{new PlayerListPacket.Entry(player.getUniqueId())};
@@ -1674,10 +1683,7 @@ public class Server {
     }
 
     public Level getLevel(int levelId) {
-        if (this.levels.containsKey(levelId)) {
-            return this.levels.get(levelId);
-        }
-        return null;
+        return this.levels.get(levelId);
     }
 
     public Level getLevelByName(String name) {
@@ -1809,9 +1815,7 @@ public class Server {
             return false;
         }
 
-        if (!options.getOptions().containsKey("preset")) {
-            options.getOptions().put("preset", this.getPropertyString("generator-settings", ""));
-        }
+        options.getOptions().computeIfAbsent("preset", key -> this.getPropertyString("generator-settings", ""));
 
         if (options.getGenerator() == null) {
             options.setGenerator(Generators.getGenerator(this.getLevelType()));

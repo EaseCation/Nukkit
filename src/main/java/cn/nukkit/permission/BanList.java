@@ -85,8 +85,7 @@ public class BanList {
 
     public void remove(String name) {
         name = name.toLowerCase();
-        if (this.list.containsKey(name)) {
-            this.list.remove(name);
+        if (this.list.remove(name) != null) {
             this.save();
         }
     }

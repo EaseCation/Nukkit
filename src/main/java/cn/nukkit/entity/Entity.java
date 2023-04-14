@@ -844,9 +844,8 @@ public abstract class Entity extends Location implements Metadatable {
     }
 
     public void removeEffect(int effectId) {
-        if (this.effects.containsKey(effectId)) {
-            Effect effect = this.effects.get(effectId);
-            this.effects.remove(effectId);
+        Effect effect = this.effects.remove(effectId);
+        if (effect != null) {
             effect.remove(this);
 
             this.recalculateEffectColor();
@@ -1323,11 +1322,10 @@ public abstract class Entity extends Location implements Metadatable {
     }
 
     public void despawnFrom(Player player) {
-        if (this.hasSpawned.containsKey(player.getLoaderId())) {
+        if (this.hasSpawned.remove(player.getLoaderId()) != null) {
             RemoveEntityPacket pk = new RemoveEntityPacket();
             pk.eid = this.getId();
             player.dataPacket(pk);
-            this.hasSpawned.remove(player.getLoaderId());
         }
     }
 

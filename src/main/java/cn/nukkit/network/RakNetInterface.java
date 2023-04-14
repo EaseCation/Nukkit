@@ -278,7 +278,7 @@ public class RakNetInterface implements RakNetServerListener, AdvancedSourceInte
         public void onEncapsulated(EncapsulatedPacket packet) {
             ByteBuf buffer = packet.getBuffer();
             short packetId = buffer.readUnsignedByte();
-            if (packetId == 0xfe) {
+            if (packetId == ProtocolInfo.BATCH_PACKET) {
                 byte[] packetBuffer = new byte[buffer.readableBytes()];
                 buffer.readBytes(packetBuffer);
 
@@ -341,7 +341,7 @@ public class RakNetInterface implements RakNetServerListener, AdvancedSourceInte
 
         private void sendPacket(byte[] payload) {
             ByteBuf byteBuf = ByteBufAllocator.DEFAULT.ioBuffer(1 + payload.length);
-            byteBuf.writeByte(0xfe);
+            byteBuf.writeByte(ProtocolInfo.BATCH_PACKET);
             byteBuf.writeBytes(payload);
             this.raknet.send(byteBuf);
         }

@@ -29,8 +29,9 @@ public abstract class MetadataStore {
 
     public List<MetadataValue> getMetadata(Object subject, String metadataKey) {
         String key = this.disambiguate((Metadatable) subject, metadataKey);
-        if (this.metadataMap.containsKey(key)) {
-            Collection values = ((Map) this.metadataMap.get(key)).values();
+        Map<Plugin, MetadataValue> map = this.metadataMap.get(key);
+        if (map != null) {
+            Collection<MetadataValue> values = map.values();
             return Collections.unmodifiableList(new ArrayList<>(values));
         }
         return Collections.emptyList();
@@ -45,7 +46,7 @@ public abstract class MetadataStore {
             throw new PluginException("Plugin cannot be null");
         }
         String key = this.disambiguate((Metadatable) subject, metadataKey);
-        Map entry = this.metadataMap.get(key);
+        Map<Plugin, MetadataValue> entry = this.metadataMap.get(key);
         if (entry == null) {
             return;
         }
@@ -59,9 +60,10 @@ public abstract class MetadataStore {
         if (owningPlugin == null) {
             throw new PluginException("Plugin cannot be null");
         }
-        for (Map value : this.metadataMap.values()) {
-            if (value.containsKey(owningPlugin)) {
-                ((MetadataValue) value.get(owningPlugin)).invalidate();
+        for (Map<Plugin, MetadataValue> value : this.metadataMap.values()) {
+            MetadataValue metadata = value.get(owningPlugin);
+            if (metadata != null) {
+                metadata.invalidate();
             }
         }
     }

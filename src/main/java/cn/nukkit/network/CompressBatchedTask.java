@@ -1,6 +1,7 @@
 package cn.nukkit.network;
 
 import cn.nukkit.Server;
+import cn.nukkit.network.protocol.BatchPacket.Track;
 import cn.nukkit.scheduler.AsyncTask;
 import cn.nukkit.utils.Zlib;
 
@@ -13,34 +14,56 @@ import java.util.List;
  */
 public class CompressBatchedTask extends AsyncTask<Void> {
 
-    public int level;
-    public byte[] data;
-    public byte[] finalData;
-    public int channel;
-    public List<InetSocketAddress> targets;
-    public boolean zlibRaw;
+    private final int level;
+    private byte[] data;
+    private byte[] finalData;
+    private final int channel;
+    private final List<InetSocketAddress> targets;
+    private final Track[] tracks;
+    private final boolean zlibRaw;
 
     public CompressBatchedTask(byte[] data, List<InetSocketAddress> targets) {
-        this(data, targets, 7);
+        this(data, targets, null);
+    }
+
+    public CompressBatchedTask(byte[] data, List<InetSocketAddress> targets, Track[] tracks) {
+        this(data, targets, 7, tracks);
     }
 
     public CompressBatchedTask(byte[] data, List<InetSocketAddress> targets, int level) {
-        this(data, targets, level, 0);
+        this(data, targets, level, null);
+    }
+
+    public CompressBatchedTask(byte[] data, List<InetSocketAddress> targets, int level, Track[] tracks) {
+        this(data, targets, level, 0, tracks);
     }
 
     public CompressBatchedTask(byte[] data, List<InetSocketAddress> targets, int level, int channel) {
-        this(data, targets, level, channel, false);
+        this(data, targets, level, channel, null);
+    }
+
+    public CompressBatchedTask(byte[] data, List<InetSocketAddress> targets, int level, int channel, Track[] tracks) {
+        this(data, targets, level, channel, tracks, false);
     }
 
     public CompressBatchedTask(byte[] data, List<InetSocketAddress> targets, int level, boolean zlibRaw) {
-        this(data, targets, level, 0, zlibRaw);
+        this(data, targets, level, null, zlibRaw);
+    }
+
+    public CompressBatchedTask(byte[] data, List<InetSocketAddress> targets, int level, Track[] tracks, boolean zlibRaw) {
+        this(data, targets, level, 0, tracks, zlibRaw);
     }
 
     public CompressBatchedTask(byte[] data, List<InetSocketAddress> targets, int level, int channel, boolean zlibRaw) {
+        this(data, targets, level, channel, null, zlibRaw);
+    }
+
+    public CompressBatchedTask(byte[] data, List<InetSocketAddress> targets, int level, int channel, Track[] tracks, boolean zlibRaw) {
         this.data = data;
         this.targets = targets;
         this.level = level;
         this.channel = channel;
+        this.tracks = tracks;
         this.zlibRaw = zlibRaw;
     }
 
@@ -57,6 +80,6 @@ public class CompressBatchedTask extends AsyncTask<Void> {
 
     @Override
     public void onCompletion(Server server) {
-        server.broadcastPacketsCallback(this.finalData, this.targets);
+        server.broadcastPacketsCallback(this.finalData, this.targets, tracks);
     }
 }

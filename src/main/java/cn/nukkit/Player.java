@@ -62,6 +62,7 @@ import cn.nukkit.network.Network;
 import cn.nukkit.network.PacketViolationReason;
 import cn.nukkit.network.SourceInterface;
 import cn.nukkit.network.protocol.*;
+import cn.nukkit.network.protocol.BatchPacket.Track;
 import cn.nukkit.network.protocol.types.ContainerIds;
 import cn.nukkit.network.protocol.types.NetworkInventoryAction;
 import cn.nukkit.permission.PermissibleBase;
@@ -1650,7 +1651,7 @@ public class Player extends EntityHuman implements CommandSender, InventoryHolde
         }
         double distanceSquared = newPos.distanceSquared(this);
         boolean revert = false;
-        if ((distanceSquared / ((double) (tickDiff * tickDiff))) > 100) {
+        if ((distanceSquared / ((double) (tickDiff * tickDiff))) > 225) {
             revert = true;
         } else {
             if (this.chunk == null || !this.chunk.isGenerated()) {
@@ -2842,7 +2843,6 @@ public class Player extends EntityHuman implements CommandSender, InventoryHolde
                     break;
                 case ProtocolInfo.MOB_ARMOR_EQUIPMENT_PACKET:
                     break;
-
                 case ProtocolInfo.MODAL_FORM_RESPONSE_PACKET:
                     if (!this.spawned || !this.isAlive()) {
                         break;
@@ -2850,16 +2850,19 @@ public class Player extends EntityHuman implements CommandSender, InventoryHolde
 
                     ModalFormResponsePacket modalFormPacket = (ModalFormResponsePacket) packet;
 
-                    if (formWindows.containsKey(modalFormPacket.formId)) {
-                        FormWindow window = formWindows.get(modalFormPacket.formId);
+                    FormWindow window = formWindows.get(modalFormPacket.formId);
+                    if (window != null) {
                         window.setResponse(modalFormPacket.data.trim());
 
                         PlayerFormRespondedEvent event = new PlayerFormRespondedEvent(this, modalFormPacket.formId, window);
                         getServer().getPluginManager().callEvent(event);
 
                         formWindows.remove(modalFormPacket.formId);
-                    } else if (serverSettings.containsKey(modalFormPacket.formId)) {
-                        FormWindow window = serverSettings.get(modalFormPacket.formId);
+                        break;
+                    }
+
+                    window = serverSettings.get(modalFormPacket.formId);
+                    if (window != null) {
                         window.setResponse(modalFormPacket.data.trim());
 
                         PlayerSettingsRespondedEvent event = new PlayerSettingsRespondedEvent(this, modalFormPacket.formId, window);
@@ -2869,9 +2872,7 @@ public class Player extends EntityHuman implements CommandSender, InventoryHolde
                         if (!event.isCancelled() && window instanceof FormWindowCustom)
                             ((FormWindowCustom) window).setElementsFromResponse();
                     }
-
                     break;
-
                 case ProtocolInfo.INTERACT_PACKET:
                     if (!this.spawned || !this.isAlive()) {
                         break;
@@ -2927,12 +2928,12 @@ public class Player extends EntityHuman implements CommandSender, InventoryHolde
                     break;
                 case ProtocolInfo.BLOCK_PICK_REQUEST_PACKET:
                     BlockPickRequestPacket pickRequestPacket = (BlockPickRequestPacket) packet;
-                    Block block = this.level.getBlock(pickRequestPacket.x, pickRequestPacket.y, pickRequestPacket.z, false);
-                    if (block.distanceSquared(this) > 1000) {
+                    if (this.distanceSquared(pickRequestPacket.x, pickRequestPacket.y, pickRequestPacket.z) > 1000) {
                         this.getServer().getLogger().debug(this.getName() + ": Block pick request for a block too far away");
                         return;
                     }
-                    item = block.toItem(true);
+                    Block block = this.level.getBlock(pickRequestPacket.x, pickRequestPacket.y, pickRequestPacket.z, false);
+                    item = block.pick(pickRequestPacket.addUserData);
 
                     if (pickRequestPacket.addUserData) {
                         BlockEntity blockEntity = this.getLevel().getBlockEntity(new Vector3(pickRequestPacket.x, pickRequestPacket.y, pickRequestPacket.z));
@@ -2949,7 +2950,7 @@ public class Player extends EntityHuman implements CommandSender, InventoryHolde
 
                     PlayerBlockPickEvent pickEvent = new PlayerBlockPickEvent(this, block, item);
                     if (!this.isCreative()) {
-                        log.debug("Got block-pick request from " + this.getName() + " when not in creative mode (gamemode " + this.getGamemode() + ")");
+//                        log.debug("Got block-pick request from " + this.getName() + " when not in creative mode (gamemode " + this.getGamemode() + ")");
                         pickEvent.setCancelled();
                     }
 
@@ -3095,8 +3096,9 @@ public class Player extends EntityHuman implements CommandSender, InventoryHolde
                     this.craftingType = CRAFTING_SMALL;
                     this.resetCraftingGridType();
 
-                    if (this.windowIndex.containsKey(containerClosePacket.windowId)) {
-                        this.server.getPluginManager().callEvent(new InventoryCloseEvent(this.windowIndex.get(containerClosePacket.windowId), this));
+                    Inventory windowInventory = this.windowIndex.get(containerClosePacket.windowId);
+                    if (windowInventory != null) {
+                        this.server.getPluginManager().callEvent(new InventoryCloseEvent(windowInventory, this));
                         this.removeWindow(this.windowIndex.get(containerClosePacket.windowId));
                     } else {
                         this.windowIndex.remove(containerClosePacket.windowId);
@@ -3639,10 +3641,10 @@ public class Player extends EntityHuman implements CommandSender, InventoryHolde
                     this.getServer().getPluginManager().callEvent(settingsRequestEvent);
 
                     if (!settingsRequestEvent.isCancelled()) {
-                        settingsRequestEvent.getSettings().forEach((id, window) -> {
+                        settingsRequestEvent.getSettings().forEach((id, formWindow) -> {
                             ServerSettingsResponsePacket re = new ServerSettingsResponsePacket();
                             re.formId = id;
-                            re.data = window.getJSONData();
+                            re.data = formWindow.getJSONData();
                             this.dataPacket(re);
                         });
                     }
@@ -4639,7 +4641,7 @@ public class Player extends EntityHuman implements CommandSender, InventoryHolde
             int chunkZ = (int) this.teleportPosition.z >> 4;
 
             long centerChunkIndex = Level.chunkHash(chunkX, chunkZ);
-            if (!this.usedChunks.containsKey(centerChunkIndex) || !this.usedChunks.get(centerChunkIndex)) {
+            if (!this.usedChunks.get(centerChunkIndex)) {
                 if (this.teleportChunkLoaded) {
                     this.lastImmobile = this.isImmobile();
                 }
@@ -4651,7 +4653,7 @@ public class Player extends EntityHuman implements CommandSender, InventoryHolde
             for (int X = -1; X <= 1; ++X) {
                 for (int Z = -1; Z <= 1; ++Z) {
                     long index = Level.chunkHash(chunkX + X, chunkZ + Z);
-                    if (!this.usedChunks.containsKey(index) || !this.usedChunks.get(index)) {
+                    if (!this.usedChunks.get(index)) {
                         return false;
                     }
                 }
@@ -4873,8 +4875,8 @@ public class Player extends EntityHuman implements CommandSender, InventoryHolde
      */
     @Deprecated
     public void updateBossBar(String text, int length, long bossBarId) {
-        if (this.dummyBossBars.containsKey(bossBarId)) {
-            DummyBossBar bossBar = this.dummyBossBars.get(bossBarId);
+        DummyBossBar bossBar = this.dummyBossBars.get(bossBarId);
+        if (bossBar != null) {
             bossBar.setText(text);
             bossBar.setLength(length);
         }
@@ -4886,15 +4888,16 @@ public class Player extends EntityHuman implements CommandSender, InventoryHolde
      * @param bossBarId The BossBar ID
      */
     public void removeBossBar(long bossBarId) {
-        if (this.dummyBossBars.containsKey(bossBarId)) {
-            this.dummyBossBars.get(bossBarId).destroy();
-            this.dummyBossBars.remove(bossBarId);
+        DummyBossBar bossBar = this.dummyBossBars.remove(bossBarId);
+        if (bossBar != null) {
+            bossBar.destroy();
         }
     }
 
     public int getWindowId(Inventory inventory) {
-        if (this.windows.containsKey(inventory)) {
-            return this.windows.get(inventory);
+        Integer id = this.windows.get(inventory);
+        if (id != null) {
+            return id;
         }
 
         return -1;
@@ -4917,8 +4920,9 @@ public class Player extends EntityHuman implements CommandSender, InventoryHolde
     }
 
     public int addWindow(Inventory inventory, Integer forceId, boolean isPermanent, boolean alwaysOpen) {
-        if (this.windows.containsKey(inventory)) {
-            return this.windows.get(inventory);
+        Integer index = this.windows.get(inventory);
+        if (index != null) {
+            return index;
         }
 
         int cnt;
@@ -4949,10 +4953,9 @@ public class Player extends EntityHuman implements CommandSender, InventoryHolde
 
     public void removeWindow(Inventory inventory) {
         inventory.close(this);
-        if (this.windows.containsKey(inventory)) {
-            int id = this.windows.get(inventory);
-            this.windows.remove(this.windowIndex.get(id));
-            this.windowIndex.remove(id);
+        Integer id = this.windows.get(inventory);
+        if (id != null) {
+            this.windows.remove(this.windowIndex.remove(id));
         }
     }
 
@@ -5135,6 +5138,7 @@ public class Player extends EntityHuman implements CommandSender, InventoryHolde
         } catch (Exception e) {
             throw new RuntimeException(e);
         }
+        batch.tracks = new Track[]{new Track(pk.pid(), pk.getCount())};
         return batch;
     }
 

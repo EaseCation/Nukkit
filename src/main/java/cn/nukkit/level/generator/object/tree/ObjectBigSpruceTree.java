@@ -46,4 +46,39 @@ public class ObjectBigSpruceTree extends ObjectSpruceTree {
             }
         }
     }
+
+    @Override
+    public void placeLeaves(ChunkManager level, int topSize, int lRadius, int x, int y, int z, NukkitRandom random) {
+        int radius = random.nextBoundedInt(2);
+        int maxR = 1;
+        int minR = 0;
+
+        for (int yy = 0; yy <= topSize; ++yy) {
+            int yyy = y + this.treeHeight - yy;
+
+            for (int xx = x - radius; xx <= x + radius + 1; ++xx) {
+                int xOff = Math.abs(xx - x);
+                for (int zz = z - radius; zz <= z + radius + 1; ++zz) {
+                    int zOff = Math.abs(zz - z);
+                    if (radius > 0 && (xx < x && xOff == radius || xx > x && xOff == radius + 1) && (zz < z && zOff == radius || zz > z && zOff == radius + 1)) {
+                        continue;
+                    }
+
+                    if (!Block.solid[level.getBlockIdAt(0, xx, yyy, zz)]) {
+                        level.setBlockAt(0, xx, yyy, zz, this.getLeafBlock(), this.getType());
+                    }
+                }
+            }
+
+            if (radius >= maxR) {
+                radius = minR;
+                minR = 1;
+                if (++maxR > lRadius) {
+                    maxR = lRadius;
+                }
+            } else {
+                ++radius;
+            }
+        }
+    }
 }

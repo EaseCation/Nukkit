@@ -4,6 +4,7 @@ import cn.nukkit.Server;
 import cn.nukkit.item.Item;
 import cn.nukkit.item.ItemID;
 import cn.nukkit.network.protocol.BatchPacket;
+import cn.nukkit.network.protocol.BatchPacket.Track;
 import cn.nukkit.network.protocol.CraftingDataPacket;
 import cn.nukkit.utils.BinaryStream;
 import cn.nukkit.utils.Config;
@@ -274,6 +275,10 @@ public class CraftingManager {
 
         packet = pk.compress(Deflater.BEST_COMPRESSION);
         packetRaw = pk.compress(Deflater.BEST_COMPRESSION, true);
+
+        Track[] tracks = new Track[]{new Track(pk.pid(), pk.getCount())};
+        packet.tracks = tracks;
+        packetRaw.tracks = tracks;
     }
 
     public Collection<Recipe> getRecipes() {

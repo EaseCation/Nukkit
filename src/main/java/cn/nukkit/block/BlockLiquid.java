@@ -31,7 +31,11 @@ public abstract class BlockLiquid extends BlockTransparentMeta {
     private final byte BLOCKED = -1;
     public int adjacentSources = 0;
     protected Vector3 flowVector = null;
-    private final Long2ByteMap flowCostVisited = new Long2ByteOpenHashMap();
+    private final Long2ByteMap flowCostVisited = new Long2ByteOpenHashMap() {
+        {
+            defaultReturnValue(Byte.MIN_VALUE);
+        }
+    };
 
     protected BlockLiquid(int meta) {
         super(meta);
@@ -377,18 +381,21 @@ public abstract class BlockLiquid extends BlockTransparentMeta {
             }
 
             long hash = Level.blockHash(x, y, z);
-            if (!this.flowCostVisited.containsKey(hash)) {
+            byte status = this.flowCostVisited.get(hash);
+            if (status == Byte.MIN_VALUE) {
                 Block blockSide = this.level.getBlock(x, y, z);
                 if (!this.canFlowInto(blockSide) || this.level.getExtraBlock(x, y, z).isLiquid()) {
-                    this.flowCostVisited.put(hash, BLOCKED);
+                    status = BLOCKED;
+                    this.flowCostVisited.put(hash, status);
                 } else if (isLiquidContainer(this.level.getBlock(x, y - 1, z))) {
-                    this.flowCostVisited.put(hash, CAN_FLOW_DOWN);
+                    status = CAN_FLOW_DOWN;
+                    this.flowCostVisited.put(hash, status);
                 } else {
-                    this.flowCostVisited.put(hash, CAN_FLOW);
+                    status = CAN_FLOW;
+                    this.flowCostVisited.put(hash, status);
                 }
             }
 
-            byte status = this.flowCostVisited.get(hash);
             if (status == BLOCKED) {
                 continue;
             } else if (status == CAN_FLOW_DOWN) {

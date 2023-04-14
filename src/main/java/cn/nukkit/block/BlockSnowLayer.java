@@ -135,6 +135,11 @@ public class BlockSnowLayer extends BlockFallable {
     }
 
     @Override
+    public Item pick(boolean addUserData) {
+        return Item.get(SNOW_LAYER);
+    }
+
+    @Override
     public Item[] getDrops(Item item) {
         if (item.isShovel() && item.getTier() >= ItemTool.TIER_WOODEN) {
             Item drop = this.toItem(true);

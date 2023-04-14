@@ -1,8 +1,5 @@
 package cn.nukkit.nbt.stream;
 
-import it.unimi.dsi.fastutil.ints.IntArrayList;
-import it.unimi.dsi.fastutil.ints.IntList;
-
 import java.io.FilterOutputStream;
 import java.io.IOException;
 import java.io.InterruptedIOException;
@@ -33,7 +30,7 @@ public class PGZIPOutputStream extends FilterOutputStream {
 
     // todo: remove after block guessing is implemented
     // array list that contains the block sizes
-    private IntList blockSizes = new IntArrayList();
+//    private final IntList blockSizes = new IntArrayList();
 
     private int level = Deflater.BEST_SPEED;
     private int strategy = Deflater.DEFAULT_STRATEGY;
@@ -174,7 +171,7 @@ public class PGZIPOutputStream extends FilterOutputStream {
             // It's an ordered queue. This MUST be the same element as above.
             emitQueue.remove();
             byte[] toWrite = future.get();
-            blockSizes.add(toWrite.length);  // todo: remove after block guessing is implemented
+//            blockSizes.add(toWrite.length);  // todo: remove after block guessing is implemented
             out.write(toWrite);
         }
     }
@@ -190,7 +187,7 @@ public class PGZIPOutputStream extends FilterOutputStream {
                 // LOG.info("Waiting for taskCount=" + emitQueue.size() + " -> " + taskCountAllowed);
                 Future<byte[]> future = emitQueue.remove(); // Valid because emitQueue.size() > 0
                 byte[] toWrite = future.get();  // Blocks until this task is done.
-                blockSizes.add(toWrite.length);  // todo: remove after block guessing is implemented
+//                blockSizes.add(toWrite.length);  // todo: remove after block guessing is implemented
                 out.write(toWrite);
             }
             // We may have achieved more opportunistically available blocks

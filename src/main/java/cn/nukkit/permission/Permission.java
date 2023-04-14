@@ -160,8 +160,9 @@ public class Permission {
     public static Permission loadPermission(String name, Map<String, Object> data, String defaultValue, List<Permission> output) {
         String desc = null;
         Object2BooleanMap<String> children = new Object2BooleanOpenHashMap<>();
-        if (data.containsKey("default")) {
-            String value = Permission.getByName(String.valueOf(data.get("default")));
+        Object def = data.get("default");
+        if (def != null) {
+            String value = Permission.getByName(String.valueOf(def));
             if (value != null) {
                 defaultValue = value;
             } else {
@@ -169,8 +170,9 @@ public class Permission {
             }
         }
 
-        if (data.containsKey("children")) {
-            if (data.get("children") instanceof Map) {
+        Object child = data.get("children");
+        if (child != null) {
+            if (child instanceof Map) {
                 for (Map.Entry<String, Object> entry : ((Map<String, Object>) data.get("children")).entrySet()) {
                     String k = entry.getKey();
                     Object v = entry.getValue();
@@ -187,8 +189,9 @@ public class Permission {
             }
         }
 
-        if (data.containsKey("description")) {
-            desc = (String) data.get("description");
+        Object description = data.get("description");
+        if (description != null) {
+            desc = (String) description;
         }
 
         return new Permission(name, desc, defaultValue, children);

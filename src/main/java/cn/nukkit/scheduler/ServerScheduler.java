@@ -194,9 +194,10 @@ public class ServerScheduler {
     }
 
     public void cancelTask(int taskId) {
-        if (taskMap.containsKey(taskId)) {
+        TaskHandler taskHandler = taskMap.remove(taskId);
+        if (taskHandler != null) {
             try {
-                taskMap.remove(taskId).cancel();
+                taskHandler.cancel();
             } catch (RuntimeException ex) {
                 log.fatal("Exception while invoking onCancel", ex);
             }

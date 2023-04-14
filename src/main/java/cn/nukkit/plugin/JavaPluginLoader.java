@@ -178,12 +178,10 @@ public class JavaPluginLoader implements PluginLoader {
     }
 
     void setClass(final String name, final Class<?> clazz) {
-        if (!classes.containsKey(name)) {
-            classes.put(name, clazz);
-        }
+        classes.putIfAbsent(name, clazz);
     }
 
     private void removeClass(String name) {
-        Class<?> clazz = classes.remove(name);
+        classes.remove(name);
     }
 }
