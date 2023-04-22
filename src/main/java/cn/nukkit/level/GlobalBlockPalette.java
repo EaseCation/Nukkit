@@ -170,11 +170,12 @@ public class GlobalBlockPalette implements GlobalBlockPaletteInterface {
     }
 
     public static int getBlockIdByName(String blockName) {
-        int blockId = stringToId.getInt(blockName);
-        if (blockId == -1) {
+//        int blockId = stringToId.getInt(blockName);
+//        if (blockId == -1) {
 //            throw new NoSuchElementException("Unmapped block name: " + blockName);
-            return -1;
-        }
+//            return -1;
+//        }
+//        return blockId;
         return stringToId.getInt(blockName);
     }
 

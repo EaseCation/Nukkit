@@ -175,6 +175,11 @@ public class BlockCakeCandle extends BlockCake {
         }
     }
 
+    @Override
+    public boolean isCandleCake() {
+        return true;
+    }
+
     protected int getCandleBlockId() {
         return CANDLE;
     }

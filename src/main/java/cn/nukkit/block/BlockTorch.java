@@ -16,6 +16,13 @@ public class BlockTorch extends BlockFlowable implements Faceable {
     public static final int FACING_DIRECTION_MASK = 0b111;
     public static final int FACING_DIRECTION_BITS = 3;
 
+    public static final int FACING_DIRECTION_UNKNOWN = 0;
+    public static final int FACING_DIRECTION_WEST = 1;
+    public static final int FACING_DIRECTION_EAST = 2;
+    public static final int FACING_DIRECTION_NORTH = 3;
+    public static final int FACING_DIRECTION_SOUTH = 4;
+    public static final int FACING_DIRECTION_TOP = 5;
+
     private static final BlockFace[] CHECK_SIDE = {
             BlockFace.SOUTH, BlockFace.WEST, BlockFace.NORTH, BlockFace.EAST, BlockFace.DOWN, // ordered
     };

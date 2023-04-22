@@ -18,6 +18,9 @@ import cn.nukkit.utils.BlockColor;
 import java.util.Map;
 
 public class BlockBrewingStand extends BlockTransparentMeta {
+    public static final int HAS_SLOT_0 = 0b1;
+    public static final int HAS_SLOT_1 = 0b10;
+    public static final int HAS_SLOT_2 = 0b100;
 
     public BlockBrewingStand() {
         this(0);

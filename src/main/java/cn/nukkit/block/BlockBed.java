@@ -25,6 +25,10 @@ import cn.nukkit.utils.Faceable;
  */
 public class BlockBed extends BlockTransparentMeta implements Faceable {
 
+    public static final int DIRECTION_MASK = 0b11;
+    public static final int OCCUPIED_BIT = 0b100;
+    public static final int HEAD_PIECE_BIT = 0b1000;
+
     public BlockBed() {
         this(0);
     }

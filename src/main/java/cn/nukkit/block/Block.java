@@ -1177,6 +1177,10 @@ public abstract class Block extends Position implements Metadatable, Cloneable, 
         return false;
     }
 
+    public boolean isCandleCake() {
+        return false;
+    }
+
     public boolean isCandle() {
         return false;
     }

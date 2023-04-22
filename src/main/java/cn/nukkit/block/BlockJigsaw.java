@@ -16,6 +16,7 @@ import javax.annotation.Nullable;
 public class BlockJigsaw extends BlockSolidMeta implements Faceable {
 
     public static final int FACING_DIRECTION_MASK = 0b111;
+    public static final int FACING_DIRECTION_BITS = 3;
     public static final int ROTATION_MASK = 0b11000;
 
     public BlockJigsaw() {
