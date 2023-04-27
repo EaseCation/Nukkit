@@ -2,6 +2,7 @@ package cn.nukkit.utils;
 
 import cn.nukkit.entity.Entity;
 import cn.nukkit.entity.data.*;
+import cn.nukkit.entity.item.EntityBoat;
 import cn.nukkit.item.Item;
 import cn.nukkit.math.BlockVector3;
 import cn.nukkit.math.NukkitMath;
@@ -12,7 +13,6 @@ import it.unimi.dsi.fastutil.io.FastByteArrayInputStream;
 
 import java.io.IOException;
 import java.nio.ByteOrder;
-import java.nio.charset.StandardCharsets;
 import java.util.Arrays;
 import java.util.UUID;
 
@@ -104,10 +104,18 @@ public class Binary {
         Int2ObjectMap<EntityData> map = metadata.getMap();
         map.remove(Entity.DATA_NUKKIT_FLAGS);
         stream.putUnsignedVarInt(map.size());
-        for (int id : map.keySet()) {
-            EntityData d = map.get(id);
+
+        int buoyancyDataId = -1;
+        StringEntityData buoyancyData = null;
+
+        for (Int2ObjectMap.Entry<EntityData> entry : map.int2ObjectEntrySet()) {
+            int id = entry.getIntKey();
+            EntityData d = entry.getValue();
+
+            int mark = stream.getCount();
             stream.putUnsignedVarInt(id);
             stream.putUnsignedVarInt(d.getType());
+
             switch (d.getType()) {
                 case Entity.DATA_TYPE_BYTE:
                     stream.putByte(((ByteEntityData) d).getData().byteValue());
@@ -122,9 +130,18 @@ public class Binary {
                     stream.putLFloat(((FloatEntityData) d).getData());
                     break;
                 case Entity.DATA_TYPE_STRING:
-                    String s = ((StringEntityData) d).getData();
-                    stream.putUnsignedVarInt(s.getBytes(StandardCharsets.UTF_8).length);
-                    stream.put(s.getBytes(StandardCharsets.UTF_8));
+                    StringEntityData data = (StringEntityData) d;
+                    String s = data.getData();
+
+                    if (EntityBoat.BUOYANCY_DATA.equals(s)) {
+                        buoyancyDataId = id;
+                        buoyancyData = data;
+
+                        stream.setCount(mark);
+                        break;
+                    }
+
+                    stream.putString(s);
                     break;
                 case Entity.DATA_TYPE_SLOT:
                     if (d instanceof SlotEntityData) {
@@ -141,21 +158,26 @@ public class Binary {
                     break;
                 case Entity.DATA_TYPE_POS:
                     IntPositionEntityData pos = (IntPositionEntityData) d;
-                    stream.putVarInt(pos.x);
-                    stream.putVarInt(pos.y);
-                    stream.putVarInt(pos.z);
+                    stream.putSignedBlockPosition(pos.x, pos.y, pos.z);
                     break;
                 case Entity.DATA_TYPE_LONG:
                     stream.putVarLong(((LongEntityData) d).getData());
                     break;
                 case Entity.DATA_TYPE_VECTOR3F:
                     Vector3fEntityData v3data = (Vector3fEntityData) d;
-                    stream.putLFloat(v3data.x);
-                    stream.putLFloat(v3data.y);
-                    stream.putLFloat(v3data.z);
+                    stream.putVector3f(v3data.x, v3data.y, v3data.z);
                     break;
             }
         }
+
+        if (buoyancyData != null) {
+            //TODO HACK: put IS_BUOYANT before BUOYANCY_DATA to make the stupid client handler happy -- 04/27/2023
+            stream.putUnsignedVarInt(buoyancyDataId);
+            stream.putUnsignedVarInt(buoyancyData.getType());
+
+            stream.putString(buoyancyData.getData());
+        }
+
         return stream.getBuffer();
     }
 
