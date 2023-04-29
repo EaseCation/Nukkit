@@ -51,6 +51,10 @@ public final class SharedConstants {
 
     public static final boolean NEXT_UPDATE_EVENT_POOLING_PREVIEW = !PRODUCTION_ENVIRONMENT && false;
 
+    // temporary
+
+    public static final boolean COMMAND_POSTFIX_PARAMETER_CRASH_FIXED = false;
+
     private SharedConstants() {
         throw new IllegalStateException();
     }

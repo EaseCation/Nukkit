@@ -8,6 +8,8 @@ import cn.nukkit.command.data.CommandParameter;
 import cn.nukkit.lang.TranslationContainer;
 import cn.nukkit.utils.TextFormat;
 
+import static cn.nukkit.SharedConstants.*;
+
 /**
  * Created by Snake1999 on 2016/1/22.
  * Package cn.nukkit.command.defaults in project nukkit.
@@ -21,6 +23,9 @@ public class XpCommand extends Command {
                 CommandParameter.newType("amount", CommandParamType.INT),
                 CommandParameter.newType("player", true, CommandParamType.TARGET)
         });
+        if (!COMMAND_POSTFIX_PARAMETER_CRASH_FIXED) {
+            return;
+        }
         this.commandParameters.put("level", new CommandParameter[]{
                 CommandParameter.newPostfix("amount", "l"),
                 CommandParameter.newType("player", true, CommandParamType.TARGET)
