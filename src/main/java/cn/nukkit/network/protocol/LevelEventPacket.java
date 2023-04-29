@@ -52,6 +52,7 @@ public class LevelEventPacket extends DataPacket {
     public static final int EVENT_SOUND_POINTED_DRIPSTONE_LAND = 1064;
     public static final int EVENT_SOUND_DYE_USED = 1065;
     public static final int EVENT_SOUND_INK_SAC_USED = 1066;
+    public static final int EVENT_SOUND_AMETHYST_RESONATE = 1067;
 
     public static final int EVENT_PARTICLE_SHOOT = 2000;
     public static final int EVENT_PARTICLE_DESTROY = 2001;
@@ -122,10 +123,12 @@ public class LevelEventPacket extends DataPacket {
     public static final int EVENT_BLOCK_START_BREAK = 3600;
     public static final int EVENT_BLOCK_STOP_BREAK = 3601;
     public static final int EVENT_BLOCK_UPDATE_BREAK = 3602;
-    /**
-     * @since 1.19.60
-     */
-    public static final int EVENT_PLAYERS_SLEEPING_NEW = 3603;
+    public static final int EVENT_PARTICLE_PUNCH_BLOCK_DOWN = 3603;
+    public static final int EVENT_PARTICLE_PUNCH_BLOCK_UP = 3604;
+    public static final int EVENT_PARTICLE_PUNCH_BLOCK_NORTH = 3605;
+    public static final int EVENT_PARTICLE_PUNCH_BLOCK_SOUTH = 3606;
+    public static final int EVENT_PARTICLE_PUNCH_BLOCK_WEST = 3607;
+    public static final int EVENT_PARTICLE_PUNCH_BLOCK_EAST = 3608;
 
     public static final int EVENT_SET_DATA = 4000;
 

@@ -3114,12 +3114,11 @@ public class Player extends EntityHuman implements CommandSender, InventoryHolde
                     this.craftingType = CRAFTING_SMALL;
                     this.resetCraftingGridType();
 
-                    pos = new Vector3(blockEntityDataPacket.x, blockEntityDataPacket.y, blockEntityDataPacket.z);
-                    if (pos.distanceSquared(this) > 10000) {
+                    if (this.distanceSquared(blockEntityDataPacket.x, blockEntityDataPacket.y, blockEntityDataPacket.z) > 10000) {
                         break;
                     }
 
-                    BlockEntity t = this.level.getBlockEntity(pos);
+                    BlockEntity t = this.level.getBlockEntity(blockEntityDataPacket.x, blockEntityDataPacket.y, blockEntityDataPacket.z);
                     if (t instanceof BlockEntitySpawnable) {
                         CompoundTag nbt;
                         try {
@@ -5680,5 +5679,18 @@ public class Player extends EntityHuman implements CommandSender, InventoryHolde
         }
 
         violation--;
+    }
+
+    /**
+     * @since 1.19.80
+     */
+    public void openSignEditor(BlockVector3 pos) {
+        openSignEditor(pos, true);
+    }
+
+    /**
+     * @since 1.19.80
+     */
+    public void openSignEditor(BlockVector3 pos, boolean front) {
     }
 }

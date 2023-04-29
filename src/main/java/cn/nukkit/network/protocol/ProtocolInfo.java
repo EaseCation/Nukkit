@@ -189,7 +189,7 @@ public interface ProtocolInfo {
     int EDU_URI_RESOURCE_PACKET = 0xaa; // 170 c
     int CREATE_PHOTO_PACKET = 0xab; // 171 s
     int UPDATE_SUB_CHUNK_BLOCKS_PACKET = 0xac; // 172 c
-    int PHOTO_INFO_REQUEST_PACKET = 0xad; // 173 s
+    int PHOTO_INFO_REQUEST_PACKET = 0xad; // 173 s D
     int SUB_CHUNK_PACKET = 0xae; // 174 c
     int SUB_CHUNK_REQUEST_PACKET = 0xaf; // 175 s
     int PLAYER_START_ITEM_COOLDOWN_PACKET = 0xb0; // 176 c
@@ -214,8 +214,8 @@ public interface ProtocolInfo {
     int GAME_TEST_RESULTS_PACKET = 0xc3; // 195 c
     int UPDATE_CLIENT_INPUT_LOCKS_PACKET = 0xc4; // 196 c
     int CLIENT_CHEAT_ABILITY_PACKET = 0xc5; // 197 s
-    int CAMERA_PRESETS_PACKET = 0xc6; // 198
-    int UNLOCKED_RECIPES_PACKET = 0xc7; // 199
+    int CAMERA_PRESETS_PACKET = 0xc6; // 198 c
+    int UNLOCKED_RECIPES_PACKET = 0xc7; // 199 c
 
     //NetEase Common Mod
     int PACKET_PY_RPC = 0xc8; // 200 cs
@@ -244,9 +244,10 @@ public interface ProtocolInfo {
 
     int BATCH_PACKET = 0xfe; // 254
 
-    int CAMERA_INSTRUCTION_PACKET = 0x12c; // 300
-    int COMPRESSED_BIOME_DEFINITION_LIST_PACKET = 0x12d; // 301
-    int TRIM_DATA_PACKET = 0x12e; // 302
+    int CAMERA_INSTRUCTION_PACKET = 0x12c; // 300 c
+    int COMPRESSED_BIOME_DEFINITION_LIST_PACKET = 0x12d; // 301 c
+    int TRIM_DATA_PACKET = 0x12e; // 302 c
+    int OPEN_SIGN_PACKET = 0x12f; // 303 c
 
 
     int COUNT = 1024;

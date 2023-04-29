@@ -10,4 +10,5 @@ public enum RecipeType {
     SHAPELESS_CHEMISTRY,
     SHAPED_CHEMISTRY,
     SMITHING_TRANSFORM,
+    SMITHING_TRIM,
 }

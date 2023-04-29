@@ -52,7 +52,8 @@ public interface BlockEntityType {
     int CHISELED_BOOKSHELF = 51;
     int BRUSHABLE_BLOCK = 52;
     int DECORATED_POT = 53;
+    int CALIBRATED_SCULK_SENSOR = 54;
 
 
-    int UNDEFINED = 54;
+    int UNDEFINED = 55;
 }

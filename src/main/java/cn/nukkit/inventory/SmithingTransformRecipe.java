@@ -10,18 +10,20 @@ public class SmithingTransformRecipe implements Recipe {
     private final String recipeId;
 
     private final Item output;
+    private final Item template;
     private final Item input;
     private final Item addition;
 
     private final RecipeTag tag;
 
-    public SmithingTransformRecipe(Item result, Item input, Item addition, RecipeTag tag) {
-        this(null, result, input, addition, tag);
+    public SmithingTransformRecipe(Item result, Item template, Item input, Item addition, RecipeTag tag) {
+        this(null, result, template, input, addition, tag);
     }
 
-    public SmithingTransformRecipe(String recipeId, Item result, Item input, Item addition, RecipeTag tag) {
+    public SmithingTransformRecipe(String recipeId, Item result, Item template, Item input, Item addition, RecipeTag tag) {
         this.recipeId = recipeId != null ? recipeId : UUID.randomUUID().toString();
         this.output = result.clone();
+        this.template = template.clone();
         this.input = input.clone();
         this.addition = addition.clone();
         this.tag = tag;
@@ -29,6 +31,10 @@ public class SmithingTransformRecipe implements Recipe {
 
     public String getRecipeId() {
         return this.recipeId;
+    }
+
+    public Item getTemplate() {
+        return this.template.clone();
     }
 
     public Item getInput() {

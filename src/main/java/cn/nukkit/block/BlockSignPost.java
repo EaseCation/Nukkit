@@ -77,7 +77,9 @@ public class BlockSignPost extends BlockTransparentMeta implements Faceable {
                     return false;
                 }
 
-                setDamage(Mth.floor(((player.yaw + 180) * 16 / 360) + 0.5) & 0x0f);
+                if (player != null) {
+                    setDamage(Mth.floor(((player.yaw + 180) * 16 / 360) + 0.5) & 0x0f);
+                }
                 getLevel().setBlock(block, Block.get(getStandingBlockId(), getDamage()), true);
             } else {
                 if (getSide(face.getOpposite()).canBeFlowedInto()) {
@@ -105,7 +107,14 @@ public class BlockSignPost extends BlockTransparentMeta implements Faceable {
             }
 
             BlockEntitySign sign = (BlockEntitySign) BlockEntities.createBlockEntity(BlockEntityType.SIGN, getChunk(), nbt);
-            return sign != null;
+            if (sign == null) {
+                return false;
+            }
+
+            if (player != null) {
+                player.openSignEditor(asBlockVector3());
+            }
+            return true;
         }
 
         return false;

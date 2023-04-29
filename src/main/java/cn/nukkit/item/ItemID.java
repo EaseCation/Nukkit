@@ -499,6 +499,11 @@ public interface ItemID extends BlockID, ItemRuntimeID {
     int DISC_FRAGMENT_5 = 777;
     int RECOVERY_COMPASS = 778;
     int ECHO_SHARD = 779;
+    int MUSIC_DISC_RELIC = 780;
+    /**
+     * @deprecated use {@link #MUSIC_DISC_RELIC} instead
+     */
+    int RECORD_RELIC = 780;
 
     int SOUL_CAMPFIRE = 801;
 

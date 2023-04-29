@@ -197,6 +197,7 @@ public interface BlockID {
     @Deprecated
     int SEALANTERN = 169;
     int HAY_BLOCK = 170;
+    int WHITE_CARPET = 171; //TODO: 1.20.0: flattening
     int CARPET = 171;
     int HARDENED_CLAY = 172;
     int COAL_BLOCK = 173;
@@ -422,6 +423,7 @@ public interface BlockID {
     int ELEMENT_117 = 383;
     int ELEMENT_118 = 384;
     int SEAGRASS = 385;
+    int TUBE_CORAL = 386; //TODO: 1.20.0: flattening
     int CORAL = 386;
     int CORAL_BLOCK = 387;
     int CORAL_FAN = 388;
@@ -499,7 +501,7 @@ public interface BlockID {
     int SWEET_BERRY_BUSH = 462;
     int LANTERN = 463;
     int BLOCK_CAMPFIRE = 464;
-    int LAVA_CAULDRON = 465;
+    int LAVA_CAULDRON = 465; //TODO: 1.20.0 remove
     int JIGSAW = 466; //TODO: meta 29
     int WOOD = 467;
     int COMPOSTER = 468;
@@ -852,13 +854,41 @@ public interface BlockID {
     int JUNGLE_LOG = 826;
     int DARK_OAK_LOG = 827;
     int SUSPICIOUS_GRAVEL = 828;
-
+    int PITCHER_CROP = 829;
     int ACACIA_FENCE = 830;
     int BIRCH_FENCE = 831;
     int DARK_OAK_FENCE = 832;
     int JUNGLE_FENCE = 833;
     int SPRUCE_FENCE = 834;
+    int CALIBRATED_SCULK_SENSOR = 835;
+    int BRAIN_CORAL = 836;
+    int BUBBLE_CORAL = 837;
+    int FIRE_CORAL = 838;
+    int HORN_CORAL = 839;
+    int DEAD_TUBE_CORAL = 840;
+    int DEAD_BRAIN_CORAL = 841;
+    int DEAD_BUBBLE_CORAL = 842;
+    int DEAD_FIRE_CORAL = 843;
+    int DEAD_HORN_CORAL = 844;
+
+    int SNIFFER_EGG = 851;
+    int ORANGE_CARPET = 852;
+    int MAGENTA_CARPET = 853;
+    int LIGHT_BLUE_CARPET = 854;
+    int YELLOW_CARPET = 855;
+    int LIME_CARPET = 856;
+    int PINK_CARPET = 857;
+    int GRAY_CARPET = 858;
+    int LIGHT_GRAY_CARPET = 859;
+    int CYAN_CARPET = 860;
+    int PURPLE_CARPET = 861;
+    int BLUE_CARPET = 862;
+    int BROWN_CARPET = 863;
+    int GREEN_CARPET = 864;
+    int RED_CARPET = 865;
+    int BLACK_CARPET = 866;
+    int PITCHER_PLANT = 867;
 
 
-    int UNDEFINED = 835;
+    int UNDEFINED = 868;
 }

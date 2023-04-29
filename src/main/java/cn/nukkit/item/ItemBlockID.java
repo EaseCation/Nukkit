@@ -199,6 +199,7 @@ public interface ItemBlockID {
     @Deprecated
     int SEALANTERN = 169;
     int HAY_BLOCK = 170;
+    int WHITE_CARPET = 171;
     int CARPET = 171;
     int HARDENED_CLAY = 172;
     int COAL_BLOCK = 173;
@@ -424,6 +425,7 @@ public interface ItemBlockID {
     int ELEMENT_117 = 0xff - BlockID.ELEMENT_117;
     int ELEMENT_118 = 0xff - BlockID.ELEMENT_118;
     int SEAGRASS = 0xff - BlockID.SEAGRASS;
+    int TUBE_CORAL = 0xff - BlockID.TUBE_CORAL;
     int CORAL = 0xff - BlockID.CORAL;
     int CORAL_BLOCK = 0xff - BlockID.CORAL_BLOCK;
     int CORAL_FAN = 0xff - BlockID.CORAL_FAN;
@@ -854,12 +856,40 @@ public interface ItemBlockID {
     int JUNGLE_LOG = 0xff - BlockID.JUNGLE_LOG;
     int DARK_OAK_LOG = 0xff - BlockID.DARK_OAK_LOG;
     int SUSPICIOUS_GRAVEL = 0xff - BlockID.SUSPICIOUS_GRAVEL;
-
+    int PITCHER_CROP = 0xff - BlockID.PITCHER_CROP;
     int ACACIA_FENCE = 0xff - BlockID.ACACIA_FENCE;
     int BIRCH_FENCE = 0xff - BlockID.BIRCH_FENCE;
     int DARK_OAK_FENCE = 0xff - BlockID.DARK_OAK_FENCE;
     int JUNGLE_FENCE = 0xff - BlockID.JUNGLE_FENCE;
     int SPRUCE_FENCE = 0xff - BlockID.SPRUCE_FENCE;
+    int CALIBRATED_SCULK_SENSOR = 0xff - BlockID.CALIBRATED_SCULK_SENSOR;
+    int BRAIN_CORAL = 0xff - BlockID.BRAIN_CORAL;
+    int BUBBLE_CORAL = 0xff - BlockID.BUBBLE_CORAL;
+    int FIRE_CORAL = 0xff - BlockID.FIRE_CORAL;
+    int HORN_CORAL = 0xff - BlockID.HORN_CORAL;
+    int DEAD_TUBE_CORAL = 0xff - BlockID.DEAD_TUBE_CORAL;
+    int DEAD_BRAIN_CORAL = 0xff - BlockID.DEAD_BRAIN_CORAL;
+    int DEAD_BUBBLE_CORAL = 0xff - BlockID.DEAD_BUBBLE_CORAL;
+    int DEAD_FIRE_CORAL = 0xff - BlockID.DEAD_FIRE_CORAL;
+    int DEAD_HORN_CORAL = 0xff - BlockID.DEAD_HORN_CORAL;
+
+    int SNIFFER_EGG = 0xff - BlockID.SNIFFER_EGG;
+    int ORANGE_CARPET = 0xff - BlockID.ORANGE_CARPET;
+    int MAGENTA_CARPET = 0xff - BlockID.MAGENTA_CARPET;
+    int LIGHT_BLUE_CARPET = 0xff - BlockID.LIGHT_BLUE_CARPET;
+    int YELLOW_CARPET = 0xff - BlockID.YELLOW_CARPET;
+    int LIME_CARPET = 0xff - BlockID.LIME_CARPET;
+    int PINK_CARPET = 0xff - BlockID.PINK_CARPET;
+    int GRAY_CARPET = 0xff - BlockID.GRAY_CARPET;
+    int LIGHT_GRAY_CARPET = 0xff - BlockID.LIGHT_GRAY_CARPET;
+    int CYAN_CARPET = 0xff - BlockID.CYAN_CARPET;
+    int PURPLE_CARPET = 0xff - BlockID.PURPLE_CARPET;
+    int BLUE_CARPET = 0xff - BlockID.BLUE_CARPET;
+    int BROWN_CARPET = 0xff - BlockID.BROWN_CARPET;
+    int GREEN_CARPET = 0xff - BlockID.GREEN_CARPET;
+    int RED_CARPET = 0xff - BlockID.RED_CARPET;
+    int BLACK_CARPET = 0xff - BlockID.BLACK_CARPET;
+    int PITCHER_PLANT = 0xff - BlockID.PITCHER_PLANT;
 
 
     int UNDEFINED = 0xff - BlockID.UNDEFINED;

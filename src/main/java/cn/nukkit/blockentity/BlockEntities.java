@@ -75,6 +75,7 @@ public final class BlockEntities {
 //        registerBlockEntity(BlockEntityType.CHISELED_BOOKSHELF, CHISELED_BOOKSHELF, BlockEntityChiseledBookshelf.class, BlockEntityChiseledBookshelf::new, V1_20_0);
 //        registerBlockEntity(BlockEntityType.BRUSHABLE_BLOCK, BRUSHABLE_BLOCK, BlockEntityBrushableBlock.class, BlockEntityBrushableBlock::new, V1_20_0);
 //        registerBlockEntity(BlockEntityType.DECORATED_POT, DECORATED_POT, BlockEntityDecoratedPot.class, BlockEntityDecoratedPot::new, V1_20_0);
+//        registerBlockEntity(BlockEntityType.CALIBRATED_SCULK_SENSOR, CALIBRATED_SCULK_SENSOR, BlockEntityCalibratedSculkSensor.class, BlockEntityCalibratedSculkSensor::new, V1_20_0);
     }
 
     private static Class<? extends BlockEntity> registerBlockEntity(int type, String name, Class<? extends BlockEntity> clazz, BlockEntityFactory factory) {

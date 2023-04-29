@@ -137,14 +137,18 @@ public class BlockEntitySign extends BlockEntitySpawnable {
         if (!nbt.getString("id").equals(BlockEntity.SIGN)) {
             return false;
         }
+
+        // multi-version compatibility (1.19.80+)
+        String text = !nbt.contains("FrontText") ? nbt.getString("Text") : nbt.getCompound("FrontText").getString("Text");
+
         String[] lines = new String[4];
         Arrays.fill(lines, "");
-        String[] splitLines = nbt.getString("Text").split("\n", 4);
+        String[] splitLines = text.split("\n", 4);
         System.arraycopy(splitLines, 0, lines, 0, splitLines.length);
 
         sanitizeText(lines);
 
-        SignChangeEvent signChangeEvent = new SignChangeEvent(this.getBlock(), player, lines);
+        SignChangeEvent signChangeEvent = new SignChangeEvent(this.getBlock(), player, this, SignChangeEvent.FLAG_FRONT_TEXT, lines);
 
         //TODO: XUID "TextOwner"
 //        if (!this.namedTag.contains("Creator") || !Objects.equals(player.getUniqueId().toString(), this.namedTag.getString("Creator"))) {
@@ -169,12 +173,32 @@ public class BlockEntitySign extends BlockEntitySpawnable {
 
     @Override
     public CompoundTag getSpawnCompound() {
+        String text = this.namedTag.getString("Text");
+        int argb = this.getColor().getRGB();
+        boolean glow = this.isGlowing();
+        boolean persistFormatting = this.namedTag.getBoolean("PersistFormatting");
+
         return getDefaultCompound(this, SIGN)
-                .putString("Text", this.namedTag.getString("Text"))
-                .putInt("SignTextColor", this.getColor().getRGB())
-                .putBoolean("IgnoreLighting", this.isGlowing())
-                .putBoolean("PersistFormatting", this.namedTag.getBoolean("PersistFormatting"))
-                .putBoolean("TextIgnoreLegacyBugResolved", this.namedTag.getBoolean("TextIgnoreLegacyBugResolved"));
+                .putString("Text", text)
+                .putInt("SignTextColor", argb)
+                .putBoolean("IgnoreLighting", glow)
+                .putBoolean("PersistFormatting", persistFormatting)
+                .putBoolean("TextIgnoreLegacyBugResolved", this.namedTag.getBoolean("TextIgnoreLegacyBugResolved"))
+                //TODO: 1.19.80+
+                .putBoolean("IsWaxed", false)
+                .putLong("LockedForEditingBy", -1) // editing player actor runtime id
+                .putCompound("FrontText", new CompoundTag(5)
+                        .putString("Text", text)
+                        .putInt("SignTextColor", argb)
+                        .putBoolean("IgnoreLighting", glow)
+                        .putBoolean("PersistFormatting", persistFormatting)
+                        .putString("TextOwner", ""))
+                .putCompound("BackText", new CompoundTag(5)
+                        .putString("Text", "")
+                        .putInt("SignTextColor", 0xff_00_00_00)
+                        .putBoolean("IgnoreLighting", false)
+                        .putBoolean("PersistFormatting", true)
+                        .putString("TextOwner", ""));
     }
 
     private static void sanitizeText(String[] lines) {

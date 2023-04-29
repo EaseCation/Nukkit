@@ -434,6 +434,7 @@ public class CraftingManager {
     }
 
     public void registerSmithingTransformRecipe(SmithingTransformRecipe recipe) {
+        //TODO: template
         long hash = getMultiItemHashWithoutCount(recipe.getInput(), recipe.getAddition());
         this.smithingRecipes.put(hash, recipe);
 
@@ -444,6 +445,10 @@ public class CraftingManager {
             taggedSmithingRecipes.put(tag, recipes);
         }
         recipes.put(hash, recipe);
+    }
+
+    public void registerSmithingTrimRecipe(SmithingTrimRecipe recipe) {
+        //TODO
     }
 
     protected static long getContainerHash(int ingredientId, int containerId) {

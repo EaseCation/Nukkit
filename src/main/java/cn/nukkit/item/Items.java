@@ -302,6 +302,8 @@ public final class Items {
         registerItem(MANGROVE_SIGN, ItemSignMangrove.class, ItemSignMangrove::new, V1_19_0);
         // chest_boat
 
+//        registerItem(MUSIC_DISC_RELIC, ItemRecordRelic.class, ItemRecordRelic::new, V1_20_0);
+
         initializeItemBlockCache();
     }
 

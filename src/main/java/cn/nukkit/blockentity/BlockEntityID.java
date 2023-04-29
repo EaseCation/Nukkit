@@ -51,4 +51,5 @@ public interface BlockEntityID {
     String CHISELED_BOOKSHELF = "ChiseledBookshelf";
     String BRUSHABLE_BLOCK = "BrushableBlock";
     String DECORATED_POT = "DecoratedPot";
+    String CALIBRATED_SCULK_SENSOR = "CalibratedSculkSensor";
 }
