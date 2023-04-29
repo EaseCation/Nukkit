@@ -176,7 +176,7 @@ public class EntityXPOrb extends Entity {
             double friction = 1d - this.getDrag();
 
             if (this.onGround && (Math.abs(this.motionX) > 0.00001 || Math.abs(this.motionZ) > 0.00001)) {
-                friction = this.getLevel().getBlock(this.temporalVector.setComponents(Mth.floor(this.x), Mth.floor(this.y - 1), Mth.floor(this.z) - 1)).getFrictionFactor() * friction;
+                friction = this.getLevel().getBlock(Mth.floor(this.x), Mth.floor(this.y - 1), Mth.floor(this.z) - 1).getFrictionFactor() * friction;
             }
 
             this.motionX *= friction;

@@ -146,11 +146,9 @@ public class EntityBoat extends EntityVehicle {
         }
 
         int tickDiff = currentTick - this.lastUpdate;
-
         if (tickDiff <= 0 && !this.justCreated) {
             return true;
         }
-
         this.lastUpdate = currentTick;
 
         boolean hasUpdate = this.entityBaseTick(tickDiff);
@@ -160,10 +158,9 @@ public class EntityBoat extends EntityVehicle {
 
             double waterDiff = getWaterLevel();
             if (!hasControllingPassenger()) {
-
                 if (waterDiff > SINKING_DEPTH && !sinking) {
                     sinking = true;
-                } else if (waterDiff < -SINKING_DEPTH && sinking) {
+                } else if (waterDiff < 0.05 && sinking) {
                     sinking = false;
                 }
 
@@ -184,7 +181,30 @@ public class EntityBoat extends EntityVehicle {
             double friction = 1 - this.getDrag();
 
             if (this.onGround && (Math.abs(this.motionX) > 0.00001 || Math.abs(this.motionZ) > 0.00001)) {
-                friction *= this.getLevel().getBlock(this.temporalVector.setComponents(Mth.floor(this.x), Mth.floor(this.y - 1), Mth.floor(this.z) - 1)).getFrictionFactor();
+                double factor = 0;
+                int count = 0;
+
+                int y = getFloorY() - 1;
+                if (level.isValidHeight(y)) {
+                    for (int x = boundingBox.getFloorMinX(); x <= boundingBox.getFloorMaxX(); x++) {
+                        for (int z = boundingBox.getFloorMinZ(); z <= boundingBox.getFloorMaxZ(); z++) {
+                            Block block =  this.level.getBlock(x, y, z, false);
+                            if (block.isAir() || !block.collidesWithBB(boundingBox)) {
+                                continue;
+                            }
+
+                            factor += block.getFrictionFactor();
+                            count++;
+                        }
+                    }
+                }
+
+                if (count != 0) {
+                    factor /= count;
+                } else {
+                    factor = 0.6;
+                }
+                friction *= factor;
             }
 
             this.motionX *= friction;
@@ -295,7 +315,7 @@ public class EntityBoat extends EntityVehicle {
 
             @Override
             public void accept(int x, int y, int z) {
-                Block block = EntityBoat.this.level.getBlock(EntityBoat.this.temporalVector.setComponents(x, y, z));
+                Block block = EntityBoat.this.level.getBlock(x, y, z);
 
                 if (block instanceof BlockWater) {
                     double level = block.getMaxY();

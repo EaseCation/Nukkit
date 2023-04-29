@@ -4,6 +4,7 @@ import cn.nukkit.Player;
 import cn.nukkit.block.Block;
 import cn.nukkit.entity.item.EntityBoat;
 import cn.nukkit.level.Level;
+import cn.nukkit.math.AxisAlignedBB;
 import cn.nukkit.math.BlockFace;
 import cn.nukkit.nbt.tag.CompoundTag;
 import cn.nukkit.nbt.tag.DoubleTag;
@@ -44,12 +45,27 @@ public class ItemBoat extends Item {
 
     @Override
     public boolean onActivate(Level level, Player player, Block block, Block target, BlockFace face, double fx, double fy, double fz) {
-        if (face != BlockFace.UP || block.isLiquid() || !block.isAir() && block.canContainWater() && level.getExtraBlock(block).isWater()) return false;
+        if (face != BlockFace.UP || block.isLiquid() || !block.isAir() && block.canContainWater() && level.getExtraBlock(block).isWater()) {
+            return false;
+        }
+
+        double y;
+        if (target.isWater()) {
+            y = block.getY() - 0.375;
+        } else {
+            AxisAlignedBB bb = target.getBoundingBox();
+            if (bb != null) {
+                y = bb.getMaxY();
+            } else {
+                y = target.getY() + 0.3;
+            }
+        }
+
         EntityBoat boat = new EntityBoat(
                 level.getChunk(block.getFloorX() >> 4, block.getFloorZ() >> 4), new CompoundTag("")
                 .putList(new ListTag<DoubleTag>("Pos")
                         .add(new DoubleTag("", block.getX() + 0.5))
-                        .add(new DoubleTag("", block.getY() - (target.isWater() ? 0.0625 : 0)))
+                        .add(new DoubleTag("", y))
                         .add(new DoubleTag("", block.getZ() + 0.5)))
                 .putList(new ListTag<DoubleTag>("Motion")
                         .add(new DoubleTag("", 0))

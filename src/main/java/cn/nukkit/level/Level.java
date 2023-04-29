@@ -1671,7 +1671,7 @@ public class Level implements ChunkManager, Metadatable {
                             this.server.getLogger().logException(new AxisAlignedBBLoopException("Level.getCollisionBlocks bb=" + bb.toString() + " minX=" + minX + " maxX=" + maxX + " minY=" + minY + " maxY=" + maxY + " minZ=" + minZ + " maxZ=" + maxZ + " x=" + x + " y=" + y + " z=" + z));
                             return new Block[0];
                         }
-                        Block block = this.getBlock(this.temporalVector.setComponents(x, y, z));
+                        Block block = this.getBlock(x, y, z);
                         if (block.getId() != BlockID.AIR && block.collidesWithBB(bb)) {
                             return new Block[]{block};
                         }
@@ -1686,7 +1686,7 @@ public class Level implements ChunkManager, Metadatable {
                             this.server.getLogger().logException(new AxisAlignedBBLoopException("Level.getCollisionBlocks bb=" + bb.toString() + " minX=" + minX + " maxX=" + maxX + " minY=" + minY + " maxY=" + maxY + " minZ=" + minZ + " maxZ=" + maxZ + " x=" + x + " y=" + y + " z=" + z));
                             return collides.toArray(new Block[0]);
                         }
-                        Block block = this.getBlock(this.temporalVector.setComponents(x, y, z));
+                        Block block = this.getBlock(x, y, z);
                         if (block.getId() != BlockID.AIR && block.collidesWithBB(bb)) {
                             collides.add(block);
                         }
@@ -1733,7 +1733,7 @@ public class Level implements ChunkManager, Metadatable {
         for (int z = minZ; z <= maxZ; ++z) {
             for (int x = minX; x <= maxX; ++x) {
                 for (int y = minY; y <= maxY; ++y) {
-                    Block block = this.getBlock(this.temporalVector.setComponents(x, y, z), false);
+                    Block block = this.getBlock(x, y, z, false);
                     // EC优化：使投掷物可以穿过屏障方块
                     if (block.getId() == BlockID.BARRIER && entity.canPassThroughBarrier()) {
                         continue;
@@ -1767,7 +1767,7 @@ public class Level implements ChunkManager, Metadatable {
         for (int z = minZ; z <= maxZ; ++z) {
             for (int x = minX; x <= maxX; ++x) {
                 for (int y = minY; y <= maxY; ++y) {
-                    Block block = this.getBlock(this.temporalVector.setComponents(x, y, z));
+                    Block block = this.getBlock(x, y, z);
                     if (!block.canPassThrough() && block.collidesWithBB(bb)) {
                         return true;
                     }

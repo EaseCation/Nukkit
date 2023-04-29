@@ -1582,7 +1582,7 @@ public class Player extends EntityHuman implements CommandSender, InventoryHolde
             for (int z = minZ; z <= maxZ; ++z) {
                 for (int x = minX; x <= maxX; ++x) {
                     for (int y = minY; y <= maxY; ++y) {
-                        Block block = this.level.getBlock(this.temporalVector.setComponents(x, y, z));
+                        Block block = this.level.getBlock(x, y, z);
 
                         if (!block.canPassThrough() && block.collidesWithBB(realBB)) {
                             onGround = true;
@@ -3179,9 +3179,8 @@ public class Player extends EntityHuman implements CommandSender, InventoryHolde
                     break;
                 case ProtocolInfo.ITEM_FRAME_DROP_ITEM_PACKET:
                     ItemFrameDropItemPacket itemFrameDropItemPacket = (ItemFrameDropItemPacket) packet;
-                    Vector3 vector3 = this.temporalVector.setComponents(itemFrameDropItemPacket.x, itemFrameDropItemPacket.y, itemFrameDropItemPacket.z);
-                    if (vector3.distanceSquared(this) < 1000) {
-                        BlockEntity itemFrame = this.level.getBlockEntity(vector3);
+                    if (this.distanceSquared(itemFrameDropItemPacket.x, itemFrameDropItemPacket.y, itemFrameDropItemPacket.z) < 1000) {
+                        BlockEntity itemFrame = this.level.getBlockEntity(itemFrameDropItemPacket.x, itemFrameDropItemPacket.y, itemFrameDropItemPacket.z);
                         if (itemFrame instanceof BlockEntityItemFrame) {
                             ((BlockEntityItemFrame) itemFrame).dropItem(this);
                         }
