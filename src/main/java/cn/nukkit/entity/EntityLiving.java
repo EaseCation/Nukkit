@@ -473,4 +473,13 @@ public abstract class EntityLiving extends Entity implements EntityDamageable {
 
         return y >= (block.y + 1) - (((BlockWater) block).getFluidHeightPercent() - 0.1111111);
     }
+
+    public long getNextAllowAttack() {
+        return nextAllowAttack;
+    }
+
+    public EntityLiving setNextAllowAttack(long nextAllowAttack) {
+        this.nextAllowAttack = nextAllowAttack;
+        return this;
+    }
 }
