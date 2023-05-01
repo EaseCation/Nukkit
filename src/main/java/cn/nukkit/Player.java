@@ -1084,13 +1084,7 @@ public class Player extends EntityHuman implements CommandSender, InventoryHolde
 
         this.sendRecipeList();
 
-        if (this.gamemode == Player.SPECTATOR) {
-            InventoryContentPacket inventoryContentPacket = new InventoryContentPacket();
-            inventoryContentPacket.inventoryId = ContainerIds.CREATIVE;
-            this.dataPacket(inventoryContentPacket);
-        } else {
-            this.sendCreativeContents();
-        }
+        this.sendCreativeContents();
 
         for (long index : this.usedChunks.keySet()) {
             int chunkX = Level.getHashX(index);
@@ -1451,18 +1445,9 @@ public class Player extends EntityHuman implements CommandSender, InventoryHolde
             this.teleport(this, null);
             this.setDataFlag(DATA_FLAGS, DATA_FLAG_SILENT, true);
             this.setDataFlag(DATA_FLAGS, DATA_FLAG_HAS_COLLISION, false);
-
-            InventoryContentPacket inventoryContentPacket = new InventoryContentPacket();
-            inventoryContentPacket.inventoryId = ContainerIds.CREATIVE;
-            this.dataPacket(inventoryContentPacket);
         } else {
             this.setDataFlag(DATA_FLAGS, DATA_FLAG_SILENT, false);
             this.setDataFlag(DATA_FLAGS, DATA_FLAG_HAS_COLLISION, true);
-
-            InventoryContentPacket inventoryContentPacket = new InventoryContentPacket();
-            inventoryContentPacket.inventoryId = ContainerIds.CREATIVE;
-            inventoryContentPacket.slots = this.getCreativeItems().toArray(new Item[0]);
-            this.dataPacket(inventoryContentPacket);
         }
 
         this.resetFallDistance();
