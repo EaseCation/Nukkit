@@ -3029,6 +3029,8 @@ public class Player extends EntityHuman implements CommandSender, InventoryHolde
                     }
                     break;
                 case ProtocolInfo.COMMAND_REQUEST_PACKET:
+                    this.violation += 5;
+
                     if (!this.spawned || !this.isAlive()) {
                         break;
                     }
