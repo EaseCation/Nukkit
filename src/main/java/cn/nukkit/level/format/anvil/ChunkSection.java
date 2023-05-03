@@ -1,5 +1,6 @@
 package cn.nukkit.level.format.anvil;
 
+import cn.nukkit.Server;
 import cn.nukkit.block.Block;
 import cn.nukkit.level.GlobalBlockPalette;
 import cn.nukkit.level.GlobalBlockPaletteInterface.StaticVersion;
@@ -290,7 +291,7 @@ public class ChunkSection implements cn.nukkit.level.format.ChunkSection {
                 }
             }
         } catch (IOException e) {
-            log.throwing(e);
+            Server.getInstance().getLogger().logException(e);
         }
     }
 
@@ -408,7 +409,7 @@ public class ChunkSection implements cn.nukkit.level.format.ChunkSection {
                 try {
                     compressedLight = Zlib.deflate(toDeflate, 1);
                 } catch (Exception e) {
-                    log.throwing(e);
+                    Server.getInstance().getLogger().logException(e);
                 }
             }
             return true;

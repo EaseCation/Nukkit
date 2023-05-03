@@ -292,7 +292,7 @@ public class Level implements ChunkManager, Metadatable {
                 generator.init(new PopChunkManager(getSeed()), rand);
                 return generator;
             } catch (Throwable e) {
-                log.throwing(e);
+                Server.getInstance().getLogger().logException(e);
                 return null;
             }
         }

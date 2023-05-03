@@ -1079,10 +1079,6 @@ public class Server {
                     }
                 }
             } catch (Exception e) {
-                if (Nukkit.DEBUG > 1) {
-                    this.getLogger().logException(e);
-                }
-
                 log.fatal(this.getLanguage().translate("nukkit.level.tickError", level.getName(), e.toString()));
                 this.getLogger().logException(e);
             }
@@ -1597,9 +1593,7 @@ public class Server {
                 }
             } catch (Exception e) {
                 log.fatal(this.getLanguage().translate("nukkit.data.saveError", name, e.getMessage()));
-                if (Nukkit.DEBUG > 1) {
-                    this.getLogger().logException(e);
-                }
+                this.getLogger().logException(e);
             }
         }
     }
