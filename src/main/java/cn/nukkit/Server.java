@@ -440,7 +440,9 @@ public class Server {
 
         this.queryRegenerateEvent = new QueryRegenerateEvent(this, 5);
 
-        this.network.registerInterface(new RakNetInterface(this));
+        if (Boolean.getBoolean("nukkit.enableRak")) {
+            this.network.registerInterface(new RakNetInterface(this));
+        }
 
         this.pluginManager.loadPlugins(this.pluginPath);
 
