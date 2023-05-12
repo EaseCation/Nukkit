@@ -225,8 +225,8 @@ public class RakNetInterface implements RakNetServerListener, AdvancedSourceInte
     }
 
     @Override
-    public boolean onConnectionRequest(InetSocketAddress inetSocketAddress) {
-        return true;
+    public boolean onConnectionRequest(InetSocketAddress inetSocketAddress, InetSocketAddress realAddress) {
+        return false;
     }
 
     @Override

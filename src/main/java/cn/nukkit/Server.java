@@ -440,7 +440,7 @@ public class Server {
 
         this.queryRegenerateEvent = new QueryRegenerateEvent(this, 5);
 
-        if (Boolean.getBoolean("nukkit.enableRak")) {
+        if (!Boolean.getBoolean("nukkit.disableRak")) {
             this.network.registerInterface(new RakNetInterface(this));
         }
 
@@ -2123,7 +2123,7 @@ public class Server {
      * false otherwise
      */
     public boolean isPrimaryThread() {
-        return (Thread.currentThread() == currentThread);
+        return Thread.currentThread() == currentThread;
     }
 
     public Thread getPrimaryThread() {

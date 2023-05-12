@@ -2921,7 +2921,7 @@ public class Player extends EntityHuman implements CommandSender, InventoryHolde
                     item = block.pick(pickRequestPacket.addUserData);
 
                     if (pickRequestPacket.addUserData) {
-                        BlockEntity blockEntity = this.getLevel().getBlockEntity(new Vector3(pickRequestPacket.x, pickRequestPacket.y, pickRequestPacket.z));
+                        BlockEntity blockEntity = this.getLevel().getBlockEntityIfLoaded(pickRequestPacket.x, pickRequestPacket.y, pickRequestPacket.z);
                         if (blockEntity != null) {
                             CompoundTag nbt = blockEntity.getCleanedNBT();
                             if (nbt != null) {
@@ -3105,7 +3105,7 @@ public class Player extends EntityHuman implements CommandSender, InventoryHolde
                         break;
                     }
 
-                    BlockEntity t = this.level.getBlockEntity(blockEntityDataPacket.x, blockEntityDataPacket.y, blockEntityDataPacket.z);
+                    BlockEntity t = this.level.getBlockEntityIfLoaded(blockEntityDataPacket.x, blockEntityDataPacket.y, blockEntityDataPacket.z);
                     if (t instanceof BlockEntitySpawnable) {
                         CompoundTag nbt;
                         try {
@@ -3167,7 +3167,7 @@ public class Player extends EntityHuman implements CommandSender, InventoryHolde
                 case ProtocolInfo.ITEM_FRAME_DROP_ITEM_PACKET:
                     ItemFrameDropItemPacket itemFrameDropItemPacket = (ItemFrameDropItemPacket) packet;
                     if (this.distanceSquared(itemFrameDropItemPacket.x, itemFrameDropItemPacket.y, itemFrameDropItemPacket.z) < 1000) {
-                        BlockEntity itemFrame = this.level.getBlockEntity(itemFrameDropItemPacket.x, itemFrameDropItemPacket.y, itemFrameDropItemPacket.z);
+                        BlockEntity itemFrame = this.level.getBlockEntityIfLoaded(itemFrameDropItemPacket.x, itemFrameDropItemPacket.y, itemFrameDropItemPacket.z);
                         if (itemFrame instanceof BlockEntityItemFrame) {
                             ((BlockEntityItemFrame) itemFrame).dropItem(this);
                         }
@@ -3367,10 +3367,10 @@ public class Player extends EntityHuman implements CommandSender, InventoryHolde
                                     inventory.sendHeldItem(this);
 
                                     if (blockVector.distanceSquared(this) < 10000) {
-                                        target = this.level.getBlock(blockVector.asVector3());
+                                        target = this.level.getBlock(blockVector);
                                         this.level.sendBlocks(new Player[]{this}, new Block[]{target}, UpdateBlockPacket.FLAG_ALL_PRIORITY);
 
-                                        BlockEntity blockEntity = this.level.getBlockEntity(blockVector.asVector3());
+                                        BlockEntity blockEntity = this.level.getBlockEntityIfLoaded(blockVector);
                                         if (blockEntity instanceof BlockEntitySpawnable) {
                                             ((BlockEntitySpawnable) blockEntity).spawnTo(this);
                                         }

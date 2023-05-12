@@ -187,7 +187,7 @@ public class BlockEntityChest extends BlockEntitySpawnable implements InventoryH
 
     public BlockEntityChest getPair() {
         if (this.isPaired()) {
-            BlockEntity blockEntity = this.getLevel().getBlockEntityIfLoaded(new Vector3(this.namedTag.getInt("pairx"), this.y, this.namedTag.getInt("pairz")));
+            BlockEntity blockEntity = this.getLevel().getBlockEntityIfLoaded(this.namedTag.getInt("pairx"), this.getFloorY(), this.namedTag.getInt("pairz"));
             if (blockEntity instanceof BlockEntityChest) {
                 return (BlockEntityChest) blockEntity;
             }

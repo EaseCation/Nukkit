@@ -305,7 +305,9 @@ public class LevelDB implements LevelProvider {
         long index = Level.chunkHash(chunkX, chunkZ);
         synchronized (this.chunks) {
             chunk = this.chunks.get(index);
-            this.lastChunk.set(new WeakReference<>(chunk));
+            if (chunk != null) {
+                this.lastChunk.set(new WeakReference<>(chunk));
+            }
         }
         return chunk;
     }
@@ -323,7 +325,9 @@ public class LevelDB implements LevelProvider {
 
         synchronized (chunks) {
             chunk = this.chunks.get(hash);
-            this.lastChunk.set(new WeakReference<>(chunk));
+            if (chunk != null) {
+                this.lastChunk.set(new WeakReference<>(chunk));
+            }
         }
         return chunk;
     }

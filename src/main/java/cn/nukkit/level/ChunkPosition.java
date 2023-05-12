@@ -10,6 +10,8 @@ import cn.nukkit.math.Vector3f;
  * Nukkit Project
  */
 public class ChunkPosition implements Cloneable {
+    public static final long INVALID_CHUNK_POSITION = 0x80000000_80000000L;
+
     private int x;
     private int z;
 
