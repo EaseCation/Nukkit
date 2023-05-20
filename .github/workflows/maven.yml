@@ -11,9 +11,9 @@ jobs:
       matrix:
         java:
           [
-            8,
             17,
             19,
+            20,
           ]
     steps:
       - uses: actions/checkout@v3
