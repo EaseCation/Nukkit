@@ -291,6 +291,12 @@
                             <addClasspath>true</addClasspath>
                             <classpathPrefix>lib/</classpathPrefix>
                             <Main-Class>cn.nukkit.Nukkit</Main-Class>
+                            <Implementation-Title>EaseNukkit</Implementation-Title>
+                            <Implementation-Version>1.0</Implementation-Version>
+                            <Implementation-Vendor>EaseCation</Implementation-Vendor>
+                            <Specification-Title>Nukkit</Specification-Title>
+                            <Specification-Version>1.0</Specification-Version>
+                            <Specification-Vendor>EaseCation</Specification-Vendor>
                             <Multi-Release>true</Multi-Release>
                         </manifestEntries>
                     </archive>
@@ -327,9 +333,9 @@
                 <version>3.4.1</version>
                 <dependencies>
                     <dependency>
-                        <groupId>io.github.edwgiz</groupId>
-                        <artifactId>log4j-maven-shade-plugin-extensions</artifactId>
-                        <version>${log4j2.version}</version>
+                        <groupId>org.apache.logging.log4j</groupId>
+                        <artifactId>log4j-transform-maven-shade-plugin-extensions</artifactId>
+                        <version>0.1.0</version>
                     </dependency>
                 </dependencies>
                 <executions>
@@ -350,10 +356,22 @@
                         </filter>
                     </filters>
                     <transformers>
-                        <transformer implementation="io.github.edwgiz.log4j.maven.plugins.shade.transformer.Log4j2PluginCacheFileTransformer"/>
+                        <transformer implementation="org.apache.logging.log4j.maven.plugins.shade.transformer.Log4j2PluginCacheFileTransformer"/>
                     </transformers>
                     <dependencyReducedPomLocation>${project.build.directory}/dependency-reduced-pom.xml</dependencyReducedPomLocation>
                 </configuration>
+            </plugin>
+            <plugin>
+                <groupId>org.apache.logging.log4j</groupId>
+                <artifactId>log4j-transform-maven-plugin</artifactId>
+                <version>0.1.0</version>
+                <executions>
+                    <execution>
+                        <goals>
+                            <goal>process-classes</goal>
+                        </goals>
+                    </execution>
+                </executions>
             </plugin>
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
