@@ -75,4 +75,9 @@ public class EntityMinecartEmpty extends EntityMinecartAbstract {
     public String getInteractButtonText(Player player) {
         return this.passengers.isEmpty() ? "action.interact.ride.minecart" : "";
     }
+
+    @Override
+    public void onPlayerInput(Player player, double motionX, double motionY) {
+        setCurrentSpeed(motionY);
+    }
 }

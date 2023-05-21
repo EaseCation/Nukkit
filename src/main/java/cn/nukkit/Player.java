@@ -2495,28 +2495,23 @@ public class Player extends EntityHuman implements CommandSender, InventoryHolde
                     }
 
                     PlayerInputPacket ipk = (PlayerInputPacket) packet;
-                    if (!validateVehicleInput(ipk.motionX) || !validateVehicleInput(ipk.motionY)) {
-                        // this.getServer().getLogger().warning("Invalid vehicle input received: " + this.getName());
-                        // 将ipk.motionX修正到-1~1之间
-                        if (ipk.motionX > 1) {
-                            ipk.motionX = 1;
-                        } else if (ipk.motionX < -1) {
-                            ipk.motionX = -1;
-                        }
-                        // 将ipk.motionY修正到-1~1之间
-                        if (ipk.motionY > 1) {
-                            ipk.motionY = 1;
-                        } else if (ipk.motionY < -1) {
-                            ipk.motionY = -1;
-                        }
-                        // this.close("", "Invalid vehicle input");
-                        // return;
+                    float moveVecX = ipk.motionX;
+                    float moveVecY = ipk.motionY;
+                    if (!validateVehicleInput(moveVecX) || !validateVehicleInput(moveVecY)) {
+                        this.getServer().getLogger().warning("Invalid vehicle input received: " + this.getName());
+                        this.close("", "Invalid vehicle input");
+                        return;
                     }
 
-                    if (riding instanceof EntityMinecartAbstract) {
-                        ((EntityMinecartEmpty) riding).setCurrentSpeed(ipk.motionY);
-                    } else if (riding instanceof EntityRideable) {
-                        ((EntityRideable) riding).onPlayerInput(this, ipk.motionX, ipk.motionY);
+                    if (riding != null && (moveVecX != 0 || moveVecY != 0)) {
+                        moveVecX = Mth.clamp(moveVecX, -1, 1);
+                        moveVecY = Mth.clamp(moveVecY, -1, 1);
+
+                        if (riding instanceof EntityRideable) {
+                            ((EntityRideable) riding).onPlayerInput(this, moveVecX, moveVecY);
+                        }
+
+                        new PlayerVehicleInputEvent(this, moveVecX, moveVecY, ipk.jumping, ipk.sneaking).call();
                     }
                     break;
                 case ProtocolInfo.MOVE_PLAYER_PACKET:
@@ -3692,6 +3687,10 @@ public class Player extends EntityHuman implements CommandSender, InventoryHolde
                             this.inventory.setItem(bookEditPacket.inventorySlot, editBookEvent.getNewBook());
                         }
                     }
+                    break;
+                case ProtocolInfo.PASSENGER_JUMP_PACKET:
+                    RiderJumpPacket riderJumpPacket = (RiderJumpPacket) packet;
+                    new PlayerPassengerJumpEvent(this, riderJumpPacket.strength).call();
                     break;
                 default:
                     break;
@@ -5638,7 +5637,8 @@ public class Player extends EntityHuman implements CommandSender, InventoryHolde
     }
 
     protected static boolean validateVehicleInput(float value) {
-        return -1 <= value & value <= 1;
+//        return -1 <= value & value <= 1;
+        return validateFloat(value);
     }
 
     public void onPacketViolation(PacketViolationReason reason) {

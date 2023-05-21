@@ -481,6 +481,7 @@ public abstract class EntityMinecartAbstract extends EntityVehicle {
 
         if (linked instanceof EntityLiving) {
             expectedSpeed = currentSpeed;
+            currentSpeed = 0;
             if (expectedSpeed > 0) {
                 // This is a trajectory (Angle of elevation)
                 playerYawNeg = -Mth.sin(linked.yaw * Math.PI / 180.0F);
