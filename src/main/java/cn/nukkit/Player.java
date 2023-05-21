@@ -3713,10 +3713,12 @@ public class Player extends EntityHuman implements CommandSender, InventoryHolde
         this.craftingType = CRAFTING_SMALL;
 
         if (this.messageCounter <= 0) {
+            this.violation += 5;
             return false;
         }
 
         if (message.length() > this.messageCounter * 512 + 1) {
+            this.violation += 25;
             return false;
         }
 
