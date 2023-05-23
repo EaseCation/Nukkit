@@ -309,6 +309,8 @@ public class Player extends EntityHuman implements CommandSender, InventoryHolde
     // EC：确保在一个服务器中，每个玩家的皮肤只发一遍
     public final List<UUID> sentSkins = new ObjectArrayList<>();
 
+    protected Entity lookAtEntity;
+
     public int violation;
     public volatile boolean violated;
 
@@ -2804,6 +2806,9 @@ public class Player extends EntityHuman implements CommandSender, InventoryHolde
                             break;
                         case PlayerActionPacket.ACTION_START_GLIDE:
                             PlayerToggleGlideEvent playerToggleGlideEvent = new PlayerToggleGlideEvent(this, true);
+                            if (getInventory().getChestplate().getId() != Item.ELYTRA) {
+                                playerToggleGlideEvent.setCancelled();
+                            }
                             this.server.getPluginManager().callEvent(playerToggleGlideEvent);
                             if (playerToggleGlideEvent.isCancelled()) {
                                 this.sendData(this);
@@ -2876,6 +2881,7 @@ public class Player extends EntityHuman implements CommandSender, InventoryHolde
                     InteractPacket interactPacket = (InteractPacket) packet;
 
                     if (interactPacket.target == 0 && interactPacket.action == InteractPacket.ACTION_MOUSEOVER) {
+                        this.lookAtEntity = null;
                         this.setButtonText("");
                         break;
                     }
@@ -2896,6 +2902,8 @@ public class Player extends EntityHuman implements CommandSender, InventoryHolde
 
                     switch (interactPacket.action) {
                         case InteractPacket.ACTION_MOUSEOVER:
+                            this.lookAtEntity = targetEntity;
+
                             if (targetEntity instanceof EntityInteractable) {
                                 this.setButtonText(((EntityInteractable) targetEntity).getInteractButtonText(this));
                             }
@@ -5640,7 +5648,8 @@ public class Player extends EntityHuman implements CommandSender, InventoryHolde
 
     protected static boolean validateVehicleInput(float value) {
 //        return -1 <= value & value <= 1;
-        return validateFloat(value);
+        return -1.1f <= value & value <= 1.1f; //client precision bug??? (non-Xbox gamepad: authInput.moveVecY = -1.000_000_1)
+//        return validateFloat(value);
     }
 
     public void onPacketViolation(PacketViolationReason reason) {
