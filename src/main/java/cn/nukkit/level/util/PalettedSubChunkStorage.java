@@ -419,7 +419,7 @@ public class PalettedSubChunkStorage {
         }
 
         boolean noBlock = true;
-        for (int i = 1; i < count; i++) {
+        for (int i = 0; i < count; i++) {
             int id = this.palette.getInt(i);
             if (id == BlockID.AIR) {
                 continue;

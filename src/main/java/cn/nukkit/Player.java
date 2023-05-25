@@ -2140,7 +2140,7 @@ public class Player extends EntityHuman implements CommandSender, InventoryHolde
                 .set(Type.OPEN_CONTAINERS, !isSpectator())
                 .set(Type.ATTACK_PLAYERS, !isSpectator())
                 .set(Type.ATTACK_MOBS, !isSpectator())
-                .set(Type.INSTABUILD, isCreative())
+                .set(Type.INSTABUILD, gamemode == CREATIVE)
                 .set(Type.INVULNERABLE, isCreative() || isSpectator())
                 .set(Type.OPERATOR, isOp())
                 .set(Type.TELEPORT, hasPermission("nukkit.command.teleport"));
