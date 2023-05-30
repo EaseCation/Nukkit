@@ -489,7 +489,7 @@ public class CommandParser {
         return new Vector3(this.parseCoordinate(baseX), this.parseCoordinate(baseY), this.parseCoordinate(baseZ));
     }
 
-    public Vector3 parseVectorOrDefault3(Vector3 defaultValue) throws CommandSyntaxException {
+    public Vector3 parseVector3OrDefault(Vector3 defaultValue) throws CommandSyntaxException {
         if (!this.hasNext()) {
             return defaultValue;
         }
@@ -521,7 +521,7 @@ public class CommandParser {
         return new Vector2(this.parseCoordinate(baseX), this.parseCoordinate(baseZ));
     }
 
-    public Vector2 parseVectorOrDefault2(Vector2 defaultValue) throws CommandSyntaxException {
+    public Vector2 parseVector2OrDefault(Vector2 defaultValue) throws CommandSyntaxException {
         if (!this.hasNext()) {
             return defaultValue;
         }
