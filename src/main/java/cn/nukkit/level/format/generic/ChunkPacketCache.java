@@ -2,6 +2,7 @@ package cn.nukkit.level.format.generic;
 
 import cn.nukkit.level.GlobalBlockPaletteInterface.StaticVersion;
 import cn.nukkit.network.protocol.BatchPacket;
+import cn.nukkit.network.protocol.SubChunkPacket;
 
 import java.util.Map;
 
@@ -9,6 +10,7 @@ public class ChunkPacketCache {
 
     private final Map<StaticVersion, BatchPacket> packets; //1.16.100+ static runtime block palette
     private final Map<StaticVersion, BatchPacket[]> subChunkPackets; // 1.18+ sub chunk packet
+    private final Map<StaticVersion, SubChunkPacket[]> subChunkPacketsUncompressed;
 
     private final BatchPacket subModePacketNew; // 1.18.30+
     /**
@@ -21,9 +23,10 @@ public class ChunkPacketCache {
     private final BatchPacket packet;
     private final BatchPacket packetOld;
 
-    public ChunkPacketCache(Map<StaticVersion, BatchPacket> packets, Map<StaticVersion, BatchPacket[]> subChunkPackets, BatchPacket subModePacketNew, BatchPacket subModePacket, BatchPacket subModePacketTruncatedNew, BatchPacket subModePacketTruncated, BatchPacket packet116, BatchPacket packet, BatchPacket packetOld) {
+    public ChunkPacketCache(Map<StaticVersion, BatchPacket> packets, Map<StaticVersion, BatchPacket[]> subChunkPackets, Map<StaticVersion, SubChunkPacket[]> subChunkPacketsUncompressed, BatchPacket subModePacketNew, BatchPacket subModePacket, BatchPacket subModePacketTruncatedNew, BatchPacket subModePacketTruncated, BatchPacket packet116, BatchPacket packet, BatchPacket packetOld) {
         this.packets = packets;
         this.subChunkPackets = subChunkPackets;
+        this.subChunkPacketsUncompressed = subChunkPacketsUncompressed;
         this.subModePacketNew = subModePacketNew;
         this.subModePacket = subModePacket;
         this.subModePacketTruncatedNew = subModePacketTruncatedNew;
@@ -39,6 +42,10 @@ public class ChunkPacketCache {
 
     public BatchPacket[] getSubPackets(StaticVersion version) {
         return this.subChunkPackets.get(version);
+    }
+
+    public SubChunkPacket[] getSubPacketsUncompressed(StaticVersion version) {
+        return this.subChunkPacketsUncompressed.get(version);
     }
 
     public BatchPacket getSubModePacketNew() {

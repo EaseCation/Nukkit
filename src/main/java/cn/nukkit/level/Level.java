@@ -3288,6 +3288,7 @@ public class Level implements ChunkManager, Metadatable {
                 int extendedCount = subChunkCount == 0 ? 0 : PADDING_SUB_CHUNK_COUNT + subChunkCount;
                 Map<StaticVersion, BatchPacket> packets = new EnumMap<>(StaticVersion.class);
                 Map<StaticVersion, BatchPacket[]> subPackets = new EnumMap<>(StaticVersion.class);
+                Map<StaticVersion, SubChunkPacket[]> subPacketsUncompressed = new EnumMap<>(StaticVersion.class);
 
                 payloads.forEach((version, data) -> {
                     int actualCount = subChunkCount;
@@ -3296,6 +3297,7 @@ public class Level implements ChunkManager, Metadatable {
 
                         byte[][] subChunkData = subChunkPayloads.get(version);
                         BatchPacket[] compressed = new BatchPacket[extendedCount];
+                        SubChunkPacket[] uncompressed = new SubChunkPacket[extendedCount];
                         for (int i = 0; i < extendedCount; i++) {
                             int y = i - PADDING_SUB_CHUNK_COUNT;
                             SubChunkPacket packet;
@@ -3308,8 +3310,11 @@ public class Level implements ChunkManager, Metadatable {
                                 packet = new SubChunkPacket();
                             }
                             compressed[i] = Level.getSubChunkCacheFromData(packet, Level.DIMENSION_OVERWORLD, x, y, z, subChunkData[i], heightMapType[i], heightMapData[i]);
+                            packet.setBuffer(null, 0); // release buffer
+                            uncompressed[i] = packet;
                         }
                         subPackets.put(version, compressed);
+                        subPacketsUncompressed.put(version, uncompressed);
                     }
                     packets.put(version, getChunkCacheFromData(x, z, actualCount, data, false, true));
                 });
@@ -3317,6 +3322,7 @@ public class Level implements ChunkManager, Metadatable {
                 chunkPacketCache = new ChunkPacketCache(
                         packets,
                         subPackets,
+                        subPacketsUncompressed,
                         getChunkCacheFromData(x, z, LevelChunkPacket.CLIENT_REQUEST_FULL_COLUMN_FAKE_COUNT, subModePayloadNew, false, true),
                         getChunkCacheFromData(x, z, LevelChunkPacket.CLIENT_REQUEST_FULL_COLUMN_FAKE_COUNT, subModePayload, false, true),
                         getChunkCacheFromData(x, z, LevelChunkPacket.CLIENT_REQUEST_TRUNCATED_COLUMN_FAKE_COUNT, extendedCount, subModePayloadNew, false, true),
