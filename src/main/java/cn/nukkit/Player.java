@@ -5540,14 +5540,7 @@ public class Player extends EntityHuman implements CommandSender, InventoryHolde
      * 使用 SpawnParticleEffectPacket 生成粒子效果.
      * @since 1.8.0
      */
-    public void spawnParticleEffect(Vector3f position, String identifier, long entityUniqueId, int dimension) {
-    }
-
-    /**
-     * 使用 SpawnParticleEffectPacket 生成粒子效果.
-     * @since 1.8.0
-     */
-    public void spawnParticleEffect(Vector3f position, String identifier, long entityUniqueId, int dimension, @Nullable String molangVariables) {
+    public void spawnParticleEffect(Vector3f position, String identifier, long entityUniqueId, @Nullable String molangVariables) {
     }
 
     /**
