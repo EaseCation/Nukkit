@@ -170,6 +170,7 @@ public class LevelDB implements LevelProvider {
                 .putLong("LastPlayed", System.currentTimeMillis() / 1000)
                 .putString("LevelName", name)
                 .putInt("NetworkVersion", GameVersion.getFeatureVersion().getProtocol())
+//                .putString("InventoryVersion", GameVersion.getFeatureVersion().toString())
                 .putInt("Platform", 2)
                 .putLong("RandomSeed", options.getSeed())
                 .putInt("SpawnX", spawnPosition.getFloorX())
@@ -194,6 +195,7 @@ public class LevelDB implements LevelProvider {
                 .putInt("limitedWorldDepth", 16)
                 .putLong("worldStartCount", ((long) Integer.MAX_VALUE) & 0xffffffffL)
 //                .putString("baseGameVersion", generatorType != Generator.TYPE_OLD ? "*" : GameVersion.V1_17_40.toString())
+                .putString("baseGameVersion", "*")
                 .putByte("bonusChestEnabled", 0)
                 .putByte("bonusChestSpawned", 1)
                 .putByte("CenterMapsToOrigin", 0)
@@ -219,7 +221,20 @@ public class LevelDB implements LevelProvider {
                 .putInt("serverChunkTickRange", 4)
                 .putByte("SpawnV1Villagers", 0)
                 .putByte("startWithMapEnabled", 0)
-                .putByte("useMsaGamertagsOnly", 0);
+                .putByte("useMsaGamertagsOnly", 0)
+                .putInt("WorldVersion", 1)
+                .putInt("permissionsLevel", 0)
+                .putInt("playerPermissionsLevel", 1)
+                .putByte("isCreatedInEditor", 0)
+                .putByte("isExportedFromEditor", 0)
+                .putString("BiomeOverride", "")
+                .putString("FlatWorldLayers", DEFAULT_FLAT_WORLD_LAYERS)
+                .putCompound("world_policies", new CompoundTag(Collections.emptyMap()))
+                .putCompound("experiments", new CompoundTag()
+                        .putByte("experiments_ever_used", 0)
+                        .putByte("saved_with_toggled_experiments", 0))
+                .putList(new ListTag<>("MinimumCompatibleClientVersion", CURRENT_COMPATIBLE_CLIENT_VERSION))
+                .putList(new ListTag<>("lastOpenedWithVersion", CURRENT_COMPATIBLE_CLIENT_VERSION));
         options.getGameRules().writeNBT(levelData, true);
 
         try (OutputStream stream = Files.newOutputStream(dirPath.resolve("level.dat"))) {
@@ -243,6 +258,13 @@ public class LevelDB implements LevelProvider {
 
     @Override
     public void saveLevelData() {
+        levelData//.putString("InventoryVersion", GameVersion.getFeatureVersion().toString())
+                .putInt("NetworkVersion", GameVersion.getFeatureVersion().getProtocol())
+                .putList(new ListTag<>("MinimumCompatibleClientVersion", CURRENT_COMPATIBLE_CLIENT_VERSION))
+                .putList(new ListTag<>("lastOpenedWithVersion", CURRENT_COMPATIBLE_CLIENT_VERSION))
+//                .putInt("StorageVersion", CURRENT_STORAGE_VERSION)
+                .putInt("WorldVersion", 1);
+
         try (OutputStream stream = Files.newOutputStream(Paths.get(path, "level.dat"))) {
             byte[] data = NBTIO.write(levelData, ByteOrder.LITTLE_ENDIAN);
             stream.write(Binary.writeLInt(CURRENT_STORAGE_VERSION));

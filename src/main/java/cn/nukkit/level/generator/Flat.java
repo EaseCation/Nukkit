@@ -177,9 +177,8 @@ public class Flat extends Generator {
                 chunk.setBiomeId(X, Z, biome);
 
                 for (int y = 0; y < 256; ++y) {
-                    int k = this.structure[y][0];
-                    int l = this.structure[y][1];
-                    chunk.setBlock(0, X, y, Z, this.structure[y][0], this.structure[y][1]);
+                    int[] pair = this.structure[y];
+                    chunk.setBlock(0, X, y, Z, pair[0], pair[1]);
                 }
             }
         }

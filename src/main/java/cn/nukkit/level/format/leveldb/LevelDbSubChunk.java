@@ -134,6 +134,11 @@ public class LevelDbSubChunk implements ChunkSection {
             PalettedSubChunkStorage storage = this.storages[layer];
             int previous = storage.get(x, y, z);
             int fullId = (id << Block.BLOCK_META_BITS) | (previous & Block.BLOCK_META_MASK);
+
+            if (previous == fullId) {
+                return;
+            }
+
             storage.set(x, y, z, fullId);
 
             dirty = true;
@@ -170,6 +175,11 @@ public class LevelDbSubChunk implements ChunkSection {
             PalettedSubChunkStorage storage = this.storages[layer];
             int previous = storage.get(x, y, z);
             int fullId = (previous & Block.FULL_BLOCK_ID_MASK) | (data & Block.BLOCK_META_MASK);
+
+            if (previous == fullId) {
+                return;
+            }
+
             storage.set(x, y, z, fullId);
 
             dirty = true;
@@ -196,6 +206,7 @@ public class LevelDbSubChunk implements ChunkSection {
 
     @Override
     public Block getAndSetBlock(int layer, int x, int y, int z, Block block) {
+        int fullId;
         int previous;
         try {
             this.writeLock.lock();
@@ -210,12 +221,19 @@ public class LevelDbSubChunk implements ChunkSection {
                 this.createLayerUnsafe(layer);
 
                 storage = this.storages[layer];
+
+                fullId = block.getFullId();
             } else {
                 storage = this.storages[layer];
                 previous = storage.get(x, y, z);
+
+                fullId = block.getFullId();
+
+                if (previous == fullId) {
+                    return Block.fromFullId(previous);
+                }
             }
 
-            int fullId = block.getFullId();
             storage.set(x, y, z, fullId);
 
             dirty = true;

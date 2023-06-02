@@ -178,6 +178,11 @@ public class LevelDbChunk extends BaseChunk {
     }
 
     @Override
+    public void populateSkyLight() {
+        //TODO
+    }
+
+    @Override
     public int getHighestBlockAt(int x, int z, boolean cache) {
         if (cache) {
             int airY = this.getHeightMap(x, z);
@@ -186,11 +191,12 @@ public class LevelDbChunk extends BaseChunk {
 
         for (int chunkY = 15; chunkY >= 0; chunkY--) {
             LevelDbSubChunk subChunk = this.getSection(chunkY);
+            int baseY = chunkY << 4;
             for (int localY = 15; localY >= 0; localY--) {
                 if (subChunk.getBlockId(0, x, localY, z) == BlockID.AIR && subChunk.getBlockId(1, x, localY, z) == BlockID.AIR) {
                     continue;
                 }
-                int y = (chunkY << 4) | localY;
+                int y = baseY | localY;
                 this.setHeightMap(x, z, y + 1);
                 return y;
             }
@@ -226,7 +232,13 @@ public class LevelDbChunk extends BaseChunk {
     }
 
     protected void onSubChunkBlockChanged(LevelDbSubChunk subChunk, int layer, int x, int y, int z, int previousId, int newId) {
+        assert previousId != newId;
+
         subChunksDirty = true;
+
+        if (layer != 0) {
+            return;
+        }
 
         if (previousId == BlockID.AIR) {
             int height = getHeightMap(x, z);
@@ -238,18 +250,17 @@ public class LevelDbChunk extends BaseChunk {
             int subChunkY = subChunk.getY();
             int worldY = (subChunkY << 4) | y;
             int height = getHeightMap(x, z);
-            if (height == worldY) {
-                boolean hasColumn = false;
+            if (height == (worldY + 1)) {
                 for (int localY = y; localY >= 0; localY--) {
                     if (subChunk.getBlockId(0, x, localY, z) == BlockID.AIR && subChunk.getBlockId(1, x, localY, z) == BlockID.AIR) {
                         continue;
                     }
                     this.setHeightMap(x, z, ((subChunkY << 4) | localY) + 1);
-                    hasColumn = true;
-                    break;
+                    return;
                 }
 
                 // thread safe?
+                boolean hasColumn = false;
                 SUB_CHUNKS:
                 for (int chunkY = subChunkY - 1; chunkY >= 0; chunkY--) {
                     LevelDbSubChunk section = this.getSection(chunkY);

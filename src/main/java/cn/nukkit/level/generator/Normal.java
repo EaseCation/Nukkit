@@ -116,7 +116,7 @@ public class Normal extends Generator {
     private final Map<String, Object> options;
     private final List<Populator> populators = new ObjectArrayList<>();
     private final List<Populator> generationPopulators = new ObjectArrayList<>();
-    public static final int seaHeight = 64;
+    public static final int seaHeight = 62;
     public NoiseGeneratorOctavesF scaleNoise;
     public NoiseGeneratorOctavesF depthNoise;
     private ChunkManager level;
