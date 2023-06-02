@@ -815,20 +815,11 @@ public class Level implements ChunkManager, Metadatable {
     }
 
     public void addParticleEffect(Vector3f pos, String identifier, long uniqueEntityId, int dimensionId, String molangVariables, Player... players) {
-        SpawnParticleEffectPacket pk = new SpawnParticleEffectPacket();
-        pk.identifier = identifier;
-        pk.uniqueEntityId = uniqueEntityId;
-        pk.dimensionId = dimensionId;
-        pk.position = pos;
-        pk.molangVariables = molangVariables;
-
-        if (players == null || players.length == 0) {
-            if (this.players.isEmpty()) {
-                return;
-            }
-            addChunkPacket(pos.getFloorX() >> 4, pos.getFloorZ() >> 4, pk);
-        } else {
-            Server.broadcastPacket(players, pk);
+        if (players == null) {
+            players = this.getChunkPlayers(pos.getChunkX(), pos.getChunkZ()).values().toArray(new Player[0]);
+        }
+        for (Player player : players) {
+            player.spawnParticleEffect(pos, identifier, uniqueEntityId, molangVariables);
         }
     }
 
