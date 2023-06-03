@@ -208,6 +208,10 @@ public class Normal extends Generator {
         });
         this.populators.add(ores);
 
+        this.initUnderground();
+    }
+
+    protected void initUnderground() {
         PopulatorCaves caves = new PopulatorCaves();
         this.populators.add(caves);
 

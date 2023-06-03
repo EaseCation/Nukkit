@@ -17,13 +17,16 @@ public final class Generators {
     private static final Map<Class<? extends Generator>, GeneratorEntry> BY_CLASS = new IdentityHashMap<>();
 
     public static void registerBuiltinGenerators() {
-//        addGenerator(Void.class, "void", TYPE_VOID);
-//        addGenerator(Old.class, "old", TYPE_OLD);
-        addGenerator(Flat.class, "flat", TYPE_FLAT);
+        addGenerator(Old.class, "old", TYPE_OLD);
+        addGenerator(Old.class, "legacy", TYPE_OLD);
         addGenerator(Normal.class, "normal", TYPE_INFINITE);
+        addGenerator(Normal.class, "overworld", TYPE_INFINITE);
         addGenerator(Normal.class, "default", TYPE_INFINITE);
+        addGenerator(Flat.class, "flat", TYPE_FLAT);
         addGenerator(Nether.class, "nether", TYPE_NETHER);
-//        addGenerator(End.class, "end", TYPE_END);
+        addGenerator(End.class, "end", TYPE_END);
+        addGenerator(End.class, "the_end", TYPE_END);
+        addGenerator(Void.class, "void", TYPE_VOID);
     }
 
     public static boolean addGenerator(Class<? extends Generator> clazz, String name, int type) {
