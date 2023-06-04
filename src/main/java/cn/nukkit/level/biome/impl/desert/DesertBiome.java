@@ -10,13 +10,13 @@ import cn.nukkit.level.generator.populator.impl.PopulatorDeadBush;
  */
 public class DesertBiome extends SandyBiome {
     public DesertBiome() {
-        PopulatorCactus cactus = new PopulatorCactus();
-        cactus.setBaseAmount(2);
-        this.addPopulator(cactus);
-
         PopulatorDeadBush deadbush = new PopulatorDeadBush();
         deadbush.setBaseAmount(2);
         this.addPopulator(deadbush);
+
+        PopulatorCactus cactus = new PopulatorCactus();
+        cactus.setBaseAmount(2);
+        this.addPopulator(cactus);
 
         this.setBaseHeight(0.125f);
         this.setHeightVariation(0.05f);

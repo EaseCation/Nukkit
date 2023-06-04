@@ -62,15 +62,15 @@ public class MesaBiome extends CoveredBiome {
     int startY = 0;
 
     public MesaBiome() {
-        PopulatorCactus cactus = new PopulatorCactus();
-        cactus.setBaseAmount(1);
-        cactus.setRandomAmount(1);
-        this.addPopulator(cactus);
-
         PopulatorDeadBush deadBush = new PopulatorDeadBush();
         deadBush.setBaseAmount(3);
         deadBush.setRandomAmount(2);
         this.addPopulator(deadBush);
+
+        PopulatorCactus cactus = new PopulatorCactus();
+        cactus.setBaseAmount(1);
+        cactus.setRandomAmount(1);
+        this.addPopulator(cactus);
 
         this.setMoundHeight(17);
     }

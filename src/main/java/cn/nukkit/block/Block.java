@@ -18,9 +18,12 @@ import cn.nukkit.metadata.Metadatable;
 import cn.nukkit.plugin.Plugin;
 import cn.nukkit.potion.Effect;
 import cn.nukkit.utils.BlockColor;
+import cn.nukkit.utils.JsonUtil;
+import com.fasterxml.jackson.annotation.JsonProperty;
 import com.google.gson.Gson;
 import it.unimi.dsi.fastutil.objects.Object2IntMap;
 import it.unimi.dsi.fastutil.objects.Object2IntOpenHashMap;
+import lombok.ToString;
 import lombok.extern.log4j.Log4j2;
 
 import javax.annotation.Nullable;
@@ -29,6 +32,7 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.Field;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
@@ -63,8 +67,10 @@ public abstract class Block extends Position implements Metadatable, Cloneable, 
      */
     public static final boolean[] hasMeta = new boolean[BLOCK_ID_COUNT];
 
-    public static final int[] light = new int[BLOCK_ID_COUNT];
-    public static final int[] lightFilter = new int[BLOCK_ID_COUNT];
+    public static final byte[] light = new byte[BLOCK_ID_COUNT];
+    public static final byte[] lightBlock = new byte[BLOCK_ID_COUNT];
+    public static final boolean[] lightBlocking = new boolean[BLOCK_ID_COUNT];
+    public static final byte[] lightFilter = new byte[BLOCK_ID_COUNT];
     public static final boolean[] solid = new boolean[BLOCK_ID_COUNT];
     public static final boolean[] transparent = new boolean[BLOCK_ID_COUNT];
 
@@ -116,6 +122,27 @@ public abstract class Block extends Position implements Metadatable, Cloneable, 
 
         Blocks.registerVanillaBlocks();
 
+        BlockEntry[] propertiesTable; // auto-generated
+        try (InputStream stream = Server.class.getClassLoader().getResourceAsStream("block_properties_table.json")) {
+            propertiesTable = JsonUtil.COMMON_JSON_MAPPER.readValue(stream, BlockEntry[].class);
+        } catch (NullPointerException | IOException e) {
+            throw new AssertionError("Unable to load block_properties_table.json", e);
+        }
+
+        Arrays.fill(lightBlock, (byte) 15);
+
+        for (BlockEntry entry : propertiesTable) {
+            assert entry.mId >= 0;
+
+            int id = entry.mId;
+            if (id >= UNDEFINED) {
+                log.trace("Skip unsupported block entry: {} ({})", entry.nameId, id);
+                continue;
+            }
+
+            lightBlock[id] = (byte) entry.mLightBlock;
+        }
+
         for (int id = 0; id < BLOCK_ID_COUNT; id++) {
             Class<?> c = list[id];
             if (c != null) {
@@ -162,7 +189,12 @@ public abstract class Block extends Position implements Metadatable, Cloneable, 
 
                 solid[id] = block.isSolid();
                 transparent[id] = block.isTransparent();
-                light[id] = block.getLightLevel();
+                light[id] = (byte) block.getLightLevel();
+                assert light[id] >= 0 && light[id] <= 15;
+//                lightBlock[id] = block.getLightBlock();
+                assert lightBlock[id] >= 0 && lightBlock[id] <= 15;
+//                lightBlocking[id] = block.getLightBlock() > 0 || block.isSlab();
+                lightBlocking[id] = lightBlock[id] > 0 || block.isSlab();
 
                 if (block.isSolid()) {
                     if (block.isTransparent()) {
@@ -226,6 +258,32 @@ public abstract class Block extends Position implements Metadatable, Cloneable, 
                 return variants[0].clone();
             }
             return variants[data].clone();
+        } catch (ArrayIndexOutOfBoundsException e) {
+            throw new IllegalArgumentException("Invalid block id: " + id);
+        }
+    }
+
+    public static Block getUnsafe(int id) {
+        return getUnsafe(id, 0);
+    }
+
+    public static Block getUnsafe(int id, Integer meta) {
+        if (meta == null) {
+            return getUnsafe(id);
+        }
+        return getUnsafe(id, (int) meta);
+    }
+
+    public static Block getUnsafe(int id, int data) {
+        try {
+            Block[] variants = variantList[id];
+            if (data < 0 || data >= variants.length) {
+                if (LOG_INVALID_BLOCK_AUX_ACCESS) {
+                    log.warn("Invalid block meta: id {}, meta {}", id, data, new IllegalArgumentException());
+                }
+                return variants[0];
+            }
+            return variants[data];
         } catch (ArrayIndexOutOfBoundsException e) {
             throw new IllegalArgumentException("Invalid block id: " + id);
         }
@@ -355,6 +413,11 @@ public abstract class Block extends Position implements Metadatable, Cloneable, 
 
     public int getLightLevel() {
         return 0;
+    }
+
+    //TODO
+    public int getLightBlock() {
+        return 15;
     }
 
     public boolean canBePlaced() {
@@ -1199,5 +1262,58 @@ public abstract class Block extends Position implements Metadatable, Cloneable, 
 
     public int getCopperAge() {
         return -1;
+    }
+
+    @ToString
+    private static class BlockEntry {
+        @JsonProperty("_blastResistance")
+        private float mBlastResistance;
+        @JsonProperty("_flammability")
+        private int mFlammability;
+        @JsonProperty("_friction")
+        private float mFriction;
+        @JsonProperty("_id")
+        private int mId;
+        @JsonProperty("_lavaFlammable")
+        private boolean mLavaFlammable;
+        @JsonProperty("_mBurnOdds")
+        private int mBurnOdds;
+        @JsonProperty("_mHardness")
+        private float mHardness;
+        @JsonProperty("_mLightBlock")
+        private int mLightBlock;
+        @JsonProperty("_mLightEmission")
+        private int mLightEmission;
+        @JsonProperty("_mMapColor0-R")
+        private float mMapColorR;
+        @JsonProperty("_mMapColor1-G")
+        private float mMapColorG;
+        @JsonProperty("_mMapColor2-B")
+        private float mMapColorB;
+        @JsonProperty("_mMapColor3-A")
+        private float mMapColorA;
+
+        private int blockEntityType;
+        private int blockItemId;
+        private int burnOdds;
+        private boolean canBeOriginalSurface;
+        private boolean canContainLiquid;
+        private boolean canHurtAndBreakItem;
+        private boolean canInstatick;
+        private int creativeCategory;
+        private int flameOdds;
+        private float hardness;
+        private boolean hasBlockEntity;
+        @JsonProperty("identifier")
+        private String nameId;
+        private boolean isHeavy;
+        private boolean isLavaFlammable;
+        private boolean isMotionBlockingBlock;
+        private boolean isSolid;
+        private boolean isSolidBlockingBlock;
+        private boolean isWaterBlocking;
+        private int renderLayer;
+        private boolean shouldRandomTick;
+        private float thickness;
     }
 }

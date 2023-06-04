@@ -26,4 +26,8 @@ public abstract class BlockTransparentMeta extends BlockMeta {
         return BlockColor.TRANSPARENT_BLOCK_COLOR;
     }
 
+    @Override
+    public int getLightBlock() {
+        return 0;
+    }
 }

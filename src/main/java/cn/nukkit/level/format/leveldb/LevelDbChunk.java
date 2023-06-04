@@ -1,7 +1,6 @@
 package cn.nukkit.level.format.leveldb;
 
 import cn.nukkit.block.Block;
-import cn.nukkit.block.BlockID;
 import cn.nukkit.level.format.ChunkSection;
 import cn.nukkit.level.format.LevelProvider;
 import cn.nukkit.level.format.LevelProviderManager;
@@ -21,9 +20,9 @@ import static cn.nukkit.level.format.leveldb.LevelDbConstants.*;
 public class LevelDbChunk extends BaseChunk {
     protected PalettedSubChunkStorage[] biomes3d; //TODO
     /**
-     * ZZZZXXXX key bit order.
+     * 0-256, ZZZZXXXX key bit order.
      */
-    protected short[] heightmap; // air Y
+    protected short[] heightmap;
 
     protected boolean terrainGenerated;
     protected boolean terrainPopulated;
@@ -185,15 +184,15 @@ public class LevelDbChunk extends BaseChunk {
     @Override
     public int getHighestBlockAt(int x, int z, boolean cache) {
         if (cache) {
-            int airY = this.getHeightMap(x, z);
-            return airY > 0 ? airY - 1 : 0;
+            int height = this.getHeightMap(x, z);
+            return height > 0 ? height - 1 : 0;
         }
 
         for (int chunkY = 15; chunkY >= 0; chunkY--) {
             LevelDbSubChunk subChunk = this.getSection(chunkY);
             int baseY = chunkY << 4;
             for (int localY = 15; localY >= 0; localY--) {
-                if (subChunk.getBlockId(0, x, localY, z) == BlockID.AIR && subChunk.getBlockId(1, x, localY, z) == BlockID.AIR) {
+                if (!Block.lightBlocking[subChunk.getBlockId(0, x, localY, z)]) {
                     continue;
                 }
                 int y = baseY | localY;
@@ -240,19 +239,30 @@ public class LevelDbChunk extends BaseChunk {
             return;
         }
 
-        if (previousId == BlockID.AIR) {
+        int previousBlockId = previousId >> Block.BLOCK_META_BITS;
+        int newBlockId = newId >> Block.BLOCK_META_BITS;
+        if (previousBlockId == newBlockId) {
+            return;
+        }
+
+        boolean lightBlocking = Block.lightBlocking[newBlockId];
+        if (lightBlocking == Block.lightBlocking[previousBlockId]) {
+            return;
+        }
+
+        if (lightBlocking) {
             int height = getHeightMap(x, z);
             int worldY = (subChunk.getY() << 4) | y;
             if (height <= worldY) {
                 setHeightMap(x, z, worldY + 1);
             }
-        } else if (newId == BlockID.AIR) {
+        } else {
             int subChunkY = subChunk.getY();
             int worldY = (subChunkY << 4) | y;
             int height = getHeightMap(x, z);
             if (height == (worldY + 1)) {
                 for (int localY = y; localY >= 0; localY--) {
-                    if (subChunk.getBlockId(0, x, localY, z) == BlockID.AIR && subChunk.getBlockId(1, x, localY, z) == BlockID.AIR) {
+                    if (!Block.lightBlocking[subChunk.getBlockId(0, x, localY, z)]) {
                         continue;
                     }
                     this.setHeightMap(x, z, ((subChunkY << 4) | localY) + 1);
@@ -265,7 +275,7 @@ public class LevelDbChunk extends BaseChunk {
                 for (int chunkY = subChunkY - 1; chunkY >= 0; chunkY--) {
                     LevelDbSubChunk section = this.getSection(chunkY);
                     for (int localY = 15; localY >= 0; localY--) {
-                        if (section.getBlockId(0, x, localY, z) == BlockID.AIR && section.getBlockId(1, x, localY, z) == BlockID.AIR) {
+                        if (!Block.lightBlocking[section.getBlockId(0, x, localY, z)]) {
                             continue;
                         }
                         this.setHeightMap(x, z, ((chunkY << 4) | localY) + 1);
