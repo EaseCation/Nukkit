@@ -17,7 +17,7 @@ import cn.nukkit.network.protocol.SetDifficultyPacket;
 public class DifficultyCommand extends VanillaCommand {
 
     public DifficultyCommand(String name) {
-        super(name, "%nukkit.command.difficulty.description", "%commands.difficulty.usage");
+        super(name, "%commands.difficulty.description", "%commands.difficulty.usage");
         this.setPermission("nukkit.command.difficulty");
         this.commandParameters.clear();
         this.commandParameters.put("default", new CommandParameter[]{

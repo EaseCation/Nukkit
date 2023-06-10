@@ -72,6 +72,17 @@ public class BlockEntityChemistryTable extends BlockEntitySpawnable {
 
     @Override
     public boolean onUpdate() {
+        if (isClosed()) {
+            return false;
+        }
+
+        int currentTick = server.getTick();
+        int tickDiff = currentTick - lastUpdate;
+        if (tickDiff <= 0) {
+            return true;
+        }
+        lastUpdate = currentTick;
+
         //TODO: ChemistryTableBlockActor::tick
         return false;
     }

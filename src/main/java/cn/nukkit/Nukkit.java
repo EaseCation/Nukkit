@@ -133,7 +133,7 @@ public class Nukkit {
         }
         log.info("Stopping other threads");
 
-        for (Thread thread : java.lang.Thread.getAllStackTraces().keySet()) {
+        for (Thread thread : Thread.getAllStackTraces().keySet()) {
             if (!(thread instanceof InterruptibleThread)) {
                 continue;
             }
@@ -143,6 +143,8 @@ public class Nukkit {
             }
         }
 
+        LogManager.shutdown();
+
         if (!SharedConstants.BREAKPOINT_DEBUGGING) {
             ServerKiller killer = new ServerKiller(16);
             killer.start();
@@ -151,8 +153,6 @@ public class Nukkit {
         if (TITLE) {
             System.out.print((char) 0x1b + "]0;Server Stopped" + (char) 0x07);
         }
-
-        LogManager.shutdown();
 
         if (Boolean.getBoolean("nukkit.docker")) {
             System.out.println("Nukkit has exited.");

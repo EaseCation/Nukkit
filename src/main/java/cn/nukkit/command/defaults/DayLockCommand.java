@@ -12,7 +12,7 @@ import cn.nukkit.level.Level;
 public class DayLockCommand extends VanillaCommand {
 
     public DayLockCommand(String name) {
-        super(name, "%nukkit.command.daylock.description", "%nukkit.command.daylock.usage", "alwaysday");
+        super(name, "%commands.daylock.description", "%nukkit.command.daylock.usage", "alwaysday");
         this.setPermission("nukkit.command.gamerule");
         this.commandParameters.clear();
         this.commandParameters.put("default", new CommandParameter[]{

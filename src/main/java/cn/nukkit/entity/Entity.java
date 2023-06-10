@@ -2687,6 +2687,13 @@ public abstract class Entity extends Location implements Metadatable {
         return false;
     }
 
+    /**
+     * @return tick count
+     */
+    public int getAge() {
+        return age;
+    }
+
     @Override
     public boolean equals(Object obj) {
         if (obj == null) {

@@ -38,7 +38,7 @@ public class BossEventPacket extends DataPacket {
     public long playerEid;
     public float healthPercent;
     public String title = "";
-    public short unknown;
+    public int darkenScreen;
     public BossBarColor color = BossBarColor.PINK;
     public int overlay;
 
@@ -61,7 +61,7 @@ public class BossEventPacket extends DataPacket {
                 this.title = this.getString();
                 this.healthPercent = this.getLFloat();
             case TYPE_UPDATE_PROPERTIES:
-                this.unknown = (short) this.getShort();
+                this.darkenScreen = this.getLShort();
             case TYPE_TEXTURE:
                 this.color = BossBarColor.VALUES[(int) this.getUnsignedVarInt()];
                 this.overlay = (int) this.getUnsignedVarInt();
@@ -90,7 +90,7 @@ public class BossEventPacket extends DataPacket {
                 this.putString(this.title);
                 this.putLFloat(this.healthPercent);
             case TYPE_UPDATE_PROPERTIES:
-                this.putShort(this.unknown);
+                this.putLShort(this.darkenScreen);
             case TYPE_TEXTURE:
                 this.putUnsignedVarInt(this.color.ordinal());
                 this.putUnsignedVarInt(this.overlay);

@@ -10,13 +10,14 @@ import cn.nukkit.command.data.CommandParamOption;
 import cn.nukkit.command.data.CommandParamType;
 import cn.nukkit.command.data.CommandParameter;
 import cn.nukkit.command.exceptions.CommandSyntaxException;
+import cn.nukkit.lang.TranslationContainer;
 import cn.nukkit.level.Level;
 import cn.nukkit.level.Position;
 import cn.nukkit.utils.TextFormat;
 
 public class SetBlockCommand extends Command {
 	public SetBlockCommand(String name) {
-        super(name, "%nukkit.command.setblock.description", "%commands.setblock.usage");
+        super(name, "%commands.setblock.description", "%nukkit.command.setblock.usage");
         this.setPermission("nukkit.command.setblock");
         this.commandParameters.clear();
         this.commandParameters.put("default", new CommandParameter[]{
@@ -65,7 +66,7 @@ public class SetBlockCommand extends Command {
 			}
 
 			if (changed) {
-				sender.sendMessage("Block placed");
+				sender.sendMessage(new TranslationContainer("commands.setblock.success"));
 				return true;
 			} else {
 				sender.sendMessage(TextFormat.RED + "The block couldn't be placed");

@@ -15,7 +15,7 @@ import cn.nukkit.utils.TextFormat;
 public class WhitelistCommand extends VanillaCommand {
 
     public WhitelistCommand(String name) {
-        super(name, "%nukkit.command.whitelist.description", "%commands.allowlist.usage");
+        super(name, "%commands.allowlist.description", "%nukkit.command.allowlist.usage");
         this.setPermission(
                 "nukkit.command.whitelist.reload;" +
                         "nukkit.command.whitelist.enable;" +
@@ -108,7 +108,7 @@ public class WhitelistCommand extends VanillaCommand {
 
     private boolean badPerm(CommandSender sender, String perm) {
         if (!sender.hasPermission("nukkit.command.whitelist" + perm)) {
-            sender.sendMessage(new TranslationContainer(TextFormat.RED + "%commands.generic.permission"));
+            sender.sendMessage(new TranslationContainer(TextFormat.RED + "%nukkit.command.generic.permission"));
 
             return true;
         }

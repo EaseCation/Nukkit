@@ -15,10 +15,11 @@ import cn.nukkit.math.Vector2;
 import cn.nukkit.math.Vector3;
 import cn.nukkit.math.Vector3f;
 import cn.nukkit.utils.TextFormat;
+import cn.nukkit.utils.function.FloatSupplier;
 
 import javax.annotation.Nullable;
 import java.util.List;
-import java.util.function.Function;
+import java.util.function.*;
 import java.util.stream.Collectors;
 
 public class CommandParser {
@@ -189,6 +190,27 @@ public class CommandParser {
         return this.parseInt(min, max);
     }
 
+    public int parseIntOrDefault(IntSupplier defaultValue) throws CommandSyntaxException {
+        if (!this.hasNext()) {
+            return defaultValue.getAsInt();
+        }
+        return this.parseInt();
+    }
+
+    public int parseIntOrDefault(IntSupplier defaultValue, int min) throws CommandSyntaxException {
+        if (!this.hasNext()) {
+            return defaultValue.getAsInt();
+        }
+        return this.parseInt(min);
+    }
+
+    public int parseIntOrDefault(IntSupplier defaultValue, int min, int max) throws CommandSyntaxException {
+        if (!this.hasNext()) {
+            return defaultValue.getAsInt();
+        }
+        return this.parseInt(min, max);
+    }
+
     public long parseLong() throws CommandSyntaxException {
         String arg = this.next();
         try {
@@ -234,6 +256,27 @@ public class CommandParser {
     public long parseLongOrDefault(long defaultValue, long min, long max) throws CommandSyntaxException {
         if (!this.hasNext()) {
             return defaultValue;
+        }
+        return this.parseLong(min, max);
+    }
+
+    public long parseLongOrDefault(LongSupplier defaultValue) throws CommandSyntaxException {
+        if (!this.hasNext()) {
+            return defaultValue.getAsLong();
+        }
+        return this.parseLong();
+    }
+
+    public long parseLongOrDefault(LongSupplier defaultValue, long min) throws CommandSyntaxException {
+        if (!this.hasNext()) {
+            return defaultValue.getAsLong();
+        }
+        return this.parseLong(min);
+    }
+
+    public long parseLongOrDefault(LongSupplier defaultValue, long min, long max) throws CommandSyntaxException {
+        if (!this.hasNext()) {
+            return defaultValue.getAsLong();
         }
         return this.parseLong(min, max);
     }
@@ -287,6 +330,27 @@ public class CommandParser {
         return this.parseFloat(min, max);
     }
 
+    public float parseFloatOrDefault(FloatSupplier defaultValue) throws CommandSyntaxException {
+        if (!this.hasNext()) {
+            return defaultValue.getAsFloat();
+        }
+        return this.parseFloat();
+    }
+
+    public float parseFloatOrDefault(FloatSupplier defaultValue, float min) throws CommandSyntaxException {
+        if (!this.hasNext()) {
+            return defaultValue.getAsFloat();
+        }
+        return this.parseFloat(min);
+    }
+
+    public float parseFloatOrDefault(FloatSupplier defaultValue, float min, float max) throws CommandSyntaxException {
+        if (!this.hasNext()) {
+            return defaultValue.getAsFloat();
+        }
+        return this.parseFloat(min, max);
+    }
+
     public double parseDouble() throws CommandSyntaxException {
         String arg = this.next();
         try {
@@ -336,6 +400,27 @@ public class CommandParser {
         return this.parseDouble(min, max);
     }
 
+    public double parseDoubleOrDefault(DoubleSupplier defaultValue) throws CommandSyntaxException {
+        if (!this.hasNext()) {
+            return defaultValue.getAsDouble();
+        }
+        return this.parseDouble();
+    }
+
+    public double parseDoubleOrDefault(DoubleSupplier defaultValue, double min) throws CommandSyntaxException {
+        if (!this.hasNext()) {
+            return defaultValue.getAsDouble();
+        }
+        return this.parseDouble(min);
+    }
+
+    public double parseDoubleOrDefault(DoubleSupplier defaultValue, double min, double max) throws CommandSyntaxException {
+        if (!this.hasNext()) {
+            return defaultValue.getAsDouble();
+        }
+        return this.parseDouble(min, max);
+    }
+
     public boolean parseBoolean() throws CommandSyntaxException {
         String arg = this.next();
         switch (arg.toLowerCase()) {
@@ -354,6 +439,13 @@ public class CommandParser {
         return this.parseBoolean();
     }
 
+    public boolean parseBooleanOrDefault(BooleanSupplier defaultValue) throws CommandSyntaxException {
+        if (!this.hasNext()) {
+            return defaultValue.getAsBoolean();
+        }
+        return this.parseBoolean();
+    }
+
     public String literal() throws CommandSyntaxException {
         return this.next();
     }
@@ -361,6 +453,13 @@ public class CommandParser {
     public String literalOrDefault(String defaultValue) throws CommandSyntaxException {
         if (!this.hasNext()) {
             return defaultValue;
+        }
+        return this.literal();
+    }
+
+    public String literalOrDefault(Supplier<String> defaultValue) throws CommandSyntaxException {
+        if (!this.hasNext()) {
+            return defaultValue.get();
         }
         return this.literal();
     }
@@ -383,6 +482,13 @@ public class CommandParser {
         return this.parse(parser);
     }
 
+    public <T> T parseOrDefault(Supplier<T> defaultValue, Function<String, T> parser) throws CommandSyntaxException {
+        if (!this.hasNext()) {
+            return defaultValue.get();
+        }
+        return this.parse(parser);
+    }
+
     public <T extends Enum<T>> T parseEnum(Class<T> enumType) throws CommandSyntaxException {
         String arg = this.next();
         try {
@@ -395,6 +501,13 @@ public class CommandParser {
     public <T extends Enum<T>> T parseEnumOrDefault(T defaultValue, Class<T> enumType) throws CommandSyntaxException {
         if (!this.hasNext()) {
             return defaultValue;
+        }
+        return this.parseEnum(enumType);
+    }
+
+    public <T extends Enum<T>> T parseEnumOrDefault(Supplier<T> defaultValue, Class<T> enumType) throws CommandSyntaxException {
+        if (!this.hasNext()) {
+            return defaultValue.get();
         }
         return this.parseEnum(enumType);
     }
@@ -464,6 +577,13 @@ public class CommandParser {
         return this.parsePosition();
     }
 
+    public Position parsePositionOrDefault(Supplier<Position> defaultValue) throws CommandSyntaxException {
+        if (!this.hasNext()) {
+            return defaultValue.get();
+        }
+        return this.parsePosition();
+    }
+
     public Vector3 parseVector3() throws CommandSyntaxException {
         double baseX = 0;
         double baseY = 0;
@@ -492,6 +612,13 @@ public class CommandParser {
     public Vector3 parseVector3OrDefault(Vector3 defaultValue) throws CommandSyntaxException {
         if (!this.hasNext()) {
             return defaultValue;
+        }
+        return this.parseVector3();
+    }
+
+    public Vector3 parseVector3OrDefault(Supplier<Vector3> defaultValue) throws CommandSyntaxException {
+        if (!this.hasNext()) {
+            return defaultValue.get();
         }
         return this.parseVector3();
     }
@@ -528,6 +655,13 @@ public class CommandParser {
         return this.parseVector2();
     }
 
+    public Vector2 parseVector2OrDefault(Supplier<Vector2> defaultValue) throws CommandSyntaxException {
+        if (!this.hasNext()) {
+            return defaultValue.get();
+        }
+        return this.parseVector2();
+    }
+
     private double parseCoordinate(double baseCoordinate) throws CommandSyntaxException {
         String arg = this.next();
         try {
@@ -560,6 +694,13 @@ public class CommandParser {
         return this.parseBlock();
     }
 
+    public Block parseBlockOrDefault(Supplier<Block> defaultValue) throws CommandSyntaxException {
+        if (!this.hasNext()) {
+            return defaultValue.get();
+        }
+        return this.parseBlock();
+    }
+
     public Item parseItem() throws CommandSyntaxException {
         String arg = this.next();
         try {
@@ -572,6 +713,13 @@ public class CommandParser {
     public Item parseItemOrDefault(Item defaultValue) throws CommandSyntaxException {
         if (!this.hasNext()) {
             return defaultValue;
+        }
+        return this.parseItem();
+    }
+
+    public Item parseItemOrDefault(Supplier<Item> defaultValue) throws CommandSyntaxException {
+        if (!this.hasNext()) {
+            return defaultValue.get();
         }
         return this.parseItem();
     }

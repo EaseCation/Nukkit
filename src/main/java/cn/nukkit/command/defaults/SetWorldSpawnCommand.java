@@ -15,7 +15,7 @@ import cn.nukkit.math.Vector3;
  */
 public class SetWorldSpawnCommand extends VanillaCommand {
     public SetWorldSpawnCommand(String name) {
-        super(name, "%nukkit.command.setworldspawn.description", "%commands.setworldspawn.usage");
+        super(name, "%commands.setworldspawn.description", "%nukkit.command.setworldspawn.usage");
         this.setPermission("nukkit.command.setworldspawn");
         this.commandParameters.clear();
         this.commandParameters.put("default", new CommandParameter[]{
@@ -35,7 +35,7 @@ public class SetWorldSpawnCommand extends VanillaCommand {
                 level = ((Player) sender).getLevel();
                 pos = ((Player) sender).round();
             } else {
-                sender.sendMessage(new TranslationContainer("commands.generic.ingame"));
+                sender.sendMessage(new TranslationContainer("nukkit.command.generic.ingame"));
                 return true;
             }
         } else if (args.length == 3) {

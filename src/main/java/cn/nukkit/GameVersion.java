@@ -45,6 +45,7 @@ public enum GameVersion {
     V1_19_63(568, "1.19.63"),
     V1_19_70(575, "1.19.70"),
     V1_19_80(582, "1.19.80"),
+    V1_20_0(589, "1.20.0", "1.20"),
     ;
 
     private static GameVersion FEATURE_VERSION = ENABLE_BLOCK_STATE_PERSISTENCE ? GameVersion.V1_18_0 : GameVersion.V1_12_0;

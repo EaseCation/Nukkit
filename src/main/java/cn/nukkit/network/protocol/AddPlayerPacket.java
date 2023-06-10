@@ -3,7 +3,6 @@ package cn.nukkit.network.protocol;
 import cn.nukkit.entity.data.EntityMetadata;
 import cn.nukkit.item.Item;
 import cn.nukkit.network.protocol.types.EntityLink;
-import cn.nukkit.utils.Binary;
 import lombok.ToString;
 
 import java.util.UUID;
@@ -57,6 +56,6 @@ public class AddPlayerPacket extends DataPacket {
         this.putLFloat(this.headYaw);
         this.putSlot(this.item);
 
-        this.put(Binary.writeMetadata(this.metadata));
+        this.putEntityMetadata(this.metadata);
     }
 }

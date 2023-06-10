@@ -153,6 +153,8 @@ public class Player extends EntityHuman implements CommandSender, InventoryHolde
     public static final int TRADE_WINDOW_ID = 5;
     public static final int FIRST_AVAILABLE_WINDOW_ID = 6;
 
+    public static final int MAX_VIEW_DISTANCE = 96;
+
     /**
      * Prevent the player inside into unloaded chunks.
      */
@@ -5694,5 +5696,11 @@ public class Player extends EntityHuman implements CommandSender, InventoryHolde
      * @since 1.19.80
      */
     public void openSignEditor(BlockVector3 pos, boolean front) {
+    }
+
+    /**
+     * @since 1.16.0
+     */
+    public void playEmote(String emoteId, long entityRuntimeId, int flags) {
     }
 }

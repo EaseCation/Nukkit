@@ -138,6 +138,13 @@ public class BlockEntityHopper extends BlockEntitySpawnable implements Inventory
             return false;
         }
 
+        int currentTick = server.getTick();
+        int tickDiff = currentTick - lastUpdate;
+        if (tickDiff <= 0) {
+            return true;
+        }
+        lastUpdate = currentTick;
+
         this.transferCooldown--;
 
         if (this.level.isBlockPowered(getBlock())) {
@@ -164,7 +171,6 @@ public class BlockEntityHopper extends BlockEntitySpawnable implements Inventory
                 setDirty();
             }
         }
-
 
         return true;
     }

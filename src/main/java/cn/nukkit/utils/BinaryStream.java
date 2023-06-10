@@ -4,6 +4,7 @@ import cn.nukkit.command.data.CommandDataVersions;
 import cn.nukkit.command.data.CommandEnum;
 import cn.nukkit.command.data.CommandParamType;
 import cn.nukkit.entity.Attribute;
+import cn.nukkit.entity.data.EntityMetadata;
 import cn.nukkit.entity.data.Skin;
 import cn.nukkit.item.Item;
 import cn.nukkit.item.ItemDurable;
@@ -195,12 +196,20 @@ public class BinaryStream {
         this.count = newLength;
     }
 
+    private int prepareWriterIndex(int length) {
+        this.ensureCapacity(this.count + length);
+        int writerIndex = this.count;
+        this.count += length;
+        return writerIndex;
+    }
+
     public long getLong() {
         return Binary.readLong(this.get(8));
     }
 
     public void putLong(long l) {
-        this.put(Binary.writeLong(l));
+        int index = this.prepareWriterIndex(8);
+        Binary.writeLong(l, this.buffer, index);
     }
 
     public int getInt() {
@@ -208,7 +217,8 @@ public class BinaryStream {
     }
 
     public void putInt(int i) {
-        this.put(Binary.writeInt(i));
+        int index = this.prepareWriterIndex(4);
+        Binary.writeInt(i, this.buffer, index);
     }
 
     public long getLLong() {
@@ -216,7 +226,8 @@ public class BinaryStream {
     }
 
     public void putLLong(long l) {
-        this.put(Binary.writeLLong(l));
+        int index = this.prepareWriterIndex(8);
+        Binary.writeLLong(l, this.buffer, index);
     }
 
     public int getLInt() {
@@ -224,7 +235,8 @@ public class BinaryStream {
     }
 
     public void putLInt(int i) {
-        this.put(Binary.writeLInt(i));
+        int index = this.prepareWriterIndex(4);
+        Binary.writeLInt(i, this.buffer, index);
     }
 
     public int getShort() {
@@ -232,7 +244,8 @@ public class BinaryStream {
     }
 
     public void putShort(int s) {
-        this.put(Binary.writeShort(s));
+        int index = this.prepareWriterIndex(2);
+        Binary.writeShort(s, this.buffer, index);
     }
 
     public int getLShort() {
@@ -240,31 +253,44 @@ public class BinaryStream {
     }
 
     public void putLShort(int s) {
-        this.put(Binary.writeLShort(s));
+        int index = this.prepareWriterIndex(2);
+        Binary.writeLShort(s, this.buffer, index);
     }
 
     public float getFloat() {
-        return getFloat(-1);
-    }
-
-    public float getFloat(int accuracy) {
-        return Binary.readFloat(this.get(4), accuracy);
+        return Binary.readFloat(this.get(4));
     }
 
     public void putFloat(float v) {
-        this.put(Binary.writeFloat(v));
+        int index = this.prepareWriterIndex(4);
+        Binary.writeFloat(v, this.buffer, index);
     }
 
     public float getLFloat() {
-        return getLFloat(-1);
-    }
-
-    public float getLFloat(int accuracy) {
-        return Binary.readLFloat(this.get(4), accuracy);
+        return Binary.readLFloat(this.get(4));
     }
 
     public void putLFloat(float v) {
-        this.put(Binary.writeLFloat(v));
+        int index = this.prepareWriterIndex(4);
+        Binary.writeLFloat(v, this.buffer, index);
+    }
+
+    public double getDouble() {
+        return Binary.readDouble(this.get(8));
+    }
+
+    public void putDouble(double v) {
+        int index = this.prepareWriterIndex(8);
+        Binary.writeDouble(v, this.buffer, index);
+    }
+
+    public double getLDouble() {
+        return Binary.readLDouble(this.get(8));
+    }
+
+    public void putLDouble(double v) {
+        int index = this.prepareWriterIndex(8);
+        Binary.writeLDouble(v, this.buffer, index);
     }
 
     public int getTriad() {
@@ -272,7 +298,8 @@ public class BinaryStream {
     }
 
     public void putTriad(int triad) {
-        this.put(Binary.writeTriad(triad));
+        int index = this.prepareWriterIndex(3);
+        Binary.writeTriad(triad, this.buffer, index);
     }
 
     public int getLTriad() {
@@ -280,7 +307,8 @@ public class BinaryStream {
     }
 
     public void putLTriad(int triad) {
-        this.put(Binary.writeLTriad(triad));
+        int index = this.prepareWriterIndex(3);
+        Binary.writeLTriad(triad, this.buffer, index);
     }
 
     public boolean getBoolean() {
@@ -300,7 +328,8 @@ public class BinaryStream {
     }
 
     public void putByte(byte b) {
-        this.put(new byte[]{b});
+        this.ensureCapacity(this.count + 1);
+        this.buffer[this.count++] = b;
     }
 
     /**
@@ -920,7 +949,7 @@ public class BinaryStream {
     }
 
     public Vector3f getVector3f() {
-        return new Vector3f(this.getLFloat(4), this.getLFloat(4), this.getLFloat(4));
+        return new Vector3f(this.getLFloat(), this.getLFloat(), this.getLFloat());
     }
 
     public void putVector3f(Vector3f v) {
@@ -1004,6 +1033,10 @@ public class BinaryStream {
         putBoolean(link.immediate);
     }
 
+    public void putEntityMetadata(EntityMetadata metadata) {
+        Binary.writeMetadata(metadata, this);
+    }
+
     /**
      * @throws IndexOutOfBoundsException if the length of the array is greater than 4096
      */
@@ -1036,6 +1069,15 @@ public class BinaryStream {
         int count = this.getLShort();
         ArrayDeque<T> deque = new ArrayDeque<>();
         for (int i = 0; i < count; i++) {
+            deque.add(function.apply(this));
+        }
+        return deque.toArray((T[]) Array.newInstance(clazz, 0));
+    }
+
+    @SuppressWarnings("unchecked")
+    public <T> T[] getArray(int length, Class<T> clazz, Function<BinaryStream, T> function) {
+        ArrayDeque<T> deque = new ArrayDeque<>();
+        for (int i = 0; i < length; i++) {
             deque.add(function.apply(this));
         }
         return deque.toArray((T[]) Array.newInstance(clazz, 0));

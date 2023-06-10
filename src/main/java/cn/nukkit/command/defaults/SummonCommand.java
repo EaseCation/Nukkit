@@ -14,7 +14,7 @@ import cn.nukkit.nbt.tag.CompoundTag;
 
 public class SummonCommand extends Command {
 	public SummonCommand(String name) {
-        super(name, "%nukkit.command.summon.description", "%commands.summon.usage");
+        super(name, "%commands.summon.description", "%nukkit.command.summon.usage");
         this.setPermission("nukkit.command.summon");
         this.commandParameters.clear();
         this.commandParameters.put("pos", new CommandParameter[]{

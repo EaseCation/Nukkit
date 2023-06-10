@@ -156,6 +156,17 @@ public class BlockEntityPistonArm extends BlockEntitySpawnable {
 
     @Override
     public boolean onUpdate() {
+        if (isClosed()) {
+            return false;
+        }
+
+        int currentTick = server.getTick();
+        int tickDiff = currentTick - lastUpdate;
+        if (tickDiff <= 0) {
+            return true;
+        }
+        lastUpdate = currentTick;
+
         boolean hasUpdate = true;
 
         if (this.extending) {
@@ -213,7 +224,7 @@ public class BlockEntityPistonArm extends BlockEntitySpawnable {
             this.level.addChunkPacket(getChunkX(), getChunkZ(), packet);
         }
 
-        return super.onUpdate() || hasUpdate;
+        return hasUpdate;
     }
 
     private float getExtendedProgress(float progress) {

@@ -24,7 +24,7 @@ import java.util.stream.Stream;
 public class FillCommand extends VanillaCommand {
 
     public FillCommand(String name) {
-        super(name, "%nukkit.command.fill.description", "%nukkit.command.fill.usage");
+        super(name, "%commands.fill.description", "%nukkit.command.fill.usage");
         this.setPermission("nukkit.command.fill");
         this.commandParameters.clear();
         this.commandParameters.put("default", new CommandParameter[]{

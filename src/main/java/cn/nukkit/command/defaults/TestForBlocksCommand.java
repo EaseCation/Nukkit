@@ -21,7 +21,7 @@ import java.util.List;
 public class TestForBlocksCommand extends VanillaCommand {
 
     public TestForBlocksCommand(String name) {
-        super(name, "%nukkit.command.testforblocks.description", "%nukkit.command.testforblocks.usage");
+        super(name, "%commands.testforblocks.description", "%nukkit.command.testforblocks.usage");
         this.setPermission("nukkit.command.testforblocks");
         this.commandParameters.clear();
         this.commandParameters.put("default", new CommandParameter[]{

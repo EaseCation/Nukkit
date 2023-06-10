@@ -208,6 +208,7 @@ public class BlockEntityBrewingStand extends BlockEntitySpawnable implements Inv
                 this.server.getPluginManager().callEvent(e);
                 if (e.isCancelled()) {
                     brewing = false;
+                    timing.stopTiming();
                     return false;
                 }
             }

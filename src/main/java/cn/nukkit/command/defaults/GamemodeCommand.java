@@ -17,7 +17,7 @@ import cn.nukkit.utils.TextFormat;
 public class GamemodeCommand extends VanillaCommand {
 
     public GamemodeCommand(String name) {
-        super(name, "%nukkit.command.gamemode.description", "%commands.gamemode.usage", "gm");
+        super(name, "%commands.gamemode.description", "%nukkit.command.gamemode.usage", "gm");
         this.setPermission("nukkit.command.gamemode.survival;" +
                 "nukkit.command.gamemode.creative;" +
                 "nukkit.command.gamemode.adventure;" +
@@ -60,7 +60,7 @@ public class GamemodeCommand extends VanillaCommand {
                     return true;
                 }
             } else {
-                sender.sendMessage(new TranslationContainer(TextFormat.RED + "%commands.generic.permission"));
+                sender.sendMessage(new TranslationContainer(TextFormat.RED + "%nukkit.command.generic.permission"));
                 return true;
             }
         } else if (!(sender instanceof Player)) {
@@ -72,7 +72,7 @@ public class GamemodeCommand extends VanillaCommand {
                 (gameMode == 1 && !sender.hasPermission("nukkit.command.gamemode.creative")) ||
                 (gameMode == 2 && !sender.hasPermission("nukkit.command.gamemode.adventure")) ||
                 (gameMode == 3 && !sender.hasPermission("nukkit.command.gamemode.spectator"))) {
-            sender.sendMessage(new TranslationContainer(TextFormat.RED + "%commands.generic.permission"));
+            sender.sendMessage(new TranslationContainer(TextFormat.RED + "%nukkit.command.generic.permission"));
             return true;
         }
 

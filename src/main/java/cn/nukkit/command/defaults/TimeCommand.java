@@ -17,7 +17,7 @@ import cn.nukkit.utils.TextFormat;
 public class TimeCommand extends VanillaCommand {
 
     public TimeCommand(String name) {
-        super(name, "%nukkit.command.time.description", "%nukkit.command.time.usage");
+        super(name, "%commands.time.description", "%nukkit.command.time.usage");
         this.setPermission("nukkit.command.time.add;" +
                 "nukkit.command.time.set;" +
                 "nukkit.command.time.start;" +
@@ -50,7 +50,7 @@ public class TimeCommand extends VanillaCommand {
 
         if ("start".equals(args[0])) {
             if (!sender.hasPermission("nukkit.command.time.start")) {
-                sender.sendMessage(new TranslationContainer(TextFormat.RED + "%commands.generic.permission"));
+                sender.sendMessage(new TranslationContainer(TextFormat.RED + "%nukkit.command.generic.permission"));
 
                 return true;
             }
@@ -63,7 +63,7 @@ public class TimeCommand extends VanillaCommand {
             return true;
         } else if ("stop".equals(args[0])) {
             if (!sender.hasPermission("nukkit.command.time.stop")) {
-                sender.sendMessage(new TranslationContainer(TextFormat.RED + "%commands.generic.permission"));
+                sender.sendMessage(new TranslationContainer(TextFormat.RED + "%nukkit.command.generic.permission"));
 
                 return true;
             }
@@ -76,7 +76,7 @@ public class TimeCommand extends VanillaCommand {
             return true;
         } else if ("query".equals(args[0])) {
             if (!sender.hasPermission("nukkit.command.time.query")) {
-                sender.sendMessage(new TranslationContainer(TextFormat.RED + "%commands.generic.permission"));
+                sender.sendMessage(new TranslationContainer(TextFormat.RED + "%nukkit.command.generic.permission"));
 
                 return true;
             }
@@ -99,7 +99,7 @@ public class TimeCommand extends VanillaCommand {
 
         if ("set".equals(args[0])) {
             if (!sender.hasPermission("nukkit.command.time.set")) {
-                sender.sendMessage(new TranslationContainer(TextFormat.RED + "%commands.generic.permission"));
+                sender.sendMessage(new TranslationContainer(TextFormat.RED + "%nukkit.command.generic.permission"));
 
                 return true;
             }
@@ -134,7 +134,7 @@ public class TimeCommand extends VanillaCommand {
             Command.broadcastCommandMessage(sender, new TranslationContainer("commands.time.set", value));
         } else if ("add".equals(args[0])) {
             if (!sender.hasPermission("nukkit.command.time.add")) {
-                sender.sendMessage(new TranslationContainer(TextFormat.RED + "%commands.generic.permission"));
+                sender.sendMessage(new TranslationContainer(TextFormat.RED + "%nukkit.command.generic.permission"));
 
                 return true;
             }

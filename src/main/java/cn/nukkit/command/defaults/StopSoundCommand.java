@@ -8,7 +8,6 @@ import cn.nukkit.command.data.CommandParamType;
 import cn.nukkit.command.data.CommandParameter;
 import cn.nukkit.command.exceptions.CommandSyntaxException;
 import cn.nukkit.network.protocol.StopSoundPacket;
-import cn.nukkit.utils.TextFormat;
 
 import java.util.List;
 import java.util.stream.Collectors;
@@ -16,7 +15,7 @@ import java.util.stream.Collectors;
 public class StopSoundCommand extends VanillaCommand {
 
     public StopSoundCommand(String name) {
-        super(name, "%nukkit.command.stopsound.description", "%nukkit.command.stopsound.usage");
+        super(name, "%commands.stopsound.description", "%nukkit.command.stopsound.usage");
         this.setPermission("nukkit.command.sound.stop");
         this.commandParameters.clear();
         this.commandParameters.put("default", new CommandParameter[]{

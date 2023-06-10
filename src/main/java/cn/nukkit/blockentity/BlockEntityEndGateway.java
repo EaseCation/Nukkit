@@ -71,6 +71,17 @@ public class BlockEntityEndGateway extends BlockEntitySpawnable {
 
     @Override
     public boolean onUpdate() {
+        if (isClosed()) {
+            return false;
+        }
+
+        int currentTick = server.getTick();
+        int tickDiff = currentTick - lastUpdate;
+        if (tickDiff <= 0) {
+            return true;
+        }
+        lastUpdate = currentTick;
+
         int age = this.age;
         if (age++ < 200) {
             this.age = age;

@@ -15,7 +15,7 @@ import java.util.concurrent.ThreadLocalRandom;
 public class SpreadPlayersCommand extends VanillaCommand {
 
     public SpreadPlayersCommand(String name) {
-        super(name, "%nukkit.command.spreadplayers.description", "%nukkit.command.spreadplayers.usage");
+        super(name, "%commands.spreadplayers.description", "%nukkit.command.spreadplayers.usage");
         this.setPermission("nukkit.command.spreadplayers");
         this.commandParameters.clear();
         this.commandParameters.put("default", new CommandParameter[]{

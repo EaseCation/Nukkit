@@ -148,6 +148,17 @@ public class BlockEntityJukebox extends BlockEntitySpawnable {
 
     @Override
     public boolean onUpdate() {
+        if (isClosed()) {
+            return false;
+        }
+
+        int currentTick = server.getTick();
+        int tickDiff = currentTick - lastUpdate;
+        if (tickDiff <= 0) {
+            return true;
+        }
+        lastUpdate = currentTick;
+
         if (this.finishedRecording) {
             this.ticksPlaying = 0;
             return false;

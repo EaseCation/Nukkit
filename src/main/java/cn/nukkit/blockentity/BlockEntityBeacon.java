@@ -61,12 +61,21 @@ public class BlockEntityBeacon extends BlockEntitySpawnable {
                 .putInt("secondary", this.namedTag.getInt("secondary"));
     }
 
-    private long currentTick = 0;
-
     @Override
     public boolean onUpdate() {
+        if (isClosed()) {
+            return false;
+        }
+
+        int currentTick = server.getTick();
+        int tickDiff = currentTick - lastUpdate;
+        if (tickDiff <= 0) {
+            return true;
+        }
+        lastUpdate = currentTick;
+
         //Only apply effects every 4 secs
-        if (currentTick++ % 80 != 0) {
+        if (currentTick % 80 != 0) {
             return true;
         }
 

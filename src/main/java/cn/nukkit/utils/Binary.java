@@ -5,7 +5,6 @@ import cn.nukkit.entity.data.*;
 import cn.nukkit.entity.item.EntityBoat;
 import cn.nukkit.item.Item;
 import cn.nukkit.math.BlockVector3;
-import cn.nukkit.math.NukkitMath;
 import cn.nukkit.nbt.NBTIO;
 import cn.nukkit.nbt.tag.CompoundTag;
 import it.unimi.dsi.fastutil.ints.Int2ObjectMap;
@@ -48,55 +47,73 @@ public class Binary {
 
     //Triad: {0x00,0x00,0x01}<=>1
     public static int readTriad(byte[] bytes) {
-        return readInt(new byte[]{
-                (byte) 0x00,
-                bytes[0],
-                bytes[1],
-                bytes[2]
-        });
+        return ((bytes[0] & 0xff) << 16) |
+                ((bytes[1] & 0xff) << 8) |
+                (bytes[2] & 0xff);
+    }
+
+    public static int readTriad(byte[] bytes, int offset) {
+        return ((bytes[offset] & 0xff) << 16) |
+                ((bytes[1 + offset] & 0xff) << 8) |
+                (bytes[2 + offset] & 0xff);
     }
 
     public static byte[] writeTriad(int value) {
         return new byte[]{
-                (byte) ((value >>> 16) & 0xFF),
-                (byte) ((value >>> 8) & 0xFF),
-                (byte) (value & 0xFF)
+                (byte) (value >> 16),
+                (byte) (value >> 8),
+                (byte) value
         };
+    }
+
+    public static void writeTriad(int value, byte[] bytes, int offset) {
+        bytes[offset] = (byte) (value >> 16);
+        bytes[1 + offset] = (byte) (value >> 8);
+        bytes[2 + offset] = (byte) value;
     }
 
     //LTriad: {0x01,0x00,0x00}<=>1
     public static int readLTriad(byte[] bytes) {
-        return readLInt(new byte[]{
-                bytes[0],
-                bytes[1],
-                bytes[2],
-                (byte) 0x00
-        });
+        return ((bytes[2] & 0xff) << 24) |
+                ((bytes[1] & 0xff) << 16) |
+                ((bytes[0] & 0xff) << 8);
+    }
+
+    public static int readLTriad(byte[] bytes, int offset) {
+        return ((bytes[2 + offset] & 0xff) << 24) |
+                ((bytes[1 + offset] & 0xff) << 16) |
+                ((bytes[offset] & 0xff) << 8);
     }
 
     public static byte[] writeLTriad(int value) {
         return new byte[]{
-                (byte) (value & 0xFF),
-                (byte) ((value >>> 8) & 0xFF),
-                (byte) ((value >>> 16) & 0xFF)
+                (byte) value,
+                (byte) (value >> 8),
+                (byte) (value >> 16)
         };
     }
 
+    public static void writeLTriad(int value, byte[] bytes, int offset) {
+        bytes[offset] = (byte) value;
+        bytes[1 + offset] = (byte) (value >> 8);
+        bytes[2 + offset] = (byte) (value >> 16);
+    }
+
     public static UUID readUUID(byte[] bytes) {
-        return new UUID(readLLong(bytes), readLLong(new byte[]{
-                bytes[8],
-                bytes[9],
-                bytes[10],
-                bytes[11],
-                bytes[12],
-                bytes[13],
-                bytes[14],
-                bytes[15]
-        }));
+        return new UUID(readLLong(bytes), readLLong(bytes, 8));
+    }
+
+    public static UUID readUUID(byte[] bytes, int offset) {
+        return new UUID(readLLong(bytes, offset), readLLong(bytes, 8 + offset));
     }
 
     public static byte[] writeUUID(UUID uuid) {
         return appendBytes(writeLLong(uuid.getMostSignificantBits()), writeLLong(uuid.getLeastSignificantBits()));
+    }
+
+    public static void writeUUID(UUID uuid, byte[] bytes, int offset) {
+        writeLLong(uuid.getMostSignificantBits(), bytes, offset);
+        writeLLong(uuid.getLeastSignificantBits(), bytes, 8 + offset);
     }
 
     public static byte[] writeMetadata(EntityMetadata metadata) {
@@ -181,6 +198,85 @@ public class Binary {
         return stream.getBuffer();
     }
 
+    public static void writeMetadata(EntityMetadata metadata, BinaryStream stream) {
+        Int2ObjectMap<EntityData> map = metadata.getMap();
+        map.remove(Entity.DATA_NUKKIT_FLAGS);
+        stream.putUnsignedVarInt(map.size());
+
+        int buoyancyDataId = -1;
+        StringEntityData buoyancyData = null;
+
+        for (Int2ObjectMap.Entry<EntityData> entry : map.int2ObjectEntrySet()) {
+            int id = entry.getIntKey();
+            EntityData d = entry.getValue();
+
+            int mark = stream.getCount();
+            stream.putUnsignedVarInt(id);
+            stream.putUnsignedVarInt(d.getType());
+
+            switch (d.getType()) {
+                case Entity.DATA_TYPE_BYTE:
+                    stream.putByte(((ByteEntityData) d).getData().byteValue());
+                    break;
+                case Entity.DATA_TYPE_SHORT:
+                    stream.putLShort(((ShortEntityData) d).getData());
+                    break;
+                case Entity.DATA_TYPE_INT:
+                    stream.putVarInt(((IntEntityData) d).getData());
+                    break;
+                case Entity.DATA_TYPE_FLOAT:
+                    stream.putLFloat(((FloatEntityData) d).getData());
+                    break;
+                case Entity.DATA_TYPE_STRING:
+                    StringEntityData data = (StringEntityData) d;
+                    String s = data.getData();
+
+                    if (EntityBoat.BUOYANCY_DATA.equals(s)) {
+                        buoyancyDataId = id;
+                        buoyancyData = data;
+
+                        stream.setCount(mark);
+                        break;
+                    }
+
+                    stream.putString(s);
+                    break;
+                case Entity.DATA_TYPE_SLOT:
+                    if (d instanceof SlotEntityData) {
+                        SlotEntityData slot = (SlotEntityData) d;
+                        stream.putSlot(slot.getData());
+                    } else if (d instanceof NBTEntityData) {
+                        NBTEntityData slot = (NBTEntityData) d;
+                        try {
+                            stream.put(NBTIO.write(slot.getData(), ByteOrder.LITTLE_ENDIAN, true));
+                        } catch (IOException e) {
+                            throw new RuntimeException(e);
+                        }
+                    }
+                    break;
+                case Entity.DATA_TYPE_POS:
+                    IntPositionEntityData pos = (IntPositionEntityData) d;
+                    stream.putSignedBlockPosition(pos.x, pos.y, pos.z);
+                    break;
+                case Entity.DATA_TYPE_LONG:
+                    stream.putVarLong(((LongEntityData) d).getData());
+                    break;
+                case Entity.DATA_TYPE_VECTOR3F:
+                    Vector3fEntityData v3data = (Vector3fEntityData) d;
+                    stream.putVector3f(v3data.x, v3data.y, v3data.z);
+                    break;
+            }
+        }
+
+        if (buoyancyData != null) {
+            //TODO HACK: put IS_BUOYANT before BUOYANCY_DATA to make the stupid client handler happy -- 04/27/2023
+            stream.putUnsignedVarInt(buoyancyDataId);
+            stream.putUnsignedVarInt(buoyancyData.getType());
+
+            stream.putString(buoyancyData.getData());
+        }
+    }
+
     public static EntityMetadata readMetadata(byte[] payload) {
         BinaryStream stream = new BinaryStream();
         stream.setBuffer(payload);
@@ -260,58 +356,103 @@ public class Binary {
         return ((bytes[0] & 0xFF) << 8) | (bytes[1] & 0xFF);
     }
 
+    public static int readShort(byte[] bytes, int offset) {
+        return (bytes[offset] & 0xff) << 8 |
+                (bytes[1 + offset] & 0xff);
+    }
+
     public static short readSignedShort(byte[] bytes) {
-        return (short) readShort(bytes);
+        return (short) ((bytes[0] << 8) |
+                (bytes[1] & 0xff));
+    }
+
+    public static short readSignedShort(byte[] bytes, int offset) {
+        return (short) ((bytes[offset] << 8) |
+                (bytes[1 + offset] & 0xff));
     }
 
     public static byte[] writeShort(int s) {
         return new byte[]{
-                (byte) ((s >>> 8) & 0xFF),
-                (byte) (s & 0xFF)
+                (byte) (s >> 8),
+                (byte) s
         };
+    }
+
+    public static void writeShort(int s, byte[] bytes, int offset) {
+        bytes[offset] = (byte) (s >> 8);
+        bytes[1 + offset] = (byte) s;
     }
 
     public static int readLShort(byte[] bytes) {
         return ((bytes[1] & 0xFF) << 8) | (bytes[0] & 0xFF);
     }
 
+    public static int readLShort(byte[] bytes, int offset) {
+        return ((bytes[1 + offset] & 0xff) << 8) |
+                (bytes[offset] & 0xff);
+    }
+
     public static short readSignedLShort(byte[] bytes) {
-        return (short) readLShort(bytes);
+        return (short) ((bytes[1] << 8) |
+                (bytes[0] & 0xff));
+    }
+
+    public static short readSignedLShort(byte[] bytes, int offset) {
+        return (short) ((bytes[1 + offset] << 8) |
+                (bytes[offset] & 0xff));
     }
 
     public static byte[] writeLShort(int s) {
-        s &= 0xffff;
         return new byte[]{
-                (byte) (s & 0xFF),
-                (byte) ((s >>> 8) & 0xFF)
+                (byte) s,
+                (byte) (s >> 8)
         };
     }
 
+    public static void writeLShort(int s, byte[] bytes, int offset) {
+        bytes[offset] = (byte) s;
+        bytes[1 + offset] = (byte) (s >> 8);
+    }
+
     public static int readInt(byte[] bytes) {
-        return ((bytes[0] & 0xff) << 24) |
-                ((bytes[1] & 0xff) << 16) |
-                ((bytes[2] & 0xff) << 8) |
+        return bytes[0] << 24 |
+                (bytes[1] & 0xff) << 16 |
+                (bytes[2] & 0xff) << 8 |
                 (bytes[3] & 0xff);
+    }
+
+    public static int readInt(byte[] bytes, int offset) {
+        return bytes[offset] << 24 |
+                (bytes[1 + offset] & 0xff) << 16 |
+                (bytes[2 + offset] & 0xff) << 8 |
+                (bytes[3 + offset] & 0xff);
     }
 
     public static byte[] writeInt(int i) {
         return new byte[]{
-                (byte) ((i >>> 24) & 0xFF),
-                (byte) ((i >>> 16) & 0xFF),
-                (byte) ((i >>> 8) & 0xFF),
-                (byte) (i & 0xFF)
+                (byte) (i >> 24),
+                (byte) (i >> 16),
+                (byte) (i >> 8),
+                (byte) i
         };
     }
 
+    public static void writeInt(int i, byte[] bytes, int offset) {
+        bytes[offset] = (byte) (i >> 24);
+        bytes[1 + offset] = (byte) (i >> 16);
+        bytes[2 + offset] = (byte) (i >> 8);
+        bytes[3 + offset] = (byte) i;
+    }
+
     public static int readLInt(byte[] bytes) {
-        return ((bytes[3] & 0xff) << 24) |
+        return (bytes[3] << 24) |
                 ((bytes[2] & 0xff) << 16) |
                 ((bytes[1] & 0xff) << 8) |
                 (bytes[0] & 0xff);
     }
 
     public static int readLInt(byte[] bytes, int offset) {
-        return ((bytes[3 + offset] & 0xff) << 24) |
+        return (bytes[3 + offset] << 24) |
                 ((bytes[2 + offset] & 0xff) << 16) |
                 ((bytes[1 + offset] & 0xff) << 8) |
                 (bytes[offset] & 0xff);
@@ -319,61 +460,82 @@ public class Binary {
 
     public static byte[] writeLInt(int i) {
         return new byte[]{
-                (byte) (i & 0xFF),
-                (byte) ((i >>> 8) & 0xFF),
-                (byte) ((i >>> 16) & 0xFF),
-                (byte) ((i >>> 24) & 0xFF)
+                (byte) i,
+                (byte) (i >> 8),
+                (byte) (i >> 16),
+                (byte) (i >> 24)
         };
     }
 
-    public static float readFloat(byte[] bytes) {
-        return readFloat(bytes, -1);
+    public static void writeLInt(int i, byte[] bytes, int offset) {
+        bytes[offset] = (byte) i;
+        bytes[1 + offset] = (byte) (i >> 8);
+        bytes[2 + offset] = (byte) (i >> 16);
+        bytes[3 + offset] = (byte) (i >> 24);
     }
 
-    public static float readFloat(byte[] bytes, int accuracy) {
-        float val = Float.intBitsToFloat(readInt(bytes));
-        if (accuracy > -1) {
-            return (float) NukkitMath.round(val, accuracy);
-        } else {
-            return val;
-        }
+    public static float readFloat(byte[] bytes) {
+        return Float.intBitsToFloat(readInt(bytes));
+    }
+
+    public static float readFloat(byte[] bytes, int offset) {
+        return Float.intBitsToFloat(readInt(bytes, offset));
     }
 
     public static byte[] writeFloat(float f) {
         return writeInt(Float.floatToIntBits(f));
     }
 
-    public static float readLFloat(byte[] bytes) {
-        return readLFloat(bytes, -1);
+    public static void writeFloat(float f, byte[] bytes, int offset) {
+        writeInt(Float.floatToIntBits(f), bytes, offset);
     }
 
-    public static float readLFloat(byte[] bytes, int accuracy) {
-        float val = Float.intBitsToFloat(readLInt(bytes));
-        if (accuracy > -1) {
-            return (float) NukkitMath.round(val, accuracy);
-        } else {
-            return val;
-        }
+    public static float readLFloat(byte[] bytes) {
+        return Float.intBitsToFloat(readLInt(bytes));
+    }
+
+    public static float readLFloat(byte[] bytes, int offset) {
+        return Float.intBitsToFloat(readLInt(bytes, offset));
     }
 
     public static byte[] writeLFloat(float f) {
         return writeLInt(Float.floatToIntBits(f));
     }
 
+    public static void writeLFloat(float f, byte[] bytes, int offset) {
+        writeLInt(Float.floatToIntBits(f), bytes, offset);
+    }
+
     public static double readDouble(byte[] bytes) {
         return Double.longBitsToDouble(readLong(bytes));
+    }
+
+    public static double readDouble(byte[] bytes, int offset) {
+        return Double.longBitsToDouble(readLong(bytes, offset));
     }
 
     public static byte[] writeDouble(double d) {
         return writeLong(Double.doubleToLongBits(d));
     }
 
+    public static void writeDouble(double d, byte[] bytes, int offset) {
+        writeLong(Double.doubleToLongBits(d), bytes, offset);
+    }
+
     public static double readLDouble(byte[] bytes) {
         return Double.longBitsToDouble(readLLong(bytes));
     }
 
+    public static double readLDouble(byte[] bytes, int offset) {
+        return Double.longBitsToDouble(readLLong(bytes, offset));
+    }
+
     public static byte[] writeLDouble(double d) {
         return writeLLong(Double.doubleToLongBits(d));
+    }
+
+    public static void writeLDouble(double d, byte[] bytes, int offset) {
+        writeLLong(Double.doubleToLongBits(d), bytes, offset);
     }
 
     public static long readLong(byte[] bytes) {
@@ -387,17 +549,39 @@ public class Binary {
                 ((bytes[7] & 0xFF));
     }
 
+    public static long readLong(byte[] bytes, int offset) {
+        return ((long) bytes[offset] << 56) |
+                ((long) (bytes[1 + offset] & 0xff) << 48) |
+                ((long) (bytes[2 + offset] & 0xff) << 40) |
+                ((long) (bytes[3 + offset] & 0xff) << 32) |
+                ((long) (bytes[4 + offset] & 0xff) << 24) |
+                ((bytes[5 + offset] & 0xff) << 16) |
+                ((bytes[6 + offset] & 0xff) << 8) |
+                ((bytes[7 + offset] & 0xff));
+    }
+
     public static byte[] writeLong(long l) {
         return new byte[]{
-                (byte) (l >>> 56),
-                (byte) (l >>> 48),
-                (byte) (l >>> 40),
-                (byte) (l >>> 32),
-                (byte) (l >>> 24),
-                (byte) (l >>> 16),
-                (byte) (l >>> 8),
-                (byte) (l)
+                (byte) (l >> 56),
+                (byte) (l >> 48),
+                (byte) (l >> 40),
+                (byte) (l >> 32),
+                (byte) (l >> 24),
+                (byte) (l >> 16),
+                (byte) (l >> 8),
+                (byte) l
         };
+    }
+
+    public static void writeLong(long l, byte[] bytes, int offset) {
+        bytes[offset] = (byte) (l >> 56);
+        bytes[1 + offset] = (byte) (l >> 48);
+        bytes[2 + offset] = (byte) (l >> 40);
+        bytes[3 + offset] = (byte) (l >> 32);
+        bytes[4 + offset] = (byte) (l >> 24);
+        bytes[5 + offset] = (byte) (l >> 16);
+        bytes[6 + offset] = (byte) (l >> 8);
+        bytes[7 + offset] = (byte) l;
     }
 
     public static long readLLong(byte[] bytes) {
@@ -411,28 +595,62 @@ public class Binary {
                 ((bytes[0] & 0xFF));
     }
 
+    public static long readLLong(byte[] bytes, int offset) {
+        return ((long) bytes[7 + offset] << 56) |
+                ((long) (bytes[6 + offset] & 0xff) << 48) |
+                ((long) (bytes[5 + offset] & 0xff) << 40) |
+                ((long) (bytes[4 + offset] & 0xff) << 32) |
+                ((long) (bytes[3 + offset] & 0xff) << 24) |
+                ((bytes[2 + offset] & 0xff) << 16) |
+                ((bytes[1 + offset] & 0xff) << 8) |
+                ((bytes[offset] & 0xff));
+    }
+
     public static byte[] writeLLong(long l) {
         return new byte[]{
-                (byte) (l),
-                (byte) (l >>> 8),
-                (byte) (l >>> 16),
-                (byte) (l >>> 24),
-                (byte) (l >>> 32),
-                (byte) (l >>> 40),
-                (byte) (l >>> 48),
-                (byte) (l >>> 56),
+                (byte) l,
+                (byte) (l >> 8),
+                (byte) (l >> 16),
+                (byte) (l >> 24),
+                (byte) (l >> 32),
+                (byte) (l >> 40),
+                (byte) (l >> 48),
+                (byte) (l >> 56),
         };
     }
 
+    public static void writeLLong(long l, byte[] bytes, int offset) {
+        bytes[offset] = (byte) l;
+        bytes[1 + offset] = (byte) (l >> 8);
+        bytes[2 + offset] = (byte) (l >> 16);
+        bytes[3 + offset] = (byte) (l >> 24);
+        bytes[4 + offset] = (byte) (l >> 32);
+        bytes[5 + offset] = (byte) (l >> 40);
+        bytes[6 + offset] = (byte) (l >> 48);
+        bytes[7 + offset] = (byte) (l >> 56);
+    }
+
     public static byte[] writeVarInt(int v) {
-        BinaryStream stream = new BinaryStream();
+        BinaryStream stream = new BinaryStream(5);
         stream.putVarInt(v);
         return stream.getBuffer();
     }
 
     public static byte[] writeUnsignedVarInt(long v) {
-        BinaryStream stream = new BinaryStream();
+        BinaryStream stream = new BinaryStream(5);
         stream.putUnsignedVarInt(v);
+        return stream.getBuffer();
+    }
+
+    public static byte[] writeVarLong(long v) {
+        BinaryStream stream = new BinaryStream(10);
+        stream.putVarLong(v);
+        return stream.getBuffer();
+    }
+
+    public static byte[] writeUnsignedVarLong(long v) {
+        BinaryStream stream = new BinaryStream(10);
+        stream.putUnsignedVarLong(v);
         return stream.getBuffer();
     }
 

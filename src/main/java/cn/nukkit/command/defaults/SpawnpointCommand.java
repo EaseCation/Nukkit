@@ -18,7 +18,7 @@ import java.text.DecimalFormat;
  */
 public class SpawnpointCommand extends VanillaCommand {
     public SpawnpointCommand(String name) {
-        super(name, "%nukkit.command.spawnpoint.description", "%commands.spawnpoint.usage");
+        super(name, "%commands.spawnpoint.description", "%nukkit.command.spawnpoint.usage");
         this.setPermission("nukkit.command.spawnpoint");
         this.commandParameters.clear();
         this.commandParameters.put("default", new CommandParameter[]{
@@ -37,7 +37,7 @@ public class SpawnpointCommand extends VanillaCommand {
             if (sender instanceof Player) {
                 target = (Player) sender;
             } else {
-                sender.sendMessage(new TranslationContainer("commands.generic.ingame"));
+                sender.sendMessage(new TranslationContainer("nukkit.command.generic.ingame"));
                 return true;
             }
         } else {
@@ -81,7 +81,7 @@ public class SpawnpointCommand extends VanillaCommand {
                         round2.format(pos.z)));
                 return true;
             } else {
-                sender.sendMessage(new TranslationContainer("commands.generic.ingame"));
+                sender.sendMessage(new TranslationContainer("nukkit.command.generic.ingame"));
                 return true;
             }
         }

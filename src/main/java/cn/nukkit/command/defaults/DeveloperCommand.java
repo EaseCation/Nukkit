@@ -1,11 +1,13 @@
 package cn.nukkit.command.defaults;
 
 import cn.nukkit.block.Block;
+import cn.nukkit.command.CommandParser;
 import cn.nukkit.command.CommandSender;
 import cn.nukkit.command.data.CommandEnum;
 import cn.nukkit.command.data.CommandParamOption;
 import cn.nukkit.command.data.CommandParamType;
 import cn.nukkit.command.data.CommandParameter;
+import cn.nukkit.command.exceptions.CommandSyntaxException;
 import cn.nukkit.lang.TranslationContainer;
 import cn.nukkit.level.Position;
 import cn.nukkit.network.protocol.TextPacket;
@@ -31,6 +33,10 @@ public class DeveloperCommand extends VanillaCommand {
                 CommandParameter.newType("message", CommandParamType.STRING),
                 CommandParameter.newType("source", true, CommandParamType.STRING),
         });
+        this.commandParameters.put("heightmap", new CommandParameter[]{
+                CommandParameter.newEnum("subCommand", new CommandEnum("SubCommandHeightmap", "heightmap")),
+                CommandParameter.newType("position", true, CommandParamType.POSITION),
+        });
     }
 
     @Override
@@ -46,7 +52,7 @@ public class DeveloperCommand extends VanillaCommand {
         }
 
         switch (args[0].toLowerCase()) {
-            case "setblock":
+            case "setblock": {
                 if (length < 7) {
                     sendUsage(sender);
                     return false;
@@ -109,9 +115,28 @@ public class DeveloperCommand extends VanillaCommand {
                 sender.sendMessage(new TranslationContainer("commands.setblock.success"));
                 sender.sendMessage(block.toString());
                 return true;
-            case "text":
+            }
+            case "text": {
                 TextPacket pk = new TextPacket();
                 break;
+            }
+            case "heightmap": {
+                CommandParser parser = new CommandParser(this, sender, args);
+                try {
+                    parser.literal();
+                    Position pos = parser.parsePositionOrDefault(() -> sender instanceof Position ? (Position) sender : new Position(0, 0, 0, sender.getServer().getDefaultLevel()));
+
+                    int x = pos.getFloorX();
+                    int z = pos.getFloorZ();
+                    int height = pos.getLevel().getHeightMap(x, z);
+
+                    sender.sendMessage("heightmap: " + x + ", " + z + " = " + height + " (" + (height >> 4) + " | " + (height & 0xf) +  ")");
+                    return true;
+                } catch (CommandSyntaxException e) {
+                    sender.sendMessage(parser.getErrorMessage());
+                }
+                return false;
+            }
         }
 
         sendUsage(sender);

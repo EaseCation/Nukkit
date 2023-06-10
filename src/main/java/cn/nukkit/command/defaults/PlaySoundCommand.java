@@ -16,7 +16,7 @@ import java.util.List;
 public class PlaySoundCommand extends VanillaCommand {
 
     public PlaySoundCommand(String name) {
-        super(name, "%nukkit.command.playsound.description", "%nukkit.command.playsound.usage");
+        super(name, "%commands.playsound.description", "%nukkit.command.playsound.usage");
         this.setPermission("nukkit.command.sound.play");
         this.commandParameters.clear();
         this.commandParameters.put("default", new CommandParameter[]{

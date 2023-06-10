@@ -15,7 +15,7 @@ import static cn.nukkit.SharedConstants.*;
 public class TestForBlockCommand extends VanillaCommand {
 
     public TestForBlockCommand(String name) {
-        super(name, "%nukkit.command.testforblock.description", "%commands.testforblock.usage");
+        super(name, "%commands.testforblock.description", "%nukkit.command.testforblock.usage");
         this.setPermission("nukkit.command.testforblock");
         this.commandParameters.clear();
         this.commandParameters.put("default", new CommandParameter[]{

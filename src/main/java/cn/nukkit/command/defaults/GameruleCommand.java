@@ -18,7 +18,7 @@ import java.util.StringJoiner;
 public class GameruleCommand extends VanillaCommand {
 
     public GameruleCommand(String name) {
-        super(name, "%nukkit.command.gamerule.description", "%nukkit.command.gamerule.usage");
+        super(name, "%commands.gamerule.description", "%nukkit.command.gamerule.usage");
         this.setPermission("nukkit.command.gamerule");
         this.commandParameters.clear();
 
@@ -79,7 +79,7 @@ public class GameruleCommand extends VanillaCommand {
         }
 
         if (!sender.isPlayer()) {
-            sender.sendMessage(new TranslationContainer("%commands.generic.ingame"));
+            sender.sendMessage(new TranslationContainer("nukkit.command.generic.ingame"));
             return true;
         }
         GameRules rules = ((Player) sender).getLevel().getGameRules();

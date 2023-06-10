@@ -25,7 +25,7 @@ public class ParticleCommand extends VanillaCommand {
             , "spore", "portal", "flame", "lava", "reddust", "snowballpoof", "slime", "itembreak", "terrain", "heart"
             , "ink", "droplet", "enchantmenttable", "happyvillager", "angryvillager", "forcefield"};
     public ParticleCommand(String name) {
-        super(name, "%nukkit.command.particle.description", "%nukkit.command.particle.usage");
+        super(name, "%commands.particle.description", "%nukkit.command.particle.usage");
         this.setPermission("nukkit.command.particle");
         this.commandParameters.clear();
         this.commandParameters.put("default", new CommandParameter[]{

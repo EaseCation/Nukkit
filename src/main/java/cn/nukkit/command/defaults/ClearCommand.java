@@ -20,7 +20,7 @@ import java.util.List;
 public class ClearCommand extends VanillaCommand {
 
     public ClearCommand(String name) {
-        super(name, "%nukkit.command.clear.description", "%nukkit.command.clear.usage");
+        super(name, "%commands.clear.description", "%nukkit.command.clear.usage");
         this.setPermission("nukkit.command.clear");
         this.commandParameters.clear();
         this.commandParameters.put("default", new CommandParameter[]{

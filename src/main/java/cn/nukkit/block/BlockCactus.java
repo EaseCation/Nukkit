@@ -74,7 +74,7 @@ public class BlockCactus extends BlockTransparentMeta {
 
     @Override
     public void onEntityCollide(Entity entity) {
-        if (this.level.getServer().getTick() % 10 == 0) {
+        if (entity.getAge() % 10 == 4) {
             entity.attack(new EntityDamageByBlockEvent(this, entity, DamageCause.CONTACT, 1));
         }
     }

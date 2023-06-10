@@ -16,7 +16,7 @@ import static cn.nukkit.SharedConstants.*;
  */
 public class XpCommand extends Command {
     public XpCommand(String name) {
-        super(name, "%nukkit.command.xp.description", "%commands.xp.usage");
+        super(name, "%commands.xp.description", "%nukkit.command.xp.usage");
         this.setPermission("nukkit.command.xp");
         this.commandParameters.clear();
         this.commandParameters.put("default", new CommandParameter[]{
@@ -93,15 +93,17 @@ public class XpCommand extends Command {
             } else {
                 player.setExperience(player.getExperience(), newLevel);
             }
-            if (amount > 0) {
+            if (amount == 0) {
+                sender.sendMessage(new TranslationContainer("commands.xp.success", 0, player.getName()));
+            } else if (amount > 0) {
                 sender.sendMessage(new TranslationContainer("commands.xp.success.levels", amount, player.getName()));
             } else {
-                sender.sendMessage(new TranslationContainer("commands.xp.success.levels.minus", -amount, player.getName()));
+                sender.sendMessage(new TranslationContainer("commands.xp.success.negative.levels", amount, player.getName()));
             }
             return true;
         } else {
             if (amount < 0) {
-                sender.sendMessage(new TranslationContainer("commands.generic.usage", this.usageMessage));
+                sender.sendMessage(new TranslationContainer("commands.xp.failure.widthdrawXp"));
                 return true;
             }
             player.addExperience(amount);

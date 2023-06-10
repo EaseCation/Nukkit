@@ -245,6 +245,7 @@ public interface BlockID {
     int RED_NETHER_BRICK = 215;
     int BONE_BLOCK = 216;
     int STRUCTURE_VOID = 217;
+    int WHITE_SHULKER_BOX = 218; //TODO: 1.20.10: flattening
     int SHULKER_BOX = 218;
     int PURPLE_GLAZED_TERRACOTTA = 219;
     int WHITE_GLAZED_TERRACOTTA = 220;
@@ -263,6 +264,7 @@ public interface BlockID {
     int GREEN_GLAZED_TERRACOTTA = 233;
     int RED_GLAZED_TERRACOTTA = 234;
     int BLACK_GLAZED_TERRACOTTA = 235;
+    int WHITE_CONCRETE = 236; //TODO: 1.20.10: flattening
     int CONCRETE = 236;
     int CONCRETE_POWDER = 237;
     /**
@@ -811,7 +813,7 @@ public interface BlockID {
     int STRIPPED_BAMBOO_BLOCK = 783;
     int SUSPICIOUS_SAND = 784;
     int CHERRY_BUTTON = 785;
-    int CHERRY_DOOR = 786;
+    int BLOCK_CHERRY_DOOR = 786;
     int CHERRY_FENCE = 787;
     int CHERRY_FENCE_GATE = 788;
     int CHERRY_HANGING_SIGN = 789;
@@ -888,7 +890,37 @@ public interface BlockID {
     int RED_CARPET = 865;
     int BLACK_CARPET = 866;
     int PITCHER_PLANT = 867;
+    int ORANGE_SHULKER_BOX = 868;
+    int MAGENTA_SHULKER_BOX = 869;
+    int LIGHT_BLUE_SHULKER_BOX = 870;
+    int YELLOW_SHULKER_BOX = 871;
+    int LIME_SHULKER_BOX = 872;
+    int PINK_SHULKER_BOX = 873;
+    int GRAY_SHULKER_BOX = 874;
+    int LIGHT_GRAY_SHULKER_BOX = 875;
+    int CYAN_SHULKER_BOX = 876;
+    int PURPLE_SHULKER_BOX = 877;
+    int BLUE_SHULKER_BOX = 878;
+    int BROWN_SHULKER_BOX = 879;
+    int GREEN_SHULKER_BOX = 880;
+    int RED_SHULKER_BOX = 881;
+    int BLACK_SHULKER_BOX = 882;
+    int ORANGE_CONCRETE = 883;
+    int MAGENTA_CONCRETE = 884;
+    int LIGHT_BLUE_CONCRETE = 885;
+    int YELLOW_CONCRETE = 886;
+    int LIME_CONCRETE = 887;
+    int PINK_CONCRETE = 888;
+    int GRAY_CONCRETE = 889;
+    int LIGHT_GRAY_CONCRETE = 890;
+    int CYAN_CONCRETE = 891;
+    int PURPLE_CONCRETE = 892;
+    int BLUE_CONCRETE = 893;
+    int BROWN_CONCRETE = 894;
+    int GREEN_CONCRETE = 895;
+    int RED_CONCRETE = 896;
+    int BLACK_CONCRETE = 897;
 
 
-    int UNDEFINED = 868;
+    int UNDEFINED = 898;
 }

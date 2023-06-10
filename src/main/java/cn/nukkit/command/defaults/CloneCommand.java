@@ -24,7 +24,7 @@ import java.util.stream.Stream;
 public class CloneCommand extends VanillaCommand {
 
     public CloneCommand(String name) {
-        super(name, "%nukkit.command.clone.description", "%nukkit.command.clone.usage");
+        super(name, "%commands.clone.description", "%nukkit.command.clone.usage");
         this.setPermission("nukkit.command.clone");
         this.commandParameters.clear();
         this.commandParameters.put("default", new CommandParameter[]{

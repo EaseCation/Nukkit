@@ -26,7 +26,7 @@ import java.util.List;
 public class ReplaceItemCommand extends VanillaCommand {
 
     public ReplaceItemCommand(String name) {
-        super(name, "%nukkit.command.replaceitem.description", "%nukkit.command.replaceitem.usage");
+        super(name, "%commands.replaceitem.description", "%nukkit.command.replaceitem.usage");
         this.setPermission("nukkit.command.replaceitem");
         this.commandParameters.clear();
         this.commandParameters.put("block", new CommandParameter[]{

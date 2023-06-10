@@ -50,6 +50,17 @@ public class BlockEntityBell extends BlockEntitySpawnable {
 
     @Override
     public boolean onUpdate() {
+        if (isClosed()) {
+            return false;
+        }
+
+        int currentTick = server.getTick();
+        int tickDiff = currentTick - lastUpdate;
+        if (tickDiff <= 0) {
+            return true;
+        }
+        lastUpdate = currentTick;
+
         if (!this.ringing) {
             return false;
         }

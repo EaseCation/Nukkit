@@ -10,7 +10,7 @@ import cn.nukkit.lang.TranslationContainer;
 public class SetMaxPlayersCommand extends VanillaCommand {
 
     public SetMaxPlayersCommand(String name) {
-        super(name, "%nukkit.command.setmaxplayers.description", "%nukkit.command.setmaxplayers.usage");
+        super(name, "%commands.setmaxplayers.description", "%nukkit.command.setmaxplayers.usage");
         this.setPermission("nukkit.command.setmaxplayers");
         this.commandParameters.clear();
         this.commandParameters.put("default", new CommandParameter[]{
