@@ -4452,10 +4452,10 @@ public class Player extends EntityHuman implements CommandSender, InventoryHolde
         }
 
         if (this.isCreativeLike()
-                && source.getCause() != DamageCause.SUICIDE
-                && source.getCause() != DamageCause.VOID
+//                && source.getCause() != DamageCause.SUICIDE
+//                && source.getCause() != DamageCause.VOID
                 ) {
-            //source.setCancelled();
+            source.setCancelled();
             return false;
         } else if (this.getAdventureSettings().get(Type.ALLOW_FLIGHT) && source.getCause() == DamageCause.FALL) {
             //source.setCancelled();
