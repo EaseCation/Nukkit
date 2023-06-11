@@ -18,6 +18,7 @@ import cn.nukkit.level.format.FullChunk;
 import cn.nukkit.level.particle.BubbleParticle;
 import cn.nukkit.level.particle.WaterParticle;
 import cn.nukkit.level.sound.LaunchSound;
+import cn.nukkit.level.sound.SoundEnum;
 import cn.nukkit.math.Vector3;
 import cn.nukkit.nbt.NBTIO;
 import cn.nukkit.nbt.tag.CompoundTag;
@@ -306,6 +307,7 @@ public class EntityFishingHook extends EntityProjectile {
 
         if (entity.attack(ev)) {
             this.setTarget(entity.getId());
+            this.getLevel().addSound(this, SoundEnum.RANDOM_BREAK, 0.5f, 0.9f);
 
             if (this.shootingEntity != null) {
                 entity.setMotion(entity.subtract(this.shootingEntity).divide(15).add(0, 0.3, 0)); // 这边还是用EC的特殊钩回motion，营造EC的特殊手感
