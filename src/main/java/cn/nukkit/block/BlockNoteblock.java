@@ -292,7 +292,14 @@ public class BlockNoteblock extends BlockSolid {
         DIDGERIDOO(SoundEnum.NOTE_DIDGERIDOO),
         SQUARE_WAVE(SoundEnum.NOTE_BIT),
         BANJO(SoundEnum.NOTE_BANJO),
-        ELECTRIC_PIANO(SoundEnum.NOTE_PLING);
+        ELECTRIC_PIANO(SoundEnum.NOTE_PLING),
+        SKELETON(SoundEnum.NOTE_SKELETON),
+        WITHER_SKELETON(SoundEnum.NOTE_WITHERSKELETON),
+        ZOMBIE(SoundEnum.NOTE_ZOMBIE),
+        CREEPER(SoundEnum.NOTE_CREEPER),
+        ENDER_DRAGON(SoundEnum.NOTE_ENDERDRAGON),
+        PIGLIN(SoundEnum.NOTE_PIGLIN),
+        ;
 
         private final SoundEnum sound;
 

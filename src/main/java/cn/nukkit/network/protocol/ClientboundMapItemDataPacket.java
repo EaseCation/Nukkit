@@ -15,7 +15,7 @@ import java.util.stream.Collectors;
 @ToString
 public class ClientboundMapItemDataPacket extends DataPacket {
 
-    public long[] eids = new long[0];
+    public long[] parentMapIds = new long[0];
 
     public long mapId;
     public int update;
@@ -37,7 +37,7 @@ public class ClientboundMapItemDataPacket extends DataPacket {
     //update
     public static final int TEXTURE_UPDATE = 2;
     public static final int DECORATIONS_UPDATE = 4;
-    public static final int ENTITIES_UPDATE = 8;
+    public static final int CREATION = 8;
 
     @Override
     public int pid() {
@@ -54,8 +54,8 @@ public class ClientboundMapItemDataPacket extends DataPacket {
         this.putEntityUniqueId(mapId);
 
         int update = 0;
-        if (eids.length > 0) {
-            update |= 0x08;
+        if (parentMapIds.length > 0) {
+            update |= CREATION;
         }
         if (decorators.length > 0 || trackedEntities.length > 0) {
             update |= DECORATIONS_UPDATE;
@@ -68,10 +68,10 @@ public class ClientboundMapItemDataPacket extends DataPacket {
         this.putUnsignedVarInt(update);
         this.putByte(this.dimensionId);
 
-        if ((update & 0x08) != 0) {
-            this.putUnsignedVarInt(eids.length);
-            for (long eid : eids) {
-                this.putEntityUniqueId(eid);
+        if ((update & CREATION) != 0) {
+            this.putUnsignedVarInt(parentMapIds.length);
+            for (long parentMapId : parentMapIds) {
+                this.putEntityUniqueId(parentMapId);
             }
         }
         if ((update & (TEXTURE_UPDATE | DECORATIONS_UPDATE)) != 0) {

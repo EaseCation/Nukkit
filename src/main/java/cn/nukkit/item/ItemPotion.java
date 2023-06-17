@@ -5,7 +5,7 @@ import cn.nukkit.event.player.PlayerItemConsumeEvent;
 import cn.nukkit.math.Vector3;
 import cn.nukkit.potion.Potion;
 
-public class ItemPotion extends Item {
+public class ItemPotion extends Item implements ItemReleasable {
 
     public ItemPotion() {
         this(0, 1);
@@ -31,7 +31,9 @@ public class ItemPotion extends Item {
 
     @Override
     public boolean onUse(Player player, int ticksUsed) {
-        if (ticksUsed < 30) return false;
+        if (ticksUsed < 30) {
+            return false;
+        }
         PlayerItemConsumeEvent consumeEvent = new PlayerItemConsumeEvent(player, this);
         player.getServer().getPluginManager().callEvent(consumeEvent);
         if (consumeEvent.isCancelled()) {
@@ -49,6 +51,11 @@ public class ItemPotion extends Item {
             player.getInventory().addItem(get(GLASS_BOTTLE));
         }
 
+        return true;
+    }
+
+    @Override
+    public boolean onRelease(Player player, int ticksUsed) {
         return true;
     }
 

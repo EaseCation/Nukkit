@@ -1,5 +1,6 @@
 package cn.nukkit.nbt.tag;
 
+import cn.nukkit.nbt.NBTIO;
 import cn.nukkit.nbt.stream.NBTInputStream;
 import cn.nukkit.nbt.stream.NBTOutputStream;
 import it.unimi.dsi.fastutil.objects.Object2ObjectOpenHashMap;
@@ -7,11 +8,22 @@ import it.unimi.dsi.fastutil.objects.Object2ObjectOpenHashMap;
 import java.io.IOException;
 import java.io.PrintStream;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.StringJoiner;
 
 public class CompoundTag extends Tag implements Cloneable {
+    public static final byte[] EMPTY;
+
+    static {
+        try {
+            EMPTY = NBTIO.writeNetwork(new CompoundTag(Collections.emptyMap()));
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
     private final Map<String, Tag> tags;
 
     public CompoundTag() {

@@ -4,7 +4,7 @@ import cn.nukkit.Player;
 import cn.nukkit.math.Vector3;
 import cn.nukkit.network.protocol.LevelSoundEventPacket;
 
-public class ItemGoatHorn extends Item {
+public class ItemGoatHorn extends Item implements ItemReleasable {
     public static final int PONDER_GOAT_HORN = 0;
     public static final int SING_GOAT_HORN = 1;
     public static final int SEEK_GOAT_HORN = 2;
@@ -44,33 +44,38 @@ public class ItemGoatHorn extends Item {
         player.onGoatHornPlay();
 
         switch (getDamage() & 0x7) {
-            case 0:
+            case PONDER_GOAT_HORN:
                 player.level.addLevelSoundEvent(player, LevelSoundEventPacket.SOUND_GOAT_CALL_0);
                 break;
-            case 1:
+            case SING_GOAT_HORN:
                 player.level.addLevelSoundEvent(player, LevelSoundEventPacket.SOUND_GOAT_CALL_1);
                 break;
-            case 2:
+            case SEEK_GOAT_HORN:
                 player.level.addLevelSoundEvent(player, LevelSoundEventPacket.SOUND_GOAT_CALL_2);
                 break;
-            case 3:
+            case FEEL_GOAT_HORN:
                 player.level.addLevelSoundEvent(player, LevelSoundEventPacket.SOUND_GOAT_CALL_3);
                 break;
-            case 4:
+            case ADMIRE_GOAT_HORN:
                 player.level.addLevelSoundEvent(player, LevelSoundEventPacket.SOUND_GOAT_CALL_4);
                 break;
-            case 5:
+            case CALL_GOAT_HORN:
                 player.level.addLevelSoundEvent(player, LevelSoundEventPacket.SOUND_GOAT_CALL_5);
                 break;
-            case 6:
+            case YEARN_GOAT_HORN:
                 player.level.addLevelSoundEvent(player, LevelSoundEventPacket.SOUND_GOAT_CALL_6);
                 break;
-            case 7:
+            case DREAM_GOAT_HORN:
                 player.level.addLevelSoundEvent(player, LevelSoundEventPacket.SOUND_GOAT_CALL_7);
                 break;
         }
 
         player.startItemCooldown("goat_horn", COOLDOWN);
+        return true;
+    }
+
+    @Override
+    public boolean onRelease(Player player, int ticksUsed) {
         return true;
     }
 }

@@ -24,7 +24,8 @@ public class SetBlockCommand extends Command {
 				CommandParameter.newType("position", CommandParamType.BLOCK_POSITION),
 				CommandParameter.newEnum("block", CommandEnum.ENUM_BLOCK)
 						.addOption(CommandParamOption.HAS_SEMANTIC_CONSTRAINT),
-				CommandParameter.newEnum("oldBlockHandling", true, new CommandEnum("SetBlockMode", SetBlockMode.values())),
+				CommandParameter.newEnum("oldBlockHandling", true, new CommandEnum("SetBlockMode", SetBlockMode.values()))
+						.addOption(CommandParamOption.SUPPRESS_ENUM_AUTOCOMPLETION),
         });
 	}
 

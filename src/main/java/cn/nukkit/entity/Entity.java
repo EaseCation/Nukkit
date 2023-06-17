@@ -2353,7 +2353,6 @@ public abstract class Entity extends Location implements Metadatable {
     public void setRotation(double yaw, double pitch) {
         this.yaw = yaw;
         this.pitch = pitch;
-        this.scheduleUpdate();
     }
 
     /**

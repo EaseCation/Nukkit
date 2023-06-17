@@ -66,19 +66,19 @@ public class AvailableCommandsPacket extends DataPacket {
             CommandData cmdData = data.versions.get(0);
 
             if (cmdData.aliases != null) {
-                enums.add(new CommandEnum(cmdData.aliases.getName(), cmdData.aliases.getValues()));
+                enums.add(new CommandEnum(cmdData.aliases.getName(), cmdData.aliases.getValues().keySet()));
 
-                enumValues.addAll(cmdData.aliases.getValues());
+                enumValues.addAll(cmdData.aliases.getValues().keySet());
 
-                commandNames.addAll(cmdData.aliases.getValues());
+                commandNames.addAll(cmdData.aliases.getValues().keySet());
             }
 
             for (CommandOverload overload : cmdData.overloads.values()) {
                 for (CommandParameter parameter : overload.input.parameters) {
                     if (parameter.enumData != null) {
-                        enums.add(new CommandEnum(parameter.enumData.getName(), parameter.enumData.getValues()));
+                        enums.add(new CommandEnum(parameter.enumData.getName(), parameter.enumData.getValues().keySet()));
 
-                        enumValues.addAll(parameter.enumData.getValues());
+                        enumValues.addAll(parameter.enumData.getValues().keySet());
                     }
 
                     if (parameter.postFix != null) {
@@ -109,7 +109,7 @@ public class AvailableCommandsPacket extends DataPacket {
         enums.forEach((cmdEnum) -> {
             putString(cmdEnum.getName());
 
-            Set<String> values = cmdEnum.getValues();
+            Set<String> values = cmdEnum.getValues().keySet();
             putUnsignedVarInt(values.size());
 
             for (String val : values) {

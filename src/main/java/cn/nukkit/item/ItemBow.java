@@ -26,7 +26,7 @@ import java.util.concurrent.ThreadLocalRandom;
  * author: MagicDroidX
  * Nukkit Project
  */
-public class ItemBow extends ItemTool {
+public class ItemBow extends ItemTool implements ItemReleasable {
 
     public ItemBow() {
         this(0, 1);
@@ -53,6 +53,11 @@ public class ItemBow extends ItemTool {
     @Override
     public boolean onClickAir(Player player, Vector3 directionVector) {
         return player.getInventory().contains(LazyHolder.ARROW) || player.isCreative();
+    }
+
+    @Override
+    public boolean onUse(Player player, int ticksUsed) {
+        return true;
     }
 
     @Override

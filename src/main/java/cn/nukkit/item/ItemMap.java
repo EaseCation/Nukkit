@@ -96,8 +96,8 @@ public class ItemMap extends Item {
 
         ClientboundMapItemDataPacket pk = new ClientboundMapItemDataPacket();
         pk.mapId = getMapId();
-        pk.eids = new long[]{getMapId()};
-        pk.update = 2;
+        pk.parentMapIds = new long[]{getMapId()};
+        pk.update = ClientboundMapItemDataPacket.TEXTURE_UPDATE;
         pk.scale = 0;
         pk.width = 128;
         pk.height = 128;

@@ -18,7 +18,7 @@ import cn.nukkit.network.protocol.LevelSoundEventPacket;
 /**
  * Created by PetteriM1
  */
-public class ItemTrident extends ItemTool {
+public class ItemTrident extends ItemTool implements ItemReleasable {
 
     public ItemTrident() {
         this(0, 1);
@@ -49,6 +49,11 @@ public class ItemTrident extends ItemTool {
 
     @Override
     public boolean onClickAir(Player player, Vector3 directionVector) {
+        return true;
+    }
+
+    @Override
+    public boolean onUse(Player player, int ticksUsed) {
         return true;
     }
 

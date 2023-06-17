@@ -1,9 +1,12 @@
 package cn.nukkit.item;
 
+import cn.nukkit.Player;
+import cn.nukkit.math.Vector3;
+
 /**
  * @author LT_Name
  */
-public class ItemSpyglass extends Item {
+public class ItemSpyglass extends Item implements ItemReleasable {
 
     public ItemSpyglass() {
         this(0, 1);
@@ -20,5 +23,20 @@ public class ItemSpyglass extends Item {
     @Override
     public int getMaxStackSize() {
         return 1;
+    }
+
+    @Override
+    public boolean onClickAir(Player player, Vector3 directionVector) {
+        return true;
+    }
+
+    @Override
+    public boolean onUse(Player player, int ticksUsed) {
+        return true;
+    }
+
+    @Override
+    public boolean onRelease(Player player, int ticksUsed) {
+        return true;
     }
 }

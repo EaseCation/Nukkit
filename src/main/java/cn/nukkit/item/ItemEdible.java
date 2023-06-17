@@ -9,7 +9,7 @@ import cn.nukkit.math.Vector3;
  * author: MagicDroidX
  * Nukkit Project
  */
-public abstract class ItemEdible extends Item {
+public abstract class ItemEdible extends Item implements ItemReleasable {
     public ItemEdible(int id, Integer meta, int count, String name) {
         super(id, meta, count, name);
     }
@@ -37,7 +37,9 @@ public abstract class ItemEdible extends Item {
 
     @Override
     public boolean onUse(Player player, int ticksUsed) {
-        if (ticksUsed < 30) return false;
+        if (ticksUsed < 30) {
+            return false;
+        }
         PlayerItemConsumeEvent consumeEvent = new PlayerItemConsumeEvent(player, this);
 
         player.getServer().getPluginManager().callEvent(consumeEvent);
@@ -51,6 +53,11 @@ public abstract class ItemEdible extends Item {
             --this.count;
             player.getInventory().setItemInHand(this);
         }
+        return true;
+    }
+
+    @Override
+    public boolean onRelease(Player player, int ticksUsed) {
         return true;
     }
 }

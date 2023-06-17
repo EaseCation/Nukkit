@@ -12,9 +12,9 @@ public class MovePlayerPacket extends DataPacket {
     public static final int NETWORK_ID = ProtocolInfo.MOVE_PLAYER_PACKET;
 
     public static final int MODE_NORMAL = 0;
-    public static final int MODE_RESET = 1;
+    public static final int MODE_RESPAWN = 1;
     public static final int MODE_TELEPORT = 2;
-    public static final int MODE_PITCH = 3; //facepalm Mojang
+    public static final int MODE_ONLY_HEAD_ROT = 3; //facepalm Mojang
 
     public long eid;
     public float x;

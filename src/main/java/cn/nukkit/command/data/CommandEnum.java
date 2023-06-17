@@ -1,16 +1,16 @@
 package cn.nukkit.command.data;
 
+import cn.nukkit.GameMode;
 import cn.nukkit.block.BlockID;
 import cn.nukkit.entity.EntityID;
 import cn.nukkit.item.ItemID;
 import cn.nukkit.item.enchantment.Enchantments;
 import cn.nukkit.potion.Effects;
-import com.google.common.collect.ImmutableSet;
-import it.unimi.dsi.fastutil.objects.ObjectOpenHashSet;
+import com.google.common.collect.ImmutableMap;
+import it.unimi.dsi.fastutil.Pair;
 
 import java.lang.reflect.Field;
-import java.util.Arrays;
-import java.util.Set;
+import java.util.*;
 import java.util.stream.Collectors;
 
 /**
@@ -18,9 +18,10 @@ import java.util.stream.Collectors;
  */
 public class CommandEnum {
 
-    public static final CommandEnum ENUM_BOOLEAN = new CommandEnum("Boolean", ImmutableSet.of("true", "false"));
-    public static final CommandEnum ENUM_GAMEMODE = new CommandEnum("GameMode",
-            ImmutableSet.of("survival", "creative", "s", "c", "adventure", "a", "spectator", "view", "v", "spc"));
+    public static final CommandEnum ENUM_BOOLEAN = new CommandEnum("Boolean", ImmutableMap.of(
+            "true", Collections.emptySet(),
+            "false", Collections.emptySet()));
+    public static final CommandEnum ENUM_GAMEMODE;
     public static final CommandEnum ENUM_BLOCK;
     public static final CommandEnum ENUM_ITEM;
     public static final CommandEnum ENUM_ENTITY_TYPE;
@@ -28,35 +29,50 @@ public class CommandEnum {
     public static final CommandEnum ENUM_EFFECT = new CommandEnum("Effect", Effects.getEffects().keySet());
 
     static {
-        ImmutableSet.Builder<String> blocks = ImmutableSet.builder();
+        ImmutableMap.Builder<String, Set<CommandEnumConstraint>> gameModes = ImmutableMap.builder();
+        for (GameMode gameMode : GameMode.getValues()) {
+            gameModes.put(gameMode.getIdentifier(), Collections.emptySet());
+            for (String alias : gameMode.getAliases()) {
+                gameModes.put(alias, Collections.emptySet());
+            }
+        }
+        ENUM_GAMEMODE = new CommandEnum("GameMode", gameModes.build());
+
+        ImmutableMap.Builder<String, Set<CommandEnumConstraint>> blocks = ImmutableMap.builder();
         for (Field field : BlockID.class.getDeclaredFields()) {
-            blocks.add(field.getName().toLowerCase());
+            String name = field.getName().toLowerCase();
+            blocks.put(name, Collections.emptySet());
+            blocks.put("minecraft:" + name, EnumSet.of(CommandEnumConstraint.ALLOW_ALIASES));
         }
         ENUM_BLOCK = new CommandEnum("Block", blocks.build());
 
-        ImmutableSet.Builder<String> items = ImmutableSet.builder();
+        ImmutableMap.Builder<String, Set<CommandEnumConstraint>> items = ImmutableMap.builder();
         for (Field field : ItemID.class.getDeclaredFields()) {
-            items.add(field.getName().toLowerCase());
+            String name = field.getName().toLowerCase();
+            items.put(name, Collections.emptySet());
+            items.put("minecraft:" + name, EnumSet.of(CommandEnumConstraint.ALLOW_ALIASES));
         }
-        items.addAll(ENUM_BLOCK.getValues());
+        items.putAll(ENUM_BLOCK.getValues());
         ENUM_ITEM = new CommandEnum("Item", items.build());
 
-        ImmutableSet.Builder<String> entities = ImmutableSet.builder();
+        ImmutableMap.Builder<String, Set<CommandEnumConstraint>> entities = ImmutableMap.builder();
         for (Field field : EntityID.class.getDeclaredFields()) {
-            entities.add(field.getName().toLowerCase());
+            String name = field.getName().toLowerCase();
+            entities.put(name, Collections.emptySet());
+            entities.put("minecraft:" + name, Collections.emptySet());
         }
         ENUM_ENTITY_TYPE = new CommandEnum("EntityType", entities.build());
     }
 
     private final String name;
-    private final Set<String> values;
+    private final Map<String, Set<CommandEnumConstraint>> values;
 
     public boolean soft;
 
     public CommandEnum(String name, Enum<?>... values) {
         this(name, false, Arrays.stream(values)
-                .map(value -> value.toString().toLowerCase())
-                .collect(Collectors.toSet()));
+                .map(value -> Pair.of(value.toString().toLowerCase(), EnumSet.noneOf(CommandEnumConstraint.class)))
+                .collect(Collectors.toMap(Pair::left, Pair::right)));
     }
 
     public CommandEnum(String name, String... values) {
@@ -64,14 +80,26 @@ public class CommandEnum {
     }
 
     public CommandEnum(String name, boolean soft, String... values) {
-        this(name, soft, new ObjectOpenHashSet<>(Arrays.asList(values)));
+        this(name, soft, Arrays.stream(values)
+                .map(value -> Pair.of(value.toLowerCase(), EnumSet.noneOf(CommandEnumConstraint.class)))
+                .collect(Collectors.toMap(Pair::left, Pair::right)));
     }
 
-    public CommandEnum(String name, Set<String> values) {
+    public CommandEnum(String name, Collection<String> values) {
         this(name, false, values);
     }
 
-    public CommandEnum(String name, boolean soft, Set<String> values) {
+    public CommandEnum(String name, boolean soft, Collection<String> values) {
+        this(name, soft, values.stream()
+                .map(value -> Pair.of(value.toLowerCase(), EnumSet.noneOf(CommandEnumConstraint.class)))
+                .collect(Collectors.toMap(Pair::left, Pair::right)));
+    }
+
+    public CommandEnum(String name, Map<String, Set<CommandEnumConstraint>> values) {
+        this(name, false, values);
+    }
+
+    public CommandEnum(String name, boolean soft, Map<String, Set<CommandEnumConstraint>> values) {
         this.name = name;
         this.values = values;
         this.soft = soft;
@@ -81,7 +109,7 @@ public class CommandEnum {
         return name;
     }
 
-    public Set<String> getValues() {
+    public Map<String, Set<CommandEnumConstraint>> getValues() {
         return values;
     }
 
@@ -89,6 +117,7 @@ public class CommandEnum {
         return soft;
     }
 
+    @Override
     public int hashCode() {
         return name.hashCode();
     }

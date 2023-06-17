@@ -140,7 +140,7 @@ public abstract class Block extends Position implements Metadatable, Cloneable, 
                 continue;
             }
 
-            lightBlock[id] = (byte) entry.mLightBlock;
+            lightBlock[id] = entry.mLightBlock;
         }
 
         for (int id = 0; id < BLOCK_ID_COUNT; id++) {
@@ -1266,32 +1266,20 @@ public abstract class Block extends Position implements Metadatable, Cloneable, 
 
     @ToString
     private static class BlockEntry {
-        @JsonProperty("_blastResistance")
-        private float mBlastResistance;
-        @JsonProperty("_flammability")
-        private int mFlammability;
-        @JsonProperty("_friction")
-        private float mFriction;
+        @JsonProperty("MaterialType")
+        private int mMaterialType;
         @JsonProperty("_id")
-        private int mId;
-        @JsonProperty("_lavaFlammable")
-        private boolean mLavaFlammable;
-        @JsonProperty("_mBurnOdds")
-        private int mBurnOdds;
-        @JsonProperty("_mHardness")
-        private float mHardness;
+        private short mId;
+        @JsonProperty("_mFriction")
+        private float mFriction;
         @JsonProperty("_mLightBlock")
-        private int mLightBlock;
+        private byte mLightBlock;
         @JsonProperty("_mLightEmission")
-        private int mLightEmission;
-        @JsonProperty("_mMapColor0-R")
-        private float mMapColorR;
-        @JsonProperty("_mMapColor1-G")
-        private float mMapColorG;
-        @JsonProperty("_mMapColor2-B")
-        private float mMapColorB;
-        @JsonProperty("_mMapColor3-A")
-        private float mMapColorA;
+        private byte mLightEmission;
+        @JsonProperty("_mMapColorARGB")
+        private int mMapColor;
+        @JsonProperty("_mMinRequiredBaseGameVersion")
+        private String mMinRequiredBaseGameVersion;
 
         private int blockEntityType;
         private int blockItemId;
@@ -1301,12 +1289,12 @@ public abstract class Block extends Position implements Metadatable, Cloneable, 
         private boolean canHurtAndBreakItem;
         private boolean canInstatick;
         private int creativeCategory;
+        private float explosionResistance;
         private int flameOdds;
         private float hardness;
         private boolean hasBlockEntity;
         @JsonProperty("identifier")
         private String nameId;
-        private boolean isHeavy;
         private boolean isLavaFlammable;
         private boolean isMotionBlockingBlock;
         private boolean isSolid;

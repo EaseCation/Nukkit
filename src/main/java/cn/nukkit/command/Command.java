@@ -10,6 +10,7 @@ import cn.nukkit.utils.TextFormat;
 import co.aikar.timings.Timing;
 import co.aikar.timings.Timings;
 import it.unimi.dsi.fastutil.objects.Object2ObjectOpenHashMap;
+import it.unimi.dsi.fastutil.objects.ObjectOpenHashSet;
 
 import java.util.*;
 
@@ -115,7 +116,7 @@ public abstract class Command {
         CommandData customData = this.commandData.clone();
 
         if (getAliases().length > 0) {
-            Set<String> aliases = new HashSet<>(Arrays.asList(getAliases()));
+            Set<String> aliases = ObjectOpenHashSet.of(getAliases());
             aliases.add(this.name);
 
             customData.aliases = new CommandEnum(this.name + "Aliases", aliases);
@@ -127,7 +128,9 @@ public abstract class Command {
             overload.input.parameters = par;
             customData.overloads.put(key, overload);
         });
-        if (customData.overloads.isEmpty()) customData.overloads.put("default", new CommandOverload());
+        if (customData.overloads.isEmpty()) {
+            customData.overloads.put("default", new CommandOverload());
+        }
         CommandDataVersions versions = new CommandDataVersions();
         versions.versions.add(customData);
         return versions;

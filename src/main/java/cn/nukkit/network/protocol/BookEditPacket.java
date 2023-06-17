@@ -26,7 +26,7 @@ public class BookEditPacket extends DataPacket {
 
     @Override
     public void decode() {
-        this.action = Action.values()[this.getByte()];
+        this.action = Action.VALUES[this.getByte()];
         this.inventorySlot = this.getByte();
 
         switch (this.action) {
@@ -61,6 +61,13 @@ public class BookEditPacket extends DataPacket {
         ADD_PAGE,
         DELETE_PAGE,
         SWAP_PAGES,
-        SIGN_BOOK
+        SIGN_BOOK,
+        ;
+
+        private static final Action[] VALUES = values();
+
+        public static Action[] getValues() {
+            return VALUES;
+        }
     }
 }

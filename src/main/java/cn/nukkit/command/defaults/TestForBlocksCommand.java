@@ -4,6 +4,7 @@ import cn.nukkit.block.Block;
 import cn.nukkit.command.CommandParser;
 import cn.nukkit.command.CommandSender;
 import cn.nukkit.command.data.CommandEnum;
+import cn.nukkit.command.data.CommandParamOption;
 import cn.nukkit.command.data.CommandParamType;
 import cn.nukkit.command.data.CommandParameter;
 import cn.nukkit.command.exceptions.CommandSyntaxException;
@@ -28,7 +29,8 @@ public class TestForBlocksCommand extends VanillaCommand {
                 CommandParameter.newType("begin", CommandParamType.BLOCK_POSITION),
                 CommandParameter.newType("end", CommandParamType.BLOCK_POSITION),
                 CommandParameter.newType("destination", CommandParamType.BLOCK_POSITION),
-                CommandParameter.newEnum("mode", true, new CommandEnum("TestForBlocksMode", TestForBlocksMode.values())),
+                CommandParameter.newEnum("mode", true, new CommandEnum("TestForBlocksMode", TestForBlocksMode.values()))
+                        .addOption(CommandParamOption.SUPPRESS_ENUM_AUTOCOMPLETION),
         });
     }
 
