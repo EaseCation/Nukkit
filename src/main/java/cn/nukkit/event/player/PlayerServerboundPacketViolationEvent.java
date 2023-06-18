@@ -12,15 +12,25 @@ public class PlayerServerboundPacketViolationEvent extends PlayerEvent {
     }
 
     private final PacketViolationReason reason;
+    private final String tag;
     private boolean kick = true;
 
     public PlayerServerboundPacketViolationEvent(Player player, PacketViolationReason reason) {
+        this(player, reason, "");
+    }
+
+    public PlayerServerboundPacketViolationEvent(Player player, PacketViolationReason reason, String tag) {
         this.player = player;
         this.reason = reason;
+        this.tag = tag;
     }
 
     public PacketViolationReason getReason() {
         return reason;
+    }
+
+    public String getTag() {
+        return tag;
     }
 
     public boolean isKick() {

@@ -2992,7 +2992,7 @@ public class Player extends EntityHuman implements CommandSender, InventoryHolde
                         case WAKE_UP:
                             break;
                         default:
-                            onPacketViolation(PacketViolationReason.IMPOSSIBLE_BEHAVIOR);
+                            onPacketViolation(PacketViolationReason.IMPOSSIBLE_BEHAVIOR, "anim");
                             return;
                     }
 
@@ -5644,9 +5644,13 @@ public class Player extends EntityHuman implements CommandSender, InventoryHolde
     }
 
     public void onPacketViolation(PacketViolationReason reason) {
+        onPacketViolation(reason, "");
+    }
+
+    public void onPacketViolation(PacketViolationReason reason, String tag) {
         violated = true;
 
-        PlayerServerboundPacketViolationEvent event = new PlayerServerboundPacketViolationEvent(this, reason);
+        PlayerServerboundPacketViolationEvent event = new PlayerServerboundPacketViolationEvent(this, reason, tag);
         event.call();
 
         if (event.isKick()) {
@@ -5666,7 +5670,7 @@ public class Player extends EntityHuman implements CommandSender, InventoryHolde
         }
 
         if (violated) {
-            onPacketViolation(PacketViolationReason.VIOLATION_OVER_THRESHOLD);
+            onPacketViolation(PacketViolationReason.VIOLATION_OVER_THRESHOLD, "insta");
             return;
         }
 
@@ -5675,7 +5679,7 @@ public class Player extends EntityHuman implements CommandSender, InventoryHolde
         }
 
         if (violation >= VIOLATION_THRESHOLD) {
-            onPacketViolation(PacketViolationReason.VIOLATION_OVER_THRESHOLD);
+            onPacketViolation(PacketViolationReason.VIOLATION_OVER_THRESHOLD, "tick");
         }
 
         violation--;
