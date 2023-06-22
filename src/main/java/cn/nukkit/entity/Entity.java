@@ -2071,7 +2071,11 @@ public abstract class Entity extends Location implements Metadatable {
     }
 
     public boolean isInsideOfWater(boolean eyeHeight) {
-        double y = eyeHeight ? (this.y + this.getEyeHeight()) : this.y;
+        return isInsideOfWater(eyeHeight ? this.getEyeHeight() : 0);
+    }
+
+    public boolean isInsideOfWater(float heightOffset) {
+        double y = this.y + heightOffset;
         Block block = this.level.getBlock(Mth.floor(this.x), Mth.floor(y), Mth.floor(this.z));
         if (!block.isWater()) {
             block = level.getExtraBlock(block);
@@ -2102,6 +2106,12 @@ public abstract class Entity extends Location implements Metadatable {
         }
 
         return false;
+    }
+
+    public boolean isOnLadder() {
+        Block b = this.getLevelBlock();
+
+        return b.getId() == Block.LADDER;
     }
 
     public boolean fastMove(double dx, double dy, double dz) {

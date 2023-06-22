@@ -10,6 +10,7 @@ import cn.nukkit.inventory.PlayerEnderChestInventory;
 import cn.nukkit.inventory.PlayerInventory;
 import cn.nukkit.inventory.PlayerOffhandInventory;
 import cn.nukkit.item.Item;
+import cn.nukkit.item.ItemBlockID;
 import cn.nukkit.item.ItemSkull;
 import cn.nukkit.item.Items;
 import cn.nukkit.item.enchantment.Enchantment;
@@ -201,8 +202,9 @@ public abstract class EntityHumanType extends EntityCreature implements Inventor
                         source.getCause() != DamageCause.SUFFOCATION &&
                         source.getCause() != DamageCause.SUICIDE &&
                         source.getCause() != DamageCause.FIRE_TICK &&
+                        source.getCause() != DamageCause.FREEZE &&
                         source.getCause() != DamageCause.FALL) { // No armor damage
-                    if (armor.isUnbreakable() || armor instanceof ItemSkull) {
+                    if (armor.isUnbreakable() || armor instanceof ItemSkull || armor.getId() == ItemBlockID.CARVED_PUMPKIN || armor.getId() == Item.ELYTRA) {
                         continue;
                     }
 
@@ -253,4 +255,18 @@ public abstract class EntityHumanType extends EntityCreature implements Inventor
         super.setOnFire(seconds);
     }
 
+    @Override
+    protected boolean checkTurtleHelmet(boolean breathing) {
+        if (breathing && inventory.getHelmet().getId() == Item.TURTLE_HELMET) {
+            turtleTicks = 200;
+            return true;
+        }
+
+        if (turtleTicks > 0) {
+            turtleTicks--;
+            return true;
+        }
+
+        return breathing;
+    }
 }

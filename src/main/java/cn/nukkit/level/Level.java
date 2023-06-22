@@ -434,13 +434,13 @@ public class Level implements ChunkManager, Metadatable {
         this.randomUpdateQueue.setLastTick(levelCurrentTick);
 
         this.chunkTickRadius = Math.min(this.server.getViewDistance(),
-                Math.max(1, this.server.getConfig("chunk-ticking.tick-radius", 4)));
-        this.chunksPerTicks = this.server.getConfig("chunk-ticking.per-tick", 40);
-        this.chunkGenerationQueueSize = this.server.getConfig("chunk-generation.queue-size", 8);
-        this.chunkPopulationQueueSize = this.server.getConfig("chunk-generation.population-queue-size", 2);
+                Math.max(1, this.server.getConfiguration().getChunkTickRadius()));
+        this.chunksPerTicks = this.server.getConfiguration().getChunkTickingPerTick();
+        this.chunkGenerationQueueSize = this.server.getConfiguration().getChunkGenerationQueueSize();
+        this.chunkPopulationQueueSize = this.server.getConfiguration().getChunkPopulationQueueSize();
         this.chunkTickList.clear();
-        this.clearChunksOnTick = this.server.getConfig("chunk-ticking.clear-tick-list", true);
-        this.cacheChunks = this.server.getConfig("chunk-sending.cache-chunks", false);
+        this.clearChunksOnTick = this.server.getConfiguration().isClearChunksOnTick();
+        this.cacheChunks = this.server.getConfiguration().isCacheChunks();
         this.temporalVector = new Vector3(0, 0, 0);
         this.tickRate = 1;
 
@@ -732,6 +732,46 @@ public class Level implements ChunkManager, Metadatable {
 
     public void addLevelSoundEvent(Vector3 pos, int type, int data, Player[] viewers) {
         this.addLevelSoundEvent(pos, type, data, ":", false, false, viewers);
+    }
+
+    public void addLevelSoundEvent(Vector3 pos, int type, String identifier) {
+        this.addLevelSoundEvent(pos, type, -1, identifier, false, false);
+    }
+
+    public void addLevelSoundEvent(Vector3 pos, int type, String identifier, Player[] viewers) {
+        this.addLevelSoundEvent(pos, type, -1, identifier, false, false, viewers);
+    }
+
+    public void addLevelSoundEvent(Vector3 pos, int type, String identifier, boolean isBaby) {
+        this.addLevelSoundEvent(pos, type, -1, identifier, isBaby, false);
+    }
+
+    public void addLevelSoundEvent(Vector3 pos, int type, String identifier, boolean isBaby, Player[] viewers) {
+        this.addLevelSoundEvent(pos, type, -1, identifier, isBaby, false, viewers);
+    }
+
+    public void addLevelSoundEvent(Vector3 pos, int type, String identifier, boolean isBaby, boolean isGlobal) {
+        this.addLevelSoundEvent(pos, type, -1, identifier, isBaby, isGlobal);
+    }
+
+    public void addLevelSoundEvent(Vector3 pos, int type, String identifier, boolean isBaby, boolean isGlobal, Player[] viewers) {
+        this.addLevelSoundEvent(pos, type, -1, identifier, isBaby, isGlobal, viewers);
+    }
+
+    public void addLevelSoundEvent(Vector3 pos, int type, int data, String identifier) {
+        this.addLevelSoundEvent(pos, type, data, identifier, false, false);
+    }
+
+    public void addLevelSoundEvent(Vector3 pos, int type, int data, String identifier, Player[] viewers) {
+        this.addLevelSoundEvent(pos, type, data, identifier, false, false, viewers);
+    }
+
+    public void addLevelSoundEvent(Vector3 pos, int type, int data, String identifier, boolean isBaby) {
+        this.addLevelSoundEvent(pos, type, data, identifier, isBaby, false);
+    }
+
+    public void addLevelSoundEvent(Vector3 pos, int type, int data, String identifier, boolean isBaby, Player[] viewers) {
+        this.addLevelSoundEvent(pos, type, data, identifier, isBaby, false, viewers);
     }
 
     public void addLevelSoundEvent(Vector3 pos, int type, int data, String identifier, boolean isBaby, boolean isGlobal) {
@@ -2396,15 +2436,8 @@ public class Level implements ChunkManager, Metadatable {
             BlockBreakEvent ev = new BlockBreakEvent(player, target, face, item, eventDrops, player.isCreative(),
                     (player.lastBreak + breakTime * 1000) > System.currentTimeMillis());
 
-            double distance;
             if (player.isSurvival() && !target.isBreakable(item)) {
                 ev.setCancelled();
-            } else if ((distance = this.server.getSpawnRadius()) > -1) {
-                Vector2 t = new Vector2(target.x, target.z);
-                Vector2 s = new Vector2(this.getSpawnLocation().x, this.getSpawnLocation().z);
-                if (t.distance(s) <= distance) {
-                    ev.setCancelled();
-                }
             }
 
             this.server.getPluginManager().callEvent(ev);
@@ -2531,15 +2564,6 @@ public class Level implements ChunkManager, Metadatable {
                 ev.setCancelled();
             }
 
-            int distance = this.server.getSpawnRadius();
-            if (distance > -1) {
-                Vector2 t = new Vector2(target.x, target.z);
-                Vector2 s = new Vector2(this.getSpawnLocation().x, this.getSpawnLocation().z);
-                if (t.distance(s) <= distance) {
-                    ev.setCancelled();
-                }
-            }
-
             this.server.getPluginManager().callEvent(ev);
             if (!ev.isCancelled()) {
                 target.onUpdate(BLOCK_UPDATE_TOUCH);
@@ -2626,15 +2650,6 @@ public class Level implements ChunkManager, Metadatable {
             }
 
             BlockPlaceEvent event = new BlockPlaceEvent(player, hand, block, target, item);
-            int distance = this.server.getSpawnRadius();
-            if (distance > -1) {
-                Vector2 t = new Vector2(target.x, target.z);
-                Vector2 s = new Vector2(this.getSpawnLocation().x, this.getSpawnLocation().z);
-                if (t.distance(s) <= distance) {
-                    event.setCancelled();
-                }
-            }
-
             this.server.getPluginManager().callEvent(event);
             if (event.isCancelled()) {
                 return null;
@@ -3501,7 +3516,7 @@ public class Level implements ChunkManager, Metadatable {
         }
 
         if (!chunk.isLightPopulated() && chunk.isPopulated()
-                && this.getServer().getConfig("chunk-ticking.light-updates", false)) {
+                && this.getServer().getConfiguration().isLightUpdates()) {
             this.getServer().getScheduler().scheduleAsyncTask(new LightPopulationTask(this, chunk));
         }
 

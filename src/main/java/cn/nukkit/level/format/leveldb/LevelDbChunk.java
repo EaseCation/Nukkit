@@ -38,7 +38,7 @@ public class LevelDbChunk extends BaseChunk {
     protected final Lock ioLock;
 
     public LevelDbChunk(@Nullable LevelProvider level, int chunkX, int chunkZ) {
-        this(level, chunkX, chunkZ, null, null, null, null, null, null);
+        this(level, chunkX, chunkZ, null, new short[SUB_CHUNK_2D_SIZE], null, null, null, null);
     }
 
     public LevelDbChunk(@Nullable LevelProvider level, int chunkX, int chunkZ, @Nullable LevelDbSubChunk[] sections,

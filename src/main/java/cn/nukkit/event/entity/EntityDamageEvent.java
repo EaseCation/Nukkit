@@ -118,7 +118,6 @@ public class EntityDamageEvent extends EntityEvent implements Cancellable {
             case FREEZE:
             case SUFFOCATION:
             case DROWNING:
-            case DRY_OUT:
             case HUNGER:
             case FALL:
             case VOID:
@@ -177,6 +176,7 @@ public class EntityDamageEvent extends EntityEvent implements Cancellable {
     }
 
     public enum DamageCause {
+//        OVERRIDE,
         /**
          * Damage caused by contact with a block such as a Cactus
          */
@@ -214,10 +214,6 @@ public class EntityDamageEvent extends EntityEvent implements Cancellable {
          */
         DROWNING,
         /**
-         * Damage caused when an entity that should be in water is not.
-         */
-        DRY_OUT,
-        /**
          * Block explosion damage
          */
         BLOCK_EXPLOSION,
@@ -237,21 +233,35 @@ public class EntityDamageEvent extends EntityEvent implements Cancellable {
          * Potion or spell damage
          */
         MAGIC,
-        /**
-         * Plugins
-         */
-        CUSTOM,
-        /**
-         * Damage caused by being struck by lightning
-         */
-        LIGHTNING,
+//        WITHER,
         /**
          * Damage caused by hunger
          */
         HUNGER,
+//        ANVIL,
+//        THORNS,
+//        FALLING_BLOCK,
+//        PISTON,
+//        FLY_INTO_WALL,
+//        MAGMA,
+//        FIREWORKS,
+        /**
+         * Damage caused by being struck by lightning
+         */
+        LIGHTNING,
+//        CHARGING,
+//        TEMPERATURE,
         /**
          * Damage caused from freezing.
          */
         FREEZE,
+//        STALACTITE,
+//        STALAGMITE,
+//        RAM_ATTACK,
+//        SONIC_BOOM,
+        /**
+         * Plugins
+         */
+        CUSTOM,
     }
 }

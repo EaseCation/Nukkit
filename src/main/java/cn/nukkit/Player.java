@@ -54,7 +54,6 @@ import cn.nukkit.level.format.generic.BaseFullChunk;
 import cn.nukkit.level.format.generic.ChunkBlobCache;
 import cn.nukkit.level.format.generic.ChunkPacketCache;
 import cn.nukkit.level.particle.PunchBlockParticle;
-import cn.nukkit.level.sound.SoundEnum;
 import cn.nukkit.level.util.AroundPlayerChunkComparator;
 import cn.nukkit.math.*;
 import cn.nukkit.metadata.MetadataValue;
@@ -85,10 +84,7 @@ import co.aikar.timings.Timings;
 import com.google.common.collect.BiMap;
 import com.google.common.collect.HashBiMap;
 import com.google.common.primitives.Floats;
-import it.unimi.dsi.fastutil.ints.Int2ObjectMap;
-import it.unimi.dsi.fastutil.ints.Int2ObjectOpenHashMap;
-import it.unimi.dsi.fastutil.ints.IntOpenHashSet;
-import it.unimi.dsi.fastutil.ints.IntSet;
+import it.unimi.dsi.fastutil.ints.*;
 import it.unimi.dsi.fastutil.longs.*;
 import it.unimi.dsi.fastutil.objects.Object2ObjectLinkedOpenHashMap;
 import it.unimi.dsi.fastutil.objects.Object2ObjectOpenHashMap;
@@ -313,6 +309,8 @@ public class Player extends EntityHuman implements CommandSender, InventoryHolde
 
     public int violation;
     public volatile boolean violated;
+
+    protected boolean inWater = false;
 
     public int getStartActionTick() {
         return startAction;
@@ -687,8 +685,8 @@ public class Player extends EntityHuman implements CommandSender, InventoryHolde
         this.socketAddress = socketAddress;
         this.clientID = clientID;
         this.loaderId = Level.generateChunkLoaderId(this);
-        this.chunksPerTick = this.server.getConfig("chunk-sending.per-tick", 4);
-        this.spawnThreshold = this.server.getConfig("chunk-sending.spawn-threshold", 56);
+        this.chunksPerTick = this.server.getConfiguration().getChunkSendingPerTick();
+        this.spawnThreshold = this.server.getConfiguration().getChunkSpawnThreshold();
         this.spawnPosition = null;
         this.gamemode = this.server.getGamemode();
         this.setLevel(this.server.getDefaultLevel());
@@ -1524,14 +1522,28 @@ public class Player extends EntityHuman implements CommandSender, InventoryHolde
         this.checkChunks();
 
         if (!this.isSpectator()) {
+            boolean inWaterPrev = this.inWater;
+            this.inWater = isInsideOfWater(0.7f);
+            boolean swimming = isSwimming();
+
             if (!this.onGround || dy != 0) {
                 AxisAlignedBB bb = this.boundingBox.clone();
                 bb.setMinY(bb.getMinY() - 0.75);
 
-                this.onGround = this.level.getCollisionBlocks(bb).length > 0;
+                boolean onGroundPrev = this.onGround;
+                Block[] blocks = this.level.getCollisionBlocks(bb);
+                this.onGround = blocks.length > 0;
+
+                if (!swimming && !onGroundPrev && onGround && !isInsideOfWater(false)) {
+                    level.addLevelSoundEvent(this, LevelSoundEventPacket.SOUND_LAND, blocks[0].getFullId(), "minecraft:player");
+                }
             }
             this.isCollided = this.onGround;
             this.updateFallState(this.onGround);
+
+            if (!swimming && !inWaterPrev && inWater) {
+                level.addLevelSoundEvent(add(0, 1.1f, 0), LevelSoundEventPacket.SOUND_SPLASH, ThreadLocalRandom.current().nextInt(600000, 800000), "minecraft:player"); //TODO: check data
+            }
 
             /*this.lastMotionX = this.motionX;
             this.lastMotionY = this.motionY;
@@ -1891,7 +1903,7 @@ public class Player extends EntityHuman implements CommandSender, InventoryHolde
                 }
             }
 
-            if (this.isOnFire() && this.lastUpdate % 10 == 0) {
+            if (this.isOnFire() && this.age % 10 == 0) {
                 if (this.isCreative() && !this.isInsideOfFire()) {
                     this.extinguish();
                 } else if (this.getLevel().isRaining()) {
@@ -1949,6 +1961,26 @@ public class Player extends EntityHuman implements CommandSender, InventoryHolde
                 if (block.getId() != Block.BLOCK_BED || (block.getDamage() & 0x8) != 0x8) {
                     this.stopSleep();
                 }
+            }
+
+            if (isSurvivalLike() && age % 20 == 0 && isGliding()) {
+                Item chestplate = inventory.getChestplate();
+                if (chestplate.getId() == Item.ELYTRA) {
+                    int damage = chestplate.getDamage();
+                    if (damage < chestplate.getMaxDurability() - 1) {
+                        Enchantment durability = chestplate.getEnchantment(Enchantment.UNBREAKING);
+                        if (durability == null || durability.getLevel() <= 0 || 100 / (durability.getLevel() + 1) > ThreadLocalRandom.current().nextInt(100)) {
+                            chestplate.setDamage(++damage);
+                            inventory.setChestplate(chestplate, true);
+                        }
+                    } else {
+                        setGliding(false);
+                    }
+                }
+            }
+
+            if (isBreakingBlock() && age % 5 == 0) {
+                level.addLevelSoundEvent(breakingBlock.blockCenter(), LevelSoundEventPacket.SOUND_HIT, breakingBlock.getFullId());
             }
         }
 
@@ -2806,7 +2838,8 @@ public class Player extends EntityHuman implements CommandSender, InventoryHolde
                             break;
                         case PlayerActionPacket.ACTION_START_GLIDE:
                             PlayerToggleGlideEvent playerToggleGlideEvent = new PlayerToggleGlideEvent(this, true);
-                            if (getInventory().getChestplate().getId() != Item.ELYTRA) {
+                            Item chestplate = getInventory().getChestplate();
+                            if (chestplate.getId() != Item.ELYTRA || chestplate.getDamage() >= chestplate.getMaxDurability() - 1) {
                                 playerToggleGlideEvent.setCancelled();
                             }
                             this.server.getPluginManager().callEvent(playerToggleGlideEvent);
@@ -2989,6 +3022,10 @@ public class Player extends EntityHuman implements CommandSender, InventoryHolde
                             }
                             break;
                         case SWING_ARM:
+                            if (false && !isBreakingBlock()) {
+                                level.addLevelSoundEvent(this, LevelSoundEventPacket.SOUND_ATTACK_NODAMAGE, "minecraft:player", new Player[]{this});
+                            }
+                            break;
                         case WAKE_UP:
                             break;
                         default:
@@ -3476,7 +3513,7 @@ public class Player extends EntityHuman implements CommandSender, InventoryHolde
                                     } else if (target instanceof Player) {
                                         if ((((Player) target).getGamemode() & 0x01) > 0) {
                                             break;
-                                        } else if (!this.server.getPropertyBoolean("pvp")) {
+                                        } else if (!this.server.getConfiguration().isPvp() || this.server.getDifficulty() == 0) {
                                             break;
                                         }
                                     }
@@ -5318,6 +5355,52 @@ public class Player extends EntityHuman implements CommandSender, InventoryHolde
                 entity.kill();
                 this.getLevel().addLevelEvent(this, LevelEventPacket.EVENT_SOUND_EXPERIENCE_ORB);
                 pickedXPOrb = tick;
+
+                if (exp > 0) {
+                    IntList itemsWithMending = new IntArrayList(4 + 2);
+                    for (int i = 0; i < 4; i++) {
+                        Item item = inventory.getArmorItem(i);
+                        if (!(item instanceof ItemDurable)) {
+                            continue;
+                        }
+                        if (item.getDamage() <= 0) {
+                            continue;
+                        }
+                        Enchantment enchantment = inventory.getArmorItem(i).getEnchantment(Enchantment.MENDING);
+                        if (enchantment != null && enchantment.getLevel() > 0) {
+                            itemsWithMending.add(inventory.getSize() + i);
+                        }
+                    }
+                    Item item = inventory.getItemInHand();
+                    if (item instanceof ItemDurable && item.getDamage() > 0) {
+                        Enchantment enchantment = item.getEnchantment(Enchantment.MENDING);
+                        if (enchantment != null && enchantment.getLevel() > 0) {
+                            itemsWithMending.add(inventory.getHeldItemIndex());
+                        }
+                    }
+                    Item offhandItem = offhandInventory.getItem(0);
+                    if (offhandItem instanceof ItemDurable && offhandItem.getDamage() > 0) {
+                        Enchantment enchantment = offhandItem.getEnchantment(Enchantment.MENDING);
+                        if (enchantment != null && enchantment.getLevel() > 0) {
+                            itemsWithMending.add(-106);
+                        }
+                    }
+                    if (!itemsWithMending.isEmpty()) {
+                        int index = itemsWithMending.getInt(ThreadLocalRandom.current().nextInt(itemsWithMending.size()));
+                        Inventory inv = inventory;
+                        if (index == -106) {
+                            inv = offhandInventory;
+                            index = 0;
+                        }
+                        Item mend = inv.getItem(index);
+                        int oldDamage = mend.getDamage();
+                        int newDamage = Math.max(oldDamage - exp, 0);
+                        exp += newDamage - oldDamage;
+                        mend.setDamage(newDamage);
+                        inv.setItem(index, mend);
+                    }
+                }
+
                 this.addExperience(exp);
                 return true;
             }
@@ -5400,7 +5483,7 @@ public class Player extends EntityHuman implements CommandSender, InventoryHolde
             fishingHook.rod = fishingRod;
             fishingHook.checkLure();
             fishingHook.spawnToAll();
-            this.level.addSound(this, SoundEnum.RANDOM_BOW, 0.5f, 0.33f + ThreadLocalRandom.current().nextFloat() * 0.17f);
+            this.level.addLevelSoundEvent(this, LevelSoundEventPacket.SOUND_THROW, "minecraft:player");
         }
     }
 

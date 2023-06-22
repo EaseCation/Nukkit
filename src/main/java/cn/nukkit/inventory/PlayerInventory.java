@@ -193,7 +193,7 @@ public class PlayerInventory extends BaseInventory {
     }
 
     public boolean setArmorItem(int index, Item item, boolean ignoreArmorEvents) {
-        return this.setItem(this.getSize() + index, item, ignoreArmorEvents);
+        return this.setItem(this.getSize() + index, item, true, ignoreArmorEvents);
     }
 
     public Item getHelmet() {
@@ -213,19 +213,35 @@ public class PlayerInventory extends BaseInventory {
     }
 
     public boolean setHelmet(Item helmet) {
-        return this.setItem(this.getSize(), helmet);
+        return this.setHelmet(helmet, false);
+    }
+
+    public boolean setHelmet(Item helmet, boolean ignoreArmorEvents) {
+        return this.setItem(this.getSize(), helmet, true, ignoreArmorEvents);
     }
 
     public boolean setChestplate(Item chestplate) {
-        return this.setItem(this.getSize() + 1, chestplate);
+        return this.setChestplate(chestplate, false);
+    }
+
+    public boolean setChestplate(Item chestplate, boolean ignoreArmorEvents) {
+        return this.setItem(this.getSize() + 1, chestplate, true, ignoreArmorEvents);
     }
 
     public boolean setLeggings(Item leggings) {
-        return this.setItem(this.getSize() + 2, leggings);
+        return this.setLeggings(leggings, false);
+    }
+
+    public boolean setLeggings(Item leggings, boolean ignoreArmorEvents) {
+        return this.setItem(this.getSize() + 2, leggings, true, ignoreArmorEvents);
     }
 
     public boolean setBoots(Item boots) {
-        return this.setItem(this.getSize() + 3, boots);
+        return this.setBoots(boots, false);
+    }
+
+    public boolean setBoots(Item boots, boolean ignoreArmorEvents) {
+        return this.setItem(this.getSize() + 3, boots, true, ignoreArmorEvents);
     }
 
     @Override

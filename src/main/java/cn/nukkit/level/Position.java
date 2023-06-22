@@ -1,11 +1,16 @@
 package cn.nukkit.level;
 
+import cn.nukkit.Player;
 import cn.nukkit.block.Block;
 import cn.nukkit.level.format.FullChunk;
 import cn.nukkit.math.BlockFace;
 import cn.nukkit.math.Mth;
 import cn.nukkit.math.Vector3;
 import cn.nukkit.utils.LevelException;
+import it.unimi.dsi.fastutil.ints.Int2ObjectMap;
+import it.unimi.dsi.fastutil.ints.Int2ObjectMaps;
+
+import javax.annotation.Nullable;
 
 /**
  * author: MagicDroidX
@@ -199,7 +204,17 @@ public class Position extends Vector3 {
         return new Position(x, y, z, level);
     }
 
+    @Nullable
     public FullChunk getChunk() {
-        return isValid() ? level.getChunk(getChunkX(), getChunkZ()) : null;
+        return getChunk(false);
+    }
+
+    @Nullable
+    public FullChunk getChunk(boolean create) {
+        return isValid() ? level.getChunk(getChunkX(), getChunkZ(), create) : null;
+    }
+
+    public Int2ObjectMap<Player> getChunkPlayers() {
+        return isValid() ? level.getChunkPlayers(getChunkX(), getChunkZ()) : Int2ObjectMaps.emptyMap();
     }
 }

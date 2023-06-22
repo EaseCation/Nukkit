@@ -7,6 +7,7 @@ import cn.nukkit.command.exceptions.CommandExceptions;
 import cn.nukkit.console.NukkitConsole;
 import cn.nukkit.data.BlockItemConverter;
 import cn.nukkit.data.ItemIdMap;
+import cn.nukkit.data.ServerConfiguration;
 import cn.nukkit.dispenser.DispenseBehaviorRegister;
 import cn.nukkit.entity.Attribute;
 import cn.nukkit.entity.Entities;
@@ -75,6 +76,7 @@ import com.dosse.upnp.UPnP;
 import com.google.common.base.Preconditions;
 import io.netty.buffer.ByteBuf;
 import it.unimi.dsi.fastutil.objects.Object2ObjectOpenHashMap;
+import lombok.Getter;
 import lombok.Setter;
 import lombok.extern.log4j.Log4j2;
 
@@ -170,7 +172,7 @@ public class Server {
     private final int autoTickRateLimit;
     private final boolean alwaysTickPlayers;
     private final int baseTickRate;
-    private Boolean getAllowFlight = null;
+    private final boolean allowFlight;
 
     private int autoSaveTicker = 0;
     private int autoSaveTicks = 6000;
@@ -196,6 +198,8 @@ public class Server {
 
     private QueryRegenerateEvent queryRegenerateEvent;
 
+    @Getter
+    private final ServerConfiguration configuration;
     private final Config properties;
     private final Config config;
 
@@ -289,15 +293,12 @@ public class Server {
         log.info("Loading {} ...", TextFormat.GREEN + "server properties" + TextFormat.WHITE);
         this.properties = new Config(this.dataPath + "server.properties", Config.PROPERTIES, new ConfigSection() {
             {
-                put("motd", "Nukkit Server For Minecraft: PE");
+                put("motd", "Nukkit Server For Minecraft: BE");
                 put("sub-motd", "Powered by Nukkit");
                 put("server-port", 19132);
                 put("server-ip", "0.0.0.0");
                 put("view-distance", 10);
                 put("white-list", false);
-//                put("achievements", true);
-//                put("announce-player-achievements", true);
-                put("spawn-protection", 16);
                 put("max-players", 20);
                 put("allow-flight", false);
                 put("spawn-animals", true);
@@ -321,6 +322,32 @@ public class Server {
                 put("enable-jmx-monitoring", false);
             }
         });
+
+        this.configuration = ServerConfiguration.builder()
+                .serverIp(getPropertyString("server-ip", "0.0.0.0"))
+                .serverPort(getPropertyInt("server-port", 19132))
+                .enableWhitelist(getPropertyBoolean("white-list", false))
+                .motd(getPropertyString("motd", "Nukkit Server For Minecraft: BE"))
+                .forceResources(getPropertyBoolean("force-resources", false))
+                .gameMode(getPropertyInt("gamemode", 0) & 0b11)
+                .forceGameMode(getPropertyBoolean("force-gamemode", false))
+                .hardcore(getPropertyBoolean("hardcore", false))
+                .difficulty(getDifficultyFromString(properties.isInt("difficulty") ? String.valueOf(getPropertyInt("difficulty", 1)) : getPropertyString("difficulty", "1")))
+                .pvp(getPropertyBoolean("pvp"))
+                .viewDistance(getPropertyInt("view-distance", 10))
+                .levelType(getPropertyString("level-type", "DEFAULT"))
+                .generatorSettings(getPropertyString("generator-settings", ""))
+                .chunkSpawnThreshold(getConfig("chunk-sending.spawn-threshold", 56))
+                .chunkSendingPerTick(getConfig("chunk-sending.per-tick", 4))
+                .chunkTickingPerTick(getConfig("chunk-ticking.per-tick", 40))
+                .chunkTickRadius(getConfig("chunk-ticking.tick-radius", 4))
+                .chunkGenerationQueueSize(getConfig("chunk-generation.queue-size", 8))
+                .chunkPopulationQueueSize(getConfig("chunk-generation.population-queue-size", 2))
+                .clearChunksOnTick(getConfig("chunk-ticking.clear-tick-list", true))
+                .cacheChunks(getConfig("chunk-sending.cache-chunks", false))
+                .lightUpdates(getConfig("chunk-ticking.light-updates", false))
+                .savePlayerData(getConfig("player.save-player-data", true))
+                .build();
 
         this.forceLanguage = this.getConfig("settings.force-language", false);
         this.baseLang = new BaseLang(this.getConfig("settings.language", BaseLang.FALLBACK_LANGUAGE));
@@ -378,6 +405,9 @@ public class Server {
         if (this.getPropertyBoolean("hardcore", false) && this.getDifficulty() < 3) {
             this.setPropertyInt("difficulty", 3);
         }
+
+//        this.allowFlight = this.getPropertyBoolean("allow-flight", false);
+        this.allowFlight = true;
 
         this.enableJmxMonitoring = this.getPropertyBoolean("enable-jmx-monitoring", false);
         if (this.enableJmxMonitoring) {
@@ -795,8 +825,9 @@ public class Server {
             log.debug("Disabling all plugins");
             this.pluginManager.disablePlugins();
 
+            String shutdownMessage = this.getConfig("settings.shutdown-message", "Server closed");
             for (Player player : new ArrayList<>(this.players.values())) {
-                player.close(player.getLeaveMessage(), this.getConfig("settings.shutdown-message", "Server closed"));
+                player.close(player.getLeaveMessage(), shutdownMessage);
             }
 
             log.debug("Unloading all levels");
@@ -1285,15 +1316,15 @@ public class Server {
     }
 
     public int getPort() {
-        return this.getPropertyInt("server-port", 19132);
+        return this.configuration.getServerPort();
     }
 
     public int getViewDistance() {
-        return this.getPropertyInt("view-distance", 10);
+        return this.configuration.getViewDistance();
     }
 
     public String getIp() {
-        return this.getPropertyString("server-ip", "0.0.0.0");
+        return this.configuration.getServerIp();
     }
 
     public UUID getServerUniqueId() {
@@ -1312,7 +1343,7 @@ public class Server {
     }
 
     public String getLevelType() {
-        return this.getPropertyString("level-type", "DEFAULT");
+        return this.configuration.getLevelType();
     }
 
     public boolean getGenerateStructures() {
@@ -1320,11 +1351,11 @@ public class Server {
     }
 
     public int getGamemode() {
-        return this.getPropertyInt("gamemode", 0) & 0b11;
+        return this.configuration.getGameMode();
     }
 
     public boolean getForceGamemode() {
-        return this.getPropertyBoolean("force-gamemode", false);
+        return this.configuration.isForceGameMode();
     }
 
     public static String getGamemodeString(int mode) {
@@ -1398,34 +1429,27 @@ public class Server {
     }
 
     public int getDifficulty() {
-        return getDifficultyFromString(this.getProperties().isInt("difficulty") ? String.valueOf(this.getPropertyInt("difficulty", 1)) : this.getPropertyString("difficulty", "1"));
+        return configuration.getDifficulty();
     }
 
     public boolean hasWhitelist() {
-        return this.getPropertyBoolean("white-list", false);
-    }
-
-    public int getSpawnRadius() {
-        return this.getPropertyInt("spawn-protection", 16);
+        return this.configuration.isEnableWhitelist();
     }
 
     public boolean getAllowFlight() {
-        if (getAllowFlight == null) {
-            getAllowFlight = this.getPropertyBoolean("allow-flight", false);
-        }
-        return getAllowFlight;
+        return allowFlight;
     }
 
     public boolean isHardcore() {
-        return this.getPropertyBoolean("hardcore", false);
+        return this.configuration.isHardcore();
     }
 
     public int getDefaultGamemode() {
-        return this.getPropertyInt("gamemode", 0);
+        return this.configuration.getGameMode();
     }
 
     public String getMotd() {
-        return this.getPropertyString("motd", "Nukkit Server For Minecraft: PE");
+        return this.configuration.getMotd();
     }
 
     public String getSubMotd() {
@@ -1437,7 +1461,7 @@ public class Server {
     }
 
     public boolean getForceResources() {
-        return this.getPropertyBoolean("force-resources", false);
+        return this.configuration.isForceResources();
     }
 
     public MainLogger getLogger() {
@@ -1811,7 +1835,7 @@ public class Server {
             return false;
         }
 
-        options.getOptions().computeIfAbsent("preset", key -> this.getPropertyString("generator-settings", ""));
+        options.getOptions().computeIfAbsent("preset", key -> this.configuration.getGeneratorSettings());
 
         if (options.getGenerator() == null) {
             options.setGenerator(Generators.getGenerator(this.getLevelType()));
@@ -2090,7 +2114,7 @@ public class Server {
     }
 
     public boolean shouldSavePlayerData() {
-        return this.getConfig("player.save-player-data", true);
+        return this.configuration.isSavePlayerData();
     }
 
     public int getPlayerSkinChangeCooldown() {

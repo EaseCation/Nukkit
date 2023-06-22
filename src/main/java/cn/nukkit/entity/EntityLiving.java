@@ -58,6 +58,8 @@ public abstract class EntityLiving extends Entity implements EntityDamageable {
 
     protected float movementSpeed = 0.1f;
 
+    protected int turtleTicks;
+
     //EaseCation 优化
     protected boolean needLivingBaseTick = true;
     protected boolean needCollidingWithRideable = true;
@@ -247,7 +249,7 @@ public abstract class EntityLiving extends Entity implements EntityDamageable {
         this.server.getPluginManager().callEvent(ev);
 
         if (this.level.getGameRules().getBoolean(GameRule.DO_ENTITY_DROPS)) {
-            for (cn.nukkit.item.Item item : ev.getDrops()) {
+            for (Item item : ev.getDrops()) {
                 this.getLevel().dropItem(this, item);
             }
         }
@@ -266,11 +268,16 @@ public abstract class EntityLiving extends Entity implements EntityDamageable {
 
         if (this.isAlive() && this.needLivingBaseTick) {
             boolean breathing = canBreathe();
+            breathing = checkTurtleHelmet(breathing);
             this.setDataFlag(DATA_FLAGS, DATA_FLAG_BREATHING, breathing);
 
             if (this.isInsideOfSolid()) {
                 hasUpdate = true;
                 this.attack(new EntityDamageEvent(this, DamageCause.SUFFOCATION, 1));
+            }
+
+            if (this.isOnLadder() || this.hasEffect(Effect.SLOW_FALLING) || this.hasEffect(Effect.LEVITATION)) {
+                this.resetFallDistance();
             }
 
             if (isPlayer) {
@@ -297,37 +304,49 @@ public abstract class EntityLiving extends Entity implements EntityDamageable {
 
             if (!this.hasEffect(Effect.WATER_BREATHING) && !breathing) {
                 if (this instanceof EntityWaterAnimal) {
-                    this.setDataProperty(new ShortEntityData(DATA_AIR, 400));
-                } else {
+                    this.setAirTicks(400);
+                } else if (turtleTicks == 0 || turtleTicks == 200) {
                     hasUpdate = true;
-                    int airTicks = this.getDataPropertyShort(DATA_AIR) - tickDiff;
+                    int oldAirTicks = getAirTicks();
+                    int airTicks = oldAirTicks - tickDiff;
 
                     if (airTicks <= -20) {
                         airTicks = 0;
                         this.attack(new EntityDamageEvent(this, DamageCause.DROWNING, 2));
                     }
 
-                    this.setDataProperty(new ShortEntityData(DATA_AIR, airTicks));
+                    if (oldAirTicks != airTicks) {
+                        setAirTicks(airTicks);
+                    }
                 }
             } else {
                 if (this instanceof EntityWaterAnimal) {
                     hasUpdate = true;
-                    int airTicks = this.getDataPropertyInt(DATA_AIR) - tickDiff;
+                    int oldAirTicks = getAirTicks();
+                    int airTicks = oldAirTicks - tickDiff;
 
                     if (airTicks <= -20) {
                         airTicks = 0;
                         this.attack(new EntityDamageEvent(this, DamageCause.DROWNING, 2));
                     }
 
-                    this.setDataProperty(new ShortEntityData(DATA_AIR, airTicks));
+                    if (oldAirTicks != airTicks) {
+                        setAirTicks(airTicks);
+                    }
                 } else {
                     hasUpdate = true;
-                    int airTicks = this.getDataPropertyInt(DATA_AIR) + tickDiff * 5;
+                    int airTicks = getAirTicks();
+                    int maxAir = this.getDataPropertyShort(DATA_MAX_AIR);
 
-                    if (airTicks > this.getDataPropertyShort(Entity.DATA_MAX_AIR)) {
-                        airTicks = this.getDataPropertyShort(Entity.DATA_MAX_AIR);
+                    if (airTicks != maxAir) {
+                        airTicks += tickDiff * 5;
+
+                        if (airTicks > maxAir) {
+                            airTicks = maxAir;
+                        }
+
+                        setAirTicks(airTicks);
                     }
-                    this.setDataProperty(new ShortEntityData(DATA_AIR, airTicks));
                 }
             }
 
@@ -355,6 +374,10 @@ public abstract class EntityLiving extends Entity implements EntityDamageable {
         Timings.livingEntityBaseTickTimer.stopTiming();
 
         return hasUpdate;
+    }
+
+    protected boolean checkTurtleHelmet(boolean breathing) {
+        return breathing;
     }
 
     public Item[] getDrops() {
