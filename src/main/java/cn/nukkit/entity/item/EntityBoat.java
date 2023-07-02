@@ -18,7 +18,6 @@ import cn.nukkit.level.GameRule;
 import cn.nukkit.level.Location;
 import cn.nukkit.level.format.FullChunk;
 import cn.nukkit.math.AxisAlignedBB;
-import cn.nukkit.math.Mth;
 import cn.nukkit.math.NukkitMath;
 import cn.nukkit.math.Vector3;
 import cn.nukkit.math.Vector3f;
@@ -387,7 +386,7 @@ public class EntityBoat extends EntityVehicle {
 
     @Override
     public Vector3f getMountedOffset(Entity entity) {
-        return entity instanceof Player ? RIDER_PLAYER_OFFSET : RIDER_OFFSET;
+        return entity.getNetworkId() == -1 ? RIDER_PLAYER_OFFSET : RIDER_OFFSET;
     }
 
     public void onPaddle(AnimatePacket.Action animation, float value) {
