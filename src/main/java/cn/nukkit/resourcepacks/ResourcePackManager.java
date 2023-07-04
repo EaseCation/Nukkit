@@ -2,22 +2,21 @@ package cn.nukkit.resourcepacks;
 
 import cn.nukkit.Server;
 import com.google.common.io.Files;
-import it.unimi.dsi.fastutil.objects.Object2ObjectOpenHashMap;
-import it.unimi.dsi.fastutil.objects.ObjectArrayList;
+import it.unimi.dsi.fastutil.objects.Object2ObjectLinkedOpenHashMap;
 import lombok.extern.log4j.Log4j2;
 
 import java.io.File;
 import java.io.IOException;
-import java.util.List;
 import java.util.Map;
 
 @Log4j2
 public class ResourcePackManager {
-    private final ResourcePack[] resourcePacks;
-    private final ResourcePack[] behaviorPacks;
-    private final Map<String, ResourcePack> allPacksById = new Object2ObjectOpenHashMap<>();
-    private final Map<String, ResourcePack> resourcePacksById = new Object2ObjectOpenHashMap<>();
-    private final Map<String, ResourcePack> behaviorPacksById = new Object2ObjectOpenHashMap<>();
+    private boolean inited;
+    private ResourcePack[] resourcePacks;
+    private ResourcePack[] behaviorPacks;
+    private final Map<String, ResourcePack> allPacksById = new Object2ObjectLinkedOpenHashMap<>();
+    private final Map<String, ResourcePack> resourcePacksById = new Object2ObjectLinkedOpenHashMap<>();
+    private final Map<String, ResourcePack> behaviorPacksById = new Object2ObjectLinkedOpenHashMap<>();
 
     public ResourcePackManager(File path) {
         if (!path.exists()) {
@@ -27,49 +26,55 @@ public class ResourcePackManager {
                     .translate("nukkit.resources.invalid-path", path.getName()));
         }
 
-        List<ResourcePack> loadedResourcePacks = new ObjectArrayList<>();
-        List<ResourcePack> loadedBehaviorPacks = new ObjectArrayList<>();
+        this.inited = false;
         for (File pack : path.listFiles()) {
-            try {
-                ResourcePack resourcePack = null;
-
-                if (!pack.isDirectory()) { //directory resource packs temporarily unsupported
-                    switch (Files.getFileExtension(pack.getName())) {
-                        case "zip":
-                        case "mcpack":
-                            resourcePack = new ZippedResourcePack(pack);
-                            break;
-                        default:
-                            log.warn(Server.getInstance().getLanguage()
-                                    .translate("nukkit.resources.unknown-format", pack.getName()));
-                            break;
-                    }
-                }
-
-                if (resourcePack != null) {
-                    if (resourcePack.getPackType().equals("resources")) {
-                        loadedResourcePacks.add(resourcePack);
-                        this.resourcePacksById.put(resourcePack.getPackId(), resourcePack);
-                        this.allPacksById.put(resourcePack.getPackId(), resourcePack);
-                    } else if (resourcePack.getPackType().equals("data")) {
-                        loadedBehaviorPacks.add(resourcePack);
-                        this.behaviorPacksById.put(resourcePack.getPackId(), resourcePack);
-                        this.allPacksById.put(resourcePack.getPackId(), resourcePack);
-                    } else {
-                        log.warn(Server.getInstance().getLanguage()
-                                .translate("nukkit.resources.unknown-format", pack.getName()));
-                    }
-                }
-            } catch (IllegalArgumentException | IOException e) {
-                log.warn(Server.getInstance().getLanguage()
-                        .translate("nukkit.resources.fail", pack.getName(), e.getMessage()));
-            }
+            this.tryLoad(pack);
         }
+        this.inited = true;
 
-        this.resourcePacks = loadedResourcePacks.toArray(new ResourcePack[0]);
-        this.behaviorPacks = loadedBehaviorPacks.toArray(new ResourcePack[0]);
+        this.resourcePacks = resourcePacksById.values().toArray(new ResourcePack[0]);
+        this.behaviorPacks = behaviorPacksById.values().toArray(new ResourcePack[0]);
         log.info(Server.getInstance().getLanguage()
                 .translate("nukkit.resources.success", this.allPacksById.size()));
+    }
+
+    public void tryLoad(File pack) {
+        try {
+            ResourcePack resourcePack = null;
+
+            if (!pack.isDirectory()) { //directory resource packs temporarily unsupported
+                switch (Files.getFileExtension(pack.getName())) {
+                    case "zip":
+                    case "mcpack":
+                        resourcePack = new ZippedResourcePack(pack);
+                        break;
+                    default:
+                        log.warn(Server.getInstance().getLanguage()
+                            .translate("nukkit.resources.unknown-format", pack.getName()));
+                        break;
+                }
+            }
+
+            if (resourcePack != null) {
+                if (resourcePack.getPackType().equals("resources")) {
+                    this.resourcePacksById.put(resourcePack.getPackId(), resourcePack);
+                    this.allPacksById.put(resourcePack.getPackId(), resourcePack);
+                } else if (resourcePack.getPackType().equals("data")) {
+                    this.behaviorPacksById.put(resourcePack.getPackId(), resourcePack);
+                    this.allPacksById.put(resourcePack.getPackId(), resourcePack);
+                } else {
+                    log.warn(Server.getInstance().getLanguage()
+                        .translate("nukkit.resources.unknown-format", pack.getName()));
+                }
+            }
+        } catch (IllegalArgumentException | IOException e) {
+            log.warn(Server.getInstance().getLanguage()
+                .translate("nukkit.resources.fail", pack.getName(), e.getMessage()));
+        }
+        if (inited) {
+            this.resourcePacks = resourcePacksById.values().toArray(new ResourcePack[0]);
+            this.behaviorPacks = behaviorPacksById.values().toArray(new ResourcePack[0]);
+        }
     }
 
     public Map<String, ResourcePack> getResourcePacksMap() {
