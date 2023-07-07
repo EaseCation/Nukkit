@@ -110,6 +110,11 @@ public abstract class BaseLevelProvider implements LevelProvider {
     }
 
     @Override
+    public Long2ObjectMap<? extends FullChunk> getLoadedChunksUnsafe() {
+        return chunks;
+    }
+
+    @Override
     public boolean isChunkLoaded(int X, int Z) {
         return isChunkLoaded(Level.chunkHash(X, Z));
     }

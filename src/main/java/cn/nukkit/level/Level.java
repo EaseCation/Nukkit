@@ -1966,8 +1966,16 @@ public class Level implements ChunkManager, Metadatable {
     }
 
     public void updateAllLight(Vector3 pos) {
-        this.updateBlockSkyLight((int) pos.x, (int) pos.y, (int) pos.z);
-        this.addLightUpdate((int) pos.x, (int) pos.y, (int) pos.z);
+        this.updateAllLight(pos.getFloorX(), pos.getFloorY(), pos.getFloorZ());
+    }
+
+    public void updateAllLight(BlockVector3 pos) {
+        this.updateAllLight(pos.getX(), pos.getY(), pos.getZ());
+    }
+
+    public void updateAllLight(int x, int y, int z) {
+        this.updateBlockSkyLight(x, y, z);
+        this.addLightUpdate(x, y, z);
     }
 
     public void updateBlockSkyLight(int x, int y, int z) {
@@ -2196,7 +2204,7 @@ public class Level implements ChunkManager, Metadatable {
         return setBlock(1, x, y, z, block, direct, update);
     }
 
-    public synchronized boolean setBlock(int layer, int x, int y, int z, Block block, boolean direct, boolean update) {
+    public boolean setBlock(int layer, int x, int y, int z, Block block, boolean direct, boolean update) {
         return setBlock(layer, x, y, z, block, direct, update, this.getChunkPlayers(x >> 4, z >> 4).values().toArray(new Player[0]));
     }
 
@@ -2698,6 +2706,10 @@ public class Level implements ChunkManager, Metadatable {
 
     public Entity[] getEntities() {
         return entities.values().toArray(new Entity[0]);
+    }
+
+    public Long2ObjectMap<Entity> getActors() {
+        return entities;
     }
 
     public Entity[] getCollidingEntities(AxisAlignedBB bb) {
@@ -4620,5 +4632,17 @@ public class Level implements ChunkManager, Metadatable {
 
         this.lastChunkPos[0] = chunkIndex;
         this.lastChunk[0] = chunk;
+    }
+
+    public Long2ObjectMap<Entity> getEntityUpdateQueue() {
+        return updateEntities;
+    }
+
+    public Long2IntMap getChunkTickList() {
+        return chunkTickList;
+    }
+
+    public Long2LongMap getChunkUnloadQueue() {
+        return unloadQueue;
     }
 }

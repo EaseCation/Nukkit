@@ -116,7 +116,7 @@ public class Server {
 
     private final AtomicBoolean isRunning = new AtomicBoolean(true);
 
-    private boolean hasStopped = false;
+    private volatile boolean hasStopped = false;
 
     private final PluginManager pluginManager;
 
@@ -212,6 +212,8 @@ public class Server {
     private final ServiceManager serviceManager = new NKServiceManager();
 
     private Level defaultLevel = null;
+    @Nullable
+    private Level tickingLevel;
 
     private final Thread currentThread;
 
@@ -1086,6 +1088,7 @@ public class Server {
                 continue;
             }
 
+            tickingLevel = level;
             try {
                 long levelTime = System.currentTimeMillis();
                 level.doTick(currentTick);
@@ -1116,6 +1119,7 @@ public class Server {
                 this.getLogger().logException(e);
             }
         }
+        tickingLevel = null;
     }
 
     public void doAutoSave() {
@@ -2132,6 +2136,11 @@ public class Server {
 
     public int getAutoCompactionTicks() {
         return autoCompactionTicks;
+    }
+
+    @Nullable
+    public Level getTickingLevel() {
+        return tickingLevel;
     }
 
     /**

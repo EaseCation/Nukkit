@@ -362,6 +362,11 @@ public class LevelDB implements LevelProvider {
     }
 
     @Override
+    public Long2ObjectMap<? extends FullChunk> getLoadedChunksUnsafe() {
+        return chunks;
+    }
+
+    @Override
     public boolean isChunkLoaded(int chunkX, int chunkZ) {
         return this.isChunkLoaded(Level.chunkHash(chunkX, chunkZ));
     }
