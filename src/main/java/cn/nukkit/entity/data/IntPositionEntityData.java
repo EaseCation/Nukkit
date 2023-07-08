@@ -2,7 +2,6 @@ package cn.nukkit.entity.data;
 
 import cn.nukkit.entity.Entity;
 import cn.nukkit.math.BlockVector3;
-import cn.nukkit.math.Vector3;
 import lombok.ToString;
 
 /**
@@ -22,8 +21,12 @@ public class IntPositionEntityData extends EntityData<BlockVector3> {
         this.z = z;
     }
 
-    public IntPositionEntityData(int id, Vector3 pos) {
-        this(id, (int) pos.x, (int) pos.y, (int) pos.z);
+    public IntPositionEntityData(int id, BlockVector3 pos) {
+        this(id, pos.x, pos.y, pos.z);
+    }
+
+    public IntPositionEntityData(int id, IntPositionEntityData data) {
+        this(id, data.x, data.y, data.z);
     }
 
     @Override
@@ -32,16 +35,31 @@ public class IntPositionEntityData extends EntityData<BlockVector3> {
     }
 
     @Override
+    public BlockVector3 getDataAsBlockPos() {
+        return getData();
+    }
+
+    @Override
     public void setData(BlockVector3 data) {
         if (data != null) {
             this.x = data.x;
             this.y = data.y;
             this.z = data.z;
+        } else {
+            this.x = 0;
+            this.y = 0;
+            this.z = 0;
         }
     }
 
     @Override
     public int getType() {
         return Entity.DATA_TYPE_POS;
+    }
+
+    @Override
+    protected boolean equalsData(EntityData<?> data) {
+        IntPositionEntityData blockPos = (IntPositionEntityData) data;
+        return this.x == blockPos.x && this.y == blockPos.y && this.z == blockPos.z;
     }
 }

@@ -43,11 +43,11 @@ public class EntityVillager extends EntityCreature implements EntityAgeable {
 
     @Override
     public boolean isBaby() {
-        return this.getDataFlag(DATA_FLAGS, DATA_FLAG_BABY);
+        return this.getDataFlag(DATA_FLAG_BABY);
     }
 
     public void setBaby(boolean baby) {
-        this.setDataFlag(DATA_FLAGS, DATA_FLAG_BABY, baby);
+        this.setDataFlag(DATA_FLAG_BABY, baby);
         this.setScale(baby ? 0.5f : 1);
     }
 

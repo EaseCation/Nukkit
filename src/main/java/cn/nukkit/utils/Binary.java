@@ -135,16 +135,16 @@ public class Binary {
 
             switch (d.getType()) {
                 case Entity.DATA_TYPE_BYTE:
-                    stream.putByte(((ByteEntityData) d).getData().byteValue());
+                    stream.putByte((byte) d.getDataAsByte());
                     break;
                 case Entity.DATA_TYPE_SHORT:
-                    stream.putLShort(((ShortEntityData) d).getData());
+                    stream.putLShort(d.getDataAsShort());
                     break;
                 case Entity.DATA_TYPE_INT:
-                    stream.putVarInt(((IntEntityData) d).getData());
+                    stream.putVarInt(d.getDataAsInt());
                     break;
                 case Entity.DATA_TYPE_FLOAT:
-                    stream.putLFloat(((FloatEntityData) d).getData());
+                    stream.putLFloat(d.getDataAsFloat());
                     break;
                 case Entity.DATA_TYPE_STRING:
                     StringEntityData data = (StringEntityData) d;
@@ -178,7 +178,7 @@ public class Binary {
                     stream.putSignedBlockPosition(pos.x, pos.y, pos.z);
                     break;
                 case Entity.DATA_TYPE_LONG:
-                    stream.putVarLong(((LongEntityData) d).getData());
+                    stream.putVarLong(d.getDataAsLong());
                     break;
                 case Entity.DATA_TYPE_VECTOR3F:
                     Vector3fEntityData v3data = (Vector3fEntityData) d;
@@ -216,16 +216,16 @@ public class Binary {
 
             switch (d.getType()) {
                 case Entity.DATA_TYPE_BYTE:
-                    stream.putByte(((ByteEntityData) d).getData().byteValue());
+                    stream.putByte((byte) d.getDataAsByte());
                     break;
                 case Entity.DATA_TYPE_SHORT:
-                    stream.putLShort(((ShortEntityData) d).getData());
+                    stream.putLShort(d.getDataAsShort());
                     break;
                 case Entity.DATA_TYPE_INT:
-                    stream.putVarInt(((IntEntityData) d).getData());
+                    stream.putVarInt(d.getDataAsInt());
                     break;
                 case Entity.DATA_TYPE_FLOAT:
-                    stream.putLFloat(((FloatEntityData) d).getData());
+                    stream.putLFloat(d.getDataAsFloat());
                     break;
                 case Entity.DATA_TYPE_STRING:
                     StringEntityData data = (StringEntityData) d;
@@ -259,7 +259,7 @@ public class Binary {
                     stream.putSignedBlockPosition(pos.x, pos.y, pos.z);
                     break;
                 case Entity.DATA_TYPE_LONG:
-                    stream.putVarLong(((LongEntityData) d).getData());
+                    stream.putVarLong(d.getDataAsLong());
                     break;
                 case Entity.DATA_TYPE_VECTOR3F:
                     Vector3fEntityData v3data = (Vector3fEntityData) d;

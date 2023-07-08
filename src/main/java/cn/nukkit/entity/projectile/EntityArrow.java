@@ -101,11 +101,11 @@ public class EntityArrow extends EntityProjectile {
     }
 
     public void setCritical(boolean value) {
-        this.setDataFlag(DATA_FLAGS, DATA_FLAG_CRITICAL, value);
+        this.setDataFlag(DATA_FLAG_CRITICAL, value);
     }
 
     public boolean isCritical() {
-        return this.getDataFlag(DATA_FLAGS, DATA_FLAG_CRITICAL);
+        return this.getDataFlag(DATA_FLAG_CRITICAL);
     }
 
     @Override

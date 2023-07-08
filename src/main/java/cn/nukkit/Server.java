@@ -445,8 +445,6 @@ public class Server {
         log.info(this.getLanguage().translate("nukkit.server.license", this.getName()));
 
         CommandExceptions.init();
-        this.consoleSender = new ConsoleCommandSender();
-        this.commandMap = new SimpleCommandMap(this);
 
         ItemIdMap.init();
         BlockItemConverter.init();
@@ -461,6 +459,9 @@ public class Server {
         Attribute.init();
         DispenseBehaviorRegister.init();
         //GlobalBlockPalette.getOrCreateRuntimeId(0, 0); //Force it to load
+
+        this.commandMap = new SimpleCommandMap(this);
+        this.consoleSender = new ConsoleCommandSender();
 
         this.craftingManager = new CraftingManager();
         this.resourcePackManager = new ResourcePackManager(new File(Nukkit.DATA_PATH, "resource_packs"));

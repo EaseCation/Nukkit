@@ -1,8 +1,8 @@
 package cn.nukkit.block;
 
+import cn.nukkit.Player;
 import cn.nukkit.Server;
 import cn.nukkit.entity.Entity;
-import cn.nukkit.entity.EntityLiving;
 import cn.nukkit.entity.projectile.EntityArrow;
 import cn.nukkit.event.block.BlockBurnEvent;
 import cn.nukkit.event.block.BlockFadeEvent;
@@ -70,7 +70,7 @@ public class BlockFire extends BlockFlowable {
 
     @Override
     public void onEntityCollide(Entity entity) {
-        if (entity.getLevel().getGameRules().getBoolean(GameRule.FIRE_DAMAGE) || !(entity instanceof EntityLiving)) {
+        if (!(entity instanceof Player) || entity.getLevel().getGameRules().getBoolean(GameRule.FIRE_DAMAGE)) {
             entity.attack(new EntityDamageByBlockEvent(this, entity, DamageCause.FIRE, 1));
         }
 

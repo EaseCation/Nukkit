@@ -783,13 +783,13 @@ public class Player extends EntityHuman implements CommandSender, InventoryHolde
      * @return bool
      */
     public boolean isUsingItem() {
-        return this.getDataFlag(DATA_FLAGS, DATA_FLAG_ACTION) && this.startAction > -1;
+        return this.getDataFlag(DATA_FLAG_ACTION) && this.startAction > -1;
     }
 
     public void setUsingItem(boolean value) {
         this.startAction = value ? this.server.getTick() : -1;
         this.startActionTimestamp = value ? System.currentTimeMillis() : -1;
-        this.setDataFlag(DATA_FLAGS, DATA_FLAG_ACTION, value);
+        this.setDataFlag(DATA_FLAG_ACTION, value);
     }
 
     public String getButtonText() {
@@ -1247,7 +1247,7 @@ public class Player extends EntityHuman implements CommandSender, InventoryHolde
         this.setDataProperty(new FloatEntityData(DATA_BOUNDING_BOX_WIDTH, 0.2f));
         this.setDataProperty(new FloatEntityData(DATA_BOUNDING_BOX_HEIGHT, 0.2f));
         this.setDataProperty(new IntPositionEntityData(DATA_PLAYER_BED_POSITION, (int) pos.x, (int) pos.y, (int) pos.z));
-        this.setDataFlag(DATA_PLAYER_FLAGS, DATA_PLAYER_FLAG_SLEEP, true);
+        this.setPlayerFlag(DATA_PLAYER_FLAG_SLEEP, true);
 
         this.setSpawn(pos);
 
@@ -1296,7 +1296,7 @@ public class Player extends EntityHuman implements CommandSender, InventoryHolde
             this.server.getPluginManager().callEvent(new PlayerBedLeaveEvent(this, this.level.getBlock(this.sleeping)));
 
             this.sleeping = null;
-            this.setDataFlag(DATA_PLAYER_FLAGS, DATA_PLAYER_FLAG_SLEEP, false);
+            this.setPlayerFlag(DATA_PLAYER_FLAG_SLEEP, false);
             this.setDataProperty(new FloatEntityData(DATA_BOUNDING_BOX_WIDTH, this.getWidth()));
             this.setDataProperty(new FloatEntityData(DATA_BOUNDING_BOX_HEIGHT, this.getHeight()));
 
@@ -1443,11 +1443,11 @@ public class Player extends EntityHuman implements CommandSender, InventoryHolde
 
         if (this.isSpectator()) {
             this.teleport(this, null);
-            this.setDataFlag(DATA_FLAGS, DATA_FLAG_SILENT, true);
-            this.setDataFlag(DATA_FLAGS, DATA_FLAG_HAS_COLLISION, false);
+            this.setDataFlag(DATA_FLAG_SILENT, true);
+            this.setDataFlag(DATA_FLAG_HAS_COLLISION, false);
         } else {
-            this.setDataFlag(DATA_FLAGS, DATA_FLAG_SILENT, false);
-            this.setDataFlag(DATA_FLAGS, DATA_FLAG_HAS_COLLISION, true);
+            this.setDataFlag(DATA_FLAG_SILENT, false);
+            this.setDataFlag(DATA_FLAG_HAS_COLLISION, true);
         }
 
         this.resetFallDistance();
@@ -2319,8 +2319,8 @@ public class Player extends EntityHuman implements CommandSender, InventoryHolde
         this.setNameTagAlwaysVisible(true);
         this.setCanClimb(true);
         if (this.isSpectator()) {
-            this.setDataFlag(DATA_FLAGS, DATA_FLAG_SILENT, true);
-            this.setDataFlag(DATA_FLAGS, DATA_FLAG_HAS_COLLISION, false);
+            this.setDataFlag(DATA_FLAG_SILENT, true);
+            this.setDataFlag(DATA_FLAG_HAS_COLLISION, false);
         }
 
         log.info(this.getServer().getLanguage().translate("nukkit.player.logIn",
@@ -2664,7 +2664,7 @@ public class Player extends EntityHuman implements CommandSender, InventoryHolde
                         ((PlayerInventory) inv).equipItem(mobEquipmentPacket.hotbarSlot);
                     }
 
-                    this.setDataFlag(Player.DATA_FLAGS, Player.DATA_FLAG_ACTION, false);
+                    this.setDataFlag(DATA_FLAG_ACTION, false);
 
                     break;
                 case ProtocolInfo.PLAYER_ACTION_PACKET:
@@ -2773,8 +2773,7 @@ public class Player extends EntityHuman implements CommandSender, InventoryHolde
                             this.setSprinting(false);
                             this.setSneaking(false);
 
-                            this.extinguish();
-                            this.setDataProperty(new ShortEntityData(Player.DATA_AIR, 400), false);
+                            this.setDataProperty(new ShortEntityData(Player.DATA_AIR, 300), false);
                             this.deadTicks = 0;
                             this.noDamageTicks = 60;
 
@@ -2789,6 +2788,7 @@ public class Player extends EntityHuman implements CommandSender, InventoryHolde
                             this.getAdventureSettings().update();
                             this.inventory.sendContents(this);
                             this.inventory.sendArmorContents(this);
+                            this.offhandInventory.sendContents(this);
 
                             this.spawnToAll();
                             this.scheduleUpdate();
@@ -3341,7 +3341,7 @@ public class Player extends EntityHuman implements CommandSender, InventoryHolde
 
                             switch (type) {
                                 case InventoryTransactionPacket.USE_ITEM_ACTION_CLICK_BLOCK:
-                                    this.setDataFlag(DATA_FLAGS, DATA_FLAG_ACTION, false);
+                                    this.setDataFlag(DATA_FLAG_ACTION, false);
 
                                     if (this.canInteract(blockVector.add(0.5, 0.5, 0.5), this.isCreative() ? 16 : 10)) {
                                         if (this.isCreative()) {
@@ -4187,14 +4187,14 @@ public class Player extends EntityHuman implements CommandSender, InventoryHolde
         }
 
         boolean showMessages = this.level.getGameRules().getBoolean(GameRule.SHOW_DEATH_MESSAGES);
-        String message = "death.attack.generic";
+        String message = "";
 
-        List<String> params = new ObjectArrayList<>();
-        params.add(this.getDisplayName());
+        List<String> params;
         if (showMessages) {
+            params = new ObjectArrayList<>();
+            params.add(this.getDisplayName());
 
             EntityDamageEvent cause = this.getLastDamageCause();
-
             switch (cause == null ? DamageCause.CUSTOM : cause.getCause()) {
                 case ENTITY_ATTACK:
                     if (cause instanceof EntityDamageByEntityEvent) {
@@ -4229,42 +4229,31 @@ public class Player extends EntityHuman implements CommandSender, InventoryHolde
                         }
                     }
                     break;
-                case SUICIDE:
-                    message = "death.attack.generic";
-                    break;
                 case VOID:
                     message = "death.attack.outOfWorld";
                     break;
                 case FALL:
-                    if (cause != null) {
-                        if (cause.getFinalDamage() > 2) {
-                            message = "death.fell.accident.generic";
-                            break;
-                        }
+                    if (cause.getFinalDamage() > 2) {
+                        message = "death.fell.accident.generic";
+                        break;
                     }
                     message = "death.attack.fall";
                     break;
-
                 case SUFFOCATION:
                     message = "death.attack.inWall";
                     break;
-
                 case LAVA:
                     message = "death.attack.lava";
                     break;
-
                 case FIRE:
                     message = "death.attack.onFire";
                     break;
-
                 case FIRE_TICK:
                     message = "death.attack.inFire";
                     break;
-
                 case DROWNING:
                     message = "death.attack.drown";
                     break;
-
                 case CONTACT:
                     if (cause instanceof EntityDamageByBlockEvent) {
                         int id = ((EntityDamageByBlockEvent) cause).getDamager().getId();
@@ -4275,7 +4264,6 @@ public class Player extends EntityHuman implements CommandSender, InventoryHolde
                         }
                     }
                     break;
-
                 case BLOCK_EXPLOSION:
                 case ENTITY_EXPLOSION:
                     if (cause instanceof EntityDamageByEntityEvent) {
@@ -4288,36 +4276,49 @@ public class Player extends EntityHuman implements CommandSender, InventoryHolde
                             message = "death.attack.explosion.player";
                             params.add(!Objects.equals(e.getNameTag(), "") ? e.getNameTag() : e.getName());
                             break;
+                        } else {
+                            message = "death.attack.explosion";
                         }
                     } else {
                         message = "death.attack.explosion";
                     }
                     break;
-
                 case MAGIC:
                     message = "death.attack.magic";
                     break;
-
-                case CUSTOM:
+                case LIGHTNING:
+                    message = "death.attack.lightningBolt";
                     break;
-
+                case HUNGER:
+                    message = "death.attack.starve";
+                    break;
                 default:
+                    message = "death.attack.generic";
                     break;
-
             }
         } else {
-            message = "";
-            params.clear();
+            params = Collections.emptyList();
         }
 
+        float health = this.health;
         this.health = 0;
-        this.scheduleUpdate();
 
         PlayerDeathEvent ev = new PlayerDeathEvent(this, this.getDrops(), new TranslationContainer(message, params.toArray()), this.getExperienceLevel());
-
         ev.setKeepExperience(this.level.gameRules.getBoolean(GameRule.KEEP_INVENTORY));
         ev.setKeepInventory(ev.getKeepExperience());
         this.server.getPluginManager().callEvent(ev);
+
+        if (ev.isCancelled()) {
+            this.health = health;
+            return;
+        }
+
+        if (this.fishing != null) {
+            this.stopFishing(false);
+        }
+
+        this.extinguish();
+        this.scheduleUpdate();
 
         if (!ev.getKeepInventory() && this.level.getGameRules().getBoolean(GameRule.DO_ENTITY_DROPS)) {
             for (Item item : ev.getDrops()) {
@@ -4334,6 +4335,12 @@ public class Player extends EntityHuman implements CommandSender, InventoryHolde
                     }
                 }
             }
+            if (this.offhandInventory != null) {
+                Item item = offhandInventory.getItem(0);
+                if (!item.isKeepOnDeath()) {
+                    offhandInventory.setItem(0, Items.air());
+                }
+            }
         }
 
         if (!ev.getKeepExperience() && this.level.getGameRules().getBoolean(GameRule.DO_ENTITY_DROPS)) {
@@ -4348,7 +4355,6 @@ public class Player extends EntityHuman implements CommandSender, InventoryHolde
         if (showMessages && !ev.getDeathMessage().toString().isEmpty()) {
             this.server.broadcast(ev.getDeathMessage(), Server.BROADCAST_CHANNEL_USERS);
         }
-
 
         RespawnPacket pk = new RespawnPacket();
         Position pos = this.getSpawn();
@@ -4598,7 +4604,7 @@ public class Player extends EntityHuman implements CommandSender, InventoryHolde
 
         this.level.dropItem(this.add(0, 1.3, 0), item, motion, 40);
 
-        this.setDataFlag(DATA_FLAGS, DATA_FLAG_ACTION, false);
+        this.setDataFlag(DATA_FLAG_ACTION, false);
         return true;
     }
 

@@ -25,9 +25,18 @@ public class Vector3fEntityData extends EntityData<Vector3f> {
         this(id, pos.x, pos.y, pos.z);
     }
 
+    public Vector3fEntityData(int id, Vector3fEntityData data) {
+        this(id, data.x, data.y, data.z);
+    }
+
     @Override
     public Vector3f getData() {
         return new Vector3f(x, y, z);
+    }
+
+    @Override
+    public Vector3f getDataAsVec3() {
+        return getData();
     }
 
     @Override
@@ -36,11 +45,21 @@ public class Vector3fEntityData extends EntityData<Vector3f> {
             this.x = data.x;
             this.y = data.y;
             this.z = data.z;
+        } else {
+            this.x = 0;
+            this.y = 0;
+            this.z = 0;
         }
     }
 
     @Override
     public int getType() {
         return Entity.DATA_TYPE_VECTOR3F;
+    }
+
+    @Override
+    protected boolean equalsData(EntityData<?> data) {
+        Vector3fEntityData vec3 = (Vector3fEntityData) data;
+        return this.x == vec3.x && this.y == vec3.y && this.z == vec3.z;
     }
 }

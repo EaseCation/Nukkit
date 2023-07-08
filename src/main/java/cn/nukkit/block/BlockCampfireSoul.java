@@ -50,6 +50,11 @@ public class BlockCampfireSoul extends BlockCampfire {
     }
 
     @Override
+    protected int getEntityDamage() {
+        return 2;
+    }
+
+    @Override
     protected RecipeTag getRecipeTag() {
         return RecipeTag.SOUL_CAMPFIRE;
     }

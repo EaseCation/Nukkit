@@ -36,7 +36,7 @@ public class EntityEndCrystal extends Entity implements EntityExplosive {
         }
 
         this.fireProof = true;
-        this.setDataFlag(DATA_FLAGS, DATA_FLAG_FIRE_IMMUNE, true, false);
+        this.setDataFlag(DATA_FLAG_FIRE_IMMUNE, true, false);
     }
 
     @Override
@@ -89,11 +89,11 @@ public class EntityEndCrystal extends Entity implements EntityExplosive {
     }
 
     public boolean showBase() {
-        return this.getDataFlag(DATA_FLAGS, DATA_FLAG_SHOWBASE);
+        return this.getDataFlag(DATA_FLAG_SHOWBASE);
     }
 
     public void setShowBase(boolean value) {
-        this.setDataFlag(DATA_FLAGS, DATA_FLAG_SHOWBASE, value);
+        this.setDataFlag(DATA_FLAG_SHOWBASE, value);
     }
 
     @Override

@@ -21,7 +21,7 @@ public class BlockWaterStill extends BlockWater {
 
     @Override
     public String getName() {
-        return "Still Water";
+        return "Water";
     }
 
     @Override

@@ -63,8 +63,8 @@ public class EntityBoat extends EntityVehicle {
     protected void initEntity() {
         super.initEntity();
 
-        this.setDataFlag(DATA_FLAGS, DATA_FLAG_STACKABLE, true, false);
-        this.setDataFlag(DATA_FLAGS, DATA_FLAG_GRAVITY, true, false);
+        this.setDataFlag(DATA_FLAG_STACKABLE, true, false);
+        this.setDataFlag(DATA_FLAG_GRAVITY, true, false);
         this.dataProperties.putInt(DATA_VARIANT, woodID = this.namedTag.getByte("woodID"));
         this.dataProperties.putByte(DATA_CONTROLLING_RIDER_SEAT_NUMBER, RIDER_INDEX);
         this.dataProperties.putBoolean(DATA_IS_BUOYANT, true);

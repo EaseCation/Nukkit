@@ -38,7 +38,7 @@ public class EntityCreeper extends EntityMob {
     }
 
     public boolean isPowered() {
-        return getDataFlag(DATA_FLAGS, DATA_FLAG_POWERED);
+        return getDataFlag(DATA_FLAG_POWERED);
     }
 
     public void setPowered(EntityLightningStrike bolt) {
@@ -46,7 +46,7 @@ public class EntityCreeper extends EntityMob {
         this.getServer().getPluginManager().callEvent(ev);
 
         if (!ev.isCancelled()) {
-            this.setDataFlag(DATA_FLAGS, DATA_FLAG_POWERED, true);
+            this.setDataFlag(DATA_FLAG_POWERED, true);
             this.namedTag.putBoolean("powered", true);
         }
     }
@@ -56,7 +56,7 @@ public class EntityCreeper extends EntityMob {
         this.getServer().getPluginManager().callEvent(ev);
 
         if (!ev.isCancelled()) {
-            this.setDataFlag(DATA_FLAGS, DATA_FLAG_POWERED, powered);
+            this.setDataFlag(DATA_FLAG_POWERED, powered);
             this.namedTag.putBoolean("powered", powered);
         }
     }
@@ -70,7 +70,7 @@ public class EntityCreeper extends EntityMob {
         super.initEntity();
 
         if (this.namedTag.getBoolean("powered") || this.namedTag.getBoolean("IsPowered")) {
-            this.setDataFlag(DATA_FLAGS, DATA_FLAG_POWERED, true);
+            this.setDataFlag(DATA_FLAG_POWERED, true, false);
         }
         this.setMaxHealth(20);
     }

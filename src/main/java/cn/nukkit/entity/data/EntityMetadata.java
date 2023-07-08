@@ -2,8 +2,9 @@ package cn.nukkit.entity.data;
 
 import cn.nukkit.item.Item;
 import cn.nukkit.item.Items;
-import cn.nukkit.math.Vector3;
+import cn.nukkit.math.BlockVector3;
 import cn.nukkit.math.Vector3f;
+import cn.nukkit.nbt.tag.CompoundTag;
 import it.unimi.dsi.fastutil.ints.Int2ObjectMap;
 import it.unimi.dsi.fastutil.ints.Int2ObjectOpenHashMap;
 import lombok.ToString;
@@ -42,43 +43,87 @@ public class EntityMetadata {
     }
 
     public int getByte(int id) {
-        return (int) this.getOrDefault(id, new ByteEntityData(id, 0)).getData() & 0xff;
+        EntityData<?> data = this.get(id);
+        if (data == null) {
+            return 0;
+        }
+        return data.getDataAsByte();
     }
 
     public int getShort(int id) {
-        return (int) this.getOrDefault(id, new ShortEntityData(id, 0)).getData();
+        EntityData<?> data = this.get(id);
+        if (data == null) {
+            return 0;
+        }
+        return data.getDataAsShort();
     }
 
     public int getInt(int id) {
-        return (int) this.getOrDefault(id, new IntEntityData(id, 0)).getData();
+        EntityData<?> data = this.get(id);
+        if (data == null) {
+            return 0;
+        }
+        return data.getDataAsInt();
     }
 
     public long getLong(int id) {
-        return (Long) this.getOrDefault(id, new LongEntityData(id, 0)).getData();
+        EntityData<?> data = this.get(id);
+        if (data == null) {
+            return 0;
+        }
+        return data.getDataAsLong();
     }
 
     public float getFloat(int id) {
-        return (float) this.getOrDefault(id, new FloatEntityData(id, 0)).getData();
+        EntityData<?> data = this.get(id);
+        if (data == null) {
+            return 0;
+        }
+        return data.getDataAsFloat();
     }
 
     public boolean getBoolean(int id) {
         return this.getByte(id) == 1;
     }
 
+    public CompoundTag getNBT(int id) {
+        EntityData<?> data = this.get(id);
+        if (data == null) {
+            return new CompoundTag();
+        }
+        return data.getDataAsNbt();
+    }
+
     public Item getSlot(int id) {
-        return (Item) this.getOrDefault(id, new SlotEntityData(id, Items.air())).getData();
+        EntityData<?> data = this.get(id);
+        if (data == null) {
+            return Items.air();
+        }
+        return data.getDataAsItemStack();
     }
 
     public String getString(int id) {
-        return (String) this.getOrDefault(id, new StringEntityData(id, "")).getData();
+        EntityData<?> data = this.get(id);
+        if (data == null) {
+            return "";
+        }
+        return data.getDataAsString();
     }
 
-    public Vector3 getPosition(int id) {
-        return (Vector3) this.getOrDefault(id, new IntPositionEntityData(id, new Vector3())).getData();
+    public BlockVector3 getPosition(int id) {
+        EntityData<?> data = this.get(id);
+        if (data == null) {
+            return new BlockVector3();
+        }
+        return data.getDataAsBlockPos();
     }
 
     public Vector3f getFloatPosition(int id) {
-        return (Vector3f) this.getOrDefault(id, new Vector3fEntityData(id, new Vector3f())).getData();
+        EntityData<?> data = this.get(id);
+        if (data == null) {
+            return new Vector3f();
+        }
+        return data.getDataAsVec3();
     }
 
     public EntityMetadata putByte(int id, int value) {
@@ -103,6 +148,10 @@ public class EntityMetadata {
 
     public EntityMetadata putBoolean(int id, boolean value) {
         return this.putByte(id, value ? 1 : 0);
+    }
+
+    public EntityMetadata putNBT(int id, CompoundTag value) {
+        return this.put(new NBTEntityData(id, value));
     }
 
     public EntityMetadata putSlot(int id, int blockId, int meta, int count) {

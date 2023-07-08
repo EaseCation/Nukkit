@@ -53,7 +53,7 @@ public class EntityMinecartTNT extends EntityMinecartAbstract implements EntityE
         } else {
             fuse = 80;
         }
-        this.setDataFlag(DATA_FLAGS, DATA_FLAG_CHARGED, false);
+        this.setDataFlag(DATA_FLAG_CHARGED, false, false);
     }
 
     @Override

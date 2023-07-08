@@ -16,21 +16,27 @@ public class StringEntityData extends EntityData<String> {
         this.data = data;
     }
 
+    @Override
     public String getData() {
         return data;
     }
 
+    @Override
+    public String getDataAsString() {
+        return getData();
+    }
+
+    @Override
     public void setData(String data) {
-        this.data = data;
+        if (data != null) {
+            this.data = data;
+        } else {
+            this.data = "";
+        }
     }
 
     @Override
     public int getType() {
         return Entity.DATA_TYPE_STRING;
-    }
-
-    @Override
-    public String toString() {
-        return data;
     }
 }

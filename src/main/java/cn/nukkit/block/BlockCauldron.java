@@ -6,14 +6,20 @@ import cn.nukkit.blockentity.BlockEntity;
 import cn.nukkit.blockentity.BlockEntityCauldron;
 import cn.nukkit.blockentity.BlockEntityType;
 import cn.nukkit.entity.Entity;
+import cn.nukkit.event.entity.EntityCombustByBlockEvent;
+import cn.nukkit.event.entity.EntityDamageByBlockEvent;
+import cn.nukkit.event.entity.EntityDamageEvent.DamageCause;
 import cn.nukkit.event.player.PlayerBucketEmptyEvent;
 import cn.nukkit.event.player.PlayerBucketFillEvent;
 import cn.nukkit.item.*;
+import cn.nukkit.level.GameRule;
 import cn.nukkit.level.Level;
+import cn.nukkit.math.AxisAlignedBB;
 import cn.nukkit.math.BlockFace;
 import cn.nukkit.nbt.tag.CompoundTag;
 import cn.nukkit.nbt.tag.Tag;
 import cn.nukkit.network.protocol.LevelEventPacket;
+import cn.nukkit.network.protocol.LevelSoundEventPacket;
 import cn.nukkit.potion.PotionID;
 
 import javax.annotation.Nullable;
@@ -501,13 +507,49 @@ public class BlockCauldron extends BlockTransparentMeta {
     }
 
     @Override
+    protected AxisAlignedBB recalculateCollisionBoundingBox() {
+        return this.shrink(2 / 16.0, 1 / 16.0, 2 / 16.0);
+    }
+
+    @Override
     public boolean hasEntityCollision() {
         return true;
     }
 
     @Override
     public void onEntityCollide(Entity entity) {
-        //TODO
+        int fillLevel = getFillLevel();
+        if (fillLevel == 0) {
+            return;
+        }
+
+        switch (getCauldronType()) {
+            case LIQUID_LAVA:
+                EntityCombustByBlockEvent event = new EntityCombustByBlockEvent(this, entity, 8);
+                event.call();
+                if (!event.isCancelled() && entity.isAlive() && entity.noDamageTicks == 0) {
+                    entity.setOnFire(event.getDuration());
+                }
+
+                if (!(entity instanceof Player) || entity.level.gameRules.getBoolean(GameRule.FIRE_DAMAGE)) {
+                    entity.attack(new EntityDamageByBlockEvent(this, entity, DamageCause.LAVA, 4));
+                }
+                break;
+            case LIQUID_WATER:
+            case LIQUID_POWDER_SNOW:
+                if (!entity.isOnFire()) {
+                    break;
+                }
+
+                level.addLevelSoundEvent(entity.upVec(), LevelSoundEventPacket.SOUND_FIZZ);
+                level.addLevelEvent(entity, LevelEventPacket.EVENT_PARTICLE_FIZZ_EFFECT, 513);
+                entity.extinguish();
+
+                setFillLevel(fillLevel - 1);
+                setCauldronType(LIQUID_WATER);
+                level.setBlock(this, this, true);
+                break;
+        }
     }
 
     protected BlockEntityCauldron createBlockEntity(@Nullable Item item) {
@@ -546,5 +588,10 @@ public class BlockCauldron extends BlockTransparentMeta {
 
     public void setCauldronType(int type) {
         setDamage((getDamage() & ~LIQUID_TYPE_MASK) | (type << LIQUID_TYPE_OFFSET));
+    }
+
+    @Override
+    public int getLightLevel() {
+        return isEmpty() ? 0 : getCauldronType() == LIQUID_LAVA ? 15 : 0;
     }
 }

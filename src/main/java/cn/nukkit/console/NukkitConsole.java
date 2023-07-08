@@ -1,6 +1,7 @@
 package cn.nukkit.console;
 
 import cn.nukkit.Server;
+import cn.nukkit.command.CommandSender;
 import cn.nukkit.event.server.ServerCommandEvent;
 import cn.nukkit.event.server.ServerInterruptEvent;
 import co.aikar.timings.Timings;
@@ -29,8 +30,12 @@ public class NukkitConsole extends SimpleTerminalConsole {
     @Override
     protected void runCommand(String command) {
         if (executingCommands.get()) {
+            CommandSender sender = server.getConsoleSender();
+            if (sender == null) {
+                return;
+            }
             Timings.serverCommandTimer.startTiming();
-            ServerCommandEvent event = new ServerCommandEvent(server.getConsoleSender(), command);
+            ServerCommandEvent event = new ServerCommandEvent(sender, command);
             if (server.getPluginManager() != null) {
                 server.getPluginManager().callEvent(event);
             }

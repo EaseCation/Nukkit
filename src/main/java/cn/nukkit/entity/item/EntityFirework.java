@@ -51,10 +51,10 @@ public class EntityFirework extends Entity {
         }
 
         this.lifetime = firework instanceof ItemFirework ? ((ItemFirework) firework).getLifeTime() : (30 + rand.nextInt(12));
-        this.setDataProperty(new SlotEntityData(Entity.DATA_FIREWORK_ITEM, firework));
-        //this.setDataProperty(new NBTEntityData(Entity.DATA_FIREWORK_ITEM, firework.getNamedTag()));
-        this.setDataProperty(new Vector3fEntityData(Entity.DATA_FIREWORK_VELOCITY, new Vector3f(0, 1, 0)));
-        this.setDataProperty(new LongEntityData(Entity.DATA_FIREWORK_ATTACHED_EID, -1));
+        this.setDataProperty(new SlotEntityData(Entity.DATA_FIREWORK_ITEM, firework), false);
+        //this.setDataProperty(new NBTEntityData(Entity.DATA_FIREWORK_ITEM, firework.getNamedTag()), false);
+        this.setDataProperty(new Vector3fEntityData(Entity.DATA_FIREWORK_VELOCITY, new Vector3f(0, 1, 0)), false);
+        this.setDataProperty(new LongEntityData(Entity.DATA_FIREWORK_ATTACHED_EID, -1), false);
     }
 
     @Override

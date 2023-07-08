@@ -30,6 +30,8 @@ import cn.nukkit.utils.Faceable;
 
 import javax.annotation.Nullable;
 
+import static cn.nukkit.GameVersion.*;
+
 public class BlockCampfire extends BlockTransparentMeta implements Faceable {
 
     public static final int DIRECTION_MASK = 0b11;
@@ -292,12 +294,16 @@ public class BlockCampfire extends BlockTransparentMeta implements Faceable {
             return;
         }
 
+        if (V1_19_60.isAvailable()) {
+            return;
+        }
+
         if (!(entity instanceof EntityLiving) || entity instanceof Player && ((Player) entity).getInventory().getBoots().hasEnchantment(EnchantmentID.FROST_WALKER)) {
             return;
         }
 
-        if (entity.level.gameRules.getBoolean(GameRule.FIRE_DAMAGE)) {
-            entity.attack(new EntityDamageByBlockEvent(this, entity, DamageCause.FIRE, 1));
+        if (!(entity instanceof Player) || entity.level.gameRules.getBoolean(GameRule.FIRE_DAMAGE)) {
+            entity.attack(new EntityDamageByBlockEvent(this, entity, DamageCause.FIRE, getEntityDamage()));
         }
 
         EntityCombustByBlockEvent event = new EntityCombustByBlockEvent(this, entity, 8);
@@ -399,6 +405,10 @@ public class BlockCampfire extends BlockTransparentMeta implements Faceable {
         }
 
         return tryLightFire();
+    }
+
+    protected int getEntityDamage() {
+        return 1;
     }
 
     protected RecipeTag getRecipeTag() {

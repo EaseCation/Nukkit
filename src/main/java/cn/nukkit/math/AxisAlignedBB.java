@@ -34,8 +34,16 @@ public interface AxisAlignedBB extends Cloneable {
         return new SimpleAxisAlignedBB(minX, minY, minZ, maxX, maxY, maxZ);
     }
 
+    default AxisAlignedBB grow(double v) {
+        return grow(v, v, v);
+    }
+
     default AxisAlignedBB grow(double x, double y, double z) {
         return new SimpleAxisAlignedBB(this.getMinX() - x, this.getMinY() - y, this.getMinZ() - z, this.getMaxX() + x, this.getMaxY() + y, this.getMaxZ() + z);
+    }
+
+    default AxisAlignedBB expand(double v) {
+        return expand(v, v, v);
     }
 
     default AxisAlignedBB expand(double x, double y, double z) {
@@ -60,8 +68,16 @@ public interface AxisAlignedBB extends Cloneable {
         return this;
     }
 
+    default AxisAlignedBB shrink(double v) {
+        return shrink(v, v, v);
+    }
+
     default AxisAlignedBB shrink(double x, double y, double z) {
         return new SimpleAxisAlignedBB(this.getMinX() + x, this.getMinY() + y, this.getMinZ() + z, this.getMaxX() - x, this.getMaxY() - y, this.getMaxZ() - z);
+    }
+
+    default AxisAlignedBB contract(double v) {
+        return contract(v, v, v);
     }
 
     default AxisAlignedBB contract(double x, double y, double z) {

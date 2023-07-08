@@ -128,8 +128,8 @@ public class DummyBossBar {
         pkAdd.metadata = new EntityMetadata()
                 // Default Metadata tags
                 .putLong(Entity.DATA_FLAGS, 0)
-                .putShort(Entity.DATA_AIR, 400)
-                .putShort(Entity.DATA_MAX_AIR, 400)
+                .putShort(Entity.DATA_AIR, 300)
+                .putShort(Entity.DATA_MAX_AIR, 300)
                 .putLong(Entity.DATA_LEAD_HOLDER_EID, -1)
                 .putString(Entity.DATA_NAMETAG, text) // Set the entity name
                 .putFloat(Entity.DATA_SCALE, 0); // And make it invisible

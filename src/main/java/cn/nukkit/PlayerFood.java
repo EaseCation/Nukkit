@@ -163,8 +163,9 @@ public class PlayerFood {
                     this.foodTickTimer = 0;
                 }
             }
-            if (this.getPlayer().hasEffect(Effect.HUNGER)) {
-                this.updateFoodExpLevel(0.1 * (this.getPlayer().getEffect(Effect.HUNGER).getAmplifier() + 1));
+            Effect hunger = this.getPlayer().getEffect(Effect.HUNGER);
+            if (hunger != null) {
+                this.updateFoodExpLevel(0.1 * (hunger.getAmplifier() + 1));
             }
         }
     }

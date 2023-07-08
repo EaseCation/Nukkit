@@ -23,8 +23,17 @@ public class NBTEntityData extends EntityData<CompoundTag> {
     }
 
     @Override
+    public CompoundTag getDataAsNbt() {
+        return getData();
+    }
+
+    @Override
     public void setData(CompoundTag tag) {
-        this.tag = tag;
+        if (tag != null) {
+            this.tag = tag;
+        } else {
+            this.tag = new CompoundTag();
+        }
     }
 
     @Override

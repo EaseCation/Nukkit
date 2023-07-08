@@ -9,7 +9,6 @@ import cn.nukkit.item.ItemTool;
 import cn.nukkit.level.GameRule;
 import cn.nukkit.level.Level;
 import cn.nukkit.math.BlockFace;
-import cn.nukkit.potion.Effect;
 import cn.nukkit.utils.BlockColor;
 
 public class BlockMagma extends BlockSolid {
@@ -66,15 +65,13 @@ public class BlockMagma extends BlockSolid {
 
     @Override
     public void onEntityCollide(Entity entity) {
-        if (!entity.hasEffect(Effect.FIRE_RESISTANCE)) {
-            if (entity instanceof Player) {
-                Player p = (Player) entity;
-                if (p.isSurvivalLike() && !p.isSneaking() && p.level.gameRules.getBoolean(GameRule.FIRE_DAMAGE)) {
-                    entity.attack(new EntityDamageByBlockEvent(this, entity, EntityDamageEvent.DamageCause.LAVA, 1));
-                }
-            } else {
+        if (entity instanceof Player) {
+            Player p = (Player) entity;
+            if (p.isSurvivalLike() && !p.isSneaking() && p.level.gameRules.getBoolean(GameRule.FIRE_DAMAGE)) {
                 entity.attack(new EntityDamageByBlockEvent(this, entity, EntityDamageEvent.DamageCause.LAVA, 1));
             }
+        } else {
+            entity.attack(new EntityDamageByBlockEvent(this, entity, EntityDamageEvent.DamageCause.LAVA, 1));
         }
     }
 

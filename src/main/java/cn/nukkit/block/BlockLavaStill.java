@@ -21,7 +21,7 @@ public class BlockLavaStill extends BlockLava {
 
     @Override
     public String getName() {
-        return "Still Lava";
+        return "Lava";
     }
 
     @Override

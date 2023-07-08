@@ -28,10 +28,10 @@ public class RCONServer extends Thread {
 
     private volatile boolean running;
 
-    private ServerSocketChannel serverChannel;
-    private Selector selector;
+    private final ServerSocketChannel serverChannel;
+    private final Selector selector;
 
-    private String password;
+    private final String password;
     private final Set<SocketChannel> rconSessions = new HashSet<>();
 
     private final List<RCONCommand> receiveQueue = new ArrayList<>();
@@ -153,7 +153,7 @@ public class RCONServer extends Thread {
         switch (packet.getType()) {
             case SERVERDATA_AUTH:
                 byte[] payload = new byte[1];
-                payload[0] = 0;
+//                payload[0] = 0;
 
                 if (new String(packet.getPayload(), StandardCharsets.UTF_8).equals(this.password)) {
                     this.rconSessions.add(channel);

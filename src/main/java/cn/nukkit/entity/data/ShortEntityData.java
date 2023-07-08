@@ -16,10 +16,17 @@ public class ShortEntityData extends EntityData<Integer> {
         this.data = data;
     }
 
+    @Override
     public Integer getData() {
         return data;
     }
 
+    @Override
+    public int getDataAsShort() {
+        return data;
+    }
+
+    @Override
     public void setData(Integer data) {
         if (data == null) {
             this.data = 0;
@@ -28,8 +35,17 @@ public class ShortEntityData extends EntityData<Integer> {
         }
     }
 
+    public void setData(int data) {
+        this.data = data;
+    }
+
     @Override
     public int getType() {
         return Entity.DATA_TYPE_SHORT;
+    }
+
+    @Override
+    protected boolean equalsData(EntityData<?> data) {
+        return this.data == ((ShortEntityData) data).data;
     }
 }

@@ -46,8 +46,9 @@ public class EntityDamageEvent extends EntityEvent implements Cancellable {
             throw new EventException("BASE Damage modifier missing");
         }
 
-        if (entity.hasEffect(Effect.RESISTANCE)) {
-            this.setDamage((float) -(this.getDamage(DamageModifier.BASE) * 0.20 * (entity.getEffect(Effect.RESISTANCE).getAmplifier() + 1)), DamageModifier.RESISTANCE);
+        Effect resistance = entity.getEffect(Effect.RESISTANCE);
+        if (resistance != null) {
+            this.setDamage((float) -(this.getDamage(DamageModifier.BASE) * 0.20 * (resistance.getAmplifier() + 1)), DamageModifier.RESISTANCE);
         }
     }
 

@@ -14,7 +14,6 @@ import cn.nukkit.level.GameRule;
 import cn.nukkit.level.Level;
 import cn.nukkit.math.BlockFace;
 import cn.nukkit.math.Vector3;
-import cn.nukkit.potion.Effect;
 import cn.nukkit.utils.BlockColor;
 
 import java.util.Random;
@@ -46,14 +45,13 @@ public class BlockLava extends BlockLiquid {
 
     @Override
     public String getName() {
-        return "Lava";
+        return "Flowing Lava";
     }
 
     @Override
     public void onEntityCollide(Entity entity) {
         entity.highestPosition -= (entity.highestPosition - entity.y) * 0.5;
 
-        // Always setting the duration to 15 seconds? TODO
         EntityCombustByBlockEvent ev = new EntityCombustByBlockEvent(this, entity, 8);
         Server.getInstance().getPluginManager().callEvent(ev);
         if (!ev.isCancelled()
@@ -63,11 +61,9 @@ public class BlockLava extends BlockLiquid {
             entity.setOnFire(ev.getDuration());
         }
 
-        if (!entity.hasEffect(Effect.FIRE_RESISTANCE)) {
+        if (!(entity instanceof Player) || entity.level.gameRules.getBoolean(GameRule.FIRE_DAMAGE)) {
             entity.attack(new EntityDamageByBlockEvent(this, entity, DamageCause.LAVA, 4));
         }
-
-        super.onEntityCollide(entity);
     }
 
     @Override

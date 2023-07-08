@@ -57,15 +57,15 @@ public abstract class EntityAbstractHorse extends EntityAnimal implements Entity
                 this.inventory.setItem(item.getByte("Slot"), NBTIO.getItemHelper(item));
             }
         }
-        this.setDataProperty(new ByteEntityData(DATA_CONTAINER_TYPE, inventory.getType().getNetworkType()));
-        this.setDataProperty(new IntEntityData(DATA_CONTAINER_BASE_SIZE, inventory.getSize()));
-        this.setDataProperty(new IntEntityData(DATA_CONTAINER_EXTRA_SLOTS_PER_STRENGTH, 0));
+        this.setDataProperty(new ByteEntityData(DATA_CONTAINER_TYPE, inventory.getType().getNetworkType()), false);
+        this.setDataProperty(new IntEntityData(DATA_CONTAINER_BASE_SIZE, inventory.getSize()), false);
+        this.setDataProperty(new IntEntityData(DATA_CONTAINER_EXTRA_SLOTS_PER_STRENGTH, 0), false);
 
-        this.setDataFlag(DATA_FLAGS, DATA_FLAG_CAN_WALK, true);
-        this.setDataFlag(DATA_FLAGS, DATA_FLAG_TAMED, true);
+        this.setDataFlag(DATA_FLAG_CAN_WALK, true, false);
+        this.setDataFlag(DATA_FLAG_TAMED, true, false);
         // Disable due to protocol compatibility issues. Only temporary measures.
-        // this.setDataFlag(DATA_FLAGS, DATA_FLAG_WASD_CONTROLLED, true);
-        this.setDataFlag(DATA_FLAGS, DATA_FLAG_GRAVITY, true);
+        // this.setDataFlag(DATA_FLAGS, DATA_FLAG_WASD_CONTROLLED, true, false);
+        this.setDataFlag(DATA_FLAG_GRAVITY, true, false);
     }
 
     @Override

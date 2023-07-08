@@ -275,7 +275,7 @@ public abstract class EntityLiving extends Entity implements EntityDamageable {
         if (this.isAlive() && this.needLivingBaseTick) {
             boolean breathing = canBreathe();
             breathing = checkTurtleHelmet(breathing);
-            this.setDataFlag(DATA_FLAGS, DATA_FLAG_BREATHING, breathing);
+            this.setDataFlag(DATA_FLAG_BREATHING, breathing);
 
             if (this.isInsideOfSolid()) {
                 hasUpdate = true;
@@ -299,10 +299,10 @@ public abstract class EntityLiving extends Entity implements EntityDamageable {
                 boolean overPowderSnow = below == BlockID.POWDER_SNOW; //TODO: check
                 PlayerInventory inventory = ((EntityHumanType) this).getInventory();
                 boolean leatherBoots = inventory != null && inventory.getBoots().getId() == ItemID.LEATHER_BOOTS;
-                setDataFlag(DATA_FLAGS_EXTENDED, DATA_FLAG_IN_SCAFFOLDING, inScaffolding);
-                setDataFlag(DATA_FLAGS_EXTENDED, DATA_FLAG_IN_ASCENDABLE_BLOCK, inScaffolding || leatherBoots && inPowderSnow);
-                setDataFlag(DATA_FLAGS_EXTENDED, DATA_FLAG_OVER_SCAFFOLDING, overScaffolding);
-                setDataFlag(DATA_FLAGS_EXTENDED, DATA_FLAG_OVER_DESCENDABLE_BLOCK, leatherBoots && overPowderSnow || overScaffolding && !level.getBlock(x, y - 2, z).isAir());
+                setDataFlag(DATA_FLAG_IN_SCAFFOLDING, inScaffolding);
+                setDataFlag(DATA_FLAG_IN_ASCENDABLE_BLOCK, inScaffolding || leatherBoots && inPowderSnow);
+                setDataFlag(DATA_FLAG_OVER_SCAFFOLDING, overScaffolding);
+                setDataFlag(DATA_FLAG_OVER_DESCENDABLE_BLOCK, leatherBoots && overPowderSnow || overScaffolding && !level.getBlock(x, y - 2, z).isAir());
                 if (inScaffolding || overScaffolding || inPowderSnow || overPowderSnow) {
                     resetFallDistance();
                 }
@@ -310,7 +310,7 @@ public abstract class EntityLiving extends Entity implements EntityDamageable {
 
             if (!this.hasEffect(Effect.WATER_BREATHING) && !breathing) {
                 if (this instanceof EntityWaterAnimal) {
-                    this.setAirTicks(400);
+                    this.setAirTicks(300);
                 } else if (turtleTicks == 0 || turtleTicks == 200) {
                     hasUpdate = true;
                     int oldAirTicks = getAirTicks();
@@ -318,7 +318,9 @@ public abstract class EntityLiving extends Entity implements EntityDamageable {
 
                     if (airTicks <= -20) {
                         airTicks = 0;
-                        this.attack(new EntityDamageEvent(this, DamageCause.DROWNING, 2));
+                        if (!isPlayer || level.gameRules.getBoolean(GameRule.DROWNING_DAMAGE)) {
+                            this.attack(new EntityDamageEvent(this, DamageCause.DROWNING, 2));
+                        }
                     }
 
                     if (oldAirTicks != airTicks) {
@@ -333,7 +335,9 @@ public abstract class EntityLiving extends Entity implements EntityDamageable {
 
                     if (airTicks <= -20) {
                         airTicks = 0;
-                        this.attack(new EntityDamageEvent(this, DamageCause.DROWNING, 2));
+                        if (!isPlayer || level.gameRules.getBoolean(GameRule.DROWNING_DAMAGE)) {
+                            this.attack(new EntityDamageEvent(this, DamageCause.DROWNING, 2));
+                        }
                     }
 
                     if (oldAirTicks != airTicks) {
@@ -345,7 +349,7 @@ public abstract class EntityLiving extends Entity implements EntityDamageable {
                     int maxAir = this.getDataPropertyShort(DATA_MAX_AIR);
 
                     if (airTicks != maxAir) {
-                        airTicks += tickDiff * 5;
+                        airTicks += tickDiff * 4;
 
                         if (airTicks > maxAir) {
                             airTicks = maxAir;

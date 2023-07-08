@@ -20,6 +20,8 @@ import cn.nukkit.math.Mth;
 import cn.nukkit.math.Vector3;
 import cn.nukkit.nbt.tag.CompoundTag;
 import cn.nukkit.nbt.tag.ListTag;
+import cn.nukkit.network.protocol.LevelEventPacket;
+import cn.nukkit.network.protocol.LevelSoundEventPacket;
 import cn.nukkit.potion.Effect;
 import cn.nukkit.potion.Potion;
 import it.unimi.dsi.fastutil.ints.Int2ObjectMap;
@@ -153,8 +155,8 @@ public class EntityAreaEffectCloud extends Entity {
 
         ownerId = namedTag.getLong("OwnerId");
 
-        setDataFlag(DATA_FLAGS, DATA_FLAG_HAS_COLLISION, false, false);
-        setDataFlag(DATA_FLAGS, DATA_FLAG_FIRE_IMMUNE, true, false);
+        setDataFlag(DATA_FLAG_HAS_COLLISION, false, false);
+        setDataFlag(DATA_FLAG_FIRE_IMMUNE, true, false);
 
         fireProof = true;
     }
@@ -279,6 +281,8 @@ public class EntityAreaEffectCloud extends Entity {
                 switch (effect.getId()) {
                     case Effect.NO_EFFECT:
                         if (potionId == Potion.WATER && entity.isOnFire()) {
+                            level.addLevelSoundEvent(entity.upVec(), LevelSoundEventPacket.SOUND_FIZZ);
+                            level.addLevelEvent(entity, LevelEventPacket.EVENT_PARTICLE_FIZZ_EFFECT, 513);
                             entity.extinguish();
                         }
                         break;

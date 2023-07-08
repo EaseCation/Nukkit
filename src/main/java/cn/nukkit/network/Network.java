@@ -376,7 +376,7 @@ public class Network {
         this.registerPacket(ProtocolInfo.CRAFTING_EVENT_PACKET, CraftingEventPacket.class);
         this.registerPacket(ProtocolInfo.DISCONNECT_PACKET, DisconnectPacket.class);
         this.registerPacket(ProtocolInfo.ACTOR_EVENT_PACKET, EntityEventPacket.class);
-        this.registerPacket(ProtocolInfo.ACTOR_FALL_PACKET, EntityFallPacket.class);
+        //this.registerPacket(ProtocolInfo.ACTOR_FALL_PACKET, EntityFallPacket.class);
         this.registerPacket(ProtocolInfo.ACTOR_PICK_REQUEST_PACKET, EntityPickRequestPacket.class);
 //        this.registerPacket(ProtocolInfo.FULL_CHUNK_DATA_PACKET, FullChunkDataPacket.class);
 //        this.registerPacket(ProtocolInfo.GAME_RULES_CHANGED_PACKET, GameRulesChangedPacket.class);

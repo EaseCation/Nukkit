@@ -64,7 +64,7 @@ public class EntitySheep extends EntityAnimal {
             this.sheared = this.namedTag.getBoolean("Sheared");
         }
 
-        this.setDataFlag(DATA_FLAGS, DATA_FLAG_SHEARED, this.sheared);
+        this.setDataFlag(DATA_FLAG_SHEARED, this.sheared, false);
     }
 
     @Override
@@ -95,7 +95,7 @@ public class EntitySheep extends EntityAnimal {
         }
 
         this.sheared = true;
-        this.setDataFlag(DATA_FLAGS, DATA_FLAG_SHEARED, true);
+        this.setDataFlag(DATA_FLAG_SHEARED, true);
 
         this.level.dropItem(this, Item.get(Item.WOOL, this.color, ThreadLocalRandom.current().nextInt(1, 3)));
         return true;

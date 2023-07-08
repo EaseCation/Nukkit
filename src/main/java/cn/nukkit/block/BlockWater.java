@@ -6,6 +6,8 @@ import cn.nukkit.event.block.LiquidFlowEvent;
 import cn.nukkit.item.Item;
 import cn.nukkit.item.ItemTool;
 import cn.nukkit.math.BlockFace;
+import cn.nukkit.network.protocol.LevelEventPacket;
+import cn.nukkit.network.protocol.LevelSoundEventPacket;
 import cn.nukkit.utils.BlockColor;
 
 /**
@@ -29,7 +31,7 @@ public class BlockWater extends BlockLiquid {
 
     @Override
     public String getName() {
-        return "Water";
+        return "Flowing Water";
     }
 
     @Override
@@ -55,7 +57,9 @@ public class BlockWater extends BlockLiquid {
     public void onEntityCollide(Entity entity) {
         super.onEntityCollide(entity);
 
-        if (entity.fireTicks > 0) {
+        if (entity.isOnFire()) {
+            level.addLevelSoundEvent(entity.upVec(), LevelSoundEventPacket.SOUND_FIZZ);
+            level.addLevelEvent(entity, LevelEventPacket.EVENT_PARTICLE_FIZZ_EFFECT, 513);
             entity.extinguish();
         }
     }

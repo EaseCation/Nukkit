@@ -20,7 +20,7 @@ public class EntityLingeringPotion extends EntityPotion {
     protected void initEntity() {
         super.initEntity();
 
-        setDataFlag(DATA_FLAGS, DATA_FLAG_LINGER, true, false);
+        setDataFlag(DATA_FLAG_LINGER, true, false);
     }
 
     @Override

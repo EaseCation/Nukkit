@@ -2416,16 +2416,17 @@ public class Level implements ChunkManager, Metadatable {
                 breakTime = 0.15;
             }
 
-            if (player.hasEffect(Effect.HASTE)) {
-                breakTime *= 1 - (0.2 * (player.getEffect(Effect.HASTE).getAmplifier() + 1));
+            Effect haste = player.getEffect(Effect.HASTE);
+            if (haste != null) {
+                breakTime *= 1 - (0.2 * (haste.getAmplifier() + 1));
             }
 
-            if (player.hasEffect(Effect.MINING_FATIGUE)) {
-                breakTime *= 1 - (0.3 * (player.getEffect(Effect.MINING_FATIGUE).getAmplifier() + 1));
+            Effect miningFatigue = player.getEffect(Effect.MINING_FATIGUE);
+            if (miningFatigue != null) {
+                breakTime *= 1 - (0.3 * (miningFatigue.getAmplifier() + 1));
             }
 
             Enchantment eff = item.getEnchantment(Enchantment.EFFICIENCY);
-
             if (eff != null && eff.getLevel() > 0) {
                 breakTime *= 1 - (0.3 * eff.getLevel());
             }

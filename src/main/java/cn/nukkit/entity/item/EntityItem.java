@@ -106,11 +106,11 @@ public class EntityItem extends Entity {
         }
 
         this.item = NBTIO.getItemHelper(this.namedTag.getCompound("Item"));
-        this.setDataFlag(DATA_FLAGS, DATA_FLAG_IMMOBILE, true, false);
+        this.setDataFlag(DATA_FLAG_IMMOBILE, true, false);
 
         if (item != null && item.isFireResistant()) {
             fireProof = true;
-            setDataFlag(DATA_FLAGS, DATA_FLAG_FIRE_IMMUNE, true, false);
+            setDataFlag(DATA_FLAG_FIRE_IMMUNE, true, false);
         }
 
         this.server.getPluginManager().callEvent(new ItemSpawnEvent(this));

@@ -1,7 +1,5 @@
 package cn.nukkit.block;
 
-import cn.nukkit.entity.Entity;
-
 public class BlockCauldronLava extends BlockCauldron {
 
     public BlockCauldronLava() {
@@ -19,11 +17,6 @@ public class BlockCauldronLava extends BlockCauldron {
 
     @Override
     public int getLightLevel() {
-        return 15;
-    }
-
-    @Override
-    public void onEntityCollide(Entity entity) {
-        //TODO
+        return isEmpty() ? 0 : 15;
     }
 }

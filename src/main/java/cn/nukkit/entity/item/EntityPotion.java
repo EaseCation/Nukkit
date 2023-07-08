@@ -17,6 +17,7 @@ import cn.nukkit.math.BlockFace.Plane;
 import cn.nukkit.nbt.NBTIO;
 import cn.nukkit.nbt.tag.CompoundTag;
 import cn.nukkit.nbt.tag.ListTag;
+import cn.nukkit.network.protocol.LevelEventPacket;
 import cn.nukkit.network.protocol.LevelSoundEventPacket;
 import cn.nukkit.potion.Effect;
 import cn.nukkit.potion.Potion;
@@ -182,6 +183,8 @@ public class EntityPotion extends EntityProjectile {
 
             if (isWater) {
                 if (entity.isOnFire()) {
+                    level.addLevelSoundEvent(entity.upVec(), LevelSoundEventPacket.SOUND_FIZZ);
+                    level.addLevelEvent(entity, LevelEventPacket.EVENT_PARTICLE_FIZZ_EFFECT, 513);
                     entity.extinguish();
                 }
                 continue;

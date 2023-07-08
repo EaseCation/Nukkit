@@ -129,7 +129,7 @@ public class BlockEntityBeehive extends BlockEntity {
         level.addLevelSoundEvent(this, LevelSoundEventPacket.SOUND_BLOCK_BEEHIVE_ENTER);
 
         bee.saveNBT();
-        occupants.add(new Occupant(bee.getDataFlag(Entity.DATA_FLAGS, Entity.DATA_FLAG_POWERED) ? 2400 : 600, bee.namedTag.clone()));
+        occupants.add(new Occupant(bee.getDataFlag(Entity.DATA_FLAG_POWERED) ? 2400 : 600, bee.namedTag.clone()));
         bee.close();
 
         scheduleUpdate();

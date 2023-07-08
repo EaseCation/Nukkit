@@ -16,6 +16,7 @@ import cn.nukkit.event.player.PlayerInteractEvent.Action;
 import cn.nukkit.event.player.PlayerTeleportEvent;
 import cn.nukkit.item.Item;
 import cn.nukkit.item.enchantment.Enchantment;
+import cn.nukkit.level.GameRule;
 import cn.nukkit.level.Level;
 import cn.nukkit.level.Location;
 import cn.nukkit.level.Position;
@@ -401,8 +402,8 @@ public abstract class Entity extends Location implements Metadatable {
             .putLong(DATA_FLAGS, 0)
             .putLong(DATA_FLAGS_EXTENDED, 0)
             .putByte(DATA_COLOR, 0)
-            .putShort(DATA_AIR, 400)
-            .putShort(DATA_MAX_AIR, 400)
+            .putShort(DATA_AIR, 300)
+            .putShort(DATA_MAX_AIR, 300)
             .putString(DATA_NAMETAG, "")
             .putLong(DATA_LEAD_HOLDER_EID, -1)
             .putFloat(DATA_SCALE, 1f);
@@ -562,7 +563,7 @@ public abstract class Entity extends Location implements Metadatable {
             this.setScoreTag(this.namedTag.getString("ScoreTag"));
         }
 
-        this.setDataFlag(DATA_FLAGS, DATA_FLAG_HAS_COLLISION, true, false);
+        this.setDataFlag(DATA_FLAG_HAS_COLLISION, true, false);
 
         float height = this.getHeight();
         float width = this.getWidth();
@@ -640,9 +641,9 @@ public abstract class Entity extends Location implements Metadatable {
         this.fireTicks = this.namedTag.getShort("Fire");
 
         if (!this.namedTag.contains("Air")) {
-            this.namedTag.putShort("Air", 400);
+            this.namedTag.putShort("Air", 300);
         }
-        this.setDataProperty(new ShortEntityData(DATA_AIR, this.namedTag.getShort("Air")), false);
+        this.setDataProperty(new ShortEntityData(DATA_AIR, Math.min(this.namedTag.getShort("Air"), 300)), false);
 
         if (!this.namedTag.contains("OnGround")) {
             this.namedTag.putBoolean("OnGround", false);
@@ -680,7 +681,7 @@ public abstract class Entity extends Location implements Metadatable {
     }
 
     public boolean isNameTagVisible() {
-        return this.getDataFlag(DATA_FLAGS, DATA_FLAG_CAN_SHOW_NAMETAG);
+        return this.getDataFlag(DATA_FLAG_CAN_SHOW_NAMETAG);
     }
 
     public boolean isNameTagAlwaysVisible() {
@@ -696,7 +697,7 @@ public abstract class Entity extends Location implements Metadatable {
     }
 
     public void setNameTagVisible(boolean value) {
-        this.setDataFlag(DATA_FLAGS, DATA_FLAG_CAN_SHOW_NAMETAG, value);
+        this.setDataFlag(DATA_FLAG_CAN_SHOW_NAMETAG, value);
     }
 
     public void setNameTagAlwaysVisible() {
@@ -716,7 +717,7 @@ public abstract class Entity extends Location implements Metadatable {
     }
 
     public boolean isSneaking() {
-        return this.getDataFlag(DATA_FLAGS, DATA_FLAG_SNEAKING);
+        return this.getDataFlag(DATA_FLAG_SNEAKING);
     }
 
     public void setSneaking() {
@@ -724,11 +725,11 @@ public abstract class Entity extends Location implements Metadatable {
     }
 
     public void setSneaking(boolean value) {
-        this.setDataFlag(DATA_FLAGS, DATA_FLAG_SNEAKING, value);
+        this.setDataFlag(DATA_FLAG_SNEAKING, value);
     }
 
     public boolean isSwimming() {
-        return this.getDataFlag(DATA_FLAGS, DATA_FLAG_SWIMMING);
+        return this.getDataFlag(DATA_FLAG_SWIMMING);
     }
 
     public void setSwimming() {
@@ -736,11 +737,11 @@ public abstract class Entity extends Location implements Metadatable {
     }
 
     public void setSwimming(boolean value) {
-        this.setDataFlag(DATA_FLAGS, DATA_FLAG_SWIMMING, value);
+        this.setDataFlag(DATA_FLAG_SWIMMING, value);
     }
 
     public boolean isSprinting() {
-        return this.getDataFlag(DATA_FLAGS, DATA_FLAG_SPRINTING);
+        return this.getDataFlag(DATA_FLAG_SPRINTING);
     }
 
     public void setSprinting() {
@@ -748,11 +749,11 @@ public abstract class Entity extends Location implements Metadatable {
     }
 
     public void setSprinting(boolean value) {
-        this.setDataFlag(DATA_FLAGS, DATA_FLAG_SPRINTING, value);
+        this.setDataFlag(DATA_FLAG_SPRINTING, value);
     }
 
     public boolean isGliding() {
-        return this.getDataFlag(DATA_FLAGS, DATA_FLAG_GLIDING);
+        return this.getDataFlag(DATA_FLAG_GLIDING);
     }
 
     public void setGliding() {
@@ -760,11 +761,11 @@ public abstract class Entity extends Location implements Metadatable {
     }
 
     public void setGliding(boolean value) {
-        this.setDataFlag(DATA_FLAGS, DATA_FLAG_GLIDING, value);
+        this.setDataFlag(DATA_FLAG_GLIDING, value);
     }
 
     public boolean isImmobile() {
-        return this.getDataFlag(DATA_FLAGS, DATA_FLAG_NO_AI);
+        return this.getDataFlag(DATA_FLAG_NO_AI);
     }
 
     public void setImmobile() {
@@ -772,11 +773,11 @@ public abstract class Entity extends Location implements Metadatable {
     }
 
     public void setImmobile(boolean value) {
-        this.setDataFlag(DATA_FLAGS, DATA_FLAG_NO_AI, value);
+        this.setDataFlag(DATA_FLAG_NO_AI, value);
     }
 
     public boolean canClimb() {
-        return this.getDataFlag(DATA_FLAGS, DATA_FLAG_CAN_CLIMB);
+        return this.getDataFlag(DATA_FLAG_CAN_CLIMB);
     }
 
     public void setCanClimb() {
@@ -784,11 +785,11 @@ public abstract class Entity extends Location implements Metadatable {
     }
 
     public void setCanClimb(boolean value) {
-        this.setDataFlag(DATA_FLAGS, DATA_FLAG_CAN_CLIMB, value);
+        this.setDataFlag(DATA_FLAG_CAN_CLIMB, value);
     }
 
     public boolean canClimbWalls() {
-        return this.getDataFlag(DATA_FLAGS, DATA_FLAG_WALLCLIMBING);
+        return this.getDataFlag(DATA_FLAG_WALLCLIMBING);
     }
 
     public void setCanClimbWalls() {
@@ -796,7 +797,7 @@ public abstract class Entity extends Location implements Metadatable {
     }
 
     public void setCanClimbWalls(boolean value) {
-        this.setDataFlag(DATA_FLAGS, DATA_FLAG_WALLCLIMBING, value);
+        this.setDataFlag(DATA_FLAG_WALLCLIMBING, value);
     }
 
     public void setScale(float scale) {
@@ -1409,7 +1410,8 @@ public abstract class Entity extends Location implements Metadatable {
     }
 
     public int getMaxHealth() {
-        return maxHealth + (this.hasEffect(Effect.HEALTH_BOOST) ? 4 * (this.getEffect(Effect.HEALTH_BOOST).getAmplifier() + 1) : 0);
+        Effect healthBoost = this.getEffect(Effect.HEALTH_BOOST);
+        return maxHealth + (healthBoost != null ? 4 * (healthBoost.getAmplifier() + 1) : 0);
     }
 
     public void setMaxHealth(int maxHealth) {
@@ -1575,7 +1577,7 @@ public abstract class Entity extends Location implements Metadatable {
                     this.fireTicks = 0;
                 }
             } else {
-                if (!this.hasEffect(Effect.FIRE_RESISTANCE) && ((this.fireTicks % 20) == 0 || tickDiff > 20)) {
+                if (!this.hasEffect(Effect.FIRE_RESISTANCE) && ((this.fireTicks % 20) == 0 || tickDiff > 20) && (!isPlayer || level.gameRules.getBoolean(GameRule.FIRE_DAMAGE))) {
                     this.attack(new EntityDamageEvent(this, DamageCause.FIRE_TICK, 1));
                 }
                 this.fireTicks -= tickDiff;
@@ -1583,7 +1585,7 @@ public abstract class Entity extends Location implements Metadatable {
             if (this.fireTicks <= 0) {
                 this.extinguish();
             } else {
-                this.setDataFlag(DATA_FLAGS, DATA_FLAG_ONFIRE, true);
+                this.setDataFlag(DATA_FLAG_ONFIRE, true);
                 hasUpdate = true;
             }
         }
@@ -1755,7 +1757,7 @@ public abstract class Entity extends Location implements Metadatable {
     }
 
     protected void onMountEntity(Entity entity) {
-        entity.setDataFlag(DATA_FLAGS, DATA_FLAG_RIDING, true);
+        entity.setDataFlag(DATA_FLAG_RIDING, true);
     }
 
     public boolean dismountEntity(Entity entity) {
@@ -1792,7 +1794,7 @@ public abstract class Entity extends Location implements Metadatable {
     }
 
     protected void onDismountEntity(Entity entity) {
-        entity.setDataFlag(DATA_FLAGS, DATA_FLAG_RIDING, false);
+        entity.setDataFlag(DATA_FLAG_RIDING, false);
     }
 
     public void broadcastLinkPacket(Entity rider, byte type) {
@@ -1891,7 +1893,7 @@ public abstract class Entity extends Location implements Metadatable {
 
     public void extinguish() {
         this.fireTicks = 0;
-        this.setDataFlag(DATA_FLAGS, DATA_FLAG_ONFIRE, false);
+        this.setDataFlag(DATA_FLAG_ONFIRE, false);
     }
 
     public boolean canTriggerWalking() {
@@ -1920,40 +1922,58 @@ public abstract class Entity extends Location implements Metadatable {
     }
 
     public void fall(float fallDistance) {
-        float damage;
-        if (this.hasEffect(Effect.SLOW_FALLING)) damage = 0;
-        else damage = Mth.floor(fallDistance - 3 - (this.hasEffect(Effect.JUMP_BOOST) ? this.getEffect(Effect.JUMP_BOOST).getAmplifier() + 1 : 0));
-
-        Block down = this.level.getBlock(this.floor().down());
-        int id = down.getId();
-
-        if (this.level.getBlockIdAt(0, this.getFloorX(), this.getFloorY(), this.getFloorZ()) == BlockID.BLOCK_BED) {
-            damage -= damage * 0.5f;
-        } else if (id == BlockID.HAY_BLOCK || id == BlockID.HONEY_BLOCK) {
-            damage -= damage * 0.8f;
+        if (this.hasEffect(Effect.SLOW_FALLING)) {
+            return;
         }
 
-        if (damage > 0) {
-            this.attack(new EntityDamageEvent(this, DamageCause.FALL, damage));
-        }
-
+        Block down = null;
         if (fallDistance > 0.75) {
-            if (id == Item.FARMLAND) {
+            down = this.level.getBlock(this.floor().down());
+            if (down.getId() == Item.FARMLAND) {
                 Event ev;
-
                 if (this instanceof Player) {
                     ev = new PlayerInteractEvent((Player) this, null, down, null, Action.PHYSICAL);
                 } else {
                     ev = new EntityInteractEvent(this, down);
                 }
-
-                this.server.getPluginManager().callEvent(ev);
-                if (ev.isCancelled()) {
-                    return;
+                ev.call();
+                if (!ev.isCancelled()) {
+                    this.level.setBlock(down, Block.get(BlockID.DIRT), true);
                 }
-                this.level.setBlock(down, Block.get(BlockID.DIRT), false, true);
             }
         }
+
+        if (isPlayer && !level.gameRules.getBoolean(GameRule.FALL_DAMAGE)) {
+            return;
+        }
+
+        float damage = Mth.floor(fallDistance - 3);
+        if (damage <= 0) {
+            return;
+        }
+
+        Effect effect = this.getEffect(Effect.JUMP_BOOST);
+        if (effect != null) {
+            damage -= effect.getAmplifier() + 1;
+            if (damage <= 0) {
+                return;
+            }
+        }
+
+        Block block = this.level.getBlock(this);
+        if (block.getId() == BlockID.BLOCK_BED) {
+            damage -= damage * 0.5f;
+        } else {
+            if (down == null) {
+                down = block.down();
+            }
+            int id = down.getId();
+            if (id == BlockID.HAY_BLOCK || id == BlockID.HONEY_BLOCK) {
+                damage -= damage * 0.8f;
+            }
+        }
+
+        this.attack(new EntityDamageEvent(this, DamageCause.FALL, damage));
     }
 
     public void handleLavaMovement() {
@@ -2580,6 +2600,10 @@ public abstract class Entity extends Location implements Metadatable {
             if (data.getId() == DATA_FLAGS_EXTENDED) {
                 metadata.put(this.dataProperties.get(DATA_FLAGS));
             }
+            if (data.getId() == DATA_FLAGS) {
+                // for multi-version conversion
+                metadata.put(this.dataProperties.get(DATA_FLAGS_EXTENDED));
+            }
             this.sendData(this.getViewers().values().toArray(new Player[0]), metadata);
         }
         return true;
@@ -2625,7 +2649,11 @@ public abstract class Entity extends Location implements Metadatable {
         return this.getDataProperties().getSlot(id);
     }
 
-    public Vector3 getDataPropertyPos(int id) {
+    public CompoundTag getDataPropertyNBT(int id) {
+        return this.getDataProperties().getNBT(id);
+    }
+
+    public BlockVector3 getDataPropertyPos(int id) {
         return this.getDataProperties().getPosition(id);
     }
 
@@ -2637,31 +2665,99 @@ public abstract class Entity extends Location implements Metadatable {
         return this.getDataProperties().exists(id) ? this.getDataProperty(id).getType() : -1;
     }
 
-    public void setDataFlag(int propertyId, int id) {
-        this.setDataFlag(propertyId, id, true);
+    /**
+     * @deprecated use {@link #setDataFlag(int)}
+     */
+    @Deprecated
+    public void setDataFlag(int propertyId, int flagId) {
+        this.setDataFlag(propertyId, flagId, true);
     }
 
-    public void setDataFlag(int propertyId, int id, boolean value) {
-        this.setDataFlag(propertyId, id, value, true);
+    /**
+     * @deprecated use {@link #setDataFlag(int, boolean)}
+     */
+    @Deprecated
+    public void setDataFlag(int propertyId, int flagId, boolean value) {
+        this.setDataFlag(propertyId, flagId, value, true);
     }
 
-    public void setDataFlag(int propertyId, int id, boolean value, boolean send) {
-        if (this.getDataFlag(propertyId, id) != value) {
-            if (propertyId == DATA_PLAYER_FLAGS) {
-                byte flags = (byte) this.getDataPropertyByte(propertyId);
-                flags ^= 1 << id;
-                this.setDataProperty(new ByteEntityData(propertyId, flags), send);
-            } else {
-                long flags = this.getDataPropertyLong(propertyId);
-                flags ^= 1L << id;
-                this.setDataProperty(new LongEntityData(propertyId, flags), send);
-            }
-
+    /**
+     * @deprecated use {@link #setDataFlag(int, boolean, boolean)}
+     */
+    @Deprecated
+    public void setDataFlag(int propertyId, int flagId, boolean value, boolean send) {
+        if (propertyId == DATA_PLAYER_FLAGS) {
+            this.setPlayerFlag(flagId, value, send);
+            return;
         }
+        this.setDataFlag(flagId, value, send);
     }
 
-    public boolean getDataFlag(int propertyId, int id) {
-        return (((propertyId == DATA_PLAYER_FLAGS ? this.getDataPropertyByte(propertyId) & 0xff : this.getDataPropertyLong(propertyId))) & (1L << id)) > 0;
+    /**
+     * @deprecated use {@link #getDataFlag(int)}
+     */
+    @Deprecated
+    public boolean getDataFlag(int propertyId, int flagId) {
+        return propertyId == DATA_PLAYER_FLAGS ? this.getPlayerFlag(flagId) : this.getDataFlag(flagId);
+    }
+
+    private static boolean getFlagBit(long flags, int flagId) {
+        return (flags & (1L << flagId)) != 0;
+    }
+
+    private static boolean getFlagBit(int flags, int flagId) {
+        return (flags & (1 << flagId)) != 0;
+    }
+
+    private static boolean getFlagBit(byte flags, int flagId) {
+        return (flags & (1 << flagId)) != 0;
+    }
+
+    public void setDataFlag(int flagId) {
+        this.setDataFlag(flagId, true);
+    }
+
+    public void setDataFlag(int flagId, boolean value) {
+        this.setDataFlag(flagId, value, true);
+    }
+
+    public void setDataFlag(int flagId, boolean value, boolean send) {
+        int propertyId = getFlagDataId(flagId);
+        long flags = this.getDataPropertyLong(propertyId);
+        if (getFlagBit(flags, flagId) == value) {
+            return;
+        }
+        flags ^= 1L << flagId;
+        this.setDataProperty(new LongEntityData(propertyId, flags), send);
+    }
+
+    public boolean getDataFlag(int flagId) {
+        return getFlagBit(this.getDataPropertyLong(getFlagDataId(flagId)), flagId);
+    }
+
+    public static int getFlagDataId(int flagId) {
+        return flagId >= 64 ? DATA_FLAGS_EXTENDED : DATA_FLAGS;
+    }
+
+    public void setPlayerFlag(int playerFlagId) {
+        this.setPlayerFlag(playerFlagId, true);
+    }
+
+    public void setPlayerFlag(int playerFlagId, boolean value) {
+        this.setPlayerFlag(playerFlagId, value, true);
+    }
+
+    public void setPlayerFlag(int playerFlagId, boolean value, boolean send) {
+        byte flags = (byte) this.getDataPropertyByte(DATA_PLAYER_FLAGS);
+        if (getFlagBit(flags, playerFlagId) == value) {
+            return;
+        }
+        flags ^= 1 << playerFlagId;
+        this.setDataProperty(new ByteEntityData(DATA_PLAYER_FLAGS, flags), send);
+    }
+
+    public boolean getPlayerFlag(int playerFlagId) {
+        return getFlagBit(this.getDataPropertyByte(DATA_PLAYER_FLAGS), playerFlagId);
     }
 
     @Override

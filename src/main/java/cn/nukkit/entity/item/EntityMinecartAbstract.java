@@ -682,21 +682,21 @@ public abstract class EntityMinecartAbstract extends EntityVehicle {
             if (namedTag.getBoolean("CustomDisplayTile")) {
                 int display = namedTag.getInt("DisplayTile");
                 int offSet = namedTag.getInt("DisplayOffset");
-                setDataProperty(new ByteEntityData(DATA_HAS_DISPLAY, 1));
-                setDataProperty(new IntEntityData(DATA_MINECART_DISPLAY_BLOCK, display));
-                setDataProperty(new IntEntityData(DATA_DISPLAY_OFFSET, offSet));
+                setDataProperty(new ByteEntityData(DATA_HAS_DISPLAY, 1), false);
+                setDataProperty(new IntEntityData(DATA_MINECART_DISPLAY_BLOCK, display), false);
+                setDataProperty(new IntEntityData(DATA_DISPLAY_OFFSET, offSet), false);
             }
         } else {
             int display = blockInside == null ? 0
                     : blockInside.getId()
                     | blockInside.getDamage() << 16;
             if (display == 0) {
-                setDataProperty(new ByteEntityData(DATA_HAS_DISPLAY, 0));
+                setDataProperty(new ByteEntityData(DATA_HAS_DISPLAY, 0), false);
                 return;
             }
-            setDataProperty(new ByteEntityData(DATA_HAS_DISPLAY, 1));
-            setDataProperty(new IntEntityData(DATA_MINECART_DISPLAY_BLOCK, display));
-            setDataProperty(new IntEntityData(DATA_DISPLAY_OFFSET, 6));
+            setDataProperty(new ByteEntityData(DATA_HAS_DISPLAY, 1), false);
+            setDataProperty(new IntEntityData(DATA_MINECART_DISPLAY_BLOCK, display), false);
+            setDataProperty(new IntEntityData(DATA_DISPLAY_OFFSET, 6), false);
         }
     }
 
