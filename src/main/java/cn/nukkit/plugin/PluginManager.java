@@ -9,8 +9,6 @@ import cn.nukkit.permission.Permission;
 import cn.nukkit.utils.MainLogger;
 import cn.nukkit.utils.PluginException;
 import cn.nukkit.utils.Utils;
-import co.aikar.timings.Timing;
-import co.aikar.timings.Timings;
 import it.unimi.dsi.fastutil.objects.Object2ObjectLinkedOpenHashMap;
 import it.unimi.dsi.fastutil.objects.Object2ObjectOpenHashMap;
 import it.unimi.dsi.fastutil.objects.ObjectArrayList;
@@ -349,7 +347,6 @@ public class PluginManager {
     }
 
     private void calculatePermissionDefault(Permission permission) {
-        Timings.permissionDefaultTimer.startTiming();
         if (permission.getDefault().equals(Permission.DEFAULT_OP) || permission.getDefault().equals(Permission.DEFAULT_TRUE)) {
             this.defaultPermsOp.put(permission.getName(), permission);
             this.dirtyPermissibles(true);
@@ -359,7 +356,6 @@ public class PluginManager {
             this.defaultPerms.put(permission.getName(), permission);
             this.dirtyPermissibles(false);
         }
-        Timings.permissionDefaultTimer.startTiming();
     }
 
     private void dirtyPermissibles(boolean op) {
@@ -612,8 +608,7 @@ public class PluginManager {
         }
 
         try {
-            Timing timing = Timings.getPluginEventTiming(event, listener, executor, plugin);
-            this.getEventListeners(event).register(new RegisteredListener(listener, executor, priority, plugin, ignoreCancelled, timing));
+            this.getEventListeners(event).register(new RegisteredListener(listener, executor, priority, plugin, ignoreCancelled));
         } catch (IllegalAccessException e) {
             Server.getInstance().getLogger().logException(e);
         }

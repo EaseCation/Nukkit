@@ -227,7 +227,6 @@ public class BlockEntityFurnace extends BlockEntitySpawnable implements Inventor
             return true;
         }
         lastUpdate = currentTick;
-        this.timing.startTiming();
 
         boolean ret = false;
         Item fuel = this.inventory.getFuel();
@@ -309,8 +308,6 @@ public class BlockEntityFurnace extends BlockEntitySpawnable implements Inventor
                 player.dataPacket(pk);
             }
         }
-
-        this.timing.stopTiming();
 
         return ret;
     }

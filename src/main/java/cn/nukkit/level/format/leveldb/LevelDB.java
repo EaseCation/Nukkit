@@ -409,11 +409,9 @@ public class LevelDB implements LevelProvider {
 
         long index = Level.chunkHash(chunkX, chunkZ);
         synchronized (this.chunks) {
-            this.level.timings.syncChunkLoadDataTimer.startTiming();
             chunk = this.chunks.get(index);
             if (chunk != null) {
                 this.lastChunk.set(new WeakReference<>(chunk));
-                this.level.timings.syncChunkLoadDataTimer.stopTiming();
                 return true;
             }
 
@@ -430,10 +428,8 @@ public class LevelDB implements LevelProvider {
             if (chunk != null) {
                 this.chunks.put(index, chunk);
                 this.lastChunk.set(new WeakReference<>(chunk));
-                this.level.timings.syncChunkLoadDataTimer.stopTiming();
                 return true;
             }
-            this.level.timings.syncChunkLoadDataTimer.stopTiming();
         }
         return false;
     }
@@ -965,7 +961,6 @@ public class LevelDB implements LevelProvider {
                 return chunk;
             }
 
-            this.level.timings.syncChunkLoadDataTimer.startTiming();
             try {
                 chunk = this.readChunk(chunkX, chunkZ);
             } catch (Exception e) {
@@ -975,7 +970,6 @@ public class LevelDB implements LevelProvider {
             if (chunk == null && create) {
                 chunk = LevelDbChunk.getEmptyChunk(chunkX, chunkZ, this);
             }
-            this.level.timings.syncChunkLoadDataTimer.stopTiming();
 
             if (chunk != null) {
                 this.lastChunk.set(new WeakReference<>(chunk));

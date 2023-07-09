@@ -90,7 +90,6 @@ public class SimpleCommandMap implements CommandMap {
 //        if ((boolean) this.server.getConfig("debug.commands", false)) {
         this.register("nukkit", new StatusCommand("status"));
         this.register("nukkit", new GarbageCollectorCommand("gc"));
-        this.register("nukkit", new TimingsCommand("timings"));
         //this.register("nukkit", new DumpMemoryCommand("dumpmemory"));
 //        }
 
@@ -274,7 +273,6 @@ public class SimpleCommandMap implements CommandMap {
             return false;
         }
 
-        target.timing.startTiming();
         try {
             target.execute(sender, sentCommandLabel, args);
         } catch (Exception e) {
@@ -285,7 +283,6 @@ public class SimpleCommandMap implements CommandMap {
                 logger.logException(e);
             }
         }
-        target.timing.stopTiming();
 
         return true;
     }

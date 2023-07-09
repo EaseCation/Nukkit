@@ -87,10 +87,8 @@ public class BlockEntityCampfire extends BlockEntitySpawnable {
             return true;
         }
         lastUpdate = currentTick;
-        timing.startTiming();
 
         if (!canCooking()) {
-            timing.stopTiming();
             return false;
         }
 
@@ -140,7 +138,6 @@ public class BlockEntityCampfire extends BlockEntitySpawnable {
             level.addLevelSoundEvent(add(0.5, 0.2, 0.5), LevelSoundEventPacket.SOUND_BLOCK_CAMPFIRE_CRACKLE);
         }
 
-        timing.stopTiming();
         return true;
     }
 

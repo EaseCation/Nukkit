@@ -130,8 +130,6 @@ public class EntityArrow extends EntityProjectile {
             return false;
         }
 
-        this.timing.startTiming();
-
         boolean hasUpdate = super.onUpdate(currentTick);
 
         if (this.onGround || this.hadCollision) {
@@ -150,8 +148,6 @@ public class EntityArrow extends EntityProjectile {
             this.close();
             hasUpdate = true;
         }
-
-        this.timing.stopTiming();
 
         return hasUpdate;
     }

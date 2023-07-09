@@ -201,8 +201,6 @@ public class EntityPotion extends EntityProjectile {
             return false;
         }
 
-        this.timing.startTiming();
-
         boolean hasUpdate = super.onUpdate(currentTick);
 
         if (this.age > 1200) {
@@ -213,7 +211,6 @@ public class EntityPotion extends EntityProjectile {
             hasUpdate = true;
         }
 
-        this.timing.stopTiming();
         return hasUpdate;
     }
 
