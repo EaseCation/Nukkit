@@ -123,7 +123,7 @@ public abstract class BlockNetherVines extends BlockFlowable {
     }
 
     @Override
-    protected AxisAlignedBB recalculateBoundingBox() {
+    protected AxisAlignedBB recalculateCollisionBoundingBox() {
         return this;
     }
 

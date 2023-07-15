@@ -66,7 +66,7 @@ public class EntityEventPacket extends DataPacket {
     public static final int BALLOON_POP = 71;
     public static final int TREASURE_HUNT = 72;
     public static final int AGENT_SUMMON = 73;
-    public static final int CHARGED_CROSSBOW = 74;
+    public static final int CHARGED_ITEM = 74;
     public static final int FALL = 75;
     public static final int GROW_UP = 76;
     public static final int VIBRATION_DETECTED = 77;

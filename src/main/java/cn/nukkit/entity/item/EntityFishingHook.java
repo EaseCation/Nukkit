@@ -18,6 +18,9 @@ import cn.nukkit.level.format.FullChunk;
 import cn.nukkit.level.particle.BubbleParticle;
 import cn.nukkit.level.particle.WaterParticle;
 import cn.nukkit.level.sound.LaunchSound;
+import cn.nukkit.math.AxisAlignedBB;
+import cn.nukkit.math.BlockVector3;
+import cn.nukkit.math.Mth;
 import cn.nukkit.math.Vector3;
 import cn.nukkit.nbt.NBTIO;
 import cn.nukkit.nbt.tag.CompoundTag;
@@ -89,7 +92,7 @@ public class EntityFishingHook extends EntityProjectile {
 
     @Override
     public float getGravity() {
-        return 0.06f;
+        return 0.07f;
     }
 
     @Override
@@ -104,7 +107,30 @@ public class EntityFishingHook extends EntityProjectile {
 
     @Override
     public boolean onUpdate(int currentTick) {
-        boolean hasUpdate = super.onUpdate(currentTick);
+        if (this.closed) {
+            return false;
+        }
+
+        int tickDiff = currentTick - this.lastUpdate;
+        if (tickDiff <= 0 && !this.justCreated) {
+            return true;
+        }
+        this.lastUpdate = currentTick;
+
+        boolean hasUpdate = this.entityBaseTick(tickDiff);
+
+        if (false) {
+            // send debug info
+            if (shootingEntity instanceof Player) {
+                ((Player) shootingEntity).sendActionBar(this.debugText() + " "
+                        + this.isCollided + " "
+                );
+            }
+        }
+
+        if (!this.isAlive()) {
+            return hasUpdate;
+        }
 
         long target = this.getDataPropertyLong(DATA_TARGET_EID);
         if (target != 0) {
@@ -117,22 +143,159 @@ public class EntityFishingHook extends EntityProjectile {
             return false;
         }
 
-        boolean inWater = this.isInsideOfWater();
-        if (inWater) {
-            this.motionX = 0;
-            this.motionY -= getGravity() * -0.04;
-            this.motionZ = 0;
-            this.addMovement(this.x, this.getWaterHeight() - 0.1, this.z, this.yaw, this.pitch, this.yaw);
-            hasUpdate = true;
-        } else if (this.isCollided && this.keepMovement) {
+        boolean updateGravity = false;
+        this.motionY -= this.getGravity();
+        if (!this.isCollided) {
+            this.motionX *= 1 - this.getDrag();
+            this.motionZ *= 1 - this.getDrag();
+        } else {
+            updateGravity = true;
+        }
+        boolean buoyancy = false;
+        boolean inWater = false;
+
+        Vector3 moveVector = new Vector3(this.x + this.motionX, this.y + this.motionY, this.z + this.motionZ);
+        MovingObjectPosition blockHitResult = level.clip(copyVec(), moveVector, true, 200);
+        if (updateGravity) {
+            if (blockHitResult != null) {
+                Vector3 hitPos = blockHitResult.hitVector;
+                double deltaY = hitPos.y - this.y;
+                if (deltaY < -Mth.EPSILON) {
+                    motionY = deltaY;
+
+                    moveVector.y = hitPos.y;
+
+                    stuckToBlockPos = new BlockVector3(blockHitResult.blockX, blockHitResult.blockY, blockHitResult.blockZ);
+                } else {
+                    motionY = 0;
+
+                    Block hitBlock = blockHitResult.block;
+                    inWater = hitBlock.isWater();
+                    if (!inWater && !hitBlock.isAir() && hitBlock.canContainWater()) {
+                        inWater = level.getExtraBlock(hitBlock).isWater();
+                    }
+                    if (inWater) {
+                        Block above = level.getBlock(hitBlock.up());
+                        if (!above.isWater() && !above.isAir() && above.canContainWater()) {
+                            above = level.getExtraBlock(above);
+                        }
+                        if (above.isWater()) {
+                            buoyancy = true;
+                            motionY = 0.35f;
+
+                            stuckToBlockPos = null;
+                            isCollided = false;
+                            hadCollision = false;
+                        }
+                    }
+                }
+            } else if (stuckToBlockPos != null) {
+                AxisAlignedBB aabb = boundingBox.grow(0.06);
+                Block stuckToExtraBlock = level.getExtraBlock(stuckToBlockPos);
+                boolean stuck = stuckToExtraBlock.collidesWithBB(aabb, stuckToExtraBlock.isLiquid());
+                if (!stuck) {
+                    Block stuckToBlock = level.getBlock(stuckToBlockPos);
+                    stuck = stuckToBlock.collidesWithBB(aabb, stuckToBlock.isLiquid());
+                    if (stuckToBlock.isLava()) {
+                        close();
+                        return false;
+                    } else if (stuck) {
+                        inWater = stuckToBlock.isWater();
+                        hasUpdate = true;
+                    }
+                } else {
+                    inWater = stuckToExtraBlock.isWater();
+                    hasUpdate = true;
+                }
+                Block above = level.getExtraBlock(stuckToBlockPos.up());
+                if (!above.isWater()) {
+                    above = level.getBlock(above);
+                }
+                if (inWater && above.isWater()) {
+                    buoyancy = true;
+
+                    stuckToBlockPos = null;
+                    isCollided = false;
+                    hadCollision = false;
+                } else if (!stuck) {
+                    stuckToBlockPos = null;
+                    isCollided = false;
+                    hadCollision = false;
+                }
+            } else {
+                isCollided = false;
+                hadCollision = false;
+            }
+        } else if (blockHitResult != null) {
+            Vector3 hitPos = blockHitResult.hitVector;
+
+            moveVector.setComponents(hitPos);
+
+            this.motionX = (hitPos.x - this.x) * 0.9;
+            this.motionY = hitPos.y - this.y;
+            this.motionZ = (hitPos.z - this.z) * 0.9;
+
+            this.isCollided = true;
+            stuckToBlockPos = new BlockVector3(blockHitResult.blockX, blockHitResult.blockY, blockHitResult.blockZ);
+
+            //TODO: water sfx
+        }
+
+        if (!updateGravity) {
+            Entity nearEntity = null;
+            double nearDistance = Integer.MAX_VALUE;
+
+            Entity[] entities = this.getLevel().getCollidingEntities(this.boundingBox.addCoord(this.motionX, this.motionY, this.motionZ).expand(1), this);
+            for (Entity entity : entities) {
+                if (!this.canCollideWith(entity) || entity == this.shootingEntity) {
+                    continue;
+                }
+
+                AxisAlignedBB aabb = entity.boundingBox.grow(0.3, 0.3, 0.3);
+                MovingObjectPosition entityHitResult = aabb.calculateIntercept(this, moveVector);
+                if (entityHitResult == null) {
+                    continue;
+                }
+
+                double distance = this.distanceSquared(entityHitResult.hitVector);
+                if (distance < nearDistance) {
+                    nearDistance = distance;
+                    nearEntity = entity;
+                }
+            }
+
+            if (nearEntity != null) {
+                onCollideWithEntity(nearEntity);
+                return true;
+            }
+        }
+
+        this.move(this.motionX, this.motionY, this.motionZ);
+
+        if (this.isCollided && !this.hadCollision) {
+            this.hadCollision = true;
+
             this.motionX = 0;
             this.motionY = 0;
             this.motionZ = 0;
-            this.keepMovement = false;
+
+//            this.addMovement(this.x, this.y + this.getBaseOffset(), this.z, this.yaw, this.pitch, this.yaw);
+            return false;
+        } else if (!this.isCollided && this.hadCollision) {
+            this.hadCollision = false;
+        }
+
+        if (!this.hadCollision || Math.abs(this.motionX) > Mth.EPSILON || Math.abs(this.motionY) >Mth.EPSILON || Math.abs(this.motionZ) > Mth.EPSILON) {
+            updateRotation();
             hasUpdate = true;
         }
 
-        Random random = ThreadLocalRandom.current();
+        if (buoyancy) {
+            motionY = 0.35f + getGravity();
+        }
+        //TODO: underwater inertia
+
+        this.updateMovement();
 
         if (inWater) {
             if (this.waitTimer == 240) {
@@ -145,6 +308,7 @@ public class EntityFishingHook extends EntityProjectile {
                     --this.waitTimer;
                 }
                 if (this.waitTimer == 0) {
+                    Random random = ThreadLocalRandom.current();
                     if (random.nextInt(100) < 90) {
                         this.attractTimer = (random.nextInt(40) + 20);
                         this.spawnFish();
@@ -156,7 +320,7 @@ public class EntityFishingHook extends EntityProjectile {
                 }
             } else if (!this.caught) {
                 if (this.attractFish()) {
-                    this.caughtTimer = (random.nextInt(20) + 30);
+                    this.caughtTimer = (ThreadLocalRandom.current().nextInt(20) + 30);
                     this.fishBites();
                     this.caught = true;
                 }
@@ -251,7 +415,7 @@ public class EntityFishingHook extends EntityProjectile {
             if (!event.isCancelled()) {
                 EntityItem itemEntity = new EntityItem(
                         this.level.getChunk(this.getChunkX(), this.getChunkZ(), true),
-                        Entity.getDefaultNBT(this.add(0, this.getWaterHeight(), 0), event.getMotion(), ThreadLocalRandom.current().nextFloat() * 360, 0)
+                        Entity.getDefaultNBT(new Vector3(this.x, this.getWaterHeight(), this.z), event.getMotion(), ThreadLocalRandom.current().nextFloat() * 360, 0)
                                 .putShort("Health", 5)
                                 .putCompound("Item", NBTIO.putItemHelper(event.getLoot()))
                                 .putShort("PickupDelay", 1));
@@ -268,7 +432,24 @@ public class EntityFishingHook extends EntityProjectile {
             if (target != 0) {
                 Entity entity = this.level.getEntity(target);
                 if (entity != null && entity.isAlive()) {
-                    entity.setMotion(this.shootingEntity.subtract(entity).divide(8).add(0, 0.3, 0));
+                    boolean riding;
+                    if (entity.isRiding()) {
+                        riding = !entity.getRiding().dismountEntity(entity);
+                    } else {
+                        riding = false;
+                    }
+
+                    if (!riding) {
+                        if (false) {
+                            // van
+                            Vector3 diff = this.shootingEntity.add(0, 1, 0).subtract(entity).multiply(0.1);
+                            diff.y = Math.sqrt(diff.length()) * 0.08;
+                            entity.setMotion(diff);
+                        } else {
+                            // ec
+                            entity.setMotion(this.shootingEntity.subtract(entity).divide(8).add(0, 0.3, 0));
+                        }
+                    }
                 }
             }
         }
@@ -311,6 +492,10 @@ public class EntityFishingHook extends EntityProjectile {
                 entity.setMotion(entity.subtract(this.shootingEntity).divide(15).add(0, 0.3, 0)); // 这边还是用EC的特殊钩回motion，营造EC的特殊手感
                 //entity.setMotion(entity.getMotion().add(entity.subtract(this.shootingEntity).multiply(0.1)));
             }
+        } else if (entity instanceof Player && ((Player) entity).getGamemode() == Player.CREATIVE) {
+            setTarget(entity.getId());
+        } else {
+            close();
         }
     }
 
@@ -326,5 +511,10 @@ public class EntityFishingHook extends EntityProjectile {
     public void setTarget(long eid) {
         this.setDataProperty(new LongEntityData(DATA_TARGET_EID, eid));
         this.canCollide = eid == 0;
+    }
+
+    @Override
+    protected boolean shouldStickInGround() {
+        return true;
     }
 }

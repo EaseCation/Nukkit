@@ -82,11 +82,6 @@ public abstract class BlockLiquid extends BlockTransparentMeta {
     }
 
     @Override
-    public AxisAlignedBB getBoundingBox() {
-        return null;
-    }
-
-    @Override
     public double getMaxY() {
         return this.y + 1 - getFluidHeightPercent();
     }

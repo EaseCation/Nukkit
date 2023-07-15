@@ -39,21 +39,22 @@ public class EntityArrow extends EntityProjectile {
 
     @Override
     public float getWidth() {
-        return 0.1f;
+        return 0.25f;
     }
 
     @Override
     public float getLength() {
-        return 0.1f;
+        return 0.25f;
     }
 
     @Override
     public float getHeight() {
-        return 0.1f;
+        return 0.25f;
     }
 
     @Override
     public float getGravity() {
+//        return 0.05f;
         return 0.03f;
     }
 
@@ -225,5 +226,15 @@ public class EntityArrow extends EntityProjectile {
                     break;
             }
         }
+    }
+
+    @Override
+    protected boolean shouldStickInGround() {
+        return true;
+    }
+
+    @Override
+    protected boolean shouldBounce() {
+        return true;
     }
 }

@@ -6,15 +6,13 @@ import cn.nukkit.entity.Entity;
 import cn.nukkit.entity.item.EntityFirework;
 import cn.nukkit.level.Level;
 import cn.nukkit.math.BlockFace;
-import cn.nukkit.math.Mth;
 import cn.nukkit.math.Vector3;
 import cn.nukkit.nbt.NBTIO;
 import cn.nukkit.nbt.tag.CompoundTag;
-import cn.nukkit.nbt.tag.DoubleTag;
-import cn.nukkit.nbt.tag.FloatTag;
 import cn.nukkit.nbt.tag.ListTag;
 import cn.nukkit.utils.DyeColor;
 
+import javax.annotation.Nullable;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
@@ -55,7 +53,7 @@ public class ItemFirework extends Item {
                 tag.putCompound("Fireworks", new CompoundTag("Fireworks")
                         .putList(new ListTag<CompoundTag>("Explosions").add(ex))
                         .putByte("Flight", 1)
-                        .putInt("LifeTime", 30 + rand.nextInt(6) + rand.nextInt(7))
+                        .putInt("LifeTime", 20 + rand.nextInt(12))
                 );
 
                 this.setNamedTag(tag);
@@ -74,8 +72,8 @@ public class ItemFirework extends Item {
             return false;
         }
 
-        if (block.canPassThrough()) {
-            this.spawnFirework(level, block);
+        if (block.canPassThrough() || block.canBeFlowedInto()) {
+            this.spawnFirework(level, block.blockCenter());
 
             if (!player.isCreative()) {
                 player.getInventory().decreaseCount(player.getInventory().getHeldItemIndex());
@@ -90,12 +88,11 @@ public class ItemFirework extends Item {
     @Override
     public boolean onClickAir(Player player, Vector3 directionVector) {
         if (player.getInventory().getChestplate() instanceof ItemElytra && player.isGliding()) {
-            this.spawnFirework(player.getLevel(), player);
+            Vector3 dir = Vector3.directionFromRotation(player.pitch, player.yaw);
 
-            player.setMotion(new Vector3(
-                    -Mth.sin(Math.toRadians(player.yaw)) * Mth.cos(Math.toRadians(player.pitch)) * 2,
-                    -Mth.sin(Math.toRadians(player.pitch)) * 2,
-                    Mth.cos(Math.toRadians(player.yaw)) * Mth.cos(Math.toRadians(player.pitch)) * 2));
+            this.spawnFirework(player.getLevel(), player, dir, player);
+
+            player.setMotion(dir.multiply(2));
 
             if (!player.isCreative()) {
                 this.count--;
@@ -116,7 +113,7 @@ public class ItemFirework extends Item {
         initNamedTag();
         if (!this.getNamedTag().getCompound("Fireworks").exist("LifeTime")) {
             Random rand = ThreadLocalRandom.current();
-            this.getNamedTag().getCompound("Fireworks").putInt("LifeTime", 30 + rand.nextInt(6) + rand.nextInt(7));
+            this.getNamedTag().getCompound("Fireworks").putInt("LifeTime", 20 + rand.nextInt(12));
         }
 
         return this.getNamedTag().getCompound("Fireworks").getInt("LifeTime");
@@ -154,29 +151,28 @@ public class ItemFirework extends Item {
         this.getNamedTag().getCompound("Fireworks").putList(new ListTag<CompoundTag>("Explosions"));
     }
 
-    public void spawnFirework(Level level, Vector3 pos) {
-        CompoundTag nbt = new CompoundTag()
-                .putList(new ListTag<DoubleTag>("Pos")
-                        .add(new DoubleTag("", pos.x + 0.5))
-                        .add(new DoubleTag("", pos.y + 0.5))
-                        .add(new DoubleTag("", pos.z + 0.5)))
-                .putList(new ListTag<DoubleTag>("Motion")
-                        .add(new DoubleTag("", 0))
-                        .add(new DoubleTag("", 0))
-                        .add(new DoubleTag("", 0)))
-                .putList(new ListTag<FloatTag>("Rotation")
-                        .add(new FloatTag("", 0))
-                        .add(new FloatTag("", 0)))
+    public EntityFirework spawnFirework(Level level, Vector3 pos) {
+        return spawnFirework(level, pos, null);
+    }
+
+    public EntityFirework spawnFirework(Level level, Vector3 pos, @Nullable Vector3 motion) {
+        return spawnFirework(level, pos, motion, null);
+    }
+
+    public EntityFirework spawnFirework(Level level, Vector3 pos, @Nullable Vector3 motion, @Nullable Entity attached) {
+        boolean projectile = motion != null;
+        CompoundTag nbt = Entity.getDefaultNBT(pos, motion, projectile ? (float) motion.yRotFromDirection() : 0, projectile ? (float) motion.xRotFromDirection() : 0)
                 .putCompound("FireworkItem", NBTIO.putItemHelper(this));
 
-        EntityFirework entity = new EntityFirework(level.getChunk(pos.getFloorX() >> 4, pos.getFloorZ() >> 4), nbt);
+        EntityFirework entity = new EntityFirework(level.getChunk(pos.getChunkX(), pos.getChunkZ()), nbt, projectile, attached);
         entity.spawnToAll();
+        return entity;
     }
 
     public static class FireworkExplosion {
 
-        private List<DyeColor> colors = new ArrayList<>();
-        private List<DyeColor> fades = new ArrayList<>();
+        private final List<DyeColor> colors = new ArrayList<>();
+        private final List<DyeColor> fades = new ArrayList<>();
         private boolean flicker = false;
         private boolean trail = false;
         private ExplosionType type = ExplosionType.CREEPER_SHAPED;

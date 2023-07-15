@@ -22,6 +22,7 @@ import cn.nukkit.utils.MainLogger;
 import cn.nukkit.utils.Utils;
 import it.unimi.dsi.fastutil.objects.ObjectArrayList;
 
+import javax.annotation.Nullable;
 import java.io.IOException;
 import java.lang.reflect.Field;
 import java.nio.ByteOrder;
@@ -350,6 +351,7 @@ public class Item implements Cloneable, ItemID {
         return this;
     }
 
+    @Nullable
     public CompoundTag getCustomBlockData() {
         if (!this.hasCompoundTag()) {
             return null;
@@ -382,6 +384,7 @@ public class Item implements Cloneable, ItemID {
         return false;
     }
 
+    @Nullable
     public Enchantment getEnchantment(int id) {
         if (!this.hasEnchantments()) {
             return null;
@@ -398,6 +401,11 @@ public class Item implements Cloneable, ItemID {
         }
 
         return null;
+    }
+
+    public int getEnchantmentLevel(int id) {
+        Enchantment enchant = getEnchantment(id);
+        return enchant == null ? 0 : enchant.getLevel();
     }
 
     public Item addEnchantment(Enchantment... enchantments) {
@@ -710,6 +718,7 @@ public class Item implements Cloneable, ItemID {
         return this;
     }
 
+    @Nullable
     public Tag getNamedTagEntry(String name) {
         CompoundTag tag = this.getNamedTag();
         if (tag != null) {
@@ -726,6 +735,7 @@ public class Item implements Cloneable, ItemID {
         return this.getNamedTag();
     }
 
+    @Nullable
     public CompoundTag getNamedTag() {
         if (!this.hasCompoundTag()) {
             return null;
@@ -928,6 +938,9 @@ public class Item implements Cloneable, ItemID {
         return false;
     }
 
+    public void onUsing(Player player, int ticksUsed) {
+    }
+
     public boolean onUse(Player player, int ticksUsed) {
         return false;
     }
@@ -990,6 +1003,10 @@ public class Item implements Cloneable, ItemID {
     //TODO
     public float getFurnaceXpMultiplier() {
         return 0;
+    }
+
+    public int getDamageChance(int unbreaking) {
+        return 100 / (unbreaking + 1);
     }
 
     @Override

@@ -92,6 +92,26 @@ public class NBTIO {
         }
     }
 
+    public static Tag readOnly(InputStream inputStream) throws IOException {
+        return readOnly(inputStream, ByteOrder.BIG_ENDIAN);
+    }
+
+    public static Tag readOnly(InputStream inputStream, ByteOrder endianness) throws IOException {
+        return readOnly(inputStream, endianness, false);
+    }
+
+    public static Tag readOnly(InputStream inputStream, ByteOrder endianness, boolean network) throws IOException {
+        return Tag.readNamedTag(new NBTInputStream(inputStream, endianness, network));
+    }
+
+    public static Tag readTag(InputStream inputStream) throws IOException {
+        return readTag(inputStream, ByteOrder.BIG_ENDIAN);
+    }
+
+    public static Tag readTag(InputStream inputStream, ByteOrder endianness) throws IOException {
+        return readTag(inputStream, endianness, false);
+    }
+
     public static Tag readTag(InputStream inputStream, ByteOrder endianness, boolean network) throws IOException {
         try (NBTInputStream stream = new NBTInputStream(inputStream, endianness, network)) {
             return Tag.readNamedTag(stream);
@@ -200,6 +220,18 @@ public class NBTIO {
         try (NBTOutputStream stream = new NBTOutputStream(outputStream, endianness, network)) {
             Tag.writeNamedTag(tag, stream);
         }
+    }
+
+    public static void writeOnly(Tag tag, OutputStream outputStream) throws IOException {
+        writeOnly(tag, outputStream, ByteOrder.BIG_ENDIAN);
+    }
+
+    public static void writeOnly(Tag tag, OutputStream outputStream, ByteOrder endianness) throws IOException {
+        writeOnly(tag, outputStream, endianness, false);
+    }
+
+    public static void writeOnly(Tag tag, OutputStream outputStream, ByteOrder endianness, boolean network) throws IOException {
+        Tag.writeNamedTag(tag, new NBTOutputStream(outputStream, endianness, network));
     }
 
     public static byte[] writeNetwork(Tag tag) throws IOException {

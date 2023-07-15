@@ -65,7 +65,7 @@ public class BlockSignPost extends BlockTransparentMeta implements Faceable {
     }
 
     @Override
-    public AxisAlignedBB getBoundingBox() {
+    protected AxisAlignedBB recalculateBoundingBox() {
         return null;
     }
 

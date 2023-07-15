@@ -134,7 +134,7 @@ public class BlockCaveVines extends BlockFlowable {
     }
 
     @Override
-    protected AxisAlignedBB recalculateBoundingBox() {
+    protected AxisAlignedBB recalculateCollisionBoundingBox() {
         return this;
     }
 

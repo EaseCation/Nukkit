@@ -54,7 +54,7 @@ public class BlockAir extends BlockTransparent {
     }
 
     @Override
-    public AxisAlignedBB getBoundingBox() {
+    protected AxisAlignedBB recalculateBoundingBox() {
         return null;
     }
 

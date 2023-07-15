@@ -85,7 +85,7 @@ public class BlockRail extends BlockFlowable implements Faceable {
     }
 
     @Override
-    public AxisAlignedBB recalculateBoundingBox() {
+    protected AxisAlignedBB recalculateBoundingBox() {
         return this;
     }
 

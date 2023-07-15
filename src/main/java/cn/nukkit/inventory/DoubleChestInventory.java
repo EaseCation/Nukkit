@@ -25,7 +25,7 @@ public class DoubleChestInventory extends ContainerInventory implements Inventor
 
         this.left = left.getRealInventory();
         this.right = right.getRealInventory();
-
+/*
         Int2ObjectMap<Item> items = new Int2ObjectOpenHashMap<>();
         // First we add the items from the left chest
         Int2ObjectMap<Item> leftItems = this.left.getContents();
@@ -45,6 +45,7 @@ public class DoubleChestInventory extends ContainerInventory implements Inventor
         }
 
         this.setContents(items);
+*/
     }
 
     @Override

@@ -33,4 +33,8 @@ public class ItemElytra extends ItemArmor {
         return true;
     }
 
+    @Override
+    public int getDamageChance(int unbreaking) {
+        return 100 / (unbreaking + 1);
+    }
 }

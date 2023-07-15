@@ -4,6 +4,8 @@ import cn.nukkit.level.ChunkPosition;
 import cn.nukkit.nbt.tag.FloatTag;
 import cn.nukkit.nbt.tag.ListTag;
 
+import javax.annotation.Nullable;
+
 public class Vector3f implements Cloneable {
 
     public float x;
@@ -328,6 +330,7 @@ public class Vector3f implements Cloneable {
      * Returns a new vector with x value equal to the second parameter, along the line between this vector and the
      * passed in vector, or null if not possible.
      */
+    @Nullable
     public Vector3f getIntermediateWithXValue(Vector3f v, float x) {
         float xDiff = v.x - this.x;
         float yDiff = v.y - this.y;
@@ -347,6 +350,7 @@ public class Vector3f implements Cloneable {
      * Returns a new vector with y value equal to the second parameter, along the line between this vector and the
      * passed in vector, or null if not possible.
      */
+    @Nullable
     public Vector3f getIntermediateWithYValue(Vector3f v, float y) {
         float xDiff = v.x - this.x;
         float yDiff = v.y - this.y;
@@ -366,6 +370,7 @@ public class Vector3f implements Cloneable {
      * Returns a new vector with z value equal to the second parameter, along the line between this vector and the
      * passed in vector, or null if not possible.
      */
+    @Nullable
     public Vector3f getIntermediateWithZValue(Vector3f v, float z) {
         float xDiff = v.x - this.x;
         float yDiff = v.y - this.y;
@@ -388,9 +393,65 @@ public class Vector3f implements Cloneable {
         return this;
     }
 
+    public Vector3f setComponents(Vector3f other) {
+        this.x = other.x;
+        this.y = other.y;
+        this.z = other.z;
+        return this;
+    }
+
+    public Vector3f xz() {
+        return new Vector3f(this.x, 0, this.z);
+    }
+
+    public Vector3f xRot(float rads) {
+        float cos = Mth.cos(rads);
+        float sin = Mth.sin(rads);
+        return new Vector3f(this.x, this.y * cos + this.z * sin, this.z * cos - this.y * sin);
+    }
+
+    public Vector3f yRot(float rads) {
+        float cos = Mth.cos(rads);
+        float sin = Mth.sin(rads);
+        return new Vector3f(this.x * cos + this.z * sin, this.y, this.z * cos - this.x * sin);
+    }
+
+    public Vector3f zRot(float rads) {
+        float cos = Mth.cos(rads);
+        float sin = Mth.sin(rads);
+        return new Vector3f(this.x * cos + this.y * sin, this.y * cos - this.x * sin, this.z);
+    }
+
+    /**
+     * @return pitch
+     */
+    public double xRotFromDirection() {
+        return (Mth.atan2(this.y, this.horizontalDistance()) * Mth.RAD_TO_DEG);
+    }
+
+    /**
+     * @return yaw
+     */
+    public double yRotFromDirection() {
+        return Mth.atan2(this.x, this.z) * Mth.RAD_TO_DEG;
+    }
+
+    /**
+     * @param xRot pitch
+     * @param yRot yaw
+     */
+    public static Vector3f directionFromRotation(float xRot, float yRot) {
+        float xCos = -Mth.cos(-xRot * Mth.DEG_TO_RAD);
+        return new Vector3f(Mth.sin(-yRot * Mth.DEG_TO_RAD - Mth.PI) * xCos, Mth.sin(-xRot * Mth.DEG_TO_RAD), Mth.cos(-yRot * Mth.DEG_TO_RAD - Mth.PI) * xCos);
+    }
+
     @Override
     public String toString() {
         return "Vector3(x=" + this.x + ",y=" + this.y + ",z=" + this.z + ")";
+    }
+
+    public String debugText() {
+        return "(" + NukkitMath.round(x, 2) + "," + NukkitMath.round(y, 2) + "," + NukkitMath.round(z, 2) + ")";
     }
 
     @Override
@@ -454,5 +515,9 @@ public class Vector3f implements Cloneable {
 
     public static Vector3f fromNbt(ListTag<FloatTag> list) {
         return new Vector3f(list.get(0).data, list.get(1).data, list.get(2).data);
+    }
+
+    public boolean checkIncorrectIntegerRange() {
+        return this.x >= Integer.MAX_VALUE || this.x <= Integer.MIN_VALUE || this.y >= Integer.MAX_VALUE || this.y <= Integer.MIN_VALUE || this.z >= Integer.MAX_VALUE || this.z <= Integer.MIN_VALUE;
     }
 }

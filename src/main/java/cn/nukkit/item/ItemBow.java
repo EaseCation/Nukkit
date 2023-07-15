@@ -156,7 +156,7 @@ public class ItemBow extends ItemTool implements ItemReleasable {
                 }
                 if (!this.isUnbreakable()) {
                     Enchantment durability = this.getEnchantment(Enchantment.UNBREAKING);
-                    if (!(durability != null && durability.getLevel() > 0 && (100 / (durability.getLevel() + 1)) <= ThreadLocalRandom.current().nextInt(100))) {
+                    if (!(durability != null && durability.getLevel() > 0 && ThreadLocalRandom.current().nextInt(100) >= getDamageChance(durability.getLevel()))) {
                         this.setDamage(this.getDamage() + 1);
                         if (this.getDamage() >= getMaxDurability()) {
                             this.count--;

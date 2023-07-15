@@ -124,4 +124,9 @@ public abstract class ItemArmor extends Item implements ItemDurable {
         Tag tag = this.getNamedTagEntry("Unbreakable");
         return tag instanceof ByteTag && ((ByteTag) tag).data > 0;
     }
+
+    @Override
+    public int getDamageChance(int unbreaking) {
+        return 40 / (unbreaking + 1) + 60;
+    }
 }

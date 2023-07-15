@@ -3,6 +3,7 @@ package cn.nukkit.block;
 import cn.nukkit.Player;
 import cn.nukkit.Server;
 import cn.nukkit.entity.Entity;
+import cn.nukkit.entity.projectile.EntityProjectile;
 import cn.nukkit.item.Item;
 import cn.nukkit.item.ItemTool;
 import cn.nukkit.item.enchantment.Enchantment;
@@ -36,6 +37,7 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
+import java.util.function.Supplier;
 import java.util.regex.Pattern;
 
 import static cn.nukkit.SharedConstants.*;
@@ -854,7 +856,11 @@ public abstract class Block extends Position implements Metadatable, Cloneable, 
 
     @Override
     public MovingObjectPosition calculateIntercept(Vector3 pos1, Vector3 pos2) {
-        AxisAlignedBB bb = this.getBoundingBox();
+        return clip(pos1, pos2, this::getBoundingBox);
+    }
+
+    public MovingObjectPosition clip(Vector3 pos1, Vector3 pos2, Supplier<AxisAlignedBB> aabbGetter) {
+        AxisAlignedBB bb = aabbGetter.get();
         if (bb == null) {
             return null;
         }
@@ -932,7 +938,7 @@ public abstract class Block extends Position implements Metadatable, Cloneable, 
             f = 3;
         }
 
-        return MovingObjectPosition.fromBlock((int) this.x, (int) this.y, (int) this.z, f, vector.add(this.x, this.y, this.z));
+        return MovingObjectPosition.fromBlock(this, f, vector);
     }
 
     public String getSaveId() {
@@ -1080,6 +1086,9 @@ public abstract class Block extends Position implements Metadatable, Cloneable, 
             return null;
         }
         return new AxisAlignedBB[]{aabb};
+    }
+
+    public void onProjectileHit(EntityProjectile projectile, MovingObjectPosition hitResult) {
     }
 
     public boolean is(int id) {

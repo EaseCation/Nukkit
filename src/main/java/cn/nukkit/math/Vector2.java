@@ -146,6 +146,10 @@ public class Vector2 {
         return "Vector2(x=" + this.x + ",y=" + this.y + ")";
     }
 
+    public String debugText() {
+        return "(" + NukkitMath.round(x, 2) + "," + NukkitMath.round(y, 2) + ")";
+    }
+
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;

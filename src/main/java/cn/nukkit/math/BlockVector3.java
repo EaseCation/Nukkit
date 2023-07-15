@@ -344,6 +344,10 @@ public class BlockVector3 implements Cloneable {
         return "BlockVector3(x=" + this.x + ",y=" + this.y + ",z=" + this.z + ")";
     }
 
+    public String debugText() {
+        return "(" + x + "," + y + "," + z + ")";
+    }
+
     @Override
     public BlockVector3 clone() {
         try {

@@ -1,5 +1,6 @@
 package cn.nukkit.level;
 
+import cn.nukkit.block.Block;
 import cn.nukkit.entity.Entity;
 import cn.nukkit.math.Vector3;
 
@@ -22,7 +23,9 @@ public class MovingObjectPosition {
      * Which side was hit. If its -1 then it went the full length of the ray trace.
      * Bottom = 0, Top = 1, East = 2, West = 3, North = 4, South = 5.
      */
-    public int sideHit;
+    public int sideHit = -1;
+
+    public Block block;
 
     public Vector3 hitVector;
 
@@ -34,7 +37,20 @@ public class MovingObjectPosition {
         objectPosition.blockX = x;
         objectPosition.blockY = y;
         objectPosition.blockZ = z;
+        objectPosition.sideHit = side;
         objectPosition.hitVector = new Vector3(hitVector.x, hitVector.y, hitVector.z);
+        return objectPosition;
+    }
+
+    public static MovingObjectPosition fromBlock(Block block, int side, Vector3 hitVector) {
+        MovingObjectPosition objectPosition = new MovingObjectPosition();
+        objectPosition.typeOfHit = 0;
+        objectPosition.block = block;
+        objectPosition.blockX = block.getFloorX();
+        objectPosition.blockY = block.getFloorY();
+        objectPosition.blockZ = block.getFloorZ();
+        objectPosition.sideHit = side;
+        objectPosition.hitVector = hitVector.copyVec();
         return objectPosition;
     }
 

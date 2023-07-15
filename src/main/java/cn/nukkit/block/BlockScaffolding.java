@@ -74,11 +74,6 @@ public class BlockScaffolding extends BlockTransparentMeta { // extends BlockFal
     }
 
     @Override
-    public AxisAlignedBB getBoundingBox() {
-        return null;
-    }
-
-    @Override
     protected AxisAlignedBB recalculateBoundingBox() {
         return null;
     }
@@ -116,6 +111,7 @@ public class BlockScaffolding extends BlockTransparentMeta { // extends BlockFal
     @Override
     public void onEntityCollide(Entity entity) {
         entity.resetFallDistance();
+        entity.onGround = true;
     }
 
     @Override

@@ -1,6 +1,7 @@
 package cn.nukkit.level;
 
 import cn.nukkit.math.Mth;
+import cn.nukkit.math.NukkitMath;
 import cn.nukkit.math.Vector3;
 import cn.nukkit.utils.LevelException;
 
@@ -79,6 +80,10 @@ public class Location extends Position {
     @Override
     public String toString() {
         return "Location (level=" + (this.isValid() ? this.getLevel().getName() : "null") + ", x=" + this.x + ", y=" + this.y + ", z=" + this.z + ", yaw=" + this.yaw + ", pitch=" + this.pitch + ")";
+    }
+
+    public String debugTextWithRot() {
+        return "(" + NukkitMath.round(x, 2) + "," + NukkitMath.round(y, 2) + "," + NukkitMath.round(z, 2) + " " + NukkitMath.round(pitch, 2) + "," + NukkitMath.round(yaw, 2) + ")";
     }
 
     @Override

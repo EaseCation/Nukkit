@@ -1750,6 +1750,155 @@ public class Level implements ChunkManager, Metadatable {
         return bb != null && bb.getAverageEdgeLength() >= 1;
     }
 
+    /**
+     * @return block hit result
+     */
+    @Nullable
+    public MovingObjectPosition clip(Vector3 a, Vector3 b, boolean liquid, int maxDistance) {
+        int xBlock0 = Mth.floor(a.x);
+        int yBlock0 = Mth.floor(a.y);
+        int zBlock0 = Mth.floor(a.z);
+        int xBlock1 = Mth.floor(b.x);
+        int yBlock1 = Mth.floor(b.y);
+        int zBlock1 = Mth.floor(b.z);
+
+        MovingObjectPosition hitResult;
+        Block block;
+        Block extraBlock;
+        if (liquid) {
+            extraBlock = getExtraBlock(xBlock0, yBlock0, zBlock0, false);
+            if (extraBlock.isLiquid()) {
+                hitResult = extraBlock.clip(a, b, extraBlock::getCollisionBoundingBox);
+            } else if (!extraBlock.isAir()) {
+                hitResult = extraBlock.calculateIntercept(a, b);
+            } else {
+                block = getBlock(xBlock0, yBlock0, zBlock0, false);
+                if (block.isLiquid()) {
+                    hitResult = block.clip(a, b, block::getCollisionBoundingBox);
+                } else {
+                    hitResult = block.calculateIntercept(a, b);
+                }
+            }
+        } else {
+            hitResult = getBlock(xBlock0, yBlock0, zBlock0, false).calculateIntercept(a, b);
+        }
+        if (hitResult != null) {
+            return hitResult;
+        }
+
+        for (int i = 0; i < maxDistance; i++) {
+            if (xBlock0 == xBlock1 && yBlock0 == yBlock1 && zBlock0 == zBlock1) {
+                return null;
+            }
+
+            double xClip = 0;
+            double yClip = 0;
+            double zClip = 0;
+            boolean hasXClip = false;
+            boolean hasYClip = false;
+            boolean hasZClip = false;
+
+            if (xBlock1 > xBlock0) {
+                hasXClip = true;
+                xClip = xBlock0 + 1;
+            }
+            if (xBlock1 < xBlock0) {
+                hasXClip = true;
+                xClip = xBlock0;
+            }
+            if (yBlock1 > yBlock0) {
+                hasYClip = true;
+                yClip = yBlock0 + 1;
+            }
+            if (yBlock1 < yBlock0) {
+                hasYClip = true;
+                yClip = yBlock0;
+            }
+            if (zBlock1 > zBlock0) {
+                hasZClip = true;
+                zClip = zBlock0 + 1;
+            }
+            if (zBlock1 < zBlock0) {
+                hasZClip = true;
+                zClip = zBlock0;
+            }
+
+            double xDist = 999;
+            double yDist = 999;
+            double zDist = 999;
+            double xd = b.x - a.x;
+            double yd = b.y - a.y;
+            double zd = b.z - a.z;
+
+            if (hasXClip) {
+                xDist = (xClip - a.x) / xd;
+            }
+            if (hasYClip) {
+                yDist = (yClip - a.y) / yd;
+            }
+            if (hasZClip) {
+                zDist = (zClip - a.z) / zd;
+            }
+
+            if (yDist <= xDist || zDist <= xDist) {
+                if (zDist <= yDist) {
+                    if (zBlock1 <= zBlock0) {
+                        --zBlock0;
+                    } else {
+                        ++zBlock0;
+                    }
+
+                    a.x = xd * zDist + a.x;
+                    a.y = yd * zDist + a.y;
+                    a.z = zClip;
+                } else {
+                    if (yBlock1 <= yBlock0) {
+                        --yBlock0;
+                    } else {
+                        ++yBlock0;
+                    }
+
+                    a.x = xd * yDist + a.x;
+                    a.y = yClip;
+                    a.z = zd * yDist + a.z;
+                }
+            } else {
+                if (xBlock1 <= xBlock0) {
+                    --xBlock0;
+                } else {
+                    ++xBlock0;
+                }
+
+                a.x = xClip;
+                a.y = yd * xDist + a.y;
+                a.z = zd * xDist + a.z;
+            }
+
+            if (liquid) {
+                extraBlock = getExtraBlock(xBlock0, yBlock0, zBlock0, false);
+                if (extraBlock.isLiquid()) {
+                    hitResult = extraBlock.clip(a, b, extraBlock::getCollisionBoundingBox);
+                } else if (!extraBlock.isAir()) {
+                    hitResult = extraBlock.calculateIntercept(a, b);
+                } else {
+                    block = getBlock(xBlock0, yBlock0, zBlock0, false);
+                    if (block.isLiquid()) {
+                        hitResult = block.clip(a, b, block::getCollisionBoundingBox);
+                    } else {
+                        hitResult = block.calculateIntercept(a, b);
+                    }
+                }
+            } else {
+                hitResult = getBlock(xBlock0, yBlock0, zBlock0, false).calculateIntercept(a, b);
+            }
+            if (hitResult != null) {
+                return hitResult;
+            }
+        }
+
+        return null;
+    }
+
     public AxisAlignedBB[] getCollisionCubes(Entity entity, AxisAlignedBB bb) {
         return this.getCollisionCubes(entity, bb, true);
     }
@@ -1792,6 +1941,10 @@ public class Level implements ChunkManager, Metadatable {
         }
 
         return collides.toArray(new AxisAlignedBB[0]);
+    }
+
+    public boolean hasCollision(AxisAlignedBB bb) {
+        return hasCollision(null, bb, false);
     }
 
     public boolean hasCollision(Entity entity, AxisAlignedBB bb, boolean entities) {
@@ -2017,11 +2170,11 @@ public class Level implements ChunkManager, Metadatable {
                     if (oldLevel != newLevel) {
                         this.setBlockLightAt(x, y, z, newLevel);
                         if (newLevel < oldLevel) {
-                            removalVisited.put(Hash.hashBlock(x, y, z), changeBlocksPresent);
-                            lightRemovalQueue.add(new Object[]{Hash.hashBlock(x, y, z), oldLevel});
+                            removalVisited.put(Hash.hashBlockPos(x, y, z), changeBlocksPresent);
+                            lightRemovalQueue.add(new Object[]{Hash.hashBlockPos(x, y, z), oldLevel});
                         } else {
-                            visited.put(Hash.hashBlock(x, y, z), changeBlocksPresent);
-                            lightPropagationQueue.add(Hash.hashBlock(x, y, z));
+                            visited.put(Hash.hashBlockPos(x, y, z), changeBlocksPresent);
+                            lightPropagationQueue.add(Hash.hashBlockPos(x, y, z));
                         }
                     }
                 }
@@ -2031,9 +2184,9 @@ public class Level implements ChunkManager, Metadatable {
         while (!lightRemovalQueue.isEmpty()) {
             Object[] val = lightRemovalQueue.poll();
             long node = (long) val[0];
-            int x = Hash.hashBlockX(node);
-            int y = Hash.hashBlockY(node);
-            int z = Hash.hashBlockZ(node);
+            int x = Hash.hashBlockPosX(node);
+            int y = Hash.hashBlockPosY(node);
+            int z = Hash.hashBlockPosZ(node);
 
             int lightLevel = (int) val[1];
 
@@ -2054,9 +2207,9 @@ public class Level implements ChunkManager, Metadatable {
         while (!lightPropagationQueue.isEmpty()) {
             long node = lightPropagationQueue.poll();
 
-            int x = Hash.hashBlockX(node);
-            int y = Hash.hashBlockY(node);
-            int z = Hash.hashBlockZ(node);
+            int x = Hash.hashBlockPosX(node);
+            int y = Hash.hashBlockPosY(node);
+            int z = Hash.hashBlockPosZ(node);
 
             int lightLevel = this.getBlockLightAt(x, y, z)
                     - Block.lightFilter[this.getBlock(x, y, z).getId()]
@@ -2076,17 +2229,17 @@ public class Level implements ChunkManager, Metadatable {
     private void computeRemoveBlockLight(int x, int y, int z, int currentLight, Queue<Object[]> queue,
                                          Queue<Long> spreadQueue, Map<Long, Object> visited, Map<Long, Object> spreadVisited) {
         int current = this.getBlockLightAt(x, y, z);
-        long index = Hash.hashBlock(x, y, z);
+        long index = Hash.hashBlockPos(x, y, z);
         if (current != 0 && current < currentLight) {
             this.setBlockLightAt(x, y, z, 0);
             if (current > 1) {
                 if (visited.putIfAbsent(index, changeBlocksPresent) == null) {
-                    queue.add(new Object[]{Hash.hashBlock(x, y, z), current});
+                    queue.add(new Object[]{Hash.hashBlockPos(x, y, z), current});
                 }
             }
         } else if (current >= currentLight) {
             if (spreadVisited.putIfAbsent(index, changeBlocksPresent) == null) {
-                spreadQueue.add(Hash.hashBlock(x, y, z));
+                spreadQueue.add(Hash.hashBlockPos(x, y, z));
             }
         }
     }
@@ -2094,14 +2247,14 @@ public class Level implements ChunkManager, Metadatable {
     private void computeSpreadBlockLight(int x, int y, int z, int currentLight, Queue<Long> queue,
                                          Map<Long, Object> visited) {
         int current = this.getBlockLightAt(x, y, z);
-        long index = Hash.hashBlock(x, y, z);
+        long index = Hash.hashBlockPos(x, y, z);
 
         if (current < currentLight - 1) {
             this.setBlockLightAt(x, y, z, currentLight);
 
             if (visited.putIfAbsent(index, changeBlocksPresent) == null) {
                 if (currentLight > 1) {
-                    queue.add(Hash.hashBlock(x, y, z));
+                    queue.add(Hash.hashBlockPos(x, y, z));
                 }
             }
         }

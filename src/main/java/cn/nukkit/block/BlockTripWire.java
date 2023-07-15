@@ -67,11 +67,6 @@ public class BlockTripWire extends BlockTransparentMeta {
     }
 
     @Override
-    public AxisAlignedBB getBoundingBox() {
-        return null;
-    }
-
-    @Override
     public Item toItem(boolean addUserData) {
         return Item.get(Item.STRING);
     }

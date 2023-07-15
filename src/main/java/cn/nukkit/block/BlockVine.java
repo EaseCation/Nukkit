@@ -80,7 +80,7 @@ public class BlockVine extends BlockFlowable {
     }
 
     @Override
-    protected AxisAlignedBB recalculateBoundingBox() {
+    protected AxisAlignedBB recalculateCollisionBoundingBox() {
         double f1 = 1;
         double f2 = 1;
         double f3 = 1;

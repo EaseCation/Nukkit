@@ -145,7 +145,7 @@ public class BlockEntityItemFrame extends BlockEntitySpawnable {
                 }
             }
 
-            if (this.getItemDropChance() > ThreadLocalRandom.current().nextFloat()) {
+            if ((player == null || player.isSurvival()) && this.getItemDropChance() > ThreadLocalRandom.current().nextFloat()) {
                 this.level.dropItem(this.add(0.5, 0, 0.5), item);
             }
             this.setItem(Item.get(Item.AIR));

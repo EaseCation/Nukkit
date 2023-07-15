@@ -271,37 +271,37 @@ public final class Mth {
         return (v - a) / (b - a);
     }
 
-    public static double atan2(double y, double x) {
-        double square = x * x + y * y;
+    public static double atan2(double dy, double dx) {
+        double square = dx * dx + dy * dy;
 
         if (Double.isNaN(square)) {
             return Double.NaN;
         }
 
-        boolean ny = y < 0;
+        boolean ny = dy < 0;
         if (ny) {
-            y = -y;
+            dy = -dy;
         }
 
-        boolean nx = x < 0;
+        boolean nx = dx < 0;
         if (nx) {
-            x = -x;
+            dx = -dx;
         }
 
-        boolean yg = y > x;
+        boolean yg = dy > dx;
         if (yg) {
-            double t = x;
-            x = y;
-            y = t;
+            double t = dx;
+            dx = dy;
+            dy = t;
         }
 
         double s = fastInvSqrt(square);
-        x *= s;
-        y *= s;
-        double b = FRAC_BIAS + y;
+        dx *= s;
+        dy *= s;
+        double b = FRAC_BIAS + dy;
         int i = (int) Double.doubleToRawLongBits(b);
         double asin = ASIN_TAB[i];
-        double e = y * COS_TAB[i] - x * (b - FRAC_BIAS);
+        double e = dy * COS_TAB[i] - dx * (b - FRAC_BIAS);
         double r = asin + (6 + e * e) * e * (1 / 6d);
 
         if (yg) {

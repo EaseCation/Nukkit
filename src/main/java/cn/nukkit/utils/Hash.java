@@ -1,8 +1,17 @@
 package cn.nukkit.utils;
 
+import cn.nukkit.nbt.NBTIO;
+import cn.nukkit.nbt.tag.CompoundTag;
 import net.openhft.hashing.LongHashFunction;
 
+import java.io.IOException;
+import java.nio.ByteOrder;
+import java.util.LinkedHashMap;
+import java.util.TreeMap;
+
 public final class Hash {
+    private static final int FNV1_32_INIT = 0x811c9dc5;
+    private static final int FNV1_PRIME_32 = 0x01000193;
 
     private static final LongHashFunction XXH64 = LongHashFunction.xx();
 
@@ -42,19 +51,44 @@ public final class Hash {
         return XXH64.hashVoid();
     }
 
-    public static long hashBlock(int x, int y, int z) {
+    private static int fnv1a_32(byte... data) {
+        int hash = FNV1_32_INIT;
+        for (byte datum : data) {
+            hash ^= datum & 0xff;
+            hash *= FNV1_PRIME_32;
+        }
+        return hash;
+    }
+
+    public static long hashBlock(CompoundTag block) {
+        String name = block.getString("name");
+
+        if ("minecraft:unknown".equals(name)) {
+            return -2;
+        }
+
+        try {
+            return fnv1a_32(NBTIO.write(new CompoundTag(new LinkedHashMap<>())
+                    .putString("name", name)
+                    .putCompound("states", new CompoundTag(new TreeMap<>(block.getCompound("states").getTagsUnsafe()))), ByteOrder.LITTLE_ENDIAN));
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    public static long hashBlockPos(int x, int y, int z) {
         return y + (((long) x & 0x3FFFFFF) << 8) + (((long) z & 0x3FFFFFF) << 34);
     }
 
-    public static int hashBlockX(long triple) {
+    public static int hashBlockPosX(long triple) {
         return (int) ((((triple >> 8) & 0x3FFFFFF) << 38) >> 38);
     }
 
-    public static int hashBlockY(long triple) {
+    public static int hashBlockPosY(long triple) {
         return (int) (triple & 0xFF);
     }
 
-    public static int hashBlockZ(long triple) {
+    public static int hashBlockPosZ(long triple) {
         return (int) ((((triple >> 34) & 0x3FFFFFF) << 38) >> 38);
     }
 

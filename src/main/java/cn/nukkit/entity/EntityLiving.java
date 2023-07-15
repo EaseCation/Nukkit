@@ -507,6 +507,32 @@ public abstract class EntityLiving extends Entity implements EntityDamageable {
         return y >= (block.y + 1) - (((BlockWater) block).getFluidHeightPercent() - 0.1111111);
     }
 
+    public int getCurrentSwingDuration() {
+        int amplifier = 0;
+        Effect digSpeed = getEffect(Effect.HASTE);
+        if (digSpeed != null) {
+            amplifier = digSpeed.getAmplifier();
+        }
+        Effect conduitPower = getEffect(Effect.CONDUIT_POWER);
+        if (conduitPower != null) {
+            amplifier = Math.max(amplifier, conduitPower.getAmplifier() + 1);
+        }
+        if (amplifier > 0) {
+            return 6 - (amplifier + 1);
+        }
+
+        Effect digSlowdown = getEffect(Effect.MINING_FATIGUE);
+        if (digSlowdown == null) {
+            return 6;
+        }
+        return 2 * (digSlowdown.getAmplifier() + 1) + 6;
+    }
+
+    @Override
+    public void blockedByShield(Entity blocker) {
+        knockBack(blocker, 0, x - blocker.x, z - blocker.z);
+    }
+
     public long getNextAllowAttack() {
         return nextAllowAttack;
     }

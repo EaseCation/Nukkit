@@ -379,7 +379,7 @@ public class Explosion {
 
             for (BlockFace side : BlockFace.getValues()) {
                 Vector3 sideBlock = block.getSide(side);
-                long index = Hash.hashBlock((int) sideBlock.x, (int) sideBlock.y, (int) sideBlock.z);
+                long index = Hash.hashBlockPos((int) sideBlock.x, (int) sideBlock.y, (int) sideBlock.z);
                 if (!this.affectedBlocks.contains(sideBlock) && !updateBlocks.contains(index)) {
                     BlockUpdateEvent ev = new BlockUpdateEvent(this.level.getBlock(sideBlock), 0);
                     this.level.getServer().getPluginManager().callEvent(ev);

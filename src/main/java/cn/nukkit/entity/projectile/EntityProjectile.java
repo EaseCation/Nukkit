@@ -1,6 +1,7 @@
 package cn.nukkit.entity.projectile;
 
 import cn.nukkit.Player;
+import cn.nukkit.block.Block;
 import cn.nukkit.entity.Entity;
 import cn.nukkit.entity.EntityLiving;
 import cn.nukkit.entity.data.LongEntityData;
@@ -12,10 +13,14 @@ import cn.nukkit.event.entity.EntityDamageEvent.DamageCause;
 import cn.nukkit.level.MovingObjectPosition;
 import cn.nukkit.level.format.FullChunk;
 import cn.nukkit.math.AxisAlignedBB;
+import cn.nukkit.math.BlockVector3;
 import cn.nukkit.math.Mth;
 import cn.nukkit.math.Vector3;
 import cn.nukkit.nbt.tag.CompoundTag;
+import it.unimi.dsi.fastutil.longs.LongOpenHashSet;
+import it.unimi.dsi.fastutil.longs.LongSet;
 
+import javax.annotation.Nullable;
 import java.util.Random;
 import java.util.concurrent.ThreadLocalRandom;
 
@@ -27,7 +32,7 @@ public abstract class EntityProjectile extends Entity {
 
     public static final int DATA_SHOOTER_ID = 17;
 
-    public Entity shootingEntity = null;
+    public Entity shootingEntity;
 
     protected double getDamage() {
         return namedTag.contains("damage") ? namedTag.getDouble("damage") : getBaseDamage();
@@ -50,6 +55,12 @@ public abstract class EntityProjectile extends Entity {
     public static final int PICKUP_ANY = 1;
     public static final int PICKUP_CREATIVE = 2;
 
+    protected BlockVector3 stuckToBlockPos;
+
+    protected int entityHitCount;
+    @Nullable
+    protected LongSet piercingIgnoreEntityIds;
+
     public EntityProjectile(FullChunk chunk, CompoundTag nbt) {
         this(chunk, nbt, null);
     }
@@ -71,8 +82,26 @@ public abstract class EntityProjectile extends Entity {
     }
 
     public void onCollideWithEntity(Entity entity) {
+        int entityHitCount = this.entityHitCount;
+        boolean piercing = entityHitCount > 1;
+        if (piercing) {
+            if (piercingIgnoreEntityIds == null) {
+                piercingIgnoreEntityIds = new LongOpenHashSet(5);
+            }
+            if (piercingIgnoreEntityIds.size() < entityHitCount) {
+                piercingIgnoreEntityIds.add(entity.getId());
+            } else {
+                close();
+                return;
+            }
+        }
+
         this.server.getPluginManager().callEvent(new ProjectileHitEvent(this, MovingObjectPosition.fromEntity(entity)));
         float damage = this.getResultDamage();
+        if (piercing && entity.isBlocking()) {
+            damage *= (entityHitCount - 1) / 4f;
+            entityHitCount = 0;
+        }
 
         EntityDamageEvent ev;
         if (this.shootingEntity == null) {
@@ -94,6 +123,18 @@ public abstract class EntityProjectile extends Entity {
                     entity.setOnFire(event.getDuration());
                 }
             }
+
+            if (piercing && piercingIgnoreEntityIds.size() < entityHitCount) {
+                return;
+            }
+        } else if (shouldBounce()) {
+            motionX *= -0.1;
+            motionY *= -0.1;
+            motionZ *= -0.1;
+            yaw = (yaw + 180) % 360;
+
+            hadCollision = false;
+            return;
         }
 
         if (closeOnCollide) {
@@ -110,9 +151,17 @@ public abstract class EntityProjectile extends Entity {
 
         this.setMaxHealth(1);
         this.setHealth(1);
+
         if (this.namedTag.contains("Age")) {
             this.age = this.namedTag.getShort("Age");
         }
+
+        if (namedTag.contains("StuckToBlockPosX") && namedTag.contains("StuckToBlockPosY") && namedTag.contains("StuckToBlockPosZ")) {
+            stuckToBlockPos = new BlockVector3(namedTag.getInt("StuckToBlockPosX"), namedTag.getInt("StuckToBlockPosY"), namedTag.getInt("StuckToBlockPosZ"));
+        }
+
+        entityHitCount = namedTag.getByte("PierceLevel") + 1;
+
         if (this.namedTag.contains("Knockback")) {
             this.knockBackH = this.namedTag.getFloat("Knockback");
             this.knockBackV = this.namedTag.getFloat("Knockback");
@@ -128,6 +177,9 @@ public abstract class EntityProjectile extends Entity {
     @Override
     public boolean canCollideWith(Entity entity) {
         if (this.onGround) return false;
+        if (piercingIgnoreEntityIds != null && piercingIgnoreEntityIds.contains(entity.getId())) {
+            return false;
+        }
         if (entity instanceof EntityLiving) {
             if (entity instanceof Player) {
                 return !((Player) entity).isSpectator() && !entity.getDataFlag(DATA_FLAG_INVISIBLE);
@@ -139,6 +191,23 @@ public abstract class EntityProjectile extends Entity {
     public void saveNBT() {
         super.saveNBT();
         this.namedTag.putShort("Age", this.age);
+
+        if (stuckToBlockPos != null) {
+            namedTag.putInt("StuckToBlockPosX", stuckToBlockPos.x);
+            namedTag.putInt("StuckToBlockPosY", stuckToBlockPos.y);
+            namedTag.putInt("StuckToBlockPosZ", stuckToBlockPos.z);
+        } else {
+            namedTag.remove("StuckToBlockPosX");
+            namedTag.remove("StuckToBlockPosY");
+            namedTag.remove("StuckToBlockPosZ");
+        }
+
+        int piercingLevel = entityHitCount - 1;
+        if (piercingLevel > 0) {
+            namedTag.putByte("PierceLevel", piercingLevel);
+        } else {
+            namedTag.remove("PierceLevel");
+        }
     }
 
     @Override
@@ -156,7 +225,6 @@ public abstract class EntityProjectile extends Entity {
         boolean hasUpdate = this.entityBaseTick(tickDiff);
 
         if (this.isAlive()) {
-
             MovingObjectPosition movingObjectPosition = null;
 
             if (!this.isCollided) {
@@ -166,6 +234,44 @@ public abstract class EntityProjectile extends Entity {
             }
 
             Vector3 moveVector = new Vector3(this.x + this.motionX, this.y + this.motionY, this.z + this.motionZ);
+            MovingObjectPosition blockHitResult = null;
+
+            if (!this.isCollided) {
+                blockHitResult = level.clip(copyVec(), moveVector, false, 200);
+                if (blockHitResult != null) {
+                    Vector3 hitPos = blockHitResult.hitVector;
+
+                    moveVector.setComponents(hitPos);
+
+                    this.motionX = hitPos.x - this.x;
+                    this.motionY = hitPos.y - this.y;
+                    this.motionZ = hitPos.z - this.z;
+
+                    this.isCollided = true;
+                    onGround = true;
+                    stuckToBlockPos = new BlockVector3(blockHitResult.blockX, blockHitResult.blockY, blockHitResult.blockZ);
+
+                    blockHitResult.block.onProjectileHit(this, blockHitResult);
+                }
+
+                //TODO: hit water sfx
+            } else if (shouldStickInGround() && stuckToBlockPos != null) {
+                Block stuckToBlock = level.getBlock(stuckToBlockPos);
+                if (!stuckToBlock.collidesWithBB(boundingBox.grow(0.06))) {
+                    stuckToBlockPos = null;
+                    onGround = false;
+                    isCollided = false;
+                    hadCollision = false;
+                    /*
+                    Random random = ThreadLocalRandom.current();
+                    motionX *= random.nextFloat() * 0.2f;
+                    motionY *= random.nextFloat() * 0.2f;
+                    motionZ *= random.nextFloat() * 0.2f;
+                    */
+                } else {
+                    onGround = true;
+                }
+            }
 
             Entity[] list = this.getLevel().getCollidingEntities(this.boundingBox.addCoord(this.motionX, this.motionY, this.motionZ).expand(1, 1, 1), this);
 
@@ -173,7 +279,7 @@ public abstract class EntityProjectile extends Entity {
             Entity nearEntity = null;
 
             for (Entity entity : list) {
-                if (!entity.canCollideWith(this) || !this.canCollideWith(entity) || (entity == this.shootingEntity && this.ticksLived < 5)) {
+                if (/*!entity.canCollideWith(this) ||*/ !this.canCollideWith(entity) || (entity == this.shootingEntity && this.ticksLived < 5)) {
                     continue;
                 }
 
@@ -213,7 +319,14 @@ public abstract class EntityProjectile extends Entity {
                 this.motionZ = 0;
 
                 this.addMovement(this.x, this.y + this.getBaseOffset(), this.z, this.yaw, this.pitch, this.yaw);
-                this.server.getPluginManager().callEvent(new ProjectileHitEvent(this, MovingObjectPosition.fromBlock(this.getFloorX(), this.getFloorY(), this.getFloorZ(), -1, this)));
+
+                if (this.piercingIgnoreEntityIds != null) {
+                    this.piercingIgnoreEntityIds.clear();
+                }
+
+                if (blockHitResult != null) {
+                    this.server.getPluginManager().callEvent(new ProjectileHitEvent(this, blockHitResult));
+                }
                 return false;
             } else if (!this.isCollided && this.hadCollision) {
                 this.hadCollision = false;
@@ -231,6 +344,34 @@ public abstract class EntityProjectile extends Entity {
         return hasUpdate;
     }
 
+    @Override
+    public boolean move(double dx, double dy, double dz) {
+        if (useLegacyMovement()) {
+            return super.move(dx, dy, dz);
+        }
+
+        if (dx == 0 && dz == 0 && dy == 0) {
+            return true;
+        }
+
+        if (this.keepMovement) {
+            this.boundingBox.offset(dx, dy, dz);
+            this.setPosition(this.temporalVector.setComponents((this.boundingBox.getMinX() + this.boundingBox.getMaxX()) / 2, this.boundingBox.getMinY(), (this.boundingBox.getMinZ() + this.boundingBox.getMaxZ()) / 2));
+            this.onGround = this.isPlayer;
+            return true;
+        }
+
+        this.boundingBox.offset(dx, dy, dz);
+
+        this.x += dx;
+        this.y += dy;
+        this.z += dz;
+
+        this.checkChunks();
+
+        return true;
+    }
+
     public void updateRotation() {
         double f = Math.sqrt((this.motionX * this.motionX) + (this.motionZ * this.motionZ));
         this.yaw = Mth.atan2(this.motionX, this.motionZ) * 180 / Math.PI;
@@ -246,7 +387,28 @@ public abstract class EntityProjectile extends Entity {
     }
 
     @Override
+    public boolean canBeMovedByCurrents() {
+        return false;
+    }
+
+    @Override
     public boolean canPassThroughBarrier() {
         return true;
+    }
+
+    protected boolean shouldStickInGround() {
+        return false;
+    }
+
+    protected boolean shouldBounce() {
+        return false;
+    }
+
+    public int getEntityHitCount() {
+        return entityHitCount;
+    }
+
+    protected boolean useLegacyMovement() {
+        return false;
     }
 }

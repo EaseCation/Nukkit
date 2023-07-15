@@ -148,7 +148,7 @@ public class BlockLeaves extends BlockTransparentMeta {
 
     private Boolean findLog(Block pos, LongSet visited, Integer distance, Integer check, BlockFace fromSide) {
         ++check;
-        long index = Hash.hashBlock((int) pos.x, (int) pos.y, (int) pos.z);
+        long index = Hash.hashBlockPos((int) pos.x, (int) pos.y, (int) pos.z);
         if (visited.contains(index)) return false;
         if (pos.isLog()) return true;
         if (pos.isLeaves() && distance <= 6) {

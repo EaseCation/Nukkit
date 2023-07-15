@@ -55,336 +55,11 @@ import java.util.concurrent.ThreadLocalRandom;
  * @author MagicDroidX
  */
 @Log4j2
-public abstract class Entity extends Location implements Metadatable {
+public abstract class Entity extends Location implements Metadatable, EntityDataType, EntityDataID, EntityFlagID {
 
     public static final int NETWORK_ID = -1;
 
     public abstract int getNetworkId();
-
-    public static final int DATA_TYPE_BYTE = 0;
-    public static final int DATA_TYPE_SHORT = 1;
-    public static final int DATA_TYPE_INT = 2;
-    public static final int DATA_TYPE_FLOAT = 3;
-    public static final int DATA_TYPE_STRING = 4;
-    public static final int DATA_TYPE_SLOT = 5; //old
-    public static final int DATA_TYPE_NBT = 5;
-    public static final int DATA_TYPE_POS = 6;
-    public static final int DATA_TYPE_LONG = 7;
-    public static final int DATA_TYPE_VECTOR3F = 8;
-
-    public static final int DATA_FLAGS = 0;
-    public static final int DATA_HEALTH = 1; //int structural integrity (minecart/boat)
-    public static final int DATA_VARIANT = 2; //int
-    public static final int DATA_COLOR = 3; //byte color index
-    public static final int DATA_NAMETAG = 4; //string
-    public static final int DATA_OWNER_EID = 5; //long
-    public static final int DATA_TARGET_EID = 6; //long
-    public static final int DATA_AIR = 7; //short
-    public static final int DATA_POTION_COLOR = 8; //int (ARGB!)
-    public static final int DATA_POTION_AMBIENT = 9; //byte
-    public static final int DATA_JUMP_DURATION = 10; //byte
-    public static final int DATA_HURT_TIME = 11; //int (minecart/boat/armor stand)
-    public static final int DATA_HURT_DIRECTION = 12; //int (minecart/boat/armor stand)
-    public static final int DATA_PADDLE_TIME_LEFT = 13; //float
-    public static final int DATA_PADDLE_TIME_RIGHT = 14; //float
-    public static final int DATA_EXPERIENCE_VALUE = 15; //int (xp orb)
-    public static final int DATA_MINECART_DISPLAY_BLOCK = 16; //int (block runtime ID)
-    public static final int DATA_HORSE_FLAGS = DATA_MINECART_DISPLAY_BLOCK; //int: 4 = saddle | 16 = bred | 32 = eating | 64 = standing | 128 = open mouth
-    public static final int DATA_FIREWORK_ITEM = DATA_MINECART_DISPLAY_BLOCK; //compoundtag
-    public static final int DATA_WITHER_SKULL_DANGEROUS = DATA_MINECART_DISPLAY_BLOCK; //byte
-    public static final int DATA_DISPLAY_OFFSET = 17; //int
-    public static final int DATA_FIREWORK_VELOCITY = DATA_DISPLAY_OFFSET; //vec3f
-    public static final int DATA_ARROW_SHOOTER_EID = DATA_DISPLAY_OFFSET; //long arrow owner
-    public static final int DATA_HAS_DISPLAY = 18; //byte (must be 1 for minecart to show block inside)
-    public static final int DATA_FIREWORK_ATTACHED_EID = DATA_HAS_DISPLAY; //long
-    public static final int DATA_ARROW_AUX_VALUE = DATA_HAS_DISPLAY; //byte (tipped arrow item meta)
-    public static final int DATA_CREEPER_SWELL = 19; //int
-    public static final int DATA_HORSE_TYPE = DATA_CREEPER_SWELL; //byte: -1 = unset, 0 = default, 1 = donkey, 2 = mule, 3 = zombie, 4 = skeleton
-    public static final int DATA_CREEPER_OLD_SWELL = 20; //int
-    public static final int DATA_CREEPER_SWELL_DIR = 21; //byte
-    public static final int DATA_CHARGE_AMOUNT = 22; //byte used for ghasts and also crossbow charging
-    public static final int DATA_ENDERMAN_HELD_BLOCK = 23; //int (block runtime ID)
-    public static final int DATA_ENDERMAN_HELD_BLOCK_DAMAGE = 24; //short DEPRECATED
-    public static final int DATA_ENTITY_AGE = 25; //short
-    public static final int DATA_SLIME_CLIENT_EVENT = DATA_ENTITY_AGE; //byte: 0 = none, 1 (default) = land, 2 = jump
-    public static final int DATA_WITCH_USING_ITEM = 26; //byte /* TODO: (int) used by horse */
-    public static final int DATA_PLAYER_FLAGS = 27; //byte
-    public static final int DATA_PLAYER_INDEX = 28; //int, used for marker colors and agent nametag colors
-    public static final int DATA_PLAYER_BED_POSITION = 29; //block coords
-    public static final int DATA_FIREBALL_POWER_X = 30; //float
-    public static final int DATA_FIREBALL_POWER_Y = 31; //float
-    public static final int DATA_FIREBALL_POWER_Z = 32; //float
-    public static final int DATA_AUX_POWER = 33;
-    public static final int DATA_FISH_X = 34; //float fishing
-    public static final int DATA_FISH_Z = 35; //float fishing
-    public static final int DATA_FISH_ANGLE = 36; //float fishing
-    public static final int DATA_AUX_VALUE_DATA = 37; //short potion type / zombie type (0 = default, 1 = villager, 2 = husk, 3 = pig, 4 = drowned)
-    public static final int DATA_LEAD_HOLDER_EID = 38; //long
-    public static final int DATA_SCALE = 39; //float
-    public static final int DATA_INTERACTIVE_TAG = 40; //string (button text)
-    public static final int DATA_NPC_SKIN_ID = 41; //string DEPRECATED
-    public static final int DATA_URL_TAG = 42; //string related to npc component - actions (json)
-    public static final int DATA_MAX_AIR = 43; //short
-    public static final int DATA_MARK_VARIANT = 44; //int
-    public static final int DATA_CONTAINER_TYPE = 45; //byte container component
-    public static final int DATA_CONTAINER_BASE_SIZE = 46; //int container component
-    public static final int DATA_CONTAINER_EXTRA_SLOTS_PER_STRENGTH = 47; //int container component (used for llamas, inventory size is baseSize + thisProp * strength)
-    public static final int DATA_BLOCK_TARGET = 48; //block coords (ender crystal)
-    public static final int DATA_WITHER_INVULNERABLE_TICKS = 49; //int
-    public static final int DATA_WITHER_TARGET_1_EID = 50; //long
-    public static final int DATA_WITHER_TARGET_2_EID = 51; //long
-    public static final int DATA_WITHER_TARGET_3_EID = 52; //long
-    public static final int DATA_AERIAL_ATTACK = 53; //short
-    public static final int DATA_BOUNDING_BOX_WIDTH = 54; //float
-    public static final int DATA_BOUNDING_BOX_HEIGHT = 55; //float
-    public static final int DATA_FUSE_LENGTH = 56; //int
-    public static final int DATA_RIDER_SEAT_POSITION = 57; //vector3f
-    public static final int DATA_RIDER_ROTATION_LOCKED = 58; //byte
-    public static final int DATA_SEAT_LOCK_RIDER_ROTATION_DEGREES = 59; //float
-    public static final int DATA_RIDER_MAX_ROTATION = 59; //float
-    public static final int DATA_RIDER_MIN_ROTATION = 60; //float
-    public static final int DATA_SEAT_ROTATION_OFFSET = 127; //float
-    public static final int DATA_AREA_EFFECT_CLOUD_RADIUS = 61; //float
-    public static final int DATA_AREA_EFFECT_CLOUD_WAITING = 62; //int
-    public static final int DATA_AREA_EFFECT_CLOUD_PARTICLE_ID = 63; //int
-    public static final int DATA_SHULKER_PEEK_ID = 64; //int
-    public static final int DATA_SHULKER_ATTACH_FACE = 65; //byte
-    public static final int DATA_SHULKER_ATTACHED = 66; //short
-    public static final int DATA_SHULKER_ATTACH_POS = 67; //block coords
-    public static final int DATA_TRADING_PLAYER_EID = 68; //long
-    public static final int DATA_TRADING_CAREER = 69; //int
-    public static final int DATA_HAS_COMMAND_BLOCK = 70; //byte
-    public static final int DATA_COMMAND_BLOCK_COMMAND = 71; //string
-    public static final int DATA_COMMAND_BLOCK_LAST_OUTPUT = 72; //string
-    public static final int DATA_COMMAND_BLOCK_TRACK_OUTPUT = 73; //byte
-    public static final int DATA_CONTROLLING_RIDER_SEAT_NUMBER = 74; //byte
-    public static final int DATA_STRENGTH = 75; //int
-    public static final int DATA_MAX_STRENGTH = 76; //int
-    public static final int DATA_SPELL_CASTING_COLOR = 77; //int
-    public static final int DATA_LIMITED_LIFE = 78; //int
-    public static final int DATA_ARMOR_STAND_POSE_INDEX = 125; //int
-    public static final int DATA_ENDER_CRYSTAL_TIME_OFFSET = 126; //int
-    public static final int DATA_ALWAYS_SHOW_NAMETAG = 80; //byte: -1 = default, 0 = only when looked at, 1 = always
-    public static final int DATA_COLOR_2 = 81; //byte color index 2
-    public static final int DATA_NAME_AUTHOR = 82; //string
-    public static final int DATA_SCORE_TAG = 83; //string
-    public static final int DATA_BALLOON_ATTACHED_EID = 84; //long
-    public static final int DATA_PUFFERFISH_SIZE = 85; //byte
-    public static final int DATA_BOAT_BUBBLE_TIME = 86; //int (time in bubble column)
-    public static final int DATA_PLAYER_AGENT_EID = 87; //long
-    public static final int DATA_SITTING_AMOUNT = 88; //float
-    public static final int DATA_SITTING_AMOUNT_PREVIOUS = 89; //float
-    public static final int DATA_EATING_COUNTER = 90; //int (used by pandas)
-    public static final int DATA_FLAGS_EXTENDED = 91; //long (data flags 2)
-    public static final int DATA_LAYING_AMOUNT = 92; //float (used by pandas)
-    public static final int DATA_LAYING_AMOUNT_PREVIOUS = 93; //float (used by pandas)
-    public static final int DATA_AREA_EFFECT_CLOUD_DURATION = 94; //int
-    public static final int DATA_AREA_EFFECT_CLOUD_SPAWN_TIME = 95; //int
-    public static final int DATA_AREA_EFFECT_CLOUD_CHANGE_RATE = 96; //float, usually negative
-    public static final int DATA_AREA_EFFECT_CLOUD_CHANGE_ON_PICKUP = 97; //float
-    public static final int DATA_AREA_EFFECT_CLOUD_PICKUP_COUNT = 98; //int
-    public static final int DATA_HAS_NPC_COMPONENT = 99; //byte
-    public static final int DATA_TRADE_TIER = 100; //int villager (trade)
-    public static final int DATA_MAX_TRADE_TIER = 101; //int villager (trade)
-    public static final int DATA_TRADE_EXPERIENCE = 102; //int villager (trade)
-    public static final int DATA_SKIN_ID = 103; //int texture index e.g. npc
-    public static final int DATA_SPAWNING_FRAMES = 104; //int - related to wither
-    public static final int DATA_COMMAND_BLOCK_TICK_DELAY = 105; //int
-    public static final int DATA_COMMAND_BLOCK_EXECUTE_ON_FIRST_TICK = 106; //byte
-    public static final int DATA_AMBIENT_SOUND_INTERVAL = 107; //float
-    public static final int DATA_AMBIENT_SOUND_INTERVAL_RANGE = 108; //float
-    public static final int DATA_AMBIENT_SOUND_EVENT_NAME = 109; //string
-    public static final int DATA_FALL_DAMAGE_MULTIPLIER = 110; //float
-    public static final int DATA_NAME_RAW_TEXT = 111; //string npc component
-    public static final int DATA_CAN_RIDE_TARGET = 112; //byte
-    public static final int DATA_LOW_TIER_CURED_DISCOUNT = 113; //int villager (trade)
-    public static final int DATA_HIGH_TIER_CURED_DISCOUNT = 114; //int villager (trade)
-    public static final int DATA_NEARBY_CURED_DISCOUNT = 115; //int villager (trade)
-    public static final int DATA_NEARBY_CURED_DISCOUNT_TIMESTAMP = 116; //int villager (trade)
-    public static final int DATA_HITBOX = 117; //compound
-    public static final int DATA_IS_BUOYANT = 118; //byte buoyant component e.g. boat
-    public static final int DATA_FREEZING_EFFECT_STRENGTH = 119; //float related to powder snow
-    public static final int DATA_BUOYANCY_DATA = 120; //string buoyant component (json) e.g. boat
-    public static final int DATA_GOAT_HORN_COUNT = 121; //int
-    public static final int DATA_BASE_RUNTIME_ID = 122; //string vanilla identifier
-    public static final int DATA_DEFINE_PROPERTIES = 123; // DEPRECATED
-    public static final int DATA_UPDATE_PROPERTIES = 124; // DEPRECATED
-    /**
-     * float.
-     * @since 1.18.30
-     */
-    public static final int DATA_MOVEMENT_SOUND_DISTANCE_OFFSET = 128; // related to warden
-    /**
-     * int.
-     * @since 1.18.30
-     */
-    public static final int DATA_HEARTBEAT_INTERVAL_TICKS = 129; //int related to warden
-    /**
-     * int.
-     * @since 1.18.30
-     */
-    public static final int DATA_HEARTBEAT_SOUND_EVENT = 130; //int related to warden (level sound event id)
-    /**
-     * block pos.
-     * @since 1.19.0
-     */
-    public static final int DATA_PLAYER_LAST_DEATH_POS = 131; //blockpos related to recovery compass
-    /**
-     * int.
-     * @since 1.19.0
-     */
-    public static final int DATA_PLAYER_LAST_DEATH_DIMENSION = 132; //int related to recovery compass
-    /**
-     * bool.
-     * @since 1.19.0
-     */
-    public static final int DATA_PLAYER_HAS_DIED = 133; //byte related to recovery compass
-    /**
-     * string.
-     * @since 1.12.0
-     */
-    public static final int DATA_NPC_DATA = 134; //string related to npc component (json)
-    public static final int DATA_NUKKIT_FLAGS = 135; //long cUstOm HACK
-    public static final int DATA_UNDEFINED = 136;
-
-    public static final long NUKKIT_FLAG_VARIANT_BLOCK = 1L << 1;
-
-    public static final int DATA_FLAG_ONFIRE = 0;
-    public static final int DATA_FLAG_SNEAKING = 1;
-    public static final int DATA_FLAG_RIDING = 2;
-    public static final int DATA_FLAG_SPRINTING = 3;
-    public static final int DATA_FLAG_ACTION = 4;
-    public static final int DATA_FLAG_INVISIBLE = 5;
-    public static final int DATA_FLAG_TEMPTED = 6;
-    public static final int DATA_FLAG_INLOVE = 7;
-    public static final int DATA_FLAG_SADDLED = 8;
-    public static final int DATA_FLAG_POWERED = 9;
-    public static final int DATA_FLAG_IGNITED = 10;
-    public static final int DATA_FLAG_BABY = 11; //disable head scaling
-    public static final int DATA_FLAG_CONVERTING = 12;
-    public static final int DATA_FLAG_CRITICAL = 13;
-    public static final int DATA_FLAG_CAN_SHOW_NAMETAG = 14;
-    public static final int DATA_FLAG_ALWAYS_SHOW_NAMETAG = 15;
-    public static final int DATA_FLAG_IMMOBILE = 16, DATA_FLAG_NO_AI = 16;
-    public static final int DATA_FLAG_SILENT = 17;
-    public static final int DATA_FLAG_WALLCLIMBING = 18;
-    public static final int DATA_FLAG_CAN_CLIMB = 19;
-    public static final int DATA_FLAG_SWIMMER = 20;
-    public static final int DATA_FLAG_CAN_FLY = 21;
-    public static final int DATA_FLAG_CAN_WALK = 22;
-    public static final int DATA_FLAG_RESTING = 23;
-    public static final int DATA_FLAG_SITTING = 24;
-    public static final int DATA_FLAG_ANGRY = 25;
-    public static final int DATA_FLAG_INTERESTED = 26;
-    public static final int DATA_FLAG_CHARGED = 27;
-    public static final int DATA_FLAG_TAMED = 28;
-    public static final int DATA_FLAG_ORPHANED = 29;
-    public static final int DATA_FLAG_LEASHED = 30;
-    public static final int DATA_FLAG_SHEARED = 31;
-    public static final int DATA_FLAG_GLIDING = 32;
-    public static final int DATA_FLAG_ELDER = 33;
-    public static final int DATA_FLAG_MOVING = 34;
-    public static final int DATA_FLAG_BREATHING = 35;
-    public static final int DATA_FLAG_CHESTED = 36;
-    public static final int DATA_FLAG_STACKABLE = 37;
-    public static final int DATA_FLAG_SHOWBASE = 38;
-    public static final int DATA_FLAG_REARING = 39;
-    public static final int DATA_FLAG_VIBRATING = 40;
-    public static final int DATA_FLAG_IDLING = 41;
-    public static final int DATA_FLAG_EVOKER_SPELL = 42;
-    public static final int DATA_FLAG_CHARGE_ATTACK = 43;
-    public static final int DATA_FLAG_WASD_CONTROLLED = 44;
-    public static final int DATA_FLAG_CAN_POWER_JUMP = 45;
-    public static final int DATA_FLAG_LINGER = 46;
-    public static final int DATA_FLAG_HAS_COLLISION = 47;
-    public static final int DATA_FLAG_GRAVITY = 48;
-    public static final int DATA_FLAG_FIRE_IMMUNE = 49;
-    public static final int DATA_FLAG_DANCING = 50;
-	public static final int DATA_FLAG_ENCHANTED = 51;
-	public static final int DATA_FLAG_RETURN_TRIDENT = 52;
-	public static final int DATA_FLAG_CONTAINER_IS_PRIVATE = 53;
-	public static final int DATA_FLAG_TRANSFORMING = 54;
-	public static final int DATA_FLAG_SPIN_ATTACK = 55;
-	public static final int DATA_FLAG_SWIMMING = 56;
-	public static final int DATA_FLAG_BRIBED = 57;
-	public static final int DATA_FLAG_PREGNANT = 58;
-	public static final int DATA_FLAG_LAYING_EGG = 59;
-	public static final int DATA_FLAG_RIDER_CAN_PICK = 60;
-    public static final int DATA_FLAG_TRANSITION_SETTING = 61;
-    public static final int DATA_FLAG_EATING = 62;
-    public static final int DATA_FLAG_LAYING_DOWN = 63;
-    public static final int DATA_FLAG_SNEEZING = 64;
-    public static final int DATA_FLAG_TRUSTING = 65;
-    public static final int DATA_FLAG_ROLLING = 66;
-    public static final int DATA_FLAG_SCARED = 67;
-    public static final int DATA_FLAG_IN_SCAFFOLDING = 68;
-    public static final int DATA_FLAG_OVER_SCAFFOLDING = 69;
-    public static final int DATA_FLAG_FALL_THROUGH_SCAFFOLDING = 70;
-    public static final int DATA_FLAG_BLOCKING = 71;
-    public static final int DATA_FLAG_TRANSITION_BLOCKING = 72;
-    public static final int DATA_FLAG_BLOCKED_USING_SHIELD = 73;
-    public static final int DATA_FLAG_BLOCKED_USING_DAMAGED_SHIELD = 74;
-    public static final int DATA_FLAG_SLEEPING = 75;
-    public static final int DATA_FLAG_ENTITY_GROW_UP = 76;
-    public static final int DATA_FLAG_TRADE_INTEREST = 77;
-    public static final int DATA_FLAG_DOOR_BREAKER = 78;
-    public static final int DATA_FLAG_BREAKING_OBSTRUCTION = 79;
-    public static final int DATA_FLAG_DOOR_OPENER = 80;
-    public static final int DATA_FLAG_IS_ILLAGER_CAPTAIN = 81;
-    public static final int DATA_FLAG_STUNNED = 82;
-    public static final int DATA_FLAG_ROARING = 83;
-    public static final int DATA_FLAG_DELAYED_ATTACK = 84;
-    public static final int DATA_FLAG_IS_AVOIDING_MOBS = 85;
-    public static final int DATA_FLAG_IS_AVOIDING_BLOCKS = 86;
-    public static final int DATA_FLAG_FACING_TARGET_TO_RANGE_ATTACK = 87;
-    public static final int DATA_FLAG_HIDDEN_WHEN_INVISIBLE = 88;
-    public static final int DATA_FLAG_IS_IN_UI = 89;
-    public static final int DATA_FLAG_STALKING = 90;
-    public static final int DATA_FLAG_EMOTING = 91;
-    public static final int DATA_FLAG_CELEBRATING = 92;
-    public static final int DATA_FLAG_ADMIRING = 93;
-    public static final int DATA_FLAG_CELEBRATING_SPECIAL = 94;
-    public static final int DATA_FLAG_OUT_OF_CONTROL = 95;
-    public static final int DATA_FLAG_RAM_ATTACK = 96;
-    public static final int DATA_FLAG_PLAYING_DEAD = 97;
-    public static final int DATA_FLAG_IN_ASCENDABLE_BLOCK = 98;
-    public static final int DATA_FLAG_OVER_DESCENDABLE_BLOCK = 99;
-    public static final int DATA_FLAG_CROAKING = 100;
-    public static final int DATA_FLAG_EAT_MOB = 101;
-    public static final int DATA_FLAG_JUMP_GOAL_JUMP = 102;
-    public static final int DATA_FLAG_EMERGING = 103;
-    public static final int DATA_FLAG_SNIFFING = 104;
-    public static final int DATA_FLAG_DIGGING = 105;
-    public static final int DATA_FLAG_SONIC_BOOM = 106;
-    /**
-     * @since 1.19.50
-     */
-    public static final int DATA_FLAG_CAN_DASH = 107;
-    /**
-     * @since 1.19.50
-     */
-    public static final int DATA_FLAG_HAS_DASH_COOLDOWN = 108;
-    /**
-     * @since 1.19.50
-     */
-    public static final int DATA_FLAG_PUSH_TOWARDS_CLOSEST_SPACE = 109;
-    /**
-     * @since 1.19.70
-     */
-    public static final int DATA_FLAG_SCENTING = 110;
-    /**
-     * @since 1.19.70
-     */
-    public static final int DATA_FLAG_RISING = 111;
-    /**
-     * @since 1.19.70
-     */
-    public static final int DATA_FLAG_HAPPY = 112;
-    /**
-     * @since 1.19.70
-     */
-    public static final int DATA_FLAG_SEARCHING = 113;
-    public static final int DATA_FLAG_UNDEFINED = 114;
 
     public static long entityCount = 2; // 0 invalid, 1 for Synapse
 
@@ -499,6 +174,14 @@ public abstract class Entity extends Location implements Metadatable {
 
     public float getEyeHeight() {
         return this.getHeight() / 2 + 0.1f;
+    }
+
+    public float getEyeY() {
+        return (float) y + getEyeHeight();
+    }
+
+    public Vector3 getEyePosition() {
+        return new Vector3(getX(), getEyeY(), getZ());
     }
 
     public float getWidth() {
@@ -832,6 +515,14 @@ public abstract class Entity extends Location implements Metadatable {
 
     public Entity getRiding() {
         return riding;
+    }
+
+    public void setRiding(Entity riding) {
+        this.riding = riding;
+    }
+
+    public boolean isRiding() {
+        return riding != null;
     }
 
     public Map<Integer, Effect> getEffects() {
@@ -1661,11 +1352,6 @@ public abstract class Entity extends Location implements Metadatable {
         pk.motionY = (float) motionY;
         pk.motionZ = (float) motionZ;
         this.level.addChunkPacket(chunkX, chunkZ, pk);
-    }
-
-    public Vector3 getDirectionVector() {
-        Vector3 vector = super.getDirectionVector();
-        return this.temporalVector.setComponents(vector.x, vector.y, vector.z);
     }
 
     public Vector2 getDirectionPlane() {
@@ -2797,6 +2483,17 @@ public abstract class Entity extends Location implements Metadatable {
      */
     public int getAge() {
         return age;
+    }
+
+    public boolean isBlocking() {
+        return false;
+    }
+
+    public void blockedByShield(Entity blocker) {
+    }
+
+    public boolean canDisableShield() {
+        return false;
     }
 
     @Override

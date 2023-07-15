@@ -3,6 +3,15 @@ package cn.nukkit.math;
 import cn.nukkit.level.MovingObjectPosition;
 
 public interface AxisAlignedBB extends Cloneable {
+    default AxisAlignedBB setBounds(AxisAlignedBB other) {
+        this.setMinX(other.getMinX());
+        this.setMinY(other.getMinY());
+        this.setMinZ(other.getMinZ());
+        this.setMaxX(other.getMaxX());
+        this.setMaxY(other.getMaxY());
+        this.setMaxZ(other.getMaxZ());
+        return this;
+    }
 
     default AxisAlignedBB setBounds(double minX, double minY, double minZ, double maxX, double maxY, double maxZ) {
         this.setMinX(minX);

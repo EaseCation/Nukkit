@@ -249,11 +249,6 @@ public class BlockDripleafBig extends BlockTransparentMeta implements Faceable {
     }
 
     @Override
-    public AxisAlignedBB getBoundingBox() {
-        return null;
-    }
-
-    @Override
     protected AxisAlignedBB recalculateBoundingBox() {
         return null;
     }

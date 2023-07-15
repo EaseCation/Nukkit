@@ -1,6 +1,7 @@
 package cn.nukkit.inventory;
 
 import cn.nukkit.Player;
+import cn.nukkit.item.Item;
 
 import static cn.nukkit.network.protocol.types.UiContainerSlots.*;
 
@@ -23,5 +24,13 @@ public class PlayerCursorInventory extends PlayerUIComponent {
     @Override
     public Player getHolder() {
         return playerUI.getHolder();
+    }
+
+    public Item getItem() {
+        return getItem(0);
+    }
+
+    public void setItem(Item item) {
+        setItem(0, item);
     }
 }

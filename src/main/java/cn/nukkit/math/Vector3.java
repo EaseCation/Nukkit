@@ -5,6 +5,8 @@ import cn.nukkit.nbt.tag.DoubleTag;
 import cn.nukkit.nbt.tag.FloatTag;
 import cn.nukkit.nbt.tag.ListTag;
 
+import javax.annotation.Nullable;
+
 /**
  * author: MagicDroidX
  * Nukkit Project
@@ -369,6 +371,7 @@ public class Vector3 implements Cloneable {
      * @param x x value
      * @return intermediate vector
      */
+    @Nullable
     public Vector3 getIntermediateWithXValue(Vector3 v, double x) {
         double xDiff = v.x - this.x;
         double yDiff = v.y - this.y;
@@ -392,6 +395,7 @@ public class Vector3 implements Cloneable {
      * @param y y value
      * @return intermediate vector
      */
+    @Nullable
     public Vector3 getIntermediateWithYValue(Vector3 v, double y) {
         double xDiff = v.x - this.x;
         double yDiff = v.y - this.y;
@@ -415,6 +419,7 @@ public class Vector3 implements Cloneable {
      * @param z z value
      * @return intermediate vector
      */
+    @Nullable
     public Vector3 getIntermediateWithZValue(Vector3 v, double z) {
         double xDiff = v.x - this.x;
         double yDiff = v.y - this.y;
@@ -437,9 +442,65 @@ public class Vector3 implements Cloneable {
         return this;
     }
 
+    public Vector3 setComponents(Vector3 other) {
+        this.x = other.x;
+        this.y = other.y;
+        this.z = other.z;
+        return this;
+    }
+
+    public Vector3 xz() {
+        return new Vector3(this.x, 0, this.z);
+    }
+
+    public Vector3 xRot(double rads) {
+        double cos = Mth.cos(rads);
+        double sin = Mth.sin(rads);
+        return new Vector3(this.x, this.y * cos + this.z * sin, this.z * cos - this.y * sin);
+    }
+
+    public Vector3 yRot(double rads) {
+        double cos = Mth.cos(rads);
+        double sin = Mth.sin(rads);
+        return new Vector3(this.x * cos + this.z * sin, this.y, this.z * cos - this.x * sin);
+    }
+
+    public Vector3 zRot(double rads) {
+        double cos = Mth.cos(rads);
+        double sin = Mth.sin(rads);
+        return new Vector3(this.x * cos + this.y * sin, this.y * cos - this.x * sin, this.z);
+    }
+
+    /**
+     * @return pitch
+     */
+    public double xRotFromDirection() {
+        return Mth.atan2(this.y, this.horizontalDistance()) * Mth.RAD_TO_DEG;
+    }
+
+    /**
+     * @return yaw
+     */
+    public double yRotFromDirection() {
+        return Mth.atan2(this.x, this.z) * Mth.RAD_TO_DEG;
+    }
+
+    /**
+     * @param xRot pitch
+     * @param yRot yaw
+     */
+    public static Vector3 directionFromRotation(double xRot, double yRot) {
+        double xCos = -Mth.cos(-xRot * Mth.DEG_TO_RAD);
+        return new Vector3(Mth.sin(-yRot * Mth.DEG_TO_RAD - Mth.PI) * xCos, Mth.sin(-xRot * Mth.DEG_TO_RAD), Mth.cos(-yRot * Mth.DEG_TO_RAD - Mth.PI) * xCos);
+    }
+
     @Override
     public String toString() {
         return "Vector3(x=" + this.x + ",y=" + this.y + ",z=" + this.z + ")";
+    }
+
+    public String debugText() {
+        return "(" + NukkitMath.round(x, 2) + "," + NukkitMath.round(y, 2) + "," + NukkitMath.round(z, 2) + ")";
     }
 
     @Override

@@ -36,6 +36,10 @@ public class SimpleAxisAlignedBB implements AxisAlignedBB {
         return "AxisAlignedBB(" + this.getMinX() + ", " + this.getMinY() + ", " + this.getMinZ() + ", " + this.getMaxX() + ", " + this.getMaxY() + ", " + this.getMaxZ() + ")";
     }
 
+    public String debugText() {
+        return "(" + NukkitMath.round(getMinX(), 2) + "," + NukkitMath.round(getMinY(), 2) + "," + NukkitMath.round(getMinZ(), 2) + "," + NukkitMath.round(getMaxX(), 2) + "," + NukkitMath.round(getMaxY(), 2) + "," + NukkitMath.round(getMaxZ(), 2) + ")";
+    }
+
     @Override
     public double getMinX() {
         return minX;

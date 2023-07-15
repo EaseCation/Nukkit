@@ -52,6 +52,18 @@ public class PlayerActionPacket extends DataPacket {
      * @since 1.19.60
      */
     public static final int ACTION_HANDLED_TELEPORT = 30;
+    /**
+     * @since 1.20.10
+     */
+    public static final int ACTION_MISSED_SWING = 31;
+    /**
+     * @since 1.20.10
+     */
+    public static final int ACTION_START_CRAWLING = 32;
+    /**
+     * @since 1.20.10
+     */
+    public static final int ACTION_STOP_CRAWLING = 33;
 
     public long entityId;
     public int action;

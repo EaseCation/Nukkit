@@ -191,8 +191,9 @@ public abstract class EntityHumanType extends EntityCreature implements Inventor
                     }
 
                     Enchantment durability = armor.getEnchantment(Enchantment.UNBREAKING);
-                    if (durability != null && durability.getLevel() > 0 && (100 / (durability.getLevel() + 1)) <= ThreadLocalRandom.current().nextInt(100))
+                    if (durability != null && durability.getLevel() > 0 && ThreadLocalRandom.current().nextInt(100) >= armor.getDamageChance(durability.getLevel())) {
                         continue;
+                    }
                 }
 
                 if (source.getCause() != DamageCause.VOID &&

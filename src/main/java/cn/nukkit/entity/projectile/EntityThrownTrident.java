@@ -155,4 +155,14 @@ public class EntityThrownTrident extends EntityProjectile {
     public void setPickupMode(int pickupMode) {
         this.pickupMode = pickupMode;
     }
+
+    @Override
+    protected boolean shouldStickInGround() {
+        return true;
+    }
+
+    @Override
+    protected boolean shouldBounce() {
+        return true;
+    }
 }

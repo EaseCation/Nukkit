@@ -79,4 +79,12 @@ public class PlayerOffhandInventory extends BaseInventory {
     public EntityHuman getHolder() {
         return (EntityHuman) super.getHolder();
     }
+
+    public Item getItem() {
+        return getItem(0);
+    }
+
+    public void setItem(Item item) {
+        setItem(0, item);
+    }
 }

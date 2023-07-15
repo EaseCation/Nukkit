@@ -7,10 +7,17 @@ import cn.nukkit.command.data.CommandEnum;
 import cn.nukkit.command.data.CommandParamOption;
 import cn.nukkit.command.data.CommandParamType;
 import cn.nukkit.command.data.CommandParameter;
+import cn.nukkit.command.exceptions.CommandExceptions;
 import cn.nukkit.command.exceptions.CommandSyntaxException;
 import cn.nukkit.lang.TranslationContainer;
 import cn.nukkit.level.Position;
 import cn.nukkit.network.protocol.TextPacket;
+
+import java.util.HashMap;
+import java.util.Map;
+import java.util.Objects;
+import java.util.Optional;
+import java.util.function.Function;
 
 public class DeveloperCommand extends VanillaCommand {
 
@@ -18,6 +25,29 @@ public class DeveloperCommand extends VanillaCommand {
         super(name, "%nukkit.command.developer.description", "%nukkit.command.developer.usage");
         this.setPermission("nukkit.command.developer");
         this.commandParameters.clear();
+        this.commandParameters.put("varI64", new CommandParameter[]{
+                CommandParameter.newEnum("subCommand", new CommandEnum("SubCommandVar", "var")),
+                CommandParameter.newEnum("valueType", new CommandEnum("VarActionSetInt", "i")),
+                CommandParameter.newType("name", CommandParamType.STRING),
+                CommandParameter.newType("data", true, CommandParamType.INT),
+        });
+        this.commandParameters.put("varF32", new CommandParameter[]{
+                CommandParameter.newEnum("subCommand", new CommandEnum("SubCommandVar", "var")),
+                CommandParameter.newEnum("valueType", new CommandEnum("VarActionSetFloat", "f")),
+                CommandParameter.newType("name", CommandParamType.STRING),
+                CommandParameter.newType("data", true, CommandParamType.FLOAT),
+        });
+        this.commandParameters.put("varStr", new CommandParameter[]{
+                CommandParameter.newEnum("subCommand", new CommandEnum("SubCommandVar", "var")),
+                CommandParameter.newEnum("valueType", new CommandEnum("VarActionSetString", "s")),
+                CommandParameter.newType("name", CommandParamType.STRING),
+                CommandParameter.newType("data", true, CommandParamType.STRING),
+        });
+        this.commandParameters.put("varDel", new CommandParameter[]{
+                CommandParameter.newEnum("subCommand", new CommandEnum("SubCommandVar", "var")),
+                CommandParameter.newEnum("action", new CommandEnum("VarActionRemove", "r")),
+                CommandParameter.newType("name", CommandParamType.STRING),
+        });
         this.commandParameters.put("setblock", new CommandParameter[]{
                 CommandParameter.newEnum("subCommand", new CommandEnum("SubCommandSetblock", "setblock")),
                 CommandParameter.newType("position", CommandParamType.BLOCK_POSITION),
@@ -52,6 +82,43 @@ public class DeveloperCommand extends VanillaCommand {
         }
 
         switch (args[0].toLowerCase()) {
+            case "var": {
+                CommandParser parser = new CommandParser(this, sender, args);
+                try {
+                    parser.literal();
+                    Function<String, Object> valueParser = parser.parse(input -> {
+                        switch (input) {
+                            case "i":
+                                return Long::valueOf;
+                            case "f":
+                                return Float::valueOf;
+                            case "s":
+                                return String::valueOf;
+                            case "r":
+                                return null;
+                            default:
+                                throw CommandExceptions.COMMAND_SYNTAX_EXCEPTION;
+                        }
+                    });
+                    String key = parser.literal();
+                    Object data = valueParser != null ? parser.parse(valueParser) : null;
+
+                    if (data != null) {
+                        DataHolder.VARIABLES.put(key, data);
+                        sender.sendMessage(key + " = " + data);
+                    } else {
+                        if (DataHolder.VARIABLES.remove(key) != null) {
+                            sender.sendMessage("succ: " + key);
+                        } else {
+                            sender.sendMessage("fail: " + key);
+                        }
+                    }
+                    return true;
+                } catch (CommandSyntaxException e) {
+                    sender.sendMessage(parser.getErrorMessage());
+                }
+                return false;
+            }
             case "setblock": {
                 if (length < 7) {
                     sendUsage(sender);
@@ -164,5 +231,44 @@ public class DeveloperCommand extends VanillaCommand {
             base = Double.parseDouble(coord);
         }
         return base;
+    }
+
+    public static class DataHolder {
+        public static final Map<String, Object> VARIABLES = new HashMap<>();
+
+        public static long getAsLong(String key) {
+            return getAsLong(key, 0);
+        }
+
+        public static long getAsLong(String key, long defaultValue) {
+            Objects.requireNonNull(key);
+            return Optional.ofNullable(VARIABLES.get(key))
+                    .filter(data -> data instanceof Number)
+                    .map(data -> ((Number) data).longValue())
+                    .orElse(defaultValue);
+        }
+
+        public static float getAsFloat(String key) {
+            return getAsFloat(key, 0);
+        }
+
+        public static float getAsFloat(String key, float defaultValue) {
+            Objects.requireNonNull(key);
+            return Optional.ofNullable(VARIABLES.get(key))
+                    .filter(data -> data instanceof Number)
+                    .map(data -> ((Number) data).floatValue())
+                    .orElse(defaultValue);
+        }
+
+        public static String getAsString(String key) {
+            return getAsString(key, "");
+        }
+
+        public static String getAsString(String key, String defaultValue) {
+            Objects.requireNonNull(key);
+            return Optional.ofNullable(VARIABLES.get(key))
+                    .map(String::valueOf)
+                    .orElse(defaultValue);
+        }
     }
 }
