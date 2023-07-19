@@ -50,9 +50,11 @@ public enum EnumBiome {
     SWAMP(6, new SwampBiome()),
     RIVER(7, new RiverBiome()),//
     HELL(8, new HellBiome()),
+    THE_END(9, new PlainsBiome()),
     FROZEN_OCEAN(10, new FrozenOceanBiome()), //DOES NOT GENERATE NATUALLY
     FROZEN_RIVER(11, new FrozenRiverBiome()),
     ICE_PLAINS(12, new IcePlainsBiome()),
+    ICE_MOUNTAINS(13, new PlainsBiome()),
     MUSHROOM_ISLAND(14, new MushroomIslandBiome()),//
     MUSHROOM_ISLAND_SHORE(15, new MushroomIslandShoreBiome()),
     BEACH(16, new BeachBiome()),
@@ -79,6 +81,15 @@ public enum EnumBiome {
     MESA(37, new MesaBiome()),
     MESA_PLATEAU_F(38, new MesaPlateauFBiome()),
     MESA_PLATEAU(39, new MesaPlateauBiome()),
+    WARM_OCEAN(40, new PlainsBiome()),
+    DEEP_WARM_OCEAN(41, new PlainsBiome()),
+    LUKEWARM_OCEAN(42, new PlainsBiome()),
+    DEEP_LUKEWARM_OCEAN(43, new PlainsBiome()),
+    COLD_OCEAN(44, new PlainsBiome()),
+    DEEP_COLD_OCEAN(45, new PlainsBiome()),
+    DEEP_FROZEN_OCEAN(47, new PlainsBiome()),
+    BAMBOO_JUNGLE(48, new PlainsBiome()),
+    BAMBOO_JUNGLE_HILLS(49, new PlainsBiome()),
     //    All biomes below this comment are mutated variants of existing biomes
     SUNFLOWER_PLAINS(129, new SunflowerPlainsBiome()),
     DESERT_M(130, new DesertMBiome()),
@@ -100,7 +111,21 @@ public enum EnumBiome {
     SAVANNA_PLATEAU_M(164, new SavannaPlateauMBiome()),
     MESA_BRYCE(165, new MesaBryceBiome()),
     MESA_PLATEAU_F_M(166, new MesaPlateauFMBiome()),
-    MESA_PLATEAU_M(167, new MesaPlateauMBiome());
+    MESA_PLATEAU_M(167, new MesaPlateauMBiome()),
+    SOULSAND_VALLEY(178, new PlainsBiome()),
+    CRIMSON_FOREST(179, new PlainsBiome()),
+    WARPED_FOREST(180, new PlainsBiome()),
+    BASALT_DELTAS(181, new PlainsBiome()),
+    JAGGED_PEAKS(182, new PlainsBiome()),
+    FROZEN_PEAKS(183, new PlainsBiome()),
+    SNOWY_SLOPES(184, new PlainsBiome()),
+    GROVE(185, new PlainsBiome()),
+    MEADOW(186, new PlainsBiome()),
+    LUSH_CAVES(187, new PlainsBiome()),
+    DRIPSTONE_CAVES(188, new PlainsBiome()),
+    STONY_PEAKS(189, new PlainsBiome()),
+    DEEP_DARK(190, new PlainsBiome()),
+    MANGROVE_SWAMP(191, new PlainsBiome());
 
     public final int id;
     public final Biome biome;
