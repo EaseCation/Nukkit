@@ -100,12 +100,13 @@ public class ItemTrident extends ItemTool implements ItemReleasable {
             if (ev.isCancelled()) {
                 entityShootBowEvent.getProjectile().close();
             } else {
-                //TODO: loyalty
-//                Enchantment loyaltyEnchant = this.getEnchantment(Enchantment.LOYALTY);
-//                boolean loyalty = loyaltyEnchant != null && loyaltyEnchant.getLevel() > 0;
+                Enchantment loyaltyEnchant = this.getEnchantment(Enchantment.LOYALTY);
+                boolean loyalty = loyaltyEnchant != null && loyaltyEnchant.getLevel() > 0;
                 EntityProjectile projectile = entityShootBowEvent.getProjectile();
                 if (player.isCreative() && projectile instanceof EntityThrownTrident) {
                     ((EntityThrownTrident) projectile).setPickupMode(EntityThrownTrident.PICKUP_CREATIVE);
+                } else if (loyalty && projectile instanceof EntityThrownTrident) {
+                    ((EntityThrownTrident) projectile).setPickupMode(EntityThrownTrident.PICKUP_NONE);
                 }
                 projectile.spawnToAll();
                 player.getLevel().addLevelSoundEvent(player, LevelSoundEventPacket.SOUND_ITEM_TRIDENT_THROW);

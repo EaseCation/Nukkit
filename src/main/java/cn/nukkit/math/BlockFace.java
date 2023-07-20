@@ -98,7 +98,7 @@ public enum BlockFace {
      * @return block face
      */
     public static BlockFace fromHorizontalIndex(int index) {
-        return HORIZONTALS[index & 0x3];
+        return HORIZONTALS[Math.abs(index % HORIZONTALS.length)];
     }
 
     public static BlockFace fromReversedHorizontalIndex(int index) {

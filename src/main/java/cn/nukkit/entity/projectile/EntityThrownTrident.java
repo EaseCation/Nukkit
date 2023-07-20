@@ -4,15 +4,16 @@ import cn.nukkit.Player;
 import cn.nukkit.entity.Entity;
 import cn.nukkit.entity.EntityID;
 import cn.nukkit.entity.weather.EntityLightning;
-import cn.nukkit.event.entity.EntityDamageEvent;
-import cn.nukkit.event.entity.EntityDamageEvent.DamageCause;
 import cn.nukkit.event.entity.EntityDamageByChildEntityEvent;
 import cn.nukkit.event.entity.EntityDamageByEntityEvent;
+import cn.nukkit.event.entity.EntityDamageEvent;
+import cn.nukkit.event.entity.EntityDamageEvent.DamageCause;
 import cn.nukkit.event.entity.ProjectileHitEvent;
 import cn.nukkit.event.weather.LightningStrikeEvent;
+import cn.nukkit.inventory.InventoryHolder;
+import cn.nukkit.item.Item;
 import cn.nukkit.item.enchantment.Enchantment;
 import cn.nukkit.level.MovingObjectPosition;
-import cn.nukkit.item.Item;
 import cn.nukkit.level.format.FullChunk;
 import cn.nukkit.nbt.NBTIO;
 import cn.nukkit.nbt.tag.CompoundTag;
@@ -29,6 +30,7 @@ public class EntityThrownTrident extends EntityProjectile {
 
     protected int pickupMode;
     public boolean alreadyCollided;
+    protected int loyaltyBackTick = 0;
 
     @Override
     public int getNetworkId() {
@@ -90,6 +92,13 @@ public class EntityThrownTrident extends EntityProjectile {
 
     public void setItem(Item item) {
         this.trident = item.clone();
+        if (this.trident != null && this.shootingEntity != null) {
+            Enchantment loyaltyEnchant = this.trident.getEnchantment(Enchantment.LOYALTY);
+            if (loyaltyEnchant != null && loyaltyEnchant.getLevel() >= 1) {
+                // TODO different ticks for different levels
+                this.loyaltyBackTick = 20;
+            }
+        }
     }
 
     @Override
@@ -144,6 +153,7 @@ public class EntityThrownTrident extends EntityProjectile {
         EntityThrownTrident newTrident = new EntityThrownTrident(getChunk(), getDefaultNBT(this), this.shootingEntity);
         newTrident.alreadyCollided = true;
         newTrident.pickupMode = this.pickupMode;
+        newTrident.shootingEntity = this.shootingEntity;
         newTrident.setItem(this.trident);
         newTrident.spawnToAll();
     }
@@ -164,5 +174,23 @@ public class EntityThrownTrident extends EntityProjectile {
     @Override
     protected boolean shouldBounce() {
         return true;
+    }
+
+    @Override
+    public boolean onUpdate(int currentTick) {
+        boolean update = super.onUpdate(currentTick);
+        if (this.loyaltyBackTick > 0) {
+            if (this.isCollided || this.hadCollision || this.alreadyCollided || this.getY() <= 0) {
+                if (--this.loyaltyBackTick <= 0 || this.getY() <= 0) {
+                    if (this.shootingEntity instanceof InventoryHolder) {
+                        this.close();
+                        ((InventoryHolder) this.shootingEntity).getInventory().addItem(this.trident);
+                        this.shootingEntity.getLevel().addLevelSoundEvent(this.shootingEntity, LevelSoundEventPacket.SOUND_ITEM_TRIDENT_RETURN);
+                    }
+                }
+            }
+            return true;
+        }
+        return update;
     }
 }
