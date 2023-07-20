@@ -183,6 +183,10 @@ public class EntityArrow extends EntityProjectile {
         namedTag.putByte("auxValue", auxValue);
     }
 
+    public Int2ObjectMap<Effect> getMobEffects() {
+        return mobEffects;
+    }
+
     public int getPickupMode() {
         return this.pickupMode;
     }
