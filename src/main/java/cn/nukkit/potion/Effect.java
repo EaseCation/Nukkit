@@ -4,6 +4,7 @@ import cn.nukkit.Player;
 import cn.nukkit.entity.Entity;
 import cn.nukkit.event.entity.EntityDamageEvent;
 import cn.nukkit.event.entity.EntityDamageEvent.DamageCause;
+import cn.nukkit.event.entity.EntityEffectEvent;
 import cn.nukkit.event.entity.EntityRegainHealthEvent;
 import cn.nukkit.nbt.tag.CompoundTag;
 import cn.nukkit.network.protocol.MobEffectPacket;
@@ -163,13 +164,23 @@ public class Effect implements EffectID, Cloneable {
         this.color = ((r & 0xff) << 16) + ((g & 0xff) << 8) + (b & 0xff);
     }
 
-    public void add(Entity entity) {
+    public boolean add(Entity entity) {
         Effect oldEffect = entity.getEffect(getId());
-        if (oldEffect != null && (Math.abs(this.getAmplifier()) < Math.abs(oldEffect.getAmplifier()) ||
-                Math.abs(this.getAmplifier()) == Math.abs(oldEffect.getAmplifier())
-                        && this.getDuration() < oldEffect.getDuration())) {
-            return;
+        boolean override = false;
+        EntityEffectEvent.Action action = EntityEffectEvent.Action.ADDED;
+        if (oldEffect != null) {
+            int newAmplifier = Math.abs(this.getAmplifier());
+            int oldAmplifier = Math.abs(oldEffect.getAmplifier());
+            override = (newAmplifier > oldAmplifier) || (newAmplifier == oldAmplifier && this.getDuration() >= oldEffect.getDuration());
+            action = EntityEffectEvent.Action.CHANGED;
         }
+
+        EntityEffectEvent event = new EntityEffectEvent(entity, action, getId(), oldEffect, this, override);
+        event.call();
+        if (event.isCancelled()) return false;
+        override = event.isOverride();
+        if (oldEffect != null && !override) return false;
+
         if (entity instanceof Player) {
             Player player = (Player) entity;
 
@@ -212,9 +223,15 @@ public class Effect implements EffectID, Cloneable {
             int add = (this.amplifier + 1) * 4;
             if (add > entity.getAbsorption()) entity.setAbsorption(add);
         }
+
+        return true;
     }
 
-    public void remove(Entity entity) {
+    public boolean remove(Entity entity) {
+        EntityEffectEvent event = new EntityEffectEvent(entity, EntityEffectEvent.Action.REMOVED, getId(), this, null, false);
+        event.call();
+        if (event.isCancelled()) return false;
+
         if (entity instanceof Player) {
             MobEffectPacket pk = new MobEffectPacket();
             pk.eid = entity.getId();
@@ -241,6 +258,8 @@ public class Effect implements EffectID, Cloneable {
         if (this.id == Effect.ABSORPTION) {
             entity.setAbsorption(0);
         }
+
+        return true;
     }
 
     @Override
