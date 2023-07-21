@@ -855,7 +855,7 @@ public class Level implements ChunkManager, Metadatable {
     }
 
     public void addParticleEffect(Vector3f pos, String identifier, long uniqueEntityId, int dimensionId, String molangVariables, Player... players) {
-        if (players == null) {
+        if (players == null || players.length == 0) {
             players = this.getChunkPlayers(pos.getChunkX(), pos.getChunkZ()).values().toArray(new Player[0]);
         }
         for (Player player : players) {
