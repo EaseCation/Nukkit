@@ -11,6 +11,6 @@ public class ItemLead extends Item {
     }
 
     public ItemLead(Integer meta, int count) {
-        super(LEAD, 0, count, "Lead");
+        super(LEAD, meta, count, "Lead");
     }
 }

@@ -339,7 +339,7 @@ public class BinaryStream {
      */
     public Attribute[] getAttributeList() throws Exception {
         List<Attribute> list = new ObjectArrayList<>();
-        long count = this.getUnsignedVarInt();
+        int count = (int) this.getUnsignedVarInt();
 
         for (int i = 0; i < count; ++i) {
             String name = this.getString();

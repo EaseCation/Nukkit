@@ -14,7 +14,7 @@ public class ItemCampfire extends Item {
     }
 
     public ItemCampfire(Integer meta, int count) {
-        super(CAMPFIRE, 0, count, "Campfire");
+        super(CAMPFIRE, meta, count, "Campfire");
         this.block = Block.get(BlockID.BLOCK_CAMPFIRE);
     }
 }

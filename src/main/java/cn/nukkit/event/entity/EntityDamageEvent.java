@@ -46,6 +46,9 @@ public class EntityDamageEvent extends EntityEvent implements Cancellable {
             throw new EventException("BASE Damage modifier missing");
         }
 
+        if (cause == DamageCause.SUICIDE || cause == DamageCause.VOID || cause == DamageCause.HUNGER) {
+            return;
+        }
         Effect resistance = entity.getEffect(Effect.RESISTANCE);
         if (resistance != null) {
             this.setDamage((float) -(this.getDamage(DamageModifier.BASE) * 0.20 * (resistance.getAmplifier() + 1)), DamageModifier.RESISTANCE);
@@ -117,12 +120,17 @@ public class EntityDamageEvent extends EntityEvent implements Cancellable {
         switch (this.cause) {
             case FIRE_TICK:
             case FREEZE:
+            case TEMPERATURE:
             case SUFFOCATION:
             case DROWNING:
             case HUNGER:
             case FALL:
+            case STALAGMITE:
+            case FLY_INTO_WALL:
             case VOID:
             case MAGIC:
+            case WITHER:
+            case SONIC_BOOM:
             case SUICIDE:
                 return false;
         }
@@ -234,32 +242,32 @@ public class EntityDamageEvent extends EntityEvent implements Cancellable {
          * Potion or spell damage
          */
         MAGIC,
-//        WITHER,
+        WITHER,
         /**
          * Damage caused by hunger
          */
         HUNGER,
-//        ANVIL,
-//        THORNS,
-//        FALLING_BLOCK,
-//        PISTON,
-//        FLY_INTO_WALL,
-//        MAGMA,
-//        FIREWORKS,
+        ANVIL,
+        THORNS,
+        FALLING_BLOCK,
+        PISTON,
+        FLY_INTO_WALL,
+        MAGMA,
+        FIREWORKS,
         /**
          * Damage caused by being struck by lightning
          */
         LIGHTNING,
-//        CHARGING,
-//        TEMPERATURE,
+        CHARGING,
+        TEMPERATURE,
         /**
          * Damage caused from freezing.
          */
         FREEZE,
-//        STALACTITE,
-//        STALAGMITE,
-//        RAM_ATTACK,
-//        SONIC_BOOM,
+        STALACTITE,
+        STALAGMITE,
+        RAM_ATTACK,
+        SONIC_BOOM,
         /**
          * Plugins
          */

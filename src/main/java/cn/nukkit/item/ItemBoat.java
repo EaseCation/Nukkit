@@ -35,7 +35,7 @@ public class ItemBoat extends Item {
     }
 
     public ItemBoat(Integer meta, int count) {
-        super(BOAT, meta, count, "Boat");
+        super(BOAT, meta, 1, "Boat");
     }
 
     @Override

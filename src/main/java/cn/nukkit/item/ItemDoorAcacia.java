@@ -13,7 +13,7 @@ public class ItemDoorAcacia extends Item {
     }
 
     public ItemDoorAcacia(Integer meta, int count) {
-        super(ACACIA_DOOR, 0, count, "Acacia Door");
+        super(ACACIA_DOOR, meta, count, "Acacia Door");
         this.block = Block.get(BlockID.BLOCK_ACACIA_DOOR);
     }
 

@@ -44,19 +44,27 @@ public class Location extends Position {
     }
 
     public static Location fromObject(Vector3 pos) {
-        return fromObject(pos, null, 0.0f, 0.0f);
+        return fromObject(pos, null, 0, 0);
+    }
+
+    public static Location fromObject(Vector3 pos, double yaw) {
+        return fromObject(pos, null, yaw);
+    }
+
+    public static Location fromObject(Vector3 pos, double yaw, double pitch) {
+        return fromObject(pos, null, yaw, pitch);
     }
 
     public static Location fromObject(Vector3 pos, Level level) {
-        return fromObject(pos, level, 0.0f, 0.0f);
+        return fromObject(pos, level, 0, 0);
     }
 
     public static Location fromObject(Vector3 pos, Level level, double yaw) {
-        return fromObject(pos, level, yaw, 0.0f);
+        return fromObject(pos, level, yaw, 0);
     }
 
     public static Location fromObject(Vector3 pos, Level level, double yaw, double pitch) {
-        return new Location(pos.x, pos.y, pos.z, yaw, pitch, (level == null) ? ((pos instanceof Position) ? ((Position) pos).level : null) : level);
+        return new Location(pos.x, pos.y, pos.z, yaw, pitch, level == null ? pos instanceof Position ? ((Position) pos).level : null : level);
     }
 
     public double getYaw() {

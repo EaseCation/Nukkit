@@ -7,6 +7,7 @@ import java.util.UUID;
 
 @ToString
 public class SmithingTransformRecipe implements Recipe {
+    private final UUID internalId;
     private final String recipeId;
 
     private final Item output;
@@ -21,12 +22,17 @@ public class SmithingTransformRecipe implements Recipe {
     }
 
     public SmithingTransformRecipe(String recipeId, Item result, Item template, Item input, Item addition, RecipeTag tag) {
-        this.recipeId = recipeId != null ? recipeId : UUID.randomUUID().toString();
+        internalId = UUID.randomUUID();
+        this.recipeId = recipeId != null ? recipeId : internalId.toString();
         this.output = result.clone();
         this.template = template.clone();
         this.input = input.clone();
         this.addition = addition.clone();
         this.tag = tag;
+    }
+
+    public UUID getInternalId() {
+        return this.internalId;
     }
 
     public String getRecipeId() {

@@ -14,7 +14,7 @@ public class ItemSignJungle extends Item {
     }
 
     public ItemSignJungle(Integer meta, int count) {
-        super(JUNGLE_SIGN, 0, count, "Jungle Sign");
+        super(JUNGLE_SIGN, meta, count, "Jungle Sign");
         this.block = Block.get(BlockID.JUNGLE_STANDING_SIGN);
     }
 

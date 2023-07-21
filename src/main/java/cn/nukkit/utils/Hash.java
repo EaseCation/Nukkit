@@ -60,7 +60,7 @@ public final class Hash {
         return hash;
     }
 
-    public static long hashBlock(CompoundTag block) {
+    public static int hashBlock(CompoundTag block) {
         String name = block.getString("name");
 
         if ("minecraft:unknown".equals(name)) {

@@ -18,7 +18,7 @@ public class ItemSeedsMelon extends Item {
     }
 
     public ItemSeedsMelon(Integer meta, int count) {
-        super(MELON_SEEDS, 0, count, "Melon Seeds");
+        super(MELON_SEEDS, meta, count, "Melon Seeds");
         this.block = Block.get(BlockID.MELON_STEM);
     }
 }

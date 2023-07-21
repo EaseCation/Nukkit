@@ -16,7 +16,7 @@ public class ItemPotionLingering extends ProjectileItem {
     }
 
     public ItemPotionLingering(Integer meta, int count) {
-        super(LINGERING_POTION, meta, count, "Lingering Potion");
+        super(LINGERING_POTION, meta, 1, "Lingering Potion");
     }
 
     @Override

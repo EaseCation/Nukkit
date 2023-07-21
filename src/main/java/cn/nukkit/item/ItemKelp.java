@@ -14,7 +14,7 @@ public class ItemKelp extends Item {
     }
 
     public ItemKelp(Integer meta, int count) {
-        super(KELP, 0, count, "Kelp");
+        super(KELP, meta, count, "Kelp");
         this.block = Block.get(BlockID.BLOCK_KELP);
     }
 }

@@ -1,15 +1,23 @@
 package cn.nukkit.command.defaults;
 
 import cn.nukkit.Player;
-import cn.nukkit.command.Command;
+import cn.nukkit.command.CommandParser;
 import cn.nukkit.command.CommandSender;
 import cn.nukkit.command.data.CommandParamType;
 import cn.nukkit.command.data.CommandParameter;
-import cn.nukkit.event.player.PlayerTeleportEvent;
+import cn.nukkit.command.exceptions.CommandExceptions;
+import cn.nukkit.command.exceptions.CommandSyntaxException;
+import cn.nukkit.entity.Entity;
+import cn.nukkit.event.player.PlayerTeleportEvent.TeleportCause;
 import cn.nukkit.lang.TranslationContainer;
+import cn.nukkit.level.Level;
 import cn.nukkit.level.Location;
+import cn.nukkit.level.Position;
 import cn.nukkit.math.NukkitMath;
-import cn.nukkit.utils.TextFormat;
+import cn.nukkit.math.Vector3;
+
+import java.util.Collections;
+import java.util.List;
 
 /**
  * Created on 2015/11/12 by Pub4Game and milkice.
@@ -45,76 +53,72 @@ public class TeleportCommand extends VanillaCommand {
         if (!this.testPermission(sender)) {
             return true;
         }
-        if (args.length < 1 || args.length > 6) {
-            sender.sendMessage(new TranslationContainer("commands.generic.usage", this.usageMessage));
-            return true;
-        }
-        CommandSender target;
-        CommandSender origin = sender;
-        if (args.length == 1 || args.length == 3) {
-            if (sender instanceof Player) {
-                target = sender;
-            } else {
-                sender.sendMessage(new TranslationContainer("nukkit.command.generic.ingame"));
-                return true;
-            }
-            if (args.length == 1) {
-                target = sender.getServer().getPlayerExact(args[0].replace("@s", sender.getName()));
-                if (target == null) {
-                    sender.sendMessage(TextFormat.RED + "Can't find player " + args[0]);
-                    return true;
-                }
-            }
-        } else {
-            target = sender.getServer().getPlayerExact(args[0].replace("@s", sender.getName()));
-            if (target == null) {
-                sender.sendMessage(TextFormat.RED + "Can't find player " + args[0]);
-                return true;
-            }
-            if (args.length == 2) {
-                origin = target;
-                target = sender.getServer().getPlayerExact(args[1].replace("@s", sender.getName()));
-                if (target == null) {
-                    sender.sendMessage(TextFormat.RED + "Can't find player " + args[1]);
-                    return true;
-                }
-            }
-        }
-        if (args.length < 3) {
-            ((Player) origin).teleport((Player) target, PlayerTeleportEvent.TeleportCause.COMMAND);
-            Command.broadcastCommandMessage(sender, new TranslationContainer("commands.tp.success", origin.getName(), target.getName()));
-            return true;
-        } else if (((Player) target).getLevel() != null) {
-            int pos;
-            if (args.length == 4 || args.length == 6) {
-                pos = 1;
-            } else {
-                pos = 0;
-            }
-            double x;
-            double y;
-            double z;
-            double yaw;
-            double pitch;
+
+        CommandParser parser = new CommandParser(this, sender, args);
+        try {
+            List<Entity> victims;
+            Vector3 destination;
+            CommandSyntaxException unresolvedVictim;
+
             try {
-                x = Double.parseDouble(args[pos++].replace("~", "" + ((Player) target).x));
-                y = Double.parseDouble(args[pos++].replace("~", "" + ((Player) target).y));
-                z = Double.parseDouble(args[pos++].replace("~", "" + ((Player) target).z));
-                yaw = ((Player) target).getYaw();
-                pitch = ((Player) target).getPitch();
-            } catch (NumberFormatException e1) {
-                sender.sendMessage(new TranslationContainer("commands.generic.usage", this.usageMessage));
-                return true;
+                victims = parser.parseTargets();
+                unresolvedVictim = null;
+            } catch (CommandSyntaxException ex) {
+                if (ex == CommandExceptions.END_OF_COMMAND) {
+                    throw ex;
+                }
+                unresolvedVictim = ex;
+
+                if (!(sender instanceof Entity)) {
+                    parser.setErrorMessage(new TranslationContainer("%commands.generic.noTargetMatch"));
+                    throw CommandExceptions.NO_TARGET;
+                }
+
+                parser.back();
+                victims = Collections.singletonList((Entity) sender);
             }
-            if (args.length == 6 || (args.length == 5 && pos == 3)) {
-                yaw = Integer.parseInt(args[pos++]);
-                pitch = Integer.parseInt(args[pos++]);
+
+            destination = parser.parseVector3TargetOrDefault((Vector3) null);
+            if (destination == null) {
+                if (unresolvedVictim != null) {
+                    throw unresolvedVictim;
+                }
+
+                if (!(sender instanceof Entity)) {
+                    parser.setErrorMessage(new TranslationContainer("%commands.generic.noTargetMatch"));
+                    throw CommandExceptions.NO_TARGET;
+                }
+                if (victims.size() != 1) {
+                    parser.setErrorMessage(new TranslationContainer("%commands.generic.tooManyTargets"));
+                    throw CommandExceptions.TOO_MANY_TARGETS;
+                }
+
+                destination = victims.get(0);
+                victims = Collections.singletonList((Entity) sender);
             }
-            ((Player) target).teleport(new Location(x, y, z, yaw, pitch, ((Player) target).getLevel()), PlayerTeleportEvent.TeleportCause.COMMAND);
-            Command.broadcastCommandMessage(sender, new TranslationContainer("commands.tp.success.coordinates", target.getName(), NukkitMath.round(x, 2), NukkitMath.round(y, 2), NukkitMath.round(z, 2)));
+
+            float yRot = parser.parseFloatOrDefault(Float.NaN) % 180;
+            float xRot = parser.parseFloatOrDefault(Float.NaN) % 180;
+
+            Level level = destination instanceof Position ? ((Position) destination).level : parser.getTargetLevel();
+            boolean isCoordinates = !(destination instanceof Entity);
+
+            final Vector3 dest = destination;
+            victims.forEach(victim -> {
+                victim.teleport(Location.fromObject(dest, level, Float.isNaN(yRot) ? victim.yaw : yRot, Float.isNaN(xRot) ? victim.pitch : xRot), TeleportCause.COMMAND);
+
+                if (!isCoordinates && victim instanceof Player) {
+                    ((Player) victim).sendMessage(new TranslationContainer("commands.tp.successVictim", ((Entity) dest).getName()));
+                }
+
+                broadcastCommandMessage(sender, isCoordinates ?
+                        new TranslationContainer("commands.tp.success.coordinates", victim.getName(), NukkitMath.round(dest.x, 2), NukkitMath.round(dest.y, 2), NukkitMath.round(dest.z, 2)) :
+                        new TranslationContainer("commands.tp.success", victim.getName(), ((Entity) dest).getName()));
+            });
             return true;
+        } catch (CommandSyntaxException e) {
+            sender.sendMessage(parser.getErrorMessage());
         }
-        sender.sendMessage(new TranslationContainer("commands.generic.usage", this.usageMessage));
-        return true;
+        return false;
     }
 }

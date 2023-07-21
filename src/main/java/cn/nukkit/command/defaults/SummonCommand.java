@@ -1,7 +1,6 @@
 package cn.nukkit.command.defaults;
 
 import cn.nukkit.Player;
-import cn.nukkit.command.Command;
 import cn.nukkit.command.CommandSender;
 import cn.nukkit.command.data.CommandEnum;
 import cn.nukkit.command.data.CommandParamType;
@@ -12,7 +11,7 @@ import cn.nukkit.level.Position;
 import cn.nukkit.nbt.Mojangson;
 import cn.nukkit.nbt.tag.CompoundTag;
 
-public class SummonCommand extends Command {
+public class SummonCommand extends VanillaCommand {
 	public SummonCommand(String name) {
         super(name, "%commands.summon.description", "%nukkit.command.summon.usage");
         this.setPermission("nukkit.command.summon");

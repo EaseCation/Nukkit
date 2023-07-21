@@ -9,7 +9,7 @@ import cn.nukkit.math.Vector3;
  * author: MagicDroidX
  * Nukkit Project
  */
-public abstract class ItemEdible extends Item implements ItemReleasable {
+public abstract class ItemEdible extends Item {
     public ItemEdible(int id, Integer meta, int count, String name) {
         super(id, meta, count, name);
     }
@@ -58,6 +58,11 @@ public abstract class ItemEdible extends Item implements ItemReleasable {
 
     @Override
     public boolean onRelease(Player player, int ticksUsed) {
+        return true;
+    }
+
+    @Override
+    public boolean canRelease() {
         return true;
     }
 }

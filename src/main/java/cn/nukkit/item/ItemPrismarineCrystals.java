@@ -11,6 +11,6 @@ public class ItemPrismarineCrystals extends Item {
     }
 
     public ItemPrismarineCrystals(Integer meta, int count) {
-        super(PRISMARINE_CRYSTALS, 0, count, "Prismarine Crystals");
+        super(PRISMARINE_CRYSTALS, meta, count, "Prismarine Crystals");
     }
 }

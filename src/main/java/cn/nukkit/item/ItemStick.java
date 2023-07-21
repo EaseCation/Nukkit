@@ -15,6 +15,6 @@ public class ItemStick extends Item {
     }
 
     public ItemStick(Integer meta, int count) {
-        super(STICK, 0, count, "Stick");
+        super(STICK, meta, count, "Stick");
     }
 }

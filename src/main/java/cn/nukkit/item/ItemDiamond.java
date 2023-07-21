@@ -15,6 +15,6 @@ public class ItemDiamond extends Item {
     }
 
     public ItemDiamond(Integer meta, int count) {
-        super(DIAMOND, 0, count, "Diamond");
+        super(DIAMOND, meta, count, "Diamond");
     }
 }

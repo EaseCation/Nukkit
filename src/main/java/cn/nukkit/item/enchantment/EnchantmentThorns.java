@@ -4,6 +4,7 @@ import cn.nukkit.entity.Entity;
 import cn.nukkit.entity.EntityHumanType;
 import cn.nukkit.event.entity.EntityDamageByEntityEvent;
 import cn.nukkit.event.entity.EntityDamageEvent;
+import cn.nukkit.event.entity.EntityDamageEvent.DamageCause;
 import cn.nukkit.item.Item;
 
 import java.util.concurrent.ThreadLocalRandom;
@@ -33,7 +34,10 @@ public class EnchantmentThorns extends Enchantment {
     }
 
     @Override
-    public void doPostAttack(Entity attacker, Entity entity) {
+    public void doPostAttack(Entity attacker, Entity entity, DamageCause cause) {
+        if (cause == DamageCause.THORNS) {
+            return;
+        }
         if (!(entity instanceof EntityHumanType)) {
             return;
         }
@@ -52,7 +56,7 @@ public class EnchantmentThorns extends Enchantment {
         ThreadLocalRandom random = ThreadLocalRandom.current();
 
         if (shouldHit(random, thornsLevel)) {
-            attacker.attack(new EntityDamageByEntityEvent(entity, attacker, EntityDamageEvent.DamageCause.ENTITY_ATTACK, getDamage(random, level), 0f, 0f));
+            attacker.attack(new EntityDamageByEntityEvent(entity, attacker, EntityDamageEvent.DamageCause.THORNS, getDamage(random, level), 0f, 0f));
         }
     }
 

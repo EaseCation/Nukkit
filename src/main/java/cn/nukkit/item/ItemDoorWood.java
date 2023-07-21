@@ -18,7 +18,7 @@ public class ItemDoorWood extends Item {
     }
 
     public ItemDoorWood(Integer meta, int count) {
-        super(WOODEN_DOOR, 0, count, "Oak Door");
+        super(WOODEN_DOOR, meta, count, "Oak Door");
         this.block = Block.get(BlockID.BLOCK_WOODEN_DOOR);
     }
 

@@ -18,6 +18,7 @@ import cn.nukkit.utils.TextFormat;
 import cn.nukkit.utils.function.FloatSupplier;
 
 import javax.annotation.Nullable;
+import java.util.Collections;
 import java.util.List;
 import java.util.function.*;
 import java.util.stream.Collectors;
@@ -73,6 +74,10 @@ public class CommandParser {
             return;
         }
         this.cursor -= n;
+    }
+
+    public void clearErrorMessage() {
+        this.errorMessage = null;
     }
 
     public void setErrorMessage(@Nullable TextContainer detailMessage) {
@@ -541,6 +546,52 @@ public class CommandParser {
         return targets;
     }
 
+    public List<Entity> parseTargetsOrDefault(List<Entity> defaultValue) throws CommandSyntaxException {
+        if (!this.hasNext()) {
+            return defaultValue;
+        }
+        return this.parseTargets();
+    }
+
+    public List<Entity> parseTargetsOrDefault(Supplier<List<Entity>> defaultValue) throws CommandSyntaxException {
+        if (!this.hasNext()) {
+            return defaultValue.get();
+        }
+        return this.parseTargets();
+    }
+
+    public List<Entity> parseTargetsOrDefault(int limit, List<Entity> defaultValue) throws CommandSyntaxException {
+        if (!this.hasNext()) {
+            return defaultValue;
+        }
+        return this.parseTargets(limit);
+    }
+
+    public List<Entity> parseTargetsOrDefault(int limit, Supplier<List<Entity>> defaultValue) throws CommandSyntaxException {
+        if (!this.hasNext()) {
+            return defaultValue.get();
+        }
+        return this.parseTargets(limit);
+    }
+
+    public List<Entity> parseTargetsOrSelf() throws CommandSyntaxException {
+        return this.parseTargetsOrDefault(() -> {
+            if (!(sender instanceof Entity)) {
+                throw CommandExceptions.NO_TARGET;
+            }
+            return Collections.singletonList((Entity) sender);
+        });
+    }
+
+    public List<Entity> parseTargetsOrSelf(int limit) throws CommandSyntaxException {
+        return this.parseTargetsOrDefault(limit, () -> {
+            if (!(sender instanceof Entity)) {
+                throw CommandExceptions.NO_TARGET;
+            }
+            return Collections.singletonList((Entity) sender);
+        });
+    }
+
     public List<Player> parseTargetPlayers() throws CommandSyntaxException {
         List<Player> targets = this.parseTargets().stream()
                 .filter(entity -> entity instanceof Player)
@@ -566,6 +617,103 @@ public class CommandParser {
         return targets;
     }
 
+    public List<Player> parseTargetPlayersOrDefault(List<Player> defaultValue) throws CommandSyntaxException {
+        if (!this.hasNext()) {
+            return defaultValue;
+        }
+        return this.parseTargetPlayers();
+    }
+
+    public List<Player> parseTargetPlayersOrDefault(Supplier<List<Player>> defaultValue) throws CommandSyntaxException {
+        if (!this.hasNext()) {
+            return defaultValue.get();
+        }
+        return this.parseTargetPlayers();
+    }
+
+    public List<Player> parseTargetPlayersOrDefault(int limit, List<Player> defaultValue) throws CommandSyntaxException {
+        if (!this.hasNext()) {
+            return defaultValue;
+        }
+        return this.parseTargetPlayers(limit);
+    }
+
+    public List<Player> parseTargetPlayersOrDefault(int limit, Supplier<List<Player>> defaultValue) throws CommandSyntaxException {
+        if (!this.hasNext()) {
+            return defaultValue.get();
+        }
+        return this.parseTargetPlayers(limit);
+    }
+
+    public List<Player> parseTargetPlayersOrSelf() throws CommandSyntaxException {
+        return this.parseTargetPlayersOrDefault(() -> {
+            if (!(sender instanceof Player)) {
+                throw CommandExceptions.NO_TARGET;
+            }
+            return Collections.singletonList((Player) sender);
+        });
+    }
+
+    public List<Player> parseTargetPlayersOrSelf(int limit) throws CommandSyntaxException {
+        return this.parseTargetPlayersOrDefault(limit, () -> {
+            if (!(sender instanceof Player)) {
+                throw CommandExceptions.NO_TARGET;
+            }
+            return Collections.singletonList((Player) sender);
+        });
+    }
+
+    public Vector3 parseVector3Target() throws CommandSyntaxException {
+        this.mark();
+        try {
+            return this.parseVector3();
+        } catch (CommandSyntaxException e) {
+            if (e == CommandExceptions.NO_TARGET || e == CommandExceptions.TOO_MANY_TARGETS) {
+                throw e;
+            }
+            this.reset();
+        }
+        return this.parseTargets(1).get(0);
+    }
+
+    public Vector3 parseVector3TargetOrDefault(Vector3 defaultValue) throws CommandSyntaxException {
+        if (!this.hasNext()) {
+            return defaultValue;
+        }
+        return this.parseVector3Target();
+    }
+
+    public Vector3 parseVector3TargetOrDefault(Supplier<Vector3> defaultValue) throws CommandSyntaxException {
+        if (!this.hasNext()) {
+            return defaultValue.get();
+        }
+        return this.parseVector3Target();
+    }
+
+    public Position parsePositionTarget() throws CommandSyntaxException {
+        Position pos = Position.fromObject(this.parseVector3Target());
+        if (pos.level == null) {
+            pos.level = this.getTargetLevel();
+        }
+        return pos;
+    }
+
+    public Position parsePositionTargetOrDefault(Vector3 defaultValue) throws CommandSyntaxException {
+        Position pos = Position.fromObject(this.parseVector3TargetOrDefault(defaultValue));
+        if (pos.level == null) {
+            pos.level = this.getTargetLevel();
+        }
+        return pos;
+    }
+
+    public Position parsePositionTargetOrDefault(Supplier<Vector3> defaultValue) throws CommandSyntaxException {
+        Position pos = Position.fromObject(this.parseVector3TargetOrDefault(defaultValue));
+        if (pos.level == null) {
+            pos.level = this.getTargetLevel();
+        }
+        return pos;
+    }
+
     public Position parsePosition() throws CommandSyntaxException {
         return Position.fromObject(this.parseVector3(), this.getTargetLevel());
     }
@@ -584,26 +732,24 @@ public class CommandParser {
         return this.parsePosition();
     }
 
-    public Vector3 parseVector3() throws CommandSyntaxException {
-        double baseX = 0;
-        double baseY = 0;
-        double baseZ = 0;
+    public Position parsePositionOrSelf() throws CommandSyntaxException {
+        return this.parsePositionOrDefault(() -> Position.fromObject(this.parseVector3OrSelf(), this.getTargetLevel()));
+    }
 
-        if (this.sender instanceof Vector3) {
-            Vector3 vec = (Vector3) this.sender;
+    public Vector3 parseVector3() throws CommandSyntaxException {
+        double baseX;
+        double baseY;
+        double baseZ;
+
+        Vector3 vec = this.senderAsVector3();
+        if (vec != null) {
             baseX = vec.getX();
             baseY = vec.getY();
             baseZ = vec.getZ();
-        } else if (this.sender instanceof Vector3f) {
-            Vector3f vec = (Vector3f) this.sender;
-            baseX = vec.getX();
-            baseY = vec.getY();
-            baseZ = vec.getZ();
-        } else if (this.sender instanceof BlockVector3) {
-            BlockVector3 vec = (BlockVector3) this.sender;
-            baseX = vec.getX();
-            baseY = vec.getY();
-            baseZ = vec.getZ();
+        } else {
+            baseX = 0;
+            baseY = 0;
+            baseZ = 0;
         }
 
         return new Vector3(this.parseCoordinate(baseX), this.parseCoordinate(baseY), this.parseCoordinate(baseZ));
@@ -623,26 +769,27 @@ public class CommandParser {
         return this.parseVector3();
     }
 
-    public Vector2 parseVector2() throws CommandSyntaxException {
-        double baseX = 0;
-        double baseZ = 0;
+    public Vector3 parseVector3OrSelf() throws CommandSyntaxException {
+        return this.parseVector3OrDefault(() -> {
+            Vector3 vec = this.senderAsVector3();
+            if (vec == null) {
+                throw CommandExceptions.NO_TARGET;
+            }
+            return vec;
+        });
+    }
 
-        if (this.sender instanceof Vector3) {
-            Vector3 vec = (Vector3) this.sender;
-            baseX = vec.getX();
-            baseZ = vec.getZ();
-        } else if (this.sender instanceof Vector3f) {
-            Vector3f vec = (Vector3f) this.sender;
-            baseX = vec.getX();
-            baseZ = vec.getZ();
-        } else if (this.sender instanceof BlockVector3) {
-            BlockVector3 vec = (BlockVector3) this.sender;
-            baseX = vec.getX();
-            baseZ = vec.getZ();
-        } else if (this.sender instanceof Vector2) {
-            Vector2 vec = (Vector2) this.sender;
+    public Vector2 parseVector2() throws CommandSyntaxException {
+        double baseX;
+        double baseZ;
+
+        Vector2 vec = this.senderAsVector2();
+        if (vec != null) {
             baseX = vec.getX();
             baseZ = vec.getY();
+        } else {
+            baseX = 0;
+            baseZ = 0;
         }
 
         return new Vector2(this.parseCoordinate(baseX), this.parseCoordinate(baseZ));
@@ -662,6 +809,16 @@ public class CommandParser {
         return this.parseVector2();
     }
 
+    public Vector2 parseVector2OrSelf() throws CommandSyntaxException {
+        return this.parseVector2OrDefault(() -> {
+            Vector2 vec = this.senderAsVector2();
+            if (vec == null) {
+                throw CommandExceptions.NO_TARGET;
+            }
+            return vec;
+        });
+    }
+
     private double parseCoordinate(double baseCoordinate) throws CommandSyntaxException {
         String arg = this.next();
         try {
@@ -676,6 +833,42 @@ public class CommandParser {
         } catch (Exception e) {
             throw CommandExceptions.COMMAND_SYNTAX_EXCEPTION;
         }
+    }
+
+    @Nullable
+    public Vector3 senderAsVector3() {
+        if (this.sender instanceof Vector3) {
+            return (Vector3) this.sender;
+        }
+        if (this.sender instanceof Vector3f) {
+            Vector3f vec = (Vector3f) this.sender;
+            return new Vector3(vec.getX(), vec.getY(), vec.getZ());
+        }
+        if (this.sender instanceof BlockVector3) {
+            BlockVector3 vec = (BlockVector3) this.sender;
+            return new Vector3(vec.getX(), vec.getY(), vec.getZ());
+        }
+        return null;
+    }
+
+    @Nullable
+    public Vector2 senderAsVector2() {
+        if (this.sender instanceof Vector3) {
+            Vector3 vec = (Vector3) this.sender;
+            return new Vector2(vec.getX(), vec.getZ());
+        }
+        if (this.sender instanceof Vector3f) {
+            Vector3f vec = (Vector3f) this.sender;
+            return new Vector2(vec.getX(), vec.getZ());
+        }
+        if (this.sender instanceof BlockVector3) {
+            BlockVector3 vec = (BlockVector3) this.sender;
+            return new Vector2(vec.getX(), vec.getZ());
+        }
+        if (this.sender instanceof Vector2) {
+            return (Vector2) this.sender;
+        }
+        return null;
     }
 
     public Block parseBlock() throws CommandSyntaxException {

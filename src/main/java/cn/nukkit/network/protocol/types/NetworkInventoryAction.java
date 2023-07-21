@@ -7,6 +7,7 @@ import cn.nukkit.inventory.CartographyTableInventory;
 import cn.nukkit.inventory.EnchantInventory;
 import cn.nukkit.inventory.Inventory;
 import cn.nukkit.inventory.LoomInventory;
+import cn.nukkit.inventory.SmithingTableInventory;
 import cn.nukkit.inventory.StonecutterInventory;
 import cn.nukkit.inventory.transaction.action.*;
 import cn.nukkit.item.Item;
@@ -48,7 +49,7 @@ public class NetworkInventoryAction {
     public static final int SOURCE_TYPE_CRAFTING_RESULT = -4;
     public static final int SOURCE_TYPE_CRAFTING_USE_INGREDIENT = -5; // crafting, stonecutter, loom, cartography_table
 
-    public static final int SOURCE_TYPE_ANVIL_INPUT = -10; // anvil, grindstone, smithing_table
+    public static final int SOURCE_TYPE_ANVIL_INPUT = -10; // anvil, grindstone, (smithing_table)
     public static final int SOURCE_TYPE_ANVIL_MATERIAL = -11; // anvil, grindstone
     public static final int SOURCE_TYPE_ANVIL_RESULT = -12; // anvil, grindstone, smithing_table
     public static final int SOURCE_TYPE_ANVIL_OUTPUT = -13;
@@ -74,7 +75,7 @@ public class NetworkInventoryAction {
 
     public int sourceType;
     public int windowId;
-    public long sourceFlags;
+    public int sourceFlags;
     public int inventorySlot;
     public Item oldItem;
     public Item newItem;
@@ -90,7 +91,7 @@ public class NetworkInventoryAction {
             case SOURCE_GLOBAL:
                 break;
             case SOURCE_WORLD:
-                this.sourceFlags = packet.getUnsignedVarInt();
+                this.sourceFlags = (int) packet.getUnsignedVarInt();
                 break;
             case SOURCE_CREATIVE:
                 break;
@@ -276,12 +277,19 @@ public class NetworkInventoryAction {
                     }
 //                    AnvilInventory anvil = (AnvilInventory) inv;
 
+                    if (inv instanceof SmithingTableInventory) {
+                        if (this.inventorySlot == 2) {
+                            return new TakeResultAction(this.oldItem, this.newItem, (SmithingTableInventory) inv);
+                        }
+                        return null;
+                    }
+
                     switch (this.windowId) {
                         case SOURCE_TYPE_ANVIL_INPUT:
                         case SOURCE_TYPE_ANVIL_MATERIAL:
                             return new RepairItemAction(this.oldItem, this.newItem, this.windowId);
                         case SOURCE_TYPE_ANVIL_RESULT:
-                            return new RepairItemAction(this.oldItem, this.newItem, this.inventorySlot == 1 ? SOURCE_TYPE_ANVIL_MATERIAL : this.windowId);
+                            return new RepairItemAction(this.oldItem, this.newItem, /*this.inventorySlot == 3 ? SOURCE_TYPE_ANVIL_OUTPUT :*/ this.inventorySlot == 1 ? SOURCE_TYPE_ANVIL_MATERIAL : this.windowId);
                     }
 
 //                    return new SlotChangeAction(anvil, this.inventorySlot, this.oldItem, this.newItem);

@@ -11,7 +11,7 @@ public class ItemNetherStar extends Item {
     }
 
     public ItemNetherStar(Integer meta, int count) {
-        super(NETHER_STAR, 0, count, "Nether Star");
+        super(NETHER_STAR, meta, count, "Nether Star");
     }
 
     @Override

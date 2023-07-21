@@ -12,7 +12,7 @@ public class ItemSignWarped extends Item {
     }
 
     public ItemSignWarped(Integer meta, int count) {
-        super(WARPED_SIGN, 0, count, "Warped Sign");
+        super(WARPED_SIGN, meta, count, "Warped Sign");
         this.block = Block.get(Block.WARPED_STANDING_SIGN);
     }
 

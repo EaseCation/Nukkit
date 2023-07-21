@@ -11,7 +11,7 @@ public class ItemIngotNetherite extends Item {
     }
 
     public ItemIngotNetherite(Integer meta, int count) {
-        super(NETHERITE_INGOT, 0, count, "Netherite Ingot");
+        super(NETHERITE_INGOT, meta, count, "Netherite Ingot");
     }
 
     @Override

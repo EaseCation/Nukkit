@@ -152,7 +152,7 @@ public abstract class EntityHumanType extends EntityCreature implements Inventor
             return false;
         }
 
-        if (source.getCause() != DamageCause.VOID && source.getCause() != DamageCause.CUSTOM && source.getCause() != DamageCause.MAGIC && source.getCause() != DamageCause.HUNGER) {
+        if (source.getCause() != DamageCause.VOID && source.getCause() != DamageCause.SUICIDE && source.getCause() != DamageCause.CUSTOM && source.getCause() != DamageCause.SONIC_BOOM && source.getCause() != DamageCause.HUNGER) {
             int armorPoints = 0;
             int epf = 0;
             //int toughness = 0;
@@ -171,9 +171,15 @@ public abstract class EntityHumanType extends EntityCreature implements Inventor
                     DamageModifier.ARMOR_ENCHANTMENTS);
         }
 
-        source.setDamage(-Math.min(this.getAbsorption(), source.getFinalDamage()), DamageModifier.ABSORPTION);
+        if (source.getCause() != DamageCause.SUICIDE) {
+            source.setDamage(-Math.min(this.getAbsorption(), source.getFinalDamage()), DamageModifier.ABSORPTION);
+        }
 
         if (super.attack(source)) {
+            if (source.getCause() == DamageCause.SUICIDE) {
+                return true;
+            }
+
             Entity damager = null;
 
             if (source instanceof EntityDamageByEntityEvent) {
@@ -186,7 +192,7 @@ public abstract class EntityHumanType extends EntityCreature implements Inventor
                 if (armor.hasEnchantments()) {
                     if (damager != null) {
                         for (Enchantment enchantment : armor.getEnchantments()) {
-                            enchantment.doPostAttack(damager, this);
+                            enchantment.doPostAttack(damager, this, source.getCause());
                         }
                     }
 
@@ -196,15 +202,20 @@ public abstract class EntityHumanType extends EntityCreature implements Inventor
                     }
                 }
 
-                if (source.getCause() != DamageCause.VOID &&
-                        source.getCause() != DamageCause.MAGIC &&
-                        source.getCause() != DamageCause.HUNGER &&
-                        source.getCause() != DamageCause.DROWNING &&
-                        source.getCause() != DamageCause.SUFFOCATION &&
-                        source.getCause() != DamageCause.SUICIDE &&
-                        source.getCause() != DamageCause.FIRE_TICK &&
-                        source.getCause() != DamageCause.FREEZE &&
-                        source.getCause() != DamageCause.FALL) { // No armor damage
+                if (source.getCause() != DamageCause.VOID
+                        && source.getCause() != DamageCause.MAGIC
+                        && source.getCause() != DamageCause.WITHER
+                        && source.getCause() != DamageCause.HUNGER
+                        && source.getCause() != DamageCause.DROWNING
+                        && source.getCause() != DamageCause.SUFFOCATION
+                        && source.getCause() != DamageCause.FIRE_TICK
+                        && source.getCause() != DamageCause.FREEZE
+                        && source.getCause() != DamageCause.TEMPERATURE
+                        && source.getCause() != DamageCause.FALL
+                        && source.getCause() != DamageCause.STALAGMITE
+                        && source.getCause() != DamageCause.FLY_INTO_WALL
+                        && source.getCause() != DamageCause.SONIC_BOOM
+                ) { // No armor damage
                     if (armor.isUnbreakable() || armor instanceof ItemSkull || armor.getId() == ItemBlockID.CARVED_PUMPKIN || armor.getId() == Item.ELYTRA) {
                         continue;
                     }

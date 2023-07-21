@@ -60,7 +60,7 @@ public abstract class Tag {
             out.print("(\"" + name + "\")");
         }
         out.print(": ");
-        out.println(toString());
+        out.println(this);
     }
 
     public Tag setName(String name) {
@@ -79,7 +79,9 @@ public abstract class Tag {
 
     public static Tag readNamedTag(NBTInputStream dis) throws IOException {
         byte type = dis.readByte();
-        if (type == 0) return new EndTag();
+        if (type == TAG_End) {
+            return new EndTag();
+        }
 
         String name = dis.readUTF();
 

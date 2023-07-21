@@ -17,7 +17,7 @@ import cn.nukkit.utils.TextFormat;
 public class GamemodeCommand extends VanillaCommand {
 
     public GamemodeCommand(String name) {
-        super(name, "%commands.gamemode.description", "%nukkit.command.gamemode.usage", "gm");
+        super(name, "%commands.gamemode.description", "%nukkit.command.gamemode.usage");
         this.setPermission("nukkit.command.gamemode.survival;" +
                 "nukkit.command.gamemode.creative;" +
                 "nukkit.command.gamemode.adventure;" +

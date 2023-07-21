@@ -32,7 +32,7 @@ public class EnchantmentProtectionFall extends EnchantmentProtection {
     public float getProtectionFactor(EntityDamageEvent e) {
         DamageCause cause = e.getCause();
 
-        if (level <= 0 || (cause != DamageCause.FALL)) {
+        if (level <= 0 || cause != DamageCause.FALL && cause != DamageCause.STALAGMITE) {
             return 0;
         }
 

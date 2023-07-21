@@ -49,7 +49,7 @@ public class Position extends Vector3 {
     }
 
     public static Position fromObject(Vector3 pos, Level level) {
-        return new Position(pos.x, pos.y, pos.z, level);
+        return new Position(pos.x, pos.y, pos.z, level == null ? pos instanceof Position ? ((Position) pos).level : null : level);
     }
 
     public Level getLevel() {

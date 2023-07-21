@@ -18,7 +18,7 @@ import cn.nukkit.network.protocol.LevelSoundEventPacket;
 /**
  * Created by PetteriM1
  */
-public class ItemTrident extends ItemTool implements ItemReleasable {
+public class ItemTrident extends ItemTool {
 
     public ItemTrident() {
         this(0, 1);
@@ -117,6 +117,11 @@ public class ItemTrident extends ItemTool implements ItemReleasable {
             }
         }
 
+        return true;
+    }
+
+    @Override
+    public boolean canRelease() {
         return true;
     }
 

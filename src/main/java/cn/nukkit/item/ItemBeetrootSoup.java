@@ -15,7 +15,7 @@ public class ItemBeetrootSoup extends ItemEdible {
     }
 
     public ItemBeetrootSoup(Integer meta, int count) {
-        super(BEETROOT_SOUP, 0, count, "Beetroot Soup");
+        super(BEETROOT_SOUP, 0, 1, "Beetroot Soup");
     }
 
     @Override

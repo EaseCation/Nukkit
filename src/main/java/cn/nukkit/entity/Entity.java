@@ -1026,10 +1026,9 @@ public abstract class Entity extends Location implements Metadatable, EntityData
     }
 
     public boolean attack(EntityDamageEvent source) {
-        if (hasEffect(Effect.FIRE_RESISTANCE)
-                && (source.getCause() == DamageCause.FIRE
-                || source.getCause() == DamageCause.FIRE_TICK
-                || source.getCause() == DamageCause.LAVA)) {
+        if ((source.getCause() == DamageCause.FIRE || source.getCause() == DamageCause.FIRE_TICK
+                || source.getCause() == DamageCause.LAVA || source.getCause() == DamageCause.MAGMA)
+                && (fireProof || hasEffect(Effect.FIRE_RESISTANCE))) {
             return false;
         }
 
@@ -1038,19 +1037,22 @@ public abstract class Entity extends Location implements Metadatable, EntityData
             return false;
         }
 
-        // Make fire aspect to set the target in fire before dealing any damage so the target is in fire on death even if killed by the first hit
-        if (source instanceof EntityDamageByEntityEvent) {
-            Enchantment[] enchantments = ((EntityDamageByEntityEvent) source).getWeaponEnchantments();
-            if (enchantments != null) {
-                for (Enchantment enchantment : enchantments) {
-                    enchantment.doAttack(((EntityDamageByEntityEvent) source).getDamager(), this);
+        if (source.getCause() != DamageCause.SUICIDE) {
+            // Make fire aspect to set the target in fire before dealing any damage so the target is in fire on death even if killed by the first hit
+            if (source instanceof EntityDamageByEntityEvent) {
+                Enchantment[] enchantments = ((EntityDamageByEntityEvent) source).getWeaponEnchantments();
+                if (enchantments != null) {
+                    for (Enchantment enchantment : enchantments) {
+                        enchantment.doAttack(((EntityDamageByEntityEvent) source).getDamager(), this);
+                    }
                 }
+            }
+
+            if (this.absorption > 0) {  // Damage Absorption
+                this.setAbsorption(Math.max(0, this.getAbsorption() + source.getDamage(EntityDamageEvent.DamageModifier.ABSORPTION)));
             }
         }
 
-        if (this.absorption > 0) {  // Damage Absorption
-            this.setAbsorption(Math.max(0, this.getAbsorption() + source.getDamage(EntityDamageEvent.DamageModifier.ABSORPTION)));
-        }
         setLastDamageCause(source);
         setHealth(getHealth() - source.getFinalDamage());
         return true;

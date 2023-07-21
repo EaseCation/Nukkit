@@ -146,6 +146,14 @@ public class CraftingDataPacket extends DataPacket {
         Collections.addAll(materialReducerEntries, recipe);
     }
 
+    public void addSmithingTransformRecipe(SmithingTransformRecipe... recipe) {
+        Collections.addAll(entries, recipe);
+    }
+
+    public void addSmithingTrimRecipe(SmithingTrimRecipe... recipe) {
+        Collections.addAll(entries, recipe);
+    }
+
     @Override
     public DataPacket clean() {
         entries = new ObjectArrayList<>();

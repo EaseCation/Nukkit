@@ -11,6 +11,6 @@ public class ItemRabbitHide extends Item {
     }
 
     public ItemRabbitHide(Integer meta, int count) {
-        super(RABBIT_HIDE, 0, count, "Rabbit Hide");
+        super(RABBIT_HIDE, meta, count, "Rabbit Hide");
     }
 }

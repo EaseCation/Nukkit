@@ -25,7 +25,7 @@ public class ItemPainting extends Item {
     }
 
     public ItemPainting(Integer meta, int count) {
-        super(PAINTING, 0, count, "Painting");
+        super(PAINTING, meta, count, "Painting");
     }
 
     @Override

@@ -14,7 +14,7 @@ public class ItemSignAcacia extends Item {
     }
 
     public ItemSignAcacia(Integer meta, int count) {
-        super(ACACIA_SIGN, 0, count, "Acacia Sign");
+        super(ACACIA_SIGN, meta, count, "Acacia Sign");
         this.block = Block.get(BlockID.ACACIA_STANDING_SIGN);
     }
 

@@ -23,7 +23,7 @@ public class ItemMinecartHopper extends Item {
     }
 
     public ItemMinecartHopper(Integer meta, int count) {
-        super(HOPPER_MINECART, meta, count, "Minecart with Hopper");
+        super(HOPPER_MINECART, meta, 1, "Minecart with Hopper");
     }
 
     @Override

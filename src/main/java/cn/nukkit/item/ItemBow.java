@@ -26,7 +26,7 @@ import java.util.concurrent.ThreadLocalRandom;
  * author: MagicDroidX
  * Nukkit Project
  */
-public class ItemBow extends ItemTool implements ItemReleasable {
+public class ItemBow extends ItemTool {
 
     public ItemBow() {
         this(0, 1);
@@ -177,6 +177,11 @@ public class ItemBow extends ItemTool implements ItemReleasable {
             }
         }
 
+        return true;
+    }
+
+    @Override
+    public boolean canRelease() {
         return true;
     }
 

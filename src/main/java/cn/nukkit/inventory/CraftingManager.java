@@ -51,6 +51,8 @@ public class CraftingManager {
     protected final Long2ObjectMap<SmithingTransformRecipe> smithingRecipes = new Long2ObjectOpenHashMap<>();
     protected final Map<RecipeTag, Long2ObjectMap<SmithingTransformRecipe>> taggedSmithingRecipes = new EnumMap<>(RecipeTag.class);
 
+    protected final Long2ObjectMap<SmithingTrimRecipe> smithingTrimRecipes = new Long2ObjectOpenHashMap<>(); //TODO
+
     protected final Long2ObjectMap<FurnaceRecipe> furnaceRecipes = new Long2ObjectOpenHashMap<>();
     protected final Map<RecipeTag, Long2ObjectMap<FurnaceRecipe>> taggedFurnaceRecipes = new EnumMap<>(RecipeTag.class);
 
@@ -271,6 +273,14 @@ public class CraftingManager {
             pk.addMaterialReducerRecipe(recipe);
         }
 
+        for (SmithingTransformRecipe recipe : this.smithingRecipes.values()) {
+            pk.addSmithingTransformRecipe(recipe);
+        }
+
+        for (SmithingTrimRecipe recipe : this.smithingTrimRecipes.values()) {
+            pk.addSmithingTrimRecipe(recipe);
+        }
+
         pk.tryEncode();
 
         packet = pk.compress(Deflater.BEST_COMPRESSION);
@@ -287,6 +297,10 @@ public class CraftingManager {
 
     public Long2ObjectMap<SmithingTransformRecipe> getSmithingRecipes() {
         return smithingRecipes;
+    }
+
+    public Long2ObjectMap<SmithingTrimRecipe> getSmithingTrimRecipes() {
+        return smithingTrimRecipes;
     }
 
     public Long2ObjectMap<FurnaceRecipe> getFurnaceRecipes() {

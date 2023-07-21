@@ -14,7 +14,7 @@ public class ItemEnderPearl extends ProjectileItem {
     }
 
     public ItemEnderPearl(Integer meta, int count) {
-        super(ENDER_PEARL, 0, count, "Ender Pearl");
+        super(ENDER_PEARL, meta, count, "Ender Pearl");
     }
 
     @Override

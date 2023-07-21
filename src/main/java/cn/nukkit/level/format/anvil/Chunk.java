@@ -269,11 +269,13 @@ public class Chunk extends BaseChunk {
         nbt.putInt("zPos", this.getZ());
 
         nbt.putByteArray("Biomes", this.getBiomeIdArray());
+
         int[] heightInts = new int[256];
         byte[] heightBytes = this.getHeightMapArray();
         for (int i = 0; i < heightInts.length; i++) {
             heightInts[i] = heightBytes[i] & 0xFF;
         }
+        nbt.putIntArray("HeightMap", heightInts);
 
         for (cn.nukkit.level.format.ChunkSection section : this.getSections()) {
             if (section instanceof EmptyChunkSection) {
@@ -295,18 +297,14 @@ public class Chunk extends BaseChunk {
                 entities.add(entity.namedTag);
             }
         }
-        ListTag<CompoundTag> entityListTag = new ListTag<>("Entities");
-        entityListTag.setAll(entities);
-        nbt.putList(entityListTag);
+        nbt.putList(new ListTag<>("Entities", entities));
 
         List<CompoundTag> tiles = new ArrayList<>();
         for (BlockEntity blockEntity : this.getBlockEntities().values()) {
             blockEntity.saveNBT();
             tiles.add(blockEntity.namedTag);
         }
-        ListTag<CompoundTag> tileListTag = new ListTag<>("TileEntities");
-        tileListTag.setAll(tiles);
-        nbt.putList(tileListTag);
+        nbt.putList(new ListTag<>("TileEntities", tiles));
 
         ListTag<CompoundTag> tileTickTag = new ListTag<>("TileTicks");
         long totalTime = this.provider.getLevel().getCurrentTick();
@@ -358,7 +356,6 @@ public class Chunk extends BaseChunk {
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
-
     }
 
     @Override
@@ -392,25 +389,21 @@ public class Chunk extends BaseChunk {
         }
         nbt.putIntArray("HeightMap", heightInts);
 
-        ArrayList<CompoundTag> entities = new ArrayList<>();
+        List<CompoundTag> entities = new ArrayList<>();
         for (Entity entity : this.getEntities().values()) {
             if (!(entity instanceof Player) && !entity.closed) {
                 entity.saveNBT();
                 entities.add(entity.namedTag);
             }
         }
-        ListTag<CompoundTag> entityListTag = new ListTag<>("Entities");
-        entityListTag.setAll(entities);
-        nbt.putList(entityListTag);
+        nbt.putList(new ListTag<>("Entities", entities));
 
-        ArrayList<CompoundTag> tiles = new ArrayList<>();
+        List<CompoundTag> tiles = new ArrayList<>();
         for (BlockEntity blockEntity : this.getBlockEntities().values()) {
             blockEntity.saveNBT();
             tiles.add(blockEntity.namedTag);
         }
-        ListTag<CompoundTag> tileListTag = new ListTag<>("TileEntities");
-        tileListTag.setAll(tiles);
-        nbt.putList(tileListTag);
+        nbt.putList(new ListTag<>("TileEntities", tiles));
 
         Set<BlockUpdateEntry> entries = this.provider.getLevel().getPendingBlockUpdates(this);
 

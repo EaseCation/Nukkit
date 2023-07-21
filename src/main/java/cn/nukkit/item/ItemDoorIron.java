@@ -18,7 +18,7 @@ public class ItemDoorIron extends Item {
     }
 
     public ItemDoorIron(Integer meta, int count) {
-        super(IRON_DOOR, 0, count, "Iron Door");
+        super(IRON_DOOR, meta, count, "Iron Door");
         this.block = Block.get(BlockID.BLOCK_IRON_DOOR);
     }
 

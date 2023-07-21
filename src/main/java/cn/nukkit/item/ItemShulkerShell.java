@@ -11,6 +11,6 @@ public class ItemShulkerShell extends Item {
     }
 
     public ItemShulkerShell(Integer meta, int count) {
-        super(SHULKER_SHELL, 0, count, "Shulker Shell");
+        super(SHULKER_SHELL, meta, count, "Shulker Shell");
     }
 }

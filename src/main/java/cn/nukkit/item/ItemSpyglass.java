@@ -6,7 +6,7 @@ import cn.nukkit.math.Vector3;
 /**
  * @author LT_Name
  */
-public class ItemSpyglass extends Item implements ItemReleasable {
+public class ItemSpyglass extends Item {
 
     public ItemSpyglass() {
         this(0, 1);
@@ -17,7 +17,7 @@ public class ItemSpyglass extends Item implements ItemReleasable {
     }
 
     public ItemSpyglass(Integer meta, int count) {
-        super(SPYGLASS, 0, count, "Spyglass");
+        super(SPYGLASS, meta, 1, "Spyglass");
     }
 
     @Override
@@ -37,6 +37,11 @@ public class ItemSpyglass extends Item implements ItemReleasable {
 
     @Override
     public boolean onRelease(Player player, int ticksUsed) {
+        return true;
+    }
+
+    @Override
+    public boolean canRelease() {
         return true;
     }
 }

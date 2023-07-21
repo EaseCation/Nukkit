@@ -2,10 +2,12 @@ package cn.nukkit.item.enchantment;
 
 import cn.nukkit.entity.Entity;
 import cn.nukkit.event.entity.EntityDamageEvent;
+import cn.nukkit.event.entity.EntityDamageEvent.DamageCause;
 import cn.nukkit.item.Item;
 import cn.nukkit.math.Mth;
 import it.unimi.dsi.fastutil.objects.ObjectOpenHashSet;
 
+import javax.annotation.Nullable;
 import java.util.Set;
 import java.util.concurrent.ThreadLocalRandom;
 
@@ -121,7 +123,7 @@ public abstract class Enchantment implements Cloneable, EnchantmentID {
         return 0;
     }
 
-    public void doPostAttack(Entity attacker, Entity entity) {
+    public void doPostAttack(Entity attacker, Entity entity, @Nullable DamageCause cause) {
 
     }
 

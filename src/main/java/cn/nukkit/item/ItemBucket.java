@@ -418,4 +418,9 @@ public class ItemBucket extends Item {
         player.removeAllEffects();
         return true;
     }
+
+    @Override
+    public boolean canRelease() {
+        return getDamage() == MILK_BUCKET;
+    }
 }

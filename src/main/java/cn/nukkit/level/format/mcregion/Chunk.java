@@ -24,6 +24,7 @@ import java.io.ByteArrayInputStream;
 import java.nio.ByteOrder;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.List;
 
 /**
  * author: MagicDroidX
@@ -457,26 +458,21 @@ public class Chunk extends BaseFullChunk {
             nbt.putIntArray("HeightMap", heightInts);
         }
 
-
-        ArrayList<CompoundTag> entities = new ArrayList<>();
+        List<CompoundTag> entities = new ArrayList<>();
         for (Entity entity : this.getEntities().values()) {
             if (!(entity instanceof Player) && !entity.closed) {
                 entity.saveNBT();
                 entities.add(entity.namedTag);
             }
         }
-        ListTag<CompoundTag> entityListTag = new ListTag<>("Entities");
-        entityListTag.setAll(entities);
-        nbt.putList(entityListTag);
+        nbt.putList(new ListTag<>("Entities", entities));
 
-        ArrayList<CompoundTag> tiles = new ArrayList<>();
+        List<CompoundTag> tiles = new ArrayList<>();
         for (BlockEntity blockEntity : this.getBlockEntities().values()) {
             blockEntity.saveNBT();
             tiles.add(blockEntity.namedTag);
         }
-        ListTag<CompoundTag> tileListTag = new ListTag<>("TileEntities");
-        tileListTag.setAll(tiles);
-        nbt.putList(tileListTag);
+        nbt.putList(new ListTag<>("TileEntities", tiles));
 
         BinaryStream extraData = new BinaryStream();
         Int2IntMap extraDataArray = this.getBlockExtraDataArray();

@@ -147,7 +147,7 @@ public class EntityFirework extends Entity {
                             if (attached != -1) {
                                 Entity entity = level.getEntity(attached);
                                 if (entity != null) {
-                                    entity.attack(new EntityDamageByEntityEvent(this, entity, DamageCause.ENTITY_EXPLOSION, damage));
+                                    entity.attack(new EntityDamageByEntityEvent(this, entity, DamageCause.FIREWORKS, damage));
                                 }
                             }
 
@@ -172,7 +172,7 @@ public class EntityFirework extends Entity {
                                     continue;
                                 }
 
-                                entity.attack(new EntityDamageByEntityEvent(this, entity, DamageCause.ENTITY_EXPLOSION, damage * (float) Math.sqrt((5 - distance(entity)) / 5)));
+                                entity.attack(new EntityDamageByEntityEvent(this, entity, DamageCause.FIREWORKS, damage * (float) Math.sqrt((5 - distance(entity)) / 5)));
                             }
                         }
                     }

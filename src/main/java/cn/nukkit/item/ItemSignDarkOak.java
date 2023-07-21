@@ -14,7 +14,7 @@ public class ItemSignDarkOak extends Item {
     }
 
     public ItemSignDarkOak(Integer meta, int count) {
-        super(DARK_OAK_SIGN, 0, count, "Dark Oak Sign");
+        super(DARK_OAK_SIGN, meta, count, "Dark Oak Sign");
         this.block = Block.get(BlockID.DARKOAK_STANDING_SIGN);
     }
 

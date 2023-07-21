@@ -2,7 +2,6 @@ package cn.nukkit.command.defaults;
 
 import cn.nukkit.block.Block;
 import cn.nukkit.block.Blocks;
-import cn.nukkit.command.Command;
 import cn.nukkit.command.CommandParser;
 import cn.nukkit.command.CommandSender;
 import cn.nukkit.command.data.CommandEnum;
@@ -15,7 +14,7 @@ import cn.nukkit.level.Level;
 import cn.nukkit.level.Position;
 import cn.nukkit.utils.TextFormat;
 
-public class SetBlockCommand extends Command {
+public class SetBlockCommand extends VanillaCommand {
 	public SetBlockCommand(String name) {
         super(name, "%commands.setblock.description", "%nukkit.command.setblock.usage");
         this.setPermission("nukkit.command.setblock");

@@ -5,13 +5,11 @@ import cn.nukkit.nbt.stream.NBTInputStream;
 import cn.nukkit.nbt.stream.NBTOutputStream;
 import it.unimi.dsi.fastutil.objects.Object2ObjectOpenHashMap;
 
+import javax.annotation.Nullable;
 import java.io.IOException;
 import java.io.PrintStream;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.Map;
+import java.util.*;
 import java.util.Map.Entry;
-import java.util.StringJoiner;
 
 public class CompoundTag extends Tag implements Cloneable {
     public static final byte[] EMPTY;
@@ -67,6 +65,14 @@ public class CompoundTag extends Tag implements Cloneable {
         while ((tag = Tag.readNamedTag(dis)).getId() != Tag.TAG_End) {
             tags.put(tag.getName(), tag);
         }
+    }
+
+    public Set<Entry<String, Tag>> entrySet() {
+        return tags.entrySet();
+    }
+
+    public Set<String> keySet() {
+        return tags.keySet();
     }
 
     public Collection<Tag> getAllTags() {
@@ -147,6 +153,7 @@ public class CompoundTag extends Tag implements Cloneable {
         return this;
     }
 
+    @Nullable
     public Tag get(String name) {
         return tags.get(name);
     }
@@ -160,75 +167,147 @@ public class CompoundTag extends Tag implements Cloneable {
         return this;
     }
 
+    @SuppressWarnings("unchecked")
+    @Nullable
     public <T extends Tag> T removeAndGet(String name) {
         return (T) tags.remove(name);
     }
 
     public int getByte(String name) {
-        if (!tags.containsKey(name)) return (byte) 0;
-        return ((NumberTag) tags.get(name)).getData().intValue();
+        return getByte(name, 0);
+    }
+
+    public int getByte(String name, int defaultValue) {
+        Tag tag = get(name);
+        if (!(tag instanceof ByteTag)) {
+            return defaultValue;
+        }
+        return ((ByteTag) tag).data;
     }
 
     public int getShort(String name) {
-        if (!tags.containsKey(name)) return 0;
-        return ((NumberTag) tags.get(name)).getData().intValue();
+        return getShort(name, 0);
+    }
+
+    public int getShort(String name, int defaultValue) {
+        Tag tag = get(name);
+        if (!(tag instanceof ShortTag)) {
+            return defaultValue;
+        }
+        return ((ShortTag) tag).data;
     }
 
     public int getInt(String name) {
-        if (!tags.containsKey(name)) return 0;
-        return ((NumberTag) tags.get(name)).getData().intValue();
+        return getInt(name, 0);
+    }
+
+    public int getInt(String name, int defaultValue) {
+        Tag tag = get(name);
+        if (!(tag instanceof IntTag)) {
+            return defaultValue;
+        }
+        return ((IntTag) tag).data;
     }
 
     public long getLong(String name) {
-        if (!tags.containsKey(name)) return 0;
-        return ((NumberTag) tags.get(name)).getData().longValue();
+        return getLong(name, 0);
+    }
+
+    public long getLong(String name, long defaultValue) {
+        Tag tag = get(name);
+        if (!(tag instanceof LongTag)) {
+            return defaultValue;
+        }
+        return ((LongTag) tag).data;
     }
 
     public float getFloat(String name) {
-        if (!tags.containsKey(name)) return (float) 0;
-        return ((NumberTag) tags.get(name)).getData().floatValue();
+        return getFloat(name, 0);
+    }
+
+    public float getFloat(String name, float defaultValue) {
+        Tag tag = get(name);
+        if (!(tag instanceof FloatTag)) {
+            return defaultValue;
+        }
+        return ((FloatTag) tag).data;
     }
 
     public double getDouble(String name) {
-        if (!tags.containsKey(name)) return 0;
-        return ((NumberTag) tags.get(name)).getData().doubleValue();
+        return getDouble(name, 0);
+    }
+
+    public double getDouble(String name, double defaultValue) {
+        Tag tag = get(name);
+        if (!(tag instanceof DoubleTag)) {
+            return defaultValue;
+        }
+        return ((DoubleTag) tag).data;
     }
 
     public String getString(String name) {
-        if (!tags.containsKey(name)) return "";
-        Tag tag = tags.get(name);
-        if (tag instanceof NumberTag) {
-            return String.valueOf(((NumberTag) tag).getData());
+        return getString(name, "");
+    }
+
+    public String getString(String name, String defaultValue) {
+        Tag tag = get(name);
+        if (!(tag instanceof StringTag)) {
+            return defaultValue;
         }
         return ((StringTag) tag).data;
     }
 
     public byte[] getByteArray(String name) {
-        if (!tags.containsKey(name)) return new byte[0];
-        return ((ByteArrayTag) tags.get(name)).data;
+        return getByteArray(name, new byte[0]);
+    }
+
+    public byte[] getByteArray(String name, byte[] defaultValue) {
+        Tag tag = get(name);
+        if (!(tag instanceof ByteArrayTag)) {
+            return defaultValue;
+        }
+        return ((ByteArrayTag) tag).data;
     }
 
     public int[] getIntArray(String name) {
-        if (!tags.containsKey(name)) return new int[0];
-        return ((IntArrayTag) tags.get(name)).data;
+        return getIntArray(name, new int[0]);
+    }
+
+    public int[] getIntArray(String name, int[] defaultValue) {
+        Tag tag = get(name);
+        if (!(tag instanceof IntArrayTag)) {
+            return defaultValue;
+        }
+        return ((IntArrayTag) tag).data;
     }
 
     public CompoundTag getCompound(String name) {
-        if (!tags.containsKey(name)) return new CompoundTag(name);
-        return (CompoundTag) tags.get(name);
+        return getCompound(name, new CompoundTag(name));
+    }
+
+    public CompoundTag getCompound(String name, CompoundTag defaultValue) {
+        Tag tag = get(name);
+        if (!(tag instanceof CompoundTag)) {
+            return defaultValue;
+        }
+        return (CompoundTag) tag;
     }
 
     public ListTag<? extends Tag> getList(String name) {
-        if (!tags.containsKey(name)) return new ListTag<>(name);
-        return (ListTag<? extends Tag>) tags.get(name);
+        return getList(name, new ListTag<>(name));
     }
 
     @SuppressWarnings("unchecked")
-    public <T extends Tag> ListTag<T> getList(String name, Class<T> type) {
-        if (tags.containsKey(name)) {
-            return (ListTag<T>) tags.get(name);
+    public <T extends Tag> ListTag<T> getList(String name, ListTag<T> defaultValue) {
+        Tag tag = get(name);
+        if (!(tag instanceof ListTag)) {
+            return defaultValue;
         }
-        return new ListTag<>(name);
+        return (ListTag<T>) tag;
+    }
+
+    public <T extends Tag> ListTag<T> getList(String name, Class<T> type) {
+        return getList(name, new ListTag<>(name));
     }
 
     public Map<String, Tag> getTags() {
@@ -260,6 +339,7 @@ public class CompoundTag extends Tag implements Cloneable {
         return "CompoundTag '" + this.getName() + "' (" + tags.size() + " entries) {\n\t" + joiner + "\n}";
     }
 
+    @Override
     public void print(String prefix, PrintStream out) {
         super.print(prefix, out);
         out.println(prefix + "{");
@@ -277,6 +357,10 @@ public class CompoundTag extends Tag implements Cloneable {
 
     public boolean isEmpty() {
         return tags.isEmpty();
+    }
+
+    public void clear() {
+        tags.clear();
     }
 
     public CompoundTag copy() {

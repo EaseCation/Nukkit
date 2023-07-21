@@ -46,24 +46,24 @@ public class AdventureSettingsPacket extends DataPacket {
     public static final int BUILD = (1 << 8) | BITFLAG_SECOND_SET;
     public static final int DEAULT_LEVEL_PERMISSIONS = (1 << 9) | BITFLAG_SECOND_SET;
 
-    public long flags = 0;
+    public int flags = 0;
 
-    public long commandPermission = PERMISSION_NORMAL;
+    public int commandPermission = PERMISSION_NORMAL;
 
-    public long flags2 = 0;
+    public int flags2 = 0;
 
-    public long playerPermission = Player.PERMISSION_MEMBER;
+    public int playerPermission = Player.PERMISSION_MEMBER;
 
-    public long customFlags; //...
+    public int customFlags; //...
 
     public long entityUniqueId; //This is a little-endian long, NOT a var-long. (WTF Mojang)
 
     public void decode() {
-        this.flags = getUnsignedVarInt();
-        this.commandPermission = getUnsignedVarInt();
-        this.flags2 = getUnsignedVarInt();
-        this.playerPermission = getUnsignedVarInt();
-        this.customFlags = getUnsignedVarInt();
+        this.flags = (int) getUnsignedVarInt();
+        this.commandPermission = (int) getUnsignedVarInt();
+        this.flags2 = (int) getUnsignedVarInt();
+        this.playerPermission = (int) getUnsignedVarInt();
+        this.customFlags = (int) getUnsignedVarInt();
         this.entityUniqueId = getLLong();
     }
 

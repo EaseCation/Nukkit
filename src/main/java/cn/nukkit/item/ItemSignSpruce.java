@@ -14,7 +14,7 @@ public class ItemSignSpruce extends Item {
     }
 
     public ItemSignSpruce(Integer meta, int count) {
-        super(SPRUCE_SIGN, 0, count, "Spruce Sign");
+        super(SPRUCE_SIGN, meta, count, "Spruce Sign");
         this.block = Block.get(BlockID.SPRUCE_STANDING_SIGN);
     }
 

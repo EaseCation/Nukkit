@@ -42,11 +42,15 @@ class VarIntTest {
 		VarInt.writeVarInt(bs, 0xea3eca71);
 		VarInt.writeUnsignedVarLong(bs, 0x1234567812345678L);
 		VarInt.writeVarLong(bs, 0xea3eca710becececL);
+		VarInt.writeUnsignedVarLong(bs, -1);
+		VarInt.writeUnsignedVarInt(bs, -1);
 		assertAll(
 				() -> assertEquals(237356812, VarInt.readUnsignedVarInt(bs)),
 				() -> assertEquals(0xea3eca71, VarInt.readVarInt(bs)),
 				() -> assertEquals(0x1234567812345678L, VarInt.readUnsignedVarLong(bs)),
-				() -> assertEquals(0xea3eca710becececL, VarInt.readVarLong(bs))
+				() -> assertEquals(0xea3eca710becececL, VarInt.readVarLong(bs)),
+				() -> assertEquals(-1, VarInt.readUnsignedVarLong(bs)),
+				() -> assertEquals(-1, (int) VarInt.readUnsignedVarInt(bs))
 		);
 		ByteArrayOutputStream os = new ByteArrayOutputStream();
 		VarInt.writeUnsignedVarInt(os, 237356812);
@@ -55,6 +59,8 @@ class VarIntTest {
 		VarInt.writeVarLong(os, 0xea3eca710becececL);
 		VarInt.writeVarInt(os, 0x7FFFFFFF);
 		VarInt.writeVarInt(os, -1);
+		VarInt.writeUnsignedVarLong(os, -1);
+		VarInt.writeUnsignedVarInt(os, -1);
 		ByteArrayInputStream is = new ByteArrayInputStream(os.toByteArray());
 		assertAll(
 				() -> assertEquals(237356812, VarInt.readUnsignedVarInt(is)),
@@ -62,7 +68,9 @@ class VarIntTest {
 				() -> assertEquals(0x1234567812345678L, VarInt.readUnsignedVarLong(is)),
 				() -> assertEquals(0xea3eca710becececL, VarInt.readVarLong(is)),
 				() -> assertEquals(0x7FFFFFFF, VarInt.readVarInt(is)),
-				() -> assertEquals(-1, VarInt.readVarInt(is))
+				() -> assertEquals(-1, VarInt.readVarInt(is)),
+				() -> assertEquals(-1, VarInt.readUnsignedVarLong(is)),
+				() -> assertEquals(-1, (int) VarInt.readUnsignedVarInt(is))
 		);
 	}
 
@@ -73,6 +81,8 @@ class VarIntTest {
 		sizeTest(w -> VarInt.writeVarInt(w, 0x7FFFFFFF /* -1 >>> 1 */), 5);
 		sizeTest(w -> VarInt.writeVarLong(w, -1), 1);
 		sizeTest(w -> VarInt.writeVarInt(w, -1), 1);
+		sizeTest(w -> VarInt.writeUnsignedVarInt(w, -1), 5);
+		sizeTest(w -> VarInt.writeUnsignedVarInt(w, Integer.MIN_VALUE), 5);
 	}
 
 	@DisplayName("Reading")

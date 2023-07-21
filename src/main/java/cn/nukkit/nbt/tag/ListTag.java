@@ -6,13 +6,14 @@ import it.unimi.dsi.fastutil.objects.ObjectArrayList;
 
 import java.io.IOException;
 import java.io.PrintStream;
-import java.util.Collection;
-import java.util.List;
-import java.util.StringJoiner;
+import java.util.*;
+import java.util.function.Consumer;
+import java.util.function.Predicate;
+import java.util.stream.Stream;
 
-public class ListTag<T extends Tag> extends Tag {
+public class ListTag<T extends Tag> extends Tag implements Iterable<T> {
 
-    private List<T> list;
+    private final List<T> list;
 
     public byte type;
 
@@ -43,12 +44,17 @@ public class ListTag<T extends Tag> extends Tag {
 
     @Override
     void write(NBTOutputStream dos) throws IOException {
-        if (list.size() > 0) type = list.get(0).getId();
-        else type = 1;
+        if (!list.isEmpty()) {
+            type = list.get(0).getId();
+        } else {
+            type = TAG_Byte;
+        }
 
         dos.writeByte(type);
         dos.writeInt(list.size());
-        for (T aList : list) aList.write(dos);
+        for (T tag : list) {
+            tag.write(dos);
+        }
     }
 
     @Override
@@ -57,7 +63,7 @@ public class ListTag<T extends Tag> extends Tag {
         type = dis.readByte();
         int size = dis.readInt();
 
-        list = new ObjectArrayList<>(size);
+        list.clear();
         for (int i = 0; i < size; i++) {
             Tag tag = Tag.newTag(type, null);
             tag.load(dis);
@@ -78,6 +84,7 @@ public class ListTag<T extends Tag> extends Tag {
         return "ListTag '" + this.getName() + "' (" + list.size() + " entries of type " + Tag.getTagName(type) + ") {\n\t" + joiner + "\n}";
     }
 
+    @Override
     public void print(String prefix, PrintStream out) {
         super.print(prefix, out);
 
@@ -130,20 +137,32 @@ public class ListTag<T extends Tag> extends Tag {
         return list;
     }
 
-    public void setAll(List<T> tags) {
-        this.list = new ObjectArrayList<>(tags);
+    public boolean remove(T tag) {
+        return list.remove(tag);
     }
 
-    public void remove(T tag) {
-        list.remove(tag);
+    public T remove(int index) {
+        return list.remove(index);
     }
 
-    public void remove(int index) {
-        list.remove(index);
+    public boolean removeAll(Collection<T> tags) {
+        return list.removeAll(tags);
     }
 
-    public void removeAll(Collection<T> tags) {
-        list.removeAll(tags);
+    public boolean removeAll(ListTag<T> o) {
+        return list.removeAll(o.list);
+    }
+
+    public boolean removeIf(Predicate<T> filter) {
+        return list.removeIf(filter);
+    }
+
+    public boolean retainAll(Collection<T> tags) {
+        return list.retainAll(tags);
+    }
+
+    public boolean retainAll(ListTag<T> o) {
+        return list.retainAll(o.list);
     }
 
     public int size() {
@@ -152,6 +171,49 @@ public class ListTag<T extends Tag> extends Tag {
 
     public boolean isEmpty() {
         return list.isEmpty();
+    }
+
+    public void clear() {
+        list.clear();
+    }
+
+    public boolean contains(T tag) {
+        return list.contains(tag);
+    }
+
+    public boolean containsAll(Collection<T> tags) {
+        return list.containsAll(tags);
+    }
+
+    public boolean containsAll(ListTag<T> o) {
+        return list.containsAll(o.list);
+    }
+
+    public T[] toArray(T[] arr) {
+        return list.toArray(arr);
+    }
+
+    @Override
+    public Iterator<T> iterator() {
+        return list.iterator();
+    }
+
+    @Override
+    public void forEach(Consumer<? super T> action) {
+        list.forEach(action);
+    }
+
+    @Override
+    public Spliterator<T> spliterator() {
+        return list.spliterator();
+    }
+
+    public Stream<T> stream() {
+        return list.stream();
+    }
+
+    public Stream<T> parallelStream() {
+        return list.parallelStream();
     }
 
     @Override

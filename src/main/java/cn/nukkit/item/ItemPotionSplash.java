@@ -20,7 +20,7 @@ public class ItemPotionSplash extends ProjectileItem {
     }
 
     public ItemPotionSplash(Integer meta, int count) {
-        super(SPLASH_POTION, meta, count, "Splash Potion");
+        super(SPLASH_POTION, meta, 1, "Splash Potion");
     }
 
     @Override

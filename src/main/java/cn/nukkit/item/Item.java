@@ -55,12 +55,31 @@ public class Item implements Cloneable, ItemID {
         this(id, 0, 1, UNKNOWN_STR);
     }
 
+    public Item(int id, int meta) {
+        this(id, meta, 1, UNKNOWN_STR);
+    }
+
     public Item(int id, Integer meta) {
         this(id, meta, 1, UNKNOWN_STR);
     }
 
+    public Item(int id, int meta, int count) {
+        this(id, meta, count, UNKNOWN_STR);
+    }
+
     public Item(int id, Integer meta, int count) {
         this(id, meta, count, UNKNOWN_STR);
+    }
+
+    public Item(int id, int meta, int count, String name) {
+        this.id = id;
+        if (meta >= 0) {
+            this.meta = meta & 0xffff;
+        } else {
+            this.hasMeta = false;
+        }
+        this.count = count;
+        this.name = name;
     }
 
     public Item(int id, Integer meta, int count, String name) {
@@ -1007,6 +1026,10 @@ public class Item implements Cloneable, ItemID {
 
     public int getDamageChance(int unbreaking) {
         return 100 / (unbreaking + 1);
+    }
+
+    public boolean canRelease() {
+        return false;
     }
 
     @Override

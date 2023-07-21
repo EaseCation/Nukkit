@@ -19,7 +19,7 @@ import cn.nukkit.potion.Potion;
 
 import java.util.concurrent.ThreadLocalRandom;
 
-public class ItemCrossbow extends ItemTool implements ItemReleasable {
+public class ItemCrossbow extends ItemTool {
     private static final float ARROW_POWER = 3.15f;
     private static final float MULTISHOT_ANGLE_DELTA = 10;
 
@@ -223,6 +223,11 @@ public class ItemCrossbow extends ItemTool implements ItemReleasable {
 
     @Override
     public boolean onRelease(Player player, int ticksUsed) {
+        return true;
+    }
+
+    @Override
+    public boolean canRelease() {
         return true;
     }
 

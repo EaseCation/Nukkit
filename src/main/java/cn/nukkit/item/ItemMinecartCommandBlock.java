@@ -16,7 +16,7 @@ public class ItemMinecartCommandBlock extends Item {
     }
 
     public ItemMinecartCommandBlock(Integer meta, int count) {
-        super(COMMAND_BLOCK_MINECART, meta, count, "Minecart with Command Block");
+        super(COMMAND_BLOCK_MINECART, meta, 1, "Minecart with Command Block");
     }
 
     @Override

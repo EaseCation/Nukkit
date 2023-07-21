@@ -18,7 +18,7 @@ public class ItemSugarcane extends Item {
     }
 
     public ItemSugarcane(Integer meta, int count) {
-        super(SUGAR_CANE, 0, count, "Sugar Cane");
+        super(SUGAR_CANE, meta, count, "Sugar Cane");
         this.block = Block.get(BlockID.BLOCK_REEDS);
     }
 }

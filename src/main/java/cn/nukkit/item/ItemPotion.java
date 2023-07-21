@@ -5,7 +5,7 @@ import cn.nukkit.event.player.PlayerItemConsumeEvent;
 import cn.nukkit.math.Vector3;
 import cn.nukkit.potion.Potion;
 
-public class ItemPotion extends Item implements ItemReleasable {
+public class ItemPotion extends Item {
 
     public ItemPotion() {
         this(0, 1);
@@ -16,7 +16,7 @@ public class ItemPotion extends Item implements ItemReleasable {
     }
 
     public ItemPotion(Integer meta, int count) {
-        super(POTION, meta, count, "Potion");
+        super(POTION, meta, 1, "Potion");
     }
 
     @Override
@@ -56,6 +56,11 @@ public class ItemPotion extends Item implements ItemReleasable {
 
     @Override
     public boolean onRelease(Player player, int ticksUsed) {
+        return true;
+    }
+
+    @Override
+    public boolean canRelease() {
         return true;
     }
 

@@ -1,12 +1,17 @@
 package cn.nukkit.command.defaults;
 
 import cn.nukkit.Player;
-import cn.nukkit.command.Command;
+import cn.nukkit.command.CommandParser;
 import cn.nukkit.command.CommandSender;
 import cn.nukkit.command.data.CommandParamType;
 import cn.nukkit.command.data.CommandParameter;
+import cn.nukkit.command.exceptions.CommandExceptions;
+import cn.nukkit.command.exceptions.CommandSyntaxException;
 import cn.nukkit.lang.TranslationContainer;
-import cn.nukkit.utils.TextFormat;
+import it.unimi.dsi.fastutil.objects.ObjectArrayList;
+import org.apache.commons.lang3.mutable.MutableBoolean;
+
+import java.util.List;
 
 import static cn.nukkit.SharedConstants.*;
 
@@ -14,7 +19,7 @@ import static cn.nukkit.SharedConstants.*;
  * Created by Snake1999 on 2016/1/22.
  * Package cn.nukkit.command.defaults in project nukkit.
  */
-public class XpCommand extends Command {
+public class XpCommand extends VanillaCommand {
     public XpCommand(String name) {
         super(name, "%commands.xp.description", "%nukkit.command.xp.usage");
         this.setPermission("nukkit.command.xp");
@@ -38,77 +43,65 @@ public class XpCommand extends Command {
             return true;
         }
 
-        //  "/xp <amount> [player]"  for adding exp
-        //  "/xp <amount>L [player]" for adding exp level
-        String amountString;
-        String playerName;
-        Player player;
-        if (!(sender instanceof Player)) {
-            if (args.length != 2) {
-                sender.sendMessage(new TranslationContainer("commands.generic.usage", this.usageMessage));
-                return true;
-            }
-            amountString = args[0];
-            playerName = args[1];
-            player = sender.getServer().getPlayerExact(playerName);
-        } else {
-            if (args.length == 1) {
-                amountString = args[0];
-                player = (Player) sender;
-            } else if (args.length == 2) {
-                amountString = args[0];
-                playerName = args[1];
-                player = sender.getServer().getPlayerExact(playerName);
-            } else {
-                sender.sendMessage(new TranslationContainer("commands.generic.usage", this.usageMessage));
-                return true;
-            }
-        }
-
-        if (player == null) {
-            sender.sendMessage(new TranslationContainer(TextFormat.RED + "%commands.generic.player.notFound"));
-            return true;
-        }
-
-        int amount;
-        boolean isLevel = false;
-        if (amountString.endsWith("l") || amountString.endsWith("L")) {
-            amountString = amountString.substring(0, amountString.length() - 1);
-            isLevel = true;
-        }
-
+        CommandParser parser = new CommandParser(this, sender, args);
         try {
-            amount = Integer.parseInt(amountString);
-        } catch (NumberFormatException e1) {
-            sender.sendMessage(new TranslationContainer("commands.generic.usage", this.usageMessage));
-            return true;
-        }
+            MutableBoolean isLevel = new MutableBoolean();
+            int amount = parser.parse(arg -> {
+                String num;
+                if (arg.endsWith("l") || arg.endsWith("L")) {
+                    num = arg.substring(0, arg.length() - 1);
+                    isLevel.setTrue();
+                } else {
+                    num = arg;
+                }
 
-        if (isLevel) {
-            int newLevel = player.getExperienceLevel();
-            newLevel += amount;
-            if (newLevel > 24791) newLevel = 24791;
-            if (newLevel < 0) {
-                player.setExperience(0, 0);
-            } else {
-                player.setExperience(player.getExperience(), newLevel);
-            }
-            if (amount == 0) {
-                sender.sendMessage(new TranslationContainer("commands.xp.success", 0, player.getName()));
-            } else if (amount > 0) {
-                sender.sendMessage(new TranslationContainer("commands.xp.success.levels", amount, player.getName()));
-            } else {
-                sender.sendMessage(new TranslationContainer("commands.xp.success.negative.levels", amount, player.getName()));
-            }
-            return true;
-        } else {
-            if (amount < 0) {
+                try {
+                    return Integer.parseInt(num);
+                } catch (NumberFormatException e) {
+                    throw CommandExceptions.NOT_INT;
+                }
+            });
+            List<Player> targets = parser.parseTargetPlayersOrSelf();
+
+            if (amount < 0 && isLevel.isFalse()) {
                 sender.sendMessage(new TranslationContainer("commands.xp.failure.widthdrawXp"));
-                return true;
+                return false;
             }
-            player.addExperience(amount);
-            sender.sendMessage(new TranslationContainer("commands.xp.success", amount, player.getName()));
+
+            List<String> success = new ObjectArrayList<>(targets.size());
+
+            targets.forEach(target -> {
+                if (isLevel.isTrue()) {
+                    int newLevel = Math.min(target.getExperienceLevel() + amount, 24791);
+                    if (newLevel < 0) {
+                        target.setExperience(0, 0);
+                    } else {
+                        target.setExperience(target.getExperience(), newLevel);
+                    }
+                } else {
+                    target.addExperience(amount);
+                }
+
+                success.add(target.getName());
+            });
+
+            if (success.isEmpty()) {
+                parser.setErrorMessage(new TranslationContainer("%commands.generic.noTargetMatch"));
+                throw CommandExceptions.NO_TARGET;
+            }
+
+            String names = String.join(", ", success);
+            if (isLevel.isFalse() || amount == 0) {
+                broadcastCommandMessage(sender, new TranslationContainer("commands.xp.success", amount, names));
+            } else if (amount > 0) {
+                broadcastCommandMessage(sender, new TranslationContainer("commands.xp.success.levels", amount, names));
+            } else {
+                broadcastCommandMessage(sender, new TranslationContainer("commands.xp.success.negative.levels", amount, names));
+            }
             return true;
+        } catch (CommandSyntaxException e) {
+            sender.sendMessage(parser.getErrorMessage());
         }
+        return false;
     }
 }

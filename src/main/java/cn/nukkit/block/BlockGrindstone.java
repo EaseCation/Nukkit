@@ -11,7 +11,7 @@ import cn.nukkit.math.BlockFace;
 import cn.nukkit.utils.BlockColor;
 import cn.nukkit.utils.Faceable;
 
-public class BlockGrindstone extends BlockSolidMeta implements Faceable {
+public class BlockGrindstone extends BlockTransparentMeta implements Faceable {
 
     public static final int DIRECTION_MASK = 0b11;
     public static final int DIRECTION_BITS = 2;

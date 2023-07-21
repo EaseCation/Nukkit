@@ -15,6 +15,6 @@ public class ItemBowl extends Item {
     }
 
     public ItemBowl(Integer meta, int count) {
-        super(BOWL, 0, count, "Bowl");
+        super(BOWL, meta, count, "Bowl");
     }
 }

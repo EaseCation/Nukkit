@@ -68,10 +68,10 @@ public class BlockMagma extends BlockSolid {
         if (entity instanceof Player) {
             Player p = (Player) entity;
             if (p.isSurvivalLike() && !p.isSneaking() && p.level.gameRules.getBoolean(GameRule.FIRE_DAMAGE)) {
-                entity.attack(new EntityDamageByBlockEvent(this, entity, EntityDamageEvent.DamageCause.LAVA, 1));
+                entity.attack(new EntityDamageByBlockEvent(this, entity, EntityDamageEvent.DamageCause.MAGMA, 1));
             }
         } else {
-            entity.attack(new EntityDamageByBlockEvent(this, entity, EntityDamageEvent.DamageCause.LAVA, 1));
+            entity.attack(new EntityDamageByBlockEvent(this, entity, EntityDamageEvent.DamageCause.MAGMA, 1));
         }
     }
 

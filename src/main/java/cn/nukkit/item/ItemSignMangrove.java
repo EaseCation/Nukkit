@@ -12,7 +12,7 @@ public class ItemSignMangrove extends Item {
     }
 
     public ItemSignMangrove(Integer meta, int count) {
-        super(MANGROVE_SIGN, 0, count, "Mangrove Sign");
+        super(MANGROVE_SIGN, meta, count, "Mangrove Sign");
         this.block = Block.get(Block.MANGROVE_STANDING_SIGN);
     }
 

@@ -18,7 +18,7 @@ public class ItemSign extends Item {
     }
 
     public ItemSign(Integer meta, int count) {
-        super(OAK_SIGN, 0, count, "Oak Sign");
+        super(OAK_SIGN, meta, count, "Oak Sign");
         this.block = Block.get(BlockID.STANDING_SIGN);
     }
 

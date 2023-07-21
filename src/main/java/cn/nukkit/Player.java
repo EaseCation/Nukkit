@@ -1656,7 +1656,7 @@ public class Player extends EntityHuman implements CommandSender, InventoryHolde
         }
         Vector3 newPos = this.newPosition;
         if (newPos.checkIncorrectIntegerRange()) {
-            this.close("Invalid position", "Invalid position from " + this.getLocation() + " moving to " + newPos);
+            this.close("", "Invalid position from " + this.getLocation() + " moving to " + newPos);
             return;
         }
         double distanceSquared = newPos.distanceSquared(this);
@@ -1999,7 +1999,7 @@ public class Player extends EntityHuman implements CommandSender, InventoryHolde
                 isSwinging = true;
 
                 Item item = inventory.getItemInHand();
-                if (item instanceof ItemReleasable) {
+                if (item.canRelease()) {
                     //int ticksUsed = this.server.getTick() - this.startAction;
                     int ticksUsed = (int) (System.currentTimeMillis() - this.startActionTimestamp) / 50;
                     item.onUsing(this, ticksUsed);
@@ -3530,7 +3530,7 @@ public class Player extends EntityHuman implements CommandSender, InventoryHolde
                                             this.inventory.setItemInHand(item);
                                         }
 
-                                        this.setUsingItem(item instanceof ItemReleasable);
+                                        this.setUsingItem(item.canRelease());
                                     }
 
                                     break packetswitch;
@@ -3629,7 +3629,7 @@ public class Player extends EntityHuman implements CommandSender, InventoryHolde
                                     }
 
                                     for (Enchantment enchantment : item.getEnchantments()) {
-                                        enchantment.doPostAttack(this, target);
+                                        enchantment.doPostAttack(this, target, null);
                                     }
 
                                     if (item.isTool() && this.isSurvivalLike()) {
@@ -4280,11 +4280,26 @@ public class Player extends EntityHuman implements CommandSender, InventoryHolde
                         if (e instanceof Player) {
                             message = "death.attack.player";
                             params.add(((Player) e).getDisplayName());
-                            break;
                         } else if (e instanceof EntityLiving) {
                             message = "death.attack.mob";
-                            params.add(!Objects.equals(e.getNameTag(), "") ? e.getNameTag() : e.getName());
-                            break;
+                            String nameTag = e.getNameTag();
+                            params.add(!"".equals(nameTag) ? nameTag : e.getName());
+                        } else {
+                            params.add("Unknown");
+                        }
+                    }
+                    break;
+                case THORNS:
+                    if (cause instanceof EntityDamageByEntityEvent) {
+                        Entity e = ((EntityDamageByEntityEvent) cause).getDamager();
+                        killer = e;
+                        if (e instanceof Player) {
+                            message = "death.attack.thorns";
+                            params.add(((Player) e).getDisplayName());
+                        } else if (e instanceof EntityLiving) {
+                            message = "death.attack.thorns";
+                            String nameTag = e.getNameTag();
+                            params.add(!"".equals(nameTag) ? nameTag : e.getName());
                         } else {
                             params.add("Unknown");
                         }
@@ -4293,14 +4308,67 @@ public class Player extends EntityHuman implements CommandSender, InventoryHolde
                 case PROJECTILE:
                     if (cause instanceof EntityDamageByEntityEvent) {
                         Entity e = ((EntityDamageByEntityEvent) cause).getDamager();
+                        int entityType;
+                        if (cause instanceof EntityDamageByChildEntityEvent) {
+                            Entity projectile = ((EntityDamageByChildEntityEvent) cause).getChild();
+                            entityType = projectile.getNetworkId();
+                        } else {
+                            entityType = EntityID.ARROW;
+                        }
                         killer = e;
                         if (e instanceof Player) {
-                            message = "death.attack.arrow";
+                            switch (entityType) {
+                                default:
+                                case EntityID.ARROW:
+                                    message = "death.attack.arrow";
+                                    break;
+                                case EntityID.THROWN_TRIDENT:
+                                    message = "death.attack.trident";
+                                    break;
+                                case EntityID.SHULKER_BULLET:
+                                    message = "death.attack.bullet";
+                                    break;
+                                case EntityID.LLAMA_SPIT:
+                                    message = "death.attack.spit";
+                                    break;
+                                case EntityID.SMALL_FIREBALL:
+                                case EntityID.FIREBALL:
+                                    message = "death.attack.fireball";
+                                    break;
+                                case EntityID.SNOWBALL:
+                                case EntityID.EGG:
+                                case EntityID.ENDER_PEARL:
+                                    message = "death.attack.thrown";
+                                    break;
+                            }
                             params.add(((Player) e).getDisplayName());
                         } else if (e instanceof EntityLiving) {
-                            message = "death.attack.arrow";
-                            params.add(!Objects.equals(e.getNameTag(), "") ? e.getNameTag() : e.getName());
-                            break;
+                            switch (entityType) {
+                                default:
+                                case EntityID.ARROW:
+                                    message = "death.attack.arrow";
+                                    break;
+                                case EntityID.THROWN_TRIDENT:
+                                    message = "death.attack.trident";
+                                    break;
+                                case EntityID.SHULKER_BULLET:
+                                    message = "death.attack.bullet";
+                                    break;
+                                case EntityID.LLAMA_SPIT:
+                                    message = "death.attack.spit";
+                                    break;
+                                case EntityID.SMALL_FIREBALL:
+                                case EntityID.FIREBALL:
+                                    message = "death.attack.fireball";
+                                    break;
+                                case EntityID.SNOWBALL:
+                                case EntityID.EGG:
+                                case EntityID.ENDER_PEARL:
+                                    message = "death.attack.thrown";
+                                    break;
+                            }
+                            String nameTag = e.getNameTag();
+                            params.add(!"".equals(nameTag) ? nameTag : e.getName());
                         } else {
                             params.add("Unknown");
                         }
@@ -4309,6 +4377,9 @@ public class Player extends EntityHuman implements CommandSender, InventoryHolde
                 case VOID:
                     message = "death.attack.outOfWorld";
                     break;
+                case FLY_INTO_WALL:
+                    message = "death.attack.flyIntoWall";
+                    break;
                 case FALL:
                     if (cause.getFinalDamage() > 2) {
                         message = "death.fell.accident.generic";
@@ -4316,11 +4387,17 @@ public class Player extends EntityHuman implements CommandSender, InventoryHolde
                     }
                     message = "death.attack.fall";
                     break;
+                case STALAGMITE:
+                    message = "death.attack.stalagmite";
+                    break;
                 case SUFFOCATION:
                     message = "death.attack.inWall";
                     break;
                 case LAVA:
                     message = "death.attack.lava";
+                    break;
+                case MAGMA:
+                    message = "death.attack.magma";
                     break;
                 case FIRE:
                     message = "death.attack.onFire";
@@ -4336,10 +4413,19 @@ public class Player extends EntityHuman implements CommandSender, InventoryHolde
                         int id = ((EntityDamageByBlockEvent) cause).getDamager().getId();
                         if (id == Block.CACTUS) {
                             message = "death.attack.cactus";
-                        } else if (id == Block.ANVIL) {
-                            message = "death.attack.anvil";
+                        } else if (id == Block.SWEET_BERRY_BUSH) {
+                            message = "death.attack.sweetBerry";
                         }
                     }
+                    break;
+                case FALLING_BLOCK:
+                    message = "death.attack.fallingBlock";
+                    break;
+                case ANVIL:
+                    message = "death.attack.anvil";
+                    break;
+                case STALACTITE:
+                    message = "death.attack.stalactite";
                     break;
                 case BLOCK_EXPLOSION:
                 case ENTITY_EXPLOSION:
@@ -4349,25 +4435,50 @@ public class Player extends EntityHuman implements CommandSender, InventoryHolde
                         if (e instanceof Player) {
                             message = "death.attack.explosion.player";
                             params.add(((Player) e).getDisplayName());
+                            break;
                         } else if (e instanceof EntityLiving) {
                             message = "death.attack.explosion.player";
-                            params.add(!Objects.equals(e.getNameTag(), "") ? e.getNameTag() : e.getName());
+                            String nameTag = e.getNameTag();
+                            params.add(!"".equals(nameTag) ? nameTag : e.getName());
                             break;
-                        } else {
-                            message = "death.attack.explosion";
                         }
-                    } else {
-                        message = "death.attack.explosion";
                     }
+                    message = "death.attack.explosion";
+                    break;
+                case FIREWORKS:
+                    message = "death.attack.fireworks";
                     break;
                 case MAGIC:
+                    if (cause instanceof EntityDamageByEntityEvent) {
+                        Entity e = ((EntityDamageByEntityEvent) cause).getDamager();
+                        killer = e;
+                        if (e instanceof Player) {
+                            message = "death.attack.indirectMagic";
+                            params.add(((Player) e).getDisplayName());
+                            break;
+                        } else if (e instanceof EntityLiving) {
+                            message = "death.attack.indirectMagic";
+                            String nameTag = e.getNameTag();
+                            params.add(!"".equals(nameTag) ? nameTag : e.getName());
+                            break;
+                        }
+                    }
                     message = "death.attack.magic";
+                    break;
+                case WITHER:
+                    message = "death.attack.wither";
+                    break;
+                case SONIC_BOOM:
+                    message = "death.attack.sonicBoom";
                     break;
                 case LIGHTNING:
                     message = "death.attack.lightningBolt";
                     break;
                 case HUNGER:
                     message = "death.attack.starve";
+                    break;
+                case FREEZE:
+                    message = "death.attack.freeze";
                     break;
                 default:
                     message = "death.attack.generic";
@@ -4431,6 +4542,8 @@ public class Player extends EntityHuman implements CommandSender, InventoryHolde
 
         if (showMessages && !ev.getDeathMessage().toString().isEmpty()) {
             this.server.broadcast(ev.getDeathMessage(), Server.BROADCAST_CHANNEL_USERS);
+
+            this.sendDeathInfo(ev.getDeathMessage());
         }
 
         RespawnPacket pk = new RespawnPacket();
@@ -6011,5 +6124,11 @@ public class Player extends EntityHuman implements CommandSender, InventoryHolde
      * @since 1.16.0
      */
     public void playEmote(String emoteId, long entityRuntimeId, int flags) {
+    }
+
+    /**
+     * @since 1.19.10
+     */
+    protected void sendDeathInfo(TextContainer message) {
     }
 }

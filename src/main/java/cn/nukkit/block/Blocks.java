@@ -342,7 +342,7 @@ public final class Blocks {
         registerBlock(ACACIA_WALL_SIGN, BlockWallSignAcacia.class, V1_9_0);
         registerBlock(DARKOAK_STANDING_SIGN, BlockSignPostDarkOak.class, V1_9_0);
         registerBlock(DARKOAK_WALL_SIGN, BlockWallSignDarkOak.class, V1_9_0);
-        registerBlock(LAVA_CAULDRON, BlockCauldronLava.class, V1_9_0); //TODO
+        registerBlock(LAVA_CAULDRON, BlockCauldronLava.class, V1_9_0);
 
         registerBlock(LECTERN, BlockLectern.class, V1_10_0);
         registerBlock(LOOM, BlockLoom.class, V1_10_0);
@@ -357,7 +357,7 @@ public final class Blocks {
         registerBlock(LIT_SMOKER, BlockSmokerBurning.class, V1_11_0);
         registerBlock(CARTOGRAPHY_TABLE, BlockCartographyTable.class, V1_11_0);
         registerBlock(FLETCHING_TABLE, BlockFletchingTable.class, V1_11_0);
-        registerBlock(SMITHING_TABLE, BlockSmithingTable.class, V1_11_0); //TODO: 1.16.0 ui
+        registerBlock(SMITHING_TABLE, BlockSmithingTable.class, V1_11_0);
         registerBlock(BARREL, BlockBarrel.class, V1_11_0);
         registerBlock(BELL, BlockBell.class, V1_11_0);
         registerBlock(SWEET_BERRY_BUSH, BlockSweetBerryBush.class, V1_11_0);

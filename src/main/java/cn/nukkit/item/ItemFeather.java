@@ -15,6 +15,6 @@ public class ItemFeather extends Item {
     }
 
     public ItemFeather(Integer meta, int count) {
-        super(FEATHER, 0, count, "Feather");
+        super(FEATHER, meta, count, "Feather");
     }
 }

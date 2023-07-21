@@ -4,7 +4,7 @@ import cn.nukkit.Player;
 import cn.nukkit.math.Vector3;
 import cn.nukkit.network.protocol.LevelSoundEventPacket;
 
-public class ItemGoatHorn extends Item implements ItemReleasable {
+public class ItemGoatHorn extends Item {
     public static final int PONDER_GOAT_HORN = 0;
     public static final int SING_GOAT_HORN = 1;
     public static final int SEEK_GOAT_HORN = 2;
@@ -26,7 +26,7 @@ public class ItemGoatHorn extends Item implements ItemReleasable {
     }
 
     public ItemGoatHorn(Integer meta, int count) {
-        super(GOAT_HORN, meta, count, "Goat Horn");
+        super(GOAT_HORN, meta, 1, "Goat Horn");
     }
 
     @Override
@@ -76,6 +76,11 @@ public class ItemGoatHorn extends Item implements ItemReleasable {
 
     @Override
     public boolean onRelease(Player player, int ticksUsed) {
+        return true;
+    }
+
+    @Override
+    public boolean canRelease() {
         return true;
     }
 }

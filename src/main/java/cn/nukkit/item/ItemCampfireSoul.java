@@ -13,7 +13,7 @@ public class ItemCampfireSoul extends Item {
     }
 
     public ItemCampfireSoul(Integer meta, int count) {
-        super(SOUL_CAMPFIRE, 0, count, "Soul Campfire");
+        super(SOUL_CAMPFIRE, meta, count, "Soul Campfire");
         this.block = Block.get(BlockID.BLOCK_SOUL_CAMPFIRE);
     }
 }

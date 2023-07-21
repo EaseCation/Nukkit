@@ -220,6 +220,7 @@ public class EntityArmorStand extends EntityLiving implements EntityInteractable
     public boolean attack(EntityDamageEvent source) {
         switch (source.getCause()) {
             case FALL:
+            case STALAGMITE:
                 level.addLevelEvent(this, LevelEventPacket.EVENT_SOUND_ARMOR_STAND_FALL);
                 return false;
             case FIRE:
@@ -262,6 +263,7 @@ public class EntityArmorStand extends EntityLiving implements EntityInteractable
             case VOID:
             case SUICIDE:
             case MAGIC:
+            case WITHER:
             case CUSTOM:
                 break;
             default:

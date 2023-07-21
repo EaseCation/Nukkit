@@ -155,7 +155,7 @@ public class EntityFallingBlock extends Entity {
                             if (!(entity instanceof EntityLiving) || highestPosition <= y) {
                                 continue;
                             }
-                            entity.attack(new EntityDamageByBlockEvent(Block.get(Block.POINTED_DRIPSTONE, getDamage()), entity, DamageCause.CONTACT, damage));
+                            entity.attack(new EntityDamageByBlockEvent(Block.get(Block.POINTED_DRIPSTONE, getDamage()), entity, DamageCause.STALACTITE, damage));
                         }
                     }
 
@@ -223,10 +223,9 @@ public class EntityFallingBlock extends Entity {
                                     if (!(entity instanceof EntityLiving) || highestPosition <= y) {
                                         continue;
                                     }
-                                    entity.attack(new EntityDamageByBlockEvent(event.getTo(), entity, DamageCause.CONTACT, damage));
+                                    entity.attack(new EntityDamageByBlockEvent(event.getTo(), entity, DamageCause.ANVIL, damage));
                                 }
                             }
-
                         }
                     }
                 }

@@ -12,7 +12,7 @@ public class ItemDoorCrimson extends Item {
     }
 
     public ItemDoorCrimson(Integer meta, int count) {
-        super(CRIMSON_DOOR, 0, count, "Crimson Door");
+        super(CRIMSON_DOOR, meta, count, "Crimson Door");
         this.block = Block.get(Block.BLOCK_CRIMSON_DOOR);
     }
 }

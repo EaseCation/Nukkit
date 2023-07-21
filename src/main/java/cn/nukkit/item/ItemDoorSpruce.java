@@ -13,7 +13,7 @@ public class ItemDoorSpruce extends Item {
     }
 
     public ItemDoorSpruce(Integer meta, int count) {
-        super(SPRUCE_DOOR, 0, count, "Spruce Door");
+        super(SPRUCE_DOOR, meta, count, "Spruce Door");
         this.block = Block.get(BlockID.BLOCK_SPRUCE_DOOR);
     }
 

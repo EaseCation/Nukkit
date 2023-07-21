@@ -120,27 +120,29 @@ public abstract class EntityLiving extends Entity implements EntityDamageable {
 
     @Override
     public boolean attack(EntityDamageEvent source) {
-        if (System.currentTimeMillis() < this.nextAllowAttack/*this.attackTime > 0*/) {
-            EntityDamageEvent lastCause = this.getLastDamageCause();
-            if (this instanceof Player) {
-                if (lastCause != null && (lastCause.getFinalDamage() == 0 || lastCause.getCause() == DamageCause.FIRE_TICK)) {
-                    //上次伤害是0，这次允许输出
+        if (source.getCause() != DamageCause.SUICIDE) {
+            if (System.currentTimeMillis() < this.nextAllowAttack/*this.attackTime > 0*/) {
+                EntityDamageEvent lastCause = this.getLastDamageCause();
+                if (this instanceof Player) {
+                    if (lastCause != null && (lastCause.getFinalDamage() == 0 || lastCause.getCause() == DamageCause.FIRE_TICK)) {
+                        //上次伤害是0，这次允许输出
+                    } else {
+                        //叠刀时的自我安慰
+                        if (source instanceof EntityDamageByEntityEvent && source.getCause() == DamageCause.ENTITY_ATTACK && ((EntityDamageByEntityEvent) source).getDamager() instanceof Player)
+                            this.getLevel().addSound(this.add(0, 15, 0), SoundEnum.GAME_PLAYER_HURT, 1, 1, (Player) ((EntityDamageByEntityEvent) source).getDamager());
+                        return false;
+                    }
                 } else {
-                    //叠刀时的自我安慰
-                    if (source instanceof EntityDamageByEntityEvent && source.getCause() == DamageCause.ENTITY_ATTACK && ((EntityDamageByEntityEvent) source).getDamager() instanceof Player)
-                        this.getLevel().addSound(this.add(0, 15, 0), SoundEnum.GAME_PLAYER_HURT, 1, 1, (Player) ((EntityDamageByEntityEvent) source).getDamager());
-                    return false;
+                    if (lastCause != null && lastCause.getDamage() >= source.getDamage()) {
+                        return false;
+                    }
                 }
-            } else {
+            }
+            if (this.noDamageTicks > 0) {
+                EntityDamageEvent lastCause = this.getLastDamageCause();
                 if (lastCause != null && lastCause.getDamage() >= source.getDamage()) {
                     return false;
                 }
-            }
-        }
-        if (this.noDamageTicks > 0) {
-            EntityDamageEvent lastCause = this.getLastDamageCause();
-            if (lastCause != null && lastCause.getDamage() >= source.getDamage()) {
-                return false;
             }
         }
 

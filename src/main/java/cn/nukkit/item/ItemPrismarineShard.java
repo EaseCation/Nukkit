@@ -11,6 +11,6 @@ public class ItemPrismarineShard extends Item {
     }
 
     public ItemPrismarineShard(Integer meta, int count) {
-        super(PRISMARINE_SHARD, 0, count, "Prismarine Shard");
+        super(PRISMARINE_SHARD, meta, count, "Prismarine Shard");
     }
 }

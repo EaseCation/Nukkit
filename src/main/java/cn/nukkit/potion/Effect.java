@@ -146,7 +146,7 @@ public class Effect implements EffectID, Cloneable {
                 }
                 break;
             case Effect.WITHER:
-                entity.attack(new EntityDamageEvent(entity, DamageCause.MAGIC, 1));
+                entity.attack(new EntityDamageEvent(entity, DamageCause.WITHER, 1));
                 break;
             case Effect.REGENERATION:
                 if (entity.getHealth() < entity.getMaxHealth()) {

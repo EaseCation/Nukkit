@@ -1,6 +1,7 @@
 package cn.nukkit.item;
 
 import cn.nukkit.Player;
+import cn.nukkit.item.enchantment.Enchantment;
 import cn.nukkit.math.Vector3;
 import cn.nukkit.nbt.tag.ByteTag;
 import cn.nukkit.nbt.tag.Tag;
@@ -29,11 +30,11 @@ public abstract class ItemArmor extends Item implements ItemDurable {
     }
 
     protected ItemArmor(int id, Integer meta, int count) {
-        super(id, meta, count);
+        super(id, meta, 1);
     }
 
     protected ItemArmor(int id, Integer meta, int count, String name) {
-        super(id, meta, count, name);
+        super(id, meta, 1, name);
     }
 
     @Override
@@ -49,27 +50,29 @@ public abstract class ItemArmor extends Item implements ItemDurable {
     @Override
     public boolean onClickAir(Player player, Vector3 directionVector) {
         boolean equip = false;
-        Item oldSlotItem = Item.get(AIR);
+        Item oldSlotItem;
         if (this.isHelmet()) {
             oldSlotItem = player.getInventory().getHelmet();
-            if (player.getInventory().setHelmet(this)) {
+            if (!oldSlotItem.hasEnchantment(Enchantment.BINDING) && player.getInventory().setHelmet(this)) {
                 equip = true;
             }
         } else if (this.isChestplate()) {
             oldSlotItem = player.getInventory().getChestplate();
-            if (player.getInventory().setChestplate(this)) {
+            if (!oldSlotItem.hasEnchantment(Enchantment.BINDING) && player.getInventory().setChestplate(this)) {
                 equip = true;
             }
         } else if (this.isLeggings()) {
             oldSlotItem = player.getInventory().getLeggings();
-            if (player.getInventory().setLeggings(this)) {
+            if (!oldSlotItem.hasEnchantment(Enchantment.BINDING) && player.getInventory().setLeggings(this)) {
                 equip = true;
             }
         } else if (this.isBoots()) {
             oldSlotItem = player.getInventory().getBoots();
-            if (player.getInventory().setBoots(this)) {
+            if (!oldSlotItem.hasEnchantment(Enchantment.BINDING) && player.getInventory().setBoots(this)) {
                 equip = true;
             }
+        } else {
+            oldSlotItem = Items.air();
         }
         if (equip) {
             player.getInventory().setItem(player.getInventory().getHeldItemIndex(), oldSlotItem);

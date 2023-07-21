@@ -20,7 +20,7 @@ public class ItemBannerPattern extends Item {
     }
 
     public ItemBannerPattern(Integer meta, int count) {
-        super(BANNER_PATTERN, meta, count, "Banner Pattern");
+        super(BANNER_PATTERN, meta, 1, "Banner Pattern");
     }
 
     @Override

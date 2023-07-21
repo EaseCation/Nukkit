@@ -21,7 +21,7 @@ public class ItemFireCharge extends Item {
     }
 
     public ItemFireCharge(Integer meta, int count) {
-        super(FIRE_CHARGE, 0, count, "Fire Charge");
+        super(FIRE_CHARGE, meta, count, "Fire Charge");
     }
 
     @Override

@@ -1,6 +1,7 @@
 package cn.nukkit.command.defaults;
 
 import cn.nukkit.block.Block;
+import cn.nukkit.command.Command;
 import cn.nukkit.command.CommandParser;
 import cn.nukkit.command.CommandSender;
 import cn.nukkit.command.data.CommandEnum;
@@ -19,7 +20,7 @@ import java.util.Objects;
 import java.util.Optional;
 import java.util.function.Function;
 
-public class DeveloperCommand extends VanillaCommand {
+public class DeveloperCommand extends Command {
 
     public DeveloperCommand(String name) {
         super(name, "%nukkit.command.developer.description", "%nukkit.command.developer.usage");

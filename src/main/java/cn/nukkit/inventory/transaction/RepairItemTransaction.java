@@ -25,6 +25,7 @@ public class RepairItemTransaction extends InventoryTransaction {
     private Item inputItem;
     private Item materialItem;
     private Item outputItem;
+    private Item templateItem;
 
     private int cost;
 
@@ -173,6 +174,9 @@ public class RepairItemTransaction extends InventoryTransaction {
                 case NetworkInventoryAction.SOURCE_TYPE_ANVIL_MATERIAL:
                     this.materialItem = action.getTargetItem();
                     break;
+//                case NetworkInventoryAction.SOURCE_TYPE_ANVIL_OUTPUT:
+//                    this.templateItem = action.getTargetItem();
+//                    break;
             }
         }
     }
@@ -202,6 +206,10 @@ public class RepairItemTransaction extends InventoryTransaction {
 
     private boolean hasOutput() {
         return this.outputItem != null && !this.outputItem.isNull();
+    }
+
+    private boolean hasTemplate() {
+        return this.templateItem != null && !this.templateItem.isNull();
     }
 
     private boolean checkRenameValid() {
@@ -401,6 +409,10 @@ public class RepairItemTransaction extends InventoryTransaction {
 
     public Item getOutputItem() {
         return this.outputItem;
+    }
+
+    public Item getTemplateItem() {
+        return this.templateItem;
     }
 
     public int getCost() {

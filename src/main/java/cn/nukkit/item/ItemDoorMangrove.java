@@ -12,7 +12,7 @@ public class ItemDoorMangrove extends Item {
     }
 
     public ItemDoorMangrove(Integer meta, int count) {
-        super(MANGROVE_DOOR, 0, count, "Mangrove Door");
+        super(MANGROVE_DOOR, meta, count, "Mangrove Door");
         this.block = Block.get(Block.BLOCK_MANGROVE_DOOR);
     }
 }

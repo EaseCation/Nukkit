@@ -15,6 +15,6 @@ public class ItemIngotIron extends Item {
     }
 
     public ItemIngotIron(Integer meta, int count) {
-        super(IRON_INGOT, 0, count, "Iron Ingot");
+        super(IRON_INGOT, meta, count, "Iron Ingot");
     }
 }
