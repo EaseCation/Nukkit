@@ -11,7 +11,7 @@ public class SavannaPlateauMBiome extends SavannaPlateauBiome {
         super();
 
         this.setBaseHeight(1.05f);
-        this.setHeightVariation(1.2125001f);
+        this.setHeightVariation(1.2125f);
     }
 
     @Override

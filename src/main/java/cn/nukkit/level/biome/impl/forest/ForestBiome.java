@@ -33,6 +33,9 @@ public class ForestBiome extends GrassyBiome {
             trees = new PopulatorTree(BlockSapling.OAK);
             trees.setBaseAmount(3);
             this.addPopulator(trees);
+        } else if (type == TYPE_BIRCH_TALL) {
+            this.setBaseHeight(0.2f);
+            this.setHeightVariation(0.4f);
         }
     }
 

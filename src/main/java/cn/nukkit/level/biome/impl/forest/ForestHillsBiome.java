@@ -12,8 +12,13 @@ public class ForestHillsBiome extends ForestBiome {
     public ForestHillsBiome(int type) {
         super(type);
 
-        this.setBaseHeight(0.45f);
-        this.setHeightVariation(0.3f);
+        if (type != TYPE_BIRCH_TALL) {
+            this.setBaseHeight(0.45f);
+            this.setHeightVariation(0.3f);
+        } else {
+            this.setBaseHeight(0.55f);
+            this.setHeightVariation(0.5f);
+        }
     }
 
     @Override

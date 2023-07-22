@@ -15,9 +15,6 @@ public class TaigaBiome extends GrassyBiome {
         PopulatorTree trees = new PopulatorTree(BlockSapling.SPRUCE);
         trees.setBaseAmount(10);
         this.addPopulator(trees);
-
-        this.setBaseHeight(0.2f);
-        this.setHeightVariation(0.2f);
     }
 
     @Override

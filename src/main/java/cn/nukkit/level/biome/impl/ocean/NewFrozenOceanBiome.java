@@ -2,15 +2,11 @@ package cn.nukkit.level.biome.impl.ocean;
 
 import cn.nukkit.level.generator.populator.impl.WaterIcePopulator;
 
-/**
- * author: DaPorkchop_
- * Nukkit Project
- * <p>
- * This biome does not generate naturally
- */
-public class FrozenOceanBiome extends OceanBiome {
-    public FrozenOceanBiome() {
+public class NewFrozenOceanBiome extends OceanBiome {
+    public NewFrozenOceanBiome() {
         super();
+
+        //TODO: ice mountains
 
         WaterIcePopulator ice = new WaterIcePopulator();
         this.addPopulator(ice);
@@ -18,7 +14,7 @@ public class FrozenOceanBiome extends OceanBiome {
 
     @Override
     public String getName() {
-        return "Legacy Frozen Ocean";
+        return "Frozen Ocean";
     }
 
     @Override

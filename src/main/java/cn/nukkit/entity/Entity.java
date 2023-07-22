@@ -3,6 +3,7 @@ package cn.nukkit.entity;
 import cn.nukkit.Player;
 import cn.nukkit.Server;
 import cn.nukkit.block.Block;
+import cn.nukkit.block.BlockDripstonePointed;
 import cn.nukkit.block.BlockID;
 import cn.nukkit.block.BlockWater;
 import cn.nukkit.blockentity.BlockEntityPistonArm;
@@ -1619,7 +1620,7 @@ public abstract class Entity extends Location implements Metadatable, EntityData
         }
 
         Block down = null;
-        if (fallDistance > 0.75) {
+        if (fallDistance > 0.75f) {
             down = this.level.getBlock(this.floor().down());
             if (down.getId() == Item.FARMLAND) {
                 Event ev;
@@ -1639,17 +1640,29 @@ public abstract class Entity extends Location implements Metadatable, EntityData
             return;
         }
 
-        float damage = Mth.floor(fallDistance - 3);
-        if (damage <= 0) {
-            return;
+        DamageCause cause;
+        float multiplier;
+        Block half;
+        if (fallDistance > 0.75f && (half = level.getBlock(subtract(0, 0.49f, 0))).getId() == Block.POINTED_DRIPSTONE && half.getDamage() == BlockDripstonePointed.THICKNESS_TIP) {
+            cause = DamageCause.STALAGMITE;
+            multiplier = 2;
+            fallDistance += 2 + 0.25f;
+        } else {
+            cause = DamageCause.FALL;
+            multiplier = 1;
         }
 
+        int jumpBoost;
         Effect effect = this.getEffect(Effect.JUMP_BOOST);
         if (effect != null) {
-            damage -= effect.getAmplifier() + 1;
-            if (damage <= 0) {
-                return;
-            }
+            jumpBoost = effect.getAmplifier() + 1;
+        } else {
+            jumpBoost = 0;
+        }
+
+        float damage = Mth.ceil((fallDistance - 3 - jumpBoost) * multiplier);
+        if (damage <= 0) {
+            return;
         }
 
         Block block = this.level.getBlock(this);
@@ -1665,7 +1678,7 @@ public abstract class Entity extends Location implements Metadatable, EntityData
             }
         }
 
-        this.attack(new EntityDamageEvent(this, DamageCause.FALL, damage));
+        this.attack(new EntityDamageEvent(this, cause, damage));
     }
 
     public void handleLavaMovement() {

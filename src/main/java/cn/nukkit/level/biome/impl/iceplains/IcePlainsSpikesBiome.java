@@ -16,6 +16,9 @@ public class IcePlainsSpikesBiome extends IcePlainsBiome {
 
         PopulatorIceSpikes iceSpikes = new PopulatorIceSpikes();
         this.addPopulator(iceSpikes);
+
+        this.setBaseHeight(0.425f);
+        this.setHeightVariation(0.45f);
     }
 
     @Override

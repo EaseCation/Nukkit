@@ -1,24 +1,28 @@
 package cn.nukkit.level.biome;
 
-import cn.nukkit.level.biome.impl.HellBiome;
 import cn.nukkit.level.biome.impl.beach.BeachBiome;
 import cn.nukkit.level.biome.impl.beach.ColdBeachBiome;
+import cn.nukkit.level.biome.impl.cave.DeepDarkBiome;
+import cn.nukkit.level.biome.impl.cave.DripstoneCavesBiome;
+import cn.nukkit.level.biome.impl.cave.LushCavesBiome;
 import cn.nukkit.level.biome.impl.desert.DesertBiome;
 import cn.nukkit.level.biome.impl.desert.DesertHillsBiome;
 import cn.nukkit.level.biome.impl.desert.DesertMBiome;
+import cn.nukkit.level.biome.impl.end.EndBiome;
 import cn.nukkit.level.biome.impl.extremehills.*;
 import cn.nukkit.level.biome.impl.forest.FlowerForestBiome;
 import cn.nukkit.level.biome.impl.forest.ForestBiome;
 import cn.nukkit.level.biome.impl.forest.ForestHillsBiome;
 import cn.nukkit.level.biome.impl.iceplains.IcePlainsBiome;
+import cn.nukkit.level.biome.impl.iceplains.IcePlainsHillsBiome;
 import cn.nukkit.level.biome.impl.iceplains.IcePlainsSpikesBiome;
 import cn.nukkit.level.biome.impl.jungle.*;
 import cn.nukkit.level.biome.impl.mesa.*;
+import cn.nukkit.level.biome.impl.mountain.*;
 import cn.nukkit.level.biome.impl.mushroom.MushroomIslandBiome;
 import cn.nukkit.level.biome.impl.mushroom.MushroomIslandShoreBiome;
-import cn.nukkit.level.biome.impl.ocean.DeepOceanBiome;
-import cn.nukkit.level.biome.impl.ocean.FrozenOceanBiome;
-import cn.nukkit.level.biome.impl.ocean.OceanBiome;
+import cn.nukkit.level.biome.impl.nether.*;
+import cn.nukkit.level.biome.impl.ocean.*;
 import cn.nukkit.level.biome.impl.plains.PlainsBiome;
 import cn.nukkit.level.biome.impl.plains.SunflowerPlainsBiome;
 import cn.nukkit.level.biome.impl.river.FrozenRiverBiome;
@@ -29,6 +33,7 @@ import cn.nukkit.level.biome.impl.savanna.SavannaBiome;
 import cn.nukkit.level.biome.impl.savanna.SavannaMBiome;
 import cn.nukkit.level.biome.impl.savanna.SavannaPlateauBiome;
 import cn.nukkit.level.biome.impl.savanna.SavannaPlateauMBiome;
+import cn.nukkit.level.biome.impl.swamp.MangroveSwampBiome;
 import cn.nukkit.level.biome.impl.swamp.SwampBiome;
 import cn.nukkit.level.biome.impl.swamp.SwamplandMBiome;
 import cn.nukkit.level.biome.impl.taiga.*;
@@ -50,11 +55,11 @@ public enum EnumBiome {
     SWAMP(6, new SwampBiome()),
     RIVER(7, new RiverBiome()),//
     HELL(8, new HellBiome()),
-    THE_END(9, new PlainsBiome()),
-    FROZEN_OCEAN(10, new FrozenOceanBiome()), //DOES NOT GENERATE NATUALLY
+    THE_END(9, new EndBiome()),
+    LEGACY_FROZEN_OCEAN(10, new FrozenOceanBiome()), //DOES NOT GENERATE NATUALLY
     FROZEN_RIVER(11, new FrozenRiverBiome()),
     ICE_PLAINS(12, new IcePlainsBiome()),
-    ICE_MOUNTAINS(13, new PlainsBiome()),
+    ICE_MOUNTAINS(13, new IcePlainsHillsBiome()),
     MUSHROOM_ISLAND(14, new MushroomIslandBiome()),//
     MUSHROOM_ISLAND_SHORE(15, new MushroomIslandShoreBiome()),
     BEACH(16, new BeachBiome()),
@@ -81,15 +86,16 @@ public enum EnumBiome {
     MESA(37, new MesaBiome()),
     MESA_PLATEAU_F(38, new MesaPlateauFBiome()),
     MESA_PLATEAU(39, new MesaPlateauBiome()),
-    WARM_OCEAN(40, new PlainsBiome()),
-    DEEP_WARM_OCEAN(41, new PlainsBiome()),
-    LUKEWARM_OCEAN(42, new PlainsBiome()),
-    DEEP_LUKEWARM_OCEAN(43, new PlainsBiome()),
-    COLD_OCEAN(44, new PlainsBiome()),
-    DEEP_COLD_OCEAN(45, new PlainsBiome()),
-    DEEP_FROZEN_OCEAN(47, new PlainsBiome()),
-    BAMBOO_JUNGLE(48, new PlainsBiome()),
-    BAMBOO_JUNGLE_HILLS(49, new PlainsBiome()),
+    WARM_OCEAN(40, new WarmOceanBiome()),
+    DEEP_WARM_OCEAN(41, new WarmDeepOceanBiome()),
+    LUKEWARM_OCEAN(42, new LukewarmOceanBiome()),
+    DEEP_LUKEWARM_OCEAN(43, new LukewarmDeepOceanBiome()),
+    COLD_OCEAN(44, new ColdOceanBiome()),
+    DEEP_COLD_OCEAN(45, new ColdDeepOceanBiome()),
+    FROZEN_OCEAN(46, new NewFrozenOceanBiome()),
+    DEEP_FROZEN_OCEAN(47, new FrozenDeepOceanBiome()),
+    BAMBOO_JUNGLE(48, new BambooJungleBiome()),
+    BAMBOO_JUNGLE_HILLS(49, new BambooJungleHillsBiome()),
     //    All biomes below this comment are mutated variants of existing biomes
     SUNFLOWER_PLAINS(129, new SunflowerPlainsBiome()),
     DESERT_M(130, new DesertMBiome()),
@@ -106,26 +112,29 @@ public enum EnumBiome {
     ROOFED_FOREST_M(157, new RoofedForestMBiome()),
     COLD_TAIGA_M(158, new ColdTaigaMBiome()),
     MEGA_SPRUCE_TAIGA(160, new MegaSpruceTaigaBiome()),
+    MEGA_SPRUCE_TAIGA_HILLS(161, new MegaSpruceTaigaHillsBiome()),
     EXTREME_HILLS_PLUS_M(162, new ExtremeHillsPlusMBiome()),
     SAVANNA_M(163, new SavannaMBiome()),
     SAVANNA_PLATEAU_M(164, new SavannaPlateauMBiome()),
     MESA_BRYCE(165, new MesaBryceBiome()),
     MESA_PLATEAU_F_M(166, new MesaPlateauFMBiome()),
     MESA_PLATEAU_M(167, new MesaPlateauMBiome()),
-    SOULSAND_VALLEY(178, new PlainsBiome()),
-    CRIMSON_FOREST(179, new PlainsBiome()),
-    WARPED_FOREST(180, new PlainsBiome()),
-    BASALT_DELTAS(181, new PlainsBiome()),
-    JAGGED_PEAKS(182, new PlainsBiome()),
-    FROZEN_PEAKS(183, new PlainsBiome()),
-    SNOWY_SLOPES(184, new PlainsBiome()),
-    GROVE(185, new PlainsBiome()),
-    MEADOW(186, new PlainsBiome()),
-    LUSH_CAVES(187, new PlainsBiome()),
-    DRIPSTONE_CAVES(188, new PlainsBiome()),
-    STONY_PEAKS(189, new PlainsBiome()),
-    DEEP_DARK(190, new PlainsBiome()),
-    MANGROVE_SWAMP(191, new PlainsBiome());
+    SOULSAND_VALLEY(178, new SoulsandValleyBiome()),
+    CRIMSON_FOREST(179, new CrimsonForestBiome()),
+    WARPED_FOREST(180, new WarpedForestBiome()),
+    BASALT_DELTAS(181, new BasaltDeltasBiome()),
+    JAGGED_PEAKS(182, new JaggedPeaksBiome()),
+    FROZEN_PEAKS(183, new FrozenPeaksBiome()),
+    SNOWY_SLOPES(184, new SnowySlopesBiome()),
+    GROVE(185, new GroveBiome()),
+    MEADOW(186, new MeadowBiome()),
+    LUSH_CAVES(187, new LushCavesBiome()),
+    DRIPSTONE_CAVES(188, new DripstoneCavesBiome()),
+    STONY_PEAKS(189, new StonyPeaksBiome()),
+    DEEP_DARK(190, new DeepDarkBiome()),
+    MANGROVE_SWAMP(191, new MangroveSwampBiome()),
+    CHERRY_GROVE(192, new CherryGroveBiome()),
+    ;
 
     public final int id;
     public final Biome biome;

@@ -29,10 +29,10 @@ public abstract class Biome implements BlockID {
     private static final Object2IntMap<String> nameToId;
     private static final String[] idToName = new String[MAX_BIOMES];
 
-    private final ArrayList<Populator> populators = new ArrayList<>();
+    private final List<Populator> populators = new ArrayList<>();
     private int id;
     private float baseHeight = 0.1f;
-    private float heightVariation = 0.3f;
+    private float heightVariation = 0.2f;
 
     protected static void register(int id, Biome biome) {
         biome.setId(id);
@@ -75,7 +75,7 @@ public abstract class Biome implements BlockID {
         }
     }
 
-    public ArrayList<Populator> getPopulators() {
+    public List<Populator> getPopulators() {
         return populators;
     }
 

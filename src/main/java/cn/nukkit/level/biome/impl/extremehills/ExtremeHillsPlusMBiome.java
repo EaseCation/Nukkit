@@ -12,9 +12,6 @@ public class ExtremeHillsPlusMBiome extends ExtremeHillsMBiome {
 
     public ExtremeHillsPlusMBiome() {
         super(false);
-
-        this.setBaseHeight(1f);
-        this.setHeightVariation(0.5f);
     }
 
     @Override

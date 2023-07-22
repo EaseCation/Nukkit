@@ -7,6 +7,9 @@ package cn.nukkit.level.biome.impl.mesa;
 public class MesaPlateauFMBiome extends MesaPlateauFBiome {
     public MesaPlateauFMBiome() {
         super();
+
+        this.setBaseHeight(0.45f);
+        this.setHeightVariation(0.3f);
     }
 
     @Override
