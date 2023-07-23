@@ -171,6 +171,10 @@ public class ChunkRequestTask extends AsyncTask<Void> {
                         if (subChunkY >= tagLists.length) {
                             continue;
                         }
+                        if (subChunkY < 0) {
+                            //TODO: unsupported
+                            continue;
+                        }
                         List<CompoundTag> tagList = tagLists[subChunkY];
                         if (tagList == null) {
                             tagList = new ObjectArrayList<>();
@@ -402,7 +406,7 @@ public class ChunkRequestTask extends AsyncTask<Void> {
             }
             success = true;
         } catch (Exception e) {
-            log.warn("Chunk async load failed", e);
+            log.warn("Chunk async load failed (network serialization)", e);
         }
     }
 
