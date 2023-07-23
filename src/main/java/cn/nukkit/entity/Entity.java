@@ -139,6 +139,8 @@ public abstract class Entity extends Location implements Metadatable, EntityData
     public int maxFireTicks;
     public int fireTicks = 0;
     public int inPortalTicks = 0;
+    public int frozenTicks;
+    public boolean freezing;
 
     public float scale = 1;
 
@@ -2513,6 +2515,14 @@ public abstract class Entity extends Location implements Metadatable, EntityData
 
     public boolean canDisableShield() {
         return false;
+    }
+
+    public void resetFrozenState() {
+        if (frozenTicks == 0) {
+            return;
+        }
+        frozenTicks = 0;
+        setDataProperty(new FloatEntityData(DATA_FREEZING_EFFECT_STRENGTH, 0));
     }
 
     @Override

@@ -216,7 +216,7 @@ public final class Blocks {
         registerBlock(COLORED_TORCH_BP, BlockTorchColoredBluePurple.class);
         registerBlock(UNDYED_SHULKER_BOX, BlockUndyedShulkerBox.class);
         registerBlock(END_BRICKS, BlockBricksEndStone.class);
-        registerBlock(FROSTED_ICE, BlockIceFrosted.class); //TODO: melt
+        registerBlock(FROSTED_ICE, BlockIceFrosted.class);
         registerBlock(END_ROD, BlockEndRod.class);
         registerBlock(END_GATEWAY, BlockEndGateway.class);
 
@@ -463,8 +463,8 @@ public final class Blocks {
 
         registerBlock(UNKNOWN, BlockUnknownBlock.class, V1_16_100);
 
-        registerBlock(POWDER_SNOW, BlockSnowPowder.class, V1_17_0); //TODO: entity interaction
-        registerBlock(POINTED_DRIPSTONE, BlockDripstonePointed.class, V1_17_0); //TODO: stalagmite damage
+        registerBlock(POWDER_SNOW, BlockSnowPowder.class, V1_17_0);
+        registerBlock(POINTED_DRIPSTONE, BlockDripstonePointed.class, V1_17_0);
         registerBlock(COPPER_ORE, BlockOreCopper.class, V1_17_0);
         registerBlock(LIGHTNING_ROD, BlockLightningRod.class, V1_17_0);
         registerBlock(DRIPSTONE_BLOCK, BlockDripstone.class, V1_17_0);

@@ -1,13 +1,12 @@
 package cn.nukkit.command.defaults;
 
-import cn.nukkit.Player;
-import cn.nukkit.command.Command;
+import cn.nukkit.command.CommandParser;
 import cn.nukkit.command.CommandSender;
 import cn.nukkit.command.data.CommandParamType;
 import cn.nukkit.command.data.CommandParameter;
+import cn.nukkit.command.exceptions.CommandSyntaxException;
 import cn.nukkit.lang.TranslationContainer;
-import cn.nukkit.level.Level;
-import cn.nukkit.math.Vector3;
+import cn.nukkit.level.Position;
 
 /**
  * Created on 2015/12/13 by xtypr.
@@ -28,30 +27,18 @@ public class SetWorldSpawnCommand extends VanillaCommand {
         if (!this.testPermission(sender)) {
             return true;
         }
-        Level level;
-        Vector3 pos;
-        if (args.length == 0) {
-            if (sender instanceof Player) {
-                level = ((Player) sender).getLevel();
-                pos = ((Player) sender).round();
-            } else {
-                sender.sendMessage(new TranslationContainer("nukkit.command.generic.ingame"));
-                return true;
-            }
-        } else if (args.length == 3) {
-            level = sender.getServer().getDefaultLevel();
-            try {
-                pos = new Vector3(Integer.parseInt(args[0]), Integer.parseInt(args[1]), Integer.parseInt(args[2]));
-            } catch (NumberFormatException e1) {
-                sender.sendMessage(new TranslationContainer("commands.generic.usage", this.usageMessage));
-                return true;
-            }
-        } else {
-            sender.sendMessage(new TranslationContainer("commands.generic.usage", this.usageMessage));
+
+        CommandParser parser = new CommandParser(this, sender, args);
+        try {
+            Position pos = parser.parsePositionOrSelf();
+
+            pos.level.setSpawnLocation(pos);
+
+            broadcastCommandMessage(sender, new TranslationContainer("commands.setworldspawn.success", pos.getFloorX(), pos.getFloorY(), pos.getFloorZ()));
             return true;
+        } catch (CommandSyntaxException e) {
+            sender.sendMessage(parser.getErrorMessage());
         }
-        level.setSpawnLocation(pos);
-        Command.broadcastCommandMessage(sender, new TranslationContainer("commands.setworldspawn.success", pos.getFloorX(), pos.getFloorY(), pos.getFloorZ()));
-        return true;
+        return false;
     }
 }

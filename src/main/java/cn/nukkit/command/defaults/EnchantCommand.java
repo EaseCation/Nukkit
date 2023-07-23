@@ -86,7 +86,7 @@ public class EnchantCommand extends VanillaCommand {
                 sender.sendMessage(new TranslationContainer(TextFormat.RED + "%commands.enchant.noItem", noItem.toString()));
             }
             if (success.length() != 0) {
-                Command.broadcastCommandMessage(sender, new TranslationContainer("%commands.enchant.success", success.toString()));
+                Command.broadcastCommandMessage(sender, new TranslationContainer("commands.enchant.success", success.toString()));
                 return true;
             }
         } catch (CommandSyntaxException e) {

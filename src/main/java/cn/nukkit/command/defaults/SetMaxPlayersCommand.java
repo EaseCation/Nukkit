@@ -36,7 +36,7 @@ public class SetMaxPlayersCommand extends VanillaCommand {
 
             sender.getServer().setMaxPlayers(maxPlayers);
 
-            broadcastCommandMessage(sender, new TranslationContainer("%commands.setmaxplayers.success", maxPlayers));
+            broadcastCommandMessage(sender, new TranslationContainer("commands.setmaxplayers.success", maxPlayers));
 
             if (lowerBound) {
                 sender.sendMessage("(Bound to minimum allowed connections)");

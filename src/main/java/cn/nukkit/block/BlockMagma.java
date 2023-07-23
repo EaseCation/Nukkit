@@ -6,6 +6,7 @@ import cn.nukkit.event.entity.EntityDamageByBlockEvent;
 import cn.nukkit.event.entity.EntityDamageEvent;
 import cn.nukkit.item.Item;
 import cn.nukkit.item.ItemTool;
+import cn.nukkit.item.enchantment.Enchantment;
 import cn.nukkit.level.GameRule;
 import cn.nukkit.level.Level;
 import cn.nukkit.math.BlockFace;
@@ -67,6 +68,9 @@ public class BlockMagma extends BlockSolid {
     public void onEntityCollide(Entity entity) {
         if (entity instanceof Player) {
             Player p = (Player) entity;
+            if (p.getInventory().getBoots().hasEnchantment(Enchantment.FROST_WALKER)) {
+                return;
+            }
             if (p.isSurvivalLike() && !p.isSneaking() && p.level.gameRules.getBoolean(GameRule.FIRE_DAMAGE)) {
                 entity.attack(new EntityDamageByBlockEvent(this, entity, EntityDamageEvent.DamageCause.MAGMA, 1));
             }

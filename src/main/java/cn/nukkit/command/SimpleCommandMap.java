@@ -64,6 +64,7 @@ public class SimpleCommandMap implements CommandMap {
         this.register("nukkit", new GameruleCommand("gamerule"));
         this.register("nukkit", new KillCommand("kill"));
         this.register("nukkit", new SpawnpointCommand("spawnpoint"));
+        this.register("nukkit", new ClearSpawnpointCommand("clearspawnpoint"));
         this.register("nukkit", new SetWorldSpawnCommand("setworldspawn"));
         this.register("nukkit", new TeleportCommand("tp"));
         this.register("nukkit", new TimeCommand("time"));

@@ -36,7 +36,7 @@ public class ItemPotionLingering extends ProjectileItem {
 
     @Override
     protected void correctNBT(CompoundTag nbt) {
-        nbt.putInt("PotionId", this.getDamage());
+        nbt.putShort("PotionId", this.getDamage());
 
         nbt.putCompound("Item", NBTIO.putItemHelper(this));
     }

@@ -2,7 +2,6 @@ package cn.nukkit.block;
 
 import cn.nukkit.Player;
 import cn.nukkit.item.Item;
-import cn.nukkit.item.ItemTool;
 import cn.nukkit.level.Dimension;
 import cn.nukkit.level.Level;
 import cn.nukkit.math.BlockFace;
@@ -31,11 +30,6 @@ public class BlockIceFrosted extends BlockTransparentMeta {
     }
 
     @Override
-    public int getToolType() {
-        return ItemTool.TYPE_PICKAXE;
-    }
-
-    @Override
     public double getHardness() {
         return 0.5;
     }
@@ -58,11 +52,6 @@ public class BlockIceFrosted extends BlockTransparentMeta {
     @Override
     public BlockColor getColor() {
         return BlockColor.ICE_BLOCK_COLOR;
-    }
-
-    @Override
-    public boolean canHarvestWithHand() {
-        return false;
     }
 
     @Override
@@ -95,17 +84,54 @@ public class BlockIceFrosted extends BlockTransparentMeta {
 
     @Override
     public int onUpdate(int type) {
-        if (type == Level.BLOCK_UPDATE_NORMAL) {
-
-//            level.scheduleRandomUpdate(this, ThreadLocalRandom.current().nextInt(20, 20 * 2));
-        }
+//        if (type == Level.BLOCK_UPDATE_NORMAL) {
+//            if (equalsVec(neighborPos) && pos.countNeighbors() < 2) {
+//                level.setBlock(this, get(WATER), true);
+//            }
+//            return type;
+//        }
 
         if (type == Level.BLOCK_UPDATE_SCHEDULED) {
-            //TODO: FrostedIceBlock::_slightlyMelt
-
-            level.scheduleRandomUpdate(this, ThreadLocalRandom.current().nextInt(20, 20 * 2));
+            if ((ThreadLocalRandom.current().nextInt(3) == 0 || countNeighbors() < 4) /*&& level.getBlockLightAt(getFloorX(), getFloorY(), getFloorZ()) > 11*/) { //TODO: light
+                slightlyMelt(true);
+            } else {
+                level.scheduleRandomUpdate(this, ThreadLocalRandom.current().nextInt(20, 20 * 2));
+            }
+            return type;
         }
 
         return 0;
+    }
+
+    private void slightlyMelt(boolean propagate) {
+        int age = getDamage();
+        if (age < 3) {
+            setDamage(age + 1);
+            level.setBlock(this, this, true);
+            level.scheduleRandomUpdate(this, ThreadLocalRandom.current().nextInt(20, 20 * 2));
+            return;
+        }
+
+        level.setBlock(this, get(WATER), true);
+
+        if (!propagate) {
+            return;
+        }
+        for (BlockFace face : BlockFace.values()) {
+            Block block = getSide(face);
+            if (block instanceof BlockIceFrosted) {
+                ((BlockIceFrosted) block).slightlyMelt(false);
+            }
+        }
+    }
+
+    private int countNeighbors() {
+        int result = 0;
+        for (BlockFace face : BlockFace.values()) {
+            if (getSide(face).getId() == FROSTED_ICE && ++result >= 4) {
+                return result;
+            }
+        }
+        return result;
     }
 }

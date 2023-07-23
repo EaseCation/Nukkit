@@ -20,4 +20,9 @@ public class EnchantmentBowInfinity extends EnchantmentBow {
     public int getMaxEnchantAbility(int level) {
         return 50;
     }
+
+    @Override
+    public boolean checkCompatibility(Enchantment enchantment) {
+        return super.checkCompatibility(enchantment) && enchantment.id != MENDING;
+    }
 }

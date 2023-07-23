@@ -5,6 +5,7 @@ import cn.nukkit.Server;
 import cn.nukkit.block.Block;
 import cn.nukkit.block.BlockID;
 import cn.nukkit.block.BlockWater;
+import cn.nukkit.entity.data.FloatEntityData;
 import cn.nukkit.entity.data.ShortEntityData;
 import cn.nukkit.entity.passive.EntityWaterAnimal;
 import cn.nukkit.event.entity.*;
@@ -21,6 +22,7 @@ import cn.nukkit.math.Vector3;
 import cn.nukkit.nbt.tag.CompoundTag;
 import cn.nukkit.nbt.tag.FloatTag;
 import cn.nukkit.network.protocol.EntityEventPacket;
+import cn.nukkit.network.protocol.LevelSoundEventPacket;
 import cn.nukkit.potion.Effect;
 import cn.nukkit.utils.BlockIterator;
 import co.aikar.timings.Timings;
@@ -360,6 +362,22 @@ public abstract class EntityLiving extends Entity implements EntityDamageable {
                         setAirTicks(airTicks);
                     }
                 }
+            }
+
+            if (freezing) {
+                freezing = false;
+                if (frozenTicks < 140) {
+                    frozenTicks = Math.min(frozenTicks + tickDiff, 140);
+                    setDataProperty(new FloatEntityData(DATA_FREEZING_EFFECT_STRENGTH, frozenTicks / 140f));
+                    //TODO: player fov
+                } else if ((age % 40 == 4 || tickDiff > 40) && (!isPlayer || level.gameRules.getBoolean(GameRule.FREEZE_DAMAGE))) {
+                    if (attack(new EntityDamageEvent(this, DamageCause.FREEZE, 1))) {
+                        level.addLevelSoundEvent(this, LevelSoundEventPacket.SOUND_PLAYER_HURT_FREEZE);
+                    }
+                }
+            } else if (frozenTicks > 0) {
+                frozenTicks = Math.max(frozenTicks - tickDiff * 2, 0);
+                setDataProperty(new FloatEntityData(DATA_FREEZING_EFFECT_STRENGTH, frozenTicks / 140f));
             }
 
             int floorY = Mth.floor(y - (4 / 16.0));

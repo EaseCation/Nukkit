@@ -127,6 +127,13 @@ public class EntityThrownTrident extends EntityProjectile {
         this.server.getPluginManager().callEvent(new ProjectileHitEvent(this, MovingObjectPosition.fromEntity(entity)));
         float damage = this.getResultDamage();
 
+        if (trident != null) {
+            int impaling = trident.getEnchantmentLevel(Enchantment.IMPALING);
+            if (impaling > 0 && (entity.isInsideOfWater() || level.isRaining() && level.canBlockSeeSky(this))) {
+                damage += impaling * 2.5f;
+            }
+        }
+
         EntityDamageEvent ev;
         if (this.shootingEntity == null) {
             ev = new EntityDamageByEntityEvent(this, entity, DamageCause.PROJECTILE, damage);

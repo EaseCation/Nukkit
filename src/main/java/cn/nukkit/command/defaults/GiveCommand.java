@@ -70,7 +70,7 @@ public class GiveCommand extends VanillaCommand {
                 }
             });
 
-            Command.broadcastCommandMessage(sender, new TranslationContainer("%commands.give.success",
+            Command.broadcastCommandMessage(sender, new TranslationContainer("commands.give.success",
                     item.getName() + " (" + item.getId() + ":" + item.getDamage() + ")",
                     item.getCount(),
                     success.toString()));

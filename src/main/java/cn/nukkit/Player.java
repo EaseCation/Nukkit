@@ -10,10 +10,7 @@ import cn.nukkit.command.CommandSender;
 import cn.nukkit.command.data.CommandDataVersions;
 import cn.nukkit.entity.*;
 import cn.nukkit.entity.data.*;
-import cn.nukkit.entity.item.EntityBoat;
-import cn.nukkit.entity.item.EntityFishingHook;
-import cn.nukkit.entity.item.EntityItem;
-import cn.nukkit.entity.item.EntityXPOrb;
+import cn.nukkit.entity.item.*;
 import cn.nukkit.entity.projectile.EntityArrow;
 import cn.nukkit.entity.projectile.EntityProjectile;
 import cn.nukkit.entity.projectile.EntityThrownTrident;
@@ -1268,6 +1265,11 @@ public class Player extends EntityHuman implements CommandSender, InventoryHolde
     }
 
     public void setSpawn(Vector3 pos) {
+        if (pos == null) {
+            this.spawnPosition = null;
+            return;
+        }
+
         Level level;
         if (!(pos instanceof Position)) {
             level = this.level;
@@ -1738,7 +1740,11 @@ public class Player extends EntityHuman implements CommandSender, InventoryHolde
                 this.level);
         Location to = this.getLocation();
 
-        double delta = Math.pow(this.lastX - to.x, 2) + Math.pow(this.lastY - to.y, 2) + Math.pow(this.z - to.z, 2);
+        double deltaX = this.lastX - to.x;
+        double deltaY = this.lastY - to.y;
+        double deltaZ = this.lastZ - to.z;
+        double deltaXZ = deltaX * deltaX + deltaZ * deltaZ;
+        double delta = deltaXZ + deltaY * deltaY;
         double deltaAngle = Math.abs(this.lastYaw - to.yaw) + Math.abs(this.lastPitch - to.pitch);
 
         if (!revert && (delta > 0.0001d || deltaAngle > 1d)) {
@@ -1799,6 +1805,47 @@ public class Player extends EntityHuman implements CommandSender, InventoryHolde
                             jump = 0.05;
                         }
                         this.getFoodData().updateFoodExpLevel(jump + swimming);
+                    }
+                }
+            }
+        }
+
+        if (!revert && !isSpectator() && this.y >= level.getMinHeight() + 1 && this.y <= level.getMaxHeight() && deltaXZ > Mth.EPSILON) {
+            int frostWalker = inventory.getBoots().getEnchantmentLevel(Enchantment.FROST_WALKER);
+            if (frostWalker > 0) {
+                int playerX = getFloorX();
+                int playerZ = getFloorZ();
+                int radius = 2 + frostWalker;
+                int y = getFloorY() - 1;
+                for (int x = playerX - radius; x <= playerX + radius; x++) {
+                    POS:
+                    for (int z = playerZ - radius; z <= playerZ + radius; z++) {
+                        Block block = level.getBlock(x, y, z);
+                        if (!block.isWaterSource() || !block.up().isAir()) {
+                            continue;
+                        }
+
+                        Entity[] entities = level.getCollidingEntities(new SimpleAxisAlignedBB(x, y, z, x + 1, y + 1, z + 1));
+                        for (Entity entity : entities) {
+                            if (entity instanceof Player && ((Player) entity).isSpectator()
+                                    || entity instanceof EntityProjectile
+                                    || entity instanceof EntityItem
+                                    || entity instanceof EntityXPOrb
+                                    || entity instanceof EntityPainting
+                                    || entity instanceof EntityFirework
+                            ) {
+                                continue;
+                            }
+                            continue POS;
+                        }
+
+                        Block frostedIce = Block.get(Block.FROSTED_ICE);
+                        level.setBlock(block, frostedIce, true);
+                        level.scheduleUpdate(frostedIce, ThreadLocalRandom.current().nextInt(20, 40));
+
+                        if (x == playerX && z == playerZ) {
+                            resetFallDistance(); //TODO
+                        }
                     }
                 }
             }

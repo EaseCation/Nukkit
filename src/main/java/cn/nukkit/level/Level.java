@@ -2514,8 +2514,16 @@ public class Level implements ChunkManager, Metadatable {
         return this.useBreakOn(vector, null);
     }
 
+    public Item useBreakOn(Vector3 vector, boolean createParticles) {
+        return this.useBreakOn(vector, null, createParticles);
+    }
+
     public Item useBreakOn(Vector3 vector, @Nullable Item item) {
         return this.useBreakOn(vector, item, null);
+    }
+
+    public Item useBreakOn(Vector3 vector, @Nullable Item item, boolean createParticles) {
+        return this.useBreakOn(vector, item, null, createParticles);
     }
 
     public Item useBreakOn(Vector3 vector, @Nullable Item item, @Nullable Player player) {
@@ -4233,7 +4241,15 @@ public class Level implements ChunkManager, Metadatable {
     }
 
     public boolean canBlockSeeSky(Vector3 pos) {
-        return this.getHighestBlockAt(pos.getFloorX(), pos.getFloorZ()) < pos.getY();
+        return this.canBlockSeeSky(pos.getFloorX(), pos.getFloorY(), pos.getFloorZ());
+    }
+
+    public boolean canBlockSeeSky(BlockVector3 pos) {
+        return this.canBlockSeeSky(pos.getX(), pos.getY(), pos.getZ());
+    }
+
+    public boolean canBlockSeeSky(int x, int y, int z) {
+        return this.getHighestBlockAt(x, z) < y;
     }
 
     public int getStrongPower(Vector3 pos, BlockFace direction) {

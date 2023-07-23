@@ -72,7 +72,7 @@ public class KillCommand extends VanillaCommand {
                 throw CommandExceptions.NO_TARGET;
             }
 
-            broadcastCommandMessage(sender, new TranslationContainer("%commands.kill.successful", String.join(", ", success)));
+            broadcastCommandMessage(sender, new TranslationContainer("commands.kill.successful", String.join(", ", success)));
             return true;
         } catch (CommandSyntaxException e) {
             sender.sendMessage(parser.getErrorMessage());

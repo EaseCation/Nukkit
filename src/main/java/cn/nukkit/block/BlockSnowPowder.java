@@ -1,8 +1,17 @@
 package cn.nukkit.block;
 
+import cn.nukkit.Player;
 import cn.nukkit.entity.Entity;
+import cn.nukkit.entity.EntityLiving;
+import cn.nukkit.entity.projectile.EntityProjectile;
+import cn.nukkit.inventory.PlayerInventory;
 import cn.nukkit.item.Item;
+import cn.nukkit.item.ItemArmor;
 import cn.nukkit.item.ItemBucket;
+import cn.nukkit.level.GameRule;
+import cn.nukkit.math.AxisAlignedBB;
+import cn.nukkit.network.protocol.LevelEventPacket;
+import cn.nukkit.network.protocol.LevelSoundEventPacket;
 import cn.nukkit.utils.BlockColor;
 
 public class BlockSnowPowder extends BlockFlowable {
@@ -65,6 +74,11 @@ public class BlockSnowPowder extends BlockFlowable {
     }
 
     @Override
+    protected AxisAlignedBB recalculateCollisionBoundingBox() {
+        return this;
+    }
+
+    @Override
     public boolean hasEntityCollision() {
         return true;
     }
@@ -73,7 +87,29 @@ public class BlockSnowPowder extends BlockFlowable {
     public void onEntityCollide(Entity entity) {
         entity.resetFallDistance();
 
-        //TODO
+        if (entity.isOnFire() && (entity instanceof EntityLiving || entity instanceof EntityProjectile)) {
+            level.addLevelSoundEvent(entity.upVec(), LevelSoundEventPacket.SOUND_FIZZ);
+            level.addLevelEvent(entity, LevelEventPacket.EVENT_PARTICLE_FIZZ_EFFECT, 513);
+            entity.extinguish();
+
+            if (entity instanceof Player || level.gameRules.getBoolean(GameRule.MOB_GRIEFING)) {
+                level.useBreakOn(this, true);
+            }
+
+            entity.resetFrozenState();
+            return;
+        }
+
+        if (entity instanceof Player) {
+            PlayerInventory inventory = ((Player) entity).getInventory();
+            for (int i = 0; i < 4; i++) {
+                if (inventory.getArmorItem(i).getTier() == ItemArmor.TIER_LEATHER) {
+                    return;
+                }
+            }
+        }
+
+        entity.freezing = true;
     }
 
     @Override

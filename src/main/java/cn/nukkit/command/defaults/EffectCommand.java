@@ -91,12 +91,12 @@ public class EffectCommand extends VanillaCommand {
             if (durationSec != 0) {
                 targets.forEach(entity -> {
                     entity.addEffect(effect.clone());
-                    broadcastCommandMessage(sender, new TranslationContainer("%commands.effect.success", effect.getName(), amplifier, entity.getName(), durationSec));
+                    broadcastCommandMessage(sender, new TranslationContainer("commands.effect.success", effect.getName(), amplifier, entity.getName(), durationSec));
                 });
             } else {
                 targets.forEach(entity -> {
                     entity.removeEffect(effect.getId());
-                    broadcastCommandMessage(sender, new TranslationContainer("%commands.effect.success", effect.getName(), amplifier, entity.getName(), durationSec));
+                    broadcastCommandMessage(sender, new TranslationContainer("commands.effect.success", effect.getName(), amplifier, entity.getName(), durationSec));
                 });
             }
             return true;

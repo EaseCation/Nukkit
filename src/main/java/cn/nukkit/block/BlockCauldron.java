@@ -256,6 +256,16 @@ public class BlockCauldron extends BlockTransparentMeta {
                 //TODO
                 return true;
 //                break;
+            case Item.ARROW:
+                if (item.getDamage() != ItemArrow.NORMAL_ARROW) {
+                    return true;
+                }
+                if (getCauldronType() != LIQUID_WATER) {
+                    return true;
+                }
+                //TODO
+                return true;
+//                break;
             case Item.POTION:
                 if (!fillPotion(cauldron, BlockEntityCauldron.POTION_TYPE_NORMAL, item, player)) {
                     return true;
@@ -523,7 +533,8 @@ public class BlockCauldron extends BlockTransparentMeta {
             return;
         }
 
-        switch (getCauldronType()) {
+        int type = getCauldronType();
+        switch (type) {
             case LIQUID_LAVA:
                 EntityCombustByBlockEvent event = new EntityCombustByBlockEvent(this, entity, 8);
                 event.call();
@@ -539,6 +550,13 @@ public class BlockCauldron extends BlockTransparentMeta {
             case LIQUID_POWDER_SNOW:
                 if (!entity.isOnFire()) {
                     break;
+                }
+
+                if (type == LIQUID_WATER) {
+                    BlockEntityCauldron cauldron = getBlockEntity();
+                    if (cauldron != null && cauldron.hasPotion()) {
+                        break;
+                    }
                 }
 
                 level.addLevelSoundEvent(entity.upVec(), LevelSoundEventPacket.SOUND_FIZZ);

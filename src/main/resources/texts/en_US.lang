@@ -108,6 +108,7 @@ nukkit.command.ban.usage=/ban <player> [reason]
 nukkit.command.banip.usage=/banip <address> [reason]
 nukkit.command.banlist.usage=/banlist [ips|players]
 nukkit.command.clear.usage=/clear [player] [item] [maxCount]
+nukkit.command.clearspawnpoint.usage=/clearspawnpoint [player]
 nukkit.command.clone.usage=/clone <begin> <end> <destination> [maskMode] [cloneMode] [block[:data]]
 nukkit.command.daylock.usage=/daylock [lock]
 nukkit.command.defaultgamemode.usage=/defaultgamemode <gameMode>

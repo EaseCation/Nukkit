@@ -14,4 +14,9 @@ public class EnchantmentFrostWalker extends Enchantment {
     public int getMaxLevel() {
         return 2;
     }
+
+    @Override
+    public boolean checkCompatibility(Enchantment enchantment) {
+        return super.checkCompatibility(enchantment) && enchantment.id != DEPTH_STRIDER;
+    }
 }

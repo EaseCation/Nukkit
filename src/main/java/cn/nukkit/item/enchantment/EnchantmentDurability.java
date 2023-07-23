@@ -29,11 +29,6 @@ public class EnchantmentDurability extends Enchantment {
     }
 
     @Override
-    public boolean checkCompatibility(Enchantment enchantment) {
-        return super.checkCompatibility(enchantment) && enchantment.id != FORTUNE;
-    }
-
-    @Override
     public boolean canEnchant(Item item) {
         return item.getMaxDurability() >= 0 || super.canEnchant(item);
     }
