@@ -4,6 +4,8 @@ import cn.nukkit.nbt.tag.CompoundTag;
 import cn.nukkit.utils.BlockColor;
 import cn.nukkit.utils.DyeColor;
 
+import java.awt.Color;
+
 /**
  * Created by fromgate on 27.03.2016.
  */
@@ -54,7 +56,7 @@ abstract public class ItemColorArmor extends ItemArmor {
      * @param color - BlockColor object
      * @return - Return colored item
      */
-    public ItemColorArmor setColor(BlockColor color) {
+    public ItemColorArmor setColor(Color color) {
         return setColor(color.getRed(), color.getGreen(), color.getBlue());
     }
 
@@ -67,7 +69,7 @@ abstract public class ItemColorArmor extends ItemArmor {
      * @return - Return colored item
      */
     public ItemColorArmor setColor(int r, int g, int b) {
-        int rgb = r << 16 | g << 8 | b;
+        int rgb = 0xff << 24 | r << 16 | g << 8 | b;
         CompoundTag tag = this.hasCompoundTag() ? this.getNamedTag() : new CompoundTag();
         tag.putInt("customColor", rgb);
         this.setNamedTag(tag);
@@ -85,5 +87,17 @@ abstract public class ItemColorArmor extends ItemArmor {
         if (!tag.exist("customColor")) return null;
         int rgb = tag.getInt("customColor");
         return new BlockColor(rgb);
+    }
+
+    public boolean clearColor() {
+        CompoundTag nbt = getNamedTag();
+        if (nbt == null) {
+            return false;
+        }
+        if (nbt.remove("customColor") == null) {
+            return false;
+        }
+        setNamedTag(nbt);
+        return true;
     }
 }

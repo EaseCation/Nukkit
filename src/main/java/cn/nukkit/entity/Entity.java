@@ -148,9 +148,9 @@ public abstract class Entity extends Location implements Metadatable, EntityData
 
     protected boolean isStatic = false;
 
-    public boolean isCollided = false;
-    public boolean isCollidedHorizontally = false;
-    public boolean isCollidedVertically = false;
+    public boolean isCollided;
+    public boolean isCollidedHorizontally;
+    public boolean isCollidedVertically;
 
     public int noDamageTicks;
     public boolean justCreated;

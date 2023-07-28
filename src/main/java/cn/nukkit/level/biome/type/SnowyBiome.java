@@ -10,8 +10,8 @@ public abstract class SnowyBiome extends GrassyBiome {
     public SnowyBiome() {
         super();
 
-        WaterIcePopulator waterIce = new WaterIcePopulator();
-        this.addPopulator(waterIce);
+//        WaterIcePopulator waterIce = new WaterIcePopulator();
+//        this.addPopulator(waterIce);
     }
 
     @Override

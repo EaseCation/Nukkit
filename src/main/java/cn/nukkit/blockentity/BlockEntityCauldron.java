@@ -88,13 +88,13 @@ public class BlockEntityCauldron extends BlockEntitySpawnable {
     }
 
     public void setCustomColor(int r, int g, int b) {
-        int color = (r << 16 | g << 8 | b) & 0xffffff;
+        int color = 0xff << 24 | r << 16 | g << 8 | b;
 
         namedTag.putInt("CustomColor", color);
     }
 
-    public void clearCustomColor() {
-        namedTag.remove("CustomColor");
+    public boolean clearCustomColor() {
+        return namedTag.remove("CustomColor") != null;
     }
 
     @Override
@@ -120,5 +120,31 @@ public class BlockEntityCauldron extends BlockEntitySpawnable {
         namedTag.putShort("PotionType", POTION_TYPE_NONE);
         namedTag.putShort("PotionId", -1);
         namedTag.remove("CustomColor");
+    }
+
+    public boolean mixColor(Color color) {
+        int rgb = namedTag.getInt("CustomColor");
+
+        int r = (rgb >> 16) & 0xff;
+        int g = (rgb >> 8) & 0xff;
+        int b = rgb & 0xff;
+
+        r += color.getRed();
+        g += color.getGreen();
+        b += color.getBlue();
+
+        if ((rgb & 0xff000000) != 0) {
+            r >>= 1;
+            g >>= 1;
+            b >>= 1;
+        }
+
+        int newColor = 0xff << 24 | r << 16 | g << 8 | b;
+        if (newColor == rgb) {
+            return false;
+        }
+
+        namedTag.putInt("CustomColor", newColor);
+        return true;
     }
 }

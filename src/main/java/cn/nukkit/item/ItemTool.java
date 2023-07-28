@@ -124,6 +124,7 @@ public abstract class ItemTool extends Item implements ItemDurable {
             case TIER_STONE:
                 return 5;
             case TIER_WOODEN:
+            case TIER_NETHERITE:
                 return 15;
             case TIER_DIAMOND:
                 return 10;
@@ -178,7 +179,7 @@ public abstract class ItemTool extends Item implements ItemDurable {
 
         @Override
         public int getTier() {
-            return ItemTool.TIER_DIAMOND;
+            return ItemTool.TIER_NETHERITE;
         }
 
         @Override

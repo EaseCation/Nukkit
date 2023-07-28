@@ -12,7 +12,7 @@ import cn.nukkit.math.NukkitRandom;
  * Nukkit Project
  */
 public class PopulatorDoublePlant extends PopulatorSurfaceBlock {
-    private int type;
+    private final int type;
 
     public PopulatorDoublePlant(int type)    {
         this.type = type;

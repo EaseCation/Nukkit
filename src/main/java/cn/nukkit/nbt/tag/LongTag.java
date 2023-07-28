@@ -22,6 +22,11 @@ public class LongTag extends NumberTag<Long> {
         super(name);
     }
 
+    public LongTag(long data) {
+        super("");
+        this.data = data;
+    }
+
     public LongTag(String name, long data) {
         super(name);
         this.data = data;

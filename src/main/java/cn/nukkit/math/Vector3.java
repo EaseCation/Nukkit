@@ -560,7 +560,11 @@ public class Vector3 implements Cloneable {
     }
 
     public ListTag<DoubleTag> toNbt() {
-        ListTag<DoubleTag> list = new ListTag<>();
+        return toNbt("");
+    }
+
+    public ListTag<DoubleTag> toNbt(String name) {
+        ListTag<DoubleTag> list = new ListTag<>(name);
         list.add(new DoubleTag("", x));
         list.add(new DoubleTag("", y));
         list.add(new DoubleTag("", z));
@@ -572,7 +576,11 @@ public class Vector3 implements Cloneable {
     }
 
     public ListTag<FloatTag> toNbtf() {
-        ListTag<FloatTag> list = new ListTag<>();
+        return toNbtf("");
+    }
+
+    public ListTag<FloatTag> toNbtf(String name) {
+        ListTag<FloatTag> list = new ListTag<>(name);
         list.add(new FloatTag("", (float) x));
         list.add(new FloatTag("", (float) y));
         list.add(new FloatTag("", (float) z));

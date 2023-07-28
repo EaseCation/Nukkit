@@ -506,6 +506,14 @@ public abstract class Block extends Position implements Metadatable, Cloneable, 
         return this.getId() << BLOCK_META_BITS;
     }
 
+    public static int getIdFromFullId(int fullId) {
+        return fullId >> BLOCK_META_BITS;
+    }
+
+    public static int getDamageFromFullId(int fullId) {
+        return fullId & BLOCK_META_MASK;
+    }
+
     public void addVelocityToEntity(Entity entity, Vector3 vector) {
 
     }
@@ -567,6 +575,8 @@ public abstract class Block extends Position implements Metadatable, Cloneable, 
                 return 6.0;
             case ItemTool.TIER_DIAMOND:
                 return 8.0;
+            case ItemTool.TIER_NETHERITE:
+                return 9;
             case ItemTool.TIER_GOLD:
                 return 12.0;
             default:
@@ -674,6 +684,9 @@ public abstract class Block extends Position implements Metadatable, Cloneable, 
                         break;
                     case ItemTool.TIER_DIAMOND:
                         base /= 8;
+                        break;
+                    case ItemTool.TIER_NETHERITE:
+                        base /= 9;
                         break;
                     case ItemTool.TIER_GOLD:
                         base /= 12;

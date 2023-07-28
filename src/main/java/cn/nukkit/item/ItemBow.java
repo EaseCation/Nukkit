@@ -10,11 +10,8 @@ import cn.nukkit.event.entity.EntityShootBowEvent;
 import cn.nukkit.event.entity.ProjectileLaunchEvent;
 import cn.nukkit.inventory.Inventory;
 import cn.nukkit.item.enchantment.Enchantment;
-import cn.nukkit.math.Mth;
 import cn.nukkit.math.Vector3;
 import cn.nukkit.nbt.tag.CompoundTag;
-import cn.nukkit.nbt.tag.DoubleTag;
-import cn.nukkit.nbt.tag.FloatTag;
 import cn.nukkit.nbt.tag.ListTag;
 import cn.nukkit.network.protocol.LevelSoundEventPacket;
 import cn.nukkit.potion.Effect;
@@ -96,18 +93,10 @@ public class ItemBow extends ItemTool {
             knockbackV += 0.1 * knockbackEnchant.getLevel();
         }
 
-        CompoundTag nbt = new CompoundTag()
-                .putList(new ListTag<DoubleTag>("Pos")
-                        .add(new DoubleTag("", player.x))
-                        .add(new DoubleTag("", player.y + player.getEyeHeight()))
-                        .add(new DoubleTag("", player.z)))
-                .putList(new ListTag<DoubleTag>("Motion")
-                        .add(new DoubleTag("", -Mth.sin(player.yaw / 180 * Math.PI) * Mth.cos(player.pitch / 180 * Math.PI) * 1.2))
-                        .add(new DoubleTag("", -Mth.sin(player.pitch / 180 * Math.PI) * 1.2))
-                        .add(new DoubleTag("", Mth.cos(player.yaw / 180 * Math.PI) * Mth.cos(player.pitch / 180 * Math.PI) * 1.2)))
-                .putList(new ListTag<FloatTag>("Rotation")
-                        .add(new FloatTag("", (player.yaw > 180 ? 360 : 0) - (float) player.yaw))
-                        .add(new FloatTag("", (float) -player.pitch)))
+        ThreadLocalRandom random = ThreadLocalRandom.current();
+        Vector3 dir = Vector3.directionFromRotation(player.pitch, player.yaw)
+                .add(0.0075 * random.nextGaussian(), 0.0075 * random.nextGaussian(), 0.0075 * random.nextGaussian());
+        CompoundTag nbt = Entity.getDefaultNBT(player.getEyePosition(), dir.multiply(1.2), (float) dir.yRotFromDirection(), (float) dir.xRotFromDirection()) //TODO: pow
                 .putShort("Fire", flame ? 45 * 60 : 0)
                 .putDouble("damage", damage)
                 .putFloat("KnockbackH", knockbackH)
@@ -156,7 +145,7 @@ public class ItemBow extends ItemTool {
                 }
                 if (!this.isUnbreakable()) {
                     Enchantment durability = this.getEnchantment(Enchantment.UNBREAKING);
-                    if (!(durability != null && durability.getLevel() > 0 && ThreadLocalRandom.current().nextInt(100) >= getDamageChance(durability.getLevel()))) {
+                    if (!(durability != null && durability.getLevel() > 0 && random.nextInt(100) >= getDamageChance(durability.getLevel()))) {
                         this.setDamage(this.getDamage() + 1);
                         if (this.getDamage() >= getMaxDurability()) {
                             this.count--;

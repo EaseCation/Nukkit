@@ -8,6 +8,8 @@ import cn.nukkit.utils.BannerPattern;
 import cn.nukkit.utils.DyeColor;
 
 public class BlockEntityBanner extends BlockEntitySpawnable {
+    public static final int TYPE_DEFAULT = 0;
+    public static final int TYPE_ILLAGER_CAPTAIN = 1;
 
     public BlockEntityBanner(FullChunk chunk, CompoundTag nbt) {
         super(chunk, nbt);
@@ -65,8 +67,11 @@ public class BlockEntityBanner extends BlockEntitySpawnable {
 
     public void removePattern(int index) {
         ListTag<CompoundTag> patterns = this.namedTag.getList("Patterns", CompoundTag.class);
-        if(patterns.size() > index && index >= 0) {
+        if (patterns.size() > index && index >= 0) {
             patterns.remove(index);
+            if (patterns.isEmpty()) {
+                namedTag.remove("Patterns");
+            }
         }
     }
 

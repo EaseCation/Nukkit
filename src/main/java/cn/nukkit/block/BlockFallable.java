@@ -31,7 +31,7 @@ public abstract class BlockFallable extends BlockSolid {
 
                 CompoundTag nbt = Entity.getDefaultNBT(this.add(0.5, 0, 0.5))
                         .putInt("TileID", this.getId())
-                        .putByte("Data", this.getDamage());
+                        .putByte("Data", this.getFallingBlockDamage());
                 EntityFallingBlock fall = new EntityFallingBlock(getChunk(), nbt);
                 fall.sync = true;
                 fall.spawnToAll();
@@ -51,5 +51,9 @@ public abstract class BlockFallable extends BlockSolid {
         return below.isAir() || below.isLiquid() || below.isFire()
                 || !SupportType.hasFullSupport(below, BlockFace.UP) && below.isVegetation() && !below.isLeaves()
                 && id != CACTUS && id != WATERLILY && id != CHORUS_FLOWER && id != CHORUS_PLANT && id != BAMBOO;
+    }
+
+    protected int getFallingBlockDamage() {
+        return getDamage();
     }
 }

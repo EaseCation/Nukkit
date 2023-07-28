@@ -9,8 +9,7 @@ import cn.nukkit.level.biome.type.CoveredBiome;
 import cn.nukkit.level.generator.populator.type.Populator;
 import cn.nukkit.math.Mth;
 import cn.nukkit.math.NukkitRandom;
-
-import java.util.Random;
+import cn.nukkit.math.RandomSource;
 
 /**
  * author: Angelic47
@@ -19,8 +18,6 @@ import java.util.Random;
 public class PopulatorCaves extends Populator {
 
     private static final int checkAreaSize = 8;
-
-    private final Random random = new Random();
 
     private static final int caveRarity = 7;
     private static final int caveFrequency = 40;
@@ -37,9 +34,9 @@ public class PopulatorCaves extends Populator {
 
     @Override
     public void populate(ChunkManager level, int chunkX, int chunkZ, NukkitRandom random, FullChunk chunk) {
-        this.random.setSeed(level.getSeed());
-        long worldLong1 = this.random.nextLong();
-        long worldLong2 = this.random.nextLong();
+        RandomSource localRandom = new NukkitRandom(level.getSeed());
+        long worldLong1 = localRandom.nextLong();
+        long worldLong2 = localRandom.nextLong();
 
         int size = checkAreaSize;
 
@@ -47,13 +44,13 @@ public class PopulatorCaves extends Populator {
             for (int z = chunkZ - size; z <= chunkZ + size; z++) {
                 long randomX = x * worldLong1;
                 long randomZ = z * worldLong2;
-                this.random.setSeed(randomX ^ randomZ ^ level.getSeed());
-                generateChunk(x, z, chunk);
+                localRandom.setSeed(randomX ^ randomZ ^ level.getSeed());
+                generateChunk(x, z, chunk, localRandom);
             }
     }
 
-    protected void generateLargeCaveNode(long seed, FullChunk chunk, double x, double y, double z) {
-        generateCaveNode(seed, chunk, x, y, z, 1.0F + this.random.nextFloat() * 6.0F, 0.0F, 0.0F, -1, -1, 0.5D);
+    protected void generateLargeCaveNode(long seed, RandomSource random, FullChunk chunk, double x, double y, double z) {
+        generateCaveNode(seed, chunk, x, y, z, 1.0F + random.nextFloat() * 6.0F, 0.0F, 0.0F, -1, -1, 0.5D);
     }
 
     protected void generateCaveNode(long seed, FullChunk chunk, double x, double y, double z, float radius, float angelOffset, float angel, int angle, int maxAngle, double scale) {
@@ -66,7 +63,7 @@ public class PopulatorCaves extends Populator {
         float f1 = 0.0F;
         float f2 = 0.0F;
 
-        Random localRandom = new Random(seed);
+        RandomSource localRandom = new NukkitRandom(seed);
 
         if (maxAngle <= 0) {
             int checkAreaSize = PopulatorCaves.checkAreaSize * 16 - 16;
@@ -221,47 +218,65 @@ public class PopulatorCaves extends Populator {
         }
     }
 
-    protected void generateChunk(int chunkX, int chunkZ, FullChunk generatingChunkBuffer) {
-        int i = this.random.nextInt(this.random.nextInt(this.random.nextInt(caveFrequency) + 1) + 1);
+    protected void generateChunk(int chunkX, int chunkZ, FullChunk generatingChunkBuffer, RandomSource random) {
+        int i = random.nextInt(random.nextInt(random.nextInt(caveFrequency) + 1) + 1);
         if (evenCaveDistribution)
             i = caveFrequency;
-        if (this.random.nextInt(100) >= caveRarity)
+        if (random.nextInt(100) >= caveRarity)
             i = 0;
 
         for (int j = 0; j < i; j++) {
-            double x = chunkX * 16 + this.random.nextInt(16);
+            double x = chunkX * 16 + random.nextInt(16);
 
             double y;
 
             if (evenCaveDistribution)
-                y = numberInRange(random, caveMinAltitude, caveMaxAltitude);
+                y = random.nextIntInclusive(caveMinAltitude, caveMaxAltitude);
             else
-                y = this.random.nextInt(this.random.nextInt(caveMaxAltitude - caveMinAltitude + 1) + 1) + caveMinAltitude;
+                y = random.nextInt(random.nextInt(caveMaxAltitude - caveMinAltitude + 1) + 1) + caveMinAltitude;
 
-            double z = chunkZ * 16 + this.random.nextInt(16);
+            double z = chunkZ * 16 + random.nextInt(16);
 
             int count = caveSystemFrequency;
             boolean largeCaveSpawned = false;
-            if (this.random.nextInt(100) <= individualCaveRarity) {
-                generateLargeCaveNode(this.random.nextLong(), generatingChunkBuffer, x, y, z);
+            if (random.nextInt(100) <= individualCaveRarity) {
+                generateLargeCaveNode(random.nextLong(), random, generatingChunkBuffer, x, y, z);
                 largeCaveSpawned = true;
             }
 
-            if ((largeCaveSpawned) || (this.random.nextInt(100) <= caveSystemPocketChance)) {
-                count += numberInRange(random, caveSystemPocketMinSize, caveSystemPocketMaxSize);
+            if ((largeCaveSpawned) || (random.nextInt(100) <= caveSystemPocketChance)) {
+                count += random.nextIntInclusive(caveSystemPocketMinSize, caveSystemPocketMaxSize);
             }
             while (count > 0) {
                 count--;
-                float f1 = this.random.nextFloat() * 3.141593F * 2.0F;
-                float f2 = (this.random.nextFloat() - 0.5F) * 2.0F / 8.0F;
-                float f3 = this.random.nextFloat() * 2.0F + this.random.nextFloat();
+                float f1 = random.nextFloat() * 3.141593F * 2.0F;
+                float f2 = (random.nextFloat() - 0.5F) * 2.0F / 8.0F;
+                float f3 = random.nextFloat() * 2.0F + random.nextFloat();
 
-                generateCaveNode(this.random.nextLong(), generatingChunkBuffer, x, y, z, f3, f1, f2, 0, 0, 1.0D);
+                generateCaveNode(random.nextLong(), generatingChunkBuffer, x, y, z, f3, f1, f2, 0, 0, 1.0D);
             }
         }
     }
 
-    private static int numberInRange(Random random, int min, int max) {
-        return min + random.nextInt(max - min + 1);
+    public static boolean isDiggable(int block, int above) {
+        switch (block) {
+            case SAND:
+            case GRAVEL:
+                if (above == WATER) {
+                    return false;
+                }
+            case STONE:
+            case DIRT:
+            case GRASS:
+            case HARDENED_CLAY:
+            case STAINED_HARDENED_CLAY:
+            case SANDSTONE:
+            case RED_SANDSTONE:
+            case MYCELIUM:
+            case PODZOL:
+            case SNOW_LAYER:
+                return true;
+        }
+        return false;
     }
 }

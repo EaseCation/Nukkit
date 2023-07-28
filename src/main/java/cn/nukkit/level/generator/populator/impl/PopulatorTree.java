@@ -6,7 +6,6 @@ import cn.nukkit.level.ChunkManager;
 import cn.nukkit.level.format.FullChunk;
 import cn.nukkit.level.generator.object.tree.ObjectTree;
 import cn.nukkit.level.generator.populator.type.PopulatorCount;
-import cn.nukkit.math.NukkitMath;
 import cn.nukkit.math.NukkitRandom;
 
 /**
@@ -16,7 +15,6 @@ import cn.nukkit.math.NukkitRandom;
 public class PopulatorTree extends PopulatorCount {
 
     private final int type;
-    private ChunkManager level;
 
     public PopulatorTree() {
         this(BlockSapling.OAK);
@@ -28,20 +26,19 @@ public class PopulatorTree extends PopulatorCount {
 
     @Override
     public void populateCount(ChunkManager level, int chunkX, int chunkZ, NukkitRandom random, FullChunk chunk) {
-        this.level = level;
-        int x = NukkitMath.randomRange(random, chunkX << 4, (chunkX << 4) + 15);
-        int z = NukkitMath.randomRange(random, chunkZ << 4, (chunkZ << 4) + 15);
-        int y = this.getHighestWorkableBlock(x, z);
+        int x = random.nextRange(chunkX << 4, (chunkX << 4) + 15);
+        int z = random.nextRange(chunkZ << 4, (chunkZ << 4) + 15);
+        int y = this.getHighestWorkableBlock(level, x, z);
         if (y < 3) {
             return;
         }
-        ObjectTree.growTree(this.level, x, y, z, random, this.type);
+        ObjectTree.growTree(level, x, y, z, random, this.type);
     }
 
-    private int getHighestWorkableBlock(int x, int z) {
+    private int getHighestWorkableBlock(ChunkManager level, int x, int z) {
         int y;
         for (y = 254; y > 0; --y) {
-            int b = this.level.getBlockIdAt(0, x, y, z);
+            int b = level.getBlockIdAt(0, x, y, z);
             if (b == Block.DIRT || b == Block.GRASS) {
                 break;
             } else if (b != Block.AIR && b != Block.SNOW_LAYER) {

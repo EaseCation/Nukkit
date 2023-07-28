@@ -8,8 +8,8 @@ public class NewFrozenOceanBiome extends OceanBiome {
 
         //TODO: ice mountains
 
-        WaterIcePopulator ice = new WaterIcePopulator();
-        this.addPopulator(ice);
+//        WaterIcePopulator ice = new WaterIcePopulator();
+//        this.addPopulator(ice);
     }
 
     @Override

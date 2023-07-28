@@ -11,10 +11,10 @@ public class JaggedPeaksBiome extends SnowyBiome {
     public JaggedPeaksBiome() {
         super();
 
-        WaterIcePopulator ice = new WaterIcePopulator();
-        this.addPopulator(ice);
+//        WaterIcePopulator ice = new WaterIcePopulator();
+//        this.addPopulator(ice);
 
-        this.addPopulator(new PopulatorOre(STONE,
+        this.addPopulator(new PopulatorOre(
                 new OreType(Block.get(BlockID.EMERALD_ORE), 11, 1, 0, 32),
                 new OreType(Block.get(BlockID.MONSTER_EGG), 7, 9, 0, 63)));
 

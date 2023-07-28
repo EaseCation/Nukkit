@@ -6,9 +6,8 @@ import cn.nukkit.item.Item;
 import cn.nukkit.level.ChunkManager;
 import cn.nukkit.level.Level;
 import cn.nukkit.math.BlockVector3;
+import cn.nukkit.math.RandomSource;
 import cn.nukkit.math.Vector3;
-
-import java.util.Random;
 
 public abstract class TreeGenerator extends cn.nukkit.level.generator.object.BasicGenerator {
 
@@ -20,7 +19,7 @@ public abstract class TreeGenerator extends cn.nukkit.level.generator.object.Bas
         return id == Item.AIR || id == Item.LEAVES || id == Item.GRASS || id == Item.DIRT || id == Item.LOG || id == Item.LOG2 || id == Item.SAPLING || id == Item.VINE;
     }
 
-    public void generateSaplings(Level level, Random random, Vector3 pos) {
+    public void generateSaplings(Level level, RandomSource random, Vector3 pos) {
     }
 
     protected void setDirtAt(ChunkManager level, BlockVector3 pos) {

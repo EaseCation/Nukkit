@@ -15,6 +15,8 @@ import cn.nukkit.utils.BlockColor;
  * Package cn.nukkit.block in project Nukkit .
  */
 public class BlockSnowLayer extends BlockFallable {
+    public static final int HEIGHT_MASK = 0b111;
+    public static final int COVERED_BIT = 0b1000;
 
     private int meta;
 
@@ -91,6 +93,7 @@ public class BlockSnowLayer extends BlockFallable {
 
         if (block.canContainSnow()) {
             level.setExtraBlock(this, block, true, false);
+            setDamage(COVERED_BIT);
             return super.place(item, block, target, face, fx, fy, fz, player);
         }
 
@@ -118,7 +121,7 @@ public class BlockSnowLayer extends BlockFallable {
             }
         } else if (type == Level.BLOCK_UPDATE_RANDOM) {
             if (this.getLevel().getBlockLightAt((int) this.x, (int) this.y, (int) this.z) >= 10) {
-                BlockFadeEvent event = new BlockFadeEvent(this, (this.getDamage() & 0x7) > 0 ? get(SNOW_LAYER, this.getDamage() - 1) : get(AIR));
+                BlockFadeEvent event = new BlockFadeEvent(this, (this.getDamage() & HEIGHT_MASK) > 0 ? get(SNOW_LAYER, this.getDamage() - 1) : get(AIR));
                 level.getServer().getPluginManager().callEvent(event);
                 if (!event.isCancelled()) {
                     level.setBlock(this, event.getNewState(), true);
@@ -143,7 +146,7 @@ public class BlockSnowLayer extends BlockFallable {
     public Item[] getDrops(Item item) {
         if (item.isShovel() && item.getTier() >= ItemTool.TIER_WOODEN) {
             Item drop = this.toItem(true);
-            int height = this.getDamage() & 0x7;
+            int height = this.getDamage() & HEIGHT_MASK;
             drop.setCount(height < 3 ? 1 : height < 5 ? 2 : height == 7 ? 4 : 3);
             return new Item[]{drop};
         } else {
@@ -178,7 +181,7 @@ public class BlockSnowLayer extends BlockFallable {
 
     @Override
     public double getMaxY() {
-        int height = this.getDamage() & 0x7;
+        int height = this.getDamage() & HEIGHT_MASK;
         return height < 3 ? this.y : height == 7 ? this.y + 1 : this.y + 0.5;
     }
 
@@ -228,10 +231,15 @@ public class BlockSnowLayer extends BlockFallable {
 
     @Override
     protected boolean canSlide(Block below) {
-        return below.getId() == SNOW_LAYER && (below.getDamage() & 0x7) != 0x7 || super.canSlide(below);
+        return below.getId() == SNOW_LAYER && (below.getDamage() & HEIGHT_MASK) != HEIGHT_MASK || super.canSlide(below);
+    }
+
+    @Override
+    protected int getFallingBlockDamage() {
+        return getDamage() & HEIGHT_MASK;
     }
 
     public boolean isFull() {
-        return (getDamage() & 0x7) == 0x7;
+        return (getDamage() & HEIGHT_MASK) == HEIGHT_MASK;
     }
 }

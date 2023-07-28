@@ -20,9 +20,12 @@ import cn.nukkit.nbt.tag.CompoundTag;
 import cn.nukkit.nbt.tag.Tag;
 import cn.nukkit.network.protocol.LevelEventPacket;
 import cn.nukkit.network.protocol.LevelSoundEventPacket;
+import cn.nukkit.potion.Potion;
 import cn.nukkit.potion.PotionID;
+import cn.nukkit.utils.DyeColor;
 
 import javax.annotation.Nullable;
+import java.awt.Color;
 import java.util.Map;
 
 /**
@@ -103,9 +106,9 @@ public class BlockCauldron extends BlockTransparentMeta {
         BlockEntityCauldron cauldron = (BlockEntityCauldron) be;
 
         switch (item.getId()) {
-            case Item.BUCKET:
+            case Item.BUCKET: {
                 if (item.getDamage() == ItemBucket.EMPTY_BUCKET) {
-                    if (!isFull() || cauldron.getPotionType() != BlockEntityCauldron.POTION_TYPE_NONE) {
+                    if (!isFull() || cauldron.hasPotion()) {
                         return true;
                     }
 
@@ -140,8 +143,9 @@ public class BlockCauldron extends BlockTransparentMeta {
 
                     this.level.setBlock(this, get(BLOCK_CAULDRON), true);
 
-                    cauldron.clearCustomColor();
-                    cauldron.spawnToAll();
+                    if (cauldron.clearCustomColor()) {
+                        cauldron.spawnToAll();
+                    }
 
                     this.getLevel().addLevelEvent(this.add(0.5, 0.375, 0.5), levelEvent);
                 } else if (item.getDamage() == ItemBucket.WATER_BUCKET) {
@@ -158,7 +162,7 @@ public class BlockCauldron extends BlockTransparentMeta {
                     replaceBucket(item, player, ev.getItem());
 
                     int fillLevel = getFillLevel();
-                    if (fillLevel != FILL_LEVEL_EMPTY && getCauldronType() != LIQUID_WATER || cauldron.getPotionType() != BlockEntityCauldron.POTION_TYPE_NONE) {
+                    if (fillLevel != FILL_LEVEL_EMPTY && (getCauldronType() != LIQUID_WATER || cauldron.hasPotion())) {
                         mix(cauldron);
                         break;
                     }
@@ -167,8 +171,9 @@ public class BlockCauldron extends BlockTransparentMeta {
                         this.level.setBlock(this, get(BLOCK_CAULDRON, FILL_LEVEL_FULL), true);
                     }
 
-                    cauldron.clearCustomColor();
-                    cauldron.spawnToAll();
+                    if (cauldron.clearCustomColor()) {
+                        cauldron.spawnToAll();
+                    }
 
                     this.level.addLevelEvent(this.add(0.5, 0.375 + FILL_LEVEL_FULL * 0.125, 0.5), LevelEventPacket.EVENT_SOUND_SPLASH);
                 } else if (item.getDamage() == ItemBucket.LAVA_BUCKET) {
@@ -225,63 +230,239 @@ public class BlockCauldron extends BlockTransparentMeta {
                     level.addLevelEvent(add(0.5, 0.375 + FILL_LEVEL_FULL * 0.125, 0.5), LevelEventPacket.EVENT_CAULDRON_FILL_POWDER_SNOW);
                 }
                 break;
-            case Item.DYE:
+            }
+            case Item.DYE: {
                 if (getCauldronType() != LIQUID_WATER) {
                     return true;
                 }
-                //TODO
+                if (cauldron.hasPotion()) {
+                    return true;
+                }
+                int fillLevel = getFillLevel();
+                if (fillLevel == FILL_LEVEL_EMPTY) {
+                    return true;
+                }
+
+                if (cauldron.mixColor(DyeColor.getByDyeNewData(item.getDamage()).getColor())) {
+                    cauldron.spawnToAll();
+                }
+
+                if (!player.isCreative()) {
+                    item.pop();
+                    player.getInventory().setItemInHand(item);
+                }
+
+                level.addLevelEvent(add(0.5, 0.375 + fillLevel * 0.125, 0.5), LevelEventPacket.EVENT_CAULDRON_ADD_DYE, cauldron.getCustomColor().getRGB());
                 return true;
+            }
             case Item.LEATHER_HELMET:
             case Item.LEATHER_CHESTPLATE:
             case Item.LEATHER_LEGGINGS:
-            case Item.LEATHER_BOOTS:
-            case Item.LEATHER_HORSE_ARMOR:
+            case Item.LEATHER_BOOTS: {
                 if (getCauldronType() != LIQUID_WATER) {
                     return true;
                 }
-                //TODO
-                return true;
-//                break;
-            case Item.SHULKER_BOX:
+                if (cauldron.hasPotion()) {
+                    return true;
+                }
+                int fillLevel = getFillLevel();
+                if (fillLevel == FILL_LEVEL_EMPTY) {
+                    return true;
+                }
+
+                Color color = cauldron.getCustomColor();
+                ItemColorArmor armor = (ItemColorArmor) item;
+                if (color != null) {
+                    armor.setColor(color);
+                    level.addLevelEvent(add(0.5, 0.375 + fillLevel * 0.125, 0.5), LevelEventPacket.EVENT_CAULDRON_DYE_ARMOR, color.getRGB());
+                } else if (!armor.clearColor()) {
+                    return true;
+                } else {
+                    level.addLevelEvent(add(0.5, 0.375 + fillLevel * 0.125, 0.5), LevelEventPacket.EVENT_CAULDRON_CLEAN_ARMOR);
+                }
+
+                fillLevel -= 1;
+                if (fillLevel < 2) {
+                    fillLevel = 0;
+                }
+                setFillLevel(fillLevel);
+                level.setBlock(this, this, true);
+                if (fillLevel == FILL_LEVEL_EMPTY && cauldron.clearCustomColor()) {
+                    cauldron.spawnToAll();
+                }
+
+                player.getInventory().setItemInHand(item);
+                break;
+            }
+            case Item.LEATHER_HORSE_ARMOR: {
                 if (getCauldronType() != LIQUID_WATER) {
                     return true;
                 }
-                //TODO
-                return true;
-//                break;
-            case Item.BANNER:
+                if (cauldron.hasPotion()) {
+                    return true;
+                }
+                int fillLevel = getFillLevel();
+                if (fillLevel == FILL_LEVEL_EMPTY) {
+                    return true;
+                }
+
+                Color color = cauldron.getCustomColor();
+                ItemHorseArmorLeather armor = (ItemHorseArmorLeather) item;
+                if (color != null) {
+                    armor.setColor(color);
+                    level.addLevelEvent(add(0.5, 0.375 + fillLevel * 0.125, 0.5), LevelEventPacket.EVENT_CAULDRON_DYE_ARMOR, color.getRGB());
+                } else if (!armor.clearColor()) {
+                    return true;
+                } else {
+                    level.addLevelEvent(add(0.5, 0.375 + fillLevel * 0.125, 0.5), LevelEventPacket.EVENT_CAULDRON_CLEAN_ARMOR);
+                }
+
+                fillLevel -= 1;
+                if (fillLevel < 2) {
+                    fillLevel = 0;
+                }
+                setFillLevel(fillLevel);
+                level.setBlock(this, this, true);
+                if (fillLevel == FILL_LEVEL_EMPTY && cauldron.clearCustomColor()) {
+                    cauldron.spawnToAll();
+                }
+
+                player.getInventory().setItemInHand(item);
+                break;
+            }
+            case Item.SHULKER_BOX: {
                 if (getCauldronType() != LIQUID_WATER) {
                     return true;
                 }
-                //TODO
-                return true;
-//                break;
-            case Item.ARROW:
+                if (cauldron.hasPotion()) {
+                    return true;
+                }
+                if (cauldron.isCustomColor()) {
+                    return true;
+                }
+                int fillLevel = getFillLevel();
+                if (fillLevel == FILL_LEVEL_EMPTY) {
+                    return true;
+                }
+
+                fillLevel -= 1;
+                setFillLevel(fillLevel);
+                level.setBlock(this, this, true);
+
+                player.getInventory().setItemInHand(Item.get(Item.UNDYED_SHULKER_BOX, 0, 1, item.getCompoundTag()));
+
+                level.addLevelEvent(add(0.5, 0.375 + fillLevel * 0.125, 0.5), LevelEventPacket.EVENT_CAULDRON_CLEAN_ARMOR);
+                break;
+            }
+            case Item.BANNER: {
+                if (getCauldronType() != LIQUID_WATER) {
+                    return true;
+                }
+                if (cauldron.hasPotion()) {
+                    return true;
+                }
+                if (cauldron.isCustomColor()) {
+                    return true;
+                }
+                int fillLevel = getFillLevel();
+                if (fillLevel == FILL_LEVEL_EMPTY) {
+                    return true;
+                }
+
+                ItemBanner banner = (ItemBanner) item;
+                if (!banner.isDefaultBanner()) {
+                    return true;
+                }
+
+                ItemBanner cleanBanner = (ItemBanner) banner.clone();
+                if (!cleanBanner.removeLastPattern()) {
+                    return true;
+                }
+                cleanBanner.setCount(1);
+
+                fillLevel -= 1;
+                setFillLevel(fillLevel);
+                level.setBlock(this, this, true);
+
+                if (!player.isCreative() && item.getCount() == 1) {
+                    player.getInventory().setItemInHand(cleanBanner);
+                } else {
+                    if (!player.isCreative()) {
+                        item.pop();
+                        player.getInventory().setItemInHand(item);
+                    }
+
+                    player.getInventory().addItemOrDrop(cleanBanner);
+                }
+
+                level.addLevelEvent(add(0.5, 0.375 + fillLevel * 0.125, 0.5), LevelEventPacket.EVENT_CAULDRON_CLEAN_BANNER);
+                break;
+            }
+            case Item.ARROW: {
                 if (item.getDamage() != ItemArrow.NORMAL_ARROW) {
                     return true;
                 }
                 if (getCauldronType() != LIQUID_WATER) {
                     return true;
                 }
-                //TODO
-                return true;
-//                break;
-            case Item.POTION:
+                if (cauldron.isCustomColor()) {
+                    return true;
+                }
+                int potionId = cauldron.getPotionId();
+                if (!Potion.isValidPotion(potionId)) {
+                    return true;
+                }
+                int fillLevel = getFillLevel();
+                if (fillLevel < 1) {
+                    return true;
+                }
+
+                int arrowCount = item.getCount();
+                int convertCount = Math.min(arrowCount, (fillLevel < 3 ? 1 : fillLevel - 2) << 4);
+
+                fillLevel -= (convertCount + 15) >> 4;
+                if (fillLevel <= 2) {
+                    fillLevel = 0;
+                }
+                setFillLevel(fillLevel);
+                level.setBlock(this, this, true);
+                if (fillLevel == FILL_LEVEL_EMPTY) {
+                    cauldron.resetCauldron();
+                    cauldron.spawnToAll();
+                }
+
+                Item tippedArrow = Item.get(Item.ARROW, ItemArrow.TIPPED_ARROW + potionId, convertCount);
+                if (!player.isCreative() && arrowCount == convertCount) {
+                    player.getInventory().setItemInHand(tippedArrow);
+                } else {
+                    if (!player.isCreative()) {
+                        item.shrink(convertCount);
+                        player.getInventory().setItemInHand(item);
+                    }
+
+                    player.getInventory().addItemOrDrop(tippedArrow);
+                }
+                break;
+            }
+            case Item.POTION: {
                 if (!fillPotion(cauldron, BlockEntityCauldron.POTION_TYPE_NORMAL, item, player)) {
                     return true;
                 }
                 break;
-            case Item.SPLASH_POTION:
+            }
+            case Item.SPLASH_POTION: {
                 if (!fillPotion(cauldron, BlockEntityCauldron.POTION_TYPE_SPLASH, item, player)) {
                     return true;
                 }
                 break;
-            case Item.LINGERING_POTION:
+            }
+            case Item.LINGERING_POTION: {
                 if (!fillPotion(cauldron, BlockEntityCauldron.POTION_TYPE_LINGERING, item, player)) {
                     return true;
                 }
                 break;
-            case Item.GLASS_BOTTLE:
+            }
+            case Item.GLASS_BOTTLE: {
                 if (getCauldronType() != LIQUID_WATER) {
                     return true;
                 }
@@ -322,9 +503,7 @@ public class BlockCauldron extends BlockTransparentMeta {
                     }
                     player.getInventory().setItemInHand(item);
 
-                    for (Item drop : player.getInventory().addItem(potion)) {
-                        player.level.dropItem(player.add(0, 1.3, 0), drop, player.getDirectionVector().multiply(0.4));
-                    }
+                    player.getInventory().addItemOrDrop(potion);
                 }
 
                 if (fillLevel == FILL_LEVEL_EMPTY) {
@@ -332,8 +511,10 @@ public class BlockCauldron extends BlockTransparentMeta {
                     cauldron.spawnToAll();
                 }
 
-                this.level.addLevelEvent(this.add(0.5, 0.375 + fillLevel * 0.125, 0.5), LevelEventPacket.EVENT_CAULDRON_TAKE_POTION);
+                Color color = cauldron.getCustomColor();
+                this.level.addLevelEvent(this.add(0.5, 0.375 + fillLevel * 0.125, 0.5), LevelEventPacket.EVENT_CAULDRON_TAKE_POTION, color != null ? color.getRGB() : 0);
                 break;
+            }
             default:
                 return false;
         }
@@ -352,6 +533,11 @@ public class BlockCauldron extends BlockTransparentMeta {
     }
 
     private boolean fillPotion(BlockEntityCauldron cauldron, int potionType, Item potion, Player player) {
+        int potionId = potion.getDamage();
+        if (potionId > Potion.WATER && potionId <= Potion.AWKWARD) {
+            return false;
+        }
+
         if (getCauldronType() != LIQUID_WATER) {
             mix(cauldron);
             return true;
@@ -359,13 +545,12 @@ public class BlockCauldron extends BlockTransparentMeta {
 
         int fillLevel = getFillLevel();
 
-        int potionId = potion.getDamage();
         if (potionId == PotionID.WATER) {
-            if (cauldron.getPotionType() != BlockEntityCauldron.POTION_TYPE_NONE) {
+            if (fillLevel != FILL_LEVEL_EMPTY && cauldron.hasPotion()) {
                 mix(cauldron);
                 return true;
             }
-        } else if (fillLevel != FILL_LEVEL_EMPTY && cauldron.getPotionId() != potionId) {
+        } else if (fillLevel != FILL_LEVEL_EMPTY && (cauldron.isCustomColor() || cauldron.getPotionId() != potionId)) {
             mix(cauldron);
             return true;
         }
@@ -373,6 +558,7 @@ public class BlockCauldron extends BlockTransparentMeta {
         if (fillLevel == FILL_LEVEL_FULL && potionId != PotionID.WATER) {
             return false;
         }
+
         fillLevel = Math.min(fillLevel + 2, FILL_LEVEL_FULL);
         setFillLevel(fillLevel);
         level.setBlock(this, this, true);
@@ -381,19 +567,20 @@ public class BlockCauldron extends BlockTransparentMeta {
             cauldron.setPotionType(potionType);
             cauldron.setPotionId(potionId);
             cauldron.spawnToAll();
+        } else if (cauldron.clearCustomColor()) {
+            cauldron.spawnToAll();
         }
 
+        Item glassBottle = Item.get(Item.GLASS_BOTTLE);
         if (potion.getCount() == 1 && !player.isCreative()) {
-            player.getInventory().setItemInHand(Items.air());
+            player.getInventory().setItemInHand(glassBottle);
         } else {
             if (!player.isCreative()) {
                 potion.pop();
             }
             player.getInventory().setItemInHand(potion);
 
-            for (Item drop : player.getInventory().addItem(Item.get(Item.GLASS_BOTTLE))) {
-                player.level.dropItem(player.add(0, 1.3, 0), drop, player.getDirectionVector().multiply(0.4));
-            }
+            player.getInventory().addItemOrDrop(glassBottle);
         }
 
         level.addLevelEvent(add(0.5, 0.375 + fillLevel * 0.125, 0.5), LevelEventPacket.EVENT_CAULDRON_FILL_POTION);
@@ -408,9 +595,7 @@ public class BlockCauldron extends BlockTransparentMeta {
                 oldBucket.pop();
             }
 
-            for (Item drop : player.getInventory().addItem(newBucket)) {
-                player.level.dropItem(player.add(0, 1.3, 0), drop, player.getDirectionVector().multiply(0.4));
-            }
+            player.getInventory().addItemOrDrop(newBucket);
         }
     }
 
@@ -500,7 +685,10 @@ public class BlockCauldron extends BlockTransparentMeta {
             }
 
             BlockEntityCauldron cauldron = getBlockEntity();
-            if (cauldron.getPotionType() == BlockEntityCauldron.POTION_TYPE_NONE && getFillLevel() == FILL_LEVEL_FULL) {
+            if (cauldron == null) {
+                return 0;
+            }
+            if (!cauldron.hasPotion() && getFillLevel() == FILL_LEVEL_FULL) {
                 return 0;
             }
 

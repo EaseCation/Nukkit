@@ -523,4 +523,11 @@ public class PlayerInventory extends BaseInventory {
             super.onClose(who);
         }
     }
+
+    public void addItemOrDrop(Item... slots) {
+        for (Item drop : addItem(slots)) {
+            EntityHuman holder = getHolder();
+            holder.level.dropItem(holder, drop);
+        }
+    }
 }

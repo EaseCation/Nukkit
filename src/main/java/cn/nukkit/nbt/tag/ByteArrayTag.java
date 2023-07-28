@@ -14,6 +14,11 @@ public class ByteArrayTag extends Tag {
         super(name);
     }
 
+    public ByteArrayTag(byte[] data) {
+        super("");
+        this.data = data;
+    }
+
     public ByteArrayTag(String name, byte[] data) {
         super(name);
         this.data = data;

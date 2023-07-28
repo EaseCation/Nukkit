@@ -118,4 +118,12 @@ public class Potion implements PotionID {
             }
         }
     }
+
+    public boolean isValidPotion() {
+        return isValidPotion(id);
+    }
+
+    public static boolean isValidPotion(int potionId) {
+        return potionId > AWKWARD;
+    }
 }

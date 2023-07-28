@@ -506,7 +506,11 @@ public class Vector3f implements Cloneable {
     }
 
     public ListTag<FloatTag> toNbt() {
-        ListTag<FloatTag> list = new ListTag<>();
+        return toNbt("");
+    }
+
+    public ListTag<FloatTag> toNbt(String name) {
+        ListTag<FloatTag> list = new ListTag<>(name);
         list.add(new FloatTag("", x));
         list.add(new FloatTag("", y));
         list.add(new FloatTag("", z));

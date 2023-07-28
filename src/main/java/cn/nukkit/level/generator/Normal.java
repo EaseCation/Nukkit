@@ -192,8 +192,9 @@ public class Normal extends Generator {
         PopulatorBedrock bedrock = new PopulatorBedrock();
         this.generationPopulators.add(bedrock);
 
-        PopulatorOre ores = new PopulatorOre();
-        ores.setOreTypes(new OreType[]{
+        this.initUnderground();
+
+        PopulatorOre ores = new PopulatorOre(
                 new OreType(Block.get(BlockID.COAL_ORE), 20, 17, 0, 128),
                 new OreType(Block.get(BlockID.IRON_ORE), 20, 9, 0, 64),
                 new OreType(Block.get(BlockID.REDSTONE_ORE), 8, 8, 0, 16),
@@ -205,19 +206,19 @@ public class Normal extends Generator {
                 new OreType(Block.get(BlockID.STONE, BlockStone.GRANITE), 10, 33, 0, 80),
                 new OreType(Block.get(BlockID.STONE, BlockStone.DIORITE), 10, 33, 0, 80),
                 new OreType(Block.get(BlockID.STONE, BlockStone.ANDESITE), 10, 33, 0, 80)
-        });
+        );
         this.populators.add(ores);
 
-        this.initUnderground();
+        WaterIcePopulator ice = new WaterIcePopulator();
+        this.populators.add(ice);
     }
 
     protected void initUnderground() {
         PopulatorCaves caves = new PopulatorCaves();
         this.populators.add(caves);
 
-        //TODO: fix ravines
-        //PopulatorRavines ravines = new PopulatorRavines();
-        //this.populators.add(ravines);
+        PopulatorRavines canyon = new PopulatorRavines();
+        this.populators.add(canyon);
     }
 
     @Override

@@ -17,6 +17,7 @@ import cn.nukkit.math.BlockVector3;
 import cn.nukkit.math.Mth;
 import cn.nukkit.math.Vector3;
 import cn.nukkit.nbt.tag.CompoundTag;
+import cn.nukkit.nbt.tag.IntTag;
 import it.unimi.dsi.fastutil.longs.LongOpenHashSet;
 import it.unimi.dsi.fastutil.longs.LongSet;
 
@@ -30,8 +31,6 @@ import java.util.concurrent.ThreadLocalRandom;
  */
 public abstract class EntityProjectile extends Entity {
 
-    public static final int DATA_SHOOTER_ID = 17;
-
     public Entity shootingEntity;
 
     protected double getDamage() {
@@ -42,7 +41,7 @@ public abstract class EntityProjectile extends Entity {
         return 0;
     }
 
-    public boolean hadCollision = false;
+    public boolean hadCollision;
 
     public boolean closeOnCollide = true;
 
@@ -69,7 +68,7 @@ public abstract class EntityProjectile extends Entity {
         super(chunk, nbt);
         this.shootingEntity = shootingEntity;
         if (shootingEntity != null) {
-            this.setDataProperty(new LongEntityData(DATA_SHOOTER_ID, shootingEntity.getId()));
+            this.setDataProperty(new LongEntityData(DATA_ARROW_SHOOTER_EID, shootingEntity.getId()));
         }
     }
 
@@ -156,8 +155,14 @@ public abstract class EntityProjectile extends Entity {
             this.age = this.namedTag.getShort("Age");
         }
 
-        if (namedTag.contains("StuckToBlockPosX") && namedTag.contains("StuckToBlockPosY") && namedTag.contains("StuckToBlockPosZ")) {
-            stuckToBlockPos = new BlockVector3(namedTag.getInt("StuckToBlockPosX"), namedTag.getInt("StuckToBlockPosY"), namedTag.getInt("StuckToBlockPosZ"));
+        if (namedTag.contains("StuckToBlockPos")) {
+            stuckToBlockPos = namedTag.getList("StuckToBlockPos", IntTag.class).asBlockPos();
+            isCollided = true;
+            hadCollision = true;
+        } else {
+            stuckToBlockPos = null;
+            isCollided = false;
+            hadCollision = false;
         }
 
         entityHitCount = namedTag.getByte("PierceLevel") + 1;
@@ -193,13 +198,9 @@ public abstract class EntityProjectile extends Entity {
         this.namedTag.putShort("Age", this.age);
 
         if (stuckToBlockPos != null) {
-            namedTag.putInt("StuckToBlockPosX", stuckToBlockPos.x);
-            namedTag.putInt("StuckToBlockPosY", stuckToBlockPos.y);
-            namedTag.putInt("StuckToBlockPosZ", stuckToBlockPos.z);
+            namedTag.putList(stuckToBlockPos.toNbt("StuckToBlockPos"));
         } else {
-            namedTag.remove("StuckToBlockPosX");
-            namedTag.remove("StuckToBlockPosY");
-            namedTag.remove("StuckToBlockPosZ");
+            namedTag.remove("StuckToBlockPos");
         }
 
         int piercingLevel = entityHitCount - 1;
@@ -268,6 +269,7 @@ public abstract class EntityProjectile extends Entity {
                     motionY *= random.nextFloat() * 0.2f;
                     motionZ *= random.nextFloat() * 0.2f;
                     */
+                    age = 0;
                 } else {
                     onGround = true;
                 }

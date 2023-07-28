@@ -248,6 +248,10 @@ public class BlockScaffolding extends BlockTransparentMeta { // extends BlockFal
         return calculateStability() == UNSTABLE;
     }
 
+    protected int getFallingBlockDamage() {
+        return 0;
+    }
+
     private int calculateStability() {
         Block below = down();
         if (below.getId() == SCAFFOLDING) {

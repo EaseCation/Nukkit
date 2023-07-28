@@ -1,5 +1,7 @@
 package cn.nukkit.nbt.tag;
 
+import cn.nukkit.math.BlockVector3;
+import cn.nukkit.math.Vector3;
 import cn.nukkit.nbt.stream.NBTInputStream;
 import cn.nukkit.nbt.stream.NBTOutputStream;
 import it.unimi.dsi.fastutil.objects.ObjectArrayList;
@@ -105,12 +107,173 @@ public class ListTag<T extends Tag> extends Tag implements Iterable<T> {
     public ListTag<T> add(int index, T tag) {
         type = tag.getId();
         tag.setName("");
+        setOrAdd(index, tag);
+        return this;
+    }
 
+    private void setOrAdd(int index, T tag) {
         if (index >= list.size()) {
             list.add(index, tag);
         } else {
             list.set(index, tag);
         }
+    }
+
+    @SuppressWarnings("unchecked")
+    public ListTag<T> addByte(int data) {
+        type = TAG_Byte;
+        list.add((T) new ByteTag(data));
+        return this;
+    }
+
+    @SuppressWarnings("unchecked")
+    public ListTag<T> addByte(int index, int data) {
+        type = TAG_Byte;
+        setOrAdd(index, (T) new ByteTag(data));
+        return this;
+    }
+
+    @SuppressWarnings("unchecked")
+    public ListTag<T> addShort(int data) {
+        type = TAG_Short;
+        list.add((T) new ShortTag(data));
+        return this;
+    }
+
+    @SuppressWarnings("unchecked")
+    public ListTag<T> addShort(int index, int data) {
+        type = TAG_Short;
+        setOrAdd(index, (T) new ShortTag(data));
+        return this;
+    }
+
+    @SuppressWarnings("unchecked")
+    public ListTag<T> addInt(int data) {
+        type = TAG_Int;
+        list.add((T) new IntTag(data));
+        return this;
+    }
+
+    @SuppressWarnings("unchecked")
+    public ListTag<T> addInt(int index, int data) {
+        type = TAG_Int;
+        setOrAdd(index, (T) new IntTag(data));
+        return this;
+    }
+
+    @SuppressWarnings("unchecked")
+    public ListTag<T> addLong(long data) {
+        type = TAG_Long;
+        list.add((T) new LongTag(data));
+        return this;
+    }
+
+    @SuppressWarnings("unchecked")
+    public ListTag<T> addLong(int index, long data) {
+        type = TAG_Long;
+        setOrAdd(index, (T) new LongTag(data));
+        return this;
+    }
+
+    @SuppressWarnings("unchecked")
+    public ListTag<T> addFloat(float data) {
+        type = TAG_Float;
+        list.add((T) new FloatTag(data));
+        return this;
+    }
+
+    @SuppressWarnings("unchecked")
+    public ListTag<T> addFloat(int index, float data) {
+        type = TAG_Float;
+        setOrAdd(index, (T) new FloatTag(data));
+        return this;
+    }
+
+    @SuppressWarnings("unchecked")
+    public ListTag<T> addDouble(double data) {
+        type = TAG_Double;
+        list.add((T) new DoubleTag(data));
+        return this;
+    }
+
+    @SuppressWarnings("unchecked")
+    public ListTag<T> addDouble(int index, double data) {
+        type = TAG_Double;
+        setOrAdd(index, (T) new DoubleTag(data));
+        return this;
+    }
+
+    @SuppressWarnings("unchecked")
+    public ListTag<T> addString(String data) {
+        type = TAG_String;
+        list.add((T) new StringTag("", data));
+        return this;
+    }
+
+    @SuppressWarnings("unchecked")
+    public ListTag<T> addString(int index, String data) {
+        type = TAG_String;
+        setOrAdd(index, (T) new StringTag("", data));
+        return this;
+    }
+
+    @SuppressWarnings("unchecked")
+    public ListTag<T> addByteArray(byte[] data) {
+        type = TAG_Byte_Array;
+        list.add((T) new ByteArrayTag(data));
+        return this;
+    }
+
+    @SuppressWarnings("unchecked")
+    public ListTag<T> addByteArray(int index, byte[] data) {
+        type = TAG_Byte_Array;
+        setOrAdd(index, (T) new ByteArrayTag(data));
+        return this;
+    }
+
+    @SuppressWarnings("unchecked")
+    public ListTag<T> addIntArray(int[] data) {
+        type = TAG_Int_Array;
+        list.add((T) new IntArrayTag(data));
+        return this;
+    }
+
+    @SuppressWarnings("unchecked")
+    public ListTag<T> addIntArray(int index, int[] data) {
+        type = TAG_Int_Array;
+        setOrAdd(index, (T) new IntArrayTag(data));
+        return this;
+    }
+
+    @SuppressWarnings("unchecked")
+    public ListTag<T> addList(ListTag<? extends Tag> data) {
+        type = TAG_List;
+        data.setName("");
+        list.add((T) data);
+        return this;
+    }
+
+    @SuppressWarnings("unchecked")
+    public ListTag<T> addList(int index, ListTag<? extends Tag> data) {
+        type = TAG_List;
+        data.setName("");
+        setOrAdd(index, (T) data);
+        return this;
+    }
+
+    @SuppressWarnings("unchecked")
+    public ListTag<T> addCompound(CompoundTag data) {
+        type = TAG_Compound;
+        data.setName("");
+        list.add((T) data);
+        return this;
+    }
+
+    @SuppressWarnings("unchecked")
+    public ListTag<T> addCompound(int index, CompoundTag data) {
+        type = TAG_Compound;
+        data.setName("");
+        setOrAdd(index, (T) data);
         return this;
     }
 
@@ -245,5 +408,20 @@ public class ListTag<T extends Tag> extends Tag implements Iterable<T> {
             return false;
         }
         return list.equals(o.list);
+    }
+
+    @SuppressWarnings("unchecked")
+    public Vector3 asDoublePos() {
+        return Vector3.fromNbt((ListTag<DoubleTag>) this);
+    }
+
+    @SuppressWarnings("unchecked")
+    public Vector3 asFloatPos() {
+        return Vector3.fromNbtf((ListTag<FloatTag>) this);
+    }
+
+    @SuppressWarnings("unchecked")
+    public BlockVector3 asBlockPos() {
+        return BlockVector3.fromNbt((ListTag<IntTag>) this);
     }
 }

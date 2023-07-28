@@ -68,12 +68,14 @@ public class ItemCrossbow extends ItemTool {
             Vector3 aimDir = Vector3.directionFromRotation(player.pitch, player.yaw);
 
             int count = Math.min(chargedItem.getCount(), 3);
-            if (chargedItem instanceof ItemArrow) {
+            if (chargedItem.getId() == ARROW) {
                 int penetrationLevel = getEnchantmentLevel(Enchantment.PIERCING);
 
+                ThreadLocalRandom random = ThreadLocalRandom.current();
                 for (int i = 0; i < count; i++) {
                     float angleOffset = count == 1 ? 0 : i * MULTISHOT_ANGLE_DELTA - MULTISHOT_ANGLE_DELTA;
-                    Vector3 dir = aimDir.yRot(angleOffset * Mth.DEG_TO_RAD);
+                    Vector3 dir = aimDir.yRot(angleOffset * Mth.DEG_TO_RAD)
+                            .add(0.0075 * random.nextGaussian(), 0.0075 * random.nextGaussian(), 0.0075 * random.nextGaussian());
                     CompoundTag nbt = Entity.getDefaultNBT(pos, dir.multiply(ARROW_POWER), (float) dir.yRotFromDirection(), (float) dir.xRotFromDirection())
                             .putByte("PierceLevel", penetrationLevel)
                             .putByte("auxValue", chargedItem.getDamage());

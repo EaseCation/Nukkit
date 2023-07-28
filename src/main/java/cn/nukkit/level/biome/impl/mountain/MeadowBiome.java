@@ -22,7 +22,7 @@ public class MeadowBiome extends GrassyBiome {
         birch.setRandomAmount(1);
         this.addPopulator(birch);
 
-        this.addPopulator(new PopulatorOre(STONE,
+        this.addPopulator(new PopulatorOre(
                 new OreType(Block.get(BlockID.EMERALD_ORE), 11, 1, 0, 32),
                 new OreType(Block.get(BlockID.MONSTER_EGG), 7, 9, 0, 63)));
 

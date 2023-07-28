@@ -378,7 +378,11 @@ public class BlockVector3 implements Cloneable {
     }
 
     public ListTag<IntTag> toNbt() {
-        ListTag<IntTag> list = new ListTag<>();
+        return toNbt("");
+    }
+
+    public ListTag<IntTag> toNbt(String name) {
+        ListTag<IntTag> list = new ListTag<>(name);
         list.add(new IntTag("", x));
         list.add(new IntTag("", y));
         list.add(new IntTag("", z));

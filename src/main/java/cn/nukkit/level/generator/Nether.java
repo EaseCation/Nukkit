@@ -83,13 +83,12 @@ public class Nether extends Generator {
         this.localSeed1 = localRandom.nextLong();
         this.localSeed2 = localRandom.nextLong();
 
-        PopulatorOre ores = new PopulatorOre(Block.NETHERRACK);
-        ores.setOreTypes(new OreType[]{
-                new OreType(Block.get(BlockID.QUARTZ_ORE), 20, 16, 0, 128),
-                new OreType(Block.get(BlockID.SOUL_SAND), 5, 64, 0, 128),
-                new OreType(Block.get(BlockID.GRAVEL), 5, 64, 0, 128),
-                new OreType(Block.get(BlockID.FLOWING_LAVA), 1, 16, 0, (int) this.lavaHeight),
-        });
+        PopulatorOre ores = new PopulatorOre(
+                new OreType(Block.get(BlockID.QUARTZ_ORE), 20, 16, 0, 128, NETHERRACK),
+                new OreType(Block.get(BlockID.SOUL_SAND), 5, 64, 0, 128, NETHERRACK),
+                new OreType(Block.get(BlockID.GRAVEL), 5, 64, 0, 128, NETHERRACK),
+                new OreType(Block.get(BlockID.FLOWING_LAVA), 1, 16, 0, (int) this.lavaHeight, NETHERRACK)
+        );
         this.populators.add(ores);
 
         PopulatorGroundFire groundFire = new PopulatorGroundFire();
@@ -101,14 +100,15 @@ public class Nether extends Generator {
         lava.setBaseAmount(1);
         lava.setRandomAmount(2);
         this.populators.add(lava);
+
         this.populators.add(new PopulatorGlowStone());
-        PopulatorOre ore = new PopulatorOre(Block.NETHERRACK);
-        ore.setOreTypes(new OreType[]{
+
+        PopulatorOre ore = new PopulatorOre(
                 new OreType(Block.get(BlockID.QUARTZ_ORE), 40, 16, 0, 128, NETHERRACK),
                 new OreType(Block.get(BlockID.SOUL_SAND), 1, 64, 30, 35, NETHERRACK),
                 new OreType(Block.get(BlockID.FLOWING_LAVA), 32, 1, 0, 32, NETHERRACK),
-                new OreType(Block.get(BlockID.MAGMA), 32, 16, 26, 37, NETHERRACK),
-        });
+                new OreType(Block.get(BlockID.MAGMA), 32, 16, 26, 37, NETHERRACK)
+        );
         this.populators.add(ore);
     }
 

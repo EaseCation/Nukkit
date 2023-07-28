@@ -2,36 +2,45 @@ package cn.nukkit.level.generator.populator.impl;
 
 import cn.nukkit.block.Block;
 import cn.nukkit.level.ChunkManager;
+import cn.nukkit.level.biome.EnumBiome;
 import cn.nukkit.level.format.FullChunk;
 import cn.nukkit.level.generator.populator.type.Populator;
 import cn.nukkit.math.Mth;
 import cn.nukkit.math.NukkitRandom;
+import cn.nukkit.math.RandomSource;
 
-import java.util.Random;
-
+/**
+ * Canyon feature
+ */
 public class PopulatorRavines extends Populator {
 
     private static final int checkAreaSize = 8;
 
-    private final Random random = new Random();
-
     private static final int ravineRarity = 1;//2
     private static final int ravineMinAltitude = 20;
     private static final int ravineMaxAltitude = 67;
-    private static final int ravineMinLength = 84;
+    private static final int ravineMinLength = 85;
     private static final int ravineMaxLength = 111;
 
     private static final double ravineDepth = 3;
 
-    private static final int worldHeightCap = 1 << 8;
+    private static final int worldHeightCap = 1 << 7;
 
-    private static final float[] a = new float[1024];
+    private final boolean allowMegaRavines;
+
+    public PopulatorRavines() {
+        this(true);
+    }
+
+    protected PopulatorRavines(boolean allowMegaRavines) {
+        this.allowMegaRavines = allowMegaRavines;
+    }
 
     @Override
     public void populate(ChunkManager level, int chunkX, int chunkZ, NukkitRandom random, FullChunk chunk) {
-        this.random.setSeed(level.getSeed());
-        long worldLong1 = this.random.nextLong();
-        long worldLong2 = this.random.nextLong();
+        RandomSource localRandom = new NukkitRandom(level.getSeed());
+        long worldLong1 = localRandom.nextLong();
+        long worldLong2 = localRandom.nextLong();
 
         int i = checkAreaSize;
 
@@ -39,164 +48,219 @@ public class PopulatorRavines extends Populator {
             for (int z = chunkZ - i; z <= chunkZ + i; z++) {
                 long l3 = x * worldLong1;
                 long l4 = z * worldLong2;
-                this.random.setSeed(l3 ^ l4 ^ level.getSeed());
-                generateChunk(chunkX, chunkZ, level.getChunk(chunkX, chunkZ));
+                localRandom.setSeed(l3 ^ l4 ^ level.getSeed());
+                generateChunk(x, z, chunk, localRandom);
             }
     }
 
-    protected void generateChunk(int chunkX, int chunkZ, FullChunk generatingChunkBuffer) {
-        if (this.random.nextInt(300) >= ravineRarity)
+    protected void generateChunk(int chunkX, int chunkZ, FullChunk chunk, RandomSource random) {
+        if (random.nextInt(150) != 0) {
             return;
-        double d1 = (chunkX * 16) + this.random.nextInt(16);
-        double d2 = numberInRange(random, ravineMinAltitude, ravineMaxAltitude);
-        double d3 = (chunkZ * 16) + this.random.nextInt(16);
+        }
 
-        int i = 1;
+        double x = (chunkX << 4) + random.nextInt(16);
+        double y = random.nextIntInclusive(ravineMinAltitude, ravineMaxAltitude);
+        double z = (chunkZ << 4) + random.nextInt(16);
 
-        for (int j = 0; j < i; j++) {
-            float f1 = this.random.nextFloat() * 3.141593F * 2.0F;
-            float f2 = (this.random.nextFloat() - 0.5F) * 2.0F / 8.0F;
-            float f3 = (this.random.nextFloat() * 2.0F + this.random.nextFloat()) * 2.0F;
+        if (random.nextFloat() <= 0.2f) {
+            y += 15;
+        }
 
-            int size = numberInRange(random, ravineMinLength, ravineMaxLength);
+        for (int i = 0; i < 1; i++) {
+            float yRot = random.nextFloat() * Mth.PI * 2.0F;
+            float xRot = (random.nextFloat() - 0.5F) * 2.0F / 8.0F;
+            float thickness = (random.nextFloat() * 3.0F + random.nextFloat()) * 3.0F;
+            float height;
 
-            createRavine(this.random.nextLong(), generatingChunkBuffer, d1, d2, d3, f3, f1, f2, size, ravineDepth);
+            if (allowMegaRavines && random.nextFloat() < 0.05f) {
+                thickness *= 2;
+                height = 40;
+            } else {
+                height = 4;
+            }
+
+            addTunnel(random.nextLong(), chunk, x, y, z, thickness, yRot, xRot, 0, 0, height);
         }
     }
 
-    protected void createRavine(long paramLong, FullChunk generatingChunkBuffer, double paramDouble1, double paramDouble2, double paramDouble3,
-                                float paramFloat1, float paramFloat2, float paramFloat3, int size, double paramDouble4) {
-        Random localRandom = new Random(paramLong);
+    protected void addTunnel(long seed, FullChunk chunk, double startX, double startY, double startZ,
+                             float thickness, float yRot, float xRot, int step, int dist, double yScale) {
+        float[] rs = new float[128];
+        RandomSource random = new NukkitRandom(seed);
 
-        int chunkX = generatingChunkBuffer.getX();
-        int chunkZ = generatingChunkBuffer.getZ();
+        int x = chunk.getX() << 4;
+        int z = chunk.getZ() << 4;
 
-        double d1 = chunkX * 16 + 8;
-        double d2 = chunkZ * 16 + 8;
+        double xMid = x + 8;
+        double zMid = z + 8;
 
-        float f1 = 0.0F;
-        float f2 = 0.0F;
+        float yRota = 0.0F;
+        float xRota = 0.0F;
 
-        int i = 0;
-
-        float f3 = 1.0F;
-        for (int j = 0; ; j++) {
-            if (j >= worldHeightCap)
-                break;
-            if ((j == 0) || (localRandom.nextInt(3) == 0)) {
-                f3 = 1.0F + localRandom.nextFloat() * localRandom.nextFloat() * 1.0F;
-            }
-            a[j] = (f3 * f3);
+        if (dist <= 0) {
+            dist = random.nextIntInclusive(ravineMinLength, ravineMaxLength);
         }
 
-        for (int stepCount = 0; stepCount < size; stepCount++) {
-            double d3 = 1.5D + Mth.sin(stepCount * 3.141593F / size) * paramFloat1 * 1.0F;
-            double d4 = d3 * paramDouble4;
+        boolean singleStep = false;
+        if (step == -1) {
+            step = dist / 2;
+            singleStep = true;
+        }
 
-            d3 *= (localRandom.nextFloat() * 0.25D + 0.75D);
-            d4 *= (localRandom.nextFloat() * 0.25D + 0.75D);
+        float f = 1.0F;
+        for (int i = 0; i < 128; i++) {
+            if (i == 0 || random.nextInt(3) == 0) {
+                f = 1.0F + random.nextFloat() * random.nextFloat();
+            }
+            rs[i] = f * f;
+        }
 
-            float f4 = Mth.cos(paramFloat3);
-            float f5 = Mth.sin(paramFloat3);
-            paramDouble1 += Mth.cos(paramFloat2) * f4;
-            paramDouble2 += f5;
-            paramDouble3 += Mth.sin(paramFloat2) * f4;
+        for (; step < dist; step++) {
+            double rad = 1.5D + Mth.sin(step * Mth.PI / dist) * thickness;
+            double yRad = rad * yScale;
 
-            paramFloat3 *= 0.7F;
+            rad *= random.nextFloat() * 0.25D + 0.75D;
+            yRad *= random.nextFloat() * 0.25D + 0.75D;
 
-            paramFloat3 += f2 * 0.05F;
-            paramFloat2 += f1 * 0.05F;
+            float xc = Mth.cos(xRot);
+            float xs = Mth.sin(xRot);
+            startX += Mth.cos(yRot) * xc;
+            startY += xs;
+            startZ += Mth.sin(yRot) * xc;
 
-            f2 *= 0.8F;
-            f1 *= 0.5F;
-            f2 += (localRandom.nextFloat() - localRandom.nextFloat()) * localRandom.nextFloat() * 2.0F;
-            f1 += (localRandom.nextFloat() - localRandom.nextFloat()) * localRandom.nextFloat() * 4.0F;
+            xRot *= 0.7F;
 
-            if ((i == 0) && (localRandom.nextInt(4) == 0)) {
+            xRot += xRota * 0.05F;
+            yRot += yRota * 0.05F;
+
+            xRota *= 0.8F;
+            yRota *= 0.5F;
+            xRota += random.nextGaussianFloat() * random.nextFloat() * 2.0F;
+            yRota += random.nextGaussianFloat() * random.nextFloat() * 4.0F;
+
+            if (!singleStep && random.nextInt(4) == 0) {
                 continue;
             }
-            double d5 = paramDouble1 - d1;
-            double d6 = paramDouble3 - d2;
-            double d7 = size - stepCount;
-            double d8 = paramFloat1 + 2.0F + 16.0F;
+
+            double d5 = startX - xMid;
+            double d6 = startZ - zMid;
+            double d7 = dist - step;
+            double d8 = thickness + 2.0F + 16.0F;
             if (d5 * d5 + d6 * d6 - d7 * d7 > d8 * d8) {
                 return;
             }
 
-            if ((paramDouble1 < d1 - 16.0D - d3 * 2.0D) || (paramDouble3 < d2 - 16.0D - d3 * 2.0D) || (paramDouble1 > d1 + 16.0D + d3 * 2.0D) || (paramDouble3 > d2 + 16.0D + d3 * 2.0D))
-                continue;
-            int k = Mth.floor(paramDouble1 - d3) - (chunkX * 16) - 1;
-            int m = Mth.floor(paramDouble1 + d3) - (chunkZ * 16) + 1;
-
-            int maxY = Mth.floor(paramDouble2 - d4) - 1;
-            int minY = Mth.floor(paramDouble2 + d4) + 1;
-
-            int i2 = Mth.floor(paramDouble3 - d3) - (chunkX * 16) - 1;
-            int i3 = Mth.floor(paramDouble3 + d3) - (chunkZ * 16) + 1;
-
-            if (k < 0)
-                k = 0;
-            if (m > 16)
-                m = 16;
-
-            if (maxY < 1)
-                maxY = 1;
-            if (minY > worldHeightCap - 8)
-                minY = worldHeightCap - 8;
-
-            if (i2 < 0)
-                i2 = 0;
-            if (i3 > 16)
-                i3 = 16;
-
-            int i4 = 0;
-            for (int localX = k; (i4 == 0) && (localX < m); localX++) {
-                for (int localZ = i2; (i4 == 0) && (localZ < i3); localZ++) {
-                    for (int localY = minY + 1; (i4 == 0) && (localY >= maxY - 1); localY--) {
-                        if (localY < 0)
-                            continue;
-                        if (localY < worldHeightCap) {
-                            int materialAtPosition = generatingChunkBuffer.getBlockId(0, localX, localY, localZ);
-                            if (materialAtPosition == Block.FLOWING_WATER
-                                    || materialAtPosition == Block.WATER) {
-                                i4 = 1;
-                            }
-                            if ((localY != maxY - 1) && (localX != k) && (localX != m - 1) && (localZ != i2) && (localZ != i3 - 1))
-                                localY = maxY;
-                        }
-                    }
-                }
-            }
-            if (i4 != 0) {
+            if (startX < xMid - 16.0D - rad * 2.0D || startZ < zMid - 16.0D - rad * 2.0D || startX > xMid + 16.0D + rad * 2.0D || startZ > zMid + 16.0D + rad * 2.0D) {
                 continue;
             }
-            for (int localX = k; localX < m; localX++) {
-                double d9 = (localX + (chunkX * 16) + 0.5D - paramDouble1) / d3;
-                for (int localZ = i2; localZ < i3; localZ++) {
-                    double d10 = (localZ + (chunkZ * 16) + 0.5D - paramDouble3) / d3;
-                    if (d9 * d9 + d10 * d10 < 1.0D) {
-                        for (int localY = minY; localY >= maxY; localY--) {
-                            double d11 = ((localY - 1) + 0.5D - paramDouble2) / d4;
-                            if ((d9 * d9 + d10 * d10) * a[localY - 1] + d11 * d11 / 6.0D < 1.0D) {
-                                int material = generatingChunkBuffer.getBlockId(0, localX, localY, localZ);
-                                if (material == Block.GRASS) {
-                                    if (localY - 1 < 10) {
-                                        generatingChunkBuffer.setBlock(0, localX, localY, localZ, Block.FLOWING_LAVA);
-                                    } else {
-                                        generatingChunkBuffer.setBlock(0, localX, localY, localZ, Block.AIR);
-                                    }
-                                }
-                            }
-                        }
-                    }
-                }
+
+            int x0 = Mth.floor(startX - rad) - x - 1;
+            int x1 = Mth.floor(startX + rad) - z + 1;
+
+            int y0 = Mth.floor(startY - yRad) - 1;
+            int y1 = Mth.floor(startY + yRad) + 1;
+
+            int z0 = Mth.floor(startZ - rad) - x - 1;
+            int z1 = Mth.floor(startZ + rad) - z + 1;
+
+            if (x0 < 0) {
+                x0 = 0;
             }
-            if (i != 0)
+            if (x1 > 16) {
+                x1 = 16;
+            }
+
+            y1 = Mth.clamp(y1, 1, 128 - 8);
+            y0 = Mth.clamp(y0, 1, y1);
+
+            if (z0 < 0) {
+                z0 = 0;
+            }
+            if (z1 > 16) {
+                z1 = 16;
+            }
+
+            if (!carve(chunk, startX, startY, startZ, x0, x1, y0, y1, z0, z1, rad, yRad, rs) || singleStep) {
                 break;
+            }
         }
     }
 
-    private static int numberInRange(Random random, int min, int max) {
-        return min + random.nextInt(max - min + 1);
+    protected boolean carve(FullChunk chunk, double startX, double startY, double startZ, int x0, int x1, int y0, int y1, int z0, int z1, double rad, double yRad, float[] rs) {
+        if (detectWater(chunk, x0, x1, y0, y1, z0, z1)) {
+            return true;
+        }
+
+        int x = chunk.getX() << 4;
+        int z = chunk.getZ() << 4;
+
+        boolean carved = false;
+        for (int xx = x0; xx < x1; xx++) {
+            double xd = (xx + x + 0.5 - startX) / rad;
+            double xdSq = xd * xd;
+            for (int zz = z0; zz < z1; zz++) {
+                double zd = (zz + z + 0.5 - startZ) / rad;
+                double zdSq = zd * zd;
+                double xz = xdSq + zdSq;
+
+                if (xz >= 1) {
+                    continue;
+                }
+
+                boolean hasGrass = false;
+                for (int yy = y1; yy >= y0; yy--) {
+                    double yd = (yy - 1 + 0.5 - startY) / yRad;
+
+                    if (xz * rs[yy - 1] + yd * yd / 6 >= 1) {
+                        continue;
+                    }
+
+                    int block = chunk.getBlockId(0, xx, yy, zz);
+                    int above = chunk.getBlockId(0, xx, yy + 1, zz);
+
+                    if (block == GRASS) {
+                        hasGrass = true;
+                    }
+
+                    if (!PopulatorCaves.isDiggable(block, above)) {
+                        continue;
+                    }
+
+                    if (!carved && chunk.getBiomeId(Mth.floor(startX) & 0xf, Mth.floor(startZ) & 0xf) == EnumBiome.OCEAN.id) {
+                        return false;
+                    }
+                    carved = true;
+
+                    if (yy - 1 >= 10) {
+                        chunk.setBlock(0, xx, yy, zz, AIR);
+
+                        if (hasGrass && chunk.getBlockId(0, xx, yy - 1, zz) == DIRT) {
+                            chunk.setBlock(0, xx, yy - 1, zz, GRASS);
+                        }
+                    } else {
+                        chunk.setBlock(0, xx, yy, zz, LAVA);
+                    }
+                }
+            }
+        }
+        return true;
+    }
+
+    protected boolean detectWater(FullChunk chunk, int x0, int x1, int y0, int y1, int z0, int z1) {
+        for (int xx = x0; xx < x1; xx++) {
+            for (int zz = z0; zz < z1; zz++) {
+                for (int yy = y1 + 1; yy >= y0 - 1; yy--) {
+                    int block = chunk.getBlockId(0, xx, yy, zz);
+                    if (block == Block.FLOWING_WATER || block == Block.WATER) {
+                        return true;
+                    }
+
+                    if (yy != y0 - 1 && xx != x0 && xx != x1 - 1 && zz != z0 && zz != z1 - 1) {
+                        yy = y0;
+                    }
+                }
+            }
+        }
+        return false;
     }
 }

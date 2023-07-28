@@ -22,6 +22,11 @@ public class DoubleTag extends NumberTag<Double> {
         super(name);
     }
 
+    public DoubleTag(double data) {
+        super("");
+        this.data = data;
+    }
+
     public DoubleTag(String name, double data) {
         super(name);
         this.data = data;

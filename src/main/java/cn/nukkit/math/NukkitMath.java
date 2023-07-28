@@ -38,20 +38,36 @@ public class NukkitMath {
         return Mth.ceil(n);
     }
 
+    /**
+     * @deprecated use {@link NukkitRandom#nextRange()} instead
+     */
+    @Deprecated
     public static int randomRange(NukkitRandom random) {
-        return randomRange(random, 0);
+        return random.nextRange();
     }
 
+    /**
+     * @deprecated use {@link NukkitRandom#nextRange(int)} instead
+     */
+    @Deprecated
     public static int randomRange(NukkitRandom random, int start) {
-        return randomRange(random, start, 0x7fffffff);
+        return random.nextRange(start);
     }
 
+    /**
+     * @deprecated use {@link NukkitRandom#nextRange(int, int)} instead
+     */
+    @Deprecated
     public static int randomRange(NukkitRandom random, int start, int end) {
-        return start + (random.nextInt() % (end + 1 - start));
+        return random.nextRange(start, end);
     }
 
+    /**
+     * @deprecated use {@link Math#round(double)} instead
+     */
+    @Deprecated
     public static double round(double d) {
-        return round(d, 0);
+        return Math.round(d);
     }
 
     public static double round(double d, int precision) {

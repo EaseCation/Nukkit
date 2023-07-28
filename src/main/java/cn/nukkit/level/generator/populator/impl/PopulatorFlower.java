@@ -9,7 +9,6 @@ import cn.nukkit.math.NukkitRandom;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.concurrent.ThreadLocalRandom;
 
 /**
  * @author Angelic47, Niall Lindsay (Niall7459)
@@ -34,7 +33,7 @@ public class PopulatorFlower extends PopulatorSurfaceBlock {
     @Override
     protected void placeBlock(int x, int y, int z, int id, int meta, FullChunk chunk, NukkitRandom random) {
         if (flowerTypes.size() != 0) {
-            int[] type = flowerTypes.get(ThreadLocalRandom.current().nextInt(flowerTypes.size()));
+            int[] type = flowerTypes.get(random.nextBoundedInt(flowerTypes.size()));
             chunk.setBlock(0, x, y, z, type[0], type[1]);
             if (type[0] == DOUBLE_PLANT) {
                 chunk.setBlock(0, x, y + 1, z, type[0], type[1] | BlockDoublePlant.TOP_HALF_BITMASK);

@@ -1,11 +1,9 @@
 package cn.nukkit.level.generator.populator.impl;
 
-import cn.nukkit.block.Block;
 import cn.nukkit.level.ChunkManager;
 import cn.nukkit.level.format.FullChunk;
 import cn.nukkit.level.generator.object.ore.OreType;
 import cn.nukkit.level.generator.populator.type.Populator;
-import cn.nukkit.math.NukkitMath;
 import cn.nukkit.math.NukkitRandom;
 
 /**
@@ -13,46 +11,28 @@ import cn.nukkit.math.NukkitRandom;
  * Nukkit Project
  */
 public class PopulatorOre extends Populator {
-    private final int replaceId;
-    private OreType[] oreTypes;
+    private final OreType[] oreTypes;
 
-    public PopulatorOre() {
-        this(Block.STONE);
-    }
-
-    public PopulatorOre(int id) {
-        this(id, new OreType[0]);
-    }
-
-    public PopulatorOre(int replaceId, OreType... oreTypes) {
-        this.replaceId = replaceId;
+    public PopulatorOre(OreType... oreTypes) {
         this.oreTypes = oreTypes;
     }
 
     @Override
     public void populate(ChunkManager level, int chunkX, int chunkZ, NukkitRandom random, FullChunk chunk) {
-        int sx = chunkX << 4;
-        int ex = sx + 15;
-        int sz = chunkZ << 4;
-        int ez = sz + 15;
         for (OreType type : this.oreTypes) {
             for (int i = 0; i < type.clusterCount; i++) {
-                int x = NukkitMath.randomRange(random, sx, ex);
-                int z = NukkitMath.randomRange(random, sz, ez);
-                int y = NukkitMath.randomRange(random, type.minHeight, type.maxHeight);
-                if (level.getBlockIdAt(0, x, y, z) != replaceId) {
+                int x = random.nextInt(16);
+                int z = random.nextInt(16);
+                int y = random.nextRange(type.minHeight, type.maxHeight);
+                if (chunk.getBlockId(0, x, y, z) != type.replaceBlockId) {
                     continue;
                 }
                 if (type.clusterSize == 1) {
-                    level.setBlockFullIdAt(0, x, y, z, type.fullId);
+                    chunk.setFullBlockId(0, x, y, z, type.fullId);
                 } else {
-                    type.spawn(level, random, replaceId, x, y, z);
+                    type.spawn(chunk, random, x, y, z);
                 }
             }
         }
-    }
-
-    public void setOreTypes(OreType[] oreTypes) {
-        this.oreTypes = oreTypes;
     }
 }

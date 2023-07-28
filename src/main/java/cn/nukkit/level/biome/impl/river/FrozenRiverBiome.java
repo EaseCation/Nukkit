@@ -10,8 +10,8 @@ public class FrozenRiverBiome extends RiverBiome {
     public FrozenRiverBiome() {
         super();
 
-        WaterIcePopulator ice = new WaterIcePopulator();
-        this.addPopulator(ice);
+//        WaterIcePopulator ice = new WaterIcePopulator();
+//        this.addPopulator(ice);
     }
 
     @Override

@@ -13,6 +13,11 @@ public class IntArrayTag extends Tag {
         super(name);
     }
 
+    public IntArrayTag(int[] data) {
+        super("");
+        this.data = data;
+    }
+
     public IntArrayTag(String name, int[] data) {
         super(name);
         this.data = data;

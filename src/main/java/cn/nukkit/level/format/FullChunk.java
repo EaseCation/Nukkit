@@ -44,10 +44,12 @@ public interface FullChunk extends Cloneable {
     Block getAndSetBlock(int layer, int x, int y, int z, Block block);
 
     default boolean setFullBlockId(int layer, int x, int y, int z, int fullId) {
-        return setBlock(layer, x, y, z, fullId >> 4, fullId & 0xF);
+        return setBlock(layer, x, y, z, Block.getIdFromFullId(fullId), Block.getDamageFromFullId(fullId));
     }
 
-    boolean setBlock(int layer, int x, int y, int z, int blockId);
+    default boolean setBlock(int layer, int x, int y, int z, int blockId) {
+        return setBlock(layer, x, y, z, blockId, 0);
+    }
 
     boolean setBlock(int layer, int x, int y, int z, int  blockId, int meta);
 

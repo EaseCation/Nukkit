@@ -1,82 +1,149 @@
 package cn.nukkit.math;
 
-import java.nio.ByteBuffer;
-import java.nio.ByteOrder;
-import java.util.concurrent.ThreadLocalRandom;
-import java.util.zip.CRC32;
+import java.util.concurrent.atomic.AtomicLong;
 
 /**
- * author: Angelic47
+ * Xoroshiro128++
+ *
+ * @author Angelic47
  * Nukkit Project
  */
-public class NukkitRandom {
-    private static final ThreadLocal<NukkitRandom> LOCAL = ThreadLocal.withInitial(() -> new NukkitRandom(ThreadLocalRandom.current().nextLong()));
+public class NukkitRandom implements RandomSource {
+    private static final ThreadLocal<NukkitRandom> LOCAL = ThreadLocal.withInitial(NukkitRandom::new);
+    private static final AtomicLong SEED_UNIQUIFIER = new AtomicLong(RandomSupport.mixStafford13(System.currentTimeMillis()) ^ RandomSupport.mixStafford13(System.nanoTime()));
 
-    protected long seed;
+    private long l, h;
+
+    private final MarsagliaPolarGaussian gaussianSource = new MarsagliaPolarGaussian(this);
 
     public NukkitRandom() {
-        this(-1);
+        this(seedUniquifier());
     }
 
-    public NukkitRandom(long seeds) {
-        if (seeds == -1) {
-            seeds = System.currentTimeMillis() / 1000L;
+    public NukkitRandom(long seed) {
+        setSeed(seed);
+    }
+
+    private NukkitRandom(long l, long h) {
+        this.l = l;
+        this.h = h;
+        checkZeroSeed();
+    }
+
+    private void checkZeroSeed() {
+        if ((l | h) == 0) {
+            l = RandomSupport.GOLDEN_RATIO_64;
+            h = RandomSupport.SILVER_RATIO_64;
         }
-        this.setSeed(seeds);
     }
 
-    public void setSeed(long seeds) {
-        CRC32 crc32 = new CRC32();
-        ByteBuffer buffer = ByteBuffer.allocate(4).order(ByteOrder.BIG_ENDIAN);
-        buffer.putInt((int) seeds);
-        crc32.update(buffer.array());
-        this.seed = crc32.getValue();
+    @Override
+    public NukkitRandom fork() {
+        return new NukkitRandom(nextLong(), nextLong());
     }
 
-    public int nextSignedInt() {
-        int t = (((int) ((this.seed * 65535) + 31337) >> 8) + 1337);
-        this.seed ^= t;
-        return t;
+    @Override
+    public void setSeed(long seed) {
+        long s = seed ^ RandomSupport.SILVER_RATIO_64;
+        l = RandomSupport.mixStafford13(s);
+        h = RandomSupport.mixStafford13(s + RandomSupport.GOLDEN_RATIO_64);
+        checkZeroSeed();
+        gaussianSource.reset();
     }
 
+    public static long seedUniquifier() {
+        return SEED_UNIQUIFIER.getAndAdd(RandomSupport.GOLDEN_RATIO_64);
+    }
+
+    private long next() {
+        final long s0 = l;
+        long s1 = h;
+
+        long result = Long.rotateLeft(s0 + s1, 17) + s0;
+
+        s1 ^= s0;
+        l = Long.rotateLeft(s0, 49) ^ s1 ^ s1 << 21;
+        h = Long.rotateLeft(s1, 28);
+
+        return result;
+    }
+
+    private long nextBits(int bits) {
+        return next() >>> 64 - bits;
+    }
+
+    @Override
     public int nextInt() {
-        return this.nextSignedInt() & 0x7fffffff;
+        return (int) next();
     }
 
-    public double nextDouble() {
-        return (double) this.nextInt() / 0x7fffffff;
+    @Override
+    public int nextInt(int bound) {
+        long r = Integer.toUnsignedLong(nextInt()) * bound;
+        long t = r & 0xffffffffL;
+        if (t < bound) {
+            int remainder = Integer.remainderUnsigned(~bound + 1, bound);
+            while (t < remainder) {
+                r = Integer.toUnsignedLong(nextInt()) * bound;
+                t = r & 0xffffffffL;
+            }
+        }
+        return (int) (r >> 32);
     }
 
-    public float nextFloat() {
-        return (float) this.nextInt() / 0x7fffffff;
+    @Override
+    public long nextLong() {
+        return next();
     }
 
-    public float nextSignedFloat() {
-        return (float) this.nextInt() / 0x7fffffff;
-    }
-
-    public double nextSignedDouble() {
-        return (double) this.nextSignedInt() / 0x7fffffff;
-    }
-
+    @Override
     public boolean nextBoolean() {
-        return (this.nextSignedInt() & 0x01) == 0;
+        return (next() & 1) != 0;
     }
 
-    public int nextRange() {
-        return nextRange(0, 0x7fffffff);
+    @Override
+    public float nextFloat() {
+        return nextBits(24) * RandomSupport.FLOAT_UNIT;
     }
 
-    public int nextRange(int start) {
-        return nextRange(start, 0x7fffffff);
+    @Override
+    public double nextDouble() {
+        return nextBits(53) * RandomSupport.DOUBLE_UNIT;
     }
 
-    public int nextRange(int start, int end) {
-        return start + (this.nextInt() % (end + 1 - start));
+    /**
+     * Returns the next pseudorandom, uniformly distributed
+     * {@code double} value between {@code 0.0} and
+     * {@code 1.0} from this random number generator's sequence,
+     * using a fast multiplication-free method which, however,
+     * can provide only 52 significant bits.
+     *
+     * <p>This method is faster than {@link #nextDouble()}, but it
+     * can return only dyadic rationals of the form <var>k</var> / 2<sup>&minus;52</sup>,
+     * instead of the standard <var>k</var> / 2<sup>&minus;53</sup>.
+     *
+     * <p>The only difference between the output of this method and that of
+     * {@link #nextDouble()} is an additional least significant bit set in half of the
+     * returned values. For most applications, this difference is negligible.
+     *
+     * @return the next pseudorandom, uniformly distributed {@code double}
+     * value between {@code 0.0} and {@code 1.0} from this
+     * random number generator's sequence, using 52 significant bits only.
+     */
+    public double nextDoubleFast() {
+        return Double.longBitsToDouble(0x3ffL << 52 | next() >>> 12) - 1;
     }
 
-    public int nextBoundedInt(int bound) {
-        return bound == 0 ? 0 : this.nextInt() % bound;
+    @Override
+    public double nextGaussian() {
+        return gaussianSource.nextGaussian();
+    }
+
+    @Override
+    public void consumeCount(int count) {
+        for (int i = 0; i < count; i++) {
+            nextLong();
+        }
     }
 
     public static NukkitRandom current() {

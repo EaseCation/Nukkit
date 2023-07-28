@@ -2,18 +2,17 @@ package cn.nukkit.item;
 
 import cn.nukkit.Player;
 import cn.nukkit.Server;
+import cn.nukkit.entity.Entity;
 import cn.nukkit.entity.projectile.EntityProjectile;
 import cn.nukkit.entity.projectile.EntityThrownTrident;
 import cn.nukkit.event.entity.EntityShootBowEvent;
 import cn.nukkit.event.entity.ProjectileLaunchEvent;
 import cn.nukkit.item.enchantment.Enchantment;
-import cn.nukkit.math.Mth;
 import cn.nukkit.math.Vector3;
 import cn.nukkit.nbt.tag.CompoundTag;
-import cn.nukkit.nbt.tag.DoubleTag;
-import cn.nukkit.nbt.tag.FloatTag;
-import cn.nukkit.nbt.tag.ListTag;
 import cn.nukkit.network.protocol.LevelSoundEventPacket;
+
+import java.util.concurrent.ThreadLocalRandom;
 
 /**
  * Created by PetteriM1
@@ -65,18 +64,10 @@ public class ItemTrident extends ItemTool {
 
         this.useOn(player);
 
-        CompoundTag nbt = new CompoundTag()
-                .putList(new ListTag<DoubleTag>("Pos")
-                        .add(new DoubleTag("", player.x))
-                        .add(new DoubleTag("", player.y + player.getEyeHeight()))
-                        .add(new DoubleTag("", player.z)))
-                .putList(new ListTag<DoubleTag>("Motion")
-                        .add(new DoubleTag("", -Mth.sin(player.yaw / 180 * Math.PI) * Mth.cos(player.pitch / 180 * Math.PI)))
-                        .add(new DoubleTag("", -Mth.sin(player.pitch / 180 * Mth.PI)))
-                        .add(new DoubleTag("", Mth.cos(player.yaw / 180 * Math.PI) * Mth.cos(player.pitch / 180 * Math.PI))))
-                .putList(new ListTag<FloatTag>("Rotation")
-                        .add(new FloatTag("", (player.yaw > 180 ? 360 : 0) - (float) player.yaw))
-                        .add(new FloatTag("", (float) -player.pitch)));
+        ThreadLocalRandom random = ThreadLocalRandom.current();
+        Vector3 dir = Vector3.directionFromRotation(player.pitch, player.yaw)
+                .add(0.0075 * random.nextGaussian(), 0.0075 * random.nextGaussian(), 0.0075 * random.nextGaussian());
+        CompoundTag nbt = Entity.getDefaultNBT(player.getEyePosition(), dir, (float) dir.yRotFromDirection(), (float) dir.xRotFromDirection());
 
         EntityThrownTrident trident = new EntityThrownTrident(player.chunk, nbt, player);
         trident.setItem(this);

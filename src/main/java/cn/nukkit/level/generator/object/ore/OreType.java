@@ -1,7 +1,7 @@
 package cn.nukkit.level.generator.object.ore;
 
 import cn.nukkit.block.Block;
-import cn.nukkit.level.ChunkManager;
+import cn.nukkit.level.format.FullChunk;
 import cn.nukkit.math.Mth;
 import cn.nukkit.math.NukkitRandom;
 
@@ -33,7 +33,7 @@ public class OreType {
         this.replaceBlockId = replaceBlockId;
     }
 
-    public boolean spawn(ChunkManager level, NukkitRandom rand, int replaceId, int x, int y, int z) {
+    public boolean spawn(FullChunk chunk, NukkitRandom rand, int x, int y, int z) {
         float piScaled = rand.nextFloat() * (float) Math.PI;
         double scaleMaxX = (float) (x + 8) + Mth.sin(piScaled) * (float) clusterSize / 8.0F;
         double scaleMinX = (float) (x + 8) - Mth.sin(piScaled) * (float) clusterSize / 8.0F;
@@ -57,6 +57,10 @@ public class OreType {
             int maxY = Mth.floor(scaleY + randVec2 / 2.0D);
             int maxZ = Mth.floor(scaleZ + randVec1 / 2.0D);
 
+            if (minY < 0 || maxY > 255) {
+                continue;
+            }
+
             for (int xSeg = minX; xSeg <= maxX; ++xSeg) {
                 double xVal = ((double) xSeg + 0.5D - scaleX) / (randVec1 / 2.0D);
 
@@ -69,8 +73,10 @@ public class OreType {
                                 double zVal = ((double) zSeg + 0.5D - scaleZ) / (randVec1 / 2.0D);
 
                                 if (xVal * xVal + yVal * yVal + zVal * zVal < 1.0D) {
-                                    if (level.getBlockIdAt(0, xSeg, ySeg, zSeg) == replaceBlockId) {
-                                        level.setBlockFullIdAt(0, xSeg, ySeg, zSeg, fullId);
+                                    int localX = xSeg & 0xf;
+                                    int localZ = zSeg & 0xf;
+                                    if (chunk.getBlockId(0, localX, ySeg, localZ) == replaceBlockId) {
+                                        chunk.setFullBlockId(0, localX, ySeg, localZ, fullId);
                                     }
                                 }
                             }
@@ -79,7 +85,7 @@ public class OreType {
                 }
             }
         }
-        
+
         return true;
     }
 }

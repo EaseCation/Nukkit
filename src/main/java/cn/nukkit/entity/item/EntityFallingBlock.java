@@ -5,6 +5,7 @@ import cn.nukkit.block.Block;
 import cn.nukkit.block.BlockDripstonePointed;
 import cn.nukkit.block.BlockID;
 import cn.nukkit.block.BlockLiquid;
+import cn.nukkit.block.BlockSnowLayer;
 import cn.nukkit.block.SupportType;
 import cn.nukkit.entity.Entity;
 import cn.nukkit.entity.EntityID;
@@ -205,10 +206,11 @@ public class EntityFallingBlock extends Entity {
                         getLevel().dropItem(this, Block.get(this.getBlock(), this.getDamage()).toItem());
                     }
                 } else {
-                    EntityBlockChangeEvent event = new EntityBlockChangeEvent(this, block, Block.get(getBlock(), getDamage()));
+                    boolean coverSnow = getBlock() == BlockID.SNOW_LAYER && block.canContainSnow();
+                    EntityBlockChangeEvent event = new EntityBlockChangeEvent(this, block, Block.get(getBlock(), coverSnow ? BlockSnowLayer.COVERED_BIT | getDamage() : getDamage()));
                     server.getPluginManager().callEvent(event);
                     if (!event.isCancelled()) {
-                        if (getBlock() == BlockID.SNOW_LAYER && block.canContainSnow()) {
+                        if (coverSnow) {
                             level.setExtraBlock(pos, block, true, false);
                         }
                         setBlock(pos, event.getTo());

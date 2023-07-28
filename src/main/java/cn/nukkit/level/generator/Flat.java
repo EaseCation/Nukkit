@@ -73,8 +73,7 @@ public class Flat extends Generator {
         this.options = options;
 
         if (this.options.containsKey("decoration")) {
-            PopulatorOre ores = new PopulatorOre();
-            ores.setOreTypes(new OreType[]{
+            PopulatorOre ores = new PopulatorOre(
                     new OreType(Block.get(BlockID.COAL_ORE), 20, 16, 0, 128),
                     new OreType(Block.get(BlockID.IRON_ORE), 20, 8, 0, 64),
                     new OreType(Block.get(BlockID.REDSTONE_ORE), 8, 7, 0, 16),
@@ -82,8 +81,8 @@ public class Flat extends Generator {
                     new OreType(Block.get(BlockID.GOLD_ORE), 2, 8, 0, 32),
                     new OreType(Block.get(BlockID.DIAMOND_ORE), 1, 7, 0, 16),
                     new OreType(Block.get(BlockID.DIRT), 20, 32, 0, 128),
-                    new OreType(Block.get(BlockID.GRAVEL), 20, 16, 0, 128),
-            });
+                    new OreType(Block.get(BlockID.GRAVEL), 20, 16, 0, 128)
+            );
             this.populators.add(ores);
         }
     }

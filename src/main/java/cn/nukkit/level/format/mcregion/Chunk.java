@@ -193,11 +193,6 @@ public class Chunk extends BaseFullChunk {
     }
 
     @Override
-    public boolean setBlock(int layer, int x, int y, int z, int blockId) {
-        return setBlock(layer, x, y, z, blockId, 0);
-    }
-
-    @Override
     public boolean setBlock(int layer, int x, int y, int z, int blockId, int meta) {
         int i = (x << 11) | (z << 7) | y;
         boolean changed = false;
