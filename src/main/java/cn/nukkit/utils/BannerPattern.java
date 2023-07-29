@@ -7,8 +7,8 @@ import java.util.Map;
 
 public class BannerPattern {
 
-    private Type type;
-    private DyeColor color;
+    private final Type type;
+    private final DyeColor color;
 
     public BannerPattern(Type type, DyeColor color) {
         this.type = type;
@@ -28,7 +28,6 @@ public class BannerPattern {
     }
 
     public enum Type {
-
         PATTERN_BOTTOM_STRIPE("bs"),
         PATTERN_TOP_STRIPE("ts"),
         PATTERN_LEFT_STRIPE("ls"),
@@ -70,7 +69,7 @@ public class BannerPattern {
 
         private final static Map<String, Type> BY_NAME = new HashMap<>();
 
-        private String name;
+        private final String name;
 
         Type(String name) {
             this.name = name;

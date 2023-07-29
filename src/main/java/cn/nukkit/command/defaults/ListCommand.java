@@ -30,7 +30,7 @@ public class ListCommand extends VanillaCommand {
             }
         }
 
-        if (online.length() > 0) {
+        if (!online.isEmpty()) {
             online = new StringBuilder(online.substring(0, online.length() - 2));
         }
 

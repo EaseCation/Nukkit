@@ -165,7 +165,7 @@ public class GameRules {
         Preconditions.checkNotNull(nbt);
         for (String key : nbt.getTags().keySet()) {
             Optional<GameRule> gameRule = GameRule.parseString(key);
-            if (!gameRule.isPresent()) {
+            if (gameRule.isEmpty()) {
                 continue;
             }
 

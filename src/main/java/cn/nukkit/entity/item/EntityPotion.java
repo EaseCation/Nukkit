@@ -206,8 +206,8 @@ public class EntityPotion extends EntityProjectile {
         boolean hasUpdate = super.onUpdate(currentTick);
 
         if (this.age > 1200) {
-            this.kill();
-            hasUpdate = true;
+            this.close();
+            hasUpdate = false;
         } else if (this.isCollided) {
             this.splash(null);
             hasUpdate = true;

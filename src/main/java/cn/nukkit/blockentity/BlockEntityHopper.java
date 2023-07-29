@@ -203,7 +203,7 @@ public class BlockEntityHopper extends BlockEntitySpawnable implements Inventory
 
                 Item[] items = this.inventory.addItem(itemToAdd);
 
-                if (items.length <= 0) {
+                if (items.length == 0) {
                     item.count--;
                     inv.setResult(item);
                     return true;

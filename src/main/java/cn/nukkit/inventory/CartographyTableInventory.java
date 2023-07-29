@@ -7,13 +7,11 @@ import cn.nukkit.item.Item;
 import cn.nukkit.item.ItemID;
 import cn.nukkit.level.Position;
 import it.unimi.dsi.fastutil.objects.ObjectArrayList;
-import lombok.extern.log4j.Log4j2;
 
 import java.util.List;
 
 import static cn.nukkit.network.protocol.types.UiContainerSlots.*;
 
-@Log4j2
 public class CartographyTableInventory extends FakeBlockUIComponent {
 
     public static final int INPUT_SLOT = CARTOGRAPHY_TABLE_INPUT - CARTOGRAPHY_TABLE_INPUT_OFFSET;

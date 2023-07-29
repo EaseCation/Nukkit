@@ -11,6 +11,7 @@ import java.util.regex.Pattern;
  * All supported formatting values for chat and console.
  */
 public enum TextFormat {
+    // Color codes
     /**
      * Represents black.
      */
@@ -75,34 +76,80 @@ public enum TextFormat {
      * Represents white.
      */
     WHITE('f', 0xF),
+
+    // Color codes (Bedrock only)
     /**
-     * Represents minecoins gold.
+     * Represents minecoin gold.
      */
-    MINECOIN_GOLD('g', 0x16),
+    MINECOIN_GOLD('g', 0x10),
+    /**
+     * Represents material quartz.
+     * @since 1.19.80
+     */
+    MATERIAL_QUARTZ('h', 0x11),
+    /**
+     * Represents material iron.
+     * @since 1.19.80
+     */
+    MATERIAL_IRON('i', 0x12),
+    /**
+     * Represents material netherite.
+     * @since 1.19.80
+     */
+    MATERIAL_NETHERITE('j', 0x13),
+    /**
+     * Represents material redstone.
+     * @since 1.19.80
+     */
+    MATERIAL_REDSTONE('m', 0x16),
+    /**
+     * Represents material copper.
+     * @since 1.19.80
+     */
+    MATERIAL_COPPER('n', 0x17),
+    /**
+     * Represents material gold.
+     * @since 1.19.80
+     */
+    MATERIAL_GOLD('p', 0x19),
+    /**
+     * Represents material emerald.
+     * @since 1.19.80
+     */
+    MATERIAL_EMERALD('q', 0x1a),
+    /**
+     * Represents material diamond.
+     * @since 1.19.80
+     */
+    MATERIAL_DIAMOND('s', 0x1c),
+    /**
+     * Represents material lapis.
+     * @since 1.19.80
+     */
+    MATERIAL_LAPIS('t', 0x1d),
+    /**
+     * Represents material amethyst.
+     * @since 1.19.80
+     */
+    MATERIAL_AMETHYST('u', 0x1e),
+
+    // Formatting codes
     /**
      * Makes the text obfuscated.
      */
-    OBFUSCATED('k', 0x10, true),
+    OBFUSCATED('k', 0x14, true),
     /**
      * Makes the text bold.
      */
-    BOLD('l', 0x11, true),
-    /**
-     * Makes a line appear through the text.
-     */
-    STRIKETHROUGH('m', 0x12, true),
-    /**
-     * Makes the text appear underlined.
-     */
-    UNDERLINE('n', 0x13, true),
+    BOLD('l', 0x15, true),
     /**
      * Makes the text italic.
      */
-    ITALIC('o', 0x14, true),
+    ITALIC('o', 0x18, true),
     /**
      * Resets all previous chat colors or formats.
      */
-    RESET('r', 0x15);
+    RESET('r', 0x1b);
 
     /**
      * The special character which prefixes all format codes. Use this if
@@ -110,7 +157,7 @@ public enum TextFormat {
      */
     public static final char ESCAPE = '\u00A7';
 
-    private static final Pattern CLEAN_PATTERN = Pattern.compile("(?i)" + ESCAPE + "[0-9A-GK-OR]");
+    private static final Pattern CLEAN_PATTERN = Pattern.compile("(?i)" + ESCAPE + "[0-9A-U]");
     private final static Int2ObjectMap<TextFormat> BY_ID = new Int2ObjectRBTreeMap<>();
     private final static Char2ObjectMap<TextFormat> BY_CHAR = new Char2ObjectOpenHashMap<>();
 
@@ -261,7 +308,7 @@ public enum TextFormat {
                 TextFormat color = getByChar(c);
 
                 if (color != null) {
-                    result.insert(0, color.toString());
+                    result.insert(0, color);
 
                     // Once we find a color or reset we can stop searching
                     if (color.isColor() || color.equals(RESET)) {

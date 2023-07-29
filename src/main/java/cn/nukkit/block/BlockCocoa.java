@@ -238,21 +238,6 @@ public class BlockCocoa extends BlockFlowable implements Faceable {
     }
 
     @Override
-    public boolean breaksWhenMoved() {
-        return true;
-    }
-
-    @Override
-    public boolean sticksToPiston() {
-        return false;
-    }
-
-    @Override
-    public boolean canProvideSupport(BlockFace face, SupportType type) {
-        return false;
-    }
-
-    @Override
     public boolean isVegetation() {
         return true;
     }

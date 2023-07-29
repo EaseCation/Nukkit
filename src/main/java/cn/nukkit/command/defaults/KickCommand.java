@@ -42,14 +42,14 @@ public class KickCommand extends VanillaCommand {
             reason.append(args[i]).append(" ");
         }
 
-        if (reason.length() > 0) {
+        if (!reason.isEmpty()) {
             reason = new StringBuilder(reason.substring(0, reason.length() - 1));
         }
 
         Player player = sender.getServer().getPlayerExact(name);
         if (player != null) {
             player.kick(PlayerKickEvent.Reason.KICKED_BY_ADMIN, reason.toString());
-            if (reason.length() >= 1) {
+            if (!reason.isEmpty()) {
                 Command.broadcastCommandMessage(sender, new TranslationContainer("commands.kick.success.reason", player.getName(), reason.toString())
                 );
             } else {

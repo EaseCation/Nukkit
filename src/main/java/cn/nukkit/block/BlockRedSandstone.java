@@ -46,16 +46,6 @@ public class BlockRedSandstone extends BlockSandstone {
     }
 
     @Override
-    public Item toItem(boolean addUserData) {
-        return Item.get(this.getItemId(), this.getDamage() & 0x03);
-    }
-
-    @Override
-    public boolean canHarvestWithHand() {
-        return false;
-    }
-
-    @Override
     public BlockColor getColor() {
         return BlockColor.ORANGE_BLOCK_COLOR;
     }

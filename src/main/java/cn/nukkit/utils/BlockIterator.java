@@ -25,7 +25,7 @@ public class BlockIterator implements Iterator<Block> {
 
     private Block currentBlockObject = null;
     private int currentDistance;
-    private int maxDistanceInt;
+    private final int maxDistanceInt;
 
     private int secondError;
     private int thirdError;

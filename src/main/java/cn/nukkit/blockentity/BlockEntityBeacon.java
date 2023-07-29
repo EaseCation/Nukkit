@@ -163,7 +163,7 @@ public class BlockEntityBeacon extends BlockEntitySpawnable {
 
         //Check every block from our y coord to the top of the world
         for (int y = tileY + 1; y <= 255; y++) {
-            int testBlockId = level.getBlockIdAt(0, tileX, y, tileZ);
+            int testBlockId = level.getBlock(tileX, y, tileZ).getId();
             if (!Block.transparent[testBlockId]) {
                 //There is no sky access
                 return false;
@@ -185,7 +185,7 @@ public class BlockEntityBeacon extends BlockEntitySpawnable {
             for (int queryX = tileX - powerLevel; queryX <= tileX + powerLevel; queryX++) {
                 for (int queryZ = tileZ - powerLevel; queryZ <= tileZ + powerLevel; queryZ++) {
 
-                    int testBlockId = level.getBlockIdAt(0, queryX, queryY, queryZ);
+                    int testBlockId = level.getBlock(queryX, queryY, queryZ).getId();
                     if (
                             testBlockId != Block.IRON_BLOCK &&
                                     testBlockId != Block.GOLD_BLOCK &&

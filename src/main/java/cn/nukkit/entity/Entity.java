@@ -841,7 +841,7 @@ public abstract class Entity extends Location implements Metadatable, EntityData
                 this.namedTag.putString("identifier", ":");
             }
 
-            if (!this.getNameTag().equals("")) {
+            if (!this.getNameTag().isEmpty()) {
                 this.namedTag.putString("CustomName", this.getNameTag());
                 this.namedTag.putBoolean("CustomNameVisible", this.isNameTagVisible());
                 this.namedTag.putBoolean("CustomNameAlwaysVisible", this.isNameTagAlwaysVisible());
@@ -850,7 +850,7 @@ public abstract class Entity extends Location implements Metadatable, EntityData
                 this.namedTag.remove("CustomNameVisible");
                 this.namedTag.remove("CustomNameAlwaysVisible");
             }
-            if (!this.getScoreTag().equals("")) {
+            if (!this.getScoreTag().isEmpty()) {
                 this.namedTag.putString("ScoreTag", this.getScoreTag());
             } else {
                 this.namedTag.remove("ScoreTag");
@@ -1138,13 +1138,13 @@ public abstract class Entity extends Location implements Metadatable, EntityData
         double diffY = y - j;
         double diffZ = z - k;
 
-        if (!Block.transparent[this.level.getBlockIdAt(0, i, j, k)]) {
-            boolean flag = Block.transparent[this.level.getBlockIdAt(0, i - 1, j, k)];
-            boolean flag1 = Block.transparent[this.level.getBlockIdAt(0, i + 1, j, k)];
-            boolean flag2 = Block.transparent[this.level.getBlockIdAt(0, i, j - 1, k)];
-            boolean flag3 = Block.transparent[this.level.getBlockIdAt(0, i, j + 1, k)];
-            boolean flag4 = Block.transparent[this.level.getBlockIdAt(0, i, j, k - 1)];
-            boolean flag5 = Block.transparent[this.level.getBlockIdAt(0, i, j, k + 1)];
+        if (!Block.transparent[this.level.getBlock(i, j, k).getId()]) {
+            boolean flag = Block.transparent[this.level.getBlock(i - 1, j, k).getId()];
+            boolean flag1 = Block.transparent[this.level.getBlock(i + 1, j, k).getId()];
+            boolean flag2 = Block.transparent[this.level.getBlock(i, j - 1, k).getId()];
+            boolean flag3 = Block.transparent[this.level.getBlock(i, j + 1, k).getId()];
+            boolean flag4 = Block.transparent[this.level.getBlock(i, j, k - 1).getId()];
+            boolean flag5 = Block.transparent[this.level.getBlock(i, j, k + 1).getId()];
 
             int direction = -1;
             double limit = 9999;
@@ -1265,8 +1265,8 @@ public abstract class Entity extends Location implements Metadatable, EntityData
 
         this.checkBlockCollision();
 
-        if (this.y <= -16 && this.isAlive()) {
-            this.attack(new EntityDamageEvent(this, DamageCause.VOID, 10));
+        if (this.y < level.getMinHeight() - 18 && this.isAlive()) {
+            this.attack(new EntityDamageEvent(this, DamageCause.VOID, 4));
             hasUpdate = true;
         }
 

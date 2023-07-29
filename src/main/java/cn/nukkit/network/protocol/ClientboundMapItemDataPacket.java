@@ -81,7 +81,7 @@ public class ClientboundMapItemDataPacket extends DataPacket {
         if ((update & DECORATIONS_UPDATE) != 0) {
             List<MapTrackedObject> objs = Arrays.stream(trackedEntities)
                     .filter(o -> o.type == MapTrackedObject.TYPE_ENTITY)
-                    .collect(Collectors.toList());
+                    .toList();
             this.putUnsignedVarInt(objs.size());
             for (MapTrackedObject object : objs) {
                 this.putEntityUniqueId(object.entityUniqueId);
@@ -126,7 +126,7 @@ public class ClientboundMapItemDataPacket extends DataPacket {
                 }
 
                 image.flush();
-            } else if (colors.length > 0) {
+            } else {
                 for (int color : colors) {
                     putUnsignedVarInt(color);
                 }

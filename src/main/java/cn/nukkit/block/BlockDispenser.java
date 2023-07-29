@@ -250,10 +250,8 @@ public class BlockDispenser extends BlockSolidMeta implements Faceable {
             if (result.getId() != origin.getId() || result.getDamage() != origin.getDamage()) {
                 Item[] fit = inv.addItem(result);
 
-                if (fit.length > 0) {
-                    for (Item drop : fit) {
-                        this.level.dropItem(this, drop);
-                    }
+                for (Item drop : fit) {
+                    this.level.dropItem(this, drop);
                 }
             } else {
                 inv.setItem(slot, result);

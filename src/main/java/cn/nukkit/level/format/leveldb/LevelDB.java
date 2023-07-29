@@ -916,7 +916,7 @@ public class LevelDB implements LevelProvider {
             if (chunk != null && chunk.unload(false, safe)) {
                 WeakReference<LevelDbChunk> lastChunk = this.lastChunk.get();
                 if (lastChunk != null && lastChunk.get() == chunk) {
-                    this.lastChunk.set(null);
+                    this.lastChunk.remove();
                 }
                 this.chunks.remove(index);
                 return true;

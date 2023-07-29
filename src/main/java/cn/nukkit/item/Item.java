@@ -656,7 +656,7 @@ public class Item implements Cloneable, ItemID {
     }
 
     public Item setCustomName(String name) {
-        if (name == null || name.equals("")) {
+        if (name == null || name.isEmpty()) {
             return this.clearCustomName();
         }
 
@@ -704,7 +704,7 @@ public class Item implements Cloneable, ItemID {
             CompoundTag nbt = (CompoundTag) tag;
             ListTag<StringTag> lore = nbt.getList("Lore", StringTag.class);
 
-            if (lore.size() > 0) {
+            if (!lore.isEmpty()) {
                 for (StringTag stringTag : lore.getAll()) {
                     lines.add(stringTag.data);
                 }

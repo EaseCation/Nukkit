@@ -43,7 +43,7 @@ public class BanCommand extends VanillaCommand {
             reason.append(args[i]).append(" ");
         }
 
-        if (reason.length() > 0) {
+        if (!reason.isEmpty()) {
             reason = new StringBuilder(reason.substring(0, reason.length() - 1));
         }
 
@@ -51,7 +51,7 @@ public class BanCommand extends VanillaCommand {
 
         Player player = sender.getServer().getPlayerExact(name);
         if (player != null) {
-            player.kick(PlayerKickEvent.Reason.NAME_BANNED, (reason.length() > 0) ? "Banned by admin. Reason: " + reason : "Banned by admin");
+            player.kick(PlayerKickEvent.Reason.NAME_BANNED, !reason.isEmpty() ? "Banned by admin. Reason: " + reason : "Banned by admin");
         }
 
         Command.broadcastCommandMessage(sender, new TranslationContainer("commands.ban.success", player != null ? player.getName() : name));

@@ -2,7 +2,6 @@ package cn.nukkit.block;
 
 import cn.nukkit.Player;
 import cn.nukkit.item.Item;
-import cn.nukkit.item.ItemTool;
 import cn.nukkit.math.BlockFace;
 
 public class BlockChorusFlower extends BlockFlowable {
@@ -33,26 +32,6 @@ public class BlockChorusFlower extends BlockFlowable {
     @Override
     public double getResistance() {
         return 2;
-    }
-
-    @Override
-    public int getToolType() {
-        return ItemTool.TYPE_NONE;
-    }
-
-    @Override
-    public boolean breaksWhenMoved() {
-        return true;
-    }
-
-    @Override
-    public boolean sticksToPiston() {
-        return false;
-    }
-
-    @Override
-    public boolean canProvideSupport(BlockFace face, SupportType type) {
-        return false;
     }
 
     @Override

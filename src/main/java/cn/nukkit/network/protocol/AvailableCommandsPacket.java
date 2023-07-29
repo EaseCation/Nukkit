@@ -92,7 +92,7 @@ public class AvailableCommandsPacket extends DataPacket {
         enumValues.addAll(commandNames);
 
         List<String> enumIndexes = new ArrayList<>(enumValues);
-        List<String> enumDataIndexes = enums.stream().map(CommandEnum::getName).collect(Collectors.toList());
+        List<String> enumDataIndexes = enums.stream().map(CommandEnum::getName).toList();
         List<String> fixesIndexes = new ArrayList<>(postFixes);
 
         this.putUnsignedVarInt(enumValues.size());

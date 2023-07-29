@@ -38,11 +38,6 @@ public class BlockCoralFanHang extends BlockFlowable implements Faceable {
     }
 
     @Override
-    public double getHardness() {
-        return 0;
-    }
-
-    @Override
     public double getResistance() {
         return 4.5;
     }
@@ -61,31 +56,6 @@ public class BlockCoralFanHang extends BlockFlowable implements Faceable {
             case PINK:
                 return BlockColor.PINK_BLOCK_COLOR;
         }
-    }
-
-    @Override
-    public boolean isSolid() {
-        return false;
-    }
-
-    @Override
-    public boolean breaksWhenMoved() {
-        return true;
-    }
-
-    @Override
-    public boolean sticksToPiston() {
-        return false;
-    }
-
-    @Override
-    protected AxisAlignedBB recalculateBoundingBox() {
-        return null;
-    }
-
-    @Override
-    public boolean canProvideSupport(BlockFace face, SupportType type) {
-        return false;
     }
 
     @Override

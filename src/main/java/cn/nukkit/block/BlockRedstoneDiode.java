@@ -203,11 +203,6 @@ public abstract class BlockRedstoneDiode extends BlockTransparentMeta implements
         return this.y + 0.125;
     }
 
-    @Override
-    public boolean canPassThrough() {
-        return false;
-    }
-
     protected boolean isAlternateInput(Block block) {
         return block.isPowerSource();
     }

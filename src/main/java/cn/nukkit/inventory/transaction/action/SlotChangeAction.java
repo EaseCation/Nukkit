@@ -5,7 +5,6 @@ import cn.nukkit.inventory.Inventory;
 import cn.nukkit.inventory.transaction.InventoryTransaction;
 import cn.nukkit.item.Item;
 import lombok.ToString;
-import lombok.extern.log4j.Log4j2;
 
 import java.util.HashSet;
 import java.util.Set;
@@ -13,7 +12,6 @@ import java.util.Set;
 /**
  * @author CreeperFace
  */
-@Log4j2
 @ToString
 public class SlotChangeAction extends InventoryAction {
 

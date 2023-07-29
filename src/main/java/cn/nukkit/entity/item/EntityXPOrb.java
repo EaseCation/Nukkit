@@ -190,8 +190,8 @@ public class EntityXPOrb extends Entity {
             this.updateMovement();
 
             if (this.age > 6000) {
-                this.kill();
-                hasUpdate = true;
+                this.close();
+                hasUpdate = false;
             }
 
         }

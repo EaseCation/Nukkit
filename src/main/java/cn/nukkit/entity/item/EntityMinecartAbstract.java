@@ -150,7 +150,7 @@ public abstract class EntityMinecartAbstract extends EntityVehicle {
             int dz = Mth.floor(z);
 
             // Some hack to check rails
-            if (Rail.isRailBlock(level.getBlockIdAt(0, dx, dy - 1, dz))) {
+            if (Rail.isRailBlock(level.getBlock(dx, dy - 1, dz).getId())) {
                 --dy;
             }
 
@@ -618,7 +618,7 @@ public abstract class EntityMinecartAbstract extends EntityVehicle {
         int checkY = Mth.floor(dy);
         int checkZ = Mth.floor(dz);
 
-        if (Rail.isRailBlock(level.getBlockIdAt(0, checkX, checkY - 1, checkZ))) {
+        if (Rail.isRailBlock(level.getBlock(checkX, checkY - 1, checkZ).getId())) {
             --checkY;
         }
 

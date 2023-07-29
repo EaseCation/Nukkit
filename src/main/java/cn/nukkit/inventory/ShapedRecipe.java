@@ -51,12 +51,12 @@ public class ShapedRecipe implements CraftingRecipe {
         this.recipeId = recipeId;
         this.priority = priority;
         int rowCount = shape.length;
-        if (rowCount > 3 || rowCount <= 0) {
+        if (rowCount > 3 || rowCount == 0) {
             throw new RuntimeException("Shaped recipes may only have 1, 2 or 3 rows, not " + rowCount);
         }
 
         int columnCount = shape[0].length();
-        if (columnCount > 3 || columnCount <= 0) {
+        if (columnCount > 3 || columnCount == 0) {
             throw new RuntimeException("Shaped recipes may only have 1, 2 or 3 columns, not " + columnCount);
         }
 

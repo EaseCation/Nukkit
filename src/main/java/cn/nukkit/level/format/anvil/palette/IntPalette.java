@@ -6,7 +6,7 @@ import java.util.Arrays;
  * @author https://github.com/boy0001/
  */
 public class IntPalette {
-    private static int[] INT0 = new int[0];
+    private static final int[] INT0 = new int[0];
     private int[] keys = INT0;
     private int lastIndex = Integer.MIN_VALUE;
 

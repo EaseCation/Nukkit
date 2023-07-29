@@ -336,10 +336,10 @@ public class EntityBoat extends EntityVehicle {
 
     @Override
     public boolean mountEntity(Entity entity) {
-        boolean player = this.passengers.size() >= 1 && this.passengers.get(0) instanceof Player;
+        boolean player = !this.passengers.isEmpty() && this.passengers.get(0) instanceof Player;
         byte mode = SetEntityLinkPacket.TYPE_PASSENGER;
 
-        if (!player && (entity instanceof Player || this.passengers.size() == 0)) {
+        if (!player && (entity instanceof Player || this.passengers.isEmpty())) {
             mode = SetEntityLinkPacket.TYPE_RIDE;
         }
 

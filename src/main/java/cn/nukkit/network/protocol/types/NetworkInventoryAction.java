@@ -240,11 +240,9 @@ public class NetworkInventoryAction {
                         return new SlotChangeAction(player.getCraftingGrid(), this.inventorySlot, this.oldItem, this.newItem);
                     case SOURCE_TYPE_CONTAINER_DROP_CONTENTS:
                         Optional<Inventory> inventory = player.getTopWindow();
-                        if (!inventory.isPresent()) {
-                            // No window open?
-                            return null;
-                        }
-                        return new SlotChangeAction(inventory.get(), this.inventorySlot, this.oldItem, this.newItem);
+                        return inventory.map(value -> new SlotChangeAction(value, this.inventorySlot, this.oldItem, this.newItem))
+                                // No window open?
+                                .orElse(null);
                     case SOURCE_TYPE_CRAFTING_RESULT:
                         return new CraftingTakeResultAction(this.oldItem, this.newItem);
                     case SOURCE_TYPE_CRAFTING_USE_INGREDIENT:
@@ -386,11 +384,9 @@ public class NetworkInventoryAction {
                         return new SlotChangeAction(player.getCraftingGrid(), this.inventorySlot, this.oldItem, this.newItem);
                     case SOURCE_TYPE_CONTAINER_DROP_CONTENTS:
                         Optional<Inventory> inventory = player.getTopWindow();
-                        if (!inventory.isPresent()) {
-                            // No window open?
-                            return null;
-                        }
-                        return new SlotChangeAction(inventory.get(), this.inventorySlot, this.oldItem, this.newItem);
+                        return inventory.map(value -> new SlotChangeAction(value, this.inventorySlot, this.oldItem, this.newItem))
+                                // No window open?
+                                .orElse(null);
                     case SOURCE_TYPE_CRAFTING_RESULT:
                         return new CraftingTakeResultAction(this.oldItem, this.newItem);
                     case SOURCE_TYPE_CRAFTING_USE_INGREDIENT:

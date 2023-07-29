@@ -362,7 +362,7 @@ public abstract class BaseInventory implements Inventory {
                 }
             }
 
-            if (itemSlots.size() == 0) {
+            if (itemSlots.isEmpty()) {
                 break;
             }
         }

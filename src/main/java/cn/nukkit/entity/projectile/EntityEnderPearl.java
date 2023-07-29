@@ -75,8 +75,8 @@ public class EntityEnderPearl extends EntityProjectile {
         }
 
         if (this.age > 1200 || this.isCollided) {
-            this.kill();
-            hasUpdate = true;
+            this.close();
+            hasUpdate = false;
         }
 
         this.timing.stopTiming();

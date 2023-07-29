@@ -2,7 +2,6 @@ package cn.nukkit.level.generator.populator.impl;
 
 import cn.nukkit.block.Block;
 import cn.nukkit.level.ChunkManager;
-import cn.nukkit.level.biome.EnumBiome;
 import cn.nukkit.level.format.FullChunk;
 import cn.nukkit.level.biome.Biome;
 import cn.nukkit.level.biome.type.CoveredBiome;
@@ -181,7 +180,7 @@ public class PopulatorCaves extends Populator {
                         for (int yy = yTo; yy > yFrom; yy--) {
                             double modY = ((yy - 1) + 0.5D - y) / offsetY;
                             if ((modY > -0.7D) && (modX * modX + modY * modY + modZ * modZ < 1.0D)) {
-                                Biome biome = EnumBiome.getBiome(chunk.getBiomeId(xx, zz));
+                                Biome biome = Biome.getBiome(chunk.getBiomeId(xx, zz));
                                 if (!(biome instanceof CoveredBiome)) {
                                     continue;
                                 }

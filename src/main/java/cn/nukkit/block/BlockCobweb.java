@@ -85,11 +85,6 @@ public class BlockCobweb extends BlockFlowable {
     }
 
     @Override
-    public boolean canProvideSupport(BlockFace face, SupportType type) {
-        return false;
-    }
-
-    @Override
     public int getFullId() {
         return getId() << BLOCK_META_BITS;
     }

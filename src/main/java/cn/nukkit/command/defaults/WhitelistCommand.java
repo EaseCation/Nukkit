@@ -73,7 +73,7 @@ public class WhitelistCommand extends VanillaCommand {
                         ++count;
                     }
                     sender.sendMessage(new TranslationContainer("commands.allowlist.list", count, count));
-                    sender.sendMessage(result.length() > 0 ? result.substring(0, result.length() - 2) : "");
+                    sender.sendMessage(!result.isEmpty() ? result.substring(0, result.length() - 2) : "");
 
                     return true;
 

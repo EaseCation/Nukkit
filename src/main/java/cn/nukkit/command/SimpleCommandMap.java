@@ -228,9 +228,9 @@ public class SimpleCommandMap implements CommandMap {
         return true;
     }
 
-    private ArrayList<String> parseArguments(String cmdLine) {
+    private List<String> parseArguments(String cmdLine) {
         StringBuilder sb = new StringBuilder(cmdLine);
-        ArrayList<String> args = new ArrayList<>();
+        List<String> args = new ArrayList<>();
         boolean notQuoted = true;
         int start = 0;
 
@@ -262,8 +262,8 @@ public class SimpleCommandMap implements CommandMap {
 
     @Override
     public boolean dispatch(CommandSender sender, String cmdLine) {
-        ArrayList<String> parsed = parseArguments(cmdLine);
-        if (parsed.size() == 0) {
+        List<String> parsed = parseArguments(cmdLine);
+        if (parsed.isEmpty()) {
             return false;
         }
 
@@ -327,7 +327,7 @@ public class SimpleCommandMap implements CommandMap {
                 Command command = this.getCommand(args[0]);
 
                 if (command == null) {
-                    if (bad.length() > 0) {
+                    if (!bad.isEmpty()) {
                         bad.append(", ");
                     }
                     bad.append(commandString);
@@ -336,7 +336,7 @@ public class SimpleCommandMap implements CommandMap {
                 }
             }
 
-            if (bad.length() > 0) {
+            if (!bad.isEmpty()) {
                 log.warn(this.server.getLanguage().translate("nukkit.command.alias.notFound", alias, bad.toString()));
                 continue;
             }

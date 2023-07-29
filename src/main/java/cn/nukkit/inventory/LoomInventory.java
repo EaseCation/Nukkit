@@ -4,11 +4,9 @@ import cn.nukkit.Player;
 import cn.nukkit.item.Item;
 import cn.nukkit.item.ItemID;
 import cn.nukkit.level.Position;
-import lombok.extern.log4j.Log4j2;
 
 import static cn.nukkit.network.protocol.types.UiContainerSlots.*;
 
-@Log4j2
 public class LoomInventory extends FakeBlockUIComponent {
 
     public static final int BANNER_SLOT = LOOM_BANNER - LOOM_INPUT_OFFSET;

@@ -103,11 +103,6 @@ public class BlockCarpet extends BlockFlowable {
     }
 
     @Override
-    public boolean canProvideSupport(BlockFace face, SupportType type) {
-        return false;
-    }
-
-    @Override
     public boolean breaksWhenMoved() {
         return false;
     }

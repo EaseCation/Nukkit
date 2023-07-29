@@ -49,11 +49,6 @@ public class BlockVine extends BlockFlowable {
     }
 
     @Override
-    public boolean canPassThrough() {
-        return true;
-    }
-
-    @Override
     public boolean hasEntityCollision() {
         return true;
     }
@@ -72,11 +67,6 @@ public class BlockVine extends BlockFlowable {
     public void onEntityCollide(Entity entity) {
         entity.resetFallDistance();
         entity.onGround = true;
-    }
-
-    @Override
-    public boolean isSolid() {
-        return false;
     }
 
     @Override
@@ -321,16 +311,6 @@ public class BlockVine extends BlockFlowable {
     }
 
     @Override
-    public boolean breaksWhenMoved() {
-        return true;
-    }
-
-    @Override
-    public boolean sticksToPiston() {
-        return false;
-    }
-
-    @Override
     public int getBurnChance() {
         return 15;
     }
@@ -343,11 +323,6 @@ public class BlockVine extends BlockFlowable {
     @Override
     public boolean canContainWater() {
         return true;
-    }
-
-    @Override
-    public boolean canProvideSupport(BlockFace face, SupportType type) {
-        return false;
     }
 
     @Override

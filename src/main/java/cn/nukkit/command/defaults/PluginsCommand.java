@@ -36,8 +36,8 @@ public class PluginsCommand extends VanillaCommand {
         StringBuilder list = new StringBuilder();
         Map<String, Plugin> plugins = sender.getServer().getPluginManager().getPlugins();
         for (Plugin plugin : plugins.values()) {
-            if (list.length() > 0) {
-                list.append(TextFormat.WHITE );
+            if (!list.isEmpty()) {
+                list.append(TextFormat.WHITE);
                 list.append(", ");
             }
             list.append(plugin.isEnabled() ? TextFormat.GREEN : TextFormat.RED);

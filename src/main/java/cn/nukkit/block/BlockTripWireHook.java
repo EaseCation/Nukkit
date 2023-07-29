@@ -205,7 +205,7 @@ public class BlockTripWireHook extends BlockTransparentMeta implements Faceable 
                 Vector3 vc = this.getSideVec(facing, i);
                 block = blocks[i];
 
-                if (block != null && this.level.getBlockIdAt(0, vc.getFloorX(), vc.getFloorY(), vc.getFloorZ()) != Block.AIR) {
+                if (block != null && !this.level.getBlock(vc).isAir()) {
                     if (canConnect ^ ((block.getDamage() & 0x04) > 0)) {
                         block.setDamage(block.getDamage() ^ 0x04);
                     }

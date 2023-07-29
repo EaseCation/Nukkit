@@ -501,11 +501,6 @@ public class Player extends EntityHuman implements CommandSender, InventoryHolde
         }
     }
 
-    @Override
-    public Server getServer() {
-        return this.server;
-    }
-
     public boolean getRemoveFormat() {
         return removeFormat;
     }
@@ -1080,7 +1075,7 @@ public class Player extends EntityHuman implements CommandSender, InventoryHolde
 
         this.spawned = true;
 
-        if (playerJoinEvent.getJoinMessage().toString().trim().length() > 0) {
+        if (!playerJoinEvent.getJoinMessage().toString().trim().isEmpty()) {
             this.server.broadcastMessage(playerJoinEvent.getJoinMessage());
         }
 
@@ -1983,7 +1978,7 @@ public class Player extends EntityHuman implements CommandSender, InventoryHolde
                         double expectedVelocity = (-this.getGravity()) / ((double) this.getDrag()) - ((-this.getGravity()) / ((double) this.getDrag())) * Math.exp(-((double) this.getDrag()) * ((double) (this.inAirTicks - this.startAirTicks)));
                         double diff = (this.speed.y - expectedVelocity) * (this.speed.y - expectedVelocity);
 
-                        int block = level.getBlockIdAt(0, this.getFloorX(), this.getFloorY(), this.getFloorZ());
+                        int block = level.getBlock(this).getId();
                         boolean ignore = block == Block.LADDER || block == Block.VINE || block == Block.WEB || block == BlockID.BUBBLE_COLUMN || block == BlockID.SCAFFOLDING || block == BlockID.SWEET_BERRY_BUSH || block == BlockID.WEEPING_VINES || block == BlockID.TWISTING_VINES || block == BlockID.CAVE_VINES || block == BlockID.CAVE_VINES_BODY_WITH_BERRIES || block == BlockID.CAVE_VINES_HEAD_WITH_BERRIES || block == BlockID.POWDER_SNOW || block == BlockID.BIG_DRIPLEAF
                                 || block == BlockID.HONEY_BLOCK; //TODO: slide down
 
@@ -2102,7 +2097,7 @@ public class Player extends EntityHuman implements CommandSender, InventoryHolde
             this.checkInteractNearby(); // 在客户端计算, 结果通过 action 为 mouseover 的 InteractPacket 发给服务端 (runtimeEntityId 为 0 表示移开)
         }*/
 
-        if (this.spawned && this.dummyBossBars.size() > 0 && currentTick % 100 == 0) {
+        if (this.spawned && !this.dummyBossBars.isEmpty() && currentTick % 100 == 0) {
             this.dummyBossBars.values().forEach(DummyBossBar::updateBossEntityPosition);
         }
 
@@ -2573,7 +2568,7 @@ public class Player extends EntityHuman implements CommandSender, InventoryHolde
                         }
                     };
 
-                    this.server.getScheduler().scheduleAsyncTask(this.preLoginEventTask);
+                    this.server.getScheduler().scheduleAsyncTask(null, this.preLoginEventTask);
 
                     this.processLogin();
                     break;
@@ -4089,7 +4084,7 @@ public class Player extends EntityHuman implements CommandSender, InventoryHolde
     }
 
     public void sendTitle(String title, String subtitle, int fadein, int duration, int fadeout) {
-        if (!subtitle.equals("")) {
+        if (!subtitle.isEmpty()) {
             SetTitlePacket pk = new SetTitlePacket();
             pk.type = SetTitlePacket.TYPE_SUBTITLE;
             pk.text = subtitle;
@@ -4151,7 +4146,7 @@ public class Player extends EntityHuman implements CommandSender, InventoryHolde
 
     public void close(TextContainer message, String reason, boolean notify) {
         if (this.connected && !this.closed) {
-            if (notify && reason.length() > 0) {
+            if (notify && !reason.isEmpty()) {
                 DisconnectPacket pk = new DisconnectPacket();
                 pk.message = reason;
                 this.dataPacket(pk);
@@ -4159,7 +4154,7 @@ public class Player extends EntityHuman implements CommandSender, InventoryHolde
 
             this.connected = false;
             PlayerQuitEvent ev = null;
-            if (this.getName() != null && this.getName().length() > 0) {
+            if (this.getName() != null && !this.getName().isEmpty()) {
                 this.server.getPluginManager().callEvent(ev = new PlayerQuitEvent(this, message, true, reason));
                 if (this.loggedIn && ev.getAutoSave()) {
                     this.save();
@@ -5423,18 +5418,13 @@ public class Player extends EntityHuman implements CommandSender, InventoryHolde
     public void resetCraftingGridType() {
         if (this.craftingGrid != null) {
             Item[] drops = this.inventory.addItem(this.craftingGrid.getContents().values().toArray(new Item[0]));
-
-            if (drops.length > 0) {
-                for (Item drop : drops) {
-                    this.dropItem(drop);
-                }
+            for (Item drop : drops) {
+                this.dropItem(drop);
             }
 
             drops = this.inventory.addItem(this.getCursorInventory().getItem(0));
-            if (drops.length > 0) {
-                for (Item drop : drops) {
-                    this.dropItem(drop);
-                }
+            for (Item drop : drops) {
+                this.dropItem(drop);
             }
 
             this.playerUIInventory.clearAll();
@@ -5450,10 +5440,6 @@ public class Player extends EntityHuman implements CommandSender, InventoryHolde
 
             this.craftingType = CRAFTING_SMALL;
         }
-    }
-
-    public PlayerOffhandInventory getOffhandInventory() {
-        return offhandInventory;
     }
 
     public void removeAllWindows() {
@@ -5731,7 +5717,7 @@ public class Player extends EntityHuman implements CommandSender, InventoryHolde
             EntityXPOrb xpOrb = (EntityXPOrb) entity;
             if (xpOrb.getPickupDelay() <= 0) {
                 int exp = xpOrb.getExp();
-                entity.kill();
+                entity.close();
                 this.getLevel().addLevelEvent(this, LevelEventPacket.EVENT_SOUND_EXPERIENCE_ORB);
                 pickedXPOrb = tick;
 

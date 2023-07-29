@@ -19,12 +19,15 @@ public enum CharacterIcon {
     WHITE_LEFT_CROSS_BUTTON('\uE00D'),
     WHITE_DOWN_CROSS_BUTTON('\uE00E'),
     WHITE_RIGHT_CROSS_BUTTON('\uE00F'),
-
     GREEN_A_BUTTON_2('\uE010'),
     RED_B_BUTTON_2('\uE011'),
     BLUE_X_BUTTON_2('\uE012'),
     YELLOW_Y_BUTTON_2('\uE013'),
-
+    NEW_UP_BUTTON('\uE014'),
+    NEW_ATTACK_BUTTON('\uE015'),
+    NEW_MOVE_BUTTON('\uE016'),
+    NEW_AIM_BUTTON('\uE018'),
+    NEW_DOWN_BUTTON('\uE019'),
     BLUE_CLOSE_BUTTON('\uE020'),
     RED_CIRCLE_BUTTON('\uE021'),
     PINK_SQUARE_BUTTON('\uE022'),
@@ -72,6 +75,7 @@ public enum CharacterIcon {
     SNEAKING_BUTTON_PRESSED('\uE085'),
     UP_BUTTON('\uE086'),
     DOWN_BUTTON('\uE087'),
+    FLY_BUTTON('\uE088'),
 
     CRAFTABLE_BUTTON_ON('\uE0A0'),
     CRAFTABLE_BUTTON_OFF('\uE0A1'),
@@ -109,19 +113,11 @@ public enum CharacterIcon {
     AGENT('\uE103'),
     READING('\uE104'),
     T_OVAL('\uE105'),
+    STAR_0('\uE106'),
+    STAR_1('\uE107'),
     ;
 
-    public static final Pattern CLEAN_PATTERN;
-
-    static {
-        StringBuilder regex = new StringBuilder("[");
-
-        for (CharacterIcon icon : values()) {
-            regex.append(icon.getChar());
-        }
-
-        CLEAN_PATTERN = Pattern.compile(regex.append("]").toString());
-    }
+    public static final Pattern CLEAN_PATTERN = Pattern.compile("[\uE000-\uF8FF]");
 
     private final char character;
 

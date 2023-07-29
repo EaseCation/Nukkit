@@ -7,7 +7,6 @@ import cn.nukkit.level.format.Chunk;
 import cn.nukkit.level.format.ChunkSection;
 import cn.nukkit.utils.ChunkException;
 
-import java.io.IOException;
 import java.nio.ByteBuffer;
 import java.util.Arrays;
 
@@ -183,16 +182,6 @@ public abstract class BaseChunk extends BaseFullChunk implements Chunk {
     protected void setInternalSection(float fY, ChunkSection section) {
         this.sections[(int) fY] = section;
         setChanged();
-    }
-
-    @Override
-    public boolean load() throws IOException {
-        return this.load(true);
-    }
-
-    @Override
-    public boolean load(boolean generate) throws IOException {
-        return this.getProvider() != null && this.getProvider().getChunk(this.getX(), this.getZ(), true) != null;
     }
 
     @Override

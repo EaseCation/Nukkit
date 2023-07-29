@@ -32,7 +32,7 @@ public class PopulatorFlower extends PopulatorSurfaceBlock {
 
     @Override
     protected void placeBlock(int x, int y, int z, int id, int meta, FullChunk chunk, NukkitRandom random) {
-        if (flowerTypes.size() != 0) {
+        if (!flowerTypes.isEmpty()) {
             int[] type = flowerTypes.get(random.nextBoundedInt(flowerTypes.size()));
             chunk.setBlock(0, x, y, z, type[0], type[1]);
             if (type[0] == DOUBLE_PLANT) {

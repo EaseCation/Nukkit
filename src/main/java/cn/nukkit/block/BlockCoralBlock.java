@@ -47,7 +47,7 @@ public class BlockCoralBlock extends BlockSolidMeta {
 
     @Override
     public String getName() {
-        return isDead() ? "Dead " : "" + NAMES[getCoralColor()];
+        return (isDead() ? "Dead " : "") + NAMES[getCoralColor()];
     }
 
     @Override

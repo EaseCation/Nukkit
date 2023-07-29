@@ -308,7 +308,7 @@ public abstract class BlockPistonBase extends BlockTransparentMeta implements Fa
 
                 new BlockEntityMovingBlock(this.level.getChunk(newBlock.getChunkX(), newBlock.getChunkZ()), nbt);
 
-                if (/*(!extending || !oldPos.equalsVec(getSideVec(direction))) &&*/ this.level.getBlockIdAt(0, oldPos.getFloorX(), oldPos.getFloorY(), oldPos.getFloorZ()) != BlockID.MOVING_BLOCK) {
+                if (/*(!extending || !oldPos.equalsVec(getSideVec(direction))) &&*/ this.level.getBlock(oldPos).getId() != BlockID.MOVING_BLOCK) {
                     level.setExtraBlock(oldPos, Blocks.air(), true, false);
                     this.level.setBlock(oldPos, Block.get(BlockID.AIR), true);
                 }

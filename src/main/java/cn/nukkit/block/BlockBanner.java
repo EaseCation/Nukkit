@@ -135,7 +135,7 @@ public class BlockBanner extends BlockTransparentMeta implements Faceable {
                         .putInt("Type", type));
             }
             ListTag<CompoundTag> patterns = banner.namedTag.getList("Patterns", CompoundTag.class);
-            if (patterns.size() > 0) {
+            if (!patterns.isEmpty()) {
                 item.setNamedTag((item.hasCompoundTag() ? item.getNamedTag() : new CompoundTag())
                         .putList(patterns));
             }

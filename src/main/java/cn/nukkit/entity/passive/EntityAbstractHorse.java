@@ -97,7 +97,7 @@ public abstract class EntityAbstractHorse extends EntityAnimal implements Entity
         if (player.isSneaking()) {
             openInventory(player);
         } else {
-            if (passengers.size() >= 1) return false;
+            if (!passengers.isEmpty()) return false;
             this.mountEntity(player);
         }
         return super.onInteract(player, item);

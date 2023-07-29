@@ -218,7 +218,8 @@ public class EntityItem extends Entity {
         boolean hasUpdate = this.entityBaseTick(tickDiff);
 
         if (isInsideOfFire() && (item == null || !item.isFireResistant())) {
-            this.kill();
+            this.close();
+            return false;
         }
 
         if (this.isAlive()) {
@@ -267,8 +268,8 @@ public class EntityItem extends Entity {
                 if (ev.isCancelled()) {
                     this.age = 0;
                 } else {
-                    this.kill();
-                    hasUpdate = true;
+                    this.close();
+                    return false;
                 }
             }
         }

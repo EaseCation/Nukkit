@@ -143,7 +143,7 @@ public abstract class BlockEntity extends Position implements BlockEntityID {
                 .remove("isMovable")
                 .remove("CustomName")
                 .remove("RepairCost");
-        if (tag.getTags().size() > 0) {
+        if (!tag.isEmpty()) {
             return tag;
         } else {
             return null;

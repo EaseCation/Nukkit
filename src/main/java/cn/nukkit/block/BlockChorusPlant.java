@@ -35,11 +35,6 @@ public class BlockChorusPlant extends BlockTransparent {
     }
 
     @Override
-    public int getToolType() {
-        return ItemTool.TYPE_NONE;
-    }
-
-    @Override
     public Item[] getDrops(Item item) {
         return ThreadLocalRandom.current().nextBoolean() ? new Item[]{Item.get(ItemID.CHORUS_FRUIT, 0, 1)} : new Item[0];
     }

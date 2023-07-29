@@ -3444,7 +3444,7 @@ public class Level implements ChunkManager, Metadatable {
             this.timings.syncChunkSendPrepareTimer.startTiming();
             AsyncTask task = this.provider.requestChunkTask(x, z);
             if (task != null) {
-                this.server.getScheduler().scheduleAsyncTask(task);
+                this.server.getScheduler().scheduleAsyncTask(null, task);
             }
             this.timings.syncChunkSendPrepareTimer.stopTiming();
         }
@@ -3691,7 +3691,7 @@ public class Level implements ChunkManager, Metadatable {
 
         if (!chunk.isLightPopulated() && chunk.isPopulated()
                 && this.getServer().getConfiguration().isLightUpdates()) {
-            this.getServer().getScheduler().scheduleAsyncTask(new LightPopulationTask(this, chunk));
+            this.getServer().getScheduler().scheduleAsyncTask(null, new LightPopulationTask(this, chunk));
         }
 
         if (this.isChunkInUse(x, z)) {
@@ -3960,7 +3960,7 @@ public class Level implements ChunkManager, Metadatable {
                     }
 
                     PopulationTask task = new PopulationTask(this, chunk);
-                    this.server.getScheduler().scheduleAsyncTask(task);
+                    this.server.getScheduler().scheduleAsyncTask(null, task);
                 }
             }
             Timings.populationTimer.stopTiming();
@@ -3983,7 +3983,7 @@ public class Level implements ChunkManager, Metadatable {
         if (!this.chunkGenerationQueue.putIfAbsent(index, true)) {
             Timings.generationTimer.startTiming();
             GenerationTask task = new GenerationTask(this, this.getChunk(x, z, true));
-            this.server.getScheduler().scheduleAsyncTask(task);
+            this.server.getScheduler().scheduleAsyncTask(null, task);
             Timings.generationTimer.stopTiming();
         }
     }

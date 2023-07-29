@@ -116,9 +116,9 @@ public interface Plugin extends CommandExecutor {
      * For jar-packed Nukkit plugins, Nukkit will look for your resource file in the resources folder,
      * which is normally named 'resources' and placed in plugin jar file.</p>
      *
-     * <p>当你需要把一个文件的所有内容读取为字符串，可以使用{@link cn.nukkit.utils.Utils#readFile}函数，
+     * <p>当你需要把一个文件的所有内容读取为字符串，可以使用{@link cn.nukkit.utils.Utils#readFile(File)}函数，
      * 来从{@code InputStream}读取所有内容为字符串。例如：<br>
-     * When you need to read the whole file content as a String, you can use {@link cn.nukkit.utils.Utils#readFile}
+     * When you need to read the whole file content as a String, you can use {@link cn.nukkit.utils.Utils#readFile(File)}
      * to read from a {@code InputStream} and get whole content as a String. For example:</p>
      * <p><code>String string = Utils.readFile(this.getResource("string.txt"));</code></p>
      *

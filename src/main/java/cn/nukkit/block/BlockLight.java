@@ -48,11 +48,6 @@ public class BlockLight extends BlockTransparentMeta {
     }
 
     @Override
-    public boolean isTransparent() {
-        return true;
-    }
-
-    @Override
     public BlockColor getColor() {
         return BlockColor.AIR_BLOCK_COLOR;
     }

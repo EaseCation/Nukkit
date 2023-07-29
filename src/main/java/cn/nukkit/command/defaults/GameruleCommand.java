@@ -94,7 +94,7 @@ public class GameruleCommand extends VanillaCommand {
                 return true;
             case 1:
                 Optional<GameRule> gameRule = GameRule.parseString(args[0]);
-                if (!gameRule.isPresent() || !rules.hasRule(gameRule.get())) {
+                if (gameRule.isEmpty() || !rules.hasRule(gameRule.get())) {
                     sender.sendMessage(new TranslationContainer("commands.generic.syntax", "/gamerule", args[0]));
                     return true;
                 }
@@ -104,7 +104,7 @@ public class GameruleCommand extends VanillaCommand {
             default:
                 Optional<GameRule> optionalRule = GameRule.parseString(args[0]);
 
-                if (!optionalRule.isPresent()) {
+                if (optionalRule.isEmpty()) {
                     sender.sendMessage(new TranslationContainer("commands.generic.syntax",
                             "/gamerule ", args[0], " " + String.join(" ", Arrays.copyOfRange(args, 1, args.length))));
                     return true;

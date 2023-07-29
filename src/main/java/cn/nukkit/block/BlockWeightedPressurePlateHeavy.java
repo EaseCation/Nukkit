@@ -57,11 +57,6 @@ public class BlockWeightedPressurePlateHeavy extends BlockPressurePlateBase {
     }
 
     @Override
-    public Item toItem(boolean addUserData) {
-        return Item.get(this.getItemId());
-    }
-
-    @Override
     public BlockColor getColor() {
         return BlockColor.METAL_BLOCK_COLOR;
     }

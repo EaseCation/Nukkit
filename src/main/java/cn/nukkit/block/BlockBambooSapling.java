@@ -32,16 +32,6 @@ public class BlockBambooSapling extends BlockFlowable {
     }
 
     @Override
-    public double getHardness() {
-        return 0;
-    }
-
-    @Override
-    public double getResistance() {
-        return 0;
-    }
-
-    @Override
     public int getBurnChance() {
         return 5;
     }

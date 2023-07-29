@@ -255,7 +255,7 @@ public class RegionLoader extends BaseRegionLoader {
                 this.locationTable.put(index, new Integer[]{0, 0, 0});
                 continue;
             }
-            sectors.put(data[0], (Integer) index);
+            sectors.put(data[0].intValue(), index);
         }
 
         if (sectors.size() == (this.lastSector - 2)) {

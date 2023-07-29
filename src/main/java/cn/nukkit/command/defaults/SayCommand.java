@@ -48,7 +48,7 @@ public class SayCommand extends VanillaCommand {
         for (String arg : args) {
             msg.append(arg).append(" ");
         }
-        if (msg.length() > 0) {
+        if (!msg.isEmpty()) {
             msg = new StringBuilder(msg.substring(0, msg.length() - 1));
         }
 

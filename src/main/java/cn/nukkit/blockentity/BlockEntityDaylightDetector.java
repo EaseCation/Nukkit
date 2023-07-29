@@ -6,8 +6,6 @@ import cn.nukkit.nbt.tag.CompoundTag;
 
 public class BlockEntityDaylightDetector extends BlockEntity {
 
-    private long currentTick = 0;
-
     public BlockEntityDaylightDetector(FullChunk chunk, CompoundTag nbt) {
         super(chunk, nbt);
     }

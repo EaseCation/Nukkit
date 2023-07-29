@@ -168,11 +168,6 @@ public class BlockSweetBerryBush extends BlockFlowable {
     }
 
     @Override
-    protected AxisAlignedBB recalculateBoundingBox() {
-        return null;
-    }
-
-    @Override
     protected AxisAlignedBB recalculateCollisionBoundingBox() {
         return this;
     }

@@ -54,7 +54,7 @@ public class TellCommand extends VanillaCommand {
         for (int i = 1; i < args.length; i++) {
             msg.append(args[i]).append(" ");
         }
-        if (msg.length() > 0) {
+        if (!msg.isEmpty()) {
             msg = new StringBuilder(msg.substring(0, msg.length() - 1));
         }
 

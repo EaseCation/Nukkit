@@ -51,7 +51,7 @@ public class BlockSugarcane extends BlockFlowable {
             int count = 1;
 
             for (int i = 1; i <= 2; i++) {
-                int id = this.level.getBlockIdAt(0, this.getFloorX(), this.getFloorY() - i, this.getFloorZ());
+                int id = this.level.getBlock(this.getFloorX(), this.getFloorY() - i, this.getFloorZ()).getId();
 
                 if (id == BLOCK_REEDS) {
                     count++;

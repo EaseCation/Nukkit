@@ -247,7 +247,7 @@ public class Config {
                     break;
             }
             if (async) {
-                Server.getInstance().getScheduler().scheduleAsyncTask(new FileWriteTask(this.file, content.toString()));
+                Server.getInstance().getScheduler().scheduleAsyncTask(null, new FileWriteTask(this.file, content.toString()));
 
             } else {
                 try {

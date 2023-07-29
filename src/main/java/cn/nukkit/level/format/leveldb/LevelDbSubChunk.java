@@ -341,10 +341,6 @@ public class LevelDbSubChunk implements ChunkSection {
         try {
             this.readLock.lock();
 
-            if (this.storages.length == 0) {
-                return true;
-            }
-
             for (PalettedSubChunkStorage storage : this.storages) {
                 if (storage == null) {
                     continue;

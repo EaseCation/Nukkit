@@ -50,11 +50,6 @@ public class BlockSkull extends BlockFlowable implements Faceable {
     }
 
     @Override
-    public boolean isSolid() {
-        return false;
-    }
-
-    @Override
     public String getName() {
         /*
         int itemMeta = 0;
@@ -153,22 +148,7 @@ public class BlockSkull extends BlockFlowable implements Faceable {
     }
 
     @Override
-    public boolean breaksWhenMoved() {
-        return true;
-    }
-
-    @Override
-    public boolean sticksToPiston() {
-        return false;
-    }
-
-    @Override
     public boolean canContainWater() {
         return true;
-    }
-
-    @Override
-    public boolean canProvideSupport(BlockFace face, SupportType type) {
-        return false;
     }
 }
