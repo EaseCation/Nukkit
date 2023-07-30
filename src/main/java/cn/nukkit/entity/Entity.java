@@ -5,6 +5,7 @@ import cn.nukkit.Server;
 import cn.nukkit.block.Block;
 import cn.nukkit.block.BlockDripstonePointed;
 import cn.nukkit.block.BlockID;
+import cn.nukkit.block.BlockLiquid;
 import cn.nukkit.block.BlockWater;
 import cn.nukkit.blockentity.BlockEntityPistonArm;
 import cn.nukkit.entity.data.*;
@@ -1804,7 +1805,7 @@ public abstract class Entity extends Location implements Metadatable, EntityData
     public boolean isInsideOfWater(float heightOffset) {
         double y = this.y + heightOffset;
         Block block = this.level.getBlock(Mth.floor(this.x), Mth.floor(y), Mth.floor(this.z));
-        if (!block.isWater()) {
+        if (!block.isWater() && !block.isAir() && block.canContainWater()) {
             block = level.getExtraBlock(block);
         }
 
@@ -1814,6 +1815,19 @@ public abstract class Entity extends Location implements Metadatable, EntityData
         }
 
         return false;
+    }
+
+    public boolean isInsideOfLiquid() {
+        Block block = this.level.getBlock(this);
+        if (!block.isLiquid() && !block.isAir() && block.canContainWater()) {
+            block = level.getExtraBlock(block);
+        }
+
+        if (!block.isLiquid()) {
+            return false;
+        }
+
+        return this.y < block.y + 1 - (((BlockLiquid) block).getFluidHeightPercent() - 0.1111111);
     }
 
     public boolean isInsideOfSolid() {

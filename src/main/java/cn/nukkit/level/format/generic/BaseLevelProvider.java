@@ -50,6 +50,8 @@ public abstract class BaseLevelProvider implements LevelProvider {
 
     private final AtomicReference<BaseFullChunk> lastChunk = new AtomicReference<>();
 
+    private boolean saveChunksOnClose = true;
+
     public BaseLevelProvider(Level level, String path) throws IOException {
         this.level = level;
         this.path = path;
@@ -82,10 +84,10 @@ public abstract class BaseLevelProvider implements LevelProvider {
     }
 
     @Override
-    public void unloadChunks() {
+    public void unloadChunks(boolean save) {
         ObjectIterator<BaseFullChunk> iter = chunks.values().iterator();
         while (iter.hasNext()) {
-            iter.next().unload(true, false);
+            iter.next().unload(save, false);
             iter.remove();
         }
     }
@@ -438,7 +440,7 @@ public abstract class BaseLevelProvider implements LevelProvider {
 
     @Override
     public synchronized void close() {
-        this.unloadChunks();
+        this.unloadChunks(saveChunksOnClose);
         synchronized (regions) {
             ObjectIterator<BaseRegionLoader> iter = this.regions.values().iterator();
 
@@ -459,5 +461,10 @@ public abstract class BaseLevelProvider implements LevelProvider {
     public boolean isChunkGenerated(int chunkX, int chunkZ) {
         BaseRegionLoader region = this.getRegion(chunkX >> 5, chunkZ >> 5);
         return region != null && region.chunkExists(chunkX - region.getX() * 32, chunkZ - region.getZ() * 32) && this.getChunk(chunkX - region.getX() * 32, chunkZ - region.getZ() * 32, true).isGenerated();
+    }
+
+    @Override
+    public void setSaveChunksOnClose(boolean save) {
+        this.saveChunksOnClose = save;
     }
 }

@@ -264,8 +264,7 @@ public class EntityFishingHook extends EntityProjectile {
                 }
             }
 
-            if (nearEntity != null) {
-                onCollideWithEntity(nearEntity);
+            if (nearEntity != null && onCollideWithEntity(nearEntity)) {
                 return true;
             }
         }
@@ -468,10 +467,12 @@ public class EntityFishingHook extends EntityProjectile {
     }
 
     @Override
-    public void onCollideWithEntity(Entity entity) {
+    public boolean onCollideWithEntity(Entity entity) {
         EntityFishingRodCollideEntityEvent collideEntityEvent = new EntityFishingRodCollideEntityEvent(this, entity);
         this.server.getPluginManager().callEvent(collideEntityEvent);
-        if (collideEntityEvent.isCancelled()) return;
+        if (collideEntityEvent.isCancelled()) {
+            return true;
+        }
 
         this.server.getPluginManager().callEvent(new ProjectileHitEvent(this, MovingObjectPosition.fromEntity(entity)));
         float damage = this.getResultDamage();
@@ -496,6 +497,7 @@ public class EntityFishingHook extends EntityProjectile {
         } else {
             close();
         }
+        return true;
     }
 
     public void checkLure() {

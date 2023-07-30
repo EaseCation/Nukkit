@@ -118,10 +118,10 @@ public class EntityThrownTrident extends EntityProjectile {
     }
 
     @Override
-    public void onCollideWithEntity(Entity entity) {
+    public boolean onCollideWithEntity(Entity entity) {
         if (this.alreadyCollided) {
             this.move(this.motionX, this.motionY, this.motionZ);
-            return;
+            return true;
         }
 
         this.server.getPluginManager().callEvent(new ProjectileHitEvent(this, MovingObjectPosition.fromEntity(entity)));
@@ -163,6 +163,7 @@ public class EntityThrownTrident extends EntityProjectile {
         newTrident.shootingEntity = this.shootingEntity;
         newTrident.setItem(this.trident);
         newTrident.spawnToAll();
+        return true;
     }
 
     public int getPickupMode() {
@@ -199,5 +200,10 @@ public class EntityThrownTrident extends EntityProjectile {
             return true;
         }
         return update;
+    }
+
+    @Override
+    protected float getLiquidInertia() {
+        return 0.99f;
     }
 }

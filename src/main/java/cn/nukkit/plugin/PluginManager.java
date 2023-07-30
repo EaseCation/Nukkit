@@ -247,7 +247,7 @@ public class PluginManager {
                             if (loadedPlugins.containsKey(dependency) || this.getPlugin(dependency) != null) {
                                 deps.remove(dependency);
                             } else if (!plugins.containsKey(dependency)) {
-                                log.fatal(this.server.getLanguage().translate("nukkit.plugin.loadError", name, "%nukkit.plugin.unknownDependency"));
+                                log.fatal(this.server.getLanguage().translate("nukkit.plugin.loadError", name, "%nukkit.plugin.unknownDependency") + ": " + dependency);
                                 break;
                             }
                         }

@@ -90,6 +90,8 @@ public class LevelDB implements LevelProvider {
     protected volatile boolean closed;
     protected final Lock gcLock;
 
+    protected boolean saveChunksOnClose = true;
+
     public LevelDB(Level level, String path) {
         this.level = level;
         this.path = path;
@@ -291,11 +293,11 @@ public class LevelDB implements LevelProvider {
     }
 
     @Override
-    public void unloadChunks() {
+    public void unloadChunks(boolean save) {
         synchronized (this.chunks) {
             Iterator<LevelDbChunk> iter = this.chunks.values().iterator();
             while (iter.hasNext()) {
-                iter.next().unload(true, false);
+                iter.next().unload(save, false);
                 iter.remove();
             }
         }
@@ -1057,7 +1059,7 @@ public class LevelDB implements LevelProvider {
         try {
             gcLock.lock();
 
-            this.unloadChunks();
+            this.unloadChunks(saveChunksOnClose);
             try {
                 this.db.close();
             } catch (IOException e) {
@@ -1379,6 +1381,11 @@ public class LevelDB implements LevelProvider {
         } catch (IOException e) {
             throw new RuntimeException("iteration failed", e);
         }
+    }
+
+    @Override
+    public void setSaveChunksOnClose(boolean save) {
+        this.saveChunksOnClose = save;
     }
 
     class AutoCompactionTask extends AsyncTask<Void> {

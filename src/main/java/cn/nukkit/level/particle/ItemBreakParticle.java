@@ -9,6 +9,14 @@ import cn.nukkit.math.Vector3;
  */
 public class ItemBreakParticle extends GenericParticle {
     public ItemBreakParticle(Vector3 pos, Item item) {
-        super(pos, Particle.ICON_CRACK, (item.getId() << 16) | item.getDamage());
+        this(pos, item.getId(), item.getDamage());
+    }
+
+    public ItemBreakParticle(Vector3 pos, int itemId) {
+        this(pos, itemId, 0);
+    }
+
+    public ItemBreakParticle(Vector3 pos, int itemId, int itemMeta) {
+        super(pos, Particle.ICON_CRACK, (itemId << 16) | itemMeta);
     }
 }

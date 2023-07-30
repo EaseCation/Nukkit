@@ -9,6 +9,9 @@ import cn.nukkit.math.Vector3;
  * Nukkit Project
  */
 public class MovingObjectPosition {
+    public static final int TYPE_NONE = -1;
+    public static final int TYPE_BLOCK = 0;
+    public static final int TYPE_ENTITY = 1;
 
     /**
      * 0 = block, 1 = entity
@@ -31,9 +34,27 @@ public class MovingObjectPosition {
 
     public Entity entityHit;
 
+    public boolean isNone() {
+        return typeOfHit == TYPE_NONE;
+    }
+
+    public boolean isBlock() {
+        return typeOfHit == TYPE_BLOCK;
+    }
+
+    public boolean isEntity() {
+        return typeOfHit == TYPE_ENTITY;
+    }
+
+    public static MovingObjectPosition none() {
+        MovingObjectPosition objectPosition = new MovingObjectPosition();
+        objectPosition.typeOfHit = TYPE_NONE;
+        return objectPosition;
+    }
+
     public static MovingObjectPosition fromBlock(int x, int y, int z, int side, Vector3 hitVector) {
         MovingObjectPosition objectPosition = new MovingObjectPosition();
-        objectPosition.typeOfHit = 0;
+        objectPosition.typeOfHit = TYPE_BLOCK;
         objectPosition.blockX = x;
         objectPosition.blockY = y;
         objectPosition.blockZ = z;
@@ -44,7 +65,7 @@ public class MovingObjectPosition {
 
     public static MovingObjectPosition fromBlock(Block block, int side, Vector3 hitVector) {
         MovingObjectPosition objectPosition = new MovingObjectPosition();
-        objectPosition.typeOfHit = 0;
+        objectPosition.typeOfHit = TYPE_ENTITY;
         objectPosition.block = block;
         objectPosition.blockX = block.getFloorX();
         objectPosition.blockY = block.getFloorY();
@@ -56,7 +77,7 @@ public class MovingObjectPosition {
 
     public static MovingObjectPosition fromEntity(Entity entity) {
         MovingObjectPosition objectPosition = new MovingObjectPosition();
-        objectPosition.typeOfHit = 1;
+        objectPosition.typeOfHit = TYPE_ENTITY;
         objectPosition.entityHit = entity;
         objectPosition.hitVector = new Vector3(entity.x, entity.y, entity.z);
         return objectPosition;

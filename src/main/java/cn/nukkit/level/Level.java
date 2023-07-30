@@ -871,6 +871,10 @@ public class Level implements ChunkManager, Metadatable {
         this.autoSave = autoSave;
     }
 
+    public void setSaveChunksOnUnload(boolean save) {
+        provider.setSaveChunksOnClose(save);
+    }
+
     public boolean unload() {
         return this.unload(false);
     }

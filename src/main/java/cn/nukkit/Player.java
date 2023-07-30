@@ -6164,4 +6164,10 @@ public class Player extends EntityHuman implements CommandSender, InventoryHolde
      */
     protected void sendDeathInfo(TextContainer message) {
     }
+
+    /**
+     * @since 1.16.100
+     */
+    public void sendMotionPredictionHints(long entityRuntimeId, Vector3f motion, boolean onGround) {
+    }
 }

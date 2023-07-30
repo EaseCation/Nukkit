@@ -1,6 +1,7 @@
 package cn.nukkit.entity.projectile;
 
 import cn.nukkit.Player;
+import cn.nukkit.Server;
 import cn.nukkit.entity.Entity;
 import cn.nukkit.entity.EntityID;
 import cn.nukkit.entity.EntitySmite;
@@ -9,9 +10,11 @@ import cn.nukkit.event.entity.EntityDamageEvent;
 import cn.nukkit.event.entity.EntityDamageEvent.DamageCause;
 import cn.nukkit.event.entity.EntityRegainHealthEvent;
 import cn.nukkit.item.Item;
+import cn.nukkit.level.MovingObjectPosition;
 import cn.nukkit.level.format.FullChunk;
 import cn.nukkit.nbt.tag.CompoundTag;
 import cn.nukkit.nbt.tag.ListTag;
+import cn.nukkit.network.protocol.EntityEventPacket;
 import cn.nukkit.network.protocol.LevelSoundEventPacket;
 import cn.nukkit.potion.Effect;
 import it.unimi.dsi.fastutil.ints.Int2ObjectMap;
@@ -30,6 +33,7 @@ public class EntityArrow extends EntityProjectile {
     private int auxValue;
 
     protected int pickupMode;
+
     protected boolean playedHitSound = false;
 
     @Override
@@ -138,10 +142,6 @@ public class EntityArrow extends EntityProjectile {
         if (this.onGround || this.hadCollision) {
             this.setCritical(false);
             if (!this.playedHitSound) {
-                /*EntityEventPacket pk = new EntityEventPacket();
-                pk.eid = this.getId();
-                pk.event = EntityEventPacket.ARROW_SHAKE;
-                Server.broadcastPacket(this.getViewers().values(), pk);*/
                 this.getLevel().addLevelSoundEvent(this, LevelSoundEventPacket.SOUND_BOW_HIT);
                 this.playedHitSound = true;
             }
@@ -155,6 +155,17 @@ public class EntityArrow extends EntityProjectile {
         this.timing.stopTiming();
 
         return hasUpdate;
+    }
+
+    @Override
+    protected void onHitBlock(MovingObjectPosition blockHitResult) {
+        super.onHitBlock(blockHitResult);
+
+        EntityEventPacket pk = new EntityEventPacket();
+        pk.eid = this.getId();
+        pk.event = EntityEventPacket.ARROW_SHAKE;
+        pk.data = 7;
+        Server.broadcastPacket(this.getViewers().values(), pk);
     }
 
     @Override

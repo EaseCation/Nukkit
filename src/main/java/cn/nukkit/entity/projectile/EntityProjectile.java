@@ -5,9 +5,9 @@ import cn.nukkit.block.Block;
 import cn.nukkit.entity.Entity;
 import cn.nukkit.entity.EntityLiving;
 import cn.nukkit.entity.data.LongEntityData;
-import cn.nukkit.entity.item.EntityBoat;
 import cn.nukkit.entity.item.EntityEndCrystal;
-import cn.nukkit.entity.item.EntityMinecartAbstract;
+import cn.nukkit.entity.item.EntityPainting;
+import cn.nukkit.entity.item.EntityVehicle;
 import cn.nukkit.event.entity.*;
 import cn.nukkit.event.entity.EntityDamageEvent.DamageCause;
 import cn.nukkit.level.MovingObjectPosition;
@@ -57,8 +57,9 @@ public abstract class EntityProjectile extends Entity {
     protected BlockVector3 stuckToBlockPos;
 
     protected int entityHitCount;
+    protected int piercedCount;
     @Nullable
-    protected LongSet piercingIgnoreEntityIds;
+    protected LongSet ignoreEntityIds;
 
     public EntityProjectile(FullChunk chunk, CompoundTag nbt) {
         this(chunk, nbt, null);
@@ -76,26 +77,30 @@ public abstract class EntityProjectile extends Entity {
         return Mth.ceil(Math.sqrt(this.motionX * this.motionX + this.motionY * this.motionY + this.motionZ * this.motionZ) * getDamage());
     }
 
+    @Override
     public boolean attack(EntityDamageEvent source) {
         return source.getCause() == DamageCause.VOID && super.attack(source);
     }
 
-    public void onCollideWithEntity(Entity entity) {
+    public boolean onCollideWithEntity(Entity entity) {
+        if (ignoreEntityIds == null) {
+            ignoreEntityIds = new LongOpenHashSet(5);
+        }
+        ignoreEntityIds.add(entity.getId());
+
         int entityHitCount = this.entityHitCount;
         boolean piercing = entityHitCount > 1;
         if (piercing) {
-            if (piercingIgnoreEntityIds == null) {
-                piercingIgnoreEntityIds = new LongOpenHashSet(5);
-            }
-            if (piercingIgnoreEntityIds.size() < entityHitCount) {
-                piercingIgnoreEntityIds.add(entity.getId());
+            if (piercedCount < entityHitCount) {
+                piercedCount++;
             } else {
                 close();
-                return;
+                return true;
             }
         }
 
-        this.server.getPluginManager().callEvent(new ProjectileHitEvent(this, MovingObjectPosition.fromEntity(entity)));
+        MovingObjectPosition entityHitResult = MovingObjectPosition.fromEntity(entity);
+        this.server.getPluginManager().callEvent(new ProjectileHitEvent(this, entityHitResult));
         float damage = this.getResultDamage();
         if (piercing && entity.isBlocking()) {
             damage *= (entityHitCount - 1) / 4f;
@@ -123,8 +128,8 @@ public abstract class EntityProjectile extends Entity {
                 }
             }
 
-            if (piercing && piercingIgnoreEntityIds.size() < entityHitCount) {
-                return;
+            if (piercing && piercedCount < entityHitCount) {
+                return false;
             }
         } else if (shouldBounce()) {
             motionX *= -0.1;
@@ -133,15 +138,25 @@ public abstract class EntityProjectile extends Entity {
             yaw = (yaw + 180) % 360;
 
             hadCollision = false;
-            return;
+            return false;
         }
 
+        onHit(entityHitResult);
         if (closeOnCollide) {
             this.close();
         }
+        return true;
     }
 
     protected void postHurt(Entity entity) {
+    }
+
+    protected void onHitBlock(MovingObjectPosition blockHitResult) {
+        this.server.getPluginManager().callEvent(new ProjectileHitEvent(this, blockHitResult));
+        onHit(blockHitResult);
+    }
+
+    protected void onHit(MovingObjectPosition hitResult) {
     }
 
     @Override
@@ -181,15 +196,22 @@ public abstract class EntityProjectile extends Entity {
 
     @Override
     public boolean canCollideWith(Entity entity) {
-        if (this.onGround) return false;
-        if (piercingIgnoreEntityIds != null && piercingIgnoreEntityIds.contains(entity.getId())) {
+        if (this.onGround) {
             return false;
         }
-        if (entity instanceof EntityLiving) {
-            if (entity instanceof Player) {
-                return !((Player) entity).isSpectator() && !entity.getDataFlag(DATA_FLAG_INVISIBLE);
-            } else return true;
-        } else return entity instanceof EntityEndCrystal || entity instanceof EntityMinecartAbstract || entity instanceof EntityBoat;
+
+        if (ignoreEntityIds != null && ignoreEntityIds.contains(entity.getId())) {
+            return false;
+        }
+
+        if (entity instanceof Player) {
+            return !((Player) entity).isSpectator() && !entity.getDataFlag(DATA_FLAG_INVISIBLE);
+        }
+
+        return entity instanceof EntityLiving
+                || entity instanceof EntityPainting
+                || entity instanceof EntityEndCrystal
+                || entity instanceof EntityVehicle;
     }
 
     @Override
@@ -226,12 +248,15 @@ public abstract class EntityProjectile extends Entity {
         boolean hasUpdate = this.entityBaseTick(tickDiff);
 
         if (this.isAlive()) {
-            MovingObjectPosition movingObjectPosition = null;
-
             if (!this.isCollided) {
                 this.motionY -= this.getGravity();
-                this.motionX *= 1 - this.getDrag();
-                this.motionZ *= 1 - this.getDrag();
+                boolean liquid = isInsideOfLiquid();
+                float inertia = liquid ? getLiquidInertia() : 1 - getDrag();
+                this.motionX *= inertia;
+                this.motionZ *= inertia;
+                if (liquid) {
+                    this.motionY *= inertia;
+                }
             }
 
             Vector3 moveVector = new Vector3(this.x + this.motionX, this.y + this.motionY, this.z + this.motionZ);
@@ -300,15 +325,8 @@ public abstract class EntityProjectile extends Entity {
                 }
             }
 
-            if (nearEntity != null) {
-                movingObjectPosition = MovingObjectPosition.fromEntity(nearEntity);
-            }
-
-            if (movingObjectPosition != null) {
-                if (movingObjectPosition.entityHit != null) {
-                    onCollideWithEntity(movingObjectPosition.entityHit);
-                    return true;
-                }
+            if (nearEntity != null && onCollideWithEntity(nearEntity)) {
+                return true;
             }
 
             this.move(this.motionX, this.motionY, this.motionZ);
@@ -322,12 +340,13 @@ public abstract class EntityProjectile extends Entity {
 
                 this.addMovement(this.x, this.y + this.getBaseOffset(), this.z, this.yaw, this.pitch, this.yaw);
 
-                if (this.piercingIgnoreEntityIds != null) {
-                    this.piercingIgnoreEntityIds.clear();
+                piercedCount = 0;
+                if (this.ignoreEntityIds != null) {
+                    this.ignoreEntityIds.clear();
                 }
 
                 if (blockHitResult != null) {
-                    this.server.getPluginManager().callEvent(new ProjectileHitEvent(this, blockHitResult));
+                    onHitBlock(blockHitResult);
                 }
                 return false;
             } else if (!this.isCollided && this.hadCollision) {
@@ -404,6 +423,10 @@ public abstract class EntityProjectile extends Entity {
 
     protected boolean shouldBounce() {
         return false;
+    }
+
+    protected float getLiquidInertia() {
+        return 0.6f;
     }
 
     public int getEntityHitCount() {

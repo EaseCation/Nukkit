@@ -44,7 +44,11 @@ public interface LevelProvider {
 
     void saveChunk(int X, int Z, FullChunk chunk);
 
-    void unloadChunks();
+    default void unloadChunks() {
+        unloadChunks(true);
+    }
+
+    void unloadChunks(boolean save);
 
     boolean loadChunk(int X, int Z);
 
@@ -123,4 +127,6 @@ public interface LevelProvider {
     void forEachChunks(Function<FullChunk, Boolean> action);
 
     void forEachChunks(Function<FullChunk, Boolean> action, boolean skipCorrupted);
+
+    void setSaveChunksOnClose(boolean save);
 }

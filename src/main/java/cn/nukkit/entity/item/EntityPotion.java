@@ -103,8 +103,9 @@ public class EntityPotion extends EntityProjectile {
     }
 
     @Override
-    public void onCollideWithEntity(Entity entity) {
+    public boolean onCollideWithEntity(Entity entity) {
         this.splash(entity);
+        return true;
     }
 
     private void splash(Entity collidedWith) {

@@ -85,11 +85,11 @@ public class EntityEnderPearl extends EntityProjectile {
     }
 
     @Override
-    public void onCollideWithEntity(Entity entity) {
+    public boolean onCollideWithEntity(Entity entity) {
         if (this.shootingEntity instanceof Player) {
             teleport();
         }
-        super.onCollideWithEntity(entity);
+        return super.onCollideWithEntity(entity);
     }
 
     private void teleport() {

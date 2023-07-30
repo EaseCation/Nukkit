@@ -3,7 +3,10 @@ package cn.nukkit.entity.projectile;
 import cn.nukkit.Player;
 import cn.nukkit.entity.Entity;
 import cn.nukkit.entity.EntityID;
+import cn.nukkit.level.MovingObjectPosition;
 import cn.nukkit.level.format.FullChunk;
+import cn.nukkit.level.particle.GenericParticle;
+import cn.nukkit.level.particle.Particle;
 import cn.nukkit.nbt.tag.CompoundTag;
 
 /**
@@ -80,5 +83,14 @@ public class EntitySnowball extends EntityProjectile {
         player.dataPacket(createAddEntityPacket());
 
         super.spawnTo(player);
+    }
+
+    @Override
+    protected void onHit(MovingObjectPosition hitResult) {
+        super.onHit(hitResult);
+
+        for (int i = 0; i < 6; i++) {
+            level.addParticle(new GenericParticle(this, Particle.SNOWBALL_POOF));
+        }
     }
 }
