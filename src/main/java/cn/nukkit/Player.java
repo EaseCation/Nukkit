@@ -154,7 +154,7 @@ public class Player extends EntityHuman implements CommandSender, InventoryHolde
      */
     public static final int TELEPORT_TEMP_Y = Short.MAX_VALUE;
 
-    public static final int VIOLATION_THRESHOLD = 70;
+    public static final int VIOLATION_THRESHOLD = 150;
     public static final int VIOLATION_KICK_THRESHOLD = 100;
 
     protected final SourceInterface interfaz;
