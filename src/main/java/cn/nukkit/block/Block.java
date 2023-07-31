@@ -1274,6 +1274,10 @@ public abstract class Block extends Position implements Metadatable, Cloneable, 
         return false;
     }
 
+    public boolean isGlass() {
+        return false;
+    }
+
     public boolean isWaxed() {
         return false;
     }

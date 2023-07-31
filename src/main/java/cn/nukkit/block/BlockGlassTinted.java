@@ -30,4 +30,9 @@ public class BlockGlassTinted extends BlockTransparent {
     public BlockColor getColor() {
         return BlockColor.GRAY_BLOCK_COLOR;
     }
+
+    @Override
+    public boolean isGlass() {
+        return true;
+    }
 }

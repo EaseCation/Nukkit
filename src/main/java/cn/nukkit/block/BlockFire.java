@@ -278,7 +278,7 @@ public class BlockFire extends BlockFlowable {
 
     protected boolean isValidBase(Block below) {
         int id = below.getId();
-        return id != ICE && id != FROSTED_ICE && id != SNOW_LAYER && (id == MOB_SPAWNER
+        return id != ICE && id != FROSTED_ICE && id != SNOW_LAYER && !below.isGlass() && (id == MOB_SPAWNER
                 || below.getBurnChance() > 0 || SupportType.hasFullSupport(below, BlockFace.UP));
     }
 
