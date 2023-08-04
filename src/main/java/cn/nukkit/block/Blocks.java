@@ -791,6 +791,10 @@ public final class Blocks {
         return AIR.clone();
     }
 
+    public static Block airUnsafe() {
+        return AIR;
+    }
+
     private Blocks() {
         throw new IllegalStateException();
     }

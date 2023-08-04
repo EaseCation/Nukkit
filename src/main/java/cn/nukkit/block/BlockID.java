@@ -455,6 +455,7 @@ public interface BlockID {
     int CARVED_PUMPKIN = 410;
     int SEA_PICKLE = 411;
     int CONDUIT = 412;
+    int BLOCK_AIR = 413;
     int TURTLE_EGG = 414;
     int BUBBLE_COLUMN = 415;
     int BARRIER = 416;

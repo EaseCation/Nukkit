@@ -2,6 +2,7 @@ package cn.nukkit.inventory;
 
 import cn.nukkit.Player;
 import cn.nukkit.item.Item;
+import it.unimi.dsi.fastutil.ints.Int2ObjectMap;
 
 import java.util.Collection;
 import java.util.Map;
@@ -40,6 +41,8 @@ public interface Inventory {
     Item[] removeItem(Item... slots);
 
     Map<Integer, Item> getContents();
+
+    Int2ObjectMap<Item> getContentsUnsafe();
 
     void setContents(Map<Integer, Item> items);
 

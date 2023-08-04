@@ -68,9 +68,9 @@ public class ItemFirework extends Item {
 
     @Override
     public boolean onActivate(Level level, Player player, Block block, Block target, BlockFace face, double fx, double fy, double fz) {
-        if (player.isAdventure()) {
-            return false;
-        }
+//        if (player.isAdventure()) {
+//            return false;
+//        }
 
         if (block.canPassThrough() || block.canBeFlowedInto()) {
             this.spawnFirework(level, block.blockCenter());

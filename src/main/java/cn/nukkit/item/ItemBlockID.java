@@ -457,6 +457,7 @@ public interface ItemBlockID {
     int CARVED_PUMPKIN = 0xff - BlockID.CARVED_PUMPKIN;
     int SEA_PICKLE = 0xff - BlockID.SEA_PICKLE;
     int CONDUIT = 0xff - BlockID.CONDUIT;
+    int BLOCK_AIR = 0xff - BlockID.BLOCK_AIR;
     int TURTLE_EGG = 0xff - BlockID.TURTLE_EGG;
     int BUBBLE_COLUMN = 0xff - BlockID.BUBBLE_COLUMN;
     int BARRIER = 0xff - BlockID.BARRIER;

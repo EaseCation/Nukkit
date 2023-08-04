@@ -868,6 +868,10 @@ public class Level implements ChunkManager, Metadatable {
 
     public void setSaveChunksOnUnload(boolean save) {
         provider.setSaveChunksOnClose(save);
+
+        if (!save) {
+            setAutoSave(false);
+        }
     }
 
     public boolean unload() {
@@ -2534,20 +2538,24 @@ public class Level implements ChunkManager, Metadatable {
 
         if (player != null) {
             if (player.getGamemode() == Player.ADVENTURE) {
-                Tag tag = item.getNamedTagEntry("CanDestroy");
-                boolean canBreak = false;
-                if (tag instanceof ListTag) {
-                    for (Tag v : ((ListTag<Tag>) tag).getAll()) {
-                        if (v instanceof StringTag) {
-                            Item entry = Item.fromString(((StringTag) v).data);
-                            if (entry.getId() > 0 && entry.getBlockUnsafe() != null && entry.getBlockUnsafe().getId() == target.getId()) {
-                                canBreak = true;
-                                break;
-                            }
+                Set<String> canDestroy = item.getCanDestroyBlocks();
+                if (canDestroy != null && !canDestroy.isEmpty()) {
+                    boolean canBreak = false;
+                    for (String blockName : canDestroy) {
+                        Block canDestroyBlock = Block.fromIdentifier(blockName);
+                        if (canDestroyBlock == null) {
+                            continue;
                         }
+                        if (canDestroyBlock.getId() != target.getId()) {
+                            continue;
+                        }
+                        canBreak = true;
+                        break;
                     }
-                }
-                if (!canBreak) {
+                    if (!canBreak) {
+                        return null;
+                    }
+                } else {
                     return null;
                 }
             }
@@ -2784,22 +2792,25 @@ public class Level implements ChunkManager, Metadatable {
 
         if (player != null) {
             if (player.isAdventure()) {
-                Tag tag = item.getNamedTagEntry("CanPlaceOn");
-                if (tag instanceof ListTag) {
+                Set<String> canPlaceOn = item.getCanPlaceOnBlocks();
+                if (canPlaceOn != null && !canPlaceOn.isEmpty()) {
                     boolean canPlace = false;
-                    for (Tag v : ((ListTag<Tag>) tag).getAll()) {
-                        if (v instanceof StringTag) {
-                            Item entry = Item.fromString(((StringTag) v).data);
-                            if (entry.getId() > 0 && entry.getBlockUnsafe() != null && entry.getBlockUnsafe().getId() == target.getId()) {
-                                canPlace = true;
-                                break;
-                            }
+                    for (String blockName : canPlaceOn) {
+                        Block canPlaceOnBlock = Block.fromIdentifier(blockName);
+                        if (canPlaceOnBlock == null) {
+                            continue;
                         }
+                        if (canPlaceOnBlock.getId() != target.getId()) {
+                            continue;
+                        }
+                        canPlace = true;
+                        break;
                     }
-
                     if (!canPlace) {
                         return null;
                     }
+                } else {
+                    return null;
                 }
             }
 

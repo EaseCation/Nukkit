@@ -202,7 +202,7 @@ public class BlockEntityPistonArm extends BlockEntitySpawnable {
                         BlockEntity.createBlockEntity(movedBlockEntity.getString("id"), this.level.getChunk(movingBlock.getChunkX(), movingBlock.getChunkZ()), movedBlockEntity);
                     }
 
-                    this.level.setExtraBlock(movingBlock, movedExtra, true, false);
+                    this.level.setExtraBlock(movingBlock, movedExtra != null ? movedExtra : Blocks.air(), true, false);
                     this.level.setBlock(movingBlock, moved, true);
                 }
             }

@@ -1,6 +1,12 @@
 package cn.nukkit.nbt;
 
+import cn.nukkit.block.Block;
+import cn.nukkit.block.BlockSerializer;
+import cn.nukkit.block.BlockUpgrader;
 import cn.nukkit.item.Item;
+import cn.nukkit.item.ItemSerializer;
+import cn.nukkit.item.ItemUpgrader;
+import cn.nukkit.item.Items;
 import cn.nukkit.nbt.stream.FastByteArrayOutputStream;
 import cn.nukkit.nbt.stream.NBTInputStream;
 import cn.nukkit.nbt.stream.NBTOutputStream;
@@ -18,20 +24,50 @@ import java.util.zip.Deflater;
 import java.util.zip.DeflaterOutputStream;
 import java.util.zip.GZIPInputStream;
 
+import static cn.nukkit.SharedConstants.*;
+
 /**
  * A Named Binary Tag library for Nukkit Project
  */
 public class NBTIO {
 
     public static CompoundTag putItemHelper(Item item) {
+        if (ENABLE_ITEM_NAME_PERSISTENCE) {
+            return ItemSerializer.serializeItem(item);
+        }
+
         return putItemHelper(item, null);
     }
 
+    public static CompoundTag putItemHelper(Item item, int slot) {
+        if (ENABLE_ITEM_NAME_PERSISTENCE) {
+            return ItemSerializer.serializeItemStack(item, slot);
+        }
+
+        CompoundTag tag = new CompoundTag()
+                .putShort("id", item.getId())
+                .putShort("Damage", item.getDamage())
+                .putByte("Count", item.getCount());
+
+        tag.putByte("Slot", slot);
+
+        if (item.hasCompoundTag()) {
+            tag.putCompound("tag", item.getNamedTag());
+        }
+
+        return tag;
+    }
+
     public static CompoundTag putItemHelper(Item item, Integer slot) {
+        if (ENABLE_ITEM_NAME_PERSISTENCE) {
+            return slot == null ? ItemSerializer.serializeItem(item) : ItemSerializer.serializeItemStack(item, slot);
+        }
+
         CompoundTag tag = new CompoundTag()
                 .putShort("id", item.getId())
                 .putByte("Count", item.getCount())
                 .putShort("Damage", item.getDamage());
+
         if (slot != null) {
             tag.putByte("Slot", slot);
         }
@@ -44,15 +80,23 @@ public class NBTIO {
     }
 
     public static Item getItemHelper(CompoundTag tag) {
+        if (ENABLE_ITEM_NAME_PERSISTENCE) {
+            ItemUpgrader.upgrade(tag);
+            return ItemSerializer.deserialize(tag);
+        }
+
         if (!tag.contains("id") || !tag.contains("Count")) {
-            return Item.get(0);
+            return Items.air();
         }
 
         Item item;
         try {
             item = Item.get(tag.getShort("id"), !tag.contains("Damage") ? 0 : tag.getShort("Damage"), tag.getByte("Count"));
         } catch (Exception e) {
-            item = Item.fromString(tag.getString("id"));
+            item = Item.fromIdentifier(tag.getString("id"));
+            if (item == null) {
+                return Items.air();
+            }
             item.setDamage(!tag.contains("Damage") ? 0 : tag.getShort("Damage"));
             item.setCount(tag.getByte("Count"));
         }
@@ -63,6 +107,19 @@ public class NBTIO {
         }
 
         return item;
+    }
+
+    public static CompoundTag putBlockHelper(Block block) {
+        return BlockSerializer.serialize(block);
+    }
+
+    public static CompoundTag putBlockHelper(int blockFullId) {
+        return BlockSerializer.serializeRuntime(blockFullId);
+    }
+
+    public static Block getBlockHelper(CompoundTag tag) {
+        BlockUpgrader.upgrade(tag);
+        return BlockSerializer.deserialize(tag);
     }
 
     public static CompoundTag read(File file) throws IOException {

@@ -2,6 +2,8 @@ package cn.nukkit.item;
 
 import cn.nukkit.Player;
 import cn.nukkit.block.Block;
+import cn.nukkit.entity.Entity;
+import cn.nukkit.entity.EntityFactory;
 import cn.nukkit.entity.item.EntityBoat;
 import cn.nukkit.level.Level;
 import cn.nukkit.math.AxisAlignedBB;
@@ -15,7 +17,7 @@ import cn.nukkit.nbt.tag.ListTag;
  * Created by yescallop on 2016/2/13.
  */
 public class ItemBoat extends Item {
-    public static final int OAK_BOAT = 1;
+    public static final int OAK_BOAT = 0;
     public static final int SPRUCE_BOAT = 1;
     public static final int BIRCH_BOAT = 2;
     public static final int JUNGLE_BOAT = 3;
@@ -36,6 +38,10 @@ public class ItemBoat extends Item {
 
     public ItemBoat(Integer meta, int count) {
         super(BOAT, meta, 1, "Boat");
+    }
+
+    protected ItemBoat(int id, Integer meta, int count, String name) {
+        super(id, meta, count, name);
     }
 
     @Override
@@ -61,7 +67,7 @@ public class ItemBoat extends Item {
             }
         }
 
-        EntityBoat boat = new EntityBoat(
+        Entity boat = getEntityFactory().create(
                 level.getChunk(block.getFloorX() >> 4, block.getFloorZ() >> 4), new CompoundTag("")
                 .putList(new ListTag<DoubleTag>("Pos")
                         .add(new DoubleTag("", block.getX() + 0.5))
@@ -90,5 +96,9 @@ public class ItemBoat extends Item {
     @Override
     public int getMaxStackSize() {
         return 1;
+    }
+
+    protected EntityFactory getEntityFactory() {
+        return EntityBoat::new;
     }
 }

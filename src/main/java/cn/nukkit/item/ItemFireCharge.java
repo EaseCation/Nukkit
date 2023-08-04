@@ -31,9 +31,9 @@ public class ItemFireCharge extends Item {
 
     @Override
     public boolean onActivate(Level level, Player player, Block block, Block target, BlockFace face, double fx, double fy, double fz) {
-        if (player.isAdventure()) {
-            return false;
-        }
+//        if (player.isAdventure()) {
+//            return false;
+//        }
 
         if (block.getId() == AIR) {
             if (!BlockFire.tryIgnite(block, null, player, BlockIgniteCause.FLINT_AND_STEEL)) {

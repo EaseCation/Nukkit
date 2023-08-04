@@ -141,6 +141,7 @@ public abstract class Food {
             return super.onEatenBy(player);
         }
     }.addRelative(Item.HONEY_BOTTLE), V1_14_0);
+    public static final Food glow_berries = registerDefaultFood(new FoodNormal(2, 0.3f).addRelative(Item.GLOW_BERRIES), V1_17_0);
 
     //Opened API for plugins
     public static Food registerFood(Food food, Plugin plugin) {

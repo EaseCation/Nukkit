@@ -32,9 +32,9 @@ public class ItemFlintSteel extends ItemTool {
 
     @Override
     public boolean onActivate(Level level, Player player, Block block, Block target, BlockFace face, double fx, double fy, double fz) {
-        if (player.isAdventure()) {
-            return false;
-        }
+//        if (player.isAdventure()) {
+//            return false;
+//        }
 
         if (block.getId() == AIR) {
             if (!player.isCreative()) {

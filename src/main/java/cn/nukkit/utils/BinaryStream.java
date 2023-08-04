@@ -25,6 +25,7 @@ import cn.nukkit.network.protocol.types.EntityLink;
 import cn.nukkit.network.protocol.types.InputInteractionModel;
 import it.unimi.dsi.fastutil.io.FastByteArrayInputStream;
 import it.unimi.dsi.fastutil.objects.ObjectArrayList;
+import it.unimi.dsi.fastutil.objects.ObjectOpenHashSet;
 
 import javax.annotation.Nullable;
 import java.io.IOException;
@@ -527,30 +528,29 @@ public class BinaryStream {
             throw new RuntimeException("Invalid item meta received: " + data);
         }
 
-        ListTag<StringTag> canPlace;
-        ListTag<StringTag> canBreak;
-
+        Set<String> canPlace;
         int canPlaceCount = this.getVarInt();
         if (canPlaceCount > 0) {
             if (canPlaceCount > 4096) {
                 throw new IndexOutOfBoundsException("Too many CanPlaceOn blocks");
             }
-            canPlace = new ListTag<>("CanPlaceOn");
+            canPlace = new ObjectOpenHashSet<>();
             for (int i = 0; i < canPlaceCount; i++) {
-                canPlace.add(new StringTag("", this.getString()));
+                canPlace.add(this.getString());
             }
         } else {
             canPlace = null;
         }
 
+        Set<String> canBreak;
         int canBreakCount = this.getVarInt();
         if (canBreakCount > 0) {
             if (canBreakCount > 4096) {
                 throw new IndexOutOfBoundsException("Too many CanDestroy blocks");
             }
-            canBreak = new ListTag<>("CanDestroy");
+            canBreak = new ObjectOpenHashSet<>();
             for (int i = 0; i < canBreakCount; i++) {
-                canBreak.add(new StringTag("", this.getString()));
+                canBreak.add(this.getString());
             }
         } else {
             canBreak = null;
@@ -560,20 +560,12 @@ public class BinaryStream {
                 id, data, cnt, nbt
         );
 
-        if (canPlace != null || canBreak != null) {
-            CompoundTag namedTag = item.getNamedTag();
-            if (namedTag == null) {
-                namedTag = new CompoundTag();
-            }
+        if (canPlace != null && !canPlace.isEmpty()) {
+            item.setCanPlaceOnBlocks(canPlace);
+        }
 
-            if (canPlace != null) {
-                namedTag.putList(canPlace);
-            }
-            if (canBreak != null) {
-                namedTag.putList(canBreak);
-            }
-
-            item.setNamedTag(namedTag);
+        if (canBreak != null && !canBreak.isEmpty()) {
+            item.setCanDestroyBlocks(canBreak);
         }
 
         if (item.getId() == ItemID.SHIELD) { // TODO: Shields
@@ -631,15 +623,24 @@ public class BinaryStream {
             this.putLShort(0);
         }
 
-        List<String> canPlaceOn = extractStringList(item, "CanPlaceOn");
-        List<String> canDestroy = extractStringList(item, "CanDestroy");
-        this.putVarInt(canPlaceOn.size());
-        for (String block : canPlaceOn) {
-            this.putString(block);
+        Set<String> canPlaceOn = item.getCanPlaceOnBlocks();
+        if (canPlaceOn != null) {
+            this.putVarInt(canPlaceOn.size());
+            for (String block : canPlaceOn) {
+                this.putString(block);
+            }
+        } else {
+            this.putVarInt(0);
         }
-        this.putVarInt(canDestroy.size());
-        for (String block : canDestroy) {
-            this.putString(block);
+
+        Set<String> canDestroy = item.getCanDestroyBlocks();
+        if (canDestroy != null) {
+            this.putVarInt(canDestroy.size());
+            for (String block : canDestroy) {
+                this.putString(block);
+            }
+        } else {
+            this.putVarInt(0);
         }
 
         if (item.getId() == ItemID.SHIELD) { // TODO: Shields
@@ -674,30 +675,29 @@ public class BinaryStream {
             nbt = this.get(nbtLen);
         }
 
-        ListTag<StringTag> canPlace;
-        ListTag<StringTag> canBreak;
-
+        Set<String> canPlace;
         int canPlaceCount = this.getVarInt();
         if (canPlaceCount > 0) {
             if (canPlaceCount > 4096) {
                 throw new IndexOutOfBoundsException("Too many CanPlaceOn blocks");
             }
-            canPlace = new ListTag<>("CanPlaceOn");
+            canPlace = new ObjectOpenHashSet<>();
             for (int i = 0; i < canPlaceCount; i++) {
-                canPlace.add(new StringTag("", this.getString()));
+                canPlace.add(this.getString());
             }
         } else {
             canPlace = null;
         }
 
+        Set<String> canBreak;
         int canBreakCount = this.getVarInt();
         if (canBreakCount > 0) {
             if (canBreakCount > 4096) {
                 throw new IndexOutOfBoundsException("Too many CanDestroy blocks");
             }
-            canBreak = new ListTag<>("CanDestroy");
+            canBreak = new ObjectOpenHashSet<>();
             for (int i = 0; i < canBreakCount; i++) {
-                canBreak.add(new StringTag("", this.getString()));
+                canBreak.add(this.getString());
             }
         } else {
             canBreak = null;
@@ -707,20 +707,12 @@ public class BinaryStream {
                 id, data, cnt, nbt
         );
 
-        if (canPlace != null || canBreak != null) {
-            CompoundTag namedTag = item.getNamedTag();
-            if (namedTag == null) {
-                namedTag = new CompoundTag();
-            }
+        if (canPlace != null && !canPlace.isEmpty()) {
+            item.setCanPlaceOnBlocks(canPlace);
+        }
 
-            if (canPlace != null) {
-                namedTag.putList(canPlace);
-            }
-            if (canBreak != null) {
-                namedTag.putList(canBreak);
-            }
-
-            item.setNamedTag(namedTag);
+        if (canBreak != null && !canBreak.isEmpty()) {
+            item.setCanDestroyBlocks(canBreak);
         }
 
         return item;
@@ -744,15 +736,24 @@ public class BinaryStream {
         this.putLShort(nbt.length);
         this.put(nbt);
 
-        List<String> canPlaceOn = extractStringList(item, "CanPlaceOn");
-        List<String> canDestroy = extractStringList(item, "CanDestroy");
-        this.putVarInt(canPlaceOn.size());
-        for (String block : canPlaceOn) {
-            this.putString(block);
+        Set<String> canPlaceOn = item.getCanPlaceOnBlocks();
+        if (canPlaceOn != null) {
+            this.putVarInt(canPlaceOn.size());
+            for (String block : canPlaceOn) {
+                this.putString(block);
+            }
+        } else {
+            this.putVarInt(0);
         }
-        this.putVarInt(canDestroy.size());
-        for (String block : canDestroy) {
-            this.putString(block);
+
+        Set<String> canDestroy = item.getCanDestroyBlocks();
+        if (canDestroy != null) {
+            this.putVarInt(canDestroy.size());
+            for (String block : canDestroy) {
+                this.putString(block);
+            }
+        } else {
+            this.putVarInt(0);
         }
     }
 

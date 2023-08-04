@@ -121,6 +121,11 @@ public abstract class BaseInventory implements Inventory {
     }
 
     @Override
+    public Int2ObjectMap<Item> getContentsUnsafe() {
+        return this.slots;
+    }
+
+    @Override
     public void setContents(Map<Integer, Item> items) {
         if (items.isEmpty()) {
 //            this.clearAll();

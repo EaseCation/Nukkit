@@ -15,6 +15,10 @@ import cn.nukkit.nbt.tag.CompoundTag;
 import cn.nukkit.nbt.tag.ListTag;
 import cn.nukkit.network.protocol.types.ContainerType;
 import cn.nukkit.utils.MinecartType;
+import it.unimi.dsi.fastutil.ints.Int2ObjectMap;
+import it.unimi.dsi.fastutil.objects.ObjectArrayList;
+
+import java.util.Iterator;
 
 public class EntityMinecartHopper extends EntityMinecartAbstract implements InventoryHolder {
 
@@ -89,10 +93,28 @@ public class EntityMinecartHopper extends EntityMinecartAbstract implements Inve
         super.initEntity();
 
         this.inventory = new MinecartHopperInventory(this);
-        if (this.namedTag.contains("Items") && this.namedTag.get("Items") instanceof ListTag) {
-            ListTag<CompoundTag> inventoryList = this.namedTag.getList("Items", CompoundTag.class);
-            for (CompoundTag item : inventoryList.getAll()) {
-                this.inventory.setItem(item.getByte("Slot"), NBTIO.getItemHelper(item));
+        ListTag<CompoundTag> items = namedTag.getList("Items", (ListTag<CompoundTag>) null);
+        if (items == null) {
+            namedTag.putList(new ListTag<>("Items"));
+        } else {
+            Int2ObjectMap<Item> slots = inventory.getContentsUnsafe();
+            Iterator<CompoundTag> iter = items.iterator();
+            while (iter.hasNext()) {
+                CompoundTag tag = iter.next();
+
+                int slot = tag.getByte("Slot");
+                if (slot < 0 || slot >= inventory.getSize()) {
+                    iter.remove();
+                    continue;
+                }
+
+                Item item = NBTIO.getItemHelper(tag);
+                if (item.isNull()) {
+                    iter.remove();
+                    continue;
+                }
+
+                slots.put(slot, item);
             }
         }
 
@@ -106,16 +128,37 @@ public class EntityMinecartHopper extends EntityMinecartAbstract implements Inve
     public void saveNBT() {
         super.saveNBT();
 
-        this.namedTag.putList(new ListTag<CompoundTag>("Items"));
+        ListTag<CompoundTag> items = new ListTag<>("Items");
         if (this.inventory != null) {
-            for (int slot = 0; slot < 5; ++slot) {
-                Item item = this.inventory.getItem(slot);
-                if (item != null && item.getId() != Item.AIR) {
-                    this.namedTag.getList("Items", CompoundTag.class)
-                            .add(NBTIO.putItemHelper(item, slot));
+            Int2ObjectMap<Item> slots = inventory.getContentsUnsafe();
+            for (Int2ObjectMap.Entry<Item> entry : slots.int2ObjectEntrySet()) {
+                int slot = entry.getIntKey();
+                if (slot < 0 || slot >= inventory.getSize()) {
+                    continue;
                 }
+
+                Item item = entry.getValue();
+                if (item == null || item.isNull()) {
+                    continue;
+                }
+
+                items.add(NBTIO.putItemHelper(item, slot));
             }
         }
+        namedTag.putList(items);
+    }
+
+    @Override
+    public void close() {
+        if (isClosed()) {
+            return;
+        }
+
+        for (Player player : new ObjectArrayList<>(inventory.getViewers())) {
+            player.removeWindow(inventory);
+        }
+
+        super.close();
     }
 
     @Override

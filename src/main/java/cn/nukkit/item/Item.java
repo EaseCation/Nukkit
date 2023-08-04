@@ -21,6 +21,7 @@ import cn.nukkit.utils.Config;
 import cn.nukkit.utils.MainLogger;
 import cn.nukkit.utils.Utils;
 import it.unimi.dsi.fastutil.objects.ObjectArrayList;
+import it.unimi.dsi.fastutil.objects.ObjectOpenHashSet;
 
 import javax.annotation.Nullable;
 import java.io.IOException;
@@ -38,7 +39,7 @@ public class Item implements Cloneable, ItemID {
     protected static final String UNKNOWN_STR = "Unknown";
 
     private static boolean initialized;
-    public static final Class<?>[] list = new Class[65535];
+    public static final Class<?>[] list = new Class[Short.MAX_VALUE];
 
     private static final List<Item> creative = new ObjectArrayList<>();
 
@@ -50,6 +51,11 @@ public class Item implements Cloneable, ItemID {
     private CompoundTag cachedNBT = null;
     public int count;
     private final String name;
+    private boolean pickedUp;
+    @Nullable
+    private Set<String> canPlaceOnBlocks;
+    @Nullable
+    private Set<String> canDestroyBlocks;
 
     public Item(int id) {
         this(id, 0, 1, UNKNOWN_STR);
@@ -264,6 +270,36 @@ public class Item implements Cloneable, ItemID {
         }
 
         if (b.length != 1) meta = Integer.parseInt(b[1]) & 0xFFFF;
+
+        return get(id, meta);
+    }
+
+    @Nullable
+    public static Item fromIdentifier(String identifier) {
+        return fromIdentifier(identifier, 0);
+    }
+
+    @Nullable
+    public static Item fromIdentifier(String identifier, int meta) {
+        if (identifier.startsWith("minecraft:")) {
+            identifier = identifier.substring(10);
+        }
+
+        int id;
+        identifier = identifier.toUpperCase();
+        try {
+            Field field = ItemBlockID.class.getField(identifier);
+            field.setAccessible(true);
+            id = field.getInt(null);
+        } catch (Exception e) {
+            try {
+                Field field = ItemID.class.getField(identifier);
+                field.setAccessible(true);
+                id = field.getInt(null);
+            } catch (Exception ex) {
+                return null;
+            }
+        }
 
         return get(id, meta);
     }
@@ -1045,9 +1081,12 @@ public class Item implements Cloneable, ItemID {
         if (item != null && this.getId() == item.getId() && (!checkDamage || this.getDamage() == item.getDamage() || id == AIR)) {
             if (checkCompound) {
                 if (Arrays.equals(this.getCompoundTag(), item.getCompoundTag())) {
-                    return true;
+                    return Objects.equals(this.getCanPlaceOnBlocks(), item.getCanPlaceOnBlocks())
+                            && Objects.equals(this.getCanDestroyBlocks(), item.getCanDestroyBlocks());
                 } else if (this.hasCompoundTag() && item.hasCompoundTag()) {
-                    return this.getNamedTag().equals(item.getNamedTag());
+                    return this.getNamedTag().equals(item.getNamedTag())
+                            && Objects.equals(this.getCanPlaceOnBlocks(), item.getCanPlaceOnBlocks())
+                            && Objects.equals(this.getCanDestroyBlocks(), item.getCanDestroyBlocks());
                 }
             } else {
                 return true;
@@ -1090,6 +1129,12 @@ public class Item implements Cloneable, ItemID {
 //            item.cachedNBT = null;
             //TODO: 临时处理, 确保所有插件的nbt修改调用setCompoundTag后改回去 -- 02/27/2023
             item.cachedNBT = this.cachedNBT != null ? this.cachedNBT.copy() : null;
+            if (this.canPlaceOnBlocks != null) {
+                item.canPlaceOnBlocks = new ObjectOpenHashSet<>(this.canPlaceOnBlocks);
+            }
+            if (this.canDestroyBlocks != null) {
+                item.canDestroyBlocks = new ObjectOpenHashSet<>(this.canDestroyBlocks);
+            }
             return item;
         } catch (CloneNotSupportedException e) {
             return null;
@@ -1154,5 +1199,31 @@ public class Item implements Cloneable, ItemID {
 
     public boolean isPotion() {
         return false;
+    }
+
+    public boolean wasPickedUp() {
+        return pickedUp;
+    }
+
+    public void setPickedUp(boolean pickedUp) {
+        this.pickedUp = pickedUp;
+    }
+
+    @Nullable
+    public Set<String> getCanPlaceOnBlocks() {
+        return canPlaceOnBlocks;
+    }
+
+    public void setCanPlaceOnBlocks(@Nullable Set<String> canPlaceOnBlocks) {
+        this.canPlaceOnBlocks = canPlaceOnBlocks;
+    }
+
+    @Nullable
+    public Set<String> getCanDestroyBlocks() {
+        return canDestroyBlocks;
+    }
+
+    public void setCanDestroyBlocks(@Nullable Set<String> canDestroyBlocks) {
+        this.canDestroyBlocks = canDestroyBlocks;
     }
 }

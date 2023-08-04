@@ -9,18 +9,13 @@ import cn.nukkit.event.inventory.StartBrewEvent;
 import cn.nukkit.inventory.BrewingInventory;
 import cn.nukkit.inventory.BrewingRecipe;
 import cn.nukkit.inventory.ContainerRecipe;
-import cn.nukkit.inventory.InventoryHolder;
 import cn.nukkit.inventory.MixRecipe;
 import cn.nukkit.item.Item;
-import cn.nukkit.item.Items;
 import cn.nukkit.level.format.FullChunk;
-import cn.nukkit.nbt.NBTIO;
 import cn.nukkit.nbt.tag.CompoundTag;
-import cn.nukkit.nbt.tag.ListTag;
 import cn.nukkit.network.protocol.ContainerSetDataPacket;
-import it.unimi.dsi.fastutil.objects.ObjectArrayList;
 
-public class BlockEntityBrewingStand extends BlockEntitySpawnable implements InventoryHolder, BlockEntityContainer, BlockEntityNameable {
+public class BlockEntityBrewingStand extends BlockEntityAbstractContainer {
 
     protected BrewingInventory inventory;
 
@@ -40,14 +35,6 @@ public class BlockEntityBrewingStand extends BlockEntitySpawnable implements Inv
     protected void initBlockEntity() {
         inventory = new BrewingInventory(this);
 
-        if (!namedTag.contains("Items") || !(namedTag.get("Items") instanceof ListTag)) {
-            namedTag.putList(new ListTag<CompoundTag>("Items"));
-        }
-
-        for (int i = 0; i < getSize(); i++) {
-            inventory.setItem(i, this.getItem(i));
-        }
-
         if (!namedTag.contains("CookTime") || namedTag.getShort("CookTime") > MAX_BREW_TIME) {
             this.brewTime = MAX_BREW_TIME;
         } else {
@@ -65,31 +52,8 @@ public class BlockEntityBrewingStand extends BlockEntitySpawnable implements Inv
     }
 
     @Override
-    public void close() {
-        if (!isClosed()) {
-            for (Player player : new ObjectArrayList<>(getInventory().getViewers())) {
-                player.removeWindow(getInventory());
-            }
-            super.close();
-        }
-    }
-
-    @Override
-    public void onBreak() {
-        for (Item content : inventory.getContents().values()) {
-            level.dropItem(this, content);
-        }
-        this.inventory.clearAll();
-    }
-
-    @Override
     public void saveNBT() {
         super.saveNBT();
-
-        namedTag.putList(new ListTag<CompoundTag>("Items"));
-        for (int index = 0; index < getSize(); index++) {
-            this.setItem(index, inventory.getItem(index));
-        }
 
         namedTag.putShort("CookTime", brewTime);
         namedTag.putShort("FuelAmount", this.fuelAmount);
@@ -104,45 +68,6 @@ public class BlockEntityBrewingStand extends BlockEntitySpawnable implements Inv
     @Override
     public int getSize() {
         return 5;
-    }
-
-    protected int getSlotIndex(int index) {
-        ListTag<CompoundTag> list = this.namedTag.getList("Items", CompoundTag.class);
-        for (int i = 0; i < list.size(); i++) {
-            if (list.get(i).getByte("Slot") == index) {
-                return i;
-            }
-        }
-
-        return -1;
-    }
-
-    @Override
-    public Item getItem(int index) {
-        int i = this.getSlotIndex(index);
-        if (i < 0) {
-            return Items.air();
-        } else {
-            CompoundTag data = (CompoundTag) this.namedTag.getList("Items").get(i);
-            return NBTIO.getItemHelper(data);
-        }
-    }
-
-    @Override
-    public void setItem(int index, Item item) {
-        int i = this.getSlotIndex(index);
-
-        CompoundTag d = NBTIO.putItemHelper(item, index);
-
-        if (item.getId() == Item.AIR || item.getCount() <= 0) {
-            if (i >= 0) {
-                this.namedTag.getList("Items").getAll().remove(i);
-            }
-        } else if (i < 0) {
-            (this.namedTag.getList("Items", CompoundTag.class)).add(d);
-        } else {
-            (this.namedTag.getList("Items", CompoundTag.class)).add(i, d);
-        }
     }
 
     @Override
