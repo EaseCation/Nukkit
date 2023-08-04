@@ -2252,7 +2252,7 @@ public class Player extends EntityHuman implements CommandSender, InventoryHolde
 
         nbt.putString("NameTag", this.username);
 
-        if (0 >= nbt.getShort("Health")) {
+        if (0 >= nbt.getFloat("Health")) {
             alive = false;
         }
 
