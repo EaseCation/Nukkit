@@ -163,80 +163,17 @@ public class LevelDB implements LevelProvider {
         int generatorType = Generators.getGeneratorType(options.getGenerator());
         Vector3 spawnPosition = options.getSpawnPosition();
 
-        CompoundTag levelData = new CompoundTag()
-                .putInt("DayCycleStopTime", -1)
-                .putInt("Difficulty", 0)
-                .putByte("ForceGameType", 0)
-                .putInt("GameType", 0)
+        CompoundTag levelData = new CompoundTag();
+        updateLevelData(levelData);
+        levelData
                 .putInt("Generator", generatorType)
-                .putLong("LastPlayed", System.currentTimeMillis() / 1000)
                 .putString("LevelName", name)
-                .putInt("NetworkVersion", GameVersion.getFeatureVersion().getProtocol())
-//                .putString("InventoryVersion", GameVersion.getFeatureVersion().toString())
-                .putInt("Platform", 2)
                 .putLong("RandomSeed", options.getSeed())
                 .putInt("SpawnX", spawnPosition.getFloorX())
                 .putInt("SpawnY", spawnPosition.getFloorY())
                 .putInt("SpawnZ", spawnPosition.getFloorZ())
-                .putInt("StorageVersion", CURRENT_STORAGE_VERSION)
-                .putLong("Time", 0)
-                .putByte("eduLevel", 0)
-                .putByte("hasBeenLoadedInCreative", 1) // this actually determines whether achievements can be earned in this world
-                .putByte("immutableWorld", 0)
-                .putFloat("lightningLevel", 0)
-                .putInt("lightningTime", 1)
-                .putFloat("rainLevel", 0)
-                .putInt("rainTime", 1)
-                .putByte("spawnMobs", 1)
-                .putByte("texturePacksRequired", 0)
-                .putLong("currentTick", 1)
-                .putInt("LimitedWorldOriginX", 128)
-                .putInt("LimitedWorldOriginY", Short.MAX_VALUE)
-                .putInt("LimitedWorldOriginZ", 128)
-                .putInt("limitedWorldWidth", 16)
-                .putInt("limitedWorldDepth", 16)
-                .putLong("worldStartCount", ((long) Integer.MAX_VALUE) & 0xffffffffL)
 //                .putString("baseGameVersion", generatorType != Generator.TYPE_OLD ? "*" : GameVersion.V1_17_40.toString())
-                .putString("baseGameVersion", "*")
-                .putByte("bonusChestEnabled", 0)
-                .putByte("bonusChestSpawned", 1)
-                .putByte("CenterMapsToOrigin", 0)
-                .putByte("commandsEnabled", 1)
-                .putByte("ConfirmedPlatformLockedContent", 0)
-                .putByte("educationFeaturesEnabled", 0)
-                .putInt("eduOffer", 0)
-                .putByte("hasLockedBehaviorPack", 0)
-                .putByte("hasLockedResourcePack", 0)
-                .putByte("isFromLockedTemplate", 0)
-                .putByte("isFromWorldTemplate", 0)
-                .putByte("isSingleUseWorld", 0)
-                .putByte("isWorldTemplateOptionLocked", 0)
-                .putByte("LANBroadcast", 1)
-                .putByte("LANBroadcastIntent", 1)
-                .putByte("MultiplayerGame", 1)
-                .putByte("MultiplayerGameIntent", 1)
-                .putInt("PlatformBroadcastIntent", 3)
-                .putInt("XBLBroadcastIntent", 3)
-                .putInt("NetherScale", 8)
-                .putString("prid", "")
-                .putByte("requiresCopiedPackRemovalCheck", 0)
-                .putInt("serverChunkTickRange", 4)
-                .putByte("SpawnV1Villagers", 0)
-                .putByte("startWithMapEnabled", 0)
-                .putByte("useMsaGamertagsOnly", 0)
-                .putInt("WorldVersion", 1)
-                .putInt("permissionsLevel", 0)
-                .putInt("playerPermissionsLevel", 1)
-                .putByte("isCreatedInEditor", 0)
-                .putByte("isExportedFromEditor", 0)
-                .putString("BiomeOverride", "")
-                .putString("FlatWorldLayers", DEFAULT_FLAT_WORLD_LAYERS)
-                .putCompound("world_policies", new CompoundTag(Collections.emptyMap()))
-                .putCompound("experiments", new CompoundTag()
-                        .putByte("experiments_ever_used", 0)
-                        .putByte("saved_with_toggled_experiments", 0))
-                .putList(new ListTag<>("MinimumCompatibleClientVersion", CURRENT_COMPATIBLE_CLIENT_VERSION))
-                .putList(new ListTag<>("lastOpenedWithVersion", CURRENT_COMPATIBLE_CLIENT_VERSION));
+                ;
         options.getGameRules().writeNBT(levelData, true);
 
         try (OutputStream stream = Files.newOutputStream(dirPath.resolve("level.dat"))) {
@@ -258,14 +195,79 @@ public class LevelDB implements LevelProvider {
         return NATIVE_LEVELDB ? PROVIDER.open(dir, options) : Iq80DBFactory.factory.open(dir, options);
     }
 
-    @Override
-    public void saveLevelData() {
-        levelData//.putString("InventoryVersion", GameVersion.getFeatureVersion().toString())
+    public static void updateLevelData(CompoundTag levelData) {
+        levelData.putLong("LastPlayed", System.currentTimeMillis() / 1000)
+                .putString("baseGameVersion", "*")
+                .putString("InventoryVersion", GameVersion.getFeatureVersion().toString())
                 .putInt("NetworkVersion", GameVersion.getFeatureVersion().getProtocol())
                 .putList(new ListTag<>("MinimumCompatibleClientVersion", CURRENT_COMPATIBLE_CLIENT_VERSION))
                 .putList(new ListTag<>("lastOpenedWithVersion", CURRENT_COMPATIBLE_CLIENT_VERSION))
-//                .putInt("StorageVersion", CURRENT_STORAGE_VERSION)
+                .putInt("StorageVersion", CURRENT_STORAGE_VERSION)
                 .putInt("WorldVersion", 1);
+
+        levelData.putIntIfAbsent("DayCycleStopTime", -1);
+        levelData.putIntIfAbsent("Difficulty", 0);
+        levelData.putByteIfAbsent("ForceGameType", 0);
+        levelData.putIntIfAbsent("GameType", 0);
+        levelData.putIntIfAbsent("Platform", 2);
+        levelData.putLongIfAbsent("Time", 0);
+        levelData.putByteIfAbsent("eduLevel", 0);
+        levelData.putByteIfAbsent("hasBeenLoadedInCreative", 1); // this actually determines whether achievements can be earned in this world
+        levelData.putByteIfAbsent("immutableWorld", 0);
+        levelData.putFloatIfAbsent("lightningLevel", 0);
+        levelData.putIntIfAbsent("lightningTime", 1);
+        levelData.putFloatIfAbsent("rainLevel", 0);
+        levelData.putIntIfAbsent("rainTime", 1);
+        levelData.putByteIfAbsent("spawnMobs", 1);
+        levelData.putByteIfAbsent("texturePacksRequired", 0);
+        levelData.putLongIfAbsent("currentTick", 1);
+        levelData.putIntIfAbsent("LimitedWorldOriginX", 128);
+        levelData.putIntIfAbsent("LimitedWorldOriginY", Short.MAX_VALUE);
+        levelData.putIntIfAbsent("LimitedWorldOriginZ", 128);
+        levelData.putIntIfAbsent("limitedWorldWidth", 16);
+        levelData.putIntIfAbsent("limitedWorldDepth", 16);
+        levelData.putLongIfAbsent("worldStartCount", ((long) Integer.MAX_VALUE) & 0xffffffffL);
+        levelData.putByteIfAbsent("bonusChestEnabled", 0);
+        levelData.putByteIfAbsent("bonusChestSpawned", 1);
+        levelData.putByteIfAbsent("CenterMapsToOrigin", 0);
+        levelData.putByteIfAbsent("commandsEnabled", 1);
+        levelData.putByteIfAbsent("ConfirmedPlatformLockedContent", 0);
+        levelData.putByteIfAbsent("educationFeaturesEnabled", 0);
+        levelData.putIntIfAbsent("eduOffer", 0);
+        levelData.putByteIfAbsent("hasLockedBehaviorPack", 0);
+        levelData.putByteIfAbsent("hasLockedResourcePack", 0);
+        levelData.putByteIfAbsent("isFromLockedTemplate", 0);
+        levelData.putByteIfAbsent("isFromWorldTemplate", 0);
+        levelData.putByteIfAbsent("isSingleUseWorld", 0);
+        levelData.putByteIfAbsent("isWorldTemplateOptionLocked", 0);
+        levelData.putByteIfAbsent("LANBroadcast", 1);
+        levelData.putByteIfAbsent("LANBroadcastIntent", 1);
+        levelData.putByteIfAbsent("MultiplayerGame", 1);
+        levelData.putByteIfAbsent("MultiplayerGameIntent", 1);
+        levelData.putIntIfAbsent("PlatformBroadcastIntent", 3);
+        levelData.putIntIfAbsent("XBLBroadcastIntent", 3);
+        levelData.putIntIfAbsent("NetherScale", 8);
+        levelData.putStringIfAbsent("prid", "");
+        levelData.putByteIfAbsent("requiresCopiedPackRemovalCheck", 0);
+        levelData.putIntIfAbsent("serverChunkTickRange", 4);
+        levelData.putByteIfAbsent("SpawnV1Villagers", 0);
+        levelData.putByteIfAbsent("startWithMapEnabled", 0);
+        levelData.putByteIfAbsent("useMsaGamertagsOnly", 0);
+        levelData.putIntIfAbsent("permissionsLevel", 0);
+        levelData.putIntIfAbsent("playerPermissionsLevel", 1);
+        levelData.putByteIfAbsent("isCreatedInEditor", 0);
+        levelData.putByteIfAbsent("isExportedFromEditor", 0);
+        levelData.putStringIfAbsent("BiomeOverride", "");
+        levelData.putStringIfAbsent("FlatWorldLayers", DEFAULT_FLAT_WORLD_LAYERS);
+        levelData.putCompoundIfAbsent("world_policies", new CompoundTag(Collections.emptyMap()));
+        levelData.putCompoundIfAbsent("experiments", new CompoundTag()
+                .putByte("experiments_ever_used", 0)
+                .putByte("saved_with_toggled_experiments", 0));
+    }
+
+    @Override
+    public void saveLevelData() {
+        updateLevelData(levelData);
 
         try (OutputStream stream = Files.newOutputStream(Paths.get(path, "level.dat"))) {
             byte[] data = NBTIO.write(levelData, ByteOrder.LITTLE_ENDIAN);

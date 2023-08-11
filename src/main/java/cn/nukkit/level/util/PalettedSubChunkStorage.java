@@ -5,6 +5,7 @@ import cn.nukkit.block.BlockID;
 import cn.nukkit.block.BlockSerializer;
 import cn.nukkit.block.BlockUpgrader;
 import cn.nukkit.level.GlobalBlockPalette;
+import cn.nukkit.level.biome.EnumBiome;
 import cn.nukkit.math.BlockVector3;
 import cn.nukkit.nbt.NBTIO;
 import cn.nukkit.nbt.tag.CompoundTag;
@@ -117,6 +118,11 @@ public class PalettedSubChunkStorage {
         }
         stream.setOffset(stream.getCount() - bais.available());
 
+        if (paletteSize == 0) {
+            // corrupted
+            return ofBlock(BlockID.AIR);
+        }
+
         return new PalettedSubChunkStorage(bitArray, IntArrayList.wrap(palette));
     }
 
@@ -148,6 +154,11 @@ public class PalettedSubChunkStorage {
         int[] palette = new int[paletteSize];
         for (int i = 0; i < paletteSize; ++i) {
             palette[i] = stream.getLInt();
+        }
+
+        if (paletteSize == 0) {
+            // corrupted
+            return ofBiome(EnumBiome.OCEAN.id);
         }
 
         return new PalettedSubChunkStorage(bitArray, IntArrayList.wrap(palette));
@@ -391,7 +402,8 @@ public class PalettedSubChunkStorage {
             return false;
         }
 
-        if (this.palette.getInt(0) != BlockID.AIR) {
+        int firstId = this.palette.getInt(0);
+        if (firstId != BlockID.AIR) {
             // Hive Chunker...
             return false;
         }
@@ -401,7 +413,9 @@ public class PalettedSubChunkStorage {
                 return false;
             }
         }
+
         this.palette.clear();
+        this.palette.add(firstId);
         return true;
     }
 

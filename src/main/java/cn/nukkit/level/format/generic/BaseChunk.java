@@ -1,5 +1,6 @@
 package cn.nukkit.level.format.generic;
 
+import cn.nukkit.Server;
 import cn.nukkit.block.Block;
 import cn.nukkit.block.BlockID;
 import cn.nukkit.blockentity.BlockEntity;
@@ -33,6 +34,14 @@ public abstract class BaseChunk extends BaseFullChunk implements Chunk {
     }
 
     private void removeInvalidTile(int x, int y, int z) {
+        if (Server.getInstance().isPrimaryThread()) {
+            removeInvalidBlockEntity(x, y, z);
+        } else {
+            Server.getInstance().getScheduler().scheduleTask(null, () -> removeInvalidBlockEntity(x, y, z));
+        }
+    }
+
+    private void removeInvalidBlockEntity(int x, int y, int z) {
         BlockEntity entity = getTile(x, y, z);
         if (entity != null && !entity.isBlockEntityValid()) {
             removeBlockEntity(entity);

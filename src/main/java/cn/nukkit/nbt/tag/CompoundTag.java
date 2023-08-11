@@ -98,9 +98,17 @@ public class CompoundTag extends Tag implements Cloneable {
         return this;
     }
 
+    public Tag putByteIfAbsent(String name, int value) {
+        return tags.putIfAbsent(name, new ByteTag(name, value));
+    }
+
     public CompoundTag putShort(String name, int value) {
         tags.put(name, new ShortTag(name, value));
         return this;
+    }
+
+    public Tag putShortIfAbsent(String name, int value) {
+        return tags.putIfAbsent(name, new ShortTag(name, value));
     }
 
     public CompoundTag putInt(String name, int value) {
@@ -108,9 +116,17 @@ public class CompoundTag extends Tag implements Cloneable {
         return this;
     }
 
+    public Tag putIntIfAbsent(String name, int value) {
+        return tags.putIfAbsent(name, new IntTag(name, value));
+    }
+
     public CompoundTag putLong(String name, long value) {
         tags.put(name, new LongTag(name, value));
         return this;
+    }
+
+    public Tag putLongIfAbsent(String name, long value) {
+        return tags.putIfAbsent(name, new LongTag(name, value));
     }
 
     public CompoundTag putFloat(String name, float value) {
@@ -118,9 +134,17 @@ public class CompoundTag extends Tag implements Cloneable {
         return this;
     }
 
+    public Tag putFloatIfAbsent(String name, float value) {
+        return tags.putIfAbsent(name, new FloatTag(name, value));
+    }
+
     public CompoundTag putDouble(String name, double value) {
         tags.put(name, new DoubleTag(name, value));
         return this;
+    }
+
+    public Tag putDoubleIfAbsent(String name, double value) {
+        return tags.putIfAbsent(name, new DoubleTag(name, value));
     }
 
     public CompoundTag putString(String name, String value) {
@@ -128,9 +152,17 @@ public class CompoundTag extends Tag implements Cloneable {
         return this;
     }
 
+    public Tag putStringIfAbsent(String name, String value) {
+        return tags.putIfAbsent(name, new StringTag(name, value));
+    }
+
     public CompoundTag putByteArray(String name, byte[] value) {
         tags.put(name, new ByteArrayTag(name, value));
         return this;
+    }
+
+    public Tag putByteArrayIfAbsent(String name, byte[] value) {
+        return tags.putIfAbsent(name, new ByteArrayTag(name, value));
     }
 
     public CompoundTag putIntArray(String name, int[] value) {
@@ -138,8 +170,30 @@ public class CompoundTag extends Tag implements Cloneable {
         return this;
     }
 
+    public Tag putIntArrayIfAbsent(String name, int[] value) {
+        return tags.putIfAbsent(name, new IntArrayTag(name, value));
+    }
+
     public CompoundTag putList(ListTag<? extends Tag> listTag) {
         tags.put(listTag.getName(), listTag);
+        return this;
+    }
+
+    public CompoundTag putList(String name, ListTag<? extends Tag> value) {
+        tags.put(name, value.setName(name));
+        return this;
+    }
+
+    public Tag putListIfAbsent(ListTag<? extends Tag> listTag) {
+        return tags.putIfAbsent(listTag.getName(), listTag);
+    }
+
+    public Tag putListIfAbsent(String name, ListTag<? extends Tag> value) {
+        return tags.putIfAbsent(name, value.setName(name));
+    }
+
+    public CompoundTag putCompound(CompoundTag compound) {
+        tags.put(compound.getName(), compound);
         return this;
     }
 
@@ -148,9 +202,21 @@ public class CompoundTag extends Tag implements Cloneable {
         return this;
     }
 
+    public Tag putCompoundIfAbsent(CompoundTag compound) {
+        return tags.putIfAbsent(compound.getName(), compound);
+    }
+
+    public Tag putCompoundIfAbsent(String name, CompoundTag value) {
+        return tags.putIfAbsent(name, value.setName(name));
+    }
+
     public CompoundTag putBoolean(String string, boolean val) {
         putByte(string, val ? 1 : 0);
         return this;
+    }
+
+    public Tag putBooleanIfAbsent(String string, boolean val) {
+        return putByteIfAbsent(string, val ? 1 : 0);
     }
 
     @Nullable
@@ -394,7 +460,7 @@ public class CompoundTag extends Tag implements Cloneable {
      * @return - true, if tag exists
      */
     public boolean exist(String name) {
-        return tags.containsKey(name);
+        return contains(name);
     }
 
     @Override
