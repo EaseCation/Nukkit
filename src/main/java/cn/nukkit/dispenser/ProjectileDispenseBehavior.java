@@ -8,6 +8,7 @@ import cn.nukkit.item.Item;
 import cn.nukkit.math.BlockFace;
 import cn.nukkit.math.Vector3;
 import cn.nukkit.nbt.tag.CompoundTag;
+import cn.nukkit.network.protocol.LevelEventPacket;
 
 /**
  * @author CreeperFace
@@ -32,6 +33,8 @@ public class ProjectileDispenseBehavior extends DefaultDispenseBehavior {
         if (!(projectile instanceof EntityProjectile)) {
             return super.dispense(source, face, item);
         }
+
+        source.level.addLevelEvent(dispensePos, LevelEventPacket.EVENT_SOUND_SHOOT, 78642);
 
         Vector3 motion = new Vector3(face.getXOffset(), face.getYOffset() + 0.1f, face.getZOffset())
                 .normalize();

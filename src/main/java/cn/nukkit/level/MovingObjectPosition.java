@@ -24,7 +24,6 @@ public class MovingObjectPosition {
 
     /**
      * Which side was hit. If its -1 then it went the full length of the ray trace.
-     * Bottom = 0, Top = 1, East = 2, West = 3, North = 4, South = 5.
      */
     public int sideHit = -1;
 

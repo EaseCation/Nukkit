@@ -103,7 +103,7 @@ public final class Entities {
         registerTodo(EntityID.LEASH_KNOT, "leash_knot", "LeashKnot");
         registerTodo(EntityID.WITHER_SKULL, "wither_skull", "WitherSkull");
         registerTodo(EntityID.WITHER_SKULL_DANGEROUS, "wither_skull_dangerous", "WitherSkullDangerous");
-        registerTodo(EntityID.SMALL_FIREBALL, "small_fireball", "SmallFireball");
+        registerEntity(EntityID.SMALL_FIREBALL, "small_fireball", "SmallFireball", EntitySmallFireball.class, EntitySmallFireball::new);
         registerEntity(EntityID.AREA_EFFECT_CLOUD, "area_effect_cloud", "AreaEffectCloud", EntityAreaEffectCloud.class, EntityAreaEffectCloud::new);
         registerTodo(EntityID.COMMAND_BLOCK_MINECART, "command_block_minecart", "MinecartCommandBlock");
         registerEntity(EntityID.LINGERING_POTION, "lingering_potion", "LingeringPotion", EntityLingeringPotion.class, EntityLingeringPotion::new);
@@ -162,8 +162,8 @@ public final class Entities {
 
         registerEntity(EntityID.TRADER_LLAMA, "trader_llama", "TraderLlama", EntityTraderLlama.class, EntityTraderLlama::new, V1_19_10);
 
-//        registerEntity(EntityID.CAMEL, "camel", "Camel", EntityCamel.class, EntityCamel::new, V1_20_0);
-//        registerEntity(EntityID.SNIFFER, "sniffer", "Sniffer", EntitySniffer.class, EntitySniffer::new, V1_20_0);
+        registerEntity(EntityID.CAMEL, "camel", "Camel", EntityCamel.class, EntityCamel::new, V1_20_0);
+        registerEntity(EntityID.SNIFFER, "sniffer", "Sniffer", EntitySniffer.class, EntitySniffer::new, V1_20_0);
 
     }
 

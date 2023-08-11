@@ -4695,6 +4695,10 @@ public class Level implements ChunkManager, Metadatable {
         return y <= getMaxHeight() && y >= getMinHeight();
     }
 
+    public boolean isValidHeight(double y) {
+        return y <= getMaxHeight() && y >= getMinHeight();
+    }
+
     public List<Block> getBlocks(AxisAlignedBB bb) {
         return getBlocks(bb, true);
     }

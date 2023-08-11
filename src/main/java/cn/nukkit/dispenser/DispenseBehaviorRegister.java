@@ -104,6 +104,7 @@ public final class DispenseBehaviorRegister {
                 return super.getMotion() * 1.25;
             }
         });
+        registerBehavior(ItemID.FIRE_CHARGE, new FireChargeDispenseBehavior());
         registerBehavior(ItemID.GLASS_BOTTLE, new GlassBottleDispenseBehavior());
         registerBehavior(ItemID.MINECART, new MinecartDispenseBehavior(EntityMinecartEmpty::new));
         registerBehavior(ItemID.CHEST_MINECART, new MinecartDispenseBehavior(EntityMinecartChest::new));
