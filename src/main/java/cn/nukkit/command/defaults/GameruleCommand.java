@@ -13,7 +13,6 @@ import it.unimi.dsi.fastutil.objects.ObjectOpenHashSet;
 import java.util.Arrays;
 import java.util.Optional;
 import java.util.Set;
-import java.util.StringJoiner;
 
 public class GameruleCommand extends VanillaCommand {
 
@@ -28,20 +27,20 @@ public class GameruleCommand extends VanillaCommand {
         Set<String> floatGameRules = new ObjectOpenHashSet<>();
         Set<String> unknownGameRules = new ObjectOpenHashSet<>();
 
-        rules.getGameRules().forEach((rule, value) -> {
+        rules.getGameRulesUnsafe().forEach((rule, value) -> {
             switch (value.getType()) {
                 case BOOLEAN:
-                    boolGameRules.add(rule.getName().toLowerCase());
+                    boolGameRules.add(rule.getBedrockName());
                     break;
                 case INTEGER:
-                    intGameRules.add(rule.getName().toLowerCase());
+                    intGameRules.add(rule.getBedrockName());
                     break;
                 case FLOAT:
-                    floatGameRules.add(rule.getName().toLowerCase());
+                    floatGameRules.add(rule.getBedrockName());
                     break;
                 case UNKNOWN:
                 default:
-                    unknownGameRules.add(rule.getName().toLowerCase());
+                    unknownGameRules.add(rule.getBedrockName());
                     break;
             }
         });
@@ -86,11 +85,7 @@ public class GameruleCommand extends VanillaCommand {
 
         switch (args.length) {
             case 0:
-                StringJoiner rulesJoiner = new StringJoiner(", ");
-                for (GameRule rule: rules.getRules()) {
-                    rulesJoiner.add(rule.getName().toLowerCase());
-                }
-                sender.sendMessage(rulesJoiner.toString());
+                sender.sendMessage(rules.toString());
                 return true;
             case 1:
                 Optional<GameRule> gameRule = GameRule.parseString(args[0]);
@@ -99,7 +94,7 @@ public class GameruleCommand extends VanillaCommand {
                     return true;
                 }
 
-                sender.sendMessage(gameRule.get().getName() .toLowerCase()+ " = " + rules.getString(gameRule.get()));
+                sender.sendMessage(gameRule.get().getBedrockName() + " = " + rules.getString(gameRule.get()));
                 return true;
             default:
                 Optional<GameRule> optionalRule = GameRule.parseString(args[0]);
@@ -112,7 +107,7 @@ public class GameruleCommand extends VanillaCommand {
 
                 try {
                     rules.setGameRules(optionalRule.get(), args[1]);
-                    sender.sendMessage(new TranslationContainer("commands.gamerule.success", optionalRule.get().getName().toLowerCase(), args[1]));
+                    sender.sendMessage(new TranslationContainer("commands.gamerule.success", optionalRule.get().getBedrockName(), args[1]));
                 } catch (IllegalArgumentException e) {
                     sender.sendMessage(new TranslationContainer("commands.generic.syntax", "/gamerule "  + args[0] + " ", args[1], " " + String.join(" ", Arrays.copyOfRange(args, 2, args.length))));
                 }

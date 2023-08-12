@@ -976,7 +976,7 @@ public class BinaryStream {
         Map<GameRule, GameRules.Value> rules = gameRules.getGameRules();
         this.putUnsignedVarInt(rules.size());
         rules.forEach((gameRule, value) -> {
-            putString(gameRule.getName().toLowerCase());
+            putString(gameRule.getBedrockName());
             value.write(this);
         });
     }
@@ -1173,7 +1173,7 @@ public class BinaryStream {
             Map<GameRule, GameRules.Value> rules = gameRules.getGameRules();
             stream.putUnsignedVarInt(rules.size());
             rules.forEach((gameRule, value) -> {
-                stream.putString(gameRule.getName().toLowerCase());
+                stream.putString(gameRule.getBedrockName());
                 value.write(stream);
             });
         }

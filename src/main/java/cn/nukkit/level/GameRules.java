@@ -1,21 +1,19 @@
 package cn.nukkit.level;
 
 import cn.nukkit.Server;
-import cn.nukkit.nbt.tag.CompoundTag;
+import cn.nukkit.nbt.tag.*;
 import cn.nukkit.utils.BinaryStream;
 import com.google.common.base.Preconditions;
-import com.google.common.collect.ImmutableMap;
-import lombok.ToString;
 
 import java.util.EnumMap;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Optional;
+import java.util.StringJoiner;
 
 import static cn.nukkit.level.GameRule.*;
 
 @SuppressWarnings({"unchecked"})
-@ToString
 public class GameRules {
     private final EnumMap<GameRule, Value> gameRules = new EnumMap<>(GameRule.class);
     private boolean stale;
@@ -56,12 +54,19 @@ public class GameRules {
         gameRules.gameRules.put(FREEZE_DAMAGE, new Value<>(Type.BOOLEAN, true));
         gameRules.gameRules.put(RESPAWN_BLOCKS_EXPLODE, new Value<>(Type.BOOLEAN, true));
         gameRules.gameRules.put(SHOW_BORDER_EFFECT, new Value<>(Type.BOOLEAN, true));
+//        gameRules.gameRules.put(RECIPES_UNLOCK, new Value<>(Type.BOOLEAN, false));
+//        gameRules.gameRules.put(DO_LIMITED_CRAFTING, new Value<>(Type.BOOLEAN, false));
+//        gameRules.gameRules.put(PLAYERS_SLEEPING_PERCENTAGE, new Value<>(Type.INTEGER, 100));
 
         return gameRules;
     }
 
     public Map<GameRule, Value> getGameRules() {
-        return ImmutableMap.copyOf(gameRules);
+        return new EnumMap<>(gameRules);
+    }
+
+    public Map<GameRule, Value> getGameRulesUnsafe() {
+        return gameRules;
     }
 
     public boolean isStale() {
@@ -151,13 +156,8 @@ public class GameRules {
     }
 
     public void writeNBT(CompoundTag nbt) {
-        writeNBT(nbt, false);
-    }
-
-    public void writeNBT(CompoundTag nbt, boolean lowercase) {
         for (Entry<GameRule, Value> entry : gameRules.entrySet()) {
-            String name = entry.getKey().getName();
-            nbt.putString(lowercase ? name.toLowerCase() : name, entry.getValue().value.toString());
+            nbt.putString(entry.getKey().getName(), entry.getValue().value.toString());
         }
     }
 
@@ -175,6 +175,85 @@ public class GameRules {
                 Server.getInstance().getLogger().logException(e);
             }
         }
+    }
+
+    public void writeBedrockNBT(CompoundTag nbt) {
+        gameRules.forEach((gameRule, value) -> {
+            String name = gameRule.getBedrockName();
+            switch (value.type) {
+                case BOOLEAN:
+                    nbt.putBoolean(name, value.getValueAsBoolean());
+                    break;
+                case INTEGER:
+                    nbt.putInt(name, value.getValueAsInteger());
+                    break;
+                case FLOAT:
+                    nbt.putFloat(name, value.getValueAsFloat());
+                    break;
+                case UNKNOWN:
+                default:
+                    nbt.putString(name, value.value.toString());
+                    break;
+            }
+        });
+    }
+
+    public void readBedrockNBT(CompoundTag nbt) {
+        gameRules.forEach((gameRule, value) -> {
+            String name = gameRule.getBedrockName();
+            Tag tag = nbt.get(name);
+            if (tag == null) {
+                return;
+            }
+
+            switch (value.type) {
+                case BOOLEAN:
+                    if (tag instanceof ByteTag) {
+                        setGameRule(gameRule, ((ByteTag) tag).data != 0);
+                    } else if (tag instanceof StringTag) {
+                        String data = ((StringTag) tag).data;
+                        if (data.equalsIgnoreCase("true") || data.equals("1")) {
+                            setGameRule(gameRule, true);
+                        } else if (data.equalsIgnoreCase("false") || data.equals("0")) {
+                            setGameRule(gameRule, false);
+                        } else {
+                            Server.getInstance().getLogger().warning("Invalid boolean game rule '" + name + "' value: " + data);
+                        }
+                    }
+                    break;
+                case INTEGER:
+                    if (tag instanceof IntTag) {
+                        setGameRule(gameRule, ((IntTag) tag).data);
+                    } else if (tag instanceof StringTag) {
+                        String data = ((StringTag) tag).data;
+                        try {
+                            setGameRule(gameRule, Integer.parseInt(data));
+                        } catch (Exception e) {
+                            Server.getInstance().getLogger().warning("Invalid integer game rule '" + name + "' value: " + data);
+                        }
+                    }
+                    break;
+                case FLOAT:
+                    if (tag instanceof FloatTag) {
+                        setGameRule(gameRule, ((FloatTag) tag).data);
+                    } else if (tag instanceof StringTag) {
+                        String data = ((StringTag) tag).data;
+                        try {
+                            setGameRule(gameRule, Float.parseFloat(data));
+                        } catch (Exception e) {
+                            Server.getInstance().getLogger().warning("Invalid float game rule '" + name + "' value: " + data);
+                        }
+                    }
+                    break;
+            }
+        });
+    }
+
+    @Override
+    public String toString() {
+        StringJoiner joiner = new StringJoiner(", ");
+        gameRules.forEach((rule, value) -> joiner.add(rule.getBedrockName() + " = " + value.value.toString()));
+        return joiner.toString();
     }
 
     public enum Type {
@@ -205,7 +284,6 @@ public class GameRules {
         abstract void write(BinaryStream pk, Value value);
     }
 
-    @ToString
     public static class Value<T> {
         private final Type type;
         private T value;
@@ -250,6 +328,11 @@ public class GameRules {
         public void write(BinaryStream pk) {
             pk.putUnsignedVarInt(type.ordinal());
             type.write(pk, this);
+        }
+
+        @Override
+        public String toString() {
+            return value.toString();
         }
     }
 }

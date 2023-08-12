@@ -174,7 +174,7 @@ public class LevelDB implements LevelProvider {
                 .putInt("SpawnZ", spawnPosition.getFloorZ())
 //                .putString("baseGameVersion", generatorType != Generator.TYPE_OLD ? "*" : GameVersion.V1_17_40.toString())
                 ;
-        options.getGameRules().writeNBT(levelData, true);
+        options.getGameRules().writeBedrockNBT(levelData);
 
         try (OutputStream stream = Files.newOutputStream(dirPath.resolve("level.dat"))) {
             byte[] data = NBTIO.write(levelData, ByteOrder.LITTLE_ENDIAN);
@@ -1177,13 +1177,13 @@ public class LevelDB implements LevelProvider {
     @Override
     public GameRules getGamerules() {
         GameRules rules = GameRules.getDefault();
-        rules.readNBT(this.levelData);
+        rules.readBedrockNBT(this.levelData);
         return rules;
     }
 
     @Override
     public void setGameRules(GameRules rules) {
-        rules.writeNBT(this.levelData, true);
+        rules.writeBedrockNBT(this.levelData);
     }
 
     @Override
