@@ -278,6 +278,8 @@ public class Player extends EntityHuman implements CommandSender, InventoryHolde
     public int pickedXPOrb = 0;
 
     protected int protocol;
+    @Nullable
+    protected StaticVersion blockVersion;
 
     protected int formWindowCount = 0;
     protected Int2ObjectMap<FormWindow> formWindows = new Int2ObjectOpenHashMap<>();
@@ -816,6 +818,8 @@ public class Player extends EntityHuman implements CommandSender, InventoryHolde
                 int chunkZ = Level.getHashZ(index);
                 this.unloadChunk(chunkX, chunkZ, oldLevel);
             }
+
+            targetLevel.onPlayerAdd(this);
 
             this.usedChunks = new Long2BooleanOpenHashMap();
 
@@ -6169,5 +6173,10 @@ public class Player extends EntityHuman implements CommandSender, InventoryHolde
      * @since 1.16.100
      */
     public void sendMotionPredictionHints(long entityRuntimeId, Vector3f motion, boolean onGround) {
+    }
+
+    @Nullable
+    public StaticVersion getBlockVersion() {
+        return blockVersion;
     }
 }

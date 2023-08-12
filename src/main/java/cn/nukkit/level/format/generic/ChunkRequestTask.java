@@ -36,14 +36,16 @@ import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.nio.file.StandardOpenOption;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.EnumMap;
+import java.util.EnumSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 import static cn.nukkit.SharedConstants.*;
 import static cn.nukkit.level.format.leveldb.LevelDbConstants.*;
 
-//TODO: 接入 GameVersion 按需准备数据
 @Log4j2
 public class ChunkRequestTask extends AsyncTask<Void> {
     private static final byte[] EMPTY = new byte[0];
@@ -92,6 +94,7 @@ public class ChunkRequestTask extends AsyncTask<Void> {
     int x;
     int z;
     Level level;
+    Set<StaticVersion> requestedVersions;
 
     boolean success;
 
@@ -116,6 +119,8 @@ public class ChunkRequestTask extends AsyncTask<Void> {
         x = chunk.getX();
         z = chunk.getZ();
         level = chunk.getProvider().getLevel();
+        Set<StaticVersion> requestedVersions = level.getRequestChunkVersions().keySet();
+        this.requestedVersions = requestedVersions.isEmpty() ? Collections.emptySet() : EnumSet.copyOf(requestedVersions);
         timestamp = chunk.getChanges();
     }
 
@@ -320,6 +325,10 @@ public class ChunkRequestTask extends AsyncTask<Void> {
                     continue;
                 }
 
+                if (!requestedVersions.contains(version)) {
+                    continue;
+                }
+
                 byte[][] blockStorages = new byte[extendedCount][];
                 payloads.put(version, encodeChunk(chunk, sections, count, blockStorages, biomePalettesNew, biomePalettes, fullChunkBlockEntities, version));
 
@@ -401,8 +410,8 @@ public class ChunkRequestTask extends AsyncTask<Void> {
                         Level.getChunkCacheFromData(x, z, LevelChunkPacket.CLIENT_REQUEST_TRUNCATED_COLUMN_FAKE_COUNT, extendedCount, subModePayload, false, true),
                         Level.getChunkCacheFromData(x, z, count, payload, false, true),
                         Level.getChunkCacheFromData(x, z, count, payload, false, false),
-                        Level.getChunkCacheFromData(x, z, count, payloadOld, true, false)
-                );
+                        Level.getChunkCacheFromData(x, z, count, payloadOld, true, false),
+                        requestedVersions);
             }
             success = true;
         } catch (Exception e) {
@@ -415,7 +424,7 @@ public class ChunkRequestTask extends AsyncTask<Void> {
         if (!success) {
             return;
         }
-        level.chunkRequestCallback(timestamp, x, z, count, chunkBlobCache, chunkPacketCache, payload, payloadOld, subModePayload, subModePayloadNew, payloads, subChunkPayloads, heightmapType, heightmapData, emptySection);
+        level.chunkRequestCallback(timestamp, x, z, count, chunkBlobCache, chunkPacketCache, payload, payloadOld, subModePayload, subModePayloadNew, payloads, subChunkPayloads, heightmapType, heightmapData, emptySection, requestedVersions);
     }
 
     private static byte[] encodeChunk(boolean isOld, Chunk chunk, ChunkSection[] sections, int count, byte[] blockEntities) {

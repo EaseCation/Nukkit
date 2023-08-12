@@ -4,7 +4,9 @@ import cn.nukkit.level.GlobalBlockPaletteInterface.StaticVersion;
 import cn.nukkit.network.protocol.BatchPacket;
 import cn.nukkit.network.protocol.SubChunkPacket;
 
+import javax.annotation.Nullable;
 import java.util.Map;
+import java.util.Set;
 
 public class ChunkPacketCache {
 
@@ -23,7 +25,9 @@ public class ChunkPacketCache {
     private final BatchPacket packet;
     private final BatchPacket packetOld;
 
-    public ChunkPacketCache(Map<StaticVersion, BatchPacket> packets, Map<StaticVersion, BatchPacket[]> subChunkPackets, Map<StaticVersion, SubChunkPacket[]> subChunkPacketsUncompressed, BatchPacket subModePacketNew, BatchPacket subModePacket, BatchPacket subModePacketTruncatedNew, BatchPacket subModePacketTruncated, BatchPacket packet116, BatchPacket packet, BatchPacket packetOld) {
+    private final Set<StaticVersion> requestedVersions;
+
+    public ChunkPacketCache(Map<StaticVersion, BatchPacket> packets, Map<StaticVersion, BatchPacket[]> subChunkPackets, Map<StaticVersion, SubChunkPacket[]> subChunkPacketsUncompressed, BatchPacket subModePacketNew, BatchPacket subModePacket, BatchPacket subModePacketTruncatedNew, BatchPacket subModePacketTruncated, BatchPacket packet116, BatchPacket packet, BatchPacket packetOld, Set<StaticVersion> requestedVersions) {
         this.packets = packets;
         this.subChunkPackets = subChunkPackets;
         this.subChunkPacketsUncompressed = subChunkPacketsUncompressed;
@@ -34,16 +38,20 @@ public class ChunkPacketCache {
         this.packet116 = packet116;
         this.packet = packet;
         this.packetOld = packetOld;
+        this.requestedVersions = requestedVersions;
     }
 
+    @Nullable
     public BatchPacket getPacket(StaticVersion version) {
         return this.packets.get(version);
     }
 
+    @Nullable
     public BatchPacket[] getSubPackets(StaticVersion version) {
         return this.subChunkPackets.get(version);
     }
 
+    @Nullable
     public SubChunkPacket[] getSubPacketsUncompressed(StaticVersion version) {
         return this.subChunkPacketsUncompressed.get(version);
     }
@@ -74,6 +82,10 @@ public class ChunkPacketCache {
 
     public BatchPacket getPacketOld() {
         return packetOld;
+    }
+
+    public boolean hasRequested(StaticVersion blockVersion) {
+        return requestedVersions.contains(blockVersion);
     }
 
     public void compress() {

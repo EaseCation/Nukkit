@@ -247,6 +247,8 @@ public class Level implements ChunkManager, Metadatable {
 //    private final List<BlockUpdateEntry> nextTickUpdates = Lists.newArrayList();
     //private final Map<BlockVector3, Integer> updateQueueIndex = new HashMap<>();
 
+    private final Map<StaticVersion, LongSet> requestChunkVersions = new EnumMap<>(StaticVersion.class);
+
     private final Long2ObjectMap<Int2ObjectMap<Player>> subChunkSendQueue = new Long2ObjectOpenHashMap<>();
 
     private final ConcurrentMap<Long, Int2ObjectMap<Player>> chunkSendQueue = new ConcurrentHashMap<>();
@@ -3353,28 +3355,24 @@ public class Level implements ChunkManager, Metadatable {
             return false;
         }
         long index = Level.chunkHash(x, z);
-
-        Int2ObjectMap<Player> loaders = this.subChunkSendQueue.get(index);
-        if (loaders == null) {
-            loaders = new Int2ObjectOpenHashMap<>();
-            this.subChunkSendQueue.put(index, loaders);
-        }
-        loaders.put(loaderId, player);
-
-        this.chunkSendQueue.putIfAbsent(index, new Int2ObjectOpenHashMap<>());
+        this.subChunkSendQueue.computeIfAbsent(index, key -> new Int2ObjectOpenHashMap<>()).put(loaderId, player);
+        this.chunkSendQueue.computeIfAbsent(index, key -> new Int2ObjectOpenHashMap<>());
         return true;
     }
 
     public void requestChunk(int x, int z, Player player) {
         Preconditions.checkState(player.getLoaderId() > 0, player.getName() + " has no chunk loader");
         long index = Level.chunkHash(x, z);
-        this.chunkSendQueue.putIfAbsent(index, new Int2ObjectOpenHashMap<>());
-        this.chunkSendQueue.get(index).put(player.getLoaderId(), player);
+        this.chunkSendQueue.computeIfAbsent(index, key -> new Int2ObjectOpenHashMap<>()).put(player.getLoaderId(), player);
     }
 
     private void sendChunk(int x, int z, long index, int subChunkCount, ChunkBlobCache chunkBlobCache, ChunkPacketCache chunkPacketCache) {
-        if (this.chunkSendTasks.contains(index)) {
-            for (Player player : this.chunkSendQueue.get(index).values()) {
+        if (this.chunkSendTasks.remove(index)) {
+            Int2ObjectMap<Player> loaders = this.chunkSendQueue.remove(index);
+            if (loaders == null) {
+                return;
+            }
+            for (Player player : loaders.values()) {
                 if (player.isConnected() && player.usedChunks.containsKey(index)) {
                     int protocol = player.getProtocol();
                     if (protocol < 361) {
@@ -3384,8 +3382,18 @@ public class Level implements ChunkManager, Metadatable {
                     } else if (protocol < StaticVersion.getValues()[0].getProtocol()) {
                         player.sendChunk(x, z, subChunkCount, chunkBlobCache, chunkPacketCache.getPacket116());
                     } else if (protocol < 475) {
-                        player.sendChunk(x, z, subChunkCount, chunkBlobCache, chunkPacketCache.getPacket(
-                                StaticVersion.fromProtocol(protocol, player.isNetEaseClient())));
+                        StaticVersion blockVersion = player.getBlockVersion();
+                        if (blockVersion == null) {
+                            continue;
+                        }
+
+                        BatchPacket packet = chunkPacketCache.getPacket(blockVersion);
+                        if (packet == null) {
+                            requestChunk(x, z, player);
+                            continue;
+                        }
+
+                        player.sendChunk(x, z, subChunkCount, chunkBlobCache, packet);
                     } else if (player.isSubChunkRequestAvailable()) {
                         if (protocol < 486 || !ENABLE_SUB_CHUNK_NETWORK_OPTIMIZATION) {
                             if (protocol < 503) {
@@ -3403,46 +3411,136 @@ public class Level implements ChunkManager, Metadatable {
                                     chunkPacketCache.getSubModePacketTruncatedNew());
                         }
                     } else {
-                        player.sendChunk(x, z, subChunkCount + PADDING_SUB_CHUNK_COUNT, chunkBlobCache,
-                                chunkPacketCache.getPacket(StaticVersion.fromProtocol(protocol, player.isNetEaseClient())));
+                        StaticVersion blockVersion = player.getBlockVersion();
+                        if (blockVersion == null) {
+                            continue;
+                        }
+
+                        BatchPacket packet = chunkPacketCache.getPacket(blockVersion);
+                        if (packet == null) {
+                            requestChunk(x, z, player);
+                            continue;
+                        }
+
+                        player.sendChunk(x, z, subChunkCount + PADDING_SUB_CHUNK_COUNT, chunkBlobCache, packet);
                     }
                 }
             }
-
-            this.chunkSendQueue.remove(index);
-            this.chunkSendTasks.remove(index);
         }
     }
 
     private void processChunkRequest() {
         this.timings.syncChunkSendTimer.startTiming();
-        Iterator<Long> it = this.chunkSendQueue.keySet().iterator();
+        Iterator<Map.Entry<Long, Int2ObjectMap<Player>>> it = this.chunkSendQueue.entrySet().iterator();
         while (it.hasNext()) {
-            long index = it.next();
-            if (this.chunkSendTasks.contains(index)) {
+            Map.Entry<Long, Int2ObjectMap<Player>> entry = it.next();
+            long index = entry.getKey();
+            if (!this.chunkSendTasks.add(index)) {
                 continue;
             }
             int x = getHashX(index);
             int z = getHashZ(index);
-            this.chunkSendTasks.add(index);
             BaseFullChunk chunk = getChunk(x, z);
             if (chunk != null) {
                 ChunkBlobCache blobCache = chunk.getBlobCache();
                 ChunkPacketCache packetCache = chunk.getPacketCache();
                 if (blobCache != null && packetCache != null) {
-                    this.sendChunk(x, z, index, blobCache.getSubChunkCount(), blobCache, packetCache);
+                    int subChunkCount = blobCache.getSubChunkCount();
 
-                    Int2ObjectMap<Player> loaders = this.subChunkSendQueue.remove(index);
-                    if (loaders != null) {
-                        for (Player player : loaders.values()) {
-                            if (!player.isConnected()) {
+                    boolean requestFullChunk = false;
+                    Iterator<Player> iter = entry.getValue().values().iterator();
+                    while (iter.hasNext()) {
+                        Player player = iter.next();
+
+                        if (!player.isConnected() || !player.usedChunks.containsKey(index)) {
+                            iter.remove();
+                            continue;
+                        }
+
+                        StaticVersion blockVersion = player.getBlockVersion();
+                        if (blockVersion != null && !packetCache.hasRequested(blockVersion)) {
+                            requestFullChunk = true;
+                            continue;
+                        }
+
+                        int protocol = player.getProtocol();
+                        if (protocol < 361) {
+                            player.sendChunk(x, z, subChunkCount, blobCache, packetCache.getPacketOld());
+                        } else if (protocol < 407) {
+                            player.sendChunk(x, z, subChunkCount, blobCache, packetCache.getPacket());
+                        } else if (protocol < StaticVersion.getValues()[0].getProtocol()) {
+                            player.sendChunk(x, z, subChunkCount, blobCache, packetCache.getPacket116());
+                        } else if (protocol < 475) {
+                            if (blockVersion == null) {
+                                iter.remove();
                                 continue;
                             }
+
+                            player.sendChunk(x, z, subChunkCount, blobCache, packetCache.getPacket(blockVersion));
+                        } else if (player.isSubChunkRequestAvailable()) {
+                            if (protocol < 486 || !ENABLE_SUB_CHUNK_NETWORK_OPTIMIZATION) {
+                                if (protocol < 503) {
+                                    player.sendChunk(x, z, subChunkCount + PADDING_SUB_CHUNK_COUNT, blobCache, packetCache.getSubModePacket());
+                                } else {
+                                    player.sendChunk(x, z, subChunkCount + PADDING_SUB_CHUNK_COUNT, blobCache, packetCache.getSubModePacketNew());
+                                }
+                            } else if (protocol < 503) {
+                                player.sendChunk(x, z, subChunkCount + PADDING_SUB_CHUNK_COUNT, blobCache, packetCache.getSubModePacketTruncated());
+                            } else {
+                                player.sendChunk(x, z, subChunkCount + PADDING_SUB_CHUNK_COUNT, blobCache, packetCache.getSubModePacketTruncatedNew());
+                            }
+                        } else {
+                            if (blockVersion == null) {
+                                iter.remove();
+                                continue;
+                            }
+
+                            player.sendChunk(x, z, subChunkCount + PADDING_SUB_CHUNK_COUNT, blobCache, packetCache.getPacket(blockVersion));
+                        }
+
+                        iter.remove();
+                    }
+
+                    boolean requestSubChunks = false;
+                    Int2ObjectMap<Player> loaders = this.subChunkSendQueue.get(index);
+                    if (loaders != null) {
+                        Iterator<Player> iterator = loaders.values().iterator();
+                        while (iterator.hasNext()) {
+                            Player player = iterator.next();
+
+                            if (!player.isConnected()) {
+                                iterator.remove();
+                                continue;
+                            }
+
+                            StaticVersion blockVersion = player.getBlockVersion();
+                            if (blockVersion == null) {
+                                iterator.remove();
+                                continue;
+                            }
+
+                            if (!packetCache.hasRequested(blockVersion)) {
+                                requestSubChunks = true;
+                                continue;
+                            }
+
                             player.sendSubChunks(this.getDimension().ordinal(), x, z, blobCache.getSubChunkCount(), blobCache, packetCache, blobCache.getHeightMapType(), blobCache.getHeightMapData());
+                            iterator.remove();
+                        }
+
+                        if (!requestSubChunks) {
+                            this.subChunkSendQueue.remove(index);
                         }
                     }
 
-                    continue;
+                    if (!requestFullChunk) {
+                        this.chunkSendQueue.remove(index);
+                        this.chunkSendTasks.remove(index);
+
+                        if (!requestSubChunks) {
+                            continue;
+                        }
+                    }
                 }
             }
             this.timings.syncChunkSendPrepareTimer.startTiming();
@@ -3463,7 +3561,7 @@ public class Level implements ChunkManager, Metadatable {
      * Chunk request callback on main thread
      * If this.cacheChunks == false, the ChunkPacketCache can be null;
      */
-    public void chunkRequestCallback(long timestamp, int x, int z, int subChunkCount, ChunkBlobCache chunkBlobCache, ChunkPacketCache chunkPacketCache, byte[] payload, byte[] payloadOld, byte[] subModePayload, byte[] subModePayloadNew, Map<StaticVersion, byte[]> payloads, Map<StaticVersion, byte[][]> subChunkPayloads, byte[] heightMapType, byte[][] heightMapData, boolean[] emptySection) {
+    public void chunkRequestCallback(long timestamp, int x, int z, int subChunkCount, ChunkBlobCache chunkBlobCache, ChunkPacketCache chunkPacketCache, byte[] payload, byte[] payloadOld, byte[] subModePayload, byte[] subModePayloadNew, Map<StaticVersion, byte[]> payloads, Map<StaticVersion, byte[][]> subChunkPayloads, byte[] heightMapType, byte[][] heightMapData, boolean[] emptySection, Set<StaticVersion> requestedVersions) {
         this.timings.syncChunkSendTimer.startTiming();
         long index = Level.chunkHash(x, z);
 
@@ -3513,8 +3611,8 @@ public class Level implements ChunkManager, Metadatable {
                         getChunkCacheFromData(x, z, LevelChunkPacket.CLIENT_REQUEST_TRUNCATED_COLUMN_FAKE_COUNT, extendedCount, subModePayload, false, true),
                         getChunkCacheFromData(x, z, subChunkCount, payload, false, true),
                         getChunkCacheFromData(x, z, subChunkCount, payload, false, false),
-                        getChunkCacheFromData(x, z, subChunkCount, payloadOld, true, false)
-                );
+                        getChunkCacheFromData(x, z, subChunkCount, payloadOld, true, false),
+                        requestedVersions);
             }
             BaseFullChunk chunk = getChunk(x, z, false);
             if (chunk != null && chunk.getChanges() <= timestamp) {
@@ -3529,6 +3627,17 @@ public class Level implements ChunkManager, Metadatable {
                     if (!player.isConnected()) {
                         continue;
                     }
+
+                    StaticVersion blockVersion = player.getBlockVersion();
+                    if (blockVersion == null) {
+                        continue;
+                    }
+
+                    if (!payloads.containsKey(blockVersion)) {
+                        requestSubChunks(x, z, player);
+                        continue;
+                    }
+
                     player.sendSubChunks(this.getDimension().ordinal(), x, z, subChunkCount, chunkBlobCache, chunkPacketCache, heightMapType, heightMapData);
                 }
             }
@@ -3537,29 +3646,43 @@ public class Level implements ChunkManager, Metadatable {
             return;
         }
 
-        if (this.chunkSendTasks.contains(index)) {
-            for (Player player : this.chunkSendQueue.get(index).values()) {
+        Int2ObjectMap<Player> chunkLoaders;
+        if (this.chunkSendTasks.remove(index) && (chunkLoaders = this.chunkSendQueue.remove(index)) != null) {
+            for (Player player : chunkLoaders.values()) {
                 if (player.isConnected() && player.usedChunks.containsKey(index)) {
+                    StaticVersion blockVersion = player.getBlockVersion();
+                    byte[] data = null;
+                    if (blockVersion != null) {
+                        data = payloads.get(blockVersion);
+                        if (data == null) {
+                            requestChunk(x, z, player);
+                            continue;
+                        }
+                    }
+
                     int protocol = player.getProtocol();
                     if (protocol < 361) {
                         player.sendChunk(x, z, subChunkCount, chunkBlobCache, payloadOld, subModePayload);
                     } else if (protocol < StaticVersion.getValues()[0].getProtocol()) {
                         player.sendChunk(x, z, subChunkCount, chunkBlobCache, payload, subModePayload);
                     } else if (protocol < 475) {
-                        player.sendChunk(x, z, subChunkCount, chunkBlobCache,
-                                payloads.get(StaticVersion.fromProtocol(protocol, player.isNetEaseClient())), subModePayload);
+                        if (data == null) {
+                            continue;
+                        }
+                        player.sendChunk(x, z, subChunkCount, chunkBlobCache, data, subModePayload);
                     } else if (protocol < 503) {
-                        player.sendChunk(x, z, subChunkCount + PADDING_SUB_CHUNK_COUNT, chunkBlobCache,
-                                payloads.get(StaticVersion.fromProtocol(protocol, player.isNetEaseClient())), subModePayload);
+                        if (data == null) {
+                            continue;
+                        }
+                        player.sendChunk(x, z, subChunkCount + PADDING_SUB_CHUNK_COUNT, chunkBlobCache, data, subModePayload);
                     } else {
-                        player.sendChunk(x, z, subChunkCount + PADDING_SUB_CHUNK_COUNT, chunkBlobCache,
-                                payloads.get(StaticVersion.fromProtocol(protocol, player.isNetEaseClient())), subModePayloadNew);
+                        if (data == null) {
+                            continue;
+                        }
+                        player.sendChunk(x, z, subChunkCount + PADDING_SUB_CHUNK_COUNT, chunkBlobCache, data, subModePayloadNew);
                     }
                 }
             }
-
-            this.chunkSendQueue.remove(index);
-            this.chunkSendTasks.remove(index);
         }
 
         Int2ObjectMap<Player> loaders = this.subChunkSendQueue.remove(index);
@@ -3568,6 +3691,17 @@ public class Level implements ChunkManager, Metadatable {
                 if (!player.isConnected()) {
                     continue;
                 }
+
+                StaticVersion blockVersion = player.getBlockVersion();
+                if (blockVersion == null) {
+                    continue;
+                }
+
+                if (!payloads.containsKey(blockVersion)) {
+                    requestSubChunks(x, z, player);
+                    continue;
+                }
+
                 player.sendSubChunks(this.getDimension().ordinal(), x, z, subChunkCount, chunkBlobCache, subChunkPayloads, heightMapType, heightMapData);
             }
         }
@@ -3583,6 +3717,8 @@ public class Level implements ChunkManager, Metadatable {
         if (entity instanceof Player) {
             this.players.remove(entity.getId());
             this.checkSleep();
+
+            this.onPlayerRemove((Player) entity);
         } else {
             entity.close();
         }
@@ -3599,6 +3735,8 @@ public class Level implements ChunkManager, Metadatable {
         if (entity instanceof Player) {
             this.players.remove(entity.getId());
             this.checkSleep();
+
+            this.onPlayerRemove((Player) entity);
         }
 
         this.entities.remove(entity.getId());
@@ -4822,5 +4960,29 @@ public class Level implements ChunkManager, Metadatable {
 
     public Long2LongMap getChunkUnloadQueue() {
         return unloadQueue;
+    }
+
+    public void onPlayerAdd(Player player) {
+        StaticVersion blockVersion = player.getBlockVersion();
+        if (blockVersion != null) {
+            requestChunkVersions.computeIfAbsent(blockVersion, key -> new LongOpenHashSet()).add(player.getId());
+        }
+    }
+
+    public void onPlayerRemove(Player player) {
+        StaticVersion blockVersion = player.getBlockVersion();
+        if (blockVersion != null) {
+            LongSet players = requestChunkVersions.get(blockVersion);
+            if (players != null) {
+                players.remove(player.getId());
+                if (players.isEmpty()) {
+                    requestChunkVersions.remove(blockVersion);
+                }
+            }
+        }
+    }
+
+    public Map<StaticVersion, LongSet> getRequestChunkVersions() {
+        return requestChunkVersions;
     }
 }
