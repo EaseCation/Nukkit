@@ -162,7 +162,6 @@ public class BlockEntityBrewingStand extends BlockEntitySpawnable implements Inv
             return true;
         }
         lastUpdate = currentTick;
-        timing.startTiming();
 
         boolean hasUpdate = false;
 
@@ -208,7 +207,6 @@ public class BlockEntityBrewingStand extends BlockEntitySpawnable implements Inv
                 this.server.getPluginManager().callEvent(e);
                 if (e.isCancelled()) {
                     brewing = false;
-                    timing.stopTiming();
                     return false;
                 }
             }
@@ -257,7 +255,6 @@ public class BlockEntityBrewingStand extends BlockEntitySpawnable implements Inv
         }
         brewing = canBrew;
 
-        timing.stopTiming();
         return hasUpdate;
     }
 

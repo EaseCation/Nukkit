@@ -78,8 +78,6 @@ import cn.nukkit.potion.Potion;
 import cn.nukkit.resourcepacks.ResourcePack;
 import cn.nukkit.scheduler.AsyncTask;
 import cn.nukkit.utils.*;
-import co.aikar.timings.Timing;
-import co.aikar.timings.Timings;
 import com.google.common.collect.BiMap;
 import com.google.common.collect.HashBiMap;
 import com.google.common.primitives.Floats;
@@ -955,14 +953,11 @@ public class Player extends EntityHuman implements CommandSender, InventoryHolde
             return;
         }
 
-        Timings.playerChunkSendTimer.startTiming();
-
         this.sendQueuedChunk();
 
         if ((this.canDoFirstSpawn() || System.currentTimeMillis() - this.creationTime > 15000) && !this.spawned && this.teleportPosition == null) {
             this.doFirstSpawn();
         }
-        Timings.playerChunkSendTimer.stopTiming();
     }
 
     protected boolean canDoFirstSpawn() {
@@ -1130,8 +1125,6 @@ public class Player extends EntityHuman implements CommandSender, InventoryHolde
             return false;
         }
 
-        Timings.playerChunkOrderTimer.startTiming();
-
         this.nextChunkOrderRun = 200;
 
         loadQueue.clear();
@@ -1164,7 +1157,6 @@ public class Player extends EntityHuman implements CommandSender, InventoryHolde
             this.unloadChunk(Level.getHashX(index), Level.getHashZ(index));
         }
 
-        Timings.playerChunkOrderTimer.stopTiming();
         return true;
     }
 
@@ -1185,7 +1177,7 @@ public class Player extends EntityHuman implements CommandSender, InventoryHolde
             return false;
         }
 
-        try (Timing timing = Timings.getSendDataPacketTiming(packet)) {
+        {
             DataPacketSendEvent ev = new DataPacketSendEvent(this, packet);
             this.server.getPluginManager().callEvent(ev);
             if (ev.isCancelled()) {
@@ -1515,8 +1507,6 @@ public class Player extends EntityHuman implements CommandSender, InventoryHolde
             return true;
         }
 
-        Timings.entityMoveTimer.startTiming();
-
         AxisAlignedBB newBB = this.boundingBox.getOffsetBoundingBox(dx, dy, dz);
 
         if (this.isSpectator() || server.getAllowFlight() || !this.level.hasCollision(this, newBB, false)) {
@@ -1562,7 +1552,6 @@ public class Player extends EntityHuman implements CommandSender, InventoryHolde
             this.motionZ = dz;*/
         }
 
-        Timings.entityMoveTimer.stopTiming();
         return true;
     }
 
@@ -2128,8 +2117,6 @@ public class Player extends EntityHuman implements CommandSender, InventoryHolde
      * @return Entity|null    either NULL if no entity is found or an instance of the entity
      */
     public EntityInteractable getEntityPlayerLookingAt(int maxDistance) {
-        timing.startTiming();
-
         EntityInteractable entity = null;
 
         // just a fix because player MAY not be fully initialized
@@ -2154,7 +2141,6 @@ public class Player extends EntityHuman implements CommandSender, InventoryHolde
             }
         }
 
-        timing.stopTiming();
 
         return entity;
     }
@@ -2454,16 +2440,14 @@ public class Player extends EntityHuman implements CommandSender, InventoryHolde
             return;
         }
 
-        try (Timing timing = Timings.getReceiveDataPacketTiming(packet)) {
+        {
             DataPacketReceiveEvent ev = new DataPacketReceiveEvent(this, packet);
             this.server.getPluginManager().callEvent(ev);
             if (ev.isCancelled()) {
-                timing.stopTiming();
                 return;
             }
 
             if (packet.pid() == ProtocolInfo.BATCH_PACKET) {
-                timing.stopTiming();
 //                this.server.getNetwork().processBatch((BatchPacket) packet, this);
                 // Batch packets are already decoded in Synapse
                 onPacketViolation(PacketViolationReason.NESTED_BATCH);
@@ -3226,9 +3210,7 @@ public class Player extends EntityHuman implements CommandSender, InventoryHolde
                         break;
                     }
 
-                    Timings.playerCommandTimer.startTiming();
                     this.server.dispatchCommand(playerCommandPreprocessEvent.getPlayer(), playerCommandPreprocessEvent.getMessage().substring(1));
-                    Timings.playerCommandTimer.stopTiming();
                     break;
                 case ProtocolInfo.TEXT_PACKET:
                     if (!this.spawned || !this.isAlive()) {

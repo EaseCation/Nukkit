@@ -37,8 +37,6 @@ public abstract class EntityHanging extends Entity {
         }
         this.lastUpdate = currentTick;
 
-        this.timing.startTiming();
-
         if (!this.isAlive()) {
             this.close();
         } else if ((this.checkInterval += tickDiff) >= 100) {
@@ -50,7 +48,6 @@ public abstract class EntityHanging extends Entity {
             }
         }
 
-        this.timing.stopTiming();
         return true;
     }
 

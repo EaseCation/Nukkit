@@ -115,8 +115,6 @@ public class EntityPrimedTNT extends Entity implements EntityExplosive {
         }
         lastUpdate = currentTick;
 
-        this.timing.startTiming();
-
         this.setDataProperty(new IntEntityData(DATA_FUSE_LENGTH, fuse));
         this.getLevel().addParticle(new SmokeParticle(this.add(0, 1, 0)));
         this.getLevel().addLevelSoundEvent(this, LevelSoundEventPacket.SOUND_FIZZ);
@@ -151,8 +149,6 @@ public class EntityPrimedTNT extends Entity implements EntityExplosive {
                 this.close();
             }
         }
-
-        this.timing.stopTiming();
 
         return hasUpdate || fuse >= 0 || Math.abs(motionX) > 0.00001 || Math.abs(motionY) > 0.00001 || Math.abs(motionZ) > 0.00001;
     }

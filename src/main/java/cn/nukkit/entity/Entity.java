@@ -34,10 +34,6 @@ import cn.nukkit.network.protocol.*;
 import cn.nukkit.plugin.Plugin;
 import cn.nukkit.potion.Effect;
 import cn.nukkit.utils.ChunkException;
-import co.aikar.timings.Timing;
-import co.aikar.timings.Timings;
-import co.aikar.timings.TimingsHistory;
-import co.aikar.timings.TimingsManager;
 import com.google.common.collect.Iterables;
 import it.unimi.dsi.fastutil.ints.Int2ObjectMap;
 import it.unimi.dsi.fastutil.objects.Object2ObjectOpenHashMap;
@@ -164,11 +160,7 @@ public abstract class Entity extends Location implements Metadatable, EntityData
 
     public boolean closed = false;
 
-    protected Timing timing;
-
     protected boolean isPlayer = false;
-
-    private final Timing fullEntityUpdateTiming;
 
     private volatile boolean initialized;
 
@@ -217,7 +209,6 @@ public abstract class Entity extends Location implements Metadatable, EntityData
     }
 
     public Entity(FullChunk chunk, CompoundTag nbt) {
-        this.fullEntityUpdateTiming = TimingsManager.getTiming("FullEntityUpdate - " + this.getClass().getName());
         if (this instanceof Player) {
             return;
         }
@@ -281,8 +272,6 @@ public abstract class Entity extends Location implements Metadatable, EntityData
             return;
         }
         this.initialized = true;
-
-        this.timing = Timings.getEntityTiming(this);
 
         this.isPlayer = this instanceof Player;
         this.temporalVector = new Vector3();
@@ -1226,8 +1215,6 @@ public abstract class Entity extends Location implements Metadatable, EntityData
     }
 
     public boolean entityBaseTick(int tickDiff) {
-        Timings.entityBaseTickTimer.startTiming();
-
         if (!this.isPlayer) {
             this.blocksAround = null;
             this.collisionBlocks = null;
@@ -1240,7 +1227,6 @@ public abstract class Entity extends Location implements Metadatable, EntityData
             if (!this.isPlayer) {
                 this.close();
             }
-            Timings.entityBaseTickTimer.stopTiming();
             return false;
         }
         if (riding != null && !riding.isAlive() && riding instanceof EntityRideable) {
@@ -1307,9 +1293,7 @@ public abstract class Entity extends Location implements Metadatable, EntityData
 
         this.age += tickDiff;
         this.ticksLived += tickDiff;
-        TimingsHistory.activatedEntityTicks++;
 
-        Timings.entityBaseTickTimer.stopTiming();
         return hasUpdate;
     }
 
@@ -1377,8 +1361,6 @@ public abstract class Entity extends Location implements Metadatable, EntityData
             return false;
         }
 
-        this.fullEntityUpdateTiming.startTiming();
-
         if (!this.isAlive()) {
             ++this.deadTicks;
             if (this.deadTicks >= 10) {
@@ -1401,8 +1383,6 @@ public abstract class Entity extends Location implements Metadatable, EntityData
         boolean hasUpdate = this.entityBaseTick(tickDiff);
 
         this.updateMovement();
-
-        this.fullEntityUpdateTiming.stopTiming();
 
         return hasUpdate;
     }
@@ -1860,8 +1840,6 @@ public abstract class Entity extends Location implements Metadatable, EntityData
             return true;
         }
 
-        Timings.entityMoveTimer.startTiming();
-
         AxisAlignedBB newBB = this.boundingBox.getOffsetBoundingBox(dx, dy, dz);
 
         if (server.getAllowFlight() || !this.level.hasCollision(this, newBB, false)) {
@@ -1885,7 +1863,6 @@ public abstract class Entity extends Location implements Metadatable, EntityData
         /*this.motionX = dx;
         this.motionY = dy;
         this.motionZ = dz;*/
-        Timings.entityMoveTimer.stopTiming();
         return true;
     }
 
@@ -1900,9 +1877,6 @@ public abstract class Entity extends Location implements Metadatable, EntityData
             this.onGround = this.isPlayer;
             return true;
         } else {
-
-            Timings.entityMoveTimer.startTiming();
-
             this.ySize *= 0.4;
 
             double movX = dx;
@@ -2000,7 +1974,6 @@ public abstract class Entity extends Location implements Metadatable, EntityData
             }
 
             //TODO: vehicle collision events (first we need to spawn them!)
-            Timings.entityMoveTimer.stopTiming();
             return true;
         }
     }

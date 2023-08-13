@@ -123,7 +123,6 @@ public class EntityFallingBlock extends Entity {
             return true;
         }
         lastUpdate = currentTick;
-        this.timing.startTiming();
 
         boolean hasUpdate = entityBaseTick(tickDiff);
 
@@ -236,8 +235,6 @@ public class EntityFallingBlock extends Entity {
 
             updateMovement();
         }
-
-        this.timing.stopTiming();
 
         return hasUpdate || !onGround || Math.abs(motionX) > 0.00001 || Math.abs(motionY) > 0.00001 || Math.abs(motionZ) > 0.00001;
     }

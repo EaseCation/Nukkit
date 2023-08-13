@@ -62,12 +62,9 @@ public class EntityMinecartTNT extends EntityMinecartAbstract implements EntityE
             return false;
         }
 
-        this.timing.startTiming();
-
         if (this.isPrimed()) {
             int tickDiff = currentTick - lastUpdate;
             if (tickDiff <= 0) {
-                this.timing.stopTiming();
                 return false;
             }
 
@@ -84,12 +81,10 @@ public class EntityMinecartTNT extends EntityMinecartAbstract implements EntityE
                     this.close();
                 }
 
-                this.timing.stopTiming();
                 return false;
             }
         }
 
-        this.timing.stopTiming();
         return super.onUpdate(currentTick);
     }
 
