@@ -3384,6 +3384,9 @@ public class Level implements ChunkManager, Metadatable {
                     } else if (protocol < 475) {
                         StaticVersion blockVersion = player.getBlockVersion();
                         if (blockVersion == null) {
+                            if (CHUNK_REQUEST_DEBUG) {
+                                player.sendMessage("request chunk: unknown block palette version");
+                            }
                             continue;
                         }
 
@@ -3413,6 +3416,9 @@ public class Level implements ChunkManager, Metadatable {
                     } else {
                         StaticVersion blockVersion = player.getBlockVersion();
                         if (blockVersion == null) {
+                            if (CHUNK_REQUEST_DEBUG) {
+                                player.sendMessage("request chunk: unknown block palette version");
+                            }
                             continue;
                         }
 
@@ -3472,6 +3478,9 @@ public class Level implements ChunkManager, Metadatable {
                             player.sendChunk(x, z, subChunkCount, blobCache, packetCache.getPacket116());
                         } else if (protocol < 475) {
                             if (blockVersion == null) {
+                                if (CHUNK_REQUEST_DEBUG) {
+                                    player.sendMessage("request chunk: unknown block palette version");
+                                }
                                 iter.remove();
                                 continue;
                             }
@@ -3491,6 +3500,9 @@ public class Level implements ChunkManager, Metadatable {
                             }
                         } else {
                             if (blockVersion == null) {
+                                if (CHUNK_REQUEST_DEBUG) {
+                                    player.sendMessage("request chunk: unknown block palette version");
+                                }
                                 iter.remove();
                                 continue;
                             }
@@ -3515,6 +3527,9 @@ public class Level implements ChunkManager, Metadatable {
 
                             StaticVersion blockVersion = player.getBlockVersion();
                             if (blockVersion == null) {
+                                if (CHUNK_REQUEST_DEBUG) {
+                                    player.sendMessage("request chunk: unknown block palette version");
+                                }
                                 iterator.remove();
                                 continue;
                             }
@@ -3630,6 +3645,9 @@ public class Level implements ChunkManager, Metadatable {
 
                     StaticVersion blockVersion = player.getBlockVersion();
                     if (blockVersion == null) {
+                        if (CHUNK_REQUEST_DEBUG) {
+                            player.sendMessage("request chunk: unknown block palette version");
+                        }
                         continue;
                     }
 
@@ -3658,6 +3676,8 @@ public class Level implements ChunkManager, Metadatable {
                             requestChunk(x, z, player);
                             continue;
                         }
+                    } else if (CHUNK_REQUEST_DEBUG) {
+                        player.sendMessage("request chunk: unknown block palette version");
                     }
 
                     int protocol = player.getProtocol();
@@ -3694,6 +3714,9 @@ public class Level implements ChunkManager, Metadatable {
 
                 StaticVersion blockVersion = player.getBlockVersion();
                 if (blockVersion == null) {
+                    if (CHUNK_REQUEST_DEBUG) {
+                        player.sendMessage("request chunk: unknown block palette version");
+                    }
                     continue;
                 }
 

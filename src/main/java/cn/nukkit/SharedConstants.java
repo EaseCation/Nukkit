@@ -31,6 +31,8 @@ public final class SharedConstants {
 
     public static final boolean DUMP_NETWORK_SUB_CHUNK = !PRODUCTION_ENVIRONMENT && false;
 
+    public static final boolean CHUNK_REQUEST_DEBUG = true;
+
     // storage
 
     public static final boolean USE_NATIVE_LEVELDB = true;
