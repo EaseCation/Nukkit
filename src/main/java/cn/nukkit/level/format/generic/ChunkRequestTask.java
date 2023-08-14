@@ -36,7 +36,6 @@ import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.nio.file.StandardOpenOption;
 import java.util.Arrays;
-import java.util.Collections;
 import java.util.EnumMap;
 import java.util.EnumSet;
 import java.util.List;
@@ -48,6 +47,8 @@ import static cn.nukkit.level.format.leveldb.LevelDbConstants.*;
 
 @Log4j2
 public class ChunkRequestTask extends AsyncTask<Void> {
+    private static final EnumSet<StaticVersion> PRELOAD_VERSIONS = EnumSet.noneOf(StaticVersion.class);
+
     private static final byte[] EMPTY = new byte[0];
 
     public static final int PADDING_SUB_CHUNK_COUNT = 4;
@@ -119,8 +120,8 @@ public class ChunkRequestTask extends AsyncTask<Void> {
         x = chunk.getX();
         z = chunk.getZ();
         level = chunk.getProvider().getLevel();
-        Set<StaticVersion> requestedVersions = level.getRequestChunkVersions().keySet();
-        this.requestedVersions = requestedVersions.isEmpty() ? Collections.emptySet() : EnumSet.copyOf(requestedVersions);
+        this.requestedVersions = EnumSet.copyOf(PRELOAD_VERSIONS);
+        this.requestedVersions.addAll(level.getRequestChunkVersions().keySet());
         timestamp = chunk.getChanges();
     }
 
@@ -491,5 +492,9 @@ public class ChunkRequestTask extends AsyncTask<Void> {
         String name = Biome.getNameById(id); //TODO: different version -- 07/10/2022
         // make sure we aren't sending bogus biomes - the 1.18.0 client crashes if we do this
         return name == null ? EnumBiome.OCEAN.id : id;
+    }
+
+    public static boolean addPreloadVersion(StaticVersion version) {
+        return PRELOAD_VERSIONS.add(version);
     }
 }

@@ -251,7 +251,7 @@ public class Level implements ChunkManager, Metadatable {
 
     private final Long2ObjectMap<Int2ObjectMap<Player>> subChunkSendQueue = new Long2ObjectOpenHashMap<>();
 
-    private final ConcurrentMap<Long, Int2ObjectMap<Player>> chunkSendQueue = new ConcurrentHashMap<>();
+    private final Long2ObjectMap<Int2ObjectMap<Player>> chunkSendQueue = new Long2ObjectOpenHashMap<>();
     private final LongSet chunkSendTasks = new LongOpenHashSet();
 
     private final Long2BooleanMap chunkPopulationQueue = new Long2BooleanOpenHashMap();
@@ -3431,10 +3431,10 @@ public class Level implements ChunkManager, Metadatable {
 
     private void processChunkRequest() {
         this.timings.syncChunkSendTimer.startTiming();
-        Iterator<Map.Entry<Long, Int2ObjectMap<Player>>> it = this.chunkSendQueue.entrySet().iterator();
+        Iterator<Long2ObjectMap.Entry<Int2ObjectMap<Player>>> it = this.chunkSendQueue.long2ObjectEntrySet().iterator();
         while (it.hasNext()) {
-            Map.Entry<Long, Int2ObjectMap<Player>> entry = it.next();
-            long index = entry.getKey();
+            Long2ObjectMap.Entry<Int2ObjectMap<Player>> entry = it.next();
+            long index = entry.getLongKey();
             if (!this.chunkSendTasks.add(index)) {
                 continue;
             }
@@ -3534,7 +3534,7 @@ public class Level implements ChunkManager, Metadatable {
                     }
 
                     if (!requestFullChunk) {
-                        this.chunkSendQueue.remove(index);
+                        it.remove();
                         this.chunkSendTasks.remove(index);
 
                         if (!requestSubChunks) {
