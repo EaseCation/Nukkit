@@ -6,6 +6,7 @@ import cn.nukkit.command.data.CommandParamType;
 import cn.nukkit.entity.Attribute;
 import cn.nukkit.entity.data.EntityMetadata;
 import cn.nukkit.entity.data.Skin;
+import cn.nukkit.inventory.RecipeType;
 import cn.nukkit.item.Item;
 import cn.nukkit.item.ItemDurable;
 import cn.nukkit.item.ItemID;
@@ -1148,6 +1149,14 @@ public class BinaryStream {
             return null;
         }
 
+        public boolean isMicrosoft() {
+            return true;
+        }
+
+        public boolean isNetEase() {
+            return false;
+        }
+
         /**
          * 用于1.13+. (e.g. "1.14.60")
          * @return network game version
@@ -1234,6 +1243,25 @@ public class BinaryStream {
             stream.putVarInt(ingredient.getCount());
         }
 
+        public void putFurnaceRecipeIngredient(BinaryStream stream, Item ingredient, RecipeType type) {
+            stream.putVarInt(ingredient.getId());
+
+            if (type == RecipeType.FURNACE_DATA) {
+                stream.putVarInt(ingredient.getDamage());
+            }
+        }
+
+        /**
+         * @since 1.16.0
+         */
+        public void putBrewingRecipeItem(BinaryStream stream, Item item) {
+            stream.putVarInt(item.getId());
+            stream.putVarInt(item.getDamage());
+        }
+
+        /**
+         * @since 1.17.30
+         */
         public void putMaterialReducerRecipeIngredient(BinaryStream stream, Item ingredient) {
             if (ingredient == null || ingredient.getId() == ItemID.AIR) {
                 stream.putVarInt(ItemID.AIR);
