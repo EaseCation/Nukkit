@@ -3488,11 +3488,15 @@ public class Level implements ChunkManager, Metadatable {
                         getChunkCacheFromData(x, z, subChunkCount, payloadOld, true, false)
                 );
             }
-            BaseFullChunk chunk = getChunk(x, z, false);
-            if (chunk != null && chunk.getChanges() <= timestamp) {
-                chunk.setBlobCache(chunkBlobCache);
-                chunk.setPacketCache(chunkPacketCache);
+
+            if (this.provider != null) {
+                BaseFullChunk chunk = getChunk(x, z, false);
+                if (chunk != null && chunk.getChanges() <= timestamp) {
+                    chunk.setBlobCache(chunkBlobCache);
+                    chunk.setPacketCache(chunkPacketCache);
+                }
             }
+
             this.sendChunk(x, z, index, subChunkCount, chunkBlobCache, chunkPacketCache);
 
             Int2ObjectMap<Player> loaders = this.subChunkSendQueue.remove(index);
