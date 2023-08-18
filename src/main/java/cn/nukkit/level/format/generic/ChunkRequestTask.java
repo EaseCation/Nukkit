@@ -497,4 +497,8 @@ public class ChunkRequestTask extends AsyncTask<Void> {
     public static boolean addPreloadVersion(StaticVersion version) {
         return PRELOAD_VERSIONS.add(version);
     }
+
+    public static Set<StaticVersion> getPreloadVersions() {
+        return PRELOAD_VERSIONS;
+    }
 }
