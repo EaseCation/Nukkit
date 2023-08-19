@@ -133,7 +133,7 @@ public interface ProtocolInfo {
     int UPDATE_SOFT_ENUM_PACKET = 0x72; // 114 c
     int NETWORK_STACK_LATENCY_PACKET = 0x73; // 115 cs
     int BLOCK_PALETTE_PACKET = 0x74; // 116 c D
-    int SCRIPT_CUSTOM_EVENT_PACKET = 0x75; // 117 cs
+    int SCRIPT_CUSTOM_EVENT_PACKET = 0x75; // 117 cs D
     int SPAWN_PARTICLE_EFFECT_PACKET = 0x76; // 118 c
     int AVAILABLE_ACTOR_IDENTIFIERS_PACKET = 0x77; // 119 c
     int LEVEL_SOUND_EVENT_PACKET_V2 = 0x78; // 120 cs D
@@ -213,7 +213,7 @@ public interface ProtocolInfo {
     int GAME_TEST_REQUEST_PACKET = 0xc2; // 194 s
     int GAME_TEST_RESULTS_PACKET = 0xc3; // 195 c
     int UPDATE_CLIENT_INPUT_LOCKS_PACKET = 0xc4; // 196 c
-    int CLIENT_CHEAT_ABILITY_PACKET = 0xc5; // 197 s
+    int CLIENT_CHEAT_ABILITY_PACKET = 0xc5; // 197 s D
     int CAMERA_PRESETS_PACKET = 0xc6; // 198 c
     int UNLOCKED_RECIPES_PACKET = 0xc7; // 199 c
 
@@ -248,6 +248,7 @@ public interface ProtocolInfo {
     int COMPRESSED_BIOME_DEFINITION_LIST_PACKET = 0x12d; // 301 c
     int TRIM_DATA_PACKET = 0x12e; // 302 c
     int OPEN_SIGN_PACKET = 0x12f; // 303 c
+    int AGENT_ANIMATION_PACKET = 0x130; // 304 c
 
 
     int COUNT = 1024;

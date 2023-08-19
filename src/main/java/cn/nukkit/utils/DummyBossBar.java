@@ -196,9 +196,9 @@ public class DummyBossBar {
     public void updateBossEntityPosition() {
         MoveEntityPacket pk = new MoveEntityPacket();
         pk.eid = this.bossBarId;
-        pk.x = this.player.x;
+        pk.x = (float) this.player.x;
         pk.y = -10;
-        pk.z = this.player.z;
+        pk.z = (float) this.player.z;
         pk.headYaw = 0;
         pk.yaw = 0;
         pk.pitch = 0;

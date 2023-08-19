@@ -58,8 +58,6 @@ public class EntityEnderPearl extends EntityProjectile {
             return false;
         }
 
-        this.timing.startTiming();
-
         boolean hasUpdate = super.onUpdate(currentTick);
 
         if (this.isCollided && this.shootingEntity instanceof Player) {
@@ -78,8 +76,6 @@ public class EntityEnderPearl extends EntityProjectile {
             this.close();
             hasUpdate = false;
         }
-
-        this.timing.stopTiming();
 
         return hasUpdate;
     }

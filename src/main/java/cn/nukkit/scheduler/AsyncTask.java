@@ -1,7 +1,6 @@
 package cn.nukkit.scheduler;
 
 import cn.nukkit.Server;
-import co.aikar.timings.Timings;
 import lombok.extern.log4j.Log4j2;
 
 import java.util.Queue;
@@ -63,7 +62,6 @@ public abstract class AsyncTask<T> implements Runnable {
     }
 
     public static void collectTask() {
-        Timings.schedulerAsyncTimer.startTiming();
         while (!FINISHED_LIST.isEmpty()) {
             AsyncTask<?> task = FINISHED_LIST.poll();
             try {
@@ -74,7 +72,6 @@ public abstract class AsyncTask<T> implements Runnable {
                         + " invoking onCompletion", e);
             }
         }
-        Timings.schedulerAsyncTimer.stopTiming();
     }
 
 }
