@@ -41,7 +41,7 @@ public class BlockOreIron extends BlockSolid {
     @Override
     public Item[] getDrops(Item item) {
         if (item.isPickaxe() && item.getTier() >= ItemTool.TIER_STONE) {
-            if (GameVersion.V1_19_0.isAvailable()) { // V1_17_0
+            if (GameVersion.V1_17_0.isAvailable()) {
                 return new Item[]{
                         Item.get(Item.RAW_IRON),
                 };
