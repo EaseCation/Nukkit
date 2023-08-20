@@ -5,6 +5,7 @@ import cn.nukkit.blockentity.BlockEntities;
 import cn.nukkit.blockentity.BlockEntity;
 import cn.nukkit.blockentity.BlockEntityBed;
 import cn.nukkit.blockentity.BlockEntityType;
+import cn.nukkit.event.player.PlayerSpawnChangeEvent.Cause;
 import cn.nukkit.item.Item;
 import cn.nukkit.lang.TranslationContainer;
 import cn.nukkit.level.Dimension;
@@ -119,7 +120,7 @@ public class BlockBed extends BlockTransparentMeta implements Faceable {
         }
 
         if (player != null) {
-            player.setSpawnBlockPosition(b);
+            player.setSpawnBlockPosition(b, Cause.BED);
 
             int time = this.getLevel().getTime() % Level.TIME_FULL;
             boolean isNight = (time >= Level.TIME_NIGHT && time < Level.TIME_SUNRISE);

@@ -11,6 +11,7 @@ import cn.nukkit.event.block.BlockIgniteEvent.BlockIgniteCause;
 import cn.nukkit.event.entity.EntityCombustByBlockEvent;
 import cn.nukkit.event.entity.EntityDamageByBlockEvent;
 import cn.nukkit.event.entity.EntityDamageEvent.DamageCause;
+import cn.nukkit.event.level.PortalCreateEvent.CreateReason;
 import cn.nukkit.item.Item;
 import cn.nukkit.item.Items;
 import cn.nukkit.level.GameRule;
@@ -315,7 +316,7 @@ public class BlockFire extends BlockFlowable {
         Block below = target.down();
         int id = below.getId();
 
-        if (id == OBSIDIAN && target.level.createPortal(below)) {
+        if (id == OBSIDIAN && target.level.createPortal(below, CreateReason.FIRE)) {
             return true;
         }
 

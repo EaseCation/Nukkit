@@ -15,6 +15,7 @@ import cn.nukkit.event.block.BlockBreakEvent;
 import cn.nukkit.event.block.BlockPlaceEvent;
 import cn.nukkit.event.block.BlockUpdateEvent;
 import cn.nukkit.event.level.*;
+import cn.nukkit.event.level.PortalCreateEvent.CreateReason;
 import cn.nukkit.event.player.PlayerInteractEvent;
 import cn.nukkit.event.player.PlayerInteractEvent.Action;
 import cn.nukkit.event.weather.LightningStrikeEvent;
@@ -4332,7 +4333,7 @@ public class Level implements ChunkManager, Metadatable {
         return (this.updateLCG = (this.updateLCG * 3) ^ LCG_CONSTANT);
     }
 
-    public boolean createPortal(Block target) {
+    public boolean createPortal(Block target, CreateReason reason) {
         if (this.dimension == Dimension.END) return false;
         int maxPortalSize = 23;
         final int targX = target.getFloorX();
@@ -4456,6 +4457,12 @@ public class Level implements ChunkManager, Metadatable {
                 }
             }
 
+            PortalCreateEvent event = new PortalCreateEvent(this, target, reason);
+            event.call();
+            if (event.isCancelled()) {
+                return false;
+            }
+
             for (int height = 0; height < innerHeight; height++)    {
                 for (int width = 0; width < innerWidth; width++)    {
                     this.setBlock(new Vector3(scanX - width, scanY + height, scanZ), Block.get(BlockID.PORTAL), true);
@@ -4539,6 +4546,12 @@ public class Level implements ChunkManager, Metadatable {
                         }
                     }
                 }
+            }
+
+            PortalCreateEvent event = new PortalCreateEvent(this, target, reason);
+            event.call();
+            if (event.isCancelled()) {
+                return false;
             }
 
             for (int height = 0; height < innerHeight; height++)    {
