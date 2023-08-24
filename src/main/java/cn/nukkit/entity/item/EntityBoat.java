@@ -408,7 +408,7 @@ public class EntityBoat extends EntityVehicle {
             double diffX = entity.x - this.x;
             double diffZ = entity.z - this.z;
 
-            double direction = NukkitMath.getDirection(diffX, diffZ);
+            double direction = Math.max(Math.abs(diffX), Math.abs(diffZ));
 
             if (direction >= 0.009999999776482582D) {
                 direction = Math.sqrt(direction);

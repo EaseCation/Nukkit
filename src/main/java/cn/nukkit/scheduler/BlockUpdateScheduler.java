@@ -30,7 +30,7 @@ public class BlockUpdateScheduler {
         this.level = level;
     }
 
-    public synchronized void tick(long currentTick) {
+    public void tick(long currentTick) {
         // Should only perform once, unless ticks were skipped
         if (currentTick - lastTick < Short.MAX_VALUE) {// Arbitrary
             for (long tick = lastTick + 1; tick <= currentTick; tick++) {

@@ -69,7 +69,7 @@ public class ResourcePackManager {
             }
         } catch (IllegalArgumentException | IOException e) {
             log.warn(Server.getInstance().getLanguage()
-                .translate("nukkit.resources.fail", pack.getName(), e.getMessage()));
+                .translate("nukkit.resources.fail", pack.getName()), e);
         }
         if (inited) {
             this.resourcePacks = resourcePacksById.values().toArray(new ResourcePack[0]);

@@ -5,9 +5,7 @@ import cn.nukkit.command.data.CommandParameter;
 import cn.nukkit.command.defaults.*;
 import cn.nukkit.command.simple.*;
 import cn.nukkit.lang.TranslationContainer;
-import cn.nukkit.utils.MainLogger;
 import cn.nukkit.utils.TextFormat;
-import cn.nukkit.utils.Utils;
 import lombok.extern.log4j.Log4j2;
 
 import java.lang.reflect.Method;
@@ -278,11 +276,7 @@ public class SimpleCommandMap implements CommandMap {
             target.execute(sender, sentCommandLabel, args);
         } catch (Exception e) {
             sender.sendMessage(new TranslationContainer(TextFormat.RED + "%commands.generic.exception"));
-            log.fatal(this.server.getLanguage().translate("nukkit.command.exception", cmdLine, target.toString(), Utils.getExceptionMessage(e)));
-            MainLogger logger = sender.getServer().getLogger();
-            if (logger != null) {
-                logger.logException(e);
-            }
+            log.fatal(this.server.getLanguage().translate("nukkit.command.exception", cmdLine, target.toString()), e);
         }
 
         return true;

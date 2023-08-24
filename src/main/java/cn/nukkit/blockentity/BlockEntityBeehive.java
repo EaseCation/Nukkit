@@ -8,10 +8,10 @@ import cn.nukkit.nbt.tag.CompoundTag;
 import cn.nukkit.nbt.tag.DoubleTag;
 import cn.nukkit.nbt.tag.ListTag;
 import cn.nukkit.network.protocol.LevelSoundEventPacket;
+import it.unimi.dsi.fastutil.objects.ObjectArrayList;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 
-import java.util.LinkedList;
 import java.util.List;
 
 public class BlockEntityBeehive extends BlockEntity {
@@ -31,7 +31,7 @@ public class BlockEntityBeehive extends BlockEntity {
             shouldSpawnBees = false;
         }
 
-        occupants = new LinkedList<>();
+        occupants = new ObjectArrayList<>(3);
         if (namedTag.contains("Occupants")) {
             ListTag<CompoundTag> occupants = namedTag.getList("Occupants", CompoundTag.class);
             for (CompoundTag tag : occupants.getAll()) {
