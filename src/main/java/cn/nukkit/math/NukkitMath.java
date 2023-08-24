@@ -97,12 +97,4 @@ public class NukkitMath {
     public static float clamp(float value, float min, float max) {
         return Mth.clamp(value, min, max);
     }
-
-    public static double getDirection(double diffX, double diffZ) {
-        diffX = Math.abs(diffX);
-        diffZ = Math.abs(diffZ);
-
-        return Math.max(diffX, diffZ);
-    }
-
 }

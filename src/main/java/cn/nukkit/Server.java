@@ -355,14 +355,21 @@ public class Server {
         log.info(this.getLanguage().translate("nukkit.language.selected", getLanguage().getName()));
         log.info(getLanguage().translate("nukkit.server.start", TextFormat.AQUA + this.getVersion() + TextFormat.RESET));
 
+        int corePoolSize;
         Object poolSize = this.getConfig("settings.async-workers", "auto");
         try {
-            poolSize = Integer.valueOf((String) poolSize);
+            corePoolSize = Math.max(Integer.parseInt(String.valueOf(poolSize)), 0);
         } catch (Exception e) {
-            poolSize = Math.max(Runtime.getRuntime().availableProcessors() + 1, 4);
+            corePoolSize = Math.max(Runtime.getRuntime().availableProcessors() + 1, 4);
         }
-        ServerScheduler.WORKERS = (int) poolSize;
-        log.info("Workers: {}", ServerScheduler.WORKERS);
+        int maximumPoolSize = this.getConfig("settings.max-async-workers", 0);
+        if (maximumPoolSize > 0) {
+            maximumPoolSize = Math.max(corePoolSize, maximumPoolSize);
+        } else {
+            maximumPoolSize = Integer.MAX_VALUE;
+        }
+        int keepAliveSeconds = this.getConfig("settings.async-worker-keep-alive", 60);
+        log.info("AsyncPool Workers: minimum {} threads, maximum {} threads, keep alive {} seconds", corePoolSize, maximumPoolSize, keepAliveSeconds);
 
         this.networkZlibProvider = this.getConfig("network.zlib-provider", 2);
         Zlib.setProvider(this.networkZlibProvider);
@@ -379,13 +386,13 @@ public class Server {
         this.autoCompaction = this.getConfig("level-settings.auto-compression", true);
         this.autoCompactionTicks = Math.max(1, this.getConfig("ticks-per.auto-compaction", 30 * 60 * 20));
 
-        this.scheduler = new ServerScheduler();
+        this.scheduler = new ServerScheduler(corePoolSize, maximumPoolSize, keepAliveSeconds);
 
         if (this.getPropertyBoolean("enable-rcon", false)) {
             try {
                 this.rcon = new RCON(this, this.getPropertyString("rcon.password", ""), !this.getIp().isEmpty() ? this.getIp() : "0.0.0.0", this.getPropertyInt("rcon.port", this.getPort()));
             } catch (IllegalArgumentException e) {
-                log.error(getLanguage().translate(e.getMessage(), e.getCause().getMessage()));
+                log.error(getLanguage().translate(e.getMessage(), e.getCause().getMessage()), e);
             }
         }
 
@@ -1607,8 +1614,7 @@ public class Server {
                     Utils.writeFile(this.getDataPath() + "players/" + name.toLowerCase() + ".dat", new ByteArrayInputStream(NBTIO.writeGZIPCompressed(tag, ByteOrder.BIG_ENDIAN)));
                 }
             } catch (Exception e) {
-                log.fatal(this.getLanguage().translate("nukkit.data.saveError", name, e.getMessage()));
-                this.getLogger().logException(e);
+                log.fatal(this.getLanguage().translate("nukkit.data.saveError", name), e);
             }
         }
     }
@@ -1750,8 +1756,7 @@ public class Server {
         try {
             level = new Level(this, name, path, provider);
         } catch (Exception e) {
-            log.error(this.getLanguage().translate("nukkit.level.loadError", name, e.getMessage()));
-            this.getLogger().logException(e);
+            log.error(this.getLanguage().translate("nukkit.level.loadError.exception", name), e);
             return false;
         }
 
@@ -1854,7 +1859,7 @@ public class Server {
             level.initLevel();
             level.setTickRate(this.baseTickRate);
         } catch (Exception e) {
-            log.error(this.getLanguage().translate("nukkit.level.generationError", name, Utils.getExceptionMessage(e)));
+            log.error(this.getLanguage().translate("nukkit.level.generationError", name), e);
             return false;
         }
 

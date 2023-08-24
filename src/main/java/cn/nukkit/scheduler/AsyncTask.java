@@ -18,6 +18,7 @@ public abstract class AsyncTask<T> implements Runnable {
     private volatile int taskId;
     private volatile boolean finished;
 
+    @Override
     public void run() {
         this.result = null;
         this.onRun();
@@ -62,8 +63,8 @@ public abstract class AsyncTask<T> implements Runnable {
     }
 
     public static void collectTask() {
-        while (!FINISHED_LIST.isEmpty()) {
-            AsyncTask<?> task = FINISHED_LIST.poll();
+        AsyncTask<?> task;
+        while ((task = FINISHED_LIST.poll()) != null) {
             try {
                 task.onCompletion(Server.getInstance());
             } catch (Exception e) {

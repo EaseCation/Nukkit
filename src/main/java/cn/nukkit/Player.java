@@ -98,7 +98,6 @@ import java.util.*;
 import java.util.Map.Entry;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ThreadLocalRandom;
-import java.util.concurrent.atomic.AtomicReference;
 import java.util.function.Consumer;
 import java.util.stream.Collectors;
 
@@ -255,7 +254,7 @@ public class Player extends EntityHuman implements CommandSender, InventoryHolde
 
     private Entity killer = null;
 
-    private final AtomicReference<Locale> locale = new AtomicReference<>(null);
+    private Locale locale;
 
     private int hash;
 
@@ -1006,9 +1005,10 @@ public class Player extends EntityHuman implements CommandSender, InventoryHolde
                     }
                 }
             } catch (Exception e) {
-                this.sendMessage(TextFormat.RED + "Chunk " + chunkX + "," + chunkZ + " load&send failed!");
-                this.sendMessage(e.getMessage());
-                if (e.getCause() != null) this.sendMessage(Utils.getExceptionMessage(e.getCause()));
+                this.sendMessage(TextFormat.RED + "Chunk " + chunkX + "," + chunkZ + " load&send failed: " + e.getMessage());
+                if (e.getCause() != null) {
+                    this.sendMessage(Utils.getExceptionMessage(e.getCause()));
+                }
                 log.warn("Chunk " + chunkX + "," + chunkZ + " load&send failed!", e);
                 getServer().getPluginManager().callEvent(new ChunkLoadExceptionEvent(chunk, e));
             }
@@ -5566,12 +5566,12 @@ public class Player extends EntityHuman implements CommandSender, InventoryHolde
         this.checkMovement = checkMovement;
     }
 
-    public synchronized void setLocale(Locale locale) {
-        this.locale.set(locale);
+    public void setLocale(Locale locale) {
+        this.locale = locale;
     }
 
-    public synchronized Locale getLocale() {
-        return this.locale.get();
+    public Locale getLocale() {
+        return this.locale;
     }
 
     @Override

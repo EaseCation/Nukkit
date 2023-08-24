@@ -226,7 +226,7 @@ public class Level implements ChunkManager, Metadatable {
     private final BaseFullChunk[] lastChunk = new BaseFullChunk[CHUNK_CACHE_SIZE];
 
     // Avoid OOM, gc'd references result in whole chunk being sent (possibly higher cpu)
-    private final Long2ObjectOpenHashMap<SoftReference<Char2ObjectMap<Object>>> changedBlocks = new Long2ObjectOpenHashMap<>();
+    private final Long2ObjectMap<SoftReference<Char2ObjectMap<Object>>> changedBlocks = new Long2ObjectOpenHashMap<>();
     // Storing the vector is redundant
     private final Object changeBlocksPresent = new Object();
     // Storing extra blocks past 512 is redundant
@@ -1061,7 +1061,7 @@ public class Level implements ChunkManager, Metadatable {
                 Map<Long, ? extends FullChunk> chunks = getChunks();
                 if (chunks instanceof Long2ObjectOpenHashMap) {
                     Long2ObjectOpenHashMap<? extends FullChunk> fastChunks = (Long2ObjectOpenHashMap) chunks;
-                    ObjectIterator<? extends Long2ObjectMap.Entry<? extends FullChunk>> iter = fastChunks.long2ObjectEntrySet().fastIterator();
+                    Iterator<? extends Long2ObjectMap.Entry<? extends FullChunk>> iter = fastChunks.long2ObjectEntrySet().fastIterator();
                     while (iter.hasNext()) {
                         Long2ObjectMap.Entry<? extends FullChunk> entry = iter.next();
                         performThunder(entry.getLongKey(), entry.getValue());
@@ -1085,8 +1085,9 @@ public class Level implements ChunkManager, Metadatable {
             randomUpdateQueue.tick(getCurrentTick());
         }
 
-        while (!this.normalUpdateQueue.isEmpty()) {
-            Block block = getBlock(this.normalUpdateQueue.poll());
+        Vector3 pos;
+        while ((pos = this.normalUpdateQueue.poll()) != null) {
+            Block block = getBlock(pos);
             BlockUpdateEvent event = new BlockUpdateEvent(block, 0);
             this.server.getPluginManager().callEvent(event);
 
@@ -1125,7 +1126,7 @@ public class Level implements ChunkManager, Metadatable {
         synchronized (changedBlocks) {
             if (!this.changedBlocks.isEmpty()) {
                 if (!this.players.isEmpty()) {
-                    ObjectIterator<Long2ObjectMap.Entry<SoftReference<Char2ObjectMap<Object>>>> iter = changedBlocks.long2ObjectEntrySet().fastIterator();
+                    Iterator<Long2ObjectMap.Entry<SoftReference<Char2ObjectMap<Object>>>> iter = changedBlocks.long2ObjectEntrySet().iterator();
                     while (iter.hasNext()) {
                         Long2ObjectMap.Entry<SoftReference<Char2ObjectMap<Object>>> entry = iter.next();
                         long index = entry.getLongKey();
@@ -1161,18 +1162,20 @@ public class Level implements ChunkManager, Metadatable {
             this.checkSleep();
         }
 
-        synchronized (chunkPackets) {
-            for (long index : this.chunkPackets.keySet()) {
-                int chunkX = Level.getHashX(index);
-                int chunkZ = Level.getHashZ(index);
-                Player[] chunkPlayers = this.getChunkPlayers(chunkX, chunkZ).values().toArray(new Player[0]);
-                if (chunkPlayers.length > 0) {
-                    for (DataPacket pk : this.chunkPackets.get(index)) {
-                        Server.broadcastPacket(chunkPlayers, pk);
-                    }
+        Iterator<Long2ObjectMap.Entry<List<DataPacket>>> iterator = this.chunkPackets.long2ObjectEntrySet().iterator();
+        while (iterator.hasNext()) {
+            Long2ObjectMap.Entry<List<DataPacket>> entry = iterator.next();
+            long index = entry.getLongKey();
+            int chunkX = Level.getHashX(index);
+            int chunkZ = Level.getHashZ(index);
+            Collection<Player> chunkPlayers = this.getChunkPlayers(chunkX, chunkZ).values();
+            if (!chunkPlayers.isEmpty()) {
+                List<DataPacket> packets = entry.getValue();
+                for (DataPacket pk : packets) {
+                    Server.broadcastPacket(chunkPlayers, pk);
                 }
             }
-            this.chunkPackets.clear();
+            iterator.remove();
         }
 
         if (gameRules.isStale()) {
@@ -1398,7 +1401,7 @@ public class Level implements ChunkManager, Metadatable {
         if (!chunkTickList.isEmpty()) {
             boolean skipRandomTick = server.getTicksPerSecondRaw() < 19; // 高负载时跳过随机刻
 
-            ObjectIterator<Long2IntMap.Entry> iter = chunkTickList.long2IntEntrySet().iterator();
+            Iterator<Long2IntMap.Entry> iter = chunkTickList.long2IntEntrySet().iterator();
             while (iter.hasNext()) {
                 Long2IntMap.Entry entry = iter.next();
                 long index = entry.getLongKey();
@@ -2169,8 +2172,8 @@ public class Level implements ChunkManager, Metadatable {
             }
         }
 
-        while (!lightRemovalQueue.isEmpty()) {
-            Object[] val = lightRemovalQueue.poll();
+        Object[] val;
+        while ((val = lightRemovalQueue.poll()) != null) {
             long node = (long) val[0];
             int x = Hash.hashBlockPosX(node);
             int y = Hash.hashBlockPosY(node);
@@ -2192,8 +2195,9 @@ public class Level implements ChunkManager, Metadatable {
                     removalVisited, visited);
         }
 
-        while (!lightPropagationQueue.isEmpty()) {
-            long node = lightPropagationQueue.poll();
+        Long hash;
+        while ((hash = lightPropagationQueue.poll()) != null) {
+            long node = hash;
 
             int x = Hash.hashBlockPosX(node);
             int y = Hash.hashBlockPosY(node);

@@ -476,6 +476,10 @@ public final class Mth {
         return floor(a / (double) b) * b;
     }
 
+    public static double round(double a, int precision) {
+        return Math.round(a * Math.pow(10, precision)) / Math.pow(10, precision);
+    }
+
     private Mth() {
         throw new IllegalStateException();
     }

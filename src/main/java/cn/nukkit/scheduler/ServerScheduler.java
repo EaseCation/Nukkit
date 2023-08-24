@@ -3,14 +3,14 @@ package cn.nukkit.scheduler;
 import cn.nukkit.Server;
 import cn.nukkit.plugin.Plugin;
 import cn.nukkit.utils.PluginException;
+import com.google.common.util.concurrent.ThreadFactoryBuilder;
 import lombok.extern.log4j.Log4j2;
 
+import java.util.Comparator;
 import java.util.Map;
-import java.util.Optional;
 import java.util.PriorityQueue;
 import java.util.Queue;
-import java.util.concurrent.ConcurrentHashMap;
-import java.util.concurrent.ConcurrentLinkedQueue;
+import java.util.concurrent.*;
 import java.util.concurrent.atomic.AtomicInteger;
 
 /**
@@ -19,9 +19,7 @@ import java.util.concurrent.atomic.AtomicInteger;
 @Log4j2
 public class ServerScheduler {
 
-    public static int WORKERS = 4;
-
-    private final AsyncPool asyncPool;
+    private final ThreadPoolExecutor asyncPool;
 
     private final Queue<TaskHandler> pending;
     private final Queue<TaskHandler> queue;
@@ -31,17 +29,32 @@ public class ServerScheduler {
     private volatile int currentTick;
 
     public ServerScheduler() {
+        this(0);
+    }
+
+    public ServerScheduler(int corePoolSize) {
+        this(corePoolSize, Integer.MAX_VALUE);
+    }
+
+    public ServerScheduler(int corePoolSize, int maximumPoolSize) {
+        this(corePoolSize, maximumPoolSize, 60);
+    }
+
+    public ServerScheduler(int corePoolSize, int maximumPoolSize, long keepAliveSeconds) {
         this.pending = new ConcurrentLinkedQueue<>();
-        this.currentTaskId = new AtomicInteger();
-        this.queue = new PriorityQueue<>(11, (left, right) -> {
-            int i = left.getNextRunTick() - right.getNextRunTick();
-            if (i == 0) {
-                return left.getTaskId() - right.getTaskId();
-            }
-            return i;
-        });
+        this.currentTaskId = new AtomicInteger(2);
+        this.queue = new PriorityQueue<>(Comparator.comparingInt(TaskHandler::getNextRunTick).thenComparingInt(TaskHandler::getTaskId));
         this.taskMap = new ConcurrentHashMap<>();
-        this.asyncPool = new AsyncPool(Server.getInstance(), WORKERS);
+        this.asyncPool = new ThreadPoolExecutor(corePoolSize, maximumPoolSize, keepAliveSeconds, TimeUnit.SECONDS,
+                corePoolSize == maximumPoolSize ? new LinkedBlockingQueue<>() : new SynchronousQueue<>(), new ThreadFactoryBuilder()
+                .setDaemon(true)
+                .setNameFormat("Nukkit Asynchronous Task Handler #%d")
+                .setUncaughtExceptionHandler((thread, ex) -> log.fatal("Exception in asynchronous thread", ex))
+                .build());
+    }
+
+    public ThreadPoolExecutor getAsyncPool() {
+        return asyncPool;
     }
 
     public TaskHandler scheduleTask(Task task) {
@@ -82,19 +95,6 @@ public class ServerScheduler {
 
     public TaskHandler scheduleAsyncTask(Plugin plugin, AsyncTask task) {
         return addTask(plugin, task, 0, 0, true);
-    }
-
-    @Deprecated
-    public void scheduleAsyncTaskToWorker(AsyncTask task, int worker) {
-        scheduleAsyncTask(task);
-    }
-
-    public int getAsyncTaskPoolSize() {
-        return asyncPool.getCorePoolSize();
-    }
-
-    public void increaseAsyncTaskPoolSize(int newSize) {
-        throw new UnsupportedOperationException("Cannot increase a working pool size."); //wtf?
     }
 
     public TaskHandler scheduleDelayedTask(Task task, int delay) {
@@ -269,8 +269,9 @@ public class ServerScheduler {
     public void mainThreadHeartbeat(int currentTick) {
         this.currentTick = currentTick;
         // Accepts pending.
-        while (!pending.isEmpty()) {
-            queue.offer(pending.poll());
+        TaskHandler pendingTask;
+        while ((pendingTask = pending.poll()) != null) {
+            queue.offer(pendingTask);
         }
         // Main heart beat.
         while (isReady(currentTick)) {
@@ -279,13 +280,18 @@ public class ServerScheduler {
                 taskMap.remove(taskHandler.getTaskId());
                 continue;
             } else if (taskHandler.isAsynchronous()) {
-                asyncPool.execute(taskHandler.getTask());
+                asyncPool.execute(() -> {
+                    try {
+                        taskHandler.getTask().run();
+                    } catch (Throwable e) {
+                        log.fatal("Exception in asynchronous task", e);
+                    }
+                });
             } else {
                 try {
                     taskHandler.run(currentTick);
                 } catch (Throwable e) {
-                    log.fatal("Could not execute taskHandler " + taskHandler.getTaskId() + ": " + e.getMessage());
-                    Server.getInstance().getLogger().logException(e instanceof Exception ? e : new RuntimeException(e));
+                    log.fatal("Could not execute taskHandler " + taskHandler.getTaskId() + ": ", e);
                 }
             }
             if (taskHandler.isRepeating()) {
@@ -293,7 +299,10 @@ public class ServerScheduler {
                 pending.offer(taskHandler);
             } else {
                 try {
-                    Optional.ofNullable(taskMap.remove(taskHandler.getTaskId())).ifPresent(TaskHandler::cancel);
+                    TaskHandler handler = taskMap.remove(taskHandler.getTaskId());
+                    if (handler != null) {
+                        handler.cancel();
+                    }
                 } catch (RuntimeException ex) {
                     log.fatal("Exception while invoking onCancel", ex);
                 }
@@ -302,12 +311,9 @@ public class ServerScheduler {
         AsyncTask.collectTask();
     }
 
-    public int getQueueSize() {
-        return queue.size() + pending.size();
-    }
-
     private boolean isReady(int currentTick) {
-        return this.queue.peek() != null && this.queue.peek().getNextRunTick() <= currentTick;
+        TaskHandler taskHandler = this.queue.peek();
+        return taskHandler != null && taskHandler.getNextRunTick() <= currentTick;
     }
 
     private int nextTaskId() {

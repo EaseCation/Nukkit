@@ -1,7 +1,5 @@
 package cn.nukkit.utils;
 
-import lombok.AccessLevel;
-import lombok.NoArgsConstructor;
 import lombok.extern.log4j.Log4j2;
 
 /**
@@ -12,13 +10,15 @@ import lombok.extern.log4j.Log4j2;
 We need to keep this class for backwards compatibility
  */
 @Log4j2
-@NoArgsConstructor(access = AccessLevel.PRIVATE)
-public class MainLogger extends ThreadedLogger {
+public class MainLogger implements Logger {
 
     private static final MainLogger logger = new MainLogger();
 
     public static MainLogger getLogger() {
         return logger;
+    }
+
+    private MainLogger() {
     }
 
     @Override
@@ -61,19 +61,8 @@ public class MainLogger extends ThreadedLogger {
         log.debug(message);
     }
 
-    public void setLogDebug(Boolean logDebug) {
-        throw new UnsupportedOperationException();
-    }
-
-    public ExceptionLogHandler exceptionLogHandler = null;
-
-    public interface ExceptionLogHandler {
-        void log(Throwable t);
-    }
-
     public void logException(Throwable t) {
         log.throwing(t);
-        if (t != null && exceptionLogHandler != null) exceptionLogHandler.log(t);
     }
 
     @Override
@@ -88,49 +77,41 @@ public class MainLogger extends ThreadedLogger {
     @Override
     public void emergency(String message, Throwable t) {
         log.fatal(message, t);
-        if (t != null && exceptionLogHandler != null) exceptionLogHandler.log(t);
     }
 
     @Override
     public void alert(String message, Throwable t) {
         log.warn(message, t);
-        if (t != null && exceptionLogHandler != null) exceptionLogHandler.log(t);
     }
 
     @Override
     public void critical(String message, Throwable t) {
         log.fatal(message, t);
-        if (t != null && exceptionLogHandler != null) exceptionLogHandler.log(t);
     }
 
     @Override
     public void error(String message, Throwable t) {
         log.error(message, t);
-        if (t != null && exceptionLogHandler != null) exceptionLogHandler.log(t);
     }
 
     @Override
     public void warning(String message, Throwable t) {
         log.warn(message, t);
-        if (t != null && exceptionLogHandler != null) exceptionLogHandler.log(t);
     }
 
     @Override
     public void notice(String message, Throwable t) {
         log.warn(message, t);
-        if (t != null && exceptionLogHandler != null) exceptionLogHandler.log(t);
     }
 
     @Override
     public void info(String message, Throwable t) {
         log.info(message, t);
-        if (t != null && exceptionLogHandler != null) exceptionLogHandler.log(t);
     }
 
     @Override
     public void debug(String message, Throwable t) {
         log.debug(message, t);
-        if (t != null && exceptionLogHandler != null) exceptionLogHandler.log(t);
     }
 
     @Override

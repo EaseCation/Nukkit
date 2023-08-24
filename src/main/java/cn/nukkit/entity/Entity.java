@@ -1694,7 +1694,7 @@ public abstract class Entity extends Location implements Metadatable, EntityData
         if (entity.riding != this && !entity.passengers.contains(this)) {
             double dx = entity.x - this.x;
             double dy = entity.z - this.z;
-            double dz = NukkitMath.getDirection(dx, dy);
+            double dz = Math.max(Math.abs(dx), Math.abs(dy));
 
             if (dz >= 0.009999999776482582D) {
                 dz = (float) Math.sqrt((float) dz);

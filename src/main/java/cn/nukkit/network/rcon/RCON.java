@@ -32,8 +32,8 @@ public class RCON {
         try {
             this.serverThread = new RCONServer(address, port, password);
             this.serverThread.start();
-        } catch (IOException exception) {
-            log.fatal(this.server.getLanguage().translate("nukkit.server.rcon.startupError", exception.getMessage()));
+        } catch (IOException e) {
+            log.fatal(this.server.getLanguage().translate("nukkit.server.rcon.startupError"), e);
             return;
         }
 
