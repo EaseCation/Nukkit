@@ -1,6 +1,8 @@
 package cn.nukkit.blockentity;
 
+import cn.nukkit.Player;
 import cn.nukkit.block.Block;
+import cn.nukkit.event.player.PlayerTakeLecternBookEvent;
 import cn.nukkit.item.Item;
 import cn.nukkit.item.ItemBookWritable;
 import cn.nukkit.level.format.FullChunk;
@@ -75,8 +77,20 @@ public class BlockEntityLectern extends BlockEntitySpawnable {
     }
 
     public boolean dropBook() {
+        return dropBook(null);
+    }
+
+    public boolean dropBook(@Nullable Player player) {
         if (book == null) {
             return false;
+        }
+
+        if (player != null) {
+            PlayerTakeLecternBookEvent event = new PlayerTakeLecternBookEvent(player, this);
+            event.call();
+            if (event.isCancelled()) {
+                return false;
+            }
         }
 
         level.dropItem(upVec(), book.clone());

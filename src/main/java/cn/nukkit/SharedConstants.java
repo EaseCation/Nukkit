@@ -45,9 +45,9 @@ public final class SharedConstants {
 
     public static final boolean ENABLE_BLOCK_STATE_PERSISTENCE = true;
 
-    // experimental
+    public static final boolean ENABLE_ITEM_NAME_PERSISTENCE = true;
 
-    public static final boolean NEXT_UPDATE_ITEM_UPGRADE_PREVIEW = !PRODUCTION_ENVIRONMENT && false;
+    // experimental
 
     public static final boolean NEXT_UPDATE_NEW_ENTITY_SYSTEM_PREVIEW = !PRODUCTION_ENVIRONMENT && false;
 

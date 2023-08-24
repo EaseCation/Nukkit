@@ -12,12 +12,15 @@ import cn.nukkit.nbt.tag.CompoundTag;
 import cn.nukkit.nbt.tag.Tag;
 import cn.nukkit.network.protocol.LevelEventPacket;
 
+import javax.annotation.Nullable;
 import java.util.concurrent.ThreadLocalRandom;
 
 /**
  * Created by Pub4Game on 03.07.2016.
  */
 public class BlockEntityItemFrame extends BlockEntitySpawnable {
+    @Nullable
+    private Item item;
 
     public BlockEntityItemFrame(FullChunk chunk, CompoundTag nbt) {
         super(chunk, nbt);
@@ -25,12 +28,16 @@ public class BlockEntityItemFrame extends BlockEntitySpawnable {
 
     @Override
     protected void initBlockEntity() {
-        if (this.namedTag.contains("Item")) {
-            CompoundTag item = this.namedTag.getCompound("Item");
-            if (item.getShort("id") == ItemID.AIR) {
-                this.namedTag.remove("Item");
+        Item item = null;
+        CompoundTag itemTag = this.namedTag.getCompound("Item", null);
+        if (itemTag != null) {
+            item = NBTIO.getItemHelper(itemTag);
+
+            if (item.isNull()) {
+                item = null;
             }
         }
+        this.item = item;
 
         if (!namedTag.contains("ItemRotation")) {
             namedTag.putFloat("ItemRotation", 0);
@@ -50,6 +57,18 @@ public class BlockEntityItemFrame extends BlockEntitySpawnable {
     }
 
     @Override
+    public void saveNBT() {
+        super.saveNBT();
+
+        if (!hasItem()) {
+            namedTag.remove("Item");
+            return;
+        }
+
+        namedTag.putCompound("Item", NBTIO.putItemHelper(item));
+    }
+
+    @Override
     public boolean isValidBlock(int blockId) {
         return blockId == Block.BLOCK_FRAME;
     }
@@ -58,9 +77,15 @@ public class BlockEntityItemFrame extends BlockEntitySpawnable {
         return this.namedTag.getFloat("ItemRotation");
     }
 
-    public void setItemRotation(float itemRotation) {
+    private void setItemRotationInternal(float itemRotation) {
         this.namedTag.putFloat("ItemRotation", itemRotation % 360);
+    }
+
+    public void setItemRotation(float itemRotation) {
+        this.setItemRotationInternal(itemRotation);
+
         this.level.updateComparatorOutputLevel(this);
+
         this.setChanged(this.hasItem());
     }
 
@@ -73,24 +98,19 @@ public class BlockEntityItemFrame extends BlockEntitySpawnable {
             return Item.get(ItemID.AIR);
         }
 
-        CompoundTag NBTTag = this.namedTag.getCompound("Item");
-        return NBTIO.getItemHelper(NBTTag);
+        return item.clone();
     }
 
     public boolean hasItem() {
-        return this.namedTag.contains("Item");
+        return item != null && !item.isNull();
     }
 
-    public void setItem(Item item) {
+    public void setItem(@Nullable Item item) {
         this.setItem(item, true);
     }
 
-    public void setItem(Item item, boolean setChanged) {
-        if (item.isNull()) {
-            this.namedTag.remove("Item");
-        } else {
-            this.namedTag.putCompound("Item", NBTIO.putItemHelper(item));
-        }
+    public void setItem(@Nullable Item item, boolean setChanged) {
+        this.item = item;
 
         if (setChanged) {
             this.setChanged(true);
@@ -121,7 +141,7 @@ public class BlockEntityItemFrame extends BlockEntitySpawnable {
         CompoundTag nbt = getDefaultCompound(this, getBlockEntityId());
 
         if (this.hasItem()) {
-            nbt.putCompound("Item", this.namedTag.getCompound("Item"));
+            nbt.putCompound("Item", NBTIO.putItemHelper(item));
             nbt.putFloat("ItemRotation", this.getItemRotation());
             nbt.putFloat("ItemDropChance", this.getItemDropChance());
         }
@@ -134,8 +154,9 @@ public class BlockEntityItemFrame extends BlockEntitySpawnable {
     }
 
     public boolean dropItem(Player player) {
-        Item item = this.getItem();
-        if (item != null && item.getId() != Item.AIR) {
+        if (hasItem()) {
+            Item item = this.getItem();
+
             if (player != null) {
                 ItemFrameDropItemEvent event = new ItemFrameDropItemEvent(player, this.getBlock(), this, item);
                 this.level.getServer().getPluginManager().callEvent(event);
@@ -148,8 +169,10 @@ public class BlockEntityItemFrame extends BlockEntitySpawnable {
             if ((player == null || player.isSurvival()) && this.getItemDropChance() > ThreadLocalRandom.current().nextFloat()) {
                 this.level.dropItem(this.add(0.5, 0, 0.5), item);
             }
-            this.setItem(Item.get(Item.AIR));
-            this.setItemRotation(0);
+
+            this.setItemRotationInternal(0);
+            this.setItem(null);
+
             this.level.addLevelEvent(this, LevelEventPacket.EVENT_SOUND_ITEM_FRAME_ITEM_REMOVED);
             return true;
         }

@@ -26,6 +26,7 @@ import cn.nukkit.event.level.ChunkLoadExceptionEvent;
 import cn.nukkit.event.player.*;
 import cn.nukkit.event.player.PlayerInteractEvent.Action;
 import cn.nukkit.event.player.PlayerKickEvent.Reason;
+import cn.nukkit.event.player.PlayerSpawnChangeEvent.Cause;
 import cn.nukkit.event.player.PlayerTeleportEvent.TeleportCause;
 import cn.nukkit.event.server.DataPacketReceiveEvent;
 import cn.nukkit.event.server.DataPacketSendEvent;
@@ -885,7 +886,7 @@ public class Player extends EntityHuman implements CommandSender, InventoryHolde
             if (block.getId() == Block.BLOCK_BED && (block.getDamage() & 0x8) == 0x8) {
                 return this.spawnPosition.floor().add(0.5, 0.1, 0.5);
             } else {
-                this.setSpawnBlockPosition(null);
+                this.setSpawnBlockPosition(null, Cause.RESET);
             }
         }
 
@@ -1255,7 +1256,7 @@ public class Player extends EntityHuman implements CommandSender, InventoryHolde
         return true;
     }
 
-    public void setSpawn(Vector3 pos) {
+    public void setSpawn(@Nullable Vector3 pos) {
         if (pos == null) {
             this.spawnPosition = null;
             return;
@@ -1278,7 +1279,18 @@ public class Player extends EntityHuman implements CommandSender, InventoryHolde
         }
     }
 
-    public void setSpawnBlockPosition(Position pos) {
+    public void setSpawnBlockPosition(@Nullable Position pos) {
+        setSpawnBlockPosition(pos, Cause.PLUGIN);
+    }
+
+    public void setSpawnBlockPosition(@Nullable Position pos, Cause cause) {
+        PlayerSpawnChangeEvent event = new PlayerSpawnChangeEvent(this, pos, cause);
+        event.call();
+        if (event.isCancelled()) {
+            return;
+        }
+        pos = event.getNewSpawn();
+
         if (pos == null) {
             if (this.spawnBlockPosition != null && this.spawnBlockPosition.level != null && this.spawnBlockPosition.equalsVec(this.spawnPosition) && this.spawnBlockPosition.level == this.spawnPosition.level) {
                 this.setSpawn(this.server.getDefaultLevel().getSafeSpawn());
@@ -2796,7 +2808,7 @@ public class Player extends EntityHuman implements CommandSender, InventoryHolde
                                 this.inventory.sendHeldItem(this);
                                 break;
                             }
-                            if (!isAdventure() && target.getId() == Block.NOTEBLOCK) {
+                            if (/*!isAdventure() &&*/ target.getId() == Block.NOTEBLOCK) {
                                 ((BlockNoteblock) target).emitSound();
                                 break;
                             }
@@ -5745,10 +5757,15 @@ public class Player extends EntityHuman implements CommandSender, InventoryHolde
                         }
                         Item mend = inv.getItem(index);
                         int oldDamage = mend.getDamage();
-                        int newDamage = Math.max(oldDamage - exp, 0);
-                        exp += newDamage - oldDamage;
-                        mend.setDamage(newDamage);
-                        inv.setItem(index, mend);
+                        int newDamage = Math.max(oldDamage - exp * 2, 0);
+                        PlayerItemMendEvent event = new PlayerItemMendEvent(this, mend, xpOrb, oldDamage - newDamage);
+                        event.call();
+                        if (!event.isCancelled() && event.getRepairAmount() > 0) {
+                            newDamage = Math.max(oldDamage - event.getRepairAmount(), 0);
+                            exp -= (oldDamage - newDamage) / 2;
+                            mend.setDamage(newDamage);
+                            inv.setItem(index, mend);
+                        }
                     }
                 }
 

@@ -76,10 +76,12 @@ public class BlockItemFrame extends BlockTransparentMeta implements Faceable {
 
         if (itemFrame.getItem().isNull()) {
             Item itemOnFrame = item.clone();
-            if (player != null && player.isSurvival()) {
-                itemOnFrame.setCount(itemOnFrame.getCount() - 1);
-                player.getInventory().setItemInHand(itemOnFrame);
+
+            if (player != null && player.isSurvivalLike()) {
+                item.pop();
+                player.getInventory().setItemInHand(item);
             }
+
             itemOnFrame.setCount(1);
             itemFrame.setItem(itemOnFrame);
             this.getLevel().addLevelEvent(this, LevelEventPacket.EVENT_SOUND_ITEM_FRAME_ITEM_ADDED);
@@ -112,9 +114,10 @@ public class BlockItemFrame extends BlockTransparentMeta implements Faceable {
     @Override
     public Item[] getDrops(Item item) {
         BlockEntityItemFrame itemFrame = getBlockEntity();
-        if (itemFrame != null && ThreadLocalRandom.current().nextFloat() <= itemFrame.getItemDropChance()) {
+        if (itemFrame != null && itemFrame.hasItem() && ThreadLocalRandom.current().nextFloat() <= itemFrame.getItemDropChance()) {
             return new Item[]{
-                    toItem(true), itemFrame.getItem().clone()
+                    toItem(true),
+                    itemFrame.getItem(),
             };
         } else {
             return new Item[]{

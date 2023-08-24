@@ -10,7 +10,6 @@ import cn.nukkit.event.block.BlockPistonEvent;
 import cn.nukkit.inventory.InventoryHolder;
 import cn.nukkit.item.Item;
 import cn.nukkit.item.ItemTool;
-import cn.nukkit.level.GlobalBlockPalette;
 import cn.nukkit.level.Level;
 import cn.nukkit.math.BlockFace;
 import cn.nukkit.math.BlockVector3;
@@ -259,38 +258,16 @@ public abstract class BlockPistonBase extends BlockTransparentMeta implements Fa
                 level.setExtraBlock(newBlock, Blocks.air(), true, false);
                 this.level.setBlock(newBlock, Block.get(BlockID.MOVING_BLOCK), true);
 
-                CompoundTag movingBlockTag = new CompoundTag()
-                        .putInt("id", newBlock.getId()) //only for nukkit purpose
-                        .putInt("meta", newBlock.getDamage()); //only for nukkit purpose
-                String blockName = GlobalBlockPalette.getNameByBlockId(newBlock.getId());
-                if (blockName == null) {
-                    movingBlockTag.putString("name", "minecraft:air")
-                            .putShort("val", 0);
-                } else {
-                    movingBlockTag.putString("name", blockName)
-                            .putShort("val", newBlock.getDamage());
-                }
-
-                CompoundTag movingBlockExtraTag = new CompoundTag()
-//                        .putInt("id", extra.getId()) //only for nukkit purpose
-//                        .putInt("meta", extra.getDamage()) //only for nukkit purpose
-                        .putInt("id", AIR)
-                        .putInt("meta", 0);
-//                String blockExtraName = GlobalBlockPalette.getNameByBlockId(extra.getId());
-//                if (blockExtraName == null) {
-                    movingBlockExtraTag.putString("name", "minecraft:air")
-                            .putShort("val", 0);
-//                } else {
-//                    movingBlockExtraTag.putString("name", blockExtraName)
-//                            .putShort("val", extra.getDamage());
-//                }
+                CompoundTag movingBlockTag = BlockSerializer.serialize(newBlock);
+//                CompoundTag movingBlockExtraTag = BlockSerializer.serialize(extra);
 
                 CompoundTag nbt = BlockEntity.getDefaultCompound(newBlock, BlockEntity.MOVING_BLOCK)
                         .putInt("pistonPosX", this.getFloorX())
                         .putInt("pistonPosY", this.getFloorY())
                         .putInt("pistonPosZ", this.getFloorZ())
                         .putCompound("movingBlock", movingBlockTag)
-                        .putCompound("movingBlockExtra", movingBlockExtraTag);
+//                        .putCompound("movingBlockExtra", movingBlockExtraTag)
+                        ;
 
                 if (blockEntity != null && !(blockEntity instanceof BlockEntityMovingBlock)) {
                     blockEntity.saveNBT();

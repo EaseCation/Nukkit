@@ -4,6 +4,7 @@ import cn.nukkit.GameMode;
 import cn.nukkit.block.BlockID;
 import cn.nukkit.entity.EntityID;
 import cn.nukkit.item.ItemID;
+import cn.nukkit.item.ItemRuntimeID;
 import cn.nukkit.item.enchantment.Enchantments;
 import cn.nukkit.potion.Effects;
 import com.google.common.collect.ImmutableMap;
@@ -41,6 +42,9 @@ public class CommandEnum {
         ImmutableMap.Builder<String, Set<CommandEnumConstraint>> blocks = ImmutableMap.builder();
         for (Field field : BlockID.class.getDeclaredFields()) {
             String name = field.getName().toLowerCase();
+            if (name.equals("undefined")) {
+                continue;
+            }
             blocks.put(name, Collections.emptySet());
             blocks.put("minecraft:" + name, EnumSet.of(CommandEnumConstraint.ALLOW_ALIASES));
         }
@@ -49,6 +53,17 @@ public class CommandEnum {
         ImmutableMap.Builder<String, Set<CommandEnumConstraint>> items = ImmutableMap.builder();
         for (Field field : ItemID.class.getDeclaredFields()) {
             String name = field.getName().toLowerCase();
+            if (name.equals("undefined_id")) {
+                continue;
+            }
+            items.put(name, Collections.emptySet());
+            items.put("minecraft:" + name, EnumSet.of(CommandEnumConstraint.ALLOW_ALIASES));
+        }
+        for (Field field : ItemRuntimeID.class.getDeclaredFields()) {
+            String name = field.getName().toLowerCase();
+            if (name.equals("custom_item")) {
+                continue;
+            }
             items.put(name, Collections.emptySet());
             items.put("minecraft:" + name, EnumSet.of(CommandEnumConstraint.ALLOW_ALIASES));
         }

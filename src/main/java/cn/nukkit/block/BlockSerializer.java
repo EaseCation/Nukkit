@@ -5,13 +5,13 @@ import cn.nukkit.nbt.tag.CompoundTag;
 import java.util.Objects;
 
 public class BlockSerializer {
-    private static BlockInstanceSerializer INSTANCE_SERIALIZER;
+//    private static BlockInstanceSerializer INSTANCE_SERIALIZER;
     private static RuntimeBlockSerializer RUNTIME_SERIALIZER;
 
-    public static void setInstanceSerializer(BlockInstanceSerializer serializer) {
-        Objects.requireNonNull(serializer, "serializer");
-        INSTANCE_SERIALIZER = serializer;
-    }
+//    public static void setInstanceSerializer(BlockInstanceSerializer serializer) {
+//        Objects.requireNonNull(serializer, "serializer");
+//        INSTANCE_SERIALIZER = serializer;
+//    }
 
     public static void setRuntimeSerializer(RuntimeBlockSerializer serializer) {
         Objects.requireNonNull(serializer, "serializer");
@@ -19,11 +19,13 @@ public class BlockSerializer {
     }
 
     public static CompoundTag serialize(Block block) {
-        return INSTANCE_SERIALIZER.serialize(block);
+//        return INSTANCE_SERIALIZER.serialize(block);
+        return serializeRuntime(block.getFullId());
     }
 
     public static Block deserialize(CompoundTag tag) {
-        return INSTANCE_SERIALIZER.deserialize(tag);
+//        return INSTANCE_SERIALIZER.deserialize(tag);
+        return Block.fromFullId(deserializeRuntime(tag));
     }
 
     public static CompoundTag serializeRuntime(int fullId) {
@@ -34,11 +36,11 @@ public class BlockSerializer {
         return RUNTIME_SERIALIZER.deserialize(tag);
     }
 
-    public interface BlockInstanceSerializer {
-        CompoundTag serialize(Block block);
-
-        Block deserialize(CompoundTag tag);
-    }
+//    public interface BlockInstanceSerializer {
+//        CompoundTag serialize(Block block);
+//
+//        Block deserialize(CompoundTag tag);
+//    }
 
     public interface RuntimeBlockSerializer {
         CompoundTag serialize(int fullId);

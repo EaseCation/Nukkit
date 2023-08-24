@@ -90,6 +90,7 @@ public abstract class EntityHumanType extends EntityCreature implements Inventor
             inventoryTag = new ListTag<>("Inventory");
             this.namedTag.putList(inventoryTag);
 
+/*
             for (int slot = 0; slot < 9; ++slot) {
                 inventoryTag.add(new CompoundTag()
                         .putByte("Count", 0)
@@ -99,16 +100,20 @@ public abstract class EntityHumanType extends EntityCreature implements Inventor
                         .putShort("id", 0)
                 );
             }
+*/
 
             int slotCount = Player.SURVIVAL_SLOTS + 9;
             for (int slot = 9; slot < slotCount; ++slot) {
                 Item item = this.inventory.getItem(slot - 9);
+                if (item.isNull()) {
+                    continue;
+                }
                 inventoryTag.add(NBTIO.putItemHelper(item, slot));
             }
 
             for (int slot = 100; slot < 104; ++slot) {
                 Item item = this.inventory.getItem(this.inventory.getSize() + slot - 100);
-                if (item != null && item.getId() != Item.AIR) {
+                if (!item.isNull()) {
                     inventoryTag.add(NBTIO.putItemHelper(item, slot));
                 }
             }
@@ -116,7 +121,7 @@ public abstract class EntityHumanType extends EntityCreature implements Inventor
 
         if (this.offhandInventory != null) {
             Item item = this.offhandInventory.getItem(0);
-            if (item.getId() != Item.AIR) {
+            if (!item.isNull()) {
                 if (inventoryTag == null) {
                     inventoryTag = new ListTag<>("Inventory");
                     this.namedTag.putList(inventoryTag);
@@ -129,7 +134,7 @@ public abstract class EntityHumanType extends EntityCreature implements Inventor
         if (this.enderChestInventory != null) {
             for (int slot = 0; slot < 27; ++slot) {
                 Item item = this.enderChestInventory.getItem(slot);
-                if (item != null && item.getId() != Item.AIR) {
+                if (!item.isNull()) {
                     this.namedTag.getList("EnderItems", CompoundTag.class).add(NBTIO.putItemHelper(item, slot));
                 }
             }

@@ -67,7 +67,6 @@ public final class DispenseBehaviorRegister {
                 }
             }
         });
-        //TODO: tipped arrow
         registerBehavior(ItemID.EGG, new ProjectileDispenseBehavior(EntityEgg::new));
         registerBehavior(ItemID.SNOWBALL, new ProjectileDispenseBehavior(EntitySnowball::new));
         registerBehavior(ItemID.EXPERIENCE_BOTTLE, new ProjectileDispenseBehavior(EntityExpBottle::new) {
@@ -92,7 +91,17 @@ public final class DispenseBehaviorRegister {
                 return super.getMotion() * 1.25;
             }
         });
-//        registerBehavior(ItemID.LINGERING_POTION, new ProjectileDispenseBehavior(EntityLingeringPotion::new)); //TODO
+        registerBehavior(ItemID.LINGERING_POTION, new ProjectileDispenseBehavior(EntityLingeringPotion::new) {
+            @Override
+            protected float getAccuracy() {
+                return super.getAccuracy() * 0.5f;
+            }
+
+            @Override
+            protected double getMotion() {
+                return super.getMotion() * 1.25;
+            }
+        });
         registerBehavior(ItemID.TRIDENT, new ProjectileDispenseBehavior(EntityThrownTrident::new) {
             @Override
             protected float getAccuracy() {

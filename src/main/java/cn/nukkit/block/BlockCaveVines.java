@@ -35,8 +35,8 @@ public class BlockCaveVines extends BlockFlowable {
 
     @Override
     public Item toItem(boolean addUserData) {
-        if (NEXT_UPDATE_ITEM_UPGRADE_PREVIEW) {
-//            return Item.get(Item.GLOW_BERRIES); //TODO: item name serialization
+        if (ENABLE_ITEM_NAME_PERSISTENCE) {
+            return Item.get(Item.GLOW_BERRIES);
         }
         return Item.get(getItemId(CAVE_VINES));
     }

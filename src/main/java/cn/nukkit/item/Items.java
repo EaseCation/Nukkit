@@ -5,13 +5,19 @@ import cn.nukkit.block.Block;
 import cn.nukkit.block.BlockID;
 import cn.nukkit.potion.PotionID;
 
+import java.util.concurrent.atomic.AtomicInteger;
+
 import static cn.nukkit.GameVersion.*;
+import static cn.nukkit.SharedConstants.*;
 import static cn.nukkit.item.ItemID.*;
 
 public final class Items {
-    private static final ItemFactory[] ITEM_FACTORIES = new ItemFactory[65535];
+    static final int BASE_INTERNAL_ID = 0x3ff;
+    private static final AtomicInteger CUSTOM_ITEM_ID_ALLOCATOR = new AtomicInteger(CUSTOM_ITEM);
 
-    private static final Item[][] ITEM_CACHE = new Item[65535][];
+    private static final ItemFactory[] ITEM_FACTORIES = new ItemFactory[Short.MAX_VALUE];
+
+    private static final Item[][] ITEM_CACHE = new Item[Short.MAX_VALUE][];
     private static final Item[][] BLOCK_CACHE = new Item[BlockID.UNDEFINED][];
 
     public static void registerVanillaItems() {
@@ -288,8 +294,6 @@ public final class Items {
         registerItem(AMETHYST_SHARD, ItemAmethystShard.class, ItemAmethystShard::new, V1_17_0);
         registerItem(SPYGLASS, ItemSpyglass.class, ItemSpyglass::new, V1_17_0);
         registerItem(GLOW_FRAME, ItemItemFrameGlow.class, ItemItemFrameGlow::new, V1_17_0);
-        // copper_ingot
-        // glow_berries
 
         registerItem(MUSIC_DISC_OTHERSIDE, ItemRecordOtherside.class, ItemRecordOtherside::new, V1_18_0);
 
@@ -300,18 +304,37 @@ public final class Items {
         registerItem(ECHO_SHARD, ItemEchoShard.class, ItemEchoShard::new, V1_19_0);
         registerItem(MANGROVE_DOOR, ItemDoorMangrove.class, ItemDoorMangrove::new, V1_19_0);
         registerItem(MANGROVE_SIGN, ItemSignMangrove.class, ItemSignMangrove::new, V1_19_0);
-        // chest_boat
 
         registerItem(MUSIC_DISC_RELIC, ItemRecordRelic.class, ItemRecordRelic::new, V1_20_0);
 
         initializeItemBlockCache();
     }
 
-    public static Class<? extends Item> registerItem(int id, Class<? extends Item> clazz, ItemFactory factory) {
+    /**
+     * deferred
+     */
+    public static void registerVanillaNewItems() {
+        registerNewItem("copper_ingot", COPPER_INGOT, ItemIngotCopper.class, ItemIngotCopper::new, V1_17_0);
+        registerNewItem("glow_berries", GLOW_BERRIES, ItemGlowBerries.class, ItemGlowBerries::new, V1_17_0);
+
+        registerNewItem("chest_boat", CHEST_BOAT, ItemBoatChest.class, ItemBoatChest::new, ItemBoatChest.UNDEFINED_BOAT - 1, V1_19_0);
+        registerNewItemAux("oak_chest_boat", CHEST_BOAT, ItemBoatChest.OAK_BOAT, V1_19_0);
+        registerNewItemAux("spruce_chest_boat", CHEST_BOAT, ItemBoatChest.SPRUCE_BOAT, V1_19_0);
+        registerNewItemAux("birch_chest_boat", CHEST_BOAT, ItemBoatChest.BIRCH_BOAT, V1_19_0);
+        registerNewItemAux("jungle_chest_boat", CHEST_BOAT, ItemBoatChest.JUNGLE_BOAT, V1_19_0);
+        registerNewItemAux("acacia_chest_boat", CHEST_BOAT, ItemBoatChest.ACACIA_BOAT, V1_19_0);
+        registerNewItemAux("dark_oak_chest_boat", CHEST_BOAT, ItemBoatChest.DARK_OAK_BOAT, V1_19_0);
+        registerNewItemAux("mangrove_chest_boat", CHEST_BOAT, ItemBoatChest.MANGROVE_BOAT, V1_19_0);
+        registerNewItemAux("bamboo_chest_raft", CHEST_BOAT, ItemBoatChest.BAMBOO_RAFT, V1_20_0);
+        registerNewItemAux("cherry_chest_boat", CHEST_BOAT, ItemBoatChest.CHERRY_BOAT, V1_20_0);
+
+    }
+
+    private static Class<? extends Item> registerItem(int id, Class<? extends Item> clazz, ItemFactory factory) {
         return registerItem(id, clazz, factory, 0);
     }
 
-    public static Class<? extends Item> registerItem(int id, Class<? extends Item> clazz, ItemFactory factory, int maxAuxVal) {
+    private static Class<? extends Item> registerItem(int id, Class<? extends Item> clazz, ItemFactory factory, int maxAuxVal) {
         Item.list[id] = clazz;
         ITEM_FACTORIES[id] = factory;
 
@@ -339,18 +362,71 @@ public final class Items {
     /**
      * @param version min required base game version
      */
-    public static Class<? extends Item> registerItem(int id, Class<? extends Item> clazz, ItemFactory factory, GameVersion version) {
+    private static Class<? extends Item> registerItem(int id, Class<? extends Item> clazz, ItemFactory factory, GameVersion version) {
         return registerItem(id, clazz, factory, 0, version);
     }
 
     /**
      * @param version min required base game version
      */
-    public static Class<? extends Item> registerItem(int id, Class<? extends Item> clazz, ItemFactory factory, int maxAuxVal, GameVersion version) {
+    private static Class<? extends Item> registerItem(int id, Class<? extends Item> clazz, ItemFactory factory, int maxAuxVal, GameVersion version) {
         if (!version.isAvailable()) {
             return null;
         }
         return registerItem(id, clazz, factory, maxAuxVal);
+    }
+
+    /**
+     * @param version min required base game version
+     */
+    private static Class<? extends Item> registerNewItem(String identifier, int id, Class<? extends Item> clazz, ItemFactory factory, GameVersion version) {
+        if (!ENABLE_ITEM_NAME_PERSISTENCE) {
+            return null;
+        }
+        if (!version.isAvailable()) {
+            return null;
+        }
+        ItemSerializer.registerItem("minecraft:" + identifier, id);
+        return registerItem(id, clazz, factory);
+    }
+
+    /**
+     * @param version min required base game version
+     */
+    private static Class<? extends Item> registerNewItem(String identifier, int id, Class<? extends Item> clazz, ItemFactory factory, int maxAuxVal, GameVersion version) {
+        if (!ENABLE_ITEM_NAME_PERSISTENCE) {
+            return null;
+        }
+        if (!version.isAvailable()) {
+            return null;
+        }
+        ItemSerializer.registerItem("minecraft:" + identifier, id, maxAuxVal);
+        return registerItem(id, clazz, factory, maxAuxVal);
+    }
+
+    /**
+     * @param version min required base game version
+     */
+    private static void registerNewItemAux(String identifier, int id, int meta, GameVersion version) {
+        if (!ENABLE_ITEM_NAME_PERSISTENCE) {
+            return;
+        }
+        if (!version.isAvailable()) {
+            return;
+        }
+        ItemSerializer.registerItemAux("minecraft:" + identifier, id, meta);
+    }
+
+    public static Class<? extends Item> registerCustomItem(String identifier, int id, Class<? extends Item> clazz, ItemFactory factory) {
+        if (identifier.startsWith("minecraft:")) {
+            throw new IllegalArgumentException("Invalid identifier: " + identifier);
+        }
+        ItemSerializer.registerCustomItem(identifier, id);
+        return registerItem(id, clazz, factory);
+    }
+
+    public static int allocateCustomItemId() {
+        return CUSTOM_ITEM_ID_ALLOCATOR.getAndIncrement();
     }
 
     private static void initializeItemBlockCache() {

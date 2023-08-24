@@ -1,27 +1,21 @@
 package cn.nukkit.blockentity;
 
-import cn.nukkit.Player;
 import cn.nukkit.block.Block;
 import cn.nukkit.entity.Entity;
 import cn.nukkit.entity.item.EntityItem;
 import cn.nukkit.event.inventory.InventoryMoveItemEvent;
 import cn.nukkit.inventory.*;
 import cn.nukkit.item.Item;
-import cn.nukkit.item.Items;
 import cn.nukkit.level.format.FullChunk;
 import cn.nukkit.math.AxisAlignedBB;
 import cn.nukkit.math.BlockFace;
 import cn.nukkit.math.SimpleAxisAlignedBB;
-import cn.nukkit.nbt.NBTIO;
 import cn.nukkit.nbt.tag.CompoundTag;
-import cn.nukkit.nbt.tag.ListTag;
-
-import java.util.HashSet;
 
 /**
  * Created by CreeperFace on 8.5.2017.
  */
-public class BlockEntityHopper extends BlockEntitySpawnable implements InventoryHolder, BlockEntityContainer, BlockEntityNameable {
+public class BlockEntityHopper extends BlockEntityAbstractContainer {
 
     protected HopperInventory inventory;
 
@@ -42,14 +36,6 @@ public class BlockEntityHopper extends BlockEntitySpawnable implements Inventory
         }
 
         this.inventory = new HopperInventory(this);
-
-        if (!this.namedTag.contains("Items") || !(this.namedTag.get("Items") instanceof ListTag)) {
-            this.namedTag.putList(new ListTag<CompoundTag>("Items"));
-        }
-
-        for (int i = 0; i < this.getSize(); i++) {
-            this.inventory.setItem(i, this.getItem(i));
-        }
 
         this.pickupArea = new SimpleAxisAlignedBB(this.x, this.y, this.z, this.x + 1, this.y + 2, this.z + 1);
 
@@ -76,53 +62,9 @@ public class BlockEntityHopper extends BlockEntitySpawnable implements Inventory
         return 5;
     }
 
-    protected int getSlotIndex(int index) {
-        ListTag<CompoundTag> list = this.namedTag.getList("Items", CompoundTag.class);
-        for (int i = 0; i < list.size(); i++) {
-            if (list.get(i).getByte("Slot") == index) {
-                return i;
-            }
-        }
-
-        return -1;
-    }
-
-    @Override
-    public Item getItem(int index) {
-        int i = this.getSlotIndex(index);
-        if (i < 0) {
-            return Items.air();
-        } else {
-            CompoundTag data = (CompoundTag) this.namedTag.getList("Items").get(i);
-            return NBTIO.getItemHelper(data);
-        }
-    }
-
-    @Override
-    public void setItem(int index, Item item) {
-        int i = this.getSlotIndex(index);
-
-        CompoundTag d = NBTIO.putItemHelper(item, index);
-
-        if (item.getId() == Item.AIR || item.getCount() <= 0) {
-            if (i >= 0) {
-                this.namedTag.getList("Items").getAll().remove(i);
-            }
-        } else if (i < 0) {
-            (this.namedTag.getList("Items", CompoundTag.class)).add(d);
-        } else {
-            (this.namedTag.getList("Items", CompoundTag.class)).add(i, d);
-        }
-    }
-
     @Override
     public void saveNBT() {
         super.saveNBT();
-
-        this.namedTag.putList(new ListTag<CompoundTag>("Items"));
-        for (int index = 0; index < this.getSize(); index++) {
-            this.setItem(index, this.inventory.getItem(index));
-        }
 
         this.namedTag.putInt("TransferCooldown", this.transferCooldown);
     }
@@ -294,24 +236,6 @@ public class BlockEntityHopper extends BlockEntitySpawnable implements Inventory
 
         //TODO: check for minecart
         return pickedUpItem;
-    }
-
-    @Override
-    public void close() {
-        if (!isClosed()) {
-            for (Player player : new HashSet<>(this.getInventory().getViewers())) {
-                player.removeWindow(this.getInventory());
-            }
-            super.close();
-        }
-    }
-
-    @Override
-    public void onBreak() {
-        for (Item content : inventory.getContents().values()) {
-            level.dropItem(this, content);
-        }
-        this.inventory.clearAll();
     }
 
     public boolean pushItems() {

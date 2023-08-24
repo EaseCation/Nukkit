@@ -343,6 +343,26 @@ public abstract class Block extends Position implements Metadatable, Cloneable, 
         return get(id, meta);
     }
 
+    @Nullable
+    public static Block fromIdentifier(String identifier) {
+        return fromIdentifier(identifier, 0);
+    }
+
+    @Nullable
+    public static Block fromIdentifier(String identifier, int meta) {
+        if (identifier.startsWith("minecraft:")) {
+            identifier = identifier.substring(10);
+        }
+
+        try {
+            Field field = BlockID.class.getField(identifier.toUpperCase());
+            field.setAccessible(true);
+            return get(field.getInt(null), meta);
+        } catch (Exception e) {
+            return null;
+        }
+    }
+
     /**
      * Places the Block, using block space and block target, and side. Returns if the block has been placed.
      * @param block replace block
@@ -503,7 +523,15 @@ public abstract class Block extends Position implements Metadatable, Cloneable, 
      * @return full id
      */
     public int getFullId() {
-        return this.getId() << BLOCK_META_BITS;
+        return getFullId(this.getId());
+    }
+
+    public static int getFullId(int id) {
+        return id << BLOCK_META_BITS;
+    }
+
+    public static int getFullId(int id, int meta) {
+        return getFullId(id) | meta;
     }
 
     public static int getIdFromFullId(int fullId) {
