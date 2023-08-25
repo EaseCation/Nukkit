@@ -529,10 +529,12 @@ public abstract class Entity extends Location implements Metadatable, EntityData
     }
 
     public void removeEffect(int effectId) {
-        if (this.effects.containsKey(effectId)) {
-            Effect effect = this.effects.get(effectId);
-            this.effects.remove(effectId);
-            effect.remove(this);
+        Effect effect = this.effects.get(effectId);
+        if (effect != null) {
+            boolean removed = effect.remove(this);
+            if (!removed) return;
+
+            effects.remove(effectId, effect);
 
             this.recalculateEffectColor();
         }
@@ -551,7 +553,8 @@ public abstract class Entity extends Location implements Metadatable, EntityData
             return; //here add null means add nothing
         }
 
-        effect.add(this);
+        boolean added = effect.add(this);
+        if (!added) return;
 
         this.effects.put(effect.getId(), effect);
 
