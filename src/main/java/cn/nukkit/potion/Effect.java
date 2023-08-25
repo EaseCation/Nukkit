@@ -4,7 +4,6 @@ import cn.nukkit.Player;
 import cn.nukkit.entity.Entity;
 import cn.nukkit.event.entity.EntityDamageEvent;
 import cn.nukkit.event.entity.EntityDamageEvent.DamageCause;
-import cn.nukkit.event.entity.EntityEffectEvent;
 import cn.nukkit.event.entity.EntityRegainHealthEvent;
 import cn.nukkit.nbt.tag.CompoundTag;
 import cn.nukkit.network.protocol.MobEffectPacket;
@@ -121,14 +120,18 @@ public class Effect implements EffectID, Cloneable {
     public boolean canTick() {
         int interval;
         switch (this.id) {
-            case Effect.POISON:
+            case Effect.POISON: //POISON
             case Effect.FATAL_POISON:
                 if ((interval = (25 >> this.amplifier)) > 0) {
                     return (this.duration % interval) == 0;
                 }
                 return true;
-            case Effect.WITHER:
-            case Effect.REGENERATION:
+            case Effect.WITHER: //WITHER
+                if ((interval = (50 >> this.amplifier)) > 0) {
+                    return (this.duration % interval) == 0;
+                }
+                return true;
+            case Effect.REGENERATION: //REGENERATION
                 if ((interval = (40 >> this.amplifier)) > 0) {
                     return (this.duration % interval) == 0;
                 }
@@ -139,16 +142,16 @@ public class Effect implements EffectID, Cloneable {
 
     public void applyEffect(Entity entity) {
         switch (this.id) {
-            case Effect.POISON:
+            case Effect.POISON: //POISON
             case Effect.FATAL_POISON:
-                if (entity.getHealth() > 1|| this.id == FATAL_POISON) {
+                if (entity.getHealth() > 1 || this.id == FATAL_POISON) {
                     entity.attack(new EntityDamageEvent(entity, DamageCause.MAGIC, 1));
                 }
                 break;
-            case Effect.WITHER:
+            case Effect.WITHER: //WITHER
                 entity.attack(new EntityDamageEvent(entity, DamageCause.WITHER, 1));
                 break;
-            case Effect.REGENERATION:
+            case Effect.REGENERATION: //REGENERATION
                 if (entity.getHealth() < entity.getMaxHealth()) {
                     entity.heal(new EntityRegainHealthEvent(entity, 1, EntityRegainHealthEvent.CAUSE_MAGIC));
                 }
@@ -164,23 +167,13 @@ public class Effect implements EffectID, Cloneable {
         this.color = ((r & 0xff) << 16) + ((g & 0xff) << 8) + (b & 0xff);
     }
 
-    public boolean add(Entity entity) {
+    public void add(Entity entity) {
         Effect oldEffect = entity.getEffect(getId());
-        boolean override = false;
-        EntityEffectEvent.Action action = EntityEffectEvent.Action.ADDED;
-        if (oldEffect != null) {
-            int newAmplifier = Math.abs(this.getAmplifier());
-            int oldAmplifier = Math.abs(oldEffect.getAmplifier());
-            override = (newAmplifier > oldAmplifier) || (newAmplifier == oldAmplifier && this.getDuration() >= oldEffect.getDuration());
-            action = EntityEffectEvent.Action.CHANGED;
+        if (oldEffect != null && (Math.abs(this.getAmplifier()) < Math.abs(oldEffect.getAmplifier()) ||
+            Math.abs(this.getAmplifier()) == Math.abs(oldEffect.getAmplifier())
+                && this.getDuration() < oldEffect.getDuration())) {
+            return;
         }
-
-        EntityEffectEvent event = new EntityEffectEvent(entity, action, getId(), oldEffect, this, override);
-        event.call();
-        if (event.isCancelled()) return false;
-        override = event.isOverride();
-        if (oldEffect != null && !override) return false;
-
         if (entity instanceof Player) {
             Player player = (Player) entity;
 
@@ -210,12 +203,11 @@ public class Effect implements EffectID, Cloneable {
                     player.setMovementSpeed(player.getMovementSpeed() / (1 - 0.15f * (oldEffect.amplifier + 1)), false);
                 }
                 player.setMovementSpeed(player.getMovementSpeed() * (1 - 0.15f * (this.amplifier + 1)));
-                player.setSprinting(false);
             }
         }
 
         if (this.id == Effect.INVISIBILITY) {
-            entity.setDataFlag(Entity.DATA_FLAG_INVISIBLE, true);
+            entity.setDataFlag(Entity.DATA_FLAGS, Entity.DATA_FLAG_INVISIBLE, true);
             entity.setNameTagVisible(false);
         }
 
@@ -223,15 +215,9 @@ public class Effect implements EffectID, Cloneable {
             int add = (this.amplifier + 1) * 4;
             if (add > entity.getAbsorption()) entity.setAbsorption(add);
         }
-
-        return true;
     }
 
-    public boolean remove(Entity entity) {
-        EntityEffectEvent event = new EntityEffectEvent(entity, EntityEffectEvent.Action.REMOVED, getId(), this, null, false);
-        event.call();
-        if (event.isCancelled()) return false;
-
+    public void remove(Entity entity) {
         if (entity instanceof Player) {
             MobEffectPacket pk = new MobEffectPacket();
             pk.eid = entity.getId();
@@ -241,25 +227,21 @@ public class Effect implements EffectID, Cloneable {
             ((Player) entity).dataPacket(pk);
 
             if (this.id == Effect.SPEED) {
-                entity.setSprinting(false);
-                ((Player) entity).setMovementSpeed(Player.DEFAULT_SPEED);
+                ((Player) entity).setMovementSpeed(((Player) entity).getMovementSpeed() / (1 + 0.2f * (this.amplifier + 1)));
             }
             if (this.id == Effect.SLOWNESS) {
-                entity.setSprinting(false);
-                ((Player) entity).setMovementSpeed(Player.DEFAULT_SPEED);
+                ((Player) entity).setMovementSpeed(((Player) entity).getMovementSpeed() / (1 - 0.15f * (this.amplifier + 1)));
             }
         }
 
         if (this.id == Effect.INVISIBILITY) {
-            entity.setDataFlag(Entity.DATA_FLAG_INVISIBLE, false);
+            entity.setDataFlag(Entity.DATA_FLAGS, Entity.DATA_FLAG_INVISIBLE, false);
             entity.setNameTagVisible(true);
         }
 
         if (this.id == Effect.ABSORPTION) {
             entity.setAbsorption(0);
         }
-
-        return true;
     }
 
     @Override
