@@ -3,6 +3,7 @@ package cn.nukkit.command.defaults;
 import cn.nukkit.Player;
 import cn.nukkit.command.Command;
 import cn.nukkit.command.CommandSender;
+import cn.nukkit.command.data.CommandFlag;
 import cn.nukkit.command.data.CommandParamType;
 import cn.nukkit.command.data.CommandParameter;
 import cn.nukkit.event.player.PlayerKickEvent;
@@ -17,6 +18,7 @@ public class BanCommand extends VanillaCommand {
     public BanCommand(String name) {
         super(name, "%commands.ban.description", "%nukkit.command.ban.usage");
         this.setPermission("nukkit.command.ban.player");
+        this.commandData.flags.add(CommandFlag.NOT_CHEAT);
         this.commandParameters.clear();
         this.commandParameters.put("default",
                 new CommandParameter[]{

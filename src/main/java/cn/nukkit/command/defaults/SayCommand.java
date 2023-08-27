@@ -3,6 +3,7 @@ package cn.nukkit.command.defaults;
 import cn.nukkit.Player;
 import cn.nukkit.command.CommandSender;
 import cn.nukkit.command.ConsoleCommandSender;
+import cn.nukkit.command.data.CommandFlag;
 import cn.nukkit.command.data.CommandParamType;
 import cn.nukkit.command.data.CommandParameter;
 import cn.nukkit.lang.LiteralContainer;
@@ -18,6 +19,7 @@ public class SayCommand extends VanillaCommand {
     public SayCommand(String name) {
         super(name, "%commands.say.description", "%nukkit.command.say.usage");
         this.setPermission("nukkit.command.say");
+        this.commandData.flags.add(CommandFlag.NOT_CHEAT);
         this.commandParameters.clear();
         this.commandParameters.put("default", new CommandParameter[]{
                 CommandParameter.newType("message", CommandParamType.MESSAGE)

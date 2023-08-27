@@ -2,6 +2,7 @@ package cn.nukkit.command.defaults;
 
 import cn.nukkit.Player;
 import cn.nukkit.command.CommandSender;
+import cn.nukkit.command.data.CommandFlag;
 import cn.nukkit.command.data.CommandParamType;
 import cn.nukkit.command.data.CommandParameter;
 import cn.nukkit.lang.TranslationContainer;
@@ -18,6 +19,7 @@ public class TellCommand extends VanillaCommand {
     public TellCommand(String name) {
         super(name, "%commands.tell.description", "%nukkit.command.message.usage", "w"/*, "msg"*/); //FIXME: msg 与插件的 FriendChat 冲突
         this.setPermission("nukkit.command.tell");
+        this.commandData.flags.add(CommandFlag.NOT_CHEAT);
         this.commandParameters.clear();
         this.commandParameters.put("default", new CommandParameter[]{
                 CommandParameter.newType("player", CommandParamType.TARGET),

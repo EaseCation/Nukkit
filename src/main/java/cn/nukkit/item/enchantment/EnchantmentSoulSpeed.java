@@ -15,4 +15,12 @@ public class EnchantmentSoulSpeed extends Enchantment {
     public int getMaxLevel() {
         return 3;
     }
+
+    public float getSpeedBoost() {
+        return getSpeedBoost(level);
+    }
+
+    public static float getSpeedBoost(int level) {
+        return level * 0.0105f + 0.03f;
+    }
 }

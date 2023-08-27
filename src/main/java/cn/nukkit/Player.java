@@ -9,6 +9,8 @@ import cn.nukkit.command.Command;
 import cn.nukkit.command.CommandSender;
 import cn.nukkit.command.data.CommandDataVersions;
 import cn.nukkit.entity.*;
+import cn.nukkit.entity.attribute.Attribute;
+import cn.nukkit.entity.attribute.AttributeModifiers;
 import cn.nukkit.entity.data.*;
 import cn.nukkit.entity.item.*;
 import cn.nukkit.entity.projectile.EntityArrow;
@@ -79,6 +81,7 @@ import cn.nukkit.potion.Potion;
 import cn.nukkit.resourcepacks.ResourcePack;
 import cn.nukkit.scheduler.AsyncTask;
 import cn.nukkit.utils.*;
+import com.google.common.annotations.Beta;
 import com.google.common.collect.BiMap;
 import com.google.common.collect.HashBiMap;
 import com.google.common.primitives.Floats;
@@ -318,6 +321,9 @@ public class Player extends EntityHuman implements CommandSender, InventoryHolde
     protected int shieldBlockingTick;
     protected int prevShieldBlockingTick;
     protected int shieldCooldown;
+
+    @Beta //TODO: AttributeMap
+    protected Attribute movementSpeedAttribute = Attribute.getAttribute(Attribute.MOVEMENT);
 
     public int getStartActionTick() {
         return startAction;
@@ -1903,7 +1909,7 @@ public class Player extends EntityHuman implements CommandSender, InventoryHolde
         pk.entries = new Attribute[]{
                 Attribute.getAttribute(Attribute.HEALTH).setMaxValue(this.getMaxHealth()).setValue(health >= 1 ? (health < getMaxHealth() ? health : getMaxHealth()) : 0),
                 Attribute.getAttribute(Attribute.PLAYER_HUNGER).setValue(this.getFoodData().getLevel()),
-                Attribute.getAttribute(Attribute.MOVEMENT).setValue(this.getMovementSpeed()),
+                movementSpeedAttribute.copy().setValue(movementSpeedAttribute.getModifiedValue()),
                 Attribute.getAttribute(Attribute.PLAYER_LEVEL).setValue(this.getExperienceLevel()),
                 Attribute.getAttribute(Attribute.PLAYER_EXPERIENCE).setValue(((float) this.getExperience()) / calculateRequireExperience(this.getExperienceLevel()))
         };
@@ -1949,13 +1955,14 @@ public class Player extends EntityHuman implements CommandSender, InventoryHolde
 
             this.entityBaseTick(tickDiff);
 
+            syncAttributeMap();
+
             if (this.getServer().getDifficulty() == 0 && this.level.getGameRules().getBoolean(GameRule.NATURAL_REGENERATION)) {
                 if (this.getHealth() < this.getMaxHealth() && this.ticksLived % 20 == 0) {
                     this.heal(1);
                 }
 
                 PlayerFood foodData = this.getFoodData();
-
                 if (foodData.getLevel() < 20 && this.ticksLived % 10 == 0) {
                     foodData.addFoodLevel(1, 0);
                 }
@@ -4704,9 +4711,10 @@ public class Player extends EntityHuman implements CommandSender, InventoryHolde
 
     public void setMovementSpeed(float speed, boolean send) {
         super.setMovementSpeed(speed);
+
         if (this.spawned && send) {
-            Attribute attribute = Attribute.getAttribute(Attribute.MOVEMENT).setValue(speed);
-            this.setAttribute(attribute);
+            movementSpeedAttribute.setValue(speed);
+            movementSpeedAttribute.setDirty();
         }
     }
 
@@ -5582,7 +5590,12 @@ public class Player extends EntityHuman implements CommandSender, InventoryHolde
     public void setSprinting(boolean value) {
         if (isSprinting() != value) {
             super.setSprinting(value);
-            this.setMovementSpeed(value ? getMovementSpeed() * 1.3f : getMovementSpeed() / 1.3f);
+
+            if (value) {
+                movementSpeedAttribute.addModifier(AttributeModifiers.SPRINTING_BOOST);
+            } else {
+                movementSpeedAttribute.removeModifier(AttributeModifiers.SPRINTING_BOOST.getId());
+            }
         }
     }
 
@@ -6177,5 +6190,28 @@ public class Player extends EntityHuman implements CommandSender, InventoryHolde
     @Nullable
     public StaticVersion getBlockVersion() {
         return blockVersion;
+    }
+
+    @Beta
+    public Attribute getMovementSpeedAttribute() {
+        return movementSpeedAttribute;
+    }
+
+    private void syncAttributeMap() {
+        if (movementSpeedAttribute.isDirty()) {
+            setAttribute(movementSpeedAttribute.copy().setValue(movementSpeedAttribute.getModifiedValue()));
+        }
+    }
+
+    @Override
+    protected void setFreezeEffectStrength(float freezeEffectStrength) {
+        super.setFreezeEffectStrength(freezeEffectStrength);
+
+        if (freezeEffectStrength <= 0) {
+            movementSpeedAttribute.removeModifier(AttributeModifiers.FREEZE_EFFECT_UUID);
+            return;
+        }
+
+        movementSpeedAttribute.replaceModifier(AttributeModifiers.freezeEffect(freezeEffectStrength));
     }
 }

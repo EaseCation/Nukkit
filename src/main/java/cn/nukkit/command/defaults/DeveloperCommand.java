@@ -5,6 +5,7 @@ import cn.nukkit.command.Command;
 import cn.nukkit.command.CommandParser;
 import cn.nukkit.command.CommandSender;
 import cn.nukkit.command.data.CommandEnum;
+import cn.nukkit.command.data.CommandFlag;
 import cn.nukkit.command.data.CommandParamOption;
 import cn.nukkit.command.data.CommandParamType;
 import cn.nukkit.command.data.CommandParameter;
@@ -25,6 +26,7 @@ public class DeveloperCommand extends Command {
     public DeveloperCommand(String name) {
         super(name, "%nukkit.command.developer.description", "%nukkit.command.developer.usage");
         this.setPermission("nukkit.command.developer");
+        this.commandData.flags.add(CommandFlag.TEST);
         this.commandParameters.clear();
         this.commandParameters.put("varI64", new CommandParameter[]{
                 CommandParameter.newEnum("subCommand", new CommandEnum("SubCommandVar", "var")),

@@ -1,6 +1,6 @@
 package cn.nukkit;
 
-import cn.nukkit.entity.Attribute;
+import cn.nukkit.entity.attribute.Attribute;
 import cn.nukkit.event.entity.EntityDamageEvent;
 import cn.nukkit.event.entity.EntityDamageEvent.DamageCause;
 import cn.nukkit.event.entity.EntityRegainHealthEvent;

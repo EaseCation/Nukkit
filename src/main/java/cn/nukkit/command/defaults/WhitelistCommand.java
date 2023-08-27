@@ -3,6 +3,7 @@ package cn.nukkit.command.defaults;
 import cn.nukkit.command.Command;
 import cn.nukkit.command.CommandSender;
 import cn.nukkit.command.data.CommandEnum;
+import cn.nukkit.command.data.CommandFlag;
 import cn.nukkit.command.data.CommandParamType;
 import cn.nukkit.command.data.CommandParameter;
 import cn.nukkit.lang.TranslationContainer;
@@ -24,6 +25,7 @@ public class WhitelistCommand extends VanillaCommand {
                         "nukkit.command.whitelist.add;" +
                         "nukkit.command.whitelist.remove"
         );
+        this.commandData.flags.add(CommandFlag.NOT_CHEAT);
         this.commandParameters.clear();
         this.commandParameters.put("1arg", new CommandParameter[]{
                 CommandParameter.newEnum("action", new CommandEnum("WhitelistAction", "on", "off", "list", "reload"))

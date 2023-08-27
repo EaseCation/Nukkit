@@ -2,6 +2,7 @@ package cn.nukkit.command.defaults;
 
 import cn.nukkit.command.Command;
 import cn.nukkit.command.CommandSender;
+import cn.nukkit.command.data.CommandFlag;
 import cn.nukkit.command.data.CommandParamType;
 import cn.nukkit.command.data.CommandParameter;
 import cn.nukkit.lang.TranslationContainer;
@@ -15,6 +16,7 @@ public class PardonCommand extends VanillaCommand {
     public PardonCommand(String name) {
         super(name, "%nukkit.command.unban.player.description", "%nukkit.command.unban.usage", "unban");
         this.setPermission("nukkit.command.unban.player");
+        this.commandData.flags.add(CommandFlag.NOT_CHEAT);
         this.commandParameters.clear();
         this.commandParameters.put("default", new CommandParameter[]{
                 CommandParameter.newType("player", CommandParamType.TARGET)

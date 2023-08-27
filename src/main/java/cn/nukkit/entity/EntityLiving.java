@@ -365,8 +365,7 @@ public abstract class EntityLiving extends Entity implements EntityDamageable {
                 freezing = false;
                 if (frozenTicks < 140) {
                     frozenTicks = Math.min(frozenTicks + tickDiff, 140);
-                    setDataProperty(new FloatEntityData(DATA_FREEZING_EFFECT_STRENGTH, frozenTicks / 140f));
-                    //TODO: player fov
+                    setFreezeEffectStrength(frozenTicks / 140f);
                 } else if ((age % 40 == 4 || tickDiff > 40) && (!isPlayer || level.gameRules.getBoolean(GameRule.FREEZE_DAMAGE))) {
                     if (attack(new EntityDamageEvent(this, DamageCause.FREEZE, 1))) {
                         level.addLevelSoundEvent(this, LevelSoundEventPacket.SOUND_PLAYER_HURT_FREEZE);
@@ -374,7 +373,7 @@ public abstract class EntityLiving extends Entity implements EntityDamageable {
                 }
             } else if (frozenTicks > 0) {
                 frozenTicks = Math.max(frozenTicks - tickDiff * 2, 0);
-                setDataProperty(new FloatEntityData(DATA_FREEZING_EFFECT_STRENGTH, frozenTicks / 140f));
+                setFreezeEffectStrength(frozenTicks / 140f);
             }
 
             int floorY = Mth.floor(y - (4 / 16.0));
@@ -546,6 +545,10 @@ public abstract class EntityLiving extends Entity implements EntityDamageable {
     @Override
     public void blockedByShield(Entity blocker) {
         knockBack(blocker, 0, x - blocker.x, z - blocker.z);
+    }
+
+    protected void setFreezeEffectStrength(float freezeEffectStrength) {
+        setDataProperty(new FloatEntityData(DATA_FREEZING_EFFECT_STRENGTH, freezeEffectStrength));
     }
 
     public long getNextAllowAttack() {

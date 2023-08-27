@@ -3,6 +3,7 @@ package cn.nukkit.command.defaults;
 import cn.nukkit.Nukkit;
 import cn.nukkit.Server;
 import cn.nukkit.command.CommandSender;
+import cn.nukkit.command.data.CommandFlag;
 import cn.nukkit.level.Level;
 import cn.nukkit.math.NukkitMath;
 import cn.nukkit.utils.TextFormat;
@@ -23,6 +24,7 @@ public class StatusCommand extends VanillaCommand {
     public StatusCommand(String name) {
         super(name, "%nukkit.command.status.description", "%nukkit.command.status.usage");
         this.setPermission("nukkit.command.status");
+        this.commandData.flags.add(CommandFlag.NOT_CHEAT);
         this.commandParameters.clear();
     }
 

@@ -4,6 +4,7 @@ import cn.nukkit.IPlayer;
 import cn.nukkit.Player;
 import cn.nukkit.command.Command;
 import cn.nukkit.command.CommandSender;
+import cn.nukkit.command.data.CommandFlag;
 import cn.nukkit.command.data.CommandParamType;
 import cn.nukkit.command.data.CommandParameter;
 import cn.nukkit.lang.TranslationContainer;
@@ -17,6 +18,7 @@ public class DeopCommand extends VanillaCommand {
     public DeopCommand(String name) {
         super(name, "%commands.deop.description", "%nukkit.command.deop.description");
         this.setPermission("nukkit.command.op.take");
+        this.commandData.flags.add(CommandFlag.NOT_CHEAT);
         this.commandParameters.put("default", new CommandParameter[]{
                 CommandParameter.newType("player", CommandParamType.TARGET)
         });

@@ -2,6 +2,7 @@ package cn.nukkit.command.defaults;
 
 import cn.nukkit.Player;
 import cn.nukkit.command.CommandSender;
+import cn.nukkit.command.data.CommandFlag;
 import cn.nukkit.lang.TranslationContainer;
 
 /**
@@ -13,6 +14,7 @@ public class ListCommand extends VanillaCommand {
     public ListCommand(String name) {
         super(name, "%commands.list.description", "%nukkit.command.players.usage");
         this.setPermission("nukkit.command.list");
+        this.commandData.flags.add(CommandFlag.NOT_CHEAT);
         this.commandParameters.clear();
     }
 

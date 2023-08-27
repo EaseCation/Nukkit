@@ -1,6 +1,7 @@
 package cn.nukkit.command.defaults;
 
 import cn.nukkit.command.CommandSender;
+import cn.nukkit.command.data.CommandFlag;
 import cn.nukkit.lang.TranslationContainer;
 import cn.nukkit.plugin.Plugin;
 import cn.nukkit.utils.TextFormat;
@@ -19,6 +20,7 @@ public class PluginsCommand extends VanillaCommand {
                 "%nukkit.command.plugins.usage",
                 "pl");
         this.setPermission("nukkit.command.plugins");
+        this.commandData.flags.add(CommandFlag.NOT_CHEAT);
         this.commandParameters.clear();
     }
 

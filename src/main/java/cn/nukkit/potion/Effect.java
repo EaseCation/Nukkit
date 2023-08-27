@@ -2,12 +2,16 @@ package cn.nukkit.potion;
 
 import cn.nukkit.Player;
 import cn.nukkit.entity.Entity;
+import cn.nukkit.entity.attribute.AttributeModifier;
+import cn.nukkit.entity.attribute.AttributeModifiers;
 import cn.nukkit.event.entity.EntityDamageEvent;
 import cn.nukkit.event.entity.EntityDamageEvent.DamageCause;
 import cn.nukkit.event.entity.EntityEffectEvent;
 import cn.nukkit.event.entity.EntityRegainHealthEvent;
 import cn.nukkit.nbt.tag.CompoundTag;
 import cn.nukkit.network.protocol.MobEffectPacket;
+import it.unimi.dsi.fastutil.ints.Int2ObjectMap;
+import it.unimi.dsi.fastutil.ints.Int2ObjectMaps;
 
 import javax.annotation.Nullable;
 
@@ -50,15 +54,26 @@ public class Effect implements EffectID, Cloneable {
 
     protected final boolean bad;
 
+    protected final Int2ObjectMap<AttributeModifier> attributeModifiers;
+
     Effect(int id, String identifier, String name, int r, int g, int b) {
         this(id, identifier, name, r, g, b, false);
     }
 
+    Effect(int id, String identifier, String name, int r, int g, int b, Int2ObjectMap<AttributeModifier> attributeModifiers) {
+        this(id, identifier, name, r, g, b, false, attributeModifiers);
+    }
+
     Effect(int id, String identifier, String name, int r, int g, int b, boolean isBad) {
+        this(id, identifier, name, r, g, b, isBad, Int2ObjectMaps.emptyMap());
+    }
+
+    Effect(int id, String identifier, String name, int r, int g, int b, boolean isBad, Int2ObjectMap<AttributeModifier> attributeModifiers) {
         this.id = id;
         this.identifier = identifier;
         this.name = name;
         this.bad = isBad;
+        this.attributeModifiers = attributeModifiers;
         this.setColor(r, g, b);
     }
 
@@ -195,33 +210,29 @@ public class Effect implements EffectID, Cloneable {
             } else {
                 pk.eventId = MobEffectPacket.EVENT_ADD;
             }
-
             player.dataPacket(pk);
 
             if (this.id == Effect.SPEED) {
-                if (oldEffect != null) {
-                    player.setMovementSpeed(player.getMovementSpeed() / (1 + 0.2f * (oldEffect.amplifier + 1)), false);
-                }
-                player.setMovementSpeed(player.getMovementSpeed() * (1 + 0.2f * (this.amplifier + 1)));
+                attributeModifiers.forEach((attributeId, modifier) -> player.getMovementSpeedAttribute().replaceModifier(createAttributeModifier(modifier)));
+                return true;
             }
 
             if (this.id == Effect.SLOWNESS) {
-                if (oldEffect != null) {
-                    player.setMovementSpeed(player.getMovementSpeed() / (1 - 0.15f * (oldEffect.amplifier + 1)), false);
-                }
-                player.setMovementSpeed(player.getMovementSpeed() * (1 - 0.15f * (this.amplifier + 1)));
-                player.setSprinting(false);
+                attributeModifiers.forEach((attributeId, modifier) -> player.getMovementSpeedAttribute().replaceModifier(createAttributeModifier(modifier)));
+                return true;
             }
         }
 
         if (this.id == Effect.INVISIBILITY) {
             entity.setDataFlag(Entity.DATA_FLAG_INVISIBLE, true);
             entity.setNameTagVisible(false);
+            return true;
         }
 
         if (this.id == Effect.ABSORPTION) {
             int add = (this.amplifier + 1) * 4;
             if (add > entity.getAbsorption()) entity.setAbsorption(add);
+            return true;
         }
 
         return true;
@@ -233,30 +244,34 @@ public class Effect implements EffectID, Cloneable {
         if (event.isCancelled()) return false;
 
         if (entity instanceof Player) {
+            Player player = (Player) entity;
+
             MobEffectPacket pk = new MobEffectPacket();
             pk.eid = entity.getId();
             pk.effectId = this.getId();
             pk.eventId = MobEffectPacket.EVENT_REMOVE;
-
-            ((Player) entity).dataPacket(pk);
+            player.dataPacket(pk);
 
             if (this.id == Effect.SPEED) {
-                entity.setSprinting(false);
-                ((Player) entity).setMovementSpeed(Player.DEFAULT_SPEED);
+                player.getMovementSpeedAttribute().removeModifier(AttributeModifiers.MOVEMENT_SPEED.getId());
+                return true;
             }
+
             if (this.id == Effect.SLOWNESS) {
-                entity.setSprinting(false);
-                ((Player) entity).setMovementSpeed(Player.DEFAULT_SPEED);
+                player.getMovementSpeedAttribute().removeModifier(AttributeModifiers.MOVEMENT_SLOWDOWN.getId());
+                return true;
             }
         }
 
         if (this.id == Effect.INVISIBILITY) {
             entity.setDataFlag(Entity.DATA_FLAG_INVISIBLE, false);
             entity.setNameTagVisible(true);
+            return true;
         }
 
         if (this.id == Effect.ABSORPTION) {
             entity.setAbsorption(0);
+            return true;
         }
 
         return true;
@@ -328,5 +343,13 @@ public class Effect implements EffectID, Cloneable {
         g = (g / total) & 0xff;
         b = (b / total) & 0xff;
         return (r << 16) | (g << 8) | b;
+    }
+
+    private AttributeModifier createAttributeModifier(AttributeModifier modifier) {
+        return new AttributeModifier(modifier.getId(), modifier.getName(), getAttributeModifierValue(modifier), modifier.getOperation(), modifier.getOperand(), false);
+    }
+
+    protected float getAttributeModifierValue(AttributeModifier modifier) {
+        return modifier.getAmount() * (amplifier + 1);
     }
 }

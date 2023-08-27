@@ -2,6 +2,7 @@ package cn.nukkit.command.defaults;
 
 import cn.nukkit.command.Command;
 import cn.nukkit.command.CommandSender;
+import cn.nukkit.command.data.CommandFlag;
 import cn.nukkit.command.data.CommandParamType;
 import cn.nukkit.command.data.CommandParameter;
 import cn.nukkit.lang.TranslationContainer;
@@ -19,6 +20,7 @@ public class PardonIpCommand extends VanillaCommand {
     public PardonIpCommand(String name) {
         super(name, "%nukkit.command.unban.ip.description", "%nukkit.command.unbanip.usage", "unbanip");
         this.setPermission("nukkit.command.unban.ip");
+        this.commandData.flags.add(CommandFlag.NOT_CHEAT);
         this.commandParameters.clear();
         this.commandParameters.put("default", new CommandParameter[]{
                 CommandParameter.newType("ip", CommandParamType.STRING)

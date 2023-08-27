@@ -1,6 +1,10 @@
 package cn.nukkit.potion;
 
 import cn.nukkit.GameVersion;
+import cn.nukkit.entity.attribute.Attribute;
+import cn.nukkit.entity.attribute.AttributeModifier;
+import cn.nukkit.entity.attribute.AttributeModifiers;
+import it.unimi.dsi.fastutil.ints.Int2ObjectMaps;
 import it.unimi.dsi.fastutil.objects.Object2ObjectOpenHashMap;
 
 import javax.annotation.Nullable;
@@ -15,11 +19,16 @@ public final class Effects {
     public static void registerVanillaEffects() {
         Effect.effects[NO_EFFECT] = new Effect(NO_EFFECT, "clear", "%potion.empty", 56, 93, 198);
 
-        registerEffect(SPEED, new Effect(SPEED, "speed", "%potion.moveSpeed", 124, 175, 198));
-        registerEffect(SLOWNESS, new Effect(SLOWNESS, "slowness", "%potion.moveSlowdown", 90, 108, 129, true));
+        registerEffect(SPEED, new Effect(SPEED, "speed", "%potion.moveSpeed", 124, 175, 198, Int2ObjectMaps.singleton(Attribute.MOVEMENT, AttributeModifiers.MOVEMENT_SPEED)));
+        registerEffect(SLOWNESS, new Effect(SLOWNESS, "slowness", "%potion.moveSlowdown", 90, 108, 129, true, Int2ObjectMaps.singleton(Attribute.MOVEMENT, AttributeModifiers.MOVEMENT_SLOWDOWN)));
         registerEffect(HASTE, new Effect(HASTE, "haste", "%potion.digSpeed", 217, 192, 67));
         registerEffect(MINING_FATIGUE, new Effect(MINING_FATIGUE, "mining_fatigue", "%potion.digSlowDown", 74, 66, 23, true));
-        registerEffect(STRENGTH, new Effect(STRENGTH, "strength", "%potion.damageBoost", 147, 36, 35));
+        registerEffect(STRENGTH, new Effect(STRENGTH, "strength", "%potion.damageBoost", 147, 36, 35, Int2ObjectMaps.singleton(Attribute.ATTACK_DAMAGE, AttributeModifiers.DAMAGE_BOOST)) {
+            @Override
+            protected float getAttributeModifierValue(AttributeModifier modifier) {
+                return 1.3f * (amplifier + 1);
+            }
+        });
         registerEffect(INSTANT_HEALTH, new InstantEffect(INSTANT_HEALTH, "instant_health", "%potion.heal", 248, 36, 35));
         registerEffect(INSTANT_DAMAGE, new InstantEffect(INSTANT_DAMAGE, "instant_damage", "%potion.harm", 67, 10, 9, true));
         registerEffect(JUMP_BOOST, new Effect(JUMP_BOOST, "jump_boost", "%potion.jump", 34, 255, 76));
@@ -32,10 +41,15 @@ public final class Effects {
         registerEffect(BLINDNESS, new Effect(BLINDNESS, "blindness", "%potion.blindness", 191, 192, 192));
         registerEffect(NIGHT_VISION, new Effect(NIGHT_VISION, "night_vision", "%potion.nightVision", 0, 0, 139));
         registerEffect(HUNGER, new Effect(HUNGER, "hunger", "%potion.hunger", 46, 139, 87));
-        registerEffect(WEAKNESS, new Effect(WEAKNESS, "weakness", "%potion.weakness", 72, 77, 72, true));
+        registerEffect(WEAKNESS, new Effect(WEAKNESS, "weakness", "%potion.weakness", 72, 77, 72, true, Int2ObjectMaps.singleton(Attribute.ATTACK_DAMAGE, AttributeModifiers.WEAKNESS)) {
+            @Override
+            protected float getAttributeModifierValue(AttributeModifier modifier) {
+                return -0.5f * (amplifier + 1);
+            }
+        });
         registerEffect(POISON, new Effect(POISON, "poison", "%potion.poison", 78, 147, 49, true));
         registerEffect(WITHER, new Effect(WITHER, "wither", "%potion.wither", 53, 42, 39, true));
-        registerEffect(HEALTH_BOOST, new Effect(HEALTH_BOOST, "health_boost", "%potion.healthBoost", 248, 125, 35));
+        registerEffect(HEALTH_BOOST, new Effect(HEALTH_BOOST, "health_boost", "%potion.healthBoost", 248, 125, 35, Int2ObjectMaps.singleton(Attribute.HEALTH, AttributeModifiers.HEALTH_BOOST)));
         registerEffect(ABSORPTION, new Effect(ABSORPTION, "absorption", "%potion.absorption", 36, 107, 251));
         registerEffect(SATURATION, new Effect(SATURATION, "saturation", "%potion.saturation", 255, 0, 255));
         registerEffect(LEVITATION, new Effect(LEVITATION, "levitation", "%potion.levitation", 206, 255, 255, true));

@@ -3,6 +3,7 @@ package cn.nukkit.command.defaults;
 import cn.nukkit.Player;
 import cn.nukkit.command.CommandSender;
 import cn.nukkit.command.data.CommandEnum;
+import cn.nukkit.command.data.CommandFlag;
 import cn.nukkit.command.data.CommandParamType;
 import cn.nukkit.command.data.CommandParameter;
 import cn.nukkit.lang.TranslationContainer;
@@ -19,6 +20,7 @@ public class GameruleCommand extends VanillaCommand {
     public GameruleCommand(String name) {
         super(name, "%commands.gamerule.description", "%nukkit.command.gamerule.usage");
         this.setPermission("nukkit.command.gamerule");
+        this.commandData.flags.add(CommandFlag.NOT_CHEAT);
         this.commandParameters.clear();
 
         GameRules rules = GameRules.getDefault();

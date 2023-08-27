@@ -2,6 +2,7 @@ package cn.nukkit.command.defaults;
 
 import cn.nukkit.command.CommandParser;
 import cn.nukkit.command.CommandSender;
+import cn.nukkit.command.data.CommandFlag;
 import cn.nukkit.command.data.CommandParamType;
 import cn.nukkit.command.data.CommandParameter;
 import cn.nukkit.command.exceptions.CommandSyntaxException;
@@ -12,6 +13,7 @@ public class SetMaxPlayersCommand extends VanillaCommand {
     public SetMaxPlayersCommand(String name) {
         super(name, "%commands.setmaxplayers.description", "%nukkit.command.setmaxplayers.usage");
         this.setPermission("nukkit.command.setmaxplayers");
+        this.commandData.flags.add(CommandFlag.NOT_CHEAT);
         this.commandParameters.clear();
         this.commandParameters.put("default", new CommandParameter[]{
                 CommandParameter.newType("maxPlayers", CommandParamType.INT),
