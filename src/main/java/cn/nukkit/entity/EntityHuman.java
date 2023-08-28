@@ -41,7 +41,13 @@ public class EntityHuman extends EntityHumanType {
 
     @Override
     public float getHeight() {
-        return 1.8f;
+        if (this.isSwimming() || this.isGliding()) {
+            return this.getWidth();
+        } else if (this.isSneaking()) {
+            return 1.65f;  // 潜行高度降为1.5，是1.20的特性
+        } else {
+            return 1.8f;
+        }
     }
 
     @Override
@@ -79,6 +85,24 @@ public class EntityHuman extends EntityHumanType {
 
     public void setSkin(Skin skin) {
         this.skin = skin;
+    }
+
+    @Override
+    public void setSwimming(boolean value) {
+        super.setSwimming(value);
+        this.recalculateBoundingBox();
+    }
+
+    @Override
+    public void setSneaking(boolean value) {
+        super.setSneaking(value);
+        this.recalculateBoundingBox();
+    }
+
+    @Override
+    public void setGliding(boolean value) {
+        super.setGliding(value);
+        this.recalculateBoundingBox();
     }
 
     @Override
