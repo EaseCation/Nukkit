@@ -24,6 +24,7 @@ import cn.nukkit.event.entity.EntityDamageEvent.DamageCause;
 import cn.nukkit.event.entity.EntityDamageEvent.DamageModifier;
 import cn.nukkit.event.entity.ProjectileLaunchEvent;
 import cn.nukkit.event.inventory.*;
+import cn.nukkit.event.level.LevelCorruptEvent;
 import cn.nukkit.event.player.*;
 import cn.nukkit.event.player.PlayerInteractEvent.Action;
 import cn.nukkit.event.player.PlayerKickEvent.Reason;
@@ -1037,6 +1038,7 @@ public class Player extends EntityHuman implements CommandSender, InventoryHolde
                     this.sendMessage(Utils.getExceptionMessage(e.getCause()));
                 }
                 log.warn("Chunk " + chunkX + "," + chunkZ + " load&send failed!", e);
+                new LevelCorruptEvent(level, new ChunkPosition(chunkX, chunkZ)).call();
             }
 
             this.loadQueue.remove(index);
