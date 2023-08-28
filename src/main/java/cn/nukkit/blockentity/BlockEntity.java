@@ -161,6 +161,10 @@ public abstract class BlockEntity extends Position implements BlockEntityID {
     }
 
     public final void scheduleUpdate() {
+        if (level == null) {
+            return;
+        }
+
         this.level.scheduleBlockEntityUpdate(this);
     }
 
@@ -182,6 +186,10 @@ public abstract class BlockEntity extends Position implements BlockEntityID {
     }
 
     public final void setDirty() {
+        if (level == null) {
+            return;
+        }
+
         chunk.setChanged();
 
         if (level.isInitialized() && !this.getLevelBlock().isAir()) {

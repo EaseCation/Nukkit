@@ -68,7 +68,6 @@ import it.unimi.dsi.fastutil.ints.Int2ObjectMap;
 import it.unimi.dsi.fastutil.ints.Int2ObjectOpenHashMap;
 import it.unimi.dsi.fastutil.longs.*;
 import it.unimi.dsi.fastutil.objects.ObjectArrayList;
-import it.unimi.dsi.fastutil.objects.ObjectIterator;
 import lombok.extern.log4j.Log4j2;
 import org.apache.commons.io.FileUtils;
 
@@ -81,6 +80,7 @@ import java.nio.file.Paths;
 import java.util.*;
 import java.util.concurrent.*;
 import java.util.function.Predicate;
+import java.util.function.Supplier;
 
 import static cn.nukkit.SharedConstants.*;
 import static cn.nukkit.level.format.generic.ChunkRequestTask.PADDING_SUB_CHUNK_COUNT;
@@ -271,6 +271,7 @@ public class Level implements ChunkManager, Metadatable {
     private final int chunkTickRadius;
     private final Long2IntMap chunkTickList = new Long2IntOpenHashMap();
     private final int chunksPerTicks;
+    private boolean disableChunkTick;
     private final boolean clearChunksOnTick;
 
     private int updateLCG = ThreadLocalRandom.current().nextInt();
@@ -1369,7 +1370,7 @@ public class Level implements ChunkManager, Metadatable {
     }
 
     private void tickChunks() {
-        if (this.chunksPerTicks <= 0 || this.loaders.isEmpty()) {
+        if (this.chunksPerTicks <= 0 || disableChunkTick || this.loaders.isEmpty()) {
             this.chunkTickList.clear();
             return;
         }
@@ -3327,6 +3328,14 @@ public class Level implements ChunkManager, Metadatable {
     }
 
     public Position getSpawnLocation() {
+        return getSpawnLocation(() -> null);
+    }
+
+    public Position getSpawnLocation(Supplier<Position> defaultPos) {
+        if (provider == null) {
+            return defaultPos.get();
+        }
+
         return Position.fromObject(this.provider.getSpawn(), this);
     }
 
@@ -3436,6 +3445,8 @@ public class Level implements ChunkManager, Metadatable {
             if (!this.chunkSendTasks.add(index)) {
                 continue;
             }
+            boolean requestFullChunk = false;
+            boolean requestSubChunks = false;
             int x = getHashX(index);
             int z = getHashZ(index);
             BaseFullChunk chunk = getChunk(x, z);
@@ -3445,7 +3456,6 @@ public class Level implements ChunkManager, Metadatable {
                 if (blobCache != null && packetCache != null) {
                     int subChunkCount = blobCache.getSubChunkCount();
 
-                    boolean requestFullChunk = false;
                     Iterator<Player> iter = entry.getValue().values().iterator();
                     while (iter.hasNext()) {
                         Player player = iter.next();
@@ -3505,7 +3515,6 @@ public class Level implements ChunkManager, Metadatable {
                         iter.remove();
                     }
 
-                    boolean requestSubChunks = false;
                     Int2ObjectMap<Player> loaders = this.subChunkSendQueue.get(index);
                     if (loaders != null) {
                         Iterator<Player> iterator = loaders.values().iterator();
@@ -3550,9 +3559,24 @@ public class Level implements ChunkManager, Metadatable {
                     }
                 }
             }
+
             AsyncTask task = this.provider.requestChunkTask(x, z);
             if (task != null) {
                 this.server.getScheduler().scheduleAsyncTask(null, task);
+            } else { // no such chunk
+                if (requestFullChunk) {
+                    it.remove();
+                    this.chunkSendTasks.remove(index);
+                }
+
+                if (requestSubChunks) {
+                    Int2ObjectMap<Player> loaders = this.subChunkSendQueue.remove(index);
+                    if (loaders != null) {
+                        for (Player player : loaders.values()) {
+                            player.onSubChunkRequestFail(this.getDimension().ordinal(), x, z);
+                        }
+                    }
+                }
             }
         }
     }
@@ -3820,7 +3844,7 @@ public class Level implements ChunkManager, Metadatable {
     private boolean loadChunkInternal(long index, int x, int z, boolean generate) {
         this.cancelUnloadChunkRequest(x, z);
 
-        BaseFullChunk chunk = this.provider.getChunk(x, z, generate);
+        BaseFullChunk chunk = provider != null ? this.provider.getChunk(x, z, generate) : null;
 
         if (chunk == null) {
             if (generate) {
@@ -4020,6 +4044,9 @@ public class Level implements ChunkManager, Metadatable {
     }
 
     public String getName() {
+        if (provider == null) {
+            return "";
+        }
         return this.provider.getName();
     }
 
@@ -4992,5 +5019,9 @@ public class Level implements ChunkManager, Metadatable {
 
     public Map<StaticVersion, LongSet> getRequestChunkVersions() {
         return requestChunkVersions;
+    }
+
+    public void setDisableChunkTick(boolean disable) {
+        disableChunkTick = disable;
     }
 }

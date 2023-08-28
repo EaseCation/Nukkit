@@ -24,7 +24,6 @@ import cn.nukkit.event.entity.EntityDamageEvent.DamageCause;
 import cn.nukkit.event.entity.EntityDamageEvent.DamageModifier;
 import cn.nukkit.event.entity.ProjectileLaunchEvent;
 import cn.nukkit.event.inventory.*;
-import cn.nukkit.event.level.ChunkLoadExceptionEvent;
 import cn.nukkit.event.player.*;
 import cn.nukkit.event.player.PlayerInteractEvent.Action;
 import cn.nukkit.event.player.PlayerKickEvent.Reason;
@@ -589,11 +588,17 @@ public class Player extends EntityHuman implements CommandSender, InventoryHolde
 
     @Override
     public boolean isPermissionSet(String name) {
+        if (this.perm == null) {
+            return false;
+        }
         return this.perm.isPermissionSet(name);
     }
 
     @Override
     public boolean isPermissionSet(Permission permission) {
+        if (this.perm == null) {
+            return false;
+        }
         return this.perm.isPermissionSet(permission);
     }
 
@@ -604,6 +609,9 @@ public class Player extends EntityHuman implements CommandSender, InventoryHolde
 
     @Override
     public boolean hasPermission(Permission permission) {
+        if (this.perm == null) {
+            return false;
+        }
         return this.perm.hasPermission(permission);
     }
 
@@ -619,11 +627,17 @@ public class Player extends EntityHuman implements CommandSender, InventoryHolde
 
     @Override
     public PermissionAttachment addAttachment(Plugin plugin, String name, Boolean value) {
+        if (this.perm == null) {
+            return null;
+        }
         return this.perm.addAttachment(plugin, name, value);
     }
 
     @Override
     public void removeAttachment(PermissionAttachment attachment) {
+        if (this.perm == null) {
+            return;
+        }
         this.perm.removeAttachment(attachment);
     }
 
@@ -681,6 +695,9 @@ public class Player extends EntityHuman implements CommandSender, InventoryHolde
 
     @Override
     public Map<String, PermissionAttachmentInfo> getEffectivePermissions() {
+        if (this.perm == null) {
+            return Collections.emptyMap();
+        }
         return this.perm.getEffectivePermissions();
     }
 
@@ -833,7 +850,7 @@ public class Player extends EntityHuman implements CommandSender, InventoryHolde
 
             SetSpawnPositionPacket spawnPosition = new SetSpawnPositionPacket();
             spawnPosition.spawnType = SetSpawnPositionPacket.TYPE_WORLD_SPAWN;
-            Position spawn = level.getSpawnLocation();
+            Position spawn = level.getSpawnLocation(Position::new);
             spawnPosition.x = spawn.getFloorX();
             spawnPosition.y = spawn.getFloorY();
             spawnPosition.z = spawn.getFloorZ();
@@ -1020,7 +1037,6 @@ public class Player extends EntityHuman implements CommandSender, InventoryHolde
                     this.sendMessage(Utils.getExceptionMessage(e.getCause()));
                 }
                 log.warn("Chunk " + chunkX + "," + chunkZ + " load&send failed!", e);
-                getServer().getPluginManager().callEvent(new ChunkLoadExceptionEvent(chunk, e));
             }
 
             this.loadQueue.remove(index);
@@ -1883,7 +1899,7 @@ public class Player extends EntityHuman implements CommandSender, InventoryHolde
     public boolean setMotion(Vector3 motion) {
         if (super.setMotion(motion)) {
             if (this.chunk != null) {
-                this.getLevel().addEntityMotion(this.chunk.getX(), this.chunk.getZ(), this.getId(), this.motionX, this.motionY, this.motionZ);  //Send to others
+                this.getLevel().addEntityMotion(this.getChunkX(), this.getChunkZ(), this.getId(), this.motionX, this.motionY, this.motionZ);  //Send to others
                 SetEntityMotionPacket pk = new SetEntityMotionPacket();
                 pk.eid = this.id;
                 pk.motionX = (float) motion.x;
@@ -5114,10 +5130,10 @@ public class Player extends EntityHuman implements CommandSender, InventoryHolde
             this.server.getPluginManager().callEvent(event);
             if (event.isCancelled()) return false;
             to = event.getTo();
-            if (from.getLevel().getId() != to.getLevel().getId()) { //Different level, update compass position
+            if (to.level != null && from.getLevel() != to.getLevel()) { //Different level, update compass position
                 SetSpawnPositionPacket pk = new SetSpawnPositionPacket();
                 pk.spawnType = SetSpawnPositionPacket.TYPE_WORLD_SPAWN;
-                Position spawn = to.getLevel().getSpawnLocation();
+                Position spawn = to.getLevel().getSpawnLocation(Position::new);
                 pk.x = spawn.getFloorX();
                 pk.y = spawn.getFloorY();
                 pk.z = spawn.getFloorZ();
@@ -5184,7 +5200,7 @@ public class Player extends EntityHuman implements CommandSender, InventoryHolde
             if (from.getLevel() != location.getLevel()) { //Different level, update compass position
                 SetSpawnPositionPacket pk = new SetSpawnPositionPacket();
                 pk.spawnType = SetSpawnPositionPacket.TYPE_WORLD_SPAWN;
-                Position spawn = location.getLevel().getSpawnLocation();
+                Position spawn = location.getLevel().getSpawnLocation(Position::new);
                 pk.x = spawn.getFloorX();
                 pk.y = spawn.getFloorY();
                 pk.z = spawn.getFloorZ();
@@ -5853,7 +5869,7 @@ public class Player extends EntityHuman implements CommandSender, InventoryHolde
                 .putList(new ListTag<FloatTag>("Rotation")
                         .add(new FloatTag("", (float) yaw))
                         .add(new FloatTag("", (float) pitch)));
-        EntityFishingHook fishingHook = new EntityFishingHook(chunk, nbt, this);
+        EntityFishingHook fishingHook = new EntityFishingHook(getChunk(), nbt, this);
         fishingHook.setMotion(motion);
         ProjectileLaunchEvent ev = new ProjectileLaunchEvent(fishingHook);
         this.getServer().getPluginManager().callEvent(ev);
@@ -5968,6 +5984,9 @@ public class Player extends EntityHuman implements CommandSender, InventoryHolde
      * @since 1.18.0
      */
     public void sendSubChunks(int dimension, int x, int z, int subChunkCount, ChunkBlobCache blobCache, ChunkPacketCache packetCache, byte[] heightMapType, byte[][] heightMap) {
+    }
+
+    public void onSubChunkRequestFail(int dimension, int x, int z) {
     }
 
     protected boolean hasSubChunkRequest() {

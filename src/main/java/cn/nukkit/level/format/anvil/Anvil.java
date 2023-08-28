@@ -117,7 +117,8 @@ public class Anvil extends BaseLevelProvider {
     public AsyncTask requestChunkTask(int x, int z) throws ChunkException {
         Chunk chunk = (Chunk) this.getChunk(x, z, false);
         if (chunk == null) {
-            throw new ChunkException("Invalid Chunk Set");
+//            throw new ChunkException("Invalid Chunk Set");
+            return null;
         }
         return new ChunkRequestTask(chunk);
     }

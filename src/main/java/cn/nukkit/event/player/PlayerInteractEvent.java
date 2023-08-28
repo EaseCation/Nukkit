@@ -5,6 +5,7 @@ import cn.nukkit.block.Block;
 import cn.nukkit.event.Cancellable;
 import cn.nukkit.event.HandlerList;
 import cn.nukkit.item.Item;
+import cn.nukkit.item.Items;
 import cn.nukkit.level.Position;
 import cn.nukkit.math.BlockFace;
 import cn.nukkit.math.Vector3;
@@ -46,6 +47,9 @@ public class PlayerInteractEvent extends PlayerEvent implements Cancellable {
         } else {
             this.touchVector = block;
             this.blockTouched = Block.get(Block.AIR, 0, new Position(0, 0, 0, player.level));
+        }
+        if (item == null) {
+            item = Items.air();
         }
 
         this.player = player;

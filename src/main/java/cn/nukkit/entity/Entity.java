@@ -164,6 +164,7 @@ public abstract class Entity extends Location implements Metadatable, EntityData
     protected boolean isPlayer = false;
 
     private volatile boolean initialized;
+    private boolean fullyInitialized;
 
     public float getHeight() {
         return 0;
@@ -347,6 +348,12 @@ public abstract class Entity extends Location implements Metadatable, EntityData
         this.server.getPluginManager().callEvent(new EntitySpawnEvent(this));
 
         this.scheduleUpdate();
+
+        this.fullyInitialized = true;
+    }
+
+    public boolean isInitialized() {
+        return fullyInitialized;
     }
 
     public boolean hasCustomName() {
@@ -915,7 +922,7 @@ public abstract class Entity extends Location implements Metadatable, EntityData
     }
 
     public void spawnTo(Player player) {
-        if (!this.hasSpawned.containsKey(player.getLoaderId()) && this.chunk != null && player.usedChunks.containsKey(Level.chunkHash(this.chunk.getX(), this.chunk.getZ()))) {
+        if (!this.hasSpawned.containsKey(player.getLoaderId()) && this.chunk != null && player.usedChunks.containsKey(Level.chunkHash(this.getChunkX(), this.getChunkZ()))) {
             this.hasSpawned.put(player.getLoaderId(), player);
 //            player.dataPacket(createAddEntityPacket());
         }
@@ -2251,7 +2258,7 @@ public abstract class Entity extends Location implements Metadatable, EntityData
             return;
         }
 
-        for (Player player : this.level.getChunkPlayers(this.chunk.getX(), this.chunk.getZ()).values()) {
+        for (Player player : this.level.getChunkPlayers(this.getChunkX(), this.getChunkZ()).values()) {
             if (player.isOnline()) {
                 this.spawnTo(player);
             }

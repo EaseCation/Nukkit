@@ -94,6 +94,7 @@ public class ChunkRequestTask extends AsyncTask<Void> {
     Chunk chunk;
     int x;
     int z;
+    List<BlockEntity> blockEntities;
     Level level;
     Set<StaticVersion> requestedVersions;
 
@@ -119,6 +120,7 @@ public class ChunkRequestTask extends AsyncTask<Void> {
         this.chunk = chunk;
         x = chunk.getX();
         z = chunk.getZ();
+        blockEntities = new ObjectArrayList<>(chunk.getBlockEntities().values());
         level = chunk.getProvider().getLevel();
         this.requestedVersions = EnumSet.copyOf(PRELOAD_VERSIONS);
         this.requestedVersions.addAll(level.getRequestChunkVersions().keySet());
@@ -167,12 +169,15 @@ public class ChunkRequestTask extends AsyncTask<Void> {
             byte[][] subChunkBlockEntities = new byte[PADDING_SUB_CHUNK_COUNT + 16][];
             byte[] fullChunkBlockEntities = EMPTY;
             Arrays.fill(subChunkBlockEntities, EMPTY);
-            if (!emptyChunk && !chunk.getBlockEntities().isEmpty()) {
+            if (!emptyChunk && !blockEntities.isEmpty()) {
                 stream.reuse();
                 List<CompoundTag>[] tagLists = new List[count];
 
-                for (BlockEntity blockEntity : chunk.getBlockEntities().values()) {
+                for (BlockEntity blockEntity : blockEntities) {
                     if (blockEntity instanceof BlockEntitySpawnable) {
+                        if (blockEntity.isClosed()) {
+                            continue;
+                        }
                         int subChunkY = blockEntity.getSubChunkY();
                         if (subChunkY >= tagLists.length) {
                             continue;

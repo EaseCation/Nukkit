@@ -6,6 +6,7 @@ import cn.nukkit.entity.projectile.EntityArrow;
 import cn.nukkit.event.entity.ProjectileLaunchEvent;
 import cn.nukkit.inventory.Inventory;
 import cn.nukkit.item.enchantment.Enchantment;
+import cn.nukkit.level.format.FullChunk;
 import cn.nukkit.math.Mth;
 import cn.nukkit.math.Vector3;
 import cn.nukkit.nbt.NBTIO;
@@ -71,6 +72,7 @@ public class ItemCrossbow extends ItemTool {
             if (chargedItem.getId() == ARROW) {
                 int penetrationLevel = getEnchantmentLevel(Enchantment.PIERCING);
 
+                FullChunk chunk = player.getChunk();
                 ThreadLocalRandom random = ThreadLocalRandom.current();
                 for (int i = 0; i < count; i++) {
                     float angleOffset = count == 1 ? 0 : i * MULTISHOT_ANGLE_DELTA - MULTISHOT_ANGLE_DELTA;
@@ -96,7 +98,7 @@ public class ItemCrossbow extends ItemTool {
                         nbt.putByte("pickup", EntityArrow.PICKUP_CREATIVE);
                     }
 
-                    EntityArrow arrow = new EntityArrow(player.chunk, nbt, player, true);
+                    EntityArrow arrow = new EntityArrow(chunk, nbt, player, true);
                     ProjectileLaunchEvent event = new ProjectileLaunchEvent(arrow);
                     event.call();
                     if (event.isCancelled()) {

@@ -69,7 +69,7 @@ public class ItemTrident extends ItemTool {
                 .add(0.0075 * random.nextGaussian(), 0.0075 * random.nextGaussian(), 0.0075 * random.nextGaussian());
         CompoundTag nbt = Entity.getDefaultNBT(player.getEyePosition(), dir, (float) dir.yRotFromDirection(), (float) dir.xRotFromDirection());
 
-        EntityThrownTrident trident = new EntityThrownTrident(player.chunk, nbt, player);
+        EntityThrownTrident trident = new EntityThrownTrident(player.getChunk(), nbt, player);
         trident.setItem(this);
 
         double p = (double) ticksUsed / 20;

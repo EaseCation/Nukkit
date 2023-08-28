@@ -11,7 +11,7 @@ public abstract class ChunkEvent extends LevelEvent {
     private final FullChunk chunk;
 
     public ChunkEvent(FullChunk chunk) {
-        super(chunk.getProvider().getLevel());
+        super(chunk.getProvider() != null ? chunk.getProvider().getLevel() : null);
         this.chunk = chunk;
     }
 

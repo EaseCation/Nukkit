@@ -288,7 +288,8 @@ public class LevelDB implements LevelProvider {
     public AsyncTask requestChunkTask(int chunkX, int chunkZ) {
         LevelDbChunk chunk = this.getChunk(chunkX, chunkZ, false);
         if (chunk == null) {
-            throw new ChunkException("Invalid Chunk sent");
+//            throw new ChunkException("Invalid Chunk sent");
+            return null;
         }
 
         return new ChunkRequestTask(chunk);
