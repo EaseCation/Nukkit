@@ -187,7 +187,7 @@ public abstract class Entity extends Location implements Metadatable, EntityData
     }
 
     public float getLength() {
-        return 0;
+        return getWidth();
     }
 
     protected double getStepHeight() {
@@ -446,6 +446,18 @@ public abstract class Entity extends Location implements Metadatable, EntityData
 
     public void setGliding(boolean value) {
         this.setDataFlag(DATA_FLAG_GLIDING, value);
+    }
+
+    public boolean isCrawling() {
+        return this.getDataFlag(DATA_FLAG_CRAWLING);
+    }
+
+    public void setCrawling() {
+        this.setCrawling(true);
+    }
+
+    public void setCrawling(boolean value) {
+        this.setDataFlag(DATA_FLAG_CRAWLING, value);
     }
 
     public boolean isImmobile() {

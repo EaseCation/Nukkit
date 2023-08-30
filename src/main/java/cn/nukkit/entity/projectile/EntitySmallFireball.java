@@ -36,11 +36,6 @@ public class EntitySmallFireball extends EntityFireball {
     }
 
     @Override
-    public float getLength() {
-        return 0.31f;
-    }
-
-    @Override
     public float getHeight() {
         return 0.31f;
     }

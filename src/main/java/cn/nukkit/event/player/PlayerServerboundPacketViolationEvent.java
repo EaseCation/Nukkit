@@ -4,6 +4,8 @@ import cn.nukkit.Player;
 import cn.nukkit.event.HandlerList;
 import cn.nukkit.network.PacketViolationReason;
 
+import javax.annotation.Nullable;
+
 public class PlayerServerboundPacketViolationEvent extends PlayerEvent {
     private static final HandlerList handlers = new HandlerList();
 
@@ -14,6 +16,8 @@ public class PlayerServerboundPacketViolationEvent extends PlayerEvent {
     private final PacketViolationReason reason;
     private final String tag;
     private boolean kick = true;
+    @Nullable
+    private String message;
 
     public PlayerServerboundPacketViolationEvent(Player player, PacketViolationReason reason) {
         this(player, reason, "");
@@ -39,5 +43,14 @@ public class PlayerServerboundPacketViolationEvent extends PlayerEvent {
 
     public void setKick(boolean kick) {
         this.kick = kick;
+    }
+
+    @Nullable
+    public String getMessage() {
+        return message;
+    }
+
+    public void setMessage(@Nullable String message) {
+        this.message = message;
     }
 }

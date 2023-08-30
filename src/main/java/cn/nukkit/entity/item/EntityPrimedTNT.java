@@ -28,11 +28,6 @@ public class EntityPrimedTNT extends Entity implements EntityExplosive {
     }
 
     @Override
-    public float getLength() {
-        return 0.98f;
-    }
-
-    @Override
     public float getHeight() {
         return 0.98f;
     }

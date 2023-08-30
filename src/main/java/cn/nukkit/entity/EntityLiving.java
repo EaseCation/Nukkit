@@ -551,6 +551,10 @@ public abstract class EntityLiving extends Entity implements EntityDamageable {
         setDataProperty(new FloatEntityData(DATA_FREEZING_EFFECT_STRENGTH, freezeEffectStrength));
     }
 
+    public boolean isSleeping() {
+        return false;
+    }
+
     public long getNextAllowAttack() {
         return nextAllowAttack;
     }

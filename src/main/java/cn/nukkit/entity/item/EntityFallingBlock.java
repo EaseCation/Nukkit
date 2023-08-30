@@ -39,11 +39,6 @@ public class EntityFallingBlock extends Entity {
     }
 
     @Override
-    public float getLength() {
-        return 0.98f;
-    }
-
-    @Override
     public float getHeight() {
         return 0.98f;
     }

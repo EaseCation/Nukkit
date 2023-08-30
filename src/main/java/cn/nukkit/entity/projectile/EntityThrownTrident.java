@@ -43,11 +43,6 @@ public class EntityThrownTrident extends EntityProjectile {
     }
 
     @Override
-    public float getLength() {
-        return 0.5f;
-    }
-
-    @Override
     public float getHeight() {
         return 0.05f;
     }

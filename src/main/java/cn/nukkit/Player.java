@@ -84,7 +84,6 @@ import cn.nukkit.utils.*;
 import com.google.common.annotations.Beta;
 import com.google.common.collect.BiMap;
 import com.google.common.collect.HashBiMap;
-import com.google.common.primitives.Floats;
 import it.unimi.dsi.fastutil.Pair;
 import it.unimi.dsi.fastutil.ints.*;
 import it.unimi.dsi.fastutil.longs.*;
@@ -795,6 +794,7 @@ public class Player extends EntityHuman implements CommandSender, InventoryHolde
         return this.newPosition != null ? new Position(this.newPosition.x, this.newPosition.y, this.newPosition.z, this.level) : this.getPosition();
     }
 
+    @Override
     public boolean isSleeping() {
         return this.sleeping != null;
     }
@@ -1061,7 +1061,7 @@ public class Player extends EntityHuman implements CommandSender, InventoryHolde
     protected void firstRespawn(Position pos) {
         RespawnPacket respawnPacket = new RespawnPacket();
         respawnPacket.x = (float) pos.x;
-        respawnPacket.y = (float) pos.y + this.getEyeHeight();
+        respawnPacket.y = (float) pos.y + this.getBaseOffset();
         respawnPacket.z = (float) pos.z;
         this.dataPacket(respawnPacket);
     }
@@ -1268,8 +1268,7 @@ public class Player extends EntityHuman implements CommandSender, InventoryHolde
 
         this.sleeping = pos.clone();
 
-        this.setDataProperty(new FloatEntityData(DATA_BOUNDING_BOX_WIDTH, 0.2f));
-        this.setDataProperty(new FloatEntityData(DATA_BOUNDING_BOX_HEIGHT, 0.2f));
+        this.recalculateBoundingBox();
         this.setDataProperty(new IntPositionEntityData(DATA_PLAYER_BED_POSITION, (int) pos.x, (int) pos.y, (int) pos.z));
         this.setPlayerFlag(DATA_PLAYER_FLAG_SLEEP, true);
 
@@ -1337,8 +1336,7 @@ public class Player extends EntityHuman implements CommandSender, InventoryHolde
 
             this.sleeping = null;
             this.setPlayerFlag(DATA_PLAYER_FLAG_SLEEP, false);
-            this.setDataProperty(new FloatEntityData(DATA_BOUNDING_BOX_WIDTH, this.getWidth()));
-            this.setDataProperty(new FloatEntityData(DATA_BOUNDING_BOX_HEIGHT, this.getHeight()));
+            this.recalculateBoundingBox();
 
             this.level.sleepTicks = 0;
 
@@ -2699,7 +2697,7 @@ public class Player extends EntityHuman implements CommandSender, InventoryHolde
                         return;
                     }
 
-                    Vector3 newPos = new Vector3(movePlayerPacket.x, movePlayerPacket.y - this.getEyeHeight(), movePlayerPacket.z);
+                    Vector3 newPos = new Vector3(movePlayerPacket.x, movePlayerPacket.y - this.getBaseOffset(), movePlayerPacket.z);
 
                     if (newPos.distanceSquared(this) == 0 && movePlayerPacket.yaw % 360 == this.yaw && movePlayerPacket.pitch % 360 == this.pitch) {
                         break;
@@ -2909,7 +2907,18 @@ public class Player extends EntityHuman implements CommandSender, InventoryHolde
                             this.dataPacket(respawnPacket);
 
                             this.setSprinting(false);
-                            this.setSneaking(false);
+                            if (isSneaking()) {
+                                this.setSneaking(false);
+                            }
+                            if (isGliding()) {
+                                this.setGliding(false);
+                            }
+                            if (isSwimming()) {
+                                this.setSwimming(false);
+                            }
+                            if (isCrawling()) {
+                                this.setCrawling(false);
+                            }
 
                             this.setDataProperty(new ShortEntityData(Player.DATA_AIR, 300), false);
                             this.deadTicks = 0;
@@ -2936,6 +2945,9 @@ public class Player extends EntityHuman implements CommandSender, InventoryHolde
                             this.server.getPluginManager().callEvent(playerJumpEvent);
                             break packetswitch;
                         case PlayerActionPacket.ACTION_START_SPRINT:
+                            if (isSprinting()) {
+                                break packetswitch;
+                            }
                             PlayerToggleSprintEvent playerToggleSprintEvent = new PlayerToggleSprintEvent(this, true);
                             this.server.getPluginManager().callEvent(playerToggleSprintEvent);
                             if (playerToggleSprintEvent.isCancelled()) {
@@ -2945,6 +2957,9 @@ public class Player extends EntityHuman implements CommandSender, InventoryHolde
                             }
                             break packetswitch;
                         case PlayerActionPacket.ACTION_STOP_SPRINT:
+                            if (!isSprinting()) {
+                                break packetswitch;
+                            }
                             playerToggleSprintEvent = new PlayerToggleSprintEvent(this, false);
                             this.server.getPluginManager().callEvent(playerToggleSprintEvent);
                             if (playerToggleSprintEvent.isCancelled()) {
@@ -2954,6 +2969,9 @@ public class Player extends EntityHuman implements CommandSender, InventoryHolde
                             }
                             break packetswitch;
                         case PlayerActionPacket.ACTION_START_SNEAK:
+                            if (isSneaking()) {
+                                break packetswitch;
+                            }
                             PlayerToggleSneakEvent playerToggleSneakEvent = new PlayerToggleSneakEvent(this, true);
                             this.server.getPluginManager().callEvent(playerToggleSneakEvent);
                             if (playerToggleSneakEvent.isCancelled()) {
@@ -2963,6 +2981,9 @@ public class Player extends EntityHuman implements CommandSender, InventoryHolde
                             }
                             break packetswitch;
                         case PlayerActionPacket.ACTION_STOP_SNEAK:
+                            if (!isSneaking()) {
+                                break packetswitch;
+                            }
                             playerToggleSneakEvent = new PlayerToggleSneakEvent(this, false);
                             this.server.getPluginManager().callEvent(playerToggleSneakEvent);
                             if (playerToggleSneakEvent.isCancelled()) {
@@ -2975,6 +2996,9 @@ public class Player extends EntityHuman implements CommandSender, InventoryHolde
                             this.onDimensionChangeSuccess();
                             break;
                         case PlayerActionPacket.ACTION_START_GLIDE:
+                            if (isGliding()) {
+                                break packetswitch;
+                            }
                             PlayerToggleGlideEvent playerToggleGlideEvent = new PlayerToggleGlideEvent(this, true);
                             Item chestplate = getInventory().getChestplate();
                             if (chestplate.getId() != Item.ELYTRA || chestplate.getDamage() >= chestplate.getMaxDurability() - 1) {
@@ -2988,6 +3012,9 @@ public class Player extends EntityHuman implements CommandSender, InventoryHolde
                             }
                             break packetswitch;
                         case PlayerActionPacket.ACTION_STOP_GLIDE:
+                            if (!isGliding()) {
+                                break packetswitch;
+                            }
                             playerToggleGlideEvent = new PlayerToggleGlideEvent(this, false);
                             this.server.getPluginManager().callEvent(playerToggleGlideEvent);
                             if (playerToggleGlideEvent.isCancelled()) {
@@ -5020,7 +5047,7 @@ public class Player extends EntityHuman implements CommandSender, InventoryHolde
         MovePlayerPacket pk = new MovePlayerPacket();
         pk.eid = this.getId();
         pk.x = (float) pos.x;
-        pk.y = (float) (pos.y + this.getEyeHeight());
+        pk.y = (float) (pos.y + this.getBaseOffset());
         pk.z = (float) pos.z;
         pk.headYaw = (float) yaw;
         pk.pitch = (float) pitch;
@@ -6115,16 +6142,16 @@ public class Player extends EntityHuman implements CommandSender, InventoryHolde
     }
 
     protected static boolean validateFloat(float value) {
-        return Floats.isFinite(value);
+        return Float.isFinite(value);
     }
 
     protected static boolean validateCoordinate(float value) {
-        return -30_000_000 <= value & value <= 30_000_000;
+        return -30_000_000 <= value && value <= 30_000_000;
     }
 
     protected static boolean validateVehicleInput(float value) {
-//        return -1 <= value & value <= 1;
-        return -1.1f <= value & value <= 1.1f; //client precision bug??? (non-Xbox gamepad: authInput.moveVecY = -1.000_000_1)
+//        return -1 <= value && value <= 1;
+        return -1.1f <= value && value <= 1.1f; //client precision bug??? (non-Xbox gamepad: authInput.moveVecY = -1.000_000_1)
 //        return validateFloat(value);
     }
 
@@ -6142,7 +6169,8 @@ public class Player extends EntityHuman implements CommandSender, InventoryHolde
             if (isClosed()) {
                 return;
             }
-            kick(Reason.PACKET_VIOLATION, reason.toString());
+            String message = event.getMessage();
+            kick(Reason.PACKET_VIOLATION, message != null ? message : reason.toString());
         } else {
             violation = 0;
             violated = false;
