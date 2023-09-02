@@ -13,7 +13,7 @@
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <junit.jupiter.version>5.10.0</junit.jupiter.version>
         <log4j2.version>2.20.0</log4j2.version>
-        <jackson.version>2.14.3</jackson.version>
+        <jackson.version>2.15.2</jackson.version>
         <jline.version>3.23.0</jline.version>
         <!-- 本地测试服务端插件目录 -->
         <dir.api>../../_api</dir.api>

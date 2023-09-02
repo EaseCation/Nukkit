@@ -29,7 +29,7 @@ public class PackManifest {
     private List<SubPack> subpacks = Collections.emptyList();
 
     public static PackManifest load(InputStream stream) throws IOException {
-        return JsonUtil.COMMON_JSON_MAPPER.readValue(stream, PackManifest.class);
+        return JsonUtil.TRUSTED_JSON_MAPPER.readValue(stream, PackManifest.class);
     }
 
     public boolean isValid() {

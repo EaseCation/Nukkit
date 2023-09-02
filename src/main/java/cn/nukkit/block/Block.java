@@ -126,7 +126,7 @@ public abstract class Block extends Position implements Metadatable, Cloneable, 
 
         BlockEntry[] propertiesTable; // auto-generated
         try (InputStream stream = Server.class.getClassLoader().getResourceAsStream("block_properties_table.json")) {
-            propertiesTable = JsonUtil.COMMON_JSON_MAPPER.readValue(stream, BlockEntry[].class);
+            propertiesTable = JsonUtil.TRUSTED_JSON_MAPPER.readValue(stream, BlockEntry[].class);
         } catch (NullPointerException | IOException e) {
             throw new AssertionError("Unable to load block_properties_table.json", e);
         }

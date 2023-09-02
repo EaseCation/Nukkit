@@ -3119,7 +3119,7 @@ public class Level implements ChunkManager, Metadatable {
     }
 
     public void setBiomeId(int x, int z, int biomeId) {
-        this.getChunk(x >> 4, z >> 4, true).setBiomeId(x & 0x0f, z & 0x0f, biomeId & 0x0f);
+        this.getChunk(x >> 4, z >> 4, true).setBiomeId(x & 0x0f, z & 0x0f, biomeId);
     }
 
     public int getHeightMap(int x, int z) {
@@ -3127,7 +3127,7 @@ public class Level implements ChunkManager, Metadatable {
     }
 
     private void setHeightMap(int x, int z, int value) {
-        this.getChunk(x >> 4, z >> 4, true).setHeightMap(x & 0x0f, z & 0x0f, value & 0x0f);
+        this.getChunk(x >> 4, z >> 4, true).setHeightMap(x & 0x0f, z & 0x0f, value);
     }
 
     public Map<Long, BaseFullChunk> getChunks() {

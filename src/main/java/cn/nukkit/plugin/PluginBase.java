@@ -239,6 +239,8 @@ abstract public class PluginBase implements Plugin {
         if (configStream != null) {
             LoadSettings settings = LoadSettings.builder()
                     .setParseComments(false)
+                    .setMaxAliasesForCollections(Integer.MAX_VALUE)
+                    .setCodePointLimit(Integer.MAX_VALUE)
                     .build();
             Load yaml = new Load(settings);
             try {
