@@ -189,7 +189,7 @@ public class EntityHuman extends EntityHumanType {
                         int width = animationTag.getInt("ImageWidth");
                         int height = animationTag.getInt("ImageHeight");
                         int expression = animationTag.getInt("AnimationExpression");
-                        skin.getAnimations().add(new SkinAnimation(new SerializedImage(width, height, image), type, frames, expression));
+                        newSkin.getAnimations().add(new SkinAnimation(new SerializedImage(width, height, image), type, frames, expression));
                     }
                 }
                 this.setSkin(newSkin);
