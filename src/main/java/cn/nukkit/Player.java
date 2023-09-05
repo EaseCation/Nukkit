@@ -4713,6 +4713,7 @@ public class Player extends EntityHuman implements CommandSender, InventoryHolde
     }
 
     public void setExperience(int exp, int level) {
+        level = Mth.clamp(level, 0, 24791);
         this.exp = exp;
         this.expLevel = level;
 

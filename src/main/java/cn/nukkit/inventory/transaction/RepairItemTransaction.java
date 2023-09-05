@@ -42,6 +42,9 @@ public class RepairItemTransaction extends InventoryTransaction {
         if (inventory instanceof AnvilInventory) {
             AnvilInventory anvilInventory = (AnvilInventory) inventory;
             this.cost = anvilInventory.getCost();
+            if (cost < 0 || cost > source.getExperienceLevel()) {
+                return false;
+            }
             return this.hasInput() && this.hasOutput() && this.inputItem.equals(anvilInventory.getInputSlot(), true, true)
                     && (!this.hasMaterial() || this.materialItem.equals(anvilInventory.getMaterialSlot(), true, true))
                     && this.checkRecipeValid() && this.checkRenameValid();

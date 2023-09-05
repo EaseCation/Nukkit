@@ -1560,8 +1560,13 @@ public abstract class Entity extends Location implements Metadatable, EntityData
     public void setAbsorption(float absorption) {
         if (absorption != this.absorption) {
             this.absorption = absorption;
-            if (this instanceof Player)
-                ((Player) this).setAttribute(Attribute.getAttribute(Attribute.ABSORPTION).setValue(absorption));
+            if (this instanceof Player) {
+                Attribute attribute = Attribute.getAttribute(Attribute.ABSORPTION);
+                if (absorption > attribute.getMaxValue()) {
+                    attribute.setMaxValue(absorption);
+                }
+                ((Player) this).setAttribute(attribute.setValue(absorption));
+            }
         }
     }
 

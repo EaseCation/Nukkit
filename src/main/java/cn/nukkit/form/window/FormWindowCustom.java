@@ -3,6 +3,7 @@ package cn.nukkit.form.window;
 import cn.nukkit.form.element.*;
 import cn.nukkit.form.response.FormResponseCustom;
 import cn.nukkit.form.response.FormResponseData;
+import cn.nukkit.math.Mth;
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
 import it.unimi.dsi.fastutil.ints.Int2BooleanMap;
@@ -107,8 +108,10 @@ public class FormWindowCustom extends FormWindow {
                 labelResponses.put(i, ((ElementLabel) e).getText());
                 responses.put(i, ((ElementLabel) e).getText());
             } else if (e instanceof ElementDropdown) {
-                String answer = ((ElementDropdown) e).getOptions().get(Integer.parseInt(elementData));
-                dropdownResponses.put(i, new FormResponseData(Integer.parseInt(elementData), answer));
+                int index = Integer.parseInt(elementData);
+                List<String> options = ((ElementDropdown) e).getOptions();
+                String answer = options.isEmpty() ? "" : options.get(Mth.clamp(index, 0, options.size() - 1));
+                dropdownResponses.put(i, new FormResponseData(index, answer));
                 responses.put(i, answer);
             } else if (e instanceof ElementInput) {
                 inputResponses.put(i, elementData);
@@ -119,8 +122,9 @@ public class FormWindowCustom extends FormWindow {
                 responses.put(i, answer);
             } else if (e instanceof ElementStepSlider) {
                 int index = Integer.parseInt(elementData);
-                String answer = ((ElementStepSlider) e).getSteps().get(Math.max(index, 0));
-                stepSliderResponses.put(i, new FormResponseData(Integer.parseInt(elementData), answer));
+                List<String> steps = ((ElementStepSlider) e).getSteps();
+                String answer = steps.isEmpty() ? "" : steps.get(Mth.clamp(index, 0, steps.size() - 1));
+                stepSliderResponses.put(i, new FormResponseData(index, answer));
                 responses.put(i, answer);
             } else if (e instanceof ElementToggle) {
                 boolean answer = Boolean.parseBoolean(elementData);
