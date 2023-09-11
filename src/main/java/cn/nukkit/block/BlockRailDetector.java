@@ -67,7 +67,9 @@ public class BlockRailDetector extends BlockRail {
 
     @Override
     public void onEntityCollide(Entity entity) {
-        updateState();
+        if (!this.isActive()) {
+            updateState();
+        }
     }
 
     protected void updateState() {
@@ -75,12 +77,12 @@ public class BlockRailDetector extends BlockRail {
         boolean isPowered = false;
 
         for (Entity entity : level.getNearbyEntities(new SimpleAxisAlignedBB(
-                getFloorX() + 0.125D,
+                getFloorX() + 0.2,
                 getFloorY(),
-                getFloorZ() + 0.125D,
-                getFloorX() + 0.875D,
-                getFloorY() + 0.525D,
-                getFloorZ() + 0.875D))) {
+                getFloorZ() + 0.2,
+                getFloorX() + 1 - 0.2,
+                getFloorY() + 1 - 0.2,
+                getFloorZ() + 1 - 0.2))) {
             if (entity instanceof EntityMinecartAbstract) {
                 isPowered = true;
                 break;
@@ -89,14 +91,18 @@ public class BlockRailDetector extends BlockRail {
 
         if (isPowered && !wasPowered) {
             setActive(true);
-            level.scheduleUpdate(this, this, 0);
-            level.scheduleUpdate(this, this.downVec(), 0);
+            level.updateAround(this);
+            level.updateAround(this.downVec());
         }
 
         if (!isPowered && wasPowered) {
             setActive(false);
-            level.scheduleUpdate(this, this, 0);
-            level.scheduleUpdate(this, this.downVec(), 0);
+            level.updateAround(this);
+            level.updateAround(this.downVec());
+        }
+
+        if (isPowered) {
+            level.scheduleUpdate(this, this, 20);
         }
 
         level.updateComparatorOutputLevel(this);
