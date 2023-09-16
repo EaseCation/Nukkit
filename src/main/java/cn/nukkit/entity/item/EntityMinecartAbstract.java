@@ -7,6 +7,7 @@ import cn.nukkit.api.API.Usage;
 import cn.nukkit.block.Block;
 import cn.nukkit.block.BlockRail;
 import cn.nukkit.block.BlockRailActivator;
+import cn.nukkit.block.BlockRailDetector;
 import cn.nukkit.block.BlockRailPowered;
 import cn.nukkit.entity.Entity;
 import cn.nukkit.entity.EntityHuman;
@@ -167,6 +168,20 @@ public abstract class EntityMinecartAbstract extends EntityVehicle {
                 setFalling();
             }
             checkBlockCollision();
+
+            int minX = Mth.floor(this.boundingBox.getMinX());
+            int minZ = Mth.floor(this.boundingBox.getMinZ());
+            int maxX = Mth.floor(this.boundingBox.getMaxX());
+            int maxZ = Mth.floor(this.boundingBox.getMaxZ());
+            int y = Mth.floor(this.boundingBox.getMinY());
+            for (int x = minX; x <= maxX; x++) {
+                for (int z = minZ; z <= maxZ; z++) {
+                    Block b = level.getBlock(x, y, z, false);
+                    if (b instanceof BlockRailDetector) {
+                        ((BlockRailDetector) b).activate(this);
+                    }
+                }
+            }
 
             // Minecart head
             pitch = 0;

@@ -7,6 +7,8 @@ import cn.nukkit.level.Level;
 import cn.nukkit.math.BlockFace;
 import cn.nukkit.math.SimpleAxisAlignedBB;
 
+import javax.annotation.Nullable;
+
 /**
  * Created on 2015/11/22 by CreeperFace.
  * Contributed by: larryTheCoder on 2017/7/8.
@@ -54,38 +56,34 @@ public class BlockRailDetector extends BlockRail {
     @Override
     public int onUpdate(int type) {
         if (type == Level.BLOCK_UPDATE_SCHEDULED) {
-            updateState();
+            updateState(null);
             return type;
         }
         return super.onUpdate(type);
     }
 
-    @Override
-    public boolean hasEntityCollision() {
-        return true;
-    }
-
-    @Override
-    public void onEntityCollide(Entity entity) {
+    public void activate(EntityMinecartAbstract minecart) {
         if (!this.isActive()) {
-            updateState();
+            updateState(minecart);
         }
     }
 
-    protected void updateState() {
+    protected void updateState(@Nullable EntityMinecartAbstract minecart) {
         boolean wasPowered = isActive();
-        boolean isPowered = false;
+        boolean isPowered = minecart != null;
 
-        for (Entity entity : level.getNearbyEntities(new SimpleAxisAlignedBB(
-                getFloorX() + 0.2,
-                getFloorY(),
-                getFloorZ() + 0.2,
-                getFloorX() + 1 - 0.2,
-                getFloorY() + 1 - 0.2,
-                getFloorZ() + 1 - 0.2))) {
-            if (entity instanceof EntityMinecartAbstract) {
-                isPowered = true;
-                break;
+        if (!isPowered) {
+            for (Entity entity : level.getNearbyEntities(new SimpleAxisAlignedBB(
+                    getFloorX() + 0.2,
+                    getFloorY(),
+                    getFloorZ() + 0.2,
+                    getFloorX() + 1 - 0.2,
+                    getFloorY() + 1 - 0.2,
+                    getFloorZ() + 1 - 0.2))) {
+                if (entity instanceof EntityMinecartAbstract) {
+                    isPowered = true;
+                    break;
+                }
             }
         }
 
@@ -93,9 +91,7 @@ public class BlockRailDetector extends BlockRail {
             setActive(true);
             level.updateAround(this);
             level.updateAround(this.downVec());
-        }
-
-        if (!isPowered && wasPowered) {
+        } else if (!isPowered && wasPowered) {
             setActive(false);
             level.updateAround(this);
             level.updateAround(this.downVec());
