@@ -5828,6 +5828,9 @@ public class Player extends EntityHuman implements CommandSender, InventoryHolde
                     }
                 }
 
+                if (exp > 0) {
+                    new PlayerExpChangeEvent(this, exp).call();
+                }
                 this.addExperience(exp);
                 return true;
             }
