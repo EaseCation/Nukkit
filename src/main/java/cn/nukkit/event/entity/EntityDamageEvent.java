@@ -23,6 +23,7 @@ public class EntityDamageEvent extends EntityEvent implements Cancellable {
 
     private int attackCooldown = 10;
     private final DamageCause cause;
+    private boolean enableToughness = false;
 
     private final Map<DamageModifier, Float> modifiers;
     private final Map<DamageModifier, Float> originals;
@@ -95,6 +96,14 @@ public class EntityDamageEvent extends EntityEvent implements Cancellable {
 
     public boolean isApplicable(DamageModifier type) {
         return this.modifiers.containsKey(type);
+    }
+
+    public boolean isEnableToughness() {
+        return enableToughness;
+    }
+
+    public void setEnableToughness(boolean enableToughness) {
+        this.enableToughness = enableToughness;
     }
 
     public float getFinalDamage() {

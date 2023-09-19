@@ -159,20 +159,26 @@ public abstract class EntityHumanType extends EntityCreature implements Inventor
 
         if (source.getCause() != DamageCause.VOID && source.getCause() != DamageCause.SUICIDE && source.getCause() != DamageCause.CUSTOM && source.getCause() != DamageCause.SONIC_BOOM && source.getCause() != DamageCause.HUNGER) {
             int armorPoints = 0;
-            int epf = 0;
-            //int toughness = 0;
+            double epf = 0;
+            int toughness = 0;
 
             for (Item armor : inventory.getArmorContents()) {
                 armorPoints += armor.getArmorPoints();
                 epf += calculateEnchantmentProtectionFactor(armor, source);
-                //toughness += armor.getToughness();
+                toughness += armor.getToughness();
             }
 
             if (source.canBeReducedByArmor()) {
-                source.setDamage(-source.getFinalDamage() * armorPoints * 0.04f, DamageModifier.ARMOR);
+                if (source.isEnableToughness()) {
+                    double originalDamage = source.getFinalDamage();
+                    double reducedDamage = (Math.min(20, Math.max(0.2 * armorPoints, armorPoints - (originalDamage / (2 + 0.25 * toughness)))) / 25) * originalDamage;
+                    source.setDamage((float) -reducedDamage, DamageModifier.ARMOR);
+                } else {
+                    source.setDamage(-source.getFinalDamage() * armorPoints * 0.04f, DamageModifier.ARMOR);
+                }
             }
 
-            source.setDamage(-source.getFinalDamage() * Math.min(Mth.ceil(Math.min(epf, 25) * ((float) ThreadLocalRandom.current().nextInt(50, 100) / 100)), 20) * 0.04f,
+            source.setDamage(-source.getFinalDamage() * Math.min(Mth.ceil(Math.min((int) epf, 25) * ((float) ThreadLocalRandom.current().nextInt(50, 100) / 100)), 20) * 0.04f,
                     DamageModifier.ARMOR_ENCHANTMENTS);
         }
 
