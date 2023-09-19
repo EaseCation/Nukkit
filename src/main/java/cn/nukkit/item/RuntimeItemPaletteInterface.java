@@ -23,12 +23,14 @@ public interface RuntimeItemPaletteInterface {
         public final int id;
         public final Integer oldId;
         public final Integer oldData;
+        public final boolean component;
 
-        public Entry(String name, int id, Integer oldId, Integer oldData) {
+        public Entry(String name, int id, Integer oldId, Integer oldData, boolean component) {
             this.name = name;
             this.id = id;
             this.oldId = oldId;
             this.oldData = oldData;
+            this.component = component;
         }
     }
 }

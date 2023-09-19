@@ -3,12 +3,16 @@ package cn.nukkit.item;
 import cn.nukkit.GameVersion;
 import cn.nukkit.block.Block;
 import cn.nukkit.block.BlockID;
+import cn.nukkit.nbt.tag.CompoundTag;
 import cn.nukkit.potion.PotionID;
+import it.unimi.dsi.fastutil.objects.Object2IntMap;
+import it.unimi.dsi.fastutil.objects.Object2IntOpenHashMap;
 
+import java.util.OptionalInt;
 import java.util.concurrent.atomic.AtomicInteger;
 
 import static cn.nukkit.GameVersion.*;
-import static cn.nukkit.SharedConstants.*;
+import static cn.nukkit.SharedConstants.ENABLE_ITEM_NAME_PERSISTENCE;
 import static cn.nukkit.item.ItemID.*;
 
 public final class Items {
@@ -19,6 +23,7 @@ public final class Items {
 
     private static final Item[][] ITEM_CACHE = new Item[Short.MAX_VALUE][];
     private static final Item[][] BLOCK_CACHE = new Item[BlockID.UNDEFINED][];
+    private static final Object2IntMap<String> CUSTOM_ITEM_IDENTIFIER_TO_ID = new Object2IntOpenHashMap<>();
 
     public static void registerVanillaItems() {
         registerItem(IRON_SHOVEL, ItemShovelIron.class, ItemShovelIron::new);
@@ -310,6 +315,15 @@ public final class Items {
         initializeItemBlockCache();
     }
 
+    public static OptionalInt getItemIdFromIdentifier(String identifier) {
+        int id = CUSTOM_ITEM_IDENTIFIER_TO_ID.getOrDefault(identifier, -1);
+        if (id == -1) {
+            return OptionalInt.empty();
+        } else {
+            return OptionalInt.of(id);
+        }
+    }
+
     /**
      * deferred
      */
@@ -418,10 +432,15 @@ public final class Items {
     }
 
     public static Class<? extends Item> registerCustomItem(String identifier, int id, Class<? extends Item> clazz, ItemFactory factory) {
+        return registerCustomItem(identifier, id, clazz, factory, null);
+    }
+
+    public static Class<? extends Item> registerCustomItem(String identifier, int id, Class<? extends Item> clazz, ItemFactory factory, CompoundTag compound) {
         if (identifier.startsWith("minecraft:")) {
             throw new IllegalArgumentException("Invalid identifier: " + identifier);
         }
-        ItemSerializer.registerCustomItem(identifier, id);
+        ItemSerializer.registerCustomItem(identifier, id, compound);
+        CUSTOM_ITEM_IDENTIFIER_TO_ID.put(identifier, id);
         return registerItem(id, clazz, factory);
     }
 

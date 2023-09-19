@@ -247,6 +247,10 @@ public class Item implements Cloneable, ItemID {
     private static final Pattern integerPattern = Pattern.compile("^[-1-9]\\d*$");
 
     public static Item fromString(String str) {
+        OptionalInt itemIdFromIdentifier = Items.getItemIdFromIdentifier(str);
+        if (itemIdFromIdentifier.isPresent()) {
+            return get(itemIdFromIdentifier.getAsInt());
+        }
         String[] b = str.trim().replace(' ', '_').replace("minecraft:", "").split(":", 2);
 
         int id = AIR;

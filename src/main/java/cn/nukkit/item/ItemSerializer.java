@@ -35,8 +35,8 @@ public class ItemSerializer {
         INSTANCE.registerItemAux(identifier, id, meta);
     }
 
-    public static void registerCustomItem(String identifier, int id) {
-        INSTANCE.registerCustomItem(identifier, id);
+    public static void registerCustomItem(String identifier, int id, CompoundTag component) {
+        INSTANCE.registerCustomItem(identifier, id, component);
     }
 
     public static void rebuildRuntimeMapping() {
@@ -56,7 +56,7 @@ public class ItemSerializer {
 
         void registerItemAux(String identifier, int id, int meta);
 
-        void registerCustomItem(String identifier, int id);
+        void registerCustomItem(String identifier, int id, CompoundTag component);
 
         void rebuildRuntimeMapping();
     }
