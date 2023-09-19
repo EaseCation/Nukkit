@@ -2,6 +2,7 @@ package cn.nukkit.utils;
 
 import cn.nukkit.Nukkit;
 import cn.nukkit.Server;
+import cn.nukkit.event.server.WatchdogShutdownEvent;
 import cn.nukkit.level.Level;
 import cn.nukkit.level.format.LevelProvider;
 import com.sun.management.OperatingSystemMXBean;
@@ -100,6 +101,10 @@ public class Watchdog extends Thread {
 
                         log.fatal("---------------------------------------------");
                         responding = false;
+                        try {
+                            new WatchdogShutdownEvent().call();
+                        } catch (Exception ignored) {
+                        }
                         new Thread(this.server::forceShutdown, "Watchdog Killer").start();
                     }
                 } else {

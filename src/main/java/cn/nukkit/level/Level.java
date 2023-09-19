@@ -3217,7 +3217,9 @@ public class Level implements ChunkManager, Metadatable {
         if (chunk != null) {
             return chunk;
         }
-        chunk = this.provider.getLoadedChunk(index);
+        if (provider != null) {
+            chunk = this.provider.getLoadedChunk(index);
+        }
         if (isMainThread && chunk != null) {
             this.storeChunkInCache(index, chunk);
         }
@@ -3283,7 +3285,9 @@ public class Level implements ChunkManager, Metadatable {
             if (unload && oldChunk != null) {
                 this.unloadChunk(chunkX, chunkZ, false, false);
 
-                this.provider.setChunk(chunkX, chunkZ, chunk);
+                if (provider != null) {
+                    this.provider.setChunk(chunkX, chunkZ, chunk);
+                }
             } else {
                 Map<Long, Entity> oldEntities = oldChunk != null ? oldChunk.getEntities() : Long2ObjectMaps.emptyMap();
 
@@ -3317,7 +3321,9 @@ public class Level implements ChunkManager, Metadatable {
                     }
                 }
 
-                this.provider.setChunk(chunkX, chunkZ, chunk);
+                if (provider != null) {
+                    this.provider.setChunk(chunkX, chunkZ, chunk);
+                }
             }
         }
 

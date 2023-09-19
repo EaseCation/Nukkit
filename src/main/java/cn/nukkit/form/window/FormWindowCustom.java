@@ -5,6 +5,7 @@ import cn.nukkit.form.response.FormResponseCustom;
 import cn.nukkit.form.response.FormResponseData;
 import cn.nukkit.math.Mth;
 import com.google.gson.Gson;
+import com.google.gson.JsonSyntaxException;
 import com.google.gson.reflect.TypeToken;
 import it.unimi.dsi.fastutil.ints.Int2BooleanMap;
 import it.unimi.dsi.fastutil.ints.Int2BooleanOpenHashMap;
@@ -83,8 +84,14 @@ public class FormWindowCustom extends FormWindow {
             return;
         }
 
-        List<String> elementResponses = GSON.fromJson(data, new TypeToken<List<String>>() {
-        }.getType());
+        List<String> elementResponses;
+        try {
+            elementResponses = GSON.fromJson(data, new TypeToken<List<String>>() {
+            }.getType());
+        } catch (JsonSyntaxException e) {
+            this.closed = true;
+            return;
+        }
         //elementResponses.remove(elementResponses.size() - 1); //submit button //maybe mojang removed that?
 
         int i = 0;
