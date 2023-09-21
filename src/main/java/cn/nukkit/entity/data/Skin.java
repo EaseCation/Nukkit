@@ -24,7 +24,7 @@ import java.util.concurrent.atomic.AtomicInteger;
  * Nukkit Project
  */
 @ToString(exclude = {"geometryData", "animationData"})
-public class Skin {
+public class Skin implements Cloneable {
     private static final int PIXEL_SIZE = 4;
 
     public static final int SINGLE_SKIN_SIZE = 64 * 32 * PIXEL_SIZE;
@@ -460,6 +460,28 @@ public class Skin {
 
     private static String convertLegacyGeometryName(String geometryName) {
         return "{\"geometry\" : {\"default\" : \"" + geometryName + "\"}}";
+    }
+
+    @Override
+    public Skin clone() {
+        // TODO 可能没有完全clone
+        try {
+            Skin skin = (Skin) super.clone();
+            skin.skinResourcePatch = skinResourcePatch;
+            skin.skinId = skinId;
+            skin.fullSkinId = fullSkinId;
+            skin.playFabId = playFabId;
+            skin.skinData = skinData;
+            skin.capeData = capeData;
+            skin.geometryData = geometryData;
+            skin.animations.addAll(animations);
+            skin.animationData = animationData;
+            skin.personaPieces.addAll(personaPieces);
+            skin.tintColors.addAll(tintColors);
+            return skin;
+        } catch (CloneNotSupportedException e) {
+            throw new AssertionError(e);
+        }
     }
 
 }
