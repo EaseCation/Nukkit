@@ -25,7 +25,7 @@ public class BlockNetherite extends BlockSolid {
 
     @Override
     public double getResistance() {
-        return 3600;
+        return 6000;
     }
 
     @Override

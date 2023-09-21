@@ -249,6 +249,7 @@ public interface ProtocolInfo {
     int TRIM_DATA_PACKET = 0x12e; // 302 c
     int OPEN_SIGN_PACKET = 0x12f; // 303 c
     int AGENT_ANIMATION_PACKET = 0x130; // 304 c
+    int REFRESH_ENTITLEMENTS_PACKET = 0x131; // 305
 
 
     int COUNT = 1024;

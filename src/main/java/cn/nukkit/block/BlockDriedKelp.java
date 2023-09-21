@@ -30,7 +30,7 @@ public class BlockDriedKelp extends BlockSolid {
 
     @Override
     public double getResistance() {
-        return 2.5;
+        return 12.5;
     }
 
     @Override

@@ -24,6 +24,8 @@ import java.util.Collections;
 import java.util.List;
 import java.util.stream.Collectors;
 
+import static cn.nukkit.GameVersion.*;
+
 /**
  * @author CreeperFace
  */
@@ -46,11 +48,14 @@ public abstract class BlockPistonBase extends BlockTransparentMeta implements Fa
 
     @Override
     public double getResistance() {
-        return 2.5;
+        return 7.5;
     }
 
     @Override
     public double getHardness() {
+        if (V1_20_30.isAvailable()) {
+            return 1.5;
+        }
         return 0.5;
     }
 
@@ -565,5 +570,10 @@ public abstract class BlockPistonBase extends BlockTransparentMeta implements Fa
     @Override
     public boolean isSolid() {
         return false;
+    }
+
+    @Override
+    public int getToolType() {
+        return ItemTool.TYPE_PICKAXE;
     }
 }

@@ -8,6 +8,9 @@ import cn.nukkit.level.Level;
 import cn.nukkit.math.BlockFace;
 import cn.nukkit.utils.BlockColor;
 
+import static cn.nukkit.GameVersion.*;
+import static cn.nukkit.SharedConstants.*;
+
 public class BlockLantern extends BlockTransparentMeta {
 
     public static final int HANGING_BIT = 0b1;
@@ -32,12 +35,15 @@ public class BlockLantern extends BlockTransparentMeta {
 
     @Override
     public double getHardness() {
+        if (ENABLE_BLOCK_DESTROY_SPEED_COMPATIBILITY || V1_20_30.isAvailable()) {
+            return 3.5;
+        }
         return 5;
     }
 
     @Override
     public double getResistance() {
-        return 25;
+        return 17.5;
     }
 
     @Override

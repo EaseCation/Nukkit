@@ -31,6 +31,11 @@ public class BlockGrassPath extends BlockGrass {
     }
 
     @Override
+    public double getHardness() {
+        return 0.65;
+    }
+
+    @Override
     public double getResistance() {
         return 3.25;
     }

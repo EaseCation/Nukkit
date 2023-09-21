@@ -15,6 +15,7 @@ import cn.nukkit.level.GameRule;
 import cn.nukkit.level.GameRules;
 import cn.nukkit.math.BlockFace;
 import cn.nukkit.math.BlockVector3;
+import cn.nukkit.math.Vector2f;
 import cn.nukkit.math.Vector3f;
 import cn.nukkit.nbt.NBTIO;
 import cn.nukkit.nbt.tag.CompoundTag;
@@ -33,6 +34,7 @@ import java.lang.reflect.Array;
 import java.nio.ByteOrder;
 import java.nio.charset.StandardCharsets;
 import java.util.*;
+import java.util.function.BiConsumer;
 import java.util.function.Function;
 
 /**
@@ -964,6 +966,19 @@ public class BinaryStream {
         this.putLFloat(z);
     }
 
+    public Vector2f getVector2f() {
+        return new Vector2f(this.getLFloat(), this.getLFloat());
+    }
+
+    public void putVector2f(Vector2f v) {
+        this.putVector2f(v.x, v.y);
+    }
+
+    public void putVector2f(float x, float y) {
+        this.putLFloat(x);
+        this.putLFloat(y);
+    }
+
     public void putGameRules(GameRules gameRules) {
         if (this.helper != null) {
             this.helper.putGameRules(this, gameRules);
@@ -1083,6 +1098,16 @@ public class BinaryStream {
             deque.add(function.apply(this));
         }
         return deque.toArray((T[]) Array.newInstance(clazz, 0));
+    }
+
+    public <T> void putOptional(T obj, BiConsumer<BinaryStream, T> consumer) {
+        if (obj == null) {
+            putBoolean(false);
+            return;
+        }
+
+        putBoolean(true);
+        consumer.accept(this, obj);
     }
 
     public boolean isReadable(int length) {

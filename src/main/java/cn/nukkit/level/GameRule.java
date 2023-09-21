@@ -7,8 +7,8 @@ public enum GameRule {
     DO_DAYLIGHT_CYCLE("doDaylightCycle"),
     DO_ENTITY_DROPS("doEntityDrops"),
     DO_FIRE_TICK("doFireTick"),
-//    RECIPES_UNLOCK("recipesUnlock", ),
-//    DO_LIMITED_CRAFTING("doLimitedCrafting", ),
+    RECIPES_UNLOCK("recipesUnlock", 618),
+    DO_LIMITED_CRAFTING("doLimitedCrafting", 618),
     DO_MOB_LOOT("doMobLoot"),
     DO_MOB_SPAWNING("doMobSpawning"),
     DO_TILE_DROPS("doTileDrops"),
@@ -35,7 +35,7 @@ public enum GameRule {
     FREEZE_DAMAGE("freezeDamage", 428),
     RESPAWN_BLOCKS_EXPLODE("respawnBlocksExplode", 465),
     SHOW_BORDER_EFFECT("showBorderEffect", 465),
-//    PLAYERS_SLEEPING_PERCENTAGE("playersSleepingPercentage", ),
+    PLAYERS_SLEEPING_PERCENTAGE("playersSleepingPercentage", 618),
     ;
 
     private static final GameRule[] VALUES = values();

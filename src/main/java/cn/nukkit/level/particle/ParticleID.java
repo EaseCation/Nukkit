@@ -85,7 +85,9 @@ public interface ParticleID {
     int SHRIEK = 82;
     int SCULK_SOUL = 83;
     int SONIC_EXPLOSION = 84;
+    int BRUSH_DUST = 85;
+    int CHERRY_LEAVES = 86;
 
 
-    int UNDEFINED = 85;
+    int UNDEFINED = 87;
 }

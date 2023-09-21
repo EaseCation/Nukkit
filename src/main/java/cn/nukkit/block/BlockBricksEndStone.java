@@ -4,6 +4,8 @@ import cn.nukkit.item.Item;
 import cn.nukkit.item.ItemTool;
 import cn.nukkit.utils.BlockColor;
 
+import static cn.nukkit.GameVersion.*;
+
 public class BlockBricksEndStone extends BlockSolid {
 
     public BlockBricksEndStone() {
@@ -26,12 +28,15 @@ public class BlockBricksEndStone extends BlockSolid {
 
     @Override
     public double getHardness() {
+        if (V1_20_30.isAvailable()) {
+            return 3;
+        }
         return 0.8;
     }
 
     @Override
     public double getResistance() {
-        return 4;
+        return 45;
     }
 
     @Override

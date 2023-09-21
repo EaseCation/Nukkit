@@ -22,11 +22,6 @@ public class BlockOreEmeraldDeepslate extends BlockOreEmerald {
     }
 
     @Override
-    public double getResistance() {
-        return 9;
-    }
-
-    @Override
     public BlockColor getColor() {
         return BlockColor.DEEPSLATE_BLOCK_COLOR;
     }

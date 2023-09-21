@@ -5,10 +5,12 @@ import cn.nukkit.item.Item;
 import cn.nukkit.item.ItemTool;
 import cn.nukkit.level.Level;
 import cn.nukkit.math.BlockFace;
-import cn.nukkit.math.Vector3;
 import cn.nukkit.utils.BlockColor;
 
 import java.util.concurrent.ThreadLocalRandom;
+
+import static cn.nukkit.GameVersion.*;
+import static cn.nukkit.SharedConstants.*;
 
 public class BlockCoralBlock extends BlockSolidMeta {
 
@@ -52,12 +54,15 @@ public class BlockCoralBlock extends BlockSolidMeta {
 
     @Override
     public double getHardness() {
+        if (ENABLE_BLOCK_DESTROY_SPEED_COMPATIBILITY || V1_20_30.isAvailable()) {
+            return 1.5;
+        }
         return 7;
     }
 
     @Override
     public double getResistance() {
-        return 4.5;
+        return 30;
     }
 
     @Override

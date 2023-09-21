@@ -5,6 +5,8 @@ import cn.nukkit.level.Level;
 import cn.nukkit.math.Vector3;
 import cn.nukkit.utils.Rail;
 
+import static cn.nukkit.GameVersion.*;
+
 /**
  * @author Nukkit Project Team
  */
@@ -181,6 +183,9 @@ public class BlockRailActivator extends BlockRail {
 
     @Override
     public double getHardness() {
+        if (V1_20_30.isAvailable()) {
+            return 0.7;
+        }
         return 0.5;
     }
 }

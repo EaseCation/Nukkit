@@ -43,7 +43,7 @@ public class BlockChain extends BlockRotatedPillar {
 
     @Override
     public double getResistance() {
-        return 15;
+        return 30;
     }
 
     @Override

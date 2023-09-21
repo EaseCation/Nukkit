@@ -10,6 +10,8 @@ import cn.nukkit.math.BlockFace;
 import cn.nukkit.network.protocol.LevelSoundEventPacket;
 import cn.nukkit.utils.BlockColor;
 
+import static cn.nukkit.GameVersion.*;
+
 /**
  * Created on 2015/12/6 by xtypr.
  * Package cn.nukkit.block in project Nukkit .
@@ -182,6 +184,9 @@ public class BlockSnowLayer extends BlockFallable {
     @Override
     public double getMaxY() {
         int height = this.getDamage() & HEIGHT_MASK;
+        if (V1_20_30.isAvailable()) {
+            return y + height * 2 / 16.0;
+        }
         return height < 3 ? this.y : height == 7 ? this.y + 1 : this.y + 0.5;
     }
 

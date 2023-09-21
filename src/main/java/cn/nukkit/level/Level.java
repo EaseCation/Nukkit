@@ -1260,18 +1260,21 @@ public class Level implements ChunkManager, Metadatable {
             return;
         }
 
-        boolean resetTime = true;
+        int playerCount = 0;
+        int sleepingCount = 0;
         for (Player p : this.getPlayers().values()) {
             if (p.isSpectator()) {
                 continue;
             }
+            playerCount++;
+
             if (!p.isSleeping()) {
-                resetTime = false;
-                break;
+                continue;
             }
+            sleepingCount++;
         }
 
-        if (resetTime) {
+        if ((float) sleepingCount / playerCount * 100 >= gameRules.getInteger(GameRule.PLAYERS_SLEEPING_PERCENTAGE)) {
             if (this.gameRules.getBoolean(GameRule.DO_DAYLIGHT_CYCLE)) {
                 int time = this.getTime() % Level.TIME_FULL;
                 if (time >= Level.TIME_NIGHT && time < Level.TIME_SUNRISE) {

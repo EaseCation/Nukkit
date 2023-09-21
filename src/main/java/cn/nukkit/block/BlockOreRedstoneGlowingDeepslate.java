@@ -22,11 +22,6 @@ public class BlockOreRedstoneGlowingDeepslate extends BlockOreRedstoneGlowing {
     }
 
     @Override
-    public double getResistance() {
-        return 15;
-    }
-
-    @Override
     public BlockColor getColor() {
         return BlockColor.DEEPSLATE_BLOCK_COLOR;
     }

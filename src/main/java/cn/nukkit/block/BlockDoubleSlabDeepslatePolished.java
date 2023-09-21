@@ -33,7 +33,7 @@ public class BlockDoubleSlabDeepslatePolished extends BlockDoubleSlab {
 
     @Override
     public double getResistance() {
-        return 18;
+        return 30;
     }
 
     @Override

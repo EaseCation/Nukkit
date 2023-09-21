@@ -40,7 +40,7 @@ public class BlockMagma extends BlockSolid {
 
     @Override
     public double getResistance() {
-        return 30;
+        return 2.5;
     }
 
     @Override

@@ -44,7 +44,7 @@ public class BlockMonsterEgg extends BlockSolidMeta {
 
     @Override
     public double getResistance() {
-        return 9;
+        return 3.75;
     }
 
     @Override

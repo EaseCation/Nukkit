@@ -7,11 +7,6 @@ import cn.nukkit.math.BlockFace;
 public class BlockMoving extends BlockTransparent {
 
     public BlockMoving() {
-        this(0);
-    }
-
-    public BlockMoving(int meta) {
-        super();
     }
 
     @Override
@@ -57,5 +52,15 @@ public class BlockMoving extends BlockTransparent {
     @Override
     public boolean canProvideSupport(BlockFace face, SupportType type) {
         return false;
+    }
+
+    @Override
+    public double getHardness() {
+        return -1;
+    }
+
+    @Override
+    public double getResistance() {
+        return 18000000;
     }
 }

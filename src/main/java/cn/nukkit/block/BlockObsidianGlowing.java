@@ -29,7 +29,7 @@ public class BlockObsidianGlowing extends BlockSolid {
 
     @Override
     public double getHardness() {
-        return 50;
+        return 10;
     }
 
     @Override
@@ -39,7 +39,7 @@ public class BlockObsidianGlowing extends BlockSolid {
 
     @Override
     public int getLightLevel() {
-        return 12;
+        return 13;
     }
 
     @Override

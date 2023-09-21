@@ -30,7 +30,7 @@ public class BlockDeepslate extends BlockRotatedPillar {
 
     @Override
     public double getResistance() {
-        return 18;
+        return 30;
     }
 
     @Override

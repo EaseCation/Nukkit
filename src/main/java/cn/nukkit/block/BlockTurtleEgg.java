@@ -11,6 +11,8 @@ import cn.nukkit.utils.BlockColor;
 
 import java.util.concurrent.ThreadLocalRandom;
 
+import static cn.nukkit.GameVersion.*;
+
 public class BlockTurtleEgg extends BlockTransparentMeta {
 
     public static final int EGG_COUNT_MASK = 0b11;
@@ -41,12 +43,15 @@ public class BlockTurtleEgg extends BlockTransparentMeta {
 
     @Override
     public double getHardness() {
+        if (V1_20_30.isAvailable()) {
+            return 0.5;
+        }
         return 0.4;
     }
 
     @Override
     public double getResistance() {
-        return 2;
+        return 2.5;
     }
 
     @Override

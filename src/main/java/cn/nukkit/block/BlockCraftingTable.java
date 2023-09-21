@@ -39,7 +39,7 @@ public class BlockCraftingTable extends BlockSolid {
 
     @Override
     public double getResistance() {
-        return 15;
+        return 12.5;
     }
 
     @Override

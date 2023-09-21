@@ -15,6 +15,9 @@ import cn.nukkit.utils.BlockColor;
 
 import java.util.concurrent.ThreadLocalRandom;
 
+import static cn.nukkit.GameVersion.*;
+import static cn.nukkit.SharedConstants.*;
+
 public class BlockBamboo extends BlockTransparentMeta {
 
     public static final int STALK_THICKNESS_BIT = 0b1;
@@ -50,12 +53,15 @@ public class BlockBamboo extends BlockTransparentMeta {
 
     @Override
     public double getHardness() {
+        if (ENABLE_BLOCK_DESTROY_SPEED_COMPATIBILITY || V1_20_30.isAvailable()) {
+            return 1;
+        }
         return 2;
     }
 
     @Override
     public double getResistance() {
-        return 10;
+        return 5;
     }
 
     @Override

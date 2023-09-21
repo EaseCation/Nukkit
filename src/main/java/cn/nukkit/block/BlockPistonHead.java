@@ -1,9 +1,12 @@
 package cn.nukkit.block;
 
 import cn.nukkit.item.Item;
+import cn.nukkit.item.ItemTool;
 import cn.nukkit.item.Items;
 import cn.nukkit.math.BlockFace;
 import cn.nukkit.utils.Faceable;
+
+import static cn.nukkit.GameVersion.*;
 
 /**
  * @author CreeperFace
@@ -30,11 +33,14 @@ public class BlockPistonHead extends BlockTransparentMeta implements Faceable {
 
     @Override
     public double getResistance() {
-        return 2.5;
+        return 7.5;
     }
 
     @Override
     public double getHardness() {
+        if (V1_20_30.isAvailable()) {
+            return 1.5;
+        }
         return 0.5;
     }
 
@@ -89,5 +95,10 @@ public class BlockPistonHead extends BlockTransparentMeta implements Faceable {
     @Override
     public boolean canProvideSupport(BlockFace face, SupportType type) {
         return face == getBlockFace();
+    }
+
+    @Override
+    public int getToolType() {
+        return ItemTool.TYPE_PICKAXE;
     }
 }

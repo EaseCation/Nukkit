@@ -52,6 +52,11 @@ public class BlockNetherPortal extends BlockTransparentMeta implements Faceable 
     }
 
     @Override
+    public double getResistance() {
+        return 0;
+    }
+
+    @Override
     public int getLightLevel() {
         return 11;
     }

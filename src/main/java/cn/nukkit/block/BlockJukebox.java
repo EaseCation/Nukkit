@@ -12,6 +12,8 @@ import cn.nukkit.nbt.tag.CompoundTag;
 import cn.nukkit.nbt.tag.ListTag;
 import cn.nukkit.utils.BlockColor;
 
+import static cn.nukkit.GameVersion.*;
+
 /**
  * Created by CreeperFace on 7.8.2017.
  */
@@ -98,5 +100,18 @@ public class BlockJukebox extends BlockSolid {
     @Override
     public BlockColor getColor() {
         return BlockColor.DIRT_BLOCK_COLOR;
+    }
+
+    @Override
+    public double getHardness() {
+        if (V1_20_30.isAvailable()) {
+            return 2;
+        }
+        return 0.8;
+    }
+
+    @Override
+    public double getResistance() {
+        return 30;
     }
 }

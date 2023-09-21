@@ -16,6 +16,9 @@ import it.unimi.dsi.fastutil.ints.Int2FloatOpenHashMap;
 
 import java.util.concurrent.ThreadLocalRandom;
 
+import static cn.nukkit.GameVersion.*;
+import static cn.nukkit.SharedConstants.*;
+
 public class BlockComposter extends BlockTransparentMeta {
 
     private static final Int2FloatMap COMPOSTABLES = new Int2FloatOpenHashMap();
@@ -40,12 +43,15 @@ public class BlockComposter extends BlockTransparentMeta {
 
     @Override
     public double getHardness() {
+        if (ENABLE_BLOCK_DESTROY_SPEED_COMPATIBILITY || V1_20_30.isAvailable()) {
+            return 0.6;
+        }
         return 2;
     }
 
     @Override
     public double getResistance() {
-        return 10;
+        return 3;
     }
 
     @Override

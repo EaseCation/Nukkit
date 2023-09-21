@@ -3,7 +3,6 @@ package cn.nukkit.block;
 import cn.nukkit.Player;
 import cn.nukkit.item.Item;
 import cn.nukkit.level.Level;
-import cn.nukkit.math.AxisAlignedBB;
 import cn.nukkit.math.BlockFace;
 import cn.nukkit.math.Mth;
 import cn.nukkit.math.Vector3;
@@ -53,11 +52,6 @@ public class BlockCoralFan extends BlockFlowable {
     @Override
     public String getName() {
         return NAMES[getCoralColor()];
-    }
-
-    @Override
-    public double getResistance() {
-        return 4.5;
     }
 
     @Override

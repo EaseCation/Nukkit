@@ -47,7 +47,7 @@ public class BlockSculkShrieker extends BlockTransparentMeta {
 
     @Override
     public double getResistance() {
-        return 9;
+        return 15;
     }
 
     @Override

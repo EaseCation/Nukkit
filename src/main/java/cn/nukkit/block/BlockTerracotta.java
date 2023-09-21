@@ -44,7 +44,7 @@ public class BlockTerracotta extends BlockSolidMeta {
 
     @Override
     public double getResistance() {
-        return 7;
+        return 21;
     }
 
     @Override

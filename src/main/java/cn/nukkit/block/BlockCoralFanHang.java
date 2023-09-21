@@ -2,7 +2,6 @@ package cn.nukkit.block;
 
 import cn.nukkit.item.Item;
 import cn.nukkit.level.Level;
-import cn.nukkit.math.AxisAlignedBB;
 import cn.nukkit.math.BlockFace;
 import cn.nukkit.utils.BlockColor;
 import cn.nukkit.utils.Faceable;
@@ -35,11 +34,6 @@ public class BlockCoralFanHang extends BlockFlowable implements Faceable {
     @Override
     public String getName() {
         return getCoralType() == BLUE ? "Hang Tube Coral Fan" : "Hang Brain Coral Fan";
-    }
-
-    @Override
-    public double getResistance() {
-        return 4.5;
     }
 
     @Override

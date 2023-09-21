@@ -13,6 +13,9 @@ import cn.nukkit.math.BlockFace.Axis;
 import cn.nukkit.math.BlockFace.Plane;
 import cn.nukkit.utils.BlockColor;
 
+import static cn.nukkit.GameVersion.*;
+import static cn.nukkit.SharedConstants.*;
+
 public class BlockScaffolding extends BlockTransparentMeta { // extends BlockFallable (HeavyBlock) in vanilla
 
     public static final int STABILITY_MASK = 0b111;
@@ -40,12 +43,15 @@ public class BlockScaffolding extends BlockTransparentMeta { // extends BlockFal
 
     @Override
     public double getHardness() {
+        if (ENABLE_BLOCK_DESTROY_SPEED_COMPATIBILITY || V1_20_30.isAvailable()) {
+            return 0;
+        }
         return 0.6;
     }
 
     @Override
     public double getResistance() {
-        return 4.5;
+        return 0;
     }
 
     @Override

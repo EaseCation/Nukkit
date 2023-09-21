@@ -4,6 +4,9 @@ import cn.nukkit.item.Item;
 import cn.nukkit.item.ItemTool;
 import cn.nukkit.utils.BlockColor;
 
+import static cn.nukkit.GameVersion.*;
+import static cn.nukkit.SharedConstants.*;
+
 public class BlockDoubleSlabMudBrick extends BlockDoubleSlab {
     public static final int TYPE_MASK = 0;
     public static final int TOP_SLOT_BIT = 0b1;
@@ -28,12 +31,15 @@ public class BlockDoubleSlabMudBrick extends BlockDoubleSlab {
 
     @Override
     public double getHardness() {
+        if (ENABLE_BLOCK_DESTROY_SPEED_COMPATIBILITY || V1_20_30.isAvailable()) {
+            return 1.5;
+        }
         return 2;
     }
 
     @Override
     public double getResistance() {
-        return 30;
+        return 15;
     }
 
     @Override

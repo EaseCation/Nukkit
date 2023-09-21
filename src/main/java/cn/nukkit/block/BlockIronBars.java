@@ -30,7 +30,7 @@ public class BlockIronBars extends BlockThin {
 
     @Override
     public double getResistance() {
-        return 10;
+        return 30;
     }
 
     @Override

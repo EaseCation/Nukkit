@@ -6,6 +6,8 @@ import cn.nukkit.item.ItemTool;
 import cn.nukkit.math.BlockFace;
 import cn.nukkit.network.protocol.LevelSoundEventPacket;
 
+import static cn.nukkit.GameVersion.*;
+
 public abstract class BlockHyphae extends BlockRotatedPillar {
     protected BlockHyphae(int meta) {
         super(meta);
@@ -13,12 +15,15 @@ public abstract class BlockHyphae extends BlockRotatedPillar {
 
     @Override
     public double getHardness() {
+        if (V1_20_30.isAvailable()) {
+            return 2;
+        }
         return 0.3;
     }
 
     @Override
     public double getResistance() {
-        return 1.5;
+        return 10;
     }
 
     @Override

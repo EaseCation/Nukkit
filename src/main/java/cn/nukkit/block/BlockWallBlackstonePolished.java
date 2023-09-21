@@ -4,6 +4,8 @@ import cn.nukkit.item.Item;
 import cn.nukkit.item.ItemTool;
 import cn.nukkit.utils.BlockColor;
 
+import static cn.nukkit.GameVersion.*;
+
 public class BlockWallBlackstonePolished extends BlockWall {
     public BlockWallBlackstonePolished() {
         this(0);
@@ -25,6 +27,9 @@ public class BlockWallBlackstonePolished extends BlockWall {
 
     @Override
     public double getHardness() {
+        if (V1_20_30.isAvailable()) {
+            return 2;
+        }
         return 1.5;
     }
 

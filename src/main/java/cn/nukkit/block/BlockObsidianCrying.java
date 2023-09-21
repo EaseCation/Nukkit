@@ -20,6 +20,7 @@ public class BlockObsidianCrying extends BlockSolid {
 
     @Override
     public double getHardness() {
+        // 50 in JE
         return 35;
     }
 

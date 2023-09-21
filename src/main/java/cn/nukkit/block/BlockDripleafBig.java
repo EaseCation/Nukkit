@@ -12,6 +12,8 @@ import cn.nukkit.network.protocol.LevelSoundEventPacket;
 import cn.nukkit.utils.BlockColor;
 import cn.nukkit.utils.Faceable;
 
+import static cn.nukkit.GameVersion.*;
+
 public class BlockDripleafBig extends BlockTransparentMeta implements Faceable {
     public static final int TILT_MASK = 0b11;
     public static final int HEAD_BIT = 0b100;
@@ -43,12 +45,15 @@ public class BlockDripleafBig extends BlockTransparentMeta implements Faceable {
 
     @Override
     public double getHardness() {
+        if (V1_20_30.isAvailable()) {
+            return 0.1;
+        }
         return 0;
     }
 
     @Override
     public double getResistance() {
-        return 0;
+        return 0.5;
     }
 
     @Override

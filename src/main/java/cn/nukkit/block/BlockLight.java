@@ -34,7 +34,7 @@ public class BlockLight extends BlockTransparentMeta {
 
     @Override
     public double getResistance() {
-        return 18000000;
+        return 18000004;
     }
 
     @Override

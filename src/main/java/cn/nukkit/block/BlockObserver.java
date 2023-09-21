@@ -63,12 +63,12 @@ public class BlockObserver extends BlockSolidMeta implements Faceable {
 
     @Override
     public double getHardness() {
-        return 3.5;
+        return 3;
     }
 
     @Override
     public double getResistance() {
-        return 17.5;
+        return 15;
     }
 
     @Override

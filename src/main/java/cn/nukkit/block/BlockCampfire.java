@@ -31,6 +31,7 @@ import cn.nukkit.utils.Faceable;
 import javax.annotation.Nullable;
 
 import static cn.nukkit.GameVersion.*;
+import static cn.nukkit.SharedConstants.*;
 
 public class BlockCampfire extends BlockTransparentMeta implements Faceable {
 
@@ -67,12 +68,15 @@ public class BlockCampfire extends BlockTransparentMeta implements Faceable {
 
     @Override
     public double getHardness() {
+        if (ENABLE_BLOCK_DESTROY_SPEED_COMPATIBILITY || V1_20_30.isAvailable()) {
+            return 2;
+        }
         return 5;
     }
 
     @Override
     public double getResistance() {
-        return 25;
+        return 10;
     }
 
     @Override

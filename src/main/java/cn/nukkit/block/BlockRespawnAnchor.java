@@ -40,7 +40,7 @@ public class BlockRespawnAnchor extends BlockSolidMeta {
 
     @Override
     public double getResistance() {
-        return 3600;
+        return 6000;
     }
 
     @Override

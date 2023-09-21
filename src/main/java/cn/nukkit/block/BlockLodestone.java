@@ -13,6 +13,8 @@ import cn.nukkit.utils.BlockColor;
 
 import javax.annotation.Nullable;
 
+import static cn.nukkit.GameVersion.*;
+
 public class BlockLodestone extends BlockSolid {
     public BlockLodestone() {
     }
@@ -34,12 +36,15 @@ public class BlockLodestone extends BlockSolid {
 
     @Override
     public double getHardness() {
+        if (V1_20_30.isAvailable()) {
+            return 3.5;
+        }
         return 2;
     }
 
     @Override
     public double getResistance() {
-        return 10;
+        return 17.5;
     }
 
     @Override

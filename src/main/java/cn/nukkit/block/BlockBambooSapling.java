@@ -9,6 +9,8 @@ import cn.nukkit.level.particle.BoneMealParticle;
 import cn.nukkit.math.BlockFace;
 import cn.nukkit.utils.BlockColor;
 
+import static cn.nukkit.GameVersion.*;
+
 public class BlockBambooSapling extends BlockFlowable {
 
     public static final int AGE_BIT = 0b1;
@@ -29,6 +31,19 @@ public class BlockBambooSapling extends BlockFlowable {
     @Override
     public String getName() {
         return "Bamboo Sapling";
+    }
+
+    @Override
+    public double getHardness() {
+        if (V1_20_30.isAvailable()) {
+            return 1;
+        }
+        return 0;
+    }
+
+    @Override
+    public double getResistance() {
+        return 5;
     }
 
     @Override

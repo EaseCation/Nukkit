@@ -20,6 +20,8 @@ import cn.nukkit.utils.Faceable;
 
 import javax.annotation.Nullable;
 
+import static cn.nukkit.GameVersion.*;
+
 public class BlockBell extends BlockTransparentMeta implements Faceable {
 
     public static final int DIRECTION_MASK = 0b11;
@@ -57,12 +59,15 @@ public class BlockBell extends BlockTransparentMeta implements Faceable {
 
     @Override
     public double getHardness() {
+        if (V1_20_30.isAvailable()) {
+            return 5;
+        }
         return 1;
     }
 
     @Override
     public double getResistance() {
-        return 15;
+        return 25;
     }
 
     @Override

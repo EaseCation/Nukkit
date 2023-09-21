@@ -3,6 +3,9 @@ package cn.nukkit.block;
 import cn.nukkit.item.ItemTool;
 import cn.nukkit.utils.BlockColor;
 
+import static cn.nukkit.GameVersion.*;
+import static cn.nukkit.SharedConstants.*;
+
 public class BlockStairsDiorite extends BlockStairs {
 
     public BlockStairsDiorite() {
@@ -25,6 +28,9 @@ public class BlockStairsDiorite extends BlockStairs {
 
     @Override
     public double getHardness() {
+        if (ENABLE_BLOCK_DESTROY_SPEED_COMPATIBILITY || V1_20_30.isAvailable()) {
+            return 1.5;
+        }
         return 2;
     }
 

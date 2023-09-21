@@ -43,6 +43,8 @@ public final class SharedConstants {
 
     public static final int RESOURCE_PACK_CHUNK_SIZE = 128 * 1024; // 128KB
 
+    public static final boolean ENABLE_BLOCK_DESTROY_SPEED_COMPATIBILITY = true;
+
     public static final boolean ENABLE_BLOCK_STATE_PERSISTENCE = true;
 
     public static final boolean ENABLE_ITEM_NAME_PERSISTENCE = true;

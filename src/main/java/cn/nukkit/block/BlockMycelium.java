@@ -39,7 +39,7 @@ public class BlockMycelium extends BlockSolid {
 
     @Override
     public double getResistance() {
-        return 2.5;
+        return 3;
     }
 
     @Override

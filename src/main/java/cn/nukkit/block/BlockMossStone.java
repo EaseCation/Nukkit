@@ -29,7 +29,7 @@ public class BlockMossStone extends BlockSolid {
 
     @Override
     public double getResistance() {
-        return 10;
+        return 30;
     }
 
     @Override

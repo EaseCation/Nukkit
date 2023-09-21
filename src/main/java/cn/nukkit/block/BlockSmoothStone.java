@@ -4,6 +4,8 @@ import cn.nukkit.item.Item;
 import cn.nukkit.item.ItemTool;
 import cn.nukkit.utils.BlockColor;
 
+import static cn.nukkit.GameVersion.*;
+
 public class BlockSmoothStone extends BlockSolid {
 
     public BlockSmoothStone() {
@@ -21,7 +23,10 @@ public class BlockSmoothStone extends BlockSolid {
 
     @Override
     public double getHardness() {
-        return 3;
+        if (V1_20_30.isAvailable()) {
+            return 2;
+        }
+        return 1.5;
     }
 
     @Override

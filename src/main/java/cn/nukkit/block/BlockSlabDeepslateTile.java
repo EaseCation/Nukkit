@@ -33,7 +33,7 @@ public class BlockSlabDeepslateTile extends BlockSlab {
 
     @Override
     public double getResistance() {
-        return 18;
+        return 30;
     }
 
     @Override

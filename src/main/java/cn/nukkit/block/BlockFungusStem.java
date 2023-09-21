@@ -18,7 +18,7 @@ public abstract class BlockFungusStem extends BlockRotatedPillar {
 
     @Override
     public double getResistance() {
-        return 1.5;
+        return 10;
     }
 
     @Override

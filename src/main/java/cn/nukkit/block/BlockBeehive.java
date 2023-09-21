@@ -58,7 +58,7 @@ public class BlockBeehive extends BlockSolidMeta implements Faceable {
 
     @Override
     public double getResistance() {
-        return 27;
+        return 3;
     }
 
     @Override

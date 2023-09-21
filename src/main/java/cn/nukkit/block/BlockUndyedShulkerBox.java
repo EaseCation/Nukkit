@@ -24,6 +24,9 @@ import cn.nukkit.utils.BlockColor;
 
 import java.util.Map;
 
+import static cn.nukkit.GameVersion.*;
+import static cn.nukkit.SharedConstants.*;
+
 /**
  *
  * @author Reece Mackie
@@ -50,7 +53,10 @@ public class BlockUndyedShulkerBox extends BlockTransparent {
 
     @Override
     public double getHardness() {
-        return 2;
+        if (ENABLE_BLOCK_DESTROY_SPEED_COMPATIBILITY || V1_20_30.isAvailable()) {
+            return 2;
+        }
+        return 2.5;
     }
 
     @Override

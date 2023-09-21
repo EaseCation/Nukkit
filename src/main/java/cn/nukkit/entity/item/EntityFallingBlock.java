@@ -163,14 +163,16 @@ public class EntityFallingBlock extends Entity {
                 if (this.block.getId() == Block.POINTED_DRIPSTONE) {
                     getLevel().addLevelEvent(block, LevelEventPacket.EVENT_SOUND_POINTED_DRIPSTONE_LAND);
 
-                    float damage = (float) Math.min(40, Math.max(0, (highestPosition - y) * 2));
-                    if (damage > 0) {
-                        Entity[] entities = level.getCollidingEntities(getBoundingBox(), this);
-                        for (Entity entity : entities) {
-                            if (!(entity instanceof EntityLiving) || highestPosition <= y) {
-                                continue;
+                    if (highestPosition > y) {
+                        float damage = (float) Math.min(40, Math.max(0, (highestPosition - y) * 2));
+                        if (damage > 0) {
+                            Entity[] entities = level.getCollidingEntities(getBoundingBox(), this);
+                            for (Entity entity : entities) {
+                                if (!(entity instanceof EntityLiving)) {
+                                    continue;
+                                }
+                                entity.attack(new EntityDamageByBlockEvent(Block.get(Block.POINTED_DRIPSTONE, this.block.getDamage()), entity, DamageCause.STALACTITE, damage));
                             }
-                            entity.attack(new EntityDamageByBlockEvent(Block.get(Block.POINTED_DRIPSTONE, this.block.getDamage()), entity, DamageCause.STALACTITE, damage));
                         }
                     }
 
@@ -232,14 +234,16 @@ public class EntityFallingBlock extends Entity {
                         if (event.getTo().getId() == Item.ANVIL) {
                             getLevel().addLevelEvent(block, LevelEventPacket.EVENT_SOUND_ANVIL_FALL);
 
-                            float damage = (float) Math.min(40, Math.max(0, (highestPosition - y) * 2));
-                            if (damage > 0) {
-                                Entity[] entities = level.getCollidingEntities(getBoundingBox(), this);
-                                for (Entity entity : entities) {
-                                    if (!(entity instanceof EntityLiving) || highestPosition <= y) {
-                                        continue;
+                            if (highestPosition > y) {
+                                float damage = (float) Math.min(40, Math.max(0, (highestPosition - y) * 2));
+                                if (damage > 0) {
+                                    Entity[] entities = level.getCollidingEntities(getBoundingBox(), this);
+                                    for (Entity entity : entities) {
+                                        if (!(entity instanceof EntityLiving)) {
+                                            continue;
+                                        }
+                                        entity.attack(new EntityDamageByBlockEvent(event.getTo(), entity, DamageCause.ANVIL, damage));
                                     }
-                                    entity.attack(new EntityDamageByBlockEvent(event.getTo(), entity, DamageCause.ANVIL, damage));
                                 }
                             }
                         }

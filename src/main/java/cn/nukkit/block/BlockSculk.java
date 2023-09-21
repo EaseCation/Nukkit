@@ -4,6 +4,9 @@ import cn.nukkit.item.Item;
 import cn.nukkit.item.ItemTool;
 import cn.nukkit.utils.BlockColor;
 
+import static cn.nukkit.GameVersion.*;
+import static cn.nukkit.SharedConstants.*;
+
 public class BlockSculk extends BlockSolid {
     public BlockSculk() {
     }
@@ -20,12 +23,15 @@ public class BlockSculk extends BlockSolid {
 
     @Override
     public double getHardness() {
+        if (ENABLE_BLOCK_DESTROY_SPEED_COMPATIBILITY || V1_20_30.isAvailable()) {
+            return 0.2;
+        }
         return 0.6;
     }
 
     @Override
     public double getResistance() {
-        return 3;
+        return 1;
     }
 
     @Override
