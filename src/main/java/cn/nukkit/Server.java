@@ -15,6 +15,7 @@ import cn.nukkit.entity.data.Skin;
 import cn.nukkit.event.HandlerList;
 import cn.nukkit.event.level.LevelInitEvent;
 import cn.nukkit.event.level.LevelLoadEvent;
+import cn.nukkit.event.player.SendPlayerListDataEvent;
 import cn.nukkit.event.server.BatchPacketsEvent;
 import cn.nukkit.event.server.QueryRegenerateEvent;
 import cn.nukkit.inventory.CraftingManager;
@@ -1019,10 +1020,39 @@ public class Server {
     }
 
     public void updatePlayerListData(UUID uuid, long entityId, String name, Skin skin, String xboxUserId, Player[] players) {
-        PlayerListPacket pk = new PlayerListPacket();
-        pk.type = PlayerListPacket.TYPE_ADD;
-        pk.entries = new PlayerListPacket.Entry[]{new PlayerListPacket.Entry(uuid, entityId, name, skin, xboxUserId)};
-        Server.broadcastPacket(players, pk);
+        Set<Player> playersSet = null;
+        for (Player player : players) {
+            SendPlayerListDataEvent event = new SendPlayerListDataEvent(player, uuid, entityId, name, skin, xboxUserId);
+            event.call();
+            if (event.isCancelled()) {
+                if (playersSet == null) {
+                    playersSet = new HashSet<>(Arrays.asList(players));
+                }
+                playersSet.remove(player);
+            } else if (event.isDirty()) {
+                if (playersSet == null) {
+                    playersSet = new HashSet<>(Arrays.asList(players));
+                }
+                playersSet.remove(player);
+                PlayerListPacket pk = new PlayerListPacket();
+                pk.type = PlayerListPacket.TYPE_ADD;
+                pk.entries = new PlayerListPacket.Entry[]{new PlayerListPacket.Entry(event.getUuid(), event.getEntityId(), event.getName(), event.getSkin(), event.getXboxUserId())};
+                player.dataPacket(pk);
+            }
+        }
+        if (playersSet != null) {
+            if (!playersSet.isEmpty()) {
+                PlayerListPacket pk = new PlayerListPacket();
+                pk.type = PlayerListPacket.TYPE_ADD;
+                pk.entries = new PlayerListPacket.Entry[]{new PlayerListPacket.Entry(uuid, entityId, name, skin, xboxUserId)};
+                Server.broadcastPacket(playersSet, pk);
+            }
+        } else {
+            PlayerListPacket pk = new PlayerListPacket();
+            pk.type = PlayerListPacket.TYPE_ADD;
+            pk.entries = new PlayerListPacket.Entry[]{new PlayerListPacket.Entry(uuid, entityId, name, skin, xboxUserId)};
+            Server.broadcastPacket(players, pk);
+        }
     }
 
     public void updatePlayerListData(UUID uuid, long entityId, String name, Skin skin, String xboxUserId, Collection<Player> players) {
