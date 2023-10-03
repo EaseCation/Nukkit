@@ -465,23 +465,31 @@ public class Skin implements Cloneable {
     @Override
     public Skin clone() {
         // TODO 可能没有完全clone
-        try {
-            Skin skin = (Skin) super.clone();
-            skin.skinResourcePatch = skinResourcePatch;
-            skin.skinId = skinId;
-            skin.fullSkinId = fullSkinId;
-            skin.playFabId = playFabId;
-            skin.skinData = skinData;
-            skin.capeData = capeData;
-            skin.geometryData = geometryData;
-            skin.animations.addAll(animations);
-            skin.animationData = animationData;
-            skin.personaPieces.addAll(personaPieces);
-            skin.tintColors.addAll(tintColors);
-            return skin;
-        } catch (CloneNotSupportedException e) {
-            throw new AssertionError(e);
-        }
+        Skin skin = new Skin();
+        skin.playerSkin = playerSkin;
+        skin.fullSkinId = fullSkinId;
+        skin.skinId = skinId;
+        skin.playFabId = playFabId;
+        skin.skinResourcePatch = skinResourcePatch;
+        skin.skinData = skinData;
+        skin.animations.addAll(animations);
+        skin.personaPieces.addAll(personaPieces);
+        skin.tintColors.addAll(tintColors);
+        skin.capeData = capeData;
+
+        skin.geometryData = geometryData;
+        skin.animationData = animationData;
+        skin.premium = premium;
+        skin.persona = persona;
+        skin.capeOnClassic = capeOnClassic;
+        skin.primaryUser = primaryUser;
+        skin.capeId = capeId;
+        skin.skinColor = skinColor;
+        skin.armSize = armSize;
+        skin.trusted = trusted;
+        skin.geometryDataEngineVersion = geometryDataEngineVersion;
+        skin.overridingPlayerAppearance = overridingPlayerAppearance;
+        return skin;
     }
 
 }
