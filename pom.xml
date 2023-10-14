@@ -8,8 +8,8 @@
     <version>1.0-SNAPSHOT</version>
 
     <properties>
-        <maven.compiler.source>1.8</maven.compiler.source>
-        <maven.compiler.target>1.8</maven.compiler.target>
+        <maven.compiler.source>17</maven.compiler.source>
+        <maven.compiler.target>17</maven.compiler.target>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <junit.jupiter.version>5.10.0</junit.jupiter.version>
         <log4j2.version>2.20.0</log4j2.version>
@@ -57,7 +57,7 @@
         <dependency>
             <groupId>com.google.guava</groupId>
             <artifactId>guava</artifactId>
-            <version>32.1.2-jre</version>
+            <version>32.1.3-jre</version>
             <scope>compile</scope>
         </dependency>
         <dependency>
@@ -149,7 +149,7 @@
         <dependency>
             <groupId>com.nimbusds</groupId>
             <artifactId>nimbus-jose-jwt</artifactId>
-            <version>9.31</version>
+            <version>9.36</version>
             <scope>compile</scope>
         </dependency>
         <dependency>
@@ -331,7 +331,7 @@
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-enforcer-plugin</artifactId>
-                <version>3.1.0</version>
+                <version>3.4.1</version>
                 <executions>
                     <execution>
                         <id>enforce</id>
@@ -435,27 +435,15 @@
 
     <profiles>
         <profile>
-            <id>java17</id>
+            <id>java21</id>
 
             <activation>
-                <jdk>17</jdk>
+                <jdk>21</jdk>
             </activation>
 
             <properties>
-                <maven.compiler.source>17</maven.compiler.source>
-                <maven.compiler.target>17</maven.compiler.target>
-            </properties>
-        </profile>
-        <profile>
-            <id>java-next</id>
-
-            <activation>
-                <jdk>19</jdk>
-            </activation>
-
-            <properties>
-                <maven.compiler.source>19</maven.compiler.source>
-                <maven.compiler.target>19</maven.compiler.target>
+                <maven.compiler.source>21</maven.compiler.source>
+                <maven.compiler.target>21</maven.compiler.target>
             </properties>
         </profile>
     </profiles>

@@ -1,6 +1,6 @@
 name: Java CI
 
-on: [push]
+on: [push, workflow_dispatch]
 
 jobs:
   build:
@@ -12,8 +12,7 @@ jobs:
         java:
           [
             17,
-            19,
-            20,
+            21,
           ]
     steps:
       - uses: actions/checkout@v4
@@ -23,7 +22,7 @@ jobs:
         uses: actions/setup-java@v3
         with:
           java-version: ${{ matrix.java }}
-          distribution: liberica
+          distribution: oracle
           cache: maven
       - name: Install dependencies
         run: |
