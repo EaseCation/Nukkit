@@ -6,8 +6,11 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.node.JsonNodeType;
 import com.google.common.base.Preconditions;
+import lombok.Getter;
+import lombok.Setter;
 import lombok.ToString;
 
+import javax.annotation.Nullable;
 import javax.imageio.ImageIO;
 import java.awt.*;
 import java.awt.image.BufferedImage;
@@ -61,6 +64,16 @@ public class Skin implements Cloneable {
     private boolean trusted = true;
     private String geometryDataEngineVersion = "0.0.0";
     private boolean overridingPlayerAppearance = true;
+
+    // netease
+    @Nullable
+    @Setter
+    @Getter
+    private String skinMd5;
+    @Nullable
+    @Setter
+    @Getter
+    private String skinGeoMd5;
 
     static {
         Arrays.fill(FULL_WHITE_SKIN, (byte) 0xff);
