@@ -59,6 +59,10 @@ public class Location extends Position {
         return fromObject(pos, level, 0, 0);
     }
 
+    public static Location fromObject(Location pos, Level level) {
+        return fromObject(pos, level, pos.yaw, pos.pitch);
+    }
+
     public static Location fromObject(Vector3 pos, Level level, double yaw) {
         return fromObject(pos, level, yaw, 0);
     }
