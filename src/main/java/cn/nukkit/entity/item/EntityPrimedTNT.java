@@ -53,6 +53,7 @@ public class EntityPrimedTNT extends Entity implements EntityExplosive {
     }
 
     protected int fuse;
+    protected double force;
 
     protected Entity source;
 
@@ -83,6 +84,11 @@ public class EntityPrimedTNT extends Entity implements EntityExplosive {
         } else {
             fuse = 80;
         }
+        if (namedTag.contains("Force")) {
+            force = namedTag.getDouble("Force");
+        } else {
+            force = 4;
+        }
 
         this.setDataFlag(DATA_FLAG_IGNITED, true, false);
         this.setDataProperty(new IntEntityData(DATA_FUSE_LENGTH, fuse), false);
@@ -97,6 +103,7 @@ public class EntityPrimedTNT extends Entity implements EntityExplosive {
     public void saveNBT() {
         super.saveNBT();
         namedTag.putByte("Fuse", fuse);
+        namedTag.putDouble("Force", force);
     }
 
     public boolean onUpdate(int currentTick) {
@@ -149,7 +156,7 @@ public class EntityPrimedTNT extends Entity implements EntityExplosive {
     }
 
     public void explode() {
-        EntityExplosionPrimeEvent event = new EntityExplosionPrimeEvent(this, 4);
+        EntityExplosionPrimeEvent event = new EntityExplosionPrimeEvent(this, this.force);
         server.getPluginManager().callEvent(event);
         if (event.isCancelled()) {
             return;
