@@ -63,7 +63,7 @@ public class BossEventPacket extends DataPacket {
             case TYPE_UPDATE_PROPERTIES:
                 this.darkenScreen = this.getLShort();
             case TYPE_TEXTURE:
-                this.color = BossBarColor.VALUES[(int) this.getUnsignedVarInt()];
+                this.color = this.getBossBarColor();
                 this.overlay = (int) this.getUnsignedVarInt();
                 break;
             case TYPE_HEALTH_PERCENT:
@@ -92,7 +92,7 @@ public class BossEventPacket extends DataPacket {
             case TYPE_UPDATE_PROPERTIES:
                 this.putLShort(this.darkenScreen);
             case TYPE_TEXTURE:
-                this.putUnsignedVarInt(this.color.ordinal());
+                this.putBossBarColor(this.color);
                 this.putUnsignedVarInt(this.overlay);
                 break;
             case TYPE_HEALTH_PERCENT:
@@ -105,17 +105,37 @@ public class BossEventPacket extends DataPacket {
     }
 
     public enum BossBarColor {
-        PINK,
-        BLUE,
-        RED,
-        GREEN,
-        YELLOW,
-        PURPLE,
-        WHITE;
+        PINK(0),
+        BLUE(1),
+        RED(2),
+        GREEN(3),
+        YELLOW(4),
+        PURPLE(5),
+        /**
+         * @since 1.20.40
+         */
+        REBECCA_PURPLE(5),
+        WHITE(6),
+        ;
 
+        static final BossBarColor[] VALUES_OLD = new BossBarColor[]{PINK, BLUE, RED, GREEN, YELLOW, PURPLE, WHITE};
         static final BossBarColor[] VALUES = values();
 
-        public BossBarColor[] getValues() {
+        private final int oldId;
+
+        BossBarColor(int oldId) {
+            this.oldId = oldId;
+        }
+
+        public int getOldId() {
+            return oldId;
+        }
+
+        public static BossBarColor fromOldId(int oldId) {
+            return VALUES_OLD[oldId];
+        }
+
+        public static BossBarColor[] getValues() {
             return VALUES;
         }
     }

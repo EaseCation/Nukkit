@@ -220,6 +220,14 @@ public class BlockSnowLayer extends BlockFallable {
     }
 
     @Override
+    public boolean canPassThrough() {
+        if (V1_20_30.isAvailable()) {
+            return (this.getDamage() & HEIGHT_MASK) == 0;
+        }
+        return (this.getDamage() & HEIGHT_MASK) < 3;
+    }
+
+    @Override
     public boolean breaksWhenMoved() {
         return true;
     }

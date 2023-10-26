@@ -219,7 +219,7 @@ public enum TextFormat {
             return null;
         }
 
-        String result = CLEAN_PATTERN.matcher(cleanIcon(input, recursive)).replaceAll("");
+        String result = CLEAN_PATTERN.matcher(cleanIcon(input)).replaceAll("");
 
         if (recursive && CLEAN_PATTERN.matcher(result).find()) {
             return clean(result, true);
@@ -234,27 +234,14 @@ public enum TextFormat {
      * @return A copy of the input string, without any icons.
      */
     public static String cleanIcon(String input) {
-        return cleanIcon(input, false);
-    }
-
-    public static String cleanIcon(String input, boolean recursive) {
-        if (input == null) {
-            return null;
-        }
-
-        String result = CharacterIcon.CLEAN_PATTERN.matcher(input).replaceAll("");
-
-        if (recursive &&  CharacterIcon.CLEAN_PATTERN.matcher(result).find()) {
-            return cleanIcon(result, true);
-        }
-        return result;
+        return CharacterIcon.CLEAN_PATTERN.matcher(input).replaceAll("");
     }
 
     /**
      * Translates a string using an alternate format code character into a
      * string that uses the internal TextFormat.ESCAPE format code
      * character. The alternate format code character will only be replaced if
-     * it is immediately followed by 0-9, A-G, a-g, K-O, k-o, R or r.
+     * it is immediately followed by 0-9, A-U or a-u.
      *
      * @param altFormatChar   The alternate format code character to replace. Ex: &amp;
      * @param textToTranslate Text containing the alternate format code character.

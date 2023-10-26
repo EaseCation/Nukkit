@@ -140,8 +140,19 @@ public interface EntityFlagID {
      * @since 1.20.10
      */
     int DATA_FLAG_CRAWLING = 114;
-
-    int DATA_FLAG_UNDEFINED = 115;
+    /**
+     * @since 1.20.40
+     */
+    int DATA_FLAG_TIMER_FLAG_1 = 115;
+    /**
+     * @since 1.20.40
+     */
+    int DATA_FLAG_TIMER_FLAG_2 = 116;
+    /**
+     * @since 1.20.40
+     */
+    int DATA_FLAG_TIMER_FLAG_3 = 117;
+    int DATA_FLAG_UNDEFINED = 118;
 
 
     long NUKKIT_FLAG_VARIANT_BLOCK = 1L << 1;

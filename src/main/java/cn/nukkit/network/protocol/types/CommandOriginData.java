@@ -45,10 +45,10 @@ public final class CommandOriginData {
         EXECUTE_CONTEXT,
         ;
 
-        private static final Origin[] $VALUES0 = values();
+        private static final Origin[] VALUES = values();
 
-        public static Origin[] values0() {
-            return $VALUES0;
+        public static Origin[] getValues() {
+            return VALUES;
         }
     }
 }

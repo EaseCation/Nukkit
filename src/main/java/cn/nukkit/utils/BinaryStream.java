@@ -22,6 +22,7 @@ import cn.nukkit.nbt.tag.CompoundTag;
 import cn.nukkit.nbt.tag.ListTag;
 import cn.nukkit.nbt.tag.StringTag;
 import cn.nukkit.nbt.tag.Tag;
+import cn.nukkit.network.protocol.BossEventPacket.BossBarColor;
 import cn.nukkit.network.protocol.types.EntityLink;
 import cn.nukkit.network.protocol.types.InputInteractionModel;
 import it.unimi.dsi.fastutil.io.FastByteArrayInputStream;
@@ -1110,6 +1111,23 @@ public class BinaryStream {
         consumer.accept(this, obj);
     }
 
+    public BossBarColor getBossBarColor() {
+        if (this.helper != null) {
+            return this.helper.getBossBarColor(this);
+        }
+
+        return BossBarColor.fromOldId((int) this.getUnsignedVarInt());
+    }
+
+    public void putBossBarColor(BossBarColor color) {
+        if (this.helper != null) {
+            this.helper.putBossBarColor(this, color);
+            return;
+        }
+
+        putUnsignedVarInt(color.getOldId());
+    }
+
     public boolean isReadable(int length) {
         return count - offset >= length;
     }
@@ -1334,6 +1352,14 @@ public class BinaryStream {
 
         protected final List<String> extractStringList(BinaryStream stream, Item item, String tagName) {
             return stream.extractStringList(item, tagName);
+        }
+
+        public BossBarColor getBossBarColor(BinaryStream stream) {
+            return BossBarColor.fromOldId((int) stream.getUnsignedVarInt());
+        }
+
+        public void putBossBarColor(BinaryStream stream, BossBarColor color) {
+            stream.putUnsignedVarInt(color.getOldId());
         }
     }
 }

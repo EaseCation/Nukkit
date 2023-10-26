@@ -27,7 +27,7 @@ public class CommandRequestPacket extends DataPacket {
     public void decode() {
         this.command = this.getString();
 
-        CommandOriginData.Origin type = CommandOriginData.Origin.values0()[(int) this.getUnsignedVarInt()];
+        CommandOriginData.Origin type = CommandOriginData.Origin.getValues()[(int) this.getUnsignedVarInt()];
         UUID uuid = this.getUUID();
         String requestId = this.getString();
         long playerEntityUniqueId = 0;

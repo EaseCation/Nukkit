@@ -229,10 +229,10 @@ public class ItemFirework extends Item {
             CREEPER_SHAPED,
             BURST;
 
-            private static final ExplosionType[] $VALUES0 = values();
+            private static final ExplosionType[] VALUES = values();
 
-            public static ExplosionType[] values0() {
-                return $VALUES0;
+            public static ExplosionType[] getValues() {
+                return VALUES;
             }
         }
     }

@@ -311,30 +311,30 @@ public class ItemBucket extends Item {
 
                 switch (meta) {
                     case COD_BUCKET:
-                        Entity cod = new EntityCod(block.getChunk(), Entity.getDefaultNBT(block));
+                        Entity cod = new EntityCod(block.getChunk(), Entity.getDefaultNBT(block.add(0.5, 0, 0.5)));
                         cod.spawnToAll();
                         break;
                     case SALMON_BUCKET:
-                        Entity salmon = new EntitySalmon(block.getChunk(), Entity.getDefaultNBT(block));
+                        Entity salmon = new EntitySalmon(block.getChunk(), Entity.getDefaultNBT(block.add(0.5, 0, 0.5)));
                         salmon.spawnToAll();
                         break;
                     case TROPICAL_FISH_BUCKET:
-                        Entity tropicalFish = new EntityTropicalFish(block.getChunk(), Entity.getDefaultNBT(block));
+                        Entity tropicalFish = new EntityTropicalFish(block.getChunk(), Entity.getDefaultNBT(block.add(0.5, 0, 0.5)));
                         tropicalFish.spawnToAll();
                         break;
                     case PUFFERFISH_BUCKET:
-                        Entity pufferfish = new EntityPufferfish(block.getChunk(), Entity.getDefaultNBT(block));
+                        Entity pufferfish = new EntityPufferfish(block.getChunk(), Entity.getDefaultNBT(block.add(0.5, 0, 0.5)));
                         pufferfish.spawnToAll();
                         break;
                     case AXOLOTL_BUCKET:
-                        Entity axolotl = new EntityAxolotl(block.getChunk(), Entity.getDefaultNBT(block));
+                        Entity axolotl = new EntityAxolotl(block.getChunk(), Entity.getDefaultNBT(block.add(0.5, 0, 0.5)));
                         axolotl.spawnToAll();
                         break;
                     case TADPOLE_BUCKET:
                         if (!V1_19_0.isAvailable()) {
                             break;
                         }
-                        Entity tadpole = new EntityTadpole(block.getChunk(), Entity.getDefaultNBT(block));
+                        Entity tadpole = new EntityTadpole(block.getChunk(), Entity.getDefaultNBT(block.add(0.5, 0, 0.5)));
                         tadpole.spawnToAll();
                         break;
                 }

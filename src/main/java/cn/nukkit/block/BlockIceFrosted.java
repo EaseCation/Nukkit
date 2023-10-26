@@ -117,7 +117,7 @@ public class BlockIceFrosted extends BlockTransparentMeta {
         if (!propagate) {
             return;
         }
-        for (BlockFace face : BlockFace.values()) {
+        for (BlockFace face : BlockFace.getValues()) {
             Block block = getSide(face);
             if (block instanceof BlockIceFrosted) {
                 ((BlockIceFrosted) block).slightlyMelt(false);
@@ -127,7 +127,7 @@ public class BlockIceFrosted extends BlockTransparentMeta {
 
     private int countNeighbors() {
         int result = 0;
-        for (BlockFace face : BlockFace.values()) {
+        for (BlockFace face : BlockFace.getValues()) {
             if (getSide(face).getId() == FROSTED_ICE && ++result >= 4) {
                 return result;
             }

@@ -4197,9 +4197,7 @@ public class Player extends EntityHuman implements CommandSender, InventoryHolde
     public void close(TextContainer message, String reason, boolean notify) {
         if (this.connected && !this.closed) {
             if (notify && !reason.isEmpty()) {
-                DisconnectPacket pk = new DisconnectPacket();
-                pk.message = reason;
-                this.dataPacket(pk);
+                sendDisconnectScreen(reason);
             }
 
             this.connected = false;
@@ -6266,5 +6264,20 @@ public class Player extends EntityHuman implements CommandSender, InventoryHolde
         }
 
         movementSpeedAttribute.replaceModifier(AttributeModifiers.freezeEffect(freezeEffectStrength));
+    }
+
+    public void sendDisconnectScreen(@Nullable String message) {
+        sendDisconnectScreen(DisconnectPacket.REASON_UNKNOWN, message);
+    }
+
+    public void sendDisconnectScreen(int reason, @Nullable String message) {
+        DisconnectPacket packet = new DisconnectPacket();
+        packet.reason = reason;
+        if (message != null) {
+            packet.message = message;
+        } else {
+            packet.hideDisconnectionScreen = true;
+        }
+        dataPacket(packet);
     }
 }

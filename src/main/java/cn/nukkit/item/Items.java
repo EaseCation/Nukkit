@@ -342,6 +342,49 @@ public final class Items {
         registerNewItemAux("bamboo_chest_raft", CHEST_BOAT, ItemBoatChest.BAMBOO_RAFT, V1_20_0);
         registerNewItemAux("cherry_chest_boat", CHEST_BOAT, ItemBoatChest.CHERRY_BOAT, V1_20_0);
 
+//        registerNewItem("bamboo_sign", BAMBOO_SIGN, ItemSignBamboo.class, ItemSignBamboo::new, V1_20_0);
+//        registerNewItem("cherry_sign", CHERRY_SIGN, ItemSignCherry.class, ItemSignCherry::new, V1_20_0);
+//        registerNewItem("torchflower_seeds", TORCHFLOWER_SEEDS, ItemSeedsTorchflower.class, ItemSeedsTorchflower::new, V1_20_0);
+//        registerNewItem("pitcher_pod", PITCHER_POD, ItemPitcherPod.class, ItemPitcherPod::new, V1_20_0);
+        registerNewItem("brush", BRUSH, ItemBrush.class, ItemBrush::new, V1_20_0);
+        registerNewItem("archer_pottery_sherd", ARCHER_POTTERY_SHERD, ItemPotterySherdArcher.class, ItemPotterySherdArcher::new, V1_20_0);
+        registerNewItem("arms_up_pottery_sherd", ARMS_UP_POTTERY_SHERD, ItemPotterySherdArmsUp.class, ItemPotterySherdArmsUp::new, V1_20_0);
+        registerNewItem("prize_pottery_sherd", PRIZE_POTTERY_SHERD, ItemPotterySherdPrize.class, ItemPotterySherdPrize::new, V1_20_0);
+        registerNewItem("skull_pottery_sherd", SKULL_POTTERY_SHERD, ItemPotterySherdSkull.class, ItemPotterySherdSkull::new, V1_20_0);
+        registerNewItem("angler_pottery_sherd", ANGLER_POTTERY_SHERD, ItemPotterySherdAngler.class, ItemPotterySherdAngler::new, V1_20_0);
+        registerNewItem("blade_pottery_sherd", BLADE_POTTERY_SHERD, ItemPotterySherdBlade.class, ItemPotterySherdBlade::new, V1_20_0);
+        registerNewItem("brewer_pottery_sherd", BREWER_POTTERY_SHERD, ItemPotterySherdBrewer.class, ItemPotterySherdBrewer::new, V1_20_0);
+        registerNewItem("burn_pottery_sherd", BURN_POTTERY_SHERD, ItemPotterySherdBurn.class, ItemPotterySherdBurn::new, V1_20_0);
+        registerNewItem("danger_pottery_sherd", DANGER_POTTERY_SHERD, ItemPotterySherdDanger.class, ItemPotterySherdDanger::new, V1_20_0);
+        registerNewItem("explorer_pottery_sherd", EXPLORER_POTTERY_SHERD, ItemPotterySherdExplorer.class, ItemPotterySherdExplorer::new, V1_20_0);
+        registerNewItem("friend_pottery_sherd", FRIEND_POTTERY_SHERD, ItemPotterySherdFriend.class, ItemPotterySherdFriend::new, V1_20_0);
+        registerNewItem("heart_pottery_sherd", HEART_POTTERY_SHERD, ItemPotterySherdHeart.class, ItemPotterySherdHeart::new, V1_20_0);
+        registerNewItem("heartbreak_pottery_sherd", HEARTBREAK_POTTERY_SHERD, ItemPotterySherdHeartbreak.class, ItemPotterySherdHeartbreak::new, V1_20_0);
+        registerNewItem("howl_pottery_sherd", HOWL_POTTERY_SHERD, ItemPotterySherdHowl.class, ItemPotterySherdHowl::new, V1_20_0);
+        registerNewItem("miner_pottery_sherd", MINER_POTTERY_SHERD, ItemPotterySherdMiner.class, ItemPotterySherdMiner::new, V1_20_0);
+        registerNewItem("mourner_pottery_sherd", MOURNER_POTTERY_SHERD, ItemPotterySherdMourner.class, ItemPotterySherdMourner::new, V1_20_0);
+        registerNewItem("plenty_pottery_sherd", PLENTY_POTTERY_SHERD, ItemPotterySherdPlenty.class, ItemPotterySherdPlenty::new, V1_20_0);
+        registerNewItem("sheaf_pottery_sherd", SHEAF_POTTERY_SHERD, ItemPotterySherdSheaf.class, ItemPotterySherdSheaf::new, V1_20_0);
+        registerNewItem("shelter_pottery_sherd", SHELTER_POTTERY_SHERD, ItemPotterySherdShelter.class, ItemPotterySherdShelter::new, V1_20_0);
+        registerNewItem("snort_pottery_sherd", SNORT_POTTERY_SHERD, ItemPotterySherdSnort.class, ItemPotterySherdSnort::new, V1_20_0);
+        registerNewItem("netherite_upgrade_smithing_template", NETHERITE_UPGRADE_SMITHING_TEMPLATE, ItemSmithingTemplateUpgradeNetherite.class, ItemSmithingTemplateUpgradeNetherite::new, V1_20_0);
+        registerNewItem("sentry_armor_trim_smithing_template", SENTRY_ARMOR_TRIM_SMITHING_TEMPLATE, ItemSmithingTemplateArmorTrimSentry.class, ItemSmithingTemplateArmorTrimSentry::new, V1_20_0);
+        registerNewItem("dune_armor_trim_smithing_template", DUNE_ARMOR_TRIM_SMITHING_TEMPLATE, ItemSmithingTemplateArmorTrimDune.class, ItemSmithingTemplateArmorTrimDune::new, V1_20_0);
+        registerNewItem("coast_armor_trim_smithing_template", COAST_ARMOR_TRIM_SMITHING_TEMPLATE, ItemSmithingTemplateArmorTrimCoast.class, ItemSmithingTemplateArmorTrimCoast::new, V1_20_0);
+        registerNewItem("wild_armor_trim_smithing_template", WILD_ARMOR_TRIM_SMITHING_TEMPLATE, ItemSmithingTemplateArmorTrimWild.class, ItemSmithingTemplateArmorTrimWild::new, V1_20_0);
+        registerNewItem("ward_armor_trim_smithing_template", WARD_ARMOR_TRIM_SMITHING_TEMPLATE, ItemSmithingTemplateArmorTrimWard.class, ItemSmithingTemplateArmorTrimWard::new, V1_20_0);
+        registerNewItem("eye_armor_trim_smithing_template", EYE_ARMOR_TRIM_SMITHING_TEMPLATE, ItemSmithingTemplateArmorTrimEye.class, ItemSmithingTemplateArmorTrimEye::new, V1_20_0);
+        registerNewItem("vex_armor_trim_smithing_template", VEX_ARMOR_TRIM_SMITHING_TEMPLATE, ItemSmithingTemplateArmorTrimVex.class, ItemSmithingTemplateArmorTrimVex::new, V1_20_0);
+        registerNewItem("tide_armor_trim_smithing_template", TIDE_ARMOR_TRIM_SMITHING_TEMPLATE, ItemSmithingTemplateArmorTrimTide.class, ItemSmithingTemplateArmorTrimTide::new, V1_20_0);
+        registerNewItem("snout_armor_trim_smithing_template", SNOUT_ARMOR_TRIM_SMITHING_TEMPLATE, ItemSmithingTemplateArmorTrimSnout.class, ItemSmithingTemplateArmorTrimSnout::new, V1_20_0);
+        registerNewItem("rib_armor_trim_smithing_template", RIB_ARMOR_TRIM_SMITHING_TEMPLATE, ItemSmithingTemplateArmorTrimRib.class, ItemSmithingTemplateArmorTrimRib::new, V1_20_0);
+        registerNewItem("spire_armor_trim_smithing_template", SPIRE_ARMOR_TRIM_SMITHING_TEMPLATE, ItemSmithingTemplateArmorTrimSpire.class, ItemSmithingTemplateArmorTrimSpire::new, V1_20_0);
+        registerNewItem("silence_armor_trim_smithing_template", SILENCE_ARMOR_TRIM_SMITHING_TEMPLATE, ItemSmithingTemplateArmorTrimSilence.class, ItemSmithingTemplateArmorTrimSilence::new, V1_20_0);
+        registerNewItem("wayfinder_armor_trim_smithing_template", WAYFINDER_ARMOR_TRIM_SMITHING_TEMPLATE, ItemSmithingTemplateArmorTrimWayfinder.class, ItemSmithingTemplateArmorTrimWayfinder::new, V1_20_0);
+        registerNewItem("raiser_armor_trim_smithing_template", RAISER_ARMOR_TRIM_SMITHING_TEMPLATE, ItemSmithingTemplateArmorTrimRaiser.class, ItemSmithingTemplateArmorTrimRaiser::new, V1_20_0);
+        registerNewItem("shaper_armor_trim_smithing_template", SHAPER_ARMOR_TRIM_SMITHING_TEMPLATE, ItemSmithingTemplateArmorTrimShaper.class, ItemSmithingTemplateArmorTrimShaper::new, V1_20_0);
+        registerNewItem("host_armor_trim_smithing_template", HOST_ARMOR_TRIM_SMITHING_TEMPLATE, ItemSmithingTemplateArmorTrimHost.class, ItemSmithingTemplateArmorTrimHost::new, V1_20_0);
+
     }
 
     private static Class<? extends Item> registerItem(int id, Class<? extends Item> clazz, ItemFactory factory) {
