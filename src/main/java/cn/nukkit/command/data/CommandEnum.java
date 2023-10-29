@@ -1,10 +1,9 @@
 package cn.nukkit.command.data;
 
 import cn.nukkit.GameMode;
-import cn.nukkit.block.BlockID;
+import cn.nukkit.block.Blocks;
 import cn.nukkit.entity.EntityID;
-import cn.nukkit.item.ItemID;
-import cn.nukkit.item.ItemRuntimeID;
+import cn.nukkit.item.Items;
 import cn.nukkit.item.enchantment.Enchantments;
 import cn.nukkit.potion.Effects;
 import com.google.common.collect.ImmutableMap;
@@ -40,9 +39,25 @@ public class CommandEnum {
         ENUM_GAMEMODE = new CommandEnum("GameMode", gameModes.build());
 
         ImmutableMap.Builder<String, Set<CommandEnumConstraint>> blocks = ImmutableMap.builder();
-        for (Field field : BlockID.class.getDeclaredFields()) {
-            String name = field.getName().toLowerCase();
-            if (name.equals("undefined")) {
+        for (String blockName : Blocks.getBlockNameToIdMap().keySet()) {
+            String name = blockName.toLowerCase();
+            if (!blockName.equals(name)) {
+                continue;
+            }
+            blocks.put(name, Collections.emptySet());
+            blocks.put("minecraft:" + name, EnumSet.of(CommandEnumConstraint.ALLOW_ALIASES));
+        }
+        for (String blockName : Blocks.getBlockAliasesMap().keySet()) {
+            String name = blockName.toLowerCase();
+            if (!blockName.equals(name)) {
+                continue;
+            }
+            blocks.put(name, Collections.emptySet());
+            blocks.put("minecraft:" + name, EnumSet.of(CommandEnumConstraint.ALLOW_ALIASES));
+        }
+        for (String blockName : Blocks.getComplexAliasesMap().keySet()) {
+            String name = blockName.toLowerCase();
+            if (!blockName.equals(name)) {
                 continue;
             }
             blocks.put(name, Collections.emptySet());
@@ -51,23 +66,48 @@ public class CommandEnum {
         ENUM_BLOCK = new CommandEnum("Block", blocks.build());
 
         ImmutableMap.Builder<String, Set<CommandEnumConstraint>> items = ImmutableMap.builder();
-        for (Field field : ItemID.class.getDeclaredFields()) {
-            String name = field.getName().toLowerCase();
-            if (name.equals("undefined_id")) {
+        for (String name : Blocks.getBlockItemNameToIdMap().keySet()) {
+            if (name.contains(".")) {
                 continue;
             }
             items.put(name, Collections.emptySet());
             items.put("minecraft:" + name, EnumSet.of(CommandEnumConstraint.ALLOW_ALIASES));
         }
-        for (Field field : ItemRuntimeID.class.getDeclaredFields()) {
-            String name = field.getName().toLowerCase();
-            if (name.equals("custom_item")) {
+        for (String name : Blocks.getItemAliasesMap().keySet()) {
+            if (name.contains(".")) {
                 continue;
             }
             items.put(name, Collections.emptySet());
             items.put("minecraft:" + name, EnumSet.of(CommandEnumConstraint.ALLOW_ALIASES));
         }
-        items.putAll(ENUM_BLOCK.getValues());
+        for (String name : Blocks.getComplexAliasesMap().keySet()) {
+            if (name.contains(".")) {
+                continue;
+            }
+            items.put(name, Collections.emptySet());
+            items.put("minecraft:" + name, EnumSet.of(CommandEnumConstraint.ALLOW_ALIASES));
+        }
+        for (String name : Items.getNameToIdMap().keySet()) {
+            if (name.contains(".")) {
+                continue;
+            }
+            items.put(name, Collections.emptySet());
+            items.put("minecraft:" + name, EnumSet.of(CommandEnumConstraint.ALLOW_ALIASES));
+        }
+        for (String name : Items.getSimpleAliasesMap().keySet()) {
+            if (name.contains(".")) {
+                continue;
+            }
+            items.put(name, Collections.emptySet());
+            items.put("minecraft:" + name, EnumSet.of(CommandEnumConstraint.ALLOW_ALIASES));
+        }
+        for (String name : Items.getComplexAliasesMap().keySet()) {
+            if (name.contains(".")) {
+                continue;
+            }
+            items.put(name, Collections.emptySet());
+            items.put("minecraft:" + name, EnumSet.of(CommandEnumConstraint.ALLOW_ALIASES));
+        }
         ENUM_ITEM = new CommandEnum("Item", items.build());
 
         ImmutableMap.Builder<String, Set<CommandEnumConstraint>> entities = ImmutableMap.builder();

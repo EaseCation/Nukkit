@@ -17,14 +17,17 @@ import cn.nukkit.utils.BinaryStream;
 import cn.nukkit.utils.BlockUpdateEntry;
 import cn.nukkit.utils.ChunkException;
 import cn.nukkit.utils.Zlib;
+import com.google.gson.Gson;
 import it.unimi.dsi.fastutil.ints.Int2IntMap;
 import it.unimi.dsi.fastutil.ints.Int2IntOpenHashMap;
+import it.unimi.dsi.fastutil.objects.Object2IntMap;
+import it.unimi.dsi.fastutil.objects.Object2IntOpenHashMap;
 import it.unimi.dsi.fastutil.objects.ObjectArrayList;
 
 import java.io.ByteArrayInputStream;
 import java.io.DataInputStream;
 import java.io.IOException;
-import java.lang.reflect.Constructor;
+import java.io.InputStreamReader;
 import java.nio.ByteOrder;
 import java.util.*;
 
@@ -33,6 +36,16 @@ import java.util.*;
  * Nukkit Project
  */
 public class Chunk extends BaseChunk {
+    private static final Object2IntMap<String> NUKKIT_LEGACY_BLOCK_CLASS_NAME_TO_ID;
+
+    static {
+        try (InputStreamReader reader = new InputStreamReader(Server.class.getClassLoader().getResourceAsStream("block_class_name_map.json"))) {
+            NUKKIT_LEGACY_BLOCK_CLASS_NAME_TO_ID = new Gson().fromJson(reader, Object2IntOpenHashMap.class);
+        } catch (Exception e) {
+            throw new AssertionError("Unable to load block_class_name_map.json", e);
+        }
+        NUKKIT_LEGACY_BLOCK_CLASS_NAME_TO_ID.defaultReturnValue(-1);
+    }
 
     protected long inhabitedTime;
     protected boolean terrainPopulated;
@@ -139,15 +152,13 @@ public class Chunk extends BaseChunk {
                     Tag tag = entryNBT.get("i");
                     if (tag instanceof StringTag) {
                         String name = ((StringTag) tag).data;
-
-                        @SuppressWarnings("unchecked")
-                        Class<? extends Block> clazz = (Class<? extends Block>) Class.forName("cn.nukkit.block." + name);
-
-                        Constructor<? extends Block> constructor = clazz.getDeclaredConstructor();
-                        constructor.setAccessible(true);
-                        block = constructor.newInstance();
+                        int id = NUKKIT_LEGACY_BLOCK_CLASS_NAME_TO_ID.getInt(name);
+                        if (id == -1) {
+                            continue;
+                        }
+                        block = Block.get(id);
                     }
-                } catch (Throwable e) {
+                } catch (Exception e) {
                     continue;
                 }
 

@@ -12,12 +12,12 @@ import cn.nukkit.utils.BlockColor;
  */
 public class BlockFence extends BlockTransparentMeta {
 
-    public static final int FENCE_OAK = 0;
-    public static final int FENCE_SPRUCE = 1;
-    public static final int FENCE_BIRCH = 2;
-    public static final int FENCE_JUNGLE = 3;
-    public static final int FENCE_ACACIA = 4;
-    public static final int FENCE_DARK_OAK = 5;
+    public static final int OAK = 0;
+    public static final int SPRUCE = 1;
+    public static final int BIRCH = 2;
+    public static final int JUNGLE = 3;
+    public static final int ACACIA = 4;
+    public static final int DARK_OAK = 5;
 
     private static final String[] NAMES = new String[]{
             "Oak Fence",
@@ -101,17 +101,17 @@ public class BlockFence extends BlockTransparentMeta {
     public BlockColor getColor() {
         switch (this.getDamage() & 0x07) {
             default:
-            case BlockFence.FENCE_OAK:
+            case BlockFence.OAK:
                 return BlockColor.WOOD_BLOCK_COLOR;
-            case BlockFence.FENCE_SPRUCE:
+            case BlockFence.SPRUCE:
                 return BlockColor.PODZOL_BLOCK_COLOR;
-            case BlockFence.FENCE_BIRCH:
+            case BlockFence.BIRCH:
                 return BlockColor.SAND_BLOCK_COLOR;
-            case BlockFence.FENCE_JUNGLE:
+            case BlockFence.JUNGLE:
                 return BlockColor.DIRT_BLOCK_COLOR;
-            case BlockFence.FENCE_ACACIA:
+            case BlockFence.ACACIA:
                 return BlockColor.ORANGE_BLOCK_COLOR;
-            case BlockFence.FENCE_DARK_OAK:
+            case BlockFence.DARK_OAK:
                 return BlockColor.BROWN_BLOCK_COLOR;
         }
     }

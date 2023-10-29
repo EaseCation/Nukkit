@@ -1,6 +1,6 @@
 package cn.nukkit.block;
 
-// 弃用的名称用于旧版本命令补全, 不要移除
+// 弃用的名称用于旧版本, 不要移除
 public interface BlockID {
     int AIR = 0;
     int STONE = 1;

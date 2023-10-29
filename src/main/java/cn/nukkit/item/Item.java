@@ -25,7 +25,6 @@ import it.unimi.dsi.fastutil.objects.ObjectOpenHashSet;
 
 import javax.annotation.Nullable;
 import java.io.IOException;
-import java.lang.reflect.Field;
 import java.nio.ByteOrder;
 import java.util.*;
 import java.util.regex.Pattern;
@@ -247,33 +246,39 @@ public class Item implements Cloneable, ItemID {
     private static final Pattern integerPattern = Pattern.compile("^[-1-9]\\d*$");
 
     public static Item fromString(String str) {
-        OptionalInt itemIdFromIdentifier = Items.getItemIdFromIdentifier(str);
+        return fromString(str, false);
+    }
+
+    public static Item fromString(String str, boolean lookupAlias) {
+        OptionalInt itemIdFromIdentifier = Items.getCustomItemIdFromIdentifier(str);
         if (itemIdFromIdentifier.isPresent()) {
             return get(itemIdFromIdentifier.getAsInt());
         }
+
         String[] b = str.trim().replace(' ', '_').replace("minecraft:", "").split(":", 2);
 
-        int id = AIR;
-        int meta = 0;
+        int meta;
+        if (b.length != 1) {
+            meta = Integer.parseInt(b[1]) & 0xFFFF;
+        } else {
+            meta = 0;
+        }
+
+        int id;
         if (integerPattern.matcher(b[0]).matches()) {
             id = Integer.parseInt(b[0]);
         } else {
-            try {
-                Field field = BlockID.class.getField(b[0].toUpperCase());
-                field.setAccessible(true);
-                id = field.getInt(null);
-                id = Block.getItemId(id);
-            } catch (Exception ignored) {
-                try {
-                    Field field = ItemID.class.getField(b[0].toUpperCase());
-                    field.setAccessible(true);
-                    id = field.getInt(null);
-                } catch (Exception ignore) {
+            int fullId = Items.getFullIdByName(b[0], true, lookupAlias);
+            if (fullId != Integer.MIN_VALUE) {
+                id = Item.getIdFromFullId(fullId);
+                int auxVal = Item.getMetaFromFullId(fullId);
+                if (auxVal != 0) {
+                    meta = auxVal;
                 }
+            } else {
+                id = AIR;
             }
         }
-
-        if (b.length != 1) meta = Integer.parseInt(b[1]) & 0xFFFF;
 
         return get(id, meta);
     }
@@ -284,28 +289,32 @@ public class Item implements Cloneable, ItemID {
     }
 
     @Nullable
+    public static Item fromIdentifier(String identifier, boolean lookupAlias) {
+        return fromIdentifier(identifier, 0, lookupAlias);
+    }
+
+    @Nullable
     public static Item fromIdentifier(String identifier, int meta) {
+        return fromIdentifier(identifier, meta, false);
+    }
+
+    @Nullable
+    public static Item fromIdentifier(String identifier, int meta, boolean lookupAlias) {
         if (identifier.startsWith("minecraft:")) {
             identifier = identifier.substring(10);
         }
 
-        int id;
-        identifier = identifier.toUpperCase();
-        try {
-            Field field = ItemBlockID.class.getField(identifier);
-            field.setAccessible(true);
-            id = field.getInt(null);
-        } catch (Exception e) {
-            try {
-                Field field = ItemID.class.getField(identifier);
-                field.setAccessible(true);
-                id = field.getInt(null);
-            } catch (Exception ex) {
-                return null;
-            }
+        int fullId = Items.getFullIdByName(identifier, true, lookupAlias);
+        if (fullId == Integer.MIN_VALUE) {
+            return null;
         }
 
-        return get(id, meta);
+        int auxVal = Item.getMetaFromFullId(fullId);
+        if (auxVal != 0) {
+            meta = auxVal;
+        }
+
+        return get(Item.getIdFromFullId(fullId), meta);
     }
 
     public static Item fromJson(Map<String, Object> data) {
@@ -340,6 +349,22 @@ public class Item implements Cloneable, ItemID {
             items[i] = fromString(b[i]);
         }
         return items;
+    }
+
+    public static int parseFullId(String str) {
+        return parseFullId(str, false);
+    }
+
+    public static int parseFullId(String str, boolean lookupAlias) {
+        if (str.startsWith("minecraft:")) {
+            return Items.getFullIdByName(str.substring(10), true, lookupAlias);
+        }
+
+        try {
+            return Item.getFullId(Integer.parseInt(str));
+        } catch (NumberFormatException e) {
+            return Items.getFullIdByName(str, true, lookupAlias);
+        }
     }
 
     public Item setCompoundTag(CompoundTag tag) {
@@ -1155,6 +1180,38 @@ public class Item implements Cloneable, ItemID {
 
     public static Item of(CompoundTag saved) {
         return NBTIO.getItemHelper(saved);
+    }
+
+    public int getFullId() {
+        return getFullId(getId());
+    }
+
+    public static int getFullId(int id) {
+        return id << 16;
+    }
+
+    public static int getFullId(int id, int meta) {
+        return getFullId(id) | meta;
+    }
+
+    public static int getIdFromFullId(int fullId) {
+        return fullId >> 16;
+    }
+
+    public static int getMetaFromFullId(int fullId) {
+        return fullId & 0xffff;
+    }
+
+    public static Item fromFullId(int fullId) {
+        return get(getIdFromFullId(fullId), getMetaFromFullId(fullId));
+    }
+
+    public static Item fromFullId(int fullId, int count) {
+        return get(getIdFromFullId(fullId), getMetaFromFullId(fullId), count);
+    }
+
+    public static Item fromFullId(int fullId, int count, byte[] tags) {
+        return get(getIdFromFullId(fullId), getMetaFromFullId(fullId), count, tags);
     }
 
     public long asHash() {

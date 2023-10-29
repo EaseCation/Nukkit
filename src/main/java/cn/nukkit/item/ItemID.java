@@ -2,7 +2,7 @@ package cn.nukkit.item;
 
 import cn.nukkit.block.BlockID;
 
-// 弃用的名称用于旧版本命令补全, 不要移除
+// 弃用的名称用于旧版本, 不要移除
 public interface ItemID extends BlockID, ItemRuntimeID {
     int GLOW_STICK = 166;
 
@@ -354,6 +354,10 @@ public interface ItemID extends BlockID, ItemRuntimeID {
     int JUNGLE_SIGN = 474;
     int ACACIA_SIGN = 475;
     int DARK_OAK_SIGN = 476;
+    /**
+     * @deprecated use {@link #DARK_OAK_SIGN} instead
+     */
+    @Deprecated
     int DARKOAK_SIGN = 476;
     int SWEET_BERRIES = 477;
 
@@ -478,6 +482,7 @@ public interface ItemID extends BlockID, ItemRuntimeID {
     /**
      * @deprecated use {@link #MUSIC_DISC_PIGSTEP} instead
      */
+    @Deprecated
     int RECORD_PIGSTEP = 759;
     int NETHER_SPROUTS = 760;
     int GOAT_HORN = 761;
@@ -489,12 +494,14 @@ public interface ItemID extends BlockID, ItemRuntimeID {
     /**
      * @deprecated use {@link #MUSIC_DISC_OTHERSIDE} instead
      */
+    @Deprecated
     int RECORD_OTHERSIDE = 773;
 
     int MUSIC_DISC_5 = 776;
     /**
      * @deprecated use {@link #MUSIC_DISC_5} instead
      */
+    @Deprecated
     int RECORD_5 = 776;
     int DISC_FRAGMENT_5 = 777;
     int RECOVERY_COMPASS = 778;
@@ -503,6 +510,7 @@ public interface ItemID extends BlockID, ItemRuntimeID {
     /**
      * @deprecated use {@link #MUSIC_DISC_RELIC} instead
      */
+    @Deprecated
     int RECORD_RELIC = 780;
 
     int SOUL_CAMPFIRE = 801;

@@ -153,7 +153,7 @@ public class DeveloperCommand extends Command {
                 Block block;
                 String blockName = args[6];
                 try {
-                    block = Block.fromString(blockName);
+                    block = Block.fromString(blockName, true);
                 } catch (Exception e) {
                     sender.sendMessage(new TranslationContainer("commands.setblock.notFound", blockName));
                     return false;

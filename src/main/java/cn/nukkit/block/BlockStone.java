@@ -9,13 +9,13 @@ import cn.nukkit.utils.BlockColor;
  * Nukkit Project
  */
 public class BlockStone extends BlockSolidMeta {
-    public static final int NORMAL = 0;
-    public static final int GRANITE = 1;
-    public static final int POLISHED_GRANITE = 2;
-    public static final int DIORITE = 3;
-    public static final int POLISHED_DIORITE = 4;
-    public static final int ANDESITE = 5;
-    public static final int POLISHED_ANDESITE = 6;
+    public static final int TYPE_NORMAL = 0;
+    public static final int TYPE_GRANITE = 1;
+    public static final int TYPE_POLISHED_GRANITE = 2;
+    public static final int TYPE_DIORITE = 3;
+    public static final int TYPE_POLISHED_DIORITE = 4;
+    public static final int TYPE_ANDESITE = 5;
+    public static final int TYPE_POLISHED_ANDESITE = 6;
 
     private static final String[] NAMES = new String[]{
             "Stone",
@@ -65,7 +65,7 @@ public class BlockStone extends BlockSolidMeta {
     public Item[] getDrops(Item item) {
         if (item.isPickaxe() && item.getTier() >= ItemTool.TIER_WOODEN) {
             return new Item[]{
-                    Item.get(this.getDamage() == NORMAL ? Item.COBBLESTONE : Item.STONE, this.getDamage(), 1)
+                    Item.get(this.getDamage() == TYPE_NORMAL ? Item.COBBLESTONE : Item.STONE, this.getDamage(), 1)
             };
         } else {
             return new Item[0];
@@ -86,15 +86,15 @@ public class BlockStone extends BlockSolidMeta {
     public BlockColor getColor() {
         switch (getDamage() & 0x7) {
             default:
-            case NORMAL:
-            case ANDESITE:
-            case POLISHED_ANDESITE:
+            case TYPE_NORMAL:
+            case TYPE_ANDESITE:
+            case TYPE_POLISHED_ANDESITE:
                 return BlockColor.STONE_BLOCK_COLOR;
-            case GRANITE:
-            case POLISHED_GRANITE:
+            case TYPE_GRANITE:
+            case TYPE_POLISHED_GRANITE:
                 return BlockColor.DIRT_BLOCK_COLOR;
-            case DIORITE:
-            case POLISHED_DIORITE:
+            case TYPE_DIORITE:
+            case TYPE_POLISHED_DIORITE:
                 return BlockColor.QUARTZ_BLOCK_COLOR;
         }
     }

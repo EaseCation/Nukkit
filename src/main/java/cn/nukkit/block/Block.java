@@ -32,7 +32,6 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.lang.reflect.Constructor;
-import java.lang.reflect.Field;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Objects;
@@ -323,22 +322,34 @@ public abstract class Block extends Position implements Metadatable, Cloneable, 
     private static final Pattern integerPattern = Pattern.compile("^[1-9]\\d*$");
 
     public static Block fromString(String str) {
+        return fromString(str, false);
+    }
+
+    public static Block fromString(String str, boolean lookupAlias) {
         String[] b = str.trim().replace(' ', '_').replace("minecraft:", "").split(":", 2);
 
-        int id = AIR;
-        int meta = 0;
+        int meta;
+        if (b.length > 1) {
+            meta = Integer.parseInt(b[1]);
+        } else {
+            meta = 0;
+        }
+
+        int id;
         if (integerPattern.matcher(b[0]).matches()) {
             id = Integer.parseInt(b[0]);
         } else {
-            try {
-                Field field = BlockID.class.getField(b[0].toUpperCase());
-                field.setAccessible(true);
-                id = field.getInt(null);
-            } catch (Exception ignore) {
+            int fullId = Blocks.getFullIdByBlockName(b[0], lookupAlias);
+            if (fullId != -1) {
+                id = Block.getIdFromFullId(fullId);
+                int auxVal = Block.getDamageFromFullId(fullId);
+                if (auxVal != 0) {
+                    meta = auxVal;
+                }
+            } else {
+                id = AIR;
             }
         }
-
-        if (b.length > 1) meta = Integer.parseInt(b[1]);
 
         return get(id, meta);
     }
@@ -349,17 +360,47 @@ public abstract class Block extends Position implements Metadatable, Cloneable, 
     }
 
     @Nullable
+    public static Block fromIdentifier(String identifier, boolean lookupAlias) {
+        return fromIdentifier(identifier, 0, lookupAlias);
+    }
+
+    @Nullable
     public static Block fromIdentifier(String identifier, int meta) {
+        return fromIdentifier(identifier, meta, false);
+    }
+
+    @Nullable
+    public static Block fromIdentifier(String identifier, int meta, boolean lookupAlias) {
         if (identifier.startsWith("minecraft:")) {
             identifier = identifier.substring(10);
         }
 
-        try {
-            Field field = BlockID.class.getField(identifier.toUpperCase());
-            field.setAccessible(true);
-            return get(field.getInt(null), meta);
-        } catch (Exception e) {
+        int fullId = Blocks.getFullIdByBlockName(identifier, lookupAlias);
+        if (fullId == -1) {
             return null;
+        }
+
+        int auxVal = Block.getDamageFromFullId(fullId);
+        if (auxVal != 0) {
+            meta = auxVal;
+        }
+
+        return get(Block.getIdFromFullId(fullId), meta);
+    }
+
+    public static int parseFullId(String str) {
+        return parseFullId(str, false);
+    }
+
+    public static int parseFullId(String str, boolean lookupAlias) {
+        if (str.startsWith("minecraft:")) {
+            return Blocks.getFullIdByBlockName(str.substring(10), lookupAlias);
+        }
+
+        try {
+            return Block.getFullId(Integer.parseInt(str));
+        } catch (NumberFormatException e) {
+            return Blocks.getFullIdByBlockName(str, lookupAlias);
         }
     }
 

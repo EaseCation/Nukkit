@@ -3,11 +3,17 @@ package cn.nukkit.item;
 import cn.nukkit.GameVersion;
 import cn.nukkit.block.Block;
 import cn.nukkit.block.BlockID;
+import cn.nukkit.block.Blocks;
+import cn.nukkit.entity.EntityID;
 import cn.nukkit.nbt.tag.CompoundTag;
 import cn.nukkit.potion.PotionID;
+import cn.nukkit.utils.DyeColor;
 import it.unimi.dsi.fastutil.objects.Object2IntMap;
 import it.unimi.dsi.fastutil.objects.Object2IntOpenHashMap;
+import it.unimi.dsi.fastutil.objects.Object2ObjectOpenHashMap;
 
+import javax.annotation.Nullable;
+import java.util.Map;
 import java.util.OptionalInt;
 import java.util.concurrent.atomic.AtomicInteger;
 
@@ -25,297 +31,310 @@ public final class Items {
     private static final Item[][] BLOCK_CACHE = new Item[BlockID.UNDEFINED][];
     private static final Object2IntMap<String> CUSTOM_ITEM_IDENTIFIER_TO_ID = new Object2IntOpenHashMap<>();
 
+    private static final Object2IntMap<String> NAME_TO_ID = new Object2IntOpenHashMap<>();
+    private static final String[] ID_TO_NAME = new String[Short.MAX_VALUE];
+    private static final Map<String, String> SIMPLE_ALIASES_MAP = new Object2ObjectOpenHashMap<>();
+    private static final Object2IntMap<String> COMPLEX_ALIASES_MAP = new Object2IntOpenHashMap<>();
+
+    static {
+        NAME_TO_ID.defaultReturnValue(-1);
+        COMPLEX_ALIASES_MAP.defaultReturnValue(Integer.MIN_VALUE);
+    }
+
     public static void registerVanillaItems() {
-        registerItem(IRON_SHOVEL, ItemShovelIron.class, ItemShovelIron::new);
-        registerItem(IRON_PICKAXE, ItemPickaxeIron.class, ItemPickaxeIron::new);
-        registerItem(IRON_AXE, ItemAxeIron.class, ItemAxeIron::new);
-        registerItem(FLINT_AND_STEEL, ItemFlintSteel.class, ItemFlintSteel::new);
-        registerItem(APPLE, ItemApple.class, ItemApple::new);
-        registerItem(BOW, ItemBow.class, ItemBow::new);
-        registerItem(ARROW, ItemArrow.class, ItemArrow::new, ItemArrow.TIPPED_ARROW + PotionID.UNDEFINED - 1);
-        registerItem(COAL, ItemCoal.class, ItemCoal::new, 1);
-        registerItem(DIAMOND, ItemDiamond.class, ItemDiamond::new);
-        registerItem(IRON_INGOT, ItemIngotIron.class, ItemIngotIron::new);
-        registerItem(GOLD_INGOT, ItemIngotGold.class, ItemIngotGold::new);
-        registerItem(IRON_SWORD, ItemSwordIron.class, ItemSwordIron::new);
-        registerItem(WOODEN_SWORD, ItemSwordWood.class, ItemSwordWood::new);
-        registerItem(WOODEN_SHOVEL, ItemShovelWood.class, ItemShovelWood::new);
-        registerItem(WOODEN_PICKAXE, ItemPickaxeWood.class, ItemPickaxeWood::new);
-        registerItem(WOODEN_AXE, ItemAxeWood.class, ItemAxeWood::new);
-        registerItem(STONE_SWORD, ItemSwordStone.class, ItemSwordStone::new);
-        registerItem(STONE_SHOVEL, ItemShovelStone.class, ItemShovelStone::new);
-        registerItem(STONE_PICKAXE, ItemPickaxeStone.class, ItemPickaxeStone::new);
-        registerItem(STONE_AXE, ItemAxeStone.class, ItemAxeStone::new);
-        registerItem(DIAMOND_SWORD, ItemSwordDiamond.class, ItemSwordDiamond::new);
-        registerItem(DIAMOND_SHOVEL, ItemShovelDiamond.class, ItemShovelDiamond::new);
-        registerItem(DIAMOND_PICKAXE, ItemPickaxeDiamond.class, ItemPickaxeDiamond::new);
-        registerItem(DIAMOND_AXE, ItemAxeDiamond.class, ItemAxeDiamond::new);
-        registerItem(STICK, ItemStick.class, ItemStick::new);
-        registerItem(BOWL, ItemBowl.class, ItemBowl::new);
-        registerItem(MUSHROOM_STEW, ItemMushroomStew.class, ItemMushroomStew::new);
-        registerItem(GOLDEN_SWORD, ItemSwordGold.class, ItemSwordGold::new);
-        registerItem(GOLDEN_SHOVEL, ItemShovelGold.class, ItemShovelGold::new);
-        registerItem(GOLDEN_PICKAXE, ItemPickaxeGold.class, ItemPickaxeGold::new);
-        registerItem(GOLDEN_AXE, ItemAxeGold.class, ItemAxeGold::new);
-        registerItem(STRING, ItemString.class, ItemString::new);
-        registerItem(FEATHER, ItemFeather.class, ItemFeather::new);
-        registerItem(GUNPOWDER, ItemGunpowder.class, ItemGunpowder::new);
-        registerItem(WOODEN_HOE, ItemHoeWood.class, ItemHoeWood::new);
-        registerItem(STONE_HOE, ItemHoeStone.class, ItemHoeStone::new);
-        registerItem(IRON_HOE, ItemHoeIron.class, ItemHoeIron::new);
-        registerItem(DIAMOND_HOE, ItemHoeDiamond.class, ItemHoeDiamond::new);
-        registerItem(GOLDEN_HOE, ItemHoeGold.class, ItemHoeGold::new);
-        registerItem(WHEAT_SEEDS, ItemSeedsWheat.class, ItemSeedsWheat::new);
-        registerItem(WHEAT, ItemWheat.class, ItemWheat::new);
-        registerItem(BREAD, ItemBread.class, ItemBread::new);
-        registerItem(LEATHER_HELMET, ItemHelmetLeather.class, ItemHelmetLeather::new);
-        registerItem(LEATHER_CHESTPLATE, ItemChestplateLeather.class, ItemChestplateLeather::new);
-        registerItem(LEATHER_LEGGINGS, ItemLeggingsLeather.class, ItemLeggingsLeather::new);
-        registerItem(LEATHER_BOOTS, ItemBootsLeather.class, ItemBootsLeather::new);
-        registerItem(CHAINMAIL_HELMET, ItemHelmetChain.class, ItemHelmetChain::new);
-        registerItem(CHAINMAIL_CHESTPLATE, ItemChestplateChain.class, ItemChestplateChain::new);
-        registerItem(CHAINMAIL_LEGGINGS, ItemLeggingsChain.class, ItemLeggingsChain::new);
-        registerItem(CHAINMAIL_BOOTS, ItemBootsChain.class, ItemBootsChain::new);
-        registerItem(IRON_HELMET, ItemHelmetIron.class, ItemHelmetIron::new);
-        registerItem(IRON_CHESTPLATE, ItemChestplateIron.class, ItemChestplateIron::new);
-        registerItem(IRON_LEGGINGS, ItemLeggingsIron.class, ItemLeggingsIron::new);
-        registerItem(IRON_BOOTS, ItemBootsIron.class, ItemBootsIron::new);
-        registerItem(DIAMOND_HELMET, ItemHelmetDiamond.class, ItemHelmetDiamond::new);
-        registerItem(DIAMOND_CHESTPLATE, ItemChestplateDiamond.class, ItemChestplateDiamond::new);
-        registerItem(DIAMOND_LEGGINGS, ItemLeggingsDiamond.class, ItemLeggingsDiamond::new);
-        registerItem(DIAMOND_BOOTS, ItemBootsDiamond.class, ItemBootsDiamond::new);
-        registerItem(GOLDEN_HELMET, ItemHelmetGold.class, ItemHelmetGold::new);
-        registerItem(GOLDEN_CHESTPLATE, ItemChestplateGold.class, ItemChestplateGold::new);
-        registerItem(GOLDEN_LEGGINGS, ItemLeggingsGold.class, ItemLeggingsGold::new);
-        registerItem(GOLDEN_BOOTS, ItemBootsGold.class, ItemBootsGold::new);
-        registerItem(FLINT, ItemFlint.class, ItemFlint::new);
-        registerItem(PORKCHOP, ItemPorkchopRaw.class, ItemPorkchopRaw::new);
-        registerItem(COOKED_PORKCHOP, ItemPorkchopCooked.class, ItemPorkchopCooked::new);
-        registerItem(PAINTING, ItemPainting.class, ItemPainting::new);
-        registerItem(GOLDEN_APPLE, ItemAppleGold.class, ItemAppleGold::new);
-        registerItem(OAK_SIGN, ItemSign.class, ItemSign::new);
-        registerItem(WOODEN_DOOR, ItemDoorWood.class, ItemDoorWood::new);
-        registerItem(BUCKET, ItemBucket.class, ItemBucket::new, ItemBucket.UNDEFINED_BUCKET - 1);
+        registerItem(ItemNames.IRON_SHOVEL, IRON_SHOVEL, ItemShovelIron.class, ItemShovelIron::new);
+        registerItem(ItemNames.IRON_PICKAXE, IRON_PICKAXE, ItemPickaxeIron.class, ItemPickaxeIron::new);
+        registerItem(ItemNames.IRON_AXE, IRON_AXE, ItemAxeIron.class, ItemAxeIron::new);
+        registerItem(ItemNames.FLINT_AND_STEEL, FLINT_AND_STEEL, ItemFlintSteel.class, ItemFlintSteel::new);
+        registerItem(ItemNames.APPLE, APPLE, ItemApple.class, ItemApple::new);
+        registerItem(ItemNames.BOW, BOW, ItemBow.class, ItemBow::new);
+        registerItem(ItemNames.ARROW, ARROW, ItemArrow.class, ItemArrow::new, ItemArrow.TIPPED_ARROW + PotionID.UNDEFINED - 1);
+        registerItem(ItemNames.COAL, COAL, ItemCoal.class, ItemCoal::new, 1);
+        registerItem(ItemNames.DIAMOND, DIAMOND, ItemDiamond.class, ItemDiamond::new);
+        registerItem(ItemNames.IRON_INGOT, IRON_INGOT, ItemIngotIron.class, ItemIngotIron::new);
+        registerItem(ItemNames.GOLD_INGOT, GOLD_INGOT, ItemIngotGold.class, ItemIngotGold::new);
+        registerItem(ItemNames.IRON_SWORD, IRON_SWORD, ItemSwordIron.class, ItemSwordIron::new);
+        registerItem(ItemNames.WOODEN_SWORD, WOODEN_SWORD, ItemSwordWood.class, ItemSwordWood::new);
+        registerItem(ItemNames.WOODEN_SHOVEL, WOODEN_SHOVEL, ItemShovelWood.class, ItemShovelWood::new);
+        registerItem(ItemNames.WOODEN_PICKAXE, WOODEN_PICKAXE, ItemPickaxeWood.class, ItemPickaxeWood::new);
+        registerItem(ItemNames.WOODEN_AXE, WOODEN_AXE, ItemAxeWood.class, ItemAxeWood::new);
+        registerItem(ItemNames.STONE_SWORD, STONE_SWORD, ItemSwordStone.class, ItemSwordStone::new);
+        registerItem(ItemNames.STONE_SHOVEL, STONE_SHOVEL, ItemShovelStone.class, ItemShovelStone::new);
+        registerItem(ItemNames.STONE_PICKAXE, STONE_PICKAXE, ItemPickaxeStone.class, ItemPickaxeStone::new);
+        registerItem(ItemNames.STONE_AXE, STONE_AXE, ItemAxeStone.class, ItemAxeStone::new);
+        registerItem(ItemNames.DIAMOND_SWORD, DIAMOND_SWORD, ItemSwordDiamond.class, ItemSwordDiamond::new);
+        registerItem(ItemNames.DIAMOND_SHOVEL, DIAMOND_SHOVEL, ItemShovelDiamond.class, ItemShovelDiamond::new);
+        registerItem(ItemNames.DIAMOND_PICKAXE, DIAMOND_PICKAXE, ItemPickaxeDiamond.class, ItemPickaxeDiamond::new);
+        registerItem(ItemNames.DIAMOND_AXE, DIAMOND_AXE, ItemAxeDiamond.class, ItemAxeDiamond::new);
+        registerItem(ItemNames.STICK, STICK, ItemStick.class, ItemStick::new);
+        registerItem(ItemNames.BOWL, BOWL, ItemBowl.class, ItemBowl::new);
+        registerItem(ItemNames.MUSHROOM_STEW, MUSHROOM_STEW, ItemMushroomStew.class, ItemMushroomStew::new);
+        registerItem(ItemNames.GOLDEN_SWORD, GOLDEN_SWORD, ItemSwordGold.class, ItemSwordGold::new);
+        registerItem(ItemNames.GOLDEN_SHOVEL, GOLDEN_SHOVEL, ItemShovelGold.class, ItemShovelGold::new);
+        registerItem(ItemNames.GOLDEN_PICKAXE, GOLDEN_PICKAXE, ItemPickaxeGold.class, ItemPickaxeGold::new);
+        registerItem(ItemNames.GOLDEN_AXE, GOLDEN_AXE, ItemAxeGold.class, ItemAxeGold::new);
+        registerItem(ItemNames.STRING, STRING, ItemString.class, ItemString::new);
+        registerItem(ItemNames.FEATHER, FEATHER, ItemFeather.class, ItemFeather::new);
+        registerItem(ItemNames.GUNPOWDER, GUNPOWDER, ItemGunpowder.class, ItemGunpowder::new);
+        registerItem(ItemNames.WOODEN_HOE, WOODEN_HOE, ItemHoeWood.class, ItemHoeWood::new);
+        registerItem(ItemNames.STONE_HOE, STONE_HOE, ItemHoeStone.class, ItemHoeStone::new);
+        registerItem(ItemNames.IRON_HOE, IRON_HOE, ItemHoeIron.class, ItemHoeIron::new);
+        registerItem(ItemNames.DIAMOND_HOE, DIAMOND_HOE, ItemHoeDiamond.class, ItemHoeDiamond::new);
+        registerItem(ItemNames.GOLDEN_HOE, GOLDEN_HOE, ItemHoeGold.class, ItemHoeGold::new);
+        registerItem(ItemNames.WHEAT_SEEDS, WHEAT_SEEDS, ItemSeedsWheat.class, ItemSeedsWheat::new);
+        registerItem(ItemNames.WHEAT, WHEAT, ItemWheat.class, ItemWheat::new);
+        registerItem(ItemNames.BREAD, BREAD, ItemBread.class, ItemBread::new);
+        registerItem(ItemNames.LEATHER_HELMET, LEATHER_HELMET, ItemHelmetLeather.class, ItemHelmetLeather::new);
+        registerItem(ItemNames.LEATHER_CHESTPLATE, LEATHER_CHESTPLATE, ItemChestplateLeather.class, ItemChestplateLeather::new);
+        registerItem(ItemNames.LEATHER_LEGGINGS, LEATHER_LEGGINGS, ItemLeggingsLeather.class, ItemLeggingsLeather::new);
+        registerItem(ItemNames.LEATHER_BOOTS, LEATHER_BOOTS, ItemBootsLeather.class, ItemBootsLeather::new);
+        registerItem(ItemNames.CHAINMAIL_HELMET, CHAINMAIL_HELMET, ItemHelmetChain.class, ItemHelmetChain::new);
+        registerItem(ItemNames.CHAINMAIL_CHESTPLATE, CHAINMAIL_CHESTPLATE, ItemChestplateChain.class, ItemChestplateChain::new);
+        registerItem(ItemNames.CHAINMAIL_LEGGINGS, CHAINMAIL_LEGGINGS, ItemLeggingsChain.class, ItemLeggingsChain::new);
+        registerItem(ItemNames.CHAINMAIL_BOOTS, CHAINMAIL_BOOTS, ItemBootsChain.class, ItemBootsChain::new);
+        registerItem(ItemNames.IRON_HELMET, IRON_HELMET, ItemHelmetIron.class, ItemHelmetIron::new);
+        registerItem(ItemNames.IRON_CHESTPLATE, IRON_CHESTPLATE, ItemChestplateIron.class, ItemChestplateIron::new);
+        registerItem(ItemNames.IRON_LEGGINGS, IRON_LEGGINGS, ItemLeggingsIron.class, ItemLeggingsIron::new);
+        registerItem(ItemNames.IRON_BOOTS, IRON_BOOTS, ItemBootsIron.class, ItemBootsIron::new);
+        registerItem(ItemNames.DIAMOND_HELMET, DIAMOND_HELMET, ItemHelmetDiamond.class, ItemHelmetDiamond::new);
+        registerItem(ItemNames.DIAMOND_CHESTPLATE, DIAMOND_CHESTPLATE, ItemChestplateDiamond.class, ItemChestplateDiamond::new);
+        registerItem(ItemNames.DIAMOND_LEGGINGS, DIAMOND_LEGGINGS, ItemLeggingsDiamond.class, ItemLeggingsDiamond::new);
+        registerItem(ItemNames.DIAMOND_BOOTS, DIAMOND_BOOTS, ItemBootsDiamond.class, ItemBootsDiamond::new);
+        registerItem(ItemNames.GOLDEN_HELMET, GOLDEN_HELMET, ItemHelmetGold.class, ItemHelmetGold::new);
+        registerItem(ItemNames.GOLDEN_CHESTPLATE, GOLDEN_CHESTPLATE, ItemChestplateGold.class, ItemChestplateGold::new);
+        registerItem(ItemNames.GOLDEN_LEGGINGS, GOLDEN_LEGGINGS, ItemLeggingsGold.class, ItemLeggingsGold::new);
+        registerItem(ItemNames.GOLDEN_BOOTS, GOLDEN_BOOTS, ItemBootsGold.class, ItemBootsGold::new);
+        registerItem(ItemNames.FLINT, FLINT, ItemFlint.class, ItemFlint::new);
+        registerItem(ItemNames.PORKCHOP, PORKCHOP, ItemPorkchopRaw.class, ItemPorkchopRaw::new);
+        registerItem(ItemNames.COOKED_PORKCHOP, COOKED_PORKCHOP, ItemPorkchopCooked.class, ItemPorkchopCooked::new);
+        registerItem(ItemNames.PAINTING, PAINTING, ItemPainting.class, ItemPainting::new);
+        registerItem(ItemNames.GOLDEN_APPLE, GOLDEN_APPLE, ItemAppleGold.class, ItemAppleGold::new);
+        registerItem(ItemNames.OAK_SIGN, OAK_SIGN, ItemSign.class, ItemSign::new);
+        registerItem(ItemNames.WOODEN_DOOR, WOODEN_DOOR, ItemDoorWood.class, ItemDoorWood::new);
+        registerItem(ItemNames.BUCKET, BUCKET, ItemBucket.class, ItemBucket::new, ItemBucket.UNDEFINED_BUCKET - 1);
 
-        registerItem(MINECART, ItemMinecart.class, ItemMinecart::new);
-        registerItem(SADDLE, ItemSaddle.class, ItemSaddle::new);
-        registerItem(IRON_DOOR, ItemDoorIron.class, ItemDoorIron::new);
-        registerItem(REDSTONE, ItemRedstone.class, ItemRedstone::new);
-        registerItem(SNOWBALL, ItemSnowball.class, ItemSnowball::new);
-        registerItem(BOAT, ItemBoat.class, ItemBoat::new, ItemBoat.UNDEFINED_BOAT - 1);
-        registerItem(LEATHER, ItemLeather.class, ItemLeather::new);
+        registerItem(ItemNames.MINECART, MINECART, ItemMinecart.class, ItemMinecart::new);
+        registerItem(ItemNames.SADDLE, SADDLE, ItemSaddle.class, ItemSaddle::new);
+        registerItem(ItemNames.IRON_DOOR, IRON_DOOR, ItemDoorIron.class, ItemDoorIron::new);
+        registerItem(ItemNames.REDSTONE, REDSTONE, ItemRedstone.class, ItemRedstone::new);
+        registerItem(ItemNames.SNOWBALL, SNOWBALL, ItemSnowball.class, ItemSnowball::new);
+        registerItem(ItemNames.BOAT, BOAT, ItemBoat.class, ItemBoat::new, ItemBoat.UNDEFINED_BOAT - 1);
+        registerItem(ItemNames.LEATHER, LEATHER, ItemLeather.class, ItemLeather::new);
 
-        registerItem(BRICK, ItemBrick.class, ItemBrick::new);
-        registerItem(CLAY_BALL, ItemClay.class, ItemClay::new);
-        registerItem(SUGAR_CANE, ItemSugarcane.class, ItemSugarcane::new);
-        registerItem(PAPER, ItemPaper.class, ItemPaper::new);
-        registerItem(BOOK, ItemBook.class, ItemBook::new);
-        registerItem(SLIME_BALL, ItemSlimeball.class, ItemSlimeball::new);
-        registerItem(CHEST_MINECART, ItemMinecartChest.class, ItemMinecartChest::new);
+        registerItem(ItemNames.BRICK, BRICK, ItemBrick.class, ItemBrick::new);
+        registerItem(ItemNames.CLAY_BALL, CLAY_BALL, ItemClay.class, ItemClay::new);
+        registerItem(ItemNames.SUGAR_CANE, SUGAR_CANE, ItemSugarcane.class, ItemSugarcane::new);
+        registerItem(ItemNames.PAPER, PAPER, ItemPaper.class, ItemPaper::new);
+        registerItem(ItemNames.BOOK, BOOK, ItemBook.class, ItemBook::new);
+        registerItem(ItemNames.SLIME_BALL, SLIME_BALL, ItemSlimeball.class, ItemSlimeball::new);
+        registerItem(ItemNames.CHEST_MINECART, CHEST_MINECART, ItemMinecartChest.class, ItemMinecartChest::new);
 
-        registerItem(EGG, ItemEgg.class, ItemEgg::new);
-        registerItem(COMPASS, ItemCompass.class, ItemCompass::new);
-        registerItem(FISHING_ROD, ItemFishingRod.class, ItemFishingRod::new);
-        registerItem(CLOCK, ItemClock.class, ItemClock::new);
-        registerItem(GLOWSTONE_DUST, ItemGlowstoneDust.class, ItemGlowstoneDust::new);
-        registerItem(COD, ItemFish.class, ItemFish::new);
-        registerItem(COOKED_COD, ItemFishCooked.class, ItemFishCooked::new);
-        registerItem(DYE, ItemDye.class, ItemDye::new, ItemDye.DYE_COUNT - 1);
-        registerItem(BONE, ItemBone.class, ItemBone::new);
-        registerItem(SUGAR, ItemSugar.class, ItemSugar::new);
-        registerItem(CAKE, ItemCake.class, ItemCake::new);
-        registerItem(BED, ItemBed.class, ItemBed::new, 15);
-        registerItem(REPEATER, ItemRedstoneRepeater.class, ItemRedstoneRepeater::new);
-        registerItem(COOKIE, ItemCookie.class, ItemCookie::new);
-        registerItem(FILLED_MAP, ItemMap.class, ItemMap::new, ItemMap.UNDEFINED_MAP - 1);
-        registerItem(SHEARS, ItemShears.class, ItemShears::new);
-        registerItem(MELON_SLICE, ItemMelon.class, ItemMelon::new);
-        registerItem(PUMPKIN_SEEDS, ItemSeedsPumpkin.class, ItemSeedsPumpkin::new);
-        registerItem(MELON_SEEDS, ItemSeedsMelon.class, ItemSeedsMelon::new);
-        registerItem(BEEF, ItemBeefRaw.class, ItemBeefRaw::new);
-        registerItem(COOKED_BEEF, ItemSteak.class, ItemSteak::new);
-        registerItem(CHICKEN, ItemChickenRaw.class, ItemChickenRaw::new);
-        registerItem(COOKED_CHICKEN, ItemChickenCooked.class, ItemChickenCooked::new);
-        registerItem(ROTTEN_FLESH, ItemRottenFlesh.class, ItemRottenFlesh::new);
-        registerItem(ENDER_PEARL, ItemEnderPearl.class, ItemEnderPearl::new);
-        registerItem(BLAZE_ROD, ItemBlazeRod.class, ItemBlazeRod::new);
-        registerItem(GHAST_TEAR, ItemGhastTear.class, ItemGhastTear::new);
-        registerItem(GOLD_NUGGET, ItemNuggetGold.class, ItemNuggetGold::new);
-        registerItem(NETHER_WART, ItemNetherWart.class, ItemNetherWart::new);
-        registerItem(POTION, ItemPotion.class, ItemPotion::new, PotionID.UNDEFINED - 1);
-        registerItem(GLASS_BOTTLE, ItemGlassBottle.class, ItemGlassBottle::new);
-        registerItem(SPIDER_EYE, ItemSpiderEye.class, ItemSpiderEye::new);
-        registerItem(FERMENTED_SPIDER_EYE, ItemSpiderEyeFermented.class, ItemSpiderEyeFermented::new);
-        registerItem(BLAZE_POWDER, ItemBlazePowder.class, ItemBlazePowder::new);
-        registerItem(MAGMA_CREAM, ItemMagmaCream.class, ItemMagmaCream::new);
-        registerItem(BREWING_STAND, ItemBrewingStand.class, ItemBrewingStand::new);
-        registerItem(CAULDRON, ItemCauldron.class, ItemCauldron::new);
-        registerItem(ENDER_EYE, ItemEnderEye.class, ItemEnderEye::new);
-        registerItem(GLISTERING_MELON_SLICE, ItemMelonGlistering.class, ItemMelonGlistering::new);
-        registerItem(SPAWN_EGG, ItemSpawnEgg.class, ItemSpawnEgg::new, 0xff);
-        registerItem(EXPERIENCE_BOTTLE, ItemExpBottle.class, ItemExpBottle::new);
-        registerItem(FIRE_CHARGE, ItemFireCharge.class, ItemFireCharge::new);
-        registerItem(WRITABLE_BOOK, ItemBookAndQuill.class, ItemBookAndQuill::new);
-        registerItem(WRITTEN_BOOK, ItemBookWritten.class, ItemBookWritten::new);
-        registerItem(EMERALD, ItemEmerald.class, ItemEmerald::new);
-        registerItem(FRAME, ItemItemFrame.class, ItemItemFrame::new);
-        registerItem(FLOWER_POT, ItemFlowerPot.class, ItemFlowerPot::new);
-        registerItem(CARROT, ItemCarrot.class, ItemCarrot::new);
-        registerItem(POTATO, ItemPotato.class, ItemPotato::new);
-        registerItem(BAKED_POTATO, ItemPotatoBaked.class, ItemPotatoBaked::new);
-        registerItem(POISONOUS_POTATO, ItemPotatoPoisonous.class, ItemPotatoPoisonous::new);
-        registerItem(EMPTY_MAP, ItemEmptyMap.class, ItemEmptyMap::new, ItemEmptyMap.UNDEFINED_EMPTY_MAP - 1);
-        registerItem(GOLDEN_CARROT, ItemCarrotGolden.class, ItemCarrotGolden::new);
-        registerItem(SKULL, ItemSkull.class, ItemSkull::new, ItemSkull.UNDEFINED_HEAD - 1);
-        registerItem(CARROT_ON_A_STICK, ItemCarrotOnAStick.class, ItemCarrotOnAStick::new);
-        registerItem(NETHER_STAR, ItemNetherStar.class, ItemNetherStar::new);
-        registerItem(PUMPKIN_PIE, ItemPumpkinPie.class, ItemPumpkinPie::new);
-        registerItem(FIREWORK_ROCKET, ItemFirework.class, ItemFirework::new);
-        registerItem(FIREWORK_STAR, ItemFireworkStar.class, ItemFireworkStar::new, 15);
-        registerItem(ENCHANTED_BOOK, ItemBookEnchanted.class, ItemBookEnchanted::new);
-        registerItem(COMPARATOR, ItemRedstoneComparator.class, ItemRedstoneComparator::new);
-        registerItem(NETHERBRICK, ItemNetherBrick.class, ItemNetherBrick::new);
-        registerItem(QUARTZ, ItemQuartz.class, ItemQuartz::new);
-        registerItem(TNT_MINECART, ItemMinecartTNT.class, ItemMinecartTNT::new);
-        registerItem(HOPPER_MINECART, ItemMinecartHopper.class, ItemMinecartHopper::new);
-        registerItem(PRISMARINE_SHARD, ItemPrismarineShard.class, ItemPrismarineShard::new);
-        registerItem(HOPPER, ItemHopper.class, ItemHopper::new);
-        registerItem(RABBIT, ItemRabbitRaw.class, ItemRabbitRaw::new);
-        registerItem(COOKED_RABBIT, ItemRabbitCooked.class, ItemRabbitCooked::new);
-        registerItem(RABBIT_STEW, ItemRabbitStew.class, ItemRabbitStew::new);
-        registerItem(RABBIT_FOOT, ItemRabbitFoot.class, ItemRabbitFoot::new);
-        registerItem(RABBIT_HIDE, ItemRabbitHide.class, ItemRabbitHide::new);
-        registerItem(LEATHER_HORSE_ARMOR, ItemHorseArmorLeather.class, ItemHorseArmorLeather::new);
-        registerItem(IRON_HORSE_ARMOR, ItemHorseArmorIron.class, ItemHorseArmorIron::new);
-        registerItem(GOLDEN_HORSE_ARMOR, ItemHorseArmorGold.class, ItemHorseArmorGold::new);
-        registerItem(DIAMOND_HORSE_ARMOR, ItemHorseArmorDiamond.class, ItemHorseArmorDiamond::new);
-        registerItem(LEAD, ItemLead.class, ItemLead::new);
-        registerItem(NAME_TAG, ItemNameTag.class, ItemNameTag::new);
-        registerItem(PRISMARINE_CRYSTALS, ItemPrismarineCrystals.class, ItemPrismarineCrystals::new);
-        registerItem(MUTTON, ItemMuttonRaw.class, ItemMuttonRaw::new);
-        registerItem(COOKED_MUTTON, ItemMuttonCooked.class, ItemMuttonCooked::new);
-        registerItem(ARMOR_STAND, ItemArmorStand.class, ItemArmorStand::new);
-        registerItem(END_CRYSTAL, ItemEndCrystal.class, ItemEndCrystal::new);
-        registerItem(SPRUCE_DOOR, ItemDoorSpruce.class, ItemDoorSpruce::new);
-        registerItem(BIRCH_DOOR, ItemDoorBirch.class, ItemDoorBirch::new);
-        registerItem(JUNGLE_DOOR, ItemDoorJungle.class, ItemDoorJungle::new);
-        registerItem(ACACIA_DOOR, ItemDoorAcacia.class, ItemDoorAcacia::new);
-        registerItem(DARK_OAK_DOOR, ItemDoorDarkOak.class, ItemDoorDarkOak::new);
-        registerItem(CHORUS_FRUIT, ItemChorusFruit.class, ItemChorusFruit::new);
-        registerItem(POPPED_CHORUS_FRUIT, ItemChorusFruitPopped.class, ItemChorusFruitPopped::new);
+        registerItem(ItemNames.EGG, EGG, ItemEgg.class, ItemEgg::new);
+        registerItem(ItemNames.COMPASS, COMPASS, ItemCompass.class, ItemCompass::new);
+        registerItem(ItemNames.FISHING_ROD, FISHING_ROD, ItemFishingRod.class, ItemFishingRod::new);
+        registerItem(ItemNames.CLOCK, CLOCK, ItemClock.class, ItemClock::new);
+        registerItem(ItemNames.GLOWSTONE_DUST, GLOWSTONE_DUST, ItemGlowstoneDust.class, ItemGlowstoneDust::new);
+        registerItem(ItemNames.COD, COD, ItemFish.class, ItemFish::new);
+        registerItem(ItemNames.COOKED_COD, COOKED_COD, ItemFishCooked.class, ItemFishCooked::new);
+        registerItem(ItemNames.DYE, DYE, ItemDye.class, ItemDye::new, ItemDye.DYE_COUNT - 1);
+        registerItem(ItemNames.BONE, BONE, ItemBone.class, ItemBone::new);
+        registerItem(ItemNames.SUGAR, SUGAR, ItemSugar.class, ItemSugar::new);
+        registerItem(ItemNames.CAKE, CAKE, ItemCake.class, ItemCake::new);
+        registerItem(ItemNames.BED, BED, ItemBed.class, ItemBed::new, 15);
+        registerItem(ItemNames.REPEATER, REPEATER, ItemRedstoneRepeater.class, ItemRedstoneRepeater::new);
+        registerItem(ItemNames.COOKIE, COOKIE, ItemCookie.class, ItemCookie::new);
+        registerItem(ItemNames.FILLED_MAP, FILLED_MAP, ItemMap.class, ItemMap::new, ItemMap.UNDEFINED_MAP - 1);
+        registerItem(ItemNames.SHEARS, SHEARS, ItemShears.class, ItemShears::new);
+        registerItem(ItemNames.MELON_SLICE, MELON_SLICE, ItemMelon.class, ItemMelon::new);
+        registerItem(ItemNames.PUMPKIN_SEEDS, PUMPKIN_SEEDS, ItemSeedsPumpkin.class, ItemSeedsPumpkin::new);
+        registerItem(ItemNames.MELON_SEEDS, MELON_SEEDS, ItemSeedsMelon.class, ItemSeedsMelon::new);
+        registerItem(ItemNames.BEEF, BEEF, ItemBeefRaw.class, ItemBeefRaw::new);
+        registerItem(ItemNames.COOKED_BEEF, COOKED_BEEF, ItemSteak.class, ItemSteak::new);
+        registerItem(ItemNames.CHICKEN, CHICKEN, ItemChickenRaw.class, ItemChickenRaw::new);
+        registerItem(ItemNames.COOKED_CHICKEN, COOKED_CHICKEN, ItemChickenCooked.class, ItemChickenCooked::new);
+        registerItem(ItemNames.ROTTEN_FLESH, ROTTEN_FLESH, ItemRottenFlesh.class, ItemRottenFlesh::new);
+        registerItem(ItemNames.ENDER_PEARL, ENDER_PEARL, ItemEnderPearl.class, ItemEnderPearl::new);
+        registerItem(ItemNames.BLAZE_ROD, BLAZE_ROD, ItemBlazeRod.class, ItemBlazeRod::new);
+        registerItem(ItemNames.GHAST_TEAR, GHAST_TEAR, ItemGhastTear.class, ItemGhastTear::new);
+        registerItem(ItemNames.GOLD_NUGGET, GOLD_NUGGET, ItemNuggetGold.class, ItemNuggetGold::new);
+        registerItem(ItemNames.NETHER_WART, NETHER_WART, ItemNetherWart.class, ItemNetherWart::new);
+        registerItem(ItemNames.POTION, POTION, ItemPotion.class, ItemPotion::new, PotionID.UNDEFINED - 1);
+        registerItem(ItemNames.GLASS_BOTTLE, GLASS_BOTTLE, ItemGlassBottle.class, ItemGlassBottle::new);
+        registerItem(ItemNames.SPIDER_EYE, SPIDER_EYE, ItemSpiderEye.class, ItemSpiderEye::new);
+        registerItem(ItemNames.FERMENTED_SPIDER_EYE, FERMENTED_SPIDER_EYE, ItemSpiderEyeFermented.class, ItemSpiderEyeFermented::new);
+        registerItem(ItemNames.BLAZE_POWDER, BLAZE_POWDER, ItemBlazePowder.class, ItemBlazePowder::new);
+        registerItem(ItemNames.MAGMA_CREAM, MAGMA_CREAM, ItemMagmaCream.class, ItemMagmaCream::new);
+        registerItem(ItemNames.BREWING_STAND, BREWING_STAND, ItemBrewingStand.class, ItemBrewingStand::new);
+        registerItem(ItemNames.CAULDRON, CAULDRON, ItemCauldron.class, ItemCauldron::new);
+        registerItem(ItemNames.ENDER_EYE, ENDER_EYE, ItemEnderEye.class, ItemEnderEye::new);
+        registerItem(ItemNames.GLISTERING_MELON_SLICE, GLISTERING_MELON_SLICE, ItemMelonGlistering.class, ItemMelonGlistering::new);
+        registerItem(ItemNames.SPAWN_EGG, SPAWN_EGG, ItemSpawnEgg.class, ItemSpawnEgg::new, 0xff);
+        registerItem(ItemNames.EXPERIENCE_BOTTLE, EXPERIENCE_BOTTLE, ItemExpBottle.class, ItemExpBottle::new);
+        registerItem(ItemNames.FIRE_CHARGE, FIRE_CHARGE, ItemFireCharge.class, ItemFireCharge::new);
+        registerItem(ItemNames.WRITABLE_BOOK, WRITABLE_BOOK, ItemBookAndQuill.class, ItemBookAndQuill::new);
+        registerItem(ItemNames.WRITTEN_BOOK, WRITTEN_BOOK, ItemBookWritten.class, ItemBookWritten::new);
+        registerItem(ItemNames.EMERALD, EMERALD, ItemEmerald.class, ItemEmerald::new);
+        registerItem(ItemNames.FRAME, FRAME, ItemItemFrame.class, ItemItemFrame::new);
+        registerItem(ItemNames.FLOWER_POT, FLOWER_POT, ItemFlowerPot.class, ItemFlowerPot::new);
+        registerItem(ItemNames.CARROT, CARROT, ItemCarrot.class, ItemCarrot::new);
+        registerItem(ItemNames.POTATO, POTATO, ItemPotato.class, ItemPotato::new);
+        registerItem(ItemNames.BAKED_POTATO, BAKED_POTATO, ItemPotatoBaked.class, ItemPotatoBaked::new);
+        registerItem(ItemNames.POISONOUS_POTATO, POISONOUS_POTATO, ItemPotatoPoisonous.class, ItemPotatoPoisonous::new);
+        registerItem(ItemNames.EMPTY_MAP, EMPTY_MAP, ItemEmptyMap.class, ItemEmptyMap::new, ItemEmptyMap.UNDEFINED_EMPTY_MAP - 1);
+        registerItem(ItemNames.GOLDEN_CARROT, GOLDEN_CARROT, ItemCarrotGolden.class, ItemCarrotGolden::new);
+        registerItem(ItemNames.SKULL, SKULL, ItemSkull.class, ItemSkull::new, ItemSkull.UNDEFINED_HEAD - 1);
+        registerItem(ItemNames.CARROT_ON_A_STICK, CARROT_ON_A_STICK, ItemCarrotOnAStick.class, ItemCarrotOnAStick::new);
+        registerItem(ItemNames.NETHER_STAR, NETHER_STAR, ItemNetherStar.class, ItemNetherStar::new);
+        registerItem(ItemNames.PUMPKIN_PIE, PUMPKIN_PIE, ItemPumpkinPie.class, ItemPumpkinPie::new);
+        registerItem(ItemNames.FIREWORK_ROCKET, FIREWORK_ROCKET, ItemFirework.class, ItemFirework::new);
+        registerItem(ItemNames.FIREWORK_STAR, FIREWORK_STAR, ItemFireworkStar.class, ItemFireworkStar::new, 15);
+        registerItem(ItemNames.ENCHANTED_BOOK, ENCHANTED_BOOK, ItemBookEnchanted.class, ItemBookEnchanted::new);
+        registerItem(ItemNames.COMPARATOR, COMPARATOR, ItemRedstoneComparator.class, ItemRedstoneComparator::new);
+        registerItem(ItemNames.NETHERBRICK, NETHERBRICK, ItemNetherBrick.class, ItemNetherBrick::new);
+        registerItem(ItemNames.QUARTZ, QUARTZ, ItemQuartz.class, ItemQuartz::new);
+        registerItem(ItemNames.TNT_MINECART, TNT_MINECART, ItemMinecartTNT.class, ItemMinecartTNT::new);
+        registerItem(ItemNames.HOPPER_MINECART, HOPPER_MINECART, ItemMinecartHopper.class, ItemMinecartHopper::new);
+        registerItem(ItemNames.PRISMARINE_SHARD, PRISMARINE_SHARD, ItemPrismarineShard.class, ItemPrismarineShard::new);
+        registerItem(ItemNames.HOPPER, HOPPER, ItemHopper.class, ItemHopper::new);
+        registerItem(ItemNames.RABBIT, RABBIT, ItemRabbitRaw.class, ItemRabbitRaw::new);
+        registerItem(ItemNames.COOKED_RABBIT, COOKED_RABBIT, ItemRabbitCooked.class, ItemRabbitCooked::new);
+        registerItem(ItemNames.RABBIT_STEW, RABBIT_STEW, ItemRabbitStew.class, ItemRabbitStew::new);
+        registerItem(ItemNames.RABBIT_FOOT, RABBIT_FOOT, ItemRabbitFoot.class, ItemRabbitFoot::new);
+        registerItem(ItemNames.RABBIT_HIDE, RABBIT_HIDE, ItemRabbitHide.class, ItemRabbitHide::new);
+        registerItem(ItemNames.LEATHER_HORSE_ARMOR, LEATHER_HORSE_ARMOR, ItemHorseArmorLeather.class, ItemHorseArmorLeather::new);
+        registerItem(ItemNames.IRON_HORSE_ARMOR, IRON_HORSE_ARMOR, ItemHorseArmorIron.class, ItemHorseArmorIron::new);
+        registerItem(ItemNames.GOLDEN_HORSE_ARMOR, GOLDEN_HORSE_ARMOR, ItemHorseArmorGold.class, ItemHorseArmorGold::new);
+        registerItem(ItemNames.DIAMOND_HORSE_ARMOR, DIAMOND_HORSE_ARMOR, ItemHorseArmorDiamond.class, ItemHorseArmorDiamond::new);
+        registerItem(ItemNames.LEAD, LEAD, ItemLead.class, ItemLead::new);
+        registerItem(ItemNames.NAME_TAG, NAME_TAG, ItemNameTag.class, ItemNameTag::new);
+        registerItem(ItemNames.PRISMARINE_CRYSTALS, PRISMARINE_CRYSTALS, ItemPrismarineCrystals.class, ItemPrismarineCrystals::new);
+        registerItem(ItemNames.MUTTON, MUTTON, ItemMuttonRaw.class, ItemMuttonRaw::new);
+        registerItem(ItemNames.COOKED_MUTTON, COOKED_MUTTON, ItemMuttonCooked.class, ItemMuttonCooked::new);
+        registerItem(ItemNames.ARMOR_STAND, ARMOR_STAND, ItemArmorStand.class, ItemArmorStand::new);
+        registerItem(ItemNames.END_CRYSTAL, END_CRYSTAL, ItemEndCrystal.class, ItemEndCrystal::new);
+        registerItem(ItemNames.SPRUCE_DOOR, SPRUCE_DOOR, ItemDoorSpruce.class, ItemDoorSpruce::new);
+        registerItem(ItemNames.BIRCH_DOOR, BIRCH_DOOR, ItemDoorBirch.class, ItemDoorBirch::new);
+        registerItem(ItemNames.JUNGLE_DOOR, JUNGLE_DOOR, ItemDoorJungle.class, ItemDoorJungle::new);
+        registerItem(ItemNames.ACACIA_DOOR, ACACIA_DOOR, ItemDoorAcacia.class, ItemDoorAcacia::new);
+        registerItem(ItemNames.DARK_OAK_DOOR, DARK_OAK_DOOR, ItemDoorDarkOak.class, ItemDoorDarkOak::new);
+        registerItem(ItemNames.CHORUS_FRUIT, CHORUS_FRUIT, ItemChorusFruit.class, ItemChorusFruit::new);
+        registerItem(ItemNames.POPPED_CHORUS_FRUIT, POPPED_CHORUS_FRUIT, ItemChorusFruitPopped.class, ItemChorusFruitPopped::new);
 
-        registerItem(DRAGON_BREATH, ItemDragonBreath.class, ItemDragonBreath::new);
-        registerItem(SPLASH_POTION, ItemPotionSplash.class, ItemPotionSplash::new, PotionID.UNDEFINED - 1);
+        registerItem(ItemNames.DRAGON_BREATH, DRAGON_BREATH, ItemDragonBreath.class, ItemDragonBreath::new);
+        registerItem(ItemNames.SPLASH_POTION, SPLASH_POTION, ItemPotionSplash.class, ItemPotionSplash::new, PotionID.UNDEFINED - 1);
 
-        registerItem(LINGERING_POTION, ItemPotionLingering.class, ItemPotionLingering::new, PotionID.UNDEFINED - 1);
+        registerItem(ItemNames.LINGERING_POTION, LINGERING_POTION, ItemPotionLingering.class, ItemPotionLingering::new, PotionID.UNDEFINED - 1);
 
-        registerItem(COMMAND_BLOCK_MINECART, ItemMinecartCommandBlock.class, ItemMinecartCommandBlock::new);
-        registerItem(ELYTRA, ItemElytra.class, ItemElytra::new);
-        registerItem(SHULKER_SHELL, ItemShulkerShell.class, ItemShulkerShell::new);
-        registerItem(BANNER, ItemBanner.class, ItemBanner::new, 15);
+        registerItem(ItemNames.COMMAND_BLOCK_MINECART, COMMAND_BLOCK_MINECART, ItemMinecartCommandBlock.class, ItemMinecartCommandBlock::new);
+        registerItem(ItemNames.ELYTRA, ELYTRA, ItemElytra.class, ItemElytra::new);
+        registerItem(ItemNames.SHULKER_SHELL, SHULKER_SHELL, ItemShulkerShell.class, ItemShulkerShell::new);
+        registerItem(ItemNames.BANNER, BANNER, ItemBanner.class, ItemBanner::new, 15);
 
-        registerItem(TOTEM_OF_UNDYING, ItemTotem.class, ItemTotem::new);
+        registerItem(ItemNames.TOTEM_OF_UNDYING, TOTEM_OF_UNDYING, ItemTotem.class, ItemTotem::new);
 
-        registerItem(IRON_NUGGET, ItemNuggetIron.class, ItemNuggetIron::new);
+        registerItem(ItemNames.IRON_NUGGET, IRON_NUGGET, ItemNuggetIron.class, ItemNuggetIron::new);
 
-        registerItem(BEETROOT, ItemBeetroot.class, ItemBeetroot::new);
-        registerItem(BEETROOT_SEEDS, ItemSeedsBeetroot.class, ItemSeedsBeetroot::new);
-        registerItem(BEETROOT_SOUP, ItemBeetrootSoup.class, ItemBeetrootSoup::new);
-        registerItem(SALMON, ItemSalmon.class, ItemSalmon::new);
-        registerItem(TROPICAL_FISH, ItemClownfish.class, ItemClownfish::new);
-        registerItem(PUFFERFISH, ItemPufferfish.class, ItemPufferfish::new);
-        registerItem(COOKED_SALMON, ItemSalmonCooked.class, ItemSalmonCooked::new);
+        registerItem(ItemNames.BEETROOT, BEETROOT, ItemBeetroot.class, ItemBeetroot::new);
+        registerItem(ItemNames.BEETROOT_SEEDS, BEETROOT_SEEDS, ItemSeedsBeetroot.class, ItemSeedsBeetroot::new);
+        registerItem(ItemNames.BEETROOT_SOUP, BEETROOT_SOUP, ItemBeetrootSoup.class, ItemBeetrootSoup::new);
+        registerItem(ItemNames.SALMON, SALMON, ItemSalmon.class, ItemSalmon::new);
+        registerItem(ItemNames.TROPICAL_FISH, TROPICAL_FISH, ItemClownfish.class, ItemClownfish::new);
+        registerItem(ItemNames.PUFFERFISH, PUFFERFISH, ItemPufferfish.class, ItemPufferfish::new);
+        registerItem(ItemNames.COOKED_SALMON, COOKED_SALMON, ItemSalmonCooked.class, ItemSalmonCooked::new);
 
-        registerItem(ENCHANTED_GOLDEN_APPLE, ItemAppleGoldEnchanted.class, ItemAppleGoldEnchanted::new);
+        registerItem(ItemNames.ENCHANTED_GOLDEN_APPLE, ENCHANTED_GOLDEN_APPLE, ItemAppleGoldEnchanted.class, ItemAppleGoldEnchanted::new);
 
-        registerItem(MUSIC_DISC_11, ItemRecord11.class, ItemRecord11::new);
-        registerItem(MUSIC_DISC_CAT, ItemRecordCat.class, ItemRecordCat::new);
-        registerItem(MUSIC_DISC_13, ItemRecord13.class, ItemRecord13::new);
-        registerItem(MUSIC_DISC_BLOCKS, ItemRecordBlocks.class, ItemRecordBlocks::new);
-        registerItem(MUSIC_DISC_CHIRP, ItemRecordChirp.class, ItemRecordChirp::new);
-        registerItem(MUSIC_DISC_FAR, ItemRecordFar.class, ItemRecordFar::new);
-        registerItem(MUSIC_DISC_WARD, ItemRecordWard.class, ItemRecordWard::new);
-        registerItem(MUSIC_DISC_MALL, ItemRecordMall.class, ItemRecordMall::new);
-        registerItem(MUSIC_DISC_MELLOHI, ItemRecordMellohi.class, ItemRecordMellohi::new);
-        registerItem(MUSIC_DISC_STAL, ItemRecordStal.class, ItemRecordStal::new);
-        registerItem(MUSIC_DISC_STRAD, ItemRecordStrad.class, ItemRecordStrad::new);
-        registerItem(MUSIC_DISC_WAIT, ItemRecordWait.class, ItemRecordWait::new);
+        registerItem(ItemNames.MUSIC_DISC_11, MUSIC_DISC_11, ItemRecord11.class, ItemRecord11::new);
+        registerItem(ItemNames.MUSIC_DISC_CAT, MUSIC_DISC_CAT, ItemRecordCat.class, ItemRecordCat::new);
+        registerItem(ItemNames.MUSIC_DISC_13, MUSIC_DISC_13, ItemRecord13.class, ItemRecord13::new);
+        registerItem(ItemNames.MUSIC_DISC_BLOCKS, MUSIC_DISC_BLOCKS, ItemRecordBlocks.class, ItemRecordBlocks::new);
+        registerItem(ItemNames.MUSIC_DISC_CHIRP, MUSIC_DISC_CHIRP, ItemRecordChirp.class, ItemRecordChirp::new);
+        registerItem(ItemNames.MUSIC_DISC_FAR, MUSIC_DISC_FAR, ItemRecordFar.class, ItemRecordFar::new);
+        registerItem(ItemNames.MUSIC_DISC_WARD, MUSIC_DISC_WARD, ItemRecordWard.class, ItemRecordWard::new);
+        registerItem(ItemNames.MUSIC_DISC_MALL, MUSIC_DISC_MALL, ItemRecordMall.class, ItemRecordMall::new);
+        registerItem(ItemNames.MUSIC_DISC_MELLOHI, MUSIC_DISC_MELLOHI, ItemRecordMellohi.class, ItemRecordMellohi::new);
+        registerItem(ItemNames.MUSIC_DISC_STAL, MUSIC_DISC_STAL, ItemRecordStal.class, ItemRecordStal::new);
+        registerItem(ItemNames.MUSIC_DISC_STRAD, MUSIC_DISC_STRAD, ItemRecordStrad.class, ItemRecordStrad::new);
+        registerItem(ItemNames.MUSIC_DISC_WAIT, MUSIC_DISC_WAIT, ItemRecordWait.class, ItemRecordWait::new);
 
-        registerItem(KELP, ItemKelp.class, ItemKelp::new, V1_4_0);
-        registerItem(TRIDENT, ItemTrident.class, ItemTrident::new, V1_4_0);
-        registerItem(DRIED_KELP, ItemDriedKelp.class, ItemDriedKelp::new, V1_4_0);
-        registerItem(HEART_OF_THE_SEA, ItemHeartOfTheSea.class, ItemHeartOfTheSea::new, V1_4_0);
+        registerItem(ItemNames.KELP, KELP, ItemKelp.class, ItemKelp::new, V1_4_0);
+        registerItem(ItemNames.TRIDENT, TRIDENT, ItemTrident.class, ItemTrident::new, V1_4_0);
+        registerItem(ItemNames.DRIED_KELP, DRIED_KELP, ItemDriedKelp.class, ItemDriedKelp::new, V1_4_0);
+        registerItem(ItemNames.HEART_OF_THE_SEA, HEART_OF_THE_SEA, ItemHeartOfTheSea.class, ItemHeartOfTheSea::new, V1_4_0);
 
-        registerItem(NAUTILUS_SHELL, ItemNautilusShell.class, ItemNautilusShell::new, V1_5_0);
-        registerItem(SCUTE, ItemScute.class, ItemScute::new, V1_5_0);
-        registerItem(TURTLE_HELMET, ItemTurtleShell.class, ItemTurtleShell::new, V1_5_0);
+        registerItem(ItemNames.NAUTILUS_SHELL, NAUTILUS_SHELL, ItemNautilusShell.class, ItemNautilusShell::new, V1_5_0);
+        registerItem(ItemNames.SCUTE, SCUTE, ItemScute.class, ItemScute::new, V1_5_0);
+        registerItem(ItemNames.TURTLE_HELMET, TURTLE_HELMET, ItemTurtleShell.class, ItemTurtleShell::new, V1_5_0);
 
-        registerItem(PHANTOM_MEMBRANE, ItemPhantomMembrane.class, ItemPhantomMembrane::new, V1_6_0);
+        registerItem(ItemNames.PHANTOM_MEMBRANE, PHANTOM_MEMBRANE, ItemPhantomMembrane.class, ItemPhantomMembrane::new, V1_6_0);
 
-        registerItem(SPRUCE_SIGN, ItemSignSpruce.class, ItemSignSpruce::new, V1_9_0);
-        registerItem(BIRCH_SIGN, ItemSignBirch.class, ItemSignBirch::new, V1_9_0);
-        registerItem(JUNGLE_SIGN, ItemSignJungle.class, ItemSignJungle::new, V1_9_0);
-        registerItem(ACACIA_SIGN, ItemSignAcacia.class, ItemSignAcacia::new, V1_9_0);
-        registerItem(DARK_OAK_SIGN, ItemSignDarkOak.class, ItemSignDarkOak::new, V1_9_0);
+        registerItem(ItemNames.SPRUCE_SIGN, SPRUCE_SIGN, ItemSignSpruce.class, ItemSignSpruce::new, V1_9_0);
+        registerItem(ItemNames.BIRCH_SIGN, BIRCH_SIGN, ItemSignBirch.class, ItemSignBirch::new, V1_9_0);
+        registerItem(ItemNames.JUNGLE_SIGN, JUNGLE_SIGN, ItemSignJungle.class, ItemSignJungle::new, V1_9_0);
+        registerItem(ItemNames.ACACIA_SIGN, ACACIA_SIGN, ItemSignAcacia.class, ItemSignAcacia::new, V1_9_0);
+        registerItem(ItemNames.DARK_OAK_SIGN, DARK_OAK_SIGN, ItemSignDarkOak.class, ItemSignDarkOak::new, V1_9_0);
 
-        registerItem(BANNER_PATTERN, ItemBannerPattern.class, ItemBannerPattern::new, ItemBannerPattern.UNDEFINED_BANNER_PATTERN - 1, V1_10_0);
-        registerItem(CROSSBOW, ItemCrossbow.class, ItemCrossbow::new, V1_10_0);
-        registerItem(SHIELD, ItemShield.class, ItemShield::new, V1_10_0);
+        registerItem(ItemNames.BANNER_PATTERN, BANNER_PATTERN, ItemBannerPattern.class, ItemBannerPattern::new, ItemBannerPattern.UNDEFINED_BANNER_PATTERN - 1, V1_10_0);
+        registerItem(ItemNames.CROSSBOW, CROSSBOW, ItemCrossbow.class, ItemCrossbow::new, V1_10_0);
+        registerItem(ItemNames.SHIELD, SHIELD, ItemShield.class, ItemShield::new, V1_10_0);
 
-        registerItem(SWEET_BERRIES, ItemSweetBerries.class, ItemSweetBerries::new, V1_11_0);
-        registerItem(CAMPFIRE, ItemCampfire.class, ItemCampfire::new, V1_11_0);
+        registerItem(ItemNames.SWEET_BERRIES, SWEET_BERRIES, ItemSweetBerries.class, ItemSweetBerries::new, V1_11_0);
+        registerItem(ItemNames.CAMPFIRE, CAMPFIRE, ItemCampfire.class, ItemCampfire::new, V1_11_0);
 
-        registerItem(SUSPICIOUS_STEW, ItemSuspiciousStew.class, ItemSuspiciousStew::new, ItemSuspiciousStew.UNDEFINED_STEW - 1, V1_13_0);
+        registerItem(ItemNames.SUSPICIOUS_STEW, SUSPICIOUS_STEW, ItemSuspiciousStew.class, ItemSuspiciousStew::new, ItemSuspiciousStew.UNDEFINED_STEW - 1, V1_13_0);
 
-        registerItem(HONEY_BOTTLE, ItemHoneyBottle.class, ItemHoneyBottle::new, V1_14_0);
-        registerItem(HONEYCOMB, ItemHoneycomb.class, ItemHoneycomb::new, V1_14_0);
+        registerItem(ItemNames.HONEY_BOTTLE, HONEY_BOTTLE, ItemHoneyBottle.class, ItemHoneyBottle::new, V1_14_0);
+        registerItem(ItemNames.HONEYCOMB, HONEYCOMB, ItemHoneycomb.class, ItemHoneycomb::new, V1_14_0);
 
-        registerItem(LODESTONE_COMPASS, ItemCompassLodestone.class, ItemCompassLodestone::new, V1_16_0);
-        registerItem(NETHERITE_INGOT, ItemIngotNetherite.class, ItemIngotNetherite::new, V1_16_0);
-        registerItem(NETHERITE_SWORD, ItemSwordNetherite.class, ItemSwordNetherite::new, V1_16_0);
-        registerItem(NETHERITE_SHOVEL, ItemShovelNetherite.class, ItemShovelNetherite::new, V1_16_0);
-        registerItem(NETHERITE_PICKAXE, ItemPickaxeNetherite.class, ItemPickaxeNetherite::new, V1_16_0);
-        registerItem(NETHERITE_AXE, ItemAxeNetherite.class, ItemAxeNetherite::new, V1_16_0);
-        registerItem(NETHERITE_HOE, ItemHoeNetherite.class, ItemHoeNetherite::new, V1_16_0);
-        registerItem(NETHERITE_HELMET, ItemHelmetNetherite.class, ItemHelmetNetherite::new, V1_16_0);
-        registerItem(NETHERITE_CHESTPLATE, ItemChestplateNetherite.class, ItemChestplateNetherite::new, V1_16_0);
-        registerItem(NETHERITE_LEGGINGS, ItemLeggingsNetherite.class, ItemLeggingsNetherite::new, V1_16_0);
-        registerItem(NETHERITE_BOOTS, ItemBootsNetherite.class, ItemBootsNetherite::new, V1_16_0);
-        registerItem(NETHERITE_SCRAP, ItemScrapNetherite.class, ItemScrapNetherite::new, V1_16_0);
-        registerItem(CRIMSON_SIGN, ItemSignCrimson.class, ItemSignCrimson::new, V1_16_0);
-        registerItem(WARPED_SIGN, ItemSignWarped.class, ItemSignWarped::new, V1_16_0);
-        registerItem(CRIMSON_DOOR, ItemDoorCrimson.class, ItemDoorCrimson::new, V1_16_0);
-        registerItem(WARPED_DOOR, ItemDoorWarped.class, ItemDoorWarped::new, V1_16_0);
-        registerItem(WARPED_FUNGUS_ON_A_STICK, ItemWarpedFungusOnAStick.class, ItemWarpedFungusOnAStick::new, V1_16_0);
-        registerItem(CHAIN, ItemChain.class, ItemChain::new, V1_16_0);
-        registerItem(MUSIC_DISC_PIGSTEP, ItemRecordPigstep.class, ItemRecordPigstep::new, V1_16_0);
-        registerItem(NETHER_SPROUTS, ItemNetherSprouts.class, ItemNetherSprouts::new, V1_16_0);
-        registerItem(SOUL_CAMPFIRE, ItemCampfireSoul.class, ItemCampfireSoul::new, V1_16_0);
+        registerItem(ItemNames.LODESTONE_COMPASS, LODESTONE_COMPASS, ItemCompassLodestone.class, ItemCompassLodestone::new, V1_16_0);
+        registerItem(ItemNames.NETHERITE_INGOT, NETHERITE_INGOT, ItemIngotNetherite.class, ItemIngotNetherite::new, V1_16_0);
+        registerItem(ItemNames.NETHERITE_SWORD, NETHERITE_SWORD, ItemSwordNetherite.class, ItemSwordNetherite::new, V1_16_0);
+        registerItem(ItemNames.NETHERITE_SHOVEL, NETHERITE_SHOVEL, ItemShovelNetherite.class, ItemShovelNetherite::new, V1_16_0);
+        registerItem(ItemNames.NETHERITE_PICKAXE, NETHERITE_PICKAXE, ItemPickaxeNetherite.class, ItemPickaxeNetherite::new, V1_16_0);
+        registerItem(ItemNames.NETHERITE_AXE, NETHERITE_AXE, ItemAxeNetherite.class, ItemAxeNetherite::new, V1_16_0);
+        registerItem(ItemNames.NETHERITE_HOE, NETHERITE_HOE, ItemHoeNetherite.class, ItemHoeNetherite::new, V1_16_0);
+        registerItem(ItemNames.NETHERITE_HELMET, NETHERITE_HELMET, ItemHelmetNetherite.class, ItemHelmetNetherite::new, V1_16_0);
+        registerItem(ItemNames.NETHERITE_CHESTPLATE, NETHERITE_CHESTPLATE, ItemChestplateNetherite.class, ItemChestplateNetherite::new, V1_16_0);
+        registerItem(ItemNames.NETHERITE_LEGGINGS, NETHERITE_LEGGINGS, ItemLeggingsNetherite.class, ItemLeggingsNetherite::new, V1_16_0);
+        registerItem(ItemNames.NETHERITE_BOOTS, NETHERITE_BOOTS, ItemBootsNetherite.class, ItemBootsNetherite::new, V1_16_0);
+        registerItem(ItemNames.NETHERITE_SCRAP, NETHERITE_SCRAP, ItemScrapNetherite.class, ItemScrapNetherite::new, V1_16_0);
+        registerItem(ItemNames.CRIMSON_SIGN, CRIMSON_SIGN, ItemSignCrimson.class, ItemSignCrimson::new, V1_16_0);
+        registerItem(ItemNames.WARPED_SIGN, WARPED_SIGN, ItemSignWarped.class, ItemSignWarped::new, V1_16_0);
+        registerItem(ItemNames.CRIMSON_DOOR, CRIMSON_DOOR, ItemDoorCrimson.class, ItemDoorCrimson::new, V1_16_0);
+        registerItem(ItemNames.WARPED_DOOR, WARPED_DOOR, ItemDoorWarped.class, ItemDoorWarped::new, V1_16_0);
+        registerItem(ItemNames.WARPED_FUNGUS_ON_A_STICK, WARPED_FUNGUS_ON_A_STICK, ItemWarpedFungusOnAStick.class, ItemWarpedFungusOnAStick::new, V1_16_0);
+        registerItem(ItemNames.CHAIN, CHAIN, ItemChain.class, ItemChain::new, V1_16_0);
+        registerItem(ItemNames.MUSIC_DISC_PIGSTEP, MUSIC_DISC_PIGSTEP, ItemRecordPigstep.class, ItemRecordPigstep::new, V1_16_0);
+        registerItem(ItemNames.NETHER_SPROUTS, NETHER_SPROUTS, ItemNetherSprouts.class, ItemNetherSprouts::new, V1_16_0);
+        registerItem(ItemNames.SOUL_CAMPFIRE, SOUL_CAMPFIRE, ItemCampfireSoul.class, ItemCampfireSoul::new, V1_16_0);
 
-        registerItem(GLOW_INK_SAC, ItemGlowInkSac.class, ItemGlowInkSac::new, V1_17_0);
-        registerItem(RAW_IRON, ItemRawIron.class, ItemRawIron::new, V1_17_0);
-        registerItem(RAW_GOLD, ItemRawGold.class, ItemRawGold::new, V1_17_0);
-        registerItem(RAW_COPPER, ItemRawCopper.class, ItemRawCopper::new, V1_17_0);
-        registerItem(AMETHYST_SHARD, ItemAmethystShard.class, ItemAmethystShard::new, V1_17_0);
-        registerItem(SPYGLASS, ItemSpyglass.class, ItemSpyglass::new, V1_17_0);
-        registerItem(GLOW_FRAME, ItemItemFrameGlow.class, ItemItemFrameGlow::new, V1_17_0);
+        registerItem(ItemNames.GLOW_INK_SAC, GLOW_INK_SAC, ItemGlowInkSac.class, ItemGlowInkSac::new, V1_17_0);
+        registerItem(ItemNames.RAW_IRON, RAW_IRON, ItemRawIron.class, ItemRawIron::new, V1_17_0);
+        registerItem(ItemNames.RAW_GOLD, RAW_GOLD, ItemRawGold.class, ItemRawGold::new, V1_17_0);
+        registerItem(ItemNames.RAW_COPPER, RAW_COPPER, ItemRawCopper.class, ItemRawCopper::new, V1_17_0);
+        registerItem(ItemNames.AMETHYST_SHARD, AMETHYST_SHARD, ItemAmethystShard.class, ItemAmethystShard::new, V1_17_0);
+        registerItem(ItemNames.SPYGLASS, SPYGLASS, ItemSpyglass.class, ItemSpyglass::new, V1_17_0);
+        registerItem(ItemNames.GLOW_FRAME, GLOW_FRAME, ItemItemFrameGlow.class, ItemItemFrameGlow::new, V1_17_0);
 
-        registerItem(MUSIC_DISC_OTHERSIDE, ItemRecordOtherside.class, ItemRecordOtherside::new, V1_18_0);
+        registerItem(ItemNames.MUSIC_DISC_OTHERSIDE, MUSIC_DISC_OTHERSIDE, ItemRecordOtherside.class, ItemRecordOtherside::new, V1_18_0);
 
-        registerItem(GOAT_HORN, ItemGoatHorn.class, ItemGoatHorn::new, ItemGoatHorn.UNDEFINED_GOAT_HORN - 1, V1_19_0);
-        registerItem(MUSIC_DISC_5, ItemRecord5.class, ItemRecord5::new, V1_19_0);
-        registerItem(DISC_FRAGMENT_5, ItemDiscFragment5.class, ItemDiscFragment5::new, V1_19_0);
-        registerItem(RECOVERY_COMPASS, ItemCompassRecovery.class, ItemCompassRecovery::new, V1_19_0);
-        registerItem(ECHO_SHARD, ItemEchoShard.class, ItemEchoShard::new, V1_19_0);
-        registerItem(MANGROVE_DOOR, ItemDoorMangrove.class, ItemDoorMangrove::new, V1_19_0);
-        registerItem(MANGROVE_SIGN, ItemSignMangrove.class, ItemSignMangrove::new, V1_19_0);
+        registerItem(ItemNames.GOAT_HORN, GOAT_HORN, ItemGoatHorn.class, ItemGoatHorn::new, ItemGoatHorn.UNDEFINED_GOAT_HORN - 1, V1_19_0);
+        registerItem(ItemNames.MUSIC_DISC_5, MUSIC_DISC_5, ItemRecord5.class, ItemRecord5::new, V1_19_0);
+        registerItem(ItemNames.DISC_FRAGMENT_5, DISC_FRAGMENT_5, ItemDiscFragment5.class, ItemDiscFragment5::new, V1_19_0);
+        registerItem(ItemNames.RECOVERY_COMPASS, RECOVERY_COMPASS, ItemCompassRecovery.class, ItemCompassRecovery::new, V1_19_0);
+        registerItem(ItemNames.ECHO_SHARD, ECHO_SHARD, ItemEchoShard.class, ItemEchoShard::new, V1_19_0);
+        registerItem(ItemNames.MANGROVE_DOOR, MANGROVE_DOOR, ItemDoorMangrove.class, ItemDoorMangrove::new, V1_19_0);
+        registerItem(ItemNames.MANGROVE_SIGN, MANGROVE_SIGN, ItemSignMangrove.class, ItemSignMangrove::new, V1_19_0);
 
-        registerItem(MUSIC_DISC_RELIC, ItemRecordRelic.class, ItemRecordRelic::new, V1_20_0);
+        registerItem(ItemNames.MUSIC_DISC_RELIC, MUSIC_DISC_RELIC, ItemRecordRelic.class, ItemRecordRelic::new, V1_20_0);
+
+        registerSimpleAliases();
+        registerComplexAliases();
 
         initializeItemBlockCache();
     }
 
-    public static OptionalInt getItemIdFromIdentifier(String identifier) {
+    public static OptionalInt getCustomItemIdFromIdentifier(String identifier) {
         int id = CUSTOM_ITEM_IDENTIFIER_TO_ID.getOrDefault(identifier, -1);
         if (id == -1) {
             return OptionalInt.empty();
@@ -328,70 +347,277 @@ public final class Items {
      * deferred
      */
     public static void registerVanillaNewItems() {
-        registerNewItem("copper_ingot", COPPER_INGOT, ItemIngotCopper.class, ItemIngotCopper::new, V1_17_0);
-        registerNewItem("glow_berries", GLOW_BERRIES, ItemGlowBerries.class, ItemGlowBerries::new, V1_17_0);
+        registerNewItem(ItemNames.COPPER_INGOT, COPPER_INGOT, ItemIngotCopper.class, ItemIngotCopper::new, V1_17_0);
+        registerNewItem(ItemNames.GLOW_BERRIES, GLOW_BERRIES, ItemGlowBerries.class, ItemGlowBerries::new, V1_17_0);
 
-        registerNewItem("chest_boat", CHEST_BOAT, ItemBoatChest.class, ItemBoatChest::new, ItemBoatChest.UNDEFINED_BOAT - 1, V1_19_0);
-        registerNewItemAux("oak_chest_boat", CHEST_BOAT, ItemBoatChest.OAK_BOAT, V1_19_0);
-        registerNewItemAux("spruce_chest_boat", CHEST_BOAT, ItemBoatChest.SPRUCE_BOAT, V1_19_0);
-        registerNewItemAux("birch_chest_boat", CHEST_BOAT, ItemBoatChest.BIRCH_BOAT, V1_19_0);
-        registerNewItemAux("jungle_chest_boat", CHEST_BOAT, ItemBoatChest.JUNGLE_BOAT, V1_19_0);
-        registerNewItemAux("acacia_chest_boat", CHEST_BOAT, ItemBoatChest.ACACIA_BOAT, V1_19_0);
-        registerNewItemAux("dark_oak_chest_boat", CHEST_BOAT, ItemBoatChest.DARK_OAK_BOAT, V1_19_0);
-        registerNewItemAux("mangrove_chest_boat", CHEST_BOAT, ItemBoatChest.MANGROVE_BOAT, V1_19_0);
-        registerNewItemAux("bamboo_chest_raft", CHEST_BOAT, ItemBoatChest.BAMBOO_RAFT, V1_20_0);
-        registerNewItemAux("cherry_chest_boat", CHEST_BOAT, ItemBoatChest.CHERRY_BOAT, V1_20_0);
+        registerNewItem(ItemNames.CHEST_BOAT, CHEST_BOAT, ItemBoatChest.class, ItemBoatChest::new, ItemBoatChest.UNDEFINED_BOAT - 1, V1_19_0);
+        registerNewItemAux(ItemNames.OAK_CHEST_BOAT, CHEST_BOAT, ItemBoatChest.OAK_BOAT, V1_19_0);
+        registerNewItemAux(ItemNames.SPRUCE_CHEST_BOAT, CHEST_BOAT, ItemBoatChest.SPRUCE_BOAT, V1_19_0);
+        registerNewItemAux(ItemNames.BIRCH_CHEST_BOAT, CHEST_BOAT, ItemBoatChest.BIRCH_BOAT, V1_19_0);
+        registerNewItemAux(ItemNames.JUNGLE_CHEST_BOAT, CHEST_BOAT, ItemBoatChest.JUNGLE_BOAT, V1_19_0);
+        registerNewItemAux(ItemNames.ACACIA_CHEST_BOAT, CHEST_BOAT, ItemBoatChest.ACACIA_BOAT, V1_19_0);
+        registerNewItemAux(ItemNames.DARK_OAK_CHEST_BOAT, CHEST_BOAT, ItemBoatChest.DARK_OAK_BOAT, V1_19_0);
+        registerNewItemAux(ItemNames.MANGROVE_CHEST_BOAT, CHEST_BOAT, ItemBoatChest.MANGROVE_BOAT, V1_19_0);
+        registerNewItemAux(ItemNames.BAMBOO_CHEST_RAFT, CHEST_BOAT, ItemBoatChest.BAMBOO_RAFT, V1_20_0);
+        registerNewItemAux(ItemNames.CHERRY_CHEST_BOAT, CHEST_BOAT, ItemBoatChest.CHERRY_BOAT, V1_20_0);
 
-//        registerNewItem("bamboo_sign", BAMBOO_SIGN, ItemSignBamboo.class, ItemSignBamboo::new, V1_20_0);
-//        registerNewItem("cherry_sign", CHERRY_SIGN, ItemSignCherry.class, ItemSignCherry::new, V1_20_0);
-//        registerNewItem("torchflower_seeds", TORCHFLOWER_SEEDS, ItemSeedsTorchflower.class, ItemSeedsTorchflower::new, V1_20_0);
-//        registerNewItem("pitcher_pod", PITCHER_POD, ItemPitcherPod.class, ItemPitcherPod::new, V1_20_0);
-        registerNewItem("brush", BRUSH, ItemBrush.class, ItemBrush::new, V1_20_0);
-        registerNewItem("archer_pottery_sherd", ARCHER_POTTERY_SHERD, ItemPotterySherdArcher.class, ItemPotterySherdArcher::new, V1_20_0);
-        registerNewItem("arms_up_pottery_sherd", ARMS_UP_POTTERY_SHERD, ItemPotterySherdArmsUp.class, ItemPotterySherdArmsUp::new, V1_20_0);
-        registerNewItem("prize_pottery_sherd", PRIZE_POTTERY_SHERD, ItemPotterySherdPrize.class, ItemPotterySherdPrize::new, V1_20_0);
-        registerNewItem("skull_pottery_sherd", SKULL_POTTERY_SHERD, ItemPotterySherdSkull.class, ItemPotterySherdSkull::new, V1_20_0);
-        registerNewItem("angler_pottery_sherd", ANGLER_POTTERY_SHERD, ItemPotterySherdAngler.class, ItemPotterySherdAngler::new, V1_20_0);
-        registerNewItem("blade_pottery_sherd", BLADE_POTTERY_SHERD, ItemPotterySherdBlade.class, ItemPotterySherdBlade::new, V1_20_0);
-        registerNewItem("brewer_pottery_sherd", BREWER_POTTERY_SHERD, ItemPotterySherdBrewer.class, ItemPotterySherdBrewer::new, V1_20_0);
-        registerNewItem("burn_pottery_sherd", BURN_POTTERY_SHERD, ItemPotterySherdBurn.class, ItemPotterySherdBurn::new, V1_20_0);
-        registerNewItem("danger_pottery_sherd", DANGER_POTTERY_SHERD, ItemPotterySherdDanger.class, ItemPotterySherdDanger::new, V1_20_0);
-        registerNewItem("explorer_pottery_sherd", EXPLORER_POTTERY_SHERD, ItemPotterySherdExplorer.class, ItemPotterySherdExplorer::new, V1_20_0);
-        registerNewItem("friend_pottery_sherd", FRIEND_POTTERY_SHERD, ItemPotterySherdFriend.class, ItemPotterySherdFriend::new, V1_20_0);
-        registerNewItem("heart_pottery_sherd", HEART_POTTERY_SHERD, ItemPotterySherdHeart.class, ItemPotterySherdHeart::new, V1_20_0);
-        registerNewItem("heartbreak_pottery_sherd", HEARTBREAK_POTTERY_SHERD, ItemPotterySherdHeartbreak.class, ItemPotterySherdHeartbreak::new, V1_20_0);
-        registerNewItem("howl_pottery_sherd", HOWL_POTTERY_SHERD, ItemPotterySherdHowl.class, ItemPotterySherdHowl::new, V1_20_0);
-        registerNewItem("miner_pottery_sherd", MINER_POTTERY_SHERD, ItemPotterySherdMiner.class, ItemPotterySherdMiner::new, V1_20_0);
-        registerNewItem("mourner_pottery_sherd", MOURNER_POTTERY_SHERD, ItemPotterySherdMourner.class, ItemPotterySherdMourner::new, V1_20_0);
-        registerNewItem("plenty_pottery_sherd", PLENTY_POTTERY_SHERD, ItemPotterySherdPlenty.class, ItemPotterySherdPlenty::new, V1_20_0);
-        registerNewItem("sheaf_pottery_sherd", SHEAF_POTTERY_SHERD, ItemPotterySherdSheaf.class, ItemPotterySherdSheaf::new, V1_20_0);
-        registerNewItem("shelter_pottery_sherd", SHELTER_POTTERY_SHERD, ItemPotterySherdShelter.class, ItemPotterySherdShelter::new, V1_20_0);
-        registerNewItem("snort_pottery_sherd", SNORT_POTTERY_SHERD, ItemPotterySherdSnort.class, ItemPotterySherdSnort::new, V1_20_0);
-        registerNewItem("netherite_upgrade_smithing_template", NETHERITE_UPGRADE_SMITHING_TEMPLATE, ItemSmithingTemplateUpgradeNetherite.class, ItemSmithingTemplateUpgradeNetherite::new, V1_20_0);
-        registerNewItem("sentry_armor_trim_smithing_template", SENTRY_ARMOR_TRIM_SMITHING_TEMPLATE, ItemSmithingTemplateArmorTrimSentry.class, ItemSmithingTemplateArmorTrimSentry::new, V1_20_0);
-        registerNewItem("dune_armor_trim_smithing_template", DUNE_ARMOR_TRIM_SMITHING_TEMPLATE, ItemSmithingTemplateArmorTrimDune.class, ItemSmithingTemplateArmorTrimDune::new, V1_20_0);
-        registerNewItem("coast_armor_trim_smithing_template", COAST_ARMOR_TRIM_SMITHING_TEMPLATE, ItemSmithingTemplateArmorTrimCoast.class, ItemSmithingTemplateArmorTrimCoast::new, V1_20_0);
-        registerNewItem("wild_armor_trim_smithing_template", WILD_ARMOR_TRIM_SMITHING_TEMPLATE, ItemSmithingTemplateArmorTrimWild.class, ItemSmithingTemplateArmorTrimWild::new, V1_20_0);
-        registerNewItem("ward_armor_trim_smithing_template", WARD_ARMOR_TRIM_SMITHING_TEMPLATE, ItemSmithingTemplateArmorTrimWard.class, ItemSmithingTemplateArmorTrimWard::new, V1_20_0);
-        registerNewItem("eye_armor_trim_smithing_template", EYE_ARMOR_TRIM_SMITHING_TEMPLATE, ItemSmithingTemplateArmorTrimEye.class, ItemSmithingTemplateArmorTrimEye::new, V1_20_0);
-        registerNewItem("vex_armor_trim_smithing_template", VEX_ARMOR_TRIM_SMITHING_TEMPLATE, ItemSmithingTemplateArmorTrimVex.class, ItemSmithingTemplateArmorTrimVex::new, V1_20_0);
-        registerNewItem("tide_armor_trim_smithing_template", TIDE_ARMOR_TRIM_SMITHING_TEMPLATE, ItemSmithingTemplateArmorTrimTide.class, ItemSmithingTemplateArmorTrimTide::new, V1_20_0);
-        registerNewItem("snout_armor_trim_smithing_template", SNOUT_ARMOR_TRIM_SMITHING_TEMPLATE, ItemSmithingTemplateArmorTrimSnout.class, ItemSmithingTemplateArmorTrimSnout::new, V1_20_0);
-        registerNewItem("rib_armor_trim_smithing_template", RIB_ARMOR_TRIM_SMITHING_TEMPLATE, ItemSmithingTemplateArmorTrimRib.class, ItemSmithingTemplateArmorTrimRib::new, V1_20_0);
-        registerNewItem("spire_armor_trim_smithing_template", SPIRE_ARMOR_TRIM_SMITHING_TEMPLATE, ItemSmithingTemplateArmorTrimSpire.class, ItemSmithingTemplateArmorTrimSpire::new, V1_20_0);
-        registerNewItem("silence_armor_trim_smithing_template", SILENCE_ARMOR_TRIM_SMITHING_TEMPLATE, ItemSmithingTemplateArmorTrimSilence.class, ItemSmithingTemplateArmorTrimSilence::new, V1_20_0);
-        registerNewItem("wayfinder_armor_trim_smithing_template", WAYFINDER_ARMOR_TRIM_SMITHING_TEMPLATE, ItemSmithingTemplateArmorTrimWayfinder.class, ItemSmithingTemplateArmorTrimWayfinder::new, V1_20_0);
-        registerNewItem("raiser_armor_trim_smithing_template", RAISER_ARMOR_TRIM_SMITHING_TEMPLATE, ItemSmithingTemplateArmorTrimRaiser.class, ItemSmithingTemplateArmorTrimRaiser::new, V1_20_0);
-        registerNewItem("shaper_armor_trim_smithing_template", SHAPER_ARMOR_TRIM_SMITHING_TEMPLATE, ItemSmithingTemplateArmorTrimShaper.class, ItemSmithingTemplateArmorTrimShaper::new, V1_20_0);
-        registerNewItem("host_armor_trim_smithing_template", HOST_ARMOR_TRIM_SMITHING_TEMPLATE, ItemSmithingTemplateArmorTrimHost.class, ItemSmithingTemplateArmorTrimHost::new, V1_20_0);
+//        registerNewItem(ItemNames.BAMBOO_SIGN, BAMBOO_SIGN, ItemSignBamboo.class, ItemSignBamboo::new, V1_20_0);
+//        registerNewItem(ItemNames.CHERRY_SIGN, CHERRY_SIGN, ItemSignCherry.class, ItemSignCherry::new, V1_20_0);
+//        registerNewItem(ItemNames.TORCHFLOWER_SEEDS, TORCHFLOWER_SEEDS, ItemSeedsTorchflower.class, ItemSeedsTorchflower::new, V1_20_0);
+//        registerNewItem(ItemNames.PITCHER_POD, PITCHER_POD, ItemPitcherPod.class, ItemPitcherPod::new, V1_20_0);
+        registerNewItem(ItemNames.BRUSH, BRUSH, ItemBrush.class, ItemBrush::new, V1_20_0);
+        registerNewItem(ItemNames.ARCHER_POTTERY_SHERD, ARCHER_POTTERY_SHERD, ItemPotterySherdArcher.class, ItemPotterySherdArcher::new, V1_20_0);
+        registerNewItem(ItemNames.ARMS_UP_POTTERY_SHERD, ARMS_UP_POTTERY_SHERD, ItemPotterySherdArmsUp.class, ItemPotterySherdArmsUp::new, V1_20_0);
+        registerNewItem(ItemNames.PRIZE_POTTERY_SHERD, PRIZE_POTTERY_SHERD, ItemPotterySherdPrize.class, ItemPotterySherdPrize::new, V1_20_0);
+        registerNewItem(ItemNames.SKULL_POTTERY_SHERD, SKULL_POTTERY_SHERD, ItemPotterySherdSkull.class, ItemPotterySherdSkull::new, V1_20_0);
+        registerNewItem(ItemNames.ANGLER_POTTERY_SHERD, ANGLER_POTTERY_SHERD, ItemPotterySherdAngler.class, ItemPotterySherdAngler::new, V1_20_0);
+        registerNewItem(ItemNames.BLADE_POTTERY_SHERD, BLADE_POTTERY_SHERD, ItemPotterySherdBlade.class, ItemPotterySherdBlade::new, V1_20_0);
+        registerNewItem(ItemNames.BREWER_POTTERY_SHERD, BREWER_POTTERY_SHERD, ItemPotterySherdBrewer.class, ItemPotterySherdBrewer::new, V1_20_0);
+        registerNewItem(ItemNames.BURN_POTTERY_SHERD, BURN_POTTERY_SHERD, ItemPotterySherdBurn.class, ItemPotterySherdBurn::new, V1_20_0);
+        registerNewItem(ItemNames.DANGER_POTTERY_SHERD, DANGER_POTTERY_SHERD, ItemPotterySherdDanger.class, ItemPotterySherdDanger::new, V1_20_0);
+        registerNewItem(ItemNames.EXPLORER_POTTERY_SHERD, EXPLORER_POTTERY_SHERD, ItemPotterySherdExplorer.class, ItemPotterySherdExplorer::new, V1_20_0);
+        registerNewItem(ItemNames.FRIEND_POTTERY_SHERD, FRIEND_POTTERY_SHERD, ItemPotterySherdFriend.class, ItemPotterySherdFriend::new, V1_20_0);
+        registerNewItem(ItemNames.HEART_POTTERY_SHERD, HEART_POTTERY_SHERD, ItemPotterySherdHeart.class, ItemPotterySherdHeart::new, V1_20_0);
+        registerNewItem(ItemNames.HEARTBREAK_POTTERY_SHERD, HEARTBREAK_POTTERY_SHERD, ItemPotterySherdHeartbreak.class, ItemPotterySherdHeartbreak::new, V1_20_0);
+        registerNewItem(ItemNames.HOWL_POTTERY_SHERD, HOWL_POTTERY_SHERD, ItemPotterySherdHowl.class, ItemPotterySherdHowl::new, V1_20_0);
+        registerNewItem(ItemNames.MINER_POTTERY_SHERD, MINER_POTTERY_SHERD, ItemPotterySherdMiner.class, ItemPotterySherdMiner::new, V1_20_0);
+        registerNewItem(ItemNames.MOURNER_POTTERY_SHERD, MOURNER_POTTERY_SHERD, ItemPotterySherdMourner.class, ItemPotterySherdMourner::new, V1_20_0);
+        registerNewItem(ItemNames.PLENTY_POTTERY_SHERD, PLENTY_POTTERY_SHERD, ItemPotterySherdPlenty.class, ItemPotterySherdPlenty::new, V1_20_0);
+        registerNewItem(ItemNames.SHEAF_POTTERY_SHERD, SHEAF_POTTERY_SHERD, ItemPotterySherdSheaf.class, ItemPotterySherdSheaf::new, V1_20_0);
+        registerNewItem(ItemNames.SHELTER_POTTERY_SHERD, SHELTER_POTTERY_SHERD, ItemPotterySherdShelter.class, ItemPotterySherdShelter::new, V1_20_0);
+        registerNewItem(ItemNames.SNORT_POTTERY_SHERD, SNORT_POTTERY_SHERD, ItemPotterySherdSnort.class, ItemPotterySherdSnort::new, V1_20_0);
+        registerNewItem(ItemNames.NETHERITE_UPGRADE_SMITHING_TEMPLATE, NETHERITE_UPGRADE_SMITHING_TEMPLATE, ItemSmithingTemplateUpgradeNetherite.class, ItemSmithingTemplateUpgradeNetherite::new, V1_20_0);
+        registerNewItem(ItemNames.SENTRY_ARMOR_TRIM_SMITHING_TEMPLATE, SENTRY_ARMOR_TRIM_SMITHING_TEMPLATE, ItemSmithingTemplateArmorTrimSentry.class, ItemSmithingTemplateArmorTrimSentry::new, V1_20_0);
+        registerNewItem(ItemNames.DUNE_ARMOR_TRIM_SMITHING_TEMPLATE, DUNE_ARMOR_TRIM_SMITHING_TEMPLATE, ItemSmithingTemplateArmorTrimDune.class, ItemSmithingTemplateArmorTrimDune::new, V1_20_0);
+        registerNewItem(ItemNames.COAST_ARMOR_TRIM_SMITHING_TEMPLATE, COAST_ARMOR_TRIM_SMITHING_TEMPLATE, ItemSmithingTemplateArmorTrimCoast.class, ItemSmithingTemplateArmorTrimCoast::new, V1_20_0);
+        registerNewItem(ItemNames.WILD_ARMOR_TRIM_SMITHING_TEMPLATE, WILD_ARMOR_TRIM_SMITHING_TEMPLATE, ItemSmithingTemplateArmorTrimWild.class, ItemSmithingTemplateArmorTrimWild::new, V1_20_0);
+        registerNewItem(ItemNames.WARD_ARMOR_TRIM_SMITHING_TEMPLATE, WARD_ARMOR_TRIM_SMITHING_TEMPLATE, ItemSmithingTemplateArmorTrimWard.class, ItemSmithingTemplateArmorTrimWard::new, V1_20_0);
+        registerNewItem(ItemNames.EYE_ARMOR_TRIM_SMITHING_TEMPLATE, EYE_ARMOR_TRIM_SMITHING_TEMPLATE, ItemSmithingTemplateArmorTrimEye.class, ItemSmithingTemplateArmorTrimEye::new, V1_20_0);
+        registerNewItem(ItemNames.VEX_ARMOR_TRIM_SMITHING_TEMPLATE, VEX_ARMOR_TRIM_SMITHING_TEMPLATE, ItemSmithingTemplateArmorTrimVex.class, ItemSmithingTemplateArmorTrimVex::new, V1_20_0);
+        registerNewItem(ItemNames.TIDE_ARMOR_TRIM_SMITHING_TEMPLATE, TIDE_ARMOR_TRIM_SMITHING_TEMPLATE, ItemSmithingTemplateArmorTrimTide.class, ItemSmithingTemplateArmorTrimTide::new, V1_20_0);
+        registerNewItem(ItemNames.SNOUT_ARMOR_TRIM_SMITHING_TEMPLATE, SNOUT_ARMOR_TRIM_SMITHING_TEMPLATE, ItemSmithingTemplateArmorTrimSnout.class, ItemSmithingTemplateArmorTrimSnout::new, V1_20_0);
+        registerNewItem(ItemNames.RIB_ARMOR_TRIM_SMITHING_TEMPLATE, RIB_ARMOR_TRIM_SMITHING_TEMPLATE, ItemSmithingTemplateArmorTrimRib.class, ItemSmithingTemplateArmorTrimRib::new, V1_20_0);
+        registerNewItem(ItemNames.SPIRE_ARMOR_TRIM_SMITHING_TEMPLATE, SPIRE_ARMOR_TRIM_SMITHING_TEMPLATE, ItemSmithingTemplateArmorTrimSpire.class, ItemSmithingTemplateArmorTrimSpire::new, V1_20_0);
+        registerNewItem(ItemNames.SILENCE_ARMOR_TRIM_SMITHING_TEMPLATE, SILENCE_ARMOR_TRIM_SMITHING_TEMPLATE, ItemSmithingTemplateArmorTrimSilence.class, ItemSmithingTemplateArmorTrimSilence::new, V1_20_0);
+        registerNewItem(ItemNames.WAYFINDER_ARMOR_TRIM_SMITHING_TEMPLATE, WAYFINDER_ARMOR_TRIM_SMITHING_TEMPLATE, ItemSmithingTemplateArmorTrimWayfinder.class, ItemSmithingTemplateArmorTrimWayfinder::new, V1_20_0);
+        registerNewItem(ItemNames.RAISER_ARMOR_TRIM_SMITHING_TEMPLATE, RAISER_ARMOR_TRIM_SMITHING_TEMPLATE, ItemSmithingTemplateArmorTrimRaiser.class, ItemSmithingTemplateArmorTrimRaiser::new, V1_20_0);
+        registerNewItem(ItemNames.SHAPER_ARMOR_TRIM_SMITHING_TEMPLATE, SHAPER_ARMOR_TRIM_SMITHING_TEMPLATE, ItemSmithingTemplateArmorTrimShaper.class, ItemSmithingTemplateArmorTrimShaper::new, V1_20_0);
+        registerNewItem(ItemNames.HOST_ARMOR_TRIM_SMITHING_TEMPLATE, HOST_ARMOR_TRIM_SMITHING_TEMPLATE, ItemSmithingTemplateArmorTrimHost.class, ItemSmithingTemplateArmorTrimHost::new, V1_20_0);
 
     }
 
-    private static Class<? extends Item> registerItem(int id, Class<? extends Item> clazz, ItemFactory factory) {
-        return registerItem(id, clazz, factory, 0);
+    @SuppressWarnings("deprecation")
+    private static void registerSimpleAliases() {
+        registerAlias(ItemNames.PRISMARINESHARD, ItemNames.PRISMARINE_SHARD, V1_6_0);
+        registerAlias(ItemNames.NAMETAG, ItemNames.NAME_TAG, V1_6_0);
+
+        registerAlias(ItemNames.SIGN, ItemNames.OAK_SIGN, V1_16_100);
+        registerAlias(ItemNames.REEDS, ItemNames.SUGAR_CANE, V1_16_100);
+        registerAlias(ItemNames.FISH, ItemNames.COD, V1_16_100);
+        registerAlias(ItemNames.COOKED_FISH, ItemNames.COOKED_COD, V1_16_100);
+        registerAlias(ItemNames.MAP, ItemNames.FILLED_MAP, V1_16_100);
+        registerAlias(ItemNames.MELON, ItemNames.MELON_SLICE, V1_16_100);
+        registerAlias(ItemNames.SPECKLED_MELON, ItemNames.GLISTERING_MELON_SLICE, V1_16_100);
+        registerAlias(ItemNames.FIREBALL, ItemNames.FIRE_CHARGE, V1_16_100);
+        registerAlias(ItemNames.EMPTYMAP, ItemNames.EMPTY_MAP, V1_16_100);
+        registerAlias(ItemNames.CARROTONASTICK, ItemNames.CARROT_ON_A_STICK, V1_16_100);
+        registerAlias(ItemNames.NETHERSTAR, ItemNames.NETHER_STAR, V1_16_100);
+        registerAlias(ItemNames.FIREWORKS, ItemNames.FIREWORK_ROCKET, V1_16_100);
+        registerAlias(ItemNames.FIREWORKSCHARGE, ItemNames.FIREWORK_STAR, V1_16_100);
+        registerAlias(ItemNames.HORSEARMORLEATHER, ItemNames.LEATHER_HORSE_ARMOR, V1_16_100);
+        registerAlias(ItemNames.HORSEARMORIRON, ItemNames.IRON_HORSE_ARMOR, V1_16_100);
+        registerAlias(ItemNames.HORSEARMORGOLD, ItemNames.GOLDEN_HORSE_ARMOR, V1_16_100);
+        registerAlias(ItemNames.HORSEARMORDIAMOND, ItemNames.DIAMOND_HORSE_ARMOR, V1_16_100);
+        registerAlias(ItemNames.MUTTONRAW, ItemNames.MUTTON, V1_16_100);
+        registerAlias(ItemNames.MUTTONCOOKED, ItemNames.COOKED_MUTTON, V1_16_100);
+        registerAlias(ItemNames.CHORUS_FRUIT_POPPED, ItemNames.POPPED_CHORUS_FRUIT, V1_16_100);
+        registerAlias(ItemNames.TOTEM, ItemNames.TOTEM_OF_UNDYING, V1_16_100);
+        registerAlias(ItemNames.CLOWNFISH, ItemNames.TROPICAL_FISH, V1_16_100);
+        registerAlias(ItemNames.APPLEENCHANTED, ItemNames.ENCHANTED_GOLDEN_APPLE, V1_16_100);
+        registerAlias(ItemNames.TURTLE_SHELL_PIECE, ItemNames.SCUTE, V1_16_100);
+        registerAlias(ItemNames.DARKOAK_SIGN, ItemNames.DARK_OAK_SIGN, V1_16_100);
+        registerAlias(ItemNames.RECORD_13, ItemNames.MUSIC_DISC_13, V1_16_100);
+        registerAlias(ItemNames.RECORD_CAT, ItemNames.MUSIC_DISC_CAT, V1_16_100);
+        registerAlias(ItemNames.RECORD_BLOCKS, ItemNames.MUSIC_DISC_BLOCKS, V1_16_100);
+        registerAlias(ItemNames.RECORD_CHIRP, ItemNames.MUSIC_DISC_CHIRP, V1_16_100);
+        registerAlias(ItemNames.RECORD_FAR, ItemNames.MUSIC_DISC_FAR, V1_16_100);
+        registerAlias(ItemNames.RECORD_MALL, ItemNames.MUSIC_DISC_MALL, V1_16_100);
+        registerAlias(ItemNames.RECORD_MELLOHI, ItemNames.MUSIC_DISC_MELLOHI, V1_16_100);
+        registerAlias(ItemNames.RECORD_STAL, ItemNames.MUSIC_DISC_STAL, V1_16_100);
+        registerAlias(ItemNames.RECORD_STRAD, ItemNames.MUSIC_DISC_STRAD, V1_16_100);
+        registerAlias(ItemNames.RECORD_WARD, ItemNames.MUSIC_DISC_WARD, V1_16_100);
+        registerAlias(ItemNames.RECORD_11, ItemNames.MUSIC_DISC_11, V1_16_100);
+        registerAlias(ItemNames.RECORD_WAIT, ItemNames.MUSIC_DISC_WAIT, V1_16_100);
+        registerAlias(ItemNames.LODESTONECOMPASS, ItemNames.LODESTONE_COMPASS, V1_16_100);
+        registerAlias(ItemNames.RECORD_PIGSTEP, ItemNames.MUSIC_DISC_PIGSTEP, V1_16_100);
+
+        registerAlias(ItemNames.RECORD_OTHERSIDE, ItemNames.MUSIC_DISC_OTHERSIDE, V1_18_0);
+
+        registerAlias(ItemNames.RECORD_5, ItemNames.MUSIC_DISC_5, V1_19_0);
+
+        registerAlias(ItemNames.RECORD_RELIC, ItemNames.MUSIC_DISC_RELIC, V1_20_0);
     }
 
-    private static Class<? extends Item> registerItem(int id, Class<? extends Item> clazz, ItemFactory factory, int maxAuxVal) {
+    private static void registerComplexAliases() {
+        registerComplexAlias(ItemNames.CREEPER_BANNER_PATTERN, BANNER_PATTERN, ItemBannerPattern.CREEPER_BANNER_PATTERN, V1_16_100);
+        registerComplexAlias(ItemNames.SKULL_BANNER_PATTERN, BANNER_PATTERN, ItemBannerPattern.SKULL_BANNER_PATTERN, V1_16_100);
+        registerComplexAlias(ItemNames.FLOWER_BANNER_PATTERN, BANNER_PATTERN, ItemBannerPattern.FLOWER_BANNER_PATTERN, V1_16_100);
+        registerComplexAlias(ItemNames.MOJANG_BANNER_PATTERN, BANNER_PATTERN, ItemBannerPattern.MOJANG_BANNER_PATTERN, V1_16_100);
+        registerComplexAlias(ItemNames.FIELD_MASONED_BANNER_PATTERN, BANNER_PATTERN, ItemBannerPattern.FIELD_MASONED_BANNER_PATTERN, V1_16_100);
+        registerComplexAlias(ItemNames.BORDURE_INDENTED_BANNER_PATTERN, BANNER_PATTERN, ItemBannerPattern.BORDURE_INDENTED_BANNER_PATTERN, V1_16_100);
+        registerComplexAlias(ItemNames.PIGLIN_BANNER_PATTERN, BANNER_PATTERN, ItemBannerPattern.PIGLIN_BANNER_PATTERN, V1_16_100);
+        registerComplexAlias(ItemNames.GLOBE_BANNER_PATTERN, BANNER_PATTERN, ItemBannerPattern.GLOBE_BANNER_PATTERN, V1_18_10);
+
+        registerComplexAlias(ItemNames.OAK_BOAT, BOAT, ItemBoat.OAK_BOAT, V1_16_100);
+        registerComplexAlias(ItemNames.SPRUCE_BOAT, BOAT, ItemBoat.SPRUCE_BOAT, V1_16_100);
+        registerComplexAlias(ItemNames.BIRCH_BOAT, BOAT, ItemBoat.BIRCH_BOAT, V1_16_100);
+        registerComplexAlias(ItemNames.JUNGLE_BOAT, BOAT, ItemBoat.JUNGLE_BOAT, V1_16_100);
+        registerComplexAlias(ItemNames.ACACIA_BOAT, BOAT, ItemBoat.ACACIA_BOAT, V1_16_100);
+        registerComplexAlias(ItemNames.DARK_OAK_BOAT, BOAT, ItemBoat.DARK_OAK_BOAT, V1_16_100);
+        registerComplexAlias(ItemNames.MANGROVE_BOAT, BOAT, ItemBoat.MANGROVE_BOAT, V1_19_0);
+        registerComplexAlias(ItemNames.BAMBOO_RAFT, BOAT, ItemBoat.BAMBOO_RAFT, V1_20_0);
+        registerComplexAlias(ItemNames.CHERRY_BOAT, BOAT, ItemBoat.CHERRY_BOAT, V1_20_0);
+
+        registerComplexAlias(ItemNames.MILK_BUCKET, BUCKET, ItemBucket.MILK_BUCKET, V1_16_100);
+        registerComplexAlias(ItemNames.COD_BUCKET, BUCKET, ItemBucket.COD_BUCKET, V1_16_100);
+        registerComplexAlias(ItemNames.SALMON_BUCKET, BUCKET, ItemBucket.SALMON_BUCKET, V1_16_100);
+        registerComplexAlias(ItemNames.TROPICAL_FISH_BUCKET, BUCKET, ItemBucket.TROPICAL_FISH_BUCKET, V1_16_100);
+        registerComplexAlias(ItemNames.PUFFERFISH_BUCKET, BUCKET, ItemBucket.PUFFERFISH_BUCKET, V1_16_100);
+        registerComplexAlias(ItemNames.WATER_BUCKET, BUCKET, ItemBucket.WATER_BUCKET, V1_16_100);
+        registerComplexAlias(ItemNames.LAVA_BUCKET, BUCKET, ItemBucket.LAVA_BUCKET, V1_16_100);
+        registerComplexAlias(ItemNames.POWDER_SNOW_BUCKET, BUCKET, ItemBucket.POWDER_SNOW_BUCKET, V1_17_0);
+        registerComplexAlias(ItemNames.AXOLOTL_BUCKET, BUCKET, ItemBucket.AXOLOTL_BUCKET, V1_17_0);
+        registerComplexAlias(ItemNames.TADPOLE_BUCKET, BUCKET, ItemBucket.TADPOLE_BUCKET, V1_19_0);
+
+        registerComplexAlias(ItemNames.CHARCOAL, COAL, ItemCoal.TYPE_CHARCOAL, V1_16_100);
+
+        registerComplexAlias(ItemNames.INK_SAC, DYE, ItemDye.INK_SAC, V1_16_100);
+        registerComplexAlias(ItemNames.RED_DYE, DYE, DyeColor.RED.getDyeData(), V1_16_100);
+        registerComplexAlias(ItemNames.GREEN_DYE, DYE, DyeColor.GREEN.getDyeData(), V1_16_100);
+        registerComplexAlias(ItemNames.COCOA_BEANS, DYE, ItemDye.COCOA_BEANS, V1_16_100);
+        registerComplexAlias(ItemNames.LAPIS_LAZULI, DYE, ItemDye.LAPIS_LAZULI, V1_16_100);
+        registerComplexAlias(ItemNames.PURPLE_DYE, DYE, DyeColor.PURPLE.getDyeData(), V1_16_100);
+        registerComplexAlias(ItemNames.CYAN_DYE, DYE, DyeColor.CYAN.getDyeData(), V1_16_100);
+        registerComplexAlias(ItemNames.LIGHT_GRAY_DYE, DYE, DyeColor.LIGHT_GRAY.getDyeData(), V1_16_100);
+        registerComplexAlias(ItemNames.GRAY_DYE, DYE, DyeColor.GRAY.getDyeData(), V1_16_100);
+        registerComplexAlias(ItemNames.PINK_DYE, DYE, DyeColor.PINK.getDyeData(), V1_16_100);
+        registerComplexAlias(ItemNames.LIME_DYE, DYE, DyeColor.LIME.getDyeData(), V1_16_100);
+        registerComplexAlias(ItemNames.YELLOW_DYE, DYE, DyeColor.YELLOW.getDyeData(), V1_16_100);
+        registerComplexAlias(ItemNames.LIGHT_BLUE_DYE, DYE, DyeColor.LIGHT_BLUE.getDyeData(), V1_16_100);
+        registerComplexAlias(ItemNames.MAGENTA_DYE, DYE, DyeColor.MAGENTA.getDyeData(), V1_16_100);
+        registerComplexAlias(ItemNames.ORANGE_DYE, DYE, DyeColor.ORANGE.getDyeData(), V1_16_100);
+        registerComplexAlias(ItemNames.BONE_MEAL, DYE, ItemDye.BONE_MEAL, V1_16_100);
+        registerComplexAlias(ItemNames.BLACK_DYE, DYE, ItemDye.BLACK_NEW, V1_16_100);
+        registerComplexAlias(ItemNames.BROWN_DYE, DYE, ItemDye.BROWN_NEW, V1_16_100);
+        registerComplexAlias(ItemNames.BLUE_DYE, DYE, ItemDye.BLUE_NEW, V1_16_100);
+        registerComplexAlias(ItemNames.WHITE_DYE, DYE, ItemDye.WHITE_NEW, V1_16_100);
+
+        registerComplexAlias(ItemNames.CHICKEN_SPAWN_EGG, SPAWN_EGG, EntityID.CHICKEN, V1_16_100);
+        registerComplexAlias(ItemNames.COW_SPAWN_EGG, SPAWN_EGG, EntityID.COW, V1_16_100);
+        registerComplexAlias(ItemNames.PIG_SPAWN_EGG, SPAWN_EGG, EntityID.PIG, V1_16_100);
+        registerComplexAlias(ItemNames.SHEEP_SPAWN_EGG, SPAWN_EGG, EntityID.SHEEP, V1_16_100);
+        registerComplexAlias(ItemNames.WOLF_SPAWN_EGG, SPAWN_EGG, EntityID.WOLF, V1_16_100);
+        registerComplexAlias(ItemNames.VILLAGER_SPAWN_EGG, SPAWN_EGG, EntityID.VILLAGER_V2, V1_16_100);
+        registerComplexAlias(ItemNames.MOOSHROOM_SPAWN_EGG, SPAWN_EGG, EntityID.MOOSHROOM, V1_16_100);
+        registerComplexAlias(ItemNames.SQUID_SPAWN_EGG, SPAWN_EGG, EntityID.SQUID, V1_16_100);
+        registerComplexAlias(ItemNames.RABBIT_SPAWN_EGG, SPAWN_EGG, EntityID.RABBIT, V1_16_100);
+        registerComplexAlias(ItemNames.BAT_SPAWN_EGG, SPAWN_EGG, EntityID.BAT, V1_16_100);
+        registerComplexAlias(ItemNames.OCELOT_SPAWN_EGG, SPAWN_EGG, EntityID.OCELOT, V1_16_100);
+        registerComplexAlias(ItemNames.HORSE_SPAWN_EGG, SPAWN_EGG, EntityID.HORSE, V1_16_100);
+        registerComplexAlias(ItemNames.DONKEY_SPAWN_EGG, SPAWN_EGG, EntityID.DONKEY, V1_16_100);
+        registerComplexAlias(ItemNames.MULE_SPAWN_EGG, SPAWN_EGG, EntityID.MULE, V1_16_100);
+        registerComplexAlias(ItemNames.SKELETON_HORSE_SPAWN_EGG, SPAWN_EGG, EntityID.SKELETON_HORSE, V1_16_100);
+        registerComplexAlias(ItemNames.ZOMBIE_HORSE_SPAWN_EGG, SPAWN_EGG, EntityID.ZOMBIE_HORSE, V1_16_100);
+        registerComplexAlias(ItemNames.POLAR_BEAR_SPAWN_EGG, SPAWN_EGG, EntityID.POLAR_BEAR, V1_16_100);
+        registerComplexAlias(ItemNames.LLAMA_SPAWN_EGG, SPAWN_EGG, EntityID.LLAMA, V1_16_100);
+        registerComplexAlias(ItemNames.PARROT_SPAWN_EGG, SPAWN_EGG, EntityID.PARROT, V1_16_100);
+        registerComplexAlias(ItemNames.DOLPHIN_SPAWN_EGG, SPAWN_EGG, EntityID.DOLPHIN, V1_16_100);
+        registerComplexAlias(ItemNames.ZOMBIE_SPAWN_EGG, SPAWN_EGG, EntityID.ZOMBIE, V1_16_100);
+        registerComplexAlias(ItemNames.CREEPER_SPAWN_EGG, SPAWN_EGG, EntityID.CREEPER, V1_16_100);
+        registerComplexAlias(ItemNames.SKELETON_SPAWN_EGG, SPAWN_EGG, EntityID.SKELETON, V1_16_100);
+        registerComplexAlias(ItemNames.SPIDER_SPAWN_EGG, SPAWN_EGG, EntityID.SPIDER, V1_16_100);
+        registerComplexAlias(ItemNames.ZOMBIE_PIGMAN_SPAWN_EGG, SPAWN_EGG, EntityID.ZOMBIE_PIGMAN, V1_16_100);
+        registerComplexAlias(ItemNames.SLIME_SPAWN_EGG, SPAWN_EGG, EntityID.SLIME, V1_16_100);
+        registerComplexAlias(ItemNames.ENDERMAN_SPAWN_EGG, SPAWN_EGG, EntityID.ENDERMAN, V1_16_100);
+        registerComplexAlias(ItemNames.SILVERFISH_SPAWN_EGG, SPAWN_EGG, EntityID.SILVERFISH, V1_16_100);
+        registerComplexAlias(ItemNames.CAVE_SPIDER_SPAWN_EGG, SPAWN_EGG, EntityID.CAVE_SPIDER, V1_16_100);
+        registerComplexAlias(ItemNames.GHAST_SPAWN_EGG, SPAWN_EGG, EntityID.GHAST, V1_16_100);
+        registerComplexAlias(ItemNames.MAGMA_CUBE_SPAWN_EGG, SPAWN_EGG, EntityID.MAGMA_CUBE, V1_16_100);
+        registerComplexAlias(ItemNames.BLAZE_SPAWN_EGG, SPAWN_EGG, EntityID.BLAZE, V1_16_100);
+        registerComplexAlias(ItemNames.ZOMBIE_VILLAGER_SPAWN_EGG, SPAWN_EGG, EntityID.ZOMBIE_VILLAGER_V2, V1_16_100);
+        registerComplexAlias(ItemNames.WITCH_SPAWN_EGG, SPAWN_EGG, EntityID.WITCH, V1_16_100);
+        registerComplexAlias(ItemNames.STRAY_SPAWN_EGG, SPAWN_EGG, EntityID.STRAY, V1_16_100);
+        registerComplexAlias(ItemNames.HUSK_SPAWN_EGG, SPAWN_EGG, EntityID.HUSK, V1_16_100);
+        registerComplexAlias(ItemNames.WITHER_SKELETON_SPAWN_EGG, SPAWN_EGG, EntityID.WITHER_SKELETON, V1_16_100);
+        registerComplexAlias(ItemNames.GUARDIAN_SPAWN_EGG, SPAWN_EGG, EntityID.GUARDIAN, V1_16_100);
+        registerComplexAlias(ItemNames.ELDER_GUARDIAN_SPAWN_EGG, SPAWN_EGG, EntityID.ELDER_GUARDIAN, V1_16_100);
+        registerComplexAlias(ItemNames.NPC_SPAWN_EGG, SPAWN_EGG, EntityID.NPC, V1_16_100);
+        registerComplexAlias(ItemNames.SHULKER_SPAWN_EGG, SPAWN_EGG, EntityID.SHULKER, V1_16_100);
+        registerComplexAlias(ItemNames.ENDERMITE_SPAWN_EGG, SPAWN_EGG, EntityID.ENDERMITE, V1_16_100);
+        registerComplexAlias(ItemNames.AGENT_SPAWN_EGG, SPAWN_EGG, EntityID.AGENT, V1_16_100);
+        registerComplexAlias(ItemNames.VINDICATOR_SPAWN_EGG, SPAWN_EGG, EntityID.VINDICATOR, V1_16_100);
+        registerComplexAlias(ItemNames.PHANTOM_SPAWN_EGG, SPAWN_EGG, EntityID.PHANTOM, V1_16_100);
+        registerComplexAlias(ItemNames.RAVAGER_SPAWN_EGG, SPAWN_EGG, EntityID.RAVAGER, V1_16_100);
+        registerComplexAlias(ItemNames.TURTLE_SPAWN_EGG, SPAWN_EGG, EntityID.TURTLE, V1_16_100);
+        registerComplexAlias(ItemNames.CAT_SPAWN_EGG, SPAWN_EGG, EntityID.CAT, V1_16_100);
+        registerComplexAlias(ItemNames.EVOKER_SPAWN_EGG, SPAWN_EGG, EntityID.EVOCATION_ILLAGER, V1_16_100);
+        registerComplexAlias(ItemNames.VEX_SPAWN_EGG, SPAWN_EGG, EntityID.VEX, V1_16_100);
+        registerComplexAlias(ItemNames.PUFFERFISH_SPAWN_EGG, SPAWN_EGG, EntityID.PUFFERFISH, V1_16_100);
+        registerComplexAlias(ItemNames.SALMON_SPAWN_EGG, SPAWN_EGG, EntityID.SALMON, V1_16_100);
+        registerComplexAlias(ItemNames.DROWNED_SPAWN_EGG, SPAWN_EGG, EntityID.DROWNED, V1_16_100);
+        registerComplexAlias(ItemNames.TROPICAL_FISH_SPAWN_EGG, SPAWN_EGG, EntityID.TROPICALFISH, V1_16_100);
+        registerComplexAlias(ItemNames.COD_SPAWN_EGG, SPAWN_EGG, EntityID.COD, V1_16_100);
+        registerComplexAlias(ItemNames.PANDA_SPAWN_EGG, SPAWN_EGG, EntityID.PANDA, V1_16_100);
+        registerComplexAlias(ItemNames.PILLAGER_SPAWN_EGG, SPAWN_EGG, EntityID.PILLAGER, V1_16_100);
+        registerComplexAlias(ItemNames.WANDERING_TRADER_SPAWN_EGG, SPAWN_EGG, EntityID.WANDERING_TRADER, V1_16_100);
+        registerComplexAlias(ItemNames.FOX_SPAWN_EGG, SPAWN_EGG, EntityID.FOX, V1_16_100);
+        registerComplexAlias(ItemNames.BEE_SPAWN_EGG, SPAWN_EGG, EntityID.BEE, V1_16_100);
+        registerComplexAlias(ItemNames.PIGLIN_SPAWN_EGG, SPAWN_EGG, EntityID.PIGLIN, V1_16_100);
+        registerComplexAlias(ItemNames.HOGLIN_SPAWN_EGG, SPAWN_EGG, EntityID.HOGLIN, V1_16_100);
+        registerComplexAlias(ItemNames.STRIDER_SPAWN_EGG, SPAWN_EGG, EntityID.STRIDER, V1_16_100);
+        registerComplexAlias(ItemNames.ZOGLIN_SPAWN_EGG, SPAWN_EGG, EntityID.ZOGLIN, V1_16_100);
+        registerComplexAlias(ItemNames.PIGLIN_BRUTE_SPAWN_EGG, SPAWN_EGG, EntityID.PIGLIN_BRUTE, V1_16_100);
+        registerComplexAlias(ItemNames.GOAT_SPAWN_EGG, SPAWN_EGG, EntityID.GOAT, V1_17_0);
+        registerComplexAlias(ItemNames.GLOW_SQUID_SPAWN_EGG, SPAWN_EGG, EntityID.GLOW_SQUID, V1_17_0);
+        registerComplexAlias(ItemNames.AXOLOTL_SPAWN_EGG, SPAWN_EGG, EntityID.AXOLOTL, V1_17_0);
+        registerComplexAlias(ItemNames.WARDEN_SPAWN_EGG, SPAWN_EGG, EntityID.WARDEN, V1_19_0);
+        registerComplexAlias(ItemNames.FROG_SPAWN_EGG, SPAWN_EGG, EntityID.FROG, V1_19_0);
+        registerComplexAlias(ItemNames.TADPOLE_SPAWN_EGG, SPAWN_EGG, EntityID.TADPOLE, V1_19_0);
+        registerComplexAlias(ItemNames.ALLAY_SPAWN_EGG, SPAWN_EGG, EntityID.ALLAY, V1_19_0);
+        registerComplexAlias(ItemNames.TRADER_LLAMA_SPAWN_EGG, SPAWN_EGG, EntityID.TRADER_LLAMA, V1_19_10);
+        registerComplexAlias(ItemNames.IRON_GOLEM_SPAWN_EGG, SPAWN_EGG, EntityID.IRON_GOLEM, V1_19_60);
+        registerComplexAlias(ItemNames.SNOW_GOLEM_SPAWN_EGG, SPAWN_EGG, EntityID.SNOW_GOLEM, V1_19_60);
+        registerComplexAlias(ItemNames.WITHER_SPAWN_EGG, SPAWN_EGG, EntityID.WITHER, V1_19_60);
+        registerComplexAlias(ItemNames.ENDER_DRAGON_SPAWN_EGG, SPAWN_EGG, EntityID.ENDER_DRAGON, V1_19_60);
+        registerComplexAlias(ItemNames.CAMEL_SPAWN_EGG, SPAWN_EGG, EntityID.CAMEL, V1_20_0);
+        registerComplexAlias(ItemNames.SNIFFER_SPAWN_EGG, SPAWN_EGG, EntityID.SNIFFER, V1_20_0);
+    }
+
+    private static Class<? extends Item> registerItem(String name, int id, Class<? extends Item> clazz, ItemFactory factory) {
+        return registerItem(name, id, clazz, factory, 0);
+    }
+
+    private static Class<? extends Item> registerItem(String name, int id, Class<? extends Item> clazz, ItemFactory factory, int maxAuxVal) {
+        String[] split = name.split(":", 2);
+        String fullName;
+        String namespace;
+        String identifier;
+        boolean vanilla;
+        if (split.length == 1) {
+            fullName = "minecraft:" + name;
+            namespace = "minecraft";
+            identifier = name;
+            vanilla = true;
+
+            NAME_TO_ID.put(name, id);
+            ID_TO_NAME[id] = name;
+        } else {
+            fullName = name;
+            namespace = split[0];
+            identifier = split[1];
+            vanilla = false;
+        }
+
         Item.list[id] = clazz;
         ITEM_FACTORIES[id] = factory;
 
@@ -419,72 +645,84 @@ public final class Items {
     /**
      * @param version min required base game version
      */
-    private static Class<? extends Item> registerItem(int id, Class<? extends Item> clazz, ItemFactory factory, GameVersion version) {
-        return registerItem(id, clazz, factory, 0, version);
+    private static Class<? extends Item> registerItem(String name, int id, Class<? extends Item> clazz, ItemFactory factory, GameVersion version) {
+        return registerItem(name, id, clazz, factory, 0, version);
     }
 
     /**
      * @param version min required base game version
      */
-    private static Class<? extends Item> registerItem(int id, Class<? extends Item> clazz, ItemFactory factory, int maxAuxVal, GameVersion version) {
+    private static Class<? extends Item> registerItem(String name, int id, Class<? extends Item> clazz, ItemFactory factory, int maxAuxVal, GameVersion version) {
         if (!version.isAvailable()) {
             return null;
         }
-        return registerItem(id, clazz, factory, maxAuxVal);
+        return registerItem(name, id, clazz, factory, maxAuxVal);
     }
 
     /**
      * @param version min required base game version
      */
-    private static Class<? extends Item> registerNewItem(String identifier, int id, Class<? extends Item> clazz, ItemFactory factory, GameVersion version) {
+    private static Class<? extends Item> registerNewItem(String name, int id, Class<? extends Item> clazz, ItemFactory factory, GameVersion version) {
         if (!ENABLE_ITEM_NAME_PERSISTENCE) {
             return null;
         }
         if (!version.isAvailable()) {
             return null;
         }
-        ItemSerializer.registerItem("minecraft:" + identifier, id);
-        return registerItem(id, clazz, factory);
+        ItemSerializer.registerItem("minecraft:" + name, id);
+        return registerItem(name, id, clazz, factory);
     }
 
     /**
      * @param version min required base game version
      */
-    private static Class<? extends Item> registerNewItem(String identifier, int id, Class<? extends Item> clazz, ItemFactory factory, int maxAuxVal, GameVersion version) {
+    private static Class<? extends Item> registerNewItem(String name, int id, Class<? extends Item> clazz, ItemFactory factory, int maxAuxVal, GameVersion version) {
         if (!ENABLE_ITEM_NAME_PERSISTENCE) {
             return null;
         }
         if (!version.isAvailable()) {
             return null;
         }
-        ItemSerializer.registerItem("minecraft:" + identifier, id, maxAuxVal);
-        return registerItem(id, clazz, factory, maxAuxVal);
+        ItemSerializer.registerItem("minecraft:" + name, id, maxAuxVal);
+        return registerItem(name, id, clazz, factory, maxAuxVal);
     }
 
     /**
      * @param version min required base game version
      */
-    private static void registerNewItemAux(String identifier, int id, int meta, GameVersion version) {
+    private static void registerNewItemAux(String name, int id, int meta, GameVersion version) {
         if (!ENABLE_ITEM_NAME_PERSISTENCE) {
             return;
         }
         if (!version.isAvailable()) {
             return;
         }
-        ItemSerializer.registerItemAux("minecraft:" + identifier, id, meta);
+        ItemSerializer.registerItemAux("minecraft:" + name, id, meta);
+        registerComplexAlias(name, id, meta, version);
     }
 
-    public static Class<? extends Item> registerCustomItem(String identifier, int id, Class<? extends Item> clazz, ItemFactory factory) {
-        return registerCustomItem(identifier, id, clazz, factory, null);
+    private static void registerAlias(String alias, String currentName, GameVersion version) {
+        SIMPLE_ALIASES_MAP.put(alias, currentName);
     }
 
-    public static Class<? extends Item> registerCustomItem(String identifier, int id, Class<? extends Item> clazz, ItemFactory factory, CompoundTag compound) {
-        if (identifier.startsWith("minecraft:")) {
-            throw new IllegalArgumentException("Invalid identifier: " + identifier);
+    private static void registerComplexAlias(String alias, int id, int meta, GameVersion version) {
+        COMPLEX_ALIASES_MAP.put(alias, Item.getFullId(id, meta));
+    }
+
+    public static Class<? extends Item> registerCustomItem(String fullName, int id, Class<? extends Item> clazz, ItemFactory factory) {
+        return registerCustomItem(fullName, id, clazz, factory, null);
+    }
+
+    public static Class<? extends Item> registerCustomItem(String fullName, int id, Class<? extends Item> clazz, ItemFactory factory, CompoundTag compound) {
+        if (fullName.split(":").length != 2) {
+            throw new IllegalArgumentException("Invalid namespaced identifier: " + fullName);
         }
-        ItemSerializer.registerCustomItem(identifier, id, compound);
-        CUSTOM_ITEM_IDENTIFIER_TO_ID.put(identifier, id);
-        return registerItem(id, clazz, factory);
+        if (fullName.startsWith("minecraft:")) {
+            throw new IllegalArgumentException("Invalid identifier: " + fullName);
+        }
+        ItemSerializer.registerCustomItem(fullName, id, compound);
+        CUSTOM_ITEM_IDENTIFIER_TO_ID.put(fullName, id);
+        return registerItem(fullName, id, clazz, factory);
     }
 
     public static int allocateCustomItemId() {
@@ -605,6 +843,103 @@ public final class Items {
         }
 
         return item;
+    }
+
+    public static Object2IntMap<String> getNameToIdMap() {
+        return NAME_TO_ID;
+    }
+
+    public static int getIdByName(String name) {
+        return getIdByName(name, true);
+    }
+
+    public static int getIdByName(String name, boolean lookupBlock) {
+        return getIdByName(name, lookupBlock, false);
+    }
+
+    public static int getIdByName(String name, boolean lookupBlock, boolean lookupAlias) {
+        int id = NAME_TO_ID.getInt(name);
+        if (id != -1) {
+            return id;
+        }
+
+        if (lookupBlock) {
+            id = Blocks.getIdByItemName(name, lookupAlias);
+            if (id != -1) {
+                return Block.getItemId(id);
+            }
+        }
+
+        if (lookupAlias) {
+            String alias = SIMPLE_ALIASES_MAP.get(name);
+            if (alias != null) {
+                return NAME_TO_ID.getInt(alias);
+            }
+        }
+        return -1;
+    }
+
+    public static int getFullIdByName(String name) {
+        return getFullIdByName(name, true);
+    }
+
+    public static int getFullIdByName(String name, boolean lookupBlock) {
+        return getFullIdByName(name, lookupBlock, false);
+    }
+
+    public static int getFullIdByName(String name, boolean lookupBlock, boolean lookupAlias) {
+        int id = NAME_TO_ID.getInt(name);
+        if (id != -1) {
+            return Item.getFullId(id);
+        }
+
+        if (lookupBlock) {
+            int blockFullId = Blocks.getFullIdByItemName(name, lookupAlias);
+            if (blockFullId != -1) {
+                return Item.getFullId(Block.getItemId(Block.getIdFromFullId(blockFullId)), Block.getDamageFromFullId(blockFullId));
+            }
+        }
+
+        if (lookupAlias) {
+            String alias = SIMPLE_ALIASES_MAP.get(name);
+            if (alias != null) {
+                id = NAME_TO_ID.getInt(alias);
+                if (id != -1) {
+                    return Item.getFullId(id);
+                }
+            }
+
+            return COMPLEX_ALIASES_MAP.getInt(name);
+        }
+        return Integer.MIN_VALUE;
+    }
+
+    @Nullable
+    public static String getNameById(int id) {
+        if (id >= Short.MAX_VALUE) {
+            return null;
+        }
+        if (id <= 0xff && id != GLOW_STICK) {
+            return Blocks.getItemNameById(id < 0 ? 0xff - id : id);
+        }
+        return ID_TO_NAME[id];
+    }
+
+    @Nullable
+    public static String getFullNameById(int id) {
+        String name = getNameById(id);
+        if (name == null) {
+            return null;
+        }
+        return "minecraft:" + name;
+    }
+
+    public static Map<String, String> getSimpleAliasesMap() {
+        return SIMPLE_ALIASES_MAP;
+    }
+
+    public static Object2IntMap<String> getComplexAliasesMap() {
+        return COMPLEX_ALIASES_MAP;
     }
 
     public static Item air() {
