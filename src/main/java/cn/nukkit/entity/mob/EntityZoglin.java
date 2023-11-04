@@ -63,4 +63,9 @@ public class EntityZoglin extends EntityMob {
                 Item.get(Item.ROTTEN_FLESH, 0, random.nextInt(1, 4)),
         };
     }
+
+    @Override
+    public float getRidingOffset() {
+        return -0.5f;
+    }
 }

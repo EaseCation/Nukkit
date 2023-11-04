@@ -71,7 +71,6 @@ public class EntityArmorStand extends EntityLiving implements EntityInteractable
     public EntityArmorStand(FullChunk chunk, CompoundTag nbt) {
         super(chunk, nbt);
         needLivingBaseTick = false;
-        needCollidingWithRideable = false;
     }
 
     @Override
@@ -271,6 +270,19 @@ public class EntityArmorStand extends EntityLiving implements EntityInteractable
         }
 
         return super.attack(source);
+    }
+
+    @Override
+    protected void onHurt(EntityDamageEvent source) {
+        switch (source.getCause()) {
+            case ENTITY_ATTACK:
+            case PROJECTILE:
+            case BLOCK_EXPLOSION:
+            case ENTITY_EXPLOSION:
+                return;
+        }
+
+        super.onHurt(source);
     }
 
     @Override

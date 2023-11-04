@@ -49,4 +49,9 @@ public class EntityPiglinBrute extends EntityMob {
 
         super.spawnTo(player);
     }
+
+    @Override
+    public float getRidingOffset() {
+        return -0.5f;
+    }
 }

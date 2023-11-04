@@ -1527,11 +1527,11 @@ public abstract class Entity extends Location implements Metadatable, EntityData
     }
 
     public void setSeatPosition(Vector3f pos) {
-        this.setDataProperty(new Vector3fEntityData(DATA_RIDER_SEAT_POSITION, pos));
+        this.setDataProperty(new Vector3fEntityData(DATA_SEAT_OFFSET, pos));
     }
 
     public Vector3f getSeatPosition() {
-        return this.getDataPropertyVector3f(DATA_RIDER_SEAT_POSITION);
+        return this.getDataPropertyVector3f(DATA_SEAT_OFFSET);
     }
 
     public Vector3f getMountedOffset(Entity entity) {
@@ -2535,6 +2535,10 @@ public abstract class Entity extends Location implements Metadatable, EntityData
         }
         frozenTicks = 0;
         setDataProperty(new FloatEntityData(DATA_FREEZING_EFFECT_STRENGTH, 0));
+    }
+
+    public float getRidingOffset() {
+        return 0;
     }
 
     @Override

@@ -65,4 +65,9 @@ public class EntityWitherSkeleton extends EntityMob implements EntitySmite {
                 Item.get(Item.COAL, 0, random.nextInt(2)),
         };
     }
+
+    @Override
+    public float getRidingOffset() {
+        return -0.5f;
+    }
 }

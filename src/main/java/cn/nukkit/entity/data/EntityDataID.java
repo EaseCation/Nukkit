@@ -67,11 +67,10 @@ public interface EntityDataID {
     int DATA_BOUNDING_BOX_WIDTH = 54; //float
     int DATA_BOUNDING_BOX_HEIGHT = 55; //float
     int DATA_FUSE_LENGTH = 56; //int
-    int DATA_RIDER_SEAT_POSITION = 57; //vector3f
-    int DATA_RIDER_ROTATION_LOCKED = 58; //byte
-    int DATA_SEAT_LOCK_RIDER_ROTATION_DEGREES = 59; //float
-    int DATA_RIDER_MAX_ROTATION = 59; //float
-    int DATA_RIDER_MIN_ROTATION = 60; //float
+    int DATA_SEAT_OFFSET = 57; //vector3f
+    int DATA_SEAT_LOCK_PASSENGER_ROTATION = 58; //bool
+    int DATA_SEAT_LOCK_PASSENGER_ROTATION_DEGREES = 59; //float
+    int DATA_SEAT_ROTATION_OFFSET_DEGREES = 60; //float
     int DATA_AREA_EFFECT_CLOUD_RADIUS = 61; //float
     int DATA_AREA_EFFECT_CLOUD_WAITING = 62; //int
     int DATA_AREA_EFFECT_CLOUD_PARTICLE_ID = 63; //int
@@ -85,7 +84,7 @@ public interface EntityDataID {
     int DATA_COMMAND_BLOCK_COMMAND = 71; //string
     int DATA_COMMAND_BLOCK_LAST_OUTPUT = 72; //string
     int DATA_COMMAND_BLOCK_TRACK_OUTPUT = 73; //byte
-    int DATA_CONTROLLING_RIDER_SEAT_NUMBER = 74; //byte
+    int DATA_CONTROLLING_SEAT_INDEX = 74; //byte
     int DATA_STRENGTH = 75; //int
     int DATA_MAX_STRENGTH = 76; //int
     int DATA_SPELL_CASTING_COLOR = 77; //int
@@ -137,7 +136,7 @@ public interface EntityDataID {
     int DATA_UPDATE_PROPERTIES = 124; // DEPRECATED
     int DATA_ARMOR_STAND_POSE_INDEX = 125; //int
     int DATA_ENDER_CRYSTAL_TIME_OFFSET = 126; //int
-    int DATA_SEAT_ROTATION_OFFSET = 127; //float
+    int DATA_SEAT_ROTATION_OFFSET = 127; //bool
     /**
      * float.
      * @since 1.18.30

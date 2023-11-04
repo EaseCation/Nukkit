@@ -13,6 +13,7 @@ import cn.nukkit.entity.Entity;
 import cn.nukkit.entity.EntityHuman;
 import cn.nukkit.entity.EntityLiving;
 import cn.nukkit.entity.data.ByteEntityData;
+import cn.nukkit.entity.data.FloatEntityData;
 import cn.nukkit.entity.data.IntEntityData;
 import cn.nukkit.event.entity.EntityDamageByEntityEvent;
 import cn.nukkit.event.entity.EntityDamageEvent;
@@ -53,6 +54,7 @@ public abstract class EntityMinecartAbstract extends EntityVehicle {
             {{0, 0, -1}, {-1, 0, 0}},
             {{0, 0, -1}, {1, 0, 0}}
     };
+
     private double currentSpeed = 0;
     private Block blockInside;
     // Plugins modifiers
@@ -116,125 +118,120 @@ public abstract class EntityMinecartAbstract extends EntityVehicle {
             return false;
         }
 
-        if (!this.isAlive()) {
-            ++this.deadTicks;
-            if (this.deadTicks >= 10) {
-                this.despawnFromAll();
-                this.close();
-            }
-            return this.deadTicks < 10;
-        }
-
         int tickDiff = currentTick - this.lastUpdate;
+        if (tickDiff <= 0 && !this.justCreated) {
+            return false;
+        }
+        this.lastUpdate = currentTick;
 
-        if (tickDiff <= 0) {
+        if (!this.isAlive()) {
+            this.close();
             return false;
         }
 
-        this.lastUpdate = currentTick;
+        super.onUpdate(currentTick);
 
-        if (isAlive()) {
-            super.onUpdate(currentTick);
-
-            // The damage token
-            if (getHealth() < 20) {
-                setHealth(getHealth() + 1);
-            }
-
-            // Entity variables
-            lastX = x;
-            lastY = y;
-            lastZ = z;
-            motionY -= 0.03999999910593033D;
-            int dx = Mth.floor(x);
-            int dy = Mth.floor(y);
-            int dz = Mth.floor(z);
-
-            // Some hack to check rails
-            if (Rail.isRailBlock(level.getBlock(dx, dy - 1, dz).getId())) {
-                --dy;
-            }
-
-            Block block = level.getBlock(new Vector3(dx, dy, dz));
-
-            // Ensure that the block is a rail
-            if (Rail.isRailBlock(block)) {
-                processMovement(dx, dy, dz, (BlockRail) block);
-                // Activate the minecart/TNT
-                if (block instanceof BlockRailActivator && ((BlockRailActivator) block).isActive()) {
-                    activate(dx, dy, dz, (block.getDamage() & 0x8) != 0);
-                }
-            } else {
-                setFalling();
-            }
-            checkBlockCollision();
-
-            int minX = Mth.floor(this.boundingBox.getMinX());
-            int minZ = Mth.floor(this.boundingBox.getMinZ());
-            int maxX = Mth.floor(this.boundingBox.getMaxX());
-            int maxZ = Mth.floor(this.boundingBox.getMaxZ());
-            int y = Mth.floor(this.boundingBox.getMinY());
-            for (int x = minX; x <= maxX; x++) {
-                for (int z = minZ; z <= maxZ; z++) {
-                    Block b = level.getBlock(x, y, z, false);
-                    if (b instanceof BlockRailDetector) {
-                        ((BlockRailDetector) b).activate(this);
-                    }
-                }
-            }
-
-            // Minecart head
-            pitch = 0;
-            double diffX = this.lastX - this.x;
-            double diffZ = this.lastZ - this.z;
-            double yawToChange = yaw;
-            if (diffX * diffX + diffZ * diffZ > 0.001D) {
-                yawToChange = (Mth.atan2(diffZ, diffX) * 180 / Math.PI);
-            }
-
-            // Reverse yaw if yaw is below 0
-            if (yawToChange < 0) {
-                // -90-(-90)-(-90) = 90
-                yawToChange -= yawToChange - yawToChange;
-            }
-
-            setRotation(yawToChange, pitch);
-
-            Location from = new Location(lastX, lastY, lastZ, lastYaw, lastPitch, level);
-            Location to = new Location(this.x, this.y, this.z, this.yaw, this.pitch, level);
-
-            this.getServer().getPluginManager().callEvent(new VehicleUpdateEvent(this));
-
-            if (!from.equals(to)) {
-                this.getServer().getPluginManager().callEvent(new VehicleMoveEvent(this, from, to));
-            }
-
-            // Collisions
-            for (Entity entity : level.getNearbyEntities(boundingBox.grow(0.2D, 0, 0.2D), this)) {
-                if (!passengers.contains(entity) && entity instanceof EntityMinecartAbstract) {
-                    entity.applyEntityCollision(this);
-                }
-            }
-
-            Iterator<Entity> linkedIterator = this.passengers.iterator();
-
-            while (linkedIterator.hasNext()) {
-                Entity linked = linkedIterator.next();
-
-                if (!linked.isAlive()) {
-                    if (linked.riding == this) {
-                        linked.riding = null;
-                    }
-
-                    linkedIterator.remove();
-                }
-            }
-
-            // No need to onGround or Motion diff! This always have an update
-            return true;
+        // The damage token
+        if (getHealth() < 20) {
+            setHealth(getHealth() + 1);
         }
 
-        return false;
+        // Entity variables
+        lastX = x;
+        lastY = y;
+        lastZ = z;
+        motionY -= 0.03999999910593033D;
+        int dx = Mth.floor(x);
+        int dy = Mth.floor(y);
+        int dz = Mth.floor(z);
+
+        // Some hack to check rails
+        if (Rail.isRailBlock(level.getBlock(dx, dy - 1, dz).getId())) {
+            --dy;
+        }
+
+        Block block = level.getBlock(new Vector3(dx, dy, dz));
+
+        // Ensure that the block is a rail
+        if (Rail.isRailBlock(block)) {
+            processMovement(dx, dy, dz, (BlockRail) block);
+            // Activate the minecart/TNT
+            if (block instanceof BlockRailActivator && ((BlockRailActivator) block).isActive()) {
+                activate(dx, dy, dz, (block.getDamage() & 0x8) != 0);
+            }
+        } else {
+            setFalling();
+        }
+        checkBlockCollision();
+
+        int minX = Mth.floor(this.boundingBox.getMinX());
+        int minZ = Mth.floor(this.boundingBox.getMinZ());
+        int maxX = Mth.floor(this.boundingBox.getMaxX());
+        int maxZ = Mth.floor(this.boundingBox.getMaxZ());
+        int y = Mth.floor(this.boundingBox.getMinY());
+        for (int x = minX; x <= maxX; x++) {
+            for (int z = minZ; z <= maxZ; z++) {
+                Block b = level.getBlock(x, y, z, false);
+                if (b instanceof BlockRailDetector) {
+                    ((BlockRailDetector) b).activate(this);
+                }
+            }
+        }
+
+        // Minecart head
+        pitch = 0;
+        double diffX = this.lastX - this.x;
+        double diffZ = this.lastZ - this.z;
+        double yawToChange = yaw;
+        if (diffX * diffX + diffZ * diffZ > 0.001D) {
+            yawToChange = (Mth.atan2(diffZ, diffX) * 180 / Math.PI);
+        }
+
+        // Reverse yaw if yaw is below 0
+        if (yawToChange < 0) {
+            // -90-(-90)-(-90) = 90
+            yawToChange -= yawToChange - yawToChange;
+        }
+
+        setRotation(yawToChange, pitch);
+
+        Location from = new Location(lastX, lastY, lastZ, lastYaw, lastPitch, level);
+        Location to = new Location(this.x, this.y, this.z, this.yaw, this.pitch, level);
+
+        this.getServer().getPluginManager().callEvent(new VehicleUpdateEvent(this));
+
+        if (!from.equals(to)) {
+            this.getServer().getPluginManager().callEvent(new VehicleMoveEvent(this, from, to));
+        }
+
+        // Collisions
+        for (Entity entity : level.getNearbyEntities(boundingBox.grow(0.2D, 0, 0.2D), this)) {
+            if (isPassenger(entity)) {
+                continue;
+            }
+
+            if (entity instanceof EntityMinecartAbstract) {
+                entity.applyEntityCollision(this);
+            }/* else if (entity instanceof EntityBoat) {
+                    this.applyEntityCollision(entity);
+            }*/
+        }
+
+        Iterator<Entity> linkedIterator = this.passengers.iterator();
+        while (linkedIterator.hasNext()) {
+            Entity linked = linkedIterator.next();
+
+            if (!linked.isAlive()) {
+                if (linked.riding == this) {
+                    linked.riding = null;
+                }
+
+                linkedIterator.remove();
+            }
+        }
+
+        // No need to onGround or Motion diff! This always have an update
+        return true;
     }
 
     @Override
@@ -320,6 +317,10 @@ public abstract class EntityMinecartAbstract extends EntityVehicle {
                 if (riding == null && devs) {
                     mountEntity(entity);// TODO: rewrite (weird riding)
                 }
+            }
+
+            if (entity instanceof EntityArmorStand) {
+                return;
             }
 
             double motiveX = entity.x - x;
@@ -690,7 +691,7 @@ public abstract class EntityMinecartAbstract extends EntityVehicle {
         currentSpeed = speed;
     }
 
-    private void prepareDataProperty() {
+    protected void prepareDataProperty() {
         setRollingAmplitude(0);
         setRollingDirection(1);
         if (namedTag.contains("CustomDisplayTile")) {
@@ -850,5 +851,13 @@ public abstract class EntityMinecartAbstract extends EntityVehicle {
 
     public void setMaximumSpeed(double speed) {
         maxSpeed = speed;
+    }
+
+    @Override
+    protected void onMountEntity(Entity entity) {
+        entity.setDataProperty(new ByteEntityData(DATA_SEAT_LOCK_PASSENGER_ROTATION, 0));
+        entity.setDataProperty(new FloatEntityData(DATA_SEAT_LOCK_PASSENGER_ROTATION_DEGREES, 0));
+        entity.setDataProperty(new ByteEntityData(DATA_SEAT_ROTATION_OFFSET, 0));
+        entity.setDataProperty(new FloatEntityData(DATA_SEAT_LOCK_PASSENGER_ROTATION_DEGREES, 181));
     }
 }

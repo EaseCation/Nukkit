@@ -66,4 +66,8 @@ public class EntitySkeleton extends EntityMob implements EntitySmite {
         };
     }
 
+    @Override
+    public float getRidingOffset() {
+        return -0.5f;
+    }
 }

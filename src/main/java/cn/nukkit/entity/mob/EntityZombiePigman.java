@@ -65,4 +65,9 @@ public class EntityZombiePigman extends EntityMob implements EntitySmite {
                 Item.get(Item.GOLD_NUGGET, 0, random.nextInt(2)),
         };
     }
+
+    @Override
+    public float getRidingOffset() {
+        return -0.5f;
+    }
 }

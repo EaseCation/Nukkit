@@ -60,6 +60,7 @@ public abstract class EntityAbstractHorse extends EntityAnimal implements Entity
         this.setDataProperty(new ByteEntityData(DATA_CONTAINER_TYPE, inventory.getType().getNetworkType()), false);
         this.setDataProperty(new IntEntityData(DATA_CONTAINER_BASE_SIZE, inventory.getSize()), false);
         this.setDataProperty(new IntEntityData(DATA_CONTAINER_EXTRA_SLOTS_PER_STRENGTH, 0), false);
+        dataProperties.putByte(DATA_CONTROLLING_SEAT_INDEX, 0);
 
         this.setDataFlag(DATA_FLAG_CAN_WALK, true, false);
         this.setDataFlag(DATA_FLAG_TAMED, true, false);
@@ -72,10 +73,10 @@ public abstract class EntityAbstractHorse extends EntityAnimal implements Entity
     public boolean mountEntity(Entity entity) {
         boolean mounted = super.mountEntity(entity) && entity.riding != null;
         if (mounted) {
-            entity.setDataProperty(new ByteEntityData(DATA_RIDER_ROTATION_LOCKED, 0));
-            entity.setDataProperty(new FloatEntityData(DATA_RIDER_MAX_ROTATION, 0f));
-            entity.setDataProperty(new FloatEntityData(DATA_RIDER_MIN_ROTATION, 0f));
-            entity.setDataProperty(new FloatEntityData(DATA_SEAT_ROTATION_OFFSET, 0f));
+            entity.setDataProperty(new ByteEntityData(DATA_SEAT_LOCK_PASSENGER_ROTATION, 0));
+            entity.setDataProperty(new FloatEntityData(DATA_SEAT_LOCK_PASSENGER_ROTATION_DEGREES, 0f));
+            entity.setDataProperty(new ByteEntityData(DATA_SEAT_ROTATION_OFFSET, 0));
+            entity.setDataProperty(new FloatEntityData(DATA_SEAT_ROTATION_OFFSET_DEGREES, 0f));
         }
         return mounted;
     }
@@ -84,10 +85,10 @@ public abstract class EntityAbstractHorse extends EntityAnimal implements Entity
     public boolean dismountEntity(Entity entity) {
         boolean dismounted = super.dismountEntity(entity) && entity.riding == null;
         if (dismounted) {
-            entity.setDataProperty(new ByteEntityData(DATA_RIDER_ROTATION_LOCKED, 0));
-            entity.setDataProperty(new FloatEntityData(DATA_RIDER_MAX_ROTATION, 0f));
-            entity.setDataProperty(new FloatEntityData(DATA_RIDER_MIN_ROTATION, 0f));
-            entity.setDataProperty(new FloatEntityData(DATA_SEAT_ROTATION_OFFSET, 0f));
+            entity.setDataProperty(new ByteEntityData(DATA_SEAT_LOCK_PASSENGER_ROTATION, 0));
+            entity.setDataProperty(new FloatEntityData(DATA_SEAT_LOCK_PASSENGER_ROTATION_DEGREES, 0f));
+            entity.setDataProperty(new ByteEntityData(DATA_SEAT_ROTATION_OFFSET, 0));
+            entity.setDataProperty(new FloatEntityData(DATA_SEAT_ROTATION_OFFSET_DEGREES, 0f));
         }
         return dismounted;
     }

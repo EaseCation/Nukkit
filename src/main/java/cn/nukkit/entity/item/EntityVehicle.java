@@ -10,6 +10,7 @@ import cn.nukkit.event.entity.EntityDamageEvent;
 import cn.nukkit.event.vehicle.VehicleDamageEvent;
 import cn.nukkit.event.vehicle.VehicleDestroyEvent;
 import cn.nukkit.level.format.FullChunk;
+import cn.nukkit.math.Vector3f;
 import cn.nukkit.nbt.tag.CompoundTag;
 
 /**
@@ -17,6 +18,8 @@ import cn.nukkit.nbt.tag.CompoundTag;
  * Nukkit Project
  */
 public abstract class EntityVehicle extends Entity implements EntityRideable, EntityInteractable {
+    public static final Vector3f MOB_SEAT_OFFSET = new Vector3f(0, -0.2f, 0);
+    public static final Vector3f PLAYER_SEAT_OFFSET = new Vector3f(0, 1.02001f, 0);
 
     public EntityVehicle(FullChunk chunk, CompoundTag nbt) {
         super(chunk, nbt);
@@ -112,5 +115,13 @@ public abstract class EntityVehicle extends Entity implements EntityRideable, En
         }
 
         return super.attack(source);
+    }
+
+    @Override
+    public Vector3f getMountedOffset(Entity entity) {
+        if (entity.getNetworkId() == -1) {
+            return PLAYER_SEAT_OFFSET;
+        }
+        return MOB_SEAT_OFFSET.add(0, entity.getRidingOffset(), 0);
     }
 }

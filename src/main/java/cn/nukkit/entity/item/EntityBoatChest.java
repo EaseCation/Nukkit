@@ -9,7 +9,6 @@ import cn.nukkit.inventory.InventoryHolder;
 import cn.nukkit.item.Item;
 import cn.nukkit.level.format.FullChunk;
 import cn.nukkit.math.Vector3;
-import cn.nukkit.math.Vector3f;
 import cn.nukkit.nbt.NBTIO;
 import cn.nukkit.nbt.tag.CompoundTag;
 import cn.nukkit.nbt.tag.ListTag;
@@ -18,9 +17,6 @@ import cn.nukkit.network.protocol.types.ContainerType;
 public class EntityBoatChest extends EntityBoat implements InventoryHolder {
 
     public static final int NETWORK_ID = EntityID.CHEST_BOAT;
-
-    private static final Vector3f SEAT_OFFSET = new Vector3f(0.2f, -0.2f, 0);
-    private static final Vector3f PLAYER_SEAT_OFFSET = new Vector3f(0.2f, 1.02001f, 0);
 
     protected BoatChestInventory inventory;
 
@@ -98,11 +94,6 @@ public class EntityBoatChest extends EntityBoat implements InventoryHolder {
             return false;
         }
         return super.mountEntity(entity);
-    }
-
-    @Override
-    public Vector3f getMountedOffset(Entity entity) {
-        return entity instanceof Player ? PLAYER_SEAT_OFFSET : SEAT_OFFSET;
     }
 
     @Override

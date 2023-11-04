@@ -60,4 +60,9 @@ public class EntityPillager extends EntityMob {
                 Item.get(Item.ARROW, 0, random.nextInt(3)),
         };
     }
+
+    @Override
+    public float getRidingOffset() {
+        return -0.5f;
+    }
 }

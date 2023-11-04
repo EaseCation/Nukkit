@@ -18,7 +18,6 @@ import cn.nukkit.level.GameRule;
 import cn.nukkit.level.Location;
 import cn.nukkit.level.format.FullChunk;
 import cn.nukkit.math.AxisAlignedBB;
-import cn.nukkit.math.NukkitMath;
 import cn.nukkit.math.Vector3;
 import cn.nukkit.math.Vector3f;
 import cn.nukkit.nbt.tag.CompoundTag;
@@ -35,9 +34,6 @@ public class EntityBoat extends EntityVehicle {
     public static final int NETWORK_ID = EntityID.BOAT;
 
     public static final String BUOYANCY_DATA = "{\"apply_gravity\":true,\"base_buoyancy\":1.0,\"big_wave_probability\":0.02999999932944775,\"big_wave_speed\":10.0,\"drag_down_on_buoyancy_removed\":0.0,\"liquid_blocks\":[\"minecraft:water\",\"minecraft:flowing_water\"],\"simulate_waves\":true}";
-
-    public static final Vector3f RIDER_PLAYER_OFFSET = new Vector3f(0, 1.02001f, 0);
-    public static final Vector3f RIDER_OFFSET = new Vector3f(0, -0.2f, 0);
 
     public static final Vector3f PASSENGER_OFFSET = new Vector3f(-0.6f, 0, 0);
     public static final Vector3f RIDER_PASSENGER_OFFSET = new Vector3f(0.2f, 0, 0);
@@ -66,7 +62,7 @@ public class EntityBoat extends EntityVehicle {
         this.setDataFlag(DATA_FLAG_STACKABLE, true, false);
         this.setDataFlag(DATA_FLAG_GRAVITY, true, false);
         this.dataProperties.putInt(DATA_VARIANT, woodID = this.namedTag.getByte("woodID"));
-        this.dataProperties.putByte(DATA_CONTROLLING_RIDER_SEAT_NUMBER, RIDER_INDEX);
+        this.dataProperties.putByte(DATA_CONTROLLING_SEAT_INDEX, RIDER_INDEX);
         this.dataProperties.putBoolean(DATA_IS_BUOYANT, true);
         this.dataProperties.putString(DATA_BUOYANCY_DATA, BUOYANCY_DATA);
     }
@@ -229,11 +225,23 @@ public class EntityBoat extends EntityVehicle {
             this.updateMovement();
 
             if (this.passengers.size() < 2) {
-                for (Entity entity : this.level.getCollidingEntities(this.boundingBox.grow(0.20000000298023224, 0.0D, 0.20000000298023224), this)) {
-                    if (entity.riding != null || !(entity instanceof EntityLiving) || entity instanceof Player || entity instanceof EntityWaterAnimal || isPassenger(entity)) {
+                for (Entity entity : this.level.getCollidingEntities(this.boundingBox.grow(0.2, 0, 0.2), this)) {
+                    if (entity.riding != null || isPassenger(entity)) {
                         continue;
                     }
 
+//                    if (entity instanceof EntityBoat || entity instanceof EntityMinecartAbstract) {
+//                        this.applyEntityCollision(entity);
+//                        continue;
+//                    }
+
+                    if (!(entity instanceof EntityLiving) || entity instanceof EntityArmorStand || entity instanceof Player || entity instanceof EntityWaterAnimal) {
+                        continue;
+                    }
+
+//                    if (this.passengers.size() < 2) {
+//                        this.mountEntity(entity);
+//                    }
                     this.mountEntity(entity);
 
                     if (this.passengers.size() >= 2) {
@@ -364,7 +372,8 @@ public class EntityBoat extends EntityVehicle {
         boolean r = super.dismountEntity(entity, sendLinks);
 
         updatePassengers();
-        entity.setDataProperty(new ByteEntityData(DATA_RIDER_ROTATION_LOCKED, 0));
+        entity.setDataProperty(new ByteEntityData(DATA_SEAT_LOCK_PASSENGER_ROTATION, 0));
+        entity.setDataProperty(new ByteEntityData(DATA_SEAT_ROTATION_OFFSET, 0));
 
         return r;
     }
@@ -384,11 +393,6 @@ public class EntityBoat extends EntityVehicle {
         return super.onInteract(player, item, clickedPos);
     }
 
-    @Override
-    public Vector3f getMountedOffset(Entity entity) {
-        return entity.getNetworkId() == -1 ? RIDER_PLAYER_OFFSET : RIDER_OFFSET;
-    }
-
     public void onPaddle(AnimatePacket.Action animation, float value) {
         int propertyId = animation == AnimatePacket.Action.ROW_RIGHT ? DATA_PADDLE_TIME_RIGHT : DATA_PADDLE_TIME_LEFT;
 
@@ -399,6 +403,9 @@ public class EntityBoat extends EntityVehicle {
 
     @Override
     public void applyEntityCollision(Entity entity) {
+        if (entity instanceof EntityArmorStand) {
+            return;
+        }
         if (this.riding == null && entity.riding != this && !entity.passengers.contains(this)) {
             if (!entity.boundingBox.intersectsWith(this.boundingBox.grow(0.20000000298023224, -0.1, 0.20000000298023224))
                     || entity instanceof Player && ((Player) entity).isSpectator()) {
@@ -469,10 +476,10 @@ public class EntityBoat extends EntityVehicle {
 
     @Override
     protected void onMountEntity(Entity entity) {
-        entity.setDataProperty(new ByteEntityData(DATA_RIDER_ROTATION_LOCKED, 1));
-        entity.setDataProperty(new FloatEntityData(DATA_RIDER_MAX_ROTATION, 90));
-        entity.setDataProperty(new FloatEntityData(DATA_RIDER_MIN_ROTATION, this.passengers.indexOf(entity) == 1 ? -90 : 1));
-        entity.setDataProperty(new FloatEntityData(DATA_SEAT_ROTATION_OFFSET, -90));
+        entity.setDataProperty(new ByteEntityData(DATA_SEAT_LOCK_PASSENGER_ROTATION, 1));
+        entity.setDataProperty(new FloatEntityData(DATA_SEAT_LOCK_PASSENGER_ROTATION_DEGREES, 90));
+        entity.setDataProperty(new ByteEntityData(DATA_SEAT_ROTATION_OFFSET, 1));
+        entity.setDataProperty(new FloatEntityData(DATA_SEAT_ROTATION_OFFSET_DEGREES, -90));
     }
 
     @Override

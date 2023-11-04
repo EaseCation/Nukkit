@@ -61,4 +61,9 @@ public class EntityZombieVillager extends EntityMob implements EntitySmite {
                 Item.get(Item.ROTTEN_FLESH, 0, random.nextInt(3)),
         };
     }
+
+    @Override
+    public float getRidingOffset() {
+        return -0.5f;
+    }
 }

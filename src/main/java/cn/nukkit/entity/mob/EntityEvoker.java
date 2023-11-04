@@ -64,4 +64,9 @@ public class EntityEvoker extends EntityMob {
                 Item.get(Item.TOTEM_OF_UNDYING),
         };
     }
+
+    @Override
+    public float getRidingOffset() {
+        return -0.5f;
+    }
 }

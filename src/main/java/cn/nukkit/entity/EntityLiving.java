@@ -165,10 +165,7 @@ public abstract class EntityLiving extends Entity implements EntityDamageable {
                 }
             }
 
-            EntityEventPacket pk = new EntityEventPacket();
-            pk.eid = this.getId();
-            pk.event = this.getHealth() < 1 ? EntityEventPacket.DEATH_ANIMATION : EntityEventPacket.HURT_ANIMATION;
-            Server.broadcastPacket(this.hasSpawned.values(), pk);
+            onHurt(source);
 
             // this.attackTime = source.getAttackCooldown();
             this.nextAllowAttack = System.currentTimeMillis() + source.getAttackCooldown() * 50L; // EC优化，在低TPS时也确保正确的攻击冷却时间
@@ -177,6 +174,13 @@ public abstract class EntityLiving extends Entity implements EntityDamageable {
         } else {
             return false;
         }
+    }
+
+    protected void onHurt(EntityDamageEvent source) {
+        EntityEventPacket pk = new EntityEventPacket();
+        pk.eid = this.getId();
+        pk.event = this.getHealth() < 1 ? EntityEventPacket.DEATH_ANIMATION : EntityEventPacket.HURT_ANIMATION;
+        Server.broadcastPacket(this.hasSpawned.values(), pk);
     }
 
     public void knockBack(Entity attacker, double damage, double x, double z) {
