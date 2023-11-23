@@ -2,6 +2,7 @@ package cn.nukkit.level.format.anvil;
 
 import cn.nukkit.Server;
 import cn.nukkit.block.Block;
+import cn.nukkit.block.Blocks;
 import cn.nukkit.level.GlobalBlockPalette;
 import cn.nukkit.level.GlobalBlockPaletteInterface.StaticVersion;
 import cn.nukkit.level.format.anvil.util.BlockStorage;
@@ -358,7 +359,7 @@ public class ChunkSection implements cn.nukkit.level.format.ChunkSection {
 
     @Override
     public boolean writeToCache(BinaryStream stream) {
-        return writeToCache(stream, GlobalBlockPalette::getNameByBlockId);
+        return writeToCache(stream, Blocks::getBlockFullNameById);
     }
 
     @Override

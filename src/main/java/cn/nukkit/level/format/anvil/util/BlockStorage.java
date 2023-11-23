@@ -1,6 +1,7 @@
 package cn.nukkit.level.format.anvil.util;
 
 import cn.nukkit.block.Block;
+import cn.nukkit.block.Blocks;
 import cn.nukkit.level.GlobalBlockPalette;
 import cn.nukkit.level.GlobalBlockPaletteInterface;
 import cn.nukkit.level.GlobalBlockPaletteInterface.StaticVersion;
@@ -142,7 +143,7 @@ public class BlockStorage {
      * @return all air
      */
     public boolean writeToCache(BinaryStream stream) {
-        return writeToCache(stream, GlobalBlockPalette::getNameByBlockId);
+        return writeToCache(stream, Blocks::getBlockFullNameById);
     }
 
     /**

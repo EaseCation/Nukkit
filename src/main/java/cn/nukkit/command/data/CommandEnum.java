@@ -45,6 +45,9 @@ public class CommandEnum {
                 continue;
             }
             blocks.put(name, Collections.emptySet());
+            if (name.indexOf(':') != -1) {
+                continue;
+            }
             blocks.put("minecraft:" + name, EnumSet.of(CommandEnumConstraint.ALLOW_ALIASES));
         }
         for (String blockName : Blocks.getBlockAliasesMap().keySet()) {
@@ -53,6 +56,9 @@ public class CommandEnum {
                 continue;
             }
             blocks.put(name, Collections.emptySet());
+            if (name.indexOf(':') != -1) {
+                continue;
+            }
             blocks.put("minecraft:" + name, EnumSet.of(CommandEnumConstraint.ALLOW_ALIASES));
         }
         for (String blockName : Blocks.getComplexAliasesMap().keySet()) {
@@ -61,6 +67,9 @@ public class CommandEnum {
                 continue;
             }
             blocks.put(name, Collections.emptySet());
+            if (name.indexOf(':') != -1) {
+                continue;
+            }
             blocks.put("minecraft:" + name, EnumSet.of(CommandEnumConstraint.ALLOW_ALIASES));
         }
         ENUM_BLOCK = new CommandEnum("Block", blocks.build());
@@ -71,6 +80,9 @@ public class CommandEnum {
                 continue;
             }
             items.put(name, Collections.emptySet());
+            if (name.indexOf(':') != -1) {
+                continue;
+            }
             items.put("minecraft:" + name, EnumSet.of(CommandEnumConstraint.ALLOW_ALIASES));
         }
         for (String name : Blocks.getItemAliasesMap().keySet()) {
@@ -78,6 +90,9 @@ public class CommandEnum {
                 continue;
             }
             items.put(name, Collections.emptySet());
+            if (name.indexOf(':') != -1) {
+                continue;
+            }
             items.put("minecraft:" + name, EnumSet.of(CommandEnumConstraint.ALLOW_ALIASES));
         }
         for (String name : Blocks.getComplexAliasesMap().keySet()) {
@@ -85,6 +100,9 @@ public class CommandEnum {
                 continue;
             }
             items.put(name, Collections.emptySet());
+            if (name.indexOf(':') != -1) {
+                continue;
+            }
             items.put("minecraft:" + name, EnumSet.of(CommandEnumConstraint.ALLOW_ALIASES));
         }
         for (String name : Items.getNameToIdMap().keySet()) {
@@ -92,6 +110,9 @@ public class CommandEnum {
                 continue;
             }
             items.put(name, Collections.emptySet());
+            if (name.indexOf(':') != -1) {
+                continue;
+            }
             items.put("minecraft:" + name, EnumSet.of(CommandEnumConstraint.ALLOW_ALIASES));
         }
         for (String name : Items.getSimpleAliasesMap().keySet()) {
@@ -99,6 +120,9 @@ public class CommandEnum {
                 continue;
             }
             items.put(name, Collections.emptySet());
+            if (name.indexOf(':') != -1) {
+                continue;
+            }
             items.put("minecraft:" + name, EnumSet.of(CommandEnumConstraint.ALLOW_ALIASES));
         }
         for (String name : Items.getComplexAliasesMap().keySet()) {
@@ -106,6 +130,9 @@ public class CommandEnum {
                 continue;
             }
             items.put(name, Collections.emptySet());
+            if (name.indexOf(':') != -1) {
+                continue;
+            }
             items.put("minecraft:" + name, EnumSet.of(CommandEnumConstraint.ALLOW_ALIASES));
         }
         ENUM_ITEM = new CommandEnum("Item", items.build());

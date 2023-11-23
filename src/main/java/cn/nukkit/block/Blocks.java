@@ -3,34 +3,49 @@ package cn.nukkit.block;
 import cn.nukkit.GameVersion;
 import cn.nukkit.block.edu.*;
 import cn.nukkit.item.ItemBlockNames;
+import cn.nukkit.item.Items;
+import cn.nukkit.nbt.tag.CompoundTag;
 import cn.nukkit.utils.DyeColor;
 import it.unimi.dsi.fastutil.objects.Object2IntMap;
 import it.unimi.dsi.fastutil.objects.Object2IntOpenHashMap;
 import it.unimi.dsi.fastutil.objects.Object2ObjectOpenHashMap;
+import lombok.extern.log4j.Log4j2;
 
 import javax.annotation.Nullable;
-
+import java.lang.reflect.Constructor;
+import java.lang.reflect.InvocationTargetException;
 import java.util.Map;
+import java.util.Objects;
+import java.util.concurrent.atomic.AtomicInteger;
 
 import static cn.nukkit.GameVersion.*;
 import static cn.nukkit.block.BlockID.*;
 
+@Log4j2
 public final class Blocks {
     static final Block AIR = new BlockAir();
 
     private static final Object2IntMap<String> BLOCK_NAME_TO_ID = new Object2IntOpenHashMap<>();
-    private static final String[] ID_TO_BLOCK_NAME = new String[UNDEFINED];
+    private static final Object2IntMap<String> BLOCK_FULL_NAME_TO_ID = new Object2IntOpenHashMap<>();
+    private static final String[] ID_TO_BLOCK_NAME = new String[Block.BLOCK_ID_COUNT];
+    private static final String[] ID_TO_BLOCK_FULL_NAME = new String[Block.BLOCK_ID_COUNT];
     private static final Map<String, String> BLOCK_ALIASES_MAP = new Object2ObjectOpenHashMap<>();
 
     private static final Object2IntMap<String> ITEM_NAME_TO_ID = new Object2IntOpenHashMap<>();
-    private static final String[] ID_TO_ITEM_NAME = new String[UNDEFINED];
+    private static final Object2IntMap<String> ITEM_FULL_NAME_TO_ID = new Object2IntOpenHashMap<>();
+    private static final String[] ID_TO_ITEM_NAME = new String[Block.BLOCK_ID_COUNT];
+    private static final String[] ID_TO_ITEM_FULL_NAME = new String[Block.BLOCK_ID_COUNT];
     private static final Map<String, String> ITEM_ALIASES_MAP = new Object2ObjectOpenHashMap<>();
 
     private static final Object2IntMap<String> COMPLEX_ALIASES_MAP = new Object2IntOpenHashMap<>();
 
+    private static final AtomicInteger CUSTOM_BLOCK_ID_ALLOCATOR = new AtomicInteger(1000); //TODO: 1.20.50
+
     static {
         BLOCK_NAME_TO_ID.defaultReturnValue(-1);
+        BLOCK_FULL_NAME_TO_ID.defaultReturnValue(-1);
         ITEM_NAME_TO_ID.defaultReturnValue(-1);
+        ITEM_FULL_NAME_TO_ID.defaultReturnValue(-1);
         COMPLEX_ALIASES_MAP.defaultReturnValue(-1);
     }
 
@@ -1037,10 +1052,35 @@ public final class Blocks {
     }
 
     private static Class<? extends Block> registerBlock(String blockName, String itemName, int id, Class<? extends Block> clazz) {
-        BLOCK_NAME_TO_ID.put(blockName, id);
-        ID_TO_BLOCK_NAME[id] = blockName;
-        ITEM_NAME_TO_ID.put(itemName, id);
-        ID_TO_ITEM_NAME[id] = itemName;
+        return registerBlock("minecraft:" + blockName, blockName, "minecraft:" + itemName, itemName, id, clazz);
+    }
+
+    private static Class<? extends Block> registerBlock(String blockFullName, String blockShortName, String itemFullName, String itemShortName, int id, Class<? extends Block> clazz) {
+        if (Block.list[id] != null) {
+            throw new IllegalArgumentException("Duplicate block id: " + id);
+        }
+        if (BLOCK_FULL_NAME_TO_ID.containsKey(blockFullName)) {
+            throw new IllegalArgumentException("Duplicate block full name: " + blockFullName);
+        }
+        if (ITEM_FULL_NAME_TO_ID.containsKey(itemFullName)) {
+            throw new IllegalArgumentException("Duplicate block item full name: " + itemFullName);
+        }
+        if (BLOCK_NAME_TO_ID.containsKey(blockShortName)) {
+            throw new IllegalArgumentException("Duplicate block short name: " + blockShortName);
+        }
+        if (ITEM_NAME_TO_ID.containsKey(itemShortName)) {
+            throw new IllegalArgumentException("Duplicate block item short name: " + itemShortName);
+        }
+
+        BLOCK_NAME_TO_ID.put(blockShortName, id);
+        BLOCK_FULL_NAME_TO_ID.put(blockFullName, id);
+        ID_TO_BLOCK_NAME[id] = blockShortName;
+        ID_TO_BLOCK_FULL_NAME[id] = blockFullName;
+        ITEM_NAME_TO_ID.put(itemShortName, id);
+        ITEM_FULL_NAME_TO_ID.put(itemFullName, id);
+        ID_TO_ITEM_NAME[id] = itemShortName;
+        ID_TO_ITEM_FULL_NAME[id] = itemFullName;
+
         Block.list[id] = clazz;
         return clazz;
     }
@@ -1053,6 +1093,49 @@ public final class Blocks {
             return null;
         }
         return registerBlock(blockName, itemName, id, clazz);
+    }
+
+    public static Class<? extends Block> registerCustomBlock(String fullName, int id, Class<? extends CustomBlock> clazz, CompoundTag definition) {
+        Objects.requireNonNull(clazz, "class");
+        Objects.requireNonNull(definition, "definition");
+        if (fullName.split(":").length != 2) {
+            throw new IllegalArgumentException("Invalid namespaced identifier: " + fullName);
+        }
+        if (fullName.startsWith("minecraft:")) {
+            throw new IllegalArgumentException("Invalid identifier: " + fullName);
+        }
+
+        log.trace("Register custom block {} ({}/{}) {} : {}", fullName, id, Block.getItemId(id), clazz, definition);
+
+        registerBlock(fullName, fullName, fullName, fullName, id, clazz);
+
+        CustomBlock block;
+        try {
+            Constructor<? extends CustomBlock> constructor = clazz.getDeclaredConstructor(int.class);
+            constructor.setAccessible(true);
+            block = constructor.newInstance(id);
+        } catch (NoSuchMethodException | InstantiationException | IllegalAccessException | InvocationTargetException e) {
+            throw new RuntimeException("Unable to create custom block instance: " + fullName, e);
+        }
+        Block.variantList[id] = new Block[]{block};
+        Block.solid[id] = block.isSolid();
+        Block.transparent[id] = block.isTransparent();
+        Block.light[id] = (byte) block.getLightLevel();
+        Block.lightBlock[id] = (byte) block.getLightBlock();
+        Block.lightBlocking[id] = block.getLightBlock() > 0;
+        if (block.isSolid()) {
+            if (block.isTransparent()) {
+                Block.lightFilter[id] = 1;
+            } else {
+                Block.lightFilter[id] = 15;
+            }
+        } else {
+            Block.lightFilter[id] = 1;
+        }
+
+        BlockSerializer.registerCustomBlock(fullName, id, definition);
+        Items.registerCustomBlockItem(fullName, id);
+        return clazz;
     }
 
     private static void registerBlockAlias(String alias, String currentName, GameVersion version) {
@@ -1071,18 +1154,30 @@ public final class Blocks {
         return BLOCK_NAME_TO_ID;
     }
 
+    public static Object2IntMap<String> getBlockFullNameToIdMap() {
+        return BLOCK_FULL_NAME_TO_ID;
+    }
+
     public static int getIdByBlockName(String name) {
         return getIdByBlockName(name, false);
     }
 
     public static int getIdByBlockName(String name, boolean lookupAlias) {
-        int id = BLOCK_NAME_TO_ID.getInt(name);
+        return getIdByBlockShortName(name.startsWith("minecraft:") ? name.substring(10) : name, lookupAlias);
+    }
+
+    public static int getIdByBlockShortName(String shortName) {
+        return getIdByBlockShortName(shortName, false);
+    }
+
+    public static int getIdByBlockShortName(String shortName, boolean lookupAlias) {
+        int id = BLOCK_NAME_TO_ID.getInt(shortName);
         if (id != -1) {
             return id;
         }
 
         if (lookupAlias) {
-            String alias = BLOCK_ALIASES_MAP.get(name);
+            String alias = BLOCK_ALIASES_MAP.get(shortName);
             if (alias != null) {
                 return BLOCK_NAME_TO_ID.getInt(alias);
             }
@@ -1095,13 +1190,21 @@ public final class Blocks {
     }
 
     public static int getFullIdByBlockName(String name, boolean lookupAlias) {
-        int id = BLOCK_NAME_TO_ID.getInt(name);
+        return getFullIdByBlockShortName(name.startsWith("minecraft:") ? name.substring(10) : name, lookupAlias);
+    }
+
+    public static int getFullIdByBlockShortName(String shortName) {
+        return getFullIdByBlockShortName(shortName, false);
+    }
+
+    public static int getFullIdByBlockShortName(String shortName, boolean lookupAlias) {
+        int id = BLOCK_NAME_TO_ID.getInt(shortName);
         if (id != -1) {
             return Block.getFullId(id);
         }
 
         if (lookupAlias) {
-            String alias = BLOCK_ALIASES_MAP.get(name);
+            String alias = BLOCK_ALIASES_MAP.get(shortName);
             if (alias != null) {
                 id = BLOCK_NAME_TO_ID.getInt(alias);
                 if (id != -1) {
@@ -1109,14 +1212,14 @@ public final class Blocks {
                 }
             }
 
-            return COMPLEX_ALIASES_MAP.getInt(name);
+            return COMPLEX_ALIASES_MAP.getInt(shortName);
         }
         return -1;
     }
 
     @Nullable
     public static String getBlockNameById(int id) {
-        if (id < 0 || id >= UNDEFINED) {
+        if (id < 0 || id >= Block.BLOCK_ID_COUNT) {
             return null;
         }
         return ID_TO_BLOCK_NAME[id];
@@ -1124,11 +1227,10 @@ public final class Blocks {
 
     @Nullable
     public static String getBlockFullNameById(int id) {
-        String name = getBlockNameById(id);
-        if (name == null) {
+        if (id < 0 || id >= Block.BLOCK_ID_COUNT) {
             return null;
         }
-        return "minecraft:" + name;
+        return ID_TO_BLOCK_FULL_NAME[id];
     }
 
     public static Map<String, String> getBlockAliasesMap() {
@@ -1139,18 +1241,30 @@ public final class Blocks {
         return ITEM_NAME_TO_ID;
     }
 
+    public static Object2IntMap<String> getBlockItemFullNameToIdMap() {
+        return ITEM_FULL_NAME_TO_ID;
+    }
+
     public static int getIdByItemName(String name) {
         return getIdByItemName(name, false);
     }
 
     public static int getIdByItemName(String name, boolean lookupAlias) {
-        int id = ITEM_NAME_TO_ID.getInt(name);
+        return getIdByItemShortName(name.startsWith("minecraft:") ? name.substring(10) : name, lookupAlias);
+    }
+
+    public static int getIdByItemShortName(String shortName) {
+        return getIdByItemShortName(shortName, false);
+    }
+
+    public static int getIdByItemShortName(String shortName, boolean lookupAlias) {
+        int id = ITEM_NAME_TO_ID.getInt(shortName);
         if (id != -1) {
             return id;
         }
 
         if (lookupAlias) {
-            String alias = ITEM_ALIASES_MAP.get(name);
+            String alias = ITEM_ALIASES_MAP.get(shortName);
             if (alias != null) {
                 return ITEM_NAME_TO_ID.getInt(alias);
             }
@@ -1163,13 +1277,21 @@ public final class Blocks {
     }
 
     public static int getFullIdByItemName(String name, boolean lookupAlias) {
-        int id = ITEM_NAME_TO_ID.getInt(name);
+        return getFullIdByItemShortName(name.startsWith("minecraft:") ? name.substring(10) : name, lookupAlias);
+    }
+
+    public static int getFullIdByItemShortName(String shortName) {
+        return getFullIdByItemShortName(shortName, false);
+    }
+
+    public static int getFullIdByItemShortName(String shortName, boolean lookupAlias) {
+        int id = ITEM_NAME_TO_ID.getInt(shortName);
         if (id != -1) {
             return Block.getFullId(id);
         }
 
         if (lookupAlias) {
-            String alias = ITEM_ALIASES_MAP.get(name);
+            String alias = ITEM_ALIASES_MAP.get(shortName);
             if (alias != null) {
                 id = ITEM_NAME_TO_ID.getInt(alias);
                 if (id != -1) {
@@ -1177,14 +1299,14 @@ public final class Blocks {
                 }
             }
 
-            return COMPLEX_ALIASES_MAP.getInt(name);
+            return COMPLEX_ALIASES_MAP.getInt(shortName);
         }
         return -1;
     }
 
     @Nullable
     public static String getItemNameById(int id) {
-        if (id < 0 || id >= UNDEFINED) {
+        if (id < 0 || id >= Block.BLOCK_ID_COUNT) {
             return null;
         }
         return ID_TO_ITEM_NAME[id];
@@ -1192,11 +1314,10 @@ public final class Blocks {
 
     @Nullable
     public static String getItemFullNameById(int id) {
-        String name = getItemNameById(id);
-        if (name == null) {
+        if (id < 0 || id >= Block.BLOCK_ID_COUNT) {
             return null;
         }
-        return "minecraft:" + name;
+        return ID_TO_ITEM_FULL_NAME[id];
     }
 
     public static Map<String, String> getItemAliasesMap() {
@@ -1205,6 +1326,14 @@ public final class Blocks {
 
     public static Object2IntMap<String> getComplexAliasesMap() {
         return COMPLEX_ALIASES_MAP;
+    }
+
+    public static int allocateCustomBlockId() {
+        int id = CUSTOM_BLOCK_ID_ALLOCATOR.getAndIncrement();
+        if (id >= Block.BLOCK_ID_COUNT) {
+            throw new AssertionError("Custom block ID overflow. Please increase the capacity");
+        }
+        return id;
     }
 
     public static Block air() {

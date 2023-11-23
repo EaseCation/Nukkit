@@ -6,12 +6,15 @@ import net.openhft.hashing.LongHashFunction;
 
 import java.io.IOException;
 import java.nio.ByteOrder;
+import java.nio.charset.StandardCharsets;
 import java.util.LinkedHashMap;
 import java.util.TreeMap;
 
 public final class Hash {
     private static final int FNV1_32_INIT = 0x811c9dc5;
     private static final int FNV1_PRIME_32 = 0x01000193;
+    private static final long FNV1_64_INIT = 0xcbf29ce484222325L;
+    private static final long FNV1_PRIME_64 = 0x100000001b3L;
 
     private static final LongHashFunction XXH64 = LongHashFunction.xx();
 
@@ -51,13 +54,44 @@ public final class Hash {
         return XXH64.hashVoid();
     }
 
-    private static int fnv1a_32(byte... data) {
+    public static int fnv1_32(byte... data) {
+        int hash = FNV1_32_INIT;
+        for (byte datum : data) {
+            hash *= FNV1_PRIME_32;
+            hash ^= datum & 0xff;
+        }
+        return hash;
+    }
+
+    public static long fnv1_64(byte... data) {
+        long hash = FNV1_64_INIT;
+        for (byte datum : data) {
+            hash *= FNV1_PRIME_64;
+            hash ^= datum & 0xff;
+        }
+        return hash;
+    }
+
+    public static int fnv1a_32(byte... data) {
         int hash = FNV1_32_INIT;
         for (byte datum : data) {
             hash ^= datum & 0xff;
             hash *= FNV1_PRIME_32;
         }
         return hash;
+    }
+
+    public static long fnv1a_64(byte... data) {
+        long hash = FNV1_64_INIT;
+        for (byte datum : data) {
+            hash ^= datum & 0xff;
+            hash *= FNV1_PRIME_64;
+        }
+        return hash;
+    }
+
+    public static long hashIdentifier(String identifier) {
+        return fnv1_64(identifier.getBytes(StandardCharsets.UTF_8));
     }
 
     public static int hashBlock(CompoundTag block) {

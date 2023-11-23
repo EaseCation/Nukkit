@@ -37,7 +37,6 @@ import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
 import java.util.function.Supplier;
-import java.util.regex.Pattern;
 
 import static cn.nukkit.SharedConstants.*;
 
@@ -57,6 +56,7 @@ public abstract class Block extends Position implements Metadatable, Cloneable, 
     public static final int FULL_BLOCK_COUNT = BLOCK_ID_COUNT << BLOCK_META_BITS;
     public static final int FULL_BLOCK_MASK = FULL_BLOCK_COUNT - 1;
     public static final int FULL_BLOCK_ID_MASK = BLOCK_ID_MASK << BLOCK_META_BITS;
+    public static final int CUSTOM_BLOCK_CAPACITY = BLOCK_ID_COUNT - UNDEFINED;
 
     private static boolean initialized;
     public static final Class<? extends Block>[] list = new Class[BLOCK_ID_COUNT];
@@ -83,6 +83,8 @@ public abstract class Block extends Position implements Metadatable, Cloneable, 
             return;
         }
         initialized = true;
+
+        log.debug("Custom block capacity: {}", CUSTOM_BLOCK_CAPACITY);
 
         Object2IntMap<String> metaTable; // auto-generated from development client
         try (InputStream stream = Server.class.getClassLoader().getResourceAsStream("block_meta_table.json");
@@ -319,27 +321,36 @@ public abstract class Block extends Position implements Metadatable, Cloneable, 
         return get(itemIdToBlockId(id), data);
     }
 
-    private static final Pattern integerPattern = Pattern.compile("^[1-9]\\d*$");
-
     public static Block fromString(String str) {
         return fromString(str, false);
     }
 
     public static Block fromString(String str, boolean lookupAlias) {
-        String[] b = str.trim().replace(' ', '_').replace("minecraft:", "").split(":", 2);
+        String[] split = str.split(":", 3);
 
+        String name;
         int meta;
-        if (b.length > 1) {
-            meta = Integer.parseInt(b[1]);
+        if (split.length > 2) {
+            name = split[0] + ":" + split[1];
+            meta = Integer.parseInt(split[2]);
+        } else if (split.length == 2) {
+            try {
+                meta = Integer.parseInt(split[1]);
+                name = split[0];
+            } catch (NumberFormatException e) {
+                name = str;
+                meta = 0;
+            }
         } else {
+            name = str;
             meta = 0;
         }
 
         int id;
-        if (integerPattern.matcher(b[0]).matches()) {
-            id = Integer.parseInt(b[0]);
-        } else {
-            int fullId = Blocks.getFullIdByBlockName(b[0], lookupAlias);
+        try {
+            id = Integer.parseInt(name);
+        } catch (NumberFormatException e) {
+            int fullId = Blocks.getFullIdByBlockName(name, lookupAlias);
             if (fullId != -1) {
                 id = Block.getIdFromFullId(fullId);
                 int auxVal = Block.getDamageFromFullId(fullId);
@@ -371,10 +382,6 @@ public abstract class Block extends Position implements Metadatable, Cloneable, 
 
     @Nullable
     public static Block fromIdentifier(String identifier, int meta, boolean lookupAlias) {
-        if (identifier.startsWith("minecraft:")) {
-            identifier = identifier.substring(10);
-        }
-
         int fullId = Blocks.getFullIdByBlockName(identifier, lookupAlias);
         if (fullId == -1) {
             return null;
@@ -393,10 +400,6 @@ public abstract class Block extends Position implements Metadatable, Cloneable, 
     }
 
     public static int parseFullId(String str, boolean lookupAlias) {
-        if (str.startsWith("minecraft:")) {
-            return Blocks.getFullIdByBlockName(str.substring(10), lookupAlias);
-        }
-
         try {
             return Block.getFullId(Integer.parseInt(str));
         } catch (NumberFormatException e) {
@@ -1171,6 +1174,10 @@ public abstract class Block extends Position implements Metadatable, Cloneable, 
     }
 
     public void onProjectileHit(EntityProjectile projectile, MovingObjectPosition hitResult) {
+    }
+
+    public boolean isVanilla() {
+        return true;
     }
 
     public boolean is(int id) {

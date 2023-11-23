@@ -4,6 +4,7 @@ import cn.nukkit.block.Block;
 import cn.nukkit.block.BlockID;
 import cn.nukkit.block.BlockSerializer;
 import cn.nukkit.block.BlockUpgrader;
+import cn.nukkit.block.Blocks;
 import cn.nukkit.level.GlobalBlockPalette;
 import cn.nukkit.level.biome.EnumBiome;
 import cn.nukkit.math.BlockVector3;
@@ -106,7 +107,7 @@ public class PalettedSubChunkStorage {
 
             int meta;
             String name = tag.getString("name");
-            int id = GlobalBlockPalette.getBlockIdByName(name);
+            int id = Blocks.getIdByBlockName(name);
             if (id == -1) {
                 id = Block.INFO_UPDATE;
                 meta = 0;
@@ -237,12 +238,12 @@ public class PalettedSubChunkStorage {
     }
 
     public void writeToCache(BinaryStream stream) {
-        writeToCache(stream, GlobalBlockPalette::getNameByBlockId);
+        writeToCache(stream, Blocks::getBlockFullNameById);
     }
 
     public void writeToCache(BinaryStream stream, IntFunction<String> blockIdToName) {
         if (blockIdToName == null) {
-            blockIdToName = GlobalBlockPalette::getNameByBlockId;
+            blockIdToName = Blocks::getBlockFullNameById;
         }
 
         BitArrayVersion version = bitArray.getVersion();
@@ -309,7 +310,7 @@ public class PalettedSubChunkStorage {
             }
 
             int id = fullId >> Block.BLOCK_META_BITS;
-            String name = GlobalBlockPalette.getNameByBlockId(id);
+            String name = Blocks.getBlockFullNameById(id);
             if (name == null) {
                 tagList.add(UNKNOWN_BLOCK_TAG);
                 log.warn("Unmapped block ID: {}", id);

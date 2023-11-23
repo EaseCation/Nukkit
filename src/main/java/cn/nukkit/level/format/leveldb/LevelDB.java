@@ -6,10 +6,10 @@ import cn.nukkit.Server;
 import cn.nukkit.block.Block;
 import cn.nukkit.block.BlockSerializer;
 import cn.nukkit.block.BlockUpgrader;
+import cn.nukkit.block.Blocks;
 import cn.nukkit.blockentity.BlockEntity;
 import cn.nukkit.entity.Entity;
 import cn.nukkit.level.GameRules;
-import cn.nukkit.level.GlobalBlockPalette;
 import cn.nukkit.level.Level;
 import cn.nukkit.level.LevelCreationOptions;
 import cn.nukkit.level.biome.Biome;
@@ -259,7 +259,7 @@ public class LevelDB implements LevelProvider {
         levelData.putByteIfAbsent("isExportedFromEditor", 0);
         levelData.putStringIfAbsent("BiomeOverride", "");
         levelData.putStringIfAbsent("FlatWorldLayers", DEFAULT_FLAT_WORLD_LAYERS);
-        levelData.putCompoundIfAbsent("world_policies", new CompoundTag(Collections.emptyMap()));
+        levelData.putCompoundIfAbsent("world_policies", new CompoundTag());
         levelData.putCompoundIfAbsent("experiments", new CompoundTag()
                 .putByte("experiments_ever_used", 0)
                 .putByte("saved_with_toggled_experiments", 0));
@@ -1250,7 +1250,7 @@ public class LevelDB implements LevelProvider {
                     block = Block.get(fullId >> Block.BLOCK_META_BITS, fullId & Block.BLOCK_META_MASK);
                 } else {
                     String name = blockState.getString("name");
-                    int id = GlobalBlockPalette.getBlockIdByName(name);
+                    int id = Blocks.getIdByBlockName(name);
                     if (id == -1) {
                         log.warn("Unmapped block name: {}", name);
                         continue;
@@ -1292,7 +1292,7 @@ public class LevelDB implements LevelProvider {
                 blockTag = BlockSerializer.serializeRuntime(block.getFullId());
             } else {
                 int id = block.getId();
-                String name = GlobalBlockPalette.getNameByBlockId(id);
+                String name = Blocks.getBlockFullNameById(id);
                 if (name == null) {
                     log.warn("Unmapped block ID: {}", id);
                     continue;

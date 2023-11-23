@@ -2,8 +2,8 @@ package cn.nukkit.blockentity;
 
 import cn.nukkit.block.Block;
 import cn.nukkit.block.BlockSerializer;
+import cn.nukkit.block.Blocks;
 import cn.nukkit.item.Item;
-import cn.nukkit.level.GlobalBlockPalette;
 import cn.nukkit.level.format.FullChunk;
 import cn.nukkit.nbt.NBTIO;
 import cn.nukkit.nbt.tag.CompoundTag;
@@ -39,7 +39,7 @@ public class BlockEntityFlowerPot extends BlockEntitySpawnable {
                 }
 
                 plantBlock = NBTIO.getBlockHelper(new CompoundTag()
-                        .putString("name", GlobalBlockPalette.getNameByBlockId(Block.itemIdToBlockId(id)))
+                        .putString("name", Blocks.getBlockFullNameById(Block.itemIdToBlockId(id)))
                         .putShort("val", meta));
 
                 if (plantBlock.isAir() || plantBlock.getId() == Block.INFO_UPDATE) {

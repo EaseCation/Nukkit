@@ -467,7 +467,7 @@ public class LevelDbSubChunk implements ChunkSection {
 
     @Override
     public boolean writeToCache(BinaryStream stream) {
-        return writeToCache(stream, GlobalBlockPalette::getNameByBlockId);
+        return writeToCache(stream, Blocks::getBlockFullNameById);
     }
 
     @Override

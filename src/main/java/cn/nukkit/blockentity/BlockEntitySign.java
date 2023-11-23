@@ -187,13 +187,13 @@ public class BlockEntitySign extends BlockEntitySpawnable {
                 //TODO: 1.19.80+
                 .putBoolean("IsWaxed", false)
                 .putLong("LockedForEditingBy", -1) // editing player actor runtime id
-                .putCompound("FrontText", new CompoundTag(5)
+                .putCompound("FrontText", new CompoundTag()
                         .putString("Text", text)
                         .putInt("SignTextColor", argb)
                         .putBoolean("IgnoreLighting", glow)
                         .putBoolean("PersistFormatting", persistFormatting)
                         .putString("TextOwner", ""))
-                .putCompound("BackText", new CompoundTag(5)
+                .putCompound("BackText", new CompoundTag()
                         .putString("Text", "")
                         .putInt("SignTextColor", 0xff_00_00_00)
                         .putBoolean("IgnoreLighting", false)

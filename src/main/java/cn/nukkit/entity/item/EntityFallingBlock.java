@@ -7,6 +7,7 @@ import cn.nukkit.block.BlockID;
 import cn.nukkit.block.BlockLiquid;
 import cn.nukkit.block.BlockSerializer;
 import cn.nukkit.block.BlockSnowLayer;
+import cn.nukkit.block.Blocks;
 import cn.nukkit.block.SupportType;
 import cn.nukkit.entity.Entity;
 import cn.nukkit.entity.EntityID;
@@ -18,7 +19,6 @@ import cn.nukkit.event.entity.EntityDamageEvent;
 import cn.nukkit.event.entity.EntityDamageEvent.DamageCause;
 import cn.nukkit.item.Item;
 import cn.nukkit.level.GameRule;
-import cn.nukkit.level.GlobalBlockPalette;
 import cn.nukkit.level.format.FullChunk;
 import cn.nukkit.math.BlockFace;
 import cn.nukkit.math.Vector3;
@@ -93,7 +93,7 @@ public class EntityFallingBlock extends Entity {
 
             if (id != Block.AIR) {
                 block = NBTIO.getBlockHelper(new CompoundTag()
-                        .putString("name", GlobalBlockPalette.getNameByBlockId(id))
+                        .putString("name", Blocks.getBlockFullNameById(id))
                         .putShort("val", meta));
 
                 if (block.getId() == Block.INFO_UPDATE) {

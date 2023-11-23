@@ -2,6 +2,7 @@ package cn.nukkit.level.format.generic;
 
 import cn.nukkit.Nukkit;
 import cn.nukkit.Server;
+import cn.nukkit.block.Blocks;
 import cn.nukkit.blockentity.BlockEntity;
 import cn.nukkit.blockentity.BlockEntitySpawnable;
 import cn.nukkit.level.GlobalBlockPalette;
@@ -275,7 +276,7 @@ public class ChunkRequestTask extends AsyncTask<Void> {
 
             for (int i = 0; i < count; i++) {
                 stream.reuse();
-                emptySection[i] = sections[i].writeToCache(stream, GlobalBlockPalette::getNameByBlockId);
+                emptySection[i] = sections[i].writeToCache(stream, Blocks::getBlockFullNameById);
                 byte[] subChunk = stream.getBuffer();
 
                 long hash = Hash.xxh64(subChunk);

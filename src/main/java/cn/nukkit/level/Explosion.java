@@ -28,7 +28,6 @@ import cn.nukkit.network.protocol.LevelSoundEventPacket;
 import cn.nukkit.utils.Hash;
 import it.unimi.dsi.fastutil.longs.LongArraySet;
 import it.unimi.dsi.fastutil.longs.LongSet;
-import it.unimi.dsi.fastutil.objects.Object2ObjectOpenHashMap;
 import it.unimi.dsi.fastutil.objects.ObjectArrayList;
 import it.unimi.dsi.fastutil.objects.ObjectOpenHashSet;
 
@@ -413,7 +412,7 @@ public class Explosion {
         }
 
         int count = smokePositions.size();
-        CompoundTag data = new CompoundTag(new Object2ObjectOpenHashMap<>(count + 3 + 2))
+        CompoundTag data = new CompoundTag()
                 .putFloat("originX", (float) this.source.x)
                 .putFloat("originY", (float) this.source.y)
                 .putFloat("originZ", (float) this.source.z)

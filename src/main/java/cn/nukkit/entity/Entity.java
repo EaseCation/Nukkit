@@ -2541,6 +2541,10 @@ public abstract class Entity extends Location implements Metadatable, EntityData
         return 0;
     }
 
+    public boolean isVanilla() {
+        return true;
+    }
+
     @Override
     public boolean equals(Object obj) {
         if (obj == null) {

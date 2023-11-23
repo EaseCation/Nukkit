@@ -2,6 +2,7 @@ package cn.nukkit.item;
 
 import cn.nukkit.nbt.tag.CompoundTag;
 
+import javax.annotation.Nullable;
 import java.util.Objects;
 
 public class ItemSerializer {
@@ -35,8 +36,12 @@ public class ItemSerializer {
         INSTANCE.registerItemAux(identifier, id, meta);
     }
 
-    public static void registerCustomItem(String identifier, int id, CompoundTag component) {
-        INSTANCE.registerCustomItem(identifier, id, component);
+    public static void registerCustomItem(String fullName, int id, @Nullable CompoundTag components) {
+        INSTANCE.registerCustomItem(fullName, id, components);
+    }
+
+    public static void registerCustomBlockItem(String fullName, int itemId) {
+        INSTANCE.registerCustomBlockItem(fullName, itemId);
     }
 
     public static void rebuildRuntimeMapping() {
@@ -56,7 +61,9 @@ public class ItemSerializer {
 
         void registerItemAux(String identifier, int id, int meta);
 
-        void registerCustomItem(String identifier, int id, CompoundTag component);
+        void registerCustomItem(String fullName, int id, @Nullable CompoundTag components);
+
+        void registerCustomBlockItem(String fullName, int itemId);
 
         void rebuildRuntimeMapping();
     }

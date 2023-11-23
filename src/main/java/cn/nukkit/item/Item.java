@@ -27,7 +27,6 @@ import javax.annotation.Nullable;
 import java.io.IOException;
 import java.nio.ByteOrder;
 import java.util.*;
-import java.util.regex.Pattern;
 
 /**
  * author: MagicDroidX
@@ -243,32 +242,36 @@ public class Item implements Cloneable, ItemID {
         }
     }
 
-    private static final Pattern integerPattern = Pattern.compile("^[-1-9]\\d*$");
-
     public static Item fromString(String str) {
         return fromString(str, false);
     }
 
     public static Item fromString(String str, boolean lookupAlias) {
-        OptionalInt itemIdFromIdentifier = Items.getCustomItemIdFromIdentifier(str);
-        if (itemIdFromIdentifier.isPresent()) {
-            return get(itemIdFromIdentifier.getAsInt());
-        }
+        String[] split = str.split(":", 3);
 
-        String[] b = str.trim().replace(' ', '_').replace("minecraft:", "").split(":", 2);
-
+        String name;
         int meta;
-        if (b.length != 1) {
-            meta = Integer.parseInt(b[1]) & 0xFFFF;
+        if (split.length > 2) {
+            name = split[0] + ":" + split[1];
+            meta = Integer.parseInt(split[2]) & 0xffff;
+        } else if (split.length == 2) {
+            try {
+                meta = Integer.parseInt(split[1]) & 0xFFFF;
+                name = split[0];
+            } catch (NumberFormatException e) {
+                name = str;
+                meta = 0;
+            }
         } else {
+            name = str;
             meta = 0;
         }
 
         int id;
-        if (integerPattern.matcher(b[0]).matches()) {
-            id = Integer.parseInt(b[0]);
-        } else {
-            int fullId = Items.getFullIdByName(b[0], true, lookupAlias);
+        try {
+            id = Integer.parseInt(name);
+        } catch (NumberFormatException e) {
+            int fullId = Items.getFullIdByName(name, true, lookupAlias);
             if (fullId != Integer.MIN_VALUE) {
                 id = Item.getIdFromFullId(fullId);
                 int auxVal = Item.getMetaFromFullId(fullId);
@@ -300,10 +303,6 @@ public class Item implements Cloneable, ItemID {
 
     @Nullable
     public static Item fromIdentifier(String identifier, int meta, boolean lookupAlias) {
-        if (identifier.startsWith("minecraft:")) {
-            identifier = identifier.substring(10);
-        }
-
         int fullId = Items.getFullIdByName(identifier, true, lookupAlias);
         if (fullId == Integer.MIN_VALUE) {
             return null;
@@ -356,10 +355,6 @@ public class Item implements Cloneable, ItemID {
     }
 
     public static int parseFullId(String str, boolean lookupAlias) {
-        if (str.startsWith("minecraft:")) {
-            return Items.getFullIdByName(str.substring(10), true, lookupAlias);
-        }
-
         try {
             return Item.getFullId(Integer.parseInt(str));
         } catch (NumberFormatException e) {
@@ -1286,5 +1281,9 @@ public class Item implements Cloneable, ItemID {
 
     public void setCanDestroyBlocks(@Nullable Set<String> canDestroyBlocks) {
         this.canDestroyBlocks = canDestroyBlocks;
+    }
+
+    public boolean isVanilla() {
+        return true;
     }
 }

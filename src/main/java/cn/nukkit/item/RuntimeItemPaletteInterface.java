@@ -2,6 +2,8 @@ package cn.nukkit.item;
 
 import lombok.ToString;
 
+import javax.annotation.Nullable;
+
 public interface RuntimeItemPaletteInterface {
 
     int getNetworkFullId0(Item item);
@@ -21,11 +23,13 @@ public interface RuntimeItemPaletteInterface {
 
         public final String name;
         public final int id;
+        @Nullable
         public final Integer oldId;
+        @Nullable
         public final Integer oldData;
         public final boolean component;
 
-        public Entry(String name, int id, Integer oldId, Integer oldData, boolean component) {
+        public Entry(String name, int id, @Nullable Integer oldId, @Nullable Integer oldData, boolean component) {
             this.name = name;
             this.id = id;
             this.oldId = oldId;

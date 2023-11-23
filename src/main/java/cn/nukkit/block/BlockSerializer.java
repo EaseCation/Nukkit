@@ -36,6 +36,14 @@ public class BlockSerializer {
         return RUNTIME_SERIALIZER.deserialize(tag);
     }
 
+    public static void registerCustomBlock(String name, int id, CompoundTag definition) {
+        RUNTIME_SERIALIZER.registerCustomBlock(name, id, definition);
+    }
+
+    public static void rebuildPalette() {
+        RUNTIME_SERIALIZER.rebuildPalette();
+    }
+
 //    public interface BlockInstanceSerializer {
 //        CompoundTag serialize(Block block);
 //
@@ -46,5 +54,9 @@ public class BlockSerializer {
         CompoundTag serialize(int fullId);
 
         int deserialize(CompoundTag tag);
+
+        void registerCustomBlock(String name, int id, CompoundTag definition);
+
+        void rebuildPalette();
     }
 }
