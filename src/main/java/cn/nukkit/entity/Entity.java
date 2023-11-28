@@ -842,14 +842,16 @@ public abstract class Entity extends Location implements Metadatable, EntityData
 
     public void saveNBT() {
         if (!(this instanceof Player)) {
-            EntityEntry entry = BY_CLASS.get(this.getClass());
+            this.namedTag.putString("id", this.getSaveId()); // remove?
+            this.namedTag.putString("identifier", this.getIdentifier());
+            /*EntityEntry entry = BY_CLASS.get(this.getClass());
             if (entry != null) {
                 this.namedTag.putString("id", entry.name); // remove?
                 this.namedTag.putString("identifier", entry.identifier);
             } else {
                 this.namedTag.putString("id", "");
                 this.namedTag.putString("identifier", ":");
-            }
+            }*/
 
             if (!this.getNameTag().isEmpty()) {
                 this.namedTag.putString("CustomName", this.getNameTag());
