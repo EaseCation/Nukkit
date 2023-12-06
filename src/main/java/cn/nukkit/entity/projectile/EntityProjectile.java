@@ -47,8 +47,8 @@ public abstract class EntityProjectile extends Entity {
 
     protected double damage = 0;
 
-    protected float knockBackH = EntityDamageByEntityEvent.GLOBAL_KNOCKBACK_H;
-    protected float knockBackV = EntityDamageByEntityEvent.GLOBAL_KNOCKBACK_V;
+    protected float knockBackH;
+    protected float knockBackV;
 
     public static final int PICKUP_NONE = 0;
     public static final int PICKUP_ANY = 1;
@@ -182,15 +182,23 @@ public abstract class EntityProjectile extends Entity {
 
         entityHitCount = namedTag.getByte("PierceLevel") + 1;
 
+        boolean knockbackSet = false;
         if (this.namedTag.contains("Knockback")) {
             this.knockBackH = this.namedTag.getFloat("Knockback");
             this.knockBackV = this.namedTag.getFloat("Knockback");
+            knockbackSet = true;
         }
         if (this.namedTag.contains("KnockbackH")) {
             this.knockBackH = this.namedTag.getFloat("KnockbackH");
+            knockbackSet = true;
         }
         if (this.namedTag.contains("KnockbackV")) {
             this.knockBackV = this.namedTag.getFloat("KnockbackV");
+            knockbackSet = true;
+        }
+        if (!knockbackSet) {
+            this.knockBackH = EntityDamageByEntityEvent.GLOBAL_KNOCKBACK_H;
+            this.knockBackV = EntityDamageByEntityEvent.GLOBAL_KNOCKBACK_V;
         }
     }
 

@@ -241,11 +241,13 @@ public abstract class EntityLiving extends Entity implements EntityDamageable {
         }
 
         // 修正击退方向
-        double length = Math.sqrt(motion.x * motion.x + motion.z * motion.z);
-        length = Math.min(Math.max(length, 0.2), 0.58);
-        Vector2 multiply = new Vector2(x, z).normalize().multiply(length);
-        motion.x = multiply.x;
-        motion.z = multiply.y;
+        if (baseH > 0) {
+            double length = Math.sqrt(motion.x * motion.x + motion.z * motion.z);
+            length = Math.min(Math.max(length, 0.2), 0.58);
+            Vector2 multiply = new Vector2(x, z).normalize().multiply(length);
+            motion.x = multiply.x;
+            motion.z = multiply.y;
+        }
 
         //this.getServer().getLogger().debug("[knockback] xz=" + new Vector2(motion.x, motion.z).length() + " y=" + motion.y);
 
