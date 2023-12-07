@@ -11,7 +11,7 @@
         <maven.compiler.source>17</maven.compiler.source>
         <maven.compiler.target>17</maven.compiler.target>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-        <junit.jupiter.version>5.10.0</junit.jupiter.version>
+        <junit.jupiter.version>5.10.1</junit.jupiter.version>
         <log4j2.version>2.21.1</log4j2.version>
         <jackson.version>2.15.3</jackson.version>
         <jline.version>3.24.1</jline.version>
