@@ -48,7 +48,12 @@ import static cn.nukkit.SharedConstants.*;
 public abstract class Block extends Position implements Metadatable, Cloneable, AxisAlignedBB, BlockID {
 
     // Nukkit runtime definitions
-    public static final int BLOCK_ID_COUNT = Mth.smallestEncompassingPowerOfTwo(UNDEFINED);
+    public static final int CUSTOM_BLOCK_FIRST_ID = 1000;
+    /**
+     * @since 1.20.50
+     */
+    public static final int CUSTOM_BLOCK_FIRST_ID_NEW = 10000;
+    public static final int BLOCK_ID_COUNT = Mth.smallestEncompassingPowerOfTwo(UNDEFINED + CUSTOM_BLOCK_FIRST_ID_NEW);
     public static final int BLOCK_ID_MASK = BLOCK_ID_COUNT - 1;
     public static final int BLOCK_META_COUNT = Mth.smallestEncompassingPowerOfTwo(5469); // wtf cobblestone_wall
     public static final int BLOCK_META_MASK = BLOCK_META_COUNT - 1;
@@ -56,7 +61,7 @@ public abstract class Block extends Position implements Metadatable, Cloneable, 
     public static final int FULL_BLOCK_COUNT = BLOCK_ID_COUNT << BLOCK_META_BITS;
     public static final int FULL_BLOCK_MASK = FULL_BLOCK_COUNT - 1;
     public static final int FULL_BLOCK_ID_MASK = BLOCK_ID_MASK << BLOCK_META_BITS;
-    public static final int CUSTOM_BLOCK_CAPACITY = BLOCK_ID_COUNT - UNDEFINED;
+    public static final int CUSTOM_BLOCK_CAPACITY = BLOCK_ID_COUNT - CUSTOM_BLOCK_FIRST_ID_NEW;
 
     private static boolean initialized;
     public static final Class<? extends Block>[] list = new Class[BLOCK_ID_COUNT];

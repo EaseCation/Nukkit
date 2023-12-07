@@ -69,7 +69,7 @@ public interface ProtocolInfo {
     int INVENTORY_SLOT_PACKET = 0x32; // 50 c
     int CONTAINER_SET_DATA_PACKET = 0x33; // 51 c
     int CRAFTING_DATA_PACKET = 0x34; // 52 c
-    int CRAFTING_EVENT_PACKET = 0x35; // 53 s
+    int CRAFTING_EVENT_PACKET = 0x35; // 53 s D
     int GUI_DATA_PICK_ITEM_PACKET = 0x36; // 54 c
     int ADVENTURE_SETTINGS_PACKET = 0x37; // 55 cs D
     int BLOCK_ACTOR_DATA_PACKET = 0x38; // 56 cs
@@ -249,7 +249,9 @@ public interface ProtocolInfo {
     int TRIM_DATA_PACKET = 0x12e; // 302 c
     int OPEN_SIGN_PACKET = 0x12f; // 303 c
     int AGENT_ANIMATION_PACKET = 0x130; // 304 c
-    int REFRESH_ENTITLEMENTS_PACKET = 0x131; // 305
+    int REFRESH_ENTITLEMENTS_PACKET = 0x131; // 305 c
+    int PLAYER_TOGGLE_CRAFTER_SLOT_REQUEST_PACKET = 0x132; // 306 s
+    int SET_PLAYER_INVENTORY_OPTIONS_PACKET = 0x133; // 307 cs
 
 
     int COUNT = 1024;

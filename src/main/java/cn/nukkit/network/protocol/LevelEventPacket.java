@@ -94,6 +94,7 @@ public class LevelEventPacket extends DataPacket {
     public static final int EVENT_PARTICLE_SCULK_CHARGE = 2037;
     public static final int EVENT_PARTICLE_SCULK_CHARGE_POP = 2038;
     public static final int EVENT_PARTICLE_SONIC_EXPLOSION = 2039;
+    public static final int EVENT_PARTICLE_DUST_PLUME = 2040;
 
     public static final int EVENT_START_RAIN = 3001;
     public static final int EVENT_START_THUNDER = 3002;
@@ -129,6 +130,7 @@ public class LevelEventPacket extends DataPacket {
     public static final int EVENT_PARTICLE_PUNCH_BLOCK_SOUTH = 3606;
     public static final int EVENT_PARTICLE_PUNCH_BLOCK_WEST = 3607;
     public static final int EVENT_PARTICLE_PUNCH_BLOCK_EAST = 3608;
+    public static final int EVENT_PARTICLE_SHOOT_WHITE_SMOKE = 3609;
 
     public static final int EVENT_SET_DATA = 4000;
 

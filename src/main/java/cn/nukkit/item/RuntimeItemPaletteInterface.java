@@ -29,6 +29,10 @@ public interface RuntimeItemPaletteInterface {
         public final Integer oldData;
         public final boolean component;
 
+        public Entry(String name, int id, @Nullable Integer oldId, @Nullable Integer oldData) {
+            this(name, id, oldId, oldData, false);
+        }
+
         public Entry(String name, int id, @Nullable Integer oldId, @Nullable Integer oldData, boolean component) {
             this.name = name;
             this.id = id;

@@ -1,6 +1,7 @@
 package cn.nukkit.utils;
 
 import com.fasterxml.jackson.core.StreamReadConstraints;
+import com.fasterxml.jackson.core.StreamWriteConstraints;
 import com.fasterxml.jackson.core.json.JsonReadFeature;
 import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.json.JsonMapper;
@@ -22,6 +23,11 @@ public class JsonUtil {
                         .maxNestingDepth(Integer.MAX_VALUE)
                         .maxNumberLength(Integer.MAX_VALUE)
                         .maxStringLength(Integer.MAX_VALUE)
+                        .maxNameLength(Integer.MAX_VALUE)
+                        .maxDocumentLength(0) // unlimited
+                        .build())
+                .setStreamWriteConstraints(StreamWriteConstraints.builder()
+                        .maxNestingDepth(Integer.MAX_VALUE)
                         .build());
     }
 }

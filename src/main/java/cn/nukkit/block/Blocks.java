@@ -39,7 +39,7 @@ public final class Blocks {
 
     private static final Object2IntMap<String> COMPLEX_ALIASES_MAP = new Object2IntOpenHashMap<>();
 
-    private static final AtomicInteger CUSTOM_BLOCK_ID_ALLOCATOR = new AtomicInteger(1000); //TODO: 1.20.50
+    private static final AtomicInteger CUSTOM_BLOCK_ID_ALLOCATOR = new AtomicInteger(Block.CUSTOM_BLOCK_FIRST_ID_NEW);
 
     static {
         BLOCK_NAME_TO_ID.defaultReturnValue(-1);

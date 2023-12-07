@@ -45,6 +45,8 @@ public final class SharedConstants {
 
     public static final boolean ENABLE_BLOCK_DESTROY_SPEED_COMPATIBILITY = true;
 
+    // deprecated
+
     public static final boolean ENABLE_BLOCK_STATE_PERSISTENCE = true;
 
     public static final boolean ENABLE_ITEM_NAME_PERSISTENCE = true;

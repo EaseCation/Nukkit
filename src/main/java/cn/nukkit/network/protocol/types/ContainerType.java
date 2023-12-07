@@ -39,4 +39,6 @@ public interface ContainerType {
     int JIGSAW_EDITOR = 32;
     int SMITHING_TABLE = 33;
     int CHEST_BOAT = 34;
+    int DECORATED_POT = 35;
+    int CRAFTER = 36;
 }

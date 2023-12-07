@@ -42,6 +42,7 @@ public enum ParticleEffect {
     DRAGON_DYING_EXPLOSION("minecraft:dragon_dying_explosion"),
     DRIPSTONE_LAVA_DRIP("minecraft:stalactite_lava_drip_particle"),
     DRIPSTONE_WATER_DRIP("minecraft:stalactite_water_drip_particle"),
+    DUST_PLUME("minecraft:dust_plume"),
     ELECTRIC_SPARK("minecraft:electric_spark_particle"),
     ENCHANTING_TABLE_PARTICLE("minecraft:enchanting_table_particle"),
     ENDROD("minecraft:endrod"),
