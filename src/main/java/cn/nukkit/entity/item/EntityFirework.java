@@ -22,6 +22,7 @@ import cn.nukkit.nbt.tag.CompoundTag;
 import cn.nukkit.nbt.tag.ListTag;
 import cn.nukkit.network.protocol.EntityEventPacket;
 import cn.nukkit.network.protocol.LevelSoundEventPacket;
+import lombok.Setter;
 
 import javax.annotation.Nullable;
 import java.util.Random;
@@ -41,6 +42,8 @@ public class EntityFirework extends Entity {
     private Item firework;
     @Nullable
     private Entity attached;
+    @Setter
+    private boolean calculateAttack = true;
 
     public EntityFirework(FullChunk chunk, CompoundTag nbt) {
         this(chunk, nbt, false);
@@ -132,7 +135,7 @@ public class EntityFirework extends Entity {
                 pk.eid = this.getId();
                 Server.broadcastPacket(getViewers().values(), pk);
 
-                if (firework instanceof ItemFirework) {
+                if (calculateAttack && firework instanceof ItemFirework) {
                     ItemFirework firework = (ItemFirework) this.firework;
                     CompoundTag nbt = firework.getNamedTag();
                     if (nbt != null) {
