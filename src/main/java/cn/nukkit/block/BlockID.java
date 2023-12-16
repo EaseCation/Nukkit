@@ -463,6 +463,7 @@ public interface BlockID {
     int BUBBLE_COLUMN = 415;
     int BARRIER = 416;
     int STONE_SLAB3 = 417;
+    int POLISHED_DIORITE_SLAB = 417;
     int BAMBOO = 418;
     int BAMBOO_SAPLING = 419;
     int SCAFFOLDING = 420;
