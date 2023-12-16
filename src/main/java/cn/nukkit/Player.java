@@ -1570,7 +1570,7 @@ public class Player extends EntityHuman implements CommandSender, InventoryHolde
                 Block[] blocks = this.level.getCollisionBlocks(bb);
                 this.onGround = blocks.length > 0;
 
-                if (!swimming && !onGroundPrev && onGround && !isInsideOfWater(false)) {
+                if (!this.isRiding() && !swimming && !onGroundPrev && onGround && !isInsideOfWater(false)) {
                     level.addLevelSoundEvent(this, LevelSoundEventPacket.SOUND_LAND, blocks[0].getFullId(), "minecraft:player");
                 }
             }
