@@ -79,9 +79,10 @@ public class EntitySnowball extends EntityProjectile {
     @Override
     protected void onHit(MovingObjectPosition hitResult) {
         super.onHit(hitResult);
-
-        for (int i = 0; i < 6; i++) {
-            level.addParticle(new GenericParticle(this, Particle.SNOWBALL_POOF));
+        if (!this.getViewers().isEmpty()) {
+            for (int i = 0; i < 6; i++) {
+                level.addParticle(new GenericParticle(this, Particle.SNOWBALL_POOF), this.getViewers().values());
+            }
         }
     }
 }
