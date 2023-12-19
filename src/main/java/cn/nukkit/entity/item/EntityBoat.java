@@ -47,6 +47,7 @@ public class EntityBoat extends EntityVehicle {
 
     protected boolean sinking = true;
     public int woodID;
+    private boolean autoMount = true;
 
     public EntityBoat(FullChunk chunk, CompoundTag nbt) {
         super(chunk, nbt);
@@ -58,6 +59,9 @@ public class EntityBoat extends EntityVehicle {
     @Override
     protected void initEntity() {
         super.initEntity();
+        if (this.namedTag.contains("AutoMount")) {
+            this.autoMount = this.namedTag.getBoolean("AutoMount");
+        }
 
         this.setDataFlag(DATA_FLAG_STACKABLE, true, false);
         this.setDataFlag(DATA_FLAG_GRAVITY, true, false);
@@ -95,6 +99,10 @@ public class EntityBoat extends EntityVehicle {
     @Override
     public int getNetworkId() {
         return NETWORK_ID;
+    }
+
+    public void setAutoMount(boolean autoMount) {
+        this.autoMount = autoMount;
     }
 
     @Override
@@ -224,7 +232,7 @@ public class EntityBoat extends EntityVehicle {
             //TODO: lily pad collision
             this.updateMovement();
 
-            if (this.passengers.size() < 2) {
+            if (this.autoMount && this.passengers.size() < 2) {
                 for (Entity entity : this.level.getCollidingEntities(this.boundingBox.grow(0.2, 0, 0.2), this)) {
                     if (entity.riding != null || isPassenger(entity)) {
                         continue;
