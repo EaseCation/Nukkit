@@ -4381,7 +4381,7 @@ public class Level implements ChunkManager, Metadatable {
     }
 
     public boolean setRaining(boolean raining, int intensity) {
-        WeatherChangeEvent ev = new WeatherChangeEvent(this, raining);
+        WeatherChangeEvent ev = new WeatherChangeEvent(this, raining, intensity);
         this.getServer().getPluginManager().callEvent(ev);
 
         if (ev.isCancelled()) {
@@ -4389,7 +4389,7 @@ public class Level implements ChunkManager, Metadatable {
         }
 
         this.raining = raining;
-        this.rainingIntensity = intensity;
+        this.rainingIntensity = ev.getIntensity();
 
         LevelEventPacket pk = new LevelEventPacket();
         // These numbers are from Minecraft
