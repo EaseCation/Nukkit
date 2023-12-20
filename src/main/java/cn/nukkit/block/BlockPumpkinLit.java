@@ -28,4 +28,8 @@ public class BlockPumpkinLit extends BlockPumpkin {
         return 15;
     }
 
+    @Override
+    public boolean canBeActivated() {
+        return false;
+    }
 }

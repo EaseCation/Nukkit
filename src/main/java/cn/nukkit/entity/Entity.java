@@ -1883,7 +1883,7 @@ public abstract class Entity extends Location implements Metadatable, EntityData
             AxisAlignedBB bb = this.boundingBox.clone();
             bb.setMinY(bb.getMinY() - 0.75);
 
-            this.onGround = this.level.getCollisionBlocks(bb).length > 0;
+            this.onGround = this.level.getCollisionBlocks(bb, true).length > 0;
         }
         this.isCollided = this.onGround;
         this.updateFallState(this.onGround);

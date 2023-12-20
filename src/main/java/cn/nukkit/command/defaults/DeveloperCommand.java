@@ -1,5 +1,7 @@
 package cn.nukkit.command.defaults;
 
+import cn.nukkit.Player;
+import cn.nukkit.Server;
 import cn.nukkit.block.Block;
 import cn.nukkit.command.Command;
 import cn.nukkit.command.CommandParser;
@@ -11,11 +13,16 @@ import cn.nukkit.command.data.CommandParamType;
 import cn.nukkit.command.data.CommandParameter;
 import cn.nukkit.command.exceptions.CommandExceptions;
 import cn.nukkit.command.exceptions.CommandSyntaxException;
+import cn.nukkit.entity.Entity;
 import cn.nukkit.lang.TranslationContainer;
 import cn.nukkit.level.Position;
+import cn.nukkit.network.protocol.EntityEventPacket;
+import cn.nukkit.network.protocol.LevelEventPacket;
+import cn.nukkit.network.protocol.LevelSoundEventPacket;
 import cn.nukkit.network.protocol.TextPacket;
 
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 import java.util.Optional;
@@ -69,6 +76,27 @@ public class DeveloperCommand extends Command {
         this.commandParameters.put("heightmap", new CommandParameter[]{
                 CommandParameter.newEnum("subCommand", new CommandEnum("SubCommandHeightmap", "heightmap")),
                 CommandParameter.newType("position", true, CommandParamType.POSITION),
+        });
+        this.commandParameters.put("levelEv", new CommandParameter[]{
+                CommandParameter.newEnum("subCommand", new CommandEnum("SubCommandLevelEvent", "levelev")),
+                CommandParameter.newType("position", CommandParamType.POSITION),
+                CommandParameter.newType("event", CommandParamType.INT),
+                CommandParameter.newType("data", true, CommandParamType.INT),
+        });
+        this.commandParameters.put("soundEv", new CommandParameter[]{
+                CommandParameter.newEnum("subCommand", new CommandEnum("SubCommandSoundEvent", "soundev")),
+                CommandParameter.newType("position", CommandParamType.POSITION),
+                CommandParameter.newType("event", CommandParamType.INT),
+                CommandParameter.newType("data", true, CommandParamType.INT),
+                CommandParameter.newEnum("entity", true, CommandEnum.ENUM_ENTITY_TYPE),
+                CommandParameter.newEnum("baby", true, CommandEnum.ENUM_BOOLEAN),
+                CommandParameter.newEnum("global", true, CommandEnum.ENUM_BOOLEAN),
+        });
+        this.commandParameters.put("actorEv", new CommandParameter[]{
+                CommandParameter.newEnum("subCommand", new CommandEnum("SubCommandActorEvent", "actorev")),
+                CommandParameter.newType("entity", CommandParamType.TARGET),
+                CommandParameter.newType("event", CommandParamType.INT),
+                CommandParameter.newType("data", true, CommandParamType.INT),
         });
     }
 
@@ -153,7 +181,10 @@ public class DeveloperCommand extends Command {
                 Block block;
                 String blockName = args[6];
                 try {
-                    block = Block.fromString(blockName, true);
+                    block = Block.fromStringNullable(blockName, true);
+                    if (block == null) {
+                        throw CommandExceptions.COMMAND_SYNTAX_EXCEPTION;
+                    }
                 } catch (Exception e) {
                     sender.sendMessage(new TranslationContainer("commands.setblock.notFound", blockName));
                     return false;
@@ -201,6 +232,90 @@ public class DeveloperCommand extends Command {
                     int height = pos.getLevel().getHeightMap(x, z);
 
                     sender.sendMessage("heightmap: " + x + ", " + z + " = " + height + " (" + (height >> 4) + " | " + (height & 0xf) +  ")");
+                    return true;
+                } catch (CommandSyntaxException e) {
+                    sender.sendMessage(parser.getErrorMessage());
+                }
+                return false;
+            }
+            case "levelev": {
+                CommandParser parser = new CommandParser(this, sender, args);
+                try {
+                    parser.literal();
+                    Position pos = parser.parsePositionOrDefault(() -> sender instanceof Position ? (Position) sender : new Position(0, 0, 0, sender.getServer().getDefaultLevel()));
+                    int event = parser.parseInt();
+                    int data = parser.parseIntOrDefault(0);
+
+                    LevelEventPacket packet = new LevelEventPacket();
+                    packet.x = (float) pos.x;
+                    packet.y = (float) pos.y;
+                    packet.z = (float) pos.z;
+                    packet.evid = event;
+                    packet.data = data;
+                    if (sender instanceof Player player) {
+                        player.dataPacket(packet);
+                    } else {
+                        pos.level.addChunkPacket(pos.getChunkX(), pos.getChunkZ(), packet);
+                    }
+                    sender.sendMessage(packet.toString());
+                    return true;
+                } catch (CommandSyntaxException e) {
+                    sender.sendMessage(parser.getErrorMessage());
+                }
+                return false;
+            }
+            case "soundev": {
+                CommandParser parser = new CommandParser(this, sender, args);
+                try {
+                    parser.literal();
+                    Position pos = parser.parsePositionOrDefault(() -> sender instanceof Position ? (Position) sender : new Position(0, 0, 0, sender.getServer().getDefaultLevel()));
+                    int event = parser.parseInt();
+                    int data = parser.parseIntOrDefault(0);
+                    String entityType = parser.literalOrDefault(":");
+                    boolean baby = parser.parseBooleanOrDefault(false);
+                    boolean global = parser.parseBooleanOrDefault(false);
+
+                    LevelSoundEventPacket packet = new LevelSoundEventPacket();
+                    packet.x = (float) pos.x;
+                    packet.y = (float) pos.y;
+                    packet.z = (float) pos.z;
+                    packet.sound = event;
+                    packet.extraData = data;
+                    packet.entityIdentifier = entityType;
+                    packet.isBabyMob = baby;
+                    packet.isGlobal = global;
+                    if (sender instanceof Player player) {
+                        player.dataPacket(packet);
+                    } else {
+                        pos.level.addChunkPacket(pos.getChunkX(), pos.getChunkZ(), packet);
+                    }
+                    sender.sendMessage(packet.toString());
+                    return true;
+                } catch (CommandSyntaxException e) {
+                    sender.sendMessage(parser.getErrorMessage());
+                }
+                return false;
+            }
+            case "actorev": {
+                CommandParser parser = new CommandParser(this, sender, args);
+                try {
+                    parser.literal();
+                    List<Entity> entities = parser.parseTargets();
+                    int event = parser.parseInt();
+                    int data = parser.parseIntOrDefault(0);
+
+                    for (Entity entity : entities) {
+                        EntityEventPacket packet = new EntityEventPacket();
+                        packet.eid = entity.getId();
+                        packet.event = event;
+                        packet.data = data;
+                        if (sender instanceof Player player) {
+                            player.dataPacket(packet);
+                        } else {
+                            Server.broadcastPacket(entity.getViewers().values(), packet);
+                        }
+                    }
+                    sender.sendMessage("success");
                     return true;
                 } catch (CommandSyntaxException e) {
                     sender.sendMessage(parser.getErrorMessage());

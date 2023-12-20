@@ -12,6 +12,11 @@ import cn.nukkit.level.biome.Biome;
 public abstract class CoveredBiome extends Biome {
     public final Object synchronizeCover = new Object();
 
+    @Override
+    public boolean canSnow() {
+        return getCoverBlock() == SNOW_LAYER;
+    }
+
     /**
      * A single block placed on top of the surface blocks
      *

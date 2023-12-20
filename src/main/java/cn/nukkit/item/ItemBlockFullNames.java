@@ -674,6 +674,8 @@ public interface ItemBlockFullNames {
     String LIGHTNING_ROD = "minecraft:" + ItemBlockNames.LIGHTNING_ROD;
     String CRAFTER = "minecraft:" + ItemBlockNames.CRAFTER;
 
+    String TRIAL_SPAWNER = "minecraft:" + ItemBlockNames.TRIAL_SPAWNER;
+
     String DRIPSTONE_BLOCK = "minecraft:" + ItemBlockNames.DRIPSTONE_BLOCK;
     String DIRT_WITH_ROOTS = "minecraft:" + ItemBlockNames.DIRT_WITH_ROOTS;
     String HANGING_ROOTS = "minecraft:" + ItemBlockNames.HANGING_ROOTS;

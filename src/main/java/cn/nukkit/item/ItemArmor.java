@@ -76,29 +76,8 @@ public abstract class ItemArmor extends Item implements ItemDurable {
         }
         if (equip) {
             player.getInventory().setItem(player.getInventory().getHeldItemIndex(), oldSlotItem);
-            switch (this.getTier()) {
-                case TIER_CHAIN:
-                    player.getLevel().addLevelSoundEvent(player, LevelSoundEventPacket.SOUND_ARMOR_EQUIP_CHAIN);
-                    break;
-                case TIER_DIAMOND:
-                    player.getLevel().addLevelSoundEvent(player, LevelSoundEventPacket.SOUND_ARMOR_EQUIP_DIAMOND);
-                    break;
-                case TIER_GOLD:
-                    player.getLevel().addLevelSoundEvent(player, LevelSoundEventPacket.SOUND_ARMOR_EQUIP_GOLD);
-                    break;
-                case TIER_IRON:
-                    player.getLevel().addLevelSoundEvent(player, LevelSoundEventPacket.SOUND_ARMOR_EQUIP_IRON);
-                    break;
-                case TIER_LEATHER:
-                    player.getLevel().addLevelSoundEvent(player, LevelSoundEventPacket.SOUND_ARMOR_EQUIP_LEATHER);
-                    break;
-                case TIER_NETHERITE:
-                    player.getLevel().addLevelSoundEvent(player, LevelSoundEventPacket.SOUND_ARMOR_EQUIP_NETHERITE);
-                    break;
-                case TIER_OTHER:
-                default:
-                    player.getLevel().addLevelSoundEvent(player, LevelSoundEventPacket.SOUND_ARMOR_EQUIP_GENERIC);
-            }
+
+            player.getLevel().addLevelSoundEvent(player, getArmorEquipSound());
         }
 
         return this.getCount() == 0;
@@ -133,5 +112,17 @@ public abstract class ItemArmor extends Item implements ItemDurable {
     @Override
     public int getDamageChance(int unbreaking) {
         return 40 / (unbreaking + 1) + 60;
+    }
+
+    public int getArmorEquipSound() {
+        return switch (getTier()) {
+            case TIER_CHAIN -> LevelSoundEventPacket.SOUND_ARMOR_EQUIP_CHAIN;
+            case TIER_DIAMOND -> LevelSoundEventPacket.SOUND_ARMOR_EQUIP_DIAMOND;
+            case TIER_GOLD -> LevelSoundEventPacket.SOUND_ARMOR_EQUIP_GOLD;
+            case TIER_IRON -> LevelSoundEventPacket.SOUND_ARMOR_EQUIP_IRON;
+            case TIER_LEATHER -> LevelSoundEventPacket.SOUND_ARMOR_EQUIP_LEATHER;
+            case TIER_NETHERITE -> LevelSoundEventPacket.SOUND_ARMOR_EQUIP_NETHERITE;
+            default -> LevelSoundEventPacket.SOUND_ARMOR_EQUIP_GENERIC;
+        };
     }
 }

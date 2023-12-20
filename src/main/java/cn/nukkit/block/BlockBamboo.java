@@ -11,6 +11,7 @@ import cn.nukkit.math.AxisAlignedBB;
 import cn.nukkit.math.BlockFace;
 import cn.nukkit.math.Mth;
 import cn.nukkit.math.SimpleAxisAlignedBB;
+import cn.nukkit.network.protocol.LevelSoundEventPacket;
 import cn.nukkit.utils.BlockColor;
 
 import java.util.concurrent.ThreadLocalRandom;
@@ -112,6 +113,16 @@ public class BlockBamboo extends BlockTransparentMeta {
     }
 
     @Override
+    public void playPlaceSound(Block target) {
+        if (target.is(BAMBOO) || target.is(BAMBOO_SAPLING)) {
+            super.playPlaceSound(target);
+            return;
+        }
+
+        level.addLevelSoundEvent(this, LevelSoundEventPacket.SOUND_BLOCK_BAMBOO_SAPLING_PLACE);
+    }
+
+    @Override
     public boolean canBeActivated() {
         return true;
     }
@@ -140,6 +151,8 @@ public class BlockBamboo extends BlockTransparentMeta {
             if (top.getFloorY() >= level.getMaxHeight() || !top.grow(Short.MAX_VALUE, 1)) {
                 return true;
             }
+
+            top.playPlaceSound(this);
 
             if (player != null && !player.isCreative()) {
                 item.count--;

@@ -19,4 +19,9 @@ public class BlockPumpkinCarved extends BlockPumpkin {
     public String getName() {
         return "Carved Pumpkin";
     }
+
+    @Override
+    public boolean canBeActivated() {
+        return false;
+    }
 }

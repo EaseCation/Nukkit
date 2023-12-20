@@ -253,7 +253,11 @@ public class Item implements Cloneable, ItemID {
         int meta;
         if (split.length > 2) {
             name = split[0] + ":" + split[1];
-            meta = Integer.parseInt(split[2]) & 0xffff;
+            try {
+                meta = Integer.parseInt(split[2]) & 0xffff;
+            } catch (NumberFormatException e) {
+                meta = 0;
+            }
         } else if (split.length == 2) {
             try {
                 meta = Integer.parseInt(split[1]) & 0xFFFF;
@@ -280,6 +284,55 @@ public class Item implements Cloneable, ItemID {
                 }
             } else {
                 id = AIR;
+            }
+        }
+
+        return get(id, meta);
+    }
+
+    @Nullable
+    public static Item fromStringNullable(String str) {
+        return fromStringNullable(str, false);
+    }
+
+    @Nullable
+    public static Item fromStringNullable(String str, boolean lookupAlias) {
+        String[] split = str.split(":", 3);
+
+        String name;
+        int meta;
+        if (split.length > 2) {
+            name = split[0] + ":" + split[1];
+            try {
+                meta = Integer.parseInt(split[2]) & 0xffff;
+            } catch (NumberFormatException e) {
+                return null;
+            }
+        } else if (split.length == 2) {
+            try {
+                meta = Integer.parseInt(split[1]) & 0xffff;
+                name = split[0];
+            } catch (NumberFormatException e) {
+                name = str;
+                meta = 0;
+            }
+        } else {
+            name = str;
+            meta = 0;
+        }
+
+        int id;
+        try {
+            id = Integer.parseInt(name);
+        } catch (NumberFormatException e) {
+            int fullId = Items.getFullIdByName(name, true, lookupAlias);
+            if (fullId == Integer.MIN_VALUE) {
+                return null;
+            }
+            id = Item.getIdFromFullId(fullId);
+            int auxVal = Item.getMetaFromFullId(fullId);
+            if (auxVal != 0) {
+                meta = auxVal;
             }
         }
 

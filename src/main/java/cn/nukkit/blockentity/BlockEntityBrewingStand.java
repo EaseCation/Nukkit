@@ -14,6 +14,7 @@ import cn.nukkit.item.Item;
 import cn.nukkit.level.format.FullChunk;
 import cn.nukkit.nbt.tag.CompoundTag;
 import cn.nukkit.network.protocol.ContainerSetDataPacket;
+import cn.nukkit.network.protocol.LevelSoundEventPacket;
 
 public class BlockEntityBrewingStand extends BlockEntityAbstractContainer {
 
@@ -159,6 +160,8 @@ public class BlockEntityBrewingStand extends BlockEntityAbstractContainer {
                             }
                         }
                     }
+
+                    level.addLevelSoundEvent(blockCenter(), LevelSoundEventPacket.SOUND_POTION_BREWED);
 
                     ingredient.count--;
                     this.inventory.setIngredient(ingredient);

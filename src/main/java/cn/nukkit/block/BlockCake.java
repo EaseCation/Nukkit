@@ -165,7 +165,11 @@ public class BlockCake extends BlockTransparentMeta {
         }
 
         if (player != null && (player.getFoodData().getLevel() < player.getFoodData().getMaxLevel() || player.isCreative() || player.getServer().getDifficulty() == 0)) {
-            Food.getByRelative(this).eatenBy(player);
+            if (!Food.getByRelative(this).eatenBy(player)) {
+                return true;
+            }
+
+            level.addLevelSoundEvent(player.getEyePosition(), LevelSoundEventPacket.SOUND_BURP);
 
             int bite = getDamage();
             if (bite >= 0x6) {

@@ -1719,8 +1719,6 @@ public class Level implements ChunkManager, Metadatable {
         int maxY = Mth.floor(bb.getMaxY());
         int maxZ = Mth.floor(bb.getMaxZ());
 
-        List<Block> collides = new ObjectArrayList<>();
-
         long loopTimes = 0;
         if (targetFirst) {
             for (int z = minZ; z <= maxZ; ++z) {
@@ -1737,7 +1735,9 @@ public class Level implements ChunkManager, Metadatable {
                     }
                 }
             }
+            return new Block[0];
         } else {
+            List<Block> collides = new ObjectArrayList<>();
             for (int z = minZ; z <= maxZ; ++z) {
                 for (int x = minX; x <= maxX; ++x) {
                     for (int y = minY; y <= maxY; ++y) {
@@ -1752,9 +1752,8 @@ public class Level implements ChunkManager, Metadatable {
                     }
                 }
             }
+            return collides.toArray(new Block[0]);
         }
-
-        return collides.toArray(new Block[0]);
     }
 
     public boolean isFullBlock(Vector3 pos) {
@@ -2818,7 +2817,7 @@ public class Level implements ChunkManager, Metadatable {
             hand.position(block);
         }
 
-        if (!hand.canPassThrough() && hand.getBoundingBox() != null) {
+        if (!hand.canPassThrough() && hand.getBoundingBox() != null && (!hand.is(Block.BAMBOO) || target.is(Block.BAMBOO) || target.is(Block.BAMBOO_SAPLING))) {
             Entity[] entities = this.getCollidingEntities(hand.getBoundingBox());
             for (Entity e : entities) {
                 if (e instanceof EntityProjectile || e instanceof EntityItem || e instanceof EntityXPOrb || e instanceof EntityFirework || e instanceof EntityPainting
@@ -2897,7 +2896,7 @@ public class Level implements ChunkManager, Metadatable {
         }
 
         if (playSound) {
-            this.addLevelSoundEvent(LevelSoundEventPacket.SOUND_PLACE, 1, hand.getFullId(), hand, false);
+            hand.playPlaceSound(target);
         }
 
         if (item.getCount() <= 0) {
@@ -3182,6 +3181,10 @@ public class Level implements ChunkManager, Metadatable {
             return;
         }
         chunk.setBlockLight(x & 0x0f, y & 0xff, z & 0x0f, level & 0x0f);
+    }
+
+    public Biome getBiome(int x, int z) {
+        return Biome.getBiome(getBiomeId(x, z));
     }
 
     public int getBiomeId(int x, int z) {

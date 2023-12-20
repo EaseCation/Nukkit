@@ -617,6 +617,8 @@ public interface ItemBlockID {
     int LIGHTNING_ROD = 0xff - BlockID.LIGHTNING_ROD;
     int CRAFTER = 0xff - BlockID.CRAFTER;
 
+    int TRIAL_SPAWNER = 0xff - BlockID.TRIAL_SPAWNER;
+
     int DRIPSTONE_BLOCK = 0xff - BlockID.DRIPSTONE_BLOCK;
     int DIRT_WITH_ROOTS = 0xff - BlockID.DIRT_WITH_ROOTS;
     int HANGING_ROOTS = 0xff - BlockID.HANGING_ROOTS;

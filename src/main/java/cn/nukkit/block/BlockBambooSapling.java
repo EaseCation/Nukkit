@@ -96,7 +96,7 @@ public class BlockBambooSapling extends BlockFlowable {
         }
 
         if (id == getItemId(BAMBOO)) {
-            if (!grow()) {
+            if (!grow(true)) {
                 return true;
             }
 
@@ -143,13 +143,22 @@ public class BlockBambooSapling extends BlockFlowable {
     }
 
     private boolean grow() {
+        return grow(false);
+    }
+
+    private boolean grow(boolean playSound) {
         Block up = up();
         if (!up.canBeReplaced()) {
             return false;
         }
 
         level.setBlock(this, Block.get(BAMBOO), true);
-        level.setBlock(up, Block.get(BAMBOO, BlockBamboo.SMALL_LEAVES << 1), true);
+        Block block = Block.get(BAMBOO, BlockBamboo.SMALL_LEAVES << 1);
+        level.setBlock(up, block, true);
+
+        if (playSound) {
+            block.playPlaceSound(this);
+        }
         return true;
     }
 

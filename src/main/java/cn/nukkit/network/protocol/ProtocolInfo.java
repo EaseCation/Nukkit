@@ -252,6 +252,7 @@ public interface ProtocolInfo {
     int REFRESH_ENTITLEMENTS_PACKET = 0x131; // 305 c
     int PLAYER_TOGGLE_CRAFTER_SLOT_REQUEST_PACKET = 0x132; // 306 s
     int SET_PLAYER_INVENTORY_OPTIONS_PACKET = 0x133; // 307 cs
+    int SET_HUD_PACKET = 0x134; // 308 c
 
 
     int COUNT = 1024;

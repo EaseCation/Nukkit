@@ -1,6 +1,7 @@
 package cn.nukkit.item;
 
 import cn.nukkit.Player;
+import cn.nukkit.entity.EntityFullNames;
 import cn.nukkit.entity.projectile.EntityEnderPearl;
 import cn.nukkit.entity.projectile.EntityProjectile;
 import cn.nukkit.entity.projectile.ProjectileFactory;
@@ -64,7 +65,7 @@ public abstract class ProjectileItem extends Item {
                     player.onThrowEnderPearl();
                 }
                 projectile.spawnToAll();
-                player.getLevel().addLevelSoundEvent(player, LevelSoundEventPacket.SOUND_THROW, "minecraft:player");
+                player.getLevel().addLevelSoundEvent(player, LevelSoundEventPacket.SOUND_THROW, EntityFullNames.PLAYER);
             }
         } else {
             return false;

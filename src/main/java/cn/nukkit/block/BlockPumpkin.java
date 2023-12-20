@@ -3,7 +3,9 @@ package cn.nukkit.block;
 import cn.nukkit.Player;
 import cn.nukkit.item.Item;
 import cn.nukkit.item.ItemTool;
+import cn.nukkit.level.GameRule;
 import cn.nukkit.math.BlockFace;
+import cn.nukkit.network.protocol.LevelSoundEventPacket;
 import cn.nukkit.utils.BlockColor;
 import cn.nukkit.utils.Faceable;
 
@@ -79,6 +81,31 @@ public class BlockPumpkin extends BlockSolidMeta implements Faceable {
 
     @Override
     public boolean isVegetation() {
+        return true;
+    }
+
+    @Override
+    public boolean canBeActivated() {
+        return true;
+    }
+
+    @Override
+    public boolean onActivate(Item item, BlockFace face, Player player) {
+        if (!item.isShears()) {
+            return false;
+        }
+
+        if (player != null && !player.isCreative()) {
+            item.useOn(this);
+        }
+
+        level.setBlock(this, get(CARVED_PUMPKIN, getDamage()), true);
+
+        if (level.getGameRules().getBoolean(GameRule.DO_TILE_DROPS)) {
+            level.dropItem(blockCenter(), Item.get(Item.PUMPKIN_SEEDS));
+        }
+
+        level.addLevelSoundEvent(blockCenter(), LevelSoundEventPacket.SOUND_PUMPKIN_CARVE);
         return true;
     }
 }

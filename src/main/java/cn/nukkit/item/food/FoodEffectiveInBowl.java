@@ -11,6 +11,11 @@ public class FoodEffectiveInBowl extends FoodEffective {
     @Override
     protected boolean onEatenBy(Player player) {
         super.onEatenBy(player);
+
+        if (!player.isSurvivalLike()) {
+            return true;
+        }
+
         player.getInventory().addItem(Item.get(Item.BOWL));
         return true;
     }

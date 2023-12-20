@@ -30,9 +30,9 @@ public class FlowerForestBiome extends ForestBiome {
         flower.addType(RED_FLOWER, BlockFlower.TYPE_OXEYE_DAISY);
         flower.addType(RED_FLOWER, BlockFlower.TYPE_CORNFLOWER);
         flower.addType(RED_FLOWER, BlockFlower.TYPE_LILY_OF_THE_VALLEY);
-        flower.addType(DOUBLE_PLANT, BlockDoublePlant.LILAC);
-        flower.addType(DOUBLE_PLANT, BlockDoublePlant.ROSE_BUSH);
-        flower.addType(DOUBLE_PLANT, BlockDoublePlant.PEONY);
+        flower.addType(DOUBLE_PLANT, BlockDoublePlant.TYPE_LILAC);
+        flower.addType(DOUBLE_PLANT, BlockDoublePlant.TYPE_ROSE_BUSH);
+        flower.addType(DOUBLE_PLANT, BlockDoublePlant.TYPE_PEONY);
         this.addPopulator(flower);
 
         this.setHeightVariation(0.4f);

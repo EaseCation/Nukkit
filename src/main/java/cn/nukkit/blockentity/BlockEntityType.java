@@ -53,7 +53,9 @@ public interface BlockEntityType {
     int BRUSHABLE_BLOCK = 52;
     int DECORATED_POT = 53;
     int CALIBRATED_SCULK_SENSOR = 54;
+    int CRAFTER = 55;
+    int TRIAL_SPAWNER = 56;
 
 
-    int UNDEFINED = 55;
+    int UNDEFINED = 57;
 }

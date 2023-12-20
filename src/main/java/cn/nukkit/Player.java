@@ -313,6 +313,7 @@ public class Player extends EntityHuman implements CommandSender, InventoryHolde
     public volatile boolean violated;
 
     protected boolean inWater = false;
+    protected boolean underwater;
 
     protected boolean swinging;
     protected int swingTime;
@@ -1559,7 +1560,9 @@ public class Player extends EntityHuman implements CommandSender, InventoryHolde
 
         if (!this.isSpectator()) {
             boolean inWaterPrev = this.inWater;
+            boolean wasUnderwater = this.underwater;
             this.inWater = isInsideOfWater(0.7f);
+            this.underwater = isInsideOfWater(true);
             boolean swimming = isSwimming();
 
             if (!this.onGround || dy != 0) {
@@ -1567,18 +1570,23 @@ public class Player extends EntityHuman implements CommandSender, InventoryHolde
                 bb.setMinY(bb.getMinY() - 0.75);
 
                 boolean onGroundPrev = this.onGround;
-                Block[] blocks = this.level.getCollisionBlocks(bb);
+                Block[] blocks = this.level.getCollisionBlocks(bb, true);
                 this.onGround = blocks.length > 0;
 
                 if (!this.isRiding() && !swimming && !onGroundPrev && onGround && !isInsideOfWater(false)) {
-                    level.addLevelSoundEvent(this, LevelSoundEventPacket.SOUND_LAND, blocks[0].getFullId(), "minecraft:player");
+                    level.addLevelSoundEvent(this, LevelSoundEventPacket.SOUND_LAND, blocks[0].getFullId(), EntityFullNames.PLAYER);
                 }
             }
             this.isCollided = this.onGround;
             this.updateFallState(this.onGround);
 
             if (!swimming && !inWaterPrev && inWater) {
-                level.addLevelSoundEvent(add(0, 1.1f, 0), LevelSoundEventPacket.SOUND_SPLASH, ThreadLocalRandom.current().nextInt(600000, 800000), "minecraft:player"); //TODO: check data
+                level.addLevelSoundEvent(add(0, 1.1f, 0), LevelSoundEventPacket.SOUND_SPLASH, ThreadLocalRandom.current().nextInt(700000, 1100000)); //TODO: check data
+            }
+            if (!wasUnderwater && underwater) {
+                level.addLevelSoundEvent(this, LevelSoundEventPacket.SOUND_AMBIENT_UNDERWATER_ENTER, EntityFullNames.PLAYER);
+            } else if (wasUnderwater && !underwater) {
+                level.addLevelSoundEvent(this, LevelSoundEventPacket.SOUND_AMBIENT_UNDERWATER_EXIT, EntityFullNames.PLAYER);
             }
 
             /*this.lastMotionX = this.motionX;
@@ -3191,7 +3199,7 @@ public class Player extends EntityHuman implements CommandSender, InventoryHolde
                             this.swinging = true;
 
                             if (false && !isBreakingBlock()) {
-                                level.addLevelSoundEvent(this, LevelSoundEventPacket.SOUND_ATTACK_NODAMAGE, "minecraft:player", new Player[]{this});
+                                level.addLevelSoundEvent(this, LevelSoundEventPacket.SOUND_ATTACK_NODAMAGE, EntityFullNames.PLAYER, new Player[]{this});
                             }
                             break;
                         case WAKE_UP:
@@ -4802,6 +4810,7 @@ public class Player extends EntityHuman implements CommandSender, InventoryHolde
             if (damager instanceof Player) {
                 ((Player) damager).getFoodData().updateFoodExpLevel(0.1);
             }
+
             //Critical hit
 
             if (!damager.onGround && damager instanceof Player) {
@@ -4811,14 +4820,18 @@ public class Player extends EntityHuman implements CommandSender, InventoryHolde
                     else doubleCritical = true;
                 }
             }
+
             if (add) {
                 source.setDamage((float) (source.getDamage() * 1.3));
+
                 AnimatePacket animate = new AnimatePacket();
                 animate.action = AnimatePacket.Action.CRITICAL_HIT;
                 animate.eid = getId();
                 this.getLevel().addChunkPacket(damager.getChunkX(), damager.getChunkZ(), animate);
+
                 this.getLevel().addLevelSoundEvent(this, LevelSoundEventPacket.SOUND_ATTACK_STRONG);
             }
+
             if (doubleCritical) {
                 //正在叠刀
                 Player damagerPlayer = (Player)((EntityDamageByEntityEvent) source).getDamager();
@@ -4827,12 +4840,15 @@ public class Player extends EntityHuman implements CommandSender, InventoryHolde
                     // this.attackTime = 0;
                     source.setDamage((float) (source.getDamage() * 0.2));
                 }
+
                 damagerPlayer.sendPopup("叠刀 × " + damagerPlayer.attackCriticalThisJump);
+
                 AnimatePacket animate = new AnimatePacket();
                 animate.action = AnimatePacket.Action.CRITICAL_HIT;
                 animate.eid = getId();
-                this.getLevel().addChunkPacket(damager.getChunkX(), damager.getChunkZ(), animate);
-                this.getLevel().addLevelSoundEvent(this, LevelSoundEventPacket.SOUND_ATTACK_STRONG);
+                damagerPlayer.dataPacket(animate);
+
+                this.getLevel().addLevelSoundEvent(this, LevelSoundEventPacket.SOUND_ATTACK_STRONG, new Player[]{damagerPlayer});
             }
         }
 
@@ -5911,7 +5927,7 @@ public class Player extends EntityHuman implements CommandSender, InventoryHolde
             fishingHook.rod = fishingRod;
             fishingHook.checkLure();
             fishingHook.spawnToAll();
-            this.level.addLevelSoundEvent(this, LevelSoundEventPacket.SOUND_THROW, "minecraft:player");
+            this.level.addLevelSoundEvent(this, LevelSoundEventPacket.SOUND_THROW, EntityFullNames.PLAYER);
         }
     }
 

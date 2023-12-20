@@ -3,7 +3,6 @@ package cn.nukkit.block;
 import cn.nukkit.Player;
 import cn.nukkit.item.Item;
 import cn.nukkit.item.ItemDye;
-import cn.nukkit.item.ItemSeedsWheat;
 import cn.nukkit.level.Level;
 import cn.nukkit.level.particle.BoneMealParticle;
 import cn.nukkit.math.BlockFace;
@@ -16,12 +15,12 @@ import java.util.concurrent.ThreadLocalRandom;
  * Package cn.nukkit.block in project Nukkit .
  */
 public class BlockDoublePlant extends BlockFlowable {
-    public static final int SUNFLOWER = 0;
-    public static final int LILAC = 1;
-    public static final int TALL_GRASS = 2;
-    public static final int LARGE_FERN = 3;
-    public static final int ROSE_BUSH = 4;
-    public static final int PEONY = 5;
+    public static final int TYPE_SUNFLOWER = 0;
+    public static final int TYPE_LILAC = 1;
+    public static final int TYPE_TALL_GRASS = 2;
+    public static final int TYPE_LARGE_FERN = 3;
+    public static final int TYPE_ROSE_BUSH = 4;
+    public static final int TYPE_PEONY = 5;
 
     public static final int TYPE_MASK = 0b111;
     public static final int TOP_HALF_BITMASK = 0x8;
@@ -53,7 +52,7 @@ public class BlockDoublePlant extends BlockFlowable {
     @Override
     public boolean canBeReplaced() {
         int type = getPlantType();
-        return type == TALL_GRASS || type == LARGE_FERN;
+        return type == TYPE_TALL_GRASS || type == TYPE_LARGE_FERN;
     }
 
     @Override
@@ -119,8 +118,8 @@ public class BlockDoublePlant extends BlockFlowable {
     public Item[] getDrops(Item item) {
         if ((this.getDamage() & TOP_HALF_BITMASK) != TOP_HALF_BITMASK) {
             switch (this.getPlantType()) {
-                case TALL_GRASS:
-                case LARGE_FERN:
+                case TYPE_TALL_GRASS:
+                case TYPE_LARGE_FERN:
                     boolean dropSeeds = ThreadLocalRandom.current().nextInt(10) == 0;
                     if (item.isShears()) {
                         if (dropSeeds) {
@@ -164,10 +163,10 @@ public class BlockDoublePlant extends BlockFlowable {
     public boolean onActivate(Item item, BlockFace face, Player player) {
         if (item.getId() == Item.DYE && item.getDamage() == ItemDye.BONE_MEAL) {
             switch (this.getPlantType()) {
-                case SUNFLOWER:
-                case LILAC:
-                case ROSE_BUSH:
-                case PEONY:
+                case TYPE_SUNFLOWER:
+                case TYPE_LILAC:
+                case TYPE_ROSE_BUSH:
+                case TYPE_PEONY:
                     if (player != null && (player.gamemode & 0x01) == 0) {
                         item.count--;
                     }

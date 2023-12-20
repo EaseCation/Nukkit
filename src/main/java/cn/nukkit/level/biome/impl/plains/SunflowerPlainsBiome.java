@@ -12,7 +12,7 @@ public class SunflowerPlainsBiome extends PlainsBiome {
     public SunflowerPlainsBiome() {
         super();
 
-        PopulatorDoublePlant sunflower = new PopulatorDoublePlant(BlockDoublePlant.SUNFLOWER);
+        PopulatorDoublePlant sunflower = new PopulatorDoublePlant(BlockDoublePlant.TYPE_SUNFLOWER);
         sunflower.setBaseAmount(8);
         sunflower.setRandomAmount(5);
         this.addPopulator(sunflower);

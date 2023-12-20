@@ -52,4 +52,6 @@ public interface BlockEntityID {
     String BRUSHABLE_BLOCK = "BrushableBlock";
     String DECORATED_POT = "DecoratedPot";
     String CALIBRATED_SCULK_SENSOR = "CalibratedSculkSensor";
+    String CRAFTER = "Crafter";
+    String TRIAL_SPAWNER = "TrialSpawner";
 }

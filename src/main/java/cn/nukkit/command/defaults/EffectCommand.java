@@ -1,6 +1,5 @@
 package cn.nukkit.command.defaults;
 
-import cn.nukkit.command.Command;
 import cn.nukkit.command.CommandParser;
 import cn.nukkit.command.CommandSender;
 import cn.nukkit.command.data.CommandEnum;
@@ -83,14 +82,19 @@ public class EffectCommand extends VanillaCommand {
                 return true;
             }
 
-            effect.setDuration(effect.isInstantaneous() ? durationSec : durationSec * 20).setAmplifier(amplifier);
+            effect.setDuration(effect.isInstantaneous() ? durationSec : durationSec * 20)
+                    .setAmplifier(amplifier);
             if (hideParticle) {
                 effect.setVisible(false);
             }
 
             if (durationSec != 0) {
                 targets.forEach(entity -> {
-                    entity.addEffect(effect.clone());
+                    if (effect.isInstantaneous()) {
+                        effect.applyEffect(entity);
+                    } else {
+                        entity.addEffect(effect.clone());
+                    }
                     broadcastCommandMessage(sender, new TranslationContainer("commands.effect.success", effect.getName(), amplifier, entity.getName(), durationSec));
                 });
             } else {

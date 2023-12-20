@@ -14,8 +14,8 @@ import cn.nukkit.utils.BlockColor;
  * Nukkit Project
  */
 public class BlockDirt extends BlockSolidMeta {
-    public static final int NORMAL_DIRT = 0;
-    public static final int COARSE_DIRT = 1;
+    public static final int TYPE_NORMAL_DIRT = 0;
+    public static final int TYPE_COARSE_DIRT = 1;
 
     public BlockDirt() {
         this(0);
@@ -52,7 +52,7 @@ public class BlockDirt extends BlockSolidMeta {
 
     @Override
     public String getName() {
-        return this.getDamage() == NORMAL_DIRT ? "Dirt" : "Coarse Dirt";
+        return this.getDamage() == TYPE_NORMAL_DIRT ? "Dirt" : "Coarse Dirt";
     }
 
     @Override
@@ -62,7 +62,7 @@ public class BlockDirt extends BlockSolidMeta {
                 if (player != null && !player.isCreative()) {
                     item.useOn(this);
                 }
-                this.getLevel().setBlock(this, this.getDamage() == NORMAL_DIRT ? get(FARMLAND) : get(DIRT), true);
+                this.getLevel().setBlock(this, this.getDamage() == TYPE_NORMAL_DIRT ? get(FARMLAND) : get(DIRT), true);
                 return true;
             }
         } else if (item.isShovel()) {

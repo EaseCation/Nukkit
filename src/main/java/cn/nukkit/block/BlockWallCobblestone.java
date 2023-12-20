@@ -5,20 +5,20 @@ import cn.nukkit.item.ItemTool;
 import cn.nukkit.utils.BlockColor;
 
 public class BlockWallCobblestone extends BlockWall {
-    public static final int NORMAL_COBBLESTONE_WALL = 0;
-    public static final int MOSSY_COBBLESTONE_WALL = 1;
-    public static final int GRANITE_WALL = 2;
-    public static final int DIORITE_WALL = 3;
-    public static final int ANDESITE_WALL = 4;
-    public static final int SANDSTONE_WALL = 5;
-    public static final int BRICK_WALL = 6;
-    public static final int STONE_BRICK_WALL = 7;
-    public static final int MOSSY_STONE_BRICK_WALL = 8;
-    public static final int NETHER_BRICK_WALL = 9;
-    public static final int END_BRICK_WALL = 10;
-    public static final int PRISMARINE_WALL = 11;
-    public static final int RED_SANDSTONE_WALL = 12;
-    public static final int RED_NETHER_BRICK_WALL = 13;
+    public static final int TYPE_COBBLESTONE = 0;
+    public static final int TYPE_MOSSY_COBBLESTONE = 1;
+    public static final int TYPE_GRANITE = 2;
+    public static final int TYPE_DIORITE = 3;
+    public static final int TYPE_ANDESITE = 4;
+    public static final int TYPE_SANDSTONE = 5;
+    public static final int TYPE_BRICK = 6;
+    public static final int TYPE_STONE_BRICK = 7;
+    public static final int TYPE_MOSSY_STONE_BRICK = 8;
+    public static final int TYPE_NETHER_BRICK = 9;
+    public static final int TYPE_END_BRICK = 10;
+    public static final int TYPE_PRISMARINE = 11;
+    public static final int TYPE_RED_SANDSTONE = 12;
+    public static final int TYPE_RED_NETHER_BRICK = 13;
 
     public static final int TYPE_MASK = 0b1111;
     public static final int POST_BIT = 0b1_0000;
@@ -107,27 +107,27 @@ public class BlockWallCobblestone extends BlockWall {
     public BlockColor getColor() {
         switch (getWallType()) {
             default:
-            case NORMAL_COBBLESTONE_WALL:
-            case MOSSY_COBBLESTONE_WALL:
-            case ANDESITE_WALL:
-            case STONE_BRICK_WALL:
-            case MOSSY_STONE_BRICK_WALL:
+            case TYPE_COBBLESTONE:
+            case TYPE_MOSSY_COBBLESTONE:
+            case TYPE_ANDESITE:
+            case TYPE_STONE_BRICK:
+            case TYPE_MOSSY_STONE_BRICK:
                 return BlockColor.STONE_BLOCK_COLOR;
-            case GRANITE_WALL:
+            case TYPE_GRANITE:
                 return BlockColor.DIRT_BLOCK_COLOR;
-            case DIORITE_WALL:
+            case TYPE_DIORITE:
                 return BlockColor.QUARTZ_BLOCK_COLOR;
-            case SANDSTONE_WALL:
-            case END_BRICK_WALL:
+            case TYPE_SANDSTONE:
+            case TYPE_END_BRICK:
                 return BlockColor.SAND_BLOCK_COLOR;
-            case BRICK_WALL:
+            case TYPE_BRICK:
                 return BlockColor.RED_BLOCK_COLOR;
-            case NETHER_BRICK_WALL:
-            case RED_NETHER_BRICK_WALL:
+            case TYPE_NETHER_BRICK:
+            case TYPE_RED_NETHER_BRICK:
                 return BlockColor.NETHER_BLOCK_COLOR;
-            case PRISMARINE_WALL:
+            case TYPE_PRISMARINE:
                 return BlockColor.CYAN_BLOCK_COLOR;
-            case RED_SANDSTONE_WALL:
+            case TYPE_RED_SANDSTONE:
                 return BlockColor.ORANGE_BLOCK_COLOR;
         }
     }

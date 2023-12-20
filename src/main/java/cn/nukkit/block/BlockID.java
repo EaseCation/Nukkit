@@ -1,5 +1,7 @@
 package cn.nukkit.block;
 
+import com.google.common.annotations.Beta;
+
 // 弃用的名称用于旧版本, 不要移除
 public interface BlockID {
     int AIR = 0;
@@ -463,7 +465,6 @@ public interface BlockID {
     int BUBBLE_COLUMN = 415;
     int BARRIER = 416;
     int STONE_SLAB3 = 417;
-    int POLISHED_DIORITE_SLAB = 417;
     int BAMBOO = 418;
     int BAMBOO_SAPLING = 419;
     int SCAFFOLDING = 420;
@@ -615,6 +616,8 @@ public interface BlockID {
     int COPPER_ORE = 566;
     int LIGHTNING_ROD = 567;
     int CRAFTER = 568;
+
+    int TRIAL_SPAWNER = 570;
 
     int DRIPSTONE_BLOCK = 572;
     int DIRT_WITH_ROOTS = 573;
@@ -1060,4 +1063,351 @@ public interface BlockID {
 
 
     int UNDEFINED = 1055;
+
+    @Beta
+    int COARSE_DIRT = DIRT;
+    @Beta
+    int OAK_SAPLING = SAPLING;
+    @Beta
+    int SPRUCE_SAPLING = SAPLING;
+    @Beta
+    int BIRCH_SAPLING = SAPLING;
+    @Beta
+    int JUNGLE_SAPLING = SAPLING;
+    @Beta
+    int ACACIA_SAPLING = SAPLING;
+    @Beta
+    int DARK_OAK_SAPLING = SAPLING;
+    @Beta
+    int RED_SAND = SAND;
+    @Beta
+    int OAK_LEAVES = LEAVES;
+    @Beta
+    int SPRUCE_LEAVES = LEAVES;
+    @Beta
+    int BIRCH_LEAVES = LEAVES;
+    @Beta
+    int JUNGLE_LEAVES = LEAVES;
+    @Beta
+    int CHISELED_SANDSTONE = SANDSTONE;
+    @Beta
+    int CUT_SANDSTONE = SANDSTONE;
+    @Beta
+    int SMOOTH_SANDSTONE = SANDSTONE;
+    @Beta
+    int FERN = TALLGRASS;
+    @Beta
+    int DANDELION = YELLOW_FLOWER;
+    @Beta
+    int POPPY = RED_FLOWER;
+    @Beta
+    int BLUE_ORCHID = RED_FLOWER;
+    @Beta
+    int ALLIUM = RED_FLOWER;
+    @Beta
+    int AZURE_BLUET = RED_FLOWER;
+    @Beta
+    int RED_TULIP = RED_FLOWER;
+    @Beta
+    int ORANGE_TULIP = RED_FLOWER;
+    @Beta
+    int WHITE_TULIP = RED_FLOWER;
+    @Beta
+    int PINK_TULIP   = RED_FLOWER;
+    @Beta
+    int OXEYE_DAISY = RED_FLOWER;
+    @Beta
+    int CORNFLOWER = RED_FLOWER;
+    @Beta
+    int LILY_OF_THE_VALLEY = RED_FLOWER;
+    @Beta
+    int SANDSTONE_DOUBLE_SLAB = DOUBLE_STONE_SLAB;
+    @Beta
+    int COBBLESTONE_DOUBLE_SLAB = DOUBLE_STONE_SLAB;
+    @Beta
+    int BRICK_DOUBLE_SLAB = DOUBLE_STONE_SLAB;
+    @Beta
+    int STONE_BRICK_DOUBLE_SLAB = DOUBLE_STONE_SLAB;
+    @Beta
+    int QUARTZ_DOUBLE_SLAB = DOUBLE_STONE_SLAB;
+    @Beta
+    int NETHER_BRICK_DOUBLE_SLAB = DOUBLE_STONE_SLAB;
+    @Beta
+    int SANDSTONE_SLAB = STONE_SLAB;
+    @Beta
+    int COBBLESTONE_SLAB = STONE_SLAB;
+    @Beta
+    int BRICK_SLAB = STONE_SLAB;
+    @Beta
+    int STONE_BRICK_SLAB = STONE_SLAB;
+    @Beta
+    int QUARTZ_SLAB = STONE_SLAB;
+    @Beta
+    int NETHER_BRICK_SLAB = STONE_SLAB;
+    @Beta
+    int INFESTED_STONE = MONSTER_EGG;
+    @Beta
+    int INFESTED_COBBLESTONE = MONSTER_EGG;
+    @Beta
+    int INFESTED_STONE_BRICKS = MONSTER_EGG;
+    @Beta
+    int INFESTED_MOSSY_STONE_BRICKS = MONSTER_EGG;
+    @Beta
+    int INFESTED_CRACKED_STONE_BRICKS = MONSTER_EGG;
+    @Beta
+    int INFESTED_CHISELED_STONE_BRICKS = MONSTER_EGG;
+    @Beta
+    int STONE_BRICKS = STONEBRICK;
+    @Beta
+    int MOSSY_STONE_BRICKS = STONEBRICK;
+    @Beta
+    int CRACKED_STONE_BRICKS = STONEBRICK;
+    @Beta
+    int CHISELED_STONE_BRICKS = STONEBRICK;
+    @Beta
+    int MOSSY_COBBLESTONE_WALL = COBBLESTONE_WALL;
+    @Beta
+    int GRANITE_WALL = COBBLESTONE_WALL;
+    @Beta
+    int DIORITE_WALL = COBBLESTONE_WALL;
+    @Beta
+    int ANDESITE_WALL = COBBLESTONE_WALL;
+    @Beta
+    int SANDSTONE_WALL = COBBLESTONE_WALL;
+    @Beta
+    int BRICK_WALL = COBBLESTONE_WALL;
+    @Beta
+    int STONE_BRICK_WALL = COBBLESTONE_WALL;
+    @Beta
+    int MOSSY_STONE_BRICK_WALL = COBBLESTONE_WALL;
+    @Beta
+    int NETHER_BRICK_WALL = COBBLESTONE_WALL;
+    @Beta
+    int END_STONE_BRICK_WALL = COBBLESTONE_WALL;
+    @Beta
+    int PRISMARINE_WALL = COBBLESTONE_WALL;
+    @Beta
+    int RED_SANDSTONE_WALL = COBBLESTONE_WALL;
+    @Beta
+    int RED_NETHER_BRICK_WALL = COBBLESTONE_WALL;
+    @Beta
+    int CHISELED_QUARTZ_BLOCK = QUARTZ_BLOCK;
+    @Beta
+    int QUARTZ_PILLAR = QUARTZ_BLOCK;
+    @Beta
+    int SMOOTH_QUARTZ_BLOCK = QUARTZ_BLOCK;
+    @Beta
+    int OAK_DOUBLE_SLAB = DOUBLE_WOODEN_SLAB;
+    @Beta
+    int SPRUCE_DOUBLE_SLAB = DOUBLE_WOODEN_SLAB;
+    @Beta
+    int BIRCH_DOUBLE_SLAB = DOUBLE_WOODEN_SLAB;
+    @Beta
+    int JUNGLE_DOUBLE_SLAB = DOUBLE_WOODEN_SLAB;
+    @Beta
+    int ACACIA_DOUBLE_SLAB = DOUBLE_WOODEN_SLAB;
+    @Beta
+    int DARK_OAK_DOUBLE_SLAB = DOUBLE_WOODEN_SLAB;
+    @Beta
+    int OAK_SLAB = WOODEN_SLAB;
+    @Beta
+    int SPRUCE_SLAB = WOODEN_SLAB;
+    @Beta
+    int BIRCH_SLAB = WOODEN_SLAB;
+    @Beta
+    int JUNGLE_SLAB = WOODEN_SLAB;
+    @Beta
+    int ACACIA_SLAB = WOODEN_SLAB;
+    @Beta
+    int DARK_OAK_SLAB = WOODEN_SLAB;
+    @Beta
+    int ACACIA_LEAVES = LEAVES2;
+    @Beta
+    int DARK_OAK_LEAVES = LEAVES2;
+    @Beta
+    int DARK_PRISMARINE = PRISMARINE;
+    @Beta
+    int PRISMARINE_BRICKS = PRISMARINE;
+    @Beta
+    int SUNFLOWER = DOUBLE_PLANT;
+    @Beta
+    int LILAC = DOUBLE_PLANT;
+    @Beta
+    int LARGE_FERN = DOUBLE_PLANT;
+    @Beta
+    int ROSE_BUSH = DOUBLE_PLANT;
+    @Beta
+    int PEONY = DOUBLE_PLANT;
+    @Beta
+    int CHISELED_RED_SANDSTONE = RED_SANDSTONE;
+    @Beta
+    int CUT_RED_SANDSTONE = RED_SANDSTONE;
+    @Beta
+    int SMOOTH_RED_SANDSTONE = RED_SANDSTONE;
+    @Beta
+    int RED_SANDSTONE_DOUBLE_SLAB = DOUBLE_STONE_SLAB2;
+    @Beta
+    int PURPUR_DOUBLE_SLAB = DOUBLE_STONE_SLAB2;
+    @Beta
+    int PRISMARINE_DOUBLE_SLAB = DOUBLE_STONE_SLAB2;
+    @Beta
+    int DARK_PRISMARINE_DOUBLE_SLAB = DOUBLE_STONE_SLAB2;
+    @Beta
+    int PRISMARINE_BRICK_DOUBLE_SLAB = DOUBLE_STONE_SLAB2;
+    @Beta
+    int MOSSY_COBBLESTONE_DOUBLE_SLAB = DOUBLE_STONE_SLAB2;
+    @Beta
+    int SMOOTH_SANDSTONE_DOUBLE_SLAB = DOUBLE_STONE_SLAB2;
+    @Beta
+    int RED_NETHER_BRICK_DOUBLE_SLAB = DOUBLE_STONE_SLAB2;
+    @Beta
+    int RED_SANDSTONE_SLAB = STONE_SLAB2;
+    @Beta
+    int PURPUR_SLAB = STONE_SLAB2;
+    @Beta
+    int PRISMARINE_SLAB = STONE_SLAB2;
+    @Beta
+    int DARK_PRISMARINE_SLAB = STONE_SLAB2;
+    @Beta
+    int PRISMARINE_BRICK_SLAB = STONE_SLAB2;
+    @Beta
+    int MOSSY_COBBLESTONE_SLAB = STONE_SLAB2;
+    @Beta
+    int SMOOTH_SANDSTONE_SLAB = STONE_SLAB2;
+    @Beta
+    int RED_NETHER_BRICK_SLAB = STONE_SLAB2;
+    @Beta
+    int PURPUR_PILLAR = PURPUR_BLOCK;
+    @Beta
+    int TUBE_CORAL_BLOCK = CORAL_BLOCK;
+    @Beta
+    int BRAIN_CORAL_BLOCK = CORAL_BLOCK;
+    @Beta
+    int BUBBLE_CORAL_BLOCK = CORAL_BLOCK;
+    @Beta
+    int FIRE_CORAL_BLOCK = CORAL_BLOCK;
+    @Beta
+    int HORN_CORAL_BLOCK = CORAL_BLOCK;
+    @Beta
+    int DEAD_TUBE_CORAL_BLOCK = CORAL_BLOCK;
+    @Beta
+    int DEAD_BRAIN_CORAL_BLOCK = CORAL_BLOCK;
+    @Beta
+    int DEAD_BUBBLE_CORAL_BLOCK = CORAL_BLOCK;
+    @Beta
+    int DEAD_FIRE_CORAL_BLOCK = CORAL_BLOCK;
+    @Beta
+    int DEAD_HORN_CORAL_BLOCK = CORAL_BLOCK;
+    @Beta
+    int TUBE_CORAL_FAN = CORAL_FAN;
+    @Beta
+    int BRAIN_CORAL_FAN = CORAL_FAN;
+    @Beta
+    int BUBBLE_CORAL_FAN = CORAL_FAN;
+    @Beta
+    int FIRE_CORAL_FAN = CORAL_FAN;
+    @Beta
+    int HORN_CORAL_FAN = CORAL_FAN;
+    @Beta
+    int DEAD_TUBE_CORAL_FAN = CORAL_FAN_DEAD;
+    @Beta
+    int DEAD_BRAIN_CORAL_FAN = CORAL_FAN_DEAD;
+    @Beta
+    int DEAD_BUBBLE_CORAL_FAN = CORAL_FAN_DEAD;
+    @Beta
+    int DEAD_FIRE_CORAL_FAN = CORAL_FAN_DEAD;
+    @Beta
+    int DEAD_HORN_CORAL_FAN = CORAL_FAN_DEAD;
+    @Beta
+    int TUBE_CORAL_WALL_FAN = CORAL_FAN_HANG;
+    @Beta
+    int BRAIN_CORAL_WALL_FAN = CORAL_FAN_HANG;
+    @Beta
+    int DEAD_TUBE_CORAL_WALL_FAN = CORAL_FAN_HANG;
+    @Beta
+    int DEAD_BRAIN_CORAL_WALL_FAN = CORAL_FAN_HANG;
+    @Beta
+    int BUBBLE_CORAL_WALL_FAN = CORAL_FAN_HANG2;
+    @Beta
+    int FIRE_CORAL_WALL_FAN = CORAL_FAN_HANG2;
+    @Beta
+    int DEAD_BUBBLE_CORAL_WALL_FAN = CORAL_FAN_HANG2;
+    @Beta
+    int DEAD_FIRE_CORAL_WALL_FAN = CORAL_FAN_HANG2;
+    @Beta
+    int HORN_CORAL_WALL_FAN = CORAL_FAN_HANG3;
+    @Beta
+    int DEAD_HORN_CORAL_WALL_FAN = CORAL_FAN_HANG3;
+    @Beta
+    int END_STONE_BRICK_SLAB = STONE_SLAB3;
+    @Beta
+    int SMOOTH_RED_SANDSTONE_SLAB = STONE_SLAB3;
+    @Beta
+    int POLISHED_ANDESITE_SLAB = STONE_SLAB3;
+    @Beta
+    int ANDESITE_SLAB = STONE_SLAB3;
+    @Beta
+    int DIORITE_SLAB = STONE_SLAB3;
+    @Beta
+    int POLISHED_DIORITE_SLAB = STONE_SLAB3;
+    @Beta
+    int GRANITE_SLAB = STONE_SLAB3;
+    @Beta
+    int POLISHED_GRANITE_SLAB = STONE_SLAB3;
+    @Beta
+    int MOSSY_STONE_BRICK_SLAB = STONE_SLAB4;
+    @Beta
+    int SMOOTH_QUARTZ_SLAB = STONE_SLAB4;
+    @Beta
+    int CUT_SANDSTONE_SLAB = STONE_SLAB4;
+    @Beta
+    int CUT_RED_SANDSTONE_SLAB = STONE_SLAB4;
+    @Beta
+    int END_STONE_BRICK_DOUBLE_SLAB = DOUBLE_STONE_SLAB3;
+    @Beta
+    int SMOOTH_RED_SANDSTONE_DOUBLE_SLAB = DOUBLE_STONE_SLAB3;
+    @Beta
+    int POLISHED_ANDESITE_DOUBLE_SLAB = DOUBLE_STONE_SLAB3;
+    @Beta
+    int ANDESITE_DOUBLE_SLAB = DOUBLE_STONE_SLAB3;
+    @Beta
+    int DIORITE_DOUBLE_SLAB = DOUBLE_STONE_SLAB3;
+    @Beta
+    int POLISHED_DIORITE_DOUBLE_SLAB = DOUBLE_STONE_SLAB3;
+    @Beta
+    int GRANITE_DOUBLE_SLAB = DOUBLE_STONE_SLAB3;
+    @Beta
+    int POLISHED_GRANITE_DOUBLE_SLAB = DOUBLE_STONE_SLAB3;
+    @Beta
+    int MOSSY_STONE_BRICK_DOUBLE_SLAB = DOUBLE_STONE_SLAB4;
+    @Beta
+    int SMOOTH_QUARTZ_DOUBLE_SLAB = DOUBLE_STONE_SLAB4;
+    @Beta
+    int CUT_SANDSTONE_DOUBLE_SLAB = DOUBLE_STONE_SLAB4;
+    @Beta
+    int CUT_RED_SANDSTONE_DOUBLE_SLAB = DOUBLE_STONE_SLAB4;
+    @Beta
+    int OAK_WOOD = WOOD;
+    @Beta
+    int SPRUCE_WOOD = WOOD;
+    @Beta
+    int BIRCH_WOOD = WOOD;
+    @Beta
+    int JUNGLE_WOOD = WOOD;
+    @Beta
+    int ACACIA_WOOD = WOOD;
+    @Beta
+    int DARK_OAK_WOOD = WOOD;
+    @Beta
+    int STRIPPED_OAK_WOOD = WOOD;
+    @Beta
+    int STRIPPED_SPRUCE_WOOD = WOOD;
+    @Beta
+    int STRIPPED_BIRCH_WOOD = WOOD;
+    @Beta
+    int STRIPPED_JUNGLE_WOOD = WOOD;
+    @Beta
+    int STRIPPED_ACACIA_WOOD = WOOD;
+    @Beta
+    int STRIPPED_DARK_OAK_WOOD = WOOD;
 }

@@ -16,6 +16,7 @@ import cn.nukkit.math.Mth;
 import cn.nukkit.math.Vector3;
 import cn.nukkit.metadata.MetadataValue;
 import cn.nukkit.metadata.Metadatable;
+import cn.nukkit.network.protocol.LevelSoundEventPacket;
 import cn.nukkit.plugin.Plugin;
 import cn.nukkit.potion.Effect;
 import cn.nukkit.utils.BlockColor;
@@ -337,7 +338,11 @@ public abstract class Block extends Position implements Metadatable, Cloneable, 
         int meta;
         if (split.length > 2) {
             name = split[0] + ":" + split[1];
-            meta = Integer.parseInt(split[2]);
+            try {
+                meta = Integer.parseInt(split[2]);
+            } catch (NumberFormatException e) {
+                meta = 0;
+            }
         } else if (split.length == 2) {
             try {
                 meta = Integer.parseInt(split[1]);
@@ -364,6 +369,55 @@ public abstract class Block extends Position implements Metadatable, Cloneable, 
                 }
             } else {
                 id = AIR;
+            }
+        }
+
+        return get(id, meta);
+    }
+
+    @Nullable
+    public static Block fromStringNullable(String str) {
+        return fromStringNullable(str, false);
+    }
+
+    @Nullable
+    public static Block fromStringNullable(String str, boolean lookupAlias) {
+        String[] split = str.split(":", 3);
+
+        String name;
+        int meta;
+        if (split.length > 2) {
+            name = split[0] + ":" + split[1];
+            try {
+                meta = Integer.parseInt(split[2]);
+            } catch (NumberFormatException e) {
+                return null;
+            }
+        } else if (split.length == 2) {
+            try {
+                meta = Integer.parseInt(split[1]);
+                name = split[0];
+            } catch (NumberFormatException e) {
+                name = str;
+                meta = 0;
+            }
+        } else {
+            name = str;
+            meta = 0;
+        }
+
+        int id;
+        try {
+            id = Integer.parseInt(name);
+        } catch (NumberFormatException e) {
+            int fullId = Blocks.getFullIdByBlockName(name, lookupAlias);
+            if (fullId == -1) {
+                return null;
+            }
+            id = Block.getIdFromFullId(fullId);
+            int auxVal = Block.getDamageFromFullId(fullId);
+            if (auxVal != 0) {
+                meta = auxVal;
             }
         }
 
@@ -1183,6 +1237,10 @@ public abstract class Block extends Position implements Metadatable, Cloneable, 
 
     public boolean isVanilla() {
         return true;
+    }
+
+    public void playPlaceSound(Block target) {
+        level.addLevelSoundEvent(blockCenter(), LevelSoundEventPacket.SOUND_PLACE, getFullId());
     }
 
     public boolean is(int id) {

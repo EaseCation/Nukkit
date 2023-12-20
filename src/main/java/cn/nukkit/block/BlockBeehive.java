@@ -8,9 +8,11 @@ import cn.nukkit.blockentity.BlockEntityType;
 import cn.nukkit.item.Item;
 import cn.nukkit.item.ItemID;
 import cn.nukkit.item.ItemTool;
+import cn.nukkit.level.GameRule;
 import cn.nukkit.math.BlockFace;
 import cn.nukkit.math.Mth;
 import cn.nukkit.nbt.tag.CompoundTag;
+import cn.nukkit.network.protocol.LevelSoundEventPacket;
 import cn.nukkit.utils.BlockColor;
 import cn.nukkit.utils.Faceable;
 
@@ -106,8 +108,32 @@ public class BlockBeehive extends BlockSolidMeta implements Faceable {
                     player.dropItem(drop);
                 }
             }
+
+            level.addLevelSoundEvent(blockCenter(), LevelSoundEventPacket.SOUND_BUCKET_FILL_WATER);
             return true;
         }
+
+        if (item.isShears()) {
+            int honeyLevel = getHoneyLevel();
+            if (honeyLevel != MAX_HONEY_LEVEL) {
+                return false;
+            }
+
+            setHoneyLevel(0);
+            level.setBlock(this, this, true, true);
+
+            if (player != null && !player.isCreative()) {
+                item.useOn(this);
+            }
+
+            if (level.getGameRules().getBoolean(GameRule.DO_TILE_DROPS)) {
+                level.dropItem(blockCenter(), Item.get(Item.HONEYCOMB, 0, 3));
+            }
+
+            level.addLevelSoundEvent(blockCenter(), LevelSoundEventPacket.SOUND_BLOCK_BEEHIVE_SHEAR);
+            return true;
+        }
+
         return false;
     }
 

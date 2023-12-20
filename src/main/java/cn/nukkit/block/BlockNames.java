@@ -593,6 +593,8 @@ public interface BlockNames {
     String LIGHTNING_ROD = "lightning_rod";
     String CRAFTER = "crafter";
 
+    String TRIAL_SPAWNER = "trial_spawner";
+
     String DRIPSTONE_BLOCK = "dripstone_block";
     String DIRT_WITH_ROOTS = "dirt_with_roots";
     String HANGING_ROOTS = "hanging_roots";

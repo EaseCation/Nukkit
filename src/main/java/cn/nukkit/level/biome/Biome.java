@@ -146,6 +146,10 @@ public abstract class Biome implements BlockID {
         return true;
     }
 
+    public boolean canSnow() {
+        return false;
+    }
+
     @Nullable
     public static String getNameById(int id) {
         return idToName[id];

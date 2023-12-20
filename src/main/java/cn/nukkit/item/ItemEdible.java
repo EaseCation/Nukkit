@@ -4,6 +4,7 @@ import cn.nukkit.Player;
 import cn.nukkit.event.player.PlayerItemConsumeEvent;
 import cn.nukkit.item.food.Food;
 import cn.nukkit.math.Vector3;
+import cn.nukkit.network.protocol.LevelSoundEventPacket;
 
 /**
  * author: MagicDroidX
@@ -49,9 +50,13 @@ public abstract class ItemEdible extends Item {
         }
 
         Food food = Food.getByRelative(this);
-        if (player.isSurvivalLike() && food != null && food.eatenBy(player)) {
-            --this.count;
-            player.getInventory().setItemInHand(this);
+        if (food != null && food.eatenBy(player)) {
+            if (player.isSurvivalLike()) {
+                --this.count;
+                player.getInventory().setItemInHand(this);
+            }
+
+            player.level.addLevelSoundEvent(player.getEyePosition(), LevelSoundEventPacket.SOUND_BURP);
         }
         return true;
     }

@@ -837,22 +837,22 @@ public final class Blocks {
 
     @SuppressWarnings("deprecation")
     private static void registerItemAliases() {
-        registerItemAlias(ItemBlockNames.GLAZED_TERRACOTTA_WHITE, ItemBlockNames.WHITE_GLAZED_TERRACOTTA, V1_12_0);
-        registerItemAlias(ItemBlockNames.GLAZED_TERRACOTTA_ORANGE, ItemBlockNames.ORANGE_GLAZED_TERRACOTTA, V1_12_0);
-        registerItemAlias(ItemBlockNames.GLAZED_TERRACOTTA_MAGENTA, ItemBlockNames.MAGENTA_GLAZED_TERRACOTTA, V1_12_0);
-        registerItemAlias(ItemBlockNames.GLAZED_TERRACOTTA_LIGHT_BLUE, ItemBlockNames.LIGHT_BLUE_GLAZED_TERRACOTTA, V1_12_0);
-        registerItemAlias(ItemBlockNames.GLAZED_TERRACOTTA_YELLOW, ItemBlockNames.YELLOW_GLAZED_TERRACOTTA, V1_12_0);
-        registerItemAlias(ItemBlockNames.GLAZED_TERRACOTTA_LIME, ItemBlockNames.LIME_GLAZED_TERRACOTTA, V1_12_0);
-        registerItemAlias(ItemBlockNames.GLAZED_TERRACOTTA_PINK, ItemBlockNames.PINK_GLAZED_TERRACOTTA, V1_12_0);
-        registerItemAlias(ItemBlockNames.GLAZED_TERRACOTTA_GRAY, ItemBlockNames.GRAY_GLAZED_TERRACOTTA, V1_12_0);
-        registerItemAlias(ItemBlockNames.GLAZED_TERRACOTTA_SILVER, ItemBlockNames.SILVER_GLAZED_TERRACOTTA, V1_12_0);
-        registerItemAlias(ItemBlockNames.GLAZED_TERRACOTTA_CYAN, ItemBlockNames.CYAN_GLAZED_TERRACOTTA, V1_12_0);
-        registerItemAlias(ItemBlockNames.GLAZED_TERRACOTTA_PURPLE, ItemBlockNames.PURPLE_GLAZED_TERRACOTTA, V1_12_0);
-        registerItemAlias(ItemBlockNames.GLAZED_TERRACOTTA_BLUE, ItemBlockNames.BLUE_GLAZED_TERRACOTTA, V1_12_0);
-        registerItemAlias(ItemBlockNames.GLAZED_TERRACOTTA_BROWN, ItemBlockNames.BROWN_GLAZED_TERRACOTTA, V1_12_0);
-        registerItemAlias(ItemBlockNames.GLAZED_TERRACOTTA_GREEN, ItemBlockNames.GREEN_GLAZED_TERRACOTTA, V1_12_0);
-        registerItemAlias(ItemBlockNames.GLAZED_TERRACOTTA_RED, ItemBlockNames.RED_GLAZED_TERRACOTTA, V1_12_0);
-        registerItemAlias(ItemBlockNames.GLAZED_TERRACOTTA_BLACK, ItemBlockNames.BLACK_GLAZED_TERRACOTTA, V1_12_0);
+        registerItemAlias(ItemBlockNames.WHITE_GLAZED_TERRACOTTA, ItemBlockNames.GLAZED_TERRACOTTA_WHITE, V1_12_0);
+        registerItemAlias(ItemBlockNames.ORANGE_GLAZED_TERRACOTTA, ItemBlockNames.GLAZED_TERRACOTTA_ORANGE, V1_12_0);
+        registerItemAlias(ItemBlockNames.MAGENTA_GLAZED_TERRACOTTA, ItemBlockNames.GLAZED_TERRACOTTA_MAGENTA, V1_12_0);
+        registerItemAlias(ItemBlockNames.LIGHT_BLUE_GLAZED_TERRACOTTA, ItemBlockNames.GLAZED_TERRACOTTA_LIGHT_BLUE, V1_12_0);
+        registerItemAlias(ItemBlockNames.YELLOW_GLAZED_TERRACOTTA, ItemBlockNames.GLAZED_TERRACOTTA_YELLOW, V1_12_0);
+        registerItemAlias(ItemBlockNames.LIME_GLAZED_TERRACOTTA, ItemBlockNames.GLAZED_TERRACOTTA_LIME, V1_12_0);
+        registerItemAlias(ItemBlockNames.PINK_GLAZED_TERRACOTTA, ItemBlockNames.GLAZED_TERRACOTTA_PINK, V1_12_0);
+        registerItemAlias(ItemBlockNames.GRAY_GLAZED_TERRACOTTA, ItemBlockNames.GLAZED_TERRACOTTA_GRAY, V1_12_0);
+        registerItemAlias(ItemBlockNames.SILVER_GLAZED_TERRACOTTA, ItemBlockNames.GLAZED_TERRACOTTA_SILVER, V1_12_0);
+        registerItemAlias(ItemBlockNames.CYAN_GLAZED_TERRACOTTA, ItemBlockNames.GLAZED_TERRACOTTA_CYAN, V1_12_0);
+        registerItemAlias(ItemBlockNames.PURPLE_GLAZED_TERRACOTTA, ItemBlockNames.GLAZED_TERRACOTTA_PURPLE, V1_12_0);
+        registerItemAlias(ItemBlockNames.BLUE_GLAZED_TERRACOTTA, ItemBlockNames.GLAZED_TERRACOTTA_BLUE, V1_12_0);
+        registerItemAlias(ItemBlockNames.BROWN_GLAZED_TERRACOTTA, ItemBlockNames.GLAZED_TERRACOTTA_BROWN, V1_12_0);
+        registerItemAlias(ItemBlockNames.GREEN_GLAZED_TERRACOTTA, ItemBlockNames.GLAZED_TERRACOTTA_GREEN, V1_12_0);
+        registerItemAlias(ItemBlockNames.RED_GLAZED_TERRACOTTA, ItemBlockNames.GLAZED_TERRACOTTA_RED, V1_12_0);
+        registerItemAlias(ItemBlockNames.BLACK_GLAZED_TERRACOTTA, ItemBlockNames.GLAZED_TERRACOTTA_BLACK, V1_12_0);
 
         registerItemAlias(ItemBlockNames.PISTON_ARM_COLLISION_NEW, ItemBlockNames.PISTON_ARM_COLLISION, V1_18_30);
         registerItemAlias(ItemBlockNames.INVISIBLE_BEDROCK_NEW, ItemBlockNames.INVISIBLE_BEDROCK, V1_18_30);
@@ -1036,19 +1036,19 @@ public final class Blocks {
         registerComplexAlias(ItemBlockNames.RED_TERRACOTTA, STAINED_HARDENED_CLAY, DyeColor.RED.getWoolData(), V1_20_30);
         registerComplexAlias(ItemBlockNames.BLACK_TERRACOTTA, STAINED_HARDENED_CLAY, DyeColor.BLACK.getWoolData(), V1_20_30);
 
-//        registerComplexAlias(ItemBlockNames.GRANITE, STONE, BlockStone.TYPE_GRANITE, V1_20_50);
-//        registerComplexAlias(ItemBlockNames.POLISHED_GRANITE, STONE, BlockStone.TYPE_POLISHED_GRANITE, V1_20_50);
-//        registerComplexAlias(ItemBlockNames.DIORITE, STONE, BlockStone.TYPE_DIORITE, V1_20_50);
-//        registerComplexAlias(ItemBlockNames.POLISHED_DIORITE, STONE, BlockStone.TYPE_POLISHED_DIORITE, V1_20_50);
-//        registerComplexAlias(ItemBlockNames.ANDESITE, STONE, BlockStone.TYPE_ANDESITE, V1_20_50);
-//        registerComplexAlias(ItemBlockNames.POLISHED_ANDESITE, STONE, BlockStone.TYPE_POLISHED_ANDESITE, V1_20_50);
+        registerComplexAlias(ItemBlockNames.GRANITE, STONE, BlockStone.TYPE_GRANITE, V1_20_50);
+        registerComplexAlias(ItemBlockNames.POLISHED_GRANITE, STONE, BlockStone.TYPE_POLISHED_GRANITE, V1_20_50);
+        registerComplexAlias(ItemBlockNames.DIORITE, STONE, BlockStone.TYPE_DIORITE, V1_20_50);
+        registerComplexAlias(ItemBlockNames.POLISHED_DIORITE, STONE, BlockStone.TYPE_POLISHED_DIORITE, V1_20_50);
+        registerComplexAlias(ItemBlockNames.ANDESITE, STONE, BlockStone.TYPE_ANDESITE, V1_20_50);
+        registerComplexAlias(ItemBlockNames.POLISHED_ANDESITE, STONE, BlockStone.TYPE_POLISHED_ANDESITE, V1_20_50);
 
-//        registerComplexAlias(ItemBlockNames.OAK_PLANKS, PLANKS, BlockPlanks.OAK, V1_20_50);
-//        registerComplexAlias(ItemBlockNames.SPRUCE_PLANKS, PLANKS, BlockPlanks.SPRUCE, V1_20_50);
-//        registerComplexAlias(ItemBlockNames.BIRCH_PLANKS, PLANKS, BlockPlanks.BIRCH, V1_20_50);
-//        registerComplexAlias(ItemBlockNames.JUNGLE_PLANKS, PLANKS, BlockPlanks.JUNGLE, V1_20_50);
-//        registerComplexAlias(ItemBlockNames.ACACIA_PLANKS, PLANKS, BlockPlanks.ACACIA, V1_20_50);
-//        registerComplexAlias(ItemBlockNames.DARK_OAK_PLANKS, PLANKS, BlockPlanks.DARK_OAK, V1_20_50);
+        registerComplexAlias(ItemBlockNames.OAK_PLANKS, PLANKS, BlockPlanks.OAK, V1_20_50);
+        registerComplexAlias(ItemBlockNames.SPRUCE_PLANKS, PLANKS, BlockPlanks.SPRUCE, V1_20_50);
+        registerComplexAlias(ItemBlockNames.BIRCH_PLANKS, PLANKS, BlockPlanks.BIRCH, V1_20_50);
+        registerComplexAlias(ItemBlockNames.JUNGLE_PLANKS, PLANKS, BlockPlanks.JUNGLE, V1_20_50);
+        registerComplexAlias(ItemBlockNames.ACACIA_PLANKS, PLANKS, BlockPlanks.ACACIA, V1_20_50);
+        registerComplexAlias(ItemBlockNames.DARK_OAK_PLANKS, PLANKS, BlockPlanks.DARK_OAK, V1_20_50);
     }
 
     private static Class<? extends Block> registerBlock(String blockName, String itemName, int id, Class<? extends Block> clazz) {
@@ -1138,12 +1138,22 @@ public final class Blocks {
         return clazz;
     }
 
-    private static void registerBlockAlias(String alias, String currentName, GameVersion version) {
-        BLOCK_ALIASES_MAP.put(alias, currentName);
+    private static void registerBlockAlias(String newName, String oldName, GameVersion version) {
+        if (version.isAvailable()) {
+            String name = newName;
+            newName = oldName;
+            oldName = name;
+        }
+        BLOCK_ALIASES_MAP.put(newName, oldName);
     }
 
-    private static void registerItemAlias(String alias, String currentName, GameVersion version) {
-        ITEM_ALIASES_MAP.put(alias, currentName);
+    private static void registerItemAlias(String newName, String oldName, GameVersion version) {
+        if (version.isAvailable()) {
+            String name = newName;
+            newName = oldName;
+            oldName = name;
+        }
+        ITEM_ALIASES_MAP.put(newName, oldName);
     }
 
     private static void registerComplexAlias(String alias, int id, int meta, GameVersion version) {

@@ -17,8 +17,8 @@ import java.util.concurrent.ThreadLocalRandom;
  * Nukkit Project
  */
 public class BlockTallGrass extends BlockFlowable {
-    public static final int GRASS = 1;
-    public static final int FERN = 2;
+    public static final int TYPE_GRASS = 1;
+    public static final int TYPE_FERN = 2;
 
     private static final String[] NAMES = new String[]{
             "Grass",
@@ -100,11 +100,11 @@ public class BlockTallGrass extends BlockFlowable {
                 switch (this.getDamage()) {
                     case 0:
                     case 1:
-                        meta = BlockDoublePlant.TALL_GRASS;
+                        meta = BlockDoublePlant.TYPE_TALL_GRASS;
                         break;
                     case 2:
                     case 3:
-                        meta = BlockDoublePlant.LARGE_FERN;
+                        meta = BlockDoublePlant.TYPE_LARGE_FERN;
                         break;
                     default:
                         meta = -1;

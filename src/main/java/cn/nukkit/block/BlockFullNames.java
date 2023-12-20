@@ -594,6 +594,8 @@ public interface BlockFullNames {
     String LIGHTNING_ROD = "minecraft:" + BlockNames.LIGHTNING_ROD;
     String CRAFTER = "minecraft:" + BlockNames.CRAFTER;
 
+    String TRIAL_SPAWNER = "minecraft:" + BlockNames.TRIAL_SPAWNER;
+
     String DRIPSTONE_BLOCK = "minecraft:" + BlockNames.DRIPSTONE_BLOCK;
     String DIRT_WITH_ROOTS = "minecraft:" + BlockNames.DIRT_WITH_ROOTS;
     String HANGING_ROOTS = "minecraft:" + BlockNames.HANGING_ROOTS;

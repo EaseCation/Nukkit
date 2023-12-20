@@ -80,8 +80,12 @@ public class EntityEgg extends EntityProjectile {
     protected void onHit(MovingObjectPosition hitResult) {
         super.onHit(hitResult);
 
+        if (getViewers().isEmpty()) {
+            return;
+        }
+
         for (int i = 0; i < 6; i++) {
-            level.addParticle(new ItemBreakParticle(this, Item.EGG));
+            level.addParticle(new ItemBreakParticle(this, Item.EGG), getViewers().values());
         }
     }
 }

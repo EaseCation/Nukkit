@@ -29,15 +29,19 @@ public class ItemGlassBottle extends Item {
         if (target.isWater()) {
             Item potion = get(POTION);
 
-            if (this.count == 1) {
+            if (!player.isCreative()) {
+                pop();
+            }
+
+            if (this.count <= 0) {
                 player.getInventory().setItemInHand(potion);
-            } else if (this.count > 1) {
-                this.count--;
-                player.getInventory().setItemInHand(this);
-                if (player.getInventory().canAddItem(potion)) {
-                    player.getInventory().addItem(potion);
-                } else {
-                    player.getLevel().dropItem(player.add(0, 1.3, 0), potion, player.getDirectionVector().multiply(0.4));
+            } else {
+                if (!player.isCreative()) {
+                    player.getInventory().setItemInHand(this);
+                }
+
+                for (Item drop : player.getInventory().addItem(potion)) {
+                    player.dropItem(drop);
                 }
             }
         }

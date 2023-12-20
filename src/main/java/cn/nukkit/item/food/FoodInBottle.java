@@ -12,6 +12,11 @@ public class FoodInBottle extends Food {
     @Override
     protected boolean onEatenBy(Player player) {
         super.onEatenBy(player);
+
+        if (!player.isSurvivalLike()) {
+            return true;
+        }
+
         player.getInventory().addItem(Item.get(Item.GLASS_BOTTLE));
         return true;
     }
