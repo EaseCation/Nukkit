@@ -44,21 +44,24 @@ public class PlayerUIInventory extends BaseInventory {
 
     @Override
     public void sendSlot(int index, Player... target) {
-        InventorySlotPacket pk = new InventorySlotPacket();
-        pk.slot = index;
-        pk.item = this.getItem(index);
+        Item item = this.getItem(index);
 
         for (Player p : target) {
             if (p == this.getHolder()) {
+                InventorySlotPacket pk = new InventorySlotPacket();
+                pk.slot = index;
+                pk.item = item;
                 pk.inventoryId = ContainerIds.UI;
                 p.dataPacket(pk);
             } else {
-                int id;
-
-                if ((id = p.getWindowId(this)) == ContainerIds.NONE) {
+                int id = p.getWindowId(this);
+                if (id == ContainerIds.NONE) {
                     this.close(p);
                     continue;
                 }
+                InventorySlotPacket pk = new InventorySlotPacket();
+                pk.slot = index;
+                pk.item = item;
                 pk.inventoryId = id;
                 p.dataPacket(pk);
             }
@@ -67,23 +70,25 @@ public class PlayerUIInventory extends BaseInventory {
 
     @Override
     public void sendContents(Player... target) {
-        InventoryContentPacket pk = new InventoryContentPacket();
-        pk.slots = new Item[this.getSize()];
+        Item[] slots = new Item[this.getSize()];
         for (int i = 0; i < this.getSize(); ++i) {
-            pk.slots[i] = this.getItem(i);
+            slots[i] = this.getItem(i);
         }
 
         for (Player p : target) {
             if (p == this.getHolder()) {
+                InventoryContentPacket pk = new InventoryContentPacket();
+                pk.slots = slots;
                 pk.inventoryId = ContainerIds.UI;
                 p.dataPacket(pk);
             } else {
-                int id;
-
-                if ((id = p.getWindowId(this)) == ContainerIds.NONE) {
+                int id = p.getWindowId(this);
+                if (id == ContainerIds.NONE) {
                     this.close(p);
                     continue;
                 }
+                InventoryContentPacket pk = new InventoryContentPacket();
+                pk.slots = slots;
                 pk.inventoryId = id;
                 p.dataPacket(pk);
             }

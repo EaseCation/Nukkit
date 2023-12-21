@@ -39,7 +39,7 @@ public class PlayerOffhandInventory extends BaseInventory {
     @Override
     public void sendContents(Player... players) {
         Item item = this.getItem(0);
-        MobEquipmentPacket pk = this.createMobEquipmentPacket(item);
+        long entityId = this.getHolder().getId();
 
         for (Player player : players) {
             if (player == this.getHolder()) {
@@ -48,6 +48,11 @@ public class PlayerOffhandInventory extends BaseInventory {
                 pk2.slots = new Item[]{item};
                 player.dataPacket(pk2);
             } else {
+                MobEquipmentPacket pk = new MobEquipmentPacket();
+                pk.eid = entityId;
+                pk.item = item;
+                pk.inventorySlot = 1;
+                pk.windowId = ContainerIds.OFFHAND;
                 player.dataPacket(pk);
             }
         }
@@ -56,7 +61,7 @@ public class PlayerOffhandInventory extends BaseInventory {
     @Override
     public void sendSlot(int index, Player... players) {
         Item item = this.getItem(0);
-        MobEquipmentPacket pk = this.createMobEquipmentPacket(item);
+        long entityId = this.getHolder().getId();
 
         for (Player player : players) {
             if (player == this.getHolder()) {
@@ -65,19 +70,14 @@ public class PlayerOffhandInventory extends BaseInventory {
                 pk2.item = item;
                 player.dataPacket(pk2);
             } else {
+                MobEquipmentPacket pk = new MobEquipmentPacket();
+                pk.eid = entityId;
+                pk.item = item;
+                pk.inventorySlot = 1;
+                pk.windowId = ContainerIds.OFFHAND;
                 player.dataPacket(pk);
             }
         }
-    }
-
-    private MobEquipmentPacket createMobEquipmentPacket(Item item) {
-        MobEquipmentPacket pk = new MobEquipmentPacket();
-        pk.eid = this.getHolder().getId();
-        pk.item = item;
-        pk.inventorySlot = 1;
-        pk.windowId = ContainerIds.OFFHAND;
-        pk.tryEncode();
-        return pk;
     }
 
     @Override

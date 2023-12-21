@@ -11,6 +11,7 @@ import cn.nukkit.item.ItemID;
 import cn.nukkit.item.Items;
 import cn.nukkit.network.protocol.InventoryContentPacket;
 import cn.nukkit.network.protocol.InventorySlotPacket;
+import cn.nukkit.network.protocol.types.ContainerIds;
 import it.unimi.dsi.fastutil.ints.Int2ObjectMap;
 import it.unimi.dsi.fastutil.ints.Int2ObjectOpenHashMap;
 import it.unimi.dsi.fastutil.ints.IntArrayList;
@@ -471,18 +472,19 @@ public abstract class BaseInventory implements Inventory {
 
     @Override
     public void sendContents(Player... players) {
-        InventoryContentPacket pk = new InventoryContentPacket();
-        pk.slots = new Item[this.getSize()];
+        Item[] slots = new Item[this.getSize()];
         for (int i = 0; i < this.getSize(); ++i) {
-            pk.slots[i] = this.getItem(i);
+            slots[i] = this.getItem(i);
         }
 
         for (Player player : players) {
             int id = player.getWindowId(this);
-            if (id == -1 || !player.spawned) {
+            if (id == ContainerIds.NONE || !player.spawned) {
                 this.close(player);
                 continue;
             }
+            InventoryContentPacket pk = new InventoryContentPacket();
+            pk.slots = slots;
             pk.inventoryId = id;
             player.dataPacket(pk);
         }
@@ -548,16 +550,17 @@ public abstract class BaseInventory implements Inventory {
 
     @Override
     public void sendSlot(int index, Player... players) {
-        InventorySlotPacket pk = new InventorySlotPacket();
-        pk.slot = index;
-        pk.item = this.getItem(index).clone();
+        Item item = this.getItem(index);
 
         for (Player player : players) {
             int id = player.getWindowId(this);
-            if (id == -1) {
+            if (id == ContainerIds.NONE) {
                 this.close(player);
                 continue;
             }
+            InventorySlotPacket pk = new InventorySlotPacket();
+            pk.slot = index;
+            pk.item = item;
             pk.inventoryId = id;
             player.dataPacket(pk);
         }

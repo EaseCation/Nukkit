@@ -30,7 +30,7 @@ public abstract class DataPacket extends BinaryStream implements Cloneable {
 
     public abstract void decode();
 
-    public abstract void encode();
+    protected abstract void encode();
 
     public void tryEncode() {
         if (!this.isEncoded) {
