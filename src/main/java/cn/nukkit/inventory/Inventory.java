@@ -100,7 +100,7 @@ public interface Inventory {
 
     void onClose(Player who);
 
-    void onSlotChange(int index, Item before, boolean send);
+    void onSlotChange(int index, Item before, Item after, boolean send);
 
     default Item split(int index, int count) {
         Item item = getItem(index);

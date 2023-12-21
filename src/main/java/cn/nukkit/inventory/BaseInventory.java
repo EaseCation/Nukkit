@@ -2,14 +2,11 @@ package cn.nukkit.inventory;
 
 import cn.nukkit.Player;
 import cn.nukkit.Server;
-import cn.nukkit.block.Block;
-import cn.nukkit.block.BlockID;
 import cn.nukkit.blockentity.BlockEntity;
 import cn.nukkit.entity.Entity;
 import cn.nukkit.event.entity.EntityInventoryChangeEvent;
 import cn.nukkit.event.inventory.InventoryOpenEvent;
 import cn.nukkit.item.Item;
-import cn.nukkit.item.ItemBlock;
 import cn.nukkit.item.ItemID;
 import cn.nukkit.item.Items;
 import cn.nukkit.network.protocol.InventoryContentPacket;
@@ -175,8 +172,9 @@ public abstract class BaseInventory implements Inventory {
         }*/
 
         Item old = this.getItem(index);
-        this.slots.put(index, item.clone());
-        this.onSlotChange(index, old, send);
+        Item newItem = item.clone();
+        this.slots.put(index, newItem);
+        this.onSlotChange(index, old, newItem, send);
 
         return true;
     }
@@ -391,13 +389,16 @@ public abstract class BaseInventory implements Inventory {
                 item = ev.getNewItem();
             }
 
+            Item newItem;
             if (!item.isNull()) {
-                this.slots.put(index, item.clone());
+                newItem = item.clone();
+                this.slots.put(index, newItem);
             } else {
+                newItem = null;
                 this.slots.remove(index);
             }
 
-            this.onSlotChange(index, old, send);
+            this.onSlotChange(index, old, newItem, send);
         }
 
         return true;
@@ -453,7 +454,7 @@ public abstract class BaseInventory implements Inventory {
     }
 
     @Override
-    public void onSlotChange(int index, Item before, boolean send) {
+    public void onSlotChange(int index, Item before, Item after, boolean send) {
         if (send) {
             this.sendSlot(index, this.getViewers());
         }

@@ -21,7 +21,7 @@ public class PlayerOffhandInventory extends BaseInventory {
     }
 
     @Override
-    public void onSlotChange(int index, Item before, boolean send) {
+    public void onSlotChange(int index, Item before, Item after, boolean send) {
         EntityHuman holder = this.getHolder();
         if (holder instanceof Player && !((Player) holder).spawned) {
             return;
@@ -29,6 +29,11 @@ public class PlayerOffhandInventory extends BaseInventory {
 
         this.sendContents(this.getViewers());
         this.sendContents(holder.getViewers().values());
+
+        int sound;
+        if (after != null && (sound = after.getEquippingSound()) != -1 && !after.equals(before, false, false)) {
+            holder.level.addLevelSoundEvent(holder, sound);
+        }
     }
 
     @Override

@@ -31,8 +31,8 @@ public class BrewingInventory extends ContainerInventory {
     }
 
     @Override
-    public void onSlotChange(int index, Item before, boolean send) {
-        super.onSlotChange(index, before, send);
+    public void onSlotChange(int index, Item before, Item after, boolean send) {
+        super.onSlotChange(index, before, after, send);
 
         if (index >= 1 && index <= 3) {
             this.getHolder().updateBlock();

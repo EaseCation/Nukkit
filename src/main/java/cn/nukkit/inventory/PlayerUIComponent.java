@@ -106,8 +106,8 @@ public abstract class PlayerUIComponent extends BaseInventory {
     }
 
     @Override
-    public void onSlotChange(int index, Item before, boolean send) {
-        this.playerUI.onSlotChange(realIndex(index), before, send);
+    public void onSlotChange(int index, Item before, Item after, boolean send) {
+        this.playerUI.onSlotChange(realIndex(index), before, after, send);
     }
 
     protected int realIndex(int index) {

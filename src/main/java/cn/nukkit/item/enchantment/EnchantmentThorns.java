@@ -58,7 +58,7 @@ public class EnchantmentThorns extends Enchantment {
                 thornsLevel = Math.max(thorns.getLevel(), thornsLevel);
 
                 if (armor instanceof ItemArmor item) {
-                    sounds.add(item.getArmorEquipSound());
+                    sounds.add(item.getEquippingSound());
                 }
             }
         }

@@ -1,6 +1,7 @@
 package cn.nukkit.item;
 
 import cn.nukkit.block.Block;
+import cn.nukkit.network.protocol.LevelSoundEventPacket;
 
 /**
  * author: MagicDroidX
@@ -49,8 +50,8 @@ public class ItemBlock extends Item {
     @Override
     public int getMaxStackSize() {
         //Shulker boxes don't stack!
-        int id = this.getBlockId();
-        if (id == Block.SHULKER_BOX || id == Block.UNDYED_SHULKER_BOX) {
+        int id = this.getId();
+        if (id == ItemBlockID.SHULKER_BOX || id == ItemBlockID.UNDYED_SHULKER_BOX) {
             return 1;
         }
 
@@ -70,6 +71,15 @@ public class ItemBlock extends Item {
     @Override
     public boolean isExplodable() {
         return block.isExplodable();
+    }
+
+    @Override
+    public int getEquippingSound() {
+        if (getId() == ItemBlockID.CARVED_PUMPKIN) {
+            return LevelSoundEventPacket.SOUND_ARMOR_EQUIP_GENERIC;
+        }
+
+        return super.getEquippingSound();
     }
 
     @Override

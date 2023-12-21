@@ -1,5 +1,7 @@
 package cn.nukkit.item;
 
+import cn.nukkit.network.protocol.LevelSoundEventPacket;
+
 /**
  * author: MagicDroidX
  * Nukkit Project
@@ -18,6 +20,11 @@ public class ItemArrow extends Item {
 
     public ItemArrow(Integer meta, int count) {
         super(ARROW, meta, count, "Arrow");
+    }
+
+    @Override
+    public int getEquippingSound() {
+        return LevelSoundEventPacket.SOUND_ARMOR_EQUIP_GENERIC;
     }
 
     public boolean isTipped() {

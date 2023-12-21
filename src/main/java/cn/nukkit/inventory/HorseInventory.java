@@ -14,8 +14,8 @@ public class HorseInventory extends ContainerInventory {
     }
 
     @Override
-    public void onSlotChange(int index, Item before, boolean send) {
-        super.onSlotChange(index, before, send);
+    public void onSlotChange(int index, Item before, Item after, boolean send) {
+        super.onSlotChange(index, before, after, send);
         if (index == 0) getHolder().updateSaddled(getItem(0).getId() == Item.SADDLE);
     }
 

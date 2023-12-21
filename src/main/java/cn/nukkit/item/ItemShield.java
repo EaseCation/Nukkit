@@ -1,5 +1,7 @@
 package cn.nukkit.item;
 
+import cn.nukkit.network.protocol.LevelSoundEventPacket;
+
 public class ItemShield extends ItemTool {
 
     public ItemShield() {
@@ -27,5 +29,10 @@ public class ItemShield extends ItemTool {
     @Override
     public boolean additionalDamageOnBreak() {
         return true;
+    }
+
+    @Override
+    public int getEquippingSound() {
+        return LevelSoundEventPacket.SOUND_ARMOR_EQUIP_GENERIC;
     }
 }

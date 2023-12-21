@@ -1,6 +1,7 @@
 package cn.nukkit.item;
 
 import cn.nukkit.block.Block;
+import cn.nukkit.network.protocol.LevelSoundEventPacket;
 
 /**
  * Created by Snake1999 on 2016/2/3.
@@ -27,6 +28,11 @@ public class ItemSkull extends Item {
     public ItemSkull(Integer meta, int count) {
         super(SKULL, meta, count, getItemSkullName(meta != null ? meta : 0));
         this.block = Block.get(Block.BLOCK_SKULL);
+    }
+
+    @Override
+    public int getEquippingSound() {
+        return LevelSoundEventPacket.SOUND_ARMOR_EQUIP_GENERIC;
     }
 
     public static String getItemSkullName(int meta) {

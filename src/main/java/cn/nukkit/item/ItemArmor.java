@@ -77,7 +77,7 @@ public abstract class ItemArmor extends Item implements ItemDurable {
         if (equip) {
             player.getInventory().setItem(player.getInventory().getHeldItemIndex(), oldSlotItem);
 
-            player.getLevel().addLevelSoundEvent(player, getArmorEquipSound());
+            player.getLevel().addLevelSoundEvent(player, getEquippingSound());
         }
 
         return this.getCount() == 0;
@@ -114,7 +114,8 @@ public abstract class ItemArmor extends Item implements ItemDurable {
         return 40 / (unbreaking + 1) + 60;
     }
 
-    public int getArmorEquipSound() {
+    @Override
+    public int getEquippingSound() {
         return switch (getTier()) {
             case TIER_CHAIN -> LevelSoundEventPacket.SOUND_ARMOR_EQUIP_CHAIN;
             case TIER_DIAMOND -> LevelSoundEventPacket.SOUND_ARMOR_EQUIP_DIAMOND;

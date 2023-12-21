@@ -1339,4 +1339,8 @@ public class Item implements Cloneable, ItemID {
     public boolean isVanilla() {
         return true;
     }
+
+    public int getEquippingSound() {
+        return -1;
+    }
 }

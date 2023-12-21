@@ -146,7 +146,7 @@ public class PlayerInventory extends BaseInventory {
         pk.tryEncode();
 
         for (Player player : players) {
-            if (player.equals(this.getHolder())) {
+            if (player == this.getHolder()) {
                 this.sendSlot(this.getHeldItemIndex(), player);
 
                 MobEquipmentPacket pk0 = new MobEquipmentPacket();
@@ -166,7 +166,7 @@ public class PlayerInventory extends BaseInventory {
     }
 
     @Override
-    public void onSlotChange(int index, Item before, boolean send) {
+    public void onSlotChange(int index, Item before, Item after, boolean send) {
         EntityHuman holder = this.getHolder();
         if (holder instanceof Player && !((Player) holder).spawned) {
             return;
@@ -175,8 +175,13 @@ public class PlayerInventory extends BaseInventory {
         if (index >= this.getSize()) {
             this.sendArmorSlot(index, this.getViewers());
             this.sendArmorSlot(index, this.getHolder().getViewers().values());
+
+            int sound;
+            if (after != null && (sound = after.getEquippingSound()) != -1 && !after.equals(before, false)) {
+                holder.level.addLevelSoundEvent(holder, sound);
+            }
         } else {
-            super.onSlotChange(index, before, send);
+            super.onSlotChange(index, before, after, send);
         }
     }
 
@@ -276,8 +281,9 @@ public class PlayerInventory extends BaseInventory {
             item = ev.getNewItem();
         }
         Item old = this.getItem(index);
-        this.slots.put(index, item.clone());
-        this.onSlotChange(index, old, send);
+        Item newItem = item.clone();
+        this.slots.put(index, newItem);
+        this.onSlotChange(index, old, newItem, send);
         return true;
     }
 
@@ -312,13 +318,16 @@ public class PlayerInventory extends BaseInventory {
                 item = ev.getNewItem();
             }
 
+            Item newItem;
             if (!item.isNull()) {
-                this.slots.put(index, item.clone());
+                newItem = item.clone();
+                this.slots.put(index, newItem);
             } else {
+                newItem = null;
                 this.slots.remove(index);
             }
 
-            this.onSlotChange(index, old, send);
+            this.onSlotChange(index, old, newItem, send);
         }
 
         return true;
@@ -355,7 +364,7 @@ public class PlayerInventory extends BaseInventory {
         pk.tryEncode();
 
         for (Player player : players) {
-            if (player.equals(this.getHolder())) {
+            if (player == this.getHolder()) {
                 InventoryContentPacket pk2 = new InventoryContentPacket();
                 pk2.inventoryId = ContainerIds.ARMOR;
                 pk2.slots = armor;
@@ -403,7 +412,7 @@ public class PlayerInventory extends BaseInventory {
         pk.tryEncode();
 
         for (Player player : players) {
-            if (player.equals(this.getHolder())) {
+            if (player == this.getHolder()) {
                 InventorySlotPacket pk2 = new InventorySlotPacket();
                 pk2.inventoryId = ContainerIds.ARMOR;
                 pk2.slot = index - this.getSize();
@@ -465,7 +474,7 @@ public class PlayerInventory extends BaseInventory {
         pk.item = this.getItem(index).clone();
 
         for (Player player : players) {
-            if (player.equals(this.getHolder())) {
+            if (player == this.getHolder()) {
                 pk.inventoryId = ContainerIds.INVENTORY;
                 player.dataPacket(pk);
             } else {
