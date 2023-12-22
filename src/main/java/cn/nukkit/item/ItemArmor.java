@@ -77,7 +77,7 @@ public abstract class ItemArmor extends Item implements ItemDurable {
         if (equip) {
             player.getInventory().setItem(player.getInventory().getHeldItemIndex(), oldSlotItem);
 
-            player.getLevel().addLevelSoundEvent(player, getEquippingSound());
+//            player.getLevel().addLevelSoundEvent(player, getEquippingSound());
         }
 
         return this.getCount() == 0;
