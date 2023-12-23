@@ -83,6 +83,7 @@ import cn.nukkit.scheduler.AsyncTask;
 import cn.nukkit.utils.*;
 import com.google.common.annotations.Beta;
 import com.google.common.collect.BiMap;
+import com.google.common.collect.EvictingQueue;
 import com.google.common.collect.HashBiMap;
 import it.unimi.dsi.fastutil.Pair;
 import it.unimi.dsi.fastutil.ints.*;
@@ -156,6 +157,8 @@ public class Player extends EntityHuman implements CommandSender, InventoryHolde
 
     public static final int VIOLATION_THRESHOLD = 150;
     public static final int VIOLATION_KICK_THRESHOLD = 100;
+
+    private static PlayerViolationListener VIOLATION_LISTENER = PlayerViolationListener.NOPE;
 
     protected final SourceInterface interfaz;
 
@@ -309,8 +312,10 @@ public class Player extends EntityHuman implements CommandSender, InventoryHolde
 
     protected Entity lookAtEntity;
 
-    public int violation;
-    public volatile boolean violated;
+    private int violation;
+    private volatile boolean violated;
+    private final Queue<PlayerViolationRecord> violationRecords = EvictingQueue.create(32);
+    private volatile PlayerViolationRecord asyncViolationRecord;
 
     protected boolean inWater = false;
     protected boolean underwater;
@@ -3255,7 +3260,7 @@ public class Player extends EntityHuman implements CommandSender, InventoryHolde
                     }
                     break;
                 case ProtocolInfo.COMMAND_REQUEST_PACKET:
-                    this.violation += 5;
+                    VIOLATION_LISTENER.onCommandRequest(this);
 
                     if (!this.spawned || !this.isAlive()) {
                         break;
@@ -3933,12 +3938,12 @@ public class Player extends EntityHuman implements CommandSender, InventoryHolde
         this.craftingType = CRAFTING_SMALL;
 
         if (this.messageCounter <= 0) {
-            this.violation += 5;
+            VIOLATION_LISTENER.onChatTooFast(this);
             return false;
         }
 
         if (message.length() > this.messageCounter * 512 + 1) {
-            this.violation += 25;
+            VIOLATION_LISTENER.onChatTooLong(this);
             return false;
         }
 
@@ -6214,6 +6219,43 @@ public class Player extends EntityHuman implements CommandSender, InventoryHolde
         }
 
         violation--;
+    }
+
+    public int getViolationLevel() {
+        return violation;
+    }
+
+    public void addViolationLevel(int delta, String reason) {
+        violation += delta;
+        violationRecords.offer(new PlayerViolationRecord(Server.getInstance().getTick(), reason, delta));
+    }
+
+    public void resetViolationState() {
+        violation = 0;
+        violated = false;
+    }
+
+    public boolean isViolated() {
+        return violated;
+    }
+
+    public void setViolated(String reason) {
+        violated = true;
+        asyncViolationRecord = new PlayerViolationRecord(Server.getInstance().getTick(), reason, 0);
+    }
+
+    public Queue<PlayerViolationRecord> getViolationRecords() {
+        return violationRecords;
+    }
+
+    @Nullable
+    public PlayerViolationRecord getAsyncViolationRecord() {
+        return asyncViolationRecord;
+    }
+
+    public static void setViolationListener(PlayerViolationListener listener) {
+        Objects.requireNonNull(listener, "listener");
+        VIOLATION_LISTENER = listener;
     }
 
     /**
