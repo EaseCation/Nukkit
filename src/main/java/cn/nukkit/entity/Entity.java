@@ -66,6 +66,9 @@ public abstract class Entity extends Location implements Metadatable, EntityData
     private static final Map<String, EntityEntry> BY_NAME = new Object2ObjectOpenHashMap<>();
     private static final Map<Class<? extends Entity>, EntityEntry> BY_CLASS = new IdentityHashMap<>();
 
+    //EaseCation 优化
+    protected boolean needEntityBaseTick = true;
+
     protected Map<Integer, Player> hasSpawned = new ConcurrentHashMap<>();
 
     protected final Map<Integer, Effect> effects = new ConcurrentHashMap<>();
@@ -1272,30 +1275,32 @@ public abstract class Entity extends Location implements Metadatable, EntityData
 
         boolean hasUpdate = false;
 
-        this.checkBlockCollision();
+        if (this.needEntityBaseTick) {
+            this.checkBlockCollision();
 
-        if (this.y < level.getMinHeight() - 18 && this.isAlive()) {
-            this.attack(new EntityDamageEvent(this, DamageCause.VOID, 4));
-            hasUpdate = true;
-        }
-
-        if (this.fireTicks > 0) {
-            if (this.fireProof) {
-                this.fireTicks -= 4 * tickDiff;
-                if (this.fireTicks < 0) {
-                    this.fireTicks = 0;
-                }
-            } else {
-                if (!this.hasEffect(Effect.FIRE_RESISTANCE) && ((this.fireTicks % 20) == 0 || tickDiff > 20) && (!isPlayer || level.gameRules.getBoolean(GameRule.FIRE_DAMAGE))) {
-                    this.attack(new EntityDamageEvent(this, DamageCause.FIRE_TICK, 1));
-                }
-                this.fireTicks -= tickDiff;
-            }
-            if (this.fireTicks <= 0) {
-                this.extinguish();
-            } else {
-                this.setDataFlag(DATA_FLAG_ONFIRE, true);
+            if (this.y < level.getMinHeight() - 18 && this.isAlive()) {
+                this.attack(new EntityDamageEvent(this, DamageCause.VOID, 4));
                 hasUpdate = true;
+            }
+
+            if (this.fireTicks > 0) {
+                if (this.fireProof) {
+                    this.fireTicks -= 4 * tickDiff;
+                    if (this.fireTicks < 0) {
+                        this.fireTicks = 0;
+                    }
+                } else {
+                    if (!this.hasEffect(Effect.FIRE_RESISTANCE) && ((this.fireTicks % 20) == 0 || tickDiff > 20) && (!isPlayer || level.gameRules.getBoolean(GameRule.FIRE_DAMAGE))) {
+                        this.attack(new EntityDamageEvent(this, DamageCause.FIRE_TICK, 1));
+                    }
+                    this.fireTicks -= tickDiff;
+                }
+                if (this.fireTicks <= 0) {
+                    this.extinguish();
+                } else {
+                    this.setDataFlag(DATA_FLAG_ONFIRE, true);
+                    hasUpdate = true;
+                }
             }
         }
 
