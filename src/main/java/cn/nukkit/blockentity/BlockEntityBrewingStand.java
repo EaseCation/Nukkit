@@ -205,7 +205,7 @@ public class BlockEntityBrewingStand extends BlockEntityAbstractContainer {
         }
     }
 
-    protected void sendBrewTime() {
+    public void sendBrewTime() {
         sendBrewTime(brewTime);
     }
 
