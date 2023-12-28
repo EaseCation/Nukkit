@@ -9,7 +9,9 @@ import cn.nukkit.item.ItemSuspiciousStew;
 import cn.nukkit.plugin.Plugin;
 import cn.nukkit.potion.Effect;
 
+import javax.annotation.Nullable;
 import java.util.*;
+import java.util.function.IntSupplier;
 
 import static cn.nukkit.GameVersion.*;
 
@@ -231,6 +233,29 @@ public abstract class Food {
 
     public Food setRestoreSaturation(float restoreSaturation) {
         this.restoreSaturation = restoreSaturation;
+        return this;
+    }
+
+    protected int eatingTick = 31;
+
+    protected IntSupplier eatingTickSupplier;
+
+    public int getEatingTick() {
+        return eatingTick;
+    }
+
+    public Food setEatingTick(int eatingTick) {
+        this.eatingTick = eatingTick;
+        return this;
+    }
+
+    @Nullable
+    public IntSupplier getEatingTickSupplier() {
+        return eatingTickSupplier;
+    }
+
+    public Food setEatingTickSupplier(IntSupplier eatingTickSupplier) {
+        this.eatingTickSupplier = eatingTickSupplier;
         return this;
     }
 
