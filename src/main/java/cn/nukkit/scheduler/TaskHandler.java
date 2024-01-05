@@ -10,6 +10,7 @@ import lombok.extern.log4j.Log4j2;
 public class TaskHandler {
     private final int taskId;
     private final boolean asynchronous;
+    private final boolean virtual;
 
     private final Plugin plugin;
     private final Runnable task;
@@ -22,11 +23,12 @@ public class TaskHandler {
 
     private boolean cancelled;
 
-    public TaskHandler(Plugin plugin, Runnable task, int taskId, boolean asynchronous) {
+    public TaskHandler(Plugin plugin, Runnable task, int taskId, boolean asynchronous, boolean virtual) {
         this.asynchronous = asynchronous;
         this.plugin = plugin;
         this.task = task;
         this.taskId = taskId;
+        this.virtual = virtual;
     }
 
     public boolean isCancelled() {
@@ -105,6 +107,10 @@ public class TaskHandler {
 
     public boolean isAsynchronous() {
         return asynchronous;
+    }
+
+    public boolean isVirtual() {
+        return virtual;
     }
 
     public void setDelay(int delay) {

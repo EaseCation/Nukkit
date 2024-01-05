@@ -54,4 +54,8 @@ public class FileWriteTask extends AsyncTask<Void> {
         }
     }
 
+    @Override
+    protected boolean isVirtual() {
+        return true;
+    }
 }

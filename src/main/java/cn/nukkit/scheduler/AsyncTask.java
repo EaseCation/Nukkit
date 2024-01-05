@@ -50,6 +50,10 @@ public abstract class AsyncTask<T> implements Runnable {
         return this.taskId;
     }
 
+    protected boolean isVirtual() {
+        return false;
+    }
+
     public abstract void onRun();
 
     public void onCompletion(Server server) {
