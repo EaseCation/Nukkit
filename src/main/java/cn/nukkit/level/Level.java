@@ -2,7 +2,10 @@ package cn.nukkit.level;
 
 import cn.nukkit.Player;
 import cn.nukkit.Server;
-import cn.nukkit.block.*;
+import cn.nukkit.block.Block;
+import cn.nukkit.block.BlockID;
+import cn.nukkit.block.BlockMultiface;
+import cn.nukkit.block.BlockRedstoneDiode;
 import cn.nukkit.blockentity.BlockEntity;
 import cn.nukkit.entity.Entity;
 import cn.nukkit.entity.item.EntityFirework;
@@ -24,14 +27,12 @@ import cn.nukkit.item.Items;
 import cn.nukkit.item.enchantment.Enchantment;
 import cn.nukkit.level.GlobalBlockPaletteInterface.StaticVersion;
 import cn.nukkit.level.biome.Biome;
-import cn.nukkit.level.format.Chunk;
-import cn.nukkit.level.format.ChunkSection;
-import cn.nukkit.level.format.FullChunk;
-import cn.nukkit.level.format.LevelProvider;
-import cn.nukkit.level.format.LevelProviderManager;
+import cn.nukkit.level.format.*;
 import cn.nukkit.level.format.LevelProviderManager.LevelProviderHandle;
 import cn.nukkit.level.format.anvil.Anvil;
-import cn.nukkit.level.format.generic.*;
+import cn.nukkit.level.format.generic.BaseFullChunk;
+import cn.nukkit.level.format.generic.ChunkBlobCache;
+import cn.nukkit.level.format.generic.ChunkPacketCache;
 import cn.nukkit.level.format.leveldb.LevelDB;
 import cn.nukkit.level.format.mcregion.McRegion;
 import cn.nukkit.level.generator.Generator;
@@ -50,7 +51,10 @@ import cn.nukkit.metadata.BlockMetadataStore;
 import cn.nukkit.metadata.MetadataValue;
 import cn.nukkit.metadata.Metadatable;
 import cn.nukkit.nbt.NBTIO;
-import cn.nukkit.nbt.tag.*;
+import cn.nukkit.nbt.tag.CompoundTag;
+import cn.nukkit.nbt.tag.DoubleTag;
+import cn.nukkit.nbt.tag.FloatTag;
+import cn.nukkit.nbt.tag.ListTag;
 import cn.nukkit.network.Network;
 import cn.nukkit.network.protocol.*;
 import cn.nukkit.network.protocol.BatchPacket.Track;
@@ -78,7 +82,13 @@ import java.lang.ref.SoftReference;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.*;
-import java.util.concurrent.*;
+import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.ConcurrentLinkedDeque;
+import java.util.concurrent.ConcurrentLinkedQueue;
+import java.util.concurrent.ThreadLocalRandom;
+import java.util.concurrent.atomic.AtomicInteger;
+import java.util.function.BiConsumer;
+import java.util.function.Consumer;
 import java.util.function.Predicate;
 import java.util.function.Supplier;
 
@@ -318,6 +328,10 @@ public class Level implements ChunkManager, Metadatable {
     private boolean autoCompaction;
 
     private boolean initialized;
+
+    private static final AtomicInteger callbackIdCounter = new AtomicInteger();
+    private final Int2ObjectMap<Consumer<Block>> callbackBlockSet = new Int2ObjectOpenHashMap<>();
+    private final Int2ObjectMap<BiConsumer<Long, DataPacket>> callbackChunkPacketSend = new Int2ObjectOpenHashMap<>();
 
     public Level(Server server, String name, String path, LevelProviderHandle providerHandle) {
         this.levelId = levelIdCounter++;
@@ -961,6 +975,9 @@ public class Level implements ChunkManager, Metadatable {
         long index = Level.chunkHash(chunkX, chunkZ);
         List<DataPacket> packets = this.chunkPackets.computeIfAbsent(index, key -> new ObjectArrayList<>());
         packets.add(packet);
+        for (BiConsumer<Long, DataPacket> consumer : this.callbackChunkPacketSend.values()) {
+            consumer.accept(index, packet);
+        }
     }
 
     public void registerChunkLoader(ChunkLoader loader, int chunkX, int chunkZ) {
@@ -2414,6 +2431,10 @@ public class Level implements ChunkManager, Metadatable {
         block.z = z;
         block.level = this;
 
+        for (Consumer<Block> callback : this.callbackBlockSet.values()) {
+            callback.accept(block);
+        }
+
         int cx = x >> 4;
         int cz = z >> 4;
         long index = Level.chunkHash(cx, cz);
@@ -2667,13 +2688,7 @@ public class Level implements ChunkManager, Metadatable {
         }
 
         if (createParticles) {
-            Int2ObjectMap<Player> players = this.getChunkPlayers((int) target.x >> 4, (int) target.z >> 4);
-
-            this.addParticle(new DestroyBlockParticle(target.add(0.5, 0, 0), target), players.values());
-
-            if (player != null) {
-                players.remove(player.getLoaderId());
-            }
+            this.addParticle(new DestroyBlockParticle(target, target));
         }
 
         // Close BlockEntity before we check onBreak
@@ -5125,5 +5140,25 @@ public class Level implements ChunkManager, Metadatable {
 
     public void setDisableChunkTick(boolean disable) {
         disableChunkTick = disable;
+    }
+
+    public int addCallbackBlockSet(Consumer<Block> consumer) {
+        int id = callbackIdCounter.incrementAndGet();
+        callbackBlockSet.put(id, consumer);
+        return id;
+    }
+
+    public void removeCallbackBlockSet(int id) {
+        callbackBlockSet.remove(id);
+    }
+
+    public int addCallbackChunkPacketSend(BiConsumer<Long, DataPacket> consumer) {
+        int id = callbackIdCounter.incrementAndGet();
+        callbackChunkPacketSend.put(id, consumer);
+        return id;
+    }
+
+    public void removeCallbackChunkPacketSend(int id) {
+        callbackChunkPacketSend.remove(id);
     }
 }
