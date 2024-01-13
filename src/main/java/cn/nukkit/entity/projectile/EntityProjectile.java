@@ -441,6 +441,10 @@ public abstract class EntityProjectile extends Entity {
         return entityHitCount;
     }
 
+    public void setEntityHitCount(int count) {
+        this.entityHitCount = count;
+    }
+
     protected boolean useLegacyMovement() {
         return false;
     }
