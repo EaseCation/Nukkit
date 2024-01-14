@@ -47,6 +47,7 @@ public class Skin implements Cloneable {
     private String skinId;
     private String playFabId = "";
     private String skinResourcePatch = GEOMETRY_CUSTOM;
+    private String cachedGeometryName;
     private SerializedImage skinData;
     private final List<SkinAnimation> animations = new ArrayList<>();
     private final List<PersonaPiece> personaPieces = new ArrayList<>();
@@ -203,15 +204,15 @@ public class Skin implements Cloneable {
             skinResourcePatch = GEOMETRY_CUSTOM;
         }
         this.skinResourcePatch = skinResourcePatch;
+        this.cachedGeometryName = this.getGeometryName0();  // 刷新GeometryName缓存
         return this;
     }
 
-    public String getGeometryName() {
+    private String getGeometryName0() {
         if (skinResourcePatch == null) {
             return "geometry.humanoid.custom";
         }
         try {
-            //TODO: 这里可以做个缓存 -- 12/31/2022
             JsonNode object = JsonUtil.COMMON_JSON_MAPPER.readTree(skinResourcePatch);
             JsonNode geometry = object.get("geometry");
             if (geometry == null) {
@@ -227,11 +228,21 @@ public class Skin implements Cloneable {
         }
     }
 
+    public String getGeometryName() {
+        if (this.cachedGeometryName != null) {
+            return this.cachedGeometryName;
+        }
+        this.cachedGeometryName = this.getGeometryName0();
+        return this.cachedGeometryName;
+    }
+
     public Skin setGeometryName(String geometryName) {
         if (geometryName == null || geometryName.trim().isEmpty()) {
             skinResourcePatch = GEOMETRY_CUSTOM;
+            cachedGeometryName = "geometry.humanoid.custom";
             return this;
         }
+        cachedGeometryName = geometryName;
         this.skinResourcePatch = "{\"geometry\" : {\"default\" : \"" + geometryName + "\"}}";
         return this;
     }
