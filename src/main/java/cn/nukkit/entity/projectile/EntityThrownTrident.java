@@ -18,6 +18,7 @@ import cn.nukkit.level.format.FullChunk;
 import cn.nukkit.nbt.NBTIO;
 import cn.nukkit.nbt.tag.CompoundTag;
 import cn.nukkit.network.protocol.LevelSoundEventPacket;
+import lombok.Setter;
 
 /**
  * Created by PetteriM1
@@ -30,6 +31,7 @@ public class EntityThrownTrident extends EntityProjectile {
 
     protected int pickupMode;
     public boolean alreadyCollided;
+    @Setter
     protected int loyaltyBackTick = 0;
 
     @Override
