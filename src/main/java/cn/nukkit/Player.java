@@ -4868,8 +4868,8 @@ public class Player extends EntityHuman implements CommandSender, InventoryHolde
                 this.dataPacket(pk);
                 if (add) {
                     if (((EntityDamageByEntityEvent) source).getDamager() instanceof Player) {
-                        if (((Player) ((EntityDamageByEntityEvent) source).getDamager()).getLoginChainData().getDeviceOS() == 7)  //win10
-                            (((EntityDamageByEntityEvent) source).getDamager()).addEffect(Effect.getEffect(Effect.SLOWNESS).setDuration(10).setAmplifier(1).setVisible(false));
+                        /*if (((Player) ((EntityDamageByEntityEvent) source).getDamager()).getLoginChainData().getDeviceOS() == 7)  //win10
+                            (((EntityDamageByEntityEvent) source).getDamager()).addEffect(Effect.getEffect(Effect.SLOWNESS).setDuration(10).setAmplifier(1).setVisible(false));*/
                         ((Player)(((EntityDamageByEntityEvent) source).getDamager())).attackCriticalThisJump++;
                     }
                     /*
