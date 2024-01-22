@@ -4818,7 +4818,7 @@ public class Player extends EntityHuman implements CommandSender, InventoryHolde
 
             //Critical hit
 
-            if (!damager.onGround && damager instanceof Player) {
+            if (!damager.onGround && damager instanceof Player && ((Player) damager).getLoginChainData().getCurrentInputMode() != ClientChainData.INPUT_MOUSE) {
                 if (((Player) damager).speed != null && ((Player) damager).speed.y > 0) {
                     //((Player) damager).sendMessage("speed = " + ((Player) damager).speed.y);
                     if (((Player) damager).attackCriticalThisJump <= 0) add = true;
