@@ -101,6 +101,10 @@ public class EntityDamageByEntityEvent extends EntityDamageEvent {
         this.knockBackV = 0;
     }
 
+    public boolean isDefaultKnockback() {
+        return knockBackH == GLOBAL_KNOCKBACK_H && knockBackV == GLOBAL_KNOCKBACK_V;
+    }
+
     public Enchantment[] getWeaponEnchantments() {
         return enchantments;
     }
