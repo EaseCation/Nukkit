@@ -1,6 +1,7 @@
 package cn.nukkit.item.enchantment.damage;
 
 import cn.nukkit.entity.Entity;
+import cn.nukkit.item.enchantment.EnchantmentNames;
 
 /**
  * author: MagicDroidX
@@ -9,7 +10,7 @@ import cn.nukkit.entity.Entity;
 public class EnchantmentDamageAll extends EnchantmentDamage {
 
     public EnchantmentDamageAll() {
-        super(SHARPNESS, "sharpness", "all", Rarity.COMMON, TYPE.ALL);
+        super(SHARPNESS, EnchantmentNames.SHARPNESS, "all", Rarity.COMMON, TYPE.ALL);
     }
 
     @Override

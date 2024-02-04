@@ -145,7 +145,7 @@ public class BlockSeagrass extends BlockTransparentMeta {
                 return true;
             }
 
-            if (y >= level.getMaxHeight()) {
+            if (y >= level.getHeightRange().getMaxY() - 1) {
                 return true;
             }
 

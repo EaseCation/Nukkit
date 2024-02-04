@@ -2,6 +2,9 @@ package cn.nukkit.level.biome.type;
 
 import cn.nukkit.level.biome.Biome;
 
+import java.util.concurrent.locks.Lock;
+import java.util.concurrent.locks.ReentrantLock;
+
 /**
  * author: DaPorkchop_
  * Nukkit Project
@@ -10,7 +13,7 @@ import cn.nukkit.level.biome.Biome;
  * </p>
  */
 public abstract class CoveredBiome extends Biome {
-    public final Object synchronizeCover = new Object();
+    public final Lock synchronizeCover = new ReentrantLock();
 
     @Override
     public boolean canSnow() {

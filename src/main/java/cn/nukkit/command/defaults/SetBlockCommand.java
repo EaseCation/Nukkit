@@ -45,7 +45,7 @@ public class SetBlockCommand extends VanillaCommand {
 
 			Level level = position.getLevel();
 
-			if (position.y < level.getMinHeight() || position.y > level.getMaxHeight()) {
+			if (!level.getHeightRange().isValidBlockY(position.y)) {
 				sender.sendMessage(TextFormat.RED + "Cannot place block outside of the world");
 				return true;
 			}

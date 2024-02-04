@@ -2,6 +2,7 @@ package cn.nukkit.item.enchantment.protection;
 
 import cn.nukkit.event.entity.EntityDamageEvent;
 import cn.nukkit.event.entity.EntityDamageEvent.DamageCause;
+import cn.nukkit.item.enchantment.EnchantmentNames;
 
 /**
  * author: MagicDroidX
@@ -10,7 +11,7 @@ import cn.nukkit.event.entity.EntityDamageEvent.DamageCause;
 public class EnchantmentProtectionFall extends EnchantmentProtection {
 
     public EnchantmentProtectionFall() {
-        super(FEATHER_FALLING, "feather_falling", "fall", Rarity.UNCOMMON, TYPE.FALL);
+        super(FEATHER_FALLING, EnchantmentNames.FEATHER_FALLING, "fall", Rarity.UNCOMMON, TYPE.FALL);
     }
 
     @Override

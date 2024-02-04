@@ -41,7 +41,7 @@ public abstract class BlockNylium extends BlockNetherrack {
 
     @Override
     protected boolean onFertilized() {
-        if (y >= level.getMaxHeight()) {
+        if (y >= level.getHeightRange().getMaxY() - 1) {
             return false;
         }
 

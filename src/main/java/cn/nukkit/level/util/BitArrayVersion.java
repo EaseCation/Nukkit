@@ -31,7 +31,7 @@ public enum BitArrayVersion {
      * 1 element.
      * @since 1.18.0
      */
-    V0(0, 1, V2),
+    V0(0, 0, V2),
     /**
      * No element. mainly used for 3D biomes.
      * @since 1.18.0
@@ -67,7 +67,7 @@ public enum BitArrayVersion {
     BitArrayVersion(int bits, int entriesPerWord, BitArrayVersion next, boolean padding) {
         this.bits = (byte) bits;
         this.entriesPerWord = (byte) entriesPerWord;
-        this.maxEntryValue = (1 << this.bits) - 1;
+        this.maxEntryValue = bits < 0 ? bits : (1 << this.bits) - 1;
         this.next = next;
         this.padding = padding;
     }

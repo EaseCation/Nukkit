@@ -156,7 +156,7 @@ public abstract class Biome implements BlockID {
     }
 
     public static int toValidBiome(int id) {
-        return idToName[id] == null ? EnumBiome.OCEAN.id : id;
+        return idToName[id] == null ? BiomeID.OCEAN : id;
     }
 
     static {

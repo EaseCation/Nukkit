@@ -4,6 +4,7 @@ import cn.nukkit.Player;
 import cn.nukkit.block.Block;
 import cn.nukkit.blockentity.BlockEntity;
 import cn.nukkit.entity.Entity;
+import cn.nukkit.level.HeightRange;
 import cn.nukkit.level.format.LevelProvider;
 import cn.nukkit.level.format.LevelProviderManager;
 import cn.nukkit.level.format.LevelProviderManager.LevelProviderHandle;
@@ -494,13 +495,8 @@ public class Chunk extends BaseFullChunk {
     }
 
     @Override
-    public int getMaxHeight() {
-        return 127;
-    }
-
-    @Override
-    public int getMinHeight() {
-        return 0;
+    public HeightRange getHeightRange() {
+        return McRegion.DEFAULT_HEIGHT_RANGE;
     }
 
     @SuppressWarnings("unused")

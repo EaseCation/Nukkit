@@ -9,6 +9,7 @@ import cn.nukkit.command.data.CommandParamOption;
 import cn.nukkit.command.data.CommandParamType;
 import cn.nukkit.command.data.CommandParameter;
 import cn.nukkit.command.exceptions.CommandSyntaxException;
+import cn.nukkit.level.HeightRange;
 import cn.nukkit.level.Level;
 import cn.nukkit.level.Position;
 import cn.nukkit.math.AxisAlignedBB;
@@ -71,8 +72,9 @@ public class FillCommand extends VanillaCommand {
 
             AxisAlignedBB aabb = new SimpleAxisAlignedBB(Math.min(from.getX(), to.getX()), Math.min(from.getY(), to.getY()), Math.min(from.getZ(), to.getZ()), Math.max(from.getX(), to.getX()), Math.max(from.getY(), to.getY()), Math.max(from.getZ(), to.getZ()));
             Level level = from.getLevel();
+            HeightRange heightRange = level.getHeightRange();
 
-            if (aabb.getMinY() < level.getMinHeight() || aabb.getMaxY() > level.getMaxHeight()) {
+            if (aabb.getMinY() < heightRange.getMinY() || aabb.getMaxY() >= heightRange.getMaxY()) {
                 sender.sendMessage(TextFormat.RED + "Cannot place blocks outside of the world");
                 return true;
             }

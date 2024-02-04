@@ -6,7 +6,7 @@ package cn.nukkit.item.enchantment;
  */
 public class EnchantmentWaterBreath extends Enchantment {
     protected EnchantmentWaterBreath() {
-        super(RESPIRATION, "respiration", "oxygen", Rarity.RARE, EnchantmentType.ARMOR_HEAD);
+        super(RESPIRATION, EnchantmentNames.RESPIRATION, "oxygen", Rarity.RARE, EnchantmentType.ARMOR_HEAD);
     }
 
     @Override

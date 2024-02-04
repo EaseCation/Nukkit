@@ -2,9 +2,9 @@ package cn.nukkit.level.generator.object.tree;
 
 import cn.nukkit.block.*;
 import cn.nukkit.level.ChunkManager;
+import cn.nukkit.level.HeightRange;
 import cn.nukkit.math.BlockVector3;
 import cn.nukkit.math.NukkitRandom;
-import cn.nukkit.math.Vector3;
 
 public class ObjectSwampTree extends TreeGenerator {
 
@@ -19,13 +19,14 @@ public class ObjectSwampTree extends TreeGenerator {
     private final Block metaLeaves = Block.get(BlockID.LEAVES, BlockLeaves.OAK);
 
     @Override
-    public boolean generate(ChunkManager worldIn, NukkitRandom rand, Vector3 vectorPosition) {
-        BlockVector3 position = new BlockVector3(vectorPosition.getFloorX(), vectorPosition.getFloorY(), vectorPosition.getFloorZ());
+    public boolean generate(ChunkManager worldIn, NukkitRandom rand, BlockVector3 vectorPosition) {
+        BlockVector3 position = new BlockVector3(vectorPosition.getX(), vectorPosition.getY(), vectorPosition.getZ());
 
         int i = rand.nextBoundedInt(4) + 5;
         boolean flag = true;
 
-        if (position.getY() >= 1 && position.getY() + i + 1 <= 256) {
+        HeightRange heightRange = worldIn.getHeightRange();
+        if (position.getY() > heightRange.getMinY() && position.getY() + i + 1 <= heightRange.getMaxY()) {
             for (int j = position.getY(); j <= position.getY() + 1 + i; ++j) {
                 int k = 1;
 
@@ -41,7 +42,7 @@ public class ObjectSwampTree extends TreeGenerator {
 
                 for (int l = position.getX() - k; l <= position.getX() + k && flag; ++l) {
                     for (int i1 = position.getZ() - k; i1 <= position.getZ() + k && flag; ++i1) {
-                        if (j >= 0 && j < 256) {
+                        if (j >= heightRange.getMinY() && j < heightRange.getMaxY()) {
                             pos2.setComponents(l, j, i1);
                             if (!this.canGrowInto(worldIn.getBlockIdAt(0, pos2.x, pos2.y, pos2.z))) {
                                 flag = false;
@@ -59,7 +60,7 @@ public class ObjectSwampTree extends TreeGenerator {
                 BlockVector3 down = position.down();
                 int block = worldIn.getBlockIdAt(0, down.x, down.y, down.z);
 
-                if ((block == Block.GRASS || block == Block.DIRT) && position.getY() < 256 - i - 1) {
+                if ((block == Block.GRASS || block == Block.DIRT) && position.getY() < heightRange.getMaxY() - i - 1) {
                     this.setDirtAt(worldIn, down);
 
                     for (int k1 = position.getY() - 3 + i; k1 <= position.getY() + i; ++k1) {

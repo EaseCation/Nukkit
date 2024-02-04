@@ -2,10 +2,10 @@ package cn.nukkit.level.generator.object.tree;
 
 import cn.nukkit.block.*;
 import cn.nukkit.level.ChunkManager;
+import cn.nukkit.level.HeightRange;
 import cn.nukkit.math.BlockFace;
 import cn.nukkit.math.BlockVector3;
 import cn.nukkit.math.NukkitRandom;
-import cn.nukkit.math.Vector3;
 
 /**
  * Created by CreeperFace on 26. 10. 2016.
@@ -35,21 +35,22 @@ public class NewJungleTree extends TreeGenerator {
     }
 
     @Override
-    public boolean generate(ChunkManager worldIn, NukkitRandom rand, Vector3 vectorPosition) {
-        BlockVector3 position = new BlockVector3(vectorPosition.getFloorX(), vectorPosition.getFloorY(), vectorPosition.getFloorZ());
+    public boolean generate(ChunkManager worldIn, NukkitRandom rand, BlockVector3 vectorPosition) {
+        BlockVector3 position = new BlockVector3(vectorPosition.getX(), vectorPosition.getY(), vectorPosition.getZ());
 
         int i = rand.nextBoundedInt(maxTreeHeight) + this.minTreeHeight;
         boolean flag = true;
 
-        if (position.getY() >= 1 && position.getY() + i + 1 <= 256) {
-            for (int j = position.getY(); j <= position.getY() + 1 + i; ++j) {
+        HeightRange heightRange = worldIn.getHeightRange();
+        if (position.getY() > heightRange.getMinY() && position.getY() + i + 1 <= heightRange.getMaxY()) {
+            for (int y = position.getY(); y <= position.getY() + 1 + i; ++y) {
                 int k = 1;
 
-                if (j == position.getY()) {
+                if (y == position.getY()) {
                     k = 0;
                 }
 
-                if (j >= position.getY() + 1 + i - 2) {
+                if (y >= position.getY() + 1 + i - 2) {
                     k = 2;
                 }
 
@@ -57,8 +58,8 @@ public class NewJungleTree extends TreeGenerator {
 
                 for (int l = position.getX() - k; l <= position.getX() + k && flag; ++l) {
                     for (int i1 = position.getZ() - k; i1 <= position.getZ() + k && flag; ++i1) {
-                        if (j >= 0 && j < 256) {
-                            pos2.setComponents(l, j, i1);
+                        if (y >= heightRange.getMinY() && y < heightRange.getMaxY()) {
+                            pos2.setComponents(l, y, i1);
                             if (!this.canGrowInto(worldIn.getBlockIdAt(0, pos2.x, pos2.y, pos2.z))) {
                                 flag = false;
                             }
@@ -75,10 +76,8 @@ public class NewJungleTree extends TreeGenerator {
                 BlockVector3 down = position.down();
                 int block = worldIn.getBlockIdAt(0, down.x, down.y, down.z);
 
-                if ((block == Block.GRASS || block == Block.DIRT || block == Block.FARMLAND) && position.getY() < 256 - i - 1) {
+                if ((block == Block.GRASS || block == Block.DIRT || block == Block.FARMLAND) && position.getY() < heightRange.getMaxY() - i - 1) {
                     this.setDirtAt(worldIn, down);
-                    int k2 = 3;
-                    int l2 = 0;
 
                     for (int i3 = position.getY() - 3 + i; i3 <= position.getY() + i; ++i3) {
                         int i4 = i3 - (position.getY() + i);

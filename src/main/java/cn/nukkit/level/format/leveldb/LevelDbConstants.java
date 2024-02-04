@@ -23,9 +23,6 @@ public final class LevelDbConstants {
     private static final byte LATEST_LEVEL_CHUNK_VERSION = 40; // 1.18.30
     private static final byte LATEST_LEVEL_SUBCHUNK_VERSION = 9; // 1.18
 
-    public static final int CURRENT_NUKKIT_DATA_VERSION = 8;
-    public static final long NUKKIT_DATA_MAGIC = 0x20221231fe0100ffL;
-
     public static final byte[] CHUNK_VERSION_SAVE_DATA = new byte[]{CURRENT_LEVEL_CHUNK_VERSION};
     public static final byte[] FINALISATION_GENERATION_SAVE_DATA = Binary.writeLInt(FINALISATION_NEEDS_INSTATICKING);
     public static final byte[] FINALISATION_POPULATION_SAVE_DATA = Binary.writeLInt(FINALISATION_NEEDS_POPULATION);

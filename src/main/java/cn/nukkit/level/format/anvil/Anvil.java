@@ -1,5 +1,6 @@
 package cn.nukkit.level.format.anvil;
 
+import cn.nukkit.level.HeightRange;
 import cn.nukkit.level.Level;
 import cn.nukkit.level.LevelCreationOptions;
 import cn.nukkit.level.format.FullChunk;
@@ -34,6 +35,8 @@ import java.util.regex.Pattern;
 public class Anvil extends BaseLevelProvider {
     public static final int VERSION = 19133;
     public static final Pattern ANVIL_REGEX = Pattern.compile("^r\\.(-?[0-9]+)\\.(-?[0-9]+)\\.mca$");
+
+    static final HeightRange DEFAULT_HEIGHT_RANGE = HeightRange.blockY(0, 256);
 
     public Anvil(Level level, String path) throws IOException {
         super(level, path);
@@ -305,5 +308,10 @@ public class Anvil extends BaseLevelProvider {
                 log.error("An error occurred while unloading region: {}", regionFile, e);
             }
         }
+    }
+
+    @Override
+    public HeightRange getHeightRange() {
+        return DEFAULT_HEIGHT_RANGE;
     }
 }

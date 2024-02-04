@@ -7,11 +7,11 @@ package cn.nukkit.level.format;
 public interface Chunk extends FullChunk {
     byte SECTION_COUNT = 16;
 
-    boolean isSectionEmpty(float fY);
+    boolean isSectionEmpty(int chunkY);
 
-    ChunkSection getSection(float fY);
+    ChunkSection getSection(int chunkY);
 
-    boolean setSection(float fY, ChunkSection section);
+    boolean setSection(int chunkY, ChunkSection section);
 
     ChunkSection[] getSections();
 

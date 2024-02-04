@@ -1,6 +1,7 @@
 package cn.nukkit.item.enchantment.bow;
 
 import cn.nukkit.item.enchantment.Enchantment;
+import cn.nukkit.item.enchantment.EnchantmentNames;
 
 /**
  * author: MagicDroidX
@@ -8,7 +9,7 @@ import cn.nukkit.item.enchantment.Enchantment;
  */
 public class EnchantmentBowPower extends EnchantmentBow {
     public EnchantmentBowPower() {
-        super(Enchantment.POWER, "power", "arrowDamage", Rarity.COMMON);
+        super(Enchantment.POWER, EnchantmentNames.POWER, "arrowDamage", Rarity.COMMON);
     }
 
     @Override

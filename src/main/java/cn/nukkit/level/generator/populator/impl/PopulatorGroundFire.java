@@ -42,6 +42,6 @@ public class PopulatorGroundFire extends PopulatorSurfaceBlock {
                 break;
             }
         }
-        return y == 0 ? -1 : y;
+        return y == 0 ? Integer.MIN_VALUE : y;
     }
 }

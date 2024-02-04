@@ -32,7 +32,7 @@ public class PopulatorLava extends Populator {
                 int x = random.nextRange(0, 15);
                 int z = random.nextRange(0, 15);
                 int y = this.getHighestWorkableBlock(chunk, x, z);
-                if (y != -1 && chunk.getBlockId(0, x, y, z) == Block.AIR) {
+                if (y != Integer.MIN_VALUE && chunk.getBlockId(0, x, y, z) == Block.AIR) {
                     chunk.setBlock(0, x, y, z, Block.FLOWING_LAVA);
                     chunk.setBlockLight(x, y, z, Block.light[Block.FLOWING_LAVA]);
                     this.lavaSpread(level, random, bx + x, y, bz + z);
@@ -223,6 +223,6 @@ public class PopulatorLava extends Populator {
                 break;
             }
         }
-        return y == 0 ? -1 : y;
+        return y == 0 ? Integer.MIN_VALUE : y;
     }
 }

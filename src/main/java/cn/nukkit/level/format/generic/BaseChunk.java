@@ -22,18 +22,30 @@ public abstract class BaseChunk extends BaseFullChunk implements Chunk {
     @Override
     public BaseChunk clone() {
         BaseChunk chunk = (BaseChunk) super.clone();
-        if (this.biomes != null) chunk.biomes = this.biomes.clone();
-        if (this.heightMap != null) chunk.heightMap = this.heightMap.clone();
-        if (sections != null && sections[0] != null) {
-            chunk.sections = new ChunkSection[sections.length];
-            for (int i = 0; i < sections.length; i++) {
-                chunk.sections[i] = sections[i].copy();
-            }
+
+        if (this.biomes != null) {
+            chunk.biomes = this.biomes.clone();
         }
+
+        if (this.heightMap != null) {
+            chunk.heightMap = this.heightMap.clone();
+        }
+
+        cloneSections(chunk);
+
         return chunk;
     }
 
-    private void removeInvalidTile(int x, int y, int z) {
+    protected void cloneSections(BaseChunk newChunk) {
+        if (sections != null && sections[0] != null) {
+            newChunk.sections = new ChunkSection[sections.length];
+            for (int i = 0; i < sections.length; i++) {
+                newChunk.sections[i] = sections[i].copy();
+            }
+        }
+    }
+
+    protected void removeInvalidTile(int x, int y, int z) {
         if (Server.getInstance().isPrimaryThread()) {
             removeInvalidBlockEntity(x, y, z);
         } else {
@@ -168,28 +180,28 @@ public abstract class BaseChunk extends BaseFullChunk implements Chunk {
     }
 
     @Override
-    public boolean isSectionEmpty(float fY) {
-        return this.sections[(int) fY] instanceof EmptyChunkSection;
+    public boolean isSectionEmpty(int chunkY) {
+        return this.sections[chunkY] instanceof EmptyChunkSection;
     }
 
     @Override
-    public ChunkSection getSection(float fY) {
-        return this.sections[(int) fY];
+    public ChunkSection getSection(int chunkY) {
+        return this.sections[chunkY];
     }
 
     @Override
-    public boolean setSection(float fY, ChunkSection section) {
+    public boolean setSection(int chunkY, ChunkSection section) {
         if (Arrays.equals(EmptyChunkSection.EMPTY_BLOCK_ARR, section.getIdArray()) && Arrays.equals(EmptyChunkSection.EMPTY_META_ARR, section.getDataArray())) {
-            this.sections[(int) fY] = EmptyChunkSection.EMPTY[(int) fY];
+            this.sections[chunkY] = EmptyChunkSection.EMPTY[chunkY];
         } else {
-            this.sections[(int) fY] = section;
+            this.sections[chunkY] = section;
         }
         setChanged();
         return true;
     }
 
-    protected void setInternalSection(float fY, ChunkSection section) {
-        this.sections[(int) fY] = section;
+    protected void setInternalSection(int chunkY, ChunkSection section) {
+        this.sections[chunkY] = section;
         setChanged();
     }
 
@@ -258,16 +270,6 @@ public abstract class BaseChunk extends BaseFullChunk implements Chunk {
                 return y;
             }
         }
-        return 0;
-    }
-
-    @Override
-    public int getMaxHeight() {
-        return 255;
-    }
-
-    @Override
-    public int getMinHeight() {
         return 0;
     }
 }

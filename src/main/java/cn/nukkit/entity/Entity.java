@@ -1278,7 +1278,7 @@ public abstract class Entity extends Location implements Metadatable, EntityData
         if (this.needEntityBaseTick) {
             this.checkBlockCollision();
 
-            if (this.y < level.getMinHeight() - 18 && this.isAlive()) {
+            if (this.y < level.getHeightRange().getMinY() - 18 && this.isAlive()) {
                 this.attack(new EntityDamageEvent(this, DamageCause.VOID, 4));
                 hasUpdate = true;
             }

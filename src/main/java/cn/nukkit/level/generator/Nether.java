@@ -4,7 +4,7 @@ import cn.nukkit.block.*;
 import cn.nukkit.level.ChunkManager;
 import cn.nukkit.level.Level;
 import cn.nukkit.level.biome.Biome;
-import cn.nukkit.level.biome.EnumBiome;
+import cn.nukkit.level.biome.BiomeID;
 import cn.nukkit.level.format.generic.BaseFullChunk;
 import cn.nukkit.level.generator.noise.nukkit.f.SimplexF;
 import cn.nukkit.level.generator.object.ore.OreType;
@@ -26,8 +26,9 @@ public class Nether extends Generator {
     private ChunkManager level;
     private NukkitRandom nukkitRandom;
 
-    private final double lavaHeight = 32;
-    private final double bedrockDepth = 5;
+    private static final int lavaHeight = 32;
+    private static final int bedrockDepth = 5;
+
     private final SimplexF[] noiseGen = new SimplexF[3];
     private final List<Populator> populators = new ObjectArrayList<>();
     private final List<Populator> generationPopulators = new ObjectArrayList<>();
@@ -87,7 +88,7 @@ public class Nether extends Generator {
                 new OreType(Block.get(BlockID.QUARTZ_ORE), 20, 16, 0, 128, NETHERRACK),
                 new OreType(Block.get(BlockID.SOUL_SAND), 5, 64, 0, 128, NETHERRACK),
                 new OreType(Block.get(BlockID.GRAVEL), 5, 64, 0, 128, NETHERRACK),
-                new OreType(Block.get(BlockID.FLOWING_LAVA), 1, 16, 0, (int) this.lavaHeight, NETHERRACK)
+                new OreType(Block.get(BlockID.FLOWING_LAVA), 1, 16, 0, lavaHeight, NETHERRACK)
         );
         this.populators.add(ores);
 
@@ -122,9 +123,6 @@ public class Nether extends Generator {
 
         for (int x = 0; x < 16; ++x) {
             for (int z = 0; z < 16; ++z) {
-                Biome biome = EnumBiome.HELL.biome;
-                chunk.setBiomeId(x, z, biome.getId());
-
                 chunk.setBlock(0, x, 0, z, Block.BEDROCK);
                 for (int y = 115; y < 127; ++y) {
                     chunk.setBlock(0, x, y, z, Block.NETHERRACK);
@@ -133,13 +131,14 @@ public class Nether extends Generator {
                 for (int y = 1; y < 127; ++y) {
                     if (getNoise(baseX | x, y, baseZ | z) > 0) {
                         chunk.setBlock(0, x, y, z, Block.NETHERRACK);
-                    } else if (y <= this.lavaHeight) {
+                    } else if (y <= lavaHeight) {
                         chunk.setBlock(0, x, y, z, Block.LAVA);
                         chunk.setBlockLight(x, y + 1, z, 15);
                     }
                 }
             }
         }
+
         for (Populator populator : this.generationPopulators) {
             populator.populate(this.level, chunkX, chunkZ, this.nukkitRandom, chunk);
         }
@@ -149,6 +148,9 @@ public class Nether extends Generator {
     public void populateChunk(int chunkX, int chunkZ) {
         BaseFullChunk chunk = level.getChunk(chunkX, chunkZ);
         this.nukkitRandom.setSeed(0xdeadbeef ^ (chunkX << 8) ^ chunkZ ^ this.level.getSeed());
+
+        chunk.fillBiome(BiomeID.HELL);
+
         for (Populator populator : this.populators) {
             populator.populate(this.level, chunkX, chunkZ, this.nukkitRandom, chunk);
         }

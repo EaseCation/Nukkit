@@ -4,6 +4,7 @@ import cn.nukkit.block.Block;
 import cn.nukkit.block.BlockID;
 import cn.nukkit.level.GlobalBlockPalette;
 import cn.nukkit.level.GlobalBlockPaletteInterface.StaticVersion;
+import cn.nukkit.level.Level;
 import cn.nukkit.level.format.ChunkSection;
 import cn.nukkit.level.util.BitArrayVersion;
 import cn.nukkit.level.util.PalettedSubChunkStorage;
@@ -17,7 +18,7 @@ import java.util.Arrays;
  * Nukkit Project
  */
 public final class EmptyChunkSection implements ChunkSection {
-    public static final EmptyChunkSection[] EMPTY = new EmptyChunkSection[16];
+    public static final EmptyChunkSection[] EMPTY = new EmptyChunkSection[Level.MAX_SUB_CHUNK_COUNT];
     public static final PalettedSubChunkStorage EMPTY_STORAGE = PalettedSubChunkStorage.ofBlock(BitArrayVersion.V1);
 
     private static final byte[] EMPTY_2048 = new byte[2048];
@@ -28,8 +29,8 @@ public final class EmptyChunkSection implements ChunkSection {
     public static final byte[] EMPTY_SKY_LIGHT_ARR = new byte[2048];
 
     static {
-        for (int y = 0; y < EMPTY.length; y++) {
-            EMPTY[y] = new EmptyChunkSection(y);
+        for (int i = 0; i < EMPTY.length; i++) {
+            EMPTY[i] = new EmptyChunkSection(Level.subChunkIndexToY(i));
         }
 
         Arrays.fill(EMPTY_SKY_LIGHT_ARR, (byte) 255);

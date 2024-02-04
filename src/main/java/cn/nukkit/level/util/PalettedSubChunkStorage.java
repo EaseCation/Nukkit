@@ -5,8 +5,7 @@ import cn.nukkit.block.BlockID;
 import cn.nukkit.block.BlockSerializer;
 import cn.nukkit.block.BlockUpgrader;
 import cn.nukkit.block.Blocks;
-import cn.nukkit.level.GlobalBlockPalette;
-import cn.nukkit.level.biome.EnumBiome;
+import cn.nukkit.level.biome.BiomeID;
 import cn.nukkit.math.BlockVector3;
 import cn.nukkit.nbt.NBTIO;
 import cn.nukkit.nbt.tag.CompoundTag;
@@ -15,7 +14,6 @@ import cn.nukkit.utils.ChunkException;
 import it.unimi.dsi.fastutil.ints.Int2IntFunction;
 import it.unimi.dsi.fastutil.ints.IntArrayList;
 import it.unimi.dsi.fastutil.ints.IntList;
-import it.unimi.dsi.fastutil.ints.IntLists;
 import it.unimi.dsi.fastutil.objects.ObjectArrayList;
 import lombok.extern.log4j.Log4j2;
 
@@ -26,49 +24,46 @@ import java.nio.ByteOrder;
 import java.util.List;
 import java.util.function.IntFunction;
 
-import static cn.nukkit.SharedConstants.*;
 import static cn.nukkit.level.format.leveldb.LevelDbConstants.*;
 
 @Log4j2
 public class PalettedSubChunkStorage {
-    private static final CompoundTag UNKNOWN_BLOCK_TAG = new CompoundTag()
-            .putString("name", "minecraft:info_update")
-            .putShort("val", 0);
-
     private static final int SIZE = 16 * 16 * 16;
 
+    private final boolean biome;
     private IntList palette;
     private BitArray bitArray;
 
-    private PalettedSubChunkStorage(BitArrayVersion version, int firstId) {
+    private PalettedSubChunkStorage(BitArrayVersion version, int firstId, boolean biome) {
+        this.biome = biome;
         this.bitArray = version.createPalette(SIZE);
+        this.palette = new IntArrayList(biome ? 1 << 2 : 1 << 4);
         if (version == BitArrayVersion.EMPTY) {
-            this.palette = IntLists.EMPTY_LIST;
             return;
         }
-        this.palette = new IntArrayList(version.isSingleton() ? 1 : IntArrayList.DEFAULT_INITIAL_CAPACITY);
         this.palette.add(firstId); // Air is at the start of every block palette.
     }
 
-    private PalettedSubChunkStorage(BitArray bitArray, IntList palette) {
+    private PalettedSubChunkStorage(BitArray bitArray, IntList palette, boolean biome) {
+        this.biome = biome;
         this.palette = palette;
         this.bitArray = bitArray;
     }
 
     public static PalettedSubChunkStorage ofBlock() {
-        return new PalettedSubChunkStorage(BitArrayVersion.V2, Block.AIR);
+        return new PalettedSubChunkStorage(BitArrayVersion.V2, Block.AIR, false);
     }
 
     public static PalettedSubChunkStorage ofBlock(BitArrayVersion version) {
-        return new PalettedSubChunkStorage(version, Block.AIR);
+        return new PalettedSubChunkStorage(version, Block.AIR, false);
     }
 
     public static PalettedSubChunkStorage ofBlock(int airBlockId) {
-        return new PalettedSubChunkStorage(BitArrayVersion.V2, airBlockId);
+        return new PalettedSubChunkStorage(BitArrayVersion.V2, airBlockId, false);
     }
 
     public static PalettedSubChunkStorage ofBlock(BitArrayVersion version, int airBlockId) {
-        return new PalettedSubChunkStorage(version, airBlockId);
+        return new PalettedSubChunkStorage(version, airBlockId, false);
     }
 
     @Nullable
@@ -99,23 +94,8 @@ public class PalettedSubChunkStorage {
                 throw new ChunkException("Invalid blockstate NBT at offset " + i + " in paletted storage", e);
             }
 
-            if (ENABLE_BLOCK_STATE_PERSISTENCE) {
-                BlockUpgrader.upgrade(tag);
-                palette[i] = BlockSerializer.deserializeRuntime(tag);
-                continue;
-            }
-
-            int meta;
-            String name = tag.getString("name");
-            int id = Blocks.getIdByBlockName(name);
-            if (id == -1) {
-                id = Block.INFO_UPDATE;
-                meta = 0;
-                log.warn("Unmapped block name: {}", name);
-            } else {
-                meta = tag.getShort("val");
-            }
-            palette[i] = (id << Block.BLOCK_META_BITS) | (meta & Block.BLOCK_META_MASK);
+            BlockUpgrader.upgrade(tag);
+            palette[i] = BlockSerializer.deserializeRuntime(tag);
         }
         stream.setOffset(stream.getCount() - bais.available());
 
@@ -124,15 +104,15 @@ public class PalettedSubChunkStorage {
             return ofBlock(BlockID.AIR);
         }
 
-        return new PalettedSubChunkStorage(bitArray, IntArrayList.wrap(palette));
+        return new PalettedSubChunkStorage(bitArray, IntArrayList.wrap(palette), false);
     }
 
     public static PalettedSubChunkStorage ofBiome(int biomeId) {
-        return new PalettedSubChunkStorage(BitArrayVersion.V0, biomeId);
+        return new PalettedSubChunkStorage(BitArrayVersion.V0, biomeId, true);
     }
 
     public static PalettedSubChunkStorage ofBiome(BitArrayVersion version, int biomeId) {
-        return new PalettedSubChunkStorage(version, biomeId);
+        return new PalettedSubChunkStorage(version, biomeId, true);
     }
 
     @Nullable
@@ -159,10 +139,10 @@ public class PalettedSubChunkStorage {
 
         if (paletteSize == 0) {
             // corrupted
-            return ofBiome(EnumBiome.OCEAN.id);
+            return ofBiome(BiomeID.OCEAN);
         }
 
-        return new PalettedSubChunkStorage(bitArray, IntArrayList.wrap(palette));
+        return new PalettedSubChunkStorage(bitArray, IntArrayList.wrap(palette), true);
     }
 
     private static int getPaletteHeader(BitArrayVersion version, boolean runtime) {
@@ -263,21 +243,7 @@ public class PalettedSubChunkStorage {
         List<CompoundTag> tagList = new ObjectArrayList<>();
         for (int i = 0; i < this.palette.size(); i++) {
             int fullId = this.palette.getInt(i);
-            if (ENABLE_BLOCK_STATE_PERSISTENCE) {
-                tagList.add(BlockSerializer.serializeRuntime(fullId));
-                continue;
-            }
-
-            int id = fullId >> Block.BLOCK_META_BITS;
-            String name = blockIdToName.apply(id);
-            if (name == null) {
-                tagList.add(UNKNOWN_BLOCK_TAG);
-                log.warn("Unmapped block ID: {}", id);
-                continue;
-            }
-            tagList.add(new CompoundTag()
-                    .putString("name", name)
-                    .putShort("val", fullId & Block.BLOCK_META_MASK));
+            tagList.add(BlockSerializer.serializeRuntime(fullId));
         }
         try {
             stream.put(NBTIO.write(tagList, ByteOrder.LITTLE_ENDIAN, true));
@@ -304,21 +270,7 @@ public class PalettedSubChunkStorage {
         List<CompoundTag> tagList = new ObjectArrayList<>();
         for (int i = 0; i < this.palette.size(); i++) {
             int fullId = this.palette.getInt(i);
-            if (ENABLE_BLOCK_STATE_PERSISTENCE) {
-                tagList.add(BlockSerializer.serializeRuntime(fullId));
-                continue;
-            }
-
-            int id = fullId >> Block.BLOCK_META_BITS;
-            String name = Blocks.getBlockFullNameById(id);
-            if (name == null) {
-                tagList.add(UNKNOWN_BLOCK_TAG);
-                log.warn("Unmapped block ID: {}", id);
-                continue;
-            }
-            tagList.add(new CompoundTag()
-                    .putString("name", name)
-                    .putShort("val", fullId & Block.BLOCK_META_MASK));
+            tagList.add(BlockSerializer.serializeRuntime(fullId));
         }
         try {
             stream.put(NBTIO.write(tagList, ByteOrder.LITTLE_ENDIAN, false));
@@ -387,6 +339,10 @@ public class PalettedSubChunkStorage {
             return true;
         }
 
+        if (biome) {
+            return false;
+        }
+
         boolean hasBlock = false;
         for (int i = 0; i < this.palette.size(); i++) {
             int id = this.palette.getInt(i);
@@ -448,14 +404,16 @@ public class PalettedSubChunkStorage {
             this.palette.add(firstId);
 
 //            Arrays.fill(this.bitArray.getWords(), 0);
-            this.bitArray = BitArrayVersion.V1.createPalette(SIZE);
+            this.bitArray = (biome ? BitArrayVersion.V0 : BitArrayVersion.V2).createPalette(SIZE);
             return true;
         }
 
-        BitArrayVersion version = BitArrayVersion.V2;
+        BitArrayVersion version = biome ? BitArrayVersion.V0 : BitArrayVersion.V2;
         BitArray newArray = version.createPalette(SIZE);
         IntList newPalette = new IntArrayList(count);
-        newPalette.add(this.palette.getInt(0));
+        if (!biome) {
+            newPalette.add(this.palette.getInt(0));
+        }
         for (int i = 0; i < SIZE; i++) {
             int paletteIndex = this.bitArray.get(i);
             int id = this.palette.getInt(paletteIndex);
@@ -483,7 +441,7 @@ public class PalettedSubChunkStorage {
     }
 
     public PalettedSubChunkStorage copy() {
-        return new PalettedSubChunkStorage(this.bitArray.copy(), new IntArrayList(this.palette));
+        return new PalettedSubChunkStorage(this.bitArray.copy(), new IntArrayList(this.palette), this.biome);
     }
 
     protected static int elementIndex(int x, int y, int z) {

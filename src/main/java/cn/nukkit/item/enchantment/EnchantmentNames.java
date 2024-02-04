@@ -1,0 +1,42 @@
+package cn.nukkit.item.enchantment;
+
+public interface EnchantmentNames {
+    String PROTECTION = "protection";
+    String FIRE_PROTECTION = "fire_protection";
+    String FEATHER_FALLING = "feather_falling";
+    String BLAST_PROTECTION = "blast_protection";
+    String PROJECTILE_PROTECTION = "projectile_protection";
+    String THORNS = "thorns";
+    String RESPIRATION = "respiration";
+    String DEPTH_STRIDER = "depth_strider";
+    String AQUA_AFFINITY = "aqua_affinity";
+    String SHARPNESS = "sharpness";
+    String SMITE = "smite";
+    String BANE_OF_ARTHROPODS = "bane_of_arthropods";
+    String KNOCKBACK = "knockback";
+    String FIRE_ASPECT = "fire_aspect";
+    String LOOTING = "looting";
+    String EFFICIENCY = "efficiency";
+    String SILK_TOUCH = "silk_touch";
+    String UNBREAKING = "unbreaking";
+    String FORTUNE = "fortune";
+    String POWER = "power";
+    String PUNCH = "punch";
+    String FLAME = "flame";
+    String INFINITY = "infinity";
+    String LUCK_OF_THE_SEA = "luck_of_the_sea";
+    String LURE = "lure";
+    String FROST_WALKER = "frost_walker";
+    String MENDING = "mending";
+    String BINDING = "binding";
+    String VANISHING = "vanishing";
+    String IMPALING = "impaling";
+    String RIPTIDE = "riptide";
+    String LOYALTY = "loyalty";
+    String CHANNELING = "channeling";
+    String MULTISHOT = "multishot";
+    String PIERCING = "piercing";
+    String QUICK_CHARGE = "quick_charge";
+    String SOUL_SPEED = "soul_speed";
+    String SWIFT_SNEAK = "swift_sneak";
+}

@@ -1,17 +1,15 @@
 package cn.nukkit.level.generator.populator.impl.tree;
 
-import cn.nukkit.block.Block;
 import cn.nukkit.block.BlockSapling;
 import cn.nukkit.level.ChunkManager;
 import cn.nukkit.level.format.FullChunk;
 import cn.nukkit.level.generator.object.tree.ObjectBigSpruceTree;
+import cn.nukkit.level.generator.populator.impl.PopulatorTree;
 import cn.nukkit.level.generator.populator.type.Populator;
+import cn.nukkit.math.BlockVector3;
 import cn.nukkit.math.NukkitRandom;
-import cn.nukkit.math.Vector3;
-
 
 public class SpruceBigTreePopulator extends Populator {
-    private ChunkManager level;
     private int randomAmount;
     private int baseAmount;
 
@@ -35,32 +33,17 @@ public class SpruceBigTreePopulator extends Populator {
 
     @Override
     public void populate(ChunkManager level, int chunkX, int chunkZ, NukkitRandom random, FullChunk chunk) {
-        this.level = level;
         int amount = random.nextBoundedInt(this.randomAmount + 1) + this.baseAmount;
-        Vector3 v = new Vector3();
+        BlockVector3 v = new BlockVector3();
 
         for (int i = 0; i < amount; ++i) {
             int x = random.nextRange(chunkX << 4, (chunkX << 4) + 15);
             int z = random.nextRange(chunkZ << 4, (chunkZ << 4) + 15);
-            int y = this.getHighestWorkableBlock(x, z);
-            if (y == -1) {
+            int y = PopulatorTree.getHighestWorkableBlock(level, x, z);
+            if (y == Integer.MIN_VALUE) {
                 continue;
             }
-            new ObjectBigSpruceTree(3 / 4f, 4).placeObject(this.level, (int) (v.x = x), (int) (v.y = y), (int) (v.z = z), random);
+            new ObjectBigSpruceTree(3 / 4f, 4).placeObject(level, v.x = x, v.y = y, v.z = z, random);
         }
-    }
-
-    private int getHighestWorkableBlock(int x, int z) {
-        int y;
-        for (y = 255; y > 0; --y) {
-            int b = this.level.getBlockIdAt(0, x, y, z);
-            if (b == Block.DIRT || b == Block.GRASS) {
-                break;
-            } else if (b != Block.AIR && b != Block.SNOW_LAYER) {
-                return -1;
-            }
-        }
-
-        return ++y;
     }
 }

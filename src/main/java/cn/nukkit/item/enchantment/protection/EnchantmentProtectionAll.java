@@ -3,6 +3,7 @@ package cn.nukkit.item.enchantment.protection;
 import cn.nukkit.event.entity.EntityDamageEvent;
 import cn.nukkit.event.entity.EntityDamageEvent.DamageCause;
 import cn.nukkit.item.enchantment.Enchantment;
+import cn.nukkit.item.enchantment.EnchantmentNames;
 
 /**
  * author: MagicDroidX
@@ -11,7 +12,7 @@ import cn.nukkit.item.enchantment.Enchantment;
 public class EnchantmentProtectionAll extends EnchantmentProtection {
 
     public EnchantmentProtectionAll() {
-        super(Enchantment.PROTECTION, "protection", "all", Rarity.COMMON, TYPE.ALL);
+        super(Enchantment.PROTECTION, EnchantmentNames.PROTECTION, "all", Rarity.COMMON, TYPE.ALL);
     }
 
     @Override

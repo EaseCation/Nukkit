@@ -10,93 +10,42 @@ import java.util.Set;
 
 public class ChunkPacketCache {
 
-    private final Map<StaticVersion, BatchPacket> packets; //1.16.100+ static runtime block palette
-    private final Map<StaticVersion, BatchPacket[]> subChunkPackets; // 1.18+ sub chunk packet
-    private final Map<StaticVersion, SubChunkPacket[]> subChunkPacketsUncompressed;
+    private final Map<StaticVersion, BatchPacket> fullChunkPackets;
 
-    private final BatchPacket subModePacketNew; // 1.18.30+
-    /**
-     * LevelChunkPacket in sub-chunk request mode.
-     */
-    private final BatchPacket subModePacket;
-    private final BatchPacket subModePacketTruncatedNew; // 1.18.30+
-    private final BatchPacket subModePacketTruncated;
-    private final BatchPacket packet116;
-    private final BatchPacket packet;
-    private final BatchPacket packetOld;
+    private final BatchPacket subRequestModeFullChunkPacket;
+    private final Map<StaticVersion, BatchPacket[]> subChunkPackets;
+    private final Map<StaticVersion, SubChunkPacket[]> subChunkPacketsUncompressed;
 
     private final Set<StaticVersion> requestedVersions;
 
-    public ChunkPacketCache(Map<StaticVersion, BatchPacket> packets, Map<StaticVersion, BatchPacket[]> subChunkPackets, Map<StaticVersion, SubChunkPacket[]> subChunkPacketsUncompressed, BatchPacket subModePacketNew, BatchPacket subModePacket, BatchPacket subModePacketTruncatedNew, BatchPacket subModePacketTruncated, BatchPacket packet116, BatchPacket packet, BatchPacket packetOld, Set<StaticVersion> requestedVersions) {
-        this.packets = packets;
+    public ChunkPacketCache(Map<StaticVersion, BatchPacket> fullChunkPackets, BatchPacket subRequestModeFullChunkPacket, Map<StaticVersion, BatchPacket[]> subChunkPackets, Map<StaticVersion, SubChunkPacket[]> subChunkPacketsUncompressed, Set<StaticVersion> requestedVersions) {
+        this.fullChunkPackets = fullChunkPackets;
+        this.subRequestModeFullChunkPacket = subRequestModeFullChunkPacket;
         this.subChunkPackets = subChunkPackets;
         this.subChunkPacketsUncompressed = subChunkPacketsUncompressed;
-        this.subModePacketNew = subModePacketNew;
-        this.subModePacket = subModePacket;
-        this.subModePacketTruncatedNew = subModePacketTruncatedNew;
-        this.subModePacketTruncated = subModePacketTruncated;
-        this.packet116 = packet116;
-        this.packet = packet;
-        this.packetOld = packetOld;
         this.requestedVersions = requestedVersions;
     }
 
     @Nullable
-    public BatchPacket getPacket(StaticVersion version) {
-        return this.packets.get(version);
+    public BatchPacket getFullChunkPacket(StaticVersion version) {
+        return this.fullChunkPackets.get(version);
+    }
+
+    public BatchPacket getSubRequestModeFullChunkPacket() {
+        return subRequestModeFullChunkPacket;
     }
 
     @Nullable
-    public BatchPacket[] getSubPackets(StaticVersion version) {
+    public BatchPacket[] getSubChunkPackets(StaticVersion version) {
         return this.subChunkPackets.get(version);
     }
 
     @Nullable
-    public SubChunkPacket[] getSubPacketsUncompressed(StaticVersion version) {
+    public SubChunkPacket[] getSubChunkPacketsUncompressed(StaticVersion version) {
         return this.subChunkPacketsUncompressed.get(version);
-    }
-
-    public BatchPacket getSubModePacketNew() {
-        return subModePacketNew;
-    }
-
-    public BatchPacket getSubModePacket() {
-        return subModePacket;
-    }
-
-    public BatchPacket getSubModePacketTruncatedNew() {
-        return subModePacketTruncatedNew;
-    }
-
-    public BatchPacket getSubModePacketTruncated() {
-        return subModePacketTruncated;
-    }
-
-    public BatchPacket getPacket116() {
-        return packet116;
-    }
-
-    public BatchPacket getPacket() {
-        return packet;
-    }
-
-    public BatchPacket getPacketOld() {
-        return packetOld;
     }
 
     public boolean hasRequested(StaticVersion blockVersion) {
         return requestedVersions.contains(blockVersion);
-    }
-
-    public void compress() {
-        this.packets.clear();
-        this.subChunkPackets.clear();
-        this.subModePacketNew.trim();
-        this.subModePacket.trim();
-        this.subModePacketTruncatedNew.trim();
-        this.subModePacketTruncated.trim();
-        this.packet116.trim();
-        this.packet.trim();
-        this.packetOld.trim();
     }
 }
