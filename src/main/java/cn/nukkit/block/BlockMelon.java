@@ -41,7 +41,7 @@ public class BlockMelon extends BlockSolid {
         Random random = ThreadLocalRandom.current();
         int count = 3 + random.nextInt(5);
 
-        Enchantment fortune = item.getEnchantment(Enchantment.FORTUNE);
+        Enchantment fortune = item.getId() != Item.ENCHANTED_BOOK ? item.getEnchantment(Enchantment.FORTUNE) : null;
         if (fortune != null && fortune.getLevel() >= 1) {
             count += random.nextInt(fortune.getLevel() + 1);
         }

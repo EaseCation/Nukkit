@@ -31,7 +31,7 @@ public class BlockGrass extends BlockDirt {
 
     @Override
     public int getId() {
-        return GRASS;
+        return GRASS_BLOCK;
     }
 
     @Override
@@ -92,7 +92,7 @@ public class BlockGrass extends BlockDirt {
             if (block.getId() == Block.DIRT && block.getDamage() == 0) {
                 Block up = block.up();
                 if (!up.isLiquid() && (up.isTransparent() || !up.isSolid()) && !level.getExtraBlock(up).isWater()) {
-                    BlockSpreadEvent ev = new BlockSpreadEvent(block, this, Block.get(BlockID.GRASS));
+                    BlockSpreadEvent ev = new BlockSpreadEvent(block, this, Block.get(BlockID.GRASS_BLOCK));
                     Server.getInstance().getPluginManager().callEvent(ev);
                     if (!ev.isCancelled()) {
                         this.getLevel().setBlock(block, ev.getNewState(), true);

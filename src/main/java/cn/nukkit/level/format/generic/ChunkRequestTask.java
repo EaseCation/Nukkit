@@ -18,6 +18,7 @@ import cn.nukkit.nbt.NBTIO;
 import cn.nukkit.nbt.tag.CompoundTag;
 import cn.nukkit.network.protocol.BatchPacket;
 import cn.nukkit.network.protocol.LevelChunkPacket;
+import cn.nukkit.network.protocol.LevelChunkPacket12060;
 import cn.nukkit.network.protocol.SubChunkPacket;
 import cn.nukkit.network.protocol.SubChunkPacket11810;
 import cn.nukkit.scheduler.AsyncTask;
@@ -375,6 +376,7 @@ public class ChunkRequestTask extends AsyncTask<Void> {
 
             if (level.isCacheChunks()) {
                 Map<StaticVersion, BatchPacket> packets = new EnumMap<>(StaticVersion.class);
+                Map<StaticVersion, LevelChunkPacket12060> packetsUncompressed = new EnumMap<>(StaticVersion.class);
                 Map<StaticVersion, BatchPacket[]> subPackets = new EnumMap<>(StaticVersion.class);
                 Map<StaticVersion, SubChunkPacket[]> subPacketsUncompressed = new EnumMap<>(StaticVersion.class);
 
@@ -404,17 +406,41 @@ public class ChunkRequestTask extends AsyncTask<Void> {
                         subPackets.put(version, compressed);
                         subPacketsUncompressed.put(version, uncompressed);
                     }
-                    packets.put(version, Level.getChunkCacheFromData(x, z, actualCount, payload, false, true));
+
+                    if (version.getProtocol() >= StaticVersion.V1_20_60.getProtocol()) {
+                        LevelChunkPacket12060 uncompressed = new LevelChunkPacket12060();
+                        uncompressed.chunkX = x;
+                        uncompressed.chunkZ = z;
+                        uncompressed.dimension = level.getDimension().ordinal();
+                        uncompressed.subChunkCount = actualCount;
+                        uncompressed.subChunkRequestLimit = 0;
+                        uncompressed.data = payload;
+                        uncompressed.setBuffer(null, 0);
+                        packetsUncompressed.put(version, uncompressed);
+                    } else {
+                        packets.put(version, Level.getChunkCacheFromData(x, z, actualCount, payload, false, true));
+                    }
                 });
+
+                LevelChunkPacket12060 uncompressed = new LevelChunkPacket12060();
+                uncompressed.chunkX = x;
+                uncompressed.chunkZ = z;
+                uncompressed.dimension = level.getDimension().ordinal();
+                uncompressed.subChunkCount = LevelChunkPacket.CLIENT_REQUEST_TRUNCATED_COLUMN_FAKE_COUNT;
+                uncompressed.subChunkRequestLimit = extendedCount;
+                uncompressed.data = subModePayloadNew;
+                uncompressed.setBuffer(null, 0);
 
                 chunkPacketCache = new ChunkPacketCache(
                         packets,
+                        packetsUncompressed,
                         subPackets,
                         subPacketsUncompressed,
                         Level.getChunkCacheFromData(x, z, LevelChunkPacket.CLIENT_REQUEST_FULL_COLUMN_FAKE_COUNT, subModePayloadNew, false, true),
                         Level.getChunkCacheFromData(x, z, LevelChunkPacket.CLIENT_REQUEST_FULL_COLUMN_FAKE_COUNT, subModePayload, false, true),
                         Level.getChunkCacheFromData(x, z, LevelChunkPacket.CLIENT_REQUEST_TRUNCATED_COLUMN_FAKE_COUNT, extendedCount, subModePayloadNew, false, true),
                         Level.getChunkCacheFromData(x, z, LevelChunkPacket.CLIENT_REQUEST_TRUNCATED_COLUMN_FAKE_COUNT, extendedCount, subModePayload, false, true),
+                        uncompressed,
                         Level.getChunkCacheFromData(x, z, count, payload, false, true),
                         Level.getChunkCacheFromData(x, z, count, payload, false, false),
                         Level.getChunkCacheFromData(x, z, count, payloadOld, true, false),

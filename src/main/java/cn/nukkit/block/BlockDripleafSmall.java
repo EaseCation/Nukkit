@@ -92,7 +92,7 @@ public class BlockDripleafSmall extends BlockTransparentMeta implements Faceable
         }
 
         int id = down().getId();
-        if (id != GRASS && id != DIRT && id != MYCELIUM && id != PODZOL && id != FARMLAND && id != DIRT_WITH_ROOTS && id != MOSS_BLOCK && id != CLAY) {
+        if (id != GRASS_BLOCK && id != DIRT && id != MYCELIUM && id != PODZOL && id != FARMLAND && id != DIRT_WITH_ROOTS && id != MOSS_BLOCK && id != CLAY) {
             return false;
         }
 
@@ -287,7 +287,7 @@ public class BlockDripleafSmall extends BlockTransparentMeta implements Faceable
         if (!level.getExtraBlock(this).isWater()) {
             return false;
         }
-        return id == GRASS || id == DIRT || id == MYCELIUM || id == PODZOL || id == FARMLAND || id == DIRT_WITH_ROOTS;
+        return id == GRASS_BLOCK || id == DIRT || id == MYCELIUM || id == PODZOL || id == FARMLAND || id == DIRT_WITH_ROOTS;
     }
 
     public boolean isUpper() {

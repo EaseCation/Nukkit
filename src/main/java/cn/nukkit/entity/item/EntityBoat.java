@@ -479,7 +479,7 @@ public class EntityBoat extends EntityVehicle {
     }
 
     public void onInput(double x, double y, double z, double rotation) {
-        this.setPositionAndRotation(this.temporalVector.setComponents(x, y - this.getBaseOffset(), z), rotation % 360, 0);
+        this.setPositionAndRotation(this.temporalVector.setComponents(x, y - this.getBaseOffset(), z), rotation, 0);
     }
 
     @Override

@@ -11,6 +11,6 @@ public class ItemScute extends Item {
     }
 
     public ItemScute(Integer meta, int count) {
-        super(SCUTE, meta, count, "Scute");
+        super(TURTLE_SCUTE, meta, count, "Turtle Scute");
     }
 }

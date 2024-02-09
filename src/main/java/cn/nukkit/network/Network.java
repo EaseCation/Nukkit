@@ -6,6 +6,7 @@ import cn.nukkit.Server;
 import cn.nukkit.nbt.stream.FastByteArrayOutputStream;
 import cn.nukkit.network.protocol.*;
 import cn.nukkit.utils.BinaryStream;
+import cn.nukkit.utils.DataLengthException;
 import cn.nukkit.utils.ThreadCache;
 import cn.nukkit.utils.Utils;
 import cn.nukkit.utils.VarInt;
@@ -71,10 +72,10 @@ public class Network {
 
     public static byte[] inflateRaw(byte[] data, int maxSize) throws IOException, DataFormatException {
         if (data.length == 0) {
-            throw new IOException("no data");
+            throw new DataLengthException("no data");
         }
         if (maxSize > 0 && data.length >= maxSize) {
-            throw new IOException("Input data exceeds maximum size");
+            throw new DataLengthException("Input data exceeds maximum size");
         }
         Inflater inflater = INFLATER_RAW.get();
         try {
@@ -93,7 +94,7 @@ public class Network {
                 }
                 length += i;
                 if (maxSize > 0 && length >= maxSize) {
-                    throw new IOException("Inflated data exceeds maximum size");
+                    throw new DataLengthException("Inflated data exceeds maximum size");
                 }
                 bos.write(buf, 0, i);
             }
@@ -366,6 +367,7 @@ public class Network {
         this.registerPacket(ProtocolInfo.BOSS_EVENT_PACKET, BossEventPacket.class);
 //        this.registerPacket(ProtocolInfo.CHANGE_DIMENSION_PACKET, ChangeDimensionPacket.class);
         this.registerPacket(ProtocolInfo.CHUNK_RADIUS_UPDATED_PACKET, ChunkRadiusUpdatedPacket.class);
+        this.registerPacket(ProtocolInfo.CLIENT_TO_SERVER_HANDSHAKE_PACKET, ClientToServerHandshakePacket.class);
 //        this.registerPacket(ProtocolInfo.CLIENTBOUND_MAP_ITEM_DATA_PACKET, ClientboundMapItemDataPacket.class);
         this.registerPacket(ProtocolInfo.COMMAND_REQUEST_PACKET, CommandRequestPacket.class);
         this.registerPacket(ProtocolInfo.CONTAINER_CLOSE_PACKET, ContainerClosePacket.class);

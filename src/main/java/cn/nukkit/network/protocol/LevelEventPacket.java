@@ -131,6 +131,10 @@ public class LevelEventPacket extends DataPacket {
     public static final int EVENT_PARTICLE_PUNCH_BLOCK_WEST = 3607;
     public static final int EVENT_PARTICLE_PUNCH_BLOCK_EAST = 3608;
     public static final int EVENT_PARTICLE_SHOOT_WHITE_SMOKE = 3609;
+    public static final int EVENT_PARTICLE_WIND_EXPLOSION = 3610;
+    public static final int EVENT_PARTICLE_TRAIL_SPAWNER_DETECTION = 3611;
+    public static final int EVENT_PARTICLE_TRAIL_SPAWNER_SPAWNING = 3612;
+    public static final int EVENT_PARTICLE_TRAIL_SPAWNER_EJECTING = 3613;
 
     public static final int EVENT_SET_DATA = 4000;
 

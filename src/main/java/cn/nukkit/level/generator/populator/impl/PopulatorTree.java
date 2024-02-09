@@ -39,7 +39,7 @@ public class PopulatorTree extends PopulatorCount {
         int y;
         for (y = 254; y > 0; --y) {
             int b = level.getBlockIdAt(0, x, y, z);
-            if (b == Block.DIRT || b == Block.GRASS) {
+            if (b == Block.DIRT || b == Block.GRASS_BLOCK) {
                 break;
             } else if (b != Block.AIR && b != Block.SNOW_LAYER) {
                 return -1;

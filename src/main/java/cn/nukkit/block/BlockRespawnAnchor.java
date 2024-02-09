@@ -3,7 +3,6 @@ package cn.nukkit.block;
 import cn.nukkit.Player;
 import cn.nukkit.item.Item;
 import cn.nukkit.item.ItemTool;
-import cn.nukkit.item.enchantment.Enchantment;
 import cn.nukkit.level.Dimension;
 import cn.nukkit.level.Explosion;
 import cn.nukkit.level.GameRule;
@@ -62,7 +61,7 @@ public class BlockRespawnAnchor extends BlockSolidMeta {
     public Item[] getDrops(Item item) {
         if (item.isPickaxe() && item.getTier() >= ItemTool.TIER_DIAMOND) {
             return new Item[]{
-                    Item.get(getItemId(), item.hasEnchantment(Enchantment.SILK_TOUCH) ? getDamage() : 0),
+                    Item.get(getItemId()),
             };
         }
         return new Item[0];

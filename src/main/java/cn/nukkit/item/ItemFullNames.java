@@ -1,5 +1,7 @@
 package cn.nukkit.item;
 
+import com.google.common.annotations.Beta;
+
 // This file is generated automatically, do not edit it manually.
 public interface ItemFullNames extends ItemBlockNames {
     String GLOW_STICK = "minecraft:" + ItemNames.GLOW_STICK;
@@ -462,9 +464,18 @@ public interface ItemFullNames extends ItemBlockNames {
     @Deprecated
     String APPLEENCHANTED = "minecraft:" + ItemNames.APPLEENCHANTED;
     String HEART_OF_THE_SEA = "minecraft:" + ItemNames.HEART_OF_THE_SEA;
+    /**
+     * @since 1.20.60
+     */
+    @Beta
+    String TURTLE_SCUTE = "minecraft:" + ItemNames.TURTLE_SCUTE;
+//    /**
+//     * @deprecated use {@link #TURTLE_SCUTE} instead
+//     */
+//    @Deprecated
     String SCUTE = "minecraft:" + ItemNames.SCUTE;
     /**
-     * @deprecated use {@link #SCUTE} instead
+     * @deprecated use {@link #TURTLE_SCUTE} instead
      */
     @Deprecated
     String TURTLE_SHELL_PIECE = "minecraft:" + ItemNames.TURTLE_SHELL_PIECE;

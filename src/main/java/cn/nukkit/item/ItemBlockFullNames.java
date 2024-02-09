@@ -3,6 +3,7 @@ package cn.nukkit.item;
 // This file is generated automatically, do not edit it manually.
 public interface ItemBlockFullNames {
     String STONE = "minecraft:" + ItemBlockNames.STONE;
+    String GRASS_BLOCK = "minecraft:" + ItemBlockNames.GRASS_BLOCK;
     String GRASS = "minecraft:" + ItemBlockNames.GRASS;
     String DIRT = "minecraft:" + ItemBlockNames.DIRT;
     String COBBLESTONE = "minecraft:" + ItemBlockNames.COBBLESTONE;
@@ -21,6 +22,7 @@ public interface ItemBlockFullNames {
     String COAL_ORE = "minecraft:" + ItemBlockNames.COAL_ORE;
     String OAK_LOG = "minecraft:" + ItemBlockNames.OAK_LOG; //TODO: 1.19.80 flattening
     String LOG = "minecraft:" + ItemBlockNames.LOG;
+    String OAK_LEAVES = "minecraft:" + ItemBlockNames.OAK_LEAVES;
     String LEAVES = "minecraft:" + ItemBlockNames.LEAVES;
     String SPONGE = "minecraft:" + ItemBlockNames.SPONGE;
     String GLASS = "minecraft:" + ItemBlockNames.GLASS;
@@ -168,12 +170,15 @@ public interface ItemBlockFullNames {
     String ITEM_HOPPER = "minecraft:" + ItemBlockNames.ITEM_HOPPER;
     String QUARTZ_BLOCK = "minecraft:" + ItemBlockNames.QUARTZ_BLOCK;
     String QUARTZ_STAIRS = "minecraft:" + ItemBlockNames.QUARTZ_STAIRS;
+    String OAK_DOUBLE_SLAB = "minecraft:" + ItemBlockNames.OAK_DOUBLE_SLAB; //TODO: 1.20.70 flattening
     String DOUBLE_WOODEN_SLAB = "minecraft:" + ItemBlockNames.DOUBLE_WOODEN_SLAB;
+    String OAK_SLAB = "minecraft:" + ItemBlockNames.OAK_SLAB; //TODO: 1.20.70 flattening
     String WOODEN_SLAB = "minecraft:" + ItemBlockNames.WOODEN_SLAB;
     String WHITE_TERRACOTTA = "minecraft:" + ItemBlockNames.WHITE_TERRACOTTA; //TODO: 1.20.30 flattening
     String STAINED_HARDENED_CLAY = "minecraft:" + ItemBlockNames.STAINED_HARDENED_CLAY;
     String WHITE_STAINED_GLASS_PANE = "minecraft:" + ItemBlockNames.WHITE_STAINED_GLASS_PANE; //TODO: 1.20.20 flattening
     String STAINED_GLASS_PANE = "minecraft:" + ItemBlockNames.STAINED_GLASS_PANE;
+    String ACACIA_LEAVES = "minecraft:" + ItemBlockNames.ACACIA_LEAVES; //TODO: 1.20.70 flattening
     String LEAVES2 = "minecraft:" + ItemBlockNames.LEAVES2;
     String ACACIA_LOG = "minecraft:" + ItemBlockNames.ACACIA_LOG; //TODO: 1.19.80 flattening
     String LOG2 = "minecraft:" + ItemBlockNames.LOG2;
@@ -209,6 +214,7 @@ public interface ItemBlockFullNames {
     String REPEATING_COMMAND_BLOCK = "minecraft:" + ItemBlockNames.REPEATING_COMMAND_BLOCK;
     String CHAIN_COMMAND_BLOCK = "minecraft:" + ItemBlockNames.CHAIN_COMMAND_BLOCK;
     String HARD_GLASS_PANE = "minecraft:" + ItemBlockNames.HARD_GLASS_PANE;
+    String HARD_WHITE_STAINED_GLASS_PANE = "minecraft:" + ItemBlockNames.HARD_WHITE_STAINED_GLASS_PANE; //TODO: 1.20.60 flattening
     String HARD_STAINED_GLASS_PANE = "minecraft:" + ItemBlockNames.HARD_STAINED_GLASS_PANE;
     String CHEMICAL_HEAT = "minecraft:" + ItemBlockNames.CHEMICAL_HEAT;
     String ITEM_SPRUCE_DOOR = "minecraft:" + ItemBlockNames.ITEM_SPRUCE_DOOR;
@@ -357,6 +363,7 @@ public interface ItemBlockFullNames {
     String OBSERVER = "minecraft:" + ItemBlockNames.OBSERVER;
     String STRUCTURE_BLOCK = "minecraft:" + ItemBlockNames.STRUCTURE_BLOCK;
     String HARD_GLASS = "minecraft:" + ItemBlockNames.HARD_GLASS;
+    String HARD_WHITE_STAINED_GLASS = "minecraft:" + ItemBlockNames.HARD_WHITE_STAINED_GLASS; //TODO: 1.20.60 flattening
     String HARD_STAINED_GLASS = "minecraft:" + ItemBlockNames.HARD_STAINED_GLASS;
     String RESERVED6 = "minecraft:" + ItemBlockNames.RESERVED6;
 
@@ -574,6 +581,7 @@ public interface ItemBlockFullNames {
     String ITEM_CAMPFIRE = "minecraft:" + ItemBlockNames.ITEM_CAMPFIRE;
     String LAVA_CAULDRON = "minecraft:" + ItemBlockNames.LAVA_CAULDRON; //TODO: 1.20.0 remove
     String JIGSAW = "minecraft:" + ItemBlockNames.JIGSAW; //TODO: meta 29
+    String OAK_WOOD = "minecraft:" + ItemBlockNames.OAK_WOOD; //TODO: 1.20.70 flattening
     String WOOD = "minecraft:" + ItemBlockNames.WOOD;
     String COMPOSTER = "minecraft:" + ItemBlockNames.COMPOSTER;
     String LIT_BLAST_FURNACE = "minecraft:" + ItemBlockNames.LIT_BLAST_FURNACE;
@@ -673,7 +681,7 @@ public interface ItemBlockFullNames {
     String COPPER_ORE = "minecraft:" + ItemBlockNames.COPPER_ORE;
     String LIGHTNING_ROD = "minecraft:" + ItemBlockNames.LIGHTNING_ROD;
     String CRAFTER = "minecraft:" + ItemBlockNames.CRAFTER;
-
+    String VAULT = "minecraft:" + ItemBlockNames.VAULT;
     String TRIAL_SPAWNER = "minecraft:" + ItemBlockNames.TRIAL_SPAWNER;
 
     String DRIPSTONE_BLOCK = "minecraft:" + ItemBlockNames.DRIPSTONE_BLOCK;
@@ -1009,7 +1017,21 @@ public interface ItemBlockFullNames {
     String GREEN_STAINED_GLASS_PANE = "minecraft:" + ItemBlockNames.GREEN_STAINED_GLASS_PANE;
     String RED_STAINED_GLASS_PANE = "minecraft:" + ItemBlockNames.RED_STAINED_GLASS_PANE;
     String BLACK_STAINED_GLASS_PANE = "minecraft:" + ItemBlockNames.BLACK_STAINED_GLASS_PANE;
-
+    String HARD_ORANGE_STAINED_GLASS_PANE = "minecraft:" + ItemBlockNames.HARD_ORANGE_STAINED_GLASS_PANE;
+    String HARD_MAGENTA_STAINED_GLASS_PANE = "minecraft:" + ItemBlockNames.HARD_MAGENTA_STAINED_GLASS_PANE;
+    String HARD_LIGHT_BLUE_STAINED_GLASS_PANE = "minecraft:" + ItemBlockNames.HARD_LIGHT_BLUE_STAINED_GLASS_PANE;
+    String HARD_YELLOW_STAINED_GLASS_PANE = "minecraft:" + ItemBlockNames.HARD_YELLOW_STAINED_GLASS_PANE;
+    String HARD_LIME_STAINED_GLASS_PANE = "minecraft:" + ItemBlockNames.HARD_LIME_STAINED_GLASS_PANE;
+    String HARD_PINK_STAINED_GLASS_PANE = "minecraft:" + ItemBlockNames.HARD_PINK_STAINED_GLASS_PANE;
+    String HARD_GRAY_STAINED_GLASS_PANE = "minecraft:" + ItemBlockNames.HARD_GRAY_STAINED_GLASS_PANE;
+    String HARD_LIGHT_GRAY_STAINED_GLASS_PANE = "minecraft:" + ItemBlockNames.HARD_LIGHT_GRAY_STAINED_GLASS_PANE;
+    String HARD_CYAN_STAINED_GLASS_PANE = "minecraft:" + ItemBlockNames.HARD_CYAN_STAINED_GLASS_PANE;
+    String HARD_PURPLE_STAINED_GLASS_PANE = "minecraft:" + ItemBlockNames.HARD_PURPLE_STAINED_GLASS_PANE;
+    String HARD_BLUE_STAINED_GLASS_PANE = "minecraft:" + ItemBlockNames.HARD_BLUE_STAINED_GLASS_PANE;
+    String HARD_BROWN_STAINED_GLASS_PANE = "minecraft:" + ItemBlockNames.HARD_BROWN_STAINED_GLASS_PANE;
+    String HARD_GREEN_STAINED_GLASS_PANE = "minecraft:" + ItemBlockNames.HARD_GREEN_STAINED_GLASS_PANE;
+    String HARD_RED_STAINED_GLASS_PANE = "minecraft:" + ItemBlockNames.HARD_RED_STAINED_GLASS_PANE;
+    String HARD_BLACK_STAINED_GLASS_PANE = "minecraft:" + ItemBlockNames.HARD_BLACK_STAINED_GLASS_PANE;
     String ORANGE_STAINED_GLASS = "minecraft:" + ItemBlockNames.ORANGE_STAINED_GLASS;
     String MAGENTA_STAINED_GLASS = "minecraft:" + ItemBlockNames.MAGENTA_STAINED_GLASS;
     String LIGHT_BLUE_STAINED_GLASS = "minecraft:" + ItemBlockNames.LIGHT_BLUE_STAINED_GLASS;
@@ -1025,6 +1047,21 @@ public interface ItemBlockFullNames {
     String GREEN_STAINED_GLASS = "minecraft:" + ItemBlockNames.GREEN_STAINED_GLASS;
     String RED_STAINED_GLASS = "minecraft:" + ItemBlockNames.RED_STAINED_GLASS;
     String BLACK_STAINED_GLASS = "minecraft:" + ItemBlockNames.BLACK_STAINED_GLASS;
+    String HARD_ORANGE_STAINED_GLASS = "minecraft:" + ItemBlockNames.HARD_ORANGE_STAINED_GLASS;
+    String HARD_MAGENTA_STAINED_GLASS = "minecraft:" + ItemBlockNames.HARD_MAGENTA_STAINED_GLASS;
+    String HARD_LIGHT_BLUE_STAINED_GLASS = "minecraft:" + ItemBlockNames.HARD_LIGHT_BLUE_STAINED_GLASS;
+    String HARD_YELLOW_STAINED_GLASS = "minecraft:" + ItemBlockNames.HARD_YELLOW_STAINED_GLASS;
+    String HARD_LIME_STAINED_GLASS = "minecraft:" + ItemBlockNames.HARD_LIME_STAINED_GLASS;
+    String HARD_PINK_STAINED_GLASS = "minecraft:" + ItemBlockNames.HARD_PINK_STAINED_GLASS;
+    String HARD_GRAY_STAINED_GLASS = "minecraft:" + ItemBlockNames.HARD_GRAY_STAINED_GLASS;
+    String HARD_LIGHT_GRAY_STAINED_GLASS = "minecraft:" + ItemBlockNames.HARD_LIGHT_GRAY_STAINED_GLASS;
+    String HARD_CYAN_STAINED_GLASS = "minecraft:" + ItemBlockNames.HARD_CYAN_STAINED_GLASS;
+    String HARD_PURPLE_STAINED_GLASS = "minecraft:" + ItemBlockNames.HARD_PURPLE_STAINED_GLASS;
+    String HARD_BLUE_STAINED_GLASS = "minecraft:" + ItemBlockNames.HARD_BLUE_STAINED_GLASS;
+    String HARD_BROWN_STAINED_GLASS = "minecraft:" + ItemBlockNames.HARD_BROWN_STAINED_GLASS;
+    String HARD_GREEN_STAINED_GLASS = "minecraft:" + ItemBlockNames.HARD_GREEN_STAINED_GLASS;
+    String HARD_RED_STAINED_GLASS = "minecraft:" + ItemBlockNames.HARD_RED_STAINED_GLASS;
+    String HARD_BLACK_STAINED_GLASS = "minecraft:" + ItemBlockNames.HARD_BLACK_STAINED_GLASS;
 
     String ORANGE_CONCRETE_POWDER = "minecraft:" + ItemBlockNames.ORANGE_CONCRETE_POWDER;
     String MAGENTA_CONCRETE_POWDER = "minecraft:" + ItemBlockNames.MAGENTA_CONCRETE_POWDER;
@@ -1117,4 +1154,29 @@ public interface ItemBlockFullNames {
     String WAXED_EXPOSED_COPPER_TRAPDOOR = "minecraft:" + ItemBlockNames.WAXED_EXPOSED_COPPER_TRAPDOOR;
     String WAXED_WEATHERED_COPPER_TRAPDOOR = "minecraft:" + ItemBlockNames.WAXED_WEATHERED_COPPER_TRAPDOOR;
     String WAXED_OXIDIZED_COPPER_TRAPDOOR = "minecraft:" + ItemBlockNames.WAXED_OXIDIZED_COPPER_TRAPDOOR;
+    String SPRUCE_LEAVES = "minecraft:" + ItemBlockNames.SPRUCE_LEAVES;
+    String BIRCH_LEAVES = "minecraft:" + ItemBlockNames.BIRCH_LEAVES;
+    String JUNGLE_LEAVES = "minecraft:" + ItemBlockNames.JUNGLE_LEAVES;
+    String DARK_OAK_LEAVES = "minecraft:" + ItemBlockNames.DARK_OAK_LEAVES;
+    String SPRUCE_SLAB = "minecraft:" + ItemBlockNames.SPRUCE_SLAB;
+    String BIRCH_SLAB = "minecraft:" + ItemBlockNames.BIRCH_SLAB;
+    String JUNGLE_SLAB = "minecraft:" + ItemBlockNames.JUNGLE_SLAB;
+    String ACACIA_SLAB = "minecraft:" + ItemBlockNames.ACACIA_SLAB;
+    String DARK_OAK_SLAB = "minecraft:" + ItemBlockNames.DARK_OAK_SLAB;
+    String SPRUCE_DOUBLE_SLAB = "minecraft:" + ItemBlockNames.SPRUCE_DOUBLE_SLAB;
+    String BIRCH_DOUBLE_SLAB = "minecraft:" + ItemBlockNames.BIRCH_DOUBLE_SLAB;
+    String JUNGLE_DOUBLE_SLAB = "minecraft:" + ItemBlockNames.JUNGLE_DOUBLE_SLAB;
+    String ACACIA_DOUBLE_SLAB = "minecraft:" + ItemBlockNames.ACACIA_DOUBLE_SLAB;
+    String DARK_OAK_DOUBLE_SLAB = "minecraft:" + ItemBlockNames.DARK_OAK_DOUBLE_SLAB;
+    String SPRUCE_WOOD = "minecraft:" + ItemBlockNames.SPRUCE_WOOD;
+    String BIRCH_WOOD = "minecraft:" + ItemBlockNames.BIRCH_WOOD;
+    String JUNGLE_WOOD = "minecraft:" + ItemBlockNames.JUNGLE_WOOD;
+    String ACACIA_WOOD = "minecraft:" + ItemBlockNames.ACACIA_WOOD;
+    String DARK_OAK_WOOD = "minecraft:" + ItemBlockNames.DARK_OAK_WOOD;
+    String STRIPPED_OAK_WOOD = "minecraft:" + ItemBlockNames.STRIPPED_OAK_WOOD;
+    String STRIPPED_SPRUCE_WOOD = "minecraft:" + ItemBlockNames.STRIPPED_SPRUCE_WOOD;
+    String STRIPPED_BIRCH_WOOD = "minecraft:" + ItemBlockNames.STRIPPED_BIRCH_WOOD;
+    String STRIPPED_JUNGLE_WOOD = "minecraft:" + ItemBlockNames.STRIPPED_JUNGLE_WOOD;
+    String STRIPPED_ACACIA_WOOD = "minecraft:" + ItemBlockNames.STRIPPED_ACACIA_WOOD;
+    String STRIPPED_DARK_OAK_WOOD = "minecraft:" + ItemBlockNames.STRIPPED_DARK_OAK_WOOD;
 }

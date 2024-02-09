@@ -340,9 +340,14 @@ public interface ItemID extends BlockID, ItemRuntimeID {
     @Deprecated
     int APPLEENCHANTED = 466;
     int HEART_OF_THE_SEA = 467;
+    int TURTLE_SCUTE = 468;
+    /**
+     * @deprecated use {@link #TURTLE_SCUTE} instead
+     */
+    @Deprecated
     int SCUTE = 468;
     /**
-     * @deprecated use {@link #SCUTE} instead
+     * @deprecated use {@link #TURTLE_SCUTE} instead
      */
     @Deprecated
     int TURTLE_SHELL_PIECE = 468;

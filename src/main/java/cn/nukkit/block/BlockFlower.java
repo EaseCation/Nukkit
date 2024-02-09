@@ -118,7 +118,7 @@ public class BlockFlower extends BlockFlowable {
                         random.nextInt(-1, 2),
                         random.nextInt(-3, 4));
 
-                if (level.getBlock(vec).getId() == AIR && level.getBlock(vec.down()).getId() == GRASS && vec.getY() >= 0 && vec.getY() < 256) {
+                if (level.getBlock(vec).getId() == AIR && level.getBlock(vec.down()).getId() == GRASS_BLOCK && vec.getY() >= 0 && vec.getY() < 256) {
                     if (random.nextInt(10) == 0) {
                         this.level.setBlock(vec, this.getUncommonFlower(), true);
                     } else {
@@ -149,6 +149,6 @@ public class BlockFlower extends BlockFlowable {
 
     protected boolean canSurvive() {
         int id = down().getId();
-        return id == Block.GRASS || id == Block.DIRT || id == Block.FARMLAND || id == Block.PODZOL || id == MYCELIUM || id == DIRT_WITH_ROOTS || id == MOSS_BLOCK;
+        return id == Block.GRASS_BLOCK || id == Block.DIRT || id == Block.FARMLAND || id == Block.PODZOL || id == MYCELIUM || id == DIRT_WITH_ROOTS || id == MOSS_BLOCK;
     }
 }

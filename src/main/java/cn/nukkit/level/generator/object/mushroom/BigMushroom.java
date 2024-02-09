@@ -85,7 +85,7 @@ public class BigMushroom extends BasicGenerator {
                 Vector3 pos2 = position.down();
                 int block1 = level.getBlockIdAt(0, pos2.getFloorX(), pos2.getFloorY(), pos2.getFloorZ());
 
-                if (block1 != Block.DIRT && block1 != Block.GRASS && block1 != Block.MYCELIUM) {
+                if (block1 != Block.DIRT && block1 != Block.GRASS_BLOCK && block1 != Block.MYCELIUM) {
                     return false;
                 } else {
                     int k2 = position.getFloorY() + i;

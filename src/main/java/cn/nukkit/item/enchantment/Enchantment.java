@@ -16,6 +16,7 @@ import java.util.concurrent.ThreadLocalRandom;
  * Nukkit Project
  */
 public abstract class Enchantment implements Cloneable, EnchantmentID {
+    public static final Enchantment[] EMPTY = new Enchantment[0];
 
     protected static final Enchantment[] enchantments = new Enchantment[256];
 

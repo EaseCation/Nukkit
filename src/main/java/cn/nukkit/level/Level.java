@@ -132,7 +132,7 @@ public class Level implements ChunkManager, Metadatable {
     private static final boolean[] randomTickBlocks = new boolean[Block.BLOCK_ID_COUNT];
     //TODO: move to Block class
     static {
-        randomTickBlocks[Block.GRASS] = true;
+        randomTickBlocks[Block.GRASS_BLOCK] = true;
         randomTickBlocks[Block.FARMLAND] = true;
         randomTickBlocks[Block.MYCELIUM] = true;
         randomTickBlocks[Block.SAPLING] = true;
@@ -2598,7 +2598,8 @@ public class Level implements ChunkManager, Metadatable {
             item = Items.air();
         }
 
-        boolean isSilkTouch = item.getEnchantment(Enchantment.SILK_TOUCH) != null;
+        boolean isEnchantedBook = item.getId() == Item.ENCHANTED_BOOK;
+        boolean isSilkTouch = !isEnchantedBook && item.getEnchantment(Enchantment.SILK_TOUCH) != null;
 
         if (player != null) {
             if (player.getGamemode() == Player.ADVENTURE) {
@@ -2643,7 +2644,7 @@ public class Level implements ChunkManager, Metadatable {
                 breakTime *= 1 - (0.3 * (miningFatigue.getAmplifier() + 1));
             }
 
-            Enchantment eff = item.getEnchantment(Enchantment.EFFICIENCY);
+            Enchantment eff = !isEnchantedBook ? item.getEnchantment(Enchantment.EFFICIENCY) : null;
             if (eff != null && eff.getLevel() > 0) {
                 breakTime *= 1 - (0.3 * eff.getLevel());
             }
@@ -3509,16 +3510,22 @@ public class Level implements ChunkManager, Metadatable {
                             if (protocol < 503) {
                                 player.sendChunk(x, z, subChunkCount + PADDING_SUB_CHUNK_COUNT, chunkBlobCache,
                                         chunkPacketCache.getSubModePacket());
-                            } else {
+                            } else if (protocol < 649) {
                                 player.sendChunk(x, z, subChunkCount + PADDING_SUB_CHUNK_COUNT, chunkBlobCache,
                                         chunkPacketCache.getSubModePacketNew());
+                            } else {
+                                player.sendChunk(x, z, subChunkCount + PADDING_SUB_CHUNK_COUNT, chunkBlobCache,
+                                        chunkPacketCache.getSubModePacketUncompressed());
                             }
                         } else if (protocol < 503) {
                             player.sendChunk(x, z, subChunkCount + PADDING_SUB_CHUNK_COUNT, chunkBlobCache,
                                     chunkPacketCache.getSubModePacketTruncated());
-                        } else {
+                        } else if (protocol < 649) {
                             player.sendChunk(x, z, subChunkCount + PADDING_SUB_CHUNK_COUNT, chunkBlobCache,
                                     chunkPacketCache.getSubModePacketTruncatedNew());
+                        } else {
+                            player.sendChunk(x, z, subChunkCount + PADDING_SUB_CHUNK_COUNT, chunkBlobCache,
+                                    chunkPacketCache.getSubModePacketUncompressed());
                         }
                     } else {
                         StaticVersion blockVersion = player.getBlockVersion();
@@ -3529,7 +3536,8 @@ public class Level implements ChunkManager, Metadatable {
                             continue;
                         }
 
-                        BatchPacket packet = chunkPacketCache.getPacket(blockVersion);
+                        DataPacket packet = blockVersion.getProtocol() < StaticVersion.V1_20_60.getProtocol() ?
+                                chunkPacketCache.getPacket(blockVersion) : chunkPacketCache.getPacketUncompressed(blockVersion);
                         if (packet == null) {
                             requestChunk(x, z, player);
                             continue;
@@ -3597,13 +3605,17 @@ public class Level implements ChunkManager, Metadatable {
                             if (protocol < 486 || !ENABLE_SUB_CHUNK_NETWORK_OPTIMIZATION) {
                                 if (protocol < 503) {
                                     player.sendChunk(x, z, subChunkCount + PADDING_SUB_CHUNK_COUNT, blobCache, packetCache.getSubModePacket());
-                                } else {
+                                } else if (protocol < 649) {
                                     player.sendChunk(x, z, subChunkCount + PADDING_SUB_CHUNK_COUNT, blobCache, packetCache.getSubModePacketNew());
+                                } else {
+                                    player.sendChunk(x, z, subChunkCount + PADDING_SUB_CHUNK_COUNT, blobCache, packetCache.getSubModePacketUncompressed());
                                 }
                             } else if (protocol < 503) {
                                 player.sendChunk(x, z, subChunkCount + PADDING_SUB_CHUNK_COUNT, blobCache, packetCache.getSubModePacketTruncated());
-                            } else {
+                            } else if (protocol < 649) {
                                 player.sendChunk(x, z, subChunkCount + PADDING_SUB_CHUNK_COUNT, blobCache, packetCache.getSubModePacketTruncatedNew());
+                            } else {
+                                player.sendChunk(x, z, subChunkCount + PADDING_SUB_CHUNK_COUNT, blobCache, packetCache.getSubModePacketUncompressed());
                             }
                         } else {
                             if (blockVersion == null) {
@@ -3614,7 +3626,8 @@ public class Level implements ChunkManager, Metadatable {
                                 continue;
                             }
 
-                            player.sendChunk(x, z, subChunkCount + PADDING_SUB_CHUNK_COUNT, blobCache, packetCache.getPacket(blockVersion));
+                            player.sendChunk(x, z, subChunkCount + PADDING_SUB_CHUNK_COUNT, blobCache, blockVersion.getProtocol() < StaticVersion.V1_20_60.getProtocol() ?
+                                    packetCache.getPacket(blockVersion) : packetCache.getPacketUncompressed(blockVersion));
                         }
 
                         iter.remove();
@@ -3701,6 +3714,7 @@ public class Level implements ChunkManager, Metadatable {
             if (chunkPacketCache == null) {
                 int extendedCount = subChunkCount == 0 ? 0 : PADDING_SUB_CHUNK_COUNT + subChunkCount;
                 Map<StaticVersion, BatchPacket> packets = new EnumMap<>(StaticVersion.class);
+                Map<StaticVersion, LevelChunkPacket12060> packetsUncompressed = new EnumMap<>(StaticVersion.class);
                 Map<StaticVersion, BatchPacket[]> subPackets = new EnumMap<>(StaticVersion.class);
                 Map<StaticVersion, SubChunkPacket[]> subPacketsUncompressed = new EnumMap<>(StaticVersion.class);
 
@@ -3730,17 +3744,41 @@ public class Level implements ChunkManager, Metadatable {
                         subPackets.put(version, compressed);
                         subPacketsUncompressed.put(version, uncompressed);
                     }
-                    packets.put(version, getChunkCacheFromData(x, z, actualCount, data, false, true));
+
+                    if (version.getProtocol() >= StaticVersion.V1_20_60.getProtocol()) {
+                        LevelChunkPacket12060 uncompressed = new LevelChunkPacket12060();
+                        uncompressed.chunkX = x;
+                        uncompressed.chunkZ = z;
+                        uncompressed.dimension = getDimension().ordinal();
+                        uncompressed.subChunkCount = actualCount;
+                        uncompressed.subChunkRequestLimit = 0;
+                        uncompressed.data = data;
+                        uncompressed.setBuffer(null, 0);
+                        packetsUncompressed.put(version, uncompressed);
+                    } else {
+                        packets.put(version, getChunkCacheFromData(x, z, actualCount, data, false, true));
+                    }
                 });
+
+                LevelChunkPacket12060 uncompressed = new LevelChunkPacket12060();
+                uncompressed.chunkX = x;
+                uncompressed.chunkZ = z;
+                uncompressed.dimension = getDimension().ordinal();
+                uncompressed.subChunkCount = LevelChunkPacket.CLIENT_REQUEST_TRUNCATED_COLUMN_FAKE_COUNT;
+                uncompressed.subChunkRequestLimit = extendedCount;
+                uncompressed.data = subModePayloadNew;
+                uncompressed.setBuffer(null, 0);
 
                 chunkPacketCache = new ChunkPacketCache(
                         packets,
+                        packetsUncompressed,
                         subPackets,
                         subPacketsUncompressed,
                         getChunkCacheFromData(x, z, LevelChunkPacket.CLIENT_REQUEST_FULL_COLUMN_FAKE_COUNT, subModePayloadNew, false, true),
                         getChunkCacheFromData(x, z, LevelChunkPacket.CLIENT_REQUEST_FULL_COLUMN_FAKE_COUNT, subModePayload, false, true),
                         getChunkCacheFromData(x, z, LevelChunkPacket.CLIENT_REQUEST_TRUNCATED_COLUMN_FAKE_COUNT, extendedCount, subModePayloadNew, false, true),
                         getChunkCacheFromData(x, z, LevelChunkPacket.CLIENT_REQUEST_TRUNCATED_COLUMN_FAKE_COUNT, extendedCount, subModePayload, false, true),
+                        uncompressed,
                         getChunkCacheFromData(x, z, subChunkCount, payload, false, true),
                         getChunkCacheFromData(x, z, subChunkCount, payload, false, false),
                         getChunkCacheFromData(x, z, subChunkCount, payloadOld, true, false),

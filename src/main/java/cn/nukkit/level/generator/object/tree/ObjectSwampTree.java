@@ -59,7 +59,7 @@ public class ObjectSwampTree extends TreeGenerator {
                 BlockVector3 down = position.down();
                 int block = worldIn.getBlockIdAt(0, down.x, down.y, down.z);
 
-                if ((block == Block.GRASS || block == Block.DIRT) && position.getY() < 256 - i - 1) {
+                if ((block == Block.GRASS_BLOCK || block == Block.DIRT) && position.getY() < 256 - i - 1) {
                     this.setDirtAt(worldIn, down);
 
                     for (int k1 = position.getY() - 3 + i; k1 <= position.getY() + i; ++k1) {

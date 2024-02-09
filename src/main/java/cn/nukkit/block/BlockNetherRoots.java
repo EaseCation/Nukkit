@@ -36,7 +36,7 @@ public abstract class BlockNetherRoots extends BlockFlower {
     @Override
     protected boolean canSurvive() {
         int id = down().getId();
-        return id == GRASS || id == DIRT || id == FARMLAND || id == PODZOL || id == MYCELIUM || id == DIRT_WITH_ROOTS || id == MOSS_BLOCK
+        return id == GRASS_BLOCK || id == DIRT || id == FARMLAND || id == PODZOL || id == MYCELIUM || id == DIRT_WITH_ROOTS || id == MOSS_BLOCK
                 || id == CRIMSON_NYLIUM || id == WARPED_NYLIUM || id == SOUL_SOIL;
     }
 }

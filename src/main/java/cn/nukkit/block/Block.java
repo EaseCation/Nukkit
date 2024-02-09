@@ -773,8 +773,8 @@ public abstract class Block extends Position implements Metadatable, Cloneable, 
         boolean canHarvestWithHand = canHarvestWithHand();
         int itemToolType = toolType0(item);
         int itemTier = item.getTier();
-        int efficiencyLoreLevel = Optional.ofNullable(item.getEnchantment(Enchantment.EFFICIENCY))
-                .map(Enchantment::getLevel).orElse(0);
+        int efficiencyLoreLevel = item.getId() != Item.ENCHANTED_BOOK ? Optional.ofNullable(item.getEnchantment(Enchantment.EFFICIENCY))
+                .map(Enchantment::getLevel).orElse(0) : 0;
         int hasteEffectLevel = Optional.ofNullable(player.getEffect(Effect.HASTE))
                 .map(Effect::getAmplifier).orElse(0);
         boolean insideOfWaterWithoutAquaAffinity = player.isInsideOfWater() &&

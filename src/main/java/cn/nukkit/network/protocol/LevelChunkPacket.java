@@ -28,6 +28,7 @@ public class LevelChunkPacket extends DataPacket {
 
     public int chunkX;
     public int chunkZ;
+    public int dimension;
     public int subChunkCount;
     public boolean cacheEnabled;
     public long[] blobIds;

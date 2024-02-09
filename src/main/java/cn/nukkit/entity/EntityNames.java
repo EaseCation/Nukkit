@@ -131,7 +131,7 @@ public interface EntityNames {
     String CAMEL = "camel";
     String SNIFFER = "sniffer";
     String BREEZE = "breeze";
-
+    String WIND_CHARGE_PROJECTILE = "wind_charge_projectile";
     String ARMADILLO = "armadillo";
 
     String TRADER_LLAMA = "trader_llama";

@@ -40,7 +40,7 @@ public class ObjectTallGrass {
                 y += random.nextRange(-1, 1) * random.nextBoundedInt(3) / 2;
                 z += random.nextRange(-1, 1);
 
-                if (level.getBlockIdAt(0, x, y - 1, z) != Block.GRASS || y > 255 || y < 0) {
+                if (level.getBlockIdAt(0, x, y - 1, z) != Block.GRASS_BLOCK || y > 255 || y < 0) {
                     break;
                 }
 

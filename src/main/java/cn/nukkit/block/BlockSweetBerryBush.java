@@ -195,7 +195,7 @@ public class BlockSweetBerryBush extends BlockFlowable {
 
     private boolean canSurvive() {
         int below = down().getId();
-        return below == Block.GRASS || below == Block.DIRT || below == Block.PODZOL || below == MYCELIUM || below == DIRT_WITH_ROOTS || below == MOSS_BLOCK || below == FARMLAND;
+        return below == Block.GRASS_BLOCK || below == Block.DIRT || below == Block.PODZOL || below == MYCELIUM || below == DIRT_WITH_ROOTS || below == MOSS_BLOCK || below == FARMLAND;
     }
 
     private int getBerryDropAmount(int meta) {

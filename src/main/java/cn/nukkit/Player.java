@@ -2686,7 +2686,7 @@ public class Player extends EntityHuman implements CommandSender, InventoryHolde
                         return;
                     }
 
-                    if (riding != null && (moveVecX != 0 || moveVecY != 0)) {
+                    if (riding != null && (moveVecX != 0 || moveVecY != 0) && riding.isControlling(this)) {
                         moveVecX = Mth.clamp(moveVecX, -1, 1);
                         moveVecY = Mth.clamp(moveVecY, -1, 1);
 
@@ -2738,19 +2738,11 @@ public class Player extends EntityHuman implements CommandSender, InventoryHolde
                         this.newPosition = newPos;
                         this.forceMovement = null;
                     }
-
-                    if (riding != null) {
-                        if (riding instanceof EntityRideable && !(riding instanceof EntityBoat)) {
-                            Vector3f offset = riding.getMountedOffset(this);
-                            ((EntityRideable) riding).onPlayerRiding(this.temporalVector.setComponents(movePlayerPacket.x - offset.x, movePlayerPacket.y - offset.y, movePlayerPacket.z - offset.z), (movePlayerPacket.headYaw + 90) % 360, 0);
-                        }
-                    }
-
                     break;
                 case ProtocolInfo.MOVE_ACTOR_ABSOLUTE_PACKET:
                     MoveEntityPacket moveEntityPacket = (MoveEntityPacket) packet;
-                    if (!validateCoordinate((float) moveEntityPacket.x) || !validateCoordinate((float) moveEntityPacket.y) || !validateCoordinate((float) moveEntityPacket.z)
-                            || !validateFloat((float) moveEntityPacket.pitch) || !validateFloat((float) moveEntityPacket.yaw) || !validateFloat((float) moveEntityPacket.headYaw)) {
+                    if (!validateCoordinate(moveEntityPacket.x) || !validateCoordinate(moveEntityPacket.y) || !validateCoordinate(moveEntityPacket.z)
+                            || !validateFloat(moveEntityPacket.pitch) || !validateFloat(moveEntityPacket.yaw) || !validateFloat(moveEntityPacket.headYaw)) {
                         this.getServer().getLogger().warning("Invalid vehicle movement received: " + this.getName());
                         this.close("", "Invalid vehicle movement");
                         return;
@@ -2760,9 +2752,9 @@ public class Player extends EntityHuman implements CommandSender, InventoryHolde
                         break;
                     }
 
-                    if (this.riding instanceof EntityBoat) {
+                    if (this.riding instanceof EntityBoat boat) {
                         if (this.temporalVector.setComponents(moveEntityPacket.x, moveEntityPacket.y, moveEntityPacket.z).distanceSquared(this.riding) < 1000) {
-                            ((EntityBoat) this.riding).onInput(moveEntityPacket.x, moveEntityPacket.y, moveEntityPacket.z, moveEntityPacket.yaw);
+                            boat.onInput(moveEntityPacket.x, moveEntityPacket.y, moveEntityPacket.z, moveEntityPacket.yaw % 360);
                         }
                     }
                     break;
@@ -3700,7 +3692,7 @@ public class Player extends EntityHuman implements CommandSender, InventoryHolde
                                         }
                                     }
 
-                                    Enchantment[] enchantments = item.getEnchantments();
+                                    Enchantment[] enchantments = item.getId() != Item.ENCHANTED_BOOK ? item.getEnchantments() : Enchantment.EMPTY;
 
                                     ItemAttackDamageEvent event = new ItemAttackDamageEvent(item);
                                     this.server.getPluginManager().callEvent(event);
@@ -3733,7 +3725,7 @@ public class Player extends EntityHuman implements CommandSender, InventoryHolde
                                         break;
                                     }
 
-                                    for (Enchantment enchantment : item.getEnchantments()) {
+                                    for (Enchantment enchantment : enchantments) {
                                         enchantment.doPostAttack(this, target, null);
                                     }
 
@@ -4613,7 +4605,7 @@ public class Player extends EntityHuman implements CommandSender, InventoryHolde
 
         if (!ev.getKeepInventory() && this.level.getGameRules().getBoolean(GameRule.DO_ENTITY_DROPS)) {
             for (Item item : ev.getDrops()) {
-                if (!item.hasEnchantment(Enchantment.VANISHING)) {
+                if (item.getId() == Item.ENCHANTED_BOOK || !item.hasEnchantment(Enchantment.VANISHING)) {
                     this.level.dropItem(this, item, null, true, 40);
                 }
             }

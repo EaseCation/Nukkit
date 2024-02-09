@@ -1,5 +1,6 @@
 package cn.nukkit.block;
 
+import cn.nukkit.Difficulty;
 import cn.nukkit.Player;
 import cn.nukkit.entity.Entity;
 import cn.nukkit.entity.EntityLiving;
@@ -57,11 +58,14 @@ public class BlockWitherRose extends BlockFlower {
 
     @Override
     public void onEntityCollide(Entity entity) {
+        if (entity.getServer().getDifficulty() == Difficulty.PEACEFUL.ordinal()) {
+            return;
+        }
         if (!(entity instanceof EntityLiving) || entity instanceof Player && ((Player) entity).isCreative()) {
             return;
         }
         Effect wither = entity.getEffect(Effect.WITHER);
-        if (wither != null && wither.getDuration() > 1) {
+        if (wither != null && wither.getDuration() > 30) {
             return;
         }
         entity.addEffect(Effect.getEffect(Effect.WITHER).setDuration(40 + 1));

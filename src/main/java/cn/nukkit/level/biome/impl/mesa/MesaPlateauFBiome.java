@@ -18,7 +18,7 @@ public class MesaPlateauFBiome extends MesaPlateauBiome {
 
     @Override
     public int getCoverBlock() {
-        return GRASS;
+        return GRASS_BLOCK;
     }
 
     @Override

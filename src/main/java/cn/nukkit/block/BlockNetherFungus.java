@@ -82,7 +82,7 @@ public abstract class BlockNetherFungus extends BlockFlowable {
 
     protected boolean canSurvive() {
         int id = down().getId();
-        return id == GRASS || id == DIRT || id == PODZOL || id == MYCELIUM || id == FARMLAND || id == DIRT_WITH_ROOTS || id == MOSS_BLOCK
+        return id == GRASS_BLOCK || id == DIRT || id == PODZOL || id == MYCELIUM || id == FARMLAND || id == DIRT_WITH_ROOTS || id == MOSS_BLOCK
                 || id == CRIMSON_NYLIUM || id == WARPED_NYLIUM || id == SOUL_SOIL;
     }
 

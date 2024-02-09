@@ -88,6 +88,6 @@ public class BlockDeadBush extends BlockFlowable {
 
     private boolean canSurvive() {
         int id = down().getId();
-        return id == SAND || id == HARDENED_CLAY || id == STAINED_HARDENED_CLAY || id == DIRT || id == PODZOL || id == MYCELIUM || id == DIRT_WITH_ROOTS || id == MUD || id == GRASS;
+        return id == SAND || id == HARDENED_CLAY || id == STAINED_HARDENED_CLAY || id == DIRT || id == PODZOL || id == MYCELIUM || id == DIRT_WITH_ROOTS || id == MUD || id == GRASS_BLOCK;
     }
 }

@@ -44,11 +44,11 @@ public abstract class Zlib {
         return deflate(data, Deflater.DEFAULT_COMPRESSION);
     }
 
-    public static byte[] deflate(byte[] data, int level) throws Exception {
+    public static byte[] deflate(byte[] data, int level) throws IOException {
         return provider.deflate(data, level);
     }
 
-    public static byte[] deflate(byte[][] data, int level) throws Exception {
+    public static byte[] deflate(byte[][] data, int level) throws IOException {
         return provider.deflate(data, level);
     }
 

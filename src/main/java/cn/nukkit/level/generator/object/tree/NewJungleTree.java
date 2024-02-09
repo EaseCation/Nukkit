@@ -75,7 +75,7 @@ public class NewJungleTree extends TreeGenerator {
                 BlockVector3 down = position.down();
                 int block = worldIn.getBlockIdAt(0, down.x, down.y, down.z);
 
-                if ((block == Block.GRASS || block == Block.DIRT || block == Block.FARMLAND) && position.getY() < 256 - i - 1) {
+                if ((block == Block.GRASS_BLOCK || block == Block.DIRT || block == Block.FARMLAND) && position.getY() < 256 - i - 1) {
                     this.setDirtAt(worldIn, down);
                     int k2 = 3;
                     int l2 = 0;

@@ -82,7 +82,7 @@ public abstract class HugeTreesGenerator extends TreeGenerator {
         Vector3 blockpos = pos.down();
         int block = worldIn.getBlockIdAt(0, (int) blockpos.x, (int) blockpos.y, (int) blockpos.z);
 
-        if ((block == Block.GRASS || block == Block.DIRT) && pos.getY() >= 2) {
+        if ((block == Block.GRASS_BLOCK || block == Block.DIRT) && pos.getY() >= 2) {
             this.setDirtAt(worldIn, blockpos);
             this.setDirtAt(worldIn, blockpos.east());
             this.setDirtAt(worldIn, blockpos.south());

@@ -298,6 +298,10 @@ public class BlockCampfire extends BlockTransparentMeta implements Faceable {
             return;
         }
 
+        if (true) {
+            return;
+        }
+
         if (V1_19_60.isAvailable()) {
             return;
         }

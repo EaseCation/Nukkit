@@ -2,6 +2,7 @@ package cn.nukkit.level.format.generic;
 
 import cn.nukkit.level.GlobalBlockPaletteInterface.StaticVersion;
 import cn.nukkit.network.protocol.BatchPacket;
+import cn.nukkit.network.protocol.LevelChunkPacket12060;
 import cn.nukkit.network.protocol.SubChunkPacket;
 
 import javax.annotation.Nullable;
@@ -11,6 +12,7 @@ import java.util.Set;
 public class ChunkPacketCache {
 
     private final Map<StaticVersion, BatchPacket> packets; //1.16.100+ static runtime block palette
+    private final Map<StaticVersion, LevelChunkPacket12060> fullChunkPacketsUncompressed; // 1.20.60+
     private final Map<StaticVersion, BatchPacket[]> subChunkPackets; // 1.18+ sub chunk packet
     private final Map<StaticVersion, SubChunkPacket[]> subChunkPacketsUncompressed;
 
@@ -21,20 +23,23 @@ public class ChunkPacketCache {
     private final BatchPacket subModePacket;
     private final BatchPacket subModePacketTruncatedNew; // 1.18.30+
     private final BatchPacket subModePacketTruncated;
+    private final LevelChunkPacket12060 subModePacketUncompressed; // 1.20.60+
     private final BatchPacket packet116;
     private final BatchPacket packet;
     private final BatchPacket packetOld;
 
     private final Set<StaticVersion> requestedVersions;
 
-    public ChunkPacketCache(Map<StaticVersion, BatchPacket> packets, Map<StaticVersion, BatchPacket[]> subChunkPackets, Map<StaticVersion, SubChunkPacket[]> subChunkPacketsUncompressed, BatchPacket subModePacketNew, BatchPacket subModePacket, BatchPacket subModePacketTruncatedNew, BatchPacket subModePacketTruncated, BatchPacket packet116, BatchPacket packet, BatchPacket packetOld, Set<StaticVersion> requestedVersions) {
+    public ChunkPacketCache(Map<StaticVersion, BatchPacket> packets, Map<StaticVersion, LevelChunkPacket12060> fullChunkPacketsUncompressed, Map<StaticVersion, BatchPacket[]> subChunkPackets, Map<StaticVersion, SubChunkPacket[]> subChunkPacketsUncompressed, BatchPacket subModePacketNew, BatchPacket subModePacket, BatchPacket subModePacketTruncatedNew, BatchPacket subModePacketTruncated, LevelChunkPacket12060 subModePacketUncompressed, BatchPacket packet116, BatchPacket packet, BatchPacket packetOld, Set<StaticVersion> requestedVersions) {
         this.packets = packets;
+        this.fullChunkPacketsUncompressed = fullChunkPacketsUncompressed;
         this.subChunkPackets = subChunkPackets;
         this.subChunkPacketsUncompressed = subChunkPacketsUncompressed;
         this.subModePacketNew = subModePacketNew;
         this.subModePacket = subModePacket;
         this.subModePacketTruncatedNew = subModePacketTruncatedNew;
         this.subModePacketTruncated = subModePacketTruncated;
+        this.subModePacketUncompressed = subModePacketUncompressed;
         this.packet116 = packet116;
         this.packet = packet;
         this.packetOld = packetOld;
@@ -44,6 +49,11 @@ public class ChunkPacketCache {
     @Nullable
     public BatchPacket getPacket(StaticVersion version) {
         return this.packets.get(version);
+    }
+
+    @Nullable
+    public LevelChunkPacket12060 getPacketUncompressed(StaticVersion version) {
+        return this.fullChunkPacketsUncompressed.get(version);
     }
 
     @Nullable
@@ -70,6 +80,10 @@ public class ChunkPacketCache {
 
     public BatchPacket getSubModePacketTruncated() {
         return subModePacketTruncated;
+    }
+
+    public LevelChunkPacket12060 getSubModePacketUncompressed() {
+        return subModePacketUncompressed;
     }
 
     public BatchPacket getPacket116() {

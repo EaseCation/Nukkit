@@ -218,7 +218,7 @@ public class PopulatorRavines extends Populator {
                     int block = chunk.getBlockId(0, xx, yy, zz);
                     int above = chunk.getBlockId(0, xx, yy + 1, zz);
 
-                    if (block == GRASS) {
+                    if (block == GRASS_BLOCK) {
                         hasGrass = true;
                     }
 
@@ -235,7 +235,7 @@ public class PopulatorRavines extends Populator {
                         chunk.setBlock(0, xx, yy, zz, AIR);
 
                         if (hasGrass && chunk.getBlockId(0, xx, yy - 1, zz) == DIRT) {
-                            chunk.setBlock(0, xx, yy - 1, zz, GRASS);
+                            chunk.setBlock(0, xx, yy - 1, zz, GRASS_BLOCK);
                         }
                     } else {
                         chunk.setBlock(0, xx, yy, zz, LAVA);
