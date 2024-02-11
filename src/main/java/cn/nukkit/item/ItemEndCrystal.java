@@ -12,9 +12,6 @@ import cn.nukkit.level.format.FullChunk;
 import cn.nukkit.math.BlockFace;
 import cn.nukkit.math.SimpleAxisAlignedBB;
 import cn.nukkit.nbt.tag.CompoundTag;
-import cn.nukkit.nbt.tag.DoubleTag;
-import cn.nukkit.nbt.tag.FloatTag;
-import cn.nukkit.nbt.tag.ListTag;
 
 import java.util.concurrent.ThreadLocalRandom;
 
@@ -48,18 +45,7 @@ public class ItemEndCrystal extends Item {
             return false;
         }
 
-        CompoundTag nbt = new CompoundTag()
-                .putList(new ListTag<DoubleTag>("Pos")
-                        .add(new DoubleTag("", target.x + 0.5))
-                        .add(new DoubleTag("", up.y))
-                        .add(new DoubleTag("", target.z + 0.5)))
-                .putList(new ListTag<DoubleTag>("Motion")
-                        .add(new DoubleTag("", 0))
-                        .add(new DoubleTag("", 0))
-                        .add(new DoubleTag("", 0)))
-                .putList(new ListTag<FloatTag>("Rotation")
-                        .add(new FloatTag("", ThreadLocalRandom.current().nextFloat() * 360))
-                        .add(new FloatTag("", 0)));
+        CompoundTag nbt = Entity.getDefaultNBT(target.x + 0.5, up.y, target.z + 0.5, null, ThreadLocalRandom.current().nextFloat() * 360, 0);
 
         if (this.hasCustomName()) {
             nbt.putString("CustomName", this.getCustomName());

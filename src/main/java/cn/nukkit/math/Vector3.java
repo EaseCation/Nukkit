@@ -12,6 +12,7 @@ import javax.annotation.Nullable;
  * Nukkit Project
  */
 public class Vector3 implements Cloneable {
+    public static final Vector3 ZERO = new Vector3(0, 0, 0);
 
     public double x;
     public double y;

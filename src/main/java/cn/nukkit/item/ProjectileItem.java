@@ -1,6 +1,7 @@
 package cn.nukkit.item;
 
 import cn.nukkit.Player;
+import cn.nukkit.entity.Entity;
 import cn.nukkit.entity.EntityFullNames;
 import cn.nukkit.entity.projectile.EntityEnderPearl;
 import cn.nukkit.entity.projectile.EntityProjectile;
@@ -8,9 +9,6 @@ import cn.nukkit.entity.projectile.ProjectileFactory;
 import cn.nukkit.event.entity.ProjectileLaunchEvent;
 import cn.nukkit.math.Vector3;
 import cn.nukkit.nbt.tag.CompoundTag;
-import cn.nukkit.nbt.tag.DoubleTag;
-import cn.nukkit.nbt.tag.FloatTag;
-import cn.nukkit.nbt.tag.ListTag;
 import cn.nukkit.network.protocol.LevelSoundEventPacket;
 
 /**
@@ -27,18 +25,7 @@ public abstract class ProjectileItem extends Item {
     public abstract float getThrowForce();
 
     public boolean onClickAir(Player player, Vector3 directionVector) {
-        CompoundTag nbt = new CompoundTag()
-                .putList(new ListTag<DoubleTag>("Pos")
-                        .add(new DoubleTag("", player.x))
-                        .add(new DoubleTag("", player.y + player.getEyeHeight() - 0.30000000149011612))
-                        .add(new DoubleTag("", player.z)))
-                .putList(new ListTag<DoubleTag>("Motion")
-                        .add(new DoubleTag("", directionVector.x))
-                        .add(new DoubleTag("", directionVector.y))
-                        .add(new DoubleTag("", directionVector.z)))
-                .putList(new ListTag<FloatTag>("Rotation")
-                        .add(new FloatTag("", (float) player.yaw))
-                        .add(new FloatTag("", (float) player.pitch)));
+        CompoundTag nbt = Entity.getDefaultNBT(player.x, player.y + player.getEyeHeight() - 0.3, player.z, directionVector, (float) player.yaw, (float) player.pitch);
 
         this.correctNBT(nbt);
 

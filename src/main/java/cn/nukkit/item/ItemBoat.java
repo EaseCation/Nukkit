@@ -8,10 +8,6 @@ import cn.nukkit.entity.item.EntityBoat;
 import cn.nukkit.level.Level;
 import cn.nukkit.math.AxisAlignedBB;
 import cn.nukkit.math.BlockFace;
-import cn.nukkit.nbt.tag.CompoundTag;
-import cn.nukkit.nbt.tag.DoubleTag;
-import cn.nukkit.nbt.tag.FloatTag;
-import cn.nukkit.nbt.tag.ListTag;
 
 /**
  * Created by yescallop on 2016/2/13.
@@ -68,19 +64,9 @@ public class ItemBoat extends Item {
         }
 
         Entity boat = getEntityFactory().create(
-                level.getChunk(block.getFloorX() >> 4, block.getFloorZ() >> 4), new CompoundTag("")
-                .putList(new ListTag<DoubleTag>("Pos")
-                        .add(new DoubleTag("", block.getX() + 0.5))
-                        .add(new DoubleTag("", y))
-                        .add(new DoubleTag("", block.getZ() + 0.5)))
-                .putList(new ListTag<DoubleTag>("Motion")
-                        .add(new DoubleTag("", 0))
-                        .add(new DoubleTag("", 0))
-                        .add(new DoubleTag("", 0)))
-                .putList(new ListTag<FloatTag>("Rotation")
-                        .add(new FloatTag("", (float) ((player.yaw + 90f) % 360)))
-                        .add(new FloatTag("", 0)))
-                .putByte("woodID", this.getDamage())
+                level.getChunk(block.getFloorX() >> 4, block.getFloorZ() >> 4),
+                Entity.getDefaultNBT(block.getX() + 0.5, y, block.getZ() + 0.5, null, ((float) player.yaw + 90f) % 360, 0)
+                        .putByte("woodID", this.getDamage())
         );
 
         if (player.isSurvivalLike()) {

@@ -62,7 +62,6 @@ import cn.nukkit.metadata.MetadataValue;
 import cn.nukkit.nbt.NBTIO;
 import cn.nukkit.nbt.tag.CompoundTag;
 import cn.nukkit.nbt.tag.DoubleTag;
-import cn.nukkit.nbt.tag.FloatTag;
 import cn.nukkit.nbt.tag.ListTag;
 import cn.nukkit.network.Network;
 import cn.nukkit.network.PacketViolationReason;
@@ -5911,21 +5910,10 @@ public class Player extends EntityHuman implements CommandSender, InventoryHolde
      */
     public void startFishing(Item fishingRod) {
         Vector3 motion = this.getDirectionVector().multiply(2);
-
-        CompoundTag nbt = new CompoundTag()
-                .putList(new ListTag<DoubleTag>("Pos")
-                        .add(new DoubleTag("", x + motion.x * 0.5))
-                        .add(new DoubleTag("", y + this.getEyeHeight() + motion.y * 0.5))
-                        .add(new DoubleTag("", z + motion.z * 0.5)))
-                .putList(new ListTag<DoubleTag>("Motion")
-                        .add(new DoubleTag("", motion.x))
-                        .add(new DoubleTag("", motion.y))
-                        .add(new DoubleTag("", motion.z)))
-                .putList(new ListTag<FloatTag>("Rotation")
-                        .add(new FloatTag("", (float) yaw))
-                        .add(new FloatTag("", (float) pitch)));
+        CompoundTag nbt = Entity.getDefaultNBT(x + motion.x * 0.5, y + this.getEyeHeight() + motion.y * 0.5, z + motion.z * 0.5, motion, (float) yaw, (float) pitch);
         EntityFishingHook fishingHook = new EntityFishingHook(getChunk(), nbt, this);
         fishingHook.setMotion(motion);
+
         ProjectileLaunchEvent ev = new ProjectileLaunchEvent(fishingHook);
         this.getServer().getPluginManager().callEvent(ev);
         if (ev.isCancelled()) {

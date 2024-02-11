@@ -53,7 +53,7 @@ public class EntityPrimedTNT extends Entity implements EntityExplosive {
     }
 
     protected int fuse;
-    protected double force;
+    protected int force;
 
     protected Entity source;
 
@@ -85,7 +85,7 @@ public class EntityPrimedTNT extends Entity implements EntityExplosive {
             fuse = 80;
         }
         if (namedTag.contains("Force")) {
-            force = namedTag.getDouble("Force");
+            force = namedTag.getByte("Force");
         } else {
             force = 4;
         }
@@ -103,7 +103,7 @@ public class EntityPrimedTNT extends Entity implements EntityExplosive {
     public void saveNBT() {
         super.saveNBT();
         namedTag.putByte("Fuse", fuse);
-        namedTag.putDouble("Force", force);
+        namedTag.putByte("Force", force);
     }
 
     public boolean onUpdate(int currentTick) {

@@ -52,9 +52,6 @@ import cn.nukkit.metadata.MetadataValue;
 import cn.nukkit.metadata.Metadatable;
 import cn.nukkit.nbt.NBTIO;
 import cn.nukkit.nbt.tag.CompoundTag;
-import cn.nukkit.nbt.tag.DoubleTag;
-import cn.nukkit.nbt.tag.FloatTag;
-import cn.nukkit.nbt.tag.ListTag;
 import cn.nukkit.network.Network;
 import cn.nukkit.network.protocol.*;
 import cn.nukkit.network.protocol.BatchPacket.Track;
@@ -1245,16 +1242,11 @@ public class Level implements ChunkManager, Metadatable {
             }
 
             int bId = this.getBlock(vector).getId();
-            if (bId != Block.TALLGRASS && bId != Block.FLOWING_WATER)
+            if (bId != Block.TALLGRASS && bId != Block.FLOWING_WATER) {
                 vector.y += 1;
-            CompoundTag nbt = new CompoundTag()
-                    .putList(new ListTag<DoubleTag>("Pos").add(new DoubleTag("", vector.x))
-                            .add(new DoubleTag("", vector.y)).add(new DoubleTag("", vector.z)))
-                    .putList(new ListTag<DoubleTag>("Motion").add(new DoubleTag("", 0))
-                            .add(new DoubleTag("", 0)).add(new DoubleTag("", 0)))
-                    .putList(new ListTag<FloatTag>("Rotation").add(new FloatTag("", 0))
-                            .add(new FloatTag("", 0)));
+            }
 
+            CompoundTag nbt = Entity.getDefaultNBT(vector);
             EntityLightning bolt = new EntityLightning(chunk, nbt);
             LightningStrikeEvent ev = new LightningStrikeEvent(this, bolt);
             getServer().getPluginManager().callEvent(ev);
@@ -2544,16 +2536,7 @@ public class Level implements ChunkManager, Metadatable {
         if (!item.isNull()) {
             EntityItem itemEntity = new EntityItem(
                     chunk,
-                    new CompoundTag().putList(new ListTag<DoubleTag>("Pos").add(new DoubleTag("", source.getX()))
-                            .add(new DoubleTag("", source.getY())).add(new DoubleTag("", source.getZ())))
-
-                            .putList(new ListTag<DoubleTag>("Motion").add(new DoubleTag("", motion.x))
-                                    .add(new DoubleTag("", motion.y)).add(new DoubleTag("", motion.z)))
-
-                            .putList(new ListTag<FloatTag>("Rotation")
-                                    .add(new FloatTag("", random.nextFloat() * 360))
-                                    .add(new FloatTag("", 0)))
-
+                    Entity.getDefaultNBT(source, motion, random.nextFloat() * 360, 0)
                             .putShort("Health", 5).putCompound("Item", itemTag).putShort("PickupDelay", delay));
 
             itemEntity.spawnToAll();
