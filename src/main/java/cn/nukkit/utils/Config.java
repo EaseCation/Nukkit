@@ -5,8 +5,16 @@ import cn.nukkit.scheduler.FileWriteTask;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.google.gson.reflect.TypeToken;
+import it.unimi.dsi.fastutil.booleans.BooleanList;
+import it.unimi.dsi.fastutil.bytes.ByteList;
+import it.unimi.dsi.fastutil.chars.CharList;
+import it.unimi.dsi.fastutil.doubles.DoubleList;
+import it.unimi.dsi.fastutil.floats.FloatList;
+import it.unimi.dsi.fastutil.ints.IntList;
+import it.unimi.dsi.fastutil.longs.LongList;
 import it.unimi.dsi.fastutil.objects.Object2IntMap;
 import it.unimi.dsi.fastutil.objects.Object2IntRBTreeMap;
+import it.unimi.dsi.fastutil.shorts.ShortList;
 import lombok.extern.log4j.Log4j2;
 import org.snakeyaml.engine.v2.api.Dump;
 import org.snakeyaml.engine.v2.api.DumpSettings;
@@ -274,6 +282,14 @@ public class Config {
         return this.correct ? this.config.get(key, defaultValue) : defaultValue;
     }
 
+    public Object getValue(String key) {
+        return this.getValue(key, null);
+    }
+
+    public Object getValue(String key, Object defaultValue) {
+        return this.correct ? this.config.getValue(key, defaultValue) : defaultValue;
+    }
+
     public ConfigSection getSection(String key) {
         return this.correct ? this.config.getSection(key) : new ConfigSection();
     }
@@ -366,39 +382,39 @@ public class Config {
         return config.getStringList(key);
     }
 
-    public List<Integer> getIntegerList(String key) {
+    public IntList getIntegerList(String key) {
         return config.getIntegerList(key);
     }
 
-    public List<Boolean> getBooleanList(String key) {
+    public BooleanList getBooleanList(String key) {
         return config.getBooleanList(key);
     }
 
-    public List<Double> getDoubleList(String key) {
+    public DoubleList getDoubleList(String key) {
         return config.getDoubleList(key);
     }
 
-    public List<Float> getFloatList(String key) {
+    public FloatList getFloatList(String key) {
         return config.getFloatList(key);
     }
 
-    public List<Long> getLongList(String key) {
+    public LongList getLongList(String key) {
         return config.getLongList(key);
     }
 
-    public List<Byte> getByteList(String key) {
+    public ByteList getByteList(String key) {
         return config.getByteList(key);
     }
 
-    public List<Character> getCharacterList(String key) {
+    public CharList getCharacterList(String key) {
         return config.getCharacterList(key);
     }
 
-    public List<Short> getShortList(String key) {
+    public ShortList getShortList(String key) {
         return config.getShortList(key);
     }
 
-    public List<Map> getMapList(String key) {
+    public List<Map<?, ?>> getMapList(String key) {
         return config.getMapList(key);
     }
 

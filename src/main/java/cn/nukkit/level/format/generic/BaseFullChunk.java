@@ -143,8 +143,9 @@ public abstract class BaseFullChunk implements FullChunk, ChunkManager {
     public void initChunk() {
         if (this.getProvider() != null && !this.isInit) {
             boolean changed = false;
-            if (this.NBTentities != null) {
-                for (CompoundTag nbt : NBTentities) {
+            List<CompoundTag> entities = this.NBTentities;
+            if (entities != null) {
+                for (CompoundTag nbt : entities) {
                     if (!nbt.contains("id")) {
                         this.setChanged();
                         continue;
@@ -162,8 +163,9 @@ public abstract class BaseFullChunk implements FullChunk, ChunkManager {
                 this.NBTentities = null;
             }
 
-            if (this.NBTtiles != null) {
-                for (CompoundTag nbt : NBTtiles) {
+            List<CompoundTag> blockEntities = this.NBTtiles;
+            if (blockEntities != null) {
+                for (CompoundTag nbt : blockEntities) {
                     if (nbt != null) {
                         if (!nbt.contains("id")) {
                             changed = true;

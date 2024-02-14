@@ -84,6 +84,9 @@ import java.util.concurrent.ConcurrentLinkedDeque;
 import java.util.concurrent.ConcurrentLinkedQueue;
 import java.util.concurrent.ThreadLocalRandom;
 import java.util.concurrent.atomic.AtomicInteger;
+import java.util.concurrent.locks.Condition;
+import java.util.concurrent.locks.Lock;
+import java.util.concurrent.locks.ReentrantLock;
 import java.util.function.BiConsumer;
 import java.util.function.Consumer;
 import java.util.function.Predicate;
@@ -3225,11 +3228,41 @@ public class Level implements ChunkManager, Metadatable {
     public BaseFullChunk getChunk(int chunkX, int chunkZ, boolean create) {
         long index = Level.chunkHash(chunkX, chunkZ);
         boolean isMainThread = server.isPrimaryThread();
+
         BaseFullChunk chunk = this.getChunkFromCache(isMainThread, index);
         if (chunk != null) {
             return chunk;
-        } else if (this.loadChunkInternal(index, chunkX, chunkZ, create)) {
-            return this.getChunkFromCache(isMainThread, index);
+        }
+
+        if (!isMainThread) {
+            Lock lock = new ReentrantLock();
+            Condition condition = lock.newCondition();
+            lock.lock();
+
+            BaseFullChunk[] result = new BaseFullChunk[1];
+            getServer().getScheduler().scheduleTask(null, () -> {
+                lock.lock();
+                try {
+                    if (loadChunkInternal(index, chunkX, chunkZ, create)) {
+                        result[0] = getChunkFromCache(true, index);
+                    }
+                } finally {
+                    condition.signal();
+                    lock.unlock();
+                }
+            });
+
+            try {
+                condition.await();
+            } catch (InterruptedException ignored) {
+            } finally {
+                lock.unlock();
+            }
+            return result[0];
+        }
+
+        if (this.loadChunkInternal(index, chunkX, chunkZ, create)) {
+            return this.getChunkFromCache(true, index);
         }
 
         return null;
