@@ -299,9 +299,9 @@ public class Level implements ChunkManager, Metadatable {
             try {
                 Generator generator = generatorClass.getConstructor(Map.class).newInstance(provider.getGeneratorOptions());
                 NukkitRandom rand = new NukkitRandom(getSeed());
-                if (Server.getInstance().isPrimaryThread()) {
-                    generator.init(Level.this, rand);
-                }
+//                if (Server.getInstance().isPrimaryThread()) {
+//                    generator.init(Level.this, rand);
+//                }
                 generator.init(new PopChunkManager(getSeed(), getHeightRange()), rand);
                 return generator;
             } catch (Throwable e) {
@@ -2203,7 +2203,7 @@ public class Level implements ChunkManager, Metadatable {
         return getBlock(1, x, y, z, load);
     }
 
-    public synchronized Block getBlock(int layer, int x, int y, int z, boolean load) {
+    public Block getBlock(int layer, int x, int y, int z, boolean load) {
         int fullState;
         if (heightRange.isValidBlockY(y)) {
             int cx = x >> 4;
@@ -2475,7 +2475,7 @@ public class Level implements ChunkManager, Metadatable {
         return setBlock(1, x, y, z, block, direct, update, sends);
     }
 
-    public synchronized boolean setBlock(int layer, int x, int y, int z, Block block, boolean direct, boolean update, Player[] sends) {
+    public boolean setBlock(int layer, int x, int y, int z, Block block, boolean direct, boolean update, Player[] sends) {
         if (!heightRange.isValidBlockY(y)) {
             return false;
         }
@@ -3160,6 +3160,11 @@ public class Level implements ChunkManager, Metadatable {
         }
         chunk.setBlockId(layer, x & 0x0f, y & 0xff, z & 0x0f, id);
         addBlockChange(x, y, z);
+
+        if (!server.isPrimaryThread()) {
+            return;
+        }
+
         temporalVector.setComponents(x, y, z);
         for (ChunkLoader loader : this.getChunkLoaders(x >> 4, z >> 4)) {
             loader.onBlockChanged(temporalVector);
@@ -3168,7 +3173,7 @@ public class Level implements ChunkManager, Metadatable {
 
     @Deprecated
     @Override
-    public synchronized void setBlockAt(int layer, int x, int y, int z, int id, int data) {
+    public void setBlockAt(int layer, int x, int y, int z, int id, int data) {
         BaseFullChunk chunk = this.getChunk(x >> 4, z >> 4, true);
         if (chunk == null) {
             return;
@@ -3176,6 +3181,11 @@ public class Level implements ChunkManager, Metadatable {
         chunk.setBlockId(layer, x & 0x0f, y & 0xff, z & 0x0f, id);
         chunk.setBlockData(layer, x & 0x0f, y & 0xff, z & 0x0f, data);
         addBlockChange(x, y, z);
+
+        if (!server.isPrimaryThread()) {
+            return;
+        }
+
         temporalVector.setComponents(x, y, z);
         for (ChunkLoader loader : this.getChunkLoaders(x >> 4, z >> 4)) {
             loader.onBlockChanged(temporalVector);
@@ -3215,6 +3225,11 @@ public class Level implements ChunkManager, Metadatable {
         }
         chunk.setBlockData(layer, x & 0x0f, y & 0xff, z & 0x0f, data);
         addBlockChange(x, y, z);
+
+        if (!server.isPrimaryThread()) {
+            return;
+        }
+
         temporalVector.setComponents(x, y, z);
         for (ChunkLoader loader : this.getChunkLoaders(x >> 4, z >> 4)) {
             loader.onBlockChanged(temporalVector);
@@ -3315,6 +3330,7 @@ public class Level implements ChunkManager, Metadatable {
         }
 
         if (!isMainThread) {
+/*
             Lock lock = new ReentrantLock();
             Condition condition = lock.newCondition();
             lock.lock();
@@ -3339,6 +3355,8 @@ public class Level implements ChunkManager, Metadatable {
                 lock.unlock();
             }
             return result[0];
+*/
+            return null;
         }
 
         if (this.loadChunkInternal(index, chunkX, chunkZ, create)) {
