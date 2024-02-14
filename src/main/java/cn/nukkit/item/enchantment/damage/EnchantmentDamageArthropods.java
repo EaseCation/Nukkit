@@ -3,6 +3,7 @@ package cn.nukkit.item.enchantment.damage;
 import cn.nukkit.entity.Entity;
 import cn.nukkit.entity.EntityArthropod;
 import cn.nukkit.event.entity.EntityDamageEvent.DamageCause;
+import cn.nukkit.item.enchantment.EnchantmentNames;
 import cn.nukkit.potion.Effect;
 
 import java.util.concurrent.ThreadLocalRandom;
@@ -14,7 +15,7 @@ import java.util.concurrent.ThreadLocalRandom;
 public class EnchantmentDamageArthropods extends EnchantmentDamage {
 
     public EnchantmentDamageArthropods() {
-        super(BANE_OF_ARTHROPODS, "bane_of_arthropods", "arthropods", Rarity.UNCOMMON, TYPE.SMITE);
+        super(BANE_OF_ARTHROPODS, EnchantmentNames.BANE_OF_ARTHROPODS, "arthropods", Rarity.UNCOMMON, TYPE.SMITE);
     }
 
     @Override

@@ -2,6 +2,7 @@ package cn.nukkit.item.enchantment.protection;
 
 import cn.nukkit.event.entity.EntityDamageEvent;
 import cn.nukkit.event.entity.EntityDamageEvent.DamageCause;
+import cn.nukkit.item.enchantment.EnchantmentNames;
 
 /**
  * author: MagicDroidX
@@ -10,7 +11,7 @@ import cn.nukkit.event.entity.EntityDamageEvent.DamageCause;
 public class EnchantmentProtectionFire extends EnchantmentProtection {
 
     public EnchantmentProtectionFire() {
-        super(FIRE_PROTECTION, "fire_protection", "fire", Rarity.UNCOMMON, TYPE.FIRE);
+        super(FIRE_PROTECTION, EnchantmentNames.FIRE_PROTECTION, "fire", Rarity.UNCOMMON, TYPE.FIRE);
     }
 
     @Override

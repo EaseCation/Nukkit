@@ -184,7 +184,7 @@ public class BlockScaffolding extends BlockTransparentMeta { // extends BlockFal
                 top = up;
             }
 
-            if (!up.canBeReplaced() || up.isLava() || top.getFloorY() >= level.getMaxHeight()) {
+            if (!up.canBeReplaced() || up.isLava() || top.getFloorY() >= level.getHeightRange().getMaxY() - 1) {
                 return true;
             }
 

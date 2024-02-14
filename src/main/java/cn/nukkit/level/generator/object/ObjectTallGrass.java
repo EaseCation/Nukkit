@@ -2,21 +2,21 @@ package cn.nukkit.level.generator.object;
 
 import cn.nukkit.block.Block;
 import cn.nukkit.level.ChunkManager;
+import cn.nukkit.math.BlockVector3;
 import cn.nukkit.math.NukkitRandom;
-import cn.nukkit.math.Vector3;
 
 /**
  * author: ItsLucas
  * Nukkit Project
  */
 public class ObjectTallGrass {
-    public static void growGrass(ChunkManager level, Vector3 pos, NukkitRandom random) {
+    public static void growGrass(ChunkManager level, BlockVector3 pos, NukkitRandom random) {
         for (int i = 0; i < 128; ++i) {
             int num = 0;
 
-            int x = pos.getFloorX();
-            int y = pos.getFloorY() + 1;
-            int z = pos.getFloorZ();
+            int x = pos.getX();
+            int y = pos.getY() + 1;
+            int z = pos.getZ();
 
             while (true) {
                 if (num >= i / 16) {
@@ -40,7 +40,7 @@ public class ObjectTallGrass {
                 y += random.nextRange(-1, 1) * random.nextBoundedInt(3) / 2;
                 z += random.nextRange(-1, 1);
 
-                if (level.getBlockIdAt(0, x, y - 1, z) != Block.GRASS || y > 255 || y < 0) {
+                if (level.getBlockIdAt(0, x, y - 1, z) != Block.GRASS || !level.getHeightRange().isValidBlockY(y)) {
                     break;
                 }
 

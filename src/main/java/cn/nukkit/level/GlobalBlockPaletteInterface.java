@@ -3,6 +3,8 @@ package cn.nukkit.level;
 import it.unimi.dsi.fastutil.ints.Int2ObjectMap;
 import it.unimi.dsi.fastutil.ints.Int2ObjectOpenHashMap;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.NoSuchElementException;
 
 public interface GlobalBlockPaletteInterface {
@@ -52,13 +54,21 @@ public interface GlobalBlockPaletteInterface {
         V1_20_50(630, false),
         ;
 
+        private static final StaticVersion MINIMUM_AVAILABLE_VERSION = V1_18_30;
+        private static final StaticVersion[] AVAILABLE_VERSIONS;
+
         private static final StaticVersion[] VALUES = StaticVersion.values();
+
         private static final Int2ObjectMap<StaticVersion> versionMap = new Int2ObjectOpenHashMap<>();
         private static final Int2ObjectMap<StaticVersion> versionMapNetEase = new Int2ObjectOpenHashMap<>();
 
         static {
-            for (int i = 0; i < VALUES.length; i++) {
-                StaticVersion version = VALUES[i];
+            List<StaticVersion> availableVersions = new ArrayList<>(VALUES.length);
+            for (StaticVersion version : VALUES) {
+                if (version.getProtocol() >= MINIMUM_AVAILABLE_VERSION.getProtocol()) {
+                    availableVersions.add(version);
+                }
+
                 if (!version.netease) {
                     versionMap.put(version.protocol, version);
                     StaticVersion nextIntl = findNextVersion(version, false);
@@ -76,6 +86,7 @@ public interface GlobalBlockPaletteInterface {
                     }
                 }
             }
+            AVAILABLE_VERSIONS = availableVersions.toArray(new StaticVersion[0]);
         }
 
         private static StaticVersion findNextVersion(StaticVersion version, boolean netease) {
@@ -111,6 +122,9 @@ public interface GlobalBlockPaletteInterface {
             return VALUES;
         }
 
+        public static StaticVersion[] getAvailableVersions() {
+            return AVAILABLE_VERSIONS;
+        }
     }
 
 }

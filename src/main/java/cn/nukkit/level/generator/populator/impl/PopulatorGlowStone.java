@@ -12,7 +12,7 @@ public class PopulatorGlowStone extends Populator {
         int x = random.nextRange(chunkX << 4, (chunkX << 4) + 15);
         int z = random.nextRange(chunkZ << 4, (chunkZ << 4) + 15);
         int y = this.getHighestWorkableBlock(chunk, x & 0xF, z & 0xF);
-        if (y != -1 && chunk.getBlockId(0, x & 0xf, y, z & 0xf) != NETHERRACK) {
+        if (y != Integer.MIN_VALUE && chunk.getBlockId(0, x & 0xf, y, z & 0xf) != NETHERRACK) {
             int count = random.nextRange(40, 60);
             for (int i = 0; i < count; i++) {
                 level.setBlockAt(0, x + (random.nextBoundedInt(7) - 3), y + (random.nextBoundedInt(9) - 4), z + (random.nextBoundedInt(7) - 3), GLOWSTONE);
@@ -29,6 +29,6 @@ public class PopulatorGlowStone extends Populator {
                 break;
             }
         }
-        return y == 0 ? -1 : y;
+        return y == 0 ? Integer.MIN_VALUE : y;
     }
 }

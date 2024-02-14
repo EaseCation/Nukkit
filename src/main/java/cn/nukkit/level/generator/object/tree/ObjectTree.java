@@ -96,8 +96,8 @@ public abstract class ObjectTree {
         this.placeTrunk(level, x, y, z, random, this.getTreeHeight() - 1);
 
         for (int yy = y - 3 + this.getTreeHeight(); yy <= y + this.getTreeHeight(); ++yy) {
-            double yOff = yy - (y + this.getTreeHeight());
-            int mid = (int) (1 - yOff / 2);
+            int yOff = yy - (y + this.getTreeHeight());
+            int mid = 1 - yOff / 2;
             for (int xx = x - mid; xx <= x + mid; ++xx) {
                 int xOff = Math.abs(xx - x);
                 for (int zz = z - mid; zz <= z + mid; ++zz) {

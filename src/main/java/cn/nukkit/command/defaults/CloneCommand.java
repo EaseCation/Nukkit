@@ -9,6 +9,7 @@ import cn.nukkit.command.data.CommandParamOption;
 import cn.nukkit.command.data.CommandParamType;
 import cn.nukkit.command.data.CommandParameter;
 import cn.nukkit.command.exceptions.CommandSyntaxException;
+import cn.nukkit.level.HeightRange;
 import cn.nukkit.level.Level;
 import cn.nukkit.level.Position;
 import cn.nukkit.math.AxisAlignedBB;
@@ -84,8 +85,9 @@ public class CloneCommand extends VanillaCommand {
             Position to = new Position(destination.getX() + (blocksAABB.getMaxX() - blocksAABB.getMinX()), destination.getY() + (blocksAABB.getMaxY() - blocksAABB.getMinY()), destination.getZ() + (blocksAABB.getMaxZ() - blocksAABB.getMinZ()));
             AxisAlignedBB destinationAABB = new SimpleAxisAlignedBB(Math.min(destination.getX(), to.getX()), Math.min(destination.getY(), to.getY()), Math.min(destination.getZ(), to.getZ()), Math.max(destination.getX(), to.getX()), Math.max(destination.getY(), to.getY()), Math.max(destination.getZ(), to.getZ()));
             Level level = begin.getLevel();
+            HeightRange heightRange = level.getHeightRange();
 
-            if (blocksAABB.getMinY() < level.getMinHeight() || blocksAABB.getMaxY() > level.getMaxHeight() || destinationAABB.getMinY() < level.getMinHeight() || destinationAABB.getMaxY() > level.getMaxHeight()) {
+            if (blocksAABB.getMinY() < heightRange.getMinY() || blocksAABB.getMaxY() > heightRange.getMaxY() || destinationAABB.getMinY() < heightRange.getMinY() || destinationAABB.getMaxY() > heightRange.getMaxY()) {
                 sender.sendMessage(TextFormat.RED + "Cannot access blocks outside of the world");
                 return true;
             }

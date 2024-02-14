@@ -74,7 +74,7 @@ public abstract class BlockMushroom extends BlockFlowable {
 
         BigMushroom generator = new BigMushroom(getType());
 
-        if (generator.generate(this.level, NukkitRandom.current(), this)) {
+        if (generator.generate(this.level, NukkitRandom.current(), this.asBlockVector3())) {
             return true;
         } else {
             this.level.setBlock(this, this, true, false);

@@ -56,7 +56,7 @@ public class BlockGrass extends BlockDirt {
                 item.count--;
             }
             this.level.addParticle(new BoneMealParticle(this));
-            ObjectTallGrass.growGrass(this.getLevel(), this, NukkitRandom.current());
+            ObjectTallGrass.growGrass(this.getLevel(), this.asBlockVector3(), NukkitRandom.current());
             return true;
         } else if (item.isHoe()) {
             if (player != null && !player.isCreative()) {

@@ -8,6 +8,7 @@ import cn.nukkit.level.generator.object.BasicGenerator;
 import cn.nukkit.level.generator.object.tree.*;
 import cn.nukkit.level.particle.BoneMealParticle;
 import cn.nukkit.math.BlockFace;
+import cn.nukkit.math.BlockVector3;
 import cn.nukkit.math.NukkitRandom;
 import cn.nukkit.math.Vector3;
 import cn.nukkit.utils.BlockColor;
@@ -180,7 +181,7 @@ public class BlockSapling extends BlockFlowable {
             this.level.setBlock(this, get(AIR), true, false);
         }
 
-        if (!generator.generate(this.level, NukkitRandom.current(), this.add(x, 0, z))) {
+        if (!generator.generate(this.level, NukkitRandom.current(), new BlockVector3(this.getFloorX() + x, this.getFloorY(), this.getFloorZ() + z))) {
             if (bigTree) {
                 this.level.setBlock(this.add(x, 0, z), this, true, false);
                 this.level.setBlock(this.add(x + 1, 0, z), this, true, false);

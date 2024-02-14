@@ -2,6 +2,7 @@ package cn.nukkit.item.enchantment.protection;
 
 import cn.nukkit.event.entity.EntityDamageEvent;
 import cn.nukkit.event.entity.EntityDamageEvent.DamageCause;
+import cn.nukkit.item.enchantment.EnchantmentNames;
 
 /**
  * author: MagicDroidX
@@ -10,7 +11,7 @@ import cn.nukkit.event.entity.EntityDamageEvent.DamageCause;
 public class EnchantmentProtectionProjectile extends EnchantmentProtection {
 
     public EnchantmentProtectionProjectile() {
-        super(PROJECTILE_PROTECTION, "projectile_protection", "projectile", Rarity.UNCOMMON, TYPE.PROJECTILE);
+        super(PROJECTILE_PROTECTION, EnchantmentNames.PROJECTILE_PROTECTION, "projectile", Rarity.UNCOMMON, TYPE.PROJECTILE);
     }
 
     @Override

@@ -12,6 +12,7 @@ import cn.nukkit.math.BlockFace;
 import cn.nukkit.math.Vector3;
 import cn.nukkit.network.protocol.LevelEventPacket;
 import cn.nukkit.network.protocol.LevelSoundEventPacket;
+import cn.nukkit.utils.Hash;
 import it.unimi.dsi.fastutil.longs.Long2ByteMap;
 import it.unimi.dsi.fastutil.longs.Long2ByteOpenHashMap;
 
@@ -375,7 +376,7 @@ public abstract class BlockLiquid extends BlockTransparentMeta {
                 ++z;
             }
 
-            long hash = Level.blockHash(x, y, z);
+            long hash = Hash.hashBlockPos(x, y, z);
             byte status = this.flowCostVisited.get(hash);
             if (status == Byte.MIN_VALUE) {
                 Block blockSide = this.level.getBlock(x, y, z);
@@ -444,12 +445,12 @@ public abstract class BlockLiquid extends BlockTransparentMeta {
 
             Block block = this.level.getBlock(x, y, z);
             if (!this.canFlowInto(block) || this.level.getExtraBlock(x, y, z).isLiquid()) {
-                this.flowCostVisited.put(Level.blockHash(x, y, z), BLOCKED);
+                this.flowCostVisited.put(Hash.hashBlockPos(x, y, z), BLOCKED);
             } else if (isLiquidContainer(this.level.getBlock(x, y - 1, z))) {
-                this.flowCostVisited.put(Level.blockHash(x, y, z), CAN_FLOW_DOWN);
+                this.flowCostVisited.put(Hash.hashBlockPos(x, y, z), CAN_FLOW_DOWN);
                 flowCost[j] = maxCost = 0;
             } else if (maxCost > 0) {
-                this.flowCostVisited.put(Level.blockHash(x, y, z), CAN_FLOW);
+                this.flowCostVisited.put(Hash.hashBlockPos(x, y, z), CAN_FLOW);
                 flowCost[j] = this.calculateFlowCost(x, y, z, 1, maxCost, j ^ 0x01, j ^ 0x01);
                 maxCost = Math.min(maxCost, flowCost[j]);
             }

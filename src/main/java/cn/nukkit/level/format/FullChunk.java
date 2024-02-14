@@ -3,10 +3,11 @@ package cn.nukkit.level.format;
 import cn.nukkit.block.Block;
 import cn.nukkit.blockentity.BlockEntity;
 import cn.nukkit.entity.Entity;
+import cn.nukkit.level.HeightRange;
 import cn.nukkit.level.biome.Biome;
 import cn.nukkit.level.format.LevelProviderManager.LevelProviderHandle;
 import cn.nukkit.level.util.PalettedSubChunkStorage;
-import com.google.common.annotations.Beta;
+import cn.nukkit.utils.BinaryStream;
 import it.unimi.dsi.fastutil.ints.Int2IntMap;
 
 import java.io.IOException;
@@ -89,25 +90,29 @@ public interface FullChunk extends Cloneable {
 
     int getBiomeId(int x, int z);
 
-    @Beta
     default int getBiomeId(int x, int y, int z) {
         return getBiomeId(x, z);
     }
 
-    void setBiomeId(int x, int z, byte biomeId);
+    void setBiomeId(int x, int z, int biomeId);
 
-    @Beta
-    default void setBiomeId(int x, int y, int z, byte biomeId) {
+    default void setBiomeId(int x, int y, int z, int biomeId) {
         this.setBiomeId(x, z, biomeId);
     }
 
-    default void setBiomeId(int x, int z, int biomeId)  {
-        setBiomeId(x, z, (byte) biomeId);
+    default void setBiome(int x, int z, Biome biome) {
+        setBiomeId(x, z, biome.getId());
     }
 
-    default void setBiome(int x, int z, Biome biome) {
-        setBiomeId(x, z, (byte) biome.getId());
+    default void fillBiome(int biomeId) {
+        for (int x = 0; x < 16; x++) {
+            for (int z = 0; z < 16; z++) {
+                setBiomeId(x, z, biomeId);
+            }
+        }
     }
+
+    void writeBiomeTo(BinaryStream stream, boolean network);
 
     boolean isLightPopulated();
 
@@ -192,9 +197,7 @@ public interface FullChunk extends Cloneable {
         return false;
     }
 
-    int getMaxHeight();
-
-    int getMinHeight();
+    HeightRange getHeightRange();
 
     default void fixCorruptedBlockEntities() {
     }

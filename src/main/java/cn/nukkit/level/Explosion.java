@@ -156,7 +156,7 @@ public class Explosion {
                             vBlock.x = pointerX >= x ? x : x - 1;
                             vBlock.y = pointerY >= y ? y : y - 1;
                             vBlock.z = pointerZ >= z ? z : z - 1;
-                            if (vBlock.y < level.getMinHeight() || vBlock.y > level.getMaxHeight()) {
+                            if (!level.getHeightRange().isValidBlockY(vBlock.y)) {
                                 break;
                             }
                             Block block = this.level.getBlock(vBlock);

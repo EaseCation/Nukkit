@@ -127,7 +127,7 @@ public class BlockDripleafSmall extends BlockTransparentMeta implements Faceable
 
             level.addParticle(new BoneMealParticle(this));
 
-            int maxHeight = level.getMaxHeight();
+            int maxHeight = level.getHeightRange().getMaxY() - 1;
             int thisX = getFloorX();
             int thisY = getFloorY();
             int thisZ = getFloorZ();

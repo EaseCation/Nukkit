@@ -2,6 +2,7 @@ package cn.nukkit.item.enchantment.protection;
 
 import cn.nukkit.event.entity.EntityDamageEvent;
 import cn.nukkit.event.entity.EntityDamageEvent.DamageCause;
+import cn.nukkit.item.enchantment.EnchantmentNames;
 
 /**
  * author: MagicDroidX
@@ -10,7 +11,7 @@ import cn.nukkit.event.entity.EntityDamageEvent.DamageCause;
 public class EnchantmentProtectionExplosion extends EnchantmentProtection {
 
     public EnchantmentProtectionExplosion() {
-        super(BLAST_PROTECTION, "blast_protection", "explosion", Rarity.RARE, TYPE.EXPLOSION);
+        super(BLAST_PROTECTION, EnchantmentNames.BLAST_PROTECTION, "explosion", Rarity.RARE, TYPE.EXPLOSION);
     }
 
     @Override

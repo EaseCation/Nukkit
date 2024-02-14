@@ -53,8 +53,7 @@ import cn.nukkit.level.*;
 import cn.nukkit.level.GlobalBlockPaletteInterface.StaticVersion;
 import cn.nukkit.level.format.FullChunk;
 import cn.nukkit.level.format.generic.BaseFullChunk;
-import cn.nukkit.level.format.generic.ChunkBlobCache;
-import cn.nukkit.level.format.generic.ChunkPacketCache;
+import cn.nukkit.level.format.generic.ChunkCachedData;
 import cn.nukkit.level.particle.PunchBlockParticle;
 import cn.nukkit.level.util.AroundPlayerChunkComparator;
 import cn.nukkit.math.*;
@@ -63,11 +62,9 @@ import cn.nukkit.nbt.NBTIO;
 import cn.nukkit.nbt.tag.CompoundTag;
 import cn.nukkit.nbt.tag.DoubleTag;
 import cn.nukkit.nbt.tag.ListTag;
-import cn.nukkit.network.Network;
 import cn.nukkit.network.PacketViolationReason;
 import cn.nukkit.network.SourceInterface;
 import cn.nukkit.network.protocol.*;
-import cn.nukkit.network.protocol.BatchPacket.Track;
 import cn.nukkit.network.protocol.types.ContainerIds;
 import cn.nukkit.network.protocol.types.NetworkInventoryAction;
 import cn.nukkit.permission.PermissibleBase;
@@ -925,7 +922,7 @@ public class Player extends EntityHuman implements CommandSender, InventoryHolde
         }
     }
 
-    public void sendChunk(int x, int z, int subChunkCount, ChunkBlobCache chunkBlobCache, DataPacket packet) {
+    public void sendChunk(int x, int z, int subChunkCount, ChunkCachedData cachedData, DataPacket packet) {
         if (!this.connected) {
             return;
         }
@@ -951,7 +948,7 @@ public class Player extends EntityHuman implements CommandSender, InventoryHolde
         }
     }
 
-    public void sendChunk(int x, int z, int subChunkCount, ChunkBlobCache chunkBlobCache, byte[] payload, byte[] subModePayload) {
+    public void sendChunk(int x, int z, int subChunkCount, ChunkCachedData cachedData, byte[] payload, byte[] subModePayload) {
         if (!this.connected) {
             return;
         }
@@ -1211,15 +1208,13 @@ public class Player extends EntityHuman implements CommandSender, InventoryHolde
             return false;
         }
 
-        {
-            DataPacketSendEvent ev = new DataPacketSendEvent(this, packet);
-            this.server.getPluginManager().callEvent(ev);
-            if (ev.isCancelled()) {
-                return false;
-            }
-
-            this.interfaz.putPacket(this, packet, false, true);
+        DataPacketSendEvent ev = new DataPacketSendEvent(this, packet);
+        this.server.getPluginManager().callEvent(ev);
+        if (ev.isCancelled()) {
+            return false;
         }
+
+        this.interfaz.putPacket(this, packet, false, true);
         return true;
     }
 
@@ -1844,7 +1839,8 @@ public class Player extends EntityHuman implements CommandSender, InventoryHolde
             }
         }
 
-        if (!revert && !isSpectator() && this.y >= level.getMinHeight() + 1 && this.y <= level.getMaxHeight() && deltaXZ > Mth.EPSILON) {
+        HeightRange heightRange = level.getHeightRange();
+        if (!revert && !isSpectator() && this.y >= heightRange.getMinY() + 1 && this.y < heightRange.getMaxY() && deltaXZ > Mth.EPSILON) {
             int frostWalker = inventory.getBoots().getEnchantmentLevel(Enchantment.FROST_WALKER);
             if (frostWalker > 0) {
                 int playerX = getFloorX();
@@ -5587,40 +5583,6 @@ public class Player extends EntityHuman implements CommandSender, InventoryHolde
         return this.isConnected();
     }
 
-    /**
-     * @deprecated Use {@link Level#getChunkCacheFromData}.
-     */
-    @Deprecated
-    public static BatchPacket getChunkCacheFromData(int chunkX, int chunkZ, byte[] payload) {
-        return getChunkCacheFromData(chunkX, chunkZ, payload, false);
-    }
-
-    /**
-     * @deprecated Use {@link Level#getChunkCacheFromData}.
-     */
-    @Deprecated
-    public static BatchPacket getChunkCacheFromData(int chunkX, int chunkZ, byte[] payload, boolean zlibRaw) {
-        FullChunkDataPacket pk = new FullChunkDataPacket();
-        pk.chunkX = chunkX;
-        pk.chunkZ = chunkZ;
-        pk.data = payload;
-        pk.tryEncode();
-
-        BatchPacket batch = new BatchPacket();
-        byte[][] batchPayload = new byte[2][];
-        byte[] buf = pk.getBuffer();
-        batchPayload[0] = Binary.writeUnsignedVarInt(buf.length);
-        batchPayload[1] = buf;
-        byte[] data = Binary.appendBytes(batchPayload);
-        try {
-            batch.payload = zlibRaw ? Network.deflateRaw(data, Server.getInstance().networkCompressionLevel) : Zlib.deflate(data, Server.getInstance().networkCompressionLevel);
-        } catch (Exception e) {
-            throw new RuntimeException(e);
-        }
-        batch.tracks = new Track[]{new Track(pk.pid(), pk.getCount())};
-        return batch;
-    }
-
     private boolean foodEnabled = true;
 
     public boolean isFoodEnabled() {
@@ -6019,14 +5981,14 @@ public class Player extends EntityHuman implements CommandSender, InventoryHolde
      * 发送未缓存在内存的子区块.
      * @since 1.18.0
      */
-    public void sendSubChunks(int dimension, int x, int z, int subChunkCount, ChunkBlobCache blobCache, Map<StaticVersion, byte[][]> payload, byte[] heightMapType, byte[][] heightMap) {
+    public void sendSubChunks(int dimension, int x, int z, int subChunkCount, ChunkCachedData cachedData, Map<StaticVersion, byte[][]> payload, byte[] heightMapType, byte[][] heightMap) {
     }
 
     /**
      * 发送缓存在内存的子区块.
      * @since 1.18.0
      */
-    public void sendSubChunks(int dimension, int x, int z, int subChunkCount, ChunkBlobCache blobCache, ChunkPacketCache packetCache, byte[] heightMapType, byte[][] heightMap) {
+    public void sendSubChunks(int dimension, int x, int z, int subChunkCount, ChunkCachedData cachedData, byte[] heightMapType, byte[][] heightMap) {
     }
 
     public void onSubChunkRequestFail(int dimension, int x, int z) {

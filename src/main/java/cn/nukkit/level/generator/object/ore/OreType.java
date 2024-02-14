@@ -1,6 +1,7 @@
 package cn.nukkit.level.generator.object.ore;
 
 import cn.nukkit.block.Block;
+import cn.nukkit.level.HeightRange;
 import cn.nukkit.level.format.FullChunk;
 import cn.nukkit.math.Mth;
 import cn.nukkit.math.NukkitRandom;
@@ -57,7 +58,8 @@ public class OreType {
             int maxY = Mth.floor(scaleY + randVec2 / 2.0D);
             int maxZ = Mth.floor(scaleZ + randVec1 / 2.0D);
 
-            if (minY < 0 || maxY > 255) {
+            HeightRange heightRange = chunk.getHeightRange();
+            if (minY < heightRange.getMinY() || maxY >= heightRange.getMaxY()) {
                 continue;
             }
 

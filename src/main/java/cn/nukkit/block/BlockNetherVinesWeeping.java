@@ -45,7 +45,7 @@ public class BlockNetherVinesWeeping extends BlockNetherVines {
             head = below;
         }
 
-        int minHeight = level.getMinHeight();
+        int minHeight = level.getHeightRange().getMinY();
         int headY = head.getFloorY();
         if (headY <= minHeight) {
             return;

@@ -18,7 +18,6 @@ import java.util.Objects;
 import java.util.concurrent.atomic.AtomicInteger;
 
 import static cn.nukkit.GameVersion.*;
-import static cn.nukkit.SharedConstants.ENABLE_ITEM_NAME_PERSISTENCE;
 import static cn.nukkit.item.ItemID.*;
 
 @Log4j2
@@ -670,9 +669,6 @@ public final class Items {
      * @param version min required base game version
      */
     private static Class<? extends Item> registerNewItem(String name, int id, Class<? extends Item> clazz, ItemFactory factory, GameVersion version) {
-        if (!ENABLE_ITEM_NAME_PERSISTENCE) {
-            return null;
-        }
         if (!version.isAvailable()) {
             return null;
         }
@@ -684,9 +680,6 @@ public final class Items {
      * @param version min required base game version
      */
     private static Class<? extends Item> registerNewItem(String name, int id, Class<? extends Item> clazz, ItemFactory factory, int maxAuxVal, GameVersion version) {
-        if (!ENABLE_ITEM_NAME_PERSISTENCE) {
-            return null;
-        }
         if (!version.isAvailable()) {
             return null;
         }
@@ -698,9 +691,6 @@ public final class Items {
      * @param version min required base game version
      */
     private static void registerNewItemAux(String name, int id, int meta, GameVersion version) {
-        if (!ENABLE_ITEM_NAME_PERSISTENCE) {
-            return;
-        }
         if (!version.isAvailable()) {
             return;
         }

@@ -203,7 +203,7 @@ public class DeveloperCommand extends Command {
                     pos.level = sender.getServer().getDefaultLevel();
                 }
 
-                if (!pos.level.isValidHeight(pos.getFloorY())) {
+                if (!pos.level.getHeightRange().isValidBlockY(pos.getFloorY())) {
                     sender.sendMessage(new TranslationContainer("commands.setblock.outOfWorld"));
                     return false;
                 }
@@ -230,8 +230,9 @@ public class DeveloperCommand extends Command {
                     int x = pos.getFloorX();
                     int z = pos.getFloorZ();
                     int height = pos.getLevel().getHeightMap(x, z);
+                    int rawValue = height + pos.getLevel().getHeightRange().getYIndexOffset();
 
-                    sender.sendMessage("heightmap: " + x + ", " + z + " = " + height + " (" + (height >> 4) + " | " + (height & 0xf) +  ")");
+                    sender.sendMessage("heightmap: " + x + ", " + z + " = " + height + " (" + (height >> 4) + " | " + (height & 0xf) +  ") " + rawValue);
                     return true;
                 } catch (CommandSyntaxException e) {
                     sender.sendMessage(parser.getErrorMessage());

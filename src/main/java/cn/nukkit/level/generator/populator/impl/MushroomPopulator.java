@@ -2,11 +2,12 @@ package cn.nukkit.level.generator.populator.impl;
 
 import cn.nukkit.block.Block;
 import cn.nukkit.level.ChunkManager;
+import cn.nukkit.level.HeightRange;
 import cn.nukkit.level.format.FullChunk;
 import cn.nukkit.level.generator.object.mushroom.BigMushroom;
 import cn.nukkit.level.generator.populator.type.PopulatorCount;
+import cn.nukkit.math.BlockVector3;
 import cn.nukkit.math.NukkitRandom;
-import cn.nukkit.math.Vector3;
 
 /**
  * @author DaPorkchop_
@@ -27,25 +28,24 @@ public class MushroomPopulator extends PopulatorCount {
         int x = (chunkX << 4) | random.nextBoundedInt(16);
         int z = (chunkZ << 4) | random.nextBoundedInt(16);
         int y = this.getHighestWorkableBlock(level, x, z, chunk);
-        if (y != -1) {
-            new BigMushroom(type).generate(level, random, new Vector3(x, y, z));
+        if (y != Integer.MIN_VALUE) {
+            new BigMushroom(type).generate(level, random, new BlockVector3(x, y, z));
         }
     }
 
     @Override
     protected int getHighestWorkableBlock(ChunkManager level, int x, int z, FullChunk chunk) {
-        int y;
         x &= 0xF;
         z &= 0xF;
-        for (y = 254; y > 0; --y) {
+        HeightRange heightRange = level.getHeightRange();
+        for (int y = heightRange.getMaxY() - 1 - 1; y > heightRange.getMinY(); --y) {
             int b = chunk.getBlockId(0, x, y, z);
             if (b == Block.DIRT || b == Block.GRASS) {
-                break;
+                return y + 1;
             } else if (b != Block.AIR && b != Block.SNOW_LAYER) {
-                return -1;
+                return Integer.MIN_VALUE;
             }
         }
-
-        return ++y;
+        return Integer.MIN_VALUE;
     }
 }

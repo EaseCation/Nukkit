@@ -115,7 +115,7 @@ public class BlockDripleafBig extends BlockTransparentMeta implements Faceable {
                 head = up;
             }
 
-            if (head.getFloorY() + 1 >= level.getMaxHeight()) {
+            if (head.getFloorY() + 1 >= level.getHeightRange().getMaxY() - 1) {
                 return false;
             }
 

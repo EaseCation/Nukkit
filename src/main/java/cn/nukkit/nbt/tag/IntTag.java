@@ -54,7 +54,7 @@ public class IntTag extends NumberTag<Integer> {
 
     @Override
     public String toString() {
-        return "IntTag " + this.getName() + "(data: " + data + ")";
+        return "IntTag " + this.getName() + " (data: " + data + ")";
     }
 
     @Override

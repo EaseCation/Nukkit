@@ -1,11 +1,12 @@
 package cn.nukkit.item.enchantment.crossbow;
 
 import cn.nukkit.item.enchantment.Enchantment;
+import cn.nukkit.item.enchantment.EnchantmentNames;
 
 public class EnchantmentCrossbowPiercing extends EnchantmentCrossbow {
 
     public EnchantmentCrossbowPiercing() {
-        super(Enchantment.PIERCING, "piercing", "crossbowPiercing", Rarity.COMMON);
+        super(Enchantment.PIERCING, EnchantmentNames.PIERCING, "crossbowPiercing", Rarity.COMMON);
     }
 
     @Override

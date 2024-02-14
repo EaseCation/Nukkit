@@ -1,7 +1,6 @@
 package cn.nukkit.level.format.mcregion;
 
-import cn.nukkit.blockentity.BlockEntity;
-import cn.nukkit.blockentity.BlockEntitySpawnable;
+import cn.nukkit.level.HeightRange;
 import cn.nukkit.level.Level;
 import cn.nukkit.level.LevelCreationOptions;
 import cn.nukkit.level.format.ChunkSection;
@@ -15,18 +14,13 @@ import cn.nukkit.level.generator.Generators;
 import cn.nukkit.nbt.NBTIO;
 import cn.nukkit.nbt.tag.CompoundTag;
 import cn.nukkit.scheduler.AsyncTask;
-import cn.nukkit.utils.BinaryStream;
 import cn.nukkit.utils.ChunkException;
-import it.unimi.dsi.fastutil.ints.Int2IntMap;
-import it.unimi.dsi.fastutil.objects.ObjectArrayList;
 import lombok.extern.log4j.Log4j2;
 
 import java.io.File;
 import java.io.IOException;
 import java.nio.ByteOrder;
 import java.nio.file.Files;
-import java.util.Collections;
-import java.util.List;
 import java.util.function.Function;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -38,6 +32,8 @@ import java.util.regex.Pattern;
 @Log4j2
 public class McRegion extends BaseLevelProvider {
     private static final Pattern REGION_REGEX = Pattern.compile("^r\\.(-?[0-9]+)\\.(-?[0-9]+)\\.mcr$");
+
+    static final HeightRange DEFAULT_HEIGHT_RANGE = HeightRange.blockY(0, 128);
 
     public McRegion(Level level, String path) throws IOException {
         super(level, path);
@@ -116,65 +112,7 @@ public class McRegion extends BaseLevelProvider {
     @Deprecated
     @Override
     public AsyncTask requestChunkTask(int x, int z) throws ChunkException {
-        BaseFullChunk chunk = this.getChunk(x, z, false);
-        if (chunk == null) {
-            throw new ChunkException("Invalid Chunk Sent");
-        }
-
-        long timestamp = chunk.getChanges();
-
-        byte[] tiles = new byte[0];
-
-        if (!chunk.getBlockEntities().isEmpty()) {
-            List<CompoundTag> tagList = new ObjectArrayList<>();
-
-            for (BlockEntity blockEntity : chunk.getBlockEntities().values()) {
-                if (blockEntity instanceof BlockEntitySpawnable) {
-                    CompoundTag nbt = ((BlockEntitySpawnable) blockEntity).getSpawnCompound();
-                    if (nbt.isEmpty()) {
-                        continue;
-                    }
-                    tagList.add(nbt);
-                }
-            }
-
-            try {
-                tiles = NBTIO.write(tagList, ByteOrder.LITTLE_ENDIAN, true);
-            } catch (IOException e) {
-                throw new RuntimeException(e);
-            }
-        }
-
-        Int2IntMap extra = chunk.getBlockExtraDataArray();
-        BinaryStream extraData;
-        if (!extra.isEmpty()) {
-            extraData = new BinaryStream();
-            extraData.putLInt(extra.size());
-            for (Int2IntMap.Entry entry : extra.int2IntEntrySet()) {
-                extraData.putLInt(entry.getIntKey());
-                extraData.putLShort(entry.getIntValue());
-            }
-        } else {
-            extraData = null;
-        }
-
-        BinaryStream stream = new BinaryStream();
-        stream.put(chunk.getBlockIdArray());
-        stream.put(chunk.getBlockDataArray());
-        stream.put(chunk.getBlockSkyLightArray());
-        stream.put(chunk.getBlockLightArray());
-        stream.put(chunk.getHeightMapArray());
-        stream.put(chunk.getBiomeIdArray());
-        if (extraData != null) {
-            stream.put(extraData.getBuffer());
-        } else {
-            stream.putLInt(0);
-        }
-        stream.put(tiles);
-
-        byte[] payload = stream.getBuffer();
-        this.getLevel().chunkRequestCallback(timestamp, x, z, 16, null, null, payload, payload, payload, payload, Collections.emptyMap(), Collections.emptyMap(), null, null, null, Collections.emptySet());
-
+        // deprecated
         return null;
     }
 
@@ -327,5 +265,10 @@ public class McRegion extends BaseLevelProvider {
                 log.error("An error occurred while unloading region: {}", regionFile, e);
             }
         }
+    }
+
+    @Override
+    public HeightRange getHeightRange() {
+        return DEFAULT_HEIGHT_RANGE;
     }
 }

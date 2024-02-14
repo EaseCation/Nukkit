@@ -17,7 +17,7 @@ public class PopulatorCactus extends PopulatorSurfaceBlock {
         int x = 1 + random.nextBoundedInt(14);
         int z = 1 + random.nextBoundedInt(14);
         int y = getHighestWorkableBlock(level, x, z, chunk);
-        if (y > 0 && canStay(x, y, z, chunk)) {
+        if (y != Integer.MIN_VALUE && canStay(x, y, z, chunk)) {
             placeBlock(x, y, z, getBlockId(x, z, random, chunk), getBlockMeta(x, z, random, chunk), chunk, random);
         }
     }

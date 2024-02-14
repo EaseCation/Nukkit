@@ -1,19 +1,15 @@
 package cn.nukkit.level.format.generic;
 
-import cn.nukkit.Nukkit;
 import cn.nukkit.Server;
 import cn.nukkit.block.Blocks;
 import cn.nukkit.blockentity.BlockEntity;
 import cn.nukkit.blockentity.BlockEntitySpawnable;
-import cn.nukkit.level.GlobalBlockPalette;
 import cn.nukkit.level.GlobalBlockPaletteInterface.StaticVersion;
+import cn.nukkit.level.HeightRange;
 import cn.nukkit.level.Level;
-import cn.nukkit.level.biome.Biome;
-import cn.nukkit.level.biome.EnumBiome;
 import cn.nukkit.level.format.Chunk;
 import cn.nukkit.level.format.ChunkSection;
-import cn.nukkit.level.util.BitArrayVersion;
-import cn.nukkit.level.util.PalettedSubChunkStorage;
+import cn.nukkit.level.format.LevelProvider;
 import cn.nukkit.nbt.NBTIO;
 import cn.nukkit.nbt.tag.CompoundTag;
 import cn.nukkit.network.protocol.BatchPacket;
@@ -31,11 +27,7 @@ import it.unimi.dsi.fastutil.objects.ObjectArrayList;
 import lombok.extern.log4j.Log4j2;
 
 import java.io.IOException;
-import java.io.OutputStream;
 import java.nio.ByteOrder;
-import java.nio.file.Files;
-import java.nio.file.Paths;
-import java.nio.file.StandardOpenOption;
 import java.util.Arrays;
 import java.util.EnumMap;
 import java.util.EnumSet;
@@ -43,7 +35,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-import static cn.nukkit.SharedConstants.*;
 import static cn.nukkit.level.format.leveldb.LevelDbConstants.*;
 
 @Log4j2
@@ -52,77 +43,32 @@ public class ChunkRequestTask extends AsyncTask<Void> {
 
     private static final byte[] EMPTY = new byte[0];
 
-    public static final int PADDING_SUB_CHUNK_COUNT = 4;
-    public static final byte[] PADDING_SUB_CHUNK_BLOB = new byte[]{
-            8, // sub chunk version
-            0, // no layers - client will treat this as all-air
-    };
-    public static final long PADDING_SUB_CHUNK_HASH = Hash.xxh64(PADDING_SUB_CHUNK_BLOB);
+    private final long timestamp;
+    private final Chunk chunk;
+    private final int chunkX;
+    private final int chunkZ;
+    private final HeightRange heightRange;
+    private final short[] heightmap;
+    private final BlockEntity[] blockEntities;
+    private final Level level;
+    private final Set<StaticVersion> requestedVersions;
 
-    public static final int FULL_COLUMN_NORMAL = 16;
-    public static final int FULL_COLUMN_HALF = FULL_COLUMN_NORMAL / 2; // nether and old world
+    private final Map<StaticVersion, byte[]> fullChunkPayloads = new EnumMap<>(StaticVersion.class);
 
-    public static final long MINIMIZE_BIOME_PALETTES_HASH;
-    public static final byte[] MINIMIZE_BIOME_PALETTES;
-    public static final byte[] MINIMIZE_CHUNK_DATA_NO_CACHE; // biomePalettes + borderBlocks
-    public static final byte[] MINIMIZE_CHUNK_DATA_OLD;
+    private byte[] subRequestModeFullChunkPayload;
+    private final Map<StaticVersion, byte[][]> subChunkPayloads = new EnumMap<>(StaticVersion.class);
 
-    static {
-        BinaryStream stream = new BinaryStream();
-        PalettedSubChunkStorage emptyBiomeStorage = PalettedSubChunkStorage.ofBiome(BitArrayVersion.EMPTY, EnumBiome.OCEAN.id);
-        emptyBiomeStorage.writeTo(stream);
-        byte[] emptyPalette = stream.getBuffer();
-
-        stream.reuse();
-        PalettedSubChunkStorage singletonBiomeStorage = PalettedSubChunkStorage.ofBiome(BitArrayVersion.V0, EnumBiome.OCEAN.id);
-        singletonBiomeStorage.writeTo(stream);
-
-        for (int i = 0; i < 4 + 16 + 4; i++) {
-            stream.put(emptyPalette);
-        }
-        MINIMIZE_BIOME_PALETTES = stream.getBuffer();
-        MINIMIZE_BIOME_PALETTES_HASH = Hash.xxh64(MINIMIZE_BIOME_PALETTES);
-
-        stream.putVarInt(0); // borderBlocks
-        MINIMIZE_CHUNK_DATA_NO_CACHE = stream.getBuffer();
-
-        stream.reuse();
-        stream.put(new byte[16 * 16]); // biome
-        stream.putVarInt(0); // borderBlocks
-        MINIMIZE_CHUNK_DATA_OLD = stream.getBuffer();
-    }
-
-    Chunk chunk;
-    int x;
-    int z;
-    List<BlockEntity> blockEntities;
-    Level level;
-    Set<StaticVersion> requestedVersions;
-
-    boolean success;
-
-    long timestamp;
-    int count;
-
-    ChunkBlobCache chunkBlobCache;
-
-    final Map<StaticVersion, byte[]> payloads = new EnumMap<>(StaticVersion.class);
-    final Map<StaticVersion, byte[][]> subChunkPayloads = new EnumMap<>(StaticVersion.class);
-    byte[] subModePayloadNew; // 1.18.30+
-    byte[] subModePayload;
-    byte[] payload;
-    byte[] payloadOld;
-    ChunkPacketCache chunkPacketCache;
-    byte[] heightmapType;
-    byte[][] heightmapData;
-    boolean[] emptySection;
+    private ChunkCachedData chunkCachedData;
 
     public ChunkRequestTask(Chunk chunk) {
         this.chunk = chunk;
-        x = chunk.getX();
-        z = chunk.getZ();
-        blockEntities = new ObjectArrayList<>(chunk.getBlockEntities().values());
-        level = chunk.getProvider().getLevel();
+        chunkX = chunk.getX();
+        chunkZ = chunk.getZ();
+        heightRange = chunk.getHeightRange();
+        blockEntities = chunk.getBlockEntities().values().toArray(new BlockEntity[0]);
+        heightmap = chunk.getHeightmap().clone();
+        LevelProvider provider = chunk.getProvider();
+        level = provider.getLevel();
         this.requestedVersions = EnumSet.copyOf(PRELOAD_VERSIONS);
         this.requestedVersions.addAll(level.getRequestChunkVersions().keySet());
         timestamp = chunk.getChanges();
@@ -131,46 +77,34 @@ public class ChunkRequestTask extends AsyncTask<Void> {
     @Override
     public void onRun() {
         try {
-            BinaryStream stream = new BinaryStream(8192);
+            int minChunkY = heightRange.getMinChunkY();
+            int maxChunkY = heightRange.getMaxChunkY();
+            int chunkYIndexOffset = heightRange.getChunkYIndexOffset();
+            int yIndexOffset = heightRange.getYIndexOffset();
 
-            stream.reuse();
-            byte[] biomePalette;
-            PalettedSubChunkStorage storage = PalettedSubChunkStorage.ofBiome(toValidBiome(chunk.getBiomeId(0, 0)));
-            for (int x = 0; x < 16; x++) {
-                int xi = x << 8;
-                for (int z = 0; z < 16; z++) {
-                    int xzi = xi | (z << 4);
-                    int biomeId = toValidBiome(chunk.getBiomeId(x, z));
-                    for (int y = 0; y < 16; y++) {
-                        storage.set(xzi | y, biomeId);
-                    }
-                }
-            }
-            storage.writeTo(stream);
-            biomePalette = stream.getBuffer();
-            // right now we don't support 3D natively, so we just 3Dify our 2D biomes so they fill the column
-            for (int i = 0; i < 23; i++) {
-                stream.put(biomePalette);
-            }
-            byte[] biomePalettesNew = stream.getBuffer(); // 1.18.30+
-            byte[] biomePalettes =  Arrays.copyOf(biomePalettesNew, biomePalettesNew.length + biomePalette.length);
-            System.arraycopy(biomePalette, 0, biomePalettes, biomePalettesNew.length, biomePalette.length);
+            BinaryStream stream = new BinaryStream(1024);
 
+            chunk.writeBiomeTo(stream, true);
+            byte[] biome = stream.getBuffer();
+
+            int cnt = 0;
             ChunkSection[] sections = chunk.getSections();
-            for (int i = sections.length - 1; i >= 0; i--) {
-                if (!sections[i].isEmpty()) {
-                    count = i + 1;
+            int topChunkY = maxChunkY - 1;
+            for (; topChunkY >= minChunkY; topChunkY--) {
+                if (!sections[Level.subChunkYtoIndex(topChunkY)].isEmpty()) {
+                    cnt = topChunkY - minChunkY + 1;
                     break;
                 }
             }
-            boolean emptyChunk = count == 0;
-            int extendedCount = emptyChunk ? 0 : PADDING_SUB_CHUNK_COUNT + count;
-            emptySection = new boolean[count];
+            int count = cnt;
 
-            byte[][] subChunkBlockEntities = new byte[PADDING_SUB_CHUNK_COUNT + 16][];
+            boolean emptyChunk = count == 0;
+            boolean[] emptySection = new boolean[count];
+
+            byte[][] subChunkBlockEntities = new byte[count][];
             byte[] fullChunkBlockEntities = EMPTY;
             Arrays.fill(subChunkBlockEntities, EMPTY);
-            if (!emptyChunk && !blockEntities.isEmpty()) {
+            if (!emptyChunk && blockEntities.length != 0) {
                 stream.reuse();
                 List<CompoundTag>[] tagLists = new List[count];
 
@@ -180,17 +114,14 @@ public class ChunkRequestTask extends AsyncTask<Void> {
                             continue;
                         }
                         int subChunkY = blockEntity.getSubChunkY();
-                        if (subChunkY >= tagLists.length) {
+                        int subChunkIndex = Level.yToIndex(subChunkY, chunkYIndexOffset);
+                        if (subChunkIndex >= tagLists.length) {
                             continue;
                         }
-                        if (subChunkY < 0) {
-                            //TODO: unsupported
-                            continue;
-                        }
-                        List<CompoundTag> tagList = tagLists[subChunkY];
+                        List<CompoundTag> tagList = tagLists[subChunkIndex];
                         if (tagList == null) {
                             tagList = new ObjectArrayList<>();
-                            tagLists[subChunkY] = tagList;
+                            tagLists[subChunkIndex] = tagList;
                         }
                         CompoundTag nbt = ((BlockEntitySpawnable) blockEntity).getSpawnCompound();
                         if (nbt.isEmpty()) {
@@ -200,8 +131,8 @@ public class ChunkRequestTask extends AsyncTask<Void> {
                     }
                 }
 
-                for (int i = PADDING_SUB_CHUNK_COUNT; i < extendedCount; i++) {
-                    List<CompoundTag> tagList = tagLists[i - PADDING_SUB_CHUNK_COUNT];
+                for (int i = 0; i < count; i++) {
+                    List<CompoundTag> tagList = tagLists[i];
                     if (tagList == null) {
                         continue;
                     }
@@ -220,284 +151,148 @@ public class ChunkRequestTask extends AsyncTask<Void> {
                 fullChunkBlockEntities = stream.getBuffer();
             }
 
-            short[] heightmap = chunk.getHeightmap();
-            heightmapType = new byte[extendedCount];
-            heightmapData = new byte[extendedCount][];
+            byte[] heightmapType = new byte[count];
+            byte[][] heightmapData = new byte[count][];
 
-            for (int i = 0; i < heightmapData.length; i++) {
-                int chunkY = i - PADDING_SUB_CHUNK_COUNT;
+            for (int chunkY = minChunkY; chunkY <= topChunkY; chunkY++) {
+                int index = Level.yToIndex(chunkY, chunkYIndexOffset);
                 int minY = chunkY << 4;
                 int maxY = ((chunkY + 1) << 4) - 1;
                 int tooLowCount = 0;
                 int tooHighCount = 0;
                 byte[] subChunkHeightmap = new byte[SUB_CHUNK_2D_SIZE];
-                for (int j = 0; j < SUB_CHUNK_2D_SIZE; j++) {
-                    int height = heightmap[j];
-                    if (height == -1) {
-                        height = -4 << 4;
-                    }
-
+                for (int i = 0; i < SUB_CHUNK_2D_SIZE; i++) {
+                    int height = Level.indexToY(heightmap[i], yIndexOffset);
                     if (height < minY) {
-                        subChunkHeightmap[j] = -1;
+                        subChunkHeightmap[i] = -1;
                         ++tooLowCount;
                     } else if (height > maxY) {
-                        subChunkHeightmap[j] = 0xf + 1;
+                        subChunkHeightmap[i] = 0xf + 1;
                         ++tooHighCount;
                     } else {
-                        subChunkHeightmap[j] = (byte) (height & 0xf);
+                        subChunkHeightmap[i] = (byte) (height & 0xf);
                     }
                 }
                 if (tooLowCount == SUB_CHUNK_2D_SIZE) {
-                    heightmapType[i] = SubChunkPacket.HEIGHT_MAP_TYPE_ALL_TOO_LOW;
+                    heightmapType[index] = SubChunkPacket.HEIGHT_MAP_TYPE_ALL_TOO_LOW;
                 } else if (tooHighCount == SUB_CHUNK_2D_SIZE) {
-                    heightmapType[i] = SubChunkPacket.HEIGHT_MAP_TYPE_ALL_TOO_HIGH;
+                    heightmapType[index] = SubChunkPacket.HEIGHT_MAP_TYPE_ALL_TOO_HIGH;
                 } else {
-                    heightmapType[i] = SubChunkPacket.HEIGHT_MAP_TYPE_HAS_DATA;
-                    heightmapData[i] = subChunkHeightmap;
+                    heightmapType[index] = SubChunkPacket.HEIGHT_MAP_TYPE_HAS_DATA;
+                    heightmapData[index] = subChunkHeightmap;
                 }
             }
 
-            Long2ObjectMap<byte[]> clientBlobs = new Long2ObjectOpenHashMap<>(count + 1); // 16 subChunks + 1 biome
-            Long2ObjectMap<byte[]> extendedClientBlobs = new Long2ObjectOpenHashMap<>(extendedCount + 1); // 4 + 16 subChunks + 1 biome
-            Long2ObjectMap<byte[]> extendedClientBlobsNew = new Long2ObjectOpenHashMap<>(extendedCount + 1); // 1.18.30+
+            int blobCount = count + 1; // N subChunks + 1 biome
+            Long2ObjectMap<byte[]> blobs = new Long2ObjectOpenHashMap<>(blobCount);
+            LongList blobIds = new LongArrayList(blobCount);
 
-            LongList blobIds = new LongArrayList(count + 1);
-            LongList extendedBlobIds = new LongArrayList(extendedCount + 1);
-            LongList extendedBlobIdsNew = new LongArrayList(extendedCount + 1); // 1.18.30+
-
-            if (!emptyChunk) {
-                for (int i = 0; i < PADDING_SUB_CHUNK_COUNT; i++) {
-                    extendedBlobIds.add(PADDING_SUB_CHUNK_HASH);
-                    extendedBlobIdsNew.add(PADDING_SUB_CHUNK_HASH);
-                }
-                extendedClientBlobs.put(PADDING_SUB_CHUNK_HASH, PADDING_SUB_CHUNK_BLOB);
-                extendedClientBlobsNew.put(PADDING_SUB_CHUNK_HASH, PADDING_SUB_CHUNK_BLOB);
-            }
-
-            for (int i = 0; i < count; i++) {
+            for (int chunkY = minChunkY; chunkY <= topChunkY; chunkY++) {
                 stream.reuse();
-                emptySection[i] = sections[i].writeToCache(stream, Blocks::getBlockFullNameById);
+                emptySection[Level.yToIndex(chunkY, chunkYIndexOffset)] = sections[Level.subChunkYtoIndex(chunkY)]
+                        .writeToCache(stream, Blocks::getBlockFullNameById);
                 byte[] subChunk = stream.getBuffer();
 
                 long hash = Hash.xxh64(subChunk);
                 blobIds.add(hash);
-                extendedBlobIds.add(hash);
-                clientBlobs.put(hash, subChunk);
-                extendedClientBlobs.put(hash, subChunk);
+                blobs.put(hash, subChunk);
             }
 
-            for (int i = 0; i < count; i++) {
-                stream.reuse();
-                sections[i].writeToCache(stream, GlobalBlockPalette::getNewNameByBlockId); // 1.18.30+
-                byte[] subChunk = stream.getBuffer();
-
-                long hash = Hash.xxh64(subChunk);
-                extendedBlobIdsNew.add(hash);
-                extendedClientBlobsNew.put(hash, subChunk);
-            }
-
-            byte[] biome = chunk.getBiomeIdArray();
             long hash = Hash.xxh64(biome);
             blobIds.add(hash);
-            clientBlobs.put(hash, biome);
-
-            hash = Hash.xxh64(biomePalettes);
-            extendedBlobIds.add(hash);
-            extendedClientBlobs.put(hash, biomePalettes);
-
-            hash = Hash.xxh64(biomePalettesNew);
-            extendedBlobIdsNew.add(hash);
-            extendedClientBlobsNew.put(hash, biomePalettesNew);
+            blobs.put(hash, biome);
 
             stream.reuse();
             stream.putByte((byte) 0);
             stream.put(fullChunkBlockEntities);
-            byte[] clientBlobCachedPayload = stream.getBuffer(); // borderBlocks + blockEntities
+            byte[] cacheModeFullChunkPayload = stream.getBuffer(); // borderBlocks + blockEntities
 
             stream.reuse();
-            stream.put(biomePalettes);
+            stream.put(biome);
             stream.putByte((byte) 0);
-            subModePayload = stream.getBuffer(); // biomePalettes + borderBlocks
+            subRequestModeFullChunkPayload = stream.getBuffer(); // biome + borderBlocks. (without cache)
 
-            stream.reuse();
-            stream.put(biomePalettesNew);
-            stream.putByte((byte) 0);
-            subModePayloadNew = stream.getBuffer();
-
-            chunkBlobCache = new ChunkBlobCache(count, heightmapType, heightmapData, emptySection, blobIds.toLongArray(), extendedBlobIds.toLongArray(), extendedBlobIdsNew.toLongArray(), clientBlobs, extendedClientBlobs, extendedClientBlobsNew, clientBlobCachedPayload, subChunkBlockEntities);
-
-            for (StaticVersion version : StaticVersion.getValues()) {
-                if (ENABLE_BLOCK_STATE_PERSISTENCE && version.getProtocol() < StaticVersion.V1_17_40.getProtocol()) {
-                    // drop support for unavailable versions
-                    continue;
-                }
-
+            for (StaticVersion version : StaticVersion.getAvailableVersions()) {
                 if (!requestedVersions.contains(version)) {
                     continue;
                 }
 
-                byte[][] blockStorages = new byte[extendedCount][];
-                payloads.put(version, encodeChunk(chunk, sections, count, blockStorages, biomePalettesNew, biomePalettes, fullChunkBlockEntities, version));
-
-                if (version.getProtocol() >= StaticVersion.V1_18.getProtocol()) {
-                    if (!emptyChunk && fullChunkBlockEntities.length != 0) {
-                        for (int y = PADDING_SUB_CHUNK_COUNT; y < extendedCount; y++) {
-                            byte[] blockEntities = subChunkBlockEntities[y];
-                            if (blockEntities.length == 0) {
-                                continue;
-                            }
-                            byte[] blockStorage = blockStorages[y];
-
-                            stream.reuse();
-                            stream.put(blockStorage);
-                            stream.put(blockEntities);
-                            blockStorages[y] = stream.getBuffer(); // subChunkBlocks + subChunkBlockEntities
-                        }
-                    }
-
-                    if (DUMP_NETWORK_SUB_CHUNK && version == StaticVersion.getValues()[StaticVersion.getValues().length - 1]) {
-                        for (int y = 0; y < extendedCount; y++) {
-                            try (OutputStream out = Files.newOutputStream(Paths.get(Nukkit.DATA_PATH).resolve("debug")
-                                    .resolve("subchunk_" + x + "_" + y + "_" + z + ".blob"), StandardOpenOption.CREATE, StandardOpenOption.TRUNCATE_EXISTING)) {
-                                out.write(blockStorages[y]);
-                            } catch (Exception e) {
-                                log.error("Failed to dump sub chunk network data", e);
-                            }
-                        }
-                    }
-
-                    this.subChunkPayloads.put(version, blockStorages);
+                byte[][] blockStorages = new byte[count][];
+                stream.reuse();
+                for (int chunkY = minChunkY; chunkY <= topChunkY; chunkY++) {
+                    int mark = stream.getCount();
+                    sections[Level.subChunkYtoIndex(chunkY)].writeTo(stream, version);
+                    blockStorages[Level.yToIndex(chunkY, chunkYIndexOffset)] = stream.getBuffer(mark);
                 }
+                stream.put(biome);
+                stream.putByte((byte) 0); // borderBlocks
+                stream.put(fullChunkBlockEntities);
+                fullChunkPayloads.put(version, stream.getBuffer());
+
+                if (!emptyChunk && fullChunkBlockEntities.length != 0) {
+                    for (int i = 0; i < count; i++) {
+                        byte[] blockEntities = subChunkBlockEntities[i];
+                        if (blockEntities.length == 0) {
+                            continue;
+                        }
+                        byte[] blockStorage = blockStorages[i];
+
+                        stream.reuse();
+                        stream.put(blockStorage);
+                        stream.put(blockEntities);
+                        blockStorages[i] = stream.getBuffer(); // subChunkBlocks + subChunkBlockEntities
+                    }
+                }
+
+                this.subChunkPayloads.put(version, blockStorages);
             }
 
-            payload = encodeChunk(false, chunk, sections, count, fullChunkBlockEntities);
-            payloadOld = encodeChunk(true, chunk, sections, count, fullChunkBlockEntities);
-
+            ChunkPacketCache packetCache;
             if (level.isCacheChunks()) {
                 Map<StaticVersion, BatchPacket> packets = new EnumMap<>(StaticVersion.class);
                 Map<StaticVersion, BatchPacket[]> subPackets = new EnumMap<>(StaticVersion.class);
                 Map<StaticVersion, SubChunkPacket[]> subPacketsUncompressed = new EnumMap<>(StaticVersion.class);
 
-                payloads.forEach((version, payload) -> {
-                    int actualCount = count;
-                    if (version.getProtocol() >= StaticVersion.V1_18.getProtocol()) {
-                        actualCount = extendedCount;
-
-                        byte[][] subChunkData = subChunkPayloads.get(version);
-                        BatchPacket[] compressed = new BatchPacket[extendedCount];
-                        SubChunkPacket[] uncompressed = new SubChunkPacket[extendedCount];
-                        for (int i = 0; i < extendedCount; i++) {
-                            int y = i - PADDING_SUB_CHUNK_COUNT;
-                            SubChunkPacket packet;
-                            if (version.getProtocol() >= StaticVersion.V1_18_10.getProtocol()) {
-                                packet = new SubChunkPacket11810();
-                                if (ENABLE_EMPTY_SUB_CHUNK_NETWORK_OPTIMIZATION && (y < 0 || emptySection[y])) {
-                                    packet.requestResult = SubChunkPacket.REQUEST_RESULT_SUCCESS_ALL_AIR;
-                                }
-                            } else {
-                                packet = new SubChunkPacket();
-                            }
-                            compressed[i] = Level.getSubChunkCacheFromData(packet, Level.DIMENSION_OVERWORLD, x, y, z, subChunkData[i], heightmapType[i], heightmapData[i]);
-                            packet.setBuffer(null, 0); // release buffer
-                            uncompressed[i] = packet;
+                fullChunkPayloads.forEach((version, payload) -> {
+                    byte[][] subChunkData = subChunkPayloads.get(version);
+                    BatchPacket[] compressed = new BatchPacket[count];
+                    SubChunkPacket[] uncompressed = new SubChunkPacket[count];
+                    for (int i = 0; i < count; i++) {
+                        SubChunkPacket packet = new SubChunkPacket11810();
+                        if (emptySection[i]) {
+                            packet.requestResult = SubChunkPacket.REQUEST_RESULT_SUCCESS_ALL_AIR;
                         }
-                        subPackets.put(version, compressed);
-                        subPacketsUncompressed.put(version, uncompressed);
+                        compressed[i] = Level.getSubChunkCacheFromData(packet, Level.DIMENSION_OVERWORLD, chunkX, Level.indexToY(i, chunkYIndexOffset), chunkZ, subChunkData[i], heightmapType[i], heightmapData[i]);
+                        packet.setBuffer(null, 0); // release buffer
+                        uncompressed[i] = packet;
                     }
-                    packets.put(version, Level.getChunkCacheFromData(x, z, actualCount, payload, false, true));
+                    subPackets.put(version, compressed);
+                    subPacketsUncompressed.put(version, uncompressed);
+
+                    packets.put(version, Level.getChunkCacheFromData(chunkX, chunkZ, count, payload));
                 });
 
-                chunkPacketCache = new ChunkPacketCache(
+                packetCache = new ChunkPacketCache(
                         packets,
-                        subPackets,
+                        Level.getChunkCacheFromData(chunkX, chunkZ, LevelChunkPacket.CLIENT_REQUEST_TRUNCATED_COLUMN_FAKE_COUNT, count, subRequestModeFullChunkPayload), subPackets,
                         subPacketsUncompressed,
-                        Level.getChunkCacheFromData(x, z, LevelChunkPacket.CLIENT_REQUEST_FULL_COLUMN_FAKE_COUNT, subModePayloadNew, false, true),
-                        Level.getChunkCacheFromData(x, z, LevelChunkPacket.CLIENT_REQUEST_FULL_COLUMN_FAKE_COUNT, subModePayload, false, true),
-                        Level.getChunkCacheFromData(x, z, LevelChunkPacket.CLIENT_REQUEST_TRUNCATED_COLUMN_FAKE_COUNT, extendedCount, subModePayloadNew, false, true),
-                        Level.getChunkCacheFromData(x, z, LevelChunkPacket.CLIENT_REQUEST_TRUNCATED_COLUMN_FAKE_COUNT, extendedCount, subModePayload, false, true),
-                        Level.getChunkCacheFromData(x, z, count, payload, false, true),
-                        Level.getChunkCacheFromData(x, z, count, payload, false, false),
-                        Level.getChunkCacheFromData(x, z, count, payloadOld, true, false),
                         requestedVersions);
+            } else {
+                packetCache = null;
             }
-            success = true;
+
+            chunkCachedData = new ChunkCachedData(count, heightmapType, heightmapData, emptySection, new ChunkBlobCache(blobIds.toLongArray(), blobs, cacheModeFullChunkPayload, subChunkBlockEntities), packetCache);
         } catch (Exception e) {
-            log.warn("Chunk async load failed (network serialization)", e);
+            log.warn("Chunk network serialization failed: [" + chunkX + "," + chunkZ + "] " + level.getFolderName(), e);
         }
     }
 
     @Override
     public void onCompletion(Server server) {
-        if (!success) {
+        if (chunkCachedData == null) {
             return;
         }
-        level.chunkRequestCallback(timestamp, x, z, count, chunkBlobCache, chunkPacketCache, payload, payloadOld, subModePayload, subModePayloadNew, payloads, subChunkPayloads, heightmapType, heightmapData, emptySection, requestedVersions);
-    }
-
-    private static byte[] encodeChunk(boolean isOld, Chunk chunk, ChunkSection[] sections, int count, byte[] blockEntities) {
-        BinaryStream stream = new BinaryStream();
-        stream.reuse();
-        if (isOld) {
-            stream.putByte((byte) count);
-        }
-        for (int i = 0; i < count; i++) {
-            sections[i].writeTo(stream);
-        }
-        if (isOld) {
-            for (short height : chunk.getHeightmap()) {
-                stream.putLShort(height);
-            }
-        }
-        stream.put(chunk.getBiomeIdArray());
-        stream.putByte((byte) 0);
-        stream.put(blockEntities);
-
-//        ByteBuf buf = Unpooled.wrappedBuffer(stream.getBuffer());
-//        log.info(ByteBufUtil.prettyHexDump(buf), new Throwable("version=" + null + ", chunkX=" + chunk.getX() + ", chunkZ=" + chunk.getZ() + ", length=" + buf.readableBytes())));
-//        buf.release();
-
-        return stream.getBuffer();
-    }
-
-    private static byte[] encodeChunk(Chunk chunk, ChunkSection[] sections, int count, byte[][] blockStorages, byte[] biomePalettesNew, byte[] biomePalettes, byte[] blockEntities, StaticVersion version) {
-        BinaryStream stream = new BinaryStream();
-        stream.reuse();
-        boolean extendedLevel = version.getProtocol() >= StaticVersion.V1_18.getProtocol();
-        if (extendedLevel && blockStorages.length != 0) {
-            //HACK: fill in fake sub chunks to make up for the new negative space client-side
-            for (int i = 0; i < PADDING_SUB_CHUNK_COUNT; i++) {
-                stream.put(PADDING_SUB_CHUNK_BLOB);
-                blockStorages[i] = PADDING_SUB_CHUNK_BLOB;
-            }
-        }
-        for (int i = 0; i < count; i++) {
-            int mark = stream.getCount();
-            sections[i].writeTo(stream, version);
-            blockStorages[PADDING_SUB_CHUNK_COUNT + i] = stream.getBuffer(mark);
-        }
-        if (extendedLevel) {
-            if (version.getProtocol() >= StaticVersion.V1_18_30.getProtocol()) {
-                stream.put(biomePalettesNew);
-            } else {
-                stream.put(biomePalettes);
-            }
-        } else {
-            stream.put(chunk.getBiomeIdArray());
-        }
-        stream.putByte((byte) 0);
-        stream.put(blockEntities);
-
-//        ByteBuf buf = Unpooled.wrappedBuffer(stream.getBuffer());
-//        log.info(ByteBufUtil.prettyHexDump(buf), new Throwable("version=" + version + ", chunkX=" + chunk.getX() + ", chunkZ=" + chunk.getZ() + ", length=" + buf.readableBytes()));
-//        buf.release();
-
-        return stream.getBuffer();
-    }
-
-    private static int toValidBiome(int id) {
-        String name = Biome.getNameById(id); //TODO: different version -- 07/10/2022
-        // make sure we aren't sending bogus biomes - the 1.18.0 client crashes if we do this
-        return name == null ? EnumBiome.OCEAN.id : id;
+        level.chunkRequestCallback(timestamp, chunkX, chunkZ, chunkCachedData, fullChunkPayloads, subRequestModeFullChunkPayload, subChunkPayloads);
     }
 
     public static boolean addPreloadVersion(StaticVersion version) {
