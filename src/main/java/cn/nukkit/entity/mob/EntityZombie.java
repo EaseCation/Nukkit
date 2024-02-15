@@ -3,6 +3,7 @@ package cn.nukkit.entity.mob;
 import cn.nukkit.Player;
 import cn.nukkit.entity.EntityID;
 import cn.nukkit.entity.EntitySmite;
+import cn.nukkit.event.entity.EntityDamageByEntityEvent;
 import cn.nukkit.item.Item;
 import cn.nukkit.level.format.FullChunk;
 import cn.nukkit.nbt.tag.CompoundTag;
@@ -68,5 +69,18 @@ public class EntityZombie extends EntityMob implements EntitySmite {
     @Override
     public float getRidingOffset() {
         return -0.5f;
+    }
+
+    @Override
+    protected void onAttackSuccess(EntityDamageByEntityEvent source) {
+        if (!isOnFire()) {
+            return;
+        }
+        int difficulty = server.getDifficulty();
+        ThreadLocalRandom random = ThreadLocalRandom.current();
+        if (random.nextInt(10) >= difficulty * 3) {
+            return;
+        }
+        source.getEntity().setOnFire(2 * difficulty);
     }
 }

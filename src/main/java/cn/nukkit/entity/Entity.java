@@ -14,6 +14,7 @@ import cn.nukkit.event.player.PlayerInteractEvent;
 import cn.nukkit.event.player.PlayerInteractEvent.Action;
 import cn.nukkit.event.player.PlayerTeleportEvent;
 import cn.nukkit.item.Item;
+import cn.nukkit.item.enchantment.Enchantment;
 import cn.nukkit.level.GameRule;
 import cn.nukkit.level.Level;
 import cn.nukkit.level.Location;
@@ -1078,21 +1079,44 @@ public abstract class Entity extends Location implements Metadatable, EntityData
         }
     }
 
-    public boolean isInvulnerableTo(EntityDamageEvent damageSource) {
-        return this.isClosed() || this.invulnerable && damageSource.getCause() != DamageCause.VOID && !(damageSource.getEntity() instanceof Player player && player.isCreativeLike());
-    }
-
     public boolean attack(EntityDamageEvent source) {
-        if (this.isInvulnerableTo(source)) {
-            return false;
-        } else {
-            // this.markHurt();  // Java Edition
+        if ((source.getCause() == DamageCause.FIRE || source.getCause() == DamageCause.FIRE_TICK
+                || source.getCause() == DamageCause.LAVA || source.getCause() == DamageCause.MAGMA)
+                && (fireProof || hasEffect(Effect.FIRE_RESISTANCE))) {
             return false;
         }
+
+        getServer().getPluginManager().callEvent(source);
+        if (source.isCancelled()) {
+            return false;
+        }
+
+        if (source.getCause() != DamageCause.SUICIDE) {
+            // Make fire aspect to set the target in fire before dealing any damage so the target is in fire on death even if killed by the first hit
+            if (source instanceof EntityDamageByEntityEvent) {
+                Enchantment[] enchantments = ((EntityDamageByEntityEvent) source).getWeaponEnchantments();
+                if (enchantments != null) {
+                    for (Enchantment enchantment : enchantments) {
+                        enchantment.doAttack(((EntityDamageByEntityEvent) source).getDamager(), this);
+                    }
+                }
+            }
+
+            if (this.absorption > 0) {  // Damage Absorption
+                this.setAbsorption(Math.max(0, this.getAbsorption() + source.getDamage(EntityDamageEvent.DamageModifier.ABSORPTION)));
+            }
+        }
+
+        setLastDamageCause(source);
+        setHealth(getHealth() - source.getFinalDamage());
+        return true;
     }
 
     public boolean attack(float damage) {
         return this.attack(new EntityDamageEvent(this, DamageCause.CUSTOM, damage));
+    }
+
+    protected void onAttackSuccess(EntityDamageByEntityEvent source) {
     }
 
     public void heal(EntityRegainHealthEvent source) {

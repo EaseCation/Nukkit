@@ -4783,18 +4783,16 @@ public class Player extends EntityHuman implements CommandSender, InventoryHolde
         if (!this.isAlive()) {
             return false;
         }
-
-        if (this.isCreativeLike()
-//                && source.getCause() != DamageCause.SUICIDE
-//                && source.getCause() != DamageCause.VOID
-                ) {
+        if (this.isCreativeLike()) {
             source.setCancelled();
             return false;
-        } else if (this.getAdventureSettings().get(Type.ALLOW_FLIGHT) && source.getCause() == DamageCause.FALL) {
+        }
+        if (this.getAdventureSettings().get(Type.ALLOW_FLIGHT) && source.getCause() == DamageCause.FALL) {
             //source.setCancelled();
             return false;
-        } else if (source.getCause() == DamageCause.FALL) {
-            if (this.getLevel().getBlock(this.getPosition().floor().add(0.5, -1, 0.5)).getId() == Block.SLIME) {
+        }
+        if (source.getCause() == DamageCause.FALL) {
+            if (this.getLevel().getBlock(floor().add(0.5, -1, 0.5)).getId() == Block.SLIME) {
                 if (!this.isSneaking()) {
                     //source.setCancelled();
                     this.resetFallDistance();
@@ -4807,49 +4805,22 @@ public class Player extends EntityHuman implements CommandSender, InventoryHolde
             return false;
         }
 
-        boolean add = false;
-        boolean doubleCritical = false;
-        if (source instanceof EntityDamageByEntityEvent && source.getCause() == DamageCause.ENTITY_ATTACK) {
-            Entity damager = ((EntityDamageByEntityEvent) source).getDamager();
-            if (damager instanceof Player) {
-                ((Player) damager).getFoodData().updateFoodExpLevel(0.1);
+        boolean critical = false;
+        if (source instanceof EntityDamageByEntityEvent event && source.getCause() == DamageCause.ENTITY_ATTACK) {
+            Entity damager = event.getDamager();
+            if (damager instanceof Player player) {
+                player.getFoodData().updateFoodExpLevel(0.1);
             }
 
             //Critical hit
-
-            if (!damager.onGround && damager instanceof Player) {
-                if (((Player) damager).speed != null && ((Player) damager).speed.y > 0) {
-                    //((Player) damager).sendMessage("speed = " + ((Player) damager).speed.y);
-                    if (((Player) damager).attackCriticalThisJump <= 0) {
-                        add = true;
-                    } else if (((Player) damager).getLoginChainData().getCurrentInputMode() != ClientChainData.INPUT_MOUSE) {  // 键鼠不允许叠刀
-                        doubleCritical = true;
+            if (!damager.onGround && damager instanceof Player player) {
+                if (player.speed != null && player.speed.y > 0) {
+                    if (player.attackCriticalThisJump <= 0) {
+                        critical = true;
+                        source.setDamage(source.getDamage() * 1.3f);
                     }
                 }
             }
-
-            if (add) {
-                source.setDamage((float) (source.getDamage() * 1.3));
-            }
-
-            /*if (doubleCritical) {
-                //正在叠刀
-                Player damagerPlayer = (Player)((EntityDamageByEntityEvent) source).getDamager();
-                if (damagerPlayer.attackCriticalThisJump < 2) {
-                    this.nextAllowAttack = 0;
-                    // this.attackTime = 0;
-                    source.setDamage((float) (source.getDamage() * 0.2));
-                }
-
-                damagerPlayer.sendPopup("叠刀 × " + damagerPlayer.attackCriticalThisJump);
-
-                AnimatePacket animate = new AnimatePacket();
-                animate.action = AnimatePacket.Action.CRITICAL_HIT;
-                animate.eid = getId();
-                damagerPlayer.dataPacket(animate);
-
-                this.getLevel().addLevelSoundEvent(this, LevelSoundEventPacket.SOUND_ATTACK_STRONG, new Player[]{damagerPlayer});
-            }*/
         }
 
         if (super.attack(source)) { //!source.isCancelled()
@@ -4857,16 +4828,16 @@ public class Player extends EntityHuman implements CommandSender, InventoryHolde
 
             if (this.getLastDamageCause() == source && this.spawned) {
                 EntityEventPacket pk = new EntityEventPacket();
-                pk.eid = this.id;
+                pk.eid = this.getId();
                 pk.event = EntityEventPacket.HURT_ANIMATION;
                 // 这边只发给自己，因为广播给他人的已经在EntityLiving中发送了
                 this.dataPacket(pk);
-                if (add) {
-                    if (((EntityDamageByEntityEvent) source).getDamager() instanceof Player) {
-                        /*if (((Player) ((EntityDamageByEntityEvent) source).getDamager()).getLoginChainData().getDeviceOS() == 7)  //win10
-                            (((EntityDamageByEntityEvent) source).getDamager()).addEffect(Effect.getEffect(Effect.SLOWNESS).setDuration(10).setAmplifier(1).setVisible(false));*/
-                        ((Player)(((EntityDamageByEntityEvent) source).getDamager())).attackCriticalThisJump++;
+
+                if (critical) {
+                    if (((EntityDamageByEntityEvent) source).getDamager() instanceof Player player) {
+                        player.attackCriticalThisJump++;
                     }
+
                     // 在这里发送暴击，因为事件可能被取消
                     AnimatePacket animate = new AnimatePacket();
                     animate.action = AnimatePacket.Action.CRITICAL_HIT;
@@ -4875,17 +4846,10 @@ public class Player extends EntityHuman implements CommandSender, InventoryHolde
 
                     this.getLevel().addLevelSoundEvent(this, LevelSoundEventPacket.SOUND_ATTACK_STRONG);
                 }
-                /*if (doubleCritical) {
-                    if (((EntityDamageByEntityEvent) source).getDamager() instanceof Player) {
-                        Player damagerPlayer = (Player)((EntityDamageByEntityEvent) source).getDamager();
-                        damagerPlayer.attackCriticalThisJump++;
-                    }
-                }*/
             }
             return true;
-        } else {
-            return false;
         }
+        return false;
     }
 
     protected boolean isDamageBlocked(EntityDamageEvent source) {

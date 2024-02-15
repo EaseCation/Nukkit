@@ -25,18 +25,18 @@ public class EnchantmentProtectionFire extends EnchantmentProtection {
     }
 
     @Override
-    public double getTypeModifier() {
+    public int getTypeModifier() {
         return 2;
     }
 
     @Override
-    public float getProtectionFactor(EntityDamageEvent e) {
+    public int getProtectionFactor(EntityDamageEvent e) {
         DamageCause cause = e.getCause();
 
         if (level <= 0 || cause != DamageCause.LAVA && cause != DamageCause.FIRE && cause != DamageCause.FIRE_TICK && cause != DamageCause.MAGMA) {
             return 0;
         }
 
-        return (float) (getLevel() * getTypeModifier());
+        return getLevel() * getTypeModifier();
     }
 }

@@ -241,21 +241,12 @@ public abstract class EntityHumanType extends EntityCreature implements Inventor
         }
     }
 
-    @Override
-    public boolean attack(EntityDamageEvent source) {
-        if (this.isClosed() || !this.isAlive()) {
-            return false;
-        }
-
-        return super.attack(source);
-    }
-
-    protected double calculateEnchantmentProtectionFactor(Item item, EntityDamageEvent source) {
+    protected int calculateEnchantmentProtectionFactor(Item item, EntityDamageEvent source) {
         if (!item.hasEnchantments()) {
             return 0;
         }
 
-        double epf = 0;
+        int epf = 0;
 
         for (Enchantment ench : item.getEnchantments()) {
             epf += ench.getProtectionFactor(source);

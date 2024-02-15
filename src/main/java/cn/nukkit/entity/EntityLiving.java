@@ -1,5 +1,6 @@
 package cn.nukkit.entity;
 
+import cn.nukkit.Player;
 import cn.nukkit.Server;
 import cn.nukkit.block.Block;
 import cn.nukkit.block.BlockID;
@@ -53,8 +54,6 @@ public abstract class EntityLiving extends Entity implements EntityDamageable {
         return 0.02f;
     }
 
-    @Deprecated
-    protected int attackTime = 0;
     protected long nextAllowAttack = 0;  // EC优化，在低TPS时也确保正确的攻击冷却时间
     protected float lastHurt;
 
@@ -122,13 +121,19 @@ public abstract class EntityLiving extends Entity implements EntityDamageable {
         ent.applyEntityCollision(this);
     }
 
+    protected boolean isInvulnerableTo(EntityDamageEvent source) {
+        return this.invulnerable && source.getCause() != DamageCause.VOID && !(source.getEntity() instanceof Player player && player.isCreativeLike());
+    }
+
     @Override
     public boolean attack(EntityDamageEvent source) {
+        if (this.isClosed() || !this.isAlive()) {
+            return false;
+        }
         if (this.isInvulnerableTo(source)) {
             return false;
-        } else if (this.isClosed() || !this.isAlive()) {
-            return false;
-        } else if (source.getCause() == DamageCause.FIRE_TICK || source.getCause() == DamageCause.LAVA || source.getCause() == DamageCause.FIRE) {
+        }
+        if (source.getCause() == DamageCause.FIRE_TICK || source.getCause() == DamageCause.LAVA || source.getCause() == DamageCause.FIRE) {
             if (this.hasEffect(EffectID.FIRE_RESISTANCE)) {
                 return false;
             }
@@ -146,8 +151,9 @@ public abstract class EntityLiving extends Entity implements EntityDamageable {
         float damage = source.getDamage();
         boolean hurtAffect = true;
         if (source.getCause() != DamageCause.SUICIDE) {
+            long time = System.currentTimeMillis();
             // 冷却中
-            if (System.currentTimeMillis() < this.nextAllowAttack) {
+            if (time < this.nextAllowAttack) {
                 if (damage <= this.lastHurt) {
                     return false;
                 }
@@ -164,43 +170,30 @@ public abstract class EntityLiving extends Entity implements EntityDamageable {
                 }
                 this.lastHurt = damage;
                 // EC优化，在低TPS时也确保正确的攻击冷却时间
-                this.nextAllowAttack = System.currentTimeMillis() + source.getAttackCooldown() * 50L;
+                this.nextAllowAttack = time + source.getAttackCooldown() * 50L;
             }
         }
         if (hurtAffect) {
             // 变红效果和音效
             this.onHurt(source);
-            // 击退
-            if (source instanceof EntityDamageByEntityEvent ev && ev.hasKnockBack()) {
-                double deltaX = this.x - ev.getDamager().x;
-                double deltaZ = this.z - ev.getDamager().z;
-                this.knockBack(ev.getDamager(), damage, deltaX, deltaZ, ((EntityDamageByEntityEvent) source).getKnockBackH(), ((EntityDamageByEntityEvent) source).getKnockBackV());
+
+            if (source instanceof EntityDamageByEntityEvent ev) {
+                Entity damager = ev.getDamager();
+                /*if (source instanceof EntityDamageByChildEntityEvent event) {
+                    damager = event.getChild();
+                }*/
+
+                damager.onAttackSuccess(ev);
+
+                // 击退
+                if (ev.hasKnockBack()) {
+                    double deltaX = this.x - damager.x;
+                    double deltaZ = this.z - damager.z;
+                    this.knockBack(damager, damage, deltaX, deltaZ, ev.getKnockBackH(), ev.getKnockBackV());
+                }
             }
         }
         return hurtAffect;
-
-        /*if (super.attack(source)) {
-            if (source instanceof EntityDamageByEntityEvent) {
-                Entity e = ((EntityDamageByEntityEvent) source).getDamager();
-                *//*if (source instanceof EntityDamageByChildEntityEvent) {
-                    e = ((EntityDamageByChildEntityEvent) source).getChild();
-                }*//*
-
-                if (e.isOnFire() && !(e instanceof Player)) {
-                    this.setOnFire(2 * this.server.getDifficulty());
-                }
-            }
-
-            onHurt(source);
-
-            // this.attackTime = source.getAttackCooldown();
-            // this.nextAllowAttack 在super.attack中已经设置
-            // this.nextAllowAttack = System.currentTimeMillis() + source.getAttackCooldown() * 50L; // EC优化，在低TPS时也确保正确的攻击冷却时间
-
-            return true;
-        } else {
-            return false;
-        }*/
     }
 
     /**
