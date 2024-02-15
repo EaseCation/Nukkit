@@ -203,7 +203,7 @@ public class BlockComposter extends BlockTransparentMeta {
                 ItemID.BEETROOT_SEEDS,
                 ItemID.DRIED_KELP,
                 getItemId(TALLGRASS),
-                getItemId(GRASS),
+                getItemId(GRASS_BLOCK),
                 getItemId(HANGING_ROOTS),
                 getItemId(MANGROVE_ROOTS),
                 ItemID.KELP,

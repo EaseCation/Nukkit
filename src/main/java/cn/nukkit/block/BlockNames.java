@@ -2,6 +2,7 @@ package cn.nukkit.block;
 
 public interface BlockNames {
     String STONE = "stone";
+    String GRASS_BLOCK = "grass_block";
     String GRASS = "grass";
     String DIRT = "dirt";
     String COBBLESTONE = "cobblestone";
@@ -20,6 +21,7 @@ public interface BlockNames {
     String COAL_ORE = "coal_ore";
     String OAK_LOG = "oak_log"; //TODO: 1.19.80 flattening
     String LOG = "log";
+    String OAK_LEAVES = "oak_leaves";
     String LEAVES = "leaves";
     String SPONGE = "sponge";
     String GLASS = "glass";
@@ -166,12 +168,15 @@ public interface BlockNames {
     String HOPPER = "hopper";
     String QUARTZ_BLOCK = "quartz_block";
     String QUARTZ_STAIRS = "quartz_stairs";
+    String OAK_DOUBLE_SLAB = "oak_double_slab"; //TODO: 1.20.70 flattening
     String DOUBLE_WOODEN_SLAB = "double_wooden_slab";
+    String OAK_SLAB = "oak_slab"; //TODO: 1.20.70 flattening
     String WOODEN_SLAB = "wooden_slab";
     String WHITE_TERRACOTTA = "white_terracotta"; //TODO: 1.20.30 flattening
     String STAINED_HARDENED_CLAY = "stained_hardened_clay";
     String WHITE_STAINED_GLASS_PANE = "white_stained_glass_pane"; //TODO: 1.20.20 flattening
     String STAINED_GLASS_PANE = "stained_glass_pane";
+    String ACACIA_LEAVES = "acacia_leaves"; //TODO: 1.20.70 flattening
     String LEAVES2 = "leaves2";
     String ACACIA_LOG = "acacia_log"; //TODO: 1.19.80 flattening
     String LOG2 = "log2";
@@ -207,6 +212,7 @@ public interface BlockNames {
     String REPEATING_COMMAND_BLOCK = "repeating_command_block";
     String CHAIN_COMMAND_BLOCK = "chain_command_block";
     String HARD_GLASS_PANE = "hard_glass_pane";
+    String HARD_WHITE_STAINED_GLASS_PANE = "hard_white_stained_glass_pane"; //TODO: 1.20.60 flattening
     String HARD_STAINED_GLASS_PANE = "hard_stained_glass_pane";
     String CHEMICAL_HEAT = "chemical_heat";
     String SPRUCE_DOOR = "spruce_door";
@@ -276,6 +282,7 @@ public interface BlockNames {
     String OBSERVER = "observer";
     String STRUCTURE_BLOCK = "structure_block";
     String HARD_GLASS = "hard_glass";
+    String HARD_WHITE_STAINED_GLASS = "hard_white_stained_glass"; //TODO: 1.20.60 flattening
     String HARD_STAINED_GLASS = "hard_stained_glass";
     String RESERVED6 = "reserved6";
 
@@ -493,6 +500,7 @@ public interface BlockNames {
     String CAMPFIRE = "campfire";
     String LAVA_CAULDRON = "lava_cauldron"; //TODO: 1.20.0 remove
     String JIGSAW = "jigsaw"; //TODO: meta 29
+    String OAK_WOOD = "oak_wood"; //TODO: 1.20.70 flattening
     String WOOD = "wood";
     String COMPOSTER = "composter";
     String LIT_BLAST_FURNACE = "lit_blast_furnace";
@@ -592,7 +600,7 @@ public interface BlockNames {
     String COPPER_ORE = "copper_ore";
     String LIGHTNING_ROD = "lightning_rod";
     String CRAFTER = "crafter";
-
+    String VAULT = "vault";
     String TRIAL_SPAWNER = "trial_spawner";
 
     String DRIPSTONE_BLOCK = "dripstone_block";
@@ -928,7 +936,21 @@ public interface BlockNames {
     String GREEN_STAINED_GLASS_PANE = "green_stained_glass_pane";
     String RED_STAINED_GLASS_PANE = "red_stained_glass_pane";
     String BLACK_STAINED_GLASS_PANE = "black_stained_glass_pane";
-
+    String HARD_ORANGE_STAINED_GLASS_PANE = "hard_orange_stained_glass_pane";
+    String HARD_MAGENTA_STAINED_GLASS_PANE = "hard_magenta_stained_glass_pane";
+    String HARD_LIGHT_BLUE_STAINED_GLASS_PANE = "hard_light_blue_stained_glass_pane";
+    String HARD_YELLOW_STAINED_GLASS_PANE = "hard_yellow_stained_glass_pane";
+    String HARD_LIME_STAINED_GLASS_PANE = "hard_lime_stained_glass_pane";
+    String HARD_PINK_STAINED_GLASS_PANE = "hard_pink_stained_glass_pane";
+    String HARD_GRAY_STAINED_GLASS_PANE = "hard_gray_stained_glass_pane";
+    String HARD_LIGHT_GRAY_STAINED_GLASS_PANE = "hard_light_gray_stained_glass_pane";
+    String HARD_CYAN_STAINED_GLASS_PANE = "hard_cyan_stained_glass_pane";
+    String HARD_PURPLE_STAINED_GLASS_PANE = "hard_purple_stained_glass_pane";
+    String HARD_BLUE_STAINED_GLASS_PANE = "hard_blue_stained_glass_pane";
+    String HARD_BROWN_STAINED_GLASS_PANE = "hard_brown_stained_glass_pane";
+    String HARD_GREEN_STAINED_GLASS_PANE = "hard_green_stained_glass_pane";
+    String HARD_RED_STAINED_GLASS_PANE = "hard_red_stained_glass_pane";
+    String HARD_BLACK_STAINED_GLASS_PANE = "hard_black_stained_glass_pane";
     String ORANGE_STAINED_GLASS = "orange_stained_glass";
     String MAGENTA_STAINED_GLASS = "magenta_stained_glass";
     String LIGHT_BLUE_STAINED_GLASS = "light_blue_stained_glass";
@@ -944,6 +966,21 @@ public interface BlockNames {
     String GREEN_STAINED_GLASS = "green_stained_glass";
     String RED_STAINED_GLASS = "red_stained_glass";
     String BLACK_STAINED_GLASS = "black_stained_glass";
+    String HARD_ORANGE_STAINED_GLASS = "hard_orange_stained_glass";
+    String HARD_MAGENTA_STAINED_GLASS = "hard_magenta_stained_glass";
+    String HARD_LIGHT_BLUE_STAINED_GLASS = "hard_light_blue_stained_glass";
+    String HARD_YELLOW_STAINED_GLASS = "hard_yellow_stained_glass";
+    String HARD_LIME_STAINED_GLASS = "hard_lime_stained_glass";
+    String HARD_PINK_STAINED_GLASS = "hard_pink_stained_glass";
+    String HARD_GRAY_STAINED_GLASS = "hard_gray_stained_glass";
+    String HARD_LIGHT_GRAY_STAINED_GLASS = "hard_light_gray_stained_glass";
+    String HARD_CYAN_STAINED_GLASS = "hard_cyan_stained_glass";
+    String HARD_PURPLE_STAINED_GLASS = "hard_purple_stained_glass";
+    String HARD_BLUE_STAINED_GLASS = "hard_blue_stained_glass";
+    String HARD_BROWN_STAINED_GLASS = "hard_brown_stained_glass";
+    String HARD_GREEN_STAINED_GLASS = "hard_green_stained_glass";
+    String HARD_RED_STAINED_GLASS = "hard_red_stained_glass";
+    String HARD_BLACK_STAINED_GLASS = "hard_black_stained_glass";
 
     String ORANGE_CONCRETE_POWDER = "orange_concrete_powder";
     String MAGENTA_CONCRETE_POWDER = "magenta_concrete_powder";
@@ -1036,4 +1073,29 @@ public interface BlockNames {
     String WAXED_EXPOSED_COPPER_TRAPDOOR = "waxed_exposed_copper_trapdoor";
     String WAXED_WEATHERED_COPPER_TRAPDOOR = "waxed_weathered_copper_trapdoor";
     String WAXED_OXIDIZED_COPPER_TRAPDOOR = "waxed_oxidized_copper_trapdoor";
+    String SPRUCE_LEAVES = "spruce_leaves";
+    String BIRCH_LEAVES = "birch_leaves";
+    String JUNGLE_LEAVES = "jungle_leaves";
+    String DARK_OAK_LEAVES = "dark_oak_leaves";
+    String SPRUCE_SLAB = "spruce_slab";
+    String BIRCH_SLAB = "birch_slab";
+    String JUNGLE_SLAB = "jungle_slab";
+    String ACACIA_SLAB = "acacia_slab";
+    String DARK_OAK_SLAB = "dark_oak_slab";
+    String SPRUCE_DOUBLE_SLAB = "spruce_double_slab";
+    String BIRCH_DOUBLE_SLAB = "birch_double_slab";
+    String JUNGLE_DOUBLE_SLAB = "jungle_double_slab";
+    String ACACIA_DOUBLE_SLAB = "acacia_double_slab";
+    String DARK_OAK_DOUBLE_SLAB = "dark_oak_double_slab";
+    String SPRUCE_WOOD = "spruce_wood";
+    String BIRCH_WOOD = "birch_wood";
+    String JUNGLE_WOOD = "jungle_wood";
+    String ACACIA_WOOD = "acacia_wood";
+    String DARK_OAK_WOOD = "dark_oak_wood";
+    String STRIPPED_OAK_WOOD = "stripped_oak_wood";
+    String STRIPPED_SPRUCE_WOOD = "stripped_spruce_wood";
+    String STRIPPED_BIRCH_WOOD = "stripped_birch_wood";
+    String STRIPPED_JUNGLE_WOOD = "stripped_jungle_wood";
+    String STRIPPED_ACACIA_WOOD = "stripped_acacia_wood";
+    String STRIPPED_DARK_OAK_WOOD = "stripped_dark_oak_wood";
 }

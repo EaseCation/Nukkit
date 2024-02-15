@@ -40,7 +40,7 @@ public class MushroomPopulator extends PopulatorCount {
         HeightRange heightRange = level.getHeightRange();
         for (int y = heightRange.getMaxY() - 1 - 1; y > heightRange.getMinY(); --y) {
             int b = chunk.getBlockId(0, x, y, z);
-            if (b == Block.DIRT || b == Block.GRASS) {
+            if (b == Block.DIRT || b == Block.GRASS_BLOCK) {
                 return y + 1;
             } else if (b != Block.AIR && b != Block.SNOW_LAYER) {
                 return Integer.MIN_VALUE;

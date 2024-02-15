@@ -52,7 +52,7 @@ public final class Blocks {
     public static void registerVanillaBlocks() {
         registerBlock(BlockNames.AIR, ItemBlockNames.AIR, BlockID.AIR, BlockAir.class);
         registerBlock(BlockNames.STONE, ItemBlockNames.STONE, STONE, BlockStone.class);
-        registerBlock(BlockNames.GRASS, ItemBlockNames.GRASS, GRASS, BlockGrass.class);
+        registerBlock(BlockNames.GRASS, ItemBlockNames.GRASS, GRASS_BLOCK, BlockGrass.class);
         registerBlock(BlockNames.DIRT, ItemBlockNames.DIRT, DIRT, BlockDirt.class);
         registerBlock(BlockNames.COBBLESTONE, ItemBlockNames.COBBLESTONE, COBBLESTONE, BlockCobblestone.class);
         registerBlock(BlockNames.PLANKS, ItemBlockNames.PLANKS, PLANKS, BlockPlanks.class);
@@ -833,6 +833,8 @@ public final class Blocks {
         registerBlockAlias(BlockNames.DOUBLE_STONE_BLOCK_SLAB2, BlockNames.DOUBLE_STONE_SLAB, V1_19_0);
         registerBlockAlias(BlockNames.DOUBLE_STONE_BLOCK_SLAB3, BlockNames.DOUBLE_STONE_SLAB, V1_19_0);
         registerBlockAlias(BlockNames.DOUBLE_STONE_BLOCK_SLAB4, BlockNames.DOUBLE_STONE_SLAB, V1_19_0);
+
+//        registerBlockAlias(BlockNames.GRASS_BLOCK, BlockNames.GRASS, V1_20_70);
     }
 
     @SuppressWarnings("deprecation")
@@ -870,6 +872,8 @@ public final class Blocks {
         registerItemAlias(ItemBlockNames.DOUBLE_STONE_BLOCK_SLAB2, ItemBlockNames.REAL_DOUBLE_STONE_SLAB, V1_19_0);
         registerItemAlias(ItemBlockNames.DOUBLE_STONE_BLOCK_SLAB3, ItemBlockNames.REAL_DOUBLE_STONE_SLAB, V1_19_0);
         registerItemAlias(ItemBlockNames.DOUBLE_STONE_BLOCK_SLAB4, ItemBlockNames.REAL_DOUBLE_STONE_SLAB, V1_19_0);
+
+//        registerItemAlias(ItemBlockNames.GRASS_BLOCK, ItemBlockNames.GRASS, V1_20_70);
     }
 
     private static void registerComplexAliases() {
@@ -1049,6 +1053,77 @@ public final class Blocks {
         registerComplexAlias(ItemBlockNames.JUNGLE_PLANKS, PLANKS, BlockPlanks.JUNGLE, V1_20_50);
         registerComplexAlias(ItemBlockNames.ACACIA_PLANKS, PLANKS, BlockPlanks.ACACIA, V1_20_50);
         registerComplexAlias(ItemBlockNames.DARK_OAK_PLANKS, PLANKS, BlockPlanks.DARK_OAK, V1_20_50);
+
+        registerComplexAlias(ItemBlockNames.HARD_WHITE_STAINED_GLASS, HARD_STAINED_GLASS, DyeColor.WHITE.getWoolData(), V1_20_60);
+        registerComplexAlias(ItemBlockNames.HARD_ORANGE_STAINED_GLASS, HARD_STAINED_GLASS, DyeColor.ORANGE.getWoolData(), V1_20_60);
+        registerComplexAlias(ItemBlockNames.HARD_MAGENTA_STAINED_GLASS, HARD_STAINED_GLASS, DyeColor.MAGENTA.getWoolData(), V1_20_60);
+        registerComplexAlias(ItemBlockNames.HARD_LIGHT_BLUE_STAINED_GLASS, HARD_STAINED_GLASS, DyeColor.LIGHT_BLUE.getWoolData(), V1_20_60);
+        registerComplexAlias(ItemBlockNames.HARD_YELLOW_STAINED_GLASS, HARD_STAINED_GLASS, DyeColor.YELLOW.getWoolData(), V1_20_60);
+        registerComplexAlias(ItemBlockNames.HARD_LIME_STAINED_GLASS, HARD_STAINED_GLASS, DyeColor.LIME.getWoolData(), V1_20_60);
+        registerComplexAlias(ItemBlockNames.HARD_PINK_STAINED_GLASS, HARD_STAINED_GLASS, DyeColor.PINK.getWoolData(), V1_20_60);
+        registerComplexAlias(ItemBlockNames.HARD_GRAY_STAINED_GLASS, HARD_STAINED_GLASS, DyeColor.GRAY.getWoolData(), V1_20_60);
+        registerComplexAlias(ItemBlockNames.HARD_LIGHT_GRAY_STAINED_GLASS, HARD_STAINED_GLASS, DyeColor.LIGHT_GRAY.getWoolData(), V1_20_60);
+        registerComplexAlias(ItemBlockNames.HARD_CYAN_STAINED_GLASS, HARD_STAINED_GLASS, DyeColor.CYAN.getWoolData(), V1_20_60);
+        registerComplexAlias(ItemBlockNames.HARD_PURPLE_STAINED_GLASS, HARD_STAINED_GLASS, DyeColor.PURPLE.getWoolData(), V1_20_60);
+        registerComplexAlias(ItemBlockNames.HARD_BLUE_STAINED_GLASS, HARD_STAINED_GLASS, DyeColor.BLUE.getWoolData(), V1_20_60);
+        registerComplexAlias(ItemBlockNames.HARD_BROWN_STAINED_GLASS, HARD_STAINED_GLASS, DyeColor.BROWN.getWoolData(), V1_20_60);
+        registerComplexAlias(ItemBlockNames.HARD_GREEN_STAINED_GLASS, HARD_STAINED_GLASS, DyeColor.GREEN.getWoolData(), V1_20_60);
+        registerComplexAlias(ItemBlockNames.HARD_RED_STAINED_GLASS, HARD_STAINED_GLASS, DyeColor.RED.getWoolData(), V1_20_60);
+        registerComplexAlias(ItemBlockNames.HARD_BLACK_STAINED_GLASS, HARD_STAINED_GLASS, DyeColor.BLACK.getWoolData(), V1_20_60);
+
+        registerComplexAlias(ItemBlockNames.HARD_WHITE_STAINED_GLASS_PANE, HARD_STAINED_GLASS_PANE, DyeColor.WHITE.getWoolData(), V1_20_60);
+        registerComplexAlias(ItemBlockNames.HARD_ORANGE_STAINED_GLASS_PANE, HARD_STAINED_GLASS_PANE, DyeColor.ORANGE.getWoolData(), V1_20_60);
+        registerComplexAlias(ItemBlockNames.HARD_MAGENTA_STAINED_GLASS_PANE, HARD_STAINED_GLASS_PANE, DyeColor.MAGENTA.getWoolData(), V1_20_60);
+        registerComplexAlias(ItemBlockNames.HARD_LIGHT_BLUE_STAINED_GLASS_PANE, HARD_STAINED_GLASS_PANE, DyeColor.LIGHT_BLUE.getWoolData(), V1_20_60);
+        registerComplexAlias(ItemBlockNames.HARD_YELLOW_STAINED_GLASS_PANE, HARD_STAINED_GLASS_PANE, DyeColor.YELLOW.getWoolData(), V1_20_60);
+        registerComplexAlias(ItemBlockNames.HARD_LIME_STAINED_GLASS_PANE, HARD_STAINED_GLASS_PANE, DyeColor.LIME.getWoolData(), V1_20_60);
+        registerComplexAlias(ItemBlockNames.HARD_PINK_STAINED_GLASS_PANE, HARD_STAINED_GLASS_PANE, DyeColor.PINK.getWoolData(), V1_20_60);
+        registerComplexAlias(ItemBlockNames.HARD_GRAY_STAINED_GLASS_PANE, HARD_STAINED_GLASS_PANE, DyeColor.GRAY.getWoolData(), V1_20_60);
+        registerComplexAlias(ItemBlockNames.HARD_LIGHT_GRAY_STAINED_GLASS_PANE, HARD_STAINED_GLASS_PANE, DyeColor.LIGHT_GRAY.getWoolData(), V1_20_60);
+        registerComplexAlias(ItemBlockNames.HARD_CYAN_STAINED_GLASS_PANE, HARD_STAINED_GLASS_PANE, DyeColor.CYAN.getWoolData(), V1_20_60);
+        registerComplexAlias(ItemBlockNames.HARD_PURPLE_STAINED_GLASS_PANE, HARD_STAINED_GLASS_PANE, DyeColor.PURPLE.getWoolData(), V1_20_60);
+        registerComplexAlias(ItemBlockNames.HARD_BLUE_STAINED_GLASS_PANE, HARD_STAINED_GLASS_PANE, DyeColor.BLUE.getWoolData(), V1_20_60);
+        registerComplexAlias(ItemBlockNames.HARD_BROWN_STAINED_GLASS_PANE, HARD_STAINED_GLASS_PANE, DyeColor.BROWN.getWoolData(), V1_20_60);
+        registerComplexAlias(ItemBlockNames.HARD_GREEN_STAINED_GLASS_PANE, HARD_STAINED_GLASS_PANE, DyeColor.GREEN.getWoolData(), V1_20_60);
+        registerComplexAlias(ItemBlockNames.HARD_RED_STAINED_GLASS_PANE, HARD_STAINED_GLASS_PANE, DyeColor.RED.getWoolData(), V1_20_60);
+        registerComplexAlias(ItemBlockNames.HARD_BLACK_STAINED_GLASS_PANE, HARD_STAINED_GLASS_PANE, DyeColor.BLACK.getWoolData(), V1_20_60);
+/*
+        registerComplexAlias(ItemBlockNames.OAK_LEAVES, LEAVES, BlockLeaves.OAK, V1_20_70);
+        registerComplexAlias(ItemBlockNames.SPRUCE_LEAVES, LEAVES, BlockLeaves.SPRUCE, V1_20_70);
+        registerComplexAlias(ItemBlockNames.BIRCH_LEAVES, LEAVES, BlockLeaves.BIRCH, V1_20_70);
+        registerComplexAlias(ItemBlockNames.JUNGLE_LEAVES, LEAVES, BlockLeaves.JUNGLE, V1_20_70);
+
+        registerComplexAlias(ItemBlockNames.ACACIA_LEAVES, LEAVES2, BlockLeaves2.ACACIA, V1_20_70);
+        registerComplexAlias(ItemBlockNames.DARK_OAK_LEAVES, LEAVES2, BlockLeaves2.DARK_OAK, V1_20_70);
+
+        registerComplexAlias(ItemBlockNames.OAK_SLAB, WOODEN_SLAB, BlockSlabWood.OAK, V1_20_70);
+        registerComplexAlias(ItemBlockNames.SPRUCE_SLAB, WOODEN_SLAB, BlockSlabWood.SPRUCE, V1_20_70);
+        registerComplexAlias(ItemBlockNames.BIRCH_SLAB, WOODEN_SLAB, BlockSlabWood.BIRCH, V1_20_70);
+        registerComplexAlias(ItemBlockNames.JUNGLE_SLAB, WOODEN_SLAB, BlockSlabWood.JUNGLE, V1_20_70);
+        registerComplexAlias(ItemBlockNames.ACACIA_SLAB, WOODEN_SLAB, BlockSlabWood.ACACIA, V1_20_70);
+        registerComplexAlias(ItemBlockNames.DARK_OAK_SLAB, WOODEN_SLAB, BlockSlabWood.DARK_OAK, V1_20_70);
+
+        registerComplexAlias(ItemBlockNames.OAK_DOUBLE_SLAB, DOUBLE_WOODEN_SLAB, BlockDoubleSlabWood.OAK, V1_20_70);
+        registerComplexAlias(ItemBlockNames.SPRUCE_DOUBLE_SLAB, DOUBLE_WOODEN_SLAB, BlockDoubleSlabWood.SPRUCE, V1_20_70);
+        registerComplexAlias(ItemBlockNames.BIRCH_DOUBLE_SLAB, DOUBLE_WOODEN_SLAB, BlockDoubleSlabWood.BIRCH, V1_20_70);
+        registerComplexAlias(ItemBlockNames.JUNGLE_DOUBLE_SLAB, DOUBLE_WOODEN_SLAB, BlockDoubleSlabWood.JUNGLE, V1_20_70);
+        registerComplexAlias(ItemBlockNames.ACACIA_DOUBLE_SLAB, DOUBLE_WOODEN_SLAB, BlockDoubleSlabWood.ACACIA, V1_20_70);
+        registerComplexAlias(ItemBlockNames.DARK_OAK_DOUBLE_SLAB, DOUBLE_WOODEN_SLAB, BlockDoubleSlabWood.DARK_OAK, V1_20_70);
+
+        registerComplexAlias(ItemBlockNames.OAK_WOOD, WOOD, BlockWoodBark.OAK, V1_20_70);
+        registerComplexAlias(ItemBlockNames.SPRUCE_WOOD, WOOD, BlockWoodBark.SPRUCE, V1_20_70);
+        registerComplexAlias(ItemBlockNames.BIRCH_WOOD, WOOD, BlockWoodBark.BIRCH, V1_20_70);
+        registerComplexAlias(ItemBlockNames.JUNGLE_WOOD, WOOD, BlockWoodBark.JUNGLE, V1_20_70);
+        registerComplexAlias(ItemBlockNames.ACACIA_WOOD, WOOD, BlockWoodBark.ACACIA, V1_20_70);
+        registerComplexAlias(ItemBlockNames.DARK_OAK_WOOD, WOOD, BlockWoodBark.DARK_OAK, V1_20_70);
+
+        registerComplexAlias(ItemBlockNames.STRIPPED_OAK_WOOD, WOOD, BlockWoodBark.STRIPPED_BIT | BlockWoodBark.OAK, V1_20_70);
+        registerComplexAlias(ItemBlockNames.STRIPPED_SPRUCE_WOOD, WOOD, BlockWoodBark.STRIPPED_BIT | BlockWoodBark.SPRUCE, V1_20_70);
+        registerComplexAlias(ItemBlockNames.STRIPPED_BIRCH_WOOD, WOOD, BlockWoodBark.STRIPPED_BIT | BlockWoodBark.BIRCH, V1_20_70);
+        registerComplexAlias(ItemBlockNames.STRIPPED_JUNGLE_WOOD, WOOD, BlockWoodBark.STRIPPED_BIT | BlockWoodBark.JUNGLE, V1_20_70);
+        registerComplexAlias(ItemBlockNames.STRIPPED_ACACIA_WOOD, WOOD, BlockWoodBark.STRIPPED_BIT | BlockWoodBark.ACACIA, V1_20_70);
+        registerComplexAlias(ItemBlockNames.STRIPPED_DARK_OAK_WOOD, WOOD, BlockWoodBark.STRIPPED_BIT | BlockWoodBark.DARK_OAK, V1_20_70);
+*/
     }
 
     private static Class<? extends Block> registerBlock(String blockName, String itemName, int id, Class<? extends Block> clazz) {
@@ -1138,6 +1213,9 @@ public final class Blocks {
         return clazz;
     }
 
+    /**
+     * @param version min required base game version
+     */
     private static void registerBlockAlias(String newName, String oldName, GameVersion version) {
         if (version.isAvailable()) {
             String name = newName;
@@ -1147,6 +1225,9 @@ public final class Blocks {
         BLOCK_ALIASES_MAP.put(newName, oldName);
     }
 
+    /**
+     * @param version min required base game version
+     */
     private static void registerItemAlias(String newName, String oldName, GameVersion version) {
         if (version.isAvailable()) {
             String name = newName;

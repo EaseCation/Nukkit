@@ -220,7 +220,7 @@ public class BlockMangrovePropagule extends BlockTransparentMeta {
         }
 
         int id = down().getId();
-        return id == BIG_DRIPLEAF || id == GRASS || id == DIRT || id == MYCELIUM || id == PODZOL || id == FARMLAND || id == DIRT_WITH_ROOTS || id == MOSS_BLOCK || id == CLAY;
+        return id == BIG_DRIPLEAF || id == GRASS_BLOCK || id == DIRT || id == MYCELIUM || id == PODZOL || id == FARMLAND || id == DIRT_WITH_ROOTS || id == MOSS_BLOCK || id == CLAY;
     }
 
     public int getStage() {

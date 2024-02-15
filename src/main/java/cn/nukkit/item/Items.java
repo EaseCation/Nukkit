@@ -14,6 +14,7 @@ import lombok.extern.log4j.Log4j2;
 
 import javax.annotation.Nullable;
 import java.util.Map;
+import java.util.Map.Entry;
 import java.util.Objects;
 import java.util.concurrent.atomic.AtomicInteger;
 
@@ -266,7 +267,7 @@ public final class Items {
         registerItem(ItemNames.HEART_OF_THE_SEA, HEART_OF_THE_SEA, ItemHeartOfTheSea.class, ItemHeartOfTheSea::new, V1_4_0);
 
         registerItem(ItemNames.NAUTILUS_SHELL, NAUTILUS_SHELL, ItemNautilusShell.class, ItemNautilusShell::new, V1_5_0);
-        registerItem(ItemNames.SCUTE, SCUTE, ItemScute.class, ItemScute::new, V1_5_0);
+        registerItem(ItemNames.SCUTE, TURTLE_SCUTE, ItemScute.class, ItemScute::new, V1_5_0);
         registerItem(ItemNames.TURTLE_HELMET, TURTLE_HELMET, ItemTurtleShell.class, ItemTurtleShell::new, V1_5_0);
 
         registerItem(ItemNames.PHANTOM_MEMBRANE, PHANTOM_MEMBRANE, ItemPhantomMembrane.class, ItemPhantomMembrane::new, V1_6_0);
@@ -445,11 +446,13 @@ public final class Items {
         registerAlias(ItemNames.LODESTONECOMPASS, ItemNames.LODESTONE_COMPASS, V1_16_100);
         registerAlias(ItemNames.RECORD_PIGSTEP, ItemNames.MUSIC_DISC_PIGSTEP, V1_16_100);
 
-        registerAlias(ItemNames.RECORD_OTHERSIDE, ItemNames.MUSIC_DISC_OTHERSIDE, V1_18_0);
+        registerAlias(ItemNames.RECORD_OTHERSIDE, ItemNames.MUSIC_DISC_OTHERSIDE, true, V1_18_0);
 
-        registerAlias(ItemNames.RECORD_5, ItemNames.MUSIC_DISC_5, V1_19_0);
+        registerAlias(ItemNames.RECORD_5, ItemNames.MUSIC_DISC_5, true, V1_19_0);
 
-        registerAlias(ItemNames.RECORD_RELIC, ItemNames.MUSIC_DISC_RELIC, V1_20_0);
+        registerAlias(ItemNames.RECORD_RELIC, ItemNames.MUSIC_DISC_RELIC, true, V1_20_0);
+
+        registerAlias(ItemNames.SCUTE, ItemNames.TURTLE_SCUTE, V1_20_60);
     }
 
     private static void registerComplexAliases() {
@@ -585,6 +588,8 @@ public final class Items {
         registerComplexAlias(ItemNames.ENDER_DRAGON_SPAWN_EGG, SPAWN_EGG, EntityID.ENDER_DRAGON, V1_19_60);
         registerComplexAlias(ItemNames.CAMEL_SPAWN_EGG, SPAWN_EGG, EntityID.CAMEL, V1_20_0);
         registerComplexAlias(ItemNames.SNIFFER_SPAWN_EGG, SPAWN_EGG, EntityID.SNIFFER, V1_20_0);
+//        registerComplexAlias(ItemNames.BREEZE_SPAWN_EGG, SPAWN_EGG, EntityID.BREEZE, V1_21_0);
+//        registerComplexAlias(ItemNames.ARMADILLO_SPAWN_EGG, SPAWN_EGG, EntityID.ARMADILLO, V1_21_0);
     }
 
     private static Class<? extends Item> registerItem(String name, int id, Class<? extends Item> clazz, ItemFactory factory) {
@@ -698,8 +703,30 @@ public final class Items {
         registerComplexAlias(name, id, meta, version);
     }
 
-    private static void registerAlias(String alias, String currentName, GameVersion version) {
-        SIMPLE_ALIASES_MAP.put(alias, currentName);
+    /**
+     * @param version min required base game version
+     */
+    private static void registerAlias(String oldName, String newName, GameVersion version) {
+        registerAlias(oldName, newName, false, version);
+    }
+
+    /**
+     * @param version min required base game version
+     */
+    private static void registerAlias(String oldName, String newName, boolean add, GameVersion version) {
+        if (!add && !version.isAvailable()) {
+            String name = oldName;
+            oldName = newName;
+            newName = name;
+        }
+
+        for (Entry<String, String> entry : SIMPLE_ALIASES_MAP.entrySet()) {
+            if (entry.getValue().equals(oldName)) {
+                SIMPLE_ALIASES_MAP.put(entry.getKey(), newName);
+            }
+        }
+
+        SIMPLE_ALIASES_MAP.put(oldName, newName);
     }
 
     private static void registerComplexAlias(String alias, int id, int meta, GameVersion version) {

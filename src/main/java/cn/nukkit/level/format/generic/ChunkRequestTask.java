@@ -14,6 +14,7 @@ import cn.nukkit.nbt.NBTIO;
 import cn.nukkit.nbt.tag.CompoundTag;
 import cn.nukkit.network.protocol.BatchPacket;
 import cn.nukkit.network.protocol.LevelChunkPacket;
+import cn.nukkit.network.protocol.LevelChunkPacket12060;
 import cn.nukkit.network.protocol.SubChunkPacket;
 import cn.nukkit.network.protocol.SubChunkPacket11810;
 import cn.nukkit.scheduler.AsyncTask;
@@ -250,6 +251,7 @@ public class ChunkRequestTask extends AsyncTask<Void> {
             ChunkPacketCache packetCache;
             if (level.isCacheChunks()) {
                 Map<StaticVersion, BatchPacket> packets = new EnumMap<>(StaticVersion.class);
+                Map<StaticVersion, LevelChunkPacket12060> packetsUncompressed = new EnumMap<>(StaticVersion.class);
                 Map<StaticVersion, BatchPacket[]> subPackets = new EnumMap<>(StaticVersion.class);
                 Map<StaticVersion, SubChunkPacket[]> subPacketsUncompressed = new EnumMap<>(StaticVersion.class);
 
@@ -269,12 +271,36 @@ public class ChunkRequestTask extends AsyncTask<Void> {
                     subPackets.put(version, compressed);
                     subPacketsUncompressed.put(version, uncompressed);
 
-                    packets.put(version, Level.getChunkCacheFromData(chunkX, chunkZ, count, payload));
+                    if (version.getProtocol() >= StaticVersion.V1_20_60.getProtocol()) {
+                        LevelChunkPacket12060 packet = new LevelChunkPacket12060();
+                        packet.chunkX = chunkX;
+                        packet.chunkZ = chunkZ;
+                        packet.dimension = level.getDimension().ordinal();
+                        packet.subChunkCount = count;
+                        packet.subChunkRequestLimit = 0;
+                        packet.data = payload;
+                        packet.setBuffer(null, 0);
+                        packetsUncompressed.put(version, packet);
+                    } else {
+                        packets.put(version, Level.getChunkCacheFromData(chunkX, chunkZ, count, payload));
+                    }
                 });
+
+                LevelChunkPacket12060 uncompressed = new LevelChunkPacket12060();
+                uncompressed.chunkX = chunkX;
+                uncompressed.chunkZ = chunkZ;
+                uncompressed.dimension = level.getDimension().ordinal();
+                uncompressed.subChunkCount = LevelChunkPacket.CLIENT_REQUEST_TRUNCATED_COLUMN_FAKE_COUNT;
+                uncompressed.subChunkRequestLimit = count;
+                uncompressed.data = subRequestModeFullChunkPayload;
+                uncompressed.setBuffer(null, 0);
 
                 packetCache = new ChunkPacketCache(
                         packets,
-                        Level.getChunkCacheFromData(chunkX, chunkZ, LevelChunkPacket.CLIENT_REQUEST_TRUNCATED_COLUMN_FAKE_COUNT, count, subRequestModeFullChunkPayload), subPackets,
+                        packetsUncompressed,
+                        Level.getChunkCacheFromData(chunkX, chunkZ, LevelChunkPacket.CLIENT_REQUEST_TRUNCATED_COLUMN_FAKE_COUNT, count, subRequestModeFullChunkPayload),
+                        uncompressed,
+                        subPackets,
                         subPacketsUncompressed,
                         requestedVersions);
             } else {

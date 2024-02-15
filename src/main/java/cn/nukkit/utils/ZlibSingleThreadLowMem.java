@@ -55,10 +55,10 @@ public class ZlibSingleThreadLowMem implements ZlibProvider {
     @Override
     public synchronized byte[] inflate(byte[] data, int maxSize) throws IOException {
         if (data.length == 0) {
-            throw new IOException("no data");
+            throw new DataLengthException("no data");
         }
         if (maxSize > 0 && data.length >= maxSize) {
-            throw new IOException("Input data exceeds maximum size");
+            throw new DataLengthException("Input data exceeds maximum size");
         }
         INFLATER.reset();
         INFLATER.setInput(data);
@@ -74,7 +74,7 @@ public class ZlibSingleThreadLowMem implements ZlibProvider {
                 }
                 length += i;
                 if (maxSize > 0 && length >= maxSize) {
-                    throw new IOException("Inflated data exceeds maximum size");
+                    throw new DataLengthException("Inflated data exceeds maximum size");
                 }
                 bos.write(BUFFER, 0, i);
             }

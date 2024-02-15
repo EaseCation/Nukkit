@@ -187,6 +187,6 @@ public class BlockTallGrass extends BlockFlowable {
 
     private boolean canSurvive() {
         int id = down().getId();
-        return id == Block.GRASS || id == Block.DIRT || id == Block.PODZOL || id == FARMLAND || id == MYCELIUM || id == DIRT_WITH_ROOTS || id == MOSS_BLOCK;
+        return id == Block.GRASS_BLOCK || id == Block.DIRT || id == Block.PODZOL || id == FARMLAND || id == MYCELIUM || id == DIRT_WITH_ROOTS || id == MOSS_BLOCK;
     }
 }

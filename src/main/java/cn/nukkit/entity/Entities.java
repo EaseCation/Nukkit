@@ -166,6 +166,7 @@ public final class Entities {
         registerEntity(EntityID.SNIFFER, EntityNames.SNIFFER, "Sniffer", EntitySniffer.class, EntitySniffer::new, V1_20_0);
 
 //        registerEntity(EntityID.BREEZE, EntityNames.BREEZE, "Breeze", EntityBreeze.class, EntityBreeze::new, V1_21_0);
+//        registerEntity(EntityID.WIND_CHARGE_PROJECTILE, EntityNames.WIND_CHARGE_PROJECTILE, "WindCharge", EntityWindCharge.class, EntityWindCharge::new, V1_21_0);
 //        registerEntity(EntityID.ARMADILLO, EntityNames.ARMADILLO, "Armadillo", EntityArmadillo.class, EntityArmadillo::new, V1_21_0);
     }
 

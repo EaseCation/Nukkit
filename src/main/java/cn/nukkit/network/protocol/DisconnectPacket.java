@@ -30,7 +30,7 @@ public class DisconnectPacket extends DataPacket {
     public static final int REASON_REALMS_SERVER_HIDDEN = 18;
     public static final int REASON_REALMS_SERVER_DISABLED_BETA = 19;
     public static final int REASON_REALMS_SERVER_DISABLED = 20;
-    public static final int REASON_CROSS_PLATFORM_DISALLOWED = 21;
+    public static final int REASON_CROSS_PLATFORM_DISABLED = 21;
     public static final int REASON_CANT_CONNECT = 22;
     public static final int REASON_SESSION_NOT_FOUND = 23;
     public static final int REASON_CLIENT_SETTINGS_INCOMPATIBLE_WITH_SERVER = 24;
@@ -112,6 +112,12 @@ public class DisconnectPacket extends DataPacket {
     public static final int REASON_CONN_SIGNALING_UNICAST_DELIVERY_FAILED = 100;
     public static final int REASON_CONN_SIGNALING_BROADCAST_DELIVERY_FAILED = 101;
     public static final int REASON_CONN_SIGNALING_GENERIC_DELIVERY_FAILED = 102;
+    public static final int REASON_EDITOR_MISMATCH_EDITOR_WORLD = 103;
+    public static final int REASON_EDITOR_MISMATCH_VANILLA_WORLD = 104;
+    public static final int REASON_WORLD_TRANSFER_NOT_PRIMARY_CLIENT = 105;
+    public static final int REASON_SERVER_SHUTDOWN = 106;
+    public static final int REASON_GAME_SETUP_CANCELLED = 107;
+    public static final int REASON_GAME_SETUP_FAILED = 108;
 
     public int reason = REASON_UNKNOWN;
     public boolean hideDisconnectionScreen;

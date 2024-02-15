@@ -6,6 +6,11 @@ import com.google.common.annotations.Beta;
 public interface BlockID {
     int AIR = 0;
     int STONE = 1;
+    int GRASS_BLOCK = 2;
+    /**
+     * @deprecated use {@link #GRASS_BLOCK} instead
+     */
+    @Deprecated
     int GRASS = 2;
     int DIRT = 3;
     int COBBLESTONE = 4;
@@ -24,6 +29,7 @@ public interface BlockID {
     int COAL_ORE = 16;
     int OAK_LOG = 17; //TODO: 1.19.80: flattening
     int LOG = 17;
+    int OAK_LEAVES = 18; //TODO: 1.20.70 flattening
     int LEAVES = 18;
     int SPONGE = 19;
     int GLASS = 20;
@@ -180,12 +186,15 @@ public interface BlockID {
     int BLOCK_HOPPER = 154;
     int QUARTZ_BLOCK = 155;
     int QUARTZ_STAIRS = 156;
+    int OAK_DOUBLE_SLAB = 157; //TODO: 1.20.70 flattening
     int DOUBLE_WOODEN_SLAB = 157;
+    int OAK_SLAB = 158; //TODO: 1.20.70 flattening
     int WOODEN_SLAB = 158;
     int WHITE_TERRACOTTA = 159; //TODO: 1.20.30: flattening
     int STAINED_HARDENED_CLAY = 159;
     int WHITE_STAINED_GLASS_PANE = 160; //TODO: 1.20.20: flattening
     int STAINED_GLASS_PANE = 160;
+    int ACACIA_LEAVES = 161; //TODO: 1.20.70 flattening
     int LEAVES2 = 161;
     int ACACIA_LOG = 162; //TODO: 1.19.80: flattening
     int LOG2 = 162;
@@ -223,6 +232,7 @@ public interface BlockID {
     int REPEATING_COMMAND_BLOCK = 188;
     int CHAIN_COMMAND_BLOCK = 189;
     int HARD_GLASS_PANE = 190;
+    int HARD_WHITE_STAINED_GLASS_PANE = 191; //TODO: 1.20.60 flattening
     int HARD_STAINED_GLASS_PANE = 191;
     int CHEMICAL_HEAT = 192;
     int BLOCK_SPRUCE_DOOR = 193;
@@ -300,6 +310,7 @@ public interface BlockID {
     int OBSERVER = 251;
     int STRUCTURE_BLOCK = 252;
     int HARD_GLASS = 253;
+    int HARD_WHITE_STAINED_GLASS = 254; //TODO: 1.20.60 flattening
     int HARD_STAINED_GLASS = 254;
     int RESERVED6 = 255;
 
@@ -513,6 +524,7 @@ public interface BlockID {
     int BLOCK_CAMPFIRE = 464;
     int LAVA_CAULDRON = 465; //TODO: 1.20.0 remove
     int JIGSAW = 466; //TODO: meta 29
+    int OAK_WOOD = 467; //TODO: 1.20.70 flattening
     int WOOD = 467;
     int COMPOSTER = 468;
     int LIT_BLAST_FURNACE = 469;
@@ -616,7 +628,7 @@ public interface BlockID {
     int COPPER_ORE = 566;
     int LIGHTNING_ROD = 567;
     int CRAFTER = 568;
-
+    int VAULT = 569;
     int TRIAL_SPAWNER = 570;
 
     int DRIPSTONE_BLOCK = 572;
@@ -952,7 +964,21 @@ public interface BlockID {
     int GREEN_STAINED_GLASS_PANE = 910;
     int RED_STAINED_GLASS_PANE = 911;
     int BLACK_STAINED_GLASS_PANE = 912;
-
+    int HARD_ORANGE_STAINED_GLASS_PANE = 913;
+    int HARD_MAGENTA_STAINED_GLASS_PANE = 914;
+    int HARD_LIGHT_BLUE_STAINED_GLASS_PANE = 915;
+    int HARD_YELLOW_STAINED_GLASS_PANE = 916;
+    int HARD_LIME_STAINED_GLASS_PANE = 917;
+    int HARD_PINK_STAINED_GLASS_PANE = 918;
+    int HARD_GRAY_STAINED_GLASS_PANE = 919;
+    int HARD_LIGHT_GRAY_STAINED_GLASS_PANE = 920;
+    int HARD_CYAN_STAINED_GLASS_PANE = 921;
+    int HARD_PURPLE_STAINED_GLASS_PANE = 922;
+    int HARD_BLUE_STAINED_GLASS_PANE = 923;
+    int HARD_BROWN_STAINED_GLASS_PANE = 924;
+    int HARD_GREEN_STAINED_GLASS_PANE = 925;
+    int HARD_RED_STAINED_GLASS_PANE = 926;
+    int HARD_BLACK_STAINED_GLASS_PANE = 927;
     int ORANGE_STAINED_GLASS = 928;
     int MAGENTA_STAINED_GLASS = 929;
     int LIGHT_BLUE_STAINED_GLASS = 930;
@@ -968,6 +994,21 @@ public interface BlockID {
     int GREEN_STAINED_GLASS = 940;
     int RED_STAINED_GLASS = 941;
     int BLACK_STAINED_GLASS = 942;
+    int HARD_ORANGE_STAINED_GLASS = 943;
+    int HARD_MAGENTA_STAINED_GLASS = 944;
+    int HARD_LIGHT_BLUE_STAINED_GLASS = 945;
+    int HARD_YELLOW_STAINED_GLASS = 946;
+    int HARD_LIME_STAINED_GLASS = 947;
+    int HARD_PINK_STAINED_GLASS = 948;
+    int HARD_GRAY_STAINED_GLASS = 949;
+    int HARD_LIGHT_GRAY_STAINED_GLASS = 950;
+    int HARD_CYAN_STAINED_GLASS = 951;
+    int HARD_PURPLE_STAINED_GLASS = 952;
+    int HARD_BLUE_STAINED_GLASS = 953;
+    int HARD_BROWN_STAINED_GLASS = 954;
+    int HARD_GREEN_STAINED_GLASS = 955;
+    int HARD_RED_STAINED_GLASS = 956;
+    int HARD_BLACK_STAINED_GLASS = 957;
 
     int ORANGE_CONCRETE_POWDER = 964;
     int MAGENTA_CONCRETE_POWDER = 965;
@@ -1060,9 +1101,34 @@ public interface BlockID {
     int WAXED_EXPOSED_COPPER_TRAPDOOR = 1052;
     int WAXED_WEATHERED_COPPER_TRAPDOOR = 1053;
     int WAXED_OXIDIZED_COPPER_TRAPDOOR = 1054;
+    int SPRUCE_LEAVES = 1055;
+    int BIRCH_LEAVES = 1056;
+    int JUNGLE_LEAVES = 1057;
+    int DARK_OAK_LEAVES = 1058;
+    int SPRUCE_SLAB = 1059;
+    int BIRCH_SLAB = 1060;
+    int JUNGLE_SLAB = 1061;
+    int ACACIA_SLAB = 1062;
+    int DARK_OAK_SLAB = 1063;
+    int SPRUCE_DOUBLE_SLAB = 1064;
+    int BIRCH_DOUBLE_SLAB = 1065;
+    int JUNGLE_DOUBLE_SLAB = 1066;
+    int ACACIA_DOUBLE_SLAB = 1067;
+    int DARK_OAK_DOUBLE_SLAB = 1068;
+    int SPRUCE_WOOD = 1069;
+    int BIRCH_WOOD = 1070;
+    int JUNGLE_WOOD = 1071;
+    int ACACIA_WOOD = 1072;
+    int DARK_OAK_WOOD = 1073;
+    int STRIPPED_OAK_WOOD = 1074;
+    int STRIPPED_SPRUCE_WOOD = 1075;
+    int STRIPPED_BIRCH_WOOD = 1076;
+    int STRIPPED_JUNGLE_WOOD = 1077;
+    int STRIPPED_ACACIA_WOOD = 1078;
+    int STRIPPED_DARK_OAK_WOOD = 1079;
 
 
-    int UNDEFINED = 1055;
+    int UNDEFINED = 1080;
 
     @Beta
     int COARSE_DIRT = DIRT;
@@ -1080,14 +1146,6 @@ public interface BlockID {
     int DARK_OAK_SAPLING = SAPLING;
     @Beta
     int RED_SAND = SAND;
-    @Beta
-    int OAK_LEAVES = LEAVES;
-    @Beta
-    int SPRUCE_LEAVES = LEAVES;
-    @Beta
-    int BIRCH_LEAVES = LEAVES;
-    @Beta
-    int JUNGLE_LEAVES = LEAVES;
     @Beta
     int CHISELED_SANDSTONE = SANDSTONE;
     @Beta
@@ -1196,34 +1254,6 @@ public interface BlockID {
     int QUARTZ_PILLAR = QUARTZ_BLOCK;
     @Beta
     int SMOOTH_QUARTZ_BLOCK = QUARTZ_BLOCK;
-    @Beta
-    int OAK_DOUBLE_SLAB = DOUBLE_WOODEN_SLAB;
-    @Beta
-    int SPRUCE_DOUBLE_SLAB = DOUBLE_WOODEN_SLAB;
-    @Beta
-    int BIRCH_DOUBLE_SLAB = DOUBLE_WOODEN_SLAB;
-    @Beta
-    int JUNGLE_DOUBLE_SLAB = DOUBLE_WOODEN_SLAB;
-    @Beta
-    int ACACIA_DOUBLE_SLAB = DOUBLE_WOODEN_SLAB;
-    @Beta
-    int DARK_OAK_DOUBLE_SLAB = DOUBLE_WOODEN_SLAB;
-    @Beta
-    int OAK_SLAB = WOODEN_SLAB;
-    @Beta
-    int SPRUCE_SLAB = WOODEN_SLAB;
-    @Beta
-    int BIRCH_SLAB = WOODEN_SLAB;
-    @Beta
-    int JUNGLE_SLAB = WOODEN_SLAB;
-    @Beta
-    int ACACIA_SLAB = WOODEN_SLAB;
-    @Beta
-    int DARK_OAK_SLAB = WOODEN_SLAB;
-    @Beta
-    int ACACIA_LEAVES = LEAVES2;
-    @Beta
-    int DARK_OAK_LEAVES = LEAVES2;
     @Beta
     int DARK_PRISMARINE = PRISMARINE;
     @Beta
@@ -1386,28 +1416,4 @@ public interface BlockID {
     int CUT_SANDSTONE_DOUBLE_SLAB = DOUBLE_STONE_SLAB4;
     @Beta
     int CUT_RED_SANDSTONE_DOUBLE_SLAB = DOUBLE_STONE_SLAB4;
-    @Beta
-    int OAK_WOOD = WOOD;
-    @Beta
-    int SPRUCE_WOOD = WOOD;
-    @Beta
-    int BIRCH_WOOD = WOOD;
-    @Beta
-    int JUNGLE_WOOD = WOOD;
-    @Beta
-    int ACACIA_WOOD = WOOD;
-    @Beta
-    int DARK_OAK_WOOD = WOOD;
-    @Beta
-    int STRIPPED_OAK_WOOD = WOOD;
-    @Beta
-    int STRIPPED_SPRUCE_WOOD = WOOD;
-    @Beta
-    int STRIPPED_BIRCH_WOOD = WOOD;
-    @Beta
-    int STRIPPED_JUNGLE_WOOD = WOOD;
-    @Beta
-    int STRIPPED_ACACIA_WOOD = WOOD;
-    @Beta
-    int STRIPPED_DARK_OAK_WOOD = WOOD;
 }

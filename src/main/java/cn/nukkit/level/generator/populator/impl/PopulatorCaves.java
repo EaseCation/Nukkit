@@ -187,7 +187,7 @@ public class PopulatorCaves extends Populator {
 
                                 int material = chunk.getBlockId(0, xx, yy, zz);
 //                                int materialAbove = chunk.getBlockId(0, xx, yy + 1, zz);
-                                if (material == Block.GRASS || material == Block.MYCELIUM) {
+                                if (material == Block.GRASS_BLOCK || material == Block.MYCELIUM) {
                                     grassFound = true;
                                 }
                                 //TODO: check this
@@ -266,7 +266,7 @@ public class PopulatorCaves extends Populator {
                 }
             case STONE:
             case DIRT:
-            case GRASS:
+            case GRASS_BLOCK:
             case HARDENED_CLAY:
             case STAINED_HARDENED_CLAY:
             case SANDSTONE:

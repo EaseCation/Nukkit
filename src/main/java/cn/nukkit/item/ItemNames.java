@@ -1,5 +1,7 @@
 package cn.nukkit.item;
 
+import com.google.common.annotations.Beta;
+
 public interface ItemNames extends ItemBlockNames {
     String GLOW_STICK = "glow_stick";
 
@@ -280,6 +282,8 @@ public interface ItemNames extends ItemBlockNames {
     String ALLAY_SPAWN_EGG = "allay_spawn_egg";
     String CAMEL_SPAWN_EGG = "camel_spawn_egg";
     String SNIFFER_SPAWN_EGG = "sniffer_spawn_egg";
+    String BREEZE_SPAWN_EGG = "breeze_spawn_egg";
+    String ARMADILLO_SPAWN_EGG = "armadillo_spawn_egg";
     String TRADER_LLAMA_SPAWN_EGG = "trader_llama_spawn_egg";
     String EXPERIENCE_BOTTLE = "experience_bottle";
     String FIRE_CHARGE = "fire_charge";
@@ -461,9 +465,18 @@ public interface ItemNames extends ItemBlockNames {
     @Deprecated
     String APPLEENCHANTED = "appleenchanted";
     String HEART_OF_THE_SEA = "heart_of_the_sea";
+    /**
+     * @since 1.20.60
+     */
+    @Beta
+    String TURTLE_SCUTE = "turtle_scute";
+//    /**
+//     * @deprecated use {@link #TURTLE_SCUTE} instead
+//     */
+//    @Deprecated
     String SCUTE = "scute";
     /**
-     * @deprecated use {@link #SCUTE} instead
+     * @deprecated use {@link #TURTLE_SCUTE} instead
      */
     @Deprecated
     String TURTLE_SHELL_PIECE = "turtle_shell_piece";

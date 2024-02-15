@@ -1232,6 +1232,8 @@ public enum SoundEnum {
     TILT_DOWN_BIG_DRIPLEAF("tilt_down.big_dripleaf"),
     TILT_UP_BIG_DRIPLEAF("tilt_up.big_dripleaf"),
     UI_CARTOGRAPHY_TABLE_TAKE_RESULT("ui.cartography_table.take_result"),
+    UI_DRAWER_CLOSE("ui.drawer_close"),
+    UI_DRAWER_OPEN("ui.drawer_open"),
     UI_LOOM_SELECT_PATTERN("ui.loom.select_pattern"),
     UI_LOOM_TAKE_RESULT("ui.loom.take_result"),
     UI_STONECUTTER_TAKE_RESULT("ui.stonecutter.take_result"),

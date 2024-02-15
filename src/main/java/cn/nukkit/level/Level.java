@@ -121,7 +121,7 @@ public class Level implements ChunkManager, Metadatable {
     private static final boolean[] randomTickBlocks = new boolean[Block.BLOCK_ID_COUNT];
     //TODO: move to Block class
     static {
-        randomTickBlocks[Block.GRASS] = true;
+        randomTickBlocks[Block.GRASS_BLOCK] = true;
         randomTickBlocks[Block.FARMLAND] = true;
         randomTickBlocks[Block.MYCELIUM] = true;
         randomTickBlocks[Block.SAPLING] = true;
@@ -2647,7 +2647,8 @@ public class Level implements ChunkManager, Metadatable {
             item = Items.air();
         }
 
-        boolean isSilkTouch = item.getEnchantment(Enchantment.SILK_TOUCH) != null;
+        boolean isEnchantedBook = item.getId() == Item.ENCHANTED_BOOK;
+        boolean isSilkTouch = !isEnchantedBook && item.getEnchantment(Enchantment.SILK_TOUCH) != null;
 
         if (player != null) {
             if (player.getGamemode() == Player.ADVENTURE) {
@@ -2692,7 +2693,7 @@ public class Level implements ChunkManager, Metadatable {
                 breakTime *= 1 - (0.3 * (miningFatigue.getAmplifier() + 1));
             }
 
-            Enchantment eff = item.getEnchantment(Enchantment.EFFICIENCY);
+            Enchantment eff = !isEnchantedBook ? item.getEnchantment(Enchantment.EFFICIENCY) : null;
             if (eff != null && eff.getLevel() > 0) {
                 breakTime *= 1 - (0.3 * eff.getLevel());
             }
@@ -3622,14 +3623,24 @@ public class Level implements ChunkManager, Metadatable {
                         }
 
                         if (player.isSubChunkRequestAvailable()) {
-                            player.sendChunk(x, z, subChunkCount, cachedData, packetCache.getSubRequestModeFullChunkPacket());
+                            int protocol = player.getProtocol();
+                            if (protocol >= 649) {
+                                player.sendChunk(x, z, subChunkCount, cachedData, packetCache.getSubRequestModeFullChunkPacketUncompressed());
+                            } else {
+                                player.sendChunk(x, z, subChunkCount, cachedData, packetCache.getSubRequestModeFullChunkPacket());
+                            }
                         } else {
                             if (blockVersion == null) {
                                 iter.remove();
                                 continue;
                             }
 
-                            player.sendChunk(x, z, subChunkCount, cachedData, packetCache.getFullChunkPacket(blockVersion));
+                            int protocol = player.getProtocol();
+                            if (protocol >= 649) {
+                                player.sendChunk(x, z, subChunkCount, cachedData, packetCache.getFullChunkPacketUncompressed(blockVersion));
+                            } else {
+                                player.sendChunk(x, z, subChunkCount, cachedData, packetCache.getFullChunkPacket(blockVersion));
+                            }
                         }
 
                         iter.remove();
@@ -3734,14 +3745,26 @@ public class Level implements ChunkManager, Metadatable {
                         }
 
                         if (player.isSubChunkRequestAvailable()) {
-                            player.sendChunk(x, z, subChunkCount, cachedData, packetCache.getSubRequestModeFullChunkPacket());
+                            int protocol = player.getProtocol();
+                            if (protocol >= 649) {
+                                player.sendChunk(x, z, subChunkCount, cachedData, packetCache.getSubRequestModeFullChunkPacketUncompressed());
+                            } else {
+                                player.sendChunk(x, z, subChunkCount, cachedData, packetCache.getSubRequestModeFullChunkPacket());
+                            }
                         } else {
                             StaticVersion blockVersion = player.getBlockVersion();
                             if (blockVersion == null) {
                                 continue;
                             }
 
-                            BatchPacket packet = packetCache.getFullChunkPacket(blockVersion);
+                            DataPacket packet;
+                            int protocol = player.getProtocol();
+                            if (protocol >= 649) {
+                                packet = packetCache.getFullChunkPacketUncompressed(blockVersion);
+                            } else {
+                                packet = packetCache.getFullChunkPacket(blockVersion);
+                            }
+
                             if (packet == null) {
                                 requestChunk(x, z, player);
                                 continue;

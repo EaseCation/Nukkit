@@ -138,8 +138,8 @@ public enum ParticleEffect {
     WATER_EVAPORATION_ACTOR("minecraft:water_evaporation_actor_emitter"),
     WATER_EVAPORATION_BUCKET("minecraft:water_evaporation_bucket_emitter"),
     WATER_EVAPORATION_MANUAL("minecraft:water_evaporation_manual"),
-    WATER_SPASH_MANUAL("minecraft:water_splash_particle_manual"),
     WATER_SPLASH("minecraft:water_splash_particle"),
+    WATER_SPLASH_MANUAL("minecraft:water_splash_particle_manual"),
     WATER_WAKE("minecraft:water_wake_particle"),
     WAX("minecraft:wax_particle"),
     WITHER_BOSS_INVULNERABLE("minecraft:wither_boss_invulnerable");

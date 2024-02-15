@@ -54,7 +54,7 @@ public class ObjectSavannaTree extends TreeGenerator {
                 BlockVector3 down = position.down();
                 int block = level.getBlockIdAt(0, down.getX(), down.getY(), down.getZ());
 
-                if ((block == Block.GRASS || block == Block.DIRT) && position.getY() < heightRange.getMaxY() - i - 1) {
+                if ((block == Block.GRASS_BLOCK || block == Block.DIRT) && position.getY() < heightRange.getMaxY() - i - 1) {
                     this.setDirtAt(level, position.down());
                     BlockFace face = BlockFace.Plane.HORIZONTAL.random(rand);
                     int k2 = i - rand.nextBoundedInt(4) - 1;

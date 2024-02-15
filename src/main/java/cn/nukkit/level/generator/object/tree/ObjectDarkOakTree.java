@@ -29,7 +29,7 @@ public class ObjectDarkOakTree extends TreeGenerator {
             BlockVector3 blockpos = position.down();
             int block = level.getBlockIdAt(0, blockpos.getX(), blockpos.getY(), blockpos.getZ());
 
-            if (block != Block.GRASS && block != Block.DIRT) {
+            if (block != Block.GRASS_BLOCK && block != Block.DIRT) {
                 return false;
             } else if (!this.placeTreeOfHeight(level, position, i)) {
                 return false;

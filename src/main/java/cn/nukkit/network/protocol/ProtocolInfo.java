@@ -32,6 +32,7 @@ public interface ProtocolInfo {
     int REMOVE_ACTOR_PACKET = 0x0e; // 14 c
     int ADD_ITEM_ACTOR_PACKET = 0x0f; // 15 c
     int ADD_HANGING_ACTOR_PACKET = 0x10; // 16 c D
+    int SERVER_PLAYER_POST_MOVE_POSITION_PACKET = 0x10; // 16 c
     int TAKE_ITEM_ACTOR_PACKET = 0x11; // 17 c
     int MOVE_ACTOR_ABSOLUTE_PACKET = 0x12; // 18 cs
     int MOVE_PLAYER_PACKET = 0x13; // 19 cs
@@ -87,7 +88,7 @@ public interface ProtocolInfo {
     int MAP_INFO_REQUEST_PACKET = 0x44; // 68 s
     int REQUEST_CHUNK_RADIUS_PACKET = 0x45; // 69 s
     int CHUNK_RADIUS_UPDATED_PACKET = 0x46; // 70 c
-    int ITEM_FRAME_DROP_ITEM_PACKET = 0x47; // 71 s
+    int ITEM_FRAME_DROP_ITEM_PACKET = 0x47; // 71 s D
     int GAME_RULES_CHANGED_PACKET = 0x48; // 72 c
     int CAMERA_PACKET = 0x49; // 73 c
     int BOSS_EVENT_PACKET = 0x4a; // 74 cs
@@ -143,8 +144,8 @@ public interface ProtocolInfo {
     int LEVEL_EVENT_GENERIC_PACKET = 0x7c; // 124 c
     int LECTERN_UPDATE_PACKET = 0x7d; // 125 s
     int VIDEO_STREAM_CONNECT_PACKET = 0x7e; // 126 c D
-    int ADD_ENTITY_PACKET = 0x7f; // 127 c
-    int REMOVE_ENTITY_PACKET = 0x80; // 128 c
+    int ADD_ENTITY_PACKET = 0x7f; // 127 c D
+    int REMOVE_ENTITY_PACKET = 0x80; // 128 c D
     int CLIENT_CACHE_STATUS_PACKET = 0x81; // 129 s
     int ON_SCREEN_TEXTURE_ANIMATION_PACKET = 0x82; // 130 c
     int MAP_CREATE_LOCKED_COPY_PACKET = 0x83; // 131 s
