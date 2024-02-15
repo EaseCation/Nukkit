@@ -5,6 +5,7 @@ import cn.nukkit.Server;
 import cn.nukkit.block.Block;
 import cn.nukkit.blockentity.BlockEntity;
 import cn.nukkit.entity.Entity;
+import cn.nukkit.level.HeightRange;
 import cn.nukkit.level.format.LevelProvider;
 import cn.nukkit.level.format.LevelProviderManager;
 import cn.nukkit.level.format.LevelProviderManager.LevelProviderHandle;
@@ -526,7 +527,6 @@ public class Chunk extends BaseChunk {
 
     @Override
     public boolean compress() {
-        super.compress();
         boolean result = false;
         for (cn.nukkit.level.format.ChunkSection section : getSections()) {
             if (section instanceof ChunkSection) {
@@ -537,5 +537,10 @@ public class Chunk extends BaseChunk {
             }
         }
         return result;
+    }
+
+    @Override
+    public HeightRange getHeightRange() {
+        return Anvil.DEFAULT_HEIGHT_RANGE;
     }
 }

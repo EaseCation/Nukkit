@@ -103,9 +103,9 @@ public class CraftingManager {
 
     @SuppressWarnings("unchecked")
     private void loadRecipes(Config config) {
-        List<Map> recipes = config.getMapList("recipes");
+        List<Map<?, ?>> recipes = config.getMapList("recipes");
         log.info("Loading recipes...");
-        for (Map<String, Object> recipe : recipes) {
+        for (Map<?, ?> recipe : recipes) {
             try {
                 int type = Utils.toInt(recipe.get("type"));
                 switch (type) {
@@ -216,9 +216,9 @@ public class CraftingManager {
         }
 
         // Load brewing recipes
-        List<Map> potionMixes = config.getMapList("potionMixes");
+        List<Map<?, ?>> potionMixes = config.getMapList("potionMixes");
 
-        for (Map potionMix : potionMixes) {
+        for (Map<?, ?> potionMix : potionMixes) {
             int fromPotionId = ((Number) potionMix.get("fromPotionId")).intValue(); // gson returns doubles...
             int ingredient = ((Number) potionMix.get("ingredient")).intValue();
             int toPotionId = ((Number) potionMix.get("toPotionId")).intValue();
@@ -226,9 +226,9 @@ public class CraftingManager {
             registerBrewingRecipe(new BrewingRecipe(Item.get(ItemID.POTION, fromPotionId), Item.get(ingredient), Item.get(ItemID.POTION, toPotionId)));
         }
 
-        List<Map> containerMixes = config.getMapList("containerMixes");
+        List<Map<?, ?>> containerMixes = config.getMapList("containerMixes");
 
-        for (Map containerMix : containerMixes) {
+        for (Map<?, ?> containerMix : containerMixes) {
             int fromItemId = ((Number) containerMix.get("fromItemId")).intValue();
             int ingredient = ((Number) containerMix.get("ingredient")).intValue();
             int toItemId = ((Number) containerMix.get("toItemId")).intValue();

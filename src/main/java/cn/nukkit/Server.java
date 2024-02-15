@@ -10,6 +10,7 @@ import cn.nukkit.data.ItemIdMap;
 import cn.nukkit.data.ServerConfiguration;
 import cn.nukkit.dispenser.DispenseBehaviorRegister;
 import cn.nukkit.entity.Entities;
+import cn.nukkit.entity.Entity;
 import cn.nukkit.entity.attribute.Attribute;
 import cn.nukkit.entity.data.Skin;
 import cn.nukkit.event.HandlerList;
@@ -41,8 +42,6 @@ import cn.nukkit.metadata.LevelMetadataStore;
 import cn.nukkit.metadata.PlayerMetadataStore;
 import cn.nukkit.nbt.NBTIO;
 import cn.nukkit.nbt.tag.CompoundTag;
-import cn.nukkit.nbt.tag.DoubleTag;
-import cn.nukkit.nbt.tag.FloatTag;
 import cn.nukkit.nbt.tag.ListTag;
 import cn.nukkit.network.CompressBatchedTask;
 import cn.nukkit.network.Network;
@@ -1606,24 +1605,13 @@ public class Server {
         }
 
         Position spawn = this.getDefaultLevel().getSafeSpawn();
-        CompoundTag nbt = new CompoundTag()
+        CompoundTag nbt = Entity.getDefaultNBT(spawn)
                 .putLong("firstPlayed", System.currentTimeMillis() / 1000)
                 .putLong("lastPlayed", System.currentTimeMillis() / 1000)
-                .putList(new ListTag<DoubleTag>("Pos")
-                        .add(new DoubleTag("0", spawn.x))
-                        .add(new DoubleTag("1", spawn.y))
-                        .add(new DoubleTag("2", spawn.z)))
                 .putString("Level", this.getDefaultLevel().getName())
                 .putList(new ListTag<>("Inventory"))
 //                .putCompound("Achievements", new CompoundTag())
                 .putInt("playerGameType", this.getGamemode())
-                .putList(new ListTag<DoubleTag>("Motion")
-                        .add(new DoubleTag("0", 0))
-                        .add(new DoubleTag("1", 0))
-                        .add(new DoubleTag("2", 0)))
-                .putList(new ListTag<FloatTag>("Rotation")
-                        .add(new FloatTag("0", 0))
-                        .add(new FloatTag("1", 0)))
                 .putFloat("FallDistance", 0)
                 .putShort("Fire", 0)
                 .putShort("Air", 300)

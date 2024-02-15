@@ -188,7 +188,7 @@ public class EntityBoat extends EntityVehicle {
                 int count = 0;
 
                 int y = getFloorY() - 1;
-                if (level.isValidHeight(y)) {
+                if (level.getHeightRange().isValidBlockY(y)) {
                     for (int x = boundingBox.getFloorMinX(); x <= boundingBox.getFloorMaxX(); x++) {
                         for (int z = boundingBox.getFloorMinZ(); z <= boundingBox.getFloorMaxZ(); z++) {
                             Block block =  this.level.getBlock(x, y, z, false);

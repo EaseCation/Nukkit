@@ -5,6 +5,8 @@ package cn.nukkit.math;
  * Nukkit Project
  */
 public class Vector2f {
+    public static final Vector2f ZERO = new Vector2f(0, 0);
+
     public final float x;
     public final float y;
 

@@ -45,7 +45,7 @@ public class BlockNetherVinesTwisting extends BlockNetherVines {
             head = above;
         }
 
-        int maxHeight = level.getMaxHeight();
+        int maxHeight = level.getHeightRange().getMaxY() - 1;
         int headY = head.getFloorY();
         if (headY >= maxHeight) {
             return;

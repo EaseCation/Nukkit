@@ -27,7 +27,6 @@ public enum LevelDBKey {
     BLENDING_DATA('@'),
     ENTITY_DIGEST_VERSION('A'),
     OLD_VERSION('v'),
-    NUKKIT_DATA('f'), // Nukkit only
     ;
 
     private final byte encoded;
@@ -68,6 +67,9 @@ public enum LevelDBKey {
                 (byte) ((chunkZ >>> 16) & 0xff),
                 (byte) ((chunkZ >>> 24) & 0xff),
                 (byte) (dimension & 0xff),
+                (byte) ((dimension >>> 8) & 0xff),
+                (byte) ((dimension >>> 16) & 0xff),
+                (byte) ((dimension >>> 24) & 0xff),
                 this.encoded,
         };
     }
@@ -83,7 +85,7 @@ public enum LevelDBKey {
                 (byte) ((chunkZ >>> 16) & 0xff),
                 (byte) ((chunkZ >>> 24) & 0xff),
                 this.encoded,
-                (byte) (chunkY & 0xff),
+                (byte) chunkY,
         };
     }
 
@@ -101,8 +103,11 @@ public enum LevelDBKey {
                 (byte) ((chunkZ >>> 16) & 0xff),
                 (byte) ((chunkZ >>> 24) & 0xff),
                 (byte) (dimension & 0xff),
+                (byte) ((dimension >>> 8) & 0xff),
+                (byte) ((dimension >>> 16) & 0xff),
+                (byte) ((dimension >>> 24) & 0xff),
                 this.encoded,
-                (byte) (chunkY & 0xff),
+                (byte) chunkY,
         };
     }
 }

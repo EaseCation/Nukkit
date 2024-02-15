@@ -72,7 +72,7 @@ public abstract class EntityFireball extends EntityProjectile {
             setOnFire(1);
         }
 
-        if (age > 1200 || isCollided || !level.isValidHeight(y)) {
+        if (age > 1200 || isCollided || !level.getHeightRange().isValidBlockY(y)) {
             close();
             hasUpdate = false;
         }

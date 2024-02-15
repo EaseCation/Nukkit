@@ -2,7 +2,7 @@ package cn.nukkit.level.generator.populator.impl;
 
 import cn.nukkit.block.Block;
 import cn.nukkit.level.ChunkManager;
-import cn.nukkit.level.biome.EnumBiome;
+import cn.nukkit.level.biome.BiomeID;
 import cn.nukkit.level.format.FullChunk;
 import cn.nukkit.level.generator.populator.type.Populator;
 import cn.nukkit.math.Mth;
@@ -226,7 +226,7 @@ public class PopulatorRavines extends Populator {
                         continue;
                     }
 
-                    if (!carved && chunk.getBiomeId(Mth.floor(startX) & 0xf, Mth.floor(startZ) & 0xf) == EnumBiome.OCEAN.id) {
+                    if (!carved && chunk.getBiomeId(Mth.floor(startX) & 0xf, Mth.floor(startZ) & 0xf) == BiomeID.OCEAN) {
                         return false;
                     }
                     carved = true;

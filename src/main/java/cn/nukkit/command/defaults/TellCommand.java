@@ -17,7 +17,7 @@ import java.util.Objects;
 public class TellCommand extends VanillaCommand {
 
     public TellCommand(String name) {
-        super(name, "%commands.tell.description", "%nukkit.command.message.usage", "w"/*, "msg"*/); //FIXME: msg 与插件的 FriendChat 冲突
+        super(name, "%commands.tell.description", "%nukkit.command.message.usage", "w", "msg");
         this.setPermission("nukkit.command.tell");
         this.commandData.flags.add(CommandFlag.NOT_CHEAT);
         this.commandParameters.clear();

@@ -1,5 +1,7 @@
 package cn.nukkit.level.generator;
 
+import cn.nukkit.level.Dimension;
+import cn.nukkit.level.HeightRange;
 import cn.nukkit.level.format.generic.BaseFullChunk;
 
 public class SingleChunkManager extends SimpleChunkManager {
@@ -40,5 +42,13 @@ public class SingleChunkManager extends SimpleChunkManager {
         chunk = null;
         CX = Integer.MAX_VALUE;
         CZ = Integer.MAX_VALUE;
+    }
+
+    @Override
+    public HeightRange getHeightRange() {
+        if (chunk != null) {
+            return chunk.getHeightRange();
+        }
+        return Dimension.OVERWORLD.getHeightRange();
     }
 }

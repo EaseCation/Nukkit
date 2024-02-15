@@ -1,29 +1,42 @@
 package cn.nukkit.level.format.leveldb;
 
 import cn.nukkit.block.Block;
+import cn.nukkit.level.HeightRange;
+import cn.nukkit.level.Level;
+import cn.nukkit.level.biome.BiomeID;
 import cn.nukkit.level.format.ChunkSection;
 import cn.nukkit.level.format.LevelProvider;
 import cn.nukkit.level.format.LevelProviderManager;
 import cn.nukkit.level.format.LevelProviderManager.LevelProviderHandle;
 import cn.nukkit.level.format.generic.BaseChunk;
+import cn.nukkit.level.format.generic.EmptyChunkSection;
 import cn.nukkit.level.util.PalettedSubChunkStorage;
 import cn.nukkit.nbt.tag.CompoundTag;
+import cn.nukkit.utils.BinaryStream;
+import cn.nukkit.utils.ChunkException;
 
 import javax.annotation.Nullable;
 import java.util.Arrays;
 import java.util.List;
 import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantLock;
+import java.util.concurrent.locks.ReentrantReadWriteLock;
 
 import static cn.nukkit.level.format.leveldb.LevelDbConstants.*;
 
 public class LevelDbChunk extends BaseChunk {
-    protected PalettedSubChunkStorage[] biomes3d; //TODO
+    protected static final byte SECTION_COUNT = 64;
+
+    protected PalettedSubChunkStorage[] biomes3d;
+    protected final Lock biomeReadLock;
+    protected final Lock biomeWriteLock;
+
     /**
-     * 0-256, ZZZZXXXX key bit order.
+     * ZZZZXXXX key bit order.
      */
     protected short[] heightmap;
 
+    //TODO: atomic?
     protected boolean terrainGenerated;
     protected boolean terrainPopulated;
 
@@ -34,19 +47,24 @@ public class LevelDbChunk extends BaseChunk {
 //    protected boolean randomBlockTickingDirty;
 //    protected boolean blockEntitiesDirty;
 //    protected boolean entitiesDirty;
+//    protected boolean borderBlocksDirty;
 
     protected final Lock ioLock;
 
     public LevelDbChunk(@Nullable LevelProvider level, int chunkX, int chunkZ) {
-        this(level, chunkX, chunkZ, null, new short[SUB_CHUNK_2D_SIZE], null, null, null, null);
+        this(level, chunkX, chunkZ, null, new short[SUB_CHUNK_2D_SIZE], null, null, null);
     }
 
     public LevelDbChunk(@Nullable LevelProvider level, int chunkX, int chunkZ, @Nullable LevelDbSubChunk[] sections,
-                        @Nullable short[] heightmap, @Nullable byte[] biomes2d, @Nullable PalettedSubChunkStorage[] biomes3d,
+                        @Nullable short[] heightmap, @Nullable PalettedSubChunkStorage[] biomes,
                         @Nullable List<CompoundTag> entities, @Nullable List<CompoundTag> blockEntities) {
         this.ioLock = new ReentrantLock();
         this.provider = level;
         this.setPosition(chunkX, chunkZ);
+
+        ReentrantReadWriteLock biomeLock = new ReentrantReadWriteLock();
+        this.biomeReadLock = biomeLock.readLock();
+        this.biomeWriteLock = biomeLock.writeLock();
 
         if (sections != null) {
             if (sections.length == SECTION_COUNT) {
@@ -57,11 +75,13 @@ public class LevelDbChunk extends BaseChunk {
         } else {
             this.sections = new LevelDbSubChunk[SECTION_COUNT];
         }
-        for (int i = 0; i < SECTION_COUNT; i++) {
-            ChunkSection section = this.sections[i];
+        HeightRange heightRange = getHeightRange();
+        for (int chunkY = heightRange.getMinChunkY(); chunkY < heightRange.getMaxChunkY(); chunkY++) {
+            int index = Level.subChunkYtoIndex(chunkY);
+            ChunkSection section = this.sections[index];
             if (section == null) {
-                section = new LevelDbSubChunk(this, i);
-                this.sections[i] = section;
+                section = new LevelDbSubChunk(this, chunkY);
+                this.sections[index] = section;
             }
             ((LevelDbSubChunk) section).setParent(this);
         }
@@ -73,12 +93,19 @@ public class LevelDbChunk extends BaseChunk {
             this.recalculateHeightMap();
         }
 
-        if (biomes2d != null && biomes2d.length == SUB_CHUNK_2D_SIZE) {
-            this.biomes = biomes2d;
+        if (biomes != null) {
+            if (biomes.length == SECTION_COUNT) {
+                this.biomes3d = biomes;
+            } else {
+                this.biomes3d = Arrays.copyOf(biomes, SECTION_COUNT);
+            }
         } else {
-            this.biomes = new byte[SUB_CHUNK_2D_SIZE];
+            this.biomes3d = new PalettedSubChunkStorage[SECTION_COUNT];
         }
-        this.biomes3d = biomes3d;
+        int bottomIndex = Level.subChunkYtoIndex(heightRange.getMinChunkY());
+        if (this.biomes3d[bottomIndex] == null) {
+            this.biomes3d[bottomIndex] = PalettedSubChunkStorage.ofBiome(BiomeID.OCEAN);
+        }
 
         this.NBTentities = entities;
         this.NBTtiles = blockEntities;
@@ -137,33 +164,247 @@ public class LevelDbChunk extends BaseChunk {
 
     @Override
     public int getBiomeId(int x, int z) {
-        return this.biomes[index2d(x, z)] & 0xff;
-//        return this.getBiomeId(x, 0, z);
+        int bottomIndex = Level.subChunkYtoIndex(getHeightRange().getMinChunkY());
+
+        biomeReadLock.lock();
+        try {
+            return this.biomes3d[bottomIndex].get(x, 0, z);
+        } finally {
+            biomeReadLock.unlock();
+        }
     }
 
     @Override
     public int getBiomeId(int x, int y, int z) {
-        return this.biomes[index2d(x, z)] & 0xff;
-//        return this.biomes3d[0].get(x, 0, z);
-    }
+        int chunkY = y >> 4;
+        int index = Level.subChunkYtoIndex(chunkY);
 
-    @Override
-    public void setBiomeId(int x, int z, byte biomeId) {
-//        this.biomes[index2d(x, z)] = biomeId;
-        this.setBiomeId(x, 0, z, biomeId);
-    }
+        biomeReadLock.lock();
+        try {
+            PalettedSubChunkStorage storage = this.biomes3d[index];
 
-    @Override
-    public void setBiomeId(int x, int y, int z, byte biomeId) {
-        int index = index2d(x, z);
-        if (this.biomes[index] == biomeId) {
-            return;
+            if (storage == null) {
+                int minChunkY = getHeightRange().getMinChunkY();
+                for (int subChunkY = chunkY - 1; subChunkY >= minChunkY; subChunkY--) {
+                    PalettedSubChunkStorage below = this.biomes3d[Level.subChunkYtoIndex(subChunkY)];
+                    if (below == null) {
+                        continue;
+                    }
+                    return below.get(x, 15, z);
+                }
+
+                return BiomeID.OCEAN;
+            }
+
+            return storage.get(x, y & 0xf, z);
+        } finally {
+            biomeReadLock.unlock();
         }
-        this.biomes[index] = biomeId;
-//        this.biomes3d[0].set(x, 0, z, biomeId);
+    }
+
+    @Override
+    public void setBiomeId(int x, int z, int biomeId) {
+        int bottomIndex = Level.subChunkYtoIndex(getHeightRange().getMinChunkY());
+
+        biomeWriteLock.lock();
+        try {
+            PalettedSubChunkStorage storage = this.biomes3d[bottomIndex];
+
+            int previous = storage.get(x, 0, z);
+            if (previous == biomeId) {
+                return;
+            }
+
+            for (int y = 0; y < 16; y++) {
+                storage.set(x, y, z, biomeId);
+            }
+        } finally {
+            biomeWriteLock.unlock();
+        }
 
         this.heightmapOrBiomesDirty = true;
         this.setChanged();
+    }
+
+    @Override
+    public void setBiomeId(int x, int y, int z, int biomeId) {
+        int chunkY = y >> 4;
+        int index = Level.subChunkYtoIndex(chunkY);
+        int localY = y & 0xf;
+
+        biomeWriteLock.lock();
+        try {
+            PalettedSubChunkStorage storage = this.biomes3d[index];
+
+            if (storage == null) {
+                HeightRange heightRange = getHeightRange();
+                for (int subChunkY = chunkY - 1; subChunkY >= heightRange.getMinChunkY(); subChunkY--) {
+                    PalettedSubChunkStorage below = this.biomes3d[Level.subChunkYtoIndex(subChunkY)];
+                    if (below == null) {
+                        continue;
+                    }
+
+                    if (localY == 0 && below.get(x, 15, z) == biomeId) {
+                        return;
+                    }
+
+                    storage = below.copy();
+                    this.biomes3d[index] = storage;
+
+                    int aboveChunkY;
+                    if (localY == 15 && (aboveChunkY = chunkY + 1) < heightRange.getMaxChunkY()) {
+                        this.biomes3d[Level.subChunkYtoIndex(aboveChunkY)] = below.copy();
+                    }
+                    break;
+                }
+                assert storage != null : "bottom biome storage is null";
+            } else {
+                int previous = storage.get(x, localY, z);
+                if (previous == biomeId) {
+                    return;
+                }
+            }
+
+            storage.set(x, localY, z, biomeId);
+        } finally {
+            biomeWriteLock.unlock();
+        }
+
+        this.heightmapOrBiomesDirty = true;
+        this.setChanged();
+    }
+
+    @Override
+    public void fillBiome(int biomeId) {
+        HeightRange heightRange = getHeightRange();
+        int minChunkHeight = heightRange.getMinChunkY();
+        int maxChunkHeight = heightRange.getMaxChunkY();
+
+        int bottomIndex = Level.subChunkYtoIndex(minChunkHeight);
+        PalettedSubChunkStorage storage = PalettedSubChunkStorage.ofBiome(biomeId);
+
+        biomeWriteLock.lock();
+        try {
+            biomes3d[bottomIndex] = storage;
+
+            for (int chunkY = minChunkHeight + 1; chunkY < maxChunkHeight; chunkY++) {
+                biomes3d[Level.subChunkYtoIndex(chunkY)] = null;
+            }
+        } finally {
+            biomeWriteLock.unlock();
+        }
+    }
+
+    @Override
+    public void writeBiomeTo(BinaryStream stream, boolean network) {
+        HeightRange heightRange = getHeightRange();
+        int minChunkHeight = heightRange.getMinChunkY();
+        int maxChunkHeight = heightRange.getMaxChunkY();
+
+        biomeReadLock.lock();
+        try {
+            for (int chunkY = minChunkHeight; chunkY < maxChunkHeight; chunkY++) {
+                PalettedSubChunkStorage storage = biomes3d[Level.subChunkYtoIndex(chunkY)];
+
+                if (storage == null) {
+                    stream.putByte((byte) -1);
+                    continue;
+                }
+
+                if (network) {
+                    storage.writeTo(stream);
+                } else {
+                    storage.writeToDiskBiome(stream);
+                }
+            }
+        } finally {
+            biomeReadLock.unlock();
+        }
+    }
+
+    @Override
+    public int getFullBlock(int layer, int x, int y, int z) {
+        return this.sections[Level.subChunkYtoIndex(y >> 4)].getFullBlock(layer, x, y & 0xf, z);
+    }
+
+    @Override
+    public Block getAndSetBlock(int layer, int x, int y, int z, Block block) {
+        int index = Level.subChunkYtoIndex(y >> 4);
+        try {
+            setChanged();
+            return this.sections[index].getAndSetBlock(layer, x, y & 0xf, z, block);
+        } catch (ChunkException e) {
+            this.setInternalSection(index, getProviderHandle().getSubChunkFactory().create(index));
+            return this.sections[index].getAndSetBlock(layer, x, y & 0xf, z, block);
+        } finally {
+            removeInvalidTile(x, y, z);
+        }
+    }
+
+    @Override
+    public boolean setFullBlockId(int layer, int x, int y, int z, int fullId) {
+        int index = Level.subChunkYtoIndex(y >> 4);
+        try {
+            setChanged();
+            return this.sections[index].setFullBlockId(layer, x, y & 0xf, z, fullId);
+        } catch (ChunkException e) {
+            this.setInternalSection(index, getProviderHandle().getSubChunkFactory().create(index));
+            return this.sections[index].setFullBlockId(layer, x, y & 0xf, z, fullId);
+        } finally {
+            removeInvalidTile(x, y, z);
+        }
+    }
+
+    @Override
+    public boolean setBlock(int layer, int x, int y, int z, int blockId, int meta) {
+        int index = Level.subChunkYtoIndex(y >> 4);
+        try {
+            setChanged();
+            return this.sections[index].setBlock(layer, x, y & 0xf, z, blockId, meta);
+        } catch (ChunkException e) {
+            this.setInternalSection(index, getProviderHandle().getSubChunkFactory().create(index));
+            return this.sections[index].setBlock(layer, x, y & 0xf, z, blockId, meta);
+        } finally {
+            removeInvalidTile(x, y, z);
+        }
+    }
+
+    @Override
+    public void setBlockId(int layer, int x, int y, int z, int id) {
+        int index = Level.subChunkYtoIndex(y >> 4);
+        try {
+            this.sections[index].setBlockId(layer, x, y & 0xf, z, id);
+            setChanged();
+        } catch (ChunkException e) {
+            this.setInternalSection(index, getProviderHandle().getSubChunkFactory().create(index));
+            this.sections[index].setBlockId(layer, x, y & 0xf, z, id);
+        } finally {
+            removeInvalidTile(x, y, z);
+        }
+    }
+
+    @Override
+    public int getBlockId(int layer, int x, int y, int z) {
+        return this.sections[Level.subChunkYtoIndex(y >> 4)].getBlockId(layer, x, y & 0xf, z);
+    }
+
+    @Override
+    public int getBlockData(int layer, int x, int y, int z) {
+        return this.sections[Level.subChunkYtoIndex(y >> 4)].getBlockData(layer, x, y & 0xf, z);
+    }
+
+    @Override
+    public void setBlockData(int layer, int x, int y, int z, int data) {
+        int index = Level.subChunkYtoIndex(y >> 4);
+        try {
+            this.sections[index].setBlockData(layer, x, y & 0xf, z, data);
+            setChanged();
+        } catch (ChunkException e) {
+            this.setInternalSection(index, getProviderHandle().getSubChunkFactory().create(index));
+            this.sections[index].setBlockData(layer, x, y & 0xf, z, data);
+        } finally {
+            removeInvalidTile(x, y, z);
+        }
     }
 
     @Override
@@ -172,8 +413,32 @@ public class LevelDbChunk extends BaseChunk {
     }
 
     @Override
+    public void setBlockSkyLight(int x, int y, int z, int level) {
+        int index = Level.subChunkYtoIndex(y >> 4);
+        try {
+            this.sections[index].setBlockSkyLight(x, y & 0xf, z, level);
+            setChanged();
+        } catch (ChunkException e) {
+            this.setInternalSection(index, getProviderHandle().getSubChunkFactory().create(index));
+            this.sections[index].setBlockSkyLight(x, y & 0xf, z, level);
+        }
+    }
+
+    @Override
     public int getBlockLight(int x, int y, int z) {
         return Block.light[this.getBlockId(0, x, y, z)];
+    }
+
+    @Override
+    public void setBlockLight(int x, int y, int z, int level) {
+        int index = Level.subChunkYtoIndex(y >> 4);
+        try {
+            this.sections[index].setBlockLight(x, y & 0xf, z, level);
+            setChanged();
+        } catch (ChunkException e) {
+            this.setInternalSection(index, getProviderHandle().getSubChunkFactory().create(index));
+            this.sections[index].setBlockLight(x, y & 0xf, z, level);
+        }
     }
 
     @Override
@@ -184,12 +449,13 @@ public class LevelDbChunk extends BaseChunk {
     @Override
     public int getHighestBlockAt(int x, int z, boolean cache) {
         if (cache) {
-            int height = this.getHeightMap(x, z);
-            return height > 0 ? height - 1 : 0;
+            int height = this.getHeightmapValue(x, z);
+            return height > 0 ? Level.indexToY(height - 1, getHeightRange().getYIndexOffset()) : 0;
         }
 
-        for (int chunkY = 15; chunkY >= 0; chunkY--) {
-            LevelDbSubChunk subChunk = this.getSection(chunkY);
+        HeightRange heightRange = getHeightRange();
+        for (int chunkY = heightRange.getMaxChunkY() - 1; chunkY >= heightRange.getMinChunkY(); chunkY--) {
+            ChunkSection subChunk = this.sections[Level.subChunkYtoIndex(chunkY)];
             int baseY = chunkY << 4;
             for (int localY = 15; localY >= 0; localY--) {
                 if (!Block.lightBlocking[subChunk.getBlockId(0, x, localY, z)]) {
@@ -200,17 +466,25 @@ public class LevelDbChunk extends BaseChunk {
                 return y;
             }
         }
-        this.setHeightMap(x, z, 0);
+        this.setHeightmapValue(x, z, 0);
         return 0;
     }
 
     @Override
     public int getHeightMap(int x, int z) {
+        return Level.indexToY(getHeightmapValue(x, z), getHeightRange().getYIndexOffset());
+    }
+
+    private int getHeightmapValue(int x, int z) {
         return this.heightmap[index2d(x, z)];
     }
 
     @Override
     public void setHeightMap(int x, int z, int value) {
+        setHeightmapValue(x, z, Level.yToIndex(value, getHeightRange().getYIndexOffset()));
+    }
+
+    private void setHeightmapValue(int x, int z, int value) {
         int index = index2d(x, z);
         if (this.heightmap[index] == value) {
             return;
@@ -270,23 +544,18 @@ public class LevelDbChunk extends BaseChunk {
                 }
 
                 // thread safe?
-                boolean hasColumn = false;
-                SUB_CHUNKS:
-                for (int chunkY = subChunkY - 1; chunkY >= 0; chunkY--) {
-                    LevelDbSubChunk section = this.getSection(chunkY);
+                for (int chunkY = subChunkY - 1; chunkY >= getHeightRange().getMinChunkY(); chunkY--) {
+                    ChunkSection section = this.sections[Level.subChunkYtoIndex(chunkY)];
                     for (int localY = 15; localY >= 0; localY--) {
                         if (!Block.lightBlocking[section.getBlockId(0, x, localY, z)]) {
                             continue;
                         }
                         this.setHeightMap(x, z, ((chunkY << 4) | localY) + 1);
-                        hasColumn = true;
-                        break SUB_CHUNKS;
+                        return;
                     }
                 }
 
-                if (!hasColumn) {
-                    this.setHeightMap(x, z, 0);
-                }
+                this.setHeightmapValue(x, z, 0);
             }
         }
     }
@@ -305,8 +574,10 @@ public class LevelDbChunk extends BaseChunk {
 
     public void setAllSubChunksDirty() {
         this.subChunksDirty = true;
-        for (int i = 0; i < SECTION_COUNT; i++) {
-            this.sections[i].setDirty();
+
+        HeightRange heightRange = getHeightRange();
+        for (int chunkY = heightRange.getMinChunkY(); chunkY < heightRange.getMaxChunkY(); chunkY++) {
+            this.sections[Level.subChunkYtoIndex(chunkY)].setDirty();
         }
     }
 
@@ -318,13 +589,35 @@ public class LevelDbChunk extends BaseChunk {
 
     @Override
     public boolean compress() {
-        super.compress();
-
         boolean dirty = false;
-        for (int i = 0; i < SECTION_COUNT; i++) {
-            dirty |= this.sections[i].compress();
+        HeightRange heightRange = getHeightRange();
+        for (int chunkY = heightRange.getMinChunkY(); chunkY < heightRange.getMaxChunkY(); chunkY++) {
+            dirty |= this.sections[Level.subChunkYtoIndex(chunkY)].compress();
         }
         this.subChunksDirty |= dirty;
+        return dirty;
+    }
+
+    public boolean compressBiomes() {
+        boolean dirty = false;
+        HeightRange heightRange = getHeightRange();
+        int minChunkY = heightRange.getMinChunkY();
+        int maxChunkY = heightRange.getMaxChunkY();
+
+        biomeWriteLock.lock();
+        try {
+            for (int chunkY = minChunkY; chunkY < maxChunkY; chunkY++) {
+                PalettedSubChunkStorage storage = this.biomes3d[Level.subChunkYtoIndex(chunkY)];
+                if (storage == null) {
+                    continue;
+                }
+                dirty |= storage.compress();
+            }
+        } finally {
+            biomeWriteLock.unlock();
+        }
+
+        this.heightmapOrBiomesDirty |= dirty;
         return dirty;
     }
 
@@ -335,13 +628,30 @@ public class LevelDbChunk extends BaseChunk {
     }
 
     @Override
-    public LevelDbSubChunk getSection(float y) {
-        return (LevelDbSubChunk) this.sections[(int) y];
+    public boolean isSectionEmpty(int chunkY) {
+        return this.sections[Level.subChunkYtoIndex(chunkY)] instanceof EmptyChunkSection;
     }
 
     @Override
-    protected void setInternalSection(float y, ChunkSection section) {
-        this.sections[(int) y] = section;
+    public ChunkSection getSection(int chunkY) {
+        return this.sections[Level.subChunkYtoIndex(chunkY)];
+    }
+
+    @Override
+    public boolean setSection(int chunkY, ChunkSection section) {
+        if (section.isEmpty()) {
+            int index = Level.subChunkYtoIndex(chunkY);
+            this.sections[index] = EmptyChunkSection.EMPTY[index];
+        } else {
+            this.sections[Level.subChunkYtoIndex(chunkY)] = section;
+        }
+        setChanged();
+        return true;
+    }
+
+    @Override
+    protected void setInternalSection(int chunkY, ChunkSection section) {
+        this.sections[Level.subChunkYtoIndex(chunkY)] = section;
 
         ((LevelDbSubChunk) section).setParent(this);
         section.setDirty();
@@ -358,15 +668,58 @@ public class LevelDbChunk extends BaseChunk {
             chunk.heightmap = this.heightmap.clone();
         }
 
-        for (int i = 0; i < chunk.sections.length; i++) {
-            ChunkSection section = chunk.sections[i];
-            if (section == null) {
-                continue;
+        if (biomes3d != null) {
+            HeightRange heightRange = getHeightRange();
+            int minChunkHeight = heightRange.getMinChunkY();
+            int maxChunkHeight = heightRange.getMaxChunkY();
+
+            PalettedSubChunkStorage[] storages = new PalettedSubChunkStorage[biomes3d.length];
+            chunk.biomes3d = storages;
+            biomeReadLock.lock();
+            try {
+                for (int chunkY = minChunkHeight; chunkY < maxChunkHeight; chunkY++) {
+                    int index = Level.subChunkYtoIndex(chunkY);
+                    PalettedSubChunkStorage storage = biomes3d[index];
+                    if (storage == null) {
+                        continue;
+                    }
+                    storages[index] = storage.copy();
+                }
+            } finally {
+                biomeReadLock.unlock();
             }
-            ((LevelDbSubChunk) section).setParent(chunk);
         }
 
+        //TODO: lock
+
         return chunk;
+    }
+
+    @Override
+    protected void cloneSections(BaseChunk newChunk) {
+        if (sections == null) {
+            return;
+        }
+
+        LevelDbChunk chunk = (LevelDbChunk) newChunk;
+        ChunkSection[] newSections = new ChunkSection[sections.length];
+        HeightRange heightRange = getHeightRange();
+        for (int chunkY = heightRange.getMinChunkY(); chunkY < heightRange.getMaxChunkY(); chunkY++) {
+            int index = Level.subChunkYtoIndex(chunkY);
+            LevelDbSubChunk newSection = (LevelDbSubChunk) sections[index].copy();
+            newSection.setParent(chunk);
+            newSections[index] = newSection;
+        }
+        chunk.sections = newSections;
+    }
+
+    @Override
+    public HeightRange getHeightRange() {
+        //TODO: data-driven
+//        if (provider != null) {
+//            return provider.getHeightRange();
+//        }
+        return LevelDB.DEFAULT_HEIGHT_RANGE;
     }
 
     @SuppressWarnings("unused")

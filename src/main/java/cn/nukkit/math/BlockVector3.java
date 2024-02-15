@@ -5,6 +5,8 @@ import cn.nukkit.nbt.tag.IntTag;
 import cn.nukkit.nbt.tag.ListTag;
 
 public class BlockVector3 implements Cloneable {
+    public static final BlockVector3 ZERO = new BlockVector3(0, 0, 0);
+
     public int x;
     public int y;
     public int z;

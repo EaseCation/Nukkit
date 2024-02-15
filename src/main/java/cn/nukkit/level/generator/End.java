@@ -2,7 +2,9 @@ package cn.nukkit.level.generator;
 
 import cn.nukkit.level.ChunkManager;
 import cn.nukkit.level.Level;
+import cn.nukkit.level.biome.BiomeID;
 import cn.nukkit.level.format.generic.BaseFullChunk;
+import cn.nukkit.level.generator.populator.type.Populator;
 import cn.nukkit.math.NukkitRandom;
 import cn.nukkit.math.Vector3;
 import it.unimi.dsi.fastutil.objects.Object2ObjectOpenHashMap;
@@ -61,7 +63,7 @@ public class End extends Generator {
     public void generateChunk(int chunkX, int chunkZ) {
         //TODO
         if (chunkX >= -1 && chunkX < 1 && chunkZ >= -1 && chunkZ < 1) {
-            BaseFullChunk chunk = getChunkManager().getChunk(chunkX, chunkZ);
+            BaseFullChunk chunk = level.getChunk(chunkX, chunkZ);
             for (int y = 16; y < 48; y++) {
                 for (int x = 0; x < 16; x++) {
                     for (int z = 0; z < 16; z++) {
@@ -74,6 +76,14 @@ public class End extends Generator {
 
     @Override
     public void populateChunk(int chunkX, int chunkZ) {
+        BaseFullChunk chunk = level.getChunk(chunkX, chunkZ);
+
+        chunk.fillBiome(BiomeID.THE_END);
+
         //TODO
+//        this.nukkitRandom.setSeed(0xdeadbeef ^ (chunkX << 8) ^ chunkZ ^ this.level.getSeed());
+//        for (Populator populator : this.populators) {
+//            populator.populate(this.level, chunkX, chunkZ, this.nukkitRandom, chunk);
+//        }
     }
 }

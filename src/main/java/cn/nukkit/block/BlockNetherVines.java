@@ -93,7 +93,7 @@ public abstract class BlockNetherVines extends BlockFlowable {
             }
 
             Vector3 pos = getSideVec(getGrowDirection());
-            if (!level.isValidHeight(pos.getFloorY())) {
+            if (!level.getHeightRange().isValidBlockY(pos.getFloorY())) {
                 return 0;
             }
 

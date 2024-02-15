@@ -10,8 +10,6 @@ import cn.nukkit.math.BlockFace;
 
 import java.util.concurrent.ThreadLocalRandom;
 
-import static cn.nukkit.SharedConstants.*;
-
 public class BlockCaveVines extends BlockFlowable {
     public static final int MAX_AGE = 25;
 
@@ -35,10 +33,7 @@ public class BlockCaveVines extends BlockFlowable {
 
     @Override
     public Item toItem(boolean addUserData) {
-        if (ENABLE_ITEM_NAME_PERSISTENCE) {
-            return Item.get(Item.GLOW_BERRIES);
-        }
-        return Item.get(getItemId(CAVE_VINES));
+        return Item.get(Item.GLOW_BERRIES);
     }
 
     @Override
@@ -109,7 +104,7 @@ public class BlockCaveVines extends BlockFlowable {
                 return 0;
             }
 
-            if (!level.isValidHeight(getFloorY() - 1)) {
+            if (!level.getHeightRange().isValidBlockY(getFloorY() - 1)) {
                 return 0;
             }
 

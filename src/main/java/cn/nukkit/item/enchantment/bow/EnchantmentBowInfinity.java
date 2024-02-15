@@ -1,6 +1,7 @@
 package cn.nukkit.item.enchantment.bow;
 
 import cn.nukkit.item.enchantment.Enchantment;
+import cn.nukkit.item.enchantment.EnchantmentNames;
 
 /**
  * author: MagicDroidX
@@ -8,7 +9,7 @@ import cn.nukkit.item.enchantment.Enchantment;
  */
 public class EnchantmentBowInfinity extends EnchantmentBow {
     public EnchantmentBowInfinity() {
-        super(Enchantment.INFINITY, "infinity", "arrowInfinite", Rarity.VERY_RARE);
+        super(Enchantment.INFINITY, EnchantmentNames.INFINITY, "arrowInfinite", Rarity.VERY_RARE);
     }
 
     @Override

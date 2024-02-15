@@ -1,5 +1,22 @@
 package cn.nukkit.utils;
 
+import it.unimi.dsi.fastutil.booleans.BooleanArrayList;
+import it.unimi.dsi.fastutil.booleans.BooleanList;
+import it.unimi.dsi.fastutil.bytes.ByteArrayList;
+import it.unimi.dsi.fastutil.bytes.ByteList;
+import it.unimi.dsi.fastutil.chars.CharArrayList;
+import it.unimi.dsi.fastutil.chars.CharList;
+import it.unimi.dsi.fastutil.doubles.DoubleArrayList;
+import it.unimi.dsi.fastutil.doubles.DoubleList;
+import it.unimi.dsi.fastutil.floats.FloatArrayList;
+import it.unimi.dsi.fastutil.floats.FloatList;
+import it.unimi.dsi.fastutil.ints.IntArrayList;
+import it.unimi.dsi.fastutil.ints.IntList;
+import it.unimi.dsi.fastutil.longs.LongArrayList;
+import it.unimi.dsi.fastutil.longs.LongList;
+import it.unimi.dsi.fastutil.shorts.ShortArrayList;
+import it.unimi.dsi.fastutil.shorts.ShortList;
+
 import java.util.*;
 
 /**
@@ -34,12 +51,13 @@ public class ConfigSection extends LinkedHashMap<String, Object> {
         this();
         if (map == null || map.isEmpty()) return;
         for (Map.Entry<String, Object> entry : map.entrySet()) {
-            if (entry.getValue() instanceof Map) {
-                super.put(entry.getKey(), new ConfigSection((Map) entry.getValue()));
-            } else if (entry.getValue() instanceof List) {
-                super.put(entry.getKey(), parseList((List) entry.getValue()));
+            Object value = entry.getValue();
+            if (value instanceof Map) {
+                super.put(entry.getKey(), new ConfigSection((Map) value));
+            } else if (value instanceof List<?> list) {
+                super.put(entry.getKey(), parseList(list));
             } else {
-                super.put(entry.getKey(), entry.getValue());
+                super.put(entry.getKey(), value);
             }
         }
     }
@@ -53,7 +71,7 @@ public class ConfigSection extends LinkedHashMap<String, Object> {
         this((Map<String, Object>) map);
     }
 
-    private List parseList(List list) {
+    private List<?> parseList(List<?> list) {
         List<Object> newList = new ArrayList<>();
 
         for (Object o : list) {
@@ -75,7 +93,6 @@ public class ConfigSection extends LinkedHashMap<String, Object> {
     public Map<String, Object> getAllMap() {
         return new LinkedHashMap<>(this);
     }
-
 
     /**
      * Get new instance of config section
@@ -101,14 +118,43 @@ public class ConfigSection extends LinkedHashMap<String, Object> {
      * @return
      */
     public <T> T get(String key, T defaultValue) {
-        if (key == null || key.isEmpty()) return defaultValue;
-        if (super.containsKey(key)) return (T) super.get(key);
+        if (key == null || key.isEmpty()) {
+            return defaultValue;
+        }
+        Object value = super.get(key);
+        if (value != null) {
+            return (T) value;
+        }
         String[] keys = key.split("\\.", 2);
-        if (!super.containsKey(keys[0])) return defaultValue;
-        Object value = super.get(keys[0]);
-        if (value instanceof ConfigSection) {
-            ConfigSection section = (ConfigSection) value;
+        value = super.get(keys[0]);
+        if (value == null) {
+            return defaultValue;
+        }
+        if (value instanceof ConfigSection section) {
             return section.get(keys[1], defaultValue);
+        }
+        return defaultValue;
+    }
+
+    public Object getValue(String key) {
+        return this.getValue(key, null);
+    }
+
+    public Object getValue(String key, Object defaultValue) {
+        if (key == null || key.isEmpty()) {
+            return defaultValue;
+        }
+        Object value = super.get(key);
+        if (value != null) {
+            return value;
+        }
+        String[] keys = key.split("\\.", 2);
+        value = super.get(keys[0]);
+        if (value == null) {
+            return defaultValue;
+        }
+        if (value instanceof ConfigSection section) {
+            return section.getValue(keys[1], defaultValue);
         }
         return defaultValue;
     }
@@ -122,12 +168,18 @@ public class ConfigSection extends LinkedHashMap<String, Object> {
     public void set(String key, Object value) {
         String[] subKeys = key.split("\\.", 2);
         if (subKeys.length > 1) {
-            ConfigSection childSection = new ConfigSection();
-            if (this.containsKey(subKeys[0]) && super.get(subKeys[0]) instanceof ConfigSection)
-                childSection = (ConfigSection) super.get(subKeys[0]);
+            String path = subKeys[0];
+            ConfigSection childSection;
+            if (super.get(path) instanceof ConfigSection section) {
+                childSection = section;
+            } else {
+                childSection = new ConfigSection();
+                super.put(path, childSection);
+            }
             childSection.set(subKeys[1], value);
-            super.put(subKeys[0], childSection);
-        } else super.put(subKeys[0], value);
+        } else {
+            super.put(subKeys[0], value);
+        }
     }
 
     /**
@@ -137,7 +189,7 @@ public class ConfigSection extends LinkedHashMap<String, Object> {
      * @return
      */
     public boolean isSection(String key) {
-        Object value = this.get(key);
+        Object value = this.getValue(key);
         return value instanceof ConfigSection;
     }
 
@@ -148,7 +200,8 @@ public class ConfigSection extends LinkedHashMap<String, Object> {
      * @return
      */
     public ConfigSection getSection(String key) {
-        return this.get(key, new ConfigSection());
+        Object value = this.getValue(key, null);
+        return value instanceof ConfigSection section ? section : new ConfigSection();
     }
 
     //@formatter:off
@@ -212,7 +265,8 @@ public class ConfigSection extends LinkedHashMap<String, Object> {
      * @return
      */
     public int getInt(String key, int defaultValue) {
-        return this.get(key, ((Number) defaultValue)).intValue();
+        Object value = this.getValue(key, defaultValue);
+        return value instanceof Number number ? number.intValue() : defaultValue;
     }
 
     /**
@@ -222,7 +276,7 @@ public class ConfigSection extends LinkedHashMap<String, Object> {
      * @return
      */
     public boolean isInt(String key) {
-        Object val = get(key);
+        Object val = getValue(key);
         return val instanceof Integer;
     }
 
@@ -244,7 +298,8 @@ public class ConfigSection extends LinkedHashMap<String, Object> {
      * @return
      */
     public long getLong(String key, long defaultValue) {
-        return this.get(key, ((Number) defaultValue)).longValue();
+        Object value = this.getValue(key, defaultValue);
+        return value instanceof Number number ? number.longValue() : defaultValue;
     }
 
     /**
@@ -254,7 +309,7 @@ public class ConfigSection extends LinkedHashMap<String, Object> {
      * @return
      */
     public boolean isLong(String key) {
-        Object val = get(key);
+        Object val = getValue(key);
         return val instanceof Long;
     }
 
@@ -276,7 +331,8 @@ public class ConfigSection extends LinkedHashMap<String, Object> {
      * @return
      */
     public double getDouble(String key, double defaultValue) {
-        return this.get(key, ((Number) defaultValue)).doubleValue();
+        Object value = this.getValue(key, defaultValue);
+        return value instanceof Number number ? number.doubleValue() : defaultValue;
     }
 
     /**
@@ -286,7 +342,7 @@ public class ConfigSection extends LinkedHashMap<String, Object> {
      * @return
      */
     public boolean isDouble(String key) {
-        Object val = get(key);
+        Object val = getValue(key);
         return val instanceof Double;
     }
 
@@ -308,8 +364,8 @@ public class ConfigSection extends LinkedHashMap<String, Object> {
      * @return
      */
     public String getString(String key, String defaultValue) {
-        Object result = this.get(key, defaultValue);
-        return String.valueOf(result);
+        Object value = this.getValue(key, defaultValue);
+        return value != null ? value.toString() : defaultValue;
     }
 
     /**
@@ -319,7 +375,7 @@ public class ConfigSection extends LinkedHashMap<String, Object> {
      * @return
      */
     public boolean isString(String key) {
-        Object val = get(key);
+        Object val = getValue(key);
         return val instanceof String;
     }
 
@@ -341,7 +397,8 @@ public class ConfigSection extends LinkedHashMap<String, Object> {
      * @return
      */
     public boolean getBoolean(String key, boolean defaultValue) {
-        return this.get(key, defaultValue);
+        Object value = this.getValue(key, defaultValue);
+        return value instanceof Boolean bool ? bool : defaultValue;
     }
 
     /**
@@ -351,7 +408,7 @@ public class ConfigSection extends LinkedHashMap<String, Object> {
      * @return
      */
     public boolean isBoolean(String key) {
-        Object val = get(key);
+        Object val = getValue(key);
         return val instanceof Boolean;
     }
 
@@ -361,7 +418,7 @@ public class ConfigSection extends LinkedHashMap<String, Object> {
      * @param key - key (inside) current section
      * @return
      */
-    public List getList(String key) {
+    public List<?> getList(String key) {
         return this.getList(key, null);
     }
 
@@ -372,8 +429,9 @@ public class ConfigSection extends LinkedHashMap<String, Object> {
      * @param defaultList - default value that will returned if section element is not exists
      * @return
      */
-    public List getList(String key, List defaultList) {
-        return this.get(key, defaultList);
+    public List<?> getList(String key, List<?> defaultList) {
+        Object value = this.getValue(key, defaultList);
+        return value instanceof List<?> list ? list : defaultList;
     }
 
     /**
@@ -383,7 +441,7 @@ public class ConfigSection extends LinkedHashMap<String, Object> {
      * @return
      */
     public boolean isList(String key) {
-        Object val = get(key);
+        Object val = getValue(key);
         return val instanceof List;
     }
 
@@ -394,16 +452,20 @@ public class ConfigSection extends LinkedHashMap<String, Object> {
      * @return
      */
     public List<String> getStringList(String key) {
-        List value = this.getList(key);
+        List<?> value = this.getList(key);
+
         if (value == null) {
             return new ArrayList<>(0);
         }
+
         List<String> result = new ArrayList<>();
+
         for (Object o : value) {
             if (o instanceof String || o instanceof Number || o instanceof Boolean || o instanceof Character) {
                 result.add(String.valueOf(o));
             }
         }
+
         return result;
     }
 
@@ -413,28 +475,28 @@ public class ConfigSection extends LinkedHashMap<String, Object> {
      * @param key - key (inside) current section
      * @return
      */
-    public List<Integer> getIntegerList(String key) {
+    public IntList getIntegerList(String key) {
         List<?> list = getList(key);
+
         if (list == null) {
-            return new ArrayList<>(0);
+            return new IntArrayList(0);
         }
-        List<Integer> result = new ArrayList<>();
+
+        IntList result = new IntArrayList();
 
         for (Object object : list) {
-            if (object instanceof Integer) {
-                result.add((Integer) object);
-            } else if (object instanceof String) {
+            if (object instanceof Number number) {
+                result.add(number.intValue());
+            } else if (object instanceof String string) {
                 try {
-                    result.add(Integer.valueOf((String) object));
-                } catch (Exception ex) {
-                    //ignore
+                    result.add(Integer.parseInt(string));
+                } catch (NumberFormatException ignored) {
                 }
-            } else if (object instanceof Character) {
-                result.add((int) (Character) object);
-            } else if (object instanceof Number) {
-                result.add(((Number) object).intValue());
+            } else if (object instanceof Character character) {
+                result.add((int) character);
             }
         }
+
         return result;
     }
 
@@ -444,23 +506,27 @@ public class ConfigSection extends LinkedHashMap<String, Object> {
      * @param key - key (inside) current section
      * @return
      */
-    public List<Boolean> getBooleanList(String key) {
+    public BooleanList getBooleanList(String key) {
         List<?> list = getList(key);
+
         if (list == null) {
-            return new ArrayList<>(0);
+            return new BooleanArrayList(0);
         }
-        List<Boolean> result = new ArrayList<>();
+
+        BooleanList result = new BooleanArrayList();
+
         for (Object object : list) {
-            if (object instanceof Boolean) {
-                result.add((Boolean) object);
+            if (object instanceof Boolean bool) {
+                result.add(bool);
             } else if (object instanceof String) {
-                if (Boolean.TRUE.toString().equals(object)) {
+                if ("true".equals(object)) {
                     result.add(true);
-                } else if (Boolean.FALSE.toString().equals(object)) {
+                } else if ("false".equals(object)) {
                     result.add(false);
                 }
             }
         }
+
         return result;
     }
 
@@ -470,27 +536,28 @@ public class ConfigSection extends LinkedHashMap<String, Object> {
      * @param key - key (inside) current section
      * @return
      */
-    public List<Double> getDoubleList(String key) {
+    public DoubleList getDoubleList(String key) {
         List<?> list = getList(key);
+
         if (list == null) {
-            return new ArrayList<>(0);
+            return new DoubleArrayList(0);
         }
-        List<Double> result = new ArrayList<>();
+
+        DoubleList result = new DoubleArrayList();
+
         for (Object object : list) {
-            if (object instanceof Double) {
-                result.add((Double) object);
-            } else if (object instanceof String) {
+            if (object instanceof Number number) {
+                result.add(number.doubleValue());
+            } else if (object instanceof String string) {
                 try {
-                    result.add(Double.valueOf((String) object));
-                } catch (Exception ex) {
-                    //ignore
+                    result.add(Double.parseDouble(string));
+                } catch (NumberFormatException ignored) {
                 }
-            } else if (object instanceof Character) {
-                result.add((double) (Character) object);
-            } else if (object instanceof Number) {
-                result.add(((Number) object).doubleValue());
+            } else if (object instanceof Character character) {
+                result.add((double) character);
             }
         }
+
         return result;
     }
 
@@ -500,27 +567,28 @@ public class ConfigSection extends LinkedHashMap<String, Object> {
      * @param key - key (inside) current section
      * @return
      */
-    public List<Float> getFloatList(String key) {
+    public FloatList getFloatList(String key) {
         List<?> list = getList(key);
+
         if (list == null) {
-            return new ArrayList<>(0);
+            return new FloatArrayList(0);
         }
-        List<Float> result = new ArrayList<>();
+
+        FloatList result = new FloatArrayList();
+
         for (Object object : list) {
-            if (object instanceof Float) {
-                result.add((Float) object);
-            } else if (object instanceof String) {
+            if (object instanceof Number number) {
+                result.add(number.floatValue());
+            } else if (object instanceof String string) {
                 try {
-                    result.add(Float.valueOf((String) object));
-                } catch (Exception ex) {
-                    //ignore
+                    result.add(Float.parseFloat(string));
+                } catch (NumberFormatException ignored) {
                 }
-            } else if (object instanceof Character) {
-                result.add((float) (Character) object);
-            } else if (object instanceof Number) {
-                result.add(((Number) object).floatValue());
+            } else if (object instanceof Character character) {
+                result.add((float) character);
             }
         }
+
         return result;
     }
 
@@ -530,27 +598,28 @@ public class ConfigSection extends LinkedHashMap<String, Object> {
      * @param key - key (inside) current section
      * @return
      */
-    public List<Long> getLongList(String key) {
+    public LongList getLongList(String key) {
         List<?> list = getList(key);
+
         if (list == null) {
-            return new ArrayList<>(0);
+            return new LongArrayList(0);
         }
-        List<Long> result = new ArrayList<>();
+
+        LongList result = new LongArrayList();
+
         for (Object object : list) {
-            if (object instanceof Long) {
-                result.add((Long) object);
-            } else if (object instanceof String) {
+            if (object instanceof Number number) {
+                result.add(number.longValue());
+            } else if (object instanceof String string) {
                 try {
-                    result.add(Long.valueOf((String) object));
-                } catch (Exception ex) {
-                    //ignore
+                    result.add(Long.parseLong(string));
+                } catch (NumberFormatException ignored) {
                 }
-            } else if (object instanceof Character) {
-                result.add((long) (Character) object);
-            } else if (object instanceof Number) {
-                result.add(((Number) object).longValue());
+            } else if (object instanceof Character character) {
+                result.add((long) character);
             }
         }
+
         return result;
     }
 
@@ -560,28 +629,25 @@ public class ConfigSection extends LinkedHashMap<String, Object> {
      * @param key - key (inside) current section
      * @return
      */
-    public List<Byte> getByteList(String key) {
+    public ByteList getByteList(String key) {
         List<?> list = getList(key);
 
         if (list == null) {
-            return new ArrayList<>(0);
+            return new ByteArrayList(0);
         }
 
-        List<Byte> result = new ArrayList<>();
+        ByteList result = new ByteArrayList();
 
         for (Object object : list) {
-            if (object instanceof Byte) {
-                result.add((Byte) object);
-            } else if (object instanceof String) {
+            if (object instanceof Number number) {
+                result.add(number.byteValue());
+            } else if (object instanceof String string) {
                 try {
-                    result.add(Byte.valueOf((String) object));
-                } catch (Exception ex) {
-                    //ignore
+                    result.add(Byte.parseByte(string));
+                } catch (NumberFormatException ignored) {
                 }
-            } else if (object instanceof Character) {
-                result.add((byte) ((Character) object).charValue());
-            } else if (object instanceof Number) {
-                result.add(((Number) object).byteValue());
+            } else if (object instanceof Character character) {
+                result.add((byte) character.charValue());
             }
         }
 
@@ -594,26 +660,24 @@ public class ConfigSection extends LinkedHashMap<String, Object> {
      * @param key - key (inside) current section
      * @return
      */
-    public List<Character> getCharacterList(String key) {
+    public CharList getCharacterList(String key) {
         List<?> list = getList(key);
 
         if (list == null) {
-            return new ArrayList<>(0);
+            return new CharArrayList(0);
         }
 
-        List<Character> result = new ArrayList<>();
+        CharList result = new CharArrayList();
 
         for (Object object : list) {
             if (object instanceof Character) {
                 result.add((Character) object);
-            } else if (object instanceof String) {
-                String str = (String) object;
-
+            } else if (object instanceof String str) {
                 if (str.length() == 1) {
                     result.add(str.charAt(0));
                 }
-            } else if (object instanceof Number) {
-                result.add((char) ((Number) object).intValue());
+            } else if (object instanceof Number number) {
+                result.add((char) number.intValue());
             }
         }
 
@@ -626,28 +690,25 @@ public class ConfigSection extends LinkedHashMap<String, Object> {
      * @param key - key (inside) current section
      * @return
      */
-    public List<Short> getShortList(String key) {
+    public ShortList getShortList(String key) {
         List<?> list = getList(key);
 
         if (list == null) {
-            return new ArrayList<>(0);
+            return new ShortArrayList(0);
         }
 
-        List<Short> result = new ArrayList<>();
+        ShortList result = new ShortArrayList();
 
         for (Object object : list) {
-            if (object instanceof Short) {
-                result.add((Short) object);
-            } else if (object instanceof String) {
+            if (object instanceof Number number) {
+                result.add(number.shortValue());
+            } else if (object instanceof String string) {
                 try {
-                    result.add(Short.valueOf((String) object));
-                } catch (Exception ex) {
-                    //ignore
+                    result.add(Short.parseShort(string));
+                } catch (NumberFormatException ignored) {
                 }
-            } else if (object instanceof Character) {
-                result.add((short) ((Character) object).charValue());
-            } else if (object instanceof Number) {
-                result.add(((Number) object).shortValue());
+            } else if (object instanceof Character character) {
+                result.add((short) character.charValue());
             }
         }
 
@@ -660,17 +721,17 @@ public class ConfigSection extends LinkedHashMap<String, Object> {
      * @param key - key (inside) current section
      * @return
      */
-    public List<Map> getMapList(String key) {
-        List<Map> list = getList(key);
-        List<Map> result = new ArrayList<>();
+    public List<Map<?, ?>> getMapList(String key) {
+        List<?> list = getList(key);
+        List<Map<?, ?>> result = new ArrayList<>();
 
         if (list == null) {
             return result;
         }
 
         for (Object object : list) {
-            if (object instanceof Map) {
-                result.add((Map) object);
+            if (object instanceof Map<?, ?> map) {
+                result.add(map);
             }
         }
 
@@ -709,12 +770,17 @@ public class ConfigSection extends LinkedHashMap<String, Object> {
      * @param key
      */
     public void remove(String key) {
-        if (key == null || key.isEmpty()) return;
-        if (super.containsKey(key)) super.remove(key);
-        else if (this.containsKey(".")) {
+        if (key == null || key.isEmpty()) {
+            return;
+        }
+        Object value = super.remove(key);
+        if (value != null) {
+            return;
+        }
+        if (this.containsKey(".")) {
             String[] keys = key.split("\\.", 2);
-            if (super.get(keys[0]) instanceof ConfigSection) {
-                ConfigSection section = (ConfigSection) super.get(keys[0]);
+            value = super.get(keys[0]);
+            if (value instanceof ConfigSection section) {
                 section.remove(keys[1]);
             }
         }
@@ -730,9 +796,8 @@ public class ConfigSection extends LinkedHashMap<String, Object> {
         Set<String> keys = new LinkedHashSet<>();
         this.forEach((key, value) -> {
             keys.add(key);
-            if (value instanceof ConfigSection) {
-                if (child)
-                    ((ConfigSection) value).getKeys(true).forEach(childKey -> keys.add(key + "." + childKey));
+            if (child && value instanceof ConfigSection section) {
+                section.getKeys(true).forEach(childKey -> keys.add(key + "." + childKey));
             }
         });
         return keys;

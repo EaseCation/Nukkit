@@ -131,9 +131,10 @@ public class BlockBamboo extends BlockTransparentMeta {
     public boolean onActivate(Item item, BlockFace face, Player player) {
         int id = item.getId();
         if (id == ItemID.DYE && item.getDamage() == ItemDye.BONE_MEAL) {
+            int maxHeight = level.getHeightRange().getMaxY();
             BlockBamboo top = seekToTop();
             int y = top.getFloorY();
-            if (y >= level.getMaxHeight() || !top.grow(getMaxHeight(getFloorX(), getFloorZ()), y == level.getMaxHeight() - 1 ? 1 : ThreadLocalRandom.current().nextInt(1, 3))) {
+            if (y >= maxHeight - 1 || !top.grow(getMaxHeight(getFloorX(), getFloorZ()), y == maxHeight - 2 ? 1 : ThreadLocalRandom.current().nextInt(1, 3))) {
                 return false;
             }
             //FIXME: unexpected update
@@ -148,7 +149,7 @@ public class BlockBamboo extends BlockTransparentMeta {
 
         if (id == getItemId()) {
             BlockBamboo top = seekToTop();
-            if (top.getFloorY() >= level.getMaxHeight() || !top.grow(Short.MAX_VALUE, 1)) {
+            if (top.getFloorY() >= level.getHeightRange().getMaxY() - 1 || !top.grow(Short.MAX_VALUE, 1)) {
                 return true;
             }
 
@@ -175,7 +176,7 @@ public class BlockBamboo extends BlockTransparentMeta {
             level.useBreakOn(this);
             return Level.BLOCK_UPDATE_NORMAL;
         } else if (type == Level.BLOCK_UPDATE_RANDOM) {
-            if (getFloorY() == level.getMaxHeight()) {
+            if (getFloorY() >= level.getHeightRange().getMaxY() - 1) {
                 return 0;
             }
 

@@ -5,32 +5,28 @@ import cn.nukkit.block.BlockID;
 import cn.nukkit.item.Item;
 import cn.nukkit.level.ChunkManager;
 import cn.nukkit.level.Level;
+import cn.nukkit.level.generator.object.BasicGenerator;
 import cn.nukkit.math.BlockVector3;
 import cn.nukkit.math.RandomSource;
-import cn.nukkit.math.Vector3;
 
-public abstract class TreeGenerator extends cn.nukkit.level.generator.object.BasicGenerator {
+public abstract class TreeGenerator extends BasicGenerator {
 
-    /*
-     * returns whether or not a tree can grow into a block
-     * For example, a tree will not grow into stone
+    /**
+     * returns whether or not a tree can grow into a block.
+     * For example, a tree will not grow into stone.
      */
     protected boolean canGrowInto(int id) {
         return id == Item.AIR || id == Item.LEAVES || id == Item.GRASS_BLOCK || id == Item.DIRT || id == Item.LOG || id == Item.LOG2 || id == Item.SAPLING || id == Item.VINE;
     }
 
-    public void generateSaplings(Level level, RandomSource random, Vector3 pos) {
+    public void generateSaplings(Level level, RandomSource random, BlockVector3 pos) {
     }
 
-    protected void setDirtAt(ChunkManager level, BlockVector3 pos) {
-        setDirtAt(level, new Vector3(pos.x, pos.y, pos.z));
-    }
-
-    /*
-     * sets dirt at a specific location if it isn't already dirt
+    /**
+     * sets dirt at a specific location if it isn't already dirt.
      */
-    protected void setDirtAt(ChunkManager level, Vector3 pos) {
-        if (level.getBlockIdAt(0, (int) pos.x, (int) pos.y, (int) pos.z) != Item.DIRT) {
+    protected void setDirtAt(ChunkManager level, BlockVector3 pos) {
+        if (level.getBlockIdAt(0, pos.x, pos.y, pos.z) != Item.DIRT) {
             this.setBlockAndNotifyAdequately(level, pos, Block.get(BlockID.DIRT));
         }
     }

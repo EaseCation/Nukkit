@@ -818,26 +818,63 @@ public abstract class Entity extends Location implements Metadatable, EntityData
         return getDefaultNBT(pos, null);
     }
 
-    public static CompoundTag getDefaultNBT(Vector3 pos, Vector3 motion) {
-        Location loc = pos instanceof Location ? (Location) pos : null;
-
-        if (loc != null) {
-            return getDefaultNBT(pos, motion, (float) loc.getYaw(), (float) loc.getPitch());
-        }
-
-        return getDefaultNBT(pos, motion, 0, 0);
+    public static CompoundTag getDefaultNBT(double x, double y, double z) {
+        return getDefaultNBT(x, y, z, null);
     }
 
-    public static CompoundTag getDefaultNBT(Vector3 pos, Vector3 motion, float yaw, float pitch) {
+    public static CompoundTag getDefaultNBT(double x, double y, double z, @Nullable Vector3 motion) {
+        if (motion == null) {
+            return getDefaultNBT(x, y, z, 0, 0, 0);
+        }
+        return getDefaultNBT(x, y, z, motion.x, motion.y, motion.z);
+    }
+
+    public static CompoundTag getDefaultNBT(Vector3 pos, @Nullable Vector3 motion) {
+        if (motion == null) {
+            return getDefaultNBT(pos, 0, 0, 0);
+        }
+        return getDefaultNBT(pos, motion.x, motion.y, motion.z);
+    }
+
+    public static CompoundTag getDefaultNBT(Vector3 pos, double motionX, double motionY, double motionZ) {
+        if (pos instanceof Location loc) {
+            return getDefaultNBT(pos.x, pos.y, pos.z, motionX, motionY, motionZ, (float) loc.getYaw(), (float) loc.getPitch());
+        }
+        return getDefaultNBT(pos.x, pos.y, pos.z, motionX, motionY, motionZ);
+    }
+
+    public static CompoundTag getDefaultNBT(double x, double y, double z, double motionX, double motionY, double motionZ) {
+        return getDefaultNBT(x, y, z, motionX, motionY, motionZ, 0, 0);
+    }
+
+    public static CompoundTag getDefaultNBT(Vector3 pos, double motionX, double motionY, double motionZ, float yaw, float pitch) {
+        return getDefaultNBT(pos.x, pos.y, pos.z, motionX, motionY, motionZ, yaw, pitch);
+    }
+
+    public static CompoundTag getDefaultNBT(Vector3 pos, @Nullable Vector3 motion, float yaw, float pitch) {
+        if (motion == null) {
+            return getDefaultNBT(pos.x, pos.y, pos.z, 0, 0, 0, yaw, pitch);
+        }
+        return getDefaultNBT(pos.x, pos.y, pos.z, motion.x, motion.y, motion.z, yaw, pitch);
+    }
+
+    public static CompoundTag getDefaultNBT(double x, double y, double z, @Nullable Vector3 motion, float yaw, float pitch) {
+        if (motion == null) {
+            return getDefaultNBT(x, y, z, 0, 0, 0, yaw, pitch);
+        }
+        return getDefaultNBT(x, y, z, motion.x, motion.y, motion.z, yaw, pitch);
+    }
+
+    public static CompoundTag getDefaultNBT(double x, double y, double z, double motionX, double motionY, double motionZ, float yaw, float pitch) {
         return new CompoundTag()
                 .putList(new ListTag<DoubleTag>("Pos")
-                        .add(new DoubleTag("", pos.x))
-                        .add(new DoubleTag("", pos.y))
-                        .add(new DoubleTag("", pos.z)))
+                        .add(new DoubleTag("", x))
+                        .add(new DoubleTag("", y))
+                        .add(new DoubleTag("", z)))
                 .putList(new ListTag<DoubleTag>("Motion")
-                        .add(new DoubleTag("", motion != null ? motion.x : 0))
-                        .add(new DoubleTag("", motion != null ? motion.y : 0))
-                        .add(new DoubleTag("", motion != null ? motion.z : 0)))
+                        .add(new DoubleTag("", motionX))
+                        .add(new DoubleTag("", motionY))
+                        .add(new DoubleTag("", motionZ)))
                 .putList(new ListTag<FloatTag>("Rotation")
                         .add(new FloatTag("", yaw))
                         .add(new FloatTag("", pitch)));
@@ -1278,7 +1315,7 @@ public abstract class Entity extends Location implements Metadatable, EntityData
         if (this.needEntityBaseTick) {
             this.checkBlockCollision();
 
-            if (this.y < level.getMinHeight() - 18 && this.isAlive()) {
+            if (this.y < level.getHeightRange().getMinY() - 18 && this.isAlive()) {
                 this.attack(new EntityDamageEvent(this, DamageCause.VOID, 4));
                 hasUpdate = true;
             }

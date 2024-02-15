@@ -6,8 +6,6 @@ import javax.annotation.Nullable;
 import java.util.Map;
 import java.util.Objects;
 
-import static cn.nukkit.SharedConstants.*;
-
 public enum GameVersion {
     V1_4_0(261, "1.4.0", "1.4"),
     V1_5_0(270, "1.5.0", "1.5"),
@@ -53,7 +51,7 @@ public enum GameVersion {
     V1_20_60(649, "1.20.60"),
     ;
 
-    private static GameVersion FEATURE_VERSION = ENABLE_BLOCK_STATE_PERSISTENCE ? GameVersion.V1_18_0 : GameVersion.V1_12_0;
+    private static GameVersion FEATURE_VERSION = GameVersion.V1_18_0;
 
     private final int protocol;
     private final String name;

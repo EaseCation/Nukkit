@@ -179,7 +179,7 @@ public class BlockKelp extends BlockTransparentMeta {
             return false;
         }
 
-        if (y >= level.getMaxHeight()) {
+        if (y >= level.getHeightRange().getMaxY() - 1) {
             return false;
         }
 

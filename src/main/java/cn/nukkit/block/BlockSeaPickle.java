@@ -110,7 +110,7 @@ public class BlockSeaPickle extends BlockFlowable {
             int thisX = getFloorX();
             int thisY = getFloorY();
             int thisZ = getFloorZ();
-            int minHeight = level.getMinHeight();
+            int minHeight = level.getHeightRange().getMinY();
             ThreadLocalRandom random = ThreadLocalRandom.current();
             for (int x = thisX - 2; x <= thisX + 2; x++) {
                 for (int z = thisZ - 2; z <= thisZ + 2; z++) {

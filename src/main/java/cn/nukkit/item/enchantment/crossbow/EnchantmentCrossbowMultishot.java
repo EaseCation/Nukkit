@@ -1,11 +1,12 @@
 package cn.nukkit.item.enchantment.crossbow;
 
 import cn.nukkit.item.enchantment.Enchantment;
+import cn.nukkit.item.enchantment.EnchantmentNames;
 
 public class EnchantmentCrossbowMultishot extends EnchantmentCrossbow {
 
     public EnchantmentCrossbowMultishot() {
-        super(Enchantment.MULTISHOT, "multishot", "crossbowMultishot", Rarity.RARE);
+        super(Enchantment.MULTISHOT, EnchantmentNames.MULTISHOT, "crossbowMultishot", Rarity.RARE);
     }
 
     @Override

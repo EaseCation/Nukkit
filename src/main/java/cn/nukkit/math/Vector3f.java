@@ -7,6 +7,7 @@ import cn.nukkit.nbt.tag.ListTag;
 import javax.annotation.Nullable;
 
 public class Vector3f implements Cloneable {
+    public static final Vector3f ZERO = new Vector3f(0, 0, 0);
 
     public float x;
     public float y;

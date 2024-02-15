@@ -7,6 +7,7 @@ import cn.nukkit.blockentity.BlockEntities;
 import cn.nukkit.blockentity.BlockEntity;
 import cn.nukkit.entity.Entity;
 import cn.nukkit.level.ChunkManager;
+import cn.nukkit.level.HeightRange;
 import cn.nukkit.level.Level;
 import cn.nukkit.level.format.FullChunk;
 import cn.nukkit.level.format.LevelProvider;
@@ -15,6 +16,7 @@ import cn.nukkit.nbt.tag.CompoundTag;
 import cn.nukkit.nbt.tag.ListTag;
 import cn.nukkit.nbt.tag.NumberTag;
 import cn.nukkit.nbt.tag.Tag;
+import cn.nukkit.utils.BinaryStream;
 import cn.nukkit.utils.BlockUpdateEntry;
 import it.unimi.dsi.fastutil.ints.Int2IntMap;
 import it.unimi.dsi.fastutil.ints.Int2IntMaps;
@@ -85,9 +87,7 @@ public abstract class BaseFullChunk implements FullChunk, ChunkManager {
 
     protected boolean isInit;
 
-    /** Cache **/
-    protected transient ChunkPacketCache packetCache;
-    protected transient ChunkBlobCache blobCache;
+    protected transient ChunkCachedData cachedData;
 
     @Override
     public BaseFullChunk clone() {
@@ -97,6 +97,7 @@ public abstract class BaseFullChunk implements FullChunk, ChunkManager {
         } catch (CloneNotSupportedException e) {
             return null;
         }
+
         if (this.biomes != null) {
             chunk.biomes = this.biomes.clone();
         }
@@ -118,33 +119,27 @@ public abstract class BaseFullChunk implements FullChunk, ChunkManager {
         }
 
         if (this.heightMap != null) {
-            chunk.heightMap = this.getHeightMapArray().clone();
+            chunk.heightMap = this.heightMap.clone();
         }
+
         return chunk;
     }
 
-    public void setBlobCache(ChunkBlobCache blobCache) {
-        this.blobCache = blobCache;
+    public void setCachedData(ChunkCachedData cachedData) {
+        this.cachedData = cachedData;
     }
 
-    public ChunkBlobCache getBlobCache() {
-        return blobCache;
-    }
-
-    public void setPacketCache(ChunkPacketCache packetCache) {
-        this.packetCache = packetCache;
-    }
-
-    public ChunkPacketCache getPacketCache() {
-        return packetCache;
+    public ChunkCachedData getCachedData() {
+        return cachedData;
     }
 
     @Override
     public void initChunk() {
         if (this.getProvider() != null && !this.isInit) {
             boolean changed = false;
-            if (this.NBTentities != null) {
-                for (CompoundTag nbt : NBTentities) {
+            List<CompoundTag> entities = this.NBTentities;
+            if (entities != null) {
+                for (CompoundTag nbt : entities) {
                     if (!nbt.contains("id")) {
                         this.setChanged();
                         continue;
@@ -162,8 +157,9 @@ public abstract class BaseFullChunk implements FullChunk, ChunkManager {
                 this.NBTentities = null;
             }
 
-            if (this.NBTtiles != null) {
-                for (CompoundTag nbt : NBTtiles) {
+            List<CompoundTag> blockEntities = this.NBTtiles;
+            if (blockEntities != null) {
+                for (CompoundTag nbt : blockEntities) {
                     if (nbt != null) {
                         if (!nbt.contains("id")) {
                             changed = true;
@@ -236,9 +232,14 @@ public abstract class BaseFullChunk implements FullChunk, ChunkManager {
     }
 
     @Override
-    public void setBiomeId(int x, int z, byte biomeId) {
+    public void setBiomeId(int x, int z, int biomeId) {
         this.setChanged();
-        this.biomes[(x << 4) | z] = biomeId;
+        this.biomes[(x << 4) | z] = (byte) biomeId;
+    }
+
+    @Override
+    public void writeBiomeTo(BinaryStream stream, boolean network) {
+        stream.put(biomes);
     }
 
     @Override
@@ -504,7 +505,7 @@ public abstract class BaseFullChunk implements FullChunk, ChunkManager {
     @Override
     public void setChanged() {
         this.changes++;
-        packetCache = null;
+        cachedData = null;
     }
 
     @Override
@@ -603,11 +604,6 @@ public abstract class BaseFullChunk implements FullChunk, ChunkManager {
 
     @Override
     public boolean compress() {
-        ChunkPacketCache pk = this.getPacketCache();
-        if (pk != null) {
-            pk.compress();
-            return true;
-        }
         return false;
     }
 
@@ -647,7 +643,8 @@ public abstract class BaseFullChunk implements FullChunk, ChunkManager {
             }
         }
 
-        for (int y = 0; y <= this.getMaxHeight(); y++) {
+        HeightRange heightRange = getHeightRange();
+        for (int y = heightRange.getMinY(); y < heightRange.getMaxY(); y++) {
             for (int x = 0; x < 16; x++) {
                 for (int z = 0; z < 16; z++) {
                     int fullId = this.getFullBlock(0, x, y, z);

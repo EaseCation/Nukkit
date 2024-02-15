@@ -6,7 +6,7 @@ package cn.nukkit.item.enchantment;
  */
 public class EnchantmentKnockback extends Enchantment {
     protected EnchantmentKnockback() {
-        super(KNOCKBACK, "knockback", "knockback", Rarity.UNCOMMON, EnchantmentType.SWORD);
+        super(KNOCKBACK, EnchantmentNames.KNOCKBACK, "knockback", Rarity.UNCOMMON, EnchantmentType.SWORD);
     }
 
     @Override

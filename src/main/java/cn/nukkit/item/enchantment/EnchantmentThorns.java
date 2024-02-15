@@ -20,7 +20,7 @@ import java.util.concurrent.ThreadLocalRandom;
  */
 public class EnchantmentThorns extends Enchantment {
     protected EnchantmentThorns() {
-        super(THORNS, "thorns", "thorns", Rarity.RARE, EnchantmentType.ARMOR);
+        super(THORNS, EnchantmentNames.THORNS, "thorns", Rarity.RARE, EnchantmentType.ARMOR);
     }
 
     @Override

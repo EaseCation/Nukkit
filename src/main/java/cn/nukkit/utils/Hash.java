@@ -110,20 +110,38 @@ public final class Hash {
         }
     }
 
+    /**
+     * @param x world x
+     * @param y world y
+     * @param z world z
+     * @return world position hash
+     */
     public static long hashBlockPos(int x, int y, int z) {
-        return y + (((long) x & 0x3FFFFFF) << 8) + (((long) z & 0x3FFFFFF) << 34);
+        return ((long) (y & 0x3ff) << 54) | ((long) (x & 0x7ffffff) << 27) | (long) (z & 0x7ffffff);
     }
 
+    /**
+     * @param triple world position hash
+     * @return world x
+     */
     public static int hashBlockPosX(long triple) {
-        return (int) ((((triple >> 8) & 0x3FFFFFF) << 38) >> 38);
+        return (int) (triple << 10 >> 37);
     }
 
+    /**
+     * @param triple world position hash
+     * @return world y
+     */
     public static int hashBlockPosY(long triple) {
-        return (int) (triple & 0xFF);
+        return (int) (triple >> 54);
     }
 
+    /**
+     * @param triple world position hash
+     * @return world z
+     */
     public static int hashBlockPosZ(long triple) {
-        return (int) ((((triple >> 34) & 0x3FFFFFF) << 38) >> 38);
+        return (int) (triple << 37 >> 37);
     }
 
     private Hash() {

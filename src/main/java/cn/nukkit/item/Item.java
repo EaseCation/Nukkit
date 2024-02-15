@@ -136,7 +136,7 @@ public class Item implements Cloneable, ItemID {
 
         Config config = new Config(Config.JSON);
         config.load(Server.class.getClassLoader().getResourceAsStream("creativeitems.json"));
-        List<Map> list = config.getMapList("items");
+        List<Map<?, ?>> list = config.getMapList("items");
 
         for (Map map : list) {
             try {

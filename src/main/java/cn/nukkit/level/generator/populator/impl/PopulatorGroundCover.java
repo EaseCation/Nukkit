@@ -24,14 +24,15 @@ public class PopulatorGroundCover extends Populator {
                 if (realBiome instanceof CoveredBiome) {
                     final CoveredBiome biome = (CoveredBiome) realBiome;
                     //just in case!
-                    synchronized (biome.synchronizeCover) {
+                    biome.synchronizeCover.lock();
+                    try {
                         biome.preCover(realX | x, realZ | z);
                         int coverBlock = biome.getCoverBlock();
 
                         boolean hasCovered = false;
                         int realY;
                         //start one below build limit in case of cover blocks
-                        for (int y = 254; y > 32; y--) {
+                        for (int y = level.getHeightRange().getMaxY() - 1 - 1; y > 32; y--) {
                             if (chunk.getBlockId(0, x, y, z) == STONE) {
                                 COVER:
                                 if (!hasCovered) {
@@ -64,6 +65,8 @@ public class PopulatorGroundCover extends Populator {
                                 }
                             }
                         }
+                    } finally {
+                        biome.synchronizeCover.unlock();
                     }
                 }
             }

@@ -1,6 +1,8 @@
 package cn.nukkit.level.generator;
 
+import cn.nukkit.level.HeightRange;
 import cn.nukkit.level.format.generic.BaseFullChunk;
+
 import java.util.Arrays;
 
 public class PopChunkManager extends SimpleChunkManager {
@@ -9,8 +11,11 @@ public class PopChunkManager extends SimpleChunkManager {
     private int CX = Integer.MAX_VALUE;
     private int CZ = Integer.MAX_VALUE;
 
-    public PopChunkManager(long seed) {
+    private final HeightRange heightRange;
+
+    public PopChunkManager(long seed, HeightRange heightRange) {
         super(seed);
+        this.heightRange = heightRange;
     }
 
     @Override
@@ -89,5 +94,10 @@ public class PopChunkManager extends SimpleChunkManager {
         }
         clean = false;
         chunks[index] = chunk;
+    }
+
+    @Override
+    public HeightRange getHeightRange() {
+        return heightRange;
     }
 }

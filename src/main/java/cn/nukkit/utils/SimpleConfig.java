@@ -92,11 +92,12 @@ public abstract class SimpleConfig {
                         Class fieldArgClass = (Class) aType.getActualTypeArguments()[0];
                         if (fieldArgClass == Integer.class) field.set(this, cfg.getIntegerList(path));
                         else if (fieldArgClass == Boolean.class) field.set(this, cfg.getBooleanList(path));
+                        else if (fieldArgClass == Long.class) field.set(this, cfg.getLongList(path));
                         else if (fieldArgClass == Double.class) field.set(this, cfg.getDoubleList(path));
                         else if (fieldArgClass == Character.class) field.set(this, cfg.getCharacterList(path));
                         else if (fieldArgClass == Byte.class) field.set(this, cfg.getByteList(path));
                         else if (fieldArgClass == Float.class) field.set(this, cfg.getFloatList(path));
-                        else if (fieldArgClass == Short.class) field.set(this, cfg.getFloatList(path));
+                        else if (fieldArgClass == Short.class) field.set(this, cfg.getShortList(path));
                         else if (fieldArgClass == String.class) field.set(this, cfg.getStringList(path));
                     } else field.set(this, cfg.getList(path)); // Hell knows what's kind of List was found :)
                 } else

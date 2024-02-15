@@ -24,89 +24,26 @@ import java.util.zip.Deflater;
 import java.util.zip.DeflaterOutputStream;
 import java.util.zip.GZIPInputStream;
 
-import static cn.nukkit.SharedConstants.*;
-
 /**
  * A Named Binary Tag library for Nukkit Project
  */
 public class NBTIO {
 
     public static CompoundTag putItemHelper(Item item) {
-        if (ENABLE_ITEM_NAME_PERSISTENCE) {
-            return ItemSerializer.serializeItem(item);
-        }
-
-        return putItemHelper(item, null);
+        return ItemSerializer.serializeItem(item);
     }
 
     public static CompoundTag putItemHelper(Item item, int slot) {
-        if (ENABLE_ITEM_NAME_PERSISTENCE) {
-            return ItemSerializer.serializeItemStack(item, slot);
-        }
-
-        CompoundTag tag = new CompoundTag()
-                .putShort("id", item.getId())
-                .putShort("Damage", item.getDamage())
-                .putByte("Count", item.getCount());
-
-        tag.putByte("Slot", slot);
-
-        if (item.hasCompoundTag()) {
-            tag.putCompound("tag", item.getNamedTag());
-        }
-
-        return tag;
+        return ItemSerializer.serializeItemStack(item, slot);
     }
 
     public static CompoundTag putItemHelper(Item item, Integer slot) {
-        if (ENABLE_ITEM_NAME_PERSISTENCE) {
-            return slot == null ? ItemSerializer.serializeItem(item) : ItemSerializer.serializeItemStack(item, slot);
-        }
-
-        CompoundTag tag = new CompoundTag()
-                .putShort("id", item.getId())
-                .putByte("Count", item.getCount())
-                .putShort("Damage", item.getDamage());
-
-        if (slot != null) {
-            tag.putByte("Slot", slot);
-        }
-
-        if (item.hasCompoundTag()) {
-            tag.putCompound("tag", item.getNamedTag());
-        }
-
-        return tag;
+        return slot == null ? ItemSerializer.serializeItem(item) : ItemSerializer.serializeItemStack(item, slot);
     }
 
     public static Item getItemHelper(CompoundTag tag) {
-        if (ENABLE_ITEM_NAME_PERSISTENCE) {
-            ItemUpgrader.upgrade(tag);
-            return ItemSerializer.deserialize(tag);
-        }
-
-        if (!tag.contains("id") || !tag.contains("Count")) {
-            return Items.air();
-        }
-
-        Item item;
-        try {
-            item = Item.get(tag.getShort("id"), !tag.contains("Damage") ? 0 : tag.getShort("Damage"), tag.getByte("Count"));
-        } catch (Exception e) {
-            item = Item.fromIdentifier(tag.getString("id"));
-            if (item == null) {
-                return Items.air();
-            }
-            item.setDamage(!tag.contains("Damage") ? 0 : tag.getShort("Damage"));
-            item.setCount(tag.getByte("Count"));
-        }
-
-        Tag tagTag = tag.get("tag");
-        if (tagTag instanceof CompoundTag) {
-            item.setNamedTag((CompoundTag) tagTag);
-        }
-
-        return item;
+        ItemUpgrader.upgrade(tag);
+        return ItemSerializer.deserialize(tag);
     }
 
     public static CompoundTag putBlockHelper(Block block) {

@@ -26,12 +26,6 @@ public final class SharedConstants {
      * Use bitwise operations.
      */
     public static final boolean DISABLE_SUB_CHUNK_STORAGE_PADDING = true;
-    public static final boolean ENABLE_SUB_CHUNK_NETWORK_OPTIMIZATION = true;
-    public static final boolean ENABLE_EMPTY_SUB_CHUNK_NETWORK_OPTIMIZATION = true;
-
-    public static final boolean DUMP_NETWORK_SUB_CHUNK = !PRODUCTION_ENVIRONMENT && false;
-
-    public static final boolean CHUNK_REQUEST_DEBUG = true;
 
     // storage
 
@@ -41,19 +35,13 @@ public final class SharedConstants {
 
     // misc
 
+    public static final boolean USE_FUNCTION_EVENT_EXECUTOR = true;
+
     public static final int RESOURCE_PACK_CHUNK_SIZE = 128 * 1024; // 128KB
 
     public static final boolean ENABLE_BLOCK_DESTROY_SPEED_COMPATIBILITY = true;
 
-    // deprecated
-
-    public static final boolean ENABLE_BLOCK_STATE_PERSISTENCE = true;
-
-    public static final boolean ENABLE_ITEM_NAME_PERSISTENCE = true;
-
     // experimental
-
-    public static final boolean USE_FUNCTION_EVENT_EXECUTOR = true;
 
     public static final boolean NEXT_UPDATE_NEW_ENTITY_SYSTEM_PREVIEW = !PRODUCTION_ENVIRONMENT && false;
 

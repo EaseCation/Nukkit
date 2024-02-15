@@ -1,6 +1,7 @@
 package cn.nukkit.level.format;
 
 import cn.nukkit.level.GameRules;
+import cn.nukkit.level.HeightRange;
 import cn.nukkit.level.Level;
 import cn.nukkit.level.format.LevelProviderManager.LevelProviderHandle;
 import cn.nukkit.level.format.generic.BaseFullChunk;
@@ -129,4 +130,6 @@ public interface LevelProvider {
     void forEachChunks(Function<FullChunk, Boolean> action, boolean skipCorrupted);
 
     void setSaveChunksOnClose(boolean save);
+
+    HeightRange getHeightRange();
 }

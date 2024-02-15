@@ -24,6 +24,8 @@ public interface ChunkManager {
 
     void setBlockDataAt(int layer, int x, int y, int z, int data);
 
+    HeightRange getHeightRange();
+
     BaseFullChunk getChunk(int chunkX, int chunkZ);
 
     void setChunk(int chunkX, int chunkZ);

@@ -10,7 +10,10 @@ import lombok.ToString;
 public class LevelChunkPacket extends DataPacket {
     public static final byte NETWORK_ID = ProtocolInfo.LEVEL_CHUNK_PACKET;
 
-    public static final int MAX_BLOB_HASHES = 64;
+    /**
+     * this appears large enough for a world height of 1024 blocks + 1 biome
+     */
+    public static final int MAX_BLOB_HASHES = 64 + 1;
 
     /**
      * Client will request all sub-chunks as needed up to the top of the world.
