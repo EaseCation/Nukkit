@@ -2,11 +2,7 @@ package cn.nukkit.entity;
 
 import cn.nukkit.Player;
 import cn.nukkit.Server;
-import cn.nukkit.block.Block;
-import cn.nukkit.block.BlockDripstonePointed;
-import cn.nukkit.block.BlockID;
-import cn.nukkit.block.BlockLiquid;
-import cn.nukkit.block.BlockWater;
+import cn.nukkit.block.*;
 import cn.nukkit.blockentity.BlockEntityPistonArm;
 import cn.nukkit.entity.attribute.Attribute;
 import cn.nukkit.entity.data.*;
@@ -18,7 +14,6 @@ import cn.nukkit.event.player.PlayerInteractEvent;
 import cn.nukkit.event.player.PlayerInteractEvent.Action;
 import cn.nukkit.event.player.PlayerTeleportEvent;
 import cn.nukkit.item.Item;
-import cn.nukkit.item.enchantment.Enchantment;
 import cn.nukkit.level.GameRule;
 import cn.nukkit.level.Level;
 import cn.nukkit.level.Location;
@@ -46,7 +41,10 @@ import lombok.extern.log4j.Log4j2;
 import javax.annotation.Nullable;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.Field;
-import java.util.*;
+import java.util.IdentityHashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Objects;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ThreadLocalRandom;
 
@@ -1080,37 +1078,17 @@ public abstract class Entity extends Location implements Metadatable, EntityData
         }
     }
 
+    public boolean isInvulnerableTo(EntityDamageEvent damageSource) {
+        return this.isClosed() || this.invulnerable && damageSource.getCause() != DamageCause.VOID && !(damageSource.getEntity() instanceof Player player && player.isCreativeLike());
+    }
+
     public boolean attack(EntityDamageEvent source) {
-        if ((source.getCause() == DamageCause.FIRE || source.getCause() == DamageCause.FIRE_TICK
-                || source.getCause() == DamageCause.LAVA || source.getCause() == DamageCause.MAGMA)
-                && (fireProof || hasEffect(Effect.FIRE_RESISTANCE))) {
+        if (this.isInvulnerableTo(source)) {
+            return false;
+        } else {
+            // this.markHurt();  // Java Edition
             return false;
         }
-
-        getServer().getPluginManager().callEvent(source);
-        if (source.isCancelled()) {
-            return false;
-        }
-
-        if (source.getCause() != DamageCause.SUICIDE) {
-            // Make fire aspect to set the target in fire before dealing any damage so the target is in fire on death even if killed by the first hit
-            if (source instanceof EntityDamageByEntityEvent) {
-                Enchantment[] enchantments = ((EntityDamageByEntityEvent) source).getWeaponEnchantments();
-                if (enchantments != null) {
-                    for (Enchantment enchantment : enchantments) {
-                        enchantment.doAttack(((EntityDamageByEntityEvent) source).getDamager(), this);
-                    }
-                }
-            }
-
-            if (this.absorption > 0) {  // Damage Absorption
-                this.setAbsorption(Math.max(0, this.getAbsorption() + source.getDamage(EntityDamageEvent.DamageModifier.ABSORPTION)));
-            }
-        }
-
-        setLastDamageCause(source);
-        setHealth(getHealth() - source.getFinalDamage());
-        return true;
     }
 
     public boolean attack(float damage) {

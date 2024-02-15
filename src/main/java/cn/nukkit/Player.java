@@ -2009,6 +2009,10 @@ public class Player extends EntityHuman implements CommandSender, InventoryHolde
                     }
                     this.inAirTicks = 0;
                     this.highestPosition = this.y;
+                    // 地面阻力
+                    this.motionX *= 0.3;
+                    this.motionY = 0;
+                    this.motionZ *= 0.3;
                 } else {
                     if (this.checkMovement && !this.isGliding() && !server.getAllowFlight() && !this.getAdventureSettings().get(Type.ALLOW_FLIGHT) && this.inAirTicks > 20 && !this.isSleeping() && !this.isImmobile() && !this.isSwimming() && this.riding == null && !this.hasEffect(Effect.LEVITATION) && !this.hasEffect(Effect.SLOW_FALLING)) {
                         double expectedVelocity = (-this.getGravity()) / ((double) this.getDrag()) - ((-this.getGravity()) / ((double) this.getDrag())) * Math.exp(-((double) this.getDrag()) * ((double) (this.inAirTicks - this.startAirTicks)));
@@ -2036,9 +2040,17 @@ public class Player extends EntityHuman implements CommandSender, InventoryHolde
 
                     if (this.isGliding()) this.resetFallDistance();
 
-                    ++this.inAirTicks;
+                    // 空气阻力
+                    this.motionX *= 0.9900000095367432;
+                    this.motionY *= 0.9800000190734863;
+                    this.motionZ *= 0.9900000095367432;
 
+                    ++this.inAirTicks;
                 }
+
+                if (Math.abs(this.motionX) < 0.0001) this.motionX = 0;
+                if (Math.abs(this.motionY) < 0.0001) this.motionY = 0;
+                if (Math.abs(this.motionZ) < 0.0001) this.motionZ = 0;
 
                 if (this.isSurvivalLike()) {
                     if (this.getFoodData() != null) this.getFoodData().update(tickDiff);
@@ -4826,16 +4838,9 @@ public class Player extends EntityHuman implements CommandSender, InventoryHolde
 
             if (add) {
                 source.setDamage((float) (source.getDamage() * 1.3));
-
-                AnimatePacket animate = new AnimatePacket();
-                animate.action = AnimatePacket.Action.CRITICAL_HIT;
-                animate.eid = getId();
-                this.getLevel().addChunkPacket(damager.getChunkX(), damager.getChunkZ(), animate);
-
-                this.getLevel().addLevelSoundEvent(this, LevelSoundEventPacket.SOUND_ATTACK_STRONG);
             }
 
-            if (doubleCritical) {
+            /*if (doubleCritical) {
                 //正在叠刀
                 Player damagerPlayer = (Player)((EntityDamageByEntityEvent) source).getDamager();
                 if (damagerPlayer.attackCriticalThisJump < 2) {
@@ -4852,7 +4857,7 @@ public class Player extends EntityHuman implements CommandSender, InventoryHolde
                 damagerPlayer.dataPacket(animate);
 
                 this.getLevel().addLevelSoundEvent(this, LevelSoundEventPacket.SOUND_ATTACK_STRONG, new Player[]{damagerPlayer});
-            }
+            }*/
         }
 
         if (super.attack(source)) { //!source.isCancelled()
@@ -4862,7 +4867,7 @@ public class Player extends EntityHuman implements CommandSender, InventoryHolde
                 EntityEventPacket pk = new EntityEventPacket();
                 pk.eid = this.id;
                 pk.event = EntityEventPacket.HURT_ANIMATION;
-                Server.broadcastPacket(this.hasSpawned.values(), pk);
+                // 这边只发给自己，因为广播给他人的已经在EntityLiving中发送了
                 this.dataPacket(pk);
                 if (add) {
                     if (((EntityDamageByEntityEvent) source).getDamager() instanceof Player) {
@@ -4870,20 +4875,20 @@ public class Player extends EntityHuman implements CommandSender, InventoryHolde
                             (((EntityDamageByEntityEvent) source).getDamager()).addEffect(Effect.getEffect(Effect.SLOWNESS).setDuration(10).setAmplifier(1).setVisible(false));*/
                         ((Player)(((EntityDamageByEntityEvent) source).getDamager())).attackCriticalThisJump++;
                     }
-                    /*
-                    Random random = ThreadLocalRandom.current();
-                    for (int i = 0; i < 10; i++) {
-                        CriticalParticle par = new CriticalParticle(new Vector3(this.x + random.nextDouble() * 2 - 1, this.y + random.nextDouble() * 2, this.z + random.nextDouble() * 2 - 1));
-                        this.getLevel().addParticle(par);
-                    }*/
+                    // 在这里发送暴击，因为事件可能被取消
+                    AnimatePacket animate = new AnimatePacket();
+                    animate.action = AnimatePacket.Action.CRITICAL_HIT;
+                    animate.eid = getId();
+                    this.getLevel().addChunkPacket(this.getChunkX(), this.getChunkZ(), animate);
+
+                    this.getLevel().addLevelSoundEvent(this, LevelSoundEventPacket.SOUND_ATTACK_STRONG);
                 }
-                if (doubleCritical) {
+                /*if (doubleCritical) {
                     if (((EntityDamageByEntityEvent) source).getDamager() instanceof Player) {
                         Player damagerPlayer = (Player)((EntityDamageByEntityEvent) source).getDamager();
                         damagerPlayer.attackCriticalThisJump++;
                     }
-                }
-
+                }*/
             }
             return true;
         } else {

@@ -152,7 +152,7 @@ public abstract class EntityHumanType extends EntityCreature implements Inventor
     }
 
     @Override
-    public boolean attack(EntityDamageEvent source) {
+    protected boolean damageEntity0(EntityDamageEvent source) {
         if (this.isClosed() || !this.isAlive()) {
             return false;
         }
@@ -173,14 +173,14 @@ public abstract class EntityHumanType extends EntityCreature implements Inventor
             }
 
             source.setDamage(-source.getFinalDamage() * Math.min(Mth.ceil(Math.min(epf, 25) * ((float) ThreadLocalRandom.current().nextInt(50, 100) / 100)), 20) * 0.04f,
-                    DamageModifier.ARMOR_ENCHANTMENTS);
+                DamageModifier.ARMOR_ENCHANTMENTS);
         }
 
         if (source.getCause() != DamageCause.SUICIDE) {
             source.setDamage(-Math.min(this.getAbsorption(), source.getFinalDamage()), DamageModifier.ABSORPTION);
         }
 
-        if (super.attack(source)) {
+        if (super.damageEntity0(source)) {
             if (source.getCause() == DamageCause.SUICIDE) {
                 return true;
             }
@@ -208,18 +208,18 @@ public abstract class EntityHumanType extends EntityCreature implements Inventor
                 }
 
                 if (source.getCause() != DamageCause.VOID
-                        && source.getCause() != DamageCause.MAGIC
-                        && source.getCause() != DamageCause.WITHER
-                        && source.getCause() != DamageCause.HUNGER
-                        && source.getCause() != DamageCause.DROWNING
-                        && source.getCause() != DamageCause.SUFFOCATION
-                        && source.getCause() != DamageCause.FIRE_TICK
-                        && source.getCause() != DamageCause.FREEZE
-                        && source.getCause() != DamageCause.TEMPERATURE
-                        && source.getCause() != DamageCause.FALL
-                        && source.getCause() != DamageCause.STALAGMITE
-                        && source.getCause() != DamageCause.FLY_INTO_WALL
-                        && source.getCause() != DamageCause.SONIC_BOOM
+                    && source.getCause() != DamageCause.MAGIC
+                    && source.getCause() != DamageCause.WITHER
+                    && source.getCause() != DamageCause.HUNGER
+                    && source.getCause() != DamageCause.DROWNING
+                    && source.getCause() != DamageCause.SUFFOCATION
+                    && source.getCause() != DamageCause.FIRE_TICK
+                    && source.getCause() != DamageCause.FREEZE
+                    && source.getCause() != DamageCause.TEMPERATURE
+                    && source.getCause() != DamageCause.FALL
+                    && source.getCause() != DamageCause.STALAGMITE
+                    && source.getCause() != DamageCause.FLY_INTO_WALL
+                    && source.getCause() != DamageCause.SONIC_BOOM
                 ) { // No armor damage
                     if (armor.isUnbreakable() || armor instanceof ItemSkull || armor.getId() == ItemBlockID.CARVED_PUMPKIN || armor.getId() == Item.ELYTRA) {
                         continue;
@@ -239,6 +239,15 @@ public abstract class EntityHumanType extends EntityCreature implements Inventor
         } else {
             return false;
         }
+    }
+
+    @Override
+    public boolean attack(EntityDamageEvent source) {
+        if (this.isClosed() || !this.isAlive()) {
+            return false;
+        }
+
+        return super.attack(source);
     }
 
     protected double calculateEnchantmentProtectionFactor(Item item, EntityDamageEvent source) {

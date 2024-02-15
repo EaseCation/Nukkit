@@ -1,6 +1,5 @@
 package cn.nukkit.entity;
 
-import cn.nukkit.Player;
 import cn.nukkit.Server;
 import cn.nukkit.block.Block;
 import cn.nukkit.block.BlockID;
@@ -8,14 +7,16 @@ import cn.nukkit.block.BlockWater;
 import cn.nukkit.entity.data.FloatEntityData;
 import cn.nukkit.entity.data.ShortEntityData;
 import cn.nukkit.entity.passive.EntityWaterAnimal;
-import cn.nukkit.event.entity.*;
+import cn.nukkit.event.entity.EntityDamageByEntityEvent;
+import cn.nukkit.event.entity.EntityDamageEvent;
 import cn.nukkit.event.entity.EntityDamageEvent.DamageCause;
+import cn.nukkit.event.entity.EntityDeathEvent;
 import cn.nukkit.inventory.PlayerInventory;
 import cn.nukkit.item.Item;
 import cn.nukkit.item.ItemID;
+import cn.nukkit.item.enchantment.Enchantment;
 import cn.nukkit.level.GameRule;
 import cn.nukkit.level.format.FullChunk;
-import cn.nukkit.level.sound.SoundEnum;
 import cn.nukkit.math.Mth;
 import cn.nukkit.math.Vector2;
 import cn.nukkit.math.Vector3;
@@ -24,6 +25,7 @@ import cn.nukkit.nbt.tag.FloatTag;
 import cn.nukkit.network.protocol.EntityEventPacket;
 import cn.nukkit.network.protocol.LevelSoundEventPacket;
 import cn.nukkit.potion.Effect;
+import cn.nukkit.potion.EffectID;
 import cn.nukkit.utils.BlockIterator;
 
 import java.util.ArrayList;
@@ -54,6 +56,7 @@ public abstract class EntityLiving extends Entity implements EntityDamageable {
     @Deprecated
     protected int attackTime = 0;
     protected long nextAllowAttack = 0;  // EC优化，在低TPS时也确保正确的攻击冷却时间
+    protected float lastHurt;
 
     protected boolean invisible = false;
 
@@ -121,24 +124,17 @@ public abstract class EntityLiving extends Entity implements EntityDamageable {
 
     @Override
     public boolean attack(EntityDamageEvent source) {
-        if (source.getCause() != DamageCause.SUICIDE) {
-            if (System.currentTimeMillis() < this.nextAllowAttack/*this.attackTime > 0*/) {
-                EntityDamageEvent lastCause = this.getLastDamageCause();
-                if (this instanceof Player) {
-                    if (lastCause != null && (lastCause.getFinalDamage() == 0 || lastCause.getCause() == DamageCause.FIRE_TICK)) {
-                        //上次伤害是0，这次允许输出
-                    } else {
-                        //叠刀时的自我安慰
-                        if (source instanceof EntityDamageByEntityEvent && source.getCause() == DamageCause.ENTITY_ATTACK && ((EntityDamageByEntityEvent) source).getDamager() instanceof Player)
-                            this.getLevel().addSound(this.add(0, 15, 0), SoundEnum.GAME_PLAYER_HURT, 1, 1, (Player) ((EntityDamageByEntityEvent) source).getDamager());
-                        return false;
-                    }
-                } else {
-                    if (lastCause != null && lastCause.getDamage() >= source.getDamage()) {
-                        return false;
-                    }
-                }
+        if (this.isInvulnerableTo(source)) {
+            return false;
+        } else if (this.isClosed() || !this.isAlive()) {
+            return false;
+        } else if (source.getCause() == DamageCause.FIRE_TICK || source.getCause() == DamageCause.LAVA || source.getCause() == DamageCause.FIRE) {
+            if (this.hasEffect(EffectID.FIRE_RESISTANCE)) {
+                return false;
             }
+        }
+
+        if (source.getCause() != DamageCause.SUICIDE) {
             if (this.noDamageTicks > 0) {
                 EntityDamageEvent lastCause = this.getLastDamageCause();
                 if (lastCause != null && lastCause.getDamage() >= source.getDamage()) {
@@ -147,33 +143,96 @@ public abstract class EntityLiving extends Entity implements EntityDamageable {
             }
         }
 
-        if (super.attack(source)) {
+        float damage = source.getDamage();
+        boolean hurtAffect = true;
+        if (source.getCause() != DamageCause.SUICIDE) {
+            // 冷却中
+            if (System.currentTimeMillis() < this.nextAllowAttack) {
+                if (damage <= this.lastHurt) {
+                    return false;
+                }
+                source.setDamage(damage - lastHurt);
+                if (!damageEntity0(source)) {
+                    return false;
+                }
+                this.lastHurt = damage;
+                // 这边不修改冷却时间，因为只是补上了冷却期间的伤害差
+                hurtAffect = false;
+            } else {
+                if (!damageEntity0(source)) {
+                    return false;
+                }
+                this.lastHurt = damage;
+                // EC优化，在低TPS时也确保正确的攻击冷却时间
+                this.nextAllowAttack = System.currentTimeMillis() + source.getAttackCooldown() * 50L;
+            }
+        }
+        if (hurtAffect) {
+            // 变红效果和音效
+            this.onHurt(source);
+            // 击退
+            if (source instanceof EntityDamageByEntityEvent ev && ev.hasKnockBack()) {
+                double deltaX = this.x - ev.getDamager().x;
+                double deltaZ = this.z - ev.getDamager().z;
+                this.knockBack(ev.getDamager(), damage, deltaX, deltaZ, ((EntityDamageByEntityEvent) source).getKnockBackH(), ((EntityDamageByEntityEvent) source).getKnockBackV());
+            }
+        }
+        return hurtAffect;
+
+        /*if (super.attack(source)) {
             if (source instanceof EntityDamageByEntityEvent) {
                 Entity e = ((EntityDamageByEntityEvent) source).getDamager();
-                /*if (source instanceof EntityDamageByChildEntityEvent) {
+                *//*if (source instanceof EntityDamageByChildEntityEvent) {
                     e = ((EntityDamageByChildEntityEvent) source).getChild();
-                }*/
+                }*//*
 
                 if (e.isOnFire() && !(e instanceof Player)) {
                     this.setOnFire(2 * this.server.getDifficulty());
-                }
-
-                if (((EntityDamageByEntityEvent) source).hasKnockBack()) {
-                    double deltaX = this.x - e.x;
-                    double deltaZ = this.z - e.z;
-                    this.knockBack(e, source.getDamage(), deltaX, deltaZ, ((EntityDamageByEntityEvent) source).getKnockBackH(), ((EntityDamageByEntityEvent) source).getKnockBackV());
                 }
             }
 
             onHurt(source);
 
             // this.attackTime = source.getAttackCooldown();
-            this.nextAllowAttack = System.currentTimeMillis() + source.getAttackCooldown() * 50L; // EC优化，在低TPS时也确保正确的攻击冷却时间
+            // this.nextAllowAttack 在super.attack中已经设置
+            // this.nextAllowAttack = System.currentTimeMillis() + source.getAttackCooldown() * 50L; // EC优化，在低TPS时也确保正确的攻击冷却时间
 
             return true;
         } else {
             return false;
+        }*/
+    }
+
+    /**
+     * 属于EntityLiving的处理伤害逻辑
+     * 在此处应用护甲和附魔、药水等计算
+     * @param source 伤害来源（事件）
+     * @return 是否成功造成伤害
+     */
+    protected boolean damageEntity0(EntityDamageEvent source) {
+        source.call();
+        if (source.isCancelled()) {
+            return false;
         }
+        if (source.getCause() != DamageCause.SUICIDE) {
+            // Make fire aspect to set the target in fire before dealing any damage so the target is in fire on death even if killed by the first hit
+            if (source instanceof EntityDamageByEntityEvent damageByEntityEvent) {
+                Enchantment[] enchantments = damageByEntityEvent.getWeaponEnchantments();
+                if (enchantments != null) {
+                    for (Enchantment enchantment : enchantments) {
+                        enchantment.doAttack(damageByEntityEvent.getDamager(), this);
+                    }
+                }
+            }
+
+            if (this.absorption > 0) {  // Damage Absorption
+                this.setAbsorption(Math.max(0, this.getAbsorption() + source.getDamage(EntityDamageEvent.DamageModifier.ABSORPTION)));
+            }
+        }
+
+        setLastDamageCause(source);
+        setHealth(getHealth() - source.getFinalDamage());
+        return true;
     }
 
     protected void onHurt(EntityDamageEvent source) {
