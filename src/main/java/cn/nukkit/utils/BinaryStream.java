@@ -934,9 +934,7 @@ public class BinaryStream {
     }
 
     public void putSignedBlockPosition(BlockVector3 v) {
-        putVarInt(v.x);
-        putVarInt(v.y);
-        putVarInt(v.z);
+        this.putSignedBlockPosition(v.x, v.y, v.z);
     }
 
     public void putSignedBlockPosition(int x, int y, int z) {
