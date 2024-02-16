@@ -132,8 +132,10 @@ public interface EntityFullNames {
     String CAMEL = "minecraft:" + EntityNames.CAMEL;
     String SNIFFER = "minecraft:" + EntityNames.SNIFFER;
     String BREEZE = "minecraft:" + EntityNames.BREEZE;
-    String WIND_CHARGE_PROJECTILE = "minecraft:" + EntityNames.WIND_CHARGE_PROJECTILE;
+    String BREEZE_WIND_CHARGE_PROJECTILE = "minecraft:" + EntityNames.BREEZE_WIND_CHARGE_PROJECTILE;
     String ARMADILLO = "minecraft:" + EntityNames.ARMADILLO;
+    String WIND_CHARGE_PROJECTILE = "minecraft:" + EntityNames.WIND_CHARGE_PROJECTILE;
+    String BOGGED = "minecraft:" + EntityNames.BOGGED;
 
     String TRADER_LLAMA = "minecraft:" + EntityNames.TRADER_LLAMA;
 

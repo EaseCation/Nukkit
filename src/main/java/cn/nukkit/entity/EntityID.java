@@ -131,8 +131,10 @@ public interface EntityID {
     int CAMEL = 138;
     int SNIFFER = 139;
     int BREEZE = 140;
-    int WIND_CHARGE_PROJECTILE = 141;
+    int BREEZE_WIND_CHARGE_PROJECTILE = 141;
     int ARMADILLO = 142;
+    int WIND_CHARGE_PROJECTILE = 143;
+    int BOGGED = 144;
 
     int TRADER_LLAMA = 157;
 

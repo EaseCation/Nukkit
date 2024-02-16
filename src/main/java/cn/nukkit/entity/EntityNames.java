@@ -131,8 +131,10 @@ public interface EntityNames {
     String CAMEL = "camel";
     String SNIFFER = "sniffer";
     String BREEZE = "breeze";
-    String WIND_CHARGE_PROJECTILE = "wind_charge_projectile";
+    String BREEZE_WIND_CHARGE_PROJECTILE = "breeze_wind_charge_projectile";
     String ARMADILLO = "armadillo";
+    String WIND_CHARGE_PROJECTILE = "wind_charge_projectile";
+    String BOGGED = "bogged";
 
     String TRADER_LLAMA = "trader_llama";
 
