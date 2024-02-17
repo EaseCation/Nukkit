@@ -37,6 +37,7 @@ public final class SharedConstants {
 
     public static final boolean USE_FUNCTION_EVENT_EXECUTOR = true;
 
+    public static final boolean RESOURCE_PACK_ENCRYPTION = false;
     public static final int RESOURCE_PACK_CHUNK_SIZE = 128 * 1024; // 128KB
 
     public static final boolean ENABLE_BLOCK_DESTROY_SPEED_COMPATIBILITY = true;

@@ -4,10 +4,20 @@ import cn.nukkit.Server;
 import com.google.common.io.Files;
 import it.unimi.dsi.fastutil.objects.Object2ObjectLinkedOpenHashMap;
 import lombok.extern.log4j.Log4j2;
+import org.apache.commons.io.FileUtils;
+import org.apache.commons.io.filefilter.TrueFileFilter;
 
+import javax.annotation.Nullable;
 import java.io.File;
+import java.io.FileOutputStream;
 import java.io.IOException;
+import java.nio.file.attribute.FileTime;
+import java.util.Collection;
 import java.util.Map;
+import java.util.TreeSet;
+import java.util.zip.Deflater;
+import java.util.zip.ZipEntry;
+import java.util.zip.ZipOutputStream;
 
 @Log4j2
 public class ResourcePackManager {
@@ -42,7 +52,7 @@ public class ResourcePackManager {
         try {
             ResourcePack resourcePack = null;
 
-            if (!pack.isDirectory()) { //directory resource packs temporarily unsupported
+            if (!pack.isDirectory()) {
                 switch (Files.getFileExtension(pack.getName())) {
                     case "zip":
                     case "mcpack":
@@ -53,6 +63,12 @@ public class ResourcePackManager {
                             .translate("nukkit.resources.unknown-format", pack.getName()));
                         break;
                 }
+            } else {
+                File tempPack = loadDirectoryPack(pack);
+                if (tempPack == null) {
+                    return;
+                }
+                resourcePack = new ZippedResourcePack(tempPack);
             }
 
             if (resourcePack != null) {
@@ -75,6 +91,39 @@ public class ResourcePackManager {
             this.resourcePacks = resourcePacksById.values().toArray(new ResourcePack[0]);
             this.behaviorPacks = behaviorPacksById.values().toArray(new ResourcePack[0]);
         }
+    }
+
+    @Nullable
+    private static File loadDirectoryPack(File directory) {
+        File manifestFile = new File(directory, "manifest.json");
+        if (!manifestFile.exists() || !manifestFile.isFile()) {
+            return null;
+        }
+
+        File tempFile;
+        try {
+            tempFile = File.createTempFile("pack", ".zip");
+            tempFile.deleteOnExit();
+
+            FileTime time = FileTime.fromMillis(0);
+            try (ZipOutputStream stream = new ZipOutputStream(new FileOutputStream(tempFile))) {
+                stream.setLevel(Deflater.BEST_COMPRESSION);
+
+                Collection<File> files = new TreeSet<>(FileUtils.listFiles(directory, TrueFileFilter.INSTANCE, TrueFileFilter.INSTANCE));
+                for (File file : files) {
+                    ZipEntry entry = new ZipEntry(directory.toPath().relativize(file.toPath()).toString())
+                            .setCreationTime(time)
+                            .setLastModifiedTime(time)
+                            .setLastAccessTime(time);
+                    stream.putNextEntry(entry);
+                    stream.write(Files.toByteArray(file));
+                    stream.closeEntry();
+                }
+            }
+        } catch (IOException e) {
+            throw new RuntimeException("Unable to create temporary mcpack file", e);
+        }
+        return tempFile;
     }
 
     public Map<String, ResourcePack> getResourcePacksMap() {
