@@ -1,5 +1,6 @@
 package cn.nukkit.level.biome;
 
+import cn.nukkit.GameVersion;
 import cn.nukkit.level.biome.impl.beach.BeachBiome;
 import cn.nukkit.level.biome.impl.beach.ColdBeachBiome;
 import cn.nukkit.level.biome.impl.cave.DeepDarkBiome;
@@ -37,6 +38,10 @@ import cn.nukkit.level.biome.impl.swamp.MangroveSwampBiome;
 import cn.nukkit.level.biome.impl.swamp.SwampBiome;
 import cn.nukkit.level.biome.impl.swamp.SwamplandMBiome;
 import cn.nukkit.level.biome.impl.taiga.*;
+
+import javax.annotation.Nullable;
+
+import static cn.nukkit.GameVersion.*;
 
 /**
  * @author DaPorkchop_
@@ -86,16 +91,16 @@ public enum EnumBiome {
     MESA(BiomeID.MESA, new MesaBiome()),
     MESA_PLATEAU_F(BiomeID.MESA_PLATEAU_STONE, new MesaPlateauFBiome()),
     MESA_PLATEAU(BiomeID.MESA_PLATEAU, new MesaPlateauBiome()),
-    WARM_OCEAN(BiomeID.WARM_OCEAN, new WarmOceanBiome()),
-    DEEP_WARM_OCEAN(BiomeID.DEEP_WARM_OCEAN, new WarmDeepOceanBiome()),
-    LUKEWARM_OCEAN(BiomeID.LUKEWARM_OCEAN, new LukewarmOceanBiome()),
-    DEEP_LUKEWARM_OCEAN(BiomeID.DEEP_LUKEWARM_OCEAN, new LukewarmDeepOceanBiome()),
-    COLD_OCEAN(BiomeID.COLD_OCEAN, new ColdOceanBiome()),
-    DEEP_COLD_OCEAN(BiomeID.DEEP_COLD_OCEAN, new ColdDeepOceanBiome()),
-    FROZEN_OCEAN(BiomeID.FROZEN_OCEAN, new NewFrozenOceanBiome()),
-    DEEP_FROZEN_OCEAN(BiomeID.DEEP_FROZEN_OCEAN, new FrozenDeepOceanBiome()),
-    BAMBOO_JUNGLE(BiomeID.BAMBOO_JUNGLE, new BambooJungleBiome()),
-    BAMBOO_JUNGLE_HILLS(BiomeID.BAMBOO_JUNGLE_HILLS, new BambooJungleHillsBiome()),
+    WARM_OCEAN(BiomeID.WARM_OCEAN, new WarmOceanBiome(), V1_4_0),
+    DEEP_WARM_OCEAN(BiomeID.DEEP_WARM_OCEAN, new WarmDeepOceanBiome(), V1_4_0),
+    LUKEWARM_OCEAN(BiomeID.LUKEWARM_OCEAN, new LukewarmOceanBiome(), V1_4_0),
+    DEEP_LUKEWARM_OCEAN(BiomeID.DEEP_LUKEWARM_OCEAN, new LukewarmDeepOceanBiome(), V1_4_0),
+    COLD_OCEAN(BiomeID.COLD_OCEAN, new ColdOceanBiome(), V1_4_0),
+    DEEP_COLD_OCEAN(BiomeID.DEEP_COLD_OCEAN, new ColdDeepOceanBiome(), V1_4_0),
+    FROZEN_OCEAN(BiomeID.FROZEN_OCEAN, new NewFrozenOceanBiome(), V1_4_0),
+    DEEP_FROZEN_OCEAN(BiomeID.DEEP_FROZEN_OCEAN, new FrozenDeepOceanBiome(), V1_4_0),
+    BAMBOO_JUNGLE(BiomeID.BAMBOO_JUNGLE, new BambooJungleBiome(), V1_11_0),
+    BAMBOO_JUNGLE_HILLS(BiomeID.BAMBOO_JUNGLE_HILLS, new BambooJungleHillsBiome(), V1_11_0),
     //    All biomes below this comment are mutated variants of existing biomes
     SUNFLOWER_PLAINS(BiomeID.SUNFLOWER_PLAINS, new SunflowerPlainsBiome()),
     DESERT_M(BiomeID.DESERT_MUTATED, new DesertMBiome()),
@@ -119,28 +124,32 @@ public enum EnumBiome {
     MESA_BRYCE(BiomeID.MESA_BRYCE, new MesaBryceBiome()),
     MESA_PLATEAU_F_M(BiomeID.MESA_PLATEAU_STONE_MUTATED, new MesaPlateauFMBiome()),
     MESA_PLATEAU_M(BiomeID.MESA_PLATEAU_MUTATED, new MesaPlateauMBiome()),
-    SOULSAND_VALLEY(BiomeID.SOULSAND_VALLEY, new SoulsandValleyBiome()),
-    CRIMSON_FOREST(BiomeID.CRIMSON_FOREST, new CrimsonForestBiome()),
-    WARPED_FOREST(BiomeID.WARPED_FOREST, new WarpedForestBiome()),
-    BASALT_DELTAS(BiomeID.BASALT_DELTAS, new BasaltDeltasBiome()),
-    JAGGED_PEAKS(BiomeID.JAGGED_PEAKS, new JaggedPeaksBiome()),
-    FROZEN_PEAKS(BiomeID.FROZEN_PEAKS, new FrozenPeaksBiome()),
-    SNOWY_SLOPES(BiomeID.SNOWY_SLOPES, new SnowySlopesBiome()),
-    GROVE(BiomeID.GROVE, new GroveBiome()),
-    MEADOW(BiomeID.MEADOW, new MeadowBiome()),
-    LUSH_CAVES(BiomeID.LUSH_CAVES, new LushCavesBiome()),
-    DRIPSTONE_CAVES(BiomeID.DRIPSTONE_CAVES, new DripstoneCavesBiome()),
-    STONY_PEAKS(BiomeID.STONY_PEAKS, new StonyPeaksBiome()),
-    DEEP_DARK(BiomeID.DEEP_DARK, new DeepDarkBiome()),
-    MANGROVE_SWAMP(BiomeID.MANGROVE_SWAMP, new MangroveSwampBiome()),
-    CHERRY_GROVE(BiomeID.CHERRY_GROVE, new CherryGroveBiome()),
+    SOULSAND_VALLEY(BiomeID.SOULSAND_VALLEY, new SoulsandValleyBiome(), V1_16_0),
+    CRIMSON_FOREST(BiomeID.CRIMSON_FOREST, new CrimsonForestBiome(), V1_16_0),
+    WARPED_FOREST(BiomeID.WARPED_FOREST, new WarpedForestBiome(), V1_16_0),
+    BASALT_DELTAS(BiomeID.BASALT_DELTAS, new BasaltDeltasBiome(), V1_16_0),
+    JAGGED_PEAKS(BiomeID.JAGGED_PEAKS, new JaggedPeaksBiome(), V1_18_0),
+    FROZEN_PEAKS(BiomeID.FROZEN_PEAKS, new FrozenPeaksBiome(), V1_18_0),
+    SNOWY_SLOPES(BiomeID.SNOWY_SLOPES, new SnowySlopesBiome(), V1_18_0),
+    GROVE(BiomeID.GROVE, new GroveBiome(), V1_18_0),
+    MEADOW(BiomeID.MEADOW, new MeadowBiome(), V1_18_0),
+    LUSH_CAVES(BiomeID.LUSH_CAVES, new LushCavesBiome(), V1_18_0),
+    DRIPSTONE_CAVES(BiomeID.DRIPSTONE_CAVES, new DripstoneCavesBiome(), V1_18_0),
+    STONY_PEAKS(BiomeID.STONY_PEAKS, new StonyPeaksBiome(), V1_18_0),
+    DEEP_DARK(BiomeID.DEEP_DARK, new DeepDarkBiome(), V1_19_0),
+    MANGROVE_SWAMP(BiomeID.MANGROVE_SWAMP, new MangroveSwampBiome(), V1_19_0),
+    CHERRY_GROVE(BiomeID.CHERRY_GROVE, new CherryGroveBiome(), V1_20_0),
     ;
 
     public final int id;
     public final Biome biome;
 
     EnumBiome(int id, Biome biome) {
-        Biome.register(id, biome);
+        this(id, biome, null);
+    }
+
+    EnumBiome(int id, Biome biome, @Nullable GameVersion version) {
+        Biome.register(id, biome, version);
         this.id = id;
         this.biome = biome;
     }

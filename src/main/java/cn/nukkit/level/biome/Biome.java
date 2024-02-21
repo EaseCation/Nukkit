@@ -1,5 +1,6 @@
 package cn.nukkit.level.biome;
 
+import cn.nukkit.GameVersion;
 import cn.nukkit.Server;
 import cn.nukkit.block.BlockID;
 import cn.nukkit.level.ChunkManager;
@@ -28,16 +29,22 @@ public abstract class Biome implements BlockID {
 
     private static final Object2IntMap<String> nameToId;
     private static final String[] idToName = new String[MAX_BIOMES];
+    private static final boolean[] VALID_BIOMES = new boolean[MAX_BIOMES];
 
     private final List<Populator> populators = new ArrayList<>();
     private int id;
     private float baseHeight = 0.1f;
     private float heightVariation = 0.2f;
 
-    protected static void register(int id, Biome biome) {
+    protected static boolean register(int id, Biome biome, @Nullable GameVersion version) {
         biome.setId(id);
         biomes[id] = biome;
         unorderedBiomes.add(biome);
+        if (version != null && !version.isAvailable()) {
+            return false;
+        }
+        VALID_BIOMES[id] = true;
+        return true;
     }
 
     public static Biome getBiome(int id) {
@@ -155,8 +162,12 @@ public abstract class Biome implements BlockID {
         return idToName[id];
     }
 
+    public static boolean isValidBiome(int id) {
+        return VALID_BIOMES[id];
+    }
+
     public static int toValidBiome(int id) {
-        return idToName[id] == null ? BiomeID.OCEAN : id;
+        return !isValidBiome(id) ? BiomeID.OCEAN : id;
     }
 
     static {

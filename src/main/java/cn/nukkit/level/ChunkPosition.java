@@ -86,11 +86,11 @@ public class ChunkPosition implements Cloneable {
     }
 
     public int getBlockX(int localX) {
-        return (this.x << 4) + localX;
+        return (this.x << 4) | localX;
     }
 
     public int getBlockZ(int localZ) {
-        return (this.z << 4) + localZ;
+        return (this.z << 4) | localZ;
     }
 
     public BlockVector3 getBlockPosition(int localX, int y, int localZ) {

@@ -9,6 +9,7 @@ import cn.nukkit.entity.Entity;
 import cn.nukkit.level.ChunkManager;
 import cn.nukkit.level.HeightRange;
 import cn.nukkit.level.Level;
+import cn.nukkit.level.biome.Biome;
 import cn.nukkit.level.format.FullChunk;
 import cn.nukkit.level.format.LevelProvider;
 import cn.nukkit.level.util.PalettedSubChunkStorage;
@@ -674,6 +675,21 @@ public abstract class BaseFullChunk implements FullChunk, ChunkManager {
                 }
             }
         }
+    }
+
+    @Override
+    public boolean fixInvalidBiome(boolean forceCompress) {
+        boolean fixed = false;
+        for (int i = 0; i < 16 * 16; i++) {
+            int biomeId = biomes[i] & 0xff;
+            int validBiomeId = Biome.toValidBiome(biomeId);
+            if (biomeId == validBiomeId) {
+                continue;
+            }
+            biomes[i] = (byte) validBiomeId;
+            fixed = true;
+        }
+        return fixed;
     }
 
     /**

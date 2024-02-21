@@ -125,7 +125,9 @@ public interface LevelProvider {
 
     void setGameRules(GameRules rules);
 
-    void forEachChunks(Function<FullChunk, Boolean> action);
+    default void forEachChunks(Function<FullChunk, Boolean> action) {
+        forEachChunks(action, false);
+    }
 
     void forEachChunks(Function<FullChunk, Boolean> action, boolean skipCorrupted);
 

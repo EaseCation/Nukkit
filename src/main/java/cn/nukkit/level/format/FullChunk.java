@@ -201,4 +201,12 @@ public interface FullChunk extends Cloneable {
 
     default void fixCorruptedBlockEntities() {
     }
+
+    default boolean fixInvalidBiome() {
+        return fixInvalidBiome(false);
+    }
+
+    default boolean fixInvalidBiome(boolean forceCompress) {
+        return false;
+    }
 }

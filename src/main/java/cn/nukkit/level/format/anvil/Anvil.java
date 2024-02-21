@@ -233,11 +233,6 @@ public class Anvil extends BaseLevelProvider {
     }
 
     @Override
-    public void forEachChunks(Function<FullChunk, Boolean> action) {
-        forEachChunks(action, false);
-    }
-
-    @Override
     public void forEachChunks(Function<FullChunk, Boolean> action, boolean skipCorrupted) {
         File regionDir = new File(path, "region");
         File[] regionFiles = regionDir.listFiles((dir, name) -> name.endsWith(".mca"));

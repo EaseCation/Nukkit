@@ -101,14 +101,14 @@ public class LevelDB implements LevelProvider {
         try {
             Files.createDirectories(dirPath);
         } catch (IOException e) {
-            throw new RuntimeException(e);
+            throw new RuntimeException("Unable to create directories " + path, e);
         }
 
         try (InputStream stream = Files.newInputStream(dirPath.resolve("level.dat"))) {
             stream.skip(8);
             this.levelData = NBTIO.read(stream, ByteOrder.LITTLE_ENDIAN);
         } catch (IOException e) {
-            throw new LevelException("Invalid level.dat", e);
+            throw new LevelException("Invalid level.dat in " + path, e);
         }
 
         if (!this.levelData.contains("Generator")) {
@@ -123,7 +123,7 @@ public class LevelDB implements LevelProvider {
         try {
             this.db = openDB(dirPath.resolve("db").toFile());
         } catch (IOException e) {
-            throw new RuntimeException(e);
+            throw new RuntimeException("Unable to open LevelDB: " + path, e);
         }
 
         gcLock = new ReentrantLock();
@@ -277,7 +277,7 @@ public class LevelDB implements LevelProvider {
             stream.write(Binary.writeLInt(data.length));
             stream.write(data);
         } catch (IOException e) {
-            throw new RuntimeException(e);
+            throw new RuntimeException("Unable to save level.dat: " + path, e);
         }
     }
 
@@ -290,7 +290,7 @@ public class LevelDB implements LevelProvider {
     public AsyncTask requestChunkTask(int chunkX, int chunkZ) {
         LevelDbChunk chunk = this.getChunk(chunkX, chunkZ, false);
         if (chunk == null) {
-//            throw new ChunkException("Invalid Chunk sent");
+//            throw new ChunkException("Invalid Chunk sent: " + chunkX + "," + chunkZ + " in " + path);
             return null;
         }
 
@@ -425,7 +425,7 @@ public class LevelDB implements LevelProvider {
             try {
                 chunk = this.readChunk(chunkX, chunkZ);
             } catch (Exception e) {
-                throw new ChunkException("corrupted chunk: " + chunkX + "," + chunkZ, e);
+                throw new ChunkException("corrupted chunk: " + chunkX + "," + chunkZ + " in " + path, e);
             }
 
             if (chunk == null && create) {
@@ -512,7 +512,7 @@ public class LevelDB implements LevelProvider {
                         continue;
                     }
                     if (subChunkValue.length == 0) {
-                        throw new ChunkException("Unexpected empty data for subchunk " + y);
+                        throw new ChunkException("Unexpected empty data for subchunk " + y + " (" + chunkX + "," + chunkZ + ") in " + path);
                     }
                     BinaryStream stream = new BinaryStream(subChunkValue);
 
@@ -529,7 +529,7 @@ public class LevelDB implements LevelProvider {
                             if (subChunkVersion >= 9) {
                                 int indexY = stream.getSingedByte();
                                 if (indexY != y) {
-                                    throw new ChunkException("Unexpected Y index (" + indexY + ") for subchunk " + y);
+                                    throw new ChunkException("Unexpected Y index (" + indexY + ") for subchunk " + y + " (" + chunkX + "," + chunkZ + ") in " + path);
                                 }
                             }
 
@@ -581,7 +581,7 @@ public class LevelDB implements LevelProvider {
                             break;
                         default:
                             //TODO: set chunks read-only so the version on disk doesn't get overwritten
-                            throw new ChunkException("don't know how to decode LevelDB subchunk format version " + subChunkVersion);
+                            throw new ChunkException("don't know how to decode LevelDB subchunk format version " + subChunkVersion + " (" + chunkX + "," + chunkZ + ")[" + y + "] in " + path);
                     }
                 }
 
@@ -606,11 +606,11 @@ public class LevelDB implements LevelProvider {
                                 biomes3d[Level.subChunkYtoIndex(chunkY)] = PalettedSubChunkStorage.ofBiome(stream);
                             }
                         } catch (Exception e) {
-                            log.debug("Failed to deserialize biome palette", e);
+                            log.debug("Failed to deserialize biome palette ({},{}) in {}", chunkX, chunkZ, path, e);
                         }
                     } catch (Exception e) {
                         heightmap = null;
-                        log.debug("Failed to deserialize heightmap", e);
+                        log.debug("Failed to deserialize heightmap ({},{}) in {}", chunkX, chunkZ, path, e);
                     } finally {
                         buf.release();
                     }
@@ -637,7 +637,7 @@ public class LevelDB implements LevelProvider {
                                 PalettedSubChunkStorage storage = PalettedSubChunkStorage.ofBiome(biome[0]);
                                 for (int x = 0; x < 16; x++) {
                                     for (int z = 0; z < 16; z++) {
-                                        int biomeId = biome[LevelDbChunk.index2d(x, z)] & 0xff;
+                                        int biomeId = Biome.toValidBiome(biome[LevelDbChunk.index2d(x, z)] & 0xff);
                                         for (int y = 0; y < 16; y++) {
                                             storage.set(x, y, z, biomeId);
                                         }
@@ -647,11 +647,11 @@ public class LevelDB implements LevelProvider {
                                 biomes3d = new PalettedSubChunkStorage[LevelDbChunk.SECTION_COUNT];
                                 biomes3d[Level.subChunkYtoIndex(minChunkY)] = storage;
                             } catch (Exception e) {
-                                log.debug("Failed to deserialize biome", e);
+                                log.debug("Failed to deserialize biome ({},{}) in {}", chunkX, chunkZ, path, e);
                             }
                         } catch (Exception e) {
                             heightmap = null;
-                            log.debug("Failed to deserialize height map", e);
+                            log.debug("Failed to deserialize height map ({},{}) in {}", chunkX, chunkZ, path, e);
                         } finally {
                             buf.release();
                         }
@@ -666,7 +666,7 @@ public class LevelDB implements LevelProvider {
 
                 byte[] legacyTerrain = this.db.get(LEGACY_TERRAIN.getKey(chunkX, chunkZ));
                 if (legacyTerrain == null || legacyTerrain.length == 0) {
-                    throw new ChunkException("Missing expected legacy terrain data for format version " + chunkVersion);
+                    throw new ChunkException("Missing expected legacy terrain data for format version " + chunkVersion + " (" + chunkX + "," + chunkZ + ") in " + path);
                 }
 
                 BinaryStream stream = new BinaryStream(legacyTerrain);
@@ -718,13 +718,13 @@ public class LevelDB implements LevelProvider {
                     biomes3d = new PalettedSubChunkStorage[LevelDbChunk.SECTION_COUNT];
                     biomes3d[Level.subChunkYtoIndex(getHeightRange().getMinChunkY())] = storage;
                 } catch (Exception e) {
-                    log.debug("Failed to deserialize biome color", e);
+                    log.debug("Failed to deserialize biome color ({},{}) in {}", chunkX, chunkZ, path, e);
                 }
 
                 break;
             default:
                 //TODO: set chunks read-only so the version on disk doesn't get overwritten
-                throw new ChunkException("don't know how to decode chunk format version " + chunkVersion);
+                throw new ChunkException("don't know how to decode chunk format version " + chunkVersion + " (" + chunkX + "," + chunkZ + ") in " + path);
         }
 
         List<CompoundTag> blockEntities = new ObjectArrayList<>();
@@ -734,12 +734,12 @@ public class LevelDB implements LevelProvider {
                 while (nbtStream.available() > 0) {
                     Tag tag = Tag.readNamedTag(nbtStream);
                     if (!(tag instanceof CompoundTag)) {
-                        throw new IOException("Root tag must be a compound tag");
+                        throw new IOException("Block entity root tag must be a compound tag (" + chunkX + "," + chunkZ + ") in " + path);
                     }
                     blockEntities.add((CompoundTag) tag);
                 }
             } catch (IOException e) {
-                throw new ChunkException("Corrupted block entity data", e);
+                throw new ChunkException("Corrupted block entity data (" + chunkX + "," + chunkZ + ") in " + path, e);
             }
         }
 
@@ -750,12 +750,12 @@ public class LevelDB implements LevelProvider {
                 while (nbtStream.available() > 0) {
                     Tag tag = Tag.readNamedTag(nbtStream);
                     if (!(tag instanceof CompoundTag)) {
-                        throw new IOException("Root tag must be a compound tag");
+                        throw new IOException("Entity root tag must be a compound tag (" + chunkX + "," + chunkZ + ") in " + path);
                     }
                     entities.add((CompoundTag) tag);
                 }
             } catch (IOException e) {
-                throw new ChunkException("Corrupted entity data", e);
+                throw new ChunkException("Corrupted entity data (" + chunkX + "," + chunkZ + ") in " + path, e);
             }
         }
 
@@ -836,16 +836,7 @@ public class LevelDB implements LevelProvider {
                     stream.putLShort(height);
                 }
 
-                PalettedSubChunkStorage[] biome3d = chunk.getBiomes();
-                HeightRange heightRange = getHeightRange();
-                for (int chunkY = heightRange.getMinChunkY(); chunkY < heightRange.getMaxChunkY(); chunkY++) {
-                    PalettedSubChunkStorage storage = biome3d[Level.subChunkYtoIndex(chunkY)];
-                    if (storage == null) {
-                        stream.putByte((byte) 0xff);
-                        continue;
-                    }
-                    storage.writeToDiskBiome(stream);
-                }
+                chunk.writeBiomeTo(stream, false);
 
                 batch.put(HEIGHTMAP_AND_3D_BIOMES.getKey(chunkX, chunkZ), stream.getBuffer());
             }
@@ -964,7 +955,7 @@ public class LevelDB implements LevelProvider {
 
             this.db.write(batch);
         } catch (IOException e) {
-            throw new RuntimeException("Failed to save chunk", e);
+            throw new RuntimeException("Failed to save chunk " + chunkX + "," + chunkZ + " in " + path, e);
         } finally {
             chunk.ioLock.unlock();
         }
@@ -1002,7 +993,7 @@ public class LevelDB implements LevelProvider {
     @Override
     public void saveChunk(int chunkX, int chunkZ, FullChunk chunk) {
         if (!(chunk instanceof LevelDbChunk)) {
-            throw new ChunkException("Invalid Chunk class");
+            throw new ChunkException("Invalid Chunk class: " + chunk.getClass() + " (" + chunkX + "," + chunkZ + ") in " + path);
         }
         LevelDbChunk dbChunk = (LevelDbChunk) chunk;
         this.writeChunk(dbChunk, true, false);
@@ -1035,7 +1026,7 @@ public class LevelDB implements LevelProvider {
             try {
                 chunk = this.readChunk(chunkX, chunkZ);
             } catch (Exception e) {
-                throw new ChunkException("corrupted chunk: " + chunkX + "," + chunkZ, e);
+                throw new ChunkException("corrupted chunk: " + chunkX + "," + chunkZ + " in " + path, e);
             }
 
             if (chunk == null && create) {
@@ -1057,7 +1048,7 @@ public class LevelDB implements LevelProvider {
     @Override
     public void setChunk(int chunkX, int chunkZ, FullChunk chunk) {
         if (!(chunk instanceof LevelDbChunk)) {
-            throw new ChunkException("Invalid Chunk class");
+            throw new ChunkException("Invalid Chunk class: " + chunk.getClass() + " (" + chunkX + "," + chunkZ + ") in " + path);
         }
         chunk.setProvider(this);
         chunk.setPosition(chunkX, chunkZ);
@@ -1130,7 +1121,7 @@ public class LevelDB implements LevelProvider {
             try {
                 this.db.close();
             } catch (IOException e) {
-                throw new RuntimeException(e);
+                throw new RuntimeException("Unload LevelDB exception: " + path, e);
             }
             this.level = null;
         } finally {
@@ -1305,7 +1296,7 @@ public class LevelDB implements LevelProvider {
         try {
             ticks = NBTIO.read(data, ByteOrder.LITTLE_ENDIAN);
         } catch (IOException e) {
-            throw new ChunkException("Corrupted block ticking data", e);
+            throw new ChunkException("Corrupted block ticking data in " + path, e);
         }
 
         int currentTick = ticks.getInt("currentTick");
@@ -1322,7 +1313,7 @@ public class LevelDB implements LevelProvider {
             }
 
             if (block == null) {
-                log.debug("Unavailable block ticking entry skipped: {}", entry);
+                log.debug("Unavailable block ticking entry skipped: {} in {}", entry, path);
                 continue;
             }
             block.x = entry.getInt("x");
@@ -1371,11 +1362,6 @@ public class LevelDB implements LevelProvider {
     }
 
     @Override
-    public void forEachChunks(Function<FullChunk, Boolean> action) {
-        forEachChunks(action, false);
-    }
-
-    @Override
     public void forEachChunks(Function<FullChunk, Boolean> action, boolean skipCorrupted) {
         try (DBIterator iter = db.iterator()) {
             while (iter.hasNext()) {
@@ -1403,7 +1389,7 @@ public class LevelDB implements LevelProvider {
                             if (!skipCorrupted) {
                                 throw e;
                             }
-                            log.error("Skipped corrupted chunk {} {}", chunkX, chunkZ, e);
+                            log.error("Skipped corrupted chunk {}, {} in {}", chunkX, chunkZ, path, e);
                             continue;
                         }
 
@@ -1422,7 +1408,7 @@ public class LevelDB implements LevelProvider {
                 }
             }
         } catch (IOException e) {
-            throw new RuntimeException("iteration failed", e);
+            throw new RuntimeException("iteration failed: " + path, e);
         }
     }
 

@@ -3,6 +3,7 @@ package cn.nukkit.level.format.leveldb;
 import cn.nukkit.block.Block;
 import cn.nukkit.level.HeightRange;
 import cn.nukkit.level.Level;
+import cn.nukkit.level.biome.Biome;
 import cn.nukkit.level.biome.BiomeID;
 import cn.nukkit.level.format.ChunkSection;
 import cn.nukkit.level.format.LevelProvider;
@@ -312,7 +313,8 @@ public class LevelDbChunk extends BaseChunk {
                 }
 
                 if (network) {
-                    storage.writeTo(stream);
+                    // make sure we aren't sending bogus biomes - the 1.18.0 client crashes if we do this
+                    storage.writeTo(stream, id -> Biome.toValidBiome(id & 0xff));
                 } else {
                     storage.writeToDiskBiome(stream);
                 }
@@ -625,6 +627,37 @@ public class LevelDbChunk extends BaseChunk {
     public void fixCorruptedBlockEntities() {
         super.fixCorruptedBlockEntities();
         this.setAllSubChunksDirty();
+    }
+
+    @Override
+    public boolean fixInvalidBiome(boolean forceCompress) {
+        boolean fixed = false;
+        boolean dirty = false;
+        HeightRange heightRange = getHeightRange();
+        int minChunkY = heightRange.getMinChunkY();
+        int maxChunkY = heightRange.getMaxChunkY();
+
+        biomeWriteLock.lock();
+        try {
+            for (int chunkY = minChunkY; chunkY < maxChunkY; chunkY++) {
+                PalettedSubChunkStorage storage = this.biomes3d[Level.subChunkYtoIndex(chunkY)];
+                if (storage == null) {
+                    continue;
+                }
+                if (storage.fixPaletteElements(id -> Biome.toValidBiome(id & 0xff))) {
+                    fixed = true;
+                    dirty = true;
+                } else if (!forceCompress) {
+                    continue;
+                }
+                dirty |= storage.compress();
+            }
+        } finally {
+            biomeWriteLock.unlock();
+        }
+
+        this.heightmapOrBiomesDirty |= dirty;
+        return fixed;
     }
 
     @Override

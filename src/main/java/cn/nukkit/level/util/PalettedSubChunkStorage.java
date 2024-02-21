@@ -82,7 +82,7 @@ public class PalettedSubChunkStorage {
         }
         BitArray bitArray = version.createPalette(SUB_CHUNK_SIZE, words);
 
-        int paletteSize = stream.getLInt();
+        int paletteSize = version != BitArrayVersion.V0 ? stream.getLInt() : 1;
         int[] palette = new int[paletteSize];
         ByteArrayInputStream bais = new ByteArrayInputStream(stream.getBufferUnsafe());
         bais.skip(stream.getOffset());
@@ -131,7 +131,7 @@ public class PalettedSubChunkStorage {
         }
         BitArray bitArray = version.createPalette(SUB_CHUNK_SIZE, words);
 
-        int paletteSize = stream.getLInt();
+        int paletteSize = version != BitArrayVersion.V0 ? stream.getLInt() : 1;
         int[] palette = new int[paletteSize];
         for (int i = 0; i < paletteSize; ++i) {
             palette[i] = stream.getLInt();
@@ -438,6 +438,20 @@ public class PalettedSubChunkStorage {
         this.bitArray = newArray;
         this.palette = newPalette;
         return true;
+    }
+
+    public boolean fixPaletteElements(Int2IntFunction fixer) {
+        boolean dirty = false;
+        for (int i = 0; i < palette.size(); i++) {
+            int id = palette.getInt(i);
+            int fixedId = fixer.applyAsInt(id);
+            if (id == fixedId) {
+                continue;
+            }
+            palette.set(i, fixedId);
+            dirty = true;
+        }
+        return dirty;
     }
 
     public PalettedSubChunkStorage copy() {

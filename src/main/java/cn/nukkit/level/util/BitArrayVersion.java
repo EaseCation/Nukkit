@@ -26,17 +26,57 @@ public enum BitArrayVersion {
      */
     V3(3, 10, V4, true),
     V2(2, 16, DISABLE_SUB_CHUNK_STORAGE_PADDING ? V4 : V3),
-    V1(1, 32, V2),
+    V1(1, 32, V2) {
+        @Override
+        public boolean isSingleton() {
+            return true;
+        }
+    },
     /**
      * 1 element.
      * @since 1.18.0
      */
-    V0(0, 0, V2),
+    V0(0, 0, V2) {
+        @Override
+        public BitArray createPalette(int size) {
+            return new SingletonBitArray(size);
+        }
+
+        @Override
+        public BitArray createPalette(int size, int[] words) {
+            return new SingletonBitArray(size);
+        }
+
+        @Override
+        public int getWordsForSize(int size) {
+            return 0;
+        }
+
+        @Override
+        public boolean isSingleton() {
+            return true;
+        }
+    },
     /**
      * No element. mainly used for 3D biomes.
      * @since 1.18.0
      */
-    EMPTY(-1, -1, V0);
+    EMPTY(-1, -1, V0) {
+        @Override
+        public BitArray createPalette(int size) {
+            return EmptyBitArray.INSTANCE;
+        }
+
+        @Override
+        public BitArray createPalette(int size, int[] words) {
+            return EmptyBitArray.INSTANCE;
+        }
+
+        @Override
+        public int getWordsForSize(int size) {
+            return 0;
+        }
+    };
 
     private static final BitArrayVersion[] VALUES = values();
     private static final BitArrayVersion[] VERSIONS;
@@ -59,6 +99,7 @@ public enum BitArrayVersion {
     final int maxEntryValue;
     final BitArrayVersion next;
     final boolean padding;
+    final BitArrayFactory bitArrayFactory;
 
     BitArrayVersion(int bits, int entriesPerWord, BitArrayVersion next) {
         this(bits, entriesPerWord, next, false);
@@ -70,6 +111,12 @@ public enum BitArrayVersion {
         this.maxEntryValue = bits < 0 ? bits : (1 << this.bits) - 1;
         this.next = next;
         this.padding = padding;
+        if (padding) {
+            // Padded palettes aren't able to use bitwise operations due to their padding.
+            bitArrayFactory = PaddedBitArray::new;
+        } else {
+            bitArrayFactory = Pow2BitArray::new;
+        }
     }
 
     public static BitArrayVersion get(int version, boolean read) {
@@ -98,13 +145,11 @@ public enum BitArrayVersion {
     }
 
     public BitArray createPalette(int size) {
-        return this == EMPTY ? EmptyBitArray.INSTANCE : this == V0 ? new SingletonBitArray(size)
-                : this.createPaletteInternal(size, new int[this.getWordsForSizeInternal(size)]);
+        return this.createPaletteInternal(size, new int[this.getWordsForSizeInternal(size)]);
     }
 
     public BitArray createPalette(int size, int[] words) {
-        return this == EMPTY ? EmptyBitArray.INSTANCE : this == V0 ? new SingletonBitArray(size)
-                : this.createPaletteInternal(size, words);
+        return this.createPaletteInternal(size, words);
     }
 
     public byte getId() {
@@ -112,7 +157,7 @@ public enum BitArrayVersion {
     }
 
     public int getWordsForSize(int size) {
-        return this == EMPTY || this == V0 ? 0 : this.getWordsForSizeInternal(size);
+        return this.getWordsForSizeInternal(size);
     }
 
     private int getWordsForSizeInternal(int size) {
@@ -128,16 +173,11 @@ public enum BitArrayVersion {
     }
 
     private BitArray createPaletteInternal(int size, int[] words) {
-        if (this.padding) {
-            // Padded palettes aren't able to use bitwise operations due to their padding.
-            return new PaddedBitArray(this, size, words);
-        } else {
-            return new Pow2BitArray(this, size, words);
-        }
+        return bitArrayFactory.create(this, size, words);
     }
 
     public boolean isSingleton() {
-        return this == V0 || this == V1;
+        return false;
     }
 
     /**
@@ -159,5 +199,10 @@ public enum BitArrayVersion {
      */
     public static BitArrayVersion[] getValues() {
         return VALUES;
+    }
+
+    @FunctionalInterface
+    private interface BitArrayFactory {
+        BitArray create(BitArrayVersion version, int size, int[] words);
     }
 }
