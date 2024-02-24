@@ -95,15 +95,18 @@ public abstract class EntityLiving extends Entity implements EntityDamageable {
     }
 
     @Override
-    public void setHealth(float health) {
+    public boolean setHealth(float health) {
         boolean wasAlive = this.isAlive();
-        super.setHealth(health);
+        if (!super.setHealth(health)) {
+            return false;
+        }
         if (this.isAlive() && !wasAlive) {
             EntityEventPacket pk = new EntityEventPacket();
             pk.eid = this.getId();
             pk.event = EntityEventPacket.RESPAWN;
             Server.broadcastPacket(this.hasSpawned.values(), pk);
         }
+        return true;
     }
 
     @Override

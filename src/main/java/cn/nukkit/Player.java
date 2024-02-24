@@ -1594,11 +1594,13 @@ public class Player extends EntityHuman implements CommandSender, InventoryHolde
         }
 
         boolean portal = false;
+//        boolean water = false;
 
         for (Block block : this.getCollisionBlocks()) {
             if (block.getId() == Block.PORTAL) {
                 portal = true;
-                continue;
+//            } else if (block.isWater()) {
+//                water = true;
             }
 
             block.onEntityCollide(this);
@@ -1609,6 +1611,10 @@ public class Player extends EntityHuman implements CommandSender, InventoryHolde
         } else {
             this.inPortalTicks = 0;
         }
+
+//        if (!water && isSwimming()) {
+//            setSwimming(false);
+//        }
     }
 
     protected void checkNearEntities() {
@@ -4588,21 +4594,24 @@ public class Player extends EntityHuman implements CommandSender, InventoryHolde
     }
 
     @Override
-    public void setHealth(float health) {
+    public boolean setHealth(float health) {
         if (health < 1) {
             health = 0;
         }
 
-        super.setHealth(health);
+        if (!super.setHealth(health)) {
+            return false;
+        }
 
         if (!this.spawned) {
-            return;
+            return true;
         }
 
         //TODO: Remove it in future! This a hack to solve the client-side absorption bug! WFT Mojang (Half a yellow heart cannot be shown, we can test it in local gaming)
         this.setAttribute(Attribute.getAttribute(Attribute.HEALTH)
                 .setMaxValue(this.getAbsorption() % 2 != 0 ? this.getMaxHealth() + 1 : this.getMaxHealth())
                 .setValue(health > 0 ? (health < getMaxHealth() ? health : getMaxHealth()) : 0));
+        return true;
     }
 
     @Override
@@ -5509,16 +5518,16 @@ public class Player extends EntityHuman implements CommandSender, InventoryHolde
     }
 
     @Override
-    public void setSprinting(boolean value) {
-        if (isSprinting() != value) {
-            super.setSprinting(value);
-
+    public boolean setSprinting(boolean value) {
+        if (super.setSprinting(value)) {
             if (value) {
                 movementSpeedAttribute.addModifier(AttributeModifiers.SPRINTING_BOOST);
             } else {
                 movementSpeedAttribute.removeModifier(AttributeModifiers.SPRINTING_BOOST.getId());
             }
+            return true;
         }
+        return false;
     }
 
     public void transfer(InetSocketAddress address) {
@@ -5818,10 +5827,11 @@ public class Player extends EntityHuman implements CommandSender, InventoryHolde
     }
 
     @Override
-    public void setImmobile(boolean value) {
-        super.setImmobile(value);
-        if (this.teleportChunkLoaded)
+    public boolean setImmobile(boolean value) {
+        if (this.teleportChunkLoaded) {
             this.lastImmobile = value;
+        }
+        return super.setImmobile(value);
     }
 
     /**

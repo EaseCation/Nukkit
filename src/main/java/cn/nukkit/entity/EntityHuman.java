@@ -93,27 +93,39 @@ public class EntityHuman extends EntityHumanType {
     }
 
     @Override
-    public void setSwimming(boolean value) {
-        super.setSwimming(value);
+    public boolean setSwimming(boolean value) {
+        if (!super.setSwimming(value)) {
+            return false;
+        }
         this.recalculateBoundingBox();
+        return true;
     }
 
     @Override
-    public void setSneaking(boolean value) {
-        super.setSneaking(value);
+    public boolean setSneaking(boolean value) {
+        if (!super.setSneaking(value)) {
+            return false;
+        }
         this.recalculateBoundingBox();
+        return true;
     }
 
     @Override
-    public void setGliding(boolean value) {
-        super.setGliding(value);
+    public boolean setGliding(boolean value) {
+        if (!super.setGliding(value)) {
+            return false;
+        }
         this.recalculateBoundingBox();
+        return true;
     }
 
     @Override
-    public void setCrawling(boolean value) {
-        super.setCrawling(value);
+    public boolean setCrawling(boolean value) {
+        if (!super.setCrawling(value)) {
+            return false;
+        }
         this.recalculateBoundingBox();
+        return true;
     }
 
     @Override
