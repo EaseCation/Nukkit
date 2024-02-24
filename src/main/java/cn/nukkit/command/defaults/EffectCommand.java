@@ -65,18 +65,17 @@ public class EffectCommand extends VanillaCommand {
                 }
                 return result;
             });
-            int durationSec = Math.min(parser.parseIntOrDefault(effect.isInstantaneous() ? 1 : 30, 0), 1000000);
+            int durationSec = Math.min(parser.parseIntOrDefault(30, 0), 1000000);
             int amplifier = parser.parseIntOrDefault(0, 0, 255);
             boolean hideParticle = parser.parseBooleanOrDefault(false);
 
             if (effect.getId() == EffectID.NO_EFFECT) {
                 targets.forEach(entity -> {
-                    if (entity.getEffects().isEmpty()) {
+                    if (!entity.removeAllEffects()) {
                         sender.sendMessage(new TranslationContainer(TextFormat.RED + "%commands.effect.failure.notActive.all", entity.getName()));
                         return;
                     }
 
-                    entity.removeAllEffects();
                     broadcastCommandMessage(sender, new TranslationContainer("commands.effect.success.removed.all", entity.getName()));
                 });
                 return true;
@@ -90,11 +89,7 @@ public class EffectCommand extends VanillaCommand {
 
             if (durationSec != 0) {
                 targets.forEach(entity -> {
-                    if (effect.isInstantaneous()) {
-                        effect.applyEffect(entity);
-                    } else {
-                        entity.addEffect(effect.clone());
-                    }
+                    entity.addEffect(effect.clone());
                     broadcastCommandMessage(sender, new TranslationContainer("commands.effect.success", effect.getName(), amplifier, entity.getName(), durationSec));
                 });
             } else {

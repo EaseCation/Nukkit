@@ -227,6 +227,12 @@ public class EntityArrow extends EntityProjectile {
                         entity.attack(new EntityDamageEvent(entity, DamageCause.MAGIC, 0.5f * (6 << effect.getAmplifier())));
                     }
                     break;
+                case Effect.SATURATION:
+                    if (entity instanceof Player player) {
+                        int level = 1 + effect.getAmplifier();
+                        player.getFoodData().addFoodLevel(level, level * 2);
+                    }
+                    break;
                 default:
                     entity.addEffect(effect.clone().setDuration(effect.getDuration() / 8));
                     break;

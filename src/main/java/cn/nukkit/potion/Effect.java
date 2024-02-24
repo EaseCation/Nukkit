@@ -143,8 +143,12 @@ public class Effect implements EffectID, Cloneable {
                 }
                 return true;
             case Effect.WITHER:
-            case Effect.REGENERATION:
                 if ((interval = (40 >> this.amplifier)) > 0) {
+                    return (this.duration % interval) == 0;
+                }
+                return true;
+            case Effect.REGENERATION:
+                if ((interval = (50 >> this.amplifier)) > 0) {
                     return (this.duration % interval) == 0;
                 }
                 return true;
@@ -156,7 +160,7 @@ public class Effect implements EffectID, Cloneable {
         switch (this.id) {
             case Effect.POISON:
             case Effect.FATAL_POISON:
-                if (entity.getHealth() > 1|| this.id == FATAL_POISON) {
+                if (entity.getHealth() > 1 || this.id == FATAL_POISON) {
                     entity.attack(new EntityDamageEvent(entity, DamageCause.MAGIC, 1));
                 }
                 break;
@@ -171,12 +175,28 @@ public class Effect implements EffectID, Cloneable {
         }
     }
 
-    public int[] getColor() {
-        return new int[]{this.color >> 16, (this.color >> 8) & 0xff, this.color & 0xff};
+    public int getColor() {
+        return this.color;
+    }
+
+    public int getRed() {
+        return this.color >> 16;
+    }
+
+    public int getGreen() {
+        return (this.color >> 8) & 0xff;
+    }
+
+    public int getBlue() {
+        return this.color & 0xff;
+    }
+
+    public void setColor(int rgb) {
+        this.color = rgb & 0xffffff;
     }
 
     public void setColor(int r, int g, int b) {
-        this.color = ((r & 0xff) << 16) + ((g & 0xff) << 8) + (b & 0xff);
+        this.color = ((r & 0xff) << 16) | ((g & 0xff) << 8) | (b & 0xff);
     }
 
     public boolean add(Entity entity) {
@@ -327,10 +347,9 @@ public class Effect implements EffectID, Cloneable {
 
             int level = effect.getAmplifier() + 1;
 
-            int[] color = effect.getColor();
-            r += color[0] * level;
-            g += color[1] * level;
-            b += color[2] * level;
+            r += effect.getRed() * level;
+            g += effect.getGreen() * level;
+            b += effect.getBlue() * level;
 
             total += level;
         }

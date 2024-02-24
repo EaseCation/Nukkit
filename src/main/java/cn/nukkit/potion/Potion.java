@@ -1,5 +1,6 @@
 package cn.nukkit.potion;
 
+import cn.nukkit.Player;
 import cn.nukkit.entity.Entity;
 import cn.nukkit.entity.EntityLiving;
 import cn.nukkit.entity.EntitySmite;
@@ -10,6 +11,8 @@ import cn.nukkit.event.potion.PotionApplyEvent;
 import cn.nukkit.item.Item;
 
 import javax.annotation.Nullable;
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * author: MagicDroidX
@@ -80,21 +83,28 @@ public class Potion implements PotionID {
             return;
         }
 
-        Effect[] applyEffects = new Effect[effects.length];
-        for (int i = 0; i < effects.length; i++) {
-            Effect effect = effects[i].clone();
+        List<Effect> effects = new ArrayList<>(this.effects.length);
+        for (Effect value : this.effects) {
+            Effect effect = value.clone();
             if (!effect.isInstantaneous()) {
-                effect.setDuration((int) (durationScale * effect.getDuration() + 0.5f));
+                int duration = (int) (durationScale * effect.getDuration() + 0.5f);
+                effect.setDuration(duration);
+                if (duration <= 20) {
+                    continue;
+                }
             }
-            applyEffects[i] = effect;
+            effects.add(effect);
+        }
+        if (effects.isEmpty()) {
+            return;
         }
 
-        PotionApplyEvent event = new PotionApplyEvent(this, potionItem, applyEffects, entity);
+        PotionApplyEvent event = new PotionApplyEvent(this, potionItem, effects.toArray(new Effect[0]), entity);
         entity.getServer().getPluginManager().callEvent(event);
         if (event.isCancelled()) {
             return;
         }
-        applyEffects = event.getApplyEffects();
+        Effect[] applyEffects = event.getApplyEffects();
 
         for (Effect effect : applyEffects) {
             switch (effect.getId()) {
@@ -110,6 +120,12 @@ public class Potion implements PotionID {
                         entity.heal(new EntityRegainHealthEvent(entity, instantScale * (4 << effect.getAmplifier()), EntityRegainHealthEvent.CAUSE_MAGIC));
                     } else {
                         entity.attack(new EntityDamageEvent(entity, DamageCause.MAGIC, instantScale * (6 << effect.getAmplifier())));
+                    }
+                    break;
+                case Effect.SATURATION:
+                    if (entity instanceof Player player) {
+                        int level = 1 + effect.getAmplifier();
+                        player.getFoodData().addFoodLevel(level, level * 2);
                     }
                     break;
                 default:

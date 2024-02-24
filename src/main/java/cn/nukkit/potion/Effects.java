@@ -51,7 +51,7 @@ public final class Effects {
         registerEffect(WITHER, new Effect(WITHER, EffectNames.WITHER, "%potion.wither", 53, 42, 39, true));
         registerEffect(HEALTH_BOOST, new Effect(HEALTH_BOOST, EffectNames.HEALTH_BOOST, "%potion.healthBoost", 248, 125, 35, Int2ObjectMaps.singleton(Attribute.HEALTH, AttributeModifiers.HEALTH_BOOST)));
         registerEffect(ABSORPTION, new Effect(ABSORPTION, EffectNames.ABSORPTION, "%potion.absorption", 36, 107, 251));
-        registerEffect(SATURATION, new Effect(SATURATION, EffectNames.SATURATION, "%potion.saturation", 255, 0, 255));
+        registerEffect(SATURATION, new InstantEffect(SATURATION, EffectNames.SATURATION, "%potion.saturation", 255, 0, 255));
         registerEffect(LEVITATION, new Effect(LEVITATION, EffectNames.LEVITATION, "%potion.levitation", 206, 255, 255, true));
         registerEffect(FATAL_POISON, new Effect(FATAL_POISON, EffectNames.FATAL_POISON, "%potion.poison", 78, 147, 49, true));
 

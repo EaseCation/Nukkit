@@ -172,7 +172,7 @@ public class EntityPotion extends EntityProjectile {
                 continue;
             }
 
-            double distance = entity.distanceSquared(this);
+            double distance = this.distanceSquared(entity.x, entity.y + entity.getHeight(), entity.z);
             if (distance >= 16) {
                 continue;
             }
@@ -186,7 +186,7 @@ public class EntityPotion extends EntityProjectile {
                 continue;
             }
 
-            float d = entity.equals(collidedWith) ? 1 : (float) (1 - Math.sqrt(distance) / 4);
+            float d = entity == collidedWith ? 1 : (float) (1 - Math.sqrt(distance) / 4);
             potion.applyPotion(entity, item, 0.75f * d, d);
         }
     }

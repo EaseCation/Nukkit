@@ -154,9 +154,9 @@ public abstract class EntityLiving extends Entity implements EntityDamageable {
                     e = ((EntityDamageByChildEntityEvent) source).getChild();
                 }*/
 
-                if (e.isOnFire() && !(e instanceof Player)) {
-                    this.setOnFire(2 * this.server.getDifficulty());
-                }
+//                if (e.isOnFire() && !(e instanceof Player)) {
+//                    this.setOnFire(2 * this.server.getDifficulty());
+//                }
 
                 if (((EntityDamageByEntityEvent) source).hasKnockBack()) {
                     double deltaX = this.x - e.x;

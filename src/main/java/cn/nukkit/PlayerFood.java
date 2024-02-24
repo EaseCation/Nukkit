@@ -6,25 +6,25 @@ import cn.nukkit.event.entity.EntityDamageEvent.DamageCause;
 import cn.nukkit.event.entity.EntityRegainHealthEvent;
 import cn.nukkit.event.player.PlayerFoodLevelChangeEvent;
 import cn.nukkit.item.food.Food;
+import cn.nukkit.level.GameRule;
 import cn.nukkit.potion.Effect;
 
 /**
  * Created by funcraft on 2015/11/11.
  */
 public class PlayerFood {
+    private static final int MAX_FOOD_LEVEL = 20;
 
     private int foodLevel;
-    private final int maxFoodLevel;
     private float foodSaturationLevel;
-    private int foodTickTimer = 0;
-    private double foodExpLevel = 0;
+    private float exhaustionLevel;
+    private int foodTickTimer;
 
     private final Player player;
 
     public PlayerFood(Player player, int foodLevel, float foodSaturationLevel) {
         this.player = player;
         this.foodLevel = foodLevel;
-        this.maxFoodLevel = 20;
         this.foodSaturationLevel = foodSaturationLevel;
     }
 
@@ -37,7 +37,7 @@ public class PlayerFood {
     }
 
     public int getMaxLevel() {
-        return this.maxFoodLevel;
+        return MAX_FOOD_LEVEL;
     }
 
     public void setLevel(int foodLevel) {
@@ -62,14 +62,20 @@ public class PlayerFood {
         PlayerFoodLevelChangeEvent ev = new PlayerFoodLevelChangeEvent(this.getPlayer(), foodLevel, saturationLevel);
         this.getPlayer().getServer().getPluginManager().callEvent(ev);
         if (ev.isCancelled()) {
-            this.sendFoodLevel(this.getLevel());
+            this.sendFoodLevel();
             return;
         }
         int foodLevel0 = ev.getFoodLevel();
         float fsl = ev.getFoodSaturationLevel();
         if (fsl != -1) {
             if (fsl > foodLevel) fsl = foodLevel;
-            this.foodSaturationLevel = fsl;
+            if (foodSaturationLevel != fsl) {
+                this.foodSaturationLevel = fsl;
+                this.getPlayer().setAttribute(Attribute.getAttribute(Attribute.PLAYER_SATURATION).setValue(foodSaturationLevel));
+            }
+        }
+        if (this.foodLevel == foodLevel0) {
+            return;
         }
         this.foodLevel = foodLevel0;
         this.sendFoodLevel();
@@ -88,7 +94,18 @@ public class PlayerFood {
             return;
         }
         fsl = ev.getFoodSaturationLevel();
+        if (foodSaturationLevel == fsl) {
+            return;
+        }
         this.foodSaturationLevel = fsl;
+        if (!player.spawned) {
+            return;
+        }
+        this.getPlayer().setAttribute(Attribute.getAttribute(Attribute.PLAYER_SATURATION).setValue(foodSaturationLevel));
+    }
+
+    public float getExhaustionLevel() {
+        return this.exhaustionLevel;
     }
 
     public void useHunger() {
@@ -115,22 +132,29 @@ public class PlayerFood {
         this.setLevel(this.getLevel() + foodLevel, this.getFoodSaturationLevel() + fsl);
     }
 
-    public void sendFoodLevel() {
-        this.sendFoodLevel(this.getLevel());
-    }
-
     public void reset() {
         this.foodLevel = 20;
         this.foodSaturationLevel = 5;
-        this.foodExpLevel = 0;
+        this.exhaustionLevel = 0;
         this.foodTickTimer = 0;
-        this.sendFoodLevel();
+        this.sendAll();
     }
 
-    public void sendFoodLevel(int foodLevel) {
+    public void sendFoodLevel() {
         if (this.getPlayer().spawned) {
             this.getPlayer().setAttribute(Attribute.getAttribute(Attribute.PLAYER_HUNGER).setValue(foodLevel));
         }
+    }
+
+    public void sendAll() {
+        if (!player.spawned) {
+            return;
+        }
+        player.setAttribute(
+                Attribute.getAttribute(Attribute.PLAYER_HUNGER).setValue(foodLevel),
+                Attribute.getAttribute(Attribute.PLAYER_SATURATION).setValue(foodSaturationLevel),
+                Attribute.getAttribute(Attribute.PLAYER_EXHAUSTION).setValue(exhaustionLevel)
+        );
     }
 
     public void update(int tickDiff) {
@@ -140,14 +164,15 @@ public class PlayerFood {
             if (this.getLevel() > 17) {
                 this.foodTickTimer += tickDiff;
                 if (this.foodTickTimer >= 80) {
-                    if (this.getPlayer().getHealth() < this.getPlayer().getMaxHealth()) {
+                    if (player.level.gameRules.getBoolean(GameRule.NATURAL_REGENERATION) && this.getPlayer().getHealth() < this.getPlayer().getMaxHealth()) {
                         EntityRegainHealthEvent ev = new EntityRegainHealthEvent(this.getPlayer(), 1, EntityRegainHealthEvent.CAUSE_EATING);
                         this.getPlayer().heal(ev);
-                        //this.updateFoodExpLevel(3);
+
+                        this.updateFoodExpLevel(3);
                     }
                     this.foodTickTimer = 0;
                 }
-            } else if (this.getLevel() == 0) {
+            } else if (this.getLevel() <= 0) {
                 this.foodTickTimer += tickDiff;
                 if (this.foodTickTimer >= 80) {
                     EntityDamageEvent ev = new EntityDamageEvent(this.getPlayer(), DamageCause.HUNGER, 1);
@@ -159,26 +184,39 @@ public class PlayerFood {
                     } else {
                         this.getPlayer().attack(ev);
                     }
-
                     this.foodTickTimer = 0;
                 }
+            } else {
+                this.foodTickTimer = 0;
             }
+
             Effect hunger = this.getPlayer().getEffect(Effect.HUNGER);
             if (hunger != null) {
-                this.updateFoodExpLevel(0.1 * (hunger.getAmplifier() + 1));
+                this.updateFoodExpLevel(0.005f * (hunger.getAmplifier() + 1));
             }
         }
     }
 
-    public void updateFoodExpLevel(double use) {
+    /**
+     * add exhaustion
+     */
+    public void updateFoodExpLevel(float use) {
         if (!this.getPlayer().isFoodEnabled()) return;
         if (Server.getInstance().getDifficulty() == 0) return;
         if (this.getPlayer().hasEffect(Effect.SATURATION)) return;
-        this.foodExpLevel += use;
-        if (this.foodExpLevel > 4) {
+        float lastExhaustionLevel = exhaustionLevel;
+        this.exhaustionLevel += use;
+        if (this.exhaustionLevel > 4) {
             this.useHunger(1);
-            this.foodExpLevel = 0;
+            this.exhaustionLevel = 0;
         }
+        if (lastExhaustionLevel == exhaustionLevel) {
+            return;
+        }
+        if (!player.spawned) {
+            return;
+        }
+        this.getPlayer().setAttribute(Attribute.getAttribute(Attribute.PLAYER_EXHAUSTION).setValue(exhaustionLevel));
     }
 
     /**

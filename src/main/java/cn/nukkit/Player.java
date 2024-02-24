@@ -1711,7 +1711,7 @@ public class Player extends EntityHuman implements CommandSender, InventoryHolde
 
         double tdx = newPos.x - this.x;
         double tdz = newPos.z - this.z;
-        double distance = Math.sqrt(tdx * tdx + tdz * tdz);
+        float distance = (float) Math.sqrt(tdx * tdx + tdz * tdz);
 
         if (!revert && distanceSquared != 0) {
             double dx = newPos.x - this.x;
@@ -1820,18 +1820,18 @@ public class Player extends EntityHuman implements CommandSender, InventoryHolde
         if (!revert && (this.isFoodEnabled() || this.getServer().getDifficulty() == 0)) {
             if (this.isSurvivalLike()/* && !this.getRiddingOn() instanceof Entity*/) {
                 //UpdateFoodExpLevel
-                if (distance >= 0.05) {
-                    double jump = 0;
-                    double swimming = this.isInsideOfWater() ? 0.015 * distance : 0;
+                if (distance >= 0.05f) {
+                    float jump = 0;
+                    float swimming = this.isInsideOfWater() ? 0.015f * distance : 0;
                     if (swimming != 0) distance = 0;
                     if (this.isSprinting()) {  //Running
                         if (this.inAirTicks == 3 && swimming == 0) {
-                            jump = 0.2;
+                            jump = 0.2f;
                         }
-                        this.getFoodData().updateFoodExpLevel(0.1 * distance + jump + swimming);
+                        this.getFoodData().updateFoodExpLevel(0.1f * distance + jump + swimming);
                     } else {
                         if (this.inAirTicks == 3 && swimming == 0) {
-                            jump = 0.05;
+                            jump = 0.05f;
                         }
                         this.getFoodData().updateFoodExpLevel(jump + swimming);
                     }
@@ -1928,16 +1928,15 @@ public class Player extends EntityHuman implements CommandSender, InventoryHolde
     }
 
     public void sendAttributes() {
-        UpdateAttributesPacket pk = new UpdateAttributesPacket();
-        pk.entityId = this.getId();
-        pk.entries = new Attribute[]{
+        this.setAttribute(
                 Attribute.getAttribute(Attribute.HEALTH).setMaxValue(this.getMaxHealth()).setValue(health >= 1 ? (health < getMaxHealth() ? health : getMaxHealth()) : 0),
                 Attribute.getAttribute(Attribute.PLAYER_HUNGER).setValue(this.getFoodData().getLevel()),
+                Attribute.getAttribute(Attribute.PLAYER_SATURATION).setValue(this.getFoodData().getFoodSaturationLevel()),
+                Attribute.getAttribute(Attribute.PLAYER_EXHAUSTION).setValue(this.getFoodData().getExhaustionLevel()),
                 movementSpeedAttribute.copy().setValue(movementSpeedAttribute.getModifiedValue()),
                 Attribute.getAttribute(Attribute.PLAYER_LEVEL).setValue(this.getExperienceLevel()),
                 Attribute.getAttribute(Attribute.PLAYER_EXPERIENCE).setValue(((float) this.getExperience()) / calculateRequireExperience(this.getExperienceLevel()))
-        };
-        this.dataPacket(pk);
+        );
     }
 
     @Override
@@ -3573,7 +3572,7 @@ public class Player extends EntityHuman implements CommandSender, InventoryHolde
 
                                     if (this.canInteract(blockVector.add(0.5, 0.5, 0.5), this.isCreative() ? 16 : 8) && (i = this.level.useBreakOn(blockVector.asVector3(), i, this, true)) != null) {
                                         if (this.isSurvival()) {
-                                            this.getFoodData().updateFoodExpLevel(0.005);
+                                            this.getFoodData().updateFoodExpLevel(0.005f);
                                             if (!i.equals(oldItem) || i.getCount() != oldItem.getCount()) {
                                                 inventory.setItemInHand(i);
                                                 inventory.sendHeldItem(this.getViewers().values());
@@ -4651,27 +4650,28 @@ public class Player extends EntityHuman implements CommandSender, InventoryHolde
         }
 
         super.setHealth(health);
-        //TODO: Remove it in future! This a hack to solve the client-side absorption bug! WFT Mojang (Half a yellow heart cannot be shown, we can test it in local gaming)
-        Attribute attr = Attribute.getAttribute(Attribute.HEALTH).setMaxValue(this.getAbsorption() % 2 != 0 ? this.getMaxHealth() + 1 : this.getMaxHealth()).setValue(health > 0 ? (health < getMaxHealth() ? health : getMaxHealth()) : 0);
-        if (this.spawned) {
-            UpdateAttributesPacket pk = new UpdateAttributesPacket();
-            pk.entries = new Attribute[]{attr};
-            pk.entityId = this.id;
-            this.dataPacket(pk);
+
+        if (!this.spawned) {
+            return;
         }
+
+        //TODO: Remove it in future! This a hack to solve the client-side absorption bug! WFT Mojang (Half a yellow heart cannot be shown, we can test it in local gaming)
+        this.setAttribute(Attribute.getAttribute(Attribute.HEALTH)
+                .setMaxValue(this.getAbsorption() % 2 != 0 ? this.getMaxHealth() + 1 : this.getMaxHealth())
+                .setValue(health > 0 ? (health < getMaxHealth() ? health : getMaxHealth()) : 0));
     }
 
     @Override
     public void setMaxHealth(int maxHealth) {
         super.setMaxHealth(maxHealth);
 
-        Attribute attr = Attribute.getAttribute(Attribute.HEALTH).setMaxValue(this.getAbsorption() % 2 != 0 ? this.getMaxHealth() + 1 : this.getMaxHealth()).setValue(health > 0 ? (health < getMaxHealth() ? health : getMaxHealth()) : 0);
-        if (this.spawned) {
-            UpdateAttributesPacket pk = new UpdateAttributesPacket();
-            pk.entries = new Attribute[]{attr};
-            pk.entityId = this.id;
-            this.dataPacket(pk);
+        if (!this.spawned) {
+            return;
         }
+
+        this.setAttribute(Attribute.getAttribute(Attribute.HEALTH)
+                .setMaxValue(this.getAbsorption() % 2 != 0 ? this.getMaxHealth() + 1 : this.getMaxHealth())
+                .setValue(health > 0 ? (health < getMaxHealth() ? health : getMaxHealth()) : 0));
     }
 
     public int getExperience() {
@@ -4741,10 +4741,10 @@ public class Player extends EntityHuman implements CommandSender, InventoryHolde
         }
     }
 
-    public void setAttribute(Attribute attribute) {
+    public void setAttribute(Attribute... attribute) {
         UpdateAttributesPacket pk = new UpdateAttributesPacket();
-        pk.entries = new Attribute[]{attribute};
-        pk.entityId = this.id;
+        pk.entries = attribute;
+        pk.entityId = this.getId();
         this.dataPacket(pk);
     }
 
@@ -4800,7 +4800,7 @@ public class Player extends EntityHuman implements CommandSender, InventoryHolde
         if (source instanceof EntityDamageByEntityEvent && source.getCause() == DamageCause.ENTITY_ATTACK) {
             Entity damager = ((EntityDamageByEntityEvent) source).getDamager();
             if (damager instanceof Player) {
-                ((Player) damager).getFoodData().updateFoodExpLevel(0.1);
+                ((Player) damager).getFoodData().updateFoodExpLevel(0.1f);
             }
 
             //Critical hit
