@@ -4,6 +4,7 @@ import cn.nukkit.item.Item;
 import it.unimi.dsi.fastutil.objects.ObjectArrayList;
 import lombok.ToString;
 
+import javax.annotation.Nullable;
 import java.util.*;
 
 /**
@@ -12,6 +13,8 @@ import java.util.*;
  */
 @ToString
 public class ShapelessRecipe implements CraftingRecipe {
+    @Nullable
+    private final String vanillaRecipeId;
 
     private String recipeId;
 
@@ -27,10 +30,11 @@ public class ShapelessRecipe implements CraftingRecipe {
     private final RecipeTag tag;
 
     public ShapelessRecipe(Item result, Collection<Item> ingredients, RecipeTag tag) {
-        this(null, 10, result, ingredients, tag);
+        this(null, null, 10, result, ingredients, tag);
     }
 
-    public ShapelessRecipe(String recipeId, int priority, Item result, Collection<Item> ingredients, RecipeTag tag) {
+    public ShapelessRecipe(@Nullable String vanillaRecipeId, String recipeId, int priority, Item result, Collection<Item> ingredients, RecipeTag tag) {
+        this.vanillaRecipeId = vanillaRecipeId;
         this.recipeId = recipeId;
         this.priority = priority;
         this.output = result.clone();
@@ -61,6 +65,11 @@ public class ShapelessRecipe implements CraftingRecipe {
         this.ingredientsAggregate.sort(CraftingManager.recipeComparator);
 
         this.tag = tag;
+    }
+
+    @Nullable
+    public String getVanillaRecipeId() {
+        return this.vanillaRecipeId;
     }
 
     @Override

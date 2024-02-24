@@ -34,7 +34,7 @@ public class CraftingManager {
     public static BatchPacket packet = null;
     public static BatchPacket packetRaw;
 
-    protected static long RECIPE_COUNT = 1;
+    protected static int RECIPE_COUNT = 1;
 
     public final Collection<Recipe> recipes = new ArrayDeque<>();
 
@@ -136,13 +136,13 @@ public class CraftingManager {
 
                         switch (type) {
                             case 0:
-                                this.registerRecipe(new ShapelessRecipe(recipeId, priority, Item.fromJson(first), sorted, tag));
+                                this.registerRecipe(new ShapelessRecipe(recipeId, recipeId, priority, Item.fromJson(first), sorted, tag));
                                 break;
                             case 5:
-                                this.registerRecipe(new ShulkerBoxRecipe(recipeId, priority, Item.fromJson(first), sorted, tag));
+                                this.registerRecipe(new ShulkerBoxRecipe(recipeId, recipeId, priority, Item.fromJson(first), sorted, tag));
                                 break;
                             case 6:
-                                this.registerRecipe(new ShapelessChemistryRecipe(recipeId, priority, Item.fromJson(first), sorted, tag));
+                                this.registerRecipe(new ShapelessChemistryRecipe(recipeId, recipeId, priority, Item.fromJson(first), sorted, tag));
                                 break;
                         }
                         break;
@@ -178,10 +178,10 @@ public class CraftingManager {
 
                         switch (type) {
                             case 1:
-                                this.registerRecipe(new ShapedRecipe(recipeId, priority, Item.fromJson(first), shape, ingredients, extraResults, tag));
+                                this.registerRecipe(new ShapedRecipe(recipeId, recipeId, priority, Item.fromJson(first), shape, ingredients, extraResults, tag));
                                 break;
                             case 7:
-                                this.registerRecipe(new ShapedChemistryRecipe(recipeId, priority, Item.fromJson(first), shape, ingredients, extraResults, tag));
+                                this.registerRecipe(new ShapedChemistryRecipe(recipeId, recipeId, priority, Item.fromJson(first), shape, ingredients, extraResults, tag));
                                 break;
                         }
                         break;
@@ -371,12 +371,8 @@ public class CraftingManager {
         this.furnaceRecipes.put(hash, recipe);
 
         RecipeTag tag = recipe.getTag();
-        Long2ObjectMap<FurnaceRecipe> recipes = taggedFurnaceRecipes.get(tag);
-        if (recipes == null) {
-            recipes = new Long2ObjectOpenHashMap<>();
-            taggedFurnaceRecipes.put(tag, recipes);
-        }
-        recipes.put(hash, recipe);
+        taggedFurnaceRecipes.computeIfAbsent(tag, k -> new Long2ObjectOpenHashMap<>())
+                .put(hash, recipe);
     }
 
     public void registerShapedRecipe(ShapedRecipe recipe) {
@@ -400,7 +396,7 @@ public class CraftingManager {
     public void registerRecipe(Recipe recipe) {
         if (recipe instanceof CraftingRecipe) {
 //            UUID id = Utils.dataToUUID(String.valueOf(++RECIPE_COUNT), String.valueOf(recipe.getResult().getId()), String.valueOf(recipe.getResult().getDamage()), String.valueOf(recipe.getResult().getCount()), Arrays.toString(recipe.getResult().getCompoundTag()));
-            long runtimeId = ++RECIPE_COUNT;
+            int runtimeId = ++RECIPE_COUNT;
             UUID id = new UUID(Hash.xxh64(runtimeId), runtimeId);
             ((CraftingRecipe) recipe).setId(id);
             this.recipes.add(recipe);
@@ -434,17 +430,9 @@ public class CraftingManager {
         }
 
         RecipeTag tag = recipe.getTag();
-        Long2ObjectMap<Long2ObjectMap<ShapelessRecipe>> shapelessRecipes = taggedShapelessRecipes.get(tag);
-        if (shapelessRecipes == null) {
-            shapelessRecipes = new Long2ObjectOpenHashMap<>();
-            taggedShapelessRecipes.put(tag, shapelessRecipes);
-        }
-        Long2ObjectMap<ShapelessRecipe> recipes = shapelessRecipes.get(outputHash);
-        if (recipes == null) {
-            recipes = new Long2ObjectOpenHashMap<>();
-            shapelessRecipes.put(outputHash, recipes);
-        }
-        recipes.put(inputHash, recipe);
+        taggedShapelessRecipes.computeIfAbsent(tag, k -> new Long2ObjectOpenHashMap<>())
+                .computeIfAbsent(outputHash, k -> new Long2ObjectOpenHashMap<>())
+                .put(inputHash, recipe);
     }
 
     public void registerSmithingTransformRecipe(SmithingTransformRecipe recipe) {
@@ -453,12 +441,8 @@ public class CraftingManager {
         this.smithingRecipes.put(hash, recipe);
 
         RecipeTag tag = recipe.getTag();
-        Long2ObjectMap<SmithingTransformRecipe> recipes = taggedSmithingRecipes.get(tag);
-        if (recipes == null) {
-            recipes = new Long2ObjectOpenHashMap<>();
-            taggedSmithingRecipes.put(tag, recipes);
-        }
-        recipes.put(hash, recipe);
+        taggedSmithingRecipes.computeIfAbsent(tag, k -> new Long2ObjectOpenHashMap<>())
+                .put(hash, recipe);
     }
 
     public void registerSmithingTrimRecipe(SmithingTrimRecipe recipe) {

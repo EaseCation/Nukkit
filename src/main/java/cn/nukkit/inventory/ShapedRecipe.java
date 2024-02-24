@@ -5,6 +5,7 @@ import io.netty.util.collection.CharObjectHashMap;
 import io.netty.util.collection.CharObjectMap;
 import it.unimi.dsi.fastutil.objects.ObjectArrayList;
 
+import javax.annotation.Nullable;
 import java.util.*;
 
 /**
@@ -12,6 +13,8 @@ import java.util.*;
  * Nukkit Project
  */
 public class ShapedRecipe implements CraftingRecipe {
+    @Nullable
+    private final String vanillaRecipeId;
 
     private String recipeId;
     private final Item primaryResult;
@@ -29,7 +32,7 @@ public class ShapedRecipe implements CraftingRecipe {
     private final RecipeTag tag;
 
     public ShapedRecipe(Item primaryResult, String[] shape, Map<Character, Item> ingredients, List<Item> extraResults, RecipeTag tag) {
-        this(null, 1, primaryResult, shape, ingredients, extraResults, tag);
+        this(null, null, 1, primaryResult, shape, ingredients, extraResults, tag);
     }
 
     /**
@@ -47,7 +50,8 @@ public class ShapedRecipe implements CraftingRecipe {
      *                         <p>
      *                         Note: Recipes **do not** need to be square. Do NOT add padding for empty rows/columns.
      */
-    public ShapedRecipe(String recipeId, int priority, Item primaryResult, String[] shape, Map<Character, Item> ingredients, List<Item> extraResults, RecipeTag tag) {
+    public ShapedRecipe(@Nullable String vanillaRecipeId, String recipeId, int priority, Item primaryResult, String[] shape, Map<Character, Item> ingredients, List<Item> extraResults, RecipeTag tag) {
+        this.vanillaRecipeId = vanillaRecipeId;
         this.recipeId = recipeId;
         this.priority = priority;
         int rowCount = shape.length;
@@ -103,6 +107,11 @@ public class ShapedRecipe implements CraftingRecipe {
         this.ingredientsAggregate.sort(CraftingManager.recipeComparator);
 
         this.tag = tag;
+    }
+
+    @Nullable
+    public String getVanillaRecipeId() {
+        return this.vanillaRecipeId;
     }
 
     public int getWidth() {
