@@ -2,11 +2,7 @@ package cn.nukkit.entity;
 
 import cn.nukkit.Player;
 import cn.nukkit.Server;
-import cn.nukkit.block.Block;
-import cn.nukkit.block.BlockDripstonePointed;
-import cn.nukkit.block.BlockID;
-import cn.nukkit.block.BlockLiquid;
-import cn.nukkit.block.BlockWater;
+import cn.nukkit.block.*;
 import cn.nukkit.blockentity.BlockEntityPistonArm;
 import cn.nukkit.entity.attribute.Attribute;
 import cn.nukkit.entity.data.*;
@@ -47,7 +43,10 @@ import lombok.extern.log4j.Log4j2;
 import javax.annotation.Nullable;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.Field;
-import java.util.*;
+import java.util.IdentityHashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Objects;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ThreadLocalRandom;
 
@@ -1222,6 +1221,9 @@ public abstract class Entity extends Location implements Metadatable, EntityData
 
     public boolean attack(float damage) {
         return this.attack(new EntityDamageEvent(this, DamageCause.CUSTOM, damage));
+    }
+
+    protected void onAttackSuccess(EntityDamageByEntityEvent source) {
     }
 
     public void heal(EntityRegainHealthEvent source) {

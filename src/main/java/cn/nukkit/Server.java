@@ -1610,7 +1610,6 @@ public class Server {
                 .putLong("lastPlayed", System.currentTimeMillis() / 1000)
                 .putString("Level", this.getDefaultLevel().getName())
                 .putList(new ListTag<>("Inventory"))
-//                .putCompound("Achievements", new CompoundTag())
                 .putInt("playerGameType", this.getGamemode())
                 .putFloat("FallDistance", 0)
                 .putShort("Fire", 0)

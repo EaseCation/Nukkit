@@ -26,18 +26,18 @@ public class EnchantmentProtectionAll extends EnchantmentProtection {
     }
 
     @Override
-    public double getTypeModifier() {
+    public int getTypeModifier() {
         return 1;
     }
 
     @Override
-    public float getProtectionFactor(EntityDamageEvent e) {
+    public int getProtectionFactor(EntityDamageEvent e) {
         DamageCause cause = e.getCause();
 
         if (level <= 0 || cause == DamageCause.VOID || cause == DamageCause.CUSTOM || cause == DamageCause.SONIC_BOOM || cause == DamageCause.HUNGER || cause == DamageCause.SUICIDE) {
             return 0;
         }
 
-        return (float) (getLevel() * getTypeModifier());
+        return getLevel() * getTypeModifier();
     }
 }

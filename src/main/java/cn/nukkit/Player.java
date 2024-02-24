@@ -101,6 +101,7 @@ import java.util.function.Consumer;
 import java.util.stream.Collectors;
 
 import static cn.nukkit.SharedConstants.BREAKPOINT_DEBUGGING;
+import static cn.nukkit.SharedConstants.EXPERIMENTAL_COMBAT_KNOCKBACK_TEST;
 import static cn.nukkit.SharedConstants.RESOURCE_PACK_CHUNK_SIZE;
 
 /**
@@ -175,12 +176,8 @@ public class Player extends EntityHuman implements CommandSender, InventoryHolde
     protected IntSet permanentWindows = new IntOpenHashSet();
     protected int messageCounter = 2;
 
-    private String clientSecret;
-
     public Vector3 speed = null;
     public int attackCriticalThisJump = 0;
-
-//    public final Set<String> achievements = new ObjectOpenHashSet<>();
 
     public int craftingType = CRAFTING_SMALL;
     public RecipeTag recipeTag = RecipeTag.CRAFTING_TABLE;
@@ -218,7 +215,6 @@ public class Player extends EntityHuman implements CommandSender, InventoryHolde
 
     private Integer loaderId;
 
-    protected float stepHeight = 0.6f;
 
     public Long2BooleanMap usedChunks = new Long2BooleanOpenHashMap();
 
@@ -383,10 +379,6 @@ public class Player extends EntityHuman implements CommandSender, InventoryHolde
 
     public TranslationContainer getLeaveMessage() {
         return new TranslationContainer(TextFormat.YELLOW + "%multiplayer.player.left", this.getDisplayName());
-    }
-
-    public String getClientSecret() {
-        return clientSecret;
     }
 
     /**
@@ -738,23 +730,6 @@ public class Player extends EntityHuman implements CommandSender, InventoryHolde
 
     public boolean isPlayer() {
         return true;
-    }
-
-    /**
-     * @deprecated will be removed in the future
-     */
-    @Deprecated
-    public void removeAchievement(String achievementId) {
-//        achievements.remove(achievementId);
-    }
-
-    /**
-     * @deprecated will be removed in the future
-     */
-    @Deprecated
-    public boolean hasAchievement(String achievementId) {
-//        return achievements.contains(achievementId);
-        return false;
     }
 
     public boolean isConnected() {
@@ -1345,39 +1320,6 @@ public class Player extends EntityHuman implements CommandSender, InventoryHolde
             pk.action = AnimatePacket.Action.WAKE_UP;
             this.dataPacket(pk);
         }
-    }
-
-    /**
-     * @deprecated will be removed in the future
-     */
-    @Deprecated
-    public boolean awardAchievement(String achievementId) {
-        return false;
-        /*if (!Server.getInstance().getPropertyBoolean("achievements", true)) {
-            return false;
-        }
-
-        Achievement achievement = Achievement.achievements.get(achievementId);
-
-        if (achievement == null || hasAchievement(achievementId)) {
-            return false;
-        }
-
-        for (String id : achievement.requires) {
-            if (!this.hasAchievement(id)) {
-                return false;
-            }
-        }
-        PlayerAchievementAwardedEvent event = new PlayerAchievementAwardedEvent(this, achievementId);
-        this.server.getPluginManager().callEvent(event);
-
-        if (event.isCancelled()) {
-            return false;
-        }
-
-        this.achievements.add(achievementId);
-        achievement.broadcast(this);
-        return true;*/
     }
 
     public int getGamemode() {
@@ -2008,6 +1950,13 @@ public class Player extends EntityHuman implements CommandSender, InventoryHolde
                     }
                     this.inAirTicks = 0;
                     this.highestPosition = this.y;
+
+                    if (EXPERIMENTAL_COMBAT_KNOCKBACK_TEST) {
+                        // 地面阻力
+                        this.motionX *= 0.3;
+                        this.motionY = 0;
+                        this.motionZ *= 0.3;
+                    }
                 } else {
                     if (this.checkMovement && !this.isGliding() && !server.getAllowFlight() && !this.getAdventureSettings().get(Type.ALLOW_FLIGHT) && this.inAirTicks > 20 && !this.isSleeping() && !this.isImmobile() && !this.isSwimming() && this.riding == null && !this.hasEffect(Effect.LEVITATION) && !this.hasEffect(Effect.SLOW_FALLING)) {
                         double expectedVelocity = (-this.getGravity()) / ((double) this.getDrag()) - ((-this.getGravity()) / ((double) this.getDrag())) * Math.exp(-((double) this.getDrag()) * ((double) (this.inAirTicks - this.startAirTicks)));
@@ -2035,8 +1984,20 @@ public class Player extends EntityHuman implements CommandSender, InventoryHolde
 
                     if (this.isGliding()) this.resetFallDistance();
 
-                    ++this.inAirTicks;
+                    if (EXPERIMENTAL_COMBAT_KNOCKBACK_TEST) {
+                        // 空气阻力
+                        this.motionX *= 0.9900000095367432;
+                        this.motionY *= 0.9800000190734863;
+                        this.motionZ *= 0.9900000095367432;
+                    }
 
+                    ++this.inAirTicks;
+                }
+
+                if (EXPERIMENTAL_COMBAT_KNOCKBACK_TEST) {
+                    if (Math.abs(this.motionX) < 0.0001) this.motionX = 0;
+                    if (Math.abs(this.motionY) < 0.0001) this.motionY = 0;
+                    if (Math.abs(this.motionZ) < 0.0001) this.motionZ = 0;
                 }
 
                 if (this.isSurvivalLike()) {
@@ -2328,16 +2289,6 @@ public class Player extends EntityHuman implements CommandSender, InventoryHolde
         } else {
             this.setLevel(level);
         }
-
-        /*for (Tag achievement : nbt.getCompound("Achievements").getAllTags()) {
-            if (!(achievement instanceof ByteTag)) {
-                continue;
-            }
-
-            if (((ByteTag) achievement).getData() > 0) {
-                this.achievements.add(achievement.getName());
-            }
-        }*/
 
         nbt.putLong("lastPlayed", System.currentTimeMillis() / 1000);
 
@@ -4314,13 +4265,6 @@ public class Player extends EntityHuman implements CommandSender, InventoryHolde
                 this.namedTag.putInt("SpawnBlockPositionZ", this.spawnBlockPosition.getFloorZ());
             }
 
-            /*CompoundTag achievements = new CompoundTag();
-            for (String achievement : this.achievements) {
-                achievements.putByte(achievement, 1);
-            }
-
-            this.namedTag.putCompound("Achievements", achievements);*/
-
             this.namedTag.putInt("playerGameType", this.gamemode);
             this.namedTag.putLong("lastPlayed", System.currentTimeMillis() / 1000);
 
@@ -4771,18 +4715,16 @@ public class Player extends EntityHuman implements CommandSender, InventoryHolde
         if (!this.isAlive()) {
             return false;
         }
-
-        if (this.isCreativeLike()
-//                && source.getCause() != DamageCause.SUICIDE
-//                && source.getCause() != DamageCause.VOID
-                ) {
+        if (this.isCreativeLike()) {
             source.setCancelled();
             return false;
-        } else if (this.getAdventureSettings().get(Type.ALLOW_FLIGHT) && source.getCause() == DamageCause.FALL) {
+        }
+        if (this.getAdventureSettings().get(Type.ALLOW_FLIGHT) && source.getCause() == DamageCause.FALL) {
             //source.setCancelled();
             return false;
-        } else if (source.getCause() == DamageCause.FALL) {
-            if (this.getLevel().getBlock(this.getPosition().floor().add(0.5, -1, 0.5)).getId() == Block.SLIME) {
+        }
+        if (source.getCause() == DamageCause.FALL) {
+            if (this.getLevel().getBlock(floor().add(0.5, -1, 0.5)).getId() == Block.SLIME) {
                 if (!this.isSneaking()) {
                     //source.setCancelled();
                     this.resetFallDistance();
@@ -4795,55 +4737,21 @@ public class Player extends EntityHuman implements CommandSender, InventoryHolde
             return false;
         }
 
-        boolean add = false;
-        boolean doubleCritical = false;
-        if (source instanceof EntityDamageByEntityEvent && source.getCause() == DamageCause.ENTITY_ATTACK) {
-            Entity damager = ((EntityDamageByEntityEvent) source).getDamager();
-            if (damager instanceof Player) {
-                ((Player) damager).getFoodData().updateFoodExpLevel(0.1f);
+        boolean critical = false;
+        if (source instanceof EntityDamageByEntityEvent event && source.getCause() == DamageCause.ENTITY_ATTACK) {
+            Entity damager = event.getDamager();
+            if (damager instanceof Player player) {
+                player.getFoodData().updateFoodExpLevel(0.1f);
             }
 
             //Critical hit
-
-            if (!damager.onGround && damager instanceof Player) {
-                if (((Player) damager).speed != null && ((Player) damager).speed.y > 0) {
-                    //((Player) damager).sendMessage("speed = " + ((Player) damager).speed.y);
-                    if (((Player) damager).attackCriticalThisJump <= 0) {
-                        add = true;
-                    } else if (((Player) damager).getLoginChainData().getCurrentInputMode() != ClientChainData.INPUT_MOUSE) {  // 键鼠不允许叠刀
-                        doubleCritical = true;
+            if (!damager.onGround && damager instanceof Player player) {
+                if (player.speed != null && player.speed.y > 0) {
+                    if (player.attackCriticalThisJump <= 0) {
+                        critical = true;
+                        source.setDamage(source.getDamage() * 1.3f);
                     }
                 }
-            }
-
-            if (add) {
-                source.setDamage((float) (source.getDamage() * 1.3));
-
-                AnimatePacket animate = new AnimatePacket();
-                animate.action = AnimatePacket.Action.CRITICAL_HIT;
-                animate.eid = getId();
-                this.getLevel().addChunkPacket(damager.getChunkX(), damager.getChunkZ(), animate);
-
-                this.getLevel().addLevelSoundEvent(this, LevelSoundEventPacket.SOUND_ATTACK_STRONG);
-            }
-
-            if (doubleCritical) {
-                //正在叠刀
-                Player damagerPlayer = (Player)((EntityDamageByEntityEvent) source).getDamager();
-                if (damagerPlayer.attackCriticalThisJump < 2) {
-                    this.nextAllowAttack = 0;
-                    // this.attackTime = 0;
-                    source.setDamage((float) (source.getDamage() * 0.2));
-                }
-
-                damagerPlayer.sendPopup("叠刀 × " + damagerPlayer.attackCriticalThisJump);
-
-                AnimatePacket animate = new AnimatePacket();
-                animate.action = AnimatePacket.Action.CRITICAL_HIT;
-                animate.eid = getId();
-                damagerPlayer.dataPacket(animate);
-
-                this.getLevel().addLevelSoundEvent(this, LevelSoundEventPacket.SOUND_ATTACK_STRONG, new Player[]{damagerPlayer});
             }
         }
 
@@ -4852,35 +4760,28 @@ public class Player extends EntityHuman implements CommandSender, InventoryHolde
 
             if (this.getLastDamageCause() == source && this.spawned) {
                 EntityEventPacket pk = new EntityEventPacket();
-                pk.eid = this.id;
+                pk.eid = this.getId();
                 pk.event = EntityEventPacket.HURT_ANIMATION;
-                Server.broadcastPacket(this.hasSpawned.values(), pk);
+                // 这边只发给自己，因为广播给他人的已经在EntityLiving中发送了
                 this.dataPacket(pk);
-                if (add) {
-                    if (((EntityDamageByEntityEvent) source).getDamager() instanceof Player) {
-                        /*if (((Player) ((EntityDamageByEntityEvent) source).getDamager()).getLoginChainData().getDeviceOS() == 7)  //win10
-                            (((EntityDamageByEntityEvent) source).getDamager()).addEffect(Effect.getEffect(Effect.SLOWNESS).setDuration(10).setAmplifier(1).setVisible(false));*/
-                        ((Player)(((EntityDamageByEntityEvent) source).getDamager())).attackCriticalThisJump++;
-                    }
-                    /*
-                    Random random = ThreadLocalRandom.current();
-                    for (int i = 0; i < 10; i++) {
-                        CriticalParticle par = new CriticalParticle(new Vector3(this.x + random.nextDouble() * 2 - 1, this.y + random.nextDouble() * 2, this.z + random.nextDouble() * 2 - 1));
-                        this.getLevel().addParticle(par);
-                    }*/
-                }
-                if (doubleCritical) {
-                    if (((EntityDamageByEntityEvent) source).getDamager() instanceof Player) {
-                        Player damagerPlayer = (Player)((EntityDamageByEntityEvent) source).getDamager();
-                        damagerPlayer.attackCriticalThisJump++;
-                    }
-                }
 
+                if (critical) {
+                    if (((EntityDamageByEntityEvent) source).getDamager() instanceof Player player) {
+                        player.attackCriticalThisJump++;
+                    }
+
+                    // 在这里发送暴击，因为事件可能被取消
+                    AnimatePacket animate = new AnimatePacket();
+                    animate.action = AnimatePacket.Action.CRITICAL_HIT;
+                    animate.eid = getId();
+                    this.getLevel().addChunkPacket(this.getChunkX(), this.getChunkZ(), animate);
+
+                    this.getLevel().addLevelSoundEvent(this, LevelSoundEventPacket.SOUND_ATTACK_STRONG);
+                }
             }
             return true;
-        } else {
-            return false;
         }
+        return false;
     }
 
     protected boolean isDamageBlocked(EntityDamageEvent source) {
@@ -5719,16 +5620,6 @@ public class Player extends EntityHuman implements CommandSender, InventoryHolde
                         if (ev.isCancelled()) {
                             return false;
                         }
-
-                        /*switch (item.getId()) {
-                            case Item.LOG:
-                            case Item.LOG2:
-                                this.awardAchievement("mineWood");
-                                break;
-                            case Item.DIAMOND:
-                                this.awardAchievement("diamond");
-                                break;
-                        }*/
 
                         TakeItemEntityPacket pk = new TakeItemEntityPacket();
                         pk.entityId = this.getId();

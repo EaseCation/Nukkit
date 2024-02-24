@@ -48,7 +48,7 @@ public abstract class EnchantmentProtection extends Enchantment {
         return "%enchantment.protect." + this.name;
     }
 
-    public double getTypeModifier() {
+    public int getTypeModifier() {
         return 0;
     }
 

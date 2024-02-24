@@ -152,7 +152,7 @@ public abstract class EntityHumanType extends EntityCreature implements Inventor
     }
 
     @Override
-    public boolean attack(EntityDamageEvent source) {
+    protected boolean damageEntity0(EntityDamageEvent source) {
         if (this.isClosed() || !this.isAlive()) {
             return false;
         }
@@ -180,7 +180,7 @@ public abstract class EntityHumanType extends EntityCreature implements Inventor
             source.setDamage(-Math.min(this.getAbsorption(), source.getFinalDamage()), DamageModifier.ABSORPTION);
         }
 
-        if (super.attack(source)) {
+        if (super.damageEntity0(source)) {
             if (source.getCause() == DamageCause.SUICIDE) {
                 return true;
             }
@@ -241,12 +241,12 @@ public abstract class EntityHumanType extends EntityCreature implements Inventor
         }
     }
 
-    protected double calculateEnchantmentProtectionFactor(Item item, EntityDamageEvent source) {
+    protected int calculateEnchantmentProtectionFactor(Item item, EntityDamageEvent source) {
         if (!item.hasEnchantments()) {
             return 0;
         }
 
-        double epf = 0;
+        int epf = 0;
 
         for (Enchantment ench : item.getEnchantments()) {
             epf += ench.getProtectionFactor(source);
