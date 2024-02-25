@@ -287,6 +287,11 @@ public class LevelDB implements LevelProvider {
     }
 
     @Override
+    public LevelDbChunk getEmptyChunk(int chunkX, int chunkZ) {
+        return LevelDbChunk.getEmptyChunk(chunkX, chunkZ, this);
+    }
+
+    @Override
     public AsyncTask requestChunkTask(int chunkX, int chunkZ) {
         LevelDbChunk chunk = this.getChunk(chunkX, chunkZ, false);
         if (chunk == null) {

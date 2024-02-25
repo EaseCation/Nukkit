@@ -39,6 +39,8 @@ public interface LevelProvider {
 
     BaseFullChunk getChunk(int X, int Z, boolean create);
 
+    BaseFullChunk getEmptyChunk(int x, int z);
+
     void saveChunks();
 
     void saveChunk(int X, int Z);
