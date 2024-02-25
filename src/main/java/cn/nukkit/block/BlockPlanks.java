@@ -31,7 +31,7 @@ public class BlockPlanks extends BlockSolidMeta {
     }
 
     public BlockPlanks(int meta) {
-        super(meta % 6);
+        super(meta);
     }
 
     @Override

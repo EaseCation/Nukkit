@@ -529,6 +529,14 @@ public class Server {
                 this.setPropertyString("level-name", defaultName);
             }
 
+            if (Boolean.getBoolean("nukkit.randomTempDefaultWorld")) {
+                defaultName = "temp_" + UUID.randomUUID();
+
+                File tempWorld = new File(dataPath + "worlds/" +  defaultName + "/");
+                tempWorld.mkdirs();
+                tempWorld.deleteOnExit();
+            }
+
             if (!this.loadLevel(defaultName)) {
                 long seed;
                 String seedString = String.valueOf(this.getProperty("level-seed", System.currentTimeMillis()));
