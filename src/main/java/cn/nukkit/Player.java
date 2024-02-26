@@ -1032,7 +1032,9 @@ public class Player extends EntityHuman implements CommandSender, InventoryHolde
     }
 
     protected void sendRecipeList() {
+/*
         this.dataPacket(CraftingManager.packet);
+*/
     }
 
     protected void firstRespawn(Position pos) {

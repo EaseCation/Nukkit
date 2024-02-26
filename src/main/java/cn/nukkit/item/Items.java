@@ -826,11 +826,13 @@ public final class Items {
                 if (factory != null) {
                     item = factory.create(meta, count);
                 } else {
-                    item = new Item(id, meta, count);
+//                    item = new Item(id, meta, count);
+                    return air();
                 }
             }
         } catch (Exception e) {
-            item = new Item(id, meta, count);
+//            item = new Item(id, meta, count);
+            return air();
         }
 
         if (tags.length != 0) {
@@ -868,11 +870,13 @@ public final class Items {
                 if (factory != null) {
                     item = factory.create(meta, count);
                 } else {
-                    item = new Item(id, meta, count);
+//                    item = new Item(id, meta, count);
+                    return air();
                 }
             }
         } catch (Exception e) {
-            item = new Item(id, meta, count);
+//            item = new Item(id, meta, count);
+            return air();
         }
 
         if (tags.length != 0) {

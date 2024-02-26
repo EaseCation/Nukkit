@@ -1,6 +1,5 @@
 package cn.nukkit.inventory;
 
-import cn.nukkit.Server;
 import cn.nukkit.item.Item;
 import cn.nukkit.item.ItemID;
 import cn.nukkit.network.protocol.BatchPacket;
@@ -19,8 +18,6 @@ import it.unimi.dsi.fastutil.objects.Object2ObjectOpenHashMap;
 import lombok.extern.log4j.Log4j2;
 
 import javax.annotation.Nullable;
-import java.io.File;
-import java.io.InputStream;
 import java.util.*;
 import java.util.zip.Deflater;
 
@@ -80,6 +77,7 @@ public class CraftingManager {
     }
 
     protected void initialize() {
+/*
         InputStream recipesStream = Server.class.getClassLoader().getResourceAsStream("recipes.json");
         if (recipesStream == null) {
             throw new AssertionError("Unable to find recipes.json");
@@ -99,6 +97,7 @@ public class CraftingManager {
         this.rebuildPacket();
 
         log.info("Loaded " + this.recipes.size() + " recipes.");
+*/
     }
 
     @SuppressWarnings("unchecked")

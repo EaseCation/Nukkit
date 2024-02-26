@@ -127,7 +127,9 @@ public class Item implements Cloneable, ItemID {
             }
         }
 
+/*
         initCreativeItems();
+*/
     }
 
     @SuppressWarnings("unchecked")
@@ -219,13 +221,15 @@ public class Item implements Cloneable, ItemID {
         return Items.get(id, meta, count, tags);
     }
 
+    @Nullable
     public static Item getCraftingItem(int id, int meta, int count, byte[] tags) {
         try {
             Class<?> c = id > 0 ? list[id] : Block.list[0xff - id];
             Item item;
 
             if (c == null) {
-                item = new Item(id, meta, count);
+//                item = new Item(id, meta, count);
+                return null;
             } else if (id < 256 && id != 166) {
                 item = new ItemBlock(Block.fromItemId(id, meta != -1 ? meta : 0), meta, count);
             } else {
@@ -238,7 +242,8 @@ public class Item implements Cloneable, ItemID {
 
             return item;
         } catch (Exception e) {
-            return new Item(id, meta, count).setCompoundTag(tags);
+//            return new Item(id, meta, count).setCompoundTag(tags);
+            return null;
         }
     }
 
@@ -336,7 +341,11 @@ public class Item implements Cloneable, ItemID {
             }
         }
 
-        return get(id, meta);
+        Item item = get(id, meta);
+        if (id != AIR && item.getId() == AIR) {
+            return null;
+        }
+        return item;
     }
 
     @Nullable
@@ -369,10 +378,12 @@ public class Item implements Cloneable, ItemID {
         return get(Item.getIdFromFullId(fullId), meta);
     }
 
+    @Nullable
     public static Item fromJson(Map<String, Object> data) {
         return fromJson(data, false);
     }
 
+    @Nullable
     public static Item fromJson(Map<String, Object> data, boolean ignoreUnsupported) {
         String nbt = (String) data.get("nbt_b64");
         byte[] nbtBytes;
