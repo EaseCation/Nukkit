@@ -79,7 +79,6 @@ import java.util.concurrent.ConcurrentLinkedDeque;
 import java.util.concurrent.ConcurrentLinkedQueue;
 import java.util.concurrent.ThreadLocalRandom;
 import java.util.concurrent.atomic.AtomicInteger;
-import java.util.concurrent.locks.Condition;
 import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantLock;
 import java.util.function.BiConsumer;
@@ -299,10 +298,7 @@ public class Level implements ChunkManager, Metadatable {
             try {
                 Generator generator = generatorClass.getConstructor(Map.class).newInstance(provider.getGeneratorOptions());
                 NukkitRandom rand = new NukkitRandom(getSeed());
-//                if (Server.getInstance().isPrimaryThread()) {
-//                    generator.init(Level.this, rand);
-//                }
-                generator.init(new PopChunkManager(getSeed(), getHeightRange()), rand);
+                generator.init(new PopChunkManager(getSeed(), getHeightRange()), rand, provider.getWorldGeneratorOptions());
                 return generator;
             } catch (Throwable e) {
                 Server.getInstance().getLogger().logException(e);
@@ -4094,14 +4090,14 @@ public class Level implements ChunkManager, Metadatable {
         }
 
         if (spawn != null) {
-            Vector3 v = spawn.floor();
-            FullChunk chunk = this.getChunk((int) v.x >> 4, (int) v.z >> 4, false);
-            int x = (int) v.x & 0x0f;
-            int z = (int) v.z & 0x0f;
+            BlockVector3 v = spawn.asBlockVector3();
+            FullChunk chunk = this.getChunk(v.getChunkX(), v.getChunkZ(), false);
+            int x = v.x & 0x0f;
+            int z = v.z & 0x0f;
             if (chunk != null && chunk.isGenerated()) {
-                int y = (int) Math.max(Math.min(heightRange.getMaxY() - 1 - 1, v.y), heightRange.getMinY() + 1);
-                boolean wasAir = chunk.getBlockId(0, x, y - 1, z) == Block.AIR;
-                for (; y > 0; --y) {
+                int y = Mth.clamp(Math.min(chunk.getHighestBlockAt(x, z), v.y), heightRange.getMinY() + 1, heightRange.getMaxY() - 1);
+                boolean wasAir = chunk.getBlockId(0, x, y + 1, z) == Block.AIR;
+                for (; y > heightRange.getMinY(); --y) {
                     int b = chunk.getFullBlock(0, x, y, z);
                     Block block = Block.fromFullId(b);
                     if (this.isFullBlock(block)) {
@@ -4114,14 +4110,14 @@ public class Level implements ChunkManager, Metadatable {
                     }
                 }
 
-                for (; y >= heightRange.getMinY() && y < heightRange.getMaxY() - 1; y++) {
+                for (; y >= heightRange.getMinY() && y <= heightRange.getMaxY(); y++) {
                     int b = chunk.getFullBlock(0, x, y + 1, z);
                     Block block = Block.fromFullId(b);
                     if (!this.isFullBlock(block)) {
                         b = chunk.getFullBlock(0, x, y, z);
                         block = Block.fromFullId(b);
                         if (!this.isFullBlock(block)) {
-                            return new Position(spawn.x, y == (int) spawn.y ? spawn.y : y, spawn.z, this);
+                            return new Position(spawn.x, y, spawn.z, this);
                         }
                     } else {
                         ++y;

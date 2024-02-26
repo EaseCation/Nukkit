@@ -6,6 +6,7 @@ import cn.nukkit.level.Level;
 import cn.nukkit.level.format.LevelProviderManager.LevelProviderHandle;
 import cn.nukkit.level.format.generic.BaseFullChunk;
 import cn.nukkit.level.generator.Generator;
+import cn.nukkit.level.generator.GeneratorOptions;
 import cn.nukkit.math.Vector3;
 import cn.nukkit.scheduler.AsyncTask;
 import it.unimi.dsi.fastutil.longs.Long2ObjectMap;
@@ -136,4 +137,6 @@ public interface LevelProvider {
     void setSaveChunksOnClose(boolean save);
 
     HeightRange getHeightRange();
+
+    GeneratorOptions getWorldGeneratorOptions();
 }

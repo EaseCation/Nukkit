@@ -70,7 +70,7 @@ public class Nether extends Generator {
     }
 
     @Override
-    public void init(ChunkManager level, NukkitRandom random) {
+    public void init(ChunkManager level, NukkitRandom random, GeneratorOptions generatorOptions) {
         this.level = level;
         this.nukkitRandom = random;
         this.nukkitRandom.setSeed(this.level.getSeed());

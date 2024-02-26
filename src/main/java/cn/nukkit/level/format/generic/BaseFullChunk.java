@@ -306,11 +306,6 @@ public abstract class BaseFullChunk implements FullChunk, ChunkManager {
     }
 
     @Override
-    public int getHighestBlockAt(int x, int z) {
-        return this.getHighestBlockAt(x, z, true);
-    }
-
-    @Override
     public int getHighestBlockAt(int x, int z, boolean cache) {
         if (cache) {
             int h = this.getHeightMap(x, z);
@@ -405,23 +400,8 @@ public abstract class BaseFullChunk implements FullChunk, ChunkManager {
     }
 
     @Override
-    public boolean load() throws IOException {
-        return this.load(true);
-    }
-
-    @Override
     public boolean load(boolean generate) throws IOException {
         return this.getProvider() != null && this.getProvider().getChunk(this.getX(), this.getZ(), true) != null;
-    }
-
-    @Override
-    public boolean unload() {
-        return this.unload(true, true);
-    }
-
-    @Override
-    public boolean unload(boolean save) {
-        return this.unload(save, true);
     }
 
     @Override

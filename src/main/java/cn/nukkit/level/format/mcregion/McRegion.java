@@ -10,6 +10,8 @@ import cn.nukkit.level.format.LevelProviderManager.LevelProviderHandle;
 import cn.nukkit.level.format.generic.BaseFullChunk;
 import cn.nukkit.level.format.generic.BaseLevelProvider;
 import cn.nukkit.level.format.generic.BaseRegionLoader;
+import cn.nukkit.level.generator.FlatGeneratorOptions;
+import cn.nukkit.level.generator.GeneratorOptions;
 import cn.nukkit.level.generator.Generators;
 import cn.nukkit.nbt.NBTIO;
 import cn.nukkit.nbt.tag.CompoundTag;
@@ -34,6 +36,9 @@ public class McRegion extends BaseLevelProvider {
     private static final Pattern REGION_REGEX = Pattern.compile("^r\\.(-?[0-9]+)\\.(-?[0-9]+)\\.mcr$");
 
     static final HeightRange DEFAULT_HEIGHT_RANGE = HeightRange.blockY(0, 128);
+    private static final GeneratorOptions GENERATOR_OPTIONS = GeneratorOptions.builder()
+            .flatOptions(FlatGeneratorOptions.LEGACY)
+            .build();
 
     public McRegion(Level level, String path) throws IOException {
         super(level, path);
@@ -266,5 +271,10 @@ public class McRegion extends BaseLevelProvider {
     @Override
     public HeightRange getHeightRange() {
         return DEFAULT_HEIGHT_RANGE;
+    }
+
+    @Override
+    public GeneratorOptions getWorldGeneratorOptions() {
+        return GENERATOR_OPTIONS;
     }
 }

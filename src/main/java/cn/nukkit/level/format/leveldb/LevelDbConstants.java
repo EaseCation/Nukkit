@@ -35,8 +35,6 @@ public final class LevelDbConstants {
             new IntTag("", 0), // revision
             new IntTag("", 0))); // beta
 
-    public static final String DEFAULT_FLAT_WORLD_LAYERS = "{\"biome_id\":1,\"block_layers\":[{\"block_name\":\"minecraft:bedrock\",\"count\":1},{\"block_name\":\"minecraft:dirt\",\"count\":2},{\"block_name\":\"minecraft:grass\",\"count\":1}],\"encoding_version\":6,\"structure_options\":null,\"world_version\":\"version.post_1_18\"}";
-
     private LevelDbConstants() {
         throw new IllegalStateException();
     }

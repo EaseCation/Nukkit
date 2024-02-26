@@ -4,7 +4,6 @@ import cn.nukkit.level.ChunkManager;
 import cn.nukkit.level.Level;
 import cn.nukkit.level.biome.BiomeID;
 import cn.nukkit.level.format.generic.BaseFullChunk;
-import cn.nukkit.level.generator.populator.type.Populator;
 import cn.nukkit.math.NukkitRandom;
 import cn.nukkit.math.Vector3;
 import it.unimi.dsi.fastutil.objects.Object2ObjectOpenHashMap;
@@ -55,7 +54,7 @@ public class End extends Generator {
     }
 
     @Override
-    public void init(ChunkManager level, NukkitRandom random) {
+    public void init(ChunkManager level, NukkitRandom random, GeneratorOptions generatorOptions) {
         this.level = level;
     }
 

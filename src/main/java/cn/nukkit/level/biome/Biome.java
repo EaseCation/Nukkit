@@ -157,6 +157,10 @@ public abstract class Biome implements BlockID {
         return false;
     }
 
+    public static int getIdByName(String name) {
+        return nameToId.getInt(name);
+    }
+
     @Nullable
     public static String getNameById(int id) {
         return idToName[id];

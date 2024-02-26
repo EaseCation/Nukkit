@@ -25,7 +25,7 @@ public class Void extends Generator {
     }
 
     @Override
-    public void init(ChunkManager level, NukkitRandom random) {
+    public void init(ChunkManager level, NukkitRandom random, GeneratorOptions generatorOptions) {
         this.level = level;
     }
 

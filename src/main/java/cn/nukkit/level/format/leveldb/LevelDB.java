@@ -21,7 +21,9 @@ import cn.nukkit.level.format.LevelProviderManager.LevelProviderHandle;
 import cn.nukkit.level.format.anvil.util.NibbleArray;
 import cn.nukkit.level.format.generic.BaseFullChunk;
 import cn.nukkit.level.format.generic.ChunkRequestTask;
+import cn.nukkit.level.generator.FlatGeneratorOptions;
 import cn.nukkit.level.generator.Generator;
+import cn.nukkit.level.generator.GeneratorOptions;
 import cn.nukkit.level.generator.Generators;
 import cn.nukkit.level.util.PalettedSubChunkStorage;
 import cn.nukkit.math.BlockVector3;
@@ -88,6 +90,7 @@ public class LevelDB implements LevelProvider {
     protected final String path;
 
     protected final CompoundTag levelData;
+    private GeneratorOptions generatorOptions;
 
     protected volatile boolean closed;
     protected final Lock gcLock;
@@ -260,7 +263,7 @@ public class LevelDB implements LevelProvider {
         levelData.putByteIfAbsent("isCreatedInEditor", 0);
         levelData.putByteIfAbsent("isExportedFromEditor", 0);
         levelData.putStringIfAbsent("BiomeOverride", "");
-        levelData.putStringIfAbsent("FlatWorldLayers", DEFAULT_FLAT_WORLD_LAYERS);
+        levelData.putStringIfAbsent("FlatWorldLayers", FlatGeneratorOptions.DEFAULT_FLAT_WORLD_LAYERS);
         levelData.putCompoundIfAbsent("world_policies", new CompoundTag());
         levelData.putCompoundIfAbsent("experiments", new CompoundTag()
                 .putByte("experiments_ever_used", 0)
@@ -1256,6 +1259,7 @@ public class LevelDB implements LevelProvider {
         return levelData;
     }
 
+    @Override
     public void updateLevelName(String name) {
         if (!this.getName().equals(name)) {
             this.levelData.putString("LevelName", name);
@@ -1426,6 +1430,30 @@ public class LevelDB implements LevelProvider {
     public HeightRange getHeightRange() {
         //TODO: data-driven
         return DEFAULT_HEIGHT_RANGE;
+    }
+
+    @Override
+    public GeneratorOptions getWorldGeneratorOptions() {
+        GeneratorOptions options = this.generatorOptions;
+        if (options == null) {
+            String biomeOverride = levelData.getString("BiomeOverride");
+            int biome;
+            if (biomeOverride.isEmpty()) {
+                biome = -1;
+            } else {
+                biome = Biome.getIdByName(biomeOverride);
+                if (biome != -1 && !Biome.isValidBiome(biome)) {
+                    biome = -1;
+                }
+            }
+            options = GeneratorOptions.builder()
+                    .flatOptions(FlatGeneratorOptions.load(levelData.getString("FlatWorldLayers", FlatGeneratorOptions.DEFAULT_FLAT_WORLD_LAYERS)))
+                    .bonusChest(levelData.getBoolean("bonusChestEnabled"))
+                    .biomeOverride(biome)
+                    .build();
+            this.generatorOptions = options;
+        }
+        return options;
     }
 
     class AutoCompactionTask extends AsyncTask<Void> {

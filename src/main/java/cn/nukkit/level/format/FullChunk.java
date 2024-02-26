@@ -76,7 +76,9 @@ public interface FullChunk extends Cloneable {
 
     void setBlockLight(int x, int y, int z, int level);
 
-    int getHighestBlockAt(int x, int z);
+    default int getHighestBlockAt(int x, int z) {
+        return getHighestBlockAt(x, z, true);
+    }
 
     int getHighestBlockAt(int x, int z, boolean cache);
 
@@ -148,15 +150,21 @@ public interface FullChunk extends Cloneable {
 
     boolean isLoaded();
 
-    boolean load() throws IOException;
+    default boolean load() throws IOException {
+        return load(true);
+    }
 
     boolean load(boolean generate) throws IOException;
 
-    boolean unload() throws Exception;
+    default boolean unload() {
+        return unload(true);
+    }
 
-    boolean unload(boolean save) throws Exception;
+    default boolean unload(boolean save) {
+        return unload(save, true);
+    }
 
-    boolean unload(boolean save, boolean safe) throws Exception;
+    boolean unload(boolean save, boolean safe);
 
     void initChunk();
 

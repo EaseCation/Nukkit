@@ -26,7 +26,7 @@ public abstract class Generator implements BlockID {
         return Level.DIMENSION_OVERWORLD;
     }
 
-    public abstract void init(ChunkManager level, NukkitRandom random);
+    public abstract void init(ChunkManager level, NukkitRandom random, GeneratorOptions generatorOptions);
 
     public abstract void generateChunk(int chunkX, int chunkZ);
 
