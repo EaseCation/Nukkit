@@ -2894,7 +2894,7 @@ public class Level implements ChunkManager, Metadatable {
                 bb.expand(-0.01, -0.01, -0.01);
                 if (hand.getBoundingBox().intersectsWith(bb)) {
                     // This is a hack to prevent the player from placing blocks inside themselves
-                    return Item.get(10000);
+                    return new Item(10000);
                 }
             }
         }
