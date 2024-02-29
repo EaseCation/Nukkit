@@ -800,4 +800,9 @@ public class BlockCauldron extends BlockTransparentMeta {
     public int getLightLevel() {
         return isEmpty() ? 0 : getCauldronType() == LIQUID_LAVA ? 15 : 0;
     }
+
+    @Override
+    public boolean isCauldron() {
+        return true;
+    }
 }

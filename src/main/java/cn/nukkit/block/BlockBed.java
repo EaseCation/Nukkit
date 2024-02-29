@@ -93,28 +93,19 @@ public class BlockBed extends BlockTransparentMeta implements Faceable {
             return false;
         }
 
-        Block blockNorth = this.north();
-        Block blockSouth = this.south();
-        Block blockEast = this.east();
-        Block blockWest = this.west();
-
         Block b;
-        if ((this.getDamage() & 0x08) == 0x08) {
+        int meta = getDamage();
+        if ((meta & HEAD_PIECE_BIT) != 0) {
             b = this;
         } else {
-            if (blockNorth.getId() == this.getId() && (blockNorth.getDamage() & 0x08) == 0x08) {
-                b = blockNorth;
-            } else if (blockSouth.getId() == this.getId() && (blockSouth.getDamage() & 0x08) == 0x08) {
-                b = blockSouth;
-            } else if (blockEast.getId() == this.getId() && (blockEast.getDamage() & 0x08) == 0x08) {
-                b = blockEast;
-            } else if (blockWest.getId() == this.getId() && (blockWest.getDamage() & 0x08) == 0x08) {
-                b = blockWest;
+            int direction = meta & DIRECTION_MASK;
+            Block pair = getSide(BlockFace.fromHorizontalIndex(direction));
+            if (pair.getId() == BLOCK_BED && (pair.getDamage() & HEAD_PIECE_BIT) != 0 && (pair.getDamage() & DIRECTION_MASK) == direction) {
+                b = pair;
             } else {
                 if (player != null) {
                     player.sendMessage(new TranslationContainer("tile.bed.notValid"));
                 }
-
                 return true;
             }
         }
@@ -139,19 +130,18 @@ public class BlockBed extends BlockTransparentMeta implements Faceable {
 
     @Override
     public boolean place(Item item, Block block, Block target, BlockFace face, double fx, double fy, double fz, Player player) {
-        Block down = this.down();
-        if (SupportType.hasFullSupport(down, BlockFace.UP)) {
-            Block next = this.getSide(player.getDirection());
-            Block downNext = next.down();
+        if (SupportType.hasFullSupport(this.down(), BlockFace.UP)) {
+            BlockFace direction = player.getDirection();
+            Block head = this.getSide(direction);
 
-            if (next.canBeReplaced() && SupportType.hasFullSupport(downNext, BlockFace.UP)) {
-                int meta = player.getDirection().getHorizontalIndex();
+            if (head.canBeReplaced() && SupportType.hasFullSupport(head.down(), BlockFace.UP)) {
+                int meta = direction.getHorizontalIndex();
 
-                this.getLevel().setBlock(block, Block.get(this.getId(), meta), true, true);
-                this.getLevel().setBlock(next, Block.get(this.getId(), meta | 0x08), true, true);
+                this.getLevel().setBlock(block, Block.get(BLOCK_BED, meta), true, true);
+                this.getLevel().setBlock(head, Block.get(BLOCK_BED, meta | HEAD_PIECE_BIT), true, true);
 
                 createBlockEntity(this, item.getDamage());
-                createBlockEntity(next, item.getDamage());
+                createBlockEntity(head, item.getDamage());
                 return true;
             }
         }
@@ -161,36 +151,19 @@ public class BlockBed extends BlockTransparentMeta implements Faceable {
 
     @Override
     public boolean onBreak(Item item) {
-        Block blockNorth = this.north(); //Gets the blocks around them
-        Block blockSouth = this.south();
-        Block blockEast = this.east();
-        Block blockWest = this.west();
-
-        if ((this.getDamage() & 0x08) == 0x08) { //This is the Top part of bed
-            if (blockNorth.getId() == BLOCK_BED && (blockNorth.getDamage() & 0x08) != 0x08) { //Checks if the block ID&&meta are right
-                this.getLevel().setBlock(blockNorth, Block.get(BlockID.AIR), true, true);
-            } else if (blockSouth.getId() == BLOCK_BED && (blockSouth.getDamage() & 0x08) != 0x08) {
-                this.getLevel().setBlock(blockSouth, Block.get(BlockID.AIR), true, true);
-            } else if (blockEast.getId() == BLOCK_BED && (blockEast.getDamage() & 0x08) != 0x08) {
-                this.getLevel().setBlock(blockEast, Block.get(BlockID.AIR), true, true);
-            } else if (blockWest.getId() == BLOCK_BED && (blockWest.getDamage() & 0x08) != 0x08) {
-                this.getLevel().setBlock(blockWest, Block.get(BlockID.AIR), true, true);
-            }
-        } else { //Bottom Part of Bed
-            if (blockNorth.getId() == this.getId() && (blockNorth.getDamage() & 0x08) == 0x08) {
-                this.getLevel().setBlock(blockNorth, Block.get(BlockID.AIR), true, true);
-            } else if (blockSouth.getId() == this.getId() && (blockSouth.getDamage() & 0x08) == 0x08) {
-                this.getLevel().setBlock(blockSouth, Block.get(BlockID.AIR), true, true);
-            } else if (blockEast.getId() == this.getId() && (blockEast.getDamage() & 0x08) == 0x08) {
-                this.getLevel().setBlock(blockEast, Block.get(BlockID.AIR), true, true);
-            } else if (blockWest.getId() == this.getId() && (blockWest.getDamage() & 0x08) == 0x08) {
-                this.getLevel().setBlock(blockWest, Block.get(BlockID.AIR), true, true);
-            }
+        int meta = getDamage();
+        int direction = meta & DIRECTION_MASK;
+        BlockFace face = BlockFace.fromHorizontalIndex(direction);
+        int headPiece = meta & HEAD_PIECE_BIT;
+        if (headPiece != 0) {
+            face = face.getOpposite();
+        }
+        Block pair = getSide(face);
+        if (pair.getId() == BLOCK_BED && (pair.getDamage() & DIRECTION_MASK) == direction && (pair.getDamage() & HEAD_PIECE_BIT) != headPiece) {
+            this.getLevel().setBlock(pair, Block.get(BlockID.AIR), true, false);
         }
 
-        this.getLevel().setBlock(this, Block.get(BlockID.AIR), true, false); // Do not update both parts to prevent duplication bug if there is two fallable blocks top of the bed
-
-        return true;
+        return super.onBreak(item);
     }
 
     private void createBlockEntity(Vector3 pos, int color) {

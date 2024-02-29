@@ -1247,6 +1247,10 @@ public abstract class Block extends Position implements Metadatable, Cloneable, 
         return getId() == id;
     }
 
+    public boolean is(int id, int damage) {
+        return getId() == id && getDamage() == damage;
+    }
+
     public boolean is(Block block) {
         return getId() == block.getId();
     }
@@ -1414,6 +1418,10 @@ public abstract class Block extends Position implements Metadatable, Cloneable, 
     }
 
     public boolean isGlass() {
+        return false;
+    }
+
+    public boolean isCauldron() {
         return false;
     }
 

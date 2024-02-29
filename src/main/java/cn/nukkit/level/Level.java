@@ -1430,55 +1430,42 @@ public class Level implements ChunkManager, Metadatable {
         this.sendBlocks(target, blocks, flags, 0);
     }
 
-    public void sendBlocks(Player[] target, Vector3[] blocks, int flags, boolean optimizeRebuilds) {
-        this.sendBlocks(target, blocks, flags, 0, optimizeRebuilds);
-    }
-
-    public void sendBlocks(Player[] target, Vector3[] blocks, int flags, int dataLayer) {
-        this.sendBlocks(target, blocks, flags, dataLayer, false);
-    }
-
-    public void sendBlocks(Player[] target, Vector3[] blocks, int flags, int dataLayer, boolean optimizeRebuilds) {
-        int size = 0;
-        for (Vector3 block : blocks) {
-            if (block != null) size++;
+    public void sendBlocks(Player[] target, Vector3[] blocks, int flags, int layer) {
+        if (target == null || target.length == 0) {
+            return;
         }
-        int packetIndex = 0;
-        UpdateBlockPacket[] packets = new UpdateBlockPacket[size];
-        LongSet chunks = null;
-        if (optimizeRebuilds) {
-            chunks = new LongOpenHashSet();
-        }
+
         for (Vector3 b : blocks) {
             if (b == null) {
                 continue;
             }
-            boolean first = !optimizeRebuilds;
 
-            if (optimizeRebuilds) {
-                long index = Level.chunkHash((int) b.x >> 4, (int) b.z >> 4);
-                if (!chunks.contains(index)) {
-                    chunks.add(index);
-                    first = true;
-                }
-            }
-            UpdateBlockPacket updateBlockPacket = new UpdateBlockPacket();
-            updateBlockPacket.x = (int) b.x;
-            updateBlockPacket.y = (int) b.y;
-            updateBlockPacket.z = (int) b.z;
-            updateBlockPacket.flags = first ? flags : UpdateBlockPacket.FLAG_NONE;
-            if (b instanceof Block) {
-                updateBlockPacket.blockId = ((Block) b).getId();
-                updateBlockPacket.blockData = ((Block) b).getDamage();
+            int x = (int) b.x;
+            int y = (int) b.y;
+            int z = (int) b.z;
+            int id;
+            int data;
+            if (b instanceof Block block) {
+                id = block.getId();
+                data = block.getDamage();
             } else {
-                int fullBlock = this.getFullBlock(0, (int) b.x, (int) b.y, (int) b.z);
-                updateBlockPacket.blockId = fullBlock >> Block.BLOCK_META_BITS;
-                updateBlockPacket.blockData = fullBlock & Block.BLOCK_META_MASK;
+                int fullBlock = this.getFullBlock(layer, x, y, z);
+                id = fullBlock >> Block.BLOCK_META_BITS;
+                data = fullBlock & Block.BLOCK_META_MASK;
             }
-            updateBlockPacket.dataLayer = dataLayer;
-            packets[packetIndex++] = updateBlockPacket;
+
+            UpdateBlockPacket updateBlockPacket = new UpdateBlockPacket();
+            updateBlockPacket.x = x;
+            updateBlockPacket.y = y;
+            updateBlockPacket.z = z;
+            updateBlockPacket.flags = flags;
+            updateBlockPacket.blockId = id;
+            updateBlockPacket.blockData = data;
+            updateBlockPacket.dataLayer = layer;
+            for (Player player : target) {
+                player.dataPacket(updateBlockPacket);
+            }
         }
-        this.server.batchPackets(target, packets);
     }
 
     private void tickChunks() {
@@ -2878,7 +2865,7 @@ public class Level implements ChunkManager, Metadatable {
             hand.position(block);
         }
 
-        if (!hand.canPassThrough() && hand.getBoundingBox() != null && (!hand.is(Block.BAMBOO) || target.is(Block.BAMBOO) || target.is(Block.BAMBOO_SAPLING))) {
+        if (!hand.canPassThrough() && hand.getBoundingBox() != null && !hand.isDoor() && !hand.is(Block.BLOCK_BED) && !hand.is(Block.BLOCK_SKULL) && (!hand.is(Block.BAMBOO) || target.is(Block.BAMBOO) || target.is(Block.BAMBOO_SAPLING))) {
             Entity[] entities = this.getCollidingEntities(hand.getBoundingBox());
             for (Entity e : entities) {
                 if (e instanceof EntityProjectile || e instanceof EntityItem || e instanceof EntityXPOrb || e instanceof EntityFirework || e instanceof EntityPainting

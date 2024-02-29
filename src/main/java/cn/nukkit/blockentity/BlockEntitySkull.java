@@ -33,6 +33,9 @@ public class BlockEntitySkull extends BlockEntitySpawnable {
         if (!namedTag.contains("MouthTickCount")) {
             namedTag.putInt("MouthTickCount", 0);
         }
+        if (!namedTag.contains("DoingAnimation")) {
+            namedTag.putBoolean("DoingAnimation", false);
+        }
 
         super.initBlockEntity();
     }
@@ -54,7 +57,8 @@ public class BlockEntitySkull extends BlockEntitySpawnable {
                 .putByte("SkullType", this.namedTag.getByte("SkullType"))
                 .putFloat("Rotation", namedTag.getFloat("Rotation"))
                 .putBoolean("MouthMoving", namedTag.getBoolean("MouthMoving"))
-                .putInt("MouthTickCount", namedTag.getInt("MouthTickCount"));
+                .putInt("MouthTickCount", namedTag.getInt("MouthTickCount"))
+                .putBoolean("DoingAnimation", namedTag.getBoolean("DoingAnimation"));
     }
 
 }

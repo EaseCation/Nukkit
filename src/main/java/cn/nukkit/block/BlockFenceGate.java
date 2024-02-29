@@ -15,6 +15,9 @@ import cn.nukkit.utils.Faceable;
  * Package cn.nukkit.block in project Nukkit .
  */
 public class BlockFenceGate extends BlockTransparentMeta implements Faceable {
+    public static final int DIRECTION_MASK = 0b11;
+    public static final int OPEN_BIT = 0b100;
+    public static final int IN_WALL_BIT = 0b1000;
 
     public BlockFenceGate() {
         this(0);
@@ -72,7 +75,7 @@ public class BlockFenceGate extends BlockTransparentMeta implements Faceable {
     }
 
     private int getOffsetIndex() {
-        switch (this.getDamage() & 0x03) {
+        switch (this.getDamage() & DIRECTION_MASK) {
             case 0:
             case 2:
                 return 0;
@@ -173,13 +176,13 @@ public class BlockFenceGate extends BlockTransparentMeta implements Faceable {
             }
         }
 
-        this.setDamage(direction | ((~this.getDamage()) & 0x04));
+        this.setDamage(direction | ((~this.getDamage()) & OPEN_BIT));
         this.level.setBlock(this, this, false, false);
         return true;
     }
 
     public boolean isOpen() {
-        return (this.getDamage() & 0x04) > 0;
+        return (this.getDamage() & OPEN_BIT) > 0;
     }
 
     @Override
@@ -205,7 +208,7 @@ public class BlockFenceGate extends BlockTransparentMeta implements Faceable {
 
     @Override
     public BlockFace getBlockFace() {
-        return BlockFace.fromHorizontalIndex(this.getDamage() & 0x07);
+        return BlockFace.fromHorizontalIndex(this.getDamage() & DIRECTION_MASK);
     }
 
     @Override
