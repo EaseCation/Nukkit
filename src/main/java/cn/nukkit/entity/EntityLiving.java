@@ -152,21 +152,28 @@ public abstract class EntityLiving extends Entity implements EntityDamageable {
         }
 
         float damage = source.getDamage();
-        boolean hurtAffect = true;
+        boolean knockback = true;
         if (source.getCause() != DamageCause.SUICIDE) {
             long time = System.currentTimeMillis();
             // 冷却中
             if (time < this.nextAllowAttack) {
-                if (damage <= this.lastHurt) {
-                    return false;
+                if (damage > 0) {
+                    if (damage <= this.lastHurt) {
+                        return false;
+                    }
+                    source.setDamage(damage - lastHurt);
+                    if (!damageEntity0(source)) {
+                        return false;
+                    }
+                    this.lastHurt = damage;
+                    // 这边不修改冷却时间，因为只是补上了冷却期间的伤害差
+                    knockback = false;
+                } else {
+                    // EC特性：伤害为0的攻击，无冷却，并且造成击退（但是不修改lastHurt，确保有伤害的攻击是继续冷却的）
+                    if (!damageEntity0(source)) {
+                        return false;
+                    }
                 }
-                source.setDamage(damage - lastHurt);
-                if (!damageEntity0(source)) {
-                    return false;
-                }
-                this.lastHurt = damage;
-                // 这边不修改冷却时间，因为只是补上了冷却期间的伤害差
-                hurtAffect = false;
             } else {
                 if (!damageEntity0(source)) {
                     return false;
@@ -176,18 +183,19 @@ public abstract class EntityLiving extends Entity implements EntityDamageable {
                 this.nextAllowAttack = time + source.getAttackCooldown() * 50L;
             }
         }
-        if (hurtAffect) {
-            // 变红效果和音效
-            this.onHurt(source);
+        // 变红效果和音效应该始终有
+        this.onHurt(source);
+        if (source instanceof EntityDamageByEntityEvent ev) {
+            Entity damager = ev.getDamager();
+            /*if (source instanceof EntityDamageByChildEntityEvent event) {
+                damager = event.getChild();
+            }*/
+            damager.onAttackSuccess(ev);
+        }
 
+        if (knockback) {
             if (source instanceof EntityDamageByEntityEvent ev) {
                 Entity damager = ev.getDamager();
-                /*if (source instanceof EntityDamageByChildEntityEvent event) {
-                    damager = event.getChild();
-                }*/
-
-                damager.onAttackSuccess(ev);
-
                 // 击退
                 if (ev.hasKnockBack()) {
                     double deltaX = this.x - damager.x;
@@ -196,7 +204,7 @@ public abstract class EntityLiving extends Entity implements EntityDamageable {
                 }
             }
         }
-        return hurtAffect;
+        return true;
     }
 
     /**
