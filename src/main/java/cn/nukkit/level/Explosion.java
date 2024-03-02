@@ -362,7 +362,7 @@ public class Explosion {
                     ((InventoryHolder) container).getInventory().clearAll();
                 }
             } else if (blockDrop) {
-                if (id == BlockID.DRAGON_EGG || id == BlockID.BEACON || id == BlockID.BLOCK_SKULL || random.nextDouble() * 100 < yield) {
+                if (id == BlockID.DRAGON_EGG || id == BlockID.BEACON || id == BlockID.BLOCK_SKULL || random.nextFloat() * 100 < yield) {
                     for (Item drop : block.getDrops(ItemTool.getUniversalTool())) {
                         this.level.dropItem(block.blockCenter(), drop);
                     }

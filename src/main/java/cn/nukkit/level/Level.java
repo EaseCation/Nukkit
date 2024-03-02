@@ -1501,7 +1501,7 @@ public class Level implements ChunkManager, Metadatable {
         int blockTest = 0;
 
         if (!chunkTickList.isEmpty()) {
-            boolean skipRandomTick = server.getTicksPerSecondRaw() < 19; // 高负载时跳过随机刻
+            boolean skipRandomTick = server.getTicksPerSecondRaw() < 19 || server.getTicksPerSecondAverage() < 19; // 高负载时跳过随机刻
 
             Iterator<Long2IntMap.Entry> iter = chunkTickList.long2IntEntrySet().iterator();
             while (iter.hasNext()) {
@@ -2574,8 +2574,8 @@ public class Level implements ChunkManager, Metadatable {
 
                 motion = new Vector3(-Mth.sin(f1) * f, 0.20000000298023224, Mth.cos(f1) * f);
             } else {
-                motion = new Vector3(random.nextDouble() * 0.2 - 0.1, 0.2,
-                        random.nextDouble() * 0.2 - 0.1);
+                motion = new Vector3(random.nextFloat() * 0.2f - 0.1f, 0.2f,
+                        random.nextFloat() * 0.2f - 0.1f);
             }
         }
 
@@ -2781,9 +2781,9 @@ public class Level implements ChunkManager, Metadatable {
         Random rand = ThreadLocalRandom.current();
         for (int split : EntityXPOrb.splitIntoOrbSizes(exp)) {
             CompoundTag nbt = Entity.getDefaultNBT(source, motion == null ? new Vector3(
-                    (rand.nextDouble() * 0.2 - 0.1) * 2,
-                    rand.nextDouble() * 0.4,
-                    (rand.nextDouble() * 0.2 - 0.1) * 2) : motion,
+                    (rand.nextFloat() * 0.2f - 0.1f) * 2,
+                    rand.nextFloat() * 0.4f,
+                    (rand.nextFloat() * 0.2f - 0.1f) * 2) : motion,
                     rand.nextFloat() * 360f, 0);
 
             nbt.putShort("Value", split);

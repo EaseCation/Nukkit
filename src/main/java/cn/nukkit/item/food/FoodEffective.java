@@ -39,7 +39,7 @@ public class FoodEffective extends Food {
         List<Effect> toApply = new ObjectArrayList<>();
         ThreadLocalRandom random = ThreadLocalRandom.current();
         effects.forEach((effect, chance) -> {
-            if (chance >= random.nextDouble()) toApply.add(effect.clone());
+            if (chance >= random.nextFloat()) toApply.add(effect.clone());
         });
         toApply.forEach(player::addEffect);
         return true;

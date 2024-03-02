@@ -1126,8 +1126,9 @@ public abstract class Entity extends Location implements Metadatable, EntityData
         pk.eid = this.getId();
         pk.metadata = data == null ? this.dataProperties : data;
 
-        if (this.dataProperties.exists(DATA_NUKKIT_FLAGS)) {
-            pk.metadata.put(this.dataProperties.get(DATA_NUKKIT_FLAGS));
+        EntityData<?> nukkitFlags = this.dataProperties.get(DATA_NUKKIT_FLAGS);
+        if (nukkitFlags != null) {
+            pk.metadata.put(nukkitFlags);
         }
 
         for (Player player : players) {
@@ -1303,7 +1304,7 @@ public abstract class Entity extends Location implements Metadatable, EntityData
                 direction = 5;
             }
 
-            double force = ThreadLocalRandom.current().nextDouble() * 0.2 + 0.1;
+            float force = ThreadLocalRandom.current().nextFloat() * 0.2f + 0.1f;
 
             if (direction == 0) {
                 this.motionX = -force;
@@ -2441,18 +2442,26 @@ public abstract class Entity extends Location implements Metadatable, EntityData
         }
 
         this.dataProperties.put(data);
+
         if (send) {
             EntityMetadata metadata = new EntityMetadata();
-            metadata.put(this.dataProperties.get(data.getId()));
+            metadata.put(data);
             if (data.getId() == DATA_FLAGS_EXTENDED) {
-                metadata.put(this.dataProperties.get(DATA_FLAGS));
+                EntityData<?> flags1 = this.dataProperties.get(DATA_FLAGS);
+                if (flags1 != null) {
+                    metadata.put(flags1);
+                }
             }
             if (data.getId() == DATA_FLAGS) {
                 // for multi-version conversion
-                metadata.put(this.dataProperties.get(DATA_FLAGS_EXTENDED));
+                EntityData<?> flags2 = this.dataProperties.get(DATA_FLAGS_EXTENDED);
+                if (flags2 != null) {
+                    metadata.put(flags2);
+                }
             }
             this.sendData(this.getViewers().values().toArray(new Player[0]), metadata);
         }
+
         return true;
     }
 

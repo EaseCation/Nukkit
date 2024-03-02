@@ -42,7 +42,7 @@ public class StatusCommand extends VanillaCommand {
         sender.sendMessage(TextFormat.GOLD + "Uptime: " + formatUptime(time));
 
         TextFormat tpsColor = TextFormat.GREEN;
-        float tps = server.getTicksPerSecond();
+        float tps = server.getTicksPerSecondAverage();
         if (tps < 12) {
             tpsColor = TextFormat.RED;
         } else if (tps < 17) {
@@ -51,7 +51,7 @@ public class StatusCommand extends VanillaCommand {
 
         sender.sendMessage(TextFormat.GOLD + "Current TPS: " + tpsColor + NukkitMath.round(tps, 2));
 
-        sender.sendMessage(TextFormat.GOLD + "Load: " + tpsColor + server.getTickUsage() + "%");
+        sender.sendMessage(TextFormat.GOLD + "Load: " + tpsColor + server.getTickUsageAverage() + "%");
 
         sender.sendMessage(TextFormat.GOLD + "Network upload: " + TextFormat.GREEN + NukkitMath.round((server.getNetwork().getUpload() / 1024 * 1000), 2) + " kB/s");
 

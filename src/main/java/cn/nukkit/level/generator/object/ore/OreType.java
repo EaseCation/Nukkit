@@ -48,7 +48,7 @@ public class OreType {
             double scaleX = scaleMaxX + (scaleMinX - scaleMaxX) * (double) sizeIncr;
             double scaleY = scaleMaxY + (scaleMinY - scaleMaxY) * (double) sizeIncr;
             double scaleZ = scaleMaxZ + (scaleMinZ - scaleMaxZ) * (double) sizeIncr;
-            double randSizeOffset = rand.nextDouble() * (double) clusterSize / 16.0D;
+            double randSizeOffset = rand.nextFloat() * (double) clusterSize / 16.0D;
             double randVec1 = (double) (Mth.sin((float) Math.PI * sizeIncr) + 1.0F) * randSizeOffset + 1.0D;
             double randVec2 = (double) (Mth.sin((float) Math.PI * sizeIncr) + 1.0F) * randSizeOffset + 1.0D;
             int minX = Mth.floor(scaleX - randVec1 / 2.0D);

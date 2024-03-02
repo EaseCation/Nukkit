@@ -14,6 +14,8 @@ import cn.nukkit.command.data.CommandParameter;
 import cn.nukkit.command.exceptions.CommandExceptions;
 import cn.nukkit.command.exceptions.CommandSyntaxException;
 import cn.nukkit.entity.Entity;
+import cn.nukkit.event.entity.EntityDamageByEntityEvent;
+import cn.nukkit.event.entity.EntityDamageEvent.DamageCause;
 import cn.nukkit.lang.TranslationContainer;
 import cn.nukkit.level.Position;
 import cn.nukkit.network.protocol.EntityEventPacket;
@@ -97,6 +99,10 @@ public class DeveloperCommand extends Command {
                 CommandParameter.newType("entity", CommandParamType.TARGET),
                 CommandParameter.newType("event", CommandParamType.INT),
                 CommandParameter.newType("data", true, CommandParamType.INT),
+        });
+        this.commandParameters.put("damage", new CommandParameter[]{
+                CommandParameter.newEnum("subCommand", new CommandEnum("SubCommandDamage", "damage")),
+                CommandParameter.newType("entity", true, CommandParamType.TARGET),
         });
     }
 
@@ -316,6 +322,63 @@ public class DeveloperCommand extends Command {
                             Server.broadcastPacket(entity.getViewers().values(), packet);
                         }
                     }
+                    sender.sendMessage("success");
+                    return true;
+                } catch (CommandSyntaxException e) {
+                    sender.sendMessage(parser.getErrorMessage());
+                }
+                return false;
+            }
+            case "damage": {
+                CommandParser parser = new CommandParser(this, sender, args);
+                try {
+                    parser.literal();
+                    List<Entity> entities = parser.parseTargetsOrSelf();
+
+                    for (Entity entity : entities) {
+                        EntityDamageByEntityEvent event0 = new EntityDamageByEntityEvent(entity, entity, DamageCause.PROJECTILE, 0);
+                        if (entity.attack(event0)) {
+                            sender.sendMessage("projectile 0 true : set -0 health, actual -0 health");
+                        } else {
+                            sender.sendMessage("projectile 0 false: set -0 health, actual -0 health");
+                        }
+
+                        EntityDamageByEntityEvent event1 = new EntityDamageByEntityEvent(entity, entity, DamageCause.ENTITY_ATTACK, 1);
+                        if (entity.attack(event1)) {
+                            sender.sendMessage("melee 1 true : set -1 health, actual -1 health (diff)");
+                        } else {
+                            sender.sendMessage("melee 1 false: set -1 health, actual -1 health (diff)");
+                        }
+
+                        EntityDamageByEntityEvent event2 = new EntityDamageByEntityEvent(entity, entity, DamageCause.ENTITY_ATTACK, 1);
+                        if (entity.attack(event2)) {
+                            sender.sendMessage("melee 2 true : set -1 health, actual -0 health (CD)");
+                        } else {
+                            sender.sendMessage("melee 2 false: set -1 health, actual -0 health (CD)");
+                        }
+
+                        EntityDamageByEntityEvent event3 = new EntityDamageByEntityEvent(entity, entity, DamageCause.ENTITY_ATTACK, 2);
+                        if (entity.attack(event3)) {
+                            sender.sendMessage("melee 3 true : set -2 health, actual -1 health (diff)");
+                        } else {
+                            sender.sendMessage("melee 3 false: set -2 health, actual -1 health (diff)");
+                        }
+
+                        EntityDamageByEntityEvent event4 = new EntityDamageByEntityEvent(entity, entity, DamageCause.ENTITY_ATTACK, 2);
+                        if (entity.attack(event4)) {
+                            sender.sendMessage("melee 4 true : set -2 health, actual -0 health (CD)");
+                        } else {
+                            sender.sendMessage("melee 4 false: set -2 health, actual -0 health (CD)");
+                        }
+
+                        EntityDamageByEntityEvent event5 = new EntityDamageByEntityEvent(entity, entity, DamageCause.ENTITY_ATTACK, 5);
+                        if (entity.attack(event5)) {
+                            sender.sendMessage("melee 5 true : set -5 health, actual -3 health (diff)");
+                        } else {
+                            sender.sendMessage("melee 5 false: set -5 health, actual -3 health (diff)");
+                        }
+                    }
+
                     sender.sendMessage("success");
                     return true;
                 } catch (CommandSyntaxException e) {

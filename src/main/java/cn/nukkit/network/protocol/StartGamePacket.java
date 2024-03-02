@@ -48,7 +48,7 @@ public class StartGamePacket extends DataPacket {
     public int permissionLevel = 1;
     public int gamePublish = 4;
     public String levelId = ""; //base64 string, usually the same as world folder name in vanilla
-    public String worldName;
+    public String worldName = "";
     public String premiumWorldTemplateId = "";
     public boolean unknown = false;
     public long currentTick;

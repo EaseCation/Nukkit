@@ -1885,7 +1885,7 @@ public class Player extends EntityHuman implements CommandSender, InventoryHolde
                 Attribute.getAttribute(Attribute.PLAYER_EXHAUSTION).setValue(this.getFoodData().getExhaustionLevel()),
                 movementSpeedAttribute.copy().setValue(movementSpeedAttribute.getModifiedValue()),
                 Attribute.getAttribute(Attribute.PLAYER_LEVEL).setValue(this.getExperienceLevel()),
-                Attribute.getAttribute(Attribute.PLAYER_EXPERIENCE).setValue(((float) this.getExperience()) / calculateRequireExperience(this.getExperienceLevel()))
+                Attribute.getAttribute(Attribute.PLAYER_EXPERIENCE).setValue(Mth.clamp(((float) this.getExperience()) / calculateRequireExperience(this.getExperienceLevel()), 0, 1))
         );
     }
 

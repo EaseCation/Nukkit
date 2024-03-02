@@ -81,7 +81,7 @@ public class BlockTNT extends BlockSolidMeta {
             return;
         }
 
-        double mot = ThreadLocalRandom.current().nextDouble() * Math.PI * 2;
+        float mot = ThreadLocalRandom.current().nextFloat() * Mth.PI * 2;
         CompoundTag nbt = Entity.getDefaultNBT(x + 0.5, y, z + 0.5, -Mth.sin(mot) * 0.02, 0.2, -Mth.cos(mot) * 0.02)
                 .putByte("Fuse", fuse);
         Entity tnt = new EntityPrimedTNT(

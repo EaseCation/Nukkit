@@ -8,6 +8,7 @@ import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.nio.charset.StandardCharsets;
+import java.util.function.Supplier;
 
 /**
  * author: MagicDroidX
@@ -15,7 +16,7 @@ import java.nio.charset.StandardCharsets;
  */
 public class FileWriteTask extends AsyncTask<Void> {
     private final File file;
-    private final InputStream contents;
+    private final Supplier<InputStream> contents;
 
     public FileWriteTask(String path, String contents) {
         this(new File(path), contents);
@@ -27,20 +28,30 @@ public class FileWriteTask extends AsyncTask<Void> {
 
     public FileWriteTask(String path, InputStream contents) {
         this.file = new File(path);
+        this.contents = () -> contents;
+    }
+
+    public FileWriteTask(String path, Supplier<InputStream> contents) {
+        this.file = new File(path);
         this.contents = contents;
     }
 
     public FileWriteTask(File file, String contents) {
         this.file = file;
-        this.contents = new ByteArrayInputStream(contents.getBytes(StandardCharsets.UTF_8));
+        this.contents = () -> new ByteArrayInputStream(contents.getBytes(StandardCharsets.UTF_8));
     }
 
     public FileWriteTask(File file, byte[] contents) {
         this.file = file;
-        this.contents = new ByteArrayInputStream(contents);
+        this.contents = () -> new ByteArrayInputStream(contents);
     }
 
     public FileWriteTask(File file, InputStream contents) {
+        this.file = file;
+        this.contents = () -> contents;
+    }
+
+    public FileWriteTask(File file, Supplier<InputStream> contents) {
         this.file = file;
         this.contents = contents;
     }
@@ -48,7 +59,7 @@ public class FileWriteTask extends AsyncTask<Void> {
     @Override
     public void onRun() {
         try {
-            Utils.writeFile(file, contents);
+            Utils.writeFile(file, contents.get());
         } catch (IOException e) {
             Server.getInstance().getLogger().logException(e);
         }

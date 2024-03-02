@@ -9,6 +9,8 @@ import it.unimi.dsi.fastutil.ints.Int2ObjectMap;
 import it.unimi.dsi.fastutil.ints.Int2ObjectOpenHashMap;
 import lombok.ToString;
 
+import javax.annotation.Nullable;
+
 /**
  * author: MagicDroidX
  * Nukkit Project
@@ -18,19 +20,18 @@ public class EntityMetadata {
 
     private final Int2ObjectMap<EntityData> map = new Int2ObjectOpenHashMap<>();
 
+    @Nullable
     public EntityData get(int id) {
         return this.getOrDefault(id, null);
     }
 
-    public EntityData getOrDefault(int id, EntityData defaultValue) {
-        try {
-            return this.map.getOrDefault(id, defaultValue).setId(id);
-        } catch (Exception e) {
-            if (defaultValue != null) {
-                return defaultValue.setId(id);
-            }
+    @Nullable
+    public EntityData getOrDefault(int id, @Nullable EntityData defaultValue) {
+        EntityData<?> data = this.map.getOrDefault(id, defaultValue);
+        if (data == null) {
             return null;
         }
+        return data.setId(id);
     }
 
     public boolean exists(int id) {

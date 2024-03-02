@@ -78,6 +78,8 @@ import it.unimi.dsi.fastutil.objects.Object2ObjectOpenHashMap;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.extern.log4j.Log4j2;
+import org.apache.commons.compress.compressors.gzip.GzipCompressorOutputStream;
+import org.apache.commons.compress.compressors.gzip.GzipParameters;
 
 import javax.annotation.Nullable;
 import java.io.*;
@@ -92,6 +94,7 @@ import java.nio.file.StandardCopyOption;
 import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.atomic.AtomicBoolean;
+import java.util.zip.Deflater;
 
 /**
  * @author MagicDroidX
@@ -126,12 +129,16 @@ public class Server {
     private long nextTick;
 
     private final float[] tickAverage = {20, 20, 20, 20, 20, 20, 20, 20, 20, 20, 20, 20, 20, 20, 20, 20, 20, 20, 20, 20};
+    private float tpsAverage = 20;
 
     private final float[] useAverage = {0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0};
+    private float tickUsageAverage;
 
     private float maxTick = 20;
+    private float tps = 20;
 
     private float maxUse = 0;
+    private float tickUsage;
 
     private int sendUsageTicker = 0;
 
@@ -1207,7 +1214,9 @@ public class Server {
             this.titleTick();
             this.network.resetStatistics();
             this.maxTick = 20;
+            this.tps = 20;
             this.maxUse = 0;
+            this.tickUsage = 0;
 
             if ((this.tickCounter & 0b111111111) == 0) {
                 try {
@@ -1249,17 +1258,21 @@ public class Server {
 
         if (this.maxTick > tick) {
             this.maxTick = tick;
+            this.tps = Math.round(this.maxTick * 100) / 100f;
         }
 
         if (this.maxUse < use) {
             this.maxUse = use;
+            this.tickUsage = Math.round(this.maxUse * 100) / 100f;
         }
 
         System.arraycopy(this.tickAverage, 1, this.tickAverage, 0, this.tickAverage.length - 1);
         this.tickAverage[this.tickAverage.length - 1] = tick;
+        this.tpsAverage = getAverage(this.tickAverage);
 
         System.arraycopy(this.useAverage, 1, this.useAverage, 0, this.useAverage.length - 1);
         this.useAverage[this.useAverage.length - 1] = use;
+        this.tickUsageAverage = getAverage(this.useAverage);
 
         if (this.enableJmxMonitoring) {
             long diffNano = nowNano - tickTimeNano;
@@ -1298,8 +1311,8 @@ public class Server {
             title += " | U " + NukkitMath.round((this.network.getUpload() / 1024 * 1000), 2)
                     + " D " + NukkitMath.round((this.network.getDownload() / 1024 * 1000), 2) + " kB/s";
         }
-        title += " | TPS " + this.getTicksPerSecond() +
-                " | Load " + this.getTickUsage() + "%" + (char) 0x07;
+        title += " | TPS " + this.getTicksPerSecondAverage() +
+                " | Load " + this.getTickUsageAverage() + "%" + (char) 0x07;
 
         System.out.print(title);
     }
@@ -1538,7 +1551,7 @@ public class Server {
     }
 
     public float getTicksPerSecond() {
-        return ((float) Math.round(this.maxTick * 100)) / 100;
+        return tps;
     }
 
     public float getTicksPerSecondRaw() {
@@ -1546,16 +1559,11 @@ public class Server {
     }
 
     public float getTicksPerSecondAverage() {
-        float sum = 0;
-        int count = this.tickAverage.length;
-        for (float aTickAverage : this.tickAverage) {
-            sum += aTickAverage;
-        }
-        return (float) NukkitMath.round(sum / count, 2);
+        return tpsAverage;
     }
 
     public float getTickUsage() {
-        return (float) NukkitMath.round(this.maxUse * 100, 2);
+        return tickUsage;
     }
 
     public float getTickUsageRaw() {
@@ -1563,12 +1571,16 @@ public class Server {
     }
 
     public float getTickUsageAverage() {
+        return tickUsageAverage;
+    }
+
+    private static float getAverage(float[] array) {
         float sum = 0;
-        int count = this.useAverage.length;
-        for (float aUseAverage : this.useAverage) {
-            sum += aUseAverage;
+        int count = array.length;
+        for (float num : array) {
+            sum += num;
         }
-        return ((float) Math.round(sum / count * 100)) / 100;
+        return Math.round(sum / count * 100) / 100f;
     }
 
     public SimpleCommandMap getCommandMap() {
@@ -1634,11 +1646,29 @@ public class Server {
         this.saveOfflinePlayerData(name, tag, false);
     }
 
+    private static final GzipParameters GZIP_PARAMETERS = new GzipParameters();
+
+    static {
+        GZIP_PARAMETERS.setCompressionLevel(Deflater.BEST_SPEED);
+    }
+
     public void saveOfflinePlayerData(String name, CompoundTag tag, boolean async) {
         if (this.shouldSavePlayerData()) {
             try {
-                if (async) {
-                    this.getScheduler().scheduleAsyncTask(null, new FileWriteTask(this.getDataPath() + "players/" + name.toLowerCase() + ".dat", NBTIO.writeGZIPCompressed(tag, ByteOrder.BIG_ENDIAN)));
+                // EC force async
+                if (true || async) {
+                    byte[] bytes = NBTIO.write(tag, ByteOrder.BIG_ENDIAN);
+                    this.getScheduler().scheduleAsyncTask(null, new FileWriteTask(this.getDataPath() + "players/" + name.toLowerCase() + ".dat", () -> {
+                        ByteArrayOutputStream baos = new ByteArrayOutputStream(1024);
+                        if (bytes.length != 0) {
+                            try (OutputStream os = new GzipCompressorOutputStream(baos, GZIP_PARAMETERS)) {
+                                os.write(bytes);
+                            } catch (IOException e) {
+                                throw new RuntimeException(e);
+                            }
+                        }
+                        return new ByteArrayInputStream(baos.toByteArray());
+                    }));
                 } else {
                     Utils.writeFile(this.getDataPath() + "players/" + name.toLowerCase() + ".dat", new ByteArrayInputStream(NBTIO.writeGZIPCompressed(tag, ByteOrder.BIG_ENDIAN)));
                 }

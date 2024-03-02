@@ -363,9 +363,9 @@ public class EntityFishingHook extends EntityProjectile {
         Random random = ThreadLocalRandom.current();
         for (int i = 0; i < 5; i++) {
             this.level.addParticle(new BubbleParticle(this.setComponents(
-                    this.x + random.nextDouble() * 0.5 - 0.25,
+                    this.x + random.nextFloat() * 0.5f - 0.25f,
                     this.getWaterHeight(),
-                    this.z + random.nextDouble() * 0.5 - 0.25
+                    this.z + random.nextFloat() * 0.5f - 0.25f
             )));
         }
     }
@@ -373,9 +373,9 @@ public class EntityFishingHook extends EntityProjectile {
     public void spawnFish() {
         Random random = ThreadLocalRandom.current();
         this.fish = new Vector3(
-                this.x + (random.nextDouble() * 1.2 + 1) * (random.nextBoolean() ? -1 : 1),
+                this.x + (random.nextFloat() * 1.2f + 1) * (random.nextBoolean() ? -1 : 1),
                 this.getWaterHeight(),
-                this.z + (random.nextDouble() * 1.2 + 1) * (random.nextBoolean() ? -1 : 1)
+                this.z + (random.nextFloat() * 1.2f + 1) * (random.nextBoolean() ? -1 : 1)
         );
     }
 
