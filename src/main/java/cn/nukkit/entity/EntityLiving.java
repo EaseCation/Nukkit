@@ -55,6 +55,7 @@ public abstract class EntityLiving extends Entity implements EntityDamageable {
     }
 
     protected long nextAllowAttack = 0;  // EC优化，在低TPS时也确保正确的攻击冷却时间
+    protected long nextAllowKnockback;
     protected float lastHurt;
 
     protected boolean invisible = false;
@@ -142,7 +143,8 @@ public abstract class EntityLiving extends Entity implements EntityDamageable {
             }
         }
 
-        if (source.getCause() != DamageCause.SUICIDE) {
+        boolean notSuicide = source.getCause() != DamageCause.SUICIDE;
+        if (notSuicide) {
             if (this.noDamageTicks > 0) {
                 EntityDamageEvent lastCause = this.getLastDamageCause();
                 if (lastCause != null && lastCause.getDamage() >= source.getDamage()) {
@@ -153,8 +155,9 @@ public abstract class EntityLiving extends Entity implements EntityDamageable {
 
         float damage = source.getDamage();
         boolean knockback = true;
-        if (source.getCause() != DamageCause.SUICIDE) {
-            long time = System.currentTimeMillis();
+        long time = 0;
+        if (notSuicide) {
+            time = System.currentTimeMillis();
             // 冷却中
             if (time < this.nextAllowAttack) {
                 if (damage > 0) {
@@ -183,27 +186,26 @@ public abstract class EntityLiving extends Entity implements EntityDamageable {
                 this.nextAllowAttack = time + source.getAttackCooldown() * 50L;
             }
         }
+
         // 变红效果和音效应该始终有
         this.onHurt(source);
-        if (source instanceof EntityDamageByEntityEvent ev) {
+
+        if (notSuicide && source instanceof EntityDamageByEntityEvent ev) {
             Entity damager = ev.getDamager();
             /*if (source instanceof EntityDamageByChildEntityEvent event) {
                 damager = event.getChild();
             }*/
             damager.onAttackSuccess(ev);
-        }
 
-        if (knockback) {
-            if (source instanceof EntityDamageByEntityEvent ev) {
-                Entity damager = ev.getDamager();
-                // 击退
-                if (ev.hasKnockBack()) {
-                    double deltaX = this.x - damager.x;
-                    double deltaZ = this.z - damager.z;
-                    this.knockBack(damager, damage, deltaX, deltaZ, ev.getKnockBackH(), ev.getKnockBackV());
-                }
+            // 击退
+            if ((knockback || time >= nextAllowKnockback) && ev.hasKnockBack()) {
+                nextAllowKnockback = nextAllowAttack;
+                double deltaX = this.x - damager.x;
+                double deltaZ = this.z - damager.z;
+                this.knockBack(damager, damage, deltaX, deltaZ, ev.getKnockBackH(), ev.getKnockBackV());
             }
         }
+
         return true;
     }
 
