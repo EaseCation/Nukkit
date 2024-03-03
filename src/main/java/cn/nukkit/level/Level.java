@@ -2438,6 +2438,30 @@ public class Level implements ChunkManager, Metadatable {
         return setBlock(layer, pos.getX(), pos.getY(), pos.getZ(), block, direct, update);
     }
 
+    public boolean setBlock(int x, int y, int z, Block block) {
+        return setBlock(0, x, y, z, block);
+    }
+
+    public boolean setExtraBlock(int x, int y, int z, Block block) {
+        return setBlock(1, x, y, z, block);
+    }
+
+    public boolean setBlock(int layer, int x, int y, int z, Block block) {
+        return setBlock(layer, x, y, z, block, false);
+    }
+
+    public boolean setBlock(int x, int y, int z, Block block, boolean direct) {
+        return setBlock(0, x, y, z, block, direct);
+    }
+
+    public boolean setExtraBlock(int x, int y, int z, Block block, boolean direct) {
+        return setBlock(1, x, y, z, block, direct);
+    }
+
+    public boolean setBlock(int layer, int x, int y, int z, Block block, boolean direct) {
+        return setBlock(layer, x, y, z, block, direct, true);
+    }
+
     public boolean setBlock(int x, int y, int z, Block block, boolean direct, boolean update) {
         return setBlock(0, x, y, z, block, direct, update);
     }
