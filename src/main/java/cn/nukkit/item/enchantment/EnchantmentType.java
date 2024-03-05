@@ -7,6 +7,7 @@ import cn.nukkit.item.*;
  * Nukkit Project
  */
 public enum EnchantmentType {
+    UNKNOWN,
     ALL,
     ARMOR,
     ARMOR_HEAD,
@@ -24,13 +25,16 @@ public enum EnchantmentType {
 	;
 
     public boolean canEnchantItem(Item item) {
-        if (this == ALL) {
+        if (this == UNKNOWN) {
             return true;
-
-        } else if (this == BREAKABLE && item.getMaxDurability() >= 0) {
+        }
+        if (this == ALL && (item.getMaxDurability() >= 0 || item.is(Item.SKULL) || item.is(ItemBlockID.CARVED_PUMPKIN) || item.is(Item.COMPASS) || item.is(Item.LODESTONE_COMPASS) || item.is(Item.RECOVERY_COMPASS))) {
             return true;
-
-        } else if (item instanceof ItemArmor) {
+        }
+        if (this == BREAKABLE && item.getMaxDurability() >= 0) {
+            return true;
+        }
+        if (item instanceof ItemArmor) {
             if (this == ARMOR || this == WEARABLE) {
                 return true;
             }
@@ -44,10 +48,7 @@ public enum EnchantmentType {
                     return item.isLeggings();
                 case ARMOR_FEET:
                     return item.isBoots();
-                default:
-                    return false;
             }
-
         } else {
             switch (this) {
                 case SWORD:
@@ -64,9 +65,8 @@ public enum EnchantmentType {
                     return item instanceof ItemTrident;
                 case CROSSBOW:
                     return item instanceof ItemCrossbow;
-                default:
-                    return false;
             }
         }
+        return false;
     }
 }

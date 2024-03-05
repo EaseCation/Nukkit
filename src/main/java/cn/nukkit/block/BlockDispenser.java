@@ -167,7 +167,7 @@ public class BlockDispenser extends BlockSolidMeta implements Faceable {
 
         if (type == Level.BLOCK_UPDATE_SCHEDULED) {
             this.setTriggered(false);
-            this.level.setBlock(this, this, false, false);
+            this.level.setBlock(this, this, true, false);
 
             dispense();
             return type;
@@ -177,7 +177,7 @@ public class BlockDispenser extends BlockSolidMeta implements Faceable {
 
             if (powered && !triggered) {
                 this.setTriggered(true);
-                this.level.setBlock(this, this, false, false);
+                this.level.setBlock(this, this, true, false);
                 level.scheduleUpdate(this, this, 4);
             }
 

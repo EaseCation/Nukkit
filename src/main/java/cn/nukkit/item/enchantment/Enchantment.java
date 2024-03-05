@@ -185,7 +185,7 @@ public abstract class Enchantment implements Cloneable, EnchantmentID {
     static class UnknownEnchantment extends Enchantment {
 
         protected UnknownEnchantment(int id) {
-            super(id, "unknown", "unknown", Rarity.VERY_RARE, EnchantmentType.ALL);
+            super(id, "unknown", "unknown", Rarity.VERY_RARE, EnchantmentType.UNKNOWN);
         }
     }
 

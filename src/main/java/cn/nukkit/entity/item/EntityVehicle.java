@@ -67,7 +67,7 @@ public abstract class EntityVehicle extends Entity implements EntityRideable, En
         }
 
         // A killer task
-        if (y < -16) {
+        if (y < level.getHeightRange().getMinY() - 18) {
             close();
             return false;
         }

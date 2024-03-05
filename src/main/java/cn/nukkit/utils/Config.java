@@ -13,7 +13,7 @@ import it.unimi.dsi.fastutil.floats.FloatList;
 import it.unimi.dsi.fastutil.ints.IntList;
 import it.unimi.dsi.fastutil.longs.LongList;
 import it.unimi.dsi.fastutil.objects.Object2IntMap;
-import it.unimi.dsi.fastutil.objects.Object2IntRBTreeMap;
+import it.unimi.dsi.fastutil.objects.Object2IntOpenHashMap;
 import it.unimi.dsi.fastutil.shorts.ShortList;
 import lombok.extern.log4j.Log4j2;
 import org.snakeyaml.engine.v2.api.Dump;
@@ -52,9 +52,10 @@ public class Config {
     private boolean correct = false;
     private int type = Config.DETECT;
 
-    public static final Object2IntMap<String> format = new Object2IntRBTreeMap<>();
+    public static final Object2IntMap<String> format = new Object2IntOpenHashMap<>();
 
     static {
+        format.defaultReturnValue(DETECT);
         format.put("properties", Config.PROPERTIES);
         format.put("con", Config.PROPERTIES);
         format.put("conf", Config.PROPERTIES);
@@ -158,9 +159,8 @@ public class Config {
                 if (this.file.getName().lastIndexOf(".") != -1 && this.file.getName().lastIndexOf(".") != 0) {
                     extension = this.file.getName().substring(this.file.getName().lastIndexOf(".") + 1);
                 }
-                if (format.containsKey(extension)) {
-                    this.type = format.getInt(extension);
-                } else {
+                this.type = format.getInt(extension);
+                if (this.type == DETECT) {
                     this.correct = false;
                 }
             }

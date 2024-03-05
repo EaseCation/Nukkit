@@ -251,7 +251,7 @@ public class BlockEntityBrewingStand extends BlockEntityAbstractContainer {
         }
 
         block.setDamage(meta);
-        this.level.setBlock(block, block, false, false);
+        this.level.setBlock(block, block, true, false);
     }
 
     public int getFuel() {

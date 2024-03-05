@@ -3128,8 +3128,9 @@ public class Player extends EntityHuman implements CommandSender, InventoryHolde
                     if (!this.spawned || !this.isAlive()) {
                         break;
                     }
+                    AnimatePacket animatePk = (AnimatePacket) packet;
 
-                    PlayerAnimationEvent animationEvent = new PlayerAnimationEvent(this, ((AnimatePacket) packet).action);
+                    PlayerAnimationEvent animationEvent = new PlayerAnimationEvent(this, animatePk.action);
                     this.server.getPluginManager().callEvent(animationEvent);
                     if (animationEvent.isCancelled()) {
                         break;
@@ -3140,8 +3141,14 @@ public class Player extends EntityHuman implements CommandSender, InventoryHolde
                     switch (animation) {
                         case ROW_RIGHT:
                         case ROW_LEFT:
-                            if (this.riding instanceof EntityBoat) {
-                                ((EntityBoat) this.riding).onPaddle(animation, ((AnimatePacket) packet).rowingTime);
+                            if (this.riding instanceof EntityBoat boat) {
+                                float paddleTime = animatePk.rowingTime;
+                                if (!validateFloat(paddleTime)) {
+                                    onPacketViolation(PacketViolationReason.IMPOSSIBLE_BEHAVIOR, "anim_nan");
+                                    return;
+                                }
+
+                                boat.onPaddle(animation, paddleTime);
                             }
                             break;
                         case SWING_ARM:
@@ -3162,6 +3169,7 @@ public class Player extends EntityHuman implements CommandSender, InventoryHolde
                     AnimatePacket animatePacket = new AnimatePacket();
                     animatePacket.eid = this.getId();
                     animatePacket.action = animationEvent.getAnimationType();
+                    animatePacket.rowingTime = animatePk.rowingTime;
                     Server.broadcastPacket(this.getViewers().values(), animatePacket);
                     break;
                 case ProtocolInfo.SET_HEALTH_PACKET:

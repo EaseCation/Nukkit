@@ -50,7 +50,7 @@ public class BlockRedstoneLampLit extends BlockRedstoneLamp {
         }
 
         if (type == Level.BLOCK_UPDATE_SCHEDULED && !this.level.isBlockPowered(this)) {
-            this.level.setBlock(this, Block.get(BlockID.REDSTONE_LAMP), false, false);
+            this.level.setBlock(this, Block.get(BlockID.REDSTONE_LAMP), true, false);
         }
         return 0;
     }

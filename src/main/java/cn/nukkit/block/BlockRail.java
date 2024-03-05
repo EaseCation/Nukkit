@@ -221,7 +221,7 @@ public class BlockRail extends BlockFlowable implements Faceable {
     public void setOrientation(Orientation o) {
         if (o.metadata() != this.getRealMeta()) {
             this.setDamage(o.metadata());
-            this.level.setBlock(this, this, false, true);
+            this.level.setBlock(this, this, true, true);
         }
     }
 

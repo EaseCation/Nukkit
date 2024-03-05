@@ -67,7 +67,7 @@ public class BlockDoublePlant extends BlockFlowable {
             if ((meta & TOP_HALF_BITMASK) == TOP_HALF_BITMASK) {
                 Block below = down();
                 if (below.getId() != DOUBLE_PLANT || (below.getDamage() & TYPE_MASK) != (meta & TYPE_MASK)) {
-                    this.getLevel().setBlock(this, Block.get(BlockID.AIR), false, true);
+                    this.getLevel().setBlock(this, Block.get(BlockID.AIR), true, true);
                     return Level.BLOCK_UPDATE_NORMAL;
                 }
             } else {

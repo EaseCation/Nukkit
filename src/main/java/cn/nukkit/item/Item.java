@@ -1313,6 +1313,18 @@ public class Item implements Cloneable, ItemID {
         return false;
     }
 
+    public boolean is(int id) {
+        return getId() == id;
+    }
+
+    public boolean is(int id, int damage) {
+        return getId() == id && getDamage() == damage;
+    }
+
+    public boolean is(Item item) {
+        return getId() == item.getId();
+    }
+
     public boolean isBoneMeal() {
         return false;
     }

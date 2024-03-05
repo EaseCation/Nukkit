@@ -181,7 +181,7 @@ public abstract class BlockPressurePlateBase extends BlockTransparentMeta {
 
         if (oldStrength != strength) {
             this.setRedstonePower(strength);
-            this.level.setBlock(this, this, false, false);
+            this.level.setBlock(this, this, true, false);
 
             this.level.updateAroundRedstone(this, null);
             this.level.updateAroundRedstone(this.downVec(), null);

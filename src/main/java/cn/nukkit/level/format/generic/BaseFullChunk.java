@@ -350,7 +350,7 @@ public abstract class BaseFullChunk implements FullChunk, ChunkManager {
             this.tileList = new Int2ObjectOpenHashMap<>();
         }
         this.tiles.put(blockEntity.getId(), blockEntity);
-        int index = ((blockEntity.getFloorZ() & 0x0f) << 12) | ((blockEntity.getFloorX() & 0x0f) << 8) | (blockEntity.getFloorY() & 0xff);
+        int index = Level.localBlockHash(blockEntity.getFloorX(), blockEntity.getFloorY(), blockEntity.getFloorZ());
         BlockEntity entity = this.tileList.get(index);
         if (entity != null && !entity.equals(blockEntity)) {
             this.tiles.remove(entity.getId());
@@ -366,7 +366,7 @@ public abstract class BaseFullChunk implements FullChunk, ChunkManager {
     public void removeBlockEntity(BlockEntity blockEntity) {
         if (this.tiles != null) {
             this.tiles.remove(blockEntity.getId());
-            int index = ((blockEntity.getFloorZ() & 0x0f) << 12) | ((blockEntity.getFloorX() & 0x0f) << 8) | (blockEntity.getFloorY() & 0xff);
+            int index = Level.localBlockHash(blockEntity.getFloorX(), blockEntity.getFloorY(), blockEntity.getFloorZ());
             this.tileList.remove(index);
             if (this.isInit) {
                 this.setChanged();
@@ -391,7 +391,7 @@ public abstract class BaseFullChunk implements FullChunk, ChunkManager {
 
     @Override
     public BlockEntity getTile(int x, int y, int z) {
-        return this.tileList != null ? this.tileList.get((z << 12) | (x << 8) | y) : null;
+        return this.tileList != null ? this.tileList.get(Level.localBlockHash(x, y, z)) : null;
     }
 
     @Override

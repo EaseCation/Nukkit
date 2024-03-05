@@ -177,7 +177,7 @@ public class BlockVine extends BlockFlowable {
                 int faceMeta = getMetaFromFace(face);
                 int meta = this.getDamage();
 
-                if (this.y < 255 && face == BlockFace.UP && block.getId() == AIR) {
+                if (this.y < level.getHeightRange().getMaxY() - 1 && face == BlockFace.UP && block.getId() == AIR) {
                     if (this.canSpread()) {
                         for (BlockFace horizontalFace : BlockFace.Plane.HORIZONTAL) {
                             if (random.nextBoolean() || !this.getSide(horizontalFace).getSide(face).isSolid()) {
@@ -214,7 +214,7 @@ public class BlockVine extends BlockFlowable {
                             putVine(this, meta, null);
                         }
                     }
-                } else if (this.y > 0) {
+                } else if (this.y > level.getHeightRange().getMinY()) {
                     Block below = this.down();
                     int id = below.getId();
                     if (id == AIR || id == VINE) {

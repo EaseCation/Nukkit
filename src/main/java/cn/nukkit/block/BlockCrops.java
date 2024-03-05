@@ -55,7 +55,7 @@ public abstract class BlockCrops extends BlockFlowable {
                     return false;
                 }
 
-                this.getLevel().setBlock(this, ev.getNewState(), false, true);
+                this.getLevel().setBlock(this, ev.getNewState(), true, true);
                 this.level.addParticle(new BoneMealParticle(this));
 
                 if (player != null && (player.gamemode & 0x01) == 0) {
@@ -85,7 +85,7 @@ public abstract class BlockCrops extends BlockFlowable {
                     Server.getInstance().getPluginManager().callEvent(ev);
 
                     if (!ev.isCancelled()) {
-                        this.getLevel().setBlock(this, ev.getNewState(), false, true);
+                        this.getLevel().setBlock(this, ev.getNewState(), true, true);
                     } else {
                         return Level.BLOCK_UPDATE_RANDOM;
                     }

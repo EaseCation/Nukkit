@@ -139,7 +139,7 @@ public class BlockHopper extends BlockTransparentMeta implements Faceable {
 
             if (powered == this.isEnabled()) {
                 this.setEnabled(!powered);
-                this.level.setBlock(this, this, false, false);
+                this.level.setBlock(this, this, true, false);
 
                 if (!powered) {
                     BlockEntity be = this.level.getBlockEntity(this);

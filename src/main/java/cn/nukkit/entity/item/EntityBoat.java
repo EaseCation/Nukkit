@@ -401,11 +401,17 @@ public class EntityBoat extends EntityVehicle {
         return super.onInteract(player, item, clickedPos);
     }
 
-    public void onPaddle(AnimatePacket.Action animation, float value) {
+    public void onPaddle(AnimatePacket.Action animation, float frameSeconds) {
         int propertyId = animation == AnimatePacket.Action.ROW_RIGHT ? DATA_PADDLE_TIME_RIGHT : DATA_PADDLE_TIME_LEFT;
 
-        if (getDataPropertyFloat(propertyId) != value) {
-            this.setDataProperty(new FloatEntityData(propertyId, value));
+        if (frameSeconds > 1000) {
+            frameSeconds -= 1000;
+        } else if (frameSeconds < 1000) {
+            frameSeconds += 1000;
+        }
+
+        if (getDataPropertyFloat(propertyId) != frameSeconds) {
+            this.setDataProperty(new FloatEntityData(propertyId, frameSeconds));
         }
     }
 

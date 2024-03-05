@@ -10,6 +10,7 @@ import cn.nukkit.event.block.BlockPistonEvent;
 import cn.nukkit.inventory.InventoryHolder;
 import cn.nukkit.item.Item;
 import cn.nukkit.item.ItemTool;
+import cn.nukkit.level.HeightRange;
 import cn.nukkit.level.Level;
 import cn.nukkit.math.BlockFace;
 import cn.nukkit.math.BlockVector3;
@@ -313,10 +314,9 @@ public abstract class BlockPistonBase extends BlockTransparentMeta implements Fa
     }
 
     public static boolean canPush(Block block, BlockFace face, boolean destroyBlocks, boolean extending) {
-        if (
-                block.getY() >= 0 && (face != BlockFace.DOWN || block.getY() != 0) &&
-                        block.getY() <= 255 && (face != BlockFace.UP || block.getY() != 255)
-        ) {
+        HeightRange heightRange = block.level.getHeightRange();
+        if (block.getY() >= heightRange.getMinY() && (face != BlockFace.DOWN || block.getY() != heightRange.getMinY()) &&
+                block.getY() < heightRange.getMaxY() && (face != BlockFace.UP || block.getY() != heightRange.getMaxY() - 1)) {
             if (extending && !block.canBePushed() || !extending && !block.canBePulled()) {
                 return false;
             }

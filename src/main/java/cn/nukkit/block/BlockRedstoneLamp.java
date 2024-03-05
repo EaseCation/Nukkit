@@ -44,9 +44,9 @@ public class BlockRedstoneLamp extends BlockSolid {
     @Override
     public boolean place(Item item, Block block, Block target, BlockFace face, double fx, double fy, double fz, Player player) {
         if (this.level.isBlockPowered(this)) {
-            this.level.setBlock(this, Block.get(BlockID.LIT_REDSTONE_LAMP), false, true);
+            this.level.setBlock(this, Block.get(BlockID.LIT_REDSTONE_LAMP), true, true);
         } else {
-            this.level.setBlock(this, this, false, true);
+            this.level.setBlock(this, this, true, true);
         }
         return true;
     }
@@ -64,7 +64,7 @@ public class BlockRedstoneLamp extends BlockSolid {
                 return 0;
             }
             if (this.level.isBlockPowered(this)) {
-                this.level.setBlock(this, Block.get(BlockID.LIT_REDSTONE_LAMP), false, false);
+                this.level.setBlock(this, Block.get(BlockID.LIT_REDSTONE_LAMP), true, false);
                 return 1;
             }
         }

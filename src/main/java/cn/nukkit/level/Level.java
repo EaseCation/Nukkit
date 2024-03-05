@@ -2070,11 +2070,11 @@ public class Level implements ChunkManager, Metadatable {
         FullChunk chunk = this.getChunk((int) pos.x >> 4, (int) pos.z >> 4, false);
         int level = 0;
         if (chunk != null) {
-            level = chunk.getBlockSkyLight((int) pos.x & 0x0f, (int) pos.y & 0xff, (int) pos.z & 0x0f);
+            level = chunk.getBlockSkyLight((int) pos.x & 0x0f, (int) pos.y, (int) pos.z & 0x0f);
             level -= this.skyLightSubtracted;
 
             if (level < 15) {
-                level = Math.max(chunk.getBlockLight((int) pos.x & 0x0f, (int) pos.y & 0xff, (int) pos.z & 0x0f),
+                level = Math.max(chunk.getBlockLight((int) pos.x & 0x0f, (int) pos.y, (int) pos.z & 0x0f),
                         level);
             }
         }
@@ -2115,7 +2115,7 @@ public class Level implements ChunkManager, Metadatable {
 
     public int getFullBlock(int layer, int x, int y, int z) {
         FullChunk chunk = this.getChunk(x >> 4, z >> 4, false);
-        return chunk == null ? 0 : chunk.getFullBlock(layer, x & 0x0f, y & 0xff, z & 0x0f);
+        return chunk == null ? 0 : chunk.getFullBlock(layer, x & 0x0f, y, z & 0x0f);
     }
 
     public Block getBlock(Vector3 pos) {
@@ -3110,7 +3110,7 @@ public class Level implements ChunkManager, Metadatable {
         FullChunk chunk = this.getChunk(x >> 4, z >> 4, false);
 
         if (chunk != null) {
-            return chunk.getTile(x & 0x0f, y & 0xff, z & 0x0f);
+            return chunk.getTile(x & 0x0f, y, z & 0x0f);
         }
 
         return null;
@@ -3128,7 +3128,7 @@ public class Level implements ChunkManager, Metadatable {
         FullChunk chunk = this.getChunkIfLoaded(x >> 4, z >> 4);
 
         if (chunk != null) {
-            return chunk.getTile(x & 0x0f, y & 0xff, z & 0x0f);
+            return chunk.getTile(x & 0x0f, y, z & 0x0f);
         }
 
         return null;
@@ -3156,7 +3156,7 @@ public class Level implements ChunkManager, Metadatable {
     @Override
     public int getBlockIdAt(int layer, int x, int y, int z) {
         FullChunk chunk = this.getChunk(x >> 4, z >> 4, true);
-        return chunk == null ? Block.AIR : chunk.getBlockId(layer, x & 0x0f, y & 0xff, z & 0x0f);
+        return chunk == null ? Block.AIR : chunk.getBlockId(layer, x & 0x0f, y, z & 0x0f);
     }
 
     @Deprecated
@@ -3166,7 +3166,7 @@ public class Level implements ChunkManager, Metadatable {
         if (chunk == null) {
             return;
         }
-        chunk.setBlockId(layer, x & 0x0f, y & 0xff, z & 0x0f, id);
+        chunk.setBlockId(layer, x & 0x0f, y, z & 0x0f, id);
         addBlockChange(x, y, z);
 
         if (!server.isPrimaryThread()) {
@@ -3186,8 +3186,8 @@ public class Level implements ChunkManager, Metadatable {
         if (chunk == null) {
             return;
         }
-        chunk.setBlockId(layer, x & 0x0f, y & 0xff, z & 0x0f, id);
-        chunk.setBlockData(layer, x & 0x0f, y & 0xff, z & 0x0f, data);
+        chunk.setBlockId(layer, x & 0x0f, y, z & 0x0f, id);
+        chunk.setBlockData(layer, x & 0x0f, y, z & 0x0f, data);
         addBlockChange(x, y, z);
 
         if (!server.isPrimaryThread()) {
@@ -3203,7 +3203,7 @@ public class Level implements ChunkManager, Metadatable {
     /*@Deprecated
     public int getBlockExtraDataAt(int x, int y, int z) {
         FullChunk chunk = this.getChunk(x >> 4, z >> 4, true);
-        return chunk == null ? 0 : chunk.getBlockExtraData(0, x & 0x0f, y & 0xff, z & 0x0f);
+        return chunk == null ? 0 : chunk.getBlockExtraData(0, x & 0x0f, y, z & 0x0f);
     }
 
     @Deprecated
@@ -3212,7 +3212,7 @@ public class Level implements ChunkManager, Metadatable {
         if (chunk == null) {
             return;
         }
-        chunk.setBlockExtraData(0, x & 0x0f, y & 0xff, z & 0x0f, (data << 8) | id);
+        chunk.setBlockExtraData(0, x & 0x0f, y, z & 0x0f, (data << 8) | id);
 
         this.sendBlockExtraData(x, y, z, id, data);
     }*/
@@ -3221,7 +3221,7 @@ public class Level implements ChunkManager, Metadatable {
     @Override
     public int getBlockDataAt(int layer, int x, int y, int z) {
         FullChunk chunk = this.getChunk(x >> 4, z >> 4, true);
-        return chunk == null ? 0 : chunk.getBlockData(layer, x & 0x0f, y & 0xff, z & 0x0f);
+        return chunk == null ? 0 : chunk.getBlockData(layer, x & 0x0f, y, z & 0x0f);
     }
 
     @Deprecated
@@ -3231,7 +3231,7 @@ public class Level implements ChunkManager, Metadatable {
         if (chunk == null) {
             return;
         }
-        chunk.setBlockData(layer, x & 0x0f, y & 0xff, z & 0x0f, data);
+        chunk.setBlockData(layer, x & 0x0f, y, z & 0x0f, data);
         addBlockChange(x, y, z);
 
         if (!server.isPrimaryThread()) {
@@ -3246,7 +3246,7 @@ public class Level implements ChunkManager, Metadatable {
 
     public int getBlockSkyLightAt(int x, int y, int z) {
         FullChunk chunk = this.getChunk(x >> 4, z >> 4, true);
-        return chunk == null ? 0 : chunk.getBlockSkyLight(x & 0x0f, y & 0xff, z & 0x0f);
+        return chunk == null ? 0 : chunk.getBlockSkyLight(x & 0x0f, y, z & 0x0f);
     }
 
     public void setBlockSkyLightAt(int x, int y, int z, int level) {
@@ -3254,12 +3254,12 @@ public class Level implements ChunkManager, Metadatable {
         if (chunk == null) {
             return;
         }
-        chunk.setBlockSkyLight(x & 0x0f, y & 0xff, z & 0x0f, level & 0x0f);
+        chunk.setBlockSkyLight(x & 0x0f, y, z & 0x0f, level & 0x0f);
     }
 
     public int getBlockLightAt(int x, int y, int z) {
         FullChunk chunk = this.getChunk(x >> 4, z >> 4, true);
-        return chunk == null ? 0 : chunk.getBlockLight(x & 0x0f, y & 0xff, z & 0x0f);
+        return chunk == null ? 0 : chunk.getBlockLight(x & 0x0f, y, z & 0x0f);
     }
 
     public void setBlockLightAt(int x, int y, int z, int level) {
@@ -3267,7 +3267,7 @@ public class Level implements ChunkManager, Metadatable {
         if (chunk == null) {
             return;
         }
-        chunk.setBlockLight(x & 0x0f, y & 0xff, z & 0x0f, level & 0x0f);
+        chunk.setBlockLight(x & 0x0f, y, z & 0x0f, level & 0x0f);
     }
 
     public Biome getBiome(int x, int z) {

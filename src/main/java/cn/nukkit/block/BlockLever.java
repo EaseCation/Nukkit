@@ -97,7 +97,7 @@ public class BlockLever extends BlockTransparentMeta implements Faceable {
 
         boolean redstone = this.level.isRedstoneEnabled();
 
-        this.getLevel().setBlock(this, this, false, true);
+        this.getLevel().setBlock(this, this, true, true);
         this.getLevel().addLevelEvent(this.blockCenter(), LevelEventPacket.EVENT_SOUND_BUTTON_CLICK, this.isPowerOn() ? 600 : 500);
 
         if (redstone) {

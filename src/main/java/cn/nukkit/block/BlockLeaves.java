@@ -129,7 +129,7 @@ public class BlockLeaves extends BlockTransparentMeta {
     public int onUpdate(int type) {
         if (type == Level.BLOCK_UPDATE_RANDOM && !isPersistent() && !isCheckDecay()) {
             setCheckDecay(true);
-            getLevel().setBlock(this, this, false, false);
+            getLevel().setBlock(this, this, true, false);
         } else if (type == Level.BLOCK_UPDATE_RANDOM && isCheckDecay() && !isPersistent()) {
             setDamage(getLeafType());
             int check = 0;
@@ -138,7 +138,7 @@ public class BlockLeaves extends BlockTransparentMeta {
 
             Server.getInstance().getPluginManager().callEvent(ev);
             if (ev.isCancelled() || findLog(this, new LongArraySet(), 0, check)) {
-                getLevel().setBlock(this, this, false, false);
+                getLevel().setBlock(this, this, true, false);
             } else {
                 getLevel().useBreakOn(this);
                 return Level.BLOCK_UPDATE_NORMAL;

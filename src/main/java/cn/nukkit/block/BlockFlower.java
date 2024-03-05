@@ -3,6 +3,7 @@ package cn.nukkit.block;
 import cn.nukkit.Player;
 import cn.nukkit.item.Item;
 import cn.nukkit.item.ItemDye;
+import cn.nukkit.level.HeightRange;
 import cn.nukkit.level.Level;
 import cn.nukkit.level.particle.BoneMealParticle;
 import cn.nukkit.math.BlockFace;
@@ -111,6 +112,7 @@ public class BlockFlower extends BlockFlowable {
 
             this.level.addParticle(new BoneMealParticle(this));
 
+            HeightRange heightRange = level.getHeightRange();
             ThreadLocalRandom random = ThreadLocalRandom.current();
             for (int i = 0; i < 8; i++) {
                 Vector3 vec = this.add(
@@ -118,7 +120,7 @@ public class BlockFlower extends BlockFlowable {
                         random.nextInt(-1, 2),
                         random.nextInt(-3, 4));
 
-                if (level.getBlock(vec).getId() == AIR && level.getBlock(vec.down()).getId() == GRASS_BLOCK && vec.getY() >= 0 && vec.getY() < 256) {
+                if (level.getBlock(vec).getId() == AIR && level.getBlock(vec.down()).getId() == GRASS_BLOCK && vec.getY() >= heightRange.getMinY() && vec.getY() < heightRange.getMaxY()) {
                     if (random.nextInt(10) == 0) {
                         this.level.setBlock(vec, this.getUncommonFlower(), true);
                     } else {
