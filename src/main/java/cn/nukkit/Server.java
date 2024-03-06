@@ -1591,6 +1591,14 @@ public class Server {
         return new HashMap<>(playerList);
     }
 
+    public Map<UUID, Player> getOnlinePlayersUnsafe() {
+        return playerList;
+    }
+
+    public int getOnlinePlayerCount() {
+        return playerList.size();
+    }
+
     public void addRecipe(Recipe recipe) {
         this.craftingManager.registerRecipe(recipe);
     }
