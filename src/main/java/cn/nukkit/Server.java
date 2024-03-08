@@ -102,6 +102,7 @@ import java.util.zip.Deflater;
  */
 @Log4j2
 public class Server {
+    private static final boolean FORCE_ASYNC_SAVE_PLAYER_DATA = !Boolean.getBoolean("easecation.debugging");
 
     public static final String BROADCAST_CHANNEL_ADMINISTRATIVE = "nukkit.broadcast.admin";
     public static final String BROADCAST_CHANNEL_USERS = "nukkit.broadcast.user";
@@ -394,6 +395,8 @@ public class Server {
         this.autoCompactionTicks = Math.max(1, this.getConfig("ticks-per.auto-compaction", 30 * 60 * 20));
 
         this.scheduler = new ServerScheduler(corePoolSize, maximumPoolSize, keepAliveSeconds);
+
+        log.info("Force async save player data: {}", FORCE_ASYNC_SAVE_PLAYER_DATA);
 
         if (this.getPropertyBoolean("enable-rcon", false)) {
             try {
@@ -1664,7 +1667,7 @@ public class Server {
         if (this.shouldSavePlayerData()) {
             try {
                 // EC force async
-                if (true || async) {
+                if (async || FORCE_ASYNC_SAVE_PLAYER_DATA) {
                     byte[] bytes = NBTIO.write(tag, ByteOrder.BIG_ENDIAN);
                     this.getScheduler().scheduleAsyncTask(null, new FileWriteTask(this.getDataPath() + "players/" + name.toLowerCase() + ".dat", () -> {
                         ByteArrayOutputStream baos = new ByteArrayOutputStream(1024);

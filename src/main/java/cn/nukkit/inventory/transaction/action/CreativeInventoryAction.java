@@ -22,6 +22,7 @@ public class CreativeInventoryAction extends InventoryAction {
 
     public CreativeInventoryAction(Item source, Item target, int action) {
         super(source, target);
+        actionType = action;
     }
 
     /**
@@ -64,5 +65,10 @@ public class CreativeInventoryAction extends InventoryAction {
     @Override
     public void onExecuteFail(Player source) {
 
+    }
+
+    @Override
+    public boolean hasComponents() {
+        return actionType != TYPE_DELETE_ITEM;
     }
 }

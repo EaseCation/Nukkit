@@ -1166,14 +1166,24 @@ public class Item implements Cloneable, ItemID {
     }
 
     public final boolean equals(Item item, boolean checkDamage, boolean checkCompound) {
+        return equals(item, checkDamage, checkCompound, true);
+    }
+
+    public final boolean equals(Item item, boolean checkDamage, boolean checkCompound, boolean checkComponents) {
         if (item != null && this.getId() == item.getId() && (!checkDamage || this.getDamage() == item.getDamage() || id == AIR)) {
             if (checkCompound) {
                 if (Arrays.equals(this.getCompoundTag(), item.getCompoundTag())) {
+                    if (!checkComponents) {
+                        return true;
+                    }
                     return Objects.equals(this.getCanPlaceOnBlocks(), item.getCanPlaceOnBlocks())
                             && Objects.equals(this.getCanDestroyBlocks(), item.getCanDestroyBlocks());
-                } else if (this.hasCompoundTag() && item.hasCompoundTag()) {
-                    return this.getNamedTag().equals(item.getNamedTag())
-                            && Objects.equals(this.getCanPlaceOnBlocks(), item.getCanPlaceOnBlocks())
+                }
+                if (this.hasCompoundTag() && item.hasCompoundTag() && this.getNamedTag().equals(item.getNamedTag())) {
+                    if (!checkComponents) {
+                        return true;
+                    }
+                    return Objects.equals(this.getCanPlaceOnBlocks(), item.getCanPlaceOnBlocks())
                             && Objects.equals(this.getCanDestroyBlocks(), item.getCanDestroyBlocks());
                 }
             } else {

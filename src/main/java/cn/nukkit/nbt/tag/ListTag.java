@@ -24,7 +24,8 @@ public class ListTag<T extends Tag> extends Tag implements Iterable<T> {
     }
 
     public ListTag(String name) {
-        this(name, new ObjectArrayList<>());
+        super(name);
+        this.list = new ObjectArrayList<>();
     }
 
     public ListTag(int initialCapacity) {
@@ -32,7 +33,8 @@ public class ListTag<T extends Tag> extends Tag implements Iterable<T> {
     }
 
     public ListTag(String name, int initialCapacity) {
-        this(name, new ObjectArrayList<>(initialCapacity));
+        super(name);
+        this.list = new ObjectArrayList<>(initialCapacity);
     }
 
     public ListTag(List<T> list) {
@@ -42,6 +44,10 @@ public class ListTag<T extends Tag> extends Tag implements Iterable<T> {
     public ListTag(String name, List<T> list) {
         super(name);
         this.list = list;
+
+        if (!list.isEmpty()) {
+            type = list.get(0).getId();
+        }
     }
 
     @Override

@@ -34,11 +34,19 @@ public abstract class InventoryAction {
         return sourceItem.clone();
     }
 
+    public Item getSourceItemUnsafe() {
+        return sourceItem;
+    }
+
     /**
      * Returns the item that the action attempted to replace the source item with.
      */
     public Item getTargetItem() {
         return targetItem.clone();
+    }
+
+    public Item getTargetItemUnsafe() {
+        return targetItem;
     }
 
     public void setTargetItem(Item targetItem) {
@@ -81,4 +89,8 @@ public abstract class InventoryAction {
      * Performs additional actions when this inventory-action did not complete successfully.
      */
     public abstract void onExecuteFail(Player source);
+
+    public boolean hasComponents() {
+        return true;
+    }
 }

@@ -9,6 +9,7 @@ import cn.nukkit.inventory.transaction.action.InventoryAction;
 import cn.nukkit.inventory.transaction.action.SlotChangeAction;
 import cn.nukkit.item.Item;
 import it.unimi.dsi.fastutil.objects.ObjectArrayList;
+import it.unimi.dsi.fastutil.objects.ObjectBooleanPair;
 import it.unimi.dsi.fastutil.objects.ObjectOpenHashSet;
 
 import java.util.*;
@@ -80,25 +81,35 @@ public class InventoryTransaction {
             }
 
             ListIterator<InventoryAction> iterator = this.actions.listIterator();
-
             while (iterator.hasNext()) {
                 InventoryAction existingAction = iterator.next();
                 if (existingAction instanceof SlotChangeAction) {
                     SlotChangeAction existingSlotChangeAction = (SlotChangeAction) existingAction;
-                    if (!existingSlotChangeAction.getInventory().equals(slotChangeAction.getInventory()))
+                    if (existingSlotChangeAction.getInventory() != slotChangeAction.getInventory()
+                            || existingSlotChangeAction.getSlot() != slotChangeAction.getSlot()) {
                         continue;
-                    Item existingSource = existingSlotChangeAction.getSourceItem();
-                    Item existingTarget = existingSlotChangeAction.getTargetItem();
-                    if (existingSlotChangeAction.getSlot() == slotChangeAction.getSlot()
-                            && slotChangeAction.getSourceItem().equals(existingTarget, existingTarget.hasMeta(), existingTarget.hasCompoundTag())) {
+                    }
+
+                    Item changeSource = slotChangeAction.getSourceItemUnsafe();
+                    Item existingTarget = existingSlotChangeAction.getTargetItemUnsafe();
+                    if (changeSource.equals(existingTarget, existingTarget.hasMeta(), existingTarget.hasCompoundTag())) {
                         iterator.set(new SlotChangeAction(existingSlotChangeAction.getInventory(), existingSlotChangeAction.getSlot(), existingSlotChangeAction.getSourceItem(), slotChangeAction.getTargetItem()));
                         action.onAddToTransaction(this);
                         return;
-                    } else if (existingSlotChangeAction.getSlot() == slotChangeAction.getSlot()
-                            && slotChangeAction.getSourceItem().equals(existingSource, existingSource.hasMeta(), existingSource.hasCompoundTag())
-                            && slotChangeAction.getTargetItem().equals(existingTarget, existingTarget.hasMeta(), existingTarget.hasCompoundTag())) {
-                        existingSource.setCount(existingSource.getCount() + slotChangeAction.getSourceItem().getCount());
-                        existingTarget.setCount(existingTarget.getCount() + slotChangeAction.getTargetItem().getCount());
+                    }
+
+                    Item existingSource = existingSlotChangeAction.getSourceItemUnsafe();
+                    Item changeTarget = slotChangeAction.getTargetItemUnsafe();
+                    if (changeSource.equals(existingSource, existingSource.hasMeta(), existingSource.hasCompoundTag())
+                            && changeTarget.equals(existingTarget, existingTarget.hasMeta(), existingTarget.hasCompoundTag())) {
+                        int targetCount = changeTarget.getCount();
+
+                        existingSource = existingSlotChangeAction.getSourceItem();
+                        existingSource.setCount(existingSource.getCount() + changeSource.getCount());
+
+                        existingTarget = existingSlotChangeAction.getTargetItem();
+                        existingTarget.setCount(existingTarget.getCount() + targetCount);
+
                         iterator.set(new SlotChangeAction(existingSlotChangeAction.getInventory(), existingSlotChangeAction.getSlot(), existingSource, existingTarget));
                         return;
                     }
@@ -120,39 +131,47 @@ public class InventoryTransaction {
         this.inventories.add(inventory);
     }
 
-    protected boolean matchItems(List<Item> needItems, List<Item> haveItems) {
+    protected boolean matchItems() {
+        List<ObjectBooleanPair<Item>> needItems = new ObjectArrayList<>();
+        List<Item> haveItems = new ObjectArrayList<>();
+
         for (InventoryAction action : this.actions) {
-            if (action.getTargetItem().getId() != Item.AIR) {
-                needItems.add(action.getTargetItem());
+            if (action.getTargetItemUnsafe().getId() != Item.AIR) {
+                needItems.add(ObjectBooleanPair.of(action.getTargetItem(), action.hasComponents()));
             }
 
             if (!action.isValid(this.source)) {
                 return false;
             }
 
-            if (action.getSourceItem().getId() != Item.AIR) {
+            if (action.getSourceItemUnsafe().getId() != Item.AIR) {
                 haveItems.add(action.getSourceItem());
             }
         }
 
-        for (Item needItem : new ObjectArrayList<>(needItems)) {
-            for (Item haveItem : new ObjectArrayList<>(haveItems)) {
-                if (needItem.equals(haveItem)) {
+        Iterator<ObjectBooleanPair<Item>> needItemIterator = needItems.iterator();
+        while (needItemIterator.hasNext()) {
+            ObjectBooleanPair<Item> needItemEntry = needItemIterator.next();
+            Item needItem = needItemEntry.left();
+            Iterator<Item> haveItemIterator = haveItems.iterator();
+            while (haveItemIterator.hasNext()) {
+                Item haveItem = haveItemIterator.next();
+                if (needItem.equals(haveItem, true, true, needItemEntry.rightBoolean())) {
                     int amount = Math.min(haveItem.getCount(), needItem.getCount());
                     needItem.setCount(needItem.getCount() - amount);
                     haveItem.setCount(haveItem.getCount() - amount);
                     if (haveItem.getCount() == 0) {
-                        haveItems.remove(haveItem);
+                        haveItemIterator.remove();
                     }
                     if (needItem.getCount() == 0) {
-                        needItems.remove(needItem);
+                        needItemIterator.remove();
                         break;
                     }
                 }
             }
         }
 
-        return haveItems.isEmpty() && needItems.isEmpty() || uiTransaction;
+        return haveItems.isEmpty() && needItems.isEmpty();
     }
 
     protected void sendInventories() {
@@ -166,9 +185,7 @@ public class InventoryTransaction {
     }
 
     public boolean canExecute() {
-        List<Item> haveItems = new ObjectArrayList<>();
-        List<Item> needItems = new ObjectArrayList<>();
-        return matchItems(needItems, haveItems) && !this.actions.isEmpty() && (haveItems.isEmpty() && needItems.isEmpty() || uiTransaction);
+        return !this.actions.isEmpty() && (uiTransaction || matchItems());
     }
 
     protected boolean callExecuteEvent() {
@@ -197,13 +214,15 @@ public class InventoryTransaction {
         }
 
         if (who != null && to != null) {
-            if (from.getTargetItem().getCount() > from.getSourceItem().getCount()) {
+            Item targetItem = from.getTargetItem();
+            Item sourceItem = from.getSourceItem();
+
+            if (targetItem.getCount() > sourceItem.getCount()) {
                 from = to;
             }
 
-            InventoryClickEvent ev2 = new InventoryClickEvent(who, from.getInventory(), from.getSlot(), from.getSourceItem(), from.getTargetItem());
+            InventoryClickEvent ev2 = new InventoryClickEvent(who, from.getInventory(), from.getSlot(), sourceItem, targetItem);
             this.source.getServer().getPluginManager().callEvent(ev2);
-
             if (ev2.isCancelled()) {
                 return false;
             }
