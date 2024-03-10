@@ -99,28 +99,7 @@ public abstract class BlockWall extends BlockTransparentMeta {
         if (type == Level.BLOCK_UPDATE_SCHEDULED) {
             int oldMeta = getDamage();
 
-            //TODO: post and short wall
-
-            if (canConnect(getSide(BlockFace.NORTH), BlockFace.SOUTH)) {
-                setNorthConnectionType(CONNECTION_TYPE_TALL);
-            } else {
-                setNorthConnectionType(CONNECTION_TYPE_NONE);
-            }
-            if (canConnect(getSide(BlockFace.SOUTH), BlockFace.NORTH)) {
-                setSouthConnectionType(CONNECTION_TYPE_TALL);
-            } else {
-                setSouthConnectionType(CONNECTION_TYPE_NONE);
-            }
-            if (canConnect(getSide(BlockFace.WEST), BlockFace.EAST)) {
-                setWestConnectionType(CONNECTION_TYPE_TALL);
-            } else {
-                setWestConnectionType(CONNECTION_TYPE_NONE);
-            }
-            if (canConnect(getSide(BlockFace.EAST), BlockFace.WEST)) {
-                setEastConnectionType(CONNECTION_TYPE_TALL);
-            } else {
-                setEastConnectionType(CONNECTION_TYPE_NONE);
-            }
+            recalculateConnections();
 
             if (oldMeta != getDamage()) {
                 level.setBlock(this, this, true);
@@ -129,6 +108,31 @@ public abstract class BlockWall extends BlockTransparentMeta {
         }
 
         return 0;
+    }
+
+    public void recalculateConnections() {
+        //TODO: post and short wall
+
+        if (canConnect(getSide(BlockFace.NORTH), BlockFace.SOUTH)) {
+            setNorthConnectionType(CONNECTION_TYPE_TALL);
+        } else {
+            setNorthConnectionType(CONNECTION_TYPE_NONE);
+        }
+        if (canConnect(getSide(BlockFace.SOUTH), BlockFace.NORTH)) {
+            setSouthConnectionType(CONNECTION_TYPE_TALL);
+        } else {
+            setSouthConnectionType(CONNECTION_TYPE_NONE);
+        }
+        if (canConnect(getSide(BlockFace.WEST), BlockFace.EAST)) {
+            setWestConnectionType(CONNECTION_TYPE_TALL);
+        } else {
+            setWestConnectionType(CONNECTION_TYPE_NONE);
+        }
+        if (canConnect(getSide(BlockFace.EAST), BlockFace.WEST)) {
+            setEastConnectionType(CONNECTION_TYPE_TALL);
+        } else {
+            setEastConnectionType(CONNECTION_TYPE_NONE);
+        }
     }
 
     public boolean isPost() {

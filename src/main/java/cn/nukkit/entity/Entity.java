@@ -30,7 +30,6 @@ import cn.nukkit.nbt.tag.ListTag;
 import cn.nukkit.network.protocol.*;
 import cn.nukkit.plugin.Plugin;
 import cn.nukkit.potion.Effect;
-import cn.nukkit.potion.EffectID;
 import cn.nukkit.utils.ChunkException;
 import com.google.common.collect.Iterables;
 import it.unimi.dsi.fastutil.ints.Int2ObjectMap;
@@ -843,6 +842,10 @@ public abstract class Entity extends Location implements Metadatable, EntityData
     }
 
     public static boolean registerEntity(String identifier, String name, Class<? extends Entity> clazz, EntityFactory factory, boolean force) {
+        return registerEntity(identifier, identifier, name, clazz, factory, force);
+    }
+
+    static boolean registerEntity(String identifier, String shortName, String name, Class<? extends Entity> clazz, EntityFactory factory, boolean force) {
         if (clazz == null) {
             return false;
         }
@@ -859,8 +862,9 @@ public abstract class Entity extends Location implements Metadatable, EntityData
             entityType = -1;
         }
 
-        EntityEntry entry = new EntityEntry(clazz, entityType, identifier, name, factory);
+        EntityEntry entry = new EntityEntry(clazz, entityType, identifier, shortName, name, factory);
         BY_NAME.put(name, entry);
+        BY_NAME.put(shortName, entry);
         BY_NAME.put(identifier, entry);
         BY_CLASS.put(clazz, entry);
         if (entityType != -1) {
@@ -1032,6 +1036,14 @@ public abstract class Entity extends Location implements Metadatable, EntityData
             return ":";
         }
         return entry.identifier;
+    }
+
+    public String getShortIdentifier() {
+        EntityEntry entry = BY_CLASS.get(this.getClass());
+        if (entry == null) {
+            return ":";
+        }
+        return entry.shortName;
     }
 
     public final String getSaveId() {
@@ -2665,6 +2677,7 @@ public abstract class Entity extends Location implements Metadatable, EntityData
         Class<? extends Entity> clazz;
         int type;
         String identifier;
+        String shortName;
         String name;
         EntityFactory factory;
     }

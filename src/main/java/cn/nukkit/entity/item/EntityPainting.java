@@ -2,13 +2,13 @@ package cn.nukkit.entity.item;
 
 import cn.nukkit.Player;
 import cn.nukkit.block.Block;
+import cn.nukkit.block.BlockPlanks;
 import cn.nukkit.blockentity.BlockEntityPistonArm;
 import cn.nukkit.entity.Entity;
 import cn.nukkit.entity.EntityHanging;
 import cn.nukkit.entity.EntityID;
 import cn.nukkit.item.Item;
 import cn.nukkit.level.GameRule;
-import cn.nukkit.level.GlobalBlockPalette;
 import cn.nukkit.level.format.FullChunk;
 import cn.nukkit.math.BlockFace;
 import cn.nukkit.math.BlockVector3;
@@ -229,11 +229,11 @@ public class EntityPainting extends EntityHanging {
         sizeY *= 0.5f;
         sizeZ *= 0.5f;
 
-        this.boundingBox.setBounds(this.x - sizeX, this.y - sizeY, this.z - sizeZ, this.x + sizeX, this.y + sizeY, this.z + sizeZ);
+        this.boundingBox.setBounds(this.x - sizeX + (1f / 16 * 0.5 * 0.5), this.y - sizeY + (1f / 16 * 0.5 * 0.5), this.z - sizeZ + (1f / 16 * 0.5 * 0.5), this.x + sizeX - (1f / 16 * 0.5 * 0.5), this.y + sizeY - (1f / 16 * 0.5 * 0.5), this.z + sizeZ - (1f / 16 * 0.5 * 0.5));
     }
 
     @Override
-    protected boolean isSurfaceValid() {
+    public boolean isSurfaceValid() {
         int minX = Mth.floor(this.boundingBox.getMinX());
         int minY = Mth.floor(this.boundingBox.getMinY());
         int minZ = Mth.floor(this.boundingBox.getMinZ());
@@ -299,7 +299,7 @@ public class EntityPainting extends EntityHanging {
     @Override
     protected void dropItem(Entity entity) {
         this.level.addLevelEvent(this, LevelEventPacket.EVENT_SOUND_ITEM_FRAME_REMOVED);
-        this.level.addLevelEvent(this, LevelEventPacket.EVENT_PARTICLE_DESTROY_BLOCK_NO_SOUND, GlobalBlockPalette.getOrCreateRuntimeId(Block.PLANKS, 0));
+        this.level.addLevelEvent(this, LevelEventPacket.EVENT_PARTICLE_DESTROY_BLOCK_NO_SOUND, Block.getFullId(Block.PLANKS, BlockPlanks.OAK));
 
         if (!this.level.getGameRules().getBoolean(GameRule.DO_ENTITY_DROPS)) {
             return;

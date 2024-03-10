@@ -207,7 +207,36 @@ public interface FullChunk extends Cloneable {
 
     HeightRange getHeightRange();
 
+    /**
+     * Upgrade wall states to 1.16+ (connected walls)
+     */
+    default void fixWalls() {
+        fixBlocks(true, false, false);
+    }
+
+    /**
+     * Remove invalid extra blocks.
+     */
+    default void fixBlockLayers() {
+        fixBlocks(false, true, false);
+    }
+
+    /**
+     * Remove invalid block entities and create missing block entities.
+     */
     default void fixCorruptedBlockEntities() {
+        fixBlocks(false, false, true);
+    }
+
+    default void fixBlocks() {
+        fixBlocks(true, true, true);
+    }
+
+    default void fixBlocks(boolean fixWalls, boolean fixBlockLayers, boolean fixBlockEntities) {
+        fixBlocks(fixWalls, fixBlockLayers, fixBlockEntities, false);
+    }
+
+    default void fixBlocks(boolean fixWalls, boolean fixBlockLayers, boolean fixBlockEntities, boolean emptyContainers) {
     }
 
     default boolean fixInvalidBiome() {

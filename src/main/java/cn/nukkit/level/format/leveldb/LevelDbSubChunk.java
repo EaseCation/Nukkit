@@ -337,6 +337,7 @@ public class LevelDbSubChunk implements ChunkSection {
         return this.isEmpty(true);
     }
 
+    @Override
     public boolean isEmpty(boolean fast) {
         try {
             this.readLock.lock();

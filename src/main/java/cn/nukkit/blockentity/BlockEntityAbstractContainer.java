@@ -127,8 +127,4 @@ public abstract class BlockEntityAbstractContainer extends BlockEntitySpawnable 
             items.add(NBTIO.putItemHelper(item, index));
         }
     }
-
-    public Inventory getRealInventory() {
-        return getInventory();
-    }
 }

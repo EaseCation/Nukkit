@@ -188,7 +188,7 @@ public final class Entities {
     }
 
     private static Class<? extends Entity> registerEntity(int typeId, String identifier, String name, Class<? extends Entity> clazz, EntityFactory factory, boolean force) {
-        if (!Entity.registerEntity(identifier, name, clazz, factory, force)) {
+        if (!Entity.registerEntity("minecraft:" + identifier, identifier, name, clazz, factory, force)) {
             return null;
         }
         TYPE_TO_IDENTIFIER[typeId] = identifier;

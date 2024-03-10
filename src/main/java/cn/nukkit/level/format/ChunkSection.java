@@ -51,6 +51,10 @@ public interface ChunkSection {
 
     boolean isEmpty();
 
+    default boolean isEmpty(boolean fast) {
+        return isEmpty();
+    }
+
     boolean hasLayer(int layer);
 
     @Deprecated

@@ -3,13 +3,17 @@ package cn.nukkit.level.format.generic;
 import cn.nukkit.Player;
 import cn.nukkit.block.Block;
 import cn.nukkit.block.BlockID;
+import cn.nukkit.block.BlockWall;
 import cn.nukkit.blockentity.BlockEntities;
 import cn.nukkit.blockentity.BlockEntity;
 import cn.nukkit.entity.Entity;
+import cn.nukkit.inventory.Inventory;
+import cn.nukkit.inventory.InventoryHolder;
 import cn.nukkit.level.ChunkManager;
 import cn.nukkit.level.HeightRange;
 import cn.nukkit.level.Level;
 import cn.nukkit.level.biome.Biome;
+import cn.nukkit.level.format.ChunkSection;
 import cn.nukkit.level.format.FullChunk;
 import cn.nukkit.level.format.LevelProvider;
 import cn.nukkit.level.util.PalettedSubChunkStorage;
@@ -588,8 +592,11 @@ public abstract class BaseFullChunk implements FullChunk, ChunkManager {
         return false;
     }
 
-    @Override
-    public void fixCorruptedBlockEntities() {
+    private void removeInvalidBlockEntities(Level level) {
+        if (this.tiles == null) {
+            return;
+        }
+
         Collection<BlockEntity> blockEntities = new ObjectArrayList<>(this.tiles.values());
         Iterator<BlockEntity> iter = blockEntities.iterator();
         while (iter.hasNext()) {
@@ -598,14 +605,14 @@ public abstract class BaseFullChunk implements FullChunk, ChunkManager {
             if (blockEntity.getChunkX() != this.getX() || blockEntity.getChunkZ() != this.getZ()) {
                 blockEntity.close();
                 iter.remove();
-                log.debug("Removed an invalid (pos) BlockEntity: {} ({})", blockEntity, blockEntity.getSaveId());
+                log.debug("Removed an invalid (pos) BlockEntity: {} ({}) {}", blockEntity, blockEntity.getSaveId(), level.getFolderName());
                 continue;
             }
 
             if (!blockEntity.isBlockEntityValid()) {
                 blockEntity.close();
                 iter.remove();
-                log.debug("Removed an invalid (block) BlockEntity: {} ({})", blockEntity, blockEntity.getSaveId());
+                log.debug("Removed an invalid (block) BlockEntity: {} ({}) {}", blockEntity, blockEntity.getSaveId(), level.getFolderName());
                 continue;
             }
 
@@ -619,38 +626,110 @@ public abstract class BaseFullChunk implements FullChunk, ChunkManager {
 
                 blockEntity.close();
                 iter.remove();
-                log.debug("Removed an duplicate BlockEntity: {} ({})", blockEntity, blockEntity.getSaveId());
+                log.debug("Removed an duplicate BlockEntity: {} ({}) {}", blockEntity, blockEntity.getSaveId(), level.getFolderName());
                 break;
             }
         }
+    }
 
+    @Override
+    public void fixBlocks(boolean fixWalls, boolean fixBlockLayers, boolean fixBlockEntities, boolean emptyContainers) {
+        boolean blockEntityOp = fixBlockEntities || emptyContainers;
+        Level level = provider.getLevel();
+
+        if (fixBlockEntities) {
+            removeInvalidBlockEntities(level);
+        }
+
+        ChunkSection[] sections = this instanceof BaseChunk chunk ? chunk.sections : null;
         HeightRange heightRange = getHeightRange();
-        for (int y = heightRange.getMinY(); y < heightRange.getMaxY(); y++) {
-            for (int x = 0; x < 16; x++) {
-                for (int z = 0; z < 16; z++) {
-                    int fullId = this.getFullBlock(0, x, y, z);
-                    Block block = Block.fromFullId(fullId);
-                    int type = block.getBlockEntityType();
-                    if (type == 0) {
-                        continue;
-                    }
+        int minWorldX = x << 4;
+        int minWorldZ = z << 4;
+        for (int chunkY = heightRange.getMinChunkY(); chunkY < heightRange.getMaxChunkY(); chunkY++) {
+            if (sections != null && sections[Level.subChunkYtoIndex(chunkY)].isEmpty(false)) {
+                continue;
+            }
 
-                    BlockEntity blockEntity = this.getTile(x, y, z);
-                    if (blockEntity == null) {
-                        String id = BlockEntities.getIdByType(type);
-                        if (id == null) {
-                            log.warn("Unregistered BlockEntity type: {} at {}, {}, {} ({}:{})", type, x, y, z, block.getId(), block.getDamage());
+            int minWorldY = chunkY << 4;
+            for (int y = 0; y < 16; y++) {
+                int worldY = minWorldY | y;
+                for (int x = 0; x < 16; x++) {
+                    for (int z = 0; z < 16; z++) {
+                        int worldX = minWorldX | x;
+                        int worldZ = minWorldZ | z;
+
+                        Block block = Block.get(this.getFullBlock(0, x, worldY, z), level, worldX, worldY, worldZ);
+
+                        if (fixBlockLayers) {
+                            Block extra = Block.get(this.getFullBlock(1, x, worldY, z), level, worldX, worldY, worldZ);
+                            if (!extra.isAir()) {
+                                if (block.isAir()) {
+                                    this.setBlock(1, x, worldY, z, Block.AIR);
+                                    log.debug("Removed empty extra block: {}, {}, {} ({}:{}) {}", worldX, worldY, worldZ, extra.getId(), extra.getDamage(), level.getFolderName());
+                                } else if (extra.isWater()) {
+                                    if (!block.canContainWater() || !block.canContainFlowingWater() && !extra.isWaterSource() || block.isLiquid()) {
+                                        this.setBlock(1, x, worldY, z, Block.AIR);
+                                        log.debug("Removed invalid waterlogged block: {}, {}, {} (water {}:{}, block {}:{}) {}", worldX, worldY, worldZ, extra.getId(), extra.getDamage(), block.getId(), block.getDamage(), level.getFolderName());
+                                    }
+                                } else if (block.is(Block.SNOW_LAYER)) {
+                                    if (!extra.canContainSnow()) {
+//                                        this.setBlock(0, x, worldY, z, extra.getId(), extra.getDamage());
+                                        this.setBlock(1, x, worldY, z, Block.AIR);
+                                        log.debug("Removed invalid snowlogged block: {}, {}, {} ({}:{}) {}", worldX, worldY, worldZ, extra.getId(), extra.getDamage(), level.getFolderName());
+                                    }
+                                } else {
+                                    this.setBlock(1, x, worldY, z, Block.AIR);
+                                    log.debug("Removed unknown extra block: {}, {}, {} ({}:{}) {}", worldX, worldY, worldZ, extra.getId(), extra.getDamage(), level.getFolderName());
+                                }
+                            }
+                        }
+
+                        if (fixWalls && block instanceof BlockWall wall) {
+                            int oldMeta = block.getDamage();
+                            wall.recalculateConnections();
+                            int newMeta = block.getDamage();
+                            if (oldMeta != newMeta) {
+                                this.setBlock(0, x, worldY, z, block.getId(), newMeta);
+                            }
                             continue;
                         }
 
-                        blockEntity = BlockEntity.createBlockEntity(id, this, BlockEntity.getDefaultCompound(x, y, z, id));
+                        if (!blockEntityOp) {
+                            continue;
+                        }
 
+                        int type = block.getBlockEntityType();
+                        if (type == 0) {
+                            continue;
+                        }
+
+                        BlockEntity blockEntity = this.getTile(x, worldY, z);
                         if (blockEntity == null) {
-                            log.warn("Failed to create BlockEntity: {}, {}, {} ({}:{})", x, y, z, block.getId(), block.getDamage());
+                            String id = BlockEntities.getIdByType(type);
+                            if (id == null) {
+                                log.warn("Unregistered BlockEntity type: {} at {}, {}, {} ({}:{}) {}", type, worldX, worldY, worldZ, block.getId(), block.getDamage(), level.getFolderName());
+                                continue;
+                            }
+
+                            blockEntity = BlockEntity.createBlockEntity(id, this, BlockEntity.getDefaultCompound(worldX, worldY, worldZ, id));
+
+                            if (blockEntity == null) {
+                                log.warn("Failed to create BlockEntity: {}, {}, {} ({}:{}) {}", worldX, worldY, worldZ, block.getId(), block.getDamage(), level.getFolderName());
+                                continue;
+                            }
+
+                            log.debug("Created a missing BlockEntity: {}, {}, {} ({}) {}", worldX, worldY, worldZ, blockEntity.getSaveId(), level.getFolderName());
                             continue;
                         }
 
-                        log.debug("Created a missing BlockEntity: {}, {}, {} ({})", x, y, z, blockEntity.getSaveId());
+                        if (!emptyContainers || !(blockEntity instanceof InventoryHolder container)) {
+                            continue;
+                        }
+
+                        Inventory inventory = container.getRealInventory();
+                        if (inventory != null) {
+                            inventory.clearAll();
+                        }
                     }
                 }
             }
