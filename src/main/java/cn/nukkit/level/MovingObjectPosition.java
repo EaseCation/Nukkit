@@ -64,7 +64,7 @@ public class MovingObjectPosition {
 
     public static MovingObjectPosition fromBlock(Block block, int side, Vector3 hitVector) {
         MovingObjectPosition objectPosition = new MovingObjectPosition();
-        objectPosition.typeOfHit = TYPE_ENTITY;
+        objectPosition.typeOfHit = TYPE_BLOCK;
         objectPosition.block = block;
         objectPosition.blockX = block.getFloorX();
         objectPosition.blockY = block.getFloorY();
