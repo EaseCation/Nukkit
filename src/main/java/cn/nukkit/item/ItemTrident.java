@@ -70,6 +70,7 @@ public class ItemTrident extends ItemTool {
         CompoundTag nbt = Entity.getDefaultNBT(player.getEyePosition(), dir, (float) dir.yRotFromDirection(), (float) dir.xRotFromDirection());
 
         EntityThrownTrident trident = new EntityThrownTrident(player.getChunk(), nbt, player);
+        trident.setFavoredSlot(player.getInventory().getHeldItemIndex());
         trident.setItem(this);
 
         double p = (double) ticksUsed / 20;
@@ -91,13 +92,9 @@ public class ItemTrident extends ItemTool {
             if (ev.isCancelled()) {
                 entityShootBowEvent.getProjectile().close();
             } else {
-                Enchantment loyaltyEnchant = this.getEnchantment(Enchantment.LOYALTY);
-                boolean loyalty = loyaltyEnchant != null && loyaltyEnchant.getLevel() > 0;
                 EntityProjectile projectile = entityShootBowEvent.getProjectile();
                 if (player.isCreative() && projectile instanceof EntityThrownTrident) {
                     ((EntityThrownTrident) projectile).setPickupMode(EntityThrownTrident.PICKUP_CREATIVE);
-                } else if (loyalty && projectile instanceof EntityThrownTrident) {
-                    ((EntityThrownTrident) projectile).setPickupMode(EntityThrownTrident.PICKUP_NONE);
                 }
                 projectile.spawnToAll();
                 player.getLevel().addLevelSoundEvent(player, LevelSoundEventPacket.SOUND_ITEM_TRIDENT_THROW);

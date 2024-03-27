@@ -36,6 +36,10 @@ public class SimpleAxisAlignedBB implements AxisAlignedBB {
         return "AxisAlignedBB(" + this.getMinX() + ", " + this.getMinY() + ", " + this.getMinZ() + ", " + this.getMaxX() + ", " + this.getMaxY() + ", " + this.getMaxZ() + ")";
     }
 
+    public String toShortString() {
+        return this.getMinX() + "," + this.getMinY() + "," + this.getMinZ() + "," + this.getMaxX() + "," + this.getMaxY() + "," + this.getMaxZ();
+    }
+
     public String debugText() {
         return "(" + NukkitMath.round(getMinX(), 2) + "," + NukkitMath.round(getMinY(), 2) + "," + NukkitMath.round(getMinZ(), 2) + "," + NukkitMath.round(getMaxX(), 2) + "," + NukkitMath.round(getMaxY(), 2) + "," + NukkitMath.round(getMaxZ(), 2) + ")";
     }
@@ -101,7 +105,38 @@ public class SimpleAxisAlignedBB implements AxisAlignedBB {
     }
 
     @Override
-    public AxisAlignedBB clone() {
-        return new SimpleAxisAlignedBB(minX, minY, minZ, maxX, maxY, maxZ);
+    public SimpleAxisAlignedBB clone() {
+        try {
+            return (SimpleAxisAlignedBB) super.clone();
+        } catch (CloneNotSupportedException e) {
+            return null;
+        }
+    }
+
+    @Override
+    public boolean equals(Object obj) {
+        if (this == obj) {
+            return true;
+        }
+        if (!(obj instanceof SimpleAxisAlignedBB that)) {
+            return false;
+        }
+        return Double.compare(that.minX, this.minX) == 0
+                && Double.compare(that.minY, this.minY) == 0
+                && Double.compare(that.minZ, this.minZ) == 0
+                && Double.compare(that.maxX, this.maxX) == 0
+                && Double.compare(that.maxY, this.maxY) == 0
+                && Double.compare(that.maxZ, this.maxZ) == 0;
+    }
+
+    @Override
+    public int hashCode() {
+        int hash = Double.hashCode(this.minX);
+        hash = 31 * hash + Double.hashCode(this.minY);
+        hash = 31 * hash + Double.hashCode(this.minZ);
+        hash = 31 * hash + Double.hashCode(this.maxX);
+        hash = 31 * hash + Double.hashCode(this.maxY);
+        hash = 31 * hash + Double.hashCode(this.maxZ);
+        return hash;
     }
 }

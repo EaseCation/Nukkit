@@ -1,15 +1,13 @@
 package cn.nukkit.block;
 
-import cn.nukkit.item.ItemTool;
-
 public abstract class BlockPlanksAbstract extends BlockSolid {
     @Override
-    public double getHardness() {
+    public float getHardness() {
         return 2;
     }
 
     @Override
-    public double getResistance() {
+    public float getResistance() {
         return 15;
     }
 
@@ -25,6 +23,6 @@ public abstract class BlockPlanksAbstract extends BlockSolid {
 
     @Override
     public int getToolType() {
-        return ItemTool.TYPE_AXE;
+        return BlockToolType.AXE;
     }
 }

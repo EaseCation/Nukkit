@@ -3,7 +3,6 @@ package cn.nukkit.block;
 import cn.nukkit.Player;
 import cn.nukkit.item.Item;
 import cn.nukkit.level.Level;
-import cn.nukkit.math.AxisAlignedBB;
 import cn.nukkit.math.BlockFace;
 import cn.nukkit.math.BlockFace.Plane;
 import cn.nukkit.utils.BlockColor;
@@ -82,7 +81,7 @@ public class BlockCoral extends BlockFlowable {
     }
 
     @Override
-    public Item[] getDrops(Item item) {
+    public Item[] getDrops(Item item, Player player) {
         return new Item[0];
     }
 

@@ -1,5 +1,7 @@
 package cn.nukkit.item;
 
+import cn.nukkit.block.BlockToolType;
+
 public class ItemSwordNetherite extends ItemTool {
 
     public ItemSwordNetherite() {
@@ -17,6 +19,11 @@ public class ItemSwordNetherite extends ItemTool {
     @Override
     public boolean isSword() {
         return true;
+    }
+
+    @Override
+    public int getBlockToolType() {
+        return BlockToolType.SWORD;
     }
 
     @Override

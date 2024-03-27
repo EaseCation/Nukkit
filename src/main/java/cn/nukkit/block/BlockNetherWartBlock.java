@@ -1,7 +1,7 @@
 package cn.nukkit.block;
 
+import cn.nukkit.Player;
 import cn.nukkit.item.Item;
-import cn.nukkit.item.ItemTool;
 import cn.nukkit.utils.BlockColor;
 
 public class BlockNetherWartBlock extends BlockSolid {
@@ -20,22 +20,22 @@ public class BlockNetherWartBlock extends BlockSolid {
     }
 
     @Override
-    public double getResistance() {
+    public float getResistance() {
         return 5;
     }
 
     @Override
-    public double getHardness() {
+    public float getHardness() {
         return 1;
     }
 
     @Override
     public int getToolType() {
-        return ItemTool.TYPE_HOE;
+        return BlockToolType.HOE;
     }
 
     @Override
-    public Item[] getDrops(Item item) {
+    public Item[] getDrops(Item item, Player player) {
         return new Item[]{
                 toItem(true)
         };

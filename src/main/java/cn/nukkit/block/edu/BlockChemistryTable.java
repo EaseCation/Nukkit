@@ -3,12 +3,12 @@ package cn.nukkit.block.edu;
 import cn.nukkit.Player;
 import cn.nukkit.block.Block;
 import cn.nukkit.block.BlockSolidMeta;
+import cn.nukkit.block.BlockToolType;
 import cn.nukkit.blockentity.BlockEntities;
 import cn.nukkit.blockentity.BlockEntity;
 import cn.nukkit.blockentity.BlockEntityChemistryTable;
 import cn.nukkit.blockentity.BlockEntityType;
 import cn.nukkit.item.Item;
-import cn.nukkit.item.ItemTool;
 import cn.nukkit.math.BlockFace;
 import cn.nukkit.nbt.tag.CompoundTag;
 
@@ -56,17 +56,17 @@ public class BlockChemistryTable extends BlockSolidMeta {
 
     @Override
     public int getToolType() {
-        return ItemTool.TYPE_PICKAXE;
+        return BlockToolType.PICKAXE;
     }
 
     @Override
-    public double getHardness() {
-        return 2.5;
+    public float getHardness() {
+        return 2.5f;
     }
 
     @Override
-    public double getResistance() {
-        return 12.5;
+    public float getResistance() {
+        return 12.5f;
     }
 
     @Override

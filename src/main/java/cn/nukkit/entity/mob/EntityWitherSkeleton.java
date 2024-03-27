@@ -6,6 +6,7 @@ import cn.nukkit.entity.EntitySmite;
 import cn.nukkit.item.Item;
 import cn.nukkit.level.format.FullChunk;
 import cn.nukkit.nbt.tag.CompoundTag;
+import cn.nukkit.potion.Effect;
 
 import java.util.concurrent.ThreadLocalRandom;
 
@@ -69,5 +70,13 @@ public class EntityWitherSkeleton extends EntityMob implements EntitySmite {
     @Override
     public float getRidingOffset() {
         return -0.5f;
+    }
+
+    @Override
+    public boolean canBeAffected(int effectId) {
+        if (effectId == Effect.WITHER) {
+            return false;
+        }
+        return super.canBeAffected(effectId);
     }
 }

@@ -1,5 +1,7 @@
 package cn.nukkit.item;
 
+import cn.nukkit.block.BlockToolType;
+
 /**
  * author: MagicDroidX
  * Nukkit Project
@@ -26,6 +28,11 @@ public class ItemHoeGold extends ItemTool {
     @Override
     public boolean isHoe() {
         return true;
+    }
+
+    @Override
+    public int getBlockToolType() {
+        return BlockToolType.HOE;
     }
 
     @Override

@@ -1,5 +1,7 @@
 package cn.nukkit.item;
 
+import cn.nukkit.block.BlockToolType;
+
 /**
  * author: MagicDroidX
  * Nukkit Project
@@ -26,6 +28,11 @@ public class ItemSwordIron extends ItemTool {
     @Override
     public boolean isSword() {
         return true;
+    }
+
+    @Override
+    public int getBlockToolType() {
+        return BlockToolType.SWORD;
     }
 
     @Override

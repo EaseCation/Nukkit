@@ -4,7 +4,6 @@ import cn.nukkit.Player;
 import cn.nukkit.event.block.BlockRedstoneEvent;
 import cn.nukkit.event.block.DoorToggleEvent;
 import cn.nukkit.item.Item;
-import cn.nukkit.item.ItemTool;
 import cn.nukkit.level.Level;
 import cn.nukkit.math.AxisAlignedBB;
 import cn.nukkit.math.BlockFace;
@@ -41,12 +40,12 @@ public class BlockTrapdoor extends BlockTransparentMeta implements Faceable {
     }
 
     @Override
-    public double getHardness() {
+    public float getHardness() {
         return 3;
     }
 
     @Override
-    public double getResistance() {
+    public float getResistance() {
         return 15;
     }
 
@@ -57,7 +56,7 @@ public class BlockTrapdoor extends BlockTransparentMeta implements Faceable {
 
     @Override
     public int getToolType() {
-        return ItemTool.TYPE_AXE;
+        return BlockToolType.AXE;
     }
 
     private static final AxisAlignedBB[] boundingBoxDamage = new AxisAlignedBB[16];

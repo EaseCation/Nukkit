@@ -1,9 +1,8 @@
 package cn.nukkit.block;
 
+import cn.nukkit.Player;
 import cn.nukkit.entity.Entity;
 import cn.nukkit.item.Item;
-import cn.nukkit.item.ItemTool;
-import cn.nukkit.math.BlockFace;
 import cn.nukkit.utils.BlockColor;
 
 /**
@@ -30,18 +29,18 @@ public class BlockCobweb extends BlockFlowable {
     }
 
     @Override
-    public double getHardness() {
+    public float getHardness() {
         return 4;
     }
 
     @Override
-    public double getResistance() {
+    public float getResistance() {
         return 20;
     }
 
     @Override
     public int getToolType() {
-        return ItemTool.TYPE_SWORD;
+        return BlockToolType.SWORD | BlockToolType.SHEARS;
     }
 
     @Override
@@ -55,7 +54,7 @@ public class BlockCobweb extends BlockFlowable {
     }
 
     @Override
-    public Item[] getDrops(Item item) {
+    public Item[] getDrops(Item item, Player player) {
         if (item.isShears()) {
             return new Item[]{
                     this.toItem(true)

@@ -658,9 +658,9 @@ public class Server {
     }
 
     public static void broadcastPacket(Collection<Player> players, DataPacket packet) {
-        if (players.size() > 1) {
-            packet.tryEncode();
-        }
+//        if (players.size() > 1) {
+//            packet.tryEncode();
+//        }
 
         for (Player player : players) {
             player.dataPacket(packet);
@@ -668,9 +668,9 @@ public class Server {
     }
 
     public static void broadcastPacket(Player[] players, DataPacket packet) {
-        if (players.length > 1) {
-            packet.tryEncode();
-        }
+//        if (players.length > 1) {
+//            packet.tryEncode();
+//        }
 
         for (Player player : players) {
             player.dataPacket(packet);

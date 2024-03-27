@@ -1,5 +1,7 @@
 package cn.nukkit.item;
 
+import cn.nukkit.block.BlockToolType;
+
 public class ItemPickaxeNetherite extends ItemTool {
 
     public ItemPickaxeNetherite() {
@@ -17,6 +19,11 @@ public class ItemPickaxeNetherite extends ItemTool {
     @Override
     public boolean isPickaxe() {
         return true;
+    }
+
+    @Override
+    public int getBlockToolType() {
+        return BlockToolType.PICKAXE;
     }
 
     @Override

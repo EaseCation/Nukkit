@@ -1,5 +1,6 @@
 package cn.nukkit.block;
 
+import cn.nukkit.Player;
 import cn.nukkit.item.Item;
 import cn.nukkit.item.ItemTool;
 import cn.nukkit.item.enchantment.Enchantment;
@@ -24,22 +25,27 @@ public class BlockDeepslateInfested extends BlockDeepslate {
     }
 
     @Override
-    public double getHardness() {
-        return 1.5;
+    public float getHardness() {
+        return 1.5f;
     }
 
     @Override
-    public double getResistance() {
-        return 3.75;
+    public float getResistance() {
+        return 3.75f;
     }
 
     @Override
-    public Item[] getDrops(Item item) {
+    public Item[] getDrops(Item item, Player player) {
         if (item.isPickaxe() && item.getTier() >= ItemTool.TIER_WOODEN && item.hasEnchantment(Enchantment.SILK_TOUCH)) {
             return new Item[]{
                     Item.get(getItemId(DEEPSLATE)),
             };
         }
         return new Item[0];
+    }
+
+    @Override
+    public boolean canHarvestWithHand() {
+        return true;
     }
 }

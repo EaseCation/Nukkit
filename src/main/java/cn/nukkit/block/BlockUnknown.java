@@ -1,5 +1,7 @@
 package cn.nukkit.block;
 
+import cn.nukkit.item.Item;
+
 /**
  * author: MagicDroidX
  * Nukkit Project
@@ -25,5 +27,10 @@ public class BlockUnknown extends BlockMeta {
     @Override
     public String getName() {
         return "Missing";
+    }
+
+    @Override
+    public Item toItem() {
+        return Item.get(Item.AIR);
     }
 }

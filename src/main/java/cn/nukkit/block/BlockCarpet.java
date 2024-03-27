@@ -31,13 +31,13 @@ public class BlockCarpet extends BlockFlowable {
     }
 
     @Override
-    public double getHardness() {
-        return 0.1;
+    public float getHardness() {
+        return 0.1f;
     }
 
     @Override
-    public double getResistance() {
-        return 0.5;
+    public float getResistance() {
+        return 0.5f;
     }
 
     @Override

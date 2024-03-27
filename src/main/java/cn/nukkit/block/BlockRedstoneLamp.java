@@ -3,7 +3,6 @@ package cn.nukkit.block;
 import cn.nukkit.Player;
 import cn.nukkit.event.redstone.RedstoneUpdateEvent;
 import cn.nukkit.item.Item;
-import cn.nukkit.item.ItemTool;
 import cn.nukkit.level.Level;
 import cn.nukkit.math.BlockFace;
 import cn.nukkit.utils.BlockColor;
@@ -27,18 +26,13 @@ public class BlockRedstoneLamp extends BlockSolid {
     }
 
     @Override
-    public double getHardness() {
-        return 0.3D;
+    public float getHardness() {
+        return 0.3f;
     }
 
     @Override
-    public double getResistance() {
-        return 1.5D;
-    }
-
-    @Override
-    public int getToolType() {
-        return ItemTool.TYPE_PICKAXE;
+    public float getResistance() {
+        return 1.5f;
     }
 
     @Override
@@ -73,7 +67,7 @@ public class BlockRedstoneLamp extends BlockSolid {
     }
 
     @Override
-    public Item[] getDrops(Item item) {
+    public Item[] getDrops(Item item, Player player) {
         return new Item[]{
                 Item.get(REDSTONE_LAMP)
         };

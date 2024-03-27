@@ -94,7 +94,17 @@ public class ParticleCommand extends VanillaCommand {
         Particle particle = this.getParticle(name, position, data);
 
         if (particle == null) {
-            position.level.addParticleEffect(position.asVector3f(), args[0], -1, position.level.getDimension().ordinal());
+            long eid = -1;
+            if (args.length > 5) {
+                try {
+                    eid = Long.parseLong(args[5]);
+                } catch (Exception ignored) {
+                }
+            }
+
+            for (int i = 0; i < count; i++) {
+                position.level.addParticleEffect(position, args[0], eid, args.length > 6 ? args[6] : null);
+            }
             return true;
         }
 

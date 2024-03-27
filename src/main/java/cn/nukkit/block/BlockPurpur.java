@@ -46,18 +46,18 @@ public class BlockPurpur extends BlockSolidMeta {
     }
 
     @Override
-    public double getHardness() {
-        return 1.5;
+    public float getHardness() {
+        return 1.5f;
     }
 
     @Override
-    public double getResistance() {
+    public float getResistance() {
         return 30;
     }
 
     @Override
     public int getToolType() {
-        return ItemTool.TYPE_PICKAXE;
+        return BlockToolType.PICKAXE;
     }
 
     @Override
@@ -71,7 +71,7 @@ public class BlockPurpur extends BlockSolidMeta {
     }
 
     @Override
-    public Item[] getDrops(Item item) {
+    public Item[] getDrops(Item item, Player player) {
         if (item.isPickaxe() && item.getTier() >= ItemTool.TIER_WOODEN) {
             return new Item[]{
                     toItem(true)

@@ -79,13 +79,14 @@ public class PlaySoundCommand extends VanillaCommand {
             }
 
             double maxDistance = volume > 1 ? volume * 16 : 16;
+            double maxDistanceSq = maxDistance * maxDistance;
             List<String> successes = new ObjectArrayList<>();
 
             for (Player player : targets) {
                 String name = player.getName();
                 PlaySoundPacket packet = new PlaySoundPacket();
 
-                if (position.distance(player) > maxDistance) {
+                if (position.distanceSquared(player) > maxDistanceSq) {
                     if (minimumVolume <= 0) {
                         sender.sendMessage(String.format(TextFormat.RED + "Player %1$s is too far away to hear the sound", name));
                         break;

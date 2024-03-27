@@ -1,5 +1,6 @@
 package cn.nukkit.block.edu;
 
+import cn.nukkit.Player;
 import cn.nukkit.block.BlockGlassStained;
 import cn.nukkit.item.Item;
 
@@ -24,12 +25,12 @@ public class BlockGlassStainedHard extends BlockGlassStained {
     }
 
     @Override
-    public double getHardness() {
+    public float getHardness() {
         return 10;
     }
 
     @Override
-    public double getResistance() {
+    public float getResistance() {
         return 50;
     }
 
@@ -39,7 +40,7 @@ public class BlockGlassStainedHard extends BlockGlassStained {
     }
 
     @Override
-    public Item[] getDrops(Item item) {
+    public Item[] getDrops(Item item, Player player) {
         return new Item[]{
                 this.toItem(true)
         };

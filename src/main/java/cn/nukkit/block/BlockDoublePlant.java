@@ -102,7 +102,7 @@ public class BlockDoublePlant extends BlockFlowable {
     }
 
     @Override
-    public boolean onBreak(Item item) {
+    public boolean onBreak(Item item, Player player) {
         Block down = down();
 
         if ((this.getDamage() & TOP_HALF_BITMASK) == TOP_HALF_BITMASK) { // Top half
@@ -115,7 +115,7 @@ public class BlockDoublePlant extends BlockFlowable {
     }
 
     @Override
-    public Item[] getDrops(Item item) {
+    public Item[] getDrops(Item item, Player player) {
         if ((this.getDamage() & TOP_HALF_BITMASK) != TOP_HALF_BITMASK) {
             switch (this.getPlantType()) {
                 case TYPE_TALL_GRASS:

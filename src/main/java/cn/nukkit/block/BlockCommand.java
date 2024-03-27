@@ -42,12 +42,12 @@ public class BlockCommand extends BlockSolidMeta implements Faceable {
     }
 
     @Override
-    public double getHardness() {
+    public float getHardness() {
         return -1;
     }
 
     @Override
-    public double getResistance() {
+    public float getResistance() {
         return 18000000;
     }
 
@@ -129,6 +129,7 @@ public class BlockCommand extends BlockSolidMeta implements Faceable {
             return true;
         }
         //TODO: UI
+        //player.openBlockEditor(getFloorX(), getFloorY(), getFloorZ(), ContainerType.COMMAND_BLOCK);
         return true;
     }
 

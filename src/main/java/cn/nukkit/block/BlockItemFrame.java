@@ -105,14 +105,14 @@ public class BlockItemFrame extends BlockTransparentMeta implements Faceable {
     }
 
     @Override
-    public boolean onBreak(Item item) {
+    public boolean onBreak(Item item, Player player) {
         this.getLevel().setBlock(this, Block.get(BlockID.AIR), true, true);
         this.getLevel().addLevelEvent(this, LevelEventPacket.EVENT_SOUND_ITEM_FRAME_REMOVED);
         return true;
     }
 
     @Override
-    public Item[] getDrops(Item item) {
+    public Item[] getDrops(Item item, Player player) {
         BlockEntityItemFrame itemFrame = getBlockEntity();
         if (itemFrame != null && itemFrame.hasItem() && ThreadLocalRandom.current().nextFloat() <= itemFrame.getItemDropChance()) {
             return new Item[]{
@@ -161,13 +161,13 @@ public class BlockItemFrame extends BlockTransparentMeta implements Faceable {
     }
 
     @Override
-    public double getHardness() {
-        return 0.25;
+    public float getHardness() {
+        return 0.25f;
     }
 
     @Override
-    public double getResistance() {
-        return 1.25;
+    public float getResistance() {
+        return 1.25f;
     }
 
     @Override

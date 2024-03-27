@@ -150,7 +150,7 @@ public class EntityFishingHook extends EntityProjectile {
         boolean inWater = false;
 
         Vector3 moveVector = new Vector3(this.x + this.motionX, this.y + this.motionY, this.z + this.motionZ);
-        MovingObjectPosition blockHitResult = level.clip(copyVec(), moveVector, true, 200);
+        MovingObjectPosition blockHitResult = level.clip(copyVec(), moveVector, true, 200, canPassThroughBarrier());
         if (updateGravity) {
             if (blockHitResult != null) {
                 Vector3 hitPos = blockHitResult.hitVector;

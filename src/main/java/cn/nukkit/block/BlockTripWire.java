@@ -57,12 +57,12 @@ public class BlockTripWire extends BlockTransparentMeta {
     }
 
     @Override
-    public double getResistance() {
+    public float getResistance() {
         return 0;
     }
 
     @Override
-    public double getHardness() {
+    public float getHardness() {
         return 0;
     }
 
@@ -198,7 +198,7 @@ public class BlockTripWire extends BlockTransparentMeta {
     }
 
     @Override
-    public boolean onBreak(Item item) {
+    public boolean onBreak(Item item, Player player) {
         if (item.getId() == Item.SHEARS) {
             this.setDisarmed(true);
             this.level.setBlock(this, this, true, false);

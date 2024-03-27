@@ -7,7 +7,6 @@ import cn.nukkit.blockentity.BlockEntityBeehive;
 import cn.nukkit.blockentity.BlockEntityType;
 import cn.nukkit.item.Item;
 import cn.nukkit.item.ItemID;
-import cn.nukkit.item.ItemTool;
 import cn.nukkit.level.GameRule;
 import cn.nukkit.math.BlockFace;
 import cn.nukkit.math.Mth;
@@ -50,16 +49,16 @@ public class BlockBeehive extends BlockSolidMeta implements Faceable {
 
     @Override
     public int getToolType() {
-        return ItemTool.TYPE_AXE;
+        return BlockToolType.AXE;
     }
 
     @Override
-    public double getHardness() {
-        return 0.6;
+    public float getHardness() {
+        return 0.6f;
     }
 
     @Override
-    public double getResistance() {
+    public float getResistance() {
         return 3;
     }
 

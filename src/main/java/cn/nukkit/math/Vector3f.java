@@ -23,6 +23,24 @@ public class Vector3f implements Cloneable {
         this.z = z;
     }
 
+    public Vector3f(Vector3f vec) {
+        this.x = vec.x;
+        this.y = vec.y;
+        this.z = vec.z;
+    }
+
+    public Vector3f(Vector3 vec) {
+        this.x = (float) vec.x;
+        this.y = (float) vec.y;
+        this.z = (float) vec.z;
+    }
+
+    public Vector3f(BlockVector3 vec) {
+        this.x = vec.x;
+        this.y = vec.y;
+        this.z = vec.z;
+    }
+
     public float getX() {
         return this.x;
     }
@@ -180,7 +198,11 @@ public class Vector3f implements Cloneable {
     }
 
     public double distance(Vector3f pos) {
-        return Math.sqrt(this.distanceSquared(pos));
+        return distance(pos.x, pos.y, pos.z);
+    }
+
+    public double distance(float x, float y, float z) {
+        return Math.sqrt(this.distanceSquared(x, y, z));
     }
 
     public float distanceSquared(Vector3f pos) {
@@ -203,6 +225,40 @@ public class Vector3f implements Cloneable {
 
     public int distanceManhattan(int x, int y, int z) {
         return Math.abs(x - getFloorX()) + Math.abs(y - getFloorY()) + Math.abs(z - getFloorZ());
+    }
+
+    public double distance2(Vector3f pos) {
+        return distance2(pos.x, pos.z);
+    }
+
+    public double distance2(float x, float z) {
+        return Math.sqrt(this.distanceSquared2(x, z));
+    }
+
+    public double distance2(Vector2f pos) {
+        return distance2(pos.x, pos.y);
+    }
+
+    public float distanceSquared2(Vector3f pos) {
+        return distanceSquared2(pos.getFloorX(), pos.getFloorZ());
+    }
+
+    public float distanceSquared2(float x, float z) {
+        float xDiff = this.x - x;
+        float zDiff = this.z - z;
+        return xDiff * xDiff + zDiff * zDiff;
+    }
+
+    public float distanceSquared2(Vector2f pos) {
+        return distanceSquared2(pos.getFloorX(), pos.getFloorY());
+    }
+
+    public int distanceManhattan2(Vector3f pos) {
+        return distanceManhattan2(pos.getFloorX(), pos.getFloorZ());
+    }
+
+    public int distanceManhattan2(int x, int z) {
+        return Math.abs(x - getFloorX()) + Math.abs(z - getFloorZ());
     }
 
     public float maxPlainDistance() {
@@ -250,7 +306,23 @@ public class Vector3f implements Cloneable {
     }
 
     public float dot(Vector3f v) {
-        return this.x * v.x + this.y * v.y + this.z * v.z;
+        return this.dot(v.x, v.y, v.z);
+    }
+
+    public float dot(float x, float y, float z) {
+        return this.x * x + this.y * y + this.z * z;
+    }
+
+    public float dot2(Vector3f v) {
+        return this.dot2(v.x, v.z);
+    }
+
+    public float dot2(float x, float z) {
+        return this.x * x + this.z * z;
+    }
+
+    public float dot2(Vector2f v) {
+        return this.dot2(v.x, v.y);
     }
 
     public Vector3f cross(Vector3f v) {
@@ -401,6 +473,20 @@ public class Vector3f implements Cloneable {
         return this;
     }
 
+    public Vector3f setComponents(Vector3 other) {
+        this.x = (float) other.x;
+        this.y = (float) other.y;
+        this.z = (float) other.z;
+        return this;
+    }
+
+    public Vector3f setComponents(BlockVector3 other) {
+        this.x = other.x;
+        this.y = other.y;
+        this.z = other.z;
+        return this;
+    }
+
     public Vector3f xz() {
         return new Vector3f(this.x, 0, this.z);
     }
@@ -451,30 +537,45 @@ public class Vector3f implements Cloneable {
         return "Vector3(x=" + this.x + ",y=" + this.y + ",z=" + this.z + ")";
     }
 
+    public String toShortString() {
+        return this.x + "," + this.y + "," + this.z;
+    }
+
     public String debugText() {
         return "(" + NukkitMath.round(x, 2) + "," + NukkitMath.round(y, 2) + "," + NukkitMath.round(z, 2) + ")";
     }
 
     @Override
     public boolean equals(Object obj) {
+        if (obj == this) {
+            return true;
+        }
         if (!(obj instanceof Vector3f)) {
             return false;
         }
 
         Vector3f other = (Vector3f) obj;
 
-        return this.x == other.x && this.y == other.y && this.z == other.z;
+        return Float.compare(other.x, this.x) == 0
+                && Float.compare(other.y, this.y) == 0
+                && Float.compare(other.z, this.z) == 0;
     }
 
     public final boolean equalsVec(Vector3f vec) {
         if (vec == null) {
             return false;
         }
-        return this.x == vec.x && this.y == vec.y && this.z == vec.z;
+        return Float.compare(vec.x, this.x) == 0
+                && Float.compare(vec.y, this.y) == 0
+                && Float.compare(vec.z, this.z) == 0;
     }
 
-    public int rawHashCode() {
-        return super.hashCode();
+    @Override
+    public int hashCode() {
+        int hash = Float.hashCode(this.x);
+        hash = 31 * hash + Float.hashCode(this.y);
+        hash = 31 * hash + Float.hashCode(this.z);
+        return hash;
     }
 
     @Override

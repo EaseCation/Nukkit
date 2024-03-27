@@ -1,11 +1,13 @@
 package cn.nukkit.entity.mob;
 
 import cn.nukkit.Player;
+import cn.nukkit.entity.Entity;
 import cn.nukkit.entity.EntityID;
 import cn.nukkit.entity.EntitySmite;
 import cn.nukkit.event.entity.EntityDamageByEntityEvent;
 import cn.nukkit.item.Item;
 import cn.nukkit.level.format.FullChunk;
+import cn.nukkit.math.Vector3f;
 import cn.nukkit.nbt.tag.CompoundTag;
 
 import java.util.concurrent.ThreadLocalRandom;
@@ -68,6 +70,9 @@ public class EntityZombieVillagerV1 extends EntityMob implements EntitySmite {
 
     @Override
     public float getRidingOffset() {
+        if (getDataFlag(DATA_FLAG_BABY)) {
+            return super.getRidingOffset();
+        }
         return -0.5f;
     }
 
@@ -82,5 +87,10 @@ public class EntityZombieVillagerV1 extends EntityMob implements EntitySmite {
             return;
         }
         source.getEntity().setOnFire(2 * difficulty);
+    }
+
+    @Override
+    public Vector3f getMountedOffset(Entity entity) {
+        return new Vector3f(0, 1.1f + entity.getRidingOffset(), -0.35f);
     }
 }

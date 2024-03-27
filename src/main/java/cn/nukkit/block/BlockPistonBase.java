@@ -48,16 +48,16 @@ public abstract class BlockPistonBase extends BlockTransparentMeta implements Fa
     }
 
     @Override
-    public double getResistance() {
-        return 7.5;
+    public float getResistance() {
+        return 7.5f;
     }
 
     @Override
-    public double getHardness() {
+    public float getHardness() {
         if (V1_20_30.isAvailable()) {
-            return 1.5;
+            return 1.5f;
         }
-        return 0.5;
+        return 0.5f;
     }
 
     @Override
@@ -91,13 +91,13 @@ public abstract class BlockPistonBase extends BlockTransparentMeta implements Fa
     }
 
     @Override
-    public boolean onBreak(Item item) {
+    public boolean onBreak(Item item, Player player) {
         this.level.setBlock(this, Block.get(BlockID.AIR), true, true);
 
         Block block = this.getSide(getBlockFace());
 
         if (block instanceof BlockPistonHead && ((BlockPistonHead) block).getBlockFace() == this.getBlockFace()) {
-            block.onBreak(item);
+            block.onBreak(item, player);
         }
         return true;
     }
@@ -344,17 +344,21 @@ public abstract class BlockPistonBase extends BlockTransparentMeta implements Fa
             @Override
             public int indexOf(Object o) {
                 if (o == null) {
-                    for (int i = 0; i < size(); i++)
-                        if (get(i) == null)
+                    for (int i = 0; i < size(); i++) {
+                        if (get(i) == null) {
                             return i;
+                        }
+                    }
                 } else {
                     for (int i = 0; i < size(); i++) {
                         Block block = get(i);
                         if (o instanceof Block) {
-                            if (((Block) o).superEquals(block))
+                            if (((Block) o).equalsVec(block)) {
                                 return i;
-                        } else if (o.equals(block))
+                            }
+                        } else if (o.equals(block)) {
                             return i;
+                        }
                     }
                 }
                 return -1;
@@ -436,7 +440,7 @@ public abstract class BlockPistonBase extends BlockTransparentMeta implements Fa
                 return true;
             }
 
-            if (origin.superEquals(this.pistonPos)) {
+            if (origin.equalsVec(this.pistonPos)) {
                 return true;
             }
 
@@ -456,7 +460,7 @@ public abstract class BlockPistonBase extends BlockTransparentMeta implements Fa
             while (block.getId() == SLIME) {
                 block = origin.getSide(this.moveDirection.getOpposite(), count);
 
-                if (block.getId() == AIR || !canPush(block, this.moveDirection, false, extending) || block.superEquals(this.pistonPos)) {
+                if (block.getId() == AIR || !canPush(block, this.moveDirection, false, extending) || block.equalsVec(this.pistonPos)) {
                     break;
                 }
 
@@ -498,11 +502,11 @@ public abstract class BlockPistonBase extends BlockTransparentMeta implements Fa
                     return true;
                 }
 
-                if (nextBlock.getId() == AIR || nextBlock.superEquals(armPos)) {
+                if (nextBlock.getId() == AIR || nextBlock.equalsVec(armPos)) {
                     return true;
                 }
 
-                if (!canPush(nextBlock, this.moveDirection, true, extending) || nextBlock.superEquals(this.pistonPos)) {
+                if (!canPush(nextBlock, this.moveDirection, true, extending) || nextBlock.equalsVec(this.pistonPos)) {
                     return false;
                 }
 
@@ -574,6 +578,6 @@ public abstract class BlockPistonBase extends BlockTransparentMeta implements Fa
 
     @Override
     public int getToolType() {
-        return ItemTool.TYPE_PICKAXE;
+        return BlockToolType.PICKAXE;
     }
 }

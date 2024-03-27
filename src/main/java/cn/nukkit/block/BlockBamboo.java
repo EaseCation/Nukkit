@@ -4,7 +4,6 @@ import cn.nukkit.Player;
 import cn.nukkit.item.Item;
 import cn.nukkit.item.ItemDye;
 import cn.nukkit.item.ItemID;
-import cn.nukkit.item.ItemTool;
 import cn.nukkit.level.Level;
 import cn.nukkit.level.particle.BoneMealParticle;
 import cn.nukkit.math.AxisAlignedBB;
@@ -49,11 +48,11 @@ public class BlockBamboo extends BlockTransparentMeta {
 
     @Override
     public int getToolType() {
-        return ItemTool.TYPE_SWORD;
+        return BlockToolType.SWORD | BlockToolType.AXE;
     }
 
     @Override
-    public double getHardness() {
+    public float getHardness() {
         if (ENABLE_BLOCK_DESTROY_SPEED_COMPATIBILITY || V1_20_30.isAvailable()) {
             return 1;
         }
@@ -61,7 +60,7 @@ public class BlockBamboo extends BlockTransparentMeta {
     }
 
     @Override
-    public double getResistance() {
+    public float getResistance() {
         return 5;
     }
 

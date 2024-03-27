@@ -1,11 +1,13 @@
 package cn.nukkit.entity.passive;
 
 import cn.nukkit.Player;
+import cn.nukkit.entity.Entity;
 import cn.nukkit.entity.EntityID;
 import cn.nukkit.entity.data.ByteEntityData;
 import cn.nukkit.item.Item;
 import cn.nukkit.item.ItemDye;
 import cn.nukkit.level.format.FullChunk;
+import cn.nukkit.math.Vector3f;
 import cn.nukkit.nbt.tag.CompoundTag;
 import cn.nukkit.utils.DyeColor;
 
@@ -142,5 +144,13 @@ public class EntitySheep extends EntityAnimal {
         player.dataPacket(createAddEntityPacket());
 
         super.spawnTo(player);
+    }
+
+    @Override
+    public Vector3f getMountedOffset(Entity entity) {
+        if (sheared) {
+            return new Vector3f(0, 0.9f + entity.getRidingOffset(), 0);
+        }
+        return new Vector3f(0, 0.975f + entity.getRidingOffset(), 0);
     }
 }

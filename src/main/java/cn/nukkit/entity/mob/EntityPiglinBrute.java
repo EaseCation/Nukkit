@@ -52,6 +52,9 @@ public class EntityPiglinBrute extends EntityMob {
 
     @Override
     public float getRidingOffset() {
+        if (getDataFlag(DATA_FLAG_BABY)) {
+            return super.getRidingOffset();
+        }
         return -0.5f;
     }
 }

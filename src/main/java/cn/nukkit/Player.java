@@ -117,6 +117,10 @@ public class Player extends EntityHuman implements CommandSender, InventoryHolde
     public static final int SPECTATOR = 3;
     public static final int VIEWER = SPECTATOR;
 
+    public static final int MAX_REACH_DISTANCE_CREATIVE = 13 + 1;
+    public static final int MAX_REACH_DISTANCE_SURVIVAL = 7 + 1;
+    public static final int MAX_REACH_DISTANCE_ENTITY_INTERACTION = 8;
+
     public static final int SURVIVAL_SLOTS = 36;
 
     public static final int CRAFTING_SMALL = 0;
@@ -252,8 +256,6 @@ public class Player extends EntityHuman implements CommandSender, InventoryHolde
     private Entity killer = null;
 
     private Locale locale;
-
-    private int hash;
 
     private String buttonText = "";
 
@@ -1228,7 +1230,7 @@ public class Player extends EntityHuman implements CommandSender, InventoryHolde
 
         for (Entity p : this.level.getNearbyEntities(this.boundingBox.grow(2, 1, 2), this)) {
             if (p instanceof Player) {
-                if (((Player) p).sleeping != null && pos.distance(((Player) p).sleeping) <= 0.1) {
+                if (((Player) p).sleeping != null && pos.distanceSquared(((Player) p).sleeping) <= 0.1 * 0.1) {
                     return false;
                 }
             }
@@ -2113,13 +2115,9 @@ public class Player extends EntityHuman implements CommandSender, InventoryHolde
     public void checkInteractNearby() {
         if (!checkInteractNearby) return;
         int interactDistance = isCreative() ? 5 : 3;
-        if (canInteract(this, interactDistance)) {
-            if (getEntityPlayerLookingAt(interactDistance) != null) {
-                EntityInteractable onInteract = getEntityPlayerLookingAt(interactDistance);
-                setButtonText(onInteract.getInteractButtonText(this));
-            } else {
-                setButtonText("");
-            }
+        EntityInteractable onInteract = getEntityPlayerLookingAt(interactDistance);
+        if (onInteract != null) {
+            setButtonText(onInteract.getInteractButtonText(this));
         } else {
             setButtonText("");
         }
@@ -2192,18 +2190,19 @@ public class Player extends EntityHuman implements CommandSender, InventoryHolde
     }
 
     public boolean canInteract(Vector3 pos, double maxDistance) {
-        return this.canInteract(pos, maxDistance, 6.0);
+        return this.canInteract(pos, maxDistance, Mth.SQRT_OF_THREE / 2);
     }
 
     public boolean canInteract(Vector3 pos, double maxDistance, double maxDiff) {
-        if (this.distanceSquared(pos) > maxDistance * maxDistance) {
+        Vector3 eyePos = this.getEyePosition();
+        if (eyePos.distanceSquared(pos) > maxDistance * maxDistance) {
             return false;
         }
 
-        Vector2 dV = this.getDirectionPlane();
-        double dot = dV.dot(new Vector2(this.x, this.z));
-        double dot1 = dV.dot(new Vector2(pos.x, pos.z));
-        return (dot1 - dot) >= -maxDiff;
+        Vector3 dV = this.getDirectionVector();
+        double eyeDot = dV.dot(eyePos);
+        double targetDot = dV.dot(pos);
+        return (targetDot - eyeDot) >= -maxDiff;
     }
 
     protected void processLogin() {
@@ -2707,7 +2706,7 @@ public class Player extends EntityHuman implements CommandSender, InventoryHolde
 
                     if (this.riding instanceof EntityBoat boat) {
                         if (this.temporalVector.setComponents(moveEntityPacket.x, moveEntityPacket.y, moveEntityPacket.z).distanceSquared(this.riding) < 1000) {
-                            boat.onInput(moveEntityPacket.x, moveEntityPacket.y, moveEntityPacket.z, moveEntityPacket.yaw % 360);
+                            boat.onInput(moveEntityPacket.x, moveEntityPacket.y, moveEntityPacket.z, moveEntityPacket.yaw % 360, 0);
                         }
                     }
                     break;
@@ -2778,7 +2777,7 @@ public class Player extends EntityHuman implements CommandSender, InventoryHolde
                             long currentBreak = System.currentTimeMillis();
                             BlockVector3 currentBreakPosition = new BlockVector3(playerActionPacket.x, playerActionPacket.y, playerActionPacket.z);
                             // HACK: Client spams multiple left clicks so we need to skip them.
-                            if ((lastBreakPosition.equalsVec(currentBreakPosition) && (currentBreak - this.lastBreak) < 10) || pos.distanceSquared(this) > 100) {
+                            if ((lastBreakPosition.equalsVec(currentBreakPosition) && (currentBreak - this.lastBreak) < 10) || !canInteract(pos.blockCenter(), isCreative() ? MAX_REACH_DISTANCE_CREATIVE : MAX_REACH_DISTANCE_SURVIVAL)) {
                                 break;
                             }
                             Block target = this.level.getBlock(pos, false);
@@ -2907,6 +2906,9 @@ public class Player extends EntityHuman implements CommandSender, InventoryHolde
                                 break packetswitch;
                             }
                             PlayerToggleSprintEvent playerToggleSprintEvent = new PlayerToggleSprintEvent(this, true);
+                            if (hasEffect(Effect.BLINDNESS)) {
+                                playerToggleSprintEvent.setCancelled();
+                            }
                             this.server.getPluginManager().callEvent(playerToggleSprintEvent);
                             if (playerToggleSprintEvent.isCancelled()) {
                                 this.sendData(this);
@@ -3087,6 +3089,9 @@ public class Player extends EntityHuman implements CommandSender, InventoryHolde
                         return;
                     }
                     Block block = this.level.getBlock(pickRequestPacket.x, pickRequestPacket.y, pickRequestPacket.z, false);
+                    if (block.isAir()) {
+                        return;
+                    }
                     item = block.pick(pickRequestPacket.addUserData);
 
                     if (pickRequestPacket.addUserData) {
@@ -3094,17 +3099,14 @@ public class Player extends EntityHuman implements CommandSender, InventoryHolde
                         if (blockEntity != null) {
                             CompoundTag nbt = blockEntity.getCleanedNBT();
                             if (nbt != null) {
-                                Item item1 = this.getInventory().getItemInHand();
-                                item1.setCustomBlockData(nbt);
-                                item1.setLore("+(DATA)");
-                                this.getInventory().setItemInHand(item1);
+                                item.setCustomBlockData(nbt);
+                                item.setLore("+(DATA)");
                             }
                         }
                     }
 
                     PlayerBlockPickEvent pickEvent = new PlayerBlockPickEvent(this, block, item);
-                    if (!this.isCreative()) {
-//                        log.debug("Got block-pick request from " + this.getName() + " when not in creative mode (gamemode " + this.getGamemode() + ")");
+                    if (this.isSpectator()) {
                         pickEvent.setCancelled();
                     }
 
@@ -3112,15 +3114,49 @@ public class Player extends EntityHuman implements CommandSender, InventoryHolde
 
                     if (!pickEvent.isCancelled()) {
                         boolean itemExists = false;
-                        for (int slot = 0; slot != this.inventory.getHotbarSize(); slot++) {
+                        int itemSlot = -1;
+                        for (int slot = 0; slot < this.inventory.getHotbarSize(); slot++) {
                             if (this.inventory.getItem(slot).equals(pickEvent.getItem())) {
-                                this.inventory.setHeldItemSlot(slot);
+                                if (slot < this.inventory.getHotbarSize()) {
+                                    this.inventory.setHeldItemSlot(slot);
+                                } else {
+                                    itemSlot = slot;
+                                }
                                 itemExists = true;
                                 break;
                             }
                         }
-                        if (!itemExists) {
+
+                        for (int slot = 0; slot < this.inventory.getHotbarSize(); slot++) {
+                            if (this.inventory.getItem(slot).isNull()) {
+                                if (!itemExists && this.isCreative()) {
+                                    this.inventory.setHeldItemSlot(slot);
+                                    this.inventory.setItemInHand(pickEvent.getItem());
+                                    break packetswitch;
+                                } else if (itemSlot > -1) {
+                                    this.inventory.setHeldItemSlot(slot);
+                                    this.inventory.setItemInHand(this.inventory.getItem(itemSlot));
+                                    this.inventory.clear(itemSlot, true);
+                                    break packetswitch;
+                                }
+                            }
+                        }
+
+                        if (!itemExists && this.isCreative()) {
+                            Item itemInHand = this.inventory.getItemInHand();
                             this.inventory.setItemInHand(pickEvent.getItem());
+                            if (!this.inventory.isFull()) {
+                                for (int slot = 0; slot < this.inventory.getSize(); slot++) {
+                                    if (this.inventory.getItem(slot).isNull()) {
+                                        this.inventory.setItem(slot, itemInHand);
+                                        break;
+                                    }
+                                }
+                            }
+                        } else if (itemSlot > -1) {
+                            Item itemInHand = this.inventory.getItemInHand();
+                            this.inventory.setItemInHand(this.inventory.getItem(itemSlot));
+                            this.inventory.setItem(itemSlot, itemInHand);
                         }
                     }
                     break;
@@ -3150,7 +3186,7 @@ public class Player extends EntityHuman implements CommandSender, InventoryHolde
 
                                 boat.onPaddle(animation, paddleTime);
                             }
-                            break;
+                            return;
                         case SWING_ARM:
                             this.swingTime = -1;
                             this.swinging = true;
@@ -3304,7 +3340,7 @@ public class Player extends EntityHuman implements CommandSender, InventoryHolde
                 case ProtocolInfo.REQUEST_CHUNK_RADIUS_PACKET:
                     RequestChunkRadiusPacket requestChunkRadiusPacket = (RequestChunkRadiusPacket) packet;
                     ChunkRadiusUpdatedPacket chunkRadiusUpdatePacket = new ChunkRadiusUpdatedPacket();
-                    this.chunkRadius = Math.max(3, Math.min(requestChunkRadiusPacket.radius, this.viewDistance));
+                    this.chunkRadius = Math.max(4, Math.min(requestChunkRadiusPacket.radius, this.viewDistance));
                     chunkRadiusUpdatePacket.radius = this.chunkRadius;
                     this.dataPacket(chunkRadiusUpdatePacket);
                     break;
@@ -3478,7 +3514,7 @@ public class Player extends EntityHuman implements CommandSender, InventoryHolde
                                 case InventoryTransactionPacket.USE_ITEM_ACTION_CLICK_BLOCK:
                                     this.setDataFlag(DATA_FLAG_ACTION, false);
 
-                                    if (this.canInteract(blockVector.add(0.5, 0.5, 0.5), this.isCreative() ? 16 : 10)) {
+                                    if (this.canInteract(blockVector.add(0.5, 0.5, 0.5), this.isCreative() ? MAX_REACH_DISTANCE_CREATIVE : MAX_REACH_DISTANCE_SURVIVAL)) {
                                         if (this.isCreative()) {
                                             Item i = inventory.getItemInHand();
                                             if (this.level.useItemOn(blockVector.asVector3(), i, face, useItemData.clickPos.x, useItemData.clickPos.y, useItemData.clickPos.z, this) != null) {
@@ -3537,7 +3573,7 @@ public class Player extends EntityHuman implements CommandSender, InventoryHolde
 
                                     Item oldItem = i.clone();
 
-                                    if (this.canInteract(blockVector.add(0.5, 0.5, 0.5), this.isCreative() ? 16 : 8) && (i = this.level.useBreakOn(blockVector.asVector3(), i, this, true)) != null) {
+                                    if (this.canInteract(blockVector.add(0.5, 0.5, 0.5), this.isCreative() ? MAX_REACH_DISTANCE_CREATIVE : MAX_REACH_DISTANCE_SURVIVAL) && (i = this.level.useBreakOn(blockVector.asVector3(), i, this, true)) != null) {
                                         if (this.isSurvival()) {
                                             this.getFoodData().updateFoodExpLevel(0.005f);
                                             if (!i.equals(oldItem) || i.getCount() != oldItem.getCount()) {
@@ -3618,6 +3654,10 @@ public class Player extends EntityHuman implements CommandSender, InventoryHolde
 
                             switch (type) {
                                 case InventoryTransactionPacket.USE_ITEM_ON_ENTITY_ACTION_INTERACT:
+                                    if (!this.canInteract(target, isCreative() ? MAX_REACH_DISTANCE_ENTITY_INTERACTION : 5)) {
+                                        break;
+                                    }
+
                                     PlayerInteractEntityEvent playerInteractEntityEvent = new PlayerInteractEntityEvent(this, target, item, useItemOnEntityData.clickPos);
                                     if (this.isSpectator()) playerInteractEntityEvent.setCancelled();
                                     getServer().getPluginManager().callEvent(playerInteractEntityEvent);
@@ -3643,7 +3683,7 @@ public class Player extends EntityHuman implements CommandSender, InventoryHolde
                                     }
                                     break;
                                 case InventoryTransactionPacket.USE_ITEM_ON_ENTITY_ACTION_ATTACK:
-                                    if (!this.canInteract(target, isCreative() ? 8 : 5)) {
+                                    if (!this.canInteract(target, isCreative() ? MAX_REACH_DISTANCE_ENTITY_INTERACTION : 5)) {
                                         break;
                                     } else if (target instanceof Player) {
                                         if ((((Player) target).getGamemode() & 0x01) > 0) {
@@ -3968,13 +4008,17 @@ public class Player extends EntityHuman implements CommandSender, InventoryHolde
         return false;
     }
 
-    public void setViewDistance(int distance) {
-        this.chunkRadius = distance;
+    public boolean setViewDistance(int distance) {
+        int viewDistance = Math.max(4, Math.min(distance, this.viewDistance));
+        if (this.chunkRadius == viewDistance) {
+            return false;
+        }
+        this.chunkRadius = viewDistance;
 
         ChunkRadiusUpdatedPacket pk = new ChunkRadiusUpdatedPacket();
-        pk.radius = distance;
-
+        pk.radius = viewDistance;
         this.dataPacket(pk);
+        return true;
     }
 
     public int getViewDistance() {
@@ -4764,7 +4808,7 @@ public class Player extends EntityHuman implements CommandSender, InventoryHolde
             }
 
             //Critical hit
-            if (!damager.onGround && damager instanceof Player player) {
+            if (!damager.onGround && damager instanceof Player player && !damager.hasEffect(Effect.BLINDNESS)) {
                 if (player.speed != null && player.speed.y > 0) {
                     if (player.attackCriticalThisJump <= 0) {
                         critical = true;
@@ -5592,8 +5636,7 @@ public class Player extends EntityHuman implements CommandSender, InventoryHolde
 
                 entity.close();
                 return true;
-            } else if (entity instanceof EntityThrownTrident && ((EntityThrownTrident) entity).hadCollision) {
-                EntityThrownTrident trident = (EntityThrownTrident) entity;
+            } else if (entity instanceof EntityThrownTrident trident && trident.hadCollision && !trident.hasLoyalty()) {
                 Item item = trident.getItem();
                 if (!this.isCreative() && !this.inventory.canAddItem(item)) {
                     return false;
@@ -5724,22 +5767,8 @@ public class Player extends EntityHuman implements CommandSender, InventoryHolde
         return false;
     }
 
-    @Override
-    public int hashCode() {
-        if ((this.hash == 0) || (this.hash == 485)) {
-            this.hash = (485 + (getUniqueId() != null ? getUniqueId().hashCode() : 0));
-        }
-
-        return this.hash;
-    }
-
-    @Override
-    public boolean equals(Object obj) {
-        if (!(obj instanceof Player)) {
-            return false;
-        }
-        Player other = (Player) obj;
-        return Objects.equals(this.getUniqueId(), other.getUniqueId()) && this.getId() == other.getId();
+    public final int rawHashCode() {
+        return System.identityHashCode(this);
     }
 
     public boolean isBreakingBlock() {
@@ -6193,5 +6222,72 @@ public class Player extends EntityHuman implements CommandSender, InventoryHolde
             packet.hideDisconnectionScreen = true;
         }
         dataPacket(packet);
+    }
+
+    /**
+     * @since 1.11.0
+     */
+    public void playOnScreenEffectAnimation(int effectId) {
+    }
+
+    /**
+     * @since 1.19.50
+     */
+    public void lockInput() {
+        lockInput(true, true);
+    }
+
+    /**
+     * @since 1.19.50
+     */
+    public void lockInput(boolean movement) {
+        lockInput(movement, false);
+    }
+
+    /**
+     * @since 1.19.50
+     */
+    public void lockInput(boolean movement, boolean rotation) {
+    }
+
+    /**
+     * @since 1.19.50
+     */
+    public void unlockInput() {
+        lockInput(false, false);
+    }
+
+    public void openBlockEditor(int x, int y, int z, int type) {
+        ContainerOpenPacket packet = new ContainerOpenPacket();
+        packet.type = type;
+        packet.x = x;
+        packet.y = y;
+        packet.z = z;
+        packet.windowId = Math.max(FIRST_AVAILABLE_WINDOW_ID, ++windowCnt % 99);
+        dataPacket(packet);
+    }
+
+    /**
+     * @since 1.20.60
+     */
+    public void hideHud() {
+    }
+
+    /**
+     * @since 1.20.60
+     */
+    public void hideHudElements(int... elements) {
+    }
+
+    /**
+     * @since 1.20.60
+     */
+    public void showHud() {
+    }
+
+    /**
+     * @since 1.20.60
+     */
+    public void showHudElements(int... elements) {
     }
 }

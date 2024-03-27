@@ -16,6 +16,7 @@ public interface ItemBlockID {
     int COBBLESTONE = 4;
     int OAK_PLANKS = 5;
     int PLANKS = 5;
+    int OAK_SAPLING = 6;
     int SAPLING = 6;
     int BEDROCK = 7;
     int FLOWING_WATER = 8;
@@ -56,6 +57,7 @@ public interface ItemBlockID {
     int WOOL = 35;
     int ELEMENT_0 = 36;
     int YELLOW_FLOWER = 37;
+    int POPPY = 38;
     int RED_FLOWER = 38;
     int BROWN_MUSHROOM = 39;
     int RED_MUSHROOM = 40;
@@ -446,7 +448,9 @@ public interface ItemBlockID {
     int TUBE_CORAL = 0xff - BlockID.TUBE_CORAL;
     int CORAL = 0xff - BlockID.CORAL;
     int CORAL_BLOCK = 0xff - BlockID.CORAL_BLOCK;
+    int TUBE_CORAL_FAN = 0xff - BlockID.TUBE_CORAL_FAN;
     int CORAL_FAN = 0xff - BlockID.CORAL_FAN;
+    int DEAD_TUBE_CORAL_FAN = 0xff - BlockID.DEAD_TUBE_CORAL_FAN;
     int CORAL_FAN_DEAD = 0xff - BlockID.CORAL_FAN_DEAD;
     int CORAL_FAN_HANG = 0xff - BlockID.CORAL_FAN_HANG;
     int CORAL_FAN_HANG2 = 0xff - BlockID.CORAL_FAN_HANG2;
@@ -1126,6 +1130,29 @@ public interface ItemBlockID {
     int STRIPPED_JUNGLE_WOOD = 0xff - BlockID.STRIPPED_JUNGLE_WOOD;
     int STRIPPED_ACACIA_WOOD = 0xff - BlockID.STRIPPED_ACACIA_WOOD;
     int STRIPPED_DARK_OAK_WOOD = 0xff - BlockID.STRIPPED_DARK_OAK_WOOD;
+    int SPRUCE_SAPLING = 0xff - BlockID.SPRUCE_SAPLING;
+    int BIRCH_SAPLING = 0xff - BlockID.BIRCH_SAPLING;
+    int JUNGLE_SAPLING = 0xff - BlockID.JUNGLE_SAPLING;
+    int ACACIA_SAPLING = 0xff - BlockID.ACACIA_SAPLING;
+    int DARK_OAK_SAPLING = 0xff - BlockID.DARK_OAK_SAPLING;
+    int BLUE_ORCHID = 0xff - BlockID.BLUE_ORCHID;
+    int ALLIUM = 0xff - BlockID.ALLIUM;
+    int AZURE_BLUET = 0xff - BlockID.AZURE_BLUET;
+    int RED_TULIP = 0xff - BlockID.RED_TULIP;
+    int ORANGE_TULIP = 0xff - BlockID.ORANGE_TULIP;
+    int WHITE_TULIP = 0xff - BlockID.WHITE_TULIP;
+    int PINK_TULIP = 0xff - BlockID.PINK_TULIP;
+    int OXEYE_DAISY = 0xff - BlockID.OXEYE_DAISY;
+    int CORNFLOWER = 0xff - BlockID.CORNFLOWER;
+    int LILY_OF_THE_VALLEY = 0xff - BlockID.LILY_OF_THE_VALLEY;
+    int BRAIN_CORAL_FAN = 0xff - BlockID.BRAIN_CORAL_FAN;
+    int BUBBLE_CORAL_FAN = 0xff - BlockID.BUBBLE_CORAL_FAN;
+    int FIRE_CORAL_FAN = 0xff - BlockID.FIRE_CORAL_FAN;
+    int HORN_CORAL_FAN = 0xff - BlockID.HORN_CORAL_FAN;
+    int DEAD_BRAIN_CORAL_FAN = 0xff - BlockID.DEAD_BRAIN_CORAL_FAN;
+    int DEAD_BUBBLE_CORAL_FAN = 0xff - BlockID.DEAD_BUBBLE_CORAL_FAN;
+    int DEAD_FIRE_CORAL_FAN = 0xff - BlockID.DEAD_FIRE_CORAL_FAN;
+    int DEAD_HORN_CORAL_FAN = 0xff - BlockID.DEAD_HORN_CORAL_FAN;
 
 
     int UNDEFINED = 0xff - BlockID.UNDEFINED;

@@ -1,5 +1,6 @@
 package cn.nukkit.block;
 
+import cn.nukkit.Player;
 import cn.nukkit.item.Item;
 import cn.nukkit.item.ItemTool;
 
@@ -19,7 +20,7 @@ public class BlockObsidianGlowing extends BlockSolid {
 
     @Override
     public int getToolType() {
-        return ItemTool.TYPE_PICKAXE;
+        return BlockToolType.PICKAXE;
     }
 
     @Override
@@ -28,12 +29,12 @@ public class BlockObsidianGlowing extends BlockSolid {
     }
 
     @Override
-    public double getHardness() {
+    public float getHardness() {
         return 10;
     }
 
     @Override
-    public double getResistance() {
+    public float getResistance() {
         return 6000;
     }
 
@@ -48,7 +49,7 @@ public class BlockObsidianGlowing extends BlockSolid {
     }
 
     @Override
-    public Item[] getDrops(Item item) {
+    public Item[] getDrops(Item item, Player player) {
         if (item.isPickaxe() && item.getTier() > ItemTool.DIAMOND_PICKAXE) {
             return new Item[]{
                     toItem(true)

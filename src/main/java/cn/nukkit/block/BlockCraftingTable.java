@@ -3,7 +3,6 @@ package cn.nukkit.block;
 import cn.nukkit.Player;
 import cn.nukkit.inventory.RecipeTag;
 import cn.nukkit.item.Item;
-import cn.nukkit.item.ItemTool;
 import cn.nukkit.math.BlockFace;
 import cn.nukkit.network.protocol.ContainerOpenPacket;
 import cn.nukkit.network.protocol.types.ContainerType;
@@ -33,18 +32,18 @@ public class BlockCraftingTable extends BlockSolid {
     }
 
     @Override
-    public double getHardness() {
-        return 2.5;
+    public float getHardness() {
+        return 2.5f;
     }
 
     @Override
-    public double getResistance() {
-        return 12.5;
+    public float getResistance() {
+        return 12.5f;
     }
 
     @Override
     public int getToolType() {
-        return ItemTool.TYPE_AXE;
+        return BlockToolType.AXE;
     }
 
     @Override

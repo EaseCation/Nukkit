@@ -42,6 +42,8 @@ import lombok.extern.log4j.Log4j2;
 import javax.annotation.Nullable;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.Field;
+import java.util.Arrays;
+import java.util.Collection;
 import java.util.IdentityHashMap;
 import java.util.List;
 import java.util.Map;
@@ -72,7 +74,7 @@ public abstract class Entity extends Location implements Metadatable, EntityData
 
     protected final Effect[] effects = new Effect[Effect.UNDEFINED];
 
-    protected long id;
+    protected final long id;
 
     protected final EntityMetadata dataProperties = new EntityMetadata()
             .putLong(DATA_FLAGS, 0)
@@ -172,8 +174,12 @@ public abstract class Entity extends Location implements Metadatable, EntityData
         return 0;
     }
 
+    public float getY(float bbh) {
+        return (float) y + getHeight() * bbh;
+    }
+
     public float getEyeHeight() {
-        return this.getHeight() / 2 + 0.1f;
+        return this.getHeight() * 0.85f;
     }
 
     public float getEyeY() {
@@ -213,6 +219,8 @@ public abstract class Entity extends Location implements Metadatable, EntityData
     }
 
     public Entity(FullChunk chunk, CompoundTag nbt) {
+        this.id = Entity.entityCount++;
+
         if (this instanceof Player) {
             return;
         }
@@ -280,7 +288,6 @@ public abstract class Entity extends Location implements Metadatable, EntityData
         this.isPlayer = this instanceof Player;
         this.temporalVector = new Vector3();
 
-        this.id = Entity.entityCount++;
         this.justCreated = true;
         this.namedTag = nbt;
 
@@ -591,8 +598,16 @@ public abstract class Entity extends Location implements Metadatable, EntityData
         return false;
     }
 
+    public boolean canBeAffected(int effectId) {
+        return false;
+    }
+
     public boolean addEffect(Effect effect) {
         if (effect == null) {
+            return false;
+        }
+
+        if (!canBeAffected(effect.getId())) {
             return false;
         }
 
@@ -617,6 +632,10 @@ public abstract class Entity extends Location implements Metadatable, EntityData
         boolean dirty = false;
         for (Effect effect : effects) {
             if (effect == null) {
+                continue;
+            }
+
+            if (!canBeAffected(effect.getId())) {
                 continue;
             }
 
@@ -1219,7 +1238,7 @@ public abstract class Entity extends Location implements Metadatable, EntityData
     }
 
     public boolean isAlive() {
-        return this.health > 0;
+        return this.health >= 1;
     }
 
     public boolean setHealth(float health) {
@@ -1377,8 +1396,9 @@ public abstract class Entity extends Location implements Metadatable, EntityData
             }
             return false;
         }
-        if (riding != null && !riding.isAlive() && riding instanceof EntityRideable) {
-            ((EntityRideable) riding).dismountEntity(this);
+
+        if (riding != null && (!riding.isAlive() || riding.isClosed())) {
+            riding.dismountEntity(this);
         }
 
         updatePassengers();
@@ -1502,7 +1522,7 @@ public abstract class Entity extends Location implements Metadatable, EntityData
     }
 
     public Vector2 getDirectionPlane() {
-        return (new Vector2((float) (-Mth.cos(Math.toRadians(this.yaw) - Math.PI / 2)), (float) (-Mth.sin(Math.toRadians(this.yaw) - Math.PI / 2)))).normalize();
+        return new Vector2(-Mth.cos(Math.toRadians(this.yaw) - Math.PI / 2), -Mth.sin(Math.toRadians(this.yaw) - Math.PI / 2)).normalize();
     }
 
     public BlockFace getHorizontalFacing() {
@@ -1680,6 +1700,11 @@ public abstract class Entity extends Location implements Metadatable, EntityData
     }
 
     public void setOnFire(int seconds) {
+        if (seconds > 0 && (hasEffect(Effect.FIRE_RESISTANCE) || !isAlive())) {
+            this.fireTicks = 0;
+            return;
+        }
+
         int ticks = seconds * 20;
         if (ticks > this.fireTicks) {
             this.fireTicks = ticks;
@@ -2400,7 +2425,7 @@ public abstract class Entity extends Location implements Metadatable, EntityData
         return false;
     }
 
-    public long getId() {
+    public final long getId() {
         return this.id;
     }
 
@@ -2652,8 +2677,49 @@ public abstract class Entity extends Location implements Metadatable, EntityData
         return true;
     }
 
+    public void lookAt(Vector3 target) {
+        lookAt(target.getX(), target.getY(), target.getZ());
+    }
+
+    public void lookAt(double x, double y, double z) {
+        double deltaX = x - getX();
+        double deltaZ = z - getZ();
+        setRotation(Math.toDegrees(Mth.atan2(deltaZ, deltaX)) - 90, -Math.toDegrees(Mth.atan2(y - getEyeY(), Math.sqrt(deltaX * deltaX + deltaZ * deltaZ))));
+    }
+
+    public void broadcastEntityEvent(int event) {
+        broadcastEntityEvent(event, 0);
+    }
+
+    public void broadcastEntityEvent(int event, Player... players) {
+        broadcastEntityEvent(event, 0, players);
+    }
+
+    public void broadcastEntityEvent(int event, Collection<Player> players) {
+        broadcastEntityEvent(event, 0, players);
+    }
+
+    public void broadcastEntityEvent(int event, int data) {
+        broadcastEntityEvent(event, data, getViewers().values());
+    }
+
+    public void broadcastEntityEvent(int event, int data, Player... players) {
+        broadcastEntityEvent(event, data, Arrays.asList(players));
+    }
+
+    public void broadcastEntityEvent(int event, int data, Collection<Player> players) {
+        EntityEventPacket packet = new EntityEventPacket();
+        packet.event = event;
+        packet.data = data;
+        packet.eid = getId();
+        Server.broadcastPacket(players, packet);
+    }
+
     @Override
     public boolean equals(Object obj) {
+        if (obj == this) {
+            return true;
+        }
         if (obj == null) {
             return false;
         }
@@ -2661,14 +2727,12 @@ public abstract class Entity extends Location implements Metadatable, EntityData
             return false;
         }
         Entity other = (Entity) obj;
-        return this.getId() == other.getId();
+        return this.id == other.id;
     }
 
     @Override
     public int hashCode() {
-        int hash = 7;
-        hash = (int) (29 * hash + this.getId());
-        return hash;
+        return Long.hashCode(this.id);
     }
 
     @AllArgsConstructor

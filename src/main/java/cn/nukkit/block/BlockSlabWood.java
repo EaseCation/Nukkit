@@ -1,6 +1,5 @@
 package cn.nukkit.block;
 
-import cn.nukkit.item.ItemTool;
 import cn.nukkit.utils.BlockColor;
 
 /**
@@ -46,12 +45,12 @@ public class BlockSlabWood extends BlockSlab {
     }
 
     @Override
-    public double getHardness() {
+    public float getHardness() {
         return 2;
     }
 
     @Override
-    public double getResistance() {
+    public float getResistance() {
         return 15;
     }
 
@@ -67,7 +66,7 @@ public class BlockSlabWood extends BlockSlab {
 
     @Override
     public int getToolType() {
-        return ItemTool.TYPE_AXE;
+        return BlockToolType.AXE;
     }
 
     @Override

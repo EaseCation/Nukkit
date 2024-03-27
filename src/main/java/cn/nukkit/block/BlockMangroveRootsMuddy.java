@@ -2,7 +2,6 @@ package cn.nukkit.block;
 
 import cn.nukkit.Player;
 import cn.nukkit.item.Item;
-import cn.nukkit.item.ItemTool;
 import cn.nukkit.math.BlockFace;
 import cn.nukkit.utils.BlockColor;
 
@@ -28,18 +27,18 @@ public class BlockMangroveRootsMuddy extends BlockRotatedPillar {
     }
 
     @Override
-    public double getHardness() {
-        return 0.7;
+    public float getHardness() {
+        return 0.7f;
     }
 
     @Override
-    public double getResistance() {
-        return 3.5;
+    public float getResistance() {
+        return 3.5f;
     }
 
     @Override
     public int getToolType() {
-        return ItemTool.TYPE_SHOVEL;
+        return BlockToolType.SHOVEL;
     }
 
     @Override

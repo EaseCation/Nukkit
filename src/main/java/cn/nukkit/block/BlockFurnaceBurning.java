@@ -54,18 +54,18 @@ public class BlockFurnaceBurning extends BlockSolidMeta implements Faceable {
     }
 
     @Override
-    public double getHardness() {
-        return 3.5;
+    public float getHardness() {
+        return 3.5f;
     }
 
     @Override
-    public double getResistance() {
-        return 17.5;
+    public float getResistance() {
+        return 17.5f;
     }
 
     @Override
     public int getToolType() {
-        return ItemTool.TYPE_PICKAXE;
+        return BlockToolType.PICKAXE;
     }
 
     @Override
@@ -97,7 +97,7 @@ public class BlockFurnaceBurning extends BlockSolidMeta implements Faceable {
     }
 
     @Override
-    public boolean onBreak(Item item) {
+    public boolean onBreak(Item item, Player player) {
         this.getLevel().setBlock(this, Block.get(BlockID.AIR), true, true);
         return true;
     }
@@ -136,7 +136,7 @@ public class BlockFurnaceBurning extends BlockSolidMeta implements Faceable {
     }
 
     @Override
-    public Item[] getDrops(Item item) {
+    public Item[] getDrops(Item item, Player player) {
         if (item.isPickaxe() && item.getTier() >= ItemTool.TIER_WOODEN) {
             return new Item[]{
                     this.toItem(true)

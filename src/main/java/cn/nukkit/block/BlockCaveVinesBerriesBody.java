@@ -31,7 +31,7 @@ public class BlockCaveVinesBerriesBody extends BlockCaveVines {
     }
 
     @Override
-    public Item[] getDrops(Item item) {
+    public Item[] getDrops(Item item, Player player) {
         return new Item[]{
                 toItem(true),
         };

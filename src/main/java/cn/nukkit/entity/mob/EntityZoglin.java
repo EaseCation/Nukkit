@@ -2,6 +2,7 @@ package cn.nukkit.entity.mob;
 
 import cn.nukkit.Player;
 import cn.nukkit.entity.EntityID;
+import cn.nukkit.entity.EntitySmite;
 import cn.nukkit.item.Item;
 import cn.nukkit.level.format.FullChunk;
 import cn.nukkit.nbt.tag.CompoundTag;
@@ -11,7 +12,7 @@ import java.util.concurrent.ThreadLocalRandom;
 /**
  * @author Erik Miller | EinBexiii
  */
-public class EntityZoglin extends EntityMob {
+public class EntityZoglin extends EntityMob implements EntitySmite {
 
     public final static int NETWORK_ID = EntityID.ZOGLIN;
 
@@ -62,10 +63,5 @@ public class EntityZoglin extends EntityMob {
         return new Item[]{
                 Item.get(Item.ROTTEN_FLESH, 0, random.nextInt(1, 4)),
         };
-    }
-
-    @Override
-    public float getRidingOffset() {
-        return -0.5f;
     }
 }

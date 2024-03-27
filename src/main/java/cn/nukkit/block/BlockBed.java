@@ -54,13 +54,13 @@ public class BlockBed extends BlockTransparentMeta implements Faceable {
     }
 
     @Override
-    public double getResistance() {
+    public float getResistance() {
         return 1;
     }
 
     @Override
-    public double getHardness() {
-        return 0.2;
+    public float getHardness() {
+        return 0.2f;
     }
 
     @Override
@@ -150,7 +150,7 @@ public class BlockBed extends BlockTransparentMeta implements Faceable {
     }
 
     @Override
-    public boolean onBreak(Item item) {
+    public boolean onBreak(Item item, Player player) {
         int meta = getDamage();
         int direction = meta & DIRECTION_MASK;
         BlockFace face = BlockFace.fromHorizontalIndex(direction);
@@ -163,7 +163,7 @@ public class BlockBed extends BlockTransparentMeta implements Faceable {
             this.getLevel().setBlock(pair, Block.get(BlockID.AIR), true, false);
         }
 
-        return super.onBreak(item);
+        return super.onBreak(item, player);
     }
 
     private void createBlockEntity(Vector3 pos, int color) {

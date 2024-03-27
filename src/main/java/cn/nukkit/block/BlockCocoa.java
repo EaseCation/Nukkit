@@ -5,7 +5,6 @@ import cn.nukkit.Server;
 import cn.nukkit.event.block.BlockGrowEvent;
 import cn.nukkit.item.Item;
 import cn.nukkit.item.ItemDye;
-import cn.nukkit.item.ItemTool;
 import cn.nukkit.level.Level;
 import cn.nukkit.level.particle.BoneMealParticle;
 import cn.nukkit.math.AxisAlignedBB;
@@ -122,6 +121,11 @@ public class BlockCocoa extends BlockFlowable implements Faceable {
     }
 
     @Override
+    public boolean canPassThrough() {
+        return false;
+    }
+
+    @Override
     public boolean place(Item item, Block block, Block target, BlockFace face, double fx, double fy, double fz, Player player) {
         if (face.isVertical()) {
             return false;
@@ -200,18 +204,18 @@ public class BlockCocoa extends BlockFlowable implements Faceable {
     }
 
     @Override
-    public double getResistance() {
+    public float getResistance() {
         return 15;
     }
 
     @Override
-    public double getHardness() {
-        return 0.2;
+    public float getHardness() {
+        return 0.2f;
     }
 
     @Override
     public int getToolType() {
-        return ItemTool.TYPE_AXE;
+        return BlockToolType.AXE;
     }
 
     @Override
@@ -220,7 +224,7 @@ public class BlockCocoa extends BlockFlowable implements Faceable {
     }
 
     @Override
-    public Item[] getDrops(Item item) {
+    public Item[] getDrops(Item item, Player player) {
         if (this.getDamage() >= 0x8) {
             return new Item[]{
                     Item.get(Item.DYE, ItemDye.COCOA_BEANS, 3)

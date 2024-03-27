@@ -1,5 +1,6 @@
 package cn.nukkit.block;
 
+import cn.nukkit.Player;
 import cn.nukkit.item.Item;
 import cn.nukkit.level.Level;
 import cn.nukkit.math.Vector3;
@@ -80,7 +81,7 @@ public class BlockRailActivator extends BlockRail {
         int dz = pos.getFloorZ();
 
         BlockRail block;
-        Block block2 = level.getBlock(new Vector3(dx, dy, dz));
+        Block block2 = level.getBlock(dx, dy, dz);
 
         if (Rail.isRailBlock(block2)) {
             block = (BlockRail) block2;
@@ -175,17 +176,17 @@ public class BlockRailActivator extends BlockRail {
     }
 
     @Override
-    public Item[] getDrops(Item item) {
+    public Item[] getDrops(Item item, Player player) {
         return new Item[]{
                 Item.get(Item.ACTIVATOR_RAIL, 0, 1)
         };
     }
 
     @Override
-    public double getHardness() {
+    public float getHardness() {
         if (V1_20_30.isAvailable()) {
-            return 0.7;
+            return 0.7f;
         }
-        return 0.5;
+        return 0.5f;
     }
 }

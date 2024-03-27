@@ -165,7 +165,7 @@ public class BlockRedstoneWire extends BlockFlowable {
     }
 
     @Override
-    public boolean onBreak(Item item) {
+    public boolean onBreak(Item item, Player player) {
         this.getLevel().setBlock(this, Block.get(BlockID.AIR), true, true);
 
         if (this.level.isRedstoneEnabled()) {

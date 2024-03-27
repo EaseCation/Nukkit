@@ -18,7 +18,6 @@ import cn.nukkit.level.GameRule;
 import cn.nukkit.level.Level;
 import cn.nukkit.math.AxisAlignedBB;
 import cn.nukkit.math.BlockFace;
-import cn.nukkit.math.Vector3;
 import cn.nukkit.utils.BlockColor;
 
 import javax.annotation.Nullable;
@@ -86,7 +85,7 @@ public class BlockFire extends BlockFlowable {
     }
 
     @Override
-    public Item[] getDrops(Item item) {
+    public Item[] getDrops(Item item, Player player) {
         return new Item[0];
     }
 
@@ -102,7 +101,7 @@ public class BlockFire extends BlockFlowable {
             }
 
             return Level.BLOCK_UPDATE_NORMAL;
-        } else if (type == Level.BLOCK_UPDATE_SCHEDULED && this.level.gameRules.getBoolean(GameRule.DO_FIRE_TICK)) {
+        } else if (type == Level.BLOCK_UPDATE_SCHEDULED && (this.level.gameRules.getBoolean(GameRule.DO_FIRE_TICK) || level.isExtinguishFireIgnoreGameRule())) {
             Block down = down();
             boolean forever = down.getId() == Block.NETHERRACK || down.getId() == Block.MAGMA;
 
@@ -139,7 +138,11 @@ public class BlockFire extends BlockFlowable {
                     this.getLevel().setBlock(this, this, true);
                 }
 
-                this.getLevel().scheduleRandomUpdate(this, this.tickRate() + random.nextInt(10));
+                if (level.isExtinguishFireIgnoreGameRule()) {
+                    this.getLevel().scheduleUpdate(this, this.tickRate() + random.nextInt(10));
+                } else {
+                    this.getLevel().scheduleRandomUpdate(this, this.tickRate() + random.nextInt(10));
+                }
 
                 if (!forever && !this.canNeighborBurn()) {
                     if (!this.isValidBase(this.down()) || meta > 3) {
@@ -155,7 +158,7 @@ public class BlockFire extends BlockFlowable {
                     if (!event.isCancelled()) {
                         level.setBlock(this, event.getNewState(), true);
                     }
-                } else {
+                } else if (level.gameRules.getBoolean(GameRule.DO_FIRE_TICK)) {
                     int o = 0;
 
                     //TODO: decrease the o if the rainfall values are high
@@ -177,7 +180,7 @@ public class BlockFire extends BlockFlowable {
                                         k += (y - (this.y + 1)) * 100;
                                     }
 
-                                    Block block = this.getLevel().getBlock(new Vector3(x, y, z));
+                                    Block block = this.getLevel().getBlock(x, y, z);
                                     int chance = this.getChanceOfNeighborsEncouragingFire(block);
 
                                     if (chance > 0) {

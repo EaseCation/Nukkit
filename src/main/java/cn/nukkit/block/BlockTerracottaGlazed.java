@@ -22,22 +22,22 @@ public abstract class BlockTerracottaGlazed extends BlockSolidMeta implements Fa
     }
 
     @Override
-    public double getResistance() {
+    public float getResistance() {
         return 7;
     }
 
     @Override
-    public double getHardness() {
-        return 1.4;
+    public float getHardness() {
+        return 1.4f;
     }
 
     @Override
     public int getToolType() {
-        return ItemTool.TYPE_PICKAXE;
+        return BlockToolType.PICKAXE;
     }
 
     @Override
-    public Item[] getDrops(Item item) {
+    public Item[] getDrops(Item item, Player player) {
         return item.getTier() >= ItemTool.TIER_WOODEN ? new Item[]{this.toItem(true)} : new Item[0];
     }
 

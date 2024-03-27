@@ -1,5 +1,6 @@
 package cn.nukkit.block;
 
+import cn.nukkit.Player;
 import cn.nukkit.item.Item;
 import cn.nukkit.level.Level;
 import cn.nukkit.math.Vector3;
@@ -85,7 +86,7 @@ public class BlockRailPowered extends BlockRail {
         int dz = pos.getFloorZ();
         // First: get the base block
         BlockRail block;
-        Block block2 = level.getBlock(new Vector3(dx, dy, dz));
+        Block block2 = level.getBlock(dx, dy, dz);
 
         // Second: check if the rail is Powered rail
         if (Rail.isRailBlock(block2)) {
@@ -187,7 +188,7 @@ public class BlockRailPowered extends BlockRail {
     }
 
     @Override
-    public Item[] getDrops(Item item) {
+    public Item[] getDrops(Item item, Player player) {
         return new Item[]{
                 Item.get(Item.GOLDEN_RAIL, 0, 1)
         };

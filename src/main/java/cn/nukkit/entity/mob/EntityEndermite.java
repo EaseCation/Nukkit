@@ -53,4 +53,9 @@ public class EntityEndermite extends EntityMob implements EntityArthropod {
 
         super.spawnTo(player);
     }
+
+    @Override
+    public float getRidingOffset() {
+        return 0.2f;
+    }
 }

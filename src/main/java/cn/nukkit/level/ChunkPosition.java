@@ -131,6 +131,10 @@ public class ChunkPosition implements Cloneable {
         return "[" + this.x + ", " + this.z + "]";
     }
 
+    public String toShortString() {
+        return this.x + "," + this.z;
+    }
+
     @Override
     public ChunkPosition clone() {
         try {

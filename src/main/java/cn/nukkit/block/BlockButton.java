@@ -52,13 +52,13 @@ public abstract class BlockButton extends BlockTransparentMeta implements Faceab
     }
 
     @Override
-    public double getResistance() {
-        return 2.5;
+    public float getResistance() {
+        return 2.5f;
     }
 
     @Override
-    public double getHardness() {
-        return 0.5;
+    public float getHardness() {
+        return 0.5f;
     }
 
     @Override
@@ -145,12 +145,12 @@ public abstract class BlockButton extends BlockTransparentMeta implements Faceab
     }
 
     @Override
-    public boolean onBreak(Item item) {
+    public boolean onBreak(Item item, Player player) {
         if (isActivated()) {
             this.level.getServer().getPluginManager().callEvent(new BlockRedstoneEvent(this, 15, 0));
         }
 
-        return super.onBreak(item);
+        return super.onBreak(item, player);
     }
 
     @Override

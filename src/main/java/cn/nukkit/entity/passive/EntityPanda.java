@@ -2,9 +2,11 @@ package cn.nukkit.entity.passive;
 
 import cn.nukkit.Player;
 import cn.nukkit.block.Block;
+import cn.nukkit.entity.Entity;
 import cn.nukkit.entity.EntityID;
 import cn.nukkit.item.Item;
 import cn.nukkit.level.format.FullChunk;
+import cn.nukkit.math.Vector3f;
 import cn.nukkit.nbt.tag.CompoundTag;
 
 import java.util.concurrent.ThreadLocalRandom;
@@ -59,5 +61,10 @@ public class EntityPanda extends EntityAnimal {
         return new Item[]{
                 Item.get(Block.getItemId(Block.BAMBOO), 0, ThreadLocalRandom.current().nextInt(3)),
         };
+    }
+
+    @Override
+    public Vector3f getMountedOffset(Entity entity) {
+        return new Vector3f(0, 1.105f + entity.getRidingOffset(), 0);
     }
 }

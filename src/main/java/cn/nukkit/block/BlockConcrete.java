@@ -1,5 +1,6 @@
 package cn.nukkit.block;
 
+import cn.nukkit.Player;
 import cn.nukkit.item.Item;
 import cn.nukkit.item.ItemTool;
 import cn.nukkit.utils.BlockColor;
@@ -24,13 +25,13 @@ public class BlockConcrete extends BlockSolidMeta {
     }
 
     @Override
-    public double getResistance() {
+    public float getResistance() {
         return 9;
     }
 
     @Override
-    public double getHardness() {
-        return 1.8;
+    public float getHardness() {
+        return 1.8f;
     }
 
     @Override
@@ -40,11 +41,11 @@ public class BlockConcrete extends BlockSolidMeta {
 
     @Override
     public int getToolType() {
-        return ItemTool.TYPE_PICKAXE;
+        return BlockToolType.PICKAXE;
     }
 
     @Override
-    public Item[] getDrops(Item item) {
+    public Item[] getDrops(Item item, Player player) {
         return item.getTier() >= ItemTool.TIER_WOODEN ? new Item[]{toItem(true)} : new Item[0];
     }
 

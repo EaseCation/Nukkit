@@ -16,6 +16,7 @@ public interface BlockID {
     int COBBLESTONE = 4;
     int OAK_PLANKS = 5; //TODO: 1.20.50: flattening
     int PLANKS = 5;
+    int OAK_SAPLING = 6; //TODO: 1.20.80 flattening
     int SAPLING = 6;
     int BEDROCK = 7;
     int FLOWING_WATER = 8;
@@ -56,6 +57,7 @@ public interface BlockID {
     int WOOL = 35;
     int ELEMENT_0 = 36;
     int YELLOW_FLOWER = 37;
+    int POPPY = 38; //TODO: 1.20.80 flattening
     int RED_FLOWER = 38;
     int BROWN_MUSHROOM = 39;
     int RED_MUSHROOM = 40;
@@ -446,7 +448,9 @@ public interface BlockID {
     int TUBE_CORAL = 386; //TODO: 1.20.0: flattening
     int CORAL = 386;
     int CORAL_BLOCK = 387;
+    int TUBE_CORAL_FAN = 388; //TODO: 1.20.80 flattening
     int CORAL_FAN = 388;
+    int DEAD_TUBE_CORAL_FAN = 389; //TODO: 1.20.80 flattening
     int CORAL_FAN_DEAD = 389;
     int CORAL_FAN_HANG = 390;
     int CORAL_FAN_HANG2 = 391;
@@ -1126,24 +1130,35 @@ public interface BlockID {
     int STRIPPED_JUNGLE_WOOD = 1077;
     int STRIPPED_ACACIA_WOOD = 1078;
     int STRIPPED_DARK_OAK_WOOD = 1079;
+    int SPRUCE_SAPLING = 1080;
+    int BIRCH_SAPLING = 1081;
+    int JUNGLE_SAPLING = 1082;
+    int ACACIA_SAPLING = 1083;
+    int DARK_OAK_SAPLING = 1084;
+    int BLUE_ORCHID = 1085;
+    int ALLIUM = 1086;
+    int AZURE_BLUET = 1087;
+    int RED_TULIP = 1088;
+    int ORANGE_TULIP = 1089;
+    int WHITE_TULIP = 1090;
+    int PINK_TULIP = 1091;
+    int OXEYE_DAISY = 1092;
+    int CORNFLOWER = 1093;
+    int LILY_OF_THE_VALLEY = 1094;
+    int BRAIN_CORAL_FAN = 1095;
+    int BUBBLE_CORAL_FAN = 1096;
+    int FIRE_CORAL_FAN = 1097;
+    int HORN_CORAL_FAN = 1098;
+    int DEAD_BRAIN_CORAL_FAN = 1099;
+    int DEAD_BUBBLE_CORAL_FAN = 1100;
+    int DEAD_FIRE_CORAL_FAN = 1101;
+    int DEAD_HORN_CORAL_FAN = 1102;
 
 
-    int UNDEFINED = 1080;
+    int UNDEFINED = 1103;
 
     @Beta
     int COARSE_DIRT = DIRT;
-    @Beta
-    int OAK_SAPLING = SAPLING;
-    @Beta
-    int SPRUCE_SAPLING = SAPLING;
-    @Beta
-    int BIRCH_SAPLING = SAPLING;
-    @Beta
-    int JUNGLE_SAPLING = SAPLING;
-    @Beta
-    int ACACIA_SAPLING = SAPLING;
-    @Beta
-    int DARK_OAK_SAPLING = SAPLING;
     @Beta
     int RED_SAND = SAND;
     @Beta
@@ -1156,28 +1171,6 @@ public interface BlockID {
     int FERN = TALLGRASS;
     @Beta
     int DANDELION = YELLOW_FLOWER;
-    @Beta
-    int POPPY = RED_FLOWER;
-    @Beta
-    int BLUE_ORCHID = RED_FLOWER;
-    @Beta
-    int ALLIUM = RED_FLOWER;
-    @Beta
-    int AZURE_BLUET = RED_FLOWER;
-    @Beta
-    int RED_TULIP = RED_FLOWER;
-    @Beta
-    int ORANGE_TULIP = RED_FLOWER;
-    @Beta
-    int WHITE_TULIP = RED_FLOWER;
-    @Beta
-    int PINK_TULIP   = RED_FLOWER;
-    @Beta
-    int OXEYE_DAISY = RED_FLOWER;
-    @Beta
-    int CORNFLOWER = RED_FLOWER;
-    @Beta
-    int LILY_OF_THE_VALLEY = RED_FLOWER;
     @Beta
     int SANDSTONE_DOUBLE_SLAB = DOUBLE_STONE_SLAB;
     @Beta
@@ -1328,26 +1321,6 @@ public interface BlockID {
     int DEAD_FIRE_CORAL_BLOCK = CORAL_BLOCK;
     @Beta
     int DEAD_HORN_CORAL_BLOCK = CORAL_BLOCK;
-    @Beta
-    int TUBE_CORAL_FAN = CORAL_FAN;
-    @Beta
-    int BRAIN_CORAL_FAN = CORAL_FAN;
-    @Beta
-    int BUBBLE_CORAL_FAN = CORAL_FAN;
-    @Beta
-    int FIRE_CORAL_FAN = CORAL_FAN;
-    @Beta
-    int HORN_CORAL_FAN = CORAL_FAN;
-    @Beta
-    int DEAD_TUBE_CORAL_FAN = CORAL_FAN_DEAD;
-    @Beta
-    int DEAD_BRAIN_CORAL_FAN = CORAL_FAN_DEAD;
-    @Beta
-    int DEAD_BUBBLE_CORAL_FAN = CORAL_FAN_DEAD;
-    @Beta
-    int DEAD_FIRE_CORAL_FAN = CORAL_FAN_DEAD;
-    @Beta
-    int DEAD_HORN_CORAL_FAN = CORAL_FAN_DEAD;
     @Beta
     int TUBE_CORAL_WALL_FAN = CORAL_FAN_HANG;
     @Beta

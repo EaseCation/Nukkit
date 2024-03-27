@@ -1,6 +1,5 @@
 package cn.nukkit.block;
 
-import cn.nukkit.item.ItemTool;
 import cn.nukkit.utils.BlockColor;
 import cn.nukkit.utils.DyeColor;
 
@@ -34,16 +33,16 @@ public class BlockWool extends BlockSolidMeta {
 
     @Override
     public int getToolType() {
-        return ItemTool.TYPE_SHEARS;
+        return BlockToolType.SHEARS;
     }
 
     @Override
-    public double getHardness() {
-        return 0.8;
+    public float getHardness() {
+        return 0.8f;
     }
 
     @Override
-    public double getResistance() {
+    public float getResistance() {
         return 4;
     }
 

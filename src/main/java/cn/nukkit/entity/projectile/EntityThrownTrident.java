@@ -3,6 +3,7 @@ package cn.nukkit.entity.projectile;
 import cn.nukkit.Player;
 import cn.nukkit.entity.Entity;
 import cn.nukkit.entity.EntityID;
+import cn.nukkit.entity.data.LongEntityData;
 import cn.nukkit.entity.weather.EntityLightning;
 import cn.nukkit.event.entity.EntityDamageByChildEntityEvent;
 import cn.nukkit.event.entity.EntityDamageByEntityEvent;
@@ -10,6 +11,7 @@ import cn.nukkit.event.entity.EntityDamageEvent;
 import cn.nukkit.event.entity.EntityDamageEvent.DamageCause;
 import cn.nukkit.event.entity.ProjectileHitEvent;
 import cn.nukkit.event.weather.LightningStrikeEvent;
+import cn.nukkit.inventory.Inventory;
 import cn.nukkit.inventory.InventoryHolder;
 import cn.nukkit.item.Item;
 import cn.nukkit.item.enchantment.Enchantment;
@@ -17,8 +19,11 @@ import cn.nukkit.level.MovingObjectPosition;
 import cn.nukkit.level.format.FullChunk;
 import cn.nukkit.nbt.NBTIO;
 import cn.nukkit.nbt.tag.CompoundTag;
+import cn.nukkit.network.protocol.LevelEventPacket;
 import cn.nukkit.network.protocol.LevelSoundEventPacket;
 import lombok.Setter;
+
+import java.util.concurrent.ThreadLocalRandom;
 
 /**
  * Created by PetteriM1
@@ -27,12 +32,15 @@ public class EntityThrownTrident extends EntityProjectile {
 
     public static final int NETWORK_ID = EntityID.THROWN_TRIDENT;
 
+    protected int favoredSlot;
     protected Item trident;
 
     protected int pickupMode;
+
     public boolean alreadyCollided;
     @Setter
     protected int loyaltyBackTick = 0;
+    protected int returnTridentTickCount;
 
     @Override
     public int getNetworkId() {
@@ -65,12 +73,17 @@ public class EntityThrownTrident extends EntityProjectile {
 
     public EntityThrownTrident(FullChunk chunk, CompoundTag nbt, Entity shootingEntity) {
         super(chunk, nbt, shootingEntity);
+        if (shootingEntity != null) {
+            this.setDataProperty(new LongEntityData(DATA_OWNER_EID, shootingEntity.getId()));
+//            this.setDataProperty(new LongEntityData(DATA_ARROW_SHOOTER_EID, shootingEntity.getId()));
+        }
     }
 
     @Override
     protected void initEntity() {
         super.initEntity();
 
+        this.favoredSlot = namedTag.contains("favoredSlot") ? namedTag.getInt("favoredSlot") : -1;
         this.trident = namedTag.contains("Trident") ? NBTIO.getItemHelper(namedTag.getCompound("Trident")) : Item.get(Item.AIR);
         this.pickupMode = namedTag.contains("pickup") ? namedTag.getByte("pickup") : PICKUP_ANY;
     }
@@ -79,12 +92,25 @@ public class EntityThrownTrident extends EntityProjectile {
     public void saveNBT() {
         super.saveNBT();
 
+        this.namedTag.putInt("favoredSlot", this.favoredSlot);
         this.namedTag.put("Trident", NBTIO.putItemHelper(this.trident));
         this.namedTag.putByte("pickup", this.pickupMode);
     }
 
+    public int getFavoredSlot() {
+        return favoredSlot;
+    }
+
+    public void setFavoredSlot(int slot) {
+        favoredSlot = slot;
+    }
+
     public Item getItem() {
         return this.trident != null ? this.trident.clone() : Item.get(Item.AIR);
+    }
+
+    public boolean hasLoyalty() {
+        return trident != null && trident.hasEnchantment(Enchantment.LOYALTY);
     }
 
     public void setItem(Item item) {
@@ -159,6 +185,7 @@ public class EntityThrownTrident extends EntityProjectile {
         newTrident.pickupMode = this.pickupMode;
         newTrident.shootingEntity = this.shootingEntity;
         newTrident.setItem(this.trident);
+        newTrident.setFavoredSlot(this.favoredSlot);
         newTrident.spawnToAll();
         return true;
     }
@@ -185,12 +212,35 @@ public class EntityThrownTrident extends EntityProjectile {
     public boolean onUpdate(int currentTick) {
         boolean update = super.onUpdate(currentTick);
         if (this.loyaltyBackTick > 0) {
-            if (this.isCollided || this.hadCollision || this.alreadyCollided || this.getY() <= 0) {
-                if (--this.loyaltyBackTick <= 0 || this.getY() <= 0) {
+            if (this.isCollided || this.hadCollision || this.alreadyCollided || this.getY() <= level.getHeightRange().getMinY()) {
+                if (returnTridentTickCount++ == 0) {
+                    if (shootingEntity != null) {
+                        shootingEntity.level.addLevelSoundEvent(shootingEntity, LevelSoundEventPacket.SOUND_ITEM_TRIDENT_RETURN);
+                    }
+                    setDataFlag(DATA_FLAG_RETURN_TRIDENT, true);
+                }
+
+                //TODO: ThrownTrident::returnWithLoyalty animation
+
+                if (--this.loyaltyBackTick <= 0 || this.getY() <= level.getHeightRange().getMinY()) {
                     if (this.shootingEntity instanceof InventoryHolder) {
                         this.close();
-                        ((InventoryHolder) this.shootingEntity).getInventory().addItem(this.trident);
-                        this.shootingEntity.getLevel().addLevelSoundEvent(this.shootingEntity, LevelSoundEventPacket.SOUND_ITEM_TRIDENT_RETURN);
+
+                        if (pickupMode == PICKUP_ANY) {
+                            Inventory inventory = ((InventoryHolder) this.shootingEntity).getInventory();
+                            if (favoredSlot != -1) {
+                                Item item = inventory.getItem(favoredSlot);
+                                if (item.isNull()) {
+                                    inventory.setItem(favoredSlot, trident);
+                                } else {
+                                    inventory.addItem(trident);
+                                }
+                            } else {
+                                inventory.addItem(this.trident);
+                            }
+                        }
+
+                        this.shootingEntity.getLevel().addLevelEvent(this.shootingEntity, LevelEventPacket.EVENT_SOUND_INFINITY_ARROW_PICKUP, (int) ((ThreadLocalRandom.current().nextGaussian() * 0.7 + 1) * 2 * 1000));
                     }
                 }
             }

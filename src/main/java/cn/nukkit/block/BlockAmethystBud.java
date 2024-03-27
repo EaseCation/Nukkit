@@ -1,5 +1,6 @@
 package cn.nukkit.block;
 
+import cn.nukkit.Player;
 import cn.nukkit.item.Item;
 
 public abstract class BlockAmethystBud extends BlockAmethystCluster {
@@ -8,12 +9,7 @@ public abstract class BlockAmethystBud extends BlockAmethystCluster {
     }
 
     @Override
-    public boolean canHarvestWithHand() {
-        return false;
-    }
-
-    @Override
-    public Item[] getDrops(Item item) {
+    public Item[] getDrops(Item item, Player player) {
         return new Item[0];
     }
 }

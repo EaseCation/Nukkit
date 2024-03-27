@@ -133,7 +133,7 @@ public class BlockFlowerPot extends BlockFlowable {
     }
 
     @Override
-    public Item[] getDrops(Item item) {
+    public Item[] getDrops(Item item, Player player) {
         BlockEntityFlowerPot blockEntity = getBlockEntity();
         if (blockEntity != null && blockEntity.hasPlant()) {
             return new Item[]{

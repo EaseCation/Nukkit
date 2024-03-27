@@ -2,9 +2,7 @@ package cn.nukkit.block;
 
 import cn.nukkit.Player;
 import cn.nukkit.item.Item;
-import cn.nukkit.item.ItemTool;
 import cn.nukkit.level.Dimension;
-import cn.nukkit.level.Level;
 import cn.nukkit.level.particle.DestroyBlockParticle;
 import cn.nukkit.math.BlockFace;
 import cn.nukkit.network.protocol.LevelEventPacket;
@@ -40,18 +38,18 @@ public class BlockSponge extends BlockSolidMeta {
     }
 
     @Override
-    public double getHardness() {
-        return 0.6;
+    public float getHardness() {
+        return 0.6f;
     }
 
     @Override
-    public double getResistance() {
+    public float getResistance() {
         return 3;
     }
 
     @Override
     public int getToolType() {
-        return ItemTool.TYPE_HOE;
+        return BlockToolType.HOE;
     }
 
     @Override

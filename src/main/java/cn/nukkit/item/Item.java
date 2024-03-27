@@ -4,6 +4,7 @@ import cn.nukkit.Player;
 import cn.nukkit.Server;
 import cn.nukkit.block.Block;
 import cn.nukkit.block.BlockID;
+import cn.nukkit.block.BlockToolType;
 import cn.nukkit.entity.Entity;
 import cn.nukkit.inventory.Fuel;
 import cn.nukkit.item.enchantment.Enchantment;
@@ -1007,6 +1008,10 @@ public class Item implements Cloneable, ItemID {
 
     public boolean isTool() {
         return false;
+    }
+
+    public int getBlockToolType() {
+        return BlockToolType.NONE;
     }
 
     public int getMaxDurability() {

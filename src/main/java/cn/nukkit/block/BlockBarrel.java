@@ -7,7 +7,6 @@ import cn.nukkit.blockentity.BlockEntityBarrel;
 import cn.nukkit.blockentity.BlockEntityType;
 import cn.nukkit.inventory.ContainerInventory;
 import cn.nukkit.item.Item;
-import cn.nukkit.item.ItemTool;
 import cn.nukkit.math.BlockFace;
 import cn.nukkit.nbt.tag.CompoundTag;
 import cn.nukkit.utils.BlockColor;
@@ -44,18 +43,18 @@ public class BlockBarrel extends BlockSolidMeta implements Faceable {
     }
 
     @Override
-    public double getHardness() {
-        return 2.5;
+    public float getHardness() {
+        return 2.5f;
     }
 
     @Override
-    public double getResistance() {
-        return 12.5;
+    public float getResistance() {
+        return 12.5f;
     }
 
     @Override
     public int getToolType() {
-        return ItemTool.TYPE_AXE;
+        return BlockToolType.AXE;
     }
 
     @Override

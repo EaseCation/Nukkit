@@ -7,7 +7,6 @@ import cn.nukkit.blockentity.BlockEntityBell;
 import cn.nukkit.blockentity.BlockEntityType;
 import cn.nukkit.item.Item;
 import cn.nukkit.item.ItemID;
-import cn.nukkit.item.ItemTool;
 import cn.nukkit.level.Level;
 import cn.nukkit.math.AxisAlignedBB;
 import cn.nukkit.math.BlockFace;
@@ -54,11 +53,11 @@ public class BlockBell extends BlockTransparentMeta implements Faceable {
 
     @Override
     public int getToolType() {
-        return ItemTool.TYPE_PICKAXE;
+        return BlockToolType.PICKAXE;
     }
 
     @Override
-    public double getHardness() {
+    public float getHardness() {
         if (V1_20_30.isAvailable()) {
             return 5;
         }
@@ -66,7 +65,7 @@ public class BlockBell extends BlockTransparentMeta implements Faceable {
     }
 
     @Override
-    public double getResistance() {
+    public float getResistance() {
         return 25;
     }
 

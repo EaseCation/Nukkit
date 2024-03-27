@@ -42,16 +42,16 @@ public class BlockTurtleEgg extends BlockTransparentMeta {
     }
 
     @Override
-    public double getHardness() {
+    public float getHardness() {
         if (V1_20_30.isAvailable()) {
-            return 0.5;
+            return 0.5f;
         }
-        return 0.4;
+        return 0.4f;
     }
 
     @Override
-    public double getResistance() {
-        return 2.5;
+    public float getResistance() {
+        return 2.5f;
     }
 
     @Override
@@ -110,12 +110,7 @@ public class BlockTurtleEgg extends BlockTransparentMeta {
     }
 
     @Override
-    public boolean canHarvestWithHand() {
-        return false;
-    }
-
-    @Override
-    public Item[] getDrops(Item item) {
+    public Item[] getDrops(Item item, Player player) {
         return new Item[0];
     }
 
@@ -125,7 +120,7 @@ public class BlockTurtleEgg extends BlockTransparentMeta {
     }
 
     @Override
-    public boolean onBreak(Item item) {
+    public boolean onBreak(Item item, Player player) {
         level.addLevelSoundEvent(this, LevelSoundEventPacket.SOUND_BLOCK_TURTLE_EGG_BREAK);
 
         int count = getEggCount() - 1;

@@ -11,7 +11,7 @@ public class BlockSlime extends BlockSolid {
     }
 
     @Override
-    public double getHardness() {
+    public float getHardness() {
         return 0;
     }
 
@@ -26,7 +26,7 @@ public class BlockSlime extends BlockSolid {
     }
 
     @Override
-    public double getResistance() {
+    public float getResistance() {
         return 0;
     }
 

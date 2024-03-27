@@ -4,7 +4,6 @@ import cn.nukkit.Player;
 import cn.nukkit.block.Block;
 import cn.nukkit.entity.Entity;
 import cn.nukkit.entity.EntityLiving;
-import cn.nukkit.entity.data.LongEntityData;
 import cn.nukkit.entity.item.EntityEndCrystal;
 import cn.nukkit.entity.item.EntityPainting;
 import cn.nukkit.entity.item.EntityVehicle;
@@ -68,9 +67,6 @@ public abstract class EntityProjectile extends Entity {
     public EntityProjectile(FullChunk chunk, CompoundTag nbt, Entity shootingEntity) {
         super(chunk, nbt);
         this.shootingEntity = shootingEntity;
-        if (shootingEntity != null) {
-            this.setDataProperty(new LongEntityData(DATA_ARROW_SHOOTER_EID, shootingEntity.getId()));
-        }
     }
 
     public int getResultDamage() {
@@ -271,7 +267,7 @@ public abstract class EntityProjectile extends Entity {
             MovingObjectPosition blockHitResult = null;
 
             if (!this.isCollided) {
-                blockHitResult = level.clip(copyVec(), moveVector, false, 200);
+                blockHitResult = level.clip(copyVec(), moveVector, false, 200, canPassThroughBarrier());
                 if (blockHitResult != null) {
                     Vector3 hitPos = blockHitResult.hitVector;
 

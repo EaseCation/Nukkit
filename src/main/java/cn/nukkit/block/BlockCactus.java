@@ -11,7 +11,6 @@ import cn.nukkit.level.Level;
 import cn.nukkit.math.AxisAlignedBB;
 import cn.nukkit.math.BlockFace;
 import cn.nukkit.math.SimpleAxisAlignedBB;
-import cn.nukkit.math.Vector3;
 import cn.nukkit.utils.BlockColor;
 
 /**
@@ -33,12 +32,12 @@ public class BlockCactus extends BlockTransparentMeta {
     }
 
     @Override
-    public double getHardness() {
-        return 0.4;
+    public float getHardness() {
+        return 0.4f;
     }
 
     @Override
-    public double getResistance() {
+    public float getResistance() {
         return 2;
     }
 
@@ -98,8 +97,11 @@ public class BlockCactus extends BlockTransparentMeta {
         } else if (type == Level.BLOCK_UPDATE_RANDOM) {
             if (down().getId() != CACTUS) {
                 if (this.getDamage() == 0x0F) {
+                    int blockX = getFloorX();
+                    int blockY = getFloorY();
+                    int blockZ = getFloorZ();
                     for (int y = 1; y < 3; ++y) {
-                        Block b = this.getLevel().getBlock(new Vector3(this.x, this.y + y, this.z));
+                        Block b = this.getLevel().getBlock(blockX, blockY + y, blockZ);
                         if (b.getId() == AIR) {
                             BlockGrowEvent event = new BlockGrowEvent(b, Block.get(BlockID.CACTUS));
                             Server.getInstance().getPluginManager().callEvent(event);
@@ -151,7 +153,7 @@ public class BlockCactus extends BlockTransparentMeta {
     }
 
     @Override
-    public Item[] getDrops(Item item) {
+    public Item[] getDrops(Item item, Player player) {
         return new Item[]{
             Item.get(Item.CACTUS, 0, 1)
         };

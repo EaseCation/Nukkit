@@ -2,7 +2,6 @@ package cn.nukkit.block;
 
 import cn.nukkit.Player;
 import cn.nukkit.item.Item;
-import cn.nukkit.item.ItemTool;
 import cn.nukkit.level.Level;
 import cn.nukkit.math.AxisAlignedBB;
 import cn.nukkit.math.BlockFace;
@@ -32,18 +31,18 @@ public class BlockAmethystCluster extends BlockTransparentMeta implements Faceab
     }
 
     @Override
-    public double getHardness() {
-        return 0.25;
+    public float getHardness() {
+        return 1.5f;
     }
 
     @Override
-    public double getResistance() {
-        return 1.25;
+    public float getResistance() {
+        return 7.5f;
     }
 
     @Override
     public int getToolType() {
-        return ItemTool.TYPE_PICKAXE;
+        return BlockToolType.PICKAXE;
     }
 
     @Override
@@ -57,7 +56,7 @@ public class BlockAmethystCluster extends BlockTransparentMeta implements Faceab
     }
 
     @Override
-    public Item[] getDrops(Item item) {
+    public Item[] getDrops(Item item, Player player) {
         return new Item[]{
                 Item.get(Item.AMETHYST_SHARD, 0, item.isPickaxe() ? 4 : 2),
         };
@@ -124,6 +123,11 @@ public class BlockAmethystCluster extends BlockTransparentMeta implements Faceab
 
     @Override
     public boolean sticksToPiston() {
+        return false;
+    }
+
+    @Override
+    public boolean canProvideSupport(BlockFace face, SupportType type) {
         return false;
     }
 

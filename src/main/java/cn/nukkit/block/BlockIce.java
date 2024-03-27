@@ -1,8 +1,9 @@
 package cn.nukkit.block;
 
+import cn.nukkit.Player;
 import cn.nukkit.event.block.BlockFadeEvent;
 import cn.nukkit.item.Item;
-import cn.nukkit.item.ItemTool;
+import cn.nukkit.item.enchantment.Enchantment;
 import cn.nukkit.level.Dimension;
 import cn.nukkit.level.Level;
 import cn.nukkit.utils.BlockColor;
@@ -27,31 +28,31 @@ public class BlockIce extends BlockTransparent {
     }
 
     @Override
-    public double getResistance() {
-        return 2.5;
+    public float getResistance() {
+        return 2.5f;
     }
 
     @Override
-    public double getHardness() {
-        return 0.5;
+    public float getHardness() {
+        return 0.5f;
     }
 
     @Override
-    public double getFrictionFactor() {
-        return 0.98;
+    public float getFrictionFactor() {
+        return 0.98f;
     }
 
     @Override
     public int getToolType() {
-        return ItemTool.TYPE_PICKAXE;
+        return BlockToolType.PICKAXE;
     }
 
     @Override
-    public boolean onBreak(Item item) {
-        if (this.getLevel().getDimension() != Dimension.NETHER) {
+    public boolean onBreak(Item item, Player player) {
+        if (this.getLevel().getDimension() != Dimension.NETHER && (player == null || player.isSurvivalLike()) && !item.hasEnchantment(Enchantment.SILK_TOUCH)) {
             return this.getLevel().setBlock(this, Block.get(BlockID.WATER), true);
         } else {
-            return super.onBreak(item);
+            return super.onBreak(item, player);
         }
     }
 
@@ -71,7 +72,7 @@ public class BlockIce extends BlockTransparent {
     }
 
     @Override
-    public Item[] getDrops(Item item) {
+    public Item[] getDrops(Item item, Player player) {
         return new Item[0];
     }
 
@@ -83,10 +84,5 @@ public class BlockIce extends BlockTransparent {
     @Override
     public boolean canSilkTouch() {
         return true;
-    }
-
-    @Override
-    public boolean canHarvestWithHand() {
-        return false;
     }
 }

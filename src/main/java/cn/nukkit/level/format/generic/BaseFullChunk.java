@@ -3,6 +3,7 @@ package cn.nukkit.level.format.generic;
 import cn.nukkit.Player;
 import cn.nukkit.block.Block;
 import cn.nukkit.block.BlockID;
+import cn.nukkit.block.BlockLeaves;
 import cn.nukkit.block.BlockWall;
 import cn.nukkit.blockentity.BlockEntities;
 import cn.nukkit.blockentity.BlockEntity;
@@ -633,7 +634,7 @@ public abstract class BaseFullChunk implements FullChunk, ChunkManager {
     }
 
     @Override
-    public void fixBlocks(boolean fixWalls, boolean fixBlockLayers, boolean fixBlockEntities, boolean emptyContainers) {
+    public void fixBlocks(boolean fixWalls, boolean fixBlockLayers, boolean fixBlockEntities, boolean emptyContainers, boolean persistentLeaves, boolean replaceInvisibleBedrock) {
         boolean blockEntityOp = fixBlockEntities || emptyContainers;
         Level level = provider.getLevel();
 
@@ -682,6 +683,22 @@ public abstract class BaseFullChunk implements FullChunk, ChunkManager {
                                     log.debug("Removed unknown extra block: {}, {}, {} ({}:{}) {}", worldX, worldY, worldZ, extra.getId(), extra.getDamage(), level.getFolderName());
                                 }
                             }
+                        }
+
+                        if (replaceInvisibleBedrock && block.is(Block.INVISIBLE_BEDROCK)) {
+                            this.setBlock(0, x, worldY, z, Block.BARRIER);
+                            continue;
+                        }
+
+                        if (persistentLeaves && block instanceof BlockLeaves leaves) {
+                            int oldMeta = block.getDamage();
+                            leaves.setPersistent(true);
+                            leaves.setCheckDecay(false);
+                            int newMeta = block.getDamage();
+                            if (oldMeta != newMeta) {
+                                this.setBlock(0, x, worldY, z, block.getId(), newMeta);
+                            }
+                            continue;
                         }
 
                         if (fixWalls && block instanceof BlockWall wall) {

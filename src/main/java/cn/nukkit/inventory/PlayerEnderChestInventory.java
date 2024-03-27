@@ -53,7 +53,7 @@ public class PlayerEnderChestInventory extends BaseInventory {
 
             Level level = this.getHolder().getLevel();
             if (level != null) {
-                level.addLevelSoundEvent(LevelSoundEventPacket.SOUND_ENDERCHEST_OPEN, 1, -1, this.getHolder().add(0.5, 0.5, 0.5));
+                level.addLevelSoundEvent(this.getHolder().blockCenter(), LevelSoundEventPacket.SOUND_ENDERCHEST_OPEN);
                 level.addChunkPacket((int) this.getHolder().getX() >> 4, (int) this.getHolder().getZ() >> 4, blockEventPacket);
             }
         }
@@ -79,7 +79,7 @@ public class PlayerEnderChestInventory extends BaseInventory {
 
             Level level = this.getHolder().getLevel();
             if (level != null) {
-                level.addLevelSoundEvent(LevelSoundEventPacket.SOUND_ENDERCHEST_CLOSED, 1, -1, this.getHolder().add(0.5, 0.5, 0.5));
+                level.addLevelSoundEvent(this.getHolder().blockCenter(), LevelSoundEventPacket.SOUND_ENDERCHEST_CLOSED);
                 level.addChunkPacket((int) this.getHolder().getX() >> 4, (int) this.getHolder().getZ() >> 4, blockEventPacket);
             }
 

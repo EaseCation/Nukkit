@@ -1,6 +1,5 @@
 package cn.nukkit.block;
 
-import cn.nukkit.item.ItemTool;
 import cn.nukkit.utils.BlockColor;
 
 public class BlockMangroveRoots extends BlockTransparent {
@@ -18,13 +17,13 @@ public class BlockMangroveRoots extends BlockTransparent {
     }
 
     @Override
-    public double getHardness() {
-        return 0.7;
+    public float getHardness() {
+        return 0.7f;
     }
 
     @Override
-    public double getResistance() {
-        return 3.5;
+    public float getResistance() {
+        return 3.5f;
     }
 
     @Override
@@ -39,7 +38,7 @@ public class BlockMangroveRoots extends BlockTransparent {
 
     @Override
     public int getToolType() {
-        return ItemTool.TYPE_AXE;
+        return BlockToolType.AXE;
     }
 
     @Override

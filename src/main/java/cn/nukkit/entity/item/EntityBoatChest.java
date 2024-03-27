@@ -9,6 +9,7 @@ import cn.nukkit.inventory.InventoryHolder;
 import cn.nukkit.item.Item;
 import cn.nukkit.level.format.FullChunk;
 import cn.nukkit.math.Vector3;
+import cn.nukkit.math.Vector3f;
 import cn.nukkit.nbt.NBTIO;
 import cn.nukkit.nbt.tag.CompoundTag;
 import cn.nukkit.nbt.tag.ListTag;
@@ -114,5 +115,10 @@ public class EntityBoatChest extends EntityBoat implements InventoryHolder {
     @Override
     public Inventory getInventory() {
         return inventory;
+    }
+
+    @Override
+    public Vector3f getMountedOffset(Entity entity) {
+        return super.getMountedOffset(entity).add(0.2f, 0, 0);
     }
 }

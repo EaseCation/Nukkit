@@ -1,7 +1,7 @@
 package cn.nukkit.block;
 
+import cn.nukkit.Player;
 import cn.nukkit.item.Item;
-import cn.nukkit.item.ItemTool;
 import cn.nukkit.utils.BlockColor;
 
 import static cn.nukkit.GameVersion.*;
@@ -22,21 +22,21 @@ public class BlockSculk extends BlockSolid {
     }
 
     @Override
-    public double getHardness() {
+    public float getHardness() {
         if (ENABLE_BLOCK_DESTROY_SPEED_COMPATIBILITY || V1_20_30.isAvailable()) {
-            return 0.2;
+            return 0.2f;
         }
-        return 0.6;
+        return 0.6f;
     }
 
     @Override
-    public double getResistance() {
+    public float getResistance() {
         return 1;
     }
 
     @Override
     public int getToolType() {
-        return ItemTool.TYPE_HOE;
+        return BlockToolType.HOE;
     }
 
     @Override
@@ -45,7 +45,7 @@ public class BlockSculk extends BlockSolid {
     }
 
     @Override
-    public Item[] getDrops(Item item) {
+    public Item[] getDrops(Item item, Player player) {
         return new Item[0];
     }
 

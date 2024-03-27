@@ -1,5 +1,6 @@
 package cn.nukkit.block;
 
+import cn.nukkit.Player;
 import cn.nukkit.item.Item;
 import cn.nukkit.utils.BlockColor;
 
@@ -23,17 +24,17 @@ public class BlockGlassPane extends BlockThin {
     }
 
     @Override
-    public double getResistance() {
-        return 1.5;
+    public float getResistance() {
+        return 1.5f;
     }
 
     @Override
-    public double getHardness() {
-        return 0.3;
+    public float getHardness() {
+        return 0.3f;
     }
 
     @Override
-    public Item[] getDrops(Item item) {
+    public Item[] getDrops(Item item, Player player) {
         return new Item[0];
     }
 

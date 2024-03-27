@@ -6,7 +6,6 @@ import cn.nukkit.blockentity.BlockEntity;
 import cn.nukkit.blockentity.BlockEntityType;
 import cn.nukkit.blockentity.BlockEntityMusic;
 import cn.nukkit.item.Item;
-import cn.nukkit.item.ItemTool;
 import cn.nukkit.level.Level;
 import cn.nukkit.level.sound.SoundEnum;
 import cn.nukkit.math.BlockFace;
@@ -43,17 +42,17 @@ public class BlockNoteblock extends BlockSolid {
 
     @Override
     public int getToolType() {
-        return ItemTool.TYPE_AXE;
+        return BlockToolType.AXE;
     }
 
     @Override
-    public double getHardness() {
-        return 0.8D;
+    public float getHardness() {
+        return 0.8f;
     }
 
     @Override
-    public double getResistance() {
-        return 4D;
+    public float getResistance() {
+        return 4;
     }
 
     @Override

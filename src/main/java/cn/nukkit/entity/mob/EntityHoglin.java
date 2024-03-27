@@ -1,9 +1,11 @@
 package cn.nukkit.entity.mob;
 
 import cn.nukkit.Player;
+import cn.nukkit.entity.Entity;
 import cn.nukkit.entity.EntityID;
 import cn.nukkit.item.Item;
 import cn.nukkit.level.format.FullChunk;
+import cn.nukkit.math.Vector3f;
 import cn.nukkit.nbt.tag.CompoundTag;
 
 import java.util.concurrent.ThreadLocalRandom;
@@ -63,5 +65,12 @@ public class EntityHoglin extends EntityMob {
                 Item.get(this.isOnFire() ? Item.COOKED_PORKCHOP : Item.PORKCHOP, 0, random.nextInt(2, 5)),
                 Item.get(Item.LEATHER, 0, random.nextInt(2)),
         };
+    }
+
+    @Override
+    public Vector3f getMountedOffset(Entity entity) {
+        return new Vector3f(0, 0.9f + entity.getRidingOffset(), -0.3f);
+//        return new Vector3f(0, 2.4f + entity.getRidingOffset(), -0.3f); //TODO: middle
+//        return new Vector3f(0, 3.9f + entity.getRidingOffset(), -0.3f); //TODO: top
     }
 }

@@ -23,13 +23,13 @@ public class BlockBeeNest extends BlockBeehive {
     }
 
     @Override
-    public double getHardness() {
-        return 0.3;
+    public float getHardness() {
+        return 0.3f;
     }
 
     @Override
-    public double getResistance() {
-        return 1.5;
+    public float getResistance() {
+        return 1.5f;
     }
 
     @Override

@@ -1,5 +1,7 @@
 package cn.nukkit.item;
 
+import cn.nukkit.block.BlockToolType;
+
 public class ItemAxeNetherite extends ItemTool {
 
     public ItemAxeNetherite() {
@@ -17,6 +19,11 @@ public class ItemAxeNetherite extends ItemTool {
     @Override
     public boolean isAxe() {
         return true;
+    }
+
+    @Override
+    public int getBlockToolType() {
+        return BlockToolType.AXE;
     }
 
     @Override

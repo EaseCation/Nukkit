@@ -2,7 +2,6 @@ package cn.nukkit.block;
 
 import cn.nukkit.Player;
 import cn.nukkit.item.Item;
-import cn.nukkit.item.ItemTool;
 import cn.nukkit.level.Level;
 import cn.nukkit.math.AxisAlignedBB;
 import cn.nukkit.math.BlockFace;
@@ -48,18 +47,18 @@ public class BlockRail extends BlockFlowable implements Faceable {
     }
 
     @Override
-    public double getHardness() {
-        return 0.7;
+    public float getHardness() {
+        return 0.7f;
     }
 
     @Override
-    public double getResistance() {
-        return 3.5;
+    public float getResistance() {
+        return 3.5f;
     }
 
     @Override
     public int getToolType() {
-        return ItemTool.TYPE_PICKAXE;
+        return BlockToolType.PICKAXE;
     }
 
     @Override
@@ -256,7 +255,7 @@ public class BlockRail extends BlockFlowable implements Faceable {
     }
 
     @Override
-    public Item[] getDrops(Item item) {
+    public Item[] getDrops(Item item, Player player) {
         return new Item[]{
                 Item.get(Item.RAIL, 0, 1)
         };

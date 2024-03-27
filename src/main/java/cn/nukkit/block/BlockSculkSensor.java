@@ -6,7 +6,6 @@ import cn.nukkit.blockentity.BlockEntity;
 import cn.nukkit.blockentity.BlockEntitySculkSensor;
 import cn.nukkit.blockentity.BlockEntityType;
 import cn.nukkit.item.Item;
-import cn.nukkit.item.ItemTool;
 import cn.nukkit.math.BlockFace;
 import cn.nukkit.nbt.tag.CompoundTag;
 import cn.nukkit.utils.BlockColor;
@@ -40,13 +39,13 @@ public class BlockSculkSensor extends BlockTransparentMeta {
     }
 
     @Override
-    public double getHardness() {
-        return 1.5;
+    public float getHardness() {
+        return 1.5f;
     }
 
     @Override
-    public double getResistance() {
-        return 7.5;
+    public float getResistance() {
+        return 7.5f;
     }
 
     @Override
@@ -56,7 +55,7 @@ public class BlockSculkSensor extends BlockTransparentMeta {
 
     @Override
     public int getToolType() {
-        return ItemTool.TYPE_HOE;
+        return BlockToolType.HOE;
     }
 
     @Override
@@ -65,7 +64,7 @@ public class BlockSculkSensor extends BlockTransparentMeta {
     }
 
     @Override
-    public Item[] getDrops(Item item) {
+    public Item[] getDrops(Item item, Player player) {
         return new Item[0];
     }
 

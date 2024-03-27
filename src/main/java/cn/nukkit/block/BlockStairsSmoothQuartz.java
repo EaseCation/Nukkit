@@ -1,6 +1,5 @@
 package cn.nukkit.block;
 
-import cn.nukkit.item.ItemTool;
 import cn.nukkit.utils.BlockColor;
 
 import static cn.nukkit.GameVersion.*;
@@ -26,21 +25,21 @@ public class BlockStairsSmoothQuartz extends BlockStairs {
     }
 
     @Override
-    public double getHardness() {
+    public float getHardness() {
         if (V1_20_30.isAvailable()) {
             return 2;
         }
-        return 0.8;
+        return 0.8f;
     }
 
     @Override
-    public double getResistance() {
+    public float getResistance() {
         return 30;
     }
 
     @Override
     public int getToolType() {
-        return ItemTool.TYPE_PICKAXE;
+        return BlockToolType.PICKAXE;
     }
 
     @Override

@@ -43,13 +43,13 @@ public class FoodChorusFruit extends FoodNormal {
 
             if (y < 0) continue;
 
-            while (y >= 0 && !level.getBlock(new Vector3(x, y + 1, z)).isSolid()) {
+            while (y >= 0 && !level.getBlock(x, y + 1, z).isSolid()) {
                 y--;
             }
             y++; // Back up to non solid
 
-            Block blockUp = level.getBlock(new Vector3(x, y + 1, z));
-            Block blockUp2 = level.getBlock(new Vector3(x, y + 2, z));
+            Block blockUp = level.getBlock(x, y + 1, z);
+            Block blockUp2 = level.getBlock(x, y + 2, z);
 
             if (blockUp.isSolid() || blockUp instanceof BlockLiquid ||
                     blockUp2.isSolid() || blockUp2 instanceof BlockLiquid) {

@@ -1,5 +1,6 @@
 package cn.nukkit.block;
 
+import cn.nukkit.Player;
 import cn.nukkit.item.Item;
 
 import java.util.concurrent.ThreadLocalRandom;
@@ -33,7 +34,7 @@ public class BlockStemMelon extends BlockStem {
     }
 
     @Override
-    public Item[] getDrops(Item item) {
+    public Item[] getDrops(Item item, Player player) {
         return new Item[]{
                 Item.get(Item.MELON_SEEDS, 0, ThreadLocalRandom.current().nextInt(0, 4))
         };

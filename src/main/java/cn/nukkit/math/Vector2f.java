@@ -4,7 +4,7 @@ package cn.nukkit.math;
  * author: MagicDroidX
  * Nukkit Project
  */
-public class Vector2f {
+public class Vector2f implements Cloneable {
     public static final Vector2f ZERO = new Vector2f(0, 0);
 
     public final float x;
@@ -95,20 +95,12 @@ public class Vector2f {
         return new Vector2f(this.x / vec.getX(), this.y / vec.getY());
     }
 
-    public double distance(float x) {
-        return this.distance(x, 0);
-    }
-
     public double distance(float x, float y) {
         return Math.sqrt(this.distanceSquared(x, y));
     }
 
     public double distance(Vector2f vector) {
         return Math.sqrt(this.distanceSquared(vector.getX(), vector.getY()));
-    }
-
-    public double distanceSquared(float x) {
-        return this.distanceSquared(x, 0);
     }
 
     public double distanceSquared(float x, float y) {
@@ -146,7 +138,56 @@ public class Vector2f {
         return "Vector2(x=" + this.x + ",y=" + this.y + ")";
     }
 
+    public String toShortString() {
+        return this.x + "," + this.y;
+    }
+
     public String debugText() {
         return "(" + NukkitMath.round(x, 2) + "," + NukkitMath.round(y, 2) + ")";
+    }
+
+    public final Vector2f copyVec() {
+        return new Vector2f(x, y);
+    }
+
+    public final boolean equalsVec(Vector2f vec) {
+        if (vec == null) {
+            return false;
+        }
+        return Float.compare(vec.x, this.x) == 0
+                && Float.compare(vec.y, this.y) == 0;
+    }
+
+    public Vector2 asVector2() {
+        return new Vector2(this.x, this.y);
+    }
+
+    @Override
+    public Vector2f clone() {
+        try {
+            return (Vector2f) super.clone();
+        } catch (CloneNotSupportedException e) {
+            return null;
+        }
+    }
+
+    @Override
+    public boolean equals(Object obj) {
+        if (this == obj) {
+            return true;
+        }
+        if (obj == null || getClass() != obj.getClass()) {
+            return false;
+        }
+        Vector2f that = (Vector2f) obj;
+        return Float.compare(that.x, x) == 0
+                && Float.compare(that.y, y) == 0;
+    }
+
+    @Override
+    public int hashCode() {
+        int hash = Float.hashCode(this.x);
+        hash = 31 * hash + Float.hashCode(this.y);
+        return hash;
     }
 }

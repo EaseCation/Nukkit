@@ -5,6 +5,7 @@ import cn.nukkit.Server;
 import cn.nukkit.entity.Entity;
 import cn.nukkit.entity.EntityID;
 import cn.nukkit.entity.EntitySmite;
+import cn.nukkit.entity.data.LongEntityData;
 import cn.nukkit.event.entity.EntityDamageByEntityEvent;
 import cn.nukkit.event.entity.EntityDamageEvent;
 import cn.nukkit.event.entity.EntityDamageEvent.DamageCause;
@@ -72,6 +73,10 @@ public class EntityArrow extends EntityProjectile {
 
     public EntityArrow(FullChunk chunk, CompoundTag nbt, Entity shootingEntity, boolean critical) {
         super(chunk, nbt, shootingEntity);
+        if (shootingEntity != null) {
+            this.setDataProperty(new LongEntityData(DATA_OWNER_EID, shootingEntity.getId()));
+//            this.setDataProperty(new LongEntityData(DATA_ARROW_SHOOTER_EID, shootingEntity.getId()));
+        }
         this.setCritical(critical);
     }
 
@@ -208,6 +213,9 @@ public class EntityArrow extends EntityProjectile {
                 case Effect.NO_EFFECT:
                     break;
                 case Effect.INSTANT_HEALTH:
+                    if (!entity.canBeAffected(effect.getId())) {
+                        break;
+                    }
                     if (entity instanceof EntitySmite) {
                         if (shootingEntity != null) {
                             entity.attack(new EntityDamageByEntityEvent(shootingEntity, entity, DamageCause.MAGIC, 0.5f * (6 << effect.getAmplifier())));
@@ -219,6 +227,9 @@ public class EntityArrow extends EntityProjectile {
                     }
                     break;
                 case Effect.INSTANT_DAMAGE:
+                    if (!entity.canBeAffected(effect.getId())) {
+                        break;
+                    }
                     if (entity instanceof EntitySmite) {
                         entity.heal(new EntityRegainHealthEvent(entity, 0.5f * (4 << effect.getAmplifier()), EntityRegainHealthEvent.CAUSE_MAGIC));
                     } else if (shootingEntity != null) {

@@ -18,12 +18,12 @@ public class BlockCamera extends BlockSolid {
     }
 
     @Override
-    public double getHardness() {
+    public float getHardness() {
         return 0;
     }
 
     @Override
-    public double getResistance() {
+    public float getResistance() {
         return 0;
     }
 

@@ -14,7 +14,6 @@ import cn.nukkit.inventory.ContainerInventory;
 import cn.nukkit.inventory.InventoryHolder;
 import cn.nukkit.inventory.ShulkerBoxInventory;
 import cn.nukkit.item.Item;
-import cn.nukkit.item.ItemTool;
 import cn.nukkit.math.BlockFace;
 import cn.nukkit.nbt.NBTIO;
 import cn.nukkit.nbt.tag.CompoundTag;
@@ -52,15 +51,15 @@ public class BlockUndyedShulkerBox extends BlockTransparent {
     }
 
     @Override
-    public double getHardness() {
+    public float getHardness() {
         if (ENABLE_BLOCK_DESTROY_SPEED_COMPATIBILITY || V1_20_30.isAvailable()) {
             return 2;
         }
-        return 2.5;
+        return 2.5f;
     }
 
     @Override
-    public double getResistance() {
+    public float getResistance() {
         return 10;
     }
 
@@ -71,7 +70,7 @@ public class BlockUndyedShulkerBox extends BlockTransparent {
 
     @Override
     public int getToolType() {
-        return ItemTool.TYPE_PICKAXE;
+        return BlockToolType.PICKAXE;
     }
 
     @Override
@@ -137,11 +136,6 @@ public class BlockUndyedShulkerBox extends BlockTransparent {
 
         BlockEntityShulkerBox box = (BlockEntityShulkerBox) BlockEntities.createBlockEntity(BlockEntityType.SHULKER_BOX, this.getLevel().getChunk(this.getFloorX() >> 4, this.getFloorZ() >> 4), nbt);
         return box != null;
-    }
-
-    @Override
-    public boolean canHarvestWithHand() {
-        return false;
     }
 
     @Override

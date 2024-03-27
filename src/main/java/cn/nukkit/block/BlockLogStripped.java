@@ -1,19 +1,17 @@
 package cn.nukkit.block;
 
-import cn.nukkit.item.ItemTool;
-
 public abstract class BlockLogStripped extends BlockRotatedPillar {
     protected BlockLogStripped(int meta) {
         super(meta);
     }
 
     @Override
-    public double getHardness() {
+    public float getHardness() {
         return 2;
     }
 
     @Override
-    public double getResistance() {
+    public float getResistance() {
         return 10;
     }
 
@@ -29,7 +27,7 @@ public abstract class BlockLogStripped extends BlockRotatedPillar {
 
     @Override
     public int getToolType() {
-        return ItemTool.TYPE_AXE;
+        return BlockToolType.AXE;
     }
 
     @Override

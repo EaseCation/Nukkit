@@ -5,7 +5,6 @@ import cn.nukkit.entity.Entity;
 import cn.nukkit.event.block.BlockGrowEvent;
 import cn.nukkit.event.block.BlockSpreadEvent;
 import cn.nukkit.item.Item;
-import cn.nukkit.item.ItemTool;
 import cn.nukkit.level.Level;
 import cn.nukkit.math.AxisAlignedBB;
 import cn.nukkit.math.BlockFace;
@@ -39,12 +38,12 @@ public class BlockVine extends BlockFlowable {
     }
 
     @Override
-    public double getHardness() {
-        return 0.2;
+    public float getHardness() {
+        return 0.2f;
     }
 
     @Override
-    public double getResistance() {
+    public float getResistance() {
         return 1;
     }
 
@@ -135,7 +134,7 @@ public class BlockVine extends BlockFlowable {
     }
 
     @Override
-    public Item[] getDrops(Item item) {
+    public Item[] getDrops(Item item, Player player) {
         if (item.isShears()) {
             return new Item[]{
                     toItem(true)
@@ -296,7 +295,7 @@ public class BlockVine extends BlockFlowable {
 
     @Override
     public int getToolType() {
-        return ItemTool.TYPE_AXE;
+        return BlockToolType.AXE | BlockToolType.SHEARS;
     }
 
     @Override

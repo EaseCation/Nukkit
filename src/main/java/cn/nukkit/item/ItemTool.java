@@ -1,6 +1,7 @@
 package cn.nukkit.item;
 
 import cn.nukkit.block.Block;
+import cn.nukkit.block.BlockToolType;
 import cn.nukkit.entity.Entity;
 import cn.nukkit.item.enchantment.Enchantment;
 import cn.nukkit.nbt.tag.ByteTag;
@@ -19,14 +20,6 @@ public abstract class ItemTool extends Item implements ItemDurable {
     public static final int TIER_IRON = 4;
     public static final int TIER_DIAMOND = 5;
     public static final int TIER_NETHERITE = 6;
-
-    public static final int TYPE_NONE = 0;
-    public static final int TYPE_SWORD = 1;
-    public static final int TYPE_SHOVEL = 2;
-    public static final int TYPE_PICKAXE = 3;
-    public static final int TYPE_AXE = 4;
-    public static final int TYPE_SHEARS = 5;
-    public static final int TYPE_HOE = 6;
 
     public static final int DURABILITY_WOODEN = 59;
     public static final int DURABILITY_GOLD = 32;
@@ -75,10 +68,10 @@ public abstract class ItemTool extends Item implements ItemDurable {
         }
 
         if (this.additionalDamageOnBreak()) {
-            if (block.getBreakTime(this) > 0) {
+            if (block.getHardness() > 0) {
                 this.setDamage(this.getDamage() + 2);
             }
-        } else if (this.isShears() || block.getBreakTime(this) > 0) {
+        } else if (this.isShears() || block.getHardness() > 0) {
             this.setDamage(this.getDamage() + 1);
         }
         return true;
@@ -181,6 +174,16 @@ public abstract class ItemTool extends Item implements ItemDurable {
         @Override
         public int getTier() {
             return ItemTool.TIER_NETHERITE;
+        }
+
+        @Override
+        public int getBlockToolType() {
+            return BlockToolType.SWORD
+                    | BlockToolType.SHOVEL
+                    | BlockToolType.PICKAXE
+                    | BlockToolType.AXE
+                    | BlockToolType.SHEARS
+                    | BlockToolType.HOE;
         }
 
         @Override

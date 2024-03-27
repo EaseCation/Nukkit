@@ -1,5 +1,6 @@
 package cn.nukkit.block;
 
+import cn.nukkit.Player;
 import cn.nukkit.entity.Entity;
 import cn.nukkit.event.block.BlockFromToEvent;
 import cn.nukkit.event.block.LiquidFlowEvent;
@@ -53,7 +54,7 @@ public abstract class BlockLiquid extends BlockTransparentMeta {
     }
 
     @Override
-    public Item[] getDrops(Item item) {
+    public Item[] getDrops(Item item, Player player) {
         return new Item[0];
     }
 
@@ -411,12 +412,12 @@ public abstract class BlockLiquid extends BlockTransparentMeta {
     }
 
     @Override
-    public double getHardness() {
-        return 100d;
+    public float getHardness() {
+        return 100;
     }
 
     @Override
-    public double getResistance() {
+    public float getResistance() {
         return 500;
     }
 

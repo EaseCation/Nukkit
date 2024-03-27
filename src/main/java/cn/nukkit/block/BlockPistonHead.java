@@ -1,7 +1,7 @@
 package cn.nukkit.block;
 
+import cn.nukkit.Player;
 import cn.nukkit.item.Item;
-import cn.nukkit.item.ItemTool;
 import cn.nukkit.item.Items;
 import cn.nukkit.math.BlockFace;
 import cn.nukkit.utils.Faceable;
@@ -32,30 +32,30 @@ public class BlockPistonHead extends BlockTransparentMeta implements Faceable {
     }
 
     @Override
-    public double getResistance() {
-        return 7.5;
+    public float getResistance() {
+        return 7.5f;
     }
 
     @Override
-    public double getHardness() {
+    public float getHardness() {
         if (V1_20_30.isAvailable()) {
-            return 1.5;
+            return 1.5f;
         }
-        return 0.5;
+        return 0.5f;
     }
 
     @Override
-    public Item[] getDrops(Item item) {
+    public Item[] getDrops(Item item, Player player) {
         return new Item[0];
     }
 
     @Override
-    public boolean onBreak(Item item) {
+    public boolean onBreak(Item item, Player player) {
         this.level.setBlock(this, Block.get(BlockID.AIR), true, true);
         Block piston = getSide(getBlockFace().getOpposite());
 
         if (piston instanceof BlockPistonBase && ((BlockPistonBase) piston).getBlockFace() == this.getBlockFace()) {
-            piston.onBreak(item);
+            piston.onBreak(item, player);
         }
         return true;
     }
@@ -99,6 +99,6 @@ public class BlockPistonHead extends BlockTransparentMeta implements Faceable {
 
     @Override
     public int getToolType() {
-        return ItemTool.TYPE_PICKAXE;
+        return BlockToolType.PICKAXE;
     }
 }

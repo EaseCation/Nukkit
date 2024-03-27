@@ -6,6 +6,7 @@ import cn.nukkit.block.BlockCampfire;
 import cn.nukkit.block.Blocks;
 import cn.nukkit.entity.Entity;
 import cn.nukkit.entity.EntityID;
+import cn.nukkit.entity.data.LongEntityData;
 import cn.nukkit.entity.projectile.EntityProjectile;
 import cn.nukkit.event.potion.PotionCollideEvent;
 import cn.nukkit.item.Item;
@@ -39,6 +40,9 @@ public class EntityPotion extends EntityProjectile {
 
     public EntityPotion(FullChunk chunk, CompoundTag nbt, Entity shootingEntity) {
         super(chunk, nbt, shootingEntity);
+        if (shootingEntity != null) {
+            this.setDataProperty(new LongEntityData(DATA_OWNER_EID, shootingEntity.getId()));
+        }
     }
 
     @Override
@@ -187,7 +191,7 @@ public class EntityPotion extends EntityProjectile {
             }
 
             float d = entity == collidedWith ? 1 : (float) (1 - Math.sqrt(distance) / 4);
-            potion.applyPotion(entity, item, 0.75f * d, d);
+            potion.applyPotion(entity, item, Math.min(0.75f, d), d);
         }
     }
 

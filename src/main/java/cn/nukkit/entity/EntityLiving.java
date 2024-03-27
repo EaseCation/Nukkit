@@ -125,6 +125,11 @@ public abstract class EntityLiving extends Entity implements EntityDamageable {
         ent.applyEntityCollision(this);
     }
 
+    @Override
+    public boolean canBeAffected(int effectId) {
+        return !(this instanceof EntitySmite) || effectId != Effect.REGENERATION && effectId != Effect.POISON;
+    }
+
     protected boolean isInvulnerableTo(EntityDamageEvent source) {
         return this.invulnerable && source.getCause() != DamageCause.VOID && !(source.getEntity() instanceof Player player && player.isCreativeLike());
     }
@@ -380,7 +385,7 @@ public abstract class EntityLiving extends Entity implements EntityDamageable {
                 }
             }
 
-            if (!this.hasEffect(Effect.WATER_BREATHING) && !breathing) {
+            if (!(this instanceof EntitySmite) && !this.hasEffect(Effect.WATER_BREATHING) && !breathing) {
                 if (this instanceof EntityWaterAnimal) {
                     this.setAirTicks(300);
                 } else if (turtleTicks == 0 || turtleTicks == 200) {

@@ -7,13 +7,15 @@ import cn.nukkit.math.Mth;
 import cn.nukkit.math.Vector3;
 
 import java.util.Iterator;
+import java.util.NoSuchElementException;
 
 /**
- * author: MagicDroidX
+ * This class performs ray tracing and iterates along blocks on a line.
+ *
+ * @author MagicDroidX
  * Nukkit Project
  */
 public class BlockIterator implements Iterator<Block> {
-    private final Level level;
     private final int maxDistance;
 
     private static final int gridSize = 1 << 24;
@@ -23,7 +25,6 @@ public class BlockIterator implements Iterator<Block> {
     private final Block[] blockQueue;
     private int currentBlock;
 
-    private Block currentBlockObject = null;
     private int currentDistance;
     private final int maxDistanceInt;
 
@@ -37,8 +38,21 @@ public class BlockIterator implements Iterator<Block> {
     private BlockFace secondFace;
     private BlockFace thirdFace;
 
+    /**
+     * Constructs the BlockIterator.
+     * <p>
+     * This considers all blocks as 1x1x1 in size.
+     *
+     * @param level The level to use for tracing
+     * @param start A Vector giving the initial location for the trace
+     * @param direction A Vector pointing in the direction for the trace
+     * @param yOffset The trace begins vertically offset from the start vector by this value
+     * @param maxDistance This is the maximum distance in blocks for the trace.
+     *                    Setting this value above 140 may lead to problems with unloaded chunks.
+     *                    A value of 0 indicates no limit
+     *
+     */
     public BlockIterator(Level level, Vector3 start, Vector3 direction, double yOffset, int maxDistance) {
-        this.level = level;
         this.maxDistance = maxDistance;
         this.blockQueue = new Block[3];
 
@@ -56,7 +70,7 @@ public class BlockIterator implements Iterator<Block> {
         double thirdPosition = 0;
 
         Vector3 pos = new Vector3(startClone.x, startClone.y, startClone.z);
-        Block startBlock = this.level.getBlock(new Vector3(Mth.floor(pos.x), Mth.floor(pos.y), Mth.floor(pos.z)));
+        Block startBlock = level.getBlock(Mth.floor(pos.x), Mth.floor(pos.y), Mth.floor(pos.z));
 
         if (this.getXLength(direction) > mainDirection) {
             this.mainFace = this.getXFace(direction);
@@ -98,10 +112,15 @@ public class BlockIterator implements Iterator<Block> {
             thirdPosition = this.getYPosition(direction, startClone, startBlock);
         }
 
-        double d = mainPosition / mainDirection;
+        // trace line backwards to find intercept with plane perpendicular to the main axis
+
+        double d = mainPosition / mainDirection; // how far to hit face behind
         double secondd = secondPosition - secondDirection * d;
         double thirdd = thirdPosition - thirdDirection * d;
 
+        // Guarantee that the ray will pass though the start block.
+        // It is possible that it would miss due to rounding
+        // This should only move the ray by 1 grid position
         this.secondError = Mth.floor(secondd * gridSize);
         this.secondStep = (int) Math.round(secondDirection / mainDirection * gridSize);
         this.thirdError = Mth.floor(thirdd * gridSize);
@@ -127,11 +146,11 @@ public class BlockIterator implements Iterator<Block> {
             lastBlock = lastBlock.getSide(this.thirdFace.getOpposite());
         }
 
+        // This means that when the variables are positive, it means that the coord=1 boundary has been crossed
         this.secondError -= gridSize;
         this.thirdError -= gridSize;
 
         this.blockQueue[0] = lastBlock;
-
         this.currentBlock = -1;
 
         this.scan();
@@ -154,7 +173,7 @@ public class BlockIterator implements Iterator<Block> {
     }
 
     private boolean blockEquals(Block a, Block b) {
-        return a.x == b.x && a.y == b.y && a.z == b.z;
+        return a.getFloorX() == b.getFloorX() && a.getFloorY() == b.getFloorY() && a.getFloorZ() == b.getFloorZ();
     }
 
     private BlockFace getXFace(Vector3 direction) {
@@ -186,33 +205,45 @@ public class BlockIterator implements Iterator<Block> {
     }
 
     private double getXPosition(Vector3 direction, Vector3 position, Block block) {
-        return this.getPosition(direction.x, position.x, block.x);
+        return this.getPosition(direction.x, position.x, block.getFloorX());
     }
 
     private double getYPosition(Vector3 direction, Vector3 position, Block block) {
-        return this.getPosition(direction.y, position.y, block.y);
+        return this.getPosition(direction.y, position.y, block.getFloorY());
     }
 
     private double getZPosition(Vector3 direction, Vector3 position, Block block) {
-        return this.getPosition(direction.z, position.z, block.z);
+        return this.getPosition(direction.z, position.z, block.getFloorZ());
     }
 
+    /**
+     * Returns the next Block in the trace
+     *
+     * @return the next Block in the trace
+     */
     @Override
-    public Block next() {
+    public Block next() throws NoSuchElementException {
         this.scan();
 
         if (this.currentBlock <= -1) {
-            throw new IndexOutOfBoundsException();
+            throw new NoSuchElementException();
         } else {
-            this.currentBlockObject = this.blockQueue[this.currentBlock--];
+            return this.blockQueue[this.currentBlock--];
         }
-        return this.currentBlockObject;
     }
 
+    /**
+     * Returns true if the iteration has more elements
+     */
     @Override
     public boolean hasNext() {
         this.scan();
         return this.currentBlock != -1;
+    }
+
+    @Override
+    public void remove() {
+        throw new UnsupportedOperationException("[BlockIterator] doesn't support block removal");
     }
 
     private void scan() {

@@ -1,6 +1,5 @@
 package cn.nukkit.block;
 
-import cn.nukkit.item.ItemTool;
 import cn.nukkit.utils.BlockColor;
 
 import static cn.nukkit.GameVersion.*;
@@ -27,21 +26,21 @@ public class BlockStairsPolishedDiorite extends BlockStairs {
     }
 
     @Override
-    public double getHardness() {
+    public float getHardness() {
         if (ENABLE_BLOCK_DESTROY_SPEED_COMPATIBILITY || V1_20_30.isAvailable()) {
-            return 1.5;
+            return 1.5f;
         }
         return 2;
     }
 
     @Override
-    public double getResistance() {
+    public float getResistance() {
         return 30;
     }
 
     @Override
     public int getToolType() {
-        return ItemTool.TYPE_PICKAXE;
+        return BlockToolType.PICKAXE;
     }
 
     @Override

@@ -81,7 +81,7 @@ public class BlockNetherWart extends BlockFlowable {
     }
 
     @Override
-    public Item[] getDrops(Item item) {
+    public Item[] getDrops(Item item, Player player) {
         if (this.getDamage() == 0x03) {
             return new Item[]{
                     Item.get(Item.NETHER_WART, 0, ThreadLocalRandom.current().nextInt(2, 5)),

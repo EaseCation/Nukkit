@@ -1,9 +1,11 @@
 package cn.nukkit.entity.passive;
 
 import cn.nukkit.Player;
+import cn.nukkit.entity.Entity;
 import cn.nukkit.entity.EntityID;
 import cn.nukkit.item.Item;
 import cn.nukkit.level.format.FullChunk;
+import cn.nukkit.math.Vector3f;
 import cn.nukkit.nbt.tag.CompoundTag;
 
 import java.util.Arrays;
@@ -64,5 +66,13 @@ public class EntityHorse extends EntityAbstractHorse {
         player.dataPacket(createAddEntityPacket());
 
         super.spawnTo(player);
+    }
+
+    @Override
+    public Vector3f getMountedOffset(Entity entity) {
+        if (entity.getNetworkId() == -1) {
+            return new Vector3f(0, 2.3200102f, -0.2f);
+        }
+        return new Vector3f(0, 1.1f + entity.getRidingOffset(), -0.2f);
     }
 }

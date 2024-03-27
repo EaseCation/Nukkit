@@ -16,7 +16,6 @@ import cn.nukkit.event.entity.EntityDamageEvent.DamageCause;
 import cn.nukkit.inventory.RecipeTag;
 import cn.nukkit.item.Item;
 import cn.nukkit.item.ItemID;
-import cn.nukkit.item.ItemTool;
 import cn.nukkit.item.enchantment.Enchantment;
 import cn.nukkit.item.enchantment.EnchantmentID;
 import cn.nukkit.level.GameRule;
@@ -63,11 +62,11 @@ public class BlockCampfire extends BlockTransparentMeta implements Faceable {
 
     @Override
     public int getToolType() {
-        return ItemTool.TYPE_AXE;
+        return BlockToolType.AXE;
     }
 
     @Override
-    public double getHardness() {
+    public float getHardness() {
         if (ENABLE_BLOCK_DESTROY_SPEED_COMPATIBILITY || V1_20_30.isAvailable()) {
             return 2;
         }
@@ -75,7 +74,7 @@ public class BlockCampfire extends BlockTransparentMeta implements Faceable {
     }
 
     @Override
-    public double getResistance() {
+    public float getResistance() {
         return 10;
     }
 
@@ -163,7 +162,7 @@ public class BlockCampfire extends BlockTransparentMeta implements Faceable {
     }
 
     @Override
-    public Item[] getDrops(Item item) {
+    public Item[] getDrops(Item item, Player player) {
         return new Item[]{
                 Item.get(ItemID.COAL, 1, 2)
         };

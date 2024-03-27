@@ -2,8 +2,6 @@ package cn.nukkit.block;
 
 import cn.nukkit.Player;
 import cn.nukkit.item.Item;
-import cn.nukkit.item.ItemTool;
-import cn.nukkit.level.particle.BoneMealParticle;
 import cn.nukkit.math.BlockFace;
 import cn.nukkit.utils.BlockColor;
 
@@ -27,12 +25,12 @@ public class BlockGlowLichen extends BlockMultiface {
     }
 
     @Override
-    public double getHardness() {
-        return 0.2;
+    public float getHardness() {
+        return 0.2f;
     }
 
     @Override
-    public double getResistance() {
+    public float getResistance() {
         return 1;
     }
 
@@ -53,11 +51,11 @@ public class BlockGlowLichen extends BlockMultiface {
 
     @Override
     public int getToolType() {
-        return ItemTool.TYPE_AXE;
+        return BlockToolType.AXE | BlockToolType.SHEARS;
     }
 
     @Override
-    public Item[] getDrops(Item item) {
+    public Item[] getDrops(Item item, Player player) {
         if (item.isShears()) {
             int count = 0;
             for (BlockFace face : BlockFace.getValues()) {

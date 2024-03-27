@@ -24,7 +24,7 @@ public class BlockNetherSprouts extends BlockFlowable {
 
     @Override
     public int getToolType() {
-        return ItemTool.TYPE_SHEARS;
+        return BlockToolType.SHEARS;
     }
 
     @Override
@@ -60,7 +60,7 @@ public class BlockNetherSprouts extends BlockFlowable {
     }
 
     @Override
-    public Item[] getDrops(Item item) {
+    public Item[] getDrops(Item item, Player player) {
         if (!item.isShears()) {
             return new Item[0];
         }

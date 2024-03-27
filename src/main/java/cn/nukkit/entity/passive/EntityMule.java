@@ -1,9 +1,11 @@
 package cn.nukkit.entity.passive;
 
 import cn.nukkit.Player;
+import cn.nukkit.entity.Entity;
 import cn.nukkit.entity.EntityID;
 import cn.nukkit.item.Item;
 import cn.nukkit.level.format.FullChunk;
+import cn.nukkit.math.Vector3f;
 import cn.nukkit.nbt.tag.CompoundTag;
 
 import java.util.concurrent.ThreadLocalRandom;
@@ -61,5 +63,13 @@ public class EntityMule extends EntityAnimal {
         player.dataPacket(createAddEntityPacket());
 
         super.spawnTo(player);
+    }
+
+    @Override
+    public Vector3f getMountedOffset(Entity entity) {
+        if (entity.getNetworkId() == -1) {
+            return new Vector3f(0, 2.1950102f, -0.2f);
+        }
+        return new Vector3f(0, 0.975f + entity.getRidingOffset(), -0.2f);
     }
 }

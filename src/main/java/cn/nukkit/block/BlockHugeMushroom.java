@@ -1,7 +1,7 @@
 package cn.nukkit.block;
 
+import cn.nukkit.Player;
 import cn.nukkit.item.Item;
-import cn.nukkit.item.ItemTool;
 
 import java.util.concurrent.ThreadLocalRandom;
 
@@ -11,18 +11,18 @@ public abstract class BlockHugeMushroom extends BlockSolidMeta {
     }
 
     @Override
-    public double getHardness() {
-        return 0.2;
+    public float getHardness() {
+        return 0.2f;
     }
 
     @Override
-    public double getResistance() {
+    public float getResistance() {
         return 1;
     }
 
     @Override
     public int getToolType() {
-        return ItemTool.TYPE_AXE;
+        return BlockToolType.AXE;
     }
 
     @Override
@@ -31,7 +31,7 @@ public abstract class BlockHugeMushroom extends BlockSolidMeta {
     }
 
     @Override
-    public Item[] getDrops(Item item) {
+    public Item[] getDrops(Item item, Player player) {
         int count = ThreadLocalRandom.current().nextInt(-7, 3);
         if (count <= 0) {
             return new Item[0];

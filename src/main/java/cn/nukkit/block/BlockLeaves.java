@@ -4,12 +4,11 @@ import cn.nukkit.Player;
 import cn.nukkit.Server;
 import cn.nukkit.event.block.LeavesDecayEvent;
 import cn.nukkit.item.Item;
-import cn.nukkit.item.ItemTool;
 import cn.nukkit.level.Level;
 import cn.nukkit.math.BlockFace;
 import cn.nukkit.utils.BlockColor;
 import cn.nukkit.utils.Hash;
-import it.unimi.dsi.fastutil.longs.LongArraySet;
+import it.unimi.dsi.fastutil.longs.LongOpenHashSet;
 import it.unimi.dsi.fastutil.longs.LongSet;
 
 import java.util.concurrent.ThreadLocalRandom;
@@ -56,18 +55,18 @@ public class BlockLeaves extends BlockTransparentMeta {
     }
 
     @Override
-    public double getHardness() {
-        return 0.2;
+    public float getHardness() {
+        return 0.2f;
     }
 
     @Override
-    public double getResistance() {
+    public float getResistance() {
         return 1;
     }
 
     @Override
     public int getToolType() {
-        return ItemTool.TYPE_SHEARS;
+        return BlockToolType.HOE | BlockToolType.SHEARS;
     }
 
     @Override
@@ -98,7 +97,7 @@ public class BlockLeaves extends BlockTransparentMeta {
     }
 
     @Override
-    public Item[] getDrops(Item item) {
+    public Item[] getDrops(Item item, Player player) {
         if (item.isShears()) {
             return new Item[]{
                     toItem(true)
@@ -127,35 +126,46 @@ public class BlockLeaves extends BlockTransparentMeta {
 
     @Override
     public int onUpdate(int type) {
-        if (type == Level.BLOCK_UPDATE_RANDOM && !isPersistent() && !isCheckDecay()) {
+        if (type != Level.BLOCK_UPDATE_RANDOM) {
+            return 0;
+        }
+
+        if (isPersistent()) {
+            return 0;
+        }
+
+        if (!isCheckDecay()) {
             setCheckDecay(true);
             getLevel().setBlock(this, this, true, false);
-        } else if (type == Level.BLOCK_UPDATE_RANDOM && isCheckDecay() && !isPersistent()) {
+        } else {
             setDamage(getLeafType());
+
             int check = 0;
-
             LeavesDecayEvent ev = new LeavesDecayEvent(this);
-
             Server.getInstance().getPluginManager().callEvent(ev);
-            if (ev.isCancelled() || findLog(this, new LongArraySet(), 0, check)) {
+            if (ev.isCancelled() || findLog(this, new LongOpenHashSet(), 0, check)) {
                 getLevel().setBlock(this, this, true, false);
             } else {
                 getLevel().useBreakOn(this);
                 return Level.BLOCK_UPDATE_NORMAL;
             }
         }
-        return 0;
+        return type;
     }
 
-    private Boolean findLog(Block pos, LongSet visited, Integer distance, Integer check) {
+    private Boolean findLog(Block pos, LongSet visited, int distance, int check) {
         return findLog(pos, visited, distance, check, null);
     }
 
-    private Boolean findLog(Block pos, LongSet visited, Integer distance, Integer check, BlockFace fromSide) {
+    private Boolean findLog(Block pos, LongSet visited, int distance, int check, BlockFace fromSide) {
         ++check;
         long index = Hash.hashBlockPos((int) pos.x, (int) pos.y, (int) pos.z);
-        if (visited.contains(index)) return false;
-        if (pos.isLog()) return true;
+        if (visited.contains(index)) {
+            return false;
+        }
+        if (pos.isLog()) {
+            return true;
+        }
         if (pos.isLeaves() && distance <= 6) {
             visited.add(index);
             Block down = pos.down();
@@ -165,41 +175,55 @@ public class BlockLeaves extends BlockTransparentMeta {
             if (fromSide == null) {
                 //North, East, South, West
                 for (int side = 2; side <= 5; ++side) {
-                    if (this.findLog(pos.getSide(BlockFace.fromIndex(side)), visited, distance + 1, check, BlockFace.fromIndex(side)))
+                    if (this.findLog(pos.getSide(BlockFace.fromIndex(side)), visited, distance + 1, check, BlockFace.fromIndex(side))) {
                         return true;
+                    }
                 }
             } else { //No more loops
                 switch (fromSide) {
                     case NORTH:
-                        if (this.findLog(pos.getSide(BlockFace.NORTH), visited, distance + 1, check, fromSide))
+                        if (this.findLog(pos.getSide(BlockFace.NORTH), visited, distance + 1, check, fromSide)) {
                             return true;
-                        if (this.findLog(pos.getSide(BlockFace.WEST), visited, distance + 1, check, fromSide))
+                        }
+                        if (this.findLog(pos.getSide(BlockFace.WEST), visited, distance + 1, check, fromSide)) {
                             return true;
-                        if (this.findLog(pos.getSide(BlockFace.EAST), visited, distance + 1, check, fromSide))
+                        }
+                        if (this.findLog(pos.getSide(BlockFace.EAST), visited, distance + 1, check, fromSide)) {
                             return true;
+                        }
                         break;
                     case SOUTH:
-                        if (this.findLog(pos.getSide(BlockFace.SOUTH), visited, distance + 1, check, fromSide))
+                        if (this.findLog(pos.getSide(BlockFace.SOUTH), visited, distance + 1, check, fromSide)) {
                             return true;
-                        if (this.findLog(pos.getSide(BlockFace.WEST), visited, distance + 1, check, fromSide))
+                        }
+                        if (this.findLog(pos.getSide(BlockFace.WEST), visited, distance + 1, check, fromSide)) {
                             return true;
-                        if (this.findLog(pos.getSide(BlockFace.EAST), visited, distance + 1, check, fromSide))
+                        }
+                        if (this.findLog(pos.getSide(BlockFace.EAST), visited, distance + 1, check, fromSide)) {
                             return true;
+                        }
                         break;
                     case WEST:
-                        if (this.findLog(pos.getSide(BlockFace.NORTH), visited, distance + 1, check, fromSide))
+                        if (this.findLog(pos.getSide(BlockFace.NORTH), visited, distance + 1, check, fromSide)) {
                             return true;
-                        if (this.findLog(pos.getSide(BlockFace.SOUTH), visited, distance + 1, check, fromSide))
+                        }
+                        if (this.findLog(pos.getSide(BlockFace.SOUTH), visited, distance + 1, check, fromSide)) {
                             return true;
-                        if (this.findLog(pos.getSide(BlockFace.WEST), visited, distance + 1, check, fromSide))
+                        }
+                        if (this.findLog(pos.getSide(BlockFace.WEST), visited, distance + 1, check, fromSide)) {
                             return true;
+                        }
+                        break;
                     case EAST:
-                        if (this.findLog(pos.getSide(BlockFace.NORTH), visited, distance + 1, check, fromSide))
+                        if (this.findLog(pos.getSide(BlockFace.NORTH), visited, distance + 1, check, fromSide)) {
                             return true;
-                        if (this.findLog(pos.getSide(BlockFace.SOUTH), visited, distance + 1, check, fromSide))
+                        }
+                        if (this.findLog(pos.getSide(BlockFace.SOUTH), visited, distance + 1, check, fromSide)) {
                             return true;
-                        if (this.findLog(pos.getSide(BlockFace.EAST), visited, distance + 1, check, fromSide))
+                        }
+                        if (this.findLog(pos.getSide(BlockFace.EAST), visited, distance + 1, check, fromSide)) {
                             return true;
+                        }
                         break;
                 }
             }

@@ -56,18 +56,18 @@ public class BlockSnowLayer extends BlockFallable {
     }
 
     @Override
-    public double getHardness() {
-        return 0.1;
+    public float getHardness() {
+        return 0.1f;
     }
 
     @Override
-    public double getResistance() {
-        return 0.5;
+    public float getResistance() {
+        return 0.5f;
     }
 
     @Override
     public int getToolType() {
-        return ItemTool.TYPE_SHOVEL;
+        return BlockToolType.SHOVEL;
     }
 
     @Override
@@ -145,7 +145,7 @@ public class BlockSnowLayer extends BlockFallable {
     }
 
     @Override
-    public Item[] getDrops(Item item) {
+    public Item[] getDrops(Item item, Player player) {
         if (item.isShovel() && item.getTier() >= ItemTool.TIER_WOODEN) {
             Item drop = this.toItem(true);
             int height = this.getDamage() & HEIGHT_MASK;

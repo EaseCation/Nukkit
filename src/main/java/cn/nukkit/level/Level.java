@@ -8,6 +8,7 @@ import cn.nukkit.block.BlockMultiface;
 import cn.nukkit.block.BlockRedstoneDiode;
 import cn.nukkit.blockentity.BlockEntity;
 import cn.nukkit.entity.Entity;
+import cn.nukkit.entity.EntityFullNames;
 import cn.nukkit.entity.item.EntityFirework;
 import cn.nukkit.entity.item.EntityItem;
 import cn.nukkit.entity.item.EntityPainting;
@@ -57,7 +58,6 @@ import cn.nukkit.network.Network;
 import cn.nukkit.network.protocol.*;
 import cn.nukkit.network.protocol.BatchPacket.Track;
 import cn.nukkit.plugin.Plugin;
-import cn.nukkit.potion.Effect;
 import cn.nukkit.scheduler.AsyncTask;
 import cn.nukkit.scheduler.BlockUpdateScheduler;
 import cn.nukkit.utils.*;
@@ -178,6 +178,7 @@ public class Level implements ChunkManager, Metadatable {
         randomTickBlocks[Block.CAVE_VINES_HEAD_WITH_BERRIES] = true;
         randomTickBlocks[Block.MANGROVE_LEAVES] = true;
         randomTickBlocks[Block.MANGROVE_PROPAGULE] = true;
+        randomTickBlocks[Block.CHORUS_FLOWER] = true;
     }
 
     /**
@@ -320,6 +321,7 @@ public class Level implements ChunkManager, Metadatable {
     public GameRules gameRules;
 
     private boolean redstoneEnabled = true;
+    private boolean extinguishFireIgnoreGameRule;
 
     private boolean autoCompaction;
 
@@ -650,17 +652,13 @@ public class Level implements ChunkManager, Metadatable {
         this.addSound(sound, (Player[]) null);
     }
 
-    public void addSound(Sound sound, Player player) {
-        this.addSound(sound, new Player[]{player});
-    }
-
-    public void addSound(Sound sound, Player[] players) {
+    public void addSound(Sound sound, Player... players) {
         DataPacket[] packets = sound.encode();
 
         if (players == null) {
             if (packets != null) {
                 for (DataPacket packet : packets) {
-                    this.addChunkPacket((int) sound.x >> 4, (int) sound.z >> 4, packet);
+                    this.addChunkPacket(sound.getChunkX(), sound.getChunkZ(), packet);
                 }
             }
         } else {
@@ -682,6 +680,14 @@ public class Level implements ChunkManager, Metadatable {
         this.addSound(pos, sound, 1, 1, (Player[]) null);
     }
 
+    public void addSound(Vector3 pos, SoundEnum sound, Player... players) {
+        this.addSound(pos, sound, 1, 1, players);
+    }
+
+    public void addSound(Vector3 pos, SoundEnum sound, Collection<Player> players) {
+        this.addSound(pos, sound, 1, 1, players);
+    }
+
     public void addSound(Vector3 pos, SoundEnum sound, float volume, float pitch) {
         this.addSound(pos, sound, volume, pitch, (Player[]) null);
     }
@@ -691,30 +697,32 @@ public class Level implements ChunkManager, Metadatable {
     }
 
     public void addSound(Vector3 pos, SoundEnum sound, float volume, float pitch, Player... players) {
-        Preconditions.checkArgument(volume >= 0 && volume <= 1, "Sound volume must be between 0 and 1");
-        Preconditions.checkArgument(pitch >= 0, "Sound pitch must be higher than 0");
+        this.addSound(pos, sound.getSound(), volume, pitch, players);
+    }
 
-        PlaySoundPacket packet = new PlaySoundPacket();
-        packet.name = sound.getSound();
-        packet.volume = volume;
-        packet.pitch = pitch;
-        packet.x = pos.getFloorX();
-        packet.y = pos.getFloorY();
-        packet.z = pos.getFloorZ();
+    public void addSound(Vector3 pos, String sound) {
+        this.addSound(pos, sound, 1, 1, (Player[]) null);
+    }
 
-        if (players == null || players.length == 0) {
-            if (this.players.isEmpty()) {
-                return;
-            }
-            addChunkPacket(pos.getFloorX() >> 4, pos.getFloorZ() >> 4, packet);
-        } else {
-            Server.broadcastPacket(players, packet);
-        }
+    public void addSound(Vector3 pos, String sound, Collection<Player> players) {
+        this.addSound(pos, sound, 1, 1, players);
+    }
+
+    public void addSound(Vector3 pos, String sound, Player... players) {
+        this.addSound(pos, sound, 1, 1, players);
+    }
+
+    public void addSound(Vector3 pos, String sound, float volume, float pitch) {
+        this.addSound(pos, sound, volume, pitch, (Player[]) null);
+    }
+
+    public void addSound(Vector3 pos, String sound, float volume, float pitch, Collection<Player> players) {
+        this.addSound(pos, sound, volume, pitch, players.toArray(new Player[0]));
     }
 
     public void addSound(Vector3 pos, String sound, float volume, float pitch, Player... players) {
-        Preconditions.checkArgument(volume >= 0 && volume <= 1, "Sound volume must be between 0 and 1");
-        Preconditions.checkArgument(pitch >= 0, "Sound pitch must be higher than 0");
+        volume = Mth.clamp(volume, 0, 1);
+        pitch = Math.max(pitch, 0);
 
         PlaySoundPacket packet = new PlaySoundPacket();
         packet.name = sound;
@@ -728,7 +736,8 @@ public class Level implements ChunkManager, Metadatable {
             if (this.players.isEmpty()) {
                 return;
             }
-            addChunkPacket(pos.getFloorX() >> 4, pos.getFloorZ() >> 4, packet);
+
+            addChunkPacket(pos.getChunkX(), pos.getChunkZ(), packet);
         } else {
             Server.broadcastPacket(players, packet);
         }
@@ -742,6 +751,7 @@ public class Level implements ChunkManager, Metadatable {
         if (this.players.isEmpty()) {
             return;
         }
+
         LevelEventPacket pk = new LevelEventPacket();
         pk.evid = event;
         if (pos != null) {
@@ -770,6 +780,7 @@ public class Level implements ChunkManager, Metadatable {
         if (this.players.isEmpty()) {
             return;
         }
+
         LevelEventGenericPacket pk = new LevelEventGenericPacket();
         pk.eventId = event;
         pk.tag = data;
@@ -779,43 +790,6 @@ public class Level implements ChunkManager, Metadatable {
         } else {
             this.addChunkPacket(pos.getChunkX(), pos.getChunkZ(), pk);
         }
-    }
-
-    public void addLevelSoundEvent(int type, int pitch, int data, Vector3 pos) {
-        this.addLevelSoundEvent(type, pitch, data, pos, false);
-    }
-
-    public void addLevelSoundEvent(int type, int pitch, int data, Vector3 pos, boolean isGlobal) {
-        if (this.players.isEmpty()) {
-            return;
-        }
-        LevelSoundEventPacket pk = new LevelSoundEventPacket();
-        pk.sound = type;
-        pk.pitch = pitch;
-        pk.extraData = data;
-        pk.x = (float) pos.x;
-        pk.y = (float) pos.y;
-        pk.z = (float) pos.z;
-        pk.isGlobal = isGlobal;
-
-        this.addChunkPacket(pos.getFloorX() >> 4, pos.getFloorZ() >> 4, pk);
-    }
-
-    public void addLevelSoundEvent(int type, int pitch, int data, Vector3 pos, Player[] viewers) {
-        this.addLevelSoundEvent(type, pitch, data, pos, false, viewers);
-    }
-
-    public void addLevelSoundEvent(int type, int pitch, int data, Vector3 pos, boolean isGlobal, Player[] viewers) {
-        LevelSoundEventPacket pk = new LevelSoundEventPacket();
-        pk.sound = type;
-        pk.pitch = pitch;
-        pk.extraData = data;
-        pk.x = (float) pos.x;
-        pk.y = (float) pos.y;
-        pk.z = (float) pos.z;
-        pk.isGlobal = isGlobal;
-
-        Server.broadcastPacket(viewers, pk);
     }
 
     public void addLevelSoundEvent(Vector3 pos, int type) {
@@ -833,11 +807,11 @@ public class Level implements ChunkManager, Metadatable {
         this.addLevelSoundEvent(pos, type, data, ":", false, false);
     }
 
-    public void addLevelSoundEvent(Vector3 pos, int type, Player[] viewers) {
+    public void addLevelSoundEvent(Vector3 pos, int type, Player... viewers) {
         this.addLevelSoundEvent(pos, type, -1, ":", false, false, viewers);
     }
 
-    public void addLevelSoundEvent(Vector3 pos, int type, int data, Player[] viewers) {
+    public void addLevelSoundEvent(Vector3 pos, int type, int data, Player... viewers) {
         this.addLevelSoundEvent(pos, type, data, ":", false, false, viewers);
     }
 
@@ -845,7 +819,7 @@ public class Level implements ChunkManager, Metadatable {
         this.addLevelSoundEvent(pos, type, -1, identifier, false, false);
     }
 
-    public void addLevelSoundEvent(Vector3 pos, int type, String identifier, Player[] viewers) {
+    public void addLevelSoundEvent(Vector3 pos, int type, String identifier, Player... viewers) {
         this.addLevelSoundEvent(pos, type, -1, identifier, false, false, viewers);
     }
 
@@ -853,7 +827,7 @@ public class Level implements ChunkManager, Metadatable {
         this.addLevelSoundEvent(pos, type, -1, identifier, isBaby, false);
     }
 
-    public void addLevelSoundEvent(Vector3 pos, int type, String identifier, boolean isBaby, Player[] viewers) {
+    public void addLevelSoundEvent(Vector3 pos, int type, String identifier, boolean isBaby, Player... viewers) {
         this.addLevelSoundEvent(pos, type, -1, identifier, isBaby, false, viewers);
     }
 
@@ -861,7 +835,7 @@ public class Level implements ChunkManager, Metadatable {
         this.addLevelSoundEvent(pos, type, -1, identifier, isBaby, isGlobal);
     }
 
-    public void addLevelSoundEvent(Vector3 pos, int type, String identifier, boolean isBaby, boolean isGlobal, Player[] viewers) {
+    public void addLevelSoundEvent(Vector3 pos, int type, String identifier, boolean isBaby, boolean isGlobal, Player... viewers) {
         this.addLevelSoundEvent(pos, type, -1, identifier, isBaby, isGlobal, viewers);
     }
 
@@ -869,7 +843,7 @@ public class Level implements ChunkManager, Metadatable {
         this.addLevelSoundEvent(pos, type, data, identifier, false, false);
     }
 
-    public void addLevelSoundEvent(Vector3 pos, int type, int data, String identifier, Player[] viewers) {
+    public void addLevelSoundEvent(Vector3 pos, int type, int data, String identifier, Player... viewers) {
         this.addLevelSoundEvent(pos, type, data, identifier, false, false, viewers);
     }
 
@@ -877,15 +851,15 @@ public class Level implements ChunkManager, Metadatable {
         this.addLevelSoundEvent(pos, type, data, identifier, isBaby, false);
     }
 
-    public void addLevelSoundEvent(Vector3 pos, int type, int data, String identifier, boolean isBaby, Player[] viewers) {
+    public void addLevelSoundEvent(Vector3 pos, int type, int data, String identifier, boolean isBaby, Player... viewers) {
         this.addLevelSoundEvent(pos, type, data, identifier, isBaby, false, viewers);
     }
 
     public void addLevelSoundEvent(Vector3 pos, int type, int data, String identifier, boolean isBaby, boolean isGlobal) {
-        this.addLevelSoundEvent(pos, type, data, identifier, isBaby, isGlobal, null);
+        this.addLevelSoundEvent(pos, type, data, identifier, isBaby, isGlobal, (Player[]) null);
     }
 
-    public void addLevelSoundEvent(Vector3 pos, int type, int data, String identifier, boolean isBaby, boolean isGlobal, Player[] viewers) {
+    public void addLevelSoundEvent(Vector3 pos, int type, int data, String identifier, boolean isBaby, boolean isGlobal, Player... viewers) {
         LevelSoundEventPacket pk = new LevelSoundEventPacket();
         pk.sound = type;
         pk.extraData = data;
@@ -896,8 +870,9 @@ public class Level implements ChunkManager, Metadatable {
         pk.isGlobal = isGlobal;
         pk.isBabyMob = isBaby;
 
-        if (viewers == null || viewers.length == 0) this.addChunkPacket(pos.getFloorX() >> 4, pos.getFloorZ() >> 4, pk);
-        else {
+        if (viewers == null || viewers.length == 0) {
+            this.addChunkPacket(pos.getChunkX(), pos.getChunkZ(), pk);
+        } else {
             Server.broadcastPacket(viewers, pk);
         }
     }
@@ -906,20 +881,17 @@ public class Level implements ChunkManager, Metadatable {
         this.addParticle(particle, (Player[]) null);
     }
 
-    public void addParticle(Particle particle, Player player) {
-        this.addParticle(particle, new Player[]{player});
-    }
-
-    public void addParticle(Particle particle, Player[] players) {
+    public void addParticle(Particle particle, Player... players) {
         DataPacket[] packets = particle.encode();
 
         if (players == null || players.length == 0) {
             if (this.players.isEmpty()) {
                 return;
             }
+
             if (packets != null) {
                 for (DataPacket packet : packets) {
-                    this.addChunkPacket((int) particle.x >> 4, (int) particle.z >> 4, packet);
+                    this.addChunkPacket(particle.getChunkX(), particle.getChunkZ(), packet);
                 }
             }
         } else {
@@ -937,36 +909,42 @@ public class Level implements ChunkManager, Metadatable {
         this.addParticle(particle, players.toArray(new Player[0]));
     }
 
-    public void addParticleEffect(Vector3 pos, ParticleEffect particleEffect) {
-        this.addParticleEffect(pos, particleEffect, -1, this.getDimension().ordinal(), (Player[]) null);
+    public void addParticleEffect(Vector3 pos, ParticleEffect particleEffect, Player... players) {
+        this.addParticleEffect(pos, particleEffect, -1, null, players);
     }
 
-    public void addParticleEffect(Vector3 pos, ParticleEffect particleEffect, long uniqueEntityId) {
-        this.addParticleEffect(pos, particleEffect, uniqueEntityId, this.getDimension().ordinal(), (Player[]) null);
+    public void addParticleEffect(Vector3 pos, ParticleEffect particleEffect, long uniqueEntityId, Player... players) {
+        this.addParticleEffect(pos, particleEffect, uniqueEntityId, null, players);
     }
 
-    public void addParticleEffect(Vector3 pos, ParticleEffect particleEffect, long uniqueEntityId, int dimensionId) {
-        this.addParticleEffect(pos, particleEffect, uniqueEntityId, dimensionId, (Player[]) null);
+    public void addParticleEffect(Vector3 pos, ParticleEffect particleEffect, @Nullable String molangVariables, Player... players) {
+        this.addParticleEffect(pos, particleEffect, -1, molangVariables, players);
     }
 
-    public void addParticleEffect(Vector3 pos, ParticleEffect particleEffect, long uniqueEntityId, int dimensionId, Collection<Player> players) {
-        this.addParticleEffect(pos, particleEffect, uniqueEntityId, dimensionId, players.toArray(new Player[0]));
+    public void addParticleEffect(Vector3 pos, ParticleEffect particleEffect, long uniqueEntityId, @Nullable String molangVariables, Player... players) {
+        this.addParticleEffect(pos, particleEffect.getIdentifier(), uniqueEntityId, molangVariables, players);
     }
 
-    public void addParticleEffect(Vector3 pos, ParticleEffect particleEffect, long uniqueEntityId, int dimensionId, Player... players) {
-        this.addParticleEffect(pos.asVector3f(), particleEffect.getIdentifier(), uniqueEntityId, dimensionId, players);
+    public void addParticleEffect(Vector3 pos, String identifier, Player... players) {
+        this.addParticleEffect(pos, identifier, -1, null, players);
     }
 
-    public void addParticleEffect(Vector3f pos, String identifier, long uniqueEntityId, int dimensionId, Player... players) {
-        this.addParticleEffect(pos, identifier, uniqueEntityId, dimensionId, null, players);
+    public void addParticleEffect(Vector3 pos, String identifier, long uniqueEntityId, Player... players) {
+        this.addParticleEffect(pos, identifier, uniqueEntityId, null, players);
     }
 
-    public void addParticleEffect(Vector3f pos, String identifier, long uniqueEntityId, int dimensionId, String molangVariables, Player... players) {
+    public void addParticleEffect(Vector3 pos, String identifier, @Nullable String molangVariables, Player... players) {
+        this.addParticleEffect(pos, identifier, -1, molangVariables, players);
+    }
+
+    public void addParticleEffect(Vector3 pos, String identifier, long uniqueEntityId, @Nullable String molangVariables, Player... players) {
         if (players == null || players.length == 0) {
             players = this.getChunkPlayers(pos.getChunkX(), pos.getChunkZ()).values().toArray(new Player[0]);
         }
+
+        Vector3f vec = pos.asVector3f();
         for (Player player : players) {
-            player.spawnParticleEffect(pos, identifier, uniqueEntityId, molangVariables);
+            player.spawnParticleEffect(vec, identifier, uniqueEntityId, molangVariables);
         }
     }
 
@@ -1332,8 +1310,8 @@ public class Level implements ChunkManager, Metadatable {
                 bolt.setEffect(false);
             }
 
-            this.addLevelSoundEvent(LevelSoundEventPacket.SOUND_THUNDER, EntityLightning.NETWORK_ID, -1, vector, false);
-            this.addLevelSoundEvent(LevelSoundEventPacket.SOUND_EXPLODE, EntityLightning.NETWORK_ID, -1, vector, false);
+            this.addLevelSoundEvent(vector, LevelSoundEventPacket.SOUND_THUNDER, EntityFullNames.LIGHTNING_BOLT);
+            this.addLevelSoundEvent(vector, LevelSoundEventPacket.SOUND_EXPLODE, EntityFullNames.LIGHTNING_BOLT);
         }
     }
 
@@ -1849,6 +1827,14 @@ public class Level implements ChunkManager, Metadatable {
      */
     @Nullable
     public MovingObjectPosition clip(Vector3 a, Vector3 b, boolean liquid, int maxDistance) {
+        return clip(a, b, liquid, maxDistance, false);
+    }
+
+    /**
+     * @return block hit result
+     */
+    @Nullable
+    public MovingObjectPosition clip(Vector3 a, Vector3 b, boolean liquid, int maxDistance, boolean ignoreBarrier) {
         int xBlock0 = Mth.floor(a.x);
         int yBlock0 = Mth.floor(a.y);
         int zBlock0 = Mth.floor(a.z);
@@ -1857,24 +1843,29 @@ public class Level implements ChunkManager, Metadatable {
         int zBlock1 = Mth.floor(b.z);
 
         MovingObjectPosition hitResult;
-        Block block;
-        Block extraBlock;
         if (liquid) {
-            extraBlock = getExtraBlock(xBlock0, yBlock0, zBlock0, false);
+            Block extraBlock = getExtraBlock(xBlock0, yBlock0, zBlock0, false);
             if (extraBlock.isLiquid()) {
                 hitResult = extraBlock.clip(a, b, extraBlock::getCollisionBoundingBox);
             } else if (!extraBlock.isAir()) {
                 hitResult = extraBlock.calculateIntercept(a, b);
             } else {
-                block = getBlock(xBlock0, yBlock0, zBlock0, false);
+                Block block = getBlock(xBlock0, yBlock0, zBlock0, false);
                 if (block.isLiquid()) {
                     hitResult = block.clip(a, b, block::getCollisionBoundingBox);
+                } else if (ignoreBarrier && block.is(Block.BARRIER)) {
+                    hitResult = null;
                 } else {
                     hitResult = block.calculateIntercept(a, b);
                 }
             }
         } else {
-            hitResult = getBlock(xBlock0, yBlock0, zBlock0, false).calculateIntercept(a, b);
+            Block block = getBlock(xBlock0, yBlock0, zBlock0, false);
+            if (ignoreBarrier && block.is(Block.BARRIER)) {
+                hitResult = null;
+            } else {
+                hitResult = block.calculateIntercept(a, b);
+            }
         }
         if (hitResult != null) {
             return hitResult;
@@ -1969,21 +1960,24 @@ public class Level implements ChunkManager, Metadatable {
             }
 
             if (liquid) {
-                extraBlock = getExtraBlock(xBlock0, yBlock0, zBlock0, false);
+                Block extraBlock = getExtraBlock(xBlock0, yBlock0, zBlock0, false);
                 if (extraBlock.isLiquid()) {
                     hitResult = extraBlock.clip(a, b, extraBlock::getCollisionBoundingBox);
                 } else if (!extraBlock.isAir()) {
                     hitResult = extraBlock.calculateIntercept(a, b);
                 } else {
-                    block = getBlock(xBlock0, yBlock0, zBlock0, false);
+                    Block block = getBlock(xBlock0, yBlock0, zBlock0, false);
                     if (block.isLiquid()) {
                         hitResult = block.clip(a, b, block::getCollisionBoundingBox);
-                    } else {
+                    } else if (!ignoreBarrier || !block.is(Block.BARRIER)) {
                         hitResult = block.calculateIntercept(a, b);
                     }
                 }
             } else {
-                hitResult = getBlock(xBlock0, yBlock0, zBlock0, false).calculateIntercept(a, b);
+                Block block = getBlock(xBlock0, yBlock0, zBlock0, false);
+                if (!ignoreBarrier || !block.is(Block.BARRIER)) {
+                    hitResult = block.calculateIntercept(a, b);
+                }
             }
             if (hitResult != null) {
                 return hitResult;
@@ -2681,31 +2675,11 @@ public class Level implements ChunkManager, Metadatable {
                 }
             }
 
-            double breakTime = target.getBreakTime(item, player);
-            // this in
-            // block
-            // class
+            float breakTime = player.isCreative() ? 0 : target.getBreakTime(item, player);
 
-            if (player.isCreative() && breakTime > 0.15) {
-                breakTime = 0.15;
+            if (breakTime > 0) {
+                breakTime -= 0.15f; // 3 ticks
             }
-
-            Effect haste = player.getEffect(Effect.HASTE);
-            if (haste != null) {
-                breakTime *= 1 - (0.2 * (haste.getAmplifier() + 1));
-            }
-
-            Effect miningFatigue = player.getEffect(Effect.MINING_FATIGUE);
-            if (miningFatigue != null) {
-                breakTime *= 1 - (0.3 * (miningFatigue.getAmplifier() + 1));
-            }
-
-            Enchantment eff = !isEnchantedBook ? item.getEnchantment(Enchantment.EFFICIENCY) : null;
-            if (eff != null && eff.getLevel() > 0) {
-                breakTime *= 1 - (0.3 * eff.getLevel());
-            }
-
-            breakTime -= 0.15;
 
             Item[] eventDrops;
             if (!player.isSurvival()) {
@@ -2713,11 +2687,12 @@ public class Level implements ChunkManager, Metadatable {
             } else if (isSilkTouch && target.canSilkTouch()) {
                 eventDrops = new Item[]{target.getSilkTouchResource()};
             } else {
-                eventDrops = target.getDrops(item);
+                eventDrops = target.getDrops(item, player);
             }
 
+            long now = System.currentTimeMillis();
             BlockBreakEvent ev = new BlockBreakEvent(player, target, face, item, eventDrops, player.isCreative(),
-                    (player.lastBreak + breakTime * 1000) > System.currentTimeMillis());
+                    (player.lastBreak + breakTime * 1000) > now);
 
             if (player.isSurvival() && !target.isBreakable(item)) {
                 ev.setCancelled();
@@ -2732,7 +2707,7 @@ public class Level implements ChunkManager, Metadatable {
                 return null;
             }
 
-            player.lastBreak = System.currentTimeMillis();
+            player.lastBreak = now;
 
             drops = ev.getDrops();
             dropExp = ev.getDropExp();
@@ -2757,7 +2732,7 @@ public class Level implements ChunkManager, Metadatable {
             this.updateComparatorOutputLevel(target);
         }
 
-        target.onBreak(item);
+        target.onBreak(item, player);
 
         Block newBlock = getBlock(target);
         Block extra = getExtraBlock(target);
@@ -3511,7 +3486,7 @@ public class Level implements ChunkManager, Metadatable {
     public BlockColor getMapColorAt(int x, int z) {
         int y = getHighestBlockAt(x, z);
         while (y > 1) {
-            Block block = getBlock(new Vector3(x, y, z));
+            Block block = getBlock(x, y, z);
             BlockColor blockColor = block.getColor();
             if (blockColor.getAlpha() == 0x00) {
                 y--;
@@ -4896,6 +4871,14 @@ public class Level implements ChunkManager, Metadatable {
 
     public void setRedstoneEnabled(boolean redstoneEnabled) {
         this.redstoneEnabled = redstoneEnabled;
+    }
+
+    public boolean isExtinguishFireIgnoreGameRule() {
+        return this.extinguishFireIgnoreGameRule;
+    }
+
+    public void setExtinguishFireIgnoreGameRule(boolean ignore) {
+        this.extinguishFireIgnoreGameRule = ignore;
     }
 
     public static BatchPacket getChunkCacheFromData(int x, int z, int subChunkCount, byte[] payload) {

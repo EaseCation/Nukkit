@@ -167,6 +167,22 @@ public class EntityMetadata {
         return this.put(new StringEntityData(id, value));
     }
 
+    public EntityMetadata putPosition(int id, BlockVector3 value) {
+        return this.put(new IntPositionEntityData(id, value));
+    }
+
+    public EntityMetadata putPosition(int id, int x, int y, int z) {
+        return this.put(new IntPositionEntityData(id, x, y, z));
+    }
+
+    public EntityMetadata putFloatPosition(int id, Vector3f value) {
+        return this.put(new Vector3fEntityData(id, value));
+    }
+
+    public EntityMetadata putFloatPosition(int id, float x, float y, float z) {
+        return this.put(new Vector3fEntityData(id, x, y, z));
+    }
+
     public Int2ObjectMap<EntityData> getMap() {
         return new Int2ObjectOpenHashMap<>(map);
     }

@@ -1,5 +1,7 @@
 package cn.nukkit.item;
 
+import cn.nukkit.block.BlockToolType;
+
 public class ItemHoeNetherite extends ItemTool {
 
     public ItemHoeNetherite() {
@@ -17,6 +19,11 @@ public class ItemHoeNetherite extends ItemTool {
     @Override
     public boolean isHoe() {
         return true;
+    }
+
+    @Override
+    public int getBlockToolType() {
+        return BlockToolType.HOE;
     }
 
     @Override

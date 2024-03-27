@@ -1,7 +1,7 @@
 package cn.nukkit.block;
 
+import cn.nukkit.Player;
 import cn.nukkit.item.Item;
-import cn.nukkit.item.ItemTool;
 import cn.nukkit.utils.BlockColor;
 
 public class BlockSculkVein extends BlockMultiface {
@@ -24,18 +24,18 @@ public class BlockSculkVein extends BlockMultiface {
     }
 
     @Override
-    public double getHardness() {
-        return 0.2;
+    public float getHardness() {
+        return 0.2f;
     }
 
     @Override
-    public double getResistance() {
+    public float getResistance() {
         return 1;
     }
 
     @Override
     public int getToolType() {
-        return ItemTool.TYPE_HOE;
+        return BlockToolType.HOE;
     }
 
     @Override
@@ -44,7 +44,7 @@ public class BlockSculkVein extends BlockMultiface {
     }
 
     @Override
-    public Item[] getDrops(Item item) {
+    public Item[] getDrops(Item item, Player player) {
         return new Item[0];
     }
 

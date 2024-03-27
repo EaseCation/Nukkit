@@ -140,7 +140,7 @@ public class BlockTallGrass extends BlockFlowable {
     }
 
     @Override
-    public Item[] getDrops(Item item) {
+    public Item[] getDrops(Item item, Player player) {
         boolean dropSeeds = ThreadLocalRandom.current().nextInt(10) == 0;
         if (item.isShears()) {
             //todo enchantment
@@ -167,7 +167,7 @@ public class BlockTallGrass extends BlockFlowable {
 
     @Override
     public int getToolType() {
-        return ItemTool.TYPE_SHEARS;
+        return BlockToolType.SHEARS;
     }
 
     @Override

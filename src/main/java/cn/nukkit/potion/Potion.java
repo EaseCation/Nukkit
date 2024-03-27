@@ -109,6 +109,9 @@ public class Potion implements PotionID {
         for (Effect effect : applyEffects) {
             switch (effect.getId()) {
                 case Effect.INSTANT_HEALTH:
+                    if (!entity.canBeAffected(effect.getId())) {
+                        break;
+                    }
                     if (entity instanceof EntitySmite) {
                         entity.attack(new EntityDamageEvent(entity, DamageCause.MAGIC, instantScale * (6 << effect.getAmplifier())));
                     } else {
@@ -116,6 +119,9 @@ public class Potion implements PotionID {
                     }
                     break;
                 case Effect.INSTANT_DAMAGE:
+                    if (!entity.canBeAffected(effect.getId())) {
+                        break;
+                    }
                     if (entity instanceof EntitySmite) {
                         entity.heal(new EntityRegainHealthEvent(entity, instantScale * (4 << effect.getAmplifier()), EntityRegainHealthEvent.CAUSE_MAGIC));
                     } else {

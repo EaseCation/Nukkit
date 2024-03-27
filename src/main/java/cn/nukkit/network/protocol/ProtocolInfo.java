@@ -88,7 +88,7 @@ public interface ProtocolInfo {
     int MAP_INFO_REQUEST_PACKET = 0x44; // 68 s
     int REQUEST_CHUNK_RADIUS_PACKET = 0x45; // 69 s
     int CHUNK_RADIUS_UPDATED_PACKET = 0x46; // 70 c
-    int ITEM_FRAME_DROP_ITEM_PACKET = 0x47; // 71 s D
+    int ITEM_FRAME_DROP_ITEM_PACKET = 0x47; // 71 s d
     int GAME_RULES_CHANGED_PACKET = 0x48; // 72 c
     int CAMERA_PACKET = 0x49; // 73 c
     int BOSS_EVENT_PACKET = 0x4a; // 74 cs
@@ -180,7 +180,7 @@ public interface ProtocolInfo {
     int PLAYER_FOG_PACKET = 0xa0; // 160 c
     int CORRECT_PLAYER_MOVE_PREDICTION_PACKET = 0xa1; // 161 c
     int ITEM_COMPONENT_PACKET = 0xa2; // 162 c
-    int FILTER_TEXT_PACKET = 0xa3; // 163 cs
+    int FILTER_TEXT_PACKET = 0xa3; // 163 cs d
     int CLIENTBOUND_DEBUG_RENDERER_PACKET = 0xa4; // 164 c
     int SYNC_ACTOR_PROPERTY_PACKET = 0xa5; // 165 c
     int ADD_VOLUME_ENTITY_PACKET = 0xa6; // 166 c

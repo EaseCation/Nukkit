@@ -1,12 +1,10 @@
 package cn.nukkit.math;
 
-import java.util.Objects;
-
 /**
  * author: MagicDroidX
  * Nukkit Project
  */
-public class Vector2 {
+public class Vector2 implements Cloneable {
     public static final Vector2 ZERO = new Vector2(0, 0);
 
     public final double x;
@@ -97,20 +95,12 @@ public class Vector2 {
         return new Vector2(this.x / vec.getX(), this.y / vec.getY());
     }
 
-    public double distance(double x) {
-        return this.distance(x, 0);
-    }
-
     public double distance(double x, double y) {
         return Math.sqrt(this.distanceSquared(x, y));
     }
 
     public double distance(Vector2 vector) {
         return Math.sqrt(this.distanceSquared(vector.getX(), vector.getY()));
-    }
-
-    public double distanceSquared(double x) {
-        return this.distanceSquared(x, 0);
     }
 
     public double distanceSquared(double x, double y) {
@@ -148,8 +138,37 @@ public class Vector2 {
         return "Vector2(x=" + this.x + ",y=" + this.y + ")";
     }
 
+    public String toShortString() {
+        return this.x + "," + this.y;
+    }
+
     public String debugText() {
         return "(" + NukkitMath.round(x, 2) + "," + NukkitMath.round(y, 2) + ")";
+    }
+
+    public final Vector2 copyVec() {
+        return new Vector2(x, y);
+    }
+
+    public final boolean equalsVec(Vector2 vec) {
+        if (vec == null) {
+            return false;
+        }
+        return Double.compare(vec.x, this.x) == 0
+                && Double.compare(vec.y, this.y) == 0;
+    }
+
+    public Vector2f asVector2f() {
+        return new Vector2f((float) this.x, (float) this.y);
+    }
+
+    @Override
+    public Vector2 clone() {
+        try {
+            return (Vector2) super.clone();
+        } catch (CloneNotSupportedException e) {
+            return null;
+        }
     }
 
     @Override
@@ -163,6 +182,8 @@ public class Vector2 {
 
     @Override
     public int hashCode() {
-        return Objects.hash(x, y);
+        int hash = Double.hashCode(this.x);
+        hash = 31 * hash + Double.hashCode(this.y);
+        return hash;
     }
 }

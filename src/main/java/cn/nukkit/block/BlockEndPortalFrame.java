@@ -28,12 +28,12 @@ public class BlockEndPortalFrame extends BlockTransparentMeta implements Faceabl
     }
 
     @Override
-    public double getResistance() {
+    public float getResistance() {
         return 18000000;
     }
 
     @Override
-    public double getHardness() {
+    public float getHardness() {
         return -1;
     }
 

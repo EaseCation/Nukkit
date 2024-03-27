@@ -27,6 +27,6 @@ public class BlockButtonWooden extends BlockButton {
 
     @Override
     public int getToolType() {
-        return ItemTool.TYPE_AXE;
+        return BlockToolType.AXE;
     }
 }

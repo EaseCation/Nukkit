@@ -2,7 +2,6 @@ package cn.nukkit.block;
 
 import cn.nukkit.Player;
 import cn.nukkit.item.Item;
-import cn.nukkit.item.ItemTool;
 import cn.nukkit.level.Level;
 import cn.nukkit.level.particle.BoneMealParticle;
 import cn.nukkit.math.AxisAlignedBB;
@@ -36,12 +35,12 @@ public class BlockDripleafSmall extends BlockTransparentMeta implements Faceable
     }
 
     @Override
-    public double getHardness() {
+    public float getHardness() {
         return 0;
     }
 
     @Override
-    public double getResistance() {
+    public float getResistance() {
         return 0;
     }
 
@@ -57,7 +56,7 @@ public class BlockDripleafSmall extends BlockTransparentMeta implements Faceable
 
     @Override
     public int getToolType() {
-        return ItemTool.TYPE_SHEARS;
+        return BlockToolType.SHEARS;
     }
 
     @Override
@@ -71,7 +70,7 @@ public class BlockDripleafSmall extends BlockTransparentMeta implements Faceable
     }
 
     @Override
-    public Item[] getDrops(Item item) {
+    public Item[] getDrops(Item item, Player player) {
         if (item.isShears()) {
             return new Item[]{
                     toItem(true),

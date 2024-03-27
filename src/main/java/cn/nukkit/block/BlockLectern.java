@@ -7,11 +7,11 @@ import cn.nukkit.blockentity.BlockEntityLectern;
 import cn.nukkit.blockentity.BlockEntityType;
 import cn.nukkit.item.Item;
 import cn.nukkit.item.ItemBookWritable;
-import cn.nukkit.item.ItemTool;
 import cn.nukkit.level.Level;
 import cn.nukkit.math.BlockFace;
 import cn.nukkit.nbt.tag.CompoundTag;
 import cn.nukkit.network.protocol.LevelSoundEventPacket;
+import cn.nukkit.network.protocol.types.ContainerType;
 import cn.nukkit.utils.BlockColor;
 import cn.nukkit.utils.Faceable;
 
@@ -48,16 +48,16 @@ public class BlockLectern extends BlockTransparentMeta implements Faceable {
     }
 
     @Override
-    public double getHardness() {
+    public float getHardness() {
         if (V1_20_30.isAvailable()) {
-            return 2.5;
+            return 2.5f;
         }
         return 2;
     }
 
     @Override
-    public double getResistance() {
-        return 12.5;
+    public float getResistance() {
+        return 12.5f;
     }
 
     @Override
@@ -72,7 +72,7 @@ public class BlockLectern extends BlockTransparentMeta implements Faceable {
 
     @Override
     public int getToolType() {
-        return ItemTool.TYPE_AXE;
+        return BlockToolType.AXE;
     }
 
     @Override
@@ -114,7 +114,7 @@ public class BlockLectern extends BlockTransparentMeta implements Faceable {
     }
 
     @Override
-    public Item[] getDrops(Item item) {
+    public Item[] getDrops(Item item, Player player) {
         Item drop = toItem(true);
         BlockEntityLectern blockEntity = getBlockEntity();
         ItemBookWritable book = blockEntity.getBook();
@@ -153,6 +153,7 @@ public class BlockLectern extends BlockTransparentMeta implements Faceable {
         }
 
         if (blockEntity.getBook() != null) {
+            player.openBlockEditor(getFloorX(), getFloorY(), getFloorZ(), ContainerType.LECTERN);
             return true;
         }
 
@@ -163,6 +164,7 @@ public class BlockLectern extends BlockTransparentMeta implements Faceable {
         ItemBookWritable book = (ItemBookWritable) item.clone();
         book.setCount(1);
         blockEntity.setBook(book);
+        blockEntity.spawnToAll();
 
         level.addLevelSoundEvent(this, LevelSoundEventPacket.SOUND_ITEM_BOOK_PUT);
 

@@ -8,6 +8,7 @@ public interface BlockNames {
     String COBBLESTONE = "cobblestone";
     String OAK_PLANKS = "oak_planks"; //TODO: 1.20.50 flattening
     String PLANKS = "planks";
+    String OAK_SAPLING = "oak_sapling"; //TODO: 1.20.80 flattening
     String SAPLING = "sapling";
     String BEDROCK = "bedrock";
     String FLOWING_WATER = "flowing_water";
@@ -44,6 +45,7 @@ public interface BlockNames {
     String WOOL = "wool";
     String ELEMENT_0 = "element_0";
     String YELLOW_FLOWER = "yellow_flower";
+    String POPPY = "poppy"; //TODO: 1.20.80 flattening
     String RED_FLOWER = "red_flower";
     String BROWN_MUSHROOM = "brown_mushroom";
     String RED_MUSHROOM = "red_mushroom";
@@ -418,7 +420,9 @@ public interface BlockNames {
     String TUBE_CORAL = "tube_coral"; //TODO: 1.20.0 flattening
     String CORAL = "coral";
     String CORAL_BLOCK = "coral_block";
+    String TUBE_CORAL_FAN = "tube_coral_fan"; //TODO: 1.20.80 flattening
     String CORAL_FAN = "coral_fan";
+    String DEAD_TUBE_CORAL_FAN = "dead_tube_coral_fan"; //TODO: 1.20.80 flattening
     String CORAL_FAN_DEAD = "coral_fan_dead";
     String CORAL_FAN_HANG = "coral_fan_hang";
     String CORAL_FAN_HANG2 = "coral_fan_hang2";
@@ -1098,4 +1102,27 @@ public interface BlockNames {
     String STRIPPED_JUNGLE_WOOD = "stripped_jungle_wood";
     String STRIPPED_ACACIA_WOOD = "stripped_acacia_wood";
     String STRIPPED_DARK_OAK_WOOD = "stripped_dark_oak_wood";
+    String SPRUCE_SAPLING = "spruce_sapling";
+    String BIRCH_SAPLING = "birch_sapling";
+    String JUNGLE_SAPLING = "jungle_sapling";
+    String ACACIA_SAPLING = "acacia_sapling";
+    String DARK_OAK_SAPLING = "dark_oak_sapling";
+    String BLUE_ORCHID = "blue_orchid";
+    String ALLIUM = "allium";
+    String AZURE_BLUET = "azure_bluet";
+    String RED_TULIP = "red_tulip";
+    String ORANGE_TULIP = "orange_tulip";
+    String WHITE_TULIP = "white_tulip";
+    String PINK_TULIP = "pink_tulip";
+    String OXEYE_DAISY = "oxeye_daisy";
+    String CORNFLOWER = "cornflower";
+    String LILY_OF_THE_VALLEY = "lily_of_the_valley";
+    String BRAIN_CORAL_FAN = "brain_coral_fan";
+    String BUBBLE_CORAL_FAN = "bubble_coral_fan";
+    String FIRE_CORAL_FAN = "fire_coral_fan";
+    String HORN_CORAL_FAN = "horn_coral_fan";
+    String DEAD_BRAIN_CORAL_FAN = "dead_brain_coral_fan";
+    String DEAD_BUBBLE_CORAL_FAN = "dead_bubble_coral_fan";
+    String DEAD_FIRE_CORAL_FAN = "dead_fire_coral_fan";
+    String DEAD_HORN_CORAL_FAN = "dead_horn_coral_fan";
 }

@@ -58,18 +58,18 @@ public class BlockEnderChest extends BlockTransparentMeta implements Faceable {
     }
 
     @Override
-    public double getHardness() {
-        return 22.5;
+    public float getHardness() {
+        return 22.5f;
     }
 
     @Override
-    public double getResistance() {
+    public float getResistance() {
         return 3000;
     }
 
     @Override
     public int getToolType() {
-        return ItemTool.TYPE_PICKAXE;
+        return BlockToolType.PICKAXE;
     }
 
     @Override
@@ -157,7 +157,7 @@ public class BlockEnderChest extends BlockTransparentMeta implements Faceable {
     }
 
     @Override
-    public Item[] getDrops(Item item) {
+    public Item[] getDrops(Item item, Player player) {
         if (item.isPickaxe() && item.getTier() >= ItemTool.TIER_WOODEN) {
             return new Item[]{
                     Item.get(Item.OBSIDIAN, 0, 8)

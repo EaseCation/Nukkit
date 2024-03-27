@@ -99,4 +99,16 @@ public class BlockColor extends Color {
     public BlockColor(int r, int g, int b) {
         super(r, g, b);
     }
+
+    public static int getRGB(int r, int g, int b) {
+        return ((r & 0xff) << 16) | ((g & 0xff) << 8) | (b & 0xff);
+    }
+
+    public static int getARGB(int r, int g, int b) {
+        return getARGB(r, g, b, 0xff);
+    }
+
+    public static int getARGB(int r, int g, int b, int a) {
+        return ((a & 0xff) << 24) | ((r & 0xff) << 16) | ((g & 0xff) << 8) | (b & 0xff);
+    }
 }

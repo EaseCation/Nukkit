@@ -1,5 +1,6 @@
 package cn.nukkit.block;
 
+import cn.nukkit.Player;
 import cn.nukkit.item.Item;
 import cn.nukkit.item.ItemTool;
 import cn.nukkit.utils.BlockColor;
@@ -25,21 +26,21 @@ public class BlockObsidian extends BlockSolid {
 
     @Override
     public int getToolType() {
-        return ItemTool.TYPE_PICKAXE;
+        return BlockToolType.PICKAXE;
     }
 
     @Override
-    public double getHardness() {
+    public float getHardness() {
         return 35; //50 in PC
     }
 
     @Override
-    public double getResistance() {
+    public float getResistance() {
         return 6000;
     }
 
     @Override
-    public Item[] getDrops(Item item) {
+    public Item[] getDrops(Item item, Player player) {
         if (item.isPickaxe() && item.getTier() >= ItemTool.TIER_DIAMOND) {
             return new Item[]{
                     toItem(true)
@@ -50,7 +51,7 @@ public class BlockObsidian extends BlockSolid {
     }
 
     @Override
-    public boolean onBreak(Item item) {
+    public boolean onBreak(Item item, Player player) {
         //destroy the nether portal
         Block[] nearby = new Block[]{
                 this.up(), this.down(),
@@ -59,10 +60,10 @@ public class BlockObsidian extends BlockSolid {
         };
         for (Block aNearby : nearby) {
             if (aNearby != null) if (aNearby.getId() == PORTAL) {
-                aNearby.onBreak(item);
+                aNearby.onBreak(item, player);
             }
         }
-        return super.onBreak(item);
+        return super.onBreak(item, player);
     }
 
     @Override

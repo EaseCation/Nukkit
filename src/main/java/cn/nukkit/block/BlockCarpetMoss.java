@@ -22,6 +22,11 @@ public class BlockCarpetMoss extends BlockCarpet {
     }
 
     @Override
+    public int getToolType() {
+        return BlockToolType.HOE | BlockToolType.AXE;
+    }
+
+    @Override
     public boolean breaksWhenMoved() {
         return true;
     }

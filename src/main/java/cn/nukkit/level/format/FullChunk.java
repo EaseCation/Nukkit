@@ -233,10 +233,13 @@ public interface FullChunk extends Cloneable {
     }
 
     default void fixBlocks(boolean fixWalls, boolean fixBlockLayers, boolean fixBlockEntities) {
-        fixBlocks(fixWalls, fixBlockLayers, fixBlockEntities, false);
+        fixBlocks(fixWalls, fixBlockLayers, fixBlockEntities, false, false, false);
     }
 
-    default void fixBlocks(boolean fixWalls, boolean fixBlockLayers, boolean fixBlockEntities, boolean emptyContainers) {
+    /**
+     * @param replaceInvisibleBedrock replace invisible bedrock with barrier
+     */
+    default void fixBlocks(boolean fixWalls, boolean fixBlockLayers, boolean fixBlockEntities, boolean emptyContainers, boolean persistentLeaves, boolean replaceInvisibleBedrock) {
     }
 
     default boolean fixInvalidBiome() {

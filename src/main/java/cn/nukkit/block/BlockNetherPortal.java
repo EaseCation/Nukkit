@@ -1,5 +1,6 @@
 package cn.nukkit.block;
 
+import cn.nukkit.Player;
 import cn.nukkit.item.Item;
 import cn.nukkit.item.Items;
 import cn.nukkit.level.Level;
@@ -47,12 +48,12 @@ public class BlockNetherPortal extends BlockTransparentMeta implements Faceable 
     }
 
     @Override
-    public double getHardness() {
+    public float getHardness() {
         return -1;
     }
 
     @Override
-    public double getResistance() {
+    public float getResistance() {
         return 0;
     }
 
@@ -67,13 +68,13 @@ public class BlockNetherPortal extends BlockTransparentMeta implements Faceable 
     }
 
     @Override
-    public boolean onBreak(Item item) {
-        boolean result = super.onBreak(item);
+    public boolean onBreak(Item item, Player player) {
+        boolean result = super.onBreak(item, player);
         for (BlockFace face : BlockFace.getValues()) {
             Block b = this.getSide(face);
             if (b != null) {
                 if (b instanceof BlockNetherPortal) {
-                    result &= b.onBreak(item);
+                    result &= b.onBreak(item, player);
                 }
             }
         }

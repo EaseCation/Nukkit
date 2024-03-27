@@ -834,7 +834,7 @@ public final class Blocks {
         registerBlockAlias(BlockNames.DOUBLE_STONE_BLOCK_SLAB3, BlockNames.DOUBLE_STONE_SLAB, V1_19_0);
         registerBlockAlias(BlockNames.DOUBLE_STONE_BLOCK_SLAB4, BlockNames.DOUBLE_STONE_SLAB, V1_19_0);
 
-//        registerBlockAlias(BlockNames.GRASS_BLOCK, BlockNames.GRASS, V1_20_70);
+        registerBlockAlias(BlockNames.GRASS_BLOCK, BlockNames.GRASS, V1_20_70);
     }
 
     @SuppressWarnings("deprecation")
@@ -873,7 +873,7 @@ public final class Blocks {
         registerItemAlias(ItemBlockNames.DOUBLE_STONE_BLOCK_SLAB3, ItemBlockNames.REAL_DOUBLE_STONE_SLAB, V1_19_0);
         registerItemAlias(ItemBlockNames.DOUBLE_STONE_BLOCK_SLAB4, ItemBlockNames.REAL_DOUBLE_STONE_SLAB, V1_19_0);
 
-//        registerItemAlias(ItemBlockNames.GRASS_BLOCK, ItemBlockNames.GRASS, V1_20_70);
+        registerItemAlias(ItemBlockNames.GRASS_BLOCK, ItemBlockNames.GRASS, V1_20_70);
     }
 
     private static void registerComplexAliases() {
@@ -1087,7 +1087,7 @@ public final class Blocks {
         registerComplexAlias(ItemBlockNames.HARD_GREEN_STAINED_GLASS_PANE, HARD_STAINED_GLASS_PANE, DyeColor.GREEN.getWoolData(), V1_20_60);
         registerComplexAlias(ItemBlockNames.HARD_RED_STAINED_GLASS_PANE, HARD_STAINED_GLASS_PANE, DyeColor.RED.getWoolData(), V1_20_60);
         registerComplexAlias(ItemBlockNames.HARD_BLACK_STAINED_GLASS_PANE, HARD_STAINED_GLASS_PANE, DyeColor.BLACK.getWoolData(), V1_20_60);
-/*
+
         registerComplexAlias(ItemBlockNames.OAK_LEAVES, LEAVES, BlockLeaves.OAK, V1_20_70);
         registerComplexAlias(ItemBlockNames.SPRUCE_LEAVES, LEAVES, BlockLeaves.SPRUCE, V1_20_70);
         registerComplexAlias(ItemBlockNames.BIRCH_LEAVES, LEAVES, BlockLeaves.BIRCH, V1_20_70);
@@ -1123,6 +1123,37 @@ public final class Blocks {
         registerComplexAlias(ItemBlockNames.STRIPPED_JUNGLE_WOOD, WOOD, BlockWoodBark.STRIPPED_BIT | BlockWoodBark.JUNGLE, V1_20_70);
         registerComplexAlias(ItemBlockNames.STRIPPED_ACACIA_WOOD, WOOD, BlockWoodBark.STRIPPED_BIT | BlockWoodBark.ACACIA, V1_20_70);
         registerComplexAlias(ItemBlockNames.STRIPPED_DARK_OAK_WOOD, WOOD, BlockWoodBark.STRIPPED_BIT | BlockWoodBark.DARK_OAK, V1_20_70);
+/*
+        registerComplexAlias(ItemBlockNames.OAK_SAPLING, SAPLING, BlockSapling.OAK, V1_20_80);
+        registerComplexAlias(ItemBlockNames.SPRUCE_SAPLING, SAPLING, BlockSapling.SPRUCE, V1_20_80);
+        registerComplexAlias(ItemBlockNames.BIRCH_SAPLING, SAPLING, BlockSapling.BIRCH, V1_20_80);
+        registerComplexAlias(ItemBlockNames.JUNGLE_SAPLING, SAPLING, BlockSapling.JUNGLE, V1_20_80);
+        registerComplexAlias(ItemBlockNames.ACACIA_SAPLING, SAPLING, BlockSapling.ACACIA, V1_20_80);
+        registerComplexAlias(ItemBlockNames.DARK_OAK_SAPLING, SAPLING, BlockSapling.DARK_OAK, V1_20_80);
+
+        registerComplexAlias(ItemBlockNames.TUBE_CORAL_FAN, CORAL_FAN, BlockCoralFan.BLUE, V1_20_80);
+        registerComplexAlias(ItemBlockNames.BRAIN_CORAL_FAN, CORAL_FAN, BlockCoralFan.PINK, V1_20_80);
+        registerComplexAlias(ItemBlockNames.BUBBLE_CORAL_FAN, CORAL_FAN, BlockCoralFan.PURPLE, V1_20_80);
+        registerComplexAlias(ItemBlockNames.FIRE_CORAL_FAN, CORAL_FAN, BlockCoralFan.RED, V1_20_80);
+        registerComplexAlias(ItemBlockNames.HORN_CORAL_FAN, CORAL_FAN, BlockCoralFan.YELLOW, V1_20_80);
+
+        registerComplexAlias(ItemBlockNames.DEAD_TUBE_CORAL_FAN, CORAL_FAN_DEAD, BlockCoralFanDead.BLUE, V1_20_80);
+        registerComplexAlias(ItemBlockNames.DEAD_BRAIN_CORAL_FAN, CORAL_FAN_DEAD, BlockCoralFanDead.PINK, V1_20_80);
+        registerComplexAlias(ItemBlockNames.DEAD_BUBBLE_CORAL_FAN, CORAL_FAN_DEAD, BlockCoralFanDead.PURPLE, V1_20_80);
+        registerComplexAlias(ItemBlockNames.DEAD_FIRE_CORAL_FAN, CORAL_FAN_DEAD, BlockCoralFanDead.RED, V1_20_80);
+        registerComplexAlias(ItemBlockNames.DEAD_HORN_CORAL_FAN, CORAL_FAN_DEAD, BlockCoralFanDead.YELLOW, V1_20_80);
+
+        registerComplexAlias(ItemBlockNames.POPPY, RED_FLOWER, BlockFlower.TYPE_POPPY, V1_20_80);
+        registerComplexAlias(ItemBlockNames.BLUE_ORCHID, RED_FLOWER, BlockFlower.TYPE_BLUE_ORCHID, V1_20_80);
+        registerComplexAlias(ItemBlockNames.ALLIUM, RED_FLOWER, BlockFlower.TYPE_ALLIUM, V1_20_80);
+        registerComplexAlias(ItemBlockNames.AZURE_BLUET, RED_FLOWER, BlockFlower.TYPE_AZURE_BLUET, V1_20_80);
+        registerComplexAlias(ItemBlockNames.RED_TULIP, RED_FLOWER, BlockFlower.TYPE_RED_TULIP, V1_20_80);
+        registerComplexAlias(ItemBlockNames.ORANGE_TULIP, RED_FLOWER, BlockFlower.TYPE_ORANGE_TULIP, V1_20_80);
+        registerComplexAlias(ItemBlockNames.WHITE_TULIP, RED_FLOWER, BlockFlower.TYPE_WHITE_TULIP, V1_20_80);
+        registerComplexAlias(ItemBlockNames.PINK_TULIP, RED_FLOWER, BlockFlower.TYPE_PINK_TULIP, V1_20_80);
+        registerComplexAlias(ItemBlockNames.OXEYE_DAISY, RED_FLOWER, BlockFlower.TYPE_OXEYE_DAISY, V1_20_80);
+        registerComplexAlias(ItemBlockNames.CORNFLOWER, RED_FLOWER, BlockFlower.TYPE_CORNFLOWER, V1_20_80);
+        registerComplexAlias(ItemBlockNames.LILY_OF_THE_VALLEY, RED_FLOWER, BlockFlower.TYPE_LILY_OF_THE_VALLEY, V1_20_80);
 */
     }
 

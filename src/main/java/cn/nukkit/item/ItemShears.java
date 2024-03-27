@@ -1,6 +1,7 @@
 package cn.nukkit.item;
 
 import cn.nukkit.block.Block;
+import cn.nukkit.block.BlockToolType;
 
 /**
  * author: MagicDroidX
@@ -28,6 +29,11 @@ public class ItemShears extends ItemTool {
     @Override
     public boolean isShears() {
         return true;
+    }
+
+    @Override
+    public int getBlockToolType() {
+        return BlockToolType.SHEARS;
     }
 
     @Override

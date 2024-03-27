@@ -48,7 +48,9 @@ public class EntityDamageByEntityEvent extends EntityDamageEvent {
         this.knockBackH = knockBackH;
         this.knockBackV = knockBackV;
         this.enchantments = enchantments;
-        this.addAttackerModifiers(damager);
+        if (cause == DamageCause.ENTITY_ATTACK) {
+            this.addAttackerModifiers(damager);
+        }
     }
 
     protected void addAttackerModifiers(Entity damager) {

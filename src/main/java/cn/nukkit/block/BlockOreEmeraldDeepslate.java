@@ -17,8 +17,8 @@ public class BlockOreEmeraldDeepslate extends BlockOreEmerald {
     }
 
     @Override
-    public double getHardness() {
-        return 4.5;
+    public float getHardness() {
+        return 4.5f;
     }
 
     @Override

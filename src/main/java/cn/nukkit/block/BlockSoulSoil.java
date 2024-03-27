@@ -1,6 +1,5 @@
 package cn.nukkit.block;
 
-import cn.nukkit.item.ItemTool;
 import cn.nukkit.utils.BlockColor;
 
 import static cn.nukkit.GameVersion.*;
@@ -21,21 +20,21 @@ public class BlockSoulSoil extends BlockSolid {
     }
 
     @Override
-    public double getHardness() {
+    public float getHardness() {
         if (ENABLE_BLOCK_DESTROY_SPEED_COMPATIBILITY || V1_20_30.isAvailable()) {
-            return 0.5;
+            return 0.5f;
         }
         return 1;
     }
 
     @Override
-    public double getResistance() {
-        return 2.5;
+    public float getResistance() {
+        return 2.5f;
     }
 
     @Override
     public int getToolType() {
-        return ItemTool.TYPE_SHOVEL;
+        return BlockToolType.SHOVEL;
     }
 
     @Override

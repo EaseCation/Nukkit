@@ -65,6 +65,11 @@ public class EntityHuman extends EntityHumanType {
         return 1.8f * 0.9f;
     }
 
+//    @Override
+//    public float getRidingOffset() {
+//        return getBaseOffset() - 0.4f;
+//    }
+
     protected Skin skin;
 
     @Override

@@ -34,18 +34,13 @@ public class BlockSnowPowder extends BlockFlowable {
     }
 
     @Override
-    public double getHardness() {
-        return 0.25;
+    public float getHardness() {
+        return 0.25f;
     }
 
     @Override
-    public double getResistance() {
-        return 1.25;
-    }
-
-    @Override
-    public boolean canHarvestWithHand() {
-        return false;
+    public float getResistance() {
+        return 1.25f;
     }
 
     @Override
@@ -54,7 +49,7 @@ public class BlockSnowPowder extends BlockFlowable {
     }
 
     @Override
-    public Item[] getDrops(Item item) {
+    public Item[] getDrops(Item item, Player player) {
         return new Item[0];
     }
 

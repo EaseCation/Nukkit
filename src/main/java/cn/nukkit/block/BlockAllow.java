@@ -19,12 +19,12 @@ public class BlockAllow extends BlockSolid {
     }
 
     @Override
-    public double getHardness() {
-        return 0.2;
+    public float getHardness() {
+        return 0.2f;
     }
 
     @Override
-    public double getResistance() {
+    public float getResistance() {
         return 18000;
     }
 

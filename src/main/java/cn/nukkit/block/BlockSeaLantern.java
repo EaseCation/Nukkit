@@ -1,5 +1,6 @@
 package cn.nukkit.block;
 
+import cn.nukkit.Player;
 import cn.nukkit.item.Item;
 import cn.nukkit.utils.BlockColor;
 
@@ -21,13 +22,13 @@ public class BlockSeaLantern extends BlockSolid {
     }
 
     @Override
-    public double getResistance() {
-        return 1.5;
+    public float getResistance() {
+        return 1.5f;
     }
 
     @Override
-    public double getHardness() {
-        return 0.3;
+    public float getHardness() {
+        return 0.3f;
     }
 
     @Override
@@ -36,7 +37,7 @@ public class BlockSeaLantern extends BlockSolid {
     }
 
     @Override
-    public Item[] getDrops(Item item) {
+    public Item[] getDrops(Item item, Player player) {
         return new Item[]{
                 Item.get(Item.PRISMARINE_CRYSTALS, 0, ThreadLocalRandom.current().nextInt(2, 4))
         };

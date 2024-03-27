@@ -43,7 +43,7 @@ public class BlockCakeCandle extends BlockCake {
     }
 
     @Override
-    public Item[] getDrops(Item item) {
+    public Item[] getDrops(Item item, Player player) {
         return new Item[] {
                 Item.get(getItemId(getCandleBlockId())),
         };

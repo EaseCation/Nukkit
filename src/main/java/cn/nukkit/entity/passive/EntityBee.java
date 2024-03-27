@@ -1,6 +1,7 @@
 package cn.nukkit.entity.passive;
 
 import cn.nukkit.Player;
+import cn.nukkit.entity.EntityArthropod;
 import cn.nukkit.entity.EntityID;
 import cn.nukkit.level.format.FullChunk;
 import cn.nukkit.nbt.tag.CompoundTag;
@@ -9,7 +10,7 @@ import cn.nukkit.nbt.tag.CompoundTag;
  * @author Kaooot
  * @version 1.0
  */
-public class EntityBee extends EntityAnimal {
+public class EntityBee extends EntityAnimal implements EntityArthropod {
 
     public static final int NETWORK_ID = EntityID.BEE;
 

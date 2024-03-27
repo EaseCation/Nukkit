@@ -6,7 +6,6 @@ import cn.nukkit.blockentity.BlockEntity;
 import cn.nukkit.blockentity.BlockEntityType;
 import cn.nukkit.blockentity.BlockEntitySkull;
 import cn.nukkit.item.Item;
-import cn.nukkit.item.ItemTool;
 import cn.nukkit.math.AxisAlignedBB;
 import cn.nukkit.math.BlockFace;
 import cn.nukkit.math.Mth;
@@ -40,12 +39,12 @@ public class BlockSkull extends BlockFlowable implements Faceable {
     }
 
     @Override
-    public double getHardness() {
+    public float getHardness() {
         return 1;
     }
 
     @Override
-    public double getResistance() {
+    public float getResistance() {
         return 5;
     }
 
@@ -99,7 +98,7 @@ public class BlockSkull extends BlockFlowable implements Faceable {
     }
 
     @Override
-    public Item[] getDrops(Item item) {
+    public Item[] getDrops(Item item, Player player) {
         BlockEntity blockEntity = getLevel().getBlockEntity(this);
         int dropMeta = 0;
         if (blockEntity != null) dropMeta = blockEntity.namedTag.getByte("SkullType");
@@ -114,11 +113,6 @@ public class BlockSkull extends BlockFlowable implements Faceable {
         int itemMeta = 0;
         if (blockEntity != null) itemMeta = blockEntity.namedTag.getByte("SkullType");
         return Item.get(Item.SKULL, itemMeta);
-    }
-
-    @Override
-    public int getToolType() {
-        return ItemTool.TYPE_PICKAXE;
     }
 
     @Override
@@ -145,6 +139,11 @@ public class BlockSkull extends BlockFlowable implements Faceable {
                 return bb.offset(-0.25, 0.25, 0);
         }
         return bb;
+    }
+
+    @Override
+    public boolean canPassThrough() {
+        return false;
     }
 
     @Override

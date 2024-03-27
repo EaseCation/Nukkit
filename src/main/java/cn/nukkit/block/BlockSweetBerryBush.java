@@ -45,11 +45,11 @@ public class BlockSweetBerryBush extends BlockFlowable {
     }
 
     @Override
-    public double getHardness() {
+    public float getHardness() {
         if (ENABLE_BLOCK_DESTROY_SPEED_COMPATIBILITY || V1_20_30.isAvailable()) {
             return 0;
         }
-        return 0.2;
+        return 0.2f;
     }
 
     @Override
@@ -78,7 +78,7 @@ public class BlockSweetBerryBush extends BlockFlowable {
     }
 
     @Override
-    public Item[] getDrops(Item item) {
+    public Item[] getDrops(Item item, Player player) {
         int meta = getDamage() & 0x7;
         if (meta <= STAGE_BUSH_NO_BERRIES) {
             return new Item[0];

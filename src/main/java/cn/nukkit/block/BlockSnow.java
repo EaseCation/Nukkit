@@ -22,22 +22,22 @@ public class BlockSnow extends BlockSolid {
     }
 
     @Override
-    public double getHardness() {
-        return 0.2;
+    public float getHardness() {
+        return 0.2f;
     }
 
     @Override
-    public double getResistance() {
+    public float getResistance() {
         return 1;
     }
 
     @Override
     public int getToolType() {
-        return ItemTool.TYPE_SHOVEL;
+        return BlockToolType.SHOVEL;
     }
 
     @Override
-    public Item[] getDrops(Item item) {
+    public Item[] getDrops(Item item, Player player) {
         if (item.isShovel() && item.getTier() >= ItemTool.TIER_WOODEN) {
             return new Item[]{
                     Item.get(Item.SNOWBALL, 0, 4)

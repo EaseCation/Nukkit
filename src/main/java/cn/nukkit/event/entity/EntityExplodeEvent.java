@@ -6,7 +6,7 @@ import cn.nukkit.event.Cancellable;
 import cn.nukkit.event.HandlerList;
 import cn.nukkit.level.Position;
 
-import java.util.List;
+import java.util.Collection;
 
 /**
  * author: Angelic47
@@ -21,15 +21,15 @@ public class EntityExplodeEvent extends EntityEvent implements Cancellable {
     }
 
     protected final Position position;
-    protected List<Block> blocks;
+    protected Collection<Block> blocks;
     protected double yield;
     protected boolean fire;
 
-    public EntityExplodeEvent(Entity entity, Position position, List<Block> blocks, double yield) {
+    public EntityExplodeEvent(Entity entity, Position position, Collection<Block> blocks, double yield) {
         this(entity, position, blocks, yield, false);
     }
 
-    public EntityExplodeEvent(Entity entity, Position position, List<Block> blocks, double yield, boolean fire) {
+    public EntityExplodeEvent(Entity entity, Position position, Collection<Block> blocks, double yield, boolean fire) {
         this.entity = entity;
         this.position = position;
         this.blocks = blocks;
@@ -41,11 +41,11 @@ public class EntityExplodeEvent extends EntityEvent implements Cancellable {
         return this.position;
     }
 
-    public List<Block> getBlockList() {
+    public Collection<Block> getBlockList() {
         return this.blocks;
     }
 
-    public void setBlockList(List<Block> blocks) {
+    public void setBlockList(Collection<Block> blocks) {
         this.blocks = blocks;
     }
 

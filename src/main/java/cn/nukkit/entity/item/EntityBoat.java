@@ -380,10 +380,19 @@ public class EntityBoat extends EntityVehicle {
         boolean r = super.dismountEntity(entity, sendLinks);
 
         updatePassengers();
+
+        return r;
+    }
+
+    @Override
+    public void onDismountEntity(Entity entity) {
+        super.onDismountEntity(entity);
+
         entity.setDataProperty(new ByteEntityData(DATA_SEAT_LOCK_PASSENGER_ROTATION, 0));
         entity.setDataProperty(new ByteEntityData(DATA_SEAT_ROTATION_OFFSET, 0));
 
-        return r;
+        setDataProperty(new FloatEntityData(DATA_PADDLE_TIME_LEFT, 0));
+        setDataProperty(new FloatEntityData(DATA_PADDLE_TIME_RIGHT, 0));
     }
 
     @Override
@@ -406,7 +415,7 @@ public class EntityBoat extends EntityVehicle {
 
         if (frameSeconds > 1000) {
             frameSeconds -= 1000;
-        } else if (frameSeconds < 1000) {
+        } else if (frameSeconds < -1000) {
             frameSeconds += 1000;
         }
 
@@ -417,6 +426,9 @@ public class EntityBoat extends EntityVehicle {
 
     @Override
     public void applyEntityCollision(Entity entity) {
+        if (getPassenger() instanceof Player) {
+            return;
+        }
         if (entity instanceof EntityArmorStand) {
             return;
         }
@@ -484,7 +496,7 @@ public class EntityBoat extends EntityVehicle {
         this.namedTag.putByte("woodID", this.woodID);
     }
 
-    public void onInput(double x, double y, double z, double rotation) {
+    public void onInput(double x, double y, double z, double rotation, double pitch) {
         this.setPositionAndRotation(this.temporalVector.setComponents(x, y - this.getBaseOffset(), z), rotation, 0);
     }
 

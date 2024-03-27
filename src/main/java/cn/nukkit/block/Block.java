@@ -1,5 +1,6 @@
 package cn.nukkit.block;
 
+import cn.nukkit.AdventureSettings;
 import cn.nukkit.Player;
 import cn.nukkit.Server;
 import cn.nukkit.entity.Entity;
@@ -36,7 +37,6 @@ import java.lang.reflect.Constructor;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Objects;
-import java.util.Optional;
 import java.util.function.Supplier;
 
 import static cn.nukkit.SharedConstants.*;
@@ -490,6 +490,10 @@ public abstract class Block extends Position implements Metadatable, Cloneable, 
     }
 
     public boolean onBreak(Item item) {
+        return onBreak(item, null);
+    }
+
+    public boolean onBreak(Item item, @Nullable Player player) {
         return this.getLevel().setBlock(this, Block.get(BlockID.AIR), true, true);
     }
 
@@ -509,12 +513,12 @@ public abstract class Block extends Position implements Metadatable, Cloneable, 
         return false;
     }
 
-    public double getHardness() {
-        return 10;
+    public float getHardness() {
+        return 0;
     }
 
-    public double getResistance() {
-        return 1;
+    public float getResistance() {
+        return getHardness() * 5;
     }
 
     public int getBurnChance() {
@@ -529,11 +533,11 @@ public abstract class Block extends Position implements Metadatable, Cloneable, 
     }
 
     public int getToolType() {
-        return ItemTool.TYPE_NONE;
+        return BlockToolType.NONE;
     }
 
-    public double getFrictionFactor() {
-        return 0.6;
+    public float getFrictionFactor() {
+        return 0.6f;
     }
 
     public int getLightLevel() {
@@ -677,166 +681,127 @@ public abstract class Block extends Position implements Metadatable, Cloneable, 
     }
 
     public Item[] getDrops(Item item) {
-        if (this.getId() < 0 || this.getId() > list.length) { //Unknown blocks
-            return new Item[0];
-        } else {
-            return new Item[]{
-                    this.toItem(true)
-            };
-        }
+        return getDrops(item, null);
     }
 
-    private static double toolBreakTimeBonus0(int toolType, int toolTier, int blockId) {
-        if (toolType == ItemTool.TYPE_SWORD) return blockId == Block.WEB ? 15.0 : 1.0;
-        if (toolType == ItemTool.TYPE_SHEARS) {
-            if (blockId == Block.WOOL || blockId == LEAVES || blockId == LEAVES2) {
-                return 5.0;
-            } else if (blockId == WEB) {
-                return 15.0;
+    public Item[] getDrops(Item item, @Nullable Player player) {
+        return new Item[]{
+                this.toItem(true)
+        };
+    }
+
+    private float getDestroySpeed(Item item, boolean correctTool) {
+        int toolType = item.getBlockToolType();
+        if (toolType == BlockToolType.SWORD) {
+            if (is(WEB)) {
+                return 15;
             }
-            return 1.0;
+            if (is(BAMBOO)) {
+                return 10;
+            }
+            return 1.5f;
         }
-        if (toolType == ItemTool.TYPE_NONE) return 1.0;
-        switch (toolTier) {
+        if (!correctTool) {
+            return 1;
+        }
+        if (toolType == BlockToolType.SHEARS) {
+            if (is(WEB) || isLeaves()) {
+                return 15;
+            }
+            if (is(WOOL)) {
+                return 5;
+            }
+            if (is(VINE) || is(GLOW_LICHEN)) {
+                return 2;
+            }
+            return 1;
+        }
+        if (toolType == BlockToolType.NONE) {
+            return 1;
+        }
+        switch (item.getTier()) {
             case ItemTool.TIER_WOODEN:
-                return 2.0;
+                return 2;
             case ItemTool.TIER_STONE:
-                return 4.0;
+                return 4;
             case ItemTool.TIER_IRON:
-                return 6.0;
+                return 6;
             case ItemTool.TIER_DIAMOND:
-                return 8.0;
+                return 8;
             case ItemTool.TIER_NETHERITE:
                 return 9;
             case ItemTool.TIER_GOLD:
-                return 12.0;
+                return 12;
             default:
-                return 1.0;
+                return 1;
         }
     }
 
-    private static double speedBonusByEfficiencyLore0(int efficiencyLoreLevel) {
-        if (efficiencyLoreLevel == 0) return 0;
-        return efficiencyLoreLevel * efficiencyLoreLevel + 1;
-    }
-
-    private static double speedRateByHasteLore0(int hasteLoreLevel) {
-        return 1.0 + (0.2 * hasteLoreLevel);
-    }
-
-    private static int toolType0(Item item) {
-        if (item.isSword()) return ItemTool.TYPE_SWORD;
-        if (item.isShovel()) return ItemTool.TYPE_SHOVEL;
-        if (item.isPickaxe()) return ItemTool.TYPE_PICKAXE;
-        if (item.isAxe()) return ItemTool.TYPE_AXE;
-        if (item.isHoe()) return ItemTool.TYPE_HOE;
-        if (item.isShears()) return ItemTool.TYPE_SHEARS;
-        return ItemTool.TYPE_NONE;
-    }
-
-    private static boolean correctTool0(int blockToolType, Item item) {
-        return (blockToolType == ItemTool.TYPE_SWORD && item.isSword()) ||
-                (blockToolType == ItemTool.TYPE_SHOVEL && item.isShovel()) ||
-                (blockToolType == ItemTool.TYPE_PICKAXE && item.isPickaxe()) ||
-                (blockToolType == ItemTool.TYPE_AXE && item.isAxe()) ||
-                (blockToolType == ItemTool.TYPE_HOE && item.isHoe()) ||
-                (blockToolType == ItemTool.TYPE_SHEARS && item.isShears()) ||
-                blockToolType == ItemTool.TYPE_NONE;
-    }
-
-    //http://minecraft.gamepedia.com/Breaking
-    private static double breakTime0(double blockHardness, boolean correctTool, boolean canHarvestWithHand,
-                                     int blockId, int toolType, int toolTier, int efficiencyLoreLevel, int hasteEffectLevel,
-                                     boolean insideOfWaterWithoutAquaAffinity, boolean outOfWaterButNotOnGround) {
-        double baseTime = ((correctTool || canHarvestWithHand) ? 1.5 : 5.0) * blockHardness;
-        double speed = 1.0 / baseTime;
-        if (correctTool) speed *= toolBreakTimeBonus0(toolType, toolTier, blockId);
-        speed += correctTool ? speedBonusByEfficiencyLore0(efficiencyLoreLevel) : 0;
-        speed *= speedRateByHasteLore0(hasteEffectLevel);
-        if (insideOfWaterWithoutAquaAffinity) speed *= 0.2;
-        if (outOfWaterButNotOnGround) speed *= 0.2;
-        return 1.0 / speed;
-    }
-
-    public double getBreakTime(Item item, Player player) {
+    public float getBreakTime(Item item, Player player) {
         Objects.requireNonNull(item, "getBreakTime: Item can not be null");
         Objects.requireNonNull(player, "getBreakTime: Player can not be null");
-        double blockHardness = getHardness();
+        float blockHardness = getHardness();
 
         if (blockHardness == 0) {
             return 0;
         }
 
-        int blockId = getId();
-        boolean correctTool = correctTool0(getToolType(), item)
-                || item.isShears() && (blockId == WEB || blockId == LEAVES || blockId == LEAVES2);
-        boolean canHarvestWithHand = canHarvestWithHand();
-        int itemToolType = toolType0(item);
-        int itemTier = item.getTier();
-        int efficiencyLoreLevel = item.getId() != Item.ENCHANTED_BOOK ? Optional.ofNullable(item.getEnchantment(Enchantment.EFFICIENCY))
-                .map(Enchantment::getLevel).orElse(0) : 0;
-        int hasteEffectLevel = Optional.ofNullable(player.getEffect(Effect.HASTE))
-                .map(Effect::getAmplifier).orElse(0);
-        boolean insideOfWaterWithoutAquaAffinity = player.isInsideOfWater() &&
-                Optional.ofNullable(player.getInventory().getHelmet().getEnchantment(Enchantment.AQUA_AFFINITY))
-                        .map(Enchantment::getLevel).map(l -> l >= 1).orElse(false);
-        boolean outOfWaterButNotOnGround = (!player.isInsideOfWater()) && (!player.isOnGround());
-        return breakTime0(blockHardness, correctTool, canHarvestWithHand, blockId, itemToolType, itemTier,
-                efficiencyLoreLevel, hasteEffectLevel, insideOfWaterWithoutAquaAffinity, outOfWaterButNotOnGround);
-    }
+        int toolType = getToolType();
+        boolean correctTool = isToolCompatible(toolType, item.getBlockToolType());
+        float baseTime = (correctTool || canHarvestWithHand() ? 1.5f : 5) * blockHardness;
+        float speed = 1 / baseTime;
 
-    /**
-     * @deprecated This function is lack of Player class and is not accurate enough, use #getBreakTime(Item, Player)
-     * @param item item used
-     * @return break time
-     */
-    @Deprecated
-    public double getBreakTime(Item item) {
-        double base = this.getHardness() * 1.5;
-        if (this.canBeBrokenWith(item)) {
-            if (this.getToolType() == ItemTool.TYPE_SHEARS && item.isShears()) {
-                base /= 15;
-            } else if (
-                    (this.getToolType() == ItemTool.TYPE_PICKAXE && item.isPickaxe()) ||
-                            (this.getToolType() == ItemTool.TYPE_AXE && item.isAxe()) ||
-                            (this.getToolType() == ItemTool.TYPE_SHOVEL && item.isShovel()) ||
-                            (this.getToolType() == ItemTool.TYPE_HOE && item.isHoe())
-                    ) {
-                int tier = item.getTier();
-                switch (tier) {
-                    case ItemTool.TIER_WOODEN:
-                        base /= 2;
-                        break;
-                    case ItemTool.TIER_STONE:
-                        base /= 4;
-                        break;
-                    case ItemTool.TIER_IRON:
-                        base /= 6;
-                        break;
-                    case ItemTool.TIER_DIAMOND:
-                        base /= 8;
-                        break;
-                    case ItemTool.TIER_NETHERITE:
-                        base /= 9;
-                        break;
-                    case ItemTool.TIER_GOLD:
-                        base /= 12;
-                        break;
-                }
+        float destroySpeedBonus = 0;
+        if (correctTool) {
+            int efficiency = item.getEnchantmentLevel(Enchantment.EFFICIENCY);
+            if (efficiency > 0) {
+                destroySpeedBonus = efficiency * efficiency + 1;
             }
-        } else {
-            base *= 3.33;
         }
 
-        if (item.isSword()) {
-            base *= 0.5;
+        speed *= getDestroySpeed(item, correctTool) + destroySpeedBonus;
+
+        int amp = 0;
+        Effect digSpeed = player.getEffect(Effect.HASTE);
+        if (digSpeed != null) {
+            amp = digSpeed.getAmplifier() + 1;
+        }
+        Effect conduitPower = player.getEffect(Effect.CONDUIT_POWER);
+        if (conduitPower != null) {
+            amp = Math.max(amp, conduitPower.getAmplifier() + 1);
+        }
+        if (amp > 0) {
+            speed *= 1 + 0.2f * amp;
         }
 
-        return base;
+        Effect digSlowdown = player.getEffect(Effect.MINING_FATIGUE);
+        if (digSlowdown != null) {
+            speed *= Math.pow(0.3f, digSlowdown.getAmplifier() + 1);
+        }
+
+        if (player.isRiding() || !player.isOnGround() && !player.getAdventureSettings().get(AdventureSettings.Type.NO_CLIP) && !player.getAdventureSettings().get(AdventureSettings.Type.FLYING)) {
+            speed *= 0.2f;
+        }
+        if (player.isInsideOfWater() && !player.getInventory().getHelmet().hasEnchantment(Enchantment.AQUA_AFFINITY)) {
+            speed *= 0.2f;
+        }
+
+        return 1 / speed;
     }
 
-    public boolean canBeBrokenWith(Item item) {
-        return this.getHardness() != -1;
+    public boolean isToolCompatible(Item item) {
+        return isToolCompatible(item.getBlockToolType());
+    }
+
+    public boolean isToolCompatible(int toolType) {
+        return isToolCompatible(getToolType(), toolType);
+    }
+
+    public static boolean isToolCompatible(int blockToolType, int itemToolType) {
+        if (blockToolType == BlockToolType.NONE) {
+            return false;
+        }
+        return (blockToolType & itemToolType) != 0;
     }
 
     @Override
@@ -1160,11 +1125,15 @@ public abstract class Block extends Position implements Metadatable, Cloneable, 
 
     @Override
     public boolean equals(Object obj) {
+        if (obj == this) {
+            return true;
+        }
         return obj instanceof Block && equals(this, (Block) obj) && (this.level == null || (this.level == ((Block) obj).level && super.equals(obj)));
     }
 
-    public boolean superEquals(Object obj) {
-        return super.equals(obj);
+    @Override
+    public int hashCode() {
+        return getFullId();
     }
 
     public Item toItem() {

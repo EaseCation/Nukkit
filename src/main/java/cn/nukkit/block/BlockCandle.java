@@ -36,13 +36,13 @@ public class BlockCandle extends BlockTransparentMeta {
     }
 
     @Override
-    public double getHardness() {
-        return 0.1;
+    public float getHardness() {
+        return 0.1f;
     }
 
     @Override
-    public double getResistance() {
-        return 0.5;
+    public float getResistance() {
+        return 0.5f;
     }
 
     @Override
@@ -61,7 +61,7 @@ public class BlockCandle extends BlockTransparentMeta {
     }
 
     @Override
-    public Item[] getDrops(Item item) {
+    public Item[] getDrops(Item item, Player player) {
         Item[] drops = new Item[getCandleCount()];
         for (int i = 0; i < drops.length; i++) {
             drops[i] = toItem(true);

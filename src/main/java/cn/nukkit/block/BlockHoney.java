@@ -18,18 +18,18 @@ public class BlockHoney extends BlockTransparent {
     }
 
     @Override
-    public double getHardness() {
+    public float getHardness() {
         return 0;
     }
 
     @Override
-    public double getResistance() {
+    public float getResistance() {
         return 0;
     }
 
     @Override
-    public double getFrictionFactor() {
-        return 0.8;
+    public float getFrictionFactor() {
+        return 0.8f;
     }
 
     @Override

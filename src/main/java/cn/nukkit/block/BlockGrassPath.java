@@ -2,7 +2,6 @@ package cn.nukkit.block;
 
 import cn.nukkit.Player;
 import cn.nukkit.item.Item;
-import cn.nukkit.item.ItemTool;
 import cn.nukkit.math.BlockFace;
 import cn.nukkit.utils.BlockColor;
 
@@ -27,17 +26,17 @@ public class BlockGrassPath extends BlockGrass {
 
     @Override
     public int getToolType() {
-        return ItemTool.TYPE_SHOVEL;
+        return BlockToolType.SHOVEL;
     }
 
     @Override
-    public double getHardness() {
-        return 0.65;
+    public float getHardness() {
+        return 0.65f;
     }
 
     @Override
-    public double getResistance() {
-        return 3.25;
+    public float getResistance() {
+        return 3.25f;
     }
 
     @Override

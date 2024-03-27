@@ -9,6 +9,7 @@ import cn.nukkit.level.format.FullChunk;
 import cn.nukkit.nbt.tag.CompoundTag;
 import cn.nukkit.network.protocol.AddEntityPacket;
 import cn.nukkit.network.protocol.DataPacket;
+import cn.nukkit.potion.Effect;
 
 /**
  * @author PikyCZ
@@ -89,5 +90,10 @@ public class EntityWither extends EntityMob implements EntitySmite {
         return new Item[]{
                 Item.get(Item.NETHER_STAR),
         };
+    }
+
+    @Override
+    public boolean canBeAffected(int effectId) {
+        return effectId == Effect.INSTANT_DAMAGE || effectId == Effect.INSTANT_HEALTH;
     }
 }

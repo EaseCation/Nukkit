@@ -287,6 +287,9 @@ public class EntityAreaEffectCloud extends Entity {
                         }
                         break;
                     case Effect.INSTANT_HEALTH:
+                        if (!entity.canBeAffected(effect.getId())) {
+                            break;
+                        }
                         if (entity instanceof EntitySmite) {
                             if (owner != null) {
                                 entity.attack(new EntityDamageByEntityEvent(owner, entity, DamageCause.MAGIC, 0.5f * (6 << effect.getAmplifier())));
@@ -298,6 +301,9 @@ public class EntityAreaEffectCloud extends Entity {
                         }
                         break;
                     case Effect.INSTANT_DAMAGE:
+                        if (!entity.canBeAffected(effect.getId())) {
+                            break;
+                        }
                         if (entity instanceof EntitySmite) {
                             entity.heal(new EntityRegainHealthEvent(entity, 0.5f * (4 << effect.getAmplifier()), EntityRegainHealthEvent.CAUSE_MAGIC));
                         } else if (owner != null) {
@@ -518,5 +524,23 @@ public class EntityAreaEffectCloud extends Entity {
 
     public void setAffectOwner(boolean shouldAffect) {
         this.affectOwner = shouldAffect;
+    }
+
+    public static void createDragonBreath(CompoundTag namedTag) {
+//        namedTag.putLong("OwnerId", ownerId);
+//        setAffectOwner(false);
+        namedTag.putInt("Duration", 200);
+        namedTag.putFloat("InitialRadius", 5);
+        namedTag.putFloat("RadiusOnUse", 0);
+        namedTag.putInt("ReapplicationDelay", 0);
+        namedTag.putShort("PotionId", Potion.HARMING);
+        namedTag.putList("mobEffects", new ListTag<>()
+                .add(LazyHolder.DRAGON_BREATH_EFFECT.save()));
+        namedTag.putInt("ParticleColor", 0xffdc00ef);
+        namedTag.putInt("ParticleId", Particle.DRAGON_BREATH);
+    }
+
+    private static class LazyHolder {
+        private static final Effect DRAGON_BREATH_EFFECT = Effect.getEffect(Effect.INSTANT_DAMAGE);
     }
 }

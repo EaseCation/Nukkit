@@ -3,8 +3,8 @@ package cn.nukkit.block;
 import cn.nukkit.Player;
 import cn.nukkit.event.block.DoorToggleEvent;
 import cn.nukkit.item.Item;
-import cn.nukkit.item.ItemTool;
 import cn.nukkit.level.Level;
+import cn.nukkit.math.AxisAlignedBB;
 import cn.nukkit.math.BlockFace;
 import cn.nukkit.network.protocol.LevelEventPacket;
 import cn.nukkit.utils.BlockColor;
@@ -38,12 +38,12 @@ public class BlockFenceGate extends BlockTransparentMeta implements Faceable {
     }
 
     @Override
-    public double getHardness() {
+    public float getHardness() {
         return 2;
     }
 
     @Override
-    public double getResistance() {
+    public float getResistance() {
         return 15;
     }
 
@@ -54,7 +54,7 @@ public class BlockFenceGate extends BlockTransparentMeta implements Faceable {
 
     @Override
     public int getToolType() {
-        return ItemTool.TYPE_AXE;
+        return BlockToolType.AXE;
     }
 
     private static final double[] offMinX = new double[2];
@@ -75,13 +75,7 @@ public class BlockFenceGate extends BlockTransparentMeta implements Faceable {
     }
 
     private int getOffsetIndex() {
-        switch (this.getDamage() & DIRECTION_MASK) {
-            case 0:
-            case 2:
-                return 0;
-            default:
-                return 1;
-        }
+        return getDamage() & 0x1;
     }
 
     @Override
@@ -106,7 +100,15 @@ public class BlockFenceGate extends BlockTransparentMeta implements Faceable {
 
     @Override
     public boolean place(Item item, Block block, Block target, BlockFace face, double fx, double fy, double fz, Player player) {
-        this.setDamage(player != null ? player.getDirection().getHorizontalIndex() : 0);
+        BlockFace dir = BlockFace.SOUTH;
+        if (player != null) {
+            dir = player.getDirection();
+        }
+        int meta = dir.getHorizontalIndex();
+        if (getSide(dir.rotateY()).isWall() || getSide(dir.rotateYCCW()).isWall()) {
+            meta |= IN_WALL_BIT;
+        }
+        this.setDamage(meta);
         this.getLevel().setBlock(block, this, true, true);
 
         return true;
@@ -134,25 +136,22 @@ public class BlockFenceGate extends BlockTransparentMeta implements Faceable {
     public boolean toggle(Player player) {
         DoorToggleEvent event = new DoorToggleEvent(this, player);
         this.getLevel().getServer().getPluginManager().callEvent(event);
-
         if (event.isCancelled()) {
             return false;
         }
-
         player = event.getPlayer();
 
+        int meta = getDamage();
         int direction;
 
         if (player != null) {
             double yaw = player.yaw;
             double rotation = (yaw - 90) % 360;
-
             if (rotation < 0) {
                 rotation += 360.0;
             }
 
-            int originDirection = this.getDamage() & 0x01;
-
+            int originDirection = meta & 0x01;
             if (originDirection == 0) {
                 if (rotation >= 0 && rotation < 180) {
                     direction = 2;
@@ -167,26 +166,39 @@ public class BlockFenceGate extends BlockTransparentMeta implements Faceable {
                 }
             }
         } else {
-            int originDirection = this.getDamage() & 0x01;
-
-            if (originDirection == 0) {
-                direction = 0;
-            } else {
-                direction = 1;
-            }
+            direction = meta & DIRECTION_MASK;
         }
 
-        this.setDamage(direction | ((~this.getDamage()) & OPEN_BIT));
+        this.setDamage((meta & IN_WALL_BIT) | ((meta & OPEN_BIT) ^ OPEN_BIT) | direction);
         this.level.setBlock(this, this, true, false);
         return true;
     }
 
     public boolean isOpen() {
-        return (this.getDamage() & OPEN_BIT) > 0;
+        return (this.getDamage() & OPEN_BIT) != 0;
     }
 
     @Override
     public int onUpdate(int type) {
+        if (type == Level.BLOCK_UPDATE_NORMAL) {
+            int meta = getDamage();
+            BlockFace dir = getBlockFace();
+            if ((meta & IN_WALL_BIT) != 0) {
+                if (getSide(dir.rotateY()).isWall() || getSide(dir.rotateYCCW()).isWall()) {
+                    return 0;
+                } else {
+                    setDamage(meta & ~IN_WALL_BIT);
+                    this.level.setBlock(this, this, true, false);
+                    return Level.BLOCK_UPDATE_NORMAL;
+                }
+            } else if (getSide(dir.rotateY()).isWall() || getSide(dir.rotateYCCW()).isWall()) {
+                this.setDamage(meta | IN_WALL_BIT);
+                this.level.setBlock(this, this, true, false);
+                return Level.BLOCK_UPDATE_NORMAL;
+            }
+            return 0;
+        }
+
         if (!this.level.isRedstoneEnabled()) {
             return 0;
         }
@@ -239,5 +251,18 @@ public class BlockFenceGate extends BlockTransparentMeta implements Faceable {
     @Override
     public int getBurnAbility() {
         return 20;
+    }
+
+    @Override
+    public boolean canPassThrough() {
+        return isOpen();
+    }
+
+    @Override
+    protected AxisAlignedBB recalculateBoundingBox() {
+        if (isOpen()) {
+            return null;
+        }
+        return super.recalculateBoundingBox();
     }
 }

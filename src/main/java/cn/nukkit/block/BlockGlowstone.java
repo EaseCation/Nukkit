@@ -1,5 +1,6 @@
 package cn.nukkit.block;
 
+import cn.nukkit.Player;
 import cn.nukkit.item.Item;
 import cn.nukkit.item.enchantment.Enchantment;
 import cn.nukkit.math.Mth;
@@ -27,13 +28,13 @@ public class BlockGlowstone extends BlockTransparent {
     }
 
     @Override
-    public double getResistance() {
-        return 1.5;
+    public float getResistance() {
+        return 1.5f;
     }
 
     @Override
-    public double getHardness() {
-        return 0.3;
+    public float getHardness() {
+        return 0.3f;
     }
 
     @Override
@@ -42,7 +43,7 @@ public class BlockGlowstone extends BlockTransparent {
     }
 
     @Override
-    public Item[] getDrops(Item item) {
+    public Item[] getDrops(Item item, Player player) {
         Random random = ThreadLocalRandom.current();
         int count = 2 + random.nextInt(3);
 

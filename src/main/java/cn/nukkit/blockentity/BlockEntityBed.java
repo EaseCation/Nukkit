@@ -19,7 +19,7 @@ public class BlockEntityBed extends BlockEntitySpawnable {
     @Override
     protected void initBlockEntity() {
         if (!this.namedTag.contains("color")) {
-            this.namedTag.putByte("color", 0);
+            this.namedTag.putByte("color", DyeColor.RED.getWoolData());
         }
 
         this.color = this.namedTag.getByte("color");

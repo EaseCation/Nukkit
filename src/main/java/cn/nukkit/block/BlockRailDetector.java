@@ -1,5 +1,6 @@
 package cn.nukkit.block;
 
+import cn.nukkit.Player;
 import cn.nukkit.entity.Entity;
 import cn.nukkit.entity.item.EntityMinecartAbstract;
 import cn.nukkit.item.Item;
@@ -105,7 +106,7 @@ public class BlockRailDetector extends BlockRail {
     }
 
     @Override
-    public Item[] getDrops(Item item) {
+    public Item[] getDrops(Item item, Player player) {
         return new Item[]{
                 Item.get(Item.DETECTOR_RAIL, 0, 1)
         };

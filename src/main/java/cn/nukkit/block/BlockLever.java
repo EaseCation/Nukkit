@@ -67,13 +67,13 @@ public class BlockLever extends BlockTransparentMeta implements Faceable {
     }
 
     @Override
-    public double getHardness() {
-        return 0.5d;
+    public float getHardness() {
+        return 0.5f;
     }
 
     @Override
-    public double getResistance() {
-        return 2.5d;
+    public float getResistance() {
+        return 2.5f;
     }
 
     @Override
@@ -82,7 +82,7 @@ public class BlockLever extends BlockTransparentMeta implements Faceable {
     }
 
     @Override
-    public Item[] getDrops(Item item) {
+    public Item[] getDrops(Item item, Player player) {
         return new Item[]{toItem(true)};
     }
 
@@ -135,7 +135,7 @@ public class BlockLever extends BlockTransparentMeta implements Faceable {
     }
 
     @Override
-    public boolean onBreak(Item item) {
+    public boolean onBreak(Item item, Player player) {
         this.getLevel().setBlock(this, Block.get(BlockID.AIR), true, true);
 
         if (isPowerOn()) {

@@ -1,5 +1,6 @@
 package cn.nukkit.block;
 
+import cn.nukkit.Player;
 import cn.nukkit.item.Item;
 import cn.nukkit.item.ItemTool;
 import cn.nukkit.item.enchantment.Enchantment;
@@ -38,13 +39,13 @@ public class BlockMonsterEgg extends BlockSolidMeta {
     }
 
     @Override
-    public double getHardness() {
-        return 0.75;
+    public float getHardness() {
+        return 0.75f;
     }
 
     @Override
-    public double getResistance() {
-        return 3.75;
+    public float getResistance() {
+        return 3.75f;
     }
 
     @Override
@@ -53,7 +54,7 @@ public class BlockMonsterEgg extends BlockSolidMeta {
     }
 
     @Override
-    public Item[] getDrops(Item item) {
+    public Item[] getDrops(Item item, Player player) {
         if (item.isPickaxe() && item.getTier() >= ItemTool.TIER_WOODEN && item.hasEnchantment(Enchantment.SILK_TOUCH)) {
             switch (getDamage()) {
                 case STONE:
@@ -75,12 +76,7 @@ public class BlockMonsterEgg extends BlockSolidMeta {
 
     @Override
     public int getToolType() {
-        return ItemTool.TYPE_PICKAXE;
-    }
-
-    @Override
-    public boolean canHarvestWithHand() {
-        return false;
+        return BlockToolType.PICKAXE;
     }
 
     @Override

@@ -20,10 +20,49 @@ public class BlockVector3 implements Cloneable {
     public BlockVector3() {
     }
 
+    public BlockVector3(BlockVector3 vec) {
+        this.x = vec.x;
+        this.y = vec.y;
+        this.z = vec.z;
+    }
+
+    public BlockVector3(Vector3f vec) {
+        this.x = vec.getFloorX();
+        this.y = vec.getFloorY();
+        this.z = vec.getFloorZ();
+    }
+
+    public BlockVector3(Vector3 vec) {
+        this.x = vec.getFloorX();
+        this.y = vec.getFloorY();
+        this.z = vec.getFloorZ();
+    }
+
     public BlockVector3 setComponents(int x, int y, int z) {
         this.x = x;
         this.y = y;
         this.z = z;
+        return this;
+    }
+
+    public BlockVector3 setComponents(BlockVector3 other) {
+        this.x = other.x;
+        this.y = other.y;
+        this.z = other.z;
+        return this;
+    }
+
+    public BlockVector3 setComponents(Vector3f other) {
+        this.x = other.getFloorX();
+        this.y = other.getFloorY();
+        this.z = other.getFloorZ();
+        return this;
+    }
+
+    public BlockVector3 setComponents(Vector3 other) {
+        this.x = other.getFloorX();
+        this.y = other.getFloorY();
+        this.z = other.getFloorZ();
         return this;
     }
 
@@ -184,11 +223,19 @@ public class BlockVector3 implements Cloneable {
     }
 
     public double distance(Vector3 pos) {
-        return Math.sqrt(this.distanceSquared(pos));
+        return distance(pos.x, pos.y, pos.z);
     }
 
     public double distance(BlockVector3 pos) {
-        return Math.sqrt(this.distanceSquared(pos));
+        return distance(pos.x, pos.y, pos.z);
+    }
+
+    public double distance(double x, double y, double z) {
+        return Math.sqrt(this.distanceSquared(x, y, z));
+    }
+
+    public double distance(int x, int y, int z) {
+        return Math.sqrt(this.distanceSquared(x, y, z));
     }
 
     public double distanceSquared(Vector3 pos) {
@@ -206,6 +253,13 @@ public class BlockVector3 implements Cloneable {
         return xDiff * xDiff + yDiff * yDiff + zDiff * zDiff;
     }
 
+    public int distanceSquared(int x, int y, int z) {
+        int xDiff = this.x - x;
+        int yDiff = this.y - y;
+        int zDiff = this.z - z;
+        return xDiff * xDiff + yDiff * yDiff + zDiff * zDiff;
+    }
+
     public int distanceManhattan(Vector3 pos) {
         return distanceManhattan(pos.getFloorX(), pos.getFloorY(), pos.getFloorZ());
     }
@@ -216,6 +270,54 @@ public class BlockVector3 implements Cloneable {
 
     public int distanceManhattan(int x, int y, int z) {
         return Math.abs(x - this.x) + Math.abs(y - this.y) + Math.abs(z - this.z);
+    }
+
+    public double distance2(Vector3 pos) {
+        return distance2(pos.x, pos.z);
+    }
+
+    public double distance2(BlockVector3 pos) {
+        return distance2(pos.x, pos.z);
+    }
+
+    public double distance2(double x, double z) {
+        return Math.sqrt(this.distanceSquared2(x, z));
+    }
+
+    public double distance2(int x, int z) {
+        return Math.sqrt(this.distanceSquared2(x, z));
+    }
+
+    public double distanceSquared2(Vector3 pos) {
+        return distanceSquared2(pos.x, pos.z);
+    }
+
+    public double distanceSquared2(BlockVector3 pos) {
+        return distanceSquared2(pos.x, pos.z);
+    }
+
+    public double distanceSquared2(double x, double z) {
+        double xDiff = this.x - x;
+        double zDiff = this.z - z;
+        return xDiff * xDiff + zDiff * zDiff;
+    }
+
+    public int distanceSquared2(int x, int z) {
+        int xDiff = this.x - x;
+        int zDiff = this.z - z;
+        return xDiff * xDiff + zDiff * zDiff;
+    }
+
+    public int distanceManhattan2(Vector3 pos) {
+        return distanceManhattan2(pos.getFloorX(), pos.getFloorZ());
+    }
+
+    public int distanceManhattan2(BlockVector3 pos) {
+        return distanceManhattan2(pos.x, pos.z);
+    }
+
+    public int distanceManhattan2(int x, int z) {
+        return Math.abs(x - this.x) + Math.abs(z - this.z);
     }
 
     public double length() {
@@ -235,7 +337,19 @@ public class BlockVector3 implements Cloneable {
     }
 
     public int dot(BlockVector3 v) {
-        return this.x * v.x + this.y * v.y + this.z * v.z;
+        return this.dot(v.x, v.y, v.z);
+    }
+
+    public int dot(int x, int y, int z) {
+        return this.x * x + this.y * y + this.z * z;
+    }
+
+    public int dot2(BlockVector3 v) {
+        return this.dot2(v.x, v.z);
+    }
+
+    public int dot2(int x, int z) {
+        return this.x * x + this.z * z;
     }
 
     public BlockVector3 cross(BlockVector3 v) {
@@ -314,7 +428,6 @@ public class BlockVector3 implements Cloneable {
 
     @Override
     public boolean equals(Object o) {
-        if (o == null) return false;
         if (o == this) return true;
 
         if (!(o instanceof BlockVector3)) return false;
@@ -337,13 +450,13 @@ public class BlockVector3 implements Cloneable {
         return (x ^ (z << 12)) ^ (y << 24);
     }
 
-    public int rawHashCode() {
-        return super.hashCode();
-    }
-
     @Override
     public String toString() {
         return "BlockVector3(x=" + this.x + ",y=" + this.y + ",z=" + this.z + ")";
+    }
+
+    public String toShortString() {
+        return this.x + "," + this.y + "," + this.z;
     }
 
     public String debugText() {

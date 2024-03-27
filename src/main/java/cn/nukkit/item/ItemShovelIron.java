@@ -1,5 +1,7 @@
 package cn.nukkit.item;
 
+import cn.nukkit.block.BlockToolType;
+
 /**
  * author: MagicDroidX
  * Nukkit Project
@@ -26,6 +28,11 @@ public class ItemShovelIron extends ItemTool {
     @Override
     public boolean isShovel() {
         return true;
+    }
+
+    @Override
+    public int getBlockToolType() {
+        return BlockToolType.SHOVEL;
     }
 
     @Override

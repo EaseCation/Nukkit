@@ -1,5 +1,7 @@
 package cn.nukkit.item;
 
+import cn.nukkit.block.BlockToolType;
+
 /**
  * author: MagicDroidX
  * Nukkit Project
@@ -31,6 +33,11 @@ public class ItemPickaxeDiamond extends ItemTool {
     @Override
     public int getTier() {
         return ItemTool.TIER_DIAMOND;
+    }
+
+    @Override
+    public int getBlockToolType() {
+        return BlockToolType.PICKAXE;
     }
 
     @Override

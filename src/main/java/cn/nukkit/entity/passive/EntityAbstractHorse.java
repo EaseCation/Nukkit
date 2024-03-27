@@ -74,7 +74,7 @@ public abstract class EntityAbstractHorse extends EntityAnimal implements Entity
         boolean mounted = super.mountEntity(entity) && entity.riding != null;
         if (mounted) {
             entity.setDataProperty(new ByteEntityData(DATA_SEAT_LOCK_PASSENGER_ROTATION, 0));
-            entity.setDataProperty(new FloatEntityData(DATA_SEAT_LOCK_PASSENGER_ROTATION_DEGREES, 0f));
+            entity.setDataProperty(new FloatEntityData(DATA_SEAT_LOCK_PASSENGER_ROTATION_DEGREES, 181f));
             entity.setDataProperty(new ByteEntityData(DATA_SEAT_ROTATION_OFFSET, 0));
             entity.setDataProperty(new FloatEntityData(DATA_SEAT_ROTATION_OFFSET_DEGREES, 0f));
         }

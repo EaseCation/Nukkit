@@ -10,7 +10,6 @@ import cn.nukkit.block.BlockRailActivator;
 import cn.nukkit.block.BlockRailDetector;
 import cn.nukkit.block.BlockRailPowered;
 import cn.nukkit.entity.Entity;
-import cn.nukkit.entity.EntityHuman;
 import cn.nukkit.entity.EntityLiving;
 import cn.nukkit.entity.data.ByteEntityData;
 import cn.nukkit.entity.data.FloatEntityData;
@@ -66,8 +65,6 @@ public abstract class EntityMinecartAbstract extends EntityVehicle {
     private double flyingY = 0.95;
     private double flyingZ = 0.95;
     private double maxSpeed = 0.4D;
-
-    private static final boolean devs = false; // Avoid maintained features into production
 
     public abstract MinecartType getType();
 
@@ -150,7 +147,7 @@ public abstract class EntityMinecartAbstract extends EntityVehicle {
             --dy;
         }
 
-        Block block = level.getBlock(new Vector3(dx, dy, dz));
+        Block block = level.getBlock(dx, dy, dz);
 
         // Ensure that the block is a rail
         if (Rail.isRailBlock(block)) {
@@ -308,16 +305,17 @@ public abstract class EntityMinecartAbstract extends EntityVehicle {
     @Override
     public void applyEntityCollision(Entity entity) {
         if (entity != riding && !(entity instanceof Player && ((Player) entity).isSpectator())) {
-            if (entity instanceof EntityLiving
-                    && !(entity instanceof EntityHuman)
-                    && motionX * motionX + motionZ * motionZ > 0.01D
-                    && passengers.isEmpty()
-                    && entity.riding == null
-                    && blockInside == null) {
-                if (riding == null && devs) {
-                    mountEntity(entity);// TODO: rewrite (weird riding)
+            /* //FIXME
+            if (isRideable() && blockInside == null && riding == null && entity.riding == null && passengers.isEmpty()
+                    && entity instanceof EntityLiving && !(entity instanceof EntityHuman)
+                    && (!(entity instanceof EntityWaterAnimal) || entity.getNetworkId() == EntityID.SQUID || entity.getNetworkId() == EntityID.GLOW_SQUID)
+                    && entity.boundingBox.intersectsWith(boundingBox.grow(0.20000000298023224, -0.1, 0.20000000298023224))
+            ) {
+                if (mountEntity(entity)) {
+                    return;
                 }
             }
+            */
 
             if (entity instanceof EntityArmorStand) {
                 return;
@@ -601,15 +599,15 @@ public abstract class EntityMinecartAbstract extends EntityVehicle {
                 motionX += motionX / newMovie * nextMovie;
                 motionZ += motionZ / newMovie * nextMovie;
             } else if (block.getOrientation() == Orientation.STRAIGHT_NORTH_SOUTH) {
-                if (level.getBlock(new Vector3(dx - 1, dy, dz)).isNormalBlock()) {
+                if (level.getBlock(dx - 1, dy, dz).isNormalBlock()) {
                     motionX = 0.02D;
-                } else if (level.getBlock(new Vector3(dx + 1, dy, dz)).isNormalBlock()) {
+                } else if (level.getBlock(dx + 1, dy, dz).isNormalBlock()) {
                     motionX = -0.02D;
                 }
             } else if (block.getOrientation() == Orientation.STRAIGHT_EAST_WEST) {
-                if (level.getBlock(new Vector3(dx, dy, dz - 1)).isNormalBlock()) {
+                if (level.getBlock(dx, dy, dz - 1).isNormalBlock()) {
                     motionZ = 0.02D;
-                } else if (level.getBlock(new Vector3(dx, dy, dz + 1)).isNormalBlock()) {
+                } else if (level.getBlock(dx, dy, dz + 1).isNormalBlock()) {
                     motionZ = -0.02D;
                 }
             }
@@ -638,7 +636,7 @@ public abstract class EntityMinecartAbstract extends EntityVehicle {
             --checkY;
         }
 
-        Block block = level.getBlock(new Vector3(checkX, checkY, checkZ));
+        Block block = level.getBlock(checkX, checkY, checkZ);
 
         if (Rail.isRailBlock(block)) {
             int[][] facing = matrix[((BlockRail) block).getRealMeta()];
@@ -856,8 +854,8 @@ public abstract class EntityMinecartAbstract extends EntityVehicle {
     @Override
     protected void onMountEntity(Entity entity) {
         entity.setDataProperty(new ByteEntityData(DATA_SEAT_LOCK_PASSENGER_ROTATION, 0));
-        entity.setDataProperty(new FloatEntityData(DATA_SEAT_LOCK_PASSENGER_ROTATION_DEGREES, 0));
-        entity.setDataProperty(new ByteEntityData(DATA_SEAT_ROTATION_OFFSET, 0));
         entity.setDataProperty(new FloatEntityData(DATA_SEAT_LOCK_PASSENGER_ROTATION_DEGREES, 181));
+        entity.setDataProperty(new ByteEntityData(DATA_SEAT_ROTATION_OFFSET, 0));
+        entity.setDataProperty(new FloatEntityData(DATA_SEAT_ROTATION_OFFSET_DEGREES, 0f));
     }
 }

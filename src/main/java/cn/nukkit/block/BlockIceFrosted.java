@@ -30,18 +30,18 @@ public class BlockIceFrosted extends BlockTransparentMeta {
     }
 
     @Override
-    public double getHardness() {
-        return 0.5;
+    public float getHardness() {
+        return 0.5f;
     }
 
     @Override
-    public double getResistance() {
-        return 2.5;
+    public float getResistance() {
+        return 2.5f;
     }
 
     @Override
-    public double getFrictionFactor() {
-        return 0.98;
+    public float getFrictionFactor() {
+        return 0.98f;
     }
 
     @Override
@@ -60,14 +60,14 @@ public class BlockIceFrosted extends BlockTransparentMeta {
     }
 
     @Override
-    public Item[] getDrops(Item item) {
+    public Item[] getDrops(Item item, Player player) {
         return new Item[0];
     }
 
     @Override
-    public boolean onBreak(Item item) {
-        if (level.getDimension() == Dimension.NETHER) {
-            return super.onBreak(item);
+    public boolean onBreak(Item item, Player player) {
+        if (level.getDimension() == Dimension.NETHER || (player != null && player.isCreative())) {
+            return super.onBreak(item, player);
         }
         return level.setBlock(this, Block.get(BlockID.WATER), true);
     }

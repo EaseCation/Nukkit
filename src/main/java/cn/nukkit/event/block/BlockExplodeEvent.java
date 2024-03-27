@@ -4,7 +4,7 @@ import cn.nukkit.block.Block;
 import cn.nukkit.event.Cancellable;
 import cn.nukkit.event.HandlerList;
 
-import java.util.List;
+import java.util.Collection;
 
 /**
  * Called when a block explodes.
@@ -17,11 +17,11 @@ public class BlockExplodeEvent extends BlockEvent implements Cancellable {
         return handlers;
     }
 
-    protected final List<Block> blocks;
+    protected final Collection<Block> blocks;
     protected double yield;
     protected boolean fire;
 
-    public BlockExplodeEvent(Block source, List<Block> blocks, double yield, boolean fire) {
+    public BlockExplodeEvent(Block source, Collection<Block> blocks, double yield, boolean fire) {
         super(source);
         this.blocks = blocks;
         this.yield = yield;
@@ -33,7 +33,7 @@ public class BlockExplodeEvent extends BlockEvent implements Cancellable {
      *
      * @return all blown-up blocks
      */
-    public List<Block> getBlockList() {
+    public Collection<Block> getBlockList() {
         return this.blocks;
     }
 

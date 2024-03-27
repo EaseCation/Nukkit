@@ -27,7 +27,7 @@ public class ItemSpawnEgg extends Item {
     }
 
     public ItemSpawnEgg(Integer meta, int count) {
-        super(SPAWN_EGG, meta, count, "Spawn EntityEgg");
+        super(SPAWN_EGG, meta, count, "Spawn Egg");
     }
 
     @Override

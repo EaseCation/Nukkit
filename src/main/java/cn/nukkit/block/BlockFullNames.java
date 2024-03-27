@@ -9,6 +9,7 @@ public interface BlockFullNames {
     String COBBLESTONE = "minecraft:" + BlockNames.COBBLESTONE;
     String OAK_PLANKS = "minecraft:" + BlockNames.OAK_PLANKS; //TODO: 1.20.50 flattening
     String PLANKS = "minecraft:" + BlockNames.PLANKS;
+    String OAK_SAPLING = "minecraft:" + BlockNames.OAK_SAPLING; //TODO: 1.20.80 flattening
     String SAPLING = "minecraft:" + BlockNames.SAPLING;
     String BEDROCK = "minecraft:" + BlockNames.BEDROCK;
     String FLOWING_WATER = "minecraft:" + BlockNames.FLOWING_WATER;
@@ -45,6 +46,7 @@ public interface BlockFullNames {
     String WOOL = "minecraft:" + BlockNames.WOOL;
     String ELEMENT_0 = "minecraft:" + BlockNames.ELEMENT_0;
     String YELLOW_FLOWER = "minecraft:" + BlockNames.YELLOW_FLOWER;
+    String POPPY = "minecraft:" + BlockNames.POPPY; //TODO: 1.20.80 flattening
     String RED_FLOWER = "minecraft:" + BlockNames.RED_FLOWER;
     String BROWN_MUSHROOM = "minecraft:" + BlockNames.BROWN_MUSHROOM;
     String RED_MUSHROOM = "minecraft:" + BlockNames.RED_MUSHROOM;
@@ -419,7 +421,9 @@ public interface BlockFullNames {
     String TUBE_CORAL = "minecraft:" + BlockNames.TUBE_CORAL; //TODO: 1.20.0 flattening
     String CORAL = "minecraft:" + BlockNames.CORAL;
     String CORAL_BLOCK = "minecraft:" + BlockNames.CORAL_BLOCK;
+    String TUBE_CORAL_FAN = "minecraft:" + BlockNames.TUBE_CORAL_FAN; //TODO: 1.20.80 flattening
     String CORAL_FAN = "minecraft:" + BlockNames.CORAL_FAN;
+    String DEAD_TUBE_CORAL_FAN = "minecraft:" + BlockNames.DEAD_TUBE_CORAL_FAN; //TODO: 1.20.80 flattening
     String CORAL_FAN_DEAD = "minecraft:" + BlockNames.CORAL_FAN_DEAD;
     String CORAL_FAN_HANG = "minecraft:" + BlockNames.CORAL_FAN_HANG;
     String CORAL_FAN_HANG2 = "minecraft:" + BlockNames.CORAL_FAN_HANG2;
@@ -1099,4 +1103,27 @@ public interface BlockFullNames {
     String STRIPPED_JUNGLE_WOOD = "minecraft:" + BlockNames.STRIPPED_JUNGLE_WOOD;
     String STRIPPED_ACACIA_WOOD = "minecraft:" + BlockNames.STRIPPED_ACACIA_WOOD;
     String STRIPPED_DARK_OAK_WOOD = "minecraft:" + BlockNames.STRIPPED_DARK_OAK_WOOD;
+    String SPRUCE_SAPLING = "minecraft:" + BlockNames.SPRUCE_SAPLING;
+    String BIRCH_SAPLING = "minecraft:" + BlockNames.BIRCH_SAPLING;
+    String JUNGLE_SAPLING = "minecraft:" + BlockNames.JUNGLE_SAPLING;
+    String ACACIA_SAPLING = "minecraft:" + BlockNames.ACACIA_SAPLING;
+    String DARK_OAK_SAPLING = "minecraft:" + BlockNames.DARK_OAK_SAPLING;
+    String BLUE_ORCHID = "minecraft:" + BlockNames.BLUE_ORCHID;
+    String ALLIUM = "minecraft:" + BlockNames.ALLIUM;
+    String AZURE_BLUET = "minecraft:" + BlockNames.AZURE_BLUET;
+    String RED_TULIP = "minecraft:" + BlockNames.RED_TULIP;
+    String ORANGE_TULIP = "minecraft:" + BlockNames.ORANGE_TULIP;
+    String WHITE_TULIP = "minecraft:" + BlockNames.WHITE_TULIP;
+    String PINK_TULIP = "minecraft:" + BlockNames.PINK_TULIP;
+    String OXEYE_DAISY = "minecraft:" + BlockNames.OXEYE_DAISY;
+    String CORNFLOWER = "minecraft:" + BlockNames.CORNFLOWER;
+    String LILY_OF_THE_VALLEY = "minecraft:" + BlockNames.LILY_OF_THE_VALLEY;
+    String BRAIN_CORAL_FAN = "minecraft:" + BlockNames.BRAIN_CORAL_FAN;
+    String BUBBLE_CORAL_FAN = "minecraft:" + BlockNames.BUBBLE_CORAL_FAN;
+    String FIRE_CORAL_FAN = "minecraft:" + BlockNames.FIRE_CORAL_FAN;
+    String HORN_CORAL_FAN = "minecraft:" + BlockNames.HORN_CORAL_FAN;
+    String DEAD_BRAIN_CORAL_FAN = "minecraft:" + BlockNames.DEAD_BRAIN_CORAL_FAN;
+    String DEAD_BUBBLE_CORAL_FAN = "minecraft:" + BlockNames.DEAD_BUBBLE_CORAL_FAN;
+    String DEAD_FIRE_CORAL_FAN = "minecraft:" + BlockNames.DEAD_FIRE_CORAL_FAN;
+    String DEAD_HORN_CORAL_FAN = "minecraft:" + BlockNames.DEAD_HORN_CORAL_FAN;
 }

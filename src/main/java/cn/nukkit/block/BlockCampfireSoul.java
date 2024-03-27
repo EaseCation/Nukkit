@@ -1,5 +1,6 @@
 package cn.nukkit.block;
 
+import cn.nukkit.Player;
 import cn.nukkit.blockentity.BlockEntityCampfire;
 import cn.nukkit.inventory.RecipeTag;
 import cn.nukkit.item.Item;
@@ -43,7 +44,7 @@ public class BlockCampfireSoul extends BlockCampfire {
     }
 
     @Override
-    public Item[] getDrops(Item item) {
+    public Item[] getDrops(Item item, Player player) {
         return new Item[]{
                 Item.get(ItemID.SOUL_SOIL),
         };

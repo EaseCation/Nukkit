@@ -12,7 +12,6 @@ import cn.nukkit.entity.item.EntityItem;
 import cn.nukkit.entity.item.EntityXPOrb;
 import cn.nukkit.event.block.BlockExplodeEvent;
 import cn.nukkit.event.block.BlockIgniteEvent.BlockIgniteCause;
-import cn.nukkit.event.block.BlockUpdateEvent;
 import cn.nukkit.event.entity.EntityDamageByBlockEvent;
 import cn.nukkit.event.entity.EntityDamageByEntityEvent;
 import cn.nukkit.event.entity.EntityDamageEvent;
@@ -26,14 +25,16 @@ import cn.nukkit.nbt.tag.CompoundTag;
 import cn.nukkit.network.protocol.LevelEventPacket;
 import cn.nukkit.network.protocol.LevelSoundEventPacket;
 import cn.nukkit.utils.Hash;
-import it.unimi.dsi.fastutil.longs.LongArraySet;
+import it.unimi.dsi.fastutil.longs.Long2ObjectMap;
+import it.unimi.dsi.fastutil.longs.Long2ObjectOpenHashMap;
+import it.unimi.dsi.fastutil.longs.LongOpenHashSet;
 import it.unimi.dsi.fastutil.longs.LongSet;
 import it.unimi.dsi.fastutil.objects.ObjectArrayList;
-import it.unimi.dsi.fastutil.objects.ObjectOpenHashSet;
 
+import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
-import java.util.Set;
 import java.util.concurrent.ThreadLocalRandom;
 
 /**
@@ -42,14 +43,14 @@ import java.util.concurrent.ThreadLocalRandom;
  */
 public class Explosion {
     private static final int RAYS = 16;
-    private static final double STEP_LEN = 0.3;
+    private static final float STEP_LEN = 0.3f;
 
     private final Level level;
     private final Position source;
     private final double size;
 
-    private List<Block> affectedBlocks = new ObjectArrayList<>();
-    private final Set<Block> affectedAirs = new ObjectOpenHashSet<>();
+    private Collection<Block> affectedBlocks = new ArrayList<>();
+    private final LongSet affectedAirs = new LongOpenHashSet();
     private boolean fire;
 
     private final Object what;
@@ -134,9 +135,9 @@ public class Explosion {
         }
 
         Vector3 vector = new Vector3(0, 0, 0);
-        Vector3 vBlock = new Vector3(0, 0, 0);
         ThreadLocalRandom random = ThreadLocalRandom.current();
 
+        Long2ObjectMap<Block> affectedBlocks = new Long2ObjectOpenHashMap<>();
         int mRays = RAYS - 1;
         for (int i = 0; i < RAYS; ++i) {
             for (int j = 0; j < RAYS; ++j) {
@@ -153,30 +154,28 @@ public class Explosion {
                             int x = (int) pointerX;
                             int y = (int) pointerY;
                             int z = (int) pointerZ;
-                            vBlock.x = pointerX >= x ? x : x - 1;
-                            vBlock.y = pointerY >= y ? y : y - 1;
-                            vBlock.z = pointerZ >= z ? z : z - 1;
-                            if (!level.getHeightRange().isValidBlockY(vBlock.y)) {
+                            int blockX = pointerX >= x ? x : x - 1;
+                            int blockY = pointerY >= y ? y : y - 1;
+                            int blockZ = pointerZ >= z ? z : z - 1;
+                            if (!level.getHeightRange().isValidBlockY(blockY)) {
                                 break;
                             }
-                            Block block = this.level.getBlock(vBlock);
+                            Block block = this.level.getBlock(blockX, blockY, blockZ);
 
                             if (block.getId() != BlockID.AIR) {
-                                double resistance = block.getResistance();
+                                float resistance = block.getResistance();
 
                                 Block extraBlock = this.level.getExtraBlock(block);
                                 if (!extraBlock.isAir()) {
                                     resistance += extraBlock.getResistance();
                                 }
 
-                                blastForce -= (resistance / 5 + 0.3d) * STEP_LEN;
+                                blastForce -= (resistance / 5 + 0.3f) * STEP_LEN;
                                 if (blastForce > 0) {
-                                    if (!this.affectedBlocks.contains(block)) {
-                                        this.affectedBlocks.add(block);
-                                    }
+                                    affectedBlocks.putIfAbsent(Hash.hashBlockPos(blockX, blockY, blockZ), block);
                                 }
                             } else {
-                                this.affectedAirs.add(block);
+                                this.affectedAirs.add(Hash.hashBlockPos(blockX, blockY, blockZ));
                             }
                             pointerX += vector.x;
                             pointerY += vector.y;
@@ -186,7 +185,7 @@ public class Explosion {
                 }
             }
         }
-
+        this.affectedBlocks.addAll(affectedBlocks.values());
         return true;
     }
 
@@ -197,8 +196,6 @@ public class Explosion {
      * @return {@code false} if explosion was canceled, otherwise {@code true}
      */
     public boolean explodeB() {
-        LongSet updateBlocks = new LongArraySet();
-
         boolean underwater = false;
         boolean dealDamage = true;
         double yield = (1d / this.size) * 100d;
@@ -375,19 +372,6 @@ public class Explosion {
 
             this.level.setExtraBlock(block, Blocks.air(), true, false);
             this.level.setBlock(block, Blocks.air(), true);
-
-            for (BlockFace side : BlockFace.getValues()) {
-                Vector3 sideBlock = block.getSide(side);
-                long index = Hash.hashBlockPos((int) sideBlock.x, (int) sideBlock.y, (int) sideBlock.z);
-                if (!this.affectedBlocks.contains(sideBlock) && !updateBlocks.contains(index)) {
-                    BlockUpdateEvent ev = new BlockUpdateEvent(this.level.getBlock(sideBlock), 0);
-                    this.level.getServer().getPluginManager().callEvent(ev);
-                    if (!ev.isCancelled()) {
-                        ev.getBlock().onUpdate(Level.BLOCK_UPDATE_NORMAL);
-                    }
-                    updateBlocks.add(index);
-                }
-            }
         }
 
         if (this.fire) {
@@ -400,12 +384,13 @@ public class Explosion {
             }
 
             for (Block block : this.affectedBlocks) {
-                if (random.nextInt(3) == 0 && this.level.getBlock(block).isAir()) {
+                if (random.nextInt(3) == 0 && (block = this.level.getBlock(block)).isAir()) {
                     BlockFire.tryIgnite(block, sourceBlock, sourceEntity, BlockIgniteCause.EXPLOSION);
                 }
             }
-            for (Block block : this.affectedAirs) {
-                if (random.nextInt(3) == 0 && this.level.getBlock(block).isAir()) {
+            for (long pos : this.affectedAirs) {
+                Block block;
+                if (random.nextInt(3) == 0 && (block = this.level.getBlock(Hash.hashBlockPosX(pos), Hash.hashBlockPosY(pos), Hash.hashBlockPosZ(pos))).isAir()) {
                     BlockFire.tryIgnite(block, sourceBlock, sourceEntity, BlockIgniteCause.EXPLOSION);
                 }
             }

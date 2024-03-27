@@ -35,12 +35,12 @@ public class BlockMangrovePropagule extends BlockTransparentMeta {
     }
 
     @Override
-    public double getHardness() {
+    public float getHardness() {
         return 0;
     }
 
     @Override
-    public double getResistance() {
+    public float getResistance() {
         return 0;
     }
 
@@ -50,7 +50,7 @@ public class BlockMangrovePropagule extends BlockTransparentMeta {
     }
 
     @Override
-    public Item[] getDrops(Item item) {
+    public Item[] getDrops(Item item, Player player) {
         if (isHanging() && getStage() < STAGE_FULLY_GROWN) {
             return new Item[0];
         }

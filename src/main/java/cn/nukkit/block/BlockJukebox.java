@@ -77,8 +77,8 @@ public class BlockJukebox extends BlockSolid {
     }
 
     @Override
-    public boolean onBreak(Item item) {
-        if (super.onBreak(item)) {
+    public boolean onBreak(Item item, Player player) {
+        if (super.onBreak(item, player)) {
             BlockEntity blockEntity = this.level.getBlockEntity(this);
 
             if (blockEntity instanceof BlockEntityJukebox) {
@@ -103,15 +103,15 @@ public class BlockJukebox extends BlockSolid {
     }
 
     @Override
-    public double getHardness() {
+    public float getHardness() {
         if (V1_20_30.isAvailable()) {
             return 2;
         }
-        return 0.8;
+        return 0.8f;
     }
 
     @Override
-    public double getResistance() {
+    public float getResistance() {
         return 30;
     }
 }

@@ -173,6 +173,10 @@ public interface EntityDataID {
      */
     int DATA_NPC_DATA = 134; //string related to npc component (json)
     int DATA_NUKKIT_FLAGS = 135; //long CUSTOM HACK!!
+    /**
+     * vec3.
+     * @since 1.20.10
+     */
     int DATA_COLLISION_BOX = 136; //vec3
 
     int DATA_UNDEFINED = 137;

@@ -24,12 +24,12 @@ public class BlockDragonEgg extends BlockFallable {
     }
 
     @Override
-    public double getHardness() {
+    public float getHardness() {
         return 3;
     }
 
     @Override
-    public double getResistance() {
+    public float getResistance() {
         return 45;
     }
 
@@ -106,5 +106,10 @@ public class BlockDragonEgg extends BlockFallable {
     @Override
     public boolean canProvideSupport(BlockFace face, SupportType type) {
         return false;
+    }
+
+    @Override
+    public int getToolType() {
+        return BlockToolType.PICKAXE;
     }
 }

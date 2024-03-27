@@ -103,8 +103,11 @@ public class BlockSugarcane extends BlockFlowable {
         } else if (type == Level.BLOCK_UPDATE_RANDOM) {
             if (this.down().getId() != BLOCK_REEDS) {
                 if (this.getDamage() == 0x0F) {
+                    int blockX = getFloorX();
+                    int blockY = getFloorY();
+                    int blockZ = getFloorZ();
                     for (int y = 1; y < 3; ++y) {
-                        Block b = this.getLevel().getBlock(new Vector3(this.x, this.y + y, this.z));
+                        Block b = this.getLevel().getBlock(blockX, blockY + y, blockZ);
                         if (b.getId() == AIR) {
                             BlockGrowEvent ev = new BlockGrowEvent(b, Block.get(BlockID.BLOCK_REEDS));
                             Server.getInstance().getPluginManager().callEvent(ev);

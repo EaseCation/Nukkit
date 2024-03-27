@@ -1,5 +1,7 @@
 package cn.nukkit.item;
 
+import cn.nukkit.block.BlockToolType;
+
 public class ItemShovelNetherite extends ItemTool {
 
     public ItemShovelNetherite() {
@@ -17,6 +19,11 @@ public class ItemShovelNetherite extends ItemTool {
     @Override
     public boolean isShovel() {
         return true;
+    }
+
+    @Override
+    public int getBlockToolType() {
+        return BlockToolType.SHOVEL;
     }
 
     @Override

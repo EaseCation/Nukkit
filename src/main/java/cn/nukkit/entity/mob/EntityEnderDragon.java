@@ -81,4 +81,9 @@ public class EntityEnderDragon extends EntityMob {
 
         return addEntity;
     }
+
+    @Override
+    public boolean canBeAffected(int effectId) {
+        return false;
+    }
 }

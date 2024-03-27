@@ -44,16 +44,16 @@ public class BlockDripleafBig extends BlockTransparentMeta implements Faceable {
     }
 
     @Override
-    public double getHardness() {
+    public float getHardness() {
         if (V1_20_30.isAvailable()) {
-            return 0.1;
+            return 0.1f;
         }
         return 0;
     }
 
     @Override
-    public double getResistance() {
-        return 0.5;
+    public float getResistance() {
+        return 0.5f;
     }
 
     @Override
@@ -72,7 +72,7 @@ public class BlockDripleafBig extends BlockTransparentMeta implements Faceable {
     }
 
     @Override
-    public Item[] getDrops(Item item) {
+    public Item[] getDrops(Item item, Player player) {
         return new Item[]{
                 toItem(true),
         };

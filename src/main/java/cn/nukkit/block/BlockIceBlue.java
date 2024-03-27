@@ -1,7 +1,7 @@
 package cn.nukkit.block;
 
+import cn.nukkit.Player;
 import cn.nukkit.item.Item;
-import cn.nukkit.item.ItemTool;
 import cn.nukkit.utils.BlockColor;
 
 public class BlockIceBlue extends BlockSolid {
@@ -21,22 +21,22 @@ public class BlockIceBlue extends BlockSolid {
 
     @Override
     public int getToolType() {
-        return ItemTool.TYPE_PICKAXE;
+        return BlockToolType.PICKAXE;
     }
 
     @Override
-    public double getHardness() {
-        return 2.8;
+    public float getHardness() {
+        return 2.8f;
     }
 
     @Override
-    public double getResistance() {
+    public float getResistance() {
         return 14;
     }
 
     @Override
-    public double getFrictionFactor() {
-        return 0.99;
+    public float getFrictionFactor() {
+        return 0.99f;
     }
 
     @Override
@@ -45,17 +45,12 @@ public class BlockIceBlue extends BlockSolid {
     }
 
     @Override
-    public boolean canHarvestWithHand() {
-        return false;
-    }
-
-    @Override
     public boolean canSilkTouch() {
         return true;
     }
 
     @Override
-    public Item[] getDrops(Item item) {
+    public Item[] getDrops(Item item, Player player) {
         return new Item[0];
     }
 }

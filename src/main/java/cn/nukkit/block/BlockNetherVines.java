@@ -113,7 +113,7 @@ public abstract class BlockNetherVines extends BlockFlowable {
     }
 
     @Override
-    public Item[] getDrops(Item item) {
+    public Item[] getDrops(Item item, Player player) {
         if (item.getId() != Item.ENCHANTED_BOOK && item.hasEnchantment(Enchantment.SILK_TOUCH) || ThreadLocalRandom.current().nextInt(3) == 0) {
             return new Item[]{
                     toItem(true),

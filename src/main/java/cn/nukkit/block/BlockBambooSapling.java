@@ -34,7 +34,7 @@ public class BlockBambooSapling extends BlockFlowable {
     }
 
     @Override
-    public double getHardness() {
+    public float getHardness() {
         if (V1_20_30.isAvailable()) {
             return 1;
         }
@@ -42,7 +42,7 @@ public class BlockBambooSapling extends BlockFlowable {
     }
 
     @Override
-    public double getResistance() {
+    public float getResistance() {
         return 5;
     }
 

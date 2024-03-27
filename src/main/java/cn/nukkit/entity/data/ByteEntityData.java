@@ -16,6 +16,10 @@ public class ByteEntityData extends EntityData<Integer> {
         this.data = data;
     }
 
+    public ByteEntityData(int id, boolean data) {
+        this(id, data ? 1 : 0);
+    }
+
     @Override
     public Integer getData() {
         return data;

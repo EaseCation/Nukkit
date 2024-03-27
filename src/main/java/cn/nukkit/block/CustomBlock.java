@@ -15,12 +15,12 @@ public abstract class CustomBlock extends Block {
     }
 
     @Override
-    public double getHardness() {
+    public float getHardness() {
         return 0;
     }
 
     @Override
-    public double getResistance() {
+    public float getResistance() {
         return getHardness() * 5;
     }
 

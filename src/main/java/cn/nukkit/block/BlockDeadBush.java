@@ -59,7 +59,7 @@ public class BlockDeadBush extends BlockFlowable {
     }
 
     @Override
-    public Item[] getDrops(Item item) {
+    public Item[] getDrops(Item item, Player player) {
         if (item.isShears()) {
             return new Item[]{
                     toItem(true)

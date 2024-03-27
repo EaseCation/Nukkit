@@ -33,18 +33,18 @@ public class BlockRespawnAnchor extends BlockSolidMeta {
     }
 
     @Override
-    public double getHardness() {
+    public float getHardness() {
         return 50;
     }
 
     @Override
-    public double getResistance() {
+    public float getResistance() {
         return 6000;
     }
 
     @Override
     public int getToolType() {
-        return ItemTool.TYPE_PICKAXE;
+        return BlockToolType.PICKAXE;
     }
 
     @Override
@@ -58,7 +58,7 @@ public class BlockRespawnAnchor extends BlockSolidMeta {
 //    }
 
     @Override
-    public Item[] getDrops(Item item) {
+    public Item[] getDrops(Item item, Player player) {
         if (item.isPickaxe() && item.getTier() >= ItemTool.TIER_DIAMOND) {
             return new Item[]{
                     Item.get(getItemId()),

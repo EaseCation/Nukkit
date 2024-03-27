@@ -1,7 +1,5 @@
 package cn.nukkit.block;
 
-import cn.nukkit.item.ItemTool;
-
 import static cn.nukkit.GameVersion.*;
 
 public abstract class BlockHyphaeStripped extends BlockRotatedPillar {
@@ -10,20 +8,20 @@ public abstract class BlockHyphaeStripped extends BlockRotatedPillar {
     }
 
     @Override
-    public double getHardness() {
+    public float getHardness() {
         if (V1_20_30.isAvailable()) {
             return 2;
         }
-        return 0.3;
+        return 0.3f;
     }
 
     @Override
-    public double getResistance() {
+    public float getResistance() {
         return 10;
     }
 
     @Override
     public int getToolType() {
-        return ItemTool.TYPE_AXE;
+        return BlockToolType.AXE;
     }
 }

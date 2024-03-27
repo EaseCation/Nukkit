@@ -71,8 +71,8 @@ public class BlockRedstoneTorch extends BlockTorch {
     }
 
     @Override
-    public boolean onBreak(Item item) {
-        super.onBreak(item);
+    public boolean onBreak(Item item, Player player) {
+        super.onBreak(item, player);
 
         BlockFace face = getBlockFace().getOpposite();
 
