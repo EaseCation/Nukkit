@@ -2,6 +2,7 @@ package cn.nukkit.item;
 
 import cn.nukkit.Player;
 import cn.nukkit.math.Vector3;
+import cn.nukkit.network.protocol.LevelSoundEventPacket;
 
 /**
  * Created by Snake1999 on 2016/1/14.
@@ -29,10 +30,13 @@ public class ItemFishingRod extends ItemTool {
     @Override
     public boolean onClickAir(Player player, Vector3 directionVector) {
         if (player.fishing != null) {
-            player.stopFishing(true);
+            int itemDamage = player.stopFishing(true);
+            if (itemDamage > 0 && player.isSurvivalLike() && hurtAndBreak(itemDamage) < 0) {
+                pop();
+                player.level.addLevelSoundEvent(player, LevelSoundEventPacket.SOUND_BREAK);
+            }
         } else {
             player.startFishing(this);
-            this.setDamage(this.getDamage() + 1);
         }
         return true;
     }

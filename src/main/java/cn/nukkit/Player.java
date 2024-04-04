@@ -317,6 +317,8 @@ public class Player extends EntityHuman implements CommandSender, InventoryHolde
     protected boolean swinging;
     protected int swingTime;
 
+    protected int damageNearbyMobsTick;
+
     protected int shieldBlockingTick;
     protected int prevShieldBlockingTick;
     protected int shieldCooldown;
@@ -1090,9 +1092,8 @@ public class Player extends EntityHuman implements CommandSender, InventoryHolde
 
         this.noDamageTicks = 60;
 
-        this.sendRecipeList();
-
         this.sendCreativeContents();
+        this.sendRecipeList();
 
         for (long index : this.usedChunks.keySet()) {
             int chunkX = Level.getHashX(index);
@@ -1440,7 +1441,7 @@ public class Player extends EntityHuman implements CommandSender, InventoryHolde
             this.inventory.sendContents(this);
             this.inventory.sendHeldItem(this.hasSpawned.values());
 
-            this.sendCreativeContents();
+//            this.sendCreativeContents();
         }
 
         return true;
@@ -2027,9 +2028,7 @@ public class Player extends EntityHuman implements CommandSender, InventoryHolde
                 if (chestplate.getId() == Item.ELYTRA) {
                     int damage = chestplate.getDamage();
                     if (damage < chestplate.getMaxDurability() - 1) {
-                        Enchantment durability = chestplate.getEnchantment(Enchantment.UNBREAKING);
-                        if (durability == null || durability.getLevel() <= 0 || ThreadLocalRandom.current().nextInt(100) < chestplate.getDamageChance(durability.getLevel())) {
-                            chestplate.setDamage(++damage);
+                        if (chestplate.hurtAndBreak(1) != 0) {
                             inventory.setChestplate(chestplate, true);
                         }
                     } else {
@@ -2095,6 +2094,70 @@ public class Player extends EntityHuman implements CommandSender, InventoryHolde
                 }
             } else {
                 this.swingTime = 0;
+            }
+
+            if (damageNearbyMobsTick > 0 && !isSpectator()) {
+                damageNearbyMobsTick--;
+
+                for (Entity entity : level.getNearbyEntities(boundingBox, this)) {
+                    if (!(entity instanceof EntityLiving)) {
+                        continue;
+                    }
+
+                    if (entity instanceof Player player && (player.isCreativeLike() || server.getDifficulty() == 0 || !server.getConfiguration().isPvp() || !level.getGameRules().getBoolean(GameRule.PVP))) {
+                        continue;
+                    }
+
+                    Item item = inventory.getItemInHand();
+                    Enchantment[] enchantments = item.getId() != Item.ENCHANTED_BOOK ? item.getEnchantments() : Enchantment.EMPTY;
+
+                    ItemAttackDamageEvent event = new ItemAttackDamageEvent(item);
+                    event.call();
+                    float damage = event.getAttackDamage();
+
+                    float damageBonus = 0;
+                    for (Enchantment enchantment : enchantments) {
+                        damageBonus += enchantment.getDamageBonus(entity);
+                    }
+                    damage += Mth.floor(damageBonus);
+
+                    Map<DamageModifier, Float> modifiers = new EnumMap<>(DamageModifier.class);
+                    modifiers.put(DamageModifier.BASE, damage);
+
+                    float knockbackH = EntityDamageByEntityEvent.GLOBAL_KNOCKBACK_H;
+                    float knockbackV = EntityDamageByEntityEvent.GLOBAL_KNOCKBACK_V;
+                    int knockbackEnchant = item.getEnchantmentLevel(Enchantment.KNOCKBACK);
+                    if (knockbackEnchant > 0) {
+                        knockbackH += knockbackEnchant * 0.1f;
+                        knockbackV += knockbackEnchant * 0.1f;
+                    }
+
+                    if (!entity.attack(new EntityDamageByEntityEvent(this, entity, DamageCause.ENTITY_ATTACK, modifiers, knockbackH, knockbackV, enchantments))) {
+                        continue;
+                    }
+
+                    for (Enchantment enchantment : enchantments) {
+                        enchantment.doPostAttack(item, this, entity, null);
+                    }
+
+                    if (isSurvivalLike() && item.isTool() && item.useOn(entity)) {
+                        if (item.getDamage() > item.getMaxDurability()) {
+                            inventory.setItemInHand(Items.air());
+                            level.addLevelSoundEvent(this, LevelSoundEventPacket.SOUND_BREAK);
+                        } else {
+                            inventory.setItemInHand(item);
+                        }
+                    }
+
+                    setMotion(getMotion().multiply(-0.2));
+
+                    damageNearbyMobsTick = 0;
+                    setDataFlag(DATA_FLAG_SPIN_ATTACK, false);
+                    break;
+                }
+            } else {
+                damageNearbyMobsTick = 0;
+                setDataFlag(DATA_FLAG_SPIN_ATTACK, false);
             }
         }
 
@@ -3340,7 +3403,8 @@ public class Player extends EntityHuman implements CommandSender, InventoryHolde
                 case ProtocolInfo.REQUEST_CHUNK_RADIUS_PACKET:
                     RequestChunkRadiusPacket requestChunkRadiusPacket = (RequestChunkRadiusPacket) packet;
                     ChunkRadiusUpdatedPacket chunkRadiusUpdatePacket = new ChunkRadiusUpdatedPacket();
-                    this.chunkRadius = Math.max(4, Math.min(requestChunkRadiusPacket.radius, this.viewDistance));
+                    this.chunkRadius = Math.max(4, Math.min(requestChunkRadiusPacket.radius, this.server.getViewDistance()));
+                    this.viewDistance = this.chunkRadius;
                     chunkRadiusUpdatePacket.radius = this.chunkRadius;
                     this.dataPacket(chunkRadiusUpdatePacket);
                     break;
@@ -3620,7 +3684,7 @@ public class Player extends EntityHuman implements CommandSender, InventoryHolde
                                     }
 
                                     if (item.onClickAir(this, directionVector)) {
-                                        if (this.isSurvival()) {
+                                        if (this.isSurvivalLike()) {
                                             this.inventory.setItemInHand(item);
                                         }
 
@@ -3668,8 +3732,9 @@ public class Player extends EntityHuman implements CommandSender, InventoryHolde
 
                                     if (target.onInteract(this, item) && this.isSurvival()) {
                                         if (item.isTool()) {
-                                            if (item.useOn(target) && item.getDamage() >= item.getMaxDurability()) {
+                                            if (item.useOn(target) && item.getDamage() > item.getMaxDurability()) {
                                                 item = Items.air();
+                                                level.addLevelSoundEvent(this, LevelSoundEventPacket.SOUND_BREAK);
                                             }
                                         } else {
                                             if (item.count > 1) {
@@ -3697,10 +3762,14 @@ public class Player extends EntityHuman implements CommandSender, InventoryHolde
 
                                     ItemAttackDamageEvent event = new ItemAttackDamageEvent(item);
                                     this.server.getPluginManager().callEvent(event);
+
                                     float itemDamage = event.getAttackDamage();
+
+                                    float damageBonus = 0;
                                     for (Enchantment enchantment : enchantments) {
-                                        itemDamage += enchantment.getDamageBonus(target);
+                                        damageBonus += enchantment.getDamageBonus(target);
                                     }
+                                    itemDamage += Mth.floor(damageBonus);
 
                                     Map<DamageModifier, Float> damage = new EnumMap<>(DamageModifier.class);
                                     damage.put(DamageModifier.BASE, itemDamage);
@@ -3727,14 +3796,19 @@ public class Player extends EntityHuman implements CommandSender, InventoryHolde
                                     }
 
                                     for (Enchantment enchantment : enchantments) {
-                                        enchantment.doPostAttack(this, target, null);
+                                        enchantment.doPostAttack(item, this, target, null);
                                     }
 
                                     if (item.isTool() && this.isSurvivalLike()) {
-                                        if (item.useOn(target) && item.getDamage() >= item.getMaxDurability()) {
-                                            this.inventory.setItemInHand(Item.get(0));
+                                        if (item.useOn(target)) {
+                                            if (item.getDamage() > item.getMaxDurability()) {
+                                                this.inventory.setItemInHand(Item.get(Item.AIR));
+                                                level.addLevelSoundEvent(this, LevelSoundEventPacket.SOUND_BREAK);
+                                            } else {
+                                                this.inventory.setItemInHand(item);
+                                            }
                                         } else {
-                                            if (item.getId() == 0 || this.inventory.getItemInHand().getId() == item.getId()) {
+                                            if (item.getId() == Item.AIR || this.inventory.getItemInHand().getId() == item.getId()) {
                                                 this.inventory.setItemInHand(item);
                                             } else {
                                                 server.getLogger().debug("Tried to set item " + item.getId() + " but " + this.username + " had item " + this.inventory.getItemInHand().getId() + " in their hand slot");
@@ -4493,10 +4567,12 @@ public class Player extends EntityHuman implements CommandSender, InventoryHolde
                     message = "death.attack.magma";
                     break;
                 case FIRE:
-                    message = "death.attack.onFire";
+                case CAMPFIRE:
+                case SOUL_CAMPFIRE:
+                    message = "death.attack.inFire";
                     break;
                 case FIRE_TICK:
-                    message = "death.attack.inFire";
+                    message = "death.attack.onFire";
                     break;
                 case DROWNING:
                     message = "death.attack.drown";
@@ -4808,7 +4884,7 @@ public class Player extends EntityHuman implements CommandSender, InventoryHolde
             }
 
             //Critical hit
-            if (!damager.onGround && damager instanceof Player player && !damager.hasEffect(Effect.BLINDNESS)) {
+            if (!damager.onGround && damager instanceof Player player && !damager.hasEffect(Effect.BLINDNESS) && !damager.isRiding() && !damager.isInsideOfWater(false)) {
                 if (player.speed != null && player.speed.y > 0) {
                     if (player.attackCriticalThisJump <= 0) {
                         critical = true;
@@ -4912,10 +4988,7 @@ public class Player extends EntityHuman implements CommandSender, InventoryHolde
             float damage = source.getDamage();
             if (damage >= 3) {
                 Item shield = itemStack.value();
-                int itemDamage = shield.getDamage() + Mth.floor(damage + 1);
-                if (itemDamage < shield.getMaxDurability()) {
-                    shield.setDamage(itemDamage);
-                } else {
+                if (shield.hurtAndBreak(Mth.floor(damage) + 1) < 0) {
                     shield.pop();
                     level.addLevelSoundEvent(this, LevelSoundEventPacket.SOUND_BREAK);
                 }
@@ -5824,14 +5897,16 @@ public class Player extends EntityHuman implements CommandSender, InventoryHolde
      * Stop fishing
      * @param click clicked or forced
      */
-    public void stopFishing(boolean click) {
+    public int stopFishing(boolean click) {
+        int itemDamage = 0;
         if (this.fishing != null && click) {
-            fishing.reelLine();
+            itemDamage = fishing.reelLine();
         } else if (this.fishing != null) {
             this.fishing.close();
         }
 
         this.fishing = null;
+        return itemDamage;
     }
 
     @Override
@@ -6289,5 +6364,17 @@ public class Player extends EntityHuman implements CommandSender, InventoryHolde
      * @since 1.20.60
      */
     public void showHudElements(int... elements) {
+    }
+
+    public void swingArm() {
+        AnimatePacket pk = new AnimatePacket();
+        pk.eid = getId();
+        pk.action = AnimatePacket.Action.SWING_ARM;
+        dataPacket(pk);
+
+        AnimatePacket pkBroadcast = new AnimatePacket();
+        pkBroadcast.eid = getId();
+        pkBroadcast.action = AnimatePacket.Action.SWING_ARM;
+        Server.broadcastPacket(getViewers().values(), pkBroadcast);
     }
 }

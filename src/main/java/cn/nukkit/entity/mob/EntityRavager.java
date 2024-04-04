@@ -56,4 +56,9 @@ public class EntityRavager extends EntityMob {
     public Vector3f getMountedOffset(Entity entity) {
         return new Vector3f(0, 2.1f + entity.getRidingOffset(), -0.3f);
     }
+
+    @Override
+    protected float getKnockbackResistance() {
+        return 0.75f;
+    }
 }

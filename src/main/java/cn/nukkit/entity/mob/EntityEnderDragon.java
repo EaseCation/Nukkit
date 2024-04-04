@@ -86,4 +86,9 @@ public class EntityEnderDragon extends EntityMob {
     public boolean canBeAffected(int effectId) {
         return false;
     }
+
+    @Override
+    protected float getKnockbackResistance() {
+        return 1;
+    }
 }

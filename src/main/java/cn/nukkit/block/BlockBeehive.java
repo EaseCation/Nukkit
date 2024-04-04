@@ -121,10 +121,6 @@ public class BlockBeehive extends BlockSolidMeta implements Faceable {
             setHoneyLevel(0);
             level.setBlock(this, this, true, true);
 
-            if (player != null && !player.isCreative()) {
-                item.useOn(this);
-            }
-
             if (level.getGameRules().getBoolean(GameRule.DO_TILE_DROPS)) {
                 level.dropItem(blockCenter(), Item.get(Item.HONEYCOMB, 0, 3));
             }

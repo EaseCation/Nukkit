@@ -26,7 +26,7 @@ public class EnchantmentProtectionFall extends EnchantmentProtection {
 
     @Override
     public int getTypeModifier() {
-        return 2;
+        return 3;
     }
 
     @Override

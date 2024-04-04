@@ -73,4 +73,9 @@ public class EntityHoglin extends EntityMob {
 //        return new Vector3f(0, 2.4f + entity.getRidingOffset(), -0.3f); //TODO: middle
 //        return new Vector3f(0, 3.9f + entity.getRidingOffset(), -0.3f); //TODO: top
     }
+
+    @Override
+    protected float getKnockbackResistance() {
+        return 0.6f;
+    }
 }

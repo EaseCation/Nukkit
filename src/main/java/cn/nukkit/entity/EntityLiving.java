@@ -142,7 +142,7 @@ public abstract class EntityLiving extends Entity implements EntityDamageable {
         if (this.isInvulnerableTo(source)) {
             return false;
         }
-        if (source.getCause() == DamageCause.FIRE_TICK || source.getCause() == DamageCause.LAVA || source.getCause() == DamageCause.FIRE) {
+        if (source.getCause() == DamageCause.FIRE_TICK || source.getCause() == DamageCause.LAVA || source.getCause() == DamageCause.FIRE || source.getCause() == DamageCause.MAGMA || source.getCause() == DamageCause.CAMPFIRE || source.getCause() == DamageCause.SOUL_CAMPFIRE) {
             if (this.hasEffect(EffectID.FIRE_RESISTANCE)) {
                 return false;
             }
@@ -258,6 +258,13 @@ public abstract class EntityLiving extends Entity implements EntityDamageable {
     }
 
     public void knockBack(Entity attacker, double damage, double x, double z, double base) {
+        float resistance = getKnockbackResistance();
+        if (resistance >= 1) {
+            return;
+        }
+        float scale = 1 - resistance;
+        base *= scale;
+
         double f = Math.sqrt(x * x + z * z);
         if (f <= 0) {
             return;
@@ -290,6 +297,14 @@ public abstract class EntityLiving extends Entity implements EntityDamageable {
     }
 
     public void knockBack(Entity attacker, double damage, double x, double z, double baseH, double baseV) {
+        float resistance = getKnockbackResistance();
+        if (resistance >= 1) {
+            return;
+        }
+        float scale = 1 - resistance;
+        baseH *= scale;
+        baseV *= scale;
+
         double f = Math.sqrt(x * x + z * z);
         if (f <= 0) {
             return;
@@ -322,6 +337,10 @@ public abstract class EntityLiving extends Entity implements EntityDamageable {
         //this.getServer().getLogger().debug("[knockback] xz=" + new Vector2(motion.x, motion.z).length() + " y=" + motion.y);
 
         this.setMotion(motion);
+    }
+
+    protected float getKnockbackResistance() {
+        return 0;
     }
 
     @Override
@@ -635,6 +654,10 @@ public abstract class EntityLiving extends Entity implements EntityDamageable {
 
     public boolean isSleeping() {
         return false;
+    }
+
+    public int getBaseArmorValue() {
+        return 0;
     }
 
     public long getNextAllowAttack() {

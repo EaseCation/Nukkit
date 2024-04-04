@@ -1183,6 +1183,7 @@ public abstract class Entity extends Location implements Metadatable, EntityData
 
     public boolean attack(EntityDamageEvent source) {
         if ((source.getCause() == DamageCause.FIRE || source.getCause() == DamageCause.FIRE_TICK
+                || source.getCause() == DamageCause.CAMPFIRE || source.getCause() == DamageCause.SOUL_CAMPFIRE
                 || source.getCause() == DamageCause.LAVA || source.getCause() == DamageCause.MAGMA)
                 && (fireProof || hasEffect(Effect.FIRE_RESISTANCE))) {
             return false;
@@ -1701,7 +1702,7 @@ public abstract class Entity extends Location implements Metadatable, EntityData
 
     public void setOnFire(int seconds) {
         if (seconds > 0 && (hasEffect(Effect.FIRE_RESISTANCE) || !isAlive())) {
-            this.fireTicks = 0;
+            extinguish();
             return;
         }
 
@@ -1761,7 +1762,7 @@ public abstract class Entity extends Location implements Metadatable, EntityData
     }
 
     public void resetFallDistance() {
-        this.highestPosition = 0;
+        this.highestPosition = level.getHeightRange().getMinY();
     }
 
     protected void updateFallState(boolean onGround) {

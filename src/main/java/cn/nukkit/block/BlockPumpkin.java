@@ -94,8 +94,9 @@ public class BlockPumpkin extends BlockSolidMeta implements Faceable {
             return false;
         }
 
-        if (player != null && !player.isCreative()) {
-            item.useOn(this);
+        if (player != null && player.isSurvivalLike() && item.hurtAndBreak(1) < 0) {
+            item.pop();
+            player.level.addLevelSoundEvent(player, LevelSoundEventPacket.SOUND_BREAK);
         }
 
         level.setBlock(this, get(CARVED_PUMPKIN, getDamage()), true);

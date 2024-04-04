@@ -26,7 +26,7 @@ public class EnchantmentProtectionProjectile extends EnchantmentProtection {
 
     @Override
     public int getTypeModifier() {
-        return 3;
+        return 2;
     }
 
     @Override

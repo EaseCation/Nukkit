@@ -143,15 +143,13 @@ public class ItemBow extends ItemTool {
                 if (!infinity) {
                     inventory.removeItem(matched);
                 }
-                if (!this.isUnbreakable()) {
-                    Enchantment durability = this.getEnchantment(Enchantment.UNBREAKING);
-                    if (!(durability != null && durability.getLevel() > 0 && random.nextInt(100) >= getDamageChance(durability.getLevel()))) {
-                        this.setDamage(this.getDamage() + 1);
-                        if (this.getDamage() >= getMaxDurability()) {
-                            this.count--;
-                        }
-                        player.getInventory().setItemInHand(this);
+                int itemDamaged = hurtAndBreak(1);
+                if (itemDamaged != 0) {
+                    if (itemDamaged < 0) {
+                        pop();
+                        player.level.addLevelSoundEvent(player, LevelSoundEventPacket.SOUND_BREAK);
                     }
+                    player.getInventory().setItemInHand(this);
                 }
             }
             if (entityShootBowEvent.getProjectile() != null) {

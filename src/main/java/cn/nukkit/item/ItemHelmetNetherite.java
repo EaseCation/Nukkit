@@ -40,6 +40,11 @@ public class ItemHelmetNetherite extends ItemArmor {
     }
 
     @Override
+    public float getKnockbackResistance() {
+        return 0.1f;
+    }
+
+    @Override
     public boolean isFireResistant() {
         return true;
     }

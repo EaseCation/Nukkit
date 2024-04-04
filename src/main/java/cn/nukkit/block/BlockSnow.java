@@ -3,7 +3,6 @@ package cn.nukkit.block;
 import cn.nukkit.Player;
 import cn.nukkit.item.Item;
 import cn.nukkit.item.ItemTool;
-import cn.nukkit.math.BlockFace;
 import cn.nukkit.utils.BlockColor;
 
 public class BlockSnow extends BlockSolid {
@@ -61,22 +60,5 @@ public class BlockSnow extends BlockSolid {
     @Override
     public boolean canSilkTouch() {
         return true;
-    }
-
-    @Override
-    public boolean canBeActivated() {
-        return true;
-    }
-
-    @Override
-    public boolean onActivate(Item item, BlockFace face, Player player) {
-        if (item.isShovel()) {
-            if (player != null && !player.isCreative()) {
-                item.useOn(this);
-            }
-            this.level.useBreakOn(this, item.clone().clearNamedTag(), null, true);
-            return true;
-        }
-        return false;
     }
 }

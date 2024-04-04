@@ -11,6 +11,7 @@ import cn.nukkit.math.BlockFace;
 import cn.nukkit.math.Mth;
 import cn.nukkit.nbt.tag.CompoundTag;
 import cn.nukkit.network.protocol.LevelEventPacket;
+import cn.nukkit.network.protocol.LevelSoundEventPacket;
 import cn.nukkit.utils.BlockColor;
 
 import java.util.concurrent.ThreadLocalRandom;
@@ -111,20 +112,22 @@ public class BlockTNT extends BlockSolidMeta {
             return false;
         }
 
-        if (item.getId() == Item.FLINT_AND_STEEL) {
-            if (player != null && !player.isCreative()) {
-                item.useOn(this);
+        if (item.getId() == Item.FLINT_AND_STEEL || item.isSword() && item.hasEnchantment(Enchantment.FIRE_ASPECT)) {
+            if (player != null && player.isSurvivalLike() && item.hurtAndBreak(1) < 0) {
+                item.pop();
+                level.addLevelSoundEvent(player, LevelSoundEventPacket.SOUND_BREAK);
             }
+
             this.prime(80, player);
             return true;
-        } else if (item.getId() == Item.FIRE_CHARGE) {
-            if (player != null && !player.isCreative()) item.count--;
-            this.prime(80, player);
-            return true;
-        } else if (item.hasEnchantment(Enchantment.FIRE_ASPECT)) {
+        }
+        if (item.getId() == Item.FIRE_CHARGE) {
+            level.addLevelEvent(this, LevelEventPacket.EVENT_SOUND_GHAST_SHOOT, 78642);
+
             if (player != null && !player.isCreative()) {
-                item.useOn(this);
+                item.pop();
             }
+
             this.prime(80, player);
             return true;
         }

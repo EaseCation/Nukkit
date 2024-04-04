@@ -4,6 +4,7 @@ import cn.nukkit.Player;
 import cn.nukkit.item.Item;
 import cn.nukkit.math.BlockFace;
 import cn.nukkit.network.protocol.LevelEventPacket;
+import cn.nukkit.network.protocol.LevelSoundEventPacket;
 
 public class BlockCopperWaxed extends BlockCopper {
     public BlockCopperWaxed() {
@@ -22,8 +23,9 @@ public class BlockCopperWaxed extends BlockCopper {
     @Override
     public boolean onActivate(Item item, BlockFace face, Player player) {
         if (item.isAxe()) {
-            if (player != null && !player.isCreative()) {
-                item.useOn(this);
+            if (player != null && player.isSurvivalLike() && item.hurtAndBreak(1) < 0) {
+                item.pop();
+                player.level.addLevelSoundEvent(player, LevelSoundEventPacket.SOUND_BREAK);
             }
 
             level.addLevelEvent(this, LevelEventPacket.EVENT_PARTICLE_WAX_OFF);

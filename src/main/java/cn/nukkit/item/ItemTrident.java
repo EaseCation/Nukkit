@@ -46,23 +46,35 @@ public class ItemTrident extends ItemTool {
         return 9;
     }
 
+    private boolean canUse() {
+        return getDamage() < getMaxDurability();
+    }
+
     @Override
     public boolean onClickAir(Player player, Vector3 directionVector) {
-        return true;
+        //TODO: riptide check
+        return canUse();
     }
 
     @Override
     public boolean onUse(Player player, int ticksUsed) {
-        return true;
+        return canUse();
     }
 
     @Override
     public boolean onRelease(Player player, int ticksUsed) {
+        if (!canUse()) {
+            return false;
+        }
+
         if (this.hasEnchantment(Enchantment.RIPTIDE)) {
             return true;
         }
 
-        this.useOn(player);
+        int oldDamage = getDamage();
+        if (player.isSurvivalLike()) {
+            hurtAndBreak(1);
+        }
 
         ThreadLocalRandom random = ThreadLocalRandom.current();
         Vector3 dir = Vector3.directionFromRotation(player.pitch, player.yaw)
@@ -85,6 +97,7 @@ public class ItemTrident extends ItemTool {
         Server.getInstance().getPluginManager().callEvent(entityShootBowEvent);
         if (entityShootBowEvent.isCancelled()) {
             entityShootBowEvent.getProjectile().close();
+            setDamage(oldDamage);
         } else {
             entityShootBowEvent.getProjectile().setMotion(entityShootBowEvent.getProjectile().getMotion().multiply(entityShootBowEvent.getForce()));
             ProjectileLaunchEvent ev = new ProjectileLaunchEvent(entityShootBowEvent.getProjectile());

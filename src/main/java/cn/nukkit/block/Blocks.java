@@ -2,6 +2,7 @@ package cn.nukkit.block;
 
 import cn.nukkit.GameVersion;
 import cn.nukkit.block.edu.*;
+import cn.nukkit.command.data.CommandEnum;
 import cn.nukkit.item.ItemBlockNames;
 import cn.nukkit.item.Items;
 import cn.nukkit.nbt.tag.CompoundTag;
@@ -14,6 +15,7 @@ import lombok.extern.log4j.Log4j2;
 import javax.annotation.Nullable;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationTargetException;
+import java.util.Collections;
 import java.util.Map;
 import java.util.Objects;
 import java.util.concurrent.atomic.AtomicInteger;
@@ -1241,6 +1243,9 @@ public final class Blocks {
 
         BlockSerializer.registerCustomBlock(fullName, id, definition);
         Items.registerCustomBlockItem(fullName, id);
+
+        CommandEnum.ENUM_BLOCK.getValues().put(fullName, Collections.emptySet());
+
         return clazz;
     }
 

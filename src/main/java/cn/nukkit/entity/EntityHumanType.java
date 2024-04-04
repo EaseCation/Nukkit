@@ -10,8 +10,6 @@ import cn.nukkit.inventory.PlayerEnderChestInventory;
 import cn.nukkit.inventory.PlayerInventory;
 import cn.nukkit.inventory.PlayerOffhandInventory;
 import cn.nukkit.item.Item;
-import cn.nukkit.item.ItemBlockID;
-import cn.nukkit.item.ItemSkull;
 import cn.nukkit.item.Items;
 import cn.nukkit.item.enchantment.Enchantment;
 import cn.nukkit.level.format.FullChunk;
@@ -19,10 +17,11 @@ import cn.nukkit.math.Mth;
 import cn.nukkit.nbt.NBTIO;
 import cn.nukkit.nbt.tag.CompoundTag;
 import cn.nukkit.nbt.tag.ListTag;
+import cn.nukkit.network.protocol.LevelSoundEventPacket;
+import cn.nukkit.potion.Effect;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.concurrent.ThreadLocalRandom;
 
 public abstract class EntityHumanType extends EntityCreature implements InventoryHolder {
 
@@ -157,23 +156,32 @@ public abstract class EntityHumanType extends EntityCreature implements Inventor
             return false;
         }
 
+        int armorDamage = 0;
+
         if (source.getCause() != DamageCause.VOID && source.getCause() != DamageCause.SUICIDE && source.getCause() != DamageCause.CUSTOM && source.getCause() != DamageCause.SONIC_BOOM && source.getCause() != DamageCause.HUNGER) {
-            int armorPoints = 0;
+            int armorPoints = getBaseArmorValue();
+            int toughness = 0;
             int epf = 0;
-            //int toughness = 0;
 
             for (Item armor : inventory.getArmorContents()) {
                 armorPoints += armor.getArmorPoints();
+                toughness += armor.getToughness();
                 epf += calculateEnchantmentProtectionFactor(armor, source);
-                //toughness += armor.getToughness();
             }
 
             if (source.canBeReducedByArmor()) {
-                source.setDamage(-source.getFinalDamage() * armorPoints * 0.04f, DamageModifier.ARMOR);
+                armorDamage = Math.max(1, (int) source.getDamage() / 4);
+
+                armorPoints = Mth.clamp(armorPoints, 0, 20);
+                float damage = source.getFinalDamage();
+                if (level.isNewArmorMechanics()) {
+                    source.setDamage(-damage * (Mth.clamp(armorPoints - damage / (2 + toughness / 4f), armorPoints * 0.2f, 20) / 25), DamageModifier.ARMOR);
+                } else {
+                    source.setDamage(-damage * (armorPoints / 25f), DamageModifier.ARMOR);
+                }
             }
 
-            source.setDamage(-source.getFinalDamage() * Math.min(Mth.ceil(Math.min(epf, 25) * ((float) ThreadLocalRandom.current().nextInt(50, 100) / 100)), 20) * 0.04f,
-                    DamageModifier.ARMOR_ENCHANTMENTS);
+            source.setDamage(-source.getFinalDamage() * (Mth.clamp(epf, 0, 20) / 25f), DamageModifier.ARMOR_ENCHANTMENTS);
         }
 
         if (source.getCause() != DamageCause.SUICIDE) {
@@ -197,14 +205,21 @@ public abstract class EntityHumanType extends EntityCreature implements Inventor
                 if (armor.hasEnchantments()) {
                     if (damager != null) {
                         for (Enchantment enchantment : armor.getEnchantments()) {
-                            enchantment.doPostAttack(damager, this, source.getCause());
+                            enchantment.doPostAttack(armor, damager, this, source.getCause());
+                        }
+
+                        if (armor.getDamage() > armor.getMaxDurability()) {
+                            inventory.setArmorItem(slot, Items.air());
+                            level.addLevelSoundEvent(this, LevelSoundEventPacket.SOUND_BREAK);
+                            continue;
+                        } else {
+                            inventory.setArmorItem(slot, armor, true);
                         }
                     }
+                }
 
-                    Enchantment durability = armor.getEnchantment(Enchantment.UNBREAKING);
-                    if (durability != null && durability.getLevel() > 0 && ThreadLocalRandom.current().nextInt(100) >= armor.getDamageChance(durability.getLevel())) {
-                        continue;
-                    }
+                if (armorDamage == 0) {
+                    continue;
                 }
 
                 if (source.getCause() != DamageCause.VOID
@@ -221,14 +236,22 @@ public abstract class EntityHumanType extends EntityCreature implements Inventor
                         && source.getCause() != DamageCause.FLY_INTO_WALL
                         && source.getCause() != DamageCause.SONIC_BOOM
                 ) { // No armor damage
-                    if (armor.isUnbreakable() || armor instanceof ItemSkull || armor.getId() == ItemBlockID.CARVED_PUMPKIN || armor.getId() == Item.ELYTRA) {
+                    if (!armor.isArmor() || armor.getId() == Item.ELYTRA) {
                         continue;
                     }
 
-                    armor.setDamage(armor.getDamage() + 1);
+                    if (armor.isFireResistant() && (source.getCause() == DamageCause.FIRE || source.getCause() == DamageCause.LAVA || source.getCause() == DamageCause.MAGMA || source.getCause() == DamageCause.CAMPFIRE || source.getCause() == DamageCause.SOUL_CAMPFIRE)) {
+                        continue;
+                    }
 
-                    if (armor.getDamage() >= armor.getMaxDurability()) {
+                    int itemDamaged = armor.hurtAndBreak(armorDamage);
+                    if (itemDamaged == 0) {
+                        continue;
+                    }
+
+                    if (itemDamaged < 0) {
                         inventory.setArmorItem(slot, Items.air());
+                        level.addLevelSoundEvent(this, LevelSoundEventPacket.SOUND_BREAK);
                     } else {
                         inventory.setArmorItem(slot, armor, true);
                     }
@@ -258,18 +281,20 @@ public abstract class EntityHumanType extends EntityCreature implements Inventor
     @Override
     public void setOnFire(int seconds) {
         int level = 0;
-
         for (Item armor : this.inventory.getArmorContents()) {
-            Enchantment fireProtection = armor.getEnchantment(Enchantment.FIRE_PROTECTION);
-
-            if (fireProtection != null && fireProtection.getLevel() > 0) {
-                level = Math.max(level, fireProtection.getLevel());
-            }
+            level += armor.getEnchantmentLevel(Enchantment.FIRE_PROTECTION);
         }
 
-        seconds = (int) (seconds * (1 - level * 0.15));
+        int ticks = (int) (seconds * 20 * (level * -0.15 + 1));
 
-        super.setOnFire(seconds);
+        if (ticks > 0 && (hasEffect(Effect.FIRE_RESISTANCE) || !isAlive())) {
+            extinguish();
+            return;
+        }
+
+        if (ticks > fireTicks) {
+            fireTicks = ticks;
+        }
     }
 
     @Override
@@ -285,5 +310,14 @@ public abstract class EntityHumanType extends EntityCreature implements Inventor
         }
 
         return breathing;
+    }
+
+    @Override
+    protected float getKnockbackResistance() {
+        float total = 0;
+        for (Item armor : inventory.getArmorContents()) {
+            total += armor.getKnockbackResistance();
+        }
+        return total;
     }
 }

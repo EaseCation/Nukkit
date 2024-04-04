@@ -33,7 +33,7 @@ public class EnchantmentProtectionFire extends EnchantmentProtection {
     public int getProtectionFactor(EntityDamageEvent e) {
         DamageCause cause = e.getCause();
 
-        if (level <= 0 || cause != DamageCause.LAVA && cause != DamageCause.FIRE && cause != DamageCause.FIRE_TICK && cause != DamageCause.MAGMA) {
+        if (level <= 0 || cause != DamageCause.LAVA && cause != DamageCause.FIRE && cause != DamageCause.FIRE_TICK && cause != DamageCause.MAGMA && cause != DamageCause.CAMPFIRE && cause != DamageCause.SOUL_CAMPFIRE) {
             return 0;
         }
 

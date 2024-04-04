@@ -189,6 +189,11 @@ public class EntityArmorStand extends EntityLiving implements EntityInteractable
                 }
             }
 
+            Block block = this.level.getBlock(this);
+            if (block.isCampfire()) {
+                block.onEntityCollide(this);
+            }
+
             if (hurtTime > 0) {
                 setHurtTime(hurtTime - 1);
             }
@@ -226,10 +231,14 @@ public class EntityArmorStand extends EntityLiving implements EntityInteractable
                 source.setDamage(0.05f);
                 break;
             case FIRE_TICK:
-                if (level.containsBlock(getBoundingBox(), Block::isFire, false)) {
+                if (level.containsBlock(getBoundingBox(), block -> block.isFire() || block.isCampfire(), false)) {
                     return false;
                 }
                 source.setDamage(1);
+                break;
+            case CAMPFIRE:
+            case SOUL_CAMPFIRE:
+                source.setDamage(0.5f);
                 break;
             case PROJECTILE:
                 if (source.getDamage() <= 0) {
@@ -286,11 +295,8 @@ public class EntityArmorStand extends EntityLiving implements EntityInteractable
     }
 
     @Override
-    public void knockBack(Entity attacker, double damage, double x, double z, double base) {
-    }
-
-    @Override
-    public void knockBack(Entity attacker, double damage, double x, double z, double baseH, double baseV) {
+    protected float getKnockbackResistance() {
+        return 1;
     }
 
     @Override
@@ -305,6 +311,8 @@ public class EntityArmorStand extends EntityLiving implements EntityInteractable
                 case ENTITY_EXPLOSION:
                 case FIRE:
                 case FIRE_TICK:
+                case CAMPFIRE:
+                case SOUL_CAMPFIRE:
                     return;
             }
         }
@@ -334,6 +342,8 @@ public class EntityArmorStand extends EntityLiving implements EntityInteractable
                 case ENTITY_EXPLOSION:
                 case FIRE:
                 case FIRE_TICK:
+                case CAMPFIRE:
+                case SOUL_CAMPFIRE:
                     dropResource = false;
             }
         }

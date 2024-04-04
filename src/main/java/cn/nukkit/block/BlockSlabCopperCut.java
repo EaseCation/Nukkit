@@ -7,6 +7,7 @@ import cn.nukkit.level.Level;
 import cn.nukkit.math.BlockFace;
 import cn.nukkit.math.BlockVector3;
 import cn.nukkit.network.protocol.LevelEventPacket;
+import cn.nukkit.network.protocol.LevelSoundEventPacket;
 import cn.nukkit.utils.BlockColor;
 
 import java.util.concurrent.ThreadLocalRandom;
@@ -82,8 +83,9 @@ public class BlockSlabCopperCut extends BlockSlab {
         }
 
         if (item.isAxe() && getCopperAge() > 0) {
-            if (player != null && !player.isCreative()) {
-                item.useOn(this);
+            if (player != null && player.isSurvivalLike() && item.hurtAndBreak(1) < 0) {
+                item.pop();
+                player.level.addLevelSoundEvent(player, LevelSoundEventPacket.SOUND_BREAK);
             }
 
             level.addLevelEvent(this, LevelEventPacket.EVENT_PARTICLE_SCRAPE);

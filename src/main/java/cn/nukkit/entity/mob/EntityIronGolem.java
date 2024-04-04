@@ -89,4 +89,9 @@ public class EntityIronGolem extends EntityMob {
                 Item.get(Item.RED_FLOWER, 0, random.nextInt(3)),
         };
     }
+
+    @Override
+    protected float getKnockbackResistance() {
+        return 1;
+    }
 }

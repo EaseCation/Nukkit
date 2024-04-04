@@ -38,7 +38,7 @@ public class CommandEnum {
         }
         ENUM_GAMEMODE = new CommandEnum("GameMode", gameModes.build());
 
-        ImmutableMap.Builder<String, Set<CommandEnumConstraint>> blocks = ImmutableMap.builder();
+        Map<String, Set<CommandEnumConstraint>> blocks = new HashMap<>();
         for (String blockName : Blocks.getBlockNameToIdMap().keySet()) {
             String name = blockName.toLowerCase();
             if (!blockName.equals(name)) {
@@ -72,9 +72,9 @@ public class CommandEnum {
             }
             blocks.put("minecraft:" + name, EnumSet.of(CommandEnumConstraint.ALLOW_ALIASES));
         }
-        ENUM_BLOCK = new CommandEnum("Block", blocks.build());
+        ENUM_BLOCK = new CommandEnum("Block", blocks);
 
-        ImmutableMap.Builder<String, Set<CommandEnumConstraint>> items = ImmutableMap.builder();
+        Map<String, Set<CommandEnumConstraint>> items = new HashMap<>();
         for (String name : Blocks.getBlockItemNameToIdMap().keySet()) {
             if (name.contains(".")) {
                 continue;
@@ -135,7 +135,7 @@ public class CommandEnum {
             }
             items.put("minecraft:" + name, EnumSet.of(CommandEnumConstraint.ALLOW_ALIASES));
         }
-        ENUM_ITEM = new CommandEnum("Item", items.build());
+        ENUM_ITEM = new CommandEnum("Item", items);
 
         ImmutableMap.Builder<String, Set<CommandEnumConstraint>> entities = ImmutableMap.builder();
         for (Field field : EntityID.class.getDeclaredFields()) {

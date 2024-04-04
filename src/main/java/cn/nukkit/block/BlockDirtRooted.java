@@ -4,6 +4,7 @@ import cn.nukkit.Player;
 import cn.nukkit.item.Item;
 import cn.nukkit.level.particle.BoneMealParticle;
 import cn.nukkit.math.BlockFace;
+import cn.nukkit.network.protocol.LevelSoundEventPacket;
 import cn.nukkit.utils.BlockColor;
 
 public class BlockDirtRooted extends BlockSolid {
@@ -62,8 +63,13 @@ public class BlockDirtRooted extends BlockSolid {
                 return false;
             }
 
-            if (player != null && !player.isCreative()) {
-                item.useOn(this);
+            level.addLevelSoundEvent(blockCenter(), LevelSoundEventPacket.SOUND_ITEM_USE_ON, getFullId(DIRT));
+            if (player != null) {
+                player.swingArm();
+                if (player.isSurvivalLike() && item.hurtAndBreak(1) < 0) {
+                    item.pop();
+                    player.level.addLevelSoundEvent(player, LevelSoundEventPacket.SOUND_BREAK);
+                }
             }
 
             level.setBlock(this, get(DIRT), true);
@@ -77,8 +83,10 @@ public class BlockDirtRooted extends BlockSolid {
                 return false;
             }
 
-            if (player != null && !player.isCreative()) {
-                item.useOn(this);
+            level.addLevelSoundEvent(blockCenter(), LevelSoundEventPacket.SOUND_ITEM_USE_ON, getFullId(GRASS_PATH));
+            if (player != null && player.isSurvivalLike() && item.hurtAndBreak(1) < 0) {
+                item.pop();
+                player.level.addLevelSoundEvent(player, LevelSoundEventPacket.SOUND_BREAK);
             }
 
             level.setBlock(this, get(GRASS_PATH), true);

@@ -3,6 +3,7 @@ package cn.nukkit.item;
 import cn.nukkit.GameVersion;
 import cn.nukkit.block.Block;
 import cn.nukkit.block.Blocks;
+import cn.nukkit.command.data.CommandEnum;
 import cn.nukkit.entity.EntityID;
 import cn.nukkit.nbt.tag.CompoundTag;
 import cn.nukkit.potion.PotionID;
@@ -13,6 +14,7 @@ import it.unimi.dsi.fastutil.objects.Object2ObjectOpenHashMap;
 import lombok.extern.log4j.Log4j2;
 
 import javax.annotation.Nullable;
+import java.util.Collections;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Objects;
@@ -751,6 +753,8 @@ public final class Items {
 
         ItemSerializer.registerCustomItem(fullName, id, compounds);
 
+        CommandEnum.ENUM_ITEM.getValues().put(fullName, Collections.emptySet());
+
         return registerItem(fullName, id, clazz, factory);
     }
 
@@ -758,6 +762,8 @@ public final class Items {
         int itemId = Block.getItemId(blockId);
 
         ItemSerializer.registerCustomBlockItem(fullName, itemId);
+
+        CommandEnum.ENUM_ITEM.getValues().put(fullName, Collections.emptySet());
 
         createBlockItemCache(blockId, 1);
     }

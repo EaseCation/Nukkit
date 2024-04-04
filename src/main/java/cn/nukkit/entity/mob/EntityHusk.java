@@ -93,4 +93,9 @@ public class EntityHusk extends EntityMob implements EntitySmite {
     public Vector3f getMountedOffset(Entity entity) {
         return new Vector3f(0, 1.1f + entity.getRidingOffset(), -0.35f);
     }
+
+    @Override
+    public int getBaseArmorValue() {
+        return 2;
+    }
 }

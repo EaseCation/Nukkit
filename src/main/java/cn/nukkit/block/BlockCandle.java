@@ -10,6 +10,7 @@ import cn.nukkit.math.AxisAlignedBB;
 import cn.nukkit.math.BlockFace;
 import cn.nukkit.math.Mth;
 import cn.nukkit.math.SimpleAxisAlignedBB;
+import cn.nukkit.network.protocol.LevelEventPacket;
 import cn.nukkit.network.protocol.LevelSoundEventPacket;
 import cn.nukkit.utils.BlockColor;
 
@@ -110,6 +111,8 @@ public class BlockCandle extends BlockTransparentMeta {
                 return false;
             }
 
+            level.addLevelSoundEvent(this, LevelSoundEventPacket.SOUND_EXTINGUISH_CANDLE);
+
             setLit(false);
             level.setBlock(this, this, true);
             return true;
@@ -142,18 +145,20 @@ public class BlockCandle extends BlockTransparentMeta {
             }
 
             level.addLevelSoundEvent(this, LevelSoundEventPacket.SOUND_IGNITE);
+            level.addLevelEvent(this, LevelEventPacket.EVENT_SOUND_GHAST_SHOOT, 78642);
 
             setLit(true);
             level.setBlock(this, this, true);
             return true;
         }
-        if (id == Item.FLINT_AND_STEEL || item.hasEnchantment(Enchantment.FIRE_ASPECT)) {
+        if (id == Item.FLINT_AND_STEEL || item.isSword() && item.hasEnchantment(Enchantment.FIRE_ASPECT)) {
             if (isLit()) {
                 return true;
             }
 
-            if (player != null && !player.isCreative()) {
-                item.useOn(this);
+            if (player != null && player.isSurvivalLike() && item.hurtAndBreak(1) < 0) {
+                item.pop();
+                player.level.addLevelSoundEvent(player, LevelSoundEventPacket.SOUND_BREAK);
             }
 
             level.addLevelSoundEvent(this, LevelSoundEventPacket.SOUND_IGNITE);

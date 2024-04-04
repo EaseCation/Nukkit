@@ -28,6 +28,7 @@ import javax.annotation.Nullable;
 import java.io.IOException;
 import java.nio.ByteOrder;
 import java.util.*;
+import java.util.concurrent.ThreadLocalRandom;
 
 /**
  * author: MagicDroidX
@@ -1082,6 +1083,10 @@ public class Item implements Cloneable, ItemID {
         return 0;
     }
 
+    public float getKnockbackResistance() {
+        return 0;
+    }
+
     public boolean isUnbreakable() {
         return false;
     }
@@ -1155,6 +1160,33 @@ public class Item implements Cloneable, ItemID {
 
     public int getDamageChance(int unbreaking) {
         return 100 / (unbreaking + 1);
+    }
+
+    public int hurtAndBreak(int deltaDamage) {
+        if (deltaDamage <= 0) {
+            return 0;
+        }
+
+        if (!(this instanceof ItemDurable)) {
+            return 0;
+        }
+
+        if (isUnbreakable()) {
+            return 0;
+        }
+
+        int durability = getEnchantmentLevel(Enchantment.UNBREAKING);
+        if (durability > 0 && ThreadLocalRandom.current().nextInt(100) >= getDamageChance(durability)) {
+            return 0;
+        }
+
+        int oldDamage = getDamage();
+        int newDamage = oldDamage + deltaDamage;
+        setDamage(newDamage);
+        if (newDamage <= getMaxDurability()) {
+            return deltaDamage;
+        }
+        return -1;
     }
 
     public boolean canRelease() {

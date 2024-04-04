@@ -37,16 +37,15 @@ public class ItemFlintSteel extends ItemTool {
 //        }
 
         if (block.getId() == AIR) {
-            if (!player.isCreative()) {
-                int meta = getDamage();
-                if (!isUnbreakable() && !isDurable()) {
-                    setDamage(++meta);
+            if (player.isSurvivalLike()) {
+                int itemDamaged = hurtAndBreak(1);
+                if (itemDamaged != 0) {
+                    if (itemDamaged < 0) {
+                        pop();
+                        level.addLevelSoundEvent(player, LevelSoundEventPacket.SOUND_BREAK);
+                    }
+                    player.getInventory().setItemInHand(this);
                 }
-
-                if (meta >= getMaxDurability()) {
-                    pop();
-                }
-                player.getInventory().setItemInHand(this);
             }
 
             if (!BlockFire.tryIgnite(block, null, player, BlockIgniteCause.FLINT_AND_STEEL)) {

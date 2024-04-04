@@ -58,4 +58,9 @@ public class EntityWarden extends EntityMob {
                 Item.get(Block.getItemId(Block.SCULK_CATALYST)),
         };
     }
+
+    @Override
+    protected float getKnockbackResistance() {
+        return 1;
+    }
 }

@@ -60,4 +60,9 @@ public class EntityMagmaCube extends EntityMob {
 
         super.spawnTo(player);
     }
+
+    @Override
+    public int getBaseArmorValue() {
+        return 3 * getDataPropertyInt(DATA_VARIANT);
+    }
 }

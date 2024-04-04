@@ -393,7 +393,9 @@ public class EntityFishingHook extends EntityProjectile {
         return dist < 0.15;
     }
 
-    public void reelLine() {
+    public int reelLine() {
+        int itemDamage = isCollided || hadCollision || stuckToBlockPos != null ? 2 : 0;
+
         if (this.shootingEntity instanceof Player && this.caught) {
             this.level.addSound(new LaunchSound(this.shootingEntity));
             Player player = (Player) this.shootingEntity;
@@ -418,6 +420,8 @@ public class EntityFishingHook extends EntityProjectile {
 
                 player.getLevel().dropExpOrb(player, event.getExperience());
             }
+
+//            itemDamage = 1;
         }
 
         if (this.shootingEntity != null) {
@@ -443,11 +447,15 @@ public class EntityFishingHook extends EntityProjectile {
                             entity.setMotion(this.shootingEntity.subtract(entity).divide(8).add(0, 0.3, 0));
                         }
                     }
+
+                    itemDamage = 3;
                 }
             }
         }
 
         this.close();
+
+        return itemDamage;
     }
 
     @Override

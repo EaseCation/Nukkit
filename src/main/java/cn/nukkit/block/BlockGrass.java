@@ -10,6 +10,7 @@ import cn.nukkit.level.generator.object.ObjectTallGrass;
 import cn.nukkit.level.particle.BoneMealParticle;
 import cn.nukkit.math.BlockFace;
 import cn.nukkit.math.NukkitRandom;
+import cn.nukkit.network.protocol.LevelSoundEventPacket;
 import cn.nukkit.utils.BlockColor;
 
 import java.util.concurrent.ThreadLocalRandom;
@@ -58,15 +59,27 @@ public class BlockGrass extends BlockDirt {
             this.level.addParticle(new BoneMealParticle(this));
             ObjectTallGrass.growGrass(this.getLevel(), this.asBlockVector3(), NukkitRandom.current());
             return true;
-        } else if (item.isHoe()) {
-            if (player != null && !player.isCreative()) {
-                item.useOn(this);
+        }
+        if (item.isHoe()) {
+            level.addLevelSoundEvent(blockCenter(), LevelSoundEventPacket.SOUND_ITEM_USE_ON, getFullId(FARMLAND));
+            if (player != null) {
+                player.swingArm();
+                if (player.isSurvivalLike() && item.hurtAndBreak(1) < 0) {
+                    item.pop();
+                    player.level.addLevelSoundEvent(player, LevelSoundEventPacket.SOUND_BREAK);
+                }
             }
             this.getLevel().setBlock(this, Block.get(BlockID.FARMLAND), true);
             return true;
-        } else if (item.isShovel()) {
-            if (player != null && !player.isCreative()) {
-                item.useOn(this);
+        }
+        if (item.isShovel()) {
+            level.addLevelSoundEvent(blockCenter(), LevelSoundEventPacket.SOUND_ITEM_USE_ON, getFullId(GRASS_PATH));
+            if (player != null) {
+                player.swingArm();
+                if (player.isSurvivalLike() && item.hurtAndBreak(1) < 0) {
+                    item.pop();
+                    player.level.addLevelSoundEvent(player, LevelSoundEventPacket.SOUND_BREAK);
+                }
             }
             this.getLevel().setBlock(this, Block.get(BlockID.GRASS_PATH), true);
             return true;

@@ -7,6 +7,7 @@ import cn.nukkit.blockentity.BlockEntityCampfire;
 import cn.nukkit.blockentity.BlockEntityType;
 import cn.nukkit.entity.Entity;
 import cn.nukkit.entity.EntityLiving;
+import cn.nukkit.entity.item.EntityArmorStand;
 import cn.nukkit.entity.projectile.EntityProjectile;
 import cn.nukkit.event.block.BlockIgniteEvent;
 import cn.nukkit.event.block.BlockIgniteEvent.BlockIgniteCause;
@@ -197,8 +198,9 @@ public class BlockCampfire extends BlockTransparentMeta implements Faceable {
                 return false;
             }
 
-            if (player != null && !player.isCreative()) {
-                item.useOn(this);
+            if (player != null && player.isSurvivalLike() && item.hurtAndBreak(1) < 0) {
+                item.pop();
+                player.level.addLevelSoundEvent(player, LevelSoundEventPacket.SOUND_BREAK);
             }
 
             return true;
@@ -206,8 +208,9 @@ public class BlockCampfire extends BlockTransparentMeta implements Faceable {
 
         int id = item.getId();
         if (id == Item.FLINT_AND_STEEL) {
-            if (player != null && !player.isCreative()) {
-                item.useOn(this); //FIXME: item.meta += 1; -- 07/31/2022
+            if (player != null && player.isSurvivalLike() && item.hurtAndBreak(1) < 0) {
+                item.pop();
+                player.level.addLevelSoundEvent(player, LevelSoundEventPacket.SOUND_BREAK);
             }
 
             tryLightFire();
@@ -219,19 +222,22 @@ public class BlockCampfire extends BlockTransparentMeta implements Faceable {
                 return true;
             }
 
+            level.addLevelEvent(this, LevelEventPacket.EVENT_SOUND_GHAST_SHOOT, 78642);
+
             if (player != null && !player.isCreative()) {
                 item.count--;
             }
 
             return true;
         }
-        if (item.hasEnchantment(Enchantment.FIRE_ASPECT)) {
+        if (item.isSword() && item.hasEnchantment(Enchantment.FIRE_ASPECT)) {
             if (!tryLightFire()) {
                 return false;
             }
 
-            if (player != null && !player.isCreative()) {
-                item.useOn(this); //FIXME: item.meta += 1;
+            if (player != null && player.isSurvivalLike() && item.hurtAndBreak(1) < 0) {
+                item.pop();
+                player.level.addLevelSoundEvent(player, LevelSoundEventPacket.SOUND_BREAK);
             }
 
             return true;
@@ -297,23 +303,19 @@ public class BlockCampfire extends BlockTransparentMeta implements Faceable {
             return;
         }
 
-        if (true) {
-            return;
-        }
-
-        if (V1_19_60.isAvailable()) {
-            return;
-        }
-
         if (!(entity instanceof EntityLiving) || entity instanceof Player && ((Player) entity).getInventory().getBoots().hasEnchantment(EnchantmentID.FROST_WALKER)) {
             return;
         }
 
         if (!(entity instanceof Player) || entity.level.gameRules.getBoolean(GameRule.FIRE_DAMAGE)) {
-            entity.attack(new EntityDamageByBlockEvent(this, entity, DamageCause.FIRE, getEntityDamage()));
+            entity.attack(new EntityDamageByBlockEvent(this, entity, getId() == BLOCK_SOUL_CAMPFIRE ? DamageCause.SOUL_CAMPFIRE : DamageCause.CAMPFIRE, getEntityDamage()));
         }
 
-        EntityCombustByBlockEvent event = new EntityCombustByBlockEvent(this, entity, 8);
+        if (!(entity instanceof EntityArmorStand)) {
+            return;
+        }
+
+        EntityCombustByBlockEvent event = new EntityCombustByBlockEvent(this, entity, 5);
         level.getServer().getPluginManager().callEvent(event);
         if (!event.isCancelled() && entity.isAlive() && entity.noDamageTicks == 0) {
             entity.setOnFire(event.getDuration());

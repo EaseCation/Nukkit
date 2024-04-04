@@ -5,6 +5,7 @@ import cn.nukkit.item.Item;
 import cn.nukkit.item.ItemDye;
 import cn.nukkit.item.ItemID;
 import cn.nukkit.math.BlockFace;
+import cn.nukkit.network.protocol.LevelSoundEventPacket;
 import cn.nukkit.utils.BlockColor;
 
 /**
@@ -58,16 +59,24 @@ public class BlockDirt extends BlockSolidMeta {
     public boolean onActivate(Item item, BlockFace face, Player player) {
         if (item.isHoe()) {
             if (this.up().isAir()) {
-                if (player != null && !player.isCreative()) {
-                    item.useOn(this);
+                int newId = getDamage() == TYPE_NORMAL_DIRT ? FARMLAND : DIRT;
+                level.addLevelSoundEvent(blockCenter(), LevelSoundEventPacket.SOUND_ITEM_USE_ON, getFullId(newId));
+                if (player != null) {
+                    player.swingArm();
+                    if (player.isSurvivalLike() && item.hurtAndBreak(1) < 0) {
+                        item.pop();
+                        player.level.addLevelSoundEvent(player, LevelSoundEventPacket.SOUND_BREAK);
+                    }
                 }
-                this.getLevel().setBlock(this, this.getDamage() == TYPE_NORMAL_DIRT ? get(FARMLAND) : get(DIRT), true);
+                this.getLevel().setBlock(this, get(newId), true);
                 return true;
             }
         } else if (item.isShovel()) {
             if (this.up().isAir()) {
-                if (player != null && !player.isCreative()) {
-                    item.useOn(this);
+                level.addLevelSoundEvent(blockCenter(), LevelSoundEventPacket.SOUND_ITEM_USE_ON, getFullId(GRASS_PATH));
+                if (player != null && player.isSurvivalLike() && item.hurtAndBreak(1) < 0) {
+                    item.pop();
+                    player.level.addLevelSoundEvent(player, LevelSoundEventPacket.SOUND_BREAK);
                 }
                 this.getLevel().setBlock(this, get(GRASS_PATH), true);
                 return true;

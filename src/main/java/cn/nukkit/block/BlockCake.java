@@ -239,7 +239,7 @@ public class BlockCake extends BlockTransparentMeta {
             item.pop();
         }
 
-        level.addLevelSoundEvent(this, LevelSoundEventPacket.SOUND_AMBIENT_CANDLE);
+        level.addLevelSoundEvent(this, LevelSoundEventPacket.SOUND_CAKE_ADD_CANDLE);
 
         level.setBlock(this, get(candleCakeBlockId), true);
         return true;

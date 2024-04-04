@@ -322,6 +322,7 @@ public class Level implements ChunkManager, Metadatable {
 
     private boolean redstoneEnabled = true;
     private boolean extinguishFireIgnoreGameRule;
+    private boolean newArmorMechanics = true;
 
     private boolean autoCompaction;
 
@@ -2742,8 +2743,11 @@ public class Level implements ChunkManager, Metadatable {
         }
 
         item.useOn(target);
-        if (item.isTool() && item.getDamage() >= item.getMaxDurability()) {
+        if (item.isTool() && item.getDamage() > item.getMaxDurability()) {
             item = Items.air();
+            if (player != null) {
+                addLevelSoundEvent(player, LevelSoundEventPacket.SOUND_BREAK);
+            }
         }
 
         if (this.gameRules.getBoolean(GameRule.DO_TILE_DROPS)) {
@@ -4879,6 +4883,14 @@ public class Level implements ChunkManager, Metadatable {
 
     public void setExtinguishFireIgnoreGameRule(boolean ignore) {
         this.extinguishFireIgnoreGameRule = ignore;
+    }
+
+    public boolean isNewArmorMechanics() {
+        return newArmorMechanics;
+    }
+
+    public void setNewArmorMechanics(boolean enable) {
+        this.newArmorMechanics = enable;
     }
 
     public static BatchPacket getChunkCacheFromData(int x, int z, int subChunkCount, byte[] payload) {

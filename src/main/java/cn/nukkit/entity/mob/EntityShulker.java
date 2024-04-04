@@ -63,4 +63,12 @@ public class EntityShulker extends EntityMob {
                 Item.get(Item.SHULKER_SHELL, 0, random.nextInt(2)),
         };
     }
+
+    @Override
+    public int getBaseArmorValue() {
+        if (getDataPropertyInt(DATA_SHULKER_PEEK_ID) == 0) {
+            return 20;
+        }
+        return 0;
+    }
 }

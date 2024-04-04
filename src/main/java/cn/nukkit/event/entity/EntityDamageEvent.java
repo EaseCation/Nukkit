@@ -51,7 +51,7 @@ public class EntityDamageEvent extends EntityEvent implements Cancellable {
         }
         Effect resistance = entity.getEffect(Effect.RESISTANCE);
         if (resistance != null) {
-            this.setDamage((float) -(this.getDamage(DamageModifier.BASE) * 0.20 * (resistance.getAmplifier() + 1)), DamageModifier.RESISTANCE);
+            this.setDamage(-(this.getDamage(DamageModifier.BASE) * 0.2f * (resistance.getAmplifier() + 1)), DamageModifier.RESISTANCE);
         }
     }
 
@@ -268,6 +268,8 @@ public class EntityDamageEvent extends EntityEvent implements Cancellable {
         STALAGMITE,
         RAM_ATTACK,
         SONIC_BOOM,
+        CAMPFIRE,
+        SOUL_CAMPFIRE,
         /**
          * Plugins
          */

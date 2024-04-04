@@ -96,4 +96,9 @@ public class EntityWither extends EntityMob implements EntitySmite {
     public boolean canBeAffected(int effectId) {
         return effectId == Effect.INSTANT_DAMAGE || effectId == Effect.INSTANT_HEALTH;
     }
+
+    @Override
+    public int getBaseArmorValue() {
+        return 4;
+    }
 }

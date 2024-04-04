@@ -5,6 +5,7 @@ import cn.nukkit.block.Block;
 import cn.nukkit.block.BlockLiquid;
 import cn.nukkit.event.player.PlayerTeleportEvent;
 import cn.nukkit.item.Item;
+import cn.nukkit.level.HeightRange;
 import cn.nukkit.level.Level;
 import cn.nukkit.math.Vector3;
 import cn.nukkit.network.protocol.LevelSoundEventPacket;
@@ -24,26 +25,28 @@ public class FoodChorusFruit extends FoodNormal {
     @Override
     protected boolean onEatenBy(Player player) {
         super.onEatenBy(player);
-        // Teleportation
-        int minX = player.getFloorX() - 8;
-        int minY = player.getFloorY() - 8;
-        int minZ = player.getFloorZ() - 8;
-        int maxX = minX + 16;
-        int maxY = minY + 16;
-        int maxZ = minZ + 16;
 
         Level level = player.getLevel();
-        if (level == null) return false;
+        HeightRange heightRange = level.getHeightRange();
+        int minHeight = heightRange.getMinY();
+
+        // Teleportation
+        int minX = player.getFloorX() - 8;
+        int minY = Math.max(player.getFloorY() - 8, minHeight);
+        int minZ = player.getFloorZ() - 8;
+        int maxX = minX + 16;
+        int maxY = Math.min(minY + 16, heightRange.getMaxY());
+        int maxZ = minZ + 16;
 
         ThreadLocalRandom random = ThreadLocalRandom.current();
-        for (int attempts = 0; attempts < 128; attempts++) {
+        for (int attempts = 0; attempts < 16; attempts++) {
             int x = random.nextInt(minX, maxX);
             int y = random.nextInt(minY, maxY);
             int z = random.nextInt(minZ, maxZ);
 
-            if (y < 0) continue;
+            if (y < minHeight) continue;
 
-            while (y >= 0 && !level.getBlock(x, y + 1, z).isSolid()) {
+            while (y >= minHeight && !level.getBlock(x, y + 1, z).isSolid()) {
                 y--;
             }
             y++; // Back up to non solid

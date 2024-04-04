@@ -3,11 +3,8 @@ package cn.nukkit.item;
 import cn.nukkit.block.Block;
 import cn.nukkit.block.BlockToolType;
 import cn.nukkit.entity.Entity;
-import cn.nukkit.item.enchantment.Enchantment;
 import cn.nukkit.nbt.tag.ByteTag;
 import cn.nukkit.nbt.tag.Tag;
-
-import java.util.concurrent.ThreadLocalRandom;
 
 /**
  * author: MagicDroidX
@@ -63,42 +60,33 @@ public abstract class ItemTool extends Item implements ItemDurable {
 
     @Override
     public boolean useOn(Block block) {
-        if (this.isUnbreakable() || isDurable() || noDamageOnBreak()) {
+        if (this.noDamageOnBreak()) {
             return true;
         }
 
         if (this.additionalDamageOnBreak()) {
             if (block.getHardness() > 0) {
-                this.setDamage(this.getDamage() + 2);
+                this.hurtAndBreak(2);
             }
         } else if (this.isShears() || block.getHardness() > 0) {
-            this.setDamage(this.getDamage() + 1);
+            this.hurtAndBreak(1);
         }
         return true;
     }
 
     @Override
     public boolean useOn(Entity entity) {
-        if (this.isUnbreakable() || isDurable() || noDamageOnAttack()) {
+        if (this.noDamageOnAttack()) {
             return true;
         }
 
         if (entity != null && !this.isSword()) {
-            this.setDamage(this.getDamage() + 2);
+            this.hurtAndBreak(2);
         } else {
-            this.setDamage(this.getDamage() + 1);
+            this.hurtAndBreak(1);
         }
 
         return true;
-    }
-
-    protected boolean isDurable() {
-        if (!hasEnchantments()) {
-            return false;
-        }
-
-        Enchantment durability = getEnchantment(Enchantment.UNBREAKING);
-        return durability != null && durability.getLevel() > 0 && ThreadLocalRandom.current().nextInt(100) >= getDamageChance(durability.getLevel());
     }
 
     @Override

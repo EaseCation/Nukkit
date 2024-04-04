@@ -36,8 +36,12 @@ public abstract class BlockFungusStem extends BlockRotatedPillar {
             return false;
         }
 
-        if (player != null && !player.isCreative()) {
-            item.useOn(this);
+        if (player != null) {
+            player.swingArm();
+            if (player.isSurvivalLike() && item.hurtAndBreak(1) < 0) {
+                item.pop();
+                player.level.addLevelSoundEvent(player, LevelSoundEventPacket.SOUND_BREAK);
+            }
         }
 
         level.addLevelSoundEvent(blockCenter(), LevelSoundEventPacket.SOUND_ITEM_USE_ON, getFullId());

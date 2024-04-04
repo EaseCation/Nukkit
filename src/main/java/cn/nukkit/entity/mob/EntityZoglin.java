@@ -64,4 +64,9 @@ public class EntityZoglin extends EntityMob implements EntitySmite {
                 Item.get(Item.ROTTEN_FLESH, 0, random.nextInt(1, 4)),
         };
     }
+
+    @Override
+    protected float getKnockbackResistance() {
+        return 0.6f;
+    }
 }

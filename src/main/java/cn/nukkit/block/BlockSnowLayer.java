@@ -198,12 +198,17 @@ public class BlockSnowLayer extends BlockFallable {
     @Override
     public boolean onActivate(Item item, BlockFace face, Player player) {
         if (item.isShovel()) {
-            if (player != null && !player.isCreative()) {
-                item.useOn(this);
+            if (player != null && player.isSurvivalLike() && item.hurtAndBreak(1) < 0) {
+                item.pop();
+                player.level.addLevelSoundEvent(player, LevelSoundEventPacket.SOUND_BREAK);
             }
-            this.level.useBreakOn(this, item.clone().clearNamedTag(), null, true);
+
+            level.addLevelSoundEvent(blockCenter(), LevelSoundEventPacket.SOUND_ITEM_USE_ON, getFullId());
+
+            this.level.useBreakOn(this, item.clone().clearNamedTag());
             return true;
-        } else if (item.getId() == SNOW_LAYER) {
+        }
+        if (item.getId() == SNOW_LAYER) {
             if (!isFull()) {
                 this.setDamage(this.getDamage() + 1);
                 this.level.setBlock(this ,this, true);

@@ -86,4 +86,9 @@ public class EntityDrowned extends EntityMob implements EntitySmite {
         }
         source.getEntity().setOnFire(2 * difficulty);
     }
+
+    @Override
+    public int getBaseArmorValue() {
+        return 2;
+    }
 }

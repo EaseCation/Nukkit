@@ -9,6 +9,7 @@ import cn.nukkit.item.enchantment.Enchantment;
 import cn.nukkit.item.food.Food;
 import cn.nukkit.level.Level;
 import cn.nukkit.math.BlockFace;
+import cn.nukkit.network.protocol.LevelEventPacket;
 import cn.nukkit.network.protocol.LevelSoundEventPacket;
 
 public class BlockCakeCandle extends BlockCake {
@@ -66,31 +67,13 @@ public class BlockCakeCandle extends BlockCake {
             }
 
             level.addLevelSoundEvent(this, LevelSoundEventPacket.SOUND_IGNITE);
+            level.addLevelEvent(this, LevelEventPacket.EVENT_SOUND_GHAST_SHOOT, 78642);
 
             setLit(true);
             level.setBlock(this, this, true);
             return true;
         }
-        if (id == Item.FLINT_AND_STEEL) {
-            if (isLit()) {
-                return true;
-            }
-
-            if (player != null && !player.isCreative()) {
-                item.useOn(this);
-            }
-
-            if (level.getExtraBlock(this).isWaterSource()) {
-                return true;
-            }
-
-            level.addLevelSoundEvent(this, LevelSoundEventPacket.SOUND_IGNITE);
-
-            setLit(true);
-            level.setBlock(this, this, true);
-            return true;
-        }
-        if (item.hasEnchantment(Enchantment.FIRE_ASPECT)) {
+        if (id == Item.FLINT_AND_STEEL || item.isSword() && item.hasEnchantment(Enchantment.FIRE_ASPECT)) {
             if (isLit()) {
                 return true;
             }
@@ -99,8 +82,9 @@ public class BlockCakeCandle extends BlockCake {
                 return true;
             }
 
-            if (player != null && !player.isCreative()) {
-                item.useOn(this);
+            if (player != null && player.isSurvivalLike() && item.hurtAndBreak(1) < 0) {
+                item.pop();
+                player.level.addLevelSoundEvent(player, LevelSoundEventPacket.SOUND_BREAK);
             }
 
             level.addLevelSoundEvent(this, LevelSoundEventPacket.SOUND_IGNITE);
@@ -123,6 +107,8 @@ public class BlockCakeCandle extends BlockCake {
             if (!isLit()) {
                 return false;
             }
+
+            level.addLevelSoundEvent(this, LevelSoundEventPacket.SOUND_EXTINGUISH_CANDLE);
 
             setLit(false);
             level.setBlock(this, this, true);

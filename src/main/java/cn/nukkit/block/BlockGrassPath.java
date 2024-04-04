@@ -3,6 +3,7 @@ package cn.nukkit.block;
 import cn.nukkit.Player;
 import cn.nukkit.item.Item;
 import cn.nukkit.math.BlockFace;
+import cn.nukkit.network.protocol.LevelSoundEventPacket;
 import cn.nukkit.utils.BlockColor;
 
 /**
@@ -57,8 +58,13 @@ public class BlockGrassPath extends BlockGrass {
     @Override
     public boolean onActivate(Item item, BlockFace face, Player player) {
         if (item.isHoe()) {
-            if (player != null && !player.isCreative()) {
-                item.useOn(this);
+            level.addLevelSoundEvent(blockCenter(), LevelSoundEventPacket.SOUND_ITEM_USE_ON, getFullId(FARMLAND));
+            if (player != null) {
+                player.swingArm();
+                if (player.isSurvivalLike() && item.hurtAndBreak(1) < 0) {
+                    item.pop();
+                    player.level.addLevelSoundEvent(player, LevelSoundEventPacket.SOUND_BREAK);
+                }
             }
             this.getLevel().setBlock(this, get(FARMLAND), true);
             return true;

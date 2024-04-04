@@ -184,6 +184,7 @@ public class ItemCrossbow extends ItemTool {
                 matched = inventory.peek(LazyHolder.ARROW);
                 if (matched.isNull() && !player.isCreative()) {
                     player.getOffhandInventory().sendContents(player);
+                    inventory.sendContents(player);
                     return false;
                 }
             }
@@ -203,16 +204,9 @@ public class ItemCrossbow extends ItemTool {
         if (player.isSurvivalLike()) {
             inventory.removeItem(matched);
 
-            if (!isUnbreakable()) {
-                int unbreaking = getEnchantmentLevel(Enchantment.UNBREAKING);
-                if (unbreaking <= 0 || ThreadLocalRandom.current().nextInt(100) < chargedItem.getDamageChance(unbreaking)) {
-                    int damage = getDamage() + (multishot || chargedItem.getId() == Item.FIREWORK_ROCKET ? 3 : 1);
-                    if (damage < getMaxDurability()) {
-                        setDamage(damage);
-                    } else {
-                        pop();
-                    }
-                }
+            if (hurtAndBreak(multishot || chargedItem.getId() == Item.FIREWORK_ROCKET ? 3 : 1) < 0) {
+                pop();
+                player.level.addLevelSoundEvent(player, LevelSoundEventPacket.SOUND_BREAK);
             }
         }
 

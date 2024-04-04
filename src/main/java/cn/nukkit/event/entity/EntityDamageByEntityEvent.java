@@ -56,12 +56,12 @@ public class EntityDamageByEntityEvent extends EntityDamageEvent {
     protected void addAttackerModifiers(Entity damager) {
         Effect strength = damager.getEffect(Effect.STRENGTH);
         if (strength != null) {
-            this.setDamage((float) (this.getDamage(DamageModifier.BASE) * 0.3 * (strength.getAmplifier() + 1)), DamageModifier.STRENGTH);
+            this.setDamage(this.getDamage(DamageModifier.BASE) * 0.3f * (strength.getAmplifier() + 1), DamageModifier.STRENGTH);
         }
 
         Effect weakness = damager.getEffect(Effect.WEAKNESS);
         if (weakness != null) {
-            this.setDamage(-(float) (this.getDamage(DamageModifier.BASE) * 0.2 * (weakness.getAmplifier() + 1)), DamageModifier.WEAKNESS);
+            this.setDamage(-(this.getDamage(DamageModifier.BASE) * 0.2f * (weakness.getAmplifier() + 1)), DamageModifier.WEAKNESS);
         }
     }
 
