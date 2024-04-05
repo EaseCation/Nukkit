@@ -6134,8 +6134,8 @@ public class Player extends EntityHuman implements CommandSender, InventoryHolde
 
     protected static boolean validateVehicleInput(float value) {
 //        return -1 <= value && value <= 1;
-        return -1.1f <= value && value <= 1.1f; //client precision bug??? (non-Xbox gamepad: authInput.moveVecY = -1.000_000_1)
-//        return validateFloat(value);
+//        return -1.1f <= value && value <= 1.1f; //client precision bug??? (non-Xbox gamepad: authInput.moveVecY = -1.000_000_1)
+        return validateFloat(value);
     }
 
     public void onPacketViolation(PacketViolationReason reason) {
@@ -6143,9 +6143,13 @@ public class Player extends EntityHuman implements CommandSender, InventoryHolde
     }
 
     public void onPacketViolation(PacketViolationReason reason, String tag) {
+        onPacketViolation(reason, tag, "");
+    }
+
+    public void onPacketViolation(PacketViolationReason reason, String tag, String context) {
         violated = true;
 
-        PlayerServerboundPacketViolationEvent event = new PlayerServerboundPacketViolationEvent(this, reason, tag);
+        PlayerServerboundPacketViolationEvent event = new PlayerServerboundPacketViolationEvent(this, reason, tag, context);
         event.call();
 
         if (event.isKick()) {
