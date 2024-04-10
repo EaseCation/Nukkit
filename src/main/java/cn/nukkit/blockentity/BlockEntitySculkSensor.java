@@ -32,6 +32,8 @@ public class BlockEntitySculkSensor extends BlockEntity {
         vibrationListener = new VibrationListener();
         if (namedTag.contains(VIBRATION_LISTENER_TAG)) {
             vibrationListener.load(namedTag.getCompound(VIBRATION_LISTENER_TAG));
+        } else {
+            vibrationListener.load(new CompoundTag());
         }
 
         super.initBlockEntity();
