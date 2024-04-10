@@ -185,7 +185,7 @@ public class InventoryTransaction {
     }
 
     public boolean canExecute() {
-        return !this.actions.isEmpty() && (uiTransaction || matchItems());
+        return !this.actions.isEmpty() && (/*uiTransaction ||*/ matchItems());
     }
 
     protected boolean callExecuteEvent() {

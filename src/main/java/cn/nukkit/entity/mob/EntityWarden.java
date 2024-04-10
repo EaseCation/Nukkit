@@ -34,6 +34,7 @@ public class EntityWarden extends EntityMob {
     protected void initEntity() {
         super.initEntity();
         this.setMaxHealth(500);
+        fireProof = true;
     }
 
     @Override

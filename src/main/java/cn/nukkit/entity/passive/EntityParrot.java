@@ -2,6 +2,8 @@ package cn.nukkit.entity.passive;
 
 import cn.nukkit.Player;
 import cn.nukkit.entity.EntityID;
+import cn.nukkit.event.entity.EntityDamageEvent;
+import cn.nukkit.event.entity.EntityDamageEvent.DamageCause;
 import cn.nukkit.item.Item;
 import cn.nukkit.level.format.FullChunk;
 import cn.nukkit.nbt.tag.CompoundTag;
@@ -49,6 +51,14 @@ public class EntityParrot extends EntityAnimal {
         return new Item[]{
                 Item.get(Item.FEATHER, 0, ThreadLocalRandom.current().nextInt(1, 3)),
         };
+    }
+
+    @Override
+    public boolean attack(EntityDamageEvent source) {
+        if (source.getCause() == DamageCause.FALL) {
+            return false;
+        }
+        return super.attack(source);
     }
 
     @Override

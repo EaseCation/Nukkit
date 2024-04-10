@@ -4,6 +4,8 @@ import cn.nukkit.Player;
 import cn.nukkit.entity.EntityID;
 import cn.nukkit.entity.EntitySmite;
 import cn.nukkit.entity.attribute.Attribute;
+import cn.nukkit.event.entity.EntityDamageEvent;
+import cn.nukkit.event.entity.EntityDamageEvent.DamageCause;
 import cn.nukkit.item.Item;
 import cn.nukkit.level.format.FullChunk;
 import cn.nukkit.nbt.tag.CompoundTag;
@@ -41,6 +43,7 @@ public class EntityWither extends EntityMob implements EntitySmite {
     protected void initEntity() {
         super.initEntity();
         this.setMaxHealth(600);
+        fireProof = true;
     }
 
     @Override
@@ -100,5 +103,13 @@ public class EntityWither extends EntityMob implements EntitySmite {
     @Override
     public int getBaseArmorValue() {
         return 4;
+    }
+
+    @Override
+    public boolean attack(EntityDamageEvent source) {
+        if (source.getCause() == DamageCause.FALL) {
+            return false;
+        }
+        return super.attack(source);
     }
 }

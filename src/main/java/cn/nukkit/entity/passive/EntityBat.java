@@ -2,6 +2,8 @@ package cn.nukkit.entity.passive;
 
 import cn.nukkit.Player;
 import cn.nukkit.entity.EntityID;
+import cn.nukkit.event.entity.EntityDamageEvent;
+import cn.nukkit.event.entity.EntityDamageEvent.DamageCause;
 import cn.nukkit.level.format.FullChunk;
 import cn.nukkit.nbt.tag.CompoundTag;
 
@@ -40,6 +42,14 @@ public class EntityBat extends EntityAnimal {
     public void initEntity() {
         super.initEntity();
         this.setMaxHealth(6);
+    }
+
+    @Override
+    public boolean attack(EntityDamageEvent source) {
+        if (source.getCause() == DamageCause.FALL) {
+            return false;
+        }
+        return super.attack(source);
     }
 
     @Override

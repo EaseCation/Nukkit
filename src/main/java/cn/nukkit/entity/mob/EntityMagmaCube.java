@@ -2,6 +2,8 @@ package cn.nukkit.entity.mob;
 
 import cn.nukkit.Player;
 import cn.nukkit.entity.EntityID;
+import cn.nukkit.event.entity.EntityDamageEvent;
+import cn.nukkit.event.entity.EntityDamageEvent.DamageCause;
 import cn.nukkit.item.Item;
 import cn.nukkit.level.format.FullChunk;
 import cn.nukkit.nbt.tag.CompoundTag;
@@ -26,6 +28,7 @@ public class EntityMagmaCube extends EntityMob {
     protected void initEntity() {
         super.initEntity();
         this.setMaxHealth(4);
+        fireProof = true;
     }
 
     @Override
@@ -64,5 +67,13 @@ public class EntityMagmaCube extends EntityMob {
     @Override
     public int getBaseArmorValue() {
         return 3 * getDataPropertyInt(DATA_VARIANT);
+    }
+
+    @Override
+    public boolean attack(EntityDamageEvent source) {
+        if (source.getCause() == DamageCause.FALL) {
+            return false;
+        }
+        return super.attack(source);
     }
 }

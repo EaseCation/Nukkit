@@ -2,6 +2,8 @@ package cn.nukkit.entity.mob;
 
 import cn.nukkit.Player;
 import cn.nukkit.entity.EntityID;
+import cn.nukkit.event.entity.EntityDamageEvent;
+import cn.nukkit.event.entity.EntityDamageEvent.DamageCause;
 import cn.nukkit.item.Item;
 import cn.nukkit.level.format.FullChunk;
 import cn.nukkit.nbt.tag.CompoundTag;
@@ -28,6 +30,7 @@ public class EntityShulker extends EntityMob {
     protected void initEntity() {
         super.initEntity();
         this.setMaxHealth(30);
+        fireProof = true;
     }
 
     @Override
@@ -70,5 +73,13 @@ public class EntityShulker extends EntityMob {
             return 20;
         }
         return 0;
+    }
+
+    @Override
+    public boolean attack(EntityDamageEvent source) {
+        if (source.getCause() == DamageCause.FALL) {
+            return false;
+        }
+        return super.attack(source);
     }
 }

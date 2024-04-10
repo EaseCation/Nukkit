@@ -3,6 +3,8 @@ package cn.nukkit.entity.mob;
 import cn.nukkit.Player;
 import cn.nukkit.entity.EntityID;
 import cn.nukkit.entity.attribute.Attribute;
+import cn.nukkit.event.entity.EntityDamageEvent;
+import cn.nukkit.event.entity.EntityDamageEvent.DamageCause;
 import cn.nukkit.level.format.FullChunk;
 import cn.nukkit.nbt.tag.CompoundTag;
 import cn.nukkit.network.protocol.AddEntityPacket;
@@ -38,6 +40,7 @@ public class EntityEnderDragon extends EntityMob {
     public void initEntity() {
         super.initEntity();
         this.setMaxHealth(200);
+        fireProof = true;
     }
 
     @Override
@@ -90,5 +93,13 @@ public class EntityEnderDragon extends EntityMob {
     @Override
     protected float getKnockbackResistance() {
         return 1;
+    }
+
+    @Override
+    public boolean attack(EntityDamageEvent source) {
+        if (source.getCause() == DamageCause.FALL) {
+            return false;
+        }
+        return super.attack(source);
     }
 }

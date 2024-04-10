@@ -3,6 +3,8 @@ package cn.nukkit.entity.passive;
 import cn.nukkit.Player;
 import cn.nukkit.entity.Entity;
 import cn.nukkit.entity.EntityID;
+import cn.nukkit.event.entity.EntityDamageEvent;
+import cn.nukkit.event.entity.EntityDamageEvent.DamageCause;
 import cn.nukkit.item.Item;
 import cn.nukkit.level.format.FullChunk;
 import cn.nukkit.math.Vector3f;
@@ -78,5 +80,13 @@ public class EntityChicken extends EntityAnimal {
     @Override
     public Vector3f getMountedOffset(Entity entity) {
         return new Vector3f(0, 0.4f + entity.getRidingOffset(), 0);
+    }
+
+    @Override
+    public boolean attack(EntityDamageEvent source) {
+        if (source.getCause() == DamageCause.FALL) {
+            return false;
+        }
+        return super.attack(source);
     }
 }

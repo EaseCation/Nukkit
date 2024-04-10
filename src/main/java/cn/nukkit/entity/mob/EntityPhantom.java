@@ -3,6 +3,8 @@ package cn.nukkit.entity.mob;
 import cn.nukkit.Player;
 import cn.nukkit.entity.EntityID;
 import cn.nukkit.entity.EntitySmite;
+import cn.nukkit.event.entity.EntityDamageEvent;
+import cn.nukkit.event.entity.EntityDamageEvent.DamageCause;
 import cn.nukkit.item.Item;
 import cn.nukkit.level.format.FullChunk;
 import cn.nukkit.nbt.tag.CompoundTag;
@@ -49,6 +51,14 @@ public class EntityPhantom extends EntityMob implements EntitySmite {
         return new Item[]{
 //                Item.get(Item.PHANTOM_MEMBRANE, 0, ThreadLocalRandom.current().nextInt(2)),
         };
+    }
+
+    @Override
+    public boolean attack(EntityDamageEvent source) {
+        if (source.getCause() == DamageCause.FALL) {
+            return false;
+        }
+        return super.attack(source);
     }
 
     @Override

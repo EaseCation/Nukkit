@@ -2,6 +2,8 @@ package cn.nukkit.entity.mob;
 
 import cn.nukkit.Player;
 import cn.nukkit.entity.EntityID;
+import cn.nukkit.event.entity.EntityDamageEvent;
+import cn.nukkit.event.entity.EntityDamageEvent.DamageCause;
 import cn.nukkit.level.format.FullChunk;
 import cn.nukkit.nbt.tag.CompoundTag;
 
@@ -25,6 +27,7 @@ public class EntityBlaze extends EntityMob {
     protected void initEntity() {
         super.initEntity();
         this.setMaxHealth(20);
+        fireProof = true;
     }
 
     @Override
@@ -40,6 +43,14 @@ public class EntityBlaze extends EntityMob {
     @Override
     public String getName() {
         return "Blaze";
+    }
+
+    @Override
+    public boolean attack(EntityDamageEvent source) {
+        if (source.getCause() == DamageCause.FALL) {
+            return false;
+        }
+        return super.attack(source);
     }
 
     @Override

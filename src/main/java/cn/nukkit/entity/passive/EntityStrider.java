@@ -30,6 +30,7 @@ public class EntityStrider extends EntityAnimal {
     protected void initEntity() {
         super.initEntity();
         this.setMaxHealth(20);
+        fireProof = true;
     }
 
     @Override
