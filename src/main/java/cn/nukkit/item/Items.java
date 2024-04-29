@@ -401,6 +401,21 @@ public final class Items {
         registerNewItem(ItemNames.SHAPER_ARMOR_TRIM_SMITHING_TEMPLATE, SHAPER_ARMOR_TRIM_SMITHING_TEMPLATE, ItemSmithingTemplateArmorTrimShaper.class, ItemSmithingTemplateArmorTrimShaper::new, V1_20_0);
         registerNewItem(ItemNames.HOST_ARMOR_TRIM_SMITHING_TEMPLATE, HOST_ARMOR_TRIM_SMITHING_TEMPLATE, ItemSmithingTemplateArmorTrimHost.class, ItemSmithingTemplateArmorTrimHost::new, V1_20_0);
 
+        registerNewItem(ItemNames.ARMADILLO_SCUTE, ARMADILLO_SCUTE, ItemArmadilloScute.class, ItemArmadilloScute::new, V1_20_80);
+        registerNewItem(ItemNames.WOLF_ARMOR, WOLF_ARMOR, ItemWolfArmor.class, ItemWolfArmor::new, V1_20_80);
+/*
+        registerNewItem(ItemNames.TRIAL_KEY, TRIAL_KEY, ItemTrialKey.class, ItemTrialKey::new, V1_21_0);
+        registerNewItem(ItemNames.OMINOUS_TRIAL_KEY, OMINOUS_TRIAL_KEY, ItemTrialKeyOminous.class, ItemTrialKeyOminous::new, V1_21_0);
+        registerNewItem(ItemNames.OMINOUS_BOTTLE, OMINOUS_BOTTLE, ItemOminousBottle.class, ItemOminousBottle::new, ItemOminousBottle.MAXIMUM_AMPLIFIER, V1_21_0);
+        registerNewItem(ItemNames.BREEZE_ROD, BREEZE_ROD, ItemBreezeRod.class, ItemBreezeRod::new, V1_21_0);
+        registerNewItem(ItemNames.WIND_CHARGE, WIND_CHARGE, ItemWindCharge.class, ItemWindCharge::new, V1_21_0);
+        registerNewItem(ItemNames.MACE, MACE, ItemMace.class, ItemMace::new, V1_21_0);
+        registerNewItem(ItemNames.FLOW_POTTERY_SHERD, FLOW_POTTERY_SHERD, ItemPotterySherdFlow.class, ItemPotterySherdFlow::new, V1_21_0);
+        registerNewItem(ItemNames.GUSTER_POTTERY_SHERD, GUSTER_POTTERY_SHERD, ItemPotterySherdGuster.class, ItemPotterySherdGuster::new, V1_21_0);
+        registerNewItem(ItemNames.SCRAPE_POTTERY_SHERD, SCRAPE_POTTERY_SHERD, ItemPotterySherdScrape.class, ItemPotterySherdScrape::new, V1_21_0);
+        registerNewItem(ItemNames.FLOW_ARMOR_TRIM_SMITHING_TEMPLATE, FLOW_ARMOR_TRIM_SMITHING_TEMPLATE, ItemSmithingTemplateArmorTrimFlow.class, ItemSmithingTemplateArmorTrimFlow::new, V1_21_0);
+        registerNewItem(ItemNames.BOLT_ARMOR_TRIM_SMITHING_TEMPLATE, BOLT_ARMOR_TRIM_SMITHING_TEMPLATE, ItemSmithingTemplateArmorTrimBolt.class, ItemSmithingTemplateArmorTrimBolt::new, V1_21_0);
+*/
     }
 
     @SuppressWarnings("deprecation")
@@ -466,6 +481,8 @@ public final class Items {
         registerComplexAlias(ItemNames.BORDURE_INDENTED_BANNER_PATTERN, BANNER_PATTERN, ItemBannerPattern.BORDURE_INDENTED_BANNER_PATTERN, V1_16_100);
         registerComplexAlias(ItemNames.PIGLIN_BANNER_PATTERN, BANNER_PATTERN, ItemBannerPattern.PIGLIN_BANNER_PATTERN, V1_16_100);
         registerComplexAlias(ItemNames.GLOBE_BANNER_PATTERN, BANNER_PATTERN, ItemBannerPattern.GLOBE_BANNER_PATTERN, V1_18_10);
+//        registerComplexAlias(ItemNames.FLOW_BANNER_PATTERN, BANNER_PATTERN, ItemBannerPattern.FLOW_BANNER_PATTERN, V1_21_0);
+//        registerComplexAlias(ItemNames.GUSTER_BANNER_PATTERN, BANNER_PATTERN, ItemBannerPattern.GUSTER_BANNER_PATTERN, V1_21_0);
 
         registerComplexAlias(ItemNames.OAK_BOAT, BOAT, ItemBoat.OAK_BOAT, V1_16_100);
         registerComplexAlias(ItemNames.SPRUCE_BOAT, BOAT, ItemBoat.SPRUCE_BOAT, V1_16_100);
@@ -590,8 +607,9 @@ public final class Items {
         registerComplexAlias(ItemNames.ENDER_DRAGON_SPAWN_EGG, SPAWN_EGG, EntityID.ENDER_DRAGON, V1_19_60);
         registerComplexAlias(ItemNames.CAMEL_SPAWN_EGG, SPAWN_EGG, EntityID.CAMEL, V1_20_0);
         registerComplexAlias(ItemNames.SNIFFER_SPAWN_EGG, SPAWN_EGG, EntityID.SNIFFER, V1_20_0);
+        registerComplexAlias(ItemNames.ARMADILLO_SPAWN_EGG, SPAWN_EGG, EntityID.ARMADILLO, V1_20_80);
 //        registerComplexAlias(ItemNames.BREEZE_SPAWN_EGG, SPAWN_EGG, EntityID.BREEZE, V1_21_0);
-//        registerComplexAlias(ItemNames.ARMADILLO_SPAWN_EGG, SPAWN_EGG, EntityID.ARMADILLO, V1_21_0);
+//        registerComplexAlias(ItemNames.BOGGED_SPAWN_EGG, SPAWN_EGG, EntityID.BOGGED, V1_21_0);
     }
 
     private static Class<? extends Item> registerItem(String name, int id, Class<? extends Item> clazz, ItemFactory factory) {

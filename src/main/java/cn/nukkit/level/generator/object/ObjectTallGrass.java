@@ -1,6 +1,7 @@
 package cn.nukkit.level.generator.object;
 
 import cn.nukkit.block.Block;
+import cn.nukkit.block.BlockTallGrass;
 import cn.nukkit.level.ChunkManager;
 import cn.nukkit.math.BlockVector3;
 import cn.nukkit.math.NukkitRandom;
@@ -29,7 +30,7 @@ public class ObjectTallGrass {
                                 level.setBlockAt(0, x, y, z, Block.RED_FLOWER);
                             }
                         } else {
-                            level.setBlockAt(0, x, y, z, Block.TALLGRASS, 1);
+                            level.setBlockAt(0, x, y, z, Block.SHORT_GRASS, BlockTallGrass.TYPE_GRASS);
                         }
                     }
 

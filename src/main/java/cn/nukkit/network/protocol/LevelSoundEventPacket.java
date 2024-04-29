@@ -493,13 +493,40 @@ public class LevelSoundEventPacket extends DataPacket {
 	public static final int SOUND_COPPER_BULB_ON = 490;
 	public static final int SOUND_COPPER_BULB_OFF = 491;
 	public static final int SOUND_AMBIENT_IN_AIR = 492;
-	public static final int SOUND_WIND_BURST = 493;
+	public static final int SOUND_BREEZE_WIND_CHARGE_BURST = 493;
 	public static final int SOUND_IMITATE_BREEZE = 494;
 	public static final int SOUND_ARMADILLO_BRUSH = 495;
 	public static final int SOUND_ARMADILLO_SCUTE_DROP = 496;
 	public static final int SOUND_EQUIP_WOLF = 497;
 	public static final int SOUND_UNEQUIP_WOLF = 498;
 	public static final int SOUND_REFLECT = 499;
+	public static final int SOUND_VAULT_OPEN_SHUTTER = 500;
+	public static final int SOUND_VAULT_CLOSE_SHUTTER = 501;
+	public static final int SOUND_VAULT_EJECT_ITEM = 502;
+	public static final int SOUND_VAULT_INSERT_ITEM = 503;
+	public static final int SOUND_VAULT_INSERT_ITEM_FAIL = 504;
+	public static final int SOUND_VAULT_AMBIENT = 505;
+	public static final int SOUND_VAULT_ACTIVATE = 506;
+	public static final int SOUND_VAULT_DEACTIVATE = 507;
+	public static final int SOUND_HURT_REDUCED = 508;
+	public static final int SOUND_WIND_CHARGE_BURST = 509;
+
+	public static final int SOUND_ARMOR_CRACK_WOLF = 511;
+	public static final int SOUND_ARMOR_BREAK_WOLF = 512;
+	public static final int SOUND_ARMOR_REPAIR_WOLF = 513;
+	public static final int SOUND_MACE_SMASH_AIR = 514;
+	public static final int SOUND_MACE_SMASH_GROUND = 515;
+	public static final int SOUND_TRIAL_SPAWNER_CHARGE_ACTIVATE = 516;
+	public static final int SOUND_TRIAL_SPAWNER_AMBIENT_OMINOUS = 517;
+	public static final int SOUND_OMINOUS_ITEM_SPAWNER_SPAWN_ITEM = 518;
+	public static final int SOUND_OMINOUS_BOTTLE_END_USE = 519;
+	public static final int SOUND_MACE_HEAVY_SMASH_GROUND = 520;
+	public static final int SOUND_OMINOUS_ITEM_SPAWNER_SPAWN_ITEM_BEGIN = 521;
+
+	public static final int SOUND_APPLY_EFFECT_BAD_OMEN = 523;
+	public static final int SOUND_APPLY_EFFECT_RAID_OMEN = 524;
+	public static final int SOUND_APPLY_EFFECT_TRIAL_OMEN = 525;
+	public static final int SOUND_OMINOUS_ITEM_SPAWNER_ABOUT_TO_SPAWN_ITEM = 526;
 
 	public int sound;
     public float x;

@@ -12,6 +12,9 @@ public class EntityPiglin extends EntityMob {
 
     public final static int NETWORK_ID = EntityID.PIGLIN;
 
+    public static final int PIGLIN_VARIANT_RANGED = 0;
+    public static final int PIGLIN_VARIANT_MELEE = 1;
+
     @Override
     public int getNetworkId() {
         return NETWORK_ID;
@@ -24,7 +27,17 @@ public class EntityPiglin extends EntityMob {
     @Override
     protected void initEntity() {
         super.initEntity();
+
+        dataProperties.putInt(DATA_VARIANT, namedTag.getInt("Variant", PIGLIN_VARIANT_MELEE));
+
         this.setMaxHealth(16);
+    }
+
+    @Override
+    public void saveNBT() {
+        super.saveNBT();
+
+        namedTag.putInt("Variant", getDataPropertyInt(DATA_VARIANT));
     }
 
     @Override
@@ -55,6 +68,9 @@ public class EntityPiglin extends EntityMob {
 
     @Override
     public float getRidingOffset() {
+        if (getDataFlag(DATA_FLAG_BABY)) {
+            return super.getRidingOffset();
+        }
         return -0.5f;
     }
 }

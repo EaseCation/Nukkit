@@ -13,6 +13,10 @@ public class EntityPufferfish extends EntityWaterAnimal {
 
     public static final int NETWORK_ID = EntityID.PUFFERFISH;
 
+    public static final int PUFFERFISH_VARIANT_NORMAL = 0;
+    public static final int PUFFERFISH_VARIANT_HALF = 1;
+    public static final int PUFFERFISH_VARIANT_FULL = 2;
+
     public EntityPufferfish(FullChunk chunk, CompoundTag nbt) {
         super(chunk, nbt);
     }
@@ -39,7 +43,17 @@ public class EntityPufferfish extends EntityWaterAnimal {
     @Override
     public void initEntity() {
         super.initEntity();
+
+        dataProperties.putInt(DATA_VARIANT, namedTag.getInt("Variant", PUFFERFISH_VARIANT_NORMAL));
+
         this.setMaxHealth(3);
+    }
+
+    @Override
+    public void saveNBT() {
+        super.saveNBT();
+
+        namedTag.putInt("Variant", getDataPropertyInt(DATA_VARIANT));
     }
 
     @Override

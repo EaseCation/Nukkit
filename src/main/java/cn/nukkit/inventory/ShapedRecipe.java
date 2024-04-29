@@ -31,6 +31,8 @@ public class ShapedRecipe implements CraftingRecipe {
 
     private final RecipeTag tag;
 
+    private final boolean assumeSymmetry = true; //TODO: 1.20.80+
+
     public ShapedRecipe(Item primaryResult, String[] shape, Map<Character, Item> ingredients, List<Item> extraResults, RecipeTag tag) {
         this(null, null, 1, primaryResult, shape, ingredients, extraResults, tag);
     }
@@ -334,6 +336,10 @@ public class ShapedRecipe implements CraftingRecipe {
     @Override
     public List<Item> getIngredientsAggregate() {
         return ingredientsAggregate;
+    }
+
+    public boolean isAssumeSymmetry() {
+        return assumeSymmetry;
     }
 
     public static class Entry {

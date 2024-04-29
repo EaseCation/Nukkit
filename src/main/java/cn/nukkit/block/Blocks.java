@@ -83,7 +83,7 @@ public final class Blocks {
         registerBlock(BlockNames.DETECTOR_RAIL, ItemBlockNames.DETECTOR_RAIL, DETECTOR_RAIL, BlockRailDetector.class);
         registerBlock(BlockNames.STICKY_PISTON, ItemBlockNames.STICKY_PISTON, STICKY_PISTON, BlockPistonSticky.class);
         registerBlock(BlockNames.WEB, ItemBlockNames.WEB, WEB, BlockCobweb.class);
-        registerBlock(BlockNames.TALLGRASS, ItemBlockNames.TALLGRASS, TALLGRASS, BlockTallGrass.class);
+        registerBlock(BlockNames.TALLGRASS, ItemBlockNames.TALLGRASS, SHORT_GRASS, BlockTallGrass.class);
         registerBlock(BlockNames.DEADBUSH, ItemBlockNames.DEADBUSH, DEADBUSH, BlockDeadBush.class);
         registerBlock(BlockNames.PISTON, ItemBlockNames.PISTON, PISTON, BlockPiston.class);
         registerBlock(BlockNames.PISTON_ARM_COLLISION, ItemBlockNames.PISTON_ARM_COLLISION, PISTON_ARM_COLLISION, BlockPistonHead.class);
@@ -837,6 +837,9 @@ public final class Blocks {
         registerBlockAlias(BlockNames.DOUBLE_STONE_BLOCK_SLAB4, BlockNames.DOUBLE_STONE_SLAB, V1_19_0);
 
         registerBlockAlias(BlockNames.GRASS_BLOCK, BlockNames.GRASS, V1_20_70);
+/*
+        registerBlockAlias(BlockNames.SHORT_GRASS, BlockNames.TALLGRASS, V1_21_0);
+*/
     }
 
     @SuppressWarnings("deprecation")
@@ -876,6 +879,9 @@ public final class Blocks {
         registerItemAlias(ItemBlockNames.DOUBLE_STONE_BLOCK_SLAB4, ItemBlockNames.REAL_DOUBLE_STONE_SLAB, V1_19_0);
 
         registerItemAlias(ItemBlockNames.GRASS_BLOCK, ItemBlockNames.GRASS, V1_20_70);
+/*
+        registerItemAlias(ItemBlockNames.SHORT_GRASS, ItemBlockNames.TALLGRASS, V1_21_0);
+*/
     }
 
     private static void registerComplexAliases() {
@@ -1125,7 +1131,7 @@ public final class Blocks {
         registerComplexAlias(ItemBlockNames.STRIPPED_JUNGLE_WOOD, WOOD, BlockWoodBark.STRIPPED_BIT | BlockWoodBark.JUNGLE, V1_20_70);
         registerComplexAlias(ItemBlockNames.STRIPPED_ACACIA_WOOD, WOOD, BlockWoodBark.STRIPPED_BIT | BlockWoodBark.ACACIA, V1_20_70);
         registerComplexAlias(ItemBlockNames.STRIPPED_DARK_OAK_WOOD, WOOD, BlockWoodBark.STRIPPED_BIT | BlockWoodBark.DARK_OAK, V1_20_70);
-/*
+
         registerComplexAlias(ItemBlockNames.OAK_SAPLING, SAPLING, BlockSapling.OAK, V1_20_80);
         registerComplexAlias(ItemBlockNames.SPRUCE_SAPLING, SAPLING, BlockSapling.SPRUCE, V1_20_80);
         registerComplexAlias(ItemBlockNames.BIRCH_SAPLING, SAPLING, BlockSapling.BIRCH, V1_20_80);
@@ -1156,6 +1162,35 @@ public final class Blocks {
         registerComplexAlias(ItemBlockNames.OXEYE_DAISY, RED_FLOWER, BlockFlower.TYPE_OXEYE_DAISY, V1_20_80);
         registerComplexAlias(ItemBlockNames.CORNFLOWER, RED_FLOWER, BlockFlower.TYPE_CORNFLOWER, V1_20_80);
         registerComplexAlias(ItemBlockNames.LILY_OF_THE_VALLEY, RED_FLOWER, BlockFlower.TYPE_LILY_OF_THE_VALLEY, V1_20_80);
+/*
+        registerComplexAlias(ItemBlockNames.SUNFLOWER, DOUBLE_PLANT, BlockDoublePlant.TYPE_SUNFLOWER, V1_21_0);
+        registerComplexAlias(ItemBlockNames.LILAC, DOUBLE_PLANT, BlockDoublePlant.TYPE_LILAC, V1_21_0);
+        registerComplexAlias(ItemBlockNames.TALL_GRASS, DOUBLE_PLANT, BlockDoublePlant.TYPE_TALL_GRASS, V1_21_0);
+        registerComplexAlias(ItemBlockNames.LARGE_FERN, DOUBLE_PLANT, BlockDoublePlant.TYPE_LARGE_FERN, V1_21_0);
+        registerComplexAlias(ItemBlockNames.ROSE_BUSH, DOUBLE_PLANT, BlockDoublePlant.TYPE_ROSE_BUSH, V1_21_0);
+        registerComplexAlias(ItemBlockNames.PEONY, DOUBLE_PLANT, BlockDoublePlant.TYPE_PEONY, V1_21_0);
+
+        registerComplexAlias(ItemBlockNames.FERN, SHORT_GRASS, BlockTallGrass.TYPE_FERN, V1_21_0);
+
+        registerComplexAlias(ItemBlockNames.TUBE_CORAL_BLOCK, CORAL_BLOCK, BlockCoralBlock.BLUE, V1_21_0);
+        registerComplexAlias(ItemBlockNames.BRAIN_CORAL_BLOCK, CORAL_BLOCK, BlockCoralBlock.PINK, V1_21_0);
+        registerComplexAlias(ItemBlockNames.BUBBLE_CORAL_BLOCK, CORAL_BLOCK, BlockCoralBlock.PURPLE, V1_21_0);
+        registerComplexAlias(ItemBlockNames.FIRE_CORAL_BLOCK, CORAL_BLOCK, BlockCoralBlock.RED, V1_21_0);
+        registerComplexAlias(ItemBlockNames.HORN_CORAL_BLOCK, CORAL_BLOCK, BlockCoralBlock.YELLOW, V1_21_0);
+
+        registerComplexAlias(ItemBlockNames.DEAD_TUBE_CORAL_BLOCK, CORAL_BLOCK, BlockCoralBlock.DEAD_BIT | BlockCoralBlock.BLUE, V1_21_0);
+        registerComplexAlias(ItemBlockNames.DEAD_BRAIN_CORAL_BLOCK, CORAL_BLOCK, BlockCoralBlock.DEAD_BIT | BlockCoralBlock.PINK, V1_21_0);
+        registerComplexAlias(ItemBlockNames.DEAD_BUBBLE_CORAL_BLOCK, CORAL_BLOCK, BlockCoralBlock.DEAD_BIT | BlockCoralBlock.PURPLE, V1_21_0);
+        registerComplexAlias(ItemBlockNames.DEAD_FIRE_CORAL_BLOCK, CORAL_BLOCK, BlockCoralBlock.DEAD_BIT | BlockCoralBlock.RED, V1_21_0);
+        registerComplexAlias(ItemBlockNames.DEAD_HORN_CORAL_BLOCK, CORAL_BLOCK, BlockCoralBlock.DEAD_BIT | BlockCoralBlock.YELLOW, V1_21_0);
+
+        registerComplexAlias(ItemBlockNames.SMOOTH_STONE_SLAB, STONE_SLAB, BlockSlabStone.TYPE_SMOOTH_STONE, V1_21_0);
+        registerComplexAlias(ItemBlockNames.SANDSTONE_SLAB, STONE_SLAB, BlockSlabStone.TYPE_SANDSTONE, V1_21_0);
+        registerComplexAlias(ItemBlockNames.COBBLESTONE_SLAB, STONE_SLAB, BlockSlabStone.TYPE_COBBLESTONE, V1_21_0);
+        registerComplexAlias(ItemBlockNames.BRICK_SLAB, STONE_SLAB, BlockSlabStone.TYPE_BRICK, V1_21_0);
+        registerComplexAlias(ItemBlockNames.STONE_BRICK_SLAB, STONE_SLAB, BlockSlabStone.TYPE_STONE_BRICK, V1_21_0);
+        registerComplexAlias(ItemBlockNames.QUARTZ_SLAB, STONE_SLAB, BlockSlabStone.TYPE_QUARTZ, V1_21_0);
+        registerComplexAlias(ItemBlockNames.NETHER_BRICK_SLAB, STONE_SLAB, BlockSlabStone.TYPE_NETHER_BRICK, V1_21_0);
 */
     }
 

@@ -29,6 +29,9 @@ public class EntityDrowned extends EntityMob implements EntitySmite {
     @Override
     protected void initEntity() {
         super.initEntity();
+
+        dataProperties.putShort(DATA_ZOMBIE_TYPE, EntityZombie.ZOMBIE_TYPE_DROWNED);
+
         this.setMaxHealth(20);
     }
 

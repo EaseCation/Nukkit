@@ -31,6 +31,11 @@ public class EntityHusk extends EntityMob implements EntitySmite {
     @Override
     protected void initEntity() {
         super.initEntity();
+
+        dataProperties.putShort(DATA_ZOMBIE_TYPE, EntityZombie.ZOMBIE_TYPE_HUSK);
+
+        dataProperties.putInt(DATA_VARIANT, EntityZombie.ZOMBIE_TYPE_HUSK);
+
         this.setMaxHealth(20);
     }
 

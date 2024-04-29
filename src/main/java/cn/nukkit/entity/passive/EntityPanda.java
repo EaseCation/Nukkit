@@ -15,6 +15,14 @@ public class EntityPanda extends EntityAnimal {
 
     public static final int NETWORK_ID = EntityID.PANDA;
 
+    public static final int PANDA_VARIANT_DEFAULT = 0;
+    public static final int PANDA_VARIANT_LAZY = 1;
+    public static final int PANDA_VARIANT_WORRIED = 2;
+    public static final int PANDA_VARIANT_PLAYFUL = 3;
+    public static final int PANDA_VARIANT_BROWN = 4;
+    public static final int PANDA_VARIANT_WEAK = 5;
+    public static final int PANDA_VARIANT_AGGRESSIVE = 6;
+
     public EntityPanda(FullChunk chunk, CompoundTag nbt) {
         super(chunk, nbt);
     }
@@ -42,7 +50,17 @@ public class EntityPanda extends EntityAnimal {
     @Override
     public void initEntity() {
         super.initEntity();
+
+        dataProperties.putInt(DATA_VARIANT, namedTag.getInt("Variant", PANDA_VARIANT_DEFAULT));
+
         this.setMaxHealth(20);
+    }
+
+    @Override
+    public void saveNBT() {
+        super.saveNBT();
+
+        namedTag.putInt("Variant", getDataPropertyInt(DATA_VARIANT));
     }
 
     @Override

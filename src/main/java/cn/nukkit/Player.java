@@ -87,6 +87,7 @@ import it.unimi.dsi.fastutil.longs.*;
 import it.unimi.dsi.fastutil.objects.Object2ObjectLinkedOpenHashMap;
 import it.unimi.dsi.fastutil.objects.Object2ObjectOpenHashMap;
 import it.unimi.dsi.fastutil.objects.ObjectArrayList;
+import it.unimi.dsi.fastutil.objects.ObjectIntPair;
 import lombok.extern.log4j.Log4j2;
 
 import javax.annotation.Nullable;
@@ -287,6 +288,8 @@ public class Player extends EntityHuman implements CommandSender, InventoryHolde
     protected Map<String, ResourcePack> resourcePacks = new Object2ObjectLinkedOpenHashMap<>();
     protected Map<String, ResourcePack> behaviourPacks = new Object2ObjectLinkedOpenHashMap<>();
     protected boolean forceResources = false;
+
+    private final Queue<ObjectIntPair<ResourcePack>> resourcePackChunkRequests = new ArrayDeque<>();
 
     protected AsyncTask preLoginEventTask = null;
     protected boolean shouldLogin = false;
@@ -2117,7 +2120,7 @@ public class Player extends EntityHuman implements CommandSender, InventoryHolde
 
                     float damageBonus = 0;
                     for (Enchantment enchantment : enchantments) {
-                        damageBonus += enchantment.getDamageBonus(entity);
+                        damageBonus += enchantment.getDamageBonus(this, entity);
                     }
                     damage += Mth.floor(damageBonus);
 
@@ -2232,7 +2235,29 @@ public class Player extends EntityHuman implements CommandSender, InventoryHolde
         return null;
     }
 
+    private boolean processResourcePackChunkRequest() {
+        ObjectIntPair<ResourcePack> request = resourcePackChunkRequests.poll();
+        if (request == null) {
+            return false;
+        }
+
+        ResourcePack pack = request.left();
+        int index = request.rightInt();
+
+        ResourcePackChunkDataPacket packet = new ResourcePackChunkDataPacket();
+        packet.packId = pack.getPackId();
+        packet.chunkIndex = index;
+        packet.progress = (long) RESOURCE_PACK_CHUNK_SIZE * index;
+        packet.data = pack.getPackChunk(index);
+        dataPacket(packet);
+        return true;
+    }
+
     public void checkNetwork() {
+        if (processResourcePackChunkRequest()) {
+            return;
+        }
+
         if (!this.isOnline()) {
             return;
         }
@@ -2669,18 +2694,17 @@ public class Player extends EntityHuman implements CommandSender, InventoryHolde
                     break;
                 case ProtocolInfo.RESOURCE_PACK_CHUNK_REQUEST_PACKET:
                     ResourcePackChunkRequestPacket requestPacket = (ResourcePackChunkRequestPacket) packet;
-                    ResourcePack resourcePack = this.resourcePacks.getOrDefault(requestPacket.packId, this.behaviourPacks.get(requestPacket.packId));
+
+                    ResourcePack resourcePack = this.resourcePacks.get(requestPacket.packId);
                     if (resourcePack == null) {
-                        this.close("", "disconnectionScreen.resourcePack");
-                        break;
+                        resourcePack = this.behaviourPacks.get(requestPacket.packId);
+                        if (resourcePack == null) {
+                            this.close("", "disconnectionScreen.resourcePack");
+                            break;
+                        }
                     }
 
-                    ResourcePackChunkDataPacket dataPacket = new ResourcePackChunkDataPacket();
-                    dataPacket.packId = resourcePack.getPackId();
-                    dataPacket.chunkIndex = requestPacket.chunkIndex;
-                    dataPacket.data = resourcePack.getPackChunk(requestPacket.chunkIndex);
-                    dataPacket.progress = (long) RESOURCE_PACK_CHUNK_SIZE * requestPacket.chunkIndex;
-                    this.dataPacket(dataPacket);
+                    resourcePackChunkRequests.offer(ObjectIntPair.of(resourcePack, requestPacket.chunkIndex));
                     break;
                 case ProtocolInfo.PLAYER_INPUT_PACKET:
                     if (isServerAuthoritativeMovementEnabled()) {
@@ -2767,9 +2791,9 @@ public class Player extends EntityHuman implements CommandSender, InventoryHolde
                         break;
                     }
 
-                    if (this.riding instanceof EntityBoat boat) {
+                    if (this.riding instanceof EntityRideable rideable) {
                         if (this.temporalVector.setComponents(moveEntityPacket.x, moveEntityPacket.y, moveEntityPacket.z).distanceSquared(this.riding) < 1000) {
-                            boat.onInput(moveEntityPacket.x, moveEntityPacket.y, moveEntityPacket.z, moveEntityPacket.yaw % 360, 0);
+                            rideable.onPlayerInput(this, moveEntityPacket.x, moveEntityPacket.y, moveEntityPacket.z, moveEntityPacket.yaw % 360, 0);
                         }
                     }
                     break;
@@ -3403,8 +3427,8 @@ public class Player extends EntityHuman implements CommandSender, InventoryHolde
                 case ProtocolInfo.REQUEST_CHUNK_RADIUS_PACKET:
                     RequestChunkRadiusPacket requestChunkRadiusPacket = (RequestChunkRadiusPacket) packet;
                     ChunkRadiusUpdatedPacket chunkRadiusUpdatePacket = new ChunkRadiusUpdatedPacket();
-                    this.chunkRadius = Math.max(4, Math.min(requestChunkRadiusPacket.radius, this.server.getViewDistance()));
-                    this.viewDistance = this.chunkRadius;
+                    this.viewDistance = Mth.clamp(requestChunkRadiusPacket.radius, 4, 96);
+                    this.chunkRadius = Math.min(this.viewDistance, this.getMaxViewDistance());
                     chunkRadiusUpdatePacket.radius = this.chunkRadius;
                     this.dataPacket(chunkRadiusUpdatePacket);
                     break;
@@ -3767,7 +3791,7 @@ public class Player extends EntityHuman implements CommandSender, InventoryHolde
 
                                     float damageBonus = 0;
                                     for (Enchantment enchantment : enchantments) {
-                                        damageBonus += enchantment.getDamageBonus(target);
+                                        damageBonus += enchantment.getDamageBonus(this, target);
                                     }
                                     itemDamage += Mth.floor(damageBonus);
 
@@ -6380,5 +6404,9 @@ public class Player extends EntityHuman implements CommandSender, InventoryHolde
         pkBroadcast.eid = getId();
         pkBroadcast.action = AnimatePacket.Action.SWING_ARM;
         Server.broadcastPacket(getViewers().values(), pkBroadcast);
+    }
+
+    public int getMaxViewDistance() {
+        return server.getViewDistance();
     }
 }

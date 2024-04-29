@@ -120,8 +120,7 @@ public class EntityMinecartHopper extends EntityMinecartAbstract implements Inve
 
         this.dataProperties
                 .putByte(DATA_CONTAINER_TYPE, ContainerType.MINECART_HOPPER)
-                .putInt(DATA_CONTAINER_BASE_SIZE, this.inventory.getSize())
-                .putInt(DATA_CONTAINER_EXTRA_SLOTS_PER_STRENGTH, 0);
+                .putInt(DATA_CONTAINER_BASE_SIZE, this.inventory.getSize());
     }
 
     @Override

@@ -13,6 +13,9 @@ public class EntityFox extends EntityAnimal {
 
     public static final int NETWORK_ID = EntityID.FOX;
 
+    public static final int FOX_VARIANT_RED = 0;
+    public static final int FOX_VARIANT_ARCTIC = 1;
+
     public EntityFox(FullChunk chunk, CompoundTag nbt) {
         super(chunk, nbt);
     }
@@ -35,7 +38,17 @@ public class EntityFox extends EntityAnimal {
     @Override
     protected void initEntity() {
         super.initEntity();
+
+        dataProperties.putInt(DATA_VARIANT, namedTag.getInt("Variant", FOX_VARIANT_RED));
+
         this.setMaxHealth(20);
+    }
+
+    @Override
+    public void saveNBT() {
+        super.saveNBT();
+
+        namedTag.putInt("Variant", getDataPropertyInt(DATA_VARIANT));
     }
 
     @Override

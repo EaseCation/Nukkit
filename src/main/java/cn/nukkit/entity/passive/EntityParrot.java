@@ -17,6 +17,12 @@ public class EntityParrot extends EntityAnimal {
 
     public static final int NETWORK_ID = EntityID.PARROT;
 
+    public static final int PARROT_VARIANT_RED = 0;
+    public static final int PARROT_VARIANT_BLUE = 1;
+    public static final int PARROT_VARIANT_GREEN = 2;
+    public static final int PARROT_VARIANT_CYAN = 3;
+    public static final int PARROT_VARIANT_SILVER = 4;
+
     public EntityParrot(FullChunk chunk, CompoundTag nbt) {
         super(chunk, nbt);
     }
@@ -43,7 +49,23 @@ public class EntityParrot extends EntityAnimal {
     @Override
     public void initEntity() {
         super.initEntity();
+
+        int variant;
+        if (namedTag.contains("Variant")) {
+            variant = namedTag.getInt("Variant");
+        } else {
+            variant = ThreadLocalRandom.current().nextInt(5);
+        }
+        dataProperties.putInt(DATA_VARIANT, variant);
+
         this.setMaxHealth(6);
+    }
+
+    @Override
+    public void saveNBT() {
+        super.saveNBT();
+
+        namedTag.putInt("Variant", getDataPropertyInt(DATA_VARIANT));
     }
 
     @Override

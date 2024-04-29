@@ -9,14 +9,14 @@ import cn.nukkit.utils.BlockColor;
  * Created by CreeperFace on 26. 11. 2016.
  */
 public class BlockSlabStone extends BlockSlab {
-    public static final int SMOOTH_STONE = 0;
-    public static final int SANDSTONE = 1;
-    public static final int WOOD = 2;
-    public static final int COBBLESTONE = 3;
-    public static final int BRICK = 4;
-    public static final int STONE_BRICK = 5;
-    public static final int QUARTZ = 6;
-    public static final int NETHER_BRICK = 7;
+    public static final int TYPE_SMOOTH_STONE = 0;
+    public static final int TYPE_SANDSTONE = 1;
+    public static final int TYPE_WOOD = 2;
+    public static final int TYPE_COBBLESTONE = 3;
+    public static final int TYPE_BRICK = 4;
+    public static final int TYPE_STONE_BRICK = 5;
+    public static final int TYPE_QUARTZ = 6;
+    public static final int TYPE_NETHER_BRICK = 7;
 
     private static final String[] NAMES = new String[]{
             "Smooth Stone Slab",
@@ -77,18 +77,18 @@ public class BlockSlabStone extends BlockSlab {
     public BlockColor getColor() {
         switch (this.getSlabType()) {
             default:
-            case SMOOTH_STONE:
-            case COBBLESTONE:
-            case BRICK:
-            case STONE_BRICK:
+            case TYPE_SMOOTH_STONE:
+            case TYPE_COBBLESTONE:
+            case TYPE_BRICK:
+            case TYPE_STONE_BRICK:
                 return BlockColor.STONE_BLOCK_COLOR;
-            case SANDSTONE:
+            case TYPE_SANDSTONE:
                 return BlockColor.SAND_BLOCK_COLOR;
-            case WOOD:
+            case TYPE_WOOD:
                 return BlockColor.WOOD_BLOCK_COLOR;
-            case QUARTZ:
+            case TYPE_QUARTZ:
                 return BlockColor.QUARTZ_BLOCK_COLOR;
-            case NETHER_BRICK:
+            case TYPE_NETHER_BRICK:
                 return BlockColor.NETHER_BLOCK_COLOR;
         }
     }

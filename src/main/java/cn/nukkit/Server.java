@@ -343,7 +343,7 @@ public class Server {
                 .hardcore(getPropertyBoolean("hardcore", false))
                 .difficulty(getDifficultyFromString(properties.isInt("difficulty") ? String.valueOf(getPropertyInt("difficulty", 1)) : getPropertyString("difficulty", "1")))
                 .pvp(getPropertyBoolean("pvp"))
-                .viewDistance(getPropertyInt("view-distance", 10))
+                .viewDistance(Mth.clamp(getPropertyInt("view-distance", 10), 5, 96))
                 .levelType(getPropertyString("level-type", "DEFAULT"))
                 .generatorSettings(getPropertyString("generator-settings", ""))
                 .chunkSpawnThreshold(getConfig("chunk-sending.spawn-threshold", 56))

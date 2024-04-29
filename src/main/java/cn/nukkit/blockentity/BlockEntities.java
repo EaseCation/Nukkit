@@ -79,6 +79,7 @@ public final class BlockEntities {
 
 //        registerBlockEntity(BlockEntityType.CRAFTER, CRAFTER, BlockEntityCrafter.class, BlockEntityCrafter::new, V1_21_0);
 //        registerBlockEntity(BlockEntityType.TRIAL_SPAWNER, TRIAL_SPAWNER, BlockEntityTrialSpawner.class, BlockEntityTrialSpawner::new, V1_21_0);
+//        registerBlockEntity(BlockEntityType.VAULT, VAULT, BlockEntityVault.class, BlockEntityVault::new, V1_21_0);
     }
 
     private static Class<? extends BlockEntity> registerBlockEntity(int type, String name, Class<? extends BlockEntity> clazz, BlockEntityFactory factory) {

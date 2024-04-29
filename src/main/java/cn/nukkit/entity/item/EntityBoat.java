@@ -14,6 +14,7 @@ import cn.nukkit.event.entity.EntityDamageEvent;
 import cn.nukkit.event.vehicle.VehicleMoveEvent;
 import cn.nukkit.event.vehicle.VehicleUpdateEvent;
 import cn.nukkit.item.Item;
+import cn.nukkit.item.ItemBoat;
 import cn.nukkit.level.GameRule;
 import cn.nukkit.level.Location;
 import cn.nukkit.level.format.FullChunk;
@@ -37,6 +38,9 @@ public class EntityBoat extends EntityVehicle {
 
     public static final Vector3f PASSENGER_OFFSET = new Vector3f(-0.6f, 0, 0);
     public static final Vector3f RIDER_PASSENGER_OFFSET = new Vector3f(0.2f, 0, 0);
+
+    public static final Vector3f RAFT_MOB_SEAT_OFFSET = new Vector3f(0, 0.1f, 0);
+    public static final Vector3f RAFT_PLAYER_SEAT_OFFSET = new Vector3f(0, 1.3200101f, 0);
 
     public static final int RIDER_INDEX = 0;
     public static final int PASSENGER_INDEX = 1;
@@ -496,8 +500,9 @@ public class EntityBoat extends EntityVehicle {
         this.namedTag.putByte("woodID", this.woodID);
     }
 
-    public void onInput(double x, double y, double z, double rotation, double pitch) {
-        this.setPositionAndRotation(this.temporalVector.setComponents(x, y - this.getBaseOffset(), z), rotation, 0);
+    @Override
+    public void onPlayerInput(Player player, double x, double y, double z, double yaw, double pitch) {
+        this.setPositionAndRotation(this.temporalVector.setComponents(x, y - this.getBaseOffset(), z), yaw, 0);
     }
 
     @Override
@@ -525,5 +530,23 @@ public class EntityBoat extends EntityVehicle {
     @Override
     public String getInteractButtonText(Player player) {
         return !this.isFull() ? "action.interact.ride.boat" : "";
+    }
+
+    @Override
+    public Vector3f getMountedOffset(Entity entity) {
+        if (entity.getNetworkId() == -1) {
+            if (woodID == ItemBoat.BAMBOO_RAFT) {
+                return RAFT_PLAYER_SEAT_OFFSET;
+            }
+            return PLAYER_SEAT_OFFSET;
+        }
+
+        Vector3f mobSeatOffset;
+        if (woodID == ItemBoat.BAMBOO_RAFT) {
+            mobSeatOffset = RAFT_MOB_SEAT_OFFSET;
+        } else {
+            mobSeatOffset = MOB_SEAT_OFFSET;
+        }
+        return mobSeatOffset.add(0, entity.getRidingOffset(), 0);
     }
 }

@@ -47,6 +47,13 @@ public class EntityZombieHorse extends EntityAbstractHorse implements EntitySmit
     @Override
     public void initEntity() {
         super.initEntity();
+
+        dataProperties.putByte(DATA_HORSE_TYPE, HORSE_TYPE_ZOMBIE);
+
+        setDataFlag(DATA_FLAG_TAMED, true, false);
+
+        movementSpeed = 0.2f;
+
         this.setMaxHealth(15);
     }
 
@@ -75,5 +82,42 @@ public class EntityZombieHorse extends EntityAbstractHorse implements EntitySmit
             return new Vector3f(0, 2.42001f, -0.2f);
         }
         return new Vector3f(0, 1.2f + entity.getRidingOffset(), -0.2f);
+    }
+
+    @Override
+    public boolean canRide() {
+        return false;
+    }
+
+    @Override
+    public boolean canDoInteraction(Player player) {
+        return false;
+    }
+
+    @Override
+    public String getInteractButtonText(Player player) {
+        return "";
+    }
+
+    @Override
+    public boolean onInteract(Player player, Item item) {
+        return false;
+    }
+
+    @Override
+    public void openInventory(Player player) {
+    }
+
+    @Override
+    public void updateSaddled(boolean saddled, boolean send) {
+    }
+
+    @Override
+    public void updatePlayerJump(boolean jumping) {
+    }
+
+    @Override
+    public float getJumpStrength() {
+        return 0.4f; //TODO: 0.4-1.0
     }
 }

@@ -55,7 +55,8 @@ public interface BlockEntityType {
     int CALIBRATED_SCULK_SENSOR = 54;
     int CRAFTER = 55;
     int TRIAL_SPAWNER = 56;
+    int VAULT = 57;
 
 
-    int UNDEFINED = 57;
+    int UNDEFINED = 58;
 }

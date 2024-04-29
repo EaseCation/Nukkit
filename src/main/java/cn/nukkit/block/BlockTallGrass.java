@@ -3,7 +3,6 @@ package cn.nukkit.block;
 import cn.nukkit.Player;
 import cn.nukkit.item.Item;
 import cn.nukkit.item.ItemDye;
-import cn.nukkit.item.ItemTool;
 import cn.nukkit.level.Level;
 import cn.nukkit.level.particle.BoneMealParticle;
 import cn.nukkit.math.BlockFace;
@@ -37,7 +36,7 @@ public class BlockTallGrass extends BlockFlowable {
 
     @Override
     public int getId() {
-        return TALLGRASS;
+        return SHORT_GRASS;
     }
 
     @Override
@@ -147,11 +146,11 @@ public class BlockTallGrass extends BlockFlowable {
             if (dropSeeds) {
                 return new Item[]{
                         Item.get(Item.WHEAT_SEEDS),
-                        Item.get(Item.TALLGRASS, this.getDamage(), 1)
+                        Item.get(Item.SHORT_GRASS, this.getDamage(), 1)
                 };
             } else {
                 return new Item[]{
-                        Item.get(Item.TALLGRASS, this.getDamage(), 1)
+                        Item.get(Item.SHORT_GRASS, this.getDamage(), 1)
                 };
             }
         }

@@ -169,6 +169,16 @@ public class EntityMinecartTNT extends EntityMinecartAbstract implements EntityE
 
     @Override
     public String getInteractButtonText(Player player) {
+        if (isPrimed()) {
+            return "";
+        }
+        if (!level.gameRules.getBoolean(GameRule.TNT_EXPLODES)) {
+            return "";
+        }
+        Item held = player.getInventory().getItemInHand();
+        if (held.is(Item.FLINT_AND_STEEL) || held.is(Item.FIRE_CHARGE) || held.hasEnchantment(Enchantment.FIRE_ASPECT)) {
+            return "action.interact.creeper";
+        }
         return "";
     }
 

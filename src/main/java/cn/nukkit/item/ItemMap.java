@@ -24,7 +24,15 @@ public class ItemMap extends Item {
     public static final int WOODLAND_EXPLORER_MAP = 4;
     public static final int TREASURE_EXPLORER_MAP = 5;
     public static final int LOCKED_MAP = 6;
-    public static final int UNDEFINED_MAP = 7;
+    public static final int SNOWY_VILLAGE_MAP = 7;
+    public static final int TAIGA_VILLAGE_MAP = 8;
+    public static final int PLAINS_VILLAGE_MAP = 9;
+    public static final int SAVANNA_VILLAGE_MAP = 10;
+    public static final int DESERT_VILLAGE_MAP = 11;
+    public static final int JUNGLE_EXPLORER_MAP = 12;
+    public static final int SWAMP_EXPLORER_MAP = 13;
+    public static final int TRIAL_EXPLORER_MAP = 14;
+    public static final int UNDEFINED_MAP = 15;
 
     public static int mapCount = 0;
 

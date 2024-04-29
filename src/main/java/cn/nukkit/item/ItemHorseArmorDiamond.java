@@ -17,4 +17,19 @@ public class ItemHorseArmorDiamond extends Item {
     public int getMaxStackSize() {
         return 1;
     }
+
+    @Override
+    public boolean isHorseArmor() {
+        return true;
+    }
+
+    @Override
+    public int getArmorPoints() {
+        return 11;
+    }
+
+    @Override
+    public int getToughness() {
+        return 2;
+    }
 }

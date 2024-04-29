@@ -37,7 +37,7 @@ public enum InventoryType {
     CARTOGRAPHY(3, "Cartography", ContainerType.CARTOGRAPHY),
     SMITHING_TABLE(3, "Smithing Table", ContainerType.SMITHING_TABLE),
     BOAT_CHEST(27, "Boat with Chest", /*ContainerType.CHEST_BOAT*/ContainerType.CONTAINER),
-    HORSE(2, "Horse", ContainerType.HORSE),
+    HORSE(16, "Horse", ContainerType.HORSE),
     COMMAND_BLOCK(0, "Command Block", ContainerType.COMMAND_BLOCK),
     STRUCTURE_EDITOR(0, "Structure Block", ContainerType.STRUCTURE_EDITOR),
     JIGSAW_EDITOR(0, "Jigsaw Block", ContainerType.JIGSAW_EDITOR),

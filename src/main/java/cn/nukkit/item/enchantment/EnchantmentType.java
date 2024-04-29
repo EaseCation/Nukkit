@@ -22,16 +22,18 @@ public enum EnchantmentType {
     WEARABLE,
     TRIDENT,
     CROSSBOW,
+    MACE,
+    MELEE_WEAPON,
 	;
 
     public boolean canEnchantItem(Item item) {
         if (this == UNKNOWN) {
             return true;
         }
-        if (this == ALL && (item.getMaxDurability() >= 0 || item.is(Item.SKULL) || item.is(ItemBlockID.CARVED_PUMPKIN) || item.is(Item.COMPASS) || item.is(Item.LODESTONE_COMPASS) || item.is(Item.RECOVERY_COMPASS))) {
+        if (this == ALL && (item.getMaxDurability() >= 0 || item.is(Item.SKULL) || item.is(ItemBlockID.CARVED_PUMPKIN) || item.is(Item.COMPASS) || item.is(Item.LODESTONE_COMPASS) || item.is(Item.RECOVERY_COMPASS)) && !item.is(Item.WOLF_ARMOR)) {
             return true;
         }
-        if (this == BREAKABLE && item.getMaxDurability() >= 0) {
+        if (this == BREAKABLE && item.getMaxDurability() >= 0 && !item.is(Item.WOLF_ARMOR)) {
             return true;
         }
         if (item instanceof ItemArmor) {
@@ -52,19 +54,23 @@ public enum EnchantmentType {
         } else {
             switch (this) {
                 case SWORD:
-                    return item.isSword();
+                    return item.isSword() && !item.is(Item.MACE);
                 case DIGGER:
                     return item.isPickaxe() || item.isShovel() || item.isAxe() || item.isHoe();
                 case BOW:
-                    return item instanceof ItemBow;
+                    return item.is(Item.BOW);
                 case FISHING_ROD:
-                    return item instanceof ItemFishingRod;
+                    return item.is(Item.FISHING_ROD);
                 case WEARABLE:
-                    return item instanceof ItemSkull || item.getId() == ItemBlockID.CARVED_PUMPKIN;
+                    return item.is(Item.SKULL) || item.is(ItemBlockID.CARVED_PUMPKIN);
                 case TRIDENT:
-                    return item instanceof ItemTrident;
+                    return item.is(Item.TRIDENT);
                 case CROSSBOW:
-                    return item instanceof ItemCrossbow;
+                    return item.is(Item.CROSSBOW);
+                case MACE:
+                    return item.is(Item.MACE);
+                case MELEE_WEAPON:
+                    return item.isSword() || item.is(Item.MACE);
             }
         }
         return false;

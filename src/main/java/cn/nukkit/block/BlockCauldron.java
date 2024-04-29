@@ -330,6 +330,42 @@ public class BlockCauldron extends BlockTransparentMeta {
                 player.getInventory().setItemInHand(item);
                 break;
             }
+            case Item.WOLF_ARMOR: {
+                if (getCauldronType() != LIQUID_WATER) {
+                    return true;
+                }
+                if (cauldron.hasPotion()) {
+                    return true;
+                }
+                int fillLevel = getFillLevel();
+                if (fillLevel == FILL_LEVEL_EMPTY) {
+                    return true;
+                }
+
+                Color color = cauldron.getCustomColor();
+                ItemWolfArmor armor = (ItemWolfArmor) item;
+                if (color != null) {
+                    armor.setColor(color);
+                    level.addLevelEvent(add(0.5, 0.375 + fillLevel * 0.125, 0.5), LevelEventPacket.EVENT_CAULDRON_DYE_ARMOR, color.getRGB());
+                } else if (!armor.clearColor()) {
+                    return true;
+                } else {
+                    level.addLevelEvent(add(0.5, 0.375 + fillLevel * 0.125, 0.5), LevelEventPacket.EVENT_CAULDRON_CLEAN_ARMOR);
+                }
+
+                fillLevel -= 1;
+                if (fillLevel < 2) {
+                    fillLevel = 0;
+                }
+                setFillLevel(fillLevel);
+                level.setBlock(this, this, true);
+                if (fillLevel == FILL_LEVEL_EMPTY && cauldron.clearCustomColor()) {
+                    cauldron.spawnToAll();
+                }
+
+                player.getInventory().setItemInHand(item);
+                break;
+            }
             case Item.SHULKER_BOX: {
                 if (getCauldronType() != LIQUID_WATER) {
                     return true;

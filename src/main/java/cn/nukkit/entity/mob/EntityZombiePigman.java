@@ -30,7 +30,11 @@ public class EntityZombiePigman extends EntityMob implements EntitySmite {
     @Override
     protected void initEntity() {
         super.initEntity();
+
+        dataProperties.putShort(DATA_ZOMBIE_TYPE, EntityZombie.ZOMBIE_TYPE_PIG);
+
         this.setMaxHealth(20);
+
         fireProof = true;
     }
 

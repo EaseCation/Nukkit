@@ -61,6 +61,8 @@ public abstract class EntityLiving extends Entity implements EntityDamageable {
     protected boolean invisible = false;
 
     protected float movementSpeed = 0.1f;
+    protected float waterMovementSpeed = 0.02f;
+    protected float lavaMovementSpeed = 0.02f;
 
     protected int turtleTicks;
 

@@ -90,7 +90,10 @@ public interface ParticleID {
     int DUST_PLUME = 87;
     int WHITE_SMOKE = 88;
     int WIND_EXPLOSION = 89;
+    int VAULT_CONNECTION = 90;
+    int BREEZE_WIND_EXPLOSION = 91;
+    int WOLF_ARMOR_BREAK = 92;
 
 
-    int UNDEFINED = 90;
+    int UNDEFINED = 93;
 }

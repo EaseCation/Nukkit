@@ -16,6 +16,13 @@ public class EntityRabbit extends EntityAnimal {
 
     public static final int NETWORK_ID = EntityID.RABBIT;
 
+    public static final int RABBIT_VARIANT_BROWN = 0;
+    public static final int RABBIT_VARIANT_WHITE = 1;
+    public static final int RABBIT_VARIANT_BLACK = 2;
+    public static final int RABBIT_VARIANT_SPLOTCHED = 3;
+    public static final int RABBIT_VARIANT_DESERT = 4;
+    public static final int RABBIT_VARIANT_SALT = 5;
+
     public EntityRabbit(FullChunk chunk, CompoundTag nbt) {
         super(chunk, nbt);
     }
@@ -53,7 +60,17 @@ public class EntityRabbit extends EntityAnimal {
     @Override
     protected void initEntity() {
         super.initEntity();
+
+        dataProperties.putInt(DATA_VARIANT, namedTag.getInt("Variant", RABBIT_VARIANT_BROWN));
+
         setMaxHealth(3);
+    }
+
+    @Override
+    public void saveNBT() {
+        super.saveNBT();
+
+        namedTag.putInt("Variant", getDataPropertyInt(DATA_VARIANT));
     }
 
     @Override

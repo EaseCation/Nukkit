@@ -136,6 +136,7 @@ public interface EntityFullNames {
     String ARMADILLO = "minecraft:" + EntityNames.ARMADILLO;
     String WIND_CHARGE_PROJECTILE = "minecraft:" + EntityNames.WIND_CHARGE_PROJECTILE;
     String BOGGED = "minecraft:" + EntityNames.BOGGED;
+    String OMINOUS_ITEM_SPAWNER = "minecraft:" + EntityNames.OMINOUS_ITEM_SPAWNER;
 
     String TRADER_LLAMA = "minecraft:" + EntityNames.TRADER_LLAMA;
 

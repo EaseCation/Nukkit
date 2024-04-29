@@ -19,6 +19,12 @@ public class EntityZombie extends EntityMob implements EntitySmite {
 
     public static final int NETWORK_ID = EntityID.ZOMBIE;
 
+    public static final int ZOMBIE_TYPE_DEFAULT = 0;
+    public static final int ZOMBIE_TYPE_VILLAGER = 1;
+    public static final int ZOMBIE_TYPE_HUSK = 2;
+    public static final int ZOMBIE_TYPE_PIG = 3;
+    public static final int ZOMBIE_TYPE_DROWNED = 4;
+
     @Override
     public int getNetworkId() {
         return NETWORK_ID;
@@ -31,6 +37,9 @@ public class EntityZombie extends EntityMob implements EntitySmite {
     @Override
     protected void initEntity() {
         super.initEntity();
+
+        dataProperties.putShort(DATA_ZOMBIE_TYPE, ZOMBIE_TYPE_DEFAULT);
+
         this.setMaxHealth(20);
     }
 

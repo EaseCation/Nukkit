@@ -54,4 +54,5 @@ public interface BlockEntityID {
     String CALIBRATED_SCULK_SENSOR = "CalibratedSculkSensor";
     String CRAFTER = "Crafter";
     String TRIAL_SPAWNER = "TrialSpawner";
+    String VAULT = "Vault";
 }

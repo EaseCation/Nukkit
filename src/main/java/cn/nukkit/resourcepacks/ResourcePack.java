@@ -1,5 +1,7 @@
 package cn.nukkit.resourcepacks;
 
+import javax.annotation.Nullable;
+
 public interface ResourcePack {
     String getPackName();
 
@@ -18,4 +20,7 @@ public interface ResourcePack {
     byte[] getPackChunk(int index);
 
     String getEncryptionKey();
+
+    @Nullable
+    String getCdnUrl();
 }

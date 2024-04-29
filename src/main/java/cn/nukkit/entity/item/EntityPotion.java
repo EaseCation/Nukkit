@@ -192,6 +192,7 @@ public class EntityPotion extends EntityProjectile {
 
             float d = entity == collidedWith ? 1 : (float) (1 - Math.sqrt(distance) / 4);
             potion.applyPotion(entity, item, Math.min(0.75f, d), d);
+            //TODO: 1.21.0 parity duration
         }
     }
 

@@ -2,6 +2,7 @@ package cn.nukkit.item.enchantment.damage;
 
 import cn.nukkit.entity.Entity;
 import cn.nukkit.item.enchantment.EnchantmentNames;
+import cn.nukkit.item.enchantment.EnchantmentType;
 
 /**
  * author: MagicDroidX
@@ -10,7 +11,7 @@ import cn.nukkit.item.enchantment.EnchantmentNames;
 public class EnchantmentDamageAll extends EnchantmentDamage {
 
     public EnchantmentDamageAll() {
-        super(SHARPNESS, EnchantmentNames.SHARPNESS, "all", Rarity.COMMON, TYPE.ALL);
+        super(SHARPNESS, EnchantmentNames.SHARPNESS, "all", Rarity.COMMON, EnchantmentType.SWORD, TYPE.ALL);
     }
 
     @Override
@@ -29,7 +30,7 @@ public class EnchantmentDamageAll extends EnchantmentDamage {
     }
 
     @Override
-    public float getDamageBonus(Entity entity) {
+    public float getDamageBonus(Entity attacker, Entity entity) {
         return this.getLevel() * 1.25f;
     }
 }

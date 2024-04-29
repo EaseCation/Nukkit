@@ -152,7 +152,11 @@ public interface EntityFlagID {
      * @since 1.20.40
      */
     int DATA_FLAG_TIMER_FLAG_3 = 117;
-    int DATA_FLAG_UNDEFINED = 118;
+    /**
+     * @since 1.20.80
+     */
+    int DATA_FLAG_BODY_ROTATION_BLOCKED = 118;
+    int DATA_FLAG_UNDEFINED = 119;
 
 
     long NUKKIT_FLAG_VARIANT_BLOCK = 1L << 1;

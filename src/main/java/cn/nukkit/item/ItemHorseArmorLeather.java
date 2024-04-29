@@ -25,6 +25,16 @@ public class ItemHorseArmorLeather extends Item {
         return 1;
     }
 
+    @Override
+    public boolean isHorseArmor() {
+        return true;
+    }
+
+    @Override
+    public int getArmorPoints() {
+        return 3;
+    }
+
     public void setColor(DyeColor dye) {
         setColor(dye.getColor());
     }

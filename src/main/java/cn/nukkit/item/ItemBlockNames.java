@@ -36,6 +36,7 @@ public interface ItemBlockNames {
     String DETECTOR_RAIL = "detector_rail";
     String STICKY_PISTON = "sticky_piston";
     String WEB = "web";
+    String SHORT_GRASS = "short_grass";
     String TALLGRASS = "tallgrass";
     String DEADBUSH = "deadbush";
     String PISTON = "piston";
@@ -53,6 +54,7 @@ public interface ItemBlockNames {
     String IRON_BLOCK = "iron_block";
     String REAL_DOUBLE_STONE_SLAB = "real_double_stone_slab"; //TODO: 1.19.0 rename
     String DOUBLE_STONE_BLOCK_SLAB = "double_stone_block_slab";
+    String SMOOTH_STONE_SLAB = "smooth_stone_slab"; //TODO: 1.21.0 flattening
     String DOUBLE_STONE_SLAB = "double_stone_slab"; //TODO: 1.19.0 rename
     String STONE_BLOCK_SLAB = "stone_block_slab";
     String BRICK_BLOCK = "brick_block";
@@ -197,6 +199,7 @@ public interface ItemBlockNames {
     String HARDENED_CLAY = "hardened_clay";
     String COAL_BLOCK = "coal_block";
     String PACKED_ICE = "packed_ice";
+    String SUNFLOWER = "sunflower"; //TODO: 1.21.0 flattening
     String DOUBLE_PLANT = "double_plant";
     String STANDING_BANNER = "standing_banner";
     String WALL_BANNER = "wall_banner";
@@ -499,6 +502,7 @@ public interface ItemBlockNames {
     String SEAGRASS = "seagrass";
     String TUBE_CORAL = "tube_coral"; //TODO: 1.20.0 flattening
     String CORAL = "coral";
+    String TUBE_CORAL_BLOCK = "tube_coral_block"; //TODO: 1.21.0: flattening
     String CORAL_BLOCK = "coral_block";
     String TUBE_CORAL_FAN = "tube_coral_fan"; //TODO: 1.20.80 flattening
     String CORAL_FAN = "coral_fan";
@@ -686,7 +690,7 @@ public interface ItemBlockNames {
     String CRAFTER = "crafter";
     String VAULT = "vault";
     String TRIAL_SPAWNER = "trial_spawner";
-
+    String HEAVY_CORE = "heavy_core";
     String DRIPSTONE_BLOCK = "dripstone_block";
     String DIRT_WITH_ROOTS = "dirt_with_roots";
     String HANGING_ROOTS = "hanging_roots";
@@ -1205,4 +1209,27 @@ public interface ItemBlockNames {
     String DEAD_BUBBLE_CORAL_FAN = "dead_bubble_coral_fan";
     String DEAD_FIRE_CORAL_FAN = "dead_fire_coral_fan";
     String DEAD_HORN_CORAL_FAN = "dead_horn_coral_fan";
+    String FERN = "fern";
+    String BRAIN_CORAL_BLOCK = "brain_coral_block";
+    String BUBBLE_CORAL_BLOCK = "bubble_coral_block";
+    String FIRE_CORAL_BLOCK = "fire_coral_block";
+    String HORN_CORAL_BLOCK = "horn_coral_block";
+    String DEAD_TUBE_CORAL_BLOCK = "dead_tube_coral_block";
+    String DEAD_BRAIN_CORAL_BLOCK = "dead_brain_coral_block";
+    String DEAD_BUBBLE_CORAL_BLOCK = "dead_bubble_coral_block";
+    String DEAD_FIRE_CORAL_BLOCK = "dead_fire_coral_block";
+    String DEAD_HORN_CORAL_BLOCK = "dead_horn_coral_block";
+
+    String LILAC = "lilac";
+    String TALL_GRASS = "tall_grass";
+    String LARGE_FERN = "large_fern";
+    String ROSE_BUSH = "rose_bush";
+    String PEONY = "peony";
+
+    String SANDSTONE_SLAB = "sandstone_slab";
+    String COBBLESTONE_SLAB = "cobblestone_slab";
+    String BRICK_SLAB = "brick_slab";
+    String STONE_BRICK_SLAB = "stone_brick_slab";
+    String QUARTZ_SLAB = "quartz_slab";
+    String NETHER_BRICK_SLAB = "nether_brick_slab";
 }

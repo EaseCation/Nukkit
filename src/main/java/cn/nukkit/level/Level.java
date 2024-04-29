@@ -179,6 +179,32 @@ public class Level implements ChunkManager, Metadatable {
         randomTickBlocks[Block.MANGROVE_LEAVES] = true;
         randomTickBlocks[Block.MANGROVE_PROPAGULE] = true;
         randomTickBlocks[Block.CHORUS_FLOWER] = true;
+        randomTickBlocks[Block.CHERRY_SAPLING] = true;
+        randomTickBlocks[Block.CHERRY_LEAVES] = true;
+        randomTickBlocks[Block.CHISELED_COPPER] = true;
+        randomTickBlocks[Block.EXPOSED_CHISELED_COPPER] = true;
+        randomTickBlocks[Block.WEATHERED_CHISELED_COPPER] = true;
+        randomTickBlocks[Block.COPPER_GRATE] = true;
+        randomTickBlocks[Block.EXPOSED_COPPER_GRATE] = true;
+        randomTickBlocks[Block.WEATHERED_COPPER_GRATE] = true;
+        randomTickBlocks[Block.COPPER_BULB] = true;
+        randomTickBlocks[Block.EXPOSED_COPPER_BULB] = true;
+        randomTickBlocks[Block.WEATHERED_COPPER_BULB] = true;
+        randomTickBlocks[Block.COPPER_DOOR] = true;
+        randomTickBlocks[Block.EXPOSED_COPPER_DOOR] = true;
+        randomTickBlocks[Block.WEATHERED_COPPER_DOOR] = true;
+        randomTickBlocks[Block.COPPER_TRAPDOOR] = true;
+        randomTickBlocks[Block.EXPOSED_COPPER_TRAPDOOR] = true;
+        randomTickBlocks[Block.WEATHERED_COPPER_TRAPDOOR] = true;
+        randomTickBlocks[Block.SPRUCE_SAPLING] = true;
+        randomTickBlocks[Block.BIRCH_SAPLING] = true;
+        randomTickBlocks[Block.JUNGLE_SAPLING] = true;
+        randomTickBlocks[Block.ACACIA_SAPLING] = true;
+        randomTickBlocks[Block.DARK_OAK_SAPLING] = true;
+        randomTickBlocks[Block.SPRUCE_LEAVES] = true;
+        randomTickBlocks[Block.BIRCH_LEAVES] = true;
+        randomTickBlocks[Block.JUNGLE_LEAVES] = true;
+        randomTickBlocks[Block.DARK_OAK_LEAVES] = true;
     }
 
     /**
@@ -1297,7 +1323,7 @@ public class Level implements ChunkManager, Metadatable {
             }
 
             int bId = this.getBlock(vector).getId();
-            if (bId != Block.TALLGRASS && bId != Block.FLOWING_WATER) {
+            if (bId != Block.SHORT_GRASS && bId != Block.FLOWING_WATER) {
                 vector.y += 1;
             }
 

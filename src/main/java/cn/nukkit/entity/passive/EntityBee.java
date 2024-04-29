@@ -16,6 +16,9 @@ public class EntityBee extends EntityAnimal implements EntityArthropod {
 
     public static final int NETWORK_ID = EntityID.BEE;
 
+    public static final int BEE_MARK_DEFAULT = 0;
+    public static final int BEE_MARK_COUNTDOWN_TO_PERISH = 1;
+
     public EntityBee(FullChunk chunk, CompoundTag nbt) {
         super(chunk, nbt);
     }
@@ -43,7 +46,17 @@ public class EntityBee extends EntityAnimal implements EntityArthropod {
     @Override
     protected void initEntity() {
         super.initEntity();
+
+        dataProperties.putInt(DATA_MARK_VARIANT, namedTag.getInt("MarkVariant", BEE_MARK_DEFAULT));
+
         this.setMaxHealth(10);
+    }
+
+    @Override
+    public void saveNBT() {
+        super.saveNBT();
+
+        namedTag.putInt("MarkVariant", getDataPropertyInt(DATA_MARK_VARIANT));
     }
 
     @Override

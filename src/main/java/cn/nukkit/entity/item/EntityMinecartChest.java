@@ -124,8 +124,7 @@ public class EntityMinecartChest extends EntityMinecartAbstract implements Inven
 
         this.dataProperties
                 .putByte(DATA_CONTAINER_TYPE, ContainerType.MINECART_CHEST)
-                .putInt(DATA_CONTAINER_BASE_SIZE, this.inventory.getSize())
-                .putInt(DATA_CONTAINER_EXTRA_SLOTS_PER_STRENGTH, 0);
+                .putInt(DATA_CONTAINER_BASE_SIZE, this.inventory.getSize());
     }
 
     @Override

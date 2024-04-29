@@ -58,10 +58,4 @@ public class EntityMinecartEmpty extends EntityMinecartAbstract {
     public void onPlayerInput(Player player, double motionX, double motionY) {
         setCurrentSpeed(motionY);
     }
-
-    @Override
-    protected void prepareDataProperty() {
-        super.prepareDataProperty();
-        dataProperties.putByte(DATA_CONTROLLING_SEAT_INDEX, 0);
-    }
 }

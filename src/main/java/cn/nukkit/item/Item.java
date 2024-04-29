@@ -1067,6 +1067,10 @@ public class Item implements Cloneable, ItemID {
         return false;
     }
 
+    public boolean isHorseArmor() {
+        return false;
+    }
+
     public int getEnchantAbility() {
         return 0;
     }

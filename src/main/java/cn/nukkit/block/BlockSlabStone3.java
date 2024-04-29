@@ -4,14 +4,14 @@ import cn.nukkit.utils.BlockColor;
 
 public class BlockSlabStone3 extends BlockSlabStone {
 
-    public static final int END_STONE_BRICK = 0;
-    public static final int SMOOTH_RED_SANDSTONE = 1;
-    public static final int POLISHED_ANDESITE = 2;
-    public static final int ANDESITE = 3;
-    public static final int DIORITE = 4;
-    public static final int POLISHED_DIORITE = 5;
-    public static final int GRANITE = 6;
-    public static final int POLISHED_GRANITE = 7;
+    public static final int TYPE_END_STONE_BRICK = 0;
+    public static final int TYPE_SMOOTH_RED_SANDSTONE = 1;
+    public static final int TYPE_POLISHED_ANDESITE = 2;
+    public static final int TYPE_ANDESITE = 3;
+    public static final int TYPE_DIORITE = 4;
+    public static final int TYPE_POLISHED_DIORITE = 5;
+    public static final int TYPE_GRANITE = 6;
+    public static final int TYPE_POLISHED_GRANITE = 7;
 
     private static final String[] NAMES = new String[]{
             "End Stone Brick Slab",
@@ -46,18 +46,18 @@ public class BlockSlabStone3 extends BlockSlabStone {
     public BlockColor getColor() {
         switch (this.getSlabType()) {
             default:
-            case END_STONE_BRICK:
+            case TYPE_END_STONE_BRICK:
                 return BlockColor.SAND_BLOCK_COLOR;
-            case SMOOTH_RED_SANDSTONE:
+            case TYPE_SMOOTH_RED_SANDSTONE:
                 return BlockColor.ORANGE_BLOCK_COLOR;
-            case POLISHED_ANDESITE:
-            case ANDESITE:
+            case TYPE_POLISHED_ANDESITE:
+            case TYPE_ANDESITE:
                 return BlockColor.STONE_BLOCK_COLOR;
-            case DIORITE:
-            case POLISHED_DIORITE:
+            case TYPE_DIORITE:
+            case TYPE_POLISHED_DIORITE:
                 return BlockColor.QUARTZ_BLOCK_COLOR;
-            case GRANITE:
-            case POLISHED_GRANITE:
+            case TYPE_GRANITE:
+            case TYPE_POLISHED_GRANITE:
                 return BlockColor.DIRT_BLOCK_COLOR;
         }
     }

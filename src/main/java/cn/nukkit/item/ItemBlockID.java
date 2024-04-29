@@ -44,6 +44,11 @@ public interface ItemBlockID {
     int DETECTOR_RAIL = 28;
     int STICKY_PISTON = 29;
     int WEB = 30;
+    int SHORT_GRASS = 31;
+    /**
+     * @deprecated use {@link #SHORT_GRASS} instead
+     */
+    @Deprecated
     int TALLGRASS = 31;
     int DEADBUSH = 32;
     int PISTON = 33;
@@ -64,6 +69,7 @@ public interface ItemBlockID {
     int GOLD_BLOCK = 41;
     int IRON_BLOCK = 42;
     int DOUBLE_STONE_SLAB = 43;
+    int SMOOTH_STONE_SLAB = 44;
     int STONE_SLAB = 44;
     int BRICK_BLOCK = 45;
     int TNT = 46;
@@ -218,6 +224,7 @@ public interface ItemBlockID {
     int HARDENED_CLAY = 172;
     int COAL_BLOCK = 173;
     int PACKED_ICE = 174;
+    int SUNFLOWER = 175;
     int DOUBLE_PLANT = 175;
     int STANDING_BANNER = 176;
     int WALL_BANNER = 177;
@@ -447,6 +454,7 @@ public interface ItemBlockID {
     int SEAGRASS = 0xff - BlockID.SEAGRASS;
     int TUBE_CORAL = 0xff - BlockID.TUBE_CORAL;
     int CORAL = 0xff - BlockID.CORAL;
+    int TUBE_CORAL_BLOCK = BlockID.TUBE_CORAL_BLOCK;
     int CORAL_BLOCK = 0xff - BlockID.CORAL_BLOCK;
     int TUBE_CORAL_FAN = 0xff - BlockID.TUBE_CORAL_FAN;
     int CORAL_FAN = 0xff - BlockID.CORAL_FAN;
@@ -634,7 +642,7 @@ public interface ItemBlockID {
     int CRAFTER = 0xff - BlockID.CRAFTER;
     int VAULT = 0xff - BlockID.VAULT;
     int TRIAL_SPAWNER = 0xff - BlockID.TRIAL_SPAWNER;
-
+    int HEAVY_CORE = 0xff - BlockID.HEAVY_CORE;
     int DRIPSTONE_BLOCK = 0xff - BlockID.DRIPSTONE_BLOCK;
     int DIRT_WITH_ROOTS = 0xff - BlockID.DIRT_WITH_ROOTS;
     int HANGING_ROOTS = 0xff - BlockID.HANGING_ROOTS;
@@ -1153,6 +1161,29 @@ public interface ItemBlockID {
     int DEAD_BUBBLE_CORAL_FAN = 0xff - BlockID.DEAD_BUBBLE_CORAL_FAN;
     int DEAD_FIRE_CORAL_FAN = 0xff - BlockID.DEAD_FIRE_CORAL_FAN;
     int DEAD_HORN_CORAL_FAN = 0xff - BlockID.DEAD_HORN_CORAL_FAN;
+    int FERN = 0xff - BlockID.FERN;
+    int BRAIN_CORAL_BLOCK = 0xff - BlockID.BRAIN_CORAL_BLOCK;
+    int BUBBLE_CORAL_BLOCK = 0xff - BlockID.BUBBLE_CORAL_BLOCK;
+    int FIRE_CORAL_BLOCK = 0xff - BlockID.FIRE_CORAL_BLOCK;
+    int HORN_CORAL_BLOCK = 0xff - BlockID.HORN_CORAL_BLOCK;
+    int DEAD_TUBE_CORAL_BLOCK = 0xff - BlockID.DEAD_TUBE_CORAL_BLOCK;
+    int DEAD_BRAIN_CORAL_BLOCK = 0xff - BlockID.DEAD_BRAIN_CORAL_BLOCK;
+    int DEAD_BUBBLE_CORAL_BLOCK = 0xff - BlockID.DEAD_BUBBLE_CORAL_BLOCK;
+    int DEAD_FIRE_CORAL_BLOCK = 0xff - BlockID.DEAD_FIRE_CORAL_BLOCK;
+    int DEAD_HORN_CORAL_BLOCK = 0xff - BlockID.DEAD_HORN_CORAL_BLOCK;
+
+    int LILAC = 0xff - BlockID.LILAC;
+    int TALL_GRASS = 0xff - BlockID.TALL_GRASS;
+    int LARGE_FERN = 0xff - BlockID.LARGE_FERN;
+    int ROSE_BUSH = 0xff - BlockID.ROSE_BUSH;
+    int PEONY = 0xff - BlockID.PEONY;
+
+    int SANDSTONE_SLAB = 0xff - BlockID.SANDSTONE_SLAB;
+    int COBBLESTONE_SLAB = 0xff - BlockID.COBBLESTONE_SLAB;
+    int BRICK_SLAB = 0xff - BlockID.BRICK_SLAB;
+    int STONE_BRICK_SLAB = 0xff - BlockID.STONE_BRICK_SLAB;
+    int QUARTZ_SLAB = 0xff - BlockID.QUARTZ_SLAB;
+    int NETHER_BRICK_SLAB = 0xff - BlockID.NETHER_BRICK_SLAB;
 
 
     int UNDEFINED = 0xff - BlockID.UNDEFINED;

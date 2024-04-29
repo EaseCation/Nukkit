@@ -273,6 +273,7 @@ public abstract class BlockPistonBase extends BlockTransparentMeta implements Fa
                         .putInt("pistonPosZ", this.getFloorZ())
                         .putCompound("movingBlock", movingBlockTag)
 //                        .putCompound("movingBlockExtra", movingBlockExtraTag)
+                        .putBoolean("expanding", extending)
                         ;
 
                 if (blockEntity != null && !(blockEntity instanceof BlockEntityMovingBlock)) {

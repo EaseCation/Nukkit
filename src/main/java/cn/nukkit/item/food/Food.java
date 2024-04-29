@@ -144,6 +144,21 @@ public abstract class Food {
         }
     }.addRelative(Item.HONEY_BOTTLE), V1_14_0);
     public static final Food glow_berries = registerDefaultFood(new FoodNormal(2, 0.3f).addRelative(Item.GLOW_BERRIES), V1_17_0);
+    public static final Food ominous_bottle_1 = registerDefaultFood(new FoodEffective(0, 0)
+            .addEffect(Effect.getEffect(Effect.BAD_OMEN).setDuration(100 * 60 * 20))
+            .addRelative(Item.OMINOUS_BOTTLE, 0));
+    public static final Food ominous_bottle_2 = registerDefaultFood(new FoodEffective(0, 0)
+            .addEffect(Effect.getEffect(Effect.BAD_OMEN).setDuration(100 * 60 * 20).setAmplifier(1))
+            .addRelative(Item.OMINOUS_BOTTLE, 1));
+    public static final Food ominous_bottle_3 = registerDefaultFood(new FoodEffective(0, 0)
+            .addEffect(Effect.getEffect(Effect.BAD_OMEN).setDuration(100 * 60 * 20).setAmplifier(2))
+            .addRelative(Item.OMINOUS_BOTTLE, 2));
+    public static final Food ominous_bottle_4 = registerDefaultFood(new FoodEffective(0, 0)
+            .addEffect(Effect.getEffect(Effect.BAD_OMEN).setDuration(100 * 60 * 20).setAmplifier(3))
+            .addRelative(Item.OMINOUS_BOTTLE, 3));
+    public static final Food ominous_bottle_5 = registerDefaultFood(new FoodEffective(0, 0)
+            .addEffect(Effect.getEffect(Effect.BAD_OMEN).setDuration(100 * 60 * 20).setAmplifier(4))
+            .addRelative(Item.OMINOUS_BOTTLE, 4));
 
     //Opened API for plugins
     public static Food registerFood(Food food, Plugin plugin) {

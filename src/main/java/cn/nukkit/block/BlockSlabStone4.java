@@ -4,11 +4,11 @@ import cn.nukkit.utils.BlockColor;
 
 public class BlockSlabStone4 extends BlockSlabStone {
 
-    public static final int MOSSY_STONE_BRICK = 0;
-    public static final int SMOOTH_QUARTZ = 1;
-    public static final int STONE = 2;
-    public static final int CUT_SANDSTONE = 3;
-    public static final int CUT_RED_SANDSTONE = 4;
+    public static final int TYPE_MOSSY_STONE_BRICK = 0;
+    public static final int TYPE_SMOOTH_QUARTZ = 1;
+    public static final int TYPE_STONE = 2;
+    public static final int TYPE_CUT_SANDSTONE = 3;
+    public static final int TYPE_CUT_RED_SANDSTONE = 4;
 
     private static final String[] NAMES = new String[]{
             "Mossy Stone Brick Slab",
@@ -43,14 +43,14 @@ public class BlockSlabStone4 extends BlockSlabStone {
     public BlockColor getColor() {
         switch (this.getSlabType()) {
             default:
-            case MOSSY_STONE_BRICK:
-            case STONE:
+            case TYPE_MOSSY_STONE_BRICK:
+            case TYPE_STONE:
                 return BlockColor.STONE_BLOCK_COLOR;
-            case SMOOTH_QUARTZ:
+            case TYPE_SMOOTH_QUARTZ:
                 return BlockColor.QUARTZ_BLOCK_COLOR;
-            case CUT_SANDSTONE:
+            case TYPE_CUT_SANDSTONE:
                 return BlockColor.SAND_BLOCK_COLOR;
-            case CUT_RED_SANDSTONE:
+            case TYPE_CUT_RED_SANDSTONE:
                 return BlockColor.ORANGE_BLOCK_COLOR;
         }
     }

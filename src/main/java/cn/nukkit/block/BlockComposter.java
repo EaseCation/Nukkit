@@ -201,7 +201,7 @@ public class BlockComposter extends BlockTransparentMeta {
         registerCompostableItems(0.3f,
                 ItemID.BEETROOT_SEEDS,
                 ItemID.DRIED_KELP,
-                getItemId(TALLGRASS),
+                getItemId(SHORT_GRASS),
                 getItemId(GRASS_BLOCK),
                 getItemId(HANGING_ROOTS),
                 getItemId(MANGROVE_ROOTS),

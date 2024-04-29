@@ -118,6 +118,13 @@ public class DisconnectPacket extends DataPacket {
     public static final int REASON_SERVER_SHUTDOWN = 106;
     public static final int REASON_GAME_SETUP_CANCELLED = 107;
     public static final int REASON_GAME_SETUP_FAILED = 108;
+    public static final int REASON_NO_VENUE = 109;
+    public static final int REASON_CONN_SIGNALING_SIGN_IN_FAILED = 110;
+    public static final int REASON_SESSION_ACCESS_DENIED = 111;
+    public static final int REASON_SERVICE_SIGN_IN_ISSUE = 112;
+    public static final int REASON_CONN_NO_SIGNALING_CHANNEL = 113;
+    public static final int REASON_CONN_NOT_LOGGED_IN = 114;
+    public static final int REASON_CONN_CLIENT_SIGNALING_ERROR = 115;
 
     public int reason = REASON_UNKNOWN;
     public boolean hideDisconnectionScreen;

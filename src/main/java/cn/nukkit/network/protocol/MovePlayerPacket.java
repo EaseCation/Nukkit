@@ -16,6 +16,12 @@ public class MovePlayerPacket extends DataPacket {
     public static final int MODE_TELEPORT = 2;
     public static final int MODE_ONLY_HEAD_ROT = 3; //facepalm Mojang
 
+    public static final int TELEPORT_CAUSE_UNKNOWN = 0;
+    public static final int TELEPORT_CAUSE_PROJECTILE = 1;
+    public static final int TELEPORT_CAUSE_CHORUS_FRUIT = 2;
+    public static final int TELEPORT_CAUSE_COMMAND = 3;
+    public static final int TELEPORT_CAUSE_BEHAVIOR = 4;
+
     public long eid;
     public float x;
     public float y;
@@ -26,7 +32,7 @@ public class MovePlayerPacket extends DataPacket {
     public int mode = MODE_NORMAL;
     public boolean onGround;
     public long ridingEid;
-    public int teleportCause = 0;
+    public int teleportCause = TELEPORT_CAUSE_UNKNOWN;
     public int entityType = 0;
 
     @Override

@@ -7,14 +7,14 @@ import cn.nukkit.utils.BlockColor;
  */
 public class BlockDoubleSlabRedSandstone extends BlockDoubleSlabStone {
 
-    public static final int RED_SANDSTONE = 0;
-    public static final int PURPUR = 1;
-    public static final int PRISMARINE_ROUGH = 2;
-    public static final int PRISMARINE_DARK = 3;
-    public static final int PRISMARINE_BRICK = 4;
-    public static final int MOSSY_COBBLESTONE = 5;
-    public static final int SMOOTH_SANDSTONE = 6;
-    public static final int RED_NETHER_BRICK = 7;
+    public static final int TYPE_RED_SANDSTONE = 0;
+    public static final int TYPE_PURPUR = 1;
+    public static final int TYPE_PRISMARINE_ROUGH = 2;
+    public static final int TYPE_PRISMARINE_DARK = 3;
+    public static final int TYPE_PRISMARINE_BRICK = 4;
+    public static final int TYPE_MOSSY_COBBLESTONE = 5;
+    public static final int TYPE_SMOOTH_SANDSTONE = 6;
+    public static final int TYPE_RED_NETHER_BRICK = 7;
 
     private static final String[] NAMES = new String[]{
             "Double Red Sandstone Slab",
@@ -49,20 +49,20 @@ public class BlockDoubleSlabRedSandstone extends BlockDoubleSlabStone {
     public BlockColor getColor() {
         switch (this.getSlabType()) {
             default:
-            case RED_SANDSTONE:
+            case TYPE_RED_SANDSTONE:
                 return BlockColor.ORANGE_BLOCK_COLOR;
-            case PURPUR:
+            case TYPE_PURPUR:
                 return BlockColor.PURPLE_BLOCK_COLOR;
-            case PRISMARINE_ROUGH:
+            case TYPE_PRISMARINE_ROUGH:
                 return BlockColor.CYAN_BLOCK_COLOR;
-            case PRISMARINE_DARK:
-            case PRISMARINE_BRICK:
+            case TYPE_PRISMARINE_DARK:
+            case TYPE_PRISMARINE_BRICK:
                 return BlockColor.DIAMOND_BLOCK_COLOR;
-            case MOSSY_COBBLESTONE:
+            case TYPE_MOSSY_COBBLESTONE:
                 return BlockColor.STONE_BLOCK_COLOR;
-            case SMOOTH_SANDSTONE:
+            case TYPE_SMOOTH_SANDSTONE:
                 return BlockColor.SAND_BLOCK_COLOR;
-            case RED_NETHER_BRICK:
+            case TYPE_RED_NETHER_BRICK:
                 return BlockColor.NETHER_BLOCK_COLOR;
         }
     }

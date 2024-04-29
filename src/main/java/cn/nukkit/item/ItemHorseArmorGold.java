@@ -17,4 +17,14 @@ public class ItemHorseArmorGold extends Item {
     public int getMaxStackSize() {
         return 1;
     }
+
+    @Override
+    public boolean isHorseArmor() {
+        return true;
+    }
+
+    @Override
+    public int getArmorPoints() {
+        return 7;
+    }
 }

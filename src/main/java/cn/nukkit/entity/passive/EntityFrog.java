@@ -9,6 +9,10 @@ public class EntityFrog extends EntityAnimal {
 
     public static final int NETWORK_ID = EntityID.FROG;
 
+    public static final int FROG_VARIANT_TEMPERATE = 0;
+    public static final int FROG_VARIANT_COLD = 1;
+    public static final int FROG_VARIANT_WARM = 2;
+
     public EntityFrog(FullChunk chunk, CompoundTag nbt) {
         super(chunk, nbt);
     }
@@ -31,7 +35,17 @@ public class EntityFrog extends EntityAnimal {
     @Override
     protected void initEntity() {
         super.initEntity();
+
+        dataProperties.putInt(DATA_VARIANT, namedTag.getInt("Variant", FROG_VARIANT_TEMPERATE));
+
         this.setMaxHealth(10);
+    }
+
+    @Override
+    public void saveNBT() {
+        super.saveNBT();
+
+        namedTag.putInt("Variant", getDataPropertyInt(DATA_VARIANT));
     }
 
     @Override

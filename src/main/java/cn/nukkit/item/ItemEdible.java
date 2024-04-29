@@ -56,7 +56,7 @@ public abstract class ItemEdible extends Item {
                 player.getInventory().setItemInHand(this);
             }
 
-            player.level.addLevelSoundEvent(player.getEyePosition(), LevelSoundEventPacket.SOUND_BURP);
+            player.level.addLevelSoundEvent(player.getEyePosition(), getSoundEvent());
         }
         return true;
     }
@@ -69,5 +69,9 @@ public abstract class ItemEdible extends Item {
     @Override
     public boolean canRelease() {
         return true;
+    }
+
+    protected int getSoundEvent() {
+        return LevelSoundEventPacket.SOUND_BURP;
     }
 }

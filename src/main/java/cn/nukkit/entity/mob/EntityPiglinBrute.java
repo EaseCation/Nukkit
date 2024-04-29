@@ -31,7 +31,17 @@ public class EntityPiglinBrute extends EntityMob {
     @Override
     protected void initEntity() {
         super.initEntity();
+
+        dataProperties.putInt(DATA_VARIANT, namedTag.getInt("Variant", EntityPiglin.PIGLIN_VARIANT_MELEE));
+
         this.setMaxHealth(50);
+    }
+
+    @Override
+    public void saveNBT() {
+        super.saveNBT();
+
+        namedTag.putInt("Variant", getDataPropertyInt(DATA_VARIANT));
     }
 
     @Override

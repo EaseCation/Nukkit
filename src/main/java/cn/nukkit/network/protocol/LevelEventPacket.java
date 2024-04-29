@@ -54,6 +54,11 @@ public class LevelEventPacket extends DataPacket {
     public static final int EVENT_SOUND_INK_SAC_USED = 1066;
     public static final int EVENT_SOUND_AMETHYST_RESONATE = 1067;
 
+    public static final int EVENT_QUEUE_CUSTOM_MUSIC = 1900;
+    public static final int EVENT_PLAY_CUSTOM_MUSIC = 1901;
+    public static final int EVENT_STOP_CUSTOM_MUSIC = 1902;
+    public static final int EVENT_SET_MUSIC_VOLUME = 1903;
+
     public static final int EVENT_PARTICLE_SHOOT = 2000;
     public static final int EVENT_PARTICLE_DESTROY = 2001;
     public static final int EVENT_PARTICLE_SPLASH = 2002;

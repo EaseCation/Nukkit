@@ -53,6 +53,8 @@ public class EntityVillagerV1 extends EntityCreature implements EntityAgeable {
         if (!this.namedTag.contains("Profession")) {
             this.setProfession(PROFESSION_GENERIC);
         }
+
+        dataProperties.putInt(DATA_VARIANT, getProfession());
     }
 
     public int getProfession() {

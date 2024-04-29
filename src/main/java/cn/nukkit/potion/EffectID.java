@@ -32,7 +32,13 @@ public interface EffectID {
     int BAD_OMEN = 28;
     int VILLAGE_HERO = 29;
     int DARKNESS = 30;
+    int TRIAL_OMEN = 31;
+    int WIND_CHARGED = 32;
+    int WEAVING = 33;
+    int OOZING = 34;
+    int INFESTED = 35;
+    int RAID_OMEN = 36;
 
 
-    int UNDEFINED = 31;
+    int UNDEFINED = 37;
 }

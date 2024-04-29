@@ -1,12 +1,17 @@
 package cn.nukkit.entity.passive;
 
 import cn.nukkit.Player;
+import cn.nukkit.Server;
+import cn.nukkit.block.Block;
 import cn.nukkit.entity.Entity;
 import cn.nukkit.entity.EntityHuman;
+import cn.nukkit.entity.EntityInteractable;
 import cn.nukkit.entity.EntityRideable;
+import cn.nukkit.entity.attribute.Attribute;
 import cn.nukkit.entity.data.ByteEntityData;
 import cn.nukkit.entity.data.FloatEntityData;
 import cn.nukkit.entity.data.IntEntityData;
+import cn.nukkit.event.entity.EntityDamageEvent;
 import cn.nukkit.inventory.HorseInventory;
 import cn.nukkit.inventory.InventoryHolder;
 import cn.nukkit.item.Item;
@@ -16,9 +21,39 @@ import cn.nukkit.math.Vector3f;
 import cn.nukkit.nbt.NBTIO;
 import cn.nukkit.nbt.tag.CompoundTag;
 import cn.nukkit.nbt.tag.ListTag;
+import cn.nukkit.network.protocol.AddEntityPacket;
+import cn.nukkit.network.protocol.DataPacket;
+import cn.nukkit.network.protocol.LevelSoundEventPacket;
+import cn.nukkit.network.protocol.UpdateAttributesPacket;
+import cn.nukkit.potion.Effect;
+import it.unimi.dsi.fastutil.ints.Int2ObjectMap;
 
-public abstract class EntityAbstractHorse extends EntityAnimal implements EntityRideable, InventoryHolder {
+import java.util.Iterator;
+import java.util.concurrent.ThreadLocalRandom;
+
+public abstract class EntityAbstractHorse extends EntityAnimal implements EntityInteractable, EntityRideable, InventoryHolder {
+
+    public static final int HORSE_TYPE_DEFAULT = 0;
+    public static final int HORSE_TYPE_DONKEY = 1;
+    public static final int HORSE_TYPE_MULE = 2;
+    public static final int HORSE_TYPE_ZOMBIE = 3;
+    public static final int HORSE_TYPE_SKELETON = 4;
+
+    public static final int HORSE_FLAG_NONE = 0;
+    public static final int HORSE_FLAG_TAME = 0b10;
+    public static final int HORSE_FLAG_SADDLE = 0b100;
+    public static final int HORSE_FLAG_BRED = 0b10000;
+    public static final int HORSE_FLAG_EATING = 0b100000;
+    public static final int HORSE_FLAG_STANDING = 0b1000000;
+    public static final int HORSE_FLAG_OPEN_MOUTH = 0b10000000;
+
     protected HorseInventory inventory;
+
+    private int countEating;
+    private int mouthCounter;
+    private int standCounter;
+
+    private int jumpTicks;
 
     public EntityAbstractHorse(FullChunk chunk, CompoundTag nbt) {
         super(chunk, nbt);
@@ -41,31 +76,50 @@ public abstract class EntityAbstractHorse extends EntityAnimal implements Entity
     }
 
     public void updateSaddled(boolean saddled) {
-        // Not working at now for some reason. Disable temporary
-        // this.setDataFlag(DATA_FLAGS, DATA_FLAG_SADDLED, saddled);
-        // this.setDataFlag(DATA_FLAGS, DATA_FLAG_CAN_POWER_JUMP, saddled);
+        this.updateSaddled(saddled, true);
+    }
+
+    public void updateSaddled(boolean saddled, boolean send) {
+        this.setDataFlag(DATA_FLAG_SADDLED, saddled, send);
+        this.setDataFlag(DATA_FLAG_WASD_CONTROLLED, saddled, send);
+        this.setDataFlag(DATA_FLAG_CAN_POWER_JUMP, saddled, send);
     }
 
     @Override
     protected void initEntity() {
         super.initEntity();
 
+        dataProperties.putInt(DATA_HORSE_FLAGS, HORSE_FLAG_NONE);
+
         this.inventory = new HorseInventory(this);
-        if (this.namedTag.contains("Items") && this.namedTag.get("Items") instanceof ListTag) {
-            ListTag<CompoundTag> inventoryList = this.namedTag.getList("Items", CompoundTag.class);
-            for (CompoundTag item : inventoryList.getAll()) {
-                this.inventory.setItem(item.getByte("Slot"), NBTIO.getItemHelper(item));
+        ListTag<CompoundTag> items = namedTag.getList("Items", (ListTag<CompoundTag>) null);
+        if (items == null) {
+            namedTag.putList(new ListTag<>("Items"));
+        } else {
+            Int2ObjectMap<Item> slots = inventory.getContentsUnsafe();
+            Iterator<CompoundTag> iter = items.iterator();
+            while (iter.hasNext()) {
+                CompoundTag tag = iter.next();
+
+                int slot = tag.getByte("Slot");
+                if (slot < 0 || slot >= inventory.getSize()) {
+                    iter.remove();
+                    continue;
+                }
+
+                Item item = NBTIO.getItemHelper(tag);
+                if (item.isNull()) {
+                    iter.remove();
+                    continue;
+                }
+
+                slots.put(slot, item);
             }
         }
-        this.setDataProperty(new ByteEntityData(DATA_CONTAINER_TYPE, inventory.getType().getNetworkType()), false);
-        this.setDataProperty(new IntEntityData(DATA_CONTAINER_BASE_SIZE, inventory.getSize()), false);
-        this.setDataProperty(new IntEntityData(DATA_CONTAINER_EXTRA_SLOTS_PER_STRENGTH, 0), false);
-        dataProperties.putByte(DATA_CONTROLLING_SEAT_INDEX, 0);
+
+        updateSaddled(inventory.getItem(0).is(Item.SADDLE), false);
 
         this.setDataFlag(DATA_FLAG_CAN_WALK, true, false);
-        this.setDataFlag(DATA_FLAG_TAMED, true, false);
-        // Disable due to protocol compatibility issues. Only temporary measures.
-        // this.setDataFlag(DATA_FLAGS, DATA_FLAG_WASD_CONTROLLED, true, false);
         this.setDataFlag(DATA_FLAG_GRAVITY, true, false);
     }
 
@@ -81,6 +135,12 @@ public abstract class EntityAbstractHorse extends EntityAnimal implements Entity
         return mounted;
     }
 
+    protected void onMountEntity(Entity entity) {
+        jumpTicks = 0;
+        setEating(false);
+        setStanding(false);
+    }
+
     @Override
     public boolean dismountEntity(Entity entity) {
         boolean dismounted = super.dismountEntity(entity) && entity.riding == null;
@@ -94,7 +154,40 @@ public abstract class EntityAbstractHorse extends EntityAnimal implements Entity
     }
 
     @Override
+    protected void onDismountEntity(Entity entity) {
+        jumpTicks = 0;
+        if (entity instanceof Player) {
+            pitch = 0;
+        }
+    }
+
+    @Override
+    public boolean canDoInteraction(Player player) {
+        if (isBaby()) {
+            return false;
+        }
+        return player.isSneaking() && isTamed() || passengers.isEmpty();
+    }
+
+    @Override
+    public String getInteractButtonText(Player player) {
+        if (isBaby()) {
+            return "";
+        }
+        if (player.isSneaking() && isTamed()) {
+            return "action.interact.opencontainer";
+        }
+        if (!passengers.isEmpty()) {
+            return "";
+        }
+        return isTamed() ? "action.interact.ride.horse" : "action.interact.mount";
+    }
+
+    @Override
     public boolean onInteract(Player player, Item item) {
+        if (isBaby()) {
+            return false;
+        }
         if (player.isSneaking()) {
             openInventory(player);
         } else {
@@ -102,6 +195,15 @@ public abstract class EntityAbstractHorse extends EntityAnimal implements Entity
             this.mountEntity(player);
         }
         return super.onInteract(player, item);
+    }
+
+    @Override
+    public void openInventory(Player player) {
+        if (!isTamed()) {
+            return;
+        }
+
+        player.addWindow(getInventory());
     }
 
     @Override
@@ -124,15 +226,24 @@ public abstract class EntityAbstractHorse extends EntityAnimal implements Entity
     public void saveNBT() {
         super.saveNBT();
 
-        this.namedTag.putList(new ListTag<CompoundTag>("Items"));
-        if (this.inventory != null) {
-            for (int slot = 0; slot < inventory.getSize(); ++slot) {
-                Item item = this.inventory.getItem(slot);
-                if (item != null && item.getId() != Item.AIR) {
-                    this.namedTag.getList("Items", CompoundTag.class).add(NBTIO.putItemHelper(item, slot));
+        ListTag<CompoundTag> items = new ListTag<>("Items");
+        if (inventory != null) {
+            Int2ObjectMap<Item> slots = inventory.getContentsUnsafe();
+            for (Int2ObjectMap.Entry<Item> entry : slots.int2ObjectEntrySet()) {
+                int slot = entry.getIntKey();
+                if (slot < 0 || slot >= inventory.getSize()) {
+                    continue;
                 }
+
+                Item item = entry.getValue();
+                if (item == null || item.isNull()) {
+                    continue;
+                }
+
+                items.add(NBTIO.putItemHelper(item, slot));
             }
         }
+        namedTag.putList(items);
     }
 
     @Override
@@ -169,9 +280,53 @@ public abstract class EntityAbstractHorse extends EntityAnimal implements Entity
             this.motionZ *= friction;
 
             this.updateMovement();
+
+            normalTick();
         }
 
         return hasUpdate || !this.onGround || Math.abs(this.motionX) > 0.00001 || Math.abs(this.motionY) > 0.00001 || Math.abs(this.motionZ) > 0.00001;
+    }
+
+    protected void normalTick() {
+        if (mouthCounter > 0 && ++mouthCounter > 30) {
+            mouthCounter = 0;
+            setHorseFlag(HORSE_FLAG_OPEN_MOUTH, false);
+        }
+        if (standCounter > 0 && ++standCounter > 20) {
+            standCounter = 0;
+            setStanding(false);
+        }
+
+        aiStep();
+
+        if (canRide() && getPassenger() instanceof Player player) {
+            this.pitch = Mth.clamp(player.pitch, -44.949997f, 44.949997f);
+            this.yaw = player.yaw;
+        }
+    }
+
+    protected void aiStep() {
+        if (!isEating() && passengers.isEmpty() && ThreadLocalRandom.current().nextInt(300) == 0 && level.getBlock(downVec()).is(Block.GRASS_BLOCK)) {
+            countEating = 1;
+            setEating(true);
+        }
+
+        if (countEating > 0 && ++countEating > 50) {
+            countEating = 0;
+            setEating(false);
+        }
+    }
+
+    @Override
+    public void applyEntityCollision(Entity entity) {
+        if (isClientPredictedMovement() && getPassenger() instanceof Player) {
+            return;
+        }
+        super.applyEntityCollision(entity);
+    }
+
+    protected boolean isClientPredictedMovement() {
+        return true;
     }
 
     public boolean canRide() {
@@ -180,33 +335,188 @@ public abstract class EntityAbstractHorse extends EntityAnimal implements Entity
     }
 
     @Override
-    public void onPlayerInput(Player player, double motionX, double motionY) {
-        if (!canRide()) return;
+    public void onPlayerInput(Player player, double x, double y, double z, double yaw, double pitch) {
+        setPositionAndRotation(temporalVector.setComponents(x, y, z), yaw, pitch);
+    }
 
-        motionX *= 0.4;
+    @Override
+    protected DataPacket createAddEntityPacket() {
+        AddEntityPacket addEntity = new AddEntityPacket();
+        addEntity.type = this.getNetworkId();
+        addEntity.entityUniqueId = this.getId();
+        addEntity.entityRuntimeId = this.getId();
+        addEntity.yaw = (float) this.yaw;
+        addEntity.headYaw = (float) this.yaw;
+        addEntity.pitch = (float) this.pitch;
+        addEntity.x = (float) this.x;
+        addEntity.y = (float) this.y + this.getBaseOffset();
+        addEntity.z = (float) this.z;
+        addEntity.speedX = (float) this.motionX;
+        addEntity.speedY = (float) this.motionY;
+        addEntity.speedZ = (float) this.motionZ;
+        addEntity.metadata = this.dataProperties;
 
-        double f = motionX * motionX + motionY * motionY;
-        double friction = 0.6;
+        int maxHealth = getMaxHealth();
+        float jumpStrength = getJumpStrength();
+        addEntity.attributes = new Attribute[]{
+                Attribute.getAttribute(Attribute.HEALTH).setMaxValue(maxHealth).setDefaultValue(maxHealth).setValue(getHealth()),
+                Attribute.getAttribute(Attribute.MOVEMENT).setDefaultValue(movementSpeed).setValue(movementSpeed),
+                Attribute.getAttribute(Attribute.HORSE_JUMP_STRENGTH).setDefaultValue(jumpStrength).setValue(jumpStrength),
+        };
 
-        this.yaw = player.yaw;
+        return addEntity;
+    }
 
-        if (f >= 1.0E-4) {
-            f = Math.sqrt(f);
-
-            if (f < 1) {
-                f = 1;
-            }
-
-            f = friction / f;
-            motionX = motionX * f;
-            motionY = motionY * f;
-            double f1 = Mth.sin(this.yaw * 0.017453292);
-            double f2 = Mth.cos(this.yaw * 0.017453292);
-            this.motionX = (motionX * f2 - motionY * f1);
-            this.motionZ = (motionY * f2 + motionX * f1);
-        } else {
-            this.motionX = 0;
-            this.motionZ = 0;
+    @Override
+    public boolean setHealth(float health) {
+        if (!super.setHealth(health)) {
+            return false;
         }
+
+        UpdateAttributesPacket packet = new UpdateAttributesPacket();
+        packet.entityId = getId();
+        int maxHealth = getMaxHealth();
+        packet.entries = new Attribute[]{
+                Attribute.getAttribute(Attribute.HEALTH).setMaxValue(maxHealth).setDefaultValue(maxHealth).setValue(getHealth()),
+        };
+        Server.broadcastPacket(getViewers().values(), packet);
+        return true;
+    }
+
+    @Override
+    public void setMaxHealth(int maxHealth) {
+        super.setMaxHealth(maxHealth);
+
+        if (getHealth() > maxHealth) {
+            this.health = maxHealth;
+        }
+
+        UpdateAttributesPacket packet = new UpdateAttributesPacket();
+        packet.entityId = getId();
+        int maximumHealth = getMaxHealth();
+        packet.entries = new Attribute[]{
+                Attribute.getAttribute(Attribute.HEALTH).setMaxValue(maximumHealth).setDefaultValue(maximumHealth).setValue(getHealth()),
+        };
+        Server.broadcastPacket(getViewers().values(), packet);
+    }
+
+    @Override
+    protected void onHurt(EntityDamageEvent source) {
+        openMouth();
+        super.onHurt(source);
+    }
+
+    public float getJumpStrength() {
+        return 0.5f;
+    }
+
+    public void updatePlayerJump(boolean jumping) {
+        if (!isTamed()) {
+            return;
+        }
+        if (!canRide()) {
+            return;
+        }
+        if (!isOnGround()) {
+            return;
+        }
+
+        if (jumpTicks == 0 && !jumping) {
+            return;
+        }
+
+        if (jumping) {
+            jumpTicks++;
+            return;
+        }
+
+        standIfPossible();
+
+        if (!isClientPredictedMovement()) {
+            float jumpScale = jumpTicks < 10 ? jumpTicks * 0.1f : 0.8f + 2f / (jumpTicks - 9) * 0.1f;
+            motionY += getJumpStrength() * (jumpScale >= 0.9f ? 1 : 0.4f + 0.4f * jumpScale / 0.9f);
+
+            Effect jumpBoost = getEffect(Effect.JUMP_BOOST);
+            if (jumpBoost != null) {
+                motionY += 0.1f * (jumpBoost.getAmplifier() + 1);
+            }
+        }
+
+        jumpTicks = 0;
+    }
+
+    public boolean getHorseFlag(int flag) {
+        return (getDataPropertyInt(DATA_HORSE_FLAGS) & flag) != 0;
+    }
+
+    public boolean setHorseFlag(int flag, boolean value) {
+        int current = getDataPropertyInt(DATA_HORSE_FLAGS);
+        int flags;
+        if (value) {
+            flags = current | flag;
+        } else {
+            flags = current & ~flag;
+        }
+        if (current == flags) {
+            return false;
+        }
+        return setDataProperty(new IntEntityData(DATA_HORSE_FLAGS, flags));
+    }
+
+    public boolean openMouth() {
+        mouthCounter = 1;
+        return setHorseFlag(HORSE_FLAG_OPEN_MOUTH, true);
+    }
+
+    public boolean isBred() {
+        return getHorseFlag(HORSE_FLAG_BRED);
+    }
+
+    public boolean setBred(boolean value) {
+        return setHorseFlag(HORSE_FLAG_BRED, value);
+    }
+
+    public boolean isEating() {
+        return getHorseFlag(HORSE_FLAG_EATING);
+    }
+
+    public boolean setEating(boolean value) {
+        return setHorseFlag(HORSE_FLAG_EATING, value);
+    }
+
+    public boolean standIfPossible() {
+        standCounter = 1;
+        setEating(false);
+        return setStanding(true);
+    }
+
+    public boolean isStanding() {
+        return getDataFlag(DATA_FLAG_REARING);
+    }
+
+    public boolean setStanding(boolean value) {
+        return setDataFlag(DATA_FLAG_REARING, value);
+    }
+
+    public boolean isSaddled() {
+        return getDataFlag(DATA_FLAG_SADDLED);
+    }
+
+    public boolean setSaddled(boolean value) {
+        return setDataFlag(DATA_FLAG_SADDLED, value);
+    }
+
+    public boolean isTamed() {
+        return getDataFlag(DATA_FLAG_TAMED);
+    }
+
+    public boolean setTamed(boolean value) {
+        return setDataFlag(DATA_FLAG_TAMED, value);
+    }
+
+    public void makeMad() {
+        standIfPossible();
+        openMouth();
+        level.addLevelSoundEvent(getEyePosition(), LevelSoundEventPacket.SOUND_MAD, getIdentifier());
     }
 }

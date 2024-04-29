@@ -9,6 +9,9 @@ public class EntityGoat extends EntityAnimal {
 
     public static final int NETWORK_ID = EntityID.GOAT;
 
+    public static final int GOAT_VARIANT_DEFAULT = 0;
+    public static final int GOAT_VARIANT_SCREAMER = 1;
+
     public EntityGoat(FullChunk chunk, CompoundTag nbt) {
         super(chunk, nbt);
     }
@@ -31,7 +34,17 @@ public class EntityGoat extends EntityAnimal {
     @Override
     protected void initEntity() {
         super.initEntity();
+
+        dataProperties.putInt(DATA_VARIANT, namedTag.getInt("Variant", GOAT_VARIANT_DEFAULT));
+
         this.setMaxHealth(10);
+    }
+
+    @Override
+    public void saveNBT() {
+        super.saveNBT();
+
+        namedTag.putInt("Variant", getDataPropertyInt(DATA_VARIANT));
     }
 
     @Override

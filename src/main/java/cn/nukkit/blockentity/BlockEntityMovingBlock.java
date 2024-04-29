@@ -25,6 +25,8 @@ public class BlockEntityMovingBlock extends BlockEntitySpawnable {
 
     protected BlockVector3 piston;
 
+    private boolean expanding;
+
     public BlockEntityMovingBlock(FullChunk chunk, CompoundTag nbt) {
         super(chunk, nbt);
     }
@@ -52,6 +54,8 @@ public class BlockEntityMovingBlock extends BlockEntitySpawnable {
             this.piston = asBlockVector3();
         }
 
+        expanding = namedTag.getBoolean("expanding");
+
         super.initBlockEntity();
     }
 
@@ -70,6 +74,8 @@ public class BlockEntityMovingBlock extends BlockEntitySpawnable {
         } else {
             namedTag.remove("movingBlockExtra");
         }
+
+        namedTag.putBoolean("expanding", expanding);
     }
 
     @Nullable
@@ -120,7 +126,8 @@ public class BlockEntityMovingBlock extends BlockEntitySpawnable {
         CompoundTag tag = getDefaultCompound(this, MOVING_BLOCK)
                 .putInt("pistonPosX", this.piston.getX())
                 .putInt("pistonPosY", this.piston.getY())
-                .putInt("pistonPosZ", this.piston.getZ());
+                .putInt("pistonPosZ", this.piston.getZ())
+                .putBoolean("expanding", expanding);
 
         if (block != null) {
             tag.putCompound("movingBlock", BlockSerializer.serialize(block));
@@ -128,7 +135,12 @@ public class BlockEntityMovingBlock extends BlockEntitySpawnable {
         if (blockExtra != null) {
             tag.putCompound("movingBlockExtra", BlockSerializer.serialize(blockExtra));
         }
-
+/*
+        CompoundTag blockEntity = namedTag.getCompound("movingEntity", null);
+        if (blockEntity != null) {
+            tag.putCompound("movingEntity", blockEntity.getSpawnCompound());
+        }
+*/
         return tag;
     }
 }

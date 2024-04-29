@@ -709,4 +709,19 @@ public interface ItemNames extends ItemBlockNames {
     String SHAPER_ARMOR_TRIM_SMITHING_TEMPLATE = "shaper_armor_trim_smithing_template";
     String HOST_ARMOR_TRIM_SMITHING_TEMPLATE = "host_armor_trim_smithing_template";
     String PITCHER_POD = "pitcher_pod";
+    String ARMADILLO_SCUTE = "armadillo_scute";
+    String WOLF_ARMOR = "wolf_armor";
+    String TRIAL_KEY = "trial_key";
+    String OMINOUS_TRIAL_KEY = "ominous_trial_key";
+    String OMINOUS_BOTTLE = "ominous_bottle";
+    String BREEZE_ROD = "breeze_rod";
+    String WIND_CHARGE = "wind_charge";
+    String MACE = "mace";
+    String FLOW_POTTERY_SHERD = "flow_pottery_sherd";
+    String GUSTER_POTTERY_SHERD = "guster_pottery_sherd";
+    String SCRAPE_POTTERY_SHERD = "scrape_pottery_sherd";
+    String FLOW_ARMOR_TRIM_SMITHING_TEMPLATE = "flow_armor_trim_smithing_template";
+    String BOLT_ARMOR_TRIM_SMITHING_TEMPLATE = "bolt_armor_trim_smithing_template";
+    String FLOW_BANNER_PATTERN = "flow_banner_pattern";
+    String GUSTER_BANNER_PATTERN = "guster_banner_pattern";
 }

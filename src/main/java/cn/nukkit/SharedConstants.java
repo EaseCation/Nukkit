@@ -42,6 +42,11 @@ public final class SharedConstants {
 
     public static final boolean ENABLE_BLOCK_DESTROY_SPEED_COMPATIBILITY = true;
 
+    /**
+     * @since 1.20.0
+     */
+    public static final boolean ENABLE_NEW_EFFECT_COLOR = true;
+
     // experimental
 
     public static final boolean EXPERIMENTAL_COMBAT_KNOCKBACK_TEST = false;

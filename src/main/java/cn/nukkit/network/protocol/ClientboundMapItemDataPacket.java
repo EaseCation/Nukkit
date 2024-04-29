@@ -7,7 +7,6 @@ import java.awt.*;
 import java.awt.image.BufferedImage;
 import java.util.Arrays;
 import java.util.List;
-import java.util.stream.Collectors;
 
 /**
  * Created by CreeperFace on 5.3.2017.
@@ -136,7 +135,33 @@ public class ClientboundMapItemDataPacket extends DataPacket {
 
     @ToString
     public static class MapDecorator {
-        public byte img;
+        public static final int TYPE_TYPE_MARKER_WHITE = 0; // player
+        public static final int TYPE_MARKER_GREEN = 1; // item frame
+        public static final int TYPE_MARKER_RED = 2;
+        public static final int TYPE_MARKER_BLUE = 3;
+        public static final int TYPE_X_WHITE = 4;
+        public static final int TYPE_TRIANGLE_RED = 5;
+        public static final int TYPE_SQUARE_WHITE = 6; // player off map
+        public static final int TYPE_MARKER_SIGN = 7;
+        public static final int TYPE_MARKER_PINK = 8;
+        public static final int TYPE_MARKER_ORANGE = 9;
+        public static final int TYPE_MARKER_YELLOW = 10;
+        public static final int TYPE_MARKER_TEAL = 11;
+        public static final int TYPE_TRIANGLE_GREEN = 12;
+        public static final int TYPE_SMALL_SQUARE_WHITE = 13; // player off limits
+        public static final int TYPE_MANSION = 14;
+        public static final int TYPE_MONUMENT = 15;
+        public static final int TYPE_NO_DRAW = 16; // player hidden
+        public static final int TYPE_VILLAGE_DESERT = 17;
+        public static final int TYPE_VILLAGE_PLAINS = 18;
+        public static final int TYPE_VILLAGE_SAVANNA = 19;
+        public static final int TYPE_VILLAGE_SNOWY = 20;
+        public static final int TYPE_VILLAGE_TAIGA = 21;
+        public static final int TYPE_JUNGLE_TEMPLE = 22;
+        public static final int TYPE_WITCH_HUT = 23;
+        public static final int TYPE_TRIAL_CHAMBERS = 24;
+
+        public byte img = TYPE_TYPE_MARKER_WHITE;
         public byte rot;
         public byte offsetX;
         public byte offsetZ;
@@ -148,8 +173,9 @@ public class ClientboundMapItemDataPacket extends DataPacket {
     public static class MapTrackedObject {
         public static final int TYPE_ENTITY = 0;
         public static final int TYPE_BLOCK = 1;
+        public static final int TYPE_OTHER = 2;
 
-        public int type;
+        public int type = TYPE_OTHER;
         public long entityUniqueId;
         public int x;
         public int y;

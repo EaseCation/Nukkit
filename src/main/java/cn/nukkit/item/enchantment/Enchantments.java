@@ -62,6 +62,11 @@ public final class Enchantments {
         registerEnchantment(SOUL_SPEED, new EnchantmentSoulSpeed(), V1_16_0);
 
         registerEnchantment(SWIFT_SNEAK, new EnchantmentSwiftSneak(), V1_19_0);
+/*
+        registerEnchantment(WIND_BURST, new EnchantmentMaceWindBurst(), V1_21_0);
+        registerEnchantment(DENSITY, new EnchantmentMaceDensity(), V1_21_0);
+        registerEnchantment(BREACH, new EnchantmentMaceBreach(), V1_21_0);
+*/
 
     }
 

@@ -31,4 +31,10 @@ public interface EffectNames {
     String BAD_OMEN = "bad_omen";
     String VILLAGE_HERO = "village_hero";
     String DARKNESS = "darkness";
+    String TRIAL_OMEN = "trial_omen";
+    String WIND_CHARGED = "wind_charged";
+    String WEAVING = "weaving";
+    String OOZING = "oozing";
+    String INFESTED = "infested";
+    String RAID_OMEN = "raid_omen";
 }

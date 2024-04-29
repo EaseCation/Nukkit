@@ -18,6 +18,22 @@ public class EntityMooshroom extends EntityAnimal {
 
     public static final int NETWORK_ID = EntityID.MOOSHROOM;
 
+    public static final int MOOSHROOM_VARIANT_RED = 0;
+    public static final int MOOSHROOM_VARIANT_BROWN = 1;
+
+    public static final int MOOSHROOM_MARK_NOTHING = -1;
+    public static final int MOOSHROOM_MARK_POPPY = 0;
+    public static final int MOOSHROOM_MARK_CORNFLOWER = 1;
+    public static final int MOOSHROOM_MARK_TULIPS = 2;
+    public static final int MOOSHROOM_MARK_AZURE_BLUET = 3;
+    public static final int MOOSHROOM_MARK_LILY_OF_THE_VALLEY = 4;
+    public static final int MOOSHROOM_MARK_DANDELION = 5;
+    public static final int MOOSHROOM_MARK_BLUE_ORCHID = 6;
+    public static final int MOOSHROOM_MARK_ALLIUM = 7;
+    public static final int MOOSHROOM_MARK_OXEYE_DAISY = 8;
+    public static final int MOOSHROOM_MARK_WITHER_ROSE = 9;
+    public static final int MOOSHROOM_MARK_TORCHFLOWER = 10;
+
     public EntityMooshroom(FullChunk chunk, CompoundTag nbt) {
         super(chunk, nbt);
     }
@@ -53,7 +69,19 @@ public class EntityMooshroom extends EntityAnimal {
     @Override
     protected void initEntity() {
         super.initEntity();
+
+        dataProperties.putInt(DATA_VARIANT, namedTag.getInt("Variant", MOOSHROOM_VARIANT_RED));
+        dataProperties.putInt(DATA_MARK_VARIANT, namedTag.getInt("MarkVariant", MOOSHROOM_MARK_NOTHING));
+
         setMaxHealth(10);
+    }
+
+    @Override
+    public void saveNBT() {
+        super.saveNBT();
+
+        namedTag.putInt("Variant", getDataPropertyInt(DATA_VARIANT));
+        namedTag.putInt("MarkVariant", getDataPropertyInt(DATA_MARK_VARIANT));
     }
 
     @Override

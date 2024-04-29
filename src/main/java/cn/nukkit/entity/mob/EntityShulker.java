@@ -17,6 +17,24 @@ public class EntityShulker extends EntityMob {
 
     public static final int NETWORK_ID = EntityID.SHULKER;
 
+    public static final int SHULKER_VARIANT_BLACK = 0;
+    public static final int SHULKER_VARIANT_RED = 1;
+    public static final int SHULKER_VARIANT_GREEN = 2;
+    public static final int SHULKER_VARIANT_BROWN = 3;
+    public static final int SHULKER_VARIANT_BLUE = 4;
+    public static final int SHULKER_VARIANT_PURPLE = 5;
+    public static final int SHULKER_VARIANT_CYAN = 6;
+    public static final int SHULKER_VARIANT_SILVER = 7;
+    public static final int SHULKER_VARIANT_GRAY = 8;
+    public static final int SHULKER_VARIANT_PINK = 9;
+    public static final int SHULKER_VARIANT_LIME = 10;
+    public static final int SHULKER_VARIANT_YELLOW = 11;
+    public static final int SHULKER_VARIANT_LIGHT_BLUE = 12;
+    public static final int SHULKER_VARIANT_MAGENTA = 13;
+    public static final int SHULKER_VARIANT_ORANGE = 14;
+    public static final int SHULKER_VARIANT_WHITE = 15;
+    public static final int SHULKER_VARIANT_UNDYED = 16;
+
     @Override
     public int getNetworkId() {
         return NETWORK_ID;
@@ -29,8 +47,19 @@ public class EntityShulker extends EntityMob {
     @Override
     protected void initEntity() {
         super.initEntity();
+
+        dataProperties.putInt(DATA_VARIANT, namedTag.getInt("Variant", SHULKER_VARIANT_UNDYED));
+
         this.setMaxHealth(30);
+
         fireProof = true;
+    }
+
+    @Override
+    public void saveNBT() {
+        super.saveNBT();
+
+        namedTag.putInt("Variant", getDataPropertyInt(DATA_VARIANT));
     }
 
     @Override

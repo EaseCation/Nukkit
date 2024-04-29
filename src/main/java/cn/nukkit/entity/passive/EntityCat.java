@@ -16,6 +16,18 @@ public class EntityCat extends EntityAnimal {
 
     public static final int NETWORK_ID = EntityID.CAT;
 
+    public static final int CAT_VARIANT_WHITE = 0;
+    public static final int CAT_VARIANT_TUXEDO = 1;
+    public static final int CAT_VARIANT_RED = 2;
+    public static final int CAT_VARIANT_SIAMESE = 3;
+    public static final int CAT_VARIANT_BRITISH = 4;
+    public static final int CAT_VARIANT_CALICO = 5;
+    public static final int CAT_VARIANT_PERSIAN = 6;
+    public static final int CAT_VARIANT_RAGDOLL = 7;
+    public static final int CAT_VARIANT_TABBY = 8;
+    public static final int CAT_VARIANT_BLACK = 9;
+    public static final int CAT_VARIANT_JELLIE = 10;
+
     public EntityCat(FullChunk chunk, CompoundTag nbt) {
         super(chunk, nbt);
     }
@@ -43,7 +55,23 @@ public class EntityCat extends EntityAnimal {
     @Override
     public void initEntity() {
         super.initEntity();
+
+        int variant;
+        if (namedTag.contains("Variant")) {
+            variant = namedTag.getInt("Variant");
+        } else {
+            variant = ThreadLocalRandom.current().nextInt(11);
+        }
+        dataProperties.putInt(DATA_VARIANT, variant);
+
         this.setMaxHealth(10);
+    }
+
+    @Override
+    public void saveNBT() {
+        super.saveNBT();
+
+        namedTag.putInt("Variant", getDataPropertyInt(DATA_VARIANT));
     }
 
     @Override

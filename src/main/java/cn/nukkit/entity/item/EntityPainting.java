@@ -89,7 +89,15 @@ public class EntityPainting extends EntityHanging {
         }
 
         if (this.namedTag.contains("Motive")) {
-            this.motive = getMotive(this.namedTag.getString("Motive"));
+            String motif = this.namedTag.getString("Motive");
+            this.motive = getMotive(motif);
+
+            this.recalculateBoundingBox(false);
+
+            namedTag.putString("Motif", motif);
+            namedTag.remove("Motive");
+        } else if (this.namedTag.contains("Motif")) {
+            this.motive = getMotive(this.namedTag.getString("Motif"));
 
             this.recalculateBoundingBox(false);
         } else {
@@ -188,7 +196,7 @@ public class EntityPainting extends EntityHanging {
             this.namedTag.putInt("TileZ", this.blockIn.z);
         }
 
-        this.namedTag.putString("Motive", this.motive.title);
+        this.namedTag.putString("Motif", this.motive.title);
     }
 
     @Override
@@ -332,6 +340,9 @@ public class EntityPainting extends EntityHanging {
         return (length & 1) == 0 ? 0.5 : 0;
     }
 
+    /**
+     * Motif
+     */
     public enum Motive {
         KEBAB("Kebab", 1, 1),
         AZTEC("Aztec", 1, 1),
@@ -340,8 +351,10 @@ public class EntityPainting extends EntityHanging {
         BOMB("Bomb", 1, 1),
         PLANT("Plant", 1, 1),
         WASTELAND("Wasteland", 1, 1),
+//        MEDITATIVE("Meditative", 1, 1), //TODO: 1.21.0
         WANDERER("Wanderer", 1, 2),
         GRAHAM("Graham", 1, 2),
+//        PRAIRIE_RIDE("PrairieRide", 1, 2),
         POOL("Pool", 2, 1),
         COURBET("Courbet", 2, 1),
         SUNSET("Sunset", 2, 1),
@@ -353,6 +366,8 @@ public class EntityPainting extends EntityHanging {
         VOID("Void", 2, 2),
         SKULL_AND_ROSES("SkullAndRoses", 2, 2),
         WITHER("Wither", 2, 2),
+//        BAROQUE("Baroque", 2, 2),
+//        HUMBLE("Humble", 2, 2),
         EARTH("Earth", 2, 2, true),
         FIRE("Fire", 2, 2, true),
         WATER("Water", 2, 2, true),
@@ -362,7 +377,8 @@ public class EntityPainting extends EntityHanging {
         DONKEY_KONG("DonkeyKong", 4, 3),
         POINTER("Pointer", 4, 4),
         PIG_SCENE("Pigscene", 4, 4),
-        BURNING_SKULL("BurningSkull", 4, 4)
+        BURNING_SKULL("BurningSkull", 4, 4),
+//        UNPACKED("Unpacked", 4, 4),
         ;
 
         public final String title;

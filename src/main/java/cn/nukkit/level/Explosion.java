@@ -9,6 +9,8 @@ import cn.nukkit.block.Blocks;
 import cn.nukkit.blockentity.*;
 import cn.nukkit.entity.Entity;
 import cn.nukkit.entity.item.EntityItem;
+import cn.nukkit.entity.item.EntityMinecartTNT;
+import cn.nukkit.entity.item.EntityPrimedTNT;
 import cn.nukkit.entity.item.EntityXPOrb;
 import cn.nukkit.event.block.BlockExplodeEvent;
 import cn.nukkit.event.block.BlockIgniteEvent.BlockIgniteCause;
@@ -271,6 +273,7 @@ public class Explosion {
         }
 
         boolean blockDrop = this.level.getGameRules().getBoolean(GameRule.DO_TILE_DROPS);
+        boolean dropDecay = !(what instanceof EntityPrimedTNT) && !(what instanceof EntityMinecartTNT) || level.gameRules.getBoolean(GameRule.TNT_EXPLOSION_DROP_DECAY);
         List<Vector3> smokePositions = this.affectedBlocks.isEmpty() ? Collections.emptyList() : new ObjectArrayList<>();
         ThreadLocalRandom random = ThreadLocalRandom.current();
 
@@ -279,6 +282,11 @@ public class Explosion {
             if (id == Block.TNT) {
                 ((BlockTNT) block).prime(random.nextInt(10, 31), this.what instanceof Entity ? (Entity) this.what : null);
             } else if (id == Block.CHEST || id == Block.TRAPPED_CHEST) {
+                if (blockDrop && (!dropDecay || random.nextFloat() * 100 < yield)) {
+                    for (Item drop : block.getDrops(ItemTool.getUniversalTool())) {
+                        this.level.dropItem(block.blockCenter(), drop);
+                    }
+                }
                 BlockEntity chest = block.getLevel().getBlockEntity(block);
                 if (chest instanceof BlockEntityChest) {
                     if (blockDrop) {
@@ -291,6 +299,11 @@ public class Explosion {
             } else if (id == Block.FURNACE || id == Block.LIT_FURNACE
                     || id == BlockID.BLAST_FURNACE || id == BlockID.LIT_BLAST_FURNACE
                     || id == BlockID.SMOKER || id == BlockID.LIT_SMOKER) {
+                if (blockDrop && (!dropDecay || random.nextFloat() * 100 < yield)) {
+                    for (Item drop : block.getDrops(ItemTool.getUniversalTool())) {
+                        this.level.dropItem(block.blockCenter(), drop);
+                    }
+                }
                 BlockEntity container = block.getLevel().getBlockEntity(block);
                 if (container instanceof BlockEntityFurnace) {
                     if (blockDrop) {
@@ -301,6 +314,11 @@ public class Explosion {
                     ((InventoryHolder) container).getInventory().clearAll();
                 }
             } else if (id == Block.BLOCK_BREWING_STAND) {
+                if (blockDrop && (!dropDecay || random.nextFloat() * 100 < yield)) {
+                    for (Item drop : block.getDrops(ItemTool.getUniversalTool())) {
+                        this.level.dropItem(block.blockCenter(), drop);
+                    }
+                }
                 BlockEntity container = block.getLevel().getBlockEntity(block);
                 if (container instanceof BlockEntityBrewingStand) {
                     if (blockDrop) {
@@ -311,6 +329,11 @@ public class Explosion {
                     ((InventoryHolder) container).getInventory().clearAll();
                 }
             } else if (id == Block.BLOCK_HOPPER) {
+                if (blockDrop && (!dropDecay || random.nextFloat() * 100 < yield)) {
+                    for (Item drop : block.getDrops(ItemTool.getUniversalTool())) {
+                        this.level.dropItem(block.blockCenter(), drop);
+                    }
+                }
                 BlockEntity container = block.getLevel().getBlockEntity(block);
                 if (container instanceof BlockEntityHopper) {
                     if (blockDrop) {
@@ -321,6 +344,11 @@ public class Explosion {
                     ((InventoryHolder) container).getInventory().clearAll();
                 }
             } else if (id == Block.DROPPER) {
+                if (blockDrop && (!dropDecay || random.nextFloat() * 100 < yield)) {
+                    for (Item drop : block.getDrops(ItemTool.getUniversalTool())) {
+                        this.level.dropItem(block.blockCenter(), drop);
+                    }
+                }
                 BlockEntity container = block.getLevel().getBlockEntity(block);
                 if (container instanceof BlockEntityDropper) {
                     if (blockDrop) {
@@ -331,6 +359,11 @@ public class Explosion {
                     ((InventoryHolder) container).getInventory().clearAll();
                 }
             } else if (id == Block.DISPENSER) {
+                if (blockDrop && (!dropDecay || random.nextFloat() * 100 < yield)) {
+                    for (Item drop : block.getDrops(ItemTool.getUniversalTool())) {
+                        this.level.dropItem(block.blockCenter(), drop);
+                    }
+                }
                 BlockEntity container = block.getLevel().getBlockEntity(block);
                 if (container instanceof BlockEntityDispenser) {
                     if (blockDrop) {
@@ -349,6 +382,11 @@ public class Explosion {
                     ((BlockEntityShulkerBox) shulkerBox).getInventory().clearAll();
                 }
             } else if (id == BlockID.BARREL) {
+                if (blockDrop && (!dropDecay || random.nextFloat() * 100 < yield)) {
+                    for (Item drop : block.getDrops(ItemTool.getUniversalTool())) {
+                        this.level.dropItem(block.blockCenter(), drop);
+                    }
+                }
                 BlockEntity container = block.getLevel().getBlockEntity(block);
                 if (container instanceof BlockEntityBarrel) {
                     if (blockDrop) {
@@ -359,7 +397,8 @@ public class Explosion {
                     ((InventoryHolder) container).getInventory().clearAll();
                 }
             } else if (blockDrop) {
-                if (id == BlockID.DRAGON_EGG || id == BlockID.BEACON || id == BlockID.BLOCK_SKULL || random.nextFloat() * 100 < yield) {
+                //TODO: merge items before dropping
+                if (!dropDecay || id == BlockID.DRAGON_EGG || id == BlockID.BEACON || id == BlockID.BLOCK_SKULL || random.nextFloat() * 100 < yield) {
                     for (Item drop : block.getDrops(ItemTool.getUniversalTool())) {
                         this.level.dropItem(block.blockCenter(), drop);
                     }

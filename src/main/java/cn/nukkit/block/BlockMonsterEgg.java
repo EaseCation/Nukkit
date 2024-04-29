@@ -7,12 +7,12 @@ import cn.nukkit.item.enchantment.Enchantment;
 import cn.nukkit.utils.BlockColor;
 
 public class BlockMonsterEgg extends BlockSolidMeta {
-    public static final int STONE = 0;
-    public static final int COBBLESTONE = 1;
-    public static final int STONE_BRICK = 2;
-    public static final int MOSSY_BRICK = 3;
-    public static final int CRACKED_BRICK = 4;
-    public static final int CHISELED_BRICK = 5;
+    public static final int TYPE_STONE = 0;
+    public static final int TYPE_COBBLESTONE = 1;
+    public static final int TYPE_STONE_BRICK = 2;
+    public static final int TYPE_MOSSY_BRICK = 3;
+    public static final int TYPE_CRACKED_BRICK = 4;
+    public static final int TYPE_CHISELED_BRICK = 5;
 
     private static final String[] NAMES = new String[]{
             "Infested Stone",
@@ -57,17 +57,17 @@ public class BlockMonsterEgg extends BlockSolidMeta {
     public Item[] getDrops(Item item, Player player) {
         if (item.isPickaxe() && item.getTier() >= ItemTool.TIER_WOODEN && item.hasEnchantment(Enchantment.SILK_TOUCH)) {
             switch (getDamage()) {
-                case STONE:
+                case TYPE_STONE:
                     return new Item[]{Item.get(Block.STONE)};
-                case COBBLESTONE:
+                case TYPE_COBBLESTONE:
                     return new Item[]{Item.get(Block.COBBLESTONE)};
-                case STONE_BRICK:
+                case TYPE_STONE_BRICK:
                     return new Item[]{Item.get(Block.STONEBRICK, BlockBricksStone.NORMAL)};
-                case MOSSY_BRICK:
+                case TYPE_MOSSY_BRICK:
                     return new Item[]{Item.get(Block.STONEBRICK, BlockBricksStone.MOSSY)};
-                case CRACKED_BRICK:
+                case TYPE_CRACKED_BRICK:
                     return new Item[]{Item.get(Block.STONEBRICK, BlockBricksStone.CRACKED)};
-                case CHISELED_BRICK:
+                case TYPE_CHISELED_BRICK:
                     return new Item[]{Item.get(Block.STONEBRICK, BlockBricksStone.CHISELED)};
             }
         }

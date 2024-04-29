@@ -28,11 +28,6 @@ public class EnchantmentDurability extends Enchantment {
         return 3;
     }
 
-    @Override
-    public boolean canEnchant(Item item) {
-        return item.getMaxDurability() >= 0 || super.canEnchant(item);
-    }
-
     public static boolean negateDamage(Item item, int level, Random random) {
         return !(item.isArmor() && random.nextFloat() < 0.6f) && random.nextInt(level + 1) > 0;
     }

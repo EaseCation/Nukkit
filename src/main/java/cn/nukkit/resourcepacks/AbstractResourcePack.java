@@ -34,4 +34,9 @@ public abstract class AbstractResourcePack implements ResourcePack {
     public String getEncryptionKey() {
         return "";
     }
+
+    @Override
+    public String getCdnUrl() {
+        return null;
+    }
 }

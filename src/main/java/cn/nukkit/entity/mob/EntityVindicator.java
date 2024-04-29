@@ -12,6 +12,9 @@ public class EntityVindicator extends EntityMob {
 
     public static final int NETWORK_ID = EntityID.VINDICATOR;
 
+    public static final int ILLAGER_VARIANT_DEFAULT = 0;
+    public static final int ILLAGER_VARIANT_CAPTAIN = 1;
+
     public EntityVindicator(FullChunk chunk, CompoundTag nbt) {
         super(chunk, nbt);
     }
@@ -24,7 +27,17 @@ public class EntityVindicator extends EntityMob {
     @Override
     protected void initEntity() {
         super.initEntity();
+
+        dataProperties.putInt(DATA_VARIANT, namedTag.getInt("Variant", ILLAGER_VARIANT_DEFAULT));
+
         this.setMaxHealth(24);
+    }
+
+    @Override
+    public void saveNBT() {
+        super.saveNBT();
+
+        namedTag.putInt("Variant", getDataPropertyInt(DATA_VARIANT));
     }
 
     @Override

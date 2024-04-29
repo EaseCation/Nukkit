@@ -20,6 +20,7 @@ public enum GameRule {
     MOB_GRIEFING("mobGriefing"),
     PVP("pvp"),
     SHOW_COORDINATES("showCoordinates"),
+    SHOW_DAYS_PLAYED("showDaysPlayed", 683), //TODO: 1.21.0
     NATURAL_REGENERATION("naturalRegeneration"),
     TNT_EXPLODES("tntExplodes"),
     SEND_COMMAND_FEEDBACK("sendCommandFeedback"),
@@ -35,7 +36,10 @@ public enum GameRule {
     FREEZE_DAMAGE("freezeDamage", 428),
     RESPAWN_BLOCKS_EXPLODE("respawnBlocksExplode", 465),
     SHOW_BORDER_EFFECT("showBorderEffect", 465),
+    SHOW_RECIPE_MESSAGES("showRecipeMessages", 630),
     PLAYERS_SLEEPING_PERCENTAGE("playersSleepingPercentage", 618),
+    PROJECTILES_CAN_BREAK_BLOCKS("projectilesCanBreakBlocks", 630),
+    TNT_EXPLOSION_DROP_DECAY("tntExplosionDropDecay", 676), //TODO: 1.21.0
     ;
 
     private static final GameRule[] VALUES = values();

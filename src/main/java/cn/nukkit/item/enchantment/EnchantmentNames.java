@@ -39,4 +39,7 @@ public interface EnchantmentNames {
     String QUICK_CHARGE = "quick_charge";
     String SOUL_SPEED = "soul_speed";
     String SWIFT_SNEAK = "swift_sneak";
+    String WIND_BURST = "wind_burst";
+    String DENSITY = "density";
+    String BREACH = "breach";
 }

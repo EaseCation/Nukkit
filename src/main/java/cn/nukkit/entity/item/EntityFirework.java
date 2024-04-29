@@ -69,7 +69,7 @@ public class EntityFirework extends Entity {
 
         Random rand = ThreadLocalRandom.current();
         this.lifetime = firework instanceof ItemFirework ? ((ItemFirework) firework).getLifeTime() : (20 + rand.nextInt(12));
-        this.setDataProperty(new SlotEntityData(Entity.DATA_FIREWORK_ITEM, firework), false);
+        this.setDataProperty(new SlotEntityData(Entity.DATA_DISPLAY_ITEM, firework), false);
         //this.setDataProperty(new NBTEntityData(Entity.DATA_FIREWORK_ITEM, firework.getNamedTag()), false);
         this.setDataProperty(new Vector3fEntityData(Entity.DATA_FIREWORK_DIRECTION, projectile ? new Vector3f((float) motionX, (float) motionY, (float) motionZ) : DEFAULT_DIRECTION), false);
         this.setDataProperty(new LongEntityData(Entity.DATA_FIREWORK_ATTACHED_EID, attached != null ? attached.getId() : -1), false);
@@ -196,7 +196,7 @@ public class EntityFirework extends Entity {
 
     public void setFirework(Item item) {
         this.firework = item;
-        this.setDataProperty(new NBTEntityData(Entity.DATA_FIREWORK_ITEM, item.getNamedTag()));
+        this.setDataProperty(new NBTEntityData(Entity.DATA_DISPLAY_ITEM, item.getNamedTag()));
     }
 
     @Override

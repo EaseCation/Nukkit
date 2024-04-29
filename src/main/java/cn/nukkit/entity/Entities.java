@@ -165,9 +165,13 @@ public final class Entities {
         registerEntity(EntityID.CAMEL, EntityNames.CAMEL, "Camel", EntityCamel.class, EntityCamel::new, V1_20_0);
         registerEntity(EntityID.SNIFFER, EntityNames.SNIFFER, "Sniffer", EntitySniffer.class, EntitySniffer::new, V1_20_0);
 
+        registerEntity(EntityID.ARMADILLO, EntityNames.ARMADILLO, "Armadillo", EntityArmadillo.class, EntityArmadillo::new, V1_20_80);
+
 //        registerEntity(EntityID.BREEZE, EntityNames.BREEZE, "Breeze", EntityBreeze.class, EntityBreeze::new, V1_21_0);
+//        registerEntity(EntityID.BREEZE_WIND_CHARGE_PROJECTILE, EntityNames.BREEZE_WIND_CHARGE_PROJECTILE, "BreezeWindCharge", EntityWindChargeBreeze.class, EntityWindChargeBreeze::new, V1_21_0);
 //        registerEntity(EntityID.WIND_CHARGE_PROJECTILE, EntityNames.WIND_CHARGE_PROJECTILE, "WindCharge", EntityWindCharge.class, EntityWindCharge::new, V1_21_0);
-//        registerEntity(EntityID.ARMADILLO, EntityNames.ARMADILLO, "Armadillo", EntityArmadillo.class, EntityArmadillo::new, V1_21_0);
+//        registerEntity(EntityID.BOGGED, EntityNames.BOGGED, "Bogged", EntityBogged.class, EntityBogged::new, V1_21_0);
+//        registerEntity(EntityID.OMINOUS_ITEM_SPAWNER, EntityNames.OMINOUS_ITEM_SPAWNER, "OminousItemSpawner", EntityOminousItemSpawner.class, EntityOminousItemSpawner::new, V1_21_0);
     }
 
     private static boolean registerTodo(int typeId, String identifier, String name) {

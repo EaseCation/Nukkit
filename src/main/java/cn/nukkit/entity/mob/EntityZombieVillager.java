@@ -4,6 +4,7 @@ import cn.nukkit.Player;
 import cn.nukkit.entity.Entity;
 import cn.nukkit.entity.EntityID;
 import cn.nukkit.entity.EntitySmite;
+import cn.nukkit.entity.passive.EntityVillager;
 import cn.nukkit.event.entity.EntityDamageByEntityEvent;
 import cn.nukkit.item.Item;
 import cn.nukkit.level.format.FullChunk;
@@ -28,7 +29,21 @@ public class EntityZombieVillager extends EntityMob implements EntitySmite {
     @Override
     protected void initEntity() {
         super.initEntity();
+
+        dataProperties.putShort(DATA_ZOMBIE_TYPE, EntityZombie.ZOMBIE_TYPE_VILLAGER);
+
+        dataProperties.putInt(DATA_VARIANT, namedTag.getInt("Variant", EntityVillager.PROFESSION_UNSKILLED));
+        dataProperties.putInt(DATA_MARK_VARIANT, namedTag.getInt("MarkVariant", EntityVillager.BIOME_PLAINS));
+
         this.setMaxHealth(20);
+    }
+
+    @Override
+    public void saveNBT() {
+        super.saveNBT();
+
+        namedTag.putInt("Variant", getDataPropertyInt(DATA_VARIANT));
+        namedTag.putInt("MarkVariant", getDataPropertyInt(DATA_MARK_VARIANT));
     }
 
     @Override

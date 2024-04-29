@@ -16,6 +16,16 @@ public class EntityWolf extends EntityAnimal {
 
     public static final int NETWORK_ID = EntityID.WOLF;
 
+    public static final int WOLF_VARIANT_PALE = 0;
+    public static final int WOLF_VARIANT_ASHEN = 1;
+    public static final int WOLF_VARIANT_BLACK = 2;
+    public static final int WOLF_VARIANT_CHESTNUT = 3;
+    public static final int WOLF_VARIANT_RUSTY = 4;
+    public static final int WOLF_VARIANT_SNOWY = 5;
+    public static final int WOLF_VARIANT_SPOTTED = 6;
+    public static final int WOLF_VARIANT_STRIPED = 7;
+    public static final int WOLF_VARIANT_WOODS = 8;
+
     public EntityWolf(FullChunk chunk, CompoundTag nbt) {
         super(chunk, nbt);
     }
@@ -43,7 +53,17 @@ public class EntityWolf extends EntityAnimal {
     @Override
     public void initEntity() {
         super.initEntity();
+
+        dataProperties.putInt(DATA_VARIANT, namedTag.getInt("Variant", WOLF_VARIANT_PALE));
+
         this.setMaxHealth(8);
+    }
+
+    @Override
+    public void saveNBT() {
+        super.saveNBT();
+
+        namedTag.putInt("Variant", getDataPropertyInt(DATA_VARIANT));
     }
 
     @Override

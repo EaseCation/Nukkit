@@ -120,7 +120,7 @@ public abstract class Enchantment implements Cloneable, EnchantmentID {
         return 0;
     }
 
-    public float getDamageBonus(Entity entity) {
+    public float getDamageBonus(Entity attacker, Entity entity) {
         return 0;
     }
 

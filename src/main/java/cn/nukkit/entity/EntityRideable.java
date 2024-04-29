@@ -21,4 +21,7 @@ public interface EntityRideable {
     default void onPlayerInput(Player player, double motionX, double motionY) {
         // Do nothing by default
     }
+
+    default void onPlayerInput(Player player, double x, double y, double z, double yaw, double pitch) {
+    }
 }

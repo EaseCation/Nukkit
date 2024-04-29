@@ -44,6 +44,11 @@ public interface BlockID {
     int DETECTOR_RAIL = 28;
     int STICKY_PISTON = 29;
     int WEB = 30;
+    int SHORT_GRASS = 31;
+    /**
+     * @deprecated use {@link #SHORT_GRASS} instead
+     */
+    @Deprecated
     int TALLGRASS = 31;
     int DEADBUSH = 32;
     int PISTON = 33;
@@ -64,6 +69,7 @@ public interface BlockID {
     int GOLD_BLOCK = 41;
     int IRON_BLOCK = 42;
     int DOUBLE_STONE_SLAB = 43;
+    int SMOOTH_STONE_SLAB = 44; //TODO: 1.21.0 flattening
     int STONE_SLAB = 44;
     int BRICK_BLOCK = 45;
     int TNT = 46;
@@ -218,6 +224,7 @@ public interface BlockID {
     int HARDENED_CLAY = 172;
     int COAL_BLOCK = 173;
     int PACKED_ICE = 174;
+    int SUNFLOWER = 175; //TODO: 1.21.0 flattening
     int DOUBLE_PLANT = 175;
     int STANDING_BANNER = 176;
     int WALL_BANNER = 177;
@@ -447,6 +454,7 @@ public interface BlockID {
     int SEAGRASS = 385;
     int TUBE_CORAL = 386; //TODO: 1.20.0: flattening
     int CORAL = 386;
+    int TUBE_CORAL_BLOCK = 387; //TODO: 1.21.0: flattening
     int CORAL_BLOCK = 387;
     int TUBE_CORAL_FAN = 388; //TODO: 1.20.80 flattening
     int CORAL_FAN = 388;
@@ -634,7 +642,7 @@ public interface BlockID {
     int CRAFTER = 568;
     int VAULT = 569;
     int TRIAL_SPAWNER = 570;
-
+    int HEAVY_CORE = 571;
     int DRIPSTONE_BLOCK = 572;
     int DIRT_WITH_ROOTS = 573;
     int HANGING_ROOTS = 574;
@@ -1153,9 +1161,32 @@ public interface BlockID {
     int DEAD_BUBBLE_CORAL_FAN = 1100;
     int DEAD_FIRE_CORAL_FAN = 1101;
     int DEAD_HORN_CORAL_FAN = 1102;
+    int FERN = 1103;
+    int BRAIN_CORAL_BLOCK = 1104;
+    int BUBBLE_CORAL_BLOCK = 1105;
+    int FIRE_CORAL_BLOCK = 1106;
+    int HORN_CORAL_BLOCK = 1107;
+    int DEAD_TUBE_CORAL_BLOCK = 1108;
+    int DEAD_BRAIN_CORAL_BLOCK = 1109;
+    int DEAD_BUBBLE_CORAL_BLOCK = 1110;
+    int DEAD_FIRE_CORAL_BLOCK = 1111;
+    int DEAD_HORN_CORAL_BLOCK = 1112;
+
+    int LILAC = 1118;
+    int TALL_GRASS = 1119;
+    int LARGE_FERN = 1120;
+    int ROSE_BUSH = 1121;
+    int PEONY = 1122;
+
+    int SANDSTONE_SLAB = 1127;
+    int COBBLESTONE_SLAB = 1128;
+    int BRICK_SLAB = 1129;
+    int STONE_BRICK_SLAB = 1130;
+    int QUARTZ_SLAB = 1131;
+    int NETHER_BRICK_SLAB = 1132;
 
 
-    int UNDEFINED = 1103;
+    int UNDEFINED = 1133;
 
     @Beta
     int COARSE_DIRT = DIRT;
@@ -1167,8 +1198,6 @@ public interface BlockID {
     int CUT_SANDSTONE = SANDSTONE;
     @Beta
     int SMOOTH_SANDSTONE = SANDSTONE;
-    @Beta
-    int FERN = TALLGRASS;
     @Beta
     int DANDELION = YELLOW_FLOWER;
     @Beta
@@ -1183,18 +1212,6 @@ public interface BlockID {
     int QUARTZ_DOUBLE_SLAB = DOUBLE_STONE_SLAB;
     @Beta
     int NETHER_BRICK_DOUBLE_SLAB = DOUBLE_STONE_SLAB;
-    @Beta
-    int SANDSTONE_SLAB = STONE_SLAB;
-    @Beta
-    int COBBLESTONE_SLAB = STONE_SLAB;
-    @Beta
-    int BRICK_SLAB = STONE_SLAB;
-    @Beta
-    int STONE_BRICK_SLAB = STONE_SLAB;
-    @Beta
-    int QUARTZ_SLAB = STONE_SLAB;
-    @Beta
-    int NETHER_BRICK_SLAB = STONE_SLAB;
     @Beta
     int INFESTED_STONE = MONSTER_EGG;
     @Beta
@@ -1252,16 +1269,6 @@ public interface BlockID {
     @Beta
     int PRISMARINE_BRICKS = PRISMARINE;
     @Beta
-    int SUNFLOWER = DOUBLE_PLANT;
-    @Beta
-    int LILAC = DOUBLE_PLANT;
-    @Beta
-    int LARGE_FERN = DOUBLE_PLANT;
-    @Beta
-    int ROSE_BUSH = DOUBLE_PLANT;
-    @Beta
-    int PEONY = DOUBLE_PLANT;
-    @Beta
     int CHISELED_RED_SANDSTONE = RED_SANDSTONE;
     @Beta
     int CUT_RED_SANDSTONE = RED_SANDSTONE;
@@ -1301,26 +1308,6 @@ public interface BlockID {
     int RED_NETHER_BRICK_SLAB = STONE_SLAB2;
     @Beta
     int PURPUR_PILLAR = PURPUR_BLOCK;
-    @Beta
-    int TUBE_CORAL_BLOCK = CORAL_BLOCK;
-    @Beta
-    int BRAIN_CORAL_BLOCK = CORAL_BLOCK;
-    @Beta
-    int BUBBLE_CORAL_BLOCK = CORAL_BLOCK;
-    @Beta
-    int FIRE_CORAL_BLOCK = CORAL_BLOCK;
-    @Beta
-    int HORN_CORAL_BLOCK = CORAL_BLOCK;
-    @Beta
-    int DEAD_TUBE_CORAL_BLOCK = CORAL_BLOCK;
-    @Beta
-    int DEAD_BRAIN_CORAL_BLOCK = CORAL_BLOCK;
-    @Beta
-    int DEAD_BUBBLE_CORAL_BLOCK = CORAL_BLOCK;
-    @Beta
-    int DEAD_FIRE_CORAL_BLOCK = CORAL_BLOCK;
-    @Beta
-    int DEAD_HORN_CORAL_BLOCK = CORAL_BLOCK;
     @Beta
     int TUBE_CORAL_WALL_FAN = CORAL_FAN_HANG;
     @Beta

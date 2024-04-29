@@ -1766,6 +1766,11 @@ public abstract class Entity extends Location implements Metadatable, EntityData
     }
 
     protected void updateFallState(boolean onGround) {
+        if (isRiding()) {
+            resetFallDistance();
+            return;
+        }
+
         if (onGround) {
             fallDistance = (float) (this.highestPosition - this.y);
 

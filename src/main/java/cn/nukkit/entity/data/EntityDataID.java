@@ -19,11 +19,12 @@ public interface EntityDataID {
     int DATA_EXPERIENCE_VALUE = 15; //int (xp orb)
     int DATA_MINECART_DISPLAY_BLOCK = 16; //int (block runtime ID)
     int DATA_HORSE_FLAGS = DATA_MINECART_DISPLAY_BLOCK; //int: 4 = saddle | 16 = bred | 32 = eating | 64 = standing | 128 = open mouth
-    int DATA_FIREWORK_ITEM = DATA_MINECART_DISPLAY_BLOCK; //compoundtag
+    int DATA_DISPLAY_ITEM = DATA_MINECART_DISPLAY_BLOCK; //compoundtag (firework/ominous_item_spawner)
     int DATA_WITHER_SKULL_DANGEROUS = DATA_MINECART_DISPLAY_BLOCK; //byte
     int DATA_DISPLAY_OFFSET = 17; //int
     int DATA_FIREWORK_DIRECTION = DATA_DISPLAY_OFFSET; //vec3f
     int DATA_ARROW_SHOOTER_EID = DATA_DISPLAY_OFFSET; //long arrow owner
+    int DATA_TICKS_BEFORE_REMOVAL = DATA_DISPLAY_OFFSET; //int (ominous_item_spawner)
     int DATA_HAS_DISPLAY = 18; //byte (must be 1 for minecart to show block inside)
     int DATA_FIREWORK_ATTACHED_EID = DATA_HAS_DISPLAY; //long
     int DATA_ARROW_AUX_VALUE = DATA_HAS_DISPLAY; //byte (tipped arrow item meta)
@@ -47,7 +48,8 @@ public interface EntityDataID {
     int DATA_FISH_X = 34; //float fishing
     int DATA_FISH_Z = 35; //float fishing
     int DATA_FISH_ANGLE = 36; //float fishing
-    int DATA_AUX_VALUE_DATA = 37; //short potion type / zombie type (0 = default, 1 = villager, 2 = husk, 3 = pig, 4 = drowned)
+    int DATA_AUX_VALUE_DATA = 37; //short potion type
+    int DATA_ZOMBIE_TYPE = DATA_AUX_VALUE_DATA; //short zombie type (0 = default, 1 = villager, 2 = husk, 3 = pig, 4 = drowned)
     int DATA_LEAD_HOLDER_EID = 38; //long
     int DATA_SCALE = 39; //float
     int DATA_INTERACTIVE_TAG = 40; //string (button text)

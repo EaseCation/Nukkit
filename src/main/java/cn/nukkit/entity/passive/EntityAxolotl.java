@@ -5,9 +5,17 @@ import cn.nukkit.entity.EntityID;
 import cn.nukkit.level.format.FullChunk;
 import cn.nukkit.nbt.tag.CompoundTag;
 
+import java.util.concurrent.ThreadLocalRandom;
+
 public class EntityAxolotl extends EntityAnimal {
 
     public static final int NETWORK_ID = EntityID.AXOLOTL;
+
+    public static final int AXOLOTL_VARIANT_LUCY = 0;
+    public static final int AXOLOTL_VARIANT_CYAN = 1;
+    public static final int AXOLOTL_VARIANT_GOLD = 2;
+    public static final int AXOLOTL_VARIANT_WILD = 3;
+    public static final int AXOLOTL_VARIANT_BLUE = 4;
 
     public EntityAxolotl(FullChunk chunk, CompoundTag nbt) {
         super(chunk, nbt);
@@ -31,7 +39,23 @@ public class EntityAxolotl extends EntityAnimal {
     @Override
     protected void initEntity() {
         super.initEntity();
+
+        int variant;
+        if (namedTag.contains("Variant")) {
+            variant = namedTag.getInt("Variant");
+        } else {
+            variant = ThreadLocalRandom.current().nextInt(4);
+        }
+        dataProperties.putInt(DATA_VARIANT, variant);
+
         this.setMaxHealth(14);
+    }
+
+    @Override
+    public void saveNBT() {
+        super.saveNBT();
+
+        namedTag.putInt("Variant", getDataPropertyInt(DATA_VARIANT));
     }
 
     @Override

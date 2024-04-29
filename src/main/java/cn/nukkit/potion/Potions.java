@@ -59,6 +59,12 @@ public final class Potions {
         registerPotion(SLOW_FALLING_LONG, new Potion(SLOW_FALLING_LONG, "long_slow_falling", "slowFalling", Effect.getEffect(Effect.SLOW_FALLING).setDuration(240 * 20)), V1_6_0);
 
         registerPotion(SLOWNESS_STRONG, new Potion(SLOWNESS_STRONG, "strong_slowness", "moveSlowdown", Effect.getEffect(Effect.SLOWNESS).setDuration(20 * 20).setAmplifier(3)), V1_16_0);
+/*
+        registerPotion(WIND_CHARGED, new Potion(WIND_CHARGED, "wind_charged", "windCharged", Effect.getEffect(Effect.WIND_CHARGED).setDuration(180 * 20)), V1_21_0);
+        registerPotion(WEAVING, new Potion(WEAVING, "weaving", "weaving", Effect.getEffect(Effect.WEAVING).setDuration(180 * 20)), V1_21_0);
+        registerPotion(OOZING, new Potion(OOZING, "oozing", "oozing", Effect.getEffect(Effect.OOZING).setDuration(180 * 20)), V1_21_0);
+        registerPotion(INFESTED, new Potion(INFESTED, "infested", "infested", Effect.getEffect(Effect.INFESTED).setDuration(180 * 20)), V1_21_0);
+*/
 
     }
 

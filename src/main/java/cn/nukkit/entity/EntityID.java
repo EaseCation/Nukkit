@@ -135,6 +135,7 @@ public interface EntityID {
     int ARMADILLO = 142;
     int WIND_CHARGE_PROJECTILE = 143;
     int BOGGED = 144;
+    int OMINOUS_ITEM_SPAWNER = 145;
 
     int TRADER_LLAMA = 157;
 

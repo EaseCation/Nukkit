@@ -44,7 +44,11 @@ public interface PotionID {
     int SLOW_FALLING = 40;
     int SLOW_FALLING_LONG = 41;
     int SLOWNESS_STRONG = 42;
+    int WIND_CHARGED = 43;
+    int WEAVING = 44;
+    int OOZING = 45;
+    int INFESTED = 46;
 
 
-    int UNDEFINED = 43;
+    int UNDEFINED = 47;
 }

@@ -39,7 +39,10 @@ public interface EnchantmentID {
     int QUICK_CHARGE = 35;
     int SOUL_SPEED = 36;
     int SWIFT_SNEAK = 37;
+    int WIND_BURST = 38;
+    int DENSITY = 39;
+    int BREACH = 40;
 
 
-    int UNDEFINED = 38;
+    int UNDEFINED = 41;
 }
