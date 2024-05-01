@@ -99,8 +99,6 @@ public class EntityDonkey extends EntityAbstractHorse {
 
         player.dataPacket(createAddEntityPacket());
 
-        inventory.sendArmorContents(player);
-
         super.spawnTo(player);
     }
 

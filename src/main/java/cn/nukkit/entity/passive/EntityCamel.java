@@ -334,6 +334,14 @@ public class EntityCamel extends EntityAnimal implements EntityInteractable, Ent
         f = friction / f;
         motionX = motionX * f;
         motionY = motionY * f;
+
+        Effect speed = getEffect(Effect.SPEED);
+        if (speed != null) {
+            float speedBoost = 0.2f * (speed.getAmplifier() + 1);
+            motionX += motionX * speedBoost;
+            motionY += motionY * speedBoost;
+        }
+
         double d = this.yaw * Mth.DEG_TO_RAD;
         double f1 = Mth.sin(d);
         double f2 = Mth.cos(d);

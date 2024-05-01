@@ -135,7 +135,7 @@ public class ClientboundMapItemDataPacket extends DataPacket {
 
     @ToString
     public static class MapDecorator {
-        public static final int TYPE_TYPE_MARKER_WHITE = 0; // player
+        public static final int TYPE_MARKER_WHITE = 0; // player
         public static final int TYPE_MARKER_GREEN = 1; // item frame
         public static final int TYPE_MARKER_RED = 2;
         public static final int TYPE_MARKER_BLUE = 3;
@@ -161,7 +161,7 @@ public class ClientboundMapItemDataPacket extends DataPacket {
         public static final int TYPE_WITCH_HUT = 23;
         public static final int TYPE_TRIAL_CHAMBERS = 24;
 
-        public byte img = TYPE_TYPE_MARKER_WHITE;
+        public byte img = TYPE_MARKER_WHITE;
         public byte rot;
         public byte offsetX;
         public byte offsetZ;

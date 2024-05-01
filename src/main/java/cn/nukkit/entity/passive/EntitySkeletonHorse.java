@@ -9,6 +9,7 @@ import cn.nukkit.level.format.FullChunk;
 import cn.nukkit.math.Mth;
 import cn.nukkit.math.Vector3f;
 import cn.nukkit.nbt.tag.CompoundTag;
+import cn.nukkit.potion.Effect;
 
 import java.util.concurrent.ThreadLocalRandom;
 
@@ -147,6 +148,14 @@ public class EntitySkeletonHorse extends EntityAbstractHorse implements EntitySm
             f = friction / f;
             motionX = motionX * f;
             motionY = motionY * f;
+
+            Effect speed = getEffect(Effect.SPEED);
+            if (speed != null) {
+                float speedBoost = 0.2f * (speed.getAmplifier() + 1);
+                motionX += motionX * speedBoost;
+                motionY += motionY * speedBoost;
+            }
+
             double d = this.yaw * Mth.DEG_TO_RAD;
             double f1 = Mth.sin(d);
             double f2 = Mth.cos(d);
