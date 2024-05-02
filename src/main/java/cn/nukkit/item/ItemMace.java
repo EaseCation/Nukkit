@@ -22,7 +22,7 @@ public class ItemMace extends ItemTool {
 
     @Override
     public int getAttackDamage() {
-        return 8;
+        return 5;
     }
 
     @Override

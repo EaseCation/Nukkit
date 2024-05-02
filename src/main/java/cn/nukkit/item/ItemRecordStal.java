@@ -25,7 +25,17 @@ public class ItemRecordStal extends ItemRecord {
     }
 
     @Override
+    public int getDuration() {
+        return 150 * 20;
+    }
+
+    @Override
+    public int getComparatorSignal() {
+        return 8;
+    }
+
+    @Override
     public String getTranslationIdentifier() {
-        return "record_5";
+        return "record_stal";
     }
 }

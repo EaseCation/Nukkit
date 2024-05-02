@@ -21,6 +21,16 @@ public class ItemRecordRelic extends ItemRecord {
     }
 
     @Override
+    public int getDuration() {
+        return 218 * 20;
+    }
+
+    @Override
+    public int getComparatorSignal() {
+        return 14;
+    }
+
+    @Override
     public String getTranslationIdentifier() {
         return "record_relic";
     }

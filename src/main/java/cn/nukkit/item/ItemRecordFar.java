@@ -25,6 +25,16 @@ public class ItemRecordFar extends ItemRecord {
     }
 
     @Override
+    public int getDuration() {
+        return 174 * 20;
+    }
+
+    @Override
+    public int getComparatorSignal() {
+        return 5;
+    }
+
+    @Override
     public String getTranslationIdentifier() {
         return "record_far";
     }

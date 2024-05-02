@@ -25,7 +25,17 @@ public class ItemRecordStrad extends ItemRecord {
     }
 
     @Override
+    public int getDuration() {
+        return 188 * 20;
+    }
+
+    @Override
+    public int getComparatorSignal() {
+        return 9;
+    }
+
+    @Override
     public String getTranslationIdentifier() {
-        return "record_5";
+        return "record_strad";
     }
 }

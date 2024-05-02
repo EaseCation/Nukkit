@@ -25,6 +25,16 @@ public class ItemRecordMall extends ItemRecord {
     }
 
     @Override
+    public int getDuration() {
+        return 197 * 20;
+    }
+
+    @Override
+    public int getComparatorSignal() {
+        return 6;
+    }
+
+    @Override
     public String getTranslationIdentifier() {
         return "record_mall";
     }

@@ -25,6 +25,16 @@ public class ItemRecordBlocks extends ItemRecord {
     }
 
     @Override
+    public int getDuration() {
+        return 345 * 20;
+    }
+
+    @Override
+    public int getComparatorSignal() {
+        return 3;
+    }
+
+    @Override
     public String getTranslationIdentifier() {
         return "record_blocks";
     }

@@ -25,6 +25,16 @@ public class ItemRecordMellohi extends ItemRecord {
     }
 
     @Override
+    public int getDuration() {
+        return 96 * 20;
+    }
+
+    @Override
+    public int getComparatorSignal() {
+        return 7;
+    }
+
+    @Override
     public String getTranslationIdentifier() {
         return "record_mellohi";
     }

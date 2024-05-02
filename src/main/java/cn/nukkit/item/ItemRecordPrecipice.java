@@ -2,31 +2,27 @@ package cn.nukkit.item;
 
 import cn.nukkit.network.protocol.LevelSoundEventPacket;
 
-/**
- * @author PetteriM1
- */
-public class ItemRecordPigstep extends ItemRecord {
-
-    public ItemRecordPigstep() {
+public class ItemRecordPrecipice extends ItemRecord {
+    public ItemRecordPrecipice() {
         this(0, 1);
     }
 
-    public ItemRecordPigstep(Integer meta) {
+    public ItemRecordPrecipice(Integer meta) {
         this(meta, 1);
     }
 
-    public ItemRecordPigstep(Integer meta, int count) {
-        super(Item.MUSIC_DISC_PIGSTEP, meta, count);
+    public ItemRecordPrecipice(Integer meta, int count) {
+        super(Item.MUSIC_DISC_PRECIPICE, meta, count);
     }
 
     @Override
     public int getSoundEvent() {
-        return LevelSoundEventPacket.SOUND_RECORD_PIGSTEP;
+        return LevelSoundEventPacket.SOUND_RECORD_PRECIPICE;
     }
 
     @Override
     public int getDuration() {
-        return 149 * 20;
+        return 299 * 20;
     }
 
     @Override
@@ -36,6 +32,6 @@ public class ItemRecordPigstep extends ItemRecord {
 
     @Override
     public String getTranslationIdentifier() {
-        return "record_pigstep";
+        return "record_precipice";
     }
 }

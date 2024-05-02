@@ -527,6 +527,9 @@ public class LevelSoundEventPacket extends DataPacket {
 	public static final int SOUND_APPLY_EFFECT_RAID_OMEN = 524;
 	public static final int SOUND_APPLY_EFFECT_TRIAL_OMEN = 525;
 	public static final int SOUND_OMINOUS_ITEM_SPAWNER_ABOUT_TO_SPAWN_ITEM = 526;
+	public static final int SOUND_RECORD_CREATOR = 527;
+	public static final int SOUND_RECORD_CREATOR_MUSIC_BOX = 528;
+	public static final int SOUND_RECORD_PRECIPICE = 529;
 
 	public int sound;
     public float x;

@@ -22,6 +22,16 @@ public class ItemRecord5 extends ItemRecord {
     }
 
     @Override
+    public int getDuration() {
+        return 178 * 20;
+    }
+
+    @Override
+    public int getComparatorSignal() {
+        return 15;
+    }
+
+    @Override
     public String getTranslationIdentifier() {
         return "record_5";
     }

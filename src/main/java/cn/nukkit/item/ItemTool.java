@@ -34,7 +34,7 @@ public abstract class ItemTool extends Item implements ItemDurable {
     public static final int DURABILITY_CARROT_ON_A_STICK = 26;
     public static final int DURABILITY_WARPED_FUNGUS_ON_A_STICK = 100;
     public static final int DURABILITY_BRUSH = 64;
-    public static final int DURABILITY_MACE = 250;
+    public static final int DURABILITY_MACE = 500;
     public static final int DURABILITY_SPARKLER = 100;
     public static final int DURABILITY_GLOW_STICK = 100;
 

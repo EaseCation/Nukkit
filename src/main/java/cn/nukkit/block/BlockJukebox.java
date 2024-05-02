@@ -12,6 +12,8 @@ import cn.nukkit.nbt.tag.CompoundTag;
 import cn.nukkit.nbt.tag.ListTag;
 import cn.nukkit.utils.BlockColor;
 
+import javax.annotation.Nullable;
+
 import static cn.nukkit.GameVersion.*;
 
 /**
@@ -60,6 +62,11 @@ public class BlockJukebox extends BlockSolid {
         } else if (item instanceof ItemRecord) {
             jukebox.setRecordItem((ItemRecord) item);
             jukebox.play();
+
+            if (level.isRedstoneEnabled()) {
+                level.updateAroundRedstone(this, null);
+            }
+
             player.getInventory().decreaseCount(player.getInventory().getHeldItemIndex());
         }
 
@@ -113,5 +120,49 @@ public class BlockJukebox extends BlockSolid {
     @Override
     public float getResistance() {
         return 30;
+    }
+
+    @Override
+    public boolean isPowerSource() {
+        return true;
+    }
+
+    @Override
+    public int getWeakPower(BlockFace side) {
+        BlockEntityJukebox blockEntity = getBlockEntity();
+        if (blockEntity == null) {
+            return 0;
+        }
+        return blockEntity.isRecordPlaying() ? 15 : 0;
+    }
+
+    @Override
+    public boolean hasComparatorInputOverride() {
+        return true;
+    }
+
+    @Override
+    public int getComparatorInputOverride() {
+        BlockEntityJukebox blockEntity = getBlockEntity();
+        if (blockEntity == null) {
+            return 0;
+        }
+        ItemRecord record = blockEntity.getRecordItem();
+        if (record == null) {
+            return 0;
+        }
+        return record.getComparatorSignal();
+    }
+
+    @Nullable
+    protected BlockEntityJukebox getBlockEntity() {
+        if (level == null) {
+            return null;
+        }
+        BlockEntity blockEntity = level.getBlockEntity(this);
+        if (blockEntity instanceof BlockEntityJukebox jukebox) {
+            return jukebox;
+        }
+        return null;
     }
 }

@@ -51,7 +51,9 @@ public class BlockEntityJukebox extends BlockEntitySpawnable {
                 this.ticksPlaying = 0;
             }
 
-//            this.scheduleUpdate();
+            if (!finishedRecording) {
+                this.scheduleUpdate();
+            }
         } else {
             this.recordItem = null;
             this.finishedRecording = true;
@@ -80,7 +82,7 @@ public class BlockEntityJukebox extends BlockEntitySpawnable {
     }
 
     @Nullable
-    public Item getRecordItem() {
+    public ItemRecord getRecordItem() {
         return recordItem;
     }
 
@@ -98,13 +100,17 @@ public class BlockEntityJukebox extends BlockEntitySpawnable {
             player.sendJukeboxPopup(new TranslationContainer("record.nowPlaying", "%item." + recordItem.getTranslationIdentifier() + ".desc"));
         }
 
-//        this.scheduleUpdate();
+        this.scheduleUpdate();
     }
 
     public void stop() {
         this.finishedRecording = true;
         this.ticksPlaying = 0;
         this.getLevel().addLevelSoundEvent(this.blockCenter(), LevelSoundEventPacket.SOUND_STOP_RECORD);
+
+        if (level.isRedstoneEnabled()) {
+            level.updateAroundRedstone(this, null);
+        }
     }
 
     public void dropItem() {
@@ -164,7 +170,15 @@ public class BlockEntityJukebox extends BlockEntitySpawnable {
             return false;
         }
 
-        ++this.ticksPlaying;
+        if (recordItem != null && ++this.ticksPlaying > recordItem.getDuration()) {
+            stop();
+            return false;
+        }
+
         return true;
+    }
+
+    public boolean isRecordPlaying() {
+        return !finishedRecording;
     }
 }

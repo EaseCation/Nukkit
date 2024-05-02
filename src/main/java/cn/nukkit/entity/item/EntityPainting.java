@@ -379,6 +379,21 @@ public class EntityPainting extends EntityHanging {
         PIG_SCENE("Pigscene", 4, 4),
         BURNING_SKULL("BurningSkull", 4, 4),
 //        UNPACKED("Unpacked", 4, 4),
+//        BOUQUET("Bouquet", 4, 4),
+//        CAVEBIRD("Cavebird", 4, 4),
+//        COTAN("Cotan", 4, 4),
+//        ENDBOSS("Endboss", 4, 4),
+//        FERN("Fern", 4, 4),
+//        ORB("Orb", 4, 4),
+//        PASSAGE("Passage", 4, 4),
+//        TIDES("Tides", 4, 4),
+//        SUNFLOWERS("Sunflowers", 4, 4),
+//        BACKYARD("Backyard", 4, 5),
+//        POND("Pond", 4, 5),
+//        CHAINGING("Chainging", 5, 3),
+//        FINDING("Finding", 5, 3),
+//        LOWMIST("Lowmist", 5, 3),
+//        OWLEMONS("Owlemons", 5, 3),
         ;
 
         public final String title;

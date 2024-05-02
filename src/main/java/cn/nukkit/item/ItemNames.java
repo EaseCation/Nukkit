@@ -647,6 +647,25 @@ public interface ItemNames extends ItemBlockNames {
     @Deprecated
     String RECORD_RELIC = "record_relic";
 
+    String MUSIC_DISC_CREATOR = "music_disc_creator";
+    /**
+     * @deprecated use {@link #MUSIC_DISC_CREATOR} instead
+     */
+    @Deprecated
+    String RECORD_CREATOR = "record_creator";
+    String MUSIC_DISC_CREATOR_MUSIC_BOX = "music_disc_creator_music_box";
+    /**
+     * @deprecated use {@link #MUSIC_DISC_CREATOR_MUSIC_BOX} instead
+     */
+    @Deprecated
+    String RECORD_CREATOR_MUSIC_BOX = "record_creator_music_box";
+    String MUSIC_DISC_PRECIPICE = "music_disc_precipice";
+    /**
+     * @deprecated use {@link #MUSIC_DISC_PRECIPICE} instead
+     */
+    @Deprecated
+    String RECORD_PRECIPICE = "record_precipice";
+
     String SOUL_CAMPFIRE = "soul_campfire";
 
     String GLOW_FRAME = "glow_frame";

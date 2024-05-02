@@ -25,7 +25,17 @@ public class ItemRecordWard extends ItemRecord {
     }
 
     @Override
+    public int getDuration() {
+        return 251 * 20;
+    }
+
+    @Override
+    public int getComparatorSignal() {
+        return 10;
+    }
+
+    @Override
     public String getTranslationIdentifier() {
-        return "record_5";
+        return "record_ward";
     }
 }

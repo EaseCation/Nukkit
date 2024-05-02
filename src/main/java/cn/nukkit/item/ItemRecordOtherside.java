@@ -22,7 +22,17 @@ public class ItemRecordOtherside extends ItemRecord {
     }
 
     @Override
+    public int getDuration() {
+        return 195 * 20;
+    }
+
+    @Override
+    public int getComparatorSignal() {
+        return 14;
+    }
+
+    @Override
     public String getTranslationIdentifier() {
-        return "record_5";
+        return "record_otherside";
     }
 }

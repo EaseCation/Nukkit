@@ -25,6 +25,16 @@ public class ItemRecordChirp extends ItemRecord {
     }
 
     @Override
+    public int getDuration() {
+        return 185 * 20;
+    }
+
+    @Override
+    public int getComparatorSignal() {
+        return 4;
+    }
+
+    @Override
     public String getTranslationIdentifier() {
         return "record_chirp";
     }

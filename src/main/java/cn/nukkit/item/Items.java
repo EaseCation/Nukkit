@@ -333,7 +333,11 @@ public final class Items {
         registerItem(ItemNames.MANGROVE_SIGN, MANGROVE_SIGN, ItemSignMangrove.class, ItemSignMangrove::new, V1_19_0);
 
         registerItem(ItemNames.MUSIC_DISC_RELIC, MUSIC_DISC_RELIC, ItemRecordRelic.class, ItemRecordRelic::new, V1_20_0);
-
+/*
+        registerItem(ItemNames.MUSIC_DISC_CREATOR, MUSIC_DISC_CREATOR, ItemRecordCreator.class, ItemRecordCreator::new, V1_21_0);
+        registerItem(ItemNames.MUSIC_DISC_CREATOR_MUSIC_BOX, MUSIC_DISC_CREATOR_MUSIC_BOX, ItemRecordCreatorMusicBox.class, ItemRecordCreatorMusicBox::new, V1_21_0);
+        registerItem(ItemNames.MUSIC_DISC_PRECIPICE, MUSIC_DISC_PRECIPICE, ItemRecordPrecipice.class, ItemRecordPrecipice::new, V1_21_0);
+*/
         registerSimpleAliases();
         registerComplexAliases();
 

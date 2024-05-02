@@ -518,6 +518,25 @@ public interface ItemID extends BlockID, ItemRuntimeID {
     @Deprecated
     int RECORD_RELIC = 780;
 
+    int MUSIC_DISC_CREATOR = 783;
+    /**
+     * @deprecated use {@link #MUSIC_DISC_CREATOR} instead
+     */
+    @Deprecated
+    int RECORD_CREATOR = 783;
+    int MUSIC_DISC_CREATOR_MUSIC_BOX = 784;
+    /**
+     * @deprecated use {@link #MUSIC_DISC_CREATOR_MUSIC_BOX} instead
+     */
+    @Deprecated
+    int RECORD_CREATOR_MUSIC_BOX = 784;
+    int MUSIC_DISC_PRECIPICE = 785;
+    /**
+     * @deprecated use {@link #MUSIC_DISC_PRECIPICE} instead
+     */
+    @Deprecated
+    int RECORD_PRECIPICE = 785;
+
     int SOUL_CAMPFIRE = 801;
 
     int GLOW_FRAME = 850;

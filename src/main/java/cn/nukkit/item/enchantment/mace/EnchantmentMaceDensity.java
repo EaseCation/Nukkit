@@ -1,7 +1,9 @@
 package cn.nukkit.item.enchantment.mace;
 
 import cn.nukkit.entity.Entity;
+import cn.nukkit.item.enchantment.Enchantment;
 import cn.nukkit.item.enchantment.EnchantmentNames;
+import cn.nukkit.item.enchantment.damage.EnchantmentDamage;
 
 public class EnchantmentMaceDensity extends EnchantmentMace {
     protected EnchantmentMaceDensity() {
@@ -29,6 +31,11 @@ public class EnchantmentMaceDensity extends EnchantmentMace {
         if (fallDistance <= 0) {
             return 0;
         }
-        return (getLevel() + 3) * fallDistance;
+        return getLevel() * 0.5f * fallDistance;
+    }
+
+    @Override
+    public boolean checkCompatibility(Enchantment enchantment) {
+        return super.checkCompatibility(enchantment) && enchantment.id != BREACH && !(enchantment instanceof EnchantmentDamage);
     }
 }

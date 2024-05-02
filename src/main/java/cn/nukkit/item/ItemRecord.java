@@ -16,5 +16,9 @@ public abstract class ItemRecord extends Item {
 
     public abstract int getSoundEvent();
 
+    public abstract int getDuration();
+
+    public abstract int getComparatorSignal();
+
     public abstract String getTranslationIdentifier();
 }
