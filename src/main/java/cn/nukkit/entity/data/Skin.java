@@ -403,6 +403,7 @@ public class Skin implements Cloneable {
     }
 
     public void setSkinColor(String skinColor) {
+        Objects.requireNonNull(skinColor, "skinColor");
         this.skinColor = skinColor;
     }
 
@@ -411,6 +412,7 @@ public class Skin implements Cloneable {
     }
 
     public void setArmSize(String armSize) {
+        Objects.requireNonNull(armSize, "armSize");
         this.armSize = armSize;
     }
 

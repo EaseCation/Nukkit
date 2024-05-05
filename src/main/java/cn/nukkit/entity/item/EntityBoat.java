@@ -2,12 +2,14 @@ package cn.nukkit.entity.item;
 
 import cn.nukkit.Player;
 import cn.nukkit.block.Block;
-import cn.nukkit.block.BlockWater;
+import cn.nukkit.block.BlockBubbleColumn;
 import cn.nukkit.entity.Entity;
+import cn.nukkit.entity.EntityHuman;
 import cn.nukkit.entity.EntityID;
 import cn.nukkit.entity.EntityLiving;
 import cn.nukkit.entity.data.ByteEntityData;
 import cn.nukkit.entity.data.FloatEntityData;
+import cn.nukkit.entity.data.StringEntityData;
 import cn.nukkit.entity.passive.EntityWaterAnimal;
 import cn.nukkit.event.entity.EntityDamageByEntityEvent;
 import cn.nukkit.event.entity.EntityDamageEvent;
@@ -23,9 +25,11 @@ import cn.nukkit.math.Vector3;
 import cn.nukkit.math.Vector3f;
 import cn.nukkit.nbt.tag.CompoundTag;
 import cn.nukkit.network.protocol.AnimatePacket;
+import cn.nukkit.network.protocol.LevelSoundEventPacket;
 import cn.nukkit.network.protocol.SetEntityLinkPacket;
 
 import java.util.ArrayList;
+import java.util.concurrent.ThreadLocalRandom;
 
 /**
  * Created by yescallop on 2016/2/13.
@@ -35,6 +39,7 @@ public class EntityBoat extends EntityVehicle {
     public static final int NETWORK_ID = EntityID.BOAT;
 
     public static final String BUOYANCY_DATA = "{\"apply_gravity\":true,\"base_buoyancy\":1.0,\"big_wave_probability\":0.02999999932944775,\"big_wave_speed\":10.0,\"drag_down_on_buoyancy_removed\":0.0,\"liquid_blocks\":[\"minecraft:water\",\"minecraft:flowing_water\"],\"simulate_waves\":true}";
+    public static final String BUBBLE_COLUMN_BUOYANCY_DATA = "{\"apply_gravity\":true,\"base_buoyancy\":1.0,\"big_wave_probability\":0.02999999932944775,\"big_wave_speed\":10.0,\"drag_down_on_buoyancy_removed\":0.6999999880790710,\"liquid_blocks\":[\"minecraft:water\",\"minecraft:flowing_water\"],\"simulate_waves\":false}";
 
     public static final Vector3f PASSENGER_OFFSET = new Vector3f(-0.6f, 0, 0);
     public static final Vector3f RIDER_PASSENGER_OFFSET = new Vector3f(0.2f, 0, 0);
@@ -50,7 +55,13 @@ public class EntityBoat extends EntityVehicle {
     public static final double SINKING_MAX_SPEED = 0.005;
 
     protected boolean sinking = true;
+
     public int woodID;
+
+    protected boolean canRide = true;
+    protected int bubbleTime;
+    protected boolean bubbleColumnDown;
+
     private boolean autoMount = true;
 
     public EntityBoat(FullChunk chunk, CompoundTag nbt) {
@@ -70,9 +81,12 @@ public class EntityBoat extends EntityVehicle {
         this.setDataFlag(DATA_FLAG_STACKABLE, true, false);
         this.setDataFlag(DATA_FLAG_GRAVITY, true, false);
         this.dataProperties.putInt(DATA_VARIANT, woodID = this.namedTag.getByte("woodID"));
-        this.dataProperties.putByte(DATA_CONTROLLING_SEAT_INDEX, RIDER_INDEX);
+//        this.dataProperties.putByte(DATA_CONTROLLING_SEAT_INDEX, RIDER_INDEX);
         this.dataProperties.putBoolean(DATA_IS_BUOYANT, true);
         this.dataProperties.putString(DATA_BUOYANCY_DATA, BUOYANCY_DATA);
+        this.dataProperties.putFloat(DATA_PADDLE_TIME_LEFT, 0);
+        this.dataProperties.putFloat(DATA_PADDLE_TIME_RIGHT, 0);
+//        this.dataProperties.putInt(DATA_BOAT_BUBBLE_TIME, 0); //1.16.100+ do not sync deprecated actor data
     }
 
     @Override
@@ -164,7 +178,7 @@ public class EntityBoat extends EntityVehicle {
             super.onUpdate(currentTick);
 
             double waterDiff = getWaterLevel();
-            if (!hasControllingPassenger()) {
+            if (!hasControllingPassenger() && !getDataFlag(DATA_FLAG_OUT_OF_CONTROL)) {
                 if (waterDiff > SINKING_DEPTH && !sinking) {
                     sinking = true;
                 } else if (waterDiff < 0.05 && sinking) {
@@ -216,7 +230,7 @@ public class EntityBoat extends EntityVehicle {
 
             this.motionX *= friction;
 
-            if (!hasControllingPassenger()) {
+            if (!hasControllingPassenger() && !getDataFlag(DATA_FLAG_OUT_OF_CONTROL)) {
                 if (waterDiff > SINKING_DEPTH || sinking) {
                     this.motionY = waterDiff > 0.5 ? this.motionY - this.getGravity() : (this.motionY - SINKING_SPEED < -SINKING_MAX_SPEED ? this.motionY : this.motionY - SINKING_SPEED);
                 }
@@ -233,10 +247,73 @@ public class EntityBoat extends EntityVehicle {
                 this.getServer().getPluginManager().callEvent(new VehicleMoveEvent(this, from, to));
             }
 
-            //TODO: lily pad collision
+            boolean aboveBubbleColumn = false;
+            boolean dragDown = false;
+            for (Block block : getCollisionBlocks()) {
+                if (block.is(Block.WATERLILY)) {
+                    level.useBreakOn(block, true);
+                    continue;
+                }
+
+                if (!block.is(Block.BUBBLE_COLUMN)) {
+                    continue;
+                }
+
+                if (!aboveBubbleColumn) {
+                    aboveBubbleColumn = true;
+
+                    if (bubbleTime == 0) {
+                        setDataProperty(new StringEntityData(DATA_BUOYANCY_DATA, BUBBLE_COLUMN_BUOYANCY_DATA));
+                    }
+                    bubbleTime++;
+
+                    setDataFlag(DATA_FLAG_OUT_OF_CONTROL, true);
+
+                    ThreadLocalRandom random = ThreadLocalRandom.current();
+                    if (random.nextInt(30) == 0) {
+                        level.addLevelSoundEvent(this, LevelSoundEventPacket.SOUND_SPLASH, random.nextInt(13000000, 20000000));
+                    }
+
+                    motionY = 0;
+                }
+
+                if (!dragDown && block.getDamage() == BlockBubbleColumn.DRAG_DOWN_BIT) {
+                    dragDown = true;
+
+                    if (!bubbleColumnDown) {
+                        bubbleTime = 1;
+                    } else if (bubbleTime > 3 * 20) {
+                        for (Entity passenger : new ArrayList<>(passengers)) {
+                            dismountEntity(passenger);
+                        }
+
+                        setDataFlag(DATA_FLAG_OUT_OF_CONTROL, false);
+                        setDataProperty(new ByteEntityData(DATA_IS_BUOYANT, false));
+                        setDataProperty(new StringEntityData(DATA_BUOYANCY_DATA, ""));
+                        canRide = false;
+
+                        motionY = -0.3;
+                    }
+                }
+            }
+            this.bubbleColumnDown = dragDown;
+            if (!aboveBubbleColumn && bubbleTime > 0) {
+                bubbleTime = 0;
+                setDataFlag(DATA_FLAG_OUT_OF_CONTROL, false);
+                setDataProperty(new ByteEntityData(DATA_IS_BUOYANT, true));
+                setDataProperty(new StringEntityData(DATA_BUOYANCY_DATA, BUOYANCY_DATA));
+                if (!canRide) {
+                    move(0, 0.8, 0);
+                    motionY = 0.04;
+                } else {
+                    motionY = 0;
+                }
+                canRide = true;
+            }
+
             this.updateMovement();
 
-            if (this.autoMount && this.passengers.size() < 2) {
+            if (this.autoMount && canRide() && this.passengers.size() < 2) {
                 for (Entity entity : this.level.getCollidingEntities(this.boundingBox.grow(0.2, 0, 0.2), this)) {
                     if (entity.riding != null || isPassenger(entity)) {
                         continue;
@@ -247,7 +324,11 @@ public class EntityBoat extends EntityVehicle {
 //                        continue;
 //                    }
 
-                    if (!(entity instanceof EntityLiving) || entity instanceof EntityArmorStand || entity instanceof Player || entity instanceof EntityWaterAnimal) {
+                    if (!(entity instanceof EntityLiving) || entity instanceof EntityArmorStand || entity instanceof EntityHuman || entity instanceof EntityWaterAnimal) {
+                        continue;
+                    }
+
+                    if (entity.getWidth() > 1.375f && !entity.getDataFlag(DATA_FLAG_BABY)) {
                         continue;
                     }
 
@@ -336,7 +417,7 @@ public class EntityBoat extends EntityVehicle {
             public void accept(int x, int y, int z) {
                 Block block = EntityBoat.this.level.getBlock(x, y, z);
 
-                if (block instanceof BlockWater) {
+                if (block.isWater() || block.is(Block.BUBBLE_COLUMN)) {
                     double level = block.getMaxY();
 
                     diffY = Math.min(maxY - level, diffY);
@@ -406,6 +487,10 @@ public class EntityBoat extends EntityVehicle {
 
     @Override
     public boolean onInteract(Player player, Item item, Vector3 clickedPos) {
+        if (!canRide()) {
+            return false;
+        }
+
         if (this.passengers.size() >= 2) {
             return false;
         }
@@ -524,12 +609,12 @@ public class EntityBoat extends EntityVehicle {
 
     @Override
     public boolean canDoInteraction(Player player) {
-        return !isFull();
+        return canRide() && !isFull();
     }
 
     @Override
     public String getInteractButtonText(Player player) {
-        return !this.isFull() ? "action.interact.ride.boat" : "";
+        return canRide() && !this.isFull() ? "action.interact.ride.boat" : "";
     }
 
     @Override
@@ -548,5 +633,12 @@ public class EntityBoat extends EntityVehicle {
             mobSeatOffset = MOB_SEAT_OFFSET;
         }
         return mobSeatOffset.add(0, entity.getRidingOffset(), 0);
+    }
+
+    protected boolean canRide() {
+        if (isInsideOfWater() && isInsideOfWater(1)) {
+            return false;
+        }
+        return canRide;
     }
 }

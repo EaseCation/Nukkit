@@ -78,6 +78,11 @@ public class BlockBubbleColumn extends BlockTransparentMeta {
     }
 
     @Override
+    protected AxisAlignedBB recalculateCollisionBoundingBox() {
+        return this;
+    }
+
+    @Override
     public int onUpdate(int type) {
         if (type == Level.BLOCK_UPDATE_NORMAL) {
             level.scheduleUpdate(this, 6);

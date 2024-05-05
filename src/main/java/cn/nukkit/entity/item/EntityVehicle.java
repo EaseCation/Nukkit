@@ -21,8 +21,18 @@ public abstract class EntityVehicle extends Entity implements EntityRideable, En
     public static final Vector3f MOB_SEAT_OFFSET = new Vector3f(0, -0.2f, 0);
     public static final Vector3f PLAYER_SEAT_OFFSET = new Vector3f(0, 1.02001f, 0);
 
+    protected boolean rollingDirection = true;
+
     public EntityVehicle(FullChunk chunk, CompoundTag nbt) {
         super(chunk, nbt);
+    }
+
+    @Override
+    protected void initEntity() {
+        super.initEntity();
+
+        this.dataProperties.putInt(DATA_HURT_TIME, 0);
+        this.dataProperties.putInt(DATA_HURT_DIRECTION, 1);
     }
 
     public int getRollingAmplitude() {
@@ -76,8 +86,6 @@ public abstract class EntityVehicle extends Entity implements EntityRideable, En
         updateMovement();
         return true;
     }
-
-    protected boolean rollingDirection = true;
 
     protected boolean performHurtAnimation() {
         setRollingAmplitude(9);

@@ -66,7 +66,7 @@ public class EntityCamel extends EntityAnimal implements EntityInteractable, Ent
     public void initEntity() {
         super.initEntity();
 
-        dataProperties.putByte(DATA_CONTROLLING_SEAT_INDEX, 0);
+//        dataProperties.putByte(DATA_CONTROLLING_SEAT_INDEX, 0);
 
         inventory = new HorseInventory(this);
         inventory.setSize(1);

@@ -474,6 +474,11 @@ public final class Items {
         registerAlias(ItemNames.RECORD_RELIC, ItemNames.MUSIC_DISC_RELIC, true, V1_20_0);
 
         registerAlias(ItemNames.SCUTE, ItemNames.TURTLE_SCUTE, V1_20_60);
+/*
+        registerAlias(ItemNames.RECORD_CREATOR, ItemNames.MUSIC_DISC_CREATOR, true, V1_21_0);
+        registerAlias(ItemNames.RECORD_CREATOR_MUSIC_BOX, ItemNames.MUSIC_DISC_CREATOR_MUSIC_BOX, true, V1_21_0);
+        registerAlias(ItemNames.RECORD_PRECIPICE, ItemNames.MUSIC_DISC_PRECIPICE, true, V1_21_0);
+*/
     }
 
     private static void registerComplexAliases() {

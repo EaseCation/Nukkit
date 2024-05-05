@@ -690,8 +690,6 @@ public abstract class EntityMinecartAbstract extends EntityVehicle {
     }
 
     protected void prepareDataProperty() {
-        setRollingAmplitude(0);
-        setRollingDirection(1);
         if (namedTag.contains("CustomDisplayTile")) {
             if (namedTag.getBoolean("CustomDisplayTile")) {
                 int display = namedTag.getInt("DisplayTile");

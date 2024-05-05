@@ -52,7 +52,7 @@ public class ItemBoat extends Item {
         }
 
         double y;
-        if (target.isWater()) {
+        if (target.isWater() || target.is(Block.BUBBLE_COLUMN)) {
             y = block.getY() - 0.375;
         } else {
             AxisAlignedBB bb = target.getBoundingBox();

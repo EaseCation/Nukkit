@@ -109,7 +109,7 @@ public class EntityBoatChest extends EntityBoat implements InventoryHolder {
 
     @Override
     public String getInteractButtonText(Player player) {
-        return !this.isFull() && !player.isSneaking() ? "action.interact.ride.boat" : "action.interact.opencontainer";
+        return canRide() && !this.isFull() && !player.isSneaking() ? "action.interact.ride.boat" : "action.interact.opencontainer";
     }
 
     @Override

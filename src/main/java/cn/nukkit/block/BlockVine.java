@@ -305,11 +305,6 @@ public class BlockVine extends BlockFlowable {
     }
 
     @Override
-    public boolean canSilkTouch() {
-        return true;
-    }
-
-    @Override
     public int getBurnChance() {
         return 15;
     }

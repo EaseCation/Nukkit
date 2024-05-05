@@ -646,6 +646,25 @@ public interface ItemFullNames extends ItemBlockNames {
     @Deprecated
     String RECORD_RELIC = "minecraft:" + ItemNames.RECORD_RELIC;
 
+    String MUSIC_DISC_CREATOR = "minecraft:" + ItemNames.MUSIC_DISC_CREATOR;
+    /**
+     * @deprecated use {@link #MUSIC_DISC_CREATOR} instead
+     */
+    @Deprecated
+    String RECORD_CREATOR = "minecraft:" + ItemNames.RECORD_CREATOR;
+    String MUSIC_DISC_CREATOR_MUSIC_BOX = "minecraft:" + ItemNames.MUSIC_DISC_CREATOR_MUSIC_BOX;
+    /**
+     * @deprecated use {@link #MUSIC_DISC_CREATOR_MUSIC_BOX} instead
+     */
+    @Deprecated
+    String RECORD_CREATOR_MUSIC_BOX = "minecraft:" + ItemNames.RECORD_CREATOR_MUSIC_BOX;
+    String MUSIC_DISC_PRECIPICE = "minecraft:" + ItemNames.MUSIC_DISC_PRECIPICE;
+    /**
+     * @deprecated use {@link #MUSIC_DISC_PRECIPICE} instead
+     */
+    @Deprecated
+    String RECORD_PRECIPICE = "minecraft:" + ItemNames.RECORD_PRECIPICE;
+
     String SOUL_CAMPFIRE = "minecraft:" + ItemNames.SOUL_CAMPFIRE;
 
     String GLOW_FRAME = "minecraft:" + ItemNames.GLOW_FRAME;
