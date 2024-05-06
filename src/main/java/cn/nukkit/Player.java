@@ -2183,9 +2183,12 @@ public class Player extends EntityHuman implements CommandSender, InventoryHolde
         int interactDistance = isCreative() ? 5 : 3;
         EntityInteractable onInteract = getEntityPlayerLookingAt(interactDistance);
         if (onInteract != null) {
-            setButtonText(onInteract.getInteractButtonText(this));
+            String text = onInteract.getInteractButtonText(this);
+            setButtonText(text);
+            setDataProperty(new ByteEntityData(DATA_CAN_RIDE_TARGET, onInteract != riding && onInteract instanceof EntityRideable && ("action.interact.mount".equals(text) || text.startsWith("action.interact.ride."))));
         } else {
             setButtonText("");
+            setDataProperty(new ByteEntityData(DATA_CAN_RIDE_TARGET, false));
         }
     }
 
@@ -3126,6 +3129,7 @@ public class Player extends EntityHuman implements CommandSender, InventoryHolde
                     if (interactPacket.target == 0 && interactPacket.action == InteractPacket.ACTION_MOUSEOVER) {
                         this.lookAtEntity = null;
                         this.setButtonText("");
+                        setDataProperty(new ByteEntityData(DATA_CAN_RIDE_TARGET, false));
                         break;
                     }
 
@@ -3141,14 +3145,14 @@ public class Player extends EntityHuman implements CommandSender, InventoryHolde
                         break;
                     }
 
-                    //item = this.inventory.getItemInHand();
-
                     switch (interactPacket.action) {
                         case InteractPacket.ACTION_MOUSEOVER:
                             this.lookAtEntity = targetEntity;
 
-                            if (targetEntity instanceof EntityInteractable) {
-                                this.setButtonText(((EntityInteractable) targetEntity).getInteractButtonText(this));
+                            if (targetEntity instanceof EntityInteractable interactable) {
+                                String text = interactable.getInteractButtonText(this);
+                                this.setButtonText(text);
+                                setDataProperty(new ByteEntityData(DATA_CAN_RIDE_TARGET, targetEntity != riding && targetEntity instanceof EntityRideable && ("action.interact.mount".equals(text) || text.startsWith("action.interact.ride."))));
                             }
 
                             this.getServer().getPluginManager().callEvent(new PlayerMouseOverEntityEvent(this, targetEntity));
@@ -3200,11 +3204,19 @@ public class Player extends EntityHuman implements CommandSender, InventoryHolde
                     this.server.getPluginManager().callEvent(pickEvent);
 
                     if (!pickEvent.isCancelled()) {
+                        item = pickEvent.getItem();
+
+                        GUIDataPickItemPacket pk = new GUIDataPickItemPacket();
+                        pk.itemName = item.getName();
+                        pk.itemEffectName = "";
+
                         boolean itemExists = false;
                         int itemSlot = -1;
                         for (int slot = 0; slot < this.inventory.getHotbarSize(); slot++) {
-                            if (this.inventory.getItem(slot).equals(pickEvent.getItem())) {
+                            if (this.inventory.getItem(slot).equals(item)) {
                                 if (slot < this.inventory.getHotbarSize()) {
+                                    pk.hotbarSlot = slot;
+                                    dataPacket(pk);
                                     this.inventory.setHeldItemSlot(slot);
                                 } else {
                                     itemSlot = slot;
@@ -3217,13 +3229,17 @@ public class Player extends EntityHuman implements CommandSender, InventoryHolde
                         for (int slot = 0; slot < this.inventory.getHotbarSize(); slot++) {
                             if (this.inventory.getItem(slot).isNull()) {
                                 if (!itemExists && this.isCreative()) {
+                                    pk.hotbarSlot = slot;
+                                    dataPacket(pk);
                                     this.inventory.setHeldItemSlot(slot);
-                                    this.inventory.setItemInHand(pickEvent.getItem());
+                                    this.inventory.setItemInHand(item);
                                     break packetswitch;
                                 } else if (itemSlot > -1) {
+                                    pk.hotbarSlot = slot;
+                                    dataPacket(pk);
                                     this.inventory.setHeldItemSlot(slot);
                                     this.inventory.setItemInHand(this.inventory.getItem(itemSlot));
-                                    this.inventory.clear(itemSlot, true);
+                                    this.inventory.clear(itemSlot);
                                     break packetswitch;
                                 }
                             }
@@ -3231,7 +3247,9 @@ public class Player extends EntityHuman implements CommandSender, InventoryHolde
 
                         if (!itemExists && this.isCreative()) {
                             Item itemInHand = this.inventory.getItemInHand();
-                            this.inventory.setItemInHand(pickEvent.getItem());
+                            pk.hotbarSlot = inventory.getHeldItemIndex();
+                            dataPacket(pk);
+                            this.inventory.setItemInHand(item);
                             if (!this.inventory.isFull()) {
                                 for (int slot = 0; slot < this.inventory.getSize(); slot++) {
                                     if (this.inventory.getItem(slot).isNull()) {
@@ -3242,6 +3260,8 @@ public class Player extends EntityHuman implements CommandSender, InventoryHolde
                             }
                         } else if (itemSlot > -1) {
                             Item itemInHand = this.inventory.getItemInHand();
+                            pk.hotbarSlot = inventory.getHeldItemIndex();
+                            dataPacket(pk);
                             this.inventory.setItemInHand(this.inventory.getItem(itemSlot));
                             this.inventory.setItem(itemSlot, itemInHand);
                         }

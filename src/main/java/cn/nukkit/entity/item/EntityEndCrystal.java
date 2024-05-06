@@ -4,11 +4,13 @@ import cn.nukkit.Player;
 import cn.nukkit.entity.Entity;
 import cn.nukkit.entity.EntityExplosive;
 import cn.nukkit.entity.EntityID;
+import cn.nukkit.entity.data.Vector3fEntityData;
 import cn.nukkit.event.entity.EntityDamageEvent;
 import cn.nukkit.level.Explosion;
 import cn.nukkit.level.GameRule;
 import cn.nukkit.level.Position;
 import cn.nukkit.level.format.FullChunk;
+import cn.nukkit.math.Vector3f;
 import cn.nukkit.nbt.tag.CompoundTag;
 
 /**
@@ -105,5 +107,17 @@ public class EntityEndCrystal extends Entity implements EntityExplosive {
         player.dataPacket(createAddEntityPacket());
 
         super.spawnTo(player);
+    }
+
+    public Vector3f getTargetPos() {
+        return getDataPropertyVector3f(DATA_BLOCK_TARGET);
+    }
+
+    public void setTargetPos(Vector3f pos) {
+        setTargetPos(pos.x, pos.y, pos.z);
+    }
+
+    public void setTargetPos(float x, float y, float z) {
+        setDataProperty(new Vector3fEntityData(DATA_BLOCK_TARGET, x, y, z));
     }
 }

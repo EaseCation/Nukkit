@@ -8,14 +8,17 @@ public class UpdateTradePacket extends DataPacket {
 
     public static final int NETWORK_ID = ProtocolInfo.UPDATE_TRADE_PACKET;
 
-    public byte windowId;
-    public byte windowType = ContainerType.TRADING;
-    public int unknownVarInt1;
-    public int unknownVarInt2;
-    public boolean isWilling;
+    public int windowId;
+    public int windowType = ContainerType.TRADING;
+    public int windowSize; // hardcoded to 0
+    public int tradeTier;
+    @Deprecated
+    public boolean recipeAddedOnUpdate;
     public long trader;
     public long player;
-    public String displayName;
+    public String displayName = "";
+    public boolean newTradingUi;
+    public boolean usingEconomyTrade;
     public byte[] offers;
 
     @Override
@@ -31,13 +34,13 @@ public class UpdateTradePacket extends DataPacket {
     @Override
     public void encode() {
         this.reset();
-        this.putByte(windowId);
-        this.putByte(windowType);
-        this.putVarInt(unknownVarInt1);
-        this.putVarInt(unknownVarInt2);
-        this.putBoolean(isWilling);
-        this.putEntityUniqueId(player);
+        this.putByte((byte) windowId);
+        this.putByte((byte) windowType);
+        this.putVarInt(windowSize);
+        this.putVarInt(usingEconomyTrade ? 40 : 0); // Merchant Timer
+        this.putBoolean(recipeAddedOnUpdate);
         this.putEntityUniqueId(trader);
+        this.putEntityUniqueId(player);
         this.putString(displayName);
         this.put(this.offers);
     }

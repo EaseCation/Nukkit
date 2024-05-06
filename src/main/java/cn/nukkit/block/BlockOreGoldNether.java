@@ -4,6 +4,8 @@ import cn.nukkit.Player;
 import cn.nukkit.item.Item;
 import cn.nukkit.item.ItemTool;
 
+import java.util.concurrent.ThreadLocalRandom;
+
 public class BlockOreGoldNether extends BlockSolid {
     public BlockOreGoldNether() {
     }
@@ -51,5 +53,10 @@ public class BlockOreGoldNether extends BlockSolid {
             };
         }
         return new Item[0];
+    }
+
+    @Override
+    public int getDropExp() {
+        return ThreadLocalRandom.current().nextInt(2);
     }
 }

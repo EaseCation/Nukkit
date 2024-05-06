@@ -97,8 +97,13 @@ public class PlayerInventory extends BaseInventory {
         if (index >= 0 && index < this.getHotbarSize()) {
             this.itemInHandIndex = index;
 
-            if (this.getHolder() instanceof Player && send) {
-                this.sendHeldItem((Player) this.getHolder());
+            if (this.getHolder() instanceof Player player && send) {
+//                this.sendHeldItem(player);
+                PlayerHotbarPacket packet = new PlayerHotbarPacket();
+                packet.selectedHotbarSlot = index;
+                packet.windowId = ContainerIds.INVENTORY;
+                packet.selectHotbarSlot = true;
+                player.dataPacket(packet);
             }
 
             this.sendHeldItem(this.getHolder().getViewers().values());
@@ -129,8 +134,13 @@ public class PlayerInventory extends BaseInventory {
 
         this.itemInHandIndex = slot;
 
-        if (this.getHolder() instanceof Player) {
-            this.sendHeldItem((Player) this.getHolder());
+        if (this.getHolder() instanceof Player player) {
+//            this.sendHeldItem(player);
+            PlayerHotbarPacket packet = new PlayerHotbarPacket();
+            packet.selectedHotbarSlot = slot;
+            packet.windowId = ContainerIds.INVENTORY;
+            packet.selectHotbarSlot = true;
+            player.dataPacket(packet);
         }
 
         this.sendHeldItem(this.getViewers());
@@ -249,11 +259,6 @@ public class PlayerInventory extends BaseInventory {
     }
 
     @Override
-    public boolean setItem(int index, Item item) {
-        return setItem(index, item, true, false);
-    }
-
-    @Override
     public boolean setItem(int index, Item item, boolean send) {
         return setItem(index, item, send, false);
     }
@@ -267,14 +272,16 @@ public class PlayerInventory extends BaseInventory {
         }
 
         //Armor change
-        if (!ignoreArmorEvents && index >= this.getSize()) {
-            EntityArmorChangeEvent ev = new EntityArmorChangeEvent(this.getHolder(), this.getItem(index), item, index);
-            Server.getInstance().getPluginManager().callEvent(ev);
-            if (ev.isCancelled() && this.getHolder() != null) {
-                this.sendArmorSlot(index, this.getViewers());
-                return false;
+        if (index >= this.getSize()) {
+            if (!ignoreArmorEvents) {
+                EntityArmorChangeEvent ev = new EntityArmorChangeEvent(this.getHolder(), this.getItem(index), item, index);
+                Server.getInstance().getPluginManager().callEvent(ev);
+                if (ev.isCancelled() && this.getHolder() != null) {
+                    this.sendArmorSlot(index, this.getViewers());
+                    return false;
+                }
+                item = ev.getNewItem();
             }
-            item = ev.getNewItem();
         } else {
             EntityInventoryChangeEvent ev = new EntityInventoryChangeEvent(this.getHolder(), this.getItem(index), item, index);
             Server.getInstance().getPluginManager().callEvent(ev);
@@ -284,9 +291,11 @@ public class PlayerInventory extends BaseInventory {
             }
             item = ev.getNewItem();
         }
+
         Item old = this.getItem(index);
         Item newItem = item.clone();
         this.slots.put(index, newItem);
+
         this.onSlotChange(index, old, newItem, send);
         return true;
     }
@@ -333,7 +342,6 @@ public class PlayerInventory extends BaseInventory {
 
             this.onSlotChange(index, old, newItem, send);
         }
-
         return true;
     }
 
@@ -342,7 +350,6 @@ public class PlayerInventory extends BaseInventory {
         for (int i = 0; i < 4; i++) {
             armor[i] = this.getItem(this.getSize() + i);
         }
-
         return armor;
     }
 

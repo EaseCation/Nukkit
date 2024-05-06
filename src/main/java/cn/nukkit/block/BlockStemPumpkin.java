@@ -35,8 +35,19 @@ public class BlockStemPumpkin extends BlockStem {
 
     @Override
     public Item[] getDrops(Item item, Player player) {
+        int count = 0;
+        int growth = getGrowth();
+        ThreadLocalRandom random = ThreadLocalRandom.current();
+        for (int i = 0; i < 3; i++) {
+            if (random.nextInt(15) <= growth) {
+                count++;
+            }
+        }
+        if (count == 0) {
+            return new Item[0];
+        }
         return new Item[]{
-                Item.get(Item.PUMPKIN_SEEDS, 0, ThreadLocalRandom.current().nextInt(0, 4))
+                Item.get(Item.PUMPKIN_SEEDS, 0, count)
         };
     }
 

@@ -5,6 +5,8 @@ import lombok.ToString;
 @ToString
 public class GUIDataPickItemPacket extends DataPacket {
 
+    public String itemName;
+    public String itemEffectName = "";
     public int hotbarSlot;
 
     @Override
@@ -15,6 +17,8 @@ public class GUIDataPickItemPacket extends DataPacket {
     @Override
     public void encode() {
         this.reset();
+        this.putString(this.itemName);
+        this.putString(this.itemEffectName);
         this.putLInt(this.hotbarSlot);
     }
 

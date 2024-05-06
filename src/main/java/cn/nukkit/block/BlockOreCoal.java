@@ -67,7 +67,7 @@ public class BlockOreCoal extends BlockSolid {
 
     @Override
     public int getDropExp() {
-        return ThreadLocalRandom.current().nextInt(0, 3);
+        return ThreadLocalRandom.current().nextInt(3);
     }
 
     @Override

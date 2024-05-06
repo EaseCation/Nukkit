@@ -172,10 +172,11 @@ public abstract class Enchantment implements Cloneable, EnchantmentID {
     public static final String[] words = {"the", "elder", "scrolls", "klaatu", "berata", "niktu", "xyzzy", "bless", "curse", "light", "darkness", "fire", "air", "earth", "water", "hot", "dry", "cold", "wet", "ignite", "snuff", "embiggen", "twist", "shorten", "stretch", "fiddle", "destroy", "imbue", "galvanize", "enchant", "free", "limited", "range", "of", "towards", "inside", "sphere", "cube", "self", "other", "ball", "mental", "physical", "grow", "shrink", "demon", "elemental", "spirit", "animal", "creature", "beast", "humanoid", "undead", "fresh", "stale"};
 
     public static String getRandomName() {
-        int count = ThreadLocalRandom.current().nextInt(3, 6);
+        ThreadLocalRandom random = ThreadLocalRandom.current();
+        int count = random.nextInt(3, 6);
         Set<String> set = new ObjectOpenHashSet<>();
         while (set.size() < count) {
-            set.add(Enchantment.words[ThreadLocalRandom.current().nextInt(0, Enchantment.words.length)]);
+            set.add(Enchantment.words[random.nextInt(Enchantment.words.length)]);
         }
 
         String[] words = set.toArray(new String[0]);
