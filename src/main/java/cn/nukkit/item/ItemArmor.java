@@ -52,23 +52,23 @@ public abstract class ItemArmor extends Item implements ItemDurable {
         boolean equip = false;
         Item oldSlotItem;
         if (this.isHelmet()) {
-            oldSlotItem = player.getInventory().getHelmet();
-            if (!oldSlotItem.hasEnchantment(Enchantment.BINDING) && player.getInventory().setHelmet(this)) {
+            oldSlotItem = player.getArmorInventory().getHelmet();
+            if (!oldSlotItem.hasEnchantment(Enchantment.BINDING) && player.getArmorInventory().setHelmet(this)) {
                 equip = true;
             }
         } else if (this.isChestplate()) {
-            oldSlotItem = player.getInventory().getChestplate();
-            if (!oldSlotItem.hasEnchantment(Enchantment.BINDING) && player.getInventory().setChestplate(this)) {
+            oldSlotItem = player.getArmorInventory().getChestplate();
+            if (!oldSlotItem.hasEnchantment(Enchantment.BINDING) && player.getArmorInventory().setChestplate(this)) {
                 equip = true;
             }
         } else if (this.isLeggings()) {
-            oldSlotItem = player.getInventory().getLeggings();
-            if (!oldSlotItem.hasEnchantment(Enchantment.BINDING) && player.getInventory().setLeggings(this)) {
+            oldSlotItem = player.getArmorInventory().getLeggings();
+            if (!oldSlotItem.hasEnchantment(Enchantment.BINDING) && player.getArmorInventory().setLeggings(this)) {
                 equip = true;
             }
         } else if (this.isBoots()) {
-            oldSlotItem = player.getInventory().getBoots();
-            if (!oldSlotItem.hasEnchantment(Enchantment.BINDING) && player.getInventory().setBoots(this)) {
+            oldSlotItem = player.getArmorInventory().getBoots();
+            if (!oldSlotItem.hasEnchantment(Enchantment.BINDING) && player.getArmorInventory().setBoots(this)) {
                 equip = true;
             }
         } else {

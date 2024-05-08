@@ -40,7 +40,7 @@ public interface ProtocolInfo {
     int UPDATE_BLOCK_PACKET = 0x15; // 21 c
     int ADD_PAINTING_PACKET = 0x16; // 22 c
     int EXPLODE_PACKET = 0x17; // c D
-    int TICK_SYNC_PACKET = 0x17; // 23 cs
+    int TICK_SYNC_PACKET = 0x17; // 23 cs d
     int LEVEL_SOUND_EVENT_PACKET = 0x18; // 24 cs D
     int LEVEL_EVENT_PACKET = 0x19; // 25 c
     int BLOCK_EVENT_PACKET = 0x1a; // 26 c
@@ -254,6 +254,7 @@ public interface ProtocolInfo {
     int PLAYER_TOGGLE_CRAFTER_SLOT_REQUEST_PACKET = 0x132; // 306 s
     int SET_PLAYER_INVENTORY_OPTIONS_PACKET = 0x133; // 307 cs
     int SET_HUD_PACKET = 0x134; // 308 c
+    int AWARD_ACHIEVEMENT_PACKET = 0x135; // 309 c
 
 
     int COUNT = 1024;

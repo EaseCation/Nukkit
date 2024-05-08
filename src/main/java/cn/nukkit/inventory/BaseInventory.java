@@ -163,15 +163,6 @@ public abstract class BaseInventory implements Inventory {
             item = ev.getNewItem();
         }
 
-        /*if (holder instanceof BlockEntity) {
-            try {
-                ((BlockEntity) holder).setDirty();
-            } catch (Exception e) {
-                log.error("setDirty {}", holder.getClass().getName(), e);
-                return false;
-            }
-        }*/
-
         Item old = this.getItem(index);
         Item newItem = item.clone();
         this.slots.put(index, newItem);

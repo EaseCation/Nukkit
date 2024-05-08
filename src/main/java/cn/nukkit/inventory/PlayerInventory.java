@@ -1,11 +1,8 @@
 package cn.nukkit.inventory;
 
 import cn.nukkit.Player;
-import cn.nukkit.Server;
 import cn.nukkit.entity.EntityHuman;
 import cn.nukkit.entity.EntityHumanType;
-import cn.nukkit.event.entity.EntityArmorChangeEvent;
-import cn.nukkit.event.entity.EntityInventoryChangeEvent;
 import cn.nukkit.event.player.PlayerItemHeldEvent;
 import cn.nukkit.item.Item;
 import cn.nukkit.item.Items;
@@ -24,17 +21,6 @@ public class PlayerInventory extends BaseInventory {
 
     public PlayerInventory(EntityHumanType player) {
         super(player, InventoryType.PLAYER);
-    }
-
-    @Override
-    public int getSize() {
-        return super.getSize() - 4;
-    }
-
-    @Override
-    public void setSize(int size) {
-        super.setSize(size + 4);
-        this.sendContents(this.getViewers());
     }
 
     /**
@@ -72,17 +58,7 @@ public class PlayerInventory extends BaseInventory {
     }
 
     private boolean isHotbarSlot(int slot) {
-        return slot >= 0 && slot <= this.getHotbarSize();
-    }
-
-    @Deprecated
-    public int getHotbarSlotIndex(int index) {
-        return index;
-    }
-
-    @Deprecated
-    public void setHotbarSlotIndex(int index, int slot) {
-
+        return slot >= 0 && slot < this.getHotbarSize();
     }
 
     public int getHeldItemIndex() {
@@ -94,7 +70,7 @@ public class PlayerInventory extends BaseInventory {
     }
 
     public void setHeldItemIndex(int index, boolean send) {
-        if (index >= 0 && index < this.getHotbarSize()) {
+        if (isHotbarSlot(index)) {
             this.itemInHandIndex = index;
 
             if (this.getHolder() instanceof Player player && send) {
@@ -120,30 +96,6 @@ public class PlayerInventory extends BaseInventory {
 
     public boolean setItemInHand(Item item) {
         return this.setItem(this.getHeldItemIndex(), item);
-    }
-
-    @Deprecated
-    public int getHeldItemSlot() {
-        return this.itemInHandIndex;
-    }
-
-    public void setHeldItemSlot(int slot) {
-        if (!isHotbarSlot(slot)) {
-            return;
-        }
-
-        this.itemInHandIndex = slot;
-
-        if (this.getHolder() instanceof Player player) {
-//            this.sendHeldItem(player);
-            PlayerHotbarPacket packet = new PlayerHotbarPacket();
-            packet.selectedHotbarSlot = slot;
-            packet.windowId = ContainerIds.INVENTORY;
-            packet.selectHotbarSlot = true;
-            player.dataPacket(packet);
-        }
-
-        this.sendHeldItem(this.getViewers());
     }
 
     public void sendHeldItem(Player... players) {
@@ -181,270 +133,22 @@ public class PlayerInventory extends BaseInventory {
             return;
         }
 
-        if (index >= this.getSize()) {
-            this.sendArmorSlot(index, this.getViewers());
-            this.sendArmorSlot(index, this.getHolder().getViewers().values());
-
-            int sound;
-            if (after != null && (sound = after.getEquippingSound()) != -1 && !after.equals(before, false)) {
-                holder.level.addLevelSoundEvent(holder, sound);
-            }
-        } else {
-            super.onSlotChange(index, before, after, send);
-        }
+        super.onSlotChange(index, before, after, send);
     }
 
     public int getHotbarSize() {
         return 9;
     }
 
-    public Item getArmorItem(int index) {
-        return this.getItem(this.getSize() + index);
-    }
-
-    public boolean setArmorItem(int index, Item item) {
-        return this.setArmorItem(index, item, false);
-    }
-
-    public boolean setArmorItem(int index, Item item, boolean ignoreArmorEvents) {
-        return this.setItem(this.getSize() + index, item, true, ignoreArmorEvents);
-    }
-
-    public Item getHelmet() {
-        return this.getItem(this.getSize());
-    }
-
-    public Item getChestplate() {
-        return this.getItem(this.getSize() + 1);
-    }
-
-    public Item getLeggings() {
-        return this.getItem(this.getSize() + 2);
-    }
-
-    public Item getBoots() {
-        return this.getItem(this.getSize() + 3);
-    }
-
-    public boolean setHelmet(Item helmet) {
-        return this.setHelmet(helmet, false);
-    }
-
-    public boolean setHelmet(Item helmet, boolean ignoreArmorEvents) {
-        return this.setItem(this.getSize(), helmet, true, ignoreArmorEvents);
-    }
-
-    public boolean setChestplate(Item chestplate) {
-        return this.setChestplate(chestplate, false);
-    }
-
-    public boolean setChestplate(Item chestplate, boolean ignoreArmorEvents) {
-        return this.setItem(this.getSize() + 1, chestplate, true, ignoreArmorEvents);
-    }
-
-    public boolean setLeggings(Item leggings) {
-        return this.setLeggings(leggings, false);
-    }
-
-    public boolean setLeggings(Item leggings, boolean ignoreArmorEvents) {
-        return this.setItem(this.getSize() + 2, leggings, true, ignoreArmorEvents);
-    }
-
-    public boolean setBoots(Item boots) {
-        return this.setBoots(boots, false);
-    }
-
-    public boolean setBoots(Item boots, boolean ignoreArmorEvents) {
-        return this.setItem(this.getSize() + 3, boots, true, ignoreArmorEvents);
-    }
-
-    @Override
-    public boolean setItem(int index, Item item, boolean send) {
-        return setItem(index, item, send, false);
-    }
-
-    private boolean setItem(int index, Item item, boolean send, boolean ignoreArmorEvents) {
-        if (index < 0 || index >= this.size) {
-            return false;
-        }
-        if (item.isNull()) {
-            return this.clear(index);
-        }
-
-        //Armor change
-        if (index >= this.getSize()) {
-            if (!ignoreArmorEvents) {
-                EntityArmorChangeEvent ev = new EntityArmorChangeEvent(this.getHolder(), this.getItem(index), item, index);
-                Server.getInstance().getPluginManager().callEvent(ev);
-                if (ev.isCancelled() && this.getHolder() != null) {
-                    this.sendArmorSlot(index, this.getViewers());
-                    return false;
-                }
-                item = ev.getNewItem();
-            }
-        } else {
-            EntityInventoryChangeEvent ev = new EntityInventoryChangeEvent(this.getHolder(), this.getItem(index), item, index);
-            Server.getInstance().getPluginManager().callEvent(ev);
-            if (ev.isCancelled()) {
-                this.sendSlot(index, this.getViewers());
-                return false;
-            }
-            item = ev.getNewItem();
-        }
-
-        Item old = this.getItem(index);
-        Item newItem = item.clone();
-        this.slots.put(index, newItem);
-
-        this.onSlotChange(index, old, newItem, send);
-        return true;
-    }
-
-    @Override
-    public boolean clear(int index, boolean send) {
-        Item old = this.slots.get(index);
-        if (old != null) {
-            Item item = Items.air();
-            if (index >= this.getSize() && index < this.size) {
-                EntityArmorChangeEvent ev = new EntityArmorChangeEvent(this.getHolder(), old, item, index);
-                Server.getInstance().getPluginManager().callEvent(ev);
-                if (ev.isCancelled()) {
-                    if (index >= this.size) {
-                        this.sendArmorSlot(index, this.getViewers());
-                    } else {
-                        this.sendSlot(index, this.getViewers());
-                    }
-                    return false;
-                }
-                item = ev.getNewItem();
-            } else {
-                EntityInventoryChangeEvent ev = new EntityInventoryChangeEvent(this.getHolder(), old, item, index);
-                Server.getInstance().getPluginManager().callEvent(ev);
-                if (ev.isCancelled()) {
-                    if (index >= this.size) {
-                        this.sendArmorSlot(index, this.getViewers());
-                    } else {
-                        this.sendSlot(index, this.getViewers());
-                    }
-                    return false;
-                }
-                item = ev.getNewItem();
-            }
-
-            Item newItem;
-            if (!item.isNull()) {
-                newItem = item.clone();
-                this.slots.put(index, newItem);
-            } else {
-                newItem = null;
-                this.slots.remove(index);
-            }
-
-            this.onSlotChange(index, old, newItem, send);
-        }
-        return true;
-    }
-
-    public Item[] getArmorContents() {
-        Item[] armor = new Item[4];
-        for (int i = 0; i < 4; i++) {
-            armor[i] = this.getItem(this.getSize() + i);
-        }
-        return armor;
-    }
-
     @Override
     public void clearAll() {
-        int limit = this.getSize() + 4;
+        int limit = this.getSize();
         for (int index = 0; index < limit; ++index) {
             this.clear(index);
         }
+
+        getHolder().getArmorInventory().clearAll();
         getHolder().getOffhandInventory().clearAll();
-    }
-
-    public void sendArmorContents(Player player) {
-        this.sendArmorContents(new Player[]{player});
-    }
-
-    public void sendArmorContents(Player[] players) {
-        Item[] armor = this.getArmorContents();
-        long entityId = this.getHolder().getId();
-
-        for (Player player : players) {
-            if (player == this.getHolder()) {
-                InventoryContentPacket pk2 = new InventoryContentPacket();
-                pk2.inventoryId = ContainerIds.ARMOR;
-                pk2.slots = armor;
-                player.dataPacket(pk2);
-            } else {
-                MobArmorEquipmentPacket pk = new MobArmorEquipmentPacket();
-                pk.eid = entityId;
-                pk.slots = armor;
-                player.dataPacket(pk);
-            }
-        }
-    }
-
-    public void setArmorContents(Item[] items) {
-        if (items.length < 4) {
-            Item[] newItems = new Item[4];
-            System.arraycopy(items, 0, newItems, 0, items.length);
-            items = newItems;
-        }
-
-        for (int i = 0; i < 4; ++i) {
-            if (items[i] == null) {
-                items[i] = Items.air();
-            }
-
-            if (items[i].isNull()) {
-                this.clear(this.getSize() + i);
-            } else {
-                this.setItem(this.getSize() + i, items[i]);
-            }
-        }
-    }
-
-    public void sendArmorContents(Collection<Player> players) {
-        this.sendArmorContents(players.toArray(new Player[0]));
-    }
-
-    public void sendArmorSlot(int index, Player player) {
-        this.sendArmorSlot(index, new Player[]{player});
-    }
-
-    public void sendArmorSlot(int index, Player[] players) {
-        Item[] armor = this.getArmorContents();
-        long entityId = this.getHolder().getId();
-
-        for (Player player : players) {
-            if (player == this.getHolder()) {
-                InventorySlotPacket pk2 = new InventorySlotPacket();
-                pk2.inventoryId = ContainerIds.ARMOR;
-                pk2.slot = index - this.getSize();
-                pk2.item = this.getItem(index);
-                player.dataPacket(pk2);
-            } else {
-                MobArmorEquipmentPacket pk = new MobArmorEquipmentPacket();
-                pk.eid = entityId;
-                pk.slots = armor;
-                player.dataPacket(pk);
-            }
-        }
-    }
-
-    public void sendArmorSlot(int index, Collection<Player> players) {
-        this.sendArmorSlot(index, players.toArray(new Player[0]));
-    }
-
-    @Override
-    public void sendContents(Player player) {
-        this.sendContents(new Player[]{player});
-    }
-
-    @Override
-    public void sendContents(Collection<Player> players) {
-        this.sendContents(players.toArray(new Player[0]));
     }
 
     @Override
@@ -465,16 +169,6 @@ public class PlayerInventory extends BaseInventory {
             pk.inventoryId = id;
             player.dataPacket(pk);
         }
-    }
-
-    @Override
-    public void sendSlot(int index, Player player) {
-        this.sendSlot(index, new Player[]{player});
-    }
-
-    @Override
-    public void sendSlot(int index, Collection<Player> players) {
-        this.sendSlot(index, players.toArray(new Player[0]));
     }
 
     @Override
@@ -511,11 +205,7 @@ public class PlayerInventory extends BaseInventory {
 
         InventoryContentPacket pk = new InventoryContentPacket();
         pk.inventoryId = ContainerIds.CREATIVE;
-
-        if (!p.isSpectator()) { //fill it for all gamemodes except spectator
-            pk.slots = p.getCreativeItems().toArray(new Item[0]);
-        }
-
+        pk.slots = p.getCreativeItems().toArray(new Item[0]);
         p.dataPacket(pk);
     }
 

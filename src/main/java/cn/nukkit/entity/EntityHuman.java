@@ -308,7 +308,7 @@ public class EntityHuman extends EntityHumanType {
             pk.metadata = this.dataProperties;
             player.dataPacket(pk);
 
-            this.inventory.sendArmorContents(player);
+            this.armorInventory.sendContents(player);
             this.offhandInventory.sendContents(player);
 
             if (this.riding != null) {

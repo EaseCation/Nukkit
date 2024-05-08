@@ -303,7 +303,7 @@ public class BlockCampfire extends BlockTransparentMeta implements Faceable {
             return;
         }
 
-        if (!(entity instanceof EntityLiving) || entity instanceof Player && ((Player) entity).getInventory().getBoots().hasEnchantment(EnchantmentID.FROST_WALKER)) {
+        if (!(entity instanceof EntityLiving) || entity instanceof Player && ((Player) entity).getArmorInventory().getBoots().hasEnchantment(EnchantmentID.FROST_WALKER)) {
             return;
         }
 

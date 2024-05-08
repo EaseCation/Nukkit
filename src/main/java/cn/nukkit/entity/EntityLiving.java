@@ -12,7 +12,7 @@ import cn.nukkit.event.entity.EntityDamageByEntityEvent;
 import cn.nukkit.event.entity.EntityDamageEvent;
 import cn.nukkit.event.entity.EntityDamageEvent.DamageCause;
 import cn.nukkit.event.entity.EntityDeathEvent;
-import cn.nukkit.inventory.PlayerInventory;
+import cn.nukkit.inventory.ArmorInventory;
 import cn.nukkit.item.Item;
 import cn.nukkit.item.ItemID;
 import cn.nukkit.item.enchantment.Enchantment;
@@ -395,7 +395,7 @@ public abstract class EntityLiving extends Entity implements EntityDamageable {
                 boolean inPowderSnow = block == BlockID.POWDER_SNOW;
                 boolean overScaffolding = below == BlockID.SCAFFOLDING;
                 boolean overPowderSnow = below == BlockID.POWDER_SNOW; //TODO: check
-                PlayerInventory inventory = ((EntityHumanType) this).getInventory();
+                ArmorInventory inventory = ((EntityHumanType) this).getArmorInventory();
                 boolean leatherBoots = inventory != null && inventory.getBoots().getId() == ItemID.LEATHER_BOOTS;
                 setDataFlag(DATA_FLAG_IN_SCAFFOLDING, inScaffolding);
                 setDataFlag(DATA_FLAG_IN_ASCENDABLE_BLOCK, inScaffolding || leatherBoots && inPowderSnow);

@@ -4,7 +4,7 @@ import lombok.ToString;
 
 @ToString
 public class SimpleEventPacket extends DataPacket {
-    public static final byte NETWORK_ID = ProtocolInfo.SIMPLE_EVENT_PACKET;
+    public static final int NETWORK_ID = ProtocolInfo.SIMPLE_EVENT_PACKET;
 
     public static final int TYPE_ENABLE_COMMANDS = 1;
     public static final int TYPE_DISABLE_COMMANDS = 2;

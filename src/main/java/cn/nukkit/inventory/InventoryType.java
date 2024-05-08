@@ -10,7 +10,7 @@ public enum InventoryType {
     CHEST(27, "Chest", ContainerType.CONTAINER),
     ENDER_CHEST(27, "Ender Chest", ContainerType.CONTAINER),
     DOUBLE_CHEST(27 + 27, "Double Chest", ContainerType.CONTAINER),
-    PLAYER(40, "Player", ContainerType.INVENTORY), //36 CONTAINER, 4 ARMOR
+    PLAYER(36, "Player", ContainerType.INVENTORY), //36 CONTAINER
     FURNACE(3, "Furnace", ContainerType.FURNACE),
     CRAFTING(5, "Crafting", ContainerType.WORKBENCH), //4 CRAFTING slots, 1 RESULT
     WORKBENCH(10, "Crafting", ContainerType.WORKBENCH), //9 CRAFTING slots, 1 RESULT

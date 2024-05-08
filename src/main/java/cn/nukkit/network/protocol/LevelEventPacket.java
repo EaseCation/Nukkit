@@ -141,6 +141,8 @@ public class LevelEventPacket extends DataPacket {
     public static final int EVENT_PARTICLE_TRAIL_SPAWNER_SPAWNING = 3612;
     public static final int EVENT_PARTICLE_TRAIL_SPAWNER_EJECTING = 3613;
     public static final int EVENT_PARTICLE_WIND_EXPLOSION = 3614;
+    public static final int EVENT_PARTICLE_TRIAL_SPAWNER_DETECTION_CHARGED = 3615;
+    public static final int EVENT_PARTICLE_TRIAL_SPAWNER_BECOME_CHARGED = 3616;
 
     public static final int EVENT_SET_DATA = 4000;
 
@@ -151,6 +153,8 @@ public class LevelEventPacket extends DataPacket {
     public static final int EVENT_ANIMATION_VAULT_ACTIVATE= 9811;
     public static final int EVENT_ANIMATION_VAULT_DEACTIVATE = 9812;
     public static final int EVENT_ANIMATION_VAULT_EJECT_ITEM = 9813;
+    public static final int EVENT_ANIMATION_SPAWN_COBWEB = 9814;
+    public static final int EVENT_PARTICLE_SMASH_ATTACK_GROUND_DUST = 9815;
 
     public static final int EVENT_ADD_PARTICLE_MASK = 0x4000;
 

@@ -8,7 +8,7 @@ import lombok.ToString;
  */
 @ToString(exclude = "data")
 public class LevelChunkPacket extends DataPacket {
-    public static final byte NETWORK_ID = ProtocolInfo.LEVEL_CHUNK_PACKET;
+    public static final int NETWORK_ID = ProtocolInfo.LEVEL_CHUNK_PACKET;
 
     /**
      * this appears large enough for a world height of 1024 blocks + 1 biome

@@ -127,19 +127,19 @@ public class ReplaceItemCommand extends VanillaCommand {
                                 sender.sendMessage(String.format("Replaced %1$s slot %2$d of %3$s with %4$d * %5$s", slotType, slotId, target.getName(), amount, item.getName()));
                                 break;
                             case SLOT_ARMOR_HEAD:
-                                target.getInventory().setHelmet(item);
+                                target.getArmorInventory().setHelmet(item);
                                 sender.sendMessage(String.format("Replaced %1$s slot %2$d of %3$s with %4$d * %5$s", slotType, slotId, target.getName(), amount, item.getName()));
                                 break;
                             case SLOT_ARMOR_CHEST:
-                                target.getInventory().setChestplate(item);
+                                target.getArmorInventory().setChestplate(item);
                                 sender.sendMessage(String.format("Replaced %1$s slot %2$d of %3$s with %4$d * %5$s", slotType, slotId, target.getName(), amount, item.getName()));
                                 break;
                             case SLOT_ARMOR_LEGS:
-                                target.getInventory().setLeggings(item);
+                                target.getArmorInventory().setLeggings(item);
                                 sender.sendMessage(String.format("Replaced %1$s slot %2$d of %3$s with %4$d * %5$s", slotType, slotId, target.getName(), amount, item.getName()));
                                 break;
                             case SLOT_ARMOR_FEET:
-                                target.getInventory().setBoots(item);
+                                target.getArmorInventory().setBoots(item);
                                 sender.sendMessage(String.format("Replaced %1$s slot %2$d of %3$s with %4$d * %5$s", slotType, slotId, target.getName(), amount, item.getName()));
                                 break;
                             case SLOT_HOTBAR:

@@ -93,7 +93,8 @@ public interface ParticleID {
     int VAULT_CONNECTION = 90;
     int BREEZE_WIND_EXPLOSION = 91;
     int WOLF_ARMOR_BREAK = 92;
+    int OMINOUS_ITEM_SPAWNER = 93;
 
 
-    int UNDEFINED = 93;
+    int UNDEFINED = 94;
 }

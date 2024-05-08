@@ -4,7 +4,7 @@ import cn.nukkit.Player;
 import cn.nukkit.entity.Entity;
 import cn.nukkit.entity.EntityLiving;
 import cn.nukkit.entity.projectile.EntityProjectile;
-import cn.nukkit.inventory.PlayerInventory;
+import cn.nukkit.inventory.ArmorInventory;
 import cn.nukkit.item.Item;
 import cn.nukkit.item.ItemArmor;
 import cn.nukkit.item.ItemBucket;
@@ -96,9 +96,9 @@ public class BlockSnowPowder extends BlockFlowable {
         }
 
         if (entity instanceof Player) {
-            PlayerInventory inventory = ((Player) entity).getInventory();
+            ArmorInventory inventory = ((Player) entity).getArmorInventory();
             for (int i = 0; i < 4; i++) {
-                if (inventory.getArmorItem(i).getTier() == ItemArmor.TIER_LEATHER) {
+                if (inventory.getItem(i).getTier() == ItemArmor.TIER_LEATHER) {
                     return;
                 }
             }

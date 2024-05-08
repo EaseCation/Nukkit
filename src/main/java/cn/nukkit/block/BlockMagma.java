@@ -68,7 +68,7 @@ public class BlockMagma extends BlockSolid {
     public void onEntityCollide(Entity entity) {
         if (entity instanceof Player) {
             Player p = (Player) entity;
-            if (p.getInventory().getBoots().hasEnchantment(Enchantment.FROST_WALKER)) {
+            if (p.getArmorInventory().getBoots().hasEnchantment(Enchantment.FROST_WALKER)) {
                 return;
             }
             if (p.isSurvivalLike() && !p.isSneaking() && p.level.gameRules.getBoolean(GameRule.FIRE_DAMAGE)) {

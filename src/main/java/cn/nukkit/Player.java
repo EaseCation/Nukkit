@@ -1090,7 +1090,7 @@ public class Player extends EntityHuman implements CommandSender, InventoryHolde
         }
 
         this.inventory.sendContents(this);
-        this.inventory.sendArmorContents(this);
+        this.armorInventory.sendContents(this);
         this.offhandInventory.sendContents(this);
 
         this.noDamageTicks = 60;
@@ -1797,7 +1797,7 @@ public class Player extends EntityHuman implements CommandSender, InventoryHolde
 
         HeightRange heightRange = level.getHeightRange();
         if (!revert && !isSpectator() && this.y >= heightRange.getMinY() + 1 && this.y < heightRange.getMaxY() && deltaXZ > Mth.EPSILON) {
-            int frostWalker = inventory.getBoots().getEnchantmentLevel(Enchantment.FROST_WALKER);
+            int frostWalker = armorInventory.getBoots().getEnchantmentLevel(Enchantment.FROST_WALKER);
             if (frostWalker > 0) {
                 int playerX = getFloorX();
                 int playerZ = getFloorZ();
@@ -2027,12 +2027,12 @@ public class Player extends EntityHuman implements CommandSender, InventoryHolde
             }
 
             if (isSurvivalLike() && age % 20 == 0 && isGliding()) {
-                Item chestplate = inventory.getChestplate();
+                Item chestplate = armorInventory.getChestplate();
                 if (chestplate.getId() == Item.ELYTRA) {
                     int damage = chestplate.getDamage();
                     if (damage < chestplate.getMaxDurability() - 1) {
                         if (chestplate.hurtAndBreak(1) != 0) {
-                            inventory.setChestplate(chestplate, true);
+                            armorInventory.setChestplate(chestplate, true);
                         }
                     } else {
                         setGliding(false);
@@ -2981,7 +2981,7 @@ public class Player extends EntityHuman implements CommandSender, InventoryHolde
 
                             this.getAdventureSettings().update();
                             this.inventory.sendContents(this);
-                            this.inventory.sendArmorContents(this);
+                            this.armorInventory.sendContents(this);
                             this.offhandInventory.sendContents(this);
 
                             this.spawnToAll();
@@ -3050,7 +3050,7 @@ public class Player extends EntityHuman implements CommandSender, InventoryHolde
                                 break packetswitch;
                             }
                             PlayerToggleGlideEvent playerToggleGlideEvent = new PlayerToggleGlideEvent(this, true);
-                            Item chestplate = getInventory().getChestplate();
+                            Item chestplate = getArmorInventory().getChestplate();
                             if (chestplate.getId() != Item.ELYTRA || chestplate.getDamage() >= chestplate.getMaxDurability() - 1) {
                                 playerToggleGlideEvent.setCancelled();
                             }
@@ -3217,7 +3217,7 @@ public class Player extends EntityHuman implements CommandSender, InventoryHolde
                                 if (slot < this.inventory.getHotbarSize()) {
                                     pk.hotbarSlot = slot;
                                     dataPacket(pk);
-                                    this.inventory.setHeldItemSlot(slot);
+                                    this.inventory.setHeldItemIndex(slot);
                                 } else {
                                     itemSlot = slot;
                                 }
@@ -3231,13 +3231,13 @@ public class Player extends EntityHuman implements CommandSender, InventoryHolde
                                 if (!itemExists && this.isCreative()) {
                                     pk.hotbarSlot = slot;
                                     dataPacket(pk);
-                                    this.inventory.setHeldItemSlot(slot);
+                                    this.inventory.setHeldItemIndex(slot);
                                     this.inventory.setItemInHand(item);
                                     break packetswitch;
                                 } else if (itemSlot > -1) {
                                     pk.hotbarSlot = slot;
                                     dataPacket(pk);
-                                    this.inventory.setHeldItemSlot(slot);
+                                    this.inventory.setHeldItemIndex(slot);
                                     this.inventory.setItemInHand(this.inventory.getItem(itemSlot));
                                     this.inventory.clear(itemSlot);
                                     break packetswitch;
@@ -5519,15 +5519,12 @@ public class Player extends EntityHuman implements CommandSender, InventoryHolde
     public void sendAllInventories() {
         for (Inventory inv : this.windowIndex.values()) {
             inv.sendContents(this);
-
-            if (inv instanceof PlayerInventory) {
-                ((PlayerInventory) inv).sendArmorContents(this);
-            }
         }
     }
 
     protected void addDefaultWindows() {
         this.addWindow(this.getInventory(), ContainerIds.INVENTORY, true, true);
+        this.addWindow(this.armorInventory, ContainerIds.ARMOR, true, true);
 
         this.playerUIInventory = new PlayerUIInventory(this);
         this.addWindow(this.playerUIInventory, ContainerIds.UI, true);
@@ -5826,16 +5823,16 @@ public class Player extends EntityHuman implements CommandSender, InventoryHolde
                 if (exp > 0) {
                     IntList itemsWithMending = new IntArrayList(4 + 2);
                     for (int i = 0; i < 4; i++) {
-                        Item item = inventory.getArmorItem(i);
+                        Item item = armorInventory.getItem(i);
                         if (!(item instanceof ItemDurable)) {
                             continue;
                         }
                         if (item.getDamage() <= 0) {
                             continue;
                         }
-                        Enchantment enchantment = inventory.getArmorItem(i).getEnchantment(Enchantment.MENDING);
+                        Enchantment enchantment = armorInventory.getItem(i).getEnchantment(Enchantment.MENDING);
                         if (enchantment != null && enchantment.getLevel() > 0) {
-                            itemsWithMending.add(inventory.getSize() + i);
+                            itemsWithMending.add(-i - 1);
                         }
                     }
                     Item item = inventory.getItemInHand();
@@ -5858,6 +5855,9 @@ public class Player extends EntityHuman implements CommandSender, InventoryHolde
                         if (index == -106) {
                             inv = offhandInventory;
                             index = 0;
+                        } else if (index < 0) {
+                            inv = armorInventory;
+                            index = -index - 1;
                         }
                         Item mend = inv.getItem(index);
                         int oldDamage = mend.getDamage();

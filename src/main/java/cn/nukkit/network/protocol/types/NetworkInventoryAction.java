@@ -159,11 +159,7 @@ public class NetworkInventoryAction {
     public InventoryAction createInventoryAction(Player player) {
         switch (this.sourceType) {
             case SOURCE_CONTAINER:
-                if (this.windowId == ContainerIds.ARMOR) {
-                    //TODO: HACK!
-                    this.inventorySlot += Player.SURVIVAL_SLOTS;
-                    this.windowId = ContainerIds.INVENTORY;
-                } else if (this.windowId == ContainerIds.UI) {
+                if (this.windowId == ContainerIds.UI) {
                     switch (this.inventorySlot) {
                         case ENCHANTING_TABLE_INPUT:
                             if (player.getWindowById(Player.ENCHANT_WINDOW_ID) == null) {
@@ -339,12 +335,6 @@ public class NetworkInventoryAction {
     public InventoryAction createInventoryActionLegacy(Player player) {
         switch (this.sourceType) {
             case SOURCE_CONTAINER:
-                if (this.windowId == ContainerIds.ARMOR) {
-                    //TODO: HACK!
-                    this.inventorySlot += Player.SURVIVAL_SLOTS;
-                    this.windowId = ContainerIds.INVENTORY;
-                }
-
                 Inventory window = player.getWindowById(this.windowId);
                 if (window != null) {
                     return new SlotChangeAction(window, this.inventorySlot, this.oldItem, this.newItem);

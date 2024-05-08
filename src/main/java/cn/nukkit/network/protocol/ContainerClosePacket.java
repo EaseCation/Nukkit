@@ -16,6 +16,7 @@ public class ContainerClosePacket extends DataPacket {
     }
 
     public int windowId;
+    public int windowType;
     public boolean wasServerInitiated;
 
     @Override

@@ -2,13 +2,12 @@ package cn.nukkit.entity.mob;
 
 import cn.nukkit.Player;
 import cn.nukkit.entity.EntityID;
-import cn.nukkit.entity.EntitySmite;
 import cn.nukkit.event.entity.EntityDamageEvent;
 import cn.nukkit.event.entity.EntityDamageEvent.DamageCause;
 import cn.nukkit.level.format.FullChunk;
 import cn.nukkit.nbt.tag.CompoundTag;
 
-public class EntityBreeze extends EntityMob implements EntitySmite {
+public class EntityBreeze extends EntityMob {
     public static final int NETWORK_ID = EntityID.BREEZE;
 
     public EntityBreeze(FullChunk chunk, CompoundTag nbt) {

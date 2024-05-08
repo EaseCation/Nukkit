@@ -5,6 +5,7 @@ import cn.nukkit.event.entity.EntityDamageByEntityEvent;
 import cn.nukkit.event.entity.EntityDamageEvent;
 import cn.nukkit.event.entity.EntityDamageEvent.DamageCause;
 import cn.nukkit.event.entity.EntityDamageEvent.DamageModifier;
+import cn.nukkit.inventory.ArmorInventory;
 import cn.nukkit.inventory.InventoryHolder;
 import cn.nukkit.inventory.PlayerEnderChestInventory;
 import cn.nukkit.inventory.PlayerInventory;
@@ -12,7 +13,6 @@ import cn.nukkit.inventory.PlayerOffhandInventory;
 import cn.nukkit.item.Item;
 import cn.nukkit.item.Items;
 import cn.nukkit.item.enchantment.Enchantment;
-import cn.nukkit.item.enchantment.mace.EnchantmentMaceBreach;
 import cn.nukkit.level.format.FullChunk;
 import cn.nukkit.math.Mth;
 import cn.nukkit.nbt.NBTIO;
@@ -26,12 +26,18 @@ import java.util.List;
 
 public abstract class EntityHumanType extends EntityCreature implements InventoryHolder {
 
+    protected ArmorInventory armorInventory; //TODO: move to Mob
+
     protected PlayerInventory inventory;
     protected PlayerEnderChestInventory enderChestInventory;
     protected PlayerOffhandInventory offhandInventory;
 
     public EntityHumanType(FullChunk chunk, CompoundTag nbt) {
         super(chunk, nbt);
+    }
+
+    public ArmorInventory getArmorInventory() {
+        return armorInventory;
     }
 
     @Override
@@ -49,6 +55,7 @@ public abstract class EntityHumanType extends EntityCreature implements Inventor
 
     @Override
     protected void initEntity() {
+        this.armorInventory = new ArmorInventory(this);
         this.offhandInventory = new PlayerOffhandInventory(this);
         this.inventory = new PlayerInventory(this);
 
@@ -60,7 +67,7 @@ public abstract class EntityHumanType extends EntityCreature implements Inventor
                     //Old hotbar saving stuff, remove it (useless now)
                     inventoryList.remove(item);
                 } else if (slot >= 100 && slot < 104) {
-                    this.inventory.setItem(this.inventory.getSize() + slot - 100, NBTIO.getItemHelper(item));
+                    this.armorInventory.setItem(slot - 100, NBTIO.getItemHelper(item));
                 } else if (slot == -106) {
                     this.offhandInventory.setItem(0, NBTIO.getItemHelper(item));
                 } else {
@@ -111,10 +118,10 @@ public abstract class EntityHumanType extends EntityCreature implements Inventor
                 inventoryTag.add(NBTIO.putItemHelper(item, slot));
             }
 
-            for (int slot = 100; slot < 104; ++slot) {
-                Item item = this.inventory.getItem(this.inventory.getSize() + slot - 100);
+            for (int slot = 0; slot < 4; ++slot) {
+                Item item = this.armorInventory.getItem(slot);
                 if (!item.isNull()) {
-                    inventoryTag.add(NBTIO.putItemHelper(item, slot));
+                    inventoryTag.add(NBTIO.putItemHelper(item, slot + 100));
                 }
             }
         }
@@ -145,6 +152,7 @@ public abstract class EntityHumanType extends EntityCreature implements Inventor
     public Item[] getDrops() {
         if (this.inventory != null) {
             List<Item> drops = new ArrayList<>(this.inventory.getContents().values());
+            drops.addAll(this.armorInventory.getContents().values());
             drops.addAll(this.offhandInventory.getContents().values());
             return drops.toArray(new Item[0]);
         }
@@ -177,7 +185,7 @@ public abstract class EntityHumanType extends EntityCreature implements Inventor
             int toughness = 0;
             int epf = 0;
 
-            for (Item armor : inventory.getArmorContents()) {
+            for (Item armor : armorInventory.getContents().values()) {
                 armorPoints += armor.getArmorPoints();
                 toughness += armor.getToughness();
                 epf += calculateEnchantmentProtectionFactor(armor, source);
@@ -219,7 +227,7 @@ public abstract class EntityHumanType extends EntityCreature implements Inventor
             }
 
             for (int slot = 0; slot < 4; slot++) {
-                Item armor = this.inventory.getArmorItem(slot);
+                Item armor = this.armorInventory.getItem(slot);
 
                 if (armor.hasEnchantments()) {
                     if (damager != null) {
@@ -228,11 +236,11 @@ public abstract class EntityHumanType extends EntityCreature implements Inventor
                         }
 
                         if (armor.getDamage() > armor.getMaxDurability()) {
-                            inventory.setArmorItem(slot, Items.air());
+                            armorInventory.setItem(slot, Items.air());
                             level.addLevelSoundEvent(this, LevelSoundEventPacket.SOUND_BREAK);
                             continue;
                         } else {
-                            inventory.setArmorItem(slot, armor, true);
+                            armorInventory.setItem(slot, armor, true);
                         }
                     }
                 }
@@ -269,10 +277,10 @@ public abstract class EntityHumanType extends EntityCreature implements Inventor
                     }
 
                     if (itemDamaged < 0) {
-                        inventory.setArmorItem(slot, Items.air());
+                        armorInventory.setItem(slot, Items.air());
                         level.addLevelSoundEvent(this, LevelSoundEventPacket.SOUND_BREAK);
                     } else {
-                        inventory.setArmorItem(slot, armor, true);
+                        armorInventory.setItem(slot, armor, true);
                     }
                 }
             }
@@ -300,7 +308,7 @@ public abstract class EntityHumanType extends EntityCreature implements Inventor
     @Override
     public void setOnFire(int seconds) {
         int level = 0;
-        for (Item armor : this.inventory.getArmorContents()) {
+        for (Item armor : this.armorInventory.getContents().values()) {
             level += armor.getEnchantmentLevel(Enchantment.FIRE_PROTECTION);
         }
 
@@ -318,7 +326,7 @@ public abstract class EntityHumanType extends EntityCreature implements Inventor
 
     @Override
     protected boolean checkTurtleHelmet(boolean breathing) {
-        if (breathing && inventory.getHelmet().getId() == Item.TURTLE_HELMET) {
+        if (breathing && armorInventory.getHelmet().getId() == Item.TURTLE_HELMET) {
             turtleTicks = 200;
             return true;
         }
@@ -334,7 +342,7 @@ public abstract class EntityHumanType extends EntityCreature implements Inventor
     @Override
     protected float getKnockbackResistance() {
         float total = 0;
-        for (Item armor : inventory.getArmorContents()) {
+        for (Item armor : armorInventory.getContents().values()) {
             total += armor.getKnockbackResistance();
         }
         return total;

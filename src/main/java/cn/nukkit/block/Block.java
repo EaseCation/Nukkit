@@ -782,7 +782,7 @@ public abstract class Block extends Position implements Metadatable, Cloneable, 
         if (player.isRiding() || !player.isOnGround() && !player.getAdventureSettings().get(AdventureSettings.Type.NO_CLIP) && !player.getAdventureSettings().get(AdventureSettings.Type.FLYING)) {
             speed *= 0.2f;
         }
-        if (player.isInsideOfWater() && !player.getInventory().getHelmet().hasEnchantment(Enchantment.AQUA_AFFINITY)) {
+        if (player.isInsideOfWater() && !player.getArmorInventory().getHelmet().hasEnchantment(Enchantment.AQUA_AFFINITY)) {
             speed *= 0.2f;
         }
 
