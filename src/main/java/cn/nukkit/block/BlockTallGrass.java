@@ -2,7 +2,6 @@ package cn.nukkit.block;
 
 import cn.nukkit.Player;
 import cn.nukkit.item.Item;
-import cn.nukkit.item.ItemDye;
 import cn.nukkit.level.Level;
 import cn.nukkit.level.particle.BoneMealParticle;
 import cn.nukkit.math.BlockFace;
@@ -71,6 +70,7 @@ public class BlockTallGrass extends BlockFlowable {
         }
 
         if (canSurvive()) {
+            setDamage(getValidType());
             this.getLevel().setBlock(block, this, true);
             return true;
         }
@@ -90,34 +90,29 @@ public class BlockTallGrass extends BlockFlowable {
 
     @Override
     public boolean onActivate(Item item, BlockFace face, Player player) {
-        if (item.getId() == Item.DYE && item.getDamage() == ItemDye.BONE_MEAL) {
+        if (item.getId() == Item.DYE && item.isBoneMeal()) {
             Block up = this.up();
 
             if (up.getId() == AIR) {
                 int meta;
 
-                switch (this.getDamage()) {
-                    case 0:
-                    case 1:
+                switch (this.getValidType()) {
+                    default:
+                    case TYPE_GRASS:
                         meta = BlockDoublePlant.TYPE_TALL_GRASS;
                         break;
-                    case 2:
-                    case 3:
+                    case TYPE_FERN:
                         meta = BlockDoublePlant.TYPE_LARGE_FERN;
                         break;
-                    default:
-                        meta = -1;
                 }
 
-                if (meta != -1) {
-                    if (player != null && (player.gamemode & 0x01) == 0) {
-                        item.count--;
-                    }
-
-                    this.level.addParticle(new BoneMealParticle(this));
-                    this.level.setBlock(this, get(DOUBLE_PLANT, meta), true, false);
-                    this.level.setBlock(up, get(DOUBLE_PLANT, meta ^ BlockDoublePlant.TOP_HALF_BITMASK), true);
+                if (player != null && (player.gamemode & 0x01) == 0) {
+                    item.count--;
                 }
+
+                this.level.addParticle(new BoneMealParticle(this));
+                this.level.setBlock(this, get(DOUBLE_PLANT, meta), true, false);
+                this.level.setBlock(up, get(DOUBLE_PLANT, meta ^ BlockDoublePlant.TOP_HALF_BITMASK), true);
             }
 
             return true;
@@ -146,11 +141,11 @@ public class BlockTallGrass extends BlockFlowable {
             if (dropSeeds) {
                 return new Item[]{
                         Item.get(Item.WHEAT_SEEDS),
-                        Item.get(Item.SHORT_GRASS, this.getDamage(), 1)
+                        Item.get(Item.SHORT_GRASS, this.getValidType(), 1)
                 };
             } else {
                 return new Item[]{
-                        Item.get(Item.SHORT_GRASS, this.getDamage(), 1)
+                        Item.get(Item.SHORT_GRASS, this.getValidType(), 1)
                 };
             }
         }
@@ -162,6 +157,11 @@ public class BlockTallGrass extends BlockFlowable {
         } else {
             return new Item[0];
         }
+    }
+
+    @Override
+    public Item toItem(boolean addUserData) {
+        return Item.get(getItemId(), getValidType());
     }
 
     @Override
@@ -187,5 +187,10 @@ public class BlockTallGrass extends BlockFlowable {
     private boolean canSurvive() {
         int id = down().getId();
         return id == Block.GRASS_BLOCK || id == Block.DIRT || id == Block.PODZOL || id == FARMLAND || id == MYCELIUM || id == DIRT_WITH_ROOTS || id == MOSS_BLOCK;
+    }
+
+    private int getValidType() {
+        int meta = getDamage();
+        return meta >= 2 && meta <= 3 ? TYPE_FERN : TYPE_GRASS;
     }
 }

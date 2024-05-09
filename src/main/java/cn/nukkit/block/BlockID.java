@@ -1185,8 +1185,10 @@ public interface BlockID {
     int QUARTZ_SLAB = 1131;
     int NETHER_BRICK_SLAB = 1132;
 
+    int PETRIFIED_OAK_SLAB = 1157;
 
-    int UNDEFINED = 1133;
+
+    int UNDEFINED = 1158;
 
     @Beta
     int COARSE_DIRT = DIRT;

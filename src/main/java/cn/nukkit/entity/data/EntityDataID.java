@@ -180,6 +180,10 @@ public interface EntityDataID {
      * @since 1.20.10
      */
     int DATA_COLLISION_BOX = 136; //vec3
+    /**
+     * long.
+     * @since 1.21.0
+     */
     int DATA_VISIBLE_MOB_EFFECTS = 137;
 
     int DATA_UNDEFINED = 138;

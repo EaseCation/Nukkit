@@ -64,14 +64,14 @@ public final class Effects {
         registerEffect(VILLAGE_HERO, new Effect(VILLAGE_HERO, EffectNames.VILLAGE_HERO, "%effect.villageHero", 68, 255, 68), V1_11_0);
 
         registerEffect(DARKNESS, new Effect(DARKNESS, EffectNames.DARKNESS, "%effect.darkness", 41, 39, 33).setVisible(false), V1_19_0);
-/*
-        registerEffect(TRIAL_OMEN, new Effect(TRIAL_OMEN, EffectNames.TRIAL_OMEN, "%effect.trial_omen", 22, 166, 166).setVisible(false), V1_21_0);
-        registerEffect(WIND_CHARGED, new Effect(WIND_CHARGED, EffectNames.WIND_CHARGED, "%effect.wind_charged", 189, 201, 255, true).setVisible(false), V1_21_0);
-        registerEffect(WEAVING, new Effect(WEAVING, EffectNames.WEAVING, "%effect.weaving", 120, 105, 90, true).setVisible(false), V1_21_0);
-        registerEffect(OOZING, new Effect(OOZING, EffectNames.OOZING, "%effect.oozing", 153, 255, 163, true).setVisible(false), V1_21_0);
-        registerEffect(INFESTED, new Effect(INFESTED, EffectNames.INFESTED, "%effect.infested", 140, 155, 140, true).setVisible(false), V1_21_0);
-        registerEffect(RAID_OMEN, new Effect(RAID_OMEN, EffectNames.RAID_OMEN, "%effect.raid_omen", 222, 64, 88).setVisible(false), V1_21_0);
-*/
+
+        registerEffect(TRIAL_OMEN, new Effect(TRIAL_OMEN, EffectNames.TRIAL_OMEN, "%effect.trial_omen", 22, 166, 166), V1_21_0);
+        registerEffect(WIND_CHARGED, new Effect(WIND_CHARGED, EffectNames.WIND_CHARGED, "%effect.wind_charged", 189, 201, 255, true), V1_21_0);
+        registerEffect(WEAVING, new Effect(WEAVING, EffectNames.WEAVING, "%effect.weaving", 120, 105, 90, true), V1_21_0);
+        registerEffect(OOZING, new Effect(OOZING, EffectNames.OOZING, "%effect.oozing", 153, 255, 163, true), V1_21_0);
+        registerEffect(INFESTED, new Effect(INFESTED, EffectNames.INFESTED, "%effect.infested", 140, 155, 140, true), V1_21_0);
+        registerEffect(RAID_OMEN, new Effect(RAID_OMEN, EffectNames.RAID_OMEN, "%effect.raid_omen", 222, 64, 88), V1_21_0);
+
     }
 
     private static Effect registerEffect(int id, Effect effect) {
@@ -87,7 +87,7 @@ public final class Effects {
      */
     private static Effect registerEffect(int id, Effect effect, GameVersion version) {
         if (!version.isAvailable()) {
-            return null;
+//            return null;
         }
         return registerEffect(id, effect);
     }

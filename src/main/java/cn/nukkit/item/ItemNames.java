@@ -284,6 +284,7 @@ public interface ItemNames extends ItemBlockNames {
     String SNIFFER_SPAWN_EGG = "sniffer_spawn_egg";
     String BREEZE_SPAWN_EGG = "breeze_spawn_egg";
     String ARMADILLO_SPAWN_EGG = "armadillo_spawn_egg";
+    String BOGGED_SPAWN_EGG = "bogged_spawn_egg";
     String TRADER_LLAMA_SPAWN_EGG = "trader_llama_spawn_egg";
     String EXPERIENCE_BOTTLE = "experience_bottle";
     String FIRE_CHARGE = "fire_charge";

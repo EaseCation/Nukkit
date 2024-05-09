@@ -1233,4 +1233,6 @@ public interface ItemBlockFullNames {
     String STONE_BRICK_SLAB = "minecraft:" + ItemBlockNames.STONE_BRICK_SLAB;
     String QUARTZ_SLAB = "minecraft:" + ItemBlockNames.QUARTZ_SLAB;
     String NETHER_BRICK_SLAB = "minecraft:" + ItemBlockNames.NETHER_BRICK_SLAB;
+
+    String PETRIFIED_OAK_SLAB = "minecraft:" + ItemBlockNames.PETRIFIED_OAK_SLAB;
 }

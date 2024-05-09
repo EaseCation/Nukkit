@@ -514,7 +514,7 @@ public final class Blocks {
         registerBlock(BlockNames.HANGING_ROOTS, ItemBlockNames.HANGING_ROOTS, HANGING_ROOTS, BlockHangingRoots.class, V1_17_0);
         registerBlock(BlockNames.MOSS_BLOCK, ItemBlockNames.MOSS_BLOCK, MOSS_BLOCK, BlockMoss.class, V1_17_0); //TODO: onFertilized
         registerBlock(BlockNames.SPORE_BLOSSOM, ItemBlockNames.SPORE_BLOSSOM, SPORE_BLOSSOM, BlockSporeBlossom.class, V1_17_0);
-        registerBlock(BlockNames.CAVE_VINES, ItemBlockNames.CAVE_VINES, CAVE_VINES, BlockCaveVines.class, V1_17_0); //TODO: item upgrade
+        registerBlock(BlockNames.CAVE_VINES, ItemBlockNames.CAVE_VINES, CAVE_VINES, BlockCaveVines.class, V1_17_0);
         registerBlock(BlockNames.BIG_DRIPLEAF, ItemBlockNames.BIG_DRIPLEAF, BIG_DRIPLEAF, BlockDripleafBig.class, V1_17_0);
         registerBlock(BlockNames.AZALEA_LEAVES, ItemBlockNames.AZALEA_LEAVES, AZALEA_LEAVES, BlockLeavesAzalea.class, V1_17_0);
         registerBlock(BlockNames.AZALEA_LEAVES_FLOWERED, ItemBlockNames.AZALEA_LEAVES_FLOWERED, AZALEA_LEAVES_FLOWERED, BlockLeavesAzaleaFlowered.class, V1_17_0);
@@ -837,9 +837,9 @@ public final class Blocks {
         registerBlockAlias(BlockNames.DOUBLE_STONE_BLOCK_SLAB4, BlockNames.DOUBLE_STONE_SLAB, V1_19_0);
 
         registerBlockAlias(BlockNames.GRASS_BLOCK, BlockNames.GRASS, V1_20_70);
-/*
+
         registerBlockAlias(BlockNames.SHORT_GRASS, BlockNames.TALLGRASS, V1_21_0);
-*/
+
     }
 
     @SuppressWarnings("deprecation")
@@ -879,9 +879,9 @@ public final class Blocks {
         registerItemAlias(ItemBlockNames.DOUBLE_STONE_BLOCK_SLAB4, ItemBlockNames.REAL_DOUBLE_STONE_SLAB, V1_19_0);
 
         registerItemAlias(ItemBlockNames.GRASS_BLOCK, ItemBlockNames.GRASS, V1_20_70);
-/*
+
         registerItemAlias(ItemBlockNames.SHORT_GRASS, ItemBlockNames.TALLGRASS, V1_21_0);
-*/
+
     }
 
     private static void registerComplexAliases() {
@@ -1162,7 +1162,7 @@ public final class Blocks {
         registerComplexAlias(ItemBlockNames.OXEYE_DAISY, RED_FLOWER, BlockFlower.TYPE_OXEYE_DAISY, V1_20_80);
         registerComplexAlias(ItemBlockNames.CORNFLOWER, RED_FLOWER, BlockFlower.TYPE_CORNFLOWER, V1_20_80);
         registerComplexAlias(ItemBlockNames.LILY_OF_THE_VALLEY, RED_FLOWER, BlockFlower.TYPE_LILY_OF_THE_VALLEY, V1_20_80);
-/*
+
         registerComplexAlias(ItemBlockNames.SUNFLOWER, DOUBLE_PLANT, BlockDoublePlant.TYPE_SUNFLOWER, V1_21_0);
         registerComplexAlias(ItemBlockNames.LILAC, DOUBLE_PLANT, BlockDoublePlant.TYPE_LILAC, V1_21_0);
         registerComplexAlias(ItemBlockNames.TALL_GRASS, DOUBLE_PLANT, BlockDoublePlant.TYPE_TALL_GRASS, V1_21_0);
@@ -1186,12 +1186,13 @@ public final class Blocks {
 
         registerComplexAlias(ItemBlockNames.SMOOTH_STONE_SLAB, STONE_SLAB, BlockSlabStone.TYPE_SMOOTH_STONE, V1_21_0);
         registerComplexAlias(ItemBlockNames.SANDSTONE_SLAB, STONE_SLAB, BlockSlabStone.TYPE_SANDSTONE, V1_21_0);
+        registerComplexAlias(ItemBlockNames.PETRIFIED_OAK_SLAB, STONE_SLAB, BlockSlabStone.TYPE_WOOD, V1_21_0);
         registerComplexAlias(ItemBlockNames.COBBLESTONE_SLAB, STONE_SLAB, BlockSlabStone.TYPE_COBBLESTONE, V1_21_0);
         registerComplexAlias(ItemBlockNames.BRICK_SLAB, STONE_SLAB, BlockSlabStone.TYPE_BRICK, V1_21_0);
         registerComplexAlias(ItemBlockNames.STONE_BRICK_SLAB, STONE_SLAB, BlockSlabStone.TYPE_STONE_BRICK, V1_21_0);
         registerComplexAlias(ItemBlockNames.QUARTZ_SLAB, STONE_SLAB, BlockSlabStone.TYPE_QUARTZ, V1_21_0);
         registerComplexAlias(ItemBlockNames.NETHER_BRICK_SLAB, STONE_SLAB, BlockSlabStone.TYPE_NETHER_BRICK, V1_21_0);
-*/
+
     }
 
     private static Class<? extends Block> registerBlock(String blockName, String itemName, int id, Class<? extends Block> clazz) {

@@ -333,11 +333,11 @@ public final class Items {
         registerItem(ItemNames.MANGROVE_SIGN, MANGROVE_SIGN, ItemSignMangrove.class, ItemSignMangrove::new, V1_19_0);
 
         registerItem(ItemNames.MUSIC_DISC_RELIC, MUSIC_DISC_RELIC, ItemRecordRelic.class, ItemRecordRelic::new, V1_20_0);
-/*
+
         registerItem(ItemNames.MUSIC_DISC_CREATOR, MUSIC_DISC_CREATOR, ItemRecordCreator.class, ItemRecordCreator::new, V1_21_0);
         registerItem(ItemNames.MUSIC_DISC_CREATOR_MUSIC_BOX, MUSIC_DISC_CREATOR_MUSIC_BOX, ItemRecordCreatorMusicBox.class, ItemRecordCreatorMusicBox::new, V1_21_0);
         registerItem(ItemNames.MUSIC_DISC_PRECIPICE, MUSIC_DISC_PRECIPICE, ItemRecordPrecipice.class, ItemRecordPrecipice::new, V1_21_0);
-*/
+
         registerSimpleAliases();
         registerComplexAliases();
 
@@ -407,7 +407,7 @@ public final class Items {
 
         registerNewItem(ItemNames.ARMADILLO_SCUTE, ARMADILLO_SCUTE, ItemArmadilloScute.class, ItemArmadilloScute::new, V1_20_80);
         registerNewItem(ItemNames.WOLF_ARMOR, WOLF_ARMOR, ItemWolfArmor.class, ItemWolfArmor::new, V1_20_80);
-/*
+
         registerNewItem(ItemNames.TRIAL_KEY, TRIAL_KEY, ItemTrialKey.class, ItemTrialKey::new, V1_21_0);
         registerNewItem(ItemNames.OMINOUS_TRIAL_KEY, OMINOUS_TRIAL_KEY, ItemTrialKeyOminous.class, ItemTrialKeyOminous::new, V1_21_0);
         registerNewItem(ItemNames.OMINOUS_BOTTLE, OMINOUS_BOTTLE, ItemOminousBottle.class, ItemOminousBottle::new, ItemOminousBottle.MAXIMUM_AMPLIFIER, V1_21_0);
@@ -419,7 +419,7 @@ public final class Items {
         registerNewItem(ItemNames.SCRAPE_POTTERY_SHERD, SCRAPE_POTTERY_SHERD, ItemPotterySherdScrape.class, ItemPotterySherdScrape::new, V1_21_0);
         registerNewItem(ItemNames.FLOW_ARMOR_TRIM_SMITHING_TEMPLATE, FLOW_ARMOR_TRIM_SMITHING_TEMPLATE, ItemSmithingTemplateArmorTrimFlow.class, ItemSmithingTemplateArmorTrimFlow::new, V1_21_0);
         registerNewItem(ItemNames.BOLT_ARMOR_TRIM_SMITHING_TEMPLATE, BOLT_ARMOR_TRIM_SMITHING_TEMPLATE, ItemSmithingTemplateArmorTrimBolt.class, ItemSmithingTemplateArmorTrimBolt::new, V1_21_0);
-*/
+
     }
 
     @SuppressWarnings("deprecation")
@@ -474,11 +474,11 @@ public final class Items {
         registerAlias(ItemNames.RECORD_RELIC, ItemNames.MUSIC_DISC_RELIC, true, V1_20_0);
 
         registerAlias(ItemNames.SCUTE, ItemNames.TURTLE_SCUTE, V1_20_60);
-/*
+
         registerAlias(ItemNames.RECORD_CREATOR, ItemNames.MUSIC_DISC_CREATOR, true, V1_21_0);
         registerAlias(ItemNames.RECORD_CREATOR_MUSIC_BOX, ItemNames.MUSIC_DISC_CREATOR_MUSIC_BOX, true, V1_21_0);
         registerAlias(ItemNames.RECORD_PRECIPICE, ItemNames.MUSIC_DISC_PRECIPICE, true, V1_21_0);
-*/
+
     }
 
     private static void registerComplexAliases() {
@@ -490,8 +490,8 @@ public final class Items {
         registerComplexAlias(ItemNames.BORDURE_INDENTED_BANNER_PATTERN, BANNER_PATTERN, ItemBannerPattern.BORDURE_INDENTED_BANNER_PATTERN, V1_16_100);
         registerComplexAlias(ItemNames.PIGLIN_BANNER_PATTERN, BANNER_PATTERN, ItemBannerPattern.PIGLIN_BANNER_PATTERN, V1_16_100);
         registerComplexAlias(ItemNames.GLOBE_BANNER_PATTERN, BANNER_PATTERN, ItemBannerPattern.GLOBE_BANNER_PATTERN, V1_18_10);
-//        registerComplexAlias(ItemNames.FLOW_BANNER_PATTERN, BANNER_PATTERN, ItemBannerPattern.FLOW_BANNER_PATTERN, V1_21_0);
-//        registerComplexAlias(ItemNames.GUSTER_BANNER_PATTERN, BANNER_PATTERN, ItemBannerPattern.GUSTER_BANNER_PATTERN, V1_21_0);
+        registerComplexAlias(ItemNames.FLOW_BANNER_PATTERN, BANNER_PATTERN, ItemBannerPattern.FLOW_BANNER_PATTERN, V1_21_0);
+        registerComplexAlias(ItemNames.GUSTER_BANNER_PATTERN, BANNER_PATTERN, ItemBannerPattern.GUSTER_BANNER_PATTERN, V1_21_0);
 
         registerComplexAlias(ItemNames.OAK_BOAT, BOAT, ItemBoat.OAK_BOAT, V1_16_100);
         registerComplexAlias(ItemNames.SPRUCE_BOAT, BOAT, ItemBoat.SPRUCE_BOAT, V1_16_100);
@@ -617,8 +617,8 @@ public final class Items {
         registerComplexAlias(ItemNames.CAMEL_SPAWN_EGG, SPAWN_EGG, EntityID.CAMEL, V1_20_0);
         registerComplexAlias(ItemNames.SNIFFER_SPAWN_EGG, SPAWN_EGG, EntityID.SNIFFER, V1_20_0);
         registerComplexAlias(ItemNames.ARMADILLO_SPAWN_EGG, SPAWN_EGG, EntityID.ARMADILLO, V1_20_80);
-//        registerComplexAlias(ItemNames.BREEZE_SPAWN_EGG, SPAWN_EGG, EntityID.BREEZE, V1_21_0);
-//        registerComplexAlias(ItemNames.BOGGED_SPAWN_EGG, SPAWN_EGG, EntityID.BOGGED, V1_21_0);
+        registerComplexAlias(ItemNames.BREEZE_SPAWN_EGG, SPAWN_EGG, EntityID.BREEZE, V1_21_0);
+        registerComplexAlias(ItemNames.BOGGED_SPAWN_EGG, SPAWN_EGG, EntityID.BOGGED, V1_21_0);
     }
 
     private static Class<? extends Item> registerItem(String name, int id, Class<? extends Item> clazz, ItemFactory factory) {

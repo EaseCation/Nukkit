@@ -2,7 +2,6 @@ package cn.nukkit.block;
 
 import cn.nukkit.Player;
 import cn.nukkit.item.Item;
-import cn.nukkit.item.ItemDye;
 import cn.nukkit.level.Level;
 import cn.nukkit.level.particle.BoneMealParticle;
 import cn.nukkit.math.BlockFace;
@@ -150,6 +149,11 @@ public class BlockDoublePlant extends BlockFlowable {
     }
 
     @Override
+    public Item toItem(boolean addUserData) {
+        return Item.get(getItemId(), getPlantType());
+    }
+
+    @Override
     public BlockColor getColor() {
         return BlockColor.PLANT_BLOCK_COLOR;
     }
@@ -161,7 +165,7 @@ public class BlockDoublePlant extends BlockFlowable {
 
     @Override
     public boolean onActivate(Item item, BlockFace face, Player player) {
-        if (item.getId() == Item.DYE && item.getDamage() == ItemDye.BONE_MEAL) {
+        if (item.getId() == Item.DYE && item.isBoneMeal()) {
             switch (this.getPlantType()) {
                 case TYPE_SUNFLOWER:
                 case TYPE_LILAC:

@@ -1,5 +1,6 @@
 package cn.nukkit.network.protocol;
 
+import cn.nukkit.network.protocol.types.ContainerType;
 import lombok.ToString;
 
 /**
@@ -16,7 +17,7 @@ public class ContainerClosePacket extends DataPacket {
     }
 
     public int windowId;
-    public int windowType;
+    public int windowType = ContainerType.NONE;
     public boolean wasServerInitiated;
 
     @Override

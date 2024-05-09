@@ -670,6 +670,8 @@ public abstract class Entity extends Location implements Metadatable, EntityData
         int count = 0;
         boolean ambient = true;
 
+        long visibleEffects = 0;
+
         for (Effect effect : this.effects) {
             if (effect == null) {
                 continue;
@@ -685,6 +687,8 @@ public abstract class Entity extends Location implements Metadatable, EntityData
                 if (!effect.isAmbient()) {
                     ambient = false;
                 }
+
+                visibleEffects = (visibleEffects << 7) | (effect.getId() << 1);
             }
         }
 
@@ -699,6 +703,8 @@ public abstract class Entity extends Location implements Metadatable, EntityData
             this.setDataProperty(new IntEntityData(Entity.DATA_POTION_COLOR, 0));
             this.setDataProperty(new ByteEntityData(Entity.DATA_POTION_AMBIENT, 0));
         }
+
+        this.setDataProperty(new LongEntityData(Entity.DATA_VISIBLE_MOB_EFFECTS, visibleEffects));
     }
 
     public void recalculateBoundingBox() {

@@ -283,6 +283,9 @@ public interface ItemFullNames extends ItemBlockNames {
     String ALLAY_SPAWN_EGG = "minecraft:" + ItemNames.ALLAY_SPAWN_EGG;
     String CAMEL_SPAWN_EGG = "minecraft:" + ItemNames.CAMEL_SPAWN_EGG;
     String SNIFFER_SPAWN_EGG = "minecraft:" + ItemNames.SNIFFER_SPAWN_EGG;
+    String BREEZE_SPAWN_EGG = "minecraft:" + ItemNames.BREEZE_SPAWN_EGG;
+    String ARMADILLO_SPAWN_EGG = "minecraft:" + ItemNames.ARMADILLO_SPAWN_EGG;
+    String BOGGED_SPAWN_EGG = "minecraft:" + ItemNames.BOGGED_SPAWN_EGG;
     String TRADER_LLAMA_SPAWN_EGG = "minecraft:" + ItemNames.TRADER_LLAMA_SPAWN_EGG;
     String EXPERIENCE_BOTTLE = "minecraft:" + ItemNames.EXPERIENCE_BOTTLE;
     String FIRE_CHARGE = "minecraft:" + ItemNames.FIRE_CHARGE;
@@ -727,4 +730,19 @@ public interface ItemFullNames extends ItemBlockNames {
     String SHAPER_ARMOR_TRIM_SMITHING_TEMPLATE = "minecraft:" + ItemNames.SHAPER_ARMOR_TRIM_SMITHING_TEMPLATE;
     String HOST_ARMOR_TRIM_SMITHING_TEMPLATE = "minecraft:" + ItemNames.HOST_ARMOR_TRIM_SMITHING_TEMPLATE;
     String PITCHER_POD = "minecraft:" + ItemNames.PITCHER_POD;
+    String ARMADILLO_SCUTE = "minecraft:" + ItemNames.ARMADILLO_SCUTE;
+    String WOLF_ARMOR = "minecraft:" + ItemNames.WOLF_ARMOR;
+    String TRIAL_KEY = "minecraft:" + ItemNames.TRIAL_KEY;
+    String OMINOUS_TRIAL_KEY = "minecraft:" + ItemNames.OMINOUS_TRIAL_KEY;
+    String OMINOUS_BOTTLE = "minecraft:" + ItemNames.OMINOUS_BOTTLE;
+    String BREEZE_ROD = "minecraft:" + ItemNames.BREEZE_ROD;
+    String WIND_CHARGE = "minecraft:" + ItemNames.WIND_CHARGE;
+    String MACE = "minecraft:" + ItemNames.MACE;
+    String FLOW_POTTERY_SHERD = "minecraft:" + ItemNames.FLOW_POTTERY_SHERD;
+    String GUSTER_POTTERY_SHERD = "minecraft:" + ItemNames.GUSTER_POTTERY_SHERD;
+    String SCRAPE_POTTERY_SHERD = "minecraft:" + ItemNames.SCRAPE_POTTERY_SHERD;
+    String FLOW_ARMOR_TRIM_SMITHING_TEMPLATE = "minecraft:" + ItemNames.FLOW_ARMOR_TRIM_SMITHING_TEMPLATE;
+    String BOLT_ARMOR_TRIM_SMITHING_TEMPLATE = "minecraft:" + ItemNames.BOLT_ARMOR_TRIM_SMITHING_TEMPLATE;
+    String FLOW_BANNER_PATTERN = "minecraft:" + ItemNames.FLOW_BANNER_PATTERN;
+    String GUSTER_BANNER_PATTERN = "minecraft:" + ItemNames.GUSTER_BANNER_PATTERN;
 }

@@ -1185,6 +1185,8 @@ public interface ItemBlockID {
     int QUARTZ_SLAB = 0xff - BlockID.QUARTZ_SLAB;
     int NETHER_BRICK_SLAB = 0xff - BlockID.NETHER_BRICK_SLAB;
 
+    int PETRIFIED_OAK_SLAB = 0xff - BlockID.PETRIFIED_OAK_SLAB;
+
 
     int UNDEFINED = 0xff - BlockID.UNDEFINED;
 }

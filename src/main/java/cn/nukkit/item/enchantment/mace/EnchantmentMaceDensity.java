@@ -6,7 +6,7 @@ import cn.nukkit.item.enchantment.EnchantmentNames;
 import cn.nukkit.item.enchantment.damage.EnchantmentDamage;
 
 public class EnchantmentMaceDensity extends EnchantmentMace {
-    protected EnchantmentMaceDensity() {
+    public EnchantmentMaceDensity() {
         super(DENSITY, EnchantmentNames.DENSITY, "heavy_weapon.density", Rarity.UNCOMMON);
     }
 

@@ -1152,4 +1152,6 @@ public interface BlockNames {
     String STONE_BRICK_SLAB = "stone_brick_slab";
     String QUARTZ_SLAB = "quartz_slab";
     String NETHER_BRICK_SLAB = "nether_brick_slab";
+
+    String PETRIFIED_OAK_SLAB = "petrified_oak_slab";
 }

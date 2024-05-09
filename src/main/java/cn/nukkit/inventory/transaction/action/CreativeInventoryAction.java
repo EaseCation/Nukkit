@@ -34,7 +34,7 @@ public class CreativeInventoryAction extends InventoryAction {
     @Override
     public boolean isValid(Player source) {
         return source.isCreative() && targetItem.getCount() <= targetItem.getMaxStackSize() /*&&
-                (this.actionType == TYPE_DELETE_ITEM || Item.getCreativeItemIndex(this.sourceItem) != -1)*/;
+                (this.actionType == TYPE_DELETE_ITEM || source.getCreativeItemIndex(this.sourceItem) != -1)*/;
     }
 
     /**

@@ -63,8 +63,10 @@ public class PlayerEnderChestInventory extends BaseInventory {
     public void onClose(Player who) {
         ContainerClosePacket containerClosePacket = new ContainerClosePacket();
         containerClosePacket.windowId = who.getWindowId(this);
-        //containerClosePacket.wasServerInitiated = false;
         containerClosePacket.wasServerInitiated = who.getClosingWindowId() != containerClosePacket.windowId;
+        if (containerClosePacket.wasServerInitiated) {
+            containerClosePacket.windowType = getType().getNetworkType();
+        }
         who.dataPacket(containerClosePacket);
         super.onClose(who);
 

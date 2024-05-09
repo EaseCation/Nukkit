@@ -4,7 +4,7 @@ import cn.nukkit.entity.Entity;
 import cn.nukkit.item.enchantment.EnchantmentNames;
 
 public class EnchantmentMaceWindBurst extends EnchantmentMace {
-    protected EnchantmentMaceWindBurst() {
+    public EnchantmentMaceWindBurst() {
         super(WIND_BURST, EnchantmentNames.WIND_BURST, "heavy_weapon.windburst", Rarity.RARE);
     }
 
