@@ -2,6 +2,7 @@ package cn.nukkit.command;
 
 import cn.nukkit.Server;
 import cn.nukkit.lang.TextContainer;
+import cn.nukkit.network.protocol.types.CommandOriginData.Origin;
 import cn.nukkit.permission.Permissible;
 
 /**
@@ -68,4 +69,7 @@ public interface CommandSender extends Permissible {
 
     boolean isPlayer();
 
+    default Origin getCommandOrigin() {
+        return Origin.SCRIPT;
+    }
 }

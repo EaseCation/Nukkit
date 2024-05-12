@@ -65,6 +65,7 @@ import cn.nukkit.nbt.tag.ListTag;
 import cn.nukkit.network.PacketViolationReason;
 import cn.nukkit.network.SourceInterface;
 import cn.nukkit.network.protocol.*;
+import cn.nukkit.network.protocol.types.CommandOriginData.Origin;
 import cn.nukkit.network.protocol.types.ContainerIds;
 import cn.nukkit.network.protocol.types.NetworkInventoryAction;
 import cn.nukkit.permission.PermissibleBase;
@@ -3333,11 +3334,17 @@ public class Player extends EntityHuman implements CommandSender, InventoryHolde
                             if (entityEventPacket.data == 0 || entityEventPacket.eid != this.id) {
                                 break;
                             }
-                            entityEventPacket.isEncoded = false;
+                            Item held = inventory.getItemInHand();
+                            if (!(held instanceof ItemEdible)) {
+                                break;
+                            }
 
-                            this.dataPacket(entityEventPacket);
-                            Server.broadcastPacket(this.getViewers().values(), entityEventPacket);
-
+                            EntityEventPacket pk = new EntityEventPacket();
+                            pk.eid = getId();
+                            pk.event = EntityEventPacket.EATING_ITEM;
+                            pk.data = (held.getId() << 16) | held.getDamage();
+                            this.dataPacket(pk);
+                            Server.broadcastPacket(this.getViewers().values(), pk);
                             break;
                         case EntityEventPacket.ENCHANT:
                             if (entityEventPacket.eid != this.id) {
@@ -6428,5 +6435,10 @@ public class Player extends EntityHuman implements CommandSender, InventoryHolde
 
     public int getMaxViewDistance() {
         return server.getViewDistance();
+    }
+
+    @Override
+    public Origin getCommandOrigin() {
+        return Origin.PLAYER;
     }
 }
