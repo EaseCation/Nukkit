@@ -6,6 +6,8 @@ import cn.nukkit.utils.Binary;
 
 import java.io.IOException;
 import java.util.Arrays;
+import java.util.StringJoiner;
+import java.util.function.IntFunction;
 
 public class ByteArrayTag extends Tag {
     public byte[] data;
@@ -74,5 +76,23 @@ public class ByteArrayTag extends Tag {
     @Override
     public byte[] parseValue() {
         return this.data;
+    }
+
+    @Override
+    public String toJson(boolean pretty) {
+        return asJson(String::valueOf, pretty);
+    }
+
+    @Override
+    public String toMojangson(boolean pretty) {
+        return asJson(n -> n + "B", pretty);
+    }
+
+    private String asJson(IntFunction<String> elementStringifier, boolean pretty) {
+        StringJoiner joiner = new StringJoiner(pretty ? ", " : ",");
+        for (int n : data) {
+            joiner.add(elementStringifier.apply(n));
+        }
+        return "[" + joiner + "]";
     }
 }

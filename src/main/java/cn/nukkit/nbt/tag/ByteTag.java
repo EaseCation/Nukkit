@@ -74,4 +74,14 @@ public class ByteTag extends NumberTag<Integer> {
     public Tag copy() {
         return new ByteTag(getName(), data);
     }
+
+    @Override
+    public String toJson(boolean pretty) {
+        return String.valueOf(data);
+    }
+
+    @Override
+    public String toMojangson(boolean pretty) {
+        return data + "b";
+    }
 }

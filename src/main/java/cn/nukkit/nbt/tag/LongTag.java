@@ -71,4 +71,13 @@ public class LongTag extends NumberTag<Long> {
         return false;
     }
 
+    @Override
+    public String toJson(boolean pretty) {
+        return String.valueOf(data);
+    }
+
+    @Override
+    public String toMojangson(boolean pretty) {
+        return data + "l";
+    }
 }

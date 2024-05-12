@@ -38,4 +38,17 @@ public class EndTag extends Tag {
     public Object parseValue() {
         return null;
     }
+
+    @Override
+    public String toJson(boolean pretty) {
+        return "null";
+    }
+
+    @Override
+    public String toMojangson(boolean pretty) {
+        if (pretty) {
+            return "";
+        }
+        return "\n";
+    }
 }

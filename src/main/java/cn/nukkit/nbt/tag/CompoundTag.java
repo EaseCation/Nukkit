@@ -469,4 +469,60 @@ public class CompoundTag extends Tag implements Cloneable {
         this.tags.forEach((key, value) -> nbt.put(key, value.copy()));
         return nbt;
     }
+
+    @Override
+    public String toJson(boolean pretty) {
+        return asJson(Tag::toJson, pretty);
+    }
+
+    @Override
+    public String toMojangson(boolean pretty) {
+        return asJson(Tag::toMojangson, pretty);
+    }
+
+    private String asJson(Stringifier stringifier, boolean pretty) {
+        Iterator<Entry<String, Tag>> iterator = tags.entrySet().iterator();
+        if (!iterator.hasNext()) {
+            return "{}";
+        }
+
+        StringBuilder builder = new StringBuilder();
+        if (pretty) {
+            builder.append('{').append('\n');
+            for (; ; ) {
+                Entry<String, Tag> entry = iterator.next();
+                builder.append(indent("\"" + entry.getKey() + "\": " + stringifier.stringify(entry.getValue(), true)));
+                if (!iterator.hasNext()) {
+                    return builder.append('\n').append('}').toString();
+                }
+                builder.append(',').append('\n');
+            }
+        } else {
+            builder.append('{');
+            for (; ; ) {
+                Entry<String, Tag> entry = iterator.next();
+                builder.append("\"").append(entry.getKey()).append("\":").append(stringifier.stringify(entry.getValue(), false));
+                if (!iterator.hasNext()) {
+                    return builder.append('}').toString();
+                }
+                builder.append(',');
+            }
+        }
+    }
+
+    static String indent(String string) {
+        StringBuilder builder = new StringBuilder("    " + string);
+        for (int i = 4; i < builder.length(); i++) {
+            if (builder.charAt(i) == '\n') {
+                builder.insert(i + 1, "    ");
+                i += 4;
+            }
+        }
+        return builder.toString();
+    }
+
+    @FunctionalInterface
+    interface Stringifier {
+        String stringify(Tag tag, boolean pretty);
+    }
 }

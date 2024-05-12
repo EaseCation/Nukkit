@@ -166,4 +166,16 @@ public abstract class Tag {
     public abstract Tag copy();
 
     public abstract Object parseValue();
+
+    public String toJson() {
+        return toJson(false);
+    }
+
+    public abstract String toJson(boolean pretty);
+
+    public String toMojangson() {
+        return toMojangson(false);
+    }
+
+    public abstract String toMojangson(boolean pretty);
 }

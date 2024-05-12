@@ -430,4 +430,42 @@ public class ListTag<T extends Tag> extends Tag implements Iterable<T> {
     public BlockVector3 asBlockPos() {
         return BlockVector3.fromNbt((ListTag<IntTag>) this);
     }
+
+    @Override
+    public String toJson(boolean pretty) {
+        return asJson(Tag::toJson, pretty);
+    }
+
+    @Override
+    public String toMojangson(boolean pretty) {
+        return asJson(Tag::toMojangson, pretty);
+    }
+
+    private String asJson(CompoundTag.Stringifier stringifier, boolean pretty) {
+        Iterator<T> iterator = iterator();
+        if (!iterator.hasNext()) {
+            return "[]";
+        }
+
+        StringBuilder builder = new StringBuilder();
+        if (pretty) {
+            builder.append('[').append('\n');
+            for (; ; ) {
+                builder.append(CompoundTag.indent(stringifier.stringify(iterator.next(), true)));
+                if (!iterator.hasNext()) {
+                    return builder.append('\n').append(']').toString();
+                }
+                builder.append(',').append('\n');
+            }
+        } else {
+            builder.append('[');
+            for (; ; ) {
+                builder.append(stringifier.stringify(iterator.next(), false));
+                if (!iterator.hasNext()) {
+                    return builder.append(']').toString();
+                }
+                builder.append(',');
+            }
+        }
+    }
 }

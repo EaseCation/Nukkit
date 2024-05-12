@@ -5,6 +5,8 @@ import cn.nukkit.nbt.stream.NBTOutputStream;
 
 import java.io.IOException;
 import java.util.Arrays;
+import java.util.StringJoiner;
+import java.util.function.IntFunction;
 
 public class IntArrayTag extends Tag {
     public int[] data;
@@ -73,5 +75,23 @@ public class IntArrayTag extends Tag {
         int[] cp = new int[data.length];
         System.arraycopy(data, 0, cp, 0, data.length);
         return new IntArrayTag(getName(), cp);
+    }
+
+    @Override
+    public String toJson(boolean pretty) {
+        return asJson(String::valueOf, pretty);
+    }
+
+    @Override
+    public String toMojangson(boolean pretty) {
+        return asJson(n -> n + "I", pretty);
+    }
+
+    private String asJson(IntFunction<String> elementStringifier, boolean pretty) {
+        StringJoiner joiner = new StringJoiner(pretty ? ", " : ",");
+        for (int n : data) {
+            joiner.add(elementStringifier.apply(n));
+        }
+        return "[" + joiner + "]";
     }
 }

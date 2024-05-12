@@ -57,4 +57,13 @@ public class StringTag extends Tag {
         return false;
     }
 
+    @Override
+    public String toJson(boolean pretty) {
+        return "\"" + data + "\"";
+    }
+
+    @Override
+    public String toMojangson(boolean pretty) {
+        return "\"" + data + "\"";
+    }
 }
