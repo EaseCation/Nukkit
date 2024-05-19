@@ -52,7 +52,7 @@ public class BlockNetherSprouts extends BlockFlowable {
                 return 0;
             }
 
-            level.useBreakOn(this);
+            level.useBreakOn(this, true);
             return Level.BLOCK_UPDATE_NORMAL;
         }
 
@@ -96,7 +96,7 @@ public class BlockNetherSprouts extends BlockFlowable {
 
     private boolean canSurvive() {
         int id = down().getId();
-        return id == GRASS_BLOCK || id == DIRT || id == PODZOL || id == MYCELIUM || id == FARMLAND || id == DIRT_WITH_ROOTS || id == MOSS_BLOCK
+        return id == GRASS_BLOCK || id == DIRT || id == PODZOL || id == MYCELIUM || id == FARMLAND || id == DIRT_WITH_ROOTS || id == MOSS_BLOCK || id == MUD || id == MUDDY_MANGROVE_ROOTS
                 || id == CRIMSON_NYLIUM || id == WARPED_NYLIUM || id == SOUL_SOIL;
     }
 }

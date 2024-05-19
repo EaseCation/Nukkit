@@ -46,7 +46,7 @@ public class EndTag extends Tag {
 
     @Override
     public String toMojangson(boolean pretty) {
-        if (pretty) {
+        if (!pretty) {
             return "";
         }
         return "\n";

@@ -42,6 +42,11 @@ public class BlockCarpetMoss extends BlockCarpet {
     }
 
     @Override
+    public int getCompostableChance() {
+        return 30;
+    }
+
+    @Override
     public int getFullId() {
         return getId() << BLOCK_META_BITS;
     }

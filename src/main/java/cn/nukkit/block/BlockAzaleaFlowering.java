@@ -18,4 +18,9 @@ public class BlockAzaleaFlowering extends BlockAzalea {
     public int getId() {
         return FLOWERING_AZALEA;
     }
+
+    @Override
+    public int getCompostableChance() {
+        return 85;
+    }
 }

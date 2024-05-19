@@ -2,6 +2,7 @@ package cn.nukkit.block;
 
 import cn.nukkit.Player;
 import cn.nukkit.item.Item;
+import cn.nukkit.item.enchantment.Enchantment;
 import cn.nukkit.level.Dimension;
 import cn.nukkit.level.Level;
 import cn.nukkit.math.BlockFace;
@@ -66,7 +67,7 @@ public class BlockIceFrosted extends BlockTransparentMeta {
 
     @Override
     public boolean onBreak(Item item, Player player) {
-        if (level.getDimension() == Dimension.NETHER || (player != null && player.isCreative())) {
+        if (level.getDimension() == Dimension.NETHER || player != null && player.isCreative() || !item.is(Item.ENCHANTED_BOOK) && item.hasEnchantment(Enchantment.SILK_TOUCH)) {
             return super.onBreak(item, player);
         }
         return level.setBlock(this, Block.get(BlockID.WATER), true);

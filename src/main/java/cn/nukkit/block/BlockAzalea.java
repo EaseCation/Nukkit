@@ -74,7 +74,7 @@ public class BlockAzalea extends BlockFlowable {
                 return 0;
             }
 
-            level.useBreakOn(this);
+            level.useBreakOn(this, true);
             return Level.BLOCK_UPDATE_NORMAL;
         }
 
@@ -102,6 +102,16 @@ public class BlockAzalea extends BlockFlowable {
     }
 
     @Override
+    public int getFuelTime() {
+        return 100;
+    }
+
+    @Override
+    public int getCompostableChance() {
+        return 65;
+    }
+
+    @Override
     public boolean isVegetation() {
         return true;
     }
@@ -117,6 +127,6 @@ public class BlockAzalea extends BlockFlowable {
 
     private boolean canSurvive() {
         int id = down().getId();
-        return id == GRASS_BLOCK || id == DIRT || id == MYCELIUM || id == PODZOL || id == FARMLAND || id == DIRT_WITH_ROOTS || id == MOSS_BLOCK || id == CLAY;
+        return id == GRASS_BLOCK || id == DIRT || id == MYCELIUM || id == PODZOL || id == FARMLAND || id == DIRT_WITH_ROOTS || id == MOSS_BLOCK || id == CLAY || id == MUD || id == MUDDY_MANGROVE_ROOTS;
     }
 }

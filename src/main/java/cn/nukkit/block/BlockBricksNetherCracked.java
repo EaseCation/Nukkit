@@ -13,4 +13,9 @@ public class BlockBricksNetherCracked extends BlockBricksNether {
     public String getName() {
         return "Cracked Nether Bricks";
     }
+
+    @Override
+    public float getFurnaceXpMultiplier() {
+        return 0.1f;
+    }
 }

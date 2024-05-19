@@ -17,4 +17,8 @@ public class ItemDoorJungle extends Item {
         this.block = Block.get(BlockID.BLOCK_JUNGLE_DOOR);
     }
 
+    @Override
+    public int getFuelTime() {
+        return 200;
+    }
 }

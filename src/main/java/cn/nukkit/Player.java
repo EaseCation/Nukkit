@@ -2130,7 +2130,7 @@ public class Player extends EntityHuman implements CommandSender, InventoryHolde
 
                     float knockbackH = EntityDamageByEntityEvent.GLOBAL_KNOCKBACK_H;
                     float knockbackV = EntityDamageByEntityEvent.GLOBAL_KNOCKBACK_V;
-                    int knockbackEnchant = item.getEnchantmentLevel(Enchantment.KNOCKBACK);
+                    int knockbackEnchant = !item.is(Item.ENCHANTED_BOOK) ? item.getEnchantmentLevel(Enchantment.KNOCKBACK) : 0;
                     if (knockbackEnchant > 0) {
                         knockbackH += knockbackEnchant * 0.1f;
                         knockbackV += knockbackEnchant * 0.1f;
@@ -3335,7 +3335,7 @@ public class Player extends EntityHuman implements CommandSender, InventoryHolde
                                 break;
                             }
                             Item held = inventory.getItemInHand();
-                            if (!(held instanceof ItemEdible)) {
+                            if (!(held instanceof ItemEdible) && !held.is(Item.POTION)) {
                                 break;
                             }
 
@@ -3827,7 +3827,7 @@ public class Player extends EntityHuman implements CommandSender, InventoryHolde
 
                                     float knockBackH = EntityDamageByEntityEvent.GLOBAL_KNOCKBACK_H;
                                     float knockBackV = EntityDamageByEntityEvent.GLOBAL_KNOCKBACK_V;
-                                    Enchantment knockBackEnchantment = item.getEnchantment(Enchantment.KNOCKBACK);
+                                    Enchantment knockBackEnchantment = !item.is(Item.ENCHANTED_BOOK) ? item.getEnchantment(Enchantment.KNOCKBACK) : null;
                                     if (knockBackEnchantment != null) {
                                         knockBackH += knockBackEnchantment.getLevel() * 0.1f;
                                         knockBackV += knockBackEnchantment.getLevel() * 0.1f;
@@ -4827,7 +4827,7 @@ public class Player extends EntityHuman implements CommandSender, InventoryHolde
             level++;
             most = calculateRequireExperience(level);
         }
-        this.setExperience(added, level);
+        this.setExperience(added, level, true);
     }
 
     public static int calculateRequireExperience(int level) {
@@ -4845,7 +4845,19 @@ public class Player extends EntityHuman implements CommandSender, InventoryHolde
     }
 
     public void setExperience(int exp, int level) {
+        setExperience(exp, level, false);
+    }
+
+    public void setExperience(int exp, int level, boolean playSound) {
         level = Mth.clamp(level, 0, 24791);
+
+        if (playSound) {
+            int after = level / 5;
+            if (after > expLevel / 5) {
+                this.level.addLevelSoundEvent(this, LevelSoundEventPacket.SOUND_LEVELUP, after <= 6 ? after * 2097152 : 12582911);
+            }
+        }
+
         this.exp = exp;
         this.expLevel = level;
 
@@ -5025,6 +5037,7 @@ public class Player extends EntityHuman implements CommandSender, InventoryHolde
 
             if (damager.canDisableShield()) {
                 shieldCooldown = server.getTick() + 5 * 20;
+                level.addLevelSoundEvent(this, LevelSoundEventPacket.SOUND_BREAK);
             }
         }
 

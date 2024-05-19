@@ -241,11 +241,11 @@ public abstract class BlockPistonBase extends BlockTransparentMeta implements Fa
                 if (block.canContainWater()) {
                     level.setExtraBlock(block, Blocks.air(), true, false);
                 } else if (block.getId() == SNOW_LAYER) {
-                    if (level.getExtraBlock(block).canContainSnow()) {
+                    if ((block.getDamage() & BlockSnowLayer.COVERED_BIT) != 0 && level.getExtraBlock(block).canContainSnow()) {
                         level.useBreakOn(block, ItemTool.getUniversalTool());
                     }
                 }
-                this.level.useBreakOn(block, ItemTool.getUniversalTool());
+                this.level.useBreakOn(block, ItemTool.getUniversalTool(), true);
             }
 
             List<Block> newBlocks = calculator.getBlocksToMove();

@@ -59,4 +59,9 @@ public class BlockSmoothStone extends BlockSolid {
     public BlockColor getColor() {
         return BlockColor.STONE_BLOCK_COLOR;
     }
+
+    @Override
+    public float getFurnaceXpMultiplier() {
+        return 0.1f;
+    }
 }

@@ -81,7 +81,7 @@ public class BlockTallGrass extends BlockFlowable {
     public int onUpdate(int type) {
         if (type == Level.BLOCK_UPDATE_NORMAL) {
             if (!canSurvive()) {
-                this.getLevel().useBreakOn(this);
+                this.getLevel().useBreakOn(this, true);
                 return Level.BLOCK_UPDATE_NORMAL;
             }
         }
@@ -180,13 +180,21 @@ public class BlockTallGrass extends BlockFlowable {
     }
 
     @Override
+    public int getCompostableChance() {
+        if (getValidType() == TYPE_FERN) {
+            return 65;
+        }
+        return 30;
+    }
+
+    @Override
     public boolean isVegetation() {
         return true;
     }
 
     private boolean canSurvive() {
         int id = down().getId();
-        return id == Block.GRASS_BLOCK || id == Block.DIRT || id == Block.PODZOL || id == FARMLAND || id == MYCELIUM || id == DIRT_WITH_ROOTS || id == MOSS_BLOCK;
+        return id == Block.GRASS_BLOCK || id == Block.DIRT || id == Block.PODZOL || id == FARMLAND || id == MYCELIUM || id == DIRT_WITH_ROOTS || id == MOSS_BLOCK || id == MUD || id == MUDDY_MANGROVE_ROOTS;
     }
 
     private int getValidType() {

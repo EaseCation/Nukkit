@@ -116,7 +116,7 @@ public class BlockLever extends BlockTransparentMeta implements Faceable {
         if (type == Level.BLOCK_UPDATE_NORMAL) {
             BlockFace face = getBlockFace();
             if (!SupportType.hasCenterSupport(getSide(face.getOpposite()), face)) {
-                this.level.useBreakOn(this);
+                this.level.useBreakOn(this, true);
                 return Level.BLOCK_UPDATE_NORMAL;
             }
         }

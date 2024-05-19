@@ -16,4 +16,9 @@ public class ItemGlowBerries extends ItemEdible {
         super(GLOW_BERRIES, 0, count, "Glow Berries");
         this.block = Block.get(BlockID.CAVE_VINES);
     }
+
+    @Override
+    public int getCompostableChance() {
+        return 30;
+    }
 }

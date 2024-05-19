@@ -135,6 +135,11 @@ public class BlockBarrel extends BlockSolidMeta implements Faceable {
     }
 
     @Override
+    public int getFuelTime() {
+        return 300;
+    }
+
+    @Override
     public BlockFace getBlockFace() {
         return BlockFace.fromIndex(getDamage() & FACING_DIRECTION_MASK);
     }

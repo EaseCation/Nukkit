@@ -97,7 +97,7 @@ public class BlockSugarcane extends BlockFlowable {
             Block down = this.down();
             int id = down.getId();
             if (id != BLOCK_REEDS && !canSurvive(id)) { //TODO: check water
-                this.getLevel().useBreakOn(this);
+                this.getLevel().useBreakOn(this, true);
                 return Level.BLOCK_UPDATE_NORMAL;
             }
         } else if (type == Level.BLOCK_UPDATE_RANDOM) {
@@ -170,6 +170,6 @@ public class BlockSugarcane extends BlockFlowable {
     }
 
     private boolean canSurvive(int id) {
-        return id == GRASS_BLOCK || id == DIRT || id == SAND || id == PODZOL || id == MYCELIUM || id == DIRT_WITH_ROOTS;
+        return id == GRASS_BLOCK || id == DIRT || id == SAND || id == PODZOL || id == MYCELIUM || id == DIRT_WITH_ROOTS || id == MOSS_BLOCK || id == MUD || id == MUDDY_MANGROVE_ROOTS;
     }
 }

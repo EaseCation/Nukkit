@@ -15,4 +15,9 @@ public class ItemNetherSprouts extends Item {
         super(NETHER_SPROUTS, meta, count, "Nether Sprouts");
         this.block = Block.get(Block.BLOCK_NETHER_SPROUTS);
     }
+
+    @Override
+    public int getCompostableChance() {
+        return 50;
+    }
 }

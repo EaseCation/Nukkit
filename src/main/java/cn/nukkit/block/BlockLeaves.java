@@ -295,6 +295,11 @@ public class BlockLeaves extends BlockTransparentMeta {
     }
 
     @Override
+    public int getCompostableChance() {
+        return 30;
+    }
+
+    @Override
     public boolean isLeaves() {
         return true;
     }

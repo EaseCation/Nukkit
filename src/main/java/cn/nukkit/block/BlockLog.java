@@ -61,6 +61,11 @@ public abstract class BlockLog extends BlockRotatedPillar {
     }
 
     @Override
+    public int getFuelTime() {
+        return 300;
+    }
+
+    @Override
     public boolean isLog() {
         return true;
     }

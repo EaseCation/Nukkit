@@ -103,4 +103,12 @@ public class BlockQuartz extends BlockSolidMeta {
     public boolean canHarvestWithHand() {
         return false;
     }
+
+    @Override
+    public float getFurnaceXpMultiplier() {
+        if (getDamage() != SMOOTH_QUARTZ) {
+            return 0;
+        }
+        return 0.1f;
+    }
 }

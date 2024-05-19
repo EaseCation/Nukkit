@@ -32,4 +32,9 @@ public class BlockPumpkinLit extends BlockPumpkin {
     public boolean canBeActivated() {
         return false;
     }
+
+    @Override
+    public int getCompostableChance() {
+        return 0;
+    }
 }

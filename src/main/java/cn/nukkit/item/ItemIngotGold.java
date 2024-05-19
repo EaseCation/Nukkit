@@ -17,4 +17,9 @@ public class ItemIngotGold extends Item {
     public ItemIngotGold(Integer meta, int count) {
         super(GOLD_INGOT, meta, count, "Gold Ingot");
     }
+
+    @Override
+    public float getFurnaceXpMultiplier() {
+        return 1;
+    }
 }

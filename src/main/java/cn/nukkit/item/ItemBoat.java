@@ -84,6 +84,11 @@ public class ItemBoat extends Item {
         return 1;
     }
 
+    @Override
+    public int getFuelTime() {
+        return 1200;
+    }
+
     protected EntityFactory getEntityFactory() {
         return EntityBoat::new;
     }

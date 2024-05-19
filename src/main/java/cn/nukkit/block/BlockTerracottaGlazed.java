@@ -61,4 +61,9 @@ public abstract class BlockTerracottaGlazed extends BlockSolidMeta implements Fa
     public boolean canBePulled() {
         return false;
     }
+
+    @Override
+    public float getFurnaceXpMultiplier() {
+        return 0.1f;
+    }
 }

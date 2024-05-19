@@ -73,7 +73,7 @@ public class BlockCoralFanHang extends BlockFlowable implements Faceable {
         if (type == Level.BLOCK_UPDATE_NORMAL) {
             BlockFace face = getBlockFace();
             if (!SupportType.hasFullSupport(getSide(face.getOpposite()), face)) {
-                level.useBreakOn(this);
+                level.useBreakOn(this, true);
                 return Level.BLOCK_UPDATE_NORMAL;
             }
 

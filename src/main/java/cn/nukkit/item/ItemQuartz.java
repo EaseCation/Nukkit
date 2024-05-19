@@ -17,4 +17,9 @@ public class ItemQuartz extends Item {
     public ItemQuartz(Integer meta, int count) {
         super(QUARTZ, meta, count, "Nether Quartz");
     }
+
+    @Override
+    public float getFurnaceXpMultiplier() {
+        return 0.2f;
+    }
 }

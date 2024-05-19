@@ -52,6 +52,11 @@ public class BlockBell extends BlockTransparentMeta implements Faceable {
     }
 
     @Override
+    public int getBlockEntityType() {
+        return BlockEntityType.BELL;
+    }
+
+    @Override
     public int getToolType() {
         return BlockToolType.PICKAXE;
     }
@@ -163,28 +168,54 @@ public class BlockBell extends BlockTransparentMeta implements Faceable {
                 if (SupportType.hasCenterSupport(down(), BlockFace.UP)) {
                     return 0;
                 }
-                level.useBreakOn(this, Item.get(ItemID.WOODEN_PICKAXE));
+                level.useBreakOn(this, Item.get(ItemID.WOODEN_PICKAXE), true);
                 return type;
             }
             if (attachment == ATTACHMENT_HANGING) {
                 if (SupportType.hasCenterSupport(up(), BlockFace.DOWN)) {
                     return 0;
                 }
-                level.useBreakOn(this, Item.get(ItemID.WOODEN_PICKAXE));
+                level.useBreakOn(this, Item.get(ItemID.WOODEN_PICKAXE), true);
                 return type;
             }
 
             BlockFace face = getBlockFace();
             BlockFace opposite = face.getOpposite();
-            if (attachment == ATTACHMENT_MULTIPLE && !SupportType.hasFullSupport(getSide(face), opposite)) {
-                level.useBreakOn(this, Item.get(ItemID.WOODEN_PICKAXE));
-                return type;
+
+            if (attachment == ATTACHMENT_MULTIPLE) {
+                BlockFace attachmentSide = opposite;
+                if (!SupportType.hasFullSupport(getSide(face), opposite)) {
+                    attachmentSide = face;
+                }
+
+                if (!SupportType.hasFullSupport(getSide(opposite), face)) {
+                    if (attachmentSide == face) {
+                        level.useBreakOn(this, Item.get(ItemID.WOODEN_PICKAXE), true);
+                        return type;
+                    }
+                } else if (attachmentSide == opposite) {
+                    return 0;
+                }
+
+                setDamage((ATTACHMENT_SIDE << DIRECTION_BITS) | attachmentSide.getHorizontalIndex());
+                level.setBlock(this, this, true, false);
+                return 0;
             }
 
+            boolean hasSupport = SupportType.hasFullSupport(getSide(face), opposite);
             if (!SupportType.hasFullSupport(getSide(opposite), face)) {
-                level.useBreakOn(this, Item.get(ItemID.WOODEN_PICKAXE));
-                return type;
+                if (!hasSupport) {
+                    level.useBreakOn(this, Item.get(ItemID.WOODEN_PICKAXE), true);
+                    return type;
+                }
+
+                setDamage((ATTACHMENT_SIDE << DIRECTION_BITS) | face.getHorizontalIndex());
+            } else if (hasSupport) {
+                setDamage((ATTACHMENT_MULTIPLE << DIRECTION_BITS) | face.getHorizontalIndex());
+            } else {
+                return 0;
             }
+            level.setBlock(this, this, true, false);
         }
         return 0;
     }

@@ -98,7 +98,7 @@ public abstract class BlockMultiface extends BlockTransparentMeta {
                 return Level.BLOCK_UPDATE_NORMAL;
             }
 
-            level.useBreakOn(this);
+            level.useBreakOn(this, true);
             return Level.BLOCK_UPDATE_NORMAL;
         }
 

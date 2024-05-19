@@ -17,4 +17,9 @@ public class ItemKelp extends Item {
         super(KELP, meta, count, "Kelp");
         this.block = Block.get(BlockID.BLOCK_KELP);
     }
+
+    @Override
+    public int getCompostableChance() {
+        return 30;
+    }
 }

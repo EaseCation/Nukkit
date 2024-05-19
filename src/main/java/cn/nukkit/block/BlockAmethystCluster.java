@@ -85,7 +85,7 @@ public class BlockAmethystCluster extends BlockTransparentMeta implements Faceab
                 return 0;
             }
 
-            level.useBreakOn(this);
+            level.useBreakOn(this, true);
             return Level.BLOCK_UPDATE_NORMAL;
         }
 

@@ -13,4 +13,9 @@ public class BlockDeepslateTilesCracked extends BlockDeepslateTiles {
     public String getName() {
         return "Cracked Deepslate Tiles";
     }
+
+    @Override
+    public float getFurnaceXpMultiplier() {
+        return 0.1f;
+    }
 }

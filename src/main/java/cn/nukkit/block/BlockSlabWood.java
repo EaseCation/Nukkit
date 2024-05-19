@@ -89,6 +89,11 @@ public class BlockSlabWood extends BlockSlab {
     }
 
     @Override
+    public int getFuelTime() {
+        return 300;
+    }
+
+    @Override
     protected int getDoubleSlabBlockId() {
         return DOUBLE_WOODEN_SLAB;
     }

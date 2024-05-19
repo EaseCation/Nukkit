@@ -17,4 +17,9 @@ public class ItemBowl extends Item {
     public ItemBowl(Integer meta, int count) {
         super(BOWL, meta, count, "Bowl");
     }
+
+    @Override
+    public int getFuelTime() {
+        return 200;
+    }
 }

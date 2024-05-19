@@ -104,7 +104,7 @@ public abstract class BlockButton extends BlockTransparentMeta implements Faceab
         if (type == Level.BLOCK_UPDATE_NORMAL) {
             BlockFace face = getBlockFace();
             if (!SupportType.hasCenterSupport(getSide(face.getOpposite()), face)) {
-                this.level.useBreakOn(this, Item.get(Item.WOODEN_PICKAXE));
+                this.level.useBreakOn(this, Item.get(Item.WOODEN_PICKAXE), true);
                 return Level.BLOCK_UPDATE_NORMAL;
             }
         } else if (type == Level.BLOCK_UPDATE_SCHEDULED) {

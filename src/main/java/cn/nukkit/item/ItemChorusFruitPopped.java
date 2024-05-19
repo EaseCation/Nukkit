@@ -13,4 +13,9 @@ public class ItemChorusFruitPopped extends Item {
     public ItemChorusFruitPopped(Integer meta, int count) {
         super(POPPED_CHORUS_FRUIT, meta, count, "Popped Chorus Fruit");
     }
+
+    @Override
+    public float getFurnaceXpMultiplier() {
+        return 0.1f;
+    }
 }

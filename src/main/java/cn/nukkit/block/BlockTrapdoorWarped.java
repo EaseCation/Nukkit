@@ -25,4 +25,9 @@ public class BlockTrapdoorWarped extends BlockTrapdoor {
     public BlockColor getColor() {
         return BlockColor.CYAN_BLOCK_COLOR;
     }
+
+    @Override
+    public int getFuelTime() {
+        return 0;
+    }
 }

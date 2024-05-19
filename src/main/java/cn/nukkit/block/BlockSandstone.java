@@ -80,4 +80,12 @@ public class BlockSandstone extends BlockSolidMeta {
     public boolean canHarvestWithHand() {
         return false;
     }
+
+    @Override
+    public float getFurnaceXpMultiplier() {
+        if (getDamage() != SMOOTH) {
+            return 0;
+        }
+        return 0.1f;
+    }
 }

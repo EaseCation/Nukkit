@@ -55,4 +55,9 @@ public class ItemFishingRod extends ItemTool {
     public boolean noDamageOnBreak() {
         return true;
     }
+
+    @Override
+    public int getFuelTime() {
+        return 300;
+    }
 }

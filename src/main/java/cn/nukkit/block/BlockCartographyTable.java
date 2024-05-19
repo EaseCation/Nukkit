@@ -54,4 +54,9 @@ public class BlockCartographyTable extends BlockSolid {
         player.addWindow(new CartographyTableInventory(player.getUIInventory(), this), Player.WORKBENCH_WINDOW_ID);
         return true;
     }
+
+    @Override
+    public int getFuelTime() {
+        return 300;
+    }
 }

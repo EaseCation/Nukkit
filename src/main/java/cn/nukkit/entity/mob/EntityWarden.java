@@ -64,4 +64,9 @@ public class EntityWarden extends EntityMob {
     protected float getKnockbackResistance() {
         return 1;
     }
+
+    @Override
+    public boolean canDisableShield() {
+        return true;
+    }
 }

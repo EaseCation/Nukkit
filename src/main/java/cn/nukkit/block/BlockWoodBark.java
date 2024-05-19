@@ -132,6 +132,11 @@ public class BlockWoodBark extends BlockSolidMeta {
         return true;
     }
 
+    @Override
+    public int getFuelTime() {
+        return 300;
+    }
+
     public boolean isStripped() {
         return (getDamage() & STRIPPED_BIT) == STRIPPED_BIT;
     }

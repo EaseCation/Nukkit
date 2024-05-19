@@ -2892,6 +2892,8 @@ public class Level implements ChunkManager, Metadatable {
 
             block = target;
             hand.position(block);
+        } else if (block.canBeReplaced() && block.getId() == hand.getId() && !block.is(Block.SNOW_LAYER) && !(block instanceof BlockMultiface)) {
+            return null;
         }
 
         if (!hand.canPassThrough() && hand.getBoundingBox() != null && !hand.isDoor() && !hand.is(Block.BLOCK_BED) && !hand.is(Block.BLOCK_SKULL) && (!hand.is(Block.BAMBOO) || target.is(Block.BAMBOO) || target.is(Block.BAMBOO_SAPLING))) {

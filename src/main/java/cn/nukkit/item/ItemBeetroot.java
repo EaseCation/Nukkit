@@ -18,4 +18,8 @@ public class ItemBeetroot extends ItemEdible {
         super(BEETROOT, meta, count, "Beetroot");
     }
 
+    @Override
+    public int getCompostableChance() {
+        return 65;
+    }
 }

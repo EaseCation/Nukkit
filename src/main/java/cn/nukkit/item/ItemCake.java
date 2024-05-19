@@ -21,4 +21,9 @@ public class ItemCake extends Item {
         super(CAKE, meta, count, "Cake");
         this.block = Block.get(BlockID.BLOCK_CAKE);
     }
+
+    @Override
+    public int getCompostableChance() {
+        return 100;
+    }
 }

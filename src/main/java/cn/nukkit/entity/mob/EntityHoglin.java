@@ -34,12 +34,12 @@ public class EntityHoglin extends EntityMob {
 
     @Override
     public float getWidth() {
-        return 0.85f;
+        return 1.4f;
     }
 
     @Override
     public float getHeight() {
-        return 0.85f;
+        return 1.4f;
     }
 
     @Override

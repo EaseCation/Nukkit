@@ -12,4 +12,9 @@ public class ItemIngotCopper extends Item {
     public ItemIngotCopper(Integer meta, int count) {
         super(COPPER_INGOT, 0, count, "Copper Ingot");
     }
+
+    @Override
+    public float getFurnaceXpMultiplier() {
+        return 0.7f;
+    }
 }

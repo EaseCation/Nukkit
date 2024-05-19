@@ -5,6 +5,7 @@ import cn.nukkit.entity.item.EntityFallingBlock;
 import cn.nukkit.event.block.BlockFallEvent;
 import cn.nukkit.level.Level;
 import cn.nukkit.math.BlockFace;
+import cn.nukkit.nbt.NBTIO;
 import cn.nukkit.nbt.tag.CompoundTag;
 
 /**
@@ -30,8 +31,7 @@ public abstract class BlockFallable extends BlockSolid {
                 this.level.setBlock(this, Block.get(Block.AIR), true, true);
 
                 CompoundTag nbt = Entity.getDefaultNBT(this.add(0.5, 0, 0.5))
-                        .putInt("TileID", this.getId())
-                        .putByte("Data", this.getFallingBlockDamage());
+                        .putCompound("FallingBlock", NBTIO.putBlockHelper(getFullId(this.getId(), this.getFallingBlockDamage())));
                 EntityFallingBlock fall = new EntityFallingBlock(getChunk(), nbt);
                 fall.sync = true;
                 fall.spawnToAll();

@@ -40,7 +40,7 @@ public class BlockNetherWart extends BlockFlowable {
     public int onUpdate(int type) {
         if (type == Level.BLOCK_UPDATE_NORMAL) {
             if (this.down().getId() != SOUL_SAND) {
-                this.getLevel().useBreakOn(this);
+                this.getLevel().useBreakOn(this, true);
                 return Level.BLOCK_UPDATE_NORMAL;
             }
         } else if (type == Level.BLOCK_UPDATE_RANDOM) {

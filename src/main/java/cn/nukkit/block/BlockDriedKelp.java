@@ -46,4 +46,14 @@ public class BlockDriedKelp extends BlockSolid {
     public BlockColor getColor() {
         return BlockColor.GREEN_BLOCK_COLOR;
     }
+
+    @Override
+    public int getFuelTime() {
+        return 4000;
+    }
+
+    @Override
+    public int getCompostableChance() {
+        return 50;
+    }
 }

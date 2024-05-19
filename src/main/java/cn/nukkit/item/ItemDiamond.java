@@ -17,4 +17,9 @@ public class ItemDiamond extends Item {
     public ItemDiamond(Integer meta, int count) {
         super(DIAMOND, meta, count, "Diamond");
     }
+
+    @Override
+    public float getFurnaceXpMultiplier() {
+        return 1f;
+    }
 }

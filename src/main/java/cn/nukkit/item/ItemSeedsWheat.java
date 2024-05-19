@@ -21,4 +21,9 @@ public class ItemSeedsWheat extends Item {
         super(WHEAT_SEEDS, meta, count, "Wheat Seeds");
         this.block = Block.get(BlockID.BLOCK_WHEAT);
     }
+
+    @Override
+    public int getCompostableChance() {
+        return 30;
+    }
 }

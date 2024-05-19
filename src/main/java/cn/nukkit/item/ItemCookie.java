@@ -17,4 +17,9 @@ public class ItemCookie extends ItemEdible {
     public ItemCookie(Integer meta, int count) {
         super(COOKIE, meta, count, "Cookie");
     }
+
+    @Override
+    public int getCompostableChance() {
+        return 85;
+    }
 }

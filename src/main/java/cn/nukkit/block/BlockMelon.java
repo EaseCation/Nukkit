@@ -77,6 +77,11 @@ public class BlockMelon extends BlockSolid {
     }
 
     @Override
+    public int getCompostableChance() {
+        return 65;
+    }
+
+    @Override
     public boolean isVegetation() {
         return true;
     }

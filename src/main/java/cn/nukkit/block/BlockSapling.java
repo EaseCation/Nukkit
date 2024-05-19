@@ -213,6 +213,16 @@ public class BlockSapling extends BlockFlowable {
     }
 
     @Override
+    public int getFuelTime() {
+        return 100;
+    }
+
+    @Override
+    public int getCompostableChance() {
+        return 30;
+    }
+
+    @Override
     public boolean isVegetation() {
         return true;
     }
@@ -224,6 +234,6 @@ public class BlockSapling extends BlockFlowable {
 
     private boolean canSurvive() {
         int id = down().getId();
-        return id == Block.GRASS_BLOCK || id == Block.DIRT || id == Block.FARMLAND || id == Block.PODZOL || id == MYCELIUM || id == DIRT_WITH_ROOTS || id == MOSS_BLOCK;
+        return id == Block.GRASS_BLOCK || id == Block.DIRT || id == Block.FARMLAND || id == Block.PODZOL || id == MYCELIUM || id == DIRT_WITH_ROOTS || id == MOSS_BLOCK || id == MUD || id == MUDDY_MANGROVE_ROOTS;
     }
 }

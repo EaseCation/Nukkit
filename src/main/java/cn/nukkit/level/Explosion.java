@@ -303,6 +303,10 @@ public class Explosion {
                     for (Item drop : block.getDrops(ItemTool.getUniversalTool())) {
                         this.level.dropItem(block.blockCenter(), drop);
                     }
+                    int xp = block.getDropExp();
+                    if (xp > 0) {
+                        level.dropExpOrb(block.blockCenter(), xp);
+                    }
                 }
                 BlockEntity container = block.getLevel().getBlockEntity(block);
                 if (container instanceof BlockEntityFurnace) {
@@ -401,6 +405,10 @@ public class Explosion {
                 if (!dropDecay || id == BlockID.DRAGON_EGG || id == BlockID.BEACON || id == BlockID.BLOCK_SKULL || random.nextFloat() * 100 < yield) {
                     for (Item drop : block.getDrops(ItemTool.getUniversalTool())) {
                         this.level.dropItem(block.blockCenter(), drop);
+                    }
+                    int xp = block.getDropExp();
+                    if (xp > 0) {
+                        level.dropExpOrb(block.blockCenter(), xp);
                     }
                 }
             }

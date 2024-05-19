@@ -13,4 +13,9 @@ public class BlockBricksDeepslateCracked extends BlockBricksDeepslate {
     public String getName() {
         return "Cracked Deepslate Bricks";
     }
+
+    @Override
+    public float getFurnaceXpMultiplier() {
+        return 0.1f;
+    }
 }

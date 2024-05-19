@@ -80,7 +80,7 @@ public class BlockWaterLily extends BlockFlowable {
             if (below.isWaterSource() || !below.isAir() && below.canContainWater() && level.getExtraBlock(below).isWaterSource()) {
                 return 0;
             }
-            this.getLevel().useBreakOn(this);
+            this.getLevel().useBreakOn(this, true);
             return Level.BLOCK_UPDATE_NORMAL;
         }
         return 0;
@@ -99,6 +99,11 @@ public class BlockWaterLily extends BlockFlowable {
     @Override
     public boolean canPassThrough() {
         return false;
+    }
+
+    @Override
+    public int getCompostableChance() {
+        return 65;
     }
 
     @Override

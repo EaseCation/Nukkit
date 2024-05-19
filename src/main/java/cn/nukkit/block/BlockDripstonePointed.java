@@ -11,6 +11,7 @@ import cn.nukkit.math.BlockFace;
 import cn.nukkit.math.Mth;
 import cn.nukkit.math.SimpleAxisAlignedBB;
 import cn.nukkit.math.Vector3;
+import cn.nukkit.nbt.NBTIO;
 import cn.nukkit.utils.BlockColor;
 import it.unimi.dsi.fastutil.objects.ObjectArrayList;
 
@@ -119,7 +120,7 @@ public class BlockDripstonePointed extends BlockTransparentMeta {
             }
 
             if (!isHanging()) {
-                level.useBreakOn(this);
+                level.useBreakOn(this, true);
                 return Level.BLOCK_UPDATE_NORMAL;
             }
 
@@ -139,7 +140,7 @@ public class BlockDripstonePointed extends BlockTransparentMeta {
                 BlockFallEvent event = new BlockFallEvent(block);
                 event.call();
                 if (event.isCancelled()) {
-                    level.useBreakOn(block);
+                    level.useBreakOn(block, true);
                     return Level.BLOCK_UPDATE_NORMAL;
                 }
 
@@ -148,8 +149,7 @@ public class BlockDripstonePointed extends BlockTransparentMeta {
 
                 EntityFallingBlock fallingBlock = new EntityFallingBlock(block.getChunk(),
                         Entity.getDefaultNBT(block.add(0.5, 0, 0.5))
-                                .putInt("TileID", POINTED_DRIPSTONE)
-                                .putByte("Data", block.getDamage()));
+                                .putCompound("FallingBlock", NBTIO.putBlockHelper(getFullId(block.getId(), block.getDamage()))));
                 fallingBlock.sync = true;
                 fallingBlock.spawnToAll();
             }

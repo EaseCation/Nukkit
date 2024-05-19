@@ -17,4 +17,8 @@ public class ItemDoorAcacia extends Item {
         this.block = Block.get(BlockID.BLOCK_ACACIA_DOOR);
     }
 
+    @Override
+    public int getFuelTime() {
+        return 200;
+    }
 }

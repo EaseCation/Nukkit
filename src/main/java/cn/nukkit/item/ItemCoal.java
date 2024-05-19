@@ -19,4 +19,17 @@ public class ItemCoal extends Item {
     public ItemCoal(Integer meta, int count) {
         super(COAL, meta, count, meta != null && meta == TYPE_CHARCOAL ? "Charcoal" : "Coal");
     }
+
+    @Override
+    public int getFuelTime() {
+        return 1600;
+    }
+
+    @Override
+    public float getFurnaceXpMultiplier() {
+        if (getDamage() == TYPE_CHARCOAL) {
+            return 0.15f;
+        }
+        return 0.1f;
+    }
 }

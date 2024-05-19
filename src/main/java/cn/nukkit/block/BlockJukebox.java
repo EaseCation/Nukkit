@@ -123,6 +123,11 @@ public class BlockJukebox extends BlockSolid {
     }
 
     @Override
+    public int getFuelTime() {
+        return 300;
+    }
+
+    @Override
     public boolean isPowerSource() {
         return true;
     }

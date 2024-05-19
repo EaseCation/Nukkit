@@ -86,4 +86,9 @@ public class BlockHayBale extends BlockSolidMeta implements Faceable {
     public Item toItem(boolean addUserData) {
         return Item.get(this.getId(), 0);
     }
+
+    @Override
+    public int getCompostableChance() {
+        return 85;
+    }
 }

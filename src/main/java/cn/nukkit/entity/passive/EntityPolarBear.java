@@ -30,7 +30,7 @@ public class EntityPolarBear extends EntityAnimal {
 
     @Override
     public float getWidth() {
-        return 1.3f;
+        return 1.4f;
     }
 
     @Override

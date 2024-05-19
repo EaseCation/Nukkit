@@ -31,4 +31,9 @@ public class BlockDoorCrimson extends BlockDoorWood {
     public BlockColor getColor() {
         return BlockColor.CRIMSON_STEM_BLOCK_COLOR;
     }
+
+    @Override
+    public int getFuelTime() {
+        return 0;
+    }
 }

@@ -83,13 +83,13 @@ public class BlockCactus extends BlockTransparentMeta {
         if (type == Level.BLOCK_UPDATE_NORMAL) {
             Block down = down();
             if (down.getId() != SAND && down.getId() != CACTUS) {
-                this.getLevel().useBreakOn(this);
+                this.getLevel().useBreakOn(this, true);
                 return Level.BLOCK_UPDATE_NORMAL;
             } else {
                 for (int side = 2; side <= 5; ++side) {
                     Block block = getSide(BlockFace.fromIndex(side));
                     if (!block.canBeFlowedInto()) {
-                        this.getLevel().useBreakOn(this);
+                        this.getLevel().useBreakOn(this, true);
                         return Level.BLOCK_UPDATE_NORMAL;
                     }
                 }
@@ -182,6 +182,11 @@ public class BlockCactus extends BlockTransparentMeta {
     @Override
     public boolean canProvideSupport(BlockFace face, SupportType type) {
         return false;
+    }
+
+    @Override
+    public int getCompostableChance() {
+        return 50;
     }
 
     @Override

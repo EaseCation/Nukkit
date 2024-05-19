@@ -57,6 +57,11 @@ public class ItemCrossbow extends ItemTool {
     }
 
     @Override
+    public int getFuelTime() {
+        return 200;
+    }
+
+    @Override
     public boolean onClickAir(Player player, Vector3 directionVector) {
         Vector3 pos = player.getEyePosition();
 

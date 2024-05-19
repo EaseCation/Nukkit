@@ -63,4 +63,9 @@ public class BlockStairsWood extends BlockStairs {
                 toItem(true)
          };
     }
+
+    @Override
+    public int getFuelTime() {
+        return 300;
+    }
 }

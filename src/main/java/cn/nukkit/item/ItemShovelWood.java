@@ -44,4 +44,9 @@ public class ItemShovelWood extends ItemTool {
     public int getAttackDamage() {
         return 1;
     }
+
+    @Override
+    public int getFuelTime() {
+        return 200;
+    }
 }

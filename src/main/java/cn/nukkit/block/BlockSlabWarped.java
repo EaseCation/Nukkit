@@ -40,6 +40,11 @@ public class BlockSlabWarped extends BlockSlabWood {
     }
 
     @Override
+    public int getFuelTime() {
+        return 0;
+    }
+
+    @Override
     public int getSlabType() {
         return 0;
     }

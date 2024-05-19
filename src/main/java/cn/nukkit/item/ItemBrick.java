@@ -17,4 +17,9 @@ public class ItemBrick extends Item {
     public ItemBrick(Integer meta, int count) {
         super(BRICK, meta, count, "Brick");
     }
+
+    @Override
+    public float getFurnaceXpMultiplier() {
+        return 0.3f;
+    }
 }

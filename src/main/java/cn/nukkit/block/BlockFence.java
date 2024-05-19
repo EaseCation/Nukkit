@@ -131,6 +131,11 @@ public class BlockFence extends BlockTransparentMeta {
     }
 
     @Override
+    public int getFuelTime() {
+        return 300;
+    }
+
+    @Override
     public boolean isFence() {
         return true;
     }

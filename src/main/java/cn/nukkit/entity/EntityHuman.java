@@ -46,7 +46,7 @@ public class EntityHuman extends EntityHumanType {
             return 0.6f;
         }
         if (this.isSneaking()) {
-            if (this instanceof Player player && player.getProtocol() < 589) {
+            if (this instanceof Player player && player.getProtocol() < 594) {
                 return 1.65f;  // 旧版本应该还是老的高度
             } else {
                 return 1.49f;

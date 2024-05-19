@@ -1,5 +1,6 @@
 package cn.nukkit.entity.mob;
 
+import cn.nukkit.Difficulty;
 import cn.nukkit.Player;
 import cn.nukkit.entity.Entity;
 import cn.nukkit.entity.EntityID;
@@ -87,11 +88,10 @@ public class EntityHusk extends EntityMob implements EntitySmite {
             return;
         }
         int difficulty = server.getDifficulty();
-        ThreadLocalRandom random = ThreadLocalRandom.current();
-        if (random.nextInt(10) >= difficulty * 3) {
+        if (difficulty < Difficulty.NORMAL.ordinal()) {
             return;
         }
-        source.getEntity().setOnFire(2 * difficulty);
+        source.getEntity().setOnFire(2);
     }
 
     @Override

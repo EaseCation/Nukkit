@@ -25,4 +25,9 @@ public abstract class BlockPlanksAbstract extends BlockSolid {
     public int getToolType() {
         return BlockToolType.AXE;
     }
+
+    @Override
+    public int getFuelTime() {
+        return 300;
+    }
 }

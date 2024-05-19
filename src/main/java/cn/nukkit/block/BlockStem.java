@@ -23,7 +23,7 @@ public abstract class BlockStem extends BlockCrops implements Faceable {
     public int onUpdate(int type) {
         if (type == Level.BLOCK_UPDATE_NORMAL) {
             if (down().getId() != FARMLAND) {
-                level.useBreakOn(this);
+                level.useBreakOn(this, true);
                 return Level.BLOCK_UPDATE_NORMAL;
             }
 
@@ -60,7 +60,7 @@ public abstract class BlockStem extends BlockCrops implements Faceable {
                 }
 
                 int below = block.down().getId();
-                if (below == FARMLAND || below == GRASS_BLOCK || below == DIRT) {
+                if (below == FARMLAND || below == GRASS_BLOCK || below == DIRT || below == PODZOL || below == MYCELIUM || below == MOSS_BLOCK || below == DIRT_WITH_ROOTS || below == MUD || below == MUDDY_MANGROVE_ROOTS) {
                     BlockGrowEvent ev = new BlockGrowEvent(block, get(fruit));
                     Server.getInstance().getPluginManager().callEvent(ev);
                     if (!ev.isCancelled()) {

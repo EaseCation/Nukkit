@@ -371,6 +371,9 @@ public class EntityArmorStand extends EntityLiving implements EntityInteractable
         if (item.getId() == Item.ARMOR_STAND) {
             return false;
         }
+        if (item.hasLock()) {
+            return false;
+        }
 
         int slot = EQUIPMENT_SLOT_MAINHAND;
         boolean playerHasItem = true;

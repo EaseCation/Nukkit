@@ -15,4 +15,9 @@ public class ItemDoorMangrove extends Item {
         super(MANGROVE_DOOR, meta, count, "Mangrove Door");
         this.block = Block.get(Block.BLOCK_MANGROVE_DOOR);
     }
+
+    @Override
+    public int getFuelTime() {
+        return 200;
+    }
 }

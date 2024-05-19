@@ -72,7 +72,7 @@ public class BlockDoublePlant extends BlockFlowable {
             } else {
                 Block up = this.up();
                 if (!canSurvive() || up.getId() != DOUBLE_PLANT || (up.getDamage() & TYPE_MASK) != (meta & TYPE_MASK)) {
-                    this.getLevel().useBreakOn(this);
+                    this.getLevel().useBreakOn(this, true);
                     return Level.BLOCK_UPDATE_NORMAL;
                 }
             }
@@ -105,7 +105,7 @@ public class BlockDoublePlant extends BlockFlowable {
         Block down = down();
 
         if ((this.getDamage() & TOP_HALF_BITMASK) == TOP_HALF_BITMASK) { // Top half
-            this.getLevel().useBreakOn(down);
+            this.getLevel().useBreakOn(down, true);
         } else {
             this.getLevel().setBlock(this, Block.get(BlockID.AIR), true, true);
         }
@@ -185,6 +185,14 @@ public class BlockDoublePlant extends BlockFlowable {
     }
 
     @Override
+    public int getCompostableChance() {
+        if (getPlantType() == TYPE_TALL_GRASS) {
+            return 50;
+        }
+        return 65;
+    }
+
+    @Override
     public boolean isVegetation() {
         return true;
     }
@@ -195,6 +203,6 @@ public class BlockDoublePlant extends BlockFlowable {
 
     private boolean canSurvive() {
         int id = down().getId();
-        return id == GRASS_BLOCK || id == DIRT || id == PODZOL || id == FARMLAND || id == MYCELIUM || id == DIRT_WITH_ROOTS || id == MOSS_BLOCK;
+        return id == GRASS_BLOCK || id == DIRT || id == PODZOL || id == FARMLAND || id == MYCELIUM || id == DIRT_WITH_ROOTS || id == MOSS_BLOCK || id == MUD || id == MUDDY_MANGROVE_ROOTS;
     }
 }

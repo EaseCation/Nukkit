@@ -50,6 +50,11 @@ public class FurnaceInventory extends ContainerInventory {
     public void onSlotChange(int index, Item before, Item after, boolean send) {
         super.onSlotChange(index, before, after, send);
 
-        this.getHolder().scheduleUpdate();
+        BlockEntityFurnace furnace = getHolder();
+        if (index == 2 && before != null && !before.isNull() && (after == null || after.isNull())) {
+            furnace.postTakeResult(before);
+        }
+
+        furnace.scheduleUpdate();
     }
 }

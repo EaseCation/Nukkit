@@ -44,4 +44,9 @@ public class ItemPickaxeWood extends ItemTool {
     public int getAttackDamage() {
         return 2;
     }
+
+    @Override
+    public int getFuelTime() {
+        return 200;
+    }
 }

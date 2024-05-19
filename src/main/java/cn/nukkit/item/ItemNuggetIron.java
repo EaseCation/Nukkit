@@ -13,4 +13,9 @@ public class ItemNuggetIron extends Item {
     public ItemNuggetIron(Integer meta, int count) {
         super(IRON_NUGGET, meta, count, "Iron Nugget");
     }
+
+    @Override
+    public float getFurnaceXpMultiplier() {
+        return 0.1f;
+    }
 }

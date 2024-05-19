@@ -55,7 +55,7 @@ public class BlockTorch extends BlockFlowable implements Faceable {
         if (type == Level.BLOCK_UPDATE_NORMAL) {
             BlockFace face = this.getBlockFace();
             if (!canBeSupportedBy(getSide(face.getOpposite()), face)) {
-                this.getLevel().useBreakOn(this);
+                this.getLevel().useBreakOn(this, true);
                 return Level.BLOCK_UPDATE_NORMAL;
             }
         }

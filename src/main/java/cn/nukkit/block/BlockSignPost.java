@@ -20,6 +20,8 @@ import cn.nukkit.utils.BlockColor;
 import cn.nukkit.utils.DyeColor;
 import cn.nukkit.utils.Faceable;
 
+import static cn.nukkit.GameVersion.*;
+
 /**
  * @author Nukkit Project Team
  */
@@ -123,8 +125,7 @@ public class BlockSignPost extends BlockTransparentMeta implements Faceable {
     public int onUpdate(int type) {
         if (type == Level.BLOCK_UPDATE_NORMAL) {
             if (down().getId() == Block.AIR) {
-                getLevel().useBreakOn(this);
-
+                getLevel().useBreakOn(this, true);
                 return Level.BLOCK_UPDATE_NORMAL;
             }
         }
@@ -160,13 +161,17 @@ public class BlockSignPost extends BlockTransparentMeta implements Faceable {
     @Override
     public boolean onActivate(Item item, BlockFace face, Player player) {
         if (item.getId() == Item.DYE) {
+            int meta = item.getDamage();
+            if (V1_20_10.isAvailable() && (meta == ItemDye.COCOA_BEANS || meta == ItemDye.LAPIS_LAZULI || meta == ItemDye.BONE_MEAL)) {
+                return true;
+            }
+
             BlockEntity blockEntity = this.level.getBlockEntity(this);
             if (!(blockEntity instanceof BlockEntitySign)) {
                 return false;
             }
             BlockEntitySign sign = (BlockEntitySign) blockEntity;
 
-            int meta = item.getDamage();
             if (meta == ItemDye.INK_SAC) {
                 if (!sign.isGlowing()) {
                     if (player != null) {
@@ -276,6 +281,11 @@ public class BlockSignPost extends BlockTransparentMeta implements Faceable {
     @Override
     public boolean canProvideSupport(BlockFace face, SupportType type) {
         return false;
+    }
+
+    @Override
+    public int getFuelTime() {
+        return 200;
     }
 
     protected int getStandingBlockId() {

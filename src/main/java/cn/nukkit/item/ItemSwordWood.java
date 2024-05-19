@@ -49,4 +49,9 @@ public class ItemSwordWood extends ItemTool {
     public boolean additionalDamageOnBreak() {
         return true;
     }
+
+    @Override
+    public int getFuelTime() {
+        return 200;
+    }
 }

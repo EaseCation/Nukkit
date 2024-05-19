@@ -68,4 +68,9 @@ public class BlockBookshelf extends BlockSolidMeta {
     public boolean canSilkTouch() {
         return true;
     }
+
+    @Override
+    public int getFuelTime() {
+        return 300;
+    }
 }

@@ -108,7 +108,7 @@ public class BlockCoral extends BlockFlowable {
     public int onUpdate(int type) {
         if (type == Level.BLOCK_UPDATE_NORMAL) {
             if (!SupportType.hasCenterSupport(down(), BlockFace.UP)) {
-                level.useBreakOn(this);
+                level.useBreakOn(this, true);
                 return type;
             }
 

@@ -54,7 +54,7 @@ public class BlockItemFrame extends BlockTransparentMeta implements Faceable {
         if (type == Level.BLOCK_UPDATE_NORMAL) {
             Block block = getSide(getBlockFace().getOpposite());
             if (block.canBeFlowedInto() || block.isItemFrame()) {
-                this.level.useBreakOn(this);
+                this.level.useBreakOn(this, true);
                 return type;
             }
         }
@@ -75,6 +75,10 @@ public class BlockItemFrame extends BlockTransparentMeta implements Faceable {
         }
 
         if (itemFrame.getItem().isNull()) {
+            if (item.hasLock()) {
+                return true;
+            }
+
             Item itemOnFrame = item.clone();
 
             if (player != null && player.isSurvivalLike()) {

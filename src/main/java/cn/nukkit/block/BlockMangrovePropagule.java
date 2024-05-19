@@ -123,7 +123,7 @@ public class BlockMangrovePropagule extends BlockTransparentMeta {
                 return 0;
             }
 
-            level.useBreakOn(this);
+            level.useBreakOn(this, true);
             return Level.BLOCK_UPDATE_NORMAL;
         }
 
@@ -201,6 +201,16 @@ public class BlockMangrovePropagule extends BlockTransparentMeta {
     }
 
     @Override
+    public int getFuelTime() {
+        return 100;
+    }
+
+    @Override
+    public int getCompostableChance() {
+        return 30;
+    }
+
+    @Override
     public boolean isVegetation() {
         return true;
     }
@@ -220,7 +230,7 @@ public class BlockMangrovePropagule extends BlockTransparentMeta {
         }
 
         int id = down().getId();
-        return id == BIG_DRIPLEAF || id == GRASS_BLOCK || id == DIRT || id == MYCELIUM || id == PODZOL || id == FARMLAND || id == DIRT_WITH_ROOTS || id == MOSS_BLOCK || id == CLAY;
+        return id == BIG_DRIPLEAF || id == GRASS_BLOCK || id == DIRT || id == MYCELIUM || id == PODZOL || id == FARMLAND || id == DIRT_WITH_ROOTS || id == MOSS_BLOCK || id == CLAY || id == MUD || id == MUDDY_MANGROVE_ROOTS;
     }
 
     public int getStage() {

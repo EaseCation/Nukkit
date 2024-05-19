@@ -84,7 +84,7 @@ public class BlockSporeBlossom extends BlockFlowable {
                 return 0;
             }
 
-            level.useBreakOn(this);
+            level.useBreakOn(this, true);
             return Level.BLOCK_UPDATE_NORMAL;
         }
 
@@ -94,6 +94,11 @@ public class BlockSporeBlossom extends BlockFlowable {
     @Override
     public BlockColor getColor() {
         return BlockColor.PLANT_BLOCK_COLOR;
+    }
+
+    @Override
+    public int getCompostableChance() {
+        return 65;
     }
 
     @Override

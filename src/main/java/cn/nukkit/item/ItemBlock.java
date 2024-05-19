@@ -83,6 +83,21 @@ public class ItemBlock extends Item {
     }
 
     @Override
+    public int getFuelTime() {
+        return block.getFuelTime();
+    }
+
+    @Override
+    public float getFurnaceXpMultiplier() {
+        return block.getFurnaceXpMultiplier();
+    }
+
+    @Override
+    public int getCompostableChance() {
+        return block.getCompostableChance();
+    }
+
+    @Override
     public boolean isChemistryFeature() {
         return block.isChemistryFeature();
     }

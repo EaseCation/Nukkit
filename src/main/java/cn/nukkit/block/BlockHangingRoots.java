@@ -2,7 +2,6 @@ package cn.nukkit.block;
 
 import cn.nukkit.Player;
 import cn.nukkit.item.Item;
-import cn.nukkit.item.ItemTool;
 import cn.nukkit.level.Level;
 import cn.nukkit.math.BlockFace;
 import cn.nukkit.utils.BlockColor;
@@ -71,7 +70,7 @@ public class BlockHangingRoots extends BlockFlowable {
                 return 0;
             }
 
-            level.useBreakOn(this);
+            level.useBreakOn(this, true);
             return Level.BLOCK_UPDATE_NORMAL;
         }
 
@@ -81,6 +80,11 @@ public class BlockHangingRoots extends BlockFlowable {
     @Override
     public BlockColor getColor() {
         return BlockColor.PLANT_BLOCK_COLOR;
+    }
+
+    @Override
+    public int getCompostableChance() {
+        return 30;
     }
 
     @Override

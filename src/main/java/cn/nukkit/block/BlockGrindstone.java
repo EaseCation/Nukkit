@@ -126,7 +126,7 @@ public class BlockGrindstone extends BlockTransparentMeta implements Faceable {
     public int onUpdate(int type) {
         if (type == Level.BLOCK_UPDATE_NORMAL) {
             if (getSide(getBlockFace().getOpposite()).isAir()) {
-                level.useBreakOn(this, Item.get(ItemID.WOODEN_PICKAXE));
+                level.useBreakOn(this, Item.get(ItemID.WOODEN_PICKAXE), true);
                 return Level.BLOCK_UPDATE_NORMAL;
             }
         }

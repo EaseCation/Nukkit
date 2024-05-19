@@ -167,7 +167,7 @@ public class BlockSeaPickle extends BlockFlowable {
     public int onUpdate(int type) {
         if (type == Level.BLOCK_UPDATE_NORMAL) {
             if (!canBeSupportBy(down())) {
-                level.useBreakOn(this);
+                level.useBreakOn(this, true);
                 return type;
             }
 
@@ -181,6 +181,11 @@ public class BlockSeaPickle extends BlockFlowable {
         }
 
         return 0;
+    }
+
+    @Override
+    public int getCompostableChance() {
+        return 65;
     }
 
     @Override

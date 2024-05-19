@@ -1,5 +1,7 @@
 package cn.nukkit.item;
 
+import cn.nukkit.Player;
+import cn.nukkit.math.Vector3;
 import cn.nukkit.network.protocol.LevelSoundEventPacket;
 
 public class ItemOminousBottle extends ItemEdible {
@@ -15,6 +17,11 @@ public class ItemOminousBottle extends ItemEdible {
 
     public ItemOminousBottle(Integer meta, int count) {
         super(OMINOUS_BOTTLE, meta, count, "Ominous Bottle");
+    }
+
+    @Override
+    public boolean onClickAir(Player player, Vector3 directionVector) {
+        return true;
     }
 
     @Override

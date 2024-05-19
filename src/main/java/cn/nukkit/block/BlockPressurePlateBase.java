@@ -114,7 +114,7 @@ public abstract class BlockPressurePlateBase extends BlockTransparentMeta {
     public int onUpdate(int type) {
         if (type == Level.BLOCK_UPDATE_NORMAL) {
             if (!SupportType.hasCenterSupport(this.down(), BlockFace.UP)) {
-                this.level.useBreakOn(this, Item.get(Item.WOODEN_PICKAXE));
+                this.level.useBreakOn(this, Item.get(Item.WOODEN_PICKAXE), true);
                 return type;
             }
         } else if (type == Level.BLOCK_UPDATE_SCHEDULED) {

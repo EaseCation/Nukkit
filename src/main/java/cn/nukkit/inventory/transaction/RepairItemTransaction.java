@@ -107,7 +107,7 @@ public class RepairItemTransaction extends InventoryTransaction {
             }
 
             if (!this.source.isCreative()) {
-                this.source.setExperience(this.source.getExperience(), this.source.getExperienceLevel() - event.getCost());
+                this.source.setExperience(this.source.getExperience(), this.source.getExperienceLevel() - event.getCost(), true);
             }
             this.source.level.addLevelEvent(anvilInventory.getHolder(), LevelEventPacket.EVENT_SOUND_ANVIL_USE);
             return true;

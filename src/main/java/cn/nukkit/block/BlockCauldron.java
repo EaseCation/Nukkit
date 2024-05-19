@@ -28,6 +28,8 @@ import javax.annotation.Nullable;
 import java.awt.Color;
 import java.util.Map;
 
+import static cn.nukkit.GameVersion.*;
+
 /**
  * author: CreeperFace
  * Nukkit Project
@@ -232,6 +234,10 @@ public class BlockCauldron extends BlockTransparentMeta {
                 break;
             }
             case Item.DYE: {
+                int meta = item.getDamage();
+                if (V1_20_10.isAvailable() && (meta == ItemDye.INK_SAC || meta == ItemDye.COCOA_BEANS || meta == ItemDye.LAPIS_LAZULI || meta == ItemDye.BONE_MEAL)) {
+                    return true;
+                }
                 if (getCauldronType() != LIQUID_WATER) {
                     return true;
                 }

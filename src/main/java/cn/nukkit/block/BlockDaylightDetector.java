@@ -125,6 +125,11 @@ public class BlockDaylightDetector extends BlockTransparentMeta {
     }
 
     @Override
+    public int getFuelTime() {
+        return 300;
+    }
+
+    @Override
     public boolean isDaylightDetector() {
         return true;
     }

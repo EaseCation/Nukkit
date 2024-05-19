@@ -18,4 +18,9 @@ public class ItemIngotNetherite extends Item {
     public boolean isFireResistant() {
         return true;
     }
+
+    @Override
+    public float getFurnaceXpMultiplier() {
+        return 2;
+    }
 }

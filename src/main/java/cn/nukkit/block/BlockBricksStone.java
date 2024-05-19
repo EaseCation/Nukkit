@@ -77,4 +77,12 @@ public class BlockBricksStone extends BlockSolidMeta {
     public BlockColor getColor() {
         return BlockColor.STONE_BLOCK_COLOR;
     }
+
+    @Override
+    public float getFurnaceXpMultiplier() {
+        if (getDamage() != CRACKED) {
+            return 0;
+        }
+        return 0.1f;
+    }
 }

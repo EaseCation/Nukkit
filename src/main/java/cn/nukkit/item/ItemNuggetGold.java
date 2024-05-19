@@ -17,4 +17,9 @@ public class ItemNuggetGold extends Item {
     public ItemNuggetGold(Integer meta, int count) {
         super(GOLD_NUGGET, meta, count, "Gold Nugget");
     }
+
+    @Override
+    public float getFurnaceXpMultiplier() {
+        return 0.1f;
+    }
 }

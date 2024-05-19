@@ -232,6 +232,11 @@ public class BlockLectern extends BlockTransparentMeta implements Faceable {
     }
 
     @Override
+    public int getFuelTime() {
+        return 300;
+    }
+
+    @Override
     public BlockFace getBlockFace() {
         return BlockFace.fromHorizontalIndex(getDamage() & DIRECTION_MASK);
     }

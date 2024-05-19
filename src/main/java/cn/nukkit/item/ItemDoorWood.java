@@ -22,4 +22,8 @@ public class ItemDoorWood extends Item {
         this.block = Block.get(BlockID.BLOCK_WOODEN_DOOR);
     }
 
+    @Override
+    public int getFuelTime() {
+        return 200;
+    }
 }

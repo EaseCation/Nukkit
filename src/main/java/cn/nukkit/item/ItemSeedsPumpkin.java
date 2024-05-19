@@ -21,4 +21,9 @@ public class ItemSeedsPumpkin extends Item {
         super(PUMPKIN_SEEDS, meta, count, "Pumpkin Seeds");
         this.block = Block.get(BlockID.PUMPKIN_STEM);
     }
+
+    @Override
+    public int getCompostableChance() {
+        return 30;
+    }
 }

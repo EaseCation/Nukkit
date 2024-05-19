@@ -17,4 +17,9 @@ public class ItemBread extends ItemEdible {
     public ItemBread(Integer meta, int count) {
         super(BREAD, meta, count, "Bread");
     }
+
+    @Override
+    public int getCompostableChance() {
+        return 85;
+    }
 }

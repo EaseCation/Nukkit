@@ -21,6 +21,7 @@ public enum RecipeTag {
     SMOKER("smoker", BlockID.SMOKER, BlockID.LIT_SMOKER),
     SOUL_CAMPFIRE("soul_campfire", BlockID.BLOCK_SOUL_CAMPFIRE),
     SMITHING_TABLE("smithing_table", BlockID.SMITHING_TABLE),
+    DEPRECATED("deprecated"),
     ;
 
     private static final RecipeTag[] VALUES = values();

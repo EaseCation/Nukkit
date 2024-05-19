@@ -73,6 +73,11 @@ public class BlockFenceNetherBrick extends BlockFence {
     }
 
     @Override
+    public int getFuelTime() {
+        return 0;
+    }
+
+    @Override
     public int getFullId() {
         return getId() << BLOCK_META_BITS;
     }

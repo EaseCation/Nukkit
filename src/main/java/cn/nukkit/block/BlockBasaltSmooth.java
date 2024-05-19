@@ -53,4 +53,9 @@ public class BlockBasaltSmooth extends BlockSolid {
     public BlockColor getColor() {
         return BlockColor.BLACK_BLOCK_COLOR;
     }
+
+    @Override
+    public float getFurnaceXpMultiplier() {
+        return 0.1f;
+    }
 }

@@ -45,4 +45,9 @@ public class BlockNetherWartBlock extends BlockSolid {
     public BlockColor getColor() {
         return BlockColor.RED_BLOCK_COLOR;
     }
+
+    @Override
+    public int getCompostableChance() {
+        return 85;
+    }
 }

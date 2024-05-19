@@ -18,4 +18,13 @@ public class ItemPotatoBaked extends ItemEdible {
         super(BAKED_POTATO, meta, count, "Baked Potato");
     }
 
+    @Override
+    public float getFurnaceXpMultiplier() {
+        return 0.35f;
+    }
+
+    @Override
+    public int getCompostableChance() {
+        return 85;
+    }
 }

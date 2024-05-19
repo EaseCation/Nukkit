@@ -100,4 +100,9 @@ public class BlockGlowLichen extends BlockMultiface {
     public BlockColor getColor() {
         return BlockColor.SAND_BLOCK_COLOR;
     }
+
+    @Override
+    public int getCompostableChance() {
+        return 50;
+    }
 }

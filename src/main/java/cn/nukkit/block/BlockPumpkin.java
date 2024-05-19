@@ -108,4 +108,9 @@ public class BlockPumpkin extends BlockSolidMeta implements Faceable {
         level.addLevelSoundEvent(blockCenter(), LevelSoundEventPacket.SOUND_PUMPKIN_CARVE);
         return true;
     }
+
+    @Override
+    public int getCompostableChance() {
+        return 65;
+    }
 }

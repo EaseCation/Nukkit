@@ -91,7 +91,9 @@ public class BlockEntitySign extends BlockEntitySpawnable {
                 || blockId == Block.CRIMSON_STANDING_SIGN || blockId == Block.CRIMSON_WALL_SIGN
                 || blockId == Block.WARPED_STANDING_SIGN || blockId == Block.WARPED_WALL_SIGN
                 || blockId == Block.MANGROVE_STANDING_SIGN || blockId == Block.MANGROVE_WALL_SIGN
-                || blockId == Block.BAMBOO_STANDING_SIGN || blockId == Block.BAMBOO_WALL_SIGN;
+                || blockId == Block.BAMBOO_STANDING_SIGN || blockId == Block.BAMBOO_WALL_SIGN
+                || blockId == Block.CHERRY_STANDING_SIGN || blockId == Block.CHERRY_WALL_SIGN
+                ;
     }
 
     public boolean setText(String... lines) {

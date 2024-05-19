@@ -51,4 +51,9 @@ public class BlockDoorWood extends BlockDoor {
     public BlockColor getColor() {
         return BlockColor.WOOD_BLOCK_COLOR;
     }
+
+    @Override
+    public int getFuelTime() {
+        return 200;
+    }
 }

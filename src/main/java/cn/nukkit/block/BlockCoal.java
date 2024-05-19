@@ -68,4 +68,9 @@ public class BlockCoal extends BlockSolid {
     public BlockColor getColor() {
         return BlockColor.BLACK_BLOCK_COLOR;
     }
+
+    @Override
+    public int getFuelTime() {
+        return 16000;
+    }
 }

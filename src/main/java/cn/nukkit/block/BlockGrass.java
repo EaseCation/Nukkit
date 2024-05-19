@@ -128,6 +128,11 @@ public class BlockGrass extends BlockDirt {
     }
 
     @Override
+    public int getCompostableChance() {
+        return 30;
+    }
+
+    @Override
     public int getFullId() {
         return this.getId() << BLOCK_META_BITS;
     }

@@ -99,4 +99,12 @@ public class BlockStone extends BlockSolidMeta {
                 return BlockColor.QUARTZ_BLOCK_COLOR;
         }
     }
+
+    @Override
+    public float getFurnaceXpMultiplier() {
+        if (getDamage() != TYPE_NORMAL) {
+            return 0;
+        }
+        return 0.1f;
+    }
 }

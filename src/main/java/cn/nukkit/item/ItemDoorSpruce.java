@@ -17,4 +17,8 @@ public class ItemDoorSpruce extends Item {
         this.block = Block.get(BlockID.BLOCK_SPRUCE_DOOR);
     }
 
+    @Override
+    public int getFuelTime() {
+        return 200;
+    }
 }

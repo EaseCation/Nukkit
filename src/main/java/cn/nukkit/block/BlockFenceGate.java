@@ -265,4 +265,9 @@ public class BlockFenceGate extends BlockTransparentMeta implements Faceable {
         }
         return super.recalculateBoundingBox();
     }
+
+    @Override
+    public int getFuelTime() {
+        return 300;
+    }
 }

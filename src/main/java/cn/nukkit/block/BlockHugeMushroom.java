@@ -43,6 +43,16 @@ public abstract class BlockHugeMushroom extends BlockSolidMeta {
     }
 
     @Override
+    public int getFuelTime() {
+        return 300;
+    }
+
+    @Override
+    public int getCompostableChance() {
+        return 85;
+    }
+
+    @Override
     public boolean isVegetation() {
         return true;
     }

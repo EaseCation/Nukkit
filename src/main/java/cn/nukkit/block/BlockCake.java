@@ -87,8 +87,7 @@ public class BlockCake extends BlockTransparentMeta {
     public int onUpdate(int type) {
         if (type == Level.BLOCK_UPDATE_NORMAL) {
             if (!canSurvive()) {
-                getLevel().setBlock(this, Block.get(BlockID.AIR), true);
-
+                level.useBreakOn(this, true);
                 return Level.BLOCK_UPDATE_NORMAL;
             }
         }

@@ -17,4 +17,9 @@ public class ItemPumpkinPie extends ItemEdible {
     public ItemPumpkinPie(Integer meta, int count) {
         super(PUMPKIN_PIE, meta, count, "Pumpkin Pie");
     }
+
+    @Override
+    public int getCompostableChance() {
+        return 100;
+    }
 }

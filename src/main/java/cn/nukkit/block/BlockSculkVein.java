@@ -2,6 +2,7 @@ package cn.nukkit.block;
 
 import cn.nukkit.Player;
 import cn.nukkit.item.Item;
+import cn.nukkit.math.BlockFace;
 import cn.nukkit.utils.BlockColor;
 
 public class BlockSculkVein extends BlockMultiface {
@@ -41,6 +42,19 @@ public class BlockSculkVein extends BlockMultiface {
     @Override
     public boolean canSilkTouch() {
         return true;
+    }
+
+    @Override
+    public Item getSilkTouchResource() {
+        Item item = toItem(true);
+        int count = 0;
+        for (BlockFace side : BlockFace.getValues()) {
+            if (hasFace(side)) {
+                count++;
+            }
+        }
+        item.setCount(count);
+        return item;
     }
 
     @Override

@@ -17,4 +17,9 @@ public class ItemStick extends Item {
     public ItemStick(Integer meta, int count) {
         super(STICK, meta, count, "Stick");
     }
+
+    @Override
+    public int getFuelTime() {
+        return 100;
+    }
 }

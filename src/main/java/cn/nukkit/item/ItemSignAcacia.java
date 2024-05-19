@@ -22,4 +22,9 @@ public class ItemSignAcacia extends Item {
     public int getMaxStackSize() {
         return 16;
     }
+
+    @Override
+    public int getFuelTime() {
+        return 200;
+    }
 }

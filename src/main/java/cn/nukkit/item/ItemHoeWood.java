@@ -39,4 +39,9 @@ public class ItemHoeWood extends ItemTool {
     public int getTier() {
         return ItemTool.TIER_WOODEN;
     }
+
+    @Override
+    public int getFuelTime() {
+        return 200;
+    }
 }

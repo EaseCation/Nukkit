@@ -63,4 +63,9 @@ public class BlockDeepslate extends BlockRotatedPillar {
     public BlockColor getColor() {
         return BlockColor.DEEPSLATE_BLOCK_COLOR;
     }
+
+    @Override
+    public float getFurnaceXpMultiplier() {
+        return 0.1f;
+    }
 }

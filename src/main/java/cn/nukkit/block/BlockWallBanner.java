@@ -31,7 +31,7 @@ public class BlockWallBanner extends BlockBanner {
         if (type == Level.BLOCK_UPDATE_NORMAL) {
             if (this.getDamage() >= BlockFace.NORTH.getIndex() && this.getDamage() <= BlockFace.EAST.getIndex()) {
                 if (this.getSide(BlockFace.fromIndex(this.getDamage()).getOpposite()).canBeFlowedInto()) {
-                    this.getLevel().useBreakOn(this);
+                    this.getLevel().useBreakOn(this, true);
                 }
                 return Level.BLOCK_UPDATE_NORMAL;
             }

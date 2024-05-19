@@ -17,4 +17,8 @@ public class ItemDoorDarkOak extends Item {
         this.block = Block.get(BlockID.BLOCK_DARK_OAK_DOOR);
     }
 
+    @Override
+    public int getFuelTime() {
+        return 200;
+    }
 }

@@ -31,7 +31,7 @@ public class BlockEntityFurnace extends BlockEntityAbstractContainer {
     protected int burnTime;
     protected int burnDuration;
     protected int cookTime;
-    protected int storedXp; //TODO
+    protected int storedXp;
     protected int maxTime;
 
     private int crackledTime;
@@ -62,7 +62,9 @@ public class BlockEntityFurnace extends BlockEntityAbstractContainer {
             burnDuration = this.namedTag.getShort("BurnDuration");
         }
 
-        if (!this.namedTag.contains("StoredXPInt") || this.namedTag.getInt("StoredXPInt") < 0) {
+        if (this.namedTag.contains("StoredXP")) {
+            storedXp = this.namedTag.getShort("StoredXP") & 0xffff;
+        } else if (!this.namedTag.contains("StoredXPInt") || this.namedTag.getInt("StoredXPInt") < 0) {
             storedXp = 0;
         } else {
             storedXp = this.namedTag.getInt("StoredXPInt");
@@ -114,8 +116,8 @@ public class BlockEntityFurnace extends BlockEntityAbstractContainer {
     }
 
     protected void checkFuel(Item fuel) {
-        short duration = fuel.getFuelTime();
-        FurnaceBurnEvent ev = new FurnaceBurnEvent(this, fuel, duration == -1 ? 0 : duration);
+        int duration = fuel.getFuelTime();
+        FurnaceBurnEvent ev = new FurnaceBurnEvent(this, fuel, duration);
         this.server.getPluginManager().callEvent(ev);
         if (ev.isCancelled()) {
             return;
@@ -162,7 +164,7 @@ public class BlockEntityFurnace extends BlockEntityAbstractContainer {
         FurnaceRecipe smelt = Server.getInstance().getCraftingManager().matchFurnaceRecipe(raw, getRecipeTag());
         boolean canSmelt = (smelt != null && raw.getCount() > 0 && ((smelt.getResult().equals(product, true) && product.getCount() < product.getMaxStackSize()) || product.getId() == Item.AIR));
 
-        if (burnTime <= 0 && canSmelt && fuel.getFuelTime() != -1 && fuel.getCount() > 0) {
+        if (burnTime <= 0 && canSmelt && fuel.getFuelTime() != 0 && fuel.getCount() > 0) {
             this.checkFuel(fuel);
         }
 
@@ -262,8 +264,7 @@ public class BlockEntityFurnace extends BlockEntityAbstractContainer {
         return getDefaultCompound(this, FURNACE);
     }
 
-    protected int calculateXpReward() {
-        Item product = this.inventory.getResult();
+    private static int calculateXpReward(Item product) {
         if (product.isNull()) {
             return 0;
         }
@@ -278,6 +279,20 @@ public class BlockEntityFurnace extends BlockEntityAbstractContainer {
         if (frac != 0 && ThreadLocalRandom.current().nextFloat() < frac) {
             result++;
         }
+        return result;
+    }
+
+    public int getDropXp() {
+        return storedXp + calculateXpReward(inventory.getResult());
+    }
+
+    public void postTakeResult(Item product) {
+        storedXp += calculateXpReward(product);
+    }
+
+    public int withdrawStoredXpReward() {
+        int result = storedXp;
+        storedXp = 0;
         return result;
     }
 

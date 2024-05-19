@@ -289,7 +289,7 @@ public class BlockEntityHopper extends BlockEntityAbstractContainer {
                                 pushedItem = true;
                             }
                         }
-                    } else if (Fuel.duration.containsKey(itemToAdd.getId())) {
+                    } else if (itemToAdd.getFuelTime() > 0) {
                         Item fuel = inventory.getFuel();
                         if (fuel.isNull()) {
                             event = new InventoryMoveItemEvent(this.inventory, inventory, this, itemToAdd, InventoryMoveItemEvent.Action.SLOT_CHANGE);

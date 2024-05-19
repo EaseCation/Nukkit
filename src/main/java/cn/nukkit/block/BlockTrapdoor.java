@@ -262,6 +262,11 @@ public class BlockTrapdoor extends BlockTransparentMeta implements Faceable {
     }
 
     @Override
+    public int getFuelTime() {
+        return 300;
+    }
+
+    @Override
     public boolean isTrapdoor() {
         return true;
     }

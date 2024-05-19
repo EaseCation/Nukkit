@@ -35,4 +35,9 @@ public class BlockFenceGateCrimson extends BlockFenceGate {
     public BlockColor getColor() {
         return BlockColor.NETHER_BLOCK_COLOR;
     }
+
+    @Override
+    public int getFuelTime() {
+        return 0;
+    }
 }

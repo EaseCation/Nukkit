@@ -70,4 +70,9 @@ public class BlockPressurePlateWood extends BlockPressurePlateBase {
 
         return 0;
     }
+
+    @Override
+    public int getFuelTime() {
+        return 300;
+    }
 }

@@ -174,7 +174,7 @@ public class BlockSeagrass extends BlockTransparentMeta {
         if (type == Level.BLOCK_UPDATE_NORMAL) {
             Block extra = level.getExtraBlock(this);
             if (!extra.isWater() || !extra.isFullLiquid()) {
-                level.useBreakOn(this);
+                level.useBreakOn(this, true);
                 return type;
             }
 
@@ -185,14 +185,14 @@ public class BlockSeagrass extends BlockTransparentMeta {
                 if (below.getId() == SEAGRASS && below.getDamage() == DOUBLE_SEAGRASS_BOTTOM) {
                     return 0;
                 }
-                level.useBreakOn(this);
+                level.useBreakOn(this, true);
                 return type;
             }
 
             if (meta == DOUBLE_SEAGRASS_BOTTOM) {
                 Block up = up();
                 if (up.getId() != SEAGRASS || up.getDamage() != DOUBLE_SEAGRASS_TOP) {
-                    level.useBreakOn(this);
+                    level.useBreakOn(this, true);
                     return type;
                 }
             }
@@ -201,11 +201,16 @@ public class BlockSeagrass extends BlockTransparentMeta {
                 return 0;
             }
 
-            level.useBreakOn(this);
+            level.useBreakOn(this, true);
             return type;
         }
 
         return 0;
+    }
+
+    @Override
+    public int getCompostableChance() {
+        return 30;
     }
 
     private boolean canSurvive(Block below) {

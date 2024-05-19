@@ -17,4 +17,9 @@ public class ItemApple extends ItemEdible {
     public ItemApple(Integer meta, int count) {
         super(APPLE, 0, count, "Apple");
     }
+
+    @Override
+    public int getCompostableChance() {
+        return 65;
+    }
 }

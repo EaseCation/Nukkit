@@ -423,4 +423,12 @@ public class ItemBucket extends Item {
     public boolean canRelease() {
         return getDamage() == MILK_BUCKET;
     }
+
+    @Override
+    public int getFuelTime() {
+        if (getDamage() != LAVA_BUCKET) {
+            return 0;
+        }
+        return 20000;
+    }
 }

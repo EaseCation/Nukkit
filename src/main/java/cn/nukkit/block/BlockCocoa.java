@@ -147,7 +147,7 @@ public class BlockCocoa extends BlockFlowable implements Faceable {
         if (type == Level.BLOCK_UPDATE_NORMAL) {
             Block side = this.getSide(BlockFace.fromIndex(FACING[this.getDamage() & 0x3]));
             if (!canBeSupportedBy(side)) {
-                this.getLevel().useBreakOn(this);
+                this.getLevel().useBreakOn(this, true);
                 return Level.BLOCK_UPDATE_NORMAL;
             }
         } else if (type == Level.BLOCK_UPDATE_RANDOM) {

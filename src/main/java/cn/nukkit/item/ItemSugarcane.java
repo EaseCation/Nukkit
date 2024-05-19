@@ -21,4 +21,9 @@ public class ItemSugarcane extends Item {
         super(SUGAR_CANE, meta, count, "Sugar Cane");
         this.block = Block.get(BlockID.BLOCK_REEDS);
     }
+
+    @Override
+    public int getCompostableChance() {
+        return 50;
+    }
 }

@@ -10,6 +10,7 @@ import cn.nukkit.math.AxisAlignedBB;
 import cn.nukkit.math.BlockFace;
 import cn.nukkit.math.BlockFace.Axis;
 import cn.nukkit.math.BlockFace.Plane;
+import cn.nukkit.nbt.NBTIO;
 import cn.nukkit.utils.BlockColor;
 
 import static cn.nukkit.GameVersion.*;
@@ -214,7 +215,7 @@ public class BlockScaffolding extends BlockTransparentMeta { // extends BlockFal
 
             if (stability == UNSTABLE) {
                 if (isStabilityCheck()) {
-                    level.useBreakOn(this);
+                    level.useBreakOn(this, true);
                     return type;
                 }
 
@@ -225,8 +226,7 @@ public class BlockScaffolding extends BlockTransparentMeta { // extends BlockFal
                     level.setBlock(this, get(AIR), true);
 
                     EntityFallingBlock fallingBlock = new EntityFallingBlock(getChunk(), Entity.getDefaultNBT(add(0.5, 0, 0.5))
-                            .putInt("TileID", getId())
-                            .putByte("Data", 0));
+                            .putCompound("FallingBlock", NBTIO.putBlockHelper(getFullId(getId(), 0))));
                     fallingBlock.sync = true;
                     fallingBlock.spawnToAll();
 
@@ -242,6 +242,11 @@ public class BlockScaffolding extends BlockTransparentMeta { // extends BlockFal
         }
 
         return 0;
+    }
+
+    @Override
+    public int getFuelTime() {
+        return 1200;
     }
 
     @Override

@@ -22,4 +22,8 @@ public class ItemRedstone extends Item {
         this.block = Block.get(BlockID.REDSTONE_WIRE);
     }
 
+    @Override
+    public float getFurnaceXpMultiplier() {
+        return 0.3f;
+    }
 }

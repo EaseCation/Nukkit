@@ -17,4 +17,9 @@ public class ItemEmerald extends Item {
     public ItemEmerald(Integer meta, int count) {
         super(EMERALD, meta, count, "Emerald");
     }
+
+    @Override
+    public float getFurnaceXpMultiplier() {
+        return 1;
+    }
 }

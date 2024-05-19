@@ -17,4 +17,8 @@ public class ItemBlazeRod extends Item {
         super(BLAZE_ROD, meta, count, "Blaze Rod");
     }
 
+    @Override
+    public int getFuelTime() {
+        return 2400;
+    }
 }

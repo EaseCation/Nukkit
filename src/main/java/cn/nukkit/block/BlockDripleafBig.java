@@ -82,7 +82,7 @@ public class BlockDripleafBig extends BlockTransparentMeta implements Faceable {
     public boolean place(Item item, Block block, Block target, BlockFace face, double fx, double fy, double fz, Player player) {
         Block below = down();
         int id = below.getId();
-        if (!(id == BIG_DRIPLEAF || id == GRASS_BLOCK || id == DIRT || id == MYCELIUM || id == PODZOL || id == FARMLAND || id == DIRT_WITH_ROOTS || id == MOSS_BLOCK || id == CLAY)) {
+        if (!(id == BIG_DRIPLEAF || id == GRASS_BLOCK || id == DIRT || id == MYCELIUM || id == PODZOL || id == FARMLAND || id == DIRT_WITH_ROOTS || id == MOSS_BLOCK || id == CLAY || id == MUD || id == MUDDY_MANGROVE_ROOTS)) {
             return false;
         }
 
@@ -151,7 +151,7 @@ public class BlockDripleafBig extends BlockTransparentMeta implements Faceable {
 
         if (type == Level.BLOCK_UPDATE_SCHEDULED) {
             if (!canSurvive()) {
-                level.useBreakOn(this);
+                level.useBreakOn(this, true);
                 return Level.BLOCK_UPDATE_NORMAL;
             }
 
@@ -160,7 +160,7 @@ public class BlockDripleafBig extends BlockTransparentMeta implements Faceable {
                     return 0;
                 }
 
-                level.useBreakOn(this);
+                level.useBreakOn(this, true);
                 return Level.BLOCK_UPDATE_NORMAL;
             }
 
@@ -304,6 +304,11 @@ public class BlockDripleafBig extends BlockTransparentMeta implements Faceable {
     }
 
     @Override
+    public int getCompostableChance() {
+        return 65;
+    }
+
+    @Override
     public boolean isVegetation() {
         return true;
     }
@@ -315,7 +320,7 @@ public class BlockDripleafBig extends BlockTransparentMeta implements Faceable {
 
     private boolean canSurvive() {
         int id = down().getId();
-        return id == BIG_DRIPLEAF || id == GRASS_BLOCK || id == DIRT || id == MYCELIUM || id == PODZOL || id == FARMLAND || id == DIRT_WITH_ROOTS || id == MOSS_BLOCK || id == CLAY;
+        return id == BIG_DRIPLEAF || id == GRASS_BLOCK || id == DIRT || id == MYCELIUM || id == PODZOL || id == FARMLAND || id == DIRT_WITH_ROOTS || id == MOSS_BLOCK || id == CLAY || id == MUD || id == MUDDY_MANGROVE_ROOTS;
     }
 
     private void setTiltAndScheduleTick(int tilt) {

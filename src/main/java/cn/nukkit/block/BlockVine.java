@@ -161,7 +161,7 @@ public class BlockVine extends BlockFlowable {
                 }
             }
             if (meta == 0 && !this.up().isSolid()) {
-                this.getLevel().useBreakOn(this, null, null, true);
+                this.getLevel().useBreakOn(this, true);
                 return Level.BLOCK_UPDATE_NORMAL;
             }
             if (meta != this.getDamage()) {
@@ -317,6 +317,11 @@ public class BlockVine extends BlockFlowable {
     @Override
     public boolean canContainWater() {
         return true;
+    }
+
+    @Override
+    public int getCompostableChance() {
+        return 50;
     }
 
     @Override

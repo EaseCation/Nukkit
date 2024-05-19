@@ -179,7 +179,7 @@ public abstract class Biome implements BlockID {
              InputStreamReader reader = new InputStreamReader(stream)) {
             nameToId = new Gson().fromJson(reader, Object2IntOpenHashMap.class);
         } catch (NullPointerException | IOException e) {
-            throw new AssertionError("Unable to load block_id_map.json", e);
+            throw new AssertionError("Unable to load biome_id_map.json", e);
         }
         nameToId.forEach((name, id) -> idToName[id] = name);
         nameToId.defaultReturnValue(-1);

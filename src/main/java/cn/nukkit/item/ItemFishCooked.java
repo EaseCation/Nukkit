@@ -18,4 +18,8 @@ public class ItemFishCooked extends ItemFish {
         super(COOKED_COD, meta, count, "Cooked Fish");
     }
 
+    @Override
+    public float getFurnaceXpMultiplier() {
+        return 0.35f;
+    }
 }

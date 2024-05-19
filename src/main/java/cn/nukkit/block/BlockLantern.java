@@ -80,7 +80,7 @@ public class BlockLantern extends BlockTransparentMeta {
         if (type == Level.BLOCK_UPDATE_NORMAL) {
             BlockFace face = isHanging() ? BlockFace.UP : BlockFace.DOWN;
             if (!SupportType.hasCenterSupport(getSide(face), face.getOpposite())) {
-                level.useBreakOn(this, Item.get(ItemID.WOODEN_PICKAXE));
+                level.useBreakOn(this, Item.get(ItemID.WOODEN_PICKAXE), true);
                 return Level.BLOCK_UPDATE_NORMAL;
             }
         }

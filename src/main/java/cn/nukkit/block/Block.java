@@ -1103,11 +1103,19 @@ public abstract class Block extends Position implements Metadatable, Cloneable, 
         return false;
     }
 
-    public String getLocationHash() {
-        return this.getFloorX() + ":" + this.getFloorY() + ":" + this.getFloorZ();
+    public int getDropExp() {
+        return 0;
     }
 
-    public int getDropExp() {
+    public int getFuelTime() {
+        return 0;
+    }
+
+    public float getFurnaceXpMultiplier() {
+        return 0;
+    }
+
+    public int getCompostableChance() {
         return 0;
     }
 

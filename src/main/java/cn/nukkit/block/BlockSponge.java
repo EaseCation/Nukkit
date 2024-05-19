@@ -81,6 +81,14 @@ public class BlockSponge extends BlockSolidMeta {
         return super.place(item, block, target, face, fx, fy, fz, player);
     }
 
+    @Override
+    public float getFurnaceXpMultiplier() {
+        if (getDamage() != DRY) {
+            return 0;
+        }
+        return 0.15f;
+    }
+
     private boolean performWaterAbsorb(Block block) {
         Queue<Entry> entries = new ArrayDeque<>();
 

@@ -16,4 +16,14 @@ public class ItemDriedKelp extends ItemEdible {
     public ItemDriedKelp(Integer meta, int count) {
         super(DRIED_KELP, 0, count, "Dried Kelp");
     }
+
+    @Override
+    public float getFurnaceXpMultiplier() {
+        return 0.1f;
+    }
+
+    @Override
+    public int getCompostableChance() {
+        return 30;
+    }
 }

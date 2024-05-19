@@ -35,4 +35,9 @@ public class BlockStairsCrimson extends BlockStairsWood {
     public BlockColor getColor() {
         return BlockColor.CRIMSON_STEM_BLOCK_COLOR;
     }
+
+    @Override
+    public int getFuelTime() {
+        return 0;
+    }
 }

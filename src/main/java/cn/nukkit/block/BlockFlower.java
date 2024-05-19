@@ -84,7 +84,7 @@ public class BlockFlower extends BlockFlowable {
     public int onUpdate(int type) {
         if (type == Level.BLOCK_UPDATE_NORMAL) {
             if (!canSurvive()) {
-                this.getLevel().useBreakOn(this);
+                this.getLevel().useBreakOn(this, true);
 
                 return Level.BLOCK_UPDATE_NORMAL;
             }
@@ -140,6 +140,11 @@ public class BlockFlower extends BlockFlowable {
         return true;
     }
 
+    @Override
+    public int getCompostableChance() {
+        return 65;
+    }
+
     protected Block getUncommonFlower() {
         return get(YELLOW_FLOWER);
     }
@@ -151,6 +156,6 @@ public class BlockFlower extends BlockFlowable {
 
     protected boolean canSurvive() {
         int id = down().getId();
-        return id == Block.GRASS_BLOCK || id == Block.DIRT || id == Block.FARMLAND || id == Block.PODZOL || id == MYCELIUM || id == DIRT_WITH_ROOTS || id == MOSS_BLOCK;
+        return id == Block.GRASS_BLOCK || id == Block.DIRT || id == Block.FARMLAND || id == Block.PODZOL || id == MYCELIUM || id == DIRT_WITH_ROOTS || id == MOSS_BLOCK || id == MUD || id == MUDDY_MANGROVE_ROOTS;
     }
 }

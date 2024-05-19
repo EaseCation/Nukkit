@@ -1,7 +1,5 @@
 package cn.nukkit.block;
 
-import cn.nukkit.item.ItemTool;
-
 /**
  * Created by CreeperFace on 27. 11. 2016.
  */
@@ -28,5 +26,10 @@ public class BlockButtonWooden extends BlockButton {
     @Override
     public int getToolType() {
         return BlockToolType.AXE;
+    }
+
+    @Override
+    public int getFuelTime() {
+        return 300;
     }
 }

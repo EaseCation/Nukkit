@@ -133,6 +133,11 @@ public class BlockWood extends BlockSolidMeta {
         return true;
     }
 
+    @Override
+    public int getFuelTime() {
+        return 300;
+    }
+
     protected Block getStrippedBlock() {
         int meta = getDamage();
 

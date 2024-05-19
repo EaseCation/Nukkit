@@ -17,4 +17,9 @@ public class ItemSteak extends ItemEdible {
     public ItemSteak(Integer meta, int count) {
         super(COOKED_BEEF, meta, count, "Steak");
     }
+
+    @Override
+    public float getFurnaceXpMultiplier() {
+        return 0.35f;
+    }
 }

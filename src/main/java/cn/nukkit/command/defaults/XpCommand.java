@@ -76,7 +76,7 @@ public class XpCommand extends VanillaCommand {
                     if (newLevel < 0) {
                         target.setExperience(0, 0);
                     } else {
-                        target.setExperience(target.getExperience(), newLevel);
+                        target.setExperience(target.getExperience(), newLevel, true);
                     }
                 } else {
                     target.addExperience(amount);

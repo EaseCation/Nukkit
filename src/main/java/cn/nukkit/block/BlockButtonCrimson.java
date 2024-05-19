@@ -18,4 +18,9 @@ public class BlockButtonCrimson extends BlockButtonWooden {
     public String getName() {
         return "Crimson Button";
     }
+
+    @Override
+    public int getFuelTime() {
+        return 0;
+    }
 }

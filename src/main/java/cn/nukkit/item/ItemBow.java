@@ -182,6 +182,11 @@ public class ItemBow extends ItemTool {
         return true;
     }
 
+    @Override
+    public int getFuelTime() {
+        return 200;
+    }
+
     private static class LazyHolder {
         private static final Item ARROW = Item.get(Item.ARROW, null, 1).clearCompoundTag();
     }

@@ -91,7 +91,7 @@ public class BlockDripleafSmall extends BlockTransparentMeta implements Faceable
         }
 
         int id = down().getId();
-        if (id != GRASS_BLOCK && id != DIRT && id != MYCELIUM && id != PODZOL && id != FARMLAND && id != DIRT_WITH_ROOTS && id != MOSS_BLOCK && id != CLAY) {
+        if (id != GRASS_BLOCK && id != DIRT && id != MYCELIUM && id != PODZOL && id != FARMLAND && id != DIRT_WITH_ROOTS && id != MOSS_BLOCK && id != CLAY && id != MUD && id != MUDDY_MANGROVE_ROOTS) {
             return false;
         }
 
@@ -189,7 +189,7 @@ public class BlockDripleafSmall extends BlockTransparentMeta implements Faceable
 
         if (type == Level.BLOCK_UPDATE_SCHEDULED) {
             if (!canSurvive()) {
-                level.useBreakOn(this);
+                level.useBreakOn(this, true);
                 return Level.BLOCK_UPDATE_NORMAL;
             }
 
@@ -200,7 +200,7 @@ public class BlockDripleafSmall extends BlockTransparentMeta implements Faceable
                     return 0;
                 }
 
-                level.useBreakOn(this);
+                level.useBreakOn(this, true);
                 return Level.BLOCK_UPDATE_NORMAL;
             }
 
@@ -210,7 +210,7 @@ public class BlockDripleafSmall extends BlockTransparentMeta implements Faceable
                 return 0;
             }
 
-            level.useBreakOn(this);
+            level.useBreakOn(this, true);
             return Level.BLOCK_UPDATE_NORMAL;
         }
 
@@ -268,6 +268,11 @@ public class BlockDripleafSmall extends BlockTransparentMeta implements Faceable
     }
 
     @Override
+    public int getCompostableChance() {
+        return 30;
+    }
+
+    @Override
     public boolean isVegetation() {
         return true;
     }
@@ -286,7 +291,7 @@ public class BlockDripleafSmall extends BlockTransparentMeta implements Faceable
         if (!level.getExtraBlock(this).isWater()) {
             return false;
         }
-        return id == GRASS_BLOCK || id == DIRT || id == MYCELIUM || id == PODZOL || id == FARMLAND || id == DIRT_WITH_ROOTS;
+        return id == GRASS_BLOCK || id == DIRT || id == MYCELIUM || id == PODZOL || id == FARMLAND || id == DIRT_WITH_ROOTS || id == MUD || id == MUDDY_MANGROVE_ROOTS;
     }
 
     public boolean isUpper() {

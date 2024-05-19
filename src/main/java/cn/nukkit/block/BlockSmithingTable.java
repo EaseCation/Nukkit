@@ -54,4 +54,9 @@ public class BlockSmithingTable extends BlockSolid {
         player.addWindow(new SmithingTableInventory(player.getUIInventory(), this), Player.ANVIL_WINDOW_ID);
         return true;
     }
+
+    @Override
+    public int getFuelTime() {
+        return 300;
+    }
 }

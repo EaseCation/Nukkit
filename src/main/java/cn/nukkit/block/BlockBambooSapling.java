@@ -96,6 +96,10 @@ public class BlockBambooSapling extends BlockFlowable {
         }
 
         if (id == getItemId(BAMBOO)) {
+            if (face.isHorizontal()) {
+                return false;
+            }
+
             if (!grow(true)) {
                 return true;
             }
@@ -117,7 +121,7 @@ public class BlockBambooSapling extends BlockFlowable {
                 return 0;
             }
 
-            level.useBreakOn(this);
+            level.useBreakOn(this, true);
             return Level.BLOCK_UPDATE_NORMAL;
         } else if (type == Level.BLOCK_UPDATE_RANDOM) {
             if (isReady()) {

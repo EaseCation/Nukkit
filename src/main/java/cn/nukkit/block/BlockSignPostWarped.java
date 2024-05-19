@@ -33,6 +33,11 @@ public class BlockSignPostWarped extends BlockSignPost {
     }
 
     @Override
+    public int getFuelTime() {
+        return 0;
+    }
+
+    @Override
     protected int getStandingBlockId() {
         return WARPED_STANDING_SIGN;
     }

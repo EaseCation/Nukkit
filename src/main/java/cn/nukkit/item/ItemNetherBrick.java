@@ -17,4 +17,9 @@ public class ItemNetherBrick extends Item {
     public ItemNetherBrick(Integer meta, int count) {
         super(NETHERBRICK, meta, count, "Nether Brick");
     }
+
+    @Override
+    public float getFurnaceXpMultiplier() {
+        return 0.1f;
+    }
 }

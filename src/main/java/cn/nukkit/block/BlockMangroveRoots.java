@@ -50,4 +50,14 @@ public class BlockMangroveRoots extends BlockTransparent {
     public BlockColor getColor() {
         return BlockColor.PODZOL_BLOCK_COLOR;
     }
+
+    @Override
+    public int getFuelTime() {
+        return 300;
+    }
+
+    @Override
+    public int getCompostableChance() {
+        return 30;
+    }
 }

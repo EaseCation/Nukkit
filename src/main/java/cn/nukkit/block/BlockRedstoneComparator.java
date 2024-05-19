@@ -9,7 +9,7 @@ import cn.nukkit.item.Item;
 import cn.nukkit.level.Level;
 import cn.nukkit.math.BlockFace;
 import cn.nukkit.nbt.tag.CompoundTag;
-import cn.nukkit.network.protocol.LevelEventPacket;
+import cn.nukkit.network.protocol.LevelSoundEventPacket;
 
 /**
  * @author CreeperFace
@@ -126,7 +126,7 @@ public abstract class BlockRedstoneComparator extends BlockRedstoneDiode {
             this.setDamage(this.getDamage() + 4);
         }
 
-        this.level.addLevelEvent(this.add(0.5, 0.5, 0.5), LevelEventPacket.EVENT_SOUND_BUTTON_CLICK, this.getMode() == Mode.SUBTRACT ? 500 : 550);
+        this.level.addLevelSoundEvent(this.blockCenter(), this.getMode() == Mode.SUBTRACT ? LevelSoundEventPacket.SOUND_POWER_OFF : LevelSoundEventPacket.SOUND_POWER_ON, getFullId());
         this.level.setBlock(this, this, true, false);
         //bug?
 

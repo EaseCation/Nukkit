@@ -55,7 +55,7 @@ public abstract class BlockNetherFungus extends BlockFlowable {
                 return 0;
             }
 
-            level.useBreakOn(this);
+            level.useBreakOn(this, true);
             return Level.BLOCK_UPDATE_NORMAL;
         }
         return 0;
@@ -64,6 +64,11 @@ public abstract class BlockNetherFungus extends BlockFlowable {
     @Override
     public boolean canContainSnow() {
         return true;
+    }
+
+    @Override
+    public int getCompostableChance() {
+        return 65;
     }
 
     @Override
@@ -82,7 +87,7 @@ public abstract class BlockNetherFungus extends BlockFlowable {
 
     protected boolean canSurvive() {
         int id = down().getId();
-        return id == GRASS_BLOCK || id == DIRT || id == PODZOL || id == MYCELIUM || id == FARMLAND || id == DIRT_WITH_ROOTS || id == MOSS_BLOCK
+        return id == GRASS_BLOCK || id == DIRT || id == PODZOL || id == MYCELIUM || id == FARMLAND || id == DIRT_WITH_ROOTS || id == MOSS_BLOCK || id == MUD || id == MUDDY_MANGROVE_ROOTS
                 || id == CRIMSON_NYLIUM || id == WARPED_NYLIUM || id == SOUL_SOIL;
     }
 

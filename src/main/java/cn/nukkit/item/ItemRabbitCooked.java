@@ -17,4 +17,9 @@ public class ItemRabbitCooked extends ItemEdible {
     public ItemRabbitCooked(Integer meta, int count) {
         super(COOKED_RABBIT, meta, count, "Cooked Rabbit");
     }
+
+    @Override
+    public float getFurnaceXpMultiplier() {
+        return 0.35f;
+    }
 }

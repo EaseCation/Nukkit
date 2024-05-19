@@ -5,7 +5,6 @@ import cn.nukkit.entity.Entity;
 import cn.nukkit.entity.EntityID;
 import cn.nukkit.entity.projectile.EntityProjectile;
 import cn.nukkit.level.format.FullChunk;
-import cn.nukkit.level.particle.Particle;
 import cn.nukkit.level.particle.SpellParticle;
 import cn.nukkit.nbt.tag.CompoundTag;
 import cn.nukkit.network.protocol.LevelSoundEventPacket;
@@ -63,21 +62,27 @@ public class EntityExpBottle extends EntityProjectile {
         if (this.age > 1200) {
             this.close();
             hasUpdate = true;
-        }
-
-        if (this.isCollided) {
-            this.close();
-            Particle particle2 = new SpellParticle(this, 0x00385dc6);
-            this.getLevel().addParticle(particle2);
-
-            this.getLevel().addLevelSoundEvent(this, LevelSoundEventPacket.SOUND_GLASS);
-
+        } else if (this.isCollided) {
+            this.dropXp();
             hasUpdate = true;
-
-            this.getLevel().dropExpOrb(this, ThreadLocalRandom.current().nextInt(3, 12));
         }
 
         return hasUpdate;
+    }
+
+    @Override
+    public boolean onCollideWithEntity(Entity entity) {
+        this.dropXp();
+        return true;
+    }
+
+    public void dropXp() {
+        this.close();
+
+        this.getLevel().addParticle(new SpellParticle(this, 0x385dc6));
+        this.getLevel().addLevelSoundEvent(this, LevelSoundEventPacket.SOUND_GLASS);
+
+        this.getLevel().dropExpOrb(this, ThreadLocalRandom.current().nextInt(3, 12));
     }
 
     @Override

@@ -82,7 +82,7 @@ public abstract class BlockNetherVines extends BlockFlowable {
                 return 0;
             }
 
-            level.useBreakOn(this);
+            level.useBreakOn(this, true);
             return Level.BLOCK_UPDATE_NORMAL;
         }
 
@@ -141,6 +141,11 @@ public abstract class BlockNetherVines extends BlockFlowable {
     @Override
     public boolean canBeClimbed() {
         return true;
+    }
+
+    @Override
+    public int getCompostableChance() {
+        return 50;
     }
 
     protected abstract boolean canSurvive();

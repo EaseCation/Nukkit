@@ -38,7 +38,7 @@ public class BlockWallSign extends BlockSignPost {
         if (type == Level.BLOCK_UPDATE_NORMAL) {
             if (this.getDamage() >= 2 && this.getDamage() <= 5) {
                 if (this.getSide(BlockFace.fromIndex(FACES[this.getDamage() - 2])).canBeFlowedInto()) {
-                    this.getLevel().useBreakOn(this);
+                    this.getLevel().useBreakOn(this, true);
                 }
                 return Level.BLOCK_UPDATE_NORMAL;
             }

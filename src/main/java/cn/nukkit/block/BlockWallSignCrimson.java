@@ -33,6 +33,11 @@ public class BlockWallSignCrimson extends BlockWallSign {
     }
 
     @Override
+    public int getFuelTime() {
+        return 0;
+    }
+
+    @Override
     protected int getStandingBlockId() {
         return CRIMSON_STANDING_SIGN;
     }

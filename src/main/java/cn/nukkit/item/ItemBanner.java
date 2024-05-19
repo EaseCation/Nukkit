@@ -30,6 +30,11 @@ public class ItemBanner extends Item {
         return 16;
     }
 
+    @Override
+    public int getFuelTime() {
+        return 300;
+    }
+
     public int getBaseColor() {
         return this.getDamage();
     }

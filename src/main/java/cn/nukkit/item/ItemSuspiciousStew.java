@@ -1,5 +1,8 @@
 package cn.nukkit.item;
 
+import cn.nukkit.Player;
+import cn.nukkit.math.Vector3;
+
 public class ItemSuspiciousStew extends ItemEdible {
     public static final int POPPY_STEW = 0;
     public static final int CORNFLOWER_STEW = 1;
@@ -28,5 +31,10 @@ public class ItemSuspiciousStew extends ItemEdible {
     @Override
     public int getMaxStackSize() {
         return 1;
+    }
+
+    @Override
+    public boolean onClickAir(Player player, Vector3 directionVector) {
+        return true;
     }
 }

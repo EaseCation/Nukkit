@@ -315,4 +315,9 @@ public class BlockNoteblock extends BlockSolid {
     public BlockColor getColor() {
         return BlockColor.WOOD_BLOCK_COLOR;
     }
+
+    @Override
+    public int getFuelTime() {
+        return 300;
+    }
 }

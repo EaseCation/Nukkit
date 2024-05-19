@@ -36,4 +36,9 @@ public class BlockFletchingTable extends BlockSolid {
     public BlockColor getColor() {
         return BlockColor.WOOD_BLOCK_COLOR;
     }
+
+    @Override
+    public int getFuelTime() {
+        return 300;
+    }
 }

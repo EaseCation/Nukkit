@@ -22,4 +22,8 @@ public class ItemCarrot extends ItemEdible {
         this.block = Block.get(BlockID.CARROTS);
     }
 
+    @Override
+    public int getCompostableChance() {
+        return 65;
+    }
 }

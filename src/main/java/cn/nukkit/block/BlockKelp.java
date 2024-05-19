@@ -151,7 +151,7 @@ public class BlockKelp extends BlockTransparentMeta {
         if (type == Level.BLOCK_UPDATE_NORMAL) {
             Block extra = level.getExtraBlock(this);
             if (!extra.isWater() || !extra.isFullLiquid()) {
-                level.useBreakOn(this);
+                level.useBreakOn(this, true);
                 return type;
             }
 
@@ -159,7 +159,7 @@ public class BlockKelp extends BlockTransparentMeta {
                 return 0;
             }
 
-            level.useBreakOn(this);
+            level.useBreakOn(this, true);
             return type;
         }
 

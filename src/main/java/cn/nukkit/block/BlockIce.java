@@ -49,7 +49,7 @@ public class BlockIce extends BlockTransparent {
 
     @Override
     public boolean onBreak(Item item, Player player) {
-        if (this.getLevel().getDimension() != Dimension.NETHER && (player == null || player.isSurvivalLike()) && !item.hasEnchantment(Enchantment.SILK_TOUCH)) {
+        if (this.getLevel().getDimension() != Dimension.NETHER && (player == null || player.isSurvivalLike()) && (item.is(Item.ENCHANTED_BOOK) || !item.hasEnchantment(Enchantment.SILK_TOUCH))) {
             return this.getLevel().setBlock(this, Block.get(BlockID.WATER), true);
         } else {
             return super.onBreak(item, player);

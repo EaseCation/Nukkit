@@ -64,6 +64,11 @@ public class BlockTerracotta extends BlockSolidMeta {
         return TerracottaColor.getByTerracottaData(getDamage()).getColor();
     }
 
+    @Override
+    public float getFurnaceXpMultiplier() {
+        return 0.35f;
+    }
+
     public TerracottaColor getDyeColor() {
         return TerracottaColor.getByTerracottaData(getDamage());
     }

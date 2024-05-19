@@ -201,7 +201,7 @@ public class BlockFlowerPot extends BlockFlowable {
     public int onUpdate(int type) {
         if (type == Level.BLOCK_UPDATE_NORMAL) {
             if (!SupportType.hasCenterSupport(down(), BlockFace.UP)) {
-                this.level.useBreakOn(this);
+                this.level.useBreakOn(this, true);
                 return Level.BLOCK_UPDATE_NORMAL;
             }
         }

@@ -17,4 +17,9 @@ public class ItemPorkchopCooked extends ItemEdible {
     public ItemPorkchopCooked(Integer meta, int count) {
         super(COOKED_PORKCHOP, meta, count, "Cooked Porkchop");
     }
+
+    @Override
+    public float getFurnaceXpMultiplier() {
+        return 0.35f;
+    }
 }

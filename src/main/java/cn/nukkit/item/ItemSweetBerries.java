@@ -17,4 +17,9 @@ public class ItemSweetBerries extends ItemEdible {
         super(SWEET_BERRIES, meta, count, "Sweet Berries");
         this.block = Block.get(BlockID.SWEET_BERRY_BUSH);
     }
+
+    @Override
+    public int getCompostableChance() {
+        return 30;
+    }
 }

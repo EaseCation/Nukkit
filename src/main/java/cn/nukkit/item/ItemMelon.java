@@ -17,4 +17,9 @@ public class ItemMelon extends ItemEdible {
     public ItemMelon(Integer meta, int count) {
         super(MELON_SLICE, meta, count, "Melon");
     }
+
+    @Override
+    public int getCompostableChance() {
+        return 50;
+    }
 }

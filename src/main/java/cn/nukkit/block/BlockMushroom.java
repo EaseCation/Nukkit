@@ -26,7 +26,7 @@ public abstract class BlockMushroom extends BlockFlowable {
     public int onUpdate(int type) {
         if (type == Level.BLOCK_UPDATE_NORMAL) {
             if (!canStay()) {
-                getLevel().useBreakOn(this);
+                getLevel().useBreakOn(this, true);
 
                 return Level.BLOCK_UPDATE_NORMAL;
             }
@@ -95,6 +95,11 @@ public abstract class BlockMushroom extends BlockFlowable {
     @Override
     public boolean canContainSnow() {
         return true;
+    }
+
+    @Override
+    public int getCompostableChance() {
+        return 65;
     }
 
     protected abstract int getType();

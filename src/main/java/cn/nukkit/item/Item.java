@@ -6,7 +6,6 @@ import cn.nukkit.block.Block;
 import cn.nukkit.block.BlockID;
 import cn.nukkit.block.BlockToolType;
 import cn.nukkit.entity.Entity;
-import cn.nukkit.inventory.Fuel;
 import cn.nukkit.item.enchantment.Enchantment;
 import cn.nukkit.level.Level;
 import cn.nukkit.math.BlockFace;
@@ -992,11 +991,8 @@ public class Item implements Cloneable, ItemID {
         return 64;
     }
 
-    public final short getFuelTime() {
-        if (this.id == BUCKET && this.meta != ItemBucket.LAVA_BUCKET) {
-            return -1;
-        }
-        return Fuel.duration.get(this.id);
+    public int getFuelTime() {
+        return 0;
     }
 
     public boolean useOn(Entity entity) {
@@ -1157,8 +1153,11 @@ public class Item implements Cloneable, ItemID {
         this.count--;
     }
 
-    //TODO
     public float getFurnaceXpMultiplier() {
+        return 0;
+    }
+
+    public int getCompostableChance() {
         return 0;
     }
 

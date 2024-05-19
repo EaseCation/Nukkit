@@ -19,6 +19,7 @@ import cn.nukkit.nbt.tag.ListTag;
 import cn.nukkit.network.protocol.AddItemEntityPacket;
 import cn.nukkit.network.protocol.DataPacket;
 import cn.nukkit.network.protocol.EntityEventPacket;
+import cn.nukkit.network.protocol.LevelSoundEventPacket;
 
 /**
  * @author MagicDroidX
@@ -138,6 +139,9 @@ public class EntityItem extends Entity {
         if (super.attack(source)) {
             if (this.item == null || this.isAlive()) {
                 return true;
+            }
+            if (cause == DamageCause.LAVA || cause == DamageCause.FIRE_TICK) {
+                level.addLevelSoundEvent(this, LevelSoundEventPacket.SOUND_FIZZ);
             }
             int id = this.item.getId();
             if (id != Item.SHULKER_BOX && id != Item.UNDYED_SHULKER_BOX) {

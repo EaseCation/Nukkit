@@ -42,6 +42,11 @@ public class BlockGlassHard extends BlockGlass {
     }
 
     @Override
+    public float getFurnaceXpMultiplier() {
+        return 0;
+    }
+
+    @Override
     public boolean isChemistryFeature() {
         return true;
     }

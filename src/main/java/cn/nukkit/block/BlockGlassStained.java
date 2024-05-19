@@ -38,6 +38,11 @@ public class BlockGlassStained extends BlockGlass {
         return DyeColor.getByWoolData(getDamage()).getColor();
     }
 
+    @Override
+    public float getFurnaceXpMultiplier() {
+        return 0;
+    }
+
     public DyeColor getDyeColor() {
         return DyeColor.getByWoolData(getDamage());
     }

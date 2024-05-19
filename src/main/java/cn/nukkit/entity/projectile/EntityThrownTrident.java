@@ -49,12 +49,12 @@ public class EntityThrownTrident extends EntityProjectile {
 
     @Override
     public float getWidth() {
-        return 0.05f;
+        return 0.25f;
     }
 
     @Override
     public float getHeight() {
-        return 0.05f;
+        return 0.35f;
     }
 
     @Override
@@ -188,6 +188,13 @@ public class EntityThrownTrident extends EntityProjectile {
         newTrident.setFavoredSlot(this.favoredSlot);
         newTrident.spawnToAll();
         return true;
+    }
+
+    @Override
+    protected void onHitBlock(MovingObjectPosition blockHitResult) {
+        super.onHitBlock(blockHitResult);
+
+        level.addLevelSoundEvent(this, LevelSoundEventPacket.SOUND_ITEM_TRIDENT_HIT_GROUND);
     }
 
     public int getPickupMode() {

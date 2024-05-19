@@ -147,6 +147,10 @@ public class BlockBamboo extends BlockTransparentMeta {
         }
 
         if (id == getItemId()) {
+            if (face.isHorizontal()) {
+                return false;
+            }
+
             BlockBamboo top = seekToTop();
             if (top.getFloorY() >= level.getHeightRange().getMaxY() - 1 || !top.grow(Short.MAX_VALUE, 1)) {
                 return true;
@@ -172,7 +176,7 @@ public class BlockBamboo extends BlockTransparentMeta {
                 return 0;
             }
 
-            level.useBreakOn(this);
+            level.useBreakOn(this, true);
             return Level.BLOCK_UPDATE_NORMAL;
         } else if (type == Level.BLOCK_UPDATE_RANDOM) {
             if (getFloorY() >= level.getHeightRange().getMaxY() - 1) {
@@ -194,6 +198,11 @@ public class BlockBamboo extends BlockTransparentMeta {
             return type;
         }
         return 0;
+    }
+
+    @Override
+    public int getFuelTime() {
+        return 50;
     }
 
     @Override
@@ -288,6 +297,6 @@ public class BlockBamboo extends BlockTransparentMeta {
     }
 
     static boolean canBeSupportedBy(int id) {
-        return id == GRASS_BLOCK || id == DIRT || id == SAND || id == GRAVEL || id == MYCELIUM || id == PODZOL || id == DIRT_WITH_ROOTS;
+        return id == GRASS_BLOCK || id == DIRT || id == SAND || id == GRAVEL || id == MYCELIUM || id == PODZOL || id == DIRT_WITH_ROOTS || id == MUD || id == MUDDY_MANGROVE_ROOTS;
     }
 }

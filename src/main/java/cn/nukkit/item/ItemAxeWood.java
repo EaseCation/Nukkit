@@ -44,4 +44,9 @@ public class ItemAxeWood extends ItemTool {
     public int getAttackDamage() {
         return 3;
     }
+
+    @Override
+    public int getFuelTime() {
+        return 200;
+    }
 }

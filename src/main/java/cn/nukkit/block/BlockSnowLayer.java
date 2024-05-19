@@ -72,7 +72,7 @@ public class BlockSnowLayer extends BlockFallable {
 
     @Override
     public boolean canBeReplaced() {
-        return !isFull() && level.getExtraBlock(this).canBeReplaced();
+        return !isFull() && (!isCovered() || level.getExtraBlock(this).canBeReplaced());
     }
 
     @Override
@@ -81,7 +81,7 @@ public class BlockSnowLayer extends BlockFallable {
             return false;
         }
 
-        if (!canSurvive()) {
+        if (!canSurvive(down())) {
             return false;
         }
 
@@ -90,7 +90,7 @@ public class BlockSnowLayer extends BlockFallable {
         }
 
         if (block.getId() == getId()) {
-            return onActivate(item, face, player);
+            return block.onActivate(item, face, player);
         }
 
         if (block.canContainSnow()) {
@@ -102,24 +102,47 @@ public class BlockSnowLayer extends BlockFallable {
         return false;
     }
 
-    private boolean canSurvive() {
-        Block below = this.down();
+    private boolean canSurvive(Block below) {
         return below.getId() != ICE && below.getId() != FROSTED_ICE && (below.isLeaves() || SupportType.hasFullSupport(below, BlockFace.UP));
     }
 
     @Override
     public int onUpdate(int type) {
         if (type == Level.BLOCK_UPDATE_NORMAL) {
+            Block below = null;
+            boolean removeCovered = false;
+            if (isCovered()) {
+                Block extra = level.getExtraBlock(this);
+                if (extra.canContainSnow()) {
+                    below = down();
+                    int id = below.getId();
+                    if (id != GRASS_BLOCK && id != DIRT && id != FARMLAND && id != MYCELIUM && id != PODZOL && id != DIRT_WITH_ROOTS && id != MOSS_BLOCK && id != MUD && id != MUDDY_MANGROVE_ROOTS) {
+                        level.setExtraBlock(this, Blocks.air(), true, false);
+                        if (level.gameRules.getBoolean(GameRule.DO_TILE_DROPS)) {
+                            level.dropItem(this, extra.toItem(true));
+                        }
+
+                        setDamage(getDamage() & ~COVERED_BIT);
+                        removeCovered = true;
+                    }
+                }
+            }
+
             if (super.onUpdate(type) == type) {
                 return type;
             }
 
-            if (!this.canSurvive()) {
-                this.level.useBreakOn(this, null, null, true);
+            if (!this.canSurvive(below != null ? below : down())) {
+                this.level.useBreakOn(this, true);
                 if (this.level.getGameRules().getBoolean(GameRule.DO_TILE_DROPS)) {
                     this.level.dropItem(this, this.toItem(true));
-                    return type;
                 }
+                return type;
+            }
+
+            if (removeCovered) {
+                level.setExtraBlock(this, this, true, false);
+                return type;
             }
         } else if (type == Level.BLOCK_UPDATE_RANDOM) {
             if (this.getLevel().getBlockLightAt((int) this.x, (int) this.y, (int) this.z) >= 10) {
@@ -255,6 +278,10 @@ public class BlockSnowLayer extends BlockFallable {
     @Override
     protected int getFallingBlockDamage() {
         return getDamage() & HEIGHT_MASK;
+    }
+
+    public boolean isCovered() {
+        return (getDamage() & COVERED_BIT) != 0;
     }
 
     public boolean isFull() {

@@ -49,6 +49,11 @@ public class BlockGlass extends BlockTransparent {
     }
 
     @Override
+    public float getFurnaceXpMultiplier() {
+        return 0.1f;
+    }
+
+    @Override
     public boolean isGlass() {
         return true;
     }

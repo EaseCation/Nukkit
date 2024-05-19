@@ -18,4 +18,9 @@ public class BlockButtonWarped extends BlockButtonWooden {
     public String getName() {
         return "Warped Button";
     }
+
+    @Override
+    public int getFuelTime() {
+        return 0;
+    }
 }

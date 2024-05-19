@@ -50,7 +50,7 @@ public class BlockDeadBush extends BlockFlowable {
     public int onUpdate(int type) {
         if (type == Level.BLOCK_UPDATE_NORMAL) {
             if (!canSurvive()) {
-                this.getLevel().useBreakOn(this);
+                this.getLevel().useBreakOn(this, true);
 
                 return Level.BLOCK_UPDATE_NORMAL;
             }
@@ -82,12 +82,17 @@ public class BlockDeadBush extends BlockFlowable {
     }
 
     @Override
+    public int getFuelTime() {
+        return 100;
+    }
+
+    @Override
     public boolean isVegetation() {
         return true;
     }
 
     private boolean canSurvive() {
         int id = down().getId();
-        return id == SAND || id == HARDENED_CLAY || id == STAINED_HARDENED_CLAY || id == DIRT || id == PODZOL || id == MYCELIUM || id == DIRT_WITH_ROOTS || id == MUD || id == GRASS_BLOCK;
+        return id == SAND || id == HARDENED_CLAY || id == STAINED_HARDENED_CLAY || id == DIRT || id == PODZOL || id == MYCELIUM || id == DIRT_WITH_ROOTS || id == MUD || id == GRASS_BLOCK || id == MUDDY_MANGROVE_ROOTS;
     }
 }
