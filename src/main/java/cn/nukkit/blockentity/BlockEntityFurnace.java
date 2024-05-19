@@ -64,6 +64,8 @@ public class BlockEntityFurnace extends BlockEntityAbstractContainer {
 
         if (this.namedTag.contains("StoredXP")) {
             storedXp = this.namedTag.getShort("StoredXP") & 0xffff;
+            this.namedTag.remove("StoredXP");
+            this.namedTag.putInt("StoredXPInt", storedXp);
         } else if (!this.namedTag.contains("StoredXPInt") || this.namedTag.getInt("StoredXPInt") < 0) {
             storedXp = 0;
         } else {
