@@ -140,6 +140,7 @@ public class Server {
 
     private float maxUse = 0;
     private float tickUsage;
+    private long tickUseNano;
 
     private int sendUsageTicker = 0;
 
@@ -1257,7 +1258,8 @@ public class Server {
         //float use = Math.min(1, (now - tickTime) / 50);
 
         float tick = (float) Math.min(20, 1000000000 / Math.max(1000000, ((double) nowNano - tickTimeNano)));
-        float use = (float) Math.min(1, ((double) (nowNano - tickTimeNano)) / 50000000);
+        this.tickUseNano = nowNano - tickTimeNano;  // record the tick time in nano seconds
+        float use = (float) Math.min(1, ((double) tickUseNano) / 50000000);
 
         if (this.maxTick > tick) {
             this.maxTick = tick;
@@ -1575,6 +1577,10 @@ public class Server {
 
     public float getTickUsageAverage() {
         return tickUsageAverage;
+    }
+
+    public long getTickUseNano() {
+        return tickUseNano;
     }
 
     private static float getAverage(float[] array) {
