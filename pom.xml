@@ -50,6 +50,11 @@
                 <enabled>true</enabled>
             </snapshots>
         </repository>
+        <repository>
+            <id>easecation-CodeFunCoreMaven-maven</id>
+            <name>CodeFunCoreMaven</name>
+            <url>https://easecation-maven.pkg.coding.net/repository/CodeFunCoreMaven/maven</url>
+        </repository>
     </repositories>
 
     <dependencies>
