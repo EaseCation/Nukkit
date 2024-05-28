@@ -6454,4 +6454,10 @@ public class Player extends EntityHuman implements CommandSender, InventoryHolde
     public Origin getCommandOrigin() {
         return Origin.PLAYER;
     }
+
+    /**
+     * @since 1.16.100
+     */
+    public void sendFogStack(String... fogStack) {
+    }
 }
