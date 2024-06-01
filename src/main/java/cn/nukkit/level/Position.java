@@ -204,6 +204,16 @@ public class Position extends Vector3 {
         return new Position(x, y, z, level);
     }
 
+    public final boolean equalsPosition(Position that) {
+        if (that == null) {
+            return false;
+        }
+        return that.level == this.level
+                && Double.compare(that.x, this.x) == 0
+                && Double.compare(that.y, this.y) == 0
+                && Double.compare(that.z, this.z) == 0;
+    }
+
     @Nullable
     public FullChunk getChunk() {
         return getChunk(false);

@@ -202,4 +202,35 @@ public class Location extends Position {
     public final Location copyLocation() {
         return new Location(x, y, z, yaw, pitch, level);
     }
+
+    public final boolean equalsLocation(Location that) {
+        if (that == null) {
+            return false;
+        }
+        return that.level == this.level
+                && Double.compare(that.x, this.x) == 0
+                && Double.compare(that.y, this.y) == 0
+                && Double.compare(that.z, this.z) == 0
+                && Double.compare(that.yaw, this.yaw) == 0
+                && Double.compare(that.pitch, this.pitch) == 0;
+    }
+
+    public final boolean equalsRot(Location that) {
+        if (that == null) {
+            return false;
+        }
+        return Double.compare(that.yaw, this.yaw) == 0
+                && Double.compare(that.pitch, this.pitch) == 0;
+    }
+
+    public final boolean equalsVecAndRot(Location that) {
+        if (that == null) {
+            return false;
+        }
+        return Double.compare(that.x, this.x) == 0
+                && Double.compare(that.y, this.y) == 0
+                && Double.compare(that.z, this.z) == 0
+                && Double.compare(that.yaw, this.yaw) == 0
+                && Double.compare(that.pitch, this.pitch) == 0;
+    }
 }
