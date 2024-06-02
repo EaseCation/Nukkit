@@ -67,6 +67,7 @@ public class PlayerEnderChestInventory extends BaseInventory {
         if (containerClosePacket.wasServerInitiated) {
             containerClosePacket.windowType = getType().getNetworkType();
         }
+        who.resetClosingWindowId(containerClosePacket.windowId);
         who.dataPacket(containerClosePacket);
         super.onClose(who);
 

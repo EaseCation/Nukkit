@@ -1099,6 +1099,10 @@ public class Player extends EntityHuman implements CommandSender, InventoryHolde
         this.sendCreativeContents();
         this.sendRecipeList();
 
+        if (this.getHealth() < 1) {
+            this.respawn();
+        }
+
         for (long index : this.usedChunks.keySet()) {
             int chunkX = Level.getHashX(index);
             int chunkZ = Level.getHashZ(index);
@@ -1887,10 +1891,13 @@ public class Player extends EntityHuman implements CommandSender, InventoryHolde
     public void sendAttributes() {
         this.setAttribute(
                 Attribute.getAttribute(Attribute.HEALTH).setMaxValue(this.getMaxHealth()).setValue(health >= 1 ? (health < getMaxHealth() ? health : getMaxHealth()) : 0),
+                Attribute.getAttribute(Attribute.ABSORPTION).setValue(absorption),
                 Attribute.getAttribute(Attribute.PLAYER_HUNGER).setValue(this.getFoodData().getLevel()),
                 Attribute.getAttribute(Attribute.PLAYER_SATURATION).setValue(this.getFoodData().getFoodSaturationLevel()),
                 Attribute.getAttribute(Attribute.PLAYER_EXHAUSTION).setValue(this.getFoodData().getExhaustionLevel()),
                 movementSpeedAttribute.copy().setValue(movementSpeedAttribute.getModifiedValue()),
+                Attribute.getAttribute(Attribute.UNDERWATER_MOVEMENT),
+                Attribute.getAttribute(Attribute.LAVA_MOVEMENT),
                 Attribute.getAttribute(Attribute.PLAYER_LEVEL).setValue(this.getExperienceLevel()),
                 Attribute.getAttribute(Attribute.PLAYER_EXPERIENCE).setValue(Mth.clamp(((float) this.getExperience()) / calculateRequireExperience(this.getExperienceLevel()), 0, 1))
         );
@@ -2932,61 +2939,7 @@ public class Player extends EntityHuman implements CommandSender, InventoryHolde
                             if (!this.spawned || this.isAlive() || !this.isOnline()) {
                                 break;
                             }
-
-                            if (this.server.isHardcore()) {
-                                this.setBanned(true);
-                                break;
-                            }
-
-                            this.craftingType = CRAFTING_SMALL;
-                            this.resetCraftingGridType();
-
-                            PlayerRespawnEvent playerRespawnEvent = new PlayerRespawnEvent(this, this.getSpawn());
-                            this.server.getPluginManager().callEvent(playerRespawnEvent);
-
-                            Position respawnPos = playerRespawnEvent.getRespawnPosition();
-
-                            this.teleport(respawnPos, null);
-
-                            RespawnPacket respawnPacket = new RespawnPacket();
-                            respawnPacket.x = (float) respawnPos.x;
-                            respawnPacket.y = (float) respawnPos.y;
-                            respawnPacket.z = (float) respawnPos.z;
-                            this.dataPacket(respawnPacket);
-
-                            this.setSprinting(false);
-                            if (isSneaking()) {
-                                this.setSneaking(false);
-                            }
-                            if (isGliding()) {
-                                this.setGliding(false);
-                            }
-                            if (isSwimming()) {
-                                this.setSwimming(false);
-                            }
-                            if (isCrawling()) {
-                                this.setCrawling(false);
-                            }
-
-                            this.setDataProperty(new ShortEntityData(Player.DATA_AIR, 300), false);
-                            this.deadTicks = 0;
-                            this.noDamageTicks = 60;
-
-                            this.removeAllEffects();
-                            this.setHealth(this.getMaxHealth());
-                            this.getFoodData().setLevel(20, 20);
-
-                            this.sendData(this);
-
-                            this.setMovementSpeed(DEFAULT_SPEED);
-
-                            this.getAdventureSettings().update();
-                            this.inventory.sendContents(this);
-                            this.armorInventory.sendContents(this);
-                            this.offhandInventory.sendContents(this);
-
-                            this.spawnToAll();
-                            this.scheduleUpdate();
+                            this.respawn();
                             break;
                         case PlayerActionPacket.ACTION_JUMP:
                             PlayerJumpEvent playerJumpEvent = new PlayerJumpEvent(this);
@@ -4600,6 +4553,15 @@ public class Player extends EntityHuman implements CommandSender, InventoryHolde
                     break;
                 case FALL:
                     if (cause.getFinalDamage() > 2) {
+                        ObjectIntPair<EntityDamageByEntityEvent> playerDamage = getLastPlayerDamageCause(5 * 20);
+                        if (playerDamage != null) {
+                            Player damager = (Player) playerDamage.left().getDamager();
+                            if (damager != this) {
+                                message = "death.fell.assist";
+                                params.add(damager.getDisplayName());
+                                break;
+                            }
+                        }
                         message = "death.fell.accident.generic";
                         break;
                     }
@@ -4612,26 +4574,80 @@ public class Player extends EntityHuman implements CommandSender, InventoryHolde
                     message = "death.attack.inWall";
                     break;
                 case LAVA:
+                    ObjectIntPair<EntityDamageByEntityEvent> playerDamage = getLastPlayerDamageCause(5 * 20);
+                    if (playerDamage != null) {
+                        Player damager = (Player) playerDamage.left().getDamager();
+                        if (damager != this) {
+                            message = "death.attack.lava.player";
+                            params.add(damager.getDisplayName());
+                            break;
+                        }
+                    }
                     message = "death.attack.lava";
                     break;
                 case MAGMA:
+                    playerDamage = getLastPlayerDamageCause(5 * 20);
+                    if (playerDamage != null) {
+                        Player damager = (Player) playerDamage.left().getDamager();
+                        if (damager != this) {
+                            message = "death.attack.magma.player";
+                            params.add(damager.getDisplayName());
+                            break;
+                        }
+                    }
                     message = "death.attack.magma";
                     break;
                 case FIRE:
                 case CAMPFIRE:
                 case SOUL_CAMPFIRE:
+                    playerDamage = getLastPlayerDamageCause(5 * 20);
+                    if (playerDamage != null) {
+                        Player damager = (Player) playerDamage.left().getDamager();
+                        if (damager != this) {
+                            message = "death.attack.inFire.player";
+                            params.add(damager.getDisplayName());
+                            break;
+                        }
+                    }
                     message = "death.attack.inFire";
                     break;
                 case FIRE_TICK:
+                    playerDamage = getLastPlayerDamageCause(5 * 20);
+                    if (playerDamage != null) {
+                        Player damager = (Player) playerDamage.left().getDamager();
+                        if (damager != this) {
+                            message = "death.attack.onFire.player";
+                            params.add(damager.getDisplayName());
+                            break;
+                        }
+                    }
                     message = "death.attack.onFire";
                     break;
                 case DROWNING:
+                    playerDamage = getLastPlayerDamageCause(5 * 20);
+                    if (playerDamage != null) {
+                        Player damager = (Player) playerDamage.left().getDamager();
+                        if (damager != this) {
+                            message = "death.attack.drown.player";
+                            params.add(damager.getDisplayName());
+                            break;
+                        }
+                    }
                     message = "death.attack.drown";
                     break;
                 case CONTACT:
                     if (cause instanceof EntityDamageByBlockEvent) {
                         int id = ((EntityDamageByBlockEvent) cause).getDamager().getId();
                         if (id == Block.CACTUS) {
+                            playerDamage = getLastPlayerDamageCause(5 * 20);
+                            if (playerDamage != null) {
+                                Player damager = (Player) playerDamage.left().getDamager();
+                                if (damager != this) {
+                                    message = "death.attack.cactus.player";
+                                    params.add(damager.getDisplayName());
+                                    break;
+                                }
+                            }
                             message = "death.attack.cactus";
                         } else if (id == Block.SWEET_BERRY_BUSH) {
                             message = "death.attack.sweetBerry";
@@ -4689,6 +4705,15 @@ public class Player extends EntityHuman implements CommandSender, InventoryHolde
                     message = "death.attack.wither";
                     break;
                 case SONIC_BOOM:
+                    playerDamage = getLastPlayerDamageCause(5 * 20);
+                    if (playerDamage != null) {
+                        Player damager = (Player) playerDamage.left().getDamager();
+                        if (damager != this) {
+                            message = "death.attack.sonicBoom.player";
+                            params.add(damager.getDisplayName());
+                            break;
+                        }
+                    }
                     message = "death.attack.sonicBoom";
                     break;
                 case LIGHTNING:
@@ -4774,6 +4799,66 @@ public class Player extends EntityHuman implements CommandSender, InventoryHolde
         this.dataPacket(pk);
     }
 
+    protected void respawn() {
+        if (this.server.isHardcore()) {
+            this.setBanned(true);
+            return;
+        }
+
+        this.craftingType = CRAFTING_SMALL;
+        this.resetCraftingGridType();
+
+        PlayerRespawnEvent playerRespawnEvent = new PlayerRespawnEvent(this, this.getSpawn());
+        this.server.getPluginManager().callEvent(playerRespawnEvent);
+
+        Position respawnPos = playerRespawnEvent.getRespawnPosition();
+        initiateLegacyRespawn(respawnPos);
+
+        this.sendExperience();
+        this.sendExperienceLevel();
+
+        this.setSprinting(false);
+        this.setSneaking(false);
+        this.setGliding(false);
+        this.setSwimming(false);
+        this.setCrawling(false);
+
+        this.setDataProperty(new ShortEntityData(Player.DATA_AIR, 300), false);
+        this.deadTicks = 0;
+        this.noDamageTicks = 60;
+
+        this.removeAllEffects();
+
+        SetHealthPacket healthPacket = new SetHealthPacket();
+        healthPacket.health = getMaxHealth();
+        this.dataPacket(healthPacket);
+
+        this.setHealth(this.getMaxHealth());
+        this.getFoodData().setLevel(20, 20);
+
+        this.sendData(this);
+        this.sendData(this.getViewers().values().toArray(new Player[0]));
+
+        this.setMovementSpeed(DEFAULT_SPEED);
+
+        this.getAdventureSettings().update();
+        this.inventory.sendContents(this);
+        this.armorInventory.sendContents(this);
+        this.offhandInventory.sendContents(this);
+
+        this.teleport(respawnPos, null);
+        this.spawnToAll();
+        this.scheduleUpdate();
+    }
+
+    protected void initiateLegacyRespawn(Position respawnPos) {
+        RespawnPacket respawnPacket = new RespawnPacket();
+        respawnPacket.x = (float) respawnPos.x;
+        respawnPacket.y = (float) respawnPos.y;
+        respawnPacket.z = (float) respawnPos.z;
+        this.dataPacket(respawnPacket);
+    }
+
     @Override
     public boolean setHealth(float health) {
         if (health < 1) {
@@ -4788,10 +4873,9 @@ public class Player extends EntityHuman implements CommandSender, InventoryHolde
             return true;
         }
 
-        //TODO: Remove it in future! This a hack to solve the client-side absorption bug! WFT Mojang (Half a yellow heart cannot be shown, we can test it in local gaming)
         this.setAttribute(Attribute.getAttribute(Attribute.HEALTH)
-                .setMaxValue(this.getAbsorption() % 2 != 0 ? this.getMaxHealth() + 1 : this.getMaxHealth())
-                .setValue(health > 0 ? (health < getMaxHealth() ? health : getMaxHealth()) : 0));
+                .setMaxValue(this.getMaxHealth())
+                .setValue(this.health > 0 ? (this.health < getMaxHealth() ? this.health : getMaxHealth()) : 0));
         return true;
     }
 
@@ -4804,7 +4888,7 @@ public class Player extends EntityHuman implements CommandSender, InventoryHolde
         }
 
         this.setAttribute(Attribute.getAttribute(Attribute.HEALTH)
-                .setMaxValue(this.getAbsorption() % 2 != 0 ? this.getMaxHealth() + 1 : this.getMaxHealth())
+                .setMaxValue(this.getMaxHealth())
                 .setValue(health > 0 ? (health < getMaxHealth() ? health : getMaxHealth()) : 0));
     }
 
@@ -5616,6 +5700,13 @@ public class Player extends EntityHuman implements CommandSender, InventoryHolde
 
     public int getClosingWindowId() {
         return this.closingWindowId;
+    }
+
+    public void resetClosingWindowId(int windowId) {
+        if (this.closingWindowId != windowId) {
+            return;
+        }
+        this.closingWindowId = Integer.MIN_VALUE;
     }
 
     @Override

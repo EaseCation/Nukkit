@@ -70,6 +70,7 @@ public abstract class FakeBlockUIComponent extends PlayerUIComponent {
         if (pk.wasServerInitiated) {
             pk.windowType = getType().getNetworkType();
         }
+        who.resetClosingWindowId(pk.windowId);
         who.dataPacket(pk);
         super.onClose(who);
     }

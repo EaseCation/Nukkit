@@ -9,6 +9,7 @@ import cn.nukkit.entity.EntityLiving;
 import cn.nukkit.entity.data.IntEntityData;
 import cn.nukkit.event.entity.EntityDamageByEntityEvent;
 import cn.nukkit.event.entity.EntityDamageEvent;
+import cn.nukkit.inventory.Inventory;
 import cn.nukkit.item.Item;
 import cn.nukkit.item.ItemBlockID;
 import cn.nukkit.item.ItemID;
@@ -24,6 +25,7 @@ import cn.nukkit.network.protocol.LevelSoundEventPacket;
 import cn.nukkit.network.protocol.MobEquipmentPacket;
 import cn.nukkit.network.protocol.types.ContainerIds;
 import it.unimi.dsi.fastutil.objects.ObjectArrayList;
+import it.unimi.dsi.fastutil.objects.ObjectIntPair;
 
 import javax.annotation.Nullable;
 import java.util.List;
@@ -297,6 +299,11 @@ public class EntityArmorStand extends EntityLiving implements EntityInteractable
     @Override
     protected float getKnockbackResistance() {
         return 1;
+    }
+
+    @Override
+    protected ObjectIntPair<Inventory> getEquippedTotem() {
+        return null;
     }
 
     @Override

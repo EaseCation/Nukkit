@@ -12,7 +12,9 @@ import cn.nukkit.event.entity.EntityDamageByEntityEvent;
 import cn.nukkit.event.entity.EntityDamageEvent;
 import cn.nukkit.event.entity.EntityDamageEvent.DamageCause;
 import cn.nukkit.event.entity.EntityDeathEvent;
+import cn.nukkit.event.entity.EntityResurrectEvent;
 import cn.nukkit.inventory.ArmorInventory;
+import cn.nukkit.inventory.Inventory;
 import cn.nukkit.item.Item;
 import cn.nukkit.item.ItemID;
 import cn.nukkit.item.enchantment.Enchantment;
@@ -24,11 +26,14 @@ import cn.nukkit.math.Vector3;
 import cn.nukkit.nbt.tag.CompoundTag;
 import cn.nukkit.nbt.tag.FloatTag;
 import cn.nukkit.network.protocol.EntityEventPacket;
+import cn.nukkit.network.protocol.LevelEventPacket;
 import cn.nukkit.network.protocol.LevelSoundEventPacket;
 import cn.nukkit.potion.Effect;
 import cn.nukkit.potion.EffectID;
 import cn.nukkit.utils.BlockIterator;
+import it.unimi.dsi.fastutil.objects.ObjectIntPair;
 
+import javax.annotation.Nullable;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -227,6 +232,7 @@ public abstract class EntityLiving extends Entity implements EntityDamageable {
         if (source.isCancelled()) {
             return false;
         }
+
         if (source.getCause() != DamageCause.SUICIDE) {
             // Make fire aspect to set the target in fire before dealing any damage so the target is in fire on death even if killed by the first hit
             if (source instanceof EntityDamageByEntityEvent damageByEntityEvent) {
@@ -244,7 +250,11 @@ public abstract class EntityLiving extends Entity implements EntityDamageable {
         }
 
         setLastDamageCause(source);
-        setHealth(getHealth() - source.getFinalDamage());
+
+        float newHealth = getHealth() - source.getFinalDamage();
+        if (newHealth >= 1 || !checkTotemDeathProtection(source)) {
+            setHealth(newHealth);
+        }
         return true;
     }
 
@@ -660,6 +670,45 @@ public abstract class EntityLiving extends Entity implements EntityDamageable {
 
     public int getBaseArmorValue() {
         return 0;
+    }
+
+    protected boolean checkTotemDeathProtection(EntityDamageEvent source) {
+        switch (source.getCause()) {
+            case SUICIDE:
+            case VOID:
+                return false;
+        }
+
+        ObjectIntPair<Inventory> itemStack = getEquippedTotem();
+        if (itemStack == null) {
+            return false;
+        }
+
+        EntityResurrectEvent event = new EntityResurrectEvent(this);
+        event.call();
+        if (event.isCancelled()) {
+            return false;
+        }
+
+        resetFallDistance();
+        extinguish();
+        removeAllEffects();
+        setHealth(1);
+
+        addEffect(Effect.getEffect(Effect.REGENERATION).setDuration(40 * 20).setAmplifier(1),
+                Effect.getEffect(Effect.ABSORPTION).setDuration(5 * 20).setAmplifier(1),
+                Effect.getEffect(Effect.FIRE_RESISTANCE).setDuration(40 * 20));
+
+        broadcastEntityEvent(EntityEventPacket.CONSUME_TOTEM);
+        level.addLevelEvent(this, LevelEventPacket.EVENT_SOUND_TOTEM);
+
+        itemStack.left().clear(itemStack.rightInt());
+        return true;
+    }
+
+    @Nullable
+    protected ObjectIntPair<Inventory> getEquippedTotem() {
+        return null;
     }
 
     public long getNextAllowAttack() {

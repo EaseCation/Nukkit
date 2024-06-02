@@ -251,7 +251,7 @@ public class Effect implements EffectID, Cloneable {
 
         if (this.id == Effect.ABSORPTION) {
             int add = (this.amplifier + 1) * 4;
-            if (add > entity.getAbsorption()) entity.setAbsorption(add);
+            entity.setAbsorption(entity.getAbsorption() + add);
             return true;
         }
 
@@ -290,7 +290,7 @@ public class Effect implements EffectID, Cloneable {
         }
 
         if (this.id == Effect.ABSORPTION) {
-            entity.setAbsorption(0);
+            entity.setAbsorption(entity.getAbsorption() - (amplifier + 1) * 4);
             return true;
         }
 

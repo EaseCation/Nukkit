@@ -10,13 +10,23 @@ import cn.nukkit.network.protocol.InventorySlotPacket;
 import cn.nukkit.network.protocol.MobArmorEquipmentPacket;
 import cn.nukkit.network.protocol.types.ContainerIds;
 
+import java.util.Arrays;
+
 public class ArmorInventory extends BaseInventory {
     public static final int SLOT_HEAD = 0;
     public static final int SLOT_TORSO = 1;
     public static final int SLOT_LEGS = 2;
     public static final int SLOT_FEET = 3;
 
+    private static final Item[] EMPTY_SLOTS = new Item[4];
+
+    static {
+        Arrays.fill(EMPTY_SLOTS, Items.air());
+    }
+
     private final Entity entity;
+
+    private boolean visible = true;
 
     public ArmorInventory(Entity entity) {
         super((InventoryHolder) entity, InventoryType.ENTITY_ARMOR);
@@ -63,7 +73,7 @@ public class ArmorInventory extends BaseInventory {
             } else {
                 MobArmorEquipmentPacket packet = new MobArmorEquipmentPacket();
                 packet.eid = entity.getId();
-                packet.slots = items;
+                packet.slots = visible ? items : EMPTY_SLOTS;
                 player.dataPacket(packet);
             }
         }
@@ -86,7 +96,7 @@ public class ArmorInventory extends BaseInventory {
             } else {
                 MobArmorEquipmentPacket packet = new MobArmorEquipmentPacket();
                 packet.eid = entity.getId();
-                packet.slots = items;
+                packet.slots = visible ? items : EMPTY_SLOTS;
                 player.dataPacket(packet);
             }
         }
@@ -149,6 +159,16 @@ public class ArmorInventory extends BaseInventory {
         }
 
         onSlotChange(index, old, newItem, send);
+        return true;
+    }
+
+    public boolean setVisible(boolean visible) {
+        if (this.visible == visible) {
+            return false;
+        }
+        this.visible = visible;
+
+        sendContents(entity.getViewers().values());
         return true;
     }
 

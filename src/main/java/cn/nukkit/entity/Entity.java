@@ -35,6 +35,7 @@ import com.google.common.collect.Iterables;
 import it.unimi.dsi.fastutil.ints.Int2ObjectMap;
 import it.unimi.dsi.fastutil.objects.Object2ObjectOpenHashMap;
 import it.unimi.dsi.fastutil.objects.ObjectArrayList;
+import it.unimi.dsi.fastutil.objects.ObjectIntPair;
 import lombok.AllArgsConstructor;
 import lombok.Value;
 import lombok.extern.log4j.Log4j2;
@@ -93,6 +94,9 @@ public abstract class Entity extends Location implements Metadatable, EntityData
     public FullChunk chunk;
 
     protected EntityDamageEvent lastDamageCause = null;
+    protected int lastDamageTick = 0;
+    protected ObjectIntPair<EntityDamageByEntityEvent> lastEntityDamage;
+    protected ObjectIntPair<EntityDamageByEntityEvent> lastPlayerDamage;
 
     public List<Block> blocksAround = new ObjectArrayList<>();
     public List<Block> collisionBlocks = new ObjectArrayList<>();
@@ -1267,10 +1271,71 @@ public abstract class Entity extends Location implements Metadatable, EntityData
 
     public void setLastDamageCause(EntityDamageEvent type) {
         this.lastDamageCause = type;
+        lastDamageTick = server.getTick();
+
+        if (type instanceof EntityDamageByEntityEvent event) {
+            ObjectIntPair<EntityDamageByEntityEvent> record = ObjectIntPair.of(event, lastDamageTick);
+            lastEntityDamage = record;
+
+            if (event.getDamager() instanceof Player) {
+                lastPlayerDamage = record;
+            }
+        }
     }
 
+    @Nullable
     public EntityDamageEvent getLastDamageCause() {
         return lastDamageCause;
+    }
+
+    public int getLastDamageTick() {
+        return lastDamageTick;
+    }
+
+    /**
+     * @return damage source and tick time
+     */
+    @Nullable
+    public ObjectIntPair<EntityDamageByEntityEvent> getLastEntityDamageCause() {
+        return lastEntityDamage;
+    }
+
+    /**
+     * @param ticks time limit
+     * @return damage source and tick time
+     */
+    @Nullable
+    public ObjectIntPair<EntityDamageByEntityEvent> getLastEntityDamageCause(int ticks) {
+        if (lastEntityDamage == null) {
+            return null;
+        }
+        if (lastEntityDamage.rightInt() + ticks < server.getTick()) {
+            return null;
+        }
+        return lastEntityDamage;
+    }
+
+    /**
+     * @return damage source and tick time
+     */
+    @Nullable
+    public ObjectIntPair<EntityDamageByEntityEvent> getLastPlayerDamageCause() {
+        return lastPlayerDamage;
+    }
+
+    /**
+     * @param ticks time limit
+     * @return damage source and tick time
+     */
+    @Nullable
+    public ObjectIntPair<EntityDamageByEntityEvent> getLastPlayerDamageCause(int ticks) {
+        if (lastPlayerDamage == null) {
+            return null;
+        }
+        if (lastPlayerDamage.rightInt() + ticks < server.getTick()) {
+            return null;
+        }
+        return lastPlayerDamage;
     }
 
     public int getMaxHealth() {
@@ -2712,7 +2777,7 @@ public abstract class Entity extends Location implements Metadatable, EntityData
     }
 
     public void broadcastEntityEvent(int event, int data) {
-        broadcastEntityEvent(event, data, getViewers().values());
+        level.broadcastEntityEvent(this, event, data);
     }
 
     public void broadcastEntityEvent(int event, int data, Player... players) {

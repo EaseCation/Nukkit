@@ -62,6 +62,7 @@ public abstract class ContainerInventory extends BaseInventory {
         if (pk.wasServerInitiated) {
             pk.windowType = getType().getNetworkType();
         }
+        who.resetClosingWindowId(pk.windowId);
         who.dataPacket(pk);
         super.onClose(who);
     }

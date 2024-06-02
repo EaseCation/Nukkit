@@ -5,11 +5,7 @@ import cn.nukkit.event.entity.EntityDamageByEntityEvent;
 import cn.nukkit.event.entity.EntityDamageEvent;
 import cn.nukkit.event.entity.EntityDamageEvent.DamageCause;
 import cn.nukkit.event.entity.EntityDamageEvent.DamageModifier;
-import cn.nukkit.inventory.ArmorInventory;
-import cn.nukkit.inventory.InventoryHolder;
-import cn.nukkit.inventory.PlayerEnderChestInventory;
-import cn.nukkit.inventory.PlayerInventory;
-import cn.nukkit.inventory.PlayerOffhandInventory;
+import cn.nukkit.inventory.*;
 import cn.nukkit.item.Item;
 import cn.nukkit.item.Items;
 import cn.nukkit.item.enchantment.Enchantment;
@@ -20,6 +16,7 @@ import cn.nukkit.nbt.tag.CompoundTag;
 import cn.nukkit.nbt.tag.ListTag;
 import cn.nukkit.network.protocol.LevelSoundEventPacket;
 import cn.nukkit.potion.Effect;
+import it.unimi.dsi.fastutil.objects.ObjectIntPair;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -346,5 +343,16 @@ public abstract class EntityHumanType extends EntityCreature implements Inventor
             total += armor.getKnockbackResistance();
         }
         return total;
+    }
+
+    @Override
+    protected ObjectIntPair<Inventory> getEquippedTotem() {
+        if (offhandInventory.getItem().getId() == Item.TOTEM_OF_UNDYING) {
+            return ObjectIntPair.of(offhandInventory, 0);
+        }
+        if (inventory.getItemInHand().getId() == Item.TOTEM_OF_UNDYING) {
+            return ObjectIntPair.of(inventory, inventory.getHeldItemIndex());
+        }
+        return null;
     }
 }

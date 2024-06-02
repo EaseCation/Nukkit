@@ -975,6 +975,22 @@ public class Level implements ChunkManager, Metadatable {
         }
     }
 
+    public void broadcastEntityEvent(Entity entity, int event) {
+        broadcastEntityEvent(entity, event, 0);
+    }
+
+    public void broadcastEntityEvent(Entity entity, int event, int data) {
+        if (players.isEmpty()) {
+            return;
+        }
+
+        EntityEventPacket packet = new EntityEventPacket();
+        packet.eid = entity.getId();
+        packet.event = event;
+        packet.data = data;
+        addChunkPacket(entity.getChunkX(), entity.getChunkZ(), packet);
+    }
+
     public boolean getAutoSave() {
         return this.autoSave;
     }
