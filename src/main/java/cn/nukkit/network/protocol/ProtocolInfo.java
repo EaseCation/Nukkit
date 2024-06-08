@@ -3,7 +3,7 @@ package cn.nukkit.network.protocol;
 import cn.nukkit.GameVersion;
 
 /**
- * author: MagicDroidX & iNevet
+ * author: MagicDroidX &amp; iNevet
  * Nukkit Project
  */
 public interface ProtocolInfo {

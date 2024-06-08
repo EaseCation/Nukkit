@@ -107,7 +107,7 @@ import static cn.nukkit.SharedConstants.EXPERIMENTAL_COMBAT_KNOCKBACK_TEST;
 import static cn.nukkit.SharedConstants.RESOURCE_PACK_CHUNK_SIZE;
 
 /**
- * author: MagicDroidX & Box
+ * author: MagicDroidX &amp; Box
  * Nukkit Project
  */
 @Log4j2
