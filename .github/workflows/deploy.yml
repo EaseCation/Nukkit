@@ -28,6 +28,6 @@ jobs:
           cd target/Network
           mvn -B clean install
       - name: Publish package
-        run: mvn -B clean source:jar javadoc:jar deploy -P github
+        run: mvn -B clean javadoc:jar deploy -P github
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
