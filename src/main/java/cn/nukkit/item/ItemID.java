@@ -455,7 +455,7 @@ public interface ItemID extends BlockID, ItemRuntimeID {
     int CAMPFIRE = 720;
 
     int SUSPICIOUS_STEW = 734;
-
+    int DEBUG_STICK = 735;
     int HONEYCOMB = 736;
     int HONEY_BOTTLE = 737;
 

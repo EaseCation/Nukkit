@@ -586,7 +586,7 @@ public interface ItemFullNames extends ItemBlockNames {
     String CAMPFIRE = "minecraft:" + ItemNames.CAMPFIRE;
 
     String SUSPICIOUS_STEW = "minecraft:" + ItemNames.SUSPICIOUS_STEW;
-
+    String DEBUG_STICK = "minecraft:" + ItemNames.DEBUG_STICK;
     String HONEYCOMB = "minecraft:" + ItemNames.HONEYCOMB;
     String HONEY_BOTTLE = "minecraft:" + ItemNames.HONEY_BOTTLE;
 

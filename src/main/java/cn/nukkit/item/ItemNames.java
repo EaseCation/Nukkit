@@ -585,7 +585,7 @@ public interface ItemNames extends ItemBlockNames {
     String CAMPFIRE = "campfire";
 
     String SUSPICIOUS_STEW = "suspicious_stew";
-
+    String DEBUG_STICK = "debug_stick";
     String HONEYCOMB = "honeycomb";
     String HONEY_BOTTLE = "honey_bottle";
 

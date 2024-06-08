@@ -75,6 +75,8 @@ public enum Compressor {
             } catch (Exception e) {
                 try {
                     return ZLIB.decompress(data);
+                } catch (DataLengthException ex) {
+                    throw ex;
                 } catch (Exception ex) {
                     return EMPTY;
                 }
@@ -131,7 +133,8 @@ public enum Compressor {
         public byte getAlgorithm() {
             return CompressionAlgorithm.SNAPPY;
         }
-    };
+    }
+    ;
 
     public static final int MAX_SIZE = 12 * 1024 * 1024; // 12MB
 

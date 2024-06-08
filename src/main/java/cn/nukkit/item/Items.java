@@ -21,6 +21,7 @@ import java.util.Objects;
 import java.util.concurrent.atomic.AtomicInteger;
 
 import static cn.nukkit.GameVersion.*;
+import static cn.nukkit.SharedConstants.*;
 import static cn.nukkit.item.ItemID.*;
 
 @Log4j2
@@ -337,6 +338,10 @@ public final class Items {
         registerItem(ItemNames.MUSIC_DISC_CREATOR, MUSIC_DISC_CREATOR, ItemRecordCreator.class, ItemRecordCreator::new, V1_21_0);
         registerItem(ItemNames.MUSIC_DISC_CREATOR_MUSIC_BOX, MUSIC_DISC_CREATOR_MUSIC_BOX, ItemRecordCreatorMusicBox.class, ItemRecordCreatorMusicBox::new, V1_21_0);
         registerItem(ItemNames.MUSIC_DISC_PRECIPICE, MUSIC_DISC_PRECIPICE, ItemRecordPrecipice.class, ItemRecordPrecipice::new, V1_21_0);
+
+        if (DEV_CLIENT_BUILD) {
+            registerItem(ItemNames.DEBUG_STICK, DEBUG_STICK, ItemDebugStick.class, ItemDebugStick::new);
+        }
 
         registerSimpleAliases();
         registerComplexAliases();

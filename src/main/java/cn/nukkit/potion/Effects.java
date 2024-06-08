@@ -94,6 +94,14 @@ public final class Effects {
 
     @Nullable
     public static Effect getEffectByIdentifier(String identifier) {
+        return getEffectByIdentifier(identifier, true);
+    }
+
+    public static Effect getEffectByIdentifier(String identifier, boolean namespaced) {
+        if (namespaced && identifier.startsWith("minecraft:")) {
+            identifier = identifier.substring(10);
+        }
+
         Effect effect = IDENTIFIER_TO_EFFECT.get(identifier);
         if (effect == null) {
             return null;

@@ -90,11 +90,20 @@ public final class Enchantments {
 
     @Nullable
     public static Enchantment getEnchantmentByIdentifier(String identifier) {
-        return getEnchantmentByIdentifier(identifier, false);
+        return getEnchantmentByIdentifier(identifier, true);
     }
 
     @Nullable
-    public static Enchantment getEnchantmentByIdentifier(String identifier, boolean allowUnknown) {
+    public static Enchantment getEnchantmentByIdentifier(String identifier, boolean namespaced) {
+        return getEnchantmentByIdentifier(identifier, namespaced, false);
+    }
+
+    @Nullable
+    public static Enchantment getEnchantmentByIdentifier(String identifier, boolean namespaced, boolean allowUnknown) {
+        if (namespaced && identifier.startsWith("minecraft:")) {
+            identifier = identifier.substring(10);
+        }
+
         Enchantment enchantment = IDENTIFIER_TO_ENCHANTMENT.get(identifier);
         if (enchantment == null) {
             if (!allowUnknown) {
