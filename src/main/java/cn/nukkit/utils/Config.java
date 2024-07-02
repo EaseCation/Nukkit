@@ -227,7 +227,7 @@ public class Config {
         return this.save(false);
     }
 
-    public boolean save(Boolean async) {
+    public boolean save(boolean async) {
         if (this.file == null) throw new IllegalStateException("Failed to save Config. File object is undefined.");
         if (this.correct) {
             StringBuilder content = new StringBuilder();

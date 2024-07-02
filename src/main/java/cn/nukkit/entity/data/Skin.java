@@ -9,6 +9,7 @@ import com.google.common.base.Preconditions;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.ToString;
+import org.apache.commons.lang3.RandomStringUtils;
 
 import javax.annotation.Nullable;
 import javax.imageio.ImageIO;
@@ -20,7 +21,6 @@ import java.nio.charset.StandardCharsets;
 import java.util.List;
 import java.util.*;
 import java.util.concurrent.ThreadLocalRandom;
-import java.util.concurrent.atomic.AtomicInteger;
 
 /**
  * author: MagicDroidX
@@ -39,8 +39,6 @@ public class Skin implements Cloneable {
 
     public static final String GEOMETRY_CUSTOM = convertLegacyGeometryName("geometry.humanoid.custom");
     public static final String GEOMETRY_CUSTOM_SLIM = convertLegacyGeometryName("geometry.humanoid.customSlim");
-
-    private static final AtomicInteger SKIN_COUNTER = new AtomicInteger(ThreadLocalRandom.current().nextInt());
 
     private boolean playerSkin = false; //如果是玩家皮肤，那么需要根据中国版规则进行皮肤反作弊检测
     private String fullSkinId;
@@ -243,7 +241,7 @@ public class Skin implements Cloneable {
             return this;
         }
         cachedGeometryName = geometryName;
-        this.skinResourcePatch = "{\"geometry\" : {\"default\" : \"" + geometryName + "\"}}";
+        this.skinResourcePatch = "{\"geometry\":{\"default\":\"" + geometryName + "\"}}";
         return this;
     }
 
@@ -425,7 +423,7 @@ public class Skin implements Cloneable {
             if (playerSkin) {
                 this.fullSkinId = this.getSkinId() + this.getCapeId();
             } else {
-                this.fullSkinId = this.getSkinId() + "_" + SKIN_COUNTER.incrementAndGet();
+                this.fullSkinId = this.getSkinId() + RandomStringUtils.random(8, 0, 0, true, true, null, ThreadLocalRandom.current());
             }
         }
         return fullSkinId;

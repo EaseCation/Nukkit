@@ -100,9 +100,4 @@ public class LoginPacket extends DataPacket {
     	}
         return GSON.fromJson(new String(decode, StandardCharsets.UTF_8), JsonObject.class);
     }
-
-    @Override
-    public Skin getSkinLegacy() {
-        return this.skin;
-    }
 }

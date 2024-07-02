@@ -337,6 +337,10 @@ public class BinaryStream {
         this.buffer[this.count++] = b;
     }
 
+    public void putByte(int b) {
+        putByte((byte) b);
+    }
+
     /**
      * Reads a list of Attributes from the stream.
      *

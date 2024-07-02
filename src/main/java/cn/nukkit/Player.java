@@ -2629,7 +2629,7 @@ public class Player extends EntityHuman implements CommandSender, InventoryHolde
                         this.close("", "disconnectionScreen.invalidSkin");
                         break;
                     } else {
-                        this.setSkin(loginPacket.getSkinLegacy());
+                        this.setSkin(loginPacket.skin);
                     }
 
                     PlayerPreLoginEvent playerPreLoginEvent;

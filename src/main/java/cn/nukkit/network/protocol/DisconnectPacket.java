@@ -138,7 +138,9 @@ public class DisconnectPacket extends DataPacket {
     @Override
     public void decode() {
         this.hideDisconnectionScreen = this.getBoolean();
-        this.message = this.getString();
+        if (!this.hideDisconnectionScreen) {
+            this.message = this.getString();
+        }
     }
 
     @Override
