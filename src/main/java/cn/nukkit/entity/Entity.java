@@ -31,6 +31,7 @@ import cn.nukkit.network.protocol.*;
 import cn.nukkit.plugin.Plugin;
 import cn.nukkit.potion.Effect;
 import cn.nukkit.utils.ChunkException;
+import cn.nukkit.utils.Utils;
 import com.google.common.collect.Iterables;
 import it.unimi.dsi.fastutil.ints.Int2ObjectMap;
 import it.unimi.dsi.fastutil.objects.Object2ObjectOpenHashMap;
@@ -1184,6 +1185,11 @@ public abstract class Entity extends Location implements Metadatable, EntityData
     }
 
     public void despawnFrom(Player player) {
+        if (player.riding == this && !dismountEntity(player)) {
+            log.warn("Please remove entity links before despawning", new Throwable("debug trace"));
+            Utils.pauseInIde();
+        }
+
         if (this.hasSpawned.remove(player.getLoaderId()) != null) {
             RemoveEntityPacket pk = new RemoveEntityPacket();
             pk.eid = this.getId();
@@ -2483,6 +2489,7 @@ public abstract class Entity extends Location implements Metadatable, EntityData
         }
 
         if (this.riding != null && !this.riding.dismountEntity(this)) {
+            Utils.pauseInIde();
             return false;
         }
 

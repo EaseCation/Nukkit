@@ -1,5 +1,7 @@
 package cn.nukkit.utils;
 
+import lombok.extern.log4j.Log4j2;
+
 import java.io.*;
 import java.lang.management.ManagementFactory;
 import java.lang.management.ThreadInfo;
@@ -9,12 +11,33 @@ import java.util.Arrays;
 import java.util.Map;
 import java.util.UUID;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.function.Consumer;
+import java.util.function.Supplier;
+
+import static cn.nukkit.SharedConstants.*;
 
 /**
  * author: MagicDroidX
  * Nukkit Project
  */
+@Log4j2
 public class Utils {
+    private static Consumer<String> PAUSER = message -> {
+    };
+
+    public static void setPause(Consumer<String> pauser) {
+        PAUSER = pauser;
+    }
+
+    public static void pauseInIde() {
+        pauseInIde("");
+    }
+
+    public static void pauseInIde(String message) {
+        if (BREAKPOINT_DEBUGGING) {
+            PAUSER.accept(message);
+        }
+    }
 
     public static void writeFile(String fileName, String content) throws IOException {
         writeFile(fileName, new ByteArrayInputStream(content.getBytes(StandardCharsets.UTF_8)));
@@ -279,5 +302,14 @@ public class Utils {
 
             return result;
         }
+    }
+
+    public static <T> T make(Supplier<T> supplier) {
+        return supplier.get();
+    }
+
+    public static <T> T make(T value, Consumer<? super T> consumer) {
+        consumer.accept(value);
+        return value;
     }
 }
