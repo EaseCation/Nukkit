@@ -27,6 +27,7 @@ import cn.nukkit.nbt.tag.CompoundTag;
 import cn.nukkit.network.protocol.AnimatePacket;
 import cn.nukkit.network.protocol.LevelSoundEventPacket;
 import cn.nukkit.network.protocol.SetEntityLinkPacket;
+import cn.nukkit.network.protocol.SetEntityMotionPacket;
 
 import java.util.ArrayList;
 import java.util.concurrent.ThreadLocalRandom;
@@ -601,6 +602,21 @@ public class EntityBoat extends EntityVehicle {
     @Override
     public void addMovement(double x, double y, double z, double yaw, double pitch, double headYaw) {
         super.addMovement(x, y, z, yaw, 0, 0);
+    }
+
+    @Override
+    public void addMotion(double motionX, double motionY, double motionZ) {
+        SetEntityMotionPacket pk = new SetEntityMotionPacket();
+        pk.eid = this.getId();
+        pk.motionX = (float) motionX;
+        pk.motionY = (float) motionY;
+        pk.motionZ = (float) motionZ;
+        for (Player player : getViewers().values()) {
+            if (passengers.indexOf(player) == RIDER_INDEX) {
+                continue;
+            }
+            player.dataPacket(pk);
+        }
     }
 
     public boolean isFull() {
