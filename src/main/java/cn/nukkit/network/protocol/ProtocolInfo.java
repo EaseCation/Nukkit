@@ -255,6 +255,7 @@ public interface ProtocolInfo {
     int SET_PLAYER_INVENTORY_OPTIONS_PACKET = 0x133; // 307 cs
     int SET_HUD_PACKET = 0x134; // 308 c
     int AWARD_ACHIEVEMENT_PACKET = 0x135; // 309 c
+    int CLIENTBOUND_CLOSE_FORM_PACKET = 0x136; // 310 c
 
 
     int COUNT = 1024;

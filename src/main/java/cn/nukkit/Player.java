@@ -6551,4 +6551,10 @@ public class Player extends EntityHuman implements CommandSender, InventoryHolde
      */
     public void sendFogStack(String... fogStack) {
     }
+
+    /**
+     * @since 1.21.2
+     */
+    public void requestCloseFormWindow() {
+    }
 }
