@@ -483,7 +483,7 @@ public class Skin implements Cloneable {
     }
 
     private static String convertLegacyGeometryName(String geometryName) {
-        return "{\"geometry\" : {\"default\" : \"" + geometryName + "\"}}";
+        return "{\"geometry\":{\"default\":\"" + geometryName + "\"}}";
     }
 
     @Override

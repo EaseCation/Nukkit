@@ -1,6 +1,7 @@
 package cn.nukkit.resourcepacks;
 
 import javax.annotation.Nullable;
+import java.util.List;
 
 public interface ResourcePack {
     String getPackName();
@@ -10,6 +11,8 @@ public interface ResourcePack {
     String getPackVersion();
 
     String getPackType();
+
+    List<String> getCapabilities();
 
     int getPackSize();
 

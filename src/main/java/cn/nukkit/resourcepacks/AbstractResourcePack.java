@@ -2,6 +2,9 @@ package cn.nukkit.resourcepacks;
 
 import lombok.ToString;
 
+import java.util.ArrayList;
+import java.util.List;
+
 @ToString
 public abstract class AbstractResourcePack implements ResourcePack {
     protected PackManifest manifest;
@@ -9,6 +12,7 @@ public abstract class AbstractResourcePack implements ResourcePack {
     protected String id;
     protected String version;
     protected String type;
+    protected final List<String> capabilities = new ArrayList<>();
 
     @Override
     public String getPackName() {
@@ -28,6 +32,11 @@ public abstract class AbstractResourcePack implements ResourcePack {
     @Override
     public String getPackType() {
         return type;
+    }
+
+    @Override
+    public List<String> getCapabilities() {
+        return capabilities;
     }
 
     @Override

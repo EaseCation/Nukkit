@@ -70,6 +70,7 @@ public class ZippedResourcePack extends AbstractResourcePack {
                     .findFirst()
                     .map(Module::getType)
                     .orElse("resources");
+            capabilities.addAll(manifest.getCapabilities());
 
             String encryptionKey;
             if (RESOURCE_PACK_ENCRYPTION && encrypt) {
