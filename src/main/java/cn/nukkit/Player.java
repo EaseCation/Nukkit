@@ -6557,4 +6557,28 @@ public class Player extends EntityHuman implements CommandSender, InventoryHolde
      */
     public void requestCloseFormWindow() {
     }
+
+    /**
+     * @since 1.17
+     */
+    public void sendMobPropertyInt(long entityRuntimeId, String propertyName, int value) {
+    }
+
+    /**
+     * @since 1.17
+     */
+    public void sendMobPropertyFloat(long entityRuntimeId, String propertyName, float value) {
+    }
+
+    /**
+     * @since 1.17
+     */
+    public void sendMobPropertyBool(long entityRuntimeId, String propertyName, boolean value) {
+    }
+
+    /**
+     * @since 1.17
+     */
+    public void sendMobPropertyEnum(long entityRuntimeId, String propertyName, String value) {
+    }
 }
