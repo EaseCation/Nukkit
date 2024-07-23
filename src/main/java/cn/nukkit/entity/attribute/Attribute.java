@@ -3,11 +3,11 @@ package cn.nukkit.entity.attribute;
 import cn.nukkit.entity.attribute.AttributeModifier.Operation;
 import cn.nukkit.math.Mth;
 import it.unimi.dsi.fastutil.objects.Object2ObjectArrayMap;
-import it.unimi.dsi.fastutil.objects.ObjectOpenHashSet;
 import lombok.ToString;
 
 import javax.annotation.Nullable;
 import java.util.*;
+import java.util.Map.Entry;
 
 /**
  * Attribute
@@ -162,8 +162,15 @@ public class Attribute implements AttributeID {
     }
 
     public Attribute copy() {
+        EnumMap<Operation, Set<AttributeModifier>> modifiersByOperation = new EnumMap<>(Operation.class);
+        for (Entry<Operation, Set<AttributeModifier>> entry : this.modifiersByOperation.entrySet()) {
+            Set<AttributeModifier> modifiers = entry.getValue();
+            if (!modifiers.isEmpty()) {
+                modifiersByOperation.put(entry.getKey(), new HashSet<>(modifiers));
+            }
+        }
         return new Attribute(id, name, minValue, maxValue, defaultValue, currentValue, redefinitionMode, shouldSend,
-                modifiersByOperation.clone(), modifiersById.clone(), calculatedValues.clone(), dirty);
+                modifiersByOperation, modifiersById.clone(), calculatedValues.clone(), dirty);
     }
 
     @Nullable
@@ -172,7 +179,7 @@ public class Attribute implements AttributeID {
     }
 
     public void addModifier(AttributeModifier modifier) {
-        if (!modifiersByOperation.computeIfAbsent(modifier.getOperation(), op -> new ObjectOpenHashSet<>()).add(modifier)) {
+        if (!modifiersByOperation.computeIfAbsent(modifier.getOperation(), op -> new HashSet<>()).add(modifier)) {
             return;
         }
         modifiersById.put(modifier.getId(), modifier);
@@ -193,7 +200,7 @@ public class Attribute implements AttributeID {
             }
         }
 
-        modifiersByOperation.computeIfAbsent(modifier.getOperation(), op -> new ObjectOpenHashSet<>()).add(modifier);
+        modifiersByOperation.computeIfAbsent(modifier.getOperation(), op -> new HashSet<>()).add(modifier);
 
         setDirty();
     }
