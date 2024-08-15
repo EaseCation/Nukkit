@@ -15,6 +15,6 @@ public class ItemClay extends Item {
     }
 
     public ItemClay(Integer meta, int count) {
-        super(CLAY_BALL, meta, count, "Clay");
+        super(CLAY_BALL, meta, count, "Clay Ball");
     }
 }

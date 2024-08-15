@@ -2,6 +2,9 @@ package cn.nukkit.block;
 
 import cn.nukkit.utils.BlockColor;
 
+import static cn.nukkit.GameVersion.*;
+import static cn.nukkit.SharedConstants.*;
+
 /**
  * Created by CreeperFace on 26. 11. 2016.
  */
@@ -43,6 +46,19 @@ public class BlockSlabRedSandstone extends BlockSlabStone {
     @Override
     public String getName() {
         return (isTopSlot() ? "Upper " : "") + NAMES[this.getSlabType()];
+    }
+
+    @Override
+    public float getHardness() {
+        if (ENABLE_BLOCK_DESTROY_SPEED_COMPATIBILITY || V1_21_20.isAvailable()) {
+            switch (getSlabType()) {
+                case TYPE_PRISMARINE_ROUGH:
+                case TYPE_PRISMARINE_DARK:
+                case TYPE_PRISMARINE_BRICK:
+                    return 1.5f;
+            }
+        }
+        return super.getHardness();
     }
 
     @Override

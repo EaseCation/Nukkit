@@ -3,6 +3,7 @@ package cn.nukkit;
 import cn.nukkit.AdventureSettings.Type;
 import cn.nukkit.block.*;
 import cn.nukkit.blockentity.BlockEntity;
+import cn.nukkit.blockentity.BlockEntityEnderChest;
 import cn.nukkit.blockentity.BlockEntityItemFrame;
 import cn.nukkit.blockentity.BlockEntitySpawnable;
 import cn.nukkit.command.Command;
@@ -263,7 +264,7 @@ public class Player extends EntityHuman implements CommandSender, InventoryHolde
 
     protected boolean enableClientCommand = true;
 
-    private BlockEnderChest viewingEnderChest = null;
+    private Vector3 viewingEnderChest = null;
 
     //TODO: use itemCooldownMap
     protected int lastEnderPearl = 20;
@@ -372,15 +373,17 @@ public class Player extends EntityHuman implements CommandSender, InventoryHolde
         this.lastGoatHornPlay = this.server.getTick();
     }
 
-    public BlockEnderChest getViewingEnderChest() {
+    public Vector3 getViewingEnderChest() {
         return viewingEnderChest;
     }
 
-    public void setViewingEnderChest(BlockEnderChest chest) {
+    public void setViewingEnderChest(Vector3 chest) {
         if (chest == null && this.viewingEnderChest != null) {
-            this.viewingEnderChest.getViewers().remove(this);
-        } else if (chest != null) {
-            chest.getViewers().add(this);
+            if (viewingEnderChest instanceof BlockEntityEnderChest viewing) {
+                viewing.getViewers().remove(this);
+            }
+        } else if (chest instanceof BlockEntityEnderChest enderChest) {
+            enderChest.getViewers().add(this);
         }
         this.viewingEnderChest = chest;
     }
@@ -1779,7 +1782,7 @@ public class Player extends EntityHuman implements CommandSender, InventoryHolde
         }
 
         if (!revert && (this.isFoodEnabled() || this.getServer().getDifficulty() == 0)) {
-            if (this.isSurvivalLike()/* && !this.getRiddingOn() instanceof Entity*/) {
+            if (this.isSurvivalLike() && this.riding == null) {
                 //UpdateFoodExpLevel
                 if (distance >= 0.05f) {
                     float jump = 0;
@@ -5778,12 +5781,6 @@ public class Player extends EntityHuman implements CommandSender, InventoryHolde
         return this.foodData;
     }
 
-    public void setDimension(int dimension) {
-        ChangeDimensionPacket pk = new ChangeDimensionPacket();
-        pk.dimension = getLevel().getDimension().ordinal();
-        this.dataPacket(pk);
-    }
-
     public void setCheckMovement(boolean checkMovement) {
         this.checkMovement = checkMovement;
     }
@@ -6559,26 +6556,26 @@ public class Player extends EntityHuman implements CommandSender, InventoryHolde
     }
 
     /**
-     * @since 1.17
+     * @since 1.19.40
      */
-    public void sendMobPropertyInt(long entityRuntimeId, String propertyName, int value) {
+    public void sendEntityPropertyInt(Entity entity, String propertyName, int value) {
     }
 
     /**
-     * @since 1.17
+     * @since 1.19.40
      */
-    public void sendMobPropertyFloat(long entityRuntimeId, String propertyName, float value) {
+    public void sendEntityPropertyFloat(Entity entity, String propertyName, float value) {
     }
 
     /**
-     * @since 1.17
+     * @since 1.19.40
      */
-    public void sendMobPropertyBool(long entityRuntimeId, String propertyName, boolean value) {
+    public void sendEntityPropertyBool(Entity entity, String propertyName, boolean value) {
     }
 
     /**
-     * @since 1.17
+     * @since 1.19.40
      */
-    public void sendMobPropertyEnum(long entityRuntimeId, String propertyName, String value) {
+    public void sendEntityPropertyEnum(Entity entity, String propertyName, String value) {
     }
 }

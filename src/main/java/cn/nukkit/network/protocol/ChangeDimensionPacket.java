@@ -2,6 +2,8 @@ package cn.nukkit.network.protocol;
 
 import lombok.ToString;
 
+import javax.annotation.Nullable;
+
 /**
  * Created on 2016/1/5 by xtypr.
  * Package cn.nukkit.network.protocol in project nukkit .
@@ -18,6 +20,9 @@ public class ChangeDimensionPacket extends DataPacket {
     public float z;
 
     public boolean respawn;
+
+    @Nullable
+    public Integer loadingScreenId;
 
     @Override
     public void decode() {

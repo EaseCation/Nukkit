@@ -10,6 +10,6 @@ public class ItemSmithingTemplateArmorTrimEye extends Item {
     }
 
     public ItemSmithingTemplateArmorTrimEye(Integer meta, int count) {
-        super(EYE_ARMOR_TRIM_SMITHING_TEMPLATE, meta, count, "Smithing Template");
+        super(EYE_ARMOR_TRIM_SMITHING_TEMPLATE, meta, count, "Eye Armor Trim");
     }
 }

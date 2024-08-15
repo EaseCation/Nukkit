@@ -146,7 +146,7 @@ public class BlockFlower extends BlockFlowable {
     }
 
     protected Block getUncommonFlower() {
-        return get(YELLOW_FLOWER);
+        return get(DANDELION);
     }
 
     @Override

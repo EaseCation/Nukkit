@@ -10,6 +10,6 @@ public class ItemSmithingTemplateArmorTrimTide extends Item {
     }
 
     public ItemSmithingTemplateArmorTrimTide(Integer meta, int count) {
-        super(TIDE_ARMOR_TRIM_SMITHING_TEMPLATE, meta, count, "Smithing Template");
+        super(TIDE_ARMOR_TRIM_SMITHING_TEMPLATE, meta, count, "Tide Armor Trim");
     }
 }

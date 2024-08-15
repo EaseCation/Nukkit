@@ -210,7 +210,7 @@ public class BlockRail extends BlockFlowable implements Faceable {
     }
 
     public boolean canPowered() {
-        return this.canBePowered;
+        return false;
     }
 
     public Orientation getOrientation() {

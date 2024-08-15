@@ -36,7 +36,7 @@ public class BlockFlowerPot extends BlockFlowable {
         switch (block.getId()) {
             case SAPLING:
             case DEADBUSH:
-            case YELLOW_FLOWER:
+            case DANDELION:
             case RED_FLOWER:
             case RED_MUSHROOM:
             case BROWN_MUSHROOM:

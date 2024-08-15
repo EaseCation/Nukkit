@@ -21,7 +21,7 @@ public class ItemBanner extends Item {
     }
 
     public ItemBanner(Integer meta, int count) {
-        super(BANNER, meta, count, "Banner");
+        super(BANNER, meta, count, DyeColor.getByWoolData(meta != null ? meta : 0).getName() + " Banner");
         this.block = Block.get(Block.STANDING_BANNER);
     }
 

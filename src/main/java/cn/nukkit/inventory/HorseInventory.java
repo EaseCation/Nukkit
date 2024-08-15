@@ -143,25 +143,29 @@ public class HorseInventory extends ContainerInventory {
         MobArmorEquipmentPacket pk;
         int entityType = entity.getNetworkId();
         if (entityType == EntityID.HORSE) {
+            Item body = getItem(1);
             Item empty = Items.air();
             Item[] slots = new Item[4];
             slots[0] = empty;
-            slots[1] = getItem(1);
+            slots[1] = body;
             slots[2] = empty;
             slots[3] = empty;
             pk = new MobArmorEquipmentPacket();
             pk.eid = entity.getId();
             pk.slots = slots;
+            pk.body = body;
         } else if (entityType == EntityID.LLAMA || entityType == EntityID.TRADER_LLAMA) {
+            Item body = getItem(0);
             Item empty = Items.air();
             Item[] slots = new Item[4];
             slots[0] = empty;
-            slots[1] = getItem(0);
+            slots[1] = body;
             slots[2] = empty;
             slots[3] = empty;
             pk = new MobArmorEquipmentPacket();
             pk.eid = entity.getId();
             pk.slots = slots;
+            pk.body = body;
         } else {
             return;
         }

@@ -20,6 +20,7 @@ public class SetEntityLinkPacket extends DataPacket {
     public byte type;
     public byte immediate;
     public boolean riderInitiated;
+    public float vehicleAngularVelocity;
 
     @Override
     public void decode() {

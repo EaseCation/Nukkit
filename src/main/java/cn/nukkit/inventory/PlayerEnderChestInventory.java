@@ -1,10 +1,11 @@
 package cn.nukkit.inventory;
 
 import cn.nukkit.Player;
-import cn.nukkit.block.BlockEnderChest;
+import cn.nukkit.blockentity.BlockEntityEnderChest;
 import cn.nukkit.entity.EntityHuman;
 import cn.nukkit.entity.EntityHumanType;
 import cn.nukkit.level.Level;
+import cn.nukkit.math.Vector3;
 import cn.nukkit.network.protocol.BlockEventPacket;
 import cn.nukkit.network.protocol.ContainerClosePacket;
 import cn.nukkit.network.protocol.ContainerOpenPacket;
@@ -26,11 +27,13 @@ public class PlayerEnderChestInventory extends BaseInventory {
         if (who != this.getHolder()) {
             return;
         }
+
         super.onOpen(who);
+
         ContainerOpenPacket containerOpenPacket = new ContainerOpenPacket();
         containerOpenPacket.windowId = who.getWindowId(this);
         containerOpenPacket.type = this.getType().getNetworkType();
-        BlockEnderChest chest = who.getViewingEnderChest();
+        Vector3 chest = who.getViewingEnderChest();
         if (chest != null) {
             containerOpenPacket.x = (int) chest.getX();
             containerOpenPacket.y = (int) chest.getY();
@@ -38,12 +41,11 @@ public class PlayerEnderChestInventory extends BaseInventory {
         } else {
             containerOpenPacket.x = containerOpenPacket.y = containerOpenPacket.z = 0;
         }
-
         who.dataPacket(containerOpenPacket);
 
         this.sendContents(who);
 
-        if (chest != null && chest.getViewers().size() == 1) {
+        if (chest instanceof BlockEntityEnderChest enderChest && enderChest.getViewers().size() == 1) {
             BlockEventPacket blockEventPacket = new BlockEventPacket();
             blockEventPacket.x = (int) chest.getX();
             blockEventPacket.y = (int) chest.getY();
@@ -69,10 +71,11 @@ public class PlayerEnderChestInventory extends BaseInventory {
         }
         who.resetClosingWindowId(containerClosePacket.windowId);
         who.dataPacket(containerClosePacket);
+
         super.onClose(who);
 
-        BlockEnderChest chest = who.getViewingEnderChest();
-        if (chest != null && chest.getViewers().size() == 1) {
+        Vector3 chest = who.getViewingEnderChest();
+        if (chest instanceof BlockEntityEnderChest enderChest && enderChest.getViewers().size() == 1) {
             BlockEventPacket blockEventPacket = new BlockEventPacket();
             blockEventPacket.x = (int) chest.getX();
             blockEventPacket.y = (int) chest.getY();
@@ -85,9 +88,8 @@ public class PlayerEnderChestInventory extends BaseInventory {
                 level.addLevelSoundEvent(this.getHolder().blockCenter(), LevelSoundEventPacket.SOUND_ENDERCHEST_CLOSED);
                 level.addChunkPacket((int) this.getHolder().getX() >> 4, (int) this.getHolder().getZ() >> 4, blockEventPacket);
             }
-
-            who.setViewingEnderChest(null);
         }
+        who.setViewingEnderChest(null);
 
         super.onClose(who);
     }

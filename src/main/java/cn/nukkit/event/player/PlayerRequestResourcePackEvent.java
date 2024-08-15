@@ -4,7 +4,7 @@ import cn.nukkit.Player;
 import cn.nukkit.event.HandlerList;
 import cn.nukkit.resourcepacks.ResourcePack;
 
-import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.Map;
 
 public class PlayerRequestResourcePackEvent extends PlayerEvent {
@@ -15,8 +15,8 @@ public class PlayerRequestResourcePackEvent extends PlayerEvent {
         return handlers;
     }
 
-    private final Map<String, ResourcePack> resourcePacks = new HashMap<>();
-    private final Map<String, ResourcePack> behaviourPacks = new HashMap<>();
+    private final Map<String, ResourcePack> resourcePacks = new LinkedHashMap<>();
+    private final Map<String, ResourcePack> behaviourPacks = new LinkedHashMap<>();
     private boolean mustAccept;
 
     public PlayerRequestResourcePackEvent(Player player, Map<String, ResourcePack> resourcePacks, Map<String, ResourcePack> behaviourPacks, boolean mustAccept) {

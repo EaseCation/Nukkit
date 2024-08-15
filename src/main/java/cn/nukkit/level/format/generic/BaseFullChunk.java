@@ -372,7 +372,7 @@ public abstract class BaseFullChunk implements FullChunk, ChunkManager {
         if (this.tiles != null) {
             this.tiles.remove(blockEntity.getId());
             int index = Level.localBlockHash(blockEntity.getFloorX(), blockEntity.getFloorY(), blockEntity.getFloorZ());
-            this.tileList.remove(index);
+            this.tileList.remove(index, blockEntity);
             if (this.isInit) {
                 this.setChanged();
             }

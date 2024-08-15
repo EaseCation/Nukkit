@@ -19,7 +19,6 @@ public class BlockRailActivator extends BlockRail {
 
     public BlockRailActivator() {
         this(0);
-        canBePowered = true;
     }
 
     @Override
@@ -188,5 +187,10 @@ public class BlockRailActivator extends BlockRail {
             return 0.7f;
         }
         return 0.5f;
+    }
+
+    @Override
+    public boolean canPowered() {
+        return true;
     }
 }

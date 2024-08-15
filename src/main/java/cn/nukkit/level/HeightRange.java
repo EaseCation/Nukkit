@@ -1,5 +1,6 @@
 package cn.nukkit.level;
 
+import cn.nukkit.math.Mth;
 import lombok.ToString;
 
 @ToString
@@ -106,6 +107,18 @@ public final class HeightRange {
 
     public boolean isValidBlockY(double y) {
         return y < maxY && y >= minY;
+    }
+
+    public int clampValidBlockY(int y) {
+        return Mth.clamp(y, minY, maxY - 1);
+    }
+
+    public float clampValidBlockY(float y) {
+        return Mth.clamp(y, minY, maxY - 1);
+    }
+
+    public double clampValidBlockY(double y) {
+        return Mth.clamp(y, minY, maxY - 1);
     }
 
     @Override

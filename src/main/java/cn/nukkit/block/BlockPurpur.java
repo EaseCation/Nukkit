@@ -8,14 +8,18 @@ import cn.nukkit.utils.BlockColor;
 
 public class BlockPurpur extends BlockSolidMeta {
 
-    public static final int PURPUR_NORMAL = 0;
-    public static final int PURPUR_PILLAR = 2;
+    public static final int NORMAL = 0;
+    public static final int CHISELED = 1;
+    public static final int PILLAR = 2;
+    public static final int SMOOTH = 3;
+
+    public static final int TYPE_MASK = 0b11;
 
     private static final String[] NAMES = new String[]{
             "Purpur Block",
-            "",
+            "Purpur Block",
             "Purpur Pillar",
-            ""
+            "Purpur Block"
     };
 
     private static final short[] FACES = new short[]{
@@ -37,7 +41,7 @@ public class BlockPurpur extends BlockSolidMeta {
 
     @Override
     public String getName() {
-        return NAMES[this.getDamage() & 0x03];
+        return NAMES[this.getDamage() & TYPE_MASK];
     }
 
     @Override
@@ -62,8 +66,8 @@ public class BlockPurpur extends BlockSolidMeta {
 
     @Override
     public boolean place(Item item, Block block, Block target, BlockFace face, double fx, double fy, double fz, Player player) {
-        if (this.getDamage() != PURPUR_NORMAL) {
-            this.setDamage(((this.getDamage() & 0x03) | FACES[face.getIndex()]));
+        if (this.getDamage() != NORMAL) {
+            this.setDamage(((this.getDamage() & TYPE_MASK) | FACES[face.getIndex()]));
         }
         this.getLevel().setBlock(block, this, true, true);
 
@@ -83,7 +87,7 @@ public class BlockPurpur extends BlockSolidMeta {
 
     @Override
     public Item toItem(boolean addUserData) {
-        return Item.get(getItemId(), this.getDamage() & 0x03);
+        return Item.get(getItemId(), this.getDamage() & TYPE_MASK);
     }
 
     @Override

@@ -10,6 +10,6 @@ public class ItemSmithingTemplateArmorTrimShaper extends Item {
     }
 
     public ItemSmithingTemplateArmorTrimShaper(Integer meta, int count) {
-        super(SHAPER_ARMOR_TRIM_SMITHING_TEMPLATE, meta, count, "Smithing Template");
+        super(SHAPER_ARMOR_TRIM_SMITHING_TEMPLATE, meta, count, "Shaper Armor Trim");
     }
 }

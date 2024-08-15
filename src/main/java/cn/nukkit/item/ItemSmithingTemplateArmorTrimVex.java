@@ -10,6 +10,6 @@ public class ItemSmithingTemplateArmorTrimVex extends Item {
     }
 
     public ItemSmithingTemplateArmorTrimVex(Integer meta, int count) {
-        super(VEX_ARMOR_TRIM_SMITHING_TEMPLATE, meta, count, "Smithing Template");
+        super(VEX_ARMOR_TRIM_SMITHING_TEMPLATE, meta, count, "Vex Armor Trim");
     }
 }

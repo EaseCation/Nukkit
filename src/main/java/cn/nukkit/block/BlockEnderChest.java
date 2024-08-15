@@ -14,15 +14,11 @@ import cn.nukkit.nbt.tag.Tag;
 import cn.nukkit.utils.BlockColor;
 import cn.nukkit.utils.Faceable;
 
-import java.util.HashSet;
 import java.util.Map;
-import java.util.Set;
 
 public class BlockEnderChest extends BlockTransparentMeta implements Faceable {
 
     private static final int[] FACES = {2, 5, 3, 4};
-
-    private final Set<Player> viewers = new HashSet<>();
 
     public BlockEnderChest() {
         this(0);
@@ -149,7 +145,7 @@ public class BlockEnderChest extends BlockTransparentMeta implements Faceable {
                 }
             }
 
-            player.setViewingEnderChest(this);
+            player.setViewingEnderChest(chest);
             player.addWindow(player.getEnderChestInventory());
         }
 
@@ -170,10 +166,6 @@ public class BlockEnderChest extends BlockTransparentMeta implements Faceable {
     @Override
     public BlockColor getColor() {
         return BlockColor.STONE_BLOCK_COLOR;
-    }
-
-    public Set<Player> getViewers() {
-        return viewers;
     }
 
     @Override

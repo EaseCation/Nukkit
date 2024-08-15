@@ -47,7 +47,7 @@ public class BlockSnowLayer extends BlockFallable {
 
     @Override
     public String getName() {
-        return "Top Snow";
+        return "Snow";
     }
 
     @Override

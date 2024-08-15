@@ -22,7 +22,6 @@ public class BlockRailDetector extends BlockRail {
 
     public BlockRailDetector() {
         this(0);
-        canBePowered = true;
     }
 
     public BlockRailDetector(int meta) {
@@ -110,5 +109,10 @@ public class BlockRailDetector extends BlockRail {
         return new Item[]{
                 Item.get(Item.DETECTOR_RAIL, 0, 1)
         };
+    }
+
+    @Override
+    public boolean canPowered() {
+        return true;
     }
 }

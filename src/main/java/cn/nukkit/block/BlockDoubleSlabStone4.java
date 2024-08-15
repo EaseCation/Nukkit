@@ -2,6 +2,9 @@ package cn.nukkit.block;
 
 import cn.nukkit.utils.BlockColor;
 
+import static cn.nukkit.GameVersion.*;
+import static cn.nukkit.SharedConstants.*;
+
 public class BlockDoubleSlabStone4 extends BlockDoubleSlabStone {
 
     public static final int TYPE_MOSSY_STONE_BRICK = 0;
@@ -37,6 +40,14 @@ public class BlockDoubleSlabStone4 extends BlockDoubleSlabStone {
     @Override
     public String getName() {
         return NAMES[getSlabType()];
+    }
+
+    @Override
+    public float getHardness() {
+        if ((ENABLE_BLOCK_DESTROY_SPEED_COMPATIBILITY || V1_21_20.isAvailable()) && getSlabType() == TYPE_MOSSY_STONE_BRICK) {
+            return 1.5f;
+        }
+        return super.getHardness();
     }
 
     @Override

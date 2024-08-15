@@ -16,7 +16,7 @@ public class BlockBricksNether extends BlockSolid {
 
     @Override
     public String getName() {
-        return "Nether Brick";
+        return "Nether Bricks";
     }
 
     @Override

@@ -20,7 +20,7 @@ public class BlockDandelion extends BlockFlower {
 
     @Override
     public int getId() {
-        return YELLOW_FLOWER;
+        return DANDELION;
     }
 
     @Override

@@ -10,6 +10,6 @@ public class ItemSmithingTemplateArmorTrimWard extends Item {
     }
 
     public ItemSmithingTemplateArmorTrimWard(Integer meta, int count) {
-        super(WARD_ARMOR_TRIM_SMITHING_TEMPLATE, meta, count, "Smithing Template");
+        super(WARD_ARMOR_TRIM_SMITHING_TEMPLATE, meta, count, "Ward Armor Trim");
     }
 }

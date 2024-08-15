@@ -12,20 +12,24 @@ import cn.nukkit.utils.Faceable;
  * Created by Pub4Game on 27.12.2015.
  */
 public class BlockAnvil extends BlockFallable implements Faceable {
+    public static final int UNDAMAGED = 0 << 2;
+    public static final int SLIGHTLY_DAMAGED = 1 << 2;
+    public static final int VERY_DAMAGED = 2 << 2;
+    public static final int BROKEN = 3 << 2;
 
     private static final String[] NAMES = new String[]{
             "Anvil",
             "Anvil",
             "Anvil",
             "Anvil",
-            "Slighty Damaged Anvil",
-            "Slighty Damaged Anvil",
-            "Slighty Damaged Anvil",
-            "Slighty Damaged Anvil",
-            "Very Damaged Anvil",
-            "Very Damaged Anvil",
-            "Very Damaged Anvil",
-            "Very Damaged Anvil"
+            "Chipped Anvil",
+            "Chipped Anvil",
+            "Chipped Anvil",
+            "Chipped Anvil",
+            "Damaged Anvil",
+            "Damaged Anvil",
+            "Damaged Anvil",
+            "Damaged Anvil"
     };
 
     private static final int[] FACES = {1, 2, 3, 0};

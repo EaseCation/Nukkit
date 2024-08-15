@@ -32,8 +32,6 @@ import static cn.nukkit.GameVersion.*;
  */
 public abstract class BlockPistonBase extends BlockTransparentMeta implements Faceable {
 
-    public boolean sticky = false;
-
     public BlockPistonBase() {
         this(0);
     }
@@ -81,7 +79,7 @@ public abstract class BlockPistonBase extends BlockTransparentMeta implements Fa
 
         CompoundTag nbt = BlockEntity.getDefaultCompound(this, BlockEntity.PISTON_ARM)
                 .putInt("facing", this.getBlockFace().getIndex())
-                .putBoolean("Sticky", this.sticky);
+                .putBoolean("Sticky", this.isSticky());
 
         BlockEntityPistonArm piston = (BlockEntityPistonArm) BlockEntities.createBlockEntity(BlockEntityType.PISTON_ARM, this.level.getChunk(getChunkX(), getChunkZ()), nbt);
         piston.powered = isPowered();
@@ -234,7 +232,7 @@ public abstract class BlockPistonBase extends BlockTransparentMeta implements Fa
             return false;
         }
 
-        if (canMove && (this.sticky || extending)) {
+        if (canMove && (this.isSticky() || extending)) {
             List<Block> destroyBlocks = calculator.getBlocksToDestroy();
             for (int i = destroyBlocks.size() - 1; i >= 0; --i) {
                 Block block = destroyBlocks.get(i);
@@ -302,7 +300,7 @@ public abstract class BlockPistonBase extends BlockTransparentMeta implements Fa
         if (extending) {
             Vector3 pos = this.getSide(direction);
             level.setExtraBlock(pos, Blocks.air(), true, false);
-            if (this.sticky && Block.list[STICKY_PISTON_ARM_COLLISION] != null) {
+            if (this.isSticky() && Block.list[STICKY_PISTON_ARM_COLLISION] != null) {
                 this.level.setBlock(pos, get(STICKY_PISTON_ARM_COLLISION, this.getDamage()), true);
             } else {
                 this.level.setBlock(pos, get(PISTON_ARM_COLLISION, this.getDamage()), true);
@@ -386,7 +384,7 @@ public abstract class BlockPistonBase extends BlockTransparentMeta implements Fa
                 this.blockToMove = getSide(face);
             } else {
                 this.moveDirection = face.getOpposite();
-                if (sticky) {
+                if (isSticky()) {
                     this.blockToMove = getSide(face, 2);
                 } else {
                     this.blockToMove = null;
@@ -395,7 +393,7 @@ public abstract class BlockPistonBase extends BlockTransparentMeta implements Fa
         }
 
         public boolean canMove() {
-            if (!sticky && !extending) {
+            if (!isSticky() && !extending) {
                 return true;
             }
 
@@ -581,4 +579,6 @@ public abstract class BlockPistonBase extends BlockTransparentMeta implements Fa
     public int getToolType() {
         return BlockToolType.PICKAXE;
     }
+
+    protected abstract boolean isSticky();
 }

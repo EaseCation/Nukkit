@@ -85,6 +85,10 @@ public class BlockDripleafSmall extends BlockTransparentMeta implements Faceable
             return false;
         }
 
+        if (!level.getHeightRange().isValidBlockY(getFloorY() + 1)) {
+            return false;
+        }
+
         Block above = up();
         if (!above.isAir() && !above.isWater()) {
             return false;

@@ -14,6 +14,7 @@ public class ObjectSavannaTree extends TreeGenerator {
     private static final Block TRUNK = Block.get(BlockID.LOG2, BlockWood2.ACACIA);
     private static final Block LEAF = Block.get(BlockID.LEAVES2, BlockLeaves2.ACACIA);
 
+    @Override
     public boolean generate(ChunkManager level, NukkitRandom rand, BlockVector3 position) {
         int i = rand.nextBoundedInt(3) + rand.nextBoundedInt(3) + 5;
         boolean flag = true;
@@ -110,7 +111,7 @@ public class ObjectSavannaTree extends TreeGenerator {
                     if (face1 != face) {
                         int l3 = k2 - rand.nextBoundedInt(2) - 1;
                         int k4 = 1 + rand.nextBoundedInt(3);
-                        k1 = 0;
+                        k1 = heightRange.getMinY();
 
                         for (int l4 = l3; l4 < i && k4 > 0; --k4) {
                             if (l4 >= 1) {
@@ -129,7 +130,7 @@ public class ObjectSavannaTree extends TreeGenerator {
                             ++l4;
                         }
 
-                        if (k1 > 0) {
+                        if (k1 > heightRange.getMinY()) {
                             BlockVector3 blockpos3 = new BlockVector3(i3, k1, j1);
 
                             for (int i5 = -2; i5 <= 2; ++i5) {

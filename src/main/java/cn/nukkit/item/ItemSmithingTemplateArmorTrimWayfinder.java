@@ -10,6 +10,6 @@ public class ItemSmithingTemplateArmorTrimWayfinder extends Item {
     }
 
     public ItemSmithingTemplateArmorTrimWayfinder(Integer meta, int count) {
-        super(WAYFINDER_ARMOR_TRIM_SMITHING_TEMPLATE, meta, count, "Smithing Template");
+        super(WAYFINDER_ARMOR_TRIM_SMITHING_TEMPLATE, meta, count, "Wayfinder Armor Trim");
     }
 }

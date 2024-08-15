@@ -6,6 +6,8 @@ import cn.nukkit.item.ItemTool;
 import cn.nukkit.item.enchantment.Enchantment;
 import cn.nukkit.utils.BlockColor;
 
+import static cn.nukkit.GameVersion.*;
+
 public class BlockMonsterEgg extends BlockSolidMeta {
     public static final int TYPE_STONE = 0;
     public static final int TYPE_COBBLESTONE = 1;
@@ -17,7 +19,7 @@ public class BlockMonsterEgg extends BlockSolidMeta {
     private static final String[] NAMES = new String[]{
             "Infested Stone",
             "Infested Cobblestone",
-            "Infested Stone Brick",
+            "Infested Stone Bricks",
             "Infested Mossy Stone Brick",
             "Infested Cracked Stone Brick",
             "Infested Chiseled Stone Brick",
@@ -40,6 +42,9 @@ public class BlockMonsterEgg extends BlockSolidMeta {
 
     @Override
     public float getHardness() {
+        if (V1_21_20.isAvailable() && getDamage() == TYPE_COBBLESTONE) {
+            return 1;
+        }
         return 0.75f;
     }
 

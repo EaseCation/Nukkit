@@ -9,7 +9,6 @@ import cn.nukkit.level.Level;
 import cn.nukkit.level.generator.object.ObjectTallGrass;
 import cn.nukkit.level.particle.BoneMealParticle;
 import cn.nukkit.math.BlockFace;
-import cn.nukkit.math.NukkitRandom;
 import cn.nukkit.network.protocol.LevelSoundEventPacket;
 import cn.nukkit.utils.BlockColor;
 
@@ -57,7 +56,7 @@ public class BlockGrass extends BlockDirt {
                 item.count--;
             }
             this.level.addParticle(new BoneMealParticle(this));
-            ObjectTallGrass.growGrass(this.getLevel(), this.asBlockVector3(), NukkitRandom.current());
+            ObjectTallGrass.growGrass(this.getLevel(), this.asBlockVector3());
             return true;
         }
         if (item.isHoe()) {

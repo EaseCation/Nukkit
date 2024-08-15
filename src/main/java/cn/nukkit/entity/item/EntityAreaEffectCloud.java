@@ -276,6 +276,8 @@ public class EntityAreaEffectCloud extends Entity {
                 continue;
             }
 
+            boolean consume = false;
+
 //            Potion.getPotion(potionId).applyPotion(entity, 0.25f, 0.5f);
             for (Effect effect : mobEffects.values()) {
                 switch (effect.getId()) {
@@ -284,6 +286,7 @@ public class EntityAreaEffectCloud extends Entity {
                             level.addLevelSoundEvent(entity.upVec(), LevelSoundEventPacket.SOUND_FIZZ);
                             level.addLevelEvent(entity, LevelEventPacket.EVENT_PARTICLE_FIZZ_EFFECT, 513);
                             entity.extinguish();
+                            consume = true;
                         }
                         break;
                     case Effect.INSTANT_HEALTH:
@@ -299,6 +302,7 @@ public class EntityAreaEffectCloud extends Entity {
                         } else {
                             entity.heal(new EntityRegainHealthEvent(entity, 0.5f * (4 << effect.getAmplifier()), EntityRegainHealthEvent.CAUSE_MAGIC));
                         }
+                        consume = true;
                         break;
                     case Effect.INSTANT_DAMAGE:
                         if (!entity.canBeAffected(effect.getId())) {
@@ -311,20 +315,26 @@ public class EntityAreaEffectCloud extends Entity {
                         } else {
                             entity.attack(new EntityDamageEvent(entity, DamageCause.MAGIC, 0.5f * (6 << effect.getAmplifier())));
                         }
+                        consume = true;
                         break;
                     case Effect.SATURATION:
                         if (entity instanceof Player player) {
                             int level = 1 + effect.getAmplifier();
                             player.getFoodData().addFoodLevel(level, level * 2);
+                            consume = true;
                         }
                         break;
                     default:
+                        if (!entity.canBeAffected(effect.getId())) {
+                            break;
+                        }
                         entity.addEffect(effect.clone().setDuration(effect.getDuration() / 4));
+                        consume = true;
                         break;
                 }
             }
 
-            if (radiusOnUse != 0) {
+            if (consume && radiusOnUse != 0) {
                 radius += radiusOnUse;
 
                 if (radius < 0.5f) {

@@ -339,7 +339,9 @@ public class LevelDbChunk extends BaseChunk {
             this.setInternalSection(index, getProviderHandle().getSubChunkFactory().create(index));
             return this.sections[index].getAndSetBlock(layer, x, y & 0xf, z, block);
         } finally {
-            removeInvalidTile(x, y, z);
+            if (layer == 0) {
+                removeInvalidTile(x, y, z);
+            }
         }
     }
 
@@ -353,7 +355,9 @@ public class LevelDbChunk extends BaseChunk {
             this.setInternalSection(index, getProviderHandle().getSubChunkFactory().create(index));
             return this.sections[index].setFullBlockId(layer, x, y & 0xf, z, fullId);
         } finally {
-            removeInvalidTile(x, y, z);
+            if (layer == 0) {
+                removeInvalidTile(x, y, z);
+            }
         }
     }
 
@@ -367,7 +371,9 @@ public class LevelDbChunk extends BaseChunk {
             this.setInternalSection(index, getProviderHandle().getSubChunkFactory().create(index));
             return this.sections[index].setBlock(layer, x, y & 0xf, z, blockId, meta);
         } finally {
-            removeInvalidTile(x, y, z);
+            if (layer == 0) {
+                removeInvalidTile(x, y, z);
+            }
         }
     }
 
@@ -381,7 +387,9 @@ public class LevelDbChunk extends BaseChunk {
             this.setInternalSection(index, getProviderHandle().getSubChunkFactory().create(index));
             this.sections[index].setBlockId(layer, x, y & 0xf, z, id);
         } finally {
-            removeInvalidTile(x, y, z);
+            if (layer == 0) {
+                removeInvalidTile(x, y, z);
+            }
         }
     }
 
@@ -405,7 +413,9 @@ public class LevelDbChunk extends BaseChunk {
             this.setInternalSection(index, getProviderHandle().getSubChunkFactory().create(index));
             this.sections[index].setBlockData(layer, x, y & 0xf, z, data);
         } finally {
-            removeInvalidTile(x, y, z);
+            if (layer == 0) {
+                removeInvalidTile(x, y, z);
+            }
         }
     }
 

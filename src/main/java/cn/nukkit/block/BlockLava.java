@@ -181,7 +181,8 @@ public class BlockLava extends BlockLiquid {
             if (this.getDamage() == 0) {
                 this.liquidCollide(colliding, Block.get(BlockID.OBSIDIAN), layer);
                 return;
-            } else if (this.getDamage() <= 4) {
+            }
+            if (this.getDamage() < DOWNWARD_BIT) {
                 this.liquidCollide(colliding, Block.get(BlockID.COBBLESTONE), layer);
                 return;
             }

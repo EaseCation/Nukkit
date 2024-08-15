@@ -18,6 +18,7 @@ public class MobArmorEquipmentPacket extends DataPacket {
 
     public long eid;
     public Item[] slots = new Item[4];
+    public Item body;
 
     @Override
     public void decode() {

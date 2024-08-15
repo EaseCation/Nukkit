@@ -2,17 +2,19 @@ package cn.nukkit.level.generator.object;
 
 import cn.nukkit.block.Block;
 import cn.nukkit.block.BlockTallGrass;
-import cn.nukkit.level.ChunkManager;
+import cn.nukkit.level.Level;
 import cn.nukkit.math.BlockVector3;
-import cn.nukkit.math.NukkitRandom;
+
+import java.util.concurrent.ThreadLocalRandom;
 
 /**
  * author: ItsLucas
  * Nukkit Project
  */
 public class ObjectTallGrass {
-    public static void growGrass(ChunkManager level, BlockVector3 pos, NukkitRandom random) {
-        for (int i = 0; i < 128; ++i) {
+    public static void growGrass(Level level, BlockVector3 pos) {
+        ThreadLocalRandom random = ThreadLocalRandom.current();
+        for (int i = 16; i < 64; ++i) {
             int num = 0;
 
             int x = pos.getX();
@@ -21,27 +23,32 @@ public class ObjectTallGrass {
 
             while (true) {
                 if (num >= i / 16) {
-                    if (level.getBlockIdAt(0, x, y, z) == Block.AIR) {
-                        if (random.nextBoundedInt(8) == 0) {
-                            //porktodo: biomes have specific flower types that can grow in them
-                            if (random.nextBoolean()) {
-                                level.setBlockAt(0, x, y, z, Block.YELLOW_FLOWER);
+                    if (level.getBlock(x, y, z).isAir()) {
+                        int randomValue = random.nextInt(8);
+                        if (randomValue == 0) {
+                            //TODO: biomes have specific flower types that can grow in them
+                            int flowerType = random.nextInt(12);
+                            if (flowerType == 11) {
+                                level.setBlock(x, y, z, Block.get(Block.DANDELION));
                             } else {
-                                level.setBlockAt(0, x, y, z, Block.RED_FLOWER);
+                                level.setBlock(x, y, z, Block.get(Block.RED_FLOWER, flowerType));
                             }
                         } else {
-                            level.setBlockAt(0, x, y, z, Block.SHORT_GRASS, BlockTallGrass.TYPE_GRASS);
+                            level.setBlock(x, y, z, Block.get(Block.SHORT_GRASS, randomValue == 2 ? BlockTallGrass.TYPE_FERN : BlockTallGrass.TYPE_GRASS));
                         }
                     }
 
                     break;
                 }
 
-                x += random.nextRange(-1, 1);
-                y += random.nextRange(-1, 1) * random.nextBoundedInt(3) / 2;
-                z += random.nextRange(-1, 1);
+                x += random.nextInt(-1, 2);
+                y += random.nextInt(-1, 2) * random.nextInt(3) / 2;
+                z += random.nextInt(-1, 2);
 
-                if (level.getBlockIdAt(0, x, y - 1, z) != Block.GRASS_BLOCK || !level.getHeightRange().isValidBlockY(y)) {
+                if (!level.getHeightRange().isValidBlockY(y)) {
+                    break;
+                }
+                if (level.getBlock(0, x, y - 1, z).getId() != Block.GRASS_BLOCK) {
                     break;
                 }
 

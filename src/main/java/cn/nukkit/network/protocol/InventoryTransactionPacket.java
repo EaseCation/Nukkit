@@ -34,6 +34,10 @@ public class InventoryTransactionPacket extends DataPacket implements InventoryT
     public static final int ACTION_MAGIC_SLOT_CREATIVE_DELETE_ITEM = 0;
     public static final int ACTION_MAGIC_SLOT_CREATIVE_CREATE_ITEM = 1;
 
+    public static final int USE_ITEM_TRIGGER_TYPE_UNKNOWN = 0;
+    public static final int USE_ITEM_TRIGGER_TYPE_PLAYER_INPUT = 1;
+    public static final int USE_ITEM_TRIGGER_TYPE_SIMULATION_TICK = 2;
+
     public int transactionType;
     public NetworkInventoryAction[] actions;
     public TransactionData transactionData;

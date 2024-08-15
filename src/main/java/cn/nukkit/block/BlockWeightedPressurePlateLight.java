@@ -28,7 +28,7 @@ public class BlockWeightedPressurePlateLight extends BlockPressurePlateBase {
 
     @Override
     public String getName() {
-        return "Weighted Pressure Plate (Light)";
+        return "Light Weighted Pressure Plate";
     }
 
     @Override

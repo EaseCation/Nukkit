@@ -24,7 +24,7 @@ public class BlockLight extends BlockTransparentMeta {
 
     @Override
     public String getName() {
-        return "Light Block";
+        return "Light";
     }
 
     @Override

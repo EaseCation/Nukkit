@@ -57,6 +57,7 @@ public interface GlobalBlockPaletteInterface {
         V1_20_70(662, false),
         V1_20_80(671, false),
         V1_21_0(685, false),
+        V1_21_20(712, false),
         ;
 
         private static final StaticVersion MINIMUM_AVAILABLE_VERSION = V1_18_30;

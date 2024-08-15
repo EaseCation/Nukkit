@@ -115,7 +115,7 @@ public class BlockBed extends BlockTransparentMeta implements Faceable {
 
             int time = this.getLevel().getTime() % Level.TIME_FULL;
             boolean isNight = (time >= Level.TIME_NIGHT && time < Level.TIME_SUNRISE);
-            if (!isNight && !this.level.isRaining()) {
+            if (!isNight && !this.level.isThundering()) {
                 player.sendMessage(new TranslationContainer("tile.bed.noSleep"));
                 return true;
             }

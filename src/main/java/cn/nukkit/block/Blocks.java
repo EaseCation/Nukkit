@@ -88,7 +88,7 @@ public final class Blocks {
         registerBlock(BlockNames.PISTON, ItemBlockNames.PISTON, PISTON, BlockPiston.class);
         registerBlock(BlockNames.PISTON_ARM_COLLISION, ItemBlockNames.PISTON_ARM_COLLISION, PISTON_ARM_COLLISION, BlockPistonHead.class);
         registerBlock(BlockNames.WOOL, ItemBlockNames.WOOL, WOOL, BlockWool.class);
-        registerBlock(BlockNames.YELLOW_FLOWER, ItemBlockNames.YELLOW_FLOWER, YELLOW_FLOWER, BlockDandelion.class);
+        registerBlock(BlockNames.YELLOW_FLOWER, ItemBlockNames.YELLOW_FLOWER, DANDELION, BlockDandelion.class);
         registerBlock(BlockNames.RED_FLOWER, ItemBlockNames.RED_FLOWER, RED_FLOWER, BlockFlower.class);
         registerBlock(BlockNames.BROWN_MUSHROOM, ItemBlockNames.BROWN_MUSHROOM, BROWN_MUSHROOM, BlockMushroomBrown.class);
         registerBlock(BlockNames.RED_MUSHROOM, ItemBlockNames.RED_MUSHROOM, RED_MUSHROOM, BlockMushroomRed.class);
@@ -840,6 +840,7 @@ public final class Blocks {
 
         registerBlockAlias(BlockNames.SHORT_GRASS, BlockNames.TALLGRASS, V1_21_0);
 
+        registerBlockAlias(BlockNames.DANDELION, BlockNames.YELLOW_FLOWER, V1_21_20);
     }
 
     @SuppressWarnings("deprecation")
@@ -882,6 +883,7 @@ public final class Blocks {
 
         registerItemAlias(ItemBlockNames.SHORT_GRASS, ItemBlockNames.TALLGRASS, V1_21_0);
 
+        registerItemAlias(ItemBlockNames.DANDELION, ItemBlockNames.YELLOW_FLOWER, V1_21_20);
     }
 
     private static void registerComplexAliases() {
@@ -1193,6 +1195,153 @@ public final class Blocks {
         registerComplexAlias(ItemBlockNames.QUARTZ_SLAB, STONE_SLAB, BlockSlabStone.TYPE_QUARTZ, V1_21_0);
         registerComplexAlias(ItemBlockNames.NETHER_BRICK_SLAB, STONE_SLAB, BlockSlabStone.TYPE_NETHER_BRICK, V1_21_0);
 
+        registerComplexAlias(ItemBlockNames.SMOOTH_STONE_DOUBLE_SLAB, DOUBLE_STONE_SLAB, BlockDoubleSlabStone.TYPE_SMOOTH_STONE, V1_21_20);
+        registerComplexAlias(ItemBlockNames.SANDSTONE_DOUBLE_SLAB, DOUBLE_STONE_SLAB, BlockDoubleSlabStone.TYPE_SANDSTONE, V1_21_20);
+        registerComplexAlias(ItemBlockNames.PETRIFIED_OAK_DOUBLE_SLAB, DOUBLE_STONE_SLAB, BlockDoubleSlabStone.TYPE_WOOD, V1_21_20);
+        registerComplexAlias(ItemBlockNames.COBBLESTONE_DOUBLE_SLAB, DOUBLE_STONE_SLAB, BlockDoubleSlabStone.TYPE_COBBLESTONE, V1_21_20);
+        registerComplexAlias(ItemBlockNames.BRICK_DOUBLE_SLAB, DOUBLE_STONE_SLAB, BlockDoubleSlabStone.TYPE_BRICK, V1_21_20);
+        registerComplexAlias(ItemBlockNames.STONE_BRICK_DOUBLE_SLAB, DOUBLE_STONE_SLAB, BlockDoubleSlabStone.TYPE_STONE_BRICK, V1_21_20);
+        registerComplexAlias(ItemBlockNames.QUARTZ_DOUBLE_SLAB, DOUBLE_STONE_SLAB, BlockDoubleSlabStone.TYPE_QUARTZ, V1_21_20);
+        registerComplexAlias(ItemBlockNames.NETHER_BRICK_DOUBLE_SLAB, DOUBLE_STONE_SLAB, BlockDoubleSlabStone.TYPE_NETHER_BRICK, V1_21_20);
+
+        registerComplexAlias(ItemBlockNames.RED_SANDSTONE_SLAB, STONE_SLAB2, BlockSlabRedSandstone.TYPE_RED_SANDSTONE, V1_21_20);
+        registerComplexAlias(ItemBlockNames.PURPUR_SLAB, STONE_SLAB2, BlockSlabRedSandstone.TYPE_PURPUR, V1_21_20);
+        registerComplexAlias(ItemBlockNames.PRISMARINE_SLAB, STONE_SLAB2, BlockSlabRedSandstone.TYPE_PRISMARINE_ROUGH, V1_21_20);
+        registerComplexAlias(ItemBlockNames.DARK_PRISMARINE_SLAB, STONE_SLAB2, BlockSlabRedSandstone.TYPE_PRISMARINE_DARK, V1_21_20);
+        registerComplexAlias(ItemBlockNames.PRISMARINE_BRICK_SLAB, STONE_SLAB2, BlockSlabRedSandstone.TYPE_PRISMARINE_BRICK, V1_21_20);
+        registerComplexAlias(ItemBlockNames.MOSSY_COBBLESTONE_SLAB, STONE_SLAB2, BlockSlabRedSandstone.TYPE_MOSSY_COBBLESTONE, V1_21_20);
+        registerComplexAlias(ItemBlockNames.SMOOTH_SANDSTONE_SLAB, STONE_SLAB2, BlockSlabRedSandstone.TYPE_SMOOTH_SANDSTONE, V1_21_20);
+        registerComplexAlias(ItemBlockNames.RED_NETHER_BRICK_SLAB, STONE_SLAB2, BlockSlabRedSandstone.TYPE_RED_NETHER_BRICK, V1_21_20);
+
+        registerComplexAlias(ItemBlockNames.RED_SANDSTONE_DOUBLE_SLAB, DOUBLE_STONE_SLAB2, BlockDoubleSlabRedSandstone.TYPE_RED_SANDSTONE, V1_21_20);
+        registerComplexAlias(ItemBlockNames.PURPUR_DOUBLE_SLAB, DOUBLE_STONE_SLAB2, BlockDoubleSlabRedSandstone.TYPE_PURPUR, V1_21_20);
+        registerComplexAlias(ItemBlockNames.PRISMARINE_DOUBLE_SLAB, DOUBLE_STONE_SLAB2, BlockDoubleSlabRedSandstone.TYPE_PRISMARINE_ROUGH, V1_21_20);
+        registerComplexAlias(ItemBlockNames.DARK_PRISMARINE_DOUBLE_SLAB, DOUBLE_STONE_SLAB2, BlockDoubleSlabRedSandstone.TYPE_PRISMARINE_DARK, V1_21_20);
+        registerComplexAlias(ItemBlockNames.PRISMARINE_BRICK_DOUBLE_SLAB, DOUBLE_STONE_SLAB2, BlockDoubleSlabRedSandstone.TYPE_PRISMARINE_BRICK, V1_21_20);
+        registerComplexAlias(ItemBlockNames.MOSSY_COBBLESTONE_DOUBLE_SLAB, DOUBLE_STONE_SLAB2, BlockDoubleSlabRedSandstone.TYPE_MOSSY_COBBLESTONE, V1_21_20);
+        registerComplexAlias(ItemBlockNames.SMOOTH_SANDSTONE_DOUBLE_SLAB, DOUBLE_STONE_SLAB2, BlockDoubleSlabRedSandstone.TYPE_SMOOTH_SANDSTONE, V1_21_20);
+        registerComplexAlias(ItemBlockNames.RED_NETHER_BRICK_DOUBLE_SLAB, DOUBLE_STONE_SLAB2, BlockDoubleSlabRedSandstone.TYPE_RED_NETHER_BRICK, V1_21_20);
+
+        registerComplexAlias(ItemBlockNames.END_STONE_BRICK_SLAB, STONE_SLAB3, BlockSlabStone3.TYPE_END_STONE_BRICK, V1_21_20);
+        registerComplexAlias(ItemBlockNames.SMOOTH_RED_SANDSTONE_SLAB, STONE_SLAB3, BlockSlabStone3.TYPE_SMOOTH_RED_SANDSTONE, V1_21_20);
+        registerComplexAlias(ItemBlockNames.POLISHED_ANDESITE_SLAB, STONE_SLAB3, BlockSlabStone3.TYPE_POLISHED_ANDESITE, V1_21_20);
+        registerComplexAlias(ItemBlockNames.ANDESITE_SLAB, STONE_SLAB3, BlockSlabStone3.TYPE_ANDESITE, V1_21_20);
+        registerComplexAlias(ItemBlockNames.DIORITE_SLAB, STONE_SLAB3, BlockSlabStone3.TYPE_DIORITE, V1_21_20);
+        registerComplexAlias(ItemBlockNames.POLISHED_DIORITE_SLAB, STONE_SLAB3, BlockSlabStone3.TYPE_POLISHED_DIORITE, V1_21_20);
+        registerComplexAlias(ItemBlockNames.GRANITE_SLAB, STONE_SLAB3, BlockSlabStone3.TYPE_GRANITE, V1_21_20);
+        registerComplexAlias(ItemBlockNames.POLISHED_GRANITE_SLAB, STONE_SLAB3, BlockSlabStone3.TYPE_POLISHED_GRANITE, V1_21_20);
+
+        registerComplexAlias(ItemBlockNames.END_STONE_BRICK_DOUBLE_SLAB, DOUBLE_STONE_SLAB3, BlockDoubleSlabStone3.TYPE_END_STONE_BRICK, V1_21_20);
+        registerComplexAlias(ItemBlockNames.SMOOTH_RED_SANDSTONE_DOUBLE_SLAB, DOUBLE_STONE_SLAB3, BlockDoubleSlabStone3.TYPE_SMOOTH_RED_SANDSTONE, V1_21_20);
+        registerComplexAlias(ItemBlockNames.POLISHED_ANDESITE_DOUBLE_SLAB, DOUBLE_STONE_SLAB3, BlockDoubleSlabStone3.TYPE_POLISHED_ANDESITE, V1_21_20);
+        registerComplexAlias(ItemBlockNames.ANDESITE_DOUBLE_SLAB, DOUBLE_STONE_SLAB3, BlockDoubleSlabStone3.TYPE_ANDESITE, V1_21_20);
+        registerComplexAlias(ItemBlockNames.DIORITE_DOUBLE_SLAB, DOUBLE_STONE_SLAB3, BlockDoubleSlabStone3.TYPE_DIORITE, V1_21_20);
+        registerComplexAlias(ItemBlockNames.POLISHED_DIORITE_DOUBLE_SLAB, DOUBLE_STONE_SLAB3, BlockDoubleSlabStone3.TYPE_POLISHED_DIORITE, V1_21_20);
+        registerComplexAlias(ItemBlockNames.GRANITE_DOUBLE_SLAB, DOUBLE_STONE_SLAB3, BlockDoubleSlabStone3.TYPE_GRANITE, V1_21_20);
+        registerComplexAlias(ItemBlockNames.POLISHED_GRANITE_DOUBLE_SLAB, DOUBLE_STONE_SLAB3, BlockDoubleSlabStone3.TYPE_POLISHED_GRANITE, V1_21_20);
+
+        registerComplexAlias(ItemBlockNames.MOSSY_STONE_BRICK_SLAB, STONE_SLAB4, BlockSlabStone4.TYPE_MOSSY_STONE_BRICK, V1_21_20);
+        registerComplexAlias(ItemBlockNames.SMOOTH_QUARTZ_SLAB, STONE_SLAB4, BlockSlabStone4.TYPE_SMOOTH_QUARTZ, V1_21_20);
+        registerComplexAlias(ItemBlockNames.NORMAL_STONE_SLAB, STONE_SLAB4, BlockSlabStone4.TYPE_STONE, V1_21_20);
+        registerComplexAlias(ItemBlockNames.CUT_SANDSTONE_SLAB, STONE_SLAB4, BlockSlabStone4.TYPE_CUT_SANDSTONE, V1_21_20);
+        registerComplexAlias(ItemBlockNames.CUT_RED_SANDSTONE_SLAB, STONE_SLAB4, BlockSlabStone4.TYPE_CUT_RED_SANDSTONE, V1_21_20);
+
+        registerComplexAlias(ItemBlockNames.MOSSY_STONE_BRICK_DOUBLE_SLAB, DOUBLE_STONE_SLAB4, BlockDoubleSlabStone4.TYPE_MOSSY_STONE_BRICK, V1_21_20);
+        registerComplexAlias(ItemBlockNames.SMOOTH_QUARTZ_DOUBLE_SLAB, DOUBLE_STONE_SLAB4, BlockDoubleSlabStone4.TYPE_SMOOTH_QUARTZ, V1_21_20);
+        registerComplexAlias(ItemBlockNames.NORMAL_STONE_DOUBLE_SLAB, DOUBLE_STONE_SLAB4, BlockDoubleSlabStone4.TYPE_STONE, V1_21_20);
+        registerComplexAlias(ItemBlockNames.CUT_SANDSTONE_DOUBLE_SLAB, DOUBLE_STONE_SLAB4, BlockDoubleSlabStone4.TYPE_CUT_SANDSTONE, V1_21_20);
+        registerComplexAlias(ItemBlockNames.CUT_RED_SANDSTONE_DOUBLE_SLAB, DOUBLE_STONE_SLAB4, BlockDoubleSlabStone4.TYPE_CUT_RED_SANDSTONE, V1_21_20);
+
+        registerComplexAlias(ItemBlockNames.TUBE_CORAL_WALL_FAN, CORAL_FAN_HANG, BlockCoralFanHang.BLUE, V1_21_20);
+        registerComplexAlias(ItemBlockNames.BRAIN_CORAL_WALL_FAN, CORAL_FAN_HANG, BlockCoralFanHang.PINK, V1_21_20);
+        registerComplexAlias(ItemBlockNames.BUBBLE_CORAL_WALL_FAN, CORAL_FAN_HANG2, BlockCoralFanHang2.PURPLE, V1_21_20);
+        registerComplexAlias(ItemBlockNames.FIRE_CORAL_WALL_FAN, CORAL_FAN_HANG2, BlockCoralFanHang2.RED, V1_21_20);
+        registerComplexAlias(ItemBlockNames.HORN_CORAL_WALL_FAN, CORAL_FAN_HANG3, BlockCoralFanHang3.YELLOW, V1_21_20);
+
+        registerComplexAlias(ItemBlockNames.DEAD_TUBE_CORAL_WALL_FAN, CORAL_FAN_HANG, BlockCoralFanHang.DEAD_BIT | BlockCoralFanHang.BLUE, V1_21_20);
+        registerComplexAlias(ItemBlockNames.DEAD_BRAIN_CORAL_WALL_FAN, CORAL_FAN_HANG, BlockCoralFanHang.DEAD_BIT | BlockCoralFanHang.PINK, V1_21_20);
+        registerComplexAlias(ItemBlockNames.DEAD_BUBBLE_CORAL_WALL_FAN, CORAL_FAN_HANG2, BlockCoralFanHang2.DEAD_BIT | BlockCoralFanHang2.PURPLE, V1_21_20);
+        registerComplexAlias(ItemBlockNames.DEAD_FIRE_CORAL_WALL_FAN, CORAL_FAN_HANG2, BlockCoralFanHang2.DEAD_BIT | BlockCoralFanHang2.RED, V1_21_20);
+        registerComplexAlias(ItemBlockNames.DEAD_HORN_CORAL_WALL_FAN, CORAL_FAN_HANG3, BlockCoralFanHang3.DEAD_BIT | BlockCoralFanHang3.YELLOW, V1_21_20);
+
+        registerComplexAlias(ItemBlockNames.INFESTED_STONE, MONSTER_EGG, BlockMonsterEgg.TYPE_STONE, V1_21_20);
+        registerComplexAlias(ItemBlockNames.INFESTED_COBBLESTONE, MONSTER_EGG, BlockMonsterEgg.TYPE_COBBLESTONE, V1_21_20);
+        registerComplexAlias(ItemBlockNames.INFESTED_STONE_BRICKS, MONSTER_EGG, BlockMonsterEgg.TYPE_STONE_BRICK, V1_21_20);
+        registerComplexAlias(ItemBlockNames.INFESTED_MOSSY_STONE_BRICKS, MONSTER_EGG, BlockMonsterEgg.TYPE_MOSSY_BRICK, V1_21_20);
+        registerComplexAlias(ItemBlockNames.INFESTED_CRACKED_STONE_BRICKS, MONSTER_EGG, BlockMonsterEgg.TYPE_CRACKED_BRICK, V1_21_20);
+        registerComplexAlias(ItemBlockNames.INFESTED_CHISELED_STONE_BRICKS, MONSTER_EGG, BlockMonsterEgg.TYPE_CHISELED_BRICK, V1_21_20);
+
+        registerComplexAlias(ItemBlockNames.STONE_BRICKS, STONEBRICK, BlockBricksStone.NORMAL, V1_21_20);
+        registerComplexAlias(ItemBlockNames.MOSSY_STONE_BRICKS, STONEBRICK, BlockBricksStone.MOSSY, V1_21_20);
+        registerComplexAlias(ItemBlockNames.CRACKED_STONE_BRICKS, STONEBRICK, BlockBricksStone.CRACKED, V1_21_20);
+        registerComplexAlias(ItemBlockNames.CHISELED_STONE_BRICKS, STONEBRICK, BlockBricksStone.CHISELED, V1_21_20);
+
+        registerComplexAlias(ItemBlockNames.DARK_PRISMARINE, PRISMARINE, BlockPrismarine.DARK, V1_21_20);
+        registerComplexAlias(ItemBlockNames.PRISMARINE_BRICKS, PRISMARINE, BlockPrismarine.BRICKS, V1_21_20);
+
+        registerComplexAlias(ItemBlockNames.CHISELED_SANDSTONE, SANDSTONE, BlockSandstone.CHISELED, V1_21_20);
+        registerComplexAlias(ItemBlockNames.CUT_SANDSTONE, SANDSTONE, BlockSandstone.CUT, V1_21_20);
+        registerComplexAlias(ItemBlockNames.SMOOTH_SANDSTONE, SANDSTONE, BlockSandstone.SMOOTH, V1_21_20);
+
+        registerComplexAlias(ItemBlockNames.CHISELED_RED_SANDSTONE, RED_SANDSTONE, BlockRedSandstone.CHISELED, V1_21_20);
+        registerComplexAlias(ItemBlockNames.CUT_RED_SANDSTONE, RED_SANDSTONE, BlockRedSandstone.CUT, V1_21_20);
+        registerComplexAlias(ItemBlockNames.SMOOTH_RED_SANDSTONE, RED_SANDSTONE, BlockRedSandstone.SMOOTH, V1_21_20);
+
+        registerComplexAlias(ItemBlockNames.RED_SAND, SAND, BlockSand.RED, V1_21_20);
+
+        registerComplexAlias(ItemBlockNames.COARSE_DIRT, DIRT, BlockDirt.TYPE_COARSE_DIRT, V1_21_20);
+
+        registerComplexAlias(ItemBlockNames.LIGHT_BLOCK_0, LIGHT_BLOCK, 0, V1_21_20);
+        registerComplexAlias(ItemBlockNames.LIGHT_BLOCK_1, LIGHT_BLOCK, 1, V1_21_20);
+        registerComplexAlias(ItemBlockNames.LIGHT_BLOCK_2, LIGHT_BLOCK, 2, V1_21_20);
+        registerComplexAlias(ItemBlockNames.LIGHT_BLOCK_3, LIGHT_BLOCK, 3, V1_21_20);
+        registerComplexAlias(ItemBlockNames.LIGHT_BLOCK_4, LIGHT_BLOCK, 4, V1_21_20);
+        registerComplexAlias(ItemBlockNames.LIGHT_BLOCK_5, LIGHT_BLOCK, 5, V1_21_20);
+        registerComplexAlias(ItemBlockNames.LIGHT_BLOCK_6, LIGHT_BLOCK, 6, V1_21_20);
+        registerComplexAlias(ItemBlockNames.LIGHT_BLOCK_7, LIGHT_BLOCK, 7, V1_21_20);
+        registerComplexAlias(ItemBlockNames.LIGHT_BLOCK_8, LIGHT_BLOCK, 8, V1_21_20);
+        registerComplexAlias(ItemBlockNames.LIGHT_BLOCK_9, LIGHT_BLOCK, 9, V1_21_20);
+        registerComplexAlias(ItemBlockNames.LIGHT_BLOCK_10, LIGHT_BLOCK, 10, V1_21_20);
+        registerComplexAlias(ItemBlockNames.LIGHT_BLOCK_11, LIGHT_BLOCK, 11, V1_21_20);
+        registerComplexAlias(ItemBlockNames.LIGHT_BLOCK_12, LIGHT_BLOCK, 12, V1_21_20);
+        registerComplexAlias(ItemBlockNames.LIGHT_BLOCK_13, LIGHT_BLOCK, 13, V1_21_20);
+        registerComplexAlias(ItemBlockNames.LIGHT_BLOCK_14, LIGHT_BLOCK, 14, V1_21_20);
+        registerComplexAlias(ItemBlockNames.LIGHT_BLOCK_15, LIGHT_BLOCK, 15, V1_21_20);
+
+        registerComplexAlias(ItemBlockNames.CHIPPED_ANVIL, ANVIL, BlockAnvil.SLIGHTLY_DAMAGED, V1_21_20);
+        registerComplexAlias(ItemBlockNames.DAMAGED_ANVIL, ANVIL, BlockAnvil.VERY_DAMAGED, V1_21_20);
+        registerComplexAlias(ItemBlockNames.DEPRECATED_ANVIL, ANVIL, BlockAnvil.BROKEN, V1_21_20);
+
+        registerComplexAlias(ItemBlockNames.CHISELED_QUARTZ_BLOCK, QUARTZ_BLOCK, BlockQuartz.CHISELED, V1_21_20);
+        registerComplexAlias(ItemBlockNames.QUARTZ_PILLAR, QUARTZ_BLOCK, BlockQuartz.PILLAR, V1_21_20);
+        registerComplexAlias(ItemBlockNames.SMOOTH_QUARTZ, QUARTZ_BLOCK, BlockQuartz.SMOOTH, V1_21_20);
+/*
+        registerComplexAlias(ItemBlockNames.DEPRECATED_PURPUR_BLOCK_1, PURPUR_BLOCK, BlockPurpur.CHISELED, V1_21_30);
+        registerComplexAlias(ItemBlockNames.PURPUR_PILLAR, PURPUR_BLOCK, BlockPurpur.PILLAR, V1_21_30);
+        registerComplexAlias(ItemBlockNames.DEPRECATED_PURPUR_BLOCK_2, PURPUR_BLOCK, BlockPurpur.SMOOTH, V1_21_30);
+
+        registerComplexAlias(ItemBlockNames.MOSSY_COBBLESTONE_WALL, COBBLESTONE_WALL, BlockWallCobblestone.TYPE_MOSSY_COBBLESTONE, V1_21_30);
+        registerComplexAlias(ItemBlockNames.GRANITE_WALL, COBBLESTONE_WALL, BlockWallCobblestone.TYPE_GRANITE, V1_21_30);
+        registerComplexAlias(ItemBlockNames.DIORITE_WALL, COBBLESTONE_WALL, BlockWallCobblestone.TYPE_DIORITE, V1_21_30);
+        registerComplexAlias(ItemBlockNames.ANDESITE_WALL, COBBLESTONE_WALL, BlockWallCobblestone.TYPE_ANDESITE, V1_21_30);
+        registerComplexAlias(ItemBlockNames.SANDSTONE_WALL, COBBLESTONE_WALL, BlockWallCobblestone.TYPE_SANDSTONE, V1_21_30);
+        registerComplexAlias(ItemBlockNames.BRICK_WALL, COBBLESTONE_WALL, BlockWallCobblestone.TYPE_BRICK, V1_21_30);
+        registerComplexAlias(ItemBlockNames.STONE_BRICK_WALL, COBBLESTONE_WALL, BlockWallCobblestone.TYPE_STONE_BRICK, V1_21_30);
+        registerComplexAlias(ItemBlockNames.MOSSY_STONE_BRICK_WALL, COBBLESTONE_WALL, BlockWallCobblestone.TYPE_MOSSY_STONE_BRICK, V1_21_30);
+        registerComplexAlias(ItemBlockNames.NETHER_BRICK_WALL, COBBLESTONE_WALL, BlockWallCobblestone.TYPE_NETHER_BRICK, V1_21_30);
+        registerComplexAlias(ItemBlockNames.END_STONE_BRICK_WALL, COBBLESTONE_WALL, BlockWallCobblestone.TYPE_END_BRICK, V1_21_30);
+        registerComplexAlias(ItemBlockNames.PRISMARINE_WALL, COBBLESTONE_WALL, BlockWallCobblestone.TYPE_PRISMARINE, V1_21_30);
+        registerComplexAlias(ItemBlockNames.RED_SANDSTONE_WALL, COBBLESTONE_WALL, BlockWallCobblestone.TYPE_RED_SANDSTONE, V1_21_30);
+        registerComplexAlias(ItemBlockNames.RED_NETHER_BRICK_WALL, COBBLESTONE_WALL, BlockWallCobblestone.TYPE_RED_NETHER_BRICK, V1_21_30);
+
+        registerComplexAlias(ItemBlockNames.WET_SPONGE, SPONGE, BlockSponge.WET, V1_21_30);
+
+        registerComplexAlias(ItemBlockNames.COLORED_TORCH_RED, COLORED_TORCH_RG, BlockTorchColoredRedGreen.RED, V1_21_30);
+        registerComplexAlias(ItemBlockNames.COLORED_TORCH_GREEN, COLORED_TORCH_RG, BlockTorchColoredRedGreen.GREEN, V1_21_30);
+
+        registerComplexAlias(ItemBlockNames.COLORED_TORCH_BLUE, COLORED_TORCH_BP, BlockTorchColoredBluePurple.BLUE, V1_21_30);
+        registerComplexAlias(ItemBlockNames.COLORED_TORCH_PURPLE, COLORED_TORCH_BP, BlockTorchColoredBluePurple.PURPLE, V1_21_30);
+*/
     }
 
     private static Class<? extends Block> registerBlock(String blockName, String itemName, int id, Class<? extends Block> clazz) {

@@ -18,7 +18,6 @@ public class BlockRailPowered extends BlockRail {
 
     public BlockRailPowered() {
         this(0);
-        canBePowered = true;
     }
 
     public BlockRailPowered(int meta) {
@@ -192,5 +191,10 @@ public class BlockRailPowered extends BlockRail {
         return new Item[]{
                 Item.get(Item.GOLDEN_RAIL, 0, 1)
         };
+    }
+
+    @Override
+    public boolean canPowered() {
+        return true;
     }
 }

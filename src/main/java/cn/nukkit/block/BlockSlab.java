@@ -33,11 +33,13 @@ public abstract class BlockSlab extends BlockTransparentMeta {
 
         if (face == BlockFace.DOWN) {
             if (isSameSlabType(target) && ((BlockSlab) target).isTopSlot()) {
+                level.setExtraBlock(target, Blocks.air(), true, false);
                 level.setBlock(target, get(getDoubleSlabBlockId(), getSlabType()), true);
                 return true;
             }
 
             if (isSameSlabType(block)) {
+                level.setExtraBlock(block, Blocks.air(), true, false);
                 level.setBlock(block, get(getDoubleSlabBlockId(), getSlabType()), true);
                 return true;
             }
@@ -52,11 +54,13 @@ public abstract class BlockSlab extends BlockTransparentMeta {
         }
         if (face == BlockFace.UP) {
             if (isSameSlabType(target) && !((BlockSlab) target).isTopSlot()) {
+                level.setExtraBlock(target, Blocks.air(), true, false);
                 level.setBlock(target, get(getDoubleSlabBlockId(), getSlabType()), true);
                 return true;
             }
 
             if (isSameSlabType(block)) {
+                level.setExtraBlock(block, Blocks.air(), true, false);
                 level.setBlock(block, get(getDoubleSlabBlockId(), getSlabType()), true);
                 return true;
             }
@@ -73,6 +77,7 @@ public abstract class BlockSlab extends BlockTransparentMeta {
         boolean topSlot = fy > 0.5;
 
         if (isSameSlabType(block) && ((BlockSlab) block).isTopSlot() != topSlot) {
+            level.setExtraBlock(block, Blocks.air(), true, false);
             level.setBlock(block, get(getDoubleSlabBlockId(), getSlabType()), true);
             return true;
         }
@@ -117,6 +122,11 @@ public abstract class BlockSlab extends BlockTransparentMeta {
 
     @Override
     public boolean isSlab() {
+        return true;
+    }
+
+    @Override
+    public boolean isHalfSlab() {
         return true;
     }
 

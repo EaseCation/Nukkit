@@ -1020,6 +1020,9 @@ public class Server {
     }
 
     public void removeOnlinePlayer(Player player) {
+        if (player.getUniqueId() == null) {
+            return;
+        }
         if (this.playerList.remove(player.getUniqueId()) != null) {
             PlayerListPacket pk = new PlayerListPacket();
             pk.type = PlayerListPacket.TYPE_REMOVE;

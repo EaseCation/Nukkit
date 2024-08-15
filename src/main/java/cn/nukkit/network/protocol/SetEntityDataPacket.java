@@ -1,6 +1,10 @@
 package cn.nukkit.network.protocol;
 
 import cn.nukkit.entity.data.EntityMetadata;
+import it.unimi.dsi.fastutil.ints.Int2FloatMap;
+import it.unimi.dsi.fastutil.ints.Int2FloatOpenHashMap;
+import it.unimi.dsi.fastutil.ints.Int2IntMap;
+import it.unimi.dsi.fastutil.ints.Int2IntOpenHashMap;
 import lombok.ToString;
 
 /**
@@ -18,6 +22,9 @@ public class SetEntityDataPacket extends DataPacket {
 
     public long eid;
     public EntityMetadata metadata;
+
+    public Int2IntMap intProperties = new Int2IntOpenHashMap();
+    public Int2FloatMap floatProperties = new Int2FloatOpenHashMap();
 
     @Override
     public void decode() {

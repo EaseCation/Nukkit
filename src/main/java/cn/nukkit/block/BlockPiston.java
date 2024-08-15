@@ -22,4 +22,9 @@ public class BlockPiston extends BlockPistonBase {
     public String getName() {
         return "Piston";
     }
+
+    @Override
+    protected boolean isSticky() {
+        return false;
+    }
 }

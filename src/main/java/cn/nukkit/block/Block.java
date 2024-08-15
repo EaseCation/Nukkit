@@ -39,6 +39,7 @@ import java.util.List;
 import java.util.Objects;
 import java.util.function.Supplier;
 
+import static cn.nukkit.GameVersion.*;
 import static cn.nukkit.SharedConstants.*;
 
 /**
@@ -693,6 +694,9 @@ public abstract class Block extends Position implements Metadatable, Cloneable, 
     private float getDestroySpeed(Item item, boolean correctTool) {
         int toolType = item.getBlockToolType();
         if (toolType == BlockToolType.SWORD) {
+            if (V1_21_20.isAvailable() && item.is(Item.MACE)) {
+                return 1;
+            }
             if (is(WEB)) {
                 return 15;
             }
@@ -1299,6 +1303,14 @@ public abstract class Block extends Position implements Metadatable, Cloneable, 
     }
 
     public boolean isSlab() {
+        return false;
+    }
+
+    public boolean isHalfSlab() {
+        return false;
+    }
+
+    public boolean isDoubleSlab() {
         return false;
     }
 

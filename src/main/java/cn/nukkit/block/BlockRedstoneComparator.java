@@ -190,7 +190,12 @@ public abstract class BlockRedstoneComparator extends BlockRedstoneDiode {
 
     @Override
     public boolean isPowered() {
-        return this.isPowered || (this.getDamage() & 8) > 0;
+        return this.isPoweredBlock() || (this.getDamage() & 8) > 0;
+    }
+
+    @Override
+    public boolean isPoweredBlock() {
+        return false;
     }
 
     @Override

@@ -47,13 +47,23 @@ public class AdventureSettings implements Cloneable {
     }
 
     public void update() {
+        this.update(true);
+    }
+
+    /**
+     * Send adventure settings values to the player
+     * @param resetInAirTicks reset in air ticks
+     */
+    public void update(boolean resetInAirTicks) {
         player.sendAdventureSettingsAndAbilities(player, this);
 
         /*for (Player viewer : player.getViewers().values()) {
             viewer.sendAbilities(player, this);
         }*/
 
-        player.resetInAirTicks();
+        if (resetInAirTicks) {
+            player.resetInAirTicks();
+        }
     }
 
     public enum Type {

@@ -114,6 +114,7 @@ public abstract class BlockEntity extends Position implements BlockEntityID {
     }
 
     public void saveNBT() {
+        this.namedTag.setName(null);
         this.namedTag.putString("id", this.getSaveId());
         this.namedTag.putInt("x", (int) this.getX());
         this.namedTag.putInt("y", (int) this.getY());
@@ -243,6 +244,26 @@ public abstract class BlockEntity extends Position implements BlockEntityID {
 
     public boolean isInitialized() {
         return initialized;
+    }
+
+    @Override
+    public boolean equals(Object obj) {
+        if (obj == this) {
+            return true;
+        }
+        if (obj == null) {
+            return false;
+        }
+        if (getClass() != obj.getClass()) {
+            return false;
+        }
+        BlockEntity that = (BlockEntity) obj;
+        return id == that.id;
+    }
+
+    @Override
+    public int hashCode() {
+        return Long.hashCode(id);
     }
 
     public static CompoundTag getDefaultCompound(Vector3 pos, String id) {

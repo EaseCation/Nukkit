@@ -1325,8 +1325,7 @@ public class Level implements ChunkManager, Metadatable {
     }
 
     private void performThunder(long index, FullChunk chunk) {
-        if (areNeighboringChunksLoaded(index)) return;
-        if (ThreadLocalRandom.current().nextInt(10000) == 0) {
+        if (ThreadLocalRandom.current().nextInt(10000) == 0 && areNeighboringChunksLoaded(index)) {
             int lcg = this.getUpdateLCG() >> 2;
 
             int chunkX = chunk.getX() * 16;
@@ -1402,15 +1401,17 @@ public class Level implements ChunkManager, Metadatable {
             sleepingCount++;
         }
 
-        if ((float) sleepingCount / playerCount * 100 >= gameRules.getInteger(GameRule.PLAYERS_SLEEPING_PERCENTAGE)) {
+        if (playerCount > 0 && (float) sleepingCount / playerCount * 100 >= gameRules.getInteger(GameRule.PLAYERS_SLEEPING_PERCENTAGE)) {
             if (this.gameRules.getBoolean(GameRule.DO_DAYLIGHT_CYCLE)) {
                 int time = this.getTime() % Level.TIME_FULL;
-                if (time >= Level.TIME_NIGHT && time < Level.TIME_SUNRISE) {
+                if ((time >= Level.TIME_NIGHT && time < Level.TIME_SUNRISE) || this.isThundering()) {
                     this.setTime(this.getTime() + Level.TIME_FULL - time);
                 }
+
             }
 
-            if (this.isRaining()) {
+            if (this.gameRules.getBoolean(GameRule.DO_WEATHER_CYCLE) && this.isThundering()) {
+                this.setThundering(false);
                 this.setRaining(false);
             }
 
@@ -2897,7 +2898,7 @@ public class Level implements ChunkManager, Metadatable {
         }
 
         boolean snowLayer = hand.getId() == BlockID.SNOW_LAYER && block.canContainSnow();
-        if (!(block.canBeReplaced() || snowLayer || hand.isSlab() && block.isSlab() || block.isCandle() && hand.getId() == block.getId())) {
+        if (!(block.canBeReplaced() || snowLayer || hand.isHalfSlab() && block.isHalfSlab() || block.isCandle() && hand.getId() == block.getId())) {
             return null;
         }
 
@@ -2928,7 +2929,7 @@ public class Level implements ChunkManager, Metadatable {
                 bb.expand(-0.01, -0.01, -0.01);
                 if (hand.getBoundingBox().intersectsWith(bb)) {
                     // This is a hack to prevent the player from placing blocks inside themselves
-                    return new Item(10000);
+                    return LazyHolder.INVALID_ITEM;
                 }
             }
         }
@@ -5179,5 +5180,9 @@ public class Level implements ChunkManager, Metadatable {
      * @param light light level
      */
     private record LightUpdateEntry(int x, int y, int z, int light) {
+    }
+
+    private static class LazyHolder {
+        static final Item INVALID_ITEM = new Item(10000); //HACK
     }
 }

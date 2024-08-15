@@ -125,6 +125,7 @@ public class DisconnectPacket extends DataPacket {
     public static final int REASON_CONN_NO_SIGNALING_CHANNEL = 113;
     public static final int REASON_CONN_NOT_LOGGED_IN = 114;
     public static final int REASON_CONN_CLIENT_SIGNALING_ERROR = 115;
+    public static final int REASON_SUB_CLIENT_LOGIN_DISABLED = 116;
 
     public int reason = REASON_UNKNOWN;
     public boolean hideDisconnectionScreen;

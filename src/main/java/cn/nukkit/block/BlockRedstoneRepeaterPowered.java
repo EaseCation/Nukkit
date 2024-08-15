@@ -15,7 +15,6 @@ public class BlockRedstoneRepeaterPowered extends BlockRedstoneDiode {
 
     public BlockRedstoneRepeaterPowered(int meta) {
         super(meta);
-        this.isPowered = true;
     }
 
     @Override
@@ -75,5 +74,10 @@ public class BlockRedstoneRepeaterPowered extends BlockRedstoneDiode {
     @Override
     public boolean isLocked() {
         return this.getPowerOnSides() > 0;
+    }
+
+    @Override
+    public boolean isPoweredBlock() {
+        return true;
     }
 }

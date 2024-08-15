@@ -675,6 +675,7 @@ public abstract class Entity extends Location implements Metadatable, EntityData
         int count = 0;
         boolean ambient = true;
 
+        int effectCount = 0;
         long visibleEffects = 0;
 
         for (Effect effect : this.effects) {
@@ -693,7 +694,16 @@ public abstract class Entity extends Location implements Metadatable, EntityData
                     ambient = false;
                 }
 
-                visibleEffects = (visibleEffects << 7) | (effect.getId() << 1);
+                if (effectCount >= 8) {
+                    continue;
+                }
+                effectCount++;
+
+                visibleEffects = (visibleEffects << 7) | ((effect.getId() & 0x3f) << 1);
+
+                if (effect.isAmbient()) {
+                    visibleEffects |= 1;
+                }
             }
         }
 
@@ -979,6 +989,8 @@ public abstract class Entity extends Location implements Metadatable, EntityData
     }
 
     public void saveNBT() {
+        this.namedTag.setName(null);
+
         if (!(this instanceof Player)) {
             this.namedTag.putString("id", this.getSaveId()); // remove?
             this.namedTag.putString("identifier", this.getIdentifier());

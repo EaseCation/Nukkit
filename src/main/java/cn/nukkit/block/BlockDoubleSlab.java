@@ -17,6 +17,11 @@ public abstract class BlockDoubleSlab extends BlockSolidMeta {
     }
 
     @Override
+    public boolean isDoubleSlab() {
+        return true;
+    }
+
+    @Override
     public Item toItem(boolean addUserData) {
         return Item.get(getItemId(getSlabBlockId()), getSlabType());
     }

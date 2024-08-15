@@ -17,8 +17,6 @@ import cn.nukkit.utils.Faceable;
 public abstract class BlockRedstoneDiode extends BlockTransparentMeta implements Faceable {
     public static final int DIRECTION_MASK = 0b11;
 
-    protected boolean isPowered = false;
-
     public BlockRedstoneDiode() {
         this(0);
     }
@@ -91,11 +89,11 @@ public abstract class BlockRedstoneDiode extends BlockTransparentMeta implements
             if (!this.isLocked()) {
                 boolean shouldBePowered = this.shouldBePowered();
 
-                if (this.isPowered && !shouldBePowered) {
+                if (this.isPoweredBlock() && !shouldBePowered) {
                     this.level.setBlock(this, this.getUnpowered(), true, true);
 
                     this.level.updateAroundRedstone(this.getSideVec(getFacing().getOpposite()), null);
-                } else if (!this.isPowered) {
+                } else if (!this.isPoweredBlock()) {
                     this.level.setBlock(this, this.getPowered(), true, true);
                     this.level.updateAroundRedstone(this.getSideVec(getFacing().getOpposite()), null);
 
@@ -107,16 +105,12 @@ public abstract class BlockRedstoneDiode extends BlockTransparentMeta implements
             return type;
         }
 
-        if (type == Level.BLOCK_UPDATE_NORMAL) {
-            if (SupportType.hasCenterSupport(down(), BlockFace.UP)) {
-                return 0;
+        if (type == Level.BLOCK_UPDATE_NORMAL || type == Level.BLOCK_UPDATE_REDSTONE) {
+            if (type == Level.BLOCK_UPDATE_NORMAL && !SupportType.hasCenterSupport(down(), BlockFace.UP)) {
+                this.level.useBreakOn(this);
+                return Level.BLOCK_UPDATE_NORMAL;
             }
 
-            this.level.useBreakOn(this);
-            return type;
-        }
-
-        if (type == Level.BLOCK_UPDATE_REDSTONE) {
             if (!this.level.isRedstoneEnabled()) {
                 return 0;
             }
@@ -138,7 +132,7 @@ public abstract class BlockRedstoneDiode extends BlockTransparentMeta implements
         if (!this.isLocked()) {
             boolean shouldPowered = this.shouldBePowered();
 
-            if ((this.isPowered && !shouldPowered || !this.isPowered && shouldPowered) && !this.level.isBlockTickPending(this, this)) {
+            if ((this.isPoweredBlock() && !shouldPowered || !this.isPoweredBlock() && shouldPowered) && !this.level.isBlockTickPending(this, this)) {
                 /*int priority = -1;
 
                 if (this.isFacingTowardsRepeater()) {
@@ -229,8 +223,10 @@ public abstract class BlockRedstoneDiode extends BlockTransparentMeta implements
     }
 
     public boolean isPowered() {
-        return isPowered;
+        return isPoweredBlock();
     }
+
+    protected abstract boolean isPoweredBlock();
 
     public boolean isFacingTowardsRepeater() {
         BlockFace side = getFacing().getOpposite();

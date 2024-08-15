@@ -5,6 +5,8 @@ import cn.nukkit.item.Item;
 import cn.nukkit.item.ItemTool;
 import cn.nukkit.utils.BlockColor;
 
+import static cn.nukkit.GameVersion.*;
+
 /**
  * author: MagicDroidX
  * Nukkit Project
@@ -14,6 +16,8 @@ public class BlockSandstone extends BlockSolidMeta {
     public static final int CHISELED = 1;
     public static final int CUT = 2;
     public static final int SMOOTH = 3;
+
+    public static final int TYPE_MASK = 0b11;
 
     private static final String[] NAMES = new String[]{
             "Sandstone",
@@ -37,17 +41,23 @@ public class BlockSandstone extends BlockSolidMeta {
 
     @Override
     public float getHardness() {
+        if (V1_21_20.isAvailable() && getSandstoneType() == SMOOTH) {
+            return 2;
+        }
         return 0.8f;
     }
 
     @Override
     public float getResistance() {
+        if (getSandstoneType() == SMOOTH) {
+            return 30;
+        }
         return 4;
     }
 
     @Override
     public String getName() {
-        return NAMES[this.getDamage() & 0x03];
+        return NAMES[this.getSandstoneType()];
     }
 
     @Override
@@ -63,7 +73,7 @@ public class BlockSandstone extends BlockSolidMeta {
 
     @Override
     public Item toItem(boolean addUserData) {
-        return Item.get(this.getItemId(), this.getDamage() & 0x03);
+        return Item.get(this.getItemId(), this.getSandstoneType());
     }
 
     @Override
@@ -83,9 +93,13 @@ public class BlockSandstone extends BlockSolidMeta {
 
     @Override
     public float getFurnaceXpMultiplier() {
-        if (getDamage() != SMOOTH) {
+        if (getSandstoneType() != SMOOTH) {
             return 0;
         }
         return 0.1f;
+    }
+
+    public int getSandstoneType() {
+        return getDamage() & TYPE_MASK;
     }
 }

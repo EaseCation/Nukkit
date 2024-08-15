@@ -5,6 +5,9 @@ import cn.nukkit.item.Item;
 import cn.nukkit.item.ItemTool;
 import cn.nukkit.utils.BlockColor;
 
+import static cn.nukkit.GameVersion.*;
+import static cn.nukkit.SharedConstants.*;
+
 public class BlockWallCobblestone extends BlockWall {
     public static final int TYPE_COBBLESTONE = 0;
     public static final int TYPE_MOSSY_COBBLESTONE = 1;
@@ -71,11 +74,41 @@ public class BlockWallCobblestone extends BlockWall {
 
     @Override
     public float getHardness() {
+        switch (getWallType()) {
+            case TYPE_GRANITE:
+            case TYPE_DIORITE:
+            case TYPE_ANDESITE:
+            case TYPE_STONE_BRICK:
+            case TYPE_MOSSY_STONE_BRICK:
+            case TYPE_PRISMARINE:
+                if (ENABLE_BLOCK_DESTROY_SPEED_COMPATIBILITY /*|| V1_21_30.isAvailable()*/) {
+                    return 1.5f;
+                }
+                break;
+            case TYPE_SANDSTONE:
+            case TYPE_RED_SANDSTONE:
+                if (ENABLE_BLOCK_DESTROY_SPEED_COMPATIBILITY /*|| V1_21_30.isAvailable()*/) {
+                    return 0.8f;
+                }
+                break;
+            case TYPE_END_BRICK:
+//                if (V1_21_30.isAvailable()) {
+//                    return 3;
+//                }
+                break;
+        }
         return 2;
     }
 
     @Override
     public float getResistance() {
+        switch (getWallType()) {
+            case TYPE_SANDSTONE:
+            case TYPE_RED_SANDSTONE:
+                return 4;
+            case TYPE_END_BRICK:
+                return 45;
+        }
         return 30;
     }
 

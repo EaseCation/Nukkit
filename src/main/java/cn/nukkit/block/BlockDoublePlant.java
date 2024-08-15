@@ -27,7 +27,7 @@ public class BlockDoublePlant extends BlockFlowable {
     private static final String[] NAMES = new String[]{
             "Sunflower",
             "Lilac",
-            "Double Tallgrass",
+            "Tall Grass",
             "Large Fern",
             "Rose Bush",
             "Peony",
@@ -87,6 +87,10 @@ public class BlockDoublePlant extends BlockFlowable {
         }
 
         if (!canSurvive()) {
+            return false;
+        }
+
+        if (!level.getHeightRange().isValidBlockY(getFloorY() + 1)) {
             return false;
         }
 

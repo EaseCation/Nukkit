@@ -42,7 +42,7 @@ public class ItemSkull extends Item {
             case 2:
                 return "Zombie Head";
             case 3:
-                return "Head";
+                return "Player Head";
             case 4:
                 return "Creeper Head";
             case 5:

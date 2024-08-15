@@ -45,6 +45,7 @@ public interface BlockNames {
     String WHITE_WOOL = "white_wool"; //TODO: 1.19.70 flattening
     String WOOL = "wool";
     String ELEMENT_0 = "element_0";
+    String DANDELION = "dandelion";
     String YELLOW_FLOWER = "yellow_flower";
     String POPPY = "poppy"; //TODO: 1.20.80 flattening
     String RED_FLOWER = "red_flower";
@@ -52,6 +53,7 @@ public interface BlockNames {
     String RED_MUSHROOM = "red_mushroom";
     String GOLD_BLOCK = "gold_block";
     String IRON_BLOCK = "iron_block";
+    String SMOOTH_STONE_DOUBLE_SLAB = "smooth_stone_double_slab"; //TODO: 1.21.20 flattening
     String DOUBLE_STONE_SLAB = "double_stone_slab"; //TODO: 1.19.0 rename
     String DOUBLE_STONE_BLOCK_SLAB = "double_stone_block_slab";
     String SMOOTH_STONE_SLAB = "smooth_stone_slab"; //TODO: 1.21.0 flattening
@@ -111,7 +113,9 @@ public interface BlockNames {
     String INVISIBLE_BEDROCK = "invisibleBedrock"; //TODO: 1.18.30 rename
     String INVISIBLE_BEDROCK_NEW = "invisible_bedrock";
     String TRAPDOOR = "trapdoor";
+    String INFESTED_STONE = "infested_stone"; //TODO: 1.21.20 flattening
     String MONSTER_EGG = "monster_egg";
+    String STONE_BRICKS = "stone_bricks"; //TODO: 1.21.20 flattening
     String STONEBRICK = "stonebrick";
     String BROWN_MUSHROOM_BLOCK = "brown_mushroom_block";
     String RED_MUSHROOM_BLOCK = "red_mushroom_block";
@@ -205,8 +209,10 @@ public interface BlockNames {
     String DAYLIGHT_DETECTOR_INVERTED = "daylight_detector_inverted";
     String RED_SANDSTONE = "red_sandstone";
     String RED_SANDSTONE_STAIRS = "red_sandstone_stairs";
+    String RED_SANDSTONE_DOUBLE_SLAB = "red_sandstone_double_slab"; //TODO: 1.21.20 flattening
     String DOUBLE_STONE_SLAB2 = "double_stone_slab2"; //TODO: 1.19.0 rename
     String DOUBLE_STONE_BLOCK_SLAB2 = "double_stone_block_slab2";
+    String RED_SANDSTONE_SLAB = "red_sandstone_slab"; //TODO: 1.21.20 flattening
     String STONE_SLAB2 = "stone_slab2"; //TODO: 1.19.0 rename
     String STONE_BLOCK_SLAB2 = "stone_block_slab2";
     String SPRUCE_FENCE_GATE = "spruce_fence_gate";
@@ -229,8 +235,10 @@ public interface BlockNames {
     String FRAME = "frame";
     String CHORUS_FLOWER = "chorus_flower";
     String PURPUR_BLOCK = "purpur_block";
+    String COLORED_TORCH_RED = "colored_torch_red"; //TODO: 1.21.30 flattening
     String COLORED_TORCH_RG = "colored_torch_rg";
     String PURPUR_STAIRS = "purpur_stairs";
+    String COLORED_TORCH_BLUE = "colored_torch_blue"; //TODO: 1.21.30 flattening
     String COLORED_TORCH_BP = "colored_torch_bp";
     String UNDYED_SHULKER_BOX = "undyed_shulker_box";
     String END_BRICKS = "end_bricks";
@@ -428,8 +436,11 @@ public interface BlockNames {
     String CORAL_FAN = "coral_fan";
     String DEAD_TUBE_CORAL_FAN = "dead_tube_coral_fan"; //TODO: 1.20.80 flattening
     String CORAL_FAN_DEAD = "coral_fan_dead";
+    String TUBE_CORAL_WALL_FAN = "tube_coral_wall_fan"; //TODO: 1.21.20: flattening
     String CORAL_FAN_HANG = "coral_fan_hang";
+    String BUBBLE_CORAL_WALL_FAN = "bubble_coral_wall_fan"; //TODO: 1.21.20: flattening
     String CORAL_FAN_HANG2 = "coral_fan_hang2";
+    String HORN_CORAL_WALL_FAN = "horn_coral_wall_fan"; //TODO: 1.21.20: flattening
     String CORAL_FAN_HANG3 = "coral_fan_hang3";
     String KELP = "kelp";
     String DRIED_KELP_BLOCK = "dried_kelp_block";
@@ -455,15 +466,19 @@ public interface BlockNames {
     String TURTLE_EGG = "turtle_egg";
     String BUBBLE_COLUMN = "bubble_column";
     String BARRIER = "barrier";
+    String END_STONE_BRICK_SLAB = "end_stone_brick_slab"; //TODO: 1.21.20 flattening
     String STONE_SLAB3 = "stone_slab3"; //TODO: 1.19.0 rename
     String STONE_BLOCK_SLAB3 = "stone_block_slab3";
     String BAMBOO = "bamboo";
     String BAMBOO_SAPLING = "bamboo_sapling";
     String SCAFFOLDING = "scaffolding";
+    String MOSSY_STONE_BRICK_SLAB = "mossy_stone_brick_slab"; //TODO: 1.21.20 flattening
     String STONE_SLAB4 = "stone_slab4"; //TODO: 1.19.0 rename
     String STONE_BLOCK_SLAB4 = "stone_block_slab4";
+    String END_STONE_BRICK_DOUBLE_SLAB = "end_stone_brick_double_slab"; //TODO: 1.21.20 flattening
     String DOUBLE_STONE_SLAB3 = "double_stone_slab3"; //TODO: 1.19.0 rename
     String DOUBLE_STONE_BLOCK_SLAB3 = "double_stone_block_slab3";
+    String MOSSY_STONE_BRICK_DOUBLE_SLAB = "mossy_stone_brick_double_slab"; //TODO: 1.21.20 flattening
     String DOUBLE_STONE_SLAB4 = "double_stone_slab4"; //TODO: 1.19.0 rename
     String DOUBLE_STONE_BLOCK_SLAB4 = "double_stone_block_slab4";
     String GRANITE_STAIRS = "granite_stairs";
@@ -512,6 +527,7 @@ public interface BlockNames {
     String WOOD = "wood";
     String COMPOSTER = "composter";
     String LIT_BLAST_FURNACE = "lit_blast_furnace";
+    String LIGHT_BLOCK_0 = "light_block_0"; //TODO: 1.21.20 flattening
     String LIGHT_BLOCK = "light_block";
     String WITHER_ROSE = "wither_rose";
     String STICKY_PISTON_ARM_COLLISION = "stickyPistonArmCollision"; //TODO: 1.18.30 rename
@@ -755,6 +771,16 @@ public interface BlockNames {
     String SCULK_SHRIEKER = "sculk_shrieker";
     String CLIENT_REQUEST_PLACEHOLDER_BLOCK = "client_request_placeholder_block";
     String REINFORCED_DEEPSLATE = "reinforced_deepslate";
+    /**
+     * @deprecated use {@link #REINFORCED_DEEPSLATE} instead
+     */
+    @Deprecated
+    String MYSTERIOUS_FRAME = "mysterious_frame";
+    /**
+     * @deprecated removed
+     */
+    @Deprecated
+    String MYSTERIOUS_FRAME_SLOT = "mysterious_frame_slot";
     String FROG_SPAWN = "frog_spawn";
     String PEARLESCENT_FROGLIGHT = "pearlescent_froglight";
     String VERDANT_FROGLIGHT = "verdant_froglight";
@@ -1139,12 +1165,19 @@ public interface BlockNames {
     String DEAD_BUBBLE_CORAL_BLOCK = "dead_bubble_coral_block";
     String DEAD_FIRE_CORAL_BLOCK = "dead_fire_coral_block";
     String DEAD_HORN_CORAL_BLOCK = "dead_horn_coral_block";
-
+    String INFESTED_COBBLESTONE = "infested_cobblestone";
+    String INFESTED_STONE_BRICKS = "infested_stone_bricks";
+    String INFESTED_MOSSY_STONE_BRICKS = "infested_mossy_stone_bricks";
+    String INFESTED_CRACKED_STONE_BRICKS = "infested_cracked_stone_bricks";
+    String INFESTED_CHISELED_STONE_BRICKS = "infested_chiseled_stone_bricks";
     String LILAC = "lilac";
     String TALL_GRASS = "tall_grass";
     String LARGE_FERN = "large_fern";
     String ROSE_BUSH = "rose_bush";
     String PEONY = "peony";
+    String MOSSY_STONE_BRICKS = "mossy_stone_bricks";
+    String CRACKED_STONE_BRICKS = "cracked_stone_bricks";
+    String CHISELED_STONE_BRICKS = "chiseled_stone_bricks";
 
     String SANDSTONE_SLAB = "sandstone_slab";
     String COBBLESTONE_SLAB = "cobblestone_slab";
@@ -1152,6 +1185,106 @@ public interface BlockNames {
     String STONE_BRICK_SLAB = "stone_brick_slab";
     String QUARTZ_SLAB = "quartz_slab";
     String NETHER_BRICK_SLAB = "nether_brick_slab";
-
+    String SANDSTONE_DOUBLE_SLAB = "sandstone_double_slab";
+    String COBBLESTONE_DOUBLE_SLAB = "cobblestone_double_slab";
+    String BRICK_DOUBLE_SLAB = "brick_double_slab";
+    String STONE_BRICK_DOUBLE_SLAB = "stone_brick_double_slab";
+    String QUARTZ_DOUBLE_SLAB = "quartz_double_slab";
+    String NETHER_BRICK_DOUBLE_SLAB = "nether_brick_double_slab";
+    String PURPUR_SLAB = "purpur_slab";
+    String PRISMARINE_SLAB = "prismarine_slab";
+    String DARK_PRISMARINE_SLAB = "dark_prismarine_slab";
+    String PRISMARINE_BRICK_SLAB = "prismarine_brick_slab";
+    String MOSSY_COBBLESTONE_SLAB = "mossy_cobblestone_slab";
+    String SMOOTH_SANDSTONE_SLAB = "smooth_sandstone_slab";
+    String RED_NETHER_BRICK_SLAB = "red_nether_brick_slab";
+    String SMOOTH_RED_SANDSTONE_SLAB = "smooth_red_sandstone_slab";
+    String POLISHED_ANDESITE_SLAB = "polished_andesite_slab";
+    String ANDESITE_SLAB = "andesite_slab";
+    String DIORITE_SLAB = "diorite_slab";
+    String POLISHED_DIORITE_SLAB = "polished_diorite_slab";
+    String GRANITE_SLAB = "granite_slab";
+    String POLISHED_GRANITE_SLAB = "polished_granite_slab";
+    String SMOOTH_QUARTZ_SLAB = "smooth_quartz_slab";
+    String NORMAL_STONE_SLAB = "normal_stone_slab";
+    String CUT_SANDSTONE_SLAB = "cut_sandstone_slab";
+    String CUT_RED_SANDSTONE_SLAB = "cut_red_sandstone_slab";
     String PETRIFIED_OAK_SLAB = "petrified_oak_slab";
+    String PETRIFIED_OAK_DOUBLE_SLAB = "petrified_oak_double_slab";
+    String BRAIN_CORAL_WALL_FAN = "brain_coral_wall_fan";
+    String DEAD_TUBE_CORAL_WALL_FAN = "dead_tube_coral_wall_fan";
+    String DEAD_BRAIN_CORAL_WALL_FAN = "dead_brain_coral_wall_fan";
+    String FIRE_CORAL_WALL_FAN = "fire_coral_wall_fan";
+    String DEAD_BUBBLE_CORAL_WALL_FAN = "dead_bubble_coral_wall_fan";
+    String DEAD_FIRE_CORAL_WALL_FAN = "dead_fire_coral_wall_fan";
+    String DEAD_HORN_CORAL_WALL_FAN = "dead_horn_coral_wall_fan";
+    String PURPUR_DOUBLE_SLAB = "purpur_double_slab";
+    String PRISMARINE_DOUBLE_SLAB = "prismarine_double_slab";
+    String DARK_PRISMARINE_DOUBLE_SLAB = "dark_prismarine_double_slab";
+    String PRISMARINE_BRICK_DOUBLE_SLAB = "prismarine_brick_double_slab";
+    String MOSSY_COBBLESTONE_DOUBLE_SLAB = "mossy_cobblestone_double_slab";
+    String SMOOTH_SANDSTONE_DOUBLE_SLAB = "smooth_sandstone_double_slab";
+    String RED_NETHER_BRICK_DOUBLE_SLAB = "red_nether_brick_double_slab";
+    String SMOOTH_RED_SANDSTONE_DOUBLE_SLAB = "smooth_red_sandstone_double_slab";
+    String POLISHED_ANDESITE_DOUBLE_SLAB = "polished_andesite_double_slab";
+    String ANDESITE_DOUBLE_SLAB = "andesite_double_slab";
+    String DIORITE_DOUBLE_SLAB = "diorite_double_slab";
+    String POLISHED_DIORITE_DOUBLE_SLAB = "polished_diorite_double_slab";
+    String GRANITE_DOUBLE_SLAB = "granite_double_slab";
+    String POLISHED_GRANITE_DOUBLE_SLAB = "polished_granite_double_slab";
+    String SMOOTH_QUARTZ_DOUBLE_SLAB = "smooth_quartz_double_slab";
+    String NORMAL_STONE_DOUBLE_SLAB = "normal_stone_double_slab";
+    String CUT_SANDSTONE_DOUBLE_SLAB = "cut_sandstone_double_slab";
+    String CUT_RED_SANDSTONE_DOUBLE_SLAB = "cut_red_sandstone_double_slab";
+    String LIGHT_BLOCK_1 = "light_block_1";
+    String LIGHT_BLOCK_2 = "light_block_2";
+    String LIGHT_BLOCK_3 = "light_block_3";
+    String LIGHT_BLOCK_4 = "light_block_4";
+    String LIGHT_BLOCK_5 = "light_block_5";
+    String LIGHT_BLOCK_6 = "light_block_6";
+    String LIGHT_BLOCK_7 = "light_block_7";
+    String LIGHT_BLOCK_8 = "light_block_8";
+    String LIGHT_BLOCK_9 = "light_block_9";
+    String LIGHT_BLOCK_10 = "light_block_10";
+    String LIGHT_BLOCK_11 = "light_block_11";
+    String LIGHT_BLOCK_12 = "light_block_12";
+    String LIGHT_BLOCK_13 = "light_block_13";
+    String LIGHT_BLOCK_14 = "light_block_14";
+    String LIGHT_BLOCK_15 = "light_block_15";
+    String CHISELED_SANDSTONE = "chiseled_sandstone";
+    String CUT_SANDSTONE = "cut_sandstone";
+    String SMOOTH_SANDSTONE = "smooth_sandstone";
+    String DARK_PRISMARINE = "dark_prismarine";
+    String PRISMARINE_BRICKS = "prismarine_bricks";
+    String RED_SAND = "red_sand";
+    String DEPRECATED_PURPUR_BLOCK_1 = "deprecated_purpur_block_1";
+    String PURPUR_PILLAR = "purpur_pillar";
+    String DEPRECATED_PURPUR_BLOCK_2 = "deprecated_purpur_block_2";
+    String CHISELED_QUARTZ_BLOCK = "chiseled_quartz_block";
+    String QUARTZ_PILLAR = "quartz_pillar";
+    String SMOOTH_QUARTZ = "smooth_quartz";
+    String CHISELED_RED_SANDSTONE = "chiseled_red_sandstone";
+    String CUT_RED_SANDSTONE = "cut_red_sandstone";
+    String SMOOTH_RED_SANDSTONE = "smooth_red_sandstone";
+    String CHIPPED_ANVIL = "chipped_anvil";
+    String DAMAGED_ANVIL = "damaged_anvil";
+    String DEPRECATED_ANVIL = "deprecated_anvil";
+    String COARSE_DIRT = "coarse_dirt";
+    String COLORED_TORCH_GREEN = "colored_torch_green";
+    String COLORED_TORCH_PURPLE = "colored_torch_purple";
+
+    String MOSSY_COBBLESTONE_WALL = "mossy_cobblestone_wall";
+    String GRANITE_WALL = "granite_wall";
+    String DIORITE_WALL = "diorite_wall";
+    String ANDESITE_WALL = "andesite_wall";
+    String SANDSTONE_WALL = "sandstone_wall";
+    String BRICK_WALL = "brick_wall";
+    String STONE_BRICK_WALL = "stone_brick_wall";
+    String MOSSY_STONE_BRICK_WALL = "mossy_stone_brick_wall";
+    String NETHER_BRICK_WALL = "nether_brick_wall";
+    String END_STONE_BRICK_WALL = "end_stone_brick_wall";
+    String PRISMARINE_WALL = "prismarine_wall";
+    String RED_SANDSTONE_WALL = "red_sandstone_wall";
+    String RED_NETHER_BRICK_WALL = "red_nether_brick_wall";
+    String WET_SPONGE = "wet_sponge";
 }

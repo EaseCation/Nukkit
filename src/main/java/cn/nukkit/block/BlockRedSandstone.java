@@ -1,8 +1,5 @@
 package cn.nukkit.block;
 
-import cn.nukkit.Player;
-import cn.nukkit.item.Item;
-import cn.nukkit.item.ItemTool;
 import cn.nukkit.utils.BlockColor;
 
 /**
@@ -32,18 +29,7 @@ public class BlockRedSandstone extends BlockSandstone {
 
     @Override
     public String getName() {
-        return NAMES[this.getDamage() & 0x03];
-    }
-
-    @Override
-    public Item[] getDrops(Item item, Player player) {
-        if (item.isPickaxe() && item.getTier() >= ItemTool.TIER_WOODEN) {
-            return new Item[]{
-                    toItem(true)
-            };
-        } else {
-            return new Item[0];
-        }
+        return NAMES[this.getSandstoneType()];
     }
 
     @Override

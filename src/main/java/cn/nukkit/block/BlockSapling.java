@@ -131,8 +131,8 @@ public class BlockSapling extends BlockFlowable {
         switch (this.getDamage() & 0x07) {
             case JUNGLE:
                 loop:
-                for (; x >= -1; --x) {
-                    for (; z >= -1; --z) {
+                for (x = 0; x >= -1; --x) {
+                    for (z = 0; z >= -1; --z) {
                         if (this.findSaplings(x, z, JUNGLE)) {
                             generator = new ObjectJungleBigTree(10, 20, Block.get(BlockID.LOG, BlockWood.JUNGLE), Block.get(BlockID.LEAVES, BlockLeaves.JUNGLE));
                             bigTree = true;
@@ -152,8 +152,8 @@ public class BlockSapling extends BlockFlowable {
                 break;
             case DARK_OAK:
                 loop:
-                for (; x >= -1; --x) {
-                    for (; z >= -1; --z) {
+                for (x = 0; x >= -1; --x) {
+                    for (z = 0; z >= -1; --z) {
                         if (this.findSaplings(x, z, DARK_OAK)) {
                             generator = new ObjectDarkOakTree();
                             bigTree = true;
@@ -183,10 +183,10 @@ public class BlockSapling extends BlockFlowable {
 
         if (!generator.generate(this.level, NukkitRandom.current(), new BlockVector3(this.getFloorX() + x, this.getFloorY(), this.getFloorZ() + z))) {
             if (bigTree) {
-                this.level.setBlock(this.add(x, 0, z), this, true, false);
-                this.level.setBlock(this.add(x + 1, 0, z), this, true, false);
-                this.level.setBlock(this.add(x, 0, z + 1), this, true, false);
-                this.level.setBlock(this.add(x + 1, 0, z + 1), this, true, false);
+                this.level.setBlock(this.add(x, 0, z), this.clone(), true, false);
+                this.level.setBlock(this.add(x + 1, 0, z), this.clone(), true, false);
+                this.level.setBlock(this.add(x, 0, z + 1), this.clone(), true, false);
+                this.level.setBlock(this.add(x + 1, 0, z + 1), this.clone(), true, false);
             } else {
                 this.level.setBlock(this, this, true, false);
             }

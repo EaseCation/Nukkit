@@ -212,8 +212,11 @@ public class NetworkInventoryAction {
 
                 return new DropItemAction(this.oldItem, this.newItem);
             case SOURCE_CREATIVE:
-                int type;
+                if (!player.isCreative()) {
+                    return null;
+                }
 
+                int type;
                 switch (this.inventorySlot) {
                     case InventoryTransactionPacket.ACTION_MAGIC_SLOT_CREATIVE_DELETE_ITEM:
                         type = CreativeInventoryAction.TYPE_DELETE_ITEM;
@@ -350,8 +353,11 @@ public class NetworkInventoryAction {
 
                 return new DropItemAction(this.oldItem, this.newItem);
             case SOURCE_CREATIVE:
-                int type;
+                if (!player.isCreative()) {
+                    return null;
+                }
 
+                int type;
                 switch (this.inventorySlot) {
                     case InventoryTransactionPacket.ACTION_MAGIC_SLOT_CREATIVE_DELETE_ITEM:
                         type = CreativeInventoryAction.TYPE_DELETE_ITEM;

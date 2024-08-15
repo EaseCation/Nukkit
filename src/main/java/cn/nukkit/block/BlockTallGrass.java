@@ -19,8 +19,8 @@ public class BlockTallGrass extends BlockFlowable {
     public static final int TYPE_FERN = 2;
 
     private static final String[] NAMES = new String[]{
-            "Grass",
-            "Grass",
+            "Short Grass",
+            "Short Grass",
             "Fern",
             "Fern",
     };
@@ -91,6 +91,10 @@ public class BlockTallGrass extends BlockFlowable {
     @Override
     public boolean onActivate(Item item, BlockFace face, Player player) {
         if (item.getId() == Item.DYE && item.isBoneMeal()) {
+            if (!level.getHeightRange().isValidBlockY(getFloorY() + 1)) {
+                return true;
+            }
+
             Block up = this.up();
 
             if (up.getId() == AIR) {
@@ -135,22 +139,13 @@ public class BlockTallGrass extends BlockFlowable {
 
     @Override
     public Item[] getDrops(Item item, Player player) {
-        boolean dropSeeds = ThreadLocalRandom.current().nextInt(10) == 0;
         if (item.isShears()) {
-            //todo enchantment
-            if (dropSeeds) {
-                return new Item[]{
-                        Item.get(Item.WHEAT_SEEDS),
-                        Item.get(Item.SHORT_GRASS, this.getValidType(), 1)
-                };
-            } else {
-                return new Item[]{
-                        Item.get(Item.SHORT_GRASS, this.getValidType(), 1)
-                };
-            }
+            return new Item[]{
+                    Item.get(Item.SHORT_GRASS, this.getValidType(), 1)
+            };
         }
 
-        if (dropSeeds) {
+        if (ThreadLocalRandom.current().nextInt(10) == 0) {
             return new Item[]{
                     Item.get(Item.WHEAT_SEEDS)
             };

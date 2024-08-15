@@ -3,18 +3,42 @@ package cn.nukkit.blockentity;
 import cn.nukkit.Player;
 import cn.nukkit.block.Block;
 import cn.nukkit.inventory.BeaconInventory;
+import cn.nukkit.inventory.Inventory;
 import cn.nukkit.item.Items;
 import cn.nukkit.level.format.FullChunk;
 import cn.nukkit.nbt.tag.CompoundTag;
 import cn.nukkit.network.protocol.LevelSoundEventPacket;
 import cn.nukkit.potion.Effect;
+import lombok.extern.log4j.Log4j2;
 
 import java.util.Map;
 
 /**
  * author: Rover656
  */
+@Log4j2
 public class BlockEntityBeacon extends BlockEntitySpawnable {
+    private static final byte[] ALLOWED_EFFECTS = new byte[Effect.UNDEFINED];
+
+    static {
+        ALLOWED_EFFECTS[Effect.SPEED] = 1;
+        ALLOWED_EFFECTS[Effect.HASTE] = 1;
+        ALLOWED_EFFECTS[Effect.RESISTANCE] = 2;
+        ALLOWED_EFFECTS[Effect.JUMP_BOOST] = 2;
+        ALLOWED_EFFECTS[Effect.STRENGTH] = 3;
+        ALLOWED_EFFECTS[Effect.REGENERATION] = 4;
+    }
+
+    private static boolean isAllowedEffect(int effectId, boolean primary, int maxLevel) {
+        if (effectId < 0 || effectId >= ALLOWED_EFFECTS.length) {
+            return false;
+        }
+        byte level = ALLOWED_EFFECTS[effectId];
+        if (level <= 0 || level > maxLevel) {
+            return false;
+        }
+        return !primary || level < POWER_LEVEL_MAX;
+    }
 
     public BlockEntityBeacon(FullChunk chunk, CompoundTag nbt) {
         super(chunk, nbt);
@@ -108,10 +132,10 @@ public class BlockEntityBeacon extends BlockEntitySpawnable {
             Player p = entry.getValue();
 
             //If the player is in range
-            if (p.distanceSquared(this) < rangeSq) {
+            if (p.distanceSquared2(this) < rangeSq) {
                 Effect e;
 
-                if (getPrimaryPower() != 0) {
+                if (isAllowedEffect(getPrimaryPower(), true, getPowerLevel())) {
                     //Apply the primary power
                     e = Effect.getEffect(getPrimaryPower());
 
@@ -119,32 +143,27 @@ public class BlockEntityBeacon extends BlockEntitySpawnable {
                     e.setDuration(duration * 20);
 
                     //If secondary is selected as the primary too, apply 2 amplification
-                    if (getSecondaryPower() == getPrimaryPower()) {
+                    if (getSecondaryPower() == getPrimaryPower() && getPowerLevel() == POWER_LEVEL_MAX) {
                         e.setAmplifier(1);
-                    } else {
-                        e.setAmplifier(0);
                     }
 
-                    //Hide particles
-                    e.setVisible(false);
+                    //Transparent particles
+                    e.setAmbient(true);
 
                     //Add the effect
                     p.addEffect(e);
                 }
 
                 //If we have a secondary power as regen, apply it
-                if (getSecondaryPower() == Effect.REGENERATION) {
+                if (getSecondaryPower() == Effect.REGENERATION && getPowerLevel() == POWER_LEVEL_MAX) {
                     //Get the regen effect
                     e = Effect.getEffect(Effect.REGENERATION);
 
                     //Set duration
                     e.setDuration(duration * 20);
 
-                    //Regen I
-                    e.setAmplifier(1);
-
-                    //Hide particles
-                    e.setVisible(false);
+                    //Transparent particles
+                    e.setAmbient(true);
 
                     //Add effect
                     p.addEffect(e);
@@ -196,7 +215,6 @@ public class BlockEntityBeacon extends BlockEntitySpawnable {
                             ) {
                         return powerLevel - 1;
                     }
-
                 }
             }
         }
@@ -248,14 +266,29 @@ public class BlockEntityBeacon extends BlockEntitySpawnable {
             return false;
         }
 
-        this.setPrimaryPower(nbt.getInt("primary"));
-        this.setSecondaryPower(nbt.getInt("secondary"));
+        Inventory inv = player.getWindowById(Player.BEACON_WINDOW_ID);
+        if (inv instanceof BeaconInventory inventory && inventory.getHolder().equalsPosition(this)) {
+            inv.setItem(0, Items.air());
+        } else {
+            log.debug("{} attempted to set effect but beacon inventory is null", player.getName());
+            return false;
+        }
+
+        int primary = nbt.getInt("primary");
+        if (isAllowedEffect(primary, true, POWER_LEVEL_MAX)) {
+            this.setPrimaryPower(primary);
+        } else {
+            log.debug("{} attempted to set an invalid primary effect to a beacon: {}", player.getName(), primary);
+        }
+
+        int secondary = nbt.getInt("secondary");
+        if (isAllowedEffect(secondary, false, POWER_LEVEL_MAX)) {
+            this.setSecondaryPower(secondary);
+        } else {
+            log.debug("{} attempted to set an invalid secondary effect to a beacon: {}", player.getName(), secondary);
+        }
 
         this.getLevel().addLevelSoundEvent(this, LevelSoundEventPacket.SOUND_BEACON_POWER);
-
-        BeaconInventory inv = (BeaconInventory) player.getWindowById(Player.BEACON_WINDOW_ID);
-
-        inv.setItem(0, Items.air());
         return true;
     }
 }

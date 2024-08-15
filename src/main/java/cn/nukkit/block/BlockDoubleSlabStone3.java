@@ -2,6 +2,9 @@ package cn.nukkit.block;
 
 import cn.nukkit.utils.BlockColor;
 
+import static cn.nukkit.GameVersion.*;
+import static cn.nukkit.SharedConstants.*;
+
 public class BlockDoubleSlabStone3 extends BlockDoubleSlabStone {
 
     public static final int TYPE_END_STONE_BRICK = 0;
@@ -40,6 +43,36 @@ public class BlockDoubleSlabStone3 extends BlockDoubleSlabStone {
     @Override
     public String getName() {
         return NAMES[getSlabType()];
+    }
+
+    @Override
+    public float getHardness() {
+        switch (getSlabType()) {
+            case TYPE_ANDESITE:
+            case TYPE_POLISHED_ANDESITE:
+            case TYPE_DIORITE:
+            case TYPE_POLISHED_DIORITE:
+            case TYPE_GRANITE:
+            case TYPE_POLISHED_GRANITE:
+                if (ENABLE_BLOCK_DESTROY_SPEED_COMPATIBILITY || V1_21_20.isAvailable()) {
+                    return 1.5f;
+                }
+                break;
+            case TYPE_END_STONE_BRICK:
+                if (V1_21_20.isAvailable()) {
+                    return 3;
+                }
+                break;
+        }
+        return super.getHardness();
+    }
+
+    @Override
+    public float getResistance() {
+        if (getSlabType() == TYPE_END_STONE_BRICK) {
+            return 45;
+        }
+        return super.getResistance();
     }
 
     @Override

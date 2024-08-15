@@ -170,7 +170,7 @@ public class ClientboundMapItemDataPacket extends DataPacket {
     }
 
     @ToString
-    public static class MapTrackedObject {
+    public static class MapTrackedObject implements Cloneable {
         public static final int TYPE_ENTITY = 0;
         public static final int TYPE_BLOCK = 1;
         public static final int TYPE_OTHER = 2;
@@ -180,6 +180,15 @@ public class ClientboundMapItemDataPacket extends DataPacket {
         public int x;
         public int y;
         public int z;
+
+        @Override
+        public MapTrackedObject clone() {
+            try {
+                return (MapTrackedObject) super.clone();
+            } catch (CloneNotSupportedException e) {
+                return null;
+            }
+        }
     }
 
 }

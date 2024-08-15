@@ -9,7 +9,6 @@ import cn.nukkit.level.Level;
 import cn.nukkit.level.particle.BoneMealParticle;
 import cn.nukkit.math.BlockFace;
 import cn.nukkit.math.BlockFace.Plane;
-import cn.nukkit.math.Vector3;
 import cn.nukkit.utils.BlockColor;
 
 /**
@@ -27,7 +26,7 @@ public class BlockSugarcane extends BlockFlowable {
 
     @Override
     public String getName() {
-        return "Sugarcane";
+        return "Sugar Cane";
     }
 
     @Override
@@ -96,12 +95,18 @@ public class BlockSugarcane extends BlockFlowable {
         if (type == Level.BLOCK_UPDATE_NORMAL) {
             Block down = this.down();
             int id = down.getId();
-            if (id != BLOCK_REEDS && !canSurvive(id)) { //TODO: check water
+            if (id != BLOCK_REEDS && !canSurvive(id)) {
                 this.getLevel().useBreakOn(this, true);
                 return Level.BLOCK_UPDATE_NORMAL;
             }
         } else if (type == Level.BLOCK_UPDATE_RANDOM) {
-            if (this.down().getId() != BLOCK_REEDS) {
+            Block down = this.down();
+            if (down.getId() != BLOCK_REEDS) {
+                if (!hasWaterAround(down)) {
+                    level.useBreakOn(this, true);
+                    return Level.BLOCK_UPDATE_NORMAL;
+                }
+
                 if (this.getDamage() == 0x0F) {
                     int blockX = getFloorX();
                     int blockY = getFloorY();
@@ -148,15 +153,12 @@ public class BlockSugarcane extends BlockFlowable {
             return false;
         }
 
-        for (BlockFace side : Plane.HORIZONTAL) {
-            Block sideBlock = down.getSide(side);
-            if (sideBlock.isWaterSource() || sideBlock.getId() == FROSTED_ICE
-                    || !sideBlock.isAir() && sideBlock.canContainWater() && level.getExtraBlock(sideBlock).isWaterSource()) {
-                this.getLevel().setBlock(block, Block.get(BlockID.BLOCK_REEDS), true);
-                return true;
-            }
+        if (!hasWaterAround(down)) {
+            return false;
         }
-        return false;
+
+        level.setBlock(block, get(BLOCK_REEDS), true);
+        return true;
     }
 
     @Override
@@ -167,6 +169,16 @@ public class BlockSugarcane extends BlockFlowable {
     @Override
     public boolean isVegetation() {
         return true;
+    }
+
+    private boolean hasWaterAround(Block below) {
+        for (BlockFace side : Plane.HORIZONTAL) {
+            Block block = below.getSide(side);
+            if (block.isWaterSource() || block.is(FROSTED_ICE) || !block.isAir() && block.canContainWater() && level.getExtraBlock(block).isWaterSource()) {
+                return true;
+            }
+        }
+        return false;
     }
 
     private boolean canSurvive(int id) {

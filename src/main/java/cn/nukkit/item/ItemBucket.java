@@ -53,7 +53,7 @@ public class ItemBucket extends Item {
     protected static String getName(int meta) {
         switch (meta) {
             case MILK_BUCKET:
-                return "Milk";
+                return "Milk Bucket";
             case COD_BUCKET:
                 return "Bucket of Cod";
             case SALMON_BUCKET:

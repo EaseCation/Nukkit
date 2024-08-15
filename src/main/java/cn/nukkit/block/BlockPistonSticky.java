@@ -11,7 +11,6 @@ public class BlockPistonSticky extends BlockPistonBase {
 
     public BlockPistonSticky(int meta) {
         super(meta);
-        this.sticky = true;
     }
 
     @Override
@@ -22,5 +21,10 @@ public class BlockPistonSticky extends BlockPistonBase {
     @Override
     public String getName() {
         return "Sticky Piston";
+    }
+
+    @Override
+    protected boolean isSticky() {
+        return true;
     }
 }

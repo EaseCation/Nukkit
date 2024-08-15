@@ -9,6 +9,7 @@ public class StopSoundPacket extends DataPacket {
 
     public String name;
     public boolean stopAll;
+    public boolean stopMusicLegacy;
 
     @Override
     public int pid() {

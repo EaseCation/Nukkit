@@ -398,37 +398,69 @@ public class LevelSoundEventPacket extends DataPacket {
 	public static final int SOUND_GOAT_CALL_5 = 388;
 	public static final int SOUND_GOAT_CALL_6 = 389;
 	public static final int SOUND_GOAT_CALL_7 = 390;
+	@Deprecated
 	public static final int SOUND_GOAT_CALL_8 = 391;
+	@Deprecated
 	public static final int SOUND_GOAT_CALL_9 = 392;
+	@Deprecated
 	public static final int SOUND_GOAT_HARMONY_0 = 393;
+	@Deprecated
 	public static final int SOUND_GOAT_HARMONY_1 = 394;
+	@Deprecated
 	public static final int SOUND_GOAT_HARMONY_2 = 395;
+	@Deprecated
 	public static final int SOUND_GOAT_HARMONY_3 = 396;
+	@Deprecated
 	public static final int SOUND_GOAT_HARMONY_4 = 397;
+	@Deprecated
 	public static final int SOUND_GOAT_HARMONY_5 = 398;
+	@Deprecated
 	public static final int SOUND_GOAT_HARMONY_6 = 399;
+	@Deprecated
 	public static final int SOUND_GOAT_HARMONY_7 = 400;
+	@Deprecated
 	public static final int SOUND_GOAT_HARMONY_8 = 401;
+	@Deprecated
 	public static final int SOUND_GOAT_HARMONY_9 = 402;
+	@Deprecated
 	public static final int SOUND_GOAT_MELODY_0 = 403;
+	@Deprecated
 	public static final int SOUND_GOAT_MELODY_1 = 404;
+	@Deprecated
 	public static final int SOUND_GOAT_MELODY_2 = 405;
+	@Deprecated
 	public static final int SOUND_GOAT_MELODY_3 = 406;
+	@Deprecated
 	public static final int SOUND_GOAT_MELODY_4 = 407;
+	@Deprecated
 	public static final int SOUND_GOAT_MELODY_5 = 408;
+	@Deprecated
 	public static final int SOUND_GOAT_MELODY_6 = 409;
+	@Deprecated
 	public static final int SOUND_GOAT_MELODY_7 = 410;
+	@Deprecated
 	public static final int SOUND_GOAT_MELODY_8 = 411;
+	@Deprecated
 	public static final int SOUND_GOAT_MELODY_9 = 412;
+	@Deprecated
 	public static final int SOUND_GOAT_BASS_0 = 413;
+	@Deprecated
 	public static final int SOUND_GOAT_BASS_1 = 414;
+	@Deprecated
 	public static final int SOUND_GOAT_BASS_2 = 415;
+	@Deprecated
 	public static final int SOUND_GOAT_BASS_3 = 416;
+	@Deprecated
 	public static final int SOUND_GOAT_BASS_4 = 417;
+	@Deprecated
 	public static final int SOUND_GOAT_BASS_5 = 418;
+	@Deprecated
 	public static final int SOUND_GOAT_BASS_6 = 419;
+	@Deprecated
 	public static final int SOUND_GOAT_BASS_7 = 420;
+	@Deprecated
 	public static final int SOUND_GOAT_BASS_8 = 421;
+	@Deprecated
 	public static final int SOUND_GOAT_BASS_9 = 422;
 
 	public static final int SOUND_IMITATE_WARDEN = 426;
@@ -489,7 +521,12 @@ public class LevelSoundEventPacket extends DataPacket {
 	public static final int SOUND_DECORATED_POT_INSERT = 481;
 	public static final int SOUND_DECORATED_POT_INSERT_FAILED = 482;
 	public static final int SOUND_CRAFTER_DISABLE_SLOT = 483;
-
+	public static final int SOUND_TRIAL_SPAWNER_OPEN_SHUTTER = 484;
+	public static final int SOUND_TRIAL_SPAWNER_EJECT_ITEM = 485;
+	public static final int SOUND_TRIAL_SPAWNER_DETECT_PLAYER = 486;
+	public static final int SOUND_TRIAL_SPAWNER_SPAWN_MOB = 487;
+	public static final int SOUND_TRIAL_SPAWNER_CLOSE_SHUTTER = 488;
+	public static final int SOUND_TRIAL_SPAWNER_AMBIENT = 489;
 	public static final int SOUND_COPPER_BULB_ON = 490;
 	public static final int SOUND_COPPER_BULB_OFF = 491;
 	public static final int SOUND_AMBIENT_IN_AIR = 492;
@@ -510,7 +547,7 @@ public class LevelSoundEventPacket extends DataPacket {
 	public static final int SOUND_VAULT_DEACTIVATE = 507;
 	public static final int SOUND_HURT_REDUCED = 508;
 	public static final int SOUND_WIND_CHARGE_BURST = 509;
-
+	public static final int SOUND_IMITATE_BOGGED = 510;
 	public static final int SOUND_ARMOR_CRACK_WOLF = 511;
 	public static final int SOUND_ARMOR_BREAK_WOLF = 512;
 	public static final int SOUND_ARMOR_REPAIR_WOLF = 513;
@@ -530,6 +567,7 @@ public class LevelSoundEventPacket extends DataPacket {
 	public static final int SOUND_RECORD_CREATOR = 527;
 	public static final int SOUND_RECORD_CREATOR_MUSIC_BOX = 528;
 	public static final int SOUND_RECORD_PRECIPICE = 529;
+	public static final int SOUND_VAULT_REJECT_REWARDED_PLAYER = 530;
 
 	public int sound;
     public float x;

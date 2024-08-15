@@ -21,6 +21,10 @@ public class ObjectBigSpruceTree extends ObjectSpruceTree {
     public void placeObject(ChunkManager level, int x, int y, int z, NukkitRandom random) {
         this.treeHeight = random.nextBoundedInt(15) + 20;
 
+        if (!level.getHeightRange().isValidBlockY(y + treeHeight)) {
+            return;
+        }
+
         int topSize = this.treeHeight - (int) (this.treeHeight * leafStartHeightMultiplier);
         int lRadius = baseLeafRadius + random.nextBoundedInt(2);
 

@@ -16,6 +16,7 @@ import javax.annotation.Nullable;
 public class UseItemData implements TransactionData {
 
     public int actionType;
+    public int triggerType;
     public BlockVector3 blockPos;
     @Nullable
     public BlockFace face;
@@ -27,4 +28,5 @@ public class UseItemData implements TransactionData {
      * Runtime ID.
      */
     public int blockId;
+    public boolean clientInteractPrediction;
 }

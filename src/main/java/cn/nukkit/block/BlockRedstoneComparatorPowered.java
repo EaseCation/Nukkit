@@ -11,7 +11,6 @@ public class BlockRedstoneComparatorPowered extends BlockRedstoneComparator {
 
     public BlockRedstoneComparatorPowered(int meta) {
         super(meta);
-        this.isPowered = true;
     }
 
     @Override
@@ -27,5 +26,10 @@ public class BlockRedstoneComparatorPowered extends BlockRedstoneComparator {
     @Override
     protected BlockRedstoneComparator getPowered() {
         return this;
+    }
+
+    @Override
+    public boolean isPoweredBlock() {
+        return true;
     }
 }

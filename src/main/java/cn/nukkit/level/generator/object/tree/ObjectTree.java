@@ -74,8 +74,13 @@ public abstract class ObjectTree {
 
 
     public boolean canPlaceObject(ChunkManager level, int x, int y, int z, NukkitRandom random) {
+        int height = this.getTreeHeight() + 2;
+        if (!level.getHeightRange().isValidBlockY(y + height)) {
+            return false;
+        }
+
         int radiusToCheck = 0;
-        for (int yy = 0; yy < this.getTreeHeight() + 3; ++yy) {
+        for (int yy = 0; yy <= height; ++yy) {
             if (yy == 1 || yy == this.getTreeHeight()) {
                 ++radiusToCheck;
             }
@@ -92,7 +97,6 @@ public abstract class ObjectTree {
     }
 
     public void placeObject(ChunkManager level, int x, int y, int z, NukkitRandom random) {
-
         this.placeTrunk(level, x, y, z, random, this.getTreeHeight() - 1);
 
         for (int yy = y - 3 + this.getTreeHeight(); yy <= y + this.getTreeHeight(); ++yy) {

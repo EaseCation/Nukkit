@@ -71,6 +71,10 @@ public class PlayerListPacket extends DataPacket {
             this.skin = skin;
             this.xboxUserId = xboxUserId == null ? "" : xboxUserId;
         }
+
+        public Entry copy() {
+            return new Entry(uuid, entityId, name, skin, xboxUserId);
+        }
     }
 
 }

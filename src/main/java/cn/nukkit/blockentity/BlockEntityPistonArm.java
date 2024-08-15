@@ -194,6 +194,9 @@ public class BlockEntityPistonArm extends BlockEntitySpawnable {
                     Block moved = movingBlockBlockEntity.getMovingBlock();
                     Block movedExtra = movingBlockBlockEntity.getMovingBlockExtra();
 
+                    this.level.setExtraBlock(movingBlock, movedExtra != null ? movedExtra : Blocks.air(), true, false);
+                    this.level.setBlock(movingBlock, moved, true);
+
                     CompoundTag movedBlockEntity = movingBlockBlockEntity.getBlockEntity();
                     if (movedBlockEntity != null) {
                         movedBlockEntity.putInt("x", movingBlock.getFloorX());
@@ -201,9 +204,6 @@ public class BlockEntityPistonArm extends BlockEntitySpawnable {
                         movedBlockEntity.putInt("z", movingBlock.getFloorZ());
                         BlockEntity.createBlockEntity(movedBlockEntity.getString("id"), this.level.getChunk(movingBlock.getChunkX(), movingBlock.getChunkZ()), movedBlockEntity);
                     }
-
-                    this.level.setExtraBlock(movingBlock, movedExtra != null ? movedExtra : Blocks.air(), true, false);
-                    this.level.setBlock(movingBlock, moved, true);
                 }
             }
 
