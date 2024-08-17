@@ -19,10 +19,10 @@ public class BlockChemistryTable extends BlockSolidMeta {
     public static final int DIRECTION_MASK = 0b11;
     public static final int DIRECTION_BITS = 2;
 
-    public static final int COMPOUND_CREATOR = 0;
-    public static final int MATERIAL_REDUCER = 1 << DIRECTION_BITS;
-    public static final int ELEMENT_CONSTRUCTOR = 2 << DIRECTION_BITS;
-    public static final int LAB_TABLE = 3 << DIRECTION_BITS;
+    public static final int TYPE_COMPOUND_CREATOR = 0;
+    public static final int TYPE_MATERIAL_REDUCER = 1 << DIRECTION_BITS;
+    public static final int TYPE_ELEMENT_CONSTRUCTOR = 2 << DIRECTION_BITS;
+    public static final int TYPE_LAB_TABLE = 3 << DIRECTION_BITS;
 
     private static final String[] NAMES = {
             "Compound Creator",

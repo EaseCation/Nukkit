@@ -66,6 +66,7 @@ public interface ItemRuntimeID {
     int SCRAPE_POTTERY_SHERD = BASE_INTERNAL_ID + 56;
     int FLOW_ARMOR_TRIM_SMITHING_TEMPLATE = BASE_INTERNAL_ID + 57;
     int BOLT_ARMOR_TRIM_SMITHING_TEMPLATE = BASE_INTERNAL_ID + 58;
+    int BUNDLE = BASE_INTERNAL_ID + 59;
 
-    int CUSTOM_ITEM = Mth.smallestEncompassingPowerOfTwo(BASE_INTERNAL_ID + 59); //2048
+    int CUSTOM_ITEM = Mth.smallestEncompassingPowerOfTwo(BASE_INTERNAL_ID + 60); //2048
 }

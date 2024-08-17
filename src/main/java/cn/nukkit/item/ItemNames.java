@@ -744,4 +744,5 @@ public interface ItemNames extends ItemBlockNames {
     String BOLT_ARMOR_TRIM_SMITHING_TEMPLATE = "bolt_armor_trim_smithing_template";
     String FLOW_BANNER_PATTERN = "flow_banner_pattern";
     String GUSTER_BANNER_PATTERN = "guster_banner_pattern";
+    String BUNDLE = "bundle";
 }

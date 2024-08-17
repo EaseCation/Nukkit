@@ -311,6 +311,7 @@ public interface BlockID {
      */
     @Deprecated
     int CONCRETEPOWDER = 237;
+    int COMPOUND_CREATOR = 238; //TODO: 1.21.30 flattening
     int CHEMISTRY_TABLE = 238;
     int UNDERWATER_TORCH = 239;
     int CHORUS_PLANT = 240;
@@ -1329,7 +1330,11 @@ public interface BlockID {
     int RED_SANDSTONE_WALL = 1237;
     int RED_NETHER_BRICK_WALL = 1238;
     int WET_SPONGE = 1239;
+    int UNDERWATER_TNT = 1240;
+    int MATERIAL_REDUCER = 1241;
+    int ELEMENT_CONSTRUCTOR = 1242;
+    int LAB_TABLE = 1243;
 
 
-    int UNDEFINED = 1240;
+    int UNDEFINED = 1244;
 }

@@ -358,6 +358,7 @@ public interface ItemBlockFullNames {
     String CONCRETE = "minecraft:" + ItemBlockNames.CONCRETE;
     String WHITE_CONCRETE_POWDER = "minecraft:" + ItemBlockNames.WHITE_CONCRETE_POWDER; //TODO: 1.20.30 flattening
     String CONCRETE_POWDER = "minecraft:" + ItemBlockNames.CONCRETE_POWDER;
+    String COMPOUND_CREATOR = "minecraft:" + ItemBlockNames.COMPOUND_CREATOR; //TODO: 1.21.30 flattening
     String CHEMISTRY_TABLE = "minecraft:" + ItemBlockNames.CHEMISTRY_TABLE;
     String UNDERWATER_TORCH = "minecraft:" + ItemBlockNames.UNDERWATER_TORCH;
     String CHORUS_PLANT = "minecraft:" + ItemBlockNames.CHORUS_PLANT;
@@ -1368,4 +1369,8 @@ public interface ItemBlockFullNames {
     String RED_SANDSTONE_WALL = "minecraft:" + ItemBlockNames.RED_SANDSTONE_WALL;
     String RED_NETHER_BRICK_WALL = "minecraft:" + ItemBlockNames.RED_NETHER_BRICK_WALL;
     String WET_SPONGE = "minecraft:" + ItemBlockNames.WET_SPONGE;
+    String UNDERWATER_TNT = "minecraft:" + ItemBlockNames.UNDERWATER_TNT;
+    String MATERIAL_REDUCER = "minecraft:" + ItemBlockNames.MATERIAL_REDUCER;
+    String ELEMENT_CONSTRUCTOR = "minecraft:" + ItemBlockNames.ELEMENT_CONSTRUCTOR;
+    String LAB_TABLE = "minecraft:" + ItemBlockNames.LAB_TABLE;
 }

@@ -357,6 +357,7 @@ public interface ItemBlockNames {
     String CONCRETE = "concrete";
     String WHITE_CONCRETE_POWDER = "white_concrete_powder"; //TODO: 1.20.30 flattening
     String CONCRETE_POWDER = "concrete_powder";
+    String COMPOUND_CREATOR = "compound_creator"; //TODO: 1.21.30 flattening
     String CHEMISTRY_TABLE = "chemistry_table";
     String UNDERWATER_TORCH = "underwater_torch";
     String CHORUS_PLANT = "chorus_plant";
@@ -1367,4 +1368,8 @@ public interface ItemBlockNames {
     String RED_SANDSTONE_WALL = "red_sandstone_wall";
     String RED_NETHER_BRICK_WALL = "red_nether_brick_wall";
     String WET_SPONGE = "wet_sponge";
+    String UNDERWATER_TNT = "underwater_tnt";
+    String MATERIAL_REDUCER = "material_reducer";
+    String ELEMENT_CONSTRUCTOR = "element_constructor";
+    String LAB_TABLE = "lab_table";
 }

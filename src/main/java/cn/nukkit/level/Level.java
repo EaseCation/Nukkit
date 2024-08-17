@@ -2728,7 +2728,7 @@ public class Level implements ChunkManager, Metadatable {
             Item[] eventDrops;
             if (!player.isSurvival()) {
                 eventDrops = new Item[0];
-            } else if (isSilkTouch && target.canSilkTouch()) {
+            } else if (isSilkTouch && target.canSilkTouch() && (target.canHarvestWithHand() || target.isToolCompatible(item))) {
                 eventDrops = new Item[]{target.getSilkTouchResource()};
             } else {
                 eventDrops = target.getDrops(item, player);
@@ -2757,7 +2757,7 @@ public class Level implements ChunkManager, Metadatable {
             dropExp = ev.getDropExp();
         } else if (!target.isBreakable(item)) {
             return null;
-        } else if (isSilkTouch && target.canSilkTouch()) {
+        } else if (isSilkTouch && target.canSilkTouch() && (target.canHarvestWithHand() || target.isToolCompatible(item))) {
             drops = new Item[]{target.getSilkTouchResource()};
         } else {
             drops = target.getDrops(item);

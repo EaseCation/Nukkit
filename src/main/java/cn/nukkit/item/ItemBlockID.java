@@ -313,6 +313,7 @@ public interface ItemBlockID {
      */
     @Deprecated
     int CONCRETEPOWDER = 237;
+    int COMPOUND_CREATOR = 238;
     int CHEMISTRY_TABLE = 238;
     int UNDERWATER_TORCH = 239;
     int CHORUS_PLANT = 240;
@@ -1331,6 +1332,10 @@ public interface ItemBlockID {
     int RED_SANDSTONE_WALL = 0xff - BlockID.RED_SANDSTONE_WALL;
     int RED_NETHER_BRICK_WALL = 0xff - BlockID.RED_NETHER_BRICK_WALL;
     int WET_SPONGE = 0xff - BlockID.WET_SPONGE;
+    int UNDERWATER_TNT = 0xff - BlockID.UNDERWATER_TNT;
+    int MATERIAL_REDUCER = 0xff - BlockID.MATERIAL_REDUCER;
+    int ELEMENT_CONSTRUCTOR = 0xff - BlockID.ELEMENT_CONSTRUCTOR;
+    int LAB_TABLE = 0xff - BlockID.LAB_TABLE;
 
 
     int UNDEFINED = 0xff - BlockID.UNDEFINED;

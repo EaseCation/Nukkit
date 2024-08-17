@@ -280,6 +280,20 @@ public class BlockSnowLayer extends BlockFallable {
         return getDamage() & HEIGHT_MASK;
     }
 
+    @Override
+    public boolean canSilkTouch() {
+        return true;
+    }
+
+    @Override
+    public Item getSilkTouchResource() {
+        int height = getDamage() & HEIGHT_MASK;
+        if (height == HEIGHT_MASK) {
+            return Item.get(SNOW);
+        }
+        return Item.get(SNOW_LAYER, 0, 1 + height);
+    }
+
     public boolean isCovered() {
         return (getDamage() & COVERED_BIT) != 0;
     }

@@ -745,4 +745,5 @@ public interface ItemFullNames extends ItemBlockNames {
     String BOLT_ARMOR_TRIM_SMITHING_TEMPLATE = "minecraft:" + ItemNames.BOLT_ARMOR_TRIM_SMITHING_TEMPLATE;
     String FLOW_BANNER_PATTERN = "minecraft:" + ItemNames.FLOW_BANNER_PATTERN;
     String GUSTER_BANNER_PATTERN = "minecraft:" + ItemNames.GUSTER_BANNER_PATTERN;
+    String BUNDLE = "minecraft:" + ItemNames.BUNDLE;
 }

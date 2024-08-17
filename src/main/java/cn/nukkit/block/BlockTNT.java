@@ -21,20 +21,25 @@ import java.util.concurrent.ThreadLocalRandom;
  * Package cn.nukkit.block in project Nukkit .
  */
 public class BlockTNT extends BlockSolidMeta {
+    public static final int EXPLODE_BIT = 0b1;
+    public static final int ALLOW_UNDERWATER_BIT = 0b10;
+
+    private static final String[] NAMES = {
+            "TNT",
+            "Underwater TNT",
+    };
 
     public BlockTNT() {
         this(0);
     }
 
     public BlockTNT(int meta) {
-        // 0b1 allow_underwater_bit
-        // 0b10 explode_bit
-        super(meta & 0b11);
+        super(meta);
     }
 
     @Override
     public String getName() {
-        return "TNT";
+        return NAMES[(getDamage() & 0b11) >> 1];
     }
 
     @Override

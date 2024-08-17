@@ -278,6 +278,7 @@ public interface BlockFullNames {
     String WHITE_CONCRETE_POWDER = "minecraft:" + BlockNames.WHITE_CONCRETE_POWDER; //TODO: 1.20.30 flattening
     String CONCRETE_POWDER = "minecraft:" + BlockNames.CONCRETE_POWDER; //TODO: 1.18.30 rename
     String CONCRETE_POWDER_NEW = "minecraft:" + BlockNames.CONCRETE_POWDER_NEW;
+    String COMPOUND_CREATOR = "minecraft:" + BlockNames.COMPOUND_CREATOR; //TODO: 1.21.30 flattening
     String CHEMISTRY_TABLE = "minecraft:" + BlockNames.CHEMISTRY_TABLE;
     String UNDERWATER_TORCH = "minecraft:" + BlockNames.UNDERWATER_TORCH;
     String CHORUS_PLANT = "minecraft:" + BlockNames.CHORUS_PLANT;
@@ -1288,4 +1289,8 @@ public interface BlockFullNames {
     String RED_SANDSTONE_WALL = "minecraft:" + BlockNames.RED_SANDSTONE_WALL;
     String RED_NETHER_BRICK_WALL = "minecraft:" + BlockNames.RED_NETHER_BRICK_WALL;
     String WET_SPONGE = "minecraft:" + BlockNames.WET_SPONGE;
+    String UNDERWATER_TNT = "minecraft:" + BlockNames.UNDERWATER_TNT;
+    String MATERIAL_REDUCER = "minecraft:" + BlockNames.MATERIAL_REDUCER;
+    String ELEMENT_CONSTRUCTOR = "minecraft:" + BlockNames.ELEMENT_CONSTRUCTOR;
+    String LAB_TABLE = "minecraft:" + BlockNames.LAB_TABLE;
 }

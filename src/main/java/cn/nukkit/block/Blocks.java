@@ -1341,6 +1341,13 @@ public final class Blocks {
 
         registerComplexAlias(ItemBlockNames.COLORED_TORCH_BLUE, COLORED_TORCH_BP, BlockTorchColoredBluePurple.BLUE, V1_21_30);
         registerComplexAlias(ItemBlockNames.COLORED_TORCH_PURPLE, COLORED_TORCH_BP, BlockTorchColoredBluePurple.PURPLE, V1_21_30);
+
+        registerComplexAlias(ItemBlockNames.COMPOUND_CREATOR, CHEMISTRY_TABLE, BlockChemistryTable.TYPE_COMPOUND_CREATOR, V1_21_30);
+        registerComplexAlias(ItemBlockNames.MATERIAL_REDUCER, CHEMISTRY_TABLE, BlockChemistryTable.TYPE_MATERIAL_REDUCER, V1_21_30);
+        registerComplexAlias(ItemBlockNames.ELEMENT_CONSTRUCTOR, CHEMISTRY_TABLE, BlockChemistryTable.TYPE_ELEMENT_CONSTRUCTOR, V1_21_30);
+        registerComplexAlias(ItemBlockNames.LAB_TABLE, CHEMISTRY_TABLE, BlockChemistryTable.TYPE_LAB_TABLE, V1_21_30);
+
+        registerComplexAlias(ItemBlockNames.UNDERWATER_TNT, TNT, BlockTNT.ALLOW_UNDERWATER_BIT, V1_21_30);
 */
     }
 
