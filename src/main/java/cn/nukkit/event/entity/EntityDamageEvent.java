@@ -270,6 +270,7 @@ public class EntityDamageEvent extends EntityEvent implements Cancellable {
         SONIC_BOOM,
         CAMPFIRE,
         SOUL_CAMPFIRE,
+        MACE_SMASH,
         /**
          * Plugins
          */

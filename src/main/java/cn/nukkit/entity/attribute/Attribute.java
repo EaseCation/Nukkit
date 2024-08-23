@@ -20,7 +20,9 @@ public class Attribute implements AttributeID {
 
     private final int id;
     private final String name;
+    private float defaultMinValue;
     private float minValue;
+    private float defaultMaxValue;
     private float maxValue;
     private float defaultValue;
     private float currentValue;
@@ -37,7 +39,9 @@ public class Attribute implements AttributeID {
     Attribute(int id, String name, float minValue, float maxValue, float defaultValue, RedefinitionMode redefinitionMode, boolean shouldSend) {
         this.id = id;
         this.name = name;
+        this.defaultMinValue = minValue;
         this.minValue = minValue;
+        this.defaultMaxValue = maxValue;
         this.maxValue = maxValue;
         this.defaultValue = defaultValue;
         this.redefinitionMode = redefinitionMode;
@@ -48,11 +52,13 @@ public class Attribute implements AttributeID {
         this.calculatedValues = new float[3];
     }
 
-    private Attribute(int id, String name, float minValue, float maxValue, float defaultValue, float currentValue, RedefinitionMode redefinitionMode, boolean shouldSend,
+    private Attribute(int id, String name, float defaultMinValue, float minValue, float defaultMaxValue, float maxValue, float defaultValue, float currentValue, RedefinitionMode redefinitionMode, boolean shouldSend,
                       EnumMap<Operation, Set<AttributeModifier>> modifiersByOperation, Object2ObjectArrayMap<UUID, AttributeModifier> modifiersById, float[] calculatedValues, boolean dirty) {
         this.id = id;
         this.name = name;
+        this.defaultMinValue = defaultMinValue;
         this.minValue = minValue;
+        this.defaultMaxValue = defaultMaxValue;
         this.maxValue = maxValue;
         this.defaultValue = defaultValue;
         this.currentValue = currentValue;
@@ -82,6 +88,18 @@ public class Attribute implements AttributeID {
         return Attributes.getAttribute(name);
     }
 
+    public float getDefaultMinValue() {
+        return this.defaultMinValue;
+    }
+
+    public Attribute setDefaultMinValue(float defaultMinValue) {
+        if (defaultMinValue > this.getDefaultMaxValue()) {
+            throw new IllegalArgumentException("Value " + defaultMinValue + " is bigger than the maxValue!");
+        }
+        this.defaultMinValue = defaultMinValue;
+        return this;
+    }
+
     public float getMinValue() {
         return this.minValue;
     }
@@ -91,6 +109,18 @@ public class Attribute implements AttributeID {
             throw new IllegalArgumentException("Value " + minValue + " is bigger than the maxValue!");
         }
         this.minValue = minValue;
+        return this;
+    }
+
+    public float getDefaultMaxValue() {
+        return this.defaultMaxValue;
+    }
+
+    public Attribute setDefaultMaxValue(float defaultMaxValue) {
+        if (defaultMaxValue < this.getDefaultMinValue()) {
+            throw new IllegalArgumentException("Value " + defaultMaxValue + " is bigger than the minValue!");
+        }
+        this.defaultMaxValue = defaultMaxValue;
         return this;
     }
 
@@ -111,7 +141,7 @@ public class Attribute implements AttributeID {
     }
 
     public Attribute setDefaultValue(float defaultValue) {
-        if (defaultValue > this.getMaxValue() || defaultValue < this.getMinValue()) {
+        if (defaultValue > this.getDefaultMaxValue() || defaultValue < this.getDefaultMinValue()) {
             throw new IllegalArgumentException("Value " + defaultValue + " exceeds the range!");
         }
         this.defaultValue = defaultValue;
@@ -169,7 +199,7 @@ public class Attribute implements AttributeID {
                 modifiersByOperation.put(entry.getKey(), new HashSet<>(modifiers));
             }
         }
-        return new Attribute(id, name, minValue, maxValue, defaultValue, currentValue, redefinitionMode, shouldSend,
+        return new Attribute(id, name, defaultMinValue, minValue, defaultMaxValue, maxValue, defaultValue, currentValue, redefinitionMode, shouldSend,
                 modifiersByOperation, modifiersById.clone(), calculatedValues.clone(), dirty);
     }
 

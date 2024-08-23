@@ -67,7 +67,18 @@ public class ItemTrident extends ItemTool {
             return false;
         }
 
-        if (this.hasEnchantment(Enchantment.RIPTIDE)) {
+        int riptide = getEnchantmentLevel(Enchantment.RIPTIDE);
+        if (riptide > 0) {
+            if (player.getProtocol() >= 729
+                    && (player.isInsideOfWater(false) || player.level.isRaining() && player.level.canBlockSeeSky(player.getEyePosition()))
+                    && player.setDataFlag(Entity.DATA_FLAG_SPIN_ATTACK, true)) {
+                player.damageNearbyMobsTick = 20;
+                player.level.addLevelSoundEvent(player.add(0, player.getHeight() * 0.5f, 0), switch (riptide) {
+                    case 1 -> LevelSoundEventPacket.SOUND_ITEM_TRIDENT_RIPTIDE_1;
+                    case 2 -> LevelSoundEventPacket.SOUND_ITEM_TRIDENT_RIPTIDE_2;
+                    default -> LevelSoundEventPacket.SOUND_ITEM_TRIDENT_RIPTIDE_3;
+                });
+            }
             return true;
         }
 

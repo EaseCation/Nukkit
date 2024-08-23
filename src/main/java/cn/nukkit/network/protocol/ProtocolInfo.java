@@ -261,6 +261,8 @@ public interface ProtocolInfo {
     int JIGSAW_STRUCTURE_DATA_PACKET = 0x139; // 313 c
     int CURRENT_STRUCTURE_FEATURE_PACKET = 0x13a; // 314 c
     int SERVERBOUND_DIAGNOSTICS_PACKET = 0x13b; // 315 s
+    int CAMERA_AIM_ASSIST_PACKET = 0x13c; // 316 c
+    int CONTAINER_REGISTRY_CLEANUP_PACKET = 0x13d; // 317 c
 
 
     int COUNT = 1024;

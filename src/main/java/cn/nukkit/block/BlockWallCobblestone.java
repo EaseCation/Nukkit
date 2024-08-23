@@ -81,20 +81,20 @@ public class BlockWallCobblestone extends BlockWall {
             case TYPE_STONE_BRICK:
             case TYPE_MOSSY_STONE_BRICK:
             case TYPE_PRISMARINE:
-                if (ENABLE_BLOCK_DESTROY_SPEED_COMPATIBILITY /*|| V1_21_30.isAvailable()*/) {
+                if (ENABLE_BLOCK_DESTROY_SPEED_COMPATIBILITY || V1_21_30.isAvailable()) {
                     return 1.5f;
                 }
                 break;
             case TYPE_SANDSTONE:
             case TYPE_RED_SANDSTONE:
-                if (ENABLE_BLOCK_DESTROY_SPEED_COMPATIBILITY /*|| V1_21_30.isAvailable()*/) {
+                if (ENABLE_BLOCK_DESTROY_SPEED_COMPATIBILITY || V1_21_30.isAvailable()) {
                     return 0.8f;
                 }
                 break;
             case TYPE_END_BRICK:
-//                if (V1_21_30.isAvailable()) {
-//                    return 3;
-//                }
+                if (V1_21_30.isAvailable()) {
+                    return 3;
+                }
                 break;
         }
         return 2;

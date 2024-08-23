@@ -359,7 +359,7 @@ public abstract class EntityAbstractHorse extends EntityAnimal implements Entity
         int maxHealth = getMaxHealth();
         float jumpStrength = getJumpStrength();
         addEntity.attributes = new Attribute[]{
-                Attribute.getAttribute(Attribute.HEALTH).setMaxValue(maxHealth).setDefaultValue(maxHealth).setValue(getHealth()),
+                Attribute.getAttribute(Attribute.HEALTH).setMaxValue(maxHealth).setDefaultMaxValue(maxHealth).setDefaultValue(maxHealth).setValue(getHealth()),
                 Attribute.getAttribute(Attribute.MOVEMENT).setDefaultValue(movementSpeed).setValue(movementSpeed),
                 Attribute.getAttribute(Attribute.HORSE_JUMP_STRENGTH).setDefaultValue(jumpStrength).setValue(jumpStrength),
         };
@@ -377,7 +377,7 @@ public abstract class EntityAbstractHorse extends EntityAnimal implements Entity
         packet.entityId = getId();
         int maxHealth = getMaxHealth();
         packet.entries = new Attribute[]{
-                Attribute.getAttribute(Attribute.HEALTH).setMaxValue(maxHealth).setDefaultValue(maxHealth).setValue(getHealth()),
+                Attribute.getAttribute(Attribute.HEALTH).setMaxValue(maxHealth).setDefaultMaxValue(maxHealth).setDefaultValue(maxHealth).setValue(getHealth()),
         };
         Server.broadcastPacket(getViewers().values(), packet);
         return true;
@@ -395,7 +395,7 @@ public abstract class EntityAbstractHorse extends EntityAnimal implements Entity
         packet.entityId = getId();
         int maximumHealth = getMaxHealth();
         packet.entries = new Attribute[]{
-                Attribute.getAttribute(Attribute.HEALTH).setMaxValue(maximumHealth).setDefaultValue(maximumHealth).setValue(getHealth()),
+                Attribute.getAttribute(Attribute.HEALTH).setMaxValue(maximumHealth).setDefaultMaxValue(maximumHealth).setDefaultValue(maximumHealth).setValue(getHealth()),
         };
         Server.broadcastPacket(getViewers().values(), packet);
     }

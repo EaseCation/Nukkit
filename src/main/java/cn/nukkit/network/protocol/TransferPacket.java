@@ -9,6 +9,7 @@ public class TransferPacket extends DataPacket {
 
     public String address; // Server address
     public int port = 19132; // Server port
+    public boolean reloadWorld;
 
     @Override
     public void decode() {

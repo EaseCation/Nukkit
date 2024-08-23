@@ -322,7 +322,7 @@ public class Player extends EntityHuman implements CommandSender, InventoryHolde
     protected boolean swinging;
     protected int swingTime;
 
-    protected int damageNearbyMobsTick;
+    public int damageNearbyMobsTick;
 
     protected int shieldBlockingTick;
     protected int prevShieldBlockingTick;
@@ -6398,6 +6398,12 @@ public class Player extends EntityHuman implements CommandSender, InventoryHolde
      * @since 1.16.0
      */
     public void playEmote(String emoteId, long entityRuntimeId, int flags) {
+    }
+
+    /**
+     * @since 1.21.30
+     */
+    public void playEmote(String emoteId, long entityRuntimeId, int flags, int emoteTicks) {
     }
 
     /**

@@ -182,7 +182,7 @@ public class EntityTraderLlama extends EntityAnimal implements EntityInteractabl
 
         int maxHealth = getMaxHealth();
         addEntity.attributes = new Attribute[]{
-                Attribute.getAttribute(Attribute.HEALTH).setMaxValue(maxHealth).setDefaultValue(maxHealth).setValue(getHealth()),
+                Attribute.getAttribute(Attribute.HEALTH).setMaxValue(maxHealth).setDefaultMaxValue(maxHealth).setDefaultValue(maxHealth).setValue(getHealth()),
         };
 
         return addEntity;
@@ -198,7 +198,7 @@ public class EntityTraderLlama extends EntityAnimal implements EntityInteractabl
         packet.entityId = getId();
         int maxHealth = getMaxHealth();
         packet.entries = new Attribute[]{
-                Attribute.getAttribute(Attribute.HEALTH).setMaxValue(maxHealth).setDefaultValue(maxHealth).setValue(getHealth()),
+                Attribute.getAttribute(Attribute.HEALTH).setMaxValue(maxHealth).setDefaultMaxValue(maxHealth).setDefaultValue(maxHealth).setValue(getHealth()),
         };
         Server.broadcastPacket(getViewers().values(), packet);
         return true;
@@ -216,7 +216,7 @@ public class EntityTraderLlama extends EntityAnimal implements EntityInteractabl
         packet.entityId = getId();
         int maximumHealth = getMaxHealth();
         packet.entries = new Attribute[]{
-                Attribute.getAttribute(Attribute.HEALTH).setMaxValue(maximumHealth).setDefaultValue(maximumHealth).setValue(getHealth()),
+                Attribute.getAttribute(Attribute.HEALTH).setMaxValue(maximumHealth).setDefaultMaxValue(maximumHealth).setDefaultValue(maximumHealth).setValue(getHealth()),
         };
         Server.broadcastPacket(getViewers().values(), packet);
     }

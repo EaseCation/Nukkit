@@ -1315,7 +1315,7 @@ public final class Blocks {
         registerComplexAlias(ItemBlockNames.CHISELED_QUARTZ_BLOCK, QUARTZ_BLOCK, BlockQuartz.CHISELED, V1_21_20);
         registerComplexAlias(ItemBlockNames.QUARTZ_PILLAR, QUARTZ_BLOCK, BlockQuartz.PILLAR, V1_21_20);
         registerComplexAlias(ItemBlockNames.SMOOTH_QUARTZ, QUARTZ_BLOCK, BlockQuartz.SMOOTH, V1_21_20);
-/*
+
         registerComplexAlias(ItemBlockNames.DEPRECATED_PURPUR_BLOCK_1, PURPUR_BLOCK, BlockPurpur.CHISELED, V1_21_30);
         registerComplexAlias(ItemBlockNames.PURPUR_PILLAR, PURPUR_BLOCK, BlockPurpur.PILLAR, V1_21_30);
         registerComplexAlias(ItemBlockNames.DEPRECATED_PURPUR_BLOCK_2, PURPUR_BLOCK, BlockPurpur.SMOOTH, V1_21_30);
@@ -1348,7 +1348,7 @@ public final class Blocks {
         registerComplexAlias(ItemBlockNames.LAB_TABLE, CHEMISTRY_TABLE, BlockChemistryTable.TYPE_LAB_TABLE, V1_21_30);
 
         registerComplexAlias(ItemBlockNames.UNDERWATER_TNT, TNT, BlockTNT.ALLOW_UNDERWATER_BIT, V1_21_30);
-*/
+
     }
 
     private static Class<? extends Block> registerBlock(String blockName, String itemName, int id, Class<? extends Block> clazz) {
