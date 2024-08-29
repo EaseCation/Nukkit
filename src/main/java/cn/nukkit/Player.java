@@ -5047,13 +5047,8 @@ public class Player extends EntityHuman implements CommandSender, InventoryHolde
         if (super.attack(source)) { //!source.isCancelled()
             this.stopSleep();
 
+            // 攻击生效了
             if (this.getLastDamageCause() == source && this.spawned) {
-                EntityEventPacket pk = new EntityEventPacket();
-                pk.eid = this.getId();
-                pk.event = EntityEventPacket.HURT_ANIMATION;
-                // 这边只发给自己，因为广播给他人的已经在EntityLiving中发送了
-                this.dataPacket(pk);
-
                 if (critical) {
                     if (((EntityDamageByEntityEvent) source).getDamager() instanceof Player player) {
                         player.attackCriticalThisJump++;
