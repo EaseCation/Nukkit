@@ -60,6 +60,7 @@ public abstract class EntityLiving extends Entity implements EntityDamageable {
     }
 
     protected long nextAllowAttack = 0;  // EC优化，在低TPS时也确保正确的攻击冷却时间
+    protected long nextAllowKnockback;
     protected float lastHurt;
 
     protected boolean invisible = false;
@@ -166,9 +167,9 @@ public abstract class EntityLiving extends Entity implements EntityDamageable {
 
         float damage = source.getDamage();
         boolean knockback;
-        boolean hurtAnimationViewers;
+        // 偷偷扣血+击退, 不要让玩家知道自己被打红了
         boolean hurtAnimationSelf;
-        long time;
+        long time = 0;
         if (notSuicide) {
             time = System.currentTimeMillis();
             // 冷却中
@@ -186,7 +187,6 @@ public abstract class EntityLiving extends Entity implements EntityDamageable {
                     // 冷却时的伤害补充，不应该造成击退
                     knockback = false;
                     // 冷却时的伤害补充，不应该变红、发出音效
-                    hurtAnimationViewers = true;
                     hurtAnimationSelf = false;
                 } else {
                     // EC特性：伤害为0的攻击，无冷却，并且造成击退（但是不修改lastHurt，确保有伤害的攻击是继续冷却的）
@@ -195,7 +195,6 @@ public abstract class EntityLiving extends Entity implements EntityDamageable {
                     }
                     // 这种情况下也应该变红和音效，以及击退
                     knockback = true;
-                    hurtAnimationViewers = true;
                     hurtAnimationSelf = false;
                 }
             } else {
@@ -207,26 +206,22 @@ public abstract class EntityLiving extends Entity implements EntityDamageable {
                 this.nextAllowAttack = time + source.getAttackCooldown() * 50L;
                 // 正常攻击，变红和击退都安排上
                 knockback = true;
-                hurtAnimationViewers = true;
                 hurtAnimationSelf = true;
             }
         } else {
             // 自杀，应该有变红动画，但是没有击退
-            hurtAnimationViewers = true;
             hurtAnimationSelf = true;
             knockback = false;
         }
 
         // 变红（实际上对他人来说，始终能看到变红）
-        if (hurtAnimationViewers) {
-            this.onHurt(source);
-        }
+        this.onHurt(source);
         // 如果是玩家，给玩家自己发受伤动画
         if (hurtAnimationSelf && this instanceof Player player) {
             EntityEventPacket pk = new EntityEventPacket();
             pk.eid = this.getId();
             pk.event = EntityEventPacket.HURT_ANIMATION;
-            // 这边只发给自己，因为广播给他人的已经在EntityLiving中发送了
+            // 这边只发给自己，因为广播给他人的已经在onHurt中发送了
             player.dataPacket(pk);
         }
 
@@ -238,7 +233,8 @@ public abstract class EntityLiving extends Entity implements EntityDamageable {
             damager.onAttackSuccess(ev);
 
             // 击退
-            if (knockback && ev.hasKnockBack()) {
+            if ((knockback || time >= nextAllowKnockback) && ev.hasKnockBack()) {
+                nextAllowKnockback = nextAllowAttack;
                 double deltaX = this.x - damager.x;
                 double deltaZ = this.z - damager.z;
                 this.knockBack(damager, damage, deltaX, deltaZ, ev.getKnockBackH(), ev.getKnockBackV());
