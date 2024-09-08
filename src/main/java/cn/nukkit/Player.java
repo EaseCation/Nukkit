@@ -3319,7 +3319,9 @@ public class Player extends EntityHuman implements CommandSender, InventoryHolde
                     }
                     break;
                 case ProtocolInfo.COMMAND_REQUEST_PACKET:
-                    VIOLATION_LISTENER.onCommandRequest(this);
+                    CommandRequestPacket commandRequestPacket = (CommandRequestPacket) packet;
+
+                    VIOLATION_LISTENER.onCommandRequest(this, commandRequestPacket.command.length());
 
                     if (!this.spawned || !this.isAlive()) {
                         break;
@@ -3332,7 +3334,6 @@ public class Player extends EntityHuman implements CommandSender, InventoryHolde
                         break;
                     }
 
-                    CommandRequestPacket commandRequestPacket = (CommandRequestPacket) packet;
                     if (commandRequestPacket.command.length() > 512) {
                         break;
                     }
@@ -4012,12 +4013,12 @@ public class Player extends EntityHuman implements CommandSender, InventoryHolde
         this.craftingType = CRAFTING_SMALL;
 
         if (this.messageCounter <= 0) {
-            VIOLATION_LISTENER.onChatTooFast(this);
+            VIOLATION_LISTENER.onChatTooFast(this, message.length());
             return false;
         }
 
         if (message.length() > this.messageCounter * 512 + 1) {
-            VIOLATION_LISTENER.onChatTooLong(this);
+            VIOLATION_LISTENER.onChatTooLong(this, message.length());
             return false;
         }
 
