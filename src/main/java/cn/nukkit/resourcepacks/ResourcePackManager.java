@@ -21,6 +21,7 @@ import java.util.zip.ZipOutputStream;
 
 @Log4j2
 public class ResourcePackManager {
+    private final File path;
     private boolean inited;
     private ResourcePack[] resourcePacks;
     private ResourcePack[] behaviorPacks;
@@ -29,6 +30,15 @@ public class ResourcePackManager {
     private final Map<String, ResourcePack> behaviorPacksById = new Object2ObjectLinkedOpenHashMap<>();
 
     public ResourcePackManager(File path) {
+        this.path = path;
+        reload(path);
+    }
+
+    public void reload() {
+        reload(path);
+    }
+
+    public void reload(File path) {
         if (!path.exists()) {
             path.mkdirs();
         } else if (!path.isDirectory()) {
@@ -37,6 +47,10 @@ public class ResourcePackManager {
         }
 
         this.inited = false;
+        this.allPacksById.clear();
+        this.resourcePacksById.clear();
+        this.behaviorPacksById.clear();
+
         for (File pack : path.listFiles()) {
             this.tryLoad(pack);
         }
@@ -82,6 +96,8 @@ public class ResourcePackManager {
                     log.warn(Server.getInstance().getLanguage()
                         .translate("nukkit.resources.unknown-format", pack.getName()));
                 }
+            } else {
+                return;
             }
         } catch (IllegalArgumentException | IOException e) {
             log.warn(Server.getInstance().getLanguage()
