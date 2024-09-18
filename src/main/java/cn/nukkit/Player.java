@@ -5250,6 +5250,7 @@ public class Player extends EntityHuman implements CommandSender, InventoryHolde
         if (this.riding != null) {
             pk.ridingEid = this.riding.getId();
         }
+        pk.onGround = this.onGround;
         pk.setChannel(DataPacket.CHANNEL_PLAYER_MOVING);
 
         if (targets != null) {

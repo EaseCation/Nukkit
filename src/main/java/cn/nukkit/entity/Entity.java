@@ -1595,6 +1595,7 @@ public abstract class Entity extends Location implements Metadatable, EntityData
         pk.yaw = (float) yaw;
         pk.headYaw = (float) headYaw;
         pk.pitch = (float) pitch;
+        pk.onGround = this.onGround;
         pk.setChannel(DataPacket.CHANNEL_MOVING);
         Server.broadcastPacket(this.getViewers().values(), pk);
         //this.level.addEntityMovement(this.chunk.getX(), this.chunk.getZ(), this.id, x, y, z, yaw, pitch, headYaw);
