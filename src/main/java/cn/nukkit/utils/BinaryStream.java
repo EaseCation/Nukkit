@@ -7,6 +7,7 @@ import cn.nukkit.entity.attribute.Attribute;
 import cn.nukkit.entity.data.EntityMetadata;
 import cn.nukkit.entity.data.Skin;
 import cn.nukkit.inventory.RecipeType;
+import cn.nukkit.inventory.recipe.RecipeIngredient;
 import cn.nukkit.item.Item;
 import cn.nukkit.item.ItemDurable;
 import cn.nukkit.item.ItemID;
@@ -24,7 +25,6 @@ import cn.nukkit.nbt.tag.StringTag;
 import cn.nukkit.nbt.tag.Tag;
 import cn.nukkit.network.protocol.BossEventPacket.BossBarColor;
 import cn.nukkit.network.protocol.types.EntityLink;
-import cn.nukkit.network.protocol.types.InputInteractionModel;
 import it.unimi.dsi.fastutil.io.FastByteArrayInputStream;
 import it.unimi.dsi.fastutil.objects.ObjectArrayList;
 import it.unimi.dsi.fastutil.objects.ObjectOpenHashSet;
@@ -1251,6 +1251,13 @@ public class BinaryStream {
             this.putSlot(stream, item);
         }
 
+        public RecipeIngredient getRecipeIngredient(BinaryStream stream) {
+            return RecipeIngredient.EMPTY;
+        }
+
+        public void putRecipeIngredient(BinaryStream stream, RecipeIngredient ingredient) {
+        }
+
         public Item getCraftingRecipeIngredient(BinaryStream stream) {
             int id = stream.getVarInt();
             if (id == ItemID.AIR) {
@@ -1333,10 +1340,6 @@ public class BinaryStream {
 
         public int getItemNetworkId(BinaryStream stream, Item item) {
             return RuntimeItems.getNetworkId(RuntimeItems.getNetworkFullId(item));
-        }
-
-        public InputInteractionModel getInteractionModel(BinaryStream stream) {
-            return null;
         }
 
         /**

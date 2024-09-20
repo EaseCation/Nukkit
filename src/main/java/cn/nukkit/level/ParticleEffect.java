@@ -128,6 +128,7 @@ public enum ParticleEffect {
     SMALL_SOUL_FIRE_FLAME("minecraft:small_soul_fire_flame"),
     SMASH_GROUND_PARTICLE("minecraft:smash_ground_particle"),
     SMASH_GROUND_PARTICLE_CENTER("minecraft:smash_ground_particle_center"),
+    SNEEZE("minecraft:sneeze"),
     SNOWFLAKE("minecraft:snowflake_particle"),
     SONIC_EXPLOSION("minecraft:sonic_explosion"),
     SOUL("minecraft:soul_particle"),
@@ -167,6 +168,7 @@ public enum ParticleEffect {
     WIND_CHARGED_AMBIENT("minecraft:wind_charged_ambient"),
     WIND_CHARGED_EMITTER("minecraft:wind_charged_emitter"),
     WIND_EXPLOSION("minecraft:wind_explosion_emitter"),
+    WITCHSPELL("minecraft:witchspell_emitter"),
     WITHER_BOSS_INVULNERABLE("minecraft:wither_boss_invulnerable");
 
     private final String identifier;

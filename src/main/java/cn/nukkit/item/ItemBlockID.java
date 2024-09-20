@@ -191,6 +191,7 @@ public interface ItemBlockID {
     int CARROTS = 141;
     int POTATOES = 142;
     int WOODEN_BUTTON = 143;
+    int SKELETON_SKULL = 144;
     int BLOCK_SKULL = 144;
     int ANVIL = 145;
     int TRAPPED_CHEST = 146;
@@ -1317,7 +1318,12 @@ public interface ItemBlockID {
     int COARSE_DIRT = 0xff - BlockID.COARSE_DIRT;
     int COLORED_TORCH_GREEN = 0xff - BlockID.COLORED_TORCH_GREEN;
     int COLORED_TORCH_PURPLE = 0xff - BlockID.COLORED_TORCH_PURPLE;
-
+    int WITHER_SKELETON_SKULL = 0xff - BlockID.WITHER_SKELETON_SKULL;
+    int ZOMBIE_HEAD = 0xff - BlockID.ZOMBIE_HEAD;
+    int PLAYER_HEAD = 0xff - BlockID.PLAYER_HEAD;
+    int CREEPER_HEAD = 0xff - BlockID.CREEPER_HEAD;
+    int DRAGON_HEAD = 0xff - BlockID.DRAGON_HEAD;
+    int PIGLIN_HEAD = 0xff - BlockID.PIGLIN_HEAD;
     int MOSSY_COBBLESTONE_WALL = 0xff - BlockID.MOSSY_COBBLESTONE_WALL;
     int GRANITE_WALL = 0xff - BlockID.GRANITE_WALL;
     int DIORITE_WALL = 0xff - BlockID.DIORITE_WALL;
@@ -1336,6 +1342,8 @@ public interface ItemBlockID {
     int MATERIAL_REDUCER = 0xff - BlockID.MATERIAL_REDUCER;
     int ELEMENT_CONSTRUCTOR = 0xff - BlockID.ELEMENT_CONSTRUCTOR;
     int LAB_TABLE = 0xff - BlockID.LAB_TABLE;
+
+    int MUSHROOM_STEM = 0xff - BlockID.MUSHROOM_STEM;
 
 
     int UNDEFINED = 0xff - BlockID.UNDEFINED;

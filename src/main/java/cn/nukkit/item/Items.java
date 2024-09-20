@@ -189,7 +189,7 @@ public final class Items {
         registerItem(ItemNames.POISONOUS_POTATO, POISONOUS_POTATO, ItemPotatoPoisonous.class, ItemPotatoPoisonous::new);
         registerItem(ItemNames.EMPTY_MAP, EMPTY_MAP, ItemEmptyMap.class, ItemEmptyMap::new, ItemEmptyMap.UNDEFINED_EMPTY_MAP - 1);
         registerItem(ItemNames.GOLDEN_CARROT, GOLDEN_CARROT, ItemCarrotGolden.class, ItemCarrotGolden::new);
-        registerItem(ItemNames.SKULL, SKULL, ItemSkull.class, ItemSkull::new, ItemSkull.UNDEFINED_HEAD - 1);
+        registerItem(ItemNames.SKULL, SKULL, ItemSkull.class, ItemSkull::new, ItemSkull.HEAD_UNDEFINED - 1);
         registerItem(ItemNames.CARROT_ON_A_STICK, CARROT_ON_A_STICK, ItemCarrotOnAStick.class, ItemCarrotOnAStick::new);
         registerItem(ItemNames.NETHER_STAR, NETHER_STAR, ItemNetherStar.class, ItemNetherStar::new);
         registerItem(ItemNames.PUMPKIN_PIE, PUMPKIN_PIE, ItemPumpkinPie.class, ItemPumpkinPie::new);
@@ -426,6 +426,22 @@ public final class Items {
         registerNewItem(ItemNames.BOLT_ARMOR_TRIM_SMITHING_TEMPLATE, BOLT_ARMOR_TRIM_SMITHING_TEMPLATE, ItemSmithingTemplateArmorTrimBolt.class, ItemSmithingTemplateArmorTrimBolt::new, V1_21_0);
 
 //        registerNewItem(ItemNames.BUNDLE, BUNDLE, ItemBundle.class, ItemBundle::new, );
+//        registerNewItem(ItemNames.BLACK_BUNDLE, BLACK_BUNDLE, ItemBundleBlack.class, ItemBundleBlack::new, );
+//        registerNewItem(ItemNames.BLUE_BUNDLE, BLUE_BUNDLE, ItemBundleBlue.class, ItemBundleBlue::new, );
+//        registerNewItem(ItemNames.BROWN_BUNDLE, BROWN_BUNDLE, ItemBundleBrown.class, ItemBundleBrown::new, );
+//        registerNewItem(ItemNames.CYAN_BUNDLE, CYAN_BUNDLE, ItemBundleCyan.class, ItemBundleCyan::new, );
+//        registerNewItem(ItemNames.GRAY_BUNDLE, GRAY_BUNDLE, ItemBundleGray.class, ItemBundleGray::new, );
+//        registerNewItem(ItemNames.GREEN_BUNDLE, GREEN_BUNDLE, ItemBundleGreen.class, ItemBundleGreen::new, );
+//        registerNewItem(ItemNames.LIGHT_BLUE_BUNDLE, LIGHT_BLUE_BUNDLE, ItemBundleLightBlue.class, ItemBundleLightBlue::new, );
+//        registerNewItem(ItemNames.LIGHT_GRAY_BUNDLE, LIGHT_GRAY_BUNDLE, ItemBundleLightGray.class, ItemBundleLightGray::new, );
+//        registerNewItem(ItemNames.LIME_BUNDLE, LIME_BUNDLE, ItemBundleLime.class, ItemBundleLime::new, );
+//        registerNewItem(ItemNames.MAGENTA_BUNDLE, MAGENTA_BUNDLE, ItemBundleMagenta.class, ItemBundleMagenta::new, );
+//        registerNewItem(ItemNames.ORANGE_BUNDLE, ORANGE_BUNDLE, ItemBundleOrange.class, ItemBundleOrange::new, );
+//        registerNewItem(ItemNames.PINK_BUNDLE, PINK_BUNDLE, ItemBundlePink.class, ItemBundlePink::new, );
+//        registerNewItem(ItemNames.PURPLE_BUNDLE, PURPLE_BUNDLE, ItemBundlePurple.class, ItemBundlePurple::new, );
+//        registerNewItem(ItemNames.RED_BUNDLE, RED_BUNDLE, ItemBundleRed.class, ItemBundleRed::new, );
+//        registerNewItem(ItemNames.WHITE_BUNDLE, WHITE_BUNDLE, ItemBundleWhite.class, ItemBundleWhite::new, );
+//        registerNewItem(ItemNames.YELLOW_BUNDLE, YELLOW_BUNDLE, ItemBundleYellow.class, ItemBundleYellow::new, );
 
     }
 
@@ -626,6 +642,15 @@ public final class Items {
         registerComplexAlias(ItemNames.ARMADILLO_SPAWN_EGG, SPAWN_EGG, EntityID.ARMADILLO, V1_20_80);
         registerComplexAlias(ItemNames.BREEZE_SPAWN_EGG, SPAWN_EGG, EntityID.BREEZE, V1_21_0);
         registerComplexAlias(ItemNames.BOGGED_SPAWN_EGG, SPAWN_EGG, EntityID.BOGGED, V1_21_0);
+
+        registerComplexAlias(ItemBlockNames.SKELETON_SKULL, SKULL, ItemSkull.HEAD_SKELETON, V1_21_40);
+        registerComplexAlias(ItemBlockNames.WITHER_SKELETON_SKULL, SKULL, ItemSkull.HEAD_WITHER_SKELETON, V1_21_40);
+        registerComplexAlias(ItemBlockNames.ZOMBIE_HEAD, SKULL, ItemSkull.HEAD_ZOMBIE, V1_21_40);
+        registerComplexAlias(ItemBlockNames.PLAYER_HEAD, SKULL, ItemSkull.HEAD_PLAYER, V1_21_40);
+        registerComplexAlias(ItemBlockNames.CREEPER_HEAD, SKULL, ItemSkull.HEAD_CREEPER, V1_21_40);
+        registerComplexAlias(ItemBlockNames.DRAGON_HEAD, SKULL, ItemSkull.HEAD_DRAGON, V1_21_40);
+        registerComplexAlias(ItemBlockNames.PIGLIN_HEAD, SKULL, ItemSkull.HEAD_PIGLIN, V1_21_40);
+
     }
 
     private static Class<? extends Item> registerItem(String name, int id, Class<? extends Item> clazz, ItemFactory factory) {

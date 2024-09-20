@@ -48,7 +48,15 @@ public class BlockEntitySkull extends BlockEntitySpawnable {
 
     @Override
     public boolean isValidBlock(int blockId) {
-        return blockId == Block.BLOCK_SKULL;
+        return blockId == Block.BLOCK_SKULL
+                //TODO: 1.21.40+ flatten mv -- 09/07/2024
+                ||  blockId == Block.WITHER_SKELETON_SKULL
+                ||  blockId == Block.ZOMBIE_HEAD
+                ||  blockId == Block.PLAYER_HEAD
+                ||  blockId == Block.CREEPER_HEAD
+                ||  blockId == Block.DRAGON_HEAD
+                ||  blockId == Block.PIGLIN_HEAD
+                ;
     }
 
     @Override

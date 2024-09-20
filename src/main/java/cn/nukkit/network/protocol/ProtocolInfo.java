@@ -263,6 +263,8 @@ public interface ProtocolInfo {
     int SERVERBOUND_DIAGNOSTICS_PACKET = 0x13b; // 315 s
     int CAMERA_AIM_ASSIST_PACKET = 0x13c; // 316 c
     int CONTAINER_REGISTRY_CLEANUP_PACKET = 0x13d; // 317 c
+    int MOVEMENT_EFFECT_PACKET = 0x13e; // 318 c
+    int SET_MOVEMENT_AUTHORITY_PACKET = 0x13f; // 319 c
 
 
     int COUNT = 1024;

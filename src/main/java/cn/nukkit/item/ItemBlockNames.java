@@ -164,6 +164,7 @@ public interface ItemBlockNames {
     String CARROTS = "carrots";
     String POTATOES = "potatoes";
     String WOODEN_BUTTON = "wooden_button";
+    String SKELETON_SKULL = "skeleton_skull"; //TODO: 1.21.40 flattening
     String ITEM_SKULL = "item.skull";
     String ANVIL = "anvil";
     String TRAPPED_CHEST = "trapped_chest";
@@ -1353,7 +1354,12 @@ public interface ItemBlockNames {
     String COARSE_DIRT = "coarse_dirt";
     String COLORED_TORCH_GREEN = "colored_torch_green";
     String COLORED_TORCH_PURPLE = "colored_torch_purple";
-
+    String WITHER_SKELETON_SKULL = "wither_skeleton_skull";
+    String ZOMBIE_HEAD = "zombie_head";
+    String PLAYER_HEAD = "player_head";
+    String CREEPER_HEAD = "creeper_head";
+    String DRAGON_HEAD = "dragon_head";
+    String PIGLIN_HEAD = "piglin_head";
     String MOSSY_COBBLESTONE_WALL = "mossy_cobblestone_wall";
     String GRANITE_WALL = "granite_wall";
     String DIORITE_WALL = "diorite_wall";
@@ -1372,4 +1378,6 @@ public interface ItemBlockNames {
     String MATERIAL_REDUCER = "material_reducer";
     String ELEMENT_CONSTRUCTOR = "element_constructor";
     String LAB_TABLE = "lab_table";
+
+    String MUSHROOM_STEM = "mushroom_stem";
 }

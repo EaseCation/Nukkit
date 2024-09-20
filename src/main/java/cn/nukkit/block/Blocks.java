@@ -841,6 +841,14 @@ public final class Blocks {
         registerBlockAlias(BlockNames.SHORT_GRASS, BlockNames.TALLGRASS, V1_21_0);
 
         registerBlockAlias(BlockNames.DANDELION, BlockNames.YELLOW_FLOWER, V1_21_20);
+
+        registerBlockAlias(BlockNames.SKELETON_SKULL, BlockNames.SKULL, V1_21_40);
+        registerBlockAlias(BlockNames.WITHER_SKELETON_SKULL, BlockNames.SKULL, V1_21_40);
+        registerBlockAlias(BlockNames.ZOMBIE_HEAD, BlockNames.SKULL, V1_21_40);
+        registerBlockAlias(BlockNames.PLAYER_HEAD, BlockNames.SKULL, V1_21_40);
+        registerBlockAlias(BlockNames.CREEPER_HEAD, BlockNames.SKULL, V1_21_40);
+        registerBlockAlias(BlockNames.DRAGON_HEAD, BlockNames.SKULL, V1_21_40);
+        registerBlockAlias(BlockNames.PIGLIN_HEAD, BlockNames.SKULL, V1_21_40);
     }
 
     @SuppressWarnings("deprecation")
@@ -1349,6 +1357,7 @@ public final class Blocks {
 
         registerComplexAlias(ItemBlockNames.UNDERWATER_TNT, TNT, BlockTNT.ALLOW_UNDERWATER_BIT, V1_21_30);
 
+        registerComplexAlias(ItemBlockNames.MUSHROOM_STEM, BROWN_MUSHROOM_BLOCK, 10, V1_21_40);
     }
 
     private static Class<? extends Block> registerBlock(String blockName, String itemName, int id, Class<? extends Block> clazz) {

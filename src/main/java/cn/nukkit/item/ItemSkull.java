@@ -8,14 +8,14 @@ import cn.nukkit.network.protocol.LevelSoundEventPacket;
  * Package cn.nukkit.item in project Nukkit.
  */
 public class ItemSkull extends Item {
-    public static final int SKELETON_SKULL = 0;
-    public static final int WITHER_SKELETON_SKULL = 1;
-    public static final int ZOMBIE_HEAD = 2;
-    public static final int HEAD = 3;
-    public static final int CREEPER_HEAD = 4;
-    public static final int DRAGON_HEAD = 5;
-    public static final int PIGLIN_HEAD = 6;
-    public static final int UNDEFINED_HEAD = 7;
+    public static final int HEAD_SKELETON = 0;
+    public static final int HEAD_WITHER_SKELETON = 1;
+    public static final int HEAD_ZOMBIE = 2;
+    public static final int HEAD_PLAYER = 3;
+    public static final int HEAD_CREEPER = 4;
+    public static final int HEAD_DRAGON = 5;
+    public static final int HEAD_PIGLIN = 6;
+    public static final int HEAD_UNDEFINED = 7;
 
     public ItemSkull() {
         this(0, 1);

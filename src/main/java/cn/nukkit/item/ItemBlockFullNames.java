@@ -165,6 +165,7 @@ public interface ItemBlockFullNames {
     String CARROTS = "minecraft:" + ItemBlockNames.CARROTS;
     String POTATOES = "minecraft:" + ItemBlockNames.POTATOES;
     String WOODEN_BUTTON = "minecraft:" + ItemBlockNames.WOODEN_BUTTON;
+    String SKELETON_SKULL = "minecraft:" + ItemBlockNames.SKELETON_SKULL; //TODO: 1.21.40 flattening
     String ITEM_SKULL = "minecraft:" + ItemBlockNames.ITEM_SKULL;
     String ANVIL = "minecraft:" + ItemBlockNames.ANVIL;
     String TRAPPED_CHEST = "minecraft:" + ItemBlockNames.TRAPPED_CHEST;
@@ -1354,7 +1355,12 @@ public interface ItemBlockFullNames {
     String COARSE_DIRT = "minecraft:" + ItemBlockNames.COARSE_DIRT;
     String COLORED_TORCH_GREEN = "minecraft:" + ItemBlockNames.COLORED_TORCH_GREEN;
     String COLORED_TORCH_PURPLE = "minecraft:" + ItemBlockNames.COLORED_TORCH_PURPLE;
-
+    String WITHER_SKELETON_SKULL = "minecraft:" + ItemBlockNames.WITHER_SKELETON_SKULL;
+    String ZOMBIE_HEAD = "minecraft:" + ItemBlockNames.ZOMBIE_HEAD;
+    String PLAYER_HEAD = "minecraft:" + ItemBlockNames.PLAYER_HEAD;
+    String CREEPER_HEAD = "minecraft:" + ItemBlockNames.CREEPER_HEAD;
+    String DRAGON_HEAD = "minecraft:" + ItemBlockNames.DRAGON_HEAD;
+    String PIGLIN_HEAD = "minecraft:" + ItemBlockNames.PIGLIN_HEAD;
     String MOSSY_COBBLESTONE_WALL = "minecraft:" + ItemBlockNames.MOSSY_COBBLESTONE_WALL;
     String GRANITE_WALL = "minecraft:" + ItemBlockNames.GRANITE_WALL;
     String DIORITE_WALL = "minecraft:" + ItemBlockNames.DIORITE_WALL;
@@ -1373,4 +1379,6 @@ public interface ItemBlockFullNames {
     String MATERIAL_REDUCER = "minecraft:" + ItemBlockNames.MATERIAL_REDUCER;
     String ELEMENT_CONSTRUCTOR = "minecraft:" + ItemBlockNames.ELEMENT_CONSTRUCTOR;
     String LAB_TABLE = "minecraft:" + ItemBlockNames.LAB_TABLE;
+
+    String MUSHROOM_STEM = "minecraft:" + ItemBlockNames.MUSHROOM_STEM;
 }

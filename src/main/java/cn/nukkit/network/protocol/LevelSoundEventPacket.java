@@ -313,7 +313,7 @@ public class LevelSoundEventPacket extends DataPacket {
 	public static final int SOUND_AMBIENT_WARPED_FOREST_MOOD = 303;
 	public static final int SOUND_AMBIENT_SOULSAND_VALLEY_MOOD = 304;
 	public static final int SOUND_AMBIENT_NETHER_WASTES_MOOD = 305;
-	public static final int SOUND_RESPAWN_ANCHOR_BASALT_DELTAS_MOOD = 306;
+	public static final int SOUND_AMBIENT_BASALT_DELTAS_MOOD = 306;
 	public static final int SOUND_AMBIENT_CRIMSON_FOREST_MOOD = 307;
 	public static final int SOUND_RESPAWN_ANCHOR_CHARGE = 308;
 	public static final int SOUND_RESPAWN_ANCHOR_DEPLETE = 309;
@@ -569,6 +569,8 @@ public class LevelSoundEventPacket extends DataPacket {
 	public static final int SOUND_RECORD_PRECIPICE = 529;
 	public static final int SOUND_VAULT_REJECT_REWARDED_PLAYER = 530;
 	public static final int SOUND_IMITATE_DROWNED = 531;
+
+	public static final int SOUND_BUNDLE_INSERT_FAIL = 533;
 
 	public int sound;
     public float x;

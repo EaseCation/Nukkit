@@ -189,6 +189,7 @@ public interface BlockID {
     int CARROTS = 141;
     int POTATOES = 142;
     int WOODEN_BUTTON = 143;
+    int SKELETON_SKULL = 144; //TODO: 1.21.40 flattening
     int BLOCK_SKULL = 144;
     int ANVIL = 145;
     int TRAPPED_CHEST = 146;
@@ -1315,7 +1316,12 @@ public interface BlockID {
     int COARSE_DIRT = 1217;
     int COLORED_TORCH_GREEN = 1218;
     int COLORED_TORCH_PURPLE = 1219;
-
+    int WITHER_SKELETON_SKULL = 1220;
+    int ZOMBIE_HEAD = 1221;
+    int PLAYER_HEAD = 1222;
+    int CREEPER_HEAD = 1223;
+    int DRAGON_HEAD = 1224;
+    int PIGLIN_HEAD = 1225;
     int MOSSY_COBBLESTONE_WALL = 1226;
     int GRANITE_WALL = 1227;
     int DIORITE_WALL = 1228;
@@ -1335,6 +1341,8 @@ public interface BlockID {
     int ELEMENT_CONSTRUCTOR = 1242;
     int LAB_TABLE = 1243;
 
+    int MUSHROOM_STEM = 1263;
 
-    int UNDEFINED = 1244;
+
+    int UNDEFINED = 1264;
 }

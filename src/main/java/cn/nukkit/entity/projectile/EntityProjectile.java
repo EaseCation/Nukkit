@@ -209,7 +209,7 @@ public abstract class EntityProjectile extends Entity {
         }
 
         if (entity instanceof Player) {
-            return !((Player) entity).isSpectator() && !entity.getDataFlag(DATA_FLAG_INVISIBLE);
+            return !((Player) entity).isSpectator();
         }
 
         return entity instanceof EntityLiving
