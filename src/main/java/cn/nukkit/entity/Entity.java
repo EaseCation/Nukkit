@@ -1167,7 +1167,16 @@ public abstract class Entity extends Location implements Metadatable, EntityData
     public void sendData(Player player, EntityMetadata data) {
         SetEntityDataPacket pk = new SetEntityDataPacket();
         pk.eid = this.getId();
-        pk.metadata = data == null ? this.dataProperties : data;
+        if (data == null) {
+            pk.metadata = this.dataProperties.copy();
+        } else {
+            pk.metadata = data;
+
+            EntityData<?> nukkitFlags = this.dataProperties.get(DATA_NUKKIT_FLAGS);
+            if (nukkitFlags != null) {
+                data.put(nukkitFlags);
+            }
+        }
         player.dataPacket(pk);
     }
 
@@ -1178,11 +1187,15 @@ public abstract class Entity extends Location implements Metadatable, EntityData
     public void sendData(Player[] players, EntityMetadata data) {
         SetEntityDataPacket pk = new SetEntityDataPacket();
         pk.eid = this.getId();
-        pk.metadata = data == null ? this.dataProperties : data;
+        if (data == null) {
+            pk.metadata = this.dataProperties.copy();
+        } else {
+            pk.metadata = data;
 
-        EntityData<?> nukkitFlags = this.dataProperties.get(DATA_NUKKIT_FLAGS);
-        if (nukkitFlags != null) {
-            pk.metadata.put(nukkitFlags);
+            EntityData<?> nukkitFlags = this.dataProperties.get(DATA_NUKKIT_FLAGS);
+            if (nukkitFlags != null) {
+                data.put(nukkitFlags);
+            }
         }
 
         for (Player player : players) {

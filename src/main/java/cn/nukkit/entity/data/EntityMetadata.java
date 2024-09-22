@@ -20,6 +20,13 @@ public class EntityMetadata {
 
     private final Int2ObjectMap<EntityData> map = new Int2ObjectOpenHashMap<>();
 
+    public EntityMetadata() {
+    }
+
+    public EntityMetadata(EntityMetadata copy) {
+        map.putAll(copy.map);
+    }
+
     @Nullable
     public EntityData get(int id) {
         return this.getOrDefault(id, null);
@@ -187,7 +194,15 @@ public class EntityMetadata {
         return new Int2ObjectOpenHashMap<>(map);
     }
 
+    public Int2ObjectMap<EntityData> getMapUnsafe() {
+        return map;
+    }
+
     public boolean isEmpty() {
         return this.map.isEmpty();
+    }
+
+    public EntityMetadata copy() {
+        return new EntityMetadata(this);
     }
 }
