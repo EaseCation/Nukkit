@@ -242,6 +242,9 @@ public interface ProtocolInfo {
     int PACKET_MOD_BLOCK_ACTOR_CHANGED = 0xe7; // 231
     int PACKET_CHANGE_ACTOR_MOTION = 0xe8; // 232
     int PACKET_ANIMATE_EMOTE_ENTITY = 0xe9; // 233
+    int PACKET_CHANGE_BIOME = 0xea; // 234
+    int PACKET_UPDATE_BIOME = 0xeb; // 235
+    int PACKET_SYNC_SKIN = 0xec; // 236
 
     int BATCH_PACKET = 0xfe; // 254
 

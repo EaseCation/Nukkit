@@ -113,7 +113,7 @@ public class BlockSignPost extends BlockTransparentMeta implements Faceable {
             }
 
             if (player != null) {
-                player.openSignEditor(asBlockVector3());
+                player.openSignEditor(getFloorX(), getFloorY(), getFloorZ());
             }
             return true;
         }

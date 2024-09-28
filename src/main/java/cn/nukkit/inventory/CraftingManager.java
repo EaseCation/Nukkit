@@ -38,7 +38,7 @@ public class CraftingManager {
     protected final Long2ObjectMap<Long2ObjectMap<ShapelessRecipe>> shapelessBasedRecipes = new Long2ObjectOpenHashMap<>();
     protected final Long2ObjectMap<Long2ObjectMap<ShapelessRecipe>> shapelessRecipes = new Long2ObjectOpenHashMap<>();
     protected final Map<RecipeTag, Long2ObjectMap<Long2ObjectMap<ShapelessRecipe>>> taggedShapelessRecipes = new EnumMap<>(RecipeTag.class);
-    protected final Long2ObjectMap<Long2ObjectMap<ShulkerBoxRecipe>> shulkerBoxRecipes = new Long2ObjectOpenHashMap<>();
+    protected final Long2ObjectMap<Long2ObjectMap<ShapelessUserDataRecipe>> shapelessUserDataRecipes = new Long2ObjectOpenHashMap<>();
     protected final Long2ObjectMap<Long2ObjectMap<ShapelessChemistryRecipe>> shapelessChemistryRecipes = new Long2ObjectOpenHashMap<>();
 
     protected final Long2ObjectMap<Long2ObjectMap<ShapedRecipe>> shapedBasedRecipes = new Long2ObjectOpenHashMap<>();
@@ -138,7 +138,7 @@ public class CraftingManager {
                                 this.registerRecipe(new ShapelessRecipe(recipeId, recipeId, priority, Item.fromJson(first), sorted, tag));
                                 break;
                             case 5:
-                                this.registerRecipe(new ShulkerBoxRecipe(recipeId, recipeId, priority, Item.fromJson(first), sorted, tag));
+                                this.registerRecipe(new ShapelessUserDataRecipe(recipeId, recipeId, priority, Item.fromJson(first), sorted, tag));
                                 break;
                             case 6:
                                 this.registerRecipe(new ShapelessChemistryRecipe(recipeId, recipeId, priority, Item.fromJson(first), sorted, tag));
@@ -418,9 +418,9 @@ public class CraftingManager {
                 shapelessRecipes.computeIfAbsent(outputHash, k -> new Long2ObjectOpenHashMap<>())
                         .put(inputHash, recipe);
                 break;
-            case SHULKER_BOX:
-                shulkerBoxRecipes.computeIfAbsent(outputHash, k -> new Long2ObjectOpenHashMap<>())
-                        .put(inputHash, (ShulkerBoxRecipe) recipe);
+            case SHAPELESS_USER_DATA:
+                shapelessUserDataRecipes.computeIfAbsent(outputHash, k -> new Long2ObjectOpenHashMap<>())
+                        .put(inputHash, (ShapelessUserDataRecipe) recipe);
                 break;
             case SHAPELESS_CHEMISTRY:
                 shapelessChemistryRecipes.computeIfAbsent(outputHash, k -> new Long2ObjectOpenHashMap<>())

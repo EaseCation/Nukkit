@@ -1625,6 +1625,24 @@ public abstract class Entity extends Location implements Metadatable, EntityData
         this.level.addChunkPacket(chunkX, chunkZ, pk);
     }
 
+    public void broadcastMotionPredictionHints() {
+        broadcastMotionPredictionHints(onGround);
+    }
+
+    public void broadcastMotionPredictionHints(boolean onGround) {
+        broadcastMotionPredictionHints((float) motionX, (float) motionY, (float) motionZ, onGround);
+    }
+
+    public void broadcastMotionPredictionHints(float motionX, float motionY, float motionZ) {
+        broadcastMotionPredictionHints(motionX, motionY, motionZ, onGround);
+    }
+
+    public void broadcastMotionPredictionHints(float motionX, float motionY, float motionZ, boolean onGround) {
+        for (Player player : getViewers().values()) {
+            player.sendMotionPredictionHints(getId(), motionX, motionY, motionZ, onGround);
+        }
+    }
+
     public Vector2 getDirectionPlane() {
         return new Vector2(-Mth.cos(Math.toRadians(this.yaw) - Math.PI / 2), -Mth.sin(Math.toRadians(this.yaw) - Math.PI / 2)).normalize();
     }

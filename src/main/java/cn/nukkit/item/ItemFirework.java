@@ -10,6 +10,7 @@ import cn.nukkit.math.Vector3;
 import cn.nukkit.nbt.NBTIO;
 import cn.nukkit.nbt.tag.CompoundTag;
 import cn.nukkit.nbt.tag.ListTag;
+import cn.nukkit.network.protocol.types.MovementEffectType;
 import cn.nukkit.utils.DyeColor;
 
 import javax.annotation.Nullable;
@@ -90,7 +91,12 @@ public class ItemFirework extends Item {
         if (player.getArmorInventory().getChestplate() instanceof ItemElytra && player.isGliding()) {
             Vector3 dir = Vector3.directionFromRotation(player.pitch, player.yaw);
 
-            this.spawnFirework(player.getLevel(), player, dir, player);
+            EntityFirework firework = this.spawnFirework(player.getLevel(), player, dir, player);
+
+            int lifetime = firework.getLifeTime();
+            if (lifetime > 0) {
+                player.sendMovementEffect(player.getId(), MovementEffectType.GLIDE_BOOST, lifetime);
+            }
 
             player.setMotion(dir.multiply(2));
 

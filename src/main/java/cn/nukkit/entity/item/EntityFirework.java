@@ -219,4 +219,8 @@ public class EntityFirework extends Entity {
 
         super.spawnTo(player);
     }
+
+    public int getLifeTime() {
+        return lifetime;
+    }
 }

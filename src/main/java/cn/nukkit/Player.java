@@ -6380,14 +6380,14 @@ public class Player extends EntityHuman implements CommandSender, InventoryHolde
     /**
      * @since 1.19.80
      */
-    public void openSignEditor(BlockVector3 pos) {
-        openSignEditor(pos, true);
+    public void openSignEditor(int x, int y, int z) {
+        openSignEditor(x, y, z, true);
     }
 
     /**
      * @since 1.19.80
      */
-    public void openSignEditor(BlockVector3 pos, boolean front) {
+    public void openSignEditor(int x, int y, int z, boolean front) {
     }
 
     /**
@@ -6411,7 +6411,7 @@ public class Player extends EntityHuman implements CommandSender, InventoryHolde
     /**
      * @since 1.16.100
      */
-    public void sendMotionPredictionHints(long entityRuntimeId, Vector3f motion, boolean onGround) {
+    public void sendMotionPredictionHints(long entityRuntimeId, float motionX, float motionY, float motionZ, boolean onGround) {
     }
 
     @Nullable
@@ -6579,5 +6579,11 @@ public class Player extends EntityHuman implements CommandSender, InventoryHolde
      * @since 1.19.40
      */
     public void sendEntityPropertyEnum(Entity entity, String propertyName, String value) {
+    }
+
+    /**
+     * @since 1.21.40
+     */
+    public void sendMovementEffect(long entityRuntimeId, int type, int duration) {
     }
 }

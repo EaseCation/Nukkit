@@ -69,7 +69,7 @@ public class ItemTrident extends ItemTool {
 
         int riptide = getEnchantmentLevel(Enchantment.RIPTIDE);
         if (riptide > 0) {
-            if (player.getProtocol() >= 729
+            if (player.getProtocol() >= 729 && player.getProtocol() < 748
                     && (player.isInsideOfWater(false) || player.level.isRaining() && player.level.canBlockSeeSky(player.getEyePosition()))
                     && player.setDataFlag(Entity.DATA_FLAG_SPIN_ATTACK, true)) {
                 player.damageNearbyMobsTick = 20;
