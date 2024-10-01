@@ -3291,7 +3291,7 @@ public class Player extends EntityHuman implements CommandSender, InventoryHolde
                                 break;
                             }
                             Item held = inventory.getItemInHand();
-                            if (!(held instanceof ItemEdible) && !held.is(Item.POTION)) {
+                            if (!(held instanceof ItemEdible) && !held.is(Item.POTION) && !held.is(Item.BUCKET, ItemBucket.MILK_BUCKET)) {
                                 break;
                             }
 

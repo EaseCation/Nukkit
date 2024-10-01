@@ -412,6 +412,7 @@ public class ItemBucket extends Item {
         }
 
         if (!player.isCreative()) {
+            pop();
             player.getInventory().setItemInHand(get(BUCKET));
         }
 
