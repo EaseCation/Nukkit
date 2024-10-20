@@ -48,7 +48,7 @@ public class ItemMap extends Item {
     }
 
     public ItemMap(Integer meta, int count) {
-        super(FILLED_MAP, meta, 1, "Map");
+        super(FILLED_MAP, meta, count, "Map");
 
         if (!hasCompoundTag() || !getNamedTag().contains("map_uuid")) {
             CompoundTag tag = new CompoundTag();

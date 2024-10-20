@@ -51,7 +51,7 @@ public abstract class ItemTool extends Item implements ItemDurable {
     }
 
     protected ItemTool(int id, Integer meta, int count, String name) {
-        super(id, meta, 1, name);
+        super(id, meta, count, name);
     }
 
     @Override

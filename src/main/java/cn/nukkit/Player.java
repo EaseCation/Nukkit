@@ -2330,12 +2330,12 @@ public class Player extends EntityHuman implements CommandSender, InventoryHolde
         for (Player p : new ObjectArrayList<>(this.server.getOnlinePlayers().values())) {
             if (p != this && p.getName() != null && p.getName().equalsIgnoreCase(this.getName())) {
                 if (!p.kick(PlayerKickEvent.Reason.NEW_CONNECTION, "logged in from another location")) {
-                    this.close(this.getLeaveMessage(), "Already connected");
+                    this.close(this.getLeaveMessage(), "disconnectionScreen.loggedinOtherLocation");
                     return;
                 }
             } else if (p.loggedIn && this.getUniqueId().equals(p.getUniqueId())) {
                 if (!p.kick(PlayerKickEvent.Reason.NEW_CONNECTION, "logged in from another location")) {
-                    this.close(this.getLeaveMessage(), "Already connected");
+                    this.close(this.getLeaveMessage(), "disconnectionScreen.loggedinOtherLocation");
                     return;
                 }
             }
@@ -3034,7 +3034,12 @@ public class Player extends EntityHuman implements CommandSender, InventoryHolde
                             if (this.isBreakingBlock()) {
                                 block = this.level.getBlock(pos, false);
                                 face = BlockFace.fromIndex(playerActionPacket.data);
-                                this.level.addParticle(new PunchBlockParticle(pos, block, face));
+                                Vector3 blockCenter = pos.blockCenter();
+                                this.level.addParticle(new PunchBlockParticle(blockCenter, block, face));
+                                level.addLevelEvent(blockCenter, LevelEventPacket.EVENT_PARTICLE_PUNCH_BLOCK_DOWN + face.getIndex(), block.getFullId());
+
+                                int breakTime = Mth.ceil(block.getBreakTime(inventory.getItemInHand(), this) * 20);
+                                level.addLevelEvent(pos, LevelEventPacket.EVENT_BLOCK_UPDATE_BREAK, breakTime <= 0 ? 0 : 65535 / breakTime);
                             }
                             break;
                     }

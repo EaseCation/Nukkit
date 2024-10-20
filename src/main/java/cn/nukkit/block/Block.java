@@ -712,7 +712,7 @@ public abstract class Block extends Position implements Metadatable, Cloneable, 
             if (is(WEB) || isLeaves()) {
                 return 15;
             }
-            if (is(WOOL)) {
+            if (isWool()) {
                 return 5;
             }
             if (is(VINE) || is(GLOW_LICHEN)) {
@@ -1411,6 +1411,10 @@ public abstract class Block extends Position implements Metadatable, Cloneable, 
     }
 
     public boolean isCauldron() {
+        return false;
+    }
+
+    public boolean isWool() {
         return false;
     }
 

@@ -12,7 +12,7 @@ public class ItemMace extends ItemTool {
     }
 
     public ItemMace(Integer meta, int count) {
-        super(MACE, meta, 1, "Mace");
+        super(MACE, meta, count, "Mace");
     }
 
     @Override

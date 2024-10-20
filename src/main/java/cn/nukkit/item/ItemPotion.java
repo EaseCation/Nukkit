@@ -16,7 +16,7 @@ public class ItemPotion extends Item {
     }
 
     public ItemPotion(Integer meta, int count) {
-        super(POTION, meta, 1, "Potion");
+        super(POTION, meta, count, "Potion");
     }
 
     @Override

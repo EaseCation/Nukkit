@@ -6,7 +6,7 @@ package cn.nukkit.item;
 public abstract class ItemRecord extends Item {
 
     protected ItemRecord(int id, Integer meta, int count) {
-        super(id, meta, 1, "Music Disc");
+        super(id, meta, count, "Music Disc");
     }
 
     @Override

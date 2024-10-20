@@ -79,15 +79,17 @@ public class BlockNoteblock extends BlockSolid {
     }
 
     public Instrument getInstrument() {
-        switch (this.down().getId()) {
+        Block below = this.down();
+        if (below.isWool()) {
+            return Instrument.GUITAR;
+        }
+        switch (below.getId()) {
             case GOLD_BLOCK:
                 return Instrument.GLOCKENSPIEL;
             case CLAY:
                 return Instrument.FLUTE;
             case PACKED_ICE:
                 return Instrument.CHIME;
-            case WOOL:
-                return Instrument.GUITAR;
             case BONE_BLOCK:
                 return Instrument.XYLOPHONE;
             case IRON_BLOCK:

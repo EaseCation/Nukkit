@@ -874,7 +874,7 @@ public class CommandParser {
     public Block parseBlock() throws CommandSyntaxException {
         String arg = this.next();
         try {
-            Block block = Block.fromStringNullable(arg, true);
+            Block block = Block.fromStringNullable(arg.toLowerCase(), true);
             if (block == null) {
                 throw CommandExceptions.COMMAND_SYNTAX_EXCEPTION;
             }
@@ -901,7 +901,7 @@ public class CommandParser {
     public Item parseItem() throws CommandSyntaxException {
         String arg = this.next();
         try {
-            Item item = Item.fromStringNullable(arg, true);
+            Item item = Item.fromStringNullable(arg.toLowerCase(), true);
             if (item == null) {
                 throw CommandExceptions.COMMAND_SYNTAX_EXCEPTION;
             }

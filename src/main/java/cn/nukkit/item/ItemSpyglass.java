@@ -17,7 +17,7 @@ public class ItemSpyglass extends Item {
     }
 
     public ItemSpyglass(Integer meta, int count) {
-        super(SPYGLASS, meta, 1, "Spyglass");
+        super(SPYGLASS, meta, count, "Spyglass");
     }
 
     @Override

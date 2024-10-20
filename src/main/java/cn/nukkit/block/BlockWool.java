@@ -64,4 +64,9 @@ public class BlockWool extends BlockSolidMeta {
     public DyeColor getDyeColor() {
         return DyeColor.getByWoolData(getDamage());
     }
+
+    @Override
+    public boolean isWool() {
+        return true;
+    }
 }

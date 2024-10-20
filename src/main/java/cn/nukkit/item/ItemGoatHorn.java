@@ -26,7 +26,7 @@ public class ItemGoatHorn extends Item {
     }
 
     public ItemGoatHorn(Integer meta, int count) {
-        super(GOAT_HORN, meta, 1, "Goat Horn");
+        super(GOAT_HORN, meta, count, "Goat Horn");
     }
 
     @Override

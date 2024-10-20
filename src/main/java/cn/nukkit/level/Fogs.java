@@ -56,6 +56,7 @@ public interface Fogs {
     String MUSHROOM_ISLAND = "minecraft:fog_mushroom_island";
     String MUSHROOM_ISLAND_SHORE = "minecraft:fog_mushroom_island_shore";
     String OCEAN = "minecraft:fog_ocean";
+    String PALE_GARDEN = "minecraft:fog_pale_garden";
     String PLAINS = "minecraft:fog_plains";
     String POWDER_SNOW = "minecraft:fog_powder_snow";
     String RIVER = "minecraft:fog_river";

@@ -17,7 +17,7 @@ public class ItemWolfArmor extends Item implements ItemDurable {
     }
 
     public ItemWolfArmor(Integer meta, int count) {
-        super(WOLF_ARMOR, meta, 1, "Wolf Armor");
+        super(WOLF_ARMOR, meta, count, "Wolf Armor");
     }
 
     @Override

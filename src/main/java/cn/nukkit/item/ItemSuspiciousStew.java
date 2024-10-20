@@ -25,7 +25,7 @@ public class ItemSuspiciousStew extends ItemEdible {
     }
 
     public ItemSuspiciousStew(Integer meta, int count) {
-        super(SUSPICIOUS_STEW, meta, 1, "Suspicious Stew");
+        super(SUSPICIOUS_STEW, meta, count, "Suspicious Stew");
     }
 
     @Override

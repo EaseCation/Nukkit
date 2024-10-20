@@ -11,7 +11,7 @@ public class ItemCompassLodestone extends Item {
     }
 
     public ItemCompassLodestone(Integer meta, int count) {
-        super(LODESTONE_COMPASS, meta, 1, "Lodestone Compass");
+        super(LODESTONE_COMPASS, meta, count, "Lodestone Compass");
     }
 
     @Override

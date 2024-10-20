@@ -10,7 +10,7 @@ public class ItemHorseArmorGold extends Item {
     }
 
     public ItemHorseArmorGold(Integer meta, int count) {
-        super(GOLDEN_HORSE_ARMOR, meta, 1, "Gold Horse Armor");
+        super(GOLDEN_HORSE_ARMOR, meta, count, "Gold Horse Armor");
     }
 
     @Override

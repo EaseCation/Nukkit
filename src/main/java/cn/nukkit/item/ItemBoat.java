@@ -33,7 +33,7 @@ public class ItemBoat extends Item {
     }
 
     public ItemBoat(Integer meta, int count) {
-        super(BOAT, meta, 1, "Boat");
+        super(BOAT, meta, count, "Boat");
     }
 
     protected ItemBoat(int id, Integer meta, int count, String name) {

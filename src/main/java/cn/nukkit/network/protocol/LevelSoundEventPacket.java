@@ -569,8 +569,16 @@ public class LevelSoundEventPacket extends DataPacket {
 	public static final int SOUND_RECORD_PRECIPICE = 529;
 	public static final int SOUND_VAULT_REJECT_REWARDED_PLAYER = 530;
 	public static final int SOUND_IMITATE_DROWNED = 531;
-
+	public static final int SOUND_IMITATE_CREAKING = 532;
 	public static final int SOUND_BUNDLE_INSERT_FAIL = 533;
+	public static final int SOUND_SPONGE_ABSORB = 534;
+
+	public static final int SOUND_BLOCK_CREAKING_HEART_TRAIL = 536;
+	public static final int SOUND_CREAKING_HEART_SPAWN = 537;
+	public static final int SOUND_ACTIVATE = 538;
+	public static final int SOUND_DEACTIVATE = 539;
+	public static final int SOUND_FREEZE = 540;
+	public static final int SOUND_UNFREEZE = 541;
 
 	public int sound;
     public float x;

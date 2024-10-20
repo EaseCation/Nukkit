@@ -15,7 +15,7 @@ public class ItemBookEnchanted extends Item {
     }
 
     public ItemBookEnchanted(Integer meta, int count) {
-        super(ENCHANTED_BOOK, meta, 1, "Enchanted Book");
+        super(ENCHANTED_BOOK, meta, count, "Enchanted Book");
     }
 
     @Override
