@@ -187,20 +187,20 @@ public class BlockEntityBrewingStand extends BlockEntityAbstractContainer {
     }
 
     protected void sendFuel() {
-        ContainerSetDataPacket pk = new ContainerSetDataPacket();
-
         for (Player p : this.inventory.getViewers()) {
             int windowId = p.getWindowId(this.inventory);
             if (windowId > 0) {
-                pk.windowId = windowId;
+                ContainerSetDataPacket pk1 = new ContainerSetDataPacket();
+                pk1.windowId = windowId;
+                pk1.property = ContainerSetDataPacket.PROPERTY_BREWING_STAND_FUEL_AMOUNT;
+                pk1.value = this.fuelAmount;
+                p.dataPacket(pk1);
 
-                pk.property = ContainerSetDataPacket.PROPERTY_BREWING_STAND_FUEL_AMOUNT;
-                pk.value = this.fuelAmount;
-                p.dataPacket(pk);
-
-                pk.property = ContainerSetDataPacket.PROPERTY_BREWING_STAND_FUEL_TOTAL;
-                pk.value = this.fuelTotal;
-                p.dataPacket(pk);
+                ContainerSetDataPacket pk2 = new ContainerSetDataPacket();
+                pk2.windowId = windowId;
+                pk2.property = ContainerSetDataPacket.PROPERTY_BREWING_STAND_FUEL_TOTAL;
+                pk2.value = this.fuelTotal;
+                p.dataPacket(pk2);
             }
         }
     }
@@ -210,19 +210,13 @@ public class BlockEntityBrewingStand extends BlockEntityAbstractContainer {
     }
 
     protected void sendBrewTime(int brewTime) {
-        if (this.inventory.getViewers().isEmpty()) {
-            return;
-        }
-
-        ContainerSetDataPacket pk = new ContainerSetDataPacket();
-        pk.property = ContainerSetDataPacket.PROPERTY_BREWING_STAND_BREW_TIME;
-        pk.value = brewTime;
-
         for (Player p : this.inventory.getViewers()) {
             int windowId = p.getWindowId(this.inventory);
             if (windowId > 0) {
+                ContainerSetDataPacket pk = new ContainerSetDataPacket();
                 pk.windowId = windowId;
-
+                pk.property = ContainerSetDataPacket.PROPERTY_BREWING_STAND_BREW_TIME;
+                pk.value = brewTime;
                 p.dataPacket(pk);
             }
         }

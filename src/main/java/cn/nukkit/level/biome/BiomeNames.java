@@ -94,4 +94,5 @@ public interface BiomeNames {
     String DEEP_DARK = "deep_dark";
     String MANGROVE_SWAMP = "mangrove_swamp";
     String CHERRY_GROVE = "cherry_grove";
+    String PALE_GARDEN = "pale_garden";
 }

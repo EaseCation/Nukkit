@@ -225,18 +225,17 @@ public class BlockEntityFurnace extends BlockEntityAbstractContainer {
         for (Player player : this.getInventory().getViewers()) {
             int windowId = player.getWindowId(this.getInventory());
             if (windowId > 0) {
-                ContainerSetDataPacket pk = new ContainerSetDataPacket();
-                pk.windowId = windowId;
-                pk.property = ContainerSetDataPacket.PROPERTY_FURNACE_TICK_COUNT;
+                ContainerSetDataPacket pk1 = new ContainerSetDataPacket();
+                pk1.windowId = windowId;
+                pk1.property = ContainerSetDataPacket.PROPERTY_FURNACE_TICK_COUNT;
+                pk1.value = cookTime;
+                player.dataPacket(pk1);
 
-                pk.value = cookTime;
-                player.dataPacket(pk);
-
-                pk = new ContainerSetDataPacket();
-                pk.windowId = windowId;
-                pk.property = ContainerSetDataPacket.PROPERTY_FURNACE_LIT_TIME;
-                pk.value = burnDuration;
-                player.dataPacket(pk);
+                ContainerSetDataPacket pk2 = new ContainerSetDataPacket();
+                pk2.windowId = windowId;
+                pk2.property = ContainerSetDataPacket.PROPERTY_FURNACE_LIT_TIME;
+                pk2.value = burnDuration;
+                player.dataPacket(pk2);
             }
         }
 

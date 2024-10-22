@@ -1298,6 +1298,28 @@ public interface BlockNames {
     String MATERIAL_REDUCER = "material_reducer";
     String ELEMENT_CONSTRUCTOR = "element_constructor";
     String LAB_TABLE = "lab_table";
-
+    String PALE_OAK_BUTTON = "pale_oak_button";
+    String PALE_OAK_DOOR = "pale_oak_door";
+    String PALE_OAK_FENCE = "pale_oak_fence";
+    String PALE_OAK_FENCE_GATE = "pale_oak_fence_gate";
+    String PALE_OAK_HANGING_SIGN = "pale_oak_hanging_sign";
+    String STRIPPED_PALE_OAK_LOG = "stripped_pale_oak_log";
+    String PALE_OAK_LOG = "pale_oak_log";
+    String PALE_OAK_PLANKS = "pale_oak_planks";
+    String PALE_OAK_PRESSURE_PLATE = "pale_oak_pressure_plate";
+    String PALE_OAK_SLAB = "pale_oak_slab";
+    String PALE_OAK_DOUBLE_SLAB = "pale_oak_double_slab";
+    String PALE_OAK_STAIRS = "pale_oak_stairs";
+    String PALE_OAK_STANDING_SIGN = "pale_oak_standing_sign";
+    String PALE_OAK_TRAPDOOR = "pale_oak_trapdoor";
+    String PALE_OAK_WALL_SIGN = "pale_oak_wall_sign";
+    String STRIPPED_PALE_OAK_WOOD = "stripped_pale_oak_wood";
+    String PALE_OAK_WOOD = "pale_oak_wood";
+    String PALE_OAK_SAPLING = "pale_oak_sapling";
+    String PALE_OAK_LEAVES = "pale_oak_leaves";
     String MUSHROOM_STEM = "mushroom_stem";
+    String PALE_MOSS_BLOCK = "pale_moss_block";
+    String PALE_MOSS_CARPET = "pale_moss_carpet";
+    String PALE_HANGING_MOSS = "pale_hanging_moss";
+    String CREAKING_HEART = "creaking_heart";
 }

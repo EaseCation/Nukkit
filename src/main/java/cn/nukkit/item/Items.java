@@ -366,6 +366,7 @@ public final class Items {
         registerNewItemAux(ItemNames.MANGROVE_CHEST_BOAT, CHEST_BOAT, ItemBoatChest.MANGROVE_BOAT, V1_19_0);
         registerNewItemAux(ItemNames.BAMBOO_CHEST_RAFT, CHEST_BOAT, ItemBoatChest.BAMBOO_RAFT, V1_20_0);
         registerNewItemAux(ItemNames.CHERRY_CHEST_BOAT, CHEST_BOAT, ItemBoatChest.CHERRY_BOAT, V1_20_0);
+        registerNewItemAux(ItemNames.PALE_OAK_CHEST_BOAT, CHEST_BOAT, ItemBoatChest.PALE_OAK_BOAT, V1_21_50);
 
 //        registerNewItem(ItemNames.BAMBOO_SIGN, BAMBOO_SIGN, ItemSignBamboo.class, ItemSignBamboo::new, V1_20_0);
 //        registerNewItem(ItemNames.CHERRY_SIGN, CHERRY_SIGN, ItemSignCherry.class, ItemSignCherry::new, V1_20_0);
@@ -425,23 +426,25 @@ public final class Items {
         registerNewItem(ItemNames.FLOW_ARMOR_TRIM_SMITHING_TEMPLATE, FLOW_ARMOR_TRIM_SMITHING_TEMPLATE, ItemSmithingTemplateArmorTrimFlow.class, ItemSmithingTemplateArmorTrimFlow::new, V1_21_0);
         registerNewItem(ItemNames.BOLT_ARMOR_TRIM_SMITHING_TEMPLATE, BOLT_ARMOR_TRIM_SMITHING_TEMPLATE, ItemSmithingTemplateArmorTrimBolt.class, ItemSmithingTemplateArmorTrimBolt::new, V1_21_0);
 
-//        registerNewItem(ItemNames.BUNDLE, BUNDLE, ItemBundle.class, ItemBundle::new, );
-//        registerNewItem(ItemNames.BLACK_BUNDLE, BLACK_BUNDLE, ItemBundleBlack.class, ItemBundleBlack::new, );
-//        registerNewItem(ItemNames.BLUE_BUNDLE, BLUE_BUNDLE, ItemBundleBlue.class, ItemBundleBlue::new, );
-//        registerNewItem(ItemNames.BROWN_BUNDLE, BROWN_BUNDLE, ItemBundleBrown.class, ItemBundleBrown::new, );
-//        registerNewItem(ItemNames.CYAN_BUNDLE, CYAN_BUNDLE, ItemBundleCyan.class, ItemBundleCyan::new, );
-//        registerNewItem(ItemNames.GRAY_BUNDLE, GRAY_BUNDLE, ItemBundleGray.class, ItemBundleGray::new, );
-//        registerNewItem(ItemNames.GREEN_BUNDLE, GREEN_BUNDLE, ItemBundleGreen.class, ItemBundleGreen::new, );
-//        registerNewItem(ItemNames.LIGHT_BLUE_BUNDLE, LIGHT_BLUE_BUNDLE, ItemBundleLightBlue.class, ItemBundleLightBlue::new, );
-//        registerNewItem(ItemNames.LIGHT_GRAY_BUNDLE, LIGHT_GRAY_BUNDLE, ItemBundleLightGray.class, ItemBundleLightGray::new, );
-//        registerNewItem(ItemNames.LIME_BUNDLE, LIME_BUNDLE, ItemBundleLime.class, ItemBundleLime::new, );
-//        registerNewItem(ItemNames.MAGENTA_BUNDLE, MAGENTA_BUNDLE, ItemBundleMagenta.class, ItemBundleMagenta::new, );
-//        registerNewItem(ItemNames.ORANGE_BUNDLE, ORANGE_BUNDLE, ItemBundleOrange.class, ItemBundleOrange::new, );
-//        registerNewItem(ItemNames.PINK_BUNDLE, PINK_BUNDLE, ItemBundlePink.class, ItemBundlePink::new, );
-//        registerNewItem(ItemNames.PURPLE_BUNDLE, PURPLE_BUNDLE, ItemBundlePurple.class, ItemBundlePurple::new, );
-//        registerNewItem(ItemNames.RED_BUNDLE, RED_BUNDLE, ItemBundleRed.class, ItemBundleRed::new, );
-//        registerNewItem(ItemNames.WHITE_BUNDLE, WHITE_BUNDLE, ItemBundleWhite.class, ItemBundleWhite::new, );
-//        registerNewItem(ItemNames.YELLOW_BUNDLE, YELLOW_BUNDLE, ItemBundleYellow.class, ItemBundleYellow::new, );
+//        registerNewItem(ItemNames.BUNDLE, BUNDLE, ItemBundle.class, ItemBundle::new, V1_20_40);
+//        registerNewItem(ItemNames.BLACK_BUNDLE, BLACK_BUNDLE, ItemBundleBlack.class, ItemBundleBlack::new, V1_20_40);
+//        registerNewItem(ItemNames.BLUE_BUNDLE, BLUE_BUNDLE, ItemBundleBlue.class, ItemBundleBlue::new, V1_20_40);
+//        registerNewItem(ItemNames.BROWN_BUNDLE, BROWN_BUNDLE, ItemBundleBrown.class, ItemBundleBrown::new, V1_20_40);
+//        registerNewItem(ItemNames.CYAN_BUNDLE, CYAN_BUNDLE, ItemBundleCyan.class, ItemBundleCyan::new, V1_20_40);
+//        registerNewItem(ItemNames.GRAY_BUNDLE, GRAY_BUNDLE, ItemBundleGray.class, ItemBundleGray::new, V1_20_40);
+//        registerNewItem(ItemNames.GREEN_BUNDLE, GREEN_BUNDLE, ItemBundleGreen.class, ItemBundleGreen::new, V1_20_40);
+//        registerNewItem(ItemNames.LIGHT_BLUE_BUNDLE, LIGHT_BLUE_BUNDLE, ItemBundleLightBlue.class, ItemBundleLightBlue::new, V1_20_40);
+//        registerNewItem(ItemNames.LIGHT_GRAY_BUNDLE, LIGHT_GRAY_BUNDLE, ItemBundleLightGray.class, ItemBundleLightGray::new, V1_20_40);
+//        registerNewItem(ItemNames.LIME_BUNDLE, LIME_BUNDLE, ItemBundleLime.class, ItemBundleLime::new, V1_20_40);
+//        registerNewItem(ItemNames.MAGENTA_BUNDLE, MAGENTA_BUNDLE, ItemBundleMagenta.class, ItemBundleMagenta::new, V1_20_40);
+//        registerNewItem(ItemNames.ORANGE_BUNDLE, ORANGE_BUNDLE, ItemBundleOrange.class, ItemBundleOrange::new, V1_20_40);
+//        registerNewItem(ItemNames.PINK_BUNDLE, PINK_BUNDLE, ItemBundlePink.class, ItemBundlePink::new, V1_20_40);
+//        registerNewItem(ItemNames.PURPLE_BUNDLE, PURPLE_BUNDLE, ItemBundlePurple.class, ItemBundlePurple::new, V1_20_40);
+//        registerNewItem(ItemNames.RED_BUNDLE, RED_BUNDLE, ItemBundleRed.class, ItemBundleRed::new, V1_20_40);
+//        registerNewItem(ItemNames.WHITE_BUNDLE, WHITE_BUNDLE, ItemBundleWhite.class, ItemBundleWhite::new, V1_20_40);
+//        registerNewItem(ItemNames.YELLOW_BUNDLE, YELLOW_BUNDLE, ItemBundleYellow.class, ItemBundleYellow::new, V1_20_40);
+
+//        registerNewItem(ItemNames.PALE_OAK_SIGN, PALE_OAK_SIGN, ItemSignPaleOak.class, ItemSignPaleOak::new, V1_20_50);
 
     }
 
@@ -525,6 +528,7 @@ public final class Items {
         registerComplexAlias(ItemNames.MANGROVE_BOAT, BOAT, ItemBoat.MANGROVE_BOAT, V1_19_0);
         registerComplexAlias(ItemNames.BAMBOO_RAFT, BOAT, ItemBoat.BAMBOO_RAFT, V1_20_0);
         registerComplexAlias(ItemNames.CHERRY_BOAT, BOAT, ItemBoat.CHERRY_BOAT, V1_20_0);
+        registerComplexAlias(ItemNames.PALE_OAK_BOAT, BOAT, ItemBoat.PALE_OAK_BOAT, V1_21_50);
 
         registerComplexAlias(ItemNames.MILK_BUCKET, BUCKET, ItemBucket.MILK_BUCKET, V1_16_100);
         registerComplexAlias(ItemNames.COD_BUCKET, BUCKET, ItemBucket.COD_BUCKET, V1_16_100);

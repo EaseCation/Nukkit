@@ -431,6 +431,10 @@ public class EntityHuman extends EntityHumanType {
     }
 
     public void sendPosition(Vector3 pos, double yaw, double pitch, int mode, Player[] targets) {
+        if (targets == null) {
+            return;
+        }
+
         MovePlayerPacket pk = new MovePlayerPacket();
         pk.eid = this.getId();
         pk.x = (float) pos.x;
@@ -444,10 +448,7 @@ public class EntityHuman extends EntityHumanType {
             pk.ridingEid = this.riding.getId();
         }
         pk.setChannel(DataPacket.CHANNEL_PLAYER_MOVING);
-
-        if (targets != null) {
-            Server.broadcastPacket(targets, pk);
-        }
+        Server.broadcastPacket(targets, pk);
     }
 
 }

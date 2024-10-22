@@ -94,4 +94,5 @@ public interface BiomeID {
     int DEEP_DARK = 190;
     int MANGROVE_SWAMP = 191;
     int CHERRY_GROVE = 192;
+    int PALE_GARDEN = 193;
 }

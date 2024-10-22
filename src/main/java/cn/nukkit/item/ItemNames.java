@@ -104,6 +104,7 @@ public interface ItemNames extends ItemBlockNames {
     String MANGROVE_BOAT = "mangrove_boat";
     String BAMBOO_RAFT = "bamboo_raft";
     String CHERRY_BOAT = "cherry_boat";
+    String PALE_OAK_BOAT = "pale_oak_boat";
     String LEATHER = "leather";
     String KELP = "kelp";
     String BRICK = "brick";
@@ -687,6 +688,7 @@ public interface ItemNames extends ItemBlockNames {
     String MANGROVE_CHEST_BOAT = "mangrove_chest_boat";
     String BAMBOO_CHEST_RAFT = "bamboo_chest_raft";
     String CHERRY_CHEST_BOAT = "cherry_chest_boat";
+    String PALE_OAK_CHEST_BOAT = "pale_oak_chest_boat";
     String BAMBOO_SIGN = "bamboo_sign";
     String TORCHFLOWER_SEEDS = "torchflower_seeds";
     String ARCHER_POTTERY_SHERD = "archer_pottery_sherd";
@@ -745,4 +747,21 @@ public interface ItemNames extends ItemBlockNames {
     String FLOW_BANNER_PATTERN = "flow_banner_pattern";
     String GUSTER_BANNER_PATTERN = "guster_banner_pattern";
     String BUNDLE = "bundle";
+    String BLACK_BUNDLE = "black_bundle";
+    String BLUE_BUNDLE = "blue_bundle";
+    String BROWN_BUNDLE = "brown_bundle";
+    String CYAN_BUNDLE = "cyan_bundle";
+    String GRAY_BUNDLE = "gray_bundle";
+    String GREEN_BUNDLE = "green_bundle";
+    String LIGHT_BLUE_BUNDLE = "light_blue_bundle";
+    String LIGHT_GRAY_BUNDLE = "light_gray_bundle";
+    String LIME_BUNDLE = "lime_bundle";
+    String MAGENTA_BUNDLE = "magenta_bundle";
+    String ORANGE_BUNDLE = "orange_bundle";
+    String PINK_BUNDLE = "pink_bundle";
+    String PURPLE_BUNDLE = "purple_bundle";
+    String RED_BUNDLE = "red_bundle";
+    String WHITE_BUNDLE = "white_bundle";
+    String YELLOW_BUNDLE = "yellow_bundle";
+    String PALE_OAK_SIGN = "pale_oak_sign";
 }

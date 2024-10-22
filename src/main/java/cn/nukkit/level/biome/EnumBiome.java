@@ -28,6 +28,7 @@ import cn.nukkit.level.biome.impl.plains.PlainsBiome;
 import cn.nukkit.level.biome.impl.plains.SunflowerPlainsBiome;
 import cn.nukkit.level.biome.impl.river.FrozenRiverBiome;
 import cn.nukkit.level.biome.impl.river.RiverBiome;
+import cn.nukkit.level.biome.impl.roofedforest.PaleGardenBiome;
 import cn.nukkit.level.biome.impl.roofedforest.RoofedForestBiome;
 import cn.nukkit.level.biome.impl.roofedforest.RoofedForestMBiome;
 import cn.nukkit.level.biome.impl.savanna.SavannaBiome;
@@ -139,6 +140,7 @@ public enum EnumBiome {
     DEEP_DARK(BiomeID.DEEP_DARK, new DeepDarkBiome(), V1_19_0),
     MANGROVE_SWAMP(BiomeID.MANGROVE_SWAMP, new MangroveSwampBiome(), V1_19_0),
     CHERRY_GROVE(BiomeID.CHERRY_GROVE, new CherryGroveBiome(), V1_20_0),
+    PALE_GARDEN(BiomeID.PALE_GARDEN, new PaleGardenBiome(), V1_21_50),
     ;
 
     public final int id;

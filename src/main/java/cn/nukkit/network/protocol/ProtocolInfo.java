@@ -268,6 +268,7 @@ public interface ProtocolInfo {
     int CONTAINER_REGISTRY_CLEANUP_PACKET = 0x13d; // 317 c
     int MOVEMENT_EFFECT_PACKET = 0x13e; // 318 c
     int SET_MOVEMENT_AUTHORITY_PACKET = 0x13f; // 319 c
+    int CAMERA_AIM_ASSIST_PRESETS_PACKET = 0x140; // 320 c
 
 
     int COUNT = 1024;

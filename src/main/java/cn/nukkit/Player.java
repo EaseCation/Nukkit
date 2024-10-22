@@ -6534,11 +6534,7 @@ public class Player extends EntityHuman implements CommandSender, InventoryHolde
         pk.eid = getId();
         pk.action = AnimatePacket.Action.SWING_ARM;
         dataPacket(pk);
-
-        AnimatePacket pkBroadcast = new AnimatePacket();
-        pkBroadcast.eid = getId();
-        pkBroadcast.action = AnimatePacket.Action.SWING_ARM;
-        Server.broadcastPacket(getViewers().values(), pkBroadcast);
+        Server.broadcastPacket(getViewers().values(), pk);
     }
 
     public int getMaxViewDistance() {

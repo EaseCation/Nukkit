@@ -1299,6 +1299,28 @@ public interface BlockFullNames {
     String MATERIAL_REDUCER = "minecraft:" + BlockNames.MATERIAL_REDUCER;
     String ELEMENT_CONSTRUCTOR = "minecraft:" + BlockNames.ELEMENT_CONSTRUCTOR;
     String LAB_TABLE = "minecraft:" + BlockNames.LAB_TABLE;
-
+    String PALE_OAK_BUTTON = "minecraft:" + BlockNames.PALE_OAK_BUTTON;
+    String PALE_OAK_DOOR = "minecraft:" + BlockNames.PALE_OAK_DOOR;
+    String PALE_OAK_FENCE = "minecraft:" + BlockNames.PALE_OAK_FENCE;
+    String PALE_OAK_FENCE_GATE = "minecraft:" + BlockNames.PALE_OAK_FENCE_GATE;
+    String PALE_OAK_HANGING_SIGN = "minecraft:" + BlockNames.PALE_OAK_HANGING_SIGN;
+    String STRIPPED_PALE_OAK_LOG = "minecraft:" + BlockNames.STRIPPED_PALE_OAK_LOG;
+    String PALE_OAK_LOG = "minecraft:" + BlockNames.PALE_OAK_LOG;
+    String PALE_OAK_PLANKS = "minecraft:" + BlockNames.PALE_OAK_PLANKS;
+    String PALE_OAK_PRESSURE_PLATE = "minecraft:" + BlockNames.PALE_OAK_PRESSURE_PLATE;
+    String PALE_OAK_SLAB = "minecraft:" + BlockNames.PALE_OAK_SLAB;
+    String PALE_OAK_DOUBLE_SLAB = "minecraft:" + BlockNames.PALE_OAK_DOUBLE_SLAB;
+    String PALE_OAK_STAIRS = "minecraft:" + BlockNames.PALE_OAK_STAIRS;
+    String PALE_OAK_STANDING_SIGN = "minecraft:" + BlockNames.PALE_OAK_STANDING_SIGN;
+    String PALE_OAK_TRAPDOOR = "minecraft:" + BlockNames.PALE_OAK_TRAPDOOR;
+    String PALE_OAK_WALL_SIGN = "minecraft:" + BlockNames.PALE_OAK_WALL_SIGN;
+    String STRIPPED_PALE_OAK_WOOD = "minecraft:" + BlockNames.STRIPPED_PALE_OAK_WOOD;
+    String PALE_OAK_WOOD = "minecraft:" + BlockNames.PALE_OAK_WOOD;
+    String PALE_OAK_SAPLING = "minecraft:" + BlockNames.PALE_OAK_SAPLING;
+    String PALE_OAK_LEAVES = "minecraft:" + BlockNames.PALE_OAK_LEAVES;
     String MUSHROOM_STEM = "minecraft:" + BlockNames.MUSHROOM_STEM;
+    String PALE_MOSS_BLOCK = "minecraft:" + BlockNames.PALE_MOSS_BLOCK;
+    String PALE_MOSS_CARPET = "minecraft:" + BlockNames.PALE_MOSS_CARPET;
+    String PALE_HANGING_MOSS = "minecraft:" + BlockNames.PALE_HANGING_MOSS;
+    String CREAKING_HEART = "minecraft:" + BlockNames.CREAKING_HEART;
 }

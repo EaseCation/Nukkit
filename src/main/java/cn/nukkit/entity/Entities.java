@@ -175,6 +175,9 @@ public final class Entities {
         registerEntity(EntityID.BOGGED, EntityNames.BOGGED, "Bogged", EntityBogged.class, EntityBogged::new, V1_21_0);
         registerTodo(EntityID.OMINOUS_ITEM_SPAWNER, EntityNames.OMINOUS_ITEM_SPAWNER, "OminousItemSpawner");
 //        registerEntity(EntityID.OMINOUS_ITEM_SPAWNER, EntityNames.OMINOUS_ITEM_SPAWNER, "OminousItemSpawner", EntityOminousItemSpawner.class, EntityOminousItemSpawner::new, V1_21_0);
+
+        registerTodo(EntityID.CREAKING, EntityNames.CREAKING, "Creaking");
+//        registerEntity(EntityID.CREAKING, EntityNames.CREAKING, "Creaking", EntityCreaking.class, EntityCreaking::new, V1_21_50);
     }
 
     private static boolean registerTodo(int typeId, String identifier, String name) {

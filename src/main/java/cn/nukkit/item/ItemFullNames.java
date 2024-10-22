@@ -105,6 +105,7 @@ public interface ItemFullNames extends ItemBlockNames {
     String MANGROVE_BOAT = "minecraft:" + ItemNames.MANGROVE_BOAT;
     String BAMBOO_RAFT = "minecraft:" + ItemNames.BAMBOO_RAFT;
     String CHERRY_BOAT = "minecraft:" + ItemNames.CHERRY_BOAT;
+    String PALE_OAK_BOAT = "minecraft:" + ItemNames.PALE_OAK_BOAT;
     String LEATHER = "minecraft:" + ItemNames.LEATHER;
     String KELP = "minecraft:" + ItemNames.KELP;
     String BRICK = "minecraft:" + ItemNames.BRICK;
@@ -688,6 +689,7 @@ public interface ItemFullNames extends ItemBlockNames {
     String MANGROVE_CHEST_BOAT = "minecraft:" + ItemNames.MANGROVE_CHEST_BOAT;
     String BAMBOO_CHEST_RAFT = "minecraft:" + ItemNames.BAMBOO_CHEST_RAFT;
     String CHERRY_CHEST_BOAT = "minecraft:" + ItemNames.CHERRY_CHEST_BOAT;
+    String PALE_OAK_CHEST_BOAT = "minecraft:" + ItemNames.PALE_OAK_CHEST_BOAT;
     String BAMBOO_SIGN = "minecraft:" + ItemNames.BAMBOO_SIGN;
     String TORCHFLOWER_SEEDS = "minecraft:" + ItemNames.TORCHFLOWER_SEEDS;
     String ARCHER_POTTERY_SHERD = "minecraft:" + ItemNames.ARCHER_POTTERY_SHERD;
@@ -746,4 +748,21 @@ public interface ItemFullNames extends ItemBlockNames {
     String FLOW_BANNER_PATTERN = "minecraft:" + ItemNames.FLOW_BANNER_PATTERN;
     String GUSTER_BANNER_PATTERN = "minecraft:" + ItemNames.GUSTER_BANNER_PATTERN;
     String BUNDLE = "minecraft:" + ItemNames.BUNDLE;
+    String BLACK_BUNDLE = "minecraft:" + ItemNames.BLACK_BUNDLE;
+    String BLUE_BUNDLE = "minecraft:" + ItemNames.BLUE_BUNDLE;
+    String BROWN_BUNDLE = "minecraft:" + ItemNames.BROWN_BUNDLE;
+    String CYAN_BUNDLE = "minecraft:" + ItemNames.CYAN_BUNDLE;
+    String GRAY_BUNDLE = "minecraft:" + ItemNames.GRAY_BUNDLE;
+    String GREEN_BUNDLE = "minecraft:" + ItemNames.GREEN_BUNDLE;
+    String LIGHT_BLUE_BUNDLE = "minecraft:" + ItemNames.LIGHT_BLUE_BUNDLE;
+    String LIGHT_GRAY_BUNDLE = "minecraft:" + ItemNames.LIGHT_GRAY_BUNDLE;
+    String LIME_BUNDLE = "minecraft:" + ItemNames.LIME_BUNDLE;
+    String MAGENTA_BUNDLE = "minecraft:" + ItemNames.MAGENTA_BUNDLE;
+    String ORANGE_BUNDLE = "minecraft:" + ItemNames.ORANGE_BUNDLE;
+    String PINK_BUNDLE = "minecraft:" + ItemNames.PINK_BUNDLE;
+    String PURPLE_BUNDLE = "minecraft:" + ItemNames.PURPLE_BUNDLE;
+    String RED_BUNDLE = "minecraft:" + ItemNames.RED_BUNDLE;
+    String WHITE_BUNDLE = "minecraft:" + ItemNames.WHITE_BUNDLE;
+    String YELLOW_BUNDLE = "minecraft:" + ItemNames.YELLOW_BUNDLE;
+    String PALE_OAK_SIGN = "minecraft:" + ItemNames.PALE_OAK_SIGN;
 }

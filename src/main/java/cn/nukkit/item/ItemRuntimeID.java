@@ -83,6 +83,7 @@ public interface ItemRuntimeID {
     int RED_BUNDLE = BASE_INTERNAL_ID + 73;
     int WHITE_BUNDLE = BASE_INTERNAL_ID + 74;
     int YELLOW_BUNDLE = BASE_INTERNAL_ID + 75;
+    int PALE_OAK_SIGN = BASE_INTERNAL_ID + 76;
 
-    int CUSTOM_ITEM = Mth.smallestEncompassingPowerOfTwo(BASE_INTERNAL_ID + 76); //2048
+    int CUSTOM_ITEM = Mth.smallestEncompassingPowerOfTwo(BASE_INTERNAL_ID + 77); //2048
 }

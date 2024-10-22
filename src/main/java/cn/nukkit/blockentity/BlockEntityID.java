@@ -55,4 +55,5 @@ public interface BlockEntityID {
     String CRAFTER = "Crafter";
     String TRIAL_SPAWNER = "TrialSpawner";
     String VAULT = "Vault";
+    String CREAKING_HEART = "CreakingHeart";
 }

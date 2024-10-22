@@ -4511,25 +4511,22 @@ public class Level implements ChunkManager, Metadatable {
         }
 
         LevelEventPacket pk = new LevelEventPacket();
-
-        Random random = ThreadLocalRandom.current();
         if (this.isRaining()) {
             pk.evid = LevelEventPacket.EVENT_START_RAIN;
             pk.data = this.rainingIntensity;
         } else {
             pk.evid = LevelEventPacket.EVENT_STOP_RAIN;
         }
-
         Server.broadcastPacket(players, pk);
 
+        LevelEventPacket pk2 = new LevelEventPacket();
         if (this.isThundering()) {
-            pk.evid = LevelEventPacket.EVENT_START_THUNDER;
-            pk.data = random.nextInt(50000) + 10000;
+            pk2.evid = LevelEventPacket.EVENT_START_THUNDER;
+            pk2.data = ThreadLocalRandom.current().nextInt(10000, 60000);
         } else {
-            pk.evid = LevelEventPacket.EVENT_STOP_THUNDER;
+            pk2.evid = LevelEventPacket.EVENT_STOP_THUNDER;
         }
-
-        Server.broadcastPacket(players, pk);
+        Server.broadcastPacket(players, pk2);
     }
 
     public void sendWeather(Player player) {

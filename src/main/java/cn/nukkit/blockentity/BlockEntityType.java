@@ -56,7 +56,8 @@ public interface BlockEntityType {
     int CRAFTER = 55;
     int TRIAL_SPAWNER = 56;
     int VAULT = 57;
+    int CREAKING_HEART = 58;
 
 
-    int UNDEFINED = 58;
+    int UNDEFINED = 59;
 }

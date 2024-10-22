@@ -1379,6 +1379,28 @@ public interface ItemBlockFullNames {
     String MATERIAL_REDUCER = "minecraft:" + ItemBlockNames.MATERIAL_REDUCER;
     String ELEMENT_CONSTRUCTOR = "minecraft:" + ItemBlockNames.ELEMENT_CONSTRUCTOR;
     String LAB_TABLE = "minecraft:" + ItemBlockNames.LAB_TABLE;
-
+    String PALE_OAK_BUTTON = "minecraft:" + ItemBlockNames.PALE_OAK_BUTTON;
+    String PALE_OAK_DOOR = "minecraft:" + ItemBlockNames.PALE_OAK_DOOR;
+    String PALE_OAK_FENCE = "minecraft:" + ItemBlockNames.PALE_OAK_FENCE;
+    String PALE_OAK_FENCE_GATE = "minecraft:" + ItemBlockNames.PALE_OAK_FENCE_GATE;
+    String PALE_OAK_HANGING_SIGN = "minecraft:" + ItemBlockNames.PALE_OAK_HANGING_SIGN;
+    String STRIPPED_PALE_OAK_LOG = "minecraft:" + ItemBlockNames.STRIPPED_PALE_OAK_LOG;
+    String PALE_OAK_LOG = "minecraft:" + ItemBlockNames.PALE_OAK_LOG;
+    String PALE_OAK_PLANKS = "minecraft:" + ItemBlockNames.PALE_OAK_PLANKS;
+    String PALE_OAK_PRESSURE_PLATE = "minecraft:" + ItemBlockNames.PALE_OAK_PRESSURE_PLATE;
+    String PALE_OAK_SLAB = "minecraft:" + ItemBlockNames.PALE_OAK_SLAB;
+    String PALE_OAK_DOUBLE_SLAB = "minecraft:" + ItemBlockNames.PALE_OAK_DOUBLE_SLAB;
+    String PALE_OAK_STAIRS = "minecraft:" + ItemBlockNames.PALE_OAK_STAIRS;
+    String PALE_OAK_STANDING_SIGN = "minecraft:" + ItemBlockNames.PALE_OAK_STANDING_SIGN;
+    String PALE_OAK_TRAPDOOR = "minecraft:" + ItemBlockNames.PALE_OAK_TRAPDOOR;
+    String PALE_OAK_WALL_SIGN = "minecraft:" + ItemBlockNames.PALE_OAK_WALL_SIGN;
+    String STRIPPED_PALE_OAK_WOOD = "minecraft:" + ItemBlockNames.STRIPPED_PALE_OAK_WOOD;
+    String PALE_OAK_WOOD = "minecraft:" + ItemBlockNames.PALE_OAK_WOOD;
+    String PALE_OAK_SAPLING = "minecraft:" + ItemBlockNames.PALE_OAK_SAPLING;
+    String PALE_OAK_LEAVES = "minecraft:" + ItemBlockNames.PALE_OAK_LEAVES;
     String MUSHROOM_STEM = "minecraft:" + ItemBlockNames.MUSHROOM_STEM;
+    String PALE_MOSS_BLOCK = "minecraft:" + ItemBlockNames.PALE_MOSS_BLOCK;
+    String PALE_MOSS_CARPET = "minecraft:" + ItemBlockNames.PALE_MOSS_CARPET;
+    String PALE_HANGING_MOSS = "minecraft:" + ItemBlockNames.PALE_HANGING_MOSS;
+    String CREAKING_HEART = "minecraft:" + ItemBlockNames.CREAKING_HEART;
 }

@@ -136,6 +136,7 @@ public interface EntityNames {
     String WIND_CHARGE_PROJECTILE = "wind_charge_projectile";
     String BOGGED = "bogged";
     String OMINOUS_ITEM_SPAWNER = "ominous_item_spawner";
+    String CREAKING = "creaking";
 
     String TRADER_LLAMA = "trader_llama";
 
