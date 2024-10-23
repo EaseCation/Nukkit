@@ -402,6 +402,10 @@ public class Player extends EntityHuman implements CommandSender, InventoryHolde
         return randomClientId;
     }
 
+    public UUID getSessionId() {
+        return getUniqueId();
+    }
+
     @Override
     public boolean isBanned() {
         return this.server.getNameBans().isBanned(this.getName());
@@ -411,7 +415,7 @@ public class Player extends EntityHuman implements CommandSender, InventoryHolde
     public void setBanned(boolean value) {
         if (value) {
             this.server.getNameBans().addBan(this.getName(), null, null, null);
-            this.kick(PlayerKickEvent.Reason.NAME_BANNED, "Banned by admin");
+            this.kick(PlayerKickEvent.Reason.NAME_BANNED, "Banned by admin", false);
         } else {
             this.server.getNameBans().remove(this.getName());
         }
@@ -1994,7 +1998,7 @@ public class Player extends EntityHuman implements CommandSender, InventoryHolde
                         if (!this.hasEffect(Effect.JUMP_BOOST) && diff > 0.6 && expectedVelocity < this.speed.y && !ignore) {
                             if (this.inAirTicks < 150) {
                                 this.setMotion(new Vector3(0, expectedVelocity, 0));
-                            } else if (this.kick(PlayerKickEvent.Reason.FLYING_DISABLED, "Flying is not enabled on this server")) {
+                            } else if (this.kick(PlayerKickEvent.Reason.FLYING_DISABLED, "Flying is not enabled on this server", false)) {
                                 return false;
                             }
                         }
@@ -2309,14 +2313,14 @@ public class Player extends EntityHuman implements CommandSender, InventoryHolde
 
     protected void processLogin() {
         if (!this.server.isWhitelisted((this.getName()).toLowerCase())) {
-            this.kick(PlayerKickEvent.Reason.NOT_WHITELISTED, "Server is white-listed");
+            this.kick(PlayerKickEvent.Reason.NOT_WHITELISTED, "Server is white-listed", false);
 
             return;
         } else if (this.isBanned()) {
-            this.kick(PlayerKickEvent.Reason.NAME_BANNED, "You are banned");
+            this.kick(PlayerKickEvent.Reason.NAME_BANNED, "You are banned", false);
             return;
         } else if (this.server.getIPBans().isBanned(this.getAddress())) {
-            this.kick(PlayerKickEvent.Reason.IP_BANNED, "You are banned");
+            this.kick(PlayerKickEvent.Reason.IP_BANNED, "You are banned", false);
             return;
         }
 
@@ -2327,15 +2331,11 @@ public class Player extends EntityHuman implements CommandSender, InventoryHolde
             this.server.getPluginManager().subscribeToPermission(Server.BROADCAST_CHANNEL_ADMINISTRATIVE, this);
         }
 
-        for (Player p : new ObjectArrayList<>(this.server.getOnlinePlayers().values())) {
-            if (p != this && p.getName() != null && p.getName().equalsIgnoreCase(this.getName())) {
-                if (!p.kick(PlayerKickEvent.Reason.NEW_CONNECTION, "logged in from another location")) {
-                    this.close(this.getLeaveMessage(), "disconnectionScreen.loggedinOtherLocation");
-                    return;
-                }
-            } else if (p.loggedIn && this.getUniqueId().equals(p.getUniqueId())) {
-                if (!p.kick(PlayerKickEvent.Reason.NEW_CONNECTION, "logged in from another location")) {
-                    this.close(this.getLeaveMessage(), "disconnectionScreen.loggedinOtherLocation");
+        for (Player p : this.server.getOnlinePlayerList()) {
+            if (p != this && (p.getName() != null && p.getName().equalsIgnoreCase(this.getName()) ||
+                    this.getUniqueId().equals(p.getUniqueId()))) {
+                if (!p.kick(PlayerKickEvent.Reason.NEW_CONNECTION, "disconnectionScreen.loggedinOtherLocation", false)) {
+                    this.close("", "disconnectionScreen.serverIdConflict");
                     return;
                 }
             }
@@ -2343,7 +2343,7 @@ public class Player extends EntityHuman implements CommandSender, InventoryHolde
 
         CompoundTag nbt = this.server.getOfflinePlayerData(this.username);
         if (nbt == null) {
-            this.close(this.getLeaveMessage(), "Invalid data");
+            this.close("", "disconnectionScreen.worldCorruption");
 
             return;
         }
@@ -2593,7 +2593,7 @@ public class Player extends EntityHuman implements CommandSender, InventoryHolde
 
                     this.loginChainData = ClientChainData.read(loginPacket);
 
-                    if (this.server.getOnlinePlayers().size() >= this.server.getMaxPlayers() && this.kick(PlayerKickEvent.Reason.SERVER_FULL, "disconnectionScreen.serverFull", false)) {
+                    if (this.server.getOnlinePlayerCount() >= this.server.getMaxPlayers() && this.kick(PlayerKickEvent.Reason.SERVER_FULL, "disconnectionScreen.serverFull", false)) {
                         break;
                     }
 
@@ -2818,7 +2818,7 @@ public class Player extends EntityHuman implements CommandSender, InventoryHolde
                         break;
                     }
                     if (adventureSettingsPacket.getFlag(AdventureSettingsPacket.FLYING) && !server.getAllowFlight() && !this.getAdventureSettings().get(Type.ALLOW_FLIGHT)) {
-                        this.kick(PlayerKickEvent.Reason.FLYING_DISABLED, "Flying is not enabled on this server");
+                        this.kick(PlayerKickEvent.Reason.FLYING_DISABLED, "Flying is not enabled on this server", false);
                         break;
                     }
                     PlayerToggleFlightEvent playerToggleFlightEvent = new PlayerToggleFlightEvent(this, adventureSettingsPacket.getFlag(AdventureSettingsPacket.FLYING));
@@ -3102,7 +3102,7 @@ public class Player extends EntityHuman implements CommandSender, InventoryHolde
                     }
 
                     if (targetEntity instanceof EntityItem || targetEntity instanceof EntityArrow || targetEntity instanceof EntityXPOrb) {
-                        this.kick(PlayerKickEvent.Reason.INVALID_PVE, "Attempting to interact with an invalid entity");
+                        this.kick(PlayerKickEvent.Reason.INVALID_PVE, "Attempting to interact with an invalid entity", false);
                         log.warn(this.getServer().getLanguage().translate("nukkit.player.invalidEntity", this.getName()));
                         break;
                     }
@@ -4309,7 +4309,7 @@ public class Player extends EntityHuman implements CommandSender, InventoryHolde
                 }
             }
 
-            for (Player player : new ObjectArrayList<>(this.server.getOnlinePlayers().values())) {
+            for (Player player : this.server.getOnlinePlayerList()) {
                 if (!player.canSee(this)) {
                     player.showPlayer(this);
                 }
@@ -6310,7 +6310,7 @@ public class Player extends EntityHuman implements CommandSender, InventoryHolde
                 return;
             }
             String message = event.getMessage();
-            kick(Reason.PACKET_VIOLATION, message != null ? message : reason.toString());
+            kick(Reason.PACKET_VIOLATION, message != null ? message : reason.toString(), false);
         } else {
             violation = 0;
             violated = false;

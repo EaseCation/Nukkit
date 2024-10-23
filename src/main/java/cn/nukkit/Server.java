@@ -383,7 +383,7 @@ public class Server {
         this.networkZlibProvider = this.getConfig("network.zlib-provider", 2);
         Zlib.setProvider(this.networkZlibProvider);
 
-        this.networkCompressionLevel = this.getConfig("network.compression-level", 7);
+        this.networkCompressionLevel = Mth.clamp(this.getConfig("network.compression-level", 7), Deflater.BEST_SPEED, Deflater.BEST_COMPRESSION);
         this.networkCompressionAsync = this.getConfig("network.async-compression", true);
 
         this.autoTickRate = this.getConfig("level-settings.auto-tick-rate", true);
@@ -1607,6 +1607,10 @@ public class Server {
         return playerList;
     }
 
+    public Player[] getOnlinePlayerList() {
+        return playerList.values().toArray(new Player[0]);
+    }
+
     public int getOnlinePlayerCount() {
         return playerList.size();
     }
@@ -1636,7 +1640,7 @@ public class Server {
                 try {
                     Files.move(filePath, Paths.get(path, name + ".dat.bak"), StandardCopyOption.REPLACE_EXISTING);
                 } catch (IOException ex) {
-                    throw new RuntimeException(ex);
+//                    throw new RuntimeException(ex);
                 }
                 log.warn(this.getLanguage().translate("nukkit.data.playerCorrupted", name));
             }
@@ -1702,7 +1706,7 @@ public class Server {
         Player found = null;
         name = name.toLowerCase();
         int delta = Integer.MAX_VALUE;
-        for (Player player : this.getOnlinePlayers().values()) {
+        for (Player player : this.getOnlinePlayerList()) {
             if (player.getName().toLowerCase().startsWith(name)) {
                 int curDelta = player.getName().length() - name.length();
                 if (curDelta < delta) {
@@ -1720,7 +1724,7 @@ public class Server {
 
     public Player getPlayerExact(String name) {
         name = name.toLowerCase();
-        for (Player player : this.getOnlinePlayers().values()) {
+        for (Player player : this.getOnlinePlayerList()) {
             if (player.getName().toLowerCase().equals(name)) {
                 return player;
             }
@@ -1732,7 +1736,7 @@ public class Server {
     public Player[] matchPlayer(String partialName) {
         partialName = partialName.toLowerCase();
         List<Player> matchedPlayer = new ArrayList<>();
-        for (Player player : this.getOnlinePlayers().values()) {
+        for (Player player : this.getOnlinePlayerList()) {
             if (player.getName().toLowerCase().equals(partialName)) {
                 return new Player[]{player};
             } else if (player.getName().toLowerCase().contains(partialName)) {

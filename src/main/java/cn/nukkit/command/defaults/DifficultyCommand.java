@@ -50,7 +50,7 @@ public class DifficultyCommand extends VanillaCommand {
 
             SetDifficultyPacket pk = new SetDifficultyPacket();
             pk.difficulty = sender.getServer().getDifficulty();
-            Server.broadcastPacket(sender.getServer().getOnlinePlayers().values(), pk);
+            Server.broadcastPacket(sender.getServer().getOnlinePlayerList(), pk);
 
             Command.broadcastCommandMessage(sender, new TranslationContainer("commands.difficulty.success", Difficulty.byId(difficulty).getTranslationKey()));
         } else {

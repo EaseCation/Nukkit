@@ -28,7 +28,7 @@ public class SaveCommand extends VanillaCommand {
 
         Command.broadcastCommandMessage(sender, new TranslationContainer("commands.save.start"));
 
-        for (Player player : sender.getServer().getOnlinePlayers().values()) {
+        for (Player player : sender.getServer().getOnlinePlayerList()) {
             player.save();
         }
 

@@ -103,7 +103,7 @@ public class BanIpCommand extends VanillaCommand {
     private void processIPBan(String ip, CommandSender sender, String reason) {
         sender.getServer().getIPBans().addBan(ip, reason, null, sender.getName());
 
-        for (Player player : new ObjectArrayList<>(sender.getServer().getOnlinePlayers().values())) {
+        for (Player player : sender.getServer().getOnlinePlayerList()) {
             if (player.getAddress().equals(ip)) {
                 player.kick(PlayerKickEvent.Reason.IP_BANNED, !reason.isEmpty() ? reason : "IP banned");
             }

@@ -55,7 +55,7 @@ public class QueryRegenerateEvent extends ServerEvent {
 //        this.plugins = server.getPluginManager().getPlugins().values().toArray(new Plugin[0]);
         this.plugins = new Plugin[0];
 //        List<Player> players = new ArrayList<>();
-//        for (Player player : server.getOnlinePlayers().values()) {
+//        for (Player player : server.getOnlinePlayerList()) {
 //            if (player.isOnline()) {
 //                players.add(player);
 //            }
@@ -69,7 +69,7 @@ public class QueryRegenerateEvent extends ServerEvent {
         this.server_engine = server.getName() + " " + server.getNukkitVersion();
 //        this.map = server.getDefaultLevel() == null ? "unknown" : server.getDefaultLevel().getName();
         this.map = "Nukkit";
-        this.numPlayers = server.getOnlinePlayers().size();
+        this.numPlayers = server.getOnlinePlayerCount();
         this.maxPlayers = server.getMaxPlayers();
         this.whitelist = server.hasWhitelist() ? "on" : "off";
         this.port = server.getPort();

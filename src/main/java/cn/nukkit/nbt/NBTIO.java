@@ -277,7 +277,7 @@ public class NBTIO {
     }
 
     public static void writeZLIBCompressed(CompoundTag tag, OutputStream outputStream, ByteOrder endianness) throws IOException {
-        writeZLIBCompressed(tag, outputStream, Deflater.DEFAULT_COMPRESSION, endianness);
+        writeZLIBCompressed(tag, outputStream, Deflater.BEST_SPEED, endianness);
     }
 
     public static void writeZLIBCompressed(CompoundTag tag, OutputStream outputStream, int level) throws IOException {

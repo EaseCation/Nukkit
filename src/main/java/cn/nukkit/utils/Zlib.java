@@ -41,7 +41,7 @@ public abstract class Zlib {
     }
 
     public static byte[] deflate(byte[] data) throws Exception {
-        return deflate(data, Deflater.DEFAULT_COMPRESSION);
+        return deflate(data, Deflater.BEST_SPEED);
     }
 
     public static byte[] deflate(byte[] data, int level) throws IOException {
