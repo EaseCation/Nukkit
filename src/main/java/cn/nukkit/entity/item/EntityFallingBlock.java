@@ -96,7 +96,7 @@ public class EntityFallingBlock extends Entity {
                         .putString("name", Blocks.getBlockFullNameById(id))
                         .putShort("val", meta));
 
-                if (block.getId() == Block.INFO_UPDATE) {
+                if (block.getId() == Block.UNKNOWN) {
                     block = null;
                 } else {
                     namedTag.putCompound("FallingBlock", BlockSerializer.serialize(block));

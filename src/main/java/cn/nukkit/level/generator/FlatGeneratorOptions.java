@@ -55,7 +55,7 @@ public class FlatGeneratorOptions {
             Map<String, Object> blockLayer = new HashMap<>();
             String blockName = Blocks.getBlockFullNameById(layer.blockId);
             if (blockName == null) {
-                blockName = BlockFullNames.INFO_UPDATE;
+                blockName = BlockFullNames.UNKNOWN;
             } else {
                 int blockData = layer.blockData;
                 if (blockData != 0) {
@@ -206,7 +206,7 @@ public class FlatGeneratorOptions {
                     Block block = Block.get(blockId, blockData);
                     blockData = block.getDamage();
                 } catch (Exception e) {
-                    blockId = Block.INFO_UPDATE;
+                    blockId = Block.UNKNOWN;
                     blockData = 0;
                 }
             } else {
@@ -240,7 +240,7 @@ public class FlatGeneratorOptions {
             String blockName = blockNameNode.asText();
             blockId = Blocks.getIdByBlockName(blockName, true);
             if (blockId == -1) {
-                blockId = Block.INFO_UPDATE;
+                blockId = Block.UNKNOWN;
                 meta = 0;
             } else {
                 Block block = Block.get(blockId, blockData);

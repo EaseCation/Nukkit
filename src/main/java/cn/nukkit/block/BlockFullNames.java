@@ -1323,4 +1323,14 @@ public interface BlockFullNames {
     String PALE_MOSS_CARPET = "minecraft:" + BlockNames.PALE_MOSS_CARPET;
     String PALE_HANGING_MOSS = "minecraft:" + BlockNames.PALE_HANGING_MOSS;
     String CREAKING_HEART = "minecraft:" + BlockNames.CREAKING_HEART;
+    String RESIN_BRICKS = "minecraft:" + BlockNames.RESIN_BRICKS;
+    String RESIN_BRICK_SLAB = "minecraft:" + BlockNames.RESIN_BRICK_SLAB;
+    String RESIN_BRICK_DOUBLE_SLAB = "minecraft:" + BlockNames.RESIN_BRICK_DOUBLE_SLAB;
+    String RESIN_BRICK_STAIRS = "minecraft:" + BlockNames.RESIN_BRICK_STAIRS;
+    String RESIN_BRICK_WALL = "minecraft:" + BlockNames.RESIN_BRICK_WALL;
+    String OPEN_EYEBLOSSOM = "minecraft:" + BlockNames.OPEN_EYEBLOSSOM;
+    String CLOSED_EYEBLOSSOM = "minecraft:" + BlockNames.CLOSED_EYEBLOSSOM;
+    String CHISELED_RESIN_BRICKS = "minecraft:" + BlockNames.CHISELED_RESIN_BRICKS;
+    String RESIN_BLOCK = "minecraft:" + BlockNames.RESIN_BLOCK;
+    String RESIN_CLUMP = "minecraft:" + BlockNames.RESIN_CLUMP;
 }

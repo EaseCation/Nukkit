@@ -44,7 +44,7 @@ public final class BlockEntities {
         registerBlockEntity(BlockEntityType.COMMAND_BLOCK, COMMAND_BLOCK, BlockEntityCommandBlock.class, BlockEntityCommandBlock::new);
         registerBlockEntity(BlockEntityType.BED, BED, BlockEntityBed.class, BlockEntityBed::new);
         registerBlockEntity(BlockEntityType.BANNER, BANNER, BlockEntityBanner.class, BlockEntityBanner::new);
-        // ChalkboardBlock
+//        registerBlockEntity(BlockEntityType.CHALKBOARD_BLOCK, CHALKBOARD_BLOCK, BlockEntityChalkboard.class, BlockEntityChalkboard::new, V1_21_50);
         registerBlockEntity(BlockEntityType.STRUCTURE_BLOCK, STRUCTURE_BLOCK, BlockEntityStructureBlock.class, BlockEntityStructureBlock::new);
         registerBlockEntity(BlockEntityType.JUKEBOX, JUKEBOX, BlockEntityJukebox.class, BlockEntityJukebox::new);
         registerBlockEntity(BlockEntityType.CHEMISTRY_TABLE, CHEMISTRY_TABLE, BlockEntityChemistryTable.class, BlockEntityChemistryTable::new);

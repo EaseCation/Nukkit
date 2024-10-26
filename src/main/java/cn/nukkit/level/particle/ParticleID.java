@@ -94,7 +94,8 @@ public interface ParticleID {
     int BREEZE_WIND_EXPLOSION = 91;
     int WOLF_ARMOR_BREAK = 92;
     int OMINOUS_ITEM_SPAWNER = 93;
+    int CREAKING_CRUMBLE = 94;
 
 
-    int UNDEFINED = 94;
+    int UNDEFINED = 95;
 }

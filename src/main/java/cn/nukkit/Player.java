@@ -66,15 +66,15 @@ import cn.nukkit.nbt.tag.ListTag;
 import cn.nukkit.network.PacketViolationReason;
 import cn.nukkit.network.SourceInterface;
 import cn.nukkit.network.protocol.*;
+import cn.nukkit.network.protocol.types.*;
 import cn.nukkit.network.protocol.types.CommandOriginData.Origin;
-import cn.nukkit.network.protocol.types.ContainerIds;
-import cn.nukkit.network.protocol.types.NetworkInventoryAction;
 import cn.nukkit.permission.PermissibleBase;
 import cn.nukkit.permission.Permission;
 import cn.nukkit.permission.PermissionAttachment;
 import cn.nukkit.permission.PermissionAttachmentInfo;
 import cn.nukkit.plugin.Plugin;
 import cn.nukkit.potion.Effect;
+import cn.nukkit.potion.EffectID;
 import cn.nukkit.potion.Potion;
 import cn.nukkit.resourcepacks.ResourcePack;
 import cn.nukkit.scheduler.AsyncTask;
@@ -6463,6 +6463,7 @@ public class Player extends EntityHuman implements CommandSender, InventoryHolde
     }
 
     /**
+     * @see EffectID
      * @since 1.11.0
      */
     public void playOnScreenEffectAnimation(int effectId) {
@@ -6472,7 +6473,7 @@ public class Player extends EntityHuman implements CommandSender, InventoryHolde
      * @since 1.19.50
      */
     public void lockInput() {
-        lockInput(true, true);
+        lockInput(InputLock.ALL);
     }
 
     /**
@@ -6489,10 +6490,17 @@ public class Player extends EntityHuman implements CommandSender, InventoryHolde
     }
 
     /**
+     * @see InputLock
+     * @since 1.19.50
+     */
+    public void lockInput(int flags) {
+    }
+
+    /**
      * @since 1.19.50
      */
     public void unlockInput() {
-        lockInput(false, false);
+        lockInput(InputLock.NONE);
     }
 
     public void openBlockEditor(int x, int y, int z, int type) {
@@ -6512,6 +6520,7 @@ public class Player extends EntityHuman implements CommandSender, InventoryHolde
     }
 
     /**
+     * @see HudElement
      * @since 1.20.60
      */
     public void hideHudElements(int... elements) {
@@ -6524,6 +6533,7 @@ public class Player extends EntityHuman implements CommandSender, InventoryHolde
     }
 
     /**
+     * @see HudElement
      * @since 1.20.60
      */
     public void showHudElements(int... elements) {
@@ -6547,6 +6557,7 @@ public class Player extends EntityHuman implements CommandSender, InventoryHolde
     }
 
     /**
+     * @see Fogs
      * @since 1.16.100
      */
     public void sendFogStack(String... fogStack) {
@@ -6583,6 +6594,7 @@ public class Player extends EntityHuman implements CommandSender, InventoryHolde
     }
 
     /**
+     * @see MovementEffectType
      * @since 1.21.40
      */
     public void sendMovementEffect(long entityRuntimeId, int type, int duration) {

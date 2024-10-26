@@ -1402,4 +1402,14 @@ public interface ItemBlockNames {
     String PALE_MOSS_CARPET = "pale_moss_carpet";
     String PALE_HANGING_MOSS = "pale_hanging_moss";
     String CREAKING_HEART = "creaking_heart";
+    String RESIN_BRICKS = "resin_bricks";
+    String RESIN_BRICK_SLAB = "resin_brick_slab";
+    String RESIN_BRICK_DOUBLE_SLAB = "resin_brick_double_slab";
+    String RESIN_BRICK_STAIRS = "resin_brick_stairs";
+    String RESIN_BRICK_WALL = "resin_brick_wall";
+    String OPEN_EYEBLOSSOM = "open_eyeblossom";
+    String CLOSED_EYEBLOSSOM = "closed_eyeblossom";
+    String CHISELED_RESIN_BRICKS = "chiseled_resin_bricks";
+    String RESIN_BLOCK = "resin_block";
+    String RESIN_CLUMP = "resin_clump";
 }

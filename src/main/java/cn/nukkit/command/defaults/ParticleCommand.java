@@ -209,7 +209,11 @@ public class ParticleCommand extends VanillaCommand {
             }
         }
 
-        return null;
+        try {
+            return new GenericParticle(pos, Integer.parseInt(name));
+        } catch (NumberFormatException ignored) {
+            return null;
+        }
     }
 
     private static double getDouble(String arg, double defaultValue) throws Exception {

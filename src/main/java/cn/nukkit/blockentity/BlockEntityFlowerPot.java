@@ -42,7 +42,7 @@ public class BlockEntityFlowerPot extends BlockEntitySpawnable {
                         .putString("name", Blocks.getBlockFullNameById(Block.itemIdToBlockId(id)))
                         .putShort("val", meta));
 
-                if (plantBlock.isAir() || plantBlock.getId() == Block.INFO_UPDATE) {
+                if (plantBlock.isAir() || plantBlock.getId() == Block.UNKNOWN) {
                     plantBlock = null;
                 } else {
                     namedTag.putCompound("PlantBlock", BlockSerializer.serialize(plantBlock));

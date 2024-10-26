@@ -445,6 +445,7 @@ public final class Items {
 //        registerNewItem(ItemNames.YELLOW_BUNDLE, YELLOW_BUNDLE, ItemBundleYellow.class, ItemBundleYellow::new, V1_20_40);
 
 //        registerNewItem(ItemNames.PALE_OAK_SIGN, PALE_OAK_SIGN, ItemSignPaleOak.class, ItemSignPaleOak::new, V1_20_50);
+//        registerNewItem(ItemNames.RESIN_BRICK, RESIN_BRICK, ItemBrickResin.class, ItemBrickResin::new, V1_20_50);
 
     }
 

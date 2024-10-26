@@ -20,7 +20,7 @@ public interface BlockEntityType {
     int ITEM_FRAME = 17;
     int PISTON_ARM = 18;
     int MOVING_BLOCK = 19;
-    int CHALKBOARD = 20;
+    int CHALKBOARD_BLOCK = 20;
     int BEACON = 21;
     int END_PORTAL = 22;
     int ENDER_CHEST = 23;

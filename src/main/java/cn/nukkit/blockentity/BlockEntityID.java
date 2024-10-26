@@ -20,7 +20,7 @@ public interface BlockEntityID {
     String ITEM_FRAME = "ItemFrame";
     String PISTON_ARM = "PistonArm";
     String MOVING_BLOCK = "MovingBlock";
-    String CHALKBOARD = "Chalkboard";
+    String CHALKBOARD_BLOCK = "ChalkboardBlock";
     String BEACON = "Beacon";
     String END_PORTAL = "EndPortal";
     String ENDER_CHEST = "EnderChest";
