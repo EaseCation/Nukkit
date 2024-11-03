@@ -1821,7 +1821,7 @@ public class Server {
 
         String path;
 
-        if (name.contains("/") || name.contains("\\")) {
+        if (new File(name).isAbsolute()) {
             path = name;
         } else {
             path = this.getDataPath() + "worlds/" + name + "/";
@@ -1926,7 +1926,7 @@ public class Server {
 
         String path;
 
-        if (name.contains("/") || name.contains("\\")) {
+        if (new File(name).isAbsolute()) {
             path = name;
         } else {
             path = this.getDataPath() + "worlds/" + name + "/";
@@ -1987,7 +1987,7 @@ public class Server {
             return false;
         }
         String path;
-        if (name.contains("/") || name.contains("\\")) {
+        if (new File(name).isAbsolute()) {
             path = name;
         } else {
             path = this.getDataPath() + "worlds/" + name + "/";
