@@ -49,7 +49,7 @@ public class ItemBow extends ItemTool {
 
     @Override
     public boolean onClickAir(Player player, Vector3 directionVector) {
-        return player.getInventory().contains(LazyHolder.ARROW) || player.isCreative();
+        return player.getOffhandInventory().contains(LazyHolder.ARROW) || player.getInventory().contains(LazyHolder.ARROW) || player.isCreative();
     }
 
     @Override
