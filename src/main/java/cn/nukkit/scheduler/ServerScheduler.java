@@ -84,16 +84,20 @@ public class ServerScheduler {
         return addTask(plugin, task, 0, 0, asynchronous);
     }
 
+    public TaskHandler scheduleTask(Plugin plugin, Runnable task, boolean asynchronous, boolean virtual) {
+        return addTask(plugin, task, 0, 0, asynchronous, virtual);
+    }
+
     /**
      * @deprecated Use {@link #scheduleAsyncTask(Plugin, AsyncTask)}
      */
     @Deprecated
     public TaskHandler scheduleAsyncTask(AsyncTask task) {
-        return addTask(null, task, 0, 0, true);
+        return addTask(null, task, 0, 0, true, task.isVirtual());
     }
 
     public TaskHandler scheduleAsyncTask(Plugin plugin, AsyncTask task) {
-        return addTask(plugin, task, 0, 0, true);
+        return addTask(plugin, task, 0, 0, true, task.isVirtual());
     }
 
     public TaskHandler scheduleDelayedTask(Task task, int delay) {
@@ -102,6 +106,10 @@ public class ServerScheduler {
 
     public TaskHandler scheduleDelayedTask(Task task, int delay, boolean asynchronous) {
         return this.addTask(task, delay, 0, asynchronous);
+    }
+
+    public TaskHandler scheduleDelayedTask(Task task, int delay, boolean asynchronous, boolean virtual) {
+        return this.addTask(task, delay, 0, asynchronous, virtual);
     }
 
     /**
@@ -128,6 +136,10 @@ public class ServerScheduler {
         return addTask(plugin, task, delay, 0, asynchronous);
     }
 
+    public TaskHandler scheduleDelayedTask(Plugin plugin, Runnable task, int delay, boolean asynchronous, boolean virtual) {
+        return addTask(plugin, task, delay, 0, asynchronous, virtual);
+    }
+
     /**
      * @deprecated Use {@link #scheduleRepeatingTask(Plugin, Runnable, int)}
      */
@@ -152,6 +164,10 @@ public class ServerScheduler {
         return addTask(plugin, task, 0, period, asynchronous);
     }
 
+    public TaskHandler scheduleRepeatingTask(Plugin plugin, Runnable task, int period, boolean asynchronous, boolean virtual) {
+        return addTask(plugin, task, 0, period, asynchronous, virtual);
+    }
+
     public TaskHandler scheduleRepeatingTask(Task task, int period) {
         return addTask(task, 0, period, false);
     }
@@ -160,12 +176,20 @@ public class ServerScheduler {
         return addTask(task, 0, period, asynchronous);
     }
 
+    public TaskHandler scheduleRepeatingTask(Task task, int period, boolean asynchronous, boolean virtual) {
+        return addTask(task, 0, period, asynchronous, virtual);
+    }
+
     public TaskHandler scheduleDelayedRepeatingTask(Task task, int delay, int period) {
         return addTask(task, delay, period, false);
     }
 
     public TaskHandler scheduleDelayedRepeatingTask(Task task, int delay, int period, boolean asynchronous) {
         return addTask(task, delay, period, asynchronous);
+    }
+
+    public TaskHandler scheduleDelayedRepeatingTask(Task task, int delay, int period, boolean asynchronous, boolean virtual) {
+        return addTask(task, delay, period, asynchronous, virtual);
     }
 
     /**
@@ -190,6 +214,10 @@ public class ServerScheduler {
 
     public TaskHandler scheduleDelayedRepeatingTask(Plugin plugin, Runnable task, int delay, int period, boolean asynchronous) {
         return addTask(plugin, task, delay, period, asynchronous);
+    }
+
+    public TaskHandler scheduleDelayedRepeatingTask(Plugin plugin, Runnable task, int delay, int period, boolean asynchronous, boolean virtual) {
+        return addTask(plugin, task, delay, period, asynchronous, virtual);
     }
 
     public void cancelTask(int taskId) {
@@ -239,10 +267,18 @@ public class ServerScheduler {
     }
 
     private TaskHandler addTask(Task task, int delay, int period, boolean asynchronous) {
-        return addTask(task instanceof PluginTask ? ((PluginTask) task).getOwner() : null, task, delay, period, asynchronous);
+        return addTask(task instanceof PluginTask ? ((PluginTask) task).getOwner() : null, task, delay, period, asynchronous, false);
+    }
+
+    private TaskHandler addTask(Task task, int delay, int period, boolean asynchronous, boolean virtual) {
+        return addTask(task instanceof PluginTask ? ((PluginTask) task).getOwner() : null, task, delay, period, asynchronous, virtual);
     }
 
     private TaskHandler addTask(Plugin plugin, Runnable task, int delay, int period, boolean asynchronous) {
+        return addTask(plugin, task, delay, period, asynchronous, false);
+    }
+
+    private TaskHandler addTask(Plugin plugin, Runnable task, int delay, int period, boolean asynchronous, boolean virtual) {
         if (plugin != null && plugin.isDisabled()) {
             throw new PluginException("Plugin '" + plugin.getName() + "' attempted to register a task while disabled.");
         }
@@ -250,7 +286,7 @@ public class ServerScheduler {
             throw new PluginException("Attempted to register a task with negative delay or period.");
         }
 
-        TaskHandler taskHandler = new TaskHandler(plugin, task, nextTaskId(), asynchronous);
+        TaskHandler taskHandler = new TaskHandler(plugin, task, nextTaskId(), asynchronous, virtual);
         taskHandler.setDelay(delay);
         taskHandler.setPeriod(period);
         taskHandler.setNextRunTick(taskHandler.isDelayed() ? currentTick + taskHandler.getDelay() : currentTick);
@@ -279,13 +315,20 @@ public class ServerScheduler {
                 taskMap.remove(taskHandler.getTaskId());
                 continue;
             } else if (taskHandler.isAsynchronous()) {
-                asyncPool.execute(() -> {
-                    try {
-                        taskHandler.getTask().run();
-                    } catch (Throwable e) {
-                        log.fatal("Exception in asynchronous task", e);
-                    }
-                });
+                if (taskHandler.isVirtual()) {
+                    Thread.ofVirtual()
+                            .name("Nukkit Asynchronous (Virtual) Task Handler #", 0)
+                            .uncaughtExceptionHandler((thread, ex) -> log.fatal("Exception in asynchronous (virtual) task", ex))
+                            .start(taskHandler.getTask());
+                } else {
+                    asyncPool.execute(() -> {
+                        try {
+                            taskHandler.getTask().run();
+                        } catch (Throwable e) {
+                            log.fatal("Exception in asynchronous task", e);
+                        }
+                    });
+                }
             } else {
                 try {
                     taskHandler.run(currentTick);
