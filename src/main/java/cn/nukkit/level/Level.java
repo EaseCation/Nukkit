@@ -57,6 +57,7 @@ import cn.nukkit.nbt.tag.CompoundTag;
 import cn.nukkit.network.Network;
 import cn.nukkit.network.protocol.*;
 import cn.nukkit.network.protocol.BatchPacket.Track;
+import cn.nukkit.network.protocol.types.BlockChangeEntry;
 import cn.nukkit.plugin.Plugin;
 import cn.nukkit.scheduler.AsyncTask;
 import cn.nukkit.scheduler.BlockUpdateScheduler;
@@ -270,7 +271,7 @@ public class Level implements ChunkManager, Metadatable {
     private final long[] lastChunkPos = new long[CHUNK_CACHE_SIZE];
     private final BaseFullChunk[] lastChunk = new BaseFullChunk[CHUNK_CACHE_SIZE];
 
-    private final Long2ObjectMap<IntSet> changedBlocks = new Long2ObjectOpenHashMap<>();
+    private final Long2ObjectMap<Int2ObjectMap<IntSet>> changedBlocks = new Long2ObjectOpenHashMap<>();
     private final Lock changeBlockLock = new ReentrantLock();
 
     private final BlockUpdateScheduler updateQueue;
@@ -1303,19 +1304,49 @@ public class Level implements ChunkManager, Metadatable {
                 return;
             }
 
-            Iterator<Long2ObjectMap.Entry<IntSet>> iter = changedBlocks.long2ObjectEntrySet().iterator();
+            Iterator<Long2ObjectMap.Entry<Int2ObjectMap<IntSet>>> iter = changedBlocks.long2ObjectEntrySet().iterator();
             while (iter.hasNext()) {
-                Long2ObjectMap.Entry<IntSet> entry = iter.next();
+                Long2ObjectMap.Entry<Int2ObjectMap<IntSet>> entry = iter.next();
                 long chunkIndex = entry.getLongKey();
-                IntSet localPositions = entry.getValue();
+                int chunkX = Level.getHashX(chunkIndex);
+                int chunkZ = Level.getHashZ(chunkIndex);
+                Collection<Player> players = getChunkPlayers(chunkX, chunkZ).values();
 
-                Vector3[] blocks = new Vector3[localPositions.size()];
-                int i = 0;
-                IntIterator iterator = localPositions.iterator();
-                while (iterator.hasNext()) {
-                    blocks[i++] = getBlockXYZ(chunkIndex, iterator.nextInt());
+                if (players.isEmpty()) {
+                    iter.remove();
+                    continue;
                 }
-                sendBlocks(getChunkPlayers(Level.getHashX(chunkIndex), Level.getHashZ(chunkIndex)).values().toArray(new Player[0]), blocks, UpdateBlockPacket.FLAG_ALL_PRIORITY);
+
+                int chunkBlockX = chunkX << 4;
+                int chunkBlockZ = chunkZ << 4;
+                Int2ObjectMap<IntSet> subChunks = entry.getValue();
+                for (Int2ObjectMap.Entry<IntSet> ent : subChunks.int2ObjectEntrySet()) {
+                    int chunkBlockY = ent.getIntKey() << 4;
+                    IntSet localPositions = ent.getValue();
+                    int count = localPositions.size();
+                    BlockChangeEntry[] layer0 = new BlockChangeEntry[count];
+                    BlockChangeEntry[] layer1 = new BlockChangeEntry[count];
+                    int index = 0;
+                    for (int localPos : localPositions) {
+                        int x = chunkBlockX | (localPos >> 8);
+                        int y = chunkBlockY | (localPos & 0xf);
+                        int z = chunkBlockZ | ((localPos >> 4) & 0xf);
+                        layer0[index] = BlockChangeEntry.create(x, y, z, getFullBlock(0, x, y, z), UpdateBlockPacket.FLAG_ALL_PRIORITY);
+                        layer1[index] = BlockChangeEntry.create(x, y, z, getFullBlock(1, x, y, z), UpdateBlockPacket.FLAG_ALL_PRIORITY);
+                        index++;
+                    }
+
+                    UpdateSubChunkBlocksPacket packet = new UpdateSubChunkBlocksPacket();
+                    packet.subChunkBlockX = chunkBlockX;
+                    packet.subChunkBlockY = chunkBlockY;
+                    packet.subChunkBlockZ = chunkBlockZ;
+                    packet.layer0 = layer0;
+                    packet.layer1 = layer1;
+                    for (Player player : players) {
+//                        player.updateSubChunkBlocks(chunkBlockX, chunkBlockY, chunkBlockZ, layer0, layer1);
+                        player.dataPacket(packet);
+                    }
+                }
 
                 iter.remove();
             }
@@ -2601,10 +2632,14 @@ public class Level implements ChunkManager, Metadatable {
     }
 
     private void addBlockChange(long index, int x, int y, int z) {
+        int chunkY = y >> 4;
+        int localIndex = ((x & 0xf) << 8) | ((z & 0xf) << 4) | (y & 0xf);
+
         changeBlockLock.lock();
         try {
-            changedBlocks.computeIfAbsent(index, key -> new IntOpenHashSet())
-                    .add(Level.localBlockHash(x, y, z));
+            changedBlocks.computeIfAbsent(index, key -> new Int2ObjectOpenHashMap<>())
+                    .computeIfAbsent(chunkY, key -> new IntOpenHashSet())
+                    .add(localIndex);
         } finally {
             changeBlockLock.unlock();
         }

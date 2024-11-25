@@ -6237,11 +6237,9 @@ public class Player extends EntityHuman implements CommandSender, InventoryHolde
     }
 
     /**
-     * 1.18.0 后使用 UpdateSubChunkBlocksPacket 代替 UpdateBlockPacket 和 UpdateBlockSyncedPacket.
-     * WIP
+     * @since 1.18.0
      */
-    public void updateBlock(Block entry) {
-        //TODO: queue
+    public void updateSubChunkBlocks(int subChunkBlockX, int subChunkBlockY, int subChunkBlockZ, BlockChangeEntry[] layer0, BlockChangeEntry[] layer1) {
     }
 
     public void sendAdventureSettingsAndAbilities(Player player, AdventureSettings settings) {
