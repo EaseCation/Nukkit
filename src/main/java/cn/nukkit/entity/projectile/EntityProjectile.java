@@ -310,7 +310,7 @@ public abstract class EntityProjectile extends Entity {
             Entity nearEntity = null;
 
             for (Entity entity : list) {
-                if (/*!entity.canCollideWith(this) ||*/ !this.canCollideWith(entity) || (entity == this.shootingEntity && this.ticksLived < 5)) {
+                if (!entity.canCollide() || /*!entity.canCollideWith(this) ||*/ !this.canCollideWith(entity) || (entity == this.shootingEntity && this.ticksLived < 5)) {
                     continue;
                 }
 
