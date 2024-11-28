@@ -48,6 +48,11 @@ public class EntityEnderPearl extends EntityProjectile {
     }
 
     @Override
+    public boolean canPassThroughBarrier() {
+        return false;
+    }
+
+    @Override
     public boolean onUpdate(int currentTick) {
         if (this.closed) {
             return false;
