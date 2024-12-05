@@ -66,7 +66,7 @@ public class BlockLeaves extends BlockTransparentMeta {
 
     @Override
     public int getToolType() {
-        return BlockToolType.HOE | BlockToolType.SHEARS;
+        return BlockToolType.HOE | BlockToolType.SHEARS | BlockToolType.SWORD;
     }
 
     @Override

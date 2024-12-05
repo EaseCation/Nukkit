@@ -130,6 +130,11 @@ public enum TextFormat {
      * @since 1.19.80
      */
     MATERIAL_AMETHYST('u'),
+    /**
+     * Represents material resin.
+     * @since 1.21.50
+     */
+    MATERIAL_RESIN('v'),
 
     // Formatting codes
     /**
@@ -155,7 +160,7 @@ public enum TextFormat {
      */
     public static final char ESCAPE = '\u00A7';
 
-    private static final Pattern CLEAN_PATTERN = Pattern.compile("(?i)" + ESCAPE + "[0-9A-U]");
+    private static final Pattern CLEAN_PATTERN = Pattern.compile("(?i)" + ESCAPE + "[0-9A-V]");
     private final static Char2ObjectMap<TextFormat> BY_CHAR = new Char2ObjectOpenHashMap<>();
 
     static {

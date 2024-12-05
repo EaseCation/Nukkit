@@ -44,7 +44,7 @@ public class BlockChorusPlant extends BlockFlowable {
 
     @Override
     public int getToolType() {
-        return BlockToolType.AXE;
+        return BlockToolType.AXE | BlockToolType.SWORD;
     }
 
     @Override

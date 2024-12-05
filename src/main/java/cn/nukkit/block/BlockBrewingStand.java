@@ -7,7 +7,6 @@ import cn.nukkit.blockentity.BlockEntityBrewingStand;
 import cn.nukkit.blockentity.BlockEntityType;
 import cn.nukkit.inventory.ContainerInventory;
 import cn.nukkit.item.Item;
-import cn.nukkit.item.ItemTool;
 import cn.nukkit.math.BlockFace;
 import cn.nukkit.nbt.tag.CompoundTag;
 import cn.nukkit.nbt.tag.ListTag;
@@ -16,6 +15,9 @@ import cn.nukkit.nbt.tag.Tag;
 import cn.nukkit.utils.BlockColor;
 
 import java.util.Map;
+
+import static cn.nukkit.GameVersion.*;
+import static cn.nukkit.SharedConstants.*;
 
 public class BlockBrewingStand extends BlockTransparentMeta {
     public static final int HAS_SLOT_0 = 0b1;
@@ -126,17 +128,6 @@ public class BlockBrewingStand extends BlockTransparentMeta {
     }
 
     @Override
-    public Item[] getDrops(Item item, Player player) {
-        if (item.isPickaxe() && item.getTier() >= ItemTool.TIER_WOODEN) {
-            return new Item[]{
-                    toItem(true)
-            };
-        } else {
-            return new Item[0];
-        }
-    }
-
-    @Override
     public BlockColor getColor() {
         return BlockColor.METAL_BLOCK_COLOR;
     }
@@ -189,7 +180,7 @@ public class BlockBrewingStand extends BlockTransparentMeta {
 
     @Override
     public boolean canHarvestWithHand() {
-        return false;
+        return ENABLE_BLOCK_DESTROY_SPEED_COMPATIBILITY || V1_21_50.isAvailable();
     }
 
     @Override

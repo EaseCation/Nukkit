@@ -22,6 +22,7 @@ public class BlockBamboo extends BlockTransparentMeta {
 
     public static final int STALK_THICKNESS_BIT = 0b1;
     public static final int LEAF_SIZE_MASK = 0b110;
+    public static final int LEAF_SIZE_START = 1;
     public static final int AGE_BIT = 0b1000;
 
     public static final int NO_LEAVES = 0;
@@ -48,7 +49,11 @@ public class BlockBamboo extends BlockTransparentMeta {
 
     @Override
     public int getToolType() {
-        return BlockToolType.SWORD | BlockToolType.AXE;
+        int type = BlockToolType.SWORD | BlockToolType.AXE;
+        if (!V1_21_50.isAvailable()) {
+            type |= BlockToolType.PICKAXE | BlockToolType.SHOVEL;
+        }
+        return type;
     }
 
     @Override
@@ -105,8 +110,16 @@ public class BlockBamboo extends BlockTransparentMeta {
 
     @Override
     public boolean place(Item item, Block block, Block target, BlockFace face, double fx, double fy, double fz, Player player) {
-        if (block.isLiquid() || !block.isAir() && block.canContainWater() && level.getExtraBlock(this).isWater() || !canBeSupportedBy(down().getId())) {
+        int belowId;
+        if (block.isLiquid() || !block.isAir() && block.canContainWater() && level.getExtraBlock(this).isWater() || !canBeSupportedBy(belowId = down().getId()) && belowId != BAMBOO && belowId != BAMBOO_SAPLING) {
             return false;
+        }
+        if (belowId == BAMBOO || belowId == BAMBOO_SAPLING) {
+            if (belowId == BAMBOO_SAPLING) {
+                level.setBlock(downVec(), Block.get(BAMBOO), true);
+            }
+            setDamage(SMALL_LEAVES << LEAF_SIZE_START);
+            return level.setBlock(this, this, true);
         }
         return level.setBlock(this, Block.get(BAMBOO_SAPLING), true);
     }
@@ -228,8 +241,8 @@ public class BlockBamboo extends BlockTransparentMeta {
         if (newHeight > 4) {
             stemMeta |= STALK_THICKNESS_BIT;
         }
-        int smallLeavesMeta = stemMeta | (SMALL_LEAVES << 1);
-        int largeLeavesMeta = stemMeta | (LARGE_LEAVES << 1);
+        int smallLeavesMeta = stemMeta | (SMALL_LEAVES << LEAF_SIZE_START);
+        int largeLeavesMeta = stemMeta | (LARGE_LEAVES << LEAF_SIZE_START);
 
         int x = getFloorX();
         int y = getFloorY();

@@ -1,10 +1,10 @@
 package cn.nukkit.block;
 
-import cn.nukkit.Player;
-import cn.nukkit.item.Item;
-import cn.nukkit.item.ItemTool;
 import cn.nukkit.math.Mth;
 import cn.nukkit.utils.BlockColor;
+
+import static cn.nukkit.GameVersion.*;
+import static cn.nukkit.SharedConstants.*;
 
 /**
  * @author CreeperFace
@@ -47,14 +47,8 @@ public class BlockWeightedPressurePlateHeavy extends BlockPressurePlateBase {
     }
 
     @Override
-    public Item[] getDrops(Item item, Player player) {
-        if (item.isPickaxe() && item.getTier() >= ItemTool.TIER_WOODEN) {
-            return new Item[]{
-                    toItem(true)
-            };
-        } else {
-            return new Item[0];
-        }
+    public boolean canHarvestWithHand() {
+        return ENABLE_BLOCK_DESTROY_SPEED_COMPATIBILITY || V1_21_50.isAvailable();
     }
 
     @Override

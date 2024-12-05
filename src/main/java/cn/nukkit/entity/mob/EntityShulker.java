@@ -52,6 +52,8 @@ public class EntityShulker extends EntityMob {
 
         this.setMaxHealth(30);
 
+        this.setDataFlag(DATA_FLAG_RENDERS_WHEN_INVISIBLE, true, false);
+
         fireProof = true;
     }
 

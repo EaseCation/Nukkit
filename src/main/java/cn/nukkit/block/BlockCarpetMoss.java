@@ -2,6 +2,8 @@ package cn.nukkit.block;
 
 import cn.nukkit.utils.BlockColor;
 
+import static cn.nukkit.GameVersion.*;
+
 public class BlockCarpetMoss extends BlockCarpet {
     public BlockCarpetMoss() {
         this(0);
@@ -23,7 +25,11 @@ public class BlockCarpetMoss extends BlockCarpet {
 
     @Override
     public int getToolType() {
-        return BlockToolType.HOE | BlockToolType.AXE;
+        int type = BlockToolType.HOE | BlockToolType.SWORD;
+        if (!V1_21_50.isAvailable()) {
+            type |= BlockToolType.AXE;
+        }
+        return type;
     }
 
     @Override

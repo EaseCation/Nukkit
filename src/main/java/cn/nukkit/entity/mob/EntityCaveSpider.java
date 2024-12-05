@@ -32,6 +32,7 @@ public class EntityCaveSpider extends EntityMob implements EntityArthropod {
     protected void initEntity() {
         super.initEntity();
         this.setMaxHealth(12);
+        this.setDataFlag(DATA_FLAG_RENDERS_WHEN_INVISIBLE, true, false);
     }
 
     @Override

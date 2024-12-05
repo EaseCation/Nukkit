@@ -1,11 +1,17 @@
 package cn.nukkit.item;
 
 import cn.nukkit.Player;
+import cn.nukkit.item.armortrim.TrimMaterialNames;
+import cn.nukkit.item.armortrim.TrimPatternNames;
 import cn.nukkit.item.enchantment.Enchantment;
 import cn.nukkit.math.Vector3;
 import cn.nukkit.nbt.tag.ByteTag;
+import cn.nukkit.nbt.tag.CompoundTag;
 import cn.nukkit.nbt.tag.Tag;
 import cn.nukkit.network.protocol.LevelSoundEventPacket;
+import it.unimi.dsi.fastutil.Pair;
+
+import javax.annotation.Nullable;
 
 /**
  * author: MagicDroidX
@@ -125,5 +131,70 @@ public abstract class ItemArmor extends Item implements ItemDurable {
             case TIER_NETHERITE -> LevelSoundEventPacket.SOUND_ARMOR_EQUIP_NETHERITE;
             default -> LevelSoundEventPacket.SOUND_ARMOR_EQUIP_GENERIC;
         };
+    }
+
+    /**
+     * @see TrimPatternNames
+     * @see TrimMaterialNames
+     */
+    public ItemArmor setTrim(String pattern, String material) {
+        setNamedTag(getOrCreateNamedTag().putCompound("Trim", new CompoundTag()
+                .putString("Pattern", pattern)
+                .putString("Material", material)));
+        return this;
+    }
+
+    /**
+     * @return pattern and material
+     */
+    @Nullable
+    public Pair<String, String> getTrim() {
+        CompoundTag nbt = getNamedTag();
+        if (nbt == null) {
+            return null;
+        }
+        CompoundTag trim = nbt.getCompound("Trim", null);
+        if (trim == null) {
+            return null;
+        }
+        return Pair.of(trim.getString("Pattern"), trim.getString("Material"));
+    }
+
+    @Nullable
+    public String getTrimPattern() {
+        CompoundTag nbt = getNamedTag();
+        if (nbt == null) {
+            return null;
+        }
+        CompoundTag trim = nbt.getCompound("Trim", null);
+        if (trim == null) {
+            return null;
+        }
+        return trim.getString("Pattern", null);
+    }
+
+    @Nullable
+    public String getTrimMaterial() {
+        CompoundTag nbt = getNamedTag();
+        if (nbt == null) {
+            return null;
+        }
+        CompoundTag trim = nbt.getCompound("Trim", null);
+        if (trim == null) {
+            return null;
+        }
+        return trim.getString("Material", null);
+    }
+
+    public boolean clearTrim() {
+        CompoundTag nbt = getNamedTag();
+        if (nbt == null) {
+            return false;
+        }
+        if (nbt.remove("Trim") == null) {
+            return false;
+        }
+        setNamedTag(nbt);
+        return true;
     }
 }

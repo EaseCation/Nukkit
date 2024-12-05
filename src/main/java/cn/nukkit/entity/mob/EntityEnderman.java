@@ -28,6 +28,7 @@ public class EntityEnderman extends EntityMob {
     protected void initEntity() {
         super.initEntity();
         this.setMaxHealth(40);
+        this.setDataFlag(DATA_FLAG_RENDERS_WHEN_INVISIBLE, true, false);
     }
 
     @Override

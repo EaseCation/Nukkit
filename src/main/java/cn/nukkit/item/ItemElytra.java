@@ -32,4 +32,14 @@ public class ItemElytra extends ItemArmor {
     public int getDamageChance(int unbreaking) {
         return 100 / (unbreaking + 1);
     }
+
+    @Override
+    public ItemElytra setTrim(String pattern, String material) {
+        return this;
+    }
+
+    @Override
+    public boolean clearTrim() {
+        return false;
+    }
 }

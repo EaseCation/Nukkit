@@ -22,6 +22,8 @@ import cn.nukkit.event.server.QueryRegenerateEvent;
 import cn.nukkit.inventory.CraftingManager;
 import cn.nukkit.inventory.Recipe;
 import cn.nukkit.item.Item;
+import cn.nukkit.item.armortrim.TrimMaterials;
+import cn.nukkit.item.armortrim.TrimPatterns;
 import cn.nukkit.item.enchantment.Enchantment;
 import cn.nukkit.lang.BaseLang;
 import cn.nukkit.lang.TextContainer;
@@ -470,6 +472,8 @@ public class Server {
         Block.init();
         Enchantment.init();
         Item.init();
+        TrimMaterials.registerVanillaTrimMaterials();
+        TrimPatterns.registerVanillaTrimPatterns();
         EnumBiome.values(); //load class, this also registers biomes
         Effect.init();
         Potion.init();

@@ -8,6 +8,8 @@ import cn.nukkit.utils.BlockColor;
 
 import java.util.concurrent.ThreadLocalRandom;
 
+import static cn.nukkit.GameVersion.*;
+
 public class BlockAmethystBudding extends BlockSolid {
     public BlockAmethystBudding() {
     }
@@ -39,7 +41,7 @@ public class BlockAmethystBudding extends BlockSolid {
 
     @Override
     public boolean canHarvestWithHand() {
-        return false;
+        return !V1_21_50.isAvailable();
     }
 
     @Override

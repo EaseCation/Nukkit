@@ -51,7 +51,7 @@ public class BlockGlowLichen extends BlockMultiface {
 
     @Override
     public int getToolType() {
-        return BlockToolType.AXE | BlockToolType.SHEARS;
+        return BlockToolType.AXE | BlockToolType.SHEARS | BlockToolType.SWORD;
     }
 
     @Override

@@ -700,8 +700,11 @@ public abstract class Block extends Position implements Metadatable, Cloneable, 
             if (is(WEB)) {
                 return 15;
             }
-            if (is(BAMBOO)) {
+            if (is(BAMBOO) || (ENABLE_BLOCK_DESTROY_SPEED_COMPATIBILITY || V1_21_50.isAvailable()) && is(BAMBOO_SAPLING)) {
                 return 10;
+            }
+            if (V1_21_50.isAvailable() && !correctTool) {
+                return 1;
             }
             return 1.5f;
         }

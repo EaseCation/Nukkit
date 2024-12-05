@@ -67,11 +67,6 @@ public abstract class BlockPressurePlateBase extends BlockTransparentMeta {
     }
 
     @Override
-    public boolean canHarvestWithHand() {
-        return false;
-    }
-
-    @Override
     public double getMinX() {
         return this.x + 0.625;
     }

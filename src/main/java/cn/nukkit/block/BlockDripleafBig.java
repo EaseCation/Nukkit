@@ -44,6 +44,11 @@ public class BlockDripleafBig extends BlockTransparentMeta implements Faceable {
     }
 
     @Override
+    public int getToolType() {
+        return BlockToolType.AXE | BlockToolType.SWORD;
+    }
+
+    @Override
     public float getHardness() {
         if (V1_20_30.isAvailable()) {
             return 0.1f;

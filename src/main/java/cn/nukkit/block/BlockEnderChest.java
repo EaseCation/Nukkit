@@ -6,7 +6,6 @@ import cn.nukkit.blockentity.BlockEntity;
 import cn.nukkit.blockentity.BlockEntityEnderChest;
 import cn.nukkit.blockentity.BlockEntityType;
 import cn.nukkit.item.Item;
-import cn.nukkit.item.ItemTool;
 import cn.nukkit.math.BlockFace;
 import cn.nukkit.nbt.tag.CompoundTag;
 import cn.nukkit.nbt.tag.StringTag;
@@ -15,6 +14,9 @@ import cn.nukkit.utils.BlockColor;
 import cn.nukkit.utils.Faceable;
 
 import java.util.Map;
+
+import static cn.nukkit.GameVersion.*;
+import static cn.nukkit.SharedConstants.*;
 
 public class BlockEnderChest extends BlockTransparentMeta implements Faceable {
 
@@ -154,13 +156,9 @@ public class BlockEnderChest extends BlockTransparentMeta implements Faceable {
 
     @Override
     public Item[] getDrops(Item item, Player player) {
-        if (item.isPickaxe() && item.getTier() >= ItemTool.TIER_WOODEN) {
-            return new Item[]{
-                    Item.get(Item.OBSIDIAN, 0, 8)
-            };
-        } else {
-            return new Item[0];
-        }
+        return new Item[]{
+                Item.get(Item.OBSIDIAN, 0, 8),
+        };
     }
 
     @Override
@@ -180,7 +178,7 @@ public class BlockEnderChest extends BlockTransparentMeta implements Faceable {
 
     @Override
     public boolean canHarvestWithHand() {
-        return false;
+        return ENABLE_BLOCK_DESTROY_SPEED_COMPATIBILITY || V1_21_50.isAvailable();
     }
 
     @Override

@@ -53,7 +53,7 @@ public class BlockMelon extends BlockSolid {
 
     @Override
     public int getToolType() {
-        return BlockToolType.AXE;
+        return BlockToolType.AXE | BlockToolType.SWORD;
     }
 
     @Override

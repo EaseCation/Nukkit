@@ -295,7 +295,7 @@ public class BlockVine extends BlockFlowable {
 
     @Override
     public int getToolType() {
-        return BlockToolType.AXE | BlockToolType.SHEARS;
+        return BlockToolType.AXE | BlockToolType.SHEARS | BlockToolType.SWORD;
     }
 
     @Override

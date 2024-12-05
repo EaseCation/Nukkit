@@ -10,6 +10,7 @@ import cn.nukkit.math.BlockFace;
 import cn.nukkit.utils.BlockColor;
 
 import static cn.nukkit.GameVersion.*;
+import static cn.nukkit.SharedConstants.*;
 
 public class BlockBambooSapling extends BlockFlowable {
 
@@ -31,6 +32,15 @@ public class BlockBambooSapling extends BlockFlowable {
     @Override
     public String getName() {
         return "Bamboo Sapling";
+    }
+
+    @Override
+    public int getToolType() {
+        int type = ENABLE_BLOCK_DESTROY_SPEED_COMPATIBILITY || V1_20_50.isAvailable() ? BlockToolType.SWORD : BlockToolType.NONE;
+        if (!V1_21_50.isAvailable()) {
+            type |= BlockToolType.AXE;
+        }
+        return type;
     }
 
     @Override
@@ -68,8 +78,15 @@ public class BlockBambooSapling extends BlockFlowable {
 
     @Override
     public boolean place(Item item, Block block, Block target, BlockFace face, double fx, double fy, double fz, Player player) {
-        if (!BlockBamboo.canBeSupportedBy(down().getId())) {
+        int belowId;
+        if (block.isLiquid() || !block.isAir() && block.canContainWater() && level.getExtraBlock(this).isWater() || !BlockBamboo.canBeSupportedBy(belowId = down().getId()) && belowId != BAMBOO && belowId != BAMBOO_SAPLING) {
             return false;
+        }
+        if (belowId == BAMBOO || belowId == BAMBOO_SAPLING) {
+            if (belowId == BAMBOO_SAPLING) {
+                level.setBlock(downVec(), Block.get(BAMBOO), true);
+            }
+            return level.setBlock(this, Block.get(BAMBOO, BlockBamboo.SMALL_LEAVES << BlockBamboo.LEAF_SIZE_START), true);
         }
         return super.place(item, block, target, face, fx, fy, fz, player);
     }

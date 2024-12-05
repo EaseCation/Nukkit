@@ -1,12 +1,12 @@
 package cn.nukkit.block;
 
-import cn.nukkit.Player;
 import cn.nukkit.entity.Entity;
 import cn.nukkit.entity.EntityLiving;
-import cn.nukkit.item.Item;
-import cn.nukkit.item.ItemTool;
 import cn.nukkit.math.AxisAlignedBB;
 import cn.nukkit.utils.BlockColor;
+
+import static cn.nukkit.GameVersion.*;
+import static cn.nukkit.SharedConstants.*;
 
 /**
  * @author Nukkit Project Team
@@ -49,14 +49,8 @@ public class BlockPressurePlateStone extends BlockPressurePlateBase {
     }
 
     @Override
-    public Item[] getDrops(Item item, Player player) {
-        if (item.isPickaxe() && item.getTier() >= ItemTool.TIER_WOODEN) {
-            return new Item[]{
-                    toItem(true)
-            };
-        } else {
-            return new Item[0];
-        }
+    public boolean canHarvestWithHand() {
+        return ENABLE_BLOCK_DESTROY_SPEED_COMPATIBILITY || V1_21_50.isAvailable();
     }
 
     @Override

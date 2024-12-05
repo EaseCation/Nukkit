@@ -579,6 +579,10 @@ public class LevelSoundEventPacket extends DataPacket {
 	public static final int SOUND_DEACTIVATE = 539;
 	public static final int SOUND_FREEZE = 540;
 	public static final int SOUND_UNFREEZE = 541;
+	public static final int SOUND_OPEN = 542;
+	public static final int SOUND_OPEN_LONG = 543;
+	public static final int SOUND_CLOSE = 544;
+	public static final int SOUND_CLOSE_LONG = 545;
 
 	public int sound;
     public float x;

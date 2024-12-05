@@ -5020,11 +5020,9 @@ public class Player extends EntityHuman implements CommandSender, InventoryHolde
         }
         if (source.getCause() == DamageCause.FALL) {
             if (this.getLevel().getBlock(floor().add(0.5, -1, 0.5)).getId() == Block.SLIME) {
-                if (!this.isSneaking()) {
-                    //source.setCancelled();
-                    this.resetFallDistance();
-                    return false;
-                }
+                //source.setCancelled();
+                this.resetFallDistance();
+                return false;
             }
         }
 

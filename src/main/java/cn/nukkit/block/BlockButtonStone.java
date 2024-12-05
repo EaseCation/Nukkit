@@ -1,8 +1,7 @@
 package cn.nukkit.block;
 
-import cn.nukkit.Player;
-import cn.nukkit.item.Item;
-import cn.nukkit.item.ItemTool;
+import static cn.nukkit.GameVersion.*;
+import static cn.nukkit.SharedConstants.*;
 
 /**
  * Created by CreeperFace on 27. 11. 2016.
@@ -33,17 +32,7 @@ public class BlockButtonStone extends BlockButton {
     }
 
     @Override
-    public Item[] getDrops(Item item, Player player) {
-        if (item.isPickaxe() && item.getTier() >= ItemTool.TIER_WOODEN) {
-            return new Item[]{
-                    this.toItem(true)
-            };
-        }
-        return new Item[0];
-    }
-
-    @Override
     public boolean canHarvestWithHand() {
-        return false;
+        return ENABLE_BLOCK_DESTROY_SPEED_COMPATIBILITY || V1_21_50.isAvailable();
     }
 }

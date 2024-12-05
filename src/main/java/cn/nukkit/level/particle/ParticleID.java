@@ -95,7 +95,9 @@ public interface ParticleID {
     int WOLF_ARMOR_BREAK = 92;
     int OMINOUS_ITEM_SPAWNER = 93;
     int CREAKING_CRUMBLE = 94;
+    int PALE_OAK_LEAVES = 95;
+    int EYEBLOSSOM_OPEN = 96;
+    int EYEBLOSSOM_CLOSE = 97;
 
-
-    int UNDEFINED = 95;
+    int UNDEFINED = 98;
 }

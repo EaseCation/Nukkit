@@ -1,5 +1,7 @@
 package cn.nukkit.item;
 
+import cn.nukkit.nbt.tag.CompoundTag;
+
 public class ItemCompassLodestone extends Item {
 
     public ItemCompassLodestone() {
@@ -19,5 +21,16 @@ public class ItemCompassLodestone extends Item {
         return 1;
     }
 
-    //TODO: lodestone
+    public ItemCompassLodestone setTrackingLodestoneId(int id) {
+        setNamedTag(getOrCreateNamedTag().putInt("trackingHandle", id));
+        return this;
+    }
+
+    public int getTrackingLodestoneId() {
+        CompoundTag nbt = getNamedTag();
+        if (nbt == null) {
+            return 0;
+        }
+        return nbt.getInt("trackingHandle");
+    }
 }

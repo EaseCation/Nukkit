@@ -11,6 +11,7 @@ import cn.nukkit.inventory.ContainerInventory;
 import cn.nukkit.inventory.Inventory;
 import cn.nukkit.inventory.InventoryHolder;
 import cn.nukkit.item.Item;
+import cn.nukkit.item.ItemTool;
 import cn.nukkit.level.Level;
 import cn.nukkit.math.BlockFace;
 import cn.nukkit.math.Vector3;
@@ -280,5 +281,20 @@ public class BlockDispenser extends BlockSolidMeta implements Faceable {
     @Override
     public BlockFace getBlockFace() {
         return BlockFace.fromIndex(this.getDamage() & 0x07);
+    }
+
+    @Override
+    public int getToolType() {
+        return BlockToolType.PICKAXE;
+    }
+
+    @Override
+    public Item[] getDrops(Item item, Player player) {
+        if (item.isPickaxe() && item.getTier() >= ItemTool.TIER_WOODEN) {
+            return new Item[]{
+                    toItem(true),
+            };
+        }
+        return new Item[0];
     }
 }

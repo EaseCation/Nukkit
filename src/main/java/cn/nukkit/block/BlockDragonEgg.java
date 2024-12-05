@@ -8,6 +8,9 @@ import cn.nukkit.utils.BlockColor;
 
 import java.util.concurrent.ThreadLocalRandom;
 
+import static cn.nukkit.GameVersion.*;
+import static cn.nukkit.SharedConstants.*;
+
 public class BlockDragonEgg extends BlockFallable {
 
     public BlockDragonEgg() {
@@ -110,6 +113,11 @@ public class BlockDragonEgg extends BlockFallable {
 
     @Override
     public int getToolType() {
-        return BlockToolType.PICKAXE;
+        return V1_21_50.isAvailable() ? super.getToolType() : BlockToolType.PICKAXE;
+    }
+
+    @Override
+    public boolean canHarvestWithHand() {
+        return ENABLE_BLOCK_DESTROY_SPEED_COMPATIBILITY || V1_21_50.isAvailable();
     }
 }

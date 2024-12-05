@@ -43,7 +43,7 @@ public class BlockPumpkin extends BlockSolidMeta implements Faceable {
 
     @Override
     public int getToolType() {
-        return BlockToolType.AXE;
+        return BlockToolType.AXE | BlockToolType.SWORD;
     }
 
     @Override

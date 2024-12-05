@@ -38,6 +38,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.ThreadLocalRandom;
 
 /**
  * author: MagicDroidX
@@ -444,12 +445,22 @@ public abstract class EntityLiving extends Entity implements EntityDamageable {
                     this.setAirTicks(300);
                 } else if (turtleTicks == 0 || turtleTicks == 200) {
                     hasUpdate = true;
+
+                    boolean immune = false;
+                    if (this instanceof Player player) {
+                        ArmorInventory inventory = player.getArmorInventory();
+                        int respiration = inventory.getHelmet().getEnchantmentLevel(Enchantment.RESPIRATION);
+                        if (respiration > 0 && ThreadLocalRandom.current().nextInt(respiration + 1) > 0) {
+                            immune = true;
+                        }
+                    }
+
                     int oldAirTicks = getAirTicks();
-                    int airTicks = oldAirTicks - tickDiff;
+                    int airTicks = immune ? oldAirTicks : oldAirTicks - tickDiff;
 
                     if (airTicks <= -20) {
                         airTicks = 0;
-                        if (!isPlayer || level.gameRules.getBoolean(GameRule.DROWNING_DAMAGE)) {
+                        if (!immune && (!isPlayer || level.gameRules.getBoolean(GameRule.DROWNING_DAMAGE))) {
                             this.attack(new EntityDamageEvent(this, DamageCause.DROWNING, 2));
                         }
                     }

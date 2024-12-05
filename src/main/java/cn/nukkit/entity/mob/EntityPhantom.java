@@ -29,6 +29,7 @@ public class EntityPhantom extends EntityMob implements EntitySmite {
     protected void initEntity() {
         super.initEntity();
         this.setMaxHealth(20);
+        this.setDataFlag(DATA_FLAG_RENDERS_WHEN_INVISIBLE, true, false);
     }
 
     @Override
