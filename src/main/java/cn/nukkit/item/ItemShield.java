@@ -56,7 +56,7 @@ public class ItemShield extends ItemTool {
         if (nbt == null) {
             return -1;
         }
-        return nbt.getInt("trackingHandle", -1);
+        return nbt.getInt("Base", -1);
     }
 
     public ItemShield addPattern(BannerPattern pattern) {
