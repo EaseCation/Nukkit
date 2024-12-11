@@ -43,7 +43,7 @@ public class ItemTrident extends ItemTool {
 
     @Override
     public int getAttackDamage() {
-        return 9;
+        return 8;
     }
 
     private boolean canUse() {
