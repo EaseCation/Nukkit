@@ -63,7 +63,7 @@ public class BlockRedstoneRepeaterPowered extends BlockRedstoneDiode {
     }
 
     @Override
-    public boolean onActivate(Item item, BlockFace face, Player player) {
+    public boolean onActivate(Item item, BlockFace face, float fx, float fy, float fz, Player player) {
         this.setDamage(this.getDamage() + 4);
         if (this.getDamage() > 0xf) this.setDamage(this.getDamage() % 4);
 

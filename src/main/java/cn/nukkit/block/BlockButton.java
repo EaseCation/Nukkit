@@ -13,7 +13,7 @@ import cn.nukkit.utils.Faceable;
 /**
  * Created by CreeperFace on 27. 11. 2016.
  */
-public abstract class BlockButton extends BlockTransparentMeta implements Faceable {
+public abstract class BlockButton extends BlockTransparent implements Faceable {
 
     public static final int FACING_DIRECTION_MASK = 0b111;
     public static final int BUTTON_PRESSED_BIT = 0b1000;
@@ -62,7 +62,7 @@ public abstract class BlockButton extends BlockTransparentMeta implements Faceab
     }
 
     @Override
-    public boolean place(Item item, Block block, Block target, BlockFace face, double fx, double fy, double fz, Player player) {
+    public boolean place(Item item, Block block, Block target, BlockFace face, float fx, float fy, float fz, Player player) {
         if (!SupportType.hasCenterSupport(target, face)) {
             return false;
         }
@@ -78,7 +78,7 @@ public abstract class BlockButton extends BlockTransparentMeta implements Faceab
     }
 
     @Override
-    public boolean onActivate(Item item, BlockFace face, Player player) {
+    public boolean onActivate(Item item, BlockFace face, float fx, float fy, float fz, Player player) {
         if (this.isActivated()) {
             return false;
         }
@@ -95,7 +95,7 @@ public abstract class BlockButton extends BlockTransparentMeta implements Faceab
             level.updateAroundRedstone(this.getSideVec(getBlockFace().getOpposite()), null);
         }
 
-        this.level.addLevelSoundEvent(this.add(0.5, 0.5, 0.5), LevelSoundEventPacket.SOUND_POWER_ON, (this.getId() << BLOCK_META_BITS) | this.getDamage());
+        this.level.addLevelSoundEvent(this.blockCenter(), LevelSoundEventPacket.SOUND_BUTTON_CLICK_ON, this.getFullId());
         return true;
     }
 
@@ -111,7 +111,7 @@ public abstract class BlockButton extends BlockTransparentMeta implements Faceab
             if (this.isActivated()) {
                 this.setDamage(this.getDamage() ^ BUTTON_PRESSED_BIT);
                 this.level.setBlock(this, this, true, false);
-                this.level.addLevelSoundEvent(this.add(0.5, 0.5, 0.5), LevelSoundEventPacket.SOUND_POWER_OFF, (this.getId() << BLOCK_META_BITS) | this.getDamage());
+                this.level.addLevelSoundEvent(this.blockCenter(), LevelSoundEventPacket.SOUND_BUTTON_CLICK_OFF, this.getFullId());
 
                 if (this.level.isRedstoneEnabled()) {
                     this.level.getServer().getPluginManager().callEvent(new BlockRedstoneEvent(this, 15, 0));

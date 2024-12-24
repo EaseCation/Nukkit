@@ -10,7 +10,15 @@ import cn.nukkit.utils.BlockColor;
  * author: MagicDroidX
  * Nukkit Project
  */
-public class BlockWood extends BlockSolidMeta {
+@Deprecated
+public class BlockWood extends BlockSolid {
+    public static final int[] LOGS = {
+            OAK_LOG,
+            SPRUCE_LOG,
+            BIRCH_LOG,
+            JUNGLE_LOG,
+    };
+
     public static final int OAK = 0;
     public static final int SPRUCE = 1;
     public static final int BIRCH = 2;
@@ -76,7 +84,7 @@ public class BlockWood extends BlockSolidMeta {
     }
 
     @Override
-    public boolean place(Item item, Block block, Block target, BlockFace face, double fx, double fy, double fz, Player player) {
+    public boolean place(Item item, Block block, Block target, BlockFace face, float fx, float fy, float fz, Player player) {
         this.setDamage(this.getLogType() | FACES[face.getIndex()]);
         this.getLevel().setBlock(block, this, true, true);
 
@@ -95,6 +103,19 @@ public class BlockWood extends BlockSolidMeta {
 
     @Override
     public BlockColor getColor() {
+        if ((getDamage() & PILLAR_AXIS_MASK) != 0) {
+            switch (getLogType()) {
+                default:
+                case OAK:
+                    return BlockColor.PODZOL_BLOCK_COLOR;
+                case SPRUCE:
+                    return BlockColor.BROWN_BLOCK_COLOR;
+                case BIRCH:
+                    return BlockColor.QUARTZ_BLOCK_COLOR;
+                case JUNGLE:
+                    return BlockColor.PODZOL_BLOCK_COLOR;
+            }
+        }
         switch (getLogType()) {
             default:
             case OAK:
@@ -114,7 +135,7 @@ public class BlockWood extends BlockSolidMeta {
     }
 
     @Override
-    public boolean onActivate(Item item, BlockFace face, Player player) {
+    public boolean onActivate(Item item, BlockFace face, float fx, float fy, float fz, Player player) {
         if (!item.isAxe()) {
             return false;
         }

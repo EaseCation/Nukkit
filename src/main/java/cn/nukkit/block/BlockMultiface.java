@@ -7,7 +7,7 @@ import cn.nukkit.math.BlockFace;
 
 import static cn.nukkit.GameVersion.*;
 
-public abstract class BlockMultiface extends BlockTransparentMeta {
+public abstract class BlockMultiface extends BlockTransparent {
     protected BlockMultiface(int meta) {
         super(meta);
     }
@@ -33,7 +33,24 @@ public abstract class BlockMultiface extends BlockTransparentMeta {
     }
 
     @Override
-    public boolean place(Item item, Block block, Block target, BlockFace face, double fx, double fy, double fz, Player player) {
+    public Item[] getDrops(Item item, Player player) {
+        int count = 0;
+        for (BlockFace face : BlockFace.getValues()) {
+            if (hasFace(face)) {
+                count++;
+            }
+        }
+        if (count <= 0) {
+            return new Item[0];
+        }
+
+        Item drop = toItem(true);
+        drop.setCount(count);
+        return new Item[]{drop};
+    }
+
+    @Override
+    public boolean place(Item item, Block block, Block target, BlockFace face, float fx, float fy, float fz, Player player) {
         if (getId() == block.getId()) {
             setDamage(block.getDamage());
         } else {

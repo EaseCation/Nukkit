@@ -12,4 +12,9 @@ public class ItemSmithingTemplateArmorTrimHost extends Item {
     public ItemSmithingTemplateArmorTrimHost(Integer meta, int count) {
         super(HOST_ARMOR_TRIM_SMITHING_TEMPLATE, meta, count, "Host Armor Trim");
     }
+
+    @Override
+    public boolean isArmorTrimSmithingTemplate() {
+        return true;
+    }
 }

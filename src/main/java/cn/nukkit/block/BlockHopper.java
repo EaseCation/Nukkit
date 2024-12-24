@@ -17,7 +17,7 @@ import cn.nukkit.utils.Faceable;
 /**
  * @author CreeperFace
  */
-public class BlockHopper extends BlockTransparentMeta implements Faceable {
+public class BlockHopper extends BlockTransparent implements Faceable {
 
     public BlockHopper() {
         this(0);
@@ -53,7 +53,7 @@ public class BlockHopper extends BlockTransparentMeta implements Faceable {
     }
 
     @Override
-    public boolean place(Item item, Block block, Block target, BlockFace face, double fx, double fy, double fz, Player player) {
+    public boolean place(Item item, Block block, Block target, BlockFace face, float fx, float fy, float fz, Player player) {
         BlockFace facing = face.getOpposite();
 
         if (facing == BlockFace.UP) {
@@ -84,7 +84,7 @@ public class BlockHopper extends BlockTransparentMeta implements Faceable {
     }
 
     @Override
-    public boolean onActivate(Item item, BlockFace face, Player player) {
+    public boolean onActivate(Item item, BlockFace face, float fx, float fy, float fz, Player player) {
         BlockEntity blockEntity = this.level.getBlockEntity(this);
 
         if (blockEntity instanceof BlockEntityHopper) {

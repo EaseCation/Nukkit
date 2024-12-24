@@ -22,7 +22,7 @@ public class NewJungleTree extends TreeGenerator {
     /**
      * The metadata value of the wood to use in tree generation.
      */
-    private final Block metaWood = Block.get(BlockID.LOG, BlockWood.JUNGLE);
+    private final Block metaWood = Block.get(BlockID.JUNGLE_LOG);
 
     /**
      * The metadata value of the leaves to use in tree generation.

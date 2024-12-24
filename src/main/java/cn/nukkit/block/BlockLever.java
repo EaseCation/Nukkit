@@ -6,14 +6,14 @@ import cn.nukkit.item.Item;
 import cn.nukkit.level.Level;
 import cn.nukkit.math.AxisAlignedBB;
 import cn.nukkit.math.BlockFace;
-import cn.nukkit.network.protocol.LevelEventPacket;
+import cn.nukkit.network.protocol.LevelSoundEventPacket;
 import cn.nukkit.utils.BlockColor;
 import cn.nukkit.utils.Faceable;
 
 /**
  * @author Nukkit Project Team
  */
-public class BlockLever extends BlockTransparentMeta implements Faceable {
+public class BlockLever extends BlockTransparent implements Faceable {
 
     public static final int LEVER_DIRECTION_MASK = 0b111;
     public static final int OPEN_BIT = 0b1000;
@@ -91,14 +91,14 @@ public class BlockLever extends BlockTransparentMeta implements Faceable {
     }
 
     @Override
-    public boolean onActivate(Item item, BlockFace face, Player player) {
+    public boolean onActivate(Item item, BlockFace face, float fx, float fy, float fz, Player player) {
         this.level.getServer().getPluginManager().callEvent(new BlockRedstoneEvent(this, isPowerOn() ? 15 : 0, isPowerOn() ? 0 : 15));
         this.setDamage(this.getDamage() ^ OPEN_BIT);
 
         boolean redstone = this.level.isRedstoneEnabled();
 
         this.getLevel().setBlock(this, this, true, true);
-        this.getLevel().addLevelEvent(this.blockCenter(), LevelEventPacket.EVENT_SOUND_BUTTON_CLICK, this.isPowerOn() ? 600 : 500);
+        this.getLevel().addLevelSoundEvent(this.blockCenter(), isPowerOn() ? LevelSoundEventPacket.SOUND_BUTTON_CLICK_ON : LevelSoundEventPacket.SOUND_BUTTON_CLICK_OFF, getFullId());
 
         if (redstone) {
             BlockFace facing = getBlockFace();
@@ -124,7 +124,7 @@ public class BlockLever extends BlockTransparentMeta implements Faceable {
     }
 
     @Override
-    public boolean place(Item item, Block block, Block target, BlockFace face, double fx, double fy, double fz, Player player) {
+    public boolean place(Item item, Block block, Block target, BlockFace face, float fx, float fy, float fz, Player player) {
         if (!SupportType.hasCenterSupport(target, face)) {
             return false;
         }

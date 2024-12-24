@@ -12,7 +12,7 @@ import static cn.nukkit.GameVersion.*;
  * author: MagicDroidX
  * Nukkit Project
  */
-public class BlockQuartz extends BlockSolidMeta {
+public class BlockQuartz extends BlockSolid {
 
     public static final int NORMAL = 0;
     public static final int CHISELED = 1;
@@ -72,7 +72,7 @@ public class BlockQuartz extends BlockSolidMeta {
     }
 
     @Override
-    public boolean place(Item item, Block block, Block target, BlockFace face, double fx, double fy, double fz, Player player) {
+    public boolean place(Item item, Block block, Block target, BlockFace face, float fx, float fy, float fz, Player player) {
         if (this.getDamage() != NORMAL) {
             this.setDamage(this.getQuartzType() | FACES[face.getIndex()]);
         }

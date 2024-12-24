@@ -33,17 +33,21 @@ public class BlockFrogSpawn extends BlockFlowable {
     }
 
     @Override
-    public boolean place(Item item, Block block, Block target, BlockFace face, double fx, double fy, double fz, Player player) {
-        Block below = down();
-        if (!below.isWaterSource() && (below.isAir() || !below.canContainWater() || !level.getExtraBlock(below).isWaterSource())) {
+    public boolean place(Item item, Block block, Block target, BlockFace face, float fx, float fy, float fz, Player player) {
+        if (!target.isWaterSource() && (target.isAir() || !target.canContainWater() || !level.getExtraBlock(target).isWaterSource())) {
             return false;
         }
 
-        if (!super.place(item, block, target, face, fx, fy, fz, player)) {
+        Block above = target.up();
+        if (!above.isAir()) {
             return false;
         }
 
-        level.scheduleRandomUpdate(this, ThreadLocalRandom.current().nextInt(3600, 12000));
+        if (!level.setBlock(above, this, true)) {
+            return false;
+        }
+
+        level.scheduleRandomUpdate(above, ThreadLocalRandom.current().nextInt(3600, 12000));
         return true;
     }
 
@@ -70,14 +74,5 @@ public class BlockFrogSpawn extends BlockFlowable {
     @Override
     public BlockColor getColor() {
         return BlockColor.SAND_BLOCK_COLOR;
-    }
-
-    @Override
-    public int getFullId() {
-        return getId() << BLOCK_META_BITS;
-    }
-
-    @Override
-    public void setDamage(int meta) {
     }
 }

@@ -11,7 +11,7 @@ import cn.nukkit.math.Mth;
 import cn.nukkit.network.protocol.LevelSoundEventPacket;
 import cn.nukkit.utils.BlockColor;
 
-public class BlockRespawnAnchor extends BlockSolidMeta {
+public class BlockRespawnAnchor extends BlockSolid {
     public static final int MAX_CHARGE = 4;
 
     public BlockRespawnAnchor() {
@@ -98,7 +98,7 @@ public class BlockRespawnAnchor extends BlockSolidMeta {
     }
 
     @Override
-    public boolean onActivate(Item item, BlockFace face, Player player) {
+    public boolean onActivate(Item item, BlockFace face, float fx, float fy, float fz, Player player) {
         int charge = getDamage();
         if (charge < MAX_CHARGE && item.getId() == GLOWSTONE) {
             setDamage(charge + 1);

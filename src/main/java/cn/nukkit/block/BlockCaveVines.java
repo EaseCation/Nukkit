@@ -32,6 +32,16 @@ public class BlockCaveVines extends BlockFlowable {
     }
 
     @Override
+    public int getBurnChance() {
+        return 60;
+    }
+
+    @Override
+    public int getBurnAbility() {
+        return 100;
+    }
+
+    @Override
     public Item toItem(boolean addUserData) {
         return Item.get(Item.GLOW_BERRIES);
     }
@@ -42,7 +52,7 @@ public class BlockCaveVines extends BlockFlowable {
     }
 
     @Override
-    public boolean place(Item item, Block block, Block target, BlockFace face, double fx, double fy, double fz, Player player) {
+    public boolean place(Item item, Block block, Block target, BlockFace face, float fx, float fy, float fz, Player player) {
         if (face != BlockFace.DOWN) {
             return false;
         }
@@ -68,8 +78,8 @@ public class BlockCaveVines extends BlockFlowable {
     }
 
     @Override
-    public boolean onActivate(Item item, BlockFace face, Player player) {
-        if (item.isBoneMeal()) {
+    public boolean onActivate(Item item, BlockFace face, float fx, float fy, float fz, Player player) {
+        if (item.isFertilizer()) {
             if (player != null && !player.isCreative()) {
                 item.pop();
             }

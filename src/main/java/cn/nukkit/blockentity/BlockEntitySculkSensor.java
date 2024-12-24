@@ -37,6 +37,8 @@ public class BlockEntitySculkSensor extends BlockEntity {
         }
 
         super.initBlockEntity();
+
+//        this.scheduleUpdate();
     }
 
     @Override
@@ -46,6 +48,23 @@ public class BlockEntitySculkSensor extends BlockEntity {
         CompoundTag vibrationListener = new CompoundTag();
         this.vibrationListener.save(vibrationListener);
         namedTag.putCompound(VIBRATION_LISTENER_TAG, vibrationListener);
+    }
+
+    @Override
+    public boolean onUpdate() {
+        if (isClosed()) {
+            return false;
+        }
+
+        int currentTick = server.getTick();
+        int tickDiff = currentTick - lastUpdate;
+        if (tickDiff <= 0) {
+            return true;
+        }
+        lastUpdate = currentTick;
+
+        //TODO: vibration listener
+        return true;
     }
 
     @Data

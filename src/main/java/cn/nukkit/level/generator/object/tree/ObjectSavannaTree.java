@@ -3,7 +3,6 @@ package cn.nukkit.level.generator.object.tree;
 import cn.nukkit.block.Block;
 import cn.nukkit.block.BlockID;
 import cn.nukkit.block.BlockLeaves2;
-import cn.nukkit.block.BlockWood2;
 import cn.nukkit.level.ChunkManager;
 import cn.nukkit.level.HeightRange;
 import cn.nukkit.math.BlockFace;
@@ -11,7 +10,7 @@ import cn.nukkit.math.BlockVector3;
 import cn.nukkit.math.NukkitRandom;
 
 public class ObjectSavannaTree extends TreeGenerator {
-    private static final Block TRUNK = Block.get(BlockID.LOG2, BlockWood2.ACACIA);
+    private static final Block TRUNK = Block.get(BlockID.ACACIA_LOG);
     private static final Block LEAF = Block.get(BlockID.LEAVES2, BlockLeaves2.ACACIA);
 
     @Override

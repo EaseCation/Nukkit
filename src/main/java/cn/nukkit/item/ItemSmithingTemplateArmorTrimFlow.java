@@ -12,4 +12,9 @@ public class ItemSmithingTemplateArmorTrimFlow extends Item {
     public ItemSmithingTemplateArmorTrimFlow(Integer meta, int count) {
         super(FLOW_ARMOR_TRIM_SMITHING_TEMPLATE, meta, count, "Flow Armor Trim");
     }
+
+    @Override
+    public boolean isArmorTrimSmithingTemplate() {
+        return true;
+    }
 }

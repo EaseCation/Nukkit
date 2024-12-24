@@ -5,13 +5,25 @@ import cn.nukkit.item.Item;
 import cn.nukkit.level.Level;
 import cn.nukkit.math.BlockFace;
 import cn.nukkit.math.BlockFace.Plane;
-import cn.nukkit.utils.BlockColor;
 
 import java.util.concurrent.ThreadLocalRandom;
 
-public class BlockCoral extends BlockFlowable {
+public abstract class BlockCoral extends BlockFlowable {
+    public static final int[] CORALS = {
+            TUBE_CORAL,
+            BRAIN_CORAL,
+            BUBBLE_CORAL,
+            FIRE_CORAL,
+            HORN_CORAL,
+    };
+    public static final int[] DEAD_CORALS = {
+            DEAD_TUBE_CORAL,
+            DEAD_BRAIN_CORAL,
+            DEAD_BUBBLE_CORAL,
+            DEAD_FIRE_CORAL,
+            DEAD_HORN_CORAL,
+    };
 
-    public static final int COLOR_MASK = 0b111;
     public static final int DEAD_BIT = 0b1000;
 
     public static final int BLUE = 0;
@@ -20,59 +32,13 @@ public class BlockCoral extends BlockFlowable {
     public static final int RED = 3;
     public static final int YELLOW = 4;
 
-    private static final String[] NAMES = new String[]{
-            "Tube Coral",
-            "Brain Coral",
-            "Bubble Coral",
-            "Fire Coral",
-            "Horn Coral",
-            "Coral",
-            "Coral",
-            "Coral",
-    };
-
-    public BlockCoral() {
-        this(0);
-    }
-
-    public BlockCoral(int meta) {
-        super(meta);
-    }
-
-    @Override
-    public int getId() {
-        return CORAL;
-    }
-
-    @Override
-    public String getName() {
-        return (isDead() ? "Dead " : "") + NAMES[getCoralColor()];
+    protected BlockCoral() {
+        super(0);
     }
 
     @Override
     public boolean canSilkTouch() {
         return true;
-    }
-
-    @Override
-    public BlockColor getColor() {
-        if (isDead()) {
-            return BlockColor.GRAY_BLOCK_COLOR;
-        }
-
-        switch (getCoralColor()) {
-            default:
-            case BLUE:
-                return BlockColor.BLUE_BLOCK_COLOR;
-            case PINK:
-                return BlockColor.PINK_BLOCK_COLOR;
-            case PURPLE:
-                return BlockColor.PURPLE_BLOCK_COLOR;
-            case RED:
-                return BlockColor.RED_BLOCK_COLOR;
-            case YELLOW:
-                return BlockColor.YELLOW_BLOCK_COLOR;
-        }
     }
 
     @Override
@@ -86,7 +52,7 @@ public class BlockCoral extends BlockFlowable {
     }
 
     @Override
-    public boolean place(Item item, Block block, Block target, BlockFace face, double fx, double fy, double fz, Player player) {
+    public boolean place(Item item, Block block, Block target, BlockFace face, float fx, float fy, float fz, Player player) {
         Block extra;
         if (block.isLava() || block.isWater() && !block.isFullLiquid()
                 || !block.isAir() && (extra = level.getExtraBlock(this)).isWater() && !extra.isFullLiquid()
@@ -132,8 +98,7 @@ public class BlockCoral extends BlockFlowable {
                 }
             }
 
-            setDead(true);
-            level.setBlock(this, this, true);
+            level.setBlock(this, get(getDeadBlockId()), true);
             return type;
         }
 
@@ -145,19 +110,16 @@ public class BlockCoral extends BlockFlowable {
         return true;
     }
 
-    public int getCoralColor() {
-        return getDamage() & COLOR_MASK;
+    @Override
+    public boolean isCoral() {
+        return true;
     }
 
-    public void setCoralColor(int color) {
-        setDamage((getDamage() & ~COLOR_MASK) | (color & COLOR_MASK));
+    protected boolean isDead() {
+        return false;
     }
 
-    public boolean isDead() {
-        return (getDamage() & DEAD_BIT) == DEAD_BIT;
-    }
-
-    public void setDead(boolean dead) {
-        setDamage(dead ? getDamage() | DEAD_BIT : getDamage() & ~DEAD_BIT);
+    protected int getDeadBlockId() {
+        return getId();
     }
 }

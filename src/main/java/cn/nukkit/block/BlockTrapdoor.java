@@ -8,14 +8,14 @@ import cn.nukkit.level.Level;
 import cn.nukkit.math.AxisAlignedBB;
 import cn.nukkit.math.BlockFace;
 import cn.nukkit.math.SimpleAxisAlignedBB;
-import cn.nukkit.network.protocol.LevelEventPacket;
+import cn.nukkit.network.protocol.LevelSoundEventPacket;
 import cn.nukkit.utils.BlockColor;
 import cn.nukkit.utils.Faceable;
 
 /**
  * Created by Pub4Game on 26.12.2015.
  */
-public class BlockTrapdoor extends BlockTransparentMeta implements Faceable {
+public class BlockTrapdoor extends BlockTransparent implements Faceable {
 
     public static final int DIRECTION_MASK = 0b11;
     public static final int TRAPDOOR_TOP_BIT = 0x04;
@@ -170,7 +170,7 @@ public class BlockTrapdoor extends BlockTransparentMeta implements Faceable {
                 this.level.getServer().getPluginManager().callEvent(new BlockRedstoneEvent(this, isOpen() ? 15 : 0, isOpen() ? 0 : 15));
                 this.setDamage(this.getDamage() ^ TRAPDOOR_OPEN_BIT);
                 this.level.setBlock(this, this, true);
-                this.level.addLevelEvent(this.add(0.5, 0.5, 0.5), LevelEventPacket.EVENT_SOUND_DOOR);
+                this.level.addLevelSoundEvent(this.blockCenter(), isOpen() ? LevelSoundEventPacket.SOUND_TRAPDOOR_OPEN : LevelSoundEventPacket.SOUND_TRAPDOOR_CLOSE, getFullId());
                 return type;
             }
         }
@@ -179,7 +179,7 @@ public class BlockTrapdoor extends BlockTransparentMeta implements Faceable {
     }
 
     @Override
-    public boolean place(Item item, Block block, Block target, BlockFace face, double fx, double fy, double fz, Player player) {
+    public boolean place(Item item, Block block, Block target, BlockFace face, float fx, float fy, float fz, Player player) {
         BlockFace facing;
         boolean top;
         int meta = 0;
@@ -209,9 +209,8 @@ public class BlockTrapdoor extends BlockTransparentMeta implements Faceable {
     }
 
     @Override
-    public boolean onActivate(Item item, BlockFace face, Player player) {
+    public boolean onActivate(Item item, BlockFace face, float fx, float fy, float fz, Player player) {
         if (toggle(player)) {
-            this.level.addLevelEvent(this.add(0.5, 0.5, 0.5), LevelEventPacket.EVENT_SOUND_DOOR);
             return true;
         }
         return false;
@@ -220,10 +219,11 @@ public class BlockTrapdoor extends BlockTransparentMeta implements Faceable {
     public boolean toggle(Player player) {
         DoorToggleEvent ev = new DoorToggleEvent(this, player);
         getLevel().getServer().getPluginManager().callEvent(ev);
-        if(ev.isCancelled()) {
+        if (ev.isCancelled()) {
             return false;
         }
         this.setDamage(this.getDamage() ^ TRAPDOOR_OPEN_BIT);
+        level.addLevelSoundEvent(blockCenter(), isOpen() ? LevelSoundEventPacket.SOUND_TRAPDOOR_OPEN : LevelSoundEventPacket.SOUND_TRAPDOOR_CLOSE, getFullId());
         getLevel().setBlock(this, this, true);
         return true;
     }

@@ -54,6 +54,7 @@ public class EntityPrimedTNT extends Entity implements EntityExplosive {
 
     protected int fuse;
     protected int force;
+    protected boolean allowUnderwater;
 
     protected Entity source;
 
@@ -88,6 +89,11 @@ public class EntityPrimedTNT extends Entity implements EntityExplosive {
             force = namedTag.getByte("Force");
         } else {
             force = 4;
+        }
+        if (namedTag.contains("AllowUnderwater")) {
+            allowUnderwater = namedTag.getBoolean("AllowUnderwater");
+        } else {
+            allowUnderwater = false;
         }
 
         this.setDataFlag(DATA_FLAG_IGNITED, true, false);
@@ -162,6 +168,7 @@ public class EntityPrimedTNT extends Entity implements EntityExplosive {
             return;
         }
         Explosion explosion = new Explosion(this, event.getForce(), this);
+        explosion.setAllowUnderwater(allowUnderwater);
         if (event.isBlockBreaking()) {
             explosion.explodeA();
         }

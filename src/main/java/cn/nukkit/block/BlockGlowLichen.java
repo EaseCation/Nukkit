@@ -57,19 +57,7 @@ public class BlockGlowLichen extends BlockMultiface {
     @Override
     public Item[] getDrops(Item item, Player player) {
         if (item.isShears()) {
-            int count = 0;
-            for (BlockFace face : BlockFace.getValues()) {
-                if (hasFace(face)) {
-                    count++;
-                }
-            }
-            if (count <= 0) {
-                return new Item[0];
-            }
-
-            Item drop = toItem(true);
-            drop.setCount(count);
-            return new Item[]{drop};
+            return super.getDrops(item, player);
         }
         return new Item[0];
     }
@@ -80,7 +68,7 @@ public class BlockGlowLichen extends BlockMultiface {
     }
 
     @Override
-    public boolean onActivate(Item item, BlockFace face, Player player) {
+    public boolean onActivate(Item item, BlockFace face, float fx, float fy, float fz, Player player) {
         /*
         if (item.isBoneMeal()) {
             if (player != null && !player.isCreative()) {

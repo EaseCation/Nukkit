@@ -516,7 +516,7 @@ public interface BlockID {
     int STONE_BLOCK_SLAB4 = 421; //TODO: 1.19.0 rename
     int STONE_SLAB4 = 421;
     int END_STONE_BRICK_DOUBLE_SLAB = 422; //TODO: 1.21.20 flattening
-    int DOUBLE_STONE_BLOCK_SLAB3 = 181; //TODO: 1.19.0 rename
+    int DOUBLE_STONE_BLOCK_SLAB3 = 422; //TODO: 1.19.0 rename
     int DOUBLE_STONE_SLAB3 = 422;
     int MOSSY_STONE_BRICK_DOUBLE_SLAB = 423; //TODO: 1.21.20 flattening
     int DOUBLE_STONE_BLOCK_SLAB4 = 423; //TODO: 1.19.0 rename

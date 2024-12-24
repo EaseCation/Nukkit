@@ -21,6 +21,8 @@ import java.io.InputStream;
 import java.util.Locale;
 import java.util.Properties;
 
+import static cn.nukkit.SharedConstants.*;
+
 /*
  * `_   _       _    _    _ _
  * | \ | |     | |  | |  (_) |
@@ -197,6 +199,10 @@ public class Nukkit {
     }
 
     public static void setLogLevel(Level level) {
+        if (!PRODUCTION_ENVIRONMENT) {
+            level = Level.ALL;
+        }
+
         Preconditions.checkNotNull(level, "level");
         LoggerContext ctx = (LoggerContext) LogManager.getContext(false);
         Configuration log4jConfig = ctx.getConfiguration();

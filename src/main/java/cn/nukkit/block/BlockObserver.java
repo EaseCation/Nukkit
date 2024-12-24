@@ -8,7 +8,7 @@ import cn.nukkit.utils.Faceable;
 /**
  * Created by Leonidius20 on 18.08.18.
  */
-public class BlockObserver extends BlockSolidMeta implements Faceable {
+public class BlockObserver extends BlockSolid implements Faceable {
 
     public BlockObserver() {
         this(0);
@@ -29,7 +29,7 @@ public class BlockObserver extends BlockSolidMeta implements Faceable {
     }
 
     @Override
-    public boolean place(Item item, Block block, Block target, BlockFace face, double fx, double fy, double fz, Player player) {
+    public boolean place(Item item, Block block, Block target, BlockFace face, float fx, float fy, float fz, Player player) {
         if (player != null) {
             if (Math.abs(player.getFloorX() - this.x) <= 1 && Math.abs(player.getFloorZ() - this.z) <= 1) {
                 double y = player.y + player.getEyeHeight();

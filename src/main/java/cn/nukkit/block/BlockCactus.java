@@ -16,7 +16,7 @@ import cn.nukkit.utils.BlockColor;
 /**
  * @author Nukkit Project Team
  */
-public class BlockCactus extends BlockTransparentMeta {
+public class BlockCactus extends BlockTransparent {
 
     public BlockCactus(int meta) {
         super(meta);
@@ -82,7 +82,7 @@ public class BlockCactus extends BlockTransparentMeta {
     public int onUpdate(int type) {
         if (type == Level.BLOCK_UPDATE_NORMAL) {
             Block down = down();
-            if (down.getId() != SAND && down.getId() != CACTUS) {
+            if (!canBeSupportedBy(down.getId())) {
                 this.getLevel().useBreakOn(this, true);
                 return Level.BLOCK_UPDATE_NORMAL;
             } else {
@@ -126,9 +126,9 @@ public class BlockCactus extends BlockTransparentMeta {
     }
 
     @Override
-    public boolean place(Item item, Block block, Block target, BlockFace face, double fx, double fy, double fz, Player player) {
+    public boolean place(Item item, Block block, Block target, BlockFace face, float fx, float fy, float fz, Player player) {
         Block down = this.down();
-        if (down.getId() == SAND || down.getId() == CACTUS) {
+        if (canBeSupportedBy(down.getId())) {
             Block block0 = north();
             Block block1 = south();
             Block block2 = west();
@@ -192,5 +192,9 @@ public class BlockCactus extends BlockTransparentMeta {
     @Override
     public boolean isVegetation() {
         return true;
+    }
+
+    private static boolean canBeSupportedBy(int id) {
+        return id == CACTUS || id == SAND || id == SUSPICIOUS_SAND;
     }
 }

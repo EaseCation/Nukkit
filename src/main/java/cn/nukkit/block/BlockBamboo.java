@@ -2,8 +2,6 @@ package cn.nukkit.block;
 
 import cn.nukkit.Player;
 import cn.nukkit.item.Item;
-import cn.nukkit.item.ItemDye;
-import cn.nukkit.item.ItemID;
 import cn.nukkit.level.Level;
 import cn.nukkit.level.particle.BoneMealParticle;
 import cn.nukkit.math.AxisAlignedBB;
@@ -18,7 +16,7 @@ import java.util.concurrent.ThreadLocalRandom;
 import static cn.nukkit.GameVersion.*;
 import static cn.nukkit.SharedConstants.*;
 
-public class BlockBamboo extends BlockTransparentMeta {
+public class BlockBamboo extends BlockTransparent {
 
     public static final int STALK_THICKNESS_BIT = 0b1;
     public static final int LEAF_SIZE_MASK = 0b110;
@@ -109,7 +107,7 @@ public class BlockBamboo extends BlockTransparentMeta {
     }
 
     @Override
-    public boolean place(Item item, Block block, Block target, BlockFace face, double fx, double fy, double fz, Player player) {
+    public boolean place(Item item, Block block, Block target, BlockFace face, float fx, float fy, float fz, Player player) {
         int belowId;
         if (block.isLiquid() || !block.isAir() && block.canContainWater() && level.getExtraBlock(this).isWater() || !canBeSupportedBy(belowId = down().getId()) && belowId != BAMBOO && belowId != BAMBOO_SAPLING) {
             return false;
@@ -140,9 +138,9 @@ public class BlockBamboo extends BlockTransparentMeta {
     }
 
     @Override
-    public boolean onActivate(Item item, BlockFace face, Player player) {
+    public boolean onActivate(Item item, BlockFace face, float fx, float fy, float fz, Player player) {
         int id = item.getId();
-        if (id == ItemID.DYE && item.getDamage() == ItemDye.BONE_MEAL) {
+        if (item.isFertilizer()) {
             int maxHeight = level.getHeightRange().getMaxY();
             BlockBamboo top = seekToTop();
             int y = top.getFloorY();
@@ -310,6 +308,6 @@ public class BlockBamboo extends BlockTransparentMeta {
     }
 
     static boolean canBeSupportedBy(int id) {
-        return id == GRASS_BLOCK || id == DIRT || id == SAND || id == GRAVEL || id == MYCELIUM || id == PODZOL || id == DIRT_WITH_ROOTS || id == MUD || id == MUDDY_MANGROVE_ROOTS;
+        return id == GRASS_BLOCK || id == DIRT || id == SAND || id == GRAVEL || id == MYCELIUM || id == PODZOL || id == DIRT_WITH_ROOTS || id == MUD || id == MUDDY_MANGROVE_ROOTS || id == SUSPICIOUS_SAND || id == SUSPICIOUS_GRAVEL;
     }
 }

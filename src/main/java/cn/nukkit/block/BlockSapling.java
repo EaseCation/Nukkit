@@ -2,7 +2,6 @@ package cn.nukkit.block;
 
 import cn.nukkit.Player;
 import cn.nukkit.item.Item;
-import cn.nukkit.item.ItemDye;
 import cn.nukkit.level.Level;
 import cn.nukkit.level.generator.object.BasicGenerator;
 import cn.nukkit.level.generator.object.tree.*;
@@ -31,6 +30,9 @@ public class BlockSapling extends BlockFlowable {
     public static final int ACACIA = 4;
     public static final int DARK_OAK = 5;
 
+    public static final int TYPE_MASK = 0b111;
+    public static final int AGE_BIT = 0b1000;
+
     private static final String[] NAMES = new String[]{
             "Oak Sapling",
             "Spruce Sapling",
@@ -38,8 +40,8 @@ public class BlockSapling extends BlockFlowable {
             "Jungle Sapling",
             "Acacia Sapling",
             "Dark Oak Sapling",
-            "",
-            "",
+            "Sapling",
+            "Sapling",
     };
 
     public BlockSapling() {
@@ -57,11 +59,11 @@ public class BlockSapling extends BlockFlowable {
 
     @Override
     public String getName() {
-        return NAMES[this.getDamage() & 0x07];
+        return NAMES[this.getDamage() & TYPE_MASK];
     }
 
     @Override
-    public boolean place(Item item, Block block, Block target, BlockFace face, double fx, double fy, double fz, Player player) {
+    public boolean place(Item item, Block block, Block target, BlockFace face, float fx, float fy, float fz, Player player) {
         if (block.isLiquid() || !block.isAir() && block.canContainWater() && level.getExtraBlock(this).isWater()) {
             return false;
         }
@@ -80,8 +82,8 @@ public class BlockSapling extends BlockFlowable {
     }
 
     @Override
-    public boolean onActivate(Item item, BlockFace face, Player player) {
-        if (item.getId() == Item.DYE && item.getDamage() == ItemDye.BONE_MEAL) {
+    public boolean onActivate(Item item, BlockFace face, float fx, float fy, float fz, Player player) {
+        if (item.isFertilizer()) {
             if (player != null && (player.gamemode & 0x01) == 0) {
                 item.count--;
             }
@@ -107,10 +109,11 @@ public class BlockSapling extends BlockFlowable {
             }
         } else if (type == Level.BLOCK_UPDATE_RANDOM) { //Growth
             if (ThreadLocalRandom.current().nextInt(1, 8) == 1) {
-                if ((this.getDamage() & 0x08) == 0x08) {
+                int ageBit = getAgeBit();
+                if ((this.getDamage() & ageBit) == ageBit) {
                     this.grow();
                 } else {
-                    this.setDamage(this.getDamage() | 0x08);
+                    this.setDamage(this.getDamage() | ageBit);
                     this.getLevel().setBlock(this, this, true);
                     return Level.BLOCK_UPDATE_RANDOM;
                 }
@@ -121,20 +124,20 @@ public class BlockSapling extends BlockFlowable {
         return 0;
     }
 
-    private void grow() {
+    protected void grow() {
         BasicGenerator generator = null;
         boolean bigTree = false;
 
         int x = 0;
         int z = 0;
 
-        switch (this.getDamage() & 0x07) {
+        switch (this.getDamage() & TYPE_MASK) {
             case JUNGLE:
                 loop:
                 for (x = 0; x >= -1; --x) {
                     for (z = 0; z >= -1; --z) {
                         if (this.findSaplings(x, z, JUNGLE)) {
-                            generator = new ObjectJungleBigTree(10, 20, Block.get(BlockID.LOG, BlockWood.JUNGLE), Block.get(BlockID.LEAVES, BlockLeaves.JUNGLE));
+                            generator = new ObjectJungleBigTree(10, 20, Block.get(JUNGLE_LOG), Block.get(BlockID.LEAVES, BlockLeaves.JUNGLE));
                             bigTree = true;
                             break loop;
                         }
@@ -168,7 +171,7 @@ public class BlockSapling extends BlockFlowable {
                 break;
             //TODO: big spruce
             default:
-                ObjectTree.growTree(this.level, this.getFloorX(), this.getFloorY(), this.getFloorZ(), NukkitRandom.current(), this.getDamage() & 0x07);
+                ObjectTree.growTree(this.level, this.getFloorX(), this.getFloorY(), this.getFloorZ(), NukkitRandom.current(), this.getDamage() & TYPE_MASK);
                 return;
         }
 
@@ -197,14 +200,14 @@ public class BlockSapling extends BlockFlowable {
         return this.isSameType(this.add(x, 0, z), type) && this.isSameType(this.add(x + 1, 0, z), type) && this.isSameType(this.add(x, 0, z + 1), type) && this.isSameType(this.add(x + 1, 0, z + 1), type);
     }
 
-    public boolean isSameType(Vector3 pos, int type) {
+    private boolean isSameType(Vector3 pos, int type) {
         Block block = this.level.getBlock(pos);
-        return block.getId() == this.getId() && (block.getDamage() & 0x07) == (type & 0x07);
+        return block.getId() == this.getId() && (block.getDamage() & TYPE_MASK) == (type & TYPE_MASK);
     }
 
     @Override
     public Item toItem(boolean addUserData) {
-        return Item.get(BlockID.SAPLING, this.getDamage() & 0x7);
+        return Item.get(BlockID.SAPLING, this.getDamage() & TYPE_MASK);
     }
 
     @Override
@@ -235,5 +238,9 @@ public class BlockSapling extends BlockFlowable {
     private boolean canSurvive() {
         int id = down().getId();
         return id == Block.GRASS_BLOCK || id == Block.DIRT || id == Block.FARMLAND || id == Block.PODZOL || id == MYCELIUM || id == DIRT_WITH_ROOTS || id == MOSS_BLOCK || id == MUD || id == MUDDY_MANGROVE_ROOTS;
+    }
+
+    protected int getAgeBit() {
+        return AGE_BIT;
     }
 }

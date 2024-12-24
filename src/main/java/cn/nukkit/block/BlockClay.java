@@ -2,8 +2,6 @@ package cn.nukkit.block;
 
 import cn.nukkit.Player;
 import cn.nukkit.item.Item;
-import cn.nukkit.item.ItemDye;
-import cn.nukkit.item.ItemID;
 import cn.nukkit.math.BlockFace;
 import cn.nukkit.utils.BlockColor;
 
@@ -63,8 +61,8 @@ public class BlockClay extends BlockSolid {
     }
 
     @Override
-    public boolean onActivate(Item item, BlockFace face, Player player) {
-        if (item.getId() == ItemID.DYE && item.getDamage() == ItemDye.BONE_MEAL) {
+    public boolean onActivate(Item item, BlockFace face, float fx, float fy, float fz, Player player) {
+        if (item.isFertilizer()) {
             return BlockSeagrass.trySpawnSeaGrass(this, item, player);
         }
         return false;

@@ -370,7 +370,7 @@ public class BlockEntityHopper extends BlockEntityAbstractContainer {
         CompoundTag nbt = getDefaultCompound(this, BlockEntity.HOPPER);
 
         if (this.hasName()) {
-            nbt.put("CustomName", this.namedTag.get("CustomName"));
+            nbt.putString("CustomName", this.getName());
         }
 
         return nbt;

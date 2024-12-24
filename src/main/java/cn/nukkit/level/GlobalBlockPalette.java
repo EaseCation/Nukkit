@@ -187,7 +187,7 @@ public class GlobalBlockPalette implements GlobalBlockPaletteInterface {
 //            return -1;
 //        }
 //        return blockId;
-        return Blocks.getIdByBlockName(blockName);
+        return Blocks.getIdByBlockName(blockName, true);
 //        return stringToId.getInt(blockName);
     }
 

@@ -5,29 +5,34 @@ import cn.nukkit.item.Item;
 import cn.nukkit.level.Level;
 import cn.nukkit.math.AxisAlignedBB;
 import cn.nukkit.math.BlockFace;
-import cn.nukkit.utils.BlockColor;
 import cn.nukkit.utils.DyeColor;
 
 /**
  * Created on 2015/11/24 by xtypr.
  * Package cn.nukkit.block in project Nukkit .
  */
-public class BlockCarpet extends BlockFlowable {
-    public BlockCarpet() {
-        this(0);
-    }
+public abstract class BlockCarpet extends BlockFlowable {
+    public static final int[] CARPETS = {
+            WHITE_CARPET,
+            ORANGE_CARPET,
+            MAGENTA_CARPET,
+            LIGHT_BLUE_CARPET,
+            YELLOW_CARPET,
+            LIME_CARPET,
+            PINK_CARPET,
+            GRAY_CARPET,
+            LIGHT_GRAY_CARPET,
+            CYAN_CARPET,
+            PURPLE_CARPET,
+            BLUE_CARPET,
+            BROWN_CARPET,
+            GREEN_CARPET,
+            RED_CARPET,
+            BLACK_CARPET,
+    };
 
-    public BlockCarpet(int meta) {
-        super(meta);
-    }
-
-    public BlockCarpet(DyeColor dyeColor) {
-        this(dyeColor.getWoolData());
-    }
-
-    @Override
-    public int getId() {
-        return CARPET;
+    protected BlockCarpet() {
+        super(0);
     }
 
     @Override
@@ -46,11 +51,6 @@ public class BlockCarpet extends BlockFlowable {
     }
 
     @Override
-    public String getName() {
-        return DyeColor.getByWoolData(getDamage()) + " Carpet";
-    }
-
-    @Override
     public boolean canPassThrough() {
         return false;
     }
@@ -66,7 +66,7 @@ public class BlockCarpet extends BlockFlowable {
     }
 
     @Override
-    public boolean place(Item item, Block block, Block target, BlockFace face, double fx, double fy, double fz, Player player) {
+    public boolean place(Item item, Block block, Block target, BlockFace face, float fx, float fy, float fz, Player player) {
         Block down = this.down();
         if (down.getId() != Item.AIR) {
             this.getLevel().setBlock(block, this, true, true);
@@ -88,14 +88,7 @@ public class BlockCarpet extends BlockFlowable {
         return 0;
     }
 
-    @Override
-    public BlockColor getColor() {
-        return DyeColor.getByWoolData(getDamage()).getColor();
-    }
-
-    public DyeColor getDyeColor() {
-        return DyeColor.getByWoolData(getDamage());
-    }
+    public abstract DyeColor getDyeColor();
 
     @Override
     public boolean canContainWater() {
@@ -109,6 +102,11 @@ public class BlockCarpet extends BlockFlowable {
 
     @Override
     public boolean sticksToPiston() {
+        return true;
+    }
+
+    @Override
+    public boolean isCarpet() {
         return true;
     }
 }

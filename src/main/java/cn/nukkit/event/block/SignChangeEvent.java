@@ -23,19 +23,22 @@ public class SignChangeEvent extends BlockEvent implements Cancellable {
     public static final int FLAG_GLOW = 0b100;
     public static final int FLAG_BACK_TEXT = 0b1000;
     public static final int FLAG_WAX = 0b10000;
+    public static final int FLAG_TEXT = FLAG_FRONT_TEXT | FLAG_BACK_TEXT;
 
     private final Player player;
     private final BlockEntitySign blockEntity;
 
     private final int flags;
     private final String[] lines;
+    private final String[] backLines;
 
-    public SignChangeEvent(Block block, Player player, BlockEntitySign blockEntity, int flags, String[] lines) {
+    public SignChangeEvent(Block block, Player player, BlockEntitySign blockEntity, int flags, String[] lines, String[] backLines) {
         super(block);
         this.player = player;
         this.blockEntity = blockEntity;
         this.flags = flags;
         this.lines = lines;
+        this.backLines = backLines;
     }
 
     public Player getPlayer() {
@@ -60,5 +63,17 @@ public class SignChangeEvent extends BlockEvent implements Cancellable {
 
     public void setLine(int index, String line) {
         this.lines[index] = line;
+    }
+
+    public String[] getBackLines() {
+        return backLines;
+    }
+
+    public String getBackLine(int index) {
+        return this.backLines[index];
+    }
+
+    public void setBackLine(int index, String line) {
+        this.backLines[index] = line;
     }
 }

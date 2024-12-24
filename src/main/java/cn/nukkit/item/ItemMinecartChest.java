@@ -29,7 +29,7 @@ public class ItemMinecartChest extends Item {
     }
 
     @Override
-    public boolean onActivate(Level level, Player player, Block block, Block target, BlockFace face, double fx, double fy, double fz) {
+    public boolean onActivate(Level level, Player player, Block block, Block target, BlockFace face, float fx, float fy, float fz) {
         if (Rail.isRailBlock(target)) {
             Rail.Orientation type = ((BlockRail) target).getOrientation();
             double adjacent = 0.0D;

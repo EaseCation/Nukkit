@@ -20,6 +20,7 @@ import cn.nukkit.event.entity.EntityDamageEvent.DamageCause;
 import cn.nukkit.item.Item;
 import cn.nukkit.level.GameRule;
 import cn.nukkit.level.format.FullChunk;
+import cn.nukkit.level.particle.DestroyBlockParticle;
 import cn.nukkit.math.BlockFace;
 import cn.nukkit.math.Vector3;
 import cn.nukkit.nbt.NBTIO;
@@ -156,6 +157,12 @@ public class EntityFallingBlock extends Entity {
 
             if (onGround) {
                 close();
+
+                if (block.is(Block.SUSPICIOUS_SAND) || block.is(Block.SUSPICIOUS_GRAVEL)) {
+                    level.addParticle(new DestroyBlockParticle(this, block));
+                    return true;
+                }
+
                 Block block = level.getBlock(pos);
 
                 Vector3 floorPos = new Vector3(x - 0.5, y, z - 0.5).floor();
@@ -249,6 +256,19 @@ public class EntityFallingBlock extends Entity {
                         }
                     }
                 }
+                hasUpdate = true;
+            } else if (age >= 20 * 30) {
+                close();
+
+                if (level.getGameRules().getBoolean(GameRule.DO_TILE_DROPS)) {
+                    int id = block.getId();
+                    if (id == Block.POINTED_DRIPSTONE) {
+                        level.dropItem(this, Item.get(Block.getItemId(Block.POINTED_DRIPSTONE), BlockDripstonePointed.HANGING_BIT));
+                    } else if (id != Block.SNOW_LAYER && id != Block.SUSPICIOUS_SAND && id != Block.SUSPICIOUS_GRAVEL) {
+                        level.dropItem(this, Item.get(Block.getItemId(block.getId()), block.getDamage()));
+                    }
+                }
+
                 hasUpdate = true;
             }
 

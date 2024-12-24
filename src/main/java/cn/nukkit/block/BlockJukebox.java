@@ -50,7 +50,7 @@ public class BlockJukebox extends BlockSolid {
     }
 
     @Override
-    public boolean onActivate(Item item, BlockFace face, Player player) {
+    public boolean onActivate(Item item, BlockFace face, float fx, float fy, float fz, Player player) {
         BlockEntity blockEntity = this.getLevel().getBlockEntity(this);
         if (!(blockEntity instanceof BlockEntityJukebox)) {
             blockEntity = this.createBlockEntity();
@@ -74,7 +74,7 @@ public class BlockJukebox extends BlockSolid {
     }
 
     @Override
-    public boolean place(Item item, Block block, Block target, BlockFace face, double fx, double fy, double fz, Player player) {
+    public boolean place(Item item, Block block, Block target, BlockFace face, float fx, float fy, float fz, Player player) {
         if (super.place(item, block, target, face, fx, fy, fz, player)) {
             createBlockEntity();
             return true;

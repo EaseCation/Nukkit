@@ -54,6 +54,7 @@ public class Explosion {
     private Collection<Block> affectedBlocks = new ArrayList<>();
     private final LongSet affectedAirs = new LongOpenHashSet();
     private boolean fire;
+    private boolean allowUnderwater;
 
     private final Object what;
 
@@ -103,6 +104,11 @@ public class Explosion {
         this.size = Math.max(size, 0);
         this.what = what;
         this.fire = fire;
+    }
+
+    public Explosion setAllowUnderwater(boolean allowUnderwater) {
+        this.allowUnderwater = allowUnderwater;
+        return this;
     }
 
     /**
@@ -164,11 +170,13 @@ public class Explosion {
                             }
                             Block block = this.level.getBlock(blockX, blockY, blockZ);
 
-                            if (block.getId() != BlockID.AIR) {
-                                float resistance = block.getResistance();
-
+                            if (!block.isAir()) {
+                                float resistance = 0;
+                                if (!allowUnderwater || !block.isWater()) {
+                                    resistance = block.getResistance();
+                                }
                                 Block extraBlock = this.level.getExtraBlock(block);
-                                if (!extraBlock.isAir()) {
+                                if (!allowUnderwater || !extraBlock.isWater()) {
                                     resistance += extraBlock.getResistance();
                                 }
 
@@ -216,7 +224,9 @@ public class Explosion {
             Block block = this.level.getBlock(entity);
             if (block.isWater() || !block.isAir() && block.canContainWater() && this.level.getExtraBlock(block).isWater()) {
                 underwater = true;
-                dealDamage = false;
+                if (!allowUnderwater) {
+                    dealDamage = false;
+                }
             }
         } else if (this.what instanceof Block) {
             BlockExplodeEvent event = new BlockExplodeEvent((Block) this.what, this.affectedBlocks, yield, this.fire);
@@ -377,7 +387,7 @@ public class Explosion {
                     }
                     ((InventoryHolder) container).getInventory().clearAll();
                 }
-            } else if (id == Block.SHULKER_BOX || id == Block.UNDYED_SHULKER_BOX) {
+            } else if (block.isShulkerBox()) {
                 BlockEntity shulkerBox = block.getLevel().getBlockEntity(block);
                 if (shulkerBox instanceof BlockEntityShulkerBox) {
                     if (blockDrop) {
@@ -417,8 +427,13 @@ public class Explosion {
                 smokePositions.add(block);
             }
 
+            Block extraBlock = level.getExtraBlock(block);
             this.level.setExtraBlock(block, Blocks.air(), true, false);
-            this.level.setBlock(block, Blocks.air(), true);
+            if (extraBlock.isWater()) {
+                this.level.setBlock(block, extraBlock, true);
+            } else {
+                this.level.setBlock(block, Blocks.air(), true);
+            }
         }
 
         if (this.fire) {

@@ -5,6 +5,7 @@ import cn.nukkit.item.Item;
 import cn.nukkit.level.Level;
 import cn.nukkit.math.AxisAlignedBB;
 import cn.nukkit.math.BlockFace;
+import cn.nukkit.math.SimpleAxisAlignedBB;
 import cn.nukkit.utils.BlockColor;
 import cn.nukkit.utils.Faceable;
 
@@ -12,7 +13,7 @@ import cn.nukkit.utils.Faceable;
  * Created on 2015/12/8 by xtypr.
  * Package cn.nukkit.block in project Nukkit .
  */
-public class BlockLadder extends BlockTransparentMeta implements Faceable {
+public class BlockLadder extends BlockTransparent implements Faceable {
 
     private static final int[] FACES = {
             0, //never use
@@ -29,7 +30,6 @@ public class BlockLadder extends BlockTransparentMeta implements Faceable {
 
     public BlockLadder(int meta) {
         super(meta);
-        calculateOffsets();
     }
 
     @Override
@@ -67,81 +67,33 @@ public class BlockLadder extends BlockTransparentMeta implements Faceable {
         return 2;
     }
 
-    private double offMinX;
-    private double offMinZ;
-    private double offMaxX;
-    private double offMaxZ;
-
-    private void calculateOffsets() {
-        double f = 0.1875;
-
-        switch (this.getDamage()) {
-            case 2:
-                this.offMinX = 0;
-                this.offMinZ = 1 - f;
-                this.offMaxX = 1;
-                this.offMaxZ = 1;
-                break;
-            case 3:
-                this.offMinX = 0;
-                this.offMinZ = 0;
-                this.offMaxX = 1;
-                this.offMaxZ = f;
-                break;
-            case 4:
-                this.offMinX = 1 - f;
-                this.offMinZ = 0;
-                this.offMaxX = 1;
-                this.offMaxZ = 1;
-                break;
-            case 5:
-                this.offMinX = 0;
-                this.offMinZ = 0;
-                this.offMaxX = f;
-                this.offMaxZ = 1;
-                break;
-            default:
-                this.offMinX = 0;
-                this.offMinZ = 1 ;
-                this.offMaxX = 1;
-                this.offMaxZ = 1;
-                break;
-        }
-    }
-
-    @Override
-    public void setDamage(int meta) {
-        super.setDamage(meta);
-        calculateOffsets();
-    }
-
     @Override
     public double getMinX() {
-        return this.x + offMinX;
+        return this.x + (getDamage() == 4 ? 1 - 0.1875f : 0);
     }
 
     @Override
     public double getMinZ() {
-        return this.z + offMinZ;
+        return this.z + (getDamage() == 2 ? 1 - 0.1875f : 0);
     }
 
     @Override
     public double getMaxX() {
-        return this.x + offMaxX;
+        return this.x + (getDamage() == 5 ? 0.1875f : 1);
     }
 
     @Override
     public double getMaxZ() {
-        return this.z + offMaxZ;
+        return this.z + (getDamage() == 3 ? 0.1875f : 1);
     }
 
     @Override
     protected AxisAlignedBB recalculateCollisionBoundingBox() {
-        return super.recalculateBoundingBox();
+        return new SimpleAxisAlignedBB(x, y, z, x + 1, y + 1, z + 1);
     }
 
     @Override
-    public boolean place(Item item, Block block, Block target, BlockFace face, double fx, double fy, double fz, Player player) {
+    public boolean place(Item item, Block block, Block target, BlockFace face, float fx, float fy, float fz, Player player) {
         if (!target.isTransparent()) {
             if (face.getIndex() >= 2 && face.getIndex() <= 5) {
                 this.setDamage(face.getIndex());

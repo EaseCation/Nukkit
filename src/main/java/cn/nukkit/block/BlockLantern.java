@@ -10,7 +10,7 @@ import cn.nukkit.utils.BlockColor;
 import static cn.nukkit.GameVersion.*;
 import static cn.nukkit.SharedConstants.*;
 
-public class BlockLantern extends BlockTransparentMeta {
+public class BlockLantern extends BlockTransparent {
 
     public static final int HANGING_BIT = 0b1;
 
@@ -61,7 +61,7 @@ public class BlockLantern extends BlockTransparentMeta {
     }
 
     @Override
-    public boolean place(Item item, Block block, Block target, BlockFace face, double fx, double fy, double fz, Player player) {
+    public boolean place(Item item, Block block, Block target, BlockFace face, float fx, float fy, float fz, Player player) {
         if (face.isVertical()) {
             if (SupportType.hasCenterSupport(getSide(face.getOpposite()), face)) {
                 setDamage(face.getOpposite().getIndex());

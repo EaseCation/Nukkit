@@ -22,7 +22,7 @@ import javax.annotation.Nullable;
 import static cn.nukkit.GameVersion.*;
 import static cn.nukkit.SharedConstants.*;
 
-public class BlockBell extends BlockTransparentMeta implements Faceable {
+public class BlockBell extends BlockTransparent implements Faceable {
 
     public static final int DIRECTION_MASK = 0b11;
     public static final int DIRECTION_BITS = 2;
@@ -96,7 +96,7 @@ public class BlockBell extends BlockTransparentMeta implements Faceable {
     }
 
     @Override
-    public boolean place(Item item, Block block, Block target, BlockFace face, double fx, double fy, double fz, Player player) {
+    public boolean place(Item item, Block block, Block target, BlockFace face, float fx, float fy, float fz, Player player) {
         if (!canBeSupportedBy(target, face)) {
             return false;
         }
@@ -129,7 +129,7 @@ public class BlockBell extends BlockTransparentMeta implements Faceable {
     }
 
     @Override
-    public boolean onActivate(Item item, BlockFace face, Player player) {
+    public boolean onActivate(Item item, BlockFace face, float fx, float fy, float fz, Player player) {
         if (player == null) {
             return false;
         }

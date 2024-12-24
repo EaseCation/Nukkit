@@ -59,7 +59,7 @@ public enum GameVersion {
     V1_21_50(766, "1.21.50"),
     ;
 
-    private static GameVersion FEATURE_VERSION = GameVersion.V1_18_0;
+    private static GameVersion FEATURE_VERSION = GameVersion.V1_20_10;
 
     private final int protocol;
     private final String name;

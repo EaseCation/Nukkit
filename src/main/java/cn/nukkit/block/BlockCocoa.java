@@ -126,7 +126,7 @@ public class BlockCocoa extends BlockFlowable implements Faceable {
     }
 
     @Override
-    public boolean place(Item item, Block block, Block target, BlockFace face, double fx, double fy, double fz, Player player) {
+    public boolean place(Item item, Block block, Block target, BlockFace face, float fx, float fy, float fz, Player player) {
         if (face.isVertical()) {
             return false;
         }
@@ -178,8 +178,8 @@ public class BlockCocoa extends BlockFlowable implements Faceable {
     }
 
     @Override
-    public boolean onActivate(Item item, BlockFace face, Player player) {
-        if (item.getId() == Item.DYE && item.getDamage() == ItemDye.BONE_MEAL) {
+    public boolean onActivate(Item item, BlockFace face, float fx, float fy, float fz, Player player) {
+        if (item.isFertilizer()) {
             Block block = this.clone();
             if (this.getDamage() / 4 < 2) {
                 block.setDamage(block.getDamage() + 4);
@@ -248,8 +248,8 @@ public class BlockCocoa extends BlockFlowable implements Faceable {
 
     private boolean canBeSupportedBy(Block block) {
         int id = block.getId();
-        if (id == LOG) {
-            return (block.getDamage() & BlockWood.TYPE_MASK) == BlockWood.JUNGLE;
+        if (id == JUNGLE_LOG) {
+            return true;
         }
         if (id == WOOD) {
             return (block.getDamage() & BlockWoodBark.TYPE_MASK) == BlockWoodBark.JUNGLE;

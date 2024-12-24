@@ -47,7 +47,7 @@ public class BlockMangroveRootsMuddy extends BlockRotatedPillar {
     }
 
     @Override
-    public boolean place(Item item, Block block, Block target, BlockFace face, double fx, double fy, double fz, Player player) {
+    public boolean place(Item item, Block block, Block target, BlockFace face, float fx, float fy, float fz, Player player) {
         if (!V1_19_20.isAvailable()) {
             return level.setBlock(this, this, true);
         }

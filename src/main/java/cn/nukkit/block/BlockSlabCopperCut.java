@@ -12,7 +12,7 @@ import cn.nukkit.utils.BlockColor;
 
 import java.util.concurrent.ThreadLocalRandom;
 
-public class BlockSlabCopperCut extends BlockSlab {
+public class BlockSlabCopperCut extends BlockSlab implements CopperBehavior {
     public static final int TYPE_MASK = 0;
     public static final int TOP_SLOT_BIT = 0b1;
 
@@ -70,7 +70,7 @@ public class BlockSlabCopperCut extends BlockSlab {
     }
 
     @Override
-    public boolean onActivate(Item item, BlockFace face, Player player) {
+    public boolean onActivate(Item item, BlockFace face, float fx, float fy, float fz, Player player) {
         if (item.getId() == Item.HONEYCOMB) {
             if (player != null && !player.isCreative()) {
                 item.pop();
@@ -182,15 +182,20 @@ public class BlockSlabCopperCut extends BlockSlab {
         return DOUBLE_CUT_COPPER_SLAB;
     }
 
-    protected int getWaxedBlockId() {
+    public int getWaxedBlockId() {
         return WAXED_CUT_COPPER_SLAB;
     }
 
-    protected int getIncrementAgeBlockId() {
+    @Override
+    public int getDewaxedBlockId() {
+        throw new UnsupportedOperationException();
+    }
+
+    public int getIncrementAgeBlockId() {
         return EXPOSED_CUT_COPPER_SLAB;
     }
 
-    protected int getDecrementAgeBlockId() {
+    public int getDecrementAgeBlockId() {
         throw new UnsupportedOperationException();
     }
 }

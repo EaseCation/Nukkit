@@ -4,7 +4,6 @@ import cn.nukkit.Player;
 import cn.nukkit.entity.Entity;
 import cn.nukkit.event.block.BlockGrowEvent;
 import cn.nukkit.item.Item;
-import cn.nukkit.item.ItemDye;
 import cn.nukkit.item.ItemID;
 import cn.nukkit.level.GameRule;
 import cn.nukkit.level.Level;
@@ -90,7 +89,7 @@ public class BlockSweetBerryBush extends BlockFlowable {
     }
 
     @Override
-    public boolean place(Item item, Block block, Block target, BlockFace face, double fx, double fy, double fz, Player player) {
+    public boolean place(Item item, Block block, Block target, BlockFace face, float fx, float fy, float fz, Player player) {
         if (block.isLiquid() || !block.isAir() && block.canContainWater() && level.getExtraBlock(this).isWater()) {
             return false;
         }
@@ -108,9 +107,9 @@ public class BlockSweetBerryBush extends BlockFlowable {
     }
 
     @Override
-    public boolean onActivate(Item item, BlockFace face, Player player) {
+    public boolean onActivate(Item item, BlockFace face, float fx, float fy, float fz, Player player) {
         int meta = getDamage() & 0x7;
-        if (meta < STAGE_MATURE && item.getId() == ItemID.DYE && item.getDamage() == ItemDye.BONE_MEAL) {
+        if (meta < STAGE_MATURE && item.isFertilizer()) {
             Block newBlock = this.clone();
             newBlock.setDamage(meta + 1);
 

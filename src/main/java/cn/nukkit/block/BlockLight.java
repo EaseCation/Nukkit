@@ -7,7 +7,7 @@ import cn.nukkit.math.AxisAlignedBB;
 import cn.nukkit.math.BlockFace;
 import cn.nukkit.utils.BlockColor;
 
-public class BlockLight extends BlockTransparentMeta {
+public class BlockLight extends BlockTransparent {
 
     public BlockLight() {
         this(0);
@@ -88,7 +88,7 @@ public class BlockLight extends BlockTransparentMeta {
     }
 
     @Override
-    public boolean onActivate(Item item, BlockFace face, Player player) {
+    public boolean onActivate(Item item, BlockFace face, float fx, float fy, float fz, Player player) {
         if (player != null && !player.isCreative() || item.getId() != getItemId()) {
             return false;
         }

@@ -12,7 +12,7 @@ import cn.nukkit.utils.Faceable;
  * author: MagicDroidX
  * Nukkit Project
  */
-public abstract class BlockStairs extends BlockTransparentMeta implements Faceable {
+public abstract class BlockStairs extends BlockTransparent implements Faceable {
 
     public static final int DIRECTION_MASK = 0b11;
     public static final int UPSIDE_DOWN_BIT = 0b100;
@@ -34,7 +34,7 @@ public abstract class BlockStairs extends BlockTransparentMeta implements Faceab
     }
 
     @Override
-    public boolean place(Item item, Block block, Block target, BlockFace face, double fx, double fy, double fz, Player player) {
+    public boolean place(Item item, Block block, Block target, BlockFace face, float fx, float fy, float fz, Player player) {
         this.setDamage(player != null ? player.getDirection().getReversedHorizontalIndex() : 0);
         if ((fy > 0.5 && face != BlockFace.UP) || face == BlockFace.DOWN) {
             this.setDamage(this.getDamage() | UPSIDE_DOWN_BIT); //Upside-down stairs

@@ -2,8 +2,6 @@ package cn.nukkit.block;
 
 import cn.nukkit.Player;
 import cn.nukkit.item.Item;
-import cn.nukkit.item.ItemDye;
-import cn.nukkit.item.ItemID;
 import cn.nukkit.level.Level;
 import cn.nukkit.level.particle.BoneMealParticle;
 import cn.nukkit.math.BlockFace;
@@ -37,6 +35,16 @@ public class BlockSeaPickle extends BlockFlowable {
     }
 
     @Override
+    public int getBurnChance() {
+        return 15;
+    }
+
+    @Override
+    public int getBurnAbility() {
+        return 100;
+    }
+
+    @Override
     public int getLightLevel() {
         return isDead() ? 0 : (getClusterCount() + 1) * 3;
     }
@@ -64,7 +72,7 @@ public class BlockSeaPickle extends BlockFlowable {
     }
 
     @Override
-    public boolean place(Item item, Block block, Block target, BlockFace face, double fx, double fy, double fz, Player player) {
+    public boolean place(Item item, Block block, Block target, BlockFace face, float fx, float fy, float fz, Player player) {
         Block extra = null;
         if (block.isLava() || block.isWater() && !block.isFullLiquid()
                 || !block.isAir() && (extra = level.getExtraBlock(this)).isWater() && !extra.isFullLiquid()) {
@@ -89,9 +97,9 @@ public class BlockSeaPickle extends BlockFlowable {
     }
 
     @Override
-    public boolean onActivate(Item item, BlockFace face, Player player) {
+    public boolean onActivate(Item item, BlockFace face, float fx, float fy, float fz, Player player) {
         int id = item.getId();
-        if (id == ItemID.DYE && item.getDamage() == ItemDye.BONE_MEAL) {
+        if (item.isFertilizer()) {
             Block extra = level.getExtraBlock(this);
             if (!extra.isWater() || !extra.isFullLiquid()) {
                 return true;

@@ -22,4 +22,9 @@ public class ItemBook extends Item {
     public int getEnchantAbility() {
         return 1;
     }
+
+    @Override
+    public boolean isBook() {
+        return true;
+    }
 }

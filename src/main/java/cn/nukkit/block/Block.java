@@ -14,6 +14,7 @@ import cn.nukkit.level.Position;
 import cn.nukkit.math.AxisAlignedBB;
 import cn.nukkit.math.BlockFace;
 import cn.nukkit.math.Mth;
+import cn.nukkit.math.SimpleAxisAlignedBB;
 import cn.nukkit.math.Vector3;
 import cn.nukkit.metadata.MetadataValue;
 import cn.nukkit.metadata.Metadatable;
@@ -82,7 +83,19 @@ public abstract class Block extends Position implements Metadatable, Cloneable, 
     public static final boolean[] solid = new boolean[BLOCK_ID_COUNT];
     public static final boolean[] transparent = new boolean[BLOCK_ID_COUNT];
 
-    protected Block() {}
+    private int meta;
+
+    protected Block() {
+        this(0);
+    }
+
+    protected Block(int meta) {
+        this.meta = meta;
+    }
+
+    protected void init(int meta) {
+        setDamage(meta);
+    }
 
     @SuppressWarnings("unchecked")
     public static void init() {
@@ -101,7 +114,7 @@ public abstract class Block extends Position implements Metadatable, Cloneable, 
             throw new AssertionError("Unable to load block_meta_table.json", e);
         }
 
-        metaTable.put(String.valueOf(LEAVES2), 15); //TODO: HACK
+//        metaTable.put(String.valueOf(LEAVES2), 15); //TODO: HACK
 
         for (Object2IntMap.Entry<String> entry : metaTable.object2IntEntrySet()) {
             int id;
@@ -154,7 +167,7 @@ public abstract class Block extends Position implements Metadatable, Cloneable, 
         }
 
         for (int id = 0; id < BLOCK_ID_COUNT; id++) {
-            Class<?> c = list[id];
+            Class<? extends Block> c = list[id];
             if (c != null) {
                 Block[] variants = variantList[id];
                 if (variants == null) {
@@ -165,28 +178,19 @@ public abstract class Block extends Position implements Metadatable, Cloneable, 
 
                 Block block;
                 try {
-                    block = (Block) c.newInstance();
+                    Constructor<? extends Block> constructor = c.getDeclaredConstructor();
+                    constructor.setAccessible(true);
+                    block = constructor.newInstance();
                     int defaultMeta = block.getDefaultMeta();
                     variants[0] = block;
-                    try {
-                        Constructor<?> constructor = c.getDeclaredConstructor(int.class);
-                        constructor.setAccessible(true);
-
-                        for (int data = 1; data < variants.length; ++data) {
-                            if (block.isValidMeta(data)) {
-                                variants[data] = (Block) constructor.newInstance(data);
-                            } else {
-                                variants[data] = (Block) constructor.newInstance(defaultMeta);
-                            }
+                    for (int data = 1; data < variants.length; ++data) {
+                        Block variant = constructor.newInstance();
+                        if (block.isValidMeta(data)) {
+                            variant.init(data);
+                        } else {
+                            variant.init(defaultMeta);
                         }
-                    } catch (NoSuchMethodException ignore) {
-                        for (int data = 1; data < variants.length; ++data) {
-                            variants[data] = block;
-                        }
-
-                        if (hasMeta[id]) {
-                            log.warn("meta mismatch: {} (expected 0-{})", id, metaMax[id]);
-                        }
+                        variants[data] = variant;
                     }
                 } catch (Exception e) {
                     log.error("Error while registering " + c.getName(), e);
@@ -473,7 +477,7 @@ public abstract class Block extends Position implements Metadatable, Cloneable, 
      * @param target clicked block
      * @param face clicked block face
      */
-    public boolean place(Item item, Block block, Block target, BlockFace face, double fx, double fy, double fz, @Nullable Player player) {
+    public boolean place(Item item, Block block, Block target, BlockFace face, float fx, float fy, float fz, @Nullable Player player) {
         return this.getLevel().setBlock(this, this, true, true);
     }
 
@@ -511,6 +515,10 @@ public abstract class Block extends Position implements Metadatable, Cloneable, 
     }
 
     public boolean onActivate(Item item, @Nullable BlockFace face, @Nullable Player player) {
+        return onActivate(item, face, 0.5f, 0.5f, 0.5f, player);
+    }
+
+    public boolean onActivate(Item item, @Nullable BlockFace face, float fx, float fy, float fz, @Nullable Player player) {
         return false;
     }
 
@@ -630,8 +638,8 @@ public abstract class Block extends Position implements Metadatable, Cloneable, 
      * The full id is a combination of the id and data.
      * @return full id
      */
-    public int getFullId() {
-        return getFullId(this.getId());
+    public final int getFullId() {
+        return getFullId(this.getId(), getDamage());
     }
 
     public static int getFullId(int id) {
@@ -654,12 +662,12 @@ public abstract class Block extends Position implements Metadatable, Cloneable, 
 
     }
 
-    public int getDamage() {
-        return 0;
+    public final int getDamage() {
+        return meta;
     }
 
-    public void setDamage(int meta) {
-        // Do nothing
+    public final void setDamage(int meta) {
+        this.meta = meta;
     }
 
     public final void setDamage(Integer meta) {
@@ -668,6 +676,10 @@ public abstract class Block extends Position implements Metadatable, Cloneable, 
 
     public int getDefaultMeta() {
         return 0;
+    }
+
+    public boolean isStackedByData() {
+        return true;
     }
 
     public boolean isValidMeta(int meta) {
@@ -1151,6 +1163,17 @@ public abstract class Block extends Position implements Metadatable, Cloneable, 
         return getFullId();
     }
 
+    /**
+     * @since 1.19.50
+     */
+    public boolean isBlockItem() {
+        return false;
+    }
+
+    public int getMaxStackSize() {
+        return 64;
+    }
+
     public Item toItem() {
         return toItem(false);
     }
@@ -1163,8 +1186,8 @@ public abstract class Block extends Position implements Metadatable, Cloneable, 
         return toItem(true);
     }
 
-    public Item getSilkTouchResource() {
-        return toItem(true);
+    public Item[] getSilkTouchResource() {
+        return new Item[]{toItem(true)};
     }
 
     public boolean canSilkTouch() {
@@ -1227,6 +1250,10 @@ public abstract class Block extends Position implements Metadatable, Cloneable, 
         level.addLevelSoundEvent(blockCenter(), LevelSoundEventPacket.SOUND_PLACE, getFullId());
     }
 
+    public final Block getBlock() {
+        return this;
+    }
+
     public boolean is(int id) {
         return getId() == id;
     }
@@ -1237,6 +1264,10 @@ public abstract class Block extends Position implements Metadatable, Cloneable, 
 
     public boolean is(Block block) {
         return getId() == block.getId();
+    }
+
+    public boolean is(Item item) {
+        return getItemId() == item.getId();
     }
 
     public boolean isAir() {
@@ -1385,6 +1416,10 @@ public abstract class Block extends Position implements Metadatable, Cloneable, 
         return false;
     }
 
+    public boolean isHangingSign() {
+        return false;
+    }
+
     public boolean isItemFrame() {
         return false;
     }
@@ -1421,6 +1456,26 @@ public abstract class Block extends Position implements Metadatable, Cloneable, 
         return false;
     }
 
+    public boolean isCarpet() {
+        return false;
+    }
+
+    public boolean isCoral() {
+        return false;
+    }
+
+    public boolean isShulkerBox() {
+        return false;
+    }
+
+    public boolean isConcrete() {
+        return false;
+    }
+
+    public boolean isSkull() {
+        return false;
+    }
+
     public boolean isWaxed() {
         return false;
     }
@@ -1431,6 +1486,10 @@ public abstract class Block extends Position implements Metadatable, Cloneable, 
 
     public int getCopperAge() {
         return -1;
+    }
+
+    protected static AxisAlignedBB box(float minX, float minY, float minZ, float maxX, float maxY, float maxZ) {
+        return new SimpleAxisAlignedBB(minX / 16, minY / 16, minZ / 16, maxX / 16, maxY / 16, maxZ / 16);
     }
 
     @ToString

@@ -36,7 +36,7 @@ public abstract class ItemArmor extends Item implements ItemDurable {
     }
 
     protected ItemArmor(int id, Integer meta, int count) {
-        super(id, meta, 1);
+        super(id, meta, count);
     }
 
     protected ItemArmor(int id, Integer meta, int count, String name) {

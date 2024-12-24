@@ -17,7 +17,7 @@ public class ItemBlock extends Item {
     }
 
     public ItemBlock(Block block, Integer meta, int count) {
-        super(block.getItemId(), meta, count, block.getName());
+        super(block.getItemId(), meta == null ? null : block.getDamage(), count, block.getName());
         this.block = block;
     }
 
@@ -36,6 +36,21 @@ public class ItemBlock extends Item {
     }
 
     @Override
+    public int getDefaultMeta() {
+        return block.getDefaultMeta();
+    }
+
+    @Override
+    public boolean isStackedByData() {
+        return block.isStackedByData();
+    }
+
+    @Override
+    public boolean isItemBlock() {
+        return block.isBlockItem();
+    }
+
+    @Override
     public ItemBlock clone() {
         ItemBlock block = (ItemBlock) super.clone();
         block.block = this.block.clone();
@@ -49,13 +64,7 @@ public class ItemBlock extends Item {
 
     @Override
     public int getMaxStackSize() {
-        //Shulker boxes don't stack!
-        int id = this.getId();
-        if (id == ItemBlockID.SHULKER_BOX || id == ItemBlockID.UNDYED_SHULKER_BOX) {
-            return 1;
-        }
-
-        return super.getMaxStackSize();
+        return block.getMaxStackSize();
     }
 
     @Override
@@ -100,5 +109,20 @@ public class ItemBlock extends Item {
     @Override
     public boolean isChemistryFeature() {
         return block.isChemistryFeature();
+    }
+
+    @Override
+    public boolean isShulkerBox() {
+        return block.isShulkerBox();
+    }
+
+    @Override
+    public boolean isHangingSign() {
+        return block.isHangingSign();
+    }
+
+    @Override
+    public boolean isWool() {
+        return block.isWool();
     }
 }

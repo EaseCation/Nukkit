@@ -4,7 +4,6 @@ import cn.nukkit.Player;
 import cn.nukkit.Server;
 import cn.nukkit.event.block.BlockGrowEvent;
 import cn.nukkit.item.Item;
-import cn.nukkit.item.ItemDye;
 import cn.nukkit.level.Level;
 import cn.nukkit.level.particle.BoneMealParticle;
 import cn.nukkit.math.BlockFace;
@@ -28,26 +27,30 @@ public abstract class BlockCrops extends BlockFlowable {
     }
 
     @Override
-    public boolean place(Item item, Block block, Block target, BlockFace face, double fx, double fy, double fz, Player player) {
+    public boolean place(Item item, Block block, Block target, BlockFace face, float fx, float fy, float fz, Player player) {
+        if (face != BlockFace.UP) {
+            return false;
+        }
+
         if (block.isLiquid() || !block.isAir() && block.canContainWater() && level.getExtraBlock(this).isWater()) {
             return false;
         }
 
-        if (block.down().getId() == FARMLAND) {
+        if (target.getId() == FARMLAND) {
             return level.setBlock(block, this, true);
         }
         return false;
     }
 
     @Override
-    public boolean onActivate(Item item, BlockFace face, Player player) {
-        if (item.getId() == Item.DYE && item.getDamage() == ItemDye.BONE_MEAL) {
+    public boolean onActivate(Item item, BlockFace face, float fx, float fy, float fz, Player player) {
+        if (item.isFertilizer()) {
             if (this.getDamage() < 0x7) {
-                BlockCrops block = (BlockCrops) this.clone();
-                block.setDamage(block.getDamage() + ThreadLocalRandom.current().nextInt(3) + 2);
-                if (block.getDamage() > 0x7) {
-                    block.setDamage(0x7);
+                int growth = getDamage() + ThreadLocalRandom.current().nextInt(2, 5);
+                if (growth > 0x7) {
+                    growth = 0x7;
                 }
+                Block block = this.getGrowthBlock(growth);
                 BlockGrowEvent ev = new BlockGrowEvent(this, block);
                 Server.getInstance().getPluginManager().callEvent(ev);
 
@@ -79,8 +82,7 @@ public abstract class BlockCrops extends BlockFlowable {
         } else if (type == Level.BLOCK_UPDATE_RANDOM) {
             if (ThreadLocalRandom.current().nextInt(2) == 1) {
                 if (this.getDamage() < 0x07) {
-                    BlockCrops block = (BlockCrops) this.clone();
-                    block.setDamage(block.getDamage() + 1);
+                    Block block = this.getGrowthBlock(getDamage() + 1);
                     BlockGrowEvent ev = new BlockGrowEvent(this, block);
                     Server.getInstance().getPluginManager().callEvent(ev);
 
@@ -111,5 +113,11 @@ public abstract class BlockCrops extends BlockFlowable {
     @Override
     public boolean isCrop() {
         return true;
+    }
+
+    protected Block getGrowthBlock(int growth) {
+        Block block = clone();
+        block.setDamage(growth);
+        return block;
     }
 }

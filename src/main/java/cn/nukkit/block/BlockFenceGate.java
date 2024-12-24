@@ -6,7 +6,7 @@ import cn.nukkit.item.Item;
 import cn.nukkit.level.Level;
 import cn.nukkit.math.AxisAlignedBB;
 import cn.nukkit.math.BlockFace;
-import cn.nukkit.network.protocol.LevelEventPacket;
+import cn.nukkit.network.protocol.LevelSoundEventPacket;
 import cn.nukkit.utils.BlockColor;
 import cn.nukkit.utils.Faceable;
 
@@ -14,7 +14,7 @@ import cn.nukkit.utils.Faceable;
  * Created on 2015/11/23 by xtypr.
  * Package cn.nukkit.block in project Nukkit .
  */
-public class BlockFenceGate extends BlockTransparentMeta implements Faceable {
+public class BlockFenceGate extends BlockTransparent implements Faceable {
     public static final int DIRECTION_MASK = 0b11;
     public static final int OPEN_BIT = 0b100;
     public static final int IN_WALL_BIT = 0b1000;
@@ -99,7 +99,7 @@ public class BlockFenceGate extends BlockTransparentMeta implements Faceable {
     }
 
     @Override
-    public boolean place(Item item, Block block, Block target, BlockFace face, double fx, double fy, double fz, Player player) {
+    public boolean place(Item item, Block block, Block target, BlockFace face, float fx, float fy, float fz, Player player) {
         BlockFace dir = BlockFace.SOUTH;
         if (player != null) {
             dir = player.getDirection();
@@ -115,7 +115,7 @@ public class BlockFenceGate extends BlockTransparentMeta implements Faceable {
     }
 
     @Override
-    public boolean onActivate(Item item, BlockFace face, Player player) {
+    public boolean onActivate(Item item, BlockFace face, float fx, float fy, float fz, Player player) {
         if (player == null) {
             return false;
         }
@@ -124,7 +124,6 @@ public class BlockFenceGate extends BlockTransparentMeta implements Faceable {
             return false;
         }
 
-        this.getLevel().addLevelEvent(this.add(0.5, 0.5, 0.5), LevelEventPacket.EVENT_SOUND_DOOR);
         return true;
     }
 
@@ -171,6 +170,8 @@ public class BlockFenceGate extends BlockTransparentMeta implements Faceable {
 
         this.setDamage((meta & IN_WALL_BIT) | ((meta & OPEN_BIT) ^ OPEN_BIT) | direction);
         this.level.setBlock(this, this, true, false);
+
+        level.addLevelSoundEvent(blockCenter(), isOpen() ? LevelSoundEventPacket.SOUND_FENCE_GATE_OPEN : LevelSoundEventPacket.SOUND_FENCE_GATE_CLOSE, getFullId());
         return true;
     }
 

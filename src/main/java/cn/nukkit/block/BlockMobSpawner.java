@@ -82,11 +82,6 @@ public class BlockMobSpawner extends BlockSolid {
     }
 
     @Override
-    public boolean canProvideSupport(BlockFace face, SupportType type) {
-        return false;
-    }
-
-    @Override
     public Item toItem(boolean addUserData) {
         Item item = Item.get(getItemId());
         if (addUserData) {
@@ -100,7 +95,7 @@ public class BlockMobSpawner extends BlockSolid {
     }
 
     @Override
-    public boolean place(Item item, Block block, Block target, BlockFace face, double fx, double fy, double fz, Player player) {
+    public boolean place(Item item, Block block, Block target, BlockFace face, float fx, float fy, float fz, Player player) {
         if (!super.place(item, block, target, face, fx, fy, fz, player)) {
             return false;
         }
@@ -115,7 +110,7 @@ public class BlockMobSpawner extends BlockSolid {
     }
 
     @Override
-    public boolean onActivate(Item item, BlockFace face, Player player) {
+    public boolean onActivate(Item item, BlockFace face, float fx, float fy, float fz, Player player) {
         if (item.getId() != ItemID.SPAWN_EGG) {
             return false;
         }

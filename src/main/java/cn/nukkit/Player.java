@@ -269,6 +269,7 @@ public class Player extends EntityHuman implements CommandSender, InventoryHolde
     //TODO: use itemCooldownMap
     protected int lastEnderPearl = 20;
     protected int lastChorusFruitTeleport = 20;
+    protected int lastIceBomb = 20;
     protected int lastGoatHornPlay = 140;
 
     private LoginChainData loginChainData;
@@ -328,6 +329,8 @@ public class Player extends EntityHuman implements CommandSender, InventoryHolde
     protected int prevShieldBlockingTick;
     protected int shieldCooldown;
 
+    public int brushCooldown;
+
     @Beta //TODO: AttributeMap
     protected Attribute movementSpeedAttribute = Attribute.getAttribute(Attribute.MOVEMENT);
 
@@ -363,6 +366,14 @@ public class Player extends EntityHuman implements CommandSender, InventoryHolde
 
     public void onChorusFruitTeleport() {
         this.lastChorusFruitTeleport = this.server.getTick();
+    }
+
+    public int getLastIceBombThrowingTick() {
+        return lastIceBomb;
+    }
+
+    public void onThrowIceBomb() {
+        this.lastIceBomb = this.server.getTick();
     }
 
     public int getLastGoatHornPlay() {
@@ -2055,6 +2066,13 @@ public class Player extends EntityHuman implements CommandSender, InventoryHolde
                 }
             }
 
+            if (inventory.getItemInHand() instanceof ItemChemicalTickable tickable && tickable.tick()) {
+                inventory.setItemInHand(tickable);
+            }
+            if (offhandInventory.getItem() instanceof ItemChemicalTickable tickable && tickable.tick()) {
+                offhandInventory.setItem(tickable);
+            }
+
             if (isBreakingBlock() && age % 5 == 0) {
                 level.addLevelSoundEvent(breakingBlock.blockCenter(), LevelSoundEventPacket.SOUND_HIT, breakingBlock.getFullId());
             }
@@ -3296,7 +3314,7 @@ public class Player extends EntityHuman implements CommandSender, InventoryHolde
                                 break;
                             }
                             Item held = inventory.getItemInHand();
-                            if (!(held instanceof ItemEdible) && !held.is(Item.POTION) && !held.is(Item.BUCKET, ItemBucket.MILK_BUCKET)) {
+                            if (!(held instanceof ItemEdible) && !held.is(Item.POTION) && !held.is(Item.BUCKET, ItemBucket.MILK_BUCKET) && (!(held instanceof ItemChemicalTickable tickable) || tickable.isActivated())) {
                                 break;
                             }
 

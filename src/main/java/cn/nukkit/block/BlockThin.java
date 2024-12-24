@@ -14,6 +14,10 @@ public abstract class BlockThin extends BlockTransparent {
     protected BlockThin() {
     }
 
+    public BlockThin(int meta) {
+        super(meta);
+    }
+
     @Override
     public boolean isSolid() {
         return false;

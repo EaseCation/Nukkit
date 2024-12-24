@@ -18,7 +18,7 @@ import cn.nukkit.network.protocol.LevelSoundEventPacket;
  * Created by Snake1999 on 2016/1/11.
  * Package cn.nukkit.block in project nukkit
  */
-public abstract class BlockPressurePlateBase extends BlockTransparentMeta {
+public abstract class BlockPressurePlateBase extends BlockTransparent {
 
     protected float onPitch;
     protected float offPitch;
@@ -125,7 +125,7 @@ public abstract class BlockPressurePlateBase extends BlockTransparentMeta {
     }
 
     @Override
-    public boolean place(Item item, Block block, Block target, BlockFace face, double fx, double fy, double fz, Player player) {
+    public boolean place(Item item, Block block, Block target, BlockFace face, float fx, float fy, float fz, Player player) {
         if (!SupportType.hasCenterSupport(down(), BlockFace.UP)) {
             return false;
         }
@@ -226,11 +226,11 @@ public abstract class BlockPressurePlateBase extends BlockTransparentMeta {
     }
 
     protected void playOnSound() {
-        this.level.addLevelSoundEvent(this.add(0.5, 0.1, 0.5), LevelSoundEventPacket.SOUND_POWER_ON, (this.getId() << BLOCK_META_BITS) | this.getDamage());
+        this.level.addLevelSoundEvent(this.add(0.5, 0.1, 0.5), LevelSoundEventPacket.SOUND_PRESSURE_PLATE_CLICK_ON, this.getFullId());
     }
 
     protected void playOffSound() {
-        this.level.addLevelSoundEvent(this.add(0.5, 0.1, 0.5), LevelSoundEventPacket.SOUND_POWER_OFF, (this.getId() << BLOCK_META_BITS) | this.getDamage());
+        this.level.addLevelSoundEvent(this.add(0.5, 0.1, 0.5), LevelSoundEventPacket.SOUND_PRESSURE_PLATE_CLICK_OFF, this.getFullId());
     }
 
     protected abstract int computeRedstoneStrength();

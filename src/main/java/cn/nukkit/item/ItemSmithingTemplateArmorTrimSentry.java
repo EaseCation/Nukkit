@@ -12,4 +12,9 @@ public class ItemSmithingTemplateArmorTrimSentry extends Item {
     public ItemSmithingTemplateArmorTrimSentry(Integer meta, int count) {
         super(SENTRY_ARMOR_TRIM_SMITHING_TEMPLATE, meta, count, "Sentry Armor Trim");
     }
+
+    @Override
+    public boolean isArmorTrimSmithingTemplate() {
+        return true;
+    }
 }

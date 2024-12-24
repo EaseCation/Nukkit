@@ -8,7 +8,7 @@ import cn.nukkit.math.BlockFace;
  * author: MagicDroidX
  * Nukkit Project
  */
-public abstract class BlockSlab extends BlockTransparentMeta {
+public abstract class BlockSlab extends BlockTransparent {
 
     public static final int TYPE_MASK = 0b111;
     public static final int TOP_SLOT_BIT = 0b1000;
@@ -28,7 +28,7 @@ public abstract class BlockSlab extends BlockTransparentMeta {
     }
 
     @Override
-    public boolean place(Item item, Block block, Block target, BlockFace face, double fx, double fy, double fz, Player player) {
+    public boolean place(Item item, Block block, Block target, BlockFace face, float fx, float fy, float fz, Player player) {
         setDamage(getSlabType());
 
         if (face == BlockFace.DOWN) {

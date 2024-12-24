@@ -33,15 +33,6 @@ public class BlockWitherRose extends BlockFlower {
     }
 
     @Override
-    public int getFullId() {
-        return this.getId() << BLOCK_META_BITS;
-    }
-
-    @Override
-    public void setDamage(int meta) {
-    }
-
-    @Override
     protected Block getUncommonFlower() {
         return this;
     }

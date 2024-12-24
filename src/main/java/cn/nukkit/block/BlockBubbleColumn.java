@@ -5,7 +5,7 @@ import cn.nukkit.level.Level;
 import cn.nukkit.math.AxisAlignedBB;
 import cn.nukkit.math.BlockFace;
 
-public class BlockBubbleColumn extends BlockTransparentMeta {
+public class BlockBubbleColumn extends BlockTransparent {
 
     public static final int DRAG_DOWN_BIT = 0b1;
 

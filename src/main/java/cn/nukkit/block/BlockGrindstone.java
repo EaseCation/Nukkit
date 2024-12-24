@@ -11,7 +11,7 @@ import cn.nukkit.math.BlockFace;
 import cn.nukkit.utils.BlockColor;
 import cn.nukkit.utils.Faceable;
 
-public class BlockGrindstone extends BlockTransparentMeta implements Faceable {
+public class BlockGrindstone extends BlockTransparent implements Faceable {
 
     public static final int DIRECTION_MASK = 0b11;
     public static final int DIRECTION_BITS = 2;
@@ -86,7 +86,7 @@ public class BlockGrindstone extends BlockTransparentMeta implements Faceable {
     }
 
     @Override
-    public boolean place(Item item, Block block, Block target, BlockFace face, double fx, double fy, double fz, Player player) {
+    public boolean place(Item item, Block block, Block target, BlockFace face, float fx, float fy, float fz, Player player) {
         if (getSide(face.getOpposite()).isAir()) {
             return false;
         }
@@ -114,7 +114,7 @@ public class BlockGrindstone extends BlockTransparentMeta implements Faceable {
     }
 
     @Override
-    public boolean onActivate(Item item, BlockFace face, Player player) {
+    public boolean onActivate(Item item, BlockFace face, float fx, float fy, float fz, Player player) {
         if (player == null) {
             return false;
         }

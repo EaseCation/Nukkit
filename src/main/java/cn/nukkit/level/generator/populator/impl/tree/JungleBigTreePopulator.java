@@ -44,7 +44,7 @@ public class JungleBigTreePopulator extends Populator {
             if (y == Integer.MIN_VALUE) {
                 continue;
             }
-            new ObjectJungleBigTree(10, 20, Block.get(BlockID.LOG, BlockWood.JUNGLE), Block.get(BlockID.LEAVES, BlockLeaves.JUNGLE)).generate(level, random, v.setComponents(x, y, z));
+            new ObjectJungleBigTree(10, 20, Block.get(JUNGLE_LOG), Block.get(BlockID.LEAVES, BlockLeaves.JUNGLE)).generate(level, random, v.setComponents(x, y, z));
         }
     }
 }

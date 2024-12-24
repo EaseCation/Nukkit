@@ -14,7 +14,7 @@ import cn.nukkit.utils.Faceable;
 
 import javax.annotation.Nullable;
 
-public class BlockBarrel extends BlockSolidMeta implements Faceable {
+public class BlockBarrel extends BlockSolid implements Faceable {
 
     public static final int FACING_DIRECTION_MASK = 0b111;
     public static final int OPEN_BIT = 0b1000;
@@ -85,7 +85,7 @@ public class BlockBarrel extends BlockSolidMeta implements Faceable {
     }
 
     @Override
-    public boolean place(Item item, Block block, Block target, BlockFace face, double fx, double fy, double fz, Player player) {
+    public boolean place(Item item, Block block, Block target, BlockFace face, float fx, float fy, float fz, Player player) {
         if (player != null) {
             if (Math.abs(player.x - x) < 2 && Math.abs(player.z - z) < 2) {
                 double eyeY = player.y + player.getEyeHeight();
@@ -112,7 +112,7 @@ public class BlockBarrel extends BlockSolidMeta implements Faceable {
     }
 
     @Override
-    public boolean onActivate(Item item, BlockFace face, Player player) {
+    public boolean onActivate(Item item, BlockFace face, float fx, float fy, float fz, Player player) {
         if (player == null) {
             return false;
         }

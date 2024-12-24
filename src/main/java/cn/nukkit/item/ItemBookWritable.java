@@ -225,4 +225,9 @@ public abstract class ItemBookWritable extends Item {
                 .putString("text", pageText)
                 .putString("photoname", "");
     }
+
+    @Override
+    public boolean isBook() {
+        return true;
+    }
 }

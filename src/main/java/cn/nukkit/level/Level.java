@@ -2,10 +2,7 @@ package cn.nukkit.level;
 
 import cn.nukkit.Player;
 import cn.nukkit.Server;
-import cn.nukkit.block.Block;
-import cn.nukkit.block.BlockID;
-import cn.nukkit.block.BlockMultiface;
-import cn.nukkit.block.BlockRedstoneDiode;
+import cn.nukkit.block.*;
 import cn.nukkit.blockentity.BlockEntity;
 import cn.nukkit.entity.Entity;
 import cn.nukkit.entity.EntityFullNames;
@@ -206,6 +203,8 @@ public class Level implements ChunkManager, Metadatable {
         randomTickBlocks[Block.BIRCH_LEAVES] = true;
         randomTickBlocks[Block.JUNGLE_LEAVES] = true;
         randomTickBlocks[Block.DARK_OAK_LEAVES] = true;
+        randomTickBlocks[Block.PALE_OAK_SAPLING] = true;
+        randomTickBlocks[Block.PALE_OAK_LEAVES] = true;
     }
 
     /**
@@ -2658,6 +2657,10 @@ public class Level implements ChunkManager, Metadatable {
     }
 
     public EntityItem dropItem(Vector3 source, Item item, @Nullable Vector3 motion, boolean dropAround, int delay) {
+        if (item.isNull()) {
+            return null;
+        }
+
         FullChunk chunk = getChunk(source.getChunkX(), source.getChunkZ(), true);
         if (chunk == null) {
             return null;
@@ -2676,19 +2679,12 @@ public class Level implements ChunkManager, Metadatable {
             }
         }
 
-        CompoundTag itemTag = NBTIO.putItemHelper(item);
-        itemTag.setName("Item");
-
-        if (!item.isNull()) {
-            EntityItem itemEntity = new EntityItem(
-                    chunk,
-                    Entity.getDefaultNBT(source, motion, random.nextFloat() * 360, 0)
-                            .putShort("Health", 5).putCompound("Item", itemTag).putShort("PickupDelay", delay));
-
-            itemEntity.spawnToAll();
-            return itemEntity;
-        }
-        return null;
+        EntityItem itemEntity = new EntityItem(chunk, Entity.getDefaultNBT(source, motion, random.nextFloat() * 360, 0)
+                .putShort("Health", 5)
+                .putCompound("Item", NBTIO.putItemHelper(item))
+                .putShort("PickupDelay", delay));
+        itemEntity.spawnToAll();
+        return itemEntity;
     }
 
     public Item useBreakOn(Vector3 vector) {
@@ -2764,7 +2760,7 @@ public class Level implements ChunkManager, Metadatable {
             if (!player.isSurvival()) {
                 eventDrops = new Item[0];
             } else if (isSilkTouch && target.canSilkTouch() && (target.canHarvestWithHand() || target.isToolCompatible(item))) {
-                eventDrops = new Item[]{target.getSilkTouchResource()};
+                eventDrops = target.getSilkTouchResource();
             } else {
                 eventDrops = target.getDrops(item, player);
             }
@@ -2793,7 +2789,7 @@ public class Level implements ChunkManager, Metadatable {
         } else if (!target.isBreakable(item)) {
             return null;
         } else if (isSilkTouch && target.canSilkTouch() && (target.canHarvestWithHand() || target.isToolCompatible(item))) {
-            drops = new Item[]{target.getSilkTouchResource()};
+            drops = target.getSilkTouchResource();
         } else {
             drops = target.getDrops(item);
         }
@@ -2906,11 +2902,11 @@ public class Level implements ChunkManager, Metadatable {
             this.server.getPluginManager().callEvent(ev);
             if (!ev.isCancelled()) {
                 target.onUpdate(BLOCK_UPDATE_TOUCH);
-                if (!player.isSneaking() && target.canBeActivated() && target.onActivate(item, face, player)) {
+                if ((!player.isSneaking() || item.is(Item.BRUSH) && target instanceof BlockBrushable) && target.canBeActivated() && target.onActivate(item, face, fx, fy, fz, player)) {
                     return item;
                 }
 
-                if (!player.isSneaking() && item.canBeActivated()
+                if ((!player.isSneaking() || item.is(Item.BRUSH)) && item.canBeActivated()
                         && item.onActivate(this, player, block, target, face, fx, fy, fz)) {
                     if (item.getCount() <= 0) {
                         item = Items.air();
@@ -2920,7 +2916,7 @@ public class Level implements ChunkManager, Metadatable {
             } else {
                 return null;
             }
-        } else if (target.canBeActivated() && target.onActivate(item, face, null)) {
+        } else if (target.canBeActivated() && target.onActivate(item, face, fx, fy, fz, null)) {
             return item;
         }
 

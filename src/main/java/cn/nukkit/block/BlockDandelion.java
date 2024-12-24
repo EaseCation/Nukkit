@@ -27,13 +27,4 @@ public class BlockDandelion extends BlockFlower {
     protected Block getUncommonFlower() {
         return get(RED_FLOWER);
     }
-
-    @Override
-    public int getFullId() {
-        return this.getId() << BLOCK_META_BITS;
-    }
-
-    @Override
-    public void setDamage(int meta) {
-    }
 }

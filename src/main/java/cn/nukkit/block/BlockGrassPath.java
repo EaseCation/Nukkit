@@ -56,7 +56,7 @@ public class BlockGrassPath extends BlockGrass {
     }
 
     @Override
-    public boolean onActivate(Item item, BlockFace face, Player player) {
+    public boolean onActivate(Item item, BlockFace face, float fx, float fy, float fz, Player player) {
         if (item.isHoe()) {
             level.addLevelSoundEvent(blockCenter(), LevelSoundEventPacket.SOUND_ITEM_USE_ON, getFullId(FARMLAND));
             if (player != null) {

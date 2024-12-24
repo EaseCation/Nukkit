@@ -14,7 +14,7 @@ public class ObjectSpruceTree extends ObjectTree {
 
     @Override
     public int getTrunkBlock() {
-        return Block.LOG;
+        return Block.SPRUCE_LOG;
     }
 
     @Override

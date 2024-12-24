@@ -48,7 +48,7 @@ public final class Items {
         COMPLEX_ALIASES_MAP.defaultReturnValue(Integer.MIN_VALUE);
     }
 
-    public static void registerVanillaItems() {
+    static void registerVanillaItems() {
         registerItem(ItemNames.IRON_SHOVEL, IRON_SHOVEL, ItemShovelIron.class, ItemShovelIron::new);
         registerItem(ItemNames.IRON_PICKAXE, IRON_PICKAXE, ItemPickaxeIron.class, ItemPickaxeIron::new);
         registerItem(ItemNames.IRON_AXE, IRON_AXE, ItemAxeIron.class, ItemAxeIron::new);
@@ -264,6 +264,15 @@ public final class Items {
         registerItem(ItemNames.MUSIC_DISC_STRAD, MUSIC_DISC_STRAD, ItemRecordStrad.class, ItemRecordStrad::new);
         registerItem(ItemNames.MUSIC_DISC_WAIT, MUSIC_DISC_WAIT, ItemRecordWait.class, ItemRecordWait::new);
 
+        registerItem(ItemNames.GLOW_STICK, GLOW_STICK, ItemGlowStick.class, ItemGlowStick::new, 47, V1_4_0);
+        registerItem(ItemNames.SPARKLER, SPARKLER, ItemSparkler.class, ItemSparkler::new, 46, V1_4_0);
+        registerItem(ItemNames.MEDICINE, MEDICINE, ItemMedicine.class, ItemMedicine::new, 3, V1_4_0);
+        registerItem(ItemNames.BALLOON, BALLOON, ItemBalloon.class, ItemBalloon::new, 15, V1_4_0);
+        registerItem(ItemNames.RAPID_FERTILIZER, RAPID_FERTILIZER, ItemRapidFertilizer.class, ItemRapidFertilizer::new, V1_4_0);
+        registerItem(ItemNames.BLEACH, BLEACH, ItemBleach.class, ItemBleach::new, V1_4_0);
+        registerItem(ItemNames.ICE_BOMB, ICE_BOMB, ItemIceBomb.class, ItemIceBomb::new, V1_4_0);
+        registerItem(ItemNames.COMPOUND, COMPOUND, ItemCompound.class, ItemCompound::new, 37, V1_4_0);
+
         registerItem(ItemNames.KELP, KELP, ItemKelp.class, ItemKelp::new, V1_4_0);
         registerItem(ItemNames.TRIDENT, TRIDENT, ItemTrident.class, ItemTrident::new, V1_4_0);
         registerItem(ItemNames.DRIED_KELP, DRIED_KELP, ItemDriedKelp.class, ItemDriedKelp::new, V1_4_0);
@@ -287,6 +296,8 @@ public final class Items {
 
         registerItem(ItemNames.SWEET_BERRIES, SWEET_BERRIES, ItemSweetBerries.class, ItemSweetBerries::new, V1_11_0);
         registerItem(ItemNames.CAMPFIRE, CAMPFIRE, ItemCampfire.class, ItemCampfire::new, V1_11_0);
+
+        registerItem(ItemNames.CAMERA, CAMERA, ItemCamera.class, ItemCamera::new, V1_13_0);
 
         registerItem(ItemNames.SUSPICIOUS_STEW, SUSPICIOUS_STEW, ItemSuspiciousStew.class, ItemSuspiciousStew::new, ItemSuspiciousStew.UNDEFINED_STEW - 1, V1_13_0);
 
@@ -339,6 +350,8 @@ public final class Items {
         registerItem(ItemNames.MUSIC_DISC_CREATOR_MUSIC_BOX, MUSIC_DISC_CREATOR_MUSIC_BOX, ItemRecordCreatorMusicBox.class, ItemRecordCreatorMusicBox::new, V1_21_0);
         registerItem(ItemNames.MUSIC_DISC_PRECIPICE, MUSIC_DISC_PRECIPICE, ItemRecordPrecipice.class, ItemRecordPrecipice::new, V1_21_0);
 
+        registerItem(ItemNames.BOARD, BOARD, ItemBoard.class, ItemBoard::new, 2, V1_21_50);
+
         if (DEV_CLIENT_BUILD) {
             registerItem(ItemNames.DEBUG_STICK, DEBUG_STICK, ItemDebugStick.class, ItemDebugStick::new);
         }
@@ -368,10 +381,10 @@ public final class Items {
         registerNewItemAux(ItemNames.CHERRY_CHEST_BOAT, CHEST_BOAT, ItemBoatChest.CHERRY_BOAT, V1_20_0);
         registerNewItemAux(ItemNames.PALE_OAK_CHEST_BOAT, CHEST_BOAT, ItemBoatChest.PALE_OAK_BOAT, V1_21_50);
 
-//        registerNewItem(ItemNames.BAMBOO_SIGN, BAMBOO_SIGN, ItemSignBamboo.class, ItemSignBamboo::new, V1_20_0);
-//        registerNewItem(ItemNames.CHERRY_SIGN, CHERRY_SIGN, ItemSignCherry.class, ItemSignCherry::new, V1_20_0);
-//        registerNewItem(ItemNames.TORCHFLOWER_SEEDS, TORCHFLOWER_SEEDS, ItemSeedsTorchflower.class, ItemSeedsTorchflower::new, V1_20_0);
-//        registerNewItem(ItemNames.PITCHER_POD, PITCHER_POD, ItemPitcherPod.class, ItemPitcherPod::new, V1_20_0);
+        registerNewItem(ItemNames.BAMBOO_SIGN, BAMBOO_SIGN, ItemSignBamboo.class, ItemSignBamboo::new, V1_20_0);
+        registerNewItem(ItemNames.CHERRY_SIGN, CHERRY_SIGN, ItemSignCherry.class, ItemSignCherry::new, V1_20_0);
+        registerNewItem(ItemNames.TORCHFLOWER_SEEDS, TORCHFLOWER_SEEDS, ItemSeedsTorchflower.class, ItemSeedsTorchflower::new, V1_20_0);
+        registerNewItem(ItemNames.PITCHER_POD, PITCHER_POD, ItemPitcherPod.class, ItemPitcherPod::new, V1_20_0);
         registerNewItem(ItemNames.BRUSH, BRUSH, ItemBrush.class, ItemBrush::new, V1_20_0);
         registerNewItem(ItemNames.ARCHER_POTTERY_SHERD, ARCHER_POTTERY_SHERD, ItemPotterySherdArcher.class, ItemPotterySherdArcher::new, V1_20_0);
         registerNewItem(ItemNames.ARMS_UP_POTTERY_SHERD, ARMS_UP_POTTERY_SHERD, ItemPotterySherdArmsUp.class, ItemPotterySherdArmsUp::new, V1_20_0);
@@ -426,26 +439,26 @@ public final class Items {
         registerNewItem(ItemNames.FLOW_ARMOR_TRIM_SMITHING_TEMPLATE, FLOW_ARMOR_TRIM_SMITHING_TEMPLATE, ItemSmithingTemplateArmorTrimFlow.class, ItemSmithingTemplateArmorTrimFlow::new, V1_21_0);
         registerNewItem(ItemNames.BOLT_ARMOR_TRIM_SMITHING_TEMPLATE, BOLT_ARMOR_TRIM_SMITHING_TEMPLATE, ItemSmithingTemplateArmorTrimBolt.class, ItemSmithingTemplateArmorTrimBolt::new, V1_21_0);
 
-//        registerNewItem(ItemNames.BUNDLE, BUNDLE, ItemBundle.class, ItemBundle::new, V1_20_40);
-//        registerNewItem(ItemNames.BLACK_BUNDLE, BLACK_BUNDLE, ItemBundleBlack.class, ItemBundleBlack::new, V1_20_40);
-//        registerNewItem(ItemNames.BLUE_BUNDLE, BLUE_BUNDLE, ItemBundleBlue.class, ItemBundleBlue::new, V1_20_40);
-//        registerNewItem(ItemNames.BROWN_BUNDLE, BROWN_BUNDLE, ItemBundleBrown.class, ItemBundleBrown::new, V1_20_40);
-//        registerNewItem(ItemNames.CYAN_BUNDLE, CYAN_BUNDLE, ItemBundleCyan.class, ItemBundleCyan::new, V1_20_40);
-//        registerNewItem(ItemNames.GRAY_BUNDLE, GRAY_BUNDLE, ItemBundleGray.class, ItemBundleGray::new, V1_20_40);
-//        registerNewItem(ItemNames.GREEN_BUNDLE, GREEN_BUNDLE, ItemBundleGreen.class, ItemBundleGreen::new, V1_20_40);
-//        registerNewItem(ItemNames.LIGHT_BLUE_BUNDLE, LIGHT_BLUE_BUNDLE, ItemBundleLightBlue.class, ItemBundleLightBlue::new, V1_20_40);
-//        registerNewItem(ItemNames.LIGHT_GRAY_BUNDLE, LIGHT_GRAY_BUNDLE, ItemBundleLightGray.class, ItemBundleLightGray::new, V1_20_40);
-//        registerNewItem(ItemNames.LIME_BUNDLE, LIME_BUNDLE, ItemBundleLime.class, ItemBundleLime::new, V1_20_40);
-//        registerNewItem(ItemNames.MAGENTA_BUNDLE, MAGENTA_BUNDLE, ItemBundleMagenta.class, ItemBundleMagenta::new, V1_20_40);
-//        registerNewItem(ItemNames.ORANGE_BUNDLE, ORANGE_BUNDLE, ItemBundleOrange.class, ItemBundleOrange::new, V1_20_40);
-//        registerNewItem(ItemNames.PINK_BUNDLE, PINK_BUNDLE, ItemBundlePink.class, ItemBundlePink::new, V1_20_40);
-//        registerNewItem(ItemNames.PURPLE_BUNDLE, PURPLE_BUNDLE, ItemBundlePurple.class, ItemBundlePurple::new, V1_20_40);
-//        registerNewItem(ItemNames.RED_BUNDLE, RED_BUNDLE, ItemBundleRed.class, ItemBundleRed::new, V1_20_40);
-//        registerNewItem(ItemNames.WHITE_BUNDLE, WHITE_BUNDLE, ItemBundleWhite.class, ItemBundleWhite::new, V1_20_40);
-//        registerNewItem(ItemNames.YELLOW_BUNDLE, YELLOW_BUNDLE, ItemBundleYellow.class, ItemBundleYellow::new, V1_20_40);
+        registerNewItem(ItemNames.BUNDLE, BUNDLE, ItemBundle.class, ItemBundle::new, V1_20_40); //TODO
+        registerNewItem(ItemNames.BLACK_BUNDLE, BLACK_BUNDLE, ItemBundleBlack.class, ItemBundleBlack::new, V1_20_40);
+        registerNewItem(ItemNames.BLUE_BUNDLE, BLUE_BUNDLE, ItemBundleBlue.class, ItemBundleBlue::new, V1_20_40);
+        registerNewItem(ItemNames.BROWN_BUNDLE, BROWN_BUNDLE, ItemBundleBrown.class, ItemBundleBrown::new, V1_20_40);
+        registerNewItem(ItemNames.CYAN_BUNDLE, CYAN_BUNDLE, ItemBundleCyan.class, ItemBundleCyan::new, V1_20_40);
+        registerNewItem(ItemNames.GRAY_BUNDLE, GRAY_BUNDLE, ItemBundleGray.class, ItemBundleGray::new, V1_20_40);
+        registerNewItem(ItemNames.GREEN_BUNDLE, GREEN_BUNDLE, ItemBundleGreen.class, ItemBundleGreen::new, V1_20_40);
+        registerNewItem(ItemNames.LIGHT_BLUE_BUNDLE, LIGHT_BLUE_BUNDLE, ItemBundleLightBlue.class, ItemBundleLightBlue::new, V1_20_40);
+        registerNewItem(ItemNames.LIGHT_GRAY_BUNDLE, LIGHT_GRAY_BUNDLE, ItemBundleLightGray.class, ItemBundleLightGray::new, V1_20_40);
+        registerNewItem(ItemNames.LIME_BUNDLE, LIME_BUNDLE, ItemBundleLime.class, ItemBundleLime::new, V1_20_40);
+        registerNewItem(ItemNames.MAGENTA_BUNDLE, MAGENTA_BUNDLE, ItemBundleMagenta.class, ItemBundleMagenta::new, V1_20_40);
+        registerNewItem(ItemNames.ORANGE_BUNDLE, ORANGE_BUNDLE, ItemBundleOrange.class, ItemBundleOrange::new, V1_20_40);
+        registerNewItem(ItemNames.PINK_BUNDLE, PINK_BUNDLE, ItemBundlePink.class, ItemBundlePink::new, V1_20_40);
+        registerNewItem(ItemNames.PURPLE_BUNDLE, PURPLE_BUNDLE, ItemBundlePurple.class, ItemBundlePurple::new, V1_20_40);
+        registerNewItem(ItemNames.RED_BUNDLE, RED_BUNDLE, ItemBundleRed.class, ItemBundleRed::new, V1_20_40);
+        registerNewItem(ItemNames.WHITE_BUNDLE, WHITE_BUNDLE, ItemBundleWhite.class, ItemBundleWhite::new, V1_20_40);
+        registerNewItem(ItemNames.YELLOW_BUNDLE, YELLOW_BUNDLE, ItemBundleYellow.class, ItemBundleYellow::new, V1_20_40);
 
-//        registerNewItem(ItemNames.PALE_OAK_SIGN, PALE_OAK_SIGN, ItemSignPaleOak.class, ItemSignPaleOak::new, V1_20_50);
-//        registerNewItem(ItemNames.RESIN_BRICK, RESIN_BRICK, ItemBrickResin.class, ItemBrickResin::new, V1_20_50);
+        registerNewItem(ItemNames.PALE_OAK_SIGN, PALE_OAK_SIGN, ItemSignPaleOak.class, ItemSignPaleOak::new, V1_20_50);
+        registerNewItem(ItemNames.RESIN_BRICK, RESIN_BRICK, ItemBrickResin.class, ItemBrickResin::new, V1_20_50);
 
     }
 

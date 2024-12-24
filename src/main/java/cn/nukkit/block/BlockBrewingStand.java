@@ -19,7 +19,7 @@ import java.util.Map;
 import static cn.nukkit.GameVersion.*;
 import static cn.nukkit.SharedConstants.*;
 
-public class BlockBrewingStand extends BlockTransparentMeta {
+public class BlockBrewingStand extends BlockTransparent {
     public static final int HAS_SLOT_0 = 0b1;
     public static final int HAS_SLOT_1 = 0b10;
     public static final int HAS_SLOT_2 = 0b100;
@@ -73,7 +73,7 @@ public class BlockBrewingStand extends BlockTransparentMeta {
     }
 
     @Override
-    public boolean place(Item item, Block block, Block target, BlockFace face, double fx, double fy, double fz, Player player) {
+    public boolean place(Item item, Block block, Block target, BlockFace face, float fx, float fy, float fz, Player player) {
         getLevel().setBlock(block, this, true, true);
 
         CompoundTag nbt = BlockEntity.getDefaultCompound(this, BlockEntity.BREWING_STAND)
@@ -95,7 +95,7 @@ public class BlockBrewingStand extends BlockTransparentMeta {
     }
 
     @Override
-    public boolean onActivate(Item item, BlockFace face, Player player) {
+    public boolean onActivate(Item item, BlockFace face, float fx, float fy, float fz, Player player) {
         if (player != null) {
             BlockEntity t = getLevel().getBlockEntity(this);
             BlockEntityBrewingStand brewing;

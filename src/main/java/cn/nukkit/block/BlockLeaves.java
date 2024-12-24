@@ -17,7 +17,7 @@ import java.util.concurrent.ThreadLocalRandom;
  * author: Angelic47
  * Nukkit Project
  */
-public class BlockLeaves extends BlockTransparentMeta {
+public class BlockLeaves extends BlockTransparent {
     public static final int OAK = 0;
     public static final int SPRUCE = 1;
     public static final int BIRCH = 2;
@@ -85,7 +85,7 @@ public class BlockLeaves extends BlockTransparentMeta {
     }
 
     @Override
-    public boolean place(Item item, Block block, Block target, BlockFace face, double fx, double fy, double fz, Player player) {
+    public boolean place(Item item, Block block, Block target, BlockFace face, float fx, float fy, float fz, Player player) {
         this.setPersistent(true);
         this.getLevel().setBlock(this, this, true);
         return true;

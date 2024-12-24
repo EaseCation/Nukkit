@@ -10,7 +10,7 @@ import cn.nukkit.math.SimpleAxisAlignedBB;
  * author: MagicDroidX
  * Nukkit Project
  */
-public abstract class BlockWall extends BlockTransparentMeta {
+public abstract class BlockWall extends BlockTransparent {
     public static final int POST_BIT = 0b1;
     public static final int NORTH_CONNECTION_TYPE_MASK = 0b11_0;
     public static final int NORTH_CONNECTION_TYPE_OFFSET = 1;

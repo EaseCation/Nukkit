@@ -36,7 +36,7 @@ public abstract class BlockHyphae extends BlockRotatedPillar {
     }
 
     @Override
-    public boolean onActivate(Item item, BlockFace face, Player player) {
+    public boolean onActivate(Item item, BlockFace face, float fx, float fy, float fz, Player player) {
         if (!item.isAxe()) {
             return false;
         }

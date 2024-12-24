@@ -1,6 +1,8 @@
 package cn.nukkit.entity.passive;
 
 import cn.nukkit.Player;
+import cn.nukkit.block.Block;
+import cn.nukkit.block.BlockWool;
 import cn.nukkit.entity.Entity;
 import cn.nukkit.entity.EntityID;
 import cn.nukkit.entity.data.ByteEntityData;
@@ -99,7 +101,7 @@ public class EntitySheep extends EntityAnimal {
         this.sheared = true;
         this.setDataFlag(DATA_FLAG_SHEARED, true);
 
-        this.level.dropItem(this, Item.get(Item.WOOL, this.color, ThreadLocalRandom.current().nextInt(1, 3)));
+        this.level.dropItem(this, Item.get(Block.getItemId(BlockWool.WOOLS[this.color & 0xf]), 0, ThreadLocalRandom.current().nextInt(1, 3)));
         return true;
     }
 
@@ -107,7 +109,7 @@ public class EntitySheep extends EntityAnimal {
     public Item[] getDrops() {
         return new Item[]{
                 Item.get(this.isOnFire() ? Item.COOKED_MUTTON : Item.MUTTON, ThreadLocalRandom.current().nextInt(1, 3)),
-                Item.get(Item.WOOL, this.color, sheared ? 0 : 1),
+                Item.get(Block.getItemId(BlockWool.WOOLS[this.color & 0xf]), 0, sheared ? 0 : 1),
         };
     }
 

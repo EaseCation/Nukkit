@@ -12,4 +12,9 @@ public class ItemSmithingTemplateArmorTrimRib extends Item {
     public ItemSmithingTemplateArmorTrimRib(Integer meta, int count) {
         super(RIB_ARMOR_TRIM_SMITHING_TEMPLATE, meta, count, "Rib Armor Trim");
     }
+
+    @Override
+    public boolean isArmorTrimSmithingTemplate() {
+        return true;
+    }
 }

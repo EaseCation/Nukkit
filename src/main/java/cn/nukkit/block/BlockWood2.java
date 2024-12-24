@@ -9,7 +9,12 @@ import cn.nukkit.utils.BlockColor;
  * author: MagicDroidX
  * Nukkit Project
  */
+@Deprecated
 public class BlockWood2 extends BlockWood {
+    public static final int[] LOGS = {
+            ACACIA_LOG,
+            DARK_OAK_LOG,
+    };
 
     public static final int ACACIA = 0;
     public static final int DARK_OAK = 1;
@@ -62,7 +67,7 @@ public class BlockWood2 extends BlockWood {
     public BlockColor getColor() {
         switch (getLogType()) {
             case ACACIA:
-                return BlockColor.ORANGE_BLOCK_COLOR;
+                return (getDamage() & PILLAR_AXIS_MASK) == 0 ? BlockColor.ORANGE_BLOCK_COLOR : BlockColor.STONE_BLOCK_COLOR;
             case DARK_OAK:
                 return BlockColor.BROWN_BLOCK_COLOR;
         }
@@ -91,7 +96,7 @@ public class BlockWood2 extends BlockWood {
     }
 
     @Override
-    public boolean place(Item item, Block block, Block target, BlockFace face, double fx, double fy, double fz, Player player) {
+    public boolean place(Item item, Block block, Block target, BlockFace face, float fx, float fy, float fz, Player player) {
         this.setDamage(this.getLogType() | FACES[face.getIndex()]);
         this.getLevel().setBlock(block, this, true, true);
 

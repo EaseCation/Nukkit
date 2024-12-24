@@ -11,7 +11,7 @@ import cn.nukkit.utils.BlockColor;
 
 import javax.annotation.Nullable;
 
-public class BlockSculkCatalyst extends BlockSolidMeta {
+public class BlockSculkCatalyst extends BlockSolid {
     public static final int BLOOM_BIT = 0b1;
 
     public BlockSculkCatalyst() {

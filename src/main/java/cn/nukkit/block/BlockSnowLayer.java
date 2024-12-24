@@ -20,29 +20,12 @@ public class BlockSnowLayer extends BlockFallable {
     public static final int HEIGHT_MASK = 0b111;
     public static final int COVERED_BIT = 0b1000;
 
-    private int meta;
-
     public BlockSnowLayer() {
         this(0);
     }
 
     public BlockSnowLayer(int meta) {
-        this.meta = meta;
-    }
-
-    @Override
-    public final int getFullId() {
-        return (this.getId() << BLOCK_META_BITS) | this.getDamage();
-    }
-
-    @Override
-    public final int getDamage() {
-        return this.meta;
-    }
-
-    @Override
-    public final void setDamage(int meta) {
-        this.meta = meta;
+        super(meta);
     }
 
     @Override
@@ -76,7 +59,7 @@ public class BlockSnowLayer extends BlockFallable {
     }
 
     @Override
-    public boolean place(Item item, Block block, Block target, BlockFace face, double fx, double fy, double fz, Player player) {
+    public boolean place(Item item, Block block, Block target, BlockFace face, float fx, float fy, float fz, Player player) {
         if (block.isLiquid() || !block.isAir() && block.canContainWater() && level.getExtraBlock(this).isWater()) {
             return false;
         }
@@ -90,7 +73,7 @@ public class BlockSnowLayer extends BlockFallable {
         }
 
         if (block.getId() == getId()) {
-            return block.onActivate(item, face, player);
+            return block.onActivate(item, face, fx, fy, fz, player);
         }
 
         if (block.canContainSnow()) {
@@ -219,7 +202,7 @@ public class BlockSnowLayer extends BlockFallable {
     }
 
     @Override
-    public boolean onActivate(Item item, BlockFace face, Player player) {
+    public boolean onActivate(Item item, BlockFace face, float fx, float fy, float fz, Player player) {
         if (item.isShovel()) {
             if (player != null && player.isSurvivalLike() && item.hurtAndBreak(1) < 0) {
                 item.pop();
@@ -286,12 +269,12 @@ public class BlockSnowLayer extends BlockFallable {
     }
 
     @Override
-    public Item getSilkTouchResource() {
+    public Item[] getSilkTouchResource() {
         int height = getDamage() & HEIGHT_MASK;
         if (height == HEIGHT_MASK) {
-            return Item.get(SNOW);
+            return new Item[]{Item.get(SNOW)};
         }
-        return Item.get(SNOW_LAYER, 0, 1 + height);
+        return new Item[]{Item.get(SNOW_LAYER, 0, 1 + height)};
     }
 
     public boolean isCovered() {

@@ -8,14 +8,14 @@ import cn.nukkit.level.Level;
 import cn.nukkit.math.AxisAlignedBB;
 import cn.nukkit.math.BlockFace;
 import cn.nukkit.math.SimpleAxisAlignedBB;
-import cn.nukkit.network.protocol.LevelEventPacket;
+import cn.nukkit.network.protocol.LevelSoundEventPacket;
 import cn.nukkit.utils.Faceable;
 
 /**
  * author: MagicDroidX
  * Nukkit Project
  */
-public abstract class BlockDoor extends BlockTransparentMeta implements Faceable {
+public abstract class BlockDoor extends BlockTransparent implements Faceable {
     public static final int DIRECTION_MASK = 0b11;
     public static final int DOOR_OPEN_BIT = 0b100;
     public static final int DOOR_TOP_BIT = 0b1000;
@@ -214,7 +214,7 @@ public abstract class BlockDoor extends BlockTransparentMeta implements Faceable
     }
 
     @Override
-    public boolean place(Item item, Block block, Block target, BlockFace face, double fx, double fy, double fz, Player player) {
+    public boolean place(Item item, Block block, Block target, BlockFace face, float fx, float fy, float fz, Player player) {
         if (this.y >= level.getHeightRange().getMaxY() - 1) {
             return false;
         }
@@ -287,12 +287,11 @@ public abstract class BlockDoor extends BlockTransparentMeta implements Faceable
     }
 
     @Override
-    public boolean onActivate(Item item, BlockFace face, Player player) {
+    public boolean onActivate(Item item, BlockFace face, float fx, float fy, float fz, Player player) {
         if (!this.toggle(player)) {
             return false;
         }
 
-        this.getLevel().addLevelEvent(this.add(0.5, 0.5, 0.5), LevelEventPacket.EVENT_SOUND_DOOR);
         return true;
     }
 
@@ -315,6 +314,8 @@ public abstract class BlockDoor extends BlockTransparentMeta implements Faceable
         }
         down.setDamage(down.getDamage() ^ DOOR_OPEN_BIT);
         getLevel().setBlock(down, down, true, true);
+
+        level.addLevelSoundEvent(blockCenter(), isOpen() ? LevelSoundEventPacket.SOUND_DOOR_OPEN : LevelSoundEventPacket.SOUND_DOOR_CLOSE, getFullId());
         return true;
     }
 

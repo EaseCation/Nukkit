@@ -89,7 +89,7 @@ public class ItemDye extends Item {
     }
 
     @Override
-    public boolean isBoneMeal() {
+    public boolean isFertilizer() {
         return getDamage() == BONE_MEAL;
     }
 }

@@ -12,4 +12,9 @@ public class ItemSmithingTemplateArmorTrimCoast extends Item {
     public ItemSmithingTemplateArmorTrimCoast(Integer meta, int count) {
         super(COAST_ARMOR_TRIM_SMITHING_TEMPLATE, meta, count, "Coast Armor Trim");
     }
+
+    @Override
+    public boolean isArmorTrimSmithingTemplate() {
+        return true;
+    }
 }

@@ -14,7 +14,7 @@ import cn.nukkit.utils.Faceable;
 
 import static cn.nukkit.GameVersion.*;
 
-public class BlockDripleafBig extends BlockTransparentMeta implements Faceable {
+public class BlockDripleafBig extends BlockTransparent implements Faceable {
     public static final int TILT_MASK = 0b11;
     public static final int HEAD_BIT = 0b100;
     public static final int DIRECTION_MASK = 0b11000;
@@ -84,7 +84,7 @@ public class BlockDripleafBig extends BlockTransparentMeta implements Faceable {
     }
 
     @Override
-    public boolean place(Item item, Block block, Block target, BlockFace face, double fx, double fy, double fz, Player player) {
+    public boolean place(Item item, Block block, Block target, BlockFace face, float fx, float fy, float fz, Player player) {
         Block below = down();
         int id = below.getId();
         if (!(id == BIG_DRIPLEAF || id == GRASS_BLOCK || id == DIRT || id == MYCELIUM || id == PODZOL || id == FARMLAND || id == DIRT_WITH_ROOTS || id == MOSS_BLOCK || id == CLAY || id == MUD || id == MUDDY_MANGROVE_ROOTS)) {
@@ -112,8 +112,8 @@ public class BlockDripleafBig extends BlockTransparentMeta implements Faceable {
     }
 
     @Override
-    public boolean onActivate(Item item, BlockFace face, Player player) {
-        if (item.isBoneMeal()) {
+    public boolean onActivate(Item item, BlockFace face, float fx, float fy, float fz, Player player) {
+        if (item.isFertilizer()) {
             Block head = this;
             Block up;
             while ((up = head.up()).getId() == BIG_DRIPLEAF) {

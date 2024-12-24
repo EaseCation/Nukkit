@@ -113,8 +113,9 @@ public final class Entities {
         registerTodo(EntityID.NPC, EntityNames.NPC, "NPC");
         registerTodo(EntityID.AGENT, EntityNames.AGENT, "Agent");
         registerTodo(EntityID.TRIPOD_CAMERA, EntityNames.TRIPOD_CAMERA, "Camera");
-        registerTodo(EntityID.ICE_BOMB, EntityNames.ICE_BOMB, "IceBomb");
-        registerTodo(EntityID.BALLOON, EntityNames.BALLOON, "Balloon");
+
+        registerEntity(EntityID.ICE_BOMB, EntityNames.ICE_BOMB, "IceBomb", EntityIceBomb.class, EntityIceBomb::new, V1_4_0);
+        registerTodo(EntityID.BALLOON, EntityNames.BALLOON, "Balloon", V1_4_0);
 
         registerEntity(EntityID.DOLPHIN, EntityNames.DOLPHIN, "Dolphin", EntityDolphin.class, EntityDolphin::new, V1_4_0);
         registerEntity(EntityID.THROWN_TRIDENT, EntityNames.THROWN_TRIDENT, "ThrownTrident", EntityThrownTrident.class, EntityThrownTrident::new, V1_4_0);
@@ -176,8 +177,7 @@ public final class Entities {
         registerTodo(EntityID.OMINOUS_ITEM_SPAWNER, EntityNames.OMINOUS_ITEM_SPAWNER, "OminousItemSpawner");
 //        registerEntity(EntityID.OMINOUS_ITEM_SPAWNER, EntityNames.OMINOUS_ITEM_SPAWNER, "OminousItemSpawner", EntityOminousItemSpawner.class, EntityOminousItemSpawner::new, V1_21_0);
 
-        registerTodo(EntityID.CREAKING, EntityNames.CREAKING, "Creaking");
-//        registerEntity(EntityID.CREAKING, EntityNames.CREAKING, "Creaking", EntityCreaking.class, EntityCreaking::new, V1_21_50);
+        registerEntity(EntityID.CREAKING, EntityNames.CREAKING, "Creaking", EntityCreaking.class, EntityCreaking::new, V1_21_50);
     }
 
     private static boolean registerTodo(int typeId, String identifier, String name) {

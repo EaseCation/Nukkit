@@ -2843,6 +2843,10 @@ public abstract class Entity extends Location implements Metadatable, EntityData
         Server.broadcastPacket(players, packet);
     }
 
+    public boolean isChemistryFeature() {
+        return false;
+    }
+
     @Override
     public boolean equals(Object obj) {
         if (obj == this) {

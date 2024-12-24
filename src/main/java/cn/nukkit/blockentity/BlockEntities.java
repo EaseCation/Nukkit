@@ -44,7 +44,6 @@ public final class BlockEntities {
         registerBlockEntity(BlockEntityType.COMMAND_BLOCK, COMMAND_BLOCK, BlockEntityCommandBlock.class, BlockEntityCommandBlock::new);
         registerBlockEntity(BlockEntityType.BED, BED, BlockEntityBed.class, BlockEntityBed::new);
         registerBlockEntity(BlockEntityType.BANNER, BANNER, BlockEntityBanner.class, BlockEntityBanner::new);
-//        registerBlockEntity(BlockEntityType.CHALKBOARD_BLOCK, CHALKBOARD_BLOCK, BlockEntityChalkboard.class, BlockEntityChalkboard::new, V1_21_50);
         registerBlockEntity(BlockEntityType.STRUCTURE_BLOCK, STRUCTURE_BLOCK, BlockEntityStructureBlock.class, BlockEntityStructureBlock::new);
         registerBlockEntity(BlockEntityType.JUKEBOX, JUKEBOX, BlockEntityJukebox.class, BlockEntityJukebox::new);
         registerBlockEntity(BlockEntityType.CHEMISTRY_TABLE, CHEMISTRY_TABLE, BlockEntityChemistryTable.class, BlockEntityChemistryTable::new);
@@ -71,17 +70,18 @@ public final class BlockEntities {
         registerBlockEntity(BlockEntityType.SCULK_CATALYST, SCULK_CATALYST, BlockEntitySculkCatalyst.class, BlockEntitySculkCatalyst::new, V1_19_0);
         registerBlockEntity(BlockEntityType.SCULK_SHRIEKER, SCULK_SHRIEKER, BlockEntitySculkShrieker.class, BlockEntitySculkShrieker::new, V1_19_0);
 
-//        registerBlockEntity(BlockEntityType.HANGING_SIGN, HANGING_SIGN, BlockEntityHangingSign.class, BlockEntityHangingSign::new, V1_20_0);
-//        registerBlockEntity(BlockEntityType.CHISELED_BOOKSHELF, CHISELED_BOOKSHELF, BlockEntityChiseledBookshelf.class, BlockEntityChiseledBookshelf::new, V1_20_0);
-//        registerBlockEntity(BlockEntityType.BRUSHABLE_BLOCK, BRUSHABLE_BLOCK, BlockEntityBrushableBlock.class, BlockEntityBrushableBlock::new, V1_20_0);
-//        registerBlockEntity(BlockEntityType.DECORATED_POT, DECORATED_POT, BlockEntityDecoratedPot.class, BlockEntityDecoratedPot::new, V1_20_0);
-//        registerBlockEntity(BlockEntityType.CALIBRATED_SCULK_SENSOR, CALIBRATED_SCULK_SENSOR, BlockEntityCalibratedSculkSensor.class, BlockEntityCalibratedSculkSensor::new, V1_20_0);
+        registerBlockEntity(BlockEntityType.HANGING_SIGN, HANGING_SIGN, BlockEntityHangingSign.class, BlockEntityHangingSign::new, V1_20_0);
+        registerBlockEntity(BlockEntityType.CHISELED_BOOKSHELF, CHISELED_BOOKSHELF, BlockEntityChiseledBookshelf.class, BlockEntityChiseledBookshelf::new, V1_20_0);
+        registerBlockEntity(BlockEntityType.BRUSHABLE_BLOCK, BRUSHABLE_BLOCK, BlockEntityBrushableBlock.class, BlockEntityBrushableBlock::new, V1_20_0);
+        registerBlockEntity(BlockEntityType.DECORATED_POT, DECORATED_POT, BlockEntityDecoratedPot.class, BlockEntityDecoratedPot::new, V1_20_0);
+        registerBlockEntity(BlockEntityType.CALIBRATED_SCULK_SENSOR, CALIBRATED_SCULK_SENSOR, BlockEntityCalibratedSculkSensor.class, BlockEntityCalibratedSculkSensor::new, V1_20_0);
 
-//        registerBlockEntity(BlockEntityType.CRAFTER, CRAFTER, BlockEntityCrafter.class, BlockEntityCrafter::new, V1_21_0);
-//        registerBlockEntity(BlockEntityType.TRIAL_SPAWNER, TRIAL_SPAWNER, BlockEntityTrialSpawner.class, BlockEntityTrialSpawner::new, V1_21_0);
-//        registerBlockEntity(BlockEntityType.VAULT, VAULT, BlockEntityVault.class, BlockEntityVault::new, V1_21_0);
+        registerBlockEntity(BlockEntityType.CRAFTER, CRAFTER, BlockEntityCrafter.class, BlockEntityCrafter::new, V1_21_0);
+        registerBlockEntity(BlockEntityType.TRIAL_SPAWNER, TRIAL_SPAWNER, BlockEntityTrialSpawner.class, BlockEntityTrialSpawner::new, V1_21_0);
+        registerBlockEntity(BlockEntityType.VAULT, VAULT, BlockEntityVault.class, BlockEntityVault::new, V1_21_0);
 
-//        registerBlockEntity(BlockEntityType.CREAKING_HEART, CREAKING_HEART, BlockEntityCreakingHeart.class, BlockEntityCreakingHeart::new, V1_21_50);
+        registerBlockEntity(BlockEntityType.CHALKBOARD_BLOCK, CHALKBOARD_BLOCK, BlockEntityChalkboard.class, BlockEntityChalkboard::new, V1_21_50);
+        registerBlockEntity(BlockEntityType.CREAKING_HEART, CREAKING_HEART, BlockEntityCreakingHeart.class, BlockEntityCreakingHeart::new, V1_21_50);
     }
 
     private static Class<? extends BlockEntity> registerBlockEntity(int type, String name, Class<? extends BlockEntity> clazz, BlockEntityFactory factory) {

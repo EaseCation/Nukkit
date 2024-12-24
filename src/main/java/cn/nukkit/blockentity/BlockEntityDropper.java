@@ -35,7 +35,7 @@ public class BlockEntityDropper extends BlockEntityAbstractContainer {
         CompoundTag nbt = getDefaultCompound(this, DROPPER);
 
         if (this.hasName()) {
-            nbt.put("CustomName", this.namedTag.get("CustomName"));
+            nbt.putString("CustomName", this.getName());
         }
 
         return nbt;

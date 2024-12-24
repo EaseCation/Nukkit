@@ -11,7 +11,7 @@ public class ObjectSwampTree extends TreeGenerator {
     /**
      * The metadata value of the wood to use in tree generation.
      */
-    private final Block metaWood = Block.get(BlockID.LOG, BlockWood.OAK);
+    private final Block metaWood = Block.get(BlockID.OAK_LOG);
 
     /**
      * The metadata value of the leaves to use in tree generation.

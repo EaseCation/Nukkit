@@ -255,7 +255,7 @@ public class BlockEntityFurnace extends BlockEntityAbstractContainer {
         CompoundTag nbt = createSpawnTag();
 
         if (this.hasName()) {
-            nbt.put("CustomName", this.namedTag.get("CustomName"));
+            nbt.putString("CustomName", this.getName());
         }
 
         return nbt;

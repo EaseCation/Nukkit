@@ -47,7 +47,7 @@ public class BlockCraftingTable extends BlockSolid {
     }
 
     @Override
-    public boolean onActivate(Item item, BlockFace face, Player player) {
+    public boolean onActivate(Item item, BlockFace face, float fx, float fy, float fz, Player player) {
         if (player != null) {
             player.craftingType = Player.CRAFTING_BIG;
             player.recipeTag = RecipeTag.CRAFTING_TABLE;

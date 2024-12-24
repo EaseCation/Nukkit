@@ -30,7 +30,7 @@ public class BlockEntityBarrel extends BlockEntityAbstractContainer {
         CompoundTag nbt = getDefaultCompound(this, BARREL);
 
         if (this.hasName()) {
-            nbt.put("CustomName", this.namedTag.get("CustomName"));
+            nbt.putString("CustomName", this.getName());
         }
 
         return nbt;

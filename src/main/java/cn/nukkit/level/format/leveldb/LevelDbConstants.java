@@ -15,12 +15,12 @@ public final class LevelDbConstants {
     public static final byte FINALISATION_NEEDS_POPULATION = 1;
     public static final byte FINALISATION_DONE = 2;
 
-    public static final byte CURRENT_STORAGE_VERSION = 8;
-    public static final byte CURRENT_LEVEL_CHUNK_VERSION = 39; // 1.18.0.25 beta
+    public static final byte CURRENT_STORAGE_VERSION = 10; // 1.19.40
+    public static final byte CURRENT_LEVEL_CHUNK_VERSION = 40; // 1.18.30
     public static final byte CURRENT_LEVEL_SUBCHUNK_VERSION = 8;
 
     private static final byte LATEST_STORAGE_VERSION = 10; // 1.19.40
-    private static final byte LATEST_LEVEL_CHUNK_VERSION = 40; // 1.18.30
+    private static final byte LATEST_LEVEL_CHUNK_VERSION = 41; // 1.21.40
     private static final byte LATEST_LEVEL_SUBCHUNK_VERSION = 9; // 1.18
 
     public static final byte[] CHUNK_VERSION_SAVE_DATA = new byte[]{CURRENT_LEVEL_CHUNK_VERSION};
@@ -30,8 +30,8 @@ public final class LevelDbConstants {
 
     public static final List<IntTag> CURRENT_COMPATIBLE_CLIENT_VERSION = Collections.unmodifiableList(ObjectArrayList.of(
             new IntTag("", 1), // major
-            new IntTag("", 18), // minor
-            new IntTag("", 0), // patch
+            new IntTag("", 20), // minor
+            new IntTag("", 10), // patch
             new IntTag("", 0), // revision
             new IntTag("", 0))); // beta
 

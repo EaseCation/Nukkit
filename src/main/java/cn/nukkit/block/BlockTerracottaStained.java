@@ -11,7 +11,7 @@ import cn.nukkit.utils.TerracottaColor;
  * Created on 2015/12/2 by xtypr.
  * Package cn.nukkit.block in project Nukkit .
  */
-public class BlockTerracottaStained extends BlockSolidMeta {
+public class BlockTerracottaStained extends BlockSolid {
 
     public BlockTerracottaStained() {
         this(0);

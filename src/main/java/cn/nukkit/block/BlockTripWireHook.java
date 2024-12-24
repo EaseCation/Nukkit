@@ -14,7 +14,7 @@ import cn.nukkit.utils.Faceable;
 /**
  * @author CreeperFace
  */
-public class BlockTripWireHook extends BlockTransparentMeta implements Faceable {
+public class BlockTripWireHook extends BlockTransparent implements Faceable {
 
     public BlockTripWireHook() {
         this(0);
@@ -92,7 +92,7 @@ public class BlockTripWireHook extends BlockTransparentMeta implements Faceable 
     }
 
     @Override
-    public boolean place(Item item, Block block, Block target, BlockFace face, double fx, double fy, double fz, Player player) {
+    public boolean place(Item item, Block block, Block target, BlockFace face, float fx, float fy, float fz, Player player) {
         if (face.isVertical() || !SupportType.hasFullSupport(this.getSide(face.getOpposite()), face)) {
             return false;
         }
@@ -218,10 +218,10 @@ public class BlockTripWireHook extends BlockTransparentMeta implements Faceable 
 
     private void addSound(Vector3 pos, boolean canConnect, boolean nextPowered, boolean attached, boolean powered) {
         if (nextPowered && !powered) {
-            this.level.addLevelSoundEvent(pos, LevelSoundEventPacket.SOUND_POWER_ON, (this.getId() << BLOCK_META_BITS) | this.getDamage());
+            this.level.addLevelSoundEvent(pos, LevelSoundEventPacket.SOUND_POWER_ON, this.getFullId());
             this.level.getServer().getPluginManager().callEvent(new BlockRedstoneEvent(this, 0, 15));
         } else if (!nextPowered && powered) {
-            this.level.addLevelSoundEvent(pos, LevelSoundEventPacket.SOUND_POWER_OFF, (this.getId() << BLOCK_META_BITS) | this.getDamage());
+            this.level.addLevelSoundEvent(pos, LevelSoundEventPacket.SOUND_POWER_OFF, this.getFullId());
             this.level.getServer().getPluginManager().callEvent(new BlockRedstoneEvent(this, 15, 0));
         } else if (canConnect && !attached) {
             this.level.addLevelSoundEvent(pos, LevelSoundEventPacket.SOUND_ATTACH);

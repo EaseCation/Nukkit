@@ -29,7 +29,23 @@ public class BlockEntityShulkerBox extends BlockEntityAbstractContainer {
 
     @Override
     public boolean isValidBlock(int blockId) {
-        return blockId == Block.SHULKER_BOX || blockId == Block.UNDYED_SHULKER_BOX;
+        return blockId == Block.UNDYED_SHULKER_BOX
+                || blockId == Block.WHITE_SHULKER_BOX
+                || blockId == Block.ORANGE_SHULKER_BOX
+                || blockId == Block.MAGENTA_SHULKER_BOX
+                || blockId == Block.LIGHT_BLUE_SHULKER_BOX
+                || blockId == Block.YELLOW_SHULKER_BOX
+                || blockId == Block.LIME_SHULKER_BOX
+                || blockId == Block.PINK_SHULKER_BOX
+                || blockId == Block.GRAY_SHULKER_BOX
+                || blockId == Block.LIGHT_GRAY_SHULKER_BOX
+                || blockId == Block.CYAN_SHULKER_BOX
+                || blockId == Block.PURPLE_SHULKER_BOX
+                || blockId == Block.BLUE_SHULKER_BOX
+                || blockId == Block.BROWN_SHULKER_BOX
+                || blockId == Block.GREEN_SHULKER_BOX
+                || blockId == Block.RED_SHULKER_BOX
+                || blockId == Block.BLACK_SHULKER_BOX;
     }
 
     @Override
@@ -48,7 +64,7 @@ public class BlockEntityShulkerBox extends BlockEntityAbstractContainer {
                 .putByte("facing", this.namedTag.getByte("facing"));
 
         if (this.hasName()) {
-            c.put("CustomName", this.namedTag.get("CustomName"));
+            c.putString("CustomName", this.getName());
         }
 
         return c;

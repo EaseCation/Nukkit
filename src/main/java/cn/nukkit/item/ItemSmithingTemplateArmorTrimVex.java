@@ -12,4 +12,9 @@ public class ItemSmithingTemplateArmorTrimVex extends Item {
     public ItemSmithingTemplateArmorTrimVex(Integer meta, int count) {
         super(VEX_ARMOR_TRIM_SMITHING_TEMPLATE, meta, count, "Vex Armor Trim");
     }
+
+    @Override
+    public boolean isArmorTrimSmithingTemplate() {
+        return true;
+    }
 }

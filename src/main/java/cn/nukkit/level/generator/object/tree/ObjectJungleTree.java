@@ -14,7 +14,7 @@ public class ObjectJungleTree extends ObjectTree {
 
     @Override
     public int getTrunkBlock() {
-        return Block.LOG;
+        return Block.JUNGLE_LOG;
     }
 
     @Override

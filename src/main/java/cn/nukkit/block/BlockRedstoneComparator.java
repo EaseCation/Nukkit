@@ -119,7 +119,7 @@ public abstract class BlockRedstoneComparator extends BlockRedstoneDiode {
     }
 
     @Override
-    public boolean onActivate(Item item, BlockFace face, Player player) {
+    public boolean onActivate(Item item, BlockFace face, float fx, float fy, float fz, Player player) {
         if (getMode() == Mode.SUBTRACT) {
             this.setDamage(this.getDamage() - 4);
         } else {
@@ -174,7 +174,7 @@ public abstract class BlockRedstoneComparator extends BlockRedstoneDiode {
     }
 
     @Override
-    public boolean place(Item item, Block block, Block target, BlockFace face, double fx, double fy, double fz, Player player) {
+    public boolean place(Item item, Block block, Block target, BlockFace face, float fx, float fy, float fz, Player player) {
         if (super.place(item, block, target, face, fx, fy, fz, player)) {
             CompoundTag nbt = BlockEntity.getDefaultCompound(this, BlockEntity.COMPARATOR);
             BlockEntityComparator comparator = (BlockEntityComparator) BlockEntities.createBlockEntity(BlockEntityType.COMPARATOR, this.level.getChunk((int) this.x >> 4, (int) this.z >> 4), nbt);

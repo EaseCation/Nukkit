@@ -15,12 +15,12 @@ public class BlockCopperCutOxidizedWaxed extends BlockCopperOxidizedWaxed {
     }
 
     @Override
-    protected int getDecrementAgeBlockId() {
+    public int getDecrementAgeBlockId() {
         return WAXED_WEATHERED_CUT_COPPER;
     }
 
     @Override
-    protected int getDewaxedBlockId() {
+    public int getDewaxedBlockId() {
         return OXIDIZED_CUT_COPPER;
     }
 }

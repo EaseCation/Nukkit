@@ -23,6 +23,11 @@ public class ItemShield extends ItemTool {
     }
 
     @Override
+    public boolean canDualWield() {
+        return true;
+    }
+
+    @Override
     public int getMaxDurability() {
         return ItemTool.DURABILITY_SHIELD;
     }

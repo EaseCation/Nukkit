@@ -70,8 +70,8 @@ public class BlockNetherrack extends BlockSolid {
     }
 
     @Override
-    public boolean onActivate(Item item, BlockFace face, Player player) {
-        if (item.isBoneMeal()) {
+    public boolean onActivate(Item item, BlockFace face, float fx, float fy, float fz, Player player) {
+        if (item.isFertilizer()) {
             if (!onFertilized()) {
                 return false;
             }

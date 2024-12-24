@@ -27,17 +27,17 @@ public class BlockCopperWeathered extends BlockCopper {
     }
 
     @Override
-    protected int getWaxedBlockId() {
+    public int getWaxedBlockId() {
         return WAXED_WEATHERED_COPPER;
     }
 
     @Override
-    protected int getIncrementAgeBlockId() {
+    public int getIncrementAgeBlockId() {
         return OXIDIZED_COPPER;
     }
 
     @Override
-    protected int getDecrementAgeBlockId() {
+    public int getDecrementAgeBlockId() {
         return EXPOSED_COPPER;
     }
 }

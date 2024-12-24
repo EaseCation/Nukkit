@@ -125,4 +125,9 @@ public class ItemMap extends Item {
     public int getMaxStackSize() {
         return 1;
     }
+
+    @Override
+    public boolean canDualWield() {
+        return true;
+    }
 }

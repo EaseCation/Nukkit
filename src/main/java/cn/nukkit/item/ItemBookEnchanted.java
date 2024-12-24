@@ -22,4 +22,9 @@ public class ItemBookEnchanted extends Item {
     public int getMaxStackSize() {
         return 1;
     }
+
+    @Override
+    public boolean isBook() {
+        return true;
+    }
 }

@@ -1,5 +1,9 @@
 package cn.nukkit.block;
 
+/**
+ * @deprecated 1.20.0
+ */
+@Deprecated
 public class BlockCauldronLava extends BlockCauldron {
 
     public BlockCauldronLava() {

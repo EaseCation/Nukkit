@@ -20,7 +20,7 @@ import java.util.concurrent.ThreadLocalRandom;
  * Created on 2015/12/8 by xtypr.
  * Package cn.nukkit.block in project Nukkit .
  */
-public class BlockTNT extends BlockSolidMeta {
+public class BlockTNT extends BlockSolid {
     public static final int EXPLODE_BIT = 0b1;
     public static final int ALLOW_UNDERWATER_BIT = 0b10;
 
@@ -89,7 +89,8 @@ public class BlockTNT extends BlockSolidMeta {
 
         float mot = ThreadLocalRandom.current().nextFloat() * Mth.PI * 2;
         CompoundTag nbt = Entity.getDefaultNBT(x + 0.5, y, z + 0.5, -Mth.sin(mot) * 0.02, 0.2, -Mth.cos(mot) * 0.02)
-                .putByte("Fuse", fuse);
+                .putByte("Fuse", fuse)
+                .putBoolean("AllowUnderwater", (getDamage() & ALLOW_UNDERWATER_BIT) != 0);
         Entity tnt = new EntityPrimedTNT(
                 this.getLevel().getChunk(this.getFloorX() >> 4, this.getFloorZ() >> 4),
                 nbt, source
@@ -112,7 +113,7 @@ public class BlockTNT extends BlockSolidMeta {
     }
 
     @Override
-    public boolean onActivate(Item item, BlockFace face, Player player) {
+    public boolean onActivate(Item item, BlockFace face, float fx, float fy, float fz, Player player) {
         if (!this.level.getGameRules().getBoolean(GameRule.TNT_EXPLODES)) {
             return false;
         }

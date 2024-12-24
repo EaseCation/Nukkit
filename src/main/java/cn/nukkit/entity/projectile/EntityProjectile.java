@@ -103,17 +103,22 @@ public abstract class EntityProjectile extends Entity {
             entityHitCount = 0;
         }
 
-        EntityDamageEvent ev;
-        if (this.shootingEntity == null) {
-            ev = new EntityDamageByEntityEvent(this, entity, DamageCause.PROJECTILE, damage, knockBackH, knockBackV);
+        boolean dealDamage;
+        if (dealImpactDamage()) {
+            EntityDamageEvent ev;
+            if (this.shootingEntity == null) {
+                ev = new EntityDamageByEntityEvent(this, entity, DamageCause.PROJECTILE, damage, knockBackH, knockBackV);
+            } else {
+                ev = new EntityDamageByChildEntityEvent(this.shootingEntity, this, entity, DamageCause.PROJECTILE, damage);
+                ((EntityDamageByChildEntityEvent) ev).setKnockBack(knockBackH, knockBackV);
+            }
+            dealDamage = entity.attack(ev);
         } else {
-            ev = new EntityDamageByChildEntityEvent(this.shootingEntity, this, entity, DamageCause.PROJECTILE, damage);
-            ((EntityDamageByChildEntityEvent) ev).setKnockBack(knockBackH, knockBackV);
+            dealDamage = false;
         }
-        boolean success = entity.attack(ev);
         this.hadCollision = true;
 
-        if (success) {
+        if (dealDamage) {
             postHurt(entity);
 
             if (this.fireTicks > 0) {
@@ -418,6 +423,10 @@ public abstract class EntityProjectile extends Entity {
 
     @Override
     public boolean canPassThroughBarrier() {
+        return true;
+    }
+
+    protected boolean dealImpactDamage() {
         return true;
     }
 

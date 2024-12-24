@@ -14,7 +14,7 @@ public class ObjectOakTree extends ObjectTree {
 
     @Override
     public int getTrunkBlock() {
-        return Block.LOG;
+        return Block.OAK_LOG;
     }
 
     @Override

@@ -3,7 +3,7 @@ package cn.nukkit.dispenser;
 import cn.nukkit.block.Block;
 import cn.nukkit.block.BlockDispenser;
 import cn.nukkit.block.BlockID;
-import cn.nukkit.block.BlockUndyedShulkerBox;
+import cn.nukkit.block.BlockShulkerBox;
 import cn.nukkit.blockentity.BlockEntity;
 import cn.nukkit.blockentity.BlockEntityShulkerBox;
 import cn.nukkit.item.Item;
@@ -17,7 +17,7 @@ public class ShulkerBoxDispenseBehavior extends DefaultDispenseBehavior {
         Block target = block.getSide(face);
         Block shulkerBox = item.getBlock();
 
-        if (!(shulkerBox instanceof BlockUndyedShulkerBox)) {
+        if (!(shulkerBox instanceof BlockShulkerBox)) {
             return super.dispense(block, face, item);
         }
 

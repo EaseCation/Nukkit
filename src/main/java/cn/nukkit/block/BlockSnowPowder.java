@@ -111,13 +111,4 @@ public class BlockSnowPowder extends BlockFlowable {
     public BlockColor getColor() {
         return BlockColor.SNOW_BLOCK_COLOR;
     }
-
-    @Override
-    public int getFullId() {
-        return getId() << BLOCK_META_BITS;
-    }
-
-    @Override
-    public void setDamage(int meta) {
-    }
 }

@@ -4,7 +4,6 @@ import cn.nukkit.utils.BlockColor;
 
 public class BlockFenceWarped extends BlockFence {
     public BlockFenceWarped() {
-        super(0);
     }
 
     @Override
@@ -35,14 +34,5 @@ public class BlockFenceWarped extends BlockFence {
     @Override
     public int getFuelTime() {
         return 0;
-    }
-
-    @Override
-    public int getFullId() {
-        return getId() << BLOCK_META_BITS;
-    }
-
-    @Override
-    public void setDamage(int meta) {
     }
 }

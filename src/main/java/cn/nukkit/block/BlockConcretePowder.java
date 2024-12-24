@@ -11,29 +11,13 @@ import cn.nukkit.utils.DyeColor;
  * Created by CreeperFace on 2.6.2017.
  */
 public class BlockConcretePowder extends BlockFallable {
-    private int meta;
 
     public BlockConcretePowder() {
         this(0);
     }
 
     public BlockConcretePowder(int meta) {
-        this.meta = meta;
-    }
-
-    @Override
-    public int getFullId() {
-        return (getId() << BLOCK_META_BITS) | getDamage();
-    }
-
-    @Override
-    public final int getDamage() {
-        return this.meta;
-    }
-
-    @Override
-    public final void setDamage(int meta) {
-        this.meta = meta;
+        super(meta);
     }
 
     @Override
@@ -71,7 +55,7 @@ public class BlockConcretePowder extends BlockFallable {
             for (int side = 1; side <= 5; side++) {
                 Block block = this.getSide(BlockFace.fromIndex(side));
                 if (block.isWater()) {
-                    this.level.setBlock(this, Block.get(Block.CONCRETE, this.meta), true, true);
+                    this.level.setBlock(this, Block.get(BlockConcrete.CONCRETES[getDamage() & 0xf]), true, true);
                 }
             }
 
@@ -81,7 +65,7 @@ public class BlockConcretePowder extends BlockFallable {
     }
 
     @Override
-    public boolean place(Item item, Block b, Block target, BlockFace face, double fx, double fy, double fz, Player player) {
+    public boolean place(Item item, Block b, Block target, BlockFace face, float fx, float fy, float fz, Player player) {
         boolean concrete = false;
 
         for (int side = 1; side <= 5; side++) {
@@ -93,7 +77,7 @@ public class BlockConcretePowder extends BlockFallable {
         }
 
         if (concrete) {
-            this.level.setBlock(this, Block.get(Block.CONCRETE, this.getDamage()), true, true);
+            this.level.setBlock(this, Block.get(BlockConcrete.CONCRETES[getDamage() & 0xf]), true, true);
         } else {
             this.level.setBlock(this, this, true, true);
         }

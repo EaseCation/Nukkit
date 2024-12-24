@@ -16,7 +16,7 @@ import javax.annotation.Nullable;
  * Created on 2015/11/22 by CreeperFace.
  * Package cn.nukkit.block in project Nukkit .
  */
-public class BlockDaylightDetector extends BlockTransparentMeta {
+public class BlockDaylightDetector extends BlockTransparent {
 
     public BlockDaylightDetector() {
         this(0);
@@ -105,7 +105,7 @@ public class BlockDaylightDetector extends BlockTransparentMeta {
     }
 
     @Override
-    public boolean place(Item item, Block block, Block target, BlockFace face, double fx, double fy, double fz, Player player) {
+    public boolean place(Item item, Block block, Block target, BlockFace face, float fx, float fy, float fz, Player player) {
         if (!super.place(item, block, target, face, fx, fy, fz, player)) {
             return false;
         }
@@ -119,7 +119,7 @@ public class BlockDaylightDetector extends BlockTransparentMeta {
     }
 
     @Override
-    public boolean onActivate(Item item, BlockFace face, Player player) {
+    public boolean onActivate(Item item, BlockFace face, float fx, float fy, float fz, Player player) {
         level.setBlock(this, get(DAYLIGHT_DETECTOR_INVERTED), true);
         return true;
     }

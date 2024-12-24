@@ -9,7 +9,7 @@ import cn.nukkit.math.SimpleAxisAlignedBB;
 import cn.nukkit.utils.BlockColor;
 import cn.nukkit.utils.Faceable;
 
-public class BlockAmethystCluster extends BlockTransparentMeta implements Faceable {
+public class BlockAmethystCluster extends BlockTransparent implements Faceable {
     public static final int FACING_DIRECTION_MASK = 0b111;
 
     public BlockAmethystCluster() {
@@ -68,7 +68,7 @@ public class BlockAmethystCluster extends BlockTransparentMeta implements Faceab
     }
 
     @Override
-    public boolean place(Item item, Block block, Block target, BlockFace face, double fx, double fy, double fz, Player player) {
+    public boolean place(Item item, Block block, Block target, BlockFace face, float fx, float fy, float fz, Player player) {
         setDamage(face.getIndex());
 
         if (!canSurvive()) {

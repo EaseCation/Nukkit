@@ -37,17 +37,17 @@ public class BlockSlabCopperCutExposed extends BlockSlabCopperCut {
     }
 
     @Override
-    protected int getWaxedBlockId() {
+    public int getWaxedBlockId() {
         return WAXED_EXPOSED_CUT_COPPER_SLAB;
     }
 
     @Override
-    protected int getIncrementAgeBlockId() {
+    public int getIncrementAgeBlockId() {
         return WEATHERED_CUT_COPPER_SLAB;
     }
 
     @Override
-    protected int getDecrementAgeBlockId() {
+    public int getDecrementAgeBlockId() {
         return CUT_COPPER_SLAB;
     }
 }

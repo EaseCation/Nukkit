@@ -90,7 +90,7 @@ public class BlockRail extends BlockFlowable implements Faceable {
 
     //Information from http://minecraft.gamepedia.com/Rail
     @Override
-    public boolean place(Item item, Block block, Block target, BlockFace face, double fx, double fy, double fz, Player player) {
+    public boolean place(Item item, Block block, Block target, BlockFace face, float fx, float fy, float fz, Player player) {
         if (!canSurvive()) {
             return false;
         }

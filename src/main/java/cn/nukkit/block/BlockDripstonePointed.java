@@ -17,7 +17,7 @@ import it.unimi.dsi.fastutil.objects.ObjectArrayList;
 
 import java.util.List;
 
-public class BlockDripstonePointed extends BlockTransparentMeta {
+public class BlockDripstonePointed extends BlockTransparent {
     public static final int THICKNESS_TIP = 0;
     public static final int THICKNESS_FRUSTUM = 1;
     public static final int THICKNESS_MIDDLE = 2;
@@ -66,7 +66,7 @@ public class BlockDripstonePointed extends BlockTransparentMeta {
     }
 
     @Override
-    public boolean place(Item item, Block block, Block target, BlockFace face, double fx, double fy, double fz, Player player) {
+    public boolean place(Item item, Block block, Block target, BlockFace face, float fx, float fy, float fz, Player player) {
         BlockFace side = face.getOpposite();
         if (!face.isVertical()) {
             side = BlockFace.DOWN;

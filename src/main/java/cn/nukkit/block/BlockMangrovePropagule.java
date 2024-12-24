@@ -10,7 +10,7 @@ import cn.nukkit.utils.BlockColor;
 
 import java.util.concurrent.ThreadLocalRandom;
 
-public class BlockMangrovePropagule extends BlockTransparentMeta {
+public class BlockMangrovePropagule extends BlockTransparent {
     public static final int STAGE_MASK = 0b111;
     public static final int HANGING_BIT = 0b1000;
 
@@ -61,7 +61,7 @@ public class BlockMangrovePropagule extends BlockTransparentMeta {
     }
 
     @Override
-    public boolean place(Item item, Block block, Block target, BlockFace face, double fx, double fy, double fz, Player player) {
+    public boolean place(Item item, Block block, Block target, BlockFace face, float fx, float fy, float fz, Player player) {
         setDamage(0);
 
         if (!canSurvive()) {
@@ -80,8 +80,8 @@ public class BlockMangrovePropagule extends BlockTransparentMeta {
     }
 
     @Override
-    public boolean onActivate(Item item, BlockFace face, Player player) {
-        if (item.isBoneMeal()) {
+    public boolean onActivate(Item item, BlockFace face, float fx, float fy, float fz, Player player) {
+        if (item.isFertilizer()) {
             if (!isHanging()) {
                 if (player != null && !player.isCreative()) {
                     item.pop();

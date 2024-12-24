@@ -11,6 +11,10 @@ public abstract class BlockSolid extends Block {
     protected BlockSolid() {
     }
 
+    protected BlockSolid(int meta) {
+        super(meta);
+    }
+
     @Override
     public boolean isSolid() {
         return true;

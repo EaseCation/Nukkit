@@ -41,18 +41,8 @@ public class BlockPodzol extends BlockDirt {
     }
 
     @Override
-    public boolean onActivate(Item item, BlockFace face, Player player) {
+    public boolean onActivate(Item item, BlockFace face, float fx, float fy, float fz, Player player) {
         return false;
-    }
-
-    @Override
-    public int getFullId() {
-        return this.getId() << BLOCK_META_BITS;
-    }
-
-    @Override
-    public void setDamage(int meta) {
-
     }
 
     @Override

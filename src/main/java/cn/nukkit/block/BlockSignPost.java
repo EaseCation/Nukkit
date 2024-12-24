@@ -13,6 +13,7 @@ import cn.nukkit.level.Level;
 import cn.nukkit.math.AxisAlignedBB;
 import cn.nukkit.math.BlockFace;
 import cn.nukkit.math.Mth;
+import cn.nukkit.math.Vector3;
 import cn.nukkit.nbt.tag.CompoundTag;
 import cn.nukkit.nbt.tag.Tag;
 import cn.nukkit.network.protocol.LevelEventPacket;
@@ -25,7 +26,8 @@ import static cn.nukkit.GameVersion.*;
 /**
  * @author Nukkit Project Team
  */
-public class BlockSignPost extends BlockTransparentMeta implements Faceable {
+public class BlockSignPost extends BlockTransparent implements Faceable {
+    private static final Vector3 CENTER = new Vector3(0.5, 0.5, 0.5);
 
     public BlockSignPost() {
         this(0);
@@ -71,7 +73,7 @@ public class BlockSignPost extends BlockTransparentMeta implements Faceable {
     }
 
     @Override
-    public boolean place(Item item, Block block, Block target, BlockFace face, double fx, double fy, double fz, Player player) {
+    public boolean place(Item item, Block block, Block target, BlockFace face, float fx, float fy, float fz, Player player) {
         if (face != BlockFace.DOWN) {
             if (face == BlockFace.UP) {
                 if (down().canBeFlowedInto()) {
@@ -113,6 +115,7 @@ public class BlockSignPost extends BlockTransparentMeta implements Faceable {
             }
 
             if (player != null) {
+                sign.lockedForEditingBy = player;
                 player.openSignEditor(getFloorX(), getFloorY(), getFloorZ());
             }
             return true;
@@ -150,7 +153,7 @@ public class BlockSignPost extends BlockTransparentMeta implements Faceable {
 
     @Override
     public BlockFace getBlockFace() {
-        return BlockFace.fromIndex(this.getDamage() & 0x07);
+        return BlockFace.fromHorizontalIndex((this.getDamage() + 1) / 4);
     }
 
     @Override
@@ -159,21 +162,35 @@ public class BlockSignPost extends BlockTransparentMeta implements Faceable {
     }
 
     @Override
-    public boolean onActivate(Item item, BlockFace face, Player player) {
-        if (item.getId() == Item.DYE) {
+    public boolean onActivate(Item item, BlockFace face, float fx, float fy, float fz, Player player) {
+        if (!(level.getBlockEntity(this) instanceof BlockEntitySign sign)) {
+            return false;
+        }
+
+        if (sign.isWaxed()) {
+            return true;
+        }
+
+        if (item.is(Item.HONEYCOMB)) {
+            sign.setWaxed(true);
+            sign.spawnToAll();
+
+            if (player != null && player.isSurvivalLike()) {
+                item.pop();
+            }
+            return true;
+        }
+
+        boolean front = player == null || isFacingFront(player);
+
+        if (item.getId() == Item.DYE && !sign.isEmpty(front)) {
             int meta = item.getDamage();
             if (V1_20_10.isAvailable() && (meta == ItemDye.COCOA_BEANS || meta == ItemDye.LAPIS_LAZULI || meta == ItemDye.BONE_MEAL)) {
                 return true;
             }
 
-            BlockEntity blockEntity = this.level.getBlockEntity(this);
-            if (!(blockEntity instanceof BlockEntitySign)) {
-                return false;
-            }
-            BlockEntitySign sign = (BlockEntitySign) blockEntity;
-
             if (meta == ItemDye.INK_SAC) {
-                if (!sign.isGlowing()) {
+                if (!sign.isGlowing(front)) {
                     if (player != null) {
                         sign.spawnTo(player);
                     }
@@ -189,7 +206,7 @@ public class BlockSignPost extends BlockTransparentMeta implements Faceable {
                     return false;
                 }
 
-                sign.setGlowing(false);
+                sign.setGlowing(front, false);
                 sign.spawnToAll();
 
                 this.level.addLevelEvent(this, LevelEventPacket.EVENT_SOUND_INK_SAC_USED);
@@ -202,7 +219,7 @@ public class BlockSignPost extends BlockTransparentMeta implements Faceable {
             }
 
             BlockColor color = DyeColor.getByDyeNewData(meta).getSignColor();
-            if (color.equals(sign.getColor())) {
+            if (color.equals(sign.getColor(front))) {
                 if (player != null) {
                     sign.spawnTo(player);
                 }
@@ -218,7 +235,7 @@ public class BlockSignPost extends BlockTransparentMeta implements Faceable {
                 return false;
             }
 
-            sign.setColor(color);
+            sign.setColor(front, color);
             sign.spawnToAll();
 
             this.level.addLevelEvent(this, LevelEventPacket.EVENT_SOUND_DYE_USED);
@@ -230,14 +247,8 @@ public class BlockSignPost extends BlockTransparentMeta implements Faceable {
             return true;
         }
 
-        if (item.getId() == Item.GLOW_INK_SAC) {
-            BlockEntity blockEntity = this.level.getBlockEntity(this);
-            if (!(blockEntity instanceof BlockEntitySign)) {
-                return false;
-            }
-            BlockEntitySign sign = (BlockEntitySign) blockEntity;
-
-            if (sign.isGlowing()) {
+        if (item.getId() == Item.GLOW_INK_SAC && !sign.isEmpty(front)) {
+            if (sign.isGlowing(front)) {
                 if (player != null) {
                     sign.spawnTo(player);
                 }
@@ -253,7 +264,7 @@ public class BlockSignPost extends BlockTransparentMeta implements Faceable {
                 return false;
             }
 
-            sign.setGlowing(true);
+            sign.setGlowing(front, true);
             sign.spawnToAll();
 
             this.level.addLevelEvent(this, LevelEventPacket.EVENT_SOUND_INK_SAC_USED);
@@ -265,7 +276,19 @@ public class BlockSignPost extends BlockTransparentMeta implements Faceable {
             return true;
         }
 
-        return false;
+        if (player == null || face == null) {
+            return true;
+        }
+
+        Player lockedForEditingBy = sign.lockedForEditingBy;
+        if (lockedForEditingBy != null && lockedForEditingBy.isOnline() && level == lockedForEditingBy.level
+                && lockedForEditingBy.canInteract(this, lockedForEditingBy.isCreativeLike() ? Player.MAX_REACH_DISTANCE_CREATIVE : Player.MAX_REACH_DISTANCE_SURVIVAL)) {
+            return true;
+        }
+        sign.lockedForEditingBy = player;
+
+        player.openSignEditor(getFloorX(), getFloorY(), getFloorZ(), front);
+        return true;
     }
 
     @Override
@@ -304,5 +327,18 @@ public class BlockSignPost extends BlockTransparentMeta implements Faceable {
     @Override
     public boolean isStandingSign() {
         return true;
+    }
+
+    public boolean isFacingFront(Player player) {
+        Vector3 center = getSignCenter();
+        return Mth.degreesDifferenceAbs(getRotationDegrees(), (float) Mth.atan2(player.z - (z + center.z), player.x - (x + center.x)) * Mth.RAD_TO_DEG - 90) <= 90;
+    }
+
+    protected float getRotationDegrees() {
+        return getDamage() * 360f / 16;
+    }
+
+    protected Vector3 getSignCenter() {
+        return CENTER;
     }
 }

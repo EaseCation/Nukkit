@@ -13,7 +13,7 @@ import java.util.concurrent.ThreadLocalRandom;
 
 import static cn.nukkit.GameVersion.*;
 
-public class BlockTurtleEgg extends BlockTransparentMeta {
+public class BlockTurtleEgg extends BlockTransparent {
 
     public static final int EGG_COUNT_MASK = 0b11;
     public static final int EGG_COUNT_BITS = 2;
@@ -128,7 +128,7 @@ public class BlockTurtleEgg extends BlockTransparentMeta {
     }
 
     @Override
-    public boolean place(Item item, Block block, Block target, BlockFace face, double fx, double fy, double fz, Player player) {
+    public boolean place(Item item, Block block, Block target, BlockFace face, float fx, float fy, float fz, Player player) {
         if (!SupportType.hasFullSupport(down(), BlockFace.UP)) {
             return false;
         }
@@ -147,7 +147,7 @@ public class BlockTurtleEgg extends BlockTransparentMeta {
     }
 
     @Override
-    public boolean onActivate(Item item, BlockFace face, Player player) {
+    public boolean onActivate(Item item, BlockFace face, float fx, float fy, float fz, Player player) {
         if (item.getId() == getItemId()) {
             int count = getEggCount();
             if (count == 4) {

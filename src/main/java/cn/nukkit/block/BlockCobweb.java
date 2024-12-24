@@ -82,13 +82,4 @@ public class BlockCobweb extends BlockFlowable {
     public boolean canContainWater() {
         return true;
     }
-
-    @Override
-    public int getFullId() {
-        return getId() << BLOCK_META_BITS;
-    }
-
-    @Override
-    public void setDamage(int meta) {
-    }
 }

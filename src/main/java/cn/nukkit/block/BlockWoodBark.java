@@ -6,7 +6,7 @@ import cn.nukkit.math.BlockFace;
 import cn.nukkit.network.protocol.LevelSoundEventPacket;
 import cn.nukkit.utils.BlockColor;
 
-public class BlockWoodBark extends BlockSolidMeta {
+public class BlockWoodBark extends BlockSolid {
 
     public static final int OAK = 0;
     public static final int SPRUCE = 1;
@@ -100,7 +100,7 @@ public class BlockWoodBark extends BlockSolidMeta {
             case JUNGLE:
                 return BlockColor.DIRT_BLOCK_COLOR;
             case ACACIA:
-                return BlockColor.ORANGE_BLOCK_COLOR;
+                return BlockColor.GRAY_BLOCK_COLOR;
             case DARK_OAK:
                 return BlockColor.BROWN_BLOCK_COLOR;
         }
@@ -112,7 +112,7 @@ public class BlockWoodBark extends BlockSolidMeta {
     }
 
     @Override
-    public boolean onActivate(Item item, BlockFace face, Player player) {
+    public boolean onActivate(Item item, BlockFace face, float fx, float fy, float fz, Player player) {
         if (isStripped() || !item.isAxe()) {
             return false;
         }
@@ -147,7 +147,7 @@ public class BlockWoodBark extends BlockSolidMeta {
     }
 
     @Override
-    public boolean place(Item item, Block block, Block target, BlockFace face, double fx, double fy, double fz, Player player) {
+    public boolean place(Item item, Block block, Block target, BlockFace face, float fx, float fy, float fz, Player player) {
         setDamage((getDamage() & 0b1111) | FACES[face.getIndex()]);
         return level.setBlock(this, this, true);
     }

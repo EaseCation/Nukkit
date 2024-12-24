@@ -11,7 +11,7 @@ import cn.nukkit.utils.BlockColor;
 /**
  * @author CreeperFace
  */
-public class BlockTripWire extends BlockTransparentMeta {
+public class BlockTripWire extends BlockTransparent {
 
     public BlockTripWire(int meta) {
         super(meta);
@@ -190,7 +190,7 @@ public class BlockTripWire extends BlockTransparentMeta {
     }
 
     @Override
-    public boolean place(Item item, Block block, Block target, BlockFace face, double fx, double fy, double fz, Player player) {
+    public boolean place(Item item, Block block, Block target, BlockFace face, float fx, float fy, float fz, Player player) {
         this.getLevel().setBlock(this, this, true, true);
         this.updateHook(false);
 

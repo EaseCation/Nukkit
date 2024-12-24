@@ -51,7 +51,7 @@ public class BlockCakeCandle extends BlockCake {
     }
 
     @Override
-    public boolean onActivate(Item item, BlockFace face, Player player) {
+    public boolean onActivate(Item item, BlockFace face, float fx, float fy, float fz, Player player) {
         int id = item.getId();
         if (id == Item.FIRE_CHARGE) {
             if (isLit()) {

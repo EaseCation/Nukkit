@@ -4,6 +4,7 @@ import cn.nukkit.Player;
 import cn.nukkit.entity.Entity;
 import cn.nukkit.entity.EntityFullNames;
 import cn.nukkit.entity.projectile.EntityEnderPearl;
+import cn.nukkit.entity.projectile.EntityIceBomb;
 import cn.nukkit.entity.projectile.EntityProjectile;
 import cn.nukkit.entity.projectile.ProjectileFactory;
 import cn.nukkit.event.entity.ProjectileLaunchEvent;
@@ -36,6 +37,11 @@ public abstract class ProjectileItem extends Item {
                     projectile.close();
                     return false;
                 }
+            } else if (projectile instanceof EntityIceBomb) {
+                if (player.getServer().getTick() - player.getLastIceBombThrowingTick() < 20) {
+                    projectile.close();
+                    return false;
+                }
             }
 
             projectile.setMotion(projectile.getMotion().multiply(this.getThrowForce()));
@@ -50,6 +56,8 @@ public abstract class ProjectileItem extends Item {
                 }
                 if (projectile instanceof EntityEnderPearl) {
                     player.onThrowEnderPearl();
+                } else if (projectile instanceof EntityIceBomb) {
+                    player.onThrowIceBomb();
                 }
                 projectile.spawnToAll();
                 player.getLevel().addLevelSoundEvent(player, LevelSoundEventPacket.SOUND_THROW, EntityFullNames.PLAYER);

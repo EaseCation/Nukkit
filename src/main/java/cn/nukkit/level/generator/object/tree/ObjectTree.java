@@ -14,10 +14,14 @@ public abstract class ObjectTree {
         switch (id) {
             case Block.AIR:
             case Block.SAPLING:
-            case Block.LOG:
+            case Block.OAK_LOG:
+            case Block.SPRUCE_LOG:
+            case Block.BIRCH_LOG:
+            case Block.JUNGLE_LOG:
             case Block.LEAVES:
             case Block.SNOW_LAYER:
-            case Block.LOG2:
+            case Block.ACACIA_LOG:
+            case Block.DARK_OAK_LOG:
             case Block.LEAVES2:
                 return true;
             default:
@@ -30,7 +34,7 @@ public abstract class ObjectTree {
     }
 
     public int getTrunkBlock() {
-        return Block.LOG;
+        return Block.OAK_LOG;
     }
 
     public int getLeafBlock() {
@@ -124,7 +128,7 @@ public abstract class ObjectTree {
         for (int yy = 0; yy < trunkHeight; ++yy) {
             int blockId = level.getBlockIdAt(0, x, y + yy, z);
             if (this.overridable(blockId)) {
-                level.setBlockAt(0, x, y + yy, z, this.getTrunkBlock(), this.getType());
+                level.setBlockAt(0, x, y + yy, z, this.getTrunkBlock());
             }
         }
     }

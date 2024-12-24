@@ -8,6 +8,7 @@ import cn.nukkit.command.data.CommandParamOption;
 import cn.nukkit.command.data.CommandParamType;
 import cn.nukkit.command.data.CommandParameter;
 import cn.nukkit.command.exceptions.CommandSyntaxException;
+import cn.nukkit.inventory.ArmorInventory;
 import cn.nukkit.inventory.PlayerInventory;
 import cn.nukkit.inventory.PlayerOffhandInventory;
 import cn.nukkit.item.Item;
@@ -62,6 +63,7 @@ public class ClearCommand extends VanillaCommand {
             for (Player target : targets) {
                 PlayerInventory inventory = target.getInventory();
                 PlayerOffhandInventory offhand = target.getOffhandInventory();
+                ArmorInventory armorInventory = target.getArmorInventory();
 
                 if (item == null) {
                     int count = 0;
@@ -71,6 +73,14 @@ public class ClearCommand extends VanillaCommand {
                         if (!slot.isNull()) {
                             count += slot.getCount();
                             inventory.clear(entry.getIntKey());
+                        }
+                    }
+
+                    for (Int2ObjectMap.Entry<Item> entry : armorInventory.getContents().int2ObjectEntrySet()) {
+                        Item slot = entry.getValue();
+                        if (!slot.isNull()) {
+                            count += slot.getCount();
+                            armorInventory.clear(entry.getIntKey());
                         }
                     }
 
@@ -89,6 +99,12 @@ public class ClearCommand extends VanillaCommand {
                     int count = 0;
 
                     for (Item slot : inventory.getContents().values()) {
+                        if (item.equals(slot, item.hasMeta(), false)) {
+                            count += slot.getCount();
+                        }
+                    }
+
+                    for (Item slot : armorInventory.getContents().values()) {
                         if (item.equals(slot, item.hasMeta(), false)) {
                             count += slot.getCount();
                         }
@@ -113,6 +129,15 @@ public class ClearCommand extends VanillaCommand {
                         if (item.equals(slot, item.hasMeta(), false)) {
                             count += slot.getCount();
                             inventory.clear(entry.getIntKey());
+                        }
+                    }
+
+                    for (Int2ObjectMap.Entry<Item> entry : armorInventory.getContents().int2ObjectEntrySet()) {
+                        Item slot = entry.getValue();
+
+                        if (item.equals(slot, item.hasMeta(), false)) {
+                            count += slot.getCount();
+                            armorInventory.clear(entry.getIntKey());
                         }
                     }
 
@@ -147,13 +172,31 @@ public class ClearCommand extends VanillaCommand {
                     }
 
                     if (remaining > 0) {
+                        for (Int2ObjectMap.Entry<Item> entry : armorInventory.getContents().int2ObjectEntrySet()) {
+                            Item slot = entry.getValue();
+
+                            if (item.equals(slot, item.hasMeta(), false)) {
+                                int count = slot.getCount();
+                                int amount = Math.min(count, remaining);
+
+                                slot.setCount(count - amount);
+                                armorInventory.setItem(entry.getIntKey(), slot);
+
+                                if ((remaining -= amount) <= 0) {
+                                    break;
+                                }
+                            }
+                        }
+                    }
+
+                    if (remaining > 0) {
                         Item slot = offhand.getItem(0);
                         if (item.equals(slot, item.hasMeta(), false)) {
                             int count = slot.getCount();
                             int amount = Math.min(count, remaining);
 
                             slot.setCount(count - amount);
-                            inventory.setItem(0, slot);
+                            offhand.setItem(0, slot);
                             remaining -= amount;
                         }
                     }

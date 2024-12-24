@@ -10,7 +10,7 @@ import cn.nukkit.utils.Faceable;
 /**
  * Created by Pub4Game on 26.12.2015.
  */
-public class BlockEndPortalFrame extends BlockTransparentMeta implements Faceable {
+public class BlockEndPortalFrame extends BlockTransparent implements Faceable {
 
     private static final int[] FACES = {2, 3, 0, 1};
 
@@ -81,7 +81,7 @@ public class BlockEndPortalFrame extends BlockTransparentMeta implements Faceabl
     }
 
     @Override
-    public boolean onActivate(Item item, BlockFace face, Player player) {
+    public boolean onActivate(Item item, BlockFace face, float fx, float fy, float fz, Player player) {
         if((this.getDamage() & 0x04) == 0 && player != null && item.getId() == Item.ENDER_EYE) {
             this.setDamage(this.getDamage() + 4);
             this.getLevel().setBlock(this, this, true, true);
@@ -108,7 +108,7 @@ public class BlockEndPortalFrame extends BlockTransparentMeta implements Faceabl
     }
 
     @Override
-    public boolean place(Item item, Block block, Block target, BlockFace face, double fx, double fy, double fz, Player player) {
+    public boolean place(Item item, Block block, Block target, BlockFace face, float fx, float fy, float fz, Player player) {
         this.setDamage(FACES[player != null ? player.getDirection().getHorizontalIndex() : 0]);
         this.getLevel().setBlock(block, this, true);
         return true;

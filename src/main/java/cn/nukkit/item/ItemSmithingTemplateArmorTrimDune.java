@@ -12,4 +12,9 @@ public class ItemSmithingTemplateArmorTrimDune extends Item {
     public ItemSmithingTemplateArmorTrimDune(Integer meta, int count) {
         super(DUNE_ARMOR_TRIM_SMITHING_TEMPLATE, meta, count, "Dune Armor Trim");
     }
+
+    @Override
+    public boolean isArmorTrimSmithingTemplate() {
+        return true;
+    }
 }

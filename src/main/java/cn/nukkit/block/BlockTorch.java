@@ -64,7 +64,7 @@ public class BlockTorch extends BlockFlowable implements Faceable {
     }
 
     @Override
-    public boolean place(Item item, Block block, Block target, BlockFace face, double fx, double fy, double fz, Player player) {
+    public boolean place(Item item, Block block, Block target, BlockFace face, float fx, float fy, float fz, Player player) {
         if (face == BlockFace.DOWN) {
             return false;
         }
@@ -122,10 +122,6 @@ public class BlockTorch extends BlockFlowable implements Faceable {
     }
 
     protected boolean canBeSupportedBy(Block support, BlockFace face) {
-        if (support.getId() == MOB_SPAWNER) {
-            return face != BlockFace.DOWN;
-        }
-
         return face == BlockFace.UP && SupportType.hasCenterSupport(support, BlockFace.UP)
                 || face != BlockFace.DOWN && SupportType.hasFullSupport(support, face);
     }

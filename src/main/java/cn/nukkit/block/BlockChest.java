@@ -21,7 +21,7 @@ import java.util.Map;
  * author: Angelic47
  * Nukkit Project
  */
-public class BlockChest extends BlockTransparentMeta implements Faceable {
+public class BlockChest extends BlockTransparent implements Faceable {
 
     protected static final int[] FACES = {2, 5, 3, 4};
 
@@ -99,7 +99,7 @@ public class BlockChest extends BlockTransparentMeta implements Faceable {
     }
 
     @Override
-    public boolean place(Item item, Block block, Block target, BlockFace face, double fx, double fy, double fz, Player player) {
+    public boolean place(Item item, Block block, Block target, BlockFace face, float fx, float fy, float fz, Player player) {
         BlockEntityChest chest = null;
         this.setDamage(FACES[player != null ? player.getDirection().getHorizontalIndex() : 0]);
 
@@ -160,7 +160,7 @@ public class BlockChest extends BlockTransparentMeta implements Faceable {
     }
 
     @Override
-    public boolean onActivate(Item item, BlockFace face, Player player) {
+    public boolean onActivate(Item item, BlockFace face, float fx, float fy, float fz, Player player) {
         if (player != null) {
             Block top = up();
             if (!top.isTransparent()) {

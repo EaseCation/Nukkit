@@ -63,7 +63,7 @@ public class BlockWaterLily extends BlockFlowable {
     }
 
     @Override
-    public boolean place(Item item, Block block, Block target, BlockFace face, double fx, double fy, double fz, Player player) {
+    public boolean place(Item item, Block block, Block target, BlockFace face, float fx, float fy, float fz, Player player) {
         if (target.isWaterSource() || !target.isAir() && target.canContainWater() && level.getExtraBlock(target).isWaterSource()) {
             Block up = target.up();
             if (up.getId() == Block.AIR) {
@@ -104,16 +104,6 @@ public class BlockWaterLily extends BlockFlowable {
     @Override
     public int getCompostableChance() {
         return 65;
-    }
-
-    @Override
-    public int getFullId() {
-        return this.getId() << BLOCK_META_BITS;
-    }
-
-    @Override
-    public void setDamage(int meta) {
-
     }
 
     @Override

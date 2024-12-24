@@ -2,8 +2,6 @@ package cn.nukkit.block;
 
 import cn.nukkit.Player;
 import cn.nukkit.item.Item;
-import cn.nukkit.item.ItemDye;
-import cn.nukkit.item.ItemID;
 import cn.nukkit.math.BlockFace;
 import cn.nukkit.utils.BlockColor;
 
@@ -16,29 +14,12 @@ public class BlockSand extends BlockFallable {
     public static final int DEFAULT = 0;
     public static final int RED = 1;
 
-    private int meta;
-
     public BlockSand() {
         this(0);
     }
 
     public BlockSand(int meta) {
-        this.meta = meta;
-    }
-
-    @Override
-    public int getFullId() {
-        return (getId() << BLOCK_META_BITS) | getDamage();
-    }
-
-    @Override
-    public final int getDamage() {
-        return this.meta;
-    }
-
-    @Override
-    public final void setDamage(int meta) {
-        this.meta = meta;
+        super(meta);
     }
 
     @Override
@@ -85,8 +66,8 @@ public class BlockSand extends BlockFallable {
     }
 
     @Override
-    public boolean onActivate(Item item, BlockFace face, Player player) {
-        if (item.getId() == ItemID.DYE && item.getDamage() == ItemDye.BONE_MEAL) {
+    public boolean onActivate(Item item, BlockFace face, float fx, float fy, float fz, Player player) {
+        if (item.isFertilizer()) {
             return BlockSeagrass.trySpawnSeaGrass(this, item, player);
         }
         return false;

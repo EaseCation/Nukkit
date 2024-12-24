@@ -10,7 +10,7 @@ import cn.nukkit.utils.BlockColor;
 
 import java.util.concurrent.ThreadLocalRandom;
 
-public class BlockIceFrosted extends BlockTransparentMeta {
+public class BlockIceFrosted extends BlockTransparent {
 
     public BlockIceFrosted() {
         this(0);
@@ -74,7 +74,7 @@ public class BlockIceFrosted extends BlockTransparentMeta {
     }
 
     @Override
-    public boolean place(Item item, Block block, Block target, BlockFace face, double fx, double fy, double fz, Player player) {
+    public boolean place(Item item, Block block, Block target, BlockFace face, float fx, float fy, float fz, Player player) {
         if (!super.place(item, block, target, face, fx, fy, fz, player)) {
             return false;
         }

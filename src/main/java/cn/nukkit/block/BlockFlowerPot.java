@@ -71,7 +71,7 @@ public class BlockFlowerPot extends BlockFlowable {
     }
 
     @Override
-    public boolean place(Item item, Block block, Block target, BlockFace face, double fx, double fy, double fz, Player player) {
+    public boolean place(Item item, Block block, Block target, BlockFace face, float fx, float fy, float fz, Player player) {
         if (!SupportType.hasCenterSupport(down(), BlockFace.UP)) {
             return false;
         }
@@ -88,7 +88,7 @@ public class BlockFlowerPot extends BlockFlowable {
     }
 
     @Override
-    public boolean onActivate(Item item, BlockFace face, Player player) {
+    public boolean onActivate(Item item, BlockFace face, float fx, float fy, float fz, Player player) {
         BlockEntityFlowerPot blockEntity = getBlockEntity();
         if (blockEntity == null) {
             blockEntity = createBlockEntity(null);

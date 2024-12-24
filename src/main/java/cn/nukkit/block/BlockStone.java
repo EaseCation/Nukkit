@@ -9,7 +9,7 @@ import cn.nukkit.utils.BlockColor;
  * author: MagicDroidX
  * Nukkit Project
  */
-public class BlockStone extends BlockSolidMeta {
+public class BlockStone extends BlockSolid {
     public static final int TYPE_NORMAL = 0;
     public static final int TYPE_GRANITE = 1;
     public static final int TYPE_POLISHED_GRANITE = 2;

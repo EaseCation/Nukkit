@@ -32,17 +32,17 @@ public class BlockCopperOxidized extends BlockCopper {
     }
 
     @Override
-    protected int getWaxedBlockId() {
+    public int getWaxedBlockId() {
         return WAXED_OXIDIZED_COPPER;
     }
 
     @Override
-    protected int getIncrementAgeBlockId() {
+    public int getIncrementAgeBlockId() {
         throw new UnsupportedOperationException();
     }
 
     @Override
-    protected int getDecrementAgeBlockId() {
+    public int getDecrementAgeBlockId() {
         return WEATHERED_COPPER;
     }
 }

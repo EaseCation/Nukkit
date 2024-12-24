@@ -16,7 +16,7 @@ import java.util.concurrent.ThreadLocalRandom;
 import static cn.nukkit.GameVersion.*;
 import static cn.nukkit.SharedConstants.*;
 
-public class BlockComposter extends BlockTransparentMeta {
+public class BlockComposter extends BlockTransparent {
 
     public BlockComposter() {
         this(0);
@@ -104,7 +104,7 @@ public class BlockComposter extends BlockTransparentMeta {
     }
 
     @Override
-    public boolean place(Item item, Block block, Block target, BlockFace face, double fx, double fy, double fz, Player player) {
+    public boolean place(Item item, Block block, Block target, BlockFace face, float fx, float fy, float fz, Player player) {
         if (!super.place(item, block, target, face, fx, fy, fz, player)) {
             return false;
         }
@@ -122,7 +122,7 @@ public class BlockComposter extends BlockTransparentMeta {
     }
 
     @Override
-    public boolean onActivate(Item item, BlockFace face, Player player) {
+    public boolean onActivate(Item item, BlockFace face, float fx, float fy, float fz, Player player) {
         int meta = getDamage();
 
         if (meta == 0x7) {

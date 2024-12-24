@@ -13,7 +13,6 @@ import cn.nukkit.utils.BlockColor;
 public class BlockFenceNetherBrick extends BlockFence {
 
     public BlockFenceNetherBrick() {
-        super(0);
     }
 
     @Override
@@ -75,14 +74,5 @@ public class BlockFenceNetherBrick extends BlockFence {
     @Override
     public int getFuelTime() {
         return 0;
-    }
-
-    @Override
-    public int getFullId() {
-        return getId() << BLOCK_META_BITS;
-    }
-
-    @Override
-    public void setDamage(int meta) {
     }
 }

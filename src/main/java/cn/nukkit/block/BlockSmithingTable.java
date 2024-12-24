@@ -47,7 +47,7 @@ public class BlockSmithingTable extends BlockSolid {
     }
 
     @Override
-    public boolean onActivate(Item item, BlockFace face, Player player) {
+    public boolean onActivate(Item item, BlockFace face, float fx, float fy, float fz, Player player) {
         if (player == null) {
             return false;
         }

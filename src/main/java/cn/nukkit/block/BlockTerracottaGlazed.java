@@ -9,7 +9,7 @@ import cn.nukkit.utils.Faceable;
 /**
  * Created by CreeperFace on 2.6.2017.
  */
-public abstract class BlockTerracottaGlazed extends BlockSolidMeta implements Faceable {
+public abstract class BlockTerracottaGlazed extends BlockSolid implements Faceable {
 
     private static final int[] FACES = {2, 5, 3, 4};
 
@@ -42,7 +42,7 @@ public abstract class BlockTerracottaGlazed extends BlockSolidMeta implements Fa
     }
 
     @Override
-    public boolean place(Item item, Block block, Block target, BlockFace face, double fx, double fy, double fz, Player player) {
+    public boolean place(Item item, Block block, Block target, BlockFace face, float fx, float fy, float fz, Player player) {
         this.setDamage(FACES[player != null ? player.getDirection().getHorizontalIndex() : 0]);
         return this.getLevel().setBlock(block, this, true, true);
     }

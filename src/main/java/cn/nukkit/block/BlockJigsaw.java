@@ -13,7 +13,7 @@ import cn.nukkit.utils.Faceable;
 
 import javax.annotation.Nullable;
 
-public class BlockJigsaw extends BlockSolidMeta implements Faceable {
+public class BlockJigsaw extends BlockSolid implements Faceable {
 
     public static final int FACING_DIRECTION_MASK = 0b111;
     public static final int FACING_DIRECTION_BITS = 3;
@@ -91,7 +91,7 @@ public class BlockJigsaw extends BlockSolidMeta implements Faceable {
     }
 
     @Override
-    public boolean place(Item item, Block block, Block target, BlockFace face, double fx, double fy, double fz, Player player) {
+    public boolean place(Item item, Block block, Block target, BlockFace face, float fx, float fy, float fz, Player player) {
         if (player != null) {
             if (!player.isCreative()) {
                 return false;
@@ -127,7 +127,7 @@ public class BlockJigsaw extends BlockSolidMeta implements Faceable {
     }
 
     @Override
-    public boolean onActivate(Item item, BlockFace face, Player player) {
+    public boolean onActivate(Item item, BlockFace face, float fx, float fy, float fz, Player player) {
         if (player == null || !player.isCreative() || !player.isOp()) {
             return true;
         }

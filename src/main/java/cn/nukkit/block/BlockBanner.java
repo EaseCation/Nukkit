@@ -21,7 +21,7 @@ import cn.nukkit.utils.Faceable;
 /**
  * Created by PetteriM1
  */
-public class BlockBanner extends BlockTransparentMeta implements Faceable {
+public class BlockBanner extends BlockTransparent implements Faceable {
 
     public BlockBanner() {
         this(0);
@@ -72,7 +72,7 @@ public class BlockBanner extends BlockTransparentMeta implements Faceable {
     }
 
     @Override
-    public boolean place(Item item, Block block, Block target, BlockFace face, double fx, double fy, double fz, Player player) {
+    public boolean place(Item item, Block block, Block target, BlockFace face, float fx, float fy, float fz, Player player) {
         if (face != BlockFace.DOWN) {
             if (face == BlockFace.UP) {
                 if (down().canBeFlowedInto()) {
@@ -144,7 +144,7 @@ public class BlockBanner extends BlockTransparentMeta implements Faceable {
 
     @Override
     public BlockFace getBlockFace() {
-        return BlockFace.fromHorizontalIndex(this.getDamage() & 0x7);
+        return BlockFace.fromHorizontalIndex((this.getDamage() + 1) / 4);
     }
 
     @Override

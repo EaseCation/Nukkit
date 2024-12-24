@@ -18,7 +18,7 @@ import java.util.Map;
 import static cn.nukkit.GameVersion.*;
 import static cn.nukkit.SharedConstants.*;
 
-public class BlockEnderChest extends BlockTransparentMeta implements Faceable {
+public class BlockEnderChest extends BlockTransparent implements Faceable {
 
     private static final int[] FACES = {2, 5, 3, 4};
 
@@ -96,7 +96,7 @@ public class BlockEnderChest extends BlockTransparentMeta implements Faceable {
     }
 
     @Override
-    public boolean place(Item item, Block block, Block target, BlockFace face, double fx, double fy, double fz, Player player) {
+    public boolean place(Item item, Block block, Block target, BlockFace face, float fx, float fy, float fz, Player player) {
         this.setDamage(FACES[player != null ? player.getDirection().getHorizontalIndex() : 0]);
 
         this.getLevel().setBlock(block, this, true, true);
@@ -118,7 +118,7 @@ public class BlockEnderChest extends BlockTransparentMeta implements Faceable {
     }
 
     @Override
-    public boolean onActivate(Item item, BlockFace face, Player player) {
+    public boolean onActivate(Item item, BlockFace face, float fx, float fy, float fz, Player player) {
         if (player != null) {
             Block top = this.up();
             if (!top.isTransparent()) {

@@ -23,7 +23,7 @@ public class BlockLogMangrove extends BlockLog {
 
     @Override
     public BlockColor getColor() {
-        return BlockColor.RED_BLOCK_COLOR;
+        return (getDamage() & PILLAR_AXIS_MASK) == 0 ? BlockColor.RED_BLOCK_COLOR : BlockColor.PODZOL_BLOCK_COLOR;
     }
 
     @Override

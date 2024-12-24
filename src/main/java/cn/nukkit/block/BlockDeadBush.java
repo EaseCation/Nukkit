@@ -38,7 +38,7 @@ public class BlockDeadBush extends BlockFlowable {
     }
 
     @Override
-    public boolean place(Item item, Block block, Block target, BlockFace face, double fx, double fy, double fz, Player player) {
+    public boolean place(Item item, Block block, Block target, BlockFace face, float fx, float fy, float fz, Player player) {
         if (canSurvive()) {
             this.getLevel().setBlock(block, this, true, true);
             return true;
@@ -87,12 +87,22 @@ public class BlockDeadBush extends BlockFlowable {
     }
 
     @Override
+    public int getBurnChance() {
+        return 60;
+    }
+
+    @Override
+    public int getBurnAbility() {
+        return 100;
+    }
+
+    @Override
     public boolean isVegetation() {
         return true;
     }
 
     private boolean canSurvive() {
         int id = down().getId();
-        return id == SAND || id == HARDENED_CLAY || id == STAINED_HARDENED_CLAY || id == DIRT || id == PODZOL || id == MYCELIUM || id == DIRT_WITH_ROOTS || id == MUD || id == GRASS_BLOCK || id == MUDDY_MANGROVE_ROOTS;
+        return id == SAND || id == HARDENED_CLAY || id == STAINED_HARDENED_CLAY || id == DIRT || id == PODZOL || id == MYCELIUM || id == DIRT_WITH_ROOTS || id == MUD || id == GRASS_BLOCK || id == MUDDY_MANGROVE_ROOTS || id == SUSPICIOUS_SAND;
     }
 }

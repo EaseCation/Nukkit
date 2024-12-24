@@ -14,7 +14,7 @@ import cn.nukkit.utils.Faceable;
 /**
  * @author CreeperFace
  */
-public abstract class BlockRedstoneDiode extends BlockTransparentMeta implements Faceable {
+public abstract class BlockRedstoneDiode extends BlockTransparent implements Faceable {
     public static final int DIRECTION_MASK = 0b11;
 
     public BlockRedstoneDiode() {
@@ -63,7 +63,7 @@ public abstract class BlockRedstoneDiode extends BlockTransparentMeta implements
     }
 
     @Override
-    public boolean place(Item item, Block block, Block target, BlockFace face, double fx, double fy, double fz, Player player) {
+    public boolean place(Item item, Block block, Block target, BlockFace face, float fx, float fy, float fz, Player player) {
         if (!SupportType.hasCenterSupport(block.getSide(BlockFace.DOWN), BlockFace.UP)) {
             return false;
         }

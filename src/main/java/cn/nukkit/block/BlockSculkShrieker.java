@@ -5,14 +5,20 @@ import cn.nukkit.blockentity.BlockEntities;
 import cn.nukkit.blockentity.BlockEntity;
 import cn.nukkit.blockentity.BlockEntitySculkShrieker;
 import cn.nukkit.blockentity.BlockEntityType;
+import cn.nukkit.entity.Entity;
 import cn.nukkit.item.Item;
+import cn.nukkit.level.Level;
+import cn.nukkit.math.AxisAlignedBB;
 import cn.nukkit.math.BlockFace;
+import cn.nukkit.math.SimpleAxisAlignedBB;
 import cn.nukkit.nbt.tag.CompoundTag;
+import cn.nukkit.network.protocol.LevelEventPacket;
+import cn.nukkit.network.protocol.LevelSoundEventPacket;
 import cn.nukkit.utils.BlockColor;
 
 import javax.annotation.Nullable;
 
-public class BlockSculkShrieker extends BlockTransparentMeta {
+public class BlockSculkShrieker extends BlockTransparent {
     public static final int ACTIVE_BIT = 0b1;
     public static final int CAN_SUMMON_BIT = 0b10;
 
@@ -70,7 +76,7 @@ public class BlockSculkShrieker extends BlockTransparentMeta {
     }
 
     @Override
-    public boolean place(Item item, Block block, Block target, BlockFace face, double fx, double fy, double fz, Player player) {
+    public boolean place(Item item, Block block, Block target, BlockFace face, float fx, float fy, float fz, Player player) {
         if (!super.place(item, block, target, face, fx, fy, fz, player)) {
             return false;
         }
@@ -86,6 +92,11 @@ public class BlockSculkShrieker extends BlockTransparentMeta {
     @Override
     public double getMaxY() {
         return y + 0.5;
+    }
+
+    @Override
+    protected AxisAlignedBB recalculateCollisionBoundingBox() {
+        return new SimpleAxisAlignedBB(x, y, z, x + 1, y + 9 / 16f, z + 1);
     }
 
     @Override
@@ -111,6 +122,44 @@ public class BlockSculkShrieker extends BlockTransparentMeta {
     @Override
     public BlockColor getColor() {
         return BlockColor.SCULK_BLOCK_COLOR;
+    }
+
+    @Override
+    public int onUpdate(int type) {
+        if (type == Level.BLOCK_UPDATE_SCHEDULED) {
+            if (!isActive()) {
+                return 0;
+            }
+
+            setActive(false);
+            level.setBlock(this, this, true);
+            return type;
+        }
+
+        return 0;
+    }
+
+    @Override
+    public boolean hasEntityCollision() {
+        return true;
+    }
+
+    @Override
+    public void onEntityCollide(Entity entity) {
+        if (isActive()) {
+            return;
+        }
+
+        level.addLevelEvent(this, LevelEventPacket.EVENT_PARTICLE_SCULK_SHRIEK, new CompoundTag()
+                .putInt("originX", getFloorX())
+                .putInt("originY", getFloorY())
+                .putInt("originZ", getFloorZ()));
+        level.addLevelSoundEvent(this, LevelSoundEventPacket.SOUND_SCULK_SHRIEKER_SHRIEK);
+
+        setActive(true);
+        level.setBlock(this, this, true);
+
+        level.scheduleUpdate(this, 90);
     }
 
     protected BlockEntitySculkShrieker createBlockEntity(@Nullable Item item) {

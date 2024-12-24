@@ -1,16 +1,12 @@
 package cn.nukkit.block;
 
 import cn.nukkit.utils.BlockColor;
+import cn.nukkit.utils.DyeColor;
 
 import static cn.nukkit.GameVersion.*;
 
 public class BlockCarpetMoss extends BlockCarpet {
     public BlockCarpetMoss() {
-        this(0);
-    }
-
-    public BlockCarpetMoss(int meta) {
-        super(0);
     }
 
     @Override
@@ -48,16 +44,17 @@ public class BlockCarpetMoss extends BlockCarpet {
     }
 
     @Override
+    public DyeColor getDyeColor() {
+        return null;
+    }
+
+    @Override
     public int getCompostableChance() {
         return 30;
     }
 
     @Override
-    public int getFullId() {
-        return getId() << BLOCK_META_BITS;
-    }
-
-    @Override
-    public void setDamage(int meta) {
+    public boolean isCarpet() {
+        return false;
     }
 }

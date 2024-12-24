@@ -14,7 +14,7 @@ import cn.nukkit.utils.Faceable;
  * Package cn.nukkit.block in project nukkit .
  * The name NetherPortalBlock comes from minecraft wiki.
  */
-public class BlockNetherPortal extends BlockTransparentMeta implements Faceable {
+public class BlockNetherPortal extends BlockTransparent implements Faceable {
     public static final int AXIS_UNKNOWN = 0;
     public static final int AXIS_X = 1;
     public static final int AXIS_Z = 2;

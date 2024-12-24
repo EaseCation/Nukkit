@@ -143,8 +143,7 @@ public class EntityItem extends Entity {
             if (cause == DamageCause.LAVA || cause == DamageCause.FIRE_TICK) {
                 level.addLevelSoundEvent(this, LevelSoundEventPacket.SOUND_FIZZ);
             }
-            int id = this.item.getId();
-            if (id != Item.SHULKER_BOX && id != Item.UNDYED_SHULKER_BOX) {
+            if (!this.item.isShulkerBox()) {
                 return true;
             }
             CompoundTag nbt = this.item.getNamedTag();

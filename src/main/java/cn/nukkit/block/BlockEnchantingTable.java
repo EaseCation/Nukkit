@@ -77,7 +77,7 @@ public class BlockEnchantingTable extends BlockTransparent {
     }
 
     @Override
-    public boolean place(Item item, Block block, Block target, BlockFace face, double fx, double fy, double fz, Player player) {
+    public boolean place(Item item, Block block, Block target, BlockFace face, float fx, float fy, float fz, Player player) {
         if (!this.getLevel().setBlock(block, this, true, true)) {
             return false;
         }
@@ -86,7 +86,7 @@ public class BlockEnchantingTable extends BlockTransparent {
     }
 
     @Override
-    public boolean onActivate(Item item, BlockFace face, Player player) {
+    public boolean onActivate(Item item, BlockFace face, float fx, float fy, float fz, Player player) {
         if (player != null) {
             BlockEntityEnchantTable enchantTable = getBlockEntity();
             if (enchantTable == null) {

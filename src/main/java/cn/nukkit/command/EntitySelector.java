@@ -31,7 +31,7 @@ import java.util.regex.Pattern;
 
 public final class EntitySelector {
 
-    private static final Pattern ENTITY_SELECTOR = Pattern.compile("^@([aeprs])(?:\\[([^ ]*)])?$");
+    private static final Pattern ENTITY_SELECTOR = Pattern.compile("^@([aeprsAEPRS])(?:\\[([^ ]*)])?$");
     private static final Splitter ARGUMENT_SEPARATOR = Splitter.on(',').omitEmptyStrings();
     private static final Splitter ARGUMENT_JOINER = Splitter.on('=').limit(2);
 
@@ -162,7 +162,7 @@ public final class EntitySelector {
     private static List<Predicate<Entity>> getTypePredicates(Map<String, String> params, String selectorType) {
         String type = getArgument(params, ARG_TYPE);
 
-        if (type != null && (selectorType.equals("e") || selectorType.equals("r")|| selectorType.equals("s"))) {
+        if (type != null && (selectorType.equalsIgnoreCase("e") || selectorType.equalsIgnoreCase("r")|| selectorType.equalsIgnoreCase("s"))) {
             boolean inverted;
 
             if (type.startsWith("!")) {
@@ -176,7 +176,7 @@ public final class EntitySelector {
             return Collections.singletonList(entity -> entity != null && (entity instanceof Player && identifier.equals("player")
                     || Entities.getTypeByIdentifier(identifier, false) == entity.getNetworkId()) != inverted);
         } else {
-            return !selectorType.equals("e") && !selectorType.equals("s") ? Collections.singletonList(entity -> entity instanceof Player) : Collections.emptyList();
+            return !selectorType.equalsIgnoreCase("e") && !selectorType.equalsIgnoreCase("s") ? Collections.singletonList(entity -> entity instanceof Player) : Collections.emptyList();
         }
     }
 
@@ -338,8 +338,8 @@ public final class EntitySelector {
             type = type.substring(1);
         }
 
-        boolean playerOnly = !selectorType.equals("e");
-        boolean random = selectorType.equals("r") && type != null;
+        boolean playerOnly = !selectorType.equalsIgnoreCase("e");
+        boolean random = selectorType.equalsIgnoreCase("r") && type != null;
 
         int dx = getInt(params, ARG_DX, 0);
         int dy = getInt(params, ARG_DY, 0);
@@ -357,9 +357,9 @@ public final class EntitySelector {
                 } else {
                     results.addAll(getNearbyEntities(level, aabb, predicate));
                 }
-            } else if (selectorType.equals("a")) {
+            } else if (selectorType.equalsIgnoreCase("a")) {
                 results.addAll(getPlayers(level, predicate));
-            } else if (!selectorType.equals("p") && (!selectorType.equals("r") || random)) {
+            } else if (!selectorType.equalsIgnoreCase("p") && (!selectorType.equalsIgnoreCase("r") || random)) {
                 results.addAll(getEntities(level, predicate));
             } else {
                 results.addAll(getPlayers(level, predicate));
@@ -378,10 +378,10 @@ public final class EntitySelector {
     }
 
     private static List<Entity> getEntitiesFromPredicates(List<Entity> matchingEntities, Map<String, String> params, CommandSender sender, String selectorType, Vector3 vec) {
-        int c = getInt(params, ARG_C, !selectorType.equals("a") && !selectorType.equals("e") ? 1 : 0);
+        int c = getInt(params, ARG_C, !selectorType.equalsIgnoreCase("a") && !selectorType.equalsIgnoreCase("e") ? 1 : 0);
 
-        if (!selectorType.equals("p") && !selectorType.equals("a") && !selectorType.equals("e")) {
-            if (selectorType.equals("r")) {
+        if (!selectorType.equalsIgnoreCase("p") && !selectorType.equalsIgnoreCase("a") && !selectorType.equalsIgnoreCase("e")) {
+            if (selectorType.equalsIgnoreCase("r")) {
                 Collections.shuffle(matchingEntities);
             }
         } else {
@@ -393,7 +393,7 @@ public final class EntitySelector {
             entity = (Entity) sender;
         }
 
-        if (entity != null && c == 1 && matchingEntities.contains(entity) && !"r".equals(selectorType)) {
+        if (entity != null && c == 1 && matchingEntities.contains(entity) && !"r".equalsIgnoreCase(selectorType)) {
             matchingEntities = ObjectArrayList.of(entity);
         }
 
@@ -492,7 +492,7 @@ public final class EntitySelector {
         if (matcher.matches()) {
             Map<String, String> map = getArgumentMap(matcher.group(2));
             String selectorType = matcher.group(1);
-            return getInt(map, ARG_C, !"a".equals(selectorType) && !"e".equals(selectorType) ? 1 : 0) != 1;
+            return getInt(map, ARG_C, !"a".equalsIgnoreCase(selectorType) && !"e".equalsIgnoreCase(selectorType) ? 1 : 0) != 1;
         }
 
         return false;

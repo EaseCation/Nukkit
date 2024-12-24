@@ -12,4 +12,9 @@ public class ItemSmithingTemplateArmorTrimSilence extends Item {
     public ItemSmithingTemplateArmorTrimSilence(Integer meta, int count) {
         super(SILENCE_ARMOR_TRIM_SMITHING_TEMPLATE, meta, count, "Silence Armor Trim");
     }
+
+    @Override
+    public boolean isArmorTrimSmithingTemplate() {
+        return true;
+    }
 }

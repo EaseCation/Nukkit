@@ -12,4 +12,9 @@ public class ItemPotterySherdFlow extends Item {
     public ItemPotterySherdFlow(Integer meta, int count) {
         super(FLOW_POTTERY_SHERD, meta, count, "Flow Pottery Sherd");
     }
+
+    @Override
+    public boolean isPotterySherd() {
+        return true;
+    }
 }

@@ -12,11 +12,11 @@ public class ItemSerializer {
         INSTANCE = Objects.requireNonNull(serializer, "serializer");
     }
 
-    public static CompoundTag serializeItem(Item item) {
+    public static CompoundTag serializeItem(@Nullable Item item) {
         return INSTANCE.serializeItem(item);
     }
 
-    public static CompoundTag serializeItemStack(Item item, int slot) {
+    public static CompoundTag serializeItemStack(@Nullable Item item, int slot) {
         return INSTANCE.serializeItemStack(item, slot);
     }
 
@@ -49,9 +49,9 @@ public class ItemSerializer {
     }
 
     public interface RuntimeItemSerializer {
-        CompoundTag serializeItem(Item item);
+        CompoundTag serializeItem(@Nullable Item item);
 
-        CompoundTag serializeItemStack(Item item, int slot);
+        CompoundTag serializeItemStack(@Nullable Item item, int slot);
 
         Item deserialize(CompoundTag tag);
 

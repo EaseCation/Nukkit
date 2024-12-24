@@ -92,7 +92,7 @@ public class BlockCoralFan extends BlockFlowable {
     }
 
     @Override
-    public boolean place(Item item, Block block, Block target, BlockFace face, double fx, double fy, double fz, Player player) {
+    public boolean place(Item item, Block block, Block target, BlockFace face, float fx, float fy, float fz, Player player) {
         Block extra = null;
         if (block.getId() == SEAGRASS || block.isLava() || block.isWater() && !block.isFullLiquid()
                 || !block.isAir() && (extra = level.getExtraBlock(this)).isWater() && !extra.isFullLiquid()) {

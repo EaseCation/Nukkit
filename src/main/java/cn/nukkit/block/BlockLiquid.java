@@ -29,7 +29,7 @@ import java.util.concurrent.ThreadLocalRandom;
  * author: MagicDroidX
  * Nukkit Project
  */
-public abstract class BlockLiquid extends BlockTransparentMeta {
+public abstract class BlockLiquid extends BlockTransparent {
 
     public static final int DOWNWARD_BIT = 0b1000;
 

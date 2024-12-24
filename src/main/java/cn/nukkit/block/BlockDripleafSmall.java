@@ -11,7 +11,7 @@ import cn.nukkit.utils.Faceable;
 
 import java.util.concurrent.ThreadLocalRandom;
 
-public class BlockDripleafSmall extends BlockTransparentMeta implements Faceable {
+public class BlockDripleafSmall extends BlockTransparent implements Faceable {
     public static final int UPPER_BIT = 0b1;
     public static final int DIRECTION_MASK = 0b110;
     public static final int DIRECTION_OFFSET = 1;
@@ -80,7 +80,7 @@ public class BlockDripleafSmall extends BlockTransparentMeta implements Faceable
     }
 
     @Override
-    public boolean place(Item item, Block block, Block target, BlockFace face, double fx, double fy, double fz, Player player) {
+    public boolean place(Item item, Block block, Block target, BlockFace face, float fx, float fy, float fz, Player player) {
         if (!block.isAir() && !block.isWater()) {
             return false;
         }
@@ -122,8 +122,8 @@ public class BlockDripleafSmall extends BlockTransparentMeta implements Faceable
     }
 
     @Override
-    public boolean onActivate(Item item, BlockFace face, Player player) {
-        if (item.isBoneMeal()) {
+    public boolean onActivate(Item item, BlockFace face, float fx, float fy, float fz, Player player) {
+        if (item.isFertilizer()) {
             if (player != null && !player.isCreative()) {
                 item.pop();
             }

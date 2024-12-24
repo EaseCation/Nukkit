@@ -13,7 +13,7 @@ import cn.nukkit.utils.Faceable;
  *
  * @author PikyCZ
  */
-public class BlockEndRod extends BlockTransparentMeta implements Faceable {
+public class BlockEndRod extends BlockTransparent implements Faceable {
 
     private static final int[] FACES = {0, 1, 3, 2, 5, 4};
 
@@ -64,7 +64,7 @@ public class BlockEndRod extends BlockTransparentMeta implements Faceable {
     }
 
     @Override
-    public boolean place(Item item, Block block, Block target, BlockFace face, double fx, double fy, double fz, Player player) {
+    public boolean place(Item item, Block block, Block target, BlockFace face, float fx, float fy, float fz, Player player) {
         this.setDamage(FACES[player != null ? face.getIndex() : 0]);
         this.getLevel().setBlock(block, this, true, true);
 

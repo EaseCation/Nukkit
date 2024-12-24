@@ -1,5 +1,11 @@
 package cn.nukkit.item;
 
+import cn.nukkit.Player;
+import cn.nukkit.block.Block;
+import cn.nukkit.level.Level;
+import cn.nukkit.math.BlockFace;
+import cn.nukkit.network.protocol.LevelSoundEventPacket;
+
 public class ItemBrush extends ItemTool {
     public ItemBrush() {
         this(0, 1);
@@ -25,6 +31,27 @@ public class ItemBrush extends ItemTool {
 
     @Override
     public boolean noDamageOnBreak() {
+        return true;
+    }
+
+    @Override
+    public boolean canBeActivated() {
+        return true;
+    }
+
+    @Override
+    public boolean onActivate(Level level, Player player, Block block, Block target, BlockFace face, float fx, float fy, float fz) {
+        if (target.isAir()) {
+            return true;
+        }
+
+        int time = level.getServer().getTick();
+        if (player.brushCooldown >= time) {
+            return true;
+        }
+        player.brushCooldown = time + 10;
+
+        level.addLevelSoundEvent(target.blockCenter(), LevelSoundEventPacket.SOUND_BRUSH, target.getFullId());
         return true;
     }
 }

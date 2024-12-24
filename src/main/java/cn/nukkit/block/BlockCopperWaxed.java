@@ -21,7 +21,7 @@ public class BlockCopperWaxed extends BlockCopper {
     }
 
     @Override
-    public boolean onActivate(Item item, BlockFace face, Player player) {
+    public boolean onActivate(Item item, BlockFace face, float fx, float fy, float fz, Player player) {
         if (item.isAxe()) {
             if (player != null && player.isSurvivalLike() && item.hurtAndBreak(1) < 0) {
                 item.pop();
@@ -48,16 +48,17 @@ public class BlockCopperWaxed extends BlockCopper {
     }
 
     @Override
-    protected final int getWaxedBlockId() {
+    public final int getWaxedBlockId() {
         throw new UnsupportedOperationException();
     }
 
     @Override
-    protected int getIncrementAgeBlockId() {
+    public int getIncrementAgeBlockId() {
         return WAXED_EXPOSED_COPPER;
     }
 
-    protected int getDewaxedBlockId() {
+    @Override
+    public int getDewaxedBlockId() {
         return COPPER_BLOCK;
     }
 }

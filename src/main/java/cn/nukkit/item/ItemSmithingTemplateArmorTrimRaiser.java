@@ -12,4 +12,9 @@ public class ItemSmithingTemplateArmorTrimRaiser extends Item {
     public ItemSmithingTemplateArmorTrimRaiser(Integer meta, int count) {
         super(RAISER_ARMOR_TRIM_SMITHING_TEMPLATE, meta, count, "Raiser Armor Trim");
     }
+
+    @Override
+    public boolean isArmorTrimSmithingTemplate() {
+        return true;
+    }
 }

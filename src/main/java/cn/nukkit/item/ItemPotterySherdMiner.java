@@ -12,4 +12,9 @@ public class ItemPotterySherdMiner extends Item {
     public ItemPotterySherdMiner(Integer meta, int count) {
         super(MINER_POTTERY_SHERD, meta, count, "Miner Pottery Sherd");
     }
+
+    @Override
+    public boolean isPotterySherd() {
+        return true;
+    }
 }

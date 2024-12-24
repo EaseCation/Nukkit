@@ -36,7 +36,7 @@ public class BlockRedstoneLamp extends BlockSolid {
     }
 
     @Override
-    public boolean place(Item item, Block block, Block target, BlockFace face, double fx, double fy, double fz, Player player) {
+    public boolean place(Item item, Block block, Block target, BlockFace face, float fx, float fy, float fz, Player player) {
         if (this.level.isBlockPowered(this)) {
             this.level.setBlock(this, Block.get(BlockID.LIT_REDSTONE_LAMP), true, true);
         } else {

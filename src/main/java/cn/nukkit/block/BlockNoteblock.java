@@ -3,9 +3,11 @@ package cn.nukkit.block;
 import cn.nukkit.Player;
 import cn.nukkit.blockentity.BlockEntities;
 import cn.nukkit.blockentity.BlockEntity;
+import cn.nukkit.blockentity.BlockEntitySkull;
 import cn.nukkit.blockentity.BlockEntityType;
 import cn.nukkit.blockentity.BlockEntityMusic;
 import cn.nukkit.item.Item;
+import cn.nukkit.item.ItemSkull;
 import cn.nukkit.level.Level;
 import cn.nukkit.level.sound.SoundEnum;
 import cn.nukkit.math.BlockFace;
@@ -14,6 +16,8 @@ import cn.nukkit.network.protocol.LevelSoundEventPacket;
 import cn.nukkit.utils.BlockColor;
 
 import javax.annotation.Nullable;
+
+import static cn.nukkit.GameVersion.*;
 
 /**
  * Created by Snake1999 on 2016/1/17.
@@ -61,7 +65,7 @@ public class BlockNoteblock extends BlockSolid {
     }
 
     @Override
-    public boolean place(Item item, Block block, Block target, BlockFace face, double fx, double fy, double fz, Player player) {
+    public boolean place(Item item, Block block, Block target, BlockFace face, float fx, float fy, float fz, Player player) {
         this.getLevel().setBlock(block, this, true);
         return this.createBlockEntity() != null;
     }
@@ -78,7 +82,46 @@ public class BlockNoteblock extends BlockSolid {
         }
     }
 
+    @Nullable
     public Instrument getInstrument() {
+        Block above = up();
+        if (V1_21_40.isAvailable()) {
+            if (above.isSkull()) {
+                switch (above.getId()) {
+                    case SKELETON_SKULL:
+                        return Instrument.SKELETON;
+                    case WITHER_SKELETON_SKULL:
+                        return Instrument.WITHER_SKELETON;
+                    case ZOMBIE_HEAD:
+                        return Instrument.ZOMBIE;
+                    case CREEPER_HEAD:
+                        return Instrument.CREEPER;
+                    case DRAGON_HEAD:
+                        return Instrument.ENDER_DRAGON;
+                    case PIGLIN_HEAD:
+                        return Instrument.PIGLIN;
+                }
+            }
+        } else if (above.is(BLOCK_SKULL) && level.getBlockEntity(above) instanceof BlockEntitySkull skull) {
+            switch (skull.getSkullType()) {
+                case ItemSkull.HEAD_SKELETON:
+                    return Instrument.SKELETON;
+                case ItemSkull.HEAD_WITHER_SKELETON:
+                    return Instrument.WITHER_SKELETON;
+                case ItemSkull.HEAD_ZOMBIE:
+                    return Instrument.ZOMBIE;
+                case ItemSkull.HEAD_CREEPER:
+                    return Instrument.CREEPER;
+                case ItemSkull.HEAD_DRAGON:
+                    return Instrument.ENDER_DRAGON;
+                case ItemSkull.HEAD_PIGLIN:
+                    return Instrument.PIGLIN;
+            }
+        }
+        if (!above.isAir()) {
+            return null;
+        }
+
         Block below = this.down();
         if (below.isWool()) {
             return Instrument.GUITAR;
@@ -220,9 +263,10 @@ public class BlockNoteblock extends BlockSolid {
     }
 
     public void emitSound() {
-        if (this.up().getId() != AIR) return;
-
         Instrument instrument = this.getInstrument();
+        if (instrument == null) {
+            return;
+        }
 
         this.level.addLevelSoundEvent(this, LevelSoundEventPacket.SOUND_NOTE, instrument.ordinal() << 8 | this.getStrength());
 
@@ -236,7 +280,7 @@ public class BlockNoteblock extends BlockSolid {
     }
 
     @Override
-    public boolean onActivate(Item item, BlockFace face, Player player) {
+    public boolean onActivate(Item item, BlockFace face, float fx, float fy, float fz, Player player) {
         this.increaseStrength();
         this.emitSound();
         return true;

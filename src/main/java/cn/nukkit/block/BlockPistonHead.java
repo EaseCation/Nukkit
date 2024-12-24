@@ -11,7 +11,7 @@ import static cn.nukkit.GameVersion.*;
 /**
  * @author CreeperFace
  */
-public class BlockPistonHead extends BlockTransparentMeta implements Faceable {
+public class BlockPistonHead extends BlockTransparent implements Faceable {
 
     public BlockPistonHead() {
         this(0);

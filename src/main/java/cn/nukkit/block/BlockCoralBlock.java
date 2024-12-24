@@ -11,7 +11,7 @@ import java.util.concurrent.ThreadLocalRandom;
 import static cn.nukkit.GameVersion.*;
 import static cn.nukkit.SharedConstants.*;
 
-public class BlockCoralBlock extends BlockSolidMeta {
+public class BlockCoralBlock extends BlockSolid {
 
     public static final int COLOR_MASK = 0b111;
     public static final int DEAD_BIT = 0b1000;
@@ -91,7 +91,7 @@ public class BlockCoralBlock extends BlockSolidMeta {
     }
 
     @Override
-    public boolean place(Item item, Block block, Block target, BlockFace face, double fx, double fy, double fz, Player player) {
+    public boolean place(Item item, Block block, Block target, BlockFace face, float fx, float fy, float fz, Player player) {
         if (!super.place(item, block, target, face, fx, fy, fz, player)) {
             return false;
         }

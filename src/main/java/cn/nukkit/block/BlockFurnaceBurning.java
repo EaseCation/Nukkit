@@ -22,7 +22,7 @@ import java.util.Map;
  * author: Angelic47
  * Nukkit Project
  */
-public class BlockFurnaceBurning extends BlockSolidMeta implements Faceable {
+public class BlockFurnaceBurning extends BlockSolid implements Faceable {
 
     private static final int[] FACES = {2, 5, 3, 4};
 
@@ -75,7 +75,7 @@ public class BlockFurnaceBurning extends BlockSolidMeta implements Faceable {
     }
 
     @Override
-    public boolean place(Item item, Block block, Block target, BlockFace face, double fx, double fy, double fz, Player player) {
+    public boolean place(Item item, Block block, Block target, BlockFace face, float fx, float fy, float fz, Player player) {
         this.setDamage(FACES[player != null ? player.getDirection().getHorizontalIndex() : 0]);
         this.getLevel().setBlock(block, this, true, true);
 
@@ -104,7 +104,7 @@ public class BlockFurnaceBurning extends BlockSolidMeta implements Faceable {
     }
 
     @Override
-    public boolean onActivate(Item item, BlockFace face, Player player) {
+    public boolean onActivate(Item item, BlockFace face, float fx, float fy, float fz, Player player) {
         if (player != null) {
             BlockEntity blockEntity = this.getLevel().getBlockEntity(this);
             BlockEntityFurnace furnace;

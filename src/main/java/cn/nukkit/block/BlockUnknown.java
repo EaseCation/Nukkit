@@ -6,7 +6,7 @@ import cn.nukkit.item.Item;
  * author: MagicDroidX
  * Nukkit Project
  */
-public class BlockUnknown extends BlockMeta {
+public class BlockUnknown extends Block {
 
     private final int id;
 

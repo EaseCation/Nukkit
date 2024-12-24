@@ -2,8 +2,6 @@ package cn.nukkit.block;
 
 import cn.nukkit.Player;
 import cn.nukkit.item.Item;
-import cn.nukkit.item.ItemDye;
-import cn.nukkit.item.ItemID;
 import cn.nukkit.math.BlockFace;
 import cn.nukkit.network.protocol.LevelSoundEventPacket;
 import cn.nukkit.utils.BlockColor;
@@ -13,7 +11,7 @@ import cn.nukkit.utils.BlockColor;
  * AMAZING COARSE DIRT added by kvetinac97
  * Nukkit Project
  */
-public class BlockDirt extends BlockSolidMeta {
+public class BlockDirt extends BlockSolid {
     public static final int TYPE_NORMAL_DIRT = 0;
     public static final int TYPE_COARSE_DIRT = 1;
 
@@ -56,7 +54,7 @@ public class BlockDirt extends BlockSolidMeta {
     }
 
     @Override
-    public boolean onActivate(Item item, BlockFace face, Player player) {
+    public boolean onActivate(Item item, BlockFace face, float fx, float fy, float fz, Player player) {
         if (item.isHoe()) {
             if (this.up().isAir()) {
                 int newId = getDamage() == TYPE_NORMAL_DIRT ? FARMLAND : DIRT;
@@ -81,7 +79,7 @@ public class BlockDirt extends BlockSolidMeta {
                 this.getLevel().setBlock(this, get(GRASS_PATH), true);
                 return true;
             }
-        } else if (item.getId() == ItemID.DYE && item.getDamage() == ItemDye.BONE_MEAL) {
+        } else if (item.isFertilizer()) {
             return BlockSeagrass.trySpawnSeaGrass(this, item, player);
         }
 

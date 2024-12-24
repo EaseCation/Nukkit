@@ -51,8 +51,8 @@ public class BlockMoss extends BlockSolid {
     }
 
     @Override
-    public boolean onActivate(Item item, BlockFace face, Player player) {
-        if (item.isBoneMeal()) {
+    public boolean onActivate(Item item, BlockFace face, float fx, float fy, float fz, Player player) {
+        if (item.isFertilizer()) {
             if (!up().isAir()) {
                 return false;
             }
@@ -73,5 +73,10 @@ public class BlockMoss extends BlockSolid {
     @Override
     public BlockColor getColor() {
         return BlockColor.GREEN_BLOCK_COLOR;
+    }
+
+    @Override
+    public int getCompostableChance() {
+        return 65;
     }
 }

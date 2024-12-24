@@ -17,7 +17,9 @@ import cn.nukkit.utils.Faceable;
 
 import javax.annotation.Nullable;
 
-public class BlockBeehive extends BlockSolidMeta implements Faceable {
+import static cn.nukkit.GameVersion.*;
+
+public class BlockBeehive extends BlockSolid implements Faceable {
 
     public static final int MAX_HONEY_LEVEL = 5;
 
@@ -88,7 +90,7 @@ public class BlockBeehive extends BlockSolidMeta implements Faceable {
     }
 
     @Override
-    public boolean onActivate(Item item, BlockFace face, Player player) {
+    public boolean onActivate(Item item, BlockFace face, float fx, float fy, float fz, Player player) {
         if (item.getId() == ItemID.GLASS_BOTTLE) {
             int honeyLevel = getHoneyLevel();
             if (honeyLevel != MAX_HONEY_LEVEL) {
@@ -133,7 +135,7 @@ public class BlockBeehive extends BlockSolidMeta implements Faceable {
     }
 
     @Override
-    public boolean place(Item item, Block block, Block target, BlockFace face, double fx, double fy, double fz, Player player) {
+    public boolean place(Item item, Block block, Block target, BlockFace face, float fx, float fy, float fz, Player player) {
         if (player != null) {
             this.setDamage((getHoneyLevel() << DIRECTION_BITS) | player.getHorizontalFacing().getOpposite().getHorizontalIndex());
         }
@@ -144,6 +146,9 @@ public class BlockBeehive extends BlockSolidMeta implements Faceable {
 
     @Override
     public int getFuelTime() {
+        if (true || V1_21_40.isAvailable()) {
+            return 0;
+        }
         return 300;
     }
 

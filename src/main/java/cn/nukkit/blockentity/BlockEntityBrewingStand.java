@@ -267,7 +267,7 @@ public class BlockEntityBrewingStand extends BlockEntityAbstractContainer {
         }
 
         if (this.hasName()) {
-            nbt.put("CustomName", namedTag.get("CustomName"));
+            nbt.putString("CustomName", getName());
         }
 
         return nbt;

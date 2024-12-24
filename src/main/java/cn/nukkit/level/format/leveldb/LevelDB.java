@@ -469,7 +469,9 @@ public class LevelDB implements LevelProvider {
         int subChunkKeyOffset = chunkVersion >= 24 && chunkVersion <= 26 ? 4 : 0;
 
         switch (chunkVersion) {
-//            case 40: // 1.18.30
+//            case 41: // 1.21.40
+                //TODO: BiomeStates became shorts instead of bytes
+            case 40: // 1.18.30
             case 39: // 1.18.0.25 beta
             case 38: // 1.18.0.24 beta internal_experimental
             case 37: // 1.18.0.24 beta experimental

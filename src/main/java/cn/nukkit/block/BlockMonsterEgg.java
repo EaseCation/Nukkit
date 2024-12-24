@@ -8,7 +8,7 @@ import cn.nukkit.utils.BlockColor;
 
 import static cn.nukkit.GameVersion.*;
 
-public class BlockMonsterEgg extends BlockSolidMeta {
+public class BlockMonsterEgg extends BlockSolid {
     public static final int TYPE_STONE = 0;
     public static final int TYPE_COBBLESTONE = 1;
     public static final int TYPE_STONE_BRICK = 2;

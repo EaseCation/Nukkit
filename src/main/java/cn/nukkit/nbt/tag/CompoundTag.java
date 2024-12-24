@@ -399,6 +399,10 @@ public class CompoundTag extends Tag implements Cloneable {
         return getByte(name) != 0;
     }
 
+    public boolean getBoolean(String name, boolean defaultValue) {
+        return getByte(name, defaultValue ? 1 : 0) != 0;
+    }
+
     public String toString() {
         StringJoiner joiner = new StringJoiner(",\n\t");
         tags.forEach((key, tag) -> joiner.add("'" + key + "' : " + tag.toString().replace("\n", "\n\t")));

@@ -3,13 +3,20 @@ package cn.nukkit.block;
 import cn.nukkit.math.AxisAlignedBB;
 import cn.nukkit.math.BlockFace;
 import cn.nukkit.math.SimpleAxisAlignedBB;
-import cn.nukkit.utils.BlockColor;
 
 /**
  * Created on 2015/12/7 by xtypr.
  * Package cn.nukkit.block in project Nukkit .
  */
-public class BlockFence extends BlockTransparentMeta {
+public abstract class BlockFence extends BlockTransparent {
+    public static final int[] FENCES = {
+            OAK_FENCE,
+            SPRUCE_FENCE,
+            BIRCH_FENCE,
+            JUNGLE_FENCE,
+            ACACIA_FENCE,
+            DARK_OAK_FENCE,
+    };
 
     public static final int OAK = 0;
     public static final int SPRUCE = 1;
@@ -17,30 +24,6 @@ public class BlockFence extends BlockTransparentMeta {
     public static final int JUNGLE = 3;
     public static final int ACACIA = 4;
     public static final int DARK_OAK = 5;
-
-    private static final String[] NAMES = new String[]{
-            "Oak Fence",
-            "Spruce Fence",
-            "Birch Fence",
-            "Jungle Fence",
-            "Acacia Fence",
-            "Dark Oak Fence",
-            "Fence",
-            "Fence",
-    };
-
-    public BlockFence() {
-        this(0);
-    }
-
-    public BlockFence(int meta) {
-        super(meta);
-    }
-
-    @Override
-    public int getId() {
-        return FENCE;
-    }
 
     @Override
     public float getHardness() {
@@ -55,11 +38,6 @@ public class BlockFence extends BlockTransparentMeta {
     @Override
     public int getToolType() {
         return BlockToolType.AXE;
-    }
-
-    @Override
-    public String getName() {
-        return NAMES[this.getDamage() & 0x07];
     }
 
     @Override
@@ -94,25 +72,6 @@ public class BlockFence extends BlockTransparentMeta {
 
     public boolean canConnect(Block block, BlockFace face) {
         return block.isFence() && block.getId() != NETHER_BRICK_FENCE || block.isFenceGate() || SupportType.hasFullSupport(block, face);
-    }
-
-    @Override
-    public BlockColor getColor() {
-        switch (this.getDamage() & 0x07) {
-            default:
-            case BlockFence.OAK:
-                return BlockColor.WOOD_BLOCK_COLOR;
-            case BlockFence.SPRUCE:
-                return BlockColor.PODZOL_BLOCK_COLOR;
-            case BlockFence.BIRCH:
-                return BlockColor.SAND_BLOCK_COLOR;
-            case BlockFence.JUNGLE:
-                return BlockColor.DIRT_BLOCK_COLOR;
-            case BlockFence.ACACIA:
-                return BlockColor.ORANGE_BLOCK_COLOR;
-            case BlockFence.DARK_OAK:
-                return BlockColor.BROWN_BLOCK_COLOR;
-        }
     }
 
     @Override

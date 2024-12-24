@@ -13,7 +13,7 @@ import javax.annotation.Nullable;
 /**
  * @author Nukkit Project Team
  */
-public class BlockCake extends BlockTransparentMeta {
+public class BlockCake extends BlockTransparent {
 
     public BlockCake(int meta) {
         super(meta);
@@ -74,7 +74,7 @@ public class BlockCake extends BlockTransparentMeta {
     }
 
     @Override
-    public boolean place(Item item, Block block, Block target, BlockFace face, double fx, double fy, double fz, Player player) {
+    public boolean place(Item item, Block block, Block target, BlockFace face, float fx, float fy, float fz, Player player) {
         if (canSurvive()) {
             getLevel().setBlock(block, this, true, true);
 
@@ -106,7 +106,7 @@ public class BlockCake extends BlockTransparentMeta {
     }
 
     @Override
-    public boolean onActivate(Item item, BlockFace face, Player player) {
+    public boolean onActivate(Item item, BlockFace face, float fx, float fy, float fz, Player player) {
         if (item.isBlockItem()) {
             switch (item.getBlockId()) {
                 case CANDLE:

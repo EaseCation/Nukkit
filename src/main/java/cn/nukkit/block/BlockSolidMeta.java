@@ -2,7 +2,7 @@ package cn.nukkit.block;
 
 import cn.nukkit.utils.BlockColor;
 
-public abstract class BlockSolidMeta extends BlockMeta {
+public abstract class BlockSolidMeta extends Block {
     protected BlockSolidMeta(int meta) {
         super(meta);
     }

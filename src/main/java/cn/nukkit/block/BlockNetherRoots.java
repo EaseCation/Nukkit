@@ -10,15 +10,6 @@ public abstract class BlockNetherRoots extends BlockFlower {
     }
 
     @Override
-    public int getFullId() {
-        return getId() << BLOCK_META_BITS;
-    }
-
-    @Override
-    public void setDamage(int meta) {
-    }
-
-    @Override
     public boolean canBeReplaced() {
         return true;
     }
@@ -29,7 +20,7 @@ public abstract class BlockNetherRoots extends BlockFlower {
     }
 
     @Override
-    public boolean onActivate(Item item, BlockFace face, Player player) {
+    public boolean onActivate(Item item, BlockFace face, float fx, float fy, float fz, Player player) {
         return false;
     }
 

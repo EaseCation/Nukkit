@@ -10,7 +10,7 @@ import cn.nukkit.utils.Faceable;
 /**
  * @author CreeperFace
  */
-public class BlockBone extends BlockSolidMeta implements Faceable {
+public class BlockBone extends BlockSolid implements Faceable {
 
     private static final int[] FACES = {
             0,
@@ -74,7 +74,7 @@ public class BlockBone extends BlockSolidMeta implements Faceable {
     }
 
     @Override
-    public boolean place(Item item, Block block, Block target, BlockFace face, double fx, double fy, double fz, Player player) {
+    public boolean place(Item item, Block block, Block target, BlockFace face, float fx, float fy, float fz, Player player) {
         this.setDamage(((this.getDamage() & 0x3) | FACES[face.getIndex()]));
         this.getLevel().setBlock(block, this, true);
         return true;

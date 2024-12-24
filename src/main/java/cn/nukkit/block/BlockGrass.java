@@ -4,7 +4,6 @@ import cn.nukkit.Player;
 import cn.nukkit.Server;
 import cn.nukkit.event.block.BlockSpreadEvent;
 import cn.nukkit.item.Item;
-import cn.nukkit.item.ItemDye;
 import cn.nukkit.level.Level;
 import cn.nukkit.level.generator.object.ObjectTallGrass;
 import cn.nukkit.level.particle.BoneMealParticle;
@@ -50,8 +49,8 @@ public class BlockGrass extends BlockDirt {
     }
 
     @Override
-    public boolean onActivate(Item item, BlockFace face, Player player) {
-        if (item.getId() == Item.DYE && item.getDamage() == ItemDye.BONE_MEAL) {
+    public boolean onActivate(Item item, BlockFace face, float fx, float fy, float fz, Player player) {
+        if (item.isFertilizer()) {
             if (player != null && (player.gamemode & 0x01) == 0) {
                 item.count--;
             }
@@ -129,15 +128,5 @@ public class BlockGrass extends BlockDirt {
     @Override
     public int getCompostableChance() {
         return 30;
-    }
-
-    @Override
-    public int getFullId() {
-        return this.getId() << BLOCK_META_BITS;
-    }
-
-    @Override
-    public void setDamage(int meta) {
-
     }
 }

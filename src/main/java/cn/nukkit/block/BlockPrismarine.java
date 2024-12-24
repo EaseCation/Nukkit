@@ -6,7 +6,7 @@ import cn.nukkit.item.ItemTool;
 import cn.nukkit.utils.BlockColor;
 
 
-public class BlockPrismarine extends BlockSolidMeta {
+public class BlockPrismarine extends BlockSolid {
 
     public static final int NORMAL = 0;
     public static final int DARK = 1;

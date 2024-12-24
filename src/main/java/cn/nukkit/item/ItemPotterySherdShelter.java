@@ -12,4 +12,9 @@ public class ItemPotterySherdShelter extends Item {
     public ItemPotterySherdShelter(Integer meta, int count) {
         super(SHELTER_POTTERY_SHERD, meta, count, "Shelter Pottery Sherd");
     }
+
+    @Override
+    public boolean isPotterySherd() {
+        return true;
+    }
 }

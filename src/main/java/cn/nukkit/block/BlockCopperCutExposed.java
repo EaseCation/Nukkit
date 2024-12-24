@@ -15,17 +15,17 @@ public class BlockCopperCutExposed extends BlockCopperExposed {
     }
 
     @Override
-    protected int getWaxedBlockId() {
+    public int getWaxedBlockId() {
         return WAXED_EXPOSED_CUT_COPPER;
     }
 
     @Override
-    protected int getIncrementAgeBlockId() {
+    public int getIncrementAgeBlockId() {
         return WEATHERED_CUT_COPPER;
     }
 
     @Override
-    protected int getDecrementAgeBlockId() {
+    public int getDecrementAgeBlockId() {
         return CUT_COPPER;
     }
 }

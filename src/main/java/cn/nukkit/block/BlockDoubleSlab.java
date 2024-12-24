@@ -2,7 +2,7 @@ package cn.nukkit.block;
 
 import cn.nukkit.item.Item;
 
-public abstract class BlockDoubleSlab extends BlockSolidMeta {
+public abstract class BlockDoubleSlab extends BlockSolid {
 
     public static final int TYPE_MASK = 0b111;
     public static final int TOP_SLOT_BIT = 0b1000;

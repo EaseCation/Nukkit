@@ -34,7 +34,7 @@ import static cn.nukkit.GameVersion.*;
  * author: CreeperFace
  * Nukkit Project
  */
-public class BlockCauldron extends BlockTransparentMeta {
+public class BlockCauldron extends BlockTransparent {
     public static final int FILL_LEVEL_MASK = 0b111;
     public static final int LIQUID_TYPE_MASK = 0b11000;
     public static final int LIQUID_TYPE_OFFSET = 3;
@@ -98,7 +98,7 @@ public class BlockCauldron extends BlockTransparentMeta {
     }
 
     @Override
-    public boolean onActivate(Item item, BlockFace face, Player player) {
+    public boolean onActivate(Item item, BlockFace face, float fx, float fy, float fz, Player player) {
         BlockEntity be = this.level.getBlockEntity(this);
 
         if (!(be instanceof BlockEntityCauldron)) {
@@ -200,7 +200,7 @@ public class BlockCauldron extends BlockTransparentMeta {
                     if (fillLevel != FILL_LEVEL_FULL) {
                         setCauldronType(LIQUID_LAVA);
                         setFillLevel(FILL_LEVEL_FULL);
-                        level.setBlock(this, get(LAVA_CAULDRON, getDamage()), true);
+                        level.setBlock(this, V1_20_0.isAvailable() ? this : get(LAVA_CAULDRON, getDamage()), true);
                     }
 
                     level.addLevelEvent(add(0.5, 0.375 + FILL_LEVEL_FULL * 0.125, 0.5), LevelEventPacket.EVENT_CAULDRON_FILL_LAVA);
@@ -372,7 +372,22 @@ public class BlockCauldron extends BlockTransparentMeta {
                 player.getInventory().setItemInHand(item);
                 break;
             }
-            case Item.SHULKER_BOX: {
+            case ItemBlockID.WHITE_SHULKER_BOX:
+            case ItemBlockID.ORANGE_SHULKER_BOX:
+            case ItemBlockID.MAGENTA_SHULKER_BOX:
+            case ItemBlockID.LIGHT_BLUE_SHULKER_BOX:
+            case ItemBlockID.YELLOW_SHULKER_BOX:
+            case ItemBlockID.LIME_SHULKER_BOX:
+            case ItemBlockID.PINK_SHULKER_BOX:
+            case ItemBlockID.GRAY_SHULKER_BOX:
+            case ItemBlockID.LIGHT_GRAY_SHULKER_BOX:
+            case ItemBlockID.CYAN_SHULKER_BOX:
+            case ItemBlockID.PURPLE_SHULKER_BOX:
+            case ItemBlockID.BLUE_SHULKER_BOX:
+            case ItemBlockID.BROWN_SHULKER_BOX:
+            case ItemBlockID.GREEN_SHULKER_BOX:
+            case ItemBlockID.RED_SHULKER_BOX:
+            case ItemBlockID.BLACK_SHULKER_BOX: {
                 if (getCauldronType() != LIQUID_WATER) {
                     return true;
                 }
@@ -642,7 +657,7 @@ public class BlockCauldron extends BlockTransparentMeta {
     }
 
     @Override
-    public boolean place(Item item, Block block, Block target, BlockFace face, double fx, double fy, double fz, Player player) {
+    public boolean place(Item item, Block block, Block target, BlockFace face, float fx, float fy, float fz, Player player) {
         CompoundTag nbt = BlockEntity.getDefaultCompound(this, BlockEntity.CAULDRON)
                 .putShort("PotionId", -1)
                 .putShort("PotionType", BlockEntityCauldron.POTION_TYPE_NONE);

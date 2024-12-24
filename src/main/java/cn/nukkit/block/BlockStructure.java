@@ -12,7 +12,7 @@ import cn.nukkit.utils.BlockColor;
 
 import javax.annotation.Nullable;
 
-public class BlockStructure extends BlockSolidMeta {
+public class BlockStructure extends BlockSolid {
 
     public static final int TYPE_DATA = 0;
     public static final int TYPE_SAVE = 1;
@@ -93,7 +93,7 @@ public class BlockStructure extends BlockSolidMeta {
     }
 
     @Override
-    public boolean place(Item item, Block block, Block target, BlockFace face, double fx, double fy, double fz, Player player) {
+    public boolean place(Item item, Block block, Block target, BlockFace face, float fx, float fy, float fz, Player player) {
         if (player != null && (!player.isCreative() || !player.isOp())) {
             return false;
         }
@@ -113,7 +113,7 @@ public class BlockStructure extends BlockSolidMeta {
     }
 
     @Override
-    public boolean onActivate(Item item, BlockFace face, Player player) {
+    public boolean onActivate(Item item, BlockFace face, float fx, float fy, float fz, Player player) {
         if (player == null || !player.isCreative() || !player.isOp()) {
             return true;
         }

@@ -19,7 +19,7 @@ import java.util.concurrent.ThreadLocalRandom;
 /**
  * Created by Pub4Game on 03.07.2016.
  */
-public class BlockItemFrame extends BlockTransparentMeta implements Faceable {
+public class BlockItemFrame extends BlockTransparent implements Faceable {
     public static final int FACING_DIRECTION_MASK = 0b111;
     public static final int MAP_BIT = 0b1000;
     public static final int PHOTO_BIT = 0b10000;
@@ -68,7 +68,7 @@ public class BlockItemFrame extends BlockTransparentMeta implements Faceable {
     }
 
     @Override
-    public boolean onActivate(Item item, BlockFace face, Player player) {
+    public boolean onActivate(Item item, BlockFace face, float fx, float fy, float fz, Player player) {
         BlockEntityItemFrame itemFrame = getBlockEntity();
         if (itemFrame == null) {
             return false;
@@ -97,7 +97,7 @@ public class BlockItemFrame extends BlockTransparentMeta implements Faceable {
     }
 
     @Override
-    public boolean place(Item item, Block block, Block target, BlockFace face, double fx, double fy, double fz, Player player) {
+    public boolean place(Item item, Block block, Block target, BlockFace face, float fx, float fy, float fz, Player player) {
         if (!target.canBeFlowedInto() && !target.isItemFrame()) {
             this.setDamage(face.getIndex());
             this.getLevel().setBlock(block, this, true, true);

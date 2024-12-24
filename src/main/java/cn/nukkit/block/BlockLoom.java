@@ -7,7 +7,7 @@ import cn.nukkit.math.BlockFace;
 import cn.nukkit.utils.BlockColor;
 import cn.nukkit.utils.Faceable;
 
-public class BlockLoom extends BlockSolidMeta implements Faceable {
+public class BlockLoom extends BlockSolid implements Faceable {
 
     public static final int DIRECTION_MASK = 0b11;
 
@@ -55,7 +55,7 @@ public class BlockLoom extends BlockSolidMeta implements Faceable {
     }
 
     @Override
-    public boolean place(Item item, Block block, Block target, BlockFace face, double fx, double fy, double fz, Player player) {
+    public boolean place(Item item, Block block, Block target, BlockFace face, float fx, float fy, float fz, Player player) {
         if (player != null) {
             setDamage(player.getHorizontalFacing().getOpposite().getHorizontalIndex());
         }
@@ -68,7 +68,7 @@ public class BlockLoom extends BlockSolidMeta implements Faceable {
     }
 
     @Override
-    public boolean onActivate(Item item, BlockFace face, Player player) {
+    public boolean onActivate(Item item, BlockFace face, float fx, float fy, float fz, Player player) {
         if (player == null) {
             return false;
         }

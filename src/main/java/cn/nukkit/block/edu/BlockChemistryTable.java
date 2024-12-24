@@ -2,7 +2,7 @@ package cn.nukkit.block.edu;
 
 import cn.nukkit.Player;
 import cn.nukkit.block.Block;
-import cn.nukkit.block.BlockSolidMeta;
+import cn.nukkit.block.BlockSolid;
 import cn.nukkit.block.BlockToolType;
 import cn.nukkit.blockentity.BlockEntities;
 import cn.nukkit.blockentity.BlockEntity;
@@ -14,7 +14,7 @@ import cn.nukkit.nbt.tag.CompoundTag;
 
 import javax.annotation.Nullable;
 
-public class BlockChemistryTable extends BlockSolidMeta {
+public class BlockChemistryTable extends BlockSolid {
 
     public static final int DIRECTION_MASK = 0b11;
     public static final int DIRECTION_BITS = 2;
@@ -83,7 +83,7 @@ public class BlockChemistryTable extends BlockSolidMeta {
     }
 
     @Override
-    public boolean place(Item item, Block block, Block target, BlockFace face, double fx, double fy, double fz, Player player) {
+    public boolean place(Item item, Block block, Block target, BlockFace face, float fx, float fy, float fz, Player player) {
         if (player != null) {
             setDamage(((getDamage() >> DIRECTION_BITS) << DIRECTION_BITS) | player.getHorizontalFacing().getHorizontalIndex());
         }
@@ -98,7 +98,7 @@ public class BlockChemistryTable extends BlockSolidMeta {
     }
 
     @Override
-    public boolean onActivate(Item item, BlockFace face, Player player) {
+    public boolean onActivate(Item item, BlockFace face, float fx, float fy, float fz, Player player) {
         //TODO: UI
         return true;
     }

@@ -9,7 +9,7 @@ import cn.nukkit.utils.BlockColor;
  * author: MagicDroidX
  * Nukkit Project
  */
-public class BlockBricksStone extends BlockSolidMeta {
+public class BlockBricksStone extends BlockSolid {
     public static final int NORMAL = 0;
     public static final int MOSSY = 1;
     public static final int CRACKED = 2;

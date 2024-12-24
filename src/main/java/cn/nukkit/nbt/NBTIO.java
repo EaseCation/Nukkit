@@ -6,7 +6,6 @@ import cn.nukkit.block.BlockUpgrader;
 import cn.nukkit.item.Item;
 import cn.nukkit.item.ItemSerializer;
 import cn.nukkit.item.ItemUpgrader;
-import cn.nukkit.item.Items;
 import cn.nukkit.nbt.stream.FastByteArrayOutputStream;
 import cn.nukkit.nbt.stream.NBTInputStream;
 import cn.nukkit.nbt.stream.NBTOutputStream;
@@ -15,6 +14,7 @@ import cn.nukkit.nbt.tag.CompoundTag;
 import cn.nukkit.nbt.tag.Tag;
 import cn.nukkit.utils.ThreadCache;
 
+import javax.annotation.Nullable;
 import java.io.*;
 import java.nio.ByteOrder;
 import java.nio.file.Files;
@@ -29,15 +29,15 @@ import java.util.zip.GZIPInputStream;
  */
 public class NBTIO {
 
-    public static CompoundTag putItemHelper(Item item) {
+    public static CompoundTag putItemHelper(@Nullable Item item) {
         return ItemSerializer.serializeItem(item);
     }
 
-    public static CompoundTag putItemHelper(Item item, int slot) {
+    public static CompoundTag putItemHelper(@Nullable Item item, int slot) {
         return ItemSerializer.serializeItemStack(item, slot);
     }
 
-    public static CompoundTag putItemHelper(Item item, Integer slot) {
+    public static CompoundTag putItemHelper(@Nullable Item item, Integer slot) {
         return slot == null ? ItemSerializer.serializeItem(item) : ItemSerializer.serializeItemStack(item, slot);
     }
 

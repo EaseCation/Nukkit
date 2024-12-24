@@ -44,7 +44,7 @@ public class ObjectBigSpruceTree extends ObjectSpruceTree {
                 for (int zz = 0; zz < radius; zz++) {
                     int blockId = level.getBlockIdAt(0, x, y + yy, z);
                     if (this.overridable(blockId)) {
-                        level.setBlockAt(0, x + xx, y + yy, z + zz, this.getTrunkBlock(), this.getType());
+                        level.setBlockAt(0, x + xx, y + yy, z + zz, this.getTrunkBlock());
                     }
                 }
             }

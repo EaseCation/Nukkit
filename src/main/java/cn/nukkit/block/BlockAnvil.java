@@ -34,29 +34,12 @@ public class BlockAnvil extends BlockFallable implements Faceable {
 
     private static final int[] FACES = {1, 2, 3, 0};
 
-    private int meta;
-
     public BlockAnvil() {
         this(0);
     }
 
     public BlockAnvil(int meta) {
-        this.meta = meta;
-    }
-
-    @Override
-    public int getFullId() {
-        return (getId() << BLOCK_META_BITS) | getDamage();
-    }
-
-    @Override
-    public final int getDamage() {
-        return this.meta;
-    }
-
-    @Override
-    public final void setDamage(int meta) {
-        this.meta = meta;
+        super(meta);
     }
 
     @Override
@@ -95,7 +78,7 @@ public class BlockAnvil extends BlockFallable implements Faceable {
     }
 
     @Override
-    public boolean place(Item item, Block block, Block target, BlockFace face, double fx, double fy, double fz, Player player) {
+    public boolean place(Item item, Block block, Block target, BlockFace face, float fx, float fy, float fz, Player player) {
         int damage = this.getDamage();
         this.setDamage(FACES[player != null ? player.getDirection().getHorizontalIndex() : 0]);
         if (damage >= 4 && damage <= 7) {
@@ -108,7 +91,7 @@ public class BlockAnvil extends BlockFallable implements Faceable {
     }
 
     @Override
-    public boolean onActivate(Item item, BlockFace face, Player player) {
+    public boolean onActivate(Item item, BlockFace face, float fx, float fy, float fz, Player player) {
         if (player != null) {
             player.addWindow(new AnvilInventory(player.getUIInventory(), this), Player.ANVIL_WINDOW_ID);
         }

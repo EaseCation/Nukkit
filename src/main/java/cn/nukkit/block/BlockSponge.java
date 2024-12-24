@@ -15,7 +15,7 @@ import java.util.Queue;
  * author: Angelic47
  * Nukkit Project
  */
-public class BlockSponge extends BlockSolidMeta {
+public class BlockSponge extends BlockSolid {
 
     public static final int DRY = 0;
     public static final int WET = 1;
@@ -63,7 +63,7 @@ public class BlockSponge extends BlockSolidMeta {
     }
 
     @Override
-    public boolean place(Item item, Block block, Block target, BlockFace face, double fx, double fy, double fz, Player player) {
+    public boolean place(Item item, Block block, Block target, BlockFace face, float fx, float fy, float fz, Player player) {
         if (this.getDamage() == WET && level.getDimension() == Dimension.NETHER) {
             level.setBlock(block, Block.get(BlockID.SPONGE, DRY), true, true);
 

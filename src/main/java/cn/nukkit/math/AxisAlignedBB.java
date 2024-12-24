@@ -199,7 +199,6 @@ public interface AxisAlignedBB extends Cloneable {
 
     default boolean isVectorInside(Vector3 vector) {
         return vector.x >= this.getMinX() && vector.x <= this.getMaxX() && vector.y >= this.getMinY() && vector.y <= this.getMaxY() && vector.z >= this.getMinZ() && vector.z <= this.getMaxZ();
-
     }
 
     default double getAverageEdgeLength() {
@@ -298,6 +297,10 @@ public interface AxisAlignedBB extends Cloneable {
         }
 
         return MovingObjectPosition.fromBlock(0, 0, 0, face, vector);
+    }
+
+    default Vector3 getCenter() {
+        return new Vector3(Mth.lerp(0.5, getMinX(), getMaxX()), Mth.lerp(0.5, getMinY(), getMaxY()), Mth.lerp(0.5, getMinZ(), getMaxZ()));
     }
 
     default void setMinX(double minX) {

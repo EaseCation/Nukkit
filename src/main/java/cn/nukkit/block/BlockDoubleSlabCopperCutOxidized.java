@@ -42,17 +42,17 @@ public class BlockDoubleSlabCopperCutOxidized extends BlockDoubleSlabCopperCut {
     }
 
     @Override
-    protected int getWaxedBlockId() {
+    public int getWaxedBlockId() {
         return WAXED_OXIDIZED_DOUBLE_CUT_COPPER_SLAB;
     }
 
     @Override
-    protected int getIncrementAgeBlockId() {
+    public int getIncrementAgeBlockId() {
         throw new UnsupportedOperationException();
     }
 
     @Override
-    protected int getDecrementAgeBlockId() {
+    public int getDecrementAgeBlockId() {
         return WEATHERED_DOUBLE_CUT_COPPER_SLAB;
     }
 }

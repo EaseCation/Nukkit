@@ -5,15 +5,23 @@ import cn.nukkit.blockentity.BlockEntities;
 import cn.nukkit.blockentity.BlockEntity;
 import cn.nukkit.blockentity.BlockEntitySculkSensor;
 import cn.nukkit.blockentity.BlockEntityType;
+import cn.nukkit.entity.Entity;
 import cn.nukkit.item.Item;
+import cn.nukkit.level.Level;
+import cn.nukkit.math.AxisAlignedBB;
 import cn.nukkit.math.BlockFace;
+import cn.nukkit.math.SimpleAxisAlignedBB;
 import cn.nukkit.nbt.tag.CompoundTag;
+import cn.nukkit.network.protocol.LevelSoundEventPacket;
 import cn.nukkit.utils.BlockColor;
 
 import javax.annotation.Nullable;
 
-public class BlockSculkSensor extends BlockTransparentMeta {
-    public static final int POWERED_BIT = 0b1;
+public class BlockSculkSensor extends BlockTransparent {
+    public static final int SCULK_SENSOR_PHASE_INACTIVE = 0;
+    public static final int SCULK_SENSOR_PHASE_ACTIVE = 1;
+    public static final int SCULK_SENSOR_PHASE_COOLDOWN = 2;
+    public static final int SCULK_SENSOR_PHASE_MASK = 0b11;
 
     public BlockSculkSensor() {
         this(0);
@@ -74,7 +82,7 @@ public class BlockSculkSensor extends BlockTransparentMeta {
     }
 
     @Override
-    public boolean place(Item item, Block block, Block target, BlockFace face, double fx, double fy, double fz, Player player) {
+    public boolean place(Item item, Block block, Block target, BlockFace face, float fx, float fy, float fz, Player player) {
         if (!super.place(item, block, target, face, fx, fy, fz, player)) {
             return false;
         }
@@ -90,6 +98,11 @@ public class BlockSculkSensor extends BlockTransparentMeta {
     @Override
     public double getMaxY() {
         return y + 0.5;
+    }
+
+    @Override
+    protected AxisAlignedBB recalculateCollisionBoundingBox() {
+        return new SimpleAxisAlignedBB(x, y, z, x + 1, y + 9 / 16f, z + 1);
     }
 
     @Override
@@ -117,7 +130,53 @@ public class BlockSculkSensor extends BlockTransparentMeta {
         return BlockColor.SCULK_BLOCK_COLOR;
     }
 
-    /* //TODO: redstone
+    @Override
+    public int onUpdate(int type) {
+        if (type == Level.BLOCK_UPDATE_SCHEDULED) {
+            int phase = getPhase();
+            if (phase == SCULK_SENSOR_PHASE_ACTIVE) {
+                setPhase(SCULK_SENSOR_PHASE_COOLDOWN);
+                level.setBlock(this, this, true);
+
+                level.scheduleUpdate(this, 10);
+                return type;
+            }
+            if (phase == SCULK_SENSOR_PHASE_COOLDOWN) {
+                level.addLevelSoundEvent(this, LevelSoundEventPacket.SOUND_SCULK_SENSOR_POWER_OFF);
+
+                setPhase(SCULK_SENSOR_PHASE_INACTIVE);
+                level.setBlock(this, this, true);
+                return type;
+            }
+            return 0;
+        }
+
+        return 0;
+    }
+
+    @Override
+    public boolean hasEntityCollision() {
+        return true;
+    }
+
+    @Override
+    public void onEntityCollide(Entity entity) {
+        if (getPhase() != SCULK_SENSOR_PHASE_INACTIVE) {
+            return;
+        }
+
+        if (!canActive(15)) {
+            return;
+        }
+
+        level.addLevelSoundEvent(this, LevelSoundEventPacket.SOUND_SCULK_SENSOR_POWER_ON);
+
+        setPhase(SCULK_SENSOR_PHASE_ACTIVE);
+        level.setBlock(this, this, true);
+
+        level.scheduleUpdate(this, getActiveTime());
+    }
+
     @Override
     public boolean isPowerSource() {
         return true;
@@ -125,7 +184,7 @@ public class BlockSculkSensor extends BlockTransparentMeta {
 
     @Override
     public int getWeakPower(BlockFace side) {
-        return isPowered() ? 15 : 0;
+        return isActive() ? 15 : 0;
     }
 
     @Override
@@ -140,11 +199,10 @@ public class BlockSculkSensor extends BlockTransparentMeta {
 
     @Override
     public int getComparatorInputOverride() {
-        return isPowered() ? 1 : 0;
+        return isActive() ? 1 : 0;
     }
-    */
 
-    protected BlockEntitySculkSensor createBlockEntity(@Nullable Item item) {
+    private BlockEntitySculkSensor createBlockEntity(@Nullable Item item) {
         CompoundTag nbt = BlockEntity.getDefaultCompound(this, BlockEntity.SCULK_SENSOR);
 
         if (item != null && item.hasCustomName()) {
@@ -155,7 +213,7 @@ public class BlockSculkSensor extends BlockTransparentMeta {
     }
 
     @Nullable
-    protected BlockEntitySculkSensor getBlockEntity() {
+    private BlockEntitySculkSensor getBlockEntity() {
         if (level == null) {
             return null;
         }
@@ -166,11 +224,23 @@ public class BlockSculkSensor extends BlockTransparentMeta {
         return null;
     }
 
-    public boolean isPowered() {
-        return getDamage() == POWERED_BIT;
+    protected boolean canActive(int vibration) {
+        return true;
     }
 
-    public void setPowered(boolean powered) {
-        setDamage(powered ? POWERED_BIT : 0);
+    protected int getActiveTime() {
+        return 30;
+    }
+
+    public int getPhase() {
+        return getDamage();
+    }
+
+    public void setPhase(int phase) {
+        setDamage(phase);
+    }
+
+    public boolean isActive() {
+        return getPhase() == SCULK_SENSOR_PHASE_ACTIVE;
     }
 }

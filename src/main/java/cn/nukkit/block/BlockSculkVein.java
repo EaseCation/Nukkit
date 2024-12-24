@@ -45,7 +45,7 @@ public class BlockSculkVein extends BlockMultiface {
     }
 
     @Override
-    public Item getSilkTouchResource() {
+    public Item[] getSilkTouchResource() {
         Item item = toItem(true);
         int count = 0;
         for (BlockFace side : BlockFace.getValues()) {
@@ -54,7 +54,7 @@ public class BlockSculkVein extends BlockMultiface {
             }
         }
         item.setCount(count);
-        return item;
+        return new Item[]{item};
     }
 
     @Override

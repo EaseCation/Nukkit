@@ -4,7 +4,7 @@ import cn.nukkit.item.Item;
 import cn.nukkit.math.AxisAlignedBB;
 import cn.nukkit.utils.BlockColor;
 
-public class BlockStructureVoid extends BlockTransparentMeta {
+public class BlockStructureVoid extends BlockTransparent {
 
     public static final int TYPE_VOID = 0;
     public static final int TYPE_AIR = 1;

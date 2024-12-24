@@ -11,6 +11,11 @@ import cn.nukkit.utils.BlockColor;
 public class BlockGlass extends BlockTransparent {
 
     public BlockGlass() {
+        this(0);
+    }
+
+    public BlockGlass(int meta) {
+        super(meta);
     }
 
     @Override

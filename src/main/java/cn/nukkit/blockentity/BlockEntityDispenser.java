@@ -35,7 +35,7 @@ public class BlockEntityDispenser extends BlockEntityAbstractContainer {
         CompoundTag nbt = getDefaultCompound(this, DISPENSER);
 
         if (this.hasName()) {
-            nbt.put("CustomName", this.namedTag.get("CustomName"));
+            nbt.putString("CustomName", this.getName());
         }
 
         return nbt;

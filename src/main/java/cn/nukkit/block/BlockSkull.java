@@ -6,6 +6,7 @@ import cn.nukkit.blockentity.BlockEntity;
 import cn.nukkit.blockentity.BlockEntityType;
 import cn.nukkit.blockentity.BlockEntitySkull;
 import cn.nukkit.item.Item;
+import cn.nukkit.item.ItemSkull;
 import cn.nukkit.math.AxisAlignedBB;
 import cn.nukkit.math.BlockFace;
 import cn.nukkit.math.Mth;
@@ -14,6 +15,8 @@ import cn.nukkit.nbt.tag.CompoundTag;
 import cn.nukkit.nbt.tag.Tag;
 import cn.nukkit.utils.BlockColor;
 import cn.nukkit.utils.Faceable;
+
+import static cn.nukkit.GameVersion.*;
 
 /**
  * author: Justin
@@ -60,11 +63,11 @@ public class BlockSkull extends BlockFlowable implements Faceable {
 
         return ItemSkull.getItemSkullName(itemMeta);
         */
-        return "Skull";
+        return V1_21_40.isAvailable() ? "Skeleton Skull" : "Skull";
     }
 
     @Override
-    public boolean place(Item item, Block block, Block target, BlockFace face, double fx, double fy, double fz, Player player) {
+    public boolean place(Item item, Block block, Block target, BlockFace face, float fx, float fy, float fz, Player player) {
         switch (face) {
             case NORTH:
             case SOUTH:
@@ -80,7 +83,7 @@ public class BlockSkull extends BlockFlowable implements Faceable {
         this.getLevel().setBlock(block, this, true, true);
 
         CompoundTag nbt = BlockEntity.getDefaultCompound(this, BlockEntity.SKULL)
-                .putByte("SkullType", item.getDamage())
+                .putByte("SkullType", V1_21_40.isAvailable() ? -1 : item.getDamage())
                 .putByte("Rot", Mth.floor((player.yaw * 16 / 360) + 0.5) & 0x0f);
         if (item.hasCustomBlockData()) {
             for (Tag aTag : item.getCustomBlockData().getAllTags()) {
@@ -99,19 +102,22 @@ public class BlockSkull extends BlockFlowable implements Faceable {
 
     @Override
     public Item[] getDrops(Item item, Player player) {
-        BlockEntity blockEntity = getLevel().getBlockEntity(this);
-        int dropMeta = 0;
-        if (blockEntity != null) dropMeta = blockEntity.namedTag.getByte("SkullType");
         return new Item[]{
-                Item.get(Item.SKULL, dropMeta)
+                toItem(true),
         };
     }
 
     @Override
     public Item toItem(boolean addUserData) {
+        if (V1_21_40.isAvailable()) {
+            return Item.get(getItemId());
+        }
+
         BlockEntity blockEntity = getLevel().getBlockEntity(this);
-        int itemMeta = 0;
-        if (blockEntity != null) itemMeta = blockEntity.namedTag.getByte("SkullType");
+        int itemMeta = ItemSkull.HEAD_SKELETON;
+        if (blockEntity != null) {
+            itemMeta = blockEntity.namedTag.getByte("SkullType");
+        }
         return Item.get(Item.SKULL, itemMeta);
     }
 
@@ -148,6 +154,11 @@ public class BlockSkull extends BlockFlowable implements Faceable {
 
     @Override
     public boolean canContainWater() {
+        return true;
+    }
+
+    @Override
+    public boolean isSkull() {
         return true;
     }
 }

@@ -55,7 +55,7 @@ public class BlockBeacon extends BlockTransparent {
     }
 
     @Override
-    public boolean onActivate(Item item, BlockFace face, Player player) {
+    public boolean onActivate(Item item, BlockFace face, float fx, float fy, float fz, Player player) {
         if (player != null) {
             BlockEntity t = this.getLevel().getBlockEntity(this);
             BlockEntityBeacon beacon;
@@ -79,7 +79,7 @@ public class BlockBeacon extends BlockTransparent {
     }
 
     @Override
-    public boolean place(Item item, Block block, Block target, BlockFace face, double fx, double fy, double fz, Player player) {
+    public boolean place(Item item, Block block, Block target, BlockFace face, float fx, float fy, float fz, Player player) {
         boolean blockSuccess = super.place(item, block, target, face, fx, fy, fz, player);
 
         if (blockSuccess) {

@@ -14,7 +14,7 @@ public class ObjectBirchTree extends ObjectTree {
 
     @Override
     public int getTrunkBlock() {
-        return Block.LOG;
+        return Block.BIRCH_LOG;
     }
 
     @Override

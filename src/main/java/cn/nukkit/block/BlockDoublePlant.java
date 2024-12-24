@@ -62,16 +62,18 @@ public class BlockDoublePlant extends BlockFlowable {
     @Override
     public int onUpdate(int type) {
         if (type == Level.BLOCK_UPDATE_NORMAL) {
+            int upperBlockBitMask = getUpperBlockBitMask();
+            int typeMask = getPlantTypeMask();
             int meta = getDamage();
-            if ((meta & TOP_HALF_BITMASK) == TOP_HALF_BITMASK) {
+            if ((meta & upperBlockBitMask) == upperBlockBitMask) {
                 Block below = down();
-                if (below.getId() != DOUBLE_PLANT || (below.getDamage() & TYPE_MASK) != (meta & TYPE_MASK)) {
+                if (below.getId() != getId() || (below.getDamage() & typeMask) != (meta & typeMask)) {
                     this.getLevel().setBlock(this, Block.get(BlockID.AIR), true, true);
                     return Level.BLOCK_UPDATE_NORMAL;
                 }
             } else {
                 Block up = this.up();
-                if (!canSurvive() || up.getId() != DOUBLE_PLANT || (up.getDamage() & TYPE_MASK) != (meta & TYPE_MASK)) {
+                if (!canSurvive() || up.getId() != getId() || (up.getDamage() & typeMask) != (meta & typeMask)) {
                     this.getLevel().useBreakOn(this, true);
                     return Level.BLOCK_UPDATE_NORMAL;
                 }
@@ -81,7 +83,7 @@ public class BlockDoublePlant extends BlockFlowable {
     }
 
     @Override
-    public boolean place(Item item, Block block, Block target, BlockFace face, double fx, double fy, double fz, Player player) {
+    public boolean place(Item item, Block block, Block target, BlockFace face, float fx, float fy, float fz, Player player) {
         if (block.isLiquid() || !block.isAir() && block.canContainWater() && level.getExtraBlock(this).isWater()) {
             return false;
         }
@@ -96,8 +98,11 @@ public class BlockDoublePlant extends BlockFlowable {
 
         Block up = up();
         if (up.canBeReplaced()) {
+            int upperBlockBitMask = getUpperBlockBitMask();
+            int lowerMeta = getDamage() & ~upperBlockBitMask;
+            setDamage(lowerMeta);
             this.getLevel().setBlock(block, this, true, false); // If we update the bottom half, it will drop the item because there isn't a flower block above
-            this.getLevel().setBlock(up, Block.get(BlockID.DOUBLE_PLANT, getDamage() | TOP_HALF_BITMASK), true, true);
+            this.getLevel().setBlock(up, Block.get(getId(), lowerMeta | upperBlockBitMask), true, true);
             return true;
         }
 
@@ -106,10 +111,9 @@ public class BlockDoublePlant extends BlockFlowable {
 
     @Override
     public boolean onBreak(Item item, Player player) {
-        Block down = down();
-
-        if ((this.getDamage() & TOP_HALF_BITMASK) == TOP_HALF_BITMASK) { // Top half
-            this.getLevel().useBreakOn(down, true);
+        int upperBlockBitMask = getUpperBlockBitMask();
+        if ((this.getDamage() & upperBlockBitMask) == upperBlockBitMask) { // Top half
+            this.getLevel().useBreakOn(downVec(), true);
         } else {
             this.getLevel().setBlock(this, Block.get(BlockID.AIR), true, true);
         }
@@ -119,7 +123,8 @@ public class BlockDoublePlant extends BlockFlowable {
 
     @Override
     public Item[] getDrops(Item item, Player player) {
-        if ((this.getDamage() & TOP_HALF_BITMASK) != TOP_HALF_BITMASK) {
+        int upperBlockBitMask = getUpperBlockBitMask();
+        if ((this.getDamage() & upperBlockBitMask) != upperBlockBitMask) {
             switch (this.getPlantType()) {
                 case TYPE_TALL_GRASS:
                 case TYPE_LARGE_FERN:
@@ -168,8 +173,8 @@ public class BlockDoublePlant extends BlockFlowable {
     }
 
     @Override
-    public boolean onActivate(Item item, BlockFace face, Player player) {
-        if (item.getId() == Item.DYE && item.isBoneMeal()) {
+    public boolean onActivate(Item item, BlockFace face, float fx, float fy, float fz, Player player) {
+        if (item.isFertilizer()) {
             switch (this.getPlantType()) {
                 case TYPE_SUNFLOWER:
                 case TYPE_LILAC:
@@ -197,12 +202,30 @@ public class BlockDoublePlant extends BlockFlowable {
     }
 
     @Override
+    public int getBurnChance() {
+        return 60;
+    }
+
+    @Override
+    public int getBurnAbility() {
+        return 100;
+    }
+
+    @Override
     public boolean isVegetation() {
         return true;
     }
 
     public int getPlantType() {
         return getDamage() & TYPE_MASK;
+    }
+
+    protected int getPlantTypeMask() {
+        return TYPE_MASK;
+    }
+
+    protected int getUpperBlockBitMask() {
+        return TOP_HALF_BITMASK;
     }
 
     private boolean canSurvive() {

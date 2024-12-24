@@ -14,7 +14,7 @@ import cn.nukkit.network.protocol.LevelEventPacket;
 import cn.nukkit.network.protocol.LevelSoundEventPacket;
 import cn.nukkit.utils.BlockColor;
 
-public class BlockCandle extends BlockTransparentMeta {
+public class BlockCandle extends BlockTransparent {
     public static final int CANDLE_COUNT_MASK = 0b11;
     public static final int LIT_BIT = 0b100;
 
@@ -71,7 +71,7 @@ public class BlockCandle extends BlockTransparentMeta {
     }
 
     @Override
-    public boolean place(Item item, Block block, Block target, BlockFace face, double fx, double fy, double fz, Player player) {
+    public boolean place(Item item, Block block, Block target, BlockFace face, float fx, float fy, float fz, Player player) {
         if (block.getId() == getId()) {
             BlockCandle candle = (BlockCandle) block;
             int count = candle.getCandleCount();
@@ -103,7 +103,7 @@ public class BlockCandle extends BlockTransparentMeta {
     }
 
     @Override
-    public boolean onActivate(Item item, BlockFace face, Player player) {
+    public boolean onActivate(Item item, BlockFace face, float fx, float fy, float fz, Player player) {
         int id = item.getId();
 
         if (id == AIR) {

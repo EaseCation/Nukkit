@@ -32,17 +32,17 @@ public class BlockStairsCopperCutWeathered extends BlockStairsCopperCut {
     }
 
     @Override
-    protected int getWaxedBlockId() {
+    public int getWaxedBlockId() {
         return WAXED_WEATHERED_CUT_COPPER_STAIRS;
     }
 
     @Override
-    protected int getIncrementAgeBlockId() {
+    public int getIncrementAgeBlockId() {
         return OXIDIZED_CUT_COPPER_STAIRS;
     }
 
     @Override
-    protected int getDecrementAgeBlockId() {
+    public int getDecrementAgeBlockId() {
         return EXPOSED_CUT_COPPER_STAIRS;
     }
 }

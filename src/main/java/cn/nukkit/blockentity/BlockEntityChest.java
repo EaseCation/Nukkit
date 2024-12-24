@@ -174,7 +174,7 @@ public class BlockEntityChest extends BlockEntityAbstractContainer {
         }
 
         if (this.hasName()) {
-            nbt.put("CustomName", this.namedTag.get("CustomName"));
+            nbt.putString("CustomName", this.getName());
         }
 
         return nbt;

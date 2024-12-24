@@ -248,6 +248,32 @@ public class Item implements Cloneable, ItemID {
         }
     }
 
+    @Nullable
+    public static Item getCraftingItem(int id, int meta, int count, CompoundTag tags) {
+        try {
+            Class<?> c = id > 0 ? list[id] : Block.list[0xff - id];
+            Item item;
+
+            if (c == null) {
+//                item = new Item(id, meta, count);
+                return null;
+            } else if (id < 256 && id != 166) {
+                item = new ItemBlock(Block.fromItemId(id, meta != -1 ? meta : 0), meta, count);
+            } else {
+                item = ((Item) c.getConstructor(Integer.class, int.class).newInstance(meta, count));
+            }
+
+            if (tags != null) {
+                item.setCompoundTag(tags);
+            }
+
+            return item;
+        } catch (Exception e) {
+//            return new Item(id, meta, count).setCompoundTag(tags);
+            return null;
+        }
+    }
+
     public static Item fromString(String str) {
         return fromString(str, false);
     }
@@ -987,6 +1013,14 @@ public class Item implements Cloneable, ItemID {
         }
     }
 
+    public int getDefaultMeta() {
+        return 0;
+    }
+
+    public boolean isStackedByData() {
+        return true;
+    }
+
     public int getMaxStackSize() {
         return 64;
     }
@@ -1013,6 +1047,10 @@ public class Item implements Cloneable, ItemID {
 
     public int getMaxDurability() {
         return -1;
+    }
+
+    public boolean keepDamageTag() {
+        return false;
     }
 
     public int getTier() {
@@ -1118,7 +1156,7 @@ public class Item implements Cloneable, ItemID {
         return 1;
     }
 
-    public boolean onActivate(Level level, Player player, Block block, Block target, BlockFace face, double fx, double fy, double fz) {
+    public boolean onActivate(Level level, Player player, Block block, Block target, BlockFace face, float fx, float fy, float fz) {
         return false;
     }
 
@@ -1131,6 +1169,13 @@ public class Item implements Cloneable, ItemID {
      * @return item changed
      */
     public boolean onClickAir(Player player, Vector3 directionVector) {
+        return false;
+    }
+
+    /**
+     * @since 1.19.50
+     */
+    public boolean isItemBlock() {
         return false;
     }
 
@@ -1200,6 +1245,10 @@ public class Item implements Cloneable, ItemID {
     }
 
     public boolean canRelease() {
+        return false;
+    }
+
+    public boolean canDualWield() {
         return false;
     }
 
@@ -1370,6 +1419,10 @@ public class Item implements Cloneable, ItemID {
         return false;
     }
 
+    public final Item getItem() {
+        return this;
+    }
+
     public boolean is(int id) {
         return getId() == id;
     }
@@ -1382,11 +1435,43 @@ public class Item implements Cloneable, ItemID {
         return getId() == item.getId();
     }
 
-    public boolean isBoneMeal() {
+    public boolean is(Block block) {
+        return getId() == block.getItemId();
+    }
+
+    public boolean isFertilizer() {
         return false;
     }
 
     public boolean isPotion() {
+        return false;
+    }
+
+    public boolean isBook() {
+        return false;
+    }
+
+    public boolean isPotterySherd() {
+        return false;
+    }
+
+    public boolean isArmorTrimSmithingTemplate() {
+        return false;
+    }
+
+    public boolean isBundle() {
+        return false;
+    }
+
+    public boolean isShulkerBox() {
+        return false;
+    }
+
+    public boolean isHangingSign() {
+        return false;
+    }
+
+    public boolean isWool() {
         return false;
     }
 

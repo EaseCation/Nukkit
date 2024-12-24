@@ -187,10 +187,14 @@ public class ItemCrossbow extends ItemTool {
             if (matched.isNull()) {
                 inventory = player.getInventory();
                 matched = inventory.peek(LazyHolder.ARROW);
-                if (matched.isNull() && !player.isCreative()) {
-                    player.getOffhandInventory().sendContents(player);
-                    inventory.sendContents(player);
-                    return false;
+                if (matched.isNull()) {
+                    if (player.isCreative()) {
+                        matched = LazyHolder.CREATIVE_ARROW;
+                    } else {
+                        player.getOffhandInventory().sendContents(player);
+                        inventory.sendContents(player);
+                        return false;
+                    }
                 }
             }
         }
@@ -273,5 +277,7 @@ public class ItemCrossbow extends ItemTool {
     private static class LazyHolder {
         private static final Item ARROW = Item.get(Item.ARROW, null, 1).clearCompoundTag();
         private static final Item FIREWORK_ROCKET = Item.get(Item.FIREWORK_ROCKET, null, 1).clearCompoundTag();
+
+        private static final Item CREATIVE_ARROW = Item.get(Item.ARROW);
     }
 }

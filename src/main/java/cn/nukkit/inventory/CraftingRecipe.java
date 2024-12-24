@@ -32,7 +32,9 @@ public interface CraftingRecipe extends Recipe {
      * @param extraOutputList list of items put back into the crafting grid (secondary results)
      * @return bool
      */
-    boolean matchItems(List<Item> inputList, List<Item> extraOutputList);
+    default boolean matchItems(List<Item> inputList, List<Item> extraOutputList) {
+        return matchItems(inputList, extraOutputList, 1);
+    }
 
     boolean matchItems(List<Item> inputList, List<Item> extraOutputList, int multiplier);
 

@@ -5,6 +5,7 @@ import cn.nukkit.Player;
 import cn.nukkit.block.Block;
 import cn.nukkit.event.player.PlayerEatFoodEvent;
 import cn.nukkit.item.Item;
+import cn.nukkit.item.ItemMedicine;
 import cn.nukkit.item.ItemSuspiciousStew;
 import cn.nukkit.plugin.Plugin;
 import cn.nukkit.potion.Effect;
@@ -106,6 +107,36 @@ public abstract class Food {
             .addEffect(Effect.getEffect(Effect.NAUSEA).setDuration(15 * 20))
             .addEffect(Effect.getEffect(Effect.POISON).setAmplifier(1).setDuration(60 * 20))
             .addRelative(Item.PUFFERFISH));
+
+    public static final Food eye_drops = registerDefaultFood(new FoodInBottle(0, 0) {
+        @Override
+        protected boolean onEatenBy(Player player) {
+            player.removeEffect(Effect.BLINDNESS);
+            return super.onEatenBy(player);
+        }
+    }.addRelative(Item.MEDICINE, ItemMedicine.EYE_DROPS), V1_4_0);
+    public static final Food tonic = registerDefaultFood(new FoodInBottle(0, 0) {
+        @Override
+        protected boolean onEatenBy(Player player) {
+            player.removeEffect(Effect.NAUSEA);
+            return super.onEatenBy(player);
+        }
+    }.addRelative(Item.MEDICINE, ItemMedicine.TONIC), V1_4_0);
+    public static final Food antidote = registerDefaultFood(new FoodInBottle(0, 0) {
+        @Override
+        protected boolean onEatenBy(Player player) {
+            player.removeEffect(Effect.POISON);
+            return super.onEatenBy(player);
+        }
+    }.addRelative(Item.MEDICINE, ItemMedicine.ANTIDOTE), V1_4_0);
+    public static final Food elixir = registerDefaultFood(new FoodInBottle(0, 0) {
+        @Override
+        protected boolean onEatenBy(Player player) {
+            player.removeEffect(Effect.WEAKNESS);
+            return super.onEatenBy(player);
+        }
+    }.addRelative(Item.MEDICINE, ItemMedicine.ELIXIR), V1_4_0);
+
     public static final Food dried_kelp = registerDefaultFood(new FoodNormal(1, 0.6F).addRelative(Item.DRIED_KELP), V1_4_0);
     public static final Food sweet_berries = registerDefaultFood(new FoodNormal(2, 1.2F).addRelative(Item.SWEET_BERRIES), V1_11_0);
     public static final Food poppy_stew = registerDefaultFood(new FoodEffectiveInBowl(6, 7.2f)

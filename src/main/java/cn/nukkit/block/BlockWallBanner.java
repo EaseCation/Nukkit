@@ -29,10 +29,8 @@ public class BlockWallBanner extends BlockBanner {
     @Override
     public int onUpdate(int type) {
         if (type == Level.BLOCK_UPDATE_NORMAL) {
-            if (this.getDamage() >= BlockFace.NORTH.getIndex() && this.getDamage() <= BlockFace.EAST.getIndex()) {
-                if (this.getSide(BlockFace.fromIndex(this.getDamage()).getOpposite()).canBeFlowedInto()) {
-                    this.getLevel().useBreakOn(this, true);
-                }
+            if (this.getSide(getBlockFace().getOpposite()).canBeFlowedInto()) {
+                this.getLevel().useBreakOn(this, true);
                 return Level.BLOCK_UPDATE_NORMAL;
             }
         }

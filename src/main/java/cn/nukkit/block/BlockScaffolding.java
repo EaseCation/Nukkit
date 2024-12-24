@@ -16,7 +16,7 @@ import cn.nukkit.utils.BlockColor;
 import static cn.nukkit.GameVersion.*;
 import static cn.nukkit.SharedConstants.*;
 
-public class BlockScaffolding extends BlockTransparentMeta { // extends BlockFallable (HeavyBlock) in vanilla
+public class BlockScaffolding extends BlockTransparent { // extends BlockFallable (HeavyBlock) in vanilla
 
     public static final int STABILITY_MASK = 0b111;
     public static final int STABILITY_CHECK_BIT = 0b1000;
@@ -136,7 +136,7 @@ public class BlockScaffolding extends BlockTransparentMeta { // extends BlockFal
     }
 
     @Override
-    public boolean place(Item item, Block block, Block target, BlockFace face, double fx, double fy, double fz, Player player) {
+    public boolean place(Item item, Block block, Block target, BlockFace face, float fx, float fy, float fz, Player player) {
         int stability = UNSTABLE;
         Block below = down();
         if (below.getId() == SCAFFOLDING) {
@@ -176,7 +176,7 @@ public class BlockScaffolding extends BlockTransparentMeta { // extends BlockFal
     }
 
     @Override
-    public boolean onActivate(Item item, BlockFace face, Player player) {
+    public boolean onActivate(Item item, BlockFace face, float fx, float fy, float fz, Player player) {
         if (item.getId() == getItemId() && face.getAxis() == Axis.Y) {
             Block top = this;
             Block up;

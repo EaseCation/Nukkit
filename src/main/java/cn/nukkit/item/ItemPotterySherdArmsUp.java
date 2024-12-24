@@ -12,4 +12,9 @@ public class ItemPotterySherdArmsUp extends Item {
     public ItemPotterySherdArmsUp(Integer meta, int count) {
         super(ARMS_UP_POTTERY_SHERD, meta, count, "Arms Up Pottery Sherd");
     }
+
+    @Override
+    public boolean isPotterySherd() {
+        return true;
+    }
 }

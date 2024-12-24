@@ -10,7 +10,7 @@ import cn.nukkit.utils.Faceable;
  * Created on 2015/11/24 by xtypr.
  * Package cn.nukkit.block in project Nukkit .
  */
-public class BlockHayBale extends BlockSolidMeta implements Faceable {
+public class BlockHayBale extends BlockSolid implements Faceable {
 
     private static final int[] FACES = new int[]{
             0,
@@ -65,7 +65,7 @@ public class BlockHayBale extends BlockSolidMeta implements Faceable {
     }
 
     @Override
-    public boolean place(Item item, Block block, Block target, BlockFace face, double fx, double fy, double fz, Player player) {
+    public boolean place(Item item, Block block, Block target, BlockFace face, float fx, float fy, float fz, Player player) {
         this.setDamage((this.getDamage() & 0x03) | FACES[face.getIndex()]);
         this.getLevel().setBlock(block, this, true, true);
 

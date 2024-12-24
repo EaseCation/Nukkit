@@ -33,4 +33,8 @@ public abstract class CustomBlock extends Block {
     public final boolean isVanilla() {
         return false;
     }
+
+    public int getVariantCount() {
+        return 1;
+    }
 }
