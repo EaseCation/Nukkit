@@ -44,6 +44,7 @@ public class EntityFishingHook extends EntityProjectile {
     public boolean caught = false;
     public int caughtTimer = 0;
     public boolean canCollide = true;
+    public boolean reelLineTargetMotionEC = true;
 
     public Vector3 fish = null;
 
@@ -437,7 +438,7 @@ public class EntityFishingHook extends EntityProjectile {
                     }
 
                     if (!riding) {
-                        if (false) {
+                        if (!reelLineTargetMotionEC) {
                             // van
                             Vector3 diff = this.shootingEntity.add(0, 1, 0).subtract(entity).multiply(0.1);
                             diff.y = Math.sqrt(diff.length()) * 0.08;
