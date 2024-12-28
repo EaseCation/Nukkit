@@ -1471,10 +1471,6 @@ public class Item implements Cloneable, ItemID {
         return false;
     }
 
-    public boolean isWool() {
-        return false;
-    }
-
     public boolean wasPickedUp() {
         return pickedUp;
     }
