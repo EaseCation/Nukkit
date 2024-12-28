@@ -2,6 +2,7 @@ package cn.nukkit.block;
 
 import cn.nukkit.GameVersion;
 import cn.nukkit.block.edu.*;
+import cn.nukkit.block.state.BlockTypes;
 import cn.nukkit.command.data.CommandEnum;
 import cn.nukkit.item.ItemBlockNames;
 import cn.nukkit.item.Items;
@@ -57,6 +58,8 @@ public final class Blocks {
     }
 
     static void registerVanillaBlocks() {
+        BlockTypes.init();
+
         registerBlock(BlockNames.AIR, ItemBlockNames.AIR, BlockID.AIR, BlockAir.class);
         registerBlock(BlockNames.STONE, ItemBlockNames.STONE, STONE, BlockStone.class);
         registerBlock(BlockNames.GRASS, ItemBlockNames.GRASS, GRASS_BLOCK, BlockGrass.class);

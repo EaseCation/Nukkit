@@ -1129,13 +1129,6 @@ public class Item implements Cloneable, ItemID {
         return false;
     }
 
-    public boolean isWool() {
-        if (this.block == null) {
-            return false;
-        }
-        return this.block.isWool();
-    }
-
     public void onUsing(Player player, int ticksUsed) {
     }
 
@@ -1468,6 +1461,10 @@ public class Item implements Cloneable, ItemID {
     }
 
     public boolean isHangingSign() {
+        return false;
+    }
+
+    public boolean isWool() {
         return false;
     }
 

@@ -3,6 +3,7 @@ package cn.nukkit.block;
 import cn.nukkit.AdventureSettings;
 import cn.nukkit.Player;
 import cn.nukkit.Server;
+import cn.nukkit.block.state.*;
 import cn.nukkit.entity.Entity;
 import cn.nukkit.entity.projectile.EntityProjectile;
 import cn.nukkit.item.Item;
@@ -684,6 +685,56 @@ public abstract class Block extends Position implements Metadatable, Cloneable, 
 
     public boolean isValidMeta(int meta) {
         return meta <= metaMax[getId()];
+    }
+
+    @Nullable
+    protected BlockLegacy getBlockLegacy() {
+        return BlockTypes.getBlockRegistry().getBlock(getId());
+    }
+
+    public final boolean setStateUnsafe(BlockState state, int value) {
+        BlockLegacy legacyBlock = getBlockLegacy();
+        if (legacyBlock == null) {
+            return false;
+        }
+        BlockInstance instanceBlock = legacyBlock.setStateNullable(state, value, getDamage());
+        if (instanceBlock == null) {
+            return false;
+        }
+        setDamage(instanceBlock.meta);
+        return true;
+    }
+
+    public final boolean setState(IntegerBlockState state, int value) {
+        return setStateUnsafe(state, value);
+    }
+
+    public final boolean setState(BooleanBlockState state, boolean value) {
+        return setStateUnsafe(state, value ? 1 : 0);
+    }
+
+    public final <T extends Enum<?>> boolean setState(EnumBlockState<T> state, T value) {
+        return setStateUnsafe(state, value.ordinal());
+    }
+
+    public final int getStateUnsafe(BlockState state) {
+        BlockLegacy legacyBlock = getBlockLegacy();
+        if (legacyBlock == null) {
+            return 0;
+        }
+        return legacyBlock.getState(state, getDamage());
+    }
+
+    public final int getState(IntegerBlockState state) {
+        return getStateUnsafe(state);
+    }
+
+    public final boolean getState(BooleanBlockState state) {
+        return getStateUnsafe(state) != 0;
+    }
+
+    public final <T extends Enum<?>> T getState(EnumBlockState<T> state) {
+        return state.getValues().get(getStateUnsafe(state));
     }
 
     public final void position(Position v) {
