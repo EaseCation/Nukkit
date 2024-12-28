@@ -259,7 +259,7 @@
         <dependency>
             <groupId>net.openhft</groupId>
             <artifactId>zero-allocation-hashing</artifactId>
-            <version>0.16</version>
+            <version>0.27ea0</version>
             <scope>compile</scope>
         </dependency>
         <dependency>
