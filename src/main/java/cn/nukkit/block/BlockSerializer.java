@@ -3,6 +3,7 @@ package cn.nukkit.block;
 import cn.nukkit.nbt.tag.CompoundTag;
 
 import java.util.Objects;
+import java.util.function.IntFunction;
 
 public class BlockSerializer {
 //    private static BlockInstanceSerializer INSTANCE_SERIALIZER;
@@ -36,8 +37,8 @@ public class BlockSerializer {
         return RUNTIME_SERIALIZER.deserialize(tag);
     }
 
-    public static void registerCustomBlock(String name, int id, CompoundTag definition) {
-        RUNTIME_SERIALIZER.registerCustomBlock(name, id, definition);
+    public static void registerCustomBlock(String name, int id, IntFunction<CompoundTag> definitionSupplier) {
+        RUNTIME_SERIALIZER.registerCustomBlock(name, id, definitionSupplier);
     }
 
     public static void rebuildPalette() {
@@ -55,7 +56,7 @@ public class BlockSerializer {
 
         int deserialize(CompoundTag tag);
 
-        void registerCustomBlock(String name, int id, CompoundTag definition);
+        void registerCustomBlock(String name, int id, IntFunction<CompoundTag> definitionSupplier);
 
         void rebuildPalette();
     }

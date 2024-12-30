@@ -19,6 +19,7 @@ import java.util.Collections;
 import java.util.Map;
 import java.util.Objects;
 import java.util.concurrent.atomic.AtomicInteger;
+import java.util.function.IntFunction;
 
 import static cn.nukkit.GameVersion.*;
 import static cn.nukkit.block.BlockID.*;
@@ -1405,8 +1406,12 @@ public final class Blocks {
     }
 
     public static Class<? extends Block> registerCustomBlock(String fullName, int id, Class<? extends CustomBlock> clazz, CompoundTag definition) {
+        return registerCustomBlock(fullName, id, clazz, protocol -> definition);
+    }
+
+    public static Class<? extends Block> registerCustomBlock(String fullName, int id, Class<? extends CustomBlock> clazz, IntFunction<CompoundTag> definitionSupplier) {
         Objects.requireNonNull(clazz, "class");
-        Objects.requireNonNull(definition, "definition");
+        Objects.requireNonNull(definitionSupplier, "definition");
         if (fullName.split(":").length != 2) {
             throw new IllegalArgumentException("Invalid namespaced identifier: " + fullName);
         }
@@ -1414,7 +1419,9 @@ public final class Blocks {
             throw new IllegalArgumentException("Invalid identifier: " + fullName);
         }
 
-        log.trace("Register custom block {} ({}/{}) {} : {}", fullName, id, Block.getItemId(id), clazz, definition);
+        if (log.isTraceEnabled()) {
+            log.trace("Register custom block {} ({}/{}) {} : {}", fullName, id, Block.getItemId(id), clazz, definitionSupplier.apply(GameVersion.getFeatureVersion().getProtocol()));
+        }
 
         registerBlock(fullName, fullName, fullName, fullName, id, clazz);
 
@@ -1442,7 +1449,7 @@ public final class Blocks {
             Block.lightFilter[id] = 1;
         }
 
-        BlockSerializer.registerCustomBlock(fullName, id, definition);
+        BlockSerializer.registerCustomBlock(fullName, id, definitionSupplier);
         Items.registerCustomBlockItem(fullName, id);
 
         CommandEnum.ENUM_BLOCK.getValues().put(fullName, Collections.emptySet());

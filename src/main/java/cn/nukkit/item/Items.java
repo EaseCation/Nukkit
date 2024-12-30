@@ -6,6 +6,8 @@ import cn.nukkit.block.Blocks;
 import cn.nukkit.command.data.CommandEnum;
 import cn.nukkit.entity.EntityID;
 import cn.nukkit.nbt.tag.CompoundTag;
+import cn.nukkit.nbt.tag.ListTag;
+import cn.nukkit.nbt.tag.StringTag;
 import cn.nukkit.potion.PotionID;
 import cn.nukkit.utils.DyeColor;
 import it.unimi.dsi.fastutil.objects.Object2IntMap;
@@ -19,6 +21,7 @@ import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Objects;
 import java.util.concurrent.atomic.AtomicInteger;
+import java.util.function.IntFunction;
 
 import static cn.nukkit.GameVersion.*;
 import static cn.nukkit.SharedConstants.*;
@@ -800,10 +803,14 @@ public final class Items {
     }
 
     public static Class<? extends Item> registerCustomItem(String fullName, int id, Class<? extends Item> clazz, ItemFactory factory) {
-        return registerCustomItem(fullName, id, clazz, factory, null);
+        return registerCustomItem(fullName, id, clazz, factory, (CompoundTag) null);
     }
 
-    public static Class<? extends Item> registerCustomItem(String fullName, int id, Class<? extends Item> clazz, ItemFactory factory, @Nullable CompoundTag compounds) {
+    public static Class<? extends Item> registerCustomItem(String fullName, int id, Class<? extends Item> clazz, ItemFactory factory, @Nullable CompoundTag components) {
+        return registerCustomItem(fullName, id, clazz, factory, components != null ? protocol -> components : null);
+    }
+
+    public static Class<? extends Item> registerCustomItem(String fullName, int id, Class<? extends Item> clazz, ItemFactory factory, @Nullable IntFunction<CompoundTag> componentsSupplier) {
         Objects.requireNonNull(clazz, "class");
         Objects.requireNonNull(factory, "factory");
         if (fullName.split(":").length != 2) {
@@ -813,13 +820,50 @@ public final class Items {
             throw new IllegalArgumentException("Invalid identifier: " + fullName);
         }
 
-        log.trace("Register custom item {} ({}) {} : {}", fullName, id, clazz, compounds);
+        if (log.isTraceEnabled()) {
+            CompoundTag components;
+            if (componentsSupplier != null) {
+                components = componentsSupplier.apply(GameVersion.getFeatureVersion().getProtocol());
+            } else {
+                components = null;
+            }
+            log.trace("Register custom item {} ({}) {} : {}", fullName, id, clazz, components);
+        }
 
-        ItemSerializer.registerCustomItem(fullName, id, compounds);
+        ItemSerializer.registerCustomItem(fullName, id, componentsSupplier);
 
         CommandEnum.ENUM_ITEM.getValues().put(fullName, Collections.emptySet());
 
         return registerItem(fullName, id, clazz, factory);
+    }
+
+    public static CompoundTag getDefaultComponents() {
+        return new CompoundTag()
+                .putCompound("item_properties", new CompoundTag()
+                        .putBoolean("allow_off_hand", false)
+                        .putBoolean("animates_in_toolbar", false)
+                        .putBoolean("can_destroy_in_creative", true)
+                        .putInt("creative_category", 4)
+                        .putString("creative_group", "")
+                        .putInt("damage", 0)
+                        .putString("enchantable_slot", "none")
+                        .putInt("enchantable_value", 0)
+                        .putBoolean("explodable", true)
+                        .putBoolean("foil", false)
+                        .putInt("frame_count", 1)
+                        .putBoolean("hand_equipped", false)
+                        .putBoolean("ignores_permission", false)
+                        .putBoolean("liquid_clipped", false)
+                        .putInt("max_stack_size", 64)
+                        .putFloat("mining_speed", 1)
+                        .putBoolean("mirrored_art", false)
+                        .putBoolean("requires_interact", false)
+                        .putBoolean("should_despawn", true)
+                        .putBoolean("stacked_by_data", false)
+                        .putInt("use_animation", 0)
+                        .putInt("use_duration", 0)
+                )
+                .putList("item_tags", new ListTag<StringTag>());
     }
 
     public static void registerCustomBlockItem(String fullName, int blockId) {
