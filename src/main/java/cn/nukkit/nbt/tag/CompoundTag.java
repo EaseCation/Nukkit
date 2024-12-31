@@ -84,6 +84,11 @@ public class CompoundTag extends Tag implements Cloneable {
         return TAG_Compound;
     }
 
+    public CompoundTag putAll(CompoundTag other) {
+        tags.putAll(other.tags);
+        return this;
+    }
+
     public CompoundTag put(String name, Tag tag) {
         tags.put(name, tag.setName(name));
         return this;

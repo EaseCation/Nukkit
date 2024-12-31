@@ -283,6 +283,14 @@ public class ListTag<T extends Tag> extends Tag implements Iterable<T> {
         return this;
     }
 
+    public ListTag<T> addBoolean(boolean data) {
+        return addByte(data ? 1 : 0);
+    }
+
+    public ListTag<T> addBoolean(int index, boolean data) {
+        return addByte(index, data ? 1 : 0);
+    }
+
     @Override
     public List<Object> parseValue() {
         List<Object> value = new ObjectArrayList<>(this.list.size());

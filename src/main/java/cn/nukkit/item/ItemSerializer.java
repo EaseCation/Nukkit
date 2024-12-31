@@ -4,6 +4,7 @@ import cn.nukkit.nbt.tag.CompoundTag;
 
 import javax.annotation.Nullable;
 import java.util.Objects;
+import java.util.function.IntFunction;
 
 public class ItemSerializer {
     private static RuntimeItemSerializer INSTANCE;
@@ -36,8 +37,8 @@ public class ItemSerializer {
         INSTANCE.registerItemAux(identifier, id, meta);
     }
 
-    public static void registerCustomItem(String fullName, int id, @Nullable CompoundTag components) {
-        INSTANCE.registerCustomItem(fullName, id, components);
+    public static void registerCustomItem(String fullName, int id, @Nullable IntFunction<CompoundTag> componentsSupplier) {
+        INSTANCE.registerCustomItem(fullName, id, componentsSupplier);
     }
 
     public static void registerCustomBlockItem(String fullName, int itemId) {
@@ -61,7 +62,7 @@ public class ItemSerializer {
 
         void registerItemAux(String identifier, int id, int meta);
 
-        void registerCustomItem(String fullName, int id, @Nullable CompoundTag components);
+        void registerCustomItem(String fullName, int id, @Nullable IntFunction<CompoundTag> componentsSupplier);
 
         void registerCustomBlockItem(String fullName, int itemId);
 
