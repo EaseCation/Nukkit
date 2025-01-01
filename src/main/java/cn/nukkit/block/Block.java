@@ -717,6 +717,10 @@ public abstract class Block extends Position implements Metadatable, Cloneable, 
         return setStateUnsafe(state, value.ordinal());
     }
 
+    public final boolean setState(StringBlockState state, String value) {
+        return setStateUnsafe(state, state.getValues().indexOf(value));
+    }
+
     public final int getStateUnsafe(BlockState state) {
         BlockLegacy legacyBlock = getBlockLegacy();
         if (legacyBlock == null) {
@@ -730,11 +734,23 @@ public abstract class Block extends Position implements Metadatable, Cloneable, 
     }
 
     public final boolean getState(BooleanBlockState state) {
-        return getStateUnsafe(state) != 0;
+        return getStateUnsafe(state) == 1;
     }
 
     public final <T extends Enum<?>> T getState(EnumBlockState<T> state) {
         return state.getValues().get(getStateUnsafe(state));
+    }
+
+    public final String getState(StringBlockState state) {
+        return state.getValues().get(getStateUnsafe(state));
+    }
+
+    public final boolean hasState(BlockState state) {
+        BlockLegacy legacyBlock = getBlockLegacy();
+        if (legacyBlock == null) {
+            return false;
+        }
+        return legacyBlock.hasState(state);
     }
 
     public final void position(Position v) {

@@ -6,32 +6,27 @@ import cn.nukkit.nbt.tag.Tag;
 import lombok.ToString;
 
 import java.util.List;
-import java.util.stream.Stream;
 
-@ToString(callSuper = true, exclude = "values")
-public class EnumBlockState<T extends Enum<?>> extends BlockState {
-    private final List<T> values;
-    private final List<String> stringValues;
+@ToString(callSuper = true)
+public class StringBlockState extends BlockState {
+    private final List<String> values;
 
-    public EnumBlockState(String name, T... values) {
+    public StringBlockState(String name, String... values) {
         super(name, values.length);
         if (values.length < 2) {
             throw new IllegalArgumentException("must contain at least 2 elements");
         }
         this.values = List.of(values);
-        this.stringValues = Stream.of(values)
-                .map(Enum::toString)
-                .toList();
     }
 
     @Override
-    public List<T> getValues() {
+    public List<String> getValues() {
         return values;
     }
 
     @Override
     public void toNBT(CompoundTag tag, int val) {
-        tag.putString(name, stringValues.get(val));
+        tag.putString(name, values.get(val));
     }
 
     @Override
@@ -40,6 +35,6 @@ public class EnumBlockState<T extends Enum<?>> extends BlockState {
         if (!(stateTag instanceof StringTag nbt)) {
             return -1;
         }
-        return stringValues.indexOf(nbt.data);
+        return values.indexOf(nbt.data);
     }
 }

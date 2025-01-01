@@ -1,6 +1,6 @@
 package cn.nukkit.block.state;
 
-import cn.nukkit.block.BlockID;
+import cn.nukkit.block.Block;
 
 import javax.annotation.Nullable;
 import java.util.HashMap;
@@ -9,7 +9,7 @@ import java.util.Map;
 public class BlockRegistry {
     private final int version;
     private final Map<String, BlockLegacy> blocks = new HashMap<>();
-    private final BlockLegacy[] byId = new BlockLegacy[BlockID.UNDEFINED];
+    private final BlockLegacy[] byId = new BlockLegacy[Block.BLOCK_ID_COUNT];
 
     public BlockRegistry(int version) {
         this.version = version;
@@ -29,11 +29,13 @@ public class BlockRegistry {
     }
 
     public BlockLegacy registerBlock(String name, int id) {
+        return registerBlock(name, id, new BlockLegacy(id, name));
+    }
+
+    public BlockLegacy registerBlock(String name, int id, BlockLegacy block) {
         if (byId[id] != null) {
             throw new IllegalArgumentException("Block " + id + " already exists");
         }
-
-        BlockLegacy block = new BlockLegacy(id, name);
         if (blocks.putIfAbsent(name, block) != null) {
             throw new IllegalArgumentException("Block " + name + " already exists");
         }

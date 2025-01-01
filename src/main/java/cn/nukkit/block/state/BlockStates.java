@@ -4,12 +4,14 @@ import cn.nukkit.block.state.enumeration.*;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.concurrent.atomic.AtomicInteger;
 
 import static cn.nukkit.block.state.BlockStateIntegerValues.*;
 
 // This file is generated automatically, do not edit it manually.
 public final class BlockStates {
     private static final List<BlockState> REGISTRY = new ArrayList<>();
+    private static final AtomicInteger INTERNAL_ID_ALLOCATOR = new AtomicInteger();
 
     public static final BooleanBlockState ACTIVE = register(new BooleanBlockState(BlockStateNames.ACTIVE));
     public static final IntegerBlockState AGE = register(new IntegerBlockState(BlockStateNames.AGE, MAX_AGE + 1));
@@ -157,15 +159,26 @@ public final class BlockStates {
     public static final EnumBlockState<WoodTypeState> WOOD_TYPE = register(new EnumBlockState<>(BlockStateNames.WOOD_TYPE, WoodTypeState.values()));
     public static final IntegerBlockState CHALKBOARD_DIRECTION = register(new IntegerBlockState(BlockStateNames.DIRECTION, CHALKBOARD_MAX_DIRECTION + 1));
 
-    public static final int STATE_COUNT = REGISTRY.size();
+    public static final int STATE_COUNT = 512;
 
-    public static int assignId() {
-        return REGISTRY.size();
+    static int assignId() {
+        int id = INTERNAL_ID_ALLOCATOR.getAndIncrement();
+        if (id >= STATE_COUNT) {
+            throw new AssertionError("Custom block state internal ID overflow. Please increase the capacity");
+        }
+        return id;
     }
 
-    public static <T extends BlockState> T register(T state) {
+    private static <T extends BlockState> T register(T state) {
         REGISTRY.add(state);
         return state;
+    }
+
+    public static <T extends BlockState> T registerCustomBlockState(T state) {
+        if (state.id != REGISTRY.size()) {
+            throw new IllegalArgumentException("internal ID mismatch");
+        }
+        return register(state);
     }
 
     public static BlockState get(int id) {

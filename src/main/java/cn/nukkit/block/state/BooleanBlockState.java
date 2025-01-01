@@ -11,7 +11,7 @@ import lombok.ToString;
 public class BooleanBlockState extends BlockState {
     private static final BooleanList VALUES = BooleanImmutableList.of(false, true);
 
-    protected BooleanBlockState(String name) {
+    public BooleanBlockState(String name) {
         super(name, 2);
     }
 

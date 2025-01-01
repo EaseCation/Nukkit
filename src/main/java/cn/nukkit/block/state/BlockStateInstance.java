@@ -11,8 +11,8 @@ public class BlockStateInstance {
 
     private final int startBit;
     private final int numBits;
-    private final int endBit;
-    private final int variationCount;
+    final int endBit;
+    final int variationCount;
     private final int mask;
     private final int lowerMask;
     final BlockState state;
@@ -42,7 +42,7 @@ public class BlockStateInstance {
 
     @Nullable
     public BlockInstance set(int meta, int value, BlockInstance[] permutations) {
-        if (value >= variationCount) {
+        if (value < 0 || value >= variationCount) {
             return null;
         }
         int index = (value << endBit) | ~mask & meta;

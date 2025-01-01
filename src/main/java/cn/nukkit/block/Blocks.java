@@ -2098,6 +2098,7 @@ public final class Blocks {
             Block.lightFilter[id] = 1;
         }
 
+        BlockTypes.getBlockRegistry().registerBlock(fullName, id, block.getBlockLegacy());
         BlockSerializer.registerCustomBlock(fullName, id, definitionSupplier);
         Items.registerCustomBlockItem(fullName, id);
 

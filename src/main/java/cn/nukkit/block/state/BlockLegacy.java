@@ -1,25 +1,29 @@
 package cn.nukkit.block.state;
 
 import cn.nukkit.math.Mth;
+import cn.nukkit.nbt.tag.CompoundTag;
 import lombok.ToString;
 
 import javax.annotation.Nullable;
+import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.List;
 
 @ToString(doNotUseGetters = true)
 public class BlockLegacy {
     public final int id;
-    public final String name;
+//    public final String name;
 
     private int bitsUsed;
-    private final BlockStateInstance[] states = new BlockStateInstance[BlockStates.STATE_COUNT];
+    final BlockStateInstance[] states = new BlockStateInstance[BlockStates.STATE_COUNT];
+    private final List<BlockStateInstance> validStates = new ArrayList<>();
 
     private BlockInstance[] permutations;
     private BlockInstance defaultState;
 
     public BlockLegacy(int id, String name) {
         this.id = id;
-        this.name = name;
+//        this.name = name;
     }
 
     public BlockLegacy addState(BlockState state) {
@@ -33,6 +37,7 @@ public class BlockLegacy {
         int numBits = Mth.ceillog2(variationCount);
         BlockStateInstance instance = new BlockStateInstance(bitsUsed, numBits, variationCount, state);
         states[state.id] = instance;
+        validStates.add(instance);
         bitsUsed += numBits;
         return this;
     }
@@ -94,7 +99,55 @@ public class BlockLegacy {
         return setState(state, value.ordinal(), meta);
     }
 
+    public int getStateNullable(BlockState state, int meta) {
+        BlockStateInstance instance = states[state.id];
+        if (instance == null) {
+            return -1;
+        }
+        return instance.get(meta);
+    }
+
     public int getState(BlockState state, int meta) {
-        return states[state.id].get(meta);
+        int value = getStateNullable(state, meta);
+        if (value == -1) {
+            return 0;
+        }
+        return value;
+    }
+
+    public boolean hasState(BlockState state) {
+        return states[state.id] != null;
+    }
+
+    public int getVariantCount() {
+        return permutations.length;
+    }
+
+    @Nullable
+    public BlockInstance getBlock(int meta) {
+        if (meta >= permutations.length) {
+            return null;
+        }
+        return permutations[meta];
+    }
+
+    public CompoundTag serialize(int meta) {
+        BlockInstance instance = getBlock(meta);
+        if (instance == null) {
+            return defaultState.getStatesTag();
+        }
+        return instance.getStatesTag();
+    }
+
+    public int deserialize(CompoundTag states) {
+        int meta = 0;
+        for (BlockStateInstance instance : validStates) {
+            int value = instance.state.fromNBT(states);
+            if (value < 0 || value >= instance.variationCount) {
+                continue;
+            }
+            meta |= value << instance.endBit;
+        }
+        return meta;
     }
 }

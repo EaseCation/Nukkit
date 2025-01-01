@@ -13,7 +13,7 @@ import java.util.stream.IntStream;
 public class IntegerBlockState extends BlockState {
     private final IntList values;
 
-    protected IntegerBlockState(String name, int variationCount) {
+    public IntegerBlockState(String name, int variationCount) {
         super(name, variationCount);
         if (variationCount < 2) {
             throw new IllegalArgumentException("variationCount must be at least 2");
