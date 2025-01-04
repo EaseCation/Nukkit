@@ -25,6 +25,8 @@ import cn.nukkit.nbt.tag.StringTag;
 import cn.nukkit.nbt.tag.Tag;
 import cn.nukkit.network.protocol.BossEventPacket.BossBarColor;
 import cn.nukkit.network.protocol.types.EntityLink;
+import cn.nukkit.network.protocol.types.ItemStackRequest;
+import cn.nukkit.network.protocol.types.ItemStackResponse;
 import it.unimi.dsi.fastutil.io.FastByteArrayInputStream;
 import it.unimi.dsi.fastutil.objects.ObjectArrayList;
 import it.unimi.dsi.fastutil.objects.ObjectOpenHashSet;
@@ -1349,8 +1351,14 @@ public class BinaryStream {
         /**
          * @since 1.16.0
          */
-        public int getItemStackRequest(BinaryStream stream) { //TODO: server authoritative inventory
-            return -1;
+        public ItemStackRequest getItemStackRequest(BinaryStream stream) {
+            return null;
+        }
+
+        /**
+         * @since 1.16.0
+         */
+        public void putItemStackResponse(BinaryStream stream, ItemStackResponse response) {
         }
 
         public final int getCommandParameterTypeId(CommandParamType type) {
