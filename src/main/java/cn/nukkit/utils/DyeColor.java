@@ -91,6 +91,9 @@ public enum DyeColor {
     }
 
     public static DyeColor getByDyeNewData(int dyeMeta) {
+        if (dyeMeta < 0 || dyeMeta >= BY_DYE_NEW_DATA.length) {
+            dyeMeta = 0;
+        }
         return BY_DYE_NEW_DATA[dyeMeta];
     }
 

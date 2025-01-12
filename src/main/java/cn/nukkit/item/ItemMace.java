@@ -44,4 +44,9 @@ public class ItemMace extends ItemTool {
     public boolean isSword() {
         return true;
     }
+
+    @Override
+    public int getEnchantAbility() {
+        return 15;
+    }
 }

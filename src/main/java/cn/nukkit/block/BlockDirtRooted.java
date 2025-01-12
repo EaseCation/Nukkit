@@ -5,6 +5,7 @@ import cn.nukkit.item.Item;
 import cn.nukkit.level.particle.BoneMealParticle;
 import cn.nukkit.math.BlockFace;
 import cn.nukkit.network.protocol.LevelSoundEventPacket;
+import cn.nukkit.potion.Potion;
 import cn.nukkit.utils.BlockColor;
 
 public class BlockDirtRooted extends BlockSolid {
@@ -90,6 +91,24 @@ public class BlockDirtRooted extends BlockSolid {
             }
 
             level.setBlock(this, get(GRASS_PATH), true);
+            return true;
+        }
+
+        if (item.isPotion() && item.getDamage() == Potion.WATER) {
+            level.setBlock(this, get(MUD), true);
+
+            level.addLevelSoundEvent(this, LevelSoundEventPacket.SOUND_BOTTLE_EMPTY);
+
+            if (player != null) {
+                if (item.getCount() == 1 && player.isSurvivalLike()) {
+                    player.getInventory().setItemInHand(Item.get(Item.GLASS_BOTTLE));
+                } else {
+                    if (player.isSurvivalLike()) {
+                        item.pop();
+                    }
+                    player.getInventory().addItemOrDrop(Item.get(Item.GLASS_BOTTLE));
+                }
+            }
             return true;
         }
 

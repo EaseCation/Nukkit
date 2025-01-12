@@ -4,6 +4,7 @@ import cn.nukkit.Player;
 import cn.nukkit.item.Item;
 import cn.nukkit.math.BlockFace;
 import cn.nukkit.network.protocol.LevelSoundEventPacket;
+import cn.nukkit.potion.Potion;
 import cn.nukkit.utils.BlockColor;
 
 /**
@@ -81,6 +82,22 @@ public class BlockDirt extends BlockSolid {
             }
         } else if (item.isFertilizer()) {
             return BlockSeagrass.trySpawnSeaGrass(this, item, player);
+        } else if (item.isPotion() && item.getDamage() == Potion.WATER) {
+            level.setBlock(this, get(MUD), true);
+
+            level.addLevelSoundEvent(this, LevelSoundEventPacket.SOUND_BOTTLE_EMPTY);
+
+            if (player != null) {
+                if (item.getCount() == 1 && player.isSurvivalLike()) {
+                    player.getInventory().setItemInHand(Item.get(Item.GLASS_BOTTLE));
+                } else {
+                    if (player.isSurvivalLike()) {
+                        item.pop();
+                    }
+                    player.getInventory().addItemOrDrop(Item.get(Item.GLASS_BOTTLE));
+                }
+            }
+            return true;
         }
 
         return false;

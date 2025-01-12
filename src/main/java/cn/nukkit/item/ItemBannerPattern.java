@@ -1,5 +1,7 @@
 package cn.nukkit.item;
 
+import cn.nukkit.utils.BannerPattern.Type;
+
 public class ItemBannerPattern extends Item {
     public static final int CREEPER_BANNER_PATTERN = 0;
     public static final int SKULL_BANNER_PATTERN = 1;
@@ -48,5 +50,9 @@ public class ItemBannerPattern extends Item {
             return "Banner Pattern";
         }
         return NAMES[meta];
+    }
+
+    public Type getPattern() {
+        return Type.getByMeta(getDamage());
     }
 }

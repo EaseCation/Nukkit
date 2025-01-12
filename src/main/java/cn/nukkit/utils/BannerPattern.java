@@ -1,7 +1,9 @@
 package cn.nukkit.utils;
 
+import cn.nukkit.item.ItemBannerPattern;
 import cn.nukkit.nbt.tag.CompoundTag;
 
+import javax.annotation.Nullable;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -58,37 +60,64 @@ public class BannerPattern {
         PATTERN_MIDDLE_CIRCLE("mc"),
         PATTERN_MIDDLE_RHOMBUS("mr"),
         PATTERN_BORDER("bo"),
-        PATTERN_CURLY_BORDER("cbo"),
-        PATTERN_BRICK("bri"),
+        PATTERN_CURLY_BORDER("cbo", ItemBannerPattern.BORDURE_INDENTED_BANNER_PATTERN),
+        PATTERN_BRICK("bri", ItemBannerPattern.FIELD_MASONED_BANNER_PATTERN),
         PATTERN_GRADIENT("gra"),
         PATTERN_GRADIENT_UPSIDE_DOWN("gru"),
-        PATTERN_CREEPER("cre"),
-        PATTERN_SKULL("sku"),
-        PATTERN_FLOWER("flo"),
-        PATTERN_MOJANG("moj");
+        PATTERN_CREEPER("cre", ItemBannerPattern.CREEPER_BANNER_PATTERN),
+        PATTERN_SKULL("sku", ItemBannerPattern.SKULL_BANNER_PATTERN),
+        PATTERN_FLOWER("flo", ItemBannerPattern.FLOWER_BANNER_PATTERN),
+        PATTERN_MOJANG("moj", ItemBannerPattern.MOJANG_BANNER_PATTERN),
+        PATTERN_PIGLIN("pig", ItemBannerPattern.CREEPER_BANNER_PATTERN),
+        PATTERN_GLOBE("glb", ItemBannerPattern.CREEPER_BANNER_PATTERN),
+        PATTERN_FLOW("flw", ItemBannerPattern.CREEPER_BANNER_PATTERN),
+        PATTERN_GUSTER("gus", ItemBannerPattern.CREEPER_BANNER_PATTERN),
+        ;
 
         private final static Map<String, Type> BY_NAME = new HashMap<>();
+        private final static Type[] BY_META = new Type[ItemBannerPattern.UNDEFINED_BANNER_PATTERN];
 
         private final String name;
+        private final int meta;
 
         Type(String name) {
+            this(name, -1);
+        }
+
+        Type(String name, int meta) {
             this.name = name;
+            this.meta = meta;
         }
 
         public String getName() {
             return this.name;
         }
 
+        public int getMeta() {
+            return meta;
+        }
+
         static {
             for (Type type : values()) {
                 BY_NAME.put(type.getName(), type);
+                if (type.meta != -1) {
+                    BY_META[type.meta] = type;
+                }
             }
         }
 
+        @Nullable
         public static Type getByName(String name) {
             return BY_NAME.get(name);
         }
 
+        @Nullable
+        public static Type getByMeta(int meta) {
+            if (meta < 0 || meta >= BY_META.length) {
+                return null;
+            }
+            return BY_META[meta];
+        }
     }
 
 }

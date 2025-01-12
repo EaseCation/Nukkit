@@ -35,6 +35,11 @@ public class ItemWolfArmor extends Item implements ItemDurable {
         return 11;
     }
 
+    @Override
+    public int getEnchantAbility() {
+        return 10;
+    }
+
     public void setColor(DyeColor dye) {
         setColor(dye.getColor());
     }

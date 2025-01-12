@@ -141,4 +141,9 @@ public class ItemTrident extends ItemTool {
     public boolean additionalDamageOnBreak() {
         return true;
     }
+
+    @Override
+    public int getEnchantAbility() {
+        return 1;
+    }
 }
