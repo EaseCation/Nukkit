@@ -1,6 +1,8 @@
 package cn.nukkit.resourcepacks;
 
 import cn.nukkit.Server;
+import cn.nukkit.utils.Config;
+import cn.nukkit.utils.Utils;
 import com.google.common.io.Files;
 import it.unimi.dsi.fastutil.objects.Object2ObjectLinkedOpenHashMap;
 import lombok.extern.log4j.Log4j2;
@@ -14,6 +16,7 @@ import java.io.IOException;
 import java.nio.file.attribute.FileTime;
 import java.util.Collection;
 import java.util.Map;
+import java.util.Map.Entry;
 import java.util.TreeSet;
 import java.util.zip.Deflater;
 import java.util.zip.ZipEntry;
@@ -55,6 +58,65 @@ public class ResourcePackManager {
             this.tryLoad(pack);
         }
         this.inited = true;
+
+        Map<String, ResourcePack> behaviorStack = new Object2ObjectLinkedOpenHashMap<>();
+        Map<String, ResourcePack> resourceStack = new Object2ObjectLinkedOpenHashMap<>();
+        Map<String, ResourcePack> allStack = new Object2ObjectLinkedOpenHashMap<>();
+
+        File configFile = new File(path, "packs.yml");
+        if (!configFile.exists()) {
+            try {
+                Utils.writeFile(configFile, Server.class.getClassLoader().getResourceAsStream("packs.yml"));
+            } catch (IOException e) {
+                log.warn("Failed to load pack config", e);
+            }
+        }
+
+        Config config = new Config(configFile);
+        for (String packId : config.getSections().keySet()) {
+            ResourcePack pack = getPackById(packId);
+            if (pack == null) {
+                continue;
+            }
+
+            String key = config.getString(packId + ".key");
+            if (!key.isEmpty()) {
+                pack.setEncryptionKey(key);
+            }
+
+            String cdn = config.getString(packId + ".cdn");
+            if (!cdn.isEmpty()) {
+                pack.setCdnUrl(cdn);
+            }
+
+            if (pack.isBehaviorPack()) {
+                behaviorStack.put(packId, pack);
+            } else {
+                resourceStack.put(packId, pack);
+            }
+            allStack.put(packId, pack);
+        }
+
+        for (Entry<String, ResourcePack> entry : this.behaviorPacksById.entrySet()) {
+            String id = entry.getKey();
+            ResourcePack pack = entry.getValue();
+            behaviorStack.putIfAbsent(id, pack);
+            allStack.putIfAbsent(id, pack);
+        }
+        for (Entry<String, ResourcePack> entry : this.resourcePacksById.entrySet()) {
+            String id = entry.getKey();
+            ResourcePack pack = entry.getValue();
+            resourceStack.putIfAbsent(id, pack);
+            allStack.putIfAbsent(id, pack);
+        }
+
+        this.behaviorPacksById.clear();
+        this.resourcePacksById.clear();
+        this.allPacksById.clear();
+
+        this.behaviorPacksById.putAll(behaviorStack);
+        this.resourcePacksById.putAll(resourceStack);
+        this.allPacksById.putAll(allStack);
 
         this.resourcePacks = resourcePacksById.values().toArray(new ResourcePack[0]);
         this.behaviorPacks = behaviorPacksById.values().toArray(new ResourcePack[0]);

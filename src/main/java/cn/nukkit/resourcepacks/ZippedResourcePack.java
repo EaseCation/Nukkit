@@ -35,8 +35,6 @@ public class ZippedResourcePack extends AbstractResourcePack {
     private final byte[][] chunks;
     private final byte[] sha256;
 
-    private final String encryptionKey;
-
     public ZippedResourcePack(File file) throws IOException {
         this(file, true);
     }
@@ -204,11 +202,6 @@ public class ZippedResourcePack extends AbstractResourcePack {
         }
 
         return chunks[index];
-    }
-
-    @Override
-    public String getEncryptionKey() {
-        return this.encryptionKey;
     }
 
     private static String generateToken(Random random) {

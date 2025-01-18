@@ -179,7 +179,7 @@ public interface ProtocolInfo {
     int CAMERA_SHAKE_PACKET = 0x9f; // 159 c
     int PLAYER_FOG_PACKET = 0xa0; // 160 c
     int CORRECT_PLAYER_MOVE_PREDICTION_PACKET = 0xa1; // 161 c
-    int ITEM_COMPONENT_PACKET = 0xa2; // 162 c
+    int ITEM_REGISTRY_PACKET = 0xa2; // 162 c
     int FILTER_TEXT_PACKET = 0xa3; // 163 cs d
     int CLIENTBOUND_DEBUG_RENDERER_PACKET = 0xa4; // 164 c
     int SYNC_ACTOR_PROPERTY_PACKET = 0xa5; // 165 c
@@ -269,6 +269,8 @@ public interface ProtocolInfo {
     int MOVEMENT_EFFECT_PACKET = 0x13e; // 318 c
     int SET_MOVEMENT_AUTHORITY_PACKET = 0x13f; // 319 c
     int CAMERA_AIM_ASSIST_PRESETS_PACKET = 0x140; // 320 c
+    int CLIENT_CAMERA_AIM_ASSIST_PACKET = 0x141; // 321 c
+    int CLIENT_MOVEMENT_PREDICTION_SYNC_PACKET = 0x142; // 322 s
 
 
     int COUNT = 1024;

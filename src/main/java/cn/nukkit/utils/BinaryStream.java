@@ -14,16 +14,14 @@ import cn.nukkit.item.ItemID;
 import cn.nukkit.item.RuntimeItems;
 import cn.nukkit.level.GameRule;
 import cn.nukkit.level.GameRules;
-import cn.nukkit.math.BlockFace;
-import cn.nukkit.math.BlockVector3;
-import cn.nukkit.math.Vector2f;
-import cn.nukkit.math.Vector3f;
+import cn.nukkit.math.*;
 import cn.nukkit.nbt.NBTIO;
 import cn.nukkit.nbt.tag.CompoundTag;
 import cn.nukkit.nbt.tag.ListTag;
 import cn.nukkit.nbt.tag.StringTag;
 import cn.nukkit.nbt.tag.Tag;
 import cn.nukkit.network.protocol.BossEventPacket.BossBarColor;
+import cn.nukkit.network.protocol.types.AbilityLayer;
 import cn.nukkit.network.protocol.types.EntityLink;
 import it.unimi.dsi.fastutil.io.FastByteArrayInputStream;
 import it.unimi.dsi.fastutil.objects.ObjectArrayList;
@@ -1132,6 +1130,30 @@ public class BinaryStream {
         putUnsignedVarInt(color.getOldId());
     }
 
+    public BitSet getBitSet(int size) {
+        long[] bitSet = new long[Mth.ceil(size / 64f)];
+        int index = 0;
+        int shift = 0;
+        while (true) {
+            if (shift >= size) {
+                throw new IllegalArgumentException("VarBitSet was too large: " + size);
+            }
+            byte b = getSingedByte();
+            long bits = b & 0x7f;
+            bitSet[index] |= bits << shift; // extra bits will be discarded
+            int nextShift = shift + 7;
+            if (nextShift >= 64) {
+                nextShift -= 64;
+                bitSet[++index] = bits >> (7 - nextShift);
+            }
+            if ((b & 0x80) == 0) {
+                break;
+            }
+            shift = nextShift;
+        }
+        return BitSet.valueOf(bitSet);
+    }
+
     public boolean isReadable(int length) {
         return count - offset >= length;
     }
@@ -1367,6 +1389,12 @@ public class BinaryStream {
 
         public void putBossBarColor(BinaryStream stream, BossBarColor color) {
             stream.putUnsignedVarInt(color.getOldId());
+        }
+
+        /**
+         * @since 1.19.10
+         */
+        public void putAbilityLayer(BinaryStream stream, AbilityLayer layer) {
         }
     }
 }

@@ -1263,6 +1263,7 @@ public class Player extends EntityHuman implements CommandSender, InventoryHolde
 
         this.sleeping = pos.clone();
 
+        this.setDataProperty(new Vector3fEntityData(DATA_ENTER_BED_POSITION, asVector3f()));
         this.recalculateBoundingBox();
         this.setDataProperty(new IntPositionEntityData(DATA_PLAYER_BED_POSITION, (int) pos.x, (int) pos.y, (int) pos.z));
         this.setPlayerFlag(DATA_PLAYER_FLAG_SLEEP, true);

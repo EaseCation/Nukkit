@@ -1,6 +1,5 @@
 package cn.nukkit.resourcepacks;
 
-import javax.annotation.Nullable;
 import java.util.List;
 
 public interface ResourcePack {
@@ -14,6 +13,10 @@ public interface ResourcePack {
 
     List<String> getCapabilities();
 
+    default boolean isBehaviorPack() {
+        return "data".equals(getPackType());
+    }
+
     int getPackSize();
 
     byte[] getSha256();
@@ -24,6 +27,9 @@ public interface ResourcePack {
 
     String getEncryptionKey();
 
-    @Nullable
+    void setEncryptionKey(String key);
+
     String getCdnUrl();
+
+    void setCdnUrl(String url);
 }

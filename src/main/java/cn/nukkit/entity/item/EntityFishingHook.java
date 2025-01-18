@@ -275,7 +275,7 @@ public class EntityFishingHook extends EntityProjectile {
             this.motionZ = 0;
 
 //            this.addMovement(this.x, this.y + this.getBaseOffset(), this.z, this.yaw, this.pitch, this.yaw);
-            return false;
+            //return false;
         } else if (!this.isCollided && this.hadCollision) {
             this.hadCollision = false;
         }
@@ -329,6 +329,7 @@ public class EntityFishingHook extends EntityProjectile {
                     this.waitTimer = this.waitChance * 3;
                 }
             }
+            hasUpdate = true;
         }
 
         return hasUpdate;
