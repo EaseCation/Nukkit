@@ -49,6 +49,7 @@ public final class BlockStates {
     public static final BooleanBlockState COVERED_BIT = register(new BooleanBlockState(BlockStateNames.COVERED_BIT));
     public static final EnumBlockState<CrackedState> CRACKED_STATE = register(new EnumBlockState<>(BlockStateNames.CRACKED_STATE, CrackedState.values()));
     public static final BooleanBlockState CRAFTING = register(new BooleanBlockState(BlockStateNames.CRAFTING));
+    public static final EnumBlockState<CreakingHeartState> CREAKING_HEART_STATE = register(new EnumBlockState<>(BlockStateNames.CREAKING_HEART_STATE, CreakingHeartState.values()));
     public static final EnumBlockState<DamageState> DAMAGE = register(new EnumBlockState<>(BlockStateNames.DAMAGE, DamageState.values()));
     public static final BooleanBlockState DEAD_BIT = register(new BooleanBlockState(BlockStateNames.DEAD_BIT));
     public static final IntegerBlockState DEPRECATED = register(new IntegerBlockState(BlockStateNames.DEPRECATED, MAX_DEPRECATED + 1));

@@ -268,7 +268,7 @@ public class BlockNoteblock extends BlockSolid {
             return;
         }
 
-        this.level.addLevelSoundEvent(this, LevelSoundEventPacket.SOUND_NOTE, instrument.ordinal() << 8 | this.getStrength());
+        this.level.addLevelSoundEvent(this, LevelSoundEventPacket.SOUND_NOTE, -(instrument.ordinal() << 8 | this.getStrength()));
 
         BlockEventPacket pk = new BlockEventPacket();
         pk.x = this.getFloorX();
@@ -327,10 +327,10 @@ public class BlockNoteblock extends BlockSolid {
         DRUM(SoundEnum.NOTE_SNARE),
         STICKS(SoundEnum.NOTE_HAT),
         BASS(SoundEnum.NOTE_BASS),
-        GLOCKENSPIEL(SoundEnum.NOTE_BELL),
         FLUTE(SoundEnum.NOTE_FLUTE),
-        CHIME(SoundEnum.NOTE_CHIME),
+        GLOCKENSPIEL(SoundEnum.NOTE_BELL),
         GUITAR(SoundEnum.NOTE_GUITAR),
+        CHIME(SoundEnum.NOTE_CHIME),
         XYLOPHONE(SoundEnum.NOTE_XYLOPHONE),
         VIBRAPHONE(SoundEnum.NOTE_IRON_XYLOPHONE),
         COW_BELL(SoundEnum.NOTE_COW_BELL),
@@ -338,11 +338,11 @@ public class BlockNoteblock extends BlockSolid {
         SQUARE_WAVE(SoundEnum.NOTE_BIT),
         BANJO(SoundEnum.NOTE_BANJO),
         ELECTRIC_PIANO(SoundEnum.NOTE_PLING),
-        SKELETON(SoundEnum.NOTE_SKELETON),
-        WITHER_SKELETON(SoundEnum.NOTE_WITHERSKELETON),
         ZOMBIE(SoundEnum.NOTE_ZOMBIE),
+        SKELETON(SoundEnum.NOTE_SKELETON),
         CREEPER(SoundEnum.NOTE_CREEPER),
         ENDER_DRAGON(SoundEnum.NOTE_ENDERDRAGON),
+        WITHER_SKELETON(SoundEnum.NOTE_WITHERSKELETON),
         PIGLIN(SoundEnum.NOTE_PIGLIN),
         ;
 

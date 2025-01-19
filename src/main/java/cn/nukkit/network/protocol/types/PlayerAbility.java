@@ -23,6 +23,10 @@ public enum PlayerAbility {
      * @since 1.19.70
      */
     PRIVILEGED_BUILDER,
+    /**
+     * @since 1.21.60
+     */
+    VERTICAL_FLY_SPEED,
     ;
 
     private static final PlayerAbility[] VALUES = values();

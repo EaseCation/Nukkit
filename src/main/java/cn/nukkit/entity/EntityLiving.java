@@ -706,7 +706,7 @@ public abstract class EntityLiving extends Entity implements EntityDamageable {
         return 0;
     }
 
-    protected boolean checkTotemDeathProtection(EntityDamageEvent source) {
+    public boolean checkTotemDeathProtection(EntityDamageEvent source) {
         switch (source.getCause()) {
             case SUICIDE:
             case VOID:

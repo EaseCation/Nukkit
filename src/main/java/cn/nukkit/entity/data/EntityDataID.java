@@ -185,6 +185,16 @@ public interface EntityDataID {
      * @since 1.21.0
      */
     int DATA_VISIBLE_MOB_EFFECTS = 137;
+    /**
+     * string.
+     * @since 1.21.60
+     */
+    int DATA_FILTERED_NAME = 138;
+    /**
+     * vec3.
+     * @since 1.21.60
+     */
+    int DATA_ENTER_BED_POSITION = 139;
 
-    int DATA_UNDEFINED = 138;
+    int DATA_UNDEFINED = 140;
 }

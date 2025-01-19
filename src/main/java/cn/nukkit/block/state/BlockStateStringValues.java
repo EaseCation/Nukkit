@@ -60,6 +60,10 @@ public interface BlockStateStringValues {
     String CRACKED_STATE_MAX_CRACKED = "max_cracked";
     String CRACKED_STATE_NO_CRACKS = "no_cracks";
 
+    String CREAKING_HEART_STATE_UPROOTED = "uprooted";
+    String CREAKING_HEART_STATE_DORMANT = "dormant";
+    String CREAKING_HEART_STATE_AWAKE = "awake";
+
     String DAMAGE_BROKEN = "broken";
     String DAMAGE_SLIGHTLY_DAMAGED = "slightly_damaged";
     String DAMAGE_UNDAMAGED = "undamaged";

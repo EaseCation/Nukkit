@@ -14,6 +14,9 @@ public abstract class AbstractResourcePack implements ResourcePack {
     protected String type;
     protected final List<String> capabilities = new ArrayList<>();
 
+    protected String encryptionKey = "";
+    protected String cdnUrl = "";
+
     @Override
     public String getPackName() {
         return this.manifest.getHeader().getName();
@@ -41,11 +44,21 @@ public abstract class AbstractResourcePack implements ResourcePack {
 
     @Override
     public String getEncryptionKey() {
-        return "";
+        return encryptionKey;
+    }
+
+    @Override
+    public void setEncryptionKey(String key) {
+        this.encryptionKey = key;
     }
 
     @Override
     public String getCdnUrl() {
-        return null;
+        return cdnUrl;
+    }
+
+    @Override
+    public void setCdnUrl(String url) {
+        this.cdnUrl = url;
     }
 }

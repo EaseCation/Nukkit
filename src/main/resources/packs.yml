@@ -1,0 +1,6 @@
+# Resource packs here are applied from bottom to top.
+# This means that resources in higher packs will override those in lower packs.
+
+#"00000000-0000-0000-0000-000000000000":
+# key: "0123456789abcdefGHIJKLMNOPQRSTUV"
+# cdn: "http://127.0.0.1/00000000-0000-0000-0000-000000000000/0.0.1.mcpack"
