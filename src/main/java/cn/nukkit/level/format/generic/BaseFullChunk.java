@@ -7,6 +7,7 @@ import cn.nukkit.block.BlockLeaves;
 import cn.nukkit.block.BlockWall;
 import cn.nukkit.blockentity.BlockEntities;
 import cn.nukkit.blockentity.BlockEntity;
+import cn.nukkit.blockentity.BlockEntitySign;
 import cn.nukkit.entity.Entity;
 import cn.nukkit.inventory.Inventory;
 import cn.nukkit.inventory.InventoryHolder;
@@ -634,8 +635,8 @@ public abstract class BaseFullChunk implements FullChunk, ChunkManager {
     }
 
     @Override
-    public void fixBlocks(boolean fixWalls, boolean fixBlockLayers, boolean fixBlockEntities, boolean emptyContainers, boolean persistentLeaves, boolean replaceInvisibleBedrock) {
-        boolean blockEntityOp = fixBlockEntities || emptyContainers;
+    public void fixBlocks(boolean fixWalls, boolean fixBlockLayers, boolean fixBlockEntities, boolean emptyContainers, boolean persistentLeaves, boolean replaceInvisibleBedrock, boolean waxSigns) {
+        boolean blockEntityOp = fixBlockEntities || emptyContainers || waxSigns;
         Level level = provider.getLevel();
 
         if (fixBlockEntities) {
@@ -736,6 +737,11 @@ public abstract class BaseFullChunk implements FullChunk, ChunkManager {
                             }
 
                             log.debug("Created a missing BlockEntity: {}, {}, {} ({}) {}", worldX, worldY, worldZ, blockEntity.getSaveId(), level.getFolderName());
+                            continue;
+                        }
+
+                        if (waxSigns && blockEntity instanceof BlockEntitySign sign) {
+                            sign.setWaxed(true);
                             continue;
                         }
 
