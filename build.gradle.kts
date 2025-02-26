@@ -1,7 +1,6 @@
 import com.github.jengelman.gradle.plugins.shadow.tasks.ShadowJar
 import com.github.jengelman.gradle.plugins.shadow.transformers.Log4j2PluginsCacheFileTransformer
 import org.gradle.api.publish.maven.MavenPublication
-import org.gradle.internal.extensions.core.extra
 
 plugins {
     application
@@ -27,22 +26,26 @@ application {
 
 val shadowJarTask = tasks.named<ShadowJar>("shadowJar")
 if (gradle.parent != null) {
-    tasks.register<Copy>("copyShadowJar") {
-        group = "copy"
-        val shadow = shadowJarTask.get()
-        val name = shadow.archiveBaseName.get()
-        val extension = shadow.archiveExtension.get()
-        val fileName = "$name.$extension"
-        val root = rootProject.projectDir.parentFile
-        into(root)
-        listOf(File(root, "_server"), File(root,"_login"), File(root, "_server1")).forEach { dest ->
-            copy {
-                from(shadow.outputs.files.singleFile)
+    val shadow = shadowJarTask.get()
+    val name = shadow.archiveBaseName.get()
+    val extension = shadow.archiveExtension.get()
+    val fileName = "$name.$extension"
+    val output = shadow.outputs.files.singleFile
+    val root = rootProject.projectDir.parentFile
+
+    val subtasks = listOf(File(root, "_server"), File(root, "_login"), File(root, "_server1"))
+        .mapIndexed { idx, dest ->
+            tasks.register<Copy>("copyShadowJarSubtask$idx") {
+                from(output)
                 into(dest)
                 rename { fileName }
+                dependsOn(shadowJarTask)
             }
         }
-        dependsOn(shadowJarTask)
+
+    tasks.register<DefaultTask>("copyShadowJar") {
+        group = "copy"
+        subtasks.forEach { dependsOn(it) }
     }
 }
 
