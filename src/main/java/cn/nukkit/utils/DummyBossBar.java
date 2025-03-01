@@ -5,8 +5,12 @@ import cn.nukkit.entity.Entity;
 import cn.nukkit.entity.attribute.Attribute;
 import cn.nukkit.entity.data.EntityMetadata;
 import cn.nukkit.entity.mob.EntityCreeper;
+import cn.nukkit.entity.property.EntityPropertyRegistry;
 import cn.nukkit.network.protocol.*;
 import cn.nukkit.network.protocol.BossEventPacket.BossBarColor;
+import it.unimi.dsi.fastutil.Pair;
+import it.unimi.dsi.fastutil.ints.Int2FloatMap;
+import it.unimi.dsi.fastutil.ints.Int2IntMap;
 
 /**
  * DummyBossBar
@@ -133,6 +137,11 @@ public class DummyBossBar {
                 .putLong(Entity.DATA_LEAD_HOLDER_EID, -1)
                 .putString(Entity.DATA_NAMETAG, text) // Set the entity name
                 .putFloat(Entity.DATA_SCALE, 0); // And make it invisible
+        Pair<Int2IntMap, Int2FloatMap> propertyValues = EntityPropertyRegistry.getProperties(pkAdd.type).getDefaultValues();
+        if (propertyValues != null) {
+            pkAdd.intProperties = propertyValues.left();
+            pkAdd.floatProperties = propertyValues.right();
+        }
 
         player.dataPacket(pkAdd);
         this.spawned = true;

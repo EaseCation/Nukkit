@@ -3,6 +3,10 @@ package cn.nukkit.network.protocol;
 import cn.nukkit.entity.data.EntityMetadata;
 import cn.nukkit.item.Item;
 import cn.nukkit.network.protocol.types.EntityLink;
+import it.unimi.dsi.fastutil.ints.Int2FloatMap;
+import it.unimi.dsi.fastutil.ints.Int2FloatOpenHashMap;
+import it.unimi.dsi.fastutil.ints.Int2IntMap;
+import it.unimi.dsi.fastutil.ints.Int2IntOpenHashMap;
 import lombok.ToString;
 
 import java.util.UUID;
@@ -35,6 +39,8 @@ public class AddPlayerPacket extends DataPacket {
     public float headYaw;
     public Item item;
     public EntityMetadata metadata = new EntityMetadata();
+    public Int2IntMap intProperties = new Int2IntOpenHashMap();
+    public Int2FloatMap floatProperties = new Int2FloatOpenHashMap();
     public EntityLink[] links = new EntityLink[0];
 
     @Override

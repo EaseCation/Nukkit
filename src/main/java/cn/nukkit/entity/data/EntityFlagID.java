@@ -160,7 +160,19 @@ public interface EntityFlagID {
      * @since 1.21.60
      */
     int DATA_FLAG_RENDERS_WHEN_INVISIBLE = 119;
-    int DATA_FLAG_UNDEFINED = 120;
+    /**
+     * @since 1.21.70
+     */
+    int DATA_FLAG_BODY_ROTATION_AXIS_ALIGNED = 120;
+    /**
+     * @since 1.21.70
+     */
+    int DATA_FLAG_COLLIDABLE = 121;
+    /**
+     * @since 1.21.70
+     */
+    int DATA_FLAG_WASD_AIR_CONTROLLED = 122;
+    int DATA_FLAG_UNDEFINED = 123;
 
 
     long NUKKIT_FLAG_VARIANT_BLOCK = 1L << 1;

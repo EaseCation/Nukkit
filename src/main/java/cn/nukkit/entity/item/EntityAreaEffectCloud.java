@@ -328,7 +328,7 @@ public class EntityAreaEffectCloud extends Entity {
                         if (!entity.canBeAffected(effect.getId())) {
                             break;
                         }
-                        entity.addEffect(effect.clone().setDuration(effect.getDuration() / 4));
+                        entity.addEffect(effect.clone().setDuration(effect.isInfinite() ? -1 : effect.getDuration() / 4));
                         consume = true;
                         break;
                 }

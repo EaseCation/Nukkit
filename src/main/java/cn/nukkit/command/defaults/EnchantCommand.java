@@ -7,11 +7,9 @@ import cn.nukkit.command.CommandSender;
 import cn.nukkit.command.data.CommandEnum;
 import cn.nukkit.command.data.CommandParamType;
 import cn.nukkit.command.data.CommandParameter;
-import cn.nukkit.command.exceptions.CommandExceptions;
 import cn.nukkit.command.exceptions.CommandSyntaxException;
 import cn.nukkit.item.Item;
 import cn.nukkit.item.enchantment.Enchantment;
-import cn.nukkit.item.enchantment.Enchantments;
 import cn.nukkit.lang.TranslationContainer;
 import cn.nukkit.utils.TextFormat;
 
@@ -48,19 +46,7 @@ public class EnchantCommand extends VanillaCommand {
         CommandParser parser = new CommandParser(this, sender, args);
         try {
             List<Player> targets = parser.parseTargetPlayers();
-            Enchantment enchantment = parser.parse(arg -> {
-                Enchantment result;
-                try {
-                    result = Enchantment.getEnchantment(Integer.parseInt(arg));
-                } catch (NumberFormatException a) {
-                    result = Enchantments.getEnchantmentByIdentifier(arg.toLowerCase());
-                }
-                if (result == null) {
-//                    parser.setErrorMessage(new TranslationContainer("%commands.enchant.notFound", arg));
-                    throw CommandExceptions.COMMAND_SYNTAX_EXCEPTION;
-                }
-                return result;
-            });
+            Enchantment enchantment = parser.parseEnchantment();
             int level = parser.parseIntOrDefault(1, 1, Short.MAX_VALUE);
 
             enchantment.setLevel(level);

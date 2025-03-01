@@ -6,6 +6,8 @@ import cn.nukkit.command.exceptions.CommandExceptions;
 import cn.nukkit.command.exceptions.CommandSyntaxException;
 import cn.nukkit.entity.Entity;
 import cn.nukkit.item.Item;
+import cn.nukkit.item.enchantment.Enchantment;
+import cn.nukkit.item.enchantment.Enchantments;
 import cn.nukkit.lang.TextContainer;
 import cn.nukkit.lang.TranslationContainer;
 import cn.nukkit.level.Level;
@@ -14,6 +16,8 @@ import cn.nukkit.math.BlockVector3;
 import cn.nukkit.math.Vector2;
 import cn.nukkit.math.Vector3;
 import cn.nukkit.math.Vector3f;
+import cn.nukkit.potion.Effect;
+import cn.nukkit.potion.Effects;
 import cn.nukkit.utils.TextFormat;
 import cn.nukkit.utils.function.FloatSupplier;
 
@@ -923,5 +927,61 @@ public class CommandParser {
             return defaultValue.get();
         }
         return this.parseItem();
+    }
+
+    public Enchantment parseEnchantment() throws CommandSyntaxException {
+        String arg = this.next();
+        Enchantment enchantment;
+        try {
+            enchantment = Enchantment.getEnchantment(Integer.parseInt(arg));
+        } catch (NumberFormatException a) {
+            enchantment = Enchantments.getEnchantmentByIdentifier(arg.toLowerCase());
+        }
+        if (enchantment == null) {
+            throw CommandExceptions.COMMAND_SYNTAX_EXCEPTION;
+        }
+        return enchantment;
+    }
+
+    public Enchantment parseEnchantmentOrDefault(Enchantment defaultValue) throws CommandSyntaxException {
+        if (!this.hasNext()) {
+            return defaultValue;
+        }
+        return this.parseEnchantment();
+    }
+
+    public Enchantment parseEnchantmentOrDefault(Supplier<Enchantment> defaultValue) throws CommandSyntaxException {
+        if (!this.hasNext()) {
+            return defaultValue.get();
+        }
+        return this.parseEnchantment();
+    }
+
+    public Effect parseEffect() throws CommandSyntaxException {
+        String arg = this.next();
+        Effect effect;
+        try {
+            effect = Effect.getEffect(Integer.parseInt(arg));
+        } catch (NumberFormatException a) {
+            effect = Effects.getEffectByIdentifier(arg.toLowerCase());
+        }
+        if (effect == null) {
+            throw CommandExceptions.COMMAND_SYNTAX_EXCEPTION;
+        }
+        return effect;
+    }
+
+    public Effect parseEffectOrDefault(Effect defaultValue) throws CommandSyntaxException {
+        if (!this.hasNext()) {
+            return defaultValue;
+        }
+        return this.parseEffect();
+    }
+
+    public Effect parseEffectOrDefault(Supplier<Effect> defaultValue) throws CommandSyntaxException {
+        if (!this.hasNext()) {
+            return defaultValue.get();
+        }
+        return this.parseEffect();
     }
 }

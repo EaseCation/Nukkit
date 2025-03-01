@@ -594,6 +594,10 @@ public class LevelSoundEventPacket extends DataPacket {
 	public String entityIdentifier = ":";
     public boolean isBabyMob;
     public boolean isGlobal;
+	/**
+	 * @since 1.21.70
+	 */
+	public long entityUniqueId = -1;
 
     @Override
     public void decode() {

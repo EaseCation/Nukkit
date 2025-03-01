@@ -203,7 +203,7 @@ public class BlockSeaPickle extends BlockFlowable {
 
     private boolean canBeSupportBy(Block block) {
         int id = block.getId();
-        return SupportType.hasFullSupport(block, BlockFace.UP) && id != SNOW_LAYER && id != SCAFFOLDING;
+        return SupportType.hasCenterSupport(block, BlockFace.UP) && id != SNOW_LAYER && id != SCAFFOLDING;
     }
 
     public int getClusterCount() {

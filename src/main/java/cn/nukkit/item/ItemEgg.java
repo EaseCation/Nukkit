@@ -2,6 +2,9 @@ package cn.nukkit.item;
 
 import cn.nukkit.entity.projectile.EntityEgg;
 import cn.nukkit.entity.projectile.ProjectileFactory;
+import cn.nukkit.entity.property.EntityPropertyNames;
+import cn.nukkit.entity.property.EntityPropertyStringValues;
+import cn.nukkit.nbt.tag.CompoundTag;
 
 /**
  * author: MagicDroidX
@@ -21,6 +24,10 @@ public class ItemEgg extends ProjectileItem {
         super(EGG, meta, count, "Egg");
     }
 
+    protected ItemEgg(int id, Integer meta, int count, String name) {
+        super(id, meta, count, name);
+    }
+
     @Override
     public ProjectileFactory getProjectileEntityFactory() {
         return EntityEgg::new;
@@ -34,5 +41,11 @@ public class ItemEgg extends ProjectileItem {
     @Override
     public int getMaxStackSize() {
         return 16;
+    }
+
+    @Override
+    protected void correctNBT(CompoundTag nbt) {
+        nbt.putCompound("properties", new CompoundTag()
+                .putString(EntityPropertyNames.CLIMATE_VARIANT, EntityPropertyStringValues.CLIMATE_VARIANT_TEMPERATE));
     }
 }

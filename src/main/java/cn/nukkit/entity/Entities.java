@@ -5,6 +5,7 @@ import cn.nukkit.entity.item.*;
 import cn.nukkit.entity.mob.*;
 import cn.nukkit.entity.passive.*;
 import cn.nukkit.entity.projectile.*;
+import cn.nukkit.entity.property.EntityPropertyRegistry;
 import it.unimi.dsi.fastutil.objects.Object2IntMap;
 import it.unimi.dsi.fastutil.objects.Object2IntOpenHashMap;
 
@@ -178,6 +179,8 @@ public final class Entities {
 //        registerEntity(EntityID.OMINOUS_ITEM_SPAWNER, EntityNames.OMINOUS_ITEM_SPAWNER, "OminousItemSpawner", EntityOminousItemSpawner.class, EntityOminousItemSpawner::new, V1_21_0);
 
         registerEntity(EntityID.CREAKING, EntityNames.CREAKING, "Creaking", EntityCreaking.class, EntityCreaking::new, V1_21_50);
+
+        EntityPropertyRegistry.registerVanillaProperties();
     }
 
     private static boolean registerTodo(int typeId, String identifier, String name) {

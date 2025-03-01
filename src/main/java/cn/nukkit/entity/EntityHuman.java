@@ -11,6 +11,9 @@ import cn.nukkit.nbt.tag.ListTag;
 import cn.nukkit.nbt.tag.StringTag;
 import cn.nukkit.network.protocol.*;
 import cn.nukkit.utils.*;
+import it.unimi.dsi.fastutil.Pair;
+import it.unimi.dsi.fastutil.ints.Int2FloatMap;
+import it.unimi.dsi.fastutil.ints.Int2IntMap;
 
 import java.nio.charset.StandardCharsets;
 import java.util.List;
@@ -376,6 +379,11 @@ public class EntityHuman extends EntityHumanType {
             pk.pitch = (float) this.pitch;
             pk.item = this.getInventory().getItemInHand();
             pk.metadata = this.dataProperties;
+            Pair<Int2IntMap, Int2FloatMap> propertyValues = getProperties().getValues();
+            if (propertyValues != null) {
+                pk.intProperties = propertyValues.left();
+                pk.floatProperties = propertyValues.right();
+            }
             player.dataPacket(pk);
 
             this.armorInventory.sendContents(player);

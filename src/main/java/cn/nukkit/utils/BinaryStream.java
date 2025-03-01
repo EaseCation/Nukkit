@@ -1140,8 +1140,9 @@ public class BinaryStream {
         long[] bitSet = new long[Mth.ceil(size / 64f)];
         int index = 0;
         int shift = 0;
+        int num = 0;
         while (true) {
-            if (shift >= size) {
+            if (num >= size) {
                 throw new IllegalArgumentException("VarBitSet was too large: " + size);
             }
             byte b = getSingedByte();
@@ -1155,6 +1156,7 @@ public class BinaryStream {
             if ((b & 0x80) == 0) {
                 break;
             }
+            num += shift;
             shift = nextShift;
         }
         return BitSet.valueOf(bitSet);

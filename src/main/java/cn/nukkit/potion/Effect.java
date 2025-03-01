@@ -98,6 +98,10 @@ public class Effect implements EffectID, Cloneable {
         return duration;
     }
 
+    public boolean isInfinite() {
+        return duration < 0;
+    }
+
     public boolean isVisible() {
         return show;
     }
@@ -206,7 +210,7 @@ public class Effect implements EffectID, Cloneable {
         if (oldEffect != null) {
             int newAmplifier = Math.abs(this.getAmplifier());
             int oldAmplifier = Math.abs(oldEffect.getAmplifier());
-            override = (newAmplifier > oldAmplifier) || (newAmplifier == oldAmplifier && this.getDuration() >= oldEffect.getDuration());
+            override = (newAmplifier > oldAmplifier) || (newAmplifier == oldAmplifier && !oldEffect.isInfinite() && (this.getDuration() >= oldEffect.getDuration() || this.isInfinite()));
             action = EntityEffectEvent.Action.CHANGED;
         }
 
@@ -224,7 +228,7 @@ public class Effect implements EffectID, Cloneable {
             pk.effectId = this.getId();
             pk.amplifier = this.getAmplifier();
             pk.particles = this.isVisible();
-            pk.duration = this.getDuration();
+            pk.duration = this.isInfinite() ? -1 : this.getDuration();
             if (oldEffect != null) {
                 pk.eventId = MobEffectPacket.EVENT_MODIFY;
             } else {

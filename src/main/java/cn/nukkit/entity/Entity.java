@@ -6,6 +6,9 @@ import cn.nukkit.block.*;
 import cn.nukkit.blockentity.BlockEntityPistonArm;
 import cn.nukkit.entity.attribute.Attribute;
 import cn.nukkit.entity.data.*;
+import cn.nukkit.entity.property.EntityPropertiesInstance;
+import cn.nukkit.entity.property.EntityProperty;
+import cn.nukkit.entity.property.EntityPropertyRegistry;
 import cn.nukkit.event.Event;
 import cn.nukkit.event.entity.*;
 import cn.nukkit.event.entity.EntityDamageEvent.DamageCause;
@@ -33,7 +36,8 @@ import cn.nukkit.potion.Effect;
 import cn.nukkit.utils.ChunkException;
 import cn.nukkit.utils.Utils;
 import com.google.common.collect.Iterables;
-import it.unimi.dsi.fastutil.ints.Int2ObjectMap;
+import it.unimi.dsi.fastutil.Pair;
+import it.unimi.dsi.fastutil.ints.*;
 import it.unimi.dsi.fastutil.objects.Object2ObjectOpenHashMap;
 import it.unimi.dsi.fastutil.objects.ObjectArrayList;
 import it.unimi.dsi.fastutil.objects.ObjectIntPair;
@@ -87,6 +91,8 @@ public abstract class Entity extends Location implements Metadatable, EntityData
             .putString(DATA_NAMETAG, "")
             .putLong(DATA_LEAD_HOLDER_EID, -1)
             .putFloat(DATA_SCALE, 1f);
+
+    private EntityPropertiesInstance properties;
 
     public final List<Entity> passengers = new ObjectArrayList<>();
 
@@ -353,6 +359,8 @@ public abstract class Entity extends Location implements Metadatable, EntityData
         this.scale = this.namedTag.getFloat("Scale");
         this.setDataProperty(new FloatEntityData(DATA_SCALE, scale), false);
 
+        this.loadProperties();
+
         this.chunk.addEntity(this);
         this.level.addEntity(this);
 
@@ -364,6 +372,11 @@ public abstract class Entity extends Location implements Metadatable, EntityData
         this.scheduleUpdate();
 
         this.fullyInitialized = true;
+    }
+
+    protected void loadProperties() {
+        this.properties = new EntityPropertiesInstance(EntityPropertyRegistry.getProperties(this));
+        this.properties.load(this.namedTag.getCompound("properties"));
     }
 
     public boolean isInitialized() {
@@ -1062,6 +1075,8 @@ public abstract class Entity extends Location implements Metadatable, EntityData
         } else {
             this.namedTag.remove("ActiveEffects");
         }
+
+        this.namedTag.putCompound("properties", this.properties.save());
     }
 
     public String getName() {
@@ -1130,6 +1145,11 @@ public abstract class Entity extends Location implements Metadatable, EntityData
         addEntity.speedY = (float) this.motionY;
         addEntity.speedZ = (float) this.motionZ;
         addEntity.metadata = this.dataProperties;
+        Pair<Int2IntMap, Int2FloatMap> propertyValues = getProperties().getValues();
+        if (propertyValues != null) {
+            addEntity.intProperties = propertyValues.left();
+            addEntity.floatProperties = propertyValues.right();
+        }
 
 //        addEntity.links = new EntityLink[this.passengers.size()];
 //        for (int i = 0; i < addEntity.links.length; i++) {
@@ -1154,7 +1174,7 @@ public abstract class Entity extends Location implements Metadatable, EntityData
             pk.effectId = effect.getId();
             pk.amplifier = effect.getAmplifier();
             pk.particles = effect.isVisible();
-            pk.duration = effect.getDuration();
+            pk.duration = effect.isInfinite() ? -1 : effect.getDuration();
             pk.eventId = MobEffectPacket.EVENT_ADD;
             player.dataPacket(pk);
         }
@@ -1169,6 +1189,12 @@ public abstract class Entity extends Location implements Metadatable, EntityData
         pk.eid = this.getId();
         if (data == null) {
             pk.metadata = this.dataProperties.copy();
+
+            Pair<Int2IntMap, Int2FloatMap> propertyValues = getProperties().getValues();
+            if (propertyValues != null) {
+                pk.intProperties = propertyValues.left();
+                pk.floatProperties = propertyValues.right();
+            }
         } else {
             pk.metadata = data;
 
@@ -1189,6 +1215,12 @@ public abstract class Entity extends Location implements Metadatable, EntityData
         pk.eid = this.getId();
         if (data == null) {
             pk.metadata = this.dataProperties.copy();
+
+            Pair<Int2IntMap, Int2FloatMap> propertyValues = getProperties().getValues();
+            if (propertyValues != null) {
+                pk.intProperties = propertyValues.left();
+                pk.floatProperties = propertyValues.right();
+            }
         } else {
             pk.metadata = data;
 
@@ -1513,6 +1545,10 @@ public abstract class Entity extends Location implements Metadatable, EntityData
 
             if (effect.canTick()) {
                 effect.applyEffect(this);
+            }
+
+            if (effect.isInfinite()) {
+                continue;
             }
 
             effect.setDuration(effect.getDuration() - tickDiff);
@@ -2737,6 +2773,164 @@ public abstract class Entity extends Location implements Metadatable, EntityData
 
     public boolean getPlayerFlag(int playerFlagId) {
         return getFlagBit(this.getDataPropertyByte(DATA_PLAYER_FLAGS), playerFlagId);
+    }
+
+    public EntityPropertiesInstance getProperties() {
+        return properties;
+    }
+
+    public int getPropertyInt(int index) {
+        return properties.getInt(index);
+    }
+
+    public int getPropertyInt(String name) {
+        return properties.getInt(name);
+    }
+
+    public int getPropertyInt(EntityProperty property) {
+        return properties.getInt(property);
+    }
+
+    public float getPropertyFloat(int index) {
+        return properties.getFloat(index);
+    }
+
+    public float getPropertyFloat(String name) {
+        return properties.getFloat(name);
+    }
+
+    public float getPropertyFloat(EntityProperty property) {
+        return properties.getFloat(property);
+    }
+
+    public boolean getPropertyBoolean(int index) {
+        return properties.getBoolean(index);
+    }
+
+    public boolean getPropertyBoolean(String name) {
+        return properties.getBoolean(name);
+    }
+
+    public boolean getPropertyBoolean(EntityProperty property) {
+        return properties.getBoolean(property);
+    }
+
+    public String getPropertyEnum(int index) {
+        return properties.getEnum(index);
+    }
+
+    public String getPropertyEnum(String name) {
+        return properties.getEnum(name);
+    }
+
+    public String getPropertyEnum(EntityProperty property) {
+        return properties.getEnum(property);
+    }
+
+    public void setPropertyInt(int index, int value) {
+        IntIntPair result = properties.setInt(index, value);
+        if (result != null) {
+            sendProperty(result.leftInt(), result.rightInt());
+        }
+    }
+
+    public void setPropertyInt(String name, int value) {
+        IntIntPair result = properties.setInt(name, value);
+        if (result != null) {
+            sendProperty(result.leftInt(), result.rightInt());
+        }
+    }
+
+    public void setPropertyInt(EntityProperty property, int value) {
+        IntIntPair result = properties.setInt(property, value);
+        if (result != null) {
+            sendProperty(result.leftInt(), result.rightInt());
+        }
+    }
+
+    public void setPropertyFloat(int index, float value) {
+        IntFloatPair result = properties.setFloat(index, value);
+        if (result != null) {
+            sendProperty(result.leftInt(), result.rightFloat());
+        }
+    }
+
+    public void setPropertyFloat(String name, float value) {
+        IntFloatPair result = properties.setFloat(name, value);
+        if (result != null) {
+            sendProperty(result.leftInt(), result.rightFloat());
+        }
+    }
+
+    public void setPropertyFloat(EntityProperty property, float value) {
+        IntFloatPair result = properties.setFloat(property, value);
+        if (result != null) {
+            sendProperty(result.leftInt(), result.rightFloat());
+        }
+    }
+
+    public void setPropertyBoolean(int index, boolean value) {
+        IntIntPair result = properties.setBoolean(index, value);
+        if (result != null) {
+            sendProperty(result.leftInt(), result.rightInt());
+        }
+    }
+
+    public void setPropertyBoolean(String name, boolean value) {
+        IntIntPair result = properties.setBoolean(name, value);
+        if (result != null) {
+            sendProperty(result.leftInt(), result.rightInt());
+        }
+    }
+
+    public void setPropertyBoolean(EntityProperty property, boolean value) {
+        IntIntPair result = properties.setBoolean(property, value);
+        if (result != null) {
+            sendProperty(result.leftInt(), result.rightInt());
+        }
+    }
+
+    public void setPropertyEnum(int index, String value) {
+        IntIntPair result = properties.setEnum(index, value);
+        if (result != null) {
+            sendProperty(result.leftInt(), result.rightInt());
+        }
+    }
+
+    public void setPropertyEnum(String name, String value) {
+        IntIntPair result = properties.setEnum(name, value);
+        if (result != null) {
+            sendProperty(result.leftInt(), result.rightInt());
+        }
+    }
+
+    public void setPropertyEnum(EntityProperty property, String value) {
+        IntIntPair result = properties.setEnum(property, value);
+        if (result != null) {
+            sendProperty(result.leftInt(), result.rightInt());
+        }
+    }
+
+    private void sendProperty(int index, int value) {
+        SetEntityDataPacket packet = new SetEntityDataPacket();
+        packet.eid = getId();
+        packet.metadata = new EntityMetadata();
+        packet.intProperties.put(index, value);
+        Server.broadcastPacket(getViewers().values(), packet);
+        if (this instanceof Player player) {
+            player.dataPacket(packet);
+        }
+    }
+
+    private void sendProperty(int index, float value) {
+        SetEntityDataPacket packet = new SetEntityDataPacket();
+        packet.eid = getId();
+        packet.metadata = new EntityMetadata();
+        packet.floatProperties.put(index, value);
+        Server.broadcastPacket(getViewers().values(), packet);
+        if (this instanceof Player player) {
+            player.dataPacket(packet);
+        }
     }
 
     @Override

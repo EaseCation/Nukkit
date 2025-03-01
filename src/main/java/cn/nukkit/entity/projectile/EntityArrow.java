@@ -245,7 +245,7 @@ public class EntityArrow extends EntityProjectile {
                     }
                     break;
                 default:
-                    entity.addEffect(effect.clone().setDuration(effect.getDuration() / 8));
+                    entity.addEffect(effect.clone().setDuration(effect.isInfinite() ? -1 : effect.getDuration() / 8));
                     break;
             }
         }

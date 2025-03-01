@@ -3,6 +3,10 @@ package cn.nukkit.network.protocol;
 import cn.nukkit.entity.attribute.Attribute;
 import cn.nukkit.entity.data.EntityMetadata;
 import cn.nukkit.network.protocol.types.EntityLink;
+import it.unimi.dsi.fastutil.ints.Int2FloatMap;
+import it.unimi.dsi.fastutil.ints.Int2FloatOpenHashMap;
+import it.unimi.dsi.fastutil.ints.Int2IntMap;
+import it.unimi.dsi.fastutil.ints.Int2IntOpenHashMap;
 import lombok.ToString;
 
 /**
@@ -32,6 +36,8 @@ public class AddEntityPacket extends DataPacket {
     public float pitch;
     public float headYaw;
     public EntityMetadata metadata = new EntityMetadata();
+    public Int2IntMap intProperties = new Int2IntOpenHashMap();
+    public Int2FloatMap floatProperties = new Int2FloatOpenHashMap();
     public Attribute[] attributes = new Attribute[0];
     public EntityLink[] links = new EntityLink[0];
 

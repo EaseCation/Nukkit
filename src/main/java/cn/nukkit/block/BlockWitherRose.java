@@ -56,7 +56,7 @@ public class BlockWitherRose extends BlockFlower {
             return;
         }
         Effect wither = entity.getEffect(Effect.WITHER);
-        if (wither != null && wither.getDuration() > 30) {
+        if (wither != null && (wither.getDuration() > 30 || wither.isInfinite())) {
             return;
         }
         entity.addEffect(Effect.getEffect(Effect.WITHER).setDuration(40 + 1));

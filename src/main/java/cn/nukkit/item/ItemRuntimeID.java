@@ -85,6 +85,8 @@ public interface ItemRuntimeID {
     int YELLOW_BUNDLE = BASE_INTERNAL_ID + 75;
     int PALE_OAK_SIGN = BASE_INTERNAL_ID + 76;
     int RESIN_BRICK = BASE_INTERNAL_ID + 77;
+    int BLUE_EGG = BASE_INTERNAL_ID + 78;
+    int BROWN_EGG = BASE_INTERNAL_ID + 79;
 
-    int CUSTOM_ITEM = Mth.smallestEncompassingPowerOfTwo(BASE_INTERNAL_ID + 78); //2048
+    int CUSTOM_ITEM = Mth.smallestEncompassingPowerOfTwo(BASE_INTERNAL_ID + 80); //2048
 }

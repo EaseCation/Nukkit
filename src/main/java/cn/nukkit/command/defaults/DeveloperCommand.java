@@ -23,11 +23,7 @@ import cn.nukkit.network.protocol.LevelEventPacket;
 import cn.nukkit.network.protocol.LevelSoundEventPacket;
 import cn.nukkit.network.protocol.TextPacket;
 
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Objects;
-import java.util.Optional;
+import java.util.*;
 import java.util.function.Function;
 
 public class DeveloperCommand extends Command {
@@ -281,6 +277,7 @@ public class DeveloperCommand extends Command {
                     String entityType = parser.literalOrDefault(":");
                     boolean baby = parser.parseBooleanOrDefault(false);
                     boolean global = parser.parseBooleanOrDefault(false);
+                    List<Entity> target = parser.parseTargetsOrDefault(1, Collections.emptyList());
 
                     LevelSoundEventPacket packet = new LevelSoundEventPacket();
                     packet.x = (float) pos.x;
@@ -291,6 +288,9 @@ public class DeveloperCommand extends Command {
                     packet.entityIdentifier = entityType;
                     packet.isBabyMob = baby;
                     packet.isGlobal = global;
+                    if (!target.isEmpty()) {
+                        packet.entityUniqueId = target.get(0).getId();
+                    }
                     if (sender instanceof Player player) {
                         player.dataPacket(packet);
                     } else {

@@ -86,7 +86,7 @@ public class Potion implements PotionID {
         List<Effect> effects = new ArrayList<>(this.effects.length);
         for (Effect value : this.effects) {
             Effect effect = value.clone();
-            if (!effect.isInstantaneous()) {
+            if (!effect.isInstantaneous() && !effect.isInfinite()) {
                 int duration = (int) (durationScale * effect.getDuration() + 0.5f);
                 effect.setDuration(duration);
                 if (duration <= 20) {

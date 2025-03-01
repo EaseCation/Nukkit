@@ -17,6 +17,9 @@ import cn.nukkit.network.protocol.AddEntityPacket;
 import cn.nukkit.network.protocol.DataPacket;
 import cn.nukkit.network.protocol.LevelSoundEventPacket;
 import cn.nukkit.network.protocol.UpdateAttributesPacket;
+import it.unimi.dsi.fastutil.Pair;
+import it.unimi.dsi.fastutil.ints.Int2FloatMap;
+import it.unimi.dsi.fastutil.ints.Int2IntMap;
 
 import java.util.concurrent.ThreadLocalRandom;
 
@@ -111,6 +114,11 @@ public class EntityPig extends EntityAnimal implements EntityInteractable, Entit
         addEntity.speedY = (float) this.motionY;
         addEntity.speedZ = (float) this.motionZ;
         addEntity.metadata = this.dataProperties;
+        Pair<Int2IntMap, Int2FloatMap> propertyValues = getProperties().getValues();
+        if (propertyValues != null) {
+            addEntity.intProperties = propertyValues.left();
+            addEntity.floatProperties = propertyValues.right();
+        }
 
         int maxHealth = getMaxHealth();
         addEntity.attributes = new Attribute[]{

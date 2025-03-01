@@ -79,6 +79,7 @@ public class EntityBoat extends EntityVehicle {
             this.autoMount = this.namedTag.getBoolean("AutoMount");
         }
 
+        this.setDataFlag(DATA_FLAG_COLLIDABLE, true, false);
         this.setDataFlag(DATA_FLAG_STACKABLE, true, false);
         this.setDataFlag(DATA_FLAG_GRAVITY, true, false);
         this.dataProperties.putInt(DATA_VARIANT, woodID = this.namedTag.getByte("woodID"));

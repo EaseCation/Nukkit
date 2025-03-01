@@ -1333,4 +1333,12 @@ public interface BlockFullNames {
     String CHISELED_RESIN_BRICKS = "minecraft:" + BlockNames.CHISELED_RESIN_BRICKS;
     String RESIN_BLOCK = "minecraft:" + BlockNames.RESIN_BLOCK;
     String RESIN_CLUMP = "minecraft:" + BlockNames.RESIN_CLUMP;
+    String BUSH = "minecraft:" + BlockNames.BUSH;
+    String WILDFLOWERS = "minecraft:" + BlockNames.WILDFLOWERS;
+    String FIREFLY_BUSH = "minecraft:" + BlockNames.FIREFLY_BUSH;
+    String LEAF_LITTER = "minecraft:" + BlockNames.LEAF_LITTER;
+
+    String SHORT_DRY_GRASS = "minecraft:" + BlockNames.SHORT_DRY_GRASS;
+    String TALL_DRY_GRASS = "minecraft:" + BlockNames.TALL_DRY_GRASS;
+    String CACTUS_FLOWER = "minecraft:" + BlockNames.CACTUS_FLOWER;
 }

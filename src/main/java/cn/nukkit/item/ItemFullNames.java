@@ -766,4 +766,6 @@ public interface ItemFullNames extends ItemBlockNames {
     String YELLOW_BUNDLE = "minecraft:" + ItemNames.YELLOW_BUNDLE;
     String PALE_OAK_SIGN = "minecraft:" + ItemNames.PALE_OAK_SIGN;
     String RESIN_BRICK = "minecraft:" + ItemNames.RESIN_BRICK;
+    String BLUE_EGG = "minecraft:" + ItemNames.BLUE_EGG;
+    String BROWN_EGG = "minecraft:" + ItemNames.BROWN_EGG;
 }

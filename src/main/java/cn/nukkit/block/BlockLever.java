@@ -115,7 +115,7 @@ public class BlockLever extends BlockTransparent implements Faceable {
     public int onUpdate(int type) {
         if (type == Level.BLOCK_UPDATE_NORMAL) {
             BlockFace face = getBlockFace();
-            if (!SupportType.hasCenterSupport(getSide(face.getOpposite()), face)) {
+            if (!SupportType.hasFullSupport(getSide(face.getOpposite()), face)) {
                 this.level.useBreakOn(this, true);
                 return Level.BLOCK_UPDATE_NORMAL;
             }
@@ -125,7 +125,7 @@ public class BlockLever extends BlockTransparent implements Faceable {
 
     @Override
     public boolean place(Item item, Block block, Block target, BlockFace face, float fx, float fy, float fz, Player player) {
-        if (!SupportType.hasCenterSupport(target, face)) {
+        if (!SupportType.hasFullSupport(target, face)) {
             return false;
         }
 

@@ -1376,6 +1376,14 @@ public interface ItemBlockID {
     int CHISELED_RESIN_BRICKS = 0xff - BlockID.CHISELED_RESIN_BRICKS;
     int RESIN_BLOCK = 0xff - BlockID.RESIN_BLOCK;
     int RESIN_CLUMP = 0xff - BlockID.RESIN_CLUMP;
+    int BUSH = 0xff - BlockID.BUSH;
+    int WILDFLOWERS = 0xff - BlockID.WILDFLOWERS;
+    int FIREFLY_BUSH = 0xff - BlockID.FIREFLY_BUSH;
+    int LEAF_LITTER = 0xff - BlockID.LEAF_LITTER;
+
+    int SHORT_DRY_GRASS = 0xff - BlockID.SHORT_DRY_GRASS;
+    int TALL_DRY_GRASS = 0xff - BlockID.TALL_DRY_GRASS;
+    int CACTUS_FLOWER = 0xff - BlockID.CACTUS_FLOWER;
 
 
     int UNDEFINED = 0xff - BlockID.UNDEFINED;

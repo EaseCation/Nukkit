@@ -1332,4 +1332,12 @@ public interface BlockNames {
     String CHISELED_RESIN_BRICKS = "chiseled_resin_bricks";
     String RESIN_BLOCK = "resin_block";
     String RESIN_CLUMP = "resin_clump";
+    String BUSH = "bush";
+    String WILDFLOWERS = "wildflowers";
+    String FIREFLY_BUSH = "firefly_bush";
+    String LEAF_LITTER = "leaf_litter";
+
+    String SHORT_DRY_GRASS = "short_dry_grass";
+    String TALL_DRY_GRASS = "tall_dry_grass";
+    String CACTUS_FLOWER = "cactus_flower";
 }

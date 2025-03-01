@@ -765,4 +765,6 @@ public interface ItemNames extends ItemBlockNames {
     String YELLOW_BUNDLE = "yellow_bundle";
     String PALE_OAK_SIGN = "pale_oak_sign";
     String RESIN_BRICK = "resin_brick";
+    String BLUE_EGG = "blue_egg";
+    String BROWN_EGG = "brown_egg";
 }
