@@ -2,6 +2,7 @@ package cn.nukkit;
 
 import cn.nukkit.network.protocol.ProtocolInfo;
 import cn.nukkit.utils.ServerKiller;
+import cn.nukkit.utils.bugreport.ExceptionHandler;
 import com.google.common.base.Preconditions;
 import io.netty.util.ResourceLeakDetector;
 import io.netty.util.internal.logging.InternalLoggerFactory;
@@ -106,6 +107,8 @@ public class Nukkit {
 
         ANSI = !options.has(ansiSpec);
         TITLE = options.has(titleSpec);
+
+        ExceptionHandler.registerExceptionHandler();
 
         String verbosity = options.valueOf(vSpec);
         if (verbosity == null) {

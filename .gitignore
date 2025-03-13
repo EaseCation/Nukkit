@@ -50,3 +50,4 @@ logs
 logs/*
 resource_packs
 resource_packs/*
+.gradle

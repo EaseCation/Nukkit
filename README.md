@@ -29,14 +29,29 @@ Links
 
 Build JAR file
 -------------
-- `git submodule update --init`
-- `mvn clean package`
 
-The compiled JAR can be found in the `target/` directory.
+First, clone this project.
+Then please also clone [EaseCation/Network](git@github.com:EaseCation/Network.git) next to this project as the graph following:
+
+```plaintext
+root
+├── Nukkit
+└── Network
+```
+
+For Gradle installation, please refer to this guide: [Installation - Gradle](https://gradle.org/install/).
+
+Finally, you can run:
+
+```shell
+gradle shadowJar
+```
+
+The fat jar will be generated at `target/libs/nukkit-1.0.0-all.jar`
 
 Running
 -------------
-Simply run `java -jar nukkit-1.0-SNAPSHOT.jar`.
+Simply run `java -jar nukkit.jar`.
 
 Plugin API
 -------------

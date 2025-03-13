@@ -1,0 +1,46 @@
+name: Java CI
+
+on: [push, workflow_dispatch]
+
+jobs:
+  build:
+    name: Java ${{ matrix.java }}
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        java:
+          [
+            21,
+          ]
+    steps:
+      # Checkout side by side
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          path: Nukkit
+          submodules: true
+      - name: Checkout Network repo
+        uses: actions/checkout@v4
+        with:
+          repository: EaseCation/Network
+          path: Network
+          # TODO: Remove if merge
+          ref: gradle
+      - name: Setup Gradle
+        uses: gradle/actions/setup-gradle@v3
+      - name: Set up JDK ${{ matrix.java }}
+        uses: actions/setup-java@v4
+        with:
+          java-version: ${{ matrix.java }}
+          distribution: temurin
+          cache: 'gradle'
+      - name: Build with Gradle
+        working-directory: Nukkit
+        run: gradle shadowJar
+      - name: Archive artifacts
+        uses: actions/upload-artifact@v4
+        if: success()
+        with:
+          name: Nukkit-${{ matrix.java }}
+          path: Nukkit/build/libs/nukkit-1.0.0-all.jar
