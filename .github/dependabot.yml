@@ -8,10 +8,10 @@ updates:
       github-actions:
         patterns:
           - "*"
-  - package-ecosystem: "maven"
+  - package-ecosystem: "gradle"
     directory: "/"
     schedule:
       interval: "monthly"
-    open-pull-requests-limit: 20
+    open-pull-requests-limit: 30
     ignore:
       - dependency-name: "com.nukkitx.network:raknet"
