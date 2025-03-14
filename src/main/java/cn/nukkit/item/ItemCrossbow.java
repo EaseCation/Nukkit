@@ -175,8 +175,11 @@ public class ItemCrossbow extends ItemTool {
             maxUseDuration -= 5 * quickChargeLevel;
         }
 
-        if ((ticksUsed + 1) < maxUseDuration) {
+        if ((ticksUsed + 1 + 3) < maxUseDuration) {
             return false;
+
+            //考虑玩家延迟3tick，需要增加一个阈值来防止因为延迟导致的充能失败
+            //或者需要在表现动画上加以改进
         }
 
         Item matched;
