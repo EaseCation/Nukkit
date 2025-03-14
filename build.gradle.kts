@@ -1,3 +1,4 @@
+import org.gradle.api.file.DuplicatesStrategy
 import com.github.jengelman.gradle.plugins.shadow.tasks.ShadowJar
 import com.github.jengelman.gradle.plugins.shadow.transformers.Log4j2PluginsCacheFileTransformer
 import org.gradle.api.publish.maven.MavenPublication
@@ -50,7 +51,8 @@ if (gradle.parent != null) {
 }
 
 tasks.shadowJar {
-    transform(Log4j2PluginsCacheFileTransformer::class.java)
+    transform(Log4j2PluginsCacheFileTransformer::class.java) {}
+    mergeServiceFiles()
     exclude("**/module-info.class")
 }
 
