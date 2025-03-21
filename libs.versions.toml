@@ -8,7 +8,7 @@ shadow = { id = "com.gradleup.shadow", version = "9.0.0-beta10" }
 versions = { id = "com.github.ben-manes.versions", version = "0.52.0" }
 
 [libraries]
-apache-commons-compress = { module = "org.apache.commons:commons-compress", version = "1.26.0" }
+apache-commons-compress = { module = "org.apache.commons:commons-compress", version = "1.27.1" }
 apache-commons-lang3 = { module = "org.apache.commons:commons-lang3", version = "3.14.0" }
 apache-ant = { module = "org.apache.ant:ant", version = "1.10.15" }
 commons-io = { module = "commons-io:commons-io", version = "2.15.1" }
@@ -45,3 +45,4 @@ snakeyaml-engine = { module = "org.snakeyaml:snakeyaml-engine", version = "2.7" 
 snappy = { module = "org.xerial.snappy:snappy-java", version = "1.1.10.5" }
 spotbugs-annotations = { module = "com.github.spotbugs:spotbugs-annotations", version = "4.9.1" }
 zero-allocation-hashing = { module = "net.openhft:zero-allocation-hashing", version = "0.16" }
+zstd = { module = "com.github.luben:zstd-jni", version = "1.5.7-1" }
