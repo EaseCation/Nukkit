@@ -119,6 +119,11 @@ public class BlockDispenser extends BlockSolid implements Faceable {
     }
 
     @Override
+    public boolean hasUI() {
+        return true;
+    }
+
+    @Override
     public boolean place(Item item, Block block, Block target, BlockFace face, float fx, float fy, float fz, Player player) {
         if (player != null) {
             if (Math.abs(player.x - this.x) < 2 && Math.abs(player.z - this.z) < 2) {

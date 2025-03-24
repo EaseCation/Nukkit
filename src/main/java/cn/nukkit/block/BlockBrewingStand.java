@@ -123,6 +123,11 @@ public class BlockBrewingStand extends BlockTransparent {
     }
 
     @Override
+    public boolean hasUI() {
+        return true;
+    }
+
+    @Override
     public Item toItem(boolean addUserData) {
         return Item.get(Item.BREWING_STAND);
     }

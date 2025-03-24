@@ -112,6 +112,11 @@ public class BlockCrafter extends BlockSolid implements Faceable {
     }
 
     @Override
+    public boolean hasUI() {
+        return true;
+    }
+
+    @Override
     public int onUpdate(int type) {
         if (!level.isRedstoneEnabled()) {
             return 0;

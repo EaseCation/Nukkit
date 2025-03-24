@@ -178,6 +178,11 @@ public class BlockShulkerBox extends BlockTransparent {
     }
 
     @Override
+    public boolean hasUI() {
+        return true;
+    }
+
+    @Override
     public boolean hasComparatorInputOverride() {
         return true;
     }

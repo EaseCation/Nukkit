@@ -155,6 +155,11 @@ public class BlockEnderChest extends BlockTransparent implements Faceable {
     }
 
     @Override
+    public boolean hasUI() {
+        return true;
+    }
+
+    @Override
     public Item[] getDrops(Item item, Player player) {
         return new Item[]{
                 Item.get(Item.OBSIDIAN, 0, 8),

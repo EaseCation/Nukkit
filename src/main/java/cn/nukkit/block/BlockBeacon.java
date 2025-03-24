@@ -79,6 +79,11 @@ public class BlockBeacon extends BlockTransparent {
     }
 
     @Override
+    public boolean hasUI() {
+        return true;
+    }
+
+    @Override
     public boolean place(Item item, Block block, Block target, BlockFace face, float fx, float fy, float fz, Player player) {
         boolean blockSuccess = super.place(item, block, target, face, fx, fy, fz, player);
 

@@ -583,6 +583,10 @@ public abstract class Block extends Position implements Metadatable, Cloneable, 
         return false;
     }
 
+    public boolean hasUI() {
+        return false;
+    }
+
     public boolean hasEntityCollision() {
         return false;
     }

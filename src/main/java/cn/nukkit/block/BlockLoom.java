@@ -77,6 +77,11 @@ public class BlockLoom extends BlockSolid implements Faceable {
     }
 
     @Override
+    public boolean hasUI() {
+        return true;
+    }
+
+    @Override
     public int getFuelTime() {
         return 300;
     }

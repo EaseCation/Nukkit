@@ -129,6 +129,11 @@ public class BlockBed extends BlockTransparent implements Faceable {
     }
 
     @Override
+    public boolean hasUI() {
+        return true;
+    }
+
+    @Override
     public boolean place(Item item, Block block, Block target, BlockFace face, float fx, float fy, float fz, Player player) {
         if (SupportType.hasFullSupport(this.down(), BlockFace.UP)) {
             BlockFace direction = player.getDirection();

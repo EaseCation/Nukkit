@@ -95,6 +95,11 @@ public class BlockHopper extends BlockTransparent implements Faceable {
     }
 
     @Override
+    public boolean hasUI() {
+        return true;
+    }
+
+    @Override
     public boolean canBeActivated() {
         return true;
     }

@@ -130,6 +130,11 @@ public class BlockBarrel extends BlockSolid implements Faceable {
     }
 
     @Override
+    public boolean hasUI() {
+        return true;
+    }
+
+    @Override
     public BlockColor getColor() {
         return BlockColor.WOOD_BLOCK_COLOR;
     }

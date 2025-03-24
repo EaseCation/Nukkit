@@ -56,6 +56,11 @@ public class BlockCartographyTable extends BlockSolid {
     }
 
     @Override
+    public boolean hasUI() {
+        return true;
+    }
+
+    @Override
     public int getFuelTime() {
         return 300;
     }

@@ -132,6 +132,11 @@ public class BlockFurnaceBurning extends BlockSolid implements Faceable {
     }
 
     @Override
+    public boolean hasUI() {
+        return true;
+    }
+
+    @Override
     public Item toItem(boolean addUserData) {
         return Item.get(FURNACE);
     }

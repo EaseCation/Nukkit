@@ -134,6 +134,11 @@ public class BlockCommand extends BlockSolid implements Faceable {
     }
 
     @Override
+    public boolean hasUI() {
+        return true;
+    }
+
+    @Override
     public BlockFace getBlockFace() {
         return BlockFace.fromIndex(getDamage() & FACING_DIRECTION_MASK);
     }

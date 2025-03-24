@@ -99,6 +99,11 @@ public class BlockAnvil extends BlockFallable implements Faceable {
     }
 
     @Override
+    public boolean hasUI() {
+        return true;
+    }
+
+    @Override
     public Item toItem(boolean addUserData) {
         return Item.get(this.getItemId(), (getDamage() >> 2) << 2);
     }

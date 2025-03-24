@@ -123,6 +123,11 @@ public class BlockGrindstone extends BlockTransparent implements Faceable {
     }
 
     @Override
+    public boolean hasUI() {
+        return true;
+    }
+
+    @Override
     public int onUpdate(int type) {
         if (type == Level.BLOCK_UPDATE_NORMAL) {
             if (getSide(getBlockFace().getOpposite()).isAir()) {
