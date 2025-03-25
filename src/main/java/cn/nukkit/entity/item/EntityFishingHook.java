@@ -401,7 +401,7 @@ public class EntityFishingHook extends EntityProjectile {
         if (this.shootingEntity instanceof Player && this.caught) {
             this.level.addSound(new LaunchSound(this.shootingEntity));
             Player player = (Player) this.shootingEntity;
-            Item item = Fishing.getFishingResult(this.rod);
+            Item item = Fishing.getFishingResult(this);
             int experience = ThreadLocalRandom.current().nextInt(1, 4);
             Vector3 motion = player.subtract(this).multiply(0.1);
             motion.y += Math.sqrt(player.distance(this)) * 0.08;

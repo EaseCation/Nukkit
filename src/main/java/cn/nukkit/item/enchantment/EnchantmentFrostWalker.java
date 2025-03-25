@@ -19,4 +19,9 @@ public class EnchantmentFrostWalker extends Enchantment {
     public boolean checkCompatibility(Enchantment enchantment) {
         return super.checkCompatibility(enchantment) && enchantment.id != DEPTH_STRIDER;
     }
+
+    @Override
+    public boolean isTreasureOnly() {
+        return true;
+    }
 }

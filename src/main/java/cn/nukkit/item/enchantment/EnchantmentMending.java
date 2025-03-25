@@ -22,4 +22,9 @@ public class EnchantmentMending extends Enchantment {
     public boolean checkCompatibility(Enchantment enchantment) {
         return super.checkCompatibility(enchantment) && enchantment.id != INFINITY;
     }
+
+    @Override
+    public boolean isTreasureOnly() {
+        return true;
+    }
 }

@@ -23,4 +23,9 @@ public class EnchantmentMaceWindBurst extends EnchantmentMace {
         float knockbackScaling = (getLevel() + 1) * 0.25f;
         //TODO: WindBurstUtility::burst
     }
+
+    @Override
+    public boolean isLootable() {
+        return false;
+    }
 }

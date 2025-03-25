@@ -9,4 +9,9 @@ public class EnchantmentVanishingCurse extends Enchantment {
     public boolean isCurse() {
         return true;
     }
+
+    @Override
+    public boolean isTreasureOnly() {
+        return true;
+    }
 }

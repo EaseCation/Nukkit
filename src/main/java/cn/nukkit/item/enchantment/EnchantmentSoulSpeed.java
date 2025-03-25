@@ -23,4 +23,14 @@ public class EnchantmentSoulSpeed extends Enchantment {
     public static float getSpeedBoost(int level) {
         return level * 0.0105f + 0.03f;
     }
+
+    @Override
+    public boolean isTreasureOnly() {
+        return true;
+    }
+
+    @Override
+    public boolean isLootable() {
+        return false;
+    }
 }

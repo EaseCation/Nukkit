@@ -160,8 +160,16 @@ public abstract class Enchantment implements Cloneable, EnchantmentID {
         return false;
     }
 
+    public boolean isTreasureOnly() {
+        return false;
+    }
+
+    public boolean isLootable() {
+        return true;
+    }
+
     @Override
-    protected Enchantment clone() {
+    public Enchantment clone() {
         try {
             return (Enchantment) super.clone();
         } catch (CloneNotSupportedException e) {

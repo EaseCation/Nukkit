@@ -83,7 +83,7 @@ public final class Enchantments {
      */
     private static Enchantment registerEnchantment(int id, Enchantment enchantment, GameVersion version) {
         if (!version.isAvailable()) {
-//            return null;
+            return null;
         }
         return registerEnchantment(id, enchantment);
     }
