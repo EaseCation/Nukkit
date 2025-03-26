@@ -1,9 +1,5 @@
 package cn.nukkit.network.protocol;
 
-import cn.nukkit.nbt.NBTIO;
-import cn.nukkit.nbt.tag.CompoundTag;
-import java.io.IOException;
-import java.io.UncheckedIOException;
 import lombok.ToString;
 
 @ToString(exclude = "namedtag")
@@ -13,8 +9,7 @@ public class UpdateEquipmentPacket extends DataPacket {
     public int windowType;
     public int size;
     public long eid;
-    public CompoundTag namedtag;
-
+    public byte[] namedtag;
 
     @Override
     public int pid() {
@@ -33,10 +28,6 @@ public class UpdateEquipmentPacket extends DataPacket {
         this.putByte((byte) this.windowType);
         this.putVarInt(size);
         this.putEntityUniqueId(this.eid);
-        try {
-            this.put(NBTIO.writeNetwork(namedtag));
-        } catch (IOException e) {
-            throw new UncheckedIOException(e);
-        }
+        this.put(this.namedtag);
     }
 }

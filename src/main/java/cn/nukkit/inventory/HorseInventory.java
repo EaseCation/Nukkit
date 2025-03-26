@@ -11,12 +11,15 @@ import cn.nukkit.entity.passive.EntityTraderLlama;
 import cn.nukkit.item.Item;
 import cn.nukkit.item.ItemBlockID;
 import cn.nukkit.item.Items;
+import cn.nukkit.nbt.NBTIO;
 import cn.nukkit.nbt.tag.CompoundTag;
 import cn.nukkit.nbt.tag.ListTag;
 import cn.nukkit.network.protocol.LevelSoundEventPacket;
 import cn.nukkit.network.protocol.MobArmorEquipmentPacket;
 import cn.nukkit.network.protocol.UpdateEquipmentPacket;
+import cn.nukkit.utils.Utils;
 
+import java.io.IOException;
 import java.util.Objects;
 
 public class HorseInventory extends ContainerInventory {
@@ -62,52 +65,18 @@ public class HorseInventory extends ContainerInventory {
     public void onOpen(Player who) {
         this.viewers.add(who);
 
-        ListTag<CompoundTag> slots = new ListTag<>();
+        byte[] data;
         switch (entity.getNetworkId()) {
             case EntityID.LLAMA:
             case EntityID.TRADER_LLAMA:
-                slots.add(new CompoundTag()
-                        .put("acceptedItems", new ListTag<CompoundTag>()
-                                .add(new CompoundTag().putCompound("slotItem", new CompoundTag()
-                                        .putString("Name", "minecraft:carpet")
-                                        .putShort("Aux", Short.MAX_VALUE)))
-                        )
-                        .putCompound("item", new CompoundTag()
-                                .putString("Name", "minecraft:carpet")
-                                .putShort("Aux", Short.MAX_VALUE))
-                        .putInt("slotNumber", 1));
+                data = LLAMA_EQUIPMENT;
                 break;
             case EntityID.HORSE:
-                slots.add(new CompoundTag()
-                        .put("acceptedItems", new ListTag<CompoundTag>()
-                                .add(new CompoundTag().putCompound("slotItem", new CompoundTag()
-                                        .putString("Name", "minecraft:horsearmorleather")
-                                        .putShort("Aux", Short.MAX_VALUE)))
-                                .add(new CompoundTag().putCompound("slotItem", new CompoundTag()
-                                        .putString("Name", "minecraft:horsearmoriron")
-                                        .putShort("Aux", Short.MAX_VALUE)))
-                                .add(new CompoundTag().putCompound("slotItem", new CompoundTag()
-                                        .putString("Name", "minecraft:horsearmorgold")
-                                        .putShort("Aux", Short.MAX_VALUE)))
-                                .add(new CompoundTag().putCompound("slotItem", new CompoundTag()
-                                        .putString("Name", "minecraft:horsearmordiamond")
-                                        .putShort("Aux", Short.MAX_VALUE)))
-                        )
-                        .putCompound("item", new CompoundTag()
-                                .putString("Name", "minecraft:horsearmoriron")
-                                .putShort("Aux", Short.MAX_VALUE))
-                        .putInt("slotNumber", 1));
+                data = HORSE_EQUIPMENT;
+                break;
             default:
-                slots.add(new CompoundTag()
-                        .put("acceptedItems", new ListTag<CompoundTag>()
-                                .add(new CompoundTag().putCompound("slotItem", new CompoundTag()
-                                        .putString("Name", "minecraft:saddle")
-                                        .putShort("Aux", Short.MAX_VALUE)))
-                        )
-                        .putCompound("item", new CompoundTag()
-                                .putString("Name", "minecraft:saddle")
-                                .putShort("Aux", Short.MAX_VALUE))
-                        .putInt("slotNumber", 0));
+                data = GENERAL_EQUIPMENT;
+                break;
         }
 
         UpdateEquipmentPacket pk = new UpdateEquipmentPacket();
@@ -115,7 +84,7 @@ public class HorseInventory extends ContainerInventory {
         pk.windowType = getType().getNetworkType();
         pk.size = 0;
         pk.eid = entity.getId();
-        pk.namedtag = new CompoundTag().put("slots", slots);
+        pk.namedtag = data;
         who.dataPacket(pk);
 
         super.sendContents(who);
@@ -173,4 +142,75 @@ public class HorseInventory extends ContainerInventory {
             player.dataPacket(pk);
         }
     }
+
+    private static final byte[] GENERAL_EQUIPMENT = Utils.make(() -> {
+        try {
+            return NBTIO.writeNetwork(new CompoundTag().putList("slots", new ListTag<>()
+                    .addCompound(new CompoundTag()
+                            .putList("acceptedItems", new ListTag<CompoundTag>()
+                                    .addCompound(new CompoundTag().putCompound("slotItem", new CompoundTag()
+                                            .putString("Name", "minecraft:saddle")
+                                            .putShort("Aux", Short.MAX_VALUE)))
+                            )
+                            .putCompound("item", new CompoundTag()
+                                    .putString("Name", "minecraft:saddle")
+                                    .putShort("Aux", Short.MAX_VALUE))
+                            .putInt("slotNumber", 0))));
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
+    });
+    private static final byte[] HORSE_EQUIPMENT = Utils.make(() -> {
+        try {
+            return NBTIO.writeNetwork(new CompoundTag().putList("slots", new ListTag<>()
+                    .addCompound(new CompoundTag()
+                            .putList("acceptedItems", new ListTag<CompoundTag>()
+                                    .addCompound(new CompoundTag().putCompound("slotItem", new CompoundTag()
+                                            .putString("Name", "minecraft:saddle")
+                                            .putShort("Aux", Short.MAX_VALUE)))
+                            )
+                            .putCompound("item", new CompoundTag()
+                                    .putString("Name", "minecraft:saddle")
+                                    .putShort("Aux", Short.MAX_VALUE))
+                            .putInt("slotNumber", 0))
+                    .addCompound(new CompoundTag()
+                            .putList("acceptedItems", new ListTag<CompoundTag>()
+                                    .addCompound(new CompoundTag().putCompound("slotItem", new CompoundTag()
+                                            .putString("Name", "minecraft:horsearmorleather")
+                                            .putShort("Aux", Short.MAX_VALUE)))
+                                    .addCompound(new CompoundTag().putCompound("slotItem", new CompoundTag()
+                                            .putString("Name", "minecraft:horsearmoriron")
+                                            .putShort("Aux", Short.MAX_VALUE)))
+                                    .addCompound(new CompoundTag().putCompound("slotItem", new CompoundTag()
+                                            .putString("Name", "minecraft:horsearmorgold")
+                                            .putShort("Aux", Short.MAX_VALUE)))
+                                    .addCompound(new CompoundTag().putCompound("slotItem", new CompoundTag()
+                                            .putString("Name", "minecraft:horsearmordiamond")
+                                            .putShort("Aux", Short.MAX_VALUE)))
+                            )
+                            .putCompound("item", new CompoundTag()
+                                    .putString("Name", "minecraft:horsearmoriron")
+                                    .putShort("Aux", Short.MAX_VALUE))
+                            .putInt("slotNumber", 1))));
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
+    });
+    private static final byte[] LLAMA_EQUIPMENT = Utils.make(() -> {
+        try {
+            return NBTIO.writeNetwork(new CompoundTag().putList("slots", new ListTag<>()
+                    .addCompound(new CompoundTag()
+                            .putList("acceptedItems", new ListTag<CompoundTag>()
+                                    .addCompound(new CompoundTag().putCompound("slotItem", new CompoundTag()
+                                            .putString("Name", "minecraft:carpet")
+                                            .putShort("Aux", Short.MAX_VALUE)))
+                            )
+                            .putCompound("item", new CompoundTag()
+                                    .putString("Name", "minecraft:carpet")
+                                    .putShort("Aux", Short.MAX_VALUE))
+                            .putInt("slotNumber", 1))));
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
+    });
 }
