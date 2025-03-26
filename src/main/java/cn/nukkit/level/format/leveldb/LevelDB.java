@@ -38,6 +38,8 @@ import cn.nukkit.utils.*;
 import com.google.common.collect.ImmutableMap;
 import io.netty.buffer.ByteBuf;
 import io.netty.buffer.Unpooled;
+import it.unimi.dsi.fastutil.bytes.ByteArrayList;
+import it.unimi.dsi.fastutil.bytes.ByteList;
 import it.unimi.dsi.fastutil.longs.Long2ObjectMap;
 import it.unimi.dsi.fastutil.longs.Long2ObjectOpenHashMap;
 import it.unimi.dsi.fastutil.objects.Object2ObjectOpenHashMap;
@@ -464,6 +466,7 @@ public class LevelDB implements LevelProvider {
 
         LevelDbSubChunk[] subChunks = new LevelDbSubChunk[LevelDbChunk.SECTION_COUNT];
         short[] heightmap = null;
+        boolean[] borders = null;
         PalettedSubChunkStorage[] biomes3d = null;
 
         int subChunkKeyOffset = chunkVersion >= 24 && chunkVersion <= 26 ? 4 : 0;
@@ -668,6 +671,19 @@ public class LevelDB implements LevelProvider {
                     }
                 }
 
+                byte[] borderBlocks = this.db.get(BORDER_BLOCKS.getKey(chunkX, chunkZ));
+                if (borderBlocks != null && borderBlocks.length != 0) {
+                    borders = new boolean[SUB_CHUNK_2D_SIZE];
+
+                    int count = borderBlocks[0] & 0xff;
+                    if (count == 0 && borderBlocks.length == 1 + SUB_CHUNK_2D_SIZE) {
+                        count = 256; //HACK: vanilla serialization bug in LevelChunk::serializeBorderBlocks
+                    }
+                    for (int i = 1; i <= count && i < borderBlocks.length; i++) {
+                        borders[borderBlocks[i] & 0xff] = true;
+                    }
+                }
+
                 break;
             case 2: // 0.9.5
             case 1: // 0.9.2
@@ -787,7 +803,7 @@ public class LevelDB implements LevelProvider {
             finalisation = FINALISATION_DONE; //older versions didn't have this tag
         }
 
-        LevelDbChunk chunk = new LevelDbChunk(this, chunkX, chunkZ, subChunks, heightmap, biomes3d, entities, blockEntities);
+        LevelDbChunk chunk = new LevelDbChunk(this, chunkX, chunkZ, subChunks, heightmap, biomes3d, entities, blockEntities, borders);
 
         if (finalisation == FINALISATION_DONE) {
             chunk.setGenerated();
@@ -849,6 +865,26 @@ public class LevelDB implements LevelProvider {
                 chunk.writeBiomeTo(stream, false);
 
                 batch.put(HEIGHTMAP_AND_3D_BIOMES.getKey(chunkX, chunkZ), stream.getBuffer());
+            }
+
+            if (chunk.isBordersDirty()) {
+                ByteList borderBlockIndexes = new ByteArrayList();
+                boolean[] borders = chunk.getBorders();
+                for (int i = 0; i < SUB_CHUNK_2D_SIZE; i++) {
+                    if (borders[i]) {
+                        borderBlockIndexes.add((byte) i);
+                    }
+                }
+
+                byte[] borderBlocksKey = BORDER_BLOCKS.getKey(chunkX, chunkZ);
+                if (borderBlockIndexes.isEmpty()) {
+                    batch.delete(borderBlocksKey);
+                } else {
+                    stream.reuse();
+                    stream.putByte(borderBlockIndexes.size()); // why byte mj?
+                    stream.put(borderBlockIndexes.toByteArray());
+                    batch.put(borderBlocksKey, stream.getBuffer());
+                }
             }
 
             if (!background) {

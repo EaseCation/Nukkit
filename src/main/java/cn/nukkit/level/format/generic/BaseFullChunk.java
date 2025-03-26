@@ -329,6 +329,11 @@ public abstract class BaseFullChunk implements FullChunk, ChunkManager {
     }
 
     @Override
+    public boolean hasBorder(int x, int z) {
+        return false;
+    }
+
+    @Override
     public void addEntity(Entity entity) {
         if (this.entities == null) {
             this.entities = new Long2ObjectOpenHashMap<>();
@@ -478,6 +483,11 @@ public abstract class BaseFullChunk implements FullChunk, ChunkManager {
     @Override
     public short[] getHeightmap() {
         return EMPTY_HEIGHTMAP_ARR;
+    }
+
+    @Override
+    public boolean[] getBorders() {
+        return EMPTY_BORDER_ARR;
     }
 
     public long getChanges() {

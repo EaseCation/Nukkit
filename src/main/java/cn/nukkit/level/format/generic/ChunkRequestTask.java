@@ -20,6 +20,8 @@ import cn.nukkit.network.protocol.SubChunkPacket11810;
 import cn.nukkit.scheduler.AsyncTask;
 import cn.nukkit.utils.BinaryStream;
 import cn.nukkit.utils.Hash;
+import it.unimi.dsi.fastutil.bytes.ByteArrayList;
+import it.unimi.dsi.fastutil.bytes.ByteList;
 import it.unimi.dsi.fastutil.longs.Long2ObjectMap;
 import it.unimi.dsi.fastutil.longs.Long2ObjectOpenHashMap;
 import it.unimi.dsi.fastutil.longs.LongArrayList;
@@ -50,6 +52,7 @@ public class ChunkRequestTask extends AsyncTask<Void> {
     private final int chunkZ;
     private final HeightRange heightRange;
     private final short[] heightmap;
+    private final boolean[] borders;
     private final BlockEntity[] blockEntities;
     private final Level level;
     private final Set<StaticVersion> requestedVersions;
@@ -68,6 +71,7 @@ public class ChunkRequestTask extends AsyncTask<Void> {
         heightRange = chunk.getHeightRange();
         blockEntities = chunk.getBlockEntities().values().toArray(new BlockEntity[0]);
         heightmap = chunk.getHeightmap().clone();
+        borders = chunk.getBorders().clone();
         LevelProvider provider = chunk.getProvider();
         level = provider.getLevel();
         this.requestedVersions = EnumSet.copyOf(PRELOAD_VERSIONS);
@@ -184,6 +188,18 @@ public class ChunkRequestTask extends AsyncTask<Void> {
                 }
             }
 
+            ByteList borderBlockIndexes = new ByteArrayList();
+            for (int i = 0; i < borders.length; i++) {
+                if (borders[i]) {
+                    borderBlockIndexes.add((byte) i);
+                }
+            }
+            byte[] validBorderBlocks = borderBlockIndexes.size() != SUB_CHUNK_2D_SIZE ? borderBlockIndexes.toByteArray() : new byte[0]; // vanilla bug :(
+            stream.reuse();
+            stream.putByte(validBorderBlocks.length);
+            stream.put(validBorderBlocks);
+            byte[] borderBlocks = stream.getBuffer();
+
             int blobCount = count + 1; // N subChunks + 1 biome
             Long2ObjectMap<byte[]> blobs = new Long2ObjectOpenHashMap<>(blobCount);
             LongList blobIds = new LongArrayList(blobCount);
@@ -204,13 +220,13 @@ public class ChunkRequestTask extends AsyncTask<Void> {
             blobs.put(hash, biome);
 
             stream.reuse();
-            stream.putByte((byte) 0);
+            stream.put(borderBlocks);
             stream.put(fullChunkBlockEntities);
             byte[] cacheModeFullChunkPayload = stream.getBuffer(); // borderBlocks + blockEntities
 
             stream.reuse();
             stream.put(biome);
-            stream.putByte((byte) 0);
+            stream.put(borderBlocks);
             subRequestModeFullChunkPayload = stream.getBuffer(); // biome + borderBlocks. (without cache)
 
             for (StaticVersion version : StaticVersion.getAvailableVersions()) {
@@ -226,7 +242,7 @@ public class ChunkRequestTask extends AsyncTask<Void> {
                     blockStorages[Level.yToIndex(chunkY, chunkYIndexOffset)] = stream.getBuffer(mark);
                 }
                 stream.put(biome);
-                stream.putByte((byte) 0); // borderBlocks
+                stream.put(borderBlocks);
                 stream.put(fullChunkBlockEntities);
                 fullChunkPayloads.put(version, stream.getBuffer());
 
@@ -307,7 +323,7 @@ public class ChunkRequestTask extends AsyncTask<Void> {
                 packetCache = null;
             }
 
-            chunkCachedData = new ChunkCachedData(count, heightmapType, heightmapData, emptySection, new ChunkBlobCache(blobIds.toLongArray(), blobs, cacheModeFullChunkPayload, subChunkBlockEntities), packetCache);
+            chunkCachedData = new ChunkCachedData(count, heightmapType, heightmapData, emptySection, new ChunkBlobCache(blobIds.toLongArray(), blobs, cacheModeFullChunkPayload, borderBlocks, subChunkBlockEntities), packetCache);
         } catch (Exception e) {
             log.warn("Chunk network serialization failed: [" + chunkX + "," + chunkZ + "] " + level.getFolderName(), e);
         }

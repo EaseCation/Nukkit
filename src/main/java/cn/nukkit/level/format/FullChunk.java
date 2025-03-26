@@ -90,6 +90,8 @@ public interface FullChunk extends Cloneable {
 
     void populateSkyLight();
 
+    boolean hasBorder(int x, int z);
+
     int getBiomeId(int x, int z);
 
     default int getBiomeId(int x, int y, int z) {
@@ -176,6 +178,8 @@ public interface FullChunk extends Cloneable {
     byte[] getHeightMapArray();
 
     short[] getHeightmap();
+
+    boolean[] getBorders();
 
     byte[] getBlockIdArray();
 

@@ -25,6 +25,7 @@ public final class EmptyChunkSection implements ChunkSection {
     public static final byte[] EMPTY_BLOCK_ARR = new byte[4096];
     public static final byte[] EMPTY_META_ARR = EMPTY_2048;
     public static final short[] EMPTY_HEIGHTMAP_ARR = new short[256];
+    public static final boolean[] EMPTY_BORDER_ARR = new boolean[256];
     public static final byte[] EMPTY_LIGHT_ARR = EMPTY_2048;
     public static final byte[] EMPTY_SKY_LIGHT_ARR = new byte[2048];
 

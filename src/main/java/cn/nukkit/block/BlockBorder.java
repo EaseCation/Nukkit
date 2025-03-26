@@ -1,6 +1,8 @@
 package cn.nukkit.block;
 
 import cn.nukkit.item.Item;
+import cn.nukkit.math.AxisAlignedBB;
+import cn.nukkit.math.SimpleAxisAlignedBB;
 import cn.nukkit.utils.BlockColor;
 
 public class BlockBorder extends BlockWall {
@@ -46,5 +48,10 @@ public class BlockBorder extends BlockWall {
     @Override
     public BlockColor getColor() {
         return BlockColor.FIRE_BLOCK_COLOR;
+    }
+
+    @Override
+    protected AxisAlignedBB recalculateBoundingBox() {
+        return new SimpleAxisAlignedBB(this.x, this.y, this.z, this.x + 1, this.y + 1.5, this.z + 1);
     }
 }

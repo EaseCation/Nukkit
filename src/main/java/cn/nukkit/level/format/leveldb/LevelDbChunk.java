@@ -37,12 +37,15 @@ public class LevelDbChunk extends BaseChunk {
      */
     protected short[] heightmap;
 
+    protected boolean[] borders;
+
     //TODO: atomic?
     protected boolean terrainGenerated;
     protected boolean terrainPopulated;
 
     protected boolean subChunksDirty;
     protected boolean heightmapOrBiomesDirty;
+    protected boolean bordersDirty;
     //TODO: more DirtyTicksCounter
 //    protected boolean blockTickingDirty;
 //    protected boolean randomBlockTickingDirty;
@@ -53,12 +56,13 @@ public class LevelDbChunk extends BaseChunk {
     protected final Lock ioLock;
 
     public LevelDbChunk(@Nullable LevelProvider level, int chunkX, int chunkZ) {
-        this(level, chunkX, chunkZ, null, new short[SUB_CHUNK_2D_SIZE], null, null, null);
+        this(level, chunkX, chunkZ, null, new short[SUB_CHUNK_2D_SIZE], null, null, null, new boolean[SUB_CHUNK_2D_SIZE]);
     }
 
     public LevelDbChunk(@Nullable LevelProvider level, int chunkX, int chunkZ, @Nullable LevelDbSubChunk[] sections,
                         @Nullable short[] heightmap, @Nullable PalettedSubChunkStorage[] biomes,
-                        @Nullable List<CompoundTag> entities, @Nullable List<CompoundTag> blockEntities) {
+                        @Nullable List<CompoundTag> entities, @Nullable List<CompoundTag> blockEntities,
+                        @Nullable boolean[] borders) {
         this.ioLock = new ReentrantLock();
         this.provider = level;
         this.setPosition(chunkX, chunkZ);
@@ -106,6 +110,12 @@ public class LevelDbChunk extends BaseChunk {
         int bottomIndex = Level.subChunkYtoIndex(heightRange.getMinChunkY());
         if (this.biomes3d[bottomIndex] == null) {
             this.biomes3d[bottomIndex] = PalettedSubChunkStorage.ofBiome(BiomeID.OCEAN);
+        }
+
+        if (borders != null && borders.length == SUB_CHUNK_2D_SIZE) {
+            this.borders = borders;
+        } else {
+            this.borders = new boolean[SUB_CHUNK_2D_SIZE];
         }
 
         this.NBTentities = entities;
@@ -161,6 +171,11 @@ public class LevelDbChunk extends BaseChunk {
     @Override
     public short[] getHeightmap() {
         return this.heightmap;
+    }
+
+    @Override
+    public boolean[] getBorders() {
+        return borders;
     }
 
     @Override
@@ -516,6 +531,22 @@ public class LevelDbChunk extends BaseChunk {
         }
     }
 
+    @Override
+    public boolean hasBorder(int x, int z) {
+        return borders[index2d(x, z)];
+    }
+
+    private void setBorder(int x, int z, boolean value) {
+        int index = index2d(x, z);
+        if (this.borders[index] == value) {
+            return;
+        }
+        this.borders[index] = value;
+
+        this.bordersDirty = true;
+        this.setChanged();
+    }
+
     protected void onSubChunkBlockChanged(LevelDbSubChunk subChunk, int layer, int x, int y, int z, int previousId, int newId) {
         assert previousId != newId;
 
@@ -529,6 +560,29 @@ public class LevelDbChunk extends BaseChunk {
         int newBlockId = newId >> Block.BLOCK_META_BITS;
         if (previousBlockId == newBlockId) {
             return;
+        }
+
+        if (newBlockId == Block.BORDER_BLOCK) {
+            setBorder(x, z, true);
+        } else if (previousBlockId == Block.BORDER_BLOCK && hasBorder(x, z)) {
+            boolean border = false;
+            HeightRange heightRange = getHeightRange();
+            BORDER:
+            for (int chunkY = heightRange.getMaxChunkY() - 1; chunkY >= heightRange.getMinChunkY(); chunkY--) {
+                ChunkSection section = this.sections[Level.subChunkYtoIndex(chunkY)];
+                if (section.isEmpty(true)) {
+                    continue;
+                }
+                for (int localY = 15; localY >= 0; localY--) {
+                    if (section.getBlockId(0, x, localY, z) == Block.BORDER_BLOCK) {
+                        border = true;
+                        break BORDER;
+                    }
+                }
+            }
+            if (!border) {
+                setBorder(x, z, false);
+            }
         }
 
         boolean lightBlocking = Block.lightBlocking[newBlockId];
@@ -582,6 +636,10 @@ public class LevelDbChunk extends BaseChunk {
 
     public void setHeightmapOrBiomesDirty() {
         this.heightmapOrBiomesDirty = true;
+    }
+
+    public boolean isBordersDirty() {
+        return this.bordersDirty;
     }
 
     public void setAllSubChunksDirty() {
