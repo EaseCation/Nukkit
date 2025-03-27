@@ -1,9 +1,7 @@
 package cn.nukkit.item;
 
-import cn.nukkit.block.BlockID;
-
 // 弃用的名称用于旧版本, 不要移除
-public interface ItemID extends BlockID, ItemRuntimeID {
+public interface ItemID extends ItemBlockID, ItemRuntimeID {
     int GLOW_STICK = 166;
 
     int IRON_SHOVEL = 256;
