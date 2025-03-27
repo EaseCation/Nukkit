@@ -162,7 +162,7 @@ public class BlockEnderChest extends BlockTransparent implements Faceable {
     @Override
     public Item[] getDrops(Item item, Player player) {
         return new Item[]{
-                Item.get(Item.OBSIDIAN, 0, 8),
+                Item.get(getItemId(OBSIDIAN), 0, 8),
         };
     }
 

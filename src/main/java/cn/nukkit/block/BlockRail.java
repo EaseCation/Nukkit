@@ -257,7 +257,7 @@ public class BlockRail extends BlockFlowable implements Faceable {
     @Override
     public Item[] getDrops(Item item, Player player) {
         return new Item[]{
-                Item.get(Item.RAIL, 0, 1)
+                Item.get(getItemId())
         };
     }
 

@@ -238,7 +238,7 @@ public class EntityFallingBlock extends Entity {
                         }
                         placeBlock(pos, event.getTo());
 
-                        if (event.getTo().getId() == Item.ANVIL) {
+                        if (event.getTo().getId() == Block.ANVIL) {
                             getLevel().addLevelEvent(block, LevelEventPacket.EVENT_SOUND_ANVIL_FALL);
 
                             if (highestPosition > y) {

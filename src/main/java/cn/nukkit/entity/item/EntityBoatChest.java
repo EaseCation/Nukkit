@@ -7,6 +7,7 @@ import cn.nukkit.inventory.BoatChestInventory;
 import cn.nukkit.inventory.Inventory;
 import cn.nukkit.inventory.InventoryHolder;
 import cn.nukkit.item.Item;
+import cn.nukkit.item.ItemBlockID;
 import cn.nukkit.level.format.FullChunk;
 import cn.nukkit.math.Vector3;
 import cn.nukkit.math.Vector3f;
@@ -73,7 +74,7 @@ public class EntityBoatChest extends EntityBoat implements InventoryHolder {
     @Override
     protected void dropItem() {
         super.dropItem();
-        this.level.dropItem(this, Item.get(Item.CHEST));
+        this.level.dropItem(this, Item.get(ItemBlockID.CHEST));
 
         for (Item item : this.inventory.getContents().values()) {
             this.level.dropItem(this, item);

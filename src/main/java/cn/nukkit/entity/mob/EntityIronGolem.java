@@ -6,6 +6,7 @@ import cn.nukkit.entity.attribute.Attribute;
 import cn.nukkit.event.entity.EntityDamageEvent;
 import cn.nukkit.event.entity.EntityDamageEvent.DamageCause;
 import cn.nukkit.item.Item;
+import cn.nukkit.item.ItemBlockID;
 import cn.nukkit.level.format.FullChunk;
 import cn.nukkit.nbt.tag.CompoundTag;
 import cn.nukkit.network.protocol.AddEntityPacket;
@@ -96,7 +97,7 @@ public class EntityIronGolem extends EntityMob {
         ThreadLocalRandom random = ThreadLocalRandom.current();
         return new Item[]{
                 Item.get(Item.IRON_INGOT, 0, random.nextInt(3, 6)),
-                Item.get(Item.RED_FLOWER, 0, random.nextInt(3)),
+                Item.get(ItemBlockID.RED_FLOWER, 0, random.nextInt(3)),
         };
     }
 

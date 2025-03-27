@@ -406,7 +406,7 @@ public class BlockCauldron extends BlockTransparent {
                 setFillLevel(fillLevel);
                 level.setBlock(this, this, true);
 
-                player.getInventory().setItemInHand(Item.get(Item.UNDYED_SHULKER_BOX, 0, 1, item.getCompoundTag()));
+                player.getInventory().setItemInHand(Item.get(getItemId(UNDYED_SHULKER_BOX), 0, 1, item.getCompoundTag()));
 
                 level.addLevelEvent(add(0.5, 0.375 + fillLevel * 0.125, 0.5), LevelEventPacket.EVENT_CAULDRON_CLEAN_ARMOR);
                 break;

@@ -1952,7 +1952,7 @@ public abstract class Entity extends Location implements Metadatable, EntityData
         Block down = null;
         if (fallDistance > 0.75f) {
             down = this.level.getBlock(this.floor().down());
-            if (down.getId() == Item.FARMLAND) {
+            if (down.getId() == Block.FARMLAND) {
                 Event ev;
                 if (this instanceof Player) {
                     ev = new PlayerInteractEvent((Player) this, null, down, null, Action.PHYSICAL);

@@ -1,5 +1,6 @@
 package cn.nukkit.blockentity;
 
+import cn.nukkit.block.Block;
 import cn.nukkit.item.Item;
 import cn.nukkit.level.format.FullChunk;
 import cn.nukkit.nbt.tag.CompoundTag;
@@ -29,7 +30,7 @@ public class BlockEntityBed extends BlockEntitySpawnable {
 
     @Override
     public boolean isValidBlock(int blockId) {
-        return blockId == Item.BLOCK_BED;
+        return blockId == Block.BLOCK_BED;
     }
 
     @Override

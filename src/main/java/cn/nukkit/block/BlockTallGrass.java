@@ -141,7 +141,7 @@ public class BlockTallGrass extends BlockFlowable {
     public Item[] getDrops(Item item, Player player) {
         if (item.isShears()) {
             return new Item[]{
-                    Item.get(Item.SHORT_GRASS, this.getValidType(), 1)
+                    Item.get(getItemId(), this.getValidType(), 1)
             };
         }
 

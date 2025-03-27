@@ -66,7 +66,7 @@ public class BlockStone extends BlockSolid {
     public Item[] getDrops(Item item, Player player) {
         if (item.isPickaxe() && item.getTier() >= ItemTool.TIER_WOODEN) {
             return new Item[]{
-                    Item.get(this.getDamage() == TYPE_NORMAL ? Item.COBBLESTONE : Item.STONE, this.getDamage(), 1)
+                    getDamage() == TYPE_NORMAL ? Item.get(getItemId(COBBLESTONE)) : Item.get(getItemId(), getDamage())
             };
         } else {
             return new Item[0];

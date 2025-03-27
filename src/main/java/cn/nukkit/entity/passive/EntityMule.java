@@ -32,7 +32,7 @@ public class EntityMule extends EntityAbstractHorse {
         return Stream.concat(
                 Stream.of(
                         Item.get(Item.LEATHER, 0, ThreadLocalRandom.current().nextInt(3)),
-                        Item.get(Item.CHEST, 0, getDataFlag(DATA_FLAG_CHESTED) ? 1 : 0)
+                        Item.get(ItemBlockID.CHEST, 0, getDataFlag(DATA_FLAG_CHESTED) ? 1 : 0)
                 ),
                 Arrays.stream(super.getDrops())
         ).toArray(Item[]::new);

@@ -3,6 +3,7 @@ package cn.nukkit.item.randomitem;
 import cn.nukkit.GameVersion;
 import cn.nukkit.entity.item.EntityFishingHook;
 import cn.nukkit.item.Item;
+import cn.nukkit.item.ItemBlockID;
 import cn.nukkit.item.enchantment.Enchantment;
 import cn.nukkit.level.biome.BiomeID;
 import cn.nukkit.math.Mth;
@@ -67,7 +68,7 @@ public final class Fishing {
     public static final Selector JUNK_WATTER_BOTTLE = putSelector(new ConstantItemSelector(Item.POTION, Potion.WATER, JUNKS), 10 / JUNK_TOTAL_WEIGHT);
     public static final Selector JUNK_BONE = putSelector(new ConstantItemSelector(Item.BONE, JUNKS), 10 / JUNK_TOTAL_WEIGHT);
     public static final Selector JUNK_INK_SAC = putSelector(new ConstantItemSelector(Item.DYE, DyeColor.BLACK.getDyeData(), 10, JUNKS), 1 / JUNK_TOTAL_WEIGHT);
-    public static final Selector JUNK_TRIPWIRE_HOOK = putSelector(new ConstantItemSelector(Item.TRIPWIRE_HOOK, JUNKS), 10 / JUNK_TOTAL_WEIGHT);
+    public static final Selector JUNK_TRIPWIRE_HOOK = putSelector(new ConstantItemSelector(ItemBlockID.TRIPWIRE_HOOK, JUNKS), 10 / JUNK_TOTAL_WEIGHT);
 
     public static final Selector JUNGLE_JUNK_BOWL = putSelector(new ConstantItemSelector(Item.BOWL, JUNGLE_JUNKS), 10 / JUNGLE_JUNK_TOTAL_WEIGHT);
     public static final Selector JUNGLE_JUNK_FISHING_ROD = putSelector(new ConstantItemSelector(Item.FISHING_ROD, JUNGLE_JUNKS).setDamage(0, 0.9f), 2 / JUNGLE_JUNK_TOTAL_WEIGHT);
@@ -79,9 +80,9 @@ public final class Fishing {
     public static final Selector JUNGLE_JUNK_WATTER_BOTTLE = putSelector(new ConstantItemSelector(Item.POTION, Potion.WATER, JUNGLE_JUNKS), 10 / JUNGLE_JUNK_TOTAL_WEIGHT);
     public static final Selector JUNGLE_JUNK_BONE = putSelector(new ConstantItemSelector(Item.BONE, JUNGLE_JUNKS), 10 / JUNGLE_JUNK_TOTAL_WEIGHT);
     public static final Selector JUNGLE_JUNK_INK_SAC = putSelector(new ConstantItemSelector(Item.DYE, DyeColor.BLACK.getDyeData(), 10, JUNGLE_JUNKS), 1 / JUNGLE_JUNK_TOTAL_WEIGHT);
-    public static final Selector JUNGLE_JUNK_TRIPWIRE_HOOK = putSelector(new ConstantItemSelector(Item.TRIPWIRE_HOOK, JUNGLE_JUNKS), 10 / JUNGLE_JUNK_TOTAL_WEIGHT);
+    public static final Selector JUNGLE_JUNK_TRIPWIRE_HOOK = putSelector(new ConstantItemSelector(ItemBlockID.TRIPWIRE_HOOK, JUNGLE_JUNKS), 10 / JUNGLE_JUNK_TOTAL_WEIGHT);
     public static final Selector JUNGLE_JUNK_COCOA = registerFishingSelector(new ConstantItemSelector(Item.COCOA, JUNGLE_JUNKS), 10 / JUNGLE_JUNK_TOTAL_WEIGHT, V1_8_0);
-    public static final Selector JUNGLE_JUNK_BAMBOO = registerFishingSelector(new ConstantItemSelector(Item.BAMBOO, JUNGLE_JUNKS), 10 / JUNGLE_JUNK_TOTAL_WEIGHT, V1_8_0);
+    public static final Selector JUNGLE_JUNK_BAMBOO = registerFishingSelector(new ConstantItemSelector(ItemBlockID.BAMBOO, JUNGLE_JUNKS), 10 / JUNGLE_JUNK_TOTAL_WEIGHT, V1_8_0);
 
     private static Selector registerFishingSelector(Selector selector, float chance) {
         return putSelector(selector, chance);

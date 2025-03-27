@@ -42,7 +42,7 @@ public class BlockBricks extends BlockSolid {
     public Item[] getDrops(Item item, Player player) {
         if (item.isPickaxe() && item.getTier() >= ItemTool.TIER_WOODEN) {
             return new Item[]{
-                    Item.get(Item.BRICK_BLOCK, 0, 1)
+                    Item.get(getItemId())
             };
         } else {
             return new Item[0];

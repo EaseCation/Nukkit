@@ -49,7 +49,7 @@ public class BlockBricksEndStone extends BlockSolid {
     public Item[] getDrops(Item item, Player player) {
         if (item.isPickaxe() && item.getTier() >= ItemTool.TIER_WOODEN) {
             return new Item[]{
-                    Item.get(Item.END_BRICKS, 0, 1)
+                    Item.get(getItemId())
             };
         } else {
             return new Item[0];
