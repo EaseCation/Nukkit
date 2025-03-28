@@ -135,6 +135,11 @@ public class BlockFlower extends BlockFlowable {
     }
 
     @Override
+    public boolean isFertilizable() {
+        return true;
+    }
+
+    @Override
     public boolean canContainSnow() {
         return true;
     }

@@ -68,6 +68,11 @@ public abstract class BlockMushroom extends BlockFlowable {
         return false;
     }
 
+    @Override
+    public boolean isFertilizable() {
+        return true;
+    }
+
     public boolean grow() {
         this.level.setBlock(this, Block.get(BlockID.AIR), true, false);
 

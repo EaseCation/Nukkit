@@ -127,6 +127,11 @@ public class BlockKelp extends BlockTransparent {
     }
 
     @Override
+    public boolean isFertilizable() {
+        return true;
+    }
+
+    @Override
     public boolean onBreak(Item item, Player player) {
         if (!super.onBreak(item, player)) {
             return false;

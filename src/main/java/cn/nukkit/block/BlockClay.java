@@ -67,4 +67,9 @@ public class BlockClay extends BlockSolid {
         }
         return false;
     }
+
+    @Override
+    public boolean isFertilizable() {
+        return true;
+    }
 }

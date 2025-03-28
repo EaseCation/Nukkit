@@ -1321,6 +1321,10 @@ public abstract class Block extends Position implements Metadatable, Cloneable, 
         level.addLevelSoundEvent(blockCenter(), LevelSoundEventPacket.SOUND_PLACE, getFullId());
     }
 
+    public boolean isFertilizable() {
+        return false;
+    }
+
     public final Block getBlock() {
         return this;
     }

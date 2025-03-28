@@ -147,7 +147,6 @@ public class BlockBamboo extends BlockTransparent {
             if (y >= maxHeight - 1 || !top.grow(getMaxHeight(getFloorX(), getFloorZ()), y == maxHeight - 2 ? 1 : ThreadLocalRandom.current().nextInt(1, 3))) {
                 return false;
             }
-            //FIXME: unexpected update
 
             if (player != null && !player.isCreative()) {
                 item.count--;
@@ -176,6 +175,11 @@ public class BlockBamboo extends BlockTransparent {
         }
 
         return false;
+    }
+
+    @Override
+    public boolean isFertilizable() {
+        return true;
     }
 
     @Override
@@ -251,28 +255,28 @@ public class BlockBamboo extends BlockTransparent {
                 level.setBlock(x, newTop, z, Block.get(BAMBOO, smallLeavesMeta), true, true);
                 break;
             case 3:
-                level.setBlock(x, newTop, z, Block.get(BAMBOO, smallLeavesMeta), true, true);
                 level.setBlock(x, newTop - 1, z, Block.get(BAMBOO, smallLeavesMeta), true, false);
+                level.setBlock(x, newTop, z, Block.get(BAMBOO, smallLeavesMeta), true, true);
                 break;
             case 4:
-                level.setBlock(x, newTop, z, Block.get(BAMBOO, largeLeavesMeta), true, true);
-                level.setBlock(x, newTop - 1, z, Block.get(BAMBOO, smallLeavesMeta), true, false);
-                level.setBlock(x, newTop - 2, z, Block.get(BAMBOO, stemMeta), true, false);
                 level.setBlock(x, newTop - 3, z, Block.get(BAMBOO, stemMeta), true, false);
+                level.setBlock(x, newTop - 2, z, Block.get(BAMBOO, stemMeta), true, false);
+                level.setBlock(x, newTop - 1, z, Block.get(BAMBOO, smallLeavesMeta), true, false);
+                level.setBlock(x, newTop, z, Block.get(BAMBOO, largeLeavesMeta), true, true);
                 break;
             default:
                 if (newHeight <= 4) {
                     return false;
                 }
 
-                level.setBlock(x, newTop, z, Block.get(BAMBOO, largeLeavesMeta), true, true);
-                level.setBlock(x, newTop - 1, z, Block.get(BAMBOO, largeLeavesMeta), true, false);
-                level.setBlock(x, newTop - 2, z, Block.get(BAMBOO, smallLeavesMeta), true, false);
                 int topStem = newTop - 3;
-                int stemCount = Math.min(growAmount, newHeight - 3);
-                for (int i = 0; i <= stemCount; i++) {
+                int stemCount = Math.min(growAmount, newHeight - 4);
+                for (int i = stemCount; i >= 0; i--) {
                     level.setBlock(x, topStem - i, z, Block.get(BAMBOO, stemMeta), true, false);
                 }
+                level.setBlock(x, newTop - 2, z, Block.get(BAMBOO, smallLeavesMeta), true, false);
+                level.setBlock(x, newTop - 1, z, Block.get(BAMBOO, largeLeavesMeta), true, false);
+                level.setBlock(x, newTop, z, Block.get(BAMBOO, largeLeavesMeta), true, true);
                 break;
         }
         return true;

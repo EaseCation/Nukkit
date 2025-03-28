@@ -2,6 +2,8 @@ package cn.nukkit.dispenser;
 
 import cn.nukkit.entity.item.*;
 import cn.nukkit.entity.projectile.*;
+import cn.nukkit.entity.property.EntityPropertyNames;
+import cn.nukkit.entity.property.EntityPropertyStringValues;
 import cn.nukkit.item.Item;
 import cn.nukkit.item.ItemArrow;
 import cn.nukkit.item.ItemBlockID;
@@ -38,9 +40,11 @@ public final class DispenseBehaviorRegister {
     }
 
     public static void init() {
-        registerBehavior(ItemID.BOAT, new BoatDispenseBehavior());
+        registerBehavior(ItemID.BOAT, new BoatDispenseBehavior(EntityBoat::new));
+        registerBehavior(ItemID.CHEST_BOAT, new BoatDispenseBehavior(EntityBoatChest::new));
         registerBehavior(ItemID.BUCKET, new BucketDispenseBehavior());
-        registerBehavior(ItemID.DYE, new DyeDispenseBehavior());
+        registerBehavior(ItemID.DYE, new FertilizerDispenseBehavior());
+        registerBehavior(ItemID.RAPID_FERTILIZER, new FertilizerDispenseBehavior());
         registerBehavior(ItemID.FIREWORK_ROCKET, new FireworksDispenseBehavior());
         registerBehavior(ItemID.FLINT_AND_STEEL, new FlintAndSteelDispenseBehavior());
         registerBehavior(ItemBlockID.UNDYED_SHULKER_BOX, new ShulkerBoxDispenseBehavior());
@@ -61,6 +65,9 @@ public final class DispenseBehaviorRegister {
         registerBehavior(ItemBlockID.RED_SHULKER_BOX, new ShulkerBoxDispenseBehavior());
         registerBehavior(ItemBlockID.BLACK_SHULKER_BOX, new ShulkerBoxDispenseBehavior());
         registerBehavior(ItemID.SPAWN_EGG, new SpawnEggDispenseBehavior());
+//        registerBehavior(ItemBlockID.CARVED_PUMPKIN, new PumpkinDispenseBehavior());
+//        registerBehavior(ItemBlockID.LIT_PUMPKIN, new PumpkinDispenseBehavior());
+//        registerBehavior(ItemID.SKULL, new SkullDispenseBehavior());
         registerBehavior(ItemBlockID.TNT, new TNTDispenseBehavior());
         registerBehavior(ItemBlockID.UNDERWATER_TNT, new TNTDispenseBehavior());
         registerBehavior(ItemID.ARROW, new ProjectileDispenseBehavior(EntityArrow::new) {
@@ -86,7 +93,27 @@ public final class DispenseBehaviorRegister {
                 }
             }
         });
-        registerBehavior(ItemID.EGG, new ProjectileDispenseBehavior(EntityEgg::new));
+        registerBehavior(ItemID.EGG, new ProjectileDispenseBehavior(EntityEgg::new) {
+            @Override
+            protected void correctNBT(CompoundTag nbt, Item item) {
+                nbt.putCompound("properties", new CompoundTag()
+                        .putString(EntityPropertyNames.CLIMATE_VARIANT, EntityPropertyStringValues.CLIMATE_VARIANT_TEMPERATE));
+            }
+        });
+        registerBehavior(ItemID.BLUE_EGG, new ProjectileDispenseBehavior(EntityEgg::new) {
+            @Override
+            protected void correctNBT(CompoundTag nbt, Item item) {
+                nbt.putCompound("properties", new CompoundTag()
+                        .putString(EntityPropertyNames.CLIMATE_VARIANT, EntityPropertyStringValues.CLIMATE_VARIANT_COLD));
+            }
+        });
+        registerBehavior(ItemID.BROWN_EGG, new ProjectileDispenseBehavior(EntityEgg::new) {
+            @Override
+            protected void correctNBT(CompoundTag nbt, Item item) {
+                nbt.putCompound("properties", new CompoundTag()
+                        .putString(EntityPropertyNames.CLIMATE_VARIANT, EntityPropertyStringValues.CLIMATE_VARIANT_WARM));
+            }
+        });
         registerBehavior(ItemID.SNOWBALL, new ProjectileDispenseBehavior(EntitySnowball::new));
         registerBehavior(ItemID.EXPERIENCE_BOTTLE, new ProjectileDispenseBehavior(EntityExpBottle::new) {
             @Override
@@ -132,12 +159,19 @@ public final class DispenseBehaviorRegister {
                 return super.getMotion() * 1.25;
             }
         });
+        registerBehavior(ItemID.ICE_BOMB, new ProjectileDispenseBehavior(EntityIceBomb::new));
+//        registerBehavior(ItemID.WIND_CHARGE, new ProjectileDispenseBehavior(EntityWindCharge::new));
         registerBehavior(ItemID.FIRE_CHARGE, new FireChargeDispenseBehavior());
         registerBehavior(ItemID.GLASS_BOTTLE, new GlassBottleDispenseBehavior());
         registerBehavior(ItemID.MINECART, new MinecartDispenseBehavior(EntityMinecartEmpty::new));
         registerBehavior(ItemID.CHEST_MINECART, new MinecartDispenseBehavior(EntityMinecartChest::new));
         registerBehavior(ItemID.HOPPER_MINECART, new MinecartDispenseBehavior(EntityMinecartHopper::new));
         registerBehavior(ItemID.TNT_MINECART, new MinecartDispenseBehavior(EntityMinecartTNT::new));
-//        registerBehavior(ItemID.COMMAND_BLOCK_MINECART, new MinecartDispenseBehavior(EntityMinecartCommandBlock::new)); //TODO
+//        registerBehavior(ItemID.COMMAND_BLOCK_MINECART, new MinecartDispenseBehavior(EntityMinecartCommandBlock::new));
+        registerBehavior(ItemID.SHEARS, new ShearsDispenseBehaviour());
+        registerBehavior(ItemBlockID.GLOWSTONE, new GlowstoneDispenseBehaviour());
+        registerBehavior(ItemID.HONEYCOMB, new HoneycombDispenseBehaviour());
+        registerBehavior(ItemID.POTION, new WaterBottleDispenseBehaviour());
+        registerBehavior(ItemID.BRUSH, new BrushDispenseBehaviour());
     }
 }

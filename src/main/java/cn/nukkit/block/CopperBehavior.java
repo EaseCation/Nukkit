@@ -10,6 +10,8 @@ import cn.nukkit.network.protocol.LevelSoundEventPacket;
 import java.util.concurrent.ThreadLocalRandom;
 
 public interface CopperBehavior {
+    int getDamage();
+
     boolean isWaxed();
 
     int getCopperAge();
@@ -32,7 +34,7 @@ public interface CopperBehavior {
 
                 target.level.addLevelEvent(target, LevelEventPacket.EVENT_PARTICLE_WAX_OFF);
 
-                target.level.setBlock(target, Block.get(behavior.getDewaxedBlockId()), true);
+                target.level.setBlock(target, Block.get(behavior.getDewaxedBlockId(), behavior.getDamage()), true);
                 return true;
             }
 
@@ -46,7 +48,7 @@ public interface CopperBehavior {
 
             target.level.addLevelEvent(target, LevelEventPacket.EVENT_PARTICLE_WAX_ON);
 
-            target.level.setBlock(target, Block.get(behavior.getWaxedBlockId()), true);
+            target.level.setBlock(target, Block.get(behavior.getWaxedBlockId(), behavior.getDamage()), true);
             return true;
         }
 
@@ -58,7 +60,7 @@ public interface CopperBehavior {
 
             target.level.addLevelEvent(target, LevelEventPacket.EVENT_PARTICLE_SCRAPE);
 
-            target.level.setBlock(target, Block.get(behavior.getDecrementAgeBlockId()), true);
+            target.level.setBlock(target, Block.get(behavior.getDecrementAgeBlockId(), behavior.getDamage()), true);
             return true;
         }
 
@@ -119,6 +121,6 @@ public interface CopperBehavior {
             return;
         }
 
-        target.level.setBlock(target, Block.get(behavior.getIncrementAgeBlockId()), true);
+        target.level.setBlock(target, Block.get(behavior.getIncrementAgeBlockId(), behavior.getDamage()), true);
     }
 }

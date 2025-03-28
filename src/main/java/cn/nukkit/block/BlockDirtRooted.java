@@ -116,6 +116,11 @@ public class BlockDirtRooted extends BlockSolid {
     }
 
     @Override
+    public boolean isFertilizable() {
+        return true;
+    }
+
+    @Override
     public BlockColor getColor() {
         return BlockColor.DIRT_BLOCK_COLOR;
     }

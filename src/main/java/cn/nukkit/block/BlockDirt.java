@@ -104,6 +104,11 @@ public class BlockDirt extends BlockSolid {
     }
 
     @Override
+    public boolean isFertilizable() {
+        return true;
+    }
+
+    @Override
     public Item[] getDrops(Item item, Player player) {
         return new Item[]{
                 Item.get(DIRT)

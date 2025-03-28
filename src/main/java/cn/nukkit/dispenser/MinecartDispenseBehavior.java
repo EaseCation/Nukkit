@@ -28,7 +28,7 @@ public class MinecartDispenseBehavior extends DefaultDispenseBehavior {
             return super.dispense(block, face, item);
         }
 
-        Entity minecart = factory.create(target.getChunk(), Entity.getDefaultNBT(target));
+        Entity minecart = factory.create(target.getChunk(), Entity.getDefaultNBT(target, null, face.getHorizontalAngle(), 0));
         minecart.spawnToAll();
 
         return null;

@@ -71,6 +71,11 @@ public class BlockMoss extends BlockSolid {
     }
 
     @Override
+    public boolean isFertilizable() {
+        return true;
+    }
+
+    @Override
     public BlockColor getColor() {
         return BlockColor.GREEN_BLOCK_COLOR;
     }

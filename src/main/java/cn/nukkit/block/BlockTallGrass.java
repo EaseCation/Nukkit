@@ -138,6 +138,11 @@ public class BlockTallGrass extends BlockFlowable {
     }
 
     @Override
+    public boolean isFertilizable() {
+        return true;
+    }
+
+    @Override
     public Item[] getDrops(Item item, Player player) {
         if (item.isShears()) {
             return new Item[]{

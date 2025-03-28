@@ -87,6 +87,11 @@ public abstract class BlockBrushable extends BlockFallable {
     }
 
     @Override
+    public boolean isFertilizable() {
+        return true;
+    }
+
+    @Override
     public BlockColor getColor() {
         return BlockColor.TRANSPARENT_BLOCK_COLOR;
     }

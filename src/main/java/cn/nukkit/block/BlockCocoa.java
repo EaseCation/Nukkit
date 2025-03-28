@@ -204,6 +204,11 @@ public class BlockCocoa extends BlockFlowable implements Faceable {
     }
 
     @Override
+    public boolean isFertilizable() {
+        return true;
+    }
+
+    @Override
     public float getResistance() {
         return 15;
     }

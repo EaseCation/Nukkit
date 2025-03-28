@@ -77,13 +77,13 @@ public class BlockDragonEgg extends BlockFallable {
                 int diffX = this.getFloorX() - to.getFloorX();
                 int diffY = this.getFloorY() - to.getFloorY();
                 int diffZ = this.getFloorZ() - to.getFloorZ();
-                LevelEventPacket pk = new LevelEventPacket();
-                pk.evid = LevelEventPacket.EVENT_PARTICLE_DRAGON_EGG_TELEPORT;
-                pk.data = (((((Math.abs(diffX) << 16) | (Math.abs(diffY) << 8)) | Math.abs(diffZ)) | ((diffX < 0 ? 1 : 0) << 24)) | ((diffY < 0 ? 1 : 0) << 25)) | ((diffZ < 0 ? 1 : 0) << 26);
-                pk.x = this.getFloorX();
-                pk.y = this.getFloorY();
-                pk.z = this.getFloorZ();
-                this.getLevel().addChunkPacket(this.getFloorX() >> 4, this.getFloorZ() >> 4, pk);
+                this.getLevel().addLevelEvent(floor(), LevelEventPacket.EVENT_PARTICLE_DRAGON_EGG_TELEPORT,
+                        (((((Math.abs(diffX) << 16)
+                                | (Math.abs(diffY) << 8))
+                                | Math.abs(diffZ))
+                                | ((diffX < 0 ? 1 : 0) << 24))
+                                | ((diffY < 0 ? 1 : 0) << 25))
+                                | ((diffZ < 0 ? 1 : 0) << 26));
                 this.getLevel().setBlock(this, get(AIR), true);
                 this.getLevel().setBlock(to, this, true);
                 return;

@@ -194,6 +194,11 @@ public class BlockDoublePlant extends BlockFlowable {
     }
 
     @Override
+    public boolean isFertilizable() {
+        return true;
+    }
+
+    @Override
     public int getCompostableChance() {
         if (getPlantType() == TYPE_TALL_GRASS) {
             return 50;

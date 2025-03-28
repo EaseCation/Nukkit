@@ -71,6 +71,11 @@ public abstract class BlockNetherVines extends BlockFlowable {
     }
 
     @Override
+    public boolean isFertilizable() {
+        return true;
+    }
+
+    @Override
     public int onUpdate(int type) {
         if (type == Level.BLOCK_UPDATE_NORMAL) {
             level.scheduleUpdate(this, 1);

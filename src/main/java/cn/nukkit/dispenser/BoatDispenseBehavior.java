@@ -5,12 +5,17 @@ import cn.nukkit.block.BlockDispenser;
 import cn.nukkit.block.BlockID;
 import cn.nukkit.block.BlockWater;
 import cn.nukkit.entity.Entity;
-import cn.nukkit.entity.item.EntityBoat;
+import cn.nukkit.entity.EntityFactory;
 import cn.nukkit.item.Item;
 import cn.nukkit.math.BlockFace;
 import cn.nukkit.math.Vector3;
 
 public class BoatDispenseBehavior extends DefaultDispenseBehavior {
+    private final EntityFactory factory;
+
+    public BoatDispenseBehavior(EntityFactory factory) {
+        this.factory = factory;
+    }
 
     @Override
     public Item dispense(BlockDispenser block, BlockFace face, Item item) {
@@ -26,8 +31,8 @@ public class BoatDispenseBehavior extends DefaultDispenseBehavior {
 
         pos = target.getLocation().setYaw(face.getHorizontalAngle());
 
-        EntityBoat boat = new EntityBoat(block.level.getChunk(target.getChunkX(), target.getChunkZ()),
-                Entity.getDefaultNBT(pos)
+        Entity boat = factory.create(block.level.getChunk(target.getChunkX(), target.getChunkZ()),
+                Entity.getDefaultNBT(pos, null, face.getHorizontalAngle() + 90, 0)
                         .putByte("woodID", item.getDamage())
         );
 

@@ -59,6 +59,11 @@ public class BlockAzalea extends BlockFlowable {
     }
 
     @Override
+    public boolean isFertilizable() {
+        return true;
+    }
+
+    @Override
     public boolean place(Item item, Block block, Block target, BlockFace face, float fx, float fy, float fz, Player player) {
         if (!canSurvive()) {
             return false;

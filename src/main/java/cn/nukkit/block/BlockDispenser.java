@@ -215,39 +215,24 @@ public class BlockDispenser extends BlockSolid implements Faceable {
             }
         }
 
-        LevelEventPacket pk = new LevelEventPacket();
-
         BlockFace facing = getBlockFace();
 
-        pk.x = 0.5f + facing.getXOffset() * 0.7f;
-        pk.y = 0.5f + facing.getYOffset() * 0.7f;
-        pk.z = 0.5f + facing.getZOffset() * 0.7f;
+        Vector3 pos = add(0.5f + facing.getXOffset() * 0.7f, 0.3f + facing.getYOffset() * 0.7f, 0.5f + facing.getZOffset() * 0.7f);
 
         if (target == null) {
-            pk.evid = LevelEventPacket.EVENT_SOUND_CLICK_FAIL;
-            pk.data = 1200;
-
-            this.level.addChunkPacket(getChunkX(), getChunkZ(), pk.clone());
+            this.level.addLevelEvent(pos, LevelEventPacket.EVENT_SOUND_CLICK_FAIL, 1200);
             return;
         } else {
-            pk.evid = LevelEventPacket.EVENT_SOUND_CLICK;
-            pk.data = 1000;
-
-            this.level.addChunkPacket(getChunkX(), getChunkZ(), pk.clone());
+            this.level.addLevelEvent(pos, LevelEventPacket.EVENT_SOUND_CLICK, 1000);
         }
 
-        pk.evid = LevelEventPacket.EVENT_PARTICLE_SHOOT;
-        pk.data = 7;
-        this.level.addChunkPacket(getChunkX(), getChunkZ(), pk);
+        this.level.addLevelEvent(pos, LevelEventPacket.EVENT_PARTICLE_SHOOT, 3 * (facing.getZOffset() + 1) + facing.getXOffset() + 1);
 
         Item origin = target;
         target = target.clone();
 
         DispenseBehavior behavior = getDispenseBehavior(target);
         Item result = behavior.dispense(this, facing, target);
-
-
-        pk.evid = LevelEventPacket.EVENT_SOUND_CLICK;
 
         target.count--;
         inv.setItem(slot, target);
