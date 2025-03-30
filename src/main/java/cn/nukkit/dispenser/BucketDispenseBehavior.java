@@ -65,8 +65,8 @@ public class BucketDispenseBehavior extends DefaultDispenseBehavior {
             Block extra = target.level.getExtraBlock(target);
             if (extra.isWaterSource()) {
                 target.level.setExtraBlock(target, Block.get(Block.AIR), true);
+                return Item.get(Item.BUCKET, ItemBucket.WATER_BUCKET);
             }
-            return Item.get(Item.BUCKET, ItemBucket.WATER_BUCKET);
         }
 
         return super.dispense(block, face, item);

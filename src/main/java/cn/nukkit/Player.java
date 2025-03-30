@@ -247,6 +247,10 @@ public class Player extends EntityHuman implements CommandSender, InventoryHolde
 
     protected AdventureSettings adventureSettings;
 
+    protected float walkSpeed = 0.1f;
+    protected float flySpeed = 0.05f;
+    protected float verticalFlySpeed = 1;
+
     protected boolean checkMovement = true;
 
     private PermissibleBase perm;
@@ -517,6 +521,30 @@ public class Player extends EntityHuman implements CommandSender, InventoryHolde
     @Deprecated
     public boolean hasAutoJump() {
         return this.getAdventureSettings().get(Type.AUTO_JUMP);
+    }
+
+    public float getWalkSpeed() {
+        return walkSpeed;
+    }
+
+    public void setWalkSpeed(float walkSpeed) {
+        this.walkSpeed = walkSpeed;
+    }
+
+    public float getFlySpeed() {
+        return flySpeed;
+    }
+
+    public void setFlySpeed(float flySpeed) {
+        this.flySpeed = flySpeed;
+    }
+
+    public float getVerticalFlySpeed() {
+        return verticalFlySpeed;
+    }
+
+    public void setVerticalFlySpeed(float verticalFlySpeed) {
+        this.verticalFlySpeed = verticalFlySpeed;
     }
 
     @Override
@@ -1547,7 +1575,7 @@ public class Player extends EntityHuman implements CommandSender, InventoryHolde
                 this.onGround = blocks.length > 0;
 
                 if (!this.isRiding() && !swimming && !onGroundPrev && onGround && !isInsideOfWater(false)) {
-                    level.addLevelSoundEvent(this, LevelSoundEventPacket.SOUND_LAND, blocks[0].getFullId(), EntityFullNames.PLAYER);
+                    level.addLevelSoundEvent(this, LevelSoundEventPacket.SOUND_LAND, blocks[0].getFullId(), EntityFullNames.PLAYER, getId());
                 }
             }
             this.isCollided = this.onGround;
@@ -3076,7 +3104,7 @@ public class Player extends EntityHuman implements CommandSender, InventoryHolde
 
                     FormWindow window = formWindows.get(modalFormPacket.formId);
                     if (window != null) {
-                        window.setResponse(modalFormPacket.data.trim());
+                        window.setResponse(modalFormPacket.data.trim(), getProtocol());
 
                         PlayerFormRespondedEvent event = new PlayerFormRespondedEvent(this, modalFormPacket.formId, window);
                         getServer().getPluginManager().callEvent(event);
@@ -3087,7 +3115,7 @@ public class Player extends EntityHuman implements CommandSender, InventoryHolde
 
                     window = serverSettings.get(modalFormPacket.formId);
                     if (window != null) {
-                        window.setResponse(modalFormPacket.data.trim());
+                        window.setResponse(modalFormPacket.data.trim(), getProtocol());
 
                         PlayerSettingsRespondedEvent event = new PlayerSettingsRespondedEvent(this, modalFormPacket.formId, window);
                         getServer().getPluginManager().callEvent(event);

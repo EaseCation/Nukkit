@@ -2,19 +2,26 @@ package cn.nukkit.form.element;
 
 import lombok.ToString;
 
+/**
+ * @since 1.21.70
+ */
 @ToString
-public class ElementLabel extends Element implements SimpleElement {
+public class ElementDivider extends Element implements SimpleElement {
 
     @SuppressWarnings("unused")
-    private final String type = "label"; //This variable is used for JSON import operations. Do NOT delete :) -- @Snake1999
+    private final String type = "divider";
     private String text = "";
 
-    public ElementLabel(String text) {
+    public ElementDivider() {
+        this("");
+    }
+
+    public ElementDivider(String text) {
         this.text = text;
     }
 
     public String getText() {
-        return text;
+        return this.text;
     }
 
     public void setText(String text) {

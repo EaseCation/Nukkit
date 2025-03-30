@@ -2,19 +2,22 @@ package cn.nukkit.form.element;
 
 import lombok.ToString;
 
+/**
+ * @since 1.21.70
+ */
 @ToString
-public class ElementLabel extends Element implements SimpleElement {
+public class ElementHeader extends Element implements SimpleElement {
 
     @SuppressWarnings("unused")
-    private final String type = "label"; //This variable is used for JSON import operations. Do NOT delete :) -- @Snake1999
+    private final String type = "header";
     private String text = "";
 
-    public ElementLabel(String text) {
+    public ElementHeader(String text) {
         this.text = text;
     }
 
     public String getText() {
-        return text;
+        return this.text;
     }
 
     public void setText(String text) {

@@ -172,7 +172,11 @@ public interface EntityFlagID {
      * @since 1.21.70
      */
     int DATA_FLAG_WASD_AIR_CONTROLLED = 122;
-    int DATA_FLAG_UNDEFINED = 123;
+    /**
+     * @since 1.21.80
+     */
+    int DATA_FLAG_DOES_SERVER_AUTH_ONLY_DISMOUNT = 123;
+    int DATA_FLAG_UNDEFINED = 124;
 
 
     long NUKKIT_FLAG_VARIANT_BLOCK = 1L << 1;

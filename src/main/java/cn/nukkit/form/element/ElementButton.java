@@ -1,7 +1,12 @@
 package cn.nukkit.form.element;
 
-public class ElementButton {
+import lombok.ToString;
 
+@ToString
+public class ElementButton implements SimpleElement {
+
+    @SuppressWarnings("unused")
+    private final String type = "button";
     private String text = "";
     private ElementButtonImageData image;
 

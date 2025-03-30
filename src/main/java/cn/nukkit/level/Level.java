@@ -831,62 +831,122 @@ public class Level implements ChunkManager, Metadatable {
      * @param data generic data that can affect sound
      */
     public void addLevelSoundEvent(Vector3 pos, int type, int data) {
-        this.addLevelSoundEvent(pos, type, data, ":", false, false);
+        this.addLevelSoundEvent(pos, type, data, ":", false, false, -1);
+    }
+
+    public void addLevelSoundEvent(Vector3 pos, int type, int data, long entityUniqueId) {
+        this.addLevelSoundEvent(pos, type, data, ":", false, false, entityUniqueId);
     }
 
     public void addLevelSoundEvent(Vector3 pos, int type, Player... viewers) {
-        this.addLevelSoundEvent(pos, type, -1, ":", false, false, viewers);
+        this.addLevelSoundEvent(pos, type, -1, ":", false, false, -1, viewers);
+    }
+
+    public void addLevelSoundEvent(Vector3 pos, int type, long entityUniqueId, Player... viewers) {
+        this.addLevelSoundEvent(pos, type, -1, ":", false, false, entityUniqueId, viewers);
     }
 
     public void addLevelSoundEvent(Vector3 pos, int type, int data, Player... viewers) {
-        this.addLevelSoundEvent(pos, type, data, ":", false, false, viewers);
+        this.addLevelSoundEvent(pos, type, data, ":", false, false, -1, viewers);
+    }
+
+    public void addLevelSoundEvent(Vector3 pos, int type, int data, long entityUniqueId, Player... viewers) {
+        this.addLevelSoundEvent(pos, type, data, ":", false, false, entityUniqueId, viewers);
     }
 
     public void addLevelSoundEvent(Vector3 pos, int type, String identifier) {
-        this.addLevelSoundEvent(pos, type, -1, identifier, false, false);
+        this.addLevelSoundEvent(pos, type, -1, identifier, false, false, -1);
+    }
+
+    public void addLevelSoundEvent(Vector3 pos, int type, String identifier, long entityUniqueId) {
+        this.addLevelSoundEvent(pos, type, -1, identifier, false, false, entityUniqueId);
     }
 
     public void addLevelSoundEvent(Vector3 pos, int type, String identifier, Player... viewers) {
-        this.addLevelSoundEvent(pos, type, -1, identifier, false, false, viewers);
+        this.addLevelSoundEvent(pos, type, -1, identifier, false, false, -1, viewers);
+    }
+
+    public void addLevelSoundEvent(Vector3 pos, int type, String identifier, long entityUniqueId, Player... viewers) {
+        this.addLevelSoundEvent(pos, type, -1, identifier, false, false, entityUniqueId, viewers);
     }
 
     public void addLevelSoundEvent(Vector3 pos, int type, String identifier, boolean isBaby) {
-        this.addLevelSoundEvent(pos, type, -1, identifier, isBaby, false);
+        this.addLevelSoundEvent(pos, type, -1, identifier, isBaby, false, -1);
+    }
+
+    public void addLevelSoundEvent(Vector3 pos, int type, String identifier, boolean isBaby, long entityUniqueId) {
+        this.addLevelSoundEvent(pos, type, -1, identifier, isBaby, false, entityUniqueId);
     }
 
     public void addLevelSoundEvent(Vector3 pos, int type, String identifier, boolean isBaby, Player... viewers) {
-        this.addLevelSoundEvent(pos, type, -1, identifier, isBaby, false, viewers);
+        this.addLevelSoundEvent(pos, type, -1, identifier, isBaby, false, -1, viewers);
+    }
+
+    public void addLevelSoundEvent(Vector3 pos, int type, String identifier, boolean isBaby, long entityUniqueId, Player... viewers) {
+        this.addLevelSoundEvent(pos, type, -1, identifier, isBaby, false, entityUniqueId, viewers);
     }
 
     public void addLevelSoundEvent(Vector3 pos, int type, String identifier, boolean isBaby, boolean isGlobal) {
-        this.addLevelSoundEvent(pos, type, -1, identifier, isBaby, isGlobal);
+        this.addLevelSoundEvent(pos, type, -1, identifier, isBaby, isGlobal, -1);
+    }
+
+    public void addLevelSoundEvent(Vector3 pos, int type, String identifier, boolean isBaby, boolean isGlobal, long entityUniqueId) {
+        this.addLevelSoundEvent(pos, type, -1, identifier, isBaby, isGlobal, entityUniqueId);
     }
 
     public void addLevelSoundEvent(Vector3 pos, int type, String identifier, boolean isBaby, boolean isGlobal, Player... viewers) {
-        this.addLevelSoundEvent(pos, type, -1, identifier, isBaby, isGlobal, viewers);
+        this.addLevelSoundEvent(pos, type, -1, identifier, isBaby, isGlobal, -1, viewers);
+    }
+
+    public void addLevelSoundEvent(Vector3 pos, int type, String identifier, boolean isBaby, boolean isGlobal, long entityUniqueId, Player... viewers) {
+        this.addLevelSoundEvent(pos, type, -1, identifier, isBaby, isGlobal, entityUniqueId, viewers);
     }
 
     public void addLevelSoundEvent(Vector3 pos, int type, int data, String identifier) {
-        this.addLevelSoundEvent(pos, type, data, identifier, false, false);
+        this.addLevelSoundEvent(pos, type, data, identifier, false, false, -1);
+    }
+
+    public void addLevelSoundEvent(Vector3 pos, int type, int data, String identifier, long entityUniqueId) {
+        this.addLevelSoundEvent(pos, type, data, identifier, false, false, entityUniqueId);
     }
 
     public void addLevelSoundEvent(Vector3 pos, int type, int data, String identifier, Player... viewers) {
-        this.addLevelSoundEvent(pos, type, data, identifier, false, false, viewers);
+        this.addLevelSoundEvent(pos, type, data, identifier, false, false, -1, viewers);
+    }
+
+    public void addLevelSoundEvent(Vector3 pos, int type, int data, String identifier, long entityUniqueId, Player... viewers) {
+        this.addLevelSoundEvent(pos, type, data, identifier, false, false, entityUniqueId, viewers);
     }
 
     public void addLevelSoundEvent(Vector3 pos, int type, int data, String identifier, boolean isBaby) {
-        this.addLevelSoundEvent(pos, type, data, identifier, isBaby, false);
+        this.addLevelSoundEvent(pos, type, data, identifier, isBaby, false, -1);
+    }
+
+    public void addLevelSoundEvent(Vector3 pos, int type, int data, String identifier, boolean isBaby, long entityUniqueId) {
+        this.addLevelSoundEvent(pos, type, data, identifier, isBaby, false, entityUniqueId);
     }
 
     public void addLevelSoundEvent(Vector3 pos, int type, int data, String identifier, boolean isBaby, Player... viewers) {
-        this.addLevelSoundEvent(pos, type, data, identifier, isBaby, false, viewers);
+        this.addLevelSoundEvent(pos, type, data, identifier, isBaby, false, -1, viewers);
+    }
+
+    public void addLevelSoundEvent(Vector3 pos, int type, int data, String identifier, boolean isBaby, long entityUniqueId, Player... viewers) {
+        this.addLevelSoundEvent(pos, type, data, identifier, isBaby, false, entityUniqueId, viewers);
     }
 
     public void addLevelSoundEvent(Vector3 pos, int type, int data, String identifier, boolean isBaby, boolean isGlobal) {
-        this.addLevelSoundEvent(pos, type, data, identifier, isBaby, isGlobal, (Player[]) null);
+        this.addLevelSoundEvent(pos, type, data, identifier, isBaby, isGlobal, -1, (Player[]) null);
+    }
+
+    public void addLevelSoundEvent(Vector3 pos, int type, int data, String identifier, boolean isBaby, boolean isGlobal, long entityUniqueId) {
+        this.addLevelSoundEvent(pos, type, data, identifier, isBaby, isGlobal, entityUniqueId, (Player[]) null);
     }
 
     public void addLevelSoundEvent(Vector3 pos, int type, int data, String identifier, boolean isBaby, boolean isGlobal, Player... viewers) {
+        this.addLevelSoundEvent(pos, type, data, identifier, isBaby, isGlobal, -1, viewers);
+    }
+
+    public void addLevelSoundEvent(Vector3 pos, int type, int data, String identifier, boolean isBaby, boolean isGlobal, long entityUniqueId, Player... viewers) {
         LevelSoundEventPacket pk = new LevelSoundEventPacket();
         pk.sound = type;
         pk.extraData = data;
@@ -896,6 +956,7 @@ public class Level implements ChunkManager, Metadatable {
         pk.z = (float) pos.z;
         pk.isGlobal = isGlobal;
         pk.isBabyMob = isBaby;
+        pk.entityUniqueId = entityUniqueId;
 
         if (viewers == null || viewers.length == 0) {
             this.addChunkPacket(pos.getChunkX(), pos.getChunkZ(), pk);
@@ -2096,7 +2157,7 @@ public class Level implements ChunkManager, Metadatable {
 
         if (entities || solidEntities) {
             for (Entity ent : this.getCollidingEntities(bb.grow(0.25f, 0.25f, 0.25f), entity)) {
-                if (solidEntities && !ent.canPassThrough()) {
+                if (solidEntities || !ent.canPassThrough()) {
                     collides.add(ent.boundingBox.clone());
                 }
             }
@@ -2906,11 +2967,17 @@ public class Level implements ChunkManager, Metadatable {
                     return item;
                 }
 
-                if ((!player.isSneaking() || item.is(Item.BRUSH)) && item.canBeActivated()
-                        && item.onActivate(this, player, block, target, face, fx, fy, fz)) {
-                    if (item.getCount() <= 0) {
-                        item = Items.air();
-                        return item;
+                if ((!player.isSneaking() || item.is(Item.BRUSH)) && item.canBeActivated()) {
+                    int oldCount = item.getCount();
+                    int oldDamage = item.getDamage();
+                    if (item.onActivate(this, player, block, target, face, fx, fy, fz)) {
+                        int newCount = item.getCount();
+                        if (oldCount != newCount || oldDamage != item.getDamage()) {
+                            if (newCount <= 0) {
+                                item = Items.air();
+                            }
+                            return item;
+                        }
                     }
                 }
             } else {

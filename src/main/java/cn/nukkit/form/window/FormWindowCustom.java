@@ -7,26 +7,26 @@ import cn.nukkit.math.Mth;
 import com.google.gson.Gson;
 import com.google.gson.JsonSyntaxException;
 import com.google.gson.reflect.TypeToken;
-import it.unimi.dsi.fastutil.ints.Int2BooleanMap;
-import it.unimi.dsi.fastutil.ints.Int2BooleanOpenHashMap;
-import it.unimi.dsi.fastutil.ints.Int2FloatMap;
-import it.unimi.dsi.fastutil.ints.Int2FloatOpenHashMap;
-import it.unimi.dsi.fastutil.ints.Int2ObjectMap;
-import it.unimi.dsi.fastutil.ints.Int2ObjectOpenHashMap;
+import it.unimi.dsi.fastutil.ints.*;
+import it.unimi.dsi.fastutil.ints.Int2ObjectMap.Entry;
+import lombok.ToString;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Map;
 
+import static cn.nukkit.GameVersion.*;
+
+@ToString
 public class FormWindowCustom extends FormWindow {
     private static final Gson GSON = new Gson();
 
+    @SuppressWarnings("unused")
     private final String type = "custom_form"; //This variable is used for JSON import operations. Do NOT delete :) -- @Snake1999
     private String title = "";
     private ElementButtonImageData icon;
     private List<Element> content;
 
-    private FormResponseCustom response;
+    private transient FormResponseCustom response;
 
     public FormWindowCustom(String title) {
         this(title, new ArrayList<>());
@@ -78,7 +78,7 @@ public class FormWindowCustom extends FormWindow {
         return response;
     }
 
-    public void setResponse(String data) {
+    public void setResponse(String data, int protocol) {
         if (data.equals("null")) {
             this.closed = true;
             return;
@@ -92,57 +92,70 @@ public class FormWindowCustom extends FormWindow {
             this.closed = true;
             return;
         }
-        //elementResponses.remove(elementResponses.size() - 1); //submit button //maybe mojang removed that?
 
-        int i = 0;
+        Int2ObjectMap<Object> responses = new Int2ObjectOpenHashMap<>();
 
         Int2ObjectMap<FormResponseData> dropdownResponses = new Int2ObjectOpenHashMap<>();
         Int2ObjectMap<String> inputResponses = new Int2ObjectOpenHashMap<>();
         Int2FloatMap sliderResponses = new Int2FloatOpenHashMap();
         Int2ObjectMap<FormResponseData> stepSliderResponses = new Int2ObjectOpenHashMap<>();
         Int2BooleanMap toggleResponses = new Int2BooleanOpenHashMap();
-        Map<Integer, Object> responses = new Int2ObjectOpenHashMap<>();
+
         Int2ObjectMap<String> labelResponses = new Int2ObjectOpenHashMap<>();
+        Int2ObjectMap<String> headerResponses = new Int2ObjectOpenHashMap<>();
+        Int2ObjectMap<String> dividerResponses = new Int2ObjectOpenHashMap<>();
 
-        for (String elementData : elementResponses) {
-            if (i >= content.size()) {
-                break;
-            }
+        boolean before12170 = protocol < V1_21_70.getProtocol();
 
+        int responseIndex = 0;
+        for (int i = 0; i < content.size(); i++) {
             Element e = content.get(i);
-            if (e == null) break;
+            String elementData = responseIndex >= elementResponses.size() ? "" : elementResponses.get(responseIndex);
             if (e instanceof ElementLabel) {
                 labelResponses.put(i, ((ElementLabel) e).getText());
                 responses.put(i, ((ElementLabel) e).getText());
+                if (before12170) {
+                    responseIndex++;
+                }
             } else if (e instanceof ElementDropdown) {
                 int index = Integer.parseInt(elementData);
                 List<String> options = ((ElementDropdown) e).getOptions();
                 String answer = options.isEmpty() ? "" : options.get(Mth.clamp(index, 0, options.size() - 1));
                 dropdownResponses.put(i, new FormResponseData(index, answer));
                 responses.put(i, answer);
+                responseIndex++;
             } else if (e instanceof ElementInput) {
                 inputResponses.put(i, elementData);
                 responses.put(i, elementData);
+                responseIndex++;
             } else if (e instanceof ElementSlider) {
                 float answer = Float.parseFloat(elementData);
                 sliderResponses.put(i, answer);
-                responses.put(i, answer);
+                responses.put(i, Float.valueOf(answer));
+                responseIndex++;
             } else if (e instanceof ElementStepSlider) {
                 int index = Integer.parseInt(elementData);
                 List<String> steps = ((ElementStepSlider) e).getSteps();
                 String answer = steps.isEmpty() ? "" : steps.get(Mth.clamp(index, 0, steps.size() - 1));
                 stepSliderResponses.put(i, new FormResponseData(index, answer));
                 responses.put(i, answer);
+                responseIndex++;
             } else if (e instanceof ElementToggle) {
                 boolean answer = Boolean.parseBoolean(elementData);
                 toggleResponses.put(i, answer);
-                responses.put(i, answer);
+                responses.put(i, Boolean.valueOf(answer));
+                responseIndex++;
+            } else if (e instanceof ElementHeader header) {
+                headerResponses.put(i, header.getText());
+                responses.put(i, header.getText());
+            } else if (e instanceof ElementDivider divider) {
+                dividerResponses.put(i, divider.getText());
+                responses.put(i, divider.getText());
             }
-            i++;
         }
 
         this.response = new FormResponseCustom(responses, dropdownResponses, inputResponses,
-                sliderResponses, stepSliderResponses, toggleResponses, labelResponses);
+                sliderResponses, stepSliderResponses, toggleResponses, labelResponses, headerResponses, dividerResponses);
     }
 
     /**
@@ -151,22 +164,24 @@ public class FormWindowCustom extends FormWindow {
      */
     public void setElementsFromResponse() {
         if (this.response != null) {
-            this.response.getResponses().forEach((i, response) -> {
+            for (Entry<Object> entry : this.response.getResponses().int2ObjectEntrySet()) {
+                int i = entry.getIntKey();
+                Object response = entry.getValue();
                 Element e = content.get(i);
                 if (e != null) {
                     if (e instanceof ElementDropdown) {
                         ((ElementDropdown) e).setDefaultOptionIndex(((ElementDropdown) e).getOptions().indexOf(response));
                     } else if (e instanceof ElementInput) {
-                        ((ElementInput) e).setDefaultText((String)response);
+                        ((ElementInput) e).setDefaultText((String) response);
                     } else if (e instanceof ElementSlider) {
-                        ((ElementSlider) e).setDefaultValue((Float)response);
+                        ((ElementSlider) e).setDefaultValue((Float) response);
                     } else if (e instanceof ElementStepSlider) {
                         ((ElementStepSlider) e).setDefaultOptionIndex(((ElementStepSlider) e).getSteps().indexOf(response));
                     } else if (e instanceof ElementToggle) {
-                        ((ElementToggle) e).setDefaultValue((Boolean)response);
+                        ((ElementToggle) e).setDefaultValue((Boolean) response);
                     }
                 }
-            });
+            }
         }
     }
 

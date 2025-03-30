@@ -1,16 +1,19 @@
 package cn.nukkit.form.window;
 
 import cn.nukkit.form.response.FormResponseModal;
+import lombok.ToString;
 
+@ToString
 public class FormWindowModal extends FormWindow {
 
+    @SuppressWarnings("unused")
     private final String type = "modal"; //This variable is used for JSON import operations. Do NOT delete :) -- @Snake1999
     private String title = "";
     private String content = "";
     private String button1 = "";
     private String button2 = "";
 
-    private FormResponseModal response = null;
+    private transient FormResponseModal response;
 
     public FormWindowModal(String title, String content, String trueButtonText, String falseButtonText) {
         this.title = title;
@@ -55,7 +58,7 @@ public class FormWindowModal extends FormWindow {
         return response;
     }
 
-    public void setResponse(String data) {
+    public void setResponse(String data, int protocol) {
         if (data.equals("null")) {
             closed = true;
             return;

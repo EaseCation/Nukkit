@@ -69,6 +69,7 @@ public final class Fishing {
     public static final Selector JUNK_BONE = putSelector(new ConstantItemSelector(Item.BONE, JUNKS), 10 / JUNK_TOTAL_WEIGHT);
     public static final Selector JUNK_INK_SAC = putSelector(new ConstantItemSelector(Item.DYE, DyeColor.BLACK.getDyeData(), 10, JUNKS), 1 / JUNK_TOTAL_WEIGHT);
     public static final Selector JUNK_TRIPWIRE_HOOK = putSelector(new ConstantItemSelector(ItemBlockID.TRIPWIRE_HOOK, JUNKS), 10 / JUNK_TOTAL_WEIGHT);
+    public static final Selector JUNK_WATERLILY = putSelector(new ConstantItemSelector(ItemBlockID.WATERLILY, JUNKS), 17 / JUNK_TOTAL_WEIGHT);
 
     public static final Selector JUNGLE_JUNK_BOWL = putSelector(new ConstantItemSelector(Item.BOWL, JUNGLE_JUNKS), 10 / JUNGLE_JUNK_TOTAL_WEIGHT);
     public static final Selector JUNGLE_JUNK_FISHING_ROD = putSelector(new ConstantItemSelector(Item.FISHING_ROD, JUNGLE_JUNKS).setDamage(0, 0.9f), 2 / JUNGLE_JUNK_TOTAL_WEIGHT);
@@ -81,6 +82,7 @@ public final class Fishing {
     public static final Selector JUNGLE_JUNK_BONE = putSelector(new ConstantItemSelector(Item.BONE, JUNGLE_JUNKS), 10 / JUNGLE_JUNK_TOTAL_WEIGHT);
     public static final Selector JUNGLE_JUNK_INK_SAC = putSelector(new ConstantItemSelector(Item.DYE, DyeColor.BLACK.getDyeData(), 10, JUNGLE_JUNKS), 1 / JUNGLE_JUNK_TOTAL_WEIGHT);
     public static final Selector JUNGLE_JUNK_TRIPWIRE_HOOK = putSelector(new ConstantItemSelector(ItemBlockID.TRIPWIRE_HOOK, JUNGLE_JUNKS), 10 / JUNGLE_JUNK_TOTAL_WEIGHT);
+    public static final Selector JUNGLE_JUNK_WATERLILY = putSelector(new ConstantItemSelector(ItemBlockID.WATERLILY, JUNGLE_JUNKS), 17 / JUNGLE_JUNK_TOTAL_WEIGHT);
     public static final Selector JUNGLE_JUNK_COCOA = registerFishingSelector(new ConstantItemSelector(Item.COCOA, JUNGLE_JUNKS), 10 / JUNGLE_JUNK_TOTAL_WEIGHT, V1_8_0);
     public static final Selector JUNGLE_JUNK_BAMBOO = registerFishingSelector(new ConstantItemSelector(ItemBlockID.BAMBOO, JUNGLE_JUNKS), 10 / JUNGLE_JUNK_TOTAL_WEIGHT, V1_8_0);
 

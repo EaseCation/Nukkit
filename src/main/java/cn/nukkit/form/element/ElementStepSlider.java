@@ -1,12 +1,15 @@
 package cn.nukkit.form.element;
 
 import com.google.gson.annotations.SerializedName;
+import lombok.ToString;
 
 import java.util.ArrayList;
 import java.util.List;
 
+@ToString
 public class ElementStepSlider extends Element {
 
+    @SuppressWarnings("unused")
     private final String type = "step_slider"; //This variable is used for JSON import operations. Do NOT delete :) -- @Snake1999
     private String text = "";
     private List<String> steps;

@@ -15,7 +15,7 @@ public abstract class FormWindow {
 
     public abstract String getTitle();
 
-    public abstract void setResponse(String data);
+    public abstract void setResponse(String data, int protocol);
 
     public abstract FormResponse getResponse();
 

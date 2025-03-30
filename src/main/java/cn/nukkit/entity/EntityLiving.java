@@ -25,6 +25,7 @@ import cn.nukkit.math.Vector2;
 import cn.nukkit.math.Vector3;
 import cn.nukkit.nbt.tag.CompoundTag;
 import cn.nukkit.nbt.tag.FloatTag;
+import cn.nukkit.network.protocol.AnimatePacket;
 import cn.nukkit.network.protocol.EntityEventPacket;
 import cn.nukkit.network.protocol.LevelEventPacket;
 import cn.nukkit.network.protocol.LevelSoundEventPacket;
@@ -287,6 +288,52 @@ public abstract class EntityLiving extends Entity implements EntityDamageable {
         pk.eid = this.getId();
         pk.event = this.getHealth() < 1 ? EntityEventPacket.DEATH_ANIMATION : EntityEventPacket.HURT_ANIMATION;
         Server.broadcastPacket(this.hasSpawned.values(), pk);
+
+        doMagicCriticalHit(source);
+    }
+
+    protected void doMagicCriticalHit(EntityDamageEvent source) {
+        if (source.getCause() != DamageCause.ENTITY_ATTACK) {
+            return;
+        }
+        if (!(source instanceof EntityDamageByEntityEvent event)) {
+            return;
+        }
+
+        Enchantment[] enchantments = event.getWeaponEnchantments();
+        if (enchantments == null) {
+            return;
+        }
+
+        boolean success = false;
+        ENCHANTMENTS:
+        for (Enchantment enchantment : enchantments) {
+            switch (enchantment.getId()) {
+                case Enchantment.SHARPNESS:
+                    success = true;
+                    break ENCHANTMENTS;
+                case Enchantment.SMITE:
+                    if (this instanceof EntitySmite) {
+                        success = true;
+                        break ENCHANTMENTS;
+                    }
+                    break;
+                case Enchantment.BANE_OF_ARTHROPODS:
+                    if (this instanceof EntityArthropod) {
+                        success = true;
+                        break ENCHANTMENTS;
+                    }
+                    break;
+            }
+        }
+        if (!success) {
+            return;
+        }
+
+        AnimatePacket packet = new AnimatePacket();
+        packet.eid = getId();
+        packet.action = AnimatePacket.Action.MAGIC_CRITICAL_HIT;
+        Server.broadcastPacket(getViewers().values(), packet);
     }
 
     public void knockBack(Entity attacker, double damage, double x, double z) {
@@ -729,7 +776,7 @@ public abstract class EntityLiving extends Entity implements EntityDamageable {
         removeAllEffects();
         setHealth(1);
 
-        addEffect(Effect.getEffect(Effect.REGENERATION).setDuration(40 * 20).setAmplifier(1),
+        addEffect(Effect.getEffect(Effect.REGENERATION).setDuration(45 * 20).setAmplifier(1),
                 Effect.getEffect(Effect.ABSORPTION).setDuration(5 * 20).setAmplifier(1),
                 Effect.getEffect(Effect.FIRE_RESISTANCE).setDuration(40 * 20));
 

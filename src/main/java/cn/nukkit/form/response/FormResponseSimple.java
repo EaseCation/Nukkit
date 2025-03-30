@@ -1,7 +1,9 @@
 package cn.nukkit.form.response;
 
 import cn.nukkit.form.element.ElementButton;
+import lombok.ToString;
 
+@ToString(exclude = "clickedButton")
 public class FormResponseSimple extends FormResponse {
 
     private final int clickedButtonId;

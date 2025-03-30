@@ -287,6 +287,7 @@ public class EntityArmorStand extends EntityLiving implements EntityInteractable
     protected void onHurt(EntityDamageEvent source) {
         switch (source.getCause()) {
             case ENTITY_ATTACK:
+                doMagicCriticalHit(source);
             case PROJECTILE:
             case BLOCK_EXPLOSION:
             case ENTITY_EXPLOSION:

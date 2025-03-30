@@ -96,6 +96,7 @@ public enum ParticleEffect {
     LAVA_DRIP("minecraft:lava_drip_particle"),
     LAVA_PARTICLE("minecraft:lava_particle"),
     LLAMA_SPIT("minecraft:llama_spit_smoke"),
+    MAGIC_CRITICAL_HIT("minecraft:magic_critical_hit_emitter"),
     MAGNESIUM_SALTS("minecraft:magnesium_salts_emitter"),
     MOBFLAME("minecraft:mobflame_emitter"),
     MOBFLAME_SINGLE("minecraft:mobflame_single"),

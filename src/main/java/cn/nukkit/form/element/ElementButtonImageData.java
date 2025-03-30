@@ -1,5 +1,8 @@
 package cn.nukkit.form.element;
 
+import lombok.ToString;
+
+@ToString
 public class ElementButtonImageData {
 
     public static final String IMAGE_DATA_TYPE_PATH = "path";

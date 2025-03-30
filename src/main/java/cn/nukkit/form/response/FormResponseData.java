@@ -1,5 +1,8 @@
 package cn.nukkit.form.response;
 
+import lombok.ToString;
+
+@ToString
 public class FormResponseData {
 
     private final int elementID;
