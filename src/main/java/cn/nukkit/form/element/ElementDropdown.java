@@ -1,13 +1,15 @@
 package cn.nukkit.form.element;
 
+import cn.nukkit.math.Mth;
 import com.google.gson.annotations.SerializedName;
 import lombok.ToString;
 
+import javax.annotation.Nullable;
 import java.util.ArrayList;
 import java.util.List;
 
 @ToString
-public class ElementDropdown extends Element {
+public class ElementDropdown implements Element {
 
     @SuppressWarnings("unused")
     private final String type = "dropdown"; //This variable is used for JSON import operations. Do NOT delete :) -- @Snake1999
@@ -15,6 +17,11 @@ public class ElementDropdown extends Element {
     private List<String> options;
     @SerializedName("default")
     private int defaultOptionIndex = 0;
+    /**
+     * @since 1.21.80
+     */
+    @Nullable
+    private String tooltip;
 
     public ElementDropdown(String text) {
         this(text, new ArrayList<>());
@@ -27,7 +34,16 @@ public class ElementDropdown extends Element {
     public ElementDropdown(String text, List<String> options, int defaultOption) {
         this.text = text;
         this.options = options;
-        this.defaultOptionIndex = defaultOption;
+        this.defaultOptionIndex = options.isEmpty() ? 0 : Mth.clamp(defaultOption, 0, options.size() - 1);
+    }
+
+    public ElementDropdown setTooltip(String tooltip) {
+        this.tooltip = tooltip;
+        return this;
+    }
+
+    public String getTooltip() {
+        return tooltip;
     }
 
     public int getDefaultOptionIndex() {

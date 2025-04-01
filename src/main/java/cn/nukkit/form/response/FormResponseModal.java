@@ -3,7 +3,7 @@ package cn.nukkit.form.response;
 import lombok.ToString;
 
 @ToString
-public class FormResponseModal extends FormResponse {
+public class FormResponseModal implements FormResponse {
 
     private final int clickedButtonId;
     private final String clickedButtonText;

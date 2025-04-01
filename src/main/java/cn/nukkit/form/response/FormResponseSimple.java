@@ -4,7 +4,7 @@ import cn.nukkit.form.element.ElementButton;
 import lombok.ToString;
 
 @ToString(exclude = "clickedButton")
-public class FormResponseSimple extends FormResponse {
+public class FormResponseSimple implements FormResponse {
 
     private final int clickedButtonId;
     private final ElementButton clickedButton;

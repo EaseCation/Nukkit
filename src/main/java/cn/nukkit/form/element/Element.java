@@ -1,5 +1,8 @@
 package cn.nukkit.form.element;
 
-public abstract class Element {
+/**
+ * An element which can be added to FormWindowCustom
+ */
+public interface Element {
 
 }

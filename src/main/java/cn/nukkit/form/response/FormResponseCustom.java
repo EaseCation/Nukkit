@@ -6,7 +6,7 @@ import it.unimi.dsi.fastutil.ints.Int2ObjectMap;
 import lombok.ToString;
 
 @ToString
-public class FormResponseCustom extends FormResponse {
+public class FormResponseCustom implements FormResponse {
 
     private final Int2ObjectMap<Object> responses;
     private final Int2ObjectMap<FormResponseData> dropdownResponses;

@@ -6,7 +6,7 @@ import lombok.ToString;
  * @since 1.21.70
  */
 @ToString
-public class ElementHeader extends Element implements SimpleElement {
+public class ElementHeader implements Element, SimpleElement {
 
     @SuppressWarnings("unused")
     private final String type = "header";

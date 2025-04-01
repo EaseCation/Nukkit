@@ -1,5 +1,5 @@
 package cn.nukkit.form.response;
 
-public abstract class FormResponse {
+public interface FormResponse {
 
 }

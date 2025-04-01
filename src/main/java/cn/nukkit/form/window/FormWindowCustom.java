@@ -11,6 +11,7 @@ import it.unimi.dsi.fastutil.ints.*;
 import it.unimi.dsi.fastutil.ints.Int2ObjectMap.Entry;
 import lombok.ToString;
 
+import javax.annotation.Nullable;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -23,8 +24,14 @@ public class FormWindowCustom extends FormWindow {
     @SuppressWarnings("unused")
     private final String type = "custom_form"; //This variable is used for JSON import operations. Do NOT delete :) -- @Snake1999
     private String title = "";
+    @Nullable
     private ElementButtonImageData icon;
     private List<Element> content;
+    /**
+     * @since 1.20.80
+     */
+    @Nullable
+    private String submit;
 
     private transient FormResponseCustom response;
 
@@ -44,6 +51,15 @@ public class FormWindowCustom extends FormWindow {
         this.title = title;
         this.content = contents;
         this.icon = icon;
+    }
+
+    public FormWindowCustom setSubmitButton(String submit) {
+        this.submit = submit;
+        return this;
+    }
+
+    public String getSubmitButton() {
+        return submit;
     }
 
     public String getTitle() {

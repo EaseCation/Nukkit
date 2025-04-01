@@ -6,7 +6,7 @@ import lombok.ToString;
  * @since 1.21.70
  */
 @ToString
-public class ElementDivider extends Element implements SimpleElement {
+public class ElementDivider implements Element, SimpleElement {
 
     @SuppressWarnings("unused")
     private final String type = "divider";
