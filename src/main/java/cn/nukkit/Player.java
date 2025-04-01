@@ -338,6 +338,9 @@ public class Player extends EntityHuman implements CommandSender, InventoryHolde
     @Beta //TODO: AttributeMap
     protected Attribute movementSpeedAttribute = Attribute.getAttribute(Attribute.MOVEMENT);
 
+    protected boolean hiddenLocator;
+    protected final Vector3f locatorPos = new Vector3f(Float.NaN, Float.NaN, Float.NaN);
+
     public int getStartActionTick() {
         return startAction;
     }
@@ -876,7 +879,7 @@ public class Player extends EntityHuman implements CommandSender, InventoryHolde
 
             this.usedChunks = new Long2BooleanOpenHashMap();
 
-            if (this.onLevelSwitch()) {
+            if (this.onLevelSwitch(oldLevel, targetLevel)) {
                 return true;
             }
 
@@ -1971,6 +1974,8 @@ public class Player extends EntityHuman implements CommandSender, InventoryHolde
                 this.stopFishing(false);
             }
         }
+
+        updateLocatorBar();
 
         if (!this.isAlive() && this.spawned) {
             ++this.deadTicks;
@@ -6206,7 +6211,7 @@ public class Player extends EntityHuman implements CommandSender, InventoryHolde
     protected void processSubChunkRequest() {
     }
 
-    protected boolean onLevelSwitch() {
+    protected boolean onLevelSwitch(Level oldLevel, Level newLevel) {
         return false;
     }
 
@@ -6641,5 +6646,56 @@ public class Player extends EntityHuman implements CommandSender, InventoryHolde
      * @since 1.21.40
      */
     public void sendMovementEffect(long entityRuntimeId, int type, int duration) {
+    }
+
+    /**
+     * @since 1.21.80
+     */
+    public void updateLocator(long entityUniqueId, float x, float y, float z) {
+    }
+
+    /**
+     * @since 1.21.80
+     */
+    public void hideLocator(long entityUniqueId) {
+    }
+
+    public boolean isLocatorBarEnabled() {
+        return false;
+    }
+
+    protected void updateLocatorBar() {
+        if (!isLocatorBarEnabled()) {
+            return;
+        }
+
+        Item helmet;
+        if (!isAlive() || isSpectator() || hasEffect(Effect.INVISIBILITY) || isSneaking() || (helmet = armorInventory.getHelmet()).is(Item.SKULL) || helmet.is(ItemBlockID.CARVED_PUMPKIN)) {
+            if (!hiddenLocator) {
+                hiddenLocator = true;
+
+                for (Player player : level.getPlayers().values()) {
+                    if (player == this) {
+                        continue;
+                    }
+                    player.hideLocator(getId());
+                }
+            }
+            return;
+        }
+        hiddenLocator = false;
+
+        Vector3f currentPos = asVector3f();
+        if (locatorPos.equalsVec(currentPos)) {
+            return;
+        }
+        locatorPos.setComponents(currentPos);
+
+        for (Player player : level.getPlayers().values()) {
+            if (player == this) {
+                continue;
+            }
+            player.updateLocator(getId(), currentPos.x, currentPos.y, currentPos.z);
+        }
     }
 }

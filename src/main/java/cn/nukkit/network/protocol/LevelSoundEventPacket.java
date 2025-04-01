@@ -583,6 +583,11 @@ public class LevelSoundEventPacket extends DataPacket {
 	public static final int SOUND_OPEN_LONG = 543;
 	public static final int SOUND_CLOSE = 544;
 	public static final int SOUND_CLOSE_LONG = 545;
+	public static final int SOUND_IMITATE_PHANTOM = 546;
+	public static final int SOUND_IMITATE_ZOGLIN = 547;
+	public static final int SOUND_IMITATE_GUARDIAN = 548;
+	public static final int SOUND_IMITATE_RAVAGER = 549;
+	public static final int SOUND_IMITATE_PILLAGER = 550;
 
 	public int sound;
     public float x;

@@ -196,5 +196,5 @@ public interface EntityDataID {
      */
     int DATA_ENTER_BED_POSITION = 139;
 
-    int DATA_UNDEFINED = 140;
+    int DATA_UNDEFINED = 142;
 }

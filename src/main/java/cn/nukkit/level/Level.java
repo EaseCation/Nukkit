@@ -5238,6 +5238,10 @@ public class Level implements ChunkManager, Metadatable {
                 }
             }
         }
+
+        for (Player viewer : getPlayers().values()) {
+            viewer.hideLocator(player.getId());
+        }
     }
 
     public Map<StaticVersion, LongSet> getRequestChunkVersions() {

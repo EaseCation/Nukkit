@@ -48,13 +48,20 @@ public class PlayerListPacket extends DataPacket {
         return NETWORK_ID;
     }
 
+    @ToString
     public static class Entry {
 
         public final UUID uuid;
-        public long entityId = 0;
+        public long entityId;
         public String name = "";
-        public Skin skin;
         public String xboxUserId = "";
+        public String platformChatId = "";
+        public int buildPlatform = -1;
+        public Skin skin;
+        public boolean isTeacher;
+        public boolean isHost;
+        public boolean isSubClient;
+        public int locatorIconColor = 0xffededed;
 
         public Entry(UUID uuid) {
             this.uuid = uuid;
