@@ -1,4 +1,3 @@
-import org.gradle.api.file.DuplicatesStrategy
 import com.github.jengelman.gradle.plugins.shadow.tasks.ShadowJar
 import com.github.jengelman.gradle.plugins.shadow.transformers.Log4j2PluginsCacheFileTransformer
 import org.gradle.api.publish.maven.MavenPublication
@@ -45,8 +44,37 @@ if (gradle.parent != null) {
         }
 
     tasks.register<DefaultTask>("copyShadowJar") {
-        group = "copy"
+        group = "_ec"
         subtasks.forEach { dependsOn(it) }
+    }
+
+    fun getBool(key: String, default: Boolean) =
+        runCatching { project.extra.get(key) }
+            .getOrNull()
+            ?.let {
+                if (it !is Boolean) throw GradleException("'copyToDeployTest' is not a Boolean")
+                it
+            }
+            ?: default
+
+    if (getBool("copyToDeployTest", default = true)) {
+        tasks.register<Copy>("copyToDeployTest") {
+            group = "_ec"
+            from(output)
+            into(File(root, "deploytest"))
+            rename { fileName }
+            dependsOn(shadowJarTask)
+        }
+    }
+
+    if (getBool("copyToDeploy", default = true)) {
+        tasks.register<Copy>("copyToDeploy") {
+            group = "_ec"
+            from(output)
+            into(File(root, "deploy"))
+            rename { fileName }
+            dependsOn(shadowJarTask)
+        }
     }
 }
 
