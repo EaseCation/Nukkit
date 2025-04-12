@@ -1456,6 +1456,10 @@ public class Item implements Cloneable, ItemID {
         return false;
     }
 
+    public boolean isHarness() {
+        return false;
+    }
+
     public boolean isShulkerBox() {
         return false;
     }

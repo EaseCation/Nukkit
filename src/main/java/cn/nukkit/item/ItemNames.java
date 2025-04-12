@@ -767,4 +767,20 @@ public interface ItemNames extends ItemBlockNames {
     String RESIN_BRICK = "resin_brick";
     String BLUE_EGG = "blue_egg";
     String BROWN_EGG = "brown_egg";
+    String BLACK_HARNESS = "black_harness";
+    String BLUE_HARNESS = "blue_harness";
+    String BROWN_HARNESS = "brown_harness";
+    String CYAN_HARNESS = "cyan_harness";
+    String GRAY_HARNESS = "gray_harness";
+    String GREEN_HARNESS = "green_harness";
+    String LIGHT_BLUE_HARNESS = "light_blue_harness";
+    String LIGHT_GRAY_HARNESS = "light_gray_harness";
+    String LIME_HARNESS = "lime_harness";
+    String MAGENTA_HARNESS = "magenta_harness";
+    String ORANGE_HARNESS = "orange_harness";
+    String PINK_HARNESS = "pink_harness";
+    String PURPLE_HARNESS = "purple_harness";
+    String RED_HARNESS = "red_harness";
+    String WHITE_HARNESS = "white_harness";
+    String YELLOW_HARNESS = "yellow_harness";
 }

@@ -768,4 +768,20 @@ public interface ItemFullNames extends ItemBlockNames {
     String RESIN_BRICK = "minecraft:" + ItemNames.RESIN_BRICK;
     String BLUE_EGG = "minecraft:" + ItemNames.BLUE_EGG;
     String BROWN_EGG = "minecraft:" + ItemNames.BROWN_EGG;
+    String BLACK_HARNESS = "minecraft:" + ItemNames.BLACK_HARNESS;
+    String BLUE_HARNESS = "minecraft:" + ItemNames.BLUE_HARNESS;
+    String BROWN_HARNESS = "minecraft:" + ItemNames.BROWN_HARNESS;
+    String CYAN_HARNESS = "minecraft:" + ItemNames.CYAN_HARNESS;
+    String GRAY_HARNESS = "minecraft:" + ItemNames.GRAY_HARNESS;
+    String GREEN_HARNESS = "minecraft:" + ItemNames.GREEN_HARNESS;
+    String LIGHT_BLUE_HARNESS = "minecraft:" + ItemNames.LIGHT_BLUE_HARNESS;
+    String LIGHT_GRAY_HARNESS = "minecraft:" + ItemNames.LIGHT_GRAY_HARNESS;
+    String LIME_HARNESS = "minecraft:" + ItemNames.LIME_HARNESS;
+    String MAGENTA_HARNESS = "minecraft:" + ItemNames.MAGENTA_HARNESS;
+    String ORANGE_HARNESS = "minecraft:" + ItemNames.ORANGE_HARNESS;
+    String PINK_HARNESS = "minecraft:" + ItemNames.PINK_HARNESS;
+    String PURPLE_HARNESS = "minecraft:" + ItemNames.PURPLE_HARNESS;
+    String RED_HARNESS = "minecraft:" + ItemNames.RED_HARNESS;
+    String WHITE_HARNESS = "minecraft:" + ItemNames.WHITE_HARNESS;
+    String YELLOW_HARNESS = "minecraft:" + ItemNames.YELLOW_HARNESS;
 }

@@ -35,7 +35,7 @@ public class EntityGhast extends EntityMob {
 
     @Override
     public float getWidth() {
-        return 4.02f;
+        return 4;
     }
 
     @Override

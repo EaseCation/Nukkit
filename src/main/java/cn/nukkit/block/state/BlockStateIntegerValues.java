@@ -29,6 +29,7 @@ public interface BlockStateIntegerValues {
     int MAX_PROPAGULE_STAGE = 4;
     int MAX_RAIL_DIRECTION = 9;
     int MAX_REDSTONE_SIGNAL = 15;
+    int MAX_REHYDRATION_LEVEL = 3;
     int MAX_REPEATER_DELAY = 3;
     int MAX_RESPAWN_ANCHOR_CHARGE = 4;
     int MAX_ROTATION = 3;

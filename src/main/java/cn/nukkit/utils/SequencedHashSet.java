@@ -16,6 +16,22 @@ public class SequencedHashSet<E> implements List<E> {
     private final Int2ObjectMap<E> inverse = new Int2ObjectLinkedOpenHashMap<>();
     private int index;
 
+    public SequencedHashSet() {
+        map.defaultReturnValue(-1);
+    }
+
+    public int getOrAdd(E e) {
+        int index = this.map.getInt(e);
+        if (index != -1) {
+            return index;
+        }
+
+        index = this.index++;
+        this.map.put(e, index);
+        this.inverse.put(index, e);
+        return index;
+    }
+
     @Override
     public int indexOf(Object o) {
         return map.getInt(o);
@@ -139,5 +155,10 @@ public class SequencedHashSet<E> implements List<E> {
     @Override
     public E remove(int index) {
         throw new UnsupportedOperationException();
+    }
+
+    @Override
+    public String toString() {
+        return map.keySet().toString();
     }
 }

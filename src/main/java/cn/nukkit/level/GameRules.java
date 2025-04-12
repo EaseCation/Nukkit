@@ -61,6 +61,7 @@ public class GameRules {
         gameRules.gameRules.put(PROJECTILES_CAN_BREAK_BLOCKS, new Value<>(Type.BOOLEAN, true));
         gameRules.gameRules.put(TNT_EXPLOSION_DROP_DECAY, new Value<>(Type.BOOLEAN, false));
         gameRules.gameRules.put(SHOW_DAYS_PLAYED, new Value<>(Type.BOOLEAN, false));
+        gameRules.gameRules.put(LOCATOR_BAR, new Value<>(Type.BOOLEAN, false));
 
         return gameRules;
     }

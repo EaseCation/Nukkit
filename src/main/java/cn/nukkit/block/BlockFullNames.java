@@ -1337,7 +1337,7 @@ public interface BlockFullNames {
     String WILDFLOWERS = "minecraft:" + BlockNames.WILDFLOWERS;
     String FIREFLY_BUSH = "minecraft:" + BlockNames.FIREFLY_BUSH;
     String LEAF_LITTER = "minecraft:" + BlockNames.LEAF_LITTER;
-
+    String DRIED_GHAST = "minecraft:" + BlockNames.DRIED_GHAST;
     String SHORT_DRY_GRASS = "minecraft:" + BlockNames.SHORT_DRY_GRASS;
     String TALL_DRY_GRASS = "minecraft:" + BlockNames.TALL_DRY_GRASS;
     String CACTUS_FLOWER = "minecraft:" + BlockNames.CACTUS_FLOWER;

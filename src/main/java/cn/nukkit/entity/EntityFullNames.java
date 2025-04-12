@@ -138,6 +138,7 @@ public interface EntityFullNames {
     String BOGGED = "minecraft:" + EntityNames.BOGGED;
     String OMINOUS_ITEM_SPAWNER = "minecraft:" + EntityNames.OMINOUS_ITEM_SPAWNER;
     String CREAKING = "minecraft:" + EntityNames.CREAKING;
+    String HAPPY_GHAST = "minecraft:" + EntityNames.HAPPY_GHAST;
 
     String TRADER_LLAMA = "minecraft:" + EntityNames.TRADER_LLAMA;
 

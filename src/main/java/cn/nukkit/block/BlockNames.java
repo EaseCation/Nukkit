@@ -1336,7 +1336,7 @@ public interface BlockNames {
     String WILDFLOWERS = "wildflowers";
     String FIREFLY_BUSH = "firefly_bush";
     String LEAF_LITTER = "leaf_litter";
-
+    String DRIED_GHAST = "dried_ghast";
     String SHORT_DRY_GRASS = "short_dry_grass";
     String TALL_DRY_GRASS = "tall_dry_grass";
     String CACTUS_FLOWER = "cactus_flower";

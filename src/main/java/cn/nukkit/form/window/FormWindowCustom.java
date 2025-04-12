@@ -121,7 +121,7 @@ public class FormWindowCustom extends FormWindow {
         Int2ObjectMap<String> headerResponses = new Int2ObjectOpenHashMap<>();
         Int2ObjectMap<String> dividerResponses = new Int2ObjectOpenHashMap<>();
 
-        boolean before12170 = protocol < V1_21_70.getProtocol();
+        boolean not12170 = protocol != V1_21_70.getProtocol();
 
         int responseIndex = 0;
         for (int i = 0; i < content.size(); i++) {
@@ -130,7 +130,7 @@ public class FormWindowCustom extends FormWindow {
             if (e instanceof ElementLabel) {
                 labelResponses.put(i, ((ElementLabel) e).getText());
                 responses.put(i, ((ElementLabel) e).getText());
-                if (before12170) {
+                if (not12170) {
                     responseIndex++;
                 }
             } else if (e instanceof ElementDropdown) {
@@ -164,9 +164,15 @@ public class FormWindowCustom extends FormWindow {
             } else if (e instanceof ElementHeader header) {
                 headerResponses.put(i, header.getText());
                 responses.put(i, header.getText());
+                if (not12170) {
+                    responseIndex++;
+                }
             } else if (e instanceof ElementDivider divider) {
                 dividerResponses.put(i, divider.getText());
                 responses.put(i, divider.getText());
+                if (not12170) {
+                    responseIndex++;
+                }
             }
         }
 

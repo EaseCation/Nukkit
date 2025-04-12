@@ -195,6 +195,16 @@ public interface EntityDataID {
      * @since 1.21.60
      */
     int DATA_ENTER_BED_POSITION = 139;
+    /**
+     * float.
+     * @since 1.21.80
+     */
+    int DATA_SEAT_THIRD_PERSON_CAMERA_RADIUS = 140;
+    /**
+     * float.
+     * @since 1.21.80
+     */
+    int DATA_SEAT_CAMERA_RELAX_DISTANCE_SMOOTHING = 141;
 
     int DATA_UNDEFINED = 142;
 }

@@ -137,6 +137,7 @@ public interface EntityNames {
     String BOGGED = "bogged";
     String OMINOUS_ITEM_SPAWNER = "ominous_item_spawner";
     String CREAKING = "creaking";
+    String HAPPY_GHAST = "happy_ghast";
 
     String TRADER_LLAMA = "trader_llama";
 

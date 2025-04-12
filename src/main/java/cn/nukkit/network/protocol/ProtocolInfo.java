@@ -275,6 +275,7 @@ public interface ProtocolInfo {
     int PLAYER_VIDEO_CAPTURE_PACKET = 0x144; // 324 c
     int PLAYER_UPDATE_ENTITY_OVERRIDES_PACKET = 0x145; // 325 c
     int PLAYER_LOCATION_PACKET = 0x146; // 326 c
+    int CLIENTBOUND_CONTROL_SCHEME_SET_PACKET = 0x147; // 327 c
 
 
     int COUNT = 1024;

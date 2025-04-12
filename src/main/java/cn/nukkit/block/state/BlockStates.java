@@ -114,6 +114,7 @@ public final class BlockStates {
     public static final BooleanBlockState RAIL_DATA_BIT = register(new BooleanBlockState(BlockStateNames.RAIL_DATA_BIT));
     public static final IntegerBlockState RAIL_DIRECTION = register(new IntegerBlockState(BlockStateNames.RAIL_DIRECTION, MAX_RAIL_DIRECTION + 1));
     public static final IntegerBlockState REDSTONE_SIGNAL = register(new IntegerBlockState(BlockStateNames.REDSTONE_SIGNAL, MAX_REDSTONE_SIGNAL + 1));
+    public static final IntegerBlockState REHYDRATION_LEVEL = register(new IntegerBlockState(BlockStateNames.REHYDRATION_LEVEL, MAX_REHYDRATION_LEVEL + 1));
     public static final IntegerBlockState REPEATER_DELAY = register(new IntegerBlockState(BlockStateNames.REPEATER_DELAY, MAX_REPEATER_DELAY + 1));
     public static final IntegerBlockState RESPAWN_ANCHOR_CHARGE = register(new IntegerBlockState(BlockStateNames.RESPAWN_ANCHOR_CHARGE, MAX_RESPAWN_ANCHOR_CHARGE + 1));
     public static final IntegerBlockState ROTATION = register(new IntegerBlockState(BlockStateNames.ROTATION, MAX_ROTATION + 1));

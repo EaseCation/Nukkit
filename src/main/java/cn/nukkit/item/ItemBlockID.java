@@ -1380,7 +1380,7 @@ public interface ItemBlockID {
     int WILDFLOWERS = 0xff - BlockID.WILDFLOWERS;
     int FIREFLY_BUSH = 0xff - BlockID.FIREFLY_BUSH;
     int LEAF_LITTER = 0xff - BlockID.LEAF_LITTER;
-
+    int DRIED_GHAST = 0xff - BlockID.DRIED_GHAST;
     int SHORT_DRY_GRASS = 0xff - BlockID.SHORT_DRY_GRASS;
     int TALL_DRY_GRASS = 0xff - BlockID.TALL_DRY_GRASS;
     int CACTUS_FLOWER = 0xff - BlockID.CACTUS_FLOWER;

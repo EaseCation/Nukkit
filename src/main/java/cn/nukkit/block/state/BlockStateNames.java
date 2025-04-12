@@ -103,6 +103,7 @@ public interface BlockStateNames {
     String RAIL_DATA_BIT = "rail_data_bit";
     String RAIL_DIRECTION = "rail_direction";
     String REDSTONE_SIGNAL = "redstone_signal";
+    String REHYDRATION_LEVEL = "rehydration_level";
     String REPEATER_DELAY = "repeater_delay";
     String RESPAWN_ANCHOR_CHARGE = "respawn_anchor_charge";
     String ROTATION = "rotation";

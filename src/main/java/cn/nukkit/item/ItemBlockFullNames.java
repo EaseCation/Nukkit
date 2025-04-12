@@ -1417,7 +1417,7 @@ public interface ItemBlockFullNames {
     String WILDFLOWERS = "minecraft:" + ItemBlockNames.WILDFLOWERS;
     String FIREFLY_BUSH = "minecraft:" + ItemBlockNames.FIREFLY_BUSH;
     String LEAF_LITTER = "minecraft:" + ItemBlockNames.LEAF_LITTER;
-
+    String DRIED_GHAST = "minecraft:" + ItemBlockNames.DRIED_GHAST;
     String SHORT_DRY_GRASS = "minecraft:" + ItemBlockNames.SHORT_DRY_GRASS;
     String TALL_DRY_GRASS = "minecraft:" + ItemBlockNames.TALL_DRY_GRASS;
     String CACTUS_FLOWER = "minecraft:" + ItemBlockNames.CACTUS_FLOWER;

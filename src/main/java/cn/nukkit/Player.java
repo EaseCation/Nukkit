@@ -6665,7 +6665,7 @@ public class Player extends EntityHuman implements CommandSender, InventoryHolde
     }
 
     protected void updateLocatorBar() {
-        if (!isLocatorBarEnabled()) {
+        if (!level.gameRules.getBoolean(GameRule.LOCATOR_BAR)) {
             return;
         }
 
