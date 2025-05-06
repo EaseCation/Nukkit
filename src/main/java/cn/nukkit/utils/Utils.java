@@ -13,6 +13,7 @@ import java.util.UUID;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.function.Consumer;
 import java.util.function.Supplier;
+import java.util.regex.Pattern;
 
 import static cn.nukkit.SharedConstants.*;
 
@@ -311,5 +312,77 @@ public class Utils {
     public static <T> T make(T value, Consumer<? super T> consumer) {
         consumer.accept(value);
         return value;
+    }
+
+    private static final byte[] NIBBLES = make(new byte[256], ns -> {
+        Arrays.fill(ns, (byte) -1);
+        ns['0'] = 0;
+        ns['1'] = 1;
+        ns['2'] = 2;
+        ns['3'] = 3;
+        ns['4'] = 4;
+        ns['5'] = 5;
+        ns['6'] = 6;
+        ns['7'] = 7;
+        ns['8'] = 8;
+        ns['9'] = 9;
+        ns['A'] = 10;
+        ns['B'] = 11;
+        ns['C'] = 12;
+        ns['D'] = 13;
+        ns['E'] = 14;
+        ns['F'] = 15;
+        ns['a'] = 10;
+        ns['b'] = 11;
+        ns['c'] = 12;
+        ns['d'] = 13;
+        ns['e'] = 14;
+        ns['f'] = 15;
+    });
+
+    public static boolean isHexChars(String name, int pos, int num) {
+        for (int i = 0; i < num; i++) {
+            char ch = name.charAt(pos + i);
+            if (ch > 0xff || NIBBLES[ch] < 0) {
+                return false;
+            }
+        }
+        return true;
+    }
+
+    public static boolean isUUID(String uuid) {
+        if (uuid.length() != 32 + 4) {
+            return false;
+        }
+        if (uuid.charAt(8) != '-'
+                || uuid.charAt(13) != '-'
+                || uuid.charAt(18) != '-'
+                || uuid.charAt(23) != '-') {
+            return false;
+        }
+        return isHexChars(uuid, 0, 8)
+                && isHexChars(uuid, 9, 4)
+                && isHexChars(uuid, 14, 4)
+                && isHexChars(uuid, 19, 4)
+                && isHexChars(uuid, 24, 12);
+    }
+
+    public static boolean isHexColor(String color) {
+        int length = color.length();
+        if (length < 2 || length > 8 + 1) {
+            return false;
+        }
+        if (color.charAt(0) != '#') {
+            return false;
+        }
+        return isHexChars(color, 1, length - 1);
+    }
+
+    public static long createUniqueId() {
+        return createUniqueId(UUID.randomUUID());
+    }
+
+    public static long createUniqueId(UUID uuid) {
+        return uuid.getLeastSignificantBits() ^ uuid.getMostSignificantBits();
     }
 }
