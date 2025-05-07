@@ -138,7 +138,7 @@ public class Skin implements Cloneable {
         return getSkinId().length() < 100
                 && getCapeId().length() < 100
                 && getFullSkinId().length() < 200
-                && (Strings.isNullOrEmpty(getPlayFabId()) || getPlayFabId().length() == 16)
+                && (Strings.isNullOrEmpty(getPlayFabId()) || getPlayFabId().length() <= 16)
                 && (skinColor == null || skinColor.length() < 10)
                 && (armSize == null || armSize.length() < 5)
                 && (geometryDataEngineVersion == null || geometryDataEngineVersion.length() >= 5 && geometryDataEngineVersion.length() <= 8);
