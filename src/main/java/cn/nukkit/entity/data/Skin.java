@@ -110,7 +110,7 @@ public class Skin implements Cloneable {
     }
 
     private boolean isValidSkin() {
-        return skinData != null && skinData.width >= 64 && skinData.height >= 32 && skinData.width <= 256 && skinData.height <= 256 &&
+        return skinData != null && skinData.width >= 64 && skinData.height >= 32 && skinData.width <= 4096 && skinData.height <= 4096 &&
                 skinData.data.length >= SINGLE_SKIN_SIZE && skinData.data.length == skinData.width * skinData.height * PIXEL_SIZE;
     }
 
