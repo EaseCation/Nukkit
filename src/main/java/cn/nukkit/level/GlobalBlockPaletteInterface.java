@@ -58,6 +58,7 @@ public interface GlobalBlockPaletteInterface {
         V1_20_70(662, false),
         V1_20_80(671, false),
         V1_21_0(685, false),
+        V1_21_2_NETEASE(686, true),
         V1_21_20(712, false),
         V1_21_30(729, false),
         V1_21_40(748, false),
