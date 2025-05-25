@@ -588,6 +588,16 @@ public class LevelSoundEventPacket extends DataPacket {
 	public static final int SOUND_IMITATE_GUARDIAN = 548;
 	public static final int SOUND_IMITATE_RAVAGER = 549;
 	public static final int SOUND_IMITATE_PILLAGER = 550;
+	public static final int SOUND_PLACE_IN_WATER = 551;
+	public static final int SOUND_STATE_CHANGE = 552;
+	public static final int SOUND_IMITATE_HAPPY_GHAST = 553;
+	public static final int SOUND_UNEQUIP_GENERIC = 554;
+	public static final int SOUND_RECORD_TEARS = 555;
+	public static final int SOUND_THE_END_LIGHT_FLASH = 556;
+	public static final int SOUND_LEAD_LEASH = 557;
+	public static final int SOUND_LEAD_UNLEASH = 558;
+	public static final int SOUND_LEAD_BREAK = 559;
+	public static final int SOUND_UNSADDLE = 560;
 
 	public int sound;
     public float x;

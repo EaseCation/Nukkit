@@ -355,6 +355,8 @@ public final class Items {
 
         registerItem(ItemNames.BOARD, BOARD, ItemBoard.class, ItemBoard::new, 2, V1_21_50);
 
+        registerItem(ItemNames.MUSIC_DISC_TEARS, MUSIC_DISC_TEARS, ItemRecordTears.class, ItemRecordTears::new, V1_21_90);
+
         if (DEV_CLIENT_BUILD) {
             registerItem(ItemNames.DEBUG_STICK, DEBUG_STICK, ItemDebugStick.class, ItemDebugStick::new);
         }
@@ -465,24 +467,24 @@ public final class Items {
 
         registerNewItem(ItemNames.BLUE_EGG, BLUE_EGG, ItemEggBlue.class, ItemEggBlue::new, V1_21_70);
         registerNewItem(ItemNames.BROWN_EGG, BROWN_EGG, ItemEggBrown.class, ItemEggBrown::new, V1_21_70);
-/*
-        registerNewItem(ItemNames.BLACK_HARNESS, BLACK_HARNESS, ItemHarnessBlack.class, ItemHarnessBlack::new, V1_22_0);
-        registerNewItem(ItemNames.BLUE_HARNESS, BLUE_HARNESS, ItemHarnessBlue.class, ItemHarnessBlue::new, V1_22_0);
-        registerNewItem(ItemNames.BROWN_HARNESS, BROWN_HARNESS, ItemHarnessBrown.class, ItemHarnessBrown::new, V1_22_0);
-        registerNewItem(ItemNames.CYAN_HARNESS, CYAN_HARNESS, ItemHarnessCyan.class, ItemHarnessCyan::new, V1_22_0);
-        registerNewItem(ItemNames.GRAY_HARNESS, GRAY_HARNESS, ItemHarnessGray.class, ItemHarnessGray::new, V1_22_0);
-        registerNewItem(ItemNames.GREEN_HARNESS, GREEN_HARNESS, ItemHarnessGreen.class, ItemHarnessGreen::new, V1_22_0);
-        registerNewItem(ItemNames.LIGHT_BLUE_HARNESS, LIGHT_BLUE_HARNESS, ItemHarnessLightBlue.class, ItemHarnessLightBlue::new, V1_22_0);
-        registerNewItem(ItemNames.LIGHT_GRAY_HARNESS, LIGHT_GRAY_HARNESS, ItemHarnessLightGray.class, ItemHarnessLightGray::new, V1_22_0);
-        registerNewItem(ItemNames.LIME_HARNESS, LIME_HARNESS, ItemHarnessLime.class, ItemHarnessLime::new, V1_22_0);
-        registerNewItem(ItemNames.MAGENTA_HARNESS, MAGENTA_HARNESS, ItemHarnessMagenta.class, ItemHarnessMagenta::new, V1_22_0);
-        registerNewItem(ItemNames.ORANGE_HARNESS, ORANGE_HARNESS, ItemHarnessOrange.class, ItemHarnessOrange::new, V1_22_0);
-        registerNewItem(ItemNames.PINK_HARNESS, PINK_HARNESS, ItemHarnessPink.class, ItemHarnessPink::new, V1_22_0);
-        registerNewItem(ItemNames.PURPLE_HARNESS, PURPLE_HARNESS, ItemHarnessPurple.class, ItemHarnessPurple::new, V1_22_0);
-        registerNewItem(ItemNames.RED_HARNESS, RED_HARNESS, ItemHarnessRed.class, ItemHarnessRed::new, V1_22_0);
-        registerNewItem(ItemNames.WHITE_HARNESS, WHITE_HARNESS, ItemHarnessWhite.class, ItemHarnessWhite::new, V1_22_0);
-        registerNewItem(ItemNames.YELLOW_HARNESS, YELLOW_HARNESS, ItemHarnessYellow.class, ItemHarnessYellow::new, V1_22_0);
-*/
+
+        registerNewItem(ItemNames.BLACK_HARNESS, BLACK_HARNESS, ItemHarnessBlack.class, ItemHarnessBlack::new, V1_21_90);
+        registerNewItem(ItemNames.BLUE_HARNESS, BLUE_HARNESS, ItemHarnessBlue.class, ItemHarnessBlue::new, V1_21_90);
+        registerNewItem(ItemNames.BROWN_HARNESS, BROWN_HARNESS, ItemHarnessBrown.class, ItemHarnessBrown::new, V1_21_90);
+        registerNewItem(ItemNames.CYAN_HARNESS, CYAN_HARNESS, ItemHarnessCyan.class, ItemHarnessCyan::new, V1_21_90);
+        registerNewItem(ItemNames.GRAY_HARNESS, GRAY_HARNESS, ItemHarnessGray.class, ItemHarnessGray::new, V1_21_90);
+        registerNewItem(ItemNames.GREEN_HARNESS, GREEN_HARNESS, ItemHarnessGreen.class, ItemHarnessGreen::new, V1_21_90);
+        registerNewItem(ItemNames.LIGHT_BLUE_HARNESS, LIGHT_BLUE_HARNESS, ItemHarnessLightBlue.class, ItemHarnessLightBlue::new, V1_21_90);
+        registerNewItem(ItemNames.LIGHT_GRAY_HARNESS, LIGHT_GRAY_HARNESS, ItemHarnessLightGray.class, ItemHarnessLightGray::new, V1_21_90);
+        registerNewItem(ItemNames.LIME_HARNESS, LIME_HARNESS, ItemHarnessLime.class, ItemHarnessLime::new, V1_21_90);
+        registerNewItem(ItemNames.MAGENTA_HARNESS, MAGENTA_HARNESS, ItemHarnessMagenta.class, ItemHarnessMagenta::new, V1_21_90);
+        registerNewItem(ItemNames.ORANGE_HARNESS, ORANGE_HARNESS, ItemHarnessOrange.class, ItemHarnessOrange::new, V1_21_90);
+        registerNewItem(ItemNames.PINK_HARNESS, PINK_HARNESS, ItemHarnessPink.class, ItemHarnessPink::new, V1_21_90);
+        registerNewItem(ItemNames.PURPLE_HARNESS, PURPLE_HARNESS, ItemHarnessPurple.class, ItemHarnessPurple::new, V1_21_90);
+        registerNewItem(ItemNames.RED_HARNESS, RED_HARNESS, ItemHarnessRed.class, ItemHarnessRed::new, V1_21_90);
+        registerNewItem(ItemNames.WHITE_HARNESS, WHITE_HARNESS, ItemHarnessWhite.class, ItemHarnessWhite::new, V1_21_90);
+        registerNewItem(ItemNames.YELLOW_HARNESS, YELLOW_HARNESS, ItemHarnessYellow.class, ItemHarnessYellow::new, V1_21_90);
+
     }
 
     @SuppressWarnings("deprecation")
@@ -541,6 +543,8 @@ public final class Items {
         registerAlias(ItemNames.RECORD_CREATOR, ItemNames.MUSIC_DISC_CREATOR, true, V1_21_0);
         registerAlias(ItemNames.RECORD_CREATOR_MUSIC_BOX, ItemNames.MUSIC_DISC_CREATOR_MUSIC_BOX, true, V1_21_0);
         registerAlias(ItemNames.RECORD_PRECIPICE, ItemNames.MUSIC_DISC_PRECIPICE, true, V1_21_0);
+
+        registerAlias(ItemNames.RECORD_TEARS, ItemNames.MUSIC_DISC_TEARS, true, V1_21_90);
 
     }
 

@@ -23,6 +23,7 @@ public interface Fogs {
     String DEFAULT = "minecraft:fog_default";
     String DESERT = "minecraft:fog_desert";
     String DESERT_HILLS = "minecraft:fog_desert_hills";
+    String DRY = "minecraft:fog_dry";
     String EXTREME_HILLS_EDGE = "minecraft:fog_extreme_hills_edge";
     String EXTREME_HILLS = "minecraft:fog_extreme_hills";
     String EXTREME_HILLS_MUTATED = "minecraft:fog_extreme_hills_mutated";
@@ -34,6 +35,7 @@ public interface Fogs {
     String FROZEN_OCEAN = "minecraft:fog_frozen_ocean";
     String FROZEN_RIVER = "minecraft:fog_frozen_river";
     String HELL = "minecraft:fog_hell";
+    String HUMID = "minecraft:fog_humid";
     String ICE_MOUNTAINS = "minecraft:fog_ice_mountains";
     String ICE_PLAINS = "minecraft:fog_ice_plains";
     String ICE_PLAINS_SPIKES = "minecraft:fog_ice_plains_spikes";
@@ -42,6 +44,7 @@ public interface Fogs {
     String JUNGLE_HILLS = "minecraft:fog_jungle_hills";
     String JUNGLE_MUTATED = "minecraft:fog_jungle_mutated";
     String LUKEWARM_OCEAN = "minecraft:fog_lukewarm_ocean";
+    String LUSH_CAVES = "minecraft:fog_lush_caves";
     String MANGROVE_SWAMP = "minecraft:fog_mangrove_swamp";
     String MEGA_SPRUCE_TAIGA = "minecraft:fog_mega_spruce_taiga";
     String MEGA_SPRUSE_TAIGA_MUTATED = "minecraft:fog_mega_spruce_taiga_mutated";
@@ -64,6 +67,7 @@ public interface Fogs {
     String SAVANNA = "minecraft:fog_savanna";
     String SAVANNA_MUTATED = "minecraft:fog_savanna_mutated";
     String SAVANNA_PLATEAU = "minecraft:fog_savanna_plateau";
+    String SEMI_HUMID = "minecraft:fog_semi_humid";
     String SOULSAND_VALLEY = "minecraft:fog_soulsand_valley";
     String STONE_BEACH = "minecraft:fog_stone_beach";
     String SUNFLOWER_PLAINS = "minecraft:fog_sunflower_plains";

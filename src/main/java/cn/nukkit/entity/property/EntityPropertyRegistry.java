@@ -69,10 +69,10 @@ public final class EntityPropertyRegistry {
                         SOUND_VARIANT_MAD,
                         SOUND_VARIANT_PUGLIN,
                         SOUND_VARIANT_SAD));
-/*
-        registerProperties(V1_22, EntityID.HAPPY_GHAST, EntityFullNames.HAPPY_GHAST,
+
+        registerProperties(V1_21_90, EntityID.HAPPY_GHAST, EntityFullNames.HAPPY_GHAST,
                 new BooleanEntityProperty(CAN_MOVE, true));
-*/
+
     }
 
     private static void registerProperties(int entityType, String entityIdentifier, EntityProperty... properties) {

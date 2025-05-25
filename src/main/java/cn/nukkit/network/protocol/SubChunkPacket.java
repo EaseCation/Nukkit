@@ -2,7 +2,7 @@ package cn.nukkit.network.protocol;
 
 import lombok.ToString;
 
-@ToString(exclude = {"data", "heightMap"})
+@ToString(exclude = {"data", "heightMap", "renderHeightMap"})
 public class SubChunkPacket extends DataPacket {
 
     public static final int NETWORK_ID = ProtocolInfo.SUB_CHUNK_PACKET;
@@ -21,6 +21,10 @@ public class SubChunkPacket extends DataPacket {
     public static final byte HEIGHT_MAP_TYPE_HAS_DATA = 1;
     public static final byte HEIGHT_MAP_TYPE_ALL_TOO_HIGH = 2;
     public static final byte HEIGHT_MAP_TYPE_ALL_TOO_LOW = 3;
+    /**
+     * @since 1.21.90
+     */
+    public static final byte HEIGHT_MAP_TYPE_ALL_COPIED = 4;
 
     private static final byte[] EMPTY = new byte[0];
 
@@ -35,6 +39,8 @@ public class SubChunkPacket extends DataPacket {
      * ZZZZXXXX key bit order.
      */
     public byte[] heightMap;
+    public byte renderHeightMapType = HEIGHT_MAP_TYPE_ALL_COPIED;
+    public byte[] renderHeightMap;
     public boolean cacheEnabled;
     public long blobId;
 

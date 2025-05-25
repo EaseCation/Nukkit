@@ -536,6 +536,12 @@ public interface ItemID extends BlockID, ItemRuntimeID {
      */
     @Deprecated
     int RECORD_PRECIPICE = 785;
+    int MUSIC_DISC_TEARS = 786;
+    /**
+     * @deprecated use {@link #MUSIC_DISC_TEARS} instead
+     */
+    @Deprecated
+    int RECORD_TEARS = 786;
 
     int SOUL_CAMPFIRE = 801;
 

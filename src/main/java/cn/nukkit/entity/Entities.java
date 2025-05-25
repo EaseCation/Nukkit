@@ -179,9 +179,9 @@ public final class Entities {
 //        registerEntity(EntityID.OMINOUS_ITEM_SPAWNER, EntityNames.OMINOUS_ITEM_SPAWNER, "OminousItemSpawner", EntityOminousItemSpawner.class, EntityOminousItemSpawner::new, V1_21_0);
 
         registerEntity(EntityID.CREAKING, EntityNames.CREAKING, "Creaking", EntityCreaking.class, EntityCreaking::new, V1_21_50);
-/*
-        registerEntity(EntityID.HAPPY_GHAST, EntityNames.HAPPY_GHAST, "HappyGhast", EntityHappyGhast.class, EntityHappyGhast::new, V1_22_0);
-*/
+
+        registerEntity(EntityID.HAPPY_GHAST, EntityNames.HAPPY_GHAST, "HappyGhast", EntityHappyGhast.class, EntityHappyGhast::new, V1_21_90);
+
         EntityPropertyRegistry.registerVanillaProperties();
     }
 

@@ -12,11 +12,7 @@ import cn.nukkit.level.format.ChunkSection;
 import cn.nukkit.level.format.LevelProvider;
 import cn.nukkit.nbt.NBTIO;
 import cn.nukkit.nbt.tag.CompoundTag;
-import cn.nukkit.network.protocol.BatchPacket;
-import cn.nukkit.network.protocol.LevelChunkPacket;
-import cn.nukkit.network.protocol.LevelChunkPacket12060;
-import cn.nukkit.network.protocol.SubChunkPacket;
-import cn.nukkit.network.protocol.SubChunkPacket11810;
+import cn.nukkit.network.protocol.*;
 import cn.nukkit.scheduler.AsyncTask;
 import cn.nukkit.utils.BinaryStream;
 import cn.nukkit.utils.Hash;
@@ -37,6 +33,7 @@ import java.util.EnumSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.function.Supplier;
 
 import static cn.nukkit.level.format.leveldb.LevelDbConstants.*;
 
@@ -272,15 +269,17 @@ public class ChunkRequestTask extends AsyncTask<Void> {
                 Map<StaticVersion, SubChunkPacket[]> subPacketsUncompressed = new EnumMap<>(StaticVersion.class);
 
                 fullChunkPayloads.forEach((version, payload) -> {
+                    Supplier<SubChunkPacket> subChunkPacketFactory = version.getProtocol() >= StaticVersion.V1_21_90.getProtocol() ? SubChunkPacket12190::new : SubChunkPacket11810::new;
                     byte[][] subChunkData = subChunkPayloads.get(version);
                     BatchPacket[] compressed = new BatchPacket[count];
                     SubChunkPacket[] uncompressed = new SubChunkPacket[count];
                     for (int i = 0; i < count; i++) {
-                        SubChunkPacket packet = new SubChunkPacket11810();
+                        SubChunkPacket packet = subChunkPacketFactory.get();
                         if (emptySection[i]) {
                             packet.requestResult = SubChunkPacket.REQUEST_RESULT_SUCCESS_ALL_AIR;
                         }
                         compressed[i] = Level.getSubChunkCacheFromData(packet, Level.DIMENSION_OVERWORLD, chunkX, Level.indexToY(i, chunkYIndexOffset), chunkZ, subChunkData[i], heightmapType[i], heightmapData[i]);
+                        packet.renderHeightMapType = SubChunkPacket.HEIGHT_MAP_TYPE_ALL_COPIED;
                         packet.setBuffer(null, 0); // release buffer
                         uncompressed[i] = packet;
                     }

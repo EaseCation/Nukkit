@@ -128,6 +128,9 @@ public class DisconnectPacket extends DataPacket {
     public static final int REASON_SUB_CLIENT_LOGIN_DISABLED = 116;
     public static final int REASON_DEEP_LINK_TRYING_TO_OPEN_DEMO_WORLD_WHILE_SIGNED_IN = 117;
     public static final int REASON_ASYNC_JOIN_TASK_DENIED = 118;
+    public static final int REASON_REALMS_TIMELINE_REQUIRED = 119;
+    public static final int REASON_GUEST_WITHOUT_HOST = 120;
+    public static final int REASON_FAILED_TO_JOIN_EXPERIENCE = 121;
 
     public int reason = REASON_UNKNOWN;
     public boolean hideDisconnectionScreen;

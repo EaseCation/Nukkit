@@ -60,6 +60,7 @@ public enum GameVersion {
     V1_21_60(776, "1.21.60"),
     V1_21_70(786, "1.21.70"),
     V1_21_80(800, "1.21.80"),
+    V1_21_90(818, "1.21.90"),
     ;
 
     private static GameVersion FEATURE_VERSION = GameVersion.V1_20_10;

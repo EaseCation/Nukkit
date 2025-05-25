@@ -98,13 +98,19 @@ public class BlockSponge extends BlockSolid {
         int waterRemoved = 0;
         while (waterRemoved < 64 && (entry = entries.poll()) != null) {
             for (BlockFace face : BlockFace.getValues()) {
-
                 Block faceBlock = entry.block.getSide(face);
+                Block extraBlock;
                 if (faceBlock.isWater()) {
                     this.level.setBlock(faceBlock, Block.get(BlockID.AIR), true);
                     ++waterRemoved;
                     if (entry.distance < 6) {
                         entries.add(new Entry(faceBlock, entry.distance + 1));
+                    }
+                } else if (faceBlock.canContainWater() && !faceBlock.is(BARRIER) && (extraBlock = level.getExtraBlock(faceBlock)).isWater()) {
+                    level.setExtraBlock(extraBlock, get(AIR), true);
+                    ++waterRemoved;
+                    if (entry.distance < 6) {
+                        entries.add(new Entry(extraBlock, entry.distance + 1));
                     }
                 } else if (faceBlock.getId() == BlockID.AIR) {
                     if (entry.distance < 6) {
