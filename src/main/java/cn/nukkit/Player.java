@@ -6043,10 +6043,6 @@ public class Player extends EntityHuman implements CommandSender, InventoryHolde
         return false;
     }
 
-    public final int rawHashCode() {
-        return System.identityHashCode(this);
-    }
-
     public boolean isBreakingBlock() {
         return this.breakingBlock != null;
     }

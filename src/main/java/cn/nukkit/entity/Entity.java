@@ -2953,8 +2953,16 @@ public abstract class Entity extends Location implements Metadatable, EntityData
         this.server.getEntityMetadata().removeMetadata(this, metadataKey, owningPlugin);
     }
 
+    public final int rawHashCode() {
+        return System.identityHashCode(this);
+    }
+
     public Server getServer() {
         return server;
+    }
+
+    public Entity getEntity() {
+        return this;
     }
 
     public boolean isClosed() {
