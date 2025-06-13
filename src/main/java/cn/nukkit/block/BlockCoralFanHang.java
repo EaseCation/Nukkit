@@ -105,17 +105,7 @@ public class BlockCoralFanHang extends BlockFlowable implements Faceable {
 
     @Override
     public BlockFace getBlockFace() {
-        switch (getDirection()) {
-            default:
-            case 0:
-                return BlockFace.WEST;
-            case 1:
-                return BlockFace.EAST;
-            case 2:
-                return BlockFace.NORTH;
-            case 3:
-                return BlockFace.SOUTH;
-        }
+        return BlockFace.fromReversedHorizontalIndex(getDirection()).getOpposite();
     }
 
     public int getCoralType() {

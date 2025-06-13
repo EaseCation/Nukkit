@@ -13,7 +13,6 @@ import java.util.UUID;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.function.Consumer;
 import java.util.function.Supplier;
-import java.util.regex.Pattern;
 
 import static cn.nukkit.SharedConstants.*;
 
@@ -37,6 +36,12 @@ public class Utils {
     public static void pauseInIde(String message) {
         if (BREAKPOINT_DEBUGGING) {
             PAUSER.accept(message);
+        }
+    }
+
+    public static void pauseInIde(Supplier<String> message) {
+        if (BREAKPOINT_DEBUGGING) {
+            pauseInIde(message.get());
         }
     }
 

@@ -97,20 +97,28 @@ public class BlockJigsaw extends BlockSolid implements Faceable {
                 return false;
             }
 
+            int rotation = 0;
+            BlockFace facing = player.getHorizontalFacing().getOpposite();
             if (Math.abs(player.x - x) < 2 && Math.abs(player.z - z) < 2) {
                 double eyeY = player.y + player.getEyeHeight();
                 if (eyeY - y > 2) {
-                    setDamage(BlockFace.UP.getIndex());
+                    switch (facing) {
+                        case EAST -> rotation = 1;
+                        case SOUTH -> rotation = 2;
+                        case WEST -> rotation = 3;
+                    }
+                    facing = BlockFace.UP;
                 } else if (y - eyeY > 0) {
-                    setDamage(BlockFace.DOWN.getIndex());
-                } else {
-                    setDamage(player.getHorizontalFacing().getOpposite().getIndex());
+                    switch (facing) {
+                        case WEST -> rotation = 1;
+                        case SOUTH -> rotation = 2;
+                        case EAST -> rotation = 3;
+                    }
+                    facing = BlockFace.DOWN;
                 }
-            } else {
-                setDamage(player.getHorizontalFacing().getOpposite().getIndex());
             }
 
-            //TODO: rotation
+            setDamage((rotation << FACING_DIRECTION_BITS) | facing.getIndex());
         }
 
         if (!super.place(item, block, target, face, fx, fy, fz, player)) {

@@ -91,6 +91,10 @@ public enum BlockFace {
         return VALUES[Math.abs(index % VALUES.length)];
     }
 
+    public static BlockFace fromOrdinal(int ordinal) {
+        return VALUES[ordinal];
+    }
+
     /**
      * Get a BlockFace by it's horizontal index (0-3). The order is S-W-N-E
      *
@@ -98,7 +102,7 @@ public enum BlockFace {
      * @return block face
      */
     public static BlockFace fromHorizontalIndex(int index) {
-        return HORIZONTALS[Math.abs(index % HORIZONTALS.length)];
+        return HORIZONTALS[index & 0x3];
     }
 
     public static BlockFace fromReversedHorizontalIndex(int index) {
@@ -300,10 +304,14 @@ public enum BlockFace {
     }
 
     public enum Axis implements Predicate<BlockFace> {
-        X("x"),
-        Y("y"),
-        Z("z");
+        X(1, "x"),
+        Y(0, "y"),
+        Z(2, "z");
 
+        private static final Axis[] VALUES = values();
+        private static final Axis[] BY_INDEX = new Axis[3];
+
+        private final int index;
         private final String name;
         private Plane plane;
 
@@ -312,10 +320,27 @@ public enum BlockFace {
             X.plane = Plane.HORIZONTAL;
             Y.plane = Plane.VERTICAL;
             Z.plane = Plane.HORIZONTAL;
+
+            for (Axis axis : VALUES) {
+                BY_INDEX[axis.index] = axis;
+            }
         }
 
-        Axis(String name) {
+        Axis(int index, String name) {
+            this.index = index;
             this.name = name;
+        }
+
+        public static Axis fromOrdinal(int ordinal) {
+            return VALUES[ordinal];
+        }
+
+        public static Axis fromIndex(int index) {
+            return BY_INDEX[index];
+        }
+
+        public int getIndex() {
+            return index;
         }
 
         public boolean isVertical() {
@@ -342,6 +367,10 @@ public enum BlockFace {
         @Override
         public String toString() {
             return name;
+        }
+
+        public static Axis[] getValues() {
+            return VALUES;
         }
     }
 

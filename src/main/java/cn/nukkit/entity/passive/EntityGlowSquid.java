@@ -23,12 +23,12 @@ public class EntityGlowSquid extends EntityWaterAnimal {
 
     @Override
     public float getHeight() {
-        return 0.95f;
+        return 0.8f;
     }
 
     @Override
     public float getWidth() {
-        return 0.95f;
+        return 0.8f;
     }
 
     @Override

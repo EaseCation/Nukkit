@@ -12,11 +12,7 @@ import cn.nukkit.item.enchantment.Enchantment;
 import cn.nukkit.level.Level;
 import cn.nukkit.level.MovingObjectPosition;
 import cn.nukkit.level.Position;
-import cn.nukkit.math.AxisAlignedBB;
-import cn.nukkit.math.BlockFace;
-import cn.nukkit.math.Mth;
-import cn.nukkit.math.SimpleAxisAlignedBB;
-import cn.nukkit.math.Vector3;
+import cn.nukkit.math.*;
 import cn.nukkit.metadata.MetadataValue;
 import cn.nukkit.metadata.Metadatable;
 import cn.nukkit.network.protocol.LevelSoundEventPacket;
@@ -755,6 +751,38 @@ public abstract class Block extends Position implements Metadatable, Cloneable, 
             return false;
         }
         return legacyBlock.hasState(state);
+    }
+
+    public void rotate(Rotation rotation) {
+        setDamage(rotated(rotation));
+    }
+
+    public int rotated(Rotation rotation) {
+        int meta = getDamage();
+        if (rotation == Rotation.NONE) {
+            return meta;
+        }
+        BlockLegacy legacyBlock = getBlockLegacy();
+        if (legacyBlock == null) {
+            return meta;
+        }
+        return legacyBlock.rotate(meta, rotation);
+    }
+
+    public void mirror(Mirror mirror) {
+        setDamage(mirrored(mirror));
+    }
+
+    public int mirrored(Mirror mirror) {
+        int meta = getDamage();
+        if (mirror == Mirror.NONE) {
+            return meta;
+        }
+        BlockLegacy legacyBlock = getBlockLegacy();
+        if (legacyBlock == null) {
+            return meta;
+        }
+        return legacyBlock.mirror(meta, mirror);
     }
 
     public final void position(Position v) {

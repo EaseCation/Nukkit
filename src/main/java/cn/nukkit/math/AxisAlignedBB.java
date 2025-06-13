@@ -382,6 +382,30 @@ public interface AxisAlignedBB extends Cloneable {
         return getFloorMaxZ() >> 4;
     }
 
+    default double getSize() {
+        return (getXSize() + getYSize() + getZSize()) / 3;
+    }
+
+    default double getXSize() {
+        return getMaxX() - getMinX();
+    }
+
+    default double getYSize() {
+        return getMaxY() - getMinY();
+    }
+
+    default double getZSize() {
+        return getMaxZ() - getMinZ();
+    }
+
+    default Vector3 getMin() {
+        return new Vector3(getMinX(), getMinY(), getMinZ());
+    }
+
+    default Vector3 getMax() {
+        return new Vector3(getMaxX(), getMaxY(), getMaxZ());
+    }
+
     AxisAlignedBB clone();
 
     default void forEach(BBConsumer<?> action) {

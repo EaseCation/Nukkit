@@ -1,29 +1,41 @@
 package cn.nukkit.block.state.enumeration;
 
 import cn.nukkit.Player;
+import cn.nukkit.math.BlockFace;
 import cn.nukkit.math.BlockVector3;
 import cn.nukkit.math.Vector3;
 
-public enum MinecraftFacingDirectionState {
-    DOWN("down"),
-    UP("up"),
-    NORTH("north"),
-    SOUTH("south"),
-    WEST("west"),
-    EAST("east"),
+public enum MinecraftFacingDirectionState implements BlockFaceState {
+    DOWN("down", BlockFace.DOWN),
+    UP("up", BlockFace.UP),
+    NORTH("north", BlockFace.NORTH),
+    SOUTH("south", BlockFace.SOUTH),
+    WEST("west", BlockFace.WEST),
+    EAST("east", BlockFace.EAST),
     ;
 
     private static final MinecraftFacingDirectionState[] VALUES = values();
 
     private final String name;
+    private final BlockFace facing;
 
-    MinecraftFacingDirectionState(String name) {
+    MinecraftFacingDirectionState(String name, BlockFace facing) {
         this.name = name;
+        this.facing = facing;
     }
 
     @Override
     public String toString() {
         return name;
+    }
+
+    @Override
+    public BlockFace getBlockFace() {
+        return facing;
+    }
+
+    public static MinecraftFacingDirectionState from(BlockFace facing) {
+        return from(facing.getIndex());
     }
 
     public static MinecraftFacingDirectionState from(int value) {

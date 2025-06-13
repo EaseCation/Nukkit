@@ -78,7 +78,11 @@ public class BlockEndRod extends BlockTransparent implements Faceable {
 
     @Override
     public BlockFace getBlockFace() {
-        return BlockFace.fromHorizontalIndex(this.getDamage() & 0x07);
+        BlockFace facing = BlockFace.fromIndex(this.getDamage() & 0x07);
+        if (facing.isHorizontal()) {
+            facing = facing.getOpposite();
+        }
+        return facing;
     }
 
     @Override
