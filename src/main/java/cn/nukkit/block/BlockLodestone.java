@@ -94,10 +94,6 @@ public class BlockLodestone extends BlockSolid {
     protected BlockEntityLodestone createBlockEntity(@Nullable Item item) {
         CompoundTag nbt = BlockEntity.getDefaultCompound(this, BlockEntity.LODESTONE);
 
-        if (item != null && item.hasCustomName()) {
-            nbt.putString("CustomName", item.getCustomName());
-        }
-
         return (BlockEntityLodestone) BlockEntities.createBlockEntity(BlockEntityType.LODESTONE, getChunk(), nbt);
     }
 

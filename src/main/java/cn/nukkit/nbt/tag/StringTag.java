@@ -24,7 +24,7 @@ public class StringTag extends Tag {
     }
 
     @Override
-    void load(NBTInputStream dis) throws IOException {
+    void load(NBTInputStream dis, int maxDepth) throws IOException {
         data = dis.readUTF();
     }
 

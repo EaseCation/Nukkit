@@ -90,10 +90,6 @@ public class BlockSculkCatalyst extends BlockSolid {
     protected BlockEntitySculkCatalyst createBlockEntity(@Nullable Item item) {
         CompoundTag nbt = BlockEntity.getDefaultCompound(this, BlockEntity.SCULK_CATALYST);
 
-        if (item != null && item.hasCustomName()) {
-            nbt.putString("CustomName", item.getCustomName());
-        }
-
         return (BlockEntitySculkCatalyst) BlockEntities.createBlockEntity(BlockEntityType.SCULK_CATALYST, getChunk(), nbt);
     }
 

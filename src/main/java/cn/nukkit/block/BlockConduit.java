@@ -122,10 +122,6 @@ public class BlockConduit extends BlockTransparent {
     protected BlockEntityConduit createBlockEntity(@Nullable Item item) {
         CompoundTag nbt = BlockEntity.getDefaultCompound(this, BlockEntity.CONDUIT);
 
-        if (item != null && item.hasCustomName()) {
-            nbt.putString("CustomName", item.getCustomName());
-        }
-
         return (BlockEntityConduit) BlockEntities.createBlockEntity(BlockEntityType.CONDUIT, getChunk(), nbt);
     }
 

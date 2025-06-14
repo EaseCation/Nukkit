@@ -9,6 +9,7 @@ import cn.nukkit.item.Item;
 import cn.nukkit.item.ItemID;
 import cn.nukkit.math.BlockFace;
 import cn.nukkit.nbt.tag.CompoundTag;
+import cn.nukkit.nbt.tag.Tag;
 
 import javax.annotation.Nullable;
 import java.util.concurrent.ThreadLocalRandom;
@@ -116,7 +117,14 @@ public class BlockMobSpawner extends BlockSolid {
         }
 
         BlockEntityMobSpawner blockEntity = getBlockEntity();
-        if (blockEntity != null && blockEntity.setEntityType(item.getDamage()) && player != null && !player.isCreative()) {
+        if (blockEntity == null) {
+            blockEntity = createBlockEntity(null);
+            if (blockEntity == null) {
+                return true;
+            }
+        }
+
+        if (blockEntity.setEntityType(item.getDamage()) && player != null && !player.isCreative()) {
             item.count--;
         }
         return true;
@@ -125,8 +133,10 @@ public class BlockMobSpawner extends BlockSolid {
     protected BlockEntityMobSpawner createBlockEntity(@Nullable Item item) {
         CompoundTag nbt = BlockEntity.getDefaultCompound(this, BlockEntity.MOB_SPAWNER);
 
-        if (item != null && item.hasCustomName()) {
-            nbt.putString("CustomName", item.getCustomName());
+        if (item != null && item.hasCustomBlockData()) {
+            for (Tag tag : item.getCustomBlockData().getAllTags()) {
+                nbt.put(tag.getName(), tag);
+            }
         }
 
         return (BlockEntityMobSpawner) BlockEntities.createBlockEntity(BlockEntityType.MOB_SPAWNER, getChunk(), nbt);

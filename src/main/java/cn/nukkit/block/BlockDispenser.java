@@ -15,6 +15,8 @@ import cn.nukkit.item.ItemTool;
 import cn.nukkit.level.Level;
 import cn.nukkit.math.BlockFace;
 import cn.nukkit.math.Vector3;
+import cn.nukkit.nbt.tag.CompoundTag;
+import cn.nukkit.nbt.tag.Tag;
 import cn.nukkit.network.protocol.LevelEventPacket;
 import cn.nukkit.utils.Faceable;
 
@@ -109,9 +111,11 @@ public class BlockDispenser extends BlockSolid implements Faceable {
         }
 
         InventoryHolder blockEntity = getBlockEntity();
-
         if (blockEntity == null) {
-            return false;
+            blockEntity = createBlockEntity(null);
+            if (blockEntity == null) {
+                return true;
+            }
         }
 
         player.addWindow(blockEntity.getInventory());
@@ -143,12 +147,26 @@ public class BlockDispenser extends BlockSolid implements Faceable {
 
         this.getLevel().setBlock(block, this, true);
 
-        createBlockEntity();
+        createBlockEntity(item);
         return true;
     }
 
-    protected void createBlockEntity() {
-        BlockEntities.createBlockEntity(BlockEntityType.DISPENSER, getChunk(), BlockEntity.getDefaultCompound(this, BlockEntity.DISPENSER));
+    protected InventoryHolder createBlockEntity(@Nullable Item item) {
+        CompoundTag nbt = BlockEntity.getDefaultCompound(this, getBlockEntityId());
+
+        if (item != null) {
+            if (item.hasCustomName()) {
+                nbt.putString("CustomName", item.getCustomName());
+            }
+
+            if (item.hasCustomBlockData()) {
+                for (Tag tag : item.getCustomBlockData().getAllTags()) {
+                    nbt.put(tag.getName(), tag);
+                }
+            }
+        }
+
+        return (InventoryHolder) BlockEntities.createBlockEntity(getBlockEntityType(), getChunk(), nbt);
     }
 
     @Nullable
@@ -252,6 +270,10 @@ public class BlockDispenser extends BlockSolid implements Faceable {
 
     protected DispenseBehavior getDispenseBehavior(Item item) {
         return DispenseBehaviorRegister.getBehavior(item.getId());
+    }
+
+    protected String getBlockEntityId() {
+        return BlockEntity.DISPENSER;
     }
 
     @Override

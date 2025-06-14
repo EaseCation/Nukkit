@@ -137,10 +137,6 @@ public class BlockDaylightDetector extends BlockTransparent {
     protected BlockEntityDaylightDetector createBlockEntity(@Nullable Item item) {
         CompoundTag nbt = BlockEntity.getDefaultCompound(this, BlockEntity.DAYLIGHT_DETECTOR);
 
-        if (item != null && item.hasCustomName()) {
-            nbt.putString("CustomName", item.getCustomName());
-        }
-
         return (BlockEntityDaylightDetector) BlockEntities.createBlockEntity(BlockEntityType.DAYLIGHT_DETECTOR, getChunk(), nbt);
     }
 

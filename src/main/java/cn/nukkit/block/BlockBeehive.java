@@ -11,6 +11,7 @@ import cn.nukkit.level.GameRule;
 import cn.nukkit.math.BlockFace;
 import cn.nukkit.math.Mth;
 import cn.nukkit.nbt.tag.CompoundTag;
+import cn.nukkit.nbt.tag.Tag;
 import cn.nukkit.network.protocol.LevelSoundEventPacket;
 import cn.nukkit.utils.BlockColor;
 import cn.nukkit.utils.Faceable;
@@ -165,8 +166,10 @@ public class BlockBeehive extends BlockSolid implements Faceable {
     protected BlockEntityBeehive createBlockEntity(@Nullable Item item) {
         CompoundTag nbt = BlockEntity.getDefaultCompound(this, BlockEntity.BEEHIVE);
 
-        if (item != null && item.hasCustomName()) {
-            nbt.putString("CustomName", item.getCustomName());
+        if (item != null && item.hasCustomBlockData()) {
+            for (Tag tag : item.getCustomBlockData().getAllTags()) {
+                nbt.put(tag.getName(), tag);
+            }
         }
 
         return (BlockEntityBeehive) BlockEntities.createBlockEntity(BlockEntityType.BEEHIVE, getChunk(), nbt);

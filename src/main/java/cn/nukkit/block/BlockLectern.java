@@ -10,6 +10,7 @@ import cn.nukkit.item.ItemBookWritable;
 import cn.nukkit.level.Level;
 import cn.nukkit.math.BlockFace;
 import cn.nukkit.nbt.tag.CompoundTag;
+import cn.nukkit.nbt.tag.Tag;
 import cn.nukkit.network.protocol.LevelSoundEventPacket;
 import cn.nukkit.network.protocol.types.ContainerType;
 import cn.nukkit.utils.BlockColor;
@@ -244,8 +245,10 @@ public class BlockLectern extends BlockTransparent implements Faceable {
     protected BlockEntityLectern createBlockEntity(@Nullable Item item) {
         CompoundTag nbt = BlockEntity.getDefaultCompound(this, BlockEntity.LECTERN);
 
-        if (item != null && item.hasCustomName()) {
-            nbt.putString("CustomName", item.getCustomName());
+        if (item != null && item.hasCustomBlockData()) {
+            for (Tag tag : item.getCustomBlockData().getAllTags()) {
+                nbt.put(tag.getName(), tag);
+            }
         }
 
         return (BlockEntityLectern) BlockEntities.createBlockEntity(BlockEntityType.LECTERN, getChunk(), nbt);

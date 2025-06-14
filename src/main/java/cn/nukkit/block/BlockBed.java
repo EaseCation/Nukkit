@@ -20,6 +20,8 @@ import cn.nukkit.utils.BlockColor;
 import cn.nukkit.utils.DyeColor;
 import cn.nukkit.utils.Faceable;
 
+import javax.annotation.Nullable;
+
 /**
  * author: MagicDroidX
  * Nukkit Project
@@ -75,6 +77,10 @@ public class BlockBed extends BlockTransparent implements Faceable {
 
     @Override
     public boolean onActivate(Item item, BlockFace face, float fx, float fy, float fz, Player player) {
+//        if (getBlockEntity() == null) {
+//            createBlockEntity();
+//        }
+
         if (this.level.getDimension() != Dimension.OVERWORLD) {
             if (!this.level.getGameRules().getBoolean(GameRule.RESPAWN_BLOCKS_EXPLODE)) {
                 return true;
@@ -190,10 +196,9 @@ public class BlockBed extends BlockTransparent implements Faceable {
 
     public DyeColor getDyeColor() {
         if (this.level != null) {
-            BlockEntity blockEntity = this.level.getBlockEntity(this);
-
-            if (blockEntity instanceof BlockEntityBed) {
-                return ((BlockEntityBed) blockEntity).getDyeColor();
+            BlockEntityBed blockEntity = getBlockEntity();
+            if (blockEntity != null) {
+                return blockEntity.getDyeColor();
             }
         }
 
@@ -223,5 +228,21 @@ public class BlockBed extends BlockTransparent implements Faceable {
     @Override
     public boolean canProvideSupport(BlockFace face, SupportType type) {
         return false;
+    }
+
+    protected BlockEntityBed createBlockEntity() {
+        return (BlockEntityBed) BlockEntities.createBlockEntity(BlockEntityType.BED, getChunk(),
+                BlockEntity.getDefaultCompound(this, BlockEntity.BED));
+    }
+
+    @Nullable
+    protected BlockEntityBed getBlockEntity() {
+        if (level == null) {
+            return null;
+        }
+        if (level.getBlockEntity(this) instanceof BlockEntityBed blockEntity) {
+            return blockEntity;
+        }
+        return null;
     }
 }

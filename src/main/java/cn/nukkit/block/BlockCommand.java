@@ -8,6 +8,7 @@ import cn.nukkit.blockentity.BlockEntityType;
 import cn.nukkit.item.Item;
 import cn.nukkit.math.BlockFace;
 import cn.nukkit.nbt.tag.CompoundTag;
+import cn.nukkit.nbt.tag.Tag;
 import cn.nukkit.utils.BlockColor;
 import cn.nukkit.utils.Faceable;
 
@@ -146,8 +147,16 @@ public class BlockCommand extends BlockSolid implements Faceable {
     protected BlockEntityCommandBlock createBlockEntity(@Nullable Item item) {
         CompoundTag nbt = BlockEntity.getDefaultCompound(this, BlockEntity.COMMAND_BLOCK);
 
-        if (item != null && item.hasCustomName()) {
-            nbt.putString("CustomName", item.getCustomName());
+        if (item != null) {
+            if (item.hasCustomName()) {
+                nbt.putString("CustomName", item.getCustomName());
+            }
+
+            if (item.hasCustomBlockData()) {
+                for (Tag tag : item.getCustomBlockData().getAllTags()) {
+                    nbt.put(tag.getName(), tag);
+                }
+            }
         }
 
         return (BlockEntityCommandBlock) BlockEntities.createBlockEntity(BlockEntityType.COMMAND_BLOCK, getChunk(), nbt);

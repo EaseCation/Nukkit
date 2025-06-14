@@ -71,7 +71,10 @@ public class BlockItemFrame extends BlockTransparent implements Faceable {
     public boolean onActivate(Item item, BlockFace face, float fx, float fy, float fz, Player player) {
         BlockEntityItemFrame itemFrame = getBlockEntity();
         if (itemFrame == null) {
-            return false;
+            itemFrame = createBlockEntity(null);
+            if (itemFrame == null) {
+                return true;
+            }
         }
 
         if (itemFrame.getItem().isNull()) {
@@ -212,15 +215,9 @@ public class BlockItemFrame extends BlockTransparent implements Faceable {
     protected BlockEntityItemFrame createBlockEntity(@Nullable Item item) {
         CompoundTag nbt = BlockEntity.getDefaultCompound(this, getBlockEntityId());
 
-        if (item != null) {
-            if (item.hasCustomName()) {
-                nbt.putString("CustomName", item.getCustomName());
-            }
-
-            if (item.hasCustomBlockData()) {
-                for (Tag tag : item.getCustomBlockData().getAllTags()) {
-                    nbt.put(tag.getName(), tag);
-                }
+        if (item != null && item.hasCustomBlockData()) {
+            for (Tag tag : item.getCustomBlockData().getAllTags()) {
+                nbt.put(tag.getName(), tag);
             }
         }
 

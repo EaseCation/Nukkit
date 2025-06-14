@@ -165,10 +165,6 @@ public class BlockSculkShrieker extends BlockTransparent {
     protected BlockEntitySculkShrieker createBlockEntity(@Nullable Item item) {
         CompoundTag nbt = BlockEntity.getDefaultCompound(this, BlockEntity.SCULK_SHRIEKER);
 
-        if (item != null && item.hasCustomName()) {
-            nbt.putString("CustomName", item.getCustomName());
-        }
-
         return (BlockEntitySculkShrieker) BlockEntities.createBlockEntity(BlockEntityType.SCULK_SHRIEKER, getChunk(), nbt);
     }
 

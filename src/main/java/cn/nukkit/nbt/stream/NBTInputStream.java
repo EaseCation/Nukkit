@@ -1,5 +1,6 @@
 package cn.nukkit.nbt.stream;
 
+import cn.nukkit.utils.DataLengthException;
 import cn.nukkit.utils.VarInt;
 
 import java.io.DataInput;
@@ -144,6 +145,16 @@ public class NBTInputStream implements DataInput, AutoCloseable {
     @Override
     public String readUTF() throws IOException {
         int length = network ? (int) VarInt.readUnsignedVarInt(stream) : this.readUnsignedShort();
+        byte[] bytes = new byte[length];
+        this.stream.read(bytes);
+        return new String(bytes, StandardCharsets.UTF_8);
+    }
+
+    public String readUTF(int maxLen) throws IOException {
+        int length = network ? (int) VarInt.readUnsignedVarInt(stream) : this.readUnsignedShort();
+        if (length > maxLen) {
+            throw new DataLengthException("Input too long: " + length + " >" + maxLen);
+        }
         byte[] bytes = new byte[length];
         this.stream.read(bytes);
         return new String(bytes, StandardCharsets.UTF_8);

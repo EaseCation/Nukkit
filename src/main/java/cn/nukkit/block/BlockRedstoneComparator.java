@@ -8,8 +8,9 @@ import cn.nukkit.blockentity.BlockEntityType;
 import cn.nukkit.item.Item;
 import cn.nukkit.level.Level;
 import cn.nukkit.math.BlockFace;
-import cn.nukkit.nbt.tag.CompoundTag;
 import cn.nukkit.network.protocol.LevelSoundEventPacket;
+
+import javax.annotation.Nullable;
 
 /**
  * @author CreeperFace
@@ -130,33 +131,35 @@ public abstract class BlockRedstoneComparator extends BlockRedstoneDiode {
         this.level.setBlock(this, this, true, false);
         //bug?
 
-        this.onChange();
+        BlockEntityComparator blockEntity = getBlockEntity();
+        if (blockEntity == null) {
+            blockEntity = createBlockEntity();
+        }
+        this.onChange(blockEntity);
         return true;
     }
 
     @Override
     public int onUpdate(int type) {
         if (type == Level.BLOCK_UPDATE_SCHEDULED) {
-            this.onChange();
+            this.onChange(getBlockEntity());
             return type;
         }
 
         return super.onUpdate(type);
     }
 
-    private void onChange() {
+    private void onChange(BlockEntityComparator blockEntity) {
         if (!this.level.isRedstoneEnabled()) {
             return;
         }
 
         int output = this.calculateOutput();
-        BlockEntity blockEntity = this.level.getBlockEntity(this);
         int currentOutput = 0;
 
-        if (blockEntity instanceof BlockEntityComparator) {
-            BlockEntityComparator blockEntityComparator = (BlockEntityComparator) blockEntity;
-            currentOutput = blockEntityComparator.getOutputSignal();
-            blockEntityComparator.setOutputSignal(output);
+        if (blockEntity != null) {
+            currentOutput = blockEntity.getOutputSignal();
+            blockEntity.setOutputSignal(output);
         }
 
         if (currentOutput != output || getMode() == Mode.COMPARE) {
@@ -176,8 +179,7 @@ public abstract class BlockRedstoneComparator extends BlockRedstoneDiode {
     @Override
     public boolean place(Item item, Block block, Block target, BlockFace face, float fx, float fy, float fz, Player player) {
         if (super.place(item, block, target, face, fx, fy, fz, player)) {
-            CompoundTag nbt = BlockEntity.getDefaultCompound(this, BlockEntity.COMPARATOR);
-            BlockEntityComparator comparator = (BlockEntityComparator) BlockEntities.createBlockEntity(BlockEntityType.COMPARATOR, this.level.getChunk((int) this.x >> 4, (int) this.z >> 4), nbt);
+            BlockEntityComparator comparator = createBlockEntity();
             if (comparator == null) {
                 return false;
             }
@@ -201,6 +203,22 @@ public abstract class BlockRedstoneComparator extends BlockRedstoneDiode {
     @Override
     public Item toItem(boolean addUserData) {
         return Item.get(Item.COMPARATOR);
+    }
+
+    protected BlockEntityComparator createBlockEntity() {
+        return (BlockEntityComparator) BlockEntities.createBlockEntity(BlockEntityType.COMPARATOR, getChunk(),
+                BlockEntity.getDefaultCompound(this, BlockEntity.COMPARATOR));
+    }
+
+    @Nullable
+    protected BlockEntityComparator getBlockEntity() {
+        if (level == null) {
+            return null;
+        }
+        if (level.getBlockEntity(this) instanceof BlockEntityComparator blockEntity) {
+            return blockEntity;
+        }
+        return null;
     }
 
     public enum Mode {

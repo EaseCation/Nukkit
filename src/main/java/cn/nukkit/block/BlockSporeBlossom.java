@@ -109,10 +109,6 @@ public class BlockSporeBlossom extends BlockFlowable {
     protected BlockEntitySporeBlossom createBlockEntity(@Nullable Item item) {
         CompoundTag nbt = BlockEntity.getDefaultCompound(this, BlockEntity.SPORE_BLOSSOM);
 
-        if (item != null && item.hasCustomName()) {
-            nbt.putString("CustomName", item.getCustomName());
-        }
-
         return (BlockEntitySporeBlossom) BlockEntities.createBlockEntity(BlockEntityType.SPORE_BLOSSOM, getChunk(), nbt);
     }
 

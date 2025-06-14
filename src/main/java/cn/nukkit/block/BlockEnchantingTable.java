@@ -92,7 +92,7 @@ public class BlockEnchantingTable extends BlockTransparent {
             if (enchantTable == null) {
                 enchantTable = createBlockEntity(null);
                 if (enchantTable == null) {
-                    return false;
+                    return true;
                 }
             }
 

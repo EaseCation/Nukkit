@@ -38,7 +38,7 @@ public class DoubleTag extends NumberTag<Double> {
     }
 
     @Override
-    void load(NBTInputStream dis) throws IOException {
+    void load(NBTInputStream dis, int maxDepth) throws IOException {
         data = dis.readDouble();
     }
 

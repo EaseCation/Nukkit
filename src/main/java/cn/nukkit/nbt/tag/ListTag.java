@@ -4,6 +4,7 @@ import cn.nukkit.math.BlockVector3;
 import cn.nukkit.math.Vector3;
 import cn.nukkit.nbt.stream.NBTInputStream;
 import cn.nukkit.nbt.stream.NBTOutputStream;
+import cn.nukkit.utils.DataDepthException;
 import it.unimi.dsi.fastutil.objects.ObjectArrayList;
 
 import java.io.IOException;
@@ -67,14 +68,18 @@ public class ListTag<T extends Tag> extends Tag implements Iterable<T> {
 
     @Override
     @SuppressWarnings("unchecked")
-    void load(NBTInputStream dis) throws IOException {
+    void load(NBTInputStream dis, int maxDepth) throws IOException {
+        if (--maxDepth < 0) {
+            throw new DataDepthException("Attempted to read NBT tag with too high complexity");
+        }
+
         type = dis.readByte();
         int size = dis.readInt();
 
         list.clear();
         for (int i = 0; i < size; i++) {
             Tag tag = Tag.newTag(type, null);
-            tag.load(dis);
+            tag.load(dis, maxDepth);
             tag.setName("");
             list.add((T) tag);
         }

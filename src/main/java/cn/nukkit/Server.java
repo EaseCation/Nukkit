@@ -1646,7 +1646,7 @@ public class Server {
                 } catch (IOException ex) {
 //                    throw new RuntimeException(ex);
                 }
-                log.warn(this.getLanguage().translate("nukkit.data.playerCorrupted", name));
+                log.warn(this.getLanguage().translate("nukkit.data.playerCorrupted", name), e);
             }
         } else {
             log.warn(this.getLanguage().translate("nukkit.data.playerNotFound", name));

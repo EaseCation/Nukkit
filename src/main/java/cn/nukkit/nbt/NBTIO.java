@@ -28,6 +28,7 @@ import java.util.zip.GZIPInputStream;
  * A Named Binary Tag library for Nukkit Project
  */
 public class NBTIO {
+    public static int MAX_DEPTH = 16; // 512 in vanilla
 
     public static CompoundTag putItemHelper(@Nullable Item item) {
         return ItemSerializer.serializeItem(item);

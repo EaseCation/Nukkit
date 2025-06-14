@@ -3,6 +3,7 @@ package cn.nukkit.nbt.tag;
 import cn.nukkit.nbt.NBTIO;
 import cn.nukkit.nbt.stream.NBTInputStream;
 import cn.nukkit.nbt.stream.NBTOutputStream;
+import cn.nukkit.utils.DataDepthException;
 import it.unimi.dsi.fastutil.objects.Object2ObjectOpenHashMap;
 
 import javax.annotation.Nullable;
@@ -50,7 +51,7 @@ public class CompoundTag extends Tag implements Cloneable {
     }
 
     @Override
-    public void write(NBTOutputStream dos) throws IOException {
+    void write(NBTOutputStream dos) throws IOException {
         for (Map.Entry<String, Tag> entry : this.tags.entrySet()) {
             Tag.writeNamedTag(entry.getValue(), entry.getKey(), dos);
         }
@@ -59,10 +60,14 @@ public class CompoundTag extends Tag implements Cloneable {
     }
 
     @Override
-    public void load(NBTInputStream dis) throws IOException {
+    void load(NBTInputStream dis, int maxDepth) throws IOException {
+        if (--maxDepth < 0) {
+            throw new DataDepthException("Attempted to read NBT tag with too high complexity");
+        }
+
         tags.clear();
         Tag tag;
-        while ((tag = Tag.readNamedTag(dis)).getId() != Tag.TAG_End) {
+        while ((tag = Tag.readNamedTag(dis, maxDepth)).getId() != Tag.TAG_End) {
             tags.put(tag.getName(), tag);
         }
     }

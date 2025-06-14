@@ -9,6 +9,7 @@ import cn.nukkit.item.Item;
 import cn.nukkit.level.Level;
 import cn.nukkit.math.BlockFace;
 import cn.nukkit.nbt.tag.CompoundTag;
+import cn.nukkit.nbt.tag.Tag;
 import cn.nukkit.utils.BlockColor;
 
 import javax.annotation.Nullable;
@@ -109,8 +110,10 @@ public class BlockTrialSpawner extends BlockTransparent {
     protected BlockEntityTrialSpawner createBlockEntity(@Nullable Item item) {
         CompoundTag nbt = BlockEntity.getDefaultCompound(this, BlockEntity.TRIAL_SPAWNER);
 
-        if (item != null && item.hasCustomName()) {
-            nbt.putString("CustomName", item.getCustomName());
+        if (item != null && item.hasCustomBlockData()) {
+            for (Tag tag : item.getCustomBlockData().getAllTags()) {
+                nbt.put(tag.getName(), tag);
+            }
         }
 
         return (BlockEntityTrialSpawner) BlockEntities.createBlockEntity(BlockEntityType.TRIAL_SPAWNER, getChunk(), nbt);

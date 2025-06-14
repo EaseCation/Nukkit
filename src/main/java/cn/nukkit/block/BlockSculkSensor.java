@@ -205,10 +205,6 @@ public class BlockSculkSensor extends BlockTransparent {
     private BlockEntitySculkSensor createBlockEntity(@Nullable Item item) {
         CompoundTag nbt = BlockEntity.getDefaultCompound(this, BlockEntity.SCULK_SENSOR);
 
-        if (item != null && item.hasCustomName()) {
-            nbt.putString("CustomName", item.getCustomName());
-        }
-
         return (BlockEntitySculkSensor) BlockEntities.createBlockEntity(BlockEntityType.SCULK_SENSOR, getChunk(), nbt);
     }
 

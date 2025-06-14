@@ -8,6 +8,7 @@ import cn.nukkit.blockentity.BlockEntityType;
 import cn.nukkit.item.Item;
 import cn.nukkit.math.BlockFace;
 import cn.nukkit.nbt.tag.CompoundTag;
+import cn.nukkit.nbt.tag.Tag;
 import cn.nukkit.network.protocol.LevelSoundEventPacket;
 import cn.nukkit.utils.BlockColor;
 
@@ -99,8 +100,10 @@ public abstract class BlockBrushable extends BlockFallable {
     protected BlockEntityBrushableBlock createBlockEntity(@Nullable Item item) {
         CompoundTag nbt = BlockEntity.getDefaultCompound(this, BlockEntity.BRUSHABLE_BLOCK);
 
-        if (item != null && item.hasCustomName()) {
-            nbt.putString("CustomName", item.getCustomName());
+        if (item != null && item.hasCustomBlockData()) {
+            for (Tag tag : item.getCustomBlockData().getAllTags()) {
+                nbt.put(tag.getName(), tag);
+            }
         }
 
         return (BlockEntityBrushableBlock) BlockEntities.createBlockEntity(BlockEntityType.BRUSHABLE_BLOCK, getChunk(), nbt);

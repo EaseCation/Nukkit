@@ -11,6 +11,7 @@ import cn.nukkit.blockentity.BlockEntityType;
 import cn.nukkit.item.Item;
 import cn.nukkit.math.BlockFace;
 import cn.nukkit.nbt.tag.CompoundTag;
+import cn.nukkit.nbt.tag.Tag;
 
 import javax.annotation.Nullable;
 
@@ -106,8 +107,10 @@ public class BlockChemistryTable extends BlockSolid {
     protected BlockEntityChemistryTable createBlockEntity(@Nullable Item item) {
         CompoundTag nbt = BlockEntity.getDefaultCompound(this, BlockEntity.CHEMISTRY_TABLE);
 
-        if (item != null && item.hasCustomName()) {
-            nbt.putString("CustomName", item.getCustomName());
+        if (item != null && item.hasCustomBlockData()) {
+            for (Tag tag : item.getCustomBlockData().getAllTags()) {
+                nbt.put(tag.getName(), tag);
+            }
         }
 
         return (BlockEntityChemistryTable) BlockEntities.createBlockEntity(BlockEntityType.CHEMISTRY_TABLE, getChunk(), nbt);

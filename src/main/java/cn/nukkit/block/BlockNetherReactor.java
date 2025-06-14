@@ -89,10 +89,6 @@ public class BlockNetherReactor extends BlockSolid {
     protected BlockEntityNetherReactor createBlockEntity(@Nullable Item item) {
         CompoundTag nbt = BlockEntity.getDefaultCompound(this, BlockEntity.NETHER_REACTOR);
 
-        if (item != null && item.hasCustomName()) {
-            nbt.putString("CustomName", item.getCustomName());
-        }
-
         return (BlockEntityNetherReactor) BlockEntities.createBlockEntity(BlockEntityType.NETHER_REACTOR, getChunk(), nbt);
     }
 

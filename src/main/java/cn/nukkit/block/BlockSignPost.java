@@ -21,6 +21,8 @@ import cn.nukkit.utils.BlockColor;
 import cn.nukkit.utils.DyeColor;
 import cn.nukkit.utils.Faceable;
 
+import javax.annotation.Nullable;
+
 import static cn.nukkit.GameVersion.*;
 
 /**
@@ -163,8 +165,12 @@ public class BlockSignPost extends BlockTransparent implements Faceable {
 
     @Override
     public boolean onActivate(Item item, BlockFace face, float fx, float fy, float fz, Player player) {
-        if (!(level.getBlockEntity(this) instanceof BlockEntitySign sign)) {
-            return false;
+        BlockEntitySign sign = getBlockEntity();
+        if (sign == null) {
+            sign = createBlockEntity(null);
+            if (sign == null) {
+                return true;
+            }
         }
 
         if (sign.isWaxed()) {
@@ -340,5 +346,32 @@ public class BlockSignPost extends BlockTransparent implements Faceable {
 
     protected Vector3 getSignCenter() {
         return CENTER;
+    }
+
+    protected String getBlockEntityId() {
+        return BlockEntity.SIGN;
+    }
+
+    protected BlockEntitySign createBlockEntity(@Nullable Item item) {
+        CompoundTag nbt = BlockEntity.getDefaultCompound(this, getBlockEntityId());
+
+        if (item != null && item.hasCustomBlockData()) {
+            for (Tag tag : item.getCustomBlockData().getAllTags()) {
+                nbt.put(tag.getName(), tag);
+            }
+        }
+
+        return (BlockEntitySign) BlockEntities.createBlockEntity(getBlockEntityType(), getChunk(), nbt);
+    }
+
+    @Nullable
+    protected BlockEntitySign getBlockEntity() {
+        if (level == null) {
+            return null;
+        }
+        if (level.getBlockEntity(this) instanceof BlockEntitySign blockEntity) {
+            return blockEntity;
+        }
+        return null;
     }
 }

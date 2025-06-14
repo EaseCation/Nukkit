@@ -12,7 +12,10 @@ import cn.nukkit.level.Level;
 import cn.nukkit.math.BlockFace;
 import cn.nukkit.nbt.tag.CompoundTag;
 import cn.nukkit.nbt.tag.ListTag;
+import cn.nukkit.nbt.tag.Tag;
 import cn.nukkit.utils.Faceable;
+
+import javax.annotation.Nullable;
 
 /**
  * @author CreeperFace
@@ -85,13 +88,15 @@ public class BlockHopper extends BlockTransparent implements Faceable {
 
     @Override
     public boolean onActivate(Item item, BlockFace face, float fx, float fy, float fz, Player player) {
-        BlockEntity blockEntity = this.level.getBlockEntity(this);
-
-        if (blockEntity instanceof BlockEntityHopper) {
-            return player.addWindow(((BlockEntityHopper) blockEntity).getInventory()) != -1;
+        BlockEntityHopper blockEntity = getBlockEntity();
+        if (blockEntity == null) {
+            blockEntity = createBlockEntity(null);
+            if (blockEntity == null) {
+                return true;
+            }
         }
 
-        return false;
+        return player.addWindow(blockEntity.getInventory()) != -1;
     }
 
     @Override
@@ -198,5 +203,34 @@ public class BlockHopper extends BlockTransparent implements Faceable {
     @Override
     public boolean canProvideSupport(BlockFace face, SupportType type) {
         return face == BlockFace.UP || face == BlockFace.DOWN && type == SupportType.CENTER && getBlockFace() == BlockFace.DOWN;
+    }
+
+    protected BlockEntityHopper createBlockEntity(@Nullable Item item) {
+        CompoundTag nbt = BlockEntity.getDefaultCompound(this, BlockEntity.HOPPER);
+
+        if (item != null) {
+            if (item.hasCustomName()) {
+                nbt.putString("CustomName", item.getCustomName());
+            }
+
+            if (item.hasCustomBlockData()) {
+                for (Tag tag : item.getCustomBlockData().getAllTags()) {
+                    nbt.put(tag.getName(), tag);
+                }
+            }
+        }
+
+        return (BlockEntityHopper) BlockEntities.createBlockEntity(BlockEntityType.HOPPER, getChunk(), nbt);
+    }
+
+    @Nullable
+    protected BlockEntityHopper getBlockEntity() {
+        if (level == null) {
+            return null;
+        }
+        if (level.getBlockEntity(this) instanceof BlockEntityHopper blockEntity) {
+            return blockEntity;
+        }
+        return null;
     }
 }

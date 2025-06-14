@@ -1,9 +1,8 @@
 package cn.nukkit.block;
 
 import cn.nukkit.Player;
-import cn.nukkit.blockentity.BlockEntities;
 import cn.nukkit.blockentity.BlockEntity;
-import cn.nukkit.blockentity.BlockEntityHangingSign;
+import cn.nukkit.blockentity.BlockEntitySign;
 import cn.nukkit.blockentity.BlockEntityType;
 import cn.nukkit.item.Item;
 import cn.nukkit.level.Level;
@@ -12,9 +11,6 @@ import cn.nukkit.math.BlockFace;
 import cn.nukkit.math.BlockFace.Axis;
 import cn.nukkit.math.Mth;
 import cn.nukkit.math.SimpleAxisAlignedBB;
-import cn.nukkit.nbt.tag.CompoundTag;
-
-import javax.annotation.Nullable;
 
 public abstract class BlockHangingSign extends BlockSignPost {
     public static final int FACING_DIRECTION_MASK = 0b111;
@@ -144,7 +140,7 @@ public abstract class BlockHangingSign extends BlockSignPost {
         if (!level.setBlock(this, this, true)) {
             return false;
         }
-        BlockEntityHangingSign sign = createBlockEntity(item);
+        BlockEntitySign sign = createBlockEntity(item);
 
         if (player != null) {
             sign.lockedForEditingBy = player;
@@ -196,25 +192,9 @@ public abstract class BlockHangingSign extends BlockSignPost {
         return true;
     }
 
-    protected BlockEntityHangingSign createBlockEntity(@Nullable Item item) {
-        CompoundTag nbt = BlockEntity.getDefaultCompound(this, BlockEntity.HANGING_SIGN);
-
-        if (item != null && item.hasCustomName()) {
-            nbt.putString("CustomName", item.getCustomName());
-        }
-
-        return (BlockEntityHangingSign) BlockEntities.createBlockEntity(BlockEntityType.HANGING_SIGN, getChunk(), nbt);
-    }
-
-    @Nullable
-    protected BlockEntityHangingSign getBlockEntity() {
-        if (level == null) {
-            return null;
-        }
-        if (level.getBlockEntity(this) instanceof BlockEntityHangingSign blockEntity) {
-            return blockEntity;
-        }
-        return null;
+    @Override
+    protected String getBlockEntityId() {
+        return BlockEntity.HANGING_SIGN;
     }
 
     @Override

@@ -9,6 +9,7 @@ import cn.nukkit.inventory.ContainerInventory;
 import cn.nukkit.item.Item;
 import cn.nukkit.math.BlockFace;
 import cn.nukkit.nbt.tag.CompoundTag;
+import cn.nukkit.nbt.tag.Tag;
 import cn.nukkit.utils.BlockColor;
 import cn.nukkit.utils.Faceable;
 
@@ -152,8 +153,16 @@ public class BlockBarrel extends BlockSolid implements Faceable {
     protected BlockEntityBarrel createBlockEntity(@Nullable Item item) {
         CompoundTag nbt = BlockEntity.getDefaultCompound(this, BlockEntity.BARREL);
 
-        if (item != null && item.hasCustomName()) {
-            nbt.putString("CustomName", item.getCustomName());
+        if (item != null) {
+            if (item.hasCustomName()) {
+                nbt.putString("CustomName", item.getCustomName());
+            }
+
+            if (item.hasCustomBlockData()) {
+                for (Tag tag : item.getCustomBlockData().getAllTags()) {
+                    nbt.put(tag.getName(), tag);
+                }
+            }
         }
 
         return (BlockEntityBarrel) BlockEntities.createBlockEntity(BlockEntityType.BARREL, getChunk(), nbt);

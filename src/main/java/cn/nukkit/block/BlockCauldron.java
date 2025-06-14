@@ -99,13 +99,13 @@ public class BlockCauldron extends BlockTransparent {
 
     @Override
     public boolean onActivate(Item item, BlockFace face, float fx, float fy, float fz, Player player) {
-        BlockEntity be = this.level.getBlockEntity(this);
-
-        if (!(be instanceof BlockEntityCauldron)) {
-            return false;
+        BlockEntityCauldron cauldron = getBlockEntity();
+        if (cauldron == null) {
+            cauldron = createBlockEntity(null);
+            if (cauldron == null) {
+                return true;
+            }
         }
-
-        BlockEntityCauldron cauldron = (BlockEntityCauldron) be;
 
         switch (item.getId()) {
             case Item.BUCKET: {
@@ -658,22 +658,10 @@ public class BlockCauldron extends BlockTransparent {
 
     @Override
     public boolean place(Item item, Block block, Block target, BlockFace face, float fx, float fy, float fz, Player player) {
-        CompoundTag nbt = BlockEntity.getDefaultCompound(this, BlockEntity.CAULDRON)
-                .putShort("PotionId", -1)
-                .putShort("PotionType", BlockEntityCauldron.POTION_TYPE_NONE);
-
-        if (item.hasCustomBlockData()) {
-            Map<String, Tag> customData = item.getCustomBlockData().getTags();
-            for (Map.Entry<String, Tag> tag : customData.entrySet()) {
-                nbt.put(tag.getKey(), tag.getValue());
-            }
-        }
-
-        BlockEntityCauldron cauldron = (BlockEntityCauldron) BlockEntities.createBlockEntity(BlockEntityType.CAULDRON, this.getChunk(), nbt);
-        if (cauldron == null) {
+        if (!super.place(item, block, target, face, fx, fy, fz, player)) {
             return false;
         }
-        this.getLevel().setBlock(block, this, true, true);
+        createBlockEntity(item);
         return true;
     }
 
@@ -816,10 +804,14 @@ public class BlockCauldron extends BlockTransparent {
     }
 
     protected BlockEntityCauldron createBlockEntity(@Nullable Item item) {
-        CompoundTag nbt = BlockEntity.getDefaultCompound(this, BlockEntity.CAULDRON);
+        CompoundTag nbt = BlockEntity.getDefaultCompound(this, BlockEntity.CAULDRON)
+                .putShort("PotionId", -1)
+                .putShort("PotionType", BlockEntityCauldron.POTION_TYPE_NONE);
 
-        if (item != null && item.hasCustomName()) {
-            nbt.putString("CustomName", item.getCustomName());
+        if (item != null && item.hasCustomBlockData()) {
+            for (Tag tag : item.getCustomBlockData().getAllTags()) {
+                nbt.put(tag.getName(), tag);
+            }
         }
 
         return (BlockEntityCauldron) BlockEntities.createBlockEntity(BlockEntityType.CAULDRON, getChunk(), nbt);

@@ -176,7 +176,7 @@ public class BlockChest extends BlockTransparent implements Faceable {
                         .putList(new ListTag<>("Items"));
                 chest = (BlockEntityChest) BlockEntities.createBlockEntity(BlockEntityType.CHEST, getChunk(), nbt);
                 if (chest == null) {
-                    return false;
+                    return true;
                 }
             }
 

@@ -1,5 +1,6 @@
 package cn.nukkit.nbt.tag;
 
+import cn.nukkit.nbt.NBTIO;
 import cn.nukkit.nbt.stream.NBTInputStream;
 import cn.nukkit.nbt.stream.NBTOutputStream;
 
@@ -19,12 +20,13 @@ public abstract class Tag {
     public static final byte TAG_List = 9;
     public static final byte TAG_Compound = 10;
     public static final byte TAG_Int_Array = 11;
+    static final int TAG_TYPE_COUNT = 12;
 
     private String name;
 
     abstract void write(NBTOutputStream dos) throws IOException;
 
-    abstract void load(NBTInputStream dis) throws IOException;
+    abstract void load(NBTInputStream dis, int maxDepth) throws IOException;
 
     public abstract String toString();
 
@@ -78,16 +80,20 @@ public abstract class Tag {
     }
 
     public static Tag readNamedTag(NBTInputStream dis) throws IOException {
+        return readNamedTag(dis, NBTIO.MAX_DEPTH);
+    }
+
+    public static Tag readNamedTag(NBTInputStream dis, int maxDepth) throws IOException {
         byte type = dis.readByte();
         if (type == TAG_End) {
-            return new EndTag();
+            return EndTag.INSTANCE;
         }
 
-        String name = dis.readUTF();
+        String name = dis.readUTF(1024);
 
         Tag tag = newTag(type, name);
 
-        tag.load(dis);
+        tag.load(dis, maxDepth);
         return tag;
     }
 
@@ -98,69 +104,24 @@ public abstract class Tag {
     public static void writeNamedTag(Tag tag, String name, NBTOutputStream dos) throws IOException {
         dos.writeByte(tag.getId());
         if (tag.getId() == Tag.TAG_End) return;
+
         dos.writeUTF(name);
 
         tag.write(dos);
     }
 
     public static Tag newTag(byte type, String name) {
-        switch (type) {
-            case TAG_End:
-                return new EndTag();
-            case TAG_Byte:
-                return new ByteTag(name);
-            case TAG_Short:
-                return new ShortTag(name);
-            case TAG_Int:
-                return new IntTag(name);
-            case TAG_Long:
-                return new LongTag(name);
-            case TAG_Float:
-                return new FloatTag(name);
-            case TAG_Double:
-                return new DoubleTag(name);
-            case TAG_Byte_Array:
-                return new ByteArrayTag(name);
-            case TAG_Int_Array:
-                return new IntArrayTag(name);
-            case TAG_String:
-                return new StringTag(name);
-            case TAG_List:
-                return new ListTag<>(name);
-            case TAG_Compound:
-                return new CompoundTag(name);
+        if (type < 1 || type >= TAG_TYPE_COUNT) {
+            return EndTag.INSTANCE;
         }
-        return new EndTag();
+        return Tags.REGISTRY[type].factory().apply(name);
     }
 
     public static String getTagName(byte type) {
-        switch (type) {
-            case TAG_End:
-                return "TAG_End";
-            case TAG_Byte:
-                return "TAG_Byte";
-            case TAG_Short:
-                return "TAG_Short";
-            case TAG_Int:
-                return "TAG_Int";
-            case TAG_Long:
-                return "TAG_Long";
-            case TAG_Float:
-                return "TAG_Float";
-            case TAG_Double:
-                return "TAG_Double";
-            case TAG_Byte_Array:
-                return "TAG_Byte_Array";
-            case TAG_Int_Array:
-                return "TAG_Int_Array";
-            case TAG_String:
-                return "TAG_String";
-            case TAG_List:
-                return "TAG_List";
-            case TAG_Compound:
-                return "TAG_Compound";
+        if (type < 0 || type >= TAG_TYPE_COUNT) {
+            return "UNKNOWN";
         }
-        return "UNKNOWN";
+        return Tags.REGISTRY[type].name();
     }
 
     public abstract Tag copy();

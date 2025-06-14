@@ -137,7 +137,7 @@ public class BlockEnderChest extends BlockTransparent implements Faceable {
                         .putInt("z", (int) this.z);
                 chest = (BlockEntityEnderChest) BlockEntities.createBlockEntity(BlockEntityType.ENDER_CHEST, this.getLevel().getChunk((int) this.x >> 4, (int) this.z >> 4), nbt);
                 if (chest == null) {
-                    return false;
+                    return true;
                 }
             }
 

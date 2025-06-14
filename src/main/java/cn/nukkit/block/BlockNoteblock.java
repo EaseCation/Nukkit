@@ -1,11 +1,7 @@
 package cn.nukkit.block;
 
 import cn.nukkit.Player;
-import cn.nukkit.blockentity.BlockEntities;
-import cn.nukkit.blockentity.BlockEntity;
-import cn.nukkit.blockentity.BlockEntitySkull;
-import cn.nukkit.blockentity.BlockEntityType;
-import cn.nukkit.blockentity.BlockEntityMusic;
+import cn.nukkit.blockentity.*;
 import cn.nukkit.item.Item;
 import cn.nukkit.item.ItemSkull;
 import cn.nukkit.level.Level;
@@ -76,7 +72,10 @@ public class BlockNoteblock extends BlockSolid {
     }
 
     public void increaseStrength() {
-        BlockEntityMusic blockEntity = this.getBlockEntity();
+        increaseStrength(this.getBlockEntity());
+    }
+
+    private void increaseStrength(BlockEntityMusic blockEntity) {
         if (blockEntity != null) {
             blockEntity.changePitch();
         }
@@ -281,7 +280,14 @@ public class BlockNoteblock extends BlockSolid {
 
     @Override
     public boolean onActivate(Item item, BlockFace face, float fx, float fy, float fz, Player player) {
-        this.increaseStrength();
+        BlockEntityMusic blockEntity = getBlockEntity();
+        if (blockEntity == null) {
+            blockEntity = createBlockEntity();
+            if (blockEntity == null) {
+                return true;
+            }
+        }
+        this.increaseStrength(blockEntity);
         this.emitSound();
         return true;
     }

@@ -288,10 +288,6 @@ public class BlockBell extends BlockTransparent implements Faceable {
     protected BlockEntityBell createBlockEntity(@Nullable Item item) {
         CompoundTag nbt = BlockEntity.getDefaultCompound(this, BlockEntity.BELL);
 
-        if (item != null && item.hasCustomName()) {
-            nbt.putString("CustomName", item.getCustomName());
-        }
-
         return (BlockEntityBell) BlockEntities.createBlockEntity(BlockEntityType.BELL, getChunk(), nbt);
     }
 

@@ -54,6 +54,9 @@ public class BlockJukebox extends BlockSolid {
         BlockEntity blockEntity = this.getLevel().getBlockEntity(this);
         if (!(blockEntity instanceof BlockEntityJukebox)) {
             blockEntity = this.createBlockEntity();
+            if (blockEntity == null) {
+                return true;
+            }
         }
 
         BlockEntityJukebox jukebox = (BlockEntityJukebox) blockEntity;

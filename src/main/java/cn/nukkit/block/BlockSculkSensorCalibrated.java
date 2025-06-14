@@ -55,10 +55,6 @@ public class BlockSculkSensorCalibrated extends BlockSculkSensor implements Face
     private BlockEntityCalibratedSculkSensor createBlockEntity(@Nullable Item item) {
         CompoundTag nbt = BlockEntity.getDefaultCompound(this, BlockEntity.CALIBRATED_SCULK_SENSOR);
 
-        if (item != null && item.hasCustomName()) {
-            nbt.putString("CustomName", item.getCustomName());
-        }
-
         return (BlockEntityCalibratedSculkSensor) BlockEntities.createBlockEntity(BlockEntityType.CALIBRATED_SCULK_SENSOR, getChunk(), nbt);
     }
 

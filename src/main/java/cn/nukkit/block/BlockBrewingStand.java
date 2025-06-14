@@ -106,13 +106,13 @@ public class BlockBrewingStand extends BlockTransparent {
                         .putList(new ListTag<>("Items"));
                 brewing = (BlockEntityBrewingStand) BlockEntities.createBlockEntity(BlockEntityType.BREWING_STAND, getChunk(), nbt);
                 if (brewing == null) {
-                    return false;
+                    return true;
                 }
             }
 
             if (brewing.namedTag.contains("Lock") && brewing.namedTag.get("Lock") instanceof StringTag) {
                 if (!brewing.namedTag.getString("Lock").equals(item.getCustomName())) {
-                    return false;
+                    return true;
                 }
             }
 

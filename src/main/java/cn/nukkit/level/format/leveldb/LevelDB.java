@@ -764,6 +764,8 @@ public class LevelDB implements LevelProvider {
                     }
                     blockEntities.add((CompoundTag) tag);
                 }
+            } catch (DataDepthException e) {
+                log.error("reset corrupted block entity data ({},{}) in {}", chunkX, chunkZ, path, e);
             } catch (IOException e) {
                 throw new ChunkException("Corrupted block entity data (" + chunkX + "," + chunkZ + ") in " + path, e);
             }
@@ -780,6 +782,8 @@ public class LevelDB implements LevelProvider {
                     }
                     entities.add((CompoundTag) tag);
                 }
+            } catch (DataDepthException e) {
+                log.error("reset corrupted entity data ({},{}) in {}", chunkX, chunkZ, path, e);
             } catch (IOException e) {
                 throw new ChunkException("Corrupted entity data (" + chunkX + "," + chunkZ + ") in " + path, e);
             }
