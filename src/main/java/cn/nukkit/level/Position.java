@@ -227,4 +227,8 @@ public class Position extends Vector3 {
     public Int2ObjectMap<Player> getChunkPlayers() {
         return isValid() ? level.getChunkPlayers(getChunkX(), getChunkZ()) : Int2ObjectMaps.emptyMap();
     }
+
+    public Vector3 asVector3() {
+        return new Vector3(this.x, this.y, this.z);
+    }
 }
