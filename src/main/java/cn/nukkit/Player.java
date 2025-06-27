@@ -3380,6 +3380,10 @@ public class Player extends EntityHuman implements CommandSender, InventoryHolde
 
                     VIOLATION_LISTENER.onCommandRequest(this, commandRequestPacket.command.length());
 
+                    if (!commandRequestPacket.command.startsWith("/")) {
+                        break;
+                    }
+
                     if (!this.spawned || !this.isAlive()) {
                         break;
                     }
