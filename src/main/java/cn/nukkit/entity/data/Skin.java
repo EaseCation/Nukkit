@@ -160,7 +160,7 @@ public class Skin implements Cloneable {
         if (getFullSkinId().length() >= 200) {
             return false;
         }
-        if (!Strings.isNullOrEmpty(getPlayFabId()) && getPlayFabId().length() != 16) {
+        if (!Strings.isNullOrEmpty(getPlayFabId()) && getPlayFabId().length() > 16) {
             return false;
         }
         if (!Strings.isNullOrEmpty(skinColor) && !Utils.isHexColor(skinColor)) {
