@@ -1628,7 +1628,7 @@ public class Level implements ChunkManager, Metadatable {
                 int chunkX = getHashX(index);
                 int chunkZ = getHashZ(index);
 
-                FullChunk chunk = this.getChunk(chunkX, chunkZ, false);
+                FullChunk chunk = this.getChunkIfLoaded(chunkX, chunkZ);
                 if (chunk == null) {
                     iter.remove();
                     continue;
@@ -4112,6 +4112,9 @@ public class Level implements ChunkManager, Metadatable {
     private void queueUnloadChunk(int x, int z) {
         long index = Level.chunkHash(x, z);
         this.unloadQueue.put(index, System.currentTimeMillis());
+        if (!server.isPrimaryThread()) {
+            log.throwing(new Throwable("!isPrimaryThread")); //debug
+        }
         this.chunkTickList.remove(index);
     }
 
@@ -4152,7 +4155,7 @@ public class Level implements ChunkManager, Metadatable {
 
         long index = Level.chunkHash(x, z);
 
-        BaseFullChunk chunk = this.getChunk(x, z);
+        BaseFullChunk chunk = this.getChunkIfLoaded(x, z);
 
         if (chunk != null && chunk.getProvider() != null) {
             ChunkUnloadEvent ev = new ChunkUnloadEvent(chunk);
@@ -4199,6 +4202,9 @@ public class Level implements ChunkManager, Metadatable {
             }
         }
         this.chunks.remove(index);
+        if (!server.isPrimaryThread()) {
+            log.throwing(new Throwable("!isPrimaryThread")); //debug
+        }
         this.chunkTickList.remove(index);
 
         return true;
