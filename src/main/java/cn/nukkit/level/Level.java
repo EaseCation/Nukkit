@@ -2723,7 +2723,7 @@ public class Level implements ChunkManager, Metadatable {
         }
 
         FullChunk chunk = getChunk(source.getChunkX(), source.getChunkZ(), true);
-        if (chunk == null) {
+        if (chunk == null || chunk.getProvider() == null) {
             return null;
         }
 
@@ -2912,7 +2912,7 @@ public class Level implements ChunkManager, Metadatable {
 
     public void dropExpOrb(Vector3 source, int exp, @Nullable Vector3 motion, int delay) {
         FullChunk chunk = this.getChunk(source.getChunkX(), source.getChunkZ(), true);
-        if (chunk == null) {
+        if (chunk == null || chunk.getProvider() == null) {
             return;
         }
 
