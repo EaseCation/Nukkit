@@ -1,6 +1,8 @@
 package cn.nukkit.block;
 
 import cn.nukkit.item.Item;
+import cn.nukkit.level.generator.object.tree.ObjectCherryTree;
+import cn.nukkit.math.NukkitRandom;
 import cn.nukkit.utils.BlockColor;
 
 public class BlockSaplingCherry extends BlockSapling {
@@ -41,6 +43,6 @@ public class BlockSaplingCherry extends BlockSapling {
 
     @Override
     protected void grow() {
-        //TODO
+        new ObjectCherryTree().placeObject(this.level, this.getFloorX(), this.getFloorY(), this.getFloorZ(), NukkitRandom.current());
     }
 }

@@ -99,7 +99,7 @@ public class BlockSnowLayer extends BlockFallable {
                 if (extra.canContainSnow()) {
                     below = down();
                     int id = below.getId();
-                    if (id != GRASS_BLOCK && id != DIRT && id != FARMLAND && id != MYCELIUM && id != PODZOL && id != DIRT_WITH_ROOTS && id != MOSS_BLOCK && id != MUD && id != MUDDY_MANGROVE_ROOTS) {
+                    if (id != GRASS_BLOCK && id != DIRT && id != FARMLAND && id != MYCELIUM && id != PODZOL && id != DIRT_WITH_ROOTS && id != MOSS_BLOCK && id != PALE_MOSS_BLOCK && id != MUD && id != MUDDY_MANGROVE_ROOTS) {
                         level.setExtraBlock(this, Blocks.air(), true, false);
                         if (level.gameRules.getBoolean(GameRule.DO_TILE_DROPS)) {
                             level.dropItem(this, extra.toItem(true));

@@ -235,6 +235,6 @@ public class BlockDoublePlant extends BlockFlowable {
 
     private boolean canSurvive() {
         int id = down().getId();
-        return id == GRASS_BLOCK || id == DIRT || id == PODZOL || id == FARMLAND || id == MYCELIUM || id == DIRT_WITH_ROOTS || id == MOSS_BLOCK || id == MUD || id == MUDDY_MANGROVE_ROOTS;
+        return id == GRASS_BLOCK || id == DIRT || id == PODZOL || id == FARMLAND || id == MYCELIUM || id == DIRT_WITH_ROOTS || id == MOSS_BLOCK || id == PALE_MOSS_BLOCK || id == MUD || id == MUDDY_MANGROVE_ROOTS;
     }
 }

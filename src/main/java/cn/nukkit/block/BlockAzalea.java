@@ -3,9 +3,11 @@ package cn.nukkit.block;
 import cn.nukkit.Player;
 import cn.nukkit.item.Item;
 import cn.nukkit.level.Level;
+import cn.nukkit.level.generator.object.tree.ObjectAzaleaTree;
 import cn.nukkit.level.particle.BoneMealParticle;
 import cn.nukkit.math.AxisAlignedBB;
 import cn.nukkit.math.BlockFace;
+import cn.nukkit.math.NukkitRandom;
 import cn.nukkit.utils.BlockColor;
 
 public class BlockAzalea extends BlockFlowable {
@@ -51,7 +53,7 @@ public class BlockAzalea extends BlockFlowable {
 
             level.addParticle(new BoneMealParticle(this));
 
-            //TODO: azalea tree
+            new ObjectAzaleaTree().placeObject(this.level, this.getFloorX(), this.getFloorY(), this.getFloorZ(), NukkitRandom.current());
             return true;
         }
 
@@ -123,6 +125,6 @@ public class BlockAzalea extends BlockFlowable {
 
     private boolean canSurvive() {
         int id = down().getId();
-        return id == GRASS_BLOCK || id == DIRT || id == MYCELIUM || id == PODZOL || id == FARMLAND || id == DIRT_WITH_ROOTS || id == MOSS_BLOCK || id == CLAY || id == MUD || id == MUDDY_MANGROVE_ROOTS;
+        return id == GRASS_BLOCK || id == DIRT || id == MYCELIUM || id == PODZOL || id == FARMLAND || id == DIRT_WITH_ROOTS || id == MOSS_BLOCK || id == PALE_MOSS_BLOCK  || id == CLAY || id == MUD || id == MUDDY_MANGROVE_ROOTS;
     }
 }

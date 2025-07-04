@@ -67,7 +67,7 @@ public abstract class BlockNylium extends BlockNetherrack {
             int id = block.getId();
 
             if (id != CRIMSON_NYLIUM && id != WARPED_NYLIUM && id != SOUL_SOIL
-                    && id != GRASS_BLOCK && id != DIRT && id != PODZOL && id != MYCELIUM && id != FARMLAND && id != DIRT_WITH_ROOTS && id != MOSS_BLOCK && id != MUD && id != MUDDY_MANGROVE_ROOTS) {
+                    && id != GRASS_BLOCK && id != DIRT && id != PODZOL && id != MYCELIUM && id != FARMLAND && id != DIRT_WITH_ROOTS && id != MOSS_BLOCK && id != PALE_MOSS_BLOCK && id != MUD && id != MUDDY_MANGROVE_ROOTS) {
                 continue;
             }
 

@@ -147,15 +147,23 @@ public abstract class BlockMultiface extends BlockTransparent {
     }
 
     protected boolean hasFace(BlockFace face) {
+        return hasFace(this, face);
+    }
+
+    protected static boolean hasFace(Block block, BlockFace face) {
         if (!V1_18_10.isAvailable() || face.isVertical()) {
-            return (getDamage() & (1 << face.getIndex())) != 0;
+            return (block.getDamage() & (1 << face.getIndex())) != 0;
         }
 
-        return (getDamage() & (1 << (face.getHorizontalIndex() + 2))) != 0;
+        return (block.getDamage() & (1 << (face.getHorizontalIndex() + 2))) != 0;
     }
 
     protected boolean addFace(BlockFace face) {
-        int meta = getDamage();
+        return addFace(this, face);
+    }
+
+    protected static boolean addFace(Block block, BlockFace face) {
+        int meta = block.getDamage();
         int old = meta;
 
         if (!V1_18_10.isAvailable() || face.isVertical()) {
@@ -168,7 +176,7 @@ public abstract class BlockMultiface extends BlockTransparent {
             return false;
         }
 
-        setDamage(meta);
+        block.setDamage(meta);
         return true;
     }
 

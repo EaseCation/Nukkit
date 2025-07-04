@@ -357,6 +357,8 @@ public final class Items {
 
         registerItem(ItemNames.MUSIC_DISC_TEARS, MUSIC_DISC_TEARS, ItemRecordTears.class, ItemRecordTears::new, V1_21_90);
 
+        registerItem(ItemNames.MUSIC_DISC_LAVA_CHICKEN, MUSIC_DISC_LAVA_CHICKEN, ItemRecordLavaChicken.class, ItemRecordLavaChicken::new, V1_21_93);
+
         if (DEV_CLIENT_BUILD) {
             registerItem(ItemNames.DEBUG_STICK, DEBUG_STICK, ItemDebugStick.class, ItemDebugStick::new);
         }
@@ -545,6 +547,8 @@ public final class Items {
         registerAlias(ItemNames.RECORD_PRECIPICE, ItemNames.MUSIC_DISC_PRECIPICE, true, V1_21_0);
 
         registerAlias(ItemNames.RECORD_TEARS, ItemNames.MUSIC_DISC_TEARS, true, V1_21_90);
+
+        registerAlias(ItemNames.RECORD_LAVA_CHICKEN, ItemNames.MUSIC_DISC_LAVA_CHICKEN, true, V1_21_93);
 
     }
 

@@ -1,5 +1,7 @@
 package cn.nukkit.block;
 
+import cn.nukkit.level.generator.object.tree.ObjectWarpedTree;
+import cn.nukkit.math.NukkitRandom;
 import cn.nukkit.utils.BlockColor;
 
 public class BlockNetherFungusWarped extends BlockNetherFungus {
@@ -27,7 +29,7 @@ public class BlockNetherFungusWarped extends BlockNetherFungus {
             return false;
         }
 
-        //TODO: huge fungus
+        new ObjectWarpedTree().placeObject(this.level, this.getFloorX(), this.getFloorY(), this.getFloorZ(), NukkitRandom.current());
         return true;
     }
 }

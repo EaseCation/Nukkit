@@ -95,7 +95,7 @@ public class BlockDripleafSmall extends BlockTransparent implements Faceable {
         }
 
         int id = down().getId();
-        if (id != GRASS_BLOCK && id != DIRT && id != MYCELIUM && id != PODZOL && id != FARMLAND && id != DIRT_WITH_ROOTS && id != MOSS_BLOCK && id != CLAY && id != MUD && id != MUDDY_MANGROVE_ROOTS) {
+        if (id != GRASS_BLOCK && id != DIRT && id != MYCELIUM && id != PODZOL && id != FARMLAND && id != DIRT_WITH_ROOTS && id != MOSS_BLOCK && id != PALE_MOSS_BLOCK && id != CLAY && id != MUD && id != MUDDY_MANGROVE_ROOTS) {
             return false;
         }
 
@@ -293,7 +293,7 @@ public class BlockDripleafSmall extends BlockTransparent implements Faceable {
 
     private boolean canSurvive() {
         int id = down().getId();
-        if (id == SMALL_DRIPLEAF_BLOCK || id == MOSS_BLOCK || id == CLAY) {
+        if (id == SMALL_DRIPLEAF_BLOCK || id == MOSS_BLOCK || id == PALE_MOSS_BLOCK || id == CLAY) {
             return true;
         }
 

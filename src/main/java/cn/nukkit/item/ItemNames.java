@@ -673,6 +673,12 @@ public interface ItemNames extends ItemBlockNames {
      */
     @Deprecated
     String RECORD_TEARS = "record_tears";
+    String MUSIC_DISC_LAVA_CHICKEN = "music_disc_lava_chicken";
+    /**
+     * @deprecated use {@link #MUSIC_DISC_LAVA_CHICKEN} instead
+     */
+    @Deprecated
+    String RECORD_LAVA_CHICKEN = "record_lava_chicken";
 
     String SOUL_CAMPFIRE = "soul_campfire";
 

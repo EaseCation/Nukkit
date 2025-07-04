@@ -2,10 +2,12 @@ package cn.nukkit.math;
 
 import com.google.common.collect.Iterators;
 
+import java.util.Arrays;
 import java.util.Iterator;
 import java.util.Random;
 import java.util.concurrent.ThreadLocalRandom;
 import java.util.function.Predicate;
+import java.util.stream.Stream;
 
 public enum BlockFace {
     DOWN(0, 1, -1, "down", AxisDirection.NEGATIVE, new BlockVector3(0, -1, 0)),
@@ -143,7 +145,7 @@ public enum BlockFace {
         return random(ThreadLocalRandom.current());
     }
 
-    public static BlockFace random(NukkitRandom rand) {
+    public static BlockFace random(RandomSource rand) {
         return VALUES[rand.nextBoundedInt(VALUES.length)];
     }
 
@@ -359,6 +361,18 @@ public enum BlockFace {
             return name;
         }
 
+        public Axis random(RandomSource random) {
+            return VALUES[random.nextBoundedInt(VALUES.length)];
+        }
+
+        public Axis random(Random random) {
+            return VALUES[random.nextInt(VALUES.length)];
+        }
+
+        public Axis random() {
+            return random(ThreadLocalRandom.current());
+        }
+
         @Override
         public boolean test(BlockFace face) {
             return face != null && face.getAxis() == this;
@@ -394,6 +408,10 @@ public enum BlockFace {
         public String toString() {
             return description;
         }
+
+        public AxisDirection opposite() {
+            return this == POSITIVE ? NEGATIVE : POSITIVE;
+        }
     }
 
     public enum Plane implements Predicate<BlockFace>, Iterable<BlockFace> {
@@ -403,12 +421,15 @@ public enum BlockFace {
         static {
             //Circular dependency
             HORIZONTAL.faces = new BlockFace[]{NORTH, EAST, SOUTH, WEST};
+            HORIZONTAL.axis = new Axis[]{Axis.X, Axis.Z};
             VERTICAL.faces = new BlockFace[]{UP, DOWN};
+            VERTICAL.axis = new Axis[]{Axis.Y};
         }
 
         private BlockFace[] faces;
+        private Axis[] axis;
 
-        public BlockFace random(NukkitRandom rand) {
+        public BlockFace random(RandomSource rand) {
             return faces[rand.nextBoundedInt(faces.length)];
         }
 
@@ -420,6 +441,18 @@ public enum BlockFace {
             return random(ThreadLocalRandom.current());
         }
 
+        public Axis randomAxis(RandomSource random) {
+            return axis[random.nextBoundedInt(axis.length)];
+        }
+
+        public Axis randomAxis(Random random) {
+            return axis[random.nextInt(axis.length)];
+        }
+
+        public Axis randomAxis() {
+            return randomAxis(ThreadLocalRandom.current());
+        }
+
         @Override
         public boolean test(BlockFace face) {
             return face != null && face.getAxis().getPlane() == this;
@@ -428,6 +461,14 @@ public enum BlockFace {
         @Override
         public Iterator<BlockFace> iterator() {
             return Iterators.forArray(faces);
+        }
+
+        public Stream<BlockFace> stream() {
+            return Arrays.stream(faces);
+        }
+
+        public int length() {
+            return faces.length;
         }
     }
 

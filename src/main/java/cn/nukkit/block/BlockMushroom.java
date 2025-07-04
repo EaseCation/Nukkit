@@ -58,7 +58,7 @@ public abstract class BlockMushroom extends BlockFlowable {
                 item.count--;
             }
 
-            if (ThreadLocalRandom.current().nextFloat() < 0.4) {
+            if (item.is(Item.RAPID_FERTILIZER) || player != null && player.isCreative() || ThreadLocalRandom.current().nextFloat() < 0.4f) {
                 this.grow();
             }
 

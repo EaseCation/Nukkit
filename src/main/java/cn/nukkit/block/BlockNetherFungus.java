@@ -38,7 +38,7 @@ public abstract class BlockNetherFungus extends BlockFlowable {
                 item.pop();
             }
 
-            if (ThreadLocalRandom.current().nextFloat() < 0.4) {
+            if (item.is(Item.RAPID_FERTILIZER) || player != null && player.isCreative() || ThreadLocalRandom.current().nextFloat() < 0.4f) {
                 grow();
             }
 
@@ -83,7 +83,7 @@ public abstract class BlockNetherFungus extends BlockFlowable {
 
     protected boolean canSurvive() {
         int id = down().getId();
-        return id == GRASS_BLOCK || id == DIRT || id == PODZOL || id == MYCELIUM || id == FARMLAND || id == DIRT_WITH_ROOTS || id == MOSS_BLOCK || id == MUD || id == MUDDY_MANGROVE_ROOTS
+        return id == GRASS_BLOCK || id == DIRT || id == PODZOL || id == MYCELIUM || id == FARMLAND || id == DIRT_WITH_ROOTS || id == MOSS_BLOCK || id == PALE_MOSS_BLOCK || id == MUD || id == MUDDY_MANGROVE_ROOTS
                 || id == CRIMSON_NYLIUM || id == WARPED_NYLIUM || id == SOUL_SOIL;
     }
 

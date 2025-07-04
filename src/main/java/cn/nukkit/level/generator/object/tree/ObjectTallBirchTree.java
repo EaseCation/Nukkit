@@ -8,6 +8,13 @@ import cn.nukkit.math.NukkitRandom;
  * Nukkit Project
  */
 public class ObjectTallBirchTree extends ObjectBirchTree {
+    public ObjectTallBirchTree() {
+        this(0);
+    }
+
+    public ObjectTallBirchTree(float beehiveProbability) {
+        super(beehiveProbability);
+    }
 
     @Override
     public void placeObject(ChunkManager level, int x, int y, int z, NukkitRandom random) {

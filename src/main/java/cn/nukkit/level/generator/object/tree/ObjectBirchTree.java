@@ -4,6 +4,7 @@ import cn.nukkit.block.Block;
 import cn.nukkit.block.BlockWood;
 import cn.nukkit.level.ChunkManager;
 import cn.nukkit.math.NukkitRandom;
+import cn.nukkit.math.RandomSource;
 
 /**
  * author: MagicDroidX
@@ -11,6 +12,15 @@ import cn.nukkit.math.NukkitRandom;
  */
 public class ObjectBirchTree extends ObjectTree {
     protected int treeHeight = 7;
+    protected float beehiveProbability;
+
+    public ObjectBirchTree() {
+        this(0);
+    }
+
+    public ObjectBirchTree(float beehiveProbability) {
+        this.beehiveProbability = beehiveProbability;
+    }
 
     @Override
     public int getTrunkBlock() {
@@ -36,5 +46,10 @@ public class ObjectBirchTree extends ObjectTree {
     public void placeObject(ChunkManager level, int x, int y, int z, NukkitRandom random) {
         this.treeHeight = random.nextBoundedInt(2) + 5;
         super.placeObject(level, x, y, z, random);
+    }
+
+    @Override
+    protected boolean canPlaceBeehive(RandomSource random) {
+        return beehiveProbability != 0 && random.nextFloat() < beehiveProbability;
     }
 }

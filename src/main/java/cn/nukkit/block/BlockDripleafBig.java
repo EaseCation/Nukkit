@@ -87,7 +87,7 @@ public class BlockDripleafBig extends BlockTransparent implements Faceable {
     public boolean place(Item item, Block block, Block target, BlockFace face, float fx, float fy, float fz, Player player) {
         Block below = down();
         int id = below.getId();
-        if (!(id == BIG_DRIPLEAF || id == GRASS_BLOCK || id == DIRT || id == MYCELIUM || id == PODZOL || id == FARMLAND || id == DIRT_WITH_ROOTS || id == MOSS_BLOCK || id == CLAY || id == MUD || id == MUDDY_MANGROVE_ROOTS)) {
+        if (!(id == BIG_DRIPLEAF || id == GRASS_BLOCK || id == DIRT || id == MYCELIUM || id == PODZOL || id == FARMLAND || id == DIRT_WITH_ROOTS || id == MOSS_BLOCK || id == PALE_MOSS_BLOCK  || id == CLAY || id == MUD || id == MUDDY_MANGROVE_ROOTS)) {
             return false;
         }
 
@@ -330,7 +330,7 @@ public class BlockDripleafBig extends BlockTransparent implements Faceable {
 
     private boolean canSurvive() {
         int id = down().getId();
-        return id == BIG_DRIPLEAF || id == GRASS_BLOCK || id == DIRT || id == MYCELIUM || id == PODZOL || id == FARMLAND || id == DIRT_WITH_ROOTS || id == MOSS_BLOCK || id == CLAY || id == MUD || id == MUDDY_MANGROVE_ROOTS;
+        return id == BIG_DRIPLEAF || id == GRASS_BLOCK || id == DIRT || id == MYCELIUM || id == PODZOL || id == FARMLAND || id == DIRT_WITH_ROOTS || id == MOSS_BLOCK || id == PALE_MOSS_BLOCK  || id == CLAY || id == MUD || id == MUDDY_MANGROVE_ROOTS;
     }
 
     private void setTiltAndScheduleTick(int tilt) {

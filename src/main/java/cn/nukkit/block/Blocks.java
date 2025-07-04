@@ -438,8 +438,8 @@ public final class Blocks {
         registerBlock(BlockNames.CRIMSON_STEM, ItemBlockNames.CRIMSON_STEM, CRIMSON_STEM, BlockFungusStemCrimson.class, V1_16_0);
         registerBlock(BlockNames.WARPED_STEM, ItemBlockNames.WARPED_STEM, WARPED_STEM, BlockFungusStemWarped.class, V1_16_0);
         registerBlock(BlockNames.WARPED_WART_BLOCK, ItemBlockNames.WARPED_WART_BLOCK, WARPED_WART_BLOCK, BlockNetherWartBlockWarped.class, V1_16_0);
-        registerBlock(BlockNames.CRIMSON_FUNGUS, ItemBlockNames.CRIMSON_FUNGUS, CRIMSON_FUNGUS, BlockNetherFungusCrimson.class, V1_16_0); //TODO: onFertilized
-        registerBlock(BlockNames.WARPED_FUNGUS, ItemBlockNames.WARPED_FUNGUS, WARPED_FUNGUS, BlockNetherFungusWarped.class, V1_16_0); //TODO: onFertilized
+        registerBlock(BlockNames.CRIMSON_FUNGUS, ItemBlockNames.CRIMSON_FUNGUS, CRIMSON_FUNGUS, BlockNetherFungusCrimson.class, V1_16_0);
+        registerBlock(BlockNames.WARPED_FUNGUS, ItemBlockNames.WARPED_FUNGUS, WARPED_FUNGUS, BlockNetherFungusWarped.class, V1_16_0);
         registerBlock(BlockNames.SHROOMLIGHT, ItemBlockNames.SHROOMLIGHT, SHROOMLIGHT, BlockShroomlight.class, V1_16_0);
         registerBlock(BlockNames.WEEPING_VINES, ItemBlockNames.WEEPING_VINES, WEEPING_VINES, BlockNetherVinesWeeping.class, V1_16_0);
         registerBlock(BlockNames.CRIMSON_NYLIUM, ItemBlockNames.CRIMSON_NYLIUM, CRIMSON_NYLIUM, BlockNyliumCrimson.class, V1_16_0);
@@ -523,7 +523,7 @@ public final class Blocks {
         registerBlock(BlockNames.DRIPSTONE_BLOCK, ItemBlockNames.DRIPSTONE_BLOCK, DRIPSTONE_BLOCK, BlockDripstone.class, V1_17_0);
         registerBlock(BlockNames.DIRT_WITH_ROOTS, ItemBlockNames.DIRT_WITH_ROOTS, DIRT_WITH_ROOTS, BlockDirtRooted.class, V1_17_0);
         registerBlock(BlockNames.HANGING_ROOTS, ItemBlockNames.HANGING_ROOTS, HANGING_ROOTS, BlockHangingRoots.class, V1_17_0);
-        registerBlock(BlockNames.MOSS_BLOCK, ItemBlockNames.MOSS_BLOCK, MOSS_BLOCK, BlockMoss.class, V1_17_0); //TODO: onFertilized
+        registerBlock(BlockNames.MOSS_BLOCK, ItemBlockNames.MOSS_BLOCK, MOSS_BLOCK, BlockMoss.class, V1_17_0);
         registerBlock(BlockNames.SPORE_BLOSSOM, ItemBlockNames.SPORE_BLOSSOM, SPORE_BLOSSOM, BlockSporeBlossom.class, V1_17_0);
         registerBlock(BlockNames.CAVE_VINES, ItemBlockNames.CAVE_VINES, CAVE_VINES, BlockCaveVines.class, V1_17_0);
         registerBlock(BlockNames.BIG_DRIPLEAF, ItemBlockNames.BIG_DRIPLEAF, BIG_DRIPLEAF, BlockDripleafBig.class, V1_17_0);
@@ -540,8 +540,8 @@ public final class Blocks {
         registerBlock(BlockNames.TINTED_GLASS, ItemBlockNames.TINTED_GLASS, TINTED_GLASS, BlockGlassTinted.class, V1_17_0);
         registerBlock(BlockNames.MOSS_CARPET, ItemBlockNames.MOSS_CARPET, MOSS_CARPET, BlockCarpetMoss.class, V1_17_0);
         registerBlock(BlockNames.SMALL_DRIPLEAF_BLOCK, ItemBlockNames.SMALL_DRIPLEAF_BLOCK, SMALL_DRIPLEAF_BLOCK, BlockDripleafSmall.class, V1_17_0);
-        registerBlock(BlockNames.AZALEA, ItemBlockNames.AZALEA, AZALEA, BlockAzalea.class, V1_17_0); //TODO: onFertilized
-        registerBlock(BlockNames.FLOWERING_AZALEA, ItemBlockNames.FLOWERING_AZALEA, FLOWERING_AZALEA, BlockAzaleaFlowering.class, V1_17_0); //TODO: onFertilized
+        registerBlock(BlockNames.AZALEA, ItemBlockNames.AZALEA, AZALEA, BlockAzalea.class, V1_17_0);
+        registerBlock(BlockNames.FLOWERING_AZALEA, ItemBlockNames.FLOWERING_AZALEA, FLOWERING_AZALEA, BlockAzaleaFlowering.class, V1_17_0);
         registerBlock(BlockNames.GLOW_FRAME, ItemBlockNames.ITEM_GLOW_FRAME, BLOCK_GLOW_FRAME, BlockItemFrameGlow.class, V1_17_0);
         registerBlock(BlockNames.COPPER_BLOCK, ItemBlockNames.COPPER_BLOCK, COPPER_BLOCK, BlockCopper.class, V1_17_0);
         registerBlock(BlockNames.EXPOSED_COPPER, ItemBlockNames.EXPOSED_COPPER, EXPOSED_COPPER, BlockCopperExposed.class, V1_17_0);
@@ -674,7 +674,7 @@ public final class Blocks {
         registerBlock(BlockNames.OCHRE_FROGLIGHT, ItemBlockNames.OCHRE_FROGLIGHT, OCHRE_FROGLIGHT, BlockFroglightOchre.class, V1_19_0);
         registerBlock(BlockNames.MANGROVE_LEAVES, ItemBlockNames.MANGROVE_LEAVES, MANGROVE_LEAVES, BlockLeavesMangrove.class, V1_19_0);
         registerBlock(BlockNames.MUD, ItemBlockNames.MUD, MUD, BlockMud.class, V1_19_0);
-        registerBlock(BlockNames.MANGROVE_PROPAGULE, ItemBlockNames.MANGROVE_PROPAGULE, MANGROVE_PROPAGULE, BlockMangrovePropagule.class, V1_19_0); //TODO: onFertilized
+        registerBlock(BlockNames.MANGROVE_PROPAGULE, ItemBlockNames.MANGROVE_PROPAGULE, MANGROVE_PROPAGULE, BlockMangrovePropagule.class, V1_19_0);
         registerBlock(BlockNames.MUD_BRICKS, ItemBlockNames.MUD_BRICKS, MUD_BRICKS, BlockBricksMud.class, V1_19_0);
         registerBlock(BlockNames.PACKED_MUD, ItemBlockNames.PACKED_MUD, PACKED_MUD, BlockMudPacked.class, V1_19_0);
         registerBlock(BlockNames.MUD_BRICK_SLAB, ItemBlockNames.MUD_BRICK_SLAB, MUD_BRICK_SLAB, BlockSlabMudBrick.class, V1_19_0);
@@ -747,7 +747,7 @@ public final class Blocks {
         registerBlock(BlockNames.CHERRY_WALL_SIGN, ItemBlockNames.CHERRY_WALL_SIGN, CHERRY_WALL_SIGN, BlockWallSignCherry.class, V1_20_0);
         registerBlock(BlockNames.STRIPPED_CHERRY_WOOD, ItemBlockNames.STRIPPED_CHERRY_WOOD, STRIPPED_CHERRY_WOOD, BlockWoodStrippedCherry.class, V1_20_0);
         registerBlock(BlockNames.CHERRY_WOOD, ItemBlockNames.CHERRY_WOOD, CHERRY_WOOD, BlockWoodCherry.class, V1_20_0);
-        registerBlock(BlockNames.CHERRY_SAPLING, ItemBlockNames.CHERRY_SAPLING, CHERRY_SAPLING, BlockSaplingCherry.class, V1_20_0); //TODO: onFertilized
+        registerBlock(BlockNames.CHERRY_SAPLING, ItemBlockNames.CHERRY_SAPLING, CHERRY_SAPLING, BlockSaplingCherry.class, V1_20_0);
         registerBlock(BlockNames.CHERRY_LEAVES, ItemBlockNames.CHERRY_LEAVES, CHERRY_LEAVES, BlockLeavesCherry.class, V1_20_0);
         registerBlock(BlockNames.PINK_PETALS, ItemBlockNames.PINK_PETALS, PINK_PETALS, BlockPinkPetals.class, V1_20_0);
         registerBlock(BlockNames.DECORATED_POT, ItemBlockNames.DECORATED_POT, DECORATED_POT, BlockDecoratedPot.class, V1_20_0);

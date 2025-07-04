@@ -16,13 +16,29 @@ import cn.nukkit.math.NukkitRandom;
 public class PopulatorTree extends PopulatorCount {
 
     private final int type;
+    private final float beehiveProbability;
+    private final boolean snowy;
 
     public PopulatorTree() {
         this(BlockSapling.OAK);
     }
 
     public PopulatorTree(int type) {
+        this(type, false);
+    }
+
+    public PopulatorTree(int type, float beehiveProbability) {
+        this(type, beehiveProbability, false);
+    }
+
+    public PopulatorTree(int type, boolean snowy) {
+        this(type, 0, snowy);
+    }
+
+    private PopulatorTree(int type, float beehiveProbability, boolean snowy) {
         this.type = type;
+        this.beehiveProbability = beehiveProbability;
+        this.snowy = snowy;
     }
 
     @Override
@@ -33,7 +49,7 @@ public class PopulatorTree extends PopulatorCount {
         if (y == Integer.MIN_VALUE || y < 3 + level.getHeightRange().getMinY()) {
             return;
         }
-        ObjectTree.growTree(level, x, y, z, random, this.type);
+        ObjectTree.growTree(level, x, y, z, random, this.type, this.beehiveProbability, this.snowy);
     }
 
     public static int getHighestWorkableBlock(ChunkManager level, int x, int z) {

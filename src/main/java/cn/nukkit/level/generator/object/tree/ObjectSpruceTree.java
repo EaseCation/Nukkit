@@ -3,6 +3,8 @@ package cn.nukkit.level.generator.object.tree;
 import cn.nukkit.block.Block;
 import cn.nukkit.block.BlockWood;
 import cn.nukkit.level.ChunkManager;
+import cn.nukkit.level.biome.Biome;
+import cn.nukkit.level.format.FullChunk;
 import cn.nukkit.math.NukkitRandom;
 
 /**
@@ -11,6 +13,15 @@ import cn.nukkit.math.NukkitRandom;
  */
 public class ObjectSpruceTree extends ObjectTree {
     protected int treeHeight;
+    private final boolean canCreateSnow;
+
+    public ObjectSpruceTree() {
+        this(false);
+    }
+
+    public ObjectSpruceTree(boolean canCreateSnow) {
+        this.canCreateSnow = canCreateSnow;
+    }
 
     @Override
     public int getTrunkBlock() {
@@ -36,10 +47,10 @@ public class ObjectSpruceTree extends ObjectTree {
     public void placeObject(ChunkManager level, int x, int y, int z, NukkitRandom random) {
         this.treeHeight = random.nextBoundedInt(4) + 6;
 
-        int topSize = this.getTreeHeight() - (1 + random.nextBoundedInt(2));
+        int topSize = this.treeHeight - (1 + random.nextBoundedInt(2));
         int lRadius = 2 + random.nextBoundedInt(2);
 
-        this.placeTrunk(level, x, y, z, random, this.getTreeHeight() - random.nextBoundedInt(3));
+        this.placeTrunk(level, x, y, z, random, this.treeHeight - random.nextBoundedInt(3));
 
         this.placeLeaves(level, topSize, lRadius, x, y, z, random);
     }
@@ -48,6 +59,12 @@ public class ObjectSpruceTree extends ObjectTree {
         int radius = random.nextBoundedInt(2);
         int maxR = 1;
         int minR = 0;
+
+        boolean createSnow = false;
+        if (this.canCreateSnow) {
+            FullChunk chunk = level.getChunk(x >> 4, z >> 4);
+            createSnow = chunk == null || Biome.getBiome(chunk.getBiomeId(x & 0x0f, z & 0x0f)).isFreezing();
+        }
 
         for (int yy = 0; yy <= topSize; ++yy) {
             int yyy = y + this.treeHeight - yy;
@@ -62,6 +79,12 @@ public class ObjectSpruceTree extends ObjectTree {
 
                     if (!Block.solid[level.getBlockIdAt(0, xx, yyy, zz)]) {
                         level.setBlockAt(0, xx, yyy, zz, this.getLeafBlock(), this.getType());
+
+                        if (createSnow) {
+                            if (level.getBlockIdAt(0, xx, yyy + 1, zz) == Block.AIR && level.getBlockIdAt(0, xx, yyy + 2, zz) == Block.AIR) {
+                                level.setBlockAt(0, xx, yyy + 1, zz, Block.SNOW_LAYER, 0);
+                            }
+                        }
                     }
                 }
             }

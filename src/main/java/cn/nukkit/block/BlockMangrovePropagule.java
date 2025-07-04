@@ -3,9 +3,11 @@ package cn.nukkit.block;
 import cn.nukkit.Player;
 import cn.nukkit.item.Item;
 import cn.nukkit.level.Level;
+import cn.nukkit.level.generator.object.tree.ObjectMangroveTree;
 import cn.nukkit.level.particle.BoneMealParticle;
 import cn.nukkit.math.AxisAlignedBB;
 import cn.nukkit.math.BlockFace;
+import cn.nukkit.math.NukkitRandom;
 import cn.nukkit.utils.BlockColor;
 
 import java.util.concurrent.ThreadLocalRandom;
@@ -89,7 +91,7 @@ public class BlockMangrovePropagule extends BlockTransparent {
 
                 level.addParticle(new BoneMealParticle(this));
 
-                if (ThreadLocalRandom.current().nextFloat() >= 0.45f) {
+                if (!item.is(Item.RAPID_FERTILIZER) && (player == null || !player.isCreative()) && ThreadLocalRandom.current().nextFloat() >= 0.45f) {
                     return true;
                 }
 
@@ -226,7 +228,7 @@ public class BlockMangrovePropagule extends BlockTransparent {
     }
 
     private void growTree() {
-        //TODO: place mangrove tree feature
+        new ObjectMangroveTree().placeObject(this.level, this.getFloorX(), this.getFloorY(), this.getFloorZ(), NukkitRandom.current());
     }
 
     private boolean canSurvive() {
@@ -235,7 +237,7 @@ public class BlockMangrovePropagule extends BlockTransparent {
         }
 
         int id = down().getId();
-        return id == BIG_DRIPLEAF || id == GRASS_BLOCK || id == DIRT || id == MYCELIUM || id == PODZOL || id == FARMLAND || id == DIRT_WITH_ROOTS || id == MOSS_BLOCK || id == CLAY || id == MUD || id == MUDDY_MANGROVE_ROOTS;
+        return id == BIG_DRIPLEAF || id == GRASS_BLOCK || id == DIRT || id == MYCELIUM || id == PODZOL || id == FARMLAND || id == DIRT_WITH_ROOTS || id == MOSS_BLOCK || id == PALE_MOSS_BLOCK || id == CLAY || id == MUD || id == MUDDY_MANGROVE_ROOTS;
     }
 
     public int getStage() {
