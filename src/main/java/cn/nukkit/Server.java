@@ -82,6 +82,7 @@ import lombok.Setter;
 import lombok.extern.log4j.Log4j2;
 import org.apache.commons.compress.compressors.gzip.GzipCompressorOutputStream;
 import org.apache.commons.compress.compressors.gzip.GzipParameters;
+import org.iq80.leveldb.DB;
 
 import javax.annotation.Nullable;
 import java.io.*;
@@ -94,6 +95,7 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.nio.file.StandardCopyOption;
 import java.util.*;
+import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.zip.Deflater;
@@ -1808,10 +1810,18 @@ public class Server {
         }
 
         return level.unload(forceUnload);
+    }
 
+    @Nullable
+    public CompletableFuture<Void> destroyLevel(Level level) {
+        return level.destroy();
     }
 
     public boolean loadLevel(String name) {
+        return loadLevel(name, null, null);
+    }
+
+    public boolean loadLevel(String name, CompoundTag levelData, DB db) {
         if (Objects.equals(name.trim(), "")) {
             throw new LevelException("Invalid empty level name");
         }
@@ -1841,7 +1851,7 @@ public class Server {
 
         Level level;
         try {
-            level = new Level(this, name, path, provider);
+            level = new Level(this, name, path, provider, levelData, db);
         } catch (Exception e) {
             log.error(this.getLanguage().translate("nukkit.level.loadError.exception", name), e);
             return false;

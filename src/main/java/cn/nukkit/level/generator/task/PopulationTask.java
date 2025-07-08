@@ -8,10 +8,11 @@ import cn.nukkit.level.generator.SimpleChunkManager;
 import cn.nukkit.scheduler.AsyncTask;
 
 /**
- * author: MagicDroidX
+ * @author MagicDroidX
  * Nukkit Project
  */
 public class PopulationTask extends AsyncTask<Void> {
+
     private final long seed;
     private final Level level;
     private boolean state;
@@ -61,13 +62,14 @@ public class PopulationTask extends AsyncTask<Void> {
         this.state = false;
         Generator generator = level.getGenerator();
         if (generator == null) {
+            Server.getInstance().getLogger().debug(level.getFolderName() + "/PopulationTask: generator == null");
             return;
         }
 
         SimpleChunkManager manager = (SimpleChunkManager) generator.getChunkManager();
 
         if (manager == null) {
-            this.state = false;
+            Server.getInstance().getLogger().debug(level.getFolderName() + "/PopulationTask: manager == null");
             return;
         }
 
@@ -85,27 +87,41 @@ public class PopulationTask extends AsyncTask<Void> {
                     for (int z = -1; z < 2; z++, index++) {
                         BaseFullChunk ck = this.chunks[index];
                         if (ck == centerChunk) continue;
+
+                        if (level.getProvider() == null) {
+                            this.state = false;
+                            Server.getInstance().getLogger().debug(level.getFolderName() + "/PopulationTask: provider == null");
+                            return;
+                        }
+
                         if (ck == null) {
-                            try {
-                                this.chunks[index] = centerChunk.getProviderHandle().getChunkFactory().create(centerChunk.getX() + x, centerChunk.getZ() + z);
-                            } catch (Exception e) {
-                                throw new RuntimeException(e);
-                            }
+                            this.chunks[index] = centerChunk.getProviderHandle().getChunkFactory().create(centerChunk.getX() + x, centerChunk.getZ() + z);
                         } else {
                             this.chunks[index] = ck;
                         }
-
                     }
                 }
 
                 for (BaseFullChunk chunk : this.chunks) {
+                    if (level.getProvider() == null) {
+                        this.state = false;
+                        Server.getInstance().getLogger().debug(level.getFolderName() + "/PopulationTask: provider == null");
+                        return;
+                    }
+
                     manager.setChunk(chunk.getX(), chunk.getZ(), chunk);
                     if (!chunk.isGenerated()) {
                         generator.generateChunk(chunk.getX(), chunk.getZ());
                         BaseFullChunk newChunk = manager.getChunk(chunk.getX(), chunk.getZ());
                         newChunk.setGenerated();
                         if (newChunk != chunk) manager.setChunk(chunk.getX(), chunk.getZ(), newChunk);
-                   }
+                    }
+                }
+
+                if (level.getProvider() == null) {
+                    this.state = false;
+                    Server.getInstance().getLogger().debug(level.getFolderName() + "/PopulationTask: provider == null");
+                    return;
                 }
 
                 isPopulated = centerChunk.isPopulated();
@@ -131,7 +147,6 @@ public class PopulationTask extends AsyncTask<Void> {
                                 chunks[index] = newChunk;
                             }
                         }
-
                     }
                 }
                 this.state = true;

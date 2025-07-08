@@ -39,15 +39,17 @@ public class FoodChorusFruit extends FoodNormal {
         int maxZ = minZ + 16;
 
         ThreadLocalRandom random = ThreadLocalRandom.current();
+        XZ:
         for (int attempts = 0; attempts < 16; attempts++) {
             int x = random.nextInt(minX, maxX);
             int y = random.nextInt(minY, maxY);
             int z = random.nextInt(minZ, maxZ);
 
-            if (y < minHeight) continue;
-
-            while (y >= minHeight && !level.getBlock(x, y + 1, z).isSolid()) {
+            while (!level.getBlock(x, y + 1, z).isSolid()) {
                 y--;
+                if (y < minHeight - 1) {
+                    continue XZ;
+                }
             }
             y++; // Back up to non solid
 

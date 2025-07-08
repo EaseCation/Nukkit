@@ -65,6 +65,7 @@ import it.unimi.dsi.fastutil.longs.*;
 import it.unimi.dsi.fastutil.objects.ObjectArrayList;
 import lombok.extern.log4j.Log4j2;
 import org.apache.commons.io.FileUtils;
+import org.iq80.leveldb.DB;
 
 import javax.annotation.Nullable;
 import java.io.File;
@@ -72,10 +73,7 @@ import java.io.IOException;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.*;
-import java.util.concurrent.ConcurrentHashMap;
-import java.util.concurrent.ConcurrentLinkedDeque;
-import java.util.concurrent.ConcurrentLinkedQueue;
-import java.util.concurrent.ThreadLocalRandom;
+import java.util.concurrent.*;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantLock;
@@ -359,6 +357,10 @@ public class Level implements ChunkManager, Metadatable {
     private final Int2ObjectMap<BiConsumer<Long, DataPacket>> callbackChunkPacketSend = new Int2ObjectOpenHashMap<>();
 
     public Level(Server server, String name, String path, LevelProviderHandle providerHandle) {
+        this(server, name, path, providerHandle, null, null);
+    }
+
+    public Level(Server server, String name, String path, LevelProviderHandle providerHandle, CompoundTag levelData, DB db) {
         this.levelId = levelIdCounter++;
         this.blockMetadata = new BlockMetadataStore(this);
         this.server = server;
@@ -409,6 +411,8 @@ public class Level implements ChunkManager, Metadatable {
                 FileUtils.deleteDirectory(file);
                 FileUtils.moveDirectory(dir.toFile(), file);
                 this.provider = new Anvil(this, dirBak.toString());
+            } else if (levelData != null && db != null) {
+                this.provider = new LevelDB(this, path, levelData, db);
             } else {
                 this.provider = providerHandle.getInstantiator().create(this, path);
             }
@@ -658,7 +662,7 @@ public class Level implements ChunkManager, Metadatable {
         return this.levelId;
     }
 
-    public void close() {
+    public CompletableFuture<Void> close() {
         if (this.getAutoSave()) {
             this.save();
         }
@@ -669,10 +673,11 @@ public class Level implements ChunkManager, Metadatable {
         Arrays.fill(lastChunkPos, ChunkPosition.INVALID_CHUNK_POSITION);
         Arrays.fill(lastChunk, null);
 
-        this.provider.close();
+        CompletableFuture<Void> future = this.provider.close();
         this.provider = null;
         this.blockMetadata = null;
         this.server.getLevels().remove(this.levelId);
+        return future;
     }
 
     public void addSound(Sound sound) {
@@ -1073,6 +1078,15 @@ public class Level implements ChunkManager, Metadatable {
     }
 
     public boolean unload(boolean force) {
+        if (!unloadInternal(force)) {
+            return false;
+        }
+
+        close();
+        return true;
+    }
+
+    private boolean unloadInternal(boolean force) {
         LevelUnloadEvent ev = new LevelUnloadEvent(this);
 
         if (this == this.server.getDefaultLevel() && !force) {
@@ -1101,9 +1115,19 @@ public class Level implements ChunkManager, Metadatable {
             this.server.setDefaultLevel(null);
         }
 
-        this.close();
-
         return true;
+    }
+
+    @Nullable
+    public CompletableFuture<Void> destroy() {
+        setSaveChunksOnUnload(false);
+        provider.setAsyncClose(true);
+
+        if (!unloadInternal(false)) {
+            return null;
+        }
+
+        return close();
     }
 
     public Int2ObjectMap<Player> getChunkPlayers(int chunkX, int chunkZ) {
@@ -4112,9 +4136,6 @@ public class Level implements ChunkManager, Metadatable {
     private void queueUnloadChunk(int x, int z) {
         long index = Level.chunkHash(x, z);
         this.unloadQueue.put(index, System.currentTimeMillis());
-        if (!server.isPrimaryThread()) {
-            log.throwing(new Throwable("!isPrimaryThread")); //debug
-        }
         this.chunkTickList.remove(index);
     }
 
@@ -4202,9 +4223,6 @@ public class Level implements ChunkManager, Metadatable {
             }
         }
         this.chunks.remove(index);
-        if (!server.isPrimaryThread()) {
-            log.throwing(new Throwable("!isPrimaryThread")); //debug
-        }
         this.chunkTickList.remove(index);
 
         return true;

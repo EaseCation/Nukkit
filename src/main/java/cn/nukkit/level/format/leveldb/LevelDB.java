@@ -62,6 +62,7 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.*;
 import java.util.Map.Entry;
+import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ThreadLocalRandom;
 import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantLock;
@@ -98,23 +99,34 @@ public class LevelDB implements LevelProvider {
     protected final Lock gcLock;
 
     protected boolean saveChunksOnClose = true;
+    protected boolean asyncClose;
 
     public LevelDB(Level level, String path) {
+        this(level, path, null, null);
+    }
+
+    public LevelDB(Level level, String path, CompoundTag levelData, DB db) {
         this.level = level;
         this.path = path;
-        Path dirPath = Paths.get(path);
-        try {
-            Files.createDirectories(dirPath);
-        } catch (IOException e) {
-            throw new RuntimeException("Unable to create directories " + path, e);
+
+        Path dirPath = null;
+        if (levelData == null || db == null) {
+            dirPath = Paths.get(path);
+            try {
+                Files.createDirectories(dirPath);
+            } catch (IOException e) {
+                throw new RuntimeException("Unable to create directories " + path, e);
+            }
         }
 
-        try (InputStream stream = Files.newInputStream(dirPath.resolve("level.dat"))) {
-            stream.skip(8);
-            this.levelData = NBTIO.read(stream, ByteOrder.LITTLE_ENDIAN);
-        } catch (IOException e) {
-            throw new LevelException("Invalid level.dat in " + path, e);
+        if (levelData == null) {
+            try {
+                levelData = readLevelData(dirPath.resolve("level.dat"));
+            } catch (IOException e) {
+                throw new LevelException("Invalid level.dat in " + path, e);
+            }
         }
+        this.levelData = levelData;
 
         if (!this.levelData.contains("Generator")) {
 //            this.levelData.putInt("Generator", Generator.TYPE_INFINITE);
@@ -125,11 +137,14 @@ public class LevelDB implements LevelProvider {
             this.levelData.putString("generatorOptions", "");
         }
 
-        try {
-            this.db = openDB(dirPath.resolve("db").toFile());
-        } catch (IOException e) {
-            throw new RuntimeException("Unable to open LevelDB: " + path, e);
+        if (db == null) {
+            try {
+                db = openDB(dirPath.resolve("db").toFile());
+            } catch (IOException e) {
+                throw new RuntimeException("Unable to open LevelDB: " + path, e);
+            }
         }
+        this.db = db;
 
         gcLock = new ReentrantLock();
         if (ENABLE_STORAGE_AUTO_COMPACTION && level.isAutoCompaction()) {
@@ -194,12 +209,19 @@ public class LevelDB implements LevelProvider {
         db.close();
     }
 
-    protected static DB openDB(File dir) throws IOException {
+    public static DB openDB(File dir) throws IOException {
         Options options = new Options()
                 .createIfMissing(true)
                 .compressionType(CompressionType.ZLIB_RAW)
                 .blockSize(64 * 1024);
         return NATIVE_LEVELDB ? PROVIDER.open(dir, options) : Iq80DBFactory.factory.open(dir, options);
+    }
+
+    public static CompoundTag readLevelData(Path path) throws IOException {
+        try (InputStream stream = Files.newInputStream(path)) {
+            stream.skip(8);
+            return NBTIO.read(stream, ByteOrder.LITTLE_ENDIAN);
+        }
     }
 
     public static void updateLevelData(CompoundTag levelData) {
@@ -1158,25 +1180,40 @@ public class LevelDB implements LevelProvider {
     }
 
     @Override
-    public synchronized void close() {
+    public synchronized CompletableFuture<Void> close() {
         if (closed) {
-            return;
+            return CompletableFuture.completedFuture(null);
         }
         closed = true;
 
+        CompletableFuture<Void> future;
         try {
             gcLock.lock();
 
             this.unloadChunks(saveChunksOnClose);
-            try {
-                this.db.close();
-            } catch (IOException e) {
-                throw new RuntimeException("Unload LevelDB exception: " + path, e);
+
+            if (asyncClose) {
+                future = CompletableFuture.runAsync(() -> {
+                    try {
+                        db.close();
+                    } catch (IOException e) {
+                        throw new RuntimeException("Unload LevelDB exception: " + path, e);
+                    }
+                }, getServer().getScheduler().getAsyncPool());
+            } else {
+                try {
+                    this.db.close();
+                } catch (IOException e) {
+                    throw new RuntimeException("Unload LevelDB exception: " + path, e);
+                }
+                future = CompletableFuture.completedFuture(null);
             }
+
             this.level = null;
         } finally {
             gcLock.unlock();
         }
+        return future;
     }
 
     @Override
@@ -1466,6 +1503,11 @@ public class LevelDB implements LevelProvider {
     @Override
     public void setSaveChunksOnClose(boolean save) {
         this.saveChunksOnClose = save;
+    }
+
+    @Override
+    public void setAsyncClose(boolean async) {
+        this.asyncClose = async;
     }
 
     @Override

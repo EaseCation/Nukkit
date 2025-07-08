@@ -24,6 +24,7 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.Map;
+import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.atomic.AtomicReference;
 import java.util.regex.Pattern;
 
@@ -439,7 +440,7 @@ public abstract class BaseLevelProvider implements LevelProvider {
     }
 
     @Override
-    public synchronized void close() {
+    public synchronized CompletableFuture<Void> close() {
         this.unloadChunks(saveChunksOnClose);
         synchronized (regions) {
             ObjectIterator<BaseRegionLoader> iter = this.regions.values().iterator();
@@ -455,6 +456,7 @@ public abstract class BaseLevelProvider implements LevelProvider {
             }
         }
         this.level = null;
+        return CompletableFuture.completedFuture(null);
     }
 
     @Override

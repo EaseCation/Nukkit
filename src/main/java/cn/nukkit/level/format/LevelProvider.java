@@ -12,6 +12,7 @@ import cn.nukkit.scheduler.AsyncTask;
 import it.unimi.dsi.fastutil.longs.Long2ObjectMap;
 
 import java.util.Map;
+import java.util.concurrent.CompletableFuture;
 import java.util.function.Function;
 
 /**
@@ -118,7 +119,7 @@ public interface LevelProvider {
 
     Level getLevel();
 
-    void close();
+    CompletableFuture<Void> close();
 
     void saveLevelData();
 
@@ -135,6 +136,9 @@ public interface LevelProvider {
     void forEachChunks(Function<FullChunk, Boolean> action, boolean skipCorrupted);
 
     void setSaveChunksOnClose(boolean save);
+
+    default void setAsyncClose(boolean async) {
+    }
 
     HeightRange getHeightRange();
 
