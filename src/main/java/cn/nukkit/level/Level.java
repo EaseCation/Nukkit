@@ -293,6 +293,7 @@ public class Level implements ChunkManager, Metadatable {
     private final int chunkPopulationQueueSize;
 
     private boolean autoSave;
+    private boolean saveLevelData = true;
 
     private BlockMetadataStore blockMetadata;
 
@@ -1065,6 +1066,10 @@ public class Level implements ChunkManager, Metadatable {
         this.autoSave = autoSave;
     }
 
+    public void setSaveLevelData(boolean save) {
+        saveLevelData = save;
+    }
+
     public void setSaveChunksOnUnload(boolean save) {
         provider.setSaveChunksOnClose(save);
 
@@ -1739,15 +1744,18 @@ public class Level implements ChunkManager, Metadatable {
 
         this.server.getPluginManager().callEvent(new LevelSaveEvent(this));
 
-        this.provider.setTime((int) this.time);
-        this.provider.setRaining(this.raining);
-        this.provider.setRainTime(this.rainTime);
-        this.provider.setThundering(this.thundering);
-        this.provider.setThunderTime(this.thunderTime);
-        this.provider.setCurrentTick(this.levelCurrentTick);
-        this.provider.setGameRules(this.gameRules);
         this.saveChunks();
-        this.provider.saveLevelData();
+
+        if (saveLevelData) {
+            this.provider.setTime((int) this.time);
+            this.provider.setRaining(this.raining);
+            this.provider.setRainTime(this.rainTime);
+            this.provider.setThundering(this.thundering);
+            this.provider.setThunderTime(this.thunderTime);
+            this.provider.setCurrentTick(this.levelCurrentTick);
+            this.provider.setGameRules(this.gameRules);
+            this.provider.saveLevelData();
+        }
 
         return true;
     }

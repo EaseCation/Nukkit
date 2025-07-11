@@ -163,6 +163,7 @@ public class Server {
     private int maxPlayers;
 
     private boolean autoSave;
+    private boolean scheduledAutoSave = true;
 
     private boolean redstoneEnabled;
 
@@ -1245,7 +1246,7 @@ public class Server {
             this.getNetwork().updateName();
         }
 
-        if (this.autoSave && ++this.autoSaveTicker >= this.autoSaveTicks) {
+        if (scheduledAutoSave && this.autoSave && ++this.autoSaveTicker >= this.autoSaveTicks) {
             this.autoSaveTicker = 0;
             this.doAutoSave();
         }
@@ -1404,6 +1405,10 @@ public class Server {
         for (Level level : this.getLevels().values()) {
             level.setAutoSave(this.autoSave);
         }
+    }
+
+    public void setScheduledAutoSave(boolean enable) {
+        this.scheduledAutoSave = enable;
     }
 
     public String getLevelType() {

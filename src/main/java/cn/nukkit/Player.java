@@ -222,7 +222,6 @@ public class Player extends EntityHuman implements CommandSender, InventoryHolde
 
     private Integer loaderId;
 
-
     public Long2BooleanMap usedChunks = new Long2BooleanOpenHashMap();
 
     protected int chunkLoadCount = 0;
@@ -298,6 +297,8 @@ public class Player extends EntityHuman implements CommandSender, InventoryHolde
 
     private final Queue<ObjectIntPair<ResourcePack>> resourcePackChunkRequests = new ArrayDeque<>();
 
+    @Nullable
+    protected CompoundTag offlinePlayerData;
     protected AsyncTask preLoginEventTask = null;
     protected boolean shouldLogin = false;
 
@@ -2363,6 +2364,10 @@ public class Player extends EntityHuman implements CommandSender, InventoryHolde
         return (targetDot - eyeDot) >= -maxDiff;
     }
 
+    public void setOfflinePlayerData(CompoundTag nbt) {
+        offlinePlayerData = nbt;
+    }
+
     protected void processLogin() {
         if (!this.server.isWhitelisted((this.getName()).toLowerCase())) {
             this.kick(PlayerKickEvent.Reason.NOT_WHITELISTED, "Server is white-listed", false);
@@ -2393,7 +2398,7 @@ public class Player extends EntityHuman implements CommandSender, InventoryHolde
             }
         }
 
-        CompoundTag nbt = this.server.getOfflinePlayerData(this.username);
+        CompoundTag nbt = offlinePlayerData != null ? offlinePlayerData : this.server.getOfflinePlayerData(this.username);
         if (nbt == null) {
             this.close("", "disconnectionScreen.worldCorruption");
 
