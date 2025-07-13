@@ -1340,4 +1340,12 @@ public interface BlockNames {
     String SHORT_DRY_GRASS = "short_dry_grass";
     String TALL_DRY_GRASS = "tall_dry_grass";
     String CACTUS_FLOWER = "cactus_flower";
+    String COPPER_CHEST = "copper_chest";
+    String EXPOSED_COPPER_CHEST = "exposed_copper_chest";
+    String WEATHERED_COPPER_CHEST = "weathered_copper_chest";
+    String OXIDIZED_COPPER_CHEST = "oxidized_copper_chest";
+    String WAXED_COPPER_CHEST = "waxed_copper_chest";
+    String WAXED_EXPOSED_COPPER_CHEST = "waxed_exposed_copper_chest";
+    String WAXED_WEATHERED_COPPER_CHEST = "waxed_weathered_copper_chest";
+    String WAXED_OXIDIZED_COPPER_CHEST = "waxed_oxidized_copper_chest";
 }

@@ -4,6 +4,11 @@ import cn.nukkit.utils.BlockColor;
 
 public class BlockDoorCopperExposedWaxed extends BlockDoorCopperWaxed {
     public BlockDoorCopperExposedWaxed() {
+        this(0);
+    }
+
+    public BlockDoorCopperExposedWaxed(int meta) {
+        super(meta);
     }
 
     @Override

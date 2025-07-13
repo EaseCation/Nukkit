@@ -486,7 +486,18 @@ public final class Items {
         registerNewItem(ItemNames.RED_HARNESS, RED_HARNESS, ItemHarnessRed.class, ItemHarnessRed::new, V1_21_90);
         registerNewItem(ItemNames.WHITE_HARNESS, WHITE_HARNESS, ItemHarnessWhite.class, ItemHarnessWhite::new, V1_21_90);
         registerNewItem(ItemNames.YELLOW_HARNESS, YELLOW_HARNESS, ItemHarnessYellow.class, ItemHarnessYellow::new, V1_21_90);
-
+/*
+        registerNewItem(ItemNames.COPPER_NUGGET, COPPER_NUGGET, ItemNuggetCopper.class, ItemNuggetCopper::new, V1_21_110);
+        registerNewItem(ItemNames.COPPER_AXE, COPPER_AXE, ItemAxeCopper.class, ItemAxeCopper::new, V1_21_110);
+        registerNewItem(ItemNames.COPPER_HOE, COPPER_HOE, ItemHoeCopper.class, ItemHoeCopper::new, V1_21_110);
+        registerNewItem(ItemNames.COPPER_PICKAXE, COPPER_PICKAXE, ItemPickaxeCopper.class, ItemPickaxeCopper::new, V1_21_110);
+        registerNewItem(ItemNames.COPPER_SHOVEL, COPPER_SHOVEL, ItemShovelCopper.class, ItemShovelCopper::new, V1_21_110);
+        registerNewItem(ItemNames.COPPER_SWORD, COPPER_SWORD, ItemSwordCopper.class, ItemSwordCopper::new, V1_21_110);
+        registerNewItem(ItemNames.COPPER_HELMET, COPPER_HELMET, ItemHelmetCopper.class, ItemHelmetCopper::new, V1_21_110);
+        registerNewItem(ItemNames.COPPER_CHESTPLATE, COPPER_CHESTPLATE, ItemChestplateCopper.class, ItemChestplateCopper::new, V1_21_110);
+        registerNewItem(ItemNames.COPPER_LEGGINGS, COPPER_LEGGINGS, ItemLeggingsCopper.class, ItemLeggingsCopper::new, V1_21_110);
+        registerNewItem(ItemNames.COPPER_BOOTS, COPPER_BOOTS, ItemBootsCopper.class, ItemBootsCopper::new, V1_21_110);
+*/
     }
 
     @SuppressWarnings("deprecation")

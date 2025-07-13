@@ -2925,7 +2925,7 @@ public class Player extends EntityHuman implements CommandSender, InventoryHolde
                     }
 
                     playerActionPacket.entityId = this.id;
-                    Vector3 pos = new Vector3(playerActionPacket.x, playerActionPacket.y, playerActionPacket.z);
+                    BlockVector3 pos = new BlockVector3(playerActionPacket.x, playerActionPacket.y, playerActionPacket.z);
 
                     switch (playerActionPacket.action) {
                         case PlayerActionPacket.ACTION_START_BREAK:
@@ -2967,7 +2967,7 @@ public class Player extends EntityHuman implements CommandSender, InventoryHolde
                                     pk.y = (float) pos.y;
                                     pk.z = (float) pos.z;
                                     pk.data = 65535 / breakTime;
-                                    this.getLevel().addChunkPacket(pos.getFloorX() >> 4, pos.getFloorZ() >> 4, pk);
+                                    this.getLevel().addChunkPacket(pos.getChunkX(), pos.getChunkZ(), pk);
                                 }
                             }
 
@@ -2987,10 +2987,6 @@ public class Player extends EntityHuman implements CommandSender, InventoryHolde
                                 this.getLevel().addChunkPacket(pos.getChunkX(), pos.getChunkZ(), pk);
                             }
                             this.breakingBlock = null;
-                            break;
-                        case PlayerActionPacket.ACTION_GET_UPDATED_BLOCK:
-                            break;
-                        case PlayerActionPacket.ACTION_DROP_ITEM:
                             break;
                         case PlayerActionPacket.ACTION_STOP_SLEEPING:
                             this.stopSleep();
@@ -3087,6 +3083,15 @@ public class Player extends EntityHuman implements CommandSender, InventoryHolde
                                 this.setGliding(false);
                             }
                             break packetswitch;
+                        case PlayerActionPacket.ACTION_BUILD_DENIED:
+//                            level.addLevelEvent(pos.blockCenter(), LevelEventPacket.EVENT_PARTICLE_BLOCK_FORCE_FIELD);
+                            LevelEventPacket pk = new LevelEventPacket();
+                            pk.evid = LevelEventPacket.EVENT_PARTICLE_BLOCK_FORCE_FIELD;
+                            pk.x = pos.x + 0.5f;
+                            pk.y = pos.y + 0.5f;
+                            pk.z = pos.z + 0.5f;
+                            dataPacket(pk);
+                            break packetswitch;
                         case PlayerActionPacket.ACTION_CONTINUE_BREAK:
                             if (this.isBreakingBlock()) {
                                 block = this.level.getBlock(pos, false);
@@ -3096,7 +3101,7 @@ public class Player extends EntityHuman implements CommandSender, InventoryHolde
                                 level.addLevelEvent(blockCenter, LevelEventPacket.EVENT_PARTICLE_PUNCH_BLOCK_DOWN + face.getIndex(), block.getFullId());
 
                                 int breakTime = Mth.ceil(block.getBreakTime(inventory.getItemInHand(), this) * 20);
-                                level.addLevelEvent(pos, LevelEventPacket.EVENT_BLOCK_UPDATE_BREAK, breakTime <= 0 ? 0 : 65535 / breakTime);
+                                level.addLevelEvent(pos.asVector3(), LevelEventPacket.EVENT_BLOCK_UPDATE_BREAK, breakTime <= 0 ? 0 : 65535 / breakTime);
                             }
                             break;
                     }
@@ -6501,7 +6506,7 @@ public class Player extends EntityHuman implements CommandSender, InventoryHolde
     }
 
     public void sendDisconnectScreen(@Nullable String message) {
-        sendDisconnectScreen(DisconnectPacket.REASON_UNKNOWN, message);
+        sendDisconnectScreen(DisconnectPacket.REASON_DISCONNECTED, message);
     }
 
     public void sendDisconnectScreen(int reason, @Nullable String message) {

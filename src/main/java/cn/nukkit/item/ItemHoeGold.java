@@ -39,4 +39,9 @@ public class ItemHoeGold extends ItemTool {
     public int getTier() {
         return ItemTool.TIER_GOLD;
     }
+
+    @Override
+    public int getAttackDamage() {
+        return 2;
+    }
 }

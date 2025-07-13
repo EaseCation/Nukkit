@@ -54,7 +54,11 @@ public class BlockEntityChest extends BlockEntityAbstractContainer {
 
     @Override
     public boolean isValidBlock(int blockId) {
-        return blockId == Block.CHEST || blockId == Block.TRAPPED_CHEST;
+        return blockId == Block.CHEST || blockId == Block.TRAPPED_CHEST
+                || blockId == Block.COPPER_CHEST || blockId == Block.WAXED_COPPER_CHEST
+                || blockId == Block.EXPOSED_COPPER_CHEST || blockId == Block.WAXED_EXPOSED_COPPER_CHEST
+                || blockId == Block.WEATHERED_COPPER_CHEST || blockId == Block.WAXED_WEATHERED_COPPER_CHEST
+                || blockId == Block.OXIDIZED_COPPER_CHEST || blockId == Block.WAXED_OXIDIZED_COPPER_CHEST;
     }
 
     @Override

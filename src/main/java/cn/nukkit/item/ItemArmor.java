@@ -20,12 +20,13 @@ import javax.annotation.Nullable;
 public abstract class ItemArmor extends Item implements ItemDurable {
 
     public static final int TIER_LEATHER = 1;
-    public static final int TIER_IRON = 2;
-    public static final int TIER_CHAIN = 3;
-    public static final int TIER_GOLD = 4;
-    public static final int TIER_DIAMOND = 5;
-    public static final int TIER_NETHERITE = 6;
-    public static final int TIER_OTHER = 7;
+    public static final int TIER_COPPER = 2;
+    public static final int TIER_GOLD = 3;
+    public static final int TIER_CHAIN = 4;
+    public static final int TIER_IRON = 5;
+    public static final int TIER_DIAMOND = 6;
+    public static final int TIER_NETHERITE = 7;
+    public static final int TIER_OTHER = 8;
 
     protected ItemArmor(int id) {
         super(id);
@@ -104,6 +105,8 @@ public abstract class ItemArmor extends Item implements ItemDurable {
             case TIER_IRON:
             case TIER_OTHER:
                 return 9;
+            case TIER_COPPER:
+                return 8;
         }
 
         return 0;
@@ -129,6 +132,7 @@ public abstract class ItemArmor extends Item implements ItemDurable {
             case TIER_IRON -> LevelSoundEventPacket.SOUND_ARMOR_EQUIP_IRON;
             case TIER_LEATHER -> LevelSoundEventPacket.SOUND_ARMOR_EQUIP_LEATHER;
             case TIER_NETHERITE -> LevelSoundEventPacket.SOUND_ARMOR_EQUIP_NETHERITE;
+            case TIER_COPPER -> LevelSoundEventPacket.SOUND_ARMOR_EQUIP_COPPER;
             default -> LevelSoundEventPacket.SOUND_ARMOR_EQUIP_GENERIC;
         };
     }

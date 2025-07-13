@@ -44,4 +44,9 @@ public class ItemHoeWood extends ItemTool {
     public int getFuelTime() {
         return 200;
     }
+
+    @Override
+    public int getAttackDamage() {
+        return 2;
+    }
 }

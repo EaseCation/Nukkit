@@ -796,4 +796,14 @@ public interface ItemFullNames extends ItemBlockNames {
     String RED_HARNESS = "minecraft:" + ItemNames.RED_HARNESS;
     String WHITE_HARNESS = "minecraft:" + ItemNames.WHITE_HARNESS;
     String YELLOW_HARNESS = "minecraft:" + ItemNames.YELLOW_HARNESS;
+    String COPPER_NUGGET = "minecraft:" + ItemNames.COPPER_NUGGET;
+    String COPPER_SWORD = "minecraft:" + ItemNames.COPPER_SWORD;
+    String COPPER_SHOVEL = "minecraft:" + ItemNames.COPPER_SHOVEL;
+    String COPPER_PICKAXE = "minecraft:" + ItemNames.COPPER_PICKAXE;
+    String COPPER_AXE = "minecraft:" + ItemNames.COPPER_AXE;
+    String COPPER_HOE = "minecraft:" + ItemNames.COPPER_HOE;
+    String COPPER_HELMET = "minecraft:" + ItemNames.COPPER_HELMET;
+    String COPPER_CHESTPLATE = "minecraft:" + ItemNames.COPPER_CHESTPLATE;
+    String COPPER_LEGGINGS = "minecraft:" + ItemNames.COPPER_LEGGINGS;
+    String COPPER_BOOTS = "minecraft:" + ItemNames.COPPER_BOOTS;
 }

@@ -4,6 +4,11 @@ import cn.nukkit.utils.BlockColor;
 
 public class BlockTrapdoorCopperExposed extends BlockTrapdoorCopper {
     public BlockTrapdoorCopperExposed() {
+        this(0);
+    }
+
+    public BlockTrapdoorCopperExposed(int meta) {
+        super(meta);
     }
 
     @Override

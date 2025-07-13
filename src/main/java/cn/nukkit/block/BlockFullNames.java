@@ -1341,4 +1341,12 @@ public interface BlockFullNames {
     String SHORT_DRY_GRASS = "minecraft:" + BlockNames.SHORT_DRY_GRASS;
     String TALL_DRY_GRASS = "minecraft:" + BlockNames.TALL_DRY_GRASS;
     String CACTUS_FLOWER = "minecraft:" + BlockNames.CACTUS_FLOWER;
+    String COPPER_CHEST = "minecraft:" + BlockNames.COPPER_CHEST;
+    String EXPOSED_COPPER_CHEST = "minecraft:" + BlockNames.EXPOSED_COPPER_CHEST;
+    String WEATHERED_COPPER_CHEST = "minecraft:" + BlockNames.WEATHERED_COPPER_CHEST;
+    String OXIDIZED_COPPER_CHEST = "minecraft:" + BlockNames.OXIDIZED_COPPER_CHEST;
+    String WAXED_COPPER_CHEST = "minecraft:" + BlockNames.WAXED_COPPER_CHEST;
+    String WAXED_EXPOSED_COPPER_CHEST = "minecraft:" + BlockNames.WAXED_EXPOSED_COPPER_CHEST;
+    String WAXED_WEATHERED_COPPER_CHEST = "minecraft:" + BlockNames.WAXED_WEATHERED_COPPER_CHEST;
+    String WAXED_OXIDIZED_COPPER_CHEST = "minecraft:" + BlockNames.WAXED_OXIDIZED_COPPER_CHEST;
 }

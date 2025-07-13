@@ -1341,6 +1341,7 @@ public enum SoundEnum {
     RECORD_CREATOR("record.creator"),
     RECORD_CREATOR_MUSIC_BOX("record.creator_music_box"),
     RECORD_FAR("record.far"),
+    RECORD_LAVA_CHICKEN("record.lava_chicken"),
     RECORD_MALL("record.mall"),
     RECORD_MELLOHI("record.mellohi"),
     RECORD_OTHERSIDE("record.otherside"),

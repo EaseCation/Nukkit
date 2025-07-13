@@ -60,6 +60,7 @@ dependencies {
     api(libs.zero.allocation.hashing)
     testImplementation(libs.jupiter.api)
     testImplementation(libs.jupiter.engine)
+    testAnnotationProcessor(libs.lombok)
     annotationProcessor(libs.lombok)
     annotationProcessor(libs.log4j.core)
     compileOnly(libs.lombok)

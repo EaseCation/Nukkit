@@ -795,4 +795,14 @@ public interface ItemNames extends ItemBlockNames {
     String RED_HARNESS = "red_harness";
     String WHITE_HARNESS = "white_harness";
     String YELLOW_HARNESS = "yellow_harness";
+    String COPPER_NUGGET = "copper_nugget";
+    String COPPER_SWORD = "copper_sword";
+    String COPPER_SHOVEL = "copper_shovel";
+    String COPPER_PICKAXE = "copper_pickaxe";
+    String COPPER_AXE = "copper_axe";
+    String COPPER_HOE = "copper_hoe";
+    String COPPER_HELMET = "copper_helmet";
+    String COPPER_CHESTPLATE = "copper_chestplate";
+    String COPPER_LEGGINGS = "copper_leggings";
+    String COPPER_BOOTS = "copper_boots";
 }

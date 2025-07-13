@@ -47,7 +47,7 @@ public class BlockOreGoldNether extends BlockSolid {
 
     @Override
     public Item[] getDrops(Item item, Player player) {
-        if (item.isPickaxe() && item.getTier() >= ItemTool.TIER_IRON) {
+        if (item.isPickaxe() && item.getTier() >= ItemTool.TIER_WOODEN) {
             return new Item[]{
                     Item.get(Item.GOLD_NUGGET, 2, 7),
             };

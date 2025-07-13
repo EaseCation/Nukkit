@@ -8,6 +8,12 @@ public interface EntityPropertyStringValues {
     String ARMADILLO_STATE_ROLLED_UP_UNROLLING = "rolled_up_unrolling";
     String ARMADILLO_STATE_UNROLLED = "unrolled";
 
+    String CHEST_INTERACTION_NONE = "none";
+    String CHEST_INTERACTION_PUT = "put";
+    String CHEST_INTERACTION_PUT_FAIL = "put_fail";
+    String CHEST_INTERACTION_TAKE = "take";
+    String CHEST_INTERACTION_TAKE_FAIL = "take_fail";
+
     String CLIMATE_VARIANT_COLD = "cold";
     String CLIMATE_VARIANT_TEMPERATE = "temperate";
     String CLIMATE_VARIANT_WARM = "warm";
@@ -17,6 +23,11 @@ public interface EntityPropertyStringValues {
     String CREAKING_STATE_HOSTILE_UNOBSERVED = "hostile_unobserved";
     String CREAKING_STATE_NEUTRAL = "neutral";
     String CREAKING_STATE_TWITCHING = "twitching";
+
+    String OXIDATION_LEVEL_EXPOSED = "exposed";
+    String OXIDATION_LEVEL_OXIDIZED = "oxidized";
+    String OXIDATION_LEVEL_UNOXIDIZED = "unoxidized";
+    String OXIDATION_LEVEL_WEATHERED = "weathered";
 
     String SOUND_VARIANT_BIG = "big";
     String SOUND_VARIANT_CUTE = "cute";

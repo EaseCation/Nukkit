@@ -15,7 +15,7 @@ public class ItemAttackDamageEvent extends Event {
     private float attackDamage;
 
 	public ItemAttackDamageEvent(Item item) {
-		this(item, item.getAttackDamage());
+		this(item, 1 + item.getAttackDamage());
 	}
 
 	public ItemAttackDamageEvent(Item item, float attackDamage) {

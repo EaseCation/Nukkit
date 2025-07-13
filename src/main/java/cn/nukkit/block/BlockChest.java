@@ -74,11 +74,6 @@ public class BlockChest extends BlockTransparent implements Faceable {
     }
 
     @Override
-    public double getMinY() {
-        return this.y;
-    }
-
-    @Override
     public double getMinZ() {
         return this.z + 0.0625;
     }
@@ -163,7 +158,7 @@ public class BlockChest extends BlockTransparent implements Faceable {
     public boolean onActivate(Item item, BlockFace face, float fx, float fy, float fz, Player player) {
         if (player != null) {
             Block top = up();
-            if (!top.isTransparent()) {
+            if (!top.isTransparent() || top instanceof BlockSlab slab && !slab.isTopSlot()) {
                 return true;
             }
 
@@ -244,5 +239,10 @@ public class BlockChest extends BlockTransparent implements Faceable {
     @Override
     public int getFuelTime() {
         return 300;
+    }
+
+    @Override
+    public boolean isChest() {
+        return true;
     }
 }

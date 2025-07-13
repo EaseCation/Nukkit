@@ -854,7 +854,26 @@ public final class Blocks {
         registerBlock(BlockNames.CHISELED_RESIN_BRICKS, ItemBlockNames.CHISELED_RESIN_BRICKS, CHISELED_RESIN_BRICKS, BlockBricksResinChiseled.class, V1_21_50);
         registerBlock(BlockNames.RESIN_BLOCK, ItemBlockNames.RESIN_BLOCK, RESIN_BLOCK, BlockResin.class, V1_21_50);
         registerBlock(BlockNames.RESIN_CLUMP, ItemBlockNames.RESIN_CLUMP, RESIN_CLUMP, BlockResinClump.class, V1_21_50);
+/*
+        registerBlock(BlockNames.BUSH, ItemBlockNames.BUSH, BUSH, BlockBush.class, V1_21_70);
+        registerBlock(BlockNames.WILDFLOWERS, ItemBlockNames.WILDFLOWERS, WILDFLOWERS, BlockWildflowers.class, V1_21_70);
+        registerBlock(BlockNames.FIREFLY_BUSH, ItemBlockNames.FIREFLY_BUSH, FIREFLY_BUSH, BlockBushFirefly.class, V1_21_70);
+        registerBlock(BlockNames.LEAF_LITTER, ItemBlockNames.LEAF_LITTER, LEAF_LITTER, BlockLeafLitter.class, V1_21_70);
+        registerBlock(BlockNames.SHORT_DRY_GRASS, ItemBlockNames.SHORT_DRY_GRASS, SHORT_DRY_GRASS, BlockDryGrassShort.class, V1_21_70);
+        registerBlock(BlockNames.TALL_DRY_GRASS, ItemBlockNames.TALL_DRY_GRASS, TALL_DRY_GRASS, BlockDryGrassTall.class, V1_21_70);
+        registerBlock(BlockNames.CACTUS_FLOWER, ItemBlockNames.CACTUS_FLOWER, CACTUS_FLOWER, BlockCactusFlower.class, V1_21_70);
 
+        registerBlock(BlockNames.DRIED_GHAST, ItemBlockNames.DRIED_GHAST, DRIED_GHAST, BlockDriedGhast.class, V1_21_80);
+
+        registerBlock(BlockNames.COPPER_CHEST, ItemBlockNames.COPPER_CHEST, COPPER_CHEST, BlockChestCopper.class, V1_21_110);
+        registerBlock(BlockNames.EXPOSED_COPPER_CHEST, ItemBlockNames.EXPOSED_COPPER_CHEST, EXPOSED_COPPER_CHEST, BlockChestCopperExposed.class, V1_21_110);
+        registerBlock(BlockNames.WEATHERED_COPPER_CHEST, ItemBlockNames.WEATHERED_COPPER_CHEST, WEATHERED_COPPER_CHEST, BlockChestCopperWeathered.class, V1_21_110);
+        registerBlock(BlockNames.OXIDIZED_COPPER_CHEST, ItemBlockNames.OXIDIZED_COPPER_CHEST, OXIDIZED_COPPER_CHEST, BlockChestCopperOxidized.class, V1_21_110);
+        registerBlock(BlockNames.WAXED_COPPER_CHEST, ItemBlockNames.WAXED_COPPER_CHEST, WAXED_COPPER_CHEST, BlockChestCopperWaxed.class, V1_21_110);
+        registerBlock(BlockNames.WAXED_EXPOSED_COPPER_CHEST, ItemBlockNames.WAXED_EXPOSED_COPPER_CHEST, WAXED_EXPOSED_COPPER_CHEST, BlockChestCopperExposedWaxed.class, V1_21_110);
+        registerBlock(BlockNames.WAXED_WEATHERED_COPPER_CHEST, ItemBlockNames.WAXED_WEATHERED_COPPER_CHEST, WAXED_WEATHERED_COPPER_CHEST, BlockChestCopperWeatheredWaxed.class, V1_21_110);
+        registerBlock(BlockNames.WAXED_OXIDIZED_COPPER_CHEST, ItemBlockNames.WAXED_OXIDIZED_COPPER_CHEST, WAXED_OXIDIZED_COPPER_CHEST, BlockChestCopperOxidizedWaxed.class, V1_21_110);
+*/
         registerFlattenedBlocks();
 
         registerBlockAliases();

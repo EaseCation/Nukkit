@@ -138,6 +138,7 @@ public interface EntityNames {
     String OMINOUS_ITEM_SPAWNER = "ominous_item_spawner";
     String CREAKING = "creaking";
     String HAPPY_GHAST = "happy_ghast";
+    String COPPER_GOLEM = "copper_golem";
 
     String TRADER_LLAMA = "trader_llama";
 

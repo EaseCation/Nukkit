@@ -187,6 +187,11 @@ public class BlockFurnaceBurning extends BlockSolid implements Faceable {
         return furnace.getDropXp();
     }
 
+    @Override
+    public boolean isFurnace() {
+        return true;
+    }
+
     @Nullable
     protected BlockEntityFurnace getBlockEntity() {
         if (level == null) {

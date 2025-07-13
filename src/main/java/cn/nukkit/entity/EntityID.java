@@ -138,6 +138,7 @@ public interface EntityID {
     int OMINOUS_ITEM_SPAWNER = 145;
     int CREAKING = 146;
     int HAPPY_GHAST = 147;
+    int COPPER_GOLEM = 148;
 
     int TRADER_LLAMA = 157;
 

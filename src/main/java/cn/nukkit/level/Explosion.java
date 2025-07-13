@@ -291,7 +291,7 @@ public class Explosion {
             int id = block.getId();
             if (id == Block.TNT) {
                 ((BlockTNT) block).prime(random.nextInt(10, 31), this.what instanceof Entity ? (Entity) this.what : null);
-            } else if (id == Block.CHEST || id == Block.TRAPPED_CHEST) {
+            } else if (block.isChest()) {
                 if (blockDrop && (!dropDecay || random.nextFloat() * 100 < yield)) {
                     for (Item drop : block.getDrops(ItemTool.getUniversalTool())) {
                         this.level.dropItem(block.blockCenter(), drop);
@@ -306,9 +306,7 @@ public class Explosion {
                     }
                     ((BlockEntityChest) chest).getInventory().clearAll();
                 }
-            } else if (id == Block.FURNACE || id == Block.LIT_FURNACE
-                    || id == BlockID.BLAST_FURNACE || id == BlockID.LIT_BLAST_FURNACE
-                    || id == BlockID.SMOKER || id == BlockID.LIT_SMOKER) {
+            } else if (block.isFurnace()) {
                 if (blockDrop && (!dropDecay || random.nextFloat() * 100 < yield)) {
                     for (Item drop : block.getDrops(ItemTool.getUniversalTool())) {
                         this.level.dropItem(block.blockCenter(), drop);

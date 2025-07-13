@@ -1110,7 +1110,7 @@ public class Item implements Cloneable, ItemID {
     }
 
     public int getAttackDamage() {
-        return 1;
+        return 0;
     }
 
     public int getArmorPoints() {

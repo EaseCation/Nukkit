@@ -131,8 +131,9 @@ public class DisconnectPacket extends DataPacket {
     public static final int REASON_REALMS_TIMELINE_REQUIRED = 119;
     public static final int REASON_GUEST_WITHOUT_HOST = 120;
     public static final int REASON_FAILED_TO_JOIN_EXPERIENCE = 121;
+    public static final int REASON_CONN_DATA_CHANNEL_CLOSED = 122;
 
-    public int reason = REASON_UNKNOWN;
+    public int reason = REASON_DISCONNECTED;
     public boolean hideDisconnectionScreen;
     public String message = "";
 

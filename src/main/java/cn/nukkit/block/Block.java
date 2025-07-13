@@ -842,6 +842,8 @@ public abstract class Block extends Position implements Metadatable, Cloneable, 
                 return 2;
             case ItemTool.TIER_STONE:
                 return 4;
+            case ItemTool.TIER_COPPER:
+                return 5;
             case ItemTool.TIER_IRON:
                 return 6;
             case ItemTool.TIER_DIAMOND:
@@ -1576,6 +1578,14 @@ public abstract class Block extends Position implements Metadatable, Cloneable, 
     }
 
     public boolean isSkull() {
+        return false;
+    }
+
+    public boolean isChest() {
+        return false;
+    }
+
+    public boolean isFurnace() {
         return false;
     }
 

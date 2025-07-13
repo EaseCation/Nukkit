@@ -39,4 +39,9 @@ public class ItemHoeStone extends ItemTool {
     public int getTier() {
         return ItemTool.TIER_STONE;
     }
+
+    @Override
+    public int getAttackDamage() {
+        return 3;
+    }
 }
