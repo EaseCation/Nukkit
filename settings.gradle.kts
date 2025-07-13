@@ -4,11 +4,6 @@ val buildLogic = File(rootProject.projectDir.parent, "build-logic")
 val network = File(rootProject.projectDir.parent, "Network")
 
 dependencyResolutionManagement {
-    versionCatalogs {
-        create("libs") {
-            from(files("libs.versions.toml"))
-        }
-    }
     repositories {
         mavenLocal()
         mavenCentral()
