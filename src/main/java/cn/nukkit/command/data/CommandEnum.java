@@ -5,6 +5,8 @@ import cn.nukkit.block.Blocks;
 import cn.nukkit.entity.EntityID;
 import cn.nukkit.item.Items;
 import cn.nukkit.item.enchantment.Enchantments;
+import cn.nukkit.level.biome.Biome;
+import cn.nukkit.level.biome.Biomes;
 import cn.nukkit.potion.Effects;
 import com.google.common.collect.ImmutableMap;
 import it.unimi.dsi.fastutil.Pair;
@@ -27,6 +29,7 @@ public class CommandEnum {
     public static final CommandEnum ENUM_ENTITY_TYPE;
     public static final CommandEnum ENUM_ENCHANT = new CommandEnum("Enchant", Enchantments.getEnchantments().keySet());
     public static final CommandEnum ENUM_EFFECT = new CommandEnum("Effect", Effects.getEffects().keySet());
+    public static final CommandEnum ENUM_BIOME;
 
     static {
         ImmutableMap.Builder<String, Set<CommandEnumConstraint>> gameModes = ImmutableMap.builder();
@@ -137,13 +140,20 @@ public class CommandEnum {
         }
         ENUM_ITEM = new CommandEnum("Item", items);
 
-        ImmutableMap.Builder<String, Set<CommandEnumConstraint>> entities = ImmutableMap.builder();
+        Map<String, Set<CommandEnumConstraint>> entities = new HashMap<>();
         for (Field field : EntityID.class.getDeclaredFields()) {
             String name = field.getName().toLowerCase();
             entities.put(name, Collections.emptySet());
             entities.put("minecraft:" + name, Collections.emptySet());
         }
-        ENUM_ENTITY_TYPE = new CommandEnum("EntityType", entities.build());
+        ENUM_ENTITY_TYPE = new CommandEnum("EntityType", entities);
+
+        Map<String, Set<CommandEnumConstraint>> biomes = new HashMap<>();
+        for (Biome biome : Biomes.getBiomes()) {
+            biomes.put(biome.getIdentifier(), Collections.emptySet());
+            biomes.put(biome.getFullIdentifier(), Collections.emptySet());
+        }
+        ENUM_BIOME = new CommandEnum("Biome", biomes);
     }
 
     private final String name;

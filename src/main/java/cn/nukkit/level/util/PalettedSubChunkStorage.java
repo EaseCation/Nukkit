@@ -6,6 +6,7 @@ import cn.nukkit.block.BlockSerializer;
 import cn.nukkit.block.BlockUpgrader;
 import cn.nukkit.block.Blocks;
 import cn.nukkit.level.biome.BiomeID;
+import cn.nukkit.level.biome.Biomes;
 import cn.nukkit.math.BlockVector3;
 import cn.nukkit.nbt.NBTIO;
 import cn.nukkit.nbt.tag.CompoundTag;
@@ -14,6 +15,7 @@ import cn.nukkit.utils.ChunkException;
 import it.unimi.dsi.fastutil.ints.Int2IntFunction;
 import it.unimi.dsi.fastutil.ints.IntArrayList;
 import it.unimi.dsi.fastutil.ints.IntList;
+import it.unimi.dsi.fastutil.ints.IntLists;
 import it.unimi.dsi.fastutil.objects.ObjectArrayList;
 import lombok.extern.log4j.Log4j2;
 
@@ -117,6 +119,11 @@ public class PalettedSubChunkStorage {
 
     @Nullable
     public static PalettedSubChunkStorage ofBiome(BinaryStream stream) {
+        return ofBiome(stream, IntLists.emptyList());
+    }
+
+    @Nullable
+    public static PalettedSubChunkStorage ofBiome(BinaryStream stream, IntList customBiomePersistentToRuntime) {
         byte header = stream.getSingedByte();
 
         if (header == -1) {
@@ -134,7 +141,17 @@ public class PalettedSubChunkStorage {
         int paletteSize = version != BitArrayVersion.V0 ? stream.getLInt() : 1;
         int[] palette = new int[paletteSize];
         for (int i = 0; i < paletteSize; ++i) {
-            palette[i] = stream.getLInt();
+            int id = stream.getLInt();
+            if (id >= 30000) {
+                int index = id - 30000;
+                if (index < customBiomePersistentToRuntime.size()) {
+                    int runtimeId = customBiomePersistentToRuntime.getInt(index);
+                    if (runtimeId != -1) {
+                        id = runtimeId;
+                    }
+                }
+            }
+            palette[i] = id;
         }
 
         if (paletteSize == 0) {
@@ -280,6 +297,10 @@ public class PalettedSubChunkStorage {
     }
 
     public void writeToDiskBiome(BinaryStream stream) {
+        writeToDiskBiome(stream, IntLists.emptyList());
+    }
+
+    public void writeToDiskBiome(BinaryStream stream, IntList customBiomeRuntimeToPersistent) {
         BitArrayVersion version = bitArray.getVersion();
         stream.putByte((byte) getPaletteHeader(version, true));
         if (version == BitArrayVersion.EMPTY) {
@@ -295,7 +316,17 @@ public class PalettedSubChunkStorage {
         }
 
         for (int i = 0; i < this.palette.size(); i++) {
-            stream.putLInt(this.palette.getInt(i));
+            int id = this.palette.getInt(i);
+            if (id >= 30000) {
+                int index = id - 30000;
+                if (index < customBiomeRuntimeToPersistent.size()) {
+                    int persistentId = customBiomeRuntimeToPersistent.getInt(index);
+                    if (persistentId != -1) {
+                        id = persistentId;
+                    }
+                }
+            }
+            stream.putLInt(id);
         }
     }
 

@@ -4,6 +4,7 @@ import cn.nukkit.block.Block;
 import cn.nukkit.block.BlockWood;
 import cn.nukkit.level.ChunkManager;
 import cn.nukkit.level.biome.Biome;
+import cn.nukkit.level.biome.Biomes;
 import cn.nukkit.level.format.FullChunk;
 import cn.nukkit.math.NukkitRandom;
 
@@ -63,7 +64,7 @@ public class ObjectSpruceTree extends ObjectTree {
         boolean createSnow = false;
         if (this.canCreateSnow) {
             FullChunk chunk = level.getChunk(x >> 4, z >> 4);
-            createSnow = chunk == null || Biome.getBiome(chunk.getBiomeId(x & 0x0f, z & 0x0f)).isFreezing();
+            createSnow = chunk == null || Biomes.get(chunk.getBiomeId(x & 0x0f, z & 0x0f)).isFreezing();
         }
 
         for (int yy = 0; yy <= topSize; ++yy) {

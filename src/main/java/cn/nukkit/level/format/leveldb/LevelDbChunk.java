@@ -3,8 +3,8 @@ package cn.nukkit.level.format.leveldb;
 import cn.nukkit.block.Block;
 import cn.nukkit.level.HeightRange;
 import cn.nukkit.level.Level;
-import cn.nukkit.level.biome.Biome;
 import cn.nukkit.level.biome.BiomeID;
+import cn.nukkit.level.biome.Biomes;
 import cn.nukkit.level.format.ChunkSection;
 import cn.nukkit.level.format.LevelProvider;
 import cn.nukkit.level.format.LevelProviderManager;
@@ -15,6 +15,8 @@ import cn.nukkit.level.util.PalettedSubChunkStorage;
 import cn.nukkit.nbt.tag.CompoundTag;
 import cn.nukkit.utils.BinaryStream;
 import cn.nukkit.utils.ChunkException;
+import it.unimi.dsi.fastutil.ints.IntList;
+import it.unimi.dsi.fastutil.ints.IntLists;
 
 import javax.annotation.Nullable;
 import java.util.Arrays;
@@ -312,7 +314,7 @@ public class LevelDbChunk extends BaseChunk {
     }
 
     @Override
-    public void writeBiomeTo(BinaryStream stream, boolean network) {
+    public void writeBiomeTo(BinaryStream stream, boolean network, IntList customBiomeIds) {
         HeightRange heightRange = getHeightRange();
         int minChunkHeight = heightRange.getMinChunkY();
         int maxChunkHeight = heightRange.getMaxChunkY();
@@ -328,10 +330,11 @@ public class LevelDbChunk extends BaseChunk {
                 }
 
                 if (network) {
+                    boolean legacy = customBiomeIds == null;
                     // make sure we aren't sending bogus biomes - the 1.18.0 client crashes if we do this
-                    storage.writeTo(stream, id -> Biome.toValidBiome(id & 0xff));
+                    storage.writeTo(stream, id -> Biomes.toClientId(id, legacy));
                 } else {
-                    storage.writeToDiskBiome(stream);
+                    storage.writeToDiskBiome(stream, customBiomeIds != null ? customBiomeIds : IntLists.emptyList());
                 }
             }
         } finally {
@@ -712,7 +715,7 @@ public class LevelDbChunk extends BaseChunk {
                 if (storage == null) {
                     continue;
                 }
-                if (storage.fixPaletteElements(id -> Biome.toValidBiome(id & 0xff))) {
+                if (storage.fixPaletteElements(Biomes::toValid)) {
                     fixed = true;
                     dirty = true;
                 } else if (!forceCompress) {

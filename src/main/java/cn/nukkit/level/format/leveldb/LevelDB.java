@@ -13,6 +13,7 @@ import cn.nukkit.level.HeightRange;
 import cn.nukkit.level.Level;
 import cn.nukkit.level.LevelCreationOptions;
 import cn.nukkit.level.biome.Biome;
+import cn.nukkit.level.biome.Biomes;
 import cn.nukkit.level.format.ChunkSection;
 import cn.nukkit.level.format.FullChunk;
 import cn.nukkit.level.format.LevelProvider;
@@ -21,6 +22,7 @@ import cn.nukkit.level.format.LevelProviderManager.LevelProviderHandle;
 import cn.nukkit.level.format.anvil.util.NibbleArray;
 import cn.nukkit.level.format.generic.BaseFullChunk;
 import cn.nukkit.level.format.generic.ChunkRequestTask;
+import cn.nukkit.level.format.leveldb.LevelDB.DbInitData.CustomBiomeData;
 import cn.nukkit.level.generator.FlatGeneratorOptions;
 import cn.nukkit.level.generator.Generator;
 import cn.nukkit.level.generator.GeneratorOptions;
@@ -40,17 +42,15 @@ import io.netty.buffer.ByteBuf;
 import io.netty.buffer.Unpooled;
 import it.unimi.dsi.fastutil.bytes.ByteArrayList;
 import it.unimi.dsi.fastutil.bytes.ByteList;
+import it.unimi.dsi.fastutil.ints.IntArrayList;
+import it.unimi.dsi.fastutil.ints.IntList;
 import it.unimi.dsi.fastutil.longs.Long2ObjectMap;
 import it.unimi.dsi.fastutil.longs.Long2ObjectOpenHashMap;
 import it.unimi.dsi.fastutil.objects.Object2ObjectOpenHashMap;
 import it.unimi.dsi.fastutil.objects.ObjectArrayList;
 import lombok.extern.log4j.Log4j2;
 import org.apache.commons.lang3.mutable.MutableInt;
-import org.iq80.leveldb.CompressionType;
-import org.iq80.leveldb.DB;
-import org.iq80.leveldb.DBIterator;
-import org.iq80.leveldb.Options;
-import org.iq80.leveldb.WriteBatch;
+import org.iq80.leveldb.*;
 import org.iq80.leveldb.impl.Iq80DBFactory;
 
 import javax.annotation.Nullable;
@@ -68,8 +68,10 @@ import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantLock;
 import java.util.function.Function;
 
+import static cn.nukkit.GameVersion.*;
 import static cn.nukkit.SharedConstants.*;
 import static cn.nukkit.level.format.leveldb.LevelDBKey.*;
+import static cn.nukkit.level.format.leveldb.LevelDBSpecialKey.*;
 import static cn.nukkit.level.format.leveldb.LevelDbConstants.*;
 import static net.daporkchop.ldbjni.LevelDB.PROVIDER;
 
@@ -95,6 +97,9 @@ public class LevelDB implements LevelProvider {
     protected final CompoundTag levelData;
     private GeneratorOptions generatorOptions;
 
+    protected final IntList customBiomePersistentToRuntime;
+    protected final IntList customBiomeRuntimeToPersistent;
+
     protected volatile boolean closed;
     protected final Lock gcLock;
 
@@ -102,21 +107,28 @@ public class LevelDB implements LevelProvider {
     protected boolean asyncClose;
 
     public LevelDB(Level level, String path) {
-        this(level, path, null, null);
+        this(level, path, null);
     }
 
-    public LevelDB(Level level, String path, CompoundTag levelData, DB db) {
+    public LevelDB(Level level, String path, DbInitData initData) {
         this.level = level;
         this.path = path;
 
         Path dirPath = null;
-        if (levelData == null || db == null) {
+        CompoundTag levelData = null;
+        DB db = null;
+        CustomBiomeData customBiomeData = null;
+        if (initData == null) {
             dirPath = Paths.get(path);
             try {
                 Files.createDirectories(dirPath);
             } catch (IOException e) {
                 throw new RuntimeException("Unable to create directories " + path, e);
             }
+        } else {
+            levelData = initData.levelData;
+            db = initData.db;
+            customBiomeData = initData.customBiomeData;
         }
 
         if (levelData == null) {
@@ -145,6 +157,19 @@ public class LevelDB implements LevelProvider {
             }
         }
         this.db = db;
+
+        IntList customBiomePersistentToRuntime;
+        IntList customBiomeRuntimeToPersistent;
+        if (customBiomeData == null) {
+            customBiomePersistentToRuntime = new IntArrayList();
+            customBiomeRuntimeToPersistent = new IntArrayList();
+            readCustomBiomeIds(db, customBiomePersistentToRuntime, customBiomeRuntimeToPersistent);
+        } else {
+            customBiomePersistentToRuntime = customBiomeData.customBiomePersistentToRuntime;
+            customBiomeRuntimeToPersistent = customBiomeData.customBiomeRuntimeToPersistent;
+        }
+        this.customBiomePersistentToRuntime = customBiomePersistentToRuntime;
+        this.customBiomeRuntimeToPersistent = customBiomeRuntimeToPersistent;
 
         gcLock = new ReentrantLock();
         if (ENABLE_STORAGE_AUTO_COMPACTION && level.isAutoCompaction()) {
@@ -215,6 +240,55 @@ public class LevelDB implements LevelProvider {
                 .compressionType(CompressionType.ZLIB_RAW)
                 .blockSize(64 * 1024);
         return NATIVE_LEVELDB ? PROVIDER.open(dir, options) : Iq80DBFactory.factory.open(dir, options);
+    }
+
+    public static void readCustomBiomeIds(DB db, IntList customBiomePersistentToRuntime, IntList customBiomeRuntimeToPersistent) {
+        byte[] data = db.get(BIOME_IDS_TABLE);
+        if (data == null || data.length == 0) {
+            return;
+        }
+
+        boolean useFullName = V1_21_100.isAvailable();
+        Set<String> existingBiomes = new HashSet<>();
+        try {
+            for (CompoundTag entry : NBTIO.read(data, ByteOrder.LITTLE_ENDIAN).getList("list", CompoundTag.class)) {
+                int persistentId = entry.getShort("id");
+                if (persistentId < 30000) {
+                    log.warn("Unsupported custom biome ID: {}", persistentId);
+                    continue;
+                }
+                int persistentIndex = persistentId - 30000;
+                while (customBiomePersistentToRuntime.size() <= persistentIndex) {
+                    customBiomePersistentToRuntime.add(-1);
+                }
+                String name = entry.getString("name");
+                int runtimeId = Biomes.getIdByCustomName(name);
+                int runtimeIndex = runtimeId - 30000;
+                while (customBiomeRuntimeToPersistent.size() <= runtimeIndex) {
+                    customBiomeRuntimeToPersistent.add(-1);
+                }
+                customBiomePersistentToRuntime.set(persistentIndex, runtimeId);
+                customBiomeRuntimeToPersistent.set(runtimeIndex, persistentId);
+                existingBiomes.add(useFullName ? Biomes.getFullNameById(runtimeId) : Biomes.getNameById(runtimeId));
+            }
+        } catch (Exception e) {
+            log.warn("Unable to read BiomeIdsTable", e);
+        }
+
+        for (Biome biome : Biomes.getCustomBiomes()) {
+            String name = useFullName ? biome.getFullIdentifier() : biome.getIdentifier();
+            if (existingBiomes.contains(name)) {
+                continue;
+            }
+            int persistentId = customBiomePersistentToRuntime.size() + 30000;
+            int runtimeId = biome.getId();
+            int runtimeIndex = runtimeId - 30000;
+            while (customBiomeRuntimeToPersistent.size() <= runtimeIndex) {
+                customBiomeRuntimeToPersistent.add(-1);
+            }
+            customBiomePersistentToRuntime.add(runtimeId);
+            customBiomeRuntimeToPersistent.set(runtimeIndex, persistentId);
+        }
     }
 
     public static CompoundTag readLevelData(Path path) throws IOException {
@@ -638,7 +712,7 @@ public class LevelDB implements LevelProvider {
                             biomes3d = new PalettedSubChunkStorage[LevelDbChunk.SECTION_COUNT];
 
                             for (int chunkY = minChunkY; chunkY < maxChunkY && !stream.feof(); chunkY++) {
-                                biomes3d[Level.subChunkYtoIndex(chunkY)] = PalettedSubChunkStorage.ofBiome(stream);
+                                biomes3d[Level.subChunkYtoIndex(chunkY)] = PalettedSubChunkStorage.ofBiome(stream, customBiomePersistentToRuntime);
                             }
                         } catch (Exception e) {
                             log.debug("Failed to deserialize biome palette ({},{}) in {}", chunkX, chunkZ, path, e);
@@ -672,7 +746,7 @@ public class LevelDB implements LevelProvider {
                                 PalettedSubChunkStorage storage = PalettedSubChunkStorage.ofBiome(biome[0]);
                                 for (int x = 0; x < 16; x++) {
                                     for (int z = 0; z < 16; z++) {
-                                        int biomeId = Biome.toValidBiome(biome[LevelDbChunk.index2d(x, z)] & 0xff);
+                                        int biomeId = Biomes.toValid(biome[LevelDbChunk.index2d(x, z)] & 0xff);
                                         for (int y = 0; y < 16; y++) {
                                             storage.set(x, y, z, biomeId);
                                         }
@@ -749,7 +823,7 @@ public class LevelDB implements LevelProvider {
                 try {
                     // Converts pre-MCPE-1.0 biome color array to biome ID array.
                     for (int i = 0; i < SUB_CHUNK_2D_SIZE; i++) {
-                        biome[i] = (byte) Biome.toValidBiome((stream.getInt() >> 24) & 0xff);
+                        biome[i] = (byte) Biomes.toValid((stream.getInt() >> 24) & 0xff);
                     }
 
                     // converts 2D biomes into a 3D biome palette
@@ -888,7 +962,7 @@ public class LevelDB implements LevelProvider {
                     stream.putLShort(height);
                 }
 
-                chunk.writeBiomeTo(stream, false);
+                chunk.writeBiomeTo(stream, false, customBiomeRuntimeToPersistent);
 
                 batch.put(HEIGHTMAP_AND_3D_BIOMES.getKey(chunkX, chunkZ), stream.getBuffer());
             }
@@ -1194,6 +1268,10 @@ public class LevelDB implements LevelProvider {
 
             if (asyncClose) {
                 future = CompletableFuture.runAsync(() -> {
+                    if (saveChunksOnClose) {
+                        saveCustomBiomeIds();
+                    }
+
                     try {
                         db.close();
                     } catch (IOException e) {
@@ -1201,6 +1279,10 @@ public class LevelDB implements LevelProvider {
                     }
                 }, getServer().getScheduler().getAsyncPool());
             } else {
+                if (saveChunksOnClose) {
+                    saveCustomBiomeIds();
+                }
+
                 try {
                     this.db.close();
                 } catch (IOException e) {
@@ -1214,6 +1296,29 @@ public class LevelDB implements LevelProvider {
             gcLock.unlock();
         }
         return future;
+    }
+
+    protected void saveCustomBiomeIds() {
+        boolean useFullName = V1_21_100.isAvailable();
+
+        ListTag<CompoundTag> list = new ListTag<>();
+        for (int i = 0; i < customBiomePersistentToRuntime.size(); i++) {
+            int runtimeId = customBiomePersistentToRuntime.getInt(i);
+            String name = useFullName ? Biomes.getFullNameByIdNullable(runtimeId) : Biomes.getNameByIdNullable(runtimeId);
+            if (name == null) {
+                continue;
+            }
+            list.addCompound(new CompoundTag()
+                    .putShort("id", i + 30000)
+                    .putString("name", name));
+        }
+
+        CompoundTag tag = new CompoundTag().putList("list", list);
+        try {
+            db.put(BIOME_IDS_TABLE, NBTIO.write(tag, ByteOrder.LITTLE_ENDIAN));
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
     }
 
     @Override
@@ -1525,10 +1630,7 @@ public class LevelDB implements LevelProvider {
             if (biomeOverride.isEmpty()) {
                 biome = -1;
             } else {
-                biome = Biome.getIdByName(biomeOverride);
-                if (biome != -1 && !Biome.isValidBiome(biome)) {
-                    biome = -1;
-                }
+                biome = Biomes.getIdByName(biomeOverride);
             }
             options = GeneratorOptions.builder()
                     .flatOptions(FlatGeneratorOptions.load(levelData.getString("FlatWorldLayers", FlatGeneratorOptions.DEFAULT_FLAT_WORLD_LAYERS)))
@@ -1594,5 +1696,13 @@ public class LevelDB implements LevelProvider {
 
     static {
         log.info("native LevelDB provider: {}", NATIVE_LEVELDB && PROVIDER.isNative());
+    }
+
+    public record DbInitData(CompoundTag levelData, DB db, CustomBiomeData customBiomeData) {
+        public record CustomBiomeData(IntList customBiomePersistentToRuntime, IntList customBiomeRuntimeToPersistent) {
+            public static CustomBiomeData create() {
+                return new CustomBiomeData(new IntArrayList(), new IntArrayList());
+            }
+        }
     }
 }

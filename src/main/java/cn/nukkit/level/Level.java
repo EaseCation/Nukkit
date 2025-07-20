@@ -26,6 +26,7 @@ import cn.nukkit.item.enchantment.Enchantment;
 import cn.nukkit.level.GlobalBlockPaletteInterface.StaticVersion;
 import cn.nukkit.level.biome.Biome;
 import cn.nukkit.level.biome.BiomeID;
+import cn.nukkit.level.biome.Biomes;
 import cn.nukkit.level.format.*;
 import cn.nukkit.level.format.LevelProviderManager.LevelProviderHandle;
 import cn.nukkit.level.format.anvil.Anvil;
@@ -33,6 +34,7 @@ import cn.nukkit.level.format.generic.BaseFullChunk;
 import cn.nukkit.level.format.generic.ChunkCachedData;
 import cn.nukkit.level.format.generic.ChunkPacketCache;
 import cn.nukkit.level.format.leveldb.LevelDB;
+import cn.nukkit.level.format.leveldb.LevelDB.DbInitData;
 import cn.nukkit.level.format.mcregion.McRegion;
 import cn.nukkit.level.generator.Generator;
 import cn.nukkit.level.generator.PopChunkManager;
@@ -65,7 +67,6 @@ import it.unimi.dsi.fastutil.longs.*;
 import it.unimi.dsi.fastutil.objects.ObjectArrayList;
 import lombok.extern.log4j.Log4j2;
 import org.apache.commons.io.FileUtils;
-import org.iq80.leveldb.DB;
 
 import javax.annotation.Nullable;
 import java.io.File;
@@ -358,10 +359,10 @@ public class Level implements ChunkManager, Metadatable {
     private final Int2ObjectMap<BiConsumer<Long, DataPacket>> callbackChunkPacketSend = new Int2ObjectOpenHashMap<>();
 
     public Level(Server server, String name, String path, LevelProviderHandle providerHandle) {
-        this(server, name, path, providerHandle, null, null);
+        this(server, name, path, providerHandle, null);
     }
 
-    public Level(Server server, String name, String path, LevelProviderHandle providerHandle, CompoundTag levelData, DB db) {
+    public Level(Server server, String name, String path, LevelProviderHandle providerHandle, DbInitData dbInitData) {
         this.levelId = levelIdCounter++;
         this.blockMetadata = new BlockMetadataStore(this);
         this.server = server;
@@ -412,8 +413,8 @@ public class Level implements ChunkManager, Metadatable {
                 FileUtils.deleteDirectory(file);
                 FileUtils.moveDirectory(dir.toFile(), file);
                 this.provider = new Anvil(this, dirBak.toString());
-            } else if (levelData != null && db != null) {
-                this.provider = new LevelDB(this, path, levelData, db);
+            } else if (dbInitData != null) {
+                this.provider = new LevelDB(this, path, dbInitData);
             } else {
                 this.provider = providerHandle.getInstantiator().create(this, path);
             }
@@ -1452,7 +1453,7 @@ public class Level implements ChunkManager, Metadatable {
             int chunkZ = chunk.getZ() * 16;
             Vector3 vector = this.adjustPosToNearbyEntity(new Vector3(chunkX + (lcg & 0xf), 0, chunkZ + (lcg >>> 8 & 0xf)));
 
-            Biome biome = Biome.getBiome(this.getBiomeId(vector.getFloorX(), vector.getFloorZ()));
+            Biome biome = Biomes.get(this.getBiomeId(vector.getFloorX(), vector.getFloorZ()));
             if (!biome.canRain()) {
                 return;
             }
@@ -3425,7 +3426,7 @@ public class Level implements ChunkManager, Metadatable {
     }
 
     public Biome getBiome(int x, int z) {
-        return Biome.getBiome(getBiomeId(x, z));
+        return Biomes.get(getBiomeId(x, z));
     }
 
     public int getBiomeId(int x, int z) {
@@ -3442,7 +3443,7 @@ public class Level implements ChunkManager, Metadatable {
     }
 
     public Biome getBiome(int x, int y, int z) {
-        return Biome.getBiome(getBiomeId(x, y, z));
+        return Biomes.get(getBiomeId(x, y, z));
     }
 
     public int getBiomeId(int x, int y, int z) {
@@ -3456,6 +3457,14 @@ public class Level implements ChunkManager, Metadatable {
             return;
         }
         chunk.setBiomeId(x & 0xf, y, z & 0xf, biomeId);
+    }
+
+    public void fillBiomeId(int chunkX, int chunkZ, int biomeId) {
+        FullChunk chunk = this.getChunk(chunkX, chunkZ, true);
+        if (chunk == null) {
+            return;
+        }
+        chunk.fillBiome(biomeId);
     }
 
     public int getHeightMap(int x, int z) {
@@ -3785,8 +3794,10 @@ public class Level implements ChunkManager, Metadatable {
 
                         if (player.isSubChunkRequestAvailable()) {
                             int protocol = player.getProtocol();
-                            if (protocol >= 649) {
+                            if (protocol >= 748) {
                                 player.sendChunk(x, z, subChunkCount, cachedData, packetCache.getSubRequestModeFullChunkPacketUncompressed());
+                            } else if (protocol >= 649) {
+                                player.sendChunk(x, z, subChunkCount, cachedData, packetCache.getSubRequestModeFullChunkPacketUncompressedLegacy());
                             } else {
                                 player.sendChunk(x, z, subChunkCount, cachedData, packetCache.getSubRequestModeFullChunkPacket());
                             }
@@ -3878,7 +3889,7 @@ public class Level implements ChunkManager, Metadatable {
      * Chunk request callback on main thread
      * If this.cacheChunks == false, the ChunkPacketCache can be null;
      */
-    public void chunkRequestCallback(long timestamp, int x, int z, ChunkCachedData cachedData, Map<StaticVersion, byte[]> fullChunkPayloads, byte[] subRequestModeFullChunkPayload, Map<StaticVersion, byte[][]> subChunkPayloads) {
+    public void chunkRequestCallback(long timestamp, int x, int z, ChunkCachedData cachedData, Map<StaticVersion, byte[]> fullChunkPayloads, byte[] subRequestModeFullChunkPayload, byte[] subRequestModeFullChunkPayloadLegacy, Map<StaticVersion, byte[][]> subChunkPayloads) {
         long index = Level.chunkHash(x, z);
         int subChunkCount = cachedData.getSubChunkCount();
         byte[] heightMapType = cachedData.getHeightMapType();
@@ -3907,8 +3918,10 @@ public class Level implements ChunkManager, Metadatable {
 
                         if (player.isSubChunkRequestAvailable()) {
                             int protocol = player.getProtocol();
-                            if (protocol >= 649) {
+                            if (protocol >= 748) {
                                 player.sendChunk(x, z, subChunkCount, cachedData, packetCache.getSubRequestModeFullChunkPacketUncompressed());
+                            } else if (protocol >= 649) {
+                                player.sendChunk(x, z, subChunkCount, cachedData, packetCache.getSubRequestModeFullChunkPacketUncompressedLegacy());
                             } else {
                                 player.sendChunk(x, z, subChunkCount, cachedData, packetCache.getSubRequestModeFullChunkPacket());
                             }
@@ -3977,7 +3990,7 @@ public class Level implements ChunkManager, Metadatable {
                         continue;
                     }
 
-                    player.sendChunk(x, z, subChunkCount, cachedData, data, subRequestModeFullChunkPayload);
+                    player.sendChunk(x, z, subChunkCount, cachedData, data, player.getProtocol() >= 748 ? subRequestModeFullChunkPayload : subRequestModeFullChunkPayloadLegacy);
                 }
             }
         }

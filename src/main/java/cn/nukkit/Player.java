@@ -2946,7 +2946,7 @@ public class Player extends EntityHuman implements CommandSender, InventoryHolde
                                 this.inventory.sendHeldItem(this);
                                 break;
                             }
-                            if (/*!isAdventure() &&*/ target.getId() == Block.NOTEBLOCK) {
+                            if (!isAdventure() && target.getId() == Block.NOTEBLOCK) {
                                 ((BlockNoteblock) target).emitSound();
                                 break;
                             }

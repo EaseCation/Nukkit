@@ -9,6 +9,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.util.Collections;
 import java.util.List;
+import java.util.Map;
 import java.util.UUID;
 
 @Data
@@ -53,7 +54,7 @@ public class PackManifest {
         @JsonProperty("min_engine_version")
         private SemVersion minEngineVersion;
         @JsonProperty("pack_scope")
-        private String packScope = "global";
+        private String packScope;
         @JsonProperty("directory_load")
         private boolean directoryLoad;
         @JsonProperty("load_before_game")
@@ -62,6 +63,10 @@ public class PackManifest {
         private boolean lockTemplateOptions;
         @JsonProperty("population_control")
         private boolean populationControl;
+        @JsonProperty("allow_random_seed")
+        private boolean allowRandomSeed;
+        @JsonProperty("base_game_version")
+        private SemVersion baseGameVersion;
     }
 
     @Data
@@ -70,6 +75,7 @@ public class PackManifest {
         private String description;
         private SemVersion version;
         private String type;
+        private String language;
     }
 
     @Data
@@ -77,12 +83,18 @@ public class PackManifest {
         private List<String> authors;
         private String license;
         private String url;
+        @JsonProperty("product_type")
+        private String productType;
+        @JsonProperty("generated_with")
+        private Map<String, List<String>> generatedWith;
     }
 
     @Data
     public static class Dependency {
         private UUID uuid;
         private SemVersion version;
+        @JsonProperty("module_name")
+        private String moduleName;
     }
 
     @Data

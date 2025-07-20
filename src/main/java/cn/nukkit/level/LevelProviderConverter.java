@@ -7,7 +7,7 @@ import cn.nukkit.block.BlockLeaves;
 import cn.nukkit.block.BlockLeaves2;
 import cn.nukkit.block.BlockWood;
 import cn.nukkit.block.BlockWood2;
-import cn.nukkit.level.biome.Biome;
+import cn.nukkit.level.biome.Biomes;
 import cn.nukkit.level.format.ChunkSection;
 import cn.nukkit.level.format.FullChunk;
 import cn.nukkit.level.format.LevelProvider;
@@ -367,7 +367,7 @@ class LevelProviderConverter {
 
         for (int x = 0; x < 16; x++) {
             for (int z = 0; z < 16; z++) {
-                chunk.setBiomeId(x, z, Biome.toValidBiome(oldChunk.getBiomeId(x, z)));
+                chunk.setBiomeId(x, z, Biomes.toValid(oldChunk.getBiomeId(x, z)));
             }
         }
 

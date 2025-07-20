@@ -3,8 +3,8 @@ package cn.nukkit.level.generator;
 import cn.nukkit.block.Block;
 import cn.nukkit.block.BlockFullNames;
 import cn.nukkit.block.Blocks;
-import cn.nukkit.level.biome.Biome;
 import cn.nukkit.level.biome.BiomeID;
+import cn.nukkit.level.biome.Biomes;
 import cn.nukkit.level.generator.populator.type.Populator;
 import cn.nukkit.utils.JsonUtil;
 import com.fasterxml.jackson.core.JsonProcessingException;
@@ -87,7 +87,7 @@ public class FlatGeneratorOptions {
             builder.encodingVersion(encodingVersion);
 
             JsonNode biomeIdNode = root.get("biome_id");
-            int biomeId = biomeIdNode != null ? Biome.toValidBiome(biomeIdNode.asInt() & 0xff) : BiomeID.PLAINS;
+            int biomeId = biomeIdNode != null ? Biomes.toValid(biomeIdNode.asInt()) : BiomeID.PLAINS;
             builder.biomeId(biomeId);
 
             JsonNode structureOptions = root.get("structure_options");

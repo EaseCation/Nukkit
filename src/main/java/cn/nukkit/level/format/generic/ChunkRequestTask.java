@@ -18,6 +18,7 @@ import cn.nukkit.utils.BinaryStream;
 import cn.nukkit.utils.Hash;
 import it.unimi.dsi.fastutil.bytes.ByteArrayList;
 import it.unimi.dsi.fastutil.bytes.ByteList;
+import it.unimi.dsi.fastutil.ints.IntLists;
 import it.unimi.dsi.fastutil.longs.Long2ObjectMap;
 import it.unimi.dsi.fastutil.longs.Long2ObjectOpenHashMap;
 import it.unimi.dsi.fastutil.longs.LongArrayList;
@@ -57,6 +58,7 @@ public class ChunkRequestTask extends AsyncTask<Void> {
     private final Map<StaticVersion, byte[]> fullChunkPayloads = new EnumMap<>(StaticVersion.class);
 
     private byte[] subRequestModeFullChunkPayload;
+    private byte[] subRequestModeFullChunkPayloadLegacy;
     private final Map<StaticVersion, byte[][]> subChunkPayloads = new EnumMap<>(StaticVersion.class);
 
     private ChunkCachedData chunkCachedData;
@@ -86,8 +88,12 @@ public class ChunkRequestTask extends AsyncTask<Void> {
 
             BinaryStream stream = new BinaryStream(1024);
 
-            chunk.writeBiomeTo(stream, true);
+            chunk.writeBiomeTo(stream, true, IntLists.emptyList());
             byte[] biome = stream.getBuffer();
+
+            stream.reuse();
+            chunk.writeBiomeTo(stream, true, null);
+            byte[] biomeLegacy = stream.getBuffer();
 
             int cnt = 0;
             ChunkSection[] sections = chunk.getSections();
@@ -201,6 +207,9 @@ public class ChunkRequestTask extends AsyncTask<Void> {
             Long2ObjectMap<byte[]> blobs = new Long2ObjectOpenHashMap<>(blobCount);
             LongList blobIds = new LongArrayList(blobCount);
 
+            Long2ObjectMap<byte[]> blobsLegacy = new Long2ObjectOpenHashMap<>(blobCount);
+            LongList blobIdsLegacy = new LongArrayList(blobCount);
+
             for (int chunkY = minChunkY; chunkY <= topChunkY; chunkY++) {
                 stream.reuse();
                 emptySection[Level.yToIndex(chunkY, chunkYIndexOffset)] = sections[Level.subChunkYtoIndex(chunkY)]
@@ -211,10 +220,16 @@ public class ChunkRequestTask extends AsyncTask<Void> {
                 blobIds.add(hash);
                 blobs.put(hash, subChunk);
             }
+            blobsLegacy.putAll(blobs);
+            blobIdsLegacy.addAll(blobIds);
 
             long hash = Hash.xxh64(biome);
             blobIds.add(hash);
             blobs.put(hash, biome);
+
+            long hashLegacy = Hash.xxh64(biomeLegacy);
+            blobIdsLegacy.add(hashLegacy);
+            blobsLegacy.put(hashLegacy, biomeLegacy);
 
             stream.reuse();
             stream.put(borderBlocks);
@@ -226,11 +241,12 @@ public class ChunkRequestTask extends AsyncTask<Void> {
             stream.put(borderBlocks);
             subRequestModeFullChunkPayload = stream.getBuffer(); // biome + borderBlocks. (without cache)
 
-            for (StaticVersion version : StaticVersion.getAvailableVersions()) {
-                if (!requestedVersions.contains(version)) {
-                    continue;
-                }
+            stream.reuse();
+            stream.put(biomeLegacy);
+            stream.put(borderBlocks);
+            subRequestModeFullChunkPayloadLegacy = stream.getBuffer();
 
+            for (StaticVersion version : requestedVersions) {
                 byte[][] blockStorages = new byte[count][];
                 stream.reuse();
                 for (int chunkY = minChunkY; chunkY <= topChunkY; chunkY++) {
@@ -238,7 +254,7 @@ public class ChunkRequestTask extends AsyncTask<Void> {
                     sections[Level.subChunkYtoIndex(chunkY)].writeTo(stream, version);
                     blockStorages[Level.yToIndex(chunkY, chunkYIndexOffset)] = stream.getBuffer(mark);
                 }
-                stream.put(biome);
+                stream.put(version.getProtocol() >= StaticVersion.V1_21_40.getProtocol() ? biome : biomeLegacy);
                 stream.put(borderBlocks);
                 stream.put(fullChunkBlockEntities);
                 fullChunkPayloads.put(version, stream.getBuffer());
@@ -310,11 +326,21 @@ public class ChunkRequestTask extends AsyncTask<Void> {
                 uncompressed.data = subRequestModeFullChunkPayload;
                 uncompressed.setBuffer(null, 0);
 
+                LevelChunkPacket12060 uncompressedLegacy = new LevelChunkPacket12060();
+                uncompressedLegacy.chunkX = chunkX;
+                uncompressedLegacy.chunkZ = chunkZ;
+                uncompressedLegacy.dimension = level.getDimension().ordinal();
+                uncompressedLegacy.subChunkCount = LevelChunkPacket.CLIENT_REQUEST_TRUNCATED_COLUMN_FAKE_COUNT;
+                uncompressedLegacy.subChunkRequestLimit = count;
+                uncompressedLegacy.data = subRequestModeFullChunkPayloadLegacy;
+                uncompressedLegacy.setBuffer(null, 0);
+
                 packetCache = new ChunkPacketCache(
                         packets,
                         packetsUncompressed,
                         Level.getChunkCacheFromData(chunkX, chunkZ, LevelChunkPacket.CLIENT_REQUEST_TRUNCATED_COLUMN_FAKE_COUNT, count, subRequestModeFullChunkPayload),
                         uncompressed,
+                        uncompressedLegacy,
                         subPackets,
                         subPacketsUncompressed,
                         requestedVersions);
@@ -322,9 +348,9 @@ public class ChunkRequestTask extends AsyncTask<Void> {
                 packetCache = null;
             }
 
-            chunkCachedData = new ChunkCachedData(count, heightmapType, heightmapData, emptySection, new ChunkBlobCache(blobIds.toLongArray(), blobs, cacheModeFullChunkPayload, borderBlocks, subChunkBlockEntities), packetCache);
+            chunkCachedData = new ChunkCachedData(count, heightmapType, heightmapData, emptySection, new ChunkBlobCache(blobIds.toLongArray(), blobs, blobIdsLegacy.toLongArray(), blobsLegacy, cacheModeFullChunkPayload, borderBlocks, subChunkBlockEntities), packetCache);
         } catch (Exception e) {
-            log.warn("Chunk network serialization failed: [" + chunkX + "," + chunkZ + "] " + level.getFolderName(), e);
+            log.warn("Chunk network serialization failed: [{},{}] {}", chunkX, chunkZ, level.getFolderName(), e);
         }
     }
 
@@ -333,7 +359,7 @@ public class ChunkRequestTask extends AsyncTask<Void> {
         if (chunkCachedData == null) {
             return;
         }
-        level.chunkRequestCallback(timestamp, chunkX, chunkZ, chunkCachedData, fullChunkPayloads, subRequestModeFullChunkPayload, subChunkPayloads);
+        level.chunkRequestCallback(timestamp, chunkX, chunkZ, chunkCachedData, fullChunkPayloads, subRequestModeFullChunkPayload, subRequestModeFullChunkPayloadLegacy, subChunkPayloads);
     }
 
     public static boolean addPreloadVersion(StaticVersion version) {

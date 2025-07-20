@@ -14,7 +14,7 @@ import cn.nukkit.inventory.InventoryHolder;
 import cn.nukkit.level.ChunkManager;
 import cn.nukkit.level.HeightRange;
 import cn.nukkit.level.Level;
-import cn.nukkit.level.biome.Biome;
+import cn.nukkit.level.biome.Biomes;
 import cn.nukkit.level.format.ChunkSection;
 import cn.nukkit.level.format.FullChunk;
 import cn.nukkit.level.format.LevelProvider;
@@ -25,11 +25,7 @@ import cn.nukkit.nbt.tag.NumberTag;
 import cn.nukkit.nbt.tag.Tag;
 import cn.nukkit.utils.BinaryStream;
 import cn.nukkit.utils.BlockUpdateEntry;
-import it.unimi.dsi.fastutil.ints.Int2IntMap;
-import it.unimi.dsi.fastutil.ints.Int2IntMaps;
-import it.unimi.dsi.fastutil.ints.Int2IntOpenHashMap;
-import it.unimi.dsi.fastutil.ints.Int2ObjectMap;
-import it.unimi.dsi.fastutil.ints.Int2ObjectOpenHashMap;
+import it.unimi.dsi.fastutil.ints.*;
 import it.unimi.dsi.fastutil.longs.Long2ObjectMap;
 import it.unimi.dsi.fastutil.longs.Long2ObjectMaps;
 import it.unimi.dsi.fastutil.longs.Long2ObjectOpenHashMap;
@@ -245,7 +241,7 @@ public abstract class BaseFullChunk implements FullChunk, ChunkManager {
     }
 
     @Override
-    public void writeBiomeTo(BinaryStream stream, boolean network) {
+    public void writeBiomeTo(BinaryStream stream, boolean network, IntList customBiomeIds) {
         stream.put(biomes);
     }
 
@@ -774,7 +770,7 @@ public abstract class BaseFullChunk implements FullChunk, ChunkManager {
         boolean fixed = false;
         for (int i = 0; i < 16 * 16; i++) {
             int biomeId = biomes[i] & 0xff;
-            int validBiomeId = Biome.toValidBiome(biomeId);
+            int validBiomeId = Biomes.toValid(biomeId);
             if (biomeId == validBiomeId) {
                 continue;
             }

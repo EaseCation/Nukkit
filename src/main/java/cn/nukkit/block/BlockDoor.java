@@ -5,6 +5,7 @@ import cn.nukkit.event.block.BlockRedstoneEvent;
 import cn.nukkit.event.block.DoorToggleEvent;
 import cn.nukkit.item.Item;
 import cn.nukkit.level.Level;
+import cn.nukkit.level.particle.DestroyBlockParticle;
 import cn.nukkit.math.AxisAlignedBB;
 import cn.nukkit.math.BlockFace;
 import cn.nukkit.math.SimpleAxisAlignedBB;
@@ -190,10 +191,11 @@ public abstract class BlockDoor extends BlockTransparent implements Faceable {
                 Block up = this.up();
 
                 if (up instanceof BlockDoor) {
+                    level.addParticle(new DestroyBlockParticle(up, up));
                     this.getLevel().setBlock(up, Block.get(BlockID.AIR), true, false);
-                    this.getLevel().useBreakOn(this, Item.get(Item.WOODEN_PICKAXE), true);
                 }
 
+                this.getLevel().useBreakOn(this, Item.get(Item.WOODEN_PICKAXE), true);
                 return Level.BLOCK_UPDATE_NORMAL;
             }
         }
@@ -273,11 +275,13 @@ public abstract class BlockDoor extends BlockTransparent implements Faceable {
         if (isTop(this.getDamage())) {
             Block down = this.down();
             if (down.getId() == this.getId()) {
+                level.addParticle(new DestroyBlockParticle(down, down));
                 this.getLevel().setBlock(down, Block.get(BlockID.AIR), true);
             }
         } else {
             Block up = this.up();
             if (up.getId() == this.getId()) {
+                level.addParticle(new DestroyBlockParticle(up, up));
                 this.getLevel().setBlock(up, Block.get(BlockID.AIR), true);
             }
         }

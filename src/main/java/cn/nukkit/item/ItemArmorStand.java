@@ -33,9 +33,9 @@ public class ItemArmorStand extends Item {
 
     @Override
     public boolean onActivate(Level level, Player player, Block block, Block target, BlockFace face, float fx, float fy, float fz) {
-//        if (player.isAdventure()) {
-//            return false;
-//        }
+        if (player.isAdventure()) {
+            return false;
+        }
 
         if (target.canBeReplaced()) {
             block = target;

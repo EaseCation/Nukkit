@@ -132,9 +132,9 @@ public class ItemBucket extends Item {
 
     @Override
     public boolean onActivate(Level level, Player player, Block block, Block target, BlockFace face, float fx, float fy, float fz) {
-//        if (player.isAdventure()) {
-//            return false;
-//        }
+        if (player.isAdventure()) {
+            return false;
+        }
 
         int meta = this.getDamage();
         Block placeBlock = Block.get(getPlaceBlockFromMeta(meta));

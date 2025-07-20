@@ -35,9 +35,9 @@ public class ItemPainting extends Item {
 
     @Override
     public boolean onActivate(Level level, Player player, Block block, Block target, BlockFace face, float fx, float fy, float fz) {
-//        if (player.isAdventure()) {
-//            return false;
-//        }
+        if (player.isAdventure()) {
+            return false;
+        }
 
         FullChunk chunk = level.getChunk(block.getChunkX(), block.getChunkZ());
         if (chunk == null || face.getHorizontalIndex() == -1 || block.isSolid() || level.getBlockEntity(target) != null) {

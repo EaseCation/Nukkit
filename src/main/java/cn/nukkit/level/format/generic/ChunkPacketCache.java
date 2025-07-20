@@ -14,8 +14,9 @@ public class ChunkPacketCache {
     private final Map<StaticVersion, BatchPacket> fullChunkPackets;
     private final Map<StaticVersion, LevelChunkPacket12060> fullChunkPacketsUncompressed; // 1.20.60+
 
-    private final BatchPacket subRequestModeFullChunkPacket;
-    private final LevelChunkPacket12060 subRequestModeFullChunkPacketUncompressed; // 1.20.60+
+    private final BatchPacket subRequestModeFullChunkPacket; // 1.18.0-1.20.50
+    private final LevelChunkPacket12060 subRequestModeFullChunkPacketUncompressed; // 1.21.40+
+    private final LevelChunkPacket12060 subRequestModeFullChunkPacketUncompressedLegacy; // 1.20.60-1.21.30
     private final Map<StaticVersion, BatchPacket[]> subChunkPackets;
     private final Map<StaticVersion, SubChunkPacket[]> subChunkPacketsUncompressed;
 
@@ -26,6 +27,7 @@ public class ChunkPacketCache {
             Map<StaticVersion, LevelChunkPacket12060> fullChunkPacketsUncompressed,
             BatchPacket subRequestModeFullChunkPacket,
             LevelChunkPacket12060 subRequestModeFullChunkPacketUncompressed,
+            LevelChunkPacket12060 subRequestModeFullChunkPacketUncompressedLegacy,
             Map<StaticVersion, BatchPacket[]> subChunkPackets,
             Map<StaticVersion, SubChunkPacket[]> subChunkPacketsUncompressed,
             Set<StaticVersion> requestedVersions) {
@@ -33,6 +35,7 @@ public class ChunkPacketCache {
         this.fullChunkPacketsUncompressed = fullChunkPacketsUncompressed;
         this.subRequestModeFullChunkPacket = subRequestModeFullChunkPacket;
         this.subRequestModeFullChunkPacketUncompressed = subRequestModeFullChunkPacketUncompressed;
+        this.subRequestModeFullChunkPacketUncompressedLegacy = subRequestModeFullChunkPacketUncompressedLegacy;
         this.subChunkPackets = subChunkPackets;
         this.subChunkPacketsUncompressed = subChunkPacketsUncompressed;
         this.requestedVersions = requestedVersions;
@@ -54,6 +57,10 @@ public class ChunkPacketCache {
 
     public LevelChunkPacket12060 getSubRequestModeFullChunkPacketUncompressed() {
         return subRequestModeFullChunkPacketUncompressed;
+    }
+
+    public LevelChunkPacket12060 getSubRequestModeFullChunkPacketUncompressedLegacy() {
+        return subRequestModeFullChunkPacketUncompressedLegacy;
     }
 
     @Nullable

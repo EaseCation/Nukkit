@@ -9,7 +9,9 @@ import cn.nukkit.level.format.LevelProviderManager.LevelProviderHandle;
 import cn.nukkit.level.util.PalettedSubChunkStorage;
 import cn.nukkit.utils.BinaryStream;
 import it.unimi.dsi.fastutil.ints.Int2IntMap;
+import it.unimi.dsi.fastutil.ints.IntList;
 
+import javax.annotation.Nullable;
 import java.io.IOException;
 import java.util.Map;
 
@@ -116,7 +118,7 @@ public interface FullChunk extends Cloneable {
         }
     }
 
-    void writeBiomeTo(BinaryStream stream, boolean network);
+    void writeBiomeTo(BinaryStream stream, boolean network, @Nullable IntList customBiomeIds);
 
     boolean isLightPopulated();
 

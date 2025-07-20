@@ -12,6 +12,8 @@ import cn.nukkit.lang.TextContainer;
 import cn.nukkit.lang.TranslationContainer;
 import cn.nukkit.level.Level;
 import cn.nukkit.level.Position;
+import cn.nukkit.level.biome.Biome;
+import cn.nukkit.level.biome.Biomes;
 import cn.nukkit.math.BlockVector3;
 import cn.nukkit.math.Vector2;
 import cn.nukkit.math.Vector3;
@@ -927,6 +929,34 @@ public class CommandParser {
             return defaultValue.get();
         }
         return this.parseItem();
+    }
+
+    public Biome parseBiome() throws CommandSyntaxException {
+        String arg = this.next();
+        Biome biome;
+        try {
+            biome = Biomes.getNullable(Integer.parseInt(arg));
+        } catch (NumberFormatException a) {
+            biome = Biomes.getNullable(arg.toLowerCase());
+        }
+        if (biome == null) {
+            throw CommandExceptions.COMMAND_SYNTAX_EXCEPTION;
+        }
+        return biome;
+    }
+
+    public Biome parseBiomeOrDefault(Biome defaultValue) throws CommandSyntaxException {
+        if (!this.hasNext()) {
+            return defaultValue;
+        }
+        return this.parseBiome();
+    }
+
+    public Biome parseBiomeOrDefault(Supplier<Biome> defaultValue) throws CommandSyntaxException {
+        if (!this.hasNext()) {
+            return defaultValue.get();
+        }
+        return this.parseBiome();
     }
 
     public Enchantment parseEnchantment() throws CommandSyntaxException {

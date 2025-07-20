@@ -5,6 +5,7 @@ import cn.nukkit.level.ChunkManager;
 import cn.nukkit.level.Level;
 import cn.nukkit.level.biome.Biome;
 import cn.nukkit.level.biome.BiomeID;
+import cn.nukkit.level.biome.Biomes;
 import cn.nukkit.level.format.generic.BaseFullChunk;
 import cn.nukkit.level.generator.noise.nukkit.f.SimplexF;
 import cn.nukkit.level.generator.object.ore.OreType;
@@ -155,7 +156,7 @@ public class Nether extends Generator {
             populator.populate(this.level, chunkX, chunkZ, this.nukkitRandom, chunk);
         }
 
-        Biome biome = Biome.getBiome(chunk.getBiomeId(7, 7));
+        Biome biome = Biomes.get(chunk.getBiomeId(7, 7));
         biome.populateChunk(this.level, chunkX, chunkZ, this.nukkitRandom);
     }
 

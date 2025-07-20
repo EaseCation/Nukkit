@@ -4,6 +4,7 @@ import cn.nukkit.Player;
 import cn.nukkit.item.Item;
 import cn.nukkit.level.Level;
 import cn.nukkit.level.particle.BoneMealParticle;
+import cn.nukkit.level.particle.DestroyBlockParticle;
 import cn.nukkit.math.BlockFace;
 import cn.nukkit.utils.BlockColor;
 
@@ -68,7 +69,7 @@ public class BlockDoublePlant extends BlockFlowable {
             if ((meta & upperBlockBitMask) == upperBlockBitMask) {
                 Block below = down();
                 if (below.getId() != getId() || (below.getDamage() & typeMask) != (meta & typeMask)) {
-                    this.getLevel().setBlock(this, Block.get(BlockID.AIR), true, true);
+                    this.getLevel().useBreakOn(this, true);
                     return Level.BLOCK_UPDATE_NORMAL;
                 }
             } else {
@@ -112,49 +113,53 @@ public class BlockDoublePlant extends BlockFlowable {
     @Override
     public boolean onBreak(Item item, Player player) {
         int upperBlockBitMask = getUpperBlockBitMask();
+        int typeMask = getPlantTypeMask();
         if ((this.getDamage() & upperBlockBitMask) == upperBlockBitMask) { // Top half
-            this.getLevel().useBreakOn(downVec(), true);
+            Block down = down();
+            if (down.getId() == getId() && (down.getDamage() & typeMask) == (getDamage() & typeMask)) {
+                level.addParticle(new DestroyBlockParticle(down, down));
+                this.getLevel().setBlock(down, Block.get(BlockID.AIR), true, true);
+            }
         } else {
-            this.getLevel().setBlock(this, Block.get(BlockID.AIR), true, true);
+            Block above = up();
+            if (above.getId() == getId() && (above.getDamage() & typeMask) == (getDamage() & typeMask)) {
+                level.addParticle(new DestroyBlockParticle(above, above));
+                this.getLevel().setBlock(above, Block.get(BlockID.AIR), true, true);
+            }
         }
-
-        return true;
+        return super.onBreak(item, player);
     }
 
     @Override
     public Item[] getDrops(Item item, Player player) {
-        int upperBlockBitMask = getUpperBlockBitMask();
-        if ((this.getDamage() & upperBlockBitMask) != upperBlockBitMask) {
-            switch (this.getPlantType()) {
-                case TYPE_TALL_GRASS:
-                case TYPE_LARGE_FERN:
-                    boolean dropSeeds = ThreadLocalRandom.current().nextInt(10) == 0;
-                    if (item.isShears()) {
-                        if (dropSeeds) {
-                            return new Item[]{
-                                    Item.get(Item.WHEAT_SEEDS),
-                                    toItem(true)
-                            };
-                        } else {
-                            return new Item[]{
-                                    toItem(true)
-                            };
-                        }
-                    }
-
+        switch (this.getPlantType()) {
+            case TYPE_TALL_GRASS:
+            case TYPE_LARGE_FERN:
+                boolean dropSeeds = ThreadLocalRandom.current().nextInt(10) == 0;
+                if (item.isShears()) {
                     if (dropSeeds) {
                         return new Item[]{
-                                Item.get(Item.WHEAT_SEEDS)
+                                Item.get(Item.WHEAT_SEEDS),
+                                toItem(true)
                         };
                     } else {
-                        return new Item[0];
+                        return new Item[]{
+                                toItem(true)
+                        };
                     }
-            }
+                }
 
-            return new Item[]{toItem(true)};
+                if (dropSeeds) {
+                    return new Item[]{
+                            Item.get(Item.WHEAT_SEEDS)
+                    };
+                } else {
+                    return new Item[0];
+                }
         }
-
-        return new Item[0];
+        return new Item[]{
+                toItem(true),
+        };
     }
 
     @Override

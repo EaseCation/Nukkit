@@ -31,10 +31,11 @@ import cn.nukkit.lang.TranslationContainer;
 import cn.nukkit.level.Level;
 import cn.nukkit.level.LevelCreationOptions;
 import cn.nukkit.level.Position;
-import cn.nukkit.level.biome.EnumBiome;
+import cn.nukkit.level.biome.Biomes;
 import cn.nukkit.level.format.LevelProvider;
 import cn.nukkit.level.format.LevelProviderManager;
 import cn.nukkit.level.format.LevelProviderManager.LevelProviderHandle;
+import cn.nukkit.level.format.leveldb.LevelDB.DbInitData;
 import cn.nukkit.level.generator.Generator;
 import cn.nukkit.level.generator.Generators;
 import cn.nukkit.math.Mth;
@@ -82,7 +83,6 @@ import lombok.Setter;
 import lombok.extern.log4j.Log4j2;
 import org.apache.commons.compress.compressors.gzip.GzipCompressorOutputStream;
 import org.apache.commons.compress.compressors.gzip.GzipParameters;
-import org.iq80.leveldb.DB;
 
 import javax.annotation.Nullable;
 import java.io.*;
@@ -477,7 +477,7 @@ public class Server {
         Item.init();
         TrimMaterials.registerVanillaTrimMaterials();
         TrimPatterns.registerVanillaTrimPatterns();
-        EnumBiome.values(); //load class, this also registers biomes
+        Biomes.registerVanillaBiomes();
         Effect.init();
         Potion.init();
         Attribute.init();
@@ -1823,10 +1823,10 @@ public class Server {
     }
 
     public boolean loadLevel(String name) {
-        return loadLevel(name, null, null);
+        return loadLevel(name, null);
     }
 
-    public boolean loadLevel(String name, CompoundTag levelData, DB db) {
+    public boolean loadLevel(String name, DbInitData dbInitData) {
         if (Objects.equals(name.trim(), "")) {
             throw new LevelException("Invalid empty level name");
         }
@@ -1856,7 +1856,7 @@ public class Server {
 
         Level level;
         try {
-            level = new Level(this, name, path, provider, levelData, db);
+            level = new Level(this, name, path, provider, dbInitData);
         } catch (Exception e) {
             log.error(this.getLanguage().translate("nukkit.level.loadError.exception", name), e);
             return false;
