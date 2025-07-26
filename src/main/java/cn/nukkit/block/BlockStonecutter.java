@@ -49,6 +49,11 @@ public class BlockStonecutter extends BlockTransparent implements Faceable {
     }
 
     @Override
+    public Item toItem(boolean addUserData) {
+        return Item.get(getItemId());
+    }
+
+    @Override
     public Item[] getDrops(Item item, Player player) {
         if (item.isPickaxe() && item.getTier() >= ItemTool.TIER_WOODEN) {
             return new Item[]{

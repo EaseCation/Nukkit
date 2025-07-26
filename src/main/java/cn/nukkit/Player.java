@@ -17,13 +17,9 @@ import cn.nukkit.entity.item.*;
 import cn.nukkit.entity.projectile.EntityArrow;
 import cn.nukkit.entity.projectile.EntityProjectile;
 import cn.nukkit.entity.projectile.EntityThrownTrident;
-import cn.nukkit.event.entity.EntityDamageByBlockEvent;
-import cn.nukkit.event.entity.EntityDamageByChildEntityEvent;
-import cn.nukkit.event.entity.EntityDamageByEntityEvent;
-import cn.nukkit.event.entity.EntityDamageEvent;
+import cn.nukkit.event.entity.*;
 import cn.nukkit.event.entity.EntityDamageEvent.DamageCause;
 import cn.nukkit.event.entity.EntityDamageEvent.DamageModifier;
-import cn.nukkit.event.entity.ProjectileLaunchEvent;
 import cn.nukkit.event.inventory.*;
 import cn.nukkit.event.level.LevelCorruptEvent;
 import cn.nukkit.event.player.*;
@@ -1999,7 +1995,7 @@ public class Player extends EntityHuman implements CommandSender, InventoryHolde
 
             if (this.getServer().getDifficulty() == 0 && this.level.getGameRules().getBoolean(GameRule.NATURAL_REGENERATION)) {
                 if (this.getHealth() < this.getMaxHealth() && this.ticksLived % 20 == 0) {
-                    this.heal(1);
+                    this.heal(new EntityRegainHealthEvent(this, 1, EntityRegainHealthEvent.CAUSE_REGEN));
                 }
 
                 PlayerFood foodData = this.getFoodData();
@@ -3432,7 +3428,7 @@ public class Player extends EntityHuman implements CommandSender, InventoryHolde
                     TextPacket textPacket = (TextPacket) packet;
 
                     if (textPacket.type == TextPacket.TYPE_CHAT) {
-                        this.chat(textPacket.message);
+                        this.preChat(textPacket.message);
                     }
                     break;
                 case ProtocolInfo.CONTAINER_CLOSE_PACKET:
@@ -4067,6 +4063,10 @@ public class Player extends EntityHuman implements CommandSender, InventoryHolde
                     break;
             }
         }
+    }
+
+    public void preChat(String message) {
+        chat(message);
     }
 
     /**

@@ -1296,6 +1296,9 @@ public abstract class Entity extends Location implements Metadatable, EntityData
     }
 
     public void heal(EntityRegainHealthEvent source) {
+        if (!isAlive()) {
+            source.setCancelled();
+        }
         this.server.getPluginManager().callEvent(source);
         if (source.isCancelled()) {
             return;
@@ -1304,7 +1307,7 @@ public abstract class Entity extends Location implements Metadatable, EntityData
     }
 
     public void heal(float amount) {
-        this.heal(new EntityRegainHealthEvent(this, amount, EntityRegainHealthEvent.CAUSE_REGEN));
+        this.heal(new EntityRegainHealthEvent(this, amount, EntityRegainHealthEvent.CAUSE_CUSTOM));
     }
 
     public float getHealth() {
