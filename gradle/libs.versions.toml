@@ -15,7 +15,7 @@ commons-io = { module = "commons-io:commons-io", version = "2.15.1" }
 expiringmap = { module = "net.jodah:expiringmap", version = "0.5.11" }
 fastutil = { module = "it.unimi.dsi:fastutil", version = "8.5.16" }
 gson = { module = "com.google.code.gson:gson", version = "2.10.1" }
-guava = { module = "com.google.guava:guava", version = "33.0.0-jre" }
+guava = { module = "com.google.guava:guava", version = "33.4.8-jre" }
 jackson = { module = "com.fasterxml.jackson.core:jackson-databind", version.ref = "jackson" }
 jackson-datatype-guava = { module = "com.fasterxml.jackson.datatype:jackson-datatype-guava", version.ref = "jackson" }
 jackson-datatype-jdk8 = { module = "com.fasterxml.jackson.datatype:jackson-datatype-jdk8", version.ref = "jackson" }
