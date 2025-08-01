@@ -40,7 +40,7 @@ minecrell-console = { module = "net.minecrell:terminalconsoleappender", version 
 org-cloudburstmc-upnp = { module = "org.cloudburstmc:upnp", version = "1.1.1" }
 org-msgpack-msgpack-core = { module = "org.msgpack:msgpack-core", version = "0.9.8" }
 slf4j-api = { module = "org.slf4j:slf4j-api", version = "2.0.12" }
-snakeyaml = { module = "org.yaml:snakeyaml", version = "2.2" }
+snakeyaml = { module = "org.yaml:snakeyaml", version = "2.4" }
 snakeyaml-engine = { module = "org.snakeyaml:snakeyaml-engine", version = "2.7" }
 snappy = { module = "org.xerial.snappy:snappy-java", version = "1.1.10.5" }
 spotbugs-annotations = { module = "com.github.spotbugs:spotbugs-annotations", version = "4.9.3" }
