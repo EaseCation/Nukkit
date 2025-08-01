@@ -1,7 +1,7 @@
 [versions]
 jackson = "2.17.1"
 log4j = "2.23.1"
-jupiter = "5.10.2"
+jupiter = "5.13.4"
 
 [plugins]
 shadow = { id = "com.gradleup.shadow", version = "9.0.0-beta10" }
