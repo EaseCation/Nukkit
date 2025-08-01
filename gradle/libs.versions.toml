@@ -1,5 +1,5 @@
 [versions]
-jackson = "2.17.1"
+jackson = "2.19.2"
 log4j = "2.23.1"
 jupiter = "5.10.2"
 
