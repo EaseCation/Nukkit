@@ -257,7 +257,7 @@ public class Level implements ChunkManager, Metadatable {
 
     private final Long2ObjectMap<List<DataPacket>> chunkPackets = new Long2ObjectOpenHashMap<>();
 
-    private final Long2LongMap unloadQueue = new Long2LongOpenHashMap();
+    private final Long2IntMap unloadQueue = new Long2IntOpenHashMap();
 
     private float time;
     public boolean stopTime;
@@ -4159,7 +4159,7 @@ public class Level implements ChunkManager, Metadatable {
 
     private void queueUnloadChunk(int x, int z) {
         long index = Level.chunkHash(x, z);
-        this.unloadQueue.put(index, System.currentTimeMillis());
+        this.unloadQueue.put(index, server.getTick());
         this.chunkTickList.remove(index);
     }
 
@@ -4491,27 +4491,25 @@ public class Level implements ChunkManager, Metadatable {
     }
 
     public void unloadChunks(boolean force) {
+        if (!force && server.getTickServerChunkUnloadRemaining() <= 0) {
+            return;
+        }
+
         if (!this.unloadQueue.isEmpty()) {
-            int maxUnload = 96;
-            long now = System.currentTimeMillis();
+            int maxUnload = server.getTickLevelChunkUnloadLimit();
+            int expiration = server.getTick() - server.getChunkKeepAliveTicks();
 
             for (long index : new ObjectArrayList<>(this.unloadQueue.keySet())) {
-                long time = this.unloadQueue.get(index);
-
-                int X = getHashX(index);
-                int Z = getHashZ(index);
-
-                if (!force) {
-                    if (maxUnload <= 0) {
-                        break;
-                    } else if (time > (now - 30000)) {
-                        continue;
-                    }
+                if (!force && this.unloadQueue.get(index) > expiration) {
+                    continue;
                 }
 
-                if (this.unloadChunk(X, Z, true)) {
+                if (this.unloadChunk(getHashX(index), getHashZ(index), true)) {
                     this.unloadQueue.remove(index);
-                    --maxUnload;
+
+                    if ((server.updateChunkUnloadRemaining() <= 0 || --maxUnload <= 0) && !force) {
+                        break;
+                    }
                 }
             }
         }
@@ -5264,7 +5262,7 @@ public class Level implements ChunkManager, Metadatable {
         return chunkTickList;
     }
 
-    public Long2LongMap getChunkUnloadQueue() {
+    public Long2IntMap getChunkUnloadQueue() {
         return unloadQueue;
     }
 

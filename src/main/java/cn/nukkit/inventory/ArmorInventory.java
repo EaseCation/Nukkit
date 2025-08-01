@@ -88,11 +88,18 @@ public class ArmorInventory extends BaseInventory {
 
         for (Player player : players) {
             if (player == holder) {
-                InventorySlotPacket packet = new InventorySlotPacket();
-                packet.inventoryId = ContainerIds.ARMOR;
-                packet.slot = index;
-                packet.item = items[index];
-                player.dataPacket(packet);
+                if (index < 0 || index >= size) {
+                    InventoryContentPacket packet = new InventoryContentPacket();
+                    packet.inventoryId = ContainerIds.ARMOR;
+                    packet.slots = items;
+                    player.dataPacket(packet);
+                } else {
+                    InventorySlotPacket packet = new InventorySlotPacket();
+                    packet.inventoryId = ContainerIds.ARMOR;
+                    packet.slot = index;
+                    packet.item = items[index];
+                    player.dataPacket(packet);
+                }
             } else {
                 MobArmorEquipmentPacket packet = new MobArmorEquipmentPacket();
                 packet.eid = entity.getId();

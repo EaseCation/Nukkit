@@ -9,20 +9,12 @@ import cn.nukkit.item.Item;
  */
 public abstract class InventoryAction {
 
-    private final long creationTime;
-
     protected Item sourceItem;
     protected Item targetItem;
 
     public InventoryAction(Item sourceItem, Item targetItem) {
         this.sourceItem = sourceItem;
         this.targetItem = targetItem;
-
-        this.creationTime = System.currentTimeMillis();
-    }
-
-    public long getCreationTime() {
-        return creationTime;
     }
 
     /**

@@ -605,7 +605,6 @@ public class Skin implements Cloneable {
         skin.personaPieces.addAll(personaPieces);
         skin.tintColors.addAll(tintColors);
         skin.capeData = capeData;
-
         skin.geometryData = geometryData;
         skin.animationData = animationData;
         skin.premium = premium;
@@ -618,6 +617,10 @@ public class Skin implements Cloneable {
         skin.trusted = trusted;
         skin.geometryDataEngineVersion = geometryDataEngineVersion;
         skin.overridingPlayerAppearance = overridingPlayerAppearance;
+
+        skin.cachedGeometryName = cachedGeometryName;
+        skin.skinMd5 = skinMd5;
+        skin.skinGeoMd5 = skinGeoMd5;
         return skin;
     }
 

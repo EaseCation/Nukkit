@@ -4,7 +4,6 @@ import cn.nukkit.Player;
 import cn.nukkit.event.inventory.InventoryClickEvent;
 import cn.nukkit.event.inventory.InventoryTransactionEvent;
 import cn.nukkit.inventory.Inventory;
-import cn.nukkit.inventory.PlayerUIInventory;
 import cn.nukkit.inventory.transaction.action.InventoryAction;
 import cn.nukkit.inventory.transaction.action.SlotChangeAction;
 import cn.nukkit.item.Item;
@@ -14,14 +13,11 @@ import it.unimi.dsi.fastutil.objects.ObjectOpenHashSet;
 
 import java.util.*;
 
-import static cn.nukkit.network.protocol.types.UiContainerSlots.*;
-
 /**
  * @author CreeperFace
  */
 public class InventoryTransaction {
 
-    private long creationTime;
     protected boolean hasExecuted;
 
     protected Player source;
@@ -29,8 +25,6 @@ public class InventoryTransaction {
     protected Set<Inventory> inventories = new ObjectOpenHashSet<>();
 
     protected List<InventoryAction> actions = new ObjectArrayList<>();
-
-    protected boolean uiTransaction;
 
     public InventoryTransaction(Player source, List<InventoryAction> actions) {
         this(source, actions, true);
@@ -43,7 +37,6 @@ public class InventoryTransaction {
     }
 
     protected void init(Player source, List<InventoryAction> actions) {
-        creationTime = System.currentTimeMillis();
         this.source = source;
 
         for (InventoryAction action : actions) {
@@ -53,10 +46,6 @@ public class InventoryTransaction {
 
     public Player getSource() {
         return source;
-    }
-
-    public long getCreationTime() {
-        return creationTime;
     }
 
     public Set<Inventory> getInventories() {
@@ -74,11 +63,6 @@ public class InventoryTransaction {
     public void addAction(InventoryAction action) {
         if (action instanceof SlotChangeAction) {
             SlotChangeAction slotChangeAction = (SlotChangeAction) action;
-
-            if (slotChangeAction.getInventory() instanceof PlayerUIInventory
-                    && slotChangeAction.getSlot() != CURSOR && slotChangeAction.getSlot() != CREATED_ITEM_OUTPUT) {
-                uiTransaction = true;
-            }
 
             ListIterator<InventoryAction> iterator = this.actions.listIterator();
             while (iterator.hasNext()) {

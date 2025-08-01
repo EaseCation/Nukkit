@@ -1,6 +1,5 @@
 package cn.nukkit.network;
 
-import cn.nukkit.Nukkit;
 import cn.nukkit.Player;
 import cn.nukkit.Server;
 import cn.nukkit.nbt.stream.FastByteArrayOutputStream;
@@ -8,7 +7,6 @@ import cn.nukkit.network.protocol.*;
 import cn.nukkit.utils.BinaryStream;
 import cn.nukkit.utils.DataLengthException;
 import cn.nukkit.utils.ThreadCache;
-import cn.nukkit.utils.Utils;
 import cn.nukkit.utils.VarInt;
 import cn.nukkit.utils.Zlib;
 import io.netty.buffer.ByteBuf;
@@ -59,8 +57,8 @@ public class Network {
 
     private final Set<AdvancedSourceInterface> advancedInterfaces = new HashSet<>();
 
-    private double upload = 0;
-    private double download = 0;
+    private long upload;
+    private long download;
 
     private String name;
     private String subName;
@@ -150,16 +148,19 @@ public class Network {
         }
     }
 
-    public void addStatistics(double upload, double download) {
+    public void addUploadStatistic(int upload) {
         this.upload += upload;
+    }
+
+    public void addDownloadStatistic(int download) {
         this.download += download;
     }
 
-    public double getUpload() {
+    public long getUpload() {
         return upload;
     }
 
-    public double getDownload() {
+    public long getDownload() {
         return download;
     }
 

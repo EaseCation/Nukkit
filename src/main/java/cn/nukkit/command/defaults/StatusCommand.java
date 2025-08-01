@@ -53,9 +53,9 @@ public class StatusCommand extends VanillaCommand {
 
         sender.sendMessage(TextFormat.GOLD + "Load: " + tpsColor + server.getTickUsageAverage() + "%");
 
-        sender.sendMessage(TextFormat.GOLD + "Network upload: " + TextFormat.GREEN + NukkitMath.round((server.getNetwork().getUpload() / 1024 * 1000), 2) + " kB/s");
+        sender.sendMessage(TextFormat.GOLD + "Network upload: " + TextFormat.GREEN + NukkitMath.round(((double) server.getNetwork().getUpload() / 1024 * 1000), 2) + " kB/s");
 
-        sender.sendMessage(TextFormat.GOLD + "Network download: " + TextFormat.GREEN + NukkitMath.round((server.getNetwork().getDownload() / 1024 * 1000), 2) + " kB/s");
+        sender.sendMessage(TextFormat.GOLD + "Network download: " + TextFormat.GREEN + NukkitMath.round(((double) server.getNetwork().getDownload() / 1024 * 1000), 2) + " kB/s");
 
         sender.sendMessage(TextFormat.GOLD + "Thread count: " + TextFormat.GREEN + Thread.getAllStackTraces().size());
 
@@ -91,7 +91,7 @@ public class StatusCommand extends VanillaCommand {
             sender.sendMessage(
                     TextFormat.GOLD + "World \"" + level.getFolderName() + "\"" + (!Objects.equals(level.getFolderName(), level.getName()) ? " (" + level.getName() + ")" : "") + ": " +
                             TextFormat.RED + level.getChunks().size() + TextFormat.GREEN + " chunks, " +
-                            TextFormat.RED + level.getEntities().length + TextFormat.GREEN + " entities, " +
+                            TextFormat.RED + level.getActors().size() + TextFormat.GREEN + " entities, " +
                             TextFormat.RED + level.getBlockEntities().size() + TextFormat.GREEN + " blockEntities." +
                             " Time " + ((level.getTickRate() > 1 || level.getTickRateTime() > 40) ? TextFormat.RED : TextFormat.YELLOW) + NukkitMath.round(level.getTickRateTime(), 2) + "ms" +
                             (level.getTickRate() > 1 ? " (tick rate " + level.getTickRate() + ")" : "")

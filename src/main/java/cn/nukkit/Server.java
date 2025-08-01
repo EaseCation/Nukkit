@@ -222,6 +222,11 @@ public class Server {
 
     private final Map<Integer, Level> levels = new ConcurrentHashMap<>();
 
+    private int tickServerChunkUnloadLimit = 96;
+    private int tickServerChunkUnloadRemaining = tickServerChunkUnloadLimit;
+    private int tickLevelChunkUnloadLimit = 16;
+    private int chunkKeepAliveTicks = 20 * 30;
+
     private final ServiceManager serviceManager = new NKServiceManager();
 
     private Level defaultLevel = null;
@@ -1145,6 +1150,7 @@ public class Server {
             }
         }
 
+        tickServerChunkUnloadRemaining = getTicksPerSecondRaw() < 19 || getTicksPerSecondAverage() < 19 ? 0 : tickServerChunkUnloadLimit; // 高负载时跳过区块卸载
         //Do level ticks
         for (Level level : this.getLevels().values()) {
             if (level.getTickRate() > this.baseTickRate && --level.tickRateCounter > 0) {
@@ -1323,8 +1329,8 @@ public class Server {
                 " | Online " + this.players.size() + "/" + this.getMaxPlayers() +
                 " | Memory " + usage;
         if (!Nukkit.shortTitle) {
-            title += " | U " + NukkitMath.round((this.network.getUpload() / 1024 * 1000), 2)
-                    + " D " + NukkitMath.round((this.network.getDownload() / 1024 * 1000), 2) + " kB/s";
+            title += " | U " + NukkitMath.round(((double) this.network.getUpload() / 1024 * 1000), 2)
+                    + " D " + NukkitMath.round(((double) this.network.getDownload() / 1024 * 1000), 2) + " kB/s";
         }
         title += " | TPS " + this.getTicksPerSecondAverage() +
                 " | Load " + this.getTickUsageAverage() + "%" + (char) 0x07;
@@ -1660,9 +1666,10 @@ public class Server {
         }
 
         Position spawn = this.getDefaultLevel().getSafeSpawn();
+        long time = System.currentTimeMillis() / 1000;
         CompoundTag nbt = Entity.getDefaultNBT(spawn)
-                .putLong("firstPlayed", System.currentTimeMillis() / 1000)
-                .putLong("lastPlayed", System.currentTimeMillis() / 1000)
+                .putLong("firstPlayed", time)
+                .putLong("lastPlayed", time)
                 .putString("Level", this.getDefaultLevel().getName())
                 .putList(new ListTag<>("Inventory"))
                 .putInt("playerGameType", this.getGamemode())
@@ -2233,6 +2240,34 @@ public class Server {
     @Nullable
     public Level getTickingLevel() {
         return tickingLevel;
+    }
+
+    public void setTickServerChunkUnloadLimit(int limit) {
+        tickServerChunkUnloadLimit = limit;
+    }
+
+    public int updateChunkUnloadRemaining() {
+        return --tickServerChunkUnloadRemaining;
+    }
+
+    public int getTickServerChunkUnloadRemaining() {
+        return tickServerChunkUnloadRemaining;
+    }
+
+    public void setTickLevelChunkUnloadLimit(int limit) {
+        tickLevelChunkUnloadLimit = limit;
+    }
+
+    public int getTickLevelChunkUnloadLimit() {
+        return tickLevelChunkUnloadLimit;
+    }
+
+    public void setChunkKeepAliveTicks(int ticks) {
+        chunkKeepAliveTicks = ticks;
+    }
+
+    public int getChunkKeepAliveTicks() {
+        return chunkKeepAliveTicks;
     }
 
     /**

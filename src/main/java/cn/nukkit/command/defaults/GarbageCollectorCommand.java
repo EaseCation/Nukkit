@@ -32,12 +32,12 @@ public class GarbageCollectorCommand extends VanillaCommand {
 
         for (Level level : sender.getServer().getLevels().values()) {
             int chunksCount = level.getChunks().size();
-            int entitiesCount = level.getEntities().length;
+            int entitiesCount = level.getActors().size();
             int tilesCount = level.getBlockEntities().size();
             level.doChunkGarbageCollection();
             level.unloadChunks(true);
             chunksCollected += chunksCount - level.getChunks().size();
-            entitiesCollected += entitiesCount - level.getEntities().length;
+            entitiesCollected += entitiesCount - level.getActors().size();
             tilesCollected += tilesCount - level.getBlockEntities().size();
         }
 
