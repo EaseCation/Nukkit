@@ -90,6 +90,7 @@ import lombok.extern.log4j.Log4j2;
 
 import javax.annotation.Nullable;
 import java.io.IOException;
+import java.net.InetAddress;
 import java.net.InetSocketAddress;
 import java.nio.ByteOrder;
 import java.util.*;
@@ -5872,7 +5873,12 @@ public class Player extends EntityHuman implements CommandSender, InventoryHolde
     }
 
     public void transfer(InetSocketAddress address) {
-        String hostName = address.getAddress().getHostAddress();
+        InetAddress addr = address.getAddress();
+        if (addr == null) {
+            log.warn("Invalid transfer address {}", address);
+            return;
+        }
+        String hostName = addr.getHostAddress();
         int port = address.getPort();
         TransferPacket pk = new TransferPacket();
         pk.address = hostName;
