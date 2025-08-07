@@ -403,6 +403,9 @@ public class ItemBucket extends Item {
             return false;
         }
 
+        if (ticksUsed < getUseDuration() - 2) {
+            return false;
+        }
         PlayerItemConsumeEvent consumeEvent = new PlayerItemConsumeEvent(player, this);
 
         player.getServer().getPluginManager().callEvent(consumeEvent);
@@ -423,6 +426,14 @@ public class ItemBucket extends Item {
     @Override
     public boolean canRelease() {
         return getDamage() == MILK_BUCKET;
+    }
+
+    @Override
+    public int getUseDuration() {
+        if (getDamage() == MILK_BUCKET) {
+            return 32;
+        }
+        return 0;
     }
 
     @Override

@@ -58,4 +58,19 @@ public class ItemBrush extends ItemTool {
         level.addLevelSoundEvent(target.blockCenter(), LevelSoundEventPacket.SOUND_BRUSH, target.getFullId());
         return true;
     }
+
+    @Override
+    public boolean onRelease(Player player, int ticksUsed) {
+        return true;
+    }
+
+    @Override
+    public boolean canRelease() {
+        return true;
+    }
+
+    @Override
+    public int getUseDuration() {
+        return 200;
+    }
 }

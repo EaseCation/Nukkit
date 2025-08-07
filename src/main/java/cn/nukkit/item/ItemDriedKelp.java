@@ -26,4 +26,9 @@ public class ItemDriedKelp extends ItemEdible {
     public int getCompostableChance() {
         return 30;
     }
+
+    @Override
+    public int getUseDuration() {
+        return 16;
+    }
 }

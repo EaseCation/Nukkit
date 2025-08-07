@@ -83,4 +83,9 @@ public class ItemGoatHorn extends Item {
     public boolean canRelease() {
         return true;
     }
+
+    @Override
+    public int getUseDuration() {
+        return 20;
+    }
 }

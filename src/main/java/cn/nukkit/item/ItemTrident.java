@@ -138,6 +138,11 @@ public class ItemTrident extends ItemTool {
     }
 
     @Override
+    public int getUseDuration() {
+        return 72000;
+    }
+
+    @Override
     public boolean additionalDamageOnBreak() {
         return true;
     }

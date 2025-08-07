@@ -173,6 +173,11 @@ public class ItemBow extends ItemTool {
     }
 
     @Override
+    public int getUseDuration() {
+        return 72000;
+    }
+
+    @Override
     public boolean noDamageOnAttack() {
         return true;
     }

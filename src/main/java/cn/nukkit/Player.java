@@ -2115,9 +2115,38 @@ public class Player extends EntityHuman implements CommandSender, InventoryHolde
 
                 Item item = inventory.getItemInHand();
                 if (item.canRelease()) {
-                    //int ticksUsed = this.server.getTick() - this.startAction;
-                    int ticksUsed = (int) (System.currentTimeMillis() - this.startActionTimestamp) / 50;
-                    item.onUsing(this, ticksUsed);
+                    int ticksUsed = this.server.getTick() - this.startAction;
+                    int timeUsedTicks = (int) (System.currentTimeMillis() - this.startActionTimestamp) / 50;
+                    item.onUsing(this, timeUsedTicks);
+
+                    int useDuration = item.getUseDuration();
+                    if (useDuration > 0 && ticksUsed > useDuration) {
+                        // client bug fixes: left click when using an item
+                        Vector3 directionVector = this.getDirectionVector();
+                        PlayerInteractEvent event = new PlayerInteractEvent(this, item, directionVector, null, PlayerInteractEvent.Action.RIGHT_CLICK_AIR);
+                        event.call();
+                        if (event.isCancelled()) {
+                            this.inventory.sendHeldItem(this);
+                        } else if (item.onClickAir(this, directionVector)) {
+                            if (this.isSurvivalLike()) {
+                                this.inventory.setItemInHand(item);
+                            }
+
+                            if (!this.isUsingItem()) {
+                                this.setUsingItem(item.canRelease());
+                            } else {
+                                this.setUsingItem(false);
+
+                                if (!item.onUse(this, ticksUsed)) {
+                                    this.inventory.sendContents(this);
+                                }
+
+                                if (item.canRelease() && !item.isNull()) {
+                                    this.setUsingItem(true);
+                                }
+                            }
+                        }
+                    }
                 }
             } else {
                 isSwinging = this.swinging;
