@@ -1,6 +1,7 @@
 package cn.nukkit.block;
 
 import cn.nukkit.level.Level;
+import cn.nukkit.math.AxisAlignedBB;
 import cn.nukkit.math.BlockFace;
 
 /**
@@ -35,6 +36,11 @@ public class BlockWallBanner extends BlockBanner {
             }
         }
         return 0;
+    }
+
+    @Override
+    protected AxisAlignedBB recalculateSelectionBoundingBox() {
+        return null; //TODO
     }
 
     @Override

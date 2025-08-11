@@ -192,4 +192,9 @@ public class BlockBrewingStand extends BlockTransparent {
     public boolean canContainWater() {
         return true;
     }
+
+    @Override
+    public boolean canProvideSupport(BlockFace face, SupportType type) {
+        return face == BlockFace.DOWN && type == SupportType.CENTER;
+    }
 }

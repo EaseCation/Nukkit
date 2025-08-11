@@ -147,6 +147,11 @@ public class BlockLantern extends BlockTransparent {
         return BlockColor.METAL_BLOCK_COLOR;
     }
 
+    @Override
+    public boolean isLantern() {
+        return true;
+    }
+
     public boolean isHanging() {
         return (getDamage() & HANGING_BIT) == HANGING_BIT;
     }

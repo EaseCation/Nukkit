@@ -86,7 +86,7 @@ public class BlockLightningRod extends BlockTransparent implements Faceable {
 
     @Override
     public boolean canProvideSupport(BlockFace face, SupportType type) {
-        return getBlockFace().getAxis().isVertical() && face.isVertical() && type == SupportType.CENTER;
+        return getBlockFace().getAxis() == face.getAxis() && type == SupportType.CENTER;
     }
 
     @Override
@@ -102,5 +102,10 @@ public class BlockLightningRod extends BlockTransparent implements Faceable {
     @Override
     public BlockFace getBlockFace() {
         return BlockFace.fromIndex(getDamage() & FACING_DIRECTION_MASK);
+    }
+
+    @Override
+    public boolean isLightningRod() {
+        return true;
     }
 }

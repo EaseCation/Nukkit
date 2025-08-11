@@ -4,6 +4,7 @@ import cn.nukkit.Player;
 import cn.nukkit.item.Item;
 import cn.nukkit.level.Level;
 import cn.nukkit.level.particle.BoneMealParticle;
+import cn.nukkit.math.AxisAlignedBB;
 import cn.nukkit.math.BlockFace;
 import cn.nukkit.math.Mth;
 import cn.nukkit.network.protocol.LevelSoundEventPacket;
@@ -199,6 +200,16 @@ public class BlockSeaPickle extends BlockFlowable {
     @Override
     public int getCompostableChance() {
         return 65;
+    }
+
+    @Override
+    protected AxisAlignedBB recalculateSelectionBoundingBox() {
+        return this;
+    }
+
+    @Override
+    public double getMaxY() {
+        return this.y + 0.5;
     }
 
     @Override

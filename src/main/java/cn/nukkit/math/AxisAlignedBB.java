@@ -197,6 +197,14 @@ public interface AxisAlignedBB extends Cloneable {
         return false;
     }
 
+    default boolean intersectsWithXZ(AxisAlignedBB bb) {
+        if (bb.getMaxX() > this.getMinX() && bb.getMinX() < this.getMaxX()) {
+            return bb.getMaxZ() > this.getMinZ() && bb.getMinZ() < this.getMaxZ();
+        }
+
+        return false;
+    }
+
     default boolean isVectorInside(Vector3 vector) {
         return vector.x >= this.getMinX() && vector.x <= this.getMaxX() && vector.y >= this.getMinY() && vector.y <= this.getMaxY() && vector.z >= this.getMinZ() && vector.z <= this.getMaxZ();
     }

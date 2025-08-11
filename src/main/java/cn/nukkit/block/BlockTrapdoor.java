@@ -85,7 +85,7 @@ public class BlockTrapdoor extends BlockTransparent implements Faceable {
                 );
             }
             if ((damage & TRAPDOOR_OPEN_BIT) > 0) {
-                if ((damage & DIRECTION_MASK) == 0) {
+                if ((damage & DIRECTION_MASK) == 3) {
                     bb.setBounds(
                             0,
                             0,
@@ -94,7 +94,7 @@ public class BlockTrapdoor extends BlockTransparent implements Faceable {
                             1,
                             1
                     );
-                } else if ((damage & DIRECTION_MASK) == 1) {
+                } else if ((damage & DIRECTION_MASK) == 2) {
                     bb.setBounds(
                             0,
                             0,
@@ -104,7 +104,7 @@ public class BlockTrapdoor extends BlockTransparent implements Faceable {
                             0 + f
                     );
                 }
-                if ((damage & DIRECTION_MASK) == 2) {
+                if ((damage & DIRECTION_MASK) == 1) {
                     bb.setBounds(
                             1 - f,
                             0,
@@ -114,7 +114,7 @@ public class BlockTrapdoor extends BlockTransparent implements Faceable {
                             1
                     );
                 }
-                if ((damage & DIRECTION_MASK) == 3) {
+                if ((damage & DIRECTION_MASK) == 0) {
                     bb.setBounds(
                             0,
                             0,
@@ -258,7 +258,13 @@ public class BlockTrapdoor extends BlockTransparent implements Faceable {
 
     @Override
     public boolean canProvideSupport(BlockFace face, SupportType type) {
-        return false;
+        if (isOpen()) {
+            return face == getBlockFace().getOpposite();
+        }
+        if (isTop()) {
+            return face == BlockFace.UP;
+        }
+        return face == BlockFace.DOWN;
     }
 
     @Override

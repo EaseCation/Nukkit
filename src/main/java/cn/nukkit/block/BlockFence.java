@@ -70,8 +70,13 @@ public abstract class BlockFence extends BlockTransparent {
         return 20;
     }
 
-    public boolean canConnect(Block block, BlockFace face) {
-        return block.isFence() && block.getId() != NETHER_BRICK_FENCE || block.isFenceGate() || SupportType.hasFullSupport(block, face);
+    protected boolean canConnect(Block block, BlockFace face) {
+        if (block.is(BARRIER) || block.is(MELON_BLOCK) || block.isPumpkin()) {
+            return false;
+        }
+        return block.isFence() && block.getId() != NETHER_BRICK_FENCE
+                || block.isFenceGate() && ((BlockFenceGate) block).getBlockFace().getAxis() == face.rotateY().getAxis()
+                || SupportType.hasFullSupport(block, face);
     }
 
     @Override

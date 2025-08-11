@@ -75,6 +75,11 @@ public class BlockSignPost extends BlockTransparent implements Faceable {
     }
 
     @Override
+    protected AxisAlignedBB recalculateSelectionBoundingBox() {
+        return shrink(4 / 16f, 0, 4 / 16f);
+    }
+
+    @Override
     public boolean place(Item item, Block block, Block target, BlockFace face, float fx, float fy, float fz, Player player) {
         if (face != BlockFace.DOWN) {
             if (face == BlockFace.UP) {

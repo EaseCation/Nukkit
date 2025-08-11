@@ -107,6 +107,6 @@ public class BlockEndRod extends BlockTransparent implements Faceable {
 
     @Override
     public boolean canProvideSupport(BlockFace face, SupportType type) {
-        return false;
+        return getBlockFace().getAxis() == face.getAxis() && type == SupportType.CENTER;
     }
 }

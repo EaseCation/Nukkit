@@ -614,7 +614,7 @@ public final class Blocks {
         registerBlock(BlockNames.DEEPSLATE_COPPER_ORE, ItemBlockNames.DEEPSLATE_COPPER_ORE, DEEPSLATE_COPPER_ORE, BlockOreCopperDeepslate.class, V1_17_0);
         registerBlock(BlockNames.CRACKED_DEEPSLATE_TILES, ItemBlockNames.CRACKED_DEEPSLATE_TILES, CRACKED_DEEPSLATE_TILES, BlockDeepslateTilesCracked.class, V1_17_0);
         registerBlock(BlockNames.CRACKED_DEEPSLATE_BRICKS, ItemBlockNames.CRACKED_DEEPSLATE_BRICKS, CRACKED_DEEPSLATE_BRICKS, BlockBricksDeepslateCracked.class, V1_17_0);
-        registerBlock(BlockNames.GLOW_LICHEN, ItemBlockNames.GLOW_LICHEN, GLOW_LICHEN, BlockGlowLichen.class, V1_17_0); //TODO: onFertilized
+        registerBlock(BlockNames.GLOW_LICHEN, ItemBlockNames.GLOW_LICHEN, GLOW_LICHEN, BlockGlowLichen.class, V1_17_0);
         registerBlock(BlockNames.WAXED_OXIDIZED_COPPER, ItemBlockNames.WAXED_OXIDIZED_COPPER, WAXED_OXIDIZED_COPPER, BlockCopperOxidizedWaxed.class, V1_17_0);
         registerBlock(BlockNames.WAXED_OXIDIZED_CUT_COPPER, ItemBlockNames.WAXED_OXIDIZED_CUT_COPPER, WAXED_OXIDIZED_CUT_COPPER, BlockCopperCutOxidizedWaxed.class, V1_17_0);
         registerBlock(BlockNames.WAXED_OXIDIZED_CUT_COPPER_STAIRS, ItemBlockNames.WAXED_OXIDIZED_CUT_COPPER_STAIRS, WAXED_OXIDIZED_CUT_COPPER_STAIRS, BlockStairsCopperCutOxidizedWaxed.class, V1_17_0);

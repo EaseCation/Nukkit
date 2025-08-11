@@ -67,13 +67,18 @@ public abstract class BlockPressurePlateBase extends BlockTransparent {
     }
 
     @Override
+    protected AxisAlignedBB recalculateSelectionBoundingBox() {
+        return this;
+    }
+
+    @Override
     public double getMinX() {
-        return this.x + 0.625;
+        return this.x + 0.0625;
     }
 
     @Override
     public double getMinZ() {
-        return this.z + 0.625;
+        return this.z + 0.0625;
     }
 
     @Override

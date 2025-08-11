@@ -3,6 +3,7 @@ package cn.nukkit.block;
 import cn.nukkit.Player;
 import cn.nukkit.entity.Entity;
 import cn.nukkit.item.Item;
+import cn.nukkit.math.AxisAlignedBB;
 import cn.nukkit.utils.BlockColor;
 
 /**
@@ -41,6 +42,16 @@ public class BlockCobweb extends BlockFlowable {
     @Override
     public int getToolType() {
         return BlockToolType.SWORD | BlockToolType.SHEARS;
+    }
+
+    @Override
+    protected AxisAlignedBB recalculateCollisionBoundingBox() {
+        return this;
+    }
+
+    @Override
+    protected AxisAlignedBB recalculateSelectionBoundingBox() {
+        return this;
     }
 
     @Override

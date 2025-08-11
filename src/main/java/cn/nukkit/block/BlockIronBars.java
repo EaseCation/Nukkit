@@ -64,4 +64,9 @@ public class BlockIronBars extends BlockThin {
     public boolean canHarvestWithHand() {
         return false;
     }
+
+    @Override
+    public boolean isBars() {
+        return true;
+    }
 }

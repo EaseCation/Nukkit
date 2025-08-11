@@ -137,7 +137,7 @@ public class BlockCampfire extends BlockTransparent implements Faceable {
 
     @Override
     public boolean canProvideSupport(BlockFace face, SupportType type) {
-        return false;
+        return face == BlockFace.DOWN;
     }
 
     @Override
@@ -173,7 +173,7 @@ public class BlockCampfire extends BlockTransparent implements Faceable {
     @Override
     public boolean place(Item item, Block block, Block target, BlockFace face, float fx, float fy, float fz, Player player) {
         if (player != null) {
-            setDamage(player.getHorizontalFacing().getOpposite().getHorizontalIndex());
+            setDamage(player.getHorizontalFacing().getHorizontalIndex());
         }
 
         if (block.isWaterSource()) {

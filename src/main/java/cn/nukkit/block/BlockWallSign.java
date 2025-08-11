@@ -56,6 +56,11 @@ public class BlockWallSign extends BlockSignPost {
     }
 
     @Override
+    protected AxisAlignedBB recalculateSelectionBoundingBox() {
+        return null; //TODO
+    }
+
+    @Override
     public BlockFace getBlockFace() {
         return BlockFace.fromIndex(getDamage() & 0x7);
     }

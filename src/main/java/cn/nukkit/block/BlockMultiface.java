@@ -3,6 +3,7 @@ package cn.nukkit.block;
 import cn.nukkit.Player;
 import cn.nukkit.item.Item;
 import cn.nukkit.level.Level;
+import cn.nukkit.math.AxisAlignedBB;
 import cn.nukkit.math.BlockFace;
 
 import static cn.nukkit.GameVersion.*;
@@ -20,6 +21,11 @@ public abstract class BlockMultiface extends BlockTransparent {
     @Override
     public boolean canPassThrough() {
         return true;
+    }
+
+    @Override
+    protected AxisAlignedBB recalculateBoundingBox() {
+        return null;
     }
 
     @Override

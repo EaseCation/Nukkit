@@ -62,10 +62,13 @@ public abstract class BlockThin extends BlockTransparent {
 
     @Override
     public boolean canProvideSupport(BlockFace face, SupportType type) {
-        return false;
+        return face.isVertical() && type == SupportType.CENTER;
     }
 
-    public boolean canConnect(Block block, BlockFace face) {
+    private static boolean canConnect(Block block, BlockFace face) {
+        if (block.is(BARRIER) || block.is(MELON_BLOCK) || block.isPumpkin()) {
+            return false;
+        }
         return block instanceof BlockThin || block.isWall() || SupportType.hasFullSupport(block, face);
     }
 

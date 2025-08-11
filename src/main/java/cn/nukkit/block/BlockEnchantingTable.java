@@ -145,7 +145,7 @@ public class BlockEnchantingTable extends BlockTransparent {
 
     @Override
     public boolean canProvideSupport(BlockFace face, SupportType type) {
-        return false;
+        return face == BlockFace.DOWN;
     }
 
     @Override

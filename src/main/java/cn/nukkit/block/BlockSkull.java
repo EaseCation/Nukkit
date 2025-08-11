@@ -132,6 +132,11 @@ public class BlockSkull extends BlockFlowable implements Faceable {
     }
 
     @Override
+    public boolean canProvideSupport(BlockFace face, SupportType type) {
+        return face == BlockFace.DOWN && type == SupportType.CENTER && getBlockFace() == BlockFace.UP;
+    }
+
+    @Override
     protected AxisAlignedBB recalculateBoundingBox() {
         AxisAlignedBB bb = new SimpleAxisAlignedBB(this.x + 0.25, this.y, this.z + 0.25, this.x + 1 - 0.25, this.y + 0.5, this.z + 1 - 0.25);
         switch (this.getBlockFace()) {

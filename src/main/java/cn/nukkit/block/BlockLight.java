@@ -58,6 +58,11 @@ public class BlockLight extends BlockTransparent {
     }
 
     @Override
+    protected AxisAlignedBB recalculateSelectionBoundingBox() {
+        return this;
+    }
+
+    @Override
     public boolean canPassThrough() {
         return true;
     }

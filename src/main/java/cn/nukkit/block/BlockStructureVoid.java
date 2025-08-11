@@ -53,6 +53,11 @@ public class BlockStructureVoid extends BlockTransparent {
     }
 
     @Override
+    protected AxisAlignedBB recalculateSelectionBoundingBox() {
+        return this;
+    }
+
+    @Override
     public boolean canPassThrough() {
         return true;
     }

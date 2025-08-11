@@ -56,7 +56,7 @@ public abstract class BlockCoral extends BlockFlowable {
         Block extra;
         if (block.isLava() || block.isWater() && !block.isFullLiquid()
                 || !block.isAir() && (extra = level.getExtraBlock(this)).isWater() && !extra.isFullLiquid()
-                || !SupportType.hasCenterSupport(down(), BlockFace.UP)) {
+                || !SupportType.hasFullSupport(down(), BlockFace.UP)) {
             return false;
         }
 
@@ -73,7 +73,7 @@ public abstract class BlockCoral extends BlockFlowable {
     @Override
     public int onUpdate(int type) {
         if (type == Level.BLOCK_UPDATE_NORMAL) {
-            if (!SupportType.hasCenterSupport(down(), BlockFace.UP)) {
+            if (!SupportType.hasFullSupport(down(), BlockFace.UP)) {
                 level.useBreakOn(this, true);
                 return type;
             }

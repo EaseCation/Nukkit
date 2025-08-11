@@ -160,6 +160,11 @@ public class BlockCaveVines extends BlockFlowable {
     }
 
     @Override
+    protected AxisAlignedBB recalculateSelectionBoundingBox() {
+        return shrink(1 / 16f, 0, 1 / 16f);
+    }
+
+    @Override
     public boolean canBeClimbed() {
         return true;
     }

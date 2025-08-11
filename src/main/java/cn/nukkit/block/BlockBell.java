@@ -171,7 +171,7 @@ public class BlockBell extends BlockTransparent implements Faceable {
             int attachment = getAttachment();
 
             if (attachment == ATTACHMENT_STANDING) {
-                if (SupportType.hasCenterSupport(down(), BlockFace.UP)) {
+                if (SupportType.hasFullSupport(down(), BlockFace.UP)) {
                     return 0;
                 }
                 level.useBreakOn(this, Item.get(ItemID.WOODEN_PICKAXE), true);
@@ -279,7 +279,7 @@ public class BlockBell extends BlockTransparent implements Faceable {
     }
 
     private boolean canBeSupportedBy(Block block, BlockFace face) {
-        if (face.getAxis() == Axis.Y) {
+        if (face == BlockFace.DOWN) {
             return SupportType.hasCenterSupport(block, face);
         }
         return SupportType.hasFullSupport(block, face);
