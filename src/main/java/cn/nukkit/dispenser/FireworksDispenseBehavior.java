@@ -17,11 +17,13 @@ public class FireworksDispenseBehavior extends DefaultDispenseBehavior {
         Vector3 pos = block.blockCenter().add(dir.multiply(0.5));
         if (item instanceof ItemFirework) {
             EntityFirework firework = ((ItemFirework) item).spawnFirework(block.getLevel(),pos,dir);
-        firework.spawnToAll();
+            firework.spawnToAll();
         }else {
             EntityFirework firework = new EntityFirework(block.level.getChunk(pos.getChunkX(), pos.getChunkZ()),
                     Entity.getDefaultNBT(pos, dir, (float) dir.yRotFromDirection(), (float) dir.xRotFromDirection()), true);
+            firework.spawnToAll();
         }
         return null;
+
     }
 }
