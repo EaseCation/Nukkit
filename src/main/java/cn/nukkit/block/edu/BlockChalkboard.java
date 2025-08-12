@@ -66,6 +66,15 @@ public class BlockChalkboard extends BlockTransparent implements Faceable {
     }
 
     @Override
+    protected AxisAlignedBB recalculateSelectionBoundingBox() {
+        BlockEntityChalkboard chalkboard = getBaseBlockEntity();
+        if (chalkboard != null && !chalkboard.isOnGround()) {
+            return null; //TODO
+        }
+        return this;
+    }
+
+    @Override
     public boolean canProvideSupport(BlockFace face, SupportType type) {
         return false;
     }

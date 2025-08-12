@@ -74,6 +74,11 @@ public class BlockSnowPowder extends BlockFlowable {
     }
 
     @Override
+    protected AxisAlignedBB recalculateSelectionBoundingBox() {
+        return this;
+    }
+
+    @Override
     public boolean hasEntityCollision() {
         return true;
     }

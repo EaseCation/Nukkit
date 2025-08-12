@@ -10,7 +10,6 @@ import cn.nukkit.math.AxisAlignedBB;
 import cn.nukkit.math.BlockFace;
 import cn.nukkit.math.BlockFace.Axis;
 import cn.nukkit.math.Mth;
-import cn.nukkit.math.SimpleAxisAlignedBB;
 
 public abstract class BlockHangingSign extends BlockSignPost {
     public static final int FACING_DIRECTION_MASK = 0b111;
@@ -45,9 +44,17 @@ public abstract class BlockHangingSign extends BlockSignPost {
             return null;
         }
         if (getBlockFace().getAxis() == Axis.Z) {
-            return new SimpleAxisAlignedBB(x, y + 14 / 16f, z + 6 / 16f, x + 1, y + 1, z + 1 - 6 / 16f);
+            return shrink(0, 0, 6 / 16f);
         }
-        return new SimpleAxisAlignedBB(x + 6 / 16f, y + 14 / 16f, z, x + 1 - 6 / 16f, y + 1, z + 1);
+        return shrink(6 / 16f, 0, 0);
+    }
+
+    @Override
+    protected AxisAlignedBB recalculateSelectionBoundingBox() {
+        if (isHanging()) {
+            return shrink(0, 0, 6 / 16f);
+        }
+        return recalculateBoundingBox();
     }
 
     @Override

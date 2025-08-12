@@ -268,6 +268,11 @@ public class BlockFenceGate extends BlockTransparent implements Faceable {
     }
 
     @Override
+    protected AxisAlignedBB recalculateSelectionBoundingBox() {
+        return this;
+    }
+
+    @Override
     public int getFuelTime() {
         return 300;
     }

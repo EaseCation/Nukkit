@@ -67,6 +67,11 @@ public class BlockBanner extends BlockTransparent implements Faceable {
     }
 
     @Override
+    protected AxisAlignedBB recalculateSelectionBoundingBox() {
+        return shrink(4 / 16f, 0, 4 / 16f);
+    }
+
+    @Override
     public boolean canPassThrough() {
         return true;
     }

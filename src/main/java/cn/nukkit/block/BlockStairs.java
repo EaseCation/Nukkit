@@ -136,6 +136,11 @@ public abstract class BlockStairs extends BlockTransparent implements Faceable {
     }
 
     @Override
+    protected AxisAlignedBB recalculateSelectionBoundingBox() {
+        return new SimpleAxisAlignedBB(x, y, z, x + 1, y + 1, z + 1);
+    }
+
+    @Override
     public BlockFace getBlockFace() {
         return BlockFace.fromReversedHorizontalIndex(this.getDamage() & DIRECTION_MASK);
     }

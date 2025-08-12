@@ -113,4 +113,9 @@ public class BlockPumpkin extends BlockSolid implements Faceable {
     public int getCompostableChance() {
         return 65;
     }
+
+    @Override
+    public boolean isPumpkin() {
+        return true;
+    }
 }

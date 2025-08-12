@@ -81,7 +81,7 @@ public class BlockChain extends BlockRotatedPillar {
 
     @Override
     public boolean canProvideSupport(BlockFace face, SupportType type) {
-        return false;
+        return getAxis() == face.getAxis() && type == SupportType.CENTER;
     }
 
     @Override
@@ -92,5 +92,10 @@ public class BlockChain extends BlockRotatedPillar {
     @Override
     public BlockColor getColor() {
         return BlockColor.AIR_BLOCK_COLOR;
+    }
+
+    @Override
+    public boolean isChain() {
+        return true;
     }
 }

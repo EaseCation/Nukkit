@@ -80,7 +80,7 @@ public class BlockAnvil extends BlockFallable implements Faceable {
     @Override
     public boolean place(Item item, Block block, Block target, BlockFace face, float fx, float fy, float fz, Player player) {
         int damage = this.getDamage();
-        this.setDamage(FACES[player != null ? player.getDirection().getHorizontalIndex() : 0]);
+        this.setDamage(FACES[player != null ? player.getDirection().getOpposite().getHorizontalIndex() : 0]);
         if (damage >= 4 && damage <= 7) {
             this.setDamage(this.getDamage() | 0x04);
         } else if (damage >= 8 && damage <= 11) {

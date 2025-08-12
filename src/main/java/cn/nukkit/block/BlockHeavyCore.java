@@ -74,7 +74,7 @@ public class BlockHeavyCore extends BlockTransparent {
 
     @Override
     public boolean canProvideSupport(BlockFace face, SupportType type) {
-        return false;
+        return face == BlockFace.DOWN && type == SupportType.CENTER;
     }
 
     @Override

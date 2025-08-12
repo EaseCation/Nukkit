@@ -103,7 +103,7 @@ public class BlockCoralFan extends BlockFlowable {
             case DOWN:
                 return false;
             case UP:
-                if (!SupportType.hasCenterSupport(target, face)) {
+                if (!SupportType.hasFullSupport(target, face)) {
                     return false;
                 }
 
@@ -179,7 +179,7 @@ public class BlockCoralFan extends BlockFlowable {
     @Override
     public int onUpdate(int type) {
         if (type == Level.BLOCK_UPDATE_NORMAL) {
-            if (!SupportType.hasCenterSupport(down(), BlockFace.UP)) {
+            if (!SupportType.hasFullSupport(down(), BlockFace.UP)) {
                 level.useBreakOn(this, true);
                 return Level.BLOCK_UPDATE_NORMAL;
             }

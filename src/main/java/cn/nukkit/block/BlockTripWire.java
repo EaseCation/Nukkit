@@ -224,6 +224,11 @@ public class BlockTripWire extends BlockTransparent {
     }
 
     @Override
+    protected AxisAlignedBB recalculateSelectionBoundingBox() {
+        return this;
+    }
+
+    @Override
     public BlockColor getColor() {
         return BlockColor.AIR_BLOCK_COLOR;
     }

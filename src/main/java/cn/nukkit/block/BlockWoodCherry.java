@@ -54,6 +54,14 @@ public class BlockWoodCherry extends BlockLogCherry {
     }
 
     @Override
+    public int getPillarAxis() {
+        if (V1_21_40.isAvailable()) {
+            return super.getPillarAxis();
+        }
+        return (getDamage() & PILLAR_AXIS_MASK) >> PILLAR_AXIS_OFFSET;
+    }
+
+    @Override
     protected Block getStrippedBlock() {
         return get(STRIPPED_CHERRY_WOOD, V1_21_40.isAvailable() ? getDamage() : getDamage() >> PILLAR_AXIS_OFFSET);
     }

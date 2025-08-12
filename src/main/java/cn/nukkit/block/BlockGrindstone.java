@@ -153,7 +153,7 @@ public class BlockGrindstone extends BlockTransparent implements Faceable {
 
     @Override
     public boolean canProvideSupport(BlockFace face, SupportType type) {
-        return false;
+        return type == SupportType.CENTER && getBlockFace() == face;
     }
 
     @Override

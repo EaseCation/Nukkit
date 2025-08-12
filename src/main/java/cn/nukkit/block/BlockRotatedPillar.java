@@ -3,6 +3,7 @@ package cn.nukkit.block;
 import cn.nukkit.Player;
 import cn.nukkit.item.Item;
 import cn.nukkit.math.BlockFace;
+import cn.nukkit.math.BlockFace.Axis;
 
 public abstract class BlockRotatedPillar extends BlockSolid {
     public static final int PILLAR_AXIS_Y = 0b00;
@@ -29,5 +30,13 @@ public abstract class BlockRotatedPillar extends BlockSolid {
     @Override
     public Item toItem(boolean addUserData) {
         return Item.get(getItemId());
+    }
+
+    public int getPillarAxis() {
+        return getDamage() & PILLAR_AXIS_MASK;
+    }
+
+    public Axis getAxis() {
+        return Axis.fromIndex(getPillarAxis());
     }
 }

@@ -213,6 +213,6 @@ public class BlockEnderChest extends BlockTransparent implements Faceable {
 
     @Override
     public boolean canProvideSupport(BlockFace face, SupportType type) {
-        return false;
+        return face == BlockFace.DOWN && type == SupportType.CENTER;
     }
 }

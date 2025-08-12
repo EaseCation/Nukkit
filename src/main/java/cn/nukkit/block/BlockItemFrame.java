@@ -7,7 +7,9 @@ import cn.nukkit.blockentity.BlockEntityType;
 import cn.nukkit.blockentity.BlockEntityItemFrame;
 import cn.nukkit.item.Item;
 import cn.nukkit.level.Level;
+import cn.nukkit.math.AxisAlignedBB;
 import cn.nukkit.math.BlockFace;
+import cn.nukkit.math.SimpleAxisAlignedBB;
 import cn.nukkit.nbt.tag.CompoundTag;
 import cn.nukkit.nbt.tag.Tag;
 import cn.nukkit.network.protocol.LevelEventPacket;
@@ -149,6 +151,19 @@ public class BlockItemFrame extends BlockTransparent implements Faceable {
     @Override
     public boolean canPassThrough() {
         return true;
+    }
+
+    @Override
+    protected AxisAlignedBB recalculateBoundingBox() {
+        return null;
+    }
+
+    @Override
+    protected AxisAlignedBB recalculateSelectionBoundingBox() {
+        return switch (getBlockFace()) {
+            case UP -> new SimpleAxisAlignedBB(x + 2 / 16f, y, z + 2 / 16f, x + 1 - 2 / 16f, y + 1 / 16f, z + 1 - 2 / 16f);
+            default -> null; //TODO
+        };
     }
 
     @Override

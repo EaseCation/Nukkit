@@ -26,6 +26,13 @@ public abstract class BlockWall extends BlockTransparent {
     public static final int CONNECTION_TYPE_SHORT = 0b01;
     public static final int CONNECTION_TYPE_TALL = 0b10;
 
+    private static final float EPSILON = 0.01f;
+    private static final AxisAlignedBB NORTH_TEST = box(3.5f, 0, 0, 12.5f, 16, 3.5f);
+    private static final AxisAlignedBB SOUTH_TEST = box(3.5f, 0, 12.5f, 12.5f, 16, 16);
+    private static final AxisAlignedBB WEST_TEST = box(0, 0, 3.5f, 3.5f, 16, 12.5f);
+    private static final AxisAlignedBB EAST_TEST = box(12.5f, 0, 3.5f, 16, 16, 12.5f);
+    private static final AxisAlignedBB POST_TEST = box(7, 0, 7, 9, 16, 9);
+
     protected BlockWall(int meta) {
         super(meta);
     }
@@ -65,8 +72,13 @@ public abstract class BlockWall extends BlockTransparent {
         );
     }
 
-    public boolean canConnect(Block block, BlockFace face) {
-        return block.isWall() || block.isFenceGate() || block instanceof BlockThin || SupportType.hasFullSupport(block, face);
+    private static boolean canConnect(Block block, BlockFace face) {
+        if (block.is(BARRIER) || block.is(MELON_BLOCK) || block.isPumpkin()) {
+            return false;
+        }
+        return block.isWall() || block instanceof BlockThin
+                || block.isFenceGate() && ((BlockFenceGate) block).getBlockFace().getAxis() == face.rotateY().getAxis()
+                || SupportType.hasFullSupport(block, face);
     }
 
     @Override
@@ -111,28 +123,77 @@ public abstract class BlockWall extends BlockTransparent {
     }
 
     public void recalculateConnections() {
-        //TODO: post and short wall
+        Block aboveBlock = getSide(BlockFace.UP);
+        Block northBlock = getSide(BlockFace.NORTH);
+        Block southBlock = getSide(BlockFace.SOUTH);
+        Block westBlock = getSide(BlockFace.WEST);
+        Block eastBlock = getSide(BlockFace.EAST);
 
-        if (canConnect(getSide(BlockFace.NORTH), BlockFace.SOUTH)) {
-            setNorthConnectionType(CONNECTION_TYPE_TALL);
-        } else {
-            setNorthConnectionType(CONNECTION_TYPE_NONE);
+        boolean northConnected = canConnect(northBlock, BlockFace.SOUTH);
+        boolean southConnected = canConnect(southBlock, BlockFace.NORTH);
+        boolean westConnected = canConnect(westBlock, BlockFace.EAST);
+        boolean eastConnected = canConnect(eastBlock, BlockFace.WEST);
+        boolean upConnected = false;
+
+        int northType = northConnected ? CONNECTION_TYPE_SHORT : CONNECTION_TYPE_NONE;
+        int southType = southConnected ? CONNECTION_TYPE_SHORT : CONNECTION_TYPE_NONE;
+        int westType = westConnected ? CONNECTION_TYPE_SHORT : CONNECTION_TYPE_NONE;
+        int eastType = eastConnected ? CONNECTION_TYPE_SHORT : CONNECTION_TYPE_NONE;
+        boolean post = false;
+
+        AxisAlignedBB outline = aboveBlock.getSelectionBoundingBox();
+        if (outline != null) {
+            outline = outline.getOffsetBoundingBox(-aboveBlock.getX(), -aboveBlock.getY(), -aboveBlock.getZ());
+            if (outline.getMinY() < EPSILON) {
+                if (aboveBlock.isWall()) {
+                    BlockWall aboveWall = (BlockWall) aboveBlock;
+                    if (northConnected && aboveWall.getNorthConnectionType() != CONNECTION_TYPE_NONE) {
+                        northType = CONNECTION_TYPE_TALL;
+                    }
+                    if (southConnected && aboveWall.getSouthConnectionType() != CONNECTION_TYPE_NONE) {
+                        southType = CONNECTION_TYPE_TALL;
+                    }
+                    if (westConnected && aboveWall.getWestConnectionType() != CONNECTION_TYPE_NONE) {
+                        westType = CONNECTION_TYPE_TALL;
+                    }
+                    if (eastConnected && aboveWall.getEastConnectionType() != CONNECTION_TYPE_NONE) {
+                        eastType = CONNECTION_TYPE_TALL;
+                    }
+                    post = aboveWall.isPost();
+                    upConnected = true;
+                } else {
+                    AxisAlignedBB postTest = POST_TEST.clone();
+                    if (northConnected && NORTH_TEST.intersectsWithXZ(outline)) {
+                        northType = CONNECTION_TYPE_TALL;
+                        postTest.setMinZ(0);
+                    }
+                    if (southConnected && SOUTH_TEST.intersectsWithXZ(outline)) {
+                        southType = CONNECTION_TYPE_TALL;
+                        postTest.setMaxZ(1);
+                    }
+                    if (westConnected && WEST_TEST.intersectsWithXZ(outline)) {
+                        westType = CONNECTION_TYPE_TALL;
+                        postTest.setMinX(0);
+                    }
+                    if (eastConnected && EAST_TEST.intersectsWithXZ(outline)) {
+                        eastType = CONNECTION_TYPE_TALL;
+                        postTest.setMaxX(1);
+                    }
+                    if (postTest.intersectsWithXZ(outline)) {
+                        upConnected = true;
+                    }
+                }
+            }
         }
-        if (canConnect(getSide(BlockFace.SOUTH), BlockFace.NORTH)) {
-            setSouthConnectionType(CONNECTION_TYPE_TALL);
-        } else {
-            setSouthConnectionType(CONNECTION_TYPE_NONE);
-        }
-        if (canConnect(getSide(BlockFace.WEST), BlockFace.EAST)) {
-            setWestConnectionType(CONNECTION_TYPE_TALL);
-        } else {
-            setWestConnectionType(CONNECTION_TYPE_NONE);
-        }
-        if (canConnect(getSide(BlockFace.EAST), BlockFace.WEST)) {
-            setEastConnectionType(CONNECTION_TYPE_TALL);
-        } else {
-            setEastConnectionType(CONNECTION_TYPE_NONE);
-        }
+
+        setNorthConnectionType(northType);
+        setSouthConnectionType(southType);
+        setWestConnectionType(westType);
+        setEastConnectionType(eastType);
+        setPost(post || upConnected && (northType != CONNECTION_TYPE_TALL || southType != CONNECTION_TYPE_TALL) && (westType != CONNECTION_TYPE_TALL || eastType != CONNECTION_TYPE_TALL)
+                || northConnected != southConnected || westConnected != eastConnected // 1 or 3
+                || !northConnected && !westConnected // 0
+                || northConnected && westConnected); // 4
     }
 
     public boolean isPost() {

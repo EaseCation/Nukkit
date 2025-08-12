@@ -93,7 +93,7 @@ public class BlockLectern extends BlockTransparent implements Faceable {
 
     @Override
     public boolean canProvideSupport(BlockFace face, SupportType type) {
-        return false;
+        return face == BlockFace.DOWN;
     }
 
     @Override
@@ -118,7 +118,7 @@ public class BlockLectern extends BlockTransparent implements Faceable {
     public Item[] getDrops(Item item, Player player) {
         Item drop = toItem(true);
         BlockEntityLectern blockEntity = getBlockEntity();
-        ItemBookWritable book = blockEntity.getBook();
+        ItemBookWritable book = blockEntity != null ? blockEntity.getBook() : null;
         return book != null ? new Item[]{
                 book.clone(),
                 drop

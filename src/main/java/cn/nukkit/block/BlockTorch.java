@@ -3,7 +3,9 @@ package cn.nukkit.block;
 import cn.nukkit.Player;
 import cn.nukkit.item.Item;
 import cn.nukkit.level.Level;
+import cn.nukkit.math.AxisAlignedBB;
 import cn.nukkit.math.BlockFace;
+import cn.nukkit.math.SimpleAxisAlignedBB;
 import cn.nukkit.utils.BlockColor;
 import cn.nukkit.utils.Faceable;
 
@@ -65,10 +67,6 @@ public class BlockTorch extends BlockFlowable implements Faceable {
 
     @Override
     public boolean place(Item item, Block block, Block target, BlockFace face, float fx, float fy, float fz, Player player) {
-        if (face == BlockFace.DOWN) {
-            return false;
-        }
-
         if (block.isLava() || canBeFlowedInto() && (block.isWater() || !block.isAir() && block.canContainWater() && level.getExtraBlock(this).isWater())) {
             return false;
         }
@@ -109,6 +107,14 @@ public class BlockTorch extends BlockFlowable implements Faceable {
     @Override
     public BlockColor getColor() {
         return BlockColor.AIR_BLOCK_COLOR;
+    }
+
+    @Override
+    protected AxisAlignedBB recalculateSelectionBoundingBox() {
+        return switch (getBlockFace()) {
+            case UP -> new SimpleAxisAlignedBB(x + 6.5f / 16, y, z + 6.5f / 16, x + 1 - 6.5f / 16, y + 9.5f / 16, z + 1 - 6.5f / 16);
+            default -> null; //TODO
+        };
     }
 
     @Override

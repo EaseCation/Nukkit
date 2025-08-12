@@ -1037,12 +1037,25 @@ public abstract class Block extends Position implements Metadatable, Cloneable, 
 
     }
 
+    /**
+     * @return physics collision box
+     */
     public AxisAlignedBB getBoundingBox() {
         return this.recalculateBoundingBox();
     }
 
+    /**
+     * @return trigger collision box
+     */
     public AxisAlignedBB getCollisionBoundingBox() {
         return this.recalculateCollisionBoundingBox();
+    }
+
+    /**
+     * @return selection outline box
+     */
+    public AxisAlignedBB getSelectionBoundingBox() {
+        return this.recalculateSelectionBoundingBox();
     }
 
     protected AxisAlignedBB recalculateBoundingBox() {
@@ -1080,6 +1093,10 @@ public abstract class Block extends Position implements Metadatable, Cloneable, 
     }
 
     protected AxisAlignedBB recalculateCollisionBoundingBox() {
+        return getBoundingBox();
+    }
+
+    protected AxisAlignedBB recalculateSelectionBoundingBox() {
         return getBoundingBox();
     }
 
@@ -1586,6 +1603,30 @@ public abstract class Block extends Position implements Metadatable, Cloneable, 
     }
 
     public boolean isFurnace() {
+        return false;
+    }
+
+    public boolean isPumpkin() {
+        return false;
+    }
+
+    public boolean isBars() {
+        return false;
+    }
+
+    public boolean isLantern() {
+        return false;
+    }
+
+    public boolean isChain() {
+        return false;
+    }
+
+    public boolean isLightningRod() {
+        return false;
+    }
+
+    public boolean isShelf() {
         return false;
     }
 

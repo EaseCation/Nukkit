@@ -148,6 +148,6 @@ public class BlockAmethystCluster extends BlockTransparent implements Faceable {
 
     protected boolean canSurvive() {
         BlockFace facing = getBlockFace();
-        return SupportType.hasCenterSupport(getSide(facing.getOpposite()), facing);
+        return SupportType.hasFullSupport(getSide(facing.getOpposite()), facing);
     }
 }

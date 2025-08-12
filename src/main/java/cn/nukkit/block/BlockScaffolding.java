@@ -90,6 +90,11 @@ public class BlockScaffolding extends BlockTransparent { // extends BlockFallabl
     }
 
     @Override
+    protected AxisAlignedBB recalculateSelectionBoundingBox() {
+        return this;
+    }
+
+    @Override
     public boolean canPassThrough() {
         return true;
     }

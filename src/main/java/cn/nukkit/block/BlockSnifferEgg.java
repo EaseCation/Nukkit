@@ -124,9 +124,6 @@ public class BlockSnifferEgg extends BlockTransparent {
 
     @Override
     public boolean canProvideSupport(BlockFace face, SupportType type) {
-//        if (V1_21_60.isAvailable()) {
-//            return face.isVertical() && type == SupportType.CENTER;
-//        }
-        return true;
+        return face.isVertical() && type == SupportType.CENTER;
     }
 }
