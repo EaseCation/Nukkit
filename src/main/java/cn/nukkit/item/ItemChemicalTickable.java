@@ -53,6 +53,11 @@ public abstract class ItemChemicalTickable extends Item {
     }
 
     @Override
+    public int getUseDuration() {
+        return 32;
+    }
+
+    @Override
     public boolean isChemistryFeature() {
         return true;
     }

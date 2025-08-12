@@ -1241,6 +1241,10 @@ public class Item implements Cloneable, ItemID {
         return false;
     }
 
+    public int getUseDuration() {
+        return 0;
+    }
+
     public boolean canDualWield() {
         return false;
     }

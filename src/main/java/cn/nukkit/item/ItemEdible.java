@@ -38,7 +38,7 @@ public abstract class ItemEdible extends Item {
 
     @Override
     public boolean onUse(Player player, int ticksUsed) {
-        if (ticksUsed < 30) {
+        if (ticksUsed < getUseDuration() - 2) {
             return false;
         }
         PlayerItemConsumeEvent consumeEvent = new PlayerItemConsumeEvent(player, this);
@@ -69,6 +69,11 @@ public abstract class ItemEdible extends Item {
     @Override
     public boolean canRelease() {
         return true;
+    }
+
+    @Override
+    public int getUseDuration() {
+        return 32;
     }
 
     protected int getSoundEvent() {
