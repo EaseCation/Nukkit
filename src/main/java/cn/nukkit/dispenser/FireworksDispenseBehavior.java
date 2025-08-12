@@ -3,7 +3,7 @@ package cn.nukkit.dispenser;
 import cn.nukkit.block.BlockDispenser;
 import cn.nukkit.entity.Entity;
 import cn.nukkit.entity.item.EntityFirework;
-import cn.nukkit.entity.item.EntityItem;
+
 import cn.nukkit.item.Item;
 import cn.nukkit.item.ItemFirework;
 import cn.nukkit.math.BlockFace;
