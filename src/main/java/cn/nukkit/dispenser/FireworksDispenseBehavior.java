@@ -23,6 +23,7 @@ public class FireworksDispenseBehavior extends DefaultDispenseBehavior {
                     Entity.getDefaultNBT(pos, dir, (float) dir.yRotFromDirection(), (float) dir.xRotFromDirection()), true);
             firework.spawnToAll();
         }
+        //fix
         return null;
 
     }
