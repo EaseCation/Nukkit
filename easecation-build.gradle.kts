@@ -2,12 +2,19 @@ plugins {
     application
     id("ecbuild.java-conventions")
     id("ecbuild.copy-conventions")
+    alias(libs.plugins.git)
 }
 
 extra.set("copyTo", listOf("{server}", "{login}", "{server1}"))
 
 application {
     mainClass = "cn.nukkit.Nukkit"
+}
+
+gitProperties {
+    dateFormat = "yyyy.MM.dd '@' HH:mm:ss z"
+    failOnNoGitDirectory = false
+    dotGitDirectory = rootProject.file(".git")
 }
 
 tasks.shadowJar {

@@ -177,12 +177,14 @@ public class Nukkit {
     private static Properties getGitInfo() {
         InputStream gitFileStream = Nukkit.class.getClassLoader().getResourceAsStream("git.properties");
         if (gitFileStream == null) {
+            log.debug("Unable to find git.properties");
             return null;
         }
         Properties properties = new Properties();
         try {
             properties.load(gitFileStream);
         } catch (IOException e) {
+            log.debug("Unable to load git.properties", e);
             return null;
         }
         return properties;
@@ -192,7 +194,7 @@ public class Nukkit {
         StringBuilder version = new StringBuilder();
         version.append("git-");
         String commitId;
-        if (GIT_INFO == null || (commitId = GIT_INFO.getProperty("git.commit.id.abbrev")) == null) {
+        if (GIT_INFO == null || (commitId = GIT_INFO.getProperty("git.commit.id.abbrev")) == null || commitId.isEmpty()) {
             return version.append("null").toString();
         }
         return version.append(commitId).toString();

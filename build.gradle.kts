@@ -7,6 +7,7 @@ plugins {
     `java-library`
     `maven-publish`
     alias(libs.plugins.shadow)
+    alias(libs.plugins.git)
     alias(libs.plugins.versions)
 }
 
@@ -22,6 +23,11 @@ description = "Nukkit"
 
 application {
     mainClass = "cn.nukkit.Nukkit"
+}
+
+gitProperties {
+    dateFormat = "yyyy.MM.dd '@' HH:mm:ss z"
+    failOnNoGitDirectory = false
 }
 
 val shadowJarTask = tasks.named<ShadowJar>("shadowJar")
@@ -79,6 +85,7 @@ if (gradle.parent != null) {
 }
 
 tasks.shadowJar {
+    duplicatesStrategy = DuplicatesStrategy.INCLUDE
     transform(Log4j2PluginsCacheFileTransformer::class.java) {}
     mergeServiceFiles()
     exclude("**/module-info.class")
