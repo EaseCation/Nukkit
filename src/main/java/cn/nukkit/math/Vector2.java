@@ -180,6 +180,11 @@ public class Vector2 implements Cloneable {
                 Double.compare(vector2.y, y) == 0;
     }
 
+    public boolean equals(double x, double y) {
+        return Double.compare(x, this.x) == 0
+                && Double.compare(y, this.y) == 0;
+    }
+
     @Override
     public int hashCode() {
         int hash = Double.hashCode(this.x);

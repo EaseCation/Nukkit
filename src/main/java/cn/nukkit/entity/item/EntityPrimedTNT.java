@@ -77,6 +77,7 @@ public class EntityPrimedTNT extends Entity implements EntityExplosive {
         return source.getCause() == DamageCause.VOID && super.attack(source);
     }
 
+    @Override
     protected void initEntity() {
         super.initEntity();
 
@@ -98,20 +99,24 @@ public class EntityPrimedTNT extends Entity implements EntityExplosive {
 
         this.setDataFlag(DATA_FLAG_IGNITED, true, false);
         this.setDataProperty(new IntEntityData(DATA_FUSE_LENGTH, fuse), false);
+        dataProperties.putInt(DATA_VARIANT, allowUnderwater ? 1 : 0);
 
         this.getLevel().addLevelSoundEvent(this, LevelSoundEventPacket.SOUND_FIZZ);
     }
 
+    @Override
     public boolean canCollideWith(Entity entity) {
         return false;
     }
 
+    @Override
     public void saveNBT() {
         super.saveNBT();
         namedTag.putByte("Fuse", fuse);
         namedTag.putByte("Force", force);
     }
 
+    @Override
     public boolean onUpdate(int currentTick) {
         if (closed) {
             return false;
@@ -161,6 +166,7 @@ public class EntityPrimedTNT extends Entity implements EntityExplosive {
         return hasUpdate || fuse >= 0 || Math.abs(motionX) > 0.00001 || Math.abs(motionY) > 0.00001 || Math.abs(motionZ) > 0.00001;
     }
 
+    @Override
     public void explode() {
         EntityExplosionPrimeEvent event = new EntityExplosionPrimeEvent(this, this.force);
         server.getPluginManager().callEvent(event);
@@ -175,6 +181,7 @@ public class EntityPrimedTNT extends Entity implements EntityExplosive {
         explosion.explodeB();
     }
 
+    @Override
     public void spawnTo(Player player) {
         if (this.hasSpawned.containsKey(player.getLoaderId())) {
             return;

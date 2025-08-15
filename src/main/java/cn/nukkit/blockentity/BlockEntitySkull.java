@@ -24,7 +24,7 @@ public class BlockEntitySkull extends BlockEntitySpawnable {
                 int type = namedTag.getByte("SkullType");
                 if (type != -1) {
                     Block block = level.getBlock(this);
-                    if (block.is(Block.BLOCK_SKULL)) {
+                    if (block.isSkull()) {
                         switch (type) {
                             case ItemSkull.HEAD_WITHER_SKELETON:
                                 level.setBlock(this, Block.get(Block.WITHER_SKELETON_SKULL, block.getDamage()), true, false);

@@ -561,6 +561,12 @@ public class Vector3f implements Cloneable {
                 && Float.compare(other.z, this.z) == 0;
     }
 
+    public boolean equals(float x, float y, float z) {
+        return Float.compare(x, this.x) == 0
+                && Float.compare(y, this.y) == 0
+                && Float.compare(z, this.z) == 0;
+    }
+
     public final boolean equalsVec(Vector3f vec) {
         if (vec == null) {
             return false;

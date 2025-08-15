@@ -184,6 +184,11 @@ public class Vector2f implements Cloneable {
                 && Float.compare(that.y, y) == 0;
     }
 
+    public boolean equals(float x, float y) {
+        return Float.compare(x, this.x) == 0
+                && Float.compare(y, this.y) == 0;
+    }
+
     @Override
     public int hashCode() {
         int hash = Float.hashCode(this.x);

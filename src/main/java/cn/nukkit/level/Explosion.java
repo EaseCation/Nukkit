@@ -130,7 +130,7 @@ public class Explosion {
      * @return {@code true} if success
      */
     public boolean explodeA() {
-        if (what instanceof Entity) {
+        if (!allowUnderwater && what instanceof Entity) {
             Entity entity = (Entity) what;
             Block block = level.getBlock(entity);
             if (block.isWater() || level.getExtraBlock(entity).isWater()) {
@@ -171,22 +171,29 @@ public class Explosion {
                             Block block = this.level.getBlock(blockX, blockY, blockZ);
 
                             if (!block.isAir()) {
+                                boolean notWaterOnly = false;
                                 float resistance = 0;
                                 if (!allowUnderwater || !block.isWater()) {
+                                    notWaterOnly = true;
                                     resistance = block.getResistance();
                                 }
                                 Block extraBlock = this.level.getExtraBlock(block);
                                 if (!allowUnderwater || !extraBlock.isWater()) {
+                                    notWaterOnly |= !extraBlock.isAir();
                                     resistance += extraBlock.getResistance();
                                 }
 
-                                blastForce -= (resistance / 5 + 0.3f) * STEP_LEN;
+                                if (notWaterOnly) {
+                                    blastForce -= (resistance / 5 + 0.3f) * STEP_LEN;
+                                }
+
                                 if (blastForce > 0) {
                                     affectedBlocks.putIfAbsent(Hash.hashBlockPos(blockX, blockY, blockZ), block);
                                 }
                             } else {
                                 this.affectedAirs.add(Hash.hashBlockPos(blockX, blockY, blockZ));
                             }
+
                             pointerX += vector.x;
                             pointerY += vector.y;
                             pointerZ += vector.z;
@@ -288,6 +295,7 @@ public class Explosion {
         ThreadLocalRandom random = ThreadLocalRandom.current();
 
         for (Block block : this.affectedBlocks) {
+            Block extraBlock = level.getExtraBlock(block);
             int id = block.getId();
             if (id == Block.TNT) {
                 ((BlockTNT) block).prime(random.nextInt(10, 31), this.what instanceof Entity ? (Entity) this.what : null);
@@ -410,7 +418,7 @@ public class Explosion {
                 }
             } else if (blockDrop) {
                 //TODO: merge items before dropping
-                if (!dropDecay || id == BlockID.DRAGON_EGG || id == BlockID.BEACON || id == BlockID.BLOCK_SKULL || random.nextFloat() * 100 < yield) {
+                if (!dropDecay || id == BlockID.DRAGON_EGG || id == BlockID.BEACON || block.isSkull() || random.nextFloat() * 100 < yield) {
                     for (Item drop : block.getDrops(ItemTool.getUniversalTool())) {
                         this.level.dropItem(block.blockCenter(), drop);
                     }
@@ -419,17 +427,27 @@ public class Explosion {
                         level.dropExpOrb(block.blockCenter(), xp);
                     }
                 }
+                if (!extraBlock.isAir() && (!dropDecay || random.nextFloat() * 100 < yield)) {
+                    for (Item drop : extraBlock.getDrops(ItemTool.getUniversalTool())) {
+                        this.level.dropItem(extraBlock.blockCenter(), drop);
+                    }
+                    int xp = extraBlock.getDropExp();
+                    if (xp > 0) {
+                        level.dropExpOrb(extraBlock.blockCenter(), xp);
+                    }
+                }
             }
 
             if (random.nextInt(8) == 0) {
                 smokePositions.add(block);
             }
 
-            Block extraBlock = level.getExtraBlock(block);
-            this.level.setExtraBlock(block, Blocks.air(), true, false);
+            if (!extraBlock.isAir()) {
+                this.level.setExtraBlock(block, Blocks.air(), true, false);
+            }
             if (extraBlock.isWater()) {
                 this.level.setBlock(block, extraBlock, true);
-            } else {
+            } else if (!block.isWater()) {
                 this.level.setBlock(block, Blocks.air(), true);
             }
         }

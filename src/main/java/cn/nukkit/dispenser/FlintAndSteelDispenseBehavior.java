@@ -26,7 +26,6 @@ public class FlintAndSteelDispenseBehavior extends DefaultDispenseBehavior {
             return null;
         }
 
-        item.setDamage(item.getDamage() + 1);
         if (item.hurtAndBreak(1) >= 0) {
             item.count++;
         }

@@ -3047,7 +3047,7 @@ public class Level implements ChunkManager, Metadatable {
             return null;
         }
 
-        if (!hand.canPassThrough() && hand.getBoundingBox() != null && !hand.isDoor() && !hand.is(Block.BLOCK_BED) && !hand.is(Block.BLOCK_SKULL) && (!hand.is(Block.BAMBOO) || target.is(Block.BAMBOO) || target.is(Block.BAMBOO_SAPLING))) {
+        if (!hand.canPassThrough() && hand.getBoundingBox() != null && !hand.isDoor() && !hand.is(Block.BLOCK_BED) && !hand.isSkull() && (!hand.is(Block.BAMBOO) || target.is(Block.BAMBOO) || target.is(Block.BAMBOO_SAPLING))) {
             Entity[] entities = this.getCollidingEntities(hand.getBoundingBox());
             for (Entity e : entities) {
                 if (e instanceof EntityProjectile || e instanceof EntityItem || e instanceof EntityXPOrb || e instanceof EntityFirework || e instanceof EntityPainting

@@ -126,6 +126,10 @@ public class ChunkPosition implements Cloneable {
         return this.x == o.x && this.z == o.z;
     }
 
+    public boolean equals(int chunkX, int chunkZ) {
+        return this.x == chunkX && this.z == chunkZ;
+    }
+
     @Override
     public String toString() {
         return "[" + this.x + ", " + this.z + "]";

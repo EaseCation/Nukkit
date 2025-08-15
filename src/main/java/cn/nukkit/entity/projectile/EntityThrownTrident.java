@@ -86,6 +86,10 @@ public class EntityThrownTrident extends EntityProjectile {
         this.favoredSlot = namedTag.contains("favoredSlot") ? namedTag.getInt("favoredSlot") : -1;
         this.trident = namedTag.contains("Trident") ? NBTIO.getItemHelper(namedTag.getCompound("Trident")) : Item.get(Item.AIR);
         this.pickupMode = namedTag.contains("pickup") ? namedTag.getByte("pickup") : PICKUP_ANY;
+
+        if (trident != null && trident.hasEnchantments()) {
+            setDataFlag(DATA_FLAG_ENCHANTED, true, false);
+        }
     }
 
     @Override
@@ -114,8 +118,14 @@ public class EntityThrownTrident extends EntityProjectile {
     }
 
     public void setItem(Item item) {
-        this.trident = item.clone();
-        if (this.trident != null && this.shootingEntity != null) {
+        this.trident = item != null ? item.clone() : null;
+
+        if (this.trident != null) {
+            setDataFlag(DATA_FLAG_ENCHANTED, trident.hasEnchantments());
+
+            if (this.shootingEntity == null) {
+                return;
+            }
             Enchantment loyaltyEnchant = this.trident.getEnchantment(Enchantment.LOYALTY);
             if (loyaltyEnchant != null && loyaltyEnchant.getLevel() >= 1) {
                 // TODO different ticks for different levels

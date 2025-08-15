@@ -129,6 +129,11 @@ public class BlockBeehive extends BlockSolid implements Faceable {
             }
 
             level.addLevelSoundEvent(blockCenter(), LevelSoundEventPacket.SOUND_BLOCK_BEEHIVE_SHEAR);
+
+            if (player != null && player.isSurvivalLike() && item.hurtAndBreak(1) < 0) {
+                item.pop();
+                level.addLevelSoundEvent(player, LevelSoundEventPacket.SOUND_BREAK);
+            }
             return true;
         }
 

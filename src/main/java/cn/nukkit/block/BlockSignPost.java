@@ -303,6 +303,11 @@ public class BlockSignPost extends BlockTransparent implements Faceable {
     }
 
     @Override
+    public boolean hasUI() {
+        return true;
+    }
+
+    @Override
     public boolean breaksWhenMoved() {
         return true;
     }

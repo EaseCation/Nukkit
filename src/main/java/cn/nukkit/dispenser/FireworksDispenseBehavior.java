@@ -6,6 +6,7 @@ import cn.nukkit.entity.item.EntityFirework;
 import cn.nukkit.item.Item;
 import cn.nukkit.math.BlockFace;
 import cn.nukkit.math.Vector3;
+import cn.nukkit.nbt.NBTIO;
 
 public class FireworksDispenseBehavior extends DefaultDispenseBehavior {
 
@@ -15,7 +16,8 @@ public class FireworksDispenseBehavior extends DefaultDispenseBehavior {
         Vector3 pos = block.blockCenter().add(dir.multiply(0.5));
 
         EntityFirework firework = new EntityFirework(block.level.getChunk(pos.getChunkX(), pos.getChunkZ()),
-                Entity.getDefaultNBT(pos, dir, (float) dir.yRotFromDirection(), (float) dir.xRotFromDirection()), true);
+                Entity.getDefaultNBT(pos, dir, (float) dir.yRotFromDirection(), (float) dir.xRotFromDirection())
+                        .putCompound("FireworkItem", NBTIO.putItemHelper(item)), true);
         firework.spawnToAll();
 
         return null;

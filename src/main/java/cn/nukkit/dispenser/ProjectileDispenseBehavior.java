@@ -5,6 +5,7 @@ import cn.nukkit.entity.Entity;
 import cn.nukkit.entity.EntityFactory;
 import cn.nukkit.entity.projectile.EntityProjectile;
 import cn.nukkit.item.Item;
+import cn.nukkit.item.ItemDurable;
 import cn.nukkit.math.BlockFace;
 import cn.nukkit.math.Vector3;
 import cn.nukkit.nbt.tag.CompoundTag;
@@ -23,6 +24,14 @@ public class ProjectileDispenseBehavior extends DefaultDispenseBehavior {
 
     @Override
     public Item dispense(BlockDispenser source, BlockFace face, Item item) {
+        if (item instanceof ItemDurable) {
+            if (item.getDamage() >= item.getMaxDurability()) {
+                return super.dispense(source, face, item);
+            }
+
+            item.hurtAndBreak(1);
+        }
+
         Vector3 dispensePos = source.getDispensePosition();
 
         CompoundTag nbt = Entity.getDefaultNBT(dispensePos);

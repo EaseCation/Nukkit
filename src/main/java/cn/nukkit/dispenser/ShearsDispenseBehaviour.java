@@ -11,7 +11,6 @@ public class ShearsDispenseBehaviour extends DefaultDispenseBehavior {
         Block target = block.getSide(face);
 
         if (target.isBeehive() && target.onActivate(item, face, null)) {
-            item.setDamage(item.getDamage() + 1);
             if (item.hurtAndBreak(1) >= 0) {
                 item.count++;
             }

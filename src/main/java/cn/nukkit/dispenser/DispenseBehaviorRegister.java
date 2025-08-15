@@ -8,6 +8,7 @@ import cn.nukkit.item.Item;
 import cn.nukkit.item.ItemArrow;
 import cn.nukkit.item.ItemBlockID;
 import cn.nukkit.item.ItemID;
+import cn.nukkit.nbt.NBTIO;
 import cn.nukkit.nbt.tag.CompoundTag;
 import cn.nukkit.nbt.tag.ListTag;
 import cn.nukkit.potion.Effect;
@@ -136,6 +137,12 @@ public final class DispenseBehaviorRegister {
             protected double getMotion() {
                 return super.getMotion() * 1.25;
             }
+
+            @Override
+            protected void correctNBT(CompoundTag nbt, Item item) {
+                nbt.putShort("PotionId", item.getDamage());
+                nbt.putCompound("Item", NBTIO.putItemHelper(item));
+            }
         });
         registerBehavior(ItemID.LINGERING_POTION, new ProjectileDispenseBehavior(EntityLingeringPotion::new) {
             @Override
@@ -147,6 +154,12 @@ public final class DispenseBehaviorRegister {
             protected double getMotion() {
                 return super.getMotion() * 1.25;
             }
+
+            @Override
+            protected void correctNBT(CompoundTag nbt, Item item) {
+                nbt.putShort("PotionId", item.getDamage());
+                nbt.putCompound("Item", NBTIO.putItemHelper(item));
+            }
         });
         registerBehavior(ItemID.TRIDENT, new ProjectileDispenseBehavior(EntityThrownTrident::new) {
             @Override
@@ -157,6 +170,11 @@ public final class DispenseBehaviorRegister {
             @Override
             protected double getMotion() {
                 return super.getMotion() * 1.25;
+            }
+
+            @Override
+            protected void correctNBT(CompoundTag nbt, Item item) {
+                nbt.putCompound("Trident", NBTIO.putItemHelper(item));
             }
         });
         registerBehavior(ItemID.ICE_BOMB, new ProjectileDispenseBehavior(EntityIceBomb::new));

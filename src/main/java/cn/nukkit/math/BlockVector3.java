@@ -438,6 +438,10 @@ public class BlockVector3 implements Cloneable {
                 this.z == that.z;
     }
 
+    public boolean equals(int x, int y, int z) {
+        return this.x == x && this.y == y && this.z == z;
+    }
+
     public final boolean equalsVec(BlockVector3 vec) {
         if (vec == null) {
             return false;

@@ -607,6 +607,12 @@ public class Vector3 implements Cloneable {
                 && Double.compare(other.z, this.z) == 0;
     }
 
+    public boolean equals(double x, double y, double z) {
+        return Double.compare(x, this.x) == 0
+                && Double.compare(y, this.y) == 0
+                && Double.compare(z, this.z) == 0;
+    }
+
     public final boolean equalsVec(Vector3 vec) {
         if (vec == null) {
             return false;
