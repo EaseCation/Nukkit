@@ -10,7 +10,6 @@ import cn.nukkit.item.ItemID;
 import cn.nukkit.level.Level;
 import cn.nukkit.math.AxisAlignedBB;
 import cn.nukkit.math.BlockFace;
-import cn.nukkit.math.BlockFace.Axis;
 import cn.nukkit.math.SimpleAxisAlignedBB;
 import cn.nukkit.nbt.tag.CompoundTag;
 import cn.nukkit.network.protocol.LevelSoundEventPacket;
@@ -93,6 +92,18 @@ public class BlockBell extends BlockTransparent implements Faceable {
     @Override
     public Item toItem(boolean addUserData) {
         return Item.get(getItemId());
+    }
+
+    @Override
+    public Block getPlacementBlock(Item item, Block block, Block target, BlockFace face, float fx, float fy, float fz, Player player) {
+        if (!canBeSupportedBy(target, face)) {
+            return this;
+        }
+        return get(getId(), switch (face) {
+            case UP -> ATTACHMENT_STANDING << DIRECTION_BITS | (player != null ? player.getHorizontalFacing().getOpposite().getHorizontalIndex() : getDamage() & DIRECTION_MASK);
+            case DOWN -> ATTACHMENT_HANGING << DIRECTION_BITS | (player != null ? player.getHorizontalFacing().getOpposite().getHorizontalIndex() : getDamage() & DIRECTION_MASK);
+            default -> (canBeSupportedBy(getSide(face), face.getOpposite()) ? ATTACHMENT_MULTIPLE : ATTACHMENT_SIDE) << DIRECTION_BITS | face.getHorizontalIndex();
+        });
     }
 
     @Override

@@ -12,6 +12,10 @@ import cn.nukkit.utils.Faceable;
  * Created by Pub4Game on 27.12.2015.
  */
 public class BlockAnvil extends BlockFallable implements Faceable {
+    public static final int DIRECTION_MASK = 0b11;
+    public static final int DIRECTION_BITS = 2;
+    public static final int DAMAGE_MASK = 0b1100;
+
     public static final int UNDAMAGED = 0 << 2;
     public static final int SLIGHTLY_DAMAGED = 1 << 2;
     public static final int VERY_DAMAGED = 2 << 2;
@@ -19,17 +23,9 @@ public class BlockAnvil extends BlockFallable implements Faceable {
 
     private static final String[] NAMES = new String[]{
             "Anvil",
-            "Anvil",
-            "Anvil",
-            "Anvil",
-            "Chipped Anvil",
-            "Chipped Anvil",
-            "Chipped Anvil",
             "Chipped Anvil",
             "Damaged Anvil",
-            "Damaged Anvil",
-            "Damaged Anvil",
-            "Damaged Anvil"
+            "Anvil",
     };
 
     private static final int[] FACES = {1, 2, 3, 0};
@@ -74,18 +70,17 @@ public class BlockAnvil extends BlockFallable implements Faceable {
 
     @Override
     public String getName() {
-        return NAMES[this.getDamage() > 11 ? 0 : this.getDamage()];
+        return NAMES[(this.getDamage() & DAMAGE_MASK) >> DIRECTION_BITS];
+    }
+
+    @Override
+    public Block getPlacementBlock(Item item, Block block, Block target, BlockFace face, float fx, float fy, float fz, Player player) {
+        return get(getId(), getDamage() & ~DIRECTION_MASK | FACES[player != null ? player.getDirection().getOpposite().getHorizontalIndex() : 0]);
     }
 
     @Override
     public boolean place(Item item, Block block, Block target, BlockFace face, float fx, float fy, float fz, Player player) {
-        int damage = this.getDamage();
-        this.setDamage(FACES[player != null ? player.getDirection().getOpposite().getHorizontalIndex() : 0]);
-        if (damage >= 4 && damage <= 7) {
-            this.setDamage(this.getDamage() | 0x04);
-        } else if (damage >= 8 && damage <= 11) {
-            this.setDamage(this.getDamage() | 0x08);
-        }
+        setDamage(getDamage() & ~DIRECTION_MASK | FACES[player != null ? player.getDirection().getOpposite().getHorizontalIndex() : 0]);
         this.getLevel().setBlock(block, this, true);
         return true;
     }
@@ -105,7 +100,7 @@ public class BlockAnvil extends BlockFallable implements Faceable {
 
     @Override
     public Item toItem(boolean addUserData) {
-        return Item.get(this.getItemId(), (getDamage() >> 2) << 2);
+        return Item.get(this.getItemId(), getDamage() & ~DIRECTION_MASK);
     }
 
     @Override
@@ -130,7 +125,7 @@ public class BlockAnvil extends BlockFallable implements Faceable {
 
     @Override
     public BlockFace getBlockFace() {
-        return BlockFace.fromHorizontalIndex(this.getDamage() & 0x3);
+        return BlockFace.fromHorizontalIndex(this.getDamage() & DIRECTION_MASK);
     }
 
     @Override

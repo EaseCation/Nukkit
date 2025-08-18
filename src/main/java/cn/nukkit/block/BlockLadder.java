@@ -88,14 +88,30 @@ public class BlockLadder extends BlockTransparent implements Faceable {
     }
 
     @Override
+    protected AxisAlignedBB recalculateBoundingBox() {
+        if (getBlockFace().isVertical()) {
+            return null;
+        }
+        return this;
+    }
+
+    @Override
     protected AxisAlignedBB recalculateCollisionBoundingBox() {
         return new SimpleAxisAlignedBB(x, y, z, x + 1, y + 1, z + 1);
     }
 
     @Override
+    public Block getPlacementBlock(Item item, Block block, Block target, BlockFace face, float fx, float fy, float fz, Player player) {
+        if (target.isTransparent() || face.isVertical()) {
+            return this;
+        }
+        return get(getId(), face.getIndex());
+    }
+
+    @Override
     public boolean place(Item item, Block block, Block target, BlockFace face, float fx, float fy, float fz, Player player) {
         if (!target.isTransparent()) {
-            if (face.getIndex() >= 2 && face.getIndex() <= 5) {
+            if (face.isHorizontal()) {
                 this.setDamage(face.getIndex());
                 this.getLevel().setBlock(block, this, true, true);
                 return true;
@@ -132,7 +148,7 @@ public class BlockLadder extends BlockTransparent implements Faceable {
 
     @Override
     public BlockFace getBlockFace() {
-        return BlockFace.fromHorizontalIndex(this.getDamage() & 0x07);
+        return BlockFace.fromIndex(this.getDamage() & 0x07);
     }
 
     @Override

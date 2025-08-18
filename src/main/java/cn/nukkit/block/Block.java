@@ -468,6 +468,10 @@ public abstract class Block extends Position implements Metadatable, Cloneable, 
         }
     }
 
+    public Block getPlacementBlock(Item item, Block block, Block target, BlockFace face, float fx, float fy, float fz, @Nullable Player player) {
+        return this;
+    }
+
     /**
      * Places the Block, using block space and block target, and side. Returns if the block has been placed.
      * @param block replace block

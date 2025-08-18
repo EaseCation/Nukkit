@@ -3047,8 +3047,16 @@ public class Level implements ChunkManager, Metadatable {
             return null;
         }
 
-        if (!hand.canPassThrough() && hand.getBoundingBox() != null && !hand.isDoor() && !hand.is(Block.BLOCK_BED) && !hand.isSkull() && (!hand.is(Block.BAMBOO) || target.is(Block.BAMBOO) || target.is(Block.BAMBOO_SAPLING))) {
-            Entity[] entities = this.getCollidingEntities(hand.getBoundingBox());
+        Block placement = hand.getPlacementBlock(item, block, target, face, fx, fy, fz, player);
+        if (placement != hand) {
+            placement.position(block);
+        }
+        AxisAlignedBB boundingBox;
+        if (!placement.canPassThrough() && (boundingBox = placement.getBoundingBox()) != null
+                && !placement.isDoor() && !placement.is(Block.BLOCK_BED) && !placement.isSkull() && !placement.isHangingSign()
+                && (!placement.is(Block.BAMBOO) || target.is(Block.BAMBOO) || target.is(Block.BAMBOO_SAPLING)) //TODO: check bamboo boundingBox
+        ) {
+            Entity[] entities = this.getCollidingEntities(boundingBox);
             for (Entity e : entities) {
                 if (e instanceof EntityProjectile || e instanceof EntityItem || e instanceof EntityXPOrb || e instanceof EntityFirework || e instanceof EntityPainting
                         || e == player || (e instanceof Player && ((Player) e).isSpectator())) {
@@ -3061,7 +3069,7 @@ public class Level implements ChunkManager, Metadatable {
                 Vector3 diff = player.getNextPosition().subtract(player.getPosition());
                 AxisAlignedBB bb = player.getBoundingBox().getOffsetBoundingBox(diff.x, diff.y, diff.z);
                 bb.expand(-0.01, -0.01, -0.01);
-                if (hand.getBoundingBox().intersectsWith(bb)) {
+                if (boundingBox.intersectsWith(bb)) {
                     // This is a hack to prevent the player from placing blocks inside themselves
                     return LazyHolder.INVALID_ITEM;
                 }
