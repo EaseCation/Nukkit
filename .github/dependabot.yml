@@ -8,10 +8,14 @@ updates:
       github-actions:
         patterns:
           - "*"
+  - package-ecosystem: "gitsubmodule"
+    directory: "/"
+    schedule:
+      interval: "weekly"
   - package-ecosystem: "gradle"
     directory: "/"
     schedule:
-      interval: "monthly"
-    open-pull-requests-limit: 30
+      interval: "quarterly"
+    open-pull-requests-limit: 50
     ignore:
       - dependency-name: "com.nukkitx.network:raknet"

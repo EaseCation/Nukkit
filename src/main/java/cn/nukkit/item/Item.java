@@ -621,6 +621,57 @@ public class Item implements Cloneable, ItemID {
         return this;
     }
 
+    public boolean removeEnchantment(int id) {
+        return removeEnchantment(id, 0);
+    }
+
+    public boolean removeEnchantment(int id, int level) {
+        CompoundTag tag = getNamedTag();
+        if (tag == null) {
+            return false;
+        }
+
+        ListTag<CompoundTag> ench = tag.getList("ench", (ListTag<CompoundTag>) null);
+        if (ench == null || ench.isEmpty()) {
+            return false;
+        }
+
+        boolean removed = false;
+        Iterator<CompoundTag> iter = ench.iterator();
+        while (iter.hasNext()) {
+            CompoundTag entry = iter.next();
+            if (entry.getShort("id") != id) {
+                continue;
+            }
+
+            if (level > 0 && entry.getShort("lvl") != level) {
+                break;
+            }
+
+            removed = true;
+            iter.remove();
+            break;
+        }
+        if (!removed) {
+            return false;
+        }
+        if (ench.isEmpty()) {
+            tag.remove("ench");
+        }
+
+        setNamedTag(tag);
+        return true;
+    }
+
+    public boolean removeEnchantments() {
+        CompoundTag tag = getNamedTag();
+        if (tag == null || tag.removeAndGet("ench") == null) {
+            return false;
+        }
+        setNamedTag(tag);
+        return true;
+    }
+
     public Enchantment[] getEnchantments() {
         if (!this.hasEnchantments()) {
             return new Enchantment[0];
@@ -866,6 +917,10 @@ public class Item implements Cloneable, ItemID {
     }
 
     public Item setLore(String... lines) {
+        if (lines == null || lines.length == 0) {
+            return clearLore();
+        }
+
         CompoundTag tag;
         if (!this.hasCompoundTag()) {
             tag = new CompoundTag();
@@ -886,6 +941,20 @@ public class Item implements Cloneable, ItemID {
 
         this.setNamedTag(tag);
         return this;
+    }
+
+    public Item clearLore() {
+        CompoundTag tag = getNamedTag();
+        if (tag == null || !(tag.get("display") instanceof CompoundTag display)
+                || display.removeAndGet("Lore") == null) {
+            return this;
+        }
+
+        if (display.isEmpty()) {
+            tag.remove("display");
+        }
+
+        return setNamedTag(tag);
     }
 
     @Nullable
