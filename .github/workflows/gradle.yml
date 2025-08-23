@@ -16,19 +16,19 @@ jobs:
     steps:
       # Checkout side by side
       - name: Checkout Nukkit
-        uses: actions/checkout@v4
+        uses: actions/checkout@v5
         with:
           path: Nukkit
           submodules: true
       - name: Checkout Network repo
-        uses: actions/checkout@v4
+        uses: actions/checkout@v5
         with:
           repository: EaseCation/Network
           path: Network
       - name: Setup Gradle
         uses: gradle/actions/setup-gradle@v4
       - name: Set up JDK ${{ matrix.java }}
-        uses: actions/setup-java@v4
+        uses: actions/setup-java@v5
         with:
           java-version: ${{ matrix.java }}
           distribution: oracle
