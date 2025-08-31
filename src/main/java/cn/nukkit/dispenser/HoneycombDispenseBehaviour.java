@@ -12,7 +12,7 @@ public class HoneycombDispenseBehaviour extends DefaultDispenseBehavior {
     public Item dispense(BlockDispenser block, BlockFace face, Item item) {
         Block target = block.getSide(face);
 
-        if (target instanceof CopperBehavior copper && !copper.isWaxed()) {
+        if (target.hasCopperBehavior() && target instanceof CopperBehavior copper && !copper.isWaxed()) {
             if (target.level.setBlock(target, Block.get(copper.getWaxedBlockId(), copper.getDamage()), true)) {
                 target.level.addLevelEvent(target, LevelEventPacket.EVENT_PARTICLE_WAX_ON);
             }

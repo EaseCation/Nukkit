@@ -31,7 +31,15 @@ public class BlockSmoker extends BlockFurnace {
 
     @Override
     public Item toItem(boolean addUserData) {
-        return Item.get(getItemId(SMOKER));
+        Item item = Item.get(getItemId(SMOKER));
+        if (addUserData) {
+            BlockEntity blockEntity = getBlockEntity();
+            if (blockEntity != null) {
+                item.setCustomName(blockEntity.getName());
+                item.setRepairCost(blockEntity.getRepairCost());
+            }
+        }
+        return item;
     }
 
     @Override

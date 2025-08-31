@@ -9,8 +9,6 @@ import cn.nukkit.math.BlockFace;
 import cn.nukkit.nbt.tag.CompoundTag;
 import cn.nukkit.utils.Faceable;
 
-import javax.annotation.Nullable;
-
 public class BlockSculkSensorCalibrated extends BlockSculkSensor implements Faceable {
     public static final int DIRECTION_MASK = 0b1100;
     public static final int DIRECTION_START = 2;
@@ -52,14 +50,15 @@ public class BlockSculkSensorCalibrated extends BlockSculkSensor implements Face
         return BlockFace.fromHorizontalIndex((getDamage() & DIRECTION_MASK) >> DIRECTION_START);
     }
 
-    private BlockEntityCalibratedSculkSensor createBlockEntity(@Nullable Item item) {
+    @Override
+    protected BlockEntityCalibratedSculkSensor createBlockEntity(Item item) {
         CompoundTag nbt = BlockEntity.getDefaultCompound(this, BlockEntity.CALIBRATED_SCULK_SENSOR);
 
         return (BlockEntityCalibratedSculkSensor) BlockEntities.createBlockEntity(BlockEntityType.CALIBRATED_SCULK_SENSOR, getChunk(), nbt);
     }
 
-    @Nullable
-    private BlockEntityCalibratedSculkSensor getBlockEntity() {
+    @Override
+    protected BlockEntityCalibratedSculkSensor getBlockEntity() {
         if (level == null) {
             return null;
         }

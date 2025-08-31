@@ -31,7 +31,15 @@ public class BlockFurnaceBurningBlast extends BlockFurnaceBurning {
 
     @Override
     public Item toItem(boolean addUserData) {
-        return Item.get(getItemId(BLAST_FURNACE));
+        Item item = Item.get(getItemId(BLAST_FURNACE));
+        if (addUserData) {
+            BlockEntity blockEntity = getBlockEntity();
+            if (blockEntity != null) {
+                item.setCustomName(blockEntity.getName());
+                item.setRepairCost(blockEntity.getRepairCost());
+            }
+        }
+        return item;
     }
 
     @Override

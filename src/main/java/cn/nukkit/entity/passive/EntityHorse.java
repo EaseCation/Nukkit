@@ -62,7 +62,7 @@ public class EntityHorse extends EntityAbstractHorse {
     }
 
     @Override
-    public void initEntity() {
+    protected void initEntity() {
         super.initEntity();
 
         dataProperties.putByte(DATA_HORSE_TYPE, HORSE_TYPE_DEFAULT);

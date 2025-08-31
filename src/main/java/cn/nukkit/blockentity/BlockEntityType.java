@@ -57,7 +57,9 @@ public interface BlockEntityType {
     int TRIAL_SPAWNER = 56;
     int VAULT = 57;
     int CREAKING_HEART = 58;
+    int COPPER_GOLEM_STATUE = 59;
+    int SHELF = 60;
 
 
-    int UNDEFINED = 59;
+    int UNDEFINED = 61;
 }

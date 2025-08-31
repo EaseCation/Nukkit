@@ -40,11 +40,6 @@ public class BlockIronBars extends BlockThin {
     }
 
     @Override
-    public Item toItem(boolean addUserData) {
-        return Item.get(this.getItemId());
-    }
-
-    @Override
     public Item[] getDrops(Item item, Player player) {
         if (item.isPickaxe() && item.getTier() >= ItemTool.TIER_WOODEN) {
             return new Item[]{

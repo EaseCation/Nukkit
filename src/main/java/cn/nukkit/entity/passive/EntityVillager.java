@@ -60,7 +60,7 @@ public class EntityVillager extends EntityCreature implements EntityAgeable {
     }
 
     @Override
-    public void initEntity() {
+    protected void initEntity() {
         super.initEntity();
 
         dataProperties.putInt(DATA_VARIANT, namedTag.getInt("Variant", PROFESSION_UNSKILLED));

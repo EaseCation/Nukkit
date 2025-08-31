@@ -32,6 +32,10 @@ public class EnchantmentDamageArthropods extends EnchantmentDamage {
 
     @Override
     public float getDamageBonus(Entity attacker, Entity entity) {
+        if (level <= 0) {
+            return 0;
+        }
+
         if (entity instanceof EntityArthropod) {
             return getLevel() * 2.5f;
         }

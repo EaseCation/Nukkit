@@ -72,15 +72,7 @@ public class BlockChemistryTable extends BlockSolid {
 
     @Override
     public Item toItem(boolean addUserData) {
-        Item item = Item.get(getItemId(), (getDamage() >> DIRECTION_BITS) << DIRECTION_BITS);
-        if (addUserData) {
-            BlockEntity blockEntity = getBlockEntity();
-            if (blockEntity != null) {
-                item.setCustomName(blockEntity.getName());
-                item.setRepairCost(blockEntity.getRepairCost());
-            }
-        }
-        return item;
+        return Item.get(getItemId(), (getDamage() >> DIRECTION_BITS) << DIRECTION_BITS);
     }
 
     @Override

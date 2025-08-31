@@ -143,6 +143,10 @@ public class EntityHuman extends EntityHumanType {
 
         this.setDataProperty(new IntPositionEntityData(DATA_PLAYER_BED_POSITION, 0, 0, 0), false);
 
+        if (getNetworkId() == -1) {
+            dataProperties.putBoolean(DATA_ALWAYS_SHOW_NAMETAG, true);
+        }
+
         if (!(this instanceof Player)) {
             if (this.namedTag.contains("NameTag")) {
                 this.setNameTag(this.namedTag.getString("NameTag"));

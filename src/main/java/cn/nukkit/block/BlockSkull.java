@@ -3,8 +3,8 @@ package cn.nukkit.block;
 import cn.nukkit.Player;
 import cn.nukkit.blockentity.BlockEntities;
 import cn.nukkit.blockentity.BlockEntity;
-import cn.nukkit.blockentity.BlockEntityType;
 import cn.nukkit.blockentity.BlockEntitySkull;
+import cn.nukkit.blockentity.BlockEntityType;
 import cn.nukkit.item.Item;
 import cn.nukkit.item.ItemSkull;
 import cn.nukkit.math.AxisAlignedBB;
@@ -15,6 +15,8 @@ import cn.nukkit.nbt.tag.CompoundTag;
 import cn.nukkit.nbt.tag.Tag;
 import cn.nukkit.utils.BlockColor;
 import cn.nukkit.utils.Faceable;
+
+import javax.annotation.Nullable;
 
 import static cn.nukkit.GameVersion.*;
 
@@ -165,5 +167,16 @@ public class BlockSkull extends BlockFlowable implements Faceable {
     @Override
     public boolean isSkull() {
         return true;
+    }
+
+    @Nullable
+    protected BlockEntitySkull getBlockEntity() {
+        if (level == null) {
+            return null;
+        }
+        if (level.getBlockEntity(this) instanceof BlockEntitySkull blockEntity) {
+            return blockEntity;
+        }
+        return null;
     }
 }

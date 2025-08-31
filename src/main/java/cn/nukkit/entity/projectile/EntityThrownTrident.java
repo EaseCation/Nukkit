@@ -126,8 +126,8 @@ public class EntityThrownTrident extends EntityProjectile {
             if (this.shootingEntity == null) {
                 return;
             }
-            Enchantment loyaltyEnchant = this.trident.getEnchantment(Enchantment.LOYALTY);
-            if (loyaltyEnchant != null && loyaltyEnchant.getLevel() >= 1) {
+            int loyaltyEnchant = this.trident.getEnchantmentLevel(Enchantment.LOYALTY);
+            if (loyaltyEnchant > 0) {
                 // TODO different ticks for different levels
                 this.loyaltyBackTick = 20;
             }

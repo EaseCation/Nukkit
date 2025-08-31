@@ -41,7 +41,7 @@ public class EntityPufferfish extends EntityWaterAnimal {
     }
 
     @Override
-    public void initEntity() {
+    protected void initEntity() {
         super.initEntity();
 
         dataProperties.putInt(DATA_VARIANT, namedTag.getInt("Variant", PUFFERFISH_VARIANT_NORMAL));

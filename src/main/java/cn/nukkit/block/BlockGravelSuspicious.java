@@ -23,4 +23,9 @@ public class BlockGravelSuspicious extends BlockBrushable {
     public int getBrushedBlockId() {
         return GRAVEL;
     }
+
+    @Override
+    public boolean isGravel() {
+        return true;
+    }
 }

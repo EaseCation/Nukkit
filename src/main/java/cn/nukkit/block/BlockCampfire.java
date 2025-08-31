@@ -152,15 +152,7 @@ public class BlockCampfire extends BlockTransparent implements Faceable {
 
     @Override
     public Item toItem(boolean addUserData) {
-        Item item = Item.get(ItemID.CAMPFIRE);
-        if (addUserData) {
-            BlockEntityCampfire blockEntity = getBlockEntity();
-            if (blockEntity != null) {
-                item.setCustomName(blockEntity.getName());
-                item.setRepairCost(blockEntity.getRepairCost());
-            }
-        }
-        return item;
+        return Item.get(ItemID.CAMPFIRE);
     }
 
     @Override

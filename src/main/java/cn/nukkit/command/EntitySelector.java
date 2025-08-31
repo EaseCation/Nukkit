@@ -26,6 +26,7 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.concurrent.ThreadLocalRandom;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -382,7 +383,7 @@ public final class EntitySelector {
 
         if (!selectorType.equalsIgnoreCase("p") && !selectorType.equalsIgnoreCase("a") && !selectorType.equalsIgnoreCase("n") && !selectorType.equalsIgnoreCase("e")) {
             if (selectorType.equalsIgnoreCase("r")) {
-                Collections.shuffle(matchingEntities);
+                Collections.shuffle(matchingEntities, ThreadLocalRandom.current());
             }
         } else {
             matchingEntities.sort((entity1, entity2) -> ComparisonChain.start().compare(entity1.distanceSquared(vec), entity2.distanceSquared(vec)).result());

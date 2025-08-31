@@ -5,6 +5,7 @@ import cn.nukkit.item.Item;
 import cn.nukkit.level.Level;
 import cn.nukkit.level.particle.BoneMealParticle;
 import cn.nukkit.math.BlockFace;
+import cn.nukkit.network.protocol.LevelSoundEventPacket;
 
 import java.util.concurrent.ThreadLocalRandom;
 
@@ -45,6 +46,19 @@ public abstract class BlockNetherFungus extends BlockFlowable {
             level.addParticle(new BoneMealParticle(this));
             return true;
         }
+
+        if (item.is(getItemId(SNOW_LAYER))) {
+            level.setExtraBlock(this, this, true, false);
+            level.setBlock(this, get(SNOW_LAYER, BlockSnowLayer.COVERED_BIT), true);
+
+            if (player != null && player.isSurvivalLike()) {
+                item.pop();
+            }
+
+            level.addLevelSoundEvent(this, LevelSoundEventPacket.SOUND_PLACE, getFullId(SNOW_LAYER, BlockSnowLayer.COVERED_BIT));
+            return true;
+        }
+
         return false;
     }
 
@@ -77,13 +91,18 @@ public abstract class BlockNetherFungus extends BlockFlowable {
     }
 
     @Override
+    public boolean isPottable() {
+        return true;
+    }
+
+    @Override
     public boolean isVegetation() {
         return true;
     }
 
     protected boolean canSurvive() {
         int id = down().getId();
-        return id == GRASS_BLOCK || id == DIRT || id == PODZOL || id == MYCELIUM || id == FARMLAND || id == DIRT_WITH_ROOTS || id == MOSS_BLOCK || id == PALE_MOSS_BLOCK || id == MUD || id == MUDDY_MANGROVE_ROOTS
+        return id == GRASS_BLOCK || id == DIRT || id == COARSE_DIRT || id == PODZOL || id == MYCELIUM || id == FARMLAND || id == DIRT_WITH_ROOTS || id == MOSS_BLOCK || id == PALE_MOSS_BLOCK || id == MUD || id == MUDDY_MANGROVE_ROOTS
                 || id == CRIMSON_NYLIUM || id == WARPED_NYLIUM || id == SOUL_SOIL;
     }
 

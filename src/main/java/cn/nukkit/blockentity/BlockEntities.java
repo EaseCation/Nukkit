@@ -82,6 +82,9 @@ public final class BlockEntities {
 
         registerBlockEntity(BlockEntityType.CHALKBOARD_BLOCK, CHALKBOARD_BLOCK, BlockEntityChalkboard.class, BlockEntityChalkboard::new, V1_21_50);
         registerBlockEntity(BlockEntityType.CREAKING_HEART, CREAKING_HEART, BlockEntityCreakingHeart.class, BlockEntityCreakingHeart::new, V1_21_50);
+
+        registerBlockEntity(BlockEntityType.COPPER_GOLEM_STATUE, COPPER_GOLEM_STATUE, BlockEntityCopperGolemStatue.class, BlockEntityCopperGolemStatue::new, V1_21_110);
+        registerBlockEntity(BlockEntityType.SHELF, SHELF, BlockEntityShelf.class, BlockEntityShelf::new, V1_21_110);
     }
 
     private static Class<? extends BlockEntity> registerBlockEntity(int type, String name, Class<? extends BlockEntity> clazz, BlockEntityFactory factory) {

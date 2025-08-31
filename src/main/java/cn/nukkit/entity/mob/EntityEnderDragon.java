@@ -40,7 +40,7 @@ public class EntityEnderDragon extends EntityMob {
     }
 
     @Override
-    public void initEntity() {
+    protected void initEntity() {
         super.initEntity();
         this.setMaxHealth(200);
         fireProof = true;

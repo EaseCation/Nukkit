@@ -100,6 +100,7 @@ public class ZippedResourcePack extends AbstractResourcePack {
 
                         byte[] data;
                         if (!"manifest.json".equalsIgnoreCase(name)
+                                && !"pack_manifest.json".equalsIgnoreCase(name)
                                 && !"pack_icon.png".equalsIgnoreCase(name)
                                 && !"bug_pack_icon.png".equalsIgnoreCase(name)) {
                             String token = generateToken(random);

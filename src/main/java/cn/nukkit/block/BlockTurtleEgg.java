@@ -2,8 +2,11 @@ package cn.nukkit.block;
 
 import cn.nukkit.Player;
 import cn.nukkit.entity.Entity;
+import cn.nukkit.entity.passive.EntityTurtle;
 import cn.nukkit.item.Item;
 import cn.nukkit.level.Level;
+import cn.nukkit.level.format.FullChunk;
+import cn.nukkit.level.particle.DestroyBlockParticle;
 import cn.nukkit.math.BlockFace;
 import cn.nukkit.math.Mth;
 import cn.nukkit.network.protocol.LevelSoundEventPacket;
@@ -169,17 +172,36 @@ public class BlockTurtleEgg extends BlockTransparent {
 
     @Override
     public int onUpdate(int type) {
-        //TODO: hatch
-        if (type == Level.BLOCK_UPDATE_RANDOM) {
-
-        }
-
         if (type == Level.BLOCK_UPDATE_SCHEDULED) {
+            ThreadLocalRandom random = ThreadLocalRandom.current();
+            int time = level.getTime();
+            if ((time >= 21600 && time < 22550 || random.nextInt(500) == 0) && down().isSand()) {
+                int hatchLevel = getCrackedState();
+                if (hatchLevel >= MAX_CRACKED) {
+                    level.addLevelSoundEvent(this, LevelSoundEventPacket.SOUND_BLOCK_TURTLE_EGG_HATCH);
 
-            level.scheduleRandomUpdate(this, ThreadLocalRandom.current().nextInt(750, 750 * 2));
+                    level.setBlock(this, get(AIR), true);
+
+                    FullChunk chunk = getChunk();
+                    for (int i = 0; i < getEggCount(); i++) {
+                        level.addParticle(new DestroyBlockParticle(this, this));
+
+                        new EntityTurtle(chunk, Entity.getDefaultNBT(add(0.5, 0, 0.5), null, random.nextInt(360), 0)
+                                .putBoolean("IsBaby", true)
+                                .putFloat("Scale", 0.16f))
+                                .spawnToAll();
+                    }
+                    return Level.BLOCK_UPDATE_NORMAL;
+                }
+
+                level.addLevelSoundEvent(this, LevelSoundEventPacket.SOUND_BLOCK_TURTLE_EGG_CRACK);
+
+                setCrackedState(hatchLevel + 1);
+                level.setBlock(this, this, true);
+            }
+            level.scheduleRandomUpdate(this, random.nextInt(750, 750 * 2));
             return type;
         }
-
         return 0;
     }
 

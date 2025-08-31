@@ -221,6 +221,11 @@ public class BlockBamboo extends BlockTransparent {
     }
 
     @Override
+    public boolean isPottable() {
+        return true;
+    }
+
+    @Override
     public boolean isVegetation() {
         return true;
     }
@@ -312,6 +317,6 @@ public class BlockBamboo extends BlockTransparent {
     }
 
     static boolean canBeSupportedBy(int id) {
-        return id == GRASS_BLOCK || id == DIRT || id == SAND || id == GRAVEL || id == MYCELIUM || id == PODZOL || id == DIRT_WITH_ROOTS || id == MUD || id == MUDDY_MANGROVE_ROOTS || id == SUSPICIOUS_SAND || id == SUSPICIOUS_GRAVEL;
+        return id == GRASS_BLOCK || id == DIRT || id == COARSE_DIRT || id == SAND || id == RED_SAND || id == GRAVEL || id == MYCELIUM || id == PODZOL || id == DIRT_WITH_ROOTS || id == MUD || id == MUDDY_MANGROVE_ROOTS || id == SUSPICIOUS_SAND || id == SUSPICIOUS_GRAVEL;
     }
 }

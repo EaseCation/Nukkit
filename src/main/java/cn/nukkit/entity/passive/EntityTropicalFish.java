@@ -49,7 +49,7 @@ public class EntityTropicalFish extends EntityWaterAnimal {
     }
 
     @Override
-    public void initEntity() {
+    protected void initEntity() {
         super.initEntity();
 
         int variant;

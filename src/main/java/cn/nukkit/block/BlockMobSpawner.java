@@ -84,15 +84,7 @@ public class BlockMobSpawner extends BlockSolid {
 
     @Override
     public Item toItem(boolean addUserData) {
-        Item item = Item.get(getItemId());
-        if (addUserData) {
-            BlockEntity blockEntity = getBlockEntity();
-            if (blockEntity != null) {
-                item.setCustomName(blockEntity.getName());
-                item.setRepairCost(blockEntity.getRepairCost());
-            }
-        }
-        return item;
+        return Item.get(getItemId());
     }
 
     @Override

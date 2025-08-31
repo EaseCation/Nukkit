@@ -26,6 +26,7 @@ public interface BlockStateIntegerValues {
     int MAX_LIQUID_DEPTH = 15;
     int MAX_MOISTURIZED_AMOUNT = 7;
     int MAX_MULTI_FACE_DIRECTION_BITS = 63;
+    int MAX_POWERED_SHELF_TYPE = 3;
     int MAX_PROPAGULE_STAGE = 4;
     int MAX_RAIL_DIRECTION = 9;
     int MAX_REDSTONE_SIGNAL = 15;

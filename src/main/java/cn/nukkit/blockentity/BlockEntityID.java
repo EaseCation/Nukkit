@@ -56,4 +56,6 @@ public interface BlockEntityID {
     String TRIAL_SPAWNER = "TrialSpawner";
     String VAULT = "Vault";
     String CREAKING_HEART = "CreakingHeart";
+    String COPPER_GOLEM_STATUE = "CopperGolemStatue";
+    String SHELF = "Shelf";
 }

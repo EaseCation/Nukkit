@@ -6,12 +6,15 @@ import cn.nukkit.nbt.tag.CompoundTag;
 
 //TODO
 public class BlockEntityCreakingHeart extends BlockEntity {
+    private int cooldown;
+
     public BlockEntityCreakingHeart(FullChunk chunk, CompoundTag nbt) {
         super(chunk, nbt);
     }
 
     @Override
     protected void initBlockEntity() {
+        cooldown = namedTag.getInt("Cooldown", 20);
 
         super.initBlockEntity();
     }
@@ -20,6 +23,7 @@ public class BlockEntityCreakingHeart extends BlockEntity {
     public void saveNBT() {
         super.saveNBT();
 
+        namedTag.putInt("Cooldown", cooldown);
     }
 
     @Override

@@ -3,9 +3,12 @@ package cn.nukkit.level.generator.object;
 import cn.nukkit.block.Block;
 import cn.nukkit.block.BlockTallGrass;
 import cn.nukkit.level.Level;
+import cn.nukkit.level.biome.BiomeID;
 import cn.nukkit.math.BlockVector3;
 
 import java.util.concurrent.ThreadLocalRandom;
+
+import static cn.nukkit.GameVersion.*;
 
 /**
  * author: ItsLucas
@@ -13,6 +16,8 @@ import java.util.concurrent.ThreadLocalRandom;
  */
 public class ObjectTallGrass {
     public static void growGrass(Level level, BlockVector3 pos) {
+        boolean wildflowers = hasWildflowers(level, pos);
+
         ThreadLocalRandom random = ThreadLocalRandom.current();
         for (int i = 16; i < 64; ++i) {
             int num = 0;
@@ -27,11 +32,15 @@ public class ObjectTallGrass {
                         int randomValue = random.nextInt(8);
                         if (randomValue == 0) {
                             //TODO: biomes have specific flower types that can grow in them
-                            int flowerType = random.nextInt(12);
-                            if (flowerType == 11) {
-                                level.setBlock(x, y, z, Block.get(Block.DANDELION));
+                            if (wildflowers) {
+                                level.setBlock(x, y, z, Block.get(Block.WILDFLOWERS, random.nextInt(4) | random.nextInt(4) << 3));
                             } else {
-                                level.setBlock(x, y, z, Block.get(Block.RED_FLOWER, flowerType));
+                                int flowerType = random.nextInt(12);
+                                if (flowerType == 11) {
+                                    level.setBlock(x, y, z, Block.get(Block.DANDELION));
+                                } else {
+                                    level.setBlock(x, y, z, Block.get(Block.RED_FLOWER, flowerType));
+                                }
                             }
                         } else {
                             level.setBlock(x, y, z, Block.get(Block.SHORT_GRASS, randomValue == 2 ? BlockTallGrass.TYPE_FERN : BlockTallGrass.TYPE_GRASS));
@@ -55,5 +64,15 @@ public class ObjectTallGrass {
                 ++num;
             }
         }
+    }
+
+    private static boolean hasWildflowers(Level level, BlockVector3 pos) {
+        if (!V1_21_70.isAvailable()) {
+            return false;
+        }
+        int biome = level.getBiomeId(pos.x, pos.y, pos.z);
+        return biome == BiomeID.BIRCH_FOREST || biome == BiomeID.BIRCH_FOREST_MUTATED
+                || biome == BiomeID.BIRCH_FOREST_HILLS || biome == BiomeID.BIRCH_FOREST_HILLS_MUTATED
+                || biome == BiomeID.MEADOW;
     }
 }

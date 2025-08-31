@@ -249,7 +249,7 @@ public class BlockSeagrass extends BlockTransparent {
                 z += random.nextInt(-1, 2);
                 Block block = level.getBlock(x, y - 1, z);
                 int id = block.getId();
-                if (id != DIRT && id != SAND && id != GRAVEL && id != CLAY) {
+                if (id != DIRT && id != COARSE_DIRT && id != SAND && id != RED_SAND && id != GRAVEL && id != CLAY) {
                     continue TRY;
                 }
             }

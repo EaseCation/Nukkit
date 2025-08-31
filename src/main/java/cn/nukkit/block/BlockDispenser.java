@@ -70,7 +70,14 @@ public class BlockDispenser extends BlockSolid implements Faceable {
 
     @Override
     public Item toItem(boolean addUserData) {
-        return Item.get(this.getItemId());
+        Item item = Item.get(this.getItemId());
+        if (addUserData) {
+            if (getBlockEntity() instanceof BlockEntity blockEntity) {
+                item.setCustomName(blockEntity.getName());
+                item.setRepairCost(blockEntity.getRepairCost());
+            }
+        }
+        return item;
     }
 
     @Override

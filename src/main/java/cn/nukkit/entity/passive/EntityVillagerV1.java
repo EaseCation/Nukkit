@@ -46,7 +46,7 @@ public class EntityVillagerV1 extends EntityCreature implements EntityAgeable {
     }
 
     @Override
-    public void initEntity() {
+    protected void initEntity() {
         super.initEntity();
         this.setMaxHealth(20);
 

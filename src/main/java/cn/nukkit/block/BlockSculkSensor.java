@@ -202,14 +202,14 @@ public class BlockSculkSensor extends BlockTransparent {
         return isActive() ? 1 : 0;
     }
 
-    private BlockEntitySculkSensor createBlockEntity(@Nullable Item item) {
+    protected BlockEntitySculkSensor createBlockEntity(@Nullable Item item) {
         CompoundTag nbt = BlockEntity.getDefaultCompound(this, BlockEntity.SCULK_SENSOR);
 
         return (BlockEntitySculkSensor) BlockEntities.createBlockEntity(BlockEntityType.SCULK_SENSOR, getChunk(), nbt);
     }
 
     @Nullable
-    private BlockEntitySculkSensor getBlockEntity() {
+    protected BlockEntitySculkSensor getBlockEntity() {
         if (level == null) {
             return null;
         }

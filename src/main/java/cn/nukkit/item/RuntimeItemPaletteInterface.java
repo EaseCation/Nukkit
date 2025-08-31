@@ -20,6 +20,9 @@ public interface RuntimeItemPaletteInterface {
 
     @ToString
     class Entry {
+        public static final int VERSION_LEGACY = 0;
+        public static final int VERSION_DATA_DRIVEN = 1;
+        public static final int VERSION_NONE = 2;
 
         public final String name;
         public final int id;
@@ -35,7 +38,7 @@ public interface RuntimeItemPaletteInterface {
         }
 
         public Entry(String name, int id, @Nullable Integer oldId, @Nullable Integer oldData, boolean component) {
-            this(name, id, oldId, oldData, component, 2);
+            this(name, id, oldId, oldData, component, VERSION_NONE);
         }
 
         public Entry(String name, int id, @Nullable Integer oldId, @Nullable Integer oldData, boolean component, int version) {

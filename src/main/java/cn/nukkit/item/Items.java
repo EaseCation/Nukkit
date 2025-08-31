@@ -486,7 +486,7 @@ public final class Items {
         registerNewItem(ItemNames.RED_HARNESS, RED_HARNESS, ItemHarnessRed.class, ItemHarnessRed::new, V1_21_90);
         registerNewItem(ItemNames.WHITE_HARNESS, WHITE_HARNESS, ItemHarnessWhite.class, ItemHarnessWhite::new, V1_21_90);
         registerNewItem(ItemNames.YELLOW_HARNESS, YELLOW_HARNESS, ItemHarnessYellow.class, ItemHarnessYellow::new, V1_21_90);
-/*
+
         registerNewItem(ItemNames.COPPER_NUGGET, COPPER_NUGGET, ItemNuggetCopper.class, ItemNuggetCopper::new, V1_21_110);
         registerNewItem(ItemNames.COPPER_AXE, COPPER_AXE, ItemAxeCopper.class, ItemAxeCopper::new, V1_21_110);
         registerNewItem(ItemNames.COPPER_HOE, COPPER_HOE, ItemHoeCopper.class, ItemHoeCopper::new, V1_21_110);
@@ -497,7 +497,8 @@ public final class Items {
         registerNewItem(ItemNames.COPPER_CHESTPLATE, COPPER_CHESTPLATE, ItemChestplateCopper.class, ItemChestplateCopper::new, V1_21_110);
         registerNewItem(ItemNames.COPPER_LEGGINGS, COPPER_LEGGINGS, ItemLeggingsCopper.class, ItemLeggingsCopper::new, V1_21_110);
         registerNewItem(ItemNames.COPPER_BOOTS, COPPER_BOOTS, ItemBootsCopper.class, ItemBootsCopper::new, V1_21_110);
-*/
+        registerNewItem(ItemNames.COPPER_HORSE_ARMOR, COPPER_HORSE_ARMOR, ItemHorseArmorCopper.class, ItemHorseArmorCopper::new, V1_21_110);
+
     }
 
     @SuppressWarnings("deprecation")
@@ -560,6 +561,8 @@ public final class Items {
         registerAlias(ItemNames.RECORD_TEARS, ItemNames.MUSIC_DISC_TEARS, true, V1_21_90);
 
         registerAlias(ItemNames.RECORD_LAVA_CHICKEN, ItemNames.MUSIC_DISC_LAVA_CHICKEN, true, V1_21_93);
+
+        registerAlias(ItemNames.CHAIN, ItemBlockNames.IRON_CHAIN, V1_21_110);
 
     }
 
@@ -702,6 +705,9 @@ public final class Items {
         registerComplexAlias(ItemNames.ARMADILLO_SPAWN_EGG, SPAWN_EGG, EntityID.ARMADILLO, V1_20_80);
         registerComplexAlias(ItemNames.BREEZE_SPAWN_EGG, SPAWN_EGG, EntityID.BREEZE, V1_21_0);
         registerComplexAlias(ItemNames.BOGGED_SPAWN_EGG, SPAWN_EGG, EntityID.BOGGED, V1_21_0);
+        registerComplexAlias(ItemNames.CREAKING_SPAWN_EGG, SPAWN_EGG, EntityID.CREAKING, V1_21_50);
+        registerComplexAlias(ItemNames.HAPPY_GHAST_SPAWN_EGG, SPAWN_EGG, EntityID.HAPPY_GHAST, V1_21_90);
+        registerComplexAlias(ItemNames.COPPER_GOLEM_SPAWN_EGG, SPAWN_EGG, EntityID.COPPER_GOLEM, V1_21_110);
 
         registerComplexAlias(ItemBlockNames.SKELETON_SKULL, SKULL, ItemSkull.HEAD_SKELETON, V1_21_40);
         registerComplexAlias(ItemBlockNames.WITHER_SKELETON_SKULL, SKULL, ItemSkull.HEAD_WITHER_SKELETON, V1_21_40);
@@ -904,6 +910,7 @@ public final class Items {
                         .putBoolean("foil", false)
                         .putInt("frame_count", 1)
                         .putBoolean("hand_equipped", false)
+                        .putByte("hidden_in_commands", 2)
                         .putBoolean("ignores_permission", false)
                         .putBoolean("liquid_clipped", false)
                         .putInt("max_stack_size", 64)

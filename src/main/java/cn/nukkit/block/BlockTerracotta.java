@@ -58,4 +58,9 @@ public class BlockTerracotta extends BlockSolid {
     public float getFurnaceXpMultiplier() {
         return 0.35f;
     }
+
+    @Override
+    public boolean isTerracotta() {
+        return true;
+    }
 }

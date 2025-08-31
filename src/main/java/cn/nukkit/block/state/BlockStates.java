@@ -109,6 +109,7 @@ public final class BlockStates {
     public static final EnumBlockState<PillarAxisState> PILLAR_AXIS = register(new EnumBlockState<>(BlockStateNames.PILLAR_AXIS, PillarAxisState.values()));
     public static final EnumBlockState<PortalAxisState> PORTAL_AXIS = register(new EnumBlockState<>(BlockStateNames.PORTAL_AXIS, PortalAxisState.values()));
     public static final BooleanBlockState POWERED_BIT = register(new BooleanBlockState(BlockStateNames.POWERED_BIT));
+    public static final IntegerBlockState POWERED_SHELF_TYPE = register(new IntegerBlockState(BlockStateNames.POWERED_SHELF_TYPE, MAX_POWERED_SHELF_TYPE + 1));
     public static final EnumBlockState<PrismarineBlockTypeState> PRISMARINE_BLOCK_TYPE = register(new EnumBlockState<>(BlockStateNames.PRISMARINE_BLOCK_TYPE, PrismarineBlockTypeState.values()));
     public static final IntegerBlockState PROPAGULE_STAGE = register(new IntegerBlockState(BlockStateNames.PROPAGULE_STAGE, MAX_PROPAGULE_STAGE + 1));
     public static final BooleanBlockState RAIL_DATA_BIT = register(new BooleanBlockState(BlockStateNames.RAIL_DATA_BIT));

@@ -180,7 +180,11 @@ public interface EntityFlagID {
      * @since 1.21.90
      */
     int DATA_FLAG_BODY_ROTATION_ALWAYS_FOLLOWS_HEAD = 124;
-    int DATA_FLAG_UNDEFINED = 125;
+    /**
+     * @since 1.21.110
+     */
+    int DATA_FLAG_CAN_USE_VERTICAL_MOVEMENT_ACTION = 125;
+    int DATA_FLAG_UNDEFINED = 126;
 
 
     long NUKKIT_FLAG_VARIANT_BLOCK = 1L << 1;

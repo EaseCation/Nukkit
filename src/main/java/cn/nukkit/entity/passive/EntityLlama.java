@@ -75,7 +75,7 @@ public class EntityLlama extends EntityAnimal implements EntityInteractable, Ent
     }
 
     @Override
-    public void initEntity() {
+    protected void initEntity() {
         super.initEntity();
 
         dataProperties.putInt(DATA_MAX_STRENGTH, 5);

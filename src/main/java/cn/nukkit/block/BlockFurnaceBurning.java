@@ -138,7 +138,15 @@ public class BlockFurnaceBurning extends BlockSolid implements Faceable {
 
     @Override
     public Item toItem(boolean addUserData) {
-        return Item.get(FURNACE);
+        Item item = Item.get(getItemId(FURNACE));
+        if (addUserData) {
+            BlockEntity blockEntity = getBlockEntity();
+            if (blockEntity != null) {
+                item.setCustomName(blockEntity.getName());
+                item.setRepairCost(blockEntity.getRepairCost());
+            }
+        }
+        return item;
     }
 
     @Override

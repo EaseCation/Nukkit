@@ -1,10 +1,13 @@
 package cn.nukkit.block;
 
 import cn.nukkit.Player;
+import cn.nukkit.entity.Entity;
+import cn.nukkit.entity.passive.EntitySniffer;
 import cn.nukkit.item.Item;
 import cn.nukkit.level.Level;
 import cn.nukkit.math.BlockFace;
 import cn.nukkit.network.protocol.LevelEventPacket;
+import cn.nukkit.network.protocol.LevelSoundEventPacket;
 import cn.nukkit.utils.BlockColor;
 
 import java.util.concurrent.ThreadLocalRandom;
@@ -95,10 +98,9 @@ public class BlockSnifferEgg extends BlockTransparent {
     @Override
     public int onUpdate(int type) {
         if (type == Level.BLOCK_UPDATE_SCHEDULED) {
-/*
             if (getDamage() < MAX_CRACKED) {
                 setDamage(getDamage() + 1);
-                level.setBlock(this, this, true, false);
+                level.setBlock(this, this, true);
 
                 level.addLevelEvent(this, LevelEventPacket.EVENT_PARTICLE_TURTLE_EGG);
                 level.addLevelSoundEvent(this, LevelSoundEventPacket.SOUND_SNIFFER_EGG_CRACK);
@@ -112,12 +114,11 @@ public class BlockSnifferEgg extends BlockTransparent {
 
             level.addLevelSoundEvent(this, LevelSoundEventPacket.SOUND_SNIFFER_EGG_HATCHED);
 
-            //TODO: hatch
+            new EntitySniffer(getChunk(), Entity.getDefaultNBT(add(0.5, 0, 0.5))
+                    .putBoolean("IsBaby", true)
+                    .putFloat("Scale", 0.45f))
+                    .spawnToAll();
             return Level.BLOCK_UPDATE_NORMAL;
-*/
-            int hatchTime = ThreadLocalRandom.current().nextInt(7200, 8800);
-            level.scheduleRandomUpdate(this, down().is(MOSS_BLOCK) ? hatchTime / 2 : hatchTime);
-            return type;
         }
         return 0;
     }

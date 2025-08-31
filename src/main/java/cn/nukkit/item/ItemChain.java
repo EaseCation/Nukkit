@@ -12,7 +12,7 @@ public class ItemChain extends Item {
     }
 
     public ItemChain(Integer meta, int count) {
-        super(CHAIN, meta, count, "Chain");
-        this.block = Block.get(Block.BLOCK_CHAIN);
+        super(CHAIN, meta, count, "Iron Chain");
+        this.block = Block.get(Block.IRON_CHAIN);
     }
 }

@@ -131,12 +131,12 @@ public class EntityFishingHook extends EntityProjectile {
         long target = this.getDataPropertyLong(DATA_TARGET_EID);
         if (target != 0) {
             Entity ent = this.level.getEntity(target);
-            if (ent == null || !ent.isAlive()) {
+            if (ent == null || !ent.isAlive() || ent instanceof Player player && player.isSpectator()) {
                 this.setTarget(0);
             } else {
                 this.setPosition(new Vector3(ent.x, ent.y + (getHeight() * 0.75f), ent.z));
+                return true;
             }
-            return false;
         }
 
         boolean updateGravity = false;
@@ -507,9 +507,9 @@ public class EntityFishingHook extends EntityProjectile {
 
     public void checkLure() {
         if (rod != null) {
-            Enchantment ench = rod.getEnchantment(Enchantment.LURE);
-            if (ench != null) {
-                this.waitChance = 120 - (25 * ench.getLevel());
+            int lure = rod.getEnchantmentLevel(Enchantment.LURE);
+            if (lure > 0) {
+                this.waitChance = Math.max(120 - 25 * lure, 0);
             }
         }
     }

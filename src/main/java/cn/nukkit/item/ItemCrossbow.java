@@ -146,7 +146,7 @@ public class ItemCrossbow extends ItemTool {
     public void onUsing(Player player, int ticksUsed) {
         int maxUseDuration = getUseDuration();
 
-        int quickChargeLevel = getEnchantmentLevel(Enchantment.QUICK_CHARGE);
+        int quickChargeLevel = getValidEnchantmentLevel(Enchantment.QUICK_CHARGE);
         boolean quickCharge = quickChargeLevel > 0;
         if (quickCharge) {
             maxUseDuration -= 5 * quickChargeLevel;
@@ -169,7 +169,7 @@ public class ItemCrossbow extends ItemTool {
     public boolean onUse(Player player, int ticksUsed) {
         int maxUseDuration = getUseDuration();
 
-        int quickChargeLevel = getEnchantmentLevel(Enchantment.QUICK_CHARGE);
+        int quickChargeLevel = getValidEnchantmentLevel(Enchantment.QUICK_CHARGE);
         boolean quickCharge = quickChargeLevel > 0;
         if (quickCharge) {
             maxUseDuration -= 5 * quickChargeLevel;

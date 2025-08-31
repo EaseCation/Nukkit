@@ -168,4 +168,9 @@ public class BlockMoss extends BlockSolid {
     public int getCompostableChance() {
         return 65;
     }
+
+    @Override
+    public boolean isDirt() {
+        return true;
+    }
 }

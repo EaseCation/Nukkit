@@ -11,7 +11,7 @@ import cn.nukkit.nbt.tag.StringTag;
 
 import javax.annotation.Nullable;
 
-public class BlockEntityDecoratedPot extends BlockEntitySpawnable {
+public class BlockEntityDecoratedPot extends BlockEntitySpawnable implements HopperInteractable {
     public static final int ANIMATION_NONE = 0;
     public static final int ANIMATION_INSERT_FAIL = 1;
     public static final int ANIMATION_INSERT_SUCCESS = 2;

@@ -99,10 +99,14 @@ public class BlockSnowLayer extends BlockFallable {
                 if (extra.canContainSnow()) {
                     below = down();
                     int id = below.getId();
-                    if (id != GRASS_BLOCK && id != DIRT && id != FARMLAND && id != MYCELIUM && id != PODZOL && id != DIRT_WITH_ROOTS && id != MOSS_BLOCK && id != PALE_MOSS_BLOCK && id != MUD && id != MUDDY_MANGROVE_ROOTS) {
+                    int extraId = extra.getId();
+                    if (id != GRASS_BLOCK && id != DIRT && id != FARMLAND && id != MYCELIUM && id != PODZOL && id != DIRT_WITH_ROOTS && id != MOSS_BLOCK && id != PALE_MOSS_BLOCK && id != MUD && id != MUDDY_MANGROVE_ROOTS
+                            && (extraId != SHORT_DRY_GRASS && extraId != TALL_DRY_GRASS || id != SAND && id != RED_SAND && id != SUSPICIOUS_SAND && !below.isTerracotta())) {
                         level.setExtraBlock(this, Blocks.air(), true, false);
                         if (level.gameRules.getBoolean(GameRule.DO_TILE_DROPS)) {
-                            level.dropItem(this, extra.toItem(true));
+                            for (Item drop : extra.getDrops(Item.get(AIR))) {
+                                level.dropItem(this, drop);
+                            }
                         }
 
                         setDamage(getDamage() & ~COVERED_BIT);
@@ -124,7 +128,7 @@ public class BlockSnowLayer extends BlockFallable {
             }
 
             if (removeCovered) {
-                level.setExtraBlock(this, this, true, false);
+                level.setBlock(this, this, true, false);
                 return type;
             }
         } else if (type == Level.BLOCK_UPDATE_RANDOM) {
@@ -132,7 +136,11 @@ public class BlockSnowLayer extends BlockFallable {
                 BlockFadeEvent event = new BlockFadeEvent(this, (this.getDamage() & HEIGHT_MASK) > 0 ? get(SNOW_LAYER, this.getDamage() - 1) : get(AIR));
                 level.getServer().getPluginManager().callEvent(event);
                 if (!event.isCancelled()) {
-                    level.setBlock(this, event.getNewState(), true);
+                    Block newBlock = event.getNewState();
+                    if (newBlock.isAir() && isCovered()) {
+                        newBlock = level.getExtraBlock(this);
+                    }
+                    level.setBlock(this, newBlock, true);
                     return Level.BLOCK_UPDATE_NORMAL;
                 }
             }

@@ -119,4 +119,9 @@ public class BlockDirt extends BlockSolid {
     public BlockColor getColor() {
         return BlockColor.DIRT_BLOCK_COLOR;
     }
+
+    @Override
+    public boolean isDirt() {
+        return true;
+    }
 }

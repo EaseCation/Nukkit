@@ -989,8 +989,12 @@ public class BinaryStream {
     }
 
     public void putGameRules(GameRules gameRules) {
+        putGameRules(gameRules, true);
+    }
+
+    public void putGameRules(GameRules gameRules, boolean network) {
         if (this.helper != null) {
-            this.helper.putGameRules(this, gameRules);
+            this.helper.putGameRules(this, gameRules, network);
             return;
         }
 
@@ -1003,7 +1007,7 @@ public class BinaryStream {
         this.putUnsignedVarInt(rules.size());
         rules.forEach((gameRule, value) -> {
             putString(gameRule.getBedrockName());
-            value.write(this);
+            value.write(this, network);
         });
     }
 
@@ -1251,7 +1255,7 @@ public class BinaryStream {
             return stream.getSkinV2();
         }
 
-        public void putGameRules(BinaryStream stream, GameRules gameRules) {
+        public void putGameRules(BinaryStream stream, GameRules gameRules, boolean network) {
             if (gameRules == null) {
                 stream.putUnsignedVarInt(0);
                 return;
@@ -1261,7 +1265,7 @@ public class BinaryStream {
             stream.putUnsignedVarInt(rules.size());
             rules.forEach((gameRule, value) -> {
                 stream.putString(gameRule.getBedrockName());
-                value.write(stream);
+                value.write(stream, network);
             });
         }
 

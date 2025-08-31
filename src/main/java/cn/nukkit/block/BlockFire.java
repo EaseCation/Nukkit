@@ -181,8 +181,12 @@ public class BlockFire extends BlockFlowable {
                                     }
 
                                     Block block = this.getLevel().getBlock(x, y, z);
-                                    int chance = this.getChanceOfNeighborsEncouragingFire(block);
+                                    Block extra = level.getExtraBlock(x, y, z);
+                                    if (extra.isWater()) {
+                                        continue;
+                                    }
 
+                                    int chance = this.getChanceOfNeighborsEncouragingFire(block);
                                     if (chance > 0) {
                                         int t = (chance + 40 + this.getLevel().getServer().getDifficulty() * 7) / (meta + 30);
 
@@ -199,6 +203,9 @@ public class BlockFire extends BlockFlowable {
                                             this.level.getServer().getPluginManager().callEvent(e);
 
                                             if (!e.isCancelled()) {
+                                                if (!extra.isAir()) {
+                                                    level.setExtraBlock(x, y, z, get(AIR), true, false);
+                                                }
                                                 this.getLevel().setBlock(block, Block.get(BlockID.FIRE, damage), true);
                                                 this.getLevel().scheduleRandomUpdate(block, this.tickRate());
                                             }
@@ -218,6 +225,11 @@ public class BlockFire extends BlockFlowable {
     private void tryToCatchBlockOnFire(Block block, int bound, int damage) {
         BlockCampfire campfire = block.isCampfire() ? (BlockCampfire) block : null;
         if (campfire != null && !campfire.isExtinguished()) {
+            return;
+        }
+
+        Block extra = level.getExtraBlock(block);
+        if (extra.isWater()) {
             return;
         }
 
@@ -245,6 +257,9 @@ public class BlockFire extends BlockFlowable {
                 this.getLevel().getServer().getPluginManager().callEvent(ev);
 
                 if (!ev.isCancelled()) {
+                    if (!extra.isAir()) {
+                        level.setExtraBlock(extra, get(AIR), true, false);
+                    }
                     this.getLevel().setBlock(block, Block.get(BlockID.AIR), true);
                 }
             }
@@ -272,7 +287,11 @@ public class BlockFire extends BlockFlowable {
 
     private boolean canNeighborBurn() {
         for (BlockFace face : BlockFace.getValues()) {
-            if (this.getSide(face).getBurnChance() > 0) {
+            Block block = this.getSide(face);
+            if (block.getBurnChance() > 0) {
+                if (block.canContainWater() && level.getExtraBlock(block).isWater()) {
+                    continue;
+                }
                 return true;
             }
         }
@@ -323,6 +342,11 @@ public class BlockFire extends BlockFlowable {
             return true;
         }
 
+        Block extra = target.level.getExtraBlock(target);
+        if (extra.isWater()) {
+            return false;
+        }
+
         boolean soulFire = id == SOUL_SAND || id == SOUL_SOIL;
         BlockFire fire = (BlockFire) (soulFire ? get(SOUL_FIRE) : get(FIRE, fireAge));
         fire.position(target);
@@ -337,6 +361,9 @@ public class BlockFire extends BlockFlowable {
             return false;
         }
 
+        if (!extra.isAir()) {
+            target.level.setExtraBlock(extra, get(AIR), true, false);
+        }
         target.level.setBlock(target, fire, true);
 
         if (!soulFire) {

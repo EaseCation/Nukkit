@@ -95,7 +95,7 @@ public class BlockDripleafSmall extends BlockTransparent implements Faceable {
         }
 
         int id = down().getId();
-        if (id != MOSS_BLOCK && id != PALE_MOSS_BLOCK && id != CLAY && (!block.isWater() || id != GRASS_BLOCK && id != DIRT && id != MYCELIUM && id != PODZOL && id != FARMLAND && id != DIRT_WITH_ROOTS && id != MUD && id != MUDDY_MANGROVE_ROOTS)) {
+        if (id != MOSS_BLOCK && id != PALE_MOSS_BLOCK && id != CLAY && (!block.isWater() || id != GRASS_BLOCK && id != DIRT && id != COARSE_DIRT && id != MYCELIUM && id != PODZOL && id != FARMLAND && id != DIRT_WITH_ROOTS && id != MUD && id != MUDDY_MANGROVE_ROOTS)) {
             return false;
         }
 
@@ -300,7 +300,7 @@ public class BlockDripleafSmall extends BlockTransparent implements Faceable {
         if (!level.getExtraBlock(this).isWater()) {
             return false;
         }
-        return id == GRASS_BLOCK || id == DIRT || id == MYCELIUM || id == PODZOL || id == FARMLAND || id == DIRT_WITH_ROOTS || id == MUD || id == MUDDY_MANGROVE_ROOTS;
+        return id == GRASS_BLOCK || id == DIRT || id == COARSE_DIRT || id == MYCELIUM || id == PODZOL || id == FARMLAND || id == DIRT_WITH_ROOTS || id == MUD || id == MUDDY_MANGROVE_ROOTS;
     }
 
     public boolean isUpper() {

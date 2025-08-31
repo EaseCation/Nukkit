@@ -186,6 +186,6 @@ public class BlockSugarcane extends BlockFlowable {
     }
 
     private boolean canSurvive(int id) {
-        return id == GRASS_BLOCK || id == DIRT || id == SAND || id == PODZOL || id == MYCELIUM || id == DIRT_WITH_ROOTS || id == MOSS_BLOCK || id == PALE_MOSS_BLOCK || id == MUD || id == MUDDY_MANGROVE_ROOTS || id == SUSPICIOUS_SAND;
+        return id == GRASS_BLOCK || id == DIRT || id == COARSE_DIRT || id == SAND || id == RED_SAND || id == PODZOL || id == MYCELIUM || id == DIRT_WITH_ROOTS || id == MOSS_BLOCK || id == PALE_MOSS_BLOCK || id == MUD || id == MUDDY_MANGROVE_ROOTS || id == SUSPICIOUS_SAND;
     }
 }

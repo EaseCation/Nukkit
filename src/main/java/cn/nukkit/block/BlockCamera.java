@@ -1,5 +1,6 @@
 package cn.nukkit.block;
 
+import cn.nukkit.item.Item;
 import cn.nukkit.utils.BlockColor;
 
 public class BlockCamera extends BlockSolid {
@@ -25,6 +26,11 @@ public class BlockCamera extends BlockSolid {
     @Override
     public float getResistance() {
         return 0;
+    }
+
+    @Override
+    public Item toItem(boolean addUserData) {
+        return Item.get(Item.CAMERA);
     }
 
     @Override

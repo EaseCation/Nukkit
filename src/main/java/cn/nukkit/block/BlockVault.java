@@ -82,7 +82,12 @@ public class BlockVault extends BlockTransparent implements Faceable {
     @Override
     public boolean place(Item item, Block block, Block target, BlockFace face, float fx, float fy, float fz, Player player) {
         setDamage(player != null ? player.getDirection().getOpposite().getHorizontalIndex() : 0);
-        return super.place(item, block, target, face, fx, fy, fz, player);
+
+        if (!super.place(item, block, target, face, fx, fy, fz, player)) {
+            return false;
+        }
+        createBlockEntity(item);
+        return true;
     }
 
     @Override

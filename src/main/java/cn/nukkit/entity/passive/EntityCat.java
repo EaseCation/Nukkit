@@ -53,7 +53,7 @@ public class EntityCat extends EntityAnimal {
     }
 
     @Override
-    public void initEntity() {
+    protected void initEntity() {
         super.initEntity();
 
         int variant;

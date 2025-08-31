@@ -143,7 +143,6 @@ public class Level implements ChunkManager, Metadatable {
         randomTickBlocks[Block.COCOA] = true;
         randomTickBlocks[Block.VINE] = true;
         randomTickBlocks[Block.BLOCK_KELP] = true;
-        randomTickBlocks[Block.TURTLE_EGG] = true;
         randomTickBlocks[Block.BAMBOO] = true;
         randomTickBlocks[Block.BAMBOO_SAPLING] = true;
         randomTickBlocks[Block.SWEET_BERRY_BUSH] = true;
@@ -207,6 +206,21 @@ public class Level implements ChunkManager, Metadatable {
         randomTickBlocks[Block.COPPER_CHEST] = true;
         randomTickBlocks[Block.EXPOSED_COPPER_CHEST] = true;
         randomTickBlocks[Block.WEATHERED_COPPER_CHEST] = true;
+        randomTickBlocks[Block.COPPER_GOLEM_STATUE] = true;
+        randomTickBlocks[Block.EXPOSED_COPPER_GOLEM_STATUE] = true;
+        randomTickBlocks[Block.WEATHERED_COPPER_GOLEM_STATUE] = true;
+        randomTickBlocks[Block.LIGHTNING_ROD] = true;
+        randomTickBlocks[Block.EXPOSED_LIGHTNING_ROD] = true;
+        randomTickBlocks[Block.WEATHERED_LIGHTNING_ROD] = true;
+        randomTickBlocks[Block.COPPER_BARS] = true;
+        randomTickBlocks[Block.EXPOSED_COPPER_BARS] = true;
+        randomTickBlocks[Block.WEATHERED_COPPER_BARS] = true;
+        randomTickBlocks[Block.COPPER_CHAIN] = true;
+        randomTickBlocks[Block.EXPOSED_COPPER_CHAIN] = true;
+        randomTickBlocks[Block.WEATHERED_COPPER_CHAIN] = true;
+        randomTickBlocks[Block.COPPER_LANTERN] = true;
+        randomTickBlocks[Block.EXPOSED_COPPER_LANTERN] = true;
+        randomTickBlocks[Block.WEATHERED_COPPER_LANTERN] = true;
     }
 
     /**
@@ -1980,17 +1994,21 @@ public class Level implements ChunkManager, Metadatable {
     }
 
     public boolean isFullBlock(Vector3 pos) {
-        AxisAlignedBB bb;
-        if (pos instanceof Block) {
-            if (((Block) pos).isSolid()) {
-                return true;
-            }
-            bb = ((Block) pos).getBoundingBox();
+        Block block;
+        if (pos instanceof Block b) {
+            block = b;
         } else {
-            bb = this.getBlock(pos).getBoundingBox();
+            block = this.getBlock(pos);
         }
 
-        return bb != null && bb.getAverageEdgeLength() >= 1;
+        if (block.canPassThrough()) {
+            return false;
+        }
+        if (block.isSolid()) {
+            return true;
+        }
+        AxisAlignedBB bb = block.getBoundingBox();
+        return bb != null && bb.getAverageEdgeLength() > 0.99;
     }
 
     /**
@@ -2370,12 +2388,7 @@ public class Level implements ChunkManager, Metadatable {
         } else {
             fullState = 0;
         }
-        Block block = Block.fromFullId(fullState);
-        block.x = x;
-        block.y = y;
-        block.z = z;
-        block.level = this;
-        return block;
+        return Block.get(fullState, this, x, y, z);
     }
 
     public void updateAllLight(Vector3 pos) {
@@ -2809,7 +2822,7 @@ public class Level implements ChunkManager, Metadatable {
     }
 
     public Item useBreakOn(Vector3 vector, @Nullable BlockFace face, @Nullable Item item, @Nullable Player player, boolean createParticles) {
-        if (player != null && player.getGamemode() > 2) {
+        if (player != null && player.isSpectator()) {
             return null;
         }
         Block target = this.getBlock(vector);
@@ -2992,7 +3005,7 @@ public class Level implements ChunkManager, Metadatable {
             PlayerInteractEvent ev = new PlayerInteractEvent(player, item, target, face,
                     target.getId() == BlockID.AIR ? Action.RIGHT_CLICK_AIR : Action.RIGHT_CLICK_BLOCK);
 
-            if (player.getGamemode() > 2) {
+            if (player.isSpectator()) {
                 ev.setCancelled();
             }
 
@@ -4284,27 +4297,26 @@ public class Level implements ChunkManager, Metadatable {
             int x = v.x & 0x0f;
             int z = v.z & 0x0f;
             if (chunk != null && chunk.isGenerated()) {
-                int y = Mth.clamp(Math.min(chunk.getHighestBlockAt(x, z), v.y), heightRange.getMinY() + 1, heightRange.getMaxY() - 1);
-                boolean wasAir = chunk.getBlockId(0, x, y + 1, z) == Block.AIR;
+                int y = Mth.clamp(v.y, heightRange.getMinY() + 1, heightRange.getMaxY() - 1);
+                Block belowBlock = Block.get(chunk.getFullBlock(0, x, y - 1, z), this, v.x, y - 1, v.z);
+                boolean wasAir = !this.isFullBlock(belowBlock);
                 for (; y > heightRange.getMinY(); --y) {
-                    int b = chunk.getFullBlock(0, x, y, z);
-                    Block block = Block.fromFullId(b);
-                    if (this.isFullBlock(block)) {
+                    Block block = Block.get(chunk.getFullBlock(0, x, y, z), this, v.x, y, v.z);
+                    if (block.isLiquid() || block.canProvideSupport(BlockFace.UP) || this.isFullBlock(block)
+                            || block.canContainWater() && Block.get(chunk.getFullBlock(1, x, y, z), this, v.x, y, v.z).isWater()) {
                         if (wasAir) {
                             y++;
-                            break;
                         }
+                        break;
                     } else {
                         wasAir = true;
                     }
                 }
 
                 for (; y >= heightRange.getMinY() && y <= heightRange.getMaxY(); y++) {
-                    int b = chunk.getFullBlock(0, x, y + 1, z);
-                    Block block = Block.fromFullId(b);
-                    if (!this.isFullBlock(block)) {
-                        b = chunk.getFullBlock(0, x, y, z);
-                        block = Block.fromFullId(b);
+                    Block aboveBlock = Block.get(chunk.getFullBlock(0, x, y + 1, z), this, v.x, y + 1, v.z);
+                    if (!this.isFullBlock(aboveBlock)) {
+                        Block block = Block.get(chunk.getFullBlock(0, x, y, z), this, v.x, y, v.z);
                         if (!this.isFullBlock(block)) {
                             return new Position(spawn.x, y, spawn.z, this);
                         }

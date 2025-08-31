@@ -1376,6 +1376,10 @@ public abstract class Block extends Position implements Metadatable, Cloneable, 
         return false;
     }
 
+    public boolean isPottable() {
+        return false;
+    }
+
     public final Block getBlock() {
         return this;
     }
@@ -1631,6 +1635,26 @@ public abstract class Block extends Position implements Metadatable, Cloneable, 
     }
 
     public boolean isShelf() {
+        return false;
+    }
+
+    public boolean isCopperGolemStatue() {
+        return false;
+    }
+
+    public boolean isDirt() {
+        return false;
+    }
+
+    public boolean isSand() {
+        return false;
+    }
+
+    public boolean isGravel() {
+        return false;
+    }
+
+    public boolean isTerracotta() {
         return false;
     }
 

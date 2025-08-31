@@ -249,7 +249,7 @@ public interface ProtocolInfo {
     int BATCH_PACKET = 0xfe; // 254
 
     int CAMERA_INSTRUCTION_PACKET = 0x12c; // 300 c
-    int COMPRESSED_BIOME_DEFINITION_LIST_PACKET = 0x12d; // 301 c
+    int COMPRESSED_BIOME_DEFINITION_LIST_PACKET = 0x12d; // 301 c d
     int TRIM_DATA_PACKET = 0x12e; // 302 c
     int OPEN_SIGN_PACKET = 0x12f; // 303 c
     int AGENT_ANIMATION_PACKET = 0x130; // 304 c
@@ -277,6 +277,7 @@ public interface ProtocolInfo {
     int PLAYER_LOCATION_PACKET = 0x146; // 326 c
     int CLIENTBOUND_CONTROL_SCHEME_SET_PACKET = 0x147; // 327 c
     int SERVER_SCRIPT_DEBUG_DRAWER_PACKET = 0x148; // 328 c
+    int SERVERBOUND_PACK_SETTING_CHANGE_PACKET = 0x149; // 329 s
 
 
     int COUNT = 1024;

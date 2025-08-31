@@ -8,6 +8,8 @@ import cn.nukkit.math.BlockFace;
 import cn.nukkit.math.SimpleAxisAlignedBB;
 import cn.nukkit.utils.BlockColor;
 
+import static cn.nukkit.GameVersion.*;
+
 public class BlockChain extends BlockRotatedPillar {
     public BlockChain() {
         this(0);
@@ -19,12 +21,12 @@ public class BlockChain extends BlockRotatedPillar {
 
     @Override
     public String getName() {
-        return "Chain";
+        return "Iron Chain";
     }
 
     @Override
     public int getId() {
-        return BLOCK_CHAIN;
+        return IRON_CHAIN;
     }
 
     @Override
@@ -65,6 +67,14 @@ public class BlockChain extends BlockRotatedPillar {
             };
         }
         return new Item[0];
+    }
+
+    @Override
+    public Item toItem(boolean addUserData) {
+        if (V1_21_100.isAvailable()) {
+            return super.toItem(addUserData);
+        }
+        return Item.get(Item.CHAIN);
     }
 
     @Override

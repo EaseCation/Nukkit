@@ -103,7 +103,7 @@ public abstract class EntityMinecartAbstract extends EntityVehicle {
     }
 
     @Override
-    public void initEntity() {
+    protected void initEntity() {
         super.initEntity();
 
         prepareDataProperty();

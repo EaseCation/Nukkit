@@ -77,20 +77,20 @@ public class ItemBow extends ItemTool {
 
         double damage = 2;
 
-        Enchantment bowDamage = this.getEnchantment(Enchantment.POWER);
-        if (bowDamage != null && bowDamage.getLevel() > 0) {
-            damage += (double) bowDamage.getLevel() * 0.5 + 0.5;
+        int bowDamage = this.getEnchantmentLevel(Enchantment.POWER);
+        if (bowDamage > 0) {
+            damage += (double) bowDamage * 0.5 + 0.5;
         }
 
-        Enchantment flameEnchant = this.getEnchantment(Enchantment.FLAME);
-        boolean flame = flameEnchant != null && flameEnchant.getLevel() > 0;
+        int flameEnchant = this.getEnchantmentLevel(Enchantment.FLAME);
+        boolean flame = flameEnchant > 0;
 
         float knockbackH = EntityDamageByEntityEvent.GLOBAL_KNOCKBACK_H;
         float knockbackV = EntityDamageByEntityEvent.GLOBAL_KNOCKBACK_V;
-        Enchantment knockbackEnchant = this.getEnchantment(Enchantment.PUNCH);
-        if (knockbackEnchant != null) {
-            knockbackH += 0.1 * knockbackEnchant.getLevel();
-            knockbackV += 0.1 * knockbackEnchant.getLevel();
+        int knockbackEnchant = this.getEnchantmentLevel(Enchantment.PUNCH);
+        if (knockbackEnchant > 0) {
+            knockbackH += 0.1f * knockbackEnchant;
+            knockbackV += 0.1f * knockbackEnchant;
         }
 
         ThreadLocalRandom random = ThreadLocalRandom.current();
@@ -133,8 +133,8 @@ public class ItemBow extends ItemTool {
             player.getOffhandInventory().sendContents(player);
         } else {
             entityShootBowEvent.getProjectile().setMotion(entityShootBowEvent.getProjectile().getMotion().multiply(entityShootBowEvent.getForce()));
-            Enchantment infinityEnchant = this.getEnchantment(Enchantment.INFINITY);
-            boolean infinity = infinityEnchant != null && infinityEnchant.getLevel() > 0 && matched.getDamage() == ItemArrow.NORMAL_ARROW;
+            int infinityEnchant = this.getEnchantmentLevel(Enchantment.INFINITY);
+            boolean infinity = infinityEnchant > 0 && matched.getDamage() == ItemArrow.NORMAL_ARROW;
             EntityProjectile projectile;
             if ((infinity || player.isCreative()) && (projectile = entityShootBowEvent.getProjectile()) instanceof EntityArrow) {
                 ((EntityArrow) projectile).setPickupMode(EntityArrow.PICKUP_CREATIVE);

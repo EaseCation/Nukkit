@@ -32,7 +32,7 @@ public class EntityBoatChest extends EntityBoat implements InventoryHolder {
     }
 
     @Override
-    public void initEntity() {
+    protected void initEntity() {
         super.initEntity();
 
         this.inventory = new BoatChestInventory(this);

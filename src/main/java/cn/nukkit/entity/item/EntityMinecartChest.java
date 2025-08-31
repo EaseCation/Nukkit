@@ -93,7 +93,7 @@ public class EntityMinecartChest extends EntityMinecartAbstract implements Inven
     }
 
     @Override
-    public void initEntity() {
+    protected void initEntity() {
         super.initEntity();
 
         this.inventory = new MinecartChestInventory(this);

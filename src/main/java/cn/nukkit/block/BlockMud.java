@@ -40,4 +40,9 @@ public class BlockMud extends BlockSolid {
     public BlockColor getColor() {
         return BlockColor.CYAN_TERRACOTA_BLOCK_COLOR;
     }
+
+    @Override
+    public boolean isDirt() {
+        return true;
+    }
 }

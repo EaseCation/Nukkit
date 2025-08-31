@@ -46,7 +46,7 @@ public class EntityPig extends EntityAnimal implements EntityInteractable, Entit
     }
 
     @Override
-    public void initEntity() {
+    protected void initEntity() {
         super.initEntity();
         this.setMaxHealth(10);
 

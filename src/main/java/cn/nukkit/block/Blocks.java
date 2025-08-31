@@ -494,7 +494,7 @@ public final class Blocks {
         registerBlock(BlockNames.BLACKSTONE_DOUBLE_SLAB, ItemBlockNames.BLACKSTONE_DOUBLE_SLAB, BLACKSTONE_DOUBLE_SLAB, BlockDoubleSlabBlackstone.class, V1_16_0);
         registerBlock(BlockNames.POLISHED_BLACKSTONE_BRICK_SLAB, ItemBlockNames.POLISHED_BLACKSTONE_BRICK_SLAB, POLISHED_BLACKSTONE_BRICK_SLAB, BlockSlabBlackstoneBrickPolished.class, V1_16_0);
         registerBlock(BlockNames.POLISHED_BLACKSTONE_BRICK_DOUBLE_SLAB, ItemBlockNames.POLISHED_BLACKSTONE_BRICK_DOUBLE_SLAB, POLISHED_BLACKSTONE_BRICK_DOUBLE_SLAB, BlockDoubleSlabBlackstoneBrickPolished.class, V1_16_0);
-        registerBlock(BlockNames.CHAIN, ItemBlockNames.ITEM_CHAIN, BLOCK_CHAIN, BlockChain.class, V1_16_0);
+        registerBlock(BlockNames.CHAIN, ItemBlockNames.ITEM_CHAIN, IRON_CHAIN, BlockChain.class, V1_16_0);
         registerBlock(BlockNames.TWISTING_VINES, ItemBlockNames.TWISTING_VINES, TWISTING_VINES, BlockNetherVinesTwisting.class, V1_16_0);
         registerBlock(BlockNames.NETHER_GOLD_ORE, ItemBlockNames.NETHER_GOLD_ORE, NETHER_GOLD_ORE, BlockOreGoldNether.class, V1_16_0);
         registerBlock(BlockNames.CRYING_OBSIDIAN, ItemBlockNames.CRYING_OBSIDIAN, CRYING_OBSIDIAN, BlockObsidianCrying.class, V1_16_0);
@@ -854,7 +854,7 @@ public final class Blocks {
         registerBlock(BlockNames.CHISELED_RESIN_BRICKS, ItemBlockNames.CHISELED_RESIN_BRICKS, CHISELED_RESIN_BRICKS, BlockBricksResinChiseled.class, V1_21_50);
         registerBlock(BlockNames.RESIN_BLOCK, ItemBlockNames.RESIN_BLOCK, RESIN_BLOCK, BlockResin.class, V1_21_50);
         registerBlock(BlockNames.RESIN_CLUMP, ItemBlockNames.RESIN_CLUMP, RESIN_CLUMP, BlockResinClump.class, V1_21_50);
-/*
+
         registerBlock(BlockNames.BUSH, ItemBlockNames.BUSH, BUSH, BlockBush.class, V1_21_70);
         registerBlock(BlockNames.WILDFLOWERS, ItemBlockNames.WILDFLOWERS, WILDFLOWERS, BlockWildflowers.class, V1_21_70);
         registerBlock(BlockNames.FIREFLY_BUSH, ItemBlockNames.FIREFLY_BUSH, FIREFLY_BUSH, BlockBushFirefly.class, V1_21_70);
@@ -863,7 +863,7 @@ public final class Blocks {
         registerBlock(BlockNames.TALL_DRY_GRASS, ItemBlockNames.TALL_DRY_GRASS, TALL_DRY_GRASS, BlockDryGrassTall.class, V1_21_70);
         registerBlock(BlockNames.CACTUS_FLOWER, ItemBlockNames.CACTUS_FLOWER, CACTUS_FLOWER, BlockCactusFlower.class, V1_21_70);
 
-        registerBlock(BlockNames.DRIED_GHAST, ItemBlockNames.DRIED_GHAST, DRIED_GHAST, BlockDriedGhast.class, V1_21_80);
+        registerBlock(BlockNames.DRIED_GHAST, ItemBlockNames.DRIED_GHAST, DRIED_GHAST, BlockDriedGhast.class, V1_21_90);
 
         registerBlock(BlockNames.COPPER_CHEST, ItemBlockNames.COPPER_CHEST, COPPER_CHEST, BlockChestCopper.class, V1_21_110);
         registerBlock(BlockNames.EXPOSED_COPPER_CHEST, ItemBlockNames.EXPOSED_COPPER_CHEST, EXPOSED_COPPER_CHEST, BlockChestCopperExposed.class, V1_21_110);
@@ -873,7 +873,59 @@ public final class Blocks {
         registerBlock(BlockNames.WAXED_EXPOSED_COPPER_CHEST, ItemBlockNames.WAXED_EXPOSED_COPPER_CHEST, WAXED_EXPOSED_COPPER_CHEST, BlockChestCopperExposedWaxed.class, V1_21_110);
         registerBlock(BlockNames.WAXED_WEATHERED_COPPER_CHEST, ItemBlockNames.WAXED_WEATHERED_COPPER_CHEST, WAXED_WEATHERED_COPPER_CHEST, BlockChestCopperWeatheredWaxed.class, V1_21_110);
         registerBlock(BlockNames.WAXED_OXIDIZED_COPPER_CHEST, ItemBlockNames.WAXED_OXIDIZED_COPPER_CHEST, WAXED_OXIDIZED_COPPER_CHEST, BlockChestCopperOxidizedWaxed.class, V1_21_110);
-*/
+        registerBlock(BlockNames.COPPER_GOLEM_STATUE, ItemBlockNames.COPPER_GOLEM_STATUE, COPPER_GOLEM_STATUE, BlockCopperGolemStatue.class, V1_21_110);
+        registerBlock(BlockNames.EXPOSED_COPPER_GOLEM_STATUE, ItemBlockNames.EXPOSED_COPPER_GOLEM_STATUE, EXPOSED_COPPER_GOLEM_STATUE, BlockCopperGolemStatueExposed.class, V1_21_110);
+        registerBlock(BlockNames.WEATHERED_COPPER_GOLEM_STATUE, ItemBlockNames.WEATHERED_COPPER_GOLEM_STATUE, WEATHERED_COPPER_GOLEM_STATUE, BlockCopperGolemStatueWeathered.class, V1_21_110);
+        registerBlock(BlockNames.OXIDIZED_COPPER_GOLEM_STATUE, ItemBlockNames.OXIDIZED_COPPER_GOLEM_STATUE, OXIDIZED_COPPER_GOLEM_STATUE, BlockCopperGolemStatueOxidized.class, V1_21_110);
+        registerBlock(BlockNames.WAXED_COPPER_GOLEM_STATUE, ItemBlockNames.WAXED_COPPER_GOLEM_STATUE, WAXED_COPPER_GOLEM_STATUE, BlockCopperGolemStatueWaxed.class, V1_21_110);
+        registerBlock(BlockNames.WAXED_EXPOSED_COPPER_GOLEM_STATUE, ItemBlockNames.WAXED_EXPOSED_COPPER_GOLEM_STATUE, WAXED_EXPOSED_COPPER_GOLEM_STATUE, BlockCopperGolemStatueExposedWaxed.class, V1_21_110);
+        registerBlock(BlockNames.WAXED_WEATHERED_COPPER_GOLEM_STATUE, ItemBlockNames.WAXED_WEATHERED_COPPER_GOLEM_STATUE, WAXED_WEATHERED_COPPER_GOLEM_STATUE, BlockCopperGolemStatueWeatheredWaxed.class, V1_21_110);
+        registerBlock(BlockNames.WAXED_OXIDIZED_COPPER_GOLEM_STATUE, ItemBlockNames.WAXED_OXIDIZED_COPPER_GOLEM_STATUE, WAXED_OXIDIZED_COPPER_GOLEM_STATUE, BlockCopperGolemStatueOxidizedWaxed.class, V1_21_110);
+        registerBlock(BlockNames.OAK_SHELF, ItemBlockNames.OAK_SHELF, OAK_SHELF, BlockShelfOak.class, V1_21_110);
+        registerBlock(BlockNames.SPRUCE_SHELF, ItemBlockNames.SPRUCE_SHELF, SPRUCE_SHELF, BlockShelfSpruce.class, V1_21_110);
+        registerBlock(BlockNames.BIRCH_SHELF, ItemBlockNames.BIRCH_SHELF, BIRCH_SHELF, BlockShelfBirch.class, V1_21_110);
+        registerBlock(BlockNames.JUNGLE_SHELF, ItemBlockNames.JUNGLE_SHELF, JUNGLE_SHELF, BlockShelfJungle.class, V1_21_110);
+        registerBlock(BlockNames.ACACIA_SHELF, ItemBlockNames.ACACIA_SHELF, ACACIA_SHELF, BlockShelfAcacia.class, V1_21_110);
+        registerBlock(BlockNames.DARK_OAK_SHELF, ItemBlockNames.DARK_OAK_SHELF, DARK_OAK_SHELF, BlockShelfDarkOak.class, V1_21_110);
+        registerBlock(BlockNames.MANGROVE_SHELF, ItemBlockNames.MANGROVE_SHELF, MANGROVE_SHELF, BlockShelfMangrove.class, V1_21_110);
+        registerBlock(BlockNames.CHERRY_SHELF, ItemBlockNames.CHERRY_SHELF, CHERRY_SHELF, BlockShelfCherry.class, V1_21_110);
+        registerBlock(BlockNames.PALE_OAK_SHELF, ItemBlockNames.PALE_OAK_SHELF, PALE_OAK_SHELF, BlockShelfPaleOak.class, V1_21_110);
+        registerBlock(BlockNames.BAMBOO_SHELF, ItemBlockNames.BAMBOO_SHELF, BAMBOO_SHELF, BlockShelfBamboo.class, V1_21_110);
+        registerBlock(BlockNames.CRIMSON_SHELF, ItemBlockNames.CRIMSON_SHELF, CRIMSON_SHELF, BlockShelfCrimson.class, V1_21_110);
+        registerBlock(BlockNames.WARPED_SHELF, ItemBlockNames.WARPED_SHELF, WARPED_SHELF, BlockShelfWarped.class, V1_21_110);
+        registerBlock(BlockNames.EXPOSED_LIGHTNING_ROD, ItemBlockNames.EXPOSED_LIGHTNING_ROD, EXPOSED_LIGHTNING_ROD, BlockLightningRodExposed.class, V1_21_110);
+        registerBlock(BlockNames.WEATHERED_LIGHTNING_ROD, ItemBlockNames.WEATHERED_LIGHTNING_ROD, WEATHERED_LIGHTNING_ROD, BlockLightningRodWeathered.class, V1_21_110);
+        registerBlock(BlockNames.OXIDIZED_LIGHTNING_ROD, ItemBlockNames.OXIDIZED_LIGHTNING_ROD, OXIDIZED_LIGHTNING_ROD, BlockLightningRodOxidized.class, V1_21_110);
+        registerBlock(BlockNames.WAXED_LIGHTNING_ROD, ItemBlockNames.WAXED_LIGHTNING_ROD, WAXED_LIGHTNING_ROD, BlockLightningRodWaxed.class, V1_21_110);
+        registerBlock(BlockNames.WAXED_EXPOSED_LIGHTNING_ROD, ItemBlockNames.WAXED_EXPOSED_LIGHTNING_ROD, WAXED_EXPOSED_LIGHTNING_ROD, BlockLightningRodExposedWaxed.class, V1_21_110);
+        registerBlock(BlockNames.WAXED_WEATHERED_LIGHTNING_ROD, ItemBlockNames.WAXED_WEATHERED_LIGHTNING_ROD, WAXED_WEATHERED_LIGHTNING_ROD, BlockLightningRodWeatheredWaxed.class, V1_21_110);
+        registerBlock(BlockNames.WAXED_OXIDIZED_LIGHTNING_ROD, ItemBlockNames.WAXED_OXIDIZED_LIGHTNING_ROD, WAXED_OXIDIZED_LIGHTNING_ROD, BlockLightningRodOxidizedWaxed.class, V1_21_110);
+        registerBlock(BlockNames.COPPER_BARS, ItemBlockNames.COPPER_BARS, COPPER_BARS, BlockBarsCopper.class, V1_21_110);
+        registerBlock(BlockNames.EXPOSED_COPPER_BARS, ItemBlockNames.EXPOSED_COPPER_BARS, EXPOSED_COPPER_BARS, BlockBarsCopperExposed.class, V1_21_110);
+        registerBlock(BlockNames.WEATHERED_COPPER_BARS, ItemBlockNames.WEATHERED_COPPER_BARS, WEATHERED_COPPER_BARS, BlockBarsCopperWeathered.class, V1_21_110);
+        registerBlock(BlockNames.OXIDIZED_COPPER_BARS, ItemBlockNames.OXIDIZED_COPPER_BARS, OXIDIZED_COPPER_BARS, BlockBarsCopperOxidized.class, V1_21_110);
+        registerBlock(BlockNames.WAXED_COPPER_BARS, ItemBlockNames.WAXED_COPPER_BARS, WAXED_COPPER_BARS, BlockBarsCopperWaxed.class, V1_21_110);
+        registerBlock(BlockNames.WAXED_EXPOSED_COPPER_BARS, ItemBlockNames.WAXED_EXPOSED_COPPER_BARS, WAXED_EXPOSED_COPPER_BARS, BlockBarsCopperExposedWaxed.class, V1_21_110);
+        registerBlock(BlockNames.WAXED_WEATHERED_COPPER_BARS, ItemBlockNames.WAXED_WEATHERED_COPPER_BARS, WAXED_WEATHERED_COPPER_BARS, BlockBarsCopperWeatheredWaxed.class, V1_21_110);
+        registerBlock(BlockNames.WAXED_OXIDIZED_COPPER_BARS, ItemBlockNames.WAXED_OXIDIZED_COPPER_BARS, WAXED_OXIDIZED_COPPER_BARS, BlockBarsCopperOxidizedWaxed.class, V1_21_110);
+        registerBlock(BlockNames.COPPER_CHAIN, ItemBlockNames.COPPER_CHAIN, COPPER_CHAIN, BlockChainCopper.class, V1_21_110);
+        registerBlock(BlockNames.EXPOSED_COPPER_CHAIN, ItemBlockNames.EXPOSED_COPPER_CHAIN, EXPOSED_COPPER_CHAIN, BlockChainCopperExposed.class, V1_21_110);
+        registerBlock(BlockNames.WEATHERED_COPPER_CHAIN, ItemBlockNames.WEATHERED_COPPER_CHAIN, WEATHERED_COPPER_CHAIN, BlockChainCopperWeathered.class, V1_21_110);
+        registerBlock(BlockNames.OXIDIZED_COPPER_CHAIN, ItemBlockNames.OXIDIZED_COPPER_CHAIN, OXIDIZED_COPPER_CHAIN, BlockChainCopperOxidized.class, V1_21_110);
+        registerBlock(BlockNames.WAXED_COPPER_CHAIN, ItemBlockNames.WAXED_COPPER_CHAIN, WAXED_COPPER_CHAIN, BlockChainCopperWaxed.class, V1_21_110);
+        registerBlock(BlockNames.WAXED_EXPOSED_COPPER_CHAIN, ItemBlockNames.WAXED_EXPOSED_COPPER_CHAIN, WAXED_EXPOSED_COPPER_CHAIN, BlockChainCopperExposedWaxed.class, V1_21_110);
+        registerBlock(BlockNames.WAXED_WEATHERED_COPPER_CHAIN, ItemBlockNames.WAXED_WEATHERED_COPPER_CHAIN, WAXED_WEATHERED_COPPER_CHAIN, BlockChainCopperWeatheredWaxed.class, V1_21_110);
+        registerBlock(BlockNames.WAXED_OXIDIZED_COPPER_CHAIN, ItemBlockNames.WAXED_OXIDIZED_COPPER_CHAIN, WAXED_OXIDIZED_COPPER_CHAIN, BlockChainCopperOxidizedWaxed.class, V1_21_110);
+        registerBlock(BlockNames.COPPER_TORCH, ItemBlockNames.COPPER_TORCH, COPPER_TORCH, BlockTorchCopper.class, V1_21_110);
+        registerBlock(BlockNames.COPPER_LANTERN, ItemBlockNames.COPPER_LANTERN, COPPER_LANTERN, BlockLanternCopper.class, V1_21_110);
+        registerBlock(BlockNames.EXPOSED_COPPER_LANTERN, ItemBlockNames.EXPOSED_COPPER_LANTERN, EXPOSED_COPPER_LANTERN, BlockLanternCopperExposed.class, V1_21_110);
+        registerBlock(BlockNames.WEATHERED_COPPER_LANTERN, ItemBlockNames.WEATHERED_COPPER_LANTERN, WEATHERED_COPPER_LANTERN, BlockLanternCopperWeathered.class, V1_21_110);
+        registerBlock(BlockNames.OXIDIZED_COPPER_LANTERN, ItemBlockNames.OXIDIZED_COPPER_LANTERN, OXIDIZED_COPPER_LANTERN, BlockLanternCopperOxidized.class, V1_21_110);
+        registerBlock(BlockNames.WAXED_COPPER_LANTERN, ItemBlockNames.WAXED_COPPER_LANTERN, WAXED_COPPER_LANTERN, BlockLanternCopperWaxed.class, V1_21_110);
+        registerBlock(BlockNames.WAXED_EXPOSED_COPPER_LANTERN, ItemBlockNames.WAXED_EXPOSED_COPPER_LANTERN, WAXED_EXPOSED_COPPER_LANTERN, BlockLanternCopperExposedWaxed.class, V1_21_110);
+        registerBlock(BlockNames.WAXED_WEATHERED_COPPER_LANTERN, ItemBlockNames.WAXED_WEATHERED_COPPER_LANTERN, WAXED_WEATHERED_COPPER_LANTERN, BlockLanternCopperWeatheredWaxed.class, V1_21_110);
+        registerBlock(BlockNames.WAXED_OXIDIZED_COPPER_LANTERN, ItemBlockNames.WAXED_OXIDIZED_COPPER_LANTERN, WAXED_OXIDIZED_COPPER_LANTERN, BlockLanternCopperOxidizedWaxed.class, V1_21_110);
+
         registerFlattenedBlocks();
 
         registerBlockAliases();
@@ -1509,6 +1561,8 @@ public final class Blocks {
             registerBlockAlias(BlockNames.DRAGON_HEAD, BlockNames.SKULL, V1_21_40);
             registerBlockAlias(BlockNames.PIGLIN_HEAD, BlockNames.SKULL, V1_21_40);
         }
+
+        registerBlockAlias(BlockNames.IRON_CHAIN, BlockNames.CHAIN, V1_21_110);
     }
 
     @SuppressWarnings("deprecation")

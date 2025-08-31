@@ -98,6 +98,7 @@ public interface ParticleID {
     int PALE_OAK_LEAVES = 95;
     int EYEBLOSSOM_OPEN = 96;
     int EYEBLOSSOM_CLOSE = 97;
+    int GREEN_FLAME = 98;
 
-    int UNDEFINED = 98;
+    int UNDEFINED = 99;
 }

@@ -27,6 +27,10 @@ public class EnchantmentMaceDensity extends EnchantmentMace {
 
     @Override
     public float getDamageBonus(Entity attacker, Entity entity) {
+        if (level <= 0) {
+            return 0;
+        }
+
         float fallDistance = attacker.fallDistance;
         if (fallDistance <= 0) {
             return 0;

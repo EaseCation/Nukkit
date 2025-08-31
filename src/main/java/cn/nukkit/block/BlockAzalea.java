@@ -119,12 +119,17 @@ public class BlockAzalea extends BlockFlowable {
     }
 
     @Override
+    public boolean isPottable() {
+        return true;
+    }
+
+    @Override
     public boolean isVegetation() {
         return true;
     }
 
     private boolean canSurvive() {
         int id = down().getId();
-        return id == GRASS_BLOCK || id == DIRT || id == MYCELIUM || id == PODZOL || id == FARMLAND || id == DIRT_WITH_ROOTS || id == MOSS_BLOCK || id == PALE_MOSS_BLOCK  || id == CLAY || id == MUD || id == MUDDY_MANGROVE_ROOTS;
+        return id == GRASS_BLOCK || id == DIRT || id == COARSE_DIRT || id == MYCELIUM || id == PODZOL || id == FARMLAND || id == DIRT_WITH_ROOTS || id == MOSS_BLOCK || id == PALE_MOSS_BLOCK  || id == CLAY || id == MUD || id == MUDDY_MANGROVE_ROOTS;
     }
 }

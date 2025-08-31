@@ -4,6 +4,7 @@ import cn.nukkit.Player;
 import cn.nukkit.item.Item;
 import cn.nukkit.level.Level;
 import cn.nukkit.math.BlockFace;
+import cn.nukkit.network.protocol.LevelSoundEventPacket;
 import cn.nukkit.utils.BlockColor;
 
 public class BlockNetherSprouts extends BlockFlowable {
@@ -45,6 +46,27 @@ public class BlockNetherSprouts extends BlockFlowable {
     }
 
     @Override
+    public boolean canBeActivated() {
+        return true;
+    }
+
+    @Override
+    public boolean onActivate(Item item, BlockFace face, float fx, float fy, float fz, Player player) {
+        if (item.is(getItemId(SNOW_LAYER))) {
+            level.setExtraBlock(this, this, true, false);
+            level.setBlock(this, get(SNOW_LAYER, BlockSnowLayer.COVERED_BIT), true);
+
+            if (player != null && player.isSurvivalLike()) {
+                item.pop();
+            }
+
+            level.addLevelSoundEvent(this, LevelSoundEventPacket.SOUND_PLACE, getFullId(SNOW_LAYER, BlockSnowLayer.COVERED_BIT));
+            return true;
+        }
+        return false;
+    }
+
+    @Override
     public int onUpdate(int type) {
         if (type == Level.BLOCK_UPDATE_NORMAL) {
             if (canSurvive()) {
@@ -70,6 +92,11 @@ public class BlockNetherSprouts extends BlockFlowable {
     }
 
     @Override
+    public Item toItem(boolean addUserData) {
+        return Item.get(Item.NETHER_SPROUTS);
+    }
+
+    @Override
     public BlockColor getColor() {
         return BlockColor.CYAN_BLOCK_COLOR;
     }
@@ -86,7 +113,7 @@ public class BlockNetherSprouts extends BlockFlowable {
 
     private boolean canSurvive() {
         int id = down().getId();
-        return id == GRASS_BLOCK || id == DIRT || id == PODZOL || id == MYCELIUM || id == FARMLAND || id == DIRT_WITH_ROOTS || id == MOSS_BLOCK || id == PALE_MOSS_BLOCK || id == MUD || id == MUDDY_MANGROVE_ROOTS
+        return id == GRASS_BLOCK || id == DIRT || id == COARSE_DIRT || id == PODZOL || id == MYCELIUM || id == FARMLAND || id == DIRT_WITH_ROOTS || id == MOSS_BLOCK || id == PALE_MOSS_BLOCK || id == MUD || id == MUDDY_MANGROVE_ROOTS
                 || id == CRIMSON_NYLIUM || id == WARPED_NYLIUM || id == SOUL_SOIL;
     }
 }

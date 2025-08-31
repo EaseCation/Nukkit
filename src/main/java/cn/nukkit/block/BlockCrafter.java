@@ -98,7 +98,12 @@ public class BlockCrafter extends BlockSolid implements Faceable {
     @Override
     public boolean place(Item item, Block block, Block target, BlockFace face, float fx, float fy, float fz, Player player) {
         //TODO: orientation
-        return super.place(item, block, target, face, fx, fy, fz, player);
+
+        if (!super.place(item, block, target, face, fx, fy, fz, player)) {
+            return false;
+        }
+        createBlockEntity(item);
+        return true;
     }
 
     @Override

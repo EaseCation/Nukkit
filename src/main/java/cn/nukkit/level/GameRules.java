@@ -264,29 +264,33 @@ public class GameRules {
     public enum Type {
         UNKNOWN {
             @Override
-            void write(BinaryStream pk, Value value) {
+            void write(BinaryStream pk, boolean network, Value value) {
             }
         },
         BOOLEAN {
             @Override
-            void write(BinaryStream pk, Value value) {
+            void write(BinaryStream pk, boolean network, Value value) {
                 pk.putBoolean(value.getValueAsBoolean());
             }
         },
         INTEGER {
             @Override
-            void write(BinaryStream pk, Value value) {
+            void write(BinaryStream pk, boolean network, Value value) {
+                if (!network) {
+                    pk.putLInt(value.getValueAsInteger());
+                    return;
+                }
                 pk.putUnsignedVarInt(value.getValueAsInteger());
             }
         },
         FLOAT {
             @Override
-            void write(BinaryStream pk, Value value) {
+            void write(BinaryStream pk, boolean network, Value value) {
                 pk.putLFloat(value.getValueAsFloat());
             }
         };
 
-        abstract void write(BinaryStream pk, Value value);
+        abstract void write(BinaryStream pk, boolean network, Value value);
     }
 
     public static class Value<T> {
@@ -331,8 +335,12 @@ public class GameRules {
         }
 
         public void write(BinaryStream pk) {
+            write(pk, true);
+        }
+
+        public void write(BinaryStream pk, boolean network) {
             pk.putUnsignedVarInt(type.ordinal());
-            type.write(pk, this);
+            type.write(pk, network, this);
         }
 
         @Override

@@ -48,7 +48,7 @@ public class EntityPanda extends EntityAnimal {
     }
 
     @Override
-    public void initEntity() {
+    protected void initEntity() {
         super.initEntity();
 
         dataProperties.putInt(DATA_VARIANT, namedTag.getInt("Variant", PANDA_VARIANT_DEFAULT));

@@ -77,4 +77,9 @@ public class BlockSand extends BlockFallable {
     public boolean isFertilizable() {
         return true;
     }
+
+    @Override
+    public boolean isSand() {
+        return true;
+    }
 }

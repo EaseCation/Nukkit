@@ -143,6 +143,7 @@ public class BlockBanner extends BlockTransparent implements Faceable {
                 item.setNamedTag((item.hasCompoundTag() ? item.getNamedTag() : new CompoundTag())
                         .putList(patterns));
             }
+            item.setCustomName(blockEntity.getName());
         }
         return item;
     }

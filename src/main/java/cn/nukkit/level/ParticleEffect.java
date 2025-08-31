@@ -79,6 +79,7 @@ public enum ParticleEffect {
     FISH_HOOK("minecraft:fish_hook_particle"),
     FISH_POS("minecraft:fish_pos_particle"),
     GLOW("minecraft:glow_particle"),
+    GREEN_FLAME("minecraft:green_flame_particle"),
     GUARDIAN_ATTACK("minecraft:guardian_attack_particle"),
     GUARDIAN_WATER_MOVE("minecraft:guardian_water_move_particle"),
     HEART("minecraft:heart_particle"),

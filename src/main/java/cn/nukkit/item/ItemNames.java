@@ -286,6 +286,9 @@ public interface ItemNames extends ItemBlockNames {
     String BREEZE_SPAWN_EGG = "breeze_spawn_egg";
     String ARMADILLO_SPAWN_EGG = "armadillo_spawn_egg";
     String BOGGED_SPAWN_EGG = "bogged_spawn_egg";
+    String CREAKING_SPAWN_EGG = "creaking_spawn_egg";
+    String HAPPY_GHAST_SPAWN_EGG = "happy_ghast_spawn_egg";
+    String COPPER_GOLEM_SPAWN_EGG = "copper_golem_spawn_egg";
     String TRADER_LLAMA_SPAWN_EGG = "trader_llama_spawn_egg";
     String EXPERIENCE_BOTTLE = "experience_bottle";
     String FIRE_CHARGE = "fire_charge";
@@ -805,4 +808,5 @@ public interface ItemNames extends ItemBlockNames {
     String COPPER_CHESTPLATE = "copper_chestplate";
     String COPPER_LEGGINGS = "copper_leggings";
     String COPPER_BOOTS = "copper_boots";
+    String COPPER_HORSE_ARMOR = "copper_horse_armor";
 }

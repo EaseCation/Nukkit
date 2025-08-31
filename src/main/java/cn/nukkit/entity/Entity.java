@@ -624,6 +624,9 @@ public abstract class Entity extends Location implements Metadatable, EntityData
         if (effect == null) {
             return false;
         }
+        if (effect.getAmplifier() < 0) {
+            return false;
+        }
 
         if (!canBeAffected(effect.getId())) {
             return false;
@@ -650,6 +653,9 @@ public abstract class Entity extends Location implements Metadatable, EntityData
         boolean dirty = false;
         for (Effect effect : effects) {
             if (effect == null) {
+                continue;
+            }
+            if (effect.getAmplifier() < 0) {
                 continue;
             }
 
@@ -1957,8 +1963,11 @@ public abstract class Entity extends Location implements Metadatable, EntityData
             down = this.level.getBlock(this.floor().down());
             if (down.getId() == Block.FARMLAND) {
                 Event ev;
-                if (this instanceof Player) {
-                    ev = new PlayerInteractEvent((Player) this, null, down, null, Action.PHYSICAL);
+                if (this instanceof Player player) {
+                    ev = new PlayerInteractEvent(player, null, down, null, Action.PHYSICAL);
+                    if (player.isSpectator()) {
+                        ev.setCancelled();
+                    }
                 } else {
                     ev = new EntityInteractEvent(this, down);
                 }

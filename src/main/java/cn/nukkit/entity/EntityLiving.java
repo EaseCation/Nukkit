@@ -102,6 +102,8 @@ public abstract class EntityLiving extends Entity implements EntityDamageable {
         if (this.health > this.getMaxHealth()) {
             this.setMaxHealth((int) this.health);
         }
+
+        this.setDataFlag(DATA_FLAG_HIDDEN_WHEN_INVISIBLE, true, false);
     }
 
     @Override

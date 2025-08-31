@@ -25,7 +25,7 @@ public class EntityGuardian extends EntityMob {
     }
 
     @Override
-    public void initEntity() {
+    protected void initEntity() {
         super.initEntity();
         this.setMaxHealth(30);
     }

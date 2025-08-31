@@ -112,8 +112,20 @@ public class BlockEntityChest extends BlockEntityAbstractContainer {
     }
 
     public BlockEntityChest getPair() {
+        return getPair(false);
+    }
+
+    public BlockEntityChest getPair(boolean load) {
         if (this.isPaired()) {
-            BlockEntity blockEntity = this.getLevel().getBlockEntityIfLoaded(this.namedTag.getInt("pairx"), this.getFloorY(), this.namedTag.getInt("pairz"));
+            int pairX = this.namedTag.getInt("pairx");
+            int pairZ = this.namedTag.getInt("pairz");
+            int pairY = this.getFloorY();
+            BlockEntity blockEntity;
+            if (load) {
+                blockEntity = this.getLevel().getBlockEntity(pairX, pairY, pairZ);
+            } else {
+                blockEntity = this.getLevel().getBlockEntityIfLoaded(pairX, pairY, pairZ);
+            }
             if (blockEntity instanceof BlockEntityChest) {
                 return (BlockEntityChest) blockEntity;
             }

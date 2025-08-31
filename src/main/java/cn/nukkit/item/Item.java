@@ -560,11 +560,15 @@ public class Item implements Cloneable, ItemID {
             return null;
         }
 
-        for (CompoundTag entry : this.getNamedTag().getList("ench", CompoundTag.class).getAll()) {
+        for (CompoundTag entry : this.getNamedTag().getList("ench", CompoundTag.class).getAllUnsafe()) {
             if (entry.getShort("id") == id) {
                 Enchantment e = Enchantment.getEnchantment(entry.getShort("id"));
                 if (e != null) {
-                    e.setLevel(entry.getShort("lvl"), false);
+                    int level = entry.getShort("lvl");
+                    if (level <= 0) {
+                        return null;
+                    }
+                    e.setLevel(level, false);
                     return e;
                 }
             }
@@ -576,6 +580,11 @@ public class Item implements Cloneable, ItemID {
     public int getEnchantmentLevel(int id) {
         Enchantment enchant = getEnchantment(id);
         return enchant == null ? 0 : enchant.getLevel();
+    }
+
+    public int getValidEnchantmentLevel(int id) {
+        Enchantment enchant = getEnchantment(id);
+        return enchant == null ? 0 : enchant.getValidLevel();
     }
 
     public Item addEnchantment(Enchantment... enchantments) {
@@ -594,27 +603,40 @@ public class Item implements Cloneable, ItemID {
             ench = tag.getList("ench", CompoundTag.class);
         }
 
+        boolean changed = false;
         for (Enchantment enchantment : enchantments) {
+            boolean remove = enchantment.getLevel() <= 0;
             boolean found = false;
 
             for (int k = 0; k < ench.size(); k++) {
                 CompoundTag entry = ench.get(k);
                 if (entry.getShort("id") == enchantment.getId()) {
-                    ench.add(k, new CompoundTag()
-                            .putShort("id", enchantment.getId())
-                            .putShort("lvl", enchantment.getLevel())
-                    );
+                    if (remove) {
+                        changed = true;
+                        ench.remove(k);
+                    } else if (entry.getShort("lvl") != enchantment.getLevel()) {
+                        changed = true;
+                        ench.add(k, new CompoundTag()
+                                .putShort("id", enchantment.getId())
+                                .putShort("lvl", enchantment.getLevel())
+                        );
+                    }
+
                     found = true;
                     break;
                 }
             }
 
-            if (!found) {
+            if (!found && !remove) {
+                changed = true;
                 ench.add(new CompoundTag()
                         .putShort("id", enchantment.getId())
                         .putShort("lvl", enchantment.getLevel())
                 );
             }
+        }
+        if (!changed) {
+            return this;
         }
 
         this.setNamedTag(tag);
@@ -674,25 +696,30 @@ public class Item implements Cloneable, ItemID {
 
     public Enchantment[] getEnchantments() {
         if (!this.hasEnchantments()) {
-            return new Enchantment[0];
+            return Enchantment.EMPTY;
         }
 
-        List<Enchantment> enchantments = new ObjectArrayList<>();
-
         ListTag<CompoundTag> ench = this.getNamedTag().getList("ench", CompoundTag.class);
+        List<Enchantment> enchantments = new ObjectArrayList<>(ench.size());
+
         for (CompoundTag entry : ench.getAll()) {
-            Enchantment e = Enchantment.getEnchantment(entry.getShort("id"));
+            int level = entry.getShort("id");
+            if (level <= 0) {
+                continue;
+            }
+            Enchantment e = Enchantment.getEnchantment(level);
             if (e != null) {
                 e.setLevel(entry.getShort("lvl"), false);
                 enchantments.add(e);
             }
         }
 
-        return enchantments.toArray(new Enchantment[0]);
+        return enchantments.toArray(Enchantment.EMPTY);
     }
 
     public boolean hasEnchantment(int id) {
-        return this.getEnchantment(id) != null;
+        Enchantment enchantment = this.getEnchantment(id);
+        return enchantment != null && enchantment.getLevel() > 0;
     }
 
     public int getRepairCost() {

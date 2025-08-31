@@ -24,6 +24,9 @@ public interface CopperBehavior {
 
     int getDecrementAgeBlockId();
 
+    default void updatePairedBlock(Block newBlock) {
+    }
+
     static boolean use(CopperBehavior behavior, Position target, Item item, Player player) {
         if (behavior.isWaxed()) {
             if (item.isAxe()) {
@@ -34,7 +37,9 @@ public interface CopperBehavior {
 
                 target.level.addLevelEvent(target, LevelEventPacket.EVENT_PARTICLE_WAX_OFF);
 
-                target.level.setBlock(target, Block.get(behavior.getDewaxedBlockId(), behavior.getDamage()), true);
+                Block newBlock = Block.get(behavior.getDewaxedBlockId(), behavior.getDamage());
+                target.level.setBlock(target, newBlock, true);
+                behavior.updatePairedBlock(newBlock);
                 return true;
             }
 
@@ -48,7 +53,9 @@ public interface CopperBehavior {
 
             target.level.addLevelEvent(target, LevelEventPacket.EVENT_PARTICLE_WAX_ON);
 
-            target.level.setBlock(target, Block.get(behavior.getWaxedBlockId(), behavior.getDamage()), true);
+            Block newBlock = Block.get(behavior.getWaxedBlockId(), behavior.getDamage());
+            target.level.setBlock(target, newBlock, true);
+            behavior.updatePairedBlock(newBlock);
             return true;
         }
 
@@ -60,7 +67,9 @@ public interface CopperBehavior {
 
             target.level.addLevelEvent(target, LevelEventPacket.EVENT_PARTICLE_SCRAPE);
 
-            target.level.setBlock(target, Block.get(behavior.getDecrementAgeBlockId(), behavior.getDamage()), true);
+            Block newBlock = Block.get(behavior.getDecrementAgeBlockId(), behavior.getDamage());
+            target.level.setBlock(target, newBlock, true);
+            behavior.updatePairedBlock(newBlock);
             return true;
         }
 
@@ -121,6 +130,8 @@ public interface CopperBehavior {
             return;
         }
 
-        target.level.setBlock(target, Block.get(behavior.getIncrementAgeBlockId(), behavior.getDamage()), true);
+        Block newBlock = Block.get(behavior.getIncrementAgeBlockId(), behavior.getDamage());
+        target.level.setBlock(target, newBlock, true);
+        behavior.updatePairedBlock(newBlock);
     }
 }

@@ -54,4 +54,9 @@ public class BlockMangroveRootsMuddy extends BlockRotatedPillar {
 
         return super.place(item, block, target, face, fx, fy, fz, player);
     }
+
+    @Override
+    public boolean isDirt() {
+        return true;
+    }
 }

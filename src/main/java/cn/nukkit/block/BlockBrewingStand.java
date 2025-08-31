@@ -14,6 +14,7 @@ import cn.nukkit.nbt.tag.StringTag;
 import cn.nukkit.nbt.tag.Tag;
 import cn.nukkit.utils.BlockColor;
 
+import javax.annotation.Nullable;
 import java.util.Map;
 
 import static cn.nukkit.GameVersion.*;
@@ -129,7 +130,15 @@ public class BlockBrewingStand extends BlockTransparent {
 
     @Override
     public Item toItem(boolean addUserData) {
-        return Item.get(Item.BREWING_STAND);
+        Item item = Item.get(Item.BREWING_STAND);
+        if (addUserData) {
+            BlockEntity blockEntity = getBlockEntity();
+            if (blockEntity != null) {
+                item.setCustomName(blockEntity.getName());
+                item.setRepairCost(blockEntity.getRepairCost());
+            }
+        }
+        return item;
     }
 
     @Override
@@ -196,5 +205,16 @@ public class BlockBrewingStand extends BlockTransparent {
     @Override
     public boolean canProvideSupport(BlockFace face, SupportType type) {
         return face == BlockFace.DOWN && type == SupportType.CENTER;
+    }
+
+    @Nullable
+    protected BlockEntityBrewingStand getBlockEntity() {
+        if (level == null) {
+            return null;
+        }
+        if (level.getBlockEntity(this) instanceof BlockEntityBrewingStand blockEntity) {
+            return blockEntity;
+        }
+        return null;
     }
 }

@@ -3,14 +3,18 @@ package cn.nukkit.block;
 import cn.nukkit.Player;
 import cn.nukkit.item.Item;
 import cn.nukkit.item.ItemTool;
+import cn.nukkit.level.Level;
 import cn.nukkit.math.AxisAlignedBB;
 import cn.nukkit.math.BlockFace;
 import cn.nukkit.math.SimpleAxisAlignedBB;
 import cn.nukkit.utils.BlockColor;
 import cn.nukkit.utils.Faceable;
 
-public class BlockLightningRod extends BlockTransparent implements Faceable {
+import static cn.nukkit.GameVersion.*;
+
+public class BlockLightningRod extends BlockTransparent implements CopperBehavior, Faceable {
     public static final int FACING_DIRECTION_MASK = 0b111;
+    public static final int POWERED_BIT = 0b1000;
 
     public BlockLightningRod() {
         this(0);
@@ -61,6 +65,11 @@ public class BlockLightningRod extends BlockTransparent implements Faceable {
     }
 
     @Override
+    public Item toItem(boolean addUserData) {
+        return Item.get(getItemId());
+    }
+
+    @Override
     public boolean isSolid() {
         return false;
     }
@@ -97,6 +106,56 @@ public class BlockLightningRod extends BlockTransparent implements Faceable {
     @Override
     public BlockColor getColor() {
         return BlockColor.ORANGE_BLOCK_COLOR;
+    }
+
+    @Override
+    public boolean onActivate(Item item, BlockFace face, float fx, float fy, float fz, Player player) {
+        if (!hasCopperBehavior()) {
+            return false;
+        }
+        return CopperBehavior.use(this, this, item, player);
+    }
+
+    @Override
+    public int onUpdate(int type) {
+        if (type == Level.BLOCK_UPDATE_RANDOM) {
+            if (!hasCopperBehavior()) {
+                return 0;
+            }
+            CopperBehavior.randomTick(this, this);
+            return type;
+        }
+        return 0;
+    }
+
+    @Override
+    public boolean hasCopperBehavior() {
+        return V1_21_110.isAvailable();
+    }
+
+    @Override
+    public int getCopperAge() {
+        return 0;
+    }
+
+    @Override
+    public int getWaxedBlockId() {
+        return WAXED_LIGHTNING_ROD;
+    }
+
+    @Override
+    public int getDewaxedBlockId() {
+        throw new UnsupportedOperationException();
+    }
+
+    @Override
+    public int getIncrementAgeBlockId() {
+        return EXPOSED_LIGHTNING_ROD;
+    }
+
+    @Override
+    public int getDecrementAgeBlockId() {
+        throw new UnsupportedOperationException();
     }
 
     @Override

@@ -51,6 +51,9 @@ public class BlockPinkPetals extends BlockFlowable implements Faceable {
 
     @Override
     public boolean place(Item item, Block block, Block target, BlockFace face, float fx, float fy, float fz, Player player) {
+        if (block.isLiquid() || !block.isAir() && block.canContainWater() && level.getExtraBlock(this).isWater()) {
+            return false;
+        }
         if (!canSurvive()) {
             return false;
         }
@@ -86,7 +89,7 @@ public class BlockPinkPetals extends BlockFlowable implements Faceable {
             return true;
         }
 
-        if (item.isFertilizer()) {
+        if (isFertilizable() && item.isFertilizer()) {
             if (player != null && player.isSurvivalLike()) {
                 item.pop();
             }
@@ -159,8 +162,8 @@ public class BlockPinkPetals extends BlockFlowable implements Faceable {
         setDamage((getDamage() & ~GROWTH_MASK) | (growth & GROWTH_MASK));
     }
 
-    private boolean canSurvive() {
+    protected boolean canSurvive() {
         int id = down().getId();
-        return id == GRASS_BLOCK || id == DIRT || id == MYCELIUM || id == PODZOL || id == FARMLAND || id == DIRT_WITH_ROOTS || id == MOSS_BLOCK || id == PALE_MOSS_BLOCK || id == MUD || id == MUDDY_MANGROVE_ROOTS;
+        return id == GRASS_BLOCK || id == DIRT || id == COARSE_DIRT || id == MYCELIUM || id == PODZOL || id == FARMLAND || id == DIRT_WITH_ROOTS || id == MOSS_BLOCK || id == PALE_MOSS_BLOCK || id == MUD || id == MUDDY_MANGROVE_ROOTS;
     }
 }

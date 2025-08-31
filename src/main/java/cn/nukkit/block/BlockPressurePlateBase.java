@@ -160,8 +160,11 @@ public abstract class BlockPressurePlateBase extends BlockTransparent {
         if (power == 0) {
             Event ev;
 
-            if (entity instanceof Player) {
-                ev = new PlayerInteractEvent((Player) entity, null, this, null, Action.PHYSICAL);
+            if (entity instanceof Player player) {
+                ev = new PlayerInteractEvent(player, null, this, null, Action.PHYSICAL);
+                if (player.isSpectator()) {
+                    ev.setCancelled();
+                }
             } else {
                 ev = new EntityInteractEvent(entity, this);
             }

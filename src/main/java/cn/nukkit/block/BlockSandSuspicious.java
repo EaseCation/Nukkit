@@ -23,4 +23,9 @@ public class BlockSandSuspicious extends BlockBrushable {
     public int getBrushedBlockId() {
         return SAND;
     }
+
+    @Override
+    public boolean isSand() {
+        return true;
+    }
 }

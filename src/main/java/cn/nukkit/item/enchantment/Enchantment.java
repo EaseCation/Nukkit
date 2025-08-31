@@ -61,6 +61,10 @@ public abstract class Enchantment implements Cloneable, EnchantmentID {
         return level;
     }
 
+    public int getValidLevel() {
+        return Mth.clamp(level, 0, getMaxLevel());
+    }
+
     public Enchantment setLevel(int level) {
         return this.setLevel(level, true);
     }

@@ -287,6 +287,9 @@ public interface ItemFullNames extends ItemBlockNames {
     String BREEZE_SPAWN_EGG = "minecraft:" + ItemNames.BREEZE_SPAWN_EGG;
     String ARMADILLO_SPAWN_EGG = "minecraft:" + ItemNames.ARMADILLO_SPAWN_EGG;
     String BOGGED_SPAWN_EGG = "minecraft:" + ItemNames.BOGGED_SPAWN_EGG;
+    String CREAKING_SPAWN_EGG = "minecraft:" + ItemNames.CREAKING_SPAWN_EGG;
+    String HAPPY_GHAST_SPAWN_EGG = "minecraft:" + ItemNames.HAPPY_GHAST_SPAWN_EGG;
+    String COPPER_GOLEM_SPAWN_EGG = "minecraft:" + ItemNames.COPPER_GOLEM_SPAWN_EGG;
     String TRADER_LLAMA_SPAWN_EGG = "minecraft:" + ItemNames.TRADER_LLAMA_SPAWN_EGG;
     String EXPERIENCE_BOTTLE = "minecraft:" + ItemNames.EXPERIENCE_BOTTLE;
     String FIRE_CHARGE = "minecraft:" + ItemNames.FIRE_CHARGE;
@@ -806,4 +809,5 @@ public interface ItemFullNames extends ItemBlockNames {
     String COPPER_CHESTPLATE = "minecraft:" + ItemNames.COPPER_CHESTPLATE;
     String COPPER_LEGGINGS = "minecraft:" + ItemNames.COPPER_LEGGINGS;
     String COPPER_BOOTS = "minecraft:" + ItemNames.COPPER_BOOTS;
+    String COPPER_HORSE_ARMOR = "minecraft:" + ItemNames.COPPER_HORSE_ARMOR;
 }

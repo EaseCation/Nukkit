@@ -218,6 +218,11 @@ public class BlockMangrovePropagule extends BlockTransparent {
     }
 
     @Override
+    public boolean isPottable() {
+        return true;
+    }
+
+    @Override
     public boolean isVegetation() {
         return true;
     }
@@ -237,7 +242,7 @@ public class BlockMangrovePropagule extends BlockTransparent {
         }
 
         int id = down().getId();
-        return id == BIG_DRIPLEAF || id == GRASS_BLOCK || id == DIRT || id == MYCELIUM || id == PODZOL || id == FARMLAND || id == DIRT_WITH_ROOTS || id == MOSS_BLOCK || id == PALE_MOSS_BLOCK || id == CLAY || id == MUD || id == MUDDY_MANGROVE_ROOTS;
+        return id == BIG_DRIPLEAF || id == GRASS_BLOCK || id == DIRT || id == COARSE_DIRT || id == MYCELIUM || id == PODZOL || id == FARMLAND || id == DIRT_WITH_ROOTS || id == MOSS_BLOCK || id == PALE_MOSS_BLOCK || id == CLAY || id == MUD || id == MUDDY_MANGROVE_ROOTS;
     }
 
     public int getStage() {

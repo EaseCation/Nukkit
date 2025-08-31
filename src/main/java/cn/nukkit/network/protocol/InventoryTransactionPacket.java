@@ -17,14 +17,41 @@ public class InventoryTransactionPacket extends DataPacket implements InventoryT
     public static final int TYPE_USE_ITEM_ON_ENTITY = 3;
     public static final int TYPE_RELEASE_ITEM = 4;
 
+    /**
+     * Right click item use on a surface like placing a block.
+     */
     public static final int USE_ITEM_ACTION_CLICK_BLOCK = 0;
+    /**
+     * Start right click and hold style item use or potentially interact with nothing.
+     */
     public static final int USE_ITEM_ACTION_CLICK_AIR = 1;
+    /**
+     * Block breaking like left click.
+     */
     public static final int USE_ITEM_ACTION_BREAK_BLOCK = 2;
+    /**
+     * Left-click to instantaneously use an item instead of attacking.
+     * Does not require a target block or entity.
+     * @since 1.21.110
+     */
+    public static final int USE_ITEM_ACTION_USE_AS_ATTACK = 3;
 
+    /**
+     * Release right click and hold style item use, like firing a bow.
+     */
     public static final int RELEASE_ITEM_ACTION_RELEASE = 0; //bow shoot
+    /**
+     * Finish right click and hold style item use, like charging a crossbow.
+     */
     public static final int RELEASE_ITEM_ACTION_CONSUME = 1; //eat food, drink potion
 
+    /**
+     * Right click interact with entity.
+     */
     public static final int USE_ITEM_ON_ENTITY_ACTION_INTERACT = 0;
+    /**
+     * Left click style attack of entity or elytra spin attack.
+     */
     public static final int USE_ITEM_ON_ENTITY_ACTION_ATTACK = 1;
 
 

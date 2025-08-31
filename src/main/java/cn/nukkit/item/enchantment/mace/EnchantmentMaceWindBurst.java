@@ -15,6 +15,10 @@ public class EnchantmentMaceWindBurst extends EnchantmentMace {
 
     @Override
     public void doAttack(Entity attacker, Entity entity) {
+        if (level <= 0) {
+            return;
+        }
+
         float fallDistance = attacker.fallDistance;
         if (fallDistance <= 0) {
             return;

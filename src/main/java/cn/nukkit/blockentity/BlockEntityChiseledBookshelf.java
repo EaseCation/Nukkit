@@ -9,7 +9,7 @@ import cn.nukkit.nbt.tag.ListTag;
 
 import javax.annotation.Nullable;
 
-public class BlockEntityChiseledBookshelf extends BlockEntitySpawnable {
+public class BlockEntityChiseledBookshelf extends BlockEntitySpawnable implements HopperInteractable {
     public static final int SLOT_COUNT = 6;
 
     private Item[] items;
@@ -86,6 +86,7 @@ public class BlockEntityChiseledBookshelf extends BlockEntitySpawnable {
             if (item == null) {
                 continue;
             }
+            items[i] = null;
 
             level.dropItem(this, item);
         }
@@ -93,7 +94,26 @@ public class BlockEntityChiseledBookshelf extends BlockEntitySpawnable {
 
     @Override
     public CompoundTag getSpawnCompound() {
-        return getDefaultCompound(this, CHISELED_BOOKSHELF);
+        CompoundTag nbt = getDefaultCompound(this, CHISELED_BOOKSHELF);
+/*
+        boolean hasBooks = false;
+        ListTag<CompoundTag> books = new ListTag<>();
+        for (int slot = 0; slot < SLOT_COUNT; slot++) {
+            Item item = getItem(slot);
+
+            if (item != null && !item.isNull()) {
+                hasBooks = true;
+            }
+
+            books.add(NBTIO.putItemHelper(item));
+        }
+
+        if (hasBooks) {
+            nbt.putList("Items", books)
+                    .putInt("LastInteractedSlot", lastInteractedSlot);
+        }
+*/
+        return nbt;
     }
 
     @Nullable

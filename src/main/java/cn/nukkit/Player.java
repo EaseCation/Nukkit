@@ -303,7 +303,7 @@ public class Player extends EntityHuman implements CommandSender, InventoryHolde
 
     public long lastSkinChange;
 
-    protected double lastRightClickTime = 0.0;
+    protected long lastRightClickTime;
     @Nullable
     protected UseItemData lastRightClickData;
 
@@ -1453,13 +1453,12 @@ public class Player extends EntityHuman implements CommandSender, InventoryHolde
             newSettings.set(Type.OPEN_CONTAINERS, gamemode != SPECTATOR);
             newSettings.set(Type.ATTACK_PLAYERS, gamemode != SPECTATOR);
             newSettings.set(Type.ATTACK_MOBS, gamemode != SPECTATOR);
-            newSettings.set(Type.INSTABUILD, gamemode == CREATIVE);
+            newSettings.set(Type.INSTABUILD, gamemode == CREATIVE || gamemode == SPECTATOR);
             newSettings.set(Type.INVULNERABLE, gamemode == CREATIVE || gamemode == SPECTATOR);
         }
 
         PlayerGameModeChangeEvent ev;
         this.server.getPluginManager().callEvent(ev = new PlayerGameModeChangeEvent(this, gamemode, newSettings));
-
         if (ev.isCancelled()) {
             return false;
         }
@@ -1486,12 +1485,19 @@ public class Player extends EntityHuman implements CommandSender, InventoryHolde
         this.setAdventureSettings(ev.getNewAdventureSettings());
 
         if (this.isSpectator()) {
+            if (fishing != null) {
+                stopFishing(false);
+            }
+
             this.teleport(this, null);
+
             this.setDataFlag(DATA_FLAG_SILENT, true);
             this.setDataFlag(DATA_FLAG_HAS_COLLISION, false);
+            this.setDataFlag(DATA_FLAG_PUSH_TOWARDS_CLOSEST_SPACE, false);
         } else {
             this.setDataFlag(DATA_FLAG_SILENT, false);
             this.setDataFlag(DATA_FLAG_HAS_COLLISION, true);
+            this.setDataFlag(DATA_FLAG_PUSH_TOWARDS_CLOSEST_SPACE, true);
         }
 
         this.resetFallDistance();
@@ -1853,7 +1859,7 @@ public class Player extends EntityHuman implements CommandSender, InventoryHolde
 
         HeightRange heightRange = level.getHeightRange();
         if (!revert && !isSpectator() && this.y >= heightRange.getMinY() + 1 && this.y < heightRange.getMaxY() && deltaXZ > Mth.EPSILON) {
-            int frostWalker = armorInventory.getBoots().getEnchantmentLevel(Enchantment.FROST_WALKER);
+            int frostWalker = armorInventory.getBoots().getValidEnchantmentLevel(Enchantment.FROST_WALKER);
             if (frostWalker > 0) {
                 int playerX = getFloorX();
                 int playerZ = getFloorZ();
@@ -2120,13 +2126,18 @@ public class Player extends EntityHuman implements CommandSender, InventoryHolde
                 if (item.canRelease()) {
                     int ticksUsed = this.server.getTick() - this.startAction;
                     int timeUsedTicks = (int) (System.currentTimeMillis() - this.startActionTimestamp) / 50;
-                    item.onUsing(this, timeUsedTicks);
+                    if (!isSpectator()) {
+                        item.onUsing(this, timeUsedTicks);
+                    }
 
                     int useDuration = item.getUseDuration();
                     if (useDuration > 0 && ticksUsed > useDuration) {
                         // client bug fixes: left click when using an item
                         Vector3 directionVector = this.getDirectionVector();
                         PlayerInteractEvent event = new PlayerInteractEvent(this, item, directionVector, null, PlayerInteractEvent.Action.RIGHT_CLICK_AIR);
+                        if (isSpectator()) {
+                            event.setCancelled();
+                        }
                         event.call();
                         if (event.isCancelled()) {
                             this.inventory.sendHeldItem(this);
@@ -3783,9 +3794,10 @@ public class Player extends EntityHuman implements CommandSender, InventoryHolde
                                     }
 
                                     PlayerInteractEvent interactEvent = new PlayerInteractEvent(this, item, directionVector, face, Action.RIGHT_CLICK_AIR);
-
+                                    if (isSpectator()) {
+                                        interactEvent.setCancelled();
+                                    }
                                     this.server.getPluginManager().callEvent(interactEvent);
-
                                     if (interactEvent.isCancelled()) {
                                         this.inventory.sendHeldItem(this);
                                         break packetswitch;
@@ -3812,6 +3824,9 @@ public class Player extends EntityHuman implements CommandSender, InventoryHolde
                             if (target == null) {
                                 item = this.inventory.getItemInHand();
                                 PlayerInteractEvent interactEvent = new PlayerInteractEvent(this, item, this.getDirectionVector(), BlockFace.UP, Action.CLICK_UNKNOWN_ENTITY).setUnkownEntityId(useItemOnEntityData.entityRuntimeId);
+                                if (isSpectator()) {
+                                    interactEvent.setCancelled();
+                                }
                                 this.server.getPluginManager().callEvent(interactEvent);
                                 return;
                             }
@@ -3884,10 +3899,10 @@ public class Player extends EntityHuman implements CommandSender, InventoryHolde
 
                                     float knockBackH = EntityDamageByEntityEvent.GLOBAL_KNOCKBACK_H;
                                     float knockBackV = EntityDamageByEntityEvent.GLOBAL_KNOCKBACK_V;
-                                    Enchantment knockBackEnchantment = !item.is(Item.ENCHANTED_BOOK) ? item.getEnchantment(Enchantment.KNOCKBACK) : null;
-                                    if (knockBackEnchantment != null) {
-                                        knockBackH += knockBackEnchantment.getLevel() * 0.1f;
-                                        knockBackV += knockBackEnchantment.getLevel() * 0.1f;
+                                    int knockBackEnchantment = !item.is(Item.ENCHANTED_BOOK) ? item.getEnchantmentLevel(Enchantment.KNOCKBACK) : 0;
+                                    if (knockBackEnchantment > 0) {
+                                        knockBackH += knockBackEnchantment * 0.1f;
+                                        knockBackV += knockBackEnchantment * 0.1f;
                                     }
 
                                     EntityDamageByEntityEvent entityDamageByEntityEvent = new EntityDamageByEntityEvent(this, target, DamageCause.ENTITY_ATTACK, damage, knockBackH, knockBackV, enchantments);
@@ -5555,6 +5570,8 @@ public class Player extends EntityHuman implements CommandSender, InventoryHolde
      * @return form id to use in {@link PlayerFormRespondedEvent}
      */
     public int showFormWindow(FormWindow window) {
+//        requestCloseFormWindow();
+
         int id = this.formWindowCount++;
 
         ModalFormRequestPacket packet = new ModalFormRequestPacket();
@@ -6041,22 +6058,22 @@ public class Player extends EntityHuman implements CommandSender, InventoryHolde
                         if (item.getDamage() <= 0) {
                             continue;
                         }
-                        Enchantment enchantment = armorInventory.getItem(i).getEnchantment(Enchantment.MENDING);
-                        if (enchantment != null && enchantment.getLevel() > 0) {
+                        int mending = armorInventory.getItem(i).getEnchantmentLevel(Enchantment.MENDING);
+                        if (mending > 0) {
                             itemsWithMending.add(-i - 1);
                         }
                     }
                     Item item = inventory.getItemInHand();
                     if (item instanceof ItemDurable && item.getDamage() > 0) {
-                        Enchantment enchantment = item.getEnchantment(Enchantment.MENDING);
-                        if (enchantment != null && enchantment.getLevel() > 0) {
+                        int mending = item.getEnchantmentLevel(Enchantment.MENDING);
+                        if (mending > 0) {
                             itemsWithMending.add(inventory.getHeldItemIndex());
                         }
                     }
                     Item offhandItem = offhandInventory.getItem(0);
                     if (offhandItem instanceof ItemDurable && offhandItem.getDamage() > 0) {
-                        Enchantment enchantment = offhandItem.getEnchantment(Enchantment.MENDING);
-                        if (enchantment != null && enchantment.getLevel() > 0) {
+                        int mending = offhandItem.getEnchantmentLevel(Enchantment.MENDING);
+                        if (mending > 0) {
                             itemsWithMending.add(-106);
                         }
                     }
@@ -6126,6 +6143,10 @@ public class Player extends EntityHuman implements CommandSender, InventoryHolde
      * @param fishingRod fishing rod item
      */
     public void startFishing(Item fishingRod) {
+        if (isSpectator()) {
+            return;
+        }
+
         Vector3 motion = this.getDirectionVector().multiply(2);
         CompoundTag nbt = Entity.getDefaultNBT(x + motion.x * 0.5, y + this.getEyeHeight() + motion.y * 0.5, z + motion.z * 0.5, motion, (float) yaw, (float) pitch);
         EntityFishingHook fishingHook = new EntityFishingHook(getChunk(), nbt, this);

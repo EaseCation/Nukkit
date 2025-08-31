@@ -97,12 +97,18 @@ public class BlockDeadBush extends BlockFlowable {
     }
 
     @Override
+    public boolean isPottable() {
+        return true;
+    }
+
+    @Override
     public boolean isVegetation() {
         return true;
     }
 
     private boolean canSurvive() {
-        int id = down().getId();
-        return id == SAND || id == HARDENED_CLAY || id == STAINED_HARDENED_CLAY || id == DIRT || id == PODZOL || id == MYCELIUM || id == DIRT_WITH_ROOTS || id == MUD || id == GRASS_BLOCK || id == MUDDY_MANGROVE_ROOTS || id == SUSPICIOUS_SAND;
+        Block below = down();
+        int id = below.getId();
+        return id == SAND || id == RED_SAND || below.isTerracotta() || id == DIRT || id == COARSE_DIRT || id == PODZOL || id == MYCELIUM || id == DIRT_WITH_ROOTS || id == MUD || id == GRASS_BLOCK || id == MUDDY_MANGROVE_ROOTS || id == SUSPICIOUS_SAND;
     }
 }

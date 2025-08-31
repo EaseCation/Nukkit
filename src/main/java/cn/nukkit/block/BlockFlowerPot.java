@@ -28,31 +28,11 @@ public class BlockFlowerPot extends BlockFlowable {
         super(meta);
     }
 
-    protected static boolean canPlaceIntoFlowerPot(Block block) {
-        if (block == null || block.isAir()) {
+    private static boolean canPlaceIntoFlowerPot(Block block) {
+        if (block == null) {
             return false;
         }
-
-        switch (block.getId()) {
-            case SAPLING:
-            case DEADBUSH:
-            case DANDELION:
-            case RED_FLOWER:
-            case RED_MUSHROOM:
-            case BROWN_MUSHROOM:
-            case CACTUS:
-            case BAMBOO:
-            case WITHER_ROSE:
-            case CRIMSON_ROOTS:
-            case WARPED_ROOTS:
-            case CRIMSON_FUNGUS:
-            case WARPED_FUNGUS:
-            case AZALEA:
-            case FLOWERING_AZALEA:
-            case MANGROVE_PROPAGULE:
-                return true;
-        }
-        return false;
+        return block.isPottable();
     }
 
     @Override

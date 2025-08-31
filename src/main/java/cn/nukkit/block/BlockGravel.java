@@ -75,4 +75,9 @@ public class BlockGravel extends BlockFallable {
     public boolean isFertilizable() {
         return true;
     }
+
+    @Override
+    public boolean isGravel() {
+        return true;
+    }
 }

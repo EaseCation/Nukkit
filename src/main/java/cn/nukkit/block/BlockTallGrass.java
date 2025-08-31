@@ -124,13 +124,13 @@ public class BlockTallGrass extends BlockFlowable {
 
         if (item.getId() == getItemId(SNOW_LAYER)) {
             level.setExtraBlock(this, this, true, false);
-            level.setBlock(this, Block.get(SNOW_LAYER), true);
+            level.setBlock(this, Block.get(SNOW_LAYER, BlockSnowLayer.COVERED_BIT), true);
 
             if (player != null && !player.isCreative()) {
                 item.count--;
             }
 
-            level.addLevelSoundEvent(this, LevelSoundEventPacket.SOUND_PLACE, SNOW_LAYER << Block.BLOCK_META_BITS);
+            level.addLevelSoundEvent(this, LevelSoundEventPacket.SOUND_PLACE, getFullId(SNOW_LAYER, BlockSnowLayer.COVERED_BIT));
             return true;
         }
 
@@ -188,13 +188,18 @@ public class BlockTallGrass extends BlockFlowable {
     }
 
     @Override
+    public boolean isPottable() {
+        return getValidType() == TYPE_FERN;
+    }
+
+    @Override
     public boolean isVegetation() {
         return true;
     }
 
     private boolean canSurvive() {
         int id = down().getId();
-        return id == Block.GRASS_BLOCK || id == Block.DIRT || id == Block.PODZOL || id == FARMLAND || id == MYCELIUM || id == DIRT_WITH_ROOTS || id == MOSS_BLOCK || id == PALE_MOSS_BLOCK || id == MUD || id == MUDDY_MANGROVE_ROOTS;
+        return id == Block.GRASS_BLOCK || id == Block.DIRT || id == COARSE_DIRT || id == Block.PODZOL || id == FARMLAND || id == MYCELIUM || id == DIRT_WITH_ROOTS || id == MOSS_BLOCK || id == PALE_MOSS_BLOCK || id == MUD || id == MUDDY_MANGROVE_ROOTS;
     }
 
     private int getValidType() {

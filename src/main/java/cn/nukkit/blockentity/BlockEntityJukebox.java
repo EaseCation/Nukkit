@@ -15,7 +15,7 @@ import javax.annotation.Nullable;
 /**
  * @author CreeperFace
  */
-public class BlockEntityJukebox extends BlockEntitySpawnable {
+public class BlockEntityJukebox extends BlockEntitySpawnable implements HopperInteractable {
 
     @Nullable
     private ItemRecord recordItem;

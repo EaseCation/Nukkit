@@ -66,7 +66,7 @@ public class EntityCamel extends EntityAnimal implements EntityInteractable, Ent
     }
 
     @Override
-    public void initEntity() {
+    protected void initEntity() {
         super.initEntity();
 
 //        dataProperties.putByte(DATA_CONTROLLING_SEAT_INDEX, 0);

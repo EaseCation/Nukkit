@@ -68,6 +68,7 @@ public interface GlobalBlockPaletteInterface {
         V1_21_80(800, false),
         V1_21_90(818, false), // same palette, but sub chunk format changed
         V1_21_100(827, false),
+        V1_21_110(843, false),
         ;
 
         private static final StaticVersion MINIMUM_AVAILABLE_VERSION = V1_20_10;

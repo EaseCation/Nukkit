@@ -30,15 +30,7 @@ public class BlockItemFrameGlow extends BlockItemFrame {
 
     @Override
     public Item toItem(boolean addUserData) {
-        Item item = Item.get(Item.GLOW_FRAME);
-        if (addUserData) {
-            BlockEntity blockEntity = getBlockEntity();
-            if (blockEntity != null) {
-                item.setCustomName(blockEntity.getName());
-                item.setRepairCost(blockEntity.getRepairCost());
-            }
-        }
-        return item;
+        return Item.get(Item.GLOW_FRAME);
     }
 
     @Override

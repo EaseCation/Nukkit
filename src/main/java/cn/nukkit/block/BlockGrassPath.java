@@ -77,4 +77,9 @@ public class BlockGrassPath extends BlockGrass {
     public double getMaxY() {
         return this.y + 1 - 1 / 16.0;
     }
+
+    @Override
+    public boolean isDirt() {
+        return false;
+    }
 }

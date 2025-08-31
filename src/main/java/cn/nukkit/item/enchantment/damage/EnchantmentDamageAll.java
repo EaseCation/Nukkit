@@ -31,6 +31,10 @@ public class EnchantmentDamageAll extends EnchantmentDamage {
 
     @Override
     public float getDamageBonus(Entity attacker, Entity entity) {
+        if (level <= 0) {
+            return 0;
+        }
+
         return this.getLevel() * 1.25f;
     }
 }

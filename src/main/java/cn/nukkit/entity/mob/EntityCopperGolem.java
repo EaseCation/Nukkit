@@ -24,12 +24,12 @@ public class EntityCopperGolem extends EntityMob {
 
     @Override
     public float getWidth() {
-        return 0.875f;
+        return 0.6f;
     }
 
     @Override
     public float getHeight() {
-        return 1;
+        return 0.98f;
     }
 
     @Override

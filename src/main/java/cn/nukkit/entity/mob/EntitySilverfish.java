@@ -38,7 +38,7 @@ public class EntitySilverfish extends EntityMob implements EntityArthropod {
     }
 
     @Override
-    public void initEntity() {
+    protected void initEntity() {
         super.initEntity();
         this.setMaxHealth(8);
     }

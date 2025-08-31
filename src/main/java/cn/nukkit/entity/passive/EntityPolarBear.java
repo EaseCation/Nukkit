@@ -39,7 +39,7 @@ public class EntityPolarBear extends EntityAnimal {
     }
 
     @Override
-    public void initEntity() {
+    protected void initEntity() {
         super.initEntity();
         this.setMaxHealth(30);
     }

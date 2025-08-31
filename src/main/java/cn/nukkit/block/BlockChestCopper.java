@@ -1,6 +1,8 @@
 package cn.nukkit.block;
 
+import cn.nukkit.AdventureSettings.Type;
 import cn.nukkit.Player;
+import cn.nukkit.blockentity.BlockEntityChest;
 import cn.nukkit.item.Item;
 import cn.nukkit.item.ItemTool;
 import cn.nukkit.level.Level;
@@ -58,7 +60,7 @@ public class BlockChestCopper extends BlockChest implements CopperBehavior {
 
     @Override
     public boolean onActivate(Item item, BlockFace face, float fx, float fy, float fz, Player player) {
-        if (player != null && !item.isNull() && player.isSneaking()) {
+        if (player != null && !item.isNull() && player.isSneaking() && !player.getAdventureSettings().get(Type.FLYING)) {
             return CopperBehavior.use(this, this, item, player);
         }
         return super.onActivate(item, face, fx, fy, fz, player);
@@ -111,5 +113,42 @@ public class BlockChestCopper extends BlockChest implements CopperBehavior {
     @Override
     public int getDecrementAgeBlockId() {
         throw new UnsupportedOperationException();
+    }
+
+    @Override
+    public void updatePairedBlock(Block newBlock) {
+        BlockEntityChest blockEntityChest = getBlockEntity();
+        if (blockEntityChest == null) {
+            return;
+        }
+        BlockEntityChest pair = blockEntityChest.getPair(true);
+        if (pair == null) {
+            return;
+        }
+        Block pairBlock = pair.getBlock();
+        if (pairBlock.getDamage() != newBlock.getDamage()) {
+            return;
+        }
+        level.setBlock(pairBlock, get(newBlock.getId(), newBlock.getDamage()), true, false);
+    }
+
+    @Override
+    protected int getPairableBlockId(Block block) {
+        if (!(block instanceof BlockChestCopper copperChest)) {
+            return -1;
+        }
+
+        BlockChestCopper newer = this;
+        BlockChestCopper older = copperChest;
+        if (newer.getCopperAge() > older.getCopperAge()) {
+            BlockChestCopper temp = newer;
+            newer = older;
+            older = temp;
+        }
+
+        if (newer.isWaxed() && !older.isWaxed()) {
+            return newer.getDewaxedBlockId();
+        }
+        return newer.getId();
     }
 }

@@ -190,11 +190,16 @@ public class BlockCactus extends BlockTransparent {
     }
 
     @Override
+    public boolean isPottable() {
+        return true;
+    }
+
+    @Override
     public boolean isVegetation() {
         return true;
     }
 
     private static boolean canBeSupportedBy(int id) {
-        return id == CACTUS || id == SAND || id == SUSPICIOUS_SAND;
+        return id == CACTUS || id == SAND || id == RED_SAND || id == SUSPICIOUS_SAND;
     }
 }

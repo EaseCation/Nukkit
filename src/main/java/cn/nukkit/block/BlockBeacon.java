@@ -11,6 +11,8 @@ import cn.nukkit.math.BlockFace;
 import cn.nukkit.nbt.tag.CompoundTag;
 import cn.nukkit.utils.BlockColor;
 
+import javax.annotation.Nullable;
+
 /**
  * author: Angelic47 Nukkit Project
  */
@@ -120,5 +122,29 @@ public class BlockBeacon extends BlockTransparent {
     @Override
     public boolean canContainWater() {
         return true;
+    }
+
+    @Override
+    public Item toItem(boolean addUserData) {
+        Item item = Item.get(getItemId());
+        if (addUserData) {
+            BlockEntity blockEntity = getBlockEntity();
+            if (blockEntity != null) {
+                item.setCustomName(blockEntity.getName());
+                item.setRepairCost(blockEntity.getRepairCost());
+            }
+        }
+        return item;
+    }
+
+    @Nullable
+    protected BlockEntityBeacon getBlockEntity() {
+        if (level == null) {
+            return null;
+        }
+        if (level.getBlockEntity(this) instanceof BlockEntityBeacon blockEntity) {
+            return blockEntity;
+        }
+        return null;
     }
 }

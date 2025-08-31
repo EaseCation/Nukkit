@@ -68,4 +68,8 @@ public class BlockTerracottaStained extends BlockSolid {
         return DyeColor.getByWoolData(getDamage());
     }
 
+    @Override
+    public boolean isTerracotta() {
+        return true;
+    }
 }

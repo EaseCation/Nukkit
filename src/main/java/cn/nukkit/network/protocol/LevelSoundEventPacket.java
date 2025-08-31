@@ -600,6 +600,9 @@ public class LevelSoundEventPacket extends DataPacket {
 	public static final int SOUND_UNSADDLE = 560;
 	public static final int SOUND_ARMOR_EQUIP_COPPER = 561;
 	public static final int SOUND_RECORD_LAVA_CHICKEN = 562;
+    public static final int SOUND_PLACE_ITEM = 563;
+    public static final int SOUND_SINGLE_ITEM_SWAP = 564;
+    public static final int SOUND_MULTI_ITEM_SWAP = 565;
 
 	public int sound;
     public float x;

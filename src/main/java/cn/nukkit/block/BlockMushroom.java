@@ -7,6 +7,7 @@ import cn.nukkit.level.generator.object.mushroom.BigMushroom;
 import cn.nukkit.level.particle.BoneMealParticle;
 import cn.nukkit.math.BlockFace;
 import cn.nukkit.math.NukkitRandom;
+import cn.nukkit.network.protocol.LevelSoundEventPacket;
 import cn.nukkit.utils.BlockColor;
 
 import java.util.concurrent.ThreadLocalRandom;
@@ -65,6 +66,19 @@ public abstract class BlockMushroom extends BlockFlowable {
             this.level.addParticle(new BoneMealParticle(this));
             return true;
         }
+
+        if (item.is(getItemId(SNOW_LAYER))) {
+            level.setExtraBlock(this, this, true, false);
+            level.setBlock(this, get(SNOW_LAYER, BlockSnowLayer.COVERED_BIT), true);
+
+            if (player != null && player.isSurvivalLike()) {
+                item.pop();
+            }
+
+            level.addLevelSoundEvent(this, LevelSoundEventPacket.SOUND_PLACE, getFullId(SNOW_LAYER, BlockSnowLayer.COVERED_BIT));
+            return true;
+        }
+
         return false;
     }
 
@@ -104,6 +118,11 @@ public abstract class BlockMushroom extends BlockFlowable {
     @Override
     public int getCompostableChance() {
         return 65;
+    }
+
+    @Override
+    public boolean isPottable() {
+        return true;
     }
 
     protected abstract int getType();

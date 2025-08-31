@@ -6,7 +6,7 @@ import lombok.ToString;
 public class InitiateWebSocketConnectionPacket extends DataPacket {
     public static final int NETWORK_ID = ProtocolInfo.AUTOMATION_CLIENT_CONNECT_PACKET;
 
-    private String serverUri;
+    public String serverUri;
 
     @Override
     public int pid() {

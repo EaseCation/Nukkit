@@ -2,9 +2,7 @@ package cn.nukkit.math;
 
 import com.google.common.collect.Iterators;
 
-import java.util.Arrays;
-import java.util.Iterator;
-import java.util.Random;
+import java.util.*;
 import java.util.concurrent.ThreadLocalRandom;
 import java.util.function.Predicate;
 import java.util.stream.Stream;
@@ -147,6 +145,16 @@ public enum BlockFace {
 
     public static BlockFace random(RandomSource rand) {
         return VALUES[rand.nextBoundedInt(VALUES.length)];
+    }
+
+    public Collection<BlockFace> shuffle() {
+        return shuffle(ThreadLocalRandom.current());
+    }
+
+    public Collection<BlockFace> shuffle(Random random) {
+        List<BlockFace> elements = new ArrayList<>(Arrays.asList(VALUES));
+        Collections.shuffle(elements, random);
+        return elements;
     }
 
     /**
@@ -451,6 +459,16 @@ public enum BlockFace {
 
         public Axis randomAxis() {
             return randomAxis(ThreadLocalRandom.current());
+        }
+
+        public Collection<BlockFace> shuffle() {
+            return shuffle(ThreadLocalRandom.current());
+        }
+
+        public Collection<BlockFace> shuffle(Random random) {
+            List<BlockFace> elements = new ArrayList<>(Arrays.asList(faces));
+            Collections.shuffle(elements, random);
+            return elements;
         }
 
         @Override

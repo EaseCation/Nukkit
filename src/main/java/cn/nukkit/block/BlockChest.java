@@ -15,6 +15,7 @@ import cn.nukkit.nbt.tag.Tag;
 import cn.nukkit.utils.BlockColor;
 import cn.nukkit.utils.Faceable;
 
+import javax.annotation.Nullable;
 import java.util.Map;
 
 /**
@@ -96,6 +97,9 @@ public class BlockChest extends BlockTransparent implements Faceable {
     @Override
     public boolean place(Item item, Block block, Block target, BlockFace face, float fx, float fy, float fz, Player player) {
         BlockEntityChest chest = null;
+        Block pairBlock = null;
+        int pairableId = -1;
+
         this.setDamage(FACES[player != null ? player.getDirection().getHorizontalIndex() : 0]);
 
         for (int side = 2; side <= 5; ++side) {
@@ -104,17 +108,31 @@ public class BlockChest extends BlockTransparent implements Faceable {
             } else if ((this.getDamage() == 3 || this.getDamage() == 2) && (side == 2 || side == 3)) {
                 continue;
             }
+
             Block c = this.getSide(BlockFace.fromIndex(side));
-            if (c.getId() == this.getId() && c.getDamage() == this.getDamage()) {
+            int pairableBlockId = getPairableBlockId(c);
+            if (pairableBlockId != -1 && c.getDamage() == this.getDamage()) {
                 BlockEntity blockEntity = this.getLevel().getBlockEntity(c);
                 if (blockEntity instanceof BlockEntityChest && !((BlockEntityChest) blockEntity).isPaired()) {
                     chest = (BlockEntityChest) blockEntity;
+                    pairBlock = c;
+                    pairableId = pairableBlockId;
                     break;
                 }
             }
         }
 
-        this.getLevel().setBlock(block, this, true, true);
+        Block placeBlock = this;
+        if (pairBlock != null) {
+            if (pairBlock.getId() != pairableId) {
+                level.setBlock(pairBlock, get(pairableId, pairBlock.getDamage()), true, false);
+            }
+            if (getId() != pairableId) {
+                placeBlock = get(pairableId, getDamage());
+            }
+        }
+        this.getLevel().setBlock(block, placeBlock, true, true);
+
         CompoundTag nbt = BlockEntity.getDefaultCompound(this, BlockEntity.CHEST)
                 .putList(new ListTag<>("Items"));
 
@@ -213,7 +231,15 @@ public class BlockChest extends BlockTransparent implements Faceable {
 
     @Override
     public Item toItem(boolean addUserData) {
-        return Item.get(this.getItemId());
+        Item item = Item.get(this.getItemId());
+        if (addUserData) {
+            BlockEntity blockEntity = getBlockEntity();
+            if (blockEntity != null) {
+                item.setCustomName(blockEntity.getName());
+                item.setRepairCost(blockEntity.getRepairCost());
+            }
+        }
+        return item;
     }
 
     @Override
@@ -244,5 +270,21 @@ public class BlockChest extends BlockTransparent implements Faceable {
     @Override
     public boolean isChest() {
         return true;
+    }
+
+    @Nullable
+    protected BlockEntityChest getBlockEntity() {
+        if (level == null) {
+            return null;
+        }
+        if (level.getBlockEntity(this) instanceof BlockEntityChest blockEntity) {
+            return blockEntity;
+        }
+        return null;
+    }
+
+    protected int getPairableBlockId(Block block) {
+        int id = block.getId();
+        return getId() == id ? id : -1;
     }
 }

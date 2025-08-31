@@ -51,7 +51,7 @@ public class EntitySheep extends EntityAnimal {
     }
 
     @Override
-    public void initEntity() {
+    protected void initEntity() {
         super.initEntity();
         this.setMaxHealth(8);
 

@@ -47,7 +47,7 @@ public class EntityParrot extends EntityAnimal {
     }
 
     @Override
-    public void initEntity() {
+    protected void initEntity() {
         super.initEntity();
 
         int variant;

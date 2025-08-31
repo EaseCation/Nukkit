@@ -98,6 +98,7 @@ public interface BlockStateNames {
     String PILLAR_AXIS = "pillar_axis";
     String PORTAL_AXIS = "portal_axis";
     String POWERED_BIT = "powered_bit";
+    String POWERED_SHELF_TYPE = "powered_shelf_type";
     String PRISMARINE_BLOCK_TYPE = "prismarine_block_type";
     String PROPAGULE_STAGE = "propagule_stage";
     String RAIL_DATA_BIT = "rail_data_bit";

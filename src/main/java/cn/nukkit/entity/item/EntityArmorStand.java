@@ -117,6 +117,8 @@ public class EntityArmorStand extends EntityLiving implements EntityInteractable
         dataProperties.putInt(DATA_HURT_TIME, hurtTime);
         hurtDirection = true;
         dataProperties.putInt(DATA_HURT_DIRECTION, 1);
+
+        setDataFlag(DATA_FLAG_HIDDEN_WHEN_INVISIBLE, false, false);
     }
 
     @Override

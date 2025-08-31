@@ -87,4 +87,9 @@ public class BlockMycelium extends BlockSolid {
     public boolean canSilkTouch() {
         return true;
     }
+
+    @Override
+    public boolean isDirt() {
+        return true;
+    }
 }

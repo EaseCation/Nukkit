@@ -122,7 +122,20 @@ public class BlockEntityHopper extends BlockEntityAbstractContainer {
             return false;
         }
 
-        BlockEntity blockEntity = this.level.getBlockEntity(this.up());
+        Block block = this.level.getBlock(this.upVec());
+        if (block.is(Block.COMPOSTER)) {
+            //TODO
+            return false;
+        }
+
+        if (block.getBlockEntityType() == 0) {
+            return false;
+        }
+        BlockEntity blockEntity = this.level.getBlockEntity(block);
+        if (blockEntity == null) {
+            return false;
+        }
+
         //Fix for furnace outputs
         if (blockEntity instanceof BlockEntityFurnace) {
             FurnaceInventory inv = ((BlockEntityFurnace) blockEntity).getInventory();
@@ -151,6 +164,10 @@ public class BlockEntityHopper extends BlockEntityAbstractContainer {
                     return true;
                 }
             }
+        } else if (blockEntity instanceof BlockEntityBrewingStand brewing) {
+            //TODO: brewing outputs
+        } else if (blockEntity instanceof HopperInteractable container) {
+            return container.pull(this);
         } else if (blockEntity instanceof InventoryHolder) {
             Inventory inv = ((InventoryHolder) blockEntity).getInventory();
 
@@ -243,13 +260,32 @@ public class BlockEntityHopper extends BlockEntityAbstractContainer {
             return false;
         }
 
-        BlockEntity be = this.level.getBlockEntity(this.getSide(BlockFace.fromIndex(this.level.getBlock(this).getDamage())));
-
-        if (be instanceof BlockEntityHopper && this.getBlock().getDamage() == 0 || !(be instanceof InventoryHolder))
+        Block block = this.level.getBlock(this.getSideVec(BlockFace.fromIndex(this.level.getBlock(this).getDamage())));
+        if (block.is(Block.COMPOSTER)) {
+            //TODO
             return false;
+        }
 
+        if (block.getBlockEntityType() == 0) {
+            return false;
+        }
+        BlockEntity be = this.level.getBlockEntity(block);
+        if (be == null) {
+            return false;
+        }
+
+        if (be instanceof BlockEntityHopper && this.getBlock().getDamage() == 0) {
+            return false;
+        }
+
+        if (be instanceof HopperInteractable container) {
+            return container.push(this);
+        }
+
+        if (!(be instanceof InventoryHolder)) {
+            return false;
+        }
         InventoryMoveItemEvent event;
-
         //Fix for furnace inputs
         if (be instanceof BlockEntityFurnace) {
             BlockEntityFurnace furnace = (BlockEntityFurnace) be;

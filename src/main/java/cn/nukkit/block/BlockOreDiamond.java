@@ -46,9 +46,9 @@ public class BlockOreDiamond extends BlockSolid {
     public Item[] getDrops(Item item, Player player) {
         if (item.isPickaxe() && item.getTier() >= ItemTool.TIER_IRON) {
             int count = 1;
-            Enchantment fortune = item.getEnchantment(Enchantment.FORTUNE);
-            if (fortune != null && fortune.getLevel() >= 1) {
-                int i = ThreadLocalRandom.current().nextInt(fortune.getLevel() + 2) - 1;
+            int fortune = item.getId() != Item.ENCHANTED_BOOK ? item.getValidEnchantmentLevel(Enchantment.FORTUNE) : 0;
+            if (fortune > 0) {
+                int i = ThreadLocalRandom.current().nextInt(fortune + 2) - 1;
 
                 if (i < 0) {
                     i = 0;

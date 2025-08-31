@@ -113,6 +113,7 @@ public interface ItemRuntimeID {
     int COPPER_CHESTPLATE = BASE_INTERNAL_ID + 103;
     int COPPER_LEGGINGS = BASE_INTERNAL_ID + 104;
     int COPPER_BOOTS = BASE_INTERNAL_ID + 105;
+    int COPPER_HORSE_ARMOR = BASE_INTERNAL_ID + 106;
 
-    int CUSTOM_ITEM = Mth.smallestEncompassingPowerOfTwo(BASE_INTERNAL_ID + 106); //2048
+    int CUSTOM_ITEM = Mth.smallestEncompassingPowerOfTwo(BASE_INTERNAL_ID + 107); //2048
 }

@@ -60,7 +60,7 @@ public abstract class BlockStem extends BlockCrops implements Faceable {
                 }
 
                 int below = block.down().getId();
-                if (below == FARMLAND || below == GRASS_BLOCK || below == DIRT || below == PODZOL || below == MYCELIUM || below == MOSS_BLOCK || below == PALE_MOSS_BLOCK || below == DIRT_WITH_ROOTS || below == MUD || below == MUDDY_MANGROVE_ROOTS) {
+                if (below == FARMLAND || below == GRASS_BLOCK || below == DIRT || below == COARSE_DIRT || below == PODZOL || below == MYCELIUM || below == MOSS_BLOCK || below == PALE_MOSS_BLOCK || below == DIRT_WITH_ROOTS || below == MUD || below == MUDDY_MANGROVE_ROOTS) {
                     BlockGrowEvent ev = new BlockGrowEvent(block, get(fruit));
                     Server.getInstance().getPluginManager().callEvent(ev);
                     if (!ev.isCancelled()) {

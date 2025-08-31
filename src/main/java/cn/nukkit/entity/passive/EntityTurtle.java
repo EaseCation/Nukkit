@@ -31,16 +31,22 @@ public class EntityTurtle extends EntityAnimal {
 
     @Override
     public float getWidth() {
+        if (isBaby()) {
+            return 0.6f;
+        }
         return 1.2f;
     }
 
     @Override
     public float getHeight() {
+        if (isBaby()) {
+            return 0.2f;
+        }
         return 0.4f;
     }
 
     @Override
-    public void initEntity() {
+    protected void initEntity() {
         super.initEntity();
         this.setMaxHealth(30);
     }
@@ -58,6 +64,9 @@ public class EntityTurtle extends EntityAnimal {
 
     @Override
     public Item[] getDrops() {
+        if (isBaby()) {
+            return new Item[0];
+        }
         return new Item[]{
                 Item.get(Block.getItemId(Block.SEAGRASS), 0, ThreadLocalRandom.current().nextInt(3)),
         };

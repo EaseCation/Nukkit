@@ -120,4 +120,9 @@ public class BlockFarmland extends BlockSolid {
     public double getMaxY() {
         return this.y + 1 - 1.0 / 16;
     }
+
+    @Override
+    public boolean isDirt() {
+        return true;
+    }
 }

@@ -148,6 +148,7 @@ public class BlockEntityCampfire extends BlockEntitySpawnable {
             if (item == null) {
                 continue;
             }
+            items[i] = null;
 
             level.dropItem(this, item);
         }

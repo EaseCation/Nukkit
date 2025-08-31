@@ -105,7 +105,7 @@ public final class Fishing {
         float luck;
         boolean jungle;
         if (hook != null) {
-            luck = hook.rod.getEnchantmentLevel(Enchantment.LUCK_OF_THE_SEA);
+            luck = Math.max(hook.rod.getEnchantmentLevel(Enchantment.LUCK_OF_THE_SEA), 0);
 //            if (hook.shootingEntity instanceof Player player) {
 //                luck += player.getAttribute(Attribute.LUCK).getValue(); //TODO: AttributeMap
 //            }

@@ -51,7 +51,7 @@ public class EntityWolf extends EntityAnimal {
     }
 
     @Override
-    public void initEntity() {
+    protected void initEntity() {
         super.initEntity();
 
         dataProperties.putInt(DATA_VARIANT, namedTag.getInt("Variant", WOLF_VARIANT_PALE));

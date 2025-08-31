@@ -39,7 +39,7 @@ public class EntityDolphin extends EntityWaterAnimal {
     }
 
     @Override
-    public void initEntity() {
+    protected void initEntity() {
         super.initEntity();
         this.setMaxHealth(10);
     }

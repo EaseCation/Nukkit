@@ -34,11 +34,17 @@ public class EntityZoglin extends EntityMob implements EntitySmite {
 
     @Override
     public float getWidth() {
+        if (isBaby()) {
+            return 0.85f;
+        }
         return 1.4f;
     }
 
     @Override
     public float getHeight() {
+        if (isBaby()) {
+            return 0.85f;
+        }
         return 1.4f;
     }
 
@@ -69,5 +75,9 @@ public class EntityZoglin extends EntityMob implements EntitySmite {
     @Override
     protected float getKnockbackResistance() {
         return 0.6f;
+    }
+
+    public boolean isBaby() {
+        return getDataFlag(DATA_FLAG_BABY);
     }
 }

@@ -676,15 +676,7 @@ public class BlockCauldron extends BlockTransparent {
 
     @Override
     public Item toItem(boolean addUserData) {
-        Item item = Item.get(Item.CAULDRON);
-        if (addUserData) {
-            BlockEntity blockEntity = getBlockEntity();
-            if (blockEntity != null) {
-                item.setCustomName(blockEntity.getName());
-                item.setRepairCost(blockEntity.getRepairCost());
-            }
-        }
-        return item;
+        return Item.get(Item.CAULDRON);
     }
 
     @Override

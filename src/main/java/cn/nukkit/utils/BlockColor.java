@@ -111,4 +111,17 @@ public class BlockColor extends Color {
     public static int getARGB(int r, int g, int b, int a) {
         return ((a & 0xff) << 24) | ((r & 0xff) << 16) | ((g & 0xff) << 8) | (b & 0xff);
     }
+
+    /**
+     * Converts a {@code String} to an integer and returns the specified opaque {@code BlockColor}.
+     * This method handles string formats that are used to represent octal and hexadecimal numbers.
+     * @param nm a {@code String} that represents an opaque color as a 24-bit integer
+     * @return the new {@code BlockColor} object.
+     * @see java.lang.Integer#decode
+     * @throws NumberFormatException if the specified string cannot be interpreted as a decimal, octal, or hexadecimal integer.
+     */
+    public static BlockColor decode(String nm) throws NumberFormatException {
+        int rgb = Integer.decode(nm);
+        return new BlockColor(rgb >> 16 & 0xff, rgb >> 8 & 0xff, rgb & 0xff);
+    }
 }
