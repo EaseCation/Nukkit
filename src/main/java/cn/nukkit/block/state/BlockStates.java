@@ -3,7 +3,9 @@ package cn.nukkit.block.state;
 import cn.nukkit.block.state.enumeration.*;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.concurrent.atomic.AtomicInteger;
 
 import static cn.nukkit.block.state.BlockStateIntegerValues.*;
@@ -11,6 +13,7 @@ import static cn.nukkit.block.state.BlockStateIntegerValues.*;
 // This file is generated automatically, do not edit it manually.
 public final class BlockStates {
     private static final List<BlockState> REGISTRY = new ArrayList<>();
+    private static final Map<String, List<BlockState>> BY_NAME = new HashMap<>();
     private static final AtomicInteger INTERNAL_ID_ALLOCATOR = new AtomicInteger();
 
     public static final BooleanBlockState ACTIVE = register(new BooleanBlockState(BlockStateNames.ACTIVE));
@@ -174,6 +177,7 @@ public final class BlockStates {
 
     private static <T extends BlockState> T register(T state) {
         REGISTRY.add(state);
+        BY_NAME.computeIfAbsent(state.name, k -> new ArrayList<>()).add(state);
         return state;
     }
 
@@ -186,6 +190,10 @@ public final class BlockStates {
 
     public static BlockState get(int id) {
         return REGISTRY.get(id);
+    }
+
+    public static List<BlockState> get(String name) {
+        return BY_NAME.get(name);
     }
 
     private BlockStates() {

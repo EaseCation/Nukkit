@@ -21,10 +21,18 @@ public class SetBlockCommand extends VanillaCommand {
         this.commandParameters.clear();
         this.commandParameters.put("default", new CommandParameter[]{
 				CommandParameter.newType("position", CommandParamType.BLOCK_POSITION),
-				CommandParameter.newEnum("block", CommandEnum.ENUM_BLOCK)
+				CommandParameter.newEnum("tileName", CommandEnum.ENUM_BLOCK)
 						.addOption(CommandParamOption.HAS_SEMANTIC_CONSTRAINT),
 				CommandParameter.newEnum("oldBlockHandling", true, new CommandEnum("SetBlockMode", SetBlockMode.values()))
 						.addOption(CommandParamOption.SUPPRESS_ENUM_AUTOCOMPLETION),
+        });
+        this.commandParameters.put("states", new CommandParameter[]{
+                CommandParameter.newType("position", CommandParamType.BLOCK_POSITION),
+                CommandParameter.newEnum("tileName", CommandEnum.ENUM_BLOCK)
+                        .addOption(CommandParamOption.HAS_SEMANTIC_CONSTRAINT),
+                CommandParameter.newType("blockStates", CommandParamType.BLOCK_STATES),
+                CommandParameter.newEnum("oldBlockHandling", true, new CommandEnum("SetBlockMode", SetBlockMode.values()))
+                        .addOption(CommandParamOption.SUPPRESS_ENUM_AUTOCOMPLETION),
         });
 	}
 
@@ -38,10 +46,7 @@ public class SetBlockCommand extends VanillaCommand {
 		try {
 			Position position = parser.parsePosition();
 			Block block = parser.parseBlock();
-			SetBlockMode oldBlockHandling = SetBlockMode.REPLACE;
-			if (parser.hasNext()) {
-				oldBlockHandling = parser.parseEnum(SetBlockMode.class);
-			}
+			SetBlockMode oldBlockHandling = parser.parseEnumOrDefault(SetBlockMode.REPLACE);
 
 			Level level = position.getLevel();
 

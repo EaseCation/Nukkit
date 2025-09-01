@@ -702,14 +702,14 @@ public class Item implements Cloneable, ItemID {
         ListTag<CompoundTag> ench = this.getNamedTag().getList("ench", CompoundTag.class);
         List<Enchantment> enchantments = new ObjectArrayList<>(ench.size());
 
-        for (CompoundTag entry : ench.getAll()) {
-            int level = entry.getShort("id");
-            if (level <= 0) {
-                continue;
-            }
-            Enchantment e = Enchantment.getEnchantment(level);
+        for (CompoundTag entry : ench.getAllUnsafe()) {
+            Enchantment e = Enchantment.getEnchantment(entry.getShort("id"));
             if (e != null) {
-                e.setLevel(entry.getShort("lvl"), false);
+                int level = entry.getShort("lvl");
+                if (level <= 0) {
+                    continue;
+                }
+                e.setLevel(level, false);
                 enchantments.add(e);
             }
         }
@@ -934,7 +934,7 @@ public class Item implements Cloneable, ItemID {
             ListTag<StringTag> lore = nbt.getList("Lore", StringTag.class);
 
             if (!lore.isEmpty()) {
-                for (StringTag stringTag : lore.getAll()) {
+                for (StringTag stringTag : lore.getAllUnsafe()) {
                     lines.add(stringTag.data);
                 }
             }

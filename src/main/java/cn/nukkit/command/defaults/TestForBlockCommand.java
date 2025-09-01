@@ -3,6 +3,8 @@ package cn.nukkit.command.defaults;
 import cn.nukkit.block.Block;
 import cn.nukkit.command.CommandParser;
 import cn.nukkit.command.CommandSender;
+import cn.nukkit.command.data.CommandEnum;
+import cn.nukkit.command.data.CommandParamOption;
 import cn.nukkit.command.data.CommandParamType;
 import cn.nukkit.command.data.CommandParameter;
 import cn.nukkit.command.exceptions.CommandSyntaxException;
@@ -20,8 +22,9 @@ public class TestForBlockCommand extends VanillaCommand {
         this.commandParameters.clear();
         this.commandParameters.put("default", new CommandParameter[]{
                 CommandParameter.newType("position", CommandParamType.BLOCK_POSITION),
-                CommandParameter.newType("tileId", CommandParamType.INT),
-                CommandParameter.newType("dataValue", true, CommandParamType.INT),
+                CommandParameter.newEnum("tileName", CommandEnum.ENUM_BLOCK)
+                        .addOption(CommandParamOption.HAS_SEMANTIC_CONSTRAINT),
+                CommandParameter.newType("blockStates", true, CommandParamType.BLOCK_STATES),
         });
     }
 
@@ -34,19 +37,10 @@ public class TestForBlockCommand extends VanillaCommand {
         CommandParser parser = new CommandParser(this, sender, args);
         try {
             Position position = parser.parsePosition();
-            int tileId = parser.parseInt(0);
-            int dataValue = 0;
+            Block expectedBlock = parser.parseBlock();
 
-            if (parser.hasNext()) {
-                dataValue = parser.parseInt(0);
-            }
-
-//            try {
-//                GlobalBlockPalette.getOrCreateRuntimeId(tileId, dataValue);
-//            } catch (NoSuchElementException e) {
-//                sender.sendMessage(String.format(TextFormat.RED + "There is no such block with ID %1$s:%2$s", tileId, dataValue));
-//                return true;
-//            }
+            int expectedId = expectedBlock.getId();
+            int expectedMeta = expectedBlock.getDamage();
 
             Level level = position.getLevel();
 
@@ -59,10 +53,10 @@ public class TestForBlockCommand extends VanillaCommand {
             int id = block.getId();
             int meta = block.getDamage();
 
-            if (id == tileId && meta == dataValue) {
+            if (id == expectedId && meta == expectedMeta) {
                 sender.sendMessage(String.format("Successfully found the block at %1$d,%2$d,%3$d.", position.getFloorX(), position.getFloorY(), position.getFloorZ()));
             } else {
-                sender.sendMessage(String.format(TextFormat.RED + "The block at %1$d,%2$d,%3$d is %4$d:%5$d (expected: %6$d:%7$d).", position.getFloorX(), position.getFloorY(), position.getFloorZ(), id, meta, tileId, dataValue));
+                sender.sendMessage(String.format(TextFormat.RED + "The block at %1$d,%2$d,%3$d is %4$d:%5$d (expected %6$d:%7$d).", position.getFloorX(), position.getFloorY(), position.getFloorZ(), id, meta, expectedId, expectedMeta));
             }
 
             if (ENABLE_TEST_COMMAND) {

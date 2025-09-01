@@ -37,4 +37,12 @@ public class StringBlockState extends BlockState {
         }
         return values.indexOf(nbt.data);
     }
+
+    public int indexOf(String value) {
+        return values.indexOf(value);
+    }
+
+    public boolean contains(String value) {
+        return values.contains(value);
+    }
 }

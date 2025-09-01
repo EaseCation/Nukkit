@@ -44,8 +44,9 @@ public class CloneCommand extends VanillaCommand {
                 CommandParameter.newType("destination", CommandParamType.BLOCK_POSITION),
                 CommandParameter.newEnum("maskMode", new CommandEnum("MaskModeFiltered", "filtered")),
                 CommandParameter.newEnum("cloneMode", new CommandEnum("CloneMode", CloneMode.values())),
-                CommandParameter.newEnum("block", CommandEnum.ENUM_BLOCK)
+                CommandParameter.newEnum("tileName", CommandEnum.ENUM_BLOCK)
                         .addOption(CommandParamOption.HAS_SEMANTIC_CONSTRAINT),
+                CommandParameter.newType("blockStates", true, CommandParamType.BLOCK_STATES),
         });
     }
 
@@ -60,19 +61,9 @@ public class CloneCommand extends VanillaCommand {
             Position begin = parser.parsePosition().floor();
             Position end = parser.parsePosition().floor();
             Position destination = parser.parsePosition().floor();
-            MaskMode maskMode = MaskMode.REPLACE;
-            CloneMode cloneMode = CloneMode.NORMAL;
-            Block filter = Blocks.air();
-
-            if (parser.hasNext()) {
-                maskMode = parser.parseEnum(MaskMode.class);
-                if (parser.hasNext()) {
-                    cloneMode = parser.parseEnum(CloneMode.class);
-                    if (parser.hasNext()) {
-                        filter = parser.parseBlock();
-                    }
-                }
-            }
+            MaskMode maskMode = parser.parseEnumOrDefault(MaskMode.REPLACE);
+            CloneMode cloneMode = parser.parseEnumOrDefault(CloneMode.NORMAL);
+            Block filter = parser.parseBlockOrDefault(Blocks::air);
 
             AxisAlignedBB blocksAABB = new SimpleAxisAlignedBB(Math.min(begin.getX(), end.getX()), Math.min(begin.getY(), end.getY()), Math.min(begin.getZ(), end.getZ()), Math.max(begin.getX(), end.getX()), Math.max(begin.getY(), end.getY()), Math.max(begin.getZ(), end.getZ()));
             int size = Mth.floor((blocksAABB.getMaxX() - blocksAABB.getMinX() + 1) * (blocksAABB.getMaxY() - blocksAABB.getMinY() + 1) * (blocksAABB.getMaxZ() - blocksAABB.getMinZ() + 1));

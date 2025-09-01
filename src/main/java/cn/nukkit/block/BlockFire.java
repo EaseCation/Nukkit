@@ -103,11 +103,8 @@ public class BlockFire extends BlockFlowable {
             return Level.BLOCK_UPDATE_NORMAL;
         } else if (type == Level.BLOCK_UPDATE_SCHEDULED && (this.level.gameRules.getBoolean(GameRule.DO_FIRE_TICK) || level.isExtinguishFireIgnoreGameRule())) {
             Block down = down();
-            boolean forever = down.getId() == Block.NETHERRACK || down.getId() == Block.MAGMA;
-
+            boolean forever = down.getId() == Block.NETHERRACK || down.getId() == Block.MAGMA || down.is(BEDROCK, BlockBedrock.INFINIBURN_BIT);
             ThreadLocalRandom random = ThreadLocalRandom.current();
-
-            //TODO: END
 
             if (!this.isValidBase(down) && !this.canNeighborBurn()) {
                 BlockFadeEvent event = new BlockFadeEvent(this, get(AIR));
@@ -288,6 +285,9 @@ public class BlockFire extends BlockFlowable {
     private boolean canNeighborBurn() {
         for (BlockFace face : BlockFace.getValues()) {
             Block block = this.getSide(face);
+            if (face == BlockFace.DOWN && block.is(BEDROCK, BlockBedrock.INFINIBURN_BIT)) {
+                return true;
+            }
             if (block.getBurnChance() > 0) {
                 if (block.canContainWater() && level.getExtraBlock(block).isWater()) {
                     continue;

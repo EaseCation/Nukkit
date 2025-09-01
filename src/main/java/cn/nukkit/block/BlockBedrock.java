@@ -7,13 +7,13 @@ import cn.nukkit.item.Item;
  * Nukkit Project
  */
 public class BlockBedrock extends BlockSolid {
+    public static final int INFINIBURN_BIT = 0b1;
 
     public BlockBedrock() {
         this(0);
     }
 
     public BlockBedrock(int meta) {
-        // 0b1 infiniburn_bit
         super(meta & 0b1);
     }
 

@@ -5,6 +5,7 @@ import cn.nukkit.nbt.tag.StringTag;
 import cn.nukkit.nbt.tag.Tag;
 import lombok.ToString;
 
+import javax.annotation.Nullable;
 import java.util.List;
 import java.util.stream.Stream;
 
@@ -41,5 +42,28 @@ public class EnumBlockState<T extends Enum<?>> extends BlockState {
             return -1;
         }
         return stringValues.indexOf(nbt.data);
+    }
+
+    public int indexOf(String value) {
+        for (int i = 0; i < values.size(); i++) {
+            if (values.get(i).toString().equals(value)) {
+                return i;
+            }
+        }
+        return -1;
+    }
+
+    public boolean contains(String value) {
+        return indexOf(value) >= 0;
+    }
+
+    @Nullable
+    public T get(String value) {
+        for (T element : values) {
+            if (element.toString().equals(value)) {
+                return element;
+            }
+        }
+        return null;
     }
 }

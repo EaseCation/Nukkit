@@ -65,6 +65,16 @@ public class DeveloperCommand extends Command {
                         .addOption(CommandParamOption.HAS_SEMANTIC_CONSTRAINT),
                 CommandParameter.newType("meta", true, CommandParamType.INT),
         });
+        this.commandParameters.put("setblockStates", new CommandParameter[]{
+                CommandParameter.newEnum("subCommand", new CommandEnum("SubCommandSetblock", "setblock")),
+                CommandParameter.newType("position", CommandParamType.BLOCK_POSITION),
+                CommandParameter.newType("layer", CommandParamType.INT),
+                CommandParameter.newEnum("update", CommandEnum.ENUM_BOOLEAN),
+                CommandParameter.newEnum("block", CommandEnum.ENUM_BLOCK)
+                        .addOption(CommandParamOption.HAS_SEMANTIC_CONSTRAINT),
+                CommandParameter.newType("blockStates", CommandParamType.BLOCK_STATES),
+                CommandParameter.newType("meta", true, CommandParamType.INT),
+        });
         this.commandParameters.put("text", new CommandParameter[]{
                 CommandParameter.newEnum("subCommand", new CommandEnum("SubCommandText", "text")),
                 CommandParameter.newType("player", CommandParamType.TARGET),

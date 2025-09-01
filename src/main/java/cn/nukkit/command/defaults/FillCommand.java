@@ -31,8 +31,19 @@ public class FillCommand extends VanillaCommand {
         this.commandParameters.put("default", new CommandParameter[]{
                 CommandParameter.newType("from", CommandParamType.BLOCK_POSITION),
                 CommandParameter.newType("to", CommandParamType.BLOCK_POSITION),
-                CommandParameter.newEnum("block", CommandEnum.ENUM_BLOCK)
+                CommandParameter.newEnum("tileName", CommandEnum.ENUM_BLOCK)
                         .addOption(CommandParamOption.HAS_SEMANTIC_CONSTRAINT),
+                CommandParameter.newEnum("oldBlockHandling", true, new CommandEnum("FillMode", Stream.of(FillMode.values())
+                        .filter(mode -> mode != FillMode.REPLACE)
+                        .map(mode -> mode.toString().toLowerCase())
+                        .collect(Collectors.toSet()))),
+        });
+        this.commandParameters.put("states", new CommandParameter[]{
+                CommandParameter.newType("from", CommandParamType.BLOCK_POSITION),
+                CommandParameter.newType("to", CommandParamType.BLOCK_POSITION),
+                CommandParameter.newEnum("tileName", CommandEnum.ENUM_BLOCK)
+                        .addOption(CommandParamOption.HAS_SEMANTIC_CONSTRAINT),
+                CommandParameter.newType("blockStates", CommandParamType.BLOCK_STATES),
                 CommandParameter.newEnum("oldBlockHandling", true, new CommandEnum("FillMode", Stream.of(FillMode.values())
                         .filter(mode -> mode != FillMode.REPLACE)
                         .map(mode -> mode.toString().toLowerCase())
@@ -41,11 +52,23 @@ public class FillCommand extends VanillaCommand {
         this.commandParameters.put("replace", new CommandParameter[]{
                 CommandParameter.newType("from", CommandParamType.BLOCK_POSITION),
                 CommandParameter.newType("to", CommandParamType.BLOCK_POSITION),
-                CommandParameter.newEnum("block", CommandEnum.ENUM_BLOCK)
+                CommandParameter.newEnum("tileName", CommandEnum.ENUM_BLOCK)
                         .addOption(CommandParamOption.HAS_SEMANTIC_CONSTRAINT),
                 CommandParameter.newEnum("oldBlockHandling", new CommandEnum("Replace", "replace")),
-                CommandParameter.newEnum("replaceBlock", true, CommandEnum.ENUM_BLOCK)
+                CommandParameter.newEnum("replaceTileName", true, CommandEnum.ENUM_BLOCK)
                         .addOption(CommandParamOption.HAS_SEMANTIC_CONSTRAINT),
+                CommandParameter.newType("replaceBlockStates", true, CommandParamType.BLOCK_STATES),
+        });
+        this.commandParameters.put("replaceStates", new CommandParameter[]{
+                CommandParameter.newType("from", CommandParamType.BLOCK_POSITION),
+                CommandParameter.newType("to", CommandParamType.BLOCK_POSITION),
+                CommandParameter.newEnum("tileName", CommandEnum.ENUM_BLOCK)
+                        .addOption(CommandParamOption.HAS_SEMANTIC_CONSTRAINT),
+                CommandParameter.newType("blockStates", CommandParamType.BLOCK_STATES),
+                CommandParameter.newEnum("oldBlockHandling", new CommandEnum("Replace", "replace")),
+                CommandParameter.newEnum("replaceTileName", true, CommandEnum.ENUM_BLOCK)
+                        .addOption(CommandParamOption.HAS_SEMANTIC_CONSTRAINT),
+                CommandParameter.newType("replaceBlockStates", true, CommandParamType.BLOCK_STATES),
         });
     }
 
@@ -60,15 +83,8 @@ public class FillCommand extends VanillaCommand {
             Position from = parser.parsePosition().floor();
             Position to = parser.parsePosition().floor();
             Block placeBlock = parser.parseBlock();
-            FillMode oldBlockHandling = FillMode.REPLACE;
-            Block replaceBlock = Blocks.air();
-
-            if (parser.hasNext()) {
-                oldBlockHandling = parser.parseEnum(FillMode.class);
-                if (parser.hasNext()) {
-                    replaceBlock = parser.parseBlock();
-                }
-            }
+            FillMode oldBlockHandling = parser.parseEnumOrDefault(FillMode.REPLACE);
+            Block replaceBlock = parser.parseBlockOrDefault(Blocks::air);
 
             AxisAlignedBB aabb = new SimpleAxisAlignedBB(Math.min(from.getX(), to.getX()), Math.min(from.getY(), to.getY()), Math.min(from.getZ(), to.getZ()), Math.max(from.getX(), to.getX()), Math.max(from.getY(), to.getY()), Math.max(from.getZ(), to.getZ()));
             Level level = from.getLevel();
