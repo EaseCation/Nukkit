@@ -133,7 +133,7 @@ public class BlockSnowLayer extends BlockFallable {
             }
         } else if (type == Level.BLOCK_UPDATE_RANDOM) {
             if (this.getLevel().getBlockLightAt((int) this.x, (int) this.y, (int) this.z) >= 10) {
-                BlockFadeEvent event = new BlockFadeEvent(this, (this.getDamage() & HEIGHT_MASK) > 0 ? get(SNOW_LAYER, this.getDamage() - 1) : get(AIR));
+                BlockFadeEvent event = new BlockFadeEvent(this, (this.getDamage() & HEIGHT_MASK) > 0 ? get(SNOW_LAYER, this.getDamage() & ~HEIGHT_MASK | (this.getDamage() & HEIGHT_MASK) - 1) : get(AIR));
                 level.getServer().getPluginManager().callEvent(event);
                 if (!event.isCancelled()) {
                     Block newBlock = event.getNewState();
@@ -224,8 +224,8 @@ public class BlockSnowLayer extends BlockFallable {
         }
         if (item.getId() == SNOW_LAYER) {
             if (!isFull()) {
-                this.setDamage(this.getDamage() + 1);
-                this.level.setBlock(this ,this, true);
+                this.setDamage(this.getDamage() & ~HEIGHT_MASK | (this.getDamage() & HEIGHT_MASK) + 1);
+                this.level.setBlock(this, this, true);
 
                 if (player != null && (player.gamemode & 0x1) == 0) {
                     item.count--;
@@ -233,6 +233,19 @@ public class BlockSnowLayer extends BlockFallable {
 
                 level.addLevelSoundEvent(this, LevelSoundEventPacket.SOUND_PLACE, getFullId());
                 return true;
+            } else if (face.isHorizontal()) {
+                Block block = getSide(face);
+                if (block.is(SNOW_LAYER) && (block.getDamage() & HEIGHT_MASK) != HEIGHT_MASK) {
+                    block.setDamage(block.getDamage() & ~HEIGHT_MASK | (block.getDamage() & HEIGHT_MASK) + 1);
+                    level.setBlock(block, block, true);
+
+                    if (player != null && !player.isSurvivalLike()) {
+                        item.pop();
+                    }
+
+                    level.addLevelSoundEvent(block, LevelSoundEventPacket.SOUND_PLACE, block.getFullId());
+                    return true;
+                }
             }
         }
         return false;
