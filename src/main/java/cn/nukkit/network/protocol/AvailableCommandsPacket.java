@@ -4,7 +4,6 @@ import cn.nukkit.command.data.*;
 import lombok.ToString;
 
 import java.util.*;
-import java.util.stream.Collectors;
 
 /**
  * author: MagicDroidX
@@ -119,9 +118,9 @@ public class AvailableCommandsPacket extends DataPacket {
                     throw new IllegalStateException("Enum value '" + val + "' not found");
                 }
 
-                if (enums.size() < 256) {
+                if (enums.size() <= 256) {
                     putByte((byte) i);
-                } else if (enums.size() < 65536) {
+                } else if (enums.size() <= 65536) {
                     putShort(i);
                 } else {
                     putLInt(i);
