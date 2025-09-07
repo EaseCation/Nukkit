@@ -12,9 +12,10 @@ public class CommandData implements Cloneable {
 
     public CommandEnum aliases = null;
     public String description = "description";
-    public Map<String, CommandOverload> overloads = new HashMap<>();
+    public final Map<String, ChainedSubCommandData> chainedSubCommandData = new HashMap<>();
+    public final Map<String, CommandOverload> overloads = new HashMap<>();
 
-    public Set<CommandFlag> flags = EnumSet.noneOf(CommandFlag.class);
+    public final Set<CommandFlag> flags = EnumSet.noneOf(CommandFlag.class);
     public CommandPermission permission = CommandPermission.ALL;
 
     @Override

@@ -11,6 +11,11 @@ public class BlockEntityVault extends BlockEntitySpawnable {
     }
 
     @Override
+    public int getTypeId() {
+        return BlockEntityType.VAULT;
+    }
+
+    @Override
     protected void initBlockEntity() {
 
         super.initBlockEntity();

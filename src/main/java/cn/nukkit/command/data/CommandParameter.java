@@ -9,7 +9,7 @@ public class CommandParameter {
     public String name;
     public CommandParamType type;
     public boolean optional;
-    public Set<CommandParamOption> options = EnumSet.noneOf(CommandParamOption.class);
+    public final Set<CommandParamOption> options = EnumSet.noneOf(CommandParamOption.class);
 
     public CommandEnum enumData;
     public String postFix;
@@ -87,6 +87,9 @@ public class CommandParameter {
     }
 
     private CommandParameter(String name, boolean optional, CommandParamType type, CommandEnum enumData, String postFix) {
+        if (postFix != null && postFix.isBlank()) {
+            throw new IllegalArgumentException("Postfix cannot be blank");
+        }
         this.name = name;
         this.optional = optional;
         this.type = type;

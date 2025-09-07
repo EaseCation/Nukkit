@@ -11,6 +11,11 @@ public class BlockEntityStructureBlock extends BlockEntitySpawnable {
     }
 
     @Override
+    public int getTypeId() {
+        return BlockEntityType.STRUCTURE_BLOCK;
+    }
+
+    @Override
     protected void initBlockEntity() {
         if (!this.namedTag.contains("isPowered")) {
             this.namedTag.putBoolean("isPowered", false);

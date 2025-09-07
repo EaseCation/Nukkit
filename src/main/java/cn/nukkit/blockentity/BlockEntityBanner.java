@@ -16,6 +16,11 @@ public class BlockEntityBanner extends BlockEntitySpawnable {
     }
 
     @Override
+    public int getTypeId() {
+        return BlockEntityType.BANNER;
+    }
+
+    @Override
     protected void initBlockEntity() {
         if (!this.namedTag.contains("Base")) {
             this.namedTag.putInt("Base", 0);

@@ -43,6 +43,11 @@ public class BlockEntityPistonArm extends BlockEntitySpawnable {
     }
 
     @Override
+    public int getTypeId() {
+        return BlockEntityType.PISTON_ARM;
+    }
+
+    @Override
     protected void initBlockEntity() {
         if (namedTag.contains("Progress")) {
             this.progress = namedTag.getFloat("Progress");
@@ -202,7 +207,7 @@ public class BlockEntityPistonArm extends BlockEntitySpawnable {
                         movedBlockEntity.putInt("x", movingBlock.getFloorX());
                         movedBlockEntity.putInt("y", movingBlock.getFloorY());
                         movedBlockEntity.putInt("z", movingBlock.getFloorZ());
-                        BlockEntity.createBlockEntity(movedBlockEntity.getString("id"), this.level.getChunk(movingBlock.getChunkX(), movingBlock.getChunkZ()), movedBlockEntity);
+                        BlockEntities.createBlockEntity(movedBlockEntity.getString("id"), this.level.getChunk(movingBlock.getChunkX(), movingBlock.getChunkZ()), movedBlockEntity);
                     }
                 }
             }

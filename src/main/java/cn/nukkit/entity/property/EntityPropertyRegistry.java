@@ -1,11 +1,13 @@
 package cn.nukkit.entity.property;
 
 import cn.nukkit.GameVersion;
+import cn.nukkit.command.data.CommandEnum;
 import cn.nukkit.entity.Entities;
 import cn.nukkit.entity.Entity;
 import cn.nukkit.entity.EntityFullNames;
 import cn.nukkit.entity.EntityID;
 
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -123,6 +125,10 @@ public final class EntityPropertyRegistry {
             }
         }
         registerProperties(Entities.getTypeByIdentifier(entityIdentifier), entityIdentifier, properties);
+
+        for (EntityProperty property : properties) {
+            CommandEnum.ENUM_ENTITY_PROPERTY.getValues().put(property.getName(), Collections.emptySet());
+        }
     }
 
     public static EntityProperties getProperties(Entity entity) {

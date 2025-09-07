@@ -15,6 +15,11 @@ public class BlockEntityEnchantTable extends BlockEntitySpawnable implements Blo
     }
 
     @Override
+    public int getTypeId() {
+        return BlockEntityType.ENCHANT_TABLE;
+    }
+
+    @Override
     public boolean isValidBlock(int blockId) {
         return blockId == Block.ENCHANTING_TABLE;
     }

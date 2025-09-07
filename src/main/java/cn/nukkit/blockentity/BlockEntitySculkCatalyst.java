@@ -27,6 +27,11 @@ public class BlockEntitySculkCatalyst extends BlockEntity {
     }
 
     @Override
+    public int getTypeId() {
+        return BlockEntityType.SCULK_CATALYST;
+    }
+
+    @Override
     public boolean isValidBlock(int blockId) {
         return blockId == BlockID.SCULK_CATALYST;
     }

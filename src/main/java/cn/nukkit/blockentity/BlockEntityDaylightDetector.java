@@ -11,6 +11,11 @@ public class BlockEntityDaylightDetector extends BlockEntity {
     }
 
     @Override
+    public int getTypeId() {
+        return BlockEntityType.DAYLIGHT_DETECTOR;
+    }
+
+    @Override
     public boolean isValidBlock(int blockId) {
         return blockId == Block.DAYLIGHT_DETECTOR || blockId == Block.DAYLIGHT_DETECTOR_INVERTED;
     }

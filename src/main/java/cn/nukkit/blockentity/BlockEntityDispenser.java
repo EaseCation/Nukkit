@@ -14,6 +14,11 @@ public class BlockEntityDispenser extends BlockEntityAbstractContainer {
     }
 
     @Override
+    public int getTypeId() {
+        return BlockEntityType.DISPENSER;
+    }
+
+    @Override
     protected void initBlockEntity() {
         this.inventory = new DispenserInventory(this);
 

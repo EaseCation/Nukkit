@@ -103,6 +103,11 @@ public class BlockEntityMobSpawner extends BlockEntitySpawnable {
     }
 
     @Override
+    public int getTypeId() {
+        return BlockEntityType.MOB_SPAWNER;
+    }
+
+    @Override
     protected void initBlockEntity() {
         if (namedTag.contains(TAG_ENTITY_ID)) {
             Tag tag = namedTag.get(TAG_ENTITY_ID);

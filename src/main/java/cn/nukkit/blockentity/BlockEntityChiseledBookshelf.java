@@ -20,6 +20,11 @@ public class BlockEntityChiseledBookshelf extends BlockEntitySpawnable implement
     }
 
     @Override
+    public int getTypeId() {
+        return BlockEntityType.CHISELED_BOOKSHELF;
+    }
+
+    @Override
     protected void initBlockEntity() {
         items = new Item[SLOT_COUNT];
 

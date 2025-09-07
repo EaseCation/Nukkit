@@ -8,8 +8,6 @@ import cn.nukkit.math.BlockVector3;
 import cn.nukkit.math.Vector3;
 import cn.nukkit.nbt.tag.CompoundTag;
 import cn.nukkit.utils.ChunkException;
-import com.google.common.collect.BiMap;
-import com.google.common.collect.HashBiMap;
 import lombok.extern.log4j.Log4j2;
 
 /**
@@ -19,8 +17,6 @@ import lombok.extern.log4j.Log4j2;
 public abstract class BlockEntity extends Position implements BlockEntityID {
 
     public static long count = 1;
-
-    private static final BiMap<String, Class<? extends BlockEntity>> knownBlockEntities = HashBiMap.create(BlockEntityType.UNDEFINED);
 
     public FullChunk chunk;
     private String name;
@@ -80,33 +76,10 @@ public abstract class BlockEntity extends Position implements BlockEntityID {
 
     }
 
-    public static BlockEntity createBlockEntity(String type, FullChunk chunk, CompoundTag nbt) {
-//        type = type.replaceFirst("BlockEntity", ""); //TODO: Remove this after the first release
-
-        Class<? extends BlockEntity> clazz = knownBlockEntities.get(type);
-        if (clazz == null) {
-            return null;
-        }
-
-        try {
-            return clazz.getConstructor(FullChunk.class, CompoundTag.class).newInstance(chunk, nbt);
-        } catch (Exception e) {
-            log.error("Failed to create block entity: {}", type, e);
-        }
-        return null;
-    }
-
-    public static boolean registerBlockEntity(String name, Class<? extends BlockEntity> c) {
-        if (c == null) {
-            return false;
-        }
-
-        knownBlockEntities.put(name, c);
-        return true;
-    }
+    public abstract int getTypeId();
 
     public final String getSaveId() {
-        return knownBlockEntities.inverse().getOrDefault(getClass(), "");
+        return BlockEntities.getIdByType(getTypeId());
     }
 
     public long getId() {

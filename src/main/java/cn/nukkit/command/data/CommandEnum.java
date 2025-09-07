@@ -3,8 +3,11 @@ package cn.nukkit.command.data;
 import cn.nukkit.GameMode;
 import cn.nukkit.block.Blocks;
 import cn.nukkit.entity.EntityID;
+import cn.nukkit.entity.property.EntityProperty;
+import cn.nukkit.entity.property.EntityPropertyRegistry;
 import cn.nukkit.item.Items;
 import cn.nukkit.item.enchantment.Enchantments;
+import cn.nukkit.level.Dimension;
 import cn.nukkit.level.biome.Biome;
 import cn.nukkit.level.biome.Biomes;
 import cn.nukkit.potion.Effects;
@@ -14,6 +17,7 @@ import it.unimi.dsi.fastutil.Pair;
 import java.lang.reflect.Field;
 import java.util.*;
 import java.util.stream.Collectors;
+import java.util.stream.StreamSupport;
 
 /**
  * @author CreeperFace
@@ -27,9 +31,13 @@ public class CommandEnum {
     public static final CommandEnum ENUM_BLOCK;
     public static final CommandEnum ENUM_ITEM;
     public static final CommandEnum ENUM_ENTITY_TYPE;
+    public static final CommandEnum ENUM_ENTITY_PROPERTY = new CommandEnum("EntityProperty", EntityPropertyRegistry.getRegistry().values().stream()
+            .flatMap(properties -> StreamSupport.stream(properties.spliterator(), false).map(EntityProperty::getName))
+            .collect(Collectors.toSet()));
     public static final CommandEnum ENUM_ENCHANT = new CommandEnum("Enchant", Enchantments.getEnchantments().keySet());
     public static final CommandEnum ENUM_EFFECT = new CommandEnum("Effect", Effects.getEffects().keySet());
     public static final CommandEnum ENUM_BIOME;
+    public static final CommandEnum ENUM_DIMENSION = new CommandEnum("Dimension", Dimension.values());
 
     static {
         ImmutableMap.Builder<String, Set<CommandEnumConstraint>> gameModes = ImmutableMap.builder();
@@ -163,7 +171,7 @@ public class CommandEnum {
 
     public CommandEnum(String name, Enum<?>... values) {
         this(name, false, Arrays.stream(values)
-                .map(value -> Pair.of(value.toString().toLowerCase(), EnumSet.noneOf(CommandEnumConstraint.class)))
+                .map(value -> Pair.of(value.name().toLowerCase(), EnumSet.noneOf(CommandEnumConstraint.class)))
                 .collect(Collectors.toMap(Pair::left, Pair::right)));
     }
 

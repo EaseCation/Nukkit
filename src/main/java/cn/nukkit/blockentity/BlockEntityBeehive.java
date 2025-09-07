@@ -24,6 +24,11 @@ public class BlockEntityBeehive extends BlockEntity {
     }
 
     @Override
+    public int getTypeId() {
+        return BlockEntityType.BEEHIVE;
+    }
+
+    @Override
     protected void initBlockEntity() {
         if (namedTag.contains("ShouldSpawnBees")) {
             shouldSpawnBees = namedTag.getBoolean("ShouldSpawnBees");

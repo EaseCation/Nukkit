@@ -18,6 +18,11 @@ public class BlockEntitySkull extends BlockEntitySpawnable {
     }
 
     @Override
+    public int getTypeId() {
+        return BlockEntityType.SKULL;
+    }
+
+    @Override
     protected void initBlockEntity() {
         if (V1_21_40.isAvailable()) {
             if (namedTag.contains("SkullType")) {

@@ -20,6 +20,11 @@ public class BlockEntityShelf extends BlockEntitySpawnable implements HopperInte
     }
 
     @Override
+    public int getTypeId() {
+        return BlockEntityType.SHELF;
+    }
+
+    @Override
     protected void initBlockEntity() {
         items = new Item[SLOT_COUNT];
 

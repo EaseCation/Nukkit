@@ -29,6 +29,11 @@ public class BlockEntityDecoratedPot extends BlockEntitySpawnable implements Hop
     }
 
     @Override
+    public int getTypeId() {
+        return BlockEntityType.DECORATED_POT;
+    }
+
+    @Override
     protected void initBlockEntity() {
         if (namedTag.contains("sherds")) {
             this.sherds = new String[4];

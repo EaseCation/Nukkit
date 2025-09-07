@@ -23,6 +23,11 @@ public class BlockEntitySculkSensor extends BlockEntity {
     }
 
     @Override
+    public int getTypeId() {
+        return BlockEntityType.SCULK_SENSOR;
+    }
+
+    @Override
     public boolean isValidBlock(int blockId) {
         return blockId == BlockID.SCULK_SENSOR;
     }

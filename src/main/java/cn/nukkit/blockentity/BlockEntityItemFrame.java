@@ -27,6 +27,11 @@ public class BlockEntityItemFrame extends BlockEntitySpawnable {
     }
 
     @Override
+    public int getTypeId() {
+        return BlockEntityType.ITEM_FRAME;
+    }
+
+    @Override
     protected void initBlockEntity() {
         Item item = null;
         CompoundTag itemTag = this.namedTag.getCompound("Item", null);

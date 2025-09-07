@@ -38,6 +38,11 @@ public class BlockEntityChalkboard extends BlockEntitySpawnable {
     }
 
     @Override
+    public int getTypeId() {
+        return BlockEntityType.CHALKBOARD_BLOCK;
+    }
+
+    @Override
     protected void initBlockEntity() {
         baseX = namedTag.getInt(TAG_BASE_X);
         baseY = namedTag.getInt(TAG_BASE_Y);

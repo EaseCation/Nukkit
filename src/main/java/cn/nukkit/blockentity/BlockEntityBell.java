@@ -16,6 +16,11 @@ public class BlockEntityBell extends BlockEntitySpawnable {
     }
 
     @Override
+    public int getTypeId() {
+        return BlockEntityType.BELL;
+    }
+
+    @Override
     protected void initBlockEntity() {
         this.ticks = this.namedTag.getInt("Ticks");
         this.ringing = this.namedTag.getBoolean("Ringing");

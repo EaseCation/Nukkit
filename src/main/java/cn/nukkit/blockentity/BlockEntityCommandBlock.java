@@ -57,6 +57,11 @@ public class BlockEntityCommandBlock extends BlockEntitySpawnable {
     }
 
     @Override
+    public int getTypeId() {
+        return BlockEntityType.COMMAND_BLOCK;
+    }
+
+    @Override
     protected void initBlockEntity() {
         if (this.namedTag.contains(TAG_POWERED)) {
             this.powered = this.namedTag.getBoolean(TAG_POWERED);

@@ -15,6 +15,11 @@ public class BlockEntityNetherReactor extends BlockEntitySpawnable {
     }
 
     @Override
+    public int getTypeId() {
+        return BlockEntityType.NETHER_REACTOR;
+    }
+
+    @Override
     protected void initBlockEntity() {
         if (!namedTag.contains("IsInitialized")) {
             namedTag.putBoolean("IsInitialized", false);

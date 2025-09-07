@@ -1,5 +1,6 @@
 package cn.nukkit.utils;
 
+import cn.nukkit.command.data.ChainedSubCommandData;
 import cn.nukkit.command.data.CommandDataVersions;
 import cn.nukkit.command.data.CommandEnum;
 import cn.nukkit.command.data.CommandParamType;
@@ -1367,7 +1368,7 @@ public class BinaryStream {
             stream.putBoolean(link.immediate);
         }
 
-        public void putCommandData(BinaryStream stream, Map<String, CommandDataVersions> commands, List<CommandEnum> enums, List<String> postFixes, List<CommandEnum> softEnums) {
+        public void putCommandData(BinaryStream stream, Map<String, CommandDataVersions> commands, List<CommandEnum> enums, List<String> postFixes, List<CommandEnum> softEnums, List<ChainedSubCommandData> chainedSubCommands) {
             //TODO: 1.13前的重构
             stream.putUnsignedVarInt(0);
         }

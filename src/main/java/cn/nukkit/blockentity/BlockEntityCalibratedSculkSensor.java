@@ -10,6 +10,11 @@ public class BlockEntityCalibratedSculkSensor extends BlockEntitySculkSensor {
     }
 
     @Override
+    public int getTypeId() {
+        return BlockEntityType.CALIBRATED_SCULK_SENSOR;
+    }
+
+    @Override
     public boolean isValidBlock(int blockId) {
         return blockId == Block.CALIBRATED_SCULK_SENSOR;
     }

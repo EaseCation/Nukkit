@@ -1,7 +1,6 @@
 package cn.nukkit.blockentity;
 
 import cn.nukkit.block.Block;
-import cn.nukkit.item.Item;
 import cn.nukkit.level.format.FullChunk;
 import cn.nukkit.nbt.tag.CompoundTag;
 import cn.nukkit.utils.DyeColor;
@@ -15,6 +14,11 @@ public class BlockEntityBed extends BlockEntitySpawnable {
 
     public BlockEntityBed(FullChunk chunk, CompoundTag nbt) {
         super(chunk, nbt);
+    }
+
+    @Override
+    public int getTypeId() {
+        return BlockEntityType.BED;
     }
 
     @Override

@@ -30,6 +30,11 @@ public class BlockEntitySign extends BlockEntitySpawnable {
     }
 
     @Override
+    public int getTypeId() {
+        return BlockEntityType.SIGN;
+    }
+
+    @Override
     protected void initBlockEntity() {
         frontText = new TextData();
         backText = new TextData();

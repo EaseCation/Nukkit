@@ -33,6 +33,11 @@ public class BlockEntityBrewingStand extends BlockEntityAbstractContainer {
     }
 
     @Override
+    public int getTypeId() {
+        return BlockEntityType.BREWING_STAND;
+    }
+
+    @Override
     protected void initBlockEntity() {
         inventory = new BrewingInventory(this);
 

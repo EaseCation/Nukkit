@@ -21,6 +21,11 @@ public class BlockEntityDropper extends BlockEntityAbstractContainer {
     }
 
     @Override
+    public int getTypeId() {
+        return BlockEntityType.DROPPER;
+    }
+
+    @Override
     public int getSize() {
         return 9;
     }

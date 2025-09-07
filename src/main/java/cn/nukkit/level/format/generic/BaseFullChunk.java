@@ -172,7 +172,7 @@ public abstract class BaseFullChunk implements FullChunk, ChunkManager {
                             changed = true;
                             continue;
                         }
-                        BlockEntity blockEntity = BlockEntity.createBlockEntity(nbt.getString("id"), this, nbt);
+                        BlockEntity blockEntity = BlockEntities.createBlockEntity(nbt.getString("id"), this, nbt);
                         if (blockEntity == null) {
                             changed = true;
                         }
@@ -735,7 +735,7 @@ public abstract class BaseFullChunk implements FullChunk, ChunkManager {
                                 continue;
                             }
 
-                            blockEntity = BlockEntity.createBlockEntity(id, this, BlockEntity.getDefaultCompound(worldX, worldY, worldZ, id));
+                            blockEntity = BlockEntities.createBlockEntity(type, this, BlockEntity.getDefaultCompound(worldX, worldY, worldZ, id));
 
                             if (blockEntity == null) {
                                 log.warn("Failed to create BlockEntity: {}, {}, {} ({}:{}) {}", worldX, worldY, worldZ, block.getId(), block.getDamage(), level.getFolderName());

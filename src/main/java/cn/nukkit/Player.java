@@ -6767,4 +6767,22 @@ public class Player extends EntityHuman implements CommandSender, InventoryHolde
             player.updateLocator(getId(), currentPos.x, currentPos.y, currentPos.z);
         }
     }
+
+    /**
+     * @since 1.6
+     */
+    public void setSoftEnum(String enumName, String... values) {
+    }
+
+    /**
+     * @since 1.6
+     */
+    public void addSoftEnum(String enumName, String... values) {
+    }
+
+    /**
+     * @since 1.6
+     */
+    public void removeSoftEnum(String enumName, String... values) {
+    }
 }

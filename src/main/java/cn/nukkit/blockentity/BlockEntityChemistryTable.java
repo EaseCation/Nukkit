@@ -32,6 +32,11 @@ public class BlockEntityChemistryTable extends BlockEntitySpawnable {
     }
 
     @Override
+    public int getTypeId() {
+        return BlockEntityType.CHEMISTRY_TABLE;
+    }
+
+    @Override
     protected void initBlockEntity() {
         if (namedTag.contains(TAG_ITEM_ID)) {
             item = Item.get(namedTag.getInt(TAG_ITEM_ID), namedTag.getShort(TAG_ITEM_AUX), namedTag.getByte(TAG_ITEM_STACK));

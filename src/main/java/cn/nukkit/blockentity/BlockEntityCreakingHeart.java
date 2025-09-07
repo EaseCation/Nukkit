@@ -13,6 +13,11 @@ public class BlockEntityCreakingHeart extends BlockEntity {
     }
 
     @Override
+    public int getTypeId() {
+        return BlockEntityType.CREAKING_HEART;
+    }
+
+    @Override
     protected void initBlockEntity() {
         cooldown = namedTag.getInt("Cooldown", 20);
 

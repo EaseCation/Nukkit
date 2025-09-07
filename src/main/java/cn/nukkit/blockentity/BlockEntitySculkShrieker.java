@@ -29,6 +29,11 @@ public class BlockEntitySculkShrieker extends BlockEntity {
     }
 
     @Override
+    public int getTypeId() {
+        return BlockEntityType.SCULK_SHRIEKER;
+    }
+
+    @Override
     public boolean isValidBlock(int blockId) {
         return blockId == BlockID.SCULK_SHRIEKER;
     }

@@ -26,6 +26,11 @@ public class BlockEntityEndGateway extends BlockEntitySpawnable {
     }
 
     @Override
+    public int getTypeId() {
+        return BlockEntityType.END_GATEWAY;
+    }
+
+    @Override
     protected void initBlockEntity() {
         if (namedTag.contains(TAG_AGE)) {
             age = namedTag.getInt(TAG_AGE);

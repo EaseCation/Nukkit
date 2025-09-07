@@ -17,6 +17,11 @@ public class BlockEntityEnderChest extends BlockEntitySpawnable {
     }
 
     @Override
+    public int getTypeId() {
+        return BlockEntityType.ENDER_CHEST;
+    }
+
+    @Override
     public boolean isValidBlock(int blockId) {
         return blockId == Block.ENDER_CHEST;
     }

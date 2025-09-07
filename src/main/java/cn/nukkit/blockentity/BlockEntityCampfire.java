@@ -28,6 +28,11 @@ public class BlockEntityCampfire extends BlockEntitySpawnable {
     }
 
     @Override
+    public int getTypeId() {
+        return BlockEntityType.CAMPFIRE;
+    }
+
+    @Override
     protected void initBlockEntity() {
         items = new Item[SLOT_COUNT];
         itemTime = new int[SLOT_COUNT];

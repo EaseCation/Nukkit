@@ -17,6 +17,11 @@ public class BlockEntityShulkerBox extends BlockEntityAbstractContainer {
     }
 
     @Override
+    public int getTypeId() {
+        return BlockEntityType.SHULKER_BOX;
+    }
+
+    @Override
     protected void initBlockEntity() {
         this.inventory = new ShulkerBoxInventory(this);
 

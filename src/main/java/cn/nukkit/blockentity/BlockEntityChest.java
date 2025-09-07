@@ -25,6 +25,11 @@ public class BlockEntityChest extends BlockEntityAbstractContainer {
     }
 
     @Override
+    public int getTypeId() {
+        return BlockEntityType.CHEST;
+    }
+
+    @Override
     protected void initBlockEntity() {
         this.doubleInventory = null;
         this.inventory = new ChestInventory(this);

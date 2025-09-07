@@ -28,6 +28,11 @@ public class BlockEntityJukebox extends BlockEntitySpawnable implements HopperIn
     }
 
     @Override
+    public int getTypeId() {
+        return BlockEntityType.JUKEBOX;
+    }
+
+    @Override
     protected void initBlockEntity() {
         boolean hasRecord = false;
         if (namedTag.contains("RecordItem")) {

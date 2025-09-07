@@ -1278,7 +1278,7 @@ public class Level implements ChunkManager, Metadatable {
         }
 
         // Tick Weather
-        if (this.dimension != Dimension.NETHER && this.dimension != Dimension.END && gameRules.getBoolean(GameRule.DO_WEATHER_CYCLE)) {
+        if (this.dimension != Dimension.NETHER && this.dimension != Dimension.THE_END && gameRules.getBoolean(GameRule.DO_WEATHER_CYCLE)) {
             this.rainTime--;
             if (this.rainTime <= 0) {
                 if (!this.setRaining(!this.raining)) {
@@ -4842,7 +4842,7 @@ public class Level implements ChunkManager, Metadatable {
     }
 
     public boolean createPortal(Block target, CreateReason reason) {
-        if (this.dimension == Dimension.END) return false;
+        if (this.dimension == Dimension.THE_END) return false;
         int maxPortalSize = 23;
         final int targX = target.getFloorX();
         final int targY = target.getFloorY();

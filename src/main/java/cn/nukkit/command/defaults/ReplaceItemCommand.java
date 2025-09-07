@@ -10,11 +10,7 @@ import cn.nukkit.command.data.CommandParamType;
 import cn.nukkit.command.data.CommandParameter;
 import cn.nukkit.command.exceptions.CommandExceptions;
 import cn.nukkit.command.exceptions.CommandSyntaxException;
-import cn.nukkit.inventory.Inventory;
-import cn.nukkit.inventory.InventoryHolder;
-import cn.nukkit.inventory.InventoryType;
-import cn.nukkit.inventory.PlayerEnderChestInventory;
-import cn.nukkit.inventory.PlayerInventory;
+import cn.nukkit.inventory.*;
 import cn.nukkit.item.Item;
 import cn.nukkit.level.Level;
 import cn.nukkit.level.Position;
@@ -43,8 +39,8 @@ public class ReplaceItemCommand extends VanillaCommand {
                 CommandParameter.newEnum("entity", new CommandEnum("ReplaceItemEntity", "entity")),
                 CommandParameter.newType("target", CommandParamType.TARGET),
                 CommandParameter.newEnum("slotType", new CommandEnum("EntityEquipmentSlot", "slot.weapon.mainhand", "slot.weapon.offhand",
-                                "slot.armor.head", "slot.armor.chest", "slot.armor.legs", "slot.armor.feet",
-                                "slot.hotbar", "slot.inventory", "slot.enderchest", "slot.saddle", "slot.armor", "slot.chest")),
+                                "slot.armor.head", "slot.armor.chest", "slot.armor.legs", "slot.armor.feet", "slot.armor.body",
+                                "slot.hotbar", "slot.inventory", "slot.enderchest", "slot.saddle", "slot.armor", "slot.chest", "slot.equippable")),
                 CommandParameter.newType("slotId", CommandParamType.INT),
                 CommandParameter.newEnum("item", CommandEnum.ENUM_ITEM)
                         .addOption(CommandParamOption.HAS_SEMANTIC_CONSTRAINT),
@@ -126,6 +122,18 @@ public class ReplaceItemCommand extends VanillaCommand {
                                 target.getOffhandInventory().setItem(0, item);
                                 sender.sendMessage(String.format("Replaced %1$s slot %2$d of %3$s with %4$d * %5$s", slotType, slotId, target.getName(), amount, item.getName()));
                                 break;
+                            case SLOT_ARMOR:
+                                ArmorInventory armorInventory = target.getArmorInventory();
+                                int size = armorInventory.getSize();
+
+                                if (slotId >= size || slotId < 0) {
+                                    sender.sendMessage(String.format(TextFormat.RED + "Could not replace slot %1$s, must be a value between %2$d and %3$d.", slotType, 0, size));
+                                    return false;
+                                }
+
+                                armorInventory.setItem(slotId, item);
+                                sender.sendMessage(String.format("Replaced %1$s slot %2$d of %3$s with %4$d * %5$s", slotType, slotId, target.getName(), amount, item.getName()));
+                                break;
                             case SLOT_ARMOR_HEAD:
                                 target.getArmorInventory().setHelmet(item);
                                 sender.sendMessage(String.format("Replaced %1$s slot %2$d of %3$s with %4$d * %5$s", slotType, slotId, target.getName(), amount, item.getName()));
@@ -144,9 +152,9 @@ public class ReplaceItemCommand extends VanillaCommand {
                                 break;
                             case SLOT_HOTBAR:
                                 PlayerInventory playerInventory = target.getInventory();
-                                int size = playerInventory.getSize();
+                                size = playerInventory.getHotbarSize();
 
-                                if (slotId >= playerInventory.getHotbarSize() || slotId < 0) {
+                                if (slotId >= size || slotId < 0) {
                                     sender.sendMessage(String.format(TextFormat.RED + "Could not replace slot %1$s, must be a value between %2$d and %3$d.", slotType, 0, size));
                                     return false;
                                 } else {
@@ -156,13 +164,14 @@ public class ReplaceItemCommand extends VanillaCommand {
 
                                 break;
                             case SLOT_INVENTORY:
-                                size = InventoryType.CHEST.getDefaultSize();
+                                playerInventory = target.getInventory();
+                                size = playerInventory.getSize();
 
                                 if (slotId >= size || slotId < 0) {
                                     sender.sendMessage(String.format(TextFormat.RED + "Could not replace slot %1$s, must be a value between %2$d and %3$d.", slotType, 0, size));
                                     return false;
                                 } else {
-                                    target.getInventory().setItem(8 + slotId, item);
+                                    playerInventory.setItem(8 + slotId, item);
                                     sender.sendMessage(String.format("Replaced %1$s slot %2$d of %3$s with %4$d * %5$s", slotType, slotId, target.getName(), amount, item.getName()));
                                 }
 
@@ -181,8 +190,9 @@ public class ReplaceItemCommand extends VanillaCommand {
 
                                 break;
                             case SLOT_SADDLE:
-                            case SLOT_ARMOR:
                             case SLOT_CHEST:
+                            case SLOT_ARMOR_BODY:
+                            case SLOT_EQUIPPABLE:
                                 sender.sendMessage(String.format(TextFormat.RED + "Could not replace %1$s slot %2$d with %3$d * %4$s", slotType, slotId, amount, item.getName()));
                                 return false;
                         }
@@ -221,6 +231,8 @@ public class ReplaceItemCommand extends VanillaCommand {
                 return EntityEquipmentSlot.SLOT_ARMOR_LEGS;
             case "slot.armor.feet":
                 return EntityEquipmentSlot.SLOT_ARMOR_FEET;
+            case "slot.armor.body":
+                return EntityEquipmentSlot.SLOT_ARMOR_BODY;
             case "slot.hotbar":
                 return EntityEquipmentSlot.SLOT_HOTBAR;
             case "slot.inventory":
@@ -233,6 +245,8 @@ public class ReplaceItemCommand extends VanillaCommand {
                 return EntityEquipmentSlot.SLOT_ARMOR;
             case "slot.chest":
                 return EntityEquipmentSlot.SLOT_CHEST;
+            case "slot.equippable":
+                return EntityEquipmentSlot.SLOT_EQUIPPABLE;
         }
         throw CommandExceptions.COMMAND_SYNTAX_EXCEPTION;
     }
@@ -248,11 +262,13 @@ public class ReplaceItemCommand extends VanillaCommand {
         SLOT_ARMOR_CHEST,
         SLOT_ARMOR_LEGS,
         SLOT_ARMOR_FEET,
+        SLOT_ARMOR_BODY,
         SLOT_HOTBAR,
         SLOT_INVENTORY,
         SLOT_ENDERCHEST,
         SLOT_SADDLE,
         SLOT_ARMOR,
         SLOT_CHEST,
+        SLOT_EQUIPPABLE,
     }
 }

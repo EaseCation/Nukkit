@@ -22,6 +22,11 @@ public class BlockEntityComparator extends BlockEntity {
     }
 
     @Override
+    public int getTypeId() {
+        return BlockEntityType.COMPARATOR;
+    }
+
+    @Override
     public boolean isValidBlock(int blockId) {
         return blockId == BlockID.UNPOWERED_COMPARATOR || blockId == BlockID.POWERED_COMPARATOR;
     }

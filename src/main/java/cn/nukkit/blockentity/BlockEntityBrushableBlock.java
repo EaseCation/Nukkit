@@ -32,6 +32,11 @@ public class BlockEntityBrushableBlock extends BlockEntitySpawnable {
     }
 
     @Override
+    public int getTypeId() {
+        return BlockEntityType.BRUSHABLE_BLOCK;
+    }
+
+    @Override
     protected void initBlockEntity() {
         if (namedTag.contains("type")) {
             type = namedTag.getString("type");

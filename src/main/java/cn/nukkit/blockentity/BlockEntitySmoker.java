@@ -14,6 +14,11 @@ public class BlockEntitySmoker extends BlockEntityFurnace {
     }
 
     @Override
+    public int getTypeId() {
+        return BlockEntityType.SMOKER;
+    }
+
+    @Override
     public SmokerInventory getInventory() {
         return (SmokerInventory) inventory;
     }

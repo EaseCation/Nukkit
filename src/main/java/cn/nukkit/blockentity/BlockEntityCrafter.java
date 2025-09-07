@@ -23,6 +23,11 @@ public class BlockEntityCrafter extends BlockEntityAbstractContainer {
     }
 
     @Override
+    public int getTypeId() {
+        return BlockEntityType.CRAFTER;
+    }
+
+    @Override
     public void saveNBT() {
         super.saveNBT();
 

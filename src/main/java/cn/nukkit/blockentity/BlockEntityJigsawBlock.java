@@ -44,6 +44,11 @@ public class BlockEntityJigsawBlock extends BlockEntitySpawnable {
     }
 
     @Override
+    public int getTypeId() {
+        return BlockEntityType.JIGSAW_BLOCK;
+    }
+
+    @Override
     protected void initBlockEntity() {
         boolean upgrade = false;
         if (namedTag.contains(TAG_NAME)) {

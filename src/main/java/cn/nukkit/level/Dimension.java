@@ -7,7 +7,7 @@ import javax.annotation.Nullable;
 public enum Dimension {
     OVERWORLD("Overworld", "minecraft:overworld", Generator.TYPE_INFINITE, HeightRange.blockY(-64, 320)),
     NETHER("Nether", "minecraft:nether", Generator.TYPE_NETHER, HeightRange.blockY(0, 128)),
-    END("TheEnd", "minecraft:the_end", Generator.TYPE_END, HeightRange.blockY(0, 256)),
+    THE_END("TheEnd", "minecraft:the_end", Generator.TYPE_END, HeightRange.blockY(0, 256)),
     ;
 
     private static final Dimension[] VALUES = values();

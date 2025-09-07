@@ -41,6 +41,11 @@ public class BlockEntityFurnace extends BlockEntityAbstractContainer {
     }
 
     @Override
+    public int getTypeId() {
+        return BlockEntityType.FURNACE;
+    }
+
+    @Override
     protected void initBlockEntity() {
         this.inventory = createInventory();
 

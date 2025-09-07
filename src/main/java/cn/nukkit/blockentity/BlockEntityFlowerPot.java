@@ -23,6 +23,11 @@ public class BlockEntityFlowerPot extends BlockEntitySpawnable {
     }
 
     @Override
+    public int getTypeId() {
+        return BlockEntityType.FLOWER_POT;
+    }
+
+    @Override
     protected void initBlockEntity() {
         Block plantBlock = null;
         CompoundTag plantTag;

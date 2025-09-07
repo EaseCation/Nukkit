@@ -28,6 +28,11 @@ public class BlockEntityHopper extends BlockEntityAbstractContainer {
     }
 
     @Override
+    public int getTypeId() {
+        return BlockEntityType.HOPPER;
+    }
+
+    @Override
     protected void initBlockEntity() {
         if (this.namedTag.contains("TransferCooldown")) {
             this.transferCooldown = this.namedTag.getInt("TransferCooldown");

@@ -32,6 +32,11 @@ public class BlockEntityMovingBlock extends BlockEntitySpawnable {
     }
 
     @Override
+    public int getTypeId() {
+        return BlockEntityType.MOVING_BLOCK;
+    }
+
+    @Override
     protected void initBlockEntity() {
         CompoundTag movingBlock = this.namedTag.getCompound("movingBlock", null);
         if (movingBlock != null) {

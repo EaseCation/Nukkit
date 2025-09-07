@@ -3,16 +3,19 @@ package cn.nukkit.blockentity;
 import cn.nukkit.GameVersion;
 import cn.nukkit.level.format.FullChunk;
 import cn.nukkit.nbt.tag.CompoundTag;
+import it.unimi.dsi.fastutil.objects.Object2IntMap;
+import it.unimi.dsi.fastutil.objects.Object2IntOpenHashMap;
 import lombok.extern.log4j.Log4j2;
 
 import javax.annotation.Nullable;
 
 import static cn.nukkit.GameVersion.*;
-import static cn.nukkit.blockentity.BlockEntity.*;
+import static cn.nukkit.blockentity.BlockEntityID.*;
 
 @Log4j2
 public final class BlockEntities {
 
+    private static final Object2IntMap<String> ID_TO_TYPE = new Object2IntOpenHashMap<>();
     private static final String[] TYPE_TO_ID = new String[BlockEntityType.UNDEFINED];
     private static final BlockEntityFactory[] TYPE_TO_FACTORY = new BlockEntityFactory[BlockEntityType.UNDEFINED];
 
@@ -88,8 +91,11 @@ public final class BlockEntities {
     }
 
     private static Class<? extends BlockEntity> registerBlockEntity(int type, String name, Class<? extends BlockEntity> clazz, BlockEntityFactory factory) {
-        if (!BlockEntity.registerBlockEntity(name, clazz)) {
-//            return null;
+        if (ID_TO_TYPE.putIfAbsent(name, type) != 0) {
+            throw new IllegalArgumentException("Duplicate block entity ID: " + name);
+        }
+        if (TYPE_TO_ID[type] != null) {
+            throw new IllegalArgumentException("Duplicate block entity type: " + type);
         }
         TYPE_TO_ID[type] = name;
         TYPE_TO_FACTORY[type] = factory;
@@ -114,6 +120,10 @@ public final class BlockEntities {
         return TYPE_TO_ID[type];
     }
 
+    public static int getTypeById(String id) {
+        return ID_TO_TYPE.getInt(id);
+    }
+
     @Nullable
     public static BlockEntityFactory getFactoryByType(int type) {
         if (type <= 0 || type >= BlockEntityType.UNDEFINED) {
@@ -134,6 +144,14 @@ public final class BlockEntities {
             log.error("Failed to create block entity: {}", type, e);
         }
         return null;
+    }
+
+    public static BlockEntity createBlockEntity(String id, FullChunk chunk, CompoundTag nbt) {
+        int type = getTypeById(id);
+        if (type == 0) {
+            return null;
+        }
+        return createBlockEntity(type, chunk, nbt);
     }
 
     private BlockEntities() {

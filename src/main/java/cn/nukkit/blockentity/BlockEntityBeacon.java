@@ -45,6 +45,11 @@ public class BlockEntityBeacon extends BlockEntitySpawnable {
     }
 
     @Override
+    public int getTypeId() {
+        return BlockEntityType.BEACON;
+    }
+
+    @Override
     protected void initBlockEntity() {
         if (!namedTag.contains("Levels")) {
             namedTag.putInt("Levels", 0); // Nukkit only

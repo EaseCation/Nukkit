@@ -8,6 +8,6 @@ import java.util.List;
 @ToString
 public class CommandDataVersions {
 
-    public List<CommandData> versions = new ArrayList<>();
+    public final List<CommandData> versions = new ArrayList<>();
 
 }

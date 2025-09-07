@@ -11,6 +11,11 @@ public class BlockEntityTrialSpawner extends BlockEntitySpawnable {
     }
 
     @Override
+    public int getTypeId() {
+        return BlockEntityType.TRIAL_SPAWNER;
+    }
+
+    @Override
     protected void initBlockEntity() {
 
         super.initBlockEntity();

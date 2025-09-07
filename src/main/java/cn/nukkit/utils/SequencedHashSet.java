@@ -21,15 +21,11 @@ public class SequencedHashSet<E> implements List<E> {
     }
 
     public int getOrAdd(E e) {
-        int index = this.map.getInt(e);
-        if (index != -1) {
+        return map.computeIfAbsent(e, k -> {
+            int index = this.index++;
+            this.inverse.put(index, e);
             return index;
-        }
-
-        index = this.index++;
-        this.map.put(e, index);
-        this.inverse.put(index, e);
-        return index;
+        });
     }
 
     @Override

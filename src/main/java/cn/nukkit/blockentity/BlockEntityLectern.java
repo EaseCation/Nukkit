@@ -22,6 +22,11 @@ public class BlockEntityLectern extends BlockEntitySpawnable {
     }
 
     @Override
+    public int getTypeId() {
+        return BlockEntityType.LECTERN;
+    }
+
+    @Override
     protected void initBlockEntity() {
         if (namedTag.contains("book")) {
             Item item = NBTIO.getItemHelper(namedTag.getCompound("book"));

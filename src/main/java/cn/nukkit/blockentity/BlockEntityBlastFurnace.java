@@ -14,6 +14,11 @@ public class BlockEntityBlastFurnace extends BlockEntityFurnace {
     }
 
     @Override
+    public int getTypeId() {
+        return BlockEntityType.BLAST_FURNACE;
+    }
+
+    @Override
     public BlastFurnaceInventory getInventory() {
         return (BlastFurnaceInventory) inventory;
     }

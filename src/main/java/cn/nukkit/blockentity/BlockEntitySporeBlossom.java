@@ -10,6 +10,11 @@ public class BlockEntitySporeBlossom extends BlockEntity {
     }
 
     @Override
+    public int getTypeId() {
+        return BlockEntityType.SPORE_BLOSSOM;
+    }
+
+    @Override
     public boolean isValidBlock(int blockId) {
         return blockId == BlockID.SPORE_BLOSSOM;
     }

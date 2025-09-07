@@ -11,6 +11,11 @@ public class BlockEntityEndPortal extends BlockEntity {
     }
 
     @Override
+    public int getTypeId() {
+        return BlockEntityType.END_PORTAL;
+    }
+
+    @Override
     public boolean isValidBlock(int blockId) {
         return blockId == BlockID.END_PORTAL;
     }

@@ -10,6 +10,11 @@ public class BlockEntityHangingSign extends BlockEntitySign {
     }
 
     @Override
+    public int getTypeId() {
+        return BlockEntityType.HANGING_SIGN;
+    }
+
+    @Override
     public boolean isValidBlock(int blockId) {
         return blockId == Block.OAK_HANGING_SIGN
                 || blockId == Block.SPRUCE_HANGING_SIGN

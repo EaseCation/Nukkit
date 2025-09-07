@@ -20,6 +20,11 @@ public class BlockEntityCopperGolemStatue extends BlockEntitySpawnable {
     }
 
     @Override
+    public int getTypeId() {
+        return BlockEntityType.COPPER_GOLEM_STATUE;
+    }
+
+    @Override
     protected void initBlockEntity() {
         if (namedTag.contains("Actor")) {
             CompoundTag entityData = namedTag.getCompound("Actor");

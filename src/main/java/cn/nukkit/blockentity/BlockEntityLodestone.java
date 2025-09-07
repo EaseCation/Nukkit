@@ -14,6 +14,11 @@ public class BlockEntityLodestone extends BlockEntitySpawnable {
     }
 
     @Override
+    public int getTypeId() {
+        return BlockEntityType.LODESTONE;
+    }
+
+    @Override
     protected void initBlockEntity() {
         if (namedTag.contains("trackingHandle")) {
             trackingHandle = namedTag.getInt("trackingHandle");

@@ -23,6 +23,11 @@ public class BlockEntityCauldron extends BlockEntitySpawnable {
     }
 
     @Override
+    public int getTypeId() {
+        return BlockEntityType.CAULDRON;
+    }
+
+    @Override
     protected void initBlockEntity() {
         if (!namedTag.contains("PotionType")) {
             if (namedTag.contains("SplashPotion")) {

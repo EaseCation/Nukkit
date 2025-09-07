@@ -18,6 +18,11 @@ public class BlockEntityConduit extends BlockEntitySpawnable {
     }
 
     @Override
+    public int getTypeId() {
+        return BlockEntityType.CONDUIT;
+    }
+
+    @Override
     protected void initBlockEntity() {
         this.active = this.namedTag.getBoolean("Active");
 

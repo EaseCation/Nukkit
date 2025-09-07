@@ -11,6 +11,11 @@ public class BlockEntityMusic extends BlockEntity {
     }
 
     @Override
+    public int getTypeId() {
+        return BlockEntityType.MUSIC;
+    }
+
+    @Override
     protected void initBlockEntity() {
         if (!this.namedTag.contains("note")) {
             this.namedTag.putByte("note", 0);

@@ -14,6 +14,11 @@ public class BlockEntityBarrel extends BlockEntityAbstractContainer {
     }
 
     @Override
+    public int getTypeId() {
+        return BlockEntityType.BARREL;
+    }
+
+    @Override
     protected void initBlockEntity() {
         this.inventory = new BarrelInventory(this);
 
