@@ -1824,6 +1824,15 @@ public class Level implements ChunkManager, Metadatable {
         }
     }
 
+    private void updateAroundObserver(Vector3 pos) {
+        for (BlockFace side : BlockFace.getValues()) {
+            Block block = getBlock(pos.getSideVec(side));
+            if (block.is(Block.OBSERVER) && ((Faceable) block).getBlockFace() == side.getOpposite()) {
+                scheduleUpdate(block, block, 2);
+            }
+        }
+    }
+
     public void updateAround(Vector3 pos) {
         for (BlockFace face : BlockFace.getValues()) {
             normalUpdateQueue.add(pos.getSideVec(face));
@@ -2729,6 +2738,10 @@ public class Level implements ChunkManager, Metadatable {
 
                 if (block.hasComparatorInputOverride()) {
                     this.updateComparatorOutputLevel(block);
+                }
+
+                if (isRedstoneEnabled()) {
+                    updateAroundObserver(block);
                 }
             }
         }

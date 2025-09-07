@@ -1,7 +1,9 @@
 package cn.nukkit.block;
 
 import cn.nukkit.Player;
+import cn.nukkit.event.block.BlockRedstoneEvent;
 import cn.nukkit.item.Item;
+import cn.nukkit.level.Level;
 import cn.nukkit.math.BlockFace;
 import cn.nukkit.utils.Faceable;
 
@@ -9,6 +11,8 @@ import cn.nukkit.utils.Faceable;
  * Created by Leonidius20 on 18.08.18.
  */
 public class BlockObserver extends BlockSolid implements Faceable {
+    public static final int DIRECTION_MASK = 0x7;
+    public static final int POWERED_BIT = 0x8;
 
     public BlockObserver() {
         this(0);
@@ -72,7 +76,61 @@ public class BlockObserver extends BlockSolid implements Faceable {
 
     @Override
     public BlockFace getBlockFace() {
-        return BlockFace.fromHorizontalIndex(this.getDamage() & 0x07);
+        return BlockFace.fromIndex(this.getDamage() & DIRECTION_MASK);
     }
 
+    @Override
+    public Item toItem() {
+        return Item.get(getItemId());
+    }
+
+    @Override
+    public boolean isPowerSource() {
+        return true;
+    }
+
+    @Override
+    public int getWeakPower(BlockFace face) {
+        return face == getBlockFace() && isPowered() ? 15 : 0;
+    }
+
+    @Override
+    public int getStrongPower(BlockFace side) {
+        return getWeakPower(side);
+    }
+
+    @Override
+    public boolean onBreak(Item item) {
+        level.setBlock(this, get(AIR), true);
+        if (isPowered()) {
+            level.getServer().getPluginManager().callEvent(new BlockRedstoneEvent(this, 15, 0));
+        }
+        return true;
+    }
+
+    @Override
+    public int onUpdate(int type) {
+        if (type == Level.BLOCK_UPDATE_SCHEDULED) {
+            if (!level.isRedstoneEnabled()) {
+                return 0;
+            }
+
+            setDamage(getDamage() ^ POWERED_BIT);
+            level.setBlock(this, this, true);
+
+            if (isPowered()) {
+                level.getServer().getPluginManager().callEvent(new BlockRedstoneEvent(this, 0, 15));
+                level.scheduleUpdate(this, this, 2);
+            } else {
+                level.getServer().getPluginManager().callEvent(new BlockRedstoneEvent(this, 15, 0));
+            }
+
+            level.updateAroundRedstone(getSideVec(getBlockFace()), null);
+        }
+        return 0;
+    }
+
+    public boolean isPowered() {
+        return (getDamage() & POWERED_BIT) != 0;
+    }
 }
