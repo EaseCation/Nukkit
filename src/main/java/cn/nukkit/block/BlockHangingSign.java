@@ -190,6 +190,11 @@ public abstract class BlockHangingSign extends BlockSignPost {
     }
 
     @Override
+    public int getMaxStackSize() {
+        return 16;
+    }
+
+    @Override
     public boolean isStandingSign() {
         return false;
     }
