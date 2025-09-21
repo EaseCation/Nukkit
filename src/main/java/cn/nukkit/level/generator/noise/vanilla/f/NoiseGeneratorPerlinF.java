@@ -1,14 +1,17 @@
 package cn.nukkit.level.generator.noise.vanilla.f;
 
-import cn.nukkit.math.NukkitRandom;
+import cn.nukkit.math.RandomSource;
 
 import java.util.Arrays;
 
+/**
+ * PerlinSimplexNoise
+ */
 public class NoiseGeneratorPerlinF {
     private final NoiseGeneratorSimplexF[] noiseLevels;
     private final int levels;
 
-    public NoiseGeneratorPerlinF(NukkitRandom p_i45470_1_, int p_i45470_2_) {
+    public NoiseGeneratorPerlinF(RandomSource p_i45470_1_, int p_i45470_2_) {
         this.levels = p_i45470_2_;
         this.noiseLevels = new NoiseGeneratorSimplexF[p_i45470_2_];
 
@@ -27,6 +30,16 @@ public class NoiseGeneratorPerlinF {
         }
 
         return d0;
+    }
+
+    public float getValue(float x, float y, float z) {
+        float value = 0;
+        float pow = 1;
+        for (int i = 0; i < levels; ++i) {
+            value += noiseLevels[i].getValue(x * pow, y * pow, z * pow) / pow;
+            pow /= 2;
+        }
+        return value;
     }
 
     public float[] getRegion(float[] p_151599_1_, float p_151599_2_, float p_151599_4_, int p_151599_6_, int p_151599_7_, float p_151599_8_, float p_151599_10_, float p_151599_12_) {

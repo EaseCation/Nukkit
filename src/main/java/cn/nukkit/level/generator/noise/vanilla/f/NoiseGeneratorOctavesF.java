@@ -1,10 +1,13 @@
 package cn.nukkit.level.generator.noise.vanilla.f;
 
 import cn.nukkit.math.Mth;
-import cn.nukkit.math.NukkitRandom;
+import cn.nukkit.math.RandomSource;
 
 import java.util.Arrays;
 
+/**
+ * PerlinNoise
+ */
 public class NoiseGeneratorOctavesF {
     /**
      * Collection of noise generation functions.  Output is combined to produce different octaves of noise.
@@ -12,13 +15,23 @@ public class NoiseGeneratorOctavesF {
     private final NoiseGeneratorImprovedF[] generatorCollection;
     private final int octaves;
 
-    public NoiseGeneratorOctavesF(NukkitRandom seed, int octavesIn) {
+    public NoiseGeneratorOctavesF(RandomSource seed, int octavesIn) {
         this.octaves = octavesIn;
         this.generatorCollection = new NoiseGeneratorImprovedF[octavesIn];
 
         for (int i = 0; i < octavesIn; ++i) {
             this.generatorCollection[i] = new NoiseGeneratorImprovedF(seed);
         }
+    }
+
+    public float getValue(float x, float y, float z) {
+        float value = 0;
+        float pow = 1;
+        for (int i = 0; i < octaves; ++i) {
+            value += generatorCollection[i].getValue(x * pow, y * pow, z * pow) / pow;
+            pow /= 2;
+        }
+        return value;
     }
 
     /*
@@ -47,7 +60,7 @@ public class NoiseGeneratorOctavesF {
             d0 = d0 + (float) k;
             d2 = d2 + (float) l;
             this.generatorCollection[j].populateNoiseArray(noiseArray, d0, d1, d2, xSize, ySize, zSize, xScale * d3, yScale * d3, zScale * d3, d3);
-            d3 /= 2.0D;
+            d3 /= 2;
         }
 
         return noiseArray;

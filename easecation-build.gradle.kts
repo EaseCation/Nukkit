@@ -18,6 +18,8 @@ gitProperties {
 }
 
 tasks.shadowJar {
+    manifest.attributes["Enable-Native-Access"] = "ALL-UNNAMED"
+    manifest.attributes["Add-Opens"] = "java.base/jdk.internal.misc=ALL-UNNAMED java.base/java.nio=ALL-UNNAMED java.base/java.lang=ALL-UNNAMED"
     exclude("freebsd/**/*")
     exclude("aix/**/*")
     arrayOf("arm", "armv6", "armv7", "ppc64", "ppc64le", "i386", "riscv64", "s390x", "loongarch64").forEach {
@@ -48,6 +50,7 @@ dependencies {
     api(libs.jackson.datatype.jdk8)
     api(libs.jline.reader)
     api(libs.jline.terminal)
+    api(libs.jline.terminal.ffm)
     api(libs.jopt)
     api(libs.jwt)
     api(libs.leveldb.mcpe.jni)

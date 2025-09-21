@@ -1,12 +1,12 @@
 [versions]
 jackson = "2.20.0"
 log4j = "2.25.1"
-jline = "3.30.5"
+jline = "3.30.6"
 maven = "1.9.24"
 
 [plugins]
 shadow = { id = "com.gradleup.shadow", version = "9.1.0" }
-git = { id = "com.gorylenko.gradle-git-properties", version = "2.5.2" }
+git = { id = "com.gorylenko.gradle-git-properties", version = "2.5.3" }
 versions = { id = "com.github.ben-manes.versions", version = "0.52.0" }
 
 [libraries]
@@ -14,14 +14,15 @@ apache-commons-compress = { module = "org.apache.commons:commons-compress", vers
 apache-commons-lang3 = { module = "org.apache.commons:commons-lang3", version = "3.18.0" }
 commons-io = { module = "commons-io:commons-io", version = "2.20.0" }
 fastutil = { module = "it.unimi.dsi:fastutil", version = "8.5.16" }
-gson = { module = "com.google.code.gson:gson", version = "2.13.1" }
-guava = { module = "com.google.guava:guava", version = "33.4.8-jre" }
+gson = { module = "com.google.code.gson:gson", version = "2.13.2" }
+guava = { module = "com.google.guava:guava", version = "33.5.0-jre" }
 jackson = { module = "com.fasterxml.jackson.core:jackson-databind", version.ref = "jackson" }
 jackson-datatype-guava = { module = "com.fasterxml.jackson.datatype:jackson-datatype-guava", version.ref = "jackson" }
 jackson-datatype-jdk8 = { module = "com.fasterxml.jackson.datatype:jackson-datatype-jdk8", version.ref = "jackson" }
-javax-annotations = { module = "com.github.spotbugs:spotbugs-annotations", version = "4.9.4" }
+javax-annotations = { module = "com.google.code.findbugs:jsr305", version = "3.0.2" }
 jline-reader = { module = "org.jline:jline-reader", version.ref = "jline" }
-jline-terminal = { module = "org.jline:jline-terminal-jna", version.ref = "jline" }
+jline-terminal = { module = "org.jline:jline-terminal-jni", version.ref = "jline" }
+jline-terminal-ffm = { module = "org.jline:jline-terminal-ffm", version.ref = "jline" }
 jopt = { module = "net.sf.jopt-simple:jopt-simple", version = "5.0.4" }
 jupiter-engine = { module = "org.junit.jupiter:junit-jupiter-engine", version = "5.13.4" }
 jwt = { module = "com.nimbusds:nimbus-jose-jwt", version = "10.5" }
@@ -31,7 +32,7 @@ lmax-disruptor = { module = "com.lmax:disruptor", version = "4.0.0" }
 lmbda = { group = "org.lanternpowered", name = "lmbda", version = "2.0.0" }
 log4j-core = { module = "org.apache.logging.log4j:log4j-core", version.ref = "log4j" }
 log4j-slf4j2 = { module = "org.apache.logging.log4j:log4j-slf4j2-impl", version.ref = "log4j" }
-lombok = { module = "org.projectlombok:lombok", version = "1.18.40" }
+lombok = { module = "org.projectlombok:lombok", version = "1.18.42" }
 maven-provider = { group = "org.apache.maven", name = "maven-resolver-provider", version = "3.9.11" }
 maven-connector = { group = "org.apache.maven.resolver", name = "maven-resolver-connector-basic", version.ref = "maven" }
 maven-http = { group = "org.apache.maven.resolver", name = "maven-resolver-transport-http", version.ref = "maven" }

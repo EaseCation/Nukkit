@@ -16,7 +16,7 @@ public class Old extends Normal {
 
     @Override
     public int getId() {
-        return TYPE_OLD;
+        return GeneratorID.LEGACY;
     }
 
     @Override

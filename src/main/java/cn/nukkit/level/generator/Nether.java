@@ -22,7 +22,7 @@ import it.unimi.dsi.fastutil.objects.ObjectArrayList;
 import java.util.*;
 import java.util.concurrent.ThreadLocalRandom;
 
-public class Nether extends Generator {
+public class Nether implements Generator {
     private final Map<String, Object> options;
     private ChunkManager level;
     private NukkitRandom nukkitRandom;
@@ -47,7 +47,7 @@ public class Nether extends Generator {
 
     @Override
     public int getId() {
-        return TYPE_NETHER;
+        return GeneratorID.NETHER;
     }
 
     @Override
@@ -103,7 +103,10 @@ public class Nether extends Generator {
         lava.setRandomAmount(2);
         this.populators.add(lava);
 
-        this.populators.add(new PopulatorGlowStone());
+        PopulatorGlowStone glowStone = new PopulatorGlowStone();
+        glowStone.setBaseAmount(10);
+        glowStone.setRandomAmount(10);
+        this.populators.add(glowStone);
 
         PopulatorOre ore = new PopulatorOre(
                 new OreType(Block.get(BlockID.QUARTZ_ORE), 40, 16, 0, 128, NETHERRACK),

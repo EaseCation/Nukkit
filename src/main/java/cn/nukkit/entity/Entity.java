@@ -3,6 +3,8 @@ package cn.nukkit.entity;
 import cn.nukkit.Player;
 import cn.nukkit.Server;
 import cn.nukkit.block.*;
+import cn.nukkit.blockentity.BlockEntity;
+import cn.nukkit.blockentity.BlockEntityEndGateway;
 import cn.nukkit.blockentity.BlockEntityPistonArm;
 import cn.nukkit.entity.attribute.Attribute;
 import cn.nukkit.entity.data.*;
@@ -16,12 +18,10 @@ import cn.nukkit.event.entity.EntityPortalEnterEvent.PortalType;
 import cn.nukkit.event.player.PlayerInteractEvent;
 import cn.nukkit.event.player.PlayerInteractEvent.Action;
 import cn.nukkit.event.player.PlayerTeleportEvent;
+import cn.nukkit.event.player.PlayerTeleportEvent.TeleportCause;
 import cn.nukkit.item.Item;
 import cn.nukkit.item.enchantment.Enchantment;
-import cn.nukkit.level.GameRule;
-import cn.nukkit.level.Level;
-import cn.nukkit.level.Location;
-import cn.nukkit.level.Position;
+import cn.nukkit.level.*;
 import cn.nukkit.level.format.FullChunk;
 import cn.nukkit.math.*;
 import cn.nukkit.metadata.MetadataValue;
@@ -152,6 +152,9 @@ public abstract class Entity extends Location implements Metadatable, EntityData
     public int maxFireTicks;
     public int fireTicks = 0;
     public int inPortalTicks = 0;
+    public int inEndPortalTicks;
+    public int inEndGatewayTicks;
+    public Vector3 endGatewayPos;
     public int frozenTicks;
     public boolean freezing;
 
@@ -1605,11 +1608,77 @@ public abstract class Entity extends Location implements Metadatable, EntityData
             }
         }
 
-        if (this.inPortalTicks == 80) {
+        boolean traveling = false;
+        if (this.endGatewayPos != null && this.inEndGatewayTicks == 1 && this.level.getDimension() == Dimension.THE_END) {
+            Vector3 pos = null;
+            BlockEntity blockEntity = level.getBlockEntity(this.endGatewayPos);
+            if (blockEntity instanceof BlockEntityEndGateway gateway) {
+                BlockVector3 exitPortal = gateway.getExitPortal();
+                if (exitPortal != null && !exitPortal.equals(0, 0, 0)) {
+                    pos = level.getSafeSpawn(new Vector3(exitPortal.getX(), Math.max(exitPortal.getY() - 4, 0), exitPortal.getZ()));
+                }
+            }
+            if (pos == null) {
+                pos = new Vector3(100.5, 50, 0.5);
+            }
+            this.teleport(pos, TeleportCause.END_GATEWAY);
+            traveling = true;
+        }
+        if (!traveling && this.inEndPortalTicks == 1) {
+            EntityPortalEnterEvent ev = new EntityPortalEnterEvent(this, PortalType.END);
+            getServer().getPluginManager().callEvent(ev);
+            if (!ev.isCancelled()) {
+                if (this.level.getDimension() == Dimension.THE_END) {
+                    Position spawn;
+                    if (this instanceof Player player) {
+                        spawn = player.getSpawn();
+                    } else {
+                        spawn = this.level.getDimension(Dimension.OVERWORLD).getSafeSpawn().floor().add(0.5, 0, 0.5);
+                    }
+                    this.teleport(spawn, TeleportCause.END_PORTAL);
+                } else {
+                    Level end = this.level.getDimension(Dimension.THE_END);
+                    Position pos = new Position(100.5, 50, 0.5, end);
+
+                    end.populateChunk(6, 0, true);
+                    end.populateChunk(6, -1, true);
+
+                    for (int xx = 98; xx <= 102; xx++) {
+                        for (int zz = -2; zz <= 2; zz++)  {
+                            end.setBlock(xx, 49, zz, Block.get(BlockID.OBSIDIAN), true);
+                            for (int yy = 50; yy <= 52; yy++) {
+                                end.setBlock(xx, yy, zz, Block.get(BlockID.AIR), true);
+                            }
+                        }
+                    }
+
+                    this.teleport(pos, TeleportCause.END_PORTAL);
+                }
+                traveling = true;
+            }
+        }
+        if (!traveling && this.inPortalTicks == (this instanceof Player player && player.gamemode == Player.CREATIVE ? 1 : 80)) {
             EntityPortalEnterEvent ev = new EntityPortalEnterEvent(this, PortalType.NETHER);
             getServer().getPluginManager().callEvent(ev);
+            if (!ev.isCancelled()) {
+                Position portalPos = this.level.calculatePortalMirror(this);
 
-            //TODO: teleport
+                int chunkX = portalPos.getChunkX();
+                int chunkZ = portalPos.getChunkZ();
+                for (int x = -1; x <= 1; x++) {
+                    for (int z = -1; z <= 1; z++) {
+                        portalPos.level.populateChunk(chunkX + x, chunkZ + z, true);
+                    }
+                }
+
+                Position foundPortal = BlockNetherPortal.findNearestPortal(portalPos);
+                if (foundPortal == null) {
+                    BlockNetherPortal.spawnPortal(portalPos);
+                    this.teleport(portalPos.add(1.5, 1, 0.5), TeleportCause.NETHER_PORTAL);
+                } else {
+                    this.teleport(BlockNetherPortal.getSafePortal(foundPortal).add(0.5, 0, 0.5), TeleportCause.NETHER_PORTAL);
+                }
+            }
         }
 
         this.age += tickDiff;
@@ -2401,10 +2470,15 @@ public abstract class Entity extends Location implements Metadatable, EntityData
     protected void checkBlockCollision() {
         Vector3 vector = new Vector3(0, 0, 0);
         boolean portal = false;
+        boolean endPortal = false;
 
         for (Block block : this.getCollisionBlocks()) {
-            if (block.getId() == Block.PORTAL) {
+            int id = block.getId();
+            if (id == Block.PORTAL) {
                 portal = true;
+                continue;
+            } else if (id == Block.END_PORTAL) {
+                endPortal = true;
                 continue;
             }
 
@@ -2420,6 +2494,12 @@ public abstract class Entity extends Location implements Metadatable, EntityData
             }
         } else {
             this.inPortalTicks = 0;
+        }
+
+        if (endPortal) {
+            inEndPortalTicks++;
+        } else {
+            inEndPortalTicks = 0;
         }
 
         if (vector.lengthSquared() > 0) {

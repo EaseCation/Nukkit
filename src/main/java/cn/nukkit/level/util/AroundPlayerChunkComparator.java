@@ -4,6 +4,8 @@ import cn.nukkit.Player;
 import cn.nukkit.level.Level;
 import it.unimi.dsi.fastutil.longs.LongComparator;
 
+import static cn.nukkit.level.util.AroundChunkComparator.distance;
+
 public class AroundPlayerChunkComparator implements LongComparator {
 
     private final Player player;
@@ -23,11 +25,5 @@ public class AroundPlayerChunkComparator implements LongComparator {
         int spawnZ = this.player.getChunkZ();
 
         return Integer.compare(distance(spawnX, spawnZ, x1, z1), distance(spawnX, spawnZ, x2, z2));
-    }
-
-    private static int distance(int centerX, int centerZ, int x, int z) {
-        int dx = centerX - x;
-        int dz = centerZ - z;
-        return dx * dx + dz * dz;
     }
 }

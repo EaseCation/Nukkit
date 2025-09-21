@@ -7,6 +7,7 @@ import cn.nukkit.level.Level;
 import cn.nukkit.level.Position;
 import cn.nukkit.math.AxisAlignedBB;
 import cn.nukkit.math.BlockFace;
+import cn.nukkit.math.Vector3;
 import cn.nukkit.utils.BlockColor;
 import cn.nukkit.utils.Faceable;
 
@@ -30,7 +31,7 @@ public class BlockNetherPortal extends BlockTransparent implements Faceable {
 
     @Override
     public String getName() {
-        return "Nether Portal Block";
+        return "Portal";
     }
 
     @Override
@@ -186,5 +187,52 @@ public class BlockNetherPortal extends BlockTransparent implements Faceable {
     @Override
     public boolean canProvideSupport(BlockFace face, SupportType type) {
         return false;
+    }
+
+    public static Position getSafePortal(Position portal) {
+        Level level = portal.getLevel();
+        Vector3 down = portal.getSideVec(BlockFace.DOWN);
+
+        while (level.getBlock(down).getId() == PORTAL) {
+            down = down.getSideVec(BlockFace.DOWN);
+        }
+
+        return Position.fromObject(down.up(), portal.getLevel());
+    }
+
+    public static Position findNearestPortal(Position pos) {
+        //TODO: pair record
+        Level level = pos.getLevel();
+        Position found = null;
+        int maxY = level.getHeightRange().getMaxY();
+
+        for (int xx = -16; xx <= 16; xx++) {
+            for (int zz = -16; zz <= 16; zz++) {
+                for (int y = 0; y < maxY; y++) {
+                    int x = pos.getFloorX() + xx, z = pos.getFloorZ() + zz;
+                    if (level.getBlock(x, y, z).getId() == PORTAL) {
+                        found = new Position(x, y, z, level);
+                        break;
+                    }
+                }
+            }
+        }
+
+        if (found == null) {
+            return null;
+        }
+        Vector3 up = found.up();
+        int x = up.getFloorX(), y = up.getFloorY(), z = up.getFloorZ();
+        int id = level.getBlock(x, y, z).getId();
+        if (id != AIR && id != OBSIDIAN && id != PORTAL) {
+            for (int xx = -1; xx < 4; xx++) {
+                for (int yy = 1; yy < 4; yy++) {
+                    for (int zz = -1; zz < 3; zz++) {
+                        level.setBlock(x + xx, y + yy, z + zz, get(AIR));
+                    }
+                }
+            }
+        }
+        return found;
     }
 }

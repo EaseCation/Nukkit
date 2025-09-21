@@ -9,6 +9,7 @@ import cn.nukkit.item.Item;
 import cn.nukkit.item.Items;
 import cn.nukkit.math.AxisAlignedBB;
 import cn.nukkit.math.BlockFace;
+import cn.nukkit.math.SimpleAxisAlignedBB;
 import cn.nukkit.utils.BlockColor;
 
 import javax.annotation.Nullable;
@@ -21,7 +22,7 @@ public class BlockEndPortal extends BlockTransparent {
 
     @Override
     public String getName() {
-        return "End Portal Block";
+        return "End Portal";
     }
 
     @Override
@@ -32,16 +33,6 @@ public class BlockEndPortal extends BlockTransparent {
     @Override
     public int getBlockEntityType() {
         return BlockEntityType.END_PORTAL;
-    }
-
-    @Override
-    public boolean canPassThrough() {
-        return true;
-    }
-
-    @Override
-    protected AxisAlignedBB recalculateSelectionBoundingBox() {
-        return this;
     }
 
     @Override
@@ -62,6 +53,16 @@ public class BlockEndPortal extends BlockTransparent {
     @Override
     public int getLightLevel() {
         return 15;
+    }
+
+    @Override
+    public double getMaxY() {
+        return y + 0.25;
+    }
+
+    @Override
+    protected AxisAlignedBB recalculateCollisionBoundingBox() {
+        return new SimpleAxisAlignedBB(x, y, z, x + 1, y + 0.75, z + 1);
     }
 
     @Override
@@ -97,11 +98,6 @@ public class BlockEndPortal extends BlockTransparent {
     @Override
     public boolean canBePulled() {
         return false;
-    }
-
-    @Override
-    public boolean canContainWater() {
-        return true;
     }
 
     @Override

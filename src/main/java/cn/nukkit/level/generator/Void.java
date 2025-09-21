@@ -7,7 +7,7 @@ import it.unimi.dsi.fastutil.objects.Object2ObjectOpenHashMap;
 
 import java.util.Map;
 
-public class Void extends Generator {
+public class Void implements Generator {
     private final Map<String, Object> options;
     private ChunkManager level;
 
@@ -21,7 +21,7 @@ public class Void extends Generator {
 
     @Override
     public int getId() {
-        return TYPE_VOID;
+        return GeneratorID.VOID;
     }
 
     @Override

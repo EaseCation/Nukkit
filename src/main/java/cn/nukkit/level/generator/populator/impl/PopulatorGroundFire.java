@@ -2,6 +2,7 @@ package cn.nukkit.level.generator.populator.impl;
 
 import cn.nukkit.block.Block;
 import cn.nukkit.level.ChunkManager;
+import cn.nukkit.level.HeightRange;
 import cn.nukkit.level.format.FullChunk;
 import cn.nukkit.level.generator.populator.helper.EnsureBelow;
 import cn.nukkit.level.generator.populator.helper.EnsureCover;
@@ -35,13 +36,13 @@ public class PopulatorGroundFire extends PopulatorSurfaceBlock {
 
     @Override
     protected int getHighestWorkableBlock(ChunkManager level, int x, int z, FullChunk chunk) {
-        int y;
-        for (y = 0; y <= 127; ++y) {
+        HeightRange heightRange = chunk.getHeightRange();
+        for (int y = heightRange.getMinY() + 1 + 1; y < heightRange.getMaxY() - 1; ++y) {
             int b = chunk.getBlockId(0, x, y, z);
             if (b == Block.AIR) {
-                break;
+                return y;
             }
         }
-        return y == 0 ? Integer.MIN_VALUE : y;
+        return Integer.MIN_VALUE;
     }
 }

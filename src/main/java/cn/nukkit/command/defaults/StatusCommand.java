@@ -89,7 +89,7 @@ public class StatusCommand extends VanillaCommand {
 
         for (Level level : server.getLevels().values()) {
             sender.sendMessage(
-                    TextFormat.GOLD + "World \"" + level.getFolderName() + "\"" + (!Objects.equals(level.getFolderName(), level.getName()) ? " (" + level.getName() + ")" : "") + ": " +
+                    TextFormat.GOLD + "World \"" + level.getFolderName() + "\"" + (!Objects.equals(level.getFolderName(), level.getName()) ? " (" + level.getName() + ") " : " ") + level.getDimension().getId() + ": " +
                             TextFormat.RED + level.getChunks().size() + TextFormat.GREEN + " chunks, " +
                             TextFormat.RED + level.getActors().size() + TextFormat.GREEN + " entities, " +
                             TextFormat.RED + level.getBlockEntities().size() + TextFormat.GREEN + " blockEntities." +

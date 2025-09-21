@@ -5,7 +5,8 @@ import cn.nukkit.level.format.FullChunk;
 import cn.nukkit.math.BlockVector3;
 import cn.nukkit.nbt.tag.CompoundTag;
 import cn.nukkit.nbt.tag.IntTag;
-import cn.nukkit.nbt.tag.ListTag;
+
+import javax.annotation.Nullable;
 
 public class BlockEntityEndGateway extends BlockEntitySpawnable {
     /**
@@ -19,6 +20,7 @@ public class BlockEntityEndGateway extends BlockEntitySpawnable {
     public static final String TAG_EXIT_PORTAL = "ExitPortal";
 
     protected int age;
+    @Nullable
     protected BlockVector3 exitPortal;
 
     public BlockEntityEndGateway(FullChunk chunk, CompoundTag nbt) {
@@ -54,9 +56,11 @@ public class BlockEntityEndGateway extends BlockEntitySpawnable {
 
         namedTag.putInt(TAG_AGE, age);
 
-        ListTag<IntTag> blockPos = exitPortal.toNbt();
-        blockPos.setName(TAG_EXIT_PORTAL);
-        namedTag.putList(blockPos);
+        if (exitPortal != null) {
+            namedTag.putList(TAG_EXIT_PORTAL, exitPortal.toNbt());
+        } else {
+            namedTag.remove(TAG_EXIT_PORTAL);
+        }
     }
 
     @Override
@@ -66,12 +70,14 @@ public class BlockEntityEndGateway extends BlockEntitySpawnable {
 
     @Override
     public CompoundTag getSpawnCompound() {
-        ListTag<IntTag> blockPos = exitPortal.toNbt();
-        blockPos.setName(TAG_EXIT_PORTAL);
+        CompoundTag tag = getDefaultCompound(this, END_GATEWAY)
+                .putInt(TAG_AGE, age);
 
-        return getDefaultCompound(this, END_GATEWAY)
-                .putInt(TAG_AGE, age)
-                .putList(blockPos);
+        if (exitPortal != null) {
+            tag.putList(TAG_EXIT_PORTAL, exitPortal.toNbt());
+        }
+
+        return tag;
     }
 
     @Override
@@ -101,5 +107,22 @@ public class BlockEntityEndGateway extends BlockEntitySpawnable {
 
         //TODO: EndGatewayBlockActor::teleportEntity
         return false;
+    }
+
+    public int getAge() {
+        return age;
+    }
+
+    public void setAge(int age) {
+        this.age = age;
+    }
+
+    @Nullable
+    public BlockVector3 getExitPortal() {
+        return exitPortal;
+    }
+
+    public void setExitPortal(@Nullable BlockVector3 pos) {
+        this.exitPortal = pos;
     }
 }

@@ -13,7 +13,7 @@ import it.unimi.dsi.fastutil.longs.Long2ObjectMap;
 
 import java.util.Map;
 import java.util.concurrent.CompletableFuture;
-import java.util.function.Function;
+import java.util.function.Predicate;
 
 /**
  * author: MagicDroidX
@@ -129,11 +129,11 @@ public interface LevelProvider {
 
     void setGameRules(GameRules rules);
 
-    default void forEachChunks(Function<FullChunk, Boolean> action) {
+    default void forEachChunks(Predicate<FullChunk> action) {
         forEachChunks(action, false);
     }
 
-    void forEachChunks(Function<FullChunk, Boolean> action, boolean skipCorrupted);
+    void forEachChunks(Predicate<FullChunk> action, boolean skipCorrupted);
 
     void setSaveChunksOnClose(boolean save);
 

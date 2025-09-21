@@ -18,4 +18,4 @@ updates:
       interval: "quarterly"
     open-pull-requests-limit: 50
     ignore:
-      - dependency-name: "com.nukkitx.network:raknet"
+      - dependency-name: "com.google.code.findbugs:jsr305"

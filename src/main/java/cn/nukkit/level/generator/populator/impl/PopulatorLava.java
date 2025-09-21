@@ -26,14 +26,50 @@ public class PopulatorLava extends Populator {
             int amount = random.nextRange(0, this.randomAmount + 1) + this.baseAmount;
             int bx = chunkX << 4;
             int bz = chunkZ << 4;
-            int tx = bx + 15;
-            int tz = bz + 15;
             for (int i = 0; i < amount; ++i) {
-                int x = random.nextRange(0, 15);
-                int z = random.nextRange(0, 15);
+                int x = random.nextInt(1, 15);
+                int z = random.nextInt(1, 15);
                 int y = this.getHighestWorkableBlock(chunk, x, z);
-                if (y != Integer.MIN_VALUE && chunk.getBlockId(0, x, y, z) == Block.AIR) {
-                    chunk.setBlock(0, x, y, z, Block.FLOWING_LAVA);
+                if (y != Integer.MIN_VALUE && chunk.getBlockId(0, x, y, z) == Block.AIR
+                        && chunk.getBlockId(0, x, y + 1, z) == Block.NETHERRACK) {
+                    int rockCount = 0;
+                    int holeCount = 0;
+                    int below = chunk.getBlockId(0, x, y, z);
+                    if (below == Block.NETHERRACK) {
+                        rockCount++;
+                    } else if (below == Block.AIR) {
+                        holeCount++;
+                    }
+                    int west = chunk.getBlockId(0, x - 1, y + 1, z);
+                    if (west == Block.NETHERRACK) {
+                        rockCount++;
+                    } else if (west == Block.AIR) {
+                        holeCount++;
+                    }
+                    int east = chunk.getBlockId(0, x + 1, y + 1, z);
+                    if (east == Block.NETHERRACK) {
+                        rockCount++;
+                    } else if (east == Block.AIR) {
+                        holeCount++;
+                    }
+                    int south = chunk.getBlockId(0, x, y + 1, z + 1);
+                    if (south == Block.NETHERRACK) {
+                        rockCount++;
+                    } else if (south == Block.AIR) {
+                        holeCount++;
+                    }
+                    int north = chunk.getBlockId(0, x, y + 1, z - 1);
+                    if (north == Block.NETHERRACK) {
+                        rockCount++;
+                    } else if (north == Block.AIR) {
+                        holeCount++;
+                    }
+                    if ((rockCount != 4 || holeCount != 1) && rockCount != 5) {
+                        continue;
+                    }
+                    chunk.setBlock(0, x, y + 1, z, Block.FLOWING_LAVA);
+                    chunk.setBlockLight(x, y + 1, z, Block.light[Block.FLOWING_LAVA]);
+                    chunk.setBlock(0, x, y, z, Block.FLOWING_LAVA, 8);
                     chunk.setBlockLight(x, y, z, Block.light[Block.FLOWING_LAVA]);
                     this.lavaSpread(level, random, bx + x, y, bz + z);
                 }
@@ -125,6 +161,9 @@ public class PopulatorLava extends Populator {
     }
 
     private boolean canFlowInto(ChunkManager level, int x, int y, int z) {
+        if (y < level.getHeightRange().getMinY()) {
+            return false;
+        }
         int id = level.getBlockIdAt(0, x, y, z);
         return id == Block.AIR || id == Block.FLOWING_LAVA || id == Block.LAVA;
     }
@@ -214,15 +253,14 @@ public class PopulatorLava extends Populator {
         return (decay >= 0 && blockDecay >= decay) ? decay : blockDecay;
     }
 
-
     private int getHighestWorkableBlock(FullChunk chunk, int x, int z) {
         int y;
-        for (y = 127; y >= 0; y--) {
+        for (y = 120; y >= 3; y--) {
             int b = chunk.getBlockId(0, x, y, z);
             if (b == Block.AIR) {
                 break;
             }
         }
-        return y == 0 ? Integer.MIN_VALUE : y;
+        return y == 3 ? Integer.MIN_VALUE : y;
     }
 }

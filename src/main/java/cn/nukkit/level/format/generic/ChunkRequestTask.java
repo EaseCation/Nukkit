@@ -294,7 +294,7 @@ public class ChunkRequestTask extends AsyncTask<Void> {
                         if (emptySection[i]) {
                             packet.requestResult = SubChunkPacket.REQUEST_RESULT_SUCCESS_ALL_AIR;
                         }
-                        compressed[i] = Level.getSubChunkCacheFromData(packet, Level.DIMENSION_OVERWORLD, chunkX, Level.indexToY(i, chunkYIndexOffset), chunkZ, subChunkData[i], heightmapType[i], heightmapData[i]);
+                        compressed[i] = level.getSubChunkCacheFromData(packet, chunkX, Level.indexToY(i, chunkYIndexOffset), chunkZ, subChunkData[i], heightmapType[i], heightmapData[i]);
                         packet.renderHeightMapType = SubChunkPacket.HEIGHT_MAP_TYPE_ALL_COPIED;
                         packet.setBuffer(null, 0); // release buffer
                         uncompressed[i] = packet;
@@ -306,21 +306,21 @@ public class ChunkRequestTask extends AsyncTask<Void> {
                         LevelChunkPacket12060 packet = new LevelChunkPacket12060();
                         packet.chunkX = chunkX;
                         packet.chunkZ = chunkZ;
-                        packet.dimension = level.getDimension().ordinal();
+                        packet.dimension = level.getDimension().getId();
                         packet.subChunkCount = count;
                         packet.subChunkRequestLimit = 0;
                         packet.data = payload;
                         packet.setBuffer(null, 0);
                         packetsUncompressed.put(version, packet);
                     } else {
-                        packets.put(version, Level.getChunkCacheFromData(chunkX, chunkZ, count, payload));
+                        packets.put(version, level.getChunkCacheFromData(chunkX, chunkZ, count, payload));
                     }
                 });
 
                 LevelChunkPacket12060 uncompressed = new LevelChunkPacket12060();
                 uncompressed.chunkX = chunkX;
                 uncompressed.chunkZ = chunkZ;
-                uncompressed.dimension = level.getDimension().ordinal();
+                uncompressed.dimension = level.getDimension().getId();
                 uncompressed.subChunkCount = LevelChunkPacket.CLIENT_REQUEST_TRUNCATED_COLUMN_FAKE_COUNT;
                 uncompressed.subChunkRequestLimit = count;
                 uncompressed.data = subRequestModeFullChunkPayload;
@@ -329,7 +329,7 @@ public class ChunkRequestTask extends AsyncTask<Void> {
                 LevelChunkPacket12060 uncompressedLegacy = new LevelChunkPacket12060();
                 uncompressedLegacy.chunkX = chunkX;
                 uncompressedLegacy.chunkZ = chunkZ;
-                uncompressedLegacy.dimension = level.getDimension().ordinal();
+                uncompressedLegacy.dimension = level.getDimension().getId();
                 uncompressedLegacy.subChunkCount = LevelChunkPacket.CLIENT_REQUEST_TRUNCATED_COLUMN_FAKE_COUNT;
                 uncompressedLegacy.subChunkRequestLimit = count;
                 uncompressedLegacy.data = subRequestModeFullChunkPayloadLegacy;
@@ -338,7 +338,7 @@ public class ChunkRequestTask extends AsyncTask<Void> {
                 packetCache = new ChunkPacketCache(
                         packets,
                         packetsUncompressed,
-                        Level.getChunkCacheFromData(chunkX, chunkZ, LevelChunkPacket.CLIENT_REQUEST_TRUNCATED_COLUMN_FAKE_COUNT, count, subRequestModeFullChunkPayload),
+                        level.getChunkCacheFromData(chunkX, chunkZ, LevelChunkPacket.CLIENT_REQUEST_TRUNCATED_COLUMN_FAKE_COUNT, count, subRequestModeFullChunkPayload),
                         uncompressed,
                         uncompressedLegacy,
                         subPackets,

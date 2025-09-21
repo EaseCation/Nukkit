@@ -3,6 +3,7 @@ package cn.nukkit.block;
 import cn.nukkit.Player;
 import cn.nukkit.item.Item;
 import cn.nukkit.math.BlockFace;
+import cn.nukkit.math.Vector3;
 import cn.nukkit.network.protocol.LevelSoundEventPacket;
 import cn.nukkit.utils.BlockColor;
 import cn.nukkit.utils.Faceable;
@@ -11,6 +12,8 @@ import cn.nukkit.utils.Faceable;
  * Created by Pub4Game on 26.12.2015.
  */
 public class BlockEndPortalFrame extends BlockTransparent implements Faceable {
+    public static final int DIRECTION_MASK = 0b11;
+    public static final int EYE_BIT = 0b100;
 
     private static final int[] FACES = {2, 3, 0, 1};
 
@@ -54,7 +57,7 @@ public class BlockEndPortalFrame extends BlockTransparent implements Faceable {
 
     @Override
     public double getMaxY() {
-        return this.y + ((this.getDamage() & 0x04) > 0 ? 1 : 0.8125);
+        return this.y + 0.8125;
     }
 
     @Override
@@ -72,7 +75,7 @@ public class BlockEndPortalFrame extends BlockTransparent implements Faceable {
     }
 
     public int getComparatorInputOverride() {
-        return (getDamage() & 0x4) != 0 ? 15 : 0;
+        return (getDamage() & EYE_BIT) != 0 ? 15 : 0;
     }
 
     @Override
@@ -82,11 +85,12 @@ public class BlockEndPortalFrame extends BlockTransparent implements Faceable {
 
     @Override
     public boolean onActivate(Item item, BlockFace face, float fx, float fy, float fz, Player player) {
-        if((this.getDamage() & 0x04) == 0 && player != null && item.getId() == Item.ENDER_EYE) {
-            this.setDamage(this.getDamage() + 4);
+        if ((this.getDamage() & EYE_BIT) == 0 && item.getId() == Item.ENDER_EYE) {
+            this.setDamage(this.getDamage() | EYE_BIT);
             this.getLevel().setBlock(this, this, true, true);
             this.getLevel().addLevelSoundEvent(this, LevelSoundEventPacket.SOUND_BLOCK_END_PORTAL_FRAME_FILL);
-            //TODO: create portal
+
+            tryCreatePortal();
             return true;
         }
         return false;
@@ -104,7 +108,7 @@ public class BlockEndPortalFrame extends BlockTransparent implements Faceable {
 
     @Override
     public BlockFace getBlockFace() {
-        return BlockFace.fromHorizontalIndex(this.getDamage() & 0x07);
+        return BlockFace.fromHorizontalIndex(this.getDamage() & DIRECTION_MASK);
     }
 
     @Override
@@ -125,7 +129,57 @@ public class BlockEndPortalFrame extends BlockTransparent implements Faceable {
     }
 
     @Override
+    public boolean canContainWater() {
+        return true;
+    }
+
+    @Override
     public boolean canProvideSupport(BlockFace face, SupportType type) {
         return face == BlockFace.DOWN;
+    }
+
+    private void tryCreatePortal() {
+        BlockFace facing = getBlockFace();
+        Vector3 pos = getSideVec(facing, 2);
+        BlockFace side = facing.rotateY();
+        TRY:
+        for (int step = -1; step <= 1; step++) {
+            if (step != 0 && !isSameDirectionEyedFrame(getSide(side, step), facing)) {
+                continue;
+            }
+            Vector3 origin = pos.getSide(side, step);
+            for (BlockFace face : BlockFace.Plane.HORIZONTAL) {
+                Vector3 edgeCenter = origin.getSide(face, 2);
+                BlockFace opposite = face.getOpposite();
+                BlockFace edge = face.rotateY();
+                for (int offset = -1; offset <= 1; offset++) {
+                    if (!isSameDirectionEyedFrame(level.getBlock(edgeCenter.getSide(edge, offset)), opposite)) {
+                        continue TRY;
+                    }
+                }
+            }
+
+            createPortal(origin);
+            return;
+        }
+    }
+
+    private void createPortal(Vector3 origin) {
+        for (int x = -1; x <= 1; x++) {
+            for (int z = -1; z <= 1; z++) {
+                level.setBlock(origin.add(x, 0, z), get(END_PORTAL), true);
+            }
+        }
+        level.addLevelSoundEvent(this, LevelSoundEventPacket.SOUND_BLOCK_END_PORTAL_SPAWN);
+    }
+
+    private static boolean isSameDirectionEyedFrame(Block block, BlockFace direction) {
+        if (block.getId() != END_PORTAL_FRAME) {
+            return false;
+        }
+        if ((block.getDamage() & EYE_BIT) == 0) {
+            return false;
+        }
+        return (block.getDamage() & DIRECTION_MASK) == direction.getHorizontalIndex();
     }
 }

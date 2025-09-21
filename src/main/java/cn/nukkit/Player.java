@@ -52,6 +52,7 @@ import cn.nukkit.level.format.FullChunk;
 import cn.nukkit.level.format.generic.BaseFullChunk;
 import cn.nukkit.level.format.generic.ChunkCachedData;
 import cn.nukkit.level.particle.PunchBlockParticle;
+import cn.nukkit.level.util.AroundChunkComparator;
 import cn.nukkit.level.util.AroundPlayerChunkComparator;
 import cn.nukkit.math.*;
 import cn.nukkit.metadata.MetadataValue;
@@ -217,7 +218,7 @@ public class Player extends EntityHuman implements CommandSender, InventoryHolde
     protected Vector3 sleeping = null;
     protected Long clientID;
 
-    private Integer loaderId;
+    private final int loaderId;
 
     public Long2BooleanMap usedChunks = new Long2BooleanOpenHashMap();
 
@@ -761,7 +762,7 @@ public class Player extends EntityHuman implements CommandSender, InventoryHolde
         this.lastBreak = -1;
         this.socketAddress = socketAddress;
         this.clientID = clientID;
-        this.loaderId = Level.generateChunkLoaderId(this);
+        this.loaderId = Level.generateChunkLoaderId();
         this.chunksPerTick = this.server.getConfiguration().getChunkSendingPerTick();
         this.spawnThreshold = this.server.getConfiguration().getChunkSpawnThreshold();
         this.spawnPosition = null;
@@ -955,7 +956,7 @@ public class Player extends EntityHuman implements CommandSender, InventoryHolde
         }
     }
 
-    public void sendChunk(int x, int z, int subChunkCount, ChunkCachedData cachedData, DataPacket packet) {
+    public void sendChunk(int dimension, int x, int z, int subChunkCount, ChunkCachedData cachedData, DataPacket packet) {
         if (!this.connected) {
             return;
         }
@@ -981,7 +982,7 @@ public class Player extends EntityHuman implements CommandSender, InventoryHolde
         }
     }
 
-    public void sendChunk(int x, int z, int subChunkCount, ChunkCachedData cachedData, byte[] payload, byte[] subModePayload) {
+    public void sendChunk(int dimension, int x, int z, int subChunkCount, ChunkCachedData cachedData, byte[] payload, byte[] subModePayload) {
         if (!this.connected) {
             return;
         }
@@ -1081,7 +1082,7 @@ public class Player extends EntityHuman implements CommandSender, InventoryHolde
             PlayerChunkRequestEvent ev = new PlayerChunkRequestEvent(this, chunkX, chunkZ);
             this.server.getPluginManager().callEvent(ev);
             if (!ev.isCancelled()) {
-                this.level.requestChunk(chunkX, chunkZ, this);
+                this.level.requestChunk(chunkX, chunkZ, this, getDummyDimension());
                 success = true;
             }
         }
@@ -1664,11 +1665,18 @@ public class Player extends EntityHuman implements CommandSender, InventoryHolde
         }
 
         boolean portal = false;
+        boolean endPortal = false;
+        Vector3 endGateway = null;
 //        boolean water = false;
 
         for (Block block : this.getCollisionBlocks()) {
-            if (block.getId() == Block.PORTAL) {
+            int id = block.getId();
+            if (id == Block.PORTAL) {
                 portal = true;
+            } else if (id == Block.END_PORTAL) {
+                endPortal = true;
+            } else if (id == Block.END_GATEWAY) {
+                endGateway = block;
 //            } else if (block.isWater()) {
 //                water = true;
             }
@@ -1680,6 +1688,19 @@ public class Player extends EntityHuman implements CommandSender, InventoryHolde
             inPortalTicks++;
         } else {
             this.inPortalTicks = 0;
+        }
+
+        if (endPortal) {
+            inEndPortalTicks++;
+        } else {
+            inEndPortalTicks = 0;
+        }
+
+        endGatewayPos = endGateway;
+        if (endGateway != null) {
+            inEndGatewayTicks++;
+        } else {
+            inEndGatewayTicks = 0;
         }
 
 //        if (!water && isSwimming()) {
@@ -2484,10 +2505,14 @@ public class Player extends EntityHuman implements CommandSender, InventoryHolde
                 .set(Type.OPERATOR, isOp())
                 .set(Type.TELEPORT, hasPermission("nukkit.command.teleport"));
 
-        Level level;
-        if ((level = this.server.getLevelByName(nbt.getString("Level"))) == null || !alive) {
+        Level level = this.server.getLevelByName(nbt.getString("Level"));
+        if (level != null) {
+            level = level.getDimension(Dimension.byIdOrDefault(nbt.getInt("DimensionId", DimensionID.OVERWORLD))) ;
+        }
+        if (level == null || !alive) {
             this.setLevel(this.server.getDefaultLevel());
             nbt.putString("Level", this.level.getName());
+            nbt.putInt("DimensionId", this.level.getDimension().getId());
             nbt.getList("Pos", DoubleTag.class)
                     .add(new DoubleTag("", this.level.getSpawnLocation().x))
                     .add(new DoubleTag("", this.level.getSpawnLocation().y))
@@ -2567,6 +2592,7 @@ public class Player extends EntityHuman implements CommandSender, InventoryHolde
 
         Level level;
         if (this.spawnPosition == null && this.namedTag.contains("SpawnLevel") && (level = this.server.getLevelByName(this.namedTag.getString("SpawnLevel"))) != null) {
+            level = level.getDimension(Dimension.byIdOrDefault(this.namedTag.getInt("SpawnDimension", DimensionID.OVERWORLD))) ;
             this.spawnPosition = new Position(this.namedTag.getInt("SpawnX"), this.namedTag.getInt("SpawnY"), this.namedTag.getInt("SpawnZ"), level);
         }
         if (this.spawnBlockPosition == null && this.namedTag.contains("SpawnBlockPositionLevel")) {
@@ -2588,7 +2614,7 @@ public class Player extends EntityHuman implements CommandSender, InventoryHolde
         startGamePacket.yaw = (float) this.yaw;
         startGamePacket.pitch = (float) this.pitch;
         startGamePacket.seed = -1;
-        startGamePacket.dimension = (byte) (spawnPosition.level.getDimension().ordinal() & 0xff);
+        startGamePacket.dimension = (byte) (spawnPosition.level.getDimension().getId() & 0xff);
         startGamePacket.worldGamemode = getClientFriendlyGamemode(this.gamemode);
         startGamePacket.difficulty = this.server.getDifficulty();
         startGamePacket.spawnX = (int) spawnPosition.x;
@@ -4513,17 +4539,32 @@ public class Player extends EntityHuman implements CommandSender, InventoryHolde
 
         if (this.level != null) {
             this.namedTag.putString("Level", this.level.getFolderName());
+            this.namedTag.putInt("DimensionId", this.level.getDimension().getId());
             if (this.spawnPosition != null && this.spawnPosition.getLevel() != null) {
                 this.namedTag.putString("SpawnLevel", this.spawnPosition.getLevel().getFolderName());
                 this.namedTag.putInt("SpawnX", (int) this.spawnPosition.x);
                 this.namedTag.putInt("SpawnY", (int) this.spawnPosition.y);
                 this.namedTag.putInt("SpawnZ", (int) this.spawnPosition.z);
+                this.namedTag.putInt("SpawnDimension", this.spawnPosition.getLevel().getDimension().getId());
+            } else {
+                this.namedTag.remove("SpawnLevel");
+                this.namedTag.remove("SpawnX");
+                this.namedTag.remove("SpawnY");
+                this.namedTag.remove("SpawnZ");
+                this.namedTag.remove("SpawnDimension");
             }
             if (this.spawnBlockPosition != null && this.spawnBlockPosition.level != null) {
                 this.namedTag.putString("SpawnBlockPositionLevel", this.spawnBlockPosition.level.getFolderName());
                 this.namedTag.putInt("SpawnBlockPositionX", this.spawnBlockPosition.getFloorX());
                 this.namedTag.putInt("SpawnBlockPositionY", this.spawnBlockPosition.getFloorY());
                 this.namedTag.putInt("SpawnBlockPositionZ", this.spawnBlockPosition.getFloorZ());
+            } else {
+/*
+                this.namedTag.remove("SpawnBlockPositionLevel");
+                this.namedTag.remove("SpawnBlockPositionX");
+                this.namedTag.remove("SpawnBlockPositionY");
+                this.namedTag.remove("SpawnBlockPositionZ");
+*/
             }
 
             this.namedTag.putInt("playerGameType", this.gamemode);
@@ -5512,19 +5553,25 @@ public class Player extends EntityHuman implements CommandSender, InventoryHolde
     }
 
     protected void forceSendEmptyChunks(int chunkRadius) {
-        int chunkPositionX = this.getFloorX() >> 4;
-        int chunkPositionZ = this.getFloorZ() >> 4;
+        this.forceSendEmptyChunks(chunkRadius, getFloorX(), getFloorZ());
+    }
+
+    protected void forceSendEmptyChunks(int chunkRadius, int centerChunkX, int centerChunkZ) {
+        this.forceSendEmptyChunks(this.chunkRadius, centerChunkX, centerChunkZ, level.getDimension().getId());
+    }
+
+    protected void forceSendEmptyChunks(int chunkRadius, int centerChunkX, int centerChunkZ, int dimension) {
         List<FullChunkDataPacket> pkList = new ObjectArrayList<>();
         for (int x = -chunkRadius; x < chunkRadius; x++) {
             for (int z = -chunkRadius; z < chunkRadius; z++) {
                 FullChunkDataPacket chunk = new FullChunkDataPacket();
-                chunk.chunkX = chunkPositionX + x;
-                chunk.chunkZ = chunkPositionZ + z;
+                chunk.chunkX = centerChunkX + x;
+                chunk.chunkZ = centerChunkZ + z;
                 chunk.data = new byte[0];
                 pkList.add(chunk);
             }
         }
-        //Server.getInstance().batchPackets(new Player[]{this}, pkList.stream().toArray(DataPacket[]::new), true);
+        pkList.sort(AroundChunkComparator.create(centerChunkX, centerChunkZ));
         pkList.forEach(this::dataPacket);
     }
 
@@ -5873,7 +5920,7 @@ public class Player extends EntityHuman implements CommandSender, InventoryHolde
     }
 
     @Override
-    public Integer getLoaderId() {
+    public int getLoaderId() {
         return this.loaderId;
     }
 
@@ -6285,6 +6332,10 @@ public class Player extends EntityHuman implements CommandSender, InventoryHolde
     }
 
     protected void onDimensionChangeSuccess() {
+    }
+
+    public int getDummyDimension() {
+        return level.getDimension().getId();
     }
 
     /**

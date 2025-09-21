@@ -9,7 +9,7 @@ import lombok.Value;
 import java.util.IdentityHashMap;
 import java.util.Map;
 
-import static cn.nukkit.level.generator.Generator.*;
+import static cn.nukkit.level.generator.GeneratorID.*;
 
 public final class Generators {
     private static final Map<String, GeneratorEntry> BY_NAME = new Object2ObjectOpenHashMap<>();
@@ -17,16 +17,18 @@ public final class Generators {
     private static final Map<Class<? extends Generator>, GeneratorEntry> BY_CLASS = new IdentityHashMap<>();
 
     public static void registerBuiltinGenerators() {
-        addGenerator(Old.class, "old", TYPE_OLD);
-        addGenerator(Old.class, "legacy", TYPE_OLD);
-        addGenerator(Normal.class, "normal", TYPE_INFINITE);
-        addGenerator(Normal.class, "overworld", TYPE_INFINITE);
-        addGenerator(Normal.class, "default", TYPE_INFINITE);
-        addGenerator(Flat.class, "flat", TYPE_FLAT);
-        addGenerator(Nether.class, "nether", TYPE_NETHER);
-        addGenerator(End.class, "end", TYPE_END);
-        addGenerator(End.class, "the_end", TYPE_END);
-        addGenerator(Void.class, "void", TYPE_VOID);
+        addGenerator(Old.class, "legacy", LEGACY);
+        addGenerator(Old.class, "old", LEGACY);
+        addGenerator(Normal.class, "overworld", OVERWORLD);
+        addGenerator(Normal.class, "infinite", OVERWORLD);
+        addGenerator(Normal.class, "normal", OVERWORLD);
+        addGenerator(Normal.class, "default", OVERWORLD);
+        addGenerator(Flat.class, "flat", FLAT);
+        addGenerator(LegacyNether.class, "nether", NETHER);
+        addGenerator(LegacyNether.class, "hell", NETHER);
+        addGenerator(TheEnd.class, "the_end", THE_END);
+        addGenerator(TheEnd.class, "end", THE_END);
+        addGenerator(Void.class, "void", VOID);
     }
 
     public static boolean addGenerator(Class<? extends Generator> clazz, String name, int type) {
@@ -81,7 +83,7 @@ public final class Generators {
     public static int getGeneratorType(Class<? extends Generator> clazz) {
         GeneratorEntry entry = BY_CLASS.get(clazz);
         if (entry == null) {
-            return TYPE_INFINITE;
+            return OVERWORLD;
         }
         return entry.type;
     }
@@ -91,7 +93,7 @@ public final class Generators {
 
         GeneratorEntry entry = BY_NAME.get(name);
         if (entry == null) {
-            return TYPE_INFINITE;
+            return OVERWORLD;
         }
         return entry.type;
     }

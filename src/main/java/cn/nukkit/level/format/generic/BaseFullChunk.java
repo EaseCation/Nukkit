@@ -613,14 +613,14 @@ public abstract class BaseFullChunk implements FullChunk, ChunkManager {
             if (blockEntity.getChunkX() != this.getX() || blockEntity.getChunkZ() != this.getZ()) {
                 blockEntity.close();
                 iter.remove();
-                log.debug("Removed an invalid (pos) BlockEntity: {} ({}) {}", blockEntity, blockEntity.getSaveId(), level.getFolderName());
+                log.debug("Removed an invalid (pos) BlockEntity: {} ({}) {} ({})", blockEntity, blockEntity.getSaveId(), level.getFolderName(), level.getDimension());
                 continue;
             }
 
             if (!blockEntity.isBlockEntityValid()) {
                 blockEntity.close();
                 iter.remove();
-                log.debug("Removed an invalid (block) BlockEntity: {} ({}) {}", blockEntity, blockEntity.getSaveId(), level.getFolderName());
+                log.debug("Removed an invalid (block) BlockEntity: {} ({}) {} ({})", blockEntity, blockEntity.getSaveId(), level.getFolderName(), level.getDimension());
                 continue;
             }
 
@@ -634,7 +634,7 @@ public abstract class BaseFullChunk implements FullChunk, ChunkManager {
 
                 blockEntity.close();
                 iter.remove();
-                log.debug("Removed an duplicate BlockEntity: {} ({}) {}", blockEntity, blockEntity.getSaveId(), level.getFolderName());
+                log.debug("Removed an duplicate BlockEntity: {} ({}) {} ({})", blockEntity, blockEntity.getSaveId(), level.getFolderName(), level.getDimension());
                 break;
             }
         }
@@ -673,21 +673,21 @@ public abstract class BaseFullChunk implements FullChunk, ChunkManager {
                             if (!extra.isAir()) {
                                 if (block.isAir()) {
                                     this.setBlock(1, x, worldY, z, Block.AIR);
-                                    log.debug("Removed empty extra block: {}, {}, {} ({}:{}) {}", worldX, worldY, worldZ, extra.getId(), extra.getDamage(), level.getFolderName());
+                                    log.debug("Removed empty extra block: {}, {}, {} ({}:{}) {} ({})", worldX, worldY, worldZ, extra.getId(), extra.getDamage(), level.getFolderName(), level.getDimension());
                                 } else if (extra.isWater()) {
                                     if (!block.canContainWater() || !block.canContainFlowingWater() && !extra.isWaterSource() || block.isLiquid()) {
                                         this.setBlock(1, x, worldY, z, Block.AIR);
-                                        log.debug("Removed invalid waterlogged block: {}, {}, {} (water {}:{}, block {}:{}) {}", worldX, worldY, worldZ, extra.getId(), extra.getDamage(), block.getId(), block.getDamage(), level.getFolderName());
+                                        log.debug("Removed invalid waterlogged block: {}, {}, {} (water {}:{}, block {}:{}) {} ({})", worldX, worldY, worldZ, extra.getId(), extra.getDamage(), block.getId(), block.getDamage(), level.getFolderName(), level.getDimension());
                                     }
                                 } else if (block.is(Block.SNOW_LAYER)) {
                                     if (!extra.canContainSnow()) {
 //                                        this.setBlock(0, x, worldY, z, extra.getId(), extra.getDamage());
                                         this.setBlock(1, x, worldY, z, Block.AIR);
-                                        log.debug("Removed invalid snowlogged block: {}, {}, {} ({}:{}) {}", worldX, worldY, worldZ, extra.getId(), extra.getDamage(), level.getFolderName());
+                                        log.debug("Removed invalid snowlogged block: {}, {}, {} ({}:{}) {} ({})", worldX, worldY, worldZ, extra.getId(), extra.getDamage(), level.getFolderName(), level.getDimension());
                                     }
                                 } else {
                                     this.setBlock(1, x, worldY, z, Block.AIR);
-                                    log.debug("Removed unknown extra block: {}, {}, {} ({}:{}) {}", worldX, worldY, worldZ, extra.getId(), extra.getDamage(), level.getFolderName());
+                                    log.debug("Removed unknown extra block: {}, {}, {} ({}:{}) {} ({})", worldX, worldY, worldZ, extra.getId(), extra.getDamage(), level.getFolderName(), level.getDimension());
                                 }
                             }
                         }
@@ -731,18 +731,18 @@ public abstract class BaseFullChunk implements FullChunk, ChunkManager {
                         if (blockEntity == null) {
                             String id = BlockEntities.getIdByType(type);
                             if (id == null) {
-                                log.warn("Unregistered BlockEntity type: {} at {}, {}, {} ({}:{}) {}", type, worldX, worldY, worldZ, block.getId(), block.getDamage(), level.getFolderName());
+                                log.warn("Unregistered BlockEntity type: {} at {}, {}, {} ({}:{}) {} ({})", type, worldX, worldY, worldZ, block.getId(), block.getDamage(), level.getFolderName(), level.getDimension());
                                 continue;
                             }
 
                             blockEntity = BlockEntities.createBlockEntity(type, this, BlockEntity.getDefaultCompound(worldX, worldY, worldZ, id));
 
                             if (blockEntity == null) {
-                                log.warn("Failed to create BlockEntity: {}, {}, {} ({}:{}) {}", worldX, worldY, worldZ, block.getId(), block.getDamage(), level.getFolderName());
+                                log.warn("Failed to create BlockEntity: {}, {}, {} ({}:{}) {} ({})", worldX, worldY, worldZ, block.getId(), block.getDamage(), level.getFolderName(), level.getDimension());
                                 continue;
                             }
 
-                            log.debug("Created a missing BlockEntity: {}, {}, {} ({}) {}", worldX, worldY, worldZ, blockEntity.getSaveId(), level.getFolderName());
+                            log.debug("Created a missing BlockEntity: {}, {}, {} ({}) {} ({})", worldX, worldY, worldZ, blockEntity.getSaveId(), level.getFolderName(), level.getDimension());
                             continue;
                         }
 

@@ -5,6 +5,8 @@ import lombok.ToString;
 
 @ToString
 public final class HeightRange {
+    public static final HeightRange MINIMUM = blockY(0, 128);
+
     private final int minChunkY;
     private final int maxChunkY;
     private final int subChunkCount;

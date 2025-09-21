@@ -33,6 +33,10 @@ public interface RandomSource {
         return nextInt(origin, bound + 1);
     }
 
+    default int nextGaussianInt(int n) {
+        return nextInt(n) - nextInt(n);
+    }
+
     long nextLong();
 
     default long nextUnsignedLong() {

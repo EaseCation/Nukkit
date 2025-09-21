@@ -86,6 +86,8 @@ if (gradle.parent != null) {
 
 tasks.shadowJar {
     duplicatesStrategy = DuplicatesStrategy.INCLUDE
+    manifest.attributes["Enable-Native-Access"] = "ALL-UNNAMED"
+    manifest.attributes["Add-Opens"] = "java.base/jdk.internal.misc=ALL-UNNAMED java.base/java.nio=ALL-UNNAMED java.base/java.lang=ALL-UNNAMED"
     transform(Log4j2PluginsCacheFileTransformer::class.java) {}
     mergeServiceFiles()
     exclude("**/module-info.class")
@@ -133,6 +135,7 @@ dependencies {
     api(libs.jackson.datatype.jdk8)
     api(libs.jline.reader)
     api(libs.jline.terminal)
+    api(libs.jline.terminal.ffm)
     api(libs.jopt)
     api(libs.jwt)
     api(libs.leveldb.mcpe.jni)

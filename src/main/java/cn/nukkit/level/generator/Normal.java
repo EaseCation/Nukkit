@@ -102,7 +102,7 @@ import java.util.concurrent.ThreadLocalRandom;
  * Nether.java
  * End.java
  */
-public class Normal extends Generator {
+public class Normal implements Generator {
     private static final float[] biomeWeights = new float[25];
 
     static {
@@ -145,7 +145,7 @@ public class Normal extends Generator {
 
     @Override
     public int getId() {
-        return TYPE_INFINITE;
+        return GeneratorID.OVERWORLD;
     }
 
     @Override

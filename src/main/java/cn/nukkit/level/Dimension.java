@@ -1,13 +1,14 @@
 package cn.nukkit.level;
 
-import cn.nukkit.level.generator.Generator;
+import cn.nukkit.level.generator.GeneratorID;
 
 import javax.annotation.Nullable;
 
+//TODO: data-driven custom dimensions
 public enum Dimension {
-    OVERWORLD("Overworld", "minecraft:overworld", Generator.TYPE_INFINITE, HeightRange.blockY(-64, 320)),
-    NETHER("Nether", "minecraft:nether", Generator.TYPE_NETHER, HeightRange.blockY(0, 128)),
-    THE_END("TheEnd", "minecraft:the_end", Generator.TYPE_END, HeightRange.blockY(0, 256)),
+    OVERWORLD("Overworld", DimensionFullNames.OVERWORLD, GeneratorID.OVERWORLD, HeightRange.blockY(-64, 320), -1),
+    NETHER("Nether", DimensionFullNames.NETHER, GeneratorID.NETHER, HeightRange.blockY(0, 128), Level.TIME_MIDNIGHT),
+    THE_END("TheEnd", DimensionFullNames.THE_END, GeneratorID.THE_END, HeightRange.blockY(0, 256), Level.TIME_NOON),
     ;
 
     private static final Dimension[] VALUES = values();
@@ -16,12 +17,18 @@ public enum Dimension {
     private final String identifier;
     private final int generator;
     private final HeightRange heightRange;
+    private final int fixedTime;
 
-    Dimension(String name, String identifier, int generator, HeightRange heightRange) {
+    Dimension(String name, String identifier, int generator, HeightRange heightRange, int fixedTime) {
         this.name = name;
         this.identifier = identifier;
         this.generator = generator;
         this.heightRange = heightRange;
+        this.fixedTime = fixedTime;
+    }
+
+    public int getId() {
+        return ordinal();
     }
 
     @Override
@@ -45,6 +52,10 @@ public enum Dimension {
      */
     public HeightRange getHeightRange() {
         return heightRange;
+    }
+
+    public int getFixedTime() {
+        return fixedTime;
     }
 
     @Nullable

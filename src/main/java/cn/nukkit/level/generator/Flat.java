@@ -16,7 +16,7 @@ import java.util.Map;
  * author: MagicDroidX
  * Nukkit Project
  */
-public class Flat extends Generator {
+public class Flat implements Generator {
     private final Map<String, Object> options;
     private ChunkManager level;
     private NukkitRandom random;
@@ -32,7 +32,7 @@ public class Flat extends Generator {
 
     @Override
     public int getId() {
-        return TYPE_FLAT;
+        return GeneratorID.FLAT;
     }
 
     @Override

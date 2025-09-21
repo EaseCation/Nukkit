@@ -1,5 +1,6 @@
 package cn.nukkit.network.protocol;
 
+import cn.nukkit.level.util.IChunkPos;
 import lombok.ToString;
 
 /**
@@ -7,7 +8,7 @@ import lombok.ToString;
  * Nukkit Project
  */
 @ToString(exclude = "data")
-public class LevelChunkPacket extends DataPacket {
+public class LevelChunkPacket extends DataPacket implements IChunkPos {
     public static final int NETWORK_ID = ProtocolInfo.LEVEL_CHUNK_PACKET;
 
     /**
@@ -71,5 +72,15 @@ public class LevelChunkPacket extends DataPacket {
             }
         }
         this.putByteArray(this.data);
+    }
+
+    @Override
+    public int getChunkX() {
+        return chunkX;
+    }
+
+    @Override
+    public int getChunkZ() {
+        return chunkZ;
     }
 }

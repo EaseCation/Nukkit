@@ -1,5 +1,6 @@
 package cn.nukkit.utils;
 
+import cn.nukkit.math.RandomSource;
 import lombok.extern.log4j.Log4j2;
 
 import java.io.*;
@@ -7,9 +8,7 @@ import java.lang.management.ManagementFactory;
 import java.lang.management.ThreadInfo;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
-import java.util.Arrays;
-import java.util.Map;
-import java.util.UUID;
+import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.function.Consumer;
 import java.util.function.Supplier;
@@ -389,5 +388,61 @@ public class Utils {
 
     public static long createUniqueId(UUID uuid) {
         return uuid.getLeastSignificantBits() ^ uuid.getMostSignificantBits();
+    }
+
+    /**
+     * Randomly permute the specified list using the specified source of
+     * randomness.  All permutations occur with equal likelihood
+     * assuming that the source of randomness is fair.<p>
+     *
+     * This implementation traverses the list backwards, from the last element
+     * up to the second, repeatedly swapping a randomly selected element into
+     * the "current position".  Elements are randomly selected from the
+     * portion of the list that runs from the first element to the current
+     * position, inclusive.
+     *
+     * @implSpec This method runs in linear time.  If the specified list does
+     * not implement the {@link RandomAccess} interface and is large, this
+     * implementation dumps the specified list into an array before shuffling
+     * it, and dumps the shuffled array back into the list.  This avoids the
+     * quadratic behavior that would result from shuffling a "sequential
+     * access" list in place.
+     *
+     * @param  list the list to be shuffled.
+     * @param  rnd the source of randomness to use to shuffle the list.
+     * @throws UnsupportedOperationException if the specified list or its
+     *         list-iterator does not support the {@code set} operation.
+     */
+    @SuppressWarnings({"rawtypes", "unchecked"})
+    public static void shuffle(List<?> list, RandomSource rnd) {
+        int size = list.size();
+        if (size < 5 || list instanceof RandomAccess) {
+            for (int i = size; i > 1; i--) {
+                Collections.swap(list, i - 1, rnd.nextInt(i));
+            }
+        } else {
+            Object[] arr = list.toArray();
+
+            // Shuffle array
+            for (int i = size; i > 1; i--) {
+                swap(arr, i - 1, rnd.nextInt(i));
+            }
+
+            // Dump array back into list
+            // instead of using a raw type here, it's possible to capture
+            // the wildcard but it will require a call to a supplementary
+            // private method
+            ListIterator it = list.listIterator();
+            for (Object e : arr) {
+                it.next();
+                it.set(e);
+            }
+        }
+    }
+
+    private static void swap(Object[] arr, int i, int j) {
+        Object tmp = arr[i];
+        arr[i] = arr[j];
+        arr[j] = tmp;
     }
 }

@@ -1,23 +1,29 @@
 package cn.nukkit.level.generator.noise.vanilla.f;
 
+import cn.nukkit.math.Mth;
 import cn.nukkit.math.NukkitRandom;
+import cn.nukkit.math.RandomSource;
 
+/**
+ * ImprovedNoise
+ */
 public class NoiseGeneratorImprovedF {
     private static final float[] GRAD_X = new float[]{1.0f, -1.0f, 1.0f, -1.0f, 1.0f, -1.0f, 1.0f, -1.0f, 0.0f, 0.0f, 0.0f, 0.0f, 1.0f, 0.0f, -1.0f, 0.0f};
     private static final float[] GRAD_Y = new float[]{1.0f, 1.0f, -1.0f, -1.0f, 0.0f, 0.0f, 0.0f, 0.0f, 1.0f, -1.0f, 1.0f, -1.0f, 1.0f, -1.0f, 1.0f, -1.0f};
     private static final float[] GRAD_Z = new float[]{0.0f, 0.0f, 0.0f, 0.0f, 1.0f, 1.0f, -1.0f, -1.0f, 1.0f, 1.0f, -1.0f, -1.0f, 0.0f, 1.0f, 0.0f, -1.0f};
     private static final float[] GRAD_2X = new float[]{1.0f, -1.0f, 1.0f, -1.0f, 1.0f, -1.0f, 1.0f, -1.0f, 0.0f, 0.0f, 0.0f, 0.0f, 1.0f, 0.0f, -1.0f, 0.0f};
     private static final float[] GRAD_2Z = new float[]{0.0f, 0.0f, 0.0f, 0.0f, 1.0f, 1.0f, -1.0f, -1.0f, 1.0f, 1.0f, -1.0f, -1.0f, 0.0f, 1.0f, 0.0f, -1.0f};
+
     private final int[] permutations;
-    public float xCoord;
-    public float yCoord;
-    public float zCoord;
+    public final float xCoord;
+    public final float yCoord;
+    public final float zCoord;
 
     public NoiseGeneratorImprovedF() {
         this(new NukkitRandom(System.currentTimeMillis()));
     }
 
-    public NoiseGeneratorImprovedF(NukkitRandom p_i45469_1_) {
+    public NoiseGeneratorImprovedF(RandomSource p_i45469_1_) {
         this.permutations = new int[512];
         this.xCoord = p_i45469_1_.nextFloat() * 256.0f;
         this.yCoord = p_i45469_1_.nextFloat() * 256.0f;
@@ -37,10 +43,6 @@ public class NoiseGeneratorImprovedF {
         }
     }
 
-    public final float lerp(float p_76311_1_, float p_76311_3_, float p_76311_5_) {
-        return p_76311_3_ + p_76311_1_ * (p_76311_5_ - p_76311_3_);
-    }
-
     public final float grad2(int p_76309_1_, float p_76309_2_, float p_76309_4_) {
         int i = p_76309_1_ & 15;
         return GRAD_2X[i] * p_76309_2_ + GRAD_2Z[i] * p_76309_4_;
@@ -49,6 +51,46 @@ public class NoiseGeneratorImprovedF {
     public final float grad(int p_76310_1_, float p_76310_2_, float p_76310_4_, float p_76310_6_) {
         int i = p_76310_1_ & 15;
         return GRAD_X[i] * p_76310_2_ + GRAD_Y[i] * p_76310_4_ + GRAD_Z[i] * p_76310_6_;
+    }
+
+    public float getValue(float x, float y, float z) {
+        x += this.xCoord;
+        int indexX = Mth.floor(x);
+        x -= indexX;
+        indexX &= 0xff;
+
+        y += this.yCoord;
+        int indexY = Mth.floor(y);
+        y -= indexY;
+        indexY &= 0xff;
+
+        z += this.zCoord;
+        int indexZ = Mth.floor(z);
+        z -= indexZ;
+        indexZ &= 0xff;
+
+        int a = indexY + permutations[indexX];
+        int aa = indexZ + permutations[a];
+        int ab = indexZ + permutations[a + 1];
+        int b = indexY + permutations[indexX + 1];
+        int ba = indexZ + permutations[b];
+        int bb = indexZ + permutations[b + 1];
+        float xm = x - 1;
+        float ym = y - 1;
+        float zm = z - 1;
+
+        return Mth.lerp3(
+                Mth.smoothstep(x),
+                Mth.smoothstep(y),
+                Mth.smoothstep(z),
+                grad(permutations[aa], x, y, z),
+                grad(permutations[ba], xm, y, z),
+                grad(permutations[ab], x, ym, z),
+                grad(permutations[bb], xm, ym, z),
+                grad(permutations[aa + 1], x, y, zm),
+                grad(permutations[ba + 1], xm, y, zm),
+                grad(permutations[ab + 1], x, ym, zm),
+                grad(permutations[bb + 1], xm, ym, zm));
     }
 
     /*
@@ -92,9 +134,9 @@ public class NoiseGeneratorImprovedF {
                     j5 = this.permutations[i5] + l6;
                     j = this.permutations[k2 + 1];
                     k5 = this.permutations[j] + l6;
-                    d14 = this.lerp(d18, this.grad2(this.permutations[j5], d17, d19), this.grad(this.permutations[k5], d17 - 1.0f, 0.0f, d19));
-                    d15 = this.lerp(d18, this.grad(this.permutations[j5 + 1], d17, 0.0f, d19 - 1.0f), this.grad(this.permutations[k5 + 1], d17 - 1.0f, 0.0f, d19 - 1.0f));
-                    float d21 = this.lerp(d20, d14, d15);
+                    d14 = Mth.lerp(d18, this.grad2(this.permutations[j5], d17, d19), this.grad(this.permutations[k5], d17 - 1.0f, 0.0f, d19));
+                    d15 = Mth.lerp(d18, this.grad(this.permutations[j5 + 1], d17, 0.0f, d19 - 1.0f), this.grad(this.permutations[k5 + 1], d17 - 1.0f, 0.0f, d19 - 1.0f));
+                    float d21 = Mth.lerp(d20, d14, d15);
                     int i7 = l5++;
                     noiseArray[i7] += d21 * d16;
                 }
@@ -158,15 +200,15 @@ public class NoiseGeneratorImprovedF {
                             k1 = this.permutations[j3 + 1] + l4;
                             l1 = this.permutations[k1] + i4;
                             i2 = this.permutations[k1 + 1] + i4;
-                            d1 = this.lerp(d6, this.grad(this.permutations[i1], d5, d9, d7), this.grad(this.permutations[l1], d5 - 1.0f, d9, d7));
-                            d2 = this.lerp(d6, this.grad(this.permutations[j1], d5, d9 - 1.0f, d7), this.grad(this.permutations[i2], d5 - 1.0f, d9 - 1.0f, d7));
-                            d3 = this.lerp(d6, this.grad(this.permutations[i1 + 1], d5, d9, d7 - 1.0f), this.grad(this.permutations[l1 + 1], d5 - 1.0f, d9, d7 - 1.0f));
-                            d4 = this.lerp(d6, this.grad(this.permutations[j1 + 1], d5, d9 - 1.0f, d7 - 1.0f), this.grad(this.permutations[i2 + 1], d5 - 1.0f, d9 - 1.0f, d7 - 1.0f));
+                            d1 = Mth.lerp(d6, this.grad(this.permutations[i1], d5, d9, d7), this.grad(this.permutations[l1], d5 - 1.0f, d9, d7));
+                            d2 = Mth.lerp(d6, this.grad(this.permutations[j1], d5, d9 - 1.0f, d7), this.grad(this.permutations[i2], d5 - 1.0f, d9 - 1.0f, d7));
+                            d3 = Mth.lerp(d6, this.grad(this.permutations[i1 + 1], d5, d9, d7 - 1.0f), this.grad(this.permutations[l1 + 1], d5 - 1.0f, d9, d7 - 1.0f));
+                            d4 = Mth.lerp(d6, this.grad(this.permutations[j1 + 1], d5, d9 - 1.0f, d7 - 1.0f), this.grad(this.permutations[i2 + 1], d5 - 1.0f, d9 - 1.0f, d7 - 1.0f));
                         }
 
-                        float d11 = this.lerp(d10, d1, d2);
-                        float d12 = this.lerp(d10, d3, d4);
-                        float d13 = this.lerp(d8, d11, d12);
+                        float d11 = Mth.lerp(d10, d1, d2);
+                        float d12 = Mth.lerp(d10, d3, d4);
+                        float d13 = Mth.lerp(d8, d11, d12);
                         int j7 = i++;
                         noiseArray[j7] += d13 * d0;
                     }

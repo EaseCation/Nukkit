@@ -61,6 +61,27 @@ public class BlockLantern extends BlockTransparent {
     }
 
     @Override
+    public Block getPlacementBlock(Item item, Block block, Block target, BlockFace face, float fx, float fy, float fz, Player player) {
+        int meta;
+        if (face.isVertical()) {
+            if (SupportType.hasCenterSupport(getSide(face.getOpposite()), face)) {
+                meta = face.getOpposite().getIndex();
+            } else if (SupportType.hasCenterSupport(getSide(face), face.getOpposite())) {
+                meta = face.getIndex();
+            } else {
+                return this;
+            }
+        } else if (SupportType.hasCenterSupport(down(), BlockFace.UP)) {
+            meta = 0;
+        } else if (SupportType.hasCenterSupport(up(), BlockFace.DOWN)) {
+            meta = HANGING_BIT;
+        } else {
+            return this;
+        }
+        return get(getId(), meta);
+    }
+
+    @Override
     public boolean place(Item item, Block block, Block target, BlockFace face, float fx, float fy, float fz, Player player) {
         if (face.isVertical()) {
             if (SupportType.hasCenterSupport(getSide(face.getOpposite()), face)) {

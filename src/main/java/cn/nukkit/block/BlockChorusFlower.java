@@ -15,6 +15,7 @@ import java.util.Set;
 import java.util.concurrent.ThreadLocalRandom;
 
 public class BlockChorusFlower extends BlockFlowable {
+    public static final int MAX_AGE = 5;
 
     public BlockChorusFlower() {
         this(0);
@@ -121,7 +122,7 @@ public class BlockChorusFlower extends BlockFlowable {
 
     private void grow() {
         int age = getDamage();
-        if (age >= 5) {
+        if (age >= MAX_AGE) {
             return;
         }
 
@@ -224,7 +225,7 @@ public class BlockChorusFlower extends BlockFlowable {
     }
 
     private void placeDeadFlower() {
-        setDamage(5);
+        setDamage(MAX_AGE);
         level.setBlock(this, this, true);
 
         level.addLevelSoundEvent(this, LevelSoundEventPacket.SOUND_CHORUSDEATH);

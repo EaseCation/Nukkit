@@ -23,7 +23,7 @@ import java.io.File;
 import java.io.IOException;
 import java.nio.ByteOrder;
 import java.nio.file.Files;
-import java.util.function.Function;
+import java.util.function.Predicate;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -196,7 +196,7 @@ public class McRegion extends BaseLevelProvider {
     }
 
     @Override
-    public void forEachChunks(Function<FullChunk, Boolean> action, boolean skipCorrupted) {
+    public void forEachChunks(Predicate<FullChunk> action, boolean skipCorrupted) {
         File regionDir = new File(path, "region");
         File[] regionFiles = regionDir.listFiles((dir, name) -> name.endsWith(".mcr"));
 
@@ -249,7 +249,7 @@ public class McRegion extends BaseLevelProvider {
                         continue;
                     }
 
-                    if (!action.apply(chunk)) {
+                    if (!action.test(chunk)) {
                         try {
                             region.close();
                         } catch (Exception e) {

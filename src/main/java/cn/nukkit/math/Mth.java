@@ -433,6 +433,22 @@ public final class Mth {
         return v * v;
     }
 
+    public static float cube(float v) {
+        return v * v * v;
+    }
+
+    public static double cube(double v) {
+        return v * v * v;
+    }
+
+    public static int cube(int v) {
+        return v * v * v;
+    }
+
+    public static long cube(long v) {
+        return v * v * v;
+    }
+
     public static float clampedMap(float t, float n, float m, float a, float b) {
         return clampedLerp(a, b, inverseLerp(t, n, m));
     }

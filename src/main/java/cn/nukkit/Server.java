@@ -1880,6 +1880,12 @@ public class Server {
         return true;
     }
 
+    public void onSubLevelLoad(Level level) {
+        this.levels.put(level.getId(), level);
+
+        level.setTickRate(this.baseTickRate);
+    }
+
     public boolean generateLevel(String name) {
         return this.generateLevel(name, LevelCreationOptions.builder().build());
     }

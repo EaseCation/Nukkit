@@ -34,6 +34,7 @@ public class LevelDbChunk extends BaseChunk {
     protected final Lock biomeReadLock;
     protected final Lock biomeWriteLock;
 
+    protected HeightRange heightRange;
     /**
      * ZZZZXXXX key bit order.
      */
@@ -67,6 +68,9 @@ public class LevelDbChunk extends BaseChunk {
                         @Nullable boolean[] borders) {
         this.ioLock = new ReentrantLock();
         this.provider = level;
+        if (level != null) {
+            heightRange = level.getHeightRange();
+        }
         this.setPosition(chunkX, chunkZ);
 
         ReentrantReadWriteLock biomeLock = new ReentrantReadWriteLock();
@@ -122,6 +126,14 @@ public class LevelDbChunk extends BaseChunk {
 
         this.NBTentities = entities;
         this.NBTtiles = blockEntities;
+    }
+
+    @Override
+    public void setProvider(LevelProvider provider) {
+        super.setProvider(provider);
+        if (provider != null) {
+            heightRange = provider.getHeightRange();
+        }
     }
 
     @Override
@@ -478,12 +490,13 @@ public class LevelDbChunk extends BaseChunk {
 
     @Override
     public int getHighestBlockAt(int x, int z, boolean cache) {
+        HeightRange heightRange = getHeightRange();
+
         if (cache) {
             int height = this.getHeightmapValue(x, z);
-            return height > 0 ? Level.indexToY(height - 1, getHeightRange().getYIndexOffset()) : 0;
+            return height > 0 ? Level.indexToY(height - 1, heightRange.getYIndexOffset()) : heightRange.getMinY();
         }
 
-        HeightRange heightRange = getHeightRange();
         for (int chunkY = heightRange.getMaxChunkY() - 1; chunkY >= heightRange.getMinChunkY(); chunkY--) {
             ChunkSection subChunk = this.sections[Level.subChunkYtoIndex(chunkY)];
             int baseY = chunkY << 4;
@@ -497,7 +510,7 @@ public class LevelDbChunk extends BaseChunk {
             }
         }
         this.setHeightmapValue(x, z, 0);
-        return 0;
+        return heightRange.getMinY();
     }
 
     @Override
@@ -819,11 +832,15 @@ public class LevelDbChunk extends BaseChunk {
 
     @Override
     public HeightRange getHeightRange() {
-        //TODO: data-driven
-//        if (provider != null) {
-//            return provider.getHeightRange();
-//        }
-        return LevelDB.DEFAULT_HEIGHT_RANGE;
+        HeightRange heightRange = this.heightRange;
+        if (heightRange != null) {
+            return heightRange;
+        }
+        LevelProvider provider = this.provider;
+        if (provider != null) {
+            return provider.getHeightRange();
+        }
+        return HeightRange.MINIMUM;
     }
 
     @SuppressWarnings("unused")

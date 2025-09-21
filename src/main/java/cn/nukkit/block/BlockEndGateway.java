@@ -7,7 +7,6 @@ import cn.nukkit.blockentity.BlockEntityEndGateway;
 import cn.nukkit.blockentity.BlockEntityType;
 import cn.nukkit.item.Item;
 import cn.nukkit.item.Items;
-import cn.nukkit.math.AxisAlignedBB;
 import cn.nukkit.math.BlockFace;
 import cn.nukkit.utils.BlockColor;
 
@@ -34,16 +33,6 @@ public class BlockEndGateway extends BlockTransparent {
     @Override
     public int getBlockEntityType() {
         return BlockEntityType.END_GATEWAY;
-    }
-
-    @Override
-    public boolean canPassThrough() {
-        return true;
-    }
-
-    @Override
-    protected AxisAlignedBB recalculateSelectionBoundingBox() {
-        return this;
     }
 
     @Override

@@ -8,10 +8,7 @@ import cn.nukkit.block.BlockSerializer;
 import cn.nukkit.block.BlockUpgrader;
 import cn.nukkit.blockentity.BlockEntity;
 import cn.nukkit.entity.Entity;
-import cn.nukkit.level.GameRules;
-import cn.nukkit.level.HeightRange;
-import cn.nukkit.level.Level;
-import cn.nukkit.level.LevelCreationOptions;
+import cn.nukkit.level.*;
 import cn.nukkit.level.biome.Biome;
 import cn.nukkit.level.biome.Biomes;
 import cn.nukkit.level.format.ChunkSection;
@@ -23,10 +20,7 @@ import cn.nukkit.level.format.anvil.util.NibbleArray;
 import cn.nukkit.level.format.generic.BaseFullChunk;
 import cn.nukkit.level.format.generic.ChunkRequestTask;
 import cn.nukkit.level.format.leveldb.LevelDB.DbInitData.CustomBiomeData;
-import cn.nukkit.level.generator.FlatGeneratorOptions;
-import cn.nukkit.level.generator.Generator;
-import cn.nukkit.level.generator.GeneratorOptions;
-import cn.nukkit.level.generator.Generators;
+import cn.nukkit.level.generator.*;
 import cn.nukkit.level.util.PalettedSubChunkStorage;
 import cn.nukkit.math.BlockVector3;
 import cn.nukkit.math.Vector3;
@@ -55,6 +49,7 @@ import org.iq80.leveldb.impl.Iq80DBFactory;
 
 import javax.annotation.Nullable;
 import java.io.*;
+import java.lang.Void;
 import java.lang.ref.WeakReference;
 import java.nio.ByteOrder;
 import java.nio.file.Files;
@@ -66,7 +61,7 @@ import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ThreadLocalRandom;
 import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantLock;
-import java.util.function.Function;
+import java.util.function.Predicate;
 
 import static cn.nukkit.GameVersion.*;
 import static cn.nukkit.SharedConstants.*;
@@ -91,6 +86,7 @@ public class LevelDB implements LevelProvider {
     protected final DB db;
 
     protected Level level;
+    protected final Dimension dimension;
 
     protected final String path;
 
@@ -112,6 +108,7 @@ public class LevelDB implements LevelProvider {
 
     public LevelDB(Level level, String path, DbInitData initData) {
         this.level = level;
+        this.dimension = Dimension.OVERWORLD;
         this.path = path;
 
         Path dirPath = null;
@@ -141,8 +138,8 @@ public class LevelDB implements LevelProvider {
         this.levelData = levelData;
 
         if (!this.levelData.contains("Generator")) {
-//            this.levelData.putInt("Generator", Generator.TYPE_INFINITE);
-            this.levelData.putInt("Generator", Generator.TYPE_FLAT);
+//            this.levelData.putInt("Generator", GeneratorID.TYPE_INFINITE);
+            this.levelData.putInt("Generator", GeneratorID.FLAT);
         }
 
         if (!this.levelData.contains("generatorOptions")) {
@@ -170,6 +167,25 @@ public class LevelDB implements LevelProvider {
         }
         this.customBiomePersistentToRuntime = customBiomePersistentToRuntime;
         this.customBiomeRuntimeToPersistent = customBiomeRuntimeToPersistent;
+
+        gcLock = new ReentrantLock();
+        if (ENABLE_STORAGE_AUTO_COMPACTION && level.isAutoCompaction()) {
+            int delay = level.getServer().getAutoCompactionTicks();
+            level.getServer().getScheduler().scheduleDelayedTask(null, new AutoCompactionTask(), delay + ThreadLocalRandom.current().nextInt(delay), true);
+        }
+    }
+
+    private LevelDB(LevelDB parent, Level level, Dimension dimension) {
+        this.level = level;
+        this.dimension = dimension;
+        this.path = parent.path;
+
+        this.levelData = parent.levelData;
+
+        this.db = parent.db;
+
+        this.customBiomePersistentToRuntime = parent.customBiomePersistentToRuntime;
+        this.customBiomeRuntimeToPersistent = parent.customBiomeRuntimeToPersistent;
 
         gcLock = new ReentrantLock();
         if (ENABLE_STORAGE_AUTO_COMPACTION && level.isAutoCompaction()) {
@@ -549,9 +565,9 @@ public class LevelDB implements LevelProvider {
 
     @Nullable
     public LevelDbChunk readChunk(int chunkX, int chunkZ) {
-        byte[] versionData = this.db.get(NEW_VERSION.getKey(chunkX, chunkZ));
+        byte[] versionData = this.db.get(NEW_VERSION.getKey(chunkX, chunkZ, dimension.getId()));
         if (versionData == null || versionData.length == 0) {
-            versionData = this.db.get(OLD_VERSION.getKey(chunkX, chunkZ));
+            versionData = this.db.get(OLD_VERSION.getKey(chunkX, chunkZ, dimension.getId()));
             if (versionData == null || versionData.length == 0) {
                 return null;
             }
@@ -616,7 +632,7 @@ public class LevelDB implements LevelProvider {
                 int minChunkY = heightRange.getMinChunkY();
                 int maxChunkY = heightRange.getMaxChunkY();
                 for (int y = minChunkY; y < maxChunkY; ++y) {
-                    byte[] subChunkValue = this.db.get(SUBCHUNK.getSubKey(chunkX, chunkZ, y + subChunkKeyOffset));
+                    byte[] subChunkValue = this.db.get(SUBCHUNK.getSubKey(chunkX, chunkZ, dimension.getId(), y + subChunkKeyOffset));
                     if (subChunkValue == null) {
                         continue;
                     }
@@ -694,7 +710,7 @@ public class LevelDB implements LevelProvider {
                     }
                 }
 
-                byte[] maps3d = this.db.get(HEIGHTMAP_AND_3D_BIOMES.getKey(chunkX, chunkZ));
+                byte[] maps3d = this.db.get(HEIGHTMAP_AND_3D_BIOMES.getKey(chunkX, chunkZ, dimension.getId()));
                 if (maps3d != null && maps3d.length >= SUB_CHUNK_2D_SIZE * 2) {
                     heightmap = new short[SUB_CHUNK_2D_SIZE];
 
@@ -725,7 +741,7 @@ public class LevelDB implements LevelProvider {
                     }
                 } else {
                     // Converts 2D biomes into a 3D biome palette
-                    byte[] maps2d = this.db.get(HEIGHTMAP_AND_2D_BIOMES.getKey(chunkX, chunkZ));
+                    byte[] maps2d = this.db.get(HEIGHTMAP_AND_2D_BIOMES.getKey(chunkX, chunkZ, dimension.getId()));
                     if (maps2d != null && maps2d.length >= SUB_CHUNK_2D_SIZE * 2 + SUB_CHUNK_2D_SIZE) {
                         biomeOrHeightmapUpgraded = true;
 
@@ -767,7 +783,7 @@ public class LevelDB implements LevelProvider {
                     }
                 }
 
-                byte[] borderBlocks = this.db.get(BORDER_BLOCKS.getKey(chunkX, chunkZ));
+                byte[] borderBlocks = this.db.get(BORDER_BLOCKS.getKey(chunkX, chunkZ, dimension.getId()));
                 if (borderBlocks != null && borderBlocks.length != 0) {
                     borders = new boolean[SUB_CHUNK_2D_SIZE];
 
@@ -786,7 +802,7 @@ public class LevelDB implements LevelProvider {
             case 0: // 0.9.0.1 beta (first version)
                 convertedLegacyExtraData = this.deserializeLegacyExtraData(chunkX, chunkZ, chunkVersion);
 
-                byte[] legacyTerrain = this.db.get(LEGACY_TERRAIN.getKey(chunkX, chunkZ));
+                byte[] legacyTerrain = this.db.get(LEGACY_TERRAIN.getKey(chunkX, chunkZ, dimension.getId()));
                 if (legacyTerrain == null || legacyTerrain.length == 0) {
                     throw new ChunkException("Missing expected legacy terrain data for format version " + chunkVersion + " (" + chunkX + "," + chunkZ + ") in " + path);
                 }
@@ -850,7 +866,7 @@ public class LevelDB implements LevelProvider {
         }
 
         List<CompoundTag> blockEntities = new ObjectArrayList<>();
-        byte[] blockEntityData = this.db.get(BLOCK_ENTITIES.getKey(chunkX, chunkZ));
+        byte[] blockEntityData = this.db.get(BLOCK_ENTITIES.getKey(chunkX, chunkZ, dimension.getId()));
         if (blockEntityData != null && blockEntityData.length != 0) {
             try (NBTInputStream nbtStream = new NBTInputStream(new ByteArrayInputStream(blockEntityData), ByteOrder.LITTLE_ENDIAN, false)) {
                 while (nbtStream.available() > 0) {
@@ -868,7 +884,7 @@ public class LevelDB implements LevelProvider {
         }
 
         List<CompoundTag> entities = new ObjectArrayList<>();
-        byte[] entityData = this.db.get(ENTITIES.getKey(chunkX, chunkZ));
+        byte[] entityData = this.db.get(ENTITIES.getKey(chunkX, chunkZ, dimension.getId()));
         if (entityData != null && entityData.length != 0) {
             try (NBTInputStream nbtStream = new NBTInputStream(new ByteArrayInputStream(entityData), ByteOrder.LITTLE_ENDIAN, false)) {
                 while (nbtStream.available() > 0) {
@@ -885,18 +901,18 @@ public class LevelDB implements LevelProvider {
             }
         }
 
-        byte[] tickingData = this.db.get(PENDING_SCHEDULED_TICKS.getKey(chunkX, chunkZ));
+        byte[] tickingData = this.db.get(PENDING_SCHEDULED_TICKS.getKey(chunkX, chunkZ, dimension.getId()));
         if (tickingData != null && tickingData.length != 0) {
             loadBlockTickingQueue(tickingData, false);
         }
 
-        byte[] randomTickingData = this.db.get(PENDING_RANDOM_TICKS.getKey(chunkX, chunkZ));
+        byte[] randomTickingData = this.db.get(PENDING_RANDOM_TICKS.getKey(chunkX, chunkZ, dimension.getId()));
         if (randomTickingData != null && randomTickingData.length != 0) {
             loadBlockTickingQueue(randomTickingData, true);
         }
 
         int finalisation;
-        byte[] finalisationData = this.db.get(FINALIZATION.getKey(chunkX, chunkZ));
+        byte[] finalisationData = this.db.get(FINALIZATION.getKey(chunkX, chunkZ, dimension.getId()));
         if (randomTickingData != null && randomTickingData.length != 0) {
             finalisation = Binary.readLInt(finalisationData);
         } else {
@@ -930,7 +946,7 @@ public class LevelDB implements LevelProvider {
         BinaryStream stream = new BinaryStream();
 
         try (WriteBatch batch = this.db.createWriteBatch()) {
-            batch.put(NEW_VERSION.getKey(chunkX, chunkZ), CHUNK_VERSION_SAVE_DATA);
+            batch.put(NEW_VERSION.getKey(chunkX, chunkZ, dimension.getId()), CHUNK_VERSION_SAVE_DATA);
 
             chunk.ioLock.lock();
 
@@ -939,7 +955,7 @@ public class LevelDB implements LevelProvider {
                 if (sections != null) {
                     for (int i = 0; i < LevelDbChunk.SECTION_COUNT; i++) {
                         ChunkSection section = sections[i];
-                        byte[] key = SUBCHUNK.getSubKey(chunkX, chunkZ, Level.subChunkIndexToY(i));
+                        byte[] key = SUBCHUNK.getSubKey(chunkX, chunkZ, dimension.getId(), Level.subChunkIndexToY(i));
 
                         if (section == null || section.isEmpty()) {
                             batch.delete(key);
@@ -964,7 +980,7 @@ public class LevelDB implements LevelProvider {
 
                 chunk.writeBiomeTo(stream, false, customBiomeRuntimeToPersistent);
 
-                batch.put(HEIGHTMAP_AND_3D_BIOMES.getKey(chunkX, chunkZ), stream.getBuffer());
+                batch.put(HEIGHTMAP_AND_3D_BIOMES.getKey(chunkX, chunkZ, dimension.getId()), stream.getBuffer());
             }
 
             if (chunk.isBordersDirty()) {
@@ -976,7 +992,7 @@ public class LevelDB implements LevelProvider {
                     }
                 }
 
-                byte[] borderBlocksKey = BORDER_BLOCKS.getKey(chunkX, chunkZ);
+                byte[] borderBlocksKey = BORDER_BLOCKS.getKey(chunkX, chunkZ, dimension.getId());
                 if (borderBlockIndexes.isEmpty()) {
                     batch.delete(borderBlocksKey);
                 } else {
@@ -988,7 +1004,7 @@ public class LevelDB implements LevelProvider {
             }
 
             if (!background) {
-                batch.put(FINALIZATION.getKey(chunkX, chunkZ), chunk.isPopulated() ? FINALISATION_DONE_SAVE_DATA
+                batch.put(FINALIZATION.getKey(chunkX, chunkZ, dimension.getId()), chunk.isPopulated() ? FINALISATION_DONE_SAVE_DATA
                         : chunk.isGenerated() ? FINALISATION_POPULATION_SAVE_DATA : FINALISATION_GENERATION_SAVE_DATA);
 
                 //TODO: dirty?
@@ -1007,7 +1023,7 @@ public class LevelDB implements LevelProvider {
                         blockEntities = Collections.emptyList();
                     }
                 }
-                byte[] blockEntitiesKey = BLOCK_ENTITIES.getKey(chunkX, chunkZ);
+                byte[] blockEntitiesKey = BLOCK_ENTITIES.getKey(chunkX, chunkZ, dimension.getId());
                 if (blockEntities.isEmpty()) {
                     batch.delete(blockEntitiesKey);
                 } else {
@@ -1034,7 +1050,7 @@ public class LevelDB implements LevelProvider {
                         entities = Collections.emptyList();
                     }
                 }
-                byte[] entitiesKey = ENTITIES.getKey(chunkX, chunkZ);
+                byte[] entitiesKey = ENTITIES.getKey(chunkX, chunkZ, dimension.getId());
                 if (entities.isEmpty()) {
                     batch.delete(entitiesKey);
                 } else {
@@ -1060,7 +1076,7 @@ public class LevelDB implements LevelProvider {
                     randomBlockUpdateEntries = level.getPendingRandomBlockUpdates(chunk);
                 }
 
-                byte[] pendingScheduledTicksKey = PENDING_SCHEDULED_TICKS.getKey(chunkX, chunkZ);
+                byte[] pendingScheduledTicksKey = PENDING_SCHEDULED_TICKS.getKey(chunkX, chunkZ, dimension.getId());
                 if (blockUpdateEntries != null && !blockUpdateEntries.isEmpty()) {
                     CompoundTag ticks = saveBlockTickingQueue(blockUpdateEntries, currentTick);
                     if (ticks != null) {
@@ -1076,7 +1092,7 @@ public class LevelDB implements LevelProvider {
                     batch.delete(pendingScheduledTicksKey);
                 }
 
-                byte[] pendingRandomTicksKey = PENDING_RANDOM_TICKS.getKey(chunkX, chunkZ);
+                byte[] pendingRandomTicksKey = PENDING_RANDOM_TICKS.getKey(chunkX, chunkZ, dimension.getId());
                 if (randomBlockUpdateEntries != null && !randomBlockUpdateEntries.isEmpty()) {
                     CompoundTag ticks = saveBlockTickingQueue(randomBlockUpdateEntries, currentTick);
                     if (ticks != null) {
@@ -1093,11 +1109,11 @@ public class LevelDB implements LevelProvider {
                 }
             }
 
-            batch.delete(HEIGHTMAP_AND_2D_BIOMES.getKey(chunkX, chunkZ));
-            batch.delete(HEIGHTMAP_AND_2D_BIOME_COLORS.getKey(chunkX, chunkZ));
-            batch.delete(LEGACY_TERRAIN.getKey(chunkX, chunkZ));
-            batch.delete(LEGACY_BLOCK_EXTRA_DATA.getKey(chunkX, chunkZ));
-            batch.delete(OLD_VERSION.getKey(chunkX, chunkZ));
+            batch.delete(HEIGHTMAP_AND_2D_BIOMES.getKey(chunkX, chunkZ, dimension.getId()));
+            batch.delete(HEIGHTMAP_AND_2D_BIOME_COLORS.getKey(chunkX, chunkZ, dimension.getId()));
+            batch.delete(LEGACY_TERRAIN.getKey(chunkX, chunkZ, dimension.getId()));
+            batch.delete(LEGACY_BLOCK_EXTRA_DATA.getKey(chunkX, chunkZ, dimension.getId()));
+            batch.delete(OLD_VERSION.getKey(chunkX, chunkZ, dimension.getId()));
 
             this.db.write(batch);
         } catch (IOException e) {
@@ -1220,12 +1236,12 @@ public class LevelDB implements LevelProvider {
     }
 
     private boolean chunkExists(int chunkX, int chunkZ) {
-        byte[] data = this.db.get(NEW_VERSION.getKey(chunkX, chunkZ));
+        byte[] data = this.db.get(NEW_VERSION.getKey(chunkX, chunkZ, dimension.getId()));
         if (data != null && data.length != 0) {
             return true;
         }
 
-        data = this.db.get(OLD_VERSION.getKey(chunkX, chunkZ));
+        data = this.db.get(OLD_VERSION.getKey(chunkX, chunkZ, dimension.getId()));
         return data != null && data.length != 0;
     }
 
@@ -1457,7 +1473,7 @@ public class LevelDB implements LevelProvider {
     }
 
     protected PalettedSubChunkStorage[] deserializeLegacyExtraData(int chunkX, int chunkZ, int chunkVersion) {
-        byte[] extraRawData = this.db.get(LEGACY_BLOCK_EXTRA_DATA.getKey(chunkX, chunkZ));
+        byte[] extraRawData = this.db.get(LEGACY_BLOCK_EXTRA_DATA.getKey(chunkX, chunkZ, dimension.getId()));
         if (extraRawData == null || extraRawData.length == 0) {
             return null;
         }
@@ -1555,16 +1571,30 @@ public class LevelDB implements LevelProvider {
     }
 
     @Override
-    public void forEachChunks(Function<FullChunk, Boolean> action, boolean skipCorrupted) {
+    public void forEachChunks(Predicate<FullChunk> action, boolean skipCorrupted) {
+        boolean keyHasDimensionData = dimension != Dimension.OVERWORLD;
+        int keyLength = 4 + 4 + (keyHasDimensionData ? 4 : 0) + 1;
+        int typeIndex = keyLength - 1;
+        int dimensionId = dimension.getId();
+        byte[] dimensionKey = keyHasDimensionData ? new byte[]{
+                (byte) (dimensionId & 0xff),
+                (byte) (dimensionId >>> 8 & 0xff),
+                (byte) (dimensionId >>> 16 & 0xff),
+                (byte) (dimensionId >>> 24 & 0xff),
+        } : null;
         try (DBIterator iter = db.iterator()) {
             while (iter.hasNext()) {
                 Entry<byte[], byte[]> entry = iter.next();
                 byte[] key = entry.getKey();
-                if (key.length != 9) {
+                if (key.length != keyLength) {
                     continue;
                 }
 
-                byte type = key[8];
+                if (keyHasDimensionData && !Arrays.equals(key, 8, 12, dimensionKey, 0, 4)) {
+                    continue;
+                }
+
+                byte type = key[typeIndex];
                 if (type != NEW_VERSION.getCode() && type != OLD_VERSION.getCode()) {
                     continue;
                 }
@@ -1596,7 +1626,7 @@ public class LevelDB implements LevelProvider {
                     continue;
                 }
 
-                if (!action.apply(chunk)) {
+                if (!action.test(chunk)) {
                     break;
                 }
             }
@@ -1617,8 +1647,7 @@ public class LevelDB implements LevelProvider {
 
     @Override
     public HeightRange getHeightRange() {
-        //TODO: data-driven
-        return DEFAULT_HEIGHT_RANGE;
+        return dimension.getHeightRange();
     }
 
     @Override
@@ -1696,6 +1725,31 @@ public class LevelDB implements LevelProvider {
 
     static {
         log.info("native LevelDB provider: {}", NATIVE_LEVELDB && PROVIDER.isNative());
+    }
+
+    public static class SubProvider extends LevelDB {
+        public SubProvider(LevelDB parent, Level level, Dimension dimension) {
+            super(parent, level, dimension);
+        }
+
+        @Override
+        public synchronized CompletableFuture<Void> close() {
+            if (closed) {
+                return CompletableFuture.completedFuture(null);
+            }
+            closed = true;
+
+            try {
+                gcLock.lock();
+
+                this.unloadChunks(saveChunksOnClose);
+
+                this.level = null;
+            } finally {
+                gcLock.unlock();
+            }
+            return CompletableFuture.completedFuture(null);
+        }
     }
 
     public record DbInitData(CompoundTag levelData, DB db, CustomBiomeData customBiomeData) {
