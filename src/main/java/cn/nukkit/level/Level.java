@@ -92,8 +92,8 @@ import java.util.function.Supplier;
 @Log4j2
 public class Level implements ChunkManager, Metadatable {
 
-    private static int levelIdCounter = 1;
-    private static int chunkLoaderCounter = 1;
+    private static final AtomicInteger levelIdCounter = new AtomicInteger(1);
+    private static final AtomicInteger chunkLoaderCounter = new AtomicInteger(1);
 
     public static final int BLOCK_UPDATE_NORMAL = 1;
     public static final int BLOCK_UPDATE_RANDOM = 2;
@@ -384,7 +384,7 @@ public class Level implements ChunkManager, Metadatable {
     }
 
     public Level(Server server, String name, String path, LevelProviderHandle providerHandle, DbInitData dbInitData) {
-        this.levelId = levelIdCounter++;
+        this.levelId = levelIdCounter.getAndIncrement();
         this.blockMetadata = new BlockMetadataStore(this);
         this.server = server;
         this.autoSave = server.getAutoSave();
@@ -523,7 +523,7 @@ public class Level implements ChunkManager, Metadatable {
     }
 
     private Level(Level parent, Dimension dimension) {
-        this.levelId = levelIdCounter++;
+        this.levelId = levelIdCounter.getAndIncrement();
         this.blockMetadata = new BlockMetadataStore(this);
         this.server = parent.server;
         this.autoSave = parent.autoSave;
@@ -697,7 +697,7 @@ public class Level implements ChunkManager, Metadatable {
     }
 
     public static int generateChunkLoaderId() {
-        return chunkLoaderCounter++;
+        return chunkLoaderCounter.getAndIncrement();
     }
 
     public int getTickRate() {

@@ -28,6 +28,7 @@ import cn.nukkit.item.enchantment.Enchantment;
 import cn.nukkit.lang.BaseLang;
 import cn.nukkit.lang.TextContainer;
 import cn.nukkit.lang.TranslationContainer;
+import cn.nukkit.level.Dimension;
 import cn.nukkit.level.Level;
 import cn.nukkit.level.LevelCreationOptions;
 import cn.nukkit.level.Position;
@@ -107,6 +108,8 @@ import java.util.zip.Deflater;
 @Log4j2
 public class Server {
     private static final boolean FORCE_ASYNC_SAVE_PLAYER_DATA = !Boolean.getBoolean("easecation.debugging");
+
+    public static final int TPS = 20;
 
     public static final String BROADCAST_CHANNEL_ADMINISTRATIVE = "nukkit.broadcast.admin";
     public static final String BROADCAST_CHANNEL_USERS = "nukkit.broadcast.user";
@@ -1804,6 +1807,9 @@ public class Server {
 
     public Level getLevelByName(String name) {
         for (Level level : this.getLevels().values()) {
+            if (level.getDimension() != Dimension.OVERWORLD) {
+                continue;
+            }
             if (level.getFolderName().equalsIgnoreCase(name)) {
                 return level;
             }
