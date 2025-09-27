@@ -47,10 +47,7 @@ import cn.nukkit.metadata.PlayerMetadataStore;
 import cn.nukkit.nbt.NBTIO;
 import cn.nukkit.nbt.tag.CompoundTag;
 import cn.nukkit.nbt.tag.ListTag;
-import cn.nukkit.network.CompressBatchedTask;
-import cn.nukkit.network.Network;
-import cn.nukkit.network.RakNetInterface;
-import cn.nukkit.network.SourceInterface;
+import cn.nukkit.network.*;
 import cn.nukkit.network.protocol.BatchPacket;
 import cn.nukkit.network.protocol.BatchPacket.Track;
 import cn.nukkit.network.protocol.DataPacket;
@@ -723,8 +720,6 @@ public class Server {
 
             tracks[i] = new Track(p.pid(), p.getCount());
         }
-        byte[] data;
-        data = Binary.appendBytes(payload);
 
         List<InetSocketAddress> targets = new ArrayList<>();
         for (Player p : players) {
@@ -734,10 +729,10 @@ public class Server {
         }
 
         if (!forceSync && this.networkCompressionAsync) {
-            this.getScheduler().scheduleAsyncTask(null, new CompressBatchedTask(data, targets, this.networkCompressionLevel, tracks));
+            this.getScheduler().scheduleAsyncTask(null, new CompressBatchedTask(Binary.appendBytes(payload), targets, Compressor.SNAPPY, this.networkCompressionLevel, tracks));
         } else {
             try {
-                this.broadcastPacketsCallback(Zlib.deflate(data, this.networkCompressionLevel), targets, tracks);
+                this.broadcastPacketsCallback(Compressor.SNAPPY.compress(payload, this.networkCompressionLevel), targets, tracks);
             } catch (Exception e) {
                 throw new RuntimeException(e);
             }

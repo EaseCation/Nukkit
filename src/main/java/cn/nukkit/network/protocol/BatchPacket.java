@@ -1,9 +1,8 @@
 package cn.nukkit.network.protocol;
 
 import cn.nukkit.Server;
-import cn.nukkit.network.Network;
+import cn.nukkit.network.Compressor;
 import cn.nukkit.utils.Binary;
-import cn.nukkit.utils.Zlib;
 import lombok.ToString;
 
 import javax.annotation.Nullable;
@@ -40,19 +39,11 @@ public class BatchPacket extends DataPacket {
         setBuffer(null);
     }
 
-    public static BatchPacket compress(DataPacket... packets) {
-        return compress(false, packets);
+    public static BatchPacket compress(Compressor compressor, DataPacket... packets) {
+        return compress(compressor, Server.getInstance().networkCompressionLevel, packets);
     }
 
-    public static BatchPacket compress(boolean zlibRaw, DataPacket... packets) {
-        return compress(Server.getInstance().networkCompressionLevel, zlibRaw, packets);
-    }
-
-    public static BatchPacket compress(int compressionLevel, DataPacket... packets) {
-        return compress(compressionLevel, false, packets);
-    }
-
-    public static BatchPacket compress(int compressionLevel, boolean zlibRaw, DataPacket... packets) {
+    public static BatchPacket compress(Compressor compressor, int compressionLevel, DataPacket... packets) {
         int count = packets.length;
         Track[] tracks = new Track[count];
 
@@ -70,7 +61,7 @@ public class BatchPacket extends DataPacket {
 
         BatchPacket batch = new BatchPacket();
         try {
-            batch.payload = zlibRaw ? Network.deflateRaw(payload, compressionLevel) : Zlib.deflate(payload, compressionLevel);
+            batch.payload = compressor.compress(payload, compressionLevel);
         } catch (Exception e) {
             throw new RuntimeException(e);
         }

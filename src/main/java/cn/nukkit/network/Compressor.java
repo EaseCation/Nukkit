@@ -1,5 +1,6 @@
 package cn.nukkit.network;
 
+import cn.nukkit.utils.Binary;
 import cn.nukkit.utils.DataLengthException;
 import cn.nukkit.utils.Zlib;
 import org.xerial.snappy.Snappy;
@@ -16,8 +17,13 @@ public enum Compressor {
         }
 
         @Override
-        public byte[] decompress(byte[] data) throws IOException {
-            if (data.length >= MAX_SIZE) {
+        public byte[] compress(byte[][] data, int level) {
+            return Binary.appendBytes(data);
+        }
+
+        @Override
+        public byte[] decompress(byte[] data, int maxSize) throws IOException {
+            if (data.length >= maxSize) {
                 throw new DataLengthException("Data exceeds maximum size");
             }
             return data;
@@ -35,8 +41,13 @@ public enum Compressor {
         }
 
         @Override
-        public byte[] decompress(byte[] data) throws IOException {
-            return Zlib.inflate(data, MAX_SIZE);
+        public byte[] compress(byte[][] data, int level) throws IOException {
+            return Zlib.deflate(data, level);
+        }
+
+        @Override
+        public byte[] decompress(byte[] data, int maxSize) throws IOException {
+            return Zlib.inflate(data, maxSize);
         }
 
         @Override
@@ -51,36 +62,13 @@ public enum Compressor {
         }
 
         @Override
-        public byte[] decompress(byte[] data) throws IOException, DataFormatException {
-            return Network.inflateRaw(data, MAX_SIZE);
+        public byte[] compress(byte[][] data, int level) throws IOException {
+            return Network.deflateRaw(data, level);
         }
 
         @Override
-        public byte getAlgorithm() {
-            return CompressionAlgorithm.ZLIB;
-        }
-    },
-    ZLIB_UNKNOWN {
-        @Override
-        public byte[] compress(byte[] data, int level) throws IOException {
-            return ZLIB_RAW.compress(data, level);
-        }
-
-        @Override
-        public byte[] decompress(byte[] data) throws IOException {
-            try {
-                return ZLIB_RAW.decompress(data);
-            } catch (DataLengthException e) {
-                throw e;
-            } catch (Exception e) {
-                try {
-                    return ZLIB.decompress(data);
-                } catch (DataLengthException ex) {
-                    throw ex;
-                } catch (Exception ex) {
-                    return EMPTY;
-                }
-            }
+        public byte[] decompress(byte[] data, int maxSize) throws IOException, DataFormatException {
+            return Network.inflateRaw(data, maxSize);
         }
 
         @Override
@@ -104,13 +92,18 @@ public enum Compressor {
         }
 
         @Override
-        public byte[] decompress(byte[] data) throws IOException {
+        public byte[] compress(byte[][] data, int level) throws IOException {
+            return compress(Binary.appendBytes(data), level);
+        }
+
+        @Override
+        public byte[] decompress(byte[] data, int maxSize) throws IOException {
             int inputLength = data.length;
-            if (inputLength >= MAX_SIZE) {
+            if (inputLength >= maxSize) {
                 throw new DataLengthException("Input data exceeds maximum size");
             }
             int maxOutputLength = Snappy.uncompressedLength(data);
-            if (maxOutputLength >= MAX_SIZE) {
+            if (maxOutputLength >= maxSize) {
                 throw new DataLengthException("Inflated buffer exceeds maximum size");
             }
 //            if (!Snappy.isValidCompressedBuffer(data)) {
@@ -121,7 +114,7 @@ public enum Compressor {
             if (outputLength == maxOutputLength) {
                 return buffer;
             }
-            if (outputLength >= MAX_SIZE) {
+            if (outputLength >= maxSize) {
                 throw new DataLengthException("Inflated data exceeds maximum size");
             }
             byte[] result = new byte[outputLength];
@@ -142,7 +135,13 @@ public enum Compressor {
 
     public abstract byte[] compress(byte[] data, int level) throws IOException;
 
-    public abstract byte[] decompress(byte[] data) throws IOException, DataFormatException;
+    public abstract byte[] compress(byte[][] data, int level) throws IOException;
+
+    public byte[] decompress(byte[] data) throws IOException, DataFormatException {
+        return decompress(data, MAX_SIZE);
+    }
+
+    public abstract byte[] decompress(byte[] data, int maxSize) throws IOException, DataFormatException;
 
     public abstract byte getAlgorithm();
 
@@ -154,5 +153,15 @@ public enum Compressor {
             case CompressionAlgorithm.NONE -> Compressor.NONE;
             default -> null;
         };
+    }
+
+    public static Compressor byProtocol(int protocol) {
+        if (protocol >= 554) {
+            return SNAPPY;
+        }
+        if (protocol >= 407) {
+            return ZLIB_RAW;
+        }
+        return ZLIB;
     }
 }

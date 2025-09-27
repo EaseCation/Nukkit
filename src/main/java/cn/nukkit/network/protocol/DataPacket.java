@@ -1,10 +1,9 @@
 package cn.nukkit.network.protocol;
 
 import cn.nukkit.Server;
-import cn.nukkit.network.Network;
+import cn.nukkit.network.Compressor;
 import cn.nukkit.utils.Binary;
 import cn.nukkit.utils.BinaryStream;
-import cn.nukkit.utils.Zlib;
 import com.nukkitx.network.raknet.RakNetReliability;
 
 /**
@@ -76,26 +75,18 @@ public abstract class DataPacket extends BinaryStream implements Cloneable {
         }
     }
 
-    public BatchPacket compress() {
-        return compress(Server.getInstance().networkCompressionLevel);
+    public BatchPacket compress(Compressor compressor) {
+        return compress(compressor, Server.getInstance().networkCompressionLevel);
     }
 
-    public BatchPacket compress(int level) {
-        return compress(level, false);
-    }
-
-    public BatchPacket compress(boolean zlibRaw) {
-        return compress(Server.getInstance().networkCompressionLevel, zlibRaw);
-    }
-
-    public BatchPacket compress(int level, boolean zlibRaw) {
+    public BatchPacket compress(Compressor compressor, int level) {
         BatchPacket batch = new BatchPacket();
         byte[][] batchPayload = new byte[2][];
         byte[] buf = getBuffer();
         batchPayload[0] = Binary.writeUnsignedVarInt(buf.length);
         batchPayload[1] = buf;
         try {
-            batch.payload = zlibRaw ? Network.deflateRaw(batchPayload, level) : Zlib.deflate(batchPayload, level);
+            batch.payload = compressor.compress(batchPayload, level);
         } catch (Exception e) {
             throw new RuntimeException(e);
         }

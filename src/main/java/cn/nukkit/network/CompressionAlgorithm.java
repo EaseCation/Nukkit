@@ -11,6 +11,7 @@ public interface CompressionAlgorithm {
     byte ZLIB = 0;
     /**
      * snappy raw
+     * @since 1.19.30
      */
     byte SNAPPY = 1;
 }
