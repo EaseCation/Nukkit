@@ -13,7 +13,7 @@ versions = { id = "com.github.ben-manes.versions", version = "0.52.0" }
 apache-commons-compress = { module = "org.apache.commons:commons-compress", version = "1.28.0" }
 apache-commons-lang3 = { module = "org.apache.commons:commons-lang3", version = "3.18.0" }
 commons-io = { module = "commons-io:commons-io", version = "2.20.0" }
-fastutil = { module = "it.unimi.dsi:fastutil", version = "8.5.16" }
+fastutil = { module = "it.unimi.dsi:fastutil", version = "8.5.17" }
 gson = { module = "com.google.code.gson:gson", version = "2.13.2" }
 guava = { module = "com.google.guava:guava", version = "33.5.0-jre" }
 jackson = { module = "com.fasterxml.jackson.core:jackson-databind", version.ref = "jackson" }
