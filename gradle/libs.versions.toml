@@ -11,7 +11,7 @@ versions = { id = "com.github.ben-manes.versions", version = "0.52.0" }
 
 [libraries]
 apache-commons-compress = { module = "org.apache.commons:commons-compress", version = "1.28.0" }
-apache-commons-lang3 = { module = "org.apache.commons:commons-lang3", version = "3.18.0" }
+apache-commons-lang3 = { module = "org.apache.commons:commons-lang3", version = "3.19.0" }
 commons-io = { module = "commons-io:commons-io", version = "2.20.0" }
 fastutil = { module = "it.unimi.dsi:fastutil", version = "8.5.16" }
 gson = { module = "com.google.code.gson:gson", version = "2.13.2" }
