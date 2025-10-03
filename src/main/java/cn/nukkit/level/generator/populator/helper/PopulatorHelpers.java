@@ -15,7 +15,17 @@ public final class PopulatorHelpers implements BlockID {
         nonSolidBlocks.add(AIR);
         nonSolidBlocks.add(LEAVES);
         nonSolidBlocks.add(LEAVES2);
+        nonSolidBlocks.add(SHORT_GRASS);
+        nonSolidBlocks.add(DEADBUSH);
+        nonSolidBlocks.add(DANDELION);
+        nonSolidBlocks.add(RED_FLOWER);
+        nonSolidBlocks.add(BROWN_MUSHROOM);
+        nonSolidBlocks.add(RED_MUSHROOM);
         nonSolidBlocks.add(SNOW_LAYER);
+        nonSolidBlocks.add(CACTUS);
+        nonSolidBlocks.add(BLOCK_REEDS);
+        nonSolidBlocks.add(VINE);
+        nonSolidBlocks.add(DOUBLE_PLANT);
     }
 
     private PopulatorHelpers() {

@@ -4,6 +4,9 @@ import cn.nukkit.Player;
 import cn.nukkit.nbt.tag.CompoundTag;
 import cn.nukkit.network.protocol.ClientboundMapItemDataPacket;
 import cn.nukkit.utils.MainLogger;
+import cn.nukkit.utils.Utils;
+import it.unimi.dsi.fastutil.objects.Object2IntMap;
+import it.unimi.dsi.fastutil.objects.Object2IntOpenHashMap;
 
 import javax.imageio.ImageIO;
 import java.awt.*;
@@ -33,6 +36,20 @@ public class ItemMap extends Item {
     public static final int SWAMP_EXPLORER_MAP = 13;
     public static final int TRIAL_EXPLORER_MAP = 14;
     public static final int UNDEFINED_MAP = 15;
+
+    private static final Object2IntMap<String> DESTINATIONS = Utils.make(new Object2IntOpenHashMap<>(), lookup -> {
+        lookup.put("monument", OCEAN_EXPLORER_MAP);
+        lookup.put("mansion", WOODLAND_EXPLORER_MAP);
+        lookup.put("buriedtreasure", TREASURE_EXPLORER_MAP);
+        lookup.put("village_snowy", SNOWY_VILLAGE_MAP);
+        lookup.put("village_taiga", TAIGA_VILLAGE_MAP);
+        lookup.put("village_plains", PLAINS_VILLAGE_MAP);
+        lookup.put("village_savanna", SAVANNA_VILLAGE_MAP);
+        lookup.put("village_desert", DESERT_VILLAGE_MAP);
+        lookup.put("jungle_temple", JUNGLE_EXPLORER_MAP);
+        lookup.put("swamp_hut", SWAMP_EXPLORER_MAP);
+        lookup.put("trial_chambers", TRIAL_EXPLORER_MAP);
+    });
 
     public static int mapCount = 0;
 
@@ -129,5 +146,9 @@ public class ItemMap extends Item {
     @Override
     public boolean canDualWield() {
         return true;
+    }
+
+    public static int getDataByDestination(String destination) {
+        return DESTINATIONS.getInt(destination);
     }
 }

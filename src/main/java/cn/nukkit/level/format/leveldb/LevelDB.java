@@ -334,9 +334,9 @@ public class LevelDB implements LevelProvider {
         levelData.putByteIfAbsent("hasBeenLoadedInCreative", 1); // this actually determines whether achievements can be earned in this world
         levelData.putByteIfAbsent("immutableWorld", 0);
         levelData.putFloatIfAbsent("lightningLevel", 0);
-        levelData.putIntIfAbsent("lightningTime", 1);
+        levelData.putIntIfAbsent("lightningTime", 0);
         levelData.putFloatIfAbsent("rainLevel", 0);
-        levelData.putIntIfAbsent("rainTime", 1);
+        levelData.putIntIfAbsent("rainTime", 0);
         levelData.putByteIfAbsent("spawnMobs", 1);
         levelData.putByteIfAbsent("texturePacksRequired", 0);
         levelData.putLongIfAbsent("currentTick", 1);

@@ -10,6 +10,9 @@ public class ItemBookWritten extends ItemBookWritable {
     public static final int GENERATION_COPY_OF_COPY = 2;
     public static final int GENERATION_TATTERED = 3;
 
+    public static final int MAX_TITLE_LENGTHE = 16;
+    public static final int MAX_AUTHOR_LENGTHE = 14;
+
     public ItemBookWritten() {
         this(0, 1);
     }
@@ -27,7 +30,7 @@ public class ItemBookWritten extends ItemBookWritable {
         return 16;
     }
 
-    public Item writeBook(String author, String title, String[] pages) {
+    public Item writeBook(String author, String title, String... pages) {
         ListTag<CompoundTag> pageList = new ListTag<>("pages");
         for (String page : pages) {
             pageList.add(createPageTag(page));
@@ -36,7 +39,7 @@ public class ItemBookWritten extends ItemBookWritable {
     }
 
     public Item writeBook(String author, String title, ListTag<CompoundTag> pages) {
-        if (pages.size() > 50 || pages.size() <= 0) return this; //Minecraft does not support more than 50 pages
+        if (pages.size() > 50) return this; //Minecraft does not support more than 50 pages
         CompoundTag tag = this.hasCompoundTag() ? this.getNamedTag() : new CompoundTag();
 
         tag.putString("author", author);

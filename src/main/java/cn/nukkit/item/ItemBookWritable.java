@@ -8,6 +8,8 @@ import com.google.common.base.Preconditions;
 import java.util.List;
 
 public abstract class ItemBookWritable extends Item {
+    public static final int MAX_PAGES = 50;
+    public static final int MAX_PAGE_LENGTHE = 256;
 
     protected ItemBookWritable(int id) {
         super(id);
@@ -29,7 +31,7 @@ public abstract class ItemBookWritable extends Item {
      * Returns whether the given page exists in this book.
      */
     public boolean pageExists(int pageId) {
-        Preconditions.checkArgument(pageId >= 0 && pageId < 50, "Page number " + pageId + " is out of range");
+        Preconditions.checkArgument(pageId >= 0 && pageId < MAX_PAGES, "Page number " + pageId + " is out of range");
         if (this.hasCompoundTag()) {
             CompoundTag tag = this.getNamedTag();
             if (tag.contains("pages") && tag.get("pages") instanceof ListTag) {
@@ -43,7 +45,7 @@ public abstract class ItemBookWritable extends Item {
      * Returns a string containing the content of a page (which could be empty), or null if the page doesn't exist.
      */
     public String getPageText(int pageId) {
-        Preconditions.checkArgument(pageId >= 0 && pageId < 50, "Page number " + pageId + " is out of range");
+        Preconditions.checkArgument(pageId >= 0 && pageId < MAX_PAGES, "Page number " + pageId + " is out of range");
         if (this.hasCompoundTag()) {
             CompoundTag tag = this.getNamedTag();
             if (tag.contains("pages") && tag.get("pages") instanceof ListTag) {
@@ -61,7 +63,7 @@ public abstract class ItemBookWritable extends Item {
      * @return boolean indicating success
      */
     public boolean setPageText(int pageId, String pageText) {
-        Preconditions.checkArgument(pageId >= 0 && pageId < 50, "Page number " + pageId + " is out of range");
+        Preconditions.checkArgument(pageId >= 0 && pageId < MAX_PAGES, "Page number " + pageId + " is out of range");
         CompoundTag tag;
         if (this.hasCompoundTag()) {
             tag = this.getNamedTag();
@@ -94,7 +96,7 @@ public abstract class ItemBookWritable extends Item {
      * @return boolean indicating success
      */
     public boolean addPage(int pageId) {
-        Preconditions.checkArgument(pageId >= 0 && pageId < 50, "Page number " + pageId + " is out of range");
+        Preconditions.checkArgument(pageId >= 0 && pageId < MAX_PAGES, "Page number " + pageId + " is out of range");
         CompoundTag tag = this.hasCompoundTag() ? this.getNamedTag() : new CompoundTag();
         ListTag<CompoundTag> pages;
         if (!tag.contains("pages") || !(tag.get("pages") instanceof ListTag)) {
@@ -116,7 +118,7 @@ public abstract class ItemBookWritable extends Item {
      * @return boolean indicating success
      */
     public boolean deletePage(int pageId) {
-        Preconditions.checkArgument(pageId >= 0 && pageId < 50, "Page number " + pageId + " is out of range");
+        Preconditions.checkArgument(pageId >= 0 && pageId < MAX_PAGES, "Page number " + pageId + " is out of range");
         if (this.hasCompoundTag()) {
             CompoundTag tag = this.getNamedTag();
             if (tag.contains("pages") && tag.get("pages") instanceof ListTag) {
@@ -143,7 +145,7 @@ public abstract class ItemBookWritable extends Item {
      * @return boolean indicating success
      */
     public boolean insertPage(int pageId, String pageText) {
-        Preconditions.checkArgument(pageId >= 0 && pageId < 50, "Page number " + pageId + " is out of range");
+        Preconditions.checkArgument(pageId >= 0 && pageId < MAX_PAGES, "Page number " + pageId + " is out of range");
         CompoundTag tag = this.hasCompoundTag() ? this.getNamedTag() : new CompoundTag();
         ListTag<CompoundTag> pages;
         if (!tag.contains("pages") || !(tag.get("pages") instanceof ListTag)) {
@@ -170,8 +172,8 @@ public abstract class ItemBookWritable extends Item {
      * @return boolean indicating success
      */
     public boolean swapPages(int pageId1, int pageId2) {
-        Preconditions.checkArgument(pageId1 >= 0 && pageId1 < 50, "Page number " + pageId1 + " is out of range");
-        Preconditions.checkArgument(pageId2 >= 0 && pageId2 < 50, "Page number " + pageId2 + " is out of range");
+        Preconditions.checkArgument(pageId1 >= 0 && pageId1 < MAX_PAGES, "Page number " + pageId1 + " is out of range");
+        Preconditions.checkArgument(pageId2 >= 0 && pageId2 < MAX_PAGES, "Page number " + pageId2 + " is out of range");
         if (this.hasCompoundTag()) {
             CompoundTag tag = this.getNamedTag();
             if (tag.contains("pages") && tag.get("pages") instanceof ListTag) {

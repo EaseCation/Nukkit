@@ -1,5 +1,6 @@
 package cn.nukkit.level;
 
+import cn.nukkit.Difficulty;
 import cn.nukkit.Player;
 import cn.nukkit.Server;
 import cn.nukkit.block.*;
@@ -111,6 +112,8 @@ public class Level implements ChunkManager, Metadatable {
     public static final int TIME_SUNRISE = 23000;
 
     public static final int TIME_FULL = 24000;
+
+    public static final float[] MOON_BRIGHTNESS_PER_PHASE = {1, 0.75f, 0.5f, 0.25f, 0, 0.25f, 0.5f, 0.75f};
 
     public static final int DIMENSION_OVERWORLD = 0;
     public static final int DIMENSION_NETHER = 1;
@@ -2395,6 +2398,31 @@ public class Level implements ChunkManager, Metadatable {
 
     public int getMoonPhase(long worldTime) {
         return (int) (worldTime / 24000 % 8 + 8) % 8;
+    }
+
+    public float getMoonBrightness() {
+        return MOON_BRIGHTNESS_PER_PHASE[getMoonPhase(getCurrentTick())];
+    }
+
+    public float getSpecialMultiplier() {
+        int difficulty = getDifficulty();
+        if (difficulty == Difficulty.PEACEFUL.ordinal()) {
+            return 0;
+        }
+        float globalScale = Mth.clamp((getCurrentTick() - 72000f) / 1440000, 0, 1) * 0.25f;
+        float localScale = Mth.clamp(0.25f * getMoonBrightness(), 0, globalScale)
+                + 0.5f * difficulty == Difficulty.HARD.ordinal() ? 0.75f : 1;
+        if (difficulty == Difficulty.EASY.ordinal()) {
+            localScale *= 0.5f;
+        }
+        float multiplier = difficulty * (localScale + globalScale + 0.75f);
+        return multiplier >= 2 ?
+                multiplier <= 4 ? (multiplier - 2) / 2 : 1
+                : 0;
+    }
+
+    public int getDifficulty() {
+        return server.getDifficulty();
     }
 
     public int getFullBlock(int layer, int x, int y, int z) {

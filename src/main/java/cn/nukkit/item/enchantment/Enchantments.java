@@ -12,13 +12,17 @@ import cn.nukkit.item.enchantment.trident.*;
 import it.unimi.dsi.fastutil.objects.Object2ObjectOpenHashMap;
 
 import javax.annotation.Nullable;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Map;
 
 import static cn.nukkit.GameVersion.*;
 import static cn.nukkit.item.enchantment.EnchantmentID.*;
 
 public final class Enchantments {
+    private static final Enchantment[] ENCHANTMENTS = new Enchantment[256];
     private static final Map<String, Enchantment> IDENTIFIER_TO_ENCHANTMENT = new Object2ObjectOpenHashMap<>();
+    private static final List<Enchantment> LOOTABLE_ENCHANTMENTS = new ArrayList<>();
 
     public static void registerVanillaEnchantments() {
         registerEnchantment(PROTECTION, new EnchantmentProtectionAll());
@@ -71,11 +75,14 @@ public final class Enchantments {
     }
 
     private static Enchantment registerEnchantment(int id, Enchantment enchantment) {
-        if (Enchantment.enchantments[id] == null) {
-            Enchantment.enchantments[id] = enchantment;
+        if (ENCHANTMENTS[id] == null) {
+            ENCHANTMENTS[id] = enchantment;
         }
         IDENTIFIER_TO_ENCHANTMENT.put(enchantment.getIdentifier(), enchantment);
-        return Enchantment.enchantments[id];
+        if (enchantment.isLootable()) {
+            LOOTABLE_ENCHANTMENTS.add(enchantment);
+        }
+        return ENCHANTMENTS[id];
     }
 
     /**
@@ -86,6 +93,28 @@ public final class Enchantments {
             return null;
         }
         return registerEnchantment(id, enchantment);
+    }
+
+    public static Enchantment get(int id) {
+        Enchantment enchantment = null;
+        if (id >= 0 && id < ENCHANTMENTS.length) {
+            enchantment = ENCHANTMENTS[id];
+        }
+        if (enchantment == null) {
+            return new UnknownEnchantment(id);
+        }
+        return enchantment.clone();
+    }
+
+    public static Enchantment getUnsafe(int id) {
+        Enchantment enchantment = null;
+        if (id >= 0 && id < ENCHANTMENTS.length) {
+            enchantment = ENCHANTMENTS[id];
+        }
+        if (enchantment == null) {
+            return new UnknownEnchantment(id);
+        }
+        return enchantment;
     }
 
     @Nullable
@@ -116,6 +145,10 @@ public final class Enchantments {
 
     public static Map<String, Enchantment> getEnchantments() {
         return IDENTIFIER_TO_ENCHANTMENT;
+    }
+
+    public static List<Enchantment> getLootableEnchantments() {
+        return LOOTABLE_ENCHANTMENTS;
     }
 
     private Enchantments() {

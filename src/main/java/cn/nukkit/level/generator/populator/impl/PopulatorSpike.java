@@ -1,12 +1,17 @@
 package cn.nukkit.level.generator.populator.impl;
 
+import cn.nukkit.Server;
 import cn.nukkit.block.Block;
 import cn.nukkit.block.BlockBedrock;
+import cn.nukkit.entity.Entity;
+import cn.nukkit.entity.EntityFullNames;
 import cn.nukkit.level.ChunkManager;
 import cn.nukkit.level.format.FullChunk;
 import cn.nukkit.level.generator.populator.type.Populator;
+import cn.nukkit.level.generator.task.PlaceEntityTask;
 import cn.nukkit.math.Mth;
 import cn.nukkit.math.NukkitRandom;
+import cn.nukkit.math.Vector3;
 import cn.nukkit.utils.Utils;
 import com.google.common.cache.CacheBuilder;
 import com.google.common.cache.CacheLoader;
@@ -75,7 +80,11 @@ public class PopulatorSpike extends Populator {
 
         level.setBlockAt(0, cx, height, cz, Block.BEDROCK, BlockBedrock.INFINIBURN_BIT);
         level.setBlockAt(0, cx, height + 1, cz, Block.FIRE);
-        //TODO: spawn end crystal entity
+
+        Server.getInstance().getScheduler().scheduleTask(new PlaceEntityTask(chunk,
+                Entity.getDefaultNBT(new Vector3(cx + 0.5,  height + 1, cz + 0.5))
+                        .putString("identifier", EntityFullNames.ENDER_CRYSTAL)
+                        .putBoolean("ShowBottom", true)));
     }
 
     private static class SpikeCacheLoader extends CacheLoader<Long, EndSpike[]> {

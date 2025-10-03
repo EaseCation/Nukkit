@@ -1962,6 +1962,9 @@ public abstract class Entity extends Location implements Metadatable, EntityData
                 }
                 ((Player) this).setAttribute(attribute.setValue(absorption));
             }
+            if (absorption <= 0) {
+                removeEffect(Effect.ABSORPTION);
+            }
         }
     }
 

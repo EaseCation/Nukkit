@@ -146,7 +146,7 @@ public abstract class Food {
             .addEffect(Effect.getEffect(Effect.JUMP_BOOST).setDuration(5 * 20))
             .addRelative(Item.SUSPICIOUS_STEW, ItemSuspiciousStew.CORNFLOWER_STEW), V1_13_0);
     public static final Food tulip_stew = registerDefaultFood(new FoodEffectiveInBowl(6, 7.2f)
-            .addEffect(Effect.getEffect(Effect.WEAKNESS).setDuration(8 * 20))
+            .addEffect(Effect.getEffect(Effect.WEAKNESS).setDuration(7 * 20))
             .addRelative(Item.SUSPICIOUS_STEW, ItemSuspiciousStew.TULIP_STEW), V1_13_0);
     public static final Food azure_bluet_stew = registerDefaultFood(new FoodEffectiveInBowl(6, 7.2f)
             .addEffect(Effect.getEffect(Effect.BLINDNESS).setDuration(7 * 20))
@@ -167,6 +167,15 @@ public abstract class Food {
     public static final Food wither_rose_stew = registerDefaultFood(new FoodEffectiveInBowl(6, 7.2f)
             .addEffect(Effect.getEffect(Effect.WITHER).setDuration(7 * 20))
             .addRelative(Item.SUSPICIOUS_STEW, ItemSuspiciousStew.WITHER_ROSE_STEW), V1_13_0);
+    public static final Food torchflower_stew = registerDefaultFood(new FoodEffectiveInBowl(6, 7.2f)
+            .addEffect(Effect.getEffect(Effect.NIGHT_VISION).setDuration(5 * 20))
+            .addRelative(Item.SUSPICIOUS_STEW, ItemSuspiciousStew.TORCHFLOWER_STEW), V1_20_0);
+    public static final Food open_eyeblossom_stew = registerDefaultFood(new FoodEffectiveInBowl(6, 7.2f)
+            .addEffect(Effect.getEffect(Effect.BLINDNESS).setDuration(7 * 20))
+            .addRelative(Item.SUSPICIOUS_STEW, ItemSuspiciousStew.OPEN_EYEBLOSSOM_STEW), V1_21_50);
+    public static final Food closed_eyeblossom_stew = registerDefaultFood(new FoodEffectiveInBowl(6, 7.2f)
+            .addEffect(Effect.getEffect(Effect.NAUSEA).setDuration(7 * 20))
+            .addRelative(Item.SUSPICIOUS_STEW, ItemSuspiciousStew.CLOSED_EYEBLOSSOM_STEW), V1_21_50);
     public static final Food honey_bottle = registerDefaultFood(new FoodInBottle(6, 1.2F) {
         @Override
         protected boolean onEatenBy(Player player) {

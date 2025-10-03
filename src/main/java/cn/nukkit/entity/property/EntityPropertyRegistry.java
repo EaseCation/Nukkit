@@ -75,7 +75,7 @@ public final class EntityPropertyRegistry {
         registerProperties(V1_21_90, EntityID.HAPPY_GHAST, EntityFullNames.HAPPY_GHAST,
                 new BooleanEntityProperty(CAN_MOVE, true));
 
-        registerProperties(V1_21_110, EntityID.COPPER_GOLEM, EntityFullNames.COPPER_GOLEM,
+        registerProperties(V1_21_111, EntityID.COPPER_GOLEM, EntityFullNames.COPPER_GOLEM,
                 new EnumEntityProperty(CHEST_INTERACTION,
                         CHEST_INTERACTION_NONE,
                         CHEST_INTERACTION_TAKE,

@@ -4089,8 +4089,13 @@ public class Player extends EntityHuman implements CommandSender, InventoryHolde
                         return;
                     }
 
-                    if (bookEditPacket.text != null && bookEditPacket.text.length() > 256) {
+                    if (bookEditPacket.text != null && bookEditPacket.text.length() > ItemBookAndQuill.MAX_PAGE_LENGTHE) {
                         this.getServer().getLogger().debug(this.getName() + ": BookEditPacket with too long text");
+                        return;
+                    }
+
+                    if (bookEditPacket.pageNumber < 0 || bookEditPacket.pageNumber >= ItemBookAndQuill.MAX_PAGES) {
+                        this.getServer().getLogger().debug(this.getName() + ": Invalid BookEditPacket page " + bookEditPacket.pageNumber);
                         return;
                     }
 
@@ -4110,7 +4115,11 @@ public class Player extends EntityHuman implements CommandSender, InventoryHolde
                             success = ((ItemBookAndQuill) newBook).swapPages(bookEditPacket.pageNumber, bookEditPacket.secondaryPageNumber);
                             break;
                         case SIGN_BOOK:
-                            if (bookEditPacket.title == null || bookEditPacket.author == null || bookEditPacket.xuid == null || bookEditPacket.title.length() > 64 || bookEditPacket.author.length() > 64 || bookEditPacket.xuid.length() > 64) {
+                            if (bookEditPacket.title == null || bookEditPacket.author == null || bookEditPacket.xuid == null
+                                    || bookEditPacket.title.isEmpty() || bookEditPacket.author.isEmpty()
+                                    || bookEditPacket.title.length() > ItemBookWritten.MAX_TITLE_LENGTHE
+                                    || bookEditPacket.author.length() > ItemBookWritten.MAX_AUTHOR_LENGTHE
+                                    || bookEditPacket.xuid.length() > 64) {
                                 this.getServer().getLogger().debug(this.getName() + ": Invalid BookEditPacket action SIGN_BOOK: title/author/xuid is too long");
                                 return;
                             }
@@ -5995,11 +6004,15 @@ public class Player extends EntityHuman implements CommandSender, InventoryHolde
             if (entity instanceof EntityArrow && ((EntityArrow) entity).hadCollision && entity.ticksLived > 5) {
                 EntityArrow arrow = (EntityArrow) entity;
                 Item item = arrow.getItem();
-                if (!this.isCreative() && !this.inventory.canAddItem(item)) {
+
+                Item offhandItem = offhandInventory.getItem();
+                boolean offhand = offhandItem.getId() == Item.ARROW && offhandItem.getCount() < offhandItem.getMaxStackSize() && item.equals(offhandItem);
+
+                if (!this.isCreative() && !offhand && !this.inventory.canAddItem(item)) {
                     return false;
                 }
 
-                InventoryPickupArrowEvent ev = new InventoryPickupArrowEvent(this.inventory, arrow);
+                InventoryPickupArrowEvent ev = new InventoryPickupArrowEvent(offhand ? offhandInventory : this.inventory, arrow);
 
                 int pickupMode = arrow.getPickupMode();
                 if (pickupMode == EntityArrow.PICKUP_NONE) {
@@ -6018,7 +6031,7 @@ public class Player extends EntityHuman implements CommandSender, InventoryHolde
                     Server.broadcastPacket(entity.getViewers().values(), pk);
                     this.dataPacket(pk);
 
-                    this.inventory.addItem(item);
+                    ev.getInventory().addItem(item);
                 } else {
                     level.addLevelEvent(entity, LevelEventPacket.EVENT_SOUND_INFINITY_ARROW_PICKUP, (int) ((ThreadLocalRandom.current().nextGaussian() * 0.7 + 1) * 2 * 1000));
                 }
@@ -6050,7 +6063,7 @@ public class Player extends EntityHuman implements CommandSender, InventoryHolde
                     Server.broadcastPacket(entity.getViewers().values(), pk);
                     this.dataPacket(pk);
 
-                    this.inventory.addItem(item);
+                    ev.getInventory().addItem(item);
                 } else {
                     level.addLevelEvent(entity, LevelEventPacket.EVENT_SOUND_INFINITY_ARROW_PICKUP, (int) ((ThreadLocalRandom.current().nextGaussian() * 0.7 + 1) * 2 * 1000));
                 }
@@ -6062,12 +6075,15 @@ public class Player extends EntityHuman implements CommandSender, InventoryHolde
                     Item item = ((EntityItem) entity).getItem();
 
                     if (item != null) {
-                        if (!this.isCreative() && !this.inventory.canAddItem(item)) {
+                        Item offhandItem = offhandInventory.getItem();
+                        boolean offhand = !offhandItem.isNull() && offhandItem.getCount() < offhandItem.getMaxStackSize() && item.equals(offhandItem);
+
+                        if (!this.isCreative() && !offhand && !this.inventory.canAddItem(item)) {
                             return false;
                         }
 
-                        InventoryPickupItemEvent ev;
-                        this.server.getPluginManager().callEvent(ev = new InventoryPickupItemEvent(this.inventory, (EntityItem) entity));
+                        InventoryPickupItemEvent ev = new InventoryPickupItemEvent(offhand ? offhandInventory : this.inventory, (EntityItem) entity);
+                        this.server.getPluginManager().callEvent(ev);
                         if (ev.isCancelled()) {
                             return false;
                         }
@@ -6078,7 +6094,8 @@ public class Player extends EntityHuman implements CommandSender, InventoryHolde
                         Server.broadcastPacket(entity.getViewers().values(), pk);
                         this.dataPacket(pk);
 
-                        this.inventory.addItem(item.clone());
+                        ev.getInventory().addItem(item.clone());
+
                         entity.close();
                         return true;
                     }

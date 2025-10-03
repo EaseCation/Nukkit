@@ -1,12 +1,15 @@
 package cn.nukkit.level.generator.populator.impl;
 
+import cn.nukkit.Server;
 import cn.nukkit.block.Block;
 import cn.nukkit.block.BlockBedrock;
+import cn.nukkit.blockentity.BlockEntity;
 import cn.nukkit.level.ChunkManager;
 import cn.nukkit.level.HeightRange;
 import cn.nukkit.level.format.FullChunk;
 import cn.nukkit.level.generator.TheEnd;
 import cn.nukkit.level.generator.populator.type.Populator;
+import cn.nukkit.level.generator.task.PlaceBlockEntityTask;
 import cn.nukkit.math.Mth;
 import cn.nukkit.math.NukkitRandom;
 
@@ -52,9 +55,8 @@ public class PopulatorEndGateway extends Populator {
                     boolean edge = Math.abs(yd) == 2;
                     if (xMid && yMid && zMid) {
                         chunk.setBlock(0, x, y, z, Block.END_GATEWAY);
-                        int worldX = chunkX << 4 | x;
-                        int worldZ = chunkZ << 4 | z;
-                        //TODO: spawn gateway block entity
+                        Server.getInstance().getScheduler().scheduleTask(new PlaceBlockEntityTask(chunk,
+                                BlockEntity.getDefaultCompound(chunkX << 4 | x, y, chunkZ << 4 | z, BlockEntity.END_GATEWAY)));
                     } else if (yMid) {
                         chunk.setBlock(0, x, y, z, Block.AIR);
                     } else if (edge && xMid && zMid) {

@@ -130,7 +130,7 @@ public class BlockLightningRod extends BlockTransparent implements CopperBehavio
 
     @Override
     public boolean hasCopperBehavior() {
-        return V1_21_110.isAvailable();
+        return V1_21_111.isAvailable();
     }
 
     @Override

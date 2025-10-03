@@ -182,7 +182,7 @@ public final class Entities {
 
         registerEntity(EntityID.HAPPY_GHAST, EntityNames.HAPPY_GHAST, "HappyGhast", EntityHappyGhast.class, EntityHappyGhast::new, V1_21_90);
 
-        registerEntity(EntityID.COPPER_GOLEM, EntityNames.COPPER_GOLEM, "CopperGolem", EntityCopperGolem.class, EntityCopperGolem::new, V1_21_110);
+        registerEntity(EntityID.COPPER_GOLEM, EntityNames.COPPER_GOLEM, "CopperGolem", EntityCopperGolem.class, EntityCopperGolem::new, V1_21_111);
 
         EntityPropertyRegistry.registerVanillaProperties();
     }
