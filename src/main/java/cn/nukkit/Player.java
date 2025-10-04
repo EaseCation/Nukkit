@@ -6070,33 +6070,39 @@ public class Player extends EntityHuman implements CommandSender, InventoryHolde
 
                 entity.close();
                 return true;
-            } else if (entity instanceof EntityItem) {
-                if (((EntityItem) entity).getPickupDelay() <= 0) {
-                    Item item = ((EntityItem) entity).getItem();
+            } else if (entity instanceof EntityItem itemEntity) {
+                if (itemEntity.getPickupDelay() <= 0) {
+                    Item item = itemEntity.getItem();
 
                     if (item != null) {
                         Item offhandItem = offhandInventory.getItem();
                         boolean offhand = !offhandItem.isNull() && offhandItem.getCount() < offhandItem.getMaxStackSize() && item.equals(offhandItem);
 
-                        if (!this.isCreative() && !offhand && !this.inventory.canAddItem(item)) {
+                        Item copy = item.clone();
+                        copy.setCount(1);
+                        if (!this.isCreative() && !offhand && !this.inventory.canAddItem(copy)) {
                             return false;
                         }
+                        copy.setCount(item.getCount());
 
-                        InventoryPickupItemEvent ev = new InventoryPickupItemEvent(offhand ? offhandInventory : this.inventory, (EntityItem) entity);
+                        InventoryPickupItemEvent ev = new InventoryPickupItemEvent(offhand ? offhandInventory : this.inventory, itemEntity);
                         this.server.getPluginManager().callEvent(ev);
                         if (ev.isCancelled()) {
                             return false;
                         }
 
-                        TakeItemEntityPacket pk = new TakeItemEntityPacket();
-                        pk.entityId = this.getId();
-                        pk.target = entity.getId();
-                        Server.broadcastPacket(entity.getViewers().values(), pk);
-                        this.dataPacket(pk);
+                        Item[] drops = ev.getInventory().addItem(copy);
+                        if (drops.length != 0 && !isCreative()) {
+                            item.setCount(drops[0].getCount());
+                        } else {
+                            TakeItemEntityPacket pk = new TakeItemEntityPacket();
+                            pk.entityId = this.getId();
+                            pk.target = entity.getId();
+                            Server.broadcastPacket(entity.getViewers().values(), pk);
+                            this.dataPacket(pk);
 
-                        ev.getInventory().addItem(item.clone());
-
-                        entity.close();
+                            entity.close();
+                        }
                         return true;
                     }
                 }

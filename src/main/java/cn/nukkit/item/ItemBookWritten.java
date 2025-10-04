@@ -39,7 +39,7 @@ public class ItemBookWritten extends ItemBookWritable {
     }
 
     public Item writeBook(String author, String title, ListTag<CompoundTag> pages) {
-        if (pages.size() > 50) return this; //Minecraft does not support more than 50 pages
+        if (pages.size() > MAX_PAGES) return this; //Minecraft does not support more than 50 pages
         CompoundTag tag = this.hasCompoundTag() ? this.getNamedTag() : new CompoundTag();
 
         tag.putString("author", author);
