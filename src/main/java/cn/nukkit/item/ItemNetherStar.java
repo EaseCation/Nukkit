@@ -15,6 +15,11 @@ public class ItemNetherStar extends Item {
     }
 
     @Override
+    public boolean shouldDespawn() {
+        return false;
+    }
+
+    @Override
     public boolean isFireResistant() {
         return true;
     }

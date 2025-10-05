@@ -24,6 +24,11 @@ public class BlockDandelion extends BlockFlower {
     }
 
     @Override
+    public boolean isStackedByData() {
+        return false;
+    }
+
+    @Override
     protected Block getUncommonFlower() {
         return get(RED_FLOWER);
     }

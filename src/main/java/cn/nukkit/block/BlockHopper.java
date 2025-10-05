@@ -21,6 +21,8 @@ import javax.annotation.Nullable;
  * @author CreeperFace
  */
 public class BlockHopper extends BlockTransparent implements Faceable {
+    public static final int FACING_DIRECTION_MASK = 0b111;
+    public static final int TOGGLE_BIT = 0b1000;
 
     public BlockHopper() {
         this(0);
@@ -124,17 +126,13 @@ public class BlockHopper extends BlockTransparent implements Faceable {
         return super.getComparatorInputOverride();
     }
 
-    public BlockFace getFacing() {
-        return BlockFace.fromIndex(this.getDamage() & 7);
-    }
-
     public boolean isEnabled() {
-        return (this.getDamage() & 0x08) != 8;
+        return (this.getDamage() & TOGGLE_BIT) != TOGGLE_BIT;
     }
 
     public void setEnabled(boolean enabled) {
         if (isEnabled() != enabled) {
-            this.setDamage(this.getDamage() ^ 0x08);
+            this.setDamage(this.getDamage() ^ TOGGLE_BIT);
         }
     }
 
@@ -192,7 +190,7 @@ public class BlockHopper extends BlockTransparent implements Faceable {
 
     @Override
     public BlockFace getBlockFace() {
-        return BlockFace.fromIndex(this.getDamage() & 0x07);
+        return BlockFace.fromIndex(this.getDamage() & FACING_DIRECTION_MASK);
     }
 
     @Override

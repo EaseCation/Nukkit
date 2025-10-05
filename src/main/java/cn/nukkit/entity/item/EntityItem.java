@@ -262,7 +262,7 @@ public class EntityItem extends Entity {
 
             this.updateMovement();
 
-            if (this.age > 6000) {
+            if (this.age > 6000 && (item == null || item.shouldDespawn())) {
                 ItemDespawnEvent ev = new ItemDespawnEvent(this);
                 this.server.getPluginManager().callEvent(ev);
                 if (ev.isCancelled()) {

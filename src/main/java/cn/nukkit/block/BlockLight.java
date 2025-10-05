@@ -7,6 +7,8 @@ import cn.nukkit.math.AxisAlignedBB;
 import cn.nukkit.math.BlockFace;
 import cn.nukkit.utils.BlockColor;
 
+import static cn.nukkit.GameVersion.*;
+
 public class BlockLight extends BlockTransparent {
 
     public BlockLight() {
@@ -20,6 +22,11 @@ public class BlockLight extends BlockTransparent {
     @Override
     public int getId() {
         return LIGHT_BLOCK;
+    }
+
+    @Override
+    public boolean isStackedByData() {
+        return !V1_21_20.isAvailable();
     }
 
     @Override

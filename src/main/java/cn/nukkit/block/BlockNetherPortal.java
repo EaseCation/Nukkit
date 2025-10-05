@@ -40,6 +40,11 @@ public class BlockNetherPortal extends BlockTransparent implements Faceable {
     }
 
     @Override
+    public int getBlockDefaultMeta() {
+        return 1;
+    }
+
+    @Override
     public boolean canPassThrough() {
         return true;
     }

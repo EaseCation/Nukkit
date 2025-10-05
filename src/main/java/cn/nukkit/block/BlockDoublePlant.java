@@ -10,6 +10,8 @@ import cn.nukkit.utils.BlockColor;
 
 import java.util.concurrent.ThreadLocalRandom;
 
+import static cn.nukkit.GameVersion.*;
+
 /**
  * Created on 2015/11/23 by xtypr.
  * Package cn.nukkit.block in project Nukkit .
@@ -47,6 +49,11 @@ public class BlockDoublePlant extends BlockFlowable {
     @Override
     public int getId() {
         return DOUBLE_PLANT;
+    }
+
+    @Override
+    public boolean isStackedByData() {
+        return !V1_21_0.isAvailable();
     }
 
     @Override

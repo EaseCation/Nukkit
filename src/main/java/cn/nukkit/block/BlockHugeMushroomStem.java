@@ -23,13 +23,23 @@ public class BlockHugeMushroomStem extends BlockHugeMushroom {
     }
 
     @Override
-    public Item[] getDrops(Item item, Player player) {
-        return new Item[0];
+    public boolean isStackedByData() {
+        return false;
     }
 
     @Override
-    public Item toItem(boolean addUserData) {
-        return Item.get(getItemId(), ALL_STEM);
+    public int getBlockDefaultMeta() {
+        return ALL_STEM;
+    }
+
+    @Override
+    public int getItemDefaultMeta() {
+        return ALL_STEM;
+    }
+
+    @Override
+    public Item[] getDrops(Item item, Player player) {
+        return new Item[0];
     }
 
     @Override

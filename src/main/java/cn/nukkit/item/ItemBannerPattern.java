@@ -2,6 +2,8 @@ package cn.nukkit.item;
 
 import cn.nukkit.utils.BannerPattern.Type;
 
+import static cn.nukkit.SharedConstants.*;
+
 public class ItemBannerPattern extends Item {
     public static final int CREEPER_BANNER_PATTERN = 0;
     public static final int SKULL_BANNER_PATTERN = 1;
@@ -38,6 +40,11 @@ public class ItemBannerPattern extends Item {
 
     public ItemBannerPattern(Integer meta, int count) {
         super(BANNER_PATTERN, meta, count, getName(meta != null ? meta : 0));
+    }
+
+    @Override
+    public boolean isStackedByData() {
+        return !ITEM_FLATTEN;
     }
 
     @Override

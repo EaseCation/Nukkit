@@ -40,6 +40,11 @@ public class BlockWallSign extends BlockSignPost {
     }
 
     @Override
+    public int getBlockDefaultMeta() {
+        return 3;
+    }
+
+    @Override
     public String getName() {
         return "Oak Wall Sign";
     }

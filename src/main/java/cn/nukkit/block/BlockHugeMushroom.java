@@ -25,6 +25,16 @@ public abstract class BlockHugeMushroom extends BlockSolid {
     }
 
     @Override
+    public boolean isStackedByData() {
+        return true;
+    }
+
+    @Override
+    public int getItemDefaultMeta() {
+        return ALL_OUTSIDE;
+    }
+
+    @Override
     public float getHardness() {
         return 0.2f;
     }
@@ -58,7 +68,7 @@ public abstract class BlockHugeMushroom extends BlockSolid {
 
     @Override
     public Item toItem(boolean addUserData) {
-        return Item.get(getItemId(), ALL_OUTSIDE);
+        return Item.get(getItemId(), getItemDefaultMeta());
     }
 
     @Override

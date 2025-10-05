@@ -17,6 +17,7 @@ import cn.nukkit.network.protocol.UpdateBlockPacket;
 import lombok.extern.log4j.Log4j2;
 
 import static cn.nukkit.GameVersion.*;
+import static cn.nukkit.SharedConstants.*;
 
 /**
  * author: MagicDroidX
@@ -48,6 +49,11 @@ public class ItemBucket extends Item {
 
     public ItemBucket(Integer meta, int count) {
         super(BUCKET, meta, count, getName(meta != null ? meta : 0));
+    }
+
+    @Override
+    public boolean isStackedByData() {
+        return !ITEM_FLATTEN;
     }
 
     protected static String getName(int meta) {

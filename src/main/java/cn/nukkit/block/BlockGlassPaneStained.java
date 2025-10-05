@@ -3,6 +3,8 @@ package cn.nukkit.block;
 import cn.nukkit.utils.BlockColor;
 import cn.nukkit.utils.DyeColor;
 
+import static cn.nukkit.GameVersion.*;
+
 /**
  * Created by CreeperFace on 7.8.2017.
  */
@@ -18,6 +20,11 @@ public class BlockGlassPaneStained extends BlockGlassPane {
     @Override
     public int getId() {
         return STAINED_GLASS_PANE;
+    }
+
+    @Override
+    public boolean isStackedByData() {
+        return !V1_20_30.isAvailable();
     }
 
     @Override

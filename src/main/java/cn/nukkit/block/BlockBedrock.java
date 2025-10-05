@@ -56,4 +56,9 @@ public class BlockBedrock extends BlockSolid {
     public boolean canHarvestWithHand() {
         return false;
     }
+
+    @Override
+    public Item toItem(boolean addUserData) {
+        return Item.get(getItemId());
+    }
 }

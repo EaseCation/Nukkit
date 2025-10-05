@@ -7,6 +7,8 @@ import cn.nukkit.network.protocol.LevelSoundEventPacket;
 import cn.nukkit.potion.Potion;
 import cn.nukkit.utils.BlockColor;
 
+import static cn.nukkit.GameVersion.*;
+
 /**
  * author: MagicDroidX
  * AMAZING COARSE DIRT added by kvetinac97
@@ -27,6 +29,11 @@ public class BlockDirt extends BlockSolid {
     @Override
     public int getId() {
         return DIRT;
+    }
+
+    @Override
+    public boolean isStackedByData() {
+        return !V1_21_20.isAvailable();
     }
 
     @Override

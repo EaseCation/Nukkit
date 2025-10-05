@@ -59,7 +59,7 @@ public abstract class BlockHangingSign extends BlockSignPost {
 
     @Override
     public Item toItem(boolean addUserData) {
-        return Item.get(getItemId(), getDefaultMeta());
+        return Item.get(getItemId(), getItemDefaultMeta());
     }
 
     @Override

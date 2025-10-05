@@ -20,6 +20,11 @@ public class ItemPotionLingering extends ProjectileItem {
     }
 
     @Override
+    public boolean isStackedByData() {
+        return true;
+    }
+
+    @Override
     public int getMaxStackSize() {
         return 1;
     }

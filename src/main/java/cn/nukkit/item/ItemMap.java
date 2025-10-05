@@ -75,6 +75,11 @@ public class ItemMap extends Item {
         }
     }
 
+    @Override
+    public boolean isStackedByData() {
+        return true;
+    }
+
     public void setImage(File file) throws IOException {
         setImage(ImageIO.read(file));
     }

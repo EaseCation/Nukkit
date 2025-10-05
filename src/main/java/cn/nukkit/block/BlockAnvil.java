@@ -8,6 +8,8 @@ import cn.nukkit.math.BlockFace;
 import cn.nukkit.utils.BlockColor;
 import cn.nukkit.utils.Faceable;
 
+import static cn.nukkit.GameVersion.*;
+
 /**
  * Created by Pub4Game on 27.12.2015.
  */
@@ -41,6 +43,11 @@ public class BlockAnvil extends BlockFallable implements Faceable {
     @Override
     public int getId() {
         return ANVIL;
+    }
+
+    @Override
+    public boolean isStackedByData() {
+        return !V1_21_20.isAvailable();
     }
 
     @Override

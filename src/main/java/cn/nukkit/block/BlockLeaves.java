@@ -13,6 +13,8 @@ import it.unimi.dsi.fastutil.longs.LongSet;
 
 import java.util.concurrent.ThreadLocalRandom;
 
+import static cn.nukkit.GameVersion.*;
+
 /**
  * author: Angelic47
  * Nukkit Project
@@ -52,6 +54,11 @@ public class BlockLeaves extends BlockTransparent {
     @Override
     public int getId() {
         return LEAVES;
+    }
+
+    @Override
+    public boolean isStackedByData() {
+        return !V1_20_70.isAvailable();
     }
 
     @Override

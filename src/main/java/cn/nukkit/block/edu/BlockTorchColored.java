@@ -4,6 +4,8 @@ import cn.nukkit.block.BlockTorch;
 import cn.nukkit.item.Item;
 import cn.nukkit.math.BlockFace;
 
+import static cn.nukkit.GameVersion.*;
+
 public abstract class BlockTorchColored extends BlockTorch {
 
     public static final int COLOR_BIT = 0b1000;
@@ -14,6 +16,11 @@ public abstract class BlockTorchColored extends BlockTorch {
 
     protected BlockTorchColored(int meta) {
         super(meta);
+    }
+
+    @Override
+    public boolean isStackedByData() {
+        return !V1_21_30.isAvailable();
     }
 
     @Override

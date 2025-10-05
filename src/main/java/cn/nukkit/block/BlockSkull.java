@@ -39,6 +39,11 @@ public class BlockSkull extends BlockFlowable implements Faceable {
     }
 
     @Override
+    public int getBlockDefaultMeta() {
+        return 1;
+    }
+
+    @Override
     public int getBlockEntityType() {
         return BlockEntityType.SKULL;
     }

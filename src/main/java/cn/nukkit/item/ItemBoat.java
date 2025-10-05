@@ -9,6 +9,8 @@ import cn.nukkit.level.Level;
 import cn.nukkit.math.AxisAlignedBB;
 import cn.nukkit.math.BlockFace;
 
+import static cn.nukkit.SharedConstants.*;
+
 /**
  * Created by yescallop on 2016/2/13.
  */
@@ -39,6 +41,11 @@ public class ItemBoat extends Item {
 
     protected ItemBoat(int id, Integer meta, int count, String name) {
         super(id, meta, count, name);
+    }
+
+    @Override
+    public boolean isStackedByData() {
+        return !ITEM_FLATTEN;
     }
 
     @Override

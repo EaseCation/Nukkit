@@ -5,6 +5,8 @@ import cn.nukkit.item.Item;
 import cn.nukkit.item.ItemTool;
 import cn.nukkit.utils.BlockColor;
 
+import static cn.nukkit.GameVersion.*;
+
 /**
  * author: MagicDroidX
  * Nukkit Project
@@ -41,6 +43,11 @@ public class BlockDoubleSlabStone extends BlockDoubleSlab {
     @Override
     public int getId() {
         return DOUBLE_STONE_SLAB;
+    }
+
+    @Override
+    public boolean isStackedByData() {
+        return !V1_21_20.isAvailable();
     }
 
     @Override

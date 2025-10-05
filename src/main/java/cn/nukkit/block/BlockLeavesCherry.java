@@ -21,6 +21,11 @@ public class BlockLeavesCherry extends BlockLeaves {
         return CHERRY_LEAVES;
     }
 
+    @Override
+    public boolean isStackedByData() {
+        return false;
+    }
+
     public String getName() {
         return "Cherry Leaves";
     }

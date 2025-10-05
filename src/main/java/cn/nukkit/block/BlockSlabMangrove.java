@@ -20,6 +20,11 @@ public class BlockSlabMangrove extends BlockSlabWood {
     }
 
     @Override
+    public boolean isStackedByData() {
+        return false;
+    }
+
+    @Override
     public String getName() {
         return isTopSlot() ? "Upper Mangrove Slab" : "Mangrove Slab";
     }

@@ -40,6 +40,11 @@ public class BlockSandstone extends BlockSolid {
     }
 
     @Override
+    public boolean isStackedByData() {
+        return !V1_21_20.isAvailable();
+    }
+
+    @Override
     public float getHardness() {
         if (V1_21_20.isAvailable() && getSandstoneType() == SMOOTH) {
             return 2;

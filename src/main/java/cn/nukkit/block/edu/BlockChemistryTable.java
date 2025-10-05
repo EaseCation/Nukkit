@@ -15,6 +15,8 @@ import cn.nukkit.nbt.tag.Tag;
 
 import javax.annotation.Nullable;
 
+import static cn.nukkit.GameVersion.*;
+
 public class BlockChemistryTable extends BlockSolid {
 
     public static final int DIRECTION_MASK = 0b11;
@@ -43,6 +45,11 @@ public class BlockChemistryTable extends BlockSolid {
     @Override
     public int getId() {
         return CHEMISTRY_TABLE;
+    }
+
+    @Override
+    public boolean isStackedByData() {
+        return !V1_21_30.isAvailable();
     }
 
     @Override

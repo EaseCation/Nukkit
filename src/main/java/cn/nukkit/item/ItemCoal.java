@@ -1,5 +1,7 @@
 package cn.nukkit.item;
 
+import static cn.nukkit.SharedConstants.*;
+
 /**
  * author: MagicDroidX
  * Nukkit Project
@@ -18,6 +20,11 @@ public class ItemCoal extends Item {
 
     public ItemCoal(Integer meta, int count) {
         super(COAL, meta, count, meta != null && meta == TYPE_CHARCOAL ? "Charcoal" : "Coal");
+    }
+
+    @Override
+    public boolean isStackedByData() {
+        return !ITEM_FLATTEN;
     }
 
     @Override

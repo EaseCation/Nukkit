@@ -10,6 +10,8 @@ import cn.nukkit.utils.BlockColor;
 
 import java.util.concurrent.ThreadLocalRandom;
 
+import static cn.nukkit.GameVersion.*;
+
 public class BlockCoralFan extends BlockFlowable {
 
     public static final int COLOR_MASK = 0b111;
@@ -47,6 +49,11 @@ public class BlockCoralFan extends BlockFlowable {
     @Override
     public int getId() {
         return CORAL_FAN;
+    }
+
+    @Override
+    public boolean isStackedByData() {
+        return !V1_20_80.isAvailable();
     }
 
     @Override

@@ -73,7 +73,12 @@ public class BlockDripleafBig extends BlockTransparent implements Faceable {
 
     @Override
     public Item toItem(boolean addUserData) {
-        return Item.get(getItemId(), HEAD_BIT);
+        return Item.get(getItemId(), getItemDefaultMeta());
+    }
+
+    @Override
+    public int getItemDefaultMeta() {
+        return HEAD_BIT;
     }
 
     @Override

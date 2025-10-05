@@ -21,6 +21,11 @@ public class BlockLeavesPaleOak extends BlockLeaves {
         return PALE_OAK_LEAVES;
     }
 
+    @Override
+    public boolean isStackedByData() {
+        return false;
+    }
+
     public String getName() {
         return "Pale Oak Leaves";
     }

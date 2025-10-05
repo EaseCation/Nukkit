@@ -20,6 +20,11 @@ public class BlockSlabWarped extends BlockSlabWood {
     }
 
     @Override
+    public boolean isStackedByData() {
+        return false;
+    }
+
+    @Override
     public String getName() {
         return isTopSlot() ? "Upper Warped Slab" : "Warped Slab";
     }

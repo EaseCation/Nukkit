@@ -16,6 +16,7 @@ import cn.nukkit.event.entity.EntityDamageByBlockEvent;
 import cn.nukkit.event.entity.EntityDamageEvent.DamageCause;
 import cn.nukkit.inventory.RecipeTag;
 import cn.nukkit.item.Item;
+import cn.nukkit.item.ItemCoal;
 import cn.nukkit.item.ItemID;
 import cn.nukkit.item.enchantment.Enchantment;
 import cn.nukkit.item.enchantment.EnchantmentID;
@@ -158,7 +159,7 @@ public class BlockCampfire extends BlockTransparent implements Faceable {
     @Override
     public Item[] getDrops(Item item, Player player) {
         return new Item[]{
-                Item.get(ItemID.COAL, 1, 2)
+                Item.get(ItemID.COAL, ItemCoal.TYPE_CHARCOAL, 2)
         };
     }
 

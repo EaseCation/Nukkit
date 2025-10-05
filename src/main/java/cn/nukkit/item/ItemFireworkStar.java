@@ -16,6 +16,11 @@ public class ItemFireworkStar extends Item {
         super(FIREWORK_STAR, meta, count, "Firework Star");
     }
 
+    @Override
+    public boolean isStackedByData() {
+        return true;
+    }
+
     public DyeColor getColor() {
         return DyeColor.getByDyeData(getDamage());
     }

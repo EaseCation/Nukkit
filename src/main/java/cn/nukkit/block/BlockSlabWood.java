@@ -2,6 +2,8 @@ package cn.nukkit.block;
 
 import cn.nukkit.utils.BlockColor;
 
+import static cn.nukkit.GameVersion.*;
+
 /**
  * Created on 2015/12/2 by xtypr.
  * Package cn.nukkit.block in project Nukkit .
@@ -42,6 +44,11 @@ public class BlockSlabWood extends BlockSlab {
     @Override
     public int getId() {
         return WOODEN_SLAB;
+    }
+
+    @Override
+    public boolean isStackedByData() {
+        return !V1_20_70.isAvailable();
     }
 
     @Override

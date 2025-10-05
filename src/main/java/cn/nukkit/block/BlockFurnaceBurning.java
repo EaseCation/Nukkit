@@ -40,6 +40,11 @@ public class BlockFurnaceBurning extends BlockSolid implements Faceable {
     }
 
     @Override
+    public int getBlockDefaultMeta() {
+        return 3;
+    }
+
+    @Override
     public String getName() {
         return "Burning Furnace";
     }

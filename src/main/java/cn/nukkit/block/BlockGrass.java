@@ -34,6 +34,11 @@ public class BlockGrass extends BlockDirt {
     }
 
     @Override
+    public boolean isStackedByData() {
+        return false;
+    }
+
+    @Override
     public float getHardness() {
         return 0.6f;
     }

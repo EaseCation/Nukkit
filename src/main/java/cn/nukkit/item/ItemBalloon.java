@@ -20,6 +20,11 @@ public class ItemBalloon extends Item {
     }
 
     @Override
+    public boolean isStackedByData() {
+        return true;
+    }
+
+    @Override
     public boolean canBeActivated() {
         return true;
     }

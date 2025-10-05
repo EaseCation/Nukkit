@@ -16,6 +16,7 @@ public class ItemBoatChest extends ItemBoat {
         super(CHEST_BOAT, meta, count, "Chest Boat");
     }
 
+    @Override
     protected EntityFactory getEntityFactory() {
         return EntityBoatChest::new;
     }

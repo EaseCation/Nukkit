@@ -20,6 +20,11 @@ public class BlockDoubleSlabMangrove extends BlockDoubleSlabWood {
     }
 
     @Override
+    public boolean isStackedByData() {
+        return false;
+    }
+
+    @Override
     public String getName() {
         return "Double Mangrove Slab";
     }

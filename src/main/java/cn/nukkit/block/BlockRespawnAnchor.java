@@ -52,10 +52,10 @@ public class BlockRespawnAnchor extends BlockSolid {
         return false;
     }
 
-//    @Override
-//    public boolean canSilkTouch() {
-//        return true;
-//    }
+    @Override
+    public Item toItem(boolean addUserData) {
+        return Item.get(getItemId());
+    }
 
     @Override
     public Item[] getDrops(Item item, Player player) {

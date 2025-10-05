@@ -37,7 +37,12 @@ public class ItemBlock extends Item {
 
     @Override
     public int getDefaultMeta() {
-        return block.getDefaultMeta();
+        return block.getItemDefaultMeta();
+    }
+
+    @Override
+    public boolean isValidMeta(int meta) {
+        return block.isValidMeta(meta);
     }
 
     @Override

@@ -14,6 +14,11 @@ public abstract class BlockMultiface extends BlockTransparent {
     }
 
     @Override
+    public int getBlockDefaultMeta() {
+        return 0b111111;
+    }
+
+    @Override
     public boolean isSolid() {
         return false;
     }

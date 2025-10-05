@@ -20,6 +20,11 @@ public class BlockLeavesMangrove extends BlockLeaves {
         return MANGROVE_LEAVES;
     }
 
+    @Override
+    public boolean isStackedByData() {
+        return false;
+    }
+
     public String getName() {
         return "Mangrove Leaves";
     }

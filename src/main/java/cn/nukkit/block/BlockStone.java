@@ -5,6 +5,8 @@ import cn.nukkit.item.Item;
 import cn.nukkit.item.ItemTool;
 import cn.nukkit.utils.BlockColor;
 
+import static cn.nukkit.GameVersion.*;
+
 /**
  * author: MagicDroidX
  * Nukkit Project
@@ -40,6 +42,11 @@ public class BlockStone extends BlockSolid {
     @Override
     public int getId() {
         return STONE;
+    }
+
+    @Override
+    public boolean isStackedByData() {
+        return !V1_20_50.isAvailable();
     }
 
     @Override

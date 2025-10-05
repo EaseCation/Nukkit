@@ -23,6 +23,11 @@ public class BlockWallBanner extends BlockBanner {
     }
 
     @Override
+    public int getBlockDefaultMeta() {
+        return 3;
+    }
+
+    @Override
     public String getName() {
         return "Wall Banner";
     }

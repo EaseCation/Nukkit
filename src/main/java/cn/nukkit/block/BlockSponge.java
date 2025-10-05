@@ -11,6 +11,8 @@ import cn.nukkit.utils.BlockColor;
 import java.util.ArrayDeque;
 import java.util.Queue;
 
+import static cn.nukkit.GameVersion.*;
+
 /**
  * author: Angelic47
  * Nukkit Project
@@ -35,6 +37,11 @@ public class BlockSponge extends BlockSolid {
     @Override
     public int getId() {
         return SPONGE;
+    }
+
+    @Override
+    public boolean isStackedByData() {
+        return !V1_21_30.isAvailable();
     }
 
     @Override

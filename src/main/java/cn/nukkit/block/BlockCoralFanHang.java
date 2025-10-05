@@ -9,6 +9,8 @@ import cn.nukkit.utils.Faceable;
 
 import java.util.concurrent.ThreadLocalRandom;
 
+import static cn.nukkit.GameVersion.*;
+
 public class BlockCoralFanHang extends BlockFlowable implements Faceable {
 
     public static final int TYPE_BIT = 0b1;
@@ -30,6 +32,11 @@ public class BlockCoralFanHang extends BlockFlowable implements Faceable {
     @Override
     public int getId() {
         return CORAL_FAN_HANG;
+    }
+
+    @Override
+    public boolean isStackedByData() {
+        return !V1_21_20.isAvailable();
     }
 
     @Override

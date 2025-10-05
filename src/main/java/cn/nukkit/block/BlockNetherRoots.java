@@ -10,6 +10,11 @@ public abstract class BlockNetherRoots extends BlockFlower {
     }
 
     @Override
+    public boolean isStackedByData() {
+        return false;
+    }
+
+    @Override
     public boolean canBeReplaced() {
         return true;
     }

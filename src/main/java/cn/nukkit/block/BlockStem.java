@@ -20,6 +20,11 @@ public abstract class BlockStem extends BlockCrops implements Faceable {
     }
 
     @Override
+    public int getBlockDefaultMeta() {
+        return 3;
+    }
+
+    @Override
     public int onUpdate(int type) {
         if (type == Level.BLOCK_UPDATE_NORMAL) {
             if (down().getId() != FARMLAND) {

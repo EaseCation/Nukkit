@@ -12,6 +12,8 @@ import cn.nukkit.nbt.tag.CompoundTag;
 
 import java.util.concurrent.ThreadLocalRandom;
 
+import static cn.nukkit.SharedConstants.*;
+
 /**
  * author: MagicDroidX
  * Nukkit Project
@@ -28,6 +30,11 @@ public class ItemSpawnEgg extends Item {
 
     public ItemSpawnEgg(Integer meta, int count) {
         super(SPAWN_EGG, meta, count, "Spawn Egg");
+    }
+
+    @Override
+    public boolean isStackedByData() {
+        return !ITEM_FLATTEN;
     }
 
     @Override

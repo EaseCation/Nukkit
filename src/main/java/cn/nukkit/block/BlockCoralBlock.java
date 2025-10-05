@@ -47,6 +47,11 @@ public class BlockCoralBlock extends BlockSolid {
     }
 
     @Override
+    public boolean isStackedByData() {
+        return !V1_21_0.isAvailable();
+    }
+
+    @Override
     public String getName() {
         return (isDead() ? "Dead " : "") + NAMES[getCoralColor()];
     }

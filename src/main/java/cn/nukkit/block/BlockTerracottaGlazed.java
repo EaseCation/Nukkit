@@ -22,6 +22,11 @@ public abstract class BlockTerracottaGlazed extends BlockSolid implements Faceab
     }
 
     @Override
+    public int getBlockDefaultMeta() {
+        return 3;
+    }
+
+    @Override
     public float getResistance() {
         return 7;
     }

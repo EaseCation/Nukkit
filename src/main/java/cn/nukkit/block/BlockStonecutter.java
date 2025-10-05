@@ -24,6 +24,11 @@ public class BlockStonecutter extends BlockTransparent implements Faceable {
     }
 
     @Override
+    public int getBlockDefaultMeta() {
+        return 2;
+    }
+
+    @Override
     public String getName() {
         return "Stonecutter";
     }

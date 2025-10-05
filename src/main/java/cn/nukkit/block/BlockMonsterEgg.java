@@ -41,6 +41,11 @@ public class BlockMonsterEgg extends BlockSolid {
     }
 
     @Override
+    public boolean isStackedByData() {
+        return !V1_21_20.isAvailable();
+    }
+
+    @Override
     public float getHardness() {
         if (V1_21_20.isAvailable() && getDamage() == TYPE_COBBLESTONE) {
             return 1;

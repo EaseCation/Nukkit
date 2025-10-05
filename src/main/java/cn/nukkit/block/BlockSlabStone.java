@@ -5,6 +5,8 @@ import cn.nukkit.item.Item;
 import cn.nukkit.item.ItemTool;
 import cn.nukkit.utils.BlockColor;
 
+import static cn.nukkit.GameVersion.*;
+
 /**
  * Created by CreeperFace on 26. 11. 2016.
  */
@@ -40,6 +42,11 @@ public class BlockSlabStone extends BlockSlab {
     @Override
     public int getId() {
         return STONE_SLAB;
+    }
+
+    @Override
+    public boolean isStackedByData() {
+        return !V1_21_0.isAvailable();
     }
 
     @Override

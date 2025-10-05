@@ -2,6 +2,8 @@ package cn.nukkit.block;
 
 import cn.nukkit.utils.BlockColor;
 
+import static cn.nukkit.GameVersion.*;
+
 /**
  * author: MagicDroidX
  * Nukkit Project
@@ -36,6 +38,11 @@ public class BlockPlanks extends BlockSolid {
     @Override
     public int getId() {
         return PLANKS;
+    }
+
+    @Override
+    public boolean isStackedByData() {
+        return !V1_20_50.isAvailable();
     }
 
     @Override

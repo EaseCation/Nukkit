@@ -20,6 +20,11 @@ public class BlockDoubleSlabBambooMosaic extends BlockDoubleSlabWood {
     }
 
     @Override
+    public boolean isStackedByData() {
+        return false;
+    }
+
+    @Override
     public String getName() {
         return "Double Bamboo Mosaic Slab";
     }

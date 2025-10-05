@@ -17,4 +17,9 @@ public class ItemEmptyMap extends Item {
     public ItemEmptyMap(Integer meta, int count) {
         super(EMPTY_MAP, meta, count, "Empty Map");
     }
+
+    @Override
+    public boolean isStackedByData() {
+        return true;
+    }
 }

@@ -1113,8 +1113,12 @@ public class Item implements Cloneable, ItemID {
         return 0;
     }
 
+    public boolean isValidMeta(int meta) {
+        return isStackedByData() || meta == getDefaultMeta();
+    }
+
     public boolean isStackedByData() {
-        return true;
+        return false;
     }
 
     public int getMaxStackSize() {
@@ -1498,6 +1502,10 @@ public class Item implements Cloneable, ItemID {
 
     public static int getCount(long hash) {
         return (int) hash & 0x7f;
+    }
+
+    public boolean shouldDespawn() {
+        return true;
     }
 
     public boolean isFireResistant() {

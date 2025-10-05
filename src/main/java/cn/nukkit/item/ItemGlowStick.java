@@ -16,6 +16,17 @@ public class ItemGlowStick extends ItemChemicalTickable {
     }
 
     @Override
+    public int getDefaultMeta() {
+        return 1;
+    }
+
+    @Override
+    public boolean isValidMeta(int meta) {
+        meta &= 0xf;
+        return meta != DyeColor.BLACK.getDyeData() && meta != DyeColor.LIGHT_GRAY.getDyeData();
+    }
+
+    @Override
     protected int getTickRate() {
         return 30 * 20;
     }

@@ -2,6 +2,7 @@ package cn.nukkit.item;
 
 import cn.nukkit.Player;
 import cn.nukkit.Server;
+import cn.nukkit.entity.Entity;
 import cn.nukkit.math.Vector3;
 import cn.nukkit.nbt.tag.CompoundTag;
 import cn.nukkit.utils.DyeColor;
@@ -13,6 +14,11 @@ public abstract class ItemChemicalTickable extends Item {
 
     protected ItemChemicalTickable(int id, Integer meta, int count, String name) {
         super(id, meta, count, name);
+    }
+
+    @Override
+    public boolean isStackedByData() {
+        return true;
     }
 
     @Override
@@ -103,7 +109,7 @@ public abstract class ItemChemicalTickable extends Item {
         return DyeColor.getByDyeData(getDamage());
     }
 
-    public boolean tick() {
+    public boolean tick(Entity entity) {
         if (!isActivated()) {
             return false;
         }

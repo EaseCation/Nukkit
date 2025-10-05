@@ -20,6 +20,11 @@ public class BlockLeavesAzalea extends BlockLeaves {
         return AZALEA_LEAVES;
     }
 
+    @Override
+    public boolean isStackedByData() {
+        return false;
+    }
+
     public String getName() {
         return "Azalea Leaves";
     }

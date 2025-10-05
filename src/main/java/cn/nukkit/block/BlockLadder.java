@@ -43,6 +43,11 @@ public class BlockLadder extends BlockTransparent implements Faceable {
     }
 
     @Override
+    public int getBlockDefaultMeta() {
+        return 3;
+    }
+
+    @Override
     public boolean hasEntityCollision() {
         return true;
     }

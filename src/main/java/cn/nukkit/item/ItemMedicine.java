@@ -31,6 +31,11 @@ public class ItemMedicine extends ItemEdible {
     }
 
     @Override
+    public boolean isStackedByData() {
+        return true;
+    }
+
+    @Override
     public boolean onClickAir(Player player, Vector3 directionVector) {
         switch (getDamage()) {
             case EYE_DROPS:

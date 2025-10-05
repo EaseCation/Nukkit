@@ -80,7 +80,7 @@ public class BlockObserver extends BlockSolid implements Faceable {
     }
 
     @Override
-    public Item toItem() {
+    public Item toItem(boolean addUserData) {
         return Item.get(getItemId());
     }
 
@@ -100,7 +100,7 @@ public class BlockObserver extends BlockSolid implements Faceable {
     }
 
     @Override
-    public boolean onBreak(Item item) {
+    public boolean onBreak(Item item, Player player) {
         level.setBlock(this, get(AIR), true);
         if (isPowered()) {
             level.getServer().getPluginManager().callEvent(new BlockRedstoneEvent(this, 15, 0));

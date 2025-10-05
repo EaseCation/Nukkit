@@ -41,6 +41,11 @@ public class BlockEnderChest extends BlockTransparent implements Faceable {
     }
 
     @Override
+    public int getBlockDefaultMeta() {
+        return 2;
+    }
+
+    @Override
     public int getBlockEntityType() {
         return BlockEntityType.ENDER_CHEST;
     }

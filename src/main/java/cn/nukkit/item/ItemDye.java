@@ -4,6 +4,8 @@ import cn.nukkit.block.Block;
 import cn.nukkit.block.BlockID;
 import cn.nukkit.utils.DyeColor;
 
+import static cn.nukkit.SharedConstants.*;
+
 /**
  * author: MagicDroidX
  * Nukkit Project
@@ -73,6 +75,11 @@ public class ItemDye extends Item {
         if (this.getDamage() == DyeColor.BROWN.getDyeData()) {
             this.block = Block.get(BlockID.COCOA);
         }
+    }
+
+    @Override
+    public boolean isStackedByData() {
+        return !ITEM_FLATTEN;
     }
 
     @Override

@@ -47,7 +47,7 @@ public class BlockDoorCopper extends BlockDoor implements CopperBehavior {
 
     @Override
     public Item toItem(boolean addUserData) {
-        return Item.get(getItemId(), getDefaultMeta());
+        return Item.get(getItemId(), getItemDefaultMeta());
     }
 
     @Override

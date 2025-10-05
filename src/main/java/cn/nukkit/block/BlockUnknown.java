@@ -30,7 +30,7 @@ public class BlockUnknown extends Block {
     }
 
     @Override
-    public Item toItem() {
+    public Item toItem(boolean addUserData) {
         return Item.get(Item.AIR);
     }
 }

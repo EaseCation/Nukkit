@@ -7,6 +7,8 @@ import cn.nukkit.math.BlockFace;
 import cn.nukkit.utils.BlockColor;
 import cn.nukkit.utils.DyeColor;
 
+import static cn.nukkit.GameVersion.*;
+
 /**
  * Created by CreeperFace on 2.6.2017.
  */
@@ -23,6 +25,11 @@ public class BlockConcretePowder extends BlockFallable {
     @Override
     public int getId() {
         return CONCRETE_POWDER;
+    }
+
+    @Override
+    public boolean isStackedByData() {
+        return !V1_20_30.isAvailable();
     }
 
     @Override

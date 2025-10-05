@@ -23,6 +23,11 @@ public class ItemArrow extends Item {
     }
 
     @Override
+    public boolean isStackedByData() {
+        return true;
+    }
+
+    @Override
     public boolean canDualWield() {
         return true;
     }

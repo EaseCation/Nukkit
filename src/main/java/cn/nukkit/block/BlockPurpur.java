@@ -6,6 +6,8 @@ import cn.nukkit.item.ItemTool;
 import cn.nukkit.math.BlockFace;
 import cn.nukkit.utils.BlockColor;
 
+import static cn.nukkit.GameVersion.*;
+
 public class BlockPurpur extends BlockSolid {
 
     public static final int NORMAL = 0;
@@ -47,6 +49,11 @@ public class BlockPurpur extends BlockSolid {
     @Override
     public int getId() {
         return PURPUR_BLOCK;
+    }
+
+    @Override
+    public boolean isStackedByData() {
+        return !V1_21_30.isAvailable();
     }
 
     @Override

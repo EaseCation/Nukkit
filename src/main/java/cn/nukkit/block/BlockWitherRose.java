@@ -23,6 +23,11 @@ public class BlockWitherRose extends BlockFlower {
     }
 
     @Override
+    public boolean isStackedByData() {
+        return false;
+    }
+
+    @Override
     public String getName() {
         return "Wither Rose";
     }

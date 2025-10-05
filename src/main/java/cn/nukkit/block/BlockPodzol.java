@@ -26,6 +26,11 @@ public class BlockPodzol extends BlockDirt {
     }
 
     @Override
+    public boolean isStackedByData() {
+        return false;
+    }
+
+    @Override
     public String getName() {
         return "Podzol";
     }

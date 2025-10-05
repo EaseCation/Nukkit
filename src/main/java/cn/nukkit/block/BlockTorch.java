@@ -48,6 +48,11 @@ public class BlockTorch extends BlockFlowable implements Faceable {
     }
 
     @Override
+    public int getBlockDefaultMeta() {
+        return 1;
+    }
+
+    @Override
     public int getLightLevel() {
         return 14;
     }

@@ -4,6 +4,8 @@ import cn.nukkit.Player;
 import cn.nukkit.block.BlockGlassStained;
 import cn.nukkit.item.Item;
 
+import static cn.nukkit.GameVersion.*;
+
 public class BlockGlassStainedHard extends BlockGlassStained {
 
     public BlockGlassStainedHard() {
@@ -17,6 +19,11 @@ public class BlockGlassStainedHard extends BlockGlassStained {
     @Override
     public int getId() {
         return HARD_STAINED_GLASS;
+    }
+
+    @Override
+    public boolean isStackedByData() {
+        return !V1_20_60.isAvailable();
     }
 
     @Override

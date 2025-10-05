@@ -20,6 +20,11 @@ public class ItemOminousBottle extends ItemEdible {
     }
 
     @Override
+    public boolean isStackedByData() {
+        return true;
+    }
+
+    @Override
     public boolean onClickAir(Player player, Vector3 directionVector) {
         return true;
     }

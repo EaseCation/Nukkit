@@ -14,6 +14,11 @@ public class ItemCompound extends Item {
     }
 
     @Override
+    public boolean isStackedByData() {
+        return true;
+    }
+
+    @Override
     public boolean isChemistryFeature() {
         return true;
     }

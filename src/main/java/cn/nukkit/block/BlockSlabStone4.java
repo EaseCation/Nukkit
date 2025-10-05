@@ -38,6 +38,11 @@ public class BlockSlabStone4 extends BlockSlabStone {
     }
 
     @Override
+    public boolean isStackedByData() {
+        return !V1_21_20.isAvailable();
+    }
+
+    @Override
     public String getName() {
         return (isTopSlot() ? "Upper " : "") + NAMES[getSlabType()];
     }

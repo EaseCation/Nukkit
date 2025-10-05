@@ -62,7 +62,12 @@ public class BlockDripstonePointed extends BlockTransparent {
 
     @Override
     public Item toItem(boolean addUserData) {
-        return Item.get(getItemId(), HANGING_BIT);
+        return Item.get(getItemId(), getItemDefaultMeta());
+    }
+
+    @Override
+    public int getItemDefaultMeta() {
+        return HANGING_BIT;
     }
 
     @Override

@@ -68,6 +68,11 @@ public class BlockWallCobblestone extends BlockWall {
     }
 
     @Override
+    public boolean isStackedByData() {
+        return !V1_21_30.isAvailable();
+    }
+
+    @Override
     public String getName() {
         return NAMES[getWallType()];
     }

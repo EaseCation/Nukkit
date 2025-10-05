@@ -20,6 +20,11 @@ public class BlockSlabCherry extends BlockSlabWood {
     }
 
     @Override
+    public boolean isStackedByData() {
+        return false;
+    }
+
+    @Override
     public String getName() {
         return isTopSlot() ? "Upper Cherry Slab" : "Cherry Slab";
     }

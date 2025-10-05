@@ -20,6 +20,11 @@ public class BlockSlabBambooMosaic extends BlockSlabWood {
     }
 
     @Override
+    public boolean isStackedByData() {
+        return false;
+    }
+
+    @Override
     public String getName() {
         return isTopSlot() ? "Upper Bamboo Mosaic Slab" : "Bamboo Mosaic Slab";
     }

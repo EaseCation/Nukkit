@@ -61,7 +61,7 @@ public abstract class BlockStairs extends BlockTransparent implements Faceable {
     }
 
     @Override
-    public boolean collidesWithBB(AxisAlignedBB bb) {
+    public boolean collidesWithBB(AxisAlignedBB bb, boolean collisionBB) {
         int damage = this.getDamage();
         int side = damage & DIRECTION_MASK;
         double f = 0;

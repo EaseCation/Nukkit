@@ -22,6 +22,11 @@ public class BlockSaplingCherry extends BlockSapling {
     }
 
     @Override
+    public boolean isStackedByData() {
+        return false;
+    }
+
+    @Override
     public String getName() {
         return "Cherry Sapling";
     }

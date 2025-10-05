@@ -6,6 +6,8 @@ import cn.nukkit.math.BlockFace;
 import cn.nukkit.network.protocol.LevelSoundEventPacket;
 import cn.nukkit.utils.BlockColor;
 
+import static cn.nukkit.GameVersion.*;
+
 public class BlockWoodBark extends BlockSolid {
 
     public static final int OAK = 0;
@@ -50,6 +52,11 @@ public class BlockWoodBark extends BlockSolid {
     @Override
     public int getId() {
         return WOOD;
+    }
+
+    @Override
+    public boolean isStackedByData() {
+        return !V1_20_70.isAvailable();
     }
 
     @Override

@@ -2128,10 +2128,10 @@ public class Player extends EntityHuman implements CommandSender, InventoryHolde
                 }
             }
 
-            if (inventory.getItemInHand() instanceof ItemChemicalTickable tickable && tickable.tick()) {
+            if (inventory.getItemInHand() instanceof ItemChemicalTickable tickable && tickable.tick(this)) {
                 inventory.setItemInHand(tickable);
             }
-            if (offhandInventory.getItem() instanceof ItemChemicalTickable tickable && tickable.tick()) {
+            if (offhandInventory.getItem() instanceof ItemChemicalTickable tickable && tickable.tick(this)) {
                 offhandInventory.setItem(tickable);
             }
 

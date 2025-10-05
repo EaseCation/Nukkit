@@ -178,7 +178,7 @@ public abstract class Block extends Position implements Metadatable, Cloneable, 
                     Constructor<? extends Block> constructor = c.getDeclaredConstructor();
                     constructor.setAccessible(true);
                     block = constructor.newInstance();
-                    int defaultMeta = block.getDefaultMeta();
+                    int defaultMeta = block.getBlockDefaultMeta();
                     variants[0] = block;
                     for (int data = 1; data < variants.length; ++data) {
                         Block variant = constructor.newInstance();
@@ -495,7 +495,7 @@ public abstract class Block extends Position implements Metadatable, Cloneable, 
         return 10;
     }
 
-    public boolean onBreak(Item item) {
+    public final boolean onBreak(Item item) {
         return onBreak(item, null);
     }
 
@@ -507,15 +507,15 @@ public abstract class Block extends Position implements Metadatable, Cloneable, 
         return 0;
     }
 
-    public boolean onActivate(Item item) {
+    public final boolean onActivate(Item item) {
         return this.onActivate(item, null);
     }
 
-    public boolean onActivate(Item item, @Nullable Player player) {
+    public final boolean onActivate(Item item, @Nullable Player player) {
         return onActivate(item, null, player);
     }
 
-    public boolean onActivate(Item item, @Nullable BlockFace face, @Nullable Player player) {
+    public final boolean onActivate(Item item, @Nullable BlockFace face, @Nullable Player player) {
         return onActivate(item, face, 0.5f, 0.5f, 0.5f, player);
     }
 
@@ -679,12 +679,16 @@ public abstract class Block extends Position implements Metadatable, Cloneable, 
         setDamage(meta == null ? 0 : meta);
     }
 
-    public int getDefaultMeta() {
+    public int getBlockDefaultMeta() {
+        return 0;
+    }
+
+    public int getItemDefaultMeta() {
         return 0;
     }
 
     public boolean isStackedByData() {
-        return true;
+        return false;
     }
 
     public boolean isValidMeta(int meta) {
@@ -1028,7 +1032,7 @@ public abstract class Block extends Position implements Metadatable, Cloneable, 
         return super.toString();
     }
 
-    public boolean collidesWithBB(AxisAlignedBB bb) {
+    public final boolean collidesWithBB(AxisAlignedBB bb) {
         return collidesWithBB(bb, false);
     }
 
@@ -1296,7 +1300,7 @@ public abstract class Block extends Position implements Metadatable, Cloneable, 
         return 64;
     }
 
-    public Item toItem() {
+    public final Item toItem() {
         return toItem(false);
     }
 
@@ -1328,7 +1332,7 @@ public abstract class Block extends Position implements Metadatable, Cloneable, 
         return false;
     }
 
-    public boolean canProvideSupport(BlockFace face) {
+    public final boolean canProvideSupport(BlockFace face) {
         return canProvideSupport(face, SupportType.FULL);
     }
 

@@ -5,6 +5,8 @@ import cn.nukkit.item.Item;
 import cn.nukkit.item.ItemTool;
 import cn.nukkit.utils.BlockColor;
 
+import static cn.nukkit.GameVersion.*;
+
 
 public class BlockPrismarine extends BlockSolid {
 
@@ -29,6 +31,11 @@ public class BlockPrismarine extends BlockSolid {
     @Override
     public int getId() {
         return PRISMARINE;
+    }
+
+    @Override
+    public boolean isStackedByData() {
+        return !V1_21_20.isAvailable();
     }
 
     @Override

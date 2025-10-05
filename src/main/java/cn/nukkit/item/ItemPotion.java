@@ -20,6 +20,11 @@ public class ItemPotion extends Item {
     }
 
     @Override
+    public boolean isStackedByData() {
+        return true;
+    }
+
+    @Override
     public int getMaxStackSize() {
         return 1;
     }

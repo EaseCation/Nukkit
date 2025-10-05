@@ -10,6 +10,8 @@ import cn.nukkit.utils.BlockColor;
 
 import java.util.concurrent.ThreadLocalRandom;
 
+import static cn.nukkit.GameVersion.*;
+
 /**
  * author: Angelic47
  * Nukkit Project
@@ -36,6 +38,11 @@ public class BlockTallGrass extends BlockFlowable {
     @Override
     public int getId() {
         return SHORT_GRASS;
+    }
+
+    @Override
+    public boolean isStackedByData() {
+        return !V1_21_0.isAvailable();
     }
 
     @Override

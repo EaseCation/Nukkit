@@ -1,6 +1,7 @@
 package cn.nukkit.blockentity;
 
 import cn.nukkit.block.Block;
+import cn.nukkit.block.BlockHopper;
 import cn.nukkit.entity.Entity;
 import cn.nukkit.entity.item.EntityItem;
 import cn.nukkit.event.inventory.InventoryMoveItemEvent;
@@ -99,7 +100,7 @@ public class BlockEntityHopper extends BlockEntityAbstractContainer {
         }
 
         if (!this.isOnTransferCooldown()) {
-            if ((this.level.getBlock(this).getDamage() & 0x08) == 8) { //is hopper disabled?
+            if ((this.level.getBlock(this).getDamage() & BlockHopper.TOGGLE_BIT) == BlockHopper.TOGGLE_BIT) { //is hopper disabled?
                 return false;
             }
 
@@ -265,7 +266,13 @@ public class BlockEntityHopper extends BlockEntityAbstractContainer {
             return false;
         }
 
-        Block block = this.level.getBlock(this.getSideVec(BlockFace.fromIndex(this.level.getBlock(this).getDamage())));
+        Block hopper = getBlock();
+        BlockFace facing = BlockFace.fromIndex(hopper.getDamage() & BlockHopper.FACING_DIRECTION_MASK);
+        if (facing == BlockFace.UP) {
+            return false;
+        }
+
+        Block block = this.level.getBlock(this.getSideVec(facing));
         if (block.is(Block.COMPOSTER)) {
             //TODO
             return false;
@@ -279,7 +286,7 @@ public class BlockEntityHopper extends BlockEntityAbstractContainer {
             return false;
         }
 
-        if (be instanceof BlockEntityHopper && this.getBlock().getDamage() == 0) {
+        if (be instanceof BlockEntityHopper && facing == BlockFace.DOWN) {
             return false;
         }
 
@@ -308,7 +315,7 @@ public class BlockEntityHopper extends BlockEntityAbstractContainer {
                     itemToAdd.setCount(1);
 
                     //Check direction of hopper
-                    if (this.getBlock().getDamage() == 0) {
+                    if (facing == BlockFace.DOWN) {
                         Item smelting = inventory.getSmelting();
                         if (smelting.isNull()) {
                             event = new InventoryMoveItemEvent(this.inventory, inventory, this, itemToAdd, InventoryMoveItemEvent.Action.SLOT_CHANGE);
