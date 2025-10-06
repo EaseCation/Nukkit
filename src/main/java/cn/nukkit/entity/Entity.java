@@ -181,7 +181,7 @@ public abstract class Entity extends Location implements Metadatable, EntityData
 
     protected boolean isPlayer = false;
 
-    private volatile boolean initialized;
+    private boolean initialized;
     private boolean fullyInitialized;
 
     public float getHeight() {
@@ -1770,6 +1770,12 @@ public abstract class Entity extends Location implements Metadatable, EntityData
             return false;
         }
 
+        int tickDiff = currentTick - this.lastUpdate;
+        if (tickDiff <= 0) {
+            return false;
+        }
+        this.lastUpdate = currentTick;
+
         if (!this.isAlive()) {
             ++this.deadTicks;
             if (this.deadTicks >= 10) {
@@ -1780,14 +1786,6 @@ public abstract class Entity extends Location implements Metadatable, EntityData
             }
             return this.deadTicks < 10;
         }
-
-        int tickDiff = currentTick - this.lastUpdate;
-
-        if (tickDiff <= 0) {
-            return false;
-        }
-
-        this.lastUpdate = currentTick;
 
         boolean hasUpdate = this.entityBaseTick(tickDiff);
 

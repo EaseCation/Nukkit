@@ -87,6 +87,9 @@ public final class EntitySelector {
                 for (Level level : levels) {
                     if (level != null) {
                         List<Predicate<Entity>> predicates = new ObjectArrayList<>();
+                        if (!"a".equalsIgnoreCase(selectorType)) {
+                            predicates.add(entity -> entity != null && entity.isAlive());
+                        }
                         predicates.addAll(getTypePredicates(args, selectorType));
                         predicates.addAll(getXpLevelPredicates(args));
                         predicates.addAll(getGamemodePredicates(args));

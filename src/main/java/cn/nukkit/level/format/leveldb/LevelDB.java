@@ -1039,7 +1039,7 @@ public class LevelDB implements LevelProvider {
                 if (!convert) {
                     entities = new ObjectArrayList<>();
                     for (Entity entity : chunk.getEntities().values()) {
-                        if (!(entity instanceof Player) && !entity.closed) {
+                        if (!(entity instanceof Player) && entity.isAlive()) {
                             entity.saveNBT();
                             entities.add(entity.namedTag);
                         }

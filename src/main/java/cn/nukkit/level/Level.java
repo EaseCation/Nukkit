@@ -3317,7 +3317,7 @@ public class Level implements ChunkManager, Metadatable {
             for (int x = minX; x <= maxX; ++x) {
                 for (int z = minZ; z <= maxZ; ++z) {
                     for (Entity ent : this.getChunkEntities(x, z, false).values()) {
-                        if ((entity == null || (ent != entity && entity.canCollideWith(ent)))
+                        if ((entity == null || ent != entity && ent.isAlive() && entity.canCollideWith(ent))
                                 && ent.boundingBox.intersectsWith(bb)) {
                             nearby.add(ent);
                         }
@@ -3353,7 +3353,7 @@ public class Level implements ChunkManager, Metadatable {
                     return nearby.toArray(new Entity[0]);
                 }
                 for (Entity ent : this.getChunkEntities(x, z, loadChunks).values()) {
-                    if (ent != entity && ent.boundingBox.intersectsWith(bb)) {
+                    if (ent != entity && ent.isAlive() && ent.boundingBox.intersectsWith(bb)) {
                         nearby.add(ent);
                     }
                 }
@@ -3384,7 +3384,7 @@ public class Level implements ChunkManager, Metadatable {
         for (int x = minX; x <= maxX; ++x) {
             for (int z = minZ; z <= maxZ; ++z) {
                 for (Entity ent : this.getChunkEntities(x, z, loadChunks).values()) {
-                    if (ent.boundingBox.intersectsWith(aabb) && predicate.test(ent)) {
+                    if (ent.isAlive() && ent.boundingBox.intersectsWith(aabb) && predicate.test(ent)) {
                         return true;
                     }
                 }
@@ -4394,7 +4394,7 @@ public class Level implements ChunkManager, Metadatable {
                 if (provider != null && trySave && this.getAutoSave()) {
                     boolean entities = false;
                     for (Entity e : chunk.getEntities().values()) {
-                        if (e instanceof Player) {
+                        if (e instanceof Player || !e.isAlive()) {
                             continue;
                         }
                         entities = true;
