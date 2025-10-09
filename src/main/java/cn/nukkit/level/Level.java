@@ -56,6 +56,7 @@ import cn.nukkit.metadata.MetadataValue;
 import cn.nukkit.metadata.Metadatable;
 import cn.nukkit.nbt.NBTIO;
 import cn.nukkit.nbt.tag.CompoundTag;
+import cn.nukkit.network.Compressor;
 import cn.nukkit.network.Network;
 import cn.nukkit.network.protocol.*;
 import cn.nukkit.network.protocol.BatchPacket.Track;
@@ -5296,11 +5297,11 @@ public class Level implements ChunkManager, Metadatable {
         this.newArmorMechanics = enable;
     }
 
-    public BatchPacket getChunkCacheFromData(int x, int z, int subChunkCount, byte[] payload) {
-        return getChunkCacheFromData(x, z, subChunkCount, 0, payload);
+    public BatchPacket getChunkCacheFromData(Compressor compressor, int x, int z, int subChunkCount, byte[] payload) {
+        return getChunkCacheFromData(compressor, x, z, subChunkCount, 0, payload);
     }
 
-    public BatchPacket getChunkCacheFromData(int x, int z, int subChunkCount, int subChunkRequestLimit, byte[] payload) {
+    public BatchPacket getChunkCacheFromData(Compressor compressor, int x, int z, int subChunkCount, int subChunkRequestLimit, byte[] payload) {
         LevelChunkPacket packet = new LevelChunkPacket();
         packet.chunkX = x;
         packet.chunkZ = z;
@@ -5315,9 +5316,8 @@ public class Level implements ChunkManager, Metadatable {
         byte[] buf = packet.getBuffer();
         batchPayload[0] = Binary.writeUnsignedVarInt(buf.length);
         batchPayload[1] = buf;
-        byte[] data = Binary.appendBytes(batchPayload);
         try {
-            batch.payload = Network.deflateRaw(data, Server.getInstance().networkCompressionLevel);
+            batch.payload = compressor.compress(batchPayload, Server.getInstance().networkCompressionLevel);
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
@@ -5325,7 +5325,7 @@ public class Level implements ChunkManager, Metadatable {
         return batch;
     }
 
-    public BatchPacket getSubChunkCacheFromData(SubChunkPacket packet, int subChunkX, int subChunkY, int subChunkZ, byte[] payload, byte heightMapType, byte[] heightMap) {
+    public BatchPacket getSubChunkCacheFromData(Compressor compressor, SubChunkPacket packet, int subChunkX, int subChunkY, int subChunkZ, byte[] payload, byte heightMapType, byte[] heightMap) {
         packet.dimension = dimension.getId();
         packet.subChunkX = subChunkX;
         packet.subChunkY = subChunkY;
@@ -5340,9 +5340,8 @@ public class Level implements ChunkManager, Metadatable {
         byte[] buf = packet.getBuffer();
         batchPayload[0] = Binary.writeUnsignedVarInt(buf.length);
         batchPayload[1] = buf;
-        byte[] data = Binary.appendBytes(batchPayload);
         try {
-            batch.payload = Network.deflateRaw(data, Server.getInstance().networkCompressionLevel);
+            batch.payload = compressor.compress(batchPayload, Server.getInstance().networkCompressionLevel);
         } catch (Exception e) {
             throw new RuntimeException(e);
         }

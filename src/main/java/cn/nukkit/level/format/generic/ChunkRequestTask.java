@@ -12,6 +12,7 @@ import cn.nukkit.level.format.ChunkSection;
 import cn.nukkit.level.format.LevelProvider;
 import cn.nukkit.nbt.NBTIO;
 import cn.nukkit.nbt.tag.CompoundTag;
+import cn.nukkit.network.Compressor;
 import cn.nukkit.network.protocol.*;
 import cn.nukkit.scheduler.AsyncTask;
 import cn.nukkit.utils.BinaryStream;
@@ -294,7 +295,7 @@ public class ChunkRequestTask extends AsyncTask<Void> {
                         if (emptySection[i]) {
                             packet.requestResult = SubChunkPacket.REQUEST_RESULT_SUCCESS_ALL_AIR;
                         }
-                        compressed[i] = level.getSubChunkCacheFromData(packet, chunkX, Level.indexToY(i, chunkYIndexOffset), chunkZ, subChunkData[i], heightmapType[i], heightmapData[i]);
+                        compressed[i] = level.getSubChunkCacheFromData(Compressor.byProtocol(version.getProtocol()), packet, chunkX, Level.indexToY(i, chunkYIndexOffset), chunkZ, subChunkData[i], heightmapType[i], heightmapData[i]);
                         packet.renderHeightMapType = SubChunkPacket.HEIGHT_MAP_TYPE_ALL_COPIED;
                         packet.setBuffer(null, 0); // release buffer
                         uncompressed[i] = packet;
@@ -313,7 +314,7 @@ public class ChunkRequestTask extends AsyncTask<Void> {
                         packet.setBuffer(null, 0);
                         packetsUncompressed.put(version, packet);
                     } else {
-                        packets.put(version, level.getChunkCacheFromData(chunkX, chunkZ, count, payload));
+                        packets.put(version, level.getChunkCacheFromData(Compressor.byProtocol(version.getProtocol()), chunkX, chunkZ, count, payload));
                     }
                 });
 
@@ -338,7 +339,7 @@ public class ChunkRequestTask extends AsyncTask<Void> {
                 packetCache = new ChunkPacketCache(
                         packets,
                         packetsUncompressed,
-                        level.getChunkCacheFromData(chunkX, chunkZ, LevelChunkPacket.CLIENT_REQUEST_TRUNCATED_COLUMN_FAKE_COUNT, count, subRequestModeFullChunkPayload),
+                        level.getChunkCacheFromData(Compressor.SNAPPY, chunkX, chunkZ, LevelChunkPacket.CLIENT_REQUEST_TRUNCATED_COLUMN_FAKE_COUNT, count, subRequestModeFullChunkPayload),
                         uncompressed,
                         uncompressedLegacy,
                         subPackets,
