@@ -45,6 +45,8 @@ public class EntityFishingHook extends EntityProjectile {
     public int caughtTimer = 0;
     public boolean canCollide = true;
     public boolean reelLineTargetMotionEC = true;
+    // 是否在reelLine时对目标执行拉回Motion（默认开启）。用于游戏模式级别控制是否允许钩人回拉效果
+    public boolean reelLineDoPullBack = true;
 
     public Vector3 fish = null;
 
@@ -439,14 +441,17 @@ public class EntityFishingHook extends EntityProjectile {
                     }
 
                     if (!riding) {
-                        if (!reelLineTargetMotionEC) {
-                            // van
-                            Vector3 diff = this.shootingEntity.add(0, 1, 0).subtract(entity).multiply(0.1);
-                            diff.y = Math.sqrt(diff.length()) * 0.08;
-                            entity.setMotion(diff);
-                        } else {
-                            // ec
-                            entity.setMotion(this.shootingEntity.subtract(entity).divide(8).add(0, 0.3, 0));
+                        // 仅当开启拉回逻辑时，才对目标施加拉回Motion
+                        if (reelLineDoPullBack) {
+                            if (!reelLineTargetMotionEC) {
+                                // van: vanilla-like pull back
+                                Vector3 diff = this.shootingEntity.add(0, 1, 0).subtract(entity).multiply(0.1);
+                                diff.y = Math.sqrt(diff.length()) * 0.08;
+                                entity.setMotion(diff);
+                            } else {
+                                // ec: EC-style stronger pull back
+                                entity.setMotion(this.shootingEntity.subtract(entity).divide(8).add(0, 0.3, 0));
+                            }
                         }
                     }
 
