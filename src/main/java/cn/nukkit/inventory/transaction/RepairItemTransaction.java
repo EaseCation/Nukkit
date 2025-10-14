@@ -1,6 +1,7 @@
 package cn.nukkit.inventory.transaction;
 
 import cn.nukkit.Player;
+import cn.nukkit.event.inventory.GrindstoneEvent;
 import cn.nukkit.event.inventory.RepairItemEvent;
 import cn.nukkit.inventory.AnvilInventory;
 import cn.nukkit.inventory.GrindstoneInventory;
@@ -114,15 +115,7 @@ public class RepairItemTransaction extends InventoryTransaction {
         } else if (inventory instanceof GrindstoneInventory) {
             GrindstoneInventory grindstoneInventory = (GrindstoneInventory) inventory;
 
-            for (InventoryAction action : this.actions) {
-                if (action.execute(this.source)) {
-                    action.onExecuteSuccess(this.source);
-                } else {
-                    action.onExecuteFail(this.source);
-                }
-            }
-
-            // we don't use SpawnExperienceOrbPacket
+            // 先计算经验返还值
             int xp = 0;
             if (hasInput()) {
                 for (Enchantment ench : inputItem.getEnchantments()) {
@@ -142,8 +135,37 @@ public class RepairItemTransaction extends InventoryTransaction {
                     xp += ThreadLocalRandom.current().nextInt(min, min * 2);
                 }
             }
-            if (xp != 0) {
-                source.level.dropExpOrb(source, xp);
+
+            // 抛出砂轮事件，允许插件调整经验或取消
+            GrindstoneEvent grindEvent = new GrindstoneEvent(
+                    grindstoneInventory,
+                    this.inputItem,
+                    this.outputItem,
+                    this.materialItem,
+                    xp,
+                    this.source
+            );
+            this.source.getServer().getPluginManager().callEvent(grindEvent);
+            if (grindEvent.isCancelled()) {
+                // 取消则不执行变更，回滚窗口
+                this.source.removeAllWindows(false);
+                this.sendInventories();
+                return true;
+            }
+
+            // 执行所有变更动作
+            for (InventoryAction action : this.actions) {
+                if (action.execute(this.source)) {
+                    action.onExecuteSuccess(this.source);
+                } else {
+                    action.onExecuteFail(this.source);
+                }
+            }
+
+            // 经验返还：统一以经验球掉落（插件可通过事件将返还设为0以自行处理）
+            int finalXp = Math.max(0, grindEvent.getExperienceDropped());
+            if (finalXp > 0) {
+                this.source.level.dropExpOrb(this.source, finalXp);
             }
             return true;
         } else if (inventory instanceof SmithingTableInventory) {
