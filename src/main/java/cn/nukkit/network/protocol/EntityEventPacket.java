@@ -71,6 +71,8 @@ public class EntityEventPacket extends DataPacket {
     public static final int GROW_UP = 76;
     public static final int VIBRATION_DETECTED = 77;
     public static final int DRINK_MILK = 78;
+    public static final int SHAKE_WETNESS_STOP = 79;
+    public static final int KINETIC_DAMAGE_DEALT = 80;
 
     @Override
     public int pid() {

@@ -27,6 +27,7 @@ public enum LevelDBKey {
     BLENDING_DATA('@'),
     ENTITY_DIGEST_VERSION('A'),
     OLD_VERSION('v'),
+    AABB_VOLUMES('w'),
     ;
 
     private final byte encoded;

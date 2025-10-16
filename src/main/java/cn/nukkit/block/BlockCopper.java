@@ -68,7 +68,7 @@ public class BlockCopper extends BlockSolid implements CopperBehavior {
                 item.pop();
             }
 
-            level.addLevelEvent(this, LevelEventPacket.EVENT_PARTICLE_WAX_ON);
+            level.addLevelEvent(this.blockCenter(), LevelEventPacket.EVENT_PARTICLE_WAX_ON);
 
             level.setBlock(this, get(getWaxedBlockId()), true);
             return true;
@@ -80,7 +80,7 @@ public class BlockCopper extends BlockSolid implements CopperBehavior {
                 player.level.addLevelSoundEvent(player, LevelSoundEventPacket.SOUND_BREAK);
             }
 
-            level.addLevelEvent(this, LevelEventPacket.EVENT_PARTICLE_SCRAPE);
+            level.addLevelEvent(this.blockCenter(), LevelEventPacket.EVENT_PARTICLE_SCRAPE);
 
             level.setBlock(this, get(getDecrementAgeBlockId()), true);
             return true;

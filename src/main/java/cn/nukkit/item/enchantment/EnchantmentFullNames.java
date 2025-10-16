@@ -45,4 +45,5 @@ public interface EnchantmentFullNames {
     String WIND_BURST = "minecraft:" + EnchantmentNames.WIND_BURST;
     String DENSITY = "minecraft:" + EnchantmentNames.DENSITY;
     String BREACH = "minecraft:" + EnchantmentNames.BREACH;
+    String LUNGE = "minecraft:" + EnchantmentNames.LUNGE;
 }

@@ -28,7 +28,7 @@ public class BlockGrateCopperWaxed extends BlockGrateCopper {
                 player.level.addLevelSoundEvent(player, LevelSoundEventPacket.SOUND_BREAK);
             }
 
-            level.addLevelEvent(this, LevelEventPacket.EVENT_PARTICLE_WAX_OFF);
+            level.addLevelEvent(this.blockCenter(), LevelEventPacket.EVENT_PARTICLE_WAX_OFF);
 
             level.setBlock(this, get(getDewaxedBlockId()), true);
             return true;

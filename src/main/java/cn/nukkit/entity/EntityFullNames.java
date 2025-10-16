@@ -140,6 +140,8 @@ public interface EntityFullNames {
     String CREAKING = "minecraft:" + EntityNames.CREAKING;
     String HAPPY_GHAST = "minecraft:" + EntityNames.HAPPY_GHAST;
     String COPPER_GOLEM = "minecraft:" + EntityNames.COPPER_GOLEM;
+    String NAUTILUS = "minecraft:" + EntityNames.NAUTILUS;
+    String ZOMBIE_NAUTILUS = "minecraft:" + EntityNames.ZOMBIE_NAUTILUS;
 
     String TRADER_LLAMA = "minecraft:" + EntityNames.TRADER_LLAMA;
 

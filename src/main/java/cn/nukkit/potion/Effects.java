@@ -71,7 +71,9 @@ public final class Effects {
         registerEffect(OOZING, new Effect(OOZING, EffectNames.OOZING, "%effect.oozing", 153, 255, 163, true), V1_21_0);
         registerEffect(INFESTED, new Effect(INFESTED, EffectNames.INFESTED, "%effect.infested", 140, 155, 140, true), V1_21_0);
         registerEffect(RAID_OMEN, new Effect(RAID_OMEN, EffectNames.RAID_OMEN, "%effect.raid_omen", 222, 64, 88), V1_21_0);
-
+/*
+        registerEffect(BREATH_OF_THE_NAUTILUS, new Effect(BREATH_OF_THE_NAUTILUS, EffectNames.BREATH_OF_THE_NAUTILUS, "%effect.customNautilus", 0, 255, 238), V1_21_130);
+*/
     }
 
     private static Effect registerEffect(int id, Effect effect) {

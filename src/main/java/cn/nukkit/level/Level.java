@@ -4723,6 +4723,126 @@ public class Level implements ChunkManager, Metadatable {
         this.server.getLevelMetadata().removeMetadata(this, metadataKey, owningPlugin);
     }
 
+    public String[] getDynamicPropertyIds(String module) {
+        LevelProvider provider = this.provider;
+        if (provider == null) {
+            return new String[0];
+        }
+        return provider.getDynamicPropertyIds(module);
+    }
+
+    public boolean hasDynamicProperty(String module, String name) {
+        LevelProvider provider = this.provider;
+        if (provider == null) {
+            return false;
+        }
+        return provider.hasDynamicProperty(module, name);
+    }
+
+    public double getDynamicPropertyDouble(String module, String name) {
+        return getDynamicPropertyDouble(module, name, 0);
+    }
+
+    public double getDynamicPropertyDouble(String module, String name, double defaultValue) {
+        LevelProvider provider = this.provider;
+        if (provider == null) {
+            return defaultValue;
+        }
+        return provider.getDynamicPropertyDouble(module, name, defaultValue);
+    }
+
+    public boolean getDynamicPropertyBoolean(String module, String name) {
+        return getDynamicPropertyBoolean(module, name, false);
+    }
+
+    public boolean getDynamicPropertyBoolean(String module, String name, boolean defaultValue) {
+        LevelProvider provider = this.provider;
+        if (provider == null) {
+            return defaultValue;
+        }
+        return provider.getDynamicPropertyBoolean(module, name, defaultValue);
+    }
+
+    public String getDynamicPropertyString(String module, String name) {
+        return getDynamicPropertyString(module, name, "");
+    }
+
+    public String getDynamicPropertyString(String module, String name, String defaultValue) {
+        LevelProvider provider = this.provider;
+        if (provider == null) {
+            return defaultValue;
+        }
+        return provider.getDynamicPropertyString(module, name, defaultValue);
+    }
+
+    public Vector3f getDynamicPropertyVector3f(String module, String name) {
+        return getDynamicPropertyVector3f(module, name, new Vector3f());
+    }
+
+    public Vector3f getDynamicPropertyVector3f(String module, String name, Vector3f defaultValue) {
+        LevelProvider provider = this.provider;
+        if (provider == null) {
+            return defaultValue;
+        }
+        return provider.getDynamicPropertyVector3f(module, name, defaultValue);
+    }
+
+    public void setDynamicProperty(String module, String name, double value) {
+        LevelProvider provider = this.provider;
+        if (provider == null) {
+            return;
+        }
+        provider.setDynamicProperty(module, name, value);
+    }
+
+    public void setDynamicProperty(String module, String name, boolean value) {
+        LevelProvider provider = this.provider;
+        if (provider == null) {
+            return;
+        }
+        provider.setDynamicProperty(module, name, value);
+    }
+
+    public void setDynamicProperty(String module, String name, String value) {
+        LevelProvider provider = this.provider;
+        if (provider == null) {
+            return;
+        }
+        provider.setDynamicProperty(module, name, value);
+    }
+
+    public void setDynamicProperty(String module, String name, Vector3f value) {
+        LevelProvider provider = this.provider;
+        if (provider == null) {
+            return;
+        }
+        provider.setDynamicProperty(module, name, value);
+    }
+
+    public void clearDynamicProperty(String module, String name) {
+        LevelProvider provider = this.provider;
+        if (provider == null) {
+            return;
+        }
+        provider.clearDynamicProperty(module, name);
+    }
+
+    public void clearDynamicProperties(String module) {
+        LevelProvider provider = this.provider;
+        if (provider == null) {
+            return;
+        }
+        provider.clearDynamicProperties(module);
+    }
+
+    public void clearDynamicProperties() {
+        LevelProvider provider = this.provider;
+        if (provider == null) {
+            return;
+        }
+        provider.clearDynamicProperties();
+    }
+
     public void addEntityMotion(int chunkX, int chunkZ, long entityId, double x, double y, double z) {
         SetEntityMotionPacket pk = new SetEntityMotionPacket();
         pk.eid = entityId;

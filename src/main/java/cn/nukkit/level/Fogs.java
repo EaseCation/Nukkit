@@ -64,6 +64,7 @@ public interface Fogs {
     String POWDER_SNOW = "minecraft:fog_powder_snow";
     String RIVER = "minecraft:fog_river";
     String ROOFED_FOREST = "minecraft:fog_roofed_forest";
+    String ROOFED_FOREST_MUTATED = "minecraft:fog_roofed_forest_mutated";
     String SAVANNA = "minecraft:fog_savanna";
     String SAVANNA_MUTATED = "minecraft:fog_savanna_mutated";
     String SAVANNA_PLATEAU = "minecraft:fog_savanna_plateau";

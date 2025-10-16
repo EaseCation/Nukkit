@@ -139,6 +139,8 @@ public interface EntityID {
     int CREAKING = 146;
     int HAPPY_GHAST = 147;
     int COPPER_GOLEM = 148;
+    int NAUTILUS = 149;
+    int ZOMBIE_NAUTILUS = 150;
 
     int TRADER_LLAMA = 157;
 

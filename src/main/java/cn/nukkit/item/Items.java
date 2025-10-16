@@ -349,6 +349,8 @@ public final class Items {
 
         registerItem(ItemNames.MUSIC_DISC_RELIC, MUSIC_DISC_RELIC, ItemRecordRelic.class, ItemRecordRelic::new, V1_20_0);
 
+        registerItem(ItemNames.BREEZE_ROD, BREEZE_ROD, ItemBreezeRod.class, ItemBreezeRod::new, V1_21_0);
+        registerItem(ItemNames.MACE, MACE, ItemMace.class, ItemMace::new, V1_21_0);
         registerItem(ItemNames.MUSIC_DISC_CREATOR, MUSIC_DISC_CREATOR, ItemRecordCreator.class, ItemRecordCreator::new, V1_21_0);
         registerItem(ItemNames.MUSIC_DISC_CREATOR_MUSIC_BOX, MUSIC_DISC_CREATOR_MUSIC_BOX, ItemRecordCreatorMusicBox.class, ItemRecordCreatorMusicBox::new, V1_21_0);
         registerItem(ItemNames.MUSIC_DISC_PRECIPICE, MUSIC_DISC_PRECIPICE, ItemRecordPrecipice.class, ItemRecordPrecipice::new, V1_21_0);
@@ -437,9 +439,7 @@ public final class Items {
         registerNewItem(ItemNames.TRIAL_KEY, TRIAL_KEY, ItemTrialKey.class, ItemTrialKey::new, V1_21_0);
         registerNewItem(ItemNames.OMINOUS_TRIAL_KEY, OMINOUS_TRIAL_KEY, ItemTrialKeyOminous.class, ItemTrialKeyOminous::new, V1_21_0);
         registerNewItem(ItemNames.OMINOUS_BOTTLE, OMINOUS_BOTTLE, ItemOminousBottle.class, ItemOminousBottle::new, ItemOminousBottle.MAXIMUM_AMPLIFIER, V1_21_0);
-        registerNewItem(ItemNames.BREEZE_ROD, BREEZE_ROD, ItemBreezeRod.class, ItemBreezeRod::new, V1_21_0);
         registerNewItem(ItemNames.WIND_CHARGE, WIND_CHARGE, ItemWindCharge.class, ItemWindCharge::new, V1_21_0);
-        registerNewItem(ItemNames.MACE, MACE, ItemMace.class, ItemMace::new, V1_21_0);
         registerNewItem(ItemNames.FLOW_POTTERY_SHERD, FLOW_POTTERY_SHERD, ItemPotterySherdFlow.class, ItemPotterySherdFlow::new, V1_21_0);
         registerNewItem(ItemNames.GUSTER_POTTERY_SHERD, GUSTER_POTTERY_SHERD, ItemPotterySherdGuster.class, ItemPotterySherdGuster::new, V1_21_0);
         registerNewItem(ItemNames.SCRAPE_POTTERY_SHERD, SCRAPE_POTTERY_SHERD, ItemPotterySherdScrape.class, ItemPotterySherdScrape::new, V1_21_0);
@@ -498,7 +498,20 @@ public final class Items {
         registerNewItem(ItemNames.COPPER_LEGGINGS, COPPER_LEGGINGS, ItemLeggingsCopper.class, ItemLeggingsCopper::new, V1_21_111);
         registerNewItem(ItemNames.COPPER_BOOTS, COPPER_BOOTS, ItemBootsCopper.class, ItemBootsCopper::new, V1_21_111);
         registerNewItem(ItemNames.COPPER_HORSE_ARMOR, COPPER_HORSE_ARMOR, ItemHorseArmorCopper.class, ItemHorseArmorCopper::new, V1_21_111);
-
+/*
+        registerNewItem(ItemNames.WOODEN_SPEAR, WOODEN_SPEAR, ItemSpearWooden.class, ItemSpearWooden::new, V1_21_130);
+        registerNewItem(ItemNames.STONE_SPEAR, STONE_SPEAR, ItemSpearStone.class, ItemSpearStone::new, V1_21_130);
+        registerNewItem(ItemNames.COPPER_SPEAR, COPPER_SPEAR, ItemSpearCopper.class, ItemSpearCopper::new, V1_21_130);
+        registerNewItem(ItemNames.IRON_SPEAR, IRON_SPEAR, ItemSpearIron.class, ItemSpearIron::new, V1_21_130);
+        registerNewItem(ItemNames.GOLDEN_SPEAR, GOLDEN_SPEAR, ItemSpearGolden.class, ItemSpearGolden::new, V1_21_130);
+        registerNewItem(ItemNames.DIAMOND_SPEAR, DIAMOND_SPEAR, ItemSpearDiamond.class, ItemSpearDiamond::new, V1_21_130);
+        registerNewItem(ItemNames.NETHERITE_SPEAR, NETHERITE_SPEAR, ItemSpearNetherite.class, ItemSpearNetherite::new, V1_21_130);
+        registerNewItem(ItemNames.COPPER_NAUTILUS_ARMOR, COPPER_NAUTILUS_ARMOR, ItemNautilusArmorCopper.class, ItemNautilusArmorCopper::new, V1_21_130);
+        registerNewItem(ItemNames.IRON_NAUTILUS_ARMOR, IRON_NAUTILUS_ARMOR, ItemNautilusArmorIron.class, ItemNautilusArmorIron::new, V1_21_130);
+        registerNewItem(ItemNames.GOLDEN_NAUTILUS_ARMOR, GOLDEN_NAUTILUS_ARMOR, ItemNautilusArmorGolden.class, ItemNautilusArmorGolden::new, V1_21_130);
+        registerNewItem(ItemNames.DIAMOND_NAUTILUS_ARMOR, DIAMOND_NAUTILUS_ARMOR, ItemNautilusArmorDiamond.class, ItemNautilusArmorDiamond::new, V1_21_130);
+        registerNewItem(ItemNames.NETHERITE_NAUTILUS_ARMOR, NETHERITE_NAUTILUS_ARMOR, ItemNautilusArmorNetherite.class, ItemNautilusArmorNetherite::new, V1_21_130);
+*/
     }
 
     @SuppressWarnings("deprecation")

@@ -40,4 +40,5 @@ public interface EffectFullNames {
     String OOZING = "minecraft:" + EffectNames.OOZING;
     String INFESTED = "minecraft:" + EffectNames.INFESTED;
     String RAID_OMEN = "minecraft:" + EffectNames.RAID_OMEN;
+    String BREATH_OF_THE_NAUTILUS = "minecraft:" + EffectNames.BREATH_OF_THE_NAUTILUS;
 }

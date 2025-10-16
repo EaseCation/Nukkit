@@ -452,6 +452,9 @@ public interface ItemID extends BlockID, ItemRuntimeID {
 
 //    int TADPOLE_BUCKET = 523;
 
+    int BREEZE_ROD = 529;
+    int MACE = 530;
+
     int CAMPFIRE = 720;
 
     int SUSPICIOUS_STEW = 734;

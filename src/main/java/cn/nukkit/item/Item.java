@@ -10,16 +10,19 @@ import cn.nukkit.item.enchantment.Enchantment;
 import cn.nukkit.level.Level;
 import cn.nukkit.math.BlockFace;
 import cn.nukkit.math.Vector3;
+import cn.nukkit.math.Vector3f;
 import cn.nukkit.nbt.NBTIO;
 import cn.nukkit.nbt.tag.CompoundTag;
 import cn.nukkit.nbt.tag.IntTag;
 import cn.nukkit.nbt.tag.ListTag;
 import cn.nukkit.nbt.tag.StringTag;
 import cn.nukkit.nbt.tag.Tag;
+import cn.nukkit.network.protocol.LevelSoundEventPacket;
 import cn.nukkit.utils.Binary;
 import cn.nukkit.utils.Config;
 import cn.nukkit.utils.MainLogger;
 import cn.nukkit.utils.Utils;
+import it.unimi.dsi.fastutil.Pair;
 import it.unimi.dsi.fastutil.objects.ObjectArrayList;
 import it.unimi.dsi.fastutil.objects.ObjectOpenHashSet;
 
@@ -984,6 +987,245 @@ public class Item implements Cloneable, ItemID {
         return setNamedTag(tag);
     }
 
+    public String[] getDynamicPropertyIds(String module) {
+        CompoundTag tag = getNamedTag();
+        if (tag == null) {
+            return new String[0];
+        }
+
+        CompoundTag dynamicProperties = tag.getCompound("DynamicProperties", null);
+        if (dynamicProperties == null) {
+            return new String[0];
+        }
+
+        CompoundTag moduleProperties = dynamicProperties.getCompound(module, null);
+        if (moduleProperties == null) {
+            return new String[0];
+        }
+
+        return moduleProperties.keySet().toArray(new String[0]);
+    }
+
+    public boolean hasDynamicProperty(String module, String name) {
+        CompoundTag tag = getNamedTag();
+        if (tag == null) {
+            return false;
+        }
+
+        CompoundTag dynamicProperties = tag.getCompound("DynamicProperties", null);
+        if (dynamicProperties == null) {
+            return false;
+        }
+
+        CompoundTag moduleProperties = dynamicProperties.getCompound(module, null);
+        if (moduleProperties == null) {
+            return false;
+        }
+
+        return moduleProperties.contains(name);
+    }
+
+    public double getDynamicPropertyDouble(String module, String name) {
+        return getDynamicPropertyDouble(module, name, 0);
+    }
+
+    public double getDynamicPropertyDouble(String module, String name, double defaultValue) {
+        CompoundTag tag = getNamedTag();
+        if (tag == null) {
+            return defaultValue;
+        }
+
+        CompoundTag dynamicProperties = tag.getCompound("DynamicProperties", null);
+        if (dynamicProperties == null) {
+            return defaultValue;
+        }
+
+        CompoundTag moduleProperties = dynamicProperties.getCompound(module, null);
+        if (moduleProperties == null) {
+            return defaultValue;
+        }
+
+        return moduleProperties.getDouble(name, defaultValue);
+    }
+
+    public boolean getDynamicPropertyBoolean(String module, String name) {
+        return getDynamicPropertyBoolean(module, name, false);
+    }
+
+    public boolean getDynamicPropertyBoolean(String module, String name, boolean defaultValue) {
+        CompoundTag tag = getNamedTag();
+        if (tag == null) {
+            return defaultValue;
+        }
+
+        CompoundTag dynamicProperties = tag.getCompound("DynamicProperties", null);
+        if (dynamicProperties == null) {
+            return defaultValue;
+        }
+
+        CompoundTag moduleProperties = dynamicProperties.getCompound(module, null);
+        if (moduleProperties == null) {
+            return defaultValue;
+        }
+
+        return moduleProperties.getBoolean(name, defaultValue);
+    }
+
+    public String getDynamicPropertyString(String module, String name) {
+        return getDynamicPropertyString(module, name, "");
+    }
+
+    public String getDynamicPropertyString(String module, String name, String defaultValue) {
+        CompoundTag tag = getNamedTag();
+        if (tag == null) {
+            return defaultValue;
+        }
+
+        CompoundTag dynamicProperties = tag.getCompound("DynamicProperties", null);
+        if (dynamicProperties == null) {
+            return defaultValue;
+        }
+
+        CompoundTag moduleProperties = dynamicProperties.getCompound(module, null);
+        if (moduleProperties == null) {
+            return defaultValue;
+        }
+
+        return moduleProperties.getString(name, defaultValue);
+    }
+
+    public Vector3f getDynamicPropertyVector3f(String module, String name) {
+        return getDynamicPropertyVector3f(module, name, new Vector3f());
+    }
+
+    public Vector3f getDynamicPropertyVector3f(String module, String name, Vector3f defaultValue) {
+        CompoundTag tag = getNamedTag();
+        if (tag == null) {
+            return defaultValue;
+        }
+
+        CompoundTag dynamicProperties = tag.getCompound("DynamicProperties", null);
+        if (dynamicProperties == null) {
+            return defaultValue;
+        }
+
+        CompoundTag moduleProperties = dynamicProperties.getCompound(module, null);
+        if (moduleProperties == null) {
+            return defaultValue;
+        }
+
+        return Vector3f.fromNbt(moduleProperties.getList(name, defaultValue.toNbt()));
+    }
+
+    /// Pair<RootTag, ModuleDynamicProperties>
+    private Pair<CompoundTag, CompoundTag> createDynamicPropertyModule(String module) {
+        CompoundTag tag = getOrCreateNamedTag();
+        CompoundTag dynamicProperties = tag.getCompound("DynamicProperties", null);
+        if (dynamicProperties == null) {
+            dynamicProperties = new CompoundTag();
+            tag.putCompound("DynamicProperties", dynamicProperties);
+        }
+
+        CompoundTag moduleProperties = dynamicProperties.getCompound(module, null);
+        if (moduleProperties == null) {
+            moduleProperties = new CompoundTag();
+            dynamicProperties.putCompound(module, moduleProperties);
+        }
+        return Pair.of(tag, moduleProperties);
+    }
+
+    public Item setDynamicProperty(String module, String name, double value) {
+        Pair<CompoundTag, CompoundTag> result = createDynamicPropertyModule(module);
+        result.right().putDouble(name, value);
+        setNamedTag(result.left());
+        return this;
+    }
+
+    public Item setDynamicProperty(String module, String name, boolean value) {
+        Pair<CompoundTag, CompoundTag> result = createDynamicPropertyModule(module);
+        result.right().putBoolean(name, value);
+        setNamedTag(result.left());
+        return this;
+    }
+
+    public Item setDynamicProperty(String module, String name, String value) {
+        if (value == null) {
+            return clearDynamicProperty(module, name);
+        }
+
+        Pair<CompoundTag, CompoundTag> result = createDynamicPropertyModule(module);
+        result.right().putString(name, value);
+        setNamedTag(result.left());
+        return this;
+    }
+
+    public Item setDynamicProperty(String module, String name, Vector3f value) {
+        if (value == null) {
+            return clearDynamicProperty(module, name);
+        }
+
+        Pair<CompoundTag, CompoundTag> result = createDynamicPropertyModule(module);
+        result.right().putList(name, value.toNbt());
+        setNamedTag(result.left());
+        return this;
+    }
+
+    public Item clearDynamicProperty(String module, String name) {
+        CompoundTag tag = getNamedTag();
+        if (tag == null) {
+            return this;
+        }
+
+        CompoundTag dynamicProperties = tag.getCompound("DynamicProperties", null);
+        if (dynamicProperties == null) {
+            return this;
+        }
+
+        CompoundTag moduleProperties = dynamicProperties.getCompound(module, null);
+        if (moduleProperties == null) {
+            return this;
+        }
+
+        if (moduleProperties.removeAndGet(name) != null) {
+            if (moduleProperties.isEmpty()) {
+                dynamicProperties.remove(module);
+                if (dynamicProperties.isEmpty()) {
+                    tag.remove("DynamicProperties");
+                }
+            }
+            setNamedTag(tag);
+        }
+        return this;
+    }
+
+    public Item clearDynamicProperties(String module) {
+        CompoundTag tag = getNamedTag();
+        if (tag == null) {
+            return this;
+        }
+
+        CompoundTag properties = tag.getCompound("DynamicProperties", null);
+        if (properties == null) {
+            return this;
+        }
+
+        if (properties.removeAndGet(module) != null) {
+            if (properties.isEmpty()) {
+                tag.remove("DynamicProperties");
+            }
+            setNamedTag(tag);
+        }
+        return this;
+    }
+
+    public Item clearDynamicProperties() {
+        CompoundTag tag = getNamedTag();
+        if (tag != null && tag.removeAndGet("DynamicProperties") != null) {
+            setNamedTag(tag);
+        }
+        return this;
+    }
+
     @Nullable
     public Tag getNamedTagEntry(String name) {
         CompoundTag tag = this.getNamedTag();
@@ -1181,6 +1423,10 @@ public class Item implements Cloneable, ItemID {
         return false;
     }
 
+    public boolean isSpear() {
+        return false;
+    }
+
     public boolean isArmor() {
         return false;
     }
@@ -1202,6 +1448,10 @@ public class Item implements Cloneable, ItemID {
     }
 
     public boolean isHorseArmor() {
+        return false;
+    }
+
+    public boolean isNautilusArmor() {
         return false;
     }
 
@@ -1343,6 +1593,10 @@ public class Item implements Cloneable, ItemID {
 
     public int getUseDuration() {
         return 0;
+    }
+
+    public int getSwingDuration() {
+        return 6;
     }
 
     public boolean canDualWield() {
@@ -1611,6 +1865,14 @@ public class Item implements Cloneable, ItemID {
     }
 
     public int getEquippingSound() {
+        return -1;
+    }
+
+    public int getAttackMissSound() {
+        return LevelSoundEventPacket.SOUND_ATTACK_NODAMAGE;
+    }
+
+    public int getAttackHitSound() {
         return -1;
     }
 }

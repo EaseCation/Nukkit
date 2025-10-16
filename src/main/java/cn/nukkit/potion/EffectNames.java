@@ -37,4 +37,5 @@ public interface EffectNames {
     String OOZING = "oozing";
     String INFESTED = "infested";
     String RAID_OMEN = "raid_omen";
+    String BREATH_OF_THE_NAUTILUS = "breath_of_the_nautilus";
 }

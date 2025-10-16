@@ -359,4 +359,29 @@ public abstract class EntityHumanType extends EntityCreature implements Inventor
         }
         return null;
     }
+
+    @Override
+    public int getCurrentSwingDuration() {
+        Item item = inventory.getItemInHand();
+        int swingDuration = item.getSwingDuration();
+
+        int amplifier = 0;
+        Effect digSpeed = getEffect(Effect.HASTE);
+        if (digSpeed != null) {
+            amplifier = digSpeed.getAmplifier();
+        }
+        Effect conduitPower = getEffect(Effect.CONDUIT_POWER);
+        if (conduitPower != null) {
+            amplifier = Math.max(amplifier, conduitPower.getAmplifier() + 1);
+        }
+        if (amplifier > 0) {
+            return swingDuration - (amplifier + 1);
+        }
+
+        Effect digSlowdown = getEffect(Effect.MINING_FATIGUE);
+        if (digSlowdown == null) {
+            return swingDuration;
+        }
+        return 2 * (digSlowdown.getAmplifier() + 1) + swingDuration;
+    }
 }

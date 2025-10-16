@@ -42,7 +42,8 @@ public interface EnchantmentID {
     int WIND_BURST = 38;
     int DENSITY = 39;
     int BREACH = 40;
+    int LUNGE = 41;
 
 
-    int UNDEFINED = 41;
+    int UNDEFINED = 42;
 }

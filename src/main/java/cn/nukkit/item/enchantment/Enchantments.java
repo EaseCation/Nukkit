@@ -71,7 +71,9 @@ public final class Enchantments {
         registerEnchantment(WIND_BURST, new EnchantmentMaceWindBurst(), V1_21_0);
         registerEnchantment(DENSITY, new EnchantmentMaceDensity(), V1_21_0);
         registerEnchantment(BREACH, new EnchantmentMaceBreach(), V1_21_0);
-
+/*
+        registerEnchantment(LUNGE, new EnchantmentSpearLunge(), V1_21_130);
+*/
     }
 
     private static Enchantment registerEnchantment(int id, Enchantment enchantment) {

@@ -289,6 +289,8 @@ public interface ItemNames extends ItemBlockNames {
     String CREAKING_SPAWN_EGG = "creaking_spawn_egg";
     String HAPPY_GHAST_SPAWN_EGG = "happy_ghast_spawn_egg";
     String COPPER_GOLEM_SPAWN_EGG = "copper_golem_spawn_egg";
+    String NAUTILUS_SPAWN_EGG = "nautilus_spawn_egg";
+    String ZOMBIE_NAUTILUS_SPAWN_EGG = "zombie_nautilus_spawn_egg";
     String TRADER_LLAMA_SPAWN_EGG = "trader_llama_spawn_egg";
     String EXPERIENCE_BOTTLE = "experience_bottle";
     String FIRE_CHARGE = "fire_charge";
@@ -586,6 +588,9 @@ public interface ItemNames extends ItemBlockNames {
 
     String TADPOLE_BUCKET = "tadpole_bucket";
 
+    String BREEZE_ROD = "breeze_rod";
+    String MACE = "mace";
+
     String CAMPFIRE = "campfire";
 
     String SUSPICIOUS_STEW = "suspicious_stew";
@@ -751,9 +756,7 @@ public interface ItemNames extends ItemBlockNames {
     String TRIAL_KEY = "trial_key";
     String OMINOUS_TRIAL_KEY = "ominous_trial_key";
     String OMINOUS_BOTTLE = "ominous_bottle";
-    String BREEZE_ROD = "breeze_rod";
     String WIND_CHARGE = "wind_charge";
-    String MACE = "mace";
     String FLOW_POTTERY_SHERD = "flow_pottery_sherd";
     String GUSTER_POTTERY_SHERD = "guster_pottery_sherd";
     String SCRAPE_POTTERY_SHERD = "scrape_pottery_sherd";
@@ -809,4 +812,16 @@ public interface ItemNames extends ItemBlockNames {
     String COPPER_LEGGINGS = "copper_leggings";
     String COPPER_BOOTS = "copper_boots";
     String COPPER_HORSE_ARMOR = "copper_horse_armor";
+    String WOODEN_SPEAR = "wooden_spear";
+    String STONE_SPEAR = "stone_spear";
+    String COPPER_SPEAR = "copper_spear";
+    String IRON_SPEAR = "iron_spear";
+    String GOLDEN_SPEAR = "golden_spear";
+    String DIAMOND_SPEAR = "diamond_spear";
+    String NETHERITE_SPEAR = "netherite_spear";
+    String COPPER_NAUTILUS_ARMOR = "copper_nautilus_armor";
+    String IRON_NAUTILUS_ARMOR = "iron_nautilus_armor";
+    String GOLDEN_NAUTILUS_ARMOR = "golden_nautilus_armor";
+    String DIAMOND_NAUTILUS_ARMOR = "diamond_nautilus_armor";
+    String NETHERITE_NAUTILUS_ARMOR = "netherite_nautilus_armor";
 }

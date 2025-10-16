@@ -603,6 +603,14 @@ public class LevelSoundEventPacket extends DataPacket {
     public static final int SOUND_PLACE_ITEM = 563;
     public static final int SOUND_SINGLE_ITEM_SWAP = 564;
     public static final int SOUND_MULTI_ITEM_SWAP = 565;
+    public static final int SOUND_SPEAR_LUNGE1 = 566;
+    public static final int SOUND_SPEAR_LUNGE2 = 567;
+    public static final int SOUND_SPEAR_LUNGE3 = 568;
+    public static final int SOUND_ATTACK_CRITICAL = 569;
+    public static final int SOUND_SPEAR_ATTACK_HIT = 570;
+    public static final int SOUND_SPEAR_ATTACK_MISS = 571;
+    public static final int SOUND_WOODEN_SPEAR_ATTACK_HIT = 572;
+    public static final int SOUND_WOODEN_SPEAR_ATTACK_MISS = 573;
 
 	public int sound;
     public float x;

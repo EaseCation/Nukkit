@@ -24,6 +24,7 @@ public enum EnchantmentType {
     CROSSBOW,
     MACE,
     MELEE_WEAPON,
+    SPEAR,
 	;
 
     public boolean canEnchantItem(Item item) {
@@ -54,7 +55,7 @@ public enum EnchantmentType {
         } else {
             switch (this) {
                 case SWORD:
-                    return item.isSword() && !item.is(Item.MACE);
+                    return !item.is(Item.MACE) && (item.isSword() || item.isSpear());
                 case DIGGER:
                     return item.isPickaxe() || item.isShovel() || item.isAxe() || item.isHoe();
                 case BOW:
@@ -69,8 +70,10 @@ public enum EnchantmentType {
                     return item.is(Item.CROSSBOW);
                 case MACE:
                     return item.is(Item.MACE);
+                case SPEAR:
+                    return item.isSpear();
                 case MELEE_WEAPON:
-                    return item.isSword() || item.is(Item.MACE);
+                    return item.isSword() || item.isSpear() || item.is(Item.MACE);
             }
         }
         return false;

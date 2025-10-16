@@ -290,6 +290,8 @@ public interface ItemFullNames extends ItemBlockNames {
     String CREAKING_SPAWN_EGG = "minecraft:" + ItemNames.CREAKING_SPAWN_EGG;
     String HAPPY_GHAST_SPAWN_EGG = "minecraft:" + ItemNames.HAPPY_GHAST_SPAWN_EGG;
     String COPPER_GOLEM_SPAWN_EGG = "minecraft:" + ItemNames.COPPER_GOLEM_SPAWN_EGG;
+    String NAUTILUS_SPAWN_EGG = "minecraft:" + ItemNames.NAUTILUS_SPAWN_EGG;
+    String ZOMBIE_NAUTILUS_SPAWN_EGG = "minecraft:" + ItemNames.ZOMBIE_NAUTILUS_SPAWN_EGG;
     String TRADER_LLAMA_SPAWN_EGG = "minecraft:" + ItemNames.TRADER_LLAMA_SPAWN_EGG;
     String EXPERIENCE_BOTTLE = "minecraft:" + ItemNames.EXPERIENCE_BOTTLE;
     String FIRE_CHARGE = "minecraft:" + ItemNames.FIRE_CHARGE;
@@ -587,6 +589,9 @@ public interface ItemFullNames extends ItemBlockNames {
 
     String TADPOLE_BUCKET = "minecraft:" + ItemNames.TADPOLE_BUCKET;
 
+    String BREEZE_ROD = "minecraft:" + ItemNames.BREEZE_ROD;
+    String MACE = "minecraft:" + ItemNames.MACE;
+
     String CAMPFIRE = "minecraft:" + ItemNames.CAMPFIRE;
 
     String SUSPICIOUS_STEW = "minecraft:" + ItemNames.SUSPICIOUS_STEW;
@@ -752,9 +757,7 @@ public interface ItemFullNames extends ItemBlockNames {
     String TRIAL_KEY = "minecraft:" + ItemNames.TRIAL_KEY;
     String OMINOUS_TRIAL_KEY = "minecraft:" + ItemNames.OMINOUS_TRIAL_KEY;
     String OMINOUS_BOTTLE = "minecraft:" + ItemNames.OMINOUS_BOTTLE;
-    String BREEZE_ROD = "minecraft:" + ItemNames.BREEZE_ROD;
     String WIND_CHARGE = "minecraft:" + ItemNames.WIND_CHARGE;
-    String MACE = "minecraft:" + ItemNames.MACE;
     String FLOW_POTTERY_SHERD = "minecraft:" + ItemNames.FLOW_POTTERY_SHERD;
     String GUSTER_POTTERY_SHERD = "minecraft:" + ItemNames.GUSTER_POTTERY_SHERD;
     String SCRAPE_POTTERY_SHERD = "minecraft:" + ItemNames.SCRAPE_POTTERY_SHERD;
@@ -810,4 +813,16 @@ public interface ItemFullNames extends ItemBlockNames {
     String COPPER_LEGGINGS = "minecraft:" + ItemNames.COPPER_LEGGINGS;
     String COPPER_BOOTS = "minecraft:" + ItemNames.COPPER_BOOTS;
     String COPPER_HORSE_ARMOR = "minecraft:" + ItemNames.COPPER_HORSE_ARMOR;
+    String WOODEN_SPEAR = "minecraft:" + ItemNames.WOODEN_SPEAR;
+    String STONE_SPEAR = "minecraft:" + ItemNames.STONE_SPEAR;
+    String COPPER_SPEAR = "minecraft:" + ItemNames.COPPER_SPEAR;
+    String IRON_SPEAR = "minecraft:" + ItemNames.IRON_SPEAR;
+    String GOLDEN_SPEAR = "minecraft:" + ItemNames.GOLDEN_SPEAR;
+    String DIAMOND_SPEAR = "minecraft:" + ItemNames.DIAMOND_SPEAR;
+    String NETHERITE_SPEAR = "minecraft:" + ItemNames.NETHERITE_SPEAR;
+    String COPPER_NAUTILUS_ARMOR = "minecraft:" + ItemNames.COPPER_NAUTILUS_ARMOR;
+    String IRON_NAUTILUS_ARMOR = "minecraft:" + ItemNames.IRON_NAUTILUS_ARMOR;
+    String GOLDEN_NAUTILUS_ARMOR = "minecraft:" + ItemNames.GOLDEN_NAUTILUS_ARMOR;
+    String DIAMOND_NAUTILUS_ARMOR = "minecraft:" + ItemNames.DIAMOND_NAUTILUS_ARMOR;
+    String NETHERITE_NAUTILUS_ARMOR = "minecraft:" + ItemNames.NETHERITE_NAUTILUS_ARMOR;
 }

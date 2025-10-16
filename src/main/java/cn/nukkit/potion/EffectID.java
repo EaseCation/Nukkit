@@ -38,7 +38,8 @@ public interface EffectID {
     int OOZING = 34;
     int INFESTED = 35;
     int RAID_OMEN = 36;
+    int BREATH_OF_THE_NAUTILUS = 37;
 
 
-    int UNDEFINED = 37;
+    int UNDEFINED = 38;
 }

@@ -139,6 +139,8 @@ public interface EntityNames {
     String CREAKING = "creaking";
     String HAPPY_GHAST = "happy_ghast";
     String COPPER_GOLEM = "copper_golem";
+    String NAUTILUS = "nautilus";
+    String ZOMBIE_NAUTILUS = "zombie_nautilus";
 
     String TRADER_LLAMA = "trader_llama";
 

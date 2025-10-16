@@ -14,6 +14,7 @@ public class AnimatePacket extends DataPacket {
 
     public long eid;
     public Action action;
+    public float data;
     public float rowingTime;
 
     @Override

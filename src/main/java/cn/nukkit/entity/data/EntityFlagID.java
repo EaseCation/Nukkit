@@ -184,7 +184,11 @@ public interface EntityFlagID {
      * @since 1.21.110
      */
     int DATA_FLAG_CAN_USE_VERTICAL_MOVEMENT_ACTION = 125;
-    int DATA_FLAG_UNDEFINED = 126;
+    /**
+     * @since 1.21.130
+     */
+    int DATA_FLAG_BODY_ROTATION_LOCKED_TO_VEHICLE = 126;
+    int DATA_FLAG_UNDEFINED = 127;
 
 
     long NUKKIT_FLAG_VARIANT_BLOCK = 1L << 1;

@@ -8,6 +8,7 @@ import cn.nukkit.level.format.generic.BaseFullChunk;
 import cn.nukkit.level.generator.Generator;
 import cn.nukkit.level.generator.GeneratorOptions;
 import cn.nukkit.math.Vector3;
+import cn.nukkit.math.Vector3f;
 import cn.nukkit.scheduler.AsyncTask;
 import it.unimi.dsi.fastutil.longs.Long2ObjectMap;
 
@@ -143,4 +144,65 @@ public interface LevelProvider {
     HeightRange getHeightRange();
 
     GeneratorOptions getWorldGeneratorOptions();
+
+    default String[] getDynamicPropertyIds(String module) {
+        return new String[0];
+    }
+
+    default boolean hasDynamicProperty(String module, String name) {
+        return false;
+    }
+
+    default double getDynamicPropertyDouble(String module, String name) {
+        return getDynamicPropertyDouble(module, name, 0);
+    }
+
+    default double getDynamicPropertyDouble(String module, String name, double defaultValue) {
+        return defaultValue;
+    }
+
+    default boolean getDynamicPropertyBoolean(String module, String name) {
+        return getDynamicPropertyBoolean(module, name, false);
+    }
+
+    default boolean getDynamicPropertyBoolean(String module, String name, boolean defaultValue) {
+        return defaultValue;
+    }
+
+    default String getDynamicPropertyString(String module, String name) {
+        return getDynamicPropertyString(module, name, "");
+    }
+
+    default String getDynamicPropertyString(String module, String name, String defaultValue) {
+        return defaultValue;
+    }
+
+    default Vector3f getDynamicPropertyVector3f(String module, String name) {
+        return getDynamicPropertyVector3f(module, name, new Vector3f());
+    }
+
+    default Vector3f getDynamicPropertyVector3f(String module, String name, Vector3f defaultValue) {
+        return defaultValue;
+    }
+
+    default void setDynamicProperty(String module, String name, double value) {
+    }
+
+    default void setDynamicProperty(String module, String name, boolean value) {
+    }
+
+    default void setDynamicProperty(String module, String name, String value) {
+    }
+
+    default void setDynamicProperty(String module, String name, Vector3f value) {
+    }
+
+    default void clearDynamicProperty(String module, String name) {
+    }
+
+    default void clearDynamicProperties(String module) {
+    }
+
+    default void clearDynamicProperties() {
+    }
 }

@@ -87,6 +87,10 @@ public final class BlockStates {
     public static final BooleanBlockState LIT = register(new BooleanBlockState(BlockStateNames.LIT));
     public static final EnumBlockState<MinecraftBlockFaceState> MINECRAFT_BLOCK_FACE = register(new EnumBlockState<>(BlockStateNames.MINECRAFT_BLOCK_FACE, MinecraftBlockFaceState.values()));
     public static final EnumBlockState<MinecraftCardinalDirectionState> MINECRAFT_CARDINAL_DIRECTION = register(new EnumBlockState<>(BlockStateNames.MINECRAFT_CARDINAL_DIRECTION, MinecraftCardinalDirectionState.values()));
+    public static final BooleanBlockState MINECRAFT_CONNECTION_EAST = register(new BooleanBlockState(BlockStateNames.MINECRAFT_CONNECTION_EAST));
+    public static final BooleanBlockState MINECRAFT_CONNECTION_NORTH = register(new BooleanBlockState(BlockStateNames.MINECRAFT_CONNECTION_NORTH));
+    public static final BooleanBlockState MINECRAFT_CONNECTION_SOUTH = register(new BooleanBlockState(BlockStateNames.MINECRAFT_CONNECTION_SOUTH));
+    public static final BooleanBlockState MINECRAFT_CONNECTION_WEST = register(new BooleanBlockState(BlockStateNames.MINECRAFT_CONNECTION_WEST));
     public static final EnumBlockState<MinecraftFacingDirectionState> MINECRAFT_FACING_DIRECTION = register(new EnumBlockState<>(BlockStateNames.MINECRAFT_FACING_DIRECTION, MinecraftFacingDirectionState.values()));
     public static final EnumBlockState<MinecraftVerticalHalfState> MINECRAFT_VERTICAL_HALF = register(new EnumBlockState<>(BlockStateNames.MINECRAFT_VERTICAL_HALF, MinecraftVerticalHalfState.values()));
     public static final IntegerBlockState MOISTURIZED_AMOUNT = register(new IntegerBlockState(BlockStateNames.MOISTURIZED_AMOUNT, MAX_MOISTURIZED_AMOUNT + 1));

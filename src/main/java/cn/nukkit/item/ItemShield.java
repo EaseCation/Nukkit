@@ -38,7 +38,7 @@ public class ItemShield extends ItemTool {
     }
 
     @Override
-    public boolean additionalDamageOnBreak() {
+    public boolean noDamageOnBreak() {
         return true;
     }
 

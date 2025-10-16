@@ -73,7 +73,7 @@ public class BlockStairsCopperCut extends BlockStairs implements CopperBehavior 
                 item.pop();
             }
 
-            level.addLevelEvent(this, LevelEventPacket.EVENT_PARTICLE_WAX_ON);
+            level.addLevelEvent(this.blockCenter(), LevelEventPacket.EVENT_PARTICLE_WAX_ON);
 
             level.setBlock(this, get(getWaxedBlockId(), getDamage()), true);
             return true;
@@ -85,7 +85,7 @@ public class BlockStairsCopperCut extends BlockStairs implements CopperBehavior 
                 player.level.addLevelSoundEvent(player, LevelSoundEventPacket.SOUND_BREAK);
             }
 
-            level.addLevelEvent(this, LevelEventPacket.EVENT_PARTICLE_SCRAPE);
+            level.addLevelEvent(this.blockCenter(), LevelEventPacket.EVENT_PARTICLE_SCRAPE);
 
             level.setBlock(this, get(getDecrementAgeBlockId(), getDamage()), true);
             return true;

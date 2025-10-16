@@ -5225,6 +5225,7 @@ public class Player extends EntityHuman implements CommandSender, InventoryHolde
                     // 在这里发送暴击，因为事件可能被取消
                     AnimatePacket animate = new AnimatePacket();
                     animate.action = AnimatePacket.Action.CRITICAL_HIT;
+                    animate.data = 55;
                     animate.eid = getId();
                     this.getLevel().addChunkPacket(this.getChunkX(), this.getChunkZ(), animate);
 
@@ -6858,5 +6859,17 @@ public class Player extends EntityHuman implements CommandSender, InventoryHolde
      * @since 1.6
      */
     public void removeSoftEnum(String enumName, String... values) {
+    }
+
+    /**
+     * @since 1.21.80
+     */
+    public void setControlScheme(int scheme) {
+    }
+
+    /**
+     * @since 1.21.80
+     */
+    public void resetControlScheme() {
     }
 }

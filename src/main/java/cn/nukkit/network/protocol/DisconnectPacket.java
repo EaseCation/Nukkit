@@ -132,6 +132,8 @@ public class DisconnectPacket extends DataPacket {
     public static final int REASON_GUEST_WITHOUT_HOST = 120;
     public static final int REASON_FAILED_TO_JOIN_EXPERIENCE = 121;
     public static final int REASON_CONN_DATA_CHANNEL_CLOSED = 122;
+    public static final int REASON_DISCOVERY_ENVIRONMENT_MISMATCH = 123;
+    public static final int REASON_HOST_WITHOUT_KEYS = 124;
 
     public int reason = REASON_DISCONNECTED;
     public boolean hideDisconnectionScreen;

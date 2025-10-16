@@ -335,6 +335,7 @@ public abstract class EntityLiving extends Entity implements EntityDamageable {
         AnimatePacket packet = new AnimatePacket();
         packet.eid = getId();
         packet.action = AnimatePacket.Action.MAGIC_CRITICAL_HIT;
+        packet.data = 15;
         Server.broadcastPacket(getViewers().values(), packet);
     }
 
@@ -496,7 +497,9 @@ public abstract class EntityLiving extends Entity implements EntityDamageable {
                     hasUpdate = true;
 
                     boolean immune = false;
-                    if (this instanceof Player player) {
+                    if (hasEffect(Effect.BREATH_OF_THE_NAUTILUS)) {
+                        immune = true;
+                    } else if (this instanceof Player player) {
                         ArmorInventory inventory = player.getArmorInventory();
                         int respiration = inventory.getHelmet().getEnchantmentLevel(Enchantment.RESPIRATION);
                         if (respiration > 0 && ThreadLocalRandom.current().nextInt(respiration + 1) > 0) {

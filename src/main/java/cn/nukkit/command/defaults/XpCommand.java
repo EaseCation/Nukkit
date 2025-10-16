@@ -29,6 +29,11 @@ public class XpCommand extends VanillaCommand {
                 CommandParameter.newType("player", true, CommandParamType.TARGET)
         });
         if (!COMMAND_POSTFIX_PARAMETER_CRASH_FIXED) {
+/* Debug_Log [ERROR SYSTEM]
+Assertion failed: We failed to allocate 1686395861239 bytes.
+Condition is false: pointer || size == 0
+Function: void *__cdecl operator new(unsigned __int64) in .\handheld\src-deps\Core\src\Memory\MemoryOperators.cpp @ 19
+*/
             return;
         }
         this.commandParameters.put("level", new CommandParameter[]{

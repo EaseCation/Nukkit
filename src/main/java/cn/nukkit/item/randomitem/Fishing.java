@@ -23,6 +23,7 @@ public final class Fishing {
     private static final float TREASURE_TOTAL_WEIGHT = 36;
     private static final float JUNK_TOTAL_WEIGHT = 83;
 
+    private static final float JUNGLE_FISH_TOTAL_WEIGHT = FISH_TOTAL_WEIGHT + 15;
     private static final float JUNGLE_JUNK_TOTAL_WEIGHT = JUNK_TOTAL_WEIGHT + 20;
 
     public static final Selector ROOT_FISHING = putSelector(new Selector(ROOT));
@@ -41,8 +42,10 @@ public final class Fishing {
     public static final Selector CLOWNFISH = putSelector(new ConstantItemSelector(Item.TROPICAL_FISH, FISHES), 2 / FISH_TOTAL_WEIGHT);
     public static final Selector PUFFERFISH = putSelector(new ConstantItemSelector(Item.PUFFERFISH, FISHES), 13 / FISH_TOTAL_WEIGHT);
 
-    public static final Selector JUNGLE_FISH = putSelector(new ConstantItemSelector(Item.COD, JUNGLE_FISHES), 60 / FISH_TOTAL_WEIGHT);
-    public static final Selector JUNGLE_SALMON = putSelector(new ConstantItemSelector(Item.SALMON, JUNGLE_FISHES), 40 / FISH_TOTAL_WEIGHT);
+    public static final Selector JUNGLE_FISH = putSelector(new ConstantItemSelector(Item.COD, JUNGLE_FISHES), 60 / JUNGLE_FISH_TOTAL_WEIGHT);
+    public static final Selector JUNGLE_SALMON = putSelector(new ConstantItemSelector(Item.SALMON, JUNGLE_FISHES), 40 / JUNGLE_FISH_TOTAL_WEIGHT);
+    public static final Selector JUNGLE_CLOWNFISH = putSelector(new ConstantItemSelector(Item.TROPICAL_FISH, JUNGLE_FISHES), 2 / JUNGLE_FISH_TOTAL_WEIGHT);
+    public static final Selector JUNGLE_PUFFERFISH = putSelector(new ConstantItemSelector(Item.PUFFERFISH, JUNGLE_FISHES), 13 / JUNGLE_FISH_TOTAL_WEIGHT);
 
     public static final Selector TREASURE_BOW = putSelector(new ConstantItemSelector(Item.BOW, TREASURES).setDamage(0, 0.25f).enchantWithLevels(30, true), 5 / TREASURE_TOTAL_WEIGHT);
     public static final Selector TREASURE_ENCHANTED_BOOK = putSelector(new ConstantItemSelector(Item.ENCHANTED_BOOK, TREASURES).enchantWithLevels(30, true),  6 / TREASURE_TOTAL_WEIGHT);

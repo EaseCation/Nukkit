@@ -19,11 +19,13 @@ import cn.nukkit.level.format.LevelProviderManager.LevelProviderHandle;
 import cn.nukkit.level.format.anvil.util.NibbleArray;
 import cn.nukkit.level.format.generic.BaseFullChunk;
 import cn.nukkit.level.format.generic.ChunkRequestTask;
-import cn.nukkit.level.format.leveldb.LevelDB.DbInitData.CustomBiomeData;
+import cn.nukkit.level.format.leveldb.LevelDB.DbInitData.DbData;
+import cn.nukkit.level.format.leveldb.LevelDB.DbInitData.DbData.CustomBiomeData;
 import cn.nukkit.level.generator.*;
 import cn.nukkit.level.util.PalettedSubChunkStorage;
 import cn.nukkit.math.BlockVector3;
 import cn.nukkit.math.Vector3;
+import cn.nukkit.math.Vector3f;
 import cn.nukkit.nbt.NBTIO;
 import cn.nukkit.nbt.stream.NBTInputStream;
 import cn.nukkit.nbt.tag.CompoundTag;
@@ -93,6 +95,8 @@ public class LevelDB implements LevelProvider {
     protected final CompoundTag levelData;
     private GeneratorOptions generatorOptions;
 
+    protected final CompoundTag dynamicProperties;
+
     protected final IntList customBiomePersistentToRuntime;
     protected final IntList customBiomeRuntimeToPersistent;
 
@@ -114,7 +118,7 @@ public class LevelDB implements LevelProvider {
         Path dirPath = null;
         CompoundTag levelData = null;
         DB db = null;
-        CustomBiomeData customBiomeData = null;
+        DbData dbData = null;
         if (initData == null) {
             dirPath = Paths.get(path);
             try {
@@ -125,7 +129,7 @@ public class LevelDB implements LevelProvider {
         } else {
             levelData = initData.levelData;
             db = initData.db;
-            customBiomeData = initData.customBiomeData;
+            dbData = initData.dbData;
         }
 
         if (levelData == null) {
@@ -155,16 +159,21 @@ public class LevelDB implements LevelProvider {
         }
         this.db = db;
 
+        CompoundTag dynamicProperties;
         IntList customBiomePersistentToRuntime;
         IntList customBiomeRuntimeToPersistent;
-        if (customBiomeData == null) {
+        if (dbData == null) {
+            dynamicProperties = readDynamicProperties(db);
             customBiomePersistentToRuntime = new IntArrayList();
             customBiomeRuntimeToPersistent = new IntArrayList();
             readCustomBiomeIds(db, customBiomePersistentToRuntime, customBiomeRuntimeToPersistent);
         } else {
+            dynamicProperties = dbData.dynamicProperties;
+            CustomBiomeData customBiomeData = dbData.customBiomeData;
             customBiomePersistentToRuntime = customBiomeData.customBiomePersistentToRuntime;
             customBiomeRuntimeToPersistent = customBiomeData.customBiomeRuntimeToPersistent;
         }
+        this.dynamicProperties = dynamicProperties;
         this.customBiomePersistentToRuntime = customBiomePersistentToRuntime;
         this.customBiomeRuntimeToPersistent = customBiomeRuntimeToPersistent;
 
@@ -183,6 +192,8 @@ public class LevelDB implements LevelProvider {
         this.levelData = parent.levelData;
 
         this.db = parent.db;
+
+        this.dynamicProperties = parent.dynamicProperties;
 
         this.customBiomePersistentToRuntime = parent.customBiomePersistentToRuntime;
         this.customBiomeRuntimeToPersistent = parent.customBiomeRuntimeToPersistent;
@@ -258,7 +269,21 @@ public class LevelDB implements LevelProvider {
         return NATIVE_LEVELDB ? PROVIDER.open(dir, options) : Iq80DBFactory.factory.open(dir, options);
     }
 
-    public static void readCustomBiomeIds(DB db, IntList customBiomePersistentToRuntime, IntList customBiomeRuntimeToPersistent) {
+    private static CompoundTag readDynamicProperties(DB db) {
+        byte[] data = db.get(DYNAMIC_PROPERTIES);
+        if (data == null || data.length == 0) {
+            return new CompoundTag();
+        }
+
+        try {
+            return NBTIO.read(data, ByteOrder.LITTLE_ENDIAN);
+        } catch (Exception e) {
+            log.warn("Unable to read DynamicProperties", e);
+            return new CompoundTag();
+        }
+    }
+
+    private static void readCustomBiomeIds(DB db, IntList customBiomePersistentToRuntime, IntList customBiomeRuntimeToPersistent) {
         byte[] data = db.get(BIOME_IDS_TABLE);
         if (data == null || data.length == 0) {
             return;
@@ -1671,6 +1696,129 @@ public class LevelDB implements LevelProvider {
         return options;
     }
 
+    @Override
+    public String[] getDynamicPropertyIds(String module) {
+        CompoundTag moduleProperties = dynamicProperties.getCompound(module, null);
+        if (moduleProperties == null) {
+            return new String[0];
+        }
+
+        return moduleProperties.keySet().toArray(new String[0]);
+    }
+
+    @Override
+    public boolean hasDynamicProperty(String module, String name) {
+        CompoundTag moduleProperties = dynamicProperties.getCompound(module, null);
+        if (moduleProperties == null) {
+            return false;
+        }
+
+        return moduleProperties.contains(name);
+    }
+
+    @Override
+    public double getDynamicPropertyDouble(String module, String name, double defaultValue) {
+        CompoundTag moduleProperties = dynamicProperties.getCompound(module, null);
+        if (moduleProperties == null) {
+            return defaultValue;
+        }
+
+        return moduleProperties.getDouble(name, defaultValue);
+    }
+
+    @Override
+    public boolean getDynamicPropertyBoolean(String module, String name, boolean defaultValue) {
+        CompoundTag moduleProperties = dynamicProperties.getCompound(module, null);
+        if (moduleProperties == null) {
+            return defaultValue;
+        }
+
+        return moduleProperties.getBoolean(name, defaultValue);
+    }
+
+    @Override
+    public String getDynamicPropertyString(String module, String name, String defaultValue) {
+        CompoundTag moduleProperties = dynamicProperties.getCompound(module, null);
+        if (moduleProperties == null) {
+            return defaultValue;
+        }
+
+        return moduleProperties.getString(name, defaultValue);
+    }
+
+    @Override
+    public Vector3f getDynamicPropertyVector3f(String module, String name, Vector3f defaultValue) {
+        CompoundTag moduleProperties = dynamicProperties.getCompound(module, null);
+        if (moduleProperties == null) {
+            return defaultValue;
+        }
+
+        return Vector3f.fromNbt(moduleProperties.getList(name, defaultValue.toNbt()));
+    }
+
+    private CompoundTag createDynamicPropertyModule(String module) {
+        CompoundTag moduleProperties = dynamicProperties.getCompound(module, null);
+        if (moduleProperties == null) {
+            moduleProperties = new CompoundTag();
+            dynamicProperties.putCompound(module, moduleProperties);
+        }
+        return moduleProperties;
+    }
+
+    @Override
+    public void setDynamicProperty(String module, String name, double value) {
+        createDynamicPropertyModule(module).putDouble(name, value);
+    }
+
+    @Override
+    public void setDynamicProperty(String module, String name, boolean value) {
+        createDynamicPropertyModule(module).putBoolean(name, value);
+    }
+
+    @Override
+    public void setDynamicProperty(String module, String name, String value) {
+        if (value == null) {
+            clearDynamicProperty(module, name);
+            return;
+        }
+
+        createDynamicPropertyModule(module).putString(name, value);
+    }
+
+    @Override
+    public void setDynamicProperty(String module, String name, Vector3f value) {
+        if (value == null) {
+            clearDynamicProperty(module, name);
+            return;
+        }
+
+        createDynamicPropertyModule(module).putList(name, value.toNbt());
+    }
+
+    @Override
+    public void clearDynamicProperty(String module, String name) {
+        CompoundTag moduleProperties = dynamicProperties.getCompound(module, null);
+        if (moduleProperties == null) {
+            return;
+        }
+
+        if (moduleProperties.removeAndGet(name) != null) {
+            if (moduleProperties.isEmpty()) {
+                dynamicProperties.remove(module);
+            }
+        }
+    }
+
+    @Override
+    public void clearDynamicProperties(String module) {
+        dynamicProperties.remove(module);
+    }
+
+    @Override
+    public void clearDynamicProperties() {
+        dynamicProperties.clear();
+    }
+
     class AutoCompactionTask extends AsyncTask<Void> {
         @Override
         public void onRun() {
@@ -1752,10 +1900,31 @@ public class LevelDB implements LevelProvider {
         }
     }
 
-    public record DbInitData(CompoundTag levelData, DB db, CustomBiomeData customBiomeData) {
-        public record CustomBiomeData(IntList customBiomePersistentToRuntime, IntList customBiomeRuntimeToPersistent) {
-            public static CustomBiomeData create() {
-                return new CustomBiomeData(new IntArrayList(), new IntArrayList());
+    public record DbInitData(CompoundTag levelData, DB db, DbData dbData) {
+        public static DbInitData load(CompoundTag levelData, DB db) {
+            return new DbInitData(levelData, db, DbData.load(db));
+        }
+
+        public record DbData(CompoundTag dynamicProperties, CustomBiomeData customBiomeData) {
+            public static DbData create() {
+                return new DbData(new CompoundTag(), CustomBiomeData.create());
+            }
+
+            public static DbData load(DB db) {
+                return new DbData(readDynamicProperties(db), CustomBiomeData.load(db));
+            }
+
+            public record CustomBiomeData(IntList customBiomePersistentToRuntime, IntList customBiomeRuntimeToPersistent) {
+                public static CustomBiomeData create() {
+                    return new CustomBiomeData(new IntArrayList(), new IntArrayList());
+                }
+
+                public static CustomBiomeData load(DB db) {
+                    IntList customBiomePersistentToRuntime = new IntArrayList();
+                    IntList customBiomeRuntimeToPersistent = new IntArrayList();
+                    readCustomBiomeIds(db, customBiomePersistentToRuntime, customBiomeRuntimeToPersistent);
+                    return new CustomBiomeData(customBiomePersistentToRuntime, customBiomeRuntimeToPersistent);
+                }
             }
         }
     }

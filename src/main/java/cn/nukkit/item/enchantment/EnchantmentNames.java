@@ -42,4 +42,5 @@ public interface EnchantmentNames {
     String WIND_BURST = "wind_burst";
     String DENSITY = "density";
     String BREACH = "breach";
+    String LUNGE = "lunge";
 }

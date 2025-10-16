@@ -35,7 +35,7 @@ public interface CopperBehavior {
                     player.level.addLevelSoundEvent(player, LevelSoundEventPacket.SOUND_BREAK);
                 }
 
-                target.level.addLevelEvent(target, LevelEventPacket.EVENT_PARTICLE_WAX_OFF);
+                target.level.addLevelEvent(target.blockCenter(), LevelEventPacket.EVENT_PARTICLE_WAX_OFF);
 
                 Block newBlock = Block.get(behavior.getDewaxedBlockId(), behavior.getDamage());
                 target.level.setBlock(target, newBlock, true);
@@ -51,7 +51,7 @@ public interface CopperBehavior {
                 item.pop();
             }
 
-            target.level.addLevelEvent(target, LevelEventPacket.EVENT_PARTICLE_WAX_ON);
+            target.level.addLevelEvent(target.blockCenter(), LevelEventPacket.EVENT_PARTICLE_WAX_ON);
 
             Block newBlock = Block.get(behavior.getWaxedBlockId(), behavior.getDamage());
             target.level.setBlock(target, newBlock, true);
@@ -65,7 +65,7 @@ public interface CopperBehavior {
                 player.level.addLevelSoundEvent(player, LevelSoundEventPacket.SOUND_BREAK);
             }
 
-            target.level.addLevelEvent(target, LevelEventPacket.EVENT_PARTICLE_SCRAPE);
+            target.level.addLevelEvent(target.blockCenter(), LevelEventPacket.EVENT_PARTICLE_SCRAPE);
 
             Block newBlock = Block.get(behavior.getDecrementAgeBlockId(), behavior.getDamage());
             target.level.setBlock(target, newBlock, true);
