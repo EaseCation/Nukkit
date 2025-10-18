@@ -339,7 +339,7 @@ public class ChunkRequestTask extends AsyncTask<Void> {
                 packetCache = new ChunkPacketCache(
                         packets,
                         packetsUncompressed,
-                        level.getChunkCacheFromData(Compressor.SNAPPY, chunkX, chunkZ, LevelChunkPacket.CLIENT_REQUEST_TRUNCATED_COLUMN_FAKE_COUNT, count, subRequestModeFullChunkPayload),
+                        level.getChunkCacheFromData(level.getServer().getCompressor(), chunkX, chunkZ, LevelChunkPacket.CLIENT_REQUEST_TRUNCATED_COLUMN_FAKE_COUNT, count, subRequestModeFullChunkPayload),
                         uncompressed,
                         uncompressedLegacy,
                         subPackets,

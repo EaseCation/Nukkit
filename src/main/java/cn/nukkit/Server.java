@@ -180,6 +180,7 @@ public class Server {
     private final boolean networkCompressionAsync;
     public int networkCompressionLevel;
     private final int networkZlibProvider;
+    private final Compressor compressor;
 
     private final boolean autoTickRate;
     private final int autoTickRateLimit;
@@ -340,6 +341,7 @@ public class Server {
                 put("force-resources", false);
                 put("bug-report", true);
                 put("enable-jmx-monitoring", false);
+                put("compression-algorithm", "snappy");
             }
         });
 
@@ -367,6 +369,7 @@ public class Server {
                 .cacheChunks(getConfig("chunk-sending.cache-chunks", false))
                 .lightUpdates(getConfig("chunk-ticking.light-updates", false))
                 .savePlayerData(getConfig("player.save-player-data", true))
+                .compressionAlgorithm(Compressor.getAlgorithmByName(getPropertyString("compression-algorithm", "snappy")))
                 .build();
 
         this.forceLanguage = this.getConfig("settings.force-language", false);
@@ -395,6 +398,11 @@ public class Server {
 
         this.networkCompressionLevel = Mth.clamp(this.getConfig("network.compression-level", 7), Deflater.BEST_SPEED, Deflater.BEST_COMPRESSION);
         this.networkCompressionAsync = this.getConfig("network.async-compression", true);
+
+        this.compressor = Compressor.get(configuration.getCompressionAlgorithm());
+        if (compressor != Compressor.SNAPPY) {
+            Compressor.setDynamicCompressor(compressor);
+        }
 
         this.autoTickRate = this.getConfig("level-settings.auto-tick-rate", true);
         this.autoTickRateLimit = this.getConfig("level-settings.auto-tick-rate-limit", 20);
@@ -457,6 +465,8 @@ public class Server {
         if (this.getConfig().getBoolean("bug-report", true)) {
             ExceptionHandler.registerExceptionHandler();
         }
+
+        log.info("Server network compression algorithm: {}", compressor.name().toLowerCase());
 
         log.info(this.getLanguage().translate("nukkit.server.networkStart", "".equals(this.getIp()) ? "*" : this.getIp(), this.getPort()));
         this.serverID = UUID.randomUUID();
@@ -690,6 +700,10 @@ public class Server {
         }
     }
 
+    public Compressor getCompressor() {
+        return compressor;
+    }
+
     @Deprecated
     public void batchPackets(Player[] players, DataPacket[] packets) {
         this.batchPackets(players, packets, false);
@@ -729,10 +743,10 @@ public class Server {
         }
 
         if (!forceSync && this.networkCompressionAsync) {
-            this.getScheduler().scheduleAsyncTask(null, new CompressBatchedTask(Binary.appendBytes(payload), targets, Compressor.SNAPPY, this.networkCompressionLevel, tracks));
+            this.getScheduler().scheduleAsyncTask(null, new CompressBatchedTask(Binary.appendBytes(payload), targets, compressor, this.networkCompressionLevel, tracks));
         } else {
             try {
-                this.broadcastPacketsCallback(Compressor.SNAPPY.compress(payload, this.networkCompressionLevel), targets, tracks);
+                this.broadcastPacketsCallback(compressor.compress(payload, this.networkCompressionLevel), targets, tracks);
             } catch (Exception e) {
                 throw new RuntimeException(e);
             }

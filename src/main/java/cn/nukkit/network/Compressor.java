@@ -131,7 +131,8 @@ public enum Compressor {
 
     public static final int MAX_SIZE = 12 * 1024 * 1024; // 12MB
 
-    private static final byte[] EMPTY = new byte[0];
+    @Nullable
+    private static Compressor DYNAMIC_COMPRESSOR;
 
     public abstract byte[] compress(byte[] data, int level) throws IOException;
 
@@ -156,6 +157,10 @@ public enum Compressor {
     }
 
     public static Compressor byProtocol(int protocol) {
+        Compressor compressor;
+        if (protocol >= 649 && (compressor = DYNAMIC_COMPRESSOR) != null) {
+            return compressor;
+        }
         if (protocol >= 554) {
             return SNAPPY;
         }
@@ -163,5 +168,19 @@ public enum Compressor {
             return ZLIB_RAW;
         }
         return ZLIB;
+    }
+
+    public static byte getAlgorithmByName(String name) {
+        if ("snappy".equalsIgnoreCase(name)) {
+            return CompressionAlgorithm.SNAPPY;
+        }
+        if ("none".equalsIgnoreCase(name)) {
+            return CompressionAlgorithm.NONE;
+        }
+        return CompressionAlgorithm.ZLIB;
+    }
+
+    public static void setDynamicCompressor(Compressor compressor) {
+        DYNAMIC_COMPRESSOR = compressor;
     }
 }

@@ -1,6 +1,8 @@
 package cn.nukkit.data;
 
+import cn.nukkit.network.CompressionAlgorithm;
 import lombok.Builder;
+import lombok.Builder.Default;
 import lombok.Value;
 
 @Builder
@@ -19,6 +21,8 @@ public class ServerConfiguration {
     int viewDistance;
     String levelType;
     String generatorSettings;
+    @Default
+    byte compressionAlgorithm = CompressionAlgorithm.SNAPPY;
 
     int chunkSpawnThreshold;
     int chunkSendingPerTick;
