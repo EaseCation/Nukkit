@@ -21,6 +21,7 @@ public class ServerConfiguration {
     int viewDistance;
     String levelType;
     String generatorSettings;
+    boolean disableRaknet;
     @Default
     byte compressionAlgorithm = CompressionAlgorithm.SNAPPY;
 

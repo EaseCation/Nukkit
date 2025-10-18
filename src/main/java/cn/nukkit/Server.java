@@ -342,6 +342,7 @@ public class Server {
                 put("bug-report", true);
                 put("enable-jmx-monitoring", false);
                 put("compression-algorithm", "snappy");
+                put("disable-raknet", false);
             }
         });
 
@@ -369,6 +370,7 @@ public class Server {
                 .cacheChunks(getConfig("chunk-sending.cache-chunks", false))
                 .lightUpdates(getConfig("chunk-ticking.light-updates", false))
                 .savePlayerData(getConfig("player.save-player-data", true))
+                .disableRaknet(getPropertyBoolean("disable-raknet", false))
                 .compressionAlgorithm(Compressor.getAlgorithmByName(getPropertyString("compression-algorithm", "snappy")))
                 .build();
 
@@ -512,7 +514,7 @@ public class Server {
 
         this.queryRegenerateEvent = new QueryRegenerateEvent(this, 5);
 
-        if (!Boolean.getBoolean("nukkit.disableRak")) {
+        if (!configuration.isDisableRaknet() && !Boolean.getBoolean("nukkit.disableRak")) {
             this.network.registerInterface(new RakNetInterface(this));
         }
 
