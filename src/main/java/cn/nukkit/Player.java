@@ -6575,6 +6575,13 @@ public class Player extends EntityHuman implements CommandSender, InventoryHolde
     }
 
     /**
+     * @since 1.16.0
+     */
+    public boolean isServerAuthoritativeInventoryEnabled() {
+        return false;
+    }
+
+    /**
      * @since 1.19.80
      */
     public void openSignEditor(int x, int y, int z) {

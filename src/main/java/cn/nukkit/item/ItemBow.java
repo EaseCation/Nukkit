@@ -150,6 +150,8 @@ public class ItemBow extends ItemTool {
                         player.level.addLevelSoundEvent(player, LevelSoundEventPacket.SOUND_BREAK);
                     }
                     player.getInventory().setItemInHand(this);
+                } else if (!player.isServerAuthoritativeInventoryEnabled()) {
+                    player.getInventory().sendHeldItem(player); // sync durability to correct client predictions
                 }
             }
             if (entityShootBowEvent.getProjectile() != null) {
