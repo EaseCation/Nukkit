@@ -113,12 +113,64 @@ tasks.withType<JavaCompile> {
 
 tasks.withType<Javadoc> {
     options.encoding = "UTF-8"
+    // 忽略 javadoc 警告和错误，避免构建失败
+    (options as StandardJavadocDocletOptions).apply {
+        addStringOption("Xdoclint:none", "-quiet")
+        addStringOption("encoding", "UTF-8")
+        addStringOption("charSet", "UTF-8")
+    }
+    // 忽略 javadoc 错误
+    isFailOnError = false
 }
 
+// 创建源码 JAR 任务
+tasks.register<Jar>("sourcesJar") {
+    archiveClassifier.set("sources")
+    from(sourceSets["main"].allSource)
+}
+
+// 创建 Javadoc JAR 任务
+tasks.register<Jar>("javadocJar") {
+    archiveClassifier.set("javadoc")
+    from(tasks.javadoc.get().destinationDir)
+    dependsOn(tasks.javadoc)
+}
 
 publishing {
     publications.create<MavenPublication>("maven") {
         from(components["java"])
+
+        // 添加源码和文档 artifact
+        artifact(tasks["sourcesJar"])
+        artifact(tasks["javadocJar"])
+
+        // 配置 POM 元数据
+        pom {
+            name = "Nukkit"
+            description = "Nuclear-powered server software for Minecraft: Bedrock Edition - EaseCation Fork"
+            url = "https://github.com/EaseCation/Nukkit"
+
+            licenses {
+                license {
+                    name = "GNU General Public License v3.0"
+                    url = "https://www.gnu.org/licenses/gpl-3.0.html"
+                }
+            }
+
+            developers {
+                developer {
+                    id = "easecation"
+                    name = "EaseCation Team"
+                    url = "https://github.com/EaseCation"
+                }
+            }
+
+            scm {
+                connection = "scm:git:git://github.com/EaseCation/Nukkit.git"
+                developerConnection = "scm:git:ssh://github.com/EaseCation/Nukkit.git"
+                url = "https://github.com/EaseCation/Nukkit"
+            }
+        }
     }
 }
 

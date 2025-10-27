@@ -1,0 +1,14 @@
+# JitPack 构建配置
+# 文档: https://jitpack.io/docs/BUILDING/
+
+# JDK 版本配置
+jdk:
+  - openjdk21
+
+# 构建前准备：克隆 Network 依赖项目
+before_install:
+  - git clone --depth=1 https://github.com/EaseCation/Network.git ../Network
+
+# 构建命令
+install:
+  - ./gradlew clean build publishToMavenLocal -x test
