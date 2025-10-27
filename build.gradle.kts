@@ -84,6 +84,11 @@ if (gradle.parent != null) {
     }
 }
 
+// 给普通 jar 添加 classifier，避免与 shadow jar 混淆
+tasks.jar {
+    archiveClassifier.set("thin")
+}
+
 tasks.shadowJar {
     duplicatesStrategy = DuplicatesStrategy.INCLUDE
     manifest.attributes["Enable-Native-Access"] = "ALL-UNNAMED"
@@ -138,16 +143,25 @@ tasks.register<Jar>("javadocJar") {
 
 publishing {
     publications.create<MavenPublication>("maven") {
-        from(components["java"])
+        // 发布 shadow jar 作为主 artifact（包含所有依赖）
+        artifact(tasks.shadowJar.get()) {
+            // 空 classifier 表示这是主 artifact
+            classifier = ""
+        }
 
         // 添加源码和文档 artifact
         artifact(tasks["sourcesJar"])
         artifact(tasks["javadocJar"])
 
+        // 手动设置 Maven 坐标
+        groupId = project.group.toString()
+        artifactId = project.name
+        version = project.version.toString()
+
         // 配置 POM 元数据
         pom {
             name = "Nukkit"
-            description = "Nuclear-powered server software for Minecraft: Bedrock Edition - EaseCation Fork"
+            description = "Nuclear-powered server software for Minecraft: Bedrock Edition - EaseCation Fork (Self-contained)"
             url = "https://github.com/EaseCation/Nukkit"
 
             licenses {
@@ -169,6 +183,26 @@ publishing {
                 connection = "scm:git:git://github.com/EaseCation/Nukkit.git"
                 developerConnection = "scm:git:ssh://github.com/EaseCation/Nukkit.git"
                 url = "https://github.com/EaseCation/Nukkit"
+            }
+
+            // 自定义依赖列表：只包含 compile-only 依赖，排除所有运行时依赖
+            // 因为 shadow jar 已经包含了所有运行时依赖
+            withXml {
+                val dependenciesNode = asNode().appendNode("dependencies")
+
+                // 添加 compile-only 依赖（如 lombok、annotations 等）
+                configurations.compileOnly.get().allDependencies.forEach { dep ->
+                    if (dep.group != null && dep.name != "unspecified") {
+                        val dependencyNode = dependenciesNode.appendNode("dependency")
+                        dependencyNode.appendNode("groupId", dep.group)
+                        dependencyNode.appendNode("artifactId", dep.name)
+                        dependencyNode.appendNode("version", dep.version)
+                        dependencyNode.appendNode("scope", "provided")
+                    }
+                }
+
+                // 注意：不添加任何 api/implementation 依赖
+                // 它们都已经打包在 shadow jar 中了
             }
         }
     }
