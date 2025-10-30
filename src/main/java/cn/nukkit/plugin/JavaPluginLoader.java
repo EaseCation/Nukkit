@@ -85,12 +85,18 @@ public class JavaPluginLoader implements PluginLoader {
     @Override
     public PluginDescription getPluginDescription(File file) {
         try (JarFile jar = new JarFile(file)) {
-            JarEntry entry = jar.getJarEntry("nukkit.yml");
+            // 优先级1: easecation-plugin.yml (EaseCation分支特定配置)
+            JarEntry entry = jar.getJarEntry("easecation-plugin.yml");
             if (entry == null) {
+                // 优先级2: nukkit.yml (Nukkit官方推荐配置)
+                entry = jar.getJarEntry("nukkit.yml");
+            }
+            if (entry == null) {
+                // 优先级3: plugin.yml (通用插件配置)
                 entry = jar.getJarEntry("plugin.yml");
-                if (entry == null) {
-                    return null;
-                }
+            }
+            if (entry == null) {
+                return null;
             }
             try (InputStream stream = jar.getInputStream(entry)) {
                 return new PluginDescription(Utils.readFile(stream));
