@@ -141,6 +141,8 @@ public interface EntityNames {
     String COPPER_GOLEM = "copper_golem";
     String NAUTILUS = "nautilus";
     String ZOMBIE_NAUTILUS = "zombie_nautilus";
+    String PARCHED = "parched";
+    String CAMEL_HUSK = "camel_husk";
 
     String TRADER_LLAMA = "trader_llama";
 

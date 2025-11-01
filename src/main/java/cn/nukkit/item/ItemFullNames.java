@@ -292,6 +292,8 @@ public interface ItemFullNames extends ItemBlockNames {
     String COPPER_GOLEM_SPAWN_EGG = "minecraft:" + ItemNames.COPPER_GOLEM_SPAWN_EGG;
     String NAUTILUS_SPAWN_EGG = "minecraft:" + ItemNames.NAUTILUS_SPAWN_EGG;
     String ZOMBIE_NAUTILUS_SPAWN_EGG = "minecraft:" + ItemNames.ZOMBIE_NAUTILUS_SPAWN_EGG;
+    String PARCHED_SPAWN_EGG = "minecraft:" + ItemNames.PARCHED_SPAWN_EGG;
+    String CAMEL_HUSK_SPAWN_EGG = "minecraft:" + ItemNames.CAMEL_HUSK_SPAWN_EGG;
     String TRADER_LLAMA_SPAWN_EGG = "minecraft:" + ItemNames.TRADER_LLAMA_SPAWN_EGG;
     String EXPERIENCE_BOTTLE = "minecraft:" + ItemNames.EXPERIENCE_BOTTLE;
     String FIRE_CHARGE = "minecraft:" + ItemNames.FIRE_CHARGE;

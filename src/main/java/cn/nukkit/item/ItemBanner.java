@@ -11,6 +11,8 @@ import cn.nukkit.utils.DyeColor;
  * Created by PetteriM1
  */
 public class ItemBanner extends Item {
+    public static final int TYPE_NORMAL = 0;
+    public static final int TYPE_ILLAGER = 1;
 
     public ItemBanner() {
         this(0);

@@ -57,7 +57,6 @@ import cn.nukkit.metadata.Metadatable;
 import cn.nukkit.nbt.NBTIO;
 import cn.nukkit.nbt.tag.CompoundTag;
 import cn.nukkit.network.Compressor;
-import cn.nukkit.network.Network;
 import cn.nukkit.network.protocol.*;
 import cn.nukkit.network.protocol.BatchPacket.Track;
 import cn.nukkit.network.protocol.types.BlockChangeEntry;
@@ -371,6 +370,9 @@ public class Level implements ChunkManager, Metadatable {
 
     public final GameRules gameRules;
 
+    @Nullable
+    private Difficulty difficulty;
+
     private boolean redstoneEnabled = true;
     private boolean extinguishFireIgnoreGameRule;
     private boolean newArmorMechanics = true;
@@ -542,6 +544,8 @@ public class Level implements ChunkManager, Metadatable {
         this.heightRange = dimension.getHeightRange();
 
         this.gameRules = parent.gameRules;
+
+        this.difficulty = parent.difficulty;
 
         this.initialized = true;
 
@@ -2423,7 +2427,29 @@ public class Level implements ChunkManager, Metadatable {
     }
 
     public int getDifficulty() {
+        Difficulty difficulty = this.difficulty;
+        if (difficulty != null) {
+            return difficulty.ordinal();
+        }
         return server.getDifficulty();
+    }
+
+    public void setDifficulty(Difficulty difficulty) {
+        this.difficulty = difficulty;
+    }
+
+    public void sendDifficulty(Player... players) {
+        if (players.length == 0) {
+            return;
+        }
+
+        SetDifficultyPacket pk = new SetDifficultyPacket();
+        pk.difficulty = getDifficulty();
+        Server.broadcastPacket(players, pk);
+    }
+
+    public void sendDifficulty() {
+        sendDifficulty(players.values().toArray(new Player[0]));
     }
 
     public int getFullBlock(int layer, int x, int y, int z) {

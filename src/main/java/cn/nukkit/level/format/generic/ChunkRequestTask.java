@@ -4,6 +4,7 @@ import cn.nukkit.Server;
 import cn.nukkit.block.Blocks;
 import cn.nukkit.blockentity.BlockEntity;
 import cn.nukkit.blockentity.BlockEntitySpawnable;
+import cn.nukkit.level.GlobalBlockPalette;
 import cn.nukkit.level.GlobalBlockPaletteInterface.StaticVersion;
 import cn.nukkit.level.HeightRange;
 import cn.nukkit.level.Level;
@@ -248,11 +249,17 @@ public class ChunkRequestTask extends AsyncTask<Void> {
             subRequestModeFullChunkPayloadLegacy = stream.getBuffer();
 
             for (StaticVersion version : requestedVersions) {
+                boolean available = GlobalBlockPalette.getStaticBlockPalette(version) != null;
                 byte[][] blockStorages = new byte[count][];
                 stream.reuse();
                 for (int chunkY = minChunkY; chunkY <= topChunkY; chunkY++) {
                     int mark = stream.getCount();
-                    sections[Level.subChunkYtoIndex(chunkY)].writeTo(stream, version);
+                    if (available) {
+                        sections[Level.subChunkYtoIndex(chunkY)].writeTo(stream, version);
+                    } else {
+                        stream.putByte(8); // version
+                        stream.putByte(0); // empty
+                    }
                     blockStorages[Level.yToIndex(chunkY, chunkYIndexOffset)] = stream.getBuffer(mark);
                 }
                 stream.put(version.getProtocol() >= StaticVersion.V1_21_40.getProtocol() ? biome : biomeLegacy);

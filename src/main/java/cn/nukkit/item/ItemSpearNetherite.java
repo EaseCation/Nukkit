@@ -30,7 +30,7 @@ public class ItemSpearNetherite extends ItemSpear {
 
     @Override
     public int getSwingDuration() {
-        return 20;
+        return 23;
     }
 
     @Override

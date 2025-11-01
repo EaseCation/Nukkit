@@ -185,7 +185,7 @@ public class BlockFire extends BlockFlowable {
 
                                     int chance = this.getChanceOfNeighborsEncouragingFire(block);
                                     if (chance > 0) {
-                                        int t = (chance + 40 + this.getLevel().getServer().getDifficulty() * 7) / (meta + 30);
+                                        int t = (chance + 40 + this.level.getDifficulty() * 7) / (meta + 30);
 
                                         //TODO: decrease the t if the rainfall values are high
 

@@ -8,7 +8,7 @@ import cn.nukkit.command.data.CommandEnum;
 import cn.nukkit.command.data.CommandParamType;
 import cn.nukkit.command.data.CommandParameter;
 import cn.nukkit.lang.TranslationContainer;
-import cn.nukkit.network.protocol.SetDifficultyPacket;
+import cn.nukkit.level.Level;
 
 /**
  * Created on 2015/11/12 by xtypr.
@@ -48,9 +48,10 @@ public class DifficultyCommand extends VanillaCommand {
         if (difficulty != -1) {
             sender.getServer().setPropertyInt("difficulty", difficulty);
 
-            SetDifficultyPacket pk = new SetDifficultyPacket();
-            pk.difficulty = sender.getServer().getDifficulty();
-            Server.broadcastPacket(sender.getServer().getOnlinePlayerList(), pk);
+            for (Level level : sender.getServer().getLevels().values()) {
+                level.setDifficulty(Difficulty.byId(difficulty));
+                level.sendDifficulty();
+            }
 
             Command.broadcastCommandMessage(sender, new TranslationContainer("commands.difficulty.success", Difficulty.byId(difficulty).getTranslationKey()));
         } else {

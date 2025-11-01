@@ -1,16 +1,15 @@
 package cn.nukkit.utils;
 
-import com.fasterxml.jackson.core.JsonGenerator;
-import com.fasterxml.jackson.core.JsonParser;
-import com.fasterxml.jackson.databind.DeserializationContext;
-import com.fasterxml.jackson.databind.SerializerProvider;
-import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
-import com.fasterxml.jackson.databind.annotation.JsonSerialize;
-import com.fasterxml.jackson.databind.deser.std.StdDeserializer;
-import com.fasterxml.jackson.databind.ser.std.StdSerializer;
 import lombok.Value;
-
-import java.io.IOException;
+import tools.jackson.core.JacksonException;
+import tools.jackson.core.JsonGenerator;
+import tools.jackson.core.JsonParser;
+import tools.jackson.databind.DeserializationContext;
+import tools.jackson.databind.SerializationContext;
+import tools.jackson.databind.annotation.JsonDeserialize;
+import tools.jackson.databind.annotation.JsonSerialize;
+import tools.jackson.databind.deser.std.StdDeserializer;
+import tools.jackson.databind.ser.std.StdSerializer;
 
 @JsonSerialize(using = SemVersion.Serializer.class)
 @JsonDeserialize(using = SemVersion.Deserializer.class)
@@ -37,7 +36,7 @@ public class SemVersion {
         }
 
         @Override
-        public void serialize(SemVersion value, JsonGenerator generator, SerializerProvider provider) throws IOException {
+        public void serialize(SemVersion value, JsonGenerator generator, SerializationContext context) throws JacksonException {
             generator.writeStartArray();
             generator.writeNumber(value.major);
             generator.writeNumber(value.minor);
@@ -52,7 +51,7 @@ public class SemVersion {
         }
 
         @Override
-        public SemVersion deserialize(JsonParser parser, DeserializationContext context) throws IOException {
+        public SemVersion deserialize(JsonParser parser, DeserializationContext context) throws JacksonException {
             int[] version = parser.readValueAs(int[].class);
             return new SemVersion(version[0], version[1], version[2]);
         }

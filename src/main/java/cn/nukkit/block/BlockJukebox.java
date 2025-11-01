@@ -53,7 +53,7 @@ public class BlockJukebox extends BlockSolid {
     public boolean onActivate(Item item, BlockFace face, float fx, float fy, float fz, Player player) {
         BlockEntity blockEntity = this.getLevel().getBlockEntity(this);
         if (!(blockEntity instanceof BlockEntityJukebox)) {
-            blockEntity = this.createBlockEntity();
+            blockEntity = this.createBlockEntity(item);
             if (blockEntity == null) {
                 return true;
             }
@@ -79,7 +79,7 @@ public class BlockJukebox extends BlockSolid {
     @Override
     public boolean place(Item item, Block block, Block target, BlockFace face, float fx, float fy, float fz, Player player) {
         if (super.place(item, block, target, face, fx, fy, fz, player)) {
-            createBlockEntity();
+            createBlockEntity(item);
             return true;
         }
 
@@ -100,7 +100,7 @@ public class BlockJukebox extends BlockSolid {
         return false;
     }
 
-    private BlockEntity createBlockEntity() {
+    private BlockEntity createBlockEntity(@Nullable Item item) {
         CompoundTag nbt = BlockEntity.getDefaultCompound(this, BlockEntity.JUKEBOX)
                 .putList(new ListTag<>("Items"));
 

@@ -895,9 +895,9 @@ public class Player extends EntityHuman implements CommandSender, InventoryHolde
 
             //forceSendEmptyChunks();
 
-            SetTimePacket pk = new SetTimePacket();
-            pk.time = targetLevel.getTime();
-            this.dataPacket(pk);
+            level.sendTime(this);
+
+            level.sendDifficulty(this);
 
             GameRulesChangedPacket gameRulesChanged = new GameRulesChangedPacket();
             gameRulesChanged.gameRules = level.getGameRules();
@@ -1109,9 +1109,7 @@ public class Player extends EntityHuman implements CommandSender, InventoryHolde
         this.sendPotionEffects(this);
         this.sendData(this);
 
-        SetTimePacket setTimePacket = new SetTimePacket();
-        setTimePacket.time = this.level.getTime();
-        this.dataPacket(setTimePacket);
+        this.level.sendTime(this);
 
         Position pos = this.level.getSafeSpawn(this);
 
@@ -1856,7 +1854,7 @@ public class Player extends EntityHuman implements CommandSender, InventoryHolde
             else this.speed.setComponents(0, 0, 0);
         }
 
-        if (!revert && (this.isFoodEnabled() || this.getServer().getDifficulty() == 0)) {
+        if (!revert && (this.isFoodEnabled() || this.level.getDifficulty() == 0)) {
             if (this.isSurvivalLike() && this.riding == null) {
                 //UpdateFoodExpLevel
                 if (distance >= 0.05f) {
@@ -2024,7 +2022,7 @@ public class Player extends EntityHuman implements CommandSender, InventoryHolde
 
             syncAttributeMap();
 
-            if (this.getServer().getDifficulty() == 0 && this.level.getGameRules().getBoolean(GameRule.NATURAL_REGENERATION)) {
+            if (this.level.getDifficulty() == 0 && this.level.getGameRules().getBoolean(GameRule.NATURAL_REGENERATION)) {
                 if (this.getHealth() < this.getMaxHealth() && this.ticksLived % 20 == 0) {
                     this.heal(new EntityRegainHealthEvent(this, 1, EntityRegainHealthEvent.CAUSE_REGEN));
                 }
@@ -2236,7 +2234,7 @@ public class Player extends EntityHuman implements CommandSender, InventoryHolde
                         continue;
                     }
 
-                    if (entity instanceof Player player && (player.isCreativeLike() || server.getDifficulty() == 0 || !server.getConfiguration().isPvp() || !level.getGameRules().getBoolean(GameRule.PVP))) {
+                    if (entity instanceof Player player && (player.isCreativeLike() || level.getDifficulty() == 0 || !server.getConfiguration().isPvp() || !level.getGameRules().getBoolean(GameRule.PVP))) {
                         continue;
                     }
 
@@ -2616,7 +2614,7 @@ public class Player extends EntityHuman implements CommandSender, InventoryHolde
         startGamePacket.seed = -1;
         startGamePacket.dimension = (byte) (spawnPosition.level.getDimension().getId() & 0xff);
         startGamePacket.worldGamemode = getClientFriendlyGamemode(this.gamemode);
-        startGamePacket.difficulty = this.server.getDifficulty();
+        startGamePacket.difficulty = this.level.getDifficulty();
         startGamePacket.spawnX = (int) spawnPosition.x;
         startGamePacket.spawnY = (int) spawnPosition.y;
         startGamePacket.spawnZ = (int) spawnPosition.z;
@@ -3902,7 +3900,7 @@ public class Player extends EntityHuman implements CommandSender, InventoryHolde
                                     } else if (target instanceof Player) {
                                         if ((((Player) target).getGamemode() & 0x01) > 0) {
                                             break;
-                                        } else if (!this.server.getConfiguration().isPvp() || this.server.getDifficulty() == 0) {
+                                        } else if (!this.server.getConfiguration().isPvp() || this.level.getDifficulty() == 0 || !level.getGameRules().getBoolean(GameRule.PVP)) {
                                             break;
                                         }
                                     }
@@ -4808,6 +4806,9 @@ public class Player extends EntityHuman implements CommandSender, InventoryHolde
                     }
                     message = "death.attack.drown";
                     break;
+                case DEHYDRATION:
+                    message = "death.attack.dehydration";
+                    break;
                 case CONTACT:
                     if (cause instanceof EntityDamageByBlockEvent) {
                         int id = ((EntityDamageByBlockEvent) cause).getDamager().getId();
@@ -4851,6 +4852,9 @@ public class Player extends EntityHuman implements CommandSender, InventoryHolde
                             params.add(!"".equals(nameTag) ? nameTag : e.getName());
                             break;
                         }
+                    } else if (cause instanceof EntityDamageByBlockEvent) {
+                        message = "death.attack.explosion.by.bed";
+                        break;
                     }
                     message = "death.attack.explosion";
                     break;
@@ -4898,6 +4902,16 @@ public class Player extends EntityHuman implements CommandSender, InventoryHolde
                 case FREEZE:
                     message = "death.attack.freeze";
                     break;
+                case MACE_SMASH:
+                    playerDamage = getLastPlayerDamageCause(5 * 20);
+                    if (playerDamage != null) {
+                        Player damager = (Player) playerDamage.left().getDamager();
+                        if (damager != this) {
+                            message = "death.attack.maceSmash.player";
+                            params.add(damager.getDisplayName());
+                            break;
+                        }
+                    }
                 default:
                     message = "death.attack.generic";
                     break;

@@ -122,7 +122,7 @@ public class RepairItemTransaction extends InventoryTransaction {
                     if (ench.isCurse() || ench.getLevel() <= 0) {
                         continue;
                     }
-                    int min = Mth.ceil(ench.getMinEnchantAbility(ench.getLevel()) / 2.0);
+                    int min = Mth.ceil(ench.getMinEnchantAbility(ench.getValidLevel()) / 2.0);
                     xp += ThreadLocalRandom.current().nextInt(min, min * 2);
                 }
             }
@@ -131,7 +131,7 @@ public class RepairItemTransaction extends InventoryTransaction {
                     if (ench.isCurse() || ench.getLevel() <= 0) {
                         continue;
                     }
-                    int min = Mth.ceil(ench.getMinEnchantAbility(ench.getLevel()) / 2.0);
+                    int min = Mth.ceil(ench.getMinEnchantAbility(ench.getValidLevel()) / 2.0);
                     xp += ThreadLocalRandom.current().nextInt(min, min * 2);
                 }
             }

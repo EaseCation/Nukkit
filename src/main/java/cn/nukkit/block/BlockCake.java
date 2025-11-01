@@ -163,7 +163,7 @@ public class BlockCake extends BlockTransparent {
             }
         }
 
-        if (player != null && (player.getFoodData().getLevel() < player.getFoodData().getMaxLevel() || player.isCreative() || player.getServer().getDifficulty() == 0)) {
+        if (player != null && (player.getFoodData().getLevel() < player.getFoodData().getMaxLevel() || player.isCreative() || player.level.getDifficulty() == 0)) {
             if (!Food.getByRelative(this).eatenBy(player)) {
                 return true;
             }

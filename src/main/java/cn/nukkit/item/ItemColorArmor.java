@@ -4,6 +4,7 @@ import cn.nukkit.nbt.tag.CompoundTag;
 import cn.nukkit.utils.BlockColor;
 import cn.nukkit.utils.DyeColor;
 
+import javax.annotation.Nullable;
 import java.awt.Color;
 
 /**
@@ -81,6 +82,7 @@ abstract public class ItemColorArmor extends ItemArmor {
      *
      * @return - BlockColor, or null if item has no color
      */
+    @Nullable
     public BlockColor getColor() {
         if (!this.hasCompoundTag()) return null;
         CompoundTag tag = this.getNamedTag();

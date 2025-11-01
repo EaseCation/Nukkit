@@ -306,7 +306,8 @@ public class Explosion {
                     }
                 }
                 BlockEntity chest = block.getLevel().getBlockEntity(block);
-                if (chest instanceof BlockEntityChest) {
+                if (chest instanceof BlockEntityChest lootable) {
+                    lootable.unpackLootTable();
                     if (blockDrop) {
                         for (Item drop : ((BlockEntityChest) chest).getInventory().getContents().values()) {
                             this.level.dropItem(block.blockCenter(), drop);
@@ -325,7 +326,8 @@ public class Explosion {
                     }
                 }
                 BlockEntity container = block.getLevel().getBlockEntity(block);
-                if (container instanceof BlockEntityFurnace) {
+                if (container instanceof BlockEntityFurnace lootable) {
+                    lootable.unpackLootTable();
                     if (blockDrop) {
                         for (Item drop : ((InventoryHolder) container).getInventory().getContents().values()) {
                             this.level.dropItem(block.blockCenter(), drop);
@@ -340,7 +342,8 @@ public class Explosion {
                     }
                 }
                 BlockEntity container = block.getLevel().getBlockEntity(block);
-                if (container instanceof BlockEntityBrewingStand) {
+                if (container instanceof BlockEntityBrewingStand lootable) {
+                    lootable.unpackLootTable();
                     if (blockDrop) {
                         for (Item drop : ((InventoryHolder) container).getInventory().getContents().values()) {
                             this.level.dropItem(block.blockCenter(), drop);
@@ -355,7 +358,8 @@ public class Explosion {
                     }
                 }
                 BlockEntity container = block.getLevel().getBlockEntity(block);
-                if (container instanceof BlockEntityHopper) {
+                if (container instanceof BlockEntityHopper lootable) {
+                    lootable.unpackLootTable();
                     if (blockDrop) {
                         for (Item drop : ((InventoryHolder) container).getInventory().getContents().values()) {
                             this.level.dropItem(block.blockCenter(), drop);
@@ -370,7 +374,8 @@ public class Explosion {
                     }
                 }
                 BlockEntity container = block.getLevel().getBlockEntity(block);
-                if (container instanceof BlockEntityDropper) {
+                if (container instanceof BlockEntityDropper lootable) {
+                    lootable.unpackLootTable();
                     if (blockDrop) {
                         for (Item drop : ((InventoryHolder) container).getInventory().getContents().values()) {
                             this.level.dropItem(block.blockCenter(), drop);
@@ -385,7 +390,8 @@ public class Explosion {
                     }
                 }
                 BlockEntity container = block.getLevel().getBlockEntity(block);
-                if (container instanceof BlockEntityDispenser) {
+                if (container instanceof BlockEntityDispenser lootable) {
+                    lootable.unpackLootTable();
                     if (blockDrop) {
                         for (Item drop : ((InventoryHolder) container).getInventory().getContents().values()) {
                             this.level.dropItem(block.blockCenter(), drop);
@@ -395,7 +401,8 @@ public class Explosion {
                 }
             } else if (block.isShulkerBox()) {
                 BlockEntity shulkerBox = block.getLevel().getBlockEntity(block);
-                if (shulkerBox instanceof BlockEntityShulkerBox) {
+                if (shulkerBox instanceof BlockEntityShulkerBox lootable) {
+                    lootable.unpackLootTable();
                     if (blockDrop) {
                         this.level.dropItem(block.blockCenter(), block.toItem(true));
                     }
@@ -408,7 +415,8 @@ public class Explosion {
                     }
                 }
                 BlockEntity container = block.getLevel().getBlockEntity(block);
-                if (container instanceof BlockEntityBarrel) {
+                if (container instanceof BlockEntityBarrel lootable) {
+                    lootable.unpackLootTable();
                     if (blockDrop) {
                         for (Item drop : ((InventoryHolder) container).getInventory().getContents().values()) {
                             this.level.dropItem(block.blockCenter(), drop);

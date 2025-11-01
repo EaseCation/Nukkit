@@ -7,11 +7,11 @@ import cn.nukkit.level.biome.BiomeID;
 import cn.nukkit.level.biome.Biomes;
 import cn.nukkit.level.generator.populator.type.Populator;
 import cn.nukkit.utils.JsonUtil;
-import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.JsonNode;
 import lombok.Builder;
 import lombok.Builder.Default;
 import lombok.Value;
+import tools.jackson.core.JacksonException;
+import tools.jackson.databind.JsonNode;
 
 import javax.annotation.Nullable;
 import java.util.ArrayList;
@@ -72,7 +72,7 @@ public class FlatGeneratorOptions {
 
         try {
             return JsonUtil.TRUSTED_JSON_MAPPER.writeValueAsString(root);
-        } catch (JsonProcessingException e) {
+        } catch (JacksonException e) {
             return DEFAULT_FLAT_WORLD_LAYERS;
         }
     }
@@ -97,7 +97,7 @@ public class FlatGeneratorOptions {
             JsonNode worldVersionNode = root.get("world_version");
             WorldVersion worldVersion;
             if (worldVersionNode != null) {
-                String version = worldVersionNode.asText();
+                String version = worldVersionNode.asString();
                 worldVersion = WorldVersion.byName(version);
                 if (worldVersion == null) { // unknown version
                     worldVersion = WorldVersion.POST_1_18;
@@ -237,7 +237,7 @@ public class FlatGeneratorOptions {
             JsonNode blockDataNode = element.get("block_data");
             int blockData = blockDataNode != null ? blockDataNode.asInt() : 0;
 
-            String blockName = blockNameNode.asText();
+            String blockName = blockNameNode.asString();
             blockId = Blocks.getIdByBlockName(blockName, true);
             if (blockId == -1) {
                 blockId = Block.UNKNOWN;

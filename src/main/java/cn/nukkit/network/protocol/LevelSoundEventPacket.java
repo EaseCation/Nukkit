@@ -611,6 +611,8 @@ public class LevelSoundEventPacket extends DataPacket {
     public static final int SOUND_SPEAR_ATTACK_MISS = 571;
     public static final int SOUND_WOODEN_SPEAR_ATTACK_HIT = 572;
     public static final int SOUND_WOODEN_SPEAR_ATTACK_MISS = 573;
+    public static final int SOUND_IMITATE_PARCHED = 574;
+    public static final int SOUND_IMITATE_CAMEL_HUSK = 575;
 
 	public int sound;
     public float x;

@@ -114,6 +114,7 @@ public class Normal implements Generator {
     }
 
     private final Map<String, Object> options;
+    private GeneratorOptions generatorOptions;
     private final List<Populator> populators = new ObjectArrayList<>();
     private final List<Populator> generationPopulators = new ObjectArrayList<>();
     public static final int seaHeight = 62;
@@ -176,6 +177,7 @@ public class Normal implements Generator {
         this.localSeed1 = localRandom.nextLong();
         this.localSeed2 = localRandom.nextLong();
         this.nukkitRandom.setSeed(this.level.getSeed());
+        this.generatorOptions = generatorOptions;
         this.selector = new BiomeSelector(this.nukkitRandom);
 
         this.minLimitPerlinNoise = new NoiseGeneratorOctavesF(random, 16);
@@ -403,6 +405,13 @@ public class Normal implements Generator {
 
         Biome biome = Biomes.get(chunk.getBiomeId(7, 7));
         biome.populateChunk(this.level, chunkX, chunkZ, this.nukkitRandom);
+
+        if (generatorOptions.isBonusChest()) {
+            Vector3 spawn = getSpawn();
+            if (spawn.getChunkX() == chunkX && spawn.getChunkZ() == chunkZ) {
+                new PopulatorBonusChest().populate(level, chunkX, chunkZ, nukkitRandom, chunk);
+            }
+        }
     }
 
     @Override

@@ -91,6 +91,7 @@ public final class BlockStates {
     public static final BooleanBlockState MINECRAFT_CONNECTION_NORTH = register(new BooleanBlockState(BlockStateNames.MINECRAFT_CONNECTION_NORTH));
     public static final BooleanBlockState MINECRAFT_CONNECTION_SOUTH = register(new BooleanBlockState(BlockStateNames.MINECRAFT_CONNECTION_SOUTH));
     public static final BooleanBlockState MINECRAFT_CONNECTION_WEST = register(new BooleanBlockState(BlockStateNames.MINECRAFT_CONNECTION_WEST));
+    public static final EnumBlockState<MinecraftCornerState> MINECRAFT_CORNER = register(new EnumBlockState<>(BlockStateNames.MINECRAFT_CORNER, MinecraftCornerState.values()));
     public static final EnumBlockState<MinecraftFacingDirectionState> MINECRAFT_FACING_DIRECTION = register(new EnumBlockState<>(BlockStateNames.MINECRAFT_FACING_DIRECTION, MinecraftFacingDirectionState.values()));
     public static final EnumBlockState<MinecraftVerticalHalfState> MINECRAFT_VERTICAL_HALF = register(new EnumBlockState<>(BlockStateNames.MINECRAFT_VERTICAL_HALF, MinecraftVerticalHalfState.values()));
     public static final IntegerBlockState MOISTURIZED_AMOUNT = register(new IntegerBlockState(BlockStateNames.MOISTURIZED_AMOUNT, MAX_MOISTURIZED_AMOUNT + 1));

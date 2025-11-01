@@ -5,10 +5,10 @@ import cn.nukkit.math.Mth;
 import cn.nukkit.resourcepacks.PackManifest.Module;
 import cn.nukkit.utils.Hash;
 import cn.nukkit.utils.JsonUtil;
-import com.fasterxml.jackson.databind.JsonNode;
 import com.google.common.io.Files;
 import lombok.extern.log4j.Log4j2;
 import org.apache.commons.lang3.RandomStringUtils;
+import tools.jackson.databind.JsonNode;
 
 import javax.crypto.Cipher;
 import javax.crypto.spec.IvParameterSpec;

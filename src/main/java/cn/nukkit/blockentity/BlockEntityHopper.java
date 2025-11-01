@@ -142,6 +142,10 @@ public class BlockEntityHopper extends BlockEntityAbstractContainer {
             return false;
         }
 
+        if (blockEntity instanceof BlockEntityAbstractContainer container) {
+            container.unpackLootTable();
+        }
+
         //Fix for furnace outputs
         if (blockEntity instanceof BlockEntityFurnace) {
             FurnaceInventory inv = ((BlockEntityFurnace) blockEntity).getInventory();
@@ -288,6 +292,10 @@ public class BlockEntityHopper extends BlockEntityAbstractContainer {
 
         if (be instanceof BlockEntityHopper && facing == BlockFace.DOWN) {
             return false;
+        }
+
+        if (be instanceof BlockEntityAbstractContainer container) {
+            container.unpackLootTable();
         }
 
         if (be instanceof HopperInteractable container) {

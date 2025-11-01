@@ -10,7 +10,6 @@ import cn.nukkit.event.entity.EntityRegainHealthEvent;
 import cn.nukkit.event.potion.PotionApplyEvent;
 import cn.nukkit.item.Item;
 
-import javax.annotation.Nullable;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -26,7 +25,6 @@ public class Potion implements PotionID {
         Potions.registerVanillaPotions();
     }
 
-    @Nullable
     public static Potion getPotion(int id) {
         if (id < 0 || id >= potions.length) {
             return null;

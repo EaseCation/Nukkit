@@ -5,6 +5,7 @@ import cn.nukkit.level.HeightRange;
 import cn.nukkit.level.format.generic.BaseFullChunk;
 import cn.nukkit.level.generator.FlatGeneratorOptions.BlockLayer;
 import cn.nukkit.level.generator.FlatGeneratorOptions.WorldVersion;
+import cn.nukkit.level.generator.populator.impl.PopulatorBonusChest;
 import cn.nukkit.level.generator.populator.type.Populator;
 import cn.nukkit.math.NukkitRandom;
 import cn.nukkit.math.Vector3;
@@ -20,6 +21,7 @@ public class Flat implements Generator {
     private final Map<String, Object> options;
     private ChunkManager level;
     private NukkitRandom random;
+    private GeneratorOptions generatorOptions;
     private FlatGeneratorOptions flatOptions;
 
     public Flat() {
@@ -54,6 +56,7 @@ public class Flat implements Generator {
     public void init(ChunkManager level, NukkitRandom random, GeneratorOptions generatorOptions) {
         this.level = level;
         this.random = random;
+        this.generatorOptions = generatorOptions;
         this.flatOptions = generatorOptions.getFlatOptions();
     }
 
@@ -86,8 +89,16 @@ public class Flat implements Generator {
     public void populateChunk(int chunkX, int chunkZ) {
         BaseFullChunk chunk = level.getChunk(chunkX, chunkZ);
         this.random.setSeed(0xdeadbeefL ^ ((long) chunkX << 8) ^ chunkZ ^ this.level.getSeed());
+
         for (Populator populator : flatOptions.getStructures()) {
             populator.populate(this.level, chunkX, chunkZ, this.random, chunk);
+        }
+
+        if (generatorOptions.isBonusChest()) {
+            Vector3 spawn = getSpawn();
+            if (spawn.getChunkX() == chunkX && spawn.getChunkZ() == chunkZ) {
+                new PopulatorBonusChest().populate(level, chunkX, chunkZ, random, chunk);
+            }
         }
     }
 

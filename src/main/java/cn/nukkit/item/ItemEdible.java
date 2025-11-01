@@ -29,7 +29,7 @@ public abstract class ItemEdible extends Item {
 
     @Override
     public boolean onClickAir(Player player, Vector3 directionVector) {
-        if (player.getFoodData().getLevel() < player.getFoodData().getMaxLevel() || player.isCreative() || player.getServer().getDifficulty() == 0) {
+        if (player.getFoodData().getLevel() < player.getFoodData().getMaxLevel() || player.isCreative() || player.level.getDifficulty() == 0) {
             return true;
         }
         player.getFoodData().sendFoodLevel();

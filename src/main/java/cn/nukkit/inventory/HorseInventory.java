@@ -4,10 +4,7 @@ import cn.nukkit.Player;
 import cn.nukkit.entity.Entity;
 import cn.nukkit.entity.EntityFullNames;
 import cn.nukkit.entity.EntityID;
-import cn.nukkit.entity.passive.EntityAbstractHorse;
-import cn.nukkit.entity.passive.EntityCamel;
-import cn.nukkit.entity.passive.EntityLlama;
-import cn.nukkit.entity.passive.EntityTraderLlama;
+import cn.nukkit.entity.passive.*;
 import cn.nukkit.item.Item;
 import cn.nukkit.item.ItemBlockID;
 import cn.nukkit.item.Items;
@@ -42,6 +39,12 @@ public class HorseInventory extends ContainerInventory {
                     entity.level.addLevelSoundEvent(entity, LevelSoundEventPacket.SOUND_SADDLE);
                 }
             } else if (entity instanceof EntityCamel camel) {
+                boolean saddle = after != null && after.is(Item.SADDLE);
+                camel.updateSaddled(saddle);
+                if (saddle && !after.equals(before)) {
+                    entity.level.addLevelSoundEvent(entity, LevelSoundEventPacket.SOUND_SADDLE);
+                }
+            } else if (entity instanceof EntityCamelHusk camel) {
                 boolean saddle = after != null && after.is(Item.SADDLE);
                 camel.updateSaddled(saddle);
                 if (saddle && !after.equals(before)) {

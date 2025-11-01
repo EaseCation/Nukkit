@@ -126,6 +126,7 @@ public class BlockBarrel extends BlockSolid implements Faceable {
             }
         }
 
+        blockEntity.unpackLootTable();
         player.addWindow(blockEntity.getInventory());
         return true;
     }

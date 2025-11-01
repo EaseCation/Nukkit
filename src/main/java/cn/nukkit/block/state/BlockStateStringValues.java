@@ -118,6 +118,12 @@ public interface BlockStateStringValues {
     String MINECRAFT_CARDINAL_DIRECTION_SOUTH = "south";
     String MINECRAFT_CARDINAL_DIRECTION_WEST = "west";
 
+    String MINECRAFT_CORNER_INNER_LEFT = "inner_left";
+    String MINECRAFT_CORNER_INNER_RIGHT = "inner_right";
+    String MINECRAFT_CORNER_NONE = "none";
+    String MINECRAFT_CORNER_OUTER_LEFT = "outer_left";
+    String MINECRAFT_CORNER_OUTER_RIGHT = "outer_right";
+
     String MINECRAFT_FACING_DIRECTION_DOWN = "down";
     String MINECRAFT_FACING_DIRECTION_EAST = "east";
     String MINECRAFT_FACING_DIRECTION_NORTH = "north";

@@ -94,7 +94,7 @@ public class BlockCakeCandle extends BlockCake {
             return true;
         }
 
-        if (player != null && (player.getFoodData().getLevel() < player.getFoodData().getMaxLevel() || player.isCreative() || player.getServer().getDifficulty() == 0)) {
+        if (player != null && (player.getFoodData().getLevel() < player.getFoodData().getMaxLevel() || player.isCreative() || player.level.getDifficulty() == 0)) {
             Food.getByRelative(get(getId())).eatenBy(player);
 
             level.dropItem(this, Item.get(getItemId(getCandleBlockId())));

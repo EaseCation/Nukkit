@@ -77,12 +77,10 @@ public class BlockHopper extends BlockTransparent implements Faceable {
 
         this.level.setBlock(this, this, true);
 
-        CompoundTag nbt = new CompoundTag()
-                .putList(new ListTag<>("Items"))
-                .putString("id", BlockEntity.HOPPER)
-                .putInt("x", (int) this.x)
-                .putInt("y", (int) this.y)
-                .putInt("z", (int) this.z);
+        CompoundTag nbt = BlockEntity.getDefaultCompound(this, BlockEntity.HOPPER);
+
+        CompoundTag itemNbt = item.getNamedTag();
+        nbt.putList(itemNbt != null ? itemNbt.getList("Items", CompoundTag.class) : new ListTag<>("Items"));
 
         BlockEntityHopper hopper = (BlockEntityHopper) BlockEntities.createBlockEntity(BlockEntityType.HOPPER, this.level.getChunk(this.getFloorX() >> 4, this.getFloorZ() >> 4), nbt);
         return hopper != null;
@@ -98,6 +96,7 @@ public class BlockHopper extends BlockTransparent implements Faceable {
             }
         }
 
+        blockEntity.unpackLootTable();
         return player.addWindow(blockEntity.getInventory()) != -1;
     }
 

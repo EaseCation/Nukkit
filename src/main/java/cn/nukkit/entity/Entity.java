@@ -23,6 +23,7 @@ import cn.nukkit.item.Item;
 import cn.nukkit.item.enchantment.Enchantment;
 import cn.nukkit.level.*;
 import cn.nukkit.level.format.FullChunk;
+import cn.nukkit.level.format.LevelProvider;
 import cn.nukkit.math.*;
 import cn.nukkit.metadata.MetadataValue;
 import cn.nukkit.metadata.Metadatable;
@@ -289,7 +290,9 @@ public abstract class Entity extends Location implements Metadatable, EntityData
     }
 
     protected final void init(FullChunk chunk, CompoundTag nbt) {
-        if ((chunk == null || chunk.getProvider() == null)) {
+        LevelProvider provider;
+        Level level;
+        if (chunk == null || (provider = chunk.getProvider()) == null || (level = provider.getLevel()) == null) {
             throw new ChunkException("Invalid garbage Chunk given to Entity");
         }
 
@@ -306,8 +309,8 @@ public abstract class Entity extends Location implements Metadatable, EntityData
         this.namedTag = nbt;
 
         this.chunk = chunk;
-        this.setLevel(chunk.getProvider().getLevel());
-        this.server = chunk.getProvider().getLevel().getServer();
+        this.setLevel(level);
+        this.server = level.getServer();
 
         this.boundingBox = new SimpleAxisAlignedBB(0, 0, 0, 0, 0, 0);
 

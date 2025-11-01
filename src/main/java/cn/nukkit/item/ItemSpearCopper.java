@@ -30,7 +30,7 @@ public class ItemSpearCopper extends ItemSpear {
 
     @Override
     public int getSwingDuration() {
-        return 15;
+        return 17;
     }
 
     @Override

@@ -99,6 +99,7 @@ public final class Effects {
         return getEffectByIdentifier(identifier, true);
     }
 
+    @Nullable
     public static Effect getEffectByIdentifier(String identifier, boolean namespaced) {
         if (namespaced && identifier.startsWith("minecraft:")) {
             identifier = identifier.substring(10);

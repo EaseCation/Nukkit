@@ -141,6 +141,8 @@ public interface EntityID {
     int COPPER_GOLEM = 148;
     int NAUTILUS = 149;
     int ZOMBIE_NAUTILUS = 150;
+    int PARCHED = 151;
+    int CAMEL_HUSK = 152;
 
     int TRADER_LLAMA = 157;
 

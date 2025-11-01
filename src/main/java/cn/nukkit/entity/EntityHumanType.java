@@ -251,6 +251,7 @@ public abstract class EntityHumanType extends EntityCreature implements Inventor
                         && source.getCause() != DamageCause.WITHER
                         && source.getCause() != DamageCause.HUNGER
                         && source.getCause() != DamageCause.DROWNING
+                        && source.getCause() != DamageCause.DEHYDRATION
                         && source.getCause() != DamageCause.SUFFOCATION
                         && source.getCause() != DamageCause.FIRE_TICK
                         && source.getCause() != DamageCause.FREEZE

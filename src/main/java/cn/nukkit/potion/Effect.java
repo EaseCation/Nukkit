@@ -27,7 +27,6 @@ public class Effect implements EffectID, Cloneable {
         Effects.registerVanillaEffects();
     }
 
-    @Nullable
     public static Effect getEffect(int id) {
         if (id < 0 || id >= effects.length) {
             return null;

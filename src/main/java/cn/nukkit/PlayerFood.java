@@ -160,7 +160,7 @@ public class PlayerFood {
     public void update(int tickDiff) {
         if (!this.getPlayer().isFoodEnabled()) return;
         if (this.getPlayer().isAlive()) {
-            int diff = Server.getInstance().getDifficulty();
+            int diff = player.level.getDifficulty();
             if (this.getLevel() > 17) {
                 this.foodTickTimer += tickDiff;
                 if (this.foodTickTimer >= 80) {
@@ -202,7 +202,7 @@ public class PlayerFood {
      */
     public void updateFoodExpLevel(float use) {
         if (!this.getPlayer().isFoodEnabled()) return;
-        if (Server.getInstance().getDifficulty() == 0) return;
+        if (player.level.getDifficulty() == 0) return;
         if (this.getPlayer().hasEffect(Effect.SATURATION)) return;
         float lastExhaustionLevel = exhaustionLevel;
         this.exhaustionLevel += use;

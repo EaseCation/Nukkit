@@ -123,6 +123,7 @@ public class EntityDamageEvent extends EntityEvent implements Cancellable {
             case TEMPERATURE:
             case SUFFOCATION:
             case DROWNING:
+            case DEHYDRATION:
             case HUNGER:
             case FALL:
             case STALAGMITE:
@@ -271,6 +272,7 @@ public class EntityDamageEvent extends EntityEvent implements Cancellable {
         CAMPFIRE,
         SOUL_CAMPFIRE,
         MACE_SMASH,
+        DEHYDRATION,
         /**
          * Plugins
          */

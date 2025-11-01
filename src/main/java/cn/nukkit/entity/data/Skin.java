@@ -2,9 +2,6 @@ package cn.nukkit.entity.data;
 
 import cn.nukkit.nbt.stream.FastByteArrayOutputStream;
 import cn.nukkit.utils.*;
-import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.JsonNode;
-import com.fasterxml.jackson.databind.node.JsonNodeType;
 import com.google.common.base.Preconditions;
 import com.google.common.base.Strings;
 import it.unimi.dsi.fastutil.objects.Object2IntMap;
@@ -13,6 +10,9 @@ import lombok.Getter;
 import lombok.Setter;
 import lombok.ToString;
 import org.apache.commons.lang3.RandomStringUtils;
+import tools.jackson.core.JacksonException;
+import tools.jackson.databind.JsonNode;
+import tools.jackson.databind.node.JsonNodeType;
 
 import javax.annotation.Nullable;
 import javax.imageio.ImageIO;
@@ -21,8 +21,8 @@ import java.awt.image.BufferedImage;
 import java.io.IOException;
 import java.io.InputStream;
 import java.nio.charset.StandardCharsets;
-import java.util.List;
 import java.util.*;
+import java.util.List;
 import java.util.concurrent.ThreadLocalRandom;
 
 /**
@@ -126,7 +126,7 @@ public class Skin implements Cloneable {
             }
             JsonNode def = geometry.get("default");
             return def != null && def.getNodeType() == JsonNodeType.STRING;
-        } catch (ClassCastException | NullPointerException | JsonProcessingException e) {
+        } catch (ClassCastException | NullPointerException | JacksonException e) {
             return false;
         }
     }
@@ -318,8 +318,8 @@ public class Skin implements Cloneable {
             if (def == null || def.getNodeType() != JsonNodeType.STRING) {
                 return "geometry.humanoid.custom";
             }
-            return def.textValue();
-        } catch (ClassCastException | NullPointerException | JsonProcessingException e) {
+            return def.asString();
+        } catch (ClassCastException | NullPointerException | JacksonException e) {
             return "geometry.humanoid.custom";
         }
     }

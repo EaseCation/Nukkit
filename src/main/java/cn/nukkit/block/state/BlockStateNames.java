@@ -77,6 +77,7 @@ public interface BlockStateNames {
     String MINECRAFT_CONNECTION_NORTH = "minecraft:connection_north";
     String MINECRAFT_CONNECTION_SOUTH = "minecraft:connection_south";
     String MINECRAFT_CONNECTION_WEST = "minecraft:connection_west";
+    String MINECRAFT_CORNER = "minecraft:corner";
     String MINECRAFT_FACING_DIRECTION = "minecraft:facing_direction";
     String MINECRAFT_VERTICAL_HALF = "minecraft:vertical_half";
     String MOISTURIZED_AMOUNT = "moisturized_amount";

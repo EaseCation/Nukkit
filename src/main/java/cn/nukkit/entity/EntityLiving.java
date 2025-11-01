@@ -530,7 +530,7 @@ public abstract class EntityLiving extends Entity implements EntityDamageable {
                     if (airTicks <= -20) {
                         airTicks = 0;
                         if (!isPlayer || level.gameRules.getBoolean(GameRule.DROWNING_DAMAGE)) {
-                            this.attack(new EntityDamageEvent(this, DamageCause.DROWNING, 2));
+                            this.attack(new EntityDamageEvent(this, DamageCause.DEHYDRATION, 2));
                         }
                     }
 

@@ -48,6 +48,8 @@ dependencies {
     api(libs.jackson)
     api(libs.jackson.datatype.guava)
     api(libs.jackson.datatype.jdk8)
+    api(libs.jackson.core)
+    api(libs.jackson.guava)
     api(libs.jline.reader)
     api(libs.jline.terminal)
     api(libs.jline.terminal.ffm)

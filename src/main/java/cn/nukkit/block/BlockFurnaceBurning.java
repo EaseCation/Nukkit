@@ -84,8 +84,10 @@ public class BlockFurnaceBurning extends BlockSolid implements Faceable {
         this.setDamage(FACES[player != null ? player.getDirection().getHorizontalIndex() : 0]);
         this.getLevel().setBlock(block, this, true, true);
 
-        CompoundTag nbt = BlockEntity.getDefaultCompound(this, getBlockEntityId())
-                .putList(new ListTag<>("Items"));
+        CompoundTag nbt = BlockEntity.getDefaultCompound(this, getBlockEntityId());
+
+        CompoundTag itemNbt = item.getNamedTag();
+        nbt.putList(itemNbt != null ? itemNbt.getList("Items", CompoundTag.class) : new ListTag<>("Items"));
 
         if (item.hasCustomName()) {
             nbt.putString("CustomName", item.getCustomName());
@@ -116,8 +118,11 @@ public class BlockFurnaceBurning extends BlockSolid implements Faceable {
             if (blockEntity instanceof BlockEntityFurnace) {
                 furnace = (BlockEntityFurnace) blockEntity;
             } else {
-                CompoundTag nbt = BlockEntity.getDefaultCompound(this, getBlockEntityId())
-                        .putList(new ListTag<>("Items"));
+                CompoundTag nbt = BlockEntity.getDefaultCompound(this, getBlockEntityId());
+
+                CompoundTag itemNbt = item.getNamedTag();
+                nbt.putList(itemNbt != null ? itemNbt.getList("Items", CompoundTag.class) : new ListTag<>("Items"));
+
                 furnace = (BlockEntityFurnace) BlockEntities.createBlockEntity(getBlockEntityType(), getChunk(), nbt);
                 if (furnace == null) {
                     return true;
@@ -130,6 +135,7 @@ public class BlockFurnaceBurning extends BlockSolid implements Faceable {
                 }
             }
 
+            furnace.unpackLootTable();
             player.addWindow(furnace.getInventory());
         }
 

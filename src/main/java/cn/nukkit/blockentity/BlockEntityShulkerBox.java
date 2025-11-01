@@ -77,6 +77,8 @@ public class BlockEntityShulkerBox extends BlockEntityAbstractContainer {
 
     @Override
     public void onBreak() {
+        unpackLootTable();
+
         this.inventory.clearAll();
     }
 }

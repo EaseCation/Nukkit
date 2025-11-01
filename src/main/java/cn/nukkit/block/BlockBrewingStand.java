@@ -77,8 +77,10 @@ public class BlockBrewingStand extends BlockTransparent {
     public boolean place(Item item, Block block, Block target, BlockFace face, float fx, float fy, float fz, Player player) {
         getLevel().setBlock(block, this, true, true);
 
-        CompoundTag nbt = BlockEntity.getDefaultCompound(this, BlockEntity.BREWING_STAND)
-                .putList(new ListTag<>("Items"));
+        CompoundTag nbt = BlockEntity.getDefaultCompound(this, BlockEntity.BREWING_STAND);
+
+        CompoundTag itemNbt = item.getNamedTag();
+        nbt.putList(itemNbt != null ? itemNbt.getList("Items", CompoundTag.class) : new ListTag<>("Items"));
 
         if (item.hasCustomName()) {
             nbt.putString("CustomName", item.getCustomName());
@@ -103,8 +105,11 @@ public class BlockBrewingStand extends BlockTransparent {
             if (t instanceof BlockEntityBrewingStand) {
                 brewing = (BlockEntityBrewingStand) t;
             } else {
-                CompoundTag nbt = BlockEntity.getDefaultCompound(this, BlockEntity.BREWING_STAND)
-                        .putList(new ListTag<>("Items"));
+                CompoundTag nbt = BlockEntity.getDefaultCompound(this, BlockEntity.BREWING_STAND);
+
+                CompoundTag itemNbt = item.getNamedTag();
+                nbt.putList(itemNbt != null ? itemNbt.getList("Items", CompoundTag.class) : new ListTag<>("Items"));
+
                 brewing = (BlockEntityBrewingStand) BlockEntities.createBlockEntity(BlockEntityType.BREWING_STAND, getChunk(), nbt);
                 if (brewing == null) {
                     return true;
@@ -117,6 +122,7 @@ public class BlockBrewingStand extends BlockTransparent {
                 }
             }
 
+            brewing.unpackLootTable();
             player.addWindow(brewing.getInventory());
         }
 

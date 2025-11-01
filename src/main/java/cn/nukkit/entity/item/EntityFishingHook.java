@@ -11,22 +11,23 @@ import cn.nukkit.event.entity.*;
 import cn.nukkit.event.entity.EntityDamageEvent.DamageCause;
 import cn.nukkit.event.player.PlayerFishEvent;
 import cn.nukkit.item.Item;
+import cn.nukkit.item.Items;
 import cn.nukkit.item.enchantment.Enchantment;
-import cn.nukkit.item.randomitem.Fishing;
 import cn.nukkit.level.MovingObjectPosition;
+import cn.nukkit.level.biome.BiomeID;
 import cn.nukkit.level.format.FullChunk;
 import cn.nukkit.level.particle.BubbleParticle;
 import cn.nukkit.level.particle.WaterParticle;
 import cn.nukkit.level.sound.LaunchSound;
-import cn.nukkit.math.AxisAlignedBB;
-import cn.nukkit.math.BlockVector3;
-import cn.nukkit.math.Mth;
-import cn.nukkit.math.Vector3;
+import cn.nukkit.loot.LootTableContext;
+import cn.nukkit.loot.LootTables;
+import cn.nukkit.math.*;
 import cn.nukkit.nbt.NBTIO;
 import cn.nukkit.nbt.tag.CompoundTag;
 import cn.nukkit.network.protocol.EntityEventPacket;
 
 import java.util.Collection;
+import java.util.List;
 import java.util.Random;
 import java.util.concurrent.ThreadLocalRandom;
 
@@ -403,7 +404,8 @@ public class EntityFishingHook extends EntityProjectile {
         if (this.shootingEntity instanceof Player && this.caught) {
             this.level.addSound(new LaunchSound(this.shootingEntity));
             Player player = (Player) this.shootingEntity;
-            Item item = Fishing.getFishingResult(this);
+            List<Item> items = getFishingResult();
+            Item item = items.isEmpty() ? Items.air() : items.getFirst();
             int experience = ThreadLocalRandom.current().nextInt(1, 4);
             Vector3 motion = player.subtract(this).multiply(0.1);
             motion.y += Math.sqrt(player.distance(this)) * 0.08;
@@ -463,6 +465,25 @@ public class EntityFishingHook extends EntityProjectile {
         this.close();
 
         return itemDamage;
+    }
+
+    protected List<Item> getFishingResult() {
+        float luck = Math.max(rod.getEnchantmentLevel(Enchantment.LUCK_OF_THE_SEA), 0);
+//        if (shootingEntity instanceof Player player) {
+//            luck += player.getAttribute(Attribute.LUCK).getValue(); //TODO: AttributeMap
+//        }
+
+        int biomeId = level.getBiomeId(getFloorX(), getFloorY(), getFloorZ());
+        boolean jungle = biomeId == BiomeID.JUNGLE
+                || biomeId == BiomeID.JUNGLE_HILLS
+                || biomeId == BiomeID.JUNGLE_EDGE
+                || biomeId == BiomeID.JUNGLE_MUTATED
+                || biomeId == BiomeID.JUNGLE_EDGE_MUTATED
+                || biomeId == BiomeID.BAMBOO_JUNGLE
+                || biomeId == BiomeID.BAMBOO_JUNGLE_HILLS;
+
+        return (jungle ? LootTables.GAMEPLAY_JUNGLE_FISHING : LootTables.GAMEPLAY_FISHING)
+                .getRandomItems(new LocalRandom(), LootTableContext.builder(level).luck(luck).build());
     }
 
     @Override

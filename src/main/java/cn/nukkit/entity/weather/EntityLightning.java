@@ -126,7 +126,7 @@ public class EntityLightning extends Entity implements EntityLightningStrike {
     }
 
     private void tryIgniteBlock() {
-        if (!isEffect || !level.gameRules.getBoolean(GameRule.DO_FIRE_TICK) || server.getDifficulty() < Difficulty.NORMAL.ordinal()) {
+        if (!isEffect || !level.gameRules.getBoolean(GameRule.DO_FIRE_TICK) || level.getDifficulty() < Difficulty.NORMAL.ordinal()) {
             return;
         }
         Block block = getLevelBlock();

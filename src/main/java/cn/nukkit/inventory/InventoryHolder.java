@@ -17,4 +17,7 @@ public interface InventoryHolder {
     default void openInventory(Player player) {
         player.addWindow(getInventory());
     }
+
+    default void unpackLootTable() {
+    }
 }

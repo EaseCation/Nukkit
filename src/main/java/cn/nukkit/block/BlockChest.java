@@ -138,8 +138,10 @@ public class BlockChest extends BlockTransparent implements Faceable {
         }
         this.getLevel().setBlock(block, placeBlock, true, true);
 
-        CompoundTag nbt = BlockEntity.getDefaultCompound(this, BlockEntity.CHEST)
-                .putList(new ListTag<>("Items"));
+        CompoundTag nbt = BlockEntity.getDefaultCompound(this, BlockEntity.CHEST);
+
+        CompoundTag itemNbt = item.getNamedTag();
+        nbt.putList(itemNbt != null ? itemNbt.getList("Items", CompoundTag.class) : new ListTag<>("Items"));
 
         if (item.hasCustomName()) {
             nbt.putString("CustomName", item.getCustomName());
@@ -190,8 +192,11 @@ public class BlockChest extends BlockTransparent implements Faceable {
             if (t instanceof BlockEntityChest) {
                 chest = (BlockEntityChest) t;
             } else {
-                CompoundTag nbt = BlockEntity.getDefaultCompound(this, BlockEntity.CHEST)
-                        .putList(new ListTag<>("Items"));
+                CompoundTag nbt = BlockEntity.getDefaultCompound(this, BlockEntity.CHEST);
+
+                CompoundTag itemNbt = item.getNamedTag();
+                nbt.putList(itemNbt != null ? itemNbt.getList("Items", CompoundTag.class) : new ListTag<>("Items"));
+
                 chest = (BlockEntityChest) BlockEntities.createBlockEntity(BlockEntityType.CHEST, getChunk(), nbt);
                 if (chest == null) {
                     return true;
@@ -204,6 +209,7 @@ public class BlockChest extends BlockTransparent implements Faceable {
                 }
             }
 
+            chest.unpackLootTable();
             player.addWindow(chest.getInventory());
         }
 

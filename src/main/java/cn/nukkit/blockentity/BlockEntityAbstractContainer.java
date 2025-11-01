@@ -6,15 +6,26 @@ import cn.nukkit.inventory.InventoryHolder;
 import cn.nukkit.item.Item;
 import cn.nukkit.item.Items;
 import cn.nukkit.level.format.FullChunk;
+import cn.nukkit.loot.LootTable;
+import cn.nukkit.loot.LootTableContext;
+import cn.nukkit.loot.LootTables;
+import cn.nukkit.loot.Lootable;
+import cn.nukkit.math.NukkitRandom;
 import cn.nukkit.nbt.NBTIO;
 import cn.nukkit.nbt.tag.CompoundTag;
 import cn.nukkit.nbt.tag.ListTag;
 import it.unimi.dsi.fastutil.ints.Int2ObjectMap;
 import it.unimi.dsi.fastutil.objects.ObjectArrayList;
 
+import javax.annotation.Nullable;
 import java.util.Iterator;
+import java.util.concurrent.ThreadLocalRandom;
 
-public abstract class BlockEntityAbstractContainer extends BlockEntitySpawnable implements BlockEntityContainer, InventoryHolder, BlockEntityNameable {
+public abstract class BlockEntityAbstractContainer extends BlockEntitySpawnable implements BlockEntityContainer, InventoryHolder, BlockEntityNameable, Lootable {
+    @Nullable
+    private String lootTable;
+    private int lootTableSeed;
+
     protected BlockEntityAbstractContainer(FullChunk chunk, CompoundTag nbt) {
         super(chunk, nbt);
     }
@@ -46,6 +57,9 @@ public abstract class BlockEntityAbstractContainer extends BlockEntitySpawnable 
             }
         }
 
+        lootTable = namedTag.getString("LootTable", null);
+        lootTableSeed = namedTag.getInt("LootTableSeed");
+
         super.initBlockEntity();
     }
 
@@ -69,10 +83,20 @@ public abstract class BlockEntityAbstractContainer extends BlockEntitySpawnable 
             items.add(NBTIO.putItemHelper(item, slot));
         }
         namedTag.putList(items);
+
+        if (lootTable != null) {
+            namedTag.putString("LootTable", lootTable);
+            namedTag.putInt("LootTableSeed", lootTableSeed);
+        } else {
+            namedTag.remove("LootTable");
+            namedTag.remove("LootTableSeed");
+        }
     }
 
     @Override
     public void onBreak() {
+        unpackLootTable();
+
         Inventory inventory = getRealInventory();
 
         for (Item content : inventory.getContents().values()) {
@@ -126,5 +150,43 @@ public abstract class BlockEntityAbstractContainer extends BlockEntitySpawnable 
         if (!item.isNull()) {
             items.add(NBTIO.putItemHelper(item, index));
         }
+    }
+
+    @Override
+    public void unpackLootTable() {
+        if (lootTable == null) {
+            return;
+        }
+        LootTable table = LootTables.lookupByName(lootTable);
+        if (table == null) {
+            lootTable = null;
+            return;
+        }
+        int seed = lootTableSeed;
+        if (seed == 0) {
+            seed = ThreadLocalRandom.current().nextInt();
+        }
+        table.fill(getRealInventory(), new NukkitRandom(seed), LootTableContext.builder(level).build());
+        lootTable = null;
+    }
+
+    @Override
+    public String getLootTable() {
+        return lootTable;
+    }
+
+    @Override
+    public void setLootTable(String lootTable) {
+        this.lootTable = lootTable;
+    }
+
+    @Override
+    public int getLootTableSeed() {
+        return lootTableSeed;
+    }
+
+    @Override
+    public void setLootTableSeed(int seed) {
+        this.lootTableSeed = seed;
     }
 }

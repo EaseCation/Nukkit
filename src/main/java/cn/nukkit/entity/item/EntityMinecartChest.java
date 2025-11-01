@@ -9,6 +9,11 @@ import cn.nukkit.inventory.InventoryHolder;
 import cn.nukkit.inventory.MinecartChestInventory;
 import cn.nukkit.item.Item;
 import cn.nukkit.level.format.FullChunk;
+import cn.nukkit.loot.LootTable;
+import cn.nukkit.loot.LootTableContext;
+import cn.nukkit.loot.LootTables;
+import cn.nukkit.loot.Lootable;
+import cn.nukkit.math.NukkitRandom;
 import cn.nukkit.math.Vector3;
 import cn.nukkit.nbt.NBTIO;
 import cn.nukkit.nbt.tag.CompoundTag;
@@ -18,17 +23,23 @@ import cn.nukkit.utils.MinecartType;
 import it.unimi.dsi.fastutil.ints.Int2ObjectMap;
 import it.unimi.dsi.fastutil.objects.ObjectArrayList;
 
+import javax.annotation.Nullable;
 import java.util.Iterator;
+import java.util.concurrent.ThreadLocalRandom;
 
 /**
  * Created by Snake1999 on 2016/1/30.
  * Package cn.nukkit.entity.item in project Nukkit.
  */
-public class EntityMinecartChest extends EntityMinecartAbstract implements InventoryHolder {
+public class EntityMinecartChest extends EntityMinecartAbstract implements InventoryHolder, Lootable {
 
     public static final int NETWORK_ID = EntityID.CHEST_MINECART;
 
     protected MinecartChestInventory inventory;
+
+    @Nullable
+    protected String lootTable;
+    protected int lootTableSeed;
 
     public EntityMinecartChest(FullChunk chunk, CompoundTag nbt) {
         super(chunk, nbt);
@@ -57,6 +68,8 @@ public class EntityMinecartChest extends EntityMinecartAbstract implements Inven
 
     @Override
     public void dropItem() {
+        unpackLootTable();
+
         for (Item item : this.inventory.getContents().values()) {
             this.level.dropItem(this, item);
         }
@@ -83,6 +96,8 @@ public class EntityMinecartChest extends EntityMinecartAbstract implements Inven
 
     @Override
     public boolean onInteract(Player player, Item item, Vector3 clickedPos) {
+        unpackLootTable();
+
         player.addWindow(this.inventory);
         return false; // If true, the count of items player has in hand decreases
     }
@@ -122,6 +137,9 @@ public class EntityMinecartChest extends EntityMinecartAbstract implements Inven
             }
         }
 
+        lootTable = namedTag.getString("LootTable", null);
+        lootTableSeed = namedTag.getInt("LootTableSeed");
+
         this.dataProperties
                 .putByte(DATA_CONTAINER_TYPE, ContainerType.MINECART_CHEST)
                 .putInt(DATA_CONTAINER_BASE_SIZE, this.inventory.getSize());
@@ -149,6 +167,14 @@ public class EntityMinecartChest extends EntityMinecartAbstract implements Inven
             }
         }
         namedTag.putList(items);
+
+        if (lootTable != null) {
+            namedTag.putString("LootTable", lootTable);
+            namedTag.putInt("LootTableSeed", lootTableSeed);
+        } else {
+            namedTag.remove("LootTable");
+            namedTag.remove("LootTableSeed");
+        }
     }
 
     @Override
@@ -172,5 +198,43 @@ public class EntityMinecartChest extends EntityMinecartAbstract implements Inven
     @Override
     public String getInteractButtonText(Player player) {
         return "action.interact.opencontainer";
+    }
+
+    @Override
+    public void unpackLootTable() {
+        if (lootTable == null) {
+            return;
+        }
+        LootTable table = LootTables.lookupByName(lootTable);
+        if (table == null) {
+            lootTable = null;
+            return;
+        }
+        int seed = lootTableSeed;
+        if (seed == 0) {
+            seed = ThreadLocalRandom.current().nextInt();
+        }
+        table.fill(getRealInventory(), new NukkitRandom(seed), LootTableContext.builder(level).build());
+        lootTable = null;
+    }
+
+    @Override
+    public String getLootTable() {
+        return lootTable;
+    }
+
+    @Override
+    public void setLootTable(String lootTable) {
+        this.lootTable = lootTable;
+    }
+
+    @Override
+    public int getLootTableSeed() {
+        return lootTableSeed;
+    }
+
+    @Override
+    public void setLootTableSeed(int seed) {
+        this.lootTableSeed = seed;
     }
 }

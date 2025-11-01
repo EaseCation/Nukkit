@@ -171,6 +171,7 @@ public class BlockShulkerBox extends BlockTransparent {
                 return true;
             }
 
+            box.unpackLootTable();
             player.addWindow(box.getInventory());
         }
 

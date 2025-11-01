@@ -291,6 +291,8 @@ public interface ItemNames extends ItemBlockNames {
     String COPPER_GOLEM_SPAWN_EGG = "copper_golem_spawn_egg";
     String NAUTILUS_SPAWN_EGG = "nautilus_spawn_egg";
     String ZOMBIE_NAUTILUS_SPAWN_EGG = "zombie_nautilus_spawn_egg";
+    String PARCHED_SPAWN_EGG = "parched_spawn_egg";
+    String CAMEL_HUSK_SPAWN_EGG = "camel_husk_spawn_egg";
     String TRADER_LLAMA_SPAWN_EGG = "trader_llama_spawn_egg";
     String EXPERIENCE_BOTTLE = "experience_bottle";
     String FIRE_CHARGE = "fire_charge";

@@ -54,7 +54,7 @@ public class BlockWitherRose extends BlockFlower {
 
     @Override
     public void onEntityCollide(Entity entity) {
-        if (entity.getServer().getDifficulty() == Difficulty.PEACEFUL.ordinal()) {
+        if (level.getDifficulty() == Difficulty.PEACEFUL.ordinal()) {
             return;
         }
         if (!(entity instanceof EntityLiving) || entity instanceof Player && ((Player) entity).isCreative()) {
