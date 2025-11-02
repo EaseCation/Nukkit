@@ -74,7 +74,7 @@ public class ItemFirework extends Item {
 
     @Override
     public boolean onActivate(Level level, Player player, Block block, Block target, BlockFace face, float fx, float fy, float fz) {
-        if (player.isAdventure()) {
+        if (!player.canPlaceOn(target, this)) {
             return false;
         }
 

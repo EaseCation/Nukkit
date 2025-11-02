@@ -5,6 +5,7 @@ import cn.nukkit.Server;
 import cn.nukkit.block.Block;
 import cn.nukkit.block.BlockID;
 import cn.nukkit.block.BlockToolType;
+import cn.nukkit.block.Blocks;
 import cn.nukkit.entity.Entity;
 import cn.nukkit.item.enchantment.Enchantment;
 import cn.nukkit.level.Level;
@@ -1495,8 +1496,32 @@ public class Item implements Cloneable, ItemID {
         return "Item " + this.name + " (" + this.id + ":" + (!this.hasMeta ? "?" : this.meta) + ")x" + this.count + (this.hasCompoundTag() ? " tags:0x" + Binary.bytesToHexString(this.getCompoundTag()) : "");
     }
 
-    public int getDestroySpeed(Block block, Player player) {
-        return 1;
+    public boolean canDestroy(Block block) {
+        Set<String> canDestroyBlocks = this.canDestroyBlocks;
+        if (canDestroyBlocks == null || canDestroyBlocks.isEmpty()) {
+            return false;
+        }
+        int blockId = block.getId();
+        for (String blockName : canDestroyBlocks) {
+            if (Blocks.getIdByBlockName(blockName, true) == blockId) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    public boolean canPlaceOn(Block block) {
+        Set<String> canPlaceOnBlocks = this.canPlaceOnBlocks;
+        if (canPlaceOnBlocks == null || canPlaceOnBlocks.isEmpty()) {
+            return false;
+        }
+        int blockId = block.getId();
+        for (String blockName : canPlaceOnBlocks) {
+            if (Blocks.getIdByBlockName(blockName, true) == blockId) {
+                return true;
+            }
+        }
+        return false;
     }
 
     public boolean onActivate(Level level, Player player, Block block, Block target, BlockFace face, float fx, float fy, float fz) {

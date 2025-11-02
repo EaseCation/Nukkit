@@ -2997,27 +2997,8 @@ public class Level implements ChunkManager, Metadatable {
         boolean isSilkTouch = !isEnchantedBook && item.getEnchantment(Enchantment.SILK_TOUCH) != null;
 
         if (player != null) {
-            if (player.getGamemode() == Player.ADVENTURE) {
-                Set<String> canDestroy = item.getCanDestroyBlocks();
-                if (canDestroy != null && !canDestroy.isEmpty()) {
-                    boolean canBreak = false;
-                    for (String blockName : canDestroy) {
-                        Block canDestroyBlock = Block.fromIdentifier(blockName);
-                        if (canDestroyBlock == null) {
-                            continue;
-                        }
-                        if (canDestroyBlock.getId() != target.getId()) {
-                            continue;
-                        }
-                        canBreak = true;
-                        break;
-                    }
-                    if (!canBreak) {
-                        return null;
-                    }
-                } else {
-                    return null;
-                }
+            if (!player.canDestroy(target, item)) {
+                return null;
             }
 
             float breakTime = player.isCreative() ? 0 : target.getBreakTime(item, player);
@@ -3250,27 +3231,8 @@ public class Level implements ChunkManager, Metadatable {
         }
 
         if (player != null) {
-            if (player.isAdventure()) {
-                Set<String> canPlaceOn = item.getCanPlaceOnBlocks();
-                if (canPlaceOn != null && !canPlaceOn.isEmpty()) {
-                    boolean canPlace = false;
-                    for (String blockName : canPlaceOn) {
-                        Block canPlaceOnBlock = Block.fromIdentifier(blockName);
-                        if (canPlaceOnBlock == null) {
-                            continue;
-                        }
-                        if (canPlaceOnBlock.getId() != target.getId()) {
-                            continue;
-                        }
-                        canPlace = true;
-                        break;
-                    }
-                    if (!canPlace) {
-                        return null;
-                    }
-                } else {
-                    return null;
-                }
+            if (!player.canPlaceOn(target, item)) {
+                return null;
             }
 
             BlockPlaceEvent event = new BlockPlaceEvent(player, hand, block, target, item);

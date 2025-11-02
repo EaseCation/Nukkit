@@ -1541,6 +1541,28 @@ public class Player extends EntityHuman implements CommandSender, InventoryHolde
         return (this.gamemode & 0x02) > 0;
     }
 
+    public boolean canDestroy(Block block, Item item) {
+        AdventureSettings settings;
+        return switch (getGamemode()) {
+            case Player.SURVIVAL -> (settings = getAdventureSettings()).get(Type.MINE)
+                    && (!settings.get(Type.WORLD_IMMUTABLE) || settings.get(Type.PRIVILEGED_BUILDER));
+            case Player.ADVENTURE -> getAdventureSettings().get(Type.MINE) && item.canDestroy(block);
+            case Player.SPECTATOR -> false;
+            default -> true;
+        };
+    }
+
+    public boolean canPlaceOn(Block block, Item item) {
+        AdventureSettings settings;
+        return switch (getGamemode()) {
+            case Player.SURVIVAL -> (settings = getAdventureSettings()).get(Type.BUILD)
+                    && (!settings.get(Type.WORLD_IMMUTABLE) || settings.get(Type.PRIVILEGED_BUILDER));
+            case Player.ADVENTURE -> getAdventureSettings().get(Type.BUILD) && item.canPlaceOn(block);
+            case Player.SPECTATOR -> false;
+            default -> true;
+        };
+    }
+
     @Override
     public Item[] getDrops() {
         if (!this.isCreative()) {
