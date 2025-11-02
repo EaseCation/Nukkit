@@ -268,7 +268,7 @@ public class EntityAreaEffectCloud extends Entity {
                 continue;
             }
 
-            if (radiusSquare >= distanceSquared(entity)) {
+            if (radiusSquare < distanceSquared(entity)) {
                 continue;
             }
 
