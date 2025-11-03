@@ -457,7 +457,8 @@ public abstract class BlockLiquid extends BlockTransparent {
                 ++z;
             }
 
-            if (occlusions.contains(side) || !this.canFlowInto(this.level.getBlock(x, y, z)) || this.level.getExtraBlock(x, y, z).isLiquid()) {
+            Block block;
+            if (occlusions.contains(side) || !(block = this.level.getBlock(x, y, z)).canContainFlowingWater() || !this.canFlowInto(block) || this.level.getExtraBlock(x, y, z).isLiquid()) {
                 flowCostVisited.put(Hash.hashBlockPos(x, y, z), BLOCKED);
             } else if (isLiquidContainer(this.level.getBlock(x, y - 1, z))) {
                 flowCostVisited.put(Hash.hashBlockPos(x, y, z), CAN_FLOW_DOWN);
