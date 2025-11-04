@@ -19,7 +19,7 @@ final class NumberProviders {
                 return NumberProvider.constant(node.floatValue());
             }
             if (node.isArray() && node.size() >= 2) {
-                return NumberProvider.uniform(node.get(0).intValue(), node.get(1).intValue());
+                return NumberProvider.uniform(node.get(0).floatValue(), node.get(1).floatValue());
             }
             return context.readTreeAsValue(node, RandomValueBounds.class);
         }

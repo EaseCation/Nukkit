@@ -22,14 +22,12 @@ import cn.nukkit.math.Vector3;
 import cn.nukkit.math.Vector3f;
 import cn.nukkit.potion.Effect;
 import cn.nukkit.potion.Effects;
+import cn.nukkit.utils.OptionalFloat;
 import cn.nukkit.utils.TextFormat;
 import cn.nukkit.utils.function.FloatSupplier;
 
 import javax.annotation.Nullable;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.Map.Entry;
 import java.util.function.*;
 import java.util.stream.Collectors;
@@ -232,6 +230,27 @@ public class CommandParser {
         return this.parseInt(min, max);
     }
 
+    public OptionalInt parseIntOptional() throws CommandSyntaxException {
+        if (!this.hasNext()) {
+            return OptionalInt.empty();
+        }
+        return OptionalInt.of(this.parseInt());
+    }
+
+    public OptionalInt parseIntOptional(int min) throws CommandSyntaxException {
+        if (!this.hasNext()) {
+            return OptionalInt.empty();
+        }
+        return OptionalInt.of(this.parseInt(min));
+    }
+
+    public OptionalInt parseIntOptional(int min, int max) throws CommandSyntaxException {
+        if (!this.hasNext()) {
+            return OptionalInt.empty();
+        }
+        return OptionalInt.of(this.parseInt(min, max));
+    }
+
     public long parseLong() throws CommandSyntaxException {
         String arg = this.next();
         try {
@@ -291,6 +310,27 @@ public class CommandParser {
             return defaultValue.getAsLong();
         }
         return this.parseLong(min, max);
+    }
+
+    public OptionalLong parseLongOptional() throws CommandSyntaxException {
+        if (!this.hasNext()) {
+            return OptionalLong.empty();
+        }
+        return OptionalLong.of(this.parseLong());
+    }
+
+    public OptionalLong parseLongOptional(long min) throws CommandSyntaxException {
+        if (!this.hasNext()) {
+            return OptionalLong.empty();
+        }
+        return OptionalLong.of(this.parseLong(min));
+    }
+
+    public OptionalLong parseLongOptional(long min, long max) throws CommandSyntaxException {
+        if (!this.hasNext()) {
+            return OptionalLong.empty();
+        }
+        return OptionalLong.of(this.parseLong(min, max));
     }
 
     public float parseFloat() throws CommandSyntaxException {
@@ -354,6 +394,27 @@ public class CommandParser {
         return this.parseFloat(min, max);
     }
 
+    public OptionalFloat parseFloatOptional() throws CommandSyntaxException {
+        if (!this.hasNext()) {
+            return OptionalFloat.empty();
+        }
+        return OptionalFloat.of(this.parseFloat());
+    }
+
+    public OptionalFloat parseFloatOptional(float min) throws CommandSyntaxException {
+        if (!this.hasNext()) {
+            return OptionalFloat.empty();
+        }
+        return OptionalFloat.of(this.parseFloat(min));
+    }
+
+    public OptionalFloat parseFloatOptional(float min, float max) throws CommandSyntaxException {
+        if (!this.hasNext()) {
+            return OptionalFloat.empty();
+        }
+        return OptionalFloat.of(this.parseFloat(min, max));
+    }
+
     public double parseDouble() throws CommandSyntaxException {
         String arg = this.next();
         try {
@@ -415,6 +476,27 @@ public class CommandParser {
         return this.parseDouble(min, max);
     }
 
+    public OptionalDouble parseDoubleOptional() throws CommandSyntaxException {
+        if (!this.hasNext()) {
+            return OptionalDouble.empty();
+        }
+        return OptionalDouble.of(this.parseDouble());
+    }
+
+    public OptionalDouble parseDoubleOptional(double min) throws CommandSyntaxException {
+        if (!this.hasNext()) {
+            return OptionalDouble.empty();
+        }
+        return OptionalDouble.of(this.parseDouble(min));
+    }
+
+    public OptionalDouble parseDoubleOptional(double min, double max) throws CommandSyntaxException {
+        if (!this.hasNext()) {
+            return OptionalDouble.empty();
+        }
+        return OptionalDouble.of(this.parseDouble(min, max));
+    }
+
     public boolean parseBoolean() throws CommandSyntaxException {
         String arg = this.next();
         switch (arg.toLowerCase()) {
@@ -437,6 +519,13 @@ public class CommandParser {
         return this.parseBoolean();
     }
 
+    public Optional<Boolean> parseBooleanOptional() throws CommandSyntaxException {
+        if (!this.hasNext()) {
+            return Optional.empty();
+        }
+        return Optional.of(this.parseBoolean());
+    }
+
     public String literal() throws CommandSyntaxException {
         return this.next();
     }
@@ -450,6 +539,13 @@ public class CommandParser {
             return defaultValue.get();
         }
         return this.literal();
+    }
+
+    public Optional<String> literalOptional() throws CommandSyntaxException {
+        if (!this.hasNext()) {
+            return Optional.empty();
+        }
+        return Optional.of(this.literal());
     }
 
     @Nullable
@@ -466,6 +562,13 @@ public class CommandParser {
             return defaultValue.get();
         }
         return this.args[this.cursor + 1];
+    }
+
+    public Optional<String> peekOptional() throws CommandSyntaxException {
+        if (!this.hasNext()) {
+            return Optional.empty();
+        }
+        return Optional.of(this.args[this.cursor + 1]);
     }
 
     public <T> T parse(Function<String, T> parser) throws CommandSyntaxException {
@@ -490,6 +593,13 @@ public class CommandParser {
         return this.parse(parser);
     }
 
+    public <T> Optional<T> parseOptional(Function<String, T> parser) throws CommandSyntaxException {
+        if (!this.hasNext()) {
+            return Optional.empty();
+        }
+        return Optional.ofNullable(this.parse(parser));
+    }
+
     public <T extends Enum<T>> T parseEnum(Class<T> enumType) throws CommandSyntaxException {
         String arg = this.next();
         try {
@@ -512,6 +622,13 @@ public class CommandParser {
             return defaultValue.get();
         }
         return this.parseEnum(enumType);
+    }
+
+    public <T extends Enum<T>> Optional<T> parseEnumOptional(Class<T> enumType) throws CommandSyntaxException {
+        if (!this.hasNext()) {
+            return Optional.empty();
+        }
+        return Optional.of(this.parseEnum(enumType));
     }
 
     public List<Entity> parseTargets() throws CommandSyntaxException {
@@ -570,6 +687,20 @@ public class CommandParser {
             return defaultValue.get();
         }
         return this.parseTargets(limit);
+    }
+
+    public Optional<List<Entity>> parseTargetsOptional() throws CommandSyntaxException {
+        if (!this.hasNext()) {
+            return Optional.empty();
+        }
+        return Optional.of(this.parseTargets());
+    }
+
+    public Optional<List<Entity>> parseTargetsOptional(int limit) throws CommandSyntaxException {
+        if (!this.hasNext()) {
+            return Optional.empty();
+        }
+        return Optional.of(this.parseTargets(limit));
     }
 
     public List<Entity> parseTargetsOrSelf() throws CommandSyntaxException {
@@ -637,6 +768,20 @@ public class CommandParser {
         return this.parseTargetPlayers(limit);
     }
 
+    public Optional<List<Player>> parseTargetPlayersOptional() throws CommandSyntaxException {
+        if (!this.hasNext()) {
+            return Optional.empty();
+        }
+        return Optional.of(this.parseTargetPlayers());
+    }
+
+    public Optional<List<Player>> parseTargetPlayersOptional(int limit) throws CommandSyntaxException {
+        if (!this.hasNext()) {
+            return Optional.empty();
+        }
+        return Optional.of(this.parseTargetPlayers(limit));
+    }
+
     public List<Player> parseTargetPlayersOrSelf() throws CommandSyntaxException {
         return this.parseTargetPlayersOrDefault(() -> {
             if (!(sender instanceof Player)) {
@@ -665,7 +810,7 @@ public class CommandParser {
             }
             this.reset();
         }
-        return this.parseTargets(1).get(0);
+        return this.parseTargets(1).getFirst();
     }
 
     public Vector3 parseVector3TargetOrDefault(Vector3 defaultValue) throws CommandSyntaxException {
@@ -677,6 +822,13 @@ public class CommandParser {
             return defaultValue.get();
         }
         return this.parseVector3Target();
+    }
+
+    public Optional<Vector3> parseVector3TargetOptional() throws CommandSyntaxException {
+        if (!this.hasNext()) {
+            return Optional.empty();
+        }
+        return Optional.of(this.parseVector3Target());
     }
 
     public Position parsePositionTarget() throws CommandSyntaxException {
@@ -699,6 +851,13 @@ public class CommandParser {
         return pos;
     }
 
+    public Optional<Position> parsePositionTargetOptional() throws CommandSyntaxException {
+        if (!this.hasNext()) {
+            return Optional.empty();
+        }
+        return Optional.of(this.parsePositionTarget());
+    }
+
     public Position parsePosition() throws CommandSyntaxException {
         return Position.fromObject(this.parseVector3(), this.getTargetLevel());
     }
@@ -712,6 +871,13 @@ public class CommandParser {
             return defaultValue.get();
         }
         return this.parsePosition();
+    }
+
+    public Optional<Position> parsePositionOptional() throws CommandSyntaxException {
+        if (!this.hasNext()) {
+            return Optional.empty();
+        }
+        return Optional.of(this.parsePosition());
     }
 
     public Position parsePositionOrSelf() throws CommandSyntaxException {
@@ -746,6 +912,13 @@ public class CommandParser {
             return defaultValue.get();
         }
         return this.parseVector3();
+    }
+
+    public Optional<Vector3> parseVector3Optional() throws CommandSyntaxException {
+        if (!this.hasNext()) {
+            return Optional.empty();
+        }
+        return Optional.of(this.parseVector3());
     }
 
     public Vector3 parseVector3OrSelf() throws CommandSyntaxException {
@@ -783,6 +956,13 @@ public class CommandParser {
             return defaultValue.get();
         }
         return this.parseVector2();
+    }
+
+    public Optional<Vector2> parseVector2Optional() throws CommandSyntaxException {
+        if (!this.hasNext()) {
+            return Optional.empty();
+        }
+        return Optional.of(this.parseVector2());
     }
 
     public Vector2 parseVector2OrSelf() throws CommandSyntaxException {
@@ -827,6 +1007,10 @@ public class CommandParser {
         return null;
     }
 
+    public Optional<Vector3> senderAsVector3Optional() throws CommandSyntaxException {
+        return Optional.ofNullable(this.senderAsVector3());
+    }
+
     @Nullable
     public Vector2 senderAsVector2() {
         if (this.sender instanceof Vector3) {
@@ -845,6 +1029,10 @@ public class CommandParser {
             return (Vector2) this.sender;
         }
         return null;
+    }
+
+    public Optional<Vector2> senderAsVector2Optional() throws CommandSyntaxException {
+        return Optional.ofNullable(this.senderAsVector2());
     }
 
     public Block parseBlock() throws CommandSyntaxException {
@@ -890,6 +1078,13 @@ public class CommandParser {
             return defaultValue.get();
         }
         return this.parseBlock();
+    }
+
+    public Optional<Block> parseBlockOptional() throws CommandSyntaxException {
+        if (!this.hasNext()) {
+            return Optional.empty();
+        }
+        return Optional.of(this.parseBlock());
     }
 
     private Map<String, Object> parseBlockStates(String str) throws CommandSyntaxException {
@@ -998,6 +1193,13 @@ public class CommandParser {
         return this.parseItem();
     }
 
+    public Optional<Item> parseItemOptional() throws CommandSyntaxException {
+        if (!this.hasNext()) {
+            return Optional.empty();
+        }
+        return Optional.of(this.parseItem());
+    }
+
     public Biome parseBiome() throws CommandSyntaxException {
         String arg = this.next();
         Biome biome;
@@ -1021,6 +1223,13 @@ public class CommandParser {
             return defaultValue.get();
         }
         return this.parseBiome();
+    }
+
+    public Optional<Biome> parseBiomeOptional() throws CommandSyntaxException {
+        if (!this.hasNext()) {
+            return Optional.empty();
+        }
+        return Optional.of(this.parseBiome());
     }
 
     public Enchantment parseEnchantment() throws CommandSyntaxException {
@@ -1048,6 +1257,13 @@ public class CommandParser {
         return this.parseEnchantment();
     }
 
+    public Optional<Enchantment> parseEnchantmentOptional() throws CommandSyntaxException {
+        if (!this.hasNext()) {
+            return Optional.empty();
+        }
+        return Optional.of(this.parseEnchantment());
+    }
+
     public Effect parseEffect() throws CommandSyntaxException {
         String arg = this.next();
         Effect effect;
@@ -1071,5 +1287,12 @@ public class CommandParser {
             return defaultValue.get();
         }
         return this.parseEffect();
+    }
+
+    public Optional<Effect> parseEffectOptional() throws CommandSyntaxException {
+        if (!this.hasNext()) {
+            return Optional.empty();
+        }
+        return Optional.of(this.parseEffect());
     }
 }

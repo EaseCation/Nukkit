@@ -51,6 +51,11 @@ final class BlockStateBehaviours {
         // S W N E
         register(MINECRAFT_CARDINAL_DIRECTION, BlockStateBehaviours::rotateMinecraftCardinalDirection, BlockStateBehaviours::mirrorMinecraftCardinalDirection);
 
+        register(MINECRAFT_CONNECTION_EAST, BlockStateBehaviours::rotateMinecraftCardinalConnections, BlockStateBehaviours::mirrorMinecraftCardinalConnections);
+        //register(MINECRAFT_CONNECTION_NORTH, BlockStateBehaviours::rotateMinecraftCardinalConnections, BlockStateBehaviours::mirrorMinecraftCardinalConnections);
+        //register(MINECRAFT_CONNECTION_SOUTH, BlockStateBehaviours::rotateMinecraftCardinalConnections, BlockStateBehaviours::mirrorMinecraftCardinalConnections);
+        //register(MINECRAFT_CONNECTION_WEST, BlockStateBehaviours::rotateMinecraftCardinalConnections, BlockStateBehaviours::mirrorMinecraftCardinalConnections);
+
         // D U N S W E
         register(MINECRAFT_FACING_DIRECTION, BlockStateBehaviours::rotateMinecraftFacingDirection, BlockStateBehaviours::mirrorMinecraftFacingDirection);
 
@@ -367,6 +372,14 @@ final class BlockStateBehaviours {
 
     private static BlockInstance mirrorMinecraftCardinalDirection(BlockInstance block, Mirror mirror) {
         return mirrorHorizontalBlockFace(block, MINECRAFT_CARDINAL_DIRECTION, mirror);
+    }
+
+    private static BlockInstance rotateMinecraftCardinalConnections(BlockInstance block, Rotation rotation) {
+        return rotate(block, MINECRAFT_CONNECTION_SOUTH, MINECRAFT_CONNECTION_WEST, MINECRAFT_CONNECTION_NORTH, MINECRAFT_CONNECTION_EAST, rotation);
+    }
+
+    private static BlockInstance mirrorMinecraftCardinalConnections(BlockInstance block, Mirror mirror) {
+        return mirror(block, MINECRAFT_CONNECTION_SOUTH, MINECRAFT_CONNECTION_WEST, MINECRAFT_CONNECTION_NORTH, MINECRAFT_CONNECTION_EAST, mirror);
     }
 
     private static BlockInstance rotateMinecraftFacingDirection(BlockInstance block, Rotation rotation) {
