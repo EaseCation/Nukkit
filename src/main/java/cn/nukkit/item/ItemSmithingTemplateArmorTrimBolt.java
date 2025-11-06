@@ -1,5 +1,7 @@
 package cn.nukkit.item;
 
+import cn.nukkit.item.armortrim.TrimPatternNames;
+
 public class ItemSmithingTemplateArmorTrimBolt extends Item {
     public ItemSmithingTemplateArmorTrimBolt() {
         this(0, 1);
@@ -14,7 +16,7 @@ public class ItemSmithingTemplateArmorTrimBolt extends Item {
     }
 
     @Override
-    public boolean isArmorTrimSmithingTemplate() {
-        return true;
+    public String getTrimPatternName() {
+        return TrimPatternNames.BOLT;
     }
 }

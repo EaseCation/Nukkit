@@ -449,4 +449,9 @@ public class ItemBucket extends Item {
         }
         return 20000;
     }
+
+    @Override
+    public boolean isBucket() {
+        return true;
+    }
 }

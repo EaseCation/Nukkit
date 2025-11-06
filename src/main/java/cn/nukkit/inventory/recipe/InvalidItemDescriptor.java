@@ -1,5 +1,6 @@
 package cn.nukkit.inventory.recipe;
 
+import cn.nukkit.item.Item;
 import cn.nukkit.network.protocol.types.ItemDescriptorType;
 import lombok.ToString;
 
@@ -10,5 +11,10 @@ public class InvalidItemDescriptor implements ItemDescriptor {
     @Override
     public ItemDescriptorType getType() {
         return ItemDescriptorType.NONE;
+    }
+
+    @Override
+    public boolean accepts(Item item) {
+        return item.isNull();
     }
 }

@@ -1,5 +1,6 @@
 package cn.nukkit.inventory.recipe;
 
+import cn.nukkit.item.Item;
 import cn.nukkit.network.protocol.types.ItemDescriptorType;
 import lombok.ToString;
 
@@ -14,6 +15,14 @@ public class TagItemDescriptor implements ItemDescriptor {
     @Override
     public ItemDescriptorType getType() {
         return ItemDescriptorType.ITEM_TAG;
+    }
+
+    @Override
+    public boolean accepts(Item item) {
+        if (item.getCount() < 1) {
+            return false;
+        }
+        return item.hasItemTag(tag);
     }
 
     public String getTag() {

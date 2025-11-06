@@ -1,16 +1,16 @@
 package cn.nukkit.item;
 
-public class ItemNautilusArmorNetherite extends Item {
-    public ItemNautilusArmorNetherite() {
+public class ItemHorseArmorNetherite extends Item {
+    public ItemHorseArmorNetherite() {
         this(0, 0);
     }
 
-    public ItemNautilusArmorNetherite(Integer meta) {
+    public ItemHorseArmorNetherite(Integer meta) {
         this(meta, 0);
     }
 
-    public ItemNautilusArmorNetherite(Integer meta, int count) {
-        super(NETHERITE_NAUTILUS_ARMOR, meta, count, "Netherite Nautilus Armor");
+    public ItemHorseArmorNetherite(Integer meta, int count) {
+        super(NETHERITE_HORSE_ARMOR, meta, count, "Netherite Horse Armor");
     }
 
     @Override
@@ -39,7 +39,7 @@ public class ItemNautilusArmorNetherite extends Item {
     }
 
     @Override
-    public boolean isNautilusArmor() {
+    public boolean isHorseArmor() {
         return true;
     }
 }

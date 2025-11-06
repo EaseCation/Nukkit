@@ -79,4 +79,13 @@ public class ItemSpawnEgg extends Item {
 
         return false;
     }
+
+    @Override
+    public boolean isSpawnEgg() {
+        return true;
+    }
+
+    public int getEntityId() {
+        return getDamage();
+    }
 }

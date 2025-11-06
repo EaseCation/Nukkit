@@ -8,8 +8,7 @@ import cn.nukkit.item.ItemBlockNames;
 import cn.nukkit.item.Items;
 import cn.nukkit.nbt.tag.CompoundTag;
 import cn.nukkit.utils.DyeColor;
-import it.unimi.dsi.fastutil.ints.IntArrayList;
-import it.unimi.dsi.fastutil.ints.IntList;
+import it.unimi.dsi.fastutil.ints.*;
 import it.unimi.dsi.fastutil.objects.Object2IntMap;
 import it.unimi.dsi.fastutil.objects.Object2IntOpenHashMap;
 import it.unimi.dsi.fastutil.objects.Object2ObjectOpenHashMap;
@@ -18,9 +17,7 @@ import lombok.extern.log4j.Log4j2;
 import javax.annotation.Nullable;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationTargetException;
-import java.util.Collections;
-import java.util.Map;
-import java.util.Objects;
+import java.util.*;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.function.IntFunction;
 
@@ -47,6 +44,9 @@ public final class Blocks {
 
     private static final Map<String, IntList> LEGACY_ALIASES_MAP = new Object2ObjectOpenHashMap<>();
     private static final Object2IntMap<String> DEPRECATED_LEGACY_ALIASES_MAP = new Object2IntOpenHashMap<>();
+
+    private static final Set<String>[] ID_TO_TAGS = new Set[Block.BLOCK_ID_COUNT];
+    private static final Map<String, IntSet> TAG_TO_IDS = new Object2ObjectOpenHashMap<>();
 
     private static final AtomicInteger CUSTOM_BLOCK_ID_ALLOCATOR = new AtomicInteger(Block.CUSTOM_BLOCK_FIRST_ID_NEW);
 
@@ -2219,6 +2219,20 @@ public final class Blocks {
         COMPLEX_ALIASES_MAP.put(newName, Block.getFullId(oldId, oldMeta));
     }
 
+    public static void registerBlockTag(String blockTag, int... blockIds) {
+        IntSet ids = TAG_TO_IDS.computeIfAbsent(blockTag, k -> new IntOpenHashSet());
+        for (int id : blockIds) {
+            ids.add(id);
+
+            Set<String> tags = ID_TO_TAGS[id];
+            if (tags == null) {
+                tags = new HashSet<>();
+                ID_TO_TAGS[id] = tags;
+            }
+            tags.add(blockTag);
+        }
+    }
+
     public static Object2IntMap<String> getBlockNameToIdMap() {
         return BLOCK_NAME_TO_ID;
     }
@@ -2419,6 +2433,25 @@ public final class Blocks {
 
     public static Object2IntMap<String> getDeprecatedLegacyAliasesMap() {
         return DEPRECATED_LEGACY_ALIASES_MAP;
+    }
+
+    public static Set<String> getTags(int blockId) {
+        if (blockId < 0 || blockId >= ID_TO_TAGS.length) {
+            return Collections.emptySet();
+        }
+        Set<String> tags = ID_TO_TAGS[blockId];
+        if (tags == null) {
+            return Collections.emptySet();
+        }
+        return tags;
+    }
+
+    public static boolean hasTag(String blockTag, int blockId) {
+        return getTags(blockId).contains(blockTag);
+    }
+
+    public static IntSet getBlockIdsByTag(String blockTag) {
+        return TAG_TO_IDS.getOrDefault(blockTag, IntSets.emptySet());
     }
 
     public static int allocateCustomBlockId() {

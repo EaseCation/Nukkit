@@ -10,6 +10,7 @@ import cn.nukkit.inventory.FurnaceInventory;
 import cn.nukkit.inventory.FurnaceRecipe;
 import cn.nukkit.inventory.RecipeTag;
 import cn.nukkit.item.Item;
+import cn.nukkit.item.ItemBucket;
 import cn.nukkit.item.Items;
 import cn.nukkit.level.format.FullChunk;
 import cn.nukkit.math.Mth;
@@ -140,7 +141,7 @@ public class BlockEntityFurnace extends BlockEntityAbstractContainer {
         if (burnTime > 0 && ev.isBurning()) {
             fuel.setCount(fuel.getCount() - 1);
             if (fuel.getCount() == 0) {
-                if (fuel.getId() == Item.BUCKET && fuel.getDamage() == 10) {
+                if (fuel.getId() == Item.BUCKET && fuel.getDamage() == ItemBucket.LAVA_BUCKET) {
                     fuel.setDamage(0);
                     fuel.setCount(1);
                 } else {
@@ -214,6 +215,7 @@ public class BlockEntityFurnace extends BlockEntityAbstractContainer {
                 burnTime = 0;
                 cookTime = 0;
                 burnDuration = 0;
+                maxTime = 0;
             } else {
                 cookTime = 0;
             }
@@ -225,6 +227,7 @@ public class BlockEntityFurnace extends BlockEntityAbstractContainer {
             burnTime = 0;
             cookTime = 0;
             burnDuration = 0;
+            maxTime = 0;
         }
 
         for (Player player : this.getInventory().getViewers()) {
@@ -232,13 +235,13 @@ public class BlockEntityFurnace extends BlockEntityAbstractContainer {
             if (windowId > 0) {
                 ContainerSetDataPacket pk1 = new ContainerSetDataPacket();
                 pk1.windowId = windowId;
-                pk1.property = ContainerSetDataPacket.PROPERTY_FURNACE_TICK_COUNT;
+                pk1.property = ContainerSetDataPacket.PROPERTY_FURNACE_SMELT_PROGRESS;
                 pk1.value = cookTime;
                 player.dataPacket(pk1);
 
                 ContainerSetDataPacket pk2 = new ContainerSetDataPacket();
                 pk2.windowId = windowId;
-                pk2.property = ContainerSetDataPacket.PROPERTY_FURNACE_LIT_TIME;
+                pk2.property = ContainerSetDataPacket.PROPERTY_FURNACE_REMAINING_FUEL_TIME;
                 pk2.value = burnDuration;
                 player.dataPacket(pk2);
             }

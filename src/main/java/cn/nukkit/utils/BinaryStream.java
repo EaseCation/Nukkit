@@ -9,17 +9,12 @@ import cn.nukkit.entity.data.EntityMetadata;
 import cn.nukkit.entity.data.Skin;
 import cn.nukkit.inventory.RecipeType;
 import cn.nukkit.inventory.recipe.RecipeIngredient;
-import cn.nukkit.item.Item;
-import cn.nukkit.item.ItemDurable;
-import cn.nukkit.item.ItemID;
-import cn.nukkit.item.RuntimeItems;
+import cn.nukkit.item.*;
 import cn.nukkit.level.GameRule;
 import cn.nukkit.level.GameRules;
 import cn.nukkit.math.*;
 import cn.nukkit.nbt.NBTIO;
 import cn.nukkit.nbt.tag.CompoundTag;
-import cn.nukkit.nbt.tag.ListTag;
-import cn.nukkit.nbt.tag.StringTag;
 import cn.nukkit.nbt.tag.Tag;
 import cn.nukkit.network.protocol.BossEventPacket.BossBarColor;
 import cn.nukkit.network.protocol.types.AbilityLayer;
@@ -488,7 +483,7 @@ public class BinaryStream {
 
         int id = this.getVarInt();
         if (id == ItemID.AIR) {
-            return Item.get(ItemID.AIR, 0, 0);
+            return Items.air();
         }
 
         if (id < Short.MIN_VALUE || id >= Short.MAX_VALUE) {
@@ -665,7 +660,7 @@ public class BinaryStream {
     public Item getSlotLegacy() {
         int id = this.getVarInt();
         if (id == ItemID.AIR) {
-            return Item.get(ItemID.AIR, 0, 0);
+            return Items.air();
         }
 
         if (id < Short.MIN_VALUE || id >= Short.MAX_VALUE) {
@@ -794,33 +789,6 @@ public class BinaryStream {
         this.putSlot(item);
     }
 
-    public Item getCraftingRecipeIngredient() {
-        if (this.helper != null) {
-            return this.helper.getCraftingRecipeIngredient(this);
-        }
-
-        int id = this.getVarInt();
-        if (id == ItemID.AIR) {
-            return Item.get(ItemID.AIR, 0, 0);
-        }
-
-        if (id < Short.MIN_VALUE || id >= Short.MAX_VALUE) {
-            throw new RuntimeException("Invalid item ID received: " + id);
-        }
-
-        int damage = this.getVarInt();
-        if (damage == 0x7fff) {
-            damage = -1;
-        }
-
-        if (damage < Short.MIN_VALUE || damage >= Short.MAX_VALUE) {
-            throw new RuntimeException("Invalid item meta received: " + id);
-        }
-
-        int count = this.getVarInt();
-        return Item.get(id, damage, count);
-    }
-
     public void putCraftingRecipeIngredient(Item ingredient) {
         if (this.helper != null) {
             this.helper.putCraftingRecipeIngredient(this, ingredient);
@@ -841,30 +809,6 @@ public class BinaryStream {
         }
         this.putVarInt(damage);
         this.putVarInt(ingredient.getCount());
-    }
-
-    private List<String> extractStringList(Item item, String tagName) {
-        CompoundTag namedTag = item.getNamedTag();
-        if (namedTag == null) {
-            return Collections.emptyList();
-        }
-
-        Tag tag = namedTag.get(tagName);
-        if (!(tag instanceof ListTag)) {
-            return Collections.emptyList();
-        }
-        ListTag<? extends Tag> listTag = (ListTag<? extends Tag>) tag;
-
-        int size = listTag.size();
-        List<String> values = new ObjectArrayList<>(size);
-        for (int i = 0; i < size; i++) {
-            Tag nbt = listTag.get(i);
-            if (nbt instanceof StringTag) {
-                values.add(((StringTag) nbt).data);
-            }
-        }
-
-        return values;
     }
 
     public byte[] getByteArray() {
@@ -1293,29 +1237,6 @@ public class BinaryStream {
         public void putRecipeIngredient(BinaryStream stream, RecipeIngredient ingredient) {
         }
 
-        public Item getCraftingRecipeIngredient(BinaryStream stream) {
-            int id = stream.getVarInt();
-            if (id == ItemID.AIR) {
-                return Item.get(ItemID.AIR, 0, 0);
-            }
-
-            if (id < Short.MIN_VALUE || id >= Short.MAX_VALUE) {
-                throw new RuntimeException("Invalid item ID received: " + id);
-            }
-
-            int damage = stream.getVarInt();
-            if (damage == 0x7fff) {
-                damage = -1;
-            }
-
-            if (damage < Short.MIN_VALUE || damage >= Short.MAX_VALUE) {
-                throw new RuntimeException("Invalid item meta received: " + id);
-            }
-
-            int count = stream.getVarInt();
-            return Item.get(id, damage, count);
-        }
-
         public void putCraftingRecipeIngredient(BinaryStream stream, Item ingredient) {
             if (ingredient == null || ingredient.getId() == ItemID.AIR) {
                 stream.putVarInt(ItemID.AIR);
@@ -1396,10 +1317,6 @@ public class BinaryStream {
 
         public final int getCommandParameterTypeId(CommandParamType type, int defaultValue) {
             return this.commandParameterType2Id.getOrDefault(type, defaultValue);
-        }
-
-        protected final List<String> extractStringList(BinaryStream stream, Item item, String tagName) {
-            return stream.extractStringList(item, tagName);
         }
 
         public BossBarColor getBossBarColor(BinaryStream stream) {

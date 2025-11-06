@@ -22,4 +22,9 @@ public class ItemEmptyMap extends Item {
     public boolean isStackedByData() {
         return true;
     }
+
+    @Override
+    public boolean isMap() {
+        return true;
+    }
 }

@@ -1,5 +1,7 @@
 package cn.nukkit.item;
 
+import cn.nukkit.item.armortrim.TrimMaterialNames;
+
 /**
  * author: MagicDroidX
  * Nukkit Project
@@ -21,5 +23,10 @@ public class ItemIngotIron extends Item {
     @Override
     public float getFurnaceXpMultiplier() {
         return 0.7f;
+    }
+
+    @Override
+    public String getTrimMaterialName() {
+        return TrimMaterialNames.IRON;
     }
 }

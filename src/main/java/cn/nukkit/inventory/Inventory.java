@@ -4,6 +4,7 @@ import cn.nukkit.Player;
 import cn.nukkit.item.Item;
 import it.unimi.dsi.fastutil.ints.Int2ObjectMap;
 
+import javax.annotation.Nullable;
 import java.util.Collection;
 import java.util.Map;
 import java.util.Set;
@@ -40,7 +41,7 @@ public interface Inventory {
 
     Item[] removeItem(Item... slots);
 
-    Map<Integer, Item> getContents();
+    Int2ObjectMap<Item> getContents();
 
     Int2ObjectMap<Item> getContentsUnsafe();
 
@@ -60,7 +61,7 @@ public interface Inventory {
 
     boolean contains(Item item);
 
-    Map<Integer, Item> all(Item item);
+    Int2ObjectMap<Item> all(Item item);
 
     default int first(Item item) {
         return first(item, false);
@@ -100,7 +101,7 @@ public interface Inventory {
 
     void onClose(Player who);
 
-    void onSlotChange(int index, Item before, Item after, boolean send);
+    void onSlotChange(int index, @Nullable Item before, @Nullable Item after, boolean send);
 
     default Item split(int index, int count) {
         Item item = getItem(index);
@@ -128,4 +129,8 @@ public interface Inventory {
     }
 
     Item peek(Item item);
+
+    default boolean slotExists(int slot) {
+        return slot >= 0 && slot < getSize();
+    }
 }

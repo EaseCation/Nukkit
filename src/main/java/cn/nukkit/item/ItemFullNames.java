@@ -827,4 +827,5 @@ public interface ItemFullNames extends ItemBlockNames {
     String GOLDEN_NAUTILUS_ARMOR = "minecraft:" + ItemNames.GOLDEN_NAUTILUS_ARMOR;
     String DIAMOND_NAUTILUS_ARMOR = "minecraft:" + ItemNames.DIAMOND_NAUTILUS_ARMOR;
     String NETHERITE_NAUTILUS_ARMOR = "minecraft:" + ItemNames.NETHERITE_NAUTILUS_ARMOR;
+    String NETHERITE_HORSE_ARMOR = "minecraft:" + ItemNames.NETHERITE_HORSE_ARMOR;
 }

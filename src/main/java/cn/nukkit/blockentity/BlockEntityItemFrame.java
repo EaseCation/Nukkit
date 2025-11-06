@@ -5,6 +5,7 @@ import cn.nukkit.block.Block;
 import cn.nukkit.event.block.ItemFrameDropItemEvent;
 import cn.nukkit.item.Item;
 import cn.nukkit.item.ItemID;
+import cn.nukkit.item.Items;
 import cn.nukkit.level.format.FullChunk;
 import cn.nukkit.nbt.NBTIO;
 import cn.nukkit.nbt.tag.ByteTag;
@@ -100,7 +101,7 @@ public class BlockEntityItemFrame extends BlockEntitySpawnable {
 
     public Item getItem() {
         if (!this.hasItem()) {
-            return Item.get(ItemID.AIR);
+            return Items.air();
         }
 
         return item.clone();

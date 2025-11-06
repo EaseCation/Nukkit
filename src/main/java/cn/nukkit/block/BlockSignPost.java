@@ -194,7 +194,7 @@ public class BlockSignPost extends BlockTransparent implements Faceable {
 
         boolean front = player == null || isFacingFront(player);
 
-        if (item.getId() == Item.DYE && !sign.isEmpty(front)) {
+        if (item.isDye() && !sign.isEmpty(front)) {
             int meta = item.getDamage();
             if (V1_20_10.isAvailable() && (meta == ItemDye.COCOA_BEANS || meta == ItemDye.LAPIS_LAZULI || meta == ItemDye.BONE_MEAL)) {
                 return true;

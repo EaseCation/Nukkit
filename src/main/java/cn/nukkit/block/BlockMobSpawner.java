@@ -6,7 +6,7 @@ import cn.nukkit.blockentity.BlockEntity;
 import cn.nukkit.blockentity.BlockEntityMobSpawner;
 import cn.nukkit.blockentity.BlockEntityType;
 import cn.nukkit.item.Item;
-import cn.nukkit.item.ItemID;
+import cn.nukkit.item.ItemSpawnEgg;
 import cn.nukkit.math.BlockFace;
 import cn.nukkit.nbt.tag.CompoundTag;
 import cn.nukkit.nbt.tag.Tag;
@@ -104,7 +104,7 @@ public class BlockMobSpawner extends BlockSolid {
 
     @Override
     public boolean onActivate(Item item, BlockFace face, float fx, float fy, float fz, Player player) {
-        if (item.getId() != ItemID.SPAWN_EGG) {
+        if (!item.isSpawnEgg()) {
             return false;
         }
 
@@ -116,7 +116,7 @@ public class BlockMobSpawner extends BlockSolid {
             }
         }
 
-        if (blockEntity.setEntityType(item.getDamage()) && player != null && !player.isCreative()) {
+        if (blockEntity.setEntityType(((ItemSpawnEgg) item).getEntityId()) && player != null && !player.isCreative()) {
             item.count--;
         }
         return true;

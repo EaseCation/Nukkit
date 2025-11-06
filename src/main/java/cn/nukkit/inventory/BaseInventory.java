@@ -75,9 +75,11 @@ public abstract class BaseInventory implements Inventory {
 
         this.name = this.type.getDefaultTitle();
 
-        if (!(this instanceof DoubleChestInventory)) {
-            this.setContents(items);
-        }
+        this.initSetContents(items);
+    }
+
+    protected void initSetContents(Map<Integer, Item> items) {
+        this.setContents(items);
     }
 
     @Override
@@ -107,8 +109,8 @@ public abstract class BaseInventory implements Inventory {
     @Override
     public Item getItem(int index) {
         Item item = this.slots.get(index);
-        if (item == null) {
-            return Item.get(ItemID.AIR);
+        if (item == null || item.isNull()) {
+            return Items.air();
         }
         return item.clone();
     }
@@ -143,7 +145,6 @@ public abstract class BaseInventory implements Inventory {
 
     @Override
     public boolean setItem(int index, Item item, boolean send) {
-        item = item.clone();
         if (index < 0 || index >= this.size) {
             return false;
         }
@@ -153,7 +154,7 @@ public abstract class BaseInventory implements Inventory {
 
         InventoryHolder holder = this.getHolder();
         if (holder instanceof Entity) {
-            EntityInventoryChangeEvent ev = new EntityInventoryChangeEvent((Entity) holder, this.getItem(index), item, index);
+            EntityInventoryChangeEvent ev = new EntityInventoryChangeEvent((Entity) holder, this.getItem(index), item.clone(), index);
             Server.getInstance().getPluginManager().callEvent(ev);
             if (ev.isCancelled()) {
                 this.sendSlot(index, this.getViewers());
@@ -189,7 +190,7 @@ public abstract class BaseInventory implements Inventory {
     }
 
     @Override
-    public Map<Integer, Item> all(Item item) {
+    public Int2ObjectMap<Item> all(Item item) {
         Int2ObjectMap<Item> slots = new Int2ObjectOpenHashMap<>();
         boolean checkDamage = item.hasMeta() && item.getDamage() >= 0;
         boolean checkTag = item.getCompoundTag() != null;

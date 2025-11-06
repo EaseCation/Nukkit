@@ -13,6 +13,7 @@ import cn.nukkit.level.biome.Biomes;
 import cn.nukkit.potion.Effects;
 import com.google.common.collect.ImmutableMap;
 import it.unimi.dsi.fastutil.Pair;
+import lombok.ToString;
 
 import java.lang.reflect.Field;
 import java.util.*;
@@ -22,6 +23,7 @@ import java.util.stream.StreamSupport;
 /**
  * @author CreeperFace
  */
+@ToString
 public class CommandEnum {
 
     public static final CommandEnum ENUM_BOOLEAN = new CommandEnum("Boolean", ImmutableMap.of(

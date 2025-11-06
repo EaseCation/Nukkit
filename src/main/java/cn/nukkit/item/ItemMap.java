@@ -2,6 +2,9 @@ package cn.nukkit.item;
 
 import cn.nukkit.Player;
 import cn.nukkit.nbt.tag.CompoundTag;
+import cn.nukkit.nbt.tag.LongTag;
+import cn.nukkit.nbt.tag.StringTag;
+import cn.nukkit.nbt.tag.Tag;
 import cn.nukkit.network.protocol.ClientboundMapItemDataPacket;
 import cn.nukkit.utils.MainLogger;
 import cn.nukkit.utils.Utils;
@@ -15,6 +18,8 @@ import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.IOException;
+import java.security.SecureRandom;
+import java.util.concurrent.atomic.AtomicLong;
 
 /**
  * Created by CreeperFace on 18.3.2017.
@@ -51,7 +56,7 @@ public class ItemMap extends Item {
         lookup.put("trial_chambers", TRIAL_EXPLORER_MAP);
     });
 
-    public static int mapCount = 0;
+    private static final AtomicLong MAP_UNIQUE_ID = new AtomicLong(new SecureRandom().nextLong());
 
     // not very pretty but definitely better than before.
     private BufferedImage image;
@@ -66,13 +71,40 @@ public class ItemMap extends Item {
 
     public ItemMap(Integer meta, int count) {
         super(FILLED_MAP, meta, count, "Map");
+    }
 
-        if (!hasCompoundTag() || !getNamedTag().contains("map_uuid")) {
-            CompoundTag tag = new CompoundTag();
-            tag.putLong("map_uuid", mapCount++);
-            tag.putBoolean("map_display_players", true);
-            this.setNamedTag(tag);
+    @Override
+    public void initItem() {
+        boolean dirty = false;
+        CompoundTag nbt = getOrCreateNamedTag();
+        if (getDamage() == ENHANCED_MAP && !nbt.contains("map_display_players")) {
+            nbt.putBoolean("map_display_players", true);
+            dirty = true;
         }
+        Tag tag = nbt.get("map_uuid");
+        if (tag instanceof LongTag) {
+            if (dirty) {
+                setNamedTag(nbt);
+            }
+            return;
+        }
+        long uuid = 0;
+        if (tag instanceof StringTag stringTag) {
+            try {
+                uuid = Long.parseLong(stringTag.data);
+            } catch (NumberFormatException ignored) {
+            }
+        }
+        if (uuid == 0) {
+            uuid = getNewMapId();
+        }
+        nbt.putLong("map_uuid", uuid);
+        setNamedTag(nbt);
+    }
+
+    static long getNewMapId() {
+//        return Utils.createUniqueId();
+        return MAP_UNIQUE_ID.getAndIncrement();
     }
 
     @Override
@@ -116,8 +148,17 @@ public class ItemMap extends Item {
         return null;
     }
 
+    public ItemMap setMapId(long id) {
+        setNamedTag(getOrCreateNamedTag().putLong("map_uuid", id));
+        return this;
+    }
+
     public long getMapId() {
-        return getNamedTag().getLong("map_uuid");
+        CompoundTag tag = getNamedTag();
+        if (tag == null) {
+            return 0;
+        }
+        return tag.getLong("map_uuid");
     }
 
     public void sendImage(Player p) {
@@ -151,6 +192,37 @@ public class ItemMap extends Item {
     @Override
     public boolean canDualWield() {
         return true;
+    }
+
+    @Override
+    public boolean isMap() {
+        return true;
+    }
+
+    public int getMapNameIndex() {
+        CompoundTag tag = getNamedTag();
+        if (tag == null) {
+            return 0;
+        }
+        return tag.getInt("map_name_index");
+    }
+
+    public ItemMap setMapNameIndex(int nameIndex) {
+        setNamedTag(getOrCreateNamedTag().putInt("map_name_index", nameIndex));
+        return this;
+    }
+
+    public boolean isMapDisplayPlayers() {
+        CompoundTag tag = getNamedTag();
+        if (tag == null) {
+            return false;
+        }
+        return tag.getBoolean("map_display_players");
+    }
+
+    public ItemMap setMapDisplayPlayers(boolean displayPlayers) {
+        setNamedTag(getOrCreateNamedTag().putBoolean("map_display_players", displayPlayers));
+        return this;
     }
 
     public static int getDataByDestination(String destination) {

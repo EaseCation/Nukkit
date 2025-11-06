@@ -10,10 +10,10 @@ import lombok.ToString;
 public class ContainerSetDataPacket extends DataPacket {
     public static final int NETWORK_ID = ProtocolInfo.CONTAINER_SET_DATA_PACKET;
 
-    public static final int PROPERTY_FURNACE_TICK_COUNT = 0;
-    public static final int PROPERTY_FURNACE_LIT_TIME = 1;
-    public static final int PROPERTY_FURNACE_LIT_DURATION = 2;
-
+    public static final int PROPERTY_FURNACE_SMELT_PROGRESS = 0;
+    public static final int PROPERTY_FURNACE_REMAINING_FUEL_TIME = 1;
+    public static final int PROPERTY_FURNACE_MAX_FUEL_TIME = 2;
+    public static final int PROPERTY_FURNACE_STORED_XP = 3;
     public static final int PROPERTY_FURNACE_FUEL_AUX = 4;
 
     public static final int PROPERTY_BREWING_STAND_BREW_TIME = 0;

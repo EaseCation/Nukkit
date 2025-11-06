@@ -14,6 +14,7 @@ import cn.nukkit.event.weather.LightningStrikeEvent;
 import cn.nukkit.inventory.Inventory;
 import cn.nukkit.inventory.InventoryHolder;
 import cn.nukkit.item.Item;
+import cn.nukkit.item.Items;
 import cn.nukkit.item.enchantment.Enchantment;
 import cn.nukkit.level.MovingObjectPosition;
 import cn.nukkit.level.format.FullChunk;
@@ -84,7 +85,7 @@ public class EntityThrownTrident extends EntityProjectile {
         super.initEntity();
 
         this.favoredSlot = namedTag.contains("favoredSlot") ? namedTag.getInt("favoredSlot") : -1;
-        this.trident = namedTag.contains("Trident") ? NBTIO.getItemHelper(namedTag.getCompound("Trident")) : Item.get(Item.AIR);
+        this.trident = namedTag.contains("Trident") ? NBTIO.getItemHelper(namedTag.getCompound("Trident")) : Items.air();
         this.pickupMode = namedTag.contains("pickup") ? namedTag.getByte("pickup") : PICKUP_ANY;
 
         if (trident != null && trident.hasEnchantments()) {
@@ -110,7 +111,7 @@ public class EntityThrownTrident extends EntityProjectile {
     }
 
     public Item getItem() {
-        return this.trident != null ? this.trident.clone() : Item.get(Item.AIR);
+        return this.trident != null ? this.trident.clone() : Items.air();
     }
 
     public boolean hasLoyalty() {

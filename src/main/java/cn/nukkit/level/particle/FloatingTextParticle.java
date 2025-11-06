@@ -1,21 +1,23 @@
 package cn.nukkit.level.particle;
 
 import cn.nukkit.entity.Entity;
+import cn.nukkit.entity.EntityFullNames;
 import cn.nukkit.entity.EntityID;
 import cn.nukkit.entity.data.EntityMetadata;
 import cn.nukkit.entity.property.EntityPropertyRegistry;
-import cn.nukkit.item.Item;
+import cn.nukkit.level.Level;
+import cn.nukkit.level.Location;
 import cn.nukkit.math.Vector3;
-import cn.nukkit.network.protocol.AddPlayerPacket;
+import cn.nukkit.network.protocol.AddEntityPacket;
 import cn.nukkit.network.protocol.DataPacket;
 import cn.nukkit.network.protocol.RemoveEntityPacket;
+import cn.nukkit.network.protocol.SetEntityDataPacket;
 import it.unimi.dsi.fastutil.Pair;
 import it.unimi.dsi.fastutil.ints.Int2FloatMap;
 import it.unimi.dsi.fastutil.ints.Int2IntMap;
 
 import java.util.ArrayList;
-import java.util.UUID;
-import java.util.concurrent.ThreadLocalRandom;
+import java.util.List;
 
 /**
  * Created on 2015/11/21 by xtypr.
@@ -23,36 +25,68 @@ import java.util.concurrent.ThreadLocalRandom;
  */
 public class FloatingTextParticle extends Particle {
 
-    protected String text;
-    protected String title;
+    protected final Level level;
     protected long entityId = -1;
     protected boolean invisible = false;
+    protected String text;
     protected EntityMetadata metadata = new EntityMetadata();
 
-    public FloatingTextParticle(Vector3 pos, String text) {
-        this(pos, text, "");
+    public FloatingTextParticle(Location location, String text) {
+        this(location.getLevel(), location, text);
     }
 
-    public FloatingTextParticle(Vector3 pos, String text, String title) {
+    public FloatingTextParticle(Vector3 pos, String text) {
+        this(null, pos, text);
+    }
+
+    private FloatingTextParticle(Level level, Vector3 pos, String text) {
         super(pos.x, pos.y, pos.z);
+        this.level = level;
         this.text = text;
-        this.title = title;
+
+        long flags = 0;
+        flags ^= 1 << Entity.DATA_FLAG_NO_AI;
+        flags ^= 1 << Entity.DATA_FLAG_CAN_SHOW_NAMETAG;
+
+        this.metadata.putLong(Entity.DATA_FLAGS, flags)
+                .putLong(Entity.DATA_LEAD_HOLDER_EID, -1)
+                .putByte(Entity.DATA_ALWAYS_SHOW_NAMETAG, 1)
+                .putFloat(Entity.DATA_SCALE, 0.01f) // Zero causes problems on debug builds?
+                .putFloat(Entity.DATA_BOUNDING_BOX_HEIGHT, 0.01f)
+                .putFloat(Entity.DATA_BOUNDING_BOX_WIDTH, 0.01f);
+
+        updateNameTag();
     }
 
     public String getText() {
-        return text;
+        return this.text == null ? "" : this.text;
     }
 
     public void setText(String text) {
+        if (this.text == null) {
+            if (text == null) {
+                return;
+            }
+        } else if (this.text.equals(text)) {
+            return;
+        }
         this.text = text;
+
+        updateNameTag();
+        sendMetadata();
     }
 
-    public String getTitle() {
-        return title;
+    private void updateNameTag() {
+        this.metadata.putString(Entity.DATA_NAMETAG, getText());
     }
 
-    public void setTitle(String title) {
-        this.title = title;
+    private void sendMetadata() {
+        if (this.level != null) {
+            SetEntityDataPacket packet = new SetEntityDataPacket();
+            packet.eid = entityId;
+            packet.metadata = this.metadata;
+            this.level.addChunkPacket(getChunkX(), getChunkZ(), packet);
+        }
     }
 
     public boolean isInvisible() {
@@ -60,63 +94,61 @@ public class FloatingTextParticle extends Particle {
     }
 
     public void setInvisible(boolean invisible) {
+        if (invisible == this.invisible) {
+            return;
+        }
         this.invisible = invisible;
+
+        if (this.level != null) {
+            if (invisible) {
+                this.level.addChunkPacket(getChunkX(), getChunkZ(), getRemovePacket());
+            } else {
+                this.level.addChunkPacket(getChunkX(), getChunkZ(), getAddPacket());
+            }
+        }
     }
 
-    public void setInvisible() {
-        this.setInvisible(true);
+    public long getEntityId() {
+        return this.entityId;
     }
 
     @Override
     public DataPacket[] encode() {
-        ArrayList<DataPacket> packets = new ArrayList<>();
+        List<DataPacket> packets = new ArrayList<>();
 
         if (this.entityId == -1) {
-//            this.entityId = 1095216660480L + ThreadLocalRandom.current().nextLong(0, 0x7fffffffL);
             this.entityId = Entity.entityCount++;
         } else {
-            RemoveEntityPacket pk = new RemoveEntityPacket();
-            pk.eid = this.entityId;
-
-            packets.add(pk);
+            packets.add(getRemovePacket());
         }
 
         if (!this.invisible) {
-            AddPlayerPacket pk = new AddPlayerPacket();
-            pk.uuid = UUID.randomUUID();
-            pk.username = this.title + (!this.text.isEmpty() ? "\n" + this.text : "");
-            pk.entityUniqueId = this.entityId;
-            pk.entityRuntimeId = this.entityId;
-            pk.x = (float) this.x;
-            pk.y = (float) (this.y - 0.75);
-            pk.z = (float) this.z;
-            pk.speedX = 0;
-            pk.speedY = 0;
-            pk.speedZ = 0;
-            pk.yaw = 0;
-            pk.pitch = 0;
-            long flags = (
-                    (1L << Entity.DATA_FLAG_CAN_SHOW_NAMETAG) |
-                            (1L << Entity.DATA_FLAG_ALWAYS_SHOW_NAMETAG) |
-                            (1L << Entity.DATA_FLAG_IMMOBILE)
-            );
-            pk.metadata = new EntityMetadata()
-                    .putLong(Entity.DATA_FLAGS, flags)
-                    .putString(Entity.DATA_NAMETAG, this.title + (!this.text.isEmpty() ? "\n" + this.text : ""))
-                    .putLong(Entity.DATA_LEAD_HOLDER_EID,-1)
-                    .putFloat(Entity.DATA_SCALE, 0.01f) //zero causes problems on debug builds?
-                    .putFloat(Entity.DATA_BOUNDING_BOX_HEIGHT, 0.01f)
-                    .putFloat(Entity.DATA_BOUNDING_BOX_WIDTH, 0.01f)
-                    .putByte(Entity.DATA_ALWAYS_SHOW_NAMETAG, 1);
-            Pair<Int2IntMap, Int2FloatMap> propertyValues = EntityPropertyRegistry.getProperties(EntityID.PLAYER).getDefaultValues();
-            if (propertyValues != null) {
-                pk.intProperties = propertyValues.left();
-                pk.floatProperties = propertyValues.right();
-            }
-            pk.item = Item.get(Item.AIR);
-            packets.add(pk);
+            packets.add(getAddPacket());
         }
 
         return packets.toArray(new DataPacket[0]);
+    }
+
+    private AddEntityPacket getAddPacket() {
+        AddEntityPacket pk = new AddEntityPacket();
+        pk.id = EntityFullNames.ARMOR_STAND;
+        pk.entityUniqueId = this.entityId;
+        pk.entityRuntimeId = this.entityId;
+        pk.x = (float) this.x;
+        pk.y = (float) this.y - 0.75f;
+        pk.z = (float) this.z;
+        pk.metadata = this.metadata;
+        Pair<Int2IntMap, Int2FloatMap> propertyValues = EntityPropertyRegistry.getProperties(EntityID.ARMOR_STAND).getDefaultValues();
+        if (propertyValues != null) {
+            pk.intProperties = propertyValues.left();
+            pk.floatProperties = propertyValues.right();
+        }
+        return pk;
+    }
+
+    private RemoveEntityPacket getRemovePacket() {
+        RemoveEntityPacket pk = new RemoveEntityPacket();
+        pk.eid = this.entityId;
+        return pk;
     }
 }

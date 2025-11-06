@@ -2,6 +2,7 @@ package cn.nukkit.item;
 
 import cn.nukkit.block.Block;
 import cn.nukkit.block.BlockID;
+import cn.nukkit.item.armortrim.TrimMaterialNames;
 
 /**
  * author: MagicDroidX
@@ -25,5 +26,10 @@ public class ItemRedstone extends Item {
     @Override
     public float getFurnaceXpMultiplier() {
         return 0.3f;
+    }
+
+    @Override
+    public String getTrimMaterialName() {
+        return TrimMaterialNames.REDSTONE;
     }
 }

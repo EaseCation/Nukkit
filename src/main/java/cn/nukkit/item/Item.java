@@ -60,6 +60,8 @@ public class Item implements Cloneable, ItemID {
     @Nullable
     private Set<String> canDestroyBlocks;
 
+    private int itemStackId = Integer.MIN_VALUE;
+
     public Item(int id) {
         this(id, 0, 1, UNKNOWN_STR);
     }
@@ -89,6 +91,7 @@ public class Item implements Cloneable, ItemID {
         }
         this.count = count;
         this.name = name;
+        this.initItem();
     }
 
     public Item(int id, Integer meta, int count, String name) {
@@ -104,6 +107,10 @@ public class Item implements Cloneable, ItemID {
             this.block = Block.get(this.id, this.meta);
             this.name = this.block.getName();
         }*/
+        this.initItem();
+    }
+
+    public void initItem() {
     }
 
     public boolean hasMeta() {
@@ -1493,7 +1500,7 @@ public class Item implements Cloneable, ItemID {
 
     @Override
     final public String toString() {
-        return "Item " + this.name + " (" + this.id + ":" + (!this.hasMeta ? "?" : this.meta) + ")x" + this.count + (this.hasCompoundTag() ? " tags:0x" + Binary.bytesToHexString(this.getCompoundTag()) : "");
+        return (itemStackId != Integer.MIN_VALUE ? "<" + itemStackId + ">" : "") + "Item " + this.name + " (" + this.id + ":" + (!this.hasMeta ? "?" : this.meta) + ")x" + this.count + (this.hasCompoundTag() ? " tags:0x" + Binary.bytesToHexString(this.getCompoundTag()) : "");
     }
 
     public boolean canDestroy(Block block) {
@@ -1705,6 +1712,7 @@ public class Item implements Cloneable, ItemID {
             if (this.canDestroyBlocks != null) {
                 item.canDestroyBlocks = new ObjectOpenHashSet<>(this.canDestroyBlocks);
             }
+            item.initItem();
             return item;
         } catch (CloneNotSupportedException e) {
             return null;
@@ -1724,7 +1732,7 @@ public class Item implements Cloneable, ItemID {
     }
 
     public int getFullId() {
-        return getFullId(getId());
+        return getFullId(getId(), isStackedByData() ? getDamage() : 0);
     }
 
     public static int getFullId(int id) {
@@ -1831,11 +1839,11 @@ public class Item implements Cloneable, ItemID {
         return false;
     }
 
-    public boolean isPotterySherd() {
+    public boolean isMap() {
         return false;
     }
 
-    public boolean isArmorTrimSmithingTemplate() {
+    public boolean isPotterySherd() {
         return false;
     }
 
@@ -1844,6 +1852,14 @@ public class Item implements Cloneable, ItemID {
     }
 
     public boolean isHarness() {
+        return false;
+    }
+
+    public boolean isEgg() {
+        return false;
+    }
+
+    public boolean isRecord() {
         return false;
     }
 
@@ -1859,12 +1875,37 @@ public class Item implements Cloneable, ItemID {
         return false;
     }
 
+    public boolean isBannerPattern() {
+        return false;
+    }
+
+    public boolean isBoat() {
+        return false;
+    }
+
+    public boolean isBucket() {
+        return false;
+    }
+
+    public boolean isCoal() {
+        return false;
+    }
+
+    public boolean isDye() {
+        return false;
+    }
+
+    public boolean isSpawnEgg() {
+        return false;
+    }
+
     public boolean wasPickedUp() {
         return pickedUp;
     }
 
-    public void setPickedUp(boolean pickedUp) {
+    public Item setPickedUp(boolean pickedUp) {
         this.pickedUp = pickedUp;
+        return this;
     }
 
     @Nullable
@@ -1872,8 +1913,9 @@ public class Item implements Cloneable, ItemID {
         return canPlaceOnBlocks;
     }
 
-    public void setCanPlaceOnBlocks(@Nullable Set<String> canPlaceOnBlocks) {
+    public Item setCanPlaceOnBlocks(@Nullable Set<String> canPlaceOnBlocks) {
         this.canPlaceOnBlocks = canPlaceOnBlocks;
+        return this;
     }
 
     @Nullable
@@ -1881,12 +1923,40 @@ public class Item implements Cloneable, ItemID {
         return canDestroyBlocks;
     }
 
-    public void setCanDestroyBlocks(@Nullable Set<String> canDestroyBlocks) {
+    public Item setCanDestroyBlocks(@Nullable Set<String> canDestroyBlocks) {
         this.canDestroyBlocks = canDestroyBlocks;
+        return this;
+    }
+
+    public int getItemStackId() {
+        return itemStackId;
+    }
+
+    public Item setItemStackId(int itemStackId) {
+        this.itemStackId = itemStackId;
+        return this;
+    }
+
+    public boolean hasItemTag(String tag) {
+        return Items.hasTag(tag, getId(), getDamage());
+    }
+
+    public Set<String> getItemTags() {
+        return Items.getTags(getId(), getDamage());
     }
 
     public boolean isVanilla() {
         return true;
+    }
+
+    @Nullable
+    public String getTrimPatternName() {
+        return null;
+    }
+
+    @Nullable
+    public String getTrimMaterialName() {
+        return null;
     }
 
     public int getEquippingSound() {

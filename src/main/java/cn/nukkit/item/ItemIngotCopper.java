@@ -1,5 +1,7 @@
 package cn.nukkit.item;
 
+import cn.nukkit.item.armortrim.TrimMaterialNames;
+
 public class ItemIngotCopper extends Item {
     public ItemIngotCopper() {
         this(0, 1);
@@ -16,5 +18,10 @@ public class ItemIngotCopper extends Item {
     @Override
     public float getFurnaceXpMultiplier() {
         return 0.7f;
+    }
+
+    @Override
+    public String getTrimMaterialName() {
+        return TrimMaterialNames.COPPER;
     }
 }

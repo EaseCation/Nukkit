@@ -2,6 +2,7 @@ package cn.nukkit.block;
 
 import cn.nukkit.Player;
 import cn.nukkit.item.Item;
+import cn.nukkit.item.Items;
 import cn.nukkit.item.enchantment.Enchantment;
 import cn.nukkit.level.Dimension;
 import cn.nukkit.level.Level;
@@ -57,7 +58,7 @@ public class BlockIceFrosted extends BlockTransparent {
 
     @Override
     public Item toItem(boolean addUserData) {
-        return Item.get(AIR);
+        return Items.air();
     }
 
     @Override

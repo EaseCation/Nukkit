@@ -2,7 +2,7 @@ package cn.nukkit.block;
 
 import cn.nukkit.Player;
 import cn.nukkit.item.Item;
-import cn.nukkit.item.ItemID;
+import cn.nukkit.item.Items;
 import cn.nukkit.math.AxisAlignedBB;
 import cn.nukkit.math.BlockFace;
 import cn.nukkit.utils.BlockColor;
@@ -112,7 +112,7 @@ public class BlockLight extends BlockTransparent {
 
     @Override
     public Item toItem(boolean addUserData) {
-        return Item.get(ItemID.AIR);
+        return Items.air();
     }
 
     @Override

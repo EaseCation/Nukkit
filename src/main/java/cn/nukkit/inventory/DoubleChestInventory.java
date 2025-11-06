@@ -64,6 +64,10 @@ public class DoubleChestInventory extends ContainerInventory implements Inventor
     }
 
     @Override
+    protected void initSetContents(Map<Integer, Item> items) {
+    }
+
+    @Override
     public Item getItem(int index) {
         return index < this.left.getSize() ? this.left.getItem(index) : this.right.getItem(index - this.right.getSize());
     }

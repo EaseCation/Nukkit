@@ -1,9 +1,12 @@
 package cn.nukkit.command.data;
 
+import lombok.ToString;
+
 import java.util.EnumSet;
 import java.util.HashSet;
 import java.util.Set;
 
+@ToString
 public class CommandParameter {
 
     public String name;

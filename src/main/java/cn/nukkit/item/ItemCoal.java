@@ -39,4 +39,9 @@ public class ItemCoal extends Item {
         }
         return 0.1f;
     }
+
+    @Override
+    public boolean isCoal() {
+        return true;
+    }
 }

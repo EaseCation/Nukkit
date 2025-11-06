@@ -1,5 +1,7 @@
 package cn.nukkit.item;
 
+import cn.nukkit.item.armortrim.TrimMaterialNames;
+
 public class ItemAmethystShard extends Item {
 
     public ItemAmethystShard() {
@@ -12,5 +14,10 @@ public class ItemAmethystShard extends Item {
 
     public ItemAmethystShard(Integer meta, int count) {
         super(AMETHYST_SHARD, meta, count, "Amethyst Shard");
+    }
+
+    @Override
+    public String getTrimMaterialName() {
+        return TrimMaterialNames.AMETHYST;
     }
 }

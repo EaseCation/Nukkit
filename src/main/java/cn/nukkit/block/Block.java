@@ -35,6 +35,7 @@ import java.lang.reflect.Constructor;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Objects;
+import java.util.Set;
 import java.util.function.Supplier;
 
 import static cn.nukkit.GameVersion.*;
@@ -1438,6 +1439,14 @@ public abstract class Block extends Position implements Metadatable, Cloneable, 
 
     public boolean isLava() {
         return false;
+    }
+
+    public boolean hasBlockTag(String tag) {
+        return Blocks.hasTag(tag, getId());
+    }
+
+    public Set<String> getBlockTags() {
+        return Blocks.getTags(getId());
     }
 
     //TODO: tag system

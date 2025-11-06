@@ -99,7 +99,7 @@ public class BlockTrialSpawner extends BlockTransparent {
 
     @Override
     public boolean onActivate(Item item, BlockFace face, float fx, float fy, float fz, Player player) {
-        if (item.getId() == Item.SPAWN_EGG) {
+        if (item.isSpawnEgg()) {
             //TODO
             return true;
         }

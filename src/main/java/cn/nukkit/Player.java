@@ -42,6 +42,7 @@ import cn.nukkit.inventory.transaction.data.UseItemData;
 import cn.nukkit.inventory.transaction.data.UseItemOnEntityData;
 import cn.nukkit.item.*;
 import cn.nukkit.item.enchantment.Enchantment;
+import cn.nukkit.item.enchantment.EnchantmentOption;
 import cn.nukkit.item.food.Food;
 import cn.nukkit.lang.LiteralContainer;
 import cn.nukkit.lang.TextContainer;
@@ -192,6 +193,8 @@ public class Player extends EntityHuman implements CommandSender, InventoryHolde
     protected CraftingTransaction craftingTransaction;
     protected EnchantTransaction enchantTransaction;
     protected RepairItemTransaction repairItemTransaction;
+
+    protected int enchantmentSeed;
 
     public long creationTime;
 
@@ -2500,6 +2503,11 @@ public class Player extends EntityHuman implements CommandSender, InventoryHolde
         int expLevel = nbt.getInt("expLevel");
         this.setExperience(exp, expLevel);
 
+        this.enchantmentSeed = nbt.getInt("EnchantmentSeed");
+        if (enchantmentSeed == 0) {
+            enchantmentSeed = ThreadLocalRandom.current().nextInt();
+        }
+
         this.gamemode = nbt.getInt("playerGameType") & 0x03;
         if (this.server.getForceGamemode()) {
             this.gamemode = this.server.getGamemode();
@@ -3971,7 +3979,7 @@ public class Player extends EntityHuman implements CommandSender, InventoryHolde
                                     if (item.isTool() && this.isSurvivalLike()) {
                                         if (item.useOn(target)) {
                                             if (item.getDamage() > item.getMaxDurability()) {
-                                                this.inventory.setItemInHand(Item.get(Item.AIR));
+                                                this.inventory.setItemInHand(Items.air());
                                                 level.addLevelSoundEvent(this, LevelSoundEventPacket.SOUND_BREAK);
                                             } else {
                                                 this.inventory.setItemInHand(item);
@@ -4036,7 +4044,7 @@ public class Player extends EntityHuman implements CommandSender, InventoryHolde
                                             if (potion != null) {
                                                 potion.applyPotion(this, itemInHand);
                                             }
-                                        } else if (itemInHand.getId() == Item.BUCKET && itemInHand.getDamage() == 1) { //milk
+                                        } else if (itemInHand.getId() == Item.BUCKET && itemInHand.getDamage() == ItemBucket.MILK_BUCKET) {
                                             this.server.getPluginManager().callEvent(consumeEvent);
                                             if (consumeEvent.isCancelled()) {
                                                 this.inventory.sendContents(this);
@@ -4604,6 +4612,8 @@ public class Player extends EntityHuman implements CommandSender, InventoryHolde
             this.namedTag.putInt("EXP", this.getExperience());
             this.namedTag.putInt("expLevel", this.getExperienceLevel());
 
+            this.namedTag.putInt("EnchantmentSeed", this.enchantmentSeed);
+
             this.namedTag.putInt("foodLevel", this.getFoodData().getLevel());
             this.namedTag.putFloat("foodSaturationLevel", this.getFoodData().getFoodSaturationLevel());
 
@@ -4973,7 +4983,7 @@ public class Player extends EntityHuman implements CommandSender, InventoryHolde
                 for (int slot = 0; slot < inventory.getSize(); slot++) {
                     Item item = inventory.getItem(slot);
                     if (!item.isKeepOnDeath()) {
-                        inventory.setItem(slot, Item.get(Item.AIR));
+                        inventory.setItem(slot, Items.air());
                     }
                 }
             }
@@ -6833,6 +6843,33 @@ public class Player extends EntityHuman implements CommandSender, InventoryHolde
      * @since 1.21.40
      */
     public void sendMovementEffect(long entityRuntimeId, int type, int duration) {
+    }
+
+    public void sendContainerData(Inventory inventory, int propertyId, int value) {
+        int windowId = getWindowId(inventory);
+        if (windowId <= 0) {
+            return;
+        }
+
+        ContainerSetDataPacket packet = new ContainerSetDataPacket();
+        packet.windowId = windowId;
+        packet.property = propertyId;
+        packet.value = value;
+        dataPacket(packet);
+    }
+
+    public int getEnchantmentSeed() {
+        return enchantmentSeed;
+    }
+
+    public void setEnchantmentSeed(int seed) {
+        this.enchantmentSeed = seed;
+    }
+
+    /**
+     * @since 1.16.0
+     */
+    public void sendEnchantingTableOptions(List<EnchantmentOption> options) {
     }
 
     /**

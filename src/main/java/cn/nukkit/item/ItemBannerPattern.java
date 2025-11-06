@@ -52,6 +52,11 @@ public class ItemBannerPattern extends Item {
         return 1;
     }
 
+    @Override
+    public boolean isBannerPattern() {
+        return true;
+    }
+
     private static String getName(int meta) {
         if (meta >= NAMES.length || meta < 0) {
             return "Banner Pattern";

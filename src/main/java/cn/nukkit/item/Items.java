@@ -11,16 +11,17 @@ import cn.nukkit.nbt.tag.ListTag;
 import cn.nukkit.nbt.tag.StringTag;
 import cn.nukkit.potion.PotionID;
 import cn.nukkit.utils.DyeColor;
+import it.unimi.dsi.fastutil.ints.IntOpenHashSet;
+import it.unimi.dsi.fastutil.ints.IntSet;
+import it.unimi.dsi.fastutil.ints.IntSets;
 import it.unimi.dsi.fastutil.objects.Object2IntMap;
 import it.unimi.dsi.fastutil.objects.Object2IntOpenHashMap;
 import it.unimi.dsi.fastutil.objects.Object2ObjectOpenHashMap;
 import lombok.extern.log4j.Log4j2;
 
 import javax.annotation.Nullable;
-import java.util.Collections;
-import java.util.Map;
+import java.util.*;
 import java.util.Map.Entry;
-import java.util.Objects;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.function.IntFunction;
 
@@ -43,6 +44,10 @@ public final class Items {
     private static final String[] ID_TO_FULL_NAME = new String[Short.MAX_VALUE];
     private static final Map<String, String> SIMPLE_ALIASES_MAP = new Object2ObjectOpenHashMap<>();
     private static final Object2IntMap<String> COMPLEX_ALIASES_MAP = new Object2IntOpenHashMap<>();
+
+    private static final Set<String>[][] ITEM_ID_TO_TAGS = new Set[Short.MAX_VALUE][];
+    private static final Set<String>[] BLOCK_ID_TO_TAGS = new Set[Block.BLOCK_ID_COUNT];
+    private static final Map<String, IntSet> TAG_TO_ITEM_FULL_IDS = new Object2ObjectOpenHashMap<>();
 
     private static final AtomicInteger CUSTOM_ITEM_ID_ALLOCATOR = new AtomicInteger(CUSTOM_ITEM);
 
@@ -512,6 +517,7 @@ public final class Items {
         registerNewItem(ItemNames.GOLDEN_NAUTILUS_ARMOR, GOLDEN_NAUTILUS_ARMOR, ItemNautilusArmorGolden.class, ItemNautilusArmorGolden::new, V1_21_130);
         registerNewItem(ItemNames.DIAMOND_NAUTILUS_ARMOR, DIAMOND_NAUTILUS_ARMOR, ItemNautilusArmorDiamond.class, ItemNautilusArmorDiamond::new, V1_21_130);
         registerNewItem(ItemNames.NETHERITE_NAUTILUS_ARMOR, NETHERITE_NAUTILUS_ARMOR, ItemNautilusArmorNetherite.class, ItemNautilusArmorNetherite::new, V1_21_130);
+        registerNewItem(ItemNames.NETHERITE_HORSE_ARMOR, NETHERITE_HORSE_ARMOR, ItemHorseArmorNetherite.class, ItemHorseArmorNetherite::new, V1_21_130);
 */
         LootTables.registerVanillaLootTables();
     }
@@ -880,6 +886,48 @@ public final class Items {
         COMPLEX_ALIASES_MAP.put(alias, Item.getFullId(id, meta));
     }
 
+    public static void registerItemTag(String itemTag, int itemId) {
+        registerItemTags(itemTag, Item.getFullId(itemId, 0xffff));
+    }
+
+    public static void registerItemTags(String itemTag, int... itemFullIds) {
+        IntSet fullIds = TAG_TO_ITEM_FULL_IDS.computeIfAbsent(itemTag, k -> new IntOpenHashSet());
+        for (int fullId : itemFullIds) {
+            fullIds.add(fullId);
+
+            Set<String> tags;
+            int itemId = Item.getIdFromFullId(fullId);
+            if (itemId <= 0xff && itemId != GLOW_STICK) {
+                int blockId = Block.itemIdToBlockId(itemId);
+                tags = BLOCK_ID_TO_TAGS[blockId];
+                if (tags == null) {
+                    tags = new HashSet<>();
+                    BLOCK_ID_TO_TAGS[blockId] = tags;
+                }
+            } else {
+                int itemMeta = Item.getMetaFromFullId(fullId);
+                boolean hasMeta = itemMeta != 0xffff;
+                Set<String>[] data = ITEM_ID_TO_TAGS[itemId];
+                if (data == null) {
+                    data = new Set[hasMeta ? 256 : 1];
+                    ITEM_ID_TO_TAGS[itemId] = data;
+                } else if (hasMeta && data.length == 1) {
+                    Set<String>[] oldData = data;
+                    data = new Set[256];
+                    data[0] = oldData[0];
+                    ITEM_ID_TO_TAGS[itemId] = data;
+                }
+                int index = hasMeta ? itemMeta : 0;
+                tags = data[index];
+                if (tags == null) {
+                    tags = new HashSet<>();
+                    data[index] = tags;
+                }
+            }
+            tags.add(itemTag);
+        }
+    }
+
     public static Class<? extends Item> registerCustomItem(String fullName, int id, Class<? extends Item> clazz, ItemFactory factory) {
         return registerCustomItem(fullName, id, clazz, factory, (CompoundTag) null);
     }
@@ -1206,8 +1254,41 @@ public final class Items {
         return COMPLEX_ALIASES_MAP;
     }
 
+    public static Set<String> getTags(int itemId) {
+        return getTags(itemId, 0);
+    }
+
+    public static Set<String> getTags(int itemId, int itemMeta) {
+        Set<String> tags;
+        if (itemId <= 0xff && itemId != GLOW_STICK) {
+            tags = BLOCK_ID_TO_TAGS[Block.itemIdToBlockId(itemId)];
+        } else {
+            Set<String>[] data = ITEM_ID_TO_TAGS[itemId];
+            if (data == null) {
+                return Collections.emptySet();
+            }
+            tags = data[data.length == 1 ? 0 : itemMeta & 0xff];
+        }
+        if (tags == null) {
+            return Collections.emptySet();
+        }
+        return tags;
+    }
+
+    public static boolean hasTag(String itemTag, int itemId) {
+        return hasTag(itemTag, itemId, 0);
+    }
+
+    public static boolean hasTag(String itemTag, int itemId, int itemMeta) {
+        return getTags(itemId, itemMeta).contains(itemTag);
+    }
+
+    public static IntSet getItemFullIdsByTag(String itemTag) {
+        return TAG_TO_ITEM_FULL_IDS.getOrDefault(itemTag, IntSets.emptySet());
+    }
+
     public static Item air() {
-        return Item.get(AIR, 0, 0);
+        return Item.get(AIR, 0, 0).setItemStackId(0);
     }
 
     private Items() {

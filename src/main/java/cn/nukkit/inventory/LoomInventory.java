@@ -52,12 +52,12 @@ public class LoomInventory extends FakeBlockUIComponent {
         }
 
         Item dye = getDyeSlot();
-        if (dye.getId() != ItemID.DYE) {
+        if (!dye.isDye()) {
             return false;
         }
 
         Item pattern = getPatternSlot();
-        if (!pattern.isNull() && pattern.getId() != ItemID.BANNER_PATTERN) {
+        if (!pattern.isNull() && !pattern.isBannerPattern()) {
             return false;
         }
 

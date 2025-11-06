@@ -5,16 +5,17 @@ import cn.nukkit.event.entity.EntityDamageEvent;
 import cn.nukkit.event.entity.EntityDamageEvent.DamageCause;
 import cn.nukkit.item.Item;
 import cn.nukkit.math.Mth;
-import it.unimi.dsi.fastutil.objects.ObjectOpenHashSet;
+import cn.nukkit.math.RandomSource;
+import lombok.ToString;
 
 import javax.annotation.Nullable;
-import java.util.Set;
 import java.util.concurrent.ThreadLocalRandom;
 
 /**
  * author: MagicDroidX
  * Nukkit Project
  */
+@ToString
 public abstract class Enchantment implements Cloneable, EnchantmentID {
     public static final Enchantment[] EMPTY = new Enchantment[0];
 
@@ -168,18 +169,27 @@ public abstract class Enchantment implements Cloneable, EnchantmentID {
         }
     }
 
-    public static final String[] words = {"the", "elder", "scrolls", "klaatu", "berata", "niktu", "xyzzy", "bless", "curse", "light", "darkness", "fire", "air", "earth", "water", "hot", "dry", "cold", "wet", "ignite", "snuff", "embiggen", "twist", "shorten", "stretch", "fiddle", "destroy", "imbue", "galvanize", "enchant", "free", "limited", "range", "of", "towards", "inside", "sphere", "cube", "self", "other", "ball", "mental", "physical", "grow", "shrink", "demon", "elemental", "spirit", "animal", "creature", "beast", "humanoid", "undead", "fresh", "stale"};
+    public static final String[] words = {"the", "elder", "scrolls", "klaatu", "berata", "niktu", "xyzzy", "bless", "curse", "light", "darkness", "fire", "air", "earth", "water", "hot", "dry", "cold", "wet", "ignite", "snuff", "embiggen", "twist", "shorten", "stretch", "fiddle", "destroy", "imbue", "galvanize", "enchant", "free", "limited", "range", "of", "towards", "inside", "sphere", "cube", "self", "other", "ball", "mental", "physical", "grow", "shrink", "demon", "elemental", "spirit", "animal", "creature", "beast", "humanoid", "undead", "fresh", "stale", "phnglui", "mglwnafh", "cthulhu", "rlyeh", "wgahnagl", "fhtagn", "baguette"};
+
+    public static String getRandomName(RandomSource random) {
+        StringBuilder name = new StringBuilder();
+        int count = random.nextInt(3, 5);
+        for (int i = 0; i < count; i++) {
+            if (i != 0) {
+                name.append(" ");
+            }
+            name.append(Enchantment.words[random.nextInt(Enchantment.words.length)]);
+        }
+        return name.toString();
+    }
 
     public static String getRandomName() {
         ThreadLocalRandom random = ThreadLocalRandom.current();
-        int count = random.nextInt(3, 6);
-        Set<String> set = new ObjectOpenHashSet<>();
-        while (set.size() < count) {
-            set.add(Enchantment.words[random.nextInt(Enchantment.words.length)]);
+        StringBuilder name = new StringBuilder();
+        for (int i = random.nextInt(9, 16); i > 0; i--) {
+            name.appendCodePoint(random.nextInt('a', 'z' + 1));
         }
-
-        String[] words = set.toArray(new String[0]);
-        return String.join(" ", words);
+        return name.toString();
     }
 
     static class UnknownEnchantment extends Enchantment {

@@ -1,6 +1,7 @@
 package cn.nukkit.block;
 
 import cn.nukkit.item.Item;
+import cn.nukkit.item.Items;
 import cn.nukkit.level.Level;
 import cn.nukkit.math.AxisAlignedBB;
 import cn.nukkit.math.BlockFace;
@@ -69,7 +70,7 @@ public class BlockBubbleColumn extends BlockTransparent {
 
     @Override
     public Item toItem(boolean addUserData) {
-        return Item.get(AIR);
+        return Items.air();
     }
 
     @Override

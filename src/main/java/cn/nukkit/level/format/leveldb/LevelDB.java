@@ -411,6 +411,7 @@ public class LevelDB implements LevelProvider {
 
     @Override
     public void saveLevelData() {
+        levelData.setName(null);
         updateLevelData(levelData);
 
         try (OutputStream stream = Files.newOutputStream(Paths.get(path, "level.dat"))) {

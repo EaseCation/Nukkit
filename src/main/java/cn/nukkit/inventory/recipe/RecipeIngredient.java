@@ -1,5 +1,6 @@
 package cn.nukkit.inventory.recipe;
 
+import cn.nukkit.item.Item;
 import lombok.ToString;
 
 @ToString
@@ -8,6 +9,10 @@ public class RecipeIngredient {
 
     private final ItemDescriptor descriptor;
     private final int count;
+
+    public RecipeIngredient(Item item) {
+        this(new DefaultItemDescriptor(item), item.getCount());
+    }
 
     public RecipeIngredient(ItemDescriptor descriptor, int count) {
         this.descriptor = descriptor;
@@ -20,5 +25,9 @@ public class RecipeIngredient {
 
     public int getCount() {
         return count;
+    }
+
+    public boolean accepts(Item item) {
+        return descriptor.accepts(item);
     }
 }

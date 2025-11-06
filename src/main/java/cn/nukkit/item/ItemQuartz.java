@@ -1,5 +1,7 @@
 package cn.nukkit.item;
 
+import cn.nukkit.item.armortrim.TrimMaterialNames;
+
 /**
  * author: MagicDroidX
  * Nukkit Project
@@ -21,5 +23,10 @@ public class ItemQuartz extends Item {
     @Override
     public float getFurnaceXpMultiplier() {
         return 0.2f;
+    }
+
+    @Override
+    public String getTrimMaterialName() {
+        return TrimMaterialNames.QUARTZ;
     }
 }

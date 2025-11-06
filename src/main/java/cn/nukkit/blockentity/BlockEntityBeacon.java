@@ -29,7 +29,7 @@ public class BlockEntityBeacon extends BlockEntitySpawnable {
         ALLOWED_EFFECTS[Effect.REGENERATION] = 4;
     }
 
-    private static boolean isAllowedEffect(int effectId, boolean primary, int maxLevel) {
+    public static boolean isAllowedEffect(int effectId, boolean primary, int maxLevel) {
         if (effectId < 0 || effectId >= ALLOWED_EFFECTS.length) {
             return false;
         }
@@ -179,7 +179,7 @@ public class BlockEntityBeacon extends BlockEntitySpawnable {
         return true;
     }
 
-    private static final int POWER_LEVEL_MAX = 4;
+    public static final int POWER_LEVEL_MAX = 4;
 
     private boolean hasSkyAccess() {
         int tileX = getFloorX();

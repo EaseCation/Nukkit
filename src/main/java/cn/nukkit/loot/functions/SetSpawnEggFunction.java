@@ -32,7 +32,7 @@ public class SetSpawnEggFunction extends LootItemFunction {
 
     @Override
     public Item apply(Item item, RandomSource random, LootTableContext context) {
-        if (item.is(Item.SPAWN_EGG)) {
+        if (item.isSpawnEgg()) {
             if (id != null) {
                 if (parsedType == null) {
                     parsedType = Entities.getTypeByIdentifier(id);

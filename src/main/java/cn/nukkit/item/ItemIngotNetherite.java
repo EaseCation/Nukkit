@@ -1,5 +1,7 @@
 package cn.nukkit.item;
 
+import cn.nukkit.item.armortrim.TrimMaterialNames;
+
 public class ItemIngotNetherite extends Item {
 
     public ItemIngotNetherite() {
@@ -22,5 +24,10 @@ public class ItemIngotNetherite extends Item {
     @Override
     public float getFurnaceXpMultiplier() {
         return 2;
+    }
+
+    @Override
+    public String getTrimMaterialName() {
+        return TrimMaterialNames.NETHERITE;
     }
 }

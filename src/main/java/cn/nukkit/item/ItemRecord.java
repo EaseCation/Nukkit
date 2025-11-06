@@ -14,6 +14,11 @@ public abstract class ItemRecord extends Item {
         return 1;
     }
 
+    @Override
+    public boolean isRecord() {
+        return true;
+    }
+
     public abstract int getSoundEvent();
 
     public abstract int getDuration();

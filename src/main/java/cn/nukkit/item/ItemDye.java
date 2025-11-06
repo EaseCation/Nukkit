@@ -2,6 +2,7 @@ package cn.nukkit.item;
 
 import cn.nukkit.block.Block;
 import cn.nukkit.block.BlockID;
+import cn.nukkit.item.armortrim.TrimMaterialNames;
 import cn.nukkit.utils.DyeColor;
 
 import static cn.nukkit.SharedConstants.*;
@@ -98,5 +99,18 @@ public class ItemDye extends Item {
     @Override
     public boolean isFertilizer() {
         return getDamage() == BONE_MEAL;
+    }
+
+    @Override
+    public String getTrimMaterialName() {
+        if (getDamage() == LAPIS_LAZULI) {
+            return TrimMaterialNames.LAPIS;
+        }
+        return null;
+    }
+
+    @Override
+    public boolean isDye() {
+        return true;
     }
 }

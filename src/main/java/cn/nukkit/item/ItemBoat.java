@@ -97,6 +97,11 @@ public class ItemBoat extends Item {
         return 1200;
     }
 
+    @Override
+    public boolean isBoat() {
+        return true;
+    }
+
     protected EntityFactory getEntityFactory() {
         return EntityBoat::new;
     }

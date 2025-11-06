@@ -48,4 +48,9 @@ public class ItemEgg extends ProjectileItem {
         nbt.putCompound("properties", new CompoundTag()
                 .putString(EntityPropertyNames.CLIMATE_VARIANT, EntityPropertyStringValues.CLIMATE_VARIANT_TEMPERATE));
     }
+
+    @Override
+    public boolean isEgg() {
+        return true;
+    }
 }

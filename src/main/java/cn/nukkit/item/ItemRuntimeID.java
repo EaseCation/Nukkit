@@ -126,6 +126,7 @@ public interface ItemRuntimeID {
     int GOLDEN_NAUTILUS_ARMOR = BASE_INTERNAL_ID + 116;
     int DIAMOND_NAUTILUS_ARMOR = BASE_INTERNAL_ID + 117;
     int NETHERITE_NAUTILUS_ARMOR = BASE_INTERNAL_ID + 118;
+    int NETHERITE_HORSE_ARMOR = BASE_INTERNAL_ID + 119;
 
-    int CUSTOM_ITEM = Mth.smallestEncompassingPowerOfTwo(BASE_INTERNAL_ID + 119); //2048
+    int CUSTOM_ITEM = Mth.smallestEncompassingPowerOfTwo(BASE_INTERNAL_ID + 120); //2048
 }

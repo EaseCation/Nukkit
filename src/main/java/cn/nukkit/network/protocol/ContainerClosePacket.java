@@ -22,7 +22,7 @@ public class ContainerClosePacket extends DataPacket {
 
     @Override
     public void decode() {
-        this.windowId = (byte) this.getByte();
+        this.windowId = this.getSingedByte();
     }
 
     @Override

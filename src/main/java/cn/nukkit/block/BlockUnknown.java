@@ -1,6 +1,7 @@
 package cn.nukkit.block;
 
 import cn.nukkit.item.Item;
+import cn.nukkit.item.Items;
 
 /**
  * author: MagicDroidX
@@ -31,6 +32,6 @@ public class BlockUnknown extends Block {
 
     @Override
     public Item toItem(boolean addUserData) {
-        return Item.get(Item.AIR);
+        return Items.air();
     }
 }
