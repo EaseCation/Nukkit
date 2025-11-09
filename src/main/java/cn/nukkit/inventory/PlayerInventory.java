@@ -99,6 +99,10 @@ public class PlayerInventory extends BaseInventory {
     }
 
     public void sendHeldItem(Player... players) {
+        sendHeldItem(false, players);
+    }
+
+    public void sendHeldItem(boolean forceEquip, Player... players) {
         Item item = this.getItemInHand();
         long entityId = this.getHolder().getId();
 
@@ -106,11 +110,14 @@ public class PlayerInventory extends BaseInventory {
             if (player == this.getHolder()) {
                 this.sendSlot(this.getHeldItemIndex(), player);
 
-                MobEquipmentPacket pk0 = new MobEquipmentPacket();
-                pk0.item = item;
-                pk0.inventorySlot = pk0.hotbarSlot = this.getHeldItemIndex();
-                pk0.eid = entityId;
-                player.dataPacket(pk0);
+                if (forceEquip) {
+                    MobEquipmentPacket pk0 = new MobEquipmentPacket();
+                    pk0.item = item;
+                    pk0.inventorySlot = pk0.hotbarSlot = this.getHeldItemIndex();
+                    pk0.eid = entityId;
+                    player.dataPacket(pk0);
+                }
+
                 continue;
             }
 
