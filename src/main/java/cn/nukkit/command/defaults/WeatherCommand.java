@@ -10,6 +10,8 @@ import cn.nukkit.command.data.CommandParameter;
 import cn.nukkit.lang.TranslationContainer;
 import cn.nukkit.level.Level;
 
+import java.util.concurrent.ThreadLocalRandom;
+
 /**
  * author: Angelic47
  * Nukkit Project
@@ -39,7 +41,7 @@ public class WeatherCommand extends VanillaCommand {
 
         String weather = args[0];
         Level level;
-        int seconds;
+        int seconds = 0;
         if (args.length > 1) {
             try {
                 seconds = Integer.parseInt(args[1]);
@@ -47,8 +49,13 @@ public class WeatherCommand extends VanillaCommand {
                 sender.sendMessage(new TranslationContainer("commands.generic.usage", this.usageMessage));
                 return true;
             }
-        } else {
-            seconds = 600 * 20;
+        }
+        if (seconds < 0 || seconds > 1000000) {
+            sender.sendMessage(new TranslationContainer("commands.generic.usage", this.usageMessage));
+            return false;
+        }
+        if (seconds == 0) {
+            seconds = ThreadLocalRandom.current().nextInt(300, 901);
         }
 
         if (sender instanceof Player) {
@@ -80,7 +87,7 @@ public class WeatherCommand extends VanillaCommand {
                         new TranslationContainer("commands.weather.thunder"));
                 return true;
             default:
-                sender.sendMessage(new TranslationContainer("commands.weather.usage", this.usageMessage));
+                sender.sendMessage(new TranslationContainer("commands.generic.usage", this.usageMessage));
                 return false;
         }
 
