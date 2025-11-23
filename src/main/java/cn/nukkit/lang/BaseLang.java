@@ -4,6 +4,7 @@ import cn.nukkit.Server;
 import it.unimi.dsi.fastutil.objects.Object2ObjectOpenHashMap;
 import lombok.extern.log4j.Log4j2;
 
+import javax.annotation.Nullable;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStream;
@@ -150,6 +151,7 @@ public class BaseLang {
         }
     }
 
+    @Nullable
     public String translateOnly(String prefix, String string, Object... objects) {
         if (string.isEmpty()) {
             return string;
@@ -167,12 +169,12 @@ public class BaseLang {
         }
 
         if (!i18n.startsWith(prefix)) {
-            return string;
+            return null;
         }
 
         String l10n = this.lang.get(i18n);
         if (l10n == null) {
-            return string;
+            return null;
         }
 
         if (percentBreak) {
@@ -210,7 +212,7 @@ public class BaseLang {
             if (log.isTraceEnabled()) {
                 log.throwing(e);
             }
-            return string;
+            return null;
         }
     }
 

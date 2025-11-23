@@ -8,6 +8,7 @@ import cn.nukkit.level.Level;
 import cn.nukkit.level.generator.object.ObjectTallGrass;
 import cn.nukkit.level.particle.BoneMealParticle;
 import cn.nukkit.math.BlockFace;
+import cn.nukkit.network.protocol.AnimatePacket.SwingSource;
 import cn.nukkit.network.protocol.LevelSoundEventPacket;
 import cn.nukkit.utils.BlockColor;
 
@@ -66,7 +67,7 @@ public class BlockGrass extends BlockDirt {
         if (item.isHoe()) {
             level.addLevelSoundEvent(blockCenter(), LevelSoundEventPacket.SOUND_ITEM_USE_ON, getFullId(FARMLAND));
             if (player != null) {
-                player.swingArm();
+                player.swingArm(SwingSource.USE_ITEM);
                 if (player.isSurvivalLike() && item.hurtAndBreak(1) < 0) {
                     item.pop();
                     player.level.addLevelSoundEvent(player, LevelSoundEventPacket.SOUND_BREAK);
@@ -78,7 +79,7 @@ public class BlockGrass extends BlockDirt {
         if (item.isShovel()) {
             level.addLevelSoundEvent(blockCenter(), LevelSoundEventPacket.SOUND_ITEM_USE_ON, getFullId(GRASS_PATH));
             if (player != null) {
-                player.swingArm();
+                player.swingArm(SwingSource.USE_ITEM);
                 if (player.isSurvivalLike() && item.hurtAndBreak(1) < 0) {
                     item.pop();
                     player.level.addLevelSoundEvent(player, LevelSoundEventPacket.SOUND_BREAK);

@@ -84,6 +84,9 @@ public class EntitySpider extends EntityMob implements EntityArthropod {
             case EntityID.STRAY:
             case EntityID.WITHER_SKELETON:
                 return new Vector3f(0, 0.54f + entity.getRidingOffset(), 0);
+            case EntityID.BOGGED:
+            case EntityID.PARCHED:
+                return new Vector3f(0, 0.325f + entity.getRidingOffset(), -0.1f);
         }
         return new Vector3f(0, 0.54f + entity.getRidingOffset(), -0.1f);
     }

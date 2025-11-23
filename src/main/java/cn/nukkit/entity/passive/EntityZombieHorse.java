@@ -17,6 +17,8 @@ import java.util.Arrays;
 import java.util.concurrent.ThreadLocalRandom;
 import java.util.stream.Stream;
 
+import static cn.nukkit.GameVersion.*;
+
 /**
  * @author PikyCZ
  */
@@ -62,7 +64,7 @@ public class EntityZombieHorse extends EntityAbstractHorse implements EntitySmit
         }
         setDataFlag(DATA_FLAG_TAMED, tamed, false);
 
-        movementSpeed = 0.1125f; //TODO: 0.1125-0.3375
+        movementSpeed = 0.205f; //TODO: 0.205-0.275
 
         this.setMaxHealth(25);
     }
@@ -105,7 +107,7 @@ public class EntityZombieHorse extends EntityAbstractHorse implements EntitySmit
 
     @Override
     public boolean canRide() {
-        if (true/*!V1_21_130.isAvailable()*/) {
+        if (!V1_21_130.isAvailable()) {
             return false;
         }
         return super.canRide();
@@ -113,7 +115,7 @@ public class EntityZombieHorse extends EntityAbstractHorse implements EntitySmit
 
     @Override
     public boolean canDoInteraction(Player player) {
-        if (true/*!V1_21_130.isAvailable()*/) {
+        if (!V1_21_130.isAvailable()) {
             return false;
         }
         if (isBaby()) {
@@ -133,7 +135,7 @@ public class EntityZombieHorse extends EntityAbstractHorse implements EntitySmit
 
     @Override
     public String getInteractButtonText(Player player) {
-        if (true/*!V1_21_130.isAvailable()*/) {
+        if (!V1_21_130.isAvailable()) {
             return "";
         }
         if (isBaby()) {
@@ -156,7 +158,7 @@ public class EntityZombieHorse extends EntityAbstractHorse implements EntitySmit
 
     @Override
     public boolean onInteract(Player player, Item item) {
-        if (true/*!V1_21_130.isAvailable()*/) {
+        if (!V1_21_130.isAvailable()) {
             return false;
         }
         if (isBaby()) {
@@ -196,7 +198,7 @@ public class EntityZombieHorse extends EntityAbstractHorse implements EntitySmit
 
     @Override
     public void openInventory(Player player) {
-        if (true/*!V1_21_130.isAvailable()*/) {
+        if (!V1_21_130.isAvailable()) {
             return;
         }
         super.openInventory(player);
@@ -204,7 +206,7 @@ public class EntityZombieHorse extends EntityAbstractHorse implements EntitySmit
 
     @Override
     public void updateSaddled(boolean saddled, boolean send) {
-        if (true/*!V1_21_130.isAvailable()*/) {
+        if (!V1_21_130.isAvailable()) {
             return;
         }
         super.updateSaddled(saddled, send);
@@ -212,7 +214,7 @@ public class EntityZombieHorse extends EntityAbstractHorse implements EntitySmit
 
     @Override
     public void updatePlayerJump(boolean jumping) {
-        if (true/*!V1_21_130.isAvailable()*/) {
+        if (!V1_21_130.isAvailable()) {
             return;
         }
         super.updatePlayerJump(jumping);

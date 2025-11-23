@@ -504,7 +504,7 @@ public final class Items {
         registerNewItem(ItemNames.COPPER_LEGGINGS, COPPER_LEGGINGS, ItemLeggingsCopper.class, ItemLeggingsCopper::new, V1_21_111);
         registerNewItem(ItemNames.COPPER_BOOTS, COPPER_BOOTS, ItemBootsCopper.class, ItemBootsCopper::new, V1_21_111);
         registerNewItem(ItemNames.COPPER_HORSE_ARMOR, COPPER_HORSE_ARMOR, ItemHorseArmorCopper.class, ItemHorseArmorCopper::new, V1_21_111);
-/*
+
         registerNewItem(ItemNames.WOODEN_SPEAR, WOODEN_SPEAR, ItemSpearWooden.class, ItemSpearWooden::new, V1_21_130);
         registerNewItem(ItemNames.STONE_SPEAR, STONE_SPEAR, ItemSpearStone.class, ItemSpearStone::new, V1_21_130);
         registerNewItem(ItemNames.COPPER_SPEAR, COPPER_SPEAR, ItemSpearCopper.class, ItemSpearCopper::new, V1_21_130);
@@ -518,7 +518,7 @@ public final class Items {
         registerNewItem(ItemNames.DIAMOND_NAUTILUS_ARMOR, DIAMOND_NAUTILUS_ARMOR, ItemNautilusArmorDiamond.class, ItemNautilusArmorDiamond::new, V1_21_130);
         registerNewItem(ItemNames.NETHERITE_NAUTILUS_ARMOR, NETHERITE_NAUTILUS_ARMOR, ItemNautilusArmorNetherite.class, ItemNautilusArmorNetherite::new, V1_21_130);
         registerNewItem(ItemNames.NETHERITE_HORSE_ARMOR, NETHERITE_HORSE_ARMOR, ItemHorseArmorNetherite.class, ItemHorseArmorNetherite::new, V1_21_130);
-*/
+
         LootTables.registerVanillaLootTables();
     }
 
@@ -729,12 +729,11 @@ public final class Items {
         registerComplexAlias(ItemNames.CREAKING_SPAWN_EGG, SPAWN_EGG, EntityID.CREAKING, V1_21_50);
         registerComplexAlias(ItemNames.HAPPY_GHAST_SPAWN_EGG, SPAWN_EGG, EntityID.HAPPY_GHAST, V1_21_90);
         registerComplexAlias(ItemNames.COPPER_GOLEM_SPAWN_EGG, SPAWN_EGG, EntityID.COPPER_GOLEM, V1_21_111);
-/*
         registerComplexAlias(ItemNames.NAUTILUS_SPAWN_EGG, SPAWN_EGG, EntityID.NAUTILUS, V1_21_130);
         registerComplexAlias(ItemNames.ZOMBIE_NAUTILUS_SPAWN_EGG, SPAWN_EGG, EntityID.ZOMBIE_NAUTILUS, V1_21_130);
         registerComplexAlias(ItemNames.PARCHED_SPAWN_EGG, SPAWN_EGG, EntityID.PARCHED, V1_21_130);
         registerComplexAlias(ItemNames.CAMEL_HUSK_SPAWN_EGG, SPAWN_EGG, EntityID.CAMEL_HUSK, V1_21_130);
-*/
+
         registerComplexAlias(ItemBlockNames.SKELETON_SKULL, SKULL, ItemSkull.HEAD_SKELETON, V1_21_40);
         registerComplexAlias(ItemBlockNames.WITHER_SKELETON_SKULL, SKULL, ItemSkull.HEAD_WITHER_SKELETON, V1_21_40);
         registerComplexAlias(ItemBlockNames.ZOMBIE_HEAD, SKULL, ItemSkull.HEAD_ZOMBIE, V1_21_40);

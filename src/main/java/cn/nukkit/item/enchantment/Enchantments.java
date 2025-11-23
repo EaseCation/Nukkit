@@ -8,6 +8,7 @@ import cn.nukkit.item.enchantment.damage.*;
 import cn.nukkit.item.enchantment.loot.*;
 import cn.nukkit.item.enchantment.mace.*;
 import cn.nukkit.item.enchantment.protection.*;
+import cn.nukkit.item.enchantment.spear.*;
 import cn.nukkit.item.enchantment.trident.*;
 import it.unimi.dsi.fastutil.objects.Object2ObjectOpenHashMap;
 
@@ -71,9 +72,9 @@ public final class Enchantments {
         registerEnchantment(WIND_BURST, new EnchantmentMaceWindBurst(), V1_21_0);
         registerEnchantment(DENSITY, new EnchantmentMaceDensity(), V1_21_0);
         registerEnchantment(BREACH, new EnchantmentMaceBreach(), V1_21_0);
-/*
+
         registerEnchantment(LUNGE, new EnchantmentSpearLunge(), V1_21_130);
-*/
+
     }
 
     private static Enchantment registerEnchantment(int id, Enchantment enchantment) {

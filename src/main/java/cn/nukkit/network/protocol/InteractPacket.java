@@ -1,6 +1,9 @@
 package cn.nukkit.network.protocol;
 
+import cn.nukkit.math.Vector3f;
 import lombok.ToString;
+
+import javax.annotation.Nullable;
 
 /**
  * Created on 15-10-15.
@@ -20,10 +23,8 @@ public class InteractPacket extends DataPacket {
 
     public int action;
     public long target;
-
-    public float x;
-    public float y;
-    public float z;
+    @Nullable
+    public Vector3f position;
 
     @Override
     public void decode() {
@@ -31,9 +32,7 @@ public class InteractPacket extends DataPacket {
         this.target = this.getEntityRuntimeId();
 
         if (this.action == ACTION_MOUSEOVER) {
-            this.x = this.getLFloat();
-            this.y = this.getLFloat();
-            this.z = this.getLFloat();
+            this.position = this.getVector3f();
         }
     }
 

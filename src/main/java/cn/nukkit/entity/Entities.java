@@ -183,12 +183,12 @@ public final class Entities {
         registerEntity(EntityID.HAPPY_GHAST, EntityNames.HAPPY_GHAST, "HappyGhast", EntityHappyGhast.class, EntityHappyGhast::new, V1_21_90);
 
         registerEntity(EntityID.COPPER_GOLEM, EntityNames.COPPER_GOLEM, "CopperGolem", EntityCopperGolem.class, EntityCopperGolem::new, V1_21_111);
-/*
+
         registerEntity(EntityID.NAUTILUS, EntityNames.NAUTILUS, "Nautilus", EntityNautilus.class, EntityNautilus::new, V1_21_130);
         registerEntity(EntityID.ZOMBIE_NAUTILUS, EntityNames.ZOMBIE_NAUTILUS, "ZombieNautilus", EntityZombieNautilus.class, EntityZombieNautilus::new, V1_21_130);
         registerEntity(EntityID.PARCHED, EntityNames.PARCHED, "Parched", EntityParched.class, EntityParched::new, V1_21_130);
         registerEntity(EntityID.CAMEL_HUSK, EntityNames.CAMEL_HUSK, "CamelHusk", EntityCamelHusk.class, EntityCamelHusk::new, V1_21_130);
-*/
+
         EntityPropertyRegistry.registerVanillaProperties();
     }
 

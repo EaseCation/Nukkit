@@ -3,6 +3,7 @@ package cn.nukkit.block;
 import cn.nukkit.Player;
 import cn.nukkit.item.Item;
 import cn.nukkit.math.BlockFace;
+import cn.nukkit.network.protocol.AnimatePacket.SwingSource;
 import cn.nukkit.network.protocol.LevelSoundEventPacket;
 
 public abstract class BlockLog extends BlockRotatedPillar {
@@ -47,7 +48,7 @@ public abstract class BlockLog extends BlockRotatedPillar {
         }
 
         if (player != null) {
-            player.swingArm();
+            player.swingArm(SwingSource.USE_ITEM);
             if (player.isSurvivalLike() && item.hurtAndBreak(1) < 0) {
                 item.pop();
                 player.level.addLevelSoundEvent(player, LevelSoundEventPacket.SOUND_BREAK);

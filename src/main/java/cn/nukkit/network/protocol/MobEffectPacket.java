@@ -26,6 +26,7 @@ public class MobEffectPacket extends DataPacket {
     public int amplifier = 0;
     public boolean particles = true;
     public int duration = 0;
+    public boolean ambient;
 
     @Override
     public void decode() {

@@ -88,12 +88,12 @@ public final class EntityPropertyRegistry {
                         OXIDATION_LEVEL_EXPOSED,
                         OXIDATION_LEVEL_WEATHERED,
                         OXIDATION_LEVEL_OXIDIZED));
-/*
+
         registerProperties(V1_21_130, EntityID.ZOMBIE_NAUTILUS, EntityFullNames.ZOMBIE_NAUTILUS,
                 new EnumEntityProperty(VARIANT,
                         VARIANT_DEFAULT,
                         VARIANT_CORAL));
-*/
+
     }
 
     private static void registerProperties(int entityType, String entityIdentifier, EntityProperty... properties) {

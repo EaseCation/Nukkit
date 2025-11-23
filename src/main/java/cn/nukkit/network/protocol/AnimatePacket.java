@@ -4,6 +4,12 @@ import it.unimi.dsi.fastutil.ints.Int2ObjectMap;
 import it.unimi.dsi.fastutil.ints.Int2ObjectOpenHashMap;
 import lombok.ToString;
 
+import javax.annotation.Nullable;
+import java.util.Arrays;
+import java.util.Map;
+import java.util.function.Function;
+import java.util.stream.Collectors;
+
 /**
  * @author Nukkit Project Team
  */
@@ -16,6 +22,8 @@ public class AnimatePacket extends DataPacket {
     public Action action;
     public float data;
     public float rowingTime;
+    @Nullable
+    public SwingSource swingSource;
 
     @Override
     public void decode() {
@@ -75,4 +83,34 @@ public class AnimatePacket extends DataPacket {
         }
     }
 
+    public enum SwingSource {
+        NONE("none"),
+        BUILD("build"),
+        MINE("mine"),
+        INTERACT("interact"),
+        ATTACK("attack"),
+        USE_ITEM("useitem"),
+        THROW_ITEM("throwitem"),
+        DROP_ITEM("dropitem"),
+        EVENT("event"),
+        ;
+
+        private static final Map<String, SwingSource> BY_NAME = Arrays.stream(values())
+                .collect(Collectors.toMap(SwingSource::getName, Function.identity()));
+
+        private final String name;
+
+        SwingSource(String name) {
+            this.name = name;
+        }
+
+        public String getName() {
+            return name;
+        }
+
+        @Nullable
+        public static SwingSource byName(String name) {
+            return BY_NAME.get(name);
+        }
+    }
 }

@@ -228,6 +228,7 @@ public class Effect implements EffectID, Cloneable {
             pk.amplifier = this.getAmplifier();
             pk.particles = this.isVisible();
             pk.duration = this.isInfinite() ? -1 : this.getDuration();
+            pk.ambient = this.isAmbient();
             if (oldEffect != null) {
                 pk.eventId = MobEffectPacket.EVENT_MODIFY;
             } else {

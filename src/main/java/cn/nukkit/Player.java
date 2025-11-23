@@ -1,7 +1,10 @@
 package cn.nukkit;
 
 import cn.nukkit.AdventureSettings.Type;
-import cn.nukkit.block.*;
+import cn.nukkit.block.Block;
+import cn.nukkit.block.BlockDoor;
+import cn.nukkit.block.BlockID;
+import cn.nukkit.block.BlockNoteblock;
 import cn.nukkit.blockentity.BlockEntity;
 import cn.nukkit.blockentity.BlockEntityEnderChest;
 import cn.nukkit.blockentity.BlockEntityItemFrame;
@@ -48,6 +51,7 @@ import cn.nukkit.lang.LiteralContainer;
 import cn.nukkit.lang.TextContainer;
 import cn.nukkit.lang.TranslationContainer;
 import cn.nukkit.level.*;
+import cn.nukkit.level.Dimension;
 import cn.nukkit.level.GlobalBlockPaletteInterface.StaticVersion;
 import cn.nukkit.level.format.FullChunk;
 import cn.nukkit.level.format.generic.BaseFullChunk;
@@ -64,6 +68,7 @@ import cn.nukkit.nbt.tag.ListTag;
 import cn.nukkit.network.PacketViolationReason;
 import cn.nukkit.network.SourceInterface;
 import cn.nukkit.network.protocol.*;
+import cn.nukkit.network.protocol.AnimatePacket.SwingSource;
 import cn.nukkit.network.protocol.types.*;
 import cn.nukkit.network.protocol.types.CommandOriginData.Origin;
 import cn.nukkit.permission.PermissibleBase;
@@ -91,20 +96,21 @@ import it.unimi.dsi.fastutil.objects.ObjectIntPair;
 import lombok.extern.log4j.Log4j2;
 
 import javax.annotation.Nullable;
+import java.awt.*;
 import java.io.IOException;
 import java.net.InetAddress;
 import java.net.InetSocketAddress;
 import java.nio.ByteOrder;
 import java.util.*;
+import java.util.List;
 import java.util.Map.Entry;
+import java.util.Queue;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ThreadLocalRandom;
 import java.util.function.Consumer;
 import java.util.stream.Collectors;
 
-import static cn.nukkit.SharedConstants.BREAKPOINT_DEBUGGING;
-import static cn.nukkit.SharedConstants.EXPERIMENTAL_COMBAT_KNOCKBACK_TEST;
-import static cn.nukkit.SharedConstants.RESOURCE_PACK_CHUNK_SIZE;
+import static cn.nukkit.SharedConstants.*;
 
 /**
  * author: MagicDroidX &amp; Box
@@ -4314,14 +4320,22 @@ public class Player extends EntityHuman implements CommandSender, InventoryHolde
     public void sendTranslation(String message, Object[] parameters) {
         TextPacket pk = new TextPacket();
         if (!this.server.isLanguageForced()) {
-            pk.type = TextPacket.TYPE_TRANSLATION;
-            pk.message = this.server.getLanguage().translateOnly("nukkit.", message, parameters);
-            pk.isLocalized = true;
-            String[] params = new String[parameters.length];
-            for (int i = 0; i < parameters.length; i++) {
-                params[i] = this.server.getLanguage().translateOnly("nukkit.", String.valueOf(parameters[i]), parameters);
+            String translated = this.server.getLanguage().translateOnly("nukkit.", message, parameters);
+            if (translated == null) {
+                pk.type = TextPacket.TYPE_TRANSLATION;
+                pk.isLocalized = true;
+                pk.message = message;
+                String[] params = new String[parameters.length];
+                for (int i = 0; i < parameters.length; i++) {
+                    String param = String.valueOf(parameters[i]);
+                    String translatedParam = this.server.getLanguage().translateOnly("nukkit.", param, parameters);
+                    params[i] = translatedParam != null ? translatedParam : param;
+                }
+                pk.parameters = params;
+            } else {
+                pk.type = TextPacket.TYPE_RAW;
+                pk.message = translated;
             }
-            pk.parameters = params;
         } else {
             pk.type = TextPacket.TYPE_RAW;
             pk.message = this.server.getLanguage().translate(message, parameters);
@@ -6785,9 +6799,14 @@ public class Player extends EntityHuman implements CommandSender, InventoryHolde
     }
 
     public void swingArm() {
+        swingArm(SwingSource.EVENT);
+    }
+
+    public void swingArm(SwingSource swingSource) {
         AnimatePacket pk = new AnimatePacket();
         pk.eid = getId();
         pk.action = AnimatePacket.Action.SWING_ARM;
+        pk.swingSource = swingSource;
         dataPacket(pk);
         Server.broadcastPacket(getViewers().values(), pk);
     }
@@ -6951,5 +6970,125 @@ public class Player extends EntityHuman implements CommandSender, InventoryHolde
      * @since 1.21.80
      */
     public void resetControlScheme() {
+    }
+
+    /**
+     * @since 1.21.120
+     */
+    public void setSkyZenithColor(Color color, String... biomeIdentifiers) {
+    }
+
+    /**
+     * @since 1.21.120
+     */
+    public void resetSkyZenithColor(String... biomeIdentifiers) {
+    }
+
+    /**
+     * @since 1.21.130
+     */
+    public void setSkyHorizonColor(Color color, String... biomeIdentifiers) {
+    }
+
+    /**
+     * @since 1.21.130
+     */
+    public void resetSkyHorizonColor(String... biomeIdentifiers) {
+    }
+
+    /**
+     * @since 1.21.130
+     */
+    public void setHorizonBlendMin(float blendMin, String... biomeIdentifiers) {
+    }
+
+    /**
+     * @since 1.21.130
+     */
+    public void resetHorizonBlendMin(String... biomeIdentifiers) {
+    }
+
+    /**
+     * @since 1.21.130
+     */
+    public void setHorizonBlendMax(float blendMax, String... biomeIdentifiers) {
+    }
+
+    /**
+     * @since 1.21.130
+     */
+    public void resetHorizonBlendMax(String... biomeIdentifiers) {
+    }
+
+    /**
+     * @since 1.21.130
+     */
+    public void setHorizonBlendStart(float blendStart, String... biomeIdentifiers) {
+    }
+
+    /**
+     * @since 1.21.130
+     */
+    public void resetHorizonBlendStart(String... biomeIdentifiers) {
+    }
+
+    /**
+     * @since 1.21.130
+     */
+    public void setHorizonBlendMieStart(float blendMieStart, String... biomeIdentifiers) {
+    }
+
+    /**
+     * @since 1.21.130
+     */
+    public void resetHorizonBlendMieStart(String... biomeIdentifiers) {
+    }
+
+    /**
+     * @since 1.21.130
+     */
+    public void setRayleighStrength(float rayleighStrength, String... biomeIdentifiers) {
+    }
+
+    /**
+     * @since 1.21.130
+     */
+    public void resetRayleighStrength(String... biomeIdentifiers) {
+    }
+
+    /**
+     * @since 1.21.130
+     */
+    public void setSunMieStrength(float sunMieStrength, String... biomeIdentifiers) {
+    }
+
+    /**
+     * @since 1.21.130
+     */
+    public void resetSunMieStrength(String... biomeIdentifiers) {
+    }
+
+    /**
+     * @since 1.21.130
+     */
+    public void setMoonMieStrength(float moonMieStrength, String... biomeIdentifiers) {
+    }
+
+    /**
+     * @since 1.21.130
+     */
+    public void resetMoonMieStrength(String... biomeIdentifiers) {
+    }
+
+    /**
+     * @since 1.21.130
+     */
+    public void setSunGlareShape(float sunGlareShape, String... biomeIdentifiers) {
+    }
+
+    /**
+     * @since 1.21.130
+     */
+    public void resetSunGlareShape(String... biomeIdentifiers) {
     }
 }

@@ -56,6 +56,8 @@ final class BlockStateBehaviours {
         //register(MINECRAFT_CONNECTION_SOUTH, BlockStateBehaviours::rotateMinecraftCardinalConnections, BlockStateBehaviours::mirrorMinecraftCardinalConnections);
         //register(MINECRAFT_CONNECTION_WEST, BlockStateBehaviours::rotateMinecraftCardinalConnections, BlockStateBehaviours::mirrorMinecraftCardinalConnections);
 
+        register(MINECRAFT_CORNER, null, BlockStateBehaviours::mirrorMinecraftCornerAndCardinalDirection);
+
         // D U N S W E
         register(MINECRAFT_FACING_DIRECTION, BlockStateBehaviours::rotateMinecraftFacingDirection, BlockStateBehaviours::mirrorMinecraftFacingDirection);
 
@@ -380,6 +382,34 @@ final class BlockStateBehaviours {
 
     private static BlockInstance mirrorMinecraftCardinalConnections(BlockInstance block, Mirror mirror) {
         return mirror(block, MINECRAFT_CONNECTION_SOUTH, MINECRAFT_CONNECTION_WEST, MINECRAFT_CONNECTION_NORTH, MINECRAFT_CONNECTION_EAST, mirror);
+    }
+
+    private static final Map<Mirror, Map<MinecraftCornerState, MinecraftCornerState>> CORNER_MIRROR = Utils.make(new EnumMap<>(Mirror.class), lookup -> {
+        lookup.put(Mirror.NONE, Collections.emptyMap());
+
+        Map<MinecraftCornerState, MinecraftCornerState> x = new EnumMap<>(MinecraftCornerState.class);
+        x.put(MinecraftCornerState.INNER_LEFT, MinecraftCornerState.INNER_RIGHT);
+        x.put(MinecraftCornerState.INNER_RIGHT, MinecraftCornerState.INNER_LEFT);
+        x.put(MinecraftCornerState.OUTER_LEFT, MinecraftCornerState.OUTER_RIGHT);
+        x.put(MinecraftCornerState.OUTER_RIGHT, MinecraftCornerState.OUTER_LEFT);
+        lookup.put(Mirror.X, x);
+
+        Map<MinecraftCornerState, MinecraftCornerState> z = new EnumMap<>(MinecraftCornerState.class);
+        z.put(MinecraftCornerState.OUTER_LEFT, MinecraftCornerState.OUTER_RIGHT);
+        z.put(MinecraftCornerState.OUTER_RIGHT, MinecraftCornerState.OUTER_LEFT);
+        lookup.put(Mirror.Z, z);
+    });
+
+    private static BlockInstance mirrorMinecraftCornerAndCardinalDirection(BlockInstance block, Mirror mirror) {
+        BlockInstance newBlock = mirrorMinecraftCardinalDirection(block, mirror);
+        if (newBlock == block) {
+            return block;
+        }
+        block = newBlock;
+
+        EnumBlockState<MinecraftCornerState> state = MINECRAFT_CORNER;
+        MinecraftCornerState newValue = CORNER_MIRROR.get(mirror).get(state.getValues().get(block.getState(state)));
+        return newValue == null ? block : block.setState(state, newValue);
     }
 
     private static BlockInstance rotateMinecraftFacingDirection(BlockInstance block, Rotation rotation) {

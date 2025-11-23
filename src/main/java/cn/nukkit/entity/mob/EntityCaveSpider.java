@@ -82,10 +82,11 @@ public class EntityCaveSpider extends EntityMob implements EntityArthropod {
         switch (entity.getNetworkId()) {
             case EntityID.SKELETON:
             case EntityID.STRAY:
-                return new Vector3f(0, 0.3f + entity.getRidingOffset(), -0.1f);
+            case EntityID.BOGGED:
+            case EntityID.PARCHED:
             case EntityID.WITHER_SKELETON:
-                return new Vector3f(0, 0.25f + entity.getRidingOffset(), -0.1f);
+                return new Vector3f(0, 0.325f + entity.getRidingOffset(), -0.1f);
         }
-        return new Vector3f(0, 0.3f + entity.getRidingOffset(), 0);
+        return new Vector3f(0, 0.325f + entity.getRidingOffset(), 0);
     }
 }

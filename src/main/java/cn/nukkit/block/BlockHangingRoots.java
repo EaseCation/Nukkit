@@ -6,6 +6,8 @@ import cn.nukkit.level.Level;
 import cn.nukkit.math.BlockFace;
 import cn.nukkit.utils.BlockColor;
 
+import static cn.nukkit.GameVersion.*;
+
 public class BlockHangingRoots extends BlockFlowable {
     public BlockHangingRoots() {
         this(0);
@@ -52,7 +54,7 @@ public class BlockHangingRoots extends BlockFlowable {
 
     @Override
     public boolean place(Item item, Block block, Block target, BlockFace face, float fx, float fy, float fz, Player player) {
-        if (block.isLiquid() || !block.isAir() && block.canContainWater() && level.getExtraBlock(this).isWater()) {
+        if (!V1_21_130.isAvailable() && (block.isLiquid() || !block.isAir() && block.canContainWater() && level.getExtraBlock(this).isWater())) {
             return false;
         }
 
@@ -75,6 +77,16 @@ public class BlockHangingRoots extends BlockFlowable {
         }
 
         return 0;
+    }
+
+    @Override
+    public boolean canBeFlowedInto() {
+        return !V1_21_130.isAvailable();
+    }
+
+    @Override
+    public boolean canContainWater() {
+        return V1_21_130.isAvailable();
     }
 
     @Override

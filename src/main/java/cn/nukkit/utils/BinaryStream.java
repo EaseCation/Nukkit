@@ -27,12 +27,13 @@ import it.unimi.dsi.fastutil.objects.ObjectOpenHashSet;
 
 import javax.annotation.Nullable;
 import java.io.IOException;
-import java.lang.reflect.Array;
 import java.nio.ByteOrder;
 import java.nio.charset.StandardCharsets;
 import java.util.*;
 import java.util.function.BiConsumer;
 import java.util.function.Function;
+import java.util.function.ObjIntConsumer;
+import java.util.function.ToIntFunction;
 
 /**
  * author: MagicDroidX
@@ -1015,50 +1016,65 @@ public class BinaryStream {
     /**
      * @throws IndexOutOfBoundsException if the length of the array is greater than 4096
      */
-    @SuppressWarnings("unchecked")
-    public <T> T[] getArray(Class<T> clazz, Function<BinaryStream, T> function) {
+    public <T> T[] getArray(T[] array, Function<BinaryStream, T> function) {
         int count = (int) getUnsignedVarInt();
         if (count > 4096) {
             throw new IndexOutOfBoundsException("too many array elements");
         }
-
-        ArrayDeque<T> deque = new ArrayDeque<>();
-        for (int i = 0; i < count; i++) {
-            deque.add(function.apply(this));
-        }
-        return deque.toArray((T[]) Array.newInstance(clazz, 0));
+        return getArray(count, array, function);
     }
 
-    @SuppressWarnings("unchecked")
-    public <T> T[] getArrayLInt(Class<T> clazz, Function<BinaryStream, T> function) {
-        int count = this.getLInt();
-        ArrayDeque<T> deque = new ArrayDeque<>();
-        for (int i = 0; i < count; i++) {
-            deque.add(function.apply(this));
-        }
-        return deque.toArray((T[]) Array.newInstance(clazz, 0));
+    public <T> T[] getArray(ToIntFunction<BinaryStream> lengthReader, T[] array, Function<BinaryStream, T> function) {
+        int count = lengthReader.applyAsInt(this);
+        return getArray(count, array, function);
     }
 
-    @SuppressWarnings("unchecked")
-    public <T> T[] getArrayLShort(Class<T> clazz, Function<BinaryStream, T> function) {
-        int count = this.getLShort();
-        ArrayDeque<T> deque = new ArrayDeque<>();
-        for (int i = 0; i < count; i++) {
-            deque.add(function.apply(this));
-        }
-        return deque.toArray((T[]) Array.newInstance(clazz, 0));
-    }
-
-    @SuppressWarnings("unchecked")
-    public <T> T[] getArray(int length, Class<T> clazz, Function<BinaryStream, T> function) {
-        ArrayDeque<T> deque = new ArrayDeque<>();
+    public <T> T[] getArray(int length, T[] array, Function<BinaryStream, T> function) {
+        Collection<T> collection = new ArrayList<>();
         for (int i = 0; i < length; i++) {
-            deque.add(function.apply(this));
+            collection.add(function.apply(this));
         }
-        return deque.toArray((T[]) Array.newInstance(clazz, 0));
+        return collection.toArray(array);
     }
 
-    public <T> void putOptional(T obj, BiConsumer<BinaryStream, T> consumer) {
+    public <T> void putArray(T[] array, BiConsumer<BinaryStream, T> consumer) {
+        putArray(BinaryStream::putUnsignedVarInt, array, consumer);
+    }
+
+    public <T> void putArray(ObjIntConsumer<BinaryStream> lengthWriter, T[] array, BiConsumer<BinaryStream, T> consumer) {
+        lengthWriter.accept(this, array.length);
+        for (T element : array) {
+            consumer.accept(this, element);
+        }
+    }
+
+    public <T> T getEnum(Function<String, T> function) {
+        return function.apply(getString());
+    }
+
+    public <T> void putEnum(T value, Function<T, String> function) {
+        putString(function.apply(value));
+    }
+
+    @Nullable
+    public <T> T getOptionalEnum(Function<String, T> function) {
+        return getOptional(stream -> stream.getEnum(function));
+    }
+
+    public <T> void putOptionalEnum(@Nullable T value, Function<T, String> function) {
+        putOptional(value, (stream, obj) -> stream.putEnum(obj, function));
+    }
+
+    @Nullable
+    public <T> T getOptional(Function<BinaryStream, T> function) {
+        return getOptional(function, null);
+    }
+
+    public <T> T getOptional(Function<BinaryStream, T> function, @Nullable T defaultValue) {
+        return getBoolean() ? function.apply(this) : defaultValue;
+    }
+
+    public <T> void putOptional(@Nullable T obj, BiConsumer<BinaryStream, T> consumer) {
         if (obj == null) {
             putBoolean(false);
             return;

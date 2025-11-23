@@ -1187,6 +1187,7 @@ public abstract class Entity extends Location implements Metadatable, EntityData
             pk.amplifier = effect.getAmplifier();
             pk.particles = effect.isVisible();
             pk.duration = effect.isInfinite() ? -1 : effect.getDuration();
+            pk.ambient = effect.isAmbient();
             pk.eventId = MobEffectPacket.EVENT_ADD;
             player.dataPacket(pk);
         }

@@ -78,6 +78,10 @@ public class BlockLegacy {
             }
             permutations[i] = new BlockInstance(this, i, stateValues);
         }
+
+        if (states[BlockStates.MINECRAFT_CORNER.id] != null) {
+            mirrorBehaviours.remove(BlockStateBehaviours.getMirrorBehaviour(name, BlockStates.MINECRAFT_CARDINAL_DIRECTION));
+        }
         return this;
     }
 
