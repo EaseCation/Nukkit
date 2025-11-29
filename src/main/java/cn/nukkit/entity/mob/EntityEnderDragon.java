@@ -9,6 +9,7 @@ import cn.nukkit.level.format.FullChunk;
 import cn.nukkit.nbt.tag.CompoundTag;
 import cn.nukkit.network.protocol.AddEntityPacket;
 import cn.nukkit.network.protocol.DataPacket;
+import cn.nukkit.network.protocol.types.EntityLink;
 import it.unimi.dsi.fastutil.Pair;
 import it.unimi.dsi.fastutil.ints.Int2FloatMap;
 import it.unimi.dsi.fastutil.ints.Int2IntMap;
@@ -82,6 +83,10 @@ public class EntityEnderDragon extends EntityMob {
         if (propertyValues != null) {
             addEntity.intProperties = propertyValues.left();
             addEntity.floatProperties = propertyValues.right();
+        }
+        addEntity.links = new EntityLink[this.passengers.size()];
+        for (int i = 0; i < addEntity.links.length; i++) {
+            addEntity.links[i] = new EntityLink(this.getId(), this.passengers.get(i).getId(), i == 0 ? EntityLink.TYPE_RIDER : EntityLink.TYPE_PASSENGER, false, false, 0f);
         }
 
         addEntity.attributes = new Attribute[]{

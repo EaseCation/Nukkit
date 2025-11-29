@@ -32,6 +32,7 @@ import cn.nukkit.nbt.tag.DoubleTag;
 import cn.nukkit.nbt.tag.FloatTag;
 import cn.nukkit.nbt.tag.ListTag;
 import cn.nukkit.network.protocol.*;
+import cn.nukkit.network.protocol.types.EntityLink;
 import cn.nukkit.plugin.Plugin;
 import cn.nukkit.potion.Effect;
 import cn.nukkit.utils.ChunkException;
@@ -1135,8 +1136,8 @@ public abstract class Entity extends Location implements Metadatable, EntityData
             SetEntityLinkPacket pkk = new SetEntityLinkPacket();
             pkk.vehicleUniqueId = this.riding.getId();
             pkk.riderUniqueId = this.getId();
-            pkk.type = 1;
-            pkk.immediate = 1;
+            pkk.type = this.riding.getPassenger() == this ? SetEntityLinkPacket.TYPE_RIDE : SetEntityLinkPacket.TYPE_PASSENGER;
+            pkk.immediate = true;
 
             player.dataPacket(pkk);
         }*/
@@ -1162,12 +1163,10 @@ public abstract class Entity extends Location implements Metadatable, EntityData
             addEntity.intProperties = propertyValues.left();
             addEntity.floatProperties = propertyValues.right();
         }
-
-//        addEntity.links = new EntityLink[this.passengers.size()];
-//        for (int i = 0; i < addEntity.links.length; i++) {
-//            addEntity.links[i] = new EntityLink(this.getId(), this.passengers.get(i).getId(), i == 0 ? EntityLink.TYPE_RIDER : EntityLink.TYPE_PASSENGER, false, false);
-//        }
-
+        addEntity.links = new EntityLink[this.passengers.size()];
+        for (int i = 0; i < addEntity.links.length; i++) {
+            addEntity.links[i] = new EntityLink(this.getId(), this.passengers.get(i).getId(), i == 0 ? EntityLink.TYPE_RIDER : EntityLink.TYPE_PASSENGER, false, false, 0f);
+        }
         return addEntity;
     }
 

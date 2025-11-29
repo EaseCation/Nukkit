@@ -14,7 +14,6 @@ public class BossEventPacket extends DataPacket {
     public static final int TYPE_SHOW = 0;
     /* C2S: Registers a player to a boss fight. */
     public static final int TYPE_REGISTER_PLAYER = 1;
-    public static final int TYPE_UPDATE = 1;
     /* S2C: Removes the bossbar from the client. */
     public static final int TYPE_HIDE = 2;
     /* C2S: Unregisters a player from a boss fight. */

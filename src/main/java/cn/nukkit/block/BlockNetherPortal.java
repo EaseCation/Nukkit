@@ -3,6 +3,7 @@ package cn.nukkit.block;
 import cn.nukkit.Player;
 import cn.nukkit.item.Item;
 import cn.nukkit.item.Items;
+import cn.nukkit.level.HeightRange;
 import cn.nukkit.level.Level;
 import cn.nukkit.level.Position;
 import cn.nukkit.math.AxisAlignedBB;
@@ -209,11 +210,13 @@ public class BlockNetherPortal extends BlockTransparent implements Faceable {
         //TODO: pair record
         Level level = pos.getLevel();
         Position found = null;
-        int maxY = level.getHeightRange().getMaxY();
+        HeightRange heightRange = level.getHeightRange();
+        int minY = heightRange.getMinY();
+        int maxY = heightRange.getMaxY();
 
         for (int xx = -16; xx <= 16; xx++) {
             for (int zz = -16; zz <= 16; zz++) {
-                for (int y = 0; y < maxY; y++) {
+                for (int y = minY; y < maxY; y++) {
                     int x = pos.getFloorX() + xx, z = pos.getFloorZ() + zz;
                     if (level.getBlock(x, y, z).getId() == PORTAL) {
                         found = new Position(x, y, z, level);

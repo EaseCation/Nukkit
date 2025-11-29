@@ -921,7 +921,9 @@ public class Player extends EntityHuman implements CommandSender, InventoryHolde
 
     // Remove old chunks
     public void removeAllChunks() {
-        for (long index :new LongArrayList(this.usedChunks.keySet())) {
+        dummyBossBars.values().forEach(DummyBossBar::destroy);
+
+        for (long index : new LongArrayList(this.usedChunks.keySet())) {
             int chunkX = Level.getHashX(index);
             int chunkZ = Level.getHashZ(index);
             this.unloadChunk(chunkX, chunkZ, this.level);
@@ -4176,6 +4178,16 @@ public class Player extends EntityHuman implements CommandSender, InventoryHolde
                     RiderJumpPacket riderJumpPacket = (RiderJumpPacket) packet;
                     new PlayerPassengerJumpEvent(this, riderJumpPacket.strength).call();
                     break;
+                case ProtocolInfo.BOSS_EVENT_PACKET:
+                    BossEventPacket bossEventPacket = (BossEventPacket) packet;
+                    switch (bossEventPacket.type) {
+                        case BossEventPacket.TYPE_QUERY:
+                            DummyBossBar bossBar = dummyBossBars.get(bossEventPacket.bossEid);
+                            if (bossBar != null) {
+                                bossBar.reshow();
+                            }
+                            break;
+                    }
                 default:
                     break;
             }
@@ -5596,26 +5608,30 @@ public class Player extends EntityHuman implements CommandSender, InventoryHolde
         if (super.teleport(to.getY() == to.getFloorY() ? to.add(0, 0.00001, 0) : to, null)) { // null to prevent fire of duplicate EntityTeleportEvent
             this.removeAllWindows();
 
-            this.teleportPosition = new Vector3(this.x, this.y, this.z);
-            this.forceMovement = this.teleportPosition;
-            this.sendPosition(this, this.yaw, this.pitch, MovePlayerPacket.MODE_TELEPORT);
-
-            this.checkTeleportPosition();
-
-            this.resetFallDistance();
-            this.nextChunkOrderRun = 0;
-            this.newPosition = null;
-
-            //DummyBossBar
-            this.getDummyBossBars().values().forEach(DummyBossBar::reshow);
-            //Weather
-            this.getLevel().sendWeather(this);
-            //Update time
-            this.getLevel().sendTime(this);
+            postTeleport(false);
             return true;
         }
 
         return false;
+    }
+
+    protected void postTeleport(boolean synapse) {
+        this.teleportPosition = new Vector3(this.x, this.y, this.z);
+        this.forceMovement = this.teleportPosition;
+        this.sendPosition(this, this.yaw, this.pitch, MovePlayerPacket.MODE_TELEPORT);
+
+        this.checkTeleportPosition();
+
+        this.resetFallDistance();
+        this.nextChunkOrderRun = 0;
+        this.newPosition = null;
+
+        //DummyBossBar
+        this.getDummyBossBars().values().forEach(DummyBossBar::reshow);
+        //Weather
+        this.getLevel().sendWeather(this);
+        //Update time
+        this.getLevel().sendTime(this);
     }
 
     protected void forceSendEmptyChunks() {
@@ -5723,7 +5739,7 @@ public class Player extends EntityHuman implements CommandSender, InventoryHolde
      */
     @Deprecated
     public long createBossBar(String text, int length) {
-        DummyBossBar bossBar = new DummyBossBar.Builder(this).text(text).length(length).build();
+        DummyBossBar bossBar = DummyBossBar.builder(this).text(text).length(length).build();
         return this.createBossBar(bossBar);
     }
 

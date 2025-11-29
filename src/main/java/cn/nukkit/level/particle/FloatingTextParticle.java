@@ -51,7 +51,7 @@ public class FloatingTextParticle extends Particle {
         this.metadata.putLong(Entity.DATA_FLAGS, flags)
                 .putLong(Entity.DATA_LEAD_HOLDER_EID, -1)
                 .putByte(Entity.DATA_ALWAYS_SHOW_NAMETAG, 1)
-                .putFloat(Entity.DATA_SCALE, 0.01f) // Zero causes problems on debug builds?
+                .putFloat(Entity.DATA_SCALE, 0.001f) // Zero causes problems on debug builds?
                 .putFloat(Entity.DATA_BOUNDING_BOX_HEIGHT, 0.01f)
                 .putFloat(Entity.DATA_BOUNDING_BOX_WIDTH, 0.01f);
 

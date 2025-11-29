@@ -8,6 +8,7 @@ import cn.nukkit.entity.mob.EntityCreeper;
 import cn.nukkit.entity.property.EntityPropertyRegistry;
 import cn.nukkit.network.protocol.*;
 import cn.nukkit.network.protocol.BossEventPacket.BossBarColor;
+import cn.nukkit.network.protocol.types.EntityLink;
 import it.unimi.dsi.fastutil.Pair;
 import it.unimi.dsi.fastutil.ints.Int2FloatMap;
 import it.unimi.dsi.fastutil.ints.Int2IntMap;
@@ -15,7 +16,7 @@ import it.unimi.dsi.fastutil.ints.Int2IntMap;
 /**
  * DummyBossBar
  * ===============
- * author: boybook
+ * @author boybook
  * Nukkit Project
  * ===============
  */
@@ -37,6 +38,13 @@ public class DummyBossBar {
         this.color = builder.color;
     }
 
+    public static Builder builder(Player player) {
+        return new Builder(player);
+    }
+
+    /**
+     * Boss bar builder
+     */
     public static class Builder {
         private final Player player;
         private final long bossBarId;
@@ -45,9 +53,8 @@ public class DummyBossBar {
         private float length = 100;
         private BossBarColor color = null;
 
-        public Builder(Player player) {
+        private Builder(Player player) {
             this.player = player;
-//            this.bossBarId = 1095216660480L + ThreadLocalRandom.current().nextLong(0, 0x7fffffffL);
             this.bossBarId = Entity.entityCount++;
         }
 
@@ -71,18 +78,38 @@ public class DummyBossBar {
         }
     }
 
+    /**
+     * Get boss bar owner
+     *
+     * @return player
+     */
     public Player getPlayer() {
         return player;
     }
 
+    /**
+     * Get boss bar id
+     *
+     * @return boss bar id
+     */
     public long getBossBarId() {
         return bossBarId;
     }
 
+    /**
+     * Get boss bar text
+     *
+     * @return current text
+     */
     public String getText() {
         return text;
     }
 
+    /**
+     * Set the boss bar text and send it to player if changed
+     *
+     * @param text new text
+     */
     public void setText(String text) {
         if (!this.text.equals(text)) {
             this.text = text;
@@ -91,10 +118,20 @@ public class DummyBossBar {
         }
     }
 
+    /**
+     * Get boss bar length
+     *
+     * @return length
+     */
     public float getLength() {
         return length;
     }
 
+    /**
+     * Set boss bar length
+     *
+     * @param length new length
+     */
     public void setLength(float length) {
         if (this.length != length) {
             this.length = length;
@@ -104,7 +141,7 @@ public class DummyBossBar {
     }
 
     /**
-     * Color is not working in the current version. We are keep waiting for client support.
+     * Set boss bar color. Requires client version 1.18 or newer.
      * @param color the boss bar color
      */
     public void setColor(BossBarColor color) {
@@ -114,6 +151,10 @@ public class DummyBossBar {
         }
     }
 
+    /**
+     * Get boss bar color
+     * @return current color of the boss bar
+     */
     public BossBarColor getColor() {
         return this.color;
     }
@@ -124,7 +165,7 @@ public class DummyBossBar {
         pkAdd.entityUniqueId = bossBarId;
         pkAdd.entityRuntimeId = bossBarId;
         pkAdd.x = (float) player.x;
-        pkAdd.y = (float) -10; // Below the bedrock
+        pkAdd.y = player.level.getHeightRange().getMinY() - 10; // Below the bedrock
         pkAdd.z = (float) player.z;
         pkAdd.speedX = 0;
         pkAdd.speedY = 0;
@@ -136,14 +177,19 @@ public class DummyBossBar {
                 .putShort(Entity.DATA_MAX_AIR, 300)
                 .putLong(Entity.DATA_LEAD_HOLDER_EID, -1)
                 .putString(Entity.DATA_NAMETAG, text) // Set the entity name
-                .putFloat(Entity.DATA_SCALE, 0); // And make it invisible
+                .putFloat(Entity.DATA_SCALE, 0.001f) // And make it invisible
+                .putFloat(Entity.DATA_BOUNDING_BOX_HEIGHT, 0.01f)
+                .putFloat(Entity.DATA_BOUNDING_BOX_WIDTH, 0.01f);
         Pair<Int2IntMap, Int2FloatMap> propertyValues = EntityPropertyRegistry.getProperties(pkAdd.type).getDefaultValues();
         if (propertyValues != null) {
             pkAdd.intProperties = propertyValues.left();
             pkAdd.floatProperties = propertyValues.right();
         }
-
+        pkAdd.links = new EntityLink[]{
+                new EntityLink(player.getId(), bossBarId, EntityLink.TYPE_PASSENGER, false, false, 0)
+        };
         player.dataPacket(pkAdd);
+
         this.spawned = true;
     }
 
@@ -163,6 +209,7 @@ public class DummyBossBar {
         pkBoss.type = BossEventPacket.TYPE_SHOW;
         pkBoss.title = text;
         pkBoss.healthPercent = this.length / 100;
+        pkBoss.color = this.color == null ? BossBarColor.PINK : this.color;
         player.dataPacket(pkBoss);
     }
 
@@ -203,10 +250,15 @@ public class DummyBossBar {
      * Update boss entity's position when teleport and each 5s.
      */
     public void updateBossEntityPosition() {
+        if (!spawned) {
+            create();
+            return;
+        }
+
         MoveEntityPacket pk = new MoveEntityPacket();
         pk.eid = this.bossBarId;
         pk.x = (float) this.player.x;
-        pk.y = -10;
+        pk.y = player.level.getHeightRange().getMinY() - 10;
         pk.z = (float) this.player.z;
         pk.headYaw = 0;
         pk.yaw = 0;
@@ -228,12 +280,22 @@ public class DummyBossBar {
         this.spawned = false;
     }
 
+    private void updateEntityLink(byte type) {
+        SetEntityLinkPacket packet = new SetEntityLinkPacket();
+        packet.vehicleUniqueId = player.getId();
+        packet.riderUniqueId = bossBarId;
+        packet.type = type;
+        player.dataPacket(packet);
+    }
+
+    /**
+     * Create boss bar entity and send its data
+     */
     public void create() {
         createBossEntity();
         sendAttributes();
         updateBossEntityNameTag();
         sendShowBossBar();
-        sendSetBossBarLength();
         if (color != null) this.sendSetBossBarTexture();
     }
 
@@ -245,14 +307,15 @@ public class DummyBossBar {
             this.create();
         } else {
             updateBossEntityPosition();
+            updateEntityLink(SetEntityLinkPacket.TYPE_PASSENGER);
             sendShowBossBar();
-            sendSetBossBarLength();
         }
     }
 
     public void destroy() {
         if (this.spawned) {
             sendHideBossBar();
+            updateEntityLink(SetEntityLinkPacket.TYPE_REMOVE);
             removeBossEntity();
         }
     }

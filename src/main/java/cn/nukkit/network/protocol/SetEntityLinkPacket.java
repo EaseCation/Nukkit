@@ -18,7 +18,7 @@ public class SetEntityLinkPacket extends DataPacket {
     public long vehicleUniqueId; //from
     public long riderUniqueId; //to
     public byte type;
-    public byte immediate;
+    public boolean immediate;
     public boolean riderInitiated;
     public float vehicleAngularVelocity;
 
@@ -27,7 +27,7 @@ public class SetEntityLinkPacket extends DataPacket {
         this.vehicleUniqueId = this.getEntityUniqueId();
         this.riderUniqueId = this.getEntityUniqueId();
         this.type = (byte) this.getByte();
-        this.immediate = (byte) this.getByte();
+        this.immediate = this.getBoolean();
     }
 
     @Override
@@ -36,7 +36,7 @@ public class SetEntityLinkPacket extends DataPacket {
         this.putEntityUniqueId(this.vehicleUniqueId);
         this.putEntityUniqueId(this.riderUniqueId);
         this.putByte(this.type);
-        this.putByte(this.immediate);
+        this.putBoolean(this.immediate);
     }
 
     @Override

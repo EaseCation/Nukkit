@@ -10,6 +10,7 @@ import cn.nukkit.nbt.tag.CompoundTag;
 import cn.nukkit.nbt.tag.ListTag;
 import cn.nukkit.nbt.tag.StringTag;
 import cn.nukkit.network.protocol.*;
+import cn.nukkit.network.protocol.types.EntityLink;
 import cn.nukkit.utils.*;
 import it.unimi.dsi.fastutil.Pair;
 import it.unimi.dsi.fastutil.ints.Int2FloatMap;
@@ -388,6 +389,10 @@ public class EntityHuman extends EntityHumanType {
                 pk.intProperties = propertyValues.left();
                 pk.floatProperties = propertyValues.right();
             }
+            pk.links = new EntityLink[this.passengers.size()];
+            for (int i = 0; i < pk.links.length; i++) {
+                pk.links[i] = new EntityLink(this.getId(), this.passengers.get(i).getId(), i == 0 ? EntityLink.TYPE_RIDER : EntityLink.TYPE_PASSENGER, false, false, 0f);
+            }
             player.dataPacket(pk);
 
             this.armorInventory.sendContents(player);
@@ -397,8 +402,8 @@ public class EntityHuman extends EntityHumanType {
                 SetEntityLinkPacket pkk = new SetEntityLinkPacket();
                 pkk.vehicleUniqueId = this.riding.getId();
                 pkk.riderUniqueId = this.getId();
-                pkk.type = 1;
-                pkk.immediate = 1;
+                pkk.type = this.riding.getPassenger() == this ? SetEntityLinkPacket.TYPE_RIDE : SetEntityLinkPacket.TYPE_PASSENGER;
+                pkk.immediate = true;
 
                 player.dataPacket(pkk);
             }
