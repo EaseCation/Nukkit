@@ -36,6 +36,11 @@ public class BlockTerracotta extends BlockSolid {
     }
 
     @Override
+    public boolean canHarvestWithHand() {
+        return false;
+    }
+
+    @Override
     public float getHardness() {
         return 1.25f;
     }
