@@ -20,6 +20,7 @@ import cn.nukkit.entity.item.*;
 import cn.nukkit.entity.projectile.EntityArrow;
 import cn.nukkit.entity.projectile.EntityProjectile;
 import cn.nukkit.entity.projectile.EntityThrownTrident;
+import cn.nukkit.entity.property.*;
 import cn.nukkit.event.entity.*;
 import cn.nukkit.event.entity.EntityDamageEvent.DamageCause;
 import cn.nukkit.event.entity.EntityDamageEvent.DamageModifier;
@@ -6871,6 +6872,72 @@ public class Player extends EntityHuman implements CommandSender, InventoryHolde
      * @since 1.19.40
      */
     public void sendEntityPropertyEnum(Entity entity, String propertyName, String value) {
+    }
+
+    /**
+     * @since 1.21.70
+     */
+    public void setEntityPropertyOverride(Entity entity, String propertyName, int value) {
+    }
+
+    /**
+     * @since 1.21.70
+     */
+    public void setEntityPropertyOverride(Entity entity, IntEntityProperty property, int value) {
+    }
+
+    /**
+     * @since 1.21.70
+     */
+    public void setEntityPropertyOverride(Entity entity, String propertyName, float value) {
+    }
+
+    /**
+     * @since 1.21.70
+     */
+    public void setEntityPropertyOverride(Entity entity, FloatEntityProperty property, float value) {
+    }
+
+    /**
+     * @since 1.21.70
+     */
+    public void setEntityPropertyOverride(Entity entity, String propertyName, boolean value) {
+    }
+
+    /**
+     * @since 1.21.70
+     */
+    public void setEntityPropertyOverride(Entity entity, BooleanEntityProperty property, boolean value) {
+    }
+
+    /**
+     * @since 1.21.70
+     */
+    public void setEntityPropertyOverride(Entity entity, String propertyName, String value) {
+    }
+
+    /**
+     * @since 1.21.70
+     */
+    public void setEntityPropertyOverride(Entity entity, EnumEntityProperty property, String value) {
+    }
+
+    /**
+     * @since 1.21.70
+     */
+    public void removeEntityPropertyOverride(Entity entity, String propertyName) {
+    }
+
+    /**
+     * @since 1.21.70
+     */
+    public void removeEntityPropertyOverride(Entity entity, EntityProperty property) {
+    }
+
+    /**
+     * @since 1.21.70
+     */
+    public void removeEntityPropertyOverrides(Entity entity) {
     }
 
     /**
