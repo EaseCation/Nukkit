@@ -17,12 +17,12 @@ jobs:
     steps:
       # Checkout side by side
       - name: Checkout Nukkit
-        uses: actions/checkout@v5
+        uses: actions/checkout@v6
         with:
           path: Nukkit
           submodules: true
       - name: Checkout Network repo
-        uses: actions/checkout@v5
+        uses: actions/checkout@v6
         with:
           repository: EaseCation/Network
           path: Network
