@@ -3,6 +3,8 @@ package cn.nukkit.blockentity;
 import cn.nukkit.GameVersion;
 import cn.nukkit.level.format.FullChunk;
 import cn.nukkit.nbt.tag.CompoundTag;
+import it.unimi.dsi.fastutil.ints.Int2ObjectMap;
+import it.unimi.dsi.fastutil.ints.Int2ObjectOpenHashMap;
 import it.unimi.dsi.fastutil.objects.Object2IntMap;
 import it.unimi.dsi.fastutil.objects.Object2IntOpenHashMap;
 import lombok.extern.log4j.Log4j2;
@@ -18,6 +20,24 @@ public final class BlockEntities {
     private static final Object2IntMap<String> ID_TO_TYPE = new Object2IntOpenHashMap<>();
     private static final String[] TYPE_TO_ID = new String[BlockEntityType.UNDEFINED];
     private static final BlockEntityFactory[] TYPE_TO_FACTORY = new BlockEntityFactory[BlockEntityType.UNDEFINED];
+
+    /**
+     * 自定义方块实体起始 ID。
+     * 原生方块实体类型 ID 范围为 1-60（定义在 BlockEntityType 中），
+     * 自定义类型从 1000 开始，确保与原生 ID 完全隔离，避免冲突。
+     */
+    public static final int CUSTOM_TYPE_START = 1000;
+
+    // 自定义方块实体的动态存储（使用 Map 而非数组，支持动态扩展）
+    private static final Object2IntMap<String> CUSTOM_ID_TO_TYPE = new Object2IntOpenHashMap<>();
+    private static final Int2ObjectMap<String> CUSTOM_TYPE_TO_ID = new Int2ObjectOpenHashMap<>();
+    private static final Int2ObjectMap<BlockEntityFactory> CUSTOM_TYPE_TO_FACTORY = new Int2ObjectOpenHashMap<>();
+    private static int nextCustomType = CUSTOM_TYPE_START;
+
+    static {
+        // 设置默认返回值，用于区分"未找到"和"有效值 0"
+        CUSTOM_ID_TO_TYPE.defaultReturnValue(-1);
+    }
 
     public static void registerVanillaBlockEntities() {
         registerBlockEntity(BlockEntityType.FURNACE, FURNACE, BlockEntityFurnace.class, BlockEntityFurnace::new);
@@ -112,26 +132,126 @@ public final class BlockEntities {
         return registerBlockEntity(type, name, clazz, factory);
     }
 
+    /**
+     * 注册自定义方块实体类型（供外部插件使用）。
+     * <p>
+     * 此方法自动分配一个唯一的类型 ID（>= {@link #CUSTOM_TYPE_START}），
+     * 并将其与提供的字符串标识符和工厂关联。
+     * <p>
+     *
+     * @param name 方块实体字符串标识符
+     * @param clazz 方块实体类（用于类型检查，目前未强制使用）
+     * @param factory 方块实体工厂，用于创建方块实体实例
+     * @return 分配的类型 ID（>= 1000）
+     * @throws IllegalArgumentException 如果 name 为 null、空字符串或已被注册
+     */
+    public static int registerCustomBlockEntity(String name, Class<? extends BlockEntity> clazz, BlockEntityFactory factory) {
+        if (name == null || name.isEmpty()) {
+            throw new IllegalArgumentException("Block entity name cannot be null or empty");
+        }
+        if (factory == null) {
+            throw new IllegalArgumentException("Block entity factory cannot be null");
+        }
+        if (CUSTOM_ID_TO_TYPE.containsKey(name) || ID_TO_TYPE.containsKey(name)) {
+            throw new IllegalArgumentException("Block entity ID already registered: " + name);
+        }
+
+        int type = nextCustomType++;
+        CUSTOM_ID_TO_TYPE.put(name, type);
+        CUSTOM_TYPE_TO_ID.put(type, name);
+        CUSTOM_TYPE_TO_FACTORY.put(type, factory);
+
+        if (log.isTraceEnabled()) {
+            log.trace("Registered custom block entity: {} -> type {} (class: {})", name, type, clazz.getName());
+        }
+
+        return type;
+    }
+
+    /**
+     * 检查给定的类型 ID 是否为自定义方块实体类型。
+     *
+     * @param type 类型 ID
+     * @return 如果 type >= {@link #CUSTOM_TYPE_START} 则返回 true
+     */
+    public static boolean isCustomType(int type) {
+        return type >= CUSTOM_TYPE_START;
+    }
+
+    /**
+     * 获取下一个可用的自定义方块实体类型 ID（不分配）。
+     * <p>
+     * 此方法用于预览下一个将分配的 ID，不会递增计数器。
+     *
+     * @return 下一个可用的类型 ID
+     */
+    public static int peekNextCustomType() {
+        return nextCustomType;
+    }
+
+    /**
+     * 根据类型 ID 获取方块实体字符串标识符。
+     *
+     * @param type 方块实体类型 ID
+     * @return 字符串标识符，如果类型无效或未注册则返回 null
+     */
     @Nullable
     public static String getIdByType(int type) {
+        if (type >= CUSTOM_TYPE_START) {
+            return CUSTOM_TYPE_TO_ID.get(type);
+        }
         if (type <= 0 || type >= BlockEntityType.UNDEFINED) {
             return null;
         }
         return TYPE_TO_ID[type];
     }
 
+    /**
+     * 根据字符串标识符获取方块实体类型 ID。
+     *
+     * @param id 方块实体字符串标识符
+     * @return 类型 ID，如果未找到则返回 0
+     */
     public static int getTypeById(String id) {
-        return ID_TO_TYPE.getInt(id);
+        if (id == null) {
+            return 0;
+        }
+        // 优先查询原生类型
+        int type = ID_TO_TYPE.getInt(id);
+        if (type != 0) {
+            return type;
+        }
+        // 查询自定义类型（defaultReturnValue 已设为 -1，所以需要转换）
+        int customType = CUSTOM_ID_TO_TYPE.getInt(id);
+        return Math.max(customType, 0);
     }
 
+    /**
+     * 根据类型 ID 获取方块实体工厂。
+     *
+     * @param type 方块实体类型 ID
+     * @return 方块实体工厂，如果类型无效或未注册则返回 null
+     */
     @Nullable
     public static BlockEntityFactory getFactoryByType(int type) {
+        if (type >= CUSTOM_TYPE_START) {
+            return CUSTOM_TYPE_TO_FACTORY.get(type);
+        }
         if (type <= 0 || type >= BlockEntityType.UNDEFINED) {
             return null;
         }
         return TYPE_TO_FACTORY[type];
     }
 
+    /**
+     * 使用类型 ID 创建方块实体。
+     *
+     * @param type 方块实体类型 ID
+     * @param chunk 方块所在的区块
+     * @param nbt 方块实体的 NBT 数据
+     * @return 创建的方块实体实例，如果类型无效或创建失败则返回 null
+     */
+    @Nullable
     public static BlockEntity createBlockEntity(int type, FullChunk chunk, CompoundTag nbt) {
         BlockEntityFactory factory = getFactoryByType(type);
         if (factory == null) {
@@ -146,6 +266,15 @@ public final class BlockEntities {
         return null;
     }
 
+    /**
+     * 使用字符串标识符创建方块实体。
+     *
+     * @param id 方块实体字符串标识符
+     * @param chunk 方块所在的区块
+     * @param nbt 方块实体的 NBT 数据
+     * @return 创建的方块实体实例，如果标识符无效或创建失败则返回 null
+     */
+    @Nullable
     public static BlockEntity createBlockEntity(String id, FullChunk chunk, CompoundTag nbt) {
         int type = getTypeById(id);
         if (type == 0) {
