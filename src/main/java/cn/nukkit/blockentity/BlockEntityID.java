@@ -58,4 +58,5 @@ public interface BlockEntityID {
     String CREAKING_HEART = "CreakingHeart";
     String COPPER_GOLEM_STATUE = "CopperGolemStatue";
     String SHELF = "Shelf";
+    String MOD_BLOCK = "ModBlock";
 }

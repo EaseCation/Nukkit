@@ -59,7 +59,7 @@ public interface BlockEntityType {
     int CREAKING_HEART = 58;
     int COPPER_GOLEM_STATUE = 59;
     int SHELF = 60;
+    int MOD_BLOCK = 61;
 
-
-    int UNDEFINED = 61;
+    int UNDEFINED = 62;
 }

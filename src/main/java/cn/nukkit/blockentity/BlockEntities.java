@@ -90,7 +90,20 @@ public final class BlockEntities {
         registerBlockEntity(BlockEntityType.SHELF, SHELF, BlockEntityShelf.class, BlockEntityShelf::new, V1_21_111);
     }
 
-    private static Class<? extends BlockEntity> registerBlockEntity(int type, String name, Class<? extends BlockEntity> clazz, BlockEntityFactory factory) {
+    /**
+     * 注册方块实体类型。
+     * <p>
+     * 此方法可供外部插件使用，用于注册自定义方块实体。
+     * 类型 ID 必须使用 BlockEntityType 中定义的常量。
+     *
+     * @param type 方块实体类型 ID（来自 BlockEntityType）
+     * @param name 方块实体字符串标识符（来自 BlockEntityID）
+     * @param clazz 方块实体类
+     * @param factory 方块实体工厂
+     * @return 注册的方块实体类
+     * @throws IllegalArgumentException 如果 ID 或类型已被注册
+     */
+    public static Class<? extends BlockEntity> registerBlockEntity(int type, String name, Class<? extends BlockEntity> clazz, BlockEntityFactory factory) {
         if (ID_TO_TYPE.putIfAbsent(name, type) != 0) {
             throw new IllegalArgumentException("Duplicate block entity ID: " + name);
         }
