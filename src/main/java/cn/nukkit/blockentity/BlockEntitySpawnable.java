@@ -24,6 +24,10 @@ public abstract class BlockEntitySpawnable extends BlockEntity {
     protected void initBlockEntity() {
         super.initBlockEntity();
 
+        this.initSpawn();
+    }
+
+    protected void initSpawn() {
         this.spawnToAll();
     }
 

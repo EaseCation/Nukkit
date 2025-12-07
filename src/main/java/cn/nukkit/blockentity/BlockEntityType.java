@@ -60,6 +60,7 @@ public interface BlockEntityType {
     int COPPER_GOLEM_STATUE = 59;
     int SHELF = 60;
 
+    int MOD_BLOCK = 256;
 
-    int UNDEFINED = 61;
+    int UNDEFINED = 1024;
 }

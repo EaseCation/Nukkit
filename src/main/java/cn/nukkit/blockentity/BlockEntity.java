@@ -18,7 +18,7 @@ import lombok.extern.log4j.Log4j2;
 @Log4j2
 public abstract class BlockEntity extends Position implements BlockEntityID {
 
-    public static long count = 1;
+    public static long count = 2;
 
     public FullChunk chunk;
     private String name;
@@ -82,11 +82,11 @@ public abstract class BlockEntity extends Position implements BlockEntityID {
 
     public abstract int getTypeId();
 
-    public final String getSaveId() {
+    public String getSaveId() {
         return BlockEntities.getIdByType(getTypeId());
     }
 
-    public long getId() {
+    public final long getId() {
         return id;
     }
 

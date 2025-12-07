@@ -2120,11 +2120,11 @@ public final class Blocks {
         return registerBlock(blockName, itemName, id, clazz);
     }
 
-    public static Class<? extends Block> registerCustomBlock(String fullName, int id, Class<? extends CustomBlock> clazz, CompoundTag definition) {
+    public static <T extends CustomBlock> T registerCustomBlock(String fullName, int id, Class<T> clazz, CompoundTag definition) {
         return registerCustomBlock(fullName, id, clazz, protocol -> definition);
     }
 
-    public static Class<? extends Block> registerCustomBlock(String fullName, int id, Class<? extends CustomBlock> clazz, IntFunction<CompoundTag> definitionSupplier) {
+    public static <T extends CustomBlock> T registerCustomBlock(String fullName, int id, Class<T> clazz, IntFunction<CompoundTag> definitionSupplier) {
         Objects.requireNonNull(clazz, "class");
         Objects.requireNonNull(definitionSupplier, "definition");
         if (fullName.split(":").length != 2) {
@@ -2140,9 +2140,9 @@ public final class Blocks {
 
         registerBlock(fullName, fullName, fullName, fullName, id, clazz);
 
-        CustomBlock block;
+        T block;
         try {
-            Constructor<? extends CustomBlock> constructor = clazz.getDeclaredConstructor(int.class);
+            Constructor<T> constructor = clazz.getDeclaredConstructor(int.class);
             constructor.setAccessible(true);
             block = constructor.newInstance(id);
         } catch (NoSuchMethodException | InstantiationException | IllegalAccessException | InvocationTargetException e) {
@@ -2177,7 +2177,7 @@ public final class Blocks {
 
         CommandEnum.ENUM_BLOCK.getValues().put(fullName, Collections.emptySet());
 
-        return clazz;
+        return block;
     }
 
     /**
