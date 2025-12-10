@@ -21,6 +21,7 @@ import cn.nukkit.level.GameRule;
 import cn.nukkit.level.Location;
 import cn.nukkit.level.format.FullChunk;
 import cn.nukkit.math.AxisAlignedBB;
+import cn.nukkit.math.Mth;
 import cn.nukkit.math.Vector3;
 import cn.nukkit.math.Vector3f;
 import cn.nukkit.nbt.tag.CompoundTag;
@@ -31,6 +32,8 @@ import cn.nukkit.network.protocol.SetEntityMotionPacket;
 
 import java.util.ArrayList;
 import java.util.concurrent.ThreadLocalRandom;
+
+import static cn.nukkit.GameVersion.*;
 
 /**
  * Created by yescallop on 2016/2/13.
@@ -55,6 +58,7 @@ public class EntityBoat extends EntityVehicle {
     public static final double SINKING_SPEED = 0.0005;
     public static final double SINKING_MAX_SPEED = 0.005;
 
+    protected float deltaRotation;
     protected boolean sinking = true;
 
     public int woodID;
@@ -179,8 +183,11 @@ public class EntityBoat extends EntityVehicle {
         if (this.isAlive()) {
             super.onUpdate(currentTick);
 
+            float invFriction = 0.05f;
+
+            boolean simulateWaves = (!(getPassenger() instanceof Player player) || V1_21_130.isOlderThanOrEqual(player.getProtocol())) && !getDataFlag(DATA_FLAG_OUT_OF_CONTROL);
             double waterDiff = getWaterLevel();
-            if (!hasControllingPassenger() && !getDataFlag(DATA_FLAG_OUT_OF_CONTROL)) {
+            if (simulateWaves) {
                 if (waterDiff > SINKING_DEPTH && !sinking) {
                     sinking = true;
                 } else if (waterDiff < 0.05 && sinking) {
@@ -201,10 +208,10 @@ public class EntityBoat extends EntityVehicle {
 
             this.move(this.motionX, this.motionY, this.motionZ);
 
-            double friction = 1 - this.getDrag();
+            float friction = 1 - this.getDrag();
 
             if (this.onGround && (Math.abs(this.motionX) > 0.00001 || Math.abs(this.motionZ) > 0.00001)) {
-                double factor = 0;
+                float factor = 0;
                 int count = 0;
 
                 int y = getFloorY() - 1;
@@ -225,14 +232,15 @@ public class EntityBoat extends EntityVehicle {
                 if (count != 0) {
                     factor /= count;
                 } else {
-                    factor = 0.6;
+                    factor = 0.6f;
                 }
                 friction *= factor;
+                invFriction = factor * 0.5f;
             }
 
             this.motionX *= friction;
 
-            if (!hasControllingPassenger() && !getDataFlag(DATA_FLAG_OUT_OF_CONTROL)) {
+            if (simulateWaves) {
                 if (waterDiff > SINKING_DEPTH || sinking) {
                     this.motionY = waterDiff > 0.5 ? this.motionY - this.getGravity() : (this.motionY - SINKING_SPEED < -SINKING_MAX_SPEED ? this.motionY : this.motionY - SINKING_SPEED);
                 }
@@ -252,6 +260,10 @@ public class EntityBoat extends EntityVehicle {
             boolean aboveBubbleColumn = false;
             boolean dragDown = false;
             for (Block block : getCollisionBlocks()) {
+                if (block.isWater()) {
+                    invFriction = 0.9f;
+                }
+
                 if (block.is(Block.WATERLILY)) {
                     level.useBreakOn(block, true);
                     continue;
@@ -312,6 +324,8 @@ public class EntityBoat extends EntityVehicle {
                 }
                 canRide = true;
             }
+
+            this.deltaRotation *= invFriction;
 
             this.updateMovement();
 
@@ -517,7 +531,7 @@ public class EntityBoat extends EntityVehicle {
 
     @Override
     public void applyEntityCollision(Entity entity) {
-        if (getPassenger() instanceof Player) {
+        if (getPassenger() instanceof Player player && V1_21_130.isNewerThan(player.getProtocol())) {
             return;
         }
         if (entity instanceof EntityArmorStand) {
@@ -588,7 +602,45 @@ public class EntityBoat extends EntityVehicle {
     }
 
     @Override
+    public void onPlayerInput(Player player, double motionX, double motionY) {
+        if (V1_21_130.isNewerThan(player.getProtocol())) {
+            return;
+        }
+
+        boolean inputLeft = motionX > 0;
+        boolean inputRight = motionX < 0;
+        boolean inputUp = motionY > 0;
+        boolean inputDown = motionY < 0;
+
+        float delta = inputDown ? 0.1f : 1;
+        if (inputLeft) {
+            deltaRotation -= delta;
+        } else if (inputRight) {
+            deltaRotation += delta;
+        }
+        deltaRotation = Mth.clamp(deltaRotation, -5, 5);
+        yaw += deltaRotation;
+
+        float acceleration = 0;
+        if (inputRight != inputLeft && !inputUp && !inputDown) {
+            acceleration += 0.005f;
+        }
+        if (inputUp) {
+            acceleration += 0.04f;
+        } else if (inputDown) {
+            acceleration -= 0.005f;
+        }
+        float rad = ((float) yaw - 90) * Mth.DEG_TO_RAD;
+        this.motionX += Mth.sin(-rad) * acceleration;
+        this.motionZ += Mth.cos(rad) * acceleration;
+    }
+
+    @Override
     public void onPlayerInput(Player player, double x, double y, double z, double yaw, double pitch) {
+        if (V1_21_130.isOlderThanOrEqual(player.getProtocol())) {
+            return;
+        }
+
         this.setPositionAndRotation(this.temporalVector.setComponents(x, y - this.getBaseOffset(), z), yaw, 0);
     }
 
@@ -613,7 +665,7 @@ public class EntityBoat extends EntityVehicle {
         pk.motionY = (float) motionY;
         pk.motionZ = (float) motionZ;
         for (Player player : getViewers().values()) {
-            if (passengers.indexOf(player) == RIDER_INDEX) {
+            if (passengers.indexOf(player) == RIDER_INDEX && V1_21_130.isNewerThan(player.getProtocol())) {
                 continue;
             }
             player.dataPacket(pk);

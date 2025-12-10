@@ -213,11 +213,11 @@ public class EntityZombieHorse extends EntityAbstractHorse implements EntitySmit
     }
 
     @Override
-    public void updatePlayerJump(boolean jumping) {
+    public void updatePlayerJump(Player player, boolean jumping) {
         if (!V1_21_130.isAvailable()) {
             return;
         }
-        super.updatePlayerJump(jumping);
+        super.updatePlayerJump(player, jumping);
     }
 
     @Override

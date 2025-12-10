@@ -35,6 +35,8 @@ import it.unimi.dsi.fastutil.ints.Int2ObjectMap;
 import java.util.Iterator;
 import java.util.concurrent.ThreadLocalRandom;
 
+import static cn.nukkit.GameVersion.*;
+
 public abstract class EntityAbstractHorse extends EntityAnimal implements EntityInteractable, EntityRideable, InventoryHolder {
 
     public static final int HORSE_TYPE_DEFAULT = 0;
@@ -323,7 +325,7 @@ public abstract class EntityAbstractHorse extends EntityAnimal implements Entity
 
     @Override
     public void applyEntityCollision(Entity entity) {
-        if (isClientPredictedMovement() && getPassenger() instanceof Player) {
+        if (isClientPredictedMovement() && getPassenger() instanceof Player player && V1_21_130.isNewerThan(player.getProtocol())) {
             return;
         }
         super.applyEntityCollision(entity);
@@ -339,7 +341,63 @@ public abstract class EntityAbstractHorse extends EntityAnimal implements Entity
     }
 
     @Override
+    public void onPlayerInput(Player player, double motionX, double motionY) {
+        if (V1_21_130.isNewerThan(player.getProtocol())) {
+            return;
+        }
+
+        if (!canRide()) {
+            return;
+        }
+
+        motionX *= 0.4f;
+        if (motionY > 0) {
+            motionY *= 0.7f;
+        } else if (motionY < 0) {
+            motionY *= 0.2f;
+        }
+
+        double f = motionX * motionX + motionY * motionY;
+        double friction = 0.6;
+
+        this.pitch = Mth.clamp(player.pitch, -44.949997f, 44.949997f);
+        this.yaw = player.yaw;
+
+        if (f >= 1.0E-4) {
+            f = Math.sqrt(f);
+
+            if (f < 1) {
+                f = 1;
+            }
+
+            f = friction / f;
+            motionX = motionX * f;
+            motionY = motionY * f;
+
+            Effect speed = getEffect(Effect.SPEED);
+            if (speed != null) {
+                float speedBoost = 0.2f * (speed.getAmplifier() + 1);
+                motionX += motionX * speedBoost;
+                motionY += motionY * speedBoost;
+            }
+
+            double d = this.yaw * Mth.DEG_TO_RAD;
+            double f1 = Mth.sin(d);
+            double f2 = Mth.cos(d);
+            this.motionX = (motionX * f2 - motionY * f1);
+            this.motionZ = (motionY * f2 + motionX * f1);
+        } else {
+            this.motionX = 0;
+            this.motionZ = 0;
+        }
+    }
+
+    @Override
     public void onPlayerInput(Player player, double x, double y, double z, double yaw, double pitch) {
+        if (V1_21_130.isOlderThanOrEqual(player.getProtocol())) {
+            return;
+        }
+
         setPositionAndRotation(temporalVector.setComponents(x, y, z), yaw, pitch);
     }
 
@@ -423,7 +481,8 @@ public abstract class EntityAbstractHorse extends EntityAnimal implements Entity
         return 0.5f;
     }
 
-    public void updatePlayerJump(boolean jumping) {
+    @Override
+    public void updatePlayerJump(Player player, boolean jumping) {
         if (!isTamed()) {
             return;
         }
@@ -445,7 +504,7 @@ public abstract class EntityAbstractHorse extends EntityAnimal implements Entity
 
         standIfPossible();
 
-        if (!isClientPredictedMovement()) {
+        if (!isClientPredictedMovement() || V1_21_130.isOlderThanOrEqual(player.getProtocol())) {
             float jumpScale = jumpTicks < 10 ? jumpTicks * 0.1f : 0.8f + 2f / (jumpTicks - 9) * 0.1f;
             motionY += getJumpStrength() * (jumpScale >= 0.9f ? 1 : 0.4f + 0.4f * jumpScale / 0.9f);
 

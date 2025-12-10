@@ -4,7 +4,7 @@ import cn.nukkit.nbt.tag.CompoundTag;
 
 import javax.annotation.Nullable;
 import java.util.Objects;
-import java.util.function.IntFunction;
+import java.util.function.BiFunction;
 
 public class ItemSerializer {
     private static RuntimeItemSerializer INSTANCE;
@@ -37,7 +37,7 @@ public class ItemSerializer {
         INSTANCE.registerItemAux(identifier, id, meta);
     }
 
-    public static void registerCustomItem(String fullName, int id, @Nullable IntFunction<CompoundTag> componentsSupplier) {
+    public static void registerCustomItem(String fullName, int id, @Nullable BiFunction<Integer, Boolean, CompoundTag> componentsSupplier) {
         INSTANCE.registerCustomItem(fullName, id, componentsSupplier);
     }
 
@@ -62,7 +62,7 @@ public class ItemSerializer {
 
         void registerItemAux(String identifier, int id, int meta);
 
-        void registerCustomItem(String fullName, int id, @Nullable IntFunction<CompoundTag> componentsSupplier);
+        void registerCustomItem(String fullName, int id, @Nullable BiFunction<Integer, Boolean, CompoundTag> componentsSupplier);
 
         void registerCustomBlockItem(String fullName, int itemId);
 

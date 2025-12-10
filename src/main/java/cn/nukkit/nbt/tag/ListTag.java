@@ -296,6 +296,22 @@ public class ListTag<T extends Tag> extends Tag implements Iterable<T> {
         return addByte(index, data ? 1 : 0);
     }
 
+    public boolean addAll(ListTag<T> o) {
+        if (!list.addAll(o.list)) {
+            return false;
+        }
+        type = o.type;
+        return true;
+    }
+
+    public boolean addAll(int index, ListTag<T> o) {
+        if (!list.addAll(index, o.list)) {
+            return false;
+        }
+        type = o.type;
+        return true;
+    }
+
     @Override
     public List<Object> parseValue() {
         List<Object> value = new ObjectArrayList<>(this.list.size());

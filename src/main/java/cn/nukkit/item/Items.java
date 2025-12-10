@@ -23,6 +23,7 @@ import javax.annotation.Nullable;
 import java.util.*;
 import java.util.Map.Entry;
 import java.util.concurrent.atomic.AtomicInteger;
+import java.util.function.BiFunction;
 import java.util.function.IntFunction;
 
 import static cn.nukkit.GameVersion.*;
@@ -936,6 +937,10 @@ public final class Items {
     }
 
     public static Class<? extends Item> registerCustomItem(String fullName, int id, Class<? extends Item> clazz, ItemFactory factory, @Nullable IntFunction<CompoundTag> componentsSupplier) {
+        return registerCustomItem(fullName, id, clazz, factory, componentsSupplier != null ? (protocol, netease) -> componentsSupplier.apply(protocol) : null);
+    }
+
+    public static Class<? extends Item> registerCustomItem(String fullName, int id, Class<? extends Item> clazz, ItemFactory factory, @Nullable BiFunction<Integer, Boolean, CompoundTag> componentsSupplier) {
         Objects.requireNonNull(clazz, "class");
         Objects.requireNonNull(factory, "factory");
         if (fullName.split(":").length != 2) {
@@ -948,7 +953,7 @@ public final class Items {
         if (log.isTraceEnabled()) {
             CompoundTag components;
             if (componentsSupplier != null) {
-                components = componentsSupplier.apply(GameVersion.getFeatureVersion().getProtocol());
+                components = componentsSupplier.apply(GameVersion.getFeatureVersion().getProtocol(), false);
             } else {
                 components = null;
             }

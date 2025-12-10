@@ -1,7 +1,7 @@
 package cn.nukkit.event.block;
 
 import cn.nukkit.block.Block;
-import cn.nukkit.blockentity.BlockEntity;
+import cn.nukkit.blockentity.BlockEntityModBlock;
 import cn.nukkit.event.HandlerList;
 
 public class ModBlockEntityTickEvent extends BlockEvent {
@@ -11,11 +11,15 @@ public class ModBlockEntityTickEvent extends BlockEvent {
         return handlers;
     }
 
-    private final BlockEntity blockEntity;
+    private final BlockEntityModBlock blockEntity;
 
-    public ModBlockEntityTickEvent(BlockEntity blockEntity) {
+    public ModBlockEntityTickEvent(BlockEntityModBlock blockEntity) {
         super(null);
         this.blockEntity = blockEntity;
+    }
+
+    public BlockEntityModBlock getBlockEntity() {
+        return blockEntity;
     }
 
     @Override

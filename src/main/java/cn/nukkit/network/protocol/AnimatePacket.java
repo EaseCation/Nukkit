@@ -79,7 +79,7 @@ public class AnimatePacket extends DataPacket {
         }
 
         public static Action fromId(int id) {
-            return ID_LOOKUP.get(id);
+            return ID_LOOKUP.getOrDefault(id, NO_ACTION);
         }
     }
 

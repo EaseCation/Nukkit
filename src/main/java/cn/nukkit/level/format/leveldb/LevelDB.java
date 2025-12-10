@@ -304,6 +304,10 @@ public class LevelDB implements LevelProvider {
                 }
                 String name = entry.getString("name");
                 int runtimeId = Biomes.getIdByCustomName(name);
+                if (runtimeId == -1) {
+                    log.warn("Unknown custom biome: {}", name);
+                    continue;
+                }
                 int runtimeIndex = runtimeId - 30000;
                 while (customBiomeRuntimeToPersistent.size() <= runtimeIndex) {
                     customBiomeRuntimeToPersistent.add(-1);

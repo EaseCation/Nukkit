@@ -19,6 +19,7 @@ import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationTargetException;
 import java.util.*;
 import java.util.concurrent.atomic.AtomicInteger;
+import java.util.function.BiFunction;
 import java.util.function.IntFunction;
 
 import static cn.nukkit.GameVersion.*;
@@ -2125,6 +2126,10 @@ public final class Blocks {
     }
 
     public static <T extends CustomBlock> T registerCustomBlock(String fullName, int id, Class<T> clazz, IntFunction<CompoundTag> definitionSupplier) {
+        return registerCustomBlock(fullName, id, clazz, (protocol, netease) -> definitionSupplier.apply(protocol));
+    }
+
+    public static <T extends CustomBlock> T registerCustomBlock(String fullName, int id, Class<T> clazz, BiFunction<Integer, Boolean, CompoundTag> definitionSupplier) {
         Objects.requireNonNull(clazz, "class");
         Objects.requireNonNull(definitionSupplier, "definition");
         if (fullName.split(":").length != 2) {
@@ -2135,7 +2140,7 @@ public final class Blocks {
         }
 
         if (log.isTraceEnabled()) {
-            log.trace("Register custom block {} ({}/{}) {} : {}", fullName, id, Block.getItemId(id), clazz, definitionSupplier.apply(GameVersion.getFeatureVersion().getProtocol()));
+            log.trace("Register custom block {} ({}/{}) {} : {}", fullName, id, Block.getItemId(id), clazz, definitionSupplier.apply(GameVersion.getFeatureVersion().getProtocol(), false));
         }
 
         registerBlock(fullName, fullName, fullName, fullName, id, clazz);

@@ -436,6 +436,7 @@ public class EntityCamelHusk extends EntityAnimal implements EntityInteractable,
         this.setDataFlag(DATA_FLAG_CAN_DASH, saddled, send);
     }
 
+    @Override
     public void updatePlayerJump(Player player, boolean jumping) {
         if (!getDataFlag(DATA_FLAG_SADDLED)) {
             return;

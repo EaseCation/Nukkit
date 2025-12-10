@@ -39,6 +39,7 @@ public interface BlockStateNames {
     String CRACKED_STATE = "cracked_state";
     String CRAFTING = "crafting";
     String CREAKING_HEART_STATE = "creaking_heart_state";
+    String CUSTOM_APPEARANCE = "custom_appearance";
     String DAMAGE = "damage";
     String DEAD_BIT = "dead_bit";
     String DEPRECATED = "deprecated";

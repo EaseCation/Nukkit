@@ -24,4 +24,7 @@ public interface EntityRideable {
 
     default void onPlayerInput(Player player, double x, double y, double z, double yaw, double pitch) {
     }
+
+    default void updatePlayerJump(Player player, boolean jumping) {
+    }
 }

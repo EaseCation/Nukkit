@@ -66,7 +66,7 @@ public enum GameVersion {
     V1_21_111(844, "1.21.111"),
     V1_21_120(859, "1.21.120"),
     V1_21_124(860, "1.21.124"),
-    V1_21_130(897, "1.21.130"),
+    V1_21_130(898, "1.21.130"),
     ;
 
     private static GameVersion FEATURE_VERSION = GameVersion.V1_20_10;
@@ -106,6 +106,46 @@ public enum GameVersion {
 
     public boolean isAvailable() {
         return ordinal() <= FEATURE_VERSION.ordinal();
+    }
+
+    public boolean isNewerThan(GameVersion version) {
+        return this.protocol > version.protocol;
+    }
+
+    public boolean isNewerThan(int protocol) {
+        return this.protocol > protocol;
+    }
+
+    public boolean isNewerThanOrEqual(GameVersion version) {
+        return this.protocol >= version.protocol;
+    }
+
+    public boolean isNewerThanOrEqual(int protocol) {
+        return this.protocol >= protocol;
+    }
+
+    public boolean isOlderThan(GameVersion version) {
+        return this.protocol < version.protocol;
+    }
+
+    public boolean isOlderThan(int protocol) {
+        return this.protocol < protocol;
+    }
+
+    public boolean isOlderThanOrEqual(GameVersion version) {
+        return this.protocol <= version.protocol;
+    }
+
+    public boolean isOlderThanOrEqual(int protocol) {
+        return this.protocol <= protocol;
+    }
+
+    public boolean isEqual(GameVersion version) {
+        return this.protocol == version.protocol;
+    }
+
+    public boolean isEqual(int protocol) {
+        return this.protocol == protocol;
     }
 
     private static final GameVersion[] VALUES = values();
