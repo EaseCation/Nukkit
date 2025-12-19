@@ -50,7 +50,7 @@ public class RuntimeItems implements RuntimeItemPaletteInterface {
             paletteBuffer.putLShort(entry.id);
             paletteBuffer.putBoolean(false); // Component item
 
-            if (entry.oldId != null) {
+            if (entry.oldId != null && entry.oldId <= 0xff) {
                 boolean hasData = entry.oldData != null;
                 int fullId = getFullId(entry.oldId, hasData ? entry.oldData : 0);
                 LEGACY_NETWORK_MAP.put(fullId, (entry.id << 1) | (hasData ? 1 : 0));

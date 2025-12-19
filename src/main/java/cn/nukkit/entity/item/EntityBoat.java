@@ -591,7 +591,7 @@ public class EntityBoat extends EntityVehicle {
     }
 
     protected void dropItem() {
-        this.level.dropItem(this, Item.get(Item.BOAT, this.woodID));
+        this.level.dropItem(this, Item.get(ItemBoat.BOATS[this.woodID]));
     }
 
     @Override
@@ -689,14 +689,14 @@ public class EntityBoat extends EntityVehicle {
     @Override
     public Vector3f getMountedOffset(Entity entity) {
         if (entity.getNetworkId() == -1) {
-            if (woodID == ItemBoat.BAMBOO_RAFT) {
+            if (woodID == ItemBoat.RAFT) {
                 return RAFT_PLAYER_SEAT_OFFSET;
             }
             return PLAYER_SEAT_OFFSET;
         }
 
         Vector3f mobSeatOffset;
-        if (woodID == ItemBoat.BAMBOO_RAFT) {
+        if (woodID == ItemBoat.RAFT) {
             mobSeatOffset = RAFT_MOB_SEAT_OFFSET;
         } else {
             mobSeatOffset = MOB_SEAT_OFFSET;

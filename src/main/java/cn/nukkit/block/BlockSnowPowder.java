@@ -7,7 +7,6 @@ import cn.nukkit.entity.projectile.EntityProjectile;
 import cn.nukkit.inventory.ArmorInventory;
 import cn.nukkit.item.Item;
 import cn.nukkit.item.ItemArmor;
-import cn.nukkit.item.ItemBucket;
 import cn.nukkit.level.GameRule;
 import cn.nukkit.math.AxisAlignedBB;
 import cn.nukkit.network.protocol.LevelEventPacket;
@@ -45,7 +44,7 @@ public class BlockSnowPowder extends BlockFlowable {
 
     @Override
     public Item toItem(boolean addUserData) {
-        return Item.get(Item.BUCKET, ItemBucket.POWDER_SNOW_BUCKET);
+        return Item.get(Item.POWDER_SNOW_BUCKET);
     }
 
     @Override

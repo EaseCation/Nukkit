@@ -3461,7 +3461,7 @@ public class Player extends EntityHuman implements CommandSender, InventoryHolde
                                 break;
                             }
                             Item held = inventory.getItemInHand();
-                            if (!(held instanceof ItemEdible) && !held.is(Item.POTION) && !held.is(Item.BUCKET, ItemBucket.MILK_BUCKET) && (!(held instanceof ItemChemicalTickable tickable) || tickable.isActivated())) {
+                            if (!(held instanceof ItemEdible) && !held.is(Item.POTION) && !held.is(Item.MILK_BUCKET) && (!(held instanceof ItemChemicalTickable tickable) || tickable.isActivated())) {
                                 break;
                             }
 
@@ -4053,7 +4053,7 @@ public class Player extends EntityHuman implements CommandSender, InventoryHolde
                                             if (potion != null) {
                                                 potion.applyPotion(this, itemInHand);
                                             }
-                                        } else if (itemInHand.getId() == Item.BUCKET && itemInHand.getDamage() == ItemBucket.MILK_BUCKET) {
+                                        } else if (itemInHand.getId() == Item.MILK_BUCKET) {
                                             this.server.getPluginManager().callEvent(consumeEvent);
                                             if (consumeEvent.isCancelled()) {
                                                 this.inventory.sendContents(this);

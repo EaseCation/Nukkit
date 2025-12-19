@@ -20,13 +20,12 @@ import cn.nukkit.nbt.tag.CompoundTag;
 import cn.nukkit.nbt.tag.Tag;
 import cn.nukkit.network.protocol.LevelEventPacket;
 import cn.nukkit.network.protocol.LevelSoundEventPacket;
+import cn.nukkit.network.protocol.UpdateBlockPacket;
 import cn.nukkit.potion.Potion;
 import cn.nukkit.potion.PotionID;
-import cn.nukkit.utils.DyeColor;
 
 import javax.annotation.Nullable;
 import java.awt.Color;
-import java.util.Map;
 
 import static cn.nukkit.GameVersion.*;
 
@@ -109,157 +108,119 @@ public class BlockCauldron extends BlockTransparent {
 
         switch (item.getId()) {
             case Item.BUCKET: {
-                if (item.getDamage() == ItemBucket.EMPTY_BUCKET) {
-                    if (!isFull() || cauldron.hasPotion()) {
-                        return true;
-                    }
+                if (!isFull() || cauldron.hasPotion()) {
+                    return true;
+                }
 
-                    ItemBucket bucket = (ItemBucket) item.clone();
-                    bucket.setCount(1);
-
-                    int levelEvent;
-                    switch (getCauldronType()) {
-                        case LIQUID_WATER:
-                            bucket.setDamage(ItemBucket.WATER_BUCKET);
-                            levelEvent = LevelEventPacket.EVENT_CAULDRON_TAKE_WATER;
-                            break;
-                        case LIQUID_LAVA:
-                            bucket.setDamage(ItemBucket.LAVA_BUCKET);
-                            levelEvent = LevelEventPacket.EVENT_CAULDRON_TAKE_LAVA;
-                            break;
-                        case LIQUID_POWDER_SNOW:
-                            bucket.setDamage(ItemBucket.POWDER_SNOW_BUCKET);
-                            levelEvent = LevelEventPacket.EVENT_CAULDRON_TAKE_POWDER_SNOW;
-                            break;
-                        default:
-                            return true;
-                    }
-
-                    PlayerBucketFillEvent ev = new PlayerBucketFillEvent(player, this, null, item, bucket);
-                    this.level.getServer().getPluginManager().callEvent(ev);
-                    if (ev.isCancelled()) {
-                        return true;
-                    }
-
-                    replaceBucket(item, player, ev.getItem());
-
-                    this.level.setBlock(this, get(BLOCK_CAULDRON), true);
-
-                    if (cauldron.clearCustomColor()) {
-                        cauldron.spawnToAll();
-                    }
-
-                    this.getLevel().addLevelEvent(this.add(0.5, 0.375, 0.5), levelEvent);
-                } else if (item.getDamage() == ItemBucket.WATER_BUCKET) {
-                    ItemBucket bucket = (ItemBucket) item.clone();
-                    bucket.setCount(1);
-                    bucket.setDamage(ItemBucket.EMPTY_BUCKET);
-
-                    PlayerBucketEmptyEvent ev = new PlayerBucketEmptyEvent(player, this, null, item, bucket);
-                    this.level.getServer().getPluginManager().callEvent(ev);
-                    if (ev.isCancelled()) {
-                        return true;
-                    }
-
-                    replaceBucket(item, player, ev.getItem());
-
-                    int fillLevel = getFillLevel();
-                    if (fillLevel != FILL_LEVEL_EMPTY && (getCauldronType() != LIQUID_WATER || cauldron.hasPotion())) {
-                        mix(cauldron);
+                int bucketId;
+                int levelEvent;
+                switch (getCauldronType()) {
+                    case LIQUID_WATER:
+                        bucketId = Item.WATER_BUCKET;
+                        levelEvent = LevelEventPacket.EVENT_CAULDRON_TAKE_WATER;
                         break;
-                    }
-
-                    if (fillLevel != FILL_LEVEL_FULL) {
-                        this.level.setBlock(this, get(BLOCK_CAULDRON, FILL_LEVEL_FULL), true);
-                    }
-
-                    if (cauldron.clearCustomColor()) {
-                        cauldron.spawnToAll();
-                    }
-
-                    this.level.addLevelEvent(this.add(0.5, 0.375 + FILL_LEVEL_FULL * 0.125, 0.5), LevelEventPacket.EVENT_SOUND_SPLASH);
-                } else if (item.getDamage() == ItemBucket.LAVA_BUCKET) {
-                    ItemBucket bucket = (ItemBucket) item.clone();
-                    bucket.setCount(1);
-                    bucket.setDamage(ItemBucket.EMPTY_BUCKET);
-
-                    PlayerBucketEmptyEvent ev = new PlayerBucketEmptyEvent(player, this, null, item, bucket);
-                    level.getServer().getPluginManager().callEvent(ev);
-                    if (ev.isCancelled()) {
-                        return true;
-                    }
-
-                    replaceBucket(item, player, ev.getItem());
-
-                    int fillLevel = getFillLevel();
-                    if (fillLevel != FILL_LEVEL_EMPTY && getCauldronType() != LIQUID_LAVA) {
-                        mix(cauldron);
+                    case LIQUID_LAVA:
+                        bucketId = Item.LAVA_BUCKET;
+                        levelEvent = LevelEventPacket.EVENT_CAULDRON_TAKE_LAVA;
                         break;
-                    }
-
-                    if (fillLevel != FILL_LEVEL_FULL) {
-                        setCauldronType(LIQUID_LAVA);
-                        setFillLevel(FILL_LEVEL_FULL);
-                        level.setBlock(this, V1_20_0.isAvailable() ? this : get(LAVA_CAULDRON, getDamage()), true);
-                    }
-
-                    level.addLevelEvent(add(0.5, 0.375 + FILL_LEVEL_FULL * 0.125, 0.5), LevelEventPacket.EVENT_CAULDRON_FILL_LAVA);
-                } else if (item.getDamage() == ItemBucket.POWDER_SNOW) {
-                    ItemBucket bucket = (ItemBucket) item.clone();
-                    bucket.setCount(1);
-                    bucket.setDamage(ItemBucket.EMPTY_BUCKET);
-
-                    PlayerBucketEmptyEvent ev = new PlayerBucketEmptyEvent(player, this, null, item, bucket);
-                    level.getServer().getPluginManager().callEvent(ev);
-                    if (ev.isCancelled()) {
-                        return true;
-                    }
-
-                    replaceBucket(item, player, ev.getItem());
-
-                    int fillLevel = getFillLevel();
-                    if (fillLevel != FILL_LEVEL_EMPTY && getCauldronType() != LIQUID_POWDER_SNOW) {
-                        mix(cauldron);
+                    case LIQUID_POWDER_SNOW:
+                        bucketId = Item.POWDER_SNOW_BUCKET;
+                        levelEvent = LevelEventPacket.EVENT_CAULDRON_TAKE_POWDER_SNOW;
                         break;
-                    }
+                    default:
+                        return true;
+                }
 
-                    if (fillLevel != FILL_LEVEL_FULL) {
-                        setCauldronType(LIQUID_POWDER_SNOW);
-                        setFillLevel(FILL_LEVEL_FULL);
-                        level.setBlock(this, get(BLOCK_CAULDRON, getDamage()), true);
-                    }
-
-                    level.addLevelEvent(add(0.5, 0.375 + FILL_LEVEL_FULL * 0.125, 0.5), LevelEventPacket.EVENT_CAULDRON_FILL_POWDER_SNOW);
-                }
-                break;
-            }
-            case Item.DYE: {
-                int meta = item.getDamage();
-                if (V1_20_10.isAvailable() && (meta == ItemDye.INK_SAC || meta == ItemDye.COCOA_BEANS || meta == ItemDye.LAPIS_LAZULI || meta == ItemDye.BONE_MEAL)) {
-                    return true;
-                }
-                if (getCauldronType() != LIQUID_WATER) {
-                    return true;
-                }
-                if (cauldron.hasPotion()) {
-                    return true;
-                }
-                int fillLevel = getFillLevel();
-                if (fillLevel == FILL_LEVEL_EMPTY) {
+                PlayerBucketFillEvent ev = new PlayerBucketFillEvent(player, this, null, item, Item.get(bucketId));
+                this.level.getServer().getPluginManager().callEvent(ev);
+                if (ev.isCancelled()) {
                     return true;
                 }
 
-                if (cauldron.mixColor(DyeColor.getByDyeNewData(item.getDamage()).getColor())) {
+                replaceBucket(item, player, ev.getItem());
+
+                this.level.setBlock(this, get(BLOCK_CAULDRON), true);
+
+                if (cauldron.clearCustomColor()) {
                     cauldron.spawnToAll();
                 }
 
-                if (!player.isCreative()) {
-                    item.pop();
-                    player.getInventory().setItemInHand(item);
+                this.getLevel().addLevelEvent(this.add(0.5, 0.375, 0.5), levelEvent);
+                break;
+            }
+            case Item.WATER_BUCKET: {
+                PlayerBucketEmptyEvent ev = new PlayerBucketEmptyEvent(player, this, null, item, Item.get(Item.BUCKET));
+                this.level.getServer().getPluginManager().callEvent(ev);
+                if (ev.isCancelled()) {
+                    return true;
                 }
 
-                level.addLevelEvent(add(0.5, 0.375 + fillLevel * 0.125, 0.5), LevelEventPacket.EVENT_CAULDRON_ADD_DYE, cauldron.getCustomColor().getRGB());
-                return true;
+                replaceBucket(item, player, ev.getItem());
+
+                int fillLevel = getFillLevel();
+                if (fillLevel != FILL_LEVEL_EMPTY && (getCauldronType() != LIQUID_WATER || cauldron.hasPotion())) {
+                    mix(cauldron);
+                    break;
+                }
+
+                if (fillLevel != FILL_LEVEL_FULL) {
+                    this.level.setBlock(this, get(BLOCK_CAULDRON, FILL_LEVEL_FULL), true);
+                }
+
+                if (cauldron.clearCustomColor()) {
+                    cauldron.spawnToAll();
+                }
+
+                this.level.addLevelEvent(this.add(0.5, 0.375 + FILL_LEVEL_FULL * 0.125, 0.5), LevelEventPacket.EVENT_SOUND_SPLASH);
+                break;
+            }
+            case Item.LAVA_BUCKET: {
+                PlayerBucketEmptyEvent ev = new PlayerBucketEmptyEvent(player, this, null, item, Item.get(Item.BUCKET));
+                level.getServer().getPluginManager().callEvent(ev);
+                if (ev.isCancelled()) {
+                    return true;
+                }
+
+                replaceBucket(item, player, ev.getItem());
+
+                int fillLevel = getFillLevel();
+                if (fillLevel != FILL_LEVEL_EMPTY && getCauldronType() != LIQUID_LAVA) {
+                    mix(cauldron);
+                    break;
+                }
+
+                if (fillLevel != FILL_LEVEL_FULL) {
+                    setCauldronType(LIQUID_LAVA);
+                    setFillLevel(FILL_LEVEL_FULL);
+                    level.setBlock(this, V1_20_0.isAvailable() ? this : get(LAVA_CAULDRON, getDamage()), true);
+                }
+
+                level.addLevelEvent(add(0.5, 0.375 + FILL_LEVEL_FULL * 0.125, 0.5), LevelEventPacket.EVENT_CAULDRON_FILL_LAVA);
+                break;
+            }
+            case Item.POWDER_SNOW_BUCKET: {
+                PlayerBucketEmptyEvent ev = new PlayerBucketEmptyEvent(player, this, null, item, Item.get(Item.BUCKET));
+                level.getServer().getPluginManager().callEvent(ev);
+                if (ev.isCancelled()) {
+                    return true;
+                }
+
+                replaceBucket(item, player, ev.getItem());
+
+                int fillLevel = getFillLevel();
+                if (fillLevel != FILL_LEVEL_EMPTY && getCauldronType() != LIQUID_POWDER_SNOW) {
+                    mix(cauldron);
+                    break;
+                }
+
+                if (fillLevel != FILL_LEVEL_FULL) {
+                    setCauldronType(LIQUID_POWDER_SNOW);
+                    setFillLevel(FILL_LEVEL_FULL);
+                    level.setBlock(this, get(BLOCK_CAULDRON, getDamage()), true);
+                }
+
+                level.addLevelEvent(add(0.5, 0.375 + FILL_LEVEL_FULL * 0.125, 0.5), LevelEventPacket.EVENT_CAULDRON_FILL_POWDER_SNOW);
+                break;
             }
             case Item.LEATHER_HELMET:
             case Item.LEATHER_CHESTPLATE:
@@ -573,6 +534,35 @@ public class BlockCauldron extends BlockTransparent {
                 break;
             }
             default:
+                if (item.isDye()) {
+                    if (getCauldronType() != LIQUID_WATER) {
+                        return true;
+                    }
+                    if (cauldron.hasPotion()) {
+                        return true;
+                    }
+                    int fillLevel = getFillLevel();
+                    if (fillLevel == FILL_LEVEL_EMPTY) {
+                        return true;
+                    }
+
+                    if (cauldron.mixColor(((ItemDye) item).getDyeColor().getColor())) {
+                        Player[] players = level.getChunkPlayers(getChunkX(), getChunkZ()).values().toArray(new Player[0]);
+                        BlockCauldron hackBlock = (BlockCauldron) clone();
+                        hackBlock.setFillLevel(fillLevel - 1);
+                        level.sendBlocks(players, new Block[]{hackBlock}, UpdateBlockPacket.FLAG_ALL, 0); // vanilla hack...
+                        level.sendBlocks(players, new Block[]{this}, UpdateBlockPacket.FLAG_ALL_PRIORITY, 0);
+                        cauldron.spawnToAll();
+                    }
+
+                    if (!player.isCreative()) {
+                        item.pop();
+                        player.getInventory().setItemInHand(item);
+                    }
+
+                    level.addLevelEvent(add(0.5, 0.375 + fillLevel * 0.125, 0.5), LevelEventPacket.EVENT_CAULDRON_ADD_DYE, cauldron.getCustomColor().getRGB());
+                    return true;
+                }
                 return false;
         }
 

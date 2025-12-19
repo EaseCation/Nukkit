@@ -2,7 +2,6 @@ package cn.nukkit.block;
 
 import cn.nukkit.Player;
 import cn.nukkit.item.Item;
-import cn.nukkit.item.ItemDye;
 import cn.nukkit.item.ItemTool;
 import cn.nukkit.item.enchantment.Enchantment;
 
@@ -58,7 +57,7 @@ public class BlockOreLapis extends BlockSolid {
             }
 
             return new Item[]{
-                    Item.get(Item.DYE, ItemDye.LAPIS_LAZULI, count)
+                    Item.get(Item.LAPIS_LAZULI, 0, count)
             };
         } else {
             return new Item[0];

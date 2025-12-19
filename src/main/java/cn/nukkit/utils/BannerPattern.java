@@ -1,7 +1,9 @@
 package cn.nukkit.utils;
 
-import cn.nukkit.item.ItemBannerPattern;
+import cn.nukkit.item.Item;
 import cn.nukkit.nbt.tag.CompoundTag;
+import it.unimi.dsi.fastutil.ints.Int2ObjectMap;
+import it.unimi.dsi.fastutil.ints.Int2ObjectOpenHashMap;
 
 import javax.annotation.Nullable;
 import java.util.HashMap;
@@ -60,48 +62,48 @@ public class BannerPattern {
         PATTERN_MIDDLE_CIRCLE("mc"),
         PATTERN_MIDDLE_RHOMBUS("mr"),
         PATTERN_BORDER("bo"),
-        PATTERN_CURLY_BORDER("cbo", ItemBannerPattern.BORDURE_INDENTED_BANNER_PATTERN),
-        PATTERN_BRICK("bri", ItemBannerPattern.FIELD_MASONED_BANNER_PATTERN),
+        PATTERN_CURLY_BORDER("cbo", Item.BORDURE_INDENTED_BANNER_PATTERN),
+        PATTERN_BRICK("bri", Item.FIELD_MASONED_BANNER_PATTERN),
         PATTERN_GRADIENT("gra"),
         PATTERN_GRADIENT_UPSIDE_DOWN("gru"),
-        PATTERN_CREEPER("cre", ItemBannerPattern.CREEPER_BANNER_PATTERN),
-        PATTERN_SKULL("sku", ItemBannerPattern.SKULL_BANNER_PATTERN),
-        PATTERN_FLOWER("flo", ItemBannerPattern.FLOWER_BANNER_PATTERN),
-        PATTERN_MOJANG("moj", ItemBannerPattern.MOJANG_BANNER_PATTERN),
-        PATTERN_PIGLIN("pig", ItemBannerPattern.CREEPER_BANNER_PATTERN),
-        PATTERN_GLOBE("glb", ItemBannerPattern.CREEPER_BANNER_PATTERN),
-        PATTERN_FLOW("flw", ItemBannerPattern.CREEPER_BANNER_PATTERN),
-        PATTERN_GUSTER("gus", ItemBannerPattern.CREEPER_BANNER_PATTERN),
+        PATTERN_CREEPER("cre", Item.CREEPER_BANNER_PATTERN),
+        PATTERN_SKULL("sku", Item.SKULL_BANNER_PATTERN),
+        PATTERN_FLOWER("flo", Item.FLOWER_BANNER_PATTERN),
+        PATTERN_MOJANG("moj", Item.MOJANG_BANNER_PATTERN),
+        PATTERN_PIGLIN("pig", Item.PIGLIN_BANNER_PATTERN),
+        PATTERN_GLOBE("glb", Item.GLOBE_BANNER_PATTERN),
+        PATTERN_FLOW("flw", Item.FLOW_BANNER_PATTERN),
+        PATTERN_GUSTER("gus", Item.GUSTER_BANNER_PATTERN),
         ;
 
         private final static Map<String, Type> BY_NAME = new HashMap<>();
-        private final static Type[] BY_META = new Type[ItemBannerPattern.UNDEFINED_BANNER_PATTERN];
+        private final static Int2ObjectMap<Type> BY_ID = new Int2ObjectOpenHashMap<>();
 
         private final String name;
-        private final int meta;
+        private final int id;
 
         Type(String name) {
             this(name, -1);
         }
 
-        Type(String name, int meta) {
+        Type(String name, int id) {
             this.name = name;
-            this.meta = meta;
+            this.id = id;
         }
 
         public String getName() {
             return this.name;
         }
 
-        public int getMeta() {
-            return meta;
+        public int getId() {
+            return id;
         }
 
         static {
             for (Type type : values()) {
                 BY_NAME.put(type.getName(), type);
-                if (type.meta != -1) {
-                    BY_META[type.meta] = type;
+                if (type.id != -1) {
+                    BY_ID.put(type.id, type);
                 }
             }
         }
@@ -112,11 +114,8 @@ public class BannerPattern {
         }
 
         @Nullable
-        public static Type getByMeta(int meta) {
-            if (meta < 0 || meta >= BY_META.length) {
-                return null;
-            }
-            return BY_META[meta];
+        public static Type getById(int id) {
+            return BY_ID.get(id);
         }
     }
 

@@ -87,6 +87,11 @@ public interface ItemID extends BlockID, ItemRuntimeID {
     int IRON_DOOR = 330;
     int REDSTONE = 331;
     int SNOWBALL = 332;
+    int OAK_BOAT = 333;
+    /**
+     * @deprecated use {@link #OAK_BOAT} instead (flattened)
+     */
+    @Deprecated
     int BOAT = 333;
     int LEATHER = 334;
     int KELP = 335;
@@ -120,6 +125,11 @@ public interface ItemID extends BlockID, ItemRuntimeID {
      */
     @Deprecated
     int COOKED_FISH = 350;
+    int INK_SAC = 351;
+    /**
+     * @deprecated use {@link #INK_SAC} instead (flattened)
+     */
+    @Deprecated
     int DYE = 351;
     int BONE = 352;
     int SUGAR = 353;
@@ -293,6 +303,11 @@ public interface ItemID extends BlockID, ItemRuntimeID {
      */
     @Deprecated
     int CHORUS_FRUIT_POPPED = 433;
+    int CREEPER_BANNER_PATTERN = 434;
+    /**
+     * @deprecated use {@link #CREEPER_BANNER_PATTERN} instead (flattened)
+     */
+    @Deprecated
     int BANNER_PATTERN = 434;
 
     int DRAGON_BREATH = 437;
@@ -443,14 +458,13 @@ public interface ItemID extends BlockID, ItemRuntimeID {
 
     int SHIELD = 513;
 
-//    int AXOLOTL_BUCKET = 517;
+    int AXOLOTL_BUCKET = 517;
     int GLOW_INK_SAC = 518;
 
     int RAW_IRON = 520;
     int RAW_GOLD = 521;
     int RAW_COPPER = 522;
-
-//    int TADPOLE_BUCKET = 523;
+    int TADPOLE_BUCKET = 523;
 
     int BREEZE_ROD = 529;
     int MACE = 530;
@@ -495,7 +509,7 @@ public interface ItemID extends BlockID, ItemRuntimeID {
     int NETHER_SPROUTS = 760;
     int GOAT_HORN = 761;
 
-//    int POWDER_SNOW_BUCKET = 770;
+    int POWDER_SNOW_BUCKET = 770;
     int AMETHYST_SHARD = 771;
     int SPYGLASS = 772;
     int MUSIC_DISC_OTHERSIDE = 773;

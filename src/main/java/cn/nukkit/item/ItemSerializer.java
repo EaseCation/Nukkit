@@ -33,10 +33,6 @@ public class ItemSerializer {
         INSTANCE.registerItem(identifier, id, maxAuxVal);
     }
 
-    public static void registerItemAux(String identifier, int id, int meta) {
-        INSTANCE.registerItemAux(identifier, id, meta);
-    }
-
     public static void registerCustomItem(String fullName, int id, @Nullable BiFunction<Integer, Boolean, CompoundTag> componentsSupplier) {
         INSTANCE.registerCustomItem(fullName, id, componentsSupplier);
     }
@@ -59,8 +55,6 @@ public class ItemSerializer {
         void registerItem(String identifier, int id);
 
         void registerItem(String identifier, int id, int maxAuxVal);
-
-        void registerItemAux(String identifier, int id, int meta);
 
         void registerCustomItem(String fullName, int id, @Nullable BiFunction<Integer, Boolean, CompoundTag> componentsSupplier);
 

@@ -436,7 +436,7 @@ public class NetworkInventoryAction {
                                 // Outputs should only be in slot 0.
                                 return null;
                             }
-                            if (Item.get(ItemID.DYE, 4).equals(this.newItem, true, false)) {
+                            if (Item.get(ItemID.LAPIS_LAZULI).equals(this.newItem, true, false)) {
                                 this.inventorySlot = 2; // Fake slot to store used material
                                 if (this.newItem.getCount() < 1 || this.newItem.getCount() > 3) {
                                     // Invalid material
@@ -445,8 +445,7 @@ public class NetworkInventoryAction {
                                 Item material = enchant.getItem(1);
                                 // Material to take away.
                                 int toRemove = this.newItem.getCount();
-                                if (material.getId() != ItemID.DYE && material.getDamage() != 4 &&
-                                        material.getCount() < toRemove) {
+                                if (material.getId() != ItemID.LAPIS_LAZULI && material.getCount() < toRemove) {
                                     // Invalid material or not enough
                                     return null;
                                 }
@@ -454,7 +453,7 @@ public class NetworkInventoryAction {
                                 Item toEnchant = enchant.getItem(0);
                                 Item material = enchant.getItem(1);
                                 if (toEnchant.equals(this.newItem, true, true) &&
-                                        (material.getId() == ItemID.DYE && material.getDamage() == 4 || player.isCreative())) {
+                                        (material.getId() == ItemID.LAPIS_LAZULI || player.isCreative())) {
                                     this.inventorySlot = 3; // Fake slot to store the resultant item.
 
                                     //TODO: Check (old) item has valid enchantments

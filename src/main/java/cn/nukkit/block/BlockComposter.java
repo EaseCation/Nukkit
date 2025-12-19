@@ -2,7 +2,6 @@ package cn.nukkit.block;
 
 import cn.nukkit.Player;
 import cn.nukkit.item.Item;
-import cn.nukkit.item.ItemDye;
 import cn.nukkit.item.ItemID;
 import cn.nukkit.level.GameRule;
 import cn.nukkit.level.Level;
@@ -99,7 +98,7 @@ public class BlockComposter extends BlockTransparent {
         Item drop = this.toItem(true);
         return getDamage() == 0x8 ? new Item[]{
                 drop,
-                Item.get(ItemID.DYE, ItemDye.BONE_MEAL),
+                Item.get(ItemID.BONE_MEAL),
         } : new Item[]{drop};
     }
 
@@ -133,7 +132,7 @@ public class BlockComposter extends BlockTransparent {
             level.addLevelSoundEvent(this.blockCenter(), LevelSoundEventPacket.SOUND_BLOCK_COMPOSTER_EMPTY);
 
             if (level.getGameRules().getBoolean(GameRule.DO_TILE_DROPS)) {
-                level.dropItem(this, Item.get(ItemID.DYE, ItemDye.BONE_MEAL));
+                level.dropItem(this, Item.get(ItemID.BONE_MEAL));
             }
 
             setDamage(0);

@@ -11,9 +11,11 @@ import cn.nukkit.math.BlockFace;
 import cn.nukkit.math.Vector3;
 
 public class BoatDispenseBehavior extends DefaultDispenseBehavior {
+    private final int boatType;
     private final EntityFactory factory;
 
-    public BoatDispenseBehavior(EntityFactory factory) {
+    public BoatDispenseBehavior(int boatType, EntityFactory factory) {
+        this.boatType = boatType;
         this.factory = factory;
     }
 
@@ -33,7 +35,7 @@ public class BoatDispenseBehavior extends DefaultDispenseBehavior {
 
         Entity boat = factory.create(block.level.getChunk(target.getChunkX(), target.getChunkZ()),
                 Entity.getDefaultNBT(pos, null, face.getHorizontalAngle() + 90, 0)
-                        .putByte("woodID", item.getDamage())
+                        .putByte("woodID", boatType)
         );
 
         boat.spawnToAll();

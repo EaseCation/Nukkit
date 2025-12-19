@@ -225,18 +225,18 @@ public class BlockCocoa extends BlockFlowable implements Faceable {
 
     @Override
     public Item toItem(boolean addUserData) {
-        return Item.get(Item.DYE, ItemDye.COCOA_BEANS);
+        return Item.get(Item.COCOA_BEANS);
     }
 
     @Override
     public Item[] getDrops(Item item, Player player) {
         if (this.getDamage() >= 0x8) {
             return new Item[]{
-                    Item.get(Item.DYE, ItemDye.COCOA_BEANS, 3)
+                    Item.get(Item.COCOA_BEANS, 0, 3)
             };
         } else {
             return new Item[]{
-                    Item.get(Item.DYE, ItemDye.COCOA_BEANS, 1)
+                    Item.get(Item.COCOA_BEANS)
             };
         }
     }

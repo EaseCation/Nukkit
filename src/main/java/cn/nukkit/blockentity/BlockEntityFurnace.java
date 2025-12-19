@@ -10,7 +10,6 @@ import cn.nukkit.inventory.FurnaceInventory;
 import cn.nukkit.inventory.FurnaceRecipe;
 import cn.nukkit.inventory.RecipeTag;
 import cn.nukkit.item.Item;
-import cn.nukkit.item.ItemBucket;
 import cn.nukkit.item.Items;
 import cn.nukkit.level.format.FullChunk;
 import cn.nukkit.math.Mth;
@@ -141,9 +140,8 @@ public class BlockEntityFurnace extends BlockEntityAbstractContainer {
         if (burnTime > 0 && ev.isBurning()) {
             fuel.setCount(fuel.getCount() - 1);
             if (fuel.getCount() == 0) {
-                if (fuel.getId() == Item.BUCKET && fuel.getDamage() == ItemBucket.LAVA_BUCKET) {
-                    fuel.setDamage(0);
-                    fuel.setCount(1);
+                if (fuel.getId() == Item.LAVA_BUCKET) {
+                    fuel = Item.get(Item.BUCKET);
                 } else {
                     fuel = Items.air();
                 }

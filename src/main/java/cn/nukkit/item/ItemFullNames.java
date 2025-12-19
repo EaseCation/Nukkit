@@ -3,7 +3,7 @@ package cn.nukkit.item;
 import com.google.common.annotations.Beta;
 
 // This file is generated automatically, do not edit it manually.
-public interface ItemFullNames extends ItemBlockNames {
+public interface ItemFullNames extends ItemBlockFullNames {
     String GLOW_STICK = "minecraft:" + ItemNames.GLOW_STICK;
 
     String IRON_SHOVEL = "minecraft:" + ItemNames.IRON_SHOVEL;
@@ -588,7 +588,6 @@ public interface ItemFullNames extends ItemBlockNames {
     String RAW_IRON = "minecraft:" + ItemNames.RAW_IRON;
     String RAW_GOLD = "minecraft:" + ItemNames.RAW_GOLD;
     String RAW_COPPER = "minecraft:" + ItemNames.RAW_COPPER;
-
     String TADPOLE_BUCKET = "minecraft:" + ItemNames.TADPOLE_BUCKET;
 
     String BREEZE_ROD = "minecraft:" + ItemNames.BREEZE_ROD;

@@ -3,17 +3,22 @@ package cn.nukkit.item;
 import cn.nukkit.entity.EntityFactory;
 import cn.nukkit.entity.item.EntityBoatChest;
 
-public class ItemBoatChest extends ItemBoat {
-    public ItemBoatChest() {
-        this(0, 1);
-    }
+public abstract class ItemBoatChest extends ItemBoat {
+    public static final int[] CHEST_BOATS = {
+            OAK_CHEST_BOAT,
+            SPRUCE_CHEST_BOAT,
+            BIRCH_CHEST_BOAT,
+            JUNGLE_CHEST_BOAT,
+            ACACIA_CHEST_BOAT,
+            DARK_OAK_CHEST_BOAT,
+            MANGROVE_CHEST_BOAT,
+            BAMBOO_CHEST_RAFT,
+            CHERRY_CHEST_BOAT,
+            PALE_OAK_CHEST_BOAT,
+    };
 
-    public ItemBoatChest(Integer meta) {
-        this(meta, 1);
-    }
-
-    public ItemBoatChest(Integer meta, int count) {
-        super(CHEST_BOAT, meta, count, "Chest Boat");
+    protected ItemBoatChest(int id, Integer meta, int count, String name) {
+        super(id, meta, count, name);
     }
 
     @Override

@@ -9,43 +9,36 @@ import cn.nukkit.level.Level;
 import cn.nukkit.math.AxisAlignedBB;
 import cn.nukkit.math.BlockFace;
 
-import static cn.nukkit.SharedConstants.*;
-
 /**
  * Created by yescallop on 2016/2/13.
  */
-public class ItemBoat extends Item {
-    public static final int OAK_BOAT = 0;
-    public static final int SPRUCE_BOAT = 1;
-    public static final int BIRCH_BOAT = 2;
-    public static final int JUNGLE_BOAT = 3;
-    public static final int ACACIA_BOAT = 4;
-    public static final int DARK_OAK_BOAT = 5;
-    public static final int MANGROVE_BOAT = 6;
-    public static final int BAMBOO_RAFT = 7;
-    public static final int CHERRY_BOAT = 8;
-    public static final int PALE_OAK_BOAT = 9;
-    public static final int UNDEFINED_BOAT = 10;
+public abstract class ItemBoat extends Item {
+    public static final int OAK = 0;
+    public static final int SPRUCE = 1;
+    public static final int BIRCH = 2;
+    public static final int JUNGLE = 3;
+    public static final int ACACIA = 4;
+    public static final int DARK_OAK = 5;
+    public static final int MANGROVE = 6;
+    public static final int RAFT = 7;
+    public static final int CHERRY = 8;
+    public static final int PALE_OAK = 9;
 
-    public ItemBoat() {
-        this(0, 1);
-    }
-
-    public ItemBoat(Integer meta) {
-        this(meta, 1);
-    }
-
-    public ItemBoat(Integer meta, int count) {
-        super(BOAT, meta, count, "Boat");
-    }
+    public static final int[] BOATS = {
+            OAK_BOAT,
+            SPRUCE_BOAT,
+            BIRCH_BOAT,
+            JUNGLE_BOAT,
+            ACACIA_BOAT,
+            DARK_OAK_BOAT,
+            MANGROVE_BOAT,
+            BAMBOO_RAFT,
+            CHERRY_BOAT,
+            PALE_OAK_BOAT,
+    };
 
     protected ItemBoat(int id, Integer meta, int count, String name) {
         super(id, meta, count, name);
-    }
-
-    @Override
-    public boolean isStackedByData() {
-        return !ITEM_FLATTEN;
     }
 
     @Override
@@ -74,8 +67,9 @@ public class ItemBoat extends Item {
         Entity boat = getEntityFactory().create(
                 level.getChunk(block.getFloorX() >> 4, block.getFloorZ() >> 4),
                 Entity.getDefaultNBT(block.getX() + 0.5, y, block.getZ() + 0.5, null, ((float) player.yaw + 90f) % 360, 0)
-                        .putByte("woodID", this.getDamage())
+                        .putByte("woodID", this.getBoatType())
         );
+        //TODO: check nearby boats
 
         if (player.isSurvivalLike()) {
             Item item = player.getInventory().getItemInHand();
@@ -101,6 +95,8 @@ public class ItemBoat extends Item {
     public boolean isBoat() {
         return true;
     }
+
+    public abstract int getBoatType();
 
     protected EntityFactory getEntityFactory() {
         return EntityBoat::new;

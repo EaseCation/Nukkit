@@ -2,49 +2,29 @@ package cn.nukkit.item;
 
 import cn.nukkit.utils.BannerPattern.Type;
 
-import static cn.nukkit.SharedConstants.*;
+public abstract class ItemBannerPattern extends Item {
+    static final int CREEPER_CHARGE = 0;
+    static final int SKULL_CHARGE = 1;
+    static final int FLOWER_CHARGE = 2;
+    static final int MOJANG = 3;
+    static final int FIELD_MASONED = 4;
+    static final int BORDURE_INDENTED = 5;
+    static final int PIGLIN = 6;
+    static final int GLOBE = 7;
 
-public class ItemBannerPattern extends Item {
-    public static final int CREEPER_BANNER_PATTERN = 0;
-    public static final int SKULL_BANNER_PATTERN = 1;
-    public static final int FLOWER_BANNER_PATTERN = 2;
-    public static final int MOJANG_BANNER_PATTERN = 3;
-    public static final int FIELD_MASONED_BANNER_PATTERN = 4;
-    public static final int BORDURE_INDENTED_BANNER_PATTERN = 5;
-    public static final int PIGLIN_BANNER_PATTERN = 6;
-    public static final int GLOBE_BANNER_PATTERN = 7;
-    public static final int FLOW_BANNER_PATTERN = 8;
-    public static final int GUSTER_BANNER_PATTERN = 9;
-    public static final int UNDEFINED_BANNER_PATTERN = 10;
-
-    private static final String[] NAMES = {
-            "Creeper Charge Banner Pattern",
-            "Skull Charge Banner Pattern",
-            "Flower Charge Banner Pattern",
-            "Thing Banner Pattern",
-            "Field Masoned Banner Pattern",
-            "Bordure Indented Banner Pattern",
-            "Snout Banner Pattern",
-            "Globe Banner Pattern",
-            "Flow Banner Pattern",
-            "Guster Banner Pattern",
+    public static final int[] BANNER_PATTERNS = {
+            CREEPER_BANNER_PATTERN,
+            SKULL_BANNER_PATTERN,
+            FLOWER_BANNER_PATTERN,
+            MOJANG_BANNER_PATTERN,
+            FIELD_MASONED_BANNER_PATTERN,
+            BORDURE_INDENTED_BANNER_PATTERN,
+            PIGLIN_BANNER_PATTERN,
+            GLOBE_BANNER_PATTERN,
     };
 
-    public ItemBannerPattern() {
-        this(0, 1);
-    }
-
-    public ItemBannerPattern(Integer meta) {
-        this(meta, 1);
-    }
-
-    public ItemBannerPattern(Integer meta, int count) {
-        super(BANNER_PATTERN, meta, count, getName(meta != null ? meta : 0));
-    }
-
-    @Override
-    public boolean isStackedByData() {
-        return !ITEM_FLATTEN;
+    protected ItemBannerPattern(int id, Integer meta, int count, String name) {
+        super(id, meta, count, name);
     }
 
     @Override
@@ -57,14 +37,5 @@ public class ItemBannerPattern extends Item {
         return true;
     }
 
-    private static String getName(int meta) {
-        if (meta >= NAMES.length || meta < 0) {
-            return "Banner Pattern";
-        }
-        return NAMES[meta];
-    }
-
-    public Type getPattern() {
-        return Type.getByMeta(getDamage());
-    }
+    public abstract Type getPattern();
 }

@@ -18,12 +18,9 @@ import cn.nukkit.nbt.tag.CompoundTag;
 import cn.nukkit.nbt.tag.Tag;
 import cn.nukkit.network.protocol.LevelEventPacket;
 import cn.nukkit.utils.BlockColor;
-import cn.nukkit.utils.DyeColor;
 import cn.nukkit.utils.Faceable;
 
 import javax.annotation.Nullable;
-
-import static cn.nukkit.GameVersion.*;
 
 /**
  * @author Nukkit Project Team
@@ -194,13 +191,38 @@ public class BlockSignPost extends BlockTransparent implements Faceable {
 
         boolean front = player == null || isFacingFront(player);
 
-        if (item.isDye() && !sign.isEmpty(front)) {
-            int meta = item.getDamage();
-            if (V1_20_10.isAvailable() && (meta == ItemDye.COCOA_BEANS || meta == ItemDye.LAPIS_LAZULI || meta == ItemDye.BONE_MEAL)) {
+        if (!sign.isEmpty(front)) {
+            if (item.isDye()) {
+                BlockColor color = ((ItemDye) item).getDyeColor().getSignColor();
+                if (color.equals(sign.getColor(front))) {
+                    if (player != null) {
+                        sign.spawnTo(player);
+                    }
+                    return false;
+                }
+
+                SignColorChangeEvent event = new SignColorChangeEvent(this, player, color);
+                this.level.getServer().getPluginManager().callEvent(event);
+                if (event.isCancelled()) {
+                    if (player != null) {
+                        sign.spawnTo(player);
+                    }
+                    return false;
+                }
+
+                sign.setColor(front, color);
+                sign.spawnToAll();
+
+                this.level.addLevelEvent(this, LevelEventPacket.EVENT_SOUND_DYE_USED);
+
+                if (player != null && (player.getGamemode() & 0x01) == 0) {
+                    item.count--;
+                }
+
                 return true;
             }
 
-            if (meta == ItemDye.INK_SAC) {
+            if (item.is(Item.INK_SAC)) {
                 if (!sign.isGlowing(front)) {
                     if (player != null) {
                         sign.spawnTo(player);
@@ -229,62 +251,34 @@ public class BlockSignPost extends BlockTransparent implements Faceable {
                 return true;
             }
 
-            BlockColor color = DyeColor.getByDyeNewData(meta).getSignColor();
-            if (color.equals(sign.getColor(front))) {
-                if (player != null) {
-                    sign.spawnTo(player);
+            if (item.getId() == Item.GLOW_INK_SAC) {
+                if (sign.isGlowing(front)) {
+                    if (player != null) {
+                        sign.spawnTo(player);
+                    }
+                    return false;
                 }
-                return false;
-            }
 
-            SignColorChangeEvent event = new SignColorChangeEvent(this, player, color);
-            this.level.getServer().getPluginManager().callEvent(event);
-            if (event.isCancelled()) {
-                if (player != null) {
-                    sign.spawnTo(player);
+                SignGlowEvent event = new SignGlowEvent(this, player, true);
+                this.level.getServer().getPluginManager().callEvent(event);
+                if (event.isCancelled()) {
+                    if (player != null) {
+                        sign.spawnTo(player);
+                    }
+                    return false;
                 }
-                return false;
-            }
 
-            sign.setColor(front, color);
-            sign.spawnToAll();
+                sign.setGlowing(front, true);
+                sign.spawnToAll();
 
-            this.level.addLevelEvent(this, LevelEventPacket.EVENT_SOUND_DYE_USED);
+                this.level.addLevelEvent(this, LevelEventPacket.EVENT_SOUND_INK_SAC_USED);
 
-            if (player != null && (player.getGamemode() & 0x01) == 0) {
-                item.count--;
-            }
-
-            return true;
-        }
-
-        if (item.getId() == Item.GLOW_INK_SAC && !sign.isEmpty(front)) {
-            if (sign.isGlowing(front)) {
-                if (player != null) {
-                    sign.spawnTo(player);
+                if (player != null && !player.isCreative()) {
+                    item.pop();
                 }
-                return false;
+
+                return true;
             }
-
-            SignGlowEvent event = new SignGlowEvent(this, player, true);
-            this.level.getServer().getPluginManager().callEvent(event);
-            if (event.isCancelled()) {
-                if (player != null) {
-                    sign.spawnTo(player);
-                }
-                return false;
-            }
-
-            sign.setGlowing(front, true);
-            sign.spawnToAll();
-
-            this.level.addLevelEvent(this, LevelEventPacket.EVENT_SOUND_INK_SAC_USED);
-
-            if (player != null && !player.isCreative()) {
-                item.pop();
-            }
-
-            return true;
         }
 
         if (player == null || face == null) {

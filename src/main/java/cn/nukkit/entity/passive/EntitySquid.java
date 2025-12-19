@@ -3,7 +3,6 @@ package cn.nukkit.entity.passive;
 import cn.nukkit.Player;
 import cn.nukkit.entity.EntityID;
 import cn.nukkit.item.Item;
-import cn.nukkit.item.ItemDye;
 import cn.nukkit.level.format.FullChunk;
 import cn.nukkit.nbt.tag.CompoundTag;
 
@@ -49,7 +48,7 @@ public class EntitySquid extends EntityWaterAnimal {
     @Override
     public Item[] getDrops() {
         return new Item[]{
-                Item.get(Item.DYE, ItemDye.INK_SAC, ThreadLocalRandom.current().nextInt(1, 4)),
+                Item.get(Item.INK_SAC, 0, ThreadLocalRandom.current().nextInt(1, 4)),
         };
     }
 

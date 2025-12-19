@@ -587,7 +587,6 @@ public interface ItemNames extends ItemBlockNames {
     String RAW_IRON = "raw_iron";
     String RAW_GOLD = "raw_gold";
     String RAW_COPPER = "raw_copper";
-
     String TADPOLE_BUCKET = "tadpole_bucket";
 
     String BREEZE_ROD = "breeze_rod";

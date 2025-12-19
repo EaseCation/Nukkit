@@ -12,8 +12,6 @@ import cn.nukkit.nbt.tag.CompoundTag;
 
 import java.util.concurrent.ThreadLocalRandom;
 
-import static cn.nukkit.SharedConstants.*;
-
 /**
  * author: MagicDroidX
  * Nukkit Project
@@ -32,9 +30,13 @@ public class ItemSpawnEgg extends Item {
         super(SPAWN_EGG, meta, count, "Spawn Egg");
     }
 
+    protected ItemSpawnEgg(int id, Integer meta, int count, String name) {
+        super(id, meta, count, name);
+    }
+
     @Override
     public boolean isStackedByData() {
-        return !ITEM_FLATTEN;
+        return true;
     }
 
     @Override
@@ -60,14 +62,14 @@ public class ItemSpawnEgg extends Item {
             nbt.putString("CustomName", this.getCustomName());
         }
 
-        CreatureSpawnEvent ev = new CreatureSpawnEvent(this.getDamage(), block, nbt, SpawnReason.SPAWN_EGG);
+        CreatureSpawnEvent ev = new CreatureSpawnEvent(this.getEntityId(), block, nbt, SpawnReason.SPAWN_EGG);
         level.getServer().getPluginManager().callEvent(ev);
 
         if (ev.isCancelled()) {
             return false;
         }
 
-        Entity entity = Entity.createEntity(this.getDamage(), chunk, nbt);
+        Entity entity = Entity.createEntity(this.getEntityId(), chunk, nbt);
 
         if (entity != null) {
             if (player.isSurvival()) {

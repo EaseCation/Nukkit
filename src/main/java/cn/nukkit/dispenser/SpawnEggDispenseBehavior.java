@@ -8,12 +8,17 @@ import cn.nukkit.math.BlockFace;
 import cn.nukkit.math.Vector3;
 
 public class SpawnEggDispenseBehavior extends DefaultDispenseBehavior {
+    private final int entityTypeId;
+
+    public SpawnEggDispenseBehavior(int entityTypeId) {
+        this.entityTypeId = entityTypeId;
+    }
 
     @Override
     public Item dispense(BlockDispenser block, BlockFace face, Item item) {
         Vector3 pos = block.getSideVec(face).add(0.5, 0.5, 0.5);
 
-        Entity entity = Entity.createEntity(item.getDamage(), block.level.getChunk(pos.getChunkX(), pos.getChunkZ()),
+        Entity entity = Entity.createEntity(entityTypeId, block.level.getChunk(pos.getChunkX(), pos.getChunkZ()),
                 Entity.getDefaultNBT(pos, null, face.getHorizontalAngle(), 0));
 
         boolean success = entity != null;

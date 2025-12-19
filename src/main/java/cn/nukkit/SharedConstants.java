@@ -44,8 +44,6 @@ public final class SharedConstants {
 
     public static final boolean ENABLE_BLOCK_DESTROY_SPEED_COMPATIBILITY = true;
 
-    public static final boolean ITEM_FLATTEN = false;
-
     /**
      * @since 1.20.0
      */

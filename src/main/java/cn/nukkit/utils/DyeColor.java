@@ -1,7 +1,5 @@
 package cn.nukkit.utils;
 
-import cn.nukkit.item.ItemDye;
-
 import java.util.Arrays;
 
 public enum DyeColor {
@@ -80,10 +78,10 @@ public enum DyeColor {
         }
 
         BY_DYE_NEW_DATA = Arrays.copyOf(BY_DYE_DATA, BY_DYE_DATA.length + 4);
-        BY_DYE_NEW_DATA[ItemDye.BLACK_NEW] = DyeColor.BLACK;
-        BY_DYE_NEW_DATA[ItemDye.BROWN_NEW] = DyeColor.BROWN;
-        BY_DYE_NEW_DATA[ItemDye.BLUE_NEW] = DyeColor.BLUE;
-        BY_DYE_NEW_DATA[ItemDye.WHITE_NEW] = DyeColor.WHITE;
+        BY_DYE_NEW_DATA[16] = DyeColor.BLACK;
+        BY_DYE_NEW_DATA[17] = DyeColor.BROWN;
+        BY_DYE_NEW_DATA[18] = DyeColor.BLUE;
+        BY_DYE_NEW_DATA[19] = DyeColor.WHITE;
     }
 
     public static DyeColor getByDyeData(int dyeColorMeta) {

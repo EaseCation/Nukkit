@@ -11,19 +11,19 @@ import cn.nukkit.network.protocol.LevelSoundEventPacket;
  * Nukkit Project
  */
 public abstract class ItemEdible extends Item {
-    public ItemEdible(int id, Integer meta, int count, String name) {
+    protected ItemEdible(int id, Integer meta, int count, String name) {
         super(id, meta, count, name);
     }
 
-    public ItemEdible(int id) {
+    protected ItemEdible(int id) {
         super(id);
     }
 
-    public ItemEdible(int id, Integer meta) {
+    protected ItemEdible(int id, Integer meta) {
         super(id, meta);
     }
 
-    public ItemEdible(int id, Integer meta, int count) {
+    protected ItemEdible(int id, Integer meta, int count) {
         super(id, meta, count);
     }
 
@@ -56,7 +56,10 @@ public abstract class ItemEdible extends Item {
                 player.getInventory().setItemInHand(this);
             }
 
-            player.level.addLevelSoundEvent(player.getEyePosition(), getSoundEvent());
+            int sound = getSoundEvent();
+            if (sound != -1) {
+                player.level.addLevelSoundEvent(player.getEyePosition(), sound);
+            }
         }
         return true;
     }

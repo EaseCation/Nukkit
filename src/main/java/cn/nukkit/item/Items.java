@@ -4,13 +4,13 @@ import cn.nukkit.GameVersion;
 import cn.nukkit.block.Block;
 import cn.nukkit.block.Blocks;
 import cn.nukkit.command.data.CommandEnum;
+import cn.nukkit.command.data.CommandEnumConstraint;
 import cn.nukkit.entity.EntityID;
 import cn.nukkit.loot.LootTables;
 import cn.nukkit.nbt.tag.CompoundTag;
 import cn.nukkit.nbt.tag.ListTag;
 import cn.nukkit.nbt.tag.StringTag;
 import cn.nukkit.potion.PotionID;
-import cn.nukkit.utils.DyeColor;
 import it.unimi.dsi.fastutil.ints.IntOpenHashSet;
 import it.unimi.dsi.fastutil.ints.IntSet;
 import it.unimi.dsi.fastutil.ints.IntSets;
@@ -44,7 +44,7 @@ public final class Items {
     private static final String[] ID_TO_NAME = new String[Short.MAX_VALUE];
     private static final String[] ID_TO_FULL_NAME = new String[Short.MAX_VALUE];
     private static final Map<String, String> SIMPLE_ALIASES_MAP = new Object2ObjectOpenHashMap<>();
-    private static final Object2IntMap<String> COMPLEX_ALIASES_MAP = new Object2IntOpenHashMap<>();
+    private static final Map<String, int[]> COMPLEX_ALIASES_MAP = new Object2ObjectOpenHashMap<>();
 
     private static final Set<String>[][] ITEM_ID_TO_TAGS = new Set[Short.MAX_VALUE][];
     private static final Set<String>[] BLOCK_ID_TO_TAGS = new Set[Block.BLOCK_ID_COUNT];
@@ -55,7 +55,6 @@ public final class Items {
     static {
         NAME_TO_ID.defaultReturnValue(-1);
         FULL_NAME_TO_ID.defaultReturnValue(-1);
-        COMPLEX_ALIASES_MAP.defaultReturnValue(Integer.MIN_VALUE);
     }
 
     static void registerVanillaItems() {
@@ -66,7 +65,7 @@ public final class Items {
         registerItem(ItemNames.APPLE, APPLE, ItemApple.class, ItemApple::new);
         registerItem(ItemNames.BOW, BOW, ItemBow.class, ItemBow::new);
         registerItem(ItemNames.ARROW, ARROW, ItemArrow.class, ItemArrow::new, ItemArrow.TIPPED_ARROW + PotionID.UNDEFINED - 1);
-        registerItem(ItemNames.COAL, COAL, ItemCoal.class, ItemCoal::new, 1);
+        registerItem(ItemNames.COAL, COAL, ItemCoal.class, ItemCoal::new, -(ItemCoal.COALS.length - 1));
         registerItem(ItemNames.DIAMOND, DIAMOND, ItemDiamond.class, ItemDiamond::new);
         registerItem(ItemNames.IRON_INGOT, IRON_INGOT, ItemIngotIron.class, ItemIngotIron::new);
         registerItem(ItemNames.GOLD_INGOT, GOLD_INGOT, ItemIngotGold.class, ItemIngotGold::new);
@@ -128,14 +127,14 @@ public final class Items {
         registerItem(ItemNames.GOLDEN_APPLE, GOLDEN_APPLE, ItemAppleGold.class, ItemAppleGold::new);
         registerItem(ItemNames.OAK_SIGN, OAK_SIGN, ItemSign.class, ItemSign::new);
         registerItem(ItemNames.WOODEN_DOOR, WOODEN_DOOR, ItemDoorWood.class, ItemDoorWood::new);
-        registerItem(ItemNames.BUCKET, BUCKET, ItemBucket.class, ItemBucket::new, ItemBucket.UNDEFINED_BUCKET - 1);
+        registerItem(ItemNames.BUCKET, BUCKET, ItemBucket.class, ItemBucket::new, -(ItemBucket.BUCKETS.length - 1));
 
         registerItem(ItemNames.MINECART, MINECART, ItemMinecart.class, ItemMinecart::new);
         registerItem(ItemNames.SADDLE, SADDLE, ItemSaddle.class, ItemSaddle::new);
         registerItem(ItemNames.IRON_DOOR, IRON_DOOR, ItemDoorIron.class, ItemDoorIron::new);
         registerItem(ItemNames.REDSTONE, REDSTONE, ItemRedstone.class, ItemRedstone::new);
         registerItem(ItemNames.SNOWBALL, SNOWBALL, ItemSnowball.class, ItemSnowball::new);
-        registerItem(ItemNames.BOAT, BOAT, ItemBoat.class, ItemBoat::new, ItemBoat.UNDEFINED_BOAT - 1);
+        registerItem(ItemNames.OAK_BOAT, OAK_BOAT, ItemBoatOak.class, ItemBoatOak::new, -(ItemBoat.BOATS.length - 1));
         registerItem(ItemNames.LEATHER, LEATHER, ItemLeather.class, ItemLeather::new);
 
         registerItem(ItemNames.BRICK, BRICK, ItemBrick.class, ItemBrick::new);
@@ -153,7 +152,7 @@ public final class Items {
         registerItem(ItemNames.GLOWSTONE_DUST, GLOWSTONE_DUST, ItemGlowstoneDust.class, ItemGlowstoneDust::new);
         registerItem(ItemNames.COD, COD, ItemFish.class, ItemFish::new);
         registerItem(ItemNames.COOKED_COD, COOKED_COD, ItemFishCooked.class, ItemFishCooked::new);
-        registerItem(ItemNames.DYE, DYE, ItemDye.class, ItemDye::new, ItemDye.DYE_COUNT - 1);
+        registerItem(ItemNames.INK_SAC, INK_SAC, ItemInkSac.class, ItemInkSac::new, -(ItemDye.DYES.length - 1));
         registerItem(ItemNames.BONE, BONE, ItemBone.class, ItemBone::new);
         registerItem(ItemNames.SUGAR, SUGAR, ItemSugar.class, ItemSugar::new);
         registerItem(ItemNames.CAKE, CAKE, ItemCake.class, ItemCake::new);
@@ -300,7 +299,7 @@ public final class Items {
         registerItem(ItemNames.ACACIA_SIGN, ACACIA_SIGN, ItemSignAcacia.class, ItemSignAcacia::new, V1_9_0);
         registerItem(ItemNames.DARK_OAK_SIGN, DARK_OAK_SIGN, ItemSignDarkOak.class, ItemSignDarkOak::new, V1_9_0);
 
-        registerItem(ItemNames.BANNER_PATTERN, BANNER_PATTERN, ItemBannerPattern.class, ItemBannerPattern::new, ItemBannerPattern.UNDEFINED_BANNER_PATTERN - 1, V1_10_0);
+        registerItem(ItemNames.CREEPER_BANNER_PATTERN, CREEPER_BANNER_PATTERN, ItemBannerPatternCreeper.class, ItemBannerPatternCreeper::new, -(ItemBannerPattern.BANNER_PATTERNS.length - 1), V1_10_0);
         registerItem(ItemNames.CROSSBOW, CROSSBOW, ItemCrossbow.class, ItemCrossbow::new, V1_10_0);
         registerItem(ItemNames.SHIELD, SHIELD, ItemShield.class, ItemShield::new, V1_10_0);
 
@@ -373,7 +372,6 @@ public final class Items {
         }
 
         registerSimpleAliases();
-        registerComplexAliases();
 
         initializeItemBlockCache();
     }
@@ -382,20 +380,161 @@ public final class Items {
      * deferred
      */
     public static void registerVanillaNewItems() {
+        registerNewItem(ItemNames.SKULL_BANNER_PATTERN, SKULL_BANNER_PATTERN, ItemBannerPatternSkull.class, ItemBannerPatternSkull::new, V1_16_100);
+        registerNewItem(ItemNames.FLOWER_BANNER_PATTERN, FLOWER_BANNER_PATTERN, ItemBannerPatternFlower.class, ItemBannerPatternFlower::new, V1_16_100);
+        registerNewItem(ItemNames.MOJANG_BANNER_PATTERN, MOJANG_BANNER_PATTERN, ItemBannerPatternMojang.class, ItemBannerPatternMojang::new, V1_16_100);
+        registerNewItem(ItemNames.FIELD_MASONED_BANNER_PATTERN, FIELD_MASONED_BANNER_PATTERN, ItemBannerPatternFieldMasoned.class, ItemBannerPatternFieldMasoned::new, V1_16_100);
+        registerNewItem(ItemNames.BORDURE_INDENTED_BANNER_PATTERN, BORDURE_INDENTED_BANNER_PATTERN, ItemBannerPatternBordureIndented.class, ItemBannerPatternBordureIndented::new, V1_16_100);
+        registerNewItem(ItemNames.PIGLIN_BANNER_PATTERN, PIGLIN_BANNER_PATTERN, ItemBannerPatternPiglin.class, ItemBannerPatternPiglin::new, V1_16_100);
+        registerNewItem(ItemNames.GLOBE_BANNER_PATTERN, GLOBE_BANNER_PATTERN, ItemBannerPatternGlobe.class, ItemBannerPatternGlobe::new, V1_16_100);
+
+        registerNewItem(ItemNames.SPRUCE_BOAT, SPRUCE_BOAT, ItemBoatSpruce.class, ItemBoatSpruce::new, V1_16_100);
+        registerNewItem(ItemNames.BIRCH_BOAT, BIRCH_BOAT, ItemBoatBirch.class, ItemBoatBirch::new, V1_16_100);
+        registerNewItem(ItemNames.JUNGLE_BOAT, JUNGLE_BOAT, ItemBoatJungle.class, ItemBoatJungle::new, V1_16_100);
+        registerNewItem(ItemNames.ACACIA_BOAT, ACACIA_BOAT, ItemBoatAcacia.class, ItemBoatAcacia::new, V1_16_100);
+        registerNewItem(ItemNames.DARK_OAK_BOAT, DARK_OAK_BOAT, ItemBoatDarkOak.class, ItemBoatDarkOak::new, V1_16_100);
+        registerNewItem(ItemNames.MANGROVE_BOAT, MANGROVE_BOAT, ItemBoatMangrove.class, ItemBoatMangrove::new, V1_19_0);
+        registerNewItem(ItemNames.BAMBOO_RAFT, BAMBOO_RAFT, ItemBoatBambooRaft.class, ItemBoatBambooRaft::new, V1_20_0);
+        registerNewItem(ItemNames.CHERRY_BOAT, CHERRY_BOAT, ItemBoatCherry.class, ItemBoatCherry::new, V1_20_0);
+        registerNewItem(ItemNames.PALE_OAK_BOAT, PALE_OAK_BOAT, ItemBoatPaleOak.class, ItemBoatPaleOak::new, V1_21_50);
+
+        registerNewItem(ItemNames.MILK_BUCKET, MILK_BUCKET, ItemBucketMilk.class, ItemBucketMilk::new, V1_16_100);
+        registerNewItem(ItemNames.COD_BUCKET, COD_BUCKET, ItemBucketCod.class, ItemBucketCod::new, V1_16_100);
+        registerNewItem(ItemNames.SALMON_BUCKET, SALMON_BUCKET, ItemBucketSalmon.class, ItemBucketSalmon::new, V1_16_100);
+        registerNewItem(ItemNames.TROPICAL_FISH_BUCKET, TROPICAL_FISH_BUCKET, ItemBucketTropicalFish.class, ItemBucketTropicalFish::new, V1_16_100);
+        registerNewItem(ItemNames.PUFFERFISH_BUCKET, PUFFERFISH_BUCKET, ItemBucketPufferfish.class, ItemBucketPufferfish::new, V1_16_100);
+        registerNewItem(ItemNames.WATER_BUCKET, WATER_BUCKET, ItemBucketWater.class, ItemBucketWater::new, V1_16_100);
+        registerNewItem(ItemNames.LAVA_BUCKET, LAVA_BUCKET, ItemBucketLava.class, ItemBucketLava::new, V1_16_100);
+        registerNewItem(ItemNames.POWDER_SNOW_BUCKET, POWDER_SNOW_BUCKET, ItemBucketPowderSnow.class, ItemBucketPowderSnow::new, V1_17_0);
+        registerNewItem(ItemNames.AXOLOTL_BUCKET, AXOLOTL_BUCKET, ItemBucketAxolotl.class, ItemBucketAxolotl::new, V1_17_0);
+        registerNewItem(ItemNames.TADPOLE_BUCKET, TADPOLE_BUCKET, ItemBucketTadpole.class, ItemBucketTadpole::new, V1_19_0);
+
+        registerNewItem(ItemNames.CHARCOAL, CHARCOAL, ItemCharcoal.class, ItemCharcoal::new, V1_16_100);
+
+        registerNewItem(ItemNames.COCOA_BEANS, COCOA_BEANS, ItemCocoaBeans.class, ItemCocoaBeans::new, V1_16_100);
+        registerNewItem(ItemNames.LAPIS_LAZULI, LAPIS_LAZULI, ItemLapisLazuli.class, ItemLapisLazuli::new, V1_16_100);
+        registerNewItem(ItemNames.BONE_MEAL, BONE_MEAL, ItemBoneMeal.class, ItemBoneMeal::new, V1_16_100);
+
+        registerNewItem(ItemNames.BLACK_DYE, BLACK_DYE, ItemDyeBlack.class, ItemDyeBlack::new, V1_16_100);
+        registerNewItem(ItemNames.RED_DYE, RED_DYE, ItemDyeRed.class, ItemDyeRed::new, V1_16_100);
+        registerNewItem(ItemNames.GREEN_DYE, GREEN_DYE, ItemDyeGreen.class, ItemDyeGreen::new, V1_16_100);
+        registerNewItem(ItemNames.BROWN_DYE, BROWN_DYE, ItemDyeBrown.class, ItemDyeBrown::new, V1_16_100);
+        registerNewItem(ItemNames.BLUE_DYE, BLUE_DYE, ItemDyeBlue.class, ItemDyeBlue::new, V1_16_100);
+        registerNewItem(ItemNames.PURPLE_DYE, PURPLE_DYE, ItemDyePurple.class, ItemDyePurple::new, V1_16_100);
+        registerNewItem(ItemNames.CYAN_DYE, CYAN_DYE, ItemDyeCyan.class, ItemDyeCyan::new, V1_16_100);
+        registerNewItem(ItemNames.LIGHT_GRAY_DYE, LIGHT_GRAY_DYE, ItemDyeLightGray.class, ItemDyeLightGray::new, V1_16_100);
+        registerNewItem(ItemNames.GRAY_DYE, GRAY_DYE, ItemDyeGray.class, ItemDyeGray::new, V1_16_100);
+        registerNewItem(ItemNames.PINK_DYE, PINK_DYE, ItemDyePink.class, ItemDyePink::new, V1_16_100);
+        registerNewItem(ItemNames.LIME_DYE, LIME_DYE, ItemDyeLime.class, ItemDyeLime::new, V1_16_100);
+        registerNewItem(ItemNames.YELLOW_DYE, YELLOW_DYE, ItemDyeYellow.class, ItemDyeYellow::new, V1_16_100);
+        registerNewItem(ItemNames.LIGHT_BLUE_DYE, LIGHT_BLUE_DYE, ItemDyeLightBlue.class, ItemDyeLightBlue::new, V1_16_100);
+        registerNewItem(ItemNames.MAGENTA_DYE, MAGENTA_DYE, ItemDyeMagenta.class, ItemDyeMagenta::new, V1_16_100);
+        registerNewItem(ItemNames.ORANGE_DYE, ORANGE_DYE, ItemDyeOrange.class, ItemDyeOrange::new, V1_16_100);
+        registerNewItem(ItemNames.WHITE_DYE, WHITE_DYE, ItemDyeWhite.class, ItemDyeWhite::new, V1_16_100);
+
+        registerNewItem(ItemNames.CHICKEN_SPAWN_EGG, CHICKEN_SPAWN_EGG, ItemSpawnEggChicken.class, ItemSpawnEggChicken::new, V1_16_100);
+        registerNewItem(ItemNames.COW_SPAWN_EGG, COW_SPAWN_EGG, ItemSpawnEggCow.class, ItemSpawnEggCow::new, V1_16_100);
+        registerNewItem(ItemNames.PIG_SPAWN_EGG, PIG_SPAWN_EGG, ItemSpawnEggPig.class, ItemSpawnEggPig::new, V1_16_100);
+        registerNewItem(ItemNames.SHEEP_SPAWN_EGG, SHEEP_SPAWN_EGG, ItemSpawnEggSheep.class, ItemSpawnEggSheep::new, V1_16_100);
+        registerNewItem(ItemNames.WOLF_SPAWN_EGG, WOLF_SPAWN_EGG, ItemSpawnEggWolf.class, ItemSpawnEggWolf::new, V1_16_100);
+        registerNewItem(ItemNames.VILLAGER_SPAWN_EGG, VILLAGER_SPAWN_EGG, ItemSpawnEggVillager.class, ItemSpawnEggVillager::new, V1_16_100);
+        registerNewItem(ItemNames.MOOSHROOM_SPAWN_EGG, MOOSHROOM_SPAWN_EGG, ItemSpawnEggMooshroom.class, ItemSpawnEggMooshroom::new, V1_16_100);
+        registerNewItem(ItemNames.SQUID_SPAWN_EGG, SQUID_SPAWN_EGG, ItemSpawnEggSquid.class, ItemSpawnEggSquid::new, V1_16_100);
+        registerNewItem(ItemNames.RABBIT_SPAWN_EGG, RABBIT_SPAWN_EGG, ItemSpawnEggRabbit.class, ItemSpawnEggRabbit::new, V1_16_100);
+        registerNewItem(ItemNames.BAT_SPAWN_EGG, BAT_SPAWN_EGG, ItemSpawnEggBat.class, ItemSpawnEggBat::new, V1_16_100);
+        registerNewItem(ItemNames.IRON_GOLEM_SPAWN_EGG, IRON_GOLEM_SPAWN_EGG, ItemSpawnEggIronGolem.class, ItemSpawnEggIronGolem::new, V1_16_100);
+        registerNewItem(ItemNames.SNOW_GOLEM_SPAWN_EGG, SNOW_GOLEM_SPAWN_EGG, ItemSpawnEggSnowGolem.class, ItemSpawnEggSnowGolem::new, V1_16_100);
+        registerNewItem(ItemNames.OCELOT_SPAWN_EGG, OCELOT_SPAWN_EGG, ItemSpawnEggOcelot.class, ItemSpawnEggOcelot::new, V1_16_100);
+        registerNewItem(ItemNames.HORSE_SPAWN_EGG, HORSE_SPAWN_EGG, ItemSpawnEggHorse.class, ItemSpawnEggHorse::new, V1_16_100);
+        registerNewItem(ItemNames.DONKEY_SPAWN_EGG, DONKEY_SPAWN_EGG, ItemSpawnEggDonkey.class, ItemSpawnEggDonkey::new, V1_16_100);
+        registerNewItem(ItemNames.MULE_SPAWN_EGG, MULE_SPAWN_EGG, ItemSpawnEggMule.class, ItemSpawnEggMule::new, V1_16_100);
+        registerNewItem(ItemNames.SKELETON_HORSE_SPAWN_EGG, SKELETON_HORSE_SPAWN_EGG, ItemSpawnEggSkeletonHorse.class, ItemSpawnEggSkeletonHorse::new, V1_16_100);
+        registerNewItem(ItemNames.ZOMBIE_HORSE_SPAWN_EGG, ZOMBIE_HORSE_SPAWN_EGG, ItemSpawnEggZombieHorse.class, ItemSpawnEggZombieHorse::new, V1_16_100);
+        registerNewItem(ItemNames.POLAR_BEAR_SPAWN_EGG, POLAR_BEAR_SPAWN_EGG, ItemSpawnEggPolarBear.class, ItemSpawnEggPolarBear::new, V1_16_100);
+        registerNewItem(ItemNames.LLAMA_SPAWN_EGG, LLAMA_SPAWN_EGG, ItemSpawnEggLlama.class, ItemSpawnEggLlama::new, V1_16_100);
+        registerNewItem(ItemNames.PARROT_SPAWN_EGG, PARROT_SPAWN_EGG, ItemSpawnEggParrot.class, ItemSpawnEggParrot::new, V1_16_100);
+        registerNewItem(ItemNames.DOLPHIN_SPAWN_EGG, DOLPHIN_SPAWN_EGG, ItemSpawnEggDolphin.class, ItemSpawnEggDolphin::new, V1_16_100);
+        registerNewItem(ItemNames.ZOMBIE_SPAWN_EGG, ZOMBIE_SPAWN_EGG, ItemSpawnEggZombie.class, ItemSpawnEggZombie::new, V1_16_100);
+        registerNewItem(ItemNames.CREEPER_SPAWN_EGG, CREEPER_SPAWN_EGG, ItemSpawnEggCreeper.class, ItemSpawnEggCreeper::new, V1_16_100);
+        registerNewItem(ItemNames.SKELETON_SPAWN_EGG, SKELETON_SPAWN_EGG, ItemSpawnEggSkeleton.class, ItemSpawnEggSkeleton::new, V1_16_100);
+        registerNewItem(ItemNames.SPIDER_SPAWN_EGG, SPIDER_SPAWN_EGG, ItemSpawnEggSpider.class, ItemSpawnEggSpider::new, V1_16_100);
+        registerNewItem(ItemNames.ZOMBIE_PIGMAN_SPAWN_EGG, ZOMBIE_PIGMAN_SPAWN_EGG, ItemSpawnEggZombiePigman.class, ItemSpawnEggZombiePigman::new, V1_16_100);
+        registerNewItem(ItemNames.SLIME_SPAWN_EGG, SLIME_SPAWN_EGG, ItemSpawnEggSlime.class, ItemSpawnEggSlime::new, V1_16_100);
+        registerNewItem(ItemNames.ENDERMAN_SPAWN_EGG, ENDERMAN_SPAWN_EGG, ItemSpawnEggEnderman.class, ItemSpawnEggEnderman::new, V1_16_100);
+        registerNewItem(ItemNames.SILVERFISH_SPAWN_EGG, SILVERFISH_SPAWN_EGG, ItemSpawnEggSilverfish.class, ItemSpawnEggSilverfish::new, V1_16_100);
+        registerNewItem(ItemNames.CAVE_SPIDER_SPAWN_EGG, CAVE_SPIDER_SPAWN_EGG, ItemSpawnEggCaveSpider.class, ItemSpawnEggCaveSpider::new, V1_16_100);
+        registerNewItem(ItemNames.GHAST_SPAWN_EGG, GHAST_SPAWN_EGG, ItemSpawnEggGhast.class, ItemSpawnEggGhast::new, V1_16_100);
+        registerNewItem(ItemNames.MAGMA_CUBE_SPAWN_EGG, MAGMA_CUBE_SPAWN_EGG, ItemSpawnEggMagmaCube.class, ItemSpawnEggMagmaCube::new, V1_16_100);
+        registerNewItem(ItemNames.BLAZE_SPAWN_EGG, BLAZE_SPAWN_EGG, ItemSpawnEggBlaze.class, ItemSpawnEggBlaze::new, V1_16_100);
+        registerNewItem(ItemNames.ZOMBIE_VILLAGER_SPAWN_EGG, ZOMBIE_VILLAGER_SPAWN_EGG, ItemSpawnEggZombieVillager.class, ItemSpawnEggZombieVillager::new, V1_16_100);
+        registerNewItem(ItemNames.WITCH_SPAWN_EGG, WITCH_SPAWN_EGG, ItemSpawnEggWitch.class, ItemSpawnEggWitch::new, V1_16_100);
+        registerNewItem(ItemNames.STRAY_SPAWN_EGG, STRAY_SPAWN_EGG, ItemSpawnEggStray.class, ItemSpawnEggStray::new, V1_16_100);
+        registerNewItem(ItemNames.HUSK_SPAWN_EGG, HUSK_SPAWN_EGG, ItemSpawnEggHusk.class, ItemSpawnEggHusk::new, V1_16_100);
+        registerNewItem(ItemNames.WITHER_SKELETON_SPAWN_EGG, WITHER_SKELETON_SPAWN_EGG, ItemSpawnEggWitherSkeleton.class, ItemSpawnEggWitherSkeleton::new, V1_16_100);
+        registerNewItem(ItemNames.GUARDIAN_SPAWN_EGG, GUARDIAN_SPAWN_EGG, ItemSpawnEggGuardian.class, ItemSpawnEggGuardian::new, V1_16_100);
+        registerNewItem(ItemNames.ELDER_GUARDIAN_SPAWN_EGG, ELDER_GUARDIAN_SPAWN_EGG, ItemSpawnEggElderGuardian.class, ItemSpawnEggElderGuardian::new, V1_16_100);
+        registerNewItem(ItemNames.NPC_SPAWN_EGG, NPC_SPAWN_EGG, ItemSpawnEggNpc.class, ItemSpawnEggNpc::new, V1_16_100);
+        registerNewItem(ItemNames.WITHER_SPAWN_EGG, WITHER_SPAWN_EGG, ItemSpawnEggWither.class, ItemSpawnEggWither::new, V1_16_100);
+        registerNewItem(ItemNames.ENDER_DRAGON_SPAWN_EGG, ENDER_DRAGON_SPAWN_EGG, ItemSpawnEggEnderDragon.class, ItemSpawnEggEnderDragon::new, V1_16_100);
+        registerNewItem(ItemNames.SHULKER_SPAWN_EGG, SHULKER_SPAWN_EGG, ItemSpawnEggShulker.class, ItemSpawnEggShulker::new, V1_16_100);
+        registerNewItem(ItemNames.ENDERMITE_SPAWN_EGG, ENDERMITE_SPAWN_EGG, ItemSpawnEggEndermite.class, ItemSpawnEggEndermite::new, V1_16_100);
+        registerNewItem(ItemNames.AGENT_SPAWN_EGG, AGENT_SPAWN_EGG, ItemSpawnEggAgent.class, ItemSpawnEggAgent::new, V1_16_100);
+        registerNewItem(ItemNames.VINDICATOR_SPAWN_EGG, VINDICATOR_SPAWN_EGG, ItemSpawnEggVindicator.class, ItemSpawnEggVindicator::new, V1_16_100);
+        registerNewItem(ItemNames.PHANTOM_SPAWN_EGG, PHANTOM_SPAWN_EGG, ItemSpawnEggPhantom.class, ItemSpawnEggPhantom::new, V1_16_100);
+        registerNewItem(ItemNames.RAVAGER_SPAWN_EGG, RAVAGER_SPAWN_EGG, ItemSpawnEggRavager.class, ItemSpawnEggRavager::new, V1_16_100);
+        registerNewItem(ItemNames.TURTLE_SPAWN_EGG, TURTLE_SPAWN_EGG, ItemSpawnEggTurtle.class, ItemSpawnEggTurtle::new, V1_16_100);
+        registerNewItem(ItemNames.CAT_SPAWN_EGG, CAT_SPAWN_EGG, ItemSpawnEggCat.class, ItemSpawnEggCat::new, V1_16_100);
+        registerNewItem(ItemNames.EVOKER_SPAWN_EGG, EVOKER_SPAWN_EGG, ItemSpawnEggEvoker.class, ItemSpawnEggEvoker::new, V1_16_100);
+        registerNewItem(ItemNames.VEX_SPAWN_EGG, VEX_SPAWN_EGG, ItemSpawnEggVex.class, ItemSpawnEggVex::new, V1_16_100);
+        registerNewItem(ItemNames.PUFFERFISH_SPAWN_EGG, PUFFERFISH_SPAWN_EGG, ItemSpawnEggPufferfish.class, ItemSpawnEggPufferfish::new, V1_16_100);
+        registerNewItem(ItemNames.SALMON_SPAWN_EGG, SALMON_SPAWN_EGG, ItemSpawnEggSalmon.class, ItemSpawnEggSalmon::new, V1_16_100);
+        registerNewItem(ItemNames.DROWNED_SPAWN_EGG, DROWNED_SPAWN_EGG, ItemSpawnEggDrowned.class, ItemSpawnEggDrowned::new, V1_16_100);
+        registerNewItem(ItemNames.TROPICAL_FISH_SPAWN_EGG, TROPICAL_FISH_SPAWN_EGG, ItemSpawnEggTropicalFish.class, ItemSpawnEggTropicalFish::new, V1_16_100);
+        registerNewItem(ItemNames.COD_SPAWN_EGG, COD_SPAWN_EGG, ItemSpawnEggCod.class, ItemSpawnEggCod::new, V1_16_100);
+        registerNewItem(ItemNames.PANDA_SPAWN_EGG, PANDA_SPAWN_EGG, ItemSpawnEggPanda.class, ItemSpawnEggPanda::new, V1_16_100);
+        registerNewItem(ItemNames.PILLAGER_SPAWN_EGG, PILLAGER_SPAWN_EGG, ItemSpawnEggPillager.class, ItemSpawnEggPillager::new, V1_16_100);
+        registerNewItem(ItemNames.WANDERING_TRADER_SPAWN_EGG, WANDERING_TRADER_SPAWN_EGG, ItemSpawnEggWanderingTrader.class, ItemSpawnEggWanderingTrader::new, V1_16_100);
+        registerNewItem(ItemNames.FOX_SPAWN_EGG, FOX_SPAWN_EGG, ItemSpawnEggFox.class, ItemSpawnEggFox::new, V1_16_100);
+        registerNewItem(ItemNames.BEE_SPAWN_EGG, BEE_SPAWN_EGG, ItemSpawnEggBee.class, ItemSpawnEggBee::new, V1_16_100);
+        registerNewItem(ItemNames.PIGLIN_SPAWN_EGG, PIGLIN_SPAWN_EGG, ItemSpawnEggPiglin.class, ItemSpawnEggPiglin::new, V1_16_100);
+        registerNewItem(ItemNames.HOGLIN_SPAWN_EGG, HOGLIN_SPAWN_EGG, ItemSpawnEggHoglin.class, ItemSpawnEggHoglin::new, V1_16_100);
+        registerNewItem(ItemNames.STRIDER_SPAWN_EGG, STRIDER_SPAWN_EGG, ItemSpawnEggStrider.class, ItemSpawnEggStrider::new, V1_16_100);
+        registerNewItem(ItemNames.ZOGLIN_SPAWN_EGG, ZOGLIN_SPAWN_EGG, ItemSpawnEggZoglin.class, ItemSpawnEggZoglin::new, V1_16_100);
+        registerNewItem(ItemNames.PIGLIN_BRUTE_SPAWN_EGG, PIGLIN_BRUTE_SPAWN_EGG, ItemSpawnEggPiglinBrute.class, ItemSpawnEggPiglinBrute::new, V1_16_100);
+        registerNewItem(ItemNames.GOAT_SPAWN_EGG, GOAT_SPAWN_EGG, ItemSpawnEggGoat.class, ItemSpawnEggGoat::new, V1_17_0);
+        registerNewItem(ItemNames.GLOW_SQUID_SPAWN_EGG, GLOW_SQUID_SPAWN_EGG, ItemSpawnEggGlowSquid.class, ItemSpawnEggGlowSquid::new, V1_17_0);
+        registerNewItem(ItemNames.AXOLOTL_SPAWN_EGG, AXOLOTL_SPAWN_EGG, ItemSpawnEggAxolotl.class, ItemSpawnEggAxolotl::new, V1_17_0);
+        registerNewItem(ItemNames.WARDEN_SPAWN_EGG, WARDEN_SPAWN_EGG, ItemSpawnEggWarden.class, ItemSpawnEggWarden::new, V1_19_0);
+        registerNewItem(ItemNames.FROG_SPAWN_EGG, FROG_SPAWN_EGG, ItemSpawnEggFrog.class, ItemSpawnEggFrog::new, V1_19_0);
+        registerNewItem(ItemNames.TADPOLE_SPAWN_EGG, TADPOLE_SPAWN_EGG, ItemSpawnEggTadpole.class, ItemSpawnEggTadpole::new, V1_19_0);
+        registerNewItem(ItemNames.ALLAY_SPAWN_EGG, ALLAY_SPAWN_EGG, ItemSpawnEggAllay.class, ItemSpawnEggAllay::new, V1_19_0);
+        registerNewItem(ItemNames.TRADER_LLAMA_SPAWN_EGG, TRADER_LLAMA_SPAWN_EGG, ItemSpawnEggTraderLlama.class, ItemSpawnEggTraderLlama::new, V1_19_10);
+        registerNewItem(ItemNames.CAMEL_SPAWN_EGG, CAMEL_SPAWN_EGG, ItemSpawnEggCamel.class, ItemSpawnEggCamel::new, V1_20_0);
+        registerNewItem(ItemNames.SNIFFER_SPAWN_EGG, SNIFFER_SPAWN_EGG, ItemSpawnEggSniffer.class, ItemSpawnEggSniffer::new, V1_20_0);
+        registerNewItem(ItemNames.ARMADILLO_SPAWN_EGG, ARMADILLO_SPAWN_EGG, ItemSpawnEggArmadillo.class, ItemSpawnEggArmadillo::new, V1_20_80);
+        registerNewItem(ItemNames.BREEZE_SPAWN_EGG, BREEZE_SPAWN_EGG, ItemSpawnEggBreeze.class, ItemSpawnEggBreeze::new, V1_21_0);
+        registerNewItem(ItemNames.BOGGED_SPAWN_EGG, BOGGED_SPAWN_EGG, ItemSpawnEggBogged.class, ItemSpawnEggBogged::new, V1_21_0);
+        registerNewItem(ItemNames.CREAKING_SPAWN_EGG, CREAKING_SPAWN_EGG, ItemSpawnEggCreaking.class, ItemSpawnEggCreaking::new, V1_21_50);
+        registerNewItem(ItemNames.HAPPY_GHAST_SPAWN_EGG, HAPPY_GHAST_SPAWN_EGG, ItemSpawnEggHappyGhast.class, ItemSpawnEggHappyGhast::new, V1_21_90);
+        registerNewItem(ItemNames.COPPER_GOLEM_SPAWN_EGG, COPPER_GOLEM_SPAWN_EGG, ItemSpawnEggCopperGolem.class, ItemSpawnEggCopperGolem::new, V1_21_111);
+        registerNewItem(ItemNames.NAUTILUS_SPAWN_EGG, NAUTILUS_SPAWN_EGG, ItemSpawnEggNautilus.class, ItemSpawnEggNautilus::new, V1_21_130);
+        registerNewItem(ItemNames.ZOMBIE_NAUTILUS_SPAWN_EGG, ZOMBIE_NAUTILUS_SPAWN_EGG, ItemSpawnEggZombieNautilus.class, ItemSpawnEggZombieNautilus::new, V1_21_130);
+        registerNewItem(ItemNames.PARCHED_SPAWN_EGG, PARCHED_SPAWN_EGG, ItemSpawnEggParched.class, ItemSpawnEggParched::new, V1_21_130);
+        registerNewItem(ItemNames.CAMEL_HUSK_SPAWN_EGG, CAMEL_HUSK_SPAWN_EGG, ItemSpawnEggCamelHusk.class, ItemSpawnEggCamelHusk::new, V1_21_130);
+
         registerNewItem(ItemNames.COPPER_INGOT, COPPER_INGOT, ItemIngotCopper.class, ItemIngotCopper::new, V1_17_0);
         registerNewItem(ItemNames.GLOW_BERRIES, GLOW_BERRIES, ItemGlowBerries.class, ItemGlowBerries::new, V1_17_0);
 
-        registerNewItem(ItemNames.CHEST_BOAT, CHEST_BOAT, ItemBoatChest.class, ItemBoatChest::new, ItemBoatChest.UNDEFINED_BOAT - 1, V1_19_0);
-        registerNewItemAux(ItemNames.OAK_CHEST_BOAT, CHEST_BOAT, ItemBoatChest.OAK_BOAT, V1_19_0);
-        registerNewItemAux(ItemNames.SPRUCE_CHEST_BOAT, CHEST_BOAT, ItemBoatChest.SPRUCE_BOAT, V1_19_0);
-        registerNewItemAux(ItemNames.BIRCH_CHEST_BOAT, CHEST_BOAT, ItemBoatChest.BIRCH_BOAT, V1_19_0);
-        registerNewItemAux(ItemNames.JUNGLE_CHEST_BOAT, CHEST_BOAT, ItemBoatChest.JUNGLE_BOAT, V1_19_0);
-        registerNewItemAux(ItemNames.ACACIA_CHEST_BOAT, CHEST_BOAT, ItemBoatChest.ACACIA_BOAT, V1_19_0);
-        registerNewItemAux(ItemNames.DARK_OAK_CHEST_BOAT, CHEST_BOAT, ItemBoatChest.DARK_OAK_BOAT, V1_19_0);
-        registerNewItemAux(ItemNames.MANGROVE_CHEST_BOAT, CHEST_BOAT, ItemBoatChest.MANGROVE_BOAT, V1_19_0);
-        registerNewItemAux(ItemNames.BAMBOO_CHEST_RAFT, CHEST_BOAT, ItemBoatChest.BAMBOO_RAFT, V1_20_0);
-        registerNewItemAux(ItemNames.CHERRY_CHEST_BOAT, CHEST_BOAT, ItemBoatChest.CHERRY_BOAT, V1_20_0);
-        registerNewItemAux(ItemNames.PALE_OAK_CHEST_BOAT, CHEST_BOAT, ItemBoatChest.PALE_OAK_BOAT, V1_21_50);
+        registerNewItem(ItemNames.OAK_CHEST_BOAT, OAK_CHEST_BOAT, ItemBoatChestOak.class, ItemBoatChestOak::new, -(ItemBoatChest.CHEST_BOATS.length - 1), V1_19_0);
+        registerNewItem(ItemNames.SPRUCE_CHEST_BOAT, SPRUCE_CHEST_BOAT, ItemBoatChestSpruce.class, ItemBoatChestSpruce::new, V1_19_0);
+        registerNewItem(ItemNames.BIRCH_CHEST_BOAT, BIRCH_CHEST_BOAT, ItemBoatChestBirch.class, ItemBoatChestBirch::new, V1_19_0);
+        registerNewItem(ItemNames.JUNGLE_CHEST_BOAT, JUNGLE_CHEST_BOAT, ItemBoatChestJungle.class, ItemBoatChestJungle::new, V1_19_0);
+        registerNewItem(ItemNames.ACACIA_CHEST_BOAT, ACACIA_CHEST_BOAT, ItemBoatChestAcacia.class, ItemBoatChestAcacia::new, V1_19_0);
+        registerNewItem(ItemNames.DARK_OAK_CHEST_BOAT, DARK_OAK_CHEST_BOAT, ItemBoatChestDarkOak.class, ItemBoatChestDarkOak::new, V1_19_0);
+        registerNewItem(ItemNames.MANGROVE_CHEST_BOAT, MANGROVE_CHEST_BOAT, ItemBoatChestMangrove.class, ItemBoatChestMangrove::new, V1_19_0);
+        registerNewItem(ItemNames.BAMBOO_CHEST_RAFT, BAMBOO_CHEST_RAFT, ItemBoatChestBambooRaft.class, ItemBoatChestBambooRaft::new, V1_20_0);
+        registerNewItem(ItemNames.CHERRY_CHEST_BOAT, CHERRY_CHEST_BOAT, ItemBoatChestCherry.class, ItemBoatChestCherry::new, V1_20_0);
+        registerNewItem(ItemNames.PALE_OAK_CHEST_BOAT, PALE_OAK_CHEST_BOAT, ItemBoatChestPaleOak.class, ItemBoatChestPaleOak::new, V1_21_50);
 
         registerNewItem(ItemNames.BAMBOO_SIGN, BAMBOO_SIGN, ItemSignBamboo.class, ItemSignBamboo::new, V1_20_0);
         registerNewItem(ItemNames.CHERRY_SIGN, CHERRY_SIGN, ItemSignCherry.class, ItemSignCherry::new, V1_20_0);
@@ -447,6 +586,8 @@ public final class Items {
         registerNewItem(ItemNames.OMINOUS_TRIAL_KEY, OMINOUS_TRIAL_KEY, ItemTrialKeyOminous.class, ItemTrialKeyOminous::new, V1_21_0);
         registerNewItem(ItemNames.OMINOUS_BOTTLE, OMINOUS_BOTTLE, ItemOminousBottle.class, ItemOminousBottle::new, ItemOminousBottle.MAXIMUM_AMPLIFIER, V1_21_0);
         registerNewItem(ItemNames.WIND_CHARGE, WIND_CHARGE, ItemWindCharge.class, ItemWindCharge::new, V1_21_0);
+        registerNewItem(ItemNames.FLOW_BANNER_PATTERN, FLOW_BANNER_PATTERN, ItemBannerPatternFlow.class, ItemBannerPatternFlow::new, V1_21_0);
+        registerNewItem(ItemNames.GUSTER_BANNER_PATTERN, GUSTER_BANNER_PATTERN, ItemBannerPatternGuster.class, ItemBannerPatternGuster::new, V1_21_0);
         registerNewItem(ItemNames.FLOW_POTTERY_SHERD, FLOW_POTTERY_SHERD, ItemPotterySherdFlow.class, ItemPotterySherdFlow::new, V1_21_0);
         registerNewItem(ItemNames.GUSTER_POTTERY_SHERD, GUSTER_POTTERY_SHERD, ItemPotterySherdGuster.class, ItemPotterySherdGuster::new, V1_21_0);
         registerNewItem(ItemNames.SCRAPE_POTTERY_SHERD, SCRAPE_POTTERY_SHERD, ItemPotterySherdScrape.class, ItemPotterySherdScrape::new, V1_21_0);
@@ -520,6 +661,8 @@ public final class Items {
         registerNewItem(ItemNames.NETHERITE_NAUTILUS_ARMOR, NETHERITE_NAUTILUS_ARMOR, ItemNautilusArmorNetherite.class, ItemNautilusArmorNetherite::new, V1_21_130);
         registerNewItem(ItemNames.NETHERITE_HORSE_ARMOR, NETHERITE_HORSE_ARMOR, ItemHorseArmorNetherite.class, ItemHorseArmorNetherite::new, V1_21_130);
 
+        registerComplexAliases();
+
         LootTables.registerVanillaLootTables();
     }
 
@@ -588,152 +731,164 @@ public final class Items {
 
     }
 
+    @SuppressWarnings("deprecation")
     private static void registerComplexAliases() {
-        registerComplexAlias(ItemNames.CREEPER_BANNER_PATTERN, BANNER_PATTERN, ItemBannerPattern.CREEPER_BANNER_PATTERN, V1_16_100);
-        registerComplexAlias(ItemNames.SKULL_BANNER_PATTERN, BANNER_PATTERN, ItemBannerPattern.SKULL_BANNER_PATTERN, V1_16_100);
-        registerComplexAlias(ItemNames.FLOWER_BANNER_PATTERN, BANNER_PATTERN, ItemBannerPattern.FLOWER_BANNER_PATTERN, V1_16_100);
-        registerComplexAlias(ItemNames.MOJANG_BANNER_PATTERN, BANNER_PATTERN, ItemBannerPattern.MOJANG_BANNER_PATTERN, V1_16_100);
-        registerComplexAlias(ItemNames.FIELD_MASONED_BANNER_PATTERN, BANNER_PATTERN, ItemBannerPattern.FIELD_MASONED_BANNER_PATTERN, V1_16_100);
-        registerComplexAlias(ItemNames.BORDURE_INDENTED_BANNER_PATTERN, BANNER_PATTERN, ItemBannerPattern.BORDURE_INDENTED_BANNER_PATTERN, V1_16_100);
-        registerComplexAlias(ItemNames.PIGLIN_BANNER_PATTERN, BANNER_PATTERN, ItemBannerPattern.PIGLIN_BANNER_PATTERN, V1_16_100);
-        registerComplexAlias(ItemNames.GLOBE_BANNER_PATTERN, BANNER_PATTERN, ItemBannerPattern.GLOBE_BANNER_PATTERN, V1_18_10);
-        registerComplexAlias(ItemNames.FLOW_BANNER_PATTERN, BANNER_PATTERN, ItemBannerPattern.FLOW_BANNER_PATTERN, V1_21_0);
-        registerComplexAlias(ItemNames.GUSTER_BANNER_PATTERN, BANNER_PATTERN, ItemBannerPattern.GUSTER_BANNER_PATTERN, V1_21_0);
+        registerComplexAlias(CREEPER_BANNER_PATTERN, ItemNames.BANNER_PATTERN, BANNER_PATTERN, ItemBannerPattern.CREEPER_CHARGE, V1_16_100);
+        registerComplexAlias(SKULL_BANNER_PATTERN, ItemNames.BANNER_PATTERN, BANNER_PATTERN, ItemBannerPattern.SKULL_CHARGE, V1_16_100);
+        registerComplexAlias(FLOWER_BANNER_PATTERN, ItemNames.BANNER_PATTERN, BANNER_PATTERN, ItemBannerPattern.FLOWER_CHARGE, V1_16_100);
+        registerComplexAlias(MOJANG_BANNER_PATTERN, ItemNames.BANNER_PATTERN, BANNER_PATTERN, ItemBannerPattern.MOJANG, V1_16_100);
+        registerComplexAlias(FIELD_MASONED_BANNER_PATTERN, ItemNames.BANNER_PATTERN, BANNER_PATTERN, ItemBannerPattern.FIELD_MASONED, V1_16_100);
+        registerComplexAlias(BORDURE_INDENTED_BANNER_PATTERN, ItemNames.BANNER_PATTERN, BANNER_PATTERN, ItemBannerPattern.BORDURE_INDENTED, V1_16_100);
+        registerComplexAlias(PIGLIN_BANNER_PATTERN, ItemNames.BANNER_PATTERN, BANNER_PATTERN, ItemBannerPattern.PIGLIN, V1_16_100);
+        registerComplexAlias(GLOBE_BANNER_PATTERN, ItemNames.BANNER_PATTERN, BANNER_PATTERN, ItemBannerPattern.GLOBE, V1_18_10);
 
-        registerComplexAlias(ItemNames.OAK_BOAT, BOAT, ItemBoat.OAK_BOAT, V1_16_100);
-        registerComplexAlias(ItemNames.SPRUCE_BOAT, BOAT, ItemBoat.SPRUCE_BOAT, V1_16_100);
-        registerComplexAlias(ItemNames.BIRCH_BOAT, BOAT, ItemBoat.BIRCH_BOAT, V1_16_100);
-        registerComplexAlias(ItemNames.JUNGLE_BOAT, BOAT, ItemBoat.JUNGLE_BOAT, V1_16_100);
-        registerComplexAlias(ItemNames.ACACIA_BOAT, BOAT, ItemBoat.ACACIA_BOAT, V1_16_100);
-        registerComplexAlias(ItemNames.DARK_OAK_BOAT, BOAT, ItemBoat.DARK_OAK_BOAT, V1_16_100);
-        registerComplexAlias(ItemNames.MANGROVE_BOAT, BOAT, ItemBoat.MANGROVE_BOAT, V1_19_0);
-        registerComplexAlias(ItemNames.BAMBOO_RAFT, BOAT, ItemBoat.BAMBOO_RAFT, V1_20_0);
-        registerComplexAlias(ItemNames.CHERRY_BOAT, BOAT, ItemBoat.CHERRY_BOAT, V1_20_0);
-        registerComplexAlias(ItemNames.PALE_OAK_BOAT, BOAT, ItemBoat.PALE_OAK_BOAT, V1_21_50);
+        registerComplexAlias(OAK_BOAT, ItemNames.BOAT, BOAT, ItemBoat.OAK, V1_16_100);
+        registerComplexAlias(SPRUCE_BOAT, ItemNames.BOAT, BOAT, ItemBoat.SPRUCE, V1_16_100);
+        registerComplexAlias(BIRCH_BOAT, ItemNames.BOAT, BOAT, ItemBoat.BIRCH, V1_16_100);
+        registerComplexAlias(JUNGLE_BOAT, ItemNames.BOAT, BOAT, ItemBoat.JUNGLE, V1_16_100);
+        registerComplexAlias(ACACIA_BOAT, ItemNames.BOAT, BOAT, ItemBoat.ACACIA, V1_16_100);
+        registerComplexAlias(DARK_OAK_BOAT, ItemNames.BOAT, BOAT, ItemBoat.DARK_OAK, V1_16_100);
+        registerComplexAlias(MANGROVE_BOAT, ItemNames.BOAT, BOAT, ItemBoat.MANGROVE, V1_19_0);
+        registerComplexAlias(BAMBOO_RAFT, ItemNames.BOAT, BOAT, ItemBoat.RAFT, V1_20_0);
+        registerComplexAlias(CHERRY_BOAT, ItemNames.BOAT, BOAT, ItemBoat.CHERRY, V1_20_0);
+        registerComplexAlias(PALE_OAK_BOAT, ItemNames.BOAT, BOAT, ItemBoat.PALE_OAK, V1_21_50);
 
-        registerComplexAlias(ItemNames.MILK_BUCKET, BUCKET, ItemBucket.MILK_BUCKET, V1_16_100);
-        registerComplexAlias(ItemNames.COD_BUCKET, BUCKET, ItemBucket.COD_BUCKET, V1_16_100);
-        registerComplexAlias(ItemNames.SALMON_BUCKET, BUCKET, ItemBucket.SALMON_BUCKET, V1_16_100);
-        registerComplexAlias(ItemNames.TROPICAL_FISH_BUCKET, BUCKET, ItemBucket.TROPICAL_FISH_BUCKET, V1_16_100);
-        registerComplexAlias(ItemNames.PUFFERFISH_BUCKET, BUCKET, ItemBucket.PUFFERFISH_BUCKET, V1_16_100);
-        registerComplexAlias(ItemNames.WATER_BUCKET, BUCKET, ItemBucket.WATER_BUCKET, V1_16_100);
-        registerComplexAlias(ItemNames.LAVA_BUCKET, BUCKET, ItemBucket.LAVA_BUCKET, V1_16_100);
-        registerComplexAlias(ItemNames.POWDER_SNOW_BUCKET, BUCKET, ItemBucket.POWDER_SNOW_BUCKET, V1_17_0);
-        registerComplexAlias(ItemNames.AXOLOTL_BUCKET, BUCKET, ItemBucket.AXOLOTL_BUCKET, V1_17_0);
-        registerComplexAlias(ItemNames.TADPOLE_BUCKET, BUCKET, ItemBucket.TADPOLE_BUCKET, V1_19_0);
+        registerComplexAlias(MILK_BUCKET, ItemNames.BUCKET, BUCKET, ItemBucket.TYPE_MILK_BUCKET, V1_16_100);
+        registerComplexAlias(COD_BUCKET, ItemNames.BUCKET, BUCKET, ItemBucket.TYPE_COD_BUCKET, V1_16_100);
+        registerComplexAlias(SALMON_BUCKET, ItemNames.BUCKET, BUCKET, ItemBucket.TYPE_SALMON_BUCKET, V1_16_100);
+        registerComplexAlias(TROPICAL_FISH_BUCKET, ItemNames.BUCKET, BUCKET, ItemBucket.TYPE_TROPICAL_FISH_BUCKET, V1_16_100);
+        registerComplexAlias(PUFFERFISH_BUCKET, ItemNames.BUCKET, BUCKET, ItemBucket.TYPE_PUFFERFISH_BUCKET, V1_16_100);
+        registerComplexAlias(WATER_BUCKET, ItemNames.BUCKET, BUCKET, ItemBucket.TYPE_WATER_BUCKET, V1_16_100);
+        registerComplexAlias(LAVA_BUCKET, ItemNames.BUCKET, BUCKET, ItemBucket.TYPE_LAVA_BUCKET, V1_16_100);
+        registerComplexAlias(POWDER_SNOW_BUCKET, ItemNames.BUCKET, BUCKET, ItemBucket.TYPE_POWDER_SNOW_BUCKET, V1_17_0);
+        registerComplexAlias(AXOLOTL_BUCKET, ItemNames.BUCKET, BUCKET, ItemBucket.TYPE_AXOLOTL_BUCKET, V1_17_0);
+        registerComplexAlias(TADPOLE_BUCKET, ItemNames.BUCKET, BUCKET, ItemBucket.TYPE_TADPOLE_BUCKET, V1_19_0);
 
-        registerComplexAlias(ItemNames.CHARCOAL, COAL, ItemCoal.TYPE_CHARCOAL, V1_16_100);
+        registerComplexAlias(CHARCOAL, ItemNames.COAL, COAL, ItemCoal.TYPE_CHARCOAL, V1_16_100);
 
-        registerComplexAlias(ItemNames.INK_SAC, DYE, ItemDye.INK_SAC, V1_16_100);
-        registerComplexAlias(ItemNames.RED_DYE, DYE, DyeColor.RED.getDyeData(), V1_16_100);
-        registerComplexAlias(ItemNames.GREEN_DYE, DYE, DyeColor.GREEN.getDyeData(), V1_16_100);
-        registerComplexAlias(ItemNames.COCOA_BEANS, DYE, ItemDye.COCOA_BEANS, V1_16_100);
-        registerComplexAlias(ItemNames.LAPIS_LAZULI, DYE, ItemDye.LAPIS_LAZULI, V1_16_100);
-        registerComplexAlias(ItemNames.PURPLE_DYE, DYE, DyeColor.PURPLE.getDyeData(), V1_16_100);
-        registerComplexAlias(ItemNames.CYAN_DYE, DYE, DyeColor.CYAN.getDyeData(), V1_16_100);
-        registerComplexAlias(ItemNames.LIGHT_GRAY_DYE, DYE, DyeColor.LIGHT_GRAY.getDyeData(), V1_16_100);
-        registerComplexAlias(ItemNames.GRAY_DYE, DYE, DyeColor.GRAY.getDyeData(), V1_16_100);
-        registerComplexAlias(ItemNames.PINK_DYE, DYE, DyeColor.PINK.getDyeData(), V1_16_100);
-        registerComplexAlias(ItemNames.LIME_DYE, DYE, DyeColor.LIME.getDyeData(), V1_16_100);
-        registerComplexAlias(ItemNames.YELLOW_DYE, DYE, DyeColor.YELLOW.getDyeData(), V1_16_100);
-        registerComplexAlias(ItemNames.LIGHT_BLUE_DYE, DYE, DyeColor.LIGHT_BLUE.getDyeData(), V1_16_100);
-        registerComplexAlias(ItemNames.MAGENTA_DYE, DYE, DyeColor.MAGENTA.getDyeData(), V1_16_100);
-        registerComplexAlias(ItemNames.ORANGE_DYE, DYE, DyeColor.ORANGE.getDyeData(), V1_16_100);
-        registerComplexAlias(ItemNames.BONE_MEAL, DYE, ItemDye.BONE_MEAL, V1_16_100);
-        registerComplexAlias(ItemNames.BLACK_DYE, DYE, ItemDye.BLACK_NEW, V1_16_100);
-        registerComplexAlias(ItemNames.BROWN_DYE, DYE, ItemDye.BROWN_NEW, V1_16_100);
-        registerComplexAlias(ItemNames.BLUE_DYE, DYE, ItemDye.BLUE_NEW, V1_16_100);
-        registerComplexAlias(ItemNames.WHITE_DYE, DYE, ItemDye.WHITE_NEW, V1_16_100);
+        registerComplexAlias(INK_SAC, ItemNames.DYE, DYE, ItemDye.BLACK, V1_16_100);
+        registerComplexAlias(RED_DYE, ItemNames.DYE, DYE, ItemDye.RED, V1_16_100);
+        registerComplexAlias(GREEN_DYE, ItemNames.DYE, DYE, ItemDye.GREEN, V1_16_100);
+        registerComplexAlias(COCOA_BEANS, ItemNames.DYE, DYE, ItemDye.BROWN, V1_16_100);
+        registerComplexAlias(LAPIS_LAZULI, ItemNames.DYE, DYE, ItemDye.BLUE, V1_16_100);
+        registerComplexAlias(PURPLE_DYE, ItemNames.DYE, DYE, ItemDye.PURPLE, V1_16_100);
+        registerComplexAlias(CYAN_DYE, ItemNames.DYE, DYE, ItemDye.CYAN, V1_16_100);
+        registerComplexAlias(LIGHT_GRAY_DYE, ItemNames.DYE, DYE, ItemDye.LIGHT_GRAY, V1_16_100);
+        registerComplexAlias(GRAY_DYE, ItemNames.DYE, DYE, ItemDye.GRAY, V1_16_100);
+        registerComplexAlias(PINK_DYE, ItemNames.DYE, DYE, ItemDye.PINK, V1_16_100);
+        registerComplexAlias(LIME_DYE, ItemNames.DYE, DYE, ItemDye.LIME, V1_16_100);
+        registerComplexAlias(YELLOW_DYE, ItemNames.DYE, DYE, ItemDye.YELLOW, V1_16_100);
+        registerComplexAlias(LIGHT_BLUE_DYE, ItemNames.DYE, DYE, ItemDye.LIGHT_BLUE, V1_16_100);
+        registerComplexAlias(MAGENTA_DYE, ItemNames.DYE, DYE, ItemDye.MAGENTA, V1_16_100);
+        registerComplexAlias(ORANGE_DYE, ItemNames.DYE, DYE, ItemDye.ORANGE, V1_16_100);
+        registerComplexAlias(BONE_MEAL, ItemNames.DYE, DYE, ItemDye.WHITE, V1_16_100);
+        registerComplexAlias(BLACK_DYE, ItemNames.DYE, DYE, ItemDye.BLACK_NEW, V1_16_100);
+        registerComplexAlias(BROWN_DYE, ItemNames.DYE, DYE, ItemDye.BROWN_NEW, V1_16_100);
+        registerComplexAlias(BLUE_DYE, ItemNames.DYE, DYE, ItemDye.BLUE_NEW, V1_16_100);
+        registerComplexAlias(WHITE_DYE, ItemNames.DYE, DYE, ItemDye.WHITE_NEW, V1_16_100);
 
-        registerComplexAlias(ItemNames.CHICKEN_SPAWN_EGG, SPAWN_EGG, EntityID.CHICKEN, V1_16_100);
-        registerComplexAlias(ItemNames.COW_SPAWN_EGG, SPAWN_EGG, EntityID.COW, V1_16_100);
-        registerComplexAlias(ItemNames.PIG_SPAWN_EGG, SPAWN_EGG, EntityID.PIG, V1_16_100);
-        registerComplexAlias(ItemNames.SHEEP_SPAWN_EGG, SPAWN_EGG, EntityID.SHEEP, V1_16_100);
-        registerComplexAlias(ItemNames.WOLF_SPAWN_EGG, SPAWN_EGG, EntityID.WOLF, V1_16_100);
-        registerComplexAlias(ItemNames.VILLAGER_SPAWN_EGG, SPAWN_EGG, EntityID.VILLAGER_V2, V1_16_100);
-        registerComplexAlias(ItemNames.MOOSHROOM_SPAWN_EGG, SPAWN_EGG, EntityID.MOOSHROOM, V1_16_100);
-        registerComplexAlias(ItemNames.SQUID_SPAWN_EGG, SPAWN_EGG, EntityID.SQUID, V1_16_100);
-        registerComplexAlias(ItemNames.RABBIT_SPAWN_EGG, SPAWN_EGG, EntityID.RABBIT, V1_16_100);
-        registerComplexAlias(ItemNames.BAT_SPAWN_EGG, SPAWN_EGG, EntityID.BAT, V1_16_100);
-        registerComplexAlias(ItemNames.OCELOT_SPAWN_EGG, SPAWN_EGG, EntityID.OCELOT, V1_16_100);
-        registerComplexAlias(ItemNames.HORSE_SPAWN_EGG, SPAWN_EGG, EntityID.HORSE, V1_16_100);
-        registerComplexAlias(ItemNames.DONKEY_SPAWN_EGG, SPAWN_EGG, EntityID.DONKEY, V1_16_100);
-        registerComplexAlias(ItemNames.MULE_SPAWN_EGG, SPAWN_EGG, EntityID.MULE, V1_16_100);
-        registerComplexAlias(ItemNames.SKELETON_HORSE_SPAWN_EGG, SPAWN_EGG, EntityID.SKELETON_HORSE, V1_16_100);
-        registerComplexAlias(ItemNames.ZOMBIE_HORSE_SPAWN_EGG, SPAWN_EGG, EntityID.ZOMBIE_HORSE, V1_16_100);
-        registerComplexAlias(ItemNames.POLAR_BEAR_SPAWN_EGG, SPAWN_EGG, EntityID.POLAR_BEAR, V1_16_100);
-        registerComplexAlias(ItemNames.LLAMA_SPAWN_EGG, SPAWN_EGG, EntityID.LLAMA, V1_16_100);
-        registerComplexAlias(ItemNames.PARROT_SPAWN_EGG, SPAWN_EGG, EntityID.PARROT, V1_16_100);
-        registerComplexAlias(ItemNames.DOLPHIN_SPAWN_EGG, SPAWN_EGG, EntityID.DOLPHIN, V1_16_100);
-        registerComplexAlias(ItemNames.ZOMBIE_SPAWN_EGG, SPAWN_EGG, EntityID.ZOMBIE, V1_16_100);
-        registerComplexAlias(ItemNames.CREEPER_SPAWN_EGG, SPAWN_EGG, EntityID.CREEPER, V1_16_100);
-        registerComplexAlias(ItemNames.SKELETON_SPAWN_EGG, SPAWN_EGG, EntityID.SKELETON, V1_16_100);
-        registerComplexAlias(ItemNames.SPIDER_SPAWN_EGG, SPAWN_EGG, EntityID.SPIDER, V1_16_100);
-        registerComplexAlias(ItemNames.ZOMBIE_PIGMAN_SPAWN_EGG, SPAWN_EGG, EntityID.ZOMBIE_PIGMAN, V1_16_100);
-        registerComplexAlias(ItemNames.SLIME_SPAWN_EGG, SPAWN_EGG, EntityID.SLIME, V1_16_100);
-        registerComplexAlias(ItemNames.ENDERMAN_SPAWN_EGG, SPAWN_EGG, EntityID.ENDERMAN, V1_16_100);
-        registerComplexAlias(ItemNames.SILVERFISH_SPAWN_EGG, SPAWN_EGG, EntityID.SILVERFISH, V1_16_100);
-        registerComplexAlias(ItemNames.CAVE_SPIDER_SPAWN_EGG, SPAWN_EGG, EntityID.CAVE_SPIDER, V1_16_100);
-        registerComplexAlias(ItemNames.GHAST_SPAWN_EGG, SPAWN_EGG, EntityID.GHAST, V1_16_100);
-        registerComplexAlias(ItemNames.MAGMA_CUBE_SPAWN_EGG, SPAWN_EGG, EntityID.MAGMA_CUBE, V1_16_100);
-        registerComplexAlias(ItemNames.BLAZE_SPAWN_EGG, SPAWN_EGG, EntityID.BLAZE, V1_16_100);
-        registerComplexAlias(ItemNames.ZOMBIE_VILLAGER_SPAWN_EGG, SPAWN_EGG, EntityID.ZOMBIE_VILLAGER_V2, V1_16_100);
-        registerComplexAlias(ItemNames.WITCH_SPAWN_EGG, SPAWN_EGG, EntityID.WITCH, V1_16_100);
-        registerComplexAlias(ItemNames.STRAY_SPAWN_EGG, SPAWN_EGG, EntityID.STRAY, V1_16_100);
-        registerComplexAlias(ItemNames.HUSK_SPAWN_EGG, SPAWN_EGG, EntityID.HUSK, V1_16_100);
-        registerComplexAlias(ItemNames.WITHER_SKELETON_SPAWN_EGG, SPAWN_EGG, EntityID.WITHER_SKELETON, V1_16_100);
-        registerComplexAlias(ItemNames.GUARDIAN_SPAWN_EGG, SPAWN_EGG, EntityID.GUARDIAN, V1_16_100);
-        registerComplexAlias(ItemNames.ELDER_GUARDIAN_SPAWN_EGG, SPAWN_EGG, EntityID.ELDER_GUARDIAN, V1_16_100);
-        registerComplexAlias(ItemNames.NPC_SPAWN_EGG, SPAWN_EGG, EntityID.NPC, V1_16_100);
-        registerComplexAlias(ItemNames.SHULKER_SPAWN_EGG, SPAWN_EGG, EntityID.SHULKER, V1_16_100);
-        registerComplexAlias(ItemNames.ENDERMITE_SPAWN_EGG, SPAWN_EGG, EntityID.ENDERMITE, V1_16_100);
-        registerComplexAlias(ItemNames.AGENT_SPAWN_EGG, SPAWN_EGG, EntityID.AGENT, V1_16_100);
-        registerComplexAlias(ItemNames.VINDICATOR_SPAWN_EGG, SPAWN_EGG, EntityID.VINDICATOR, V1_16_100);
-        registerComplexAlias(ItemNames.PHANTOM_SPAWN_EGG, SPAWN_EGG, EntityID.PHANTOM, V1_16_100);
-        registerComplexAlias(ItemNames.RAVAGER_SPAWN_EGG, SPAWN_EGG, EntityID.RAVAGER, V1_16_100);
-        registerComplexAlias(ItemNames.TURTLE_SPAWN_EGG, SPAWN_EGG, EntityID.TURTLE, V1_16_100);
-        registerComplexAlias(ItemNames.CAT_SPAWN_EGG, SPAWN_EGG, EntityID.CAT, V1_16_100);
-        registerComplexAlias(ItemNames.EVOKER_SPAWN_EGG, SPAWN_EGG, EntityID.EVOCATION_ILLAGER, V1_16_100);
-        registerComplexAlias(ItemNames.VEX_SPAWN_EGG, SPAWN_EGG, EntityID.VEX, V1_16_100);
-        registerComplexAlias(ItemNames.PUFFERFISH_SPAWN_EGG, SPAWN_EGG, EntityID.PUFFERFISH, V1_16_100);
-        registerComplexAlias(ItemNames.SALMON_SPAWN_EGG, SPAWN_EGG, EntityID.SALMON, V1_16_100);
-        registerComplexAlias(ItemNames.DROWNED_SPAWN_EGG, SPAWN_EGG, EntityID.DROWNED, V1_16_100);
-        registerComplexAlias(ItemNames.TROPICAL_FISH_SPAWN_EGG, SPAWN_EGG, EntityID.TROPICALFISH, V1_16_100);
-        registerComplexAlias(ItemNames.COD_SPAWN_EGG, SPAWN_EGG, EntityID.COD, V1_16_100);
-        registerComplexAlias(ItemNames.PANDA_SPAWN_EGG, SPAWN_EGG, EntityID.PANDA, V1_16_100);
-        registerComplexAlias(ItemNames.PILLAGER_SPAWN_EGG, SPAWN_EGG, EntityID.PILLAGER, V1_16_100);
-        registerComplexAlias(ItemNames.WANDERING_TRADER_SPAWN_EGG, SPAWN_EGG, EntityID.WANDERING_TRADER, V1_16_100);
-        registerComplexAlias(ItemNames.FOX_SPAWN_EGG, SPAWN_EGG, EntityID.FOX, V1_16_100);
-        registerComplexAlias(ItemNames.BEE_SPAWN_EGG, SPAWN_EGG, EntityID.BEE, V1_16_100);
-        registerComplexAlias(ItemNames.PIGLIN_SPAWN_EGG, SPAWN_EGG, EntityID.PIGLIN, V1_16_100);
-        registerComplexAlias(ItemNames.HOGLIN_SPAWN_EGG, SPAWN_EGG, EntityID.HOGLIN, V1_16_100);
-        registerComplexAlias(ItemNames.STRIDER_SPAWN_EGG, SPAWN_EGG, EntityID.STRIDER, V1_16_100);
-        registerComplexAlias(ItemNames.ZOGLIN_SPAWN_EGG, SPAWN_EGG, EntityID.ZOGLIN, V1_16_100);
-        registerComplexAlias(ItemNames.PIGLIN_BRUTE_SPAWN_EGG, SPAWN_EGG, EntityID.PIGLIN_BRUTE, V1_16_100);
-        registerComplexAlias(ItemNames.GOAT_SPAWN_EGG, SPAWN_EGG, EntityID.GOAT, V1_17_0);
-        registerComplexAlias(ItemNames.GLOW_SQUID_SPAWN_EGG, SPAWN_EGG, EntityID.GLOW_SQUID, V1_17_0);
-        registerComplexAlias(ItemNames.AXOLOTL_SPAWN_EGG, SPAWN_EGG, EntityID.AXOLOTL, V1_17_0);
-        registerComplexAlias(ItemNames.WARDEN_SPAWN_EGG, SPAWN_EGG, EntityID.WARDEN, V1_19_0);
-        registerComplexAlias(ItemNames.FROG_SPAWN_EGG, SPAWN_EGG, EntityID.FROG, V1_19_0);
-        registerComplexAlias(ItemNames.TADPOLE_SPAWN_EGG, SPAWN_EGG, EntityID.TADPOLE, V1_19_0);
-        registerComplexAlias(ItemNames.ALLAY_SPAWN_EGG, SPAWN_EGG, EntityID.ALLAY, V1_19_0);
-        registerComplexAlias(ItemNames.TRADER_LLAMA_SPAWN_EGG, SPAWN_EGG, EntityID.TRADER_LLAMA, V1_19_10);
-        registerComplexAlias(ItemNames.IRON_GOLEM_SPAWN_EGG, SPAWN_EGG, EntityID.IRON_GOLEM, V1_19_60);
-        registerComplexAlias(ItemNames.SNOW_GOLEM_SPAWN_EGG, SPAWN_EGG, EntityID.SNOW_GOLEM, V1_19_60);
-        registerComplexAlias(ItemNames.WITHER_SPAWN_EGG, SPAWN_EGG, EntityID.WITHER, V1_19_60);
-        registerComplexAlias(ItemNames.ENDER_DRAGON_SPAWN_EGG, SPAWN_EGG, EntityID.ENDER_DRAGON, V1_19_60);
-        registerComplexAlias(ItemNames.CAMEL_SPAWN_EGG, SPAWN_EGG, EntityID.CAMEL, V1_20_0);
-        registerComplexAlias(ItemNames.SNIFFER_SPAWN_EGG, SPAWN_EGG, EntityID.SNIFFER, V1_20_0);
-        registerComplexAlias(ItemNames.ARMADILLO_SPAWN_EGG, SPAWN_EGG, EntityID.ARMADILLO, V1_20_80);
-        registerComplexAlias(ItemNames.BREEZE_SPAWN_EGG, SPAWN_EGG, EntityID.BREEZE, V1_21_0);
-        registerComplexAlias(ItemNames.BOGGED_SPAWN_EGG, SPAWN_EGG, EntityID.BOGGED, V1_21_0);
-        registerComplexAlias(ItemNames.CREAKING_SPAWN_EGG, SPAWN_EGG, EntityID.CREAKING, V1_21_50);
-        registerComplexAlias(ItemNames.HAPPY_GHAST_SPAWN_EGG, SPAWN_EGG, EntityID.HAPPY_GHAST, V1_21_90);
-        registerComplexAlias(ItemNames.COPPER_GOLEM_SPAWN_EGG, SPAWN_EGG, EntityID.COPPER_GOLEM, V1_21_111);
-        registerComplexAlias(ItemNames.NAUTILUS_SPAWN_EGG, SPAWN_EGG, EntityID.NAUTILUS, V1_21_130);
-        registerComplexAlias(ItemNames.ZOMBIE_NAUTILUS_SPAWN_EGG, SPAWN_EGG, EntityID.ZOMBIE_NAUTILUS, V1_21_130);
-        registerComplexAlias(ItemNames.PARCHED_SPAWN_EGG, SPAWN_EGG, EntityID.PARCHED, V1_21_130);
-        registerComplexAlias(ItemNames.CAMEL_HUSK_SPAWN_EGG, SPAWN_EGG, EntityID.CAMEL_HUSK, V1_21_130);
+        registerComplexAlias(CHICKEN_SPAWN_EGG, ItemNames.SPAWN_EGG, SPAWN_EGG, EntityID.CHICKEN, V1_16_100);
+        registerComplexAlias(COW_SPAWN_EGG, ItemNames.SPAWN_EGG, SPAWN_EGG, EntityID.COW, V1_16_100);
+        registerComplexAlias(PIG_SPAWN_EGG, ItemNames.SPAWN_EGG, SPAWN_EGG, EntityID.PIG, V1_16_100);
+        registerComplexAlias(SHEEP_SPAWN_EGG, ItemNames.SPAWN_EGG, SPAWN_EGG, EntityID.SHEEP, V1_16_100);
+        registerComplexAlias(WOLF_SPAWN_EGG, ItemNames.SPAWN_EGG, SPAWN_EGG, EntityID.WOLF, V1_16_100);
+        registerComplexAlias(VILLAGER_SPAWN_EGG, ItemNames.SPAWN_EGG, SPAWN_EGG, EntityID.VILLAGER, V1_16_100);
+        registerComplexAlias(MOOSHROOM_SPAWN_EGG, ItemNames.SPAWN_EGG, SPAWN_EGG, EntityID.MOOSHROOM, V1_16_100);
+        registerComplexAlias(SQUID_SPAWN_EGG, ItemNames.SPAWN_EGG, SPAWN_EGG, EntityID.SQUID, V1_16_100);
+        registerComplexAlias(RABBIT_SPAWN_EGG, ItemNames.SPAWN_EGG, SPAWN_EGG, EntityID.RABBIT, V1_16_100);
+        registerComplexAlias(BAT_SPAWN_EGG, ItemNames.SPAWN_EGG, SPAWN_EGG, EntityID.BAT, V1_16_100);
+        registerComplexAlias(OCELOT_SPAWN_EGG, ItemNames.SPAWN_EGG, SPAWN_EGG, EntityID.OCELOT, V1_16_100);
+        registerComplexAlias(HORSE_SPAWN_EGG, ItemNames.SPAWN_EGG, SPAWN_EGG, EntityID.HORSE, V1_16_100);
+        registerComplexAlias(DONKEY_SPAWN_EGG, ItemNames.SPAWN_EGG, SPAWN_EGG, EntityID.DONKEY, V1_16_100);
+        registerComplexAlias(MULE_SPAWN_EGG, ItemNames.SPAWN_EGG, SPAWN_EGG, EntityID.MULE, V1_16_100);
+        registerComplexAlias(SKELETON_HORSE_SPAWN_EGG, ItemNames.SPAWN_EGG, SPAWN_EGG, EntityID.SKELETON_HORSE, V1_16_100);
+        registerComplexAlias(ZOMBIE_HORSE_SPAWN_EGG, ItemNames.SPAWN_EGG, SPAWN_EGG, EntityID.ZOMBIE_HORSE, V1_16_100);
+        registerComplexAlias(POLAR_BEAR_SPAWN_EGG, ItemNames.SPAWN_EGG, SPAWN_EGG, EntityID.POLAR_BEAR, V1_16_100);
+        registerComplexAlias(LLAMA_SPAWN_EGG, ItemNames.SPAWN_EGG, SPAWN_EGG, EntityID.LLAMA, V1_16_100);
+        registerComplexAlias(PARROT_SPAWN_EGG, ItemNames.SPAWN_EGG, SPAWN_EGG, EntityID.PARROT, V1_16_100);
+        registerComplexAlias(DOLPHIN_SPAWN_EGG, ItemNames.SPAWN_EGG, SPAWN_EGG, EntityID.DOLPHIN, V1_16_100);
+        registerComplexAlias(ZOMBIE_SPAWN_EGG, ItemNames.SPAWN_EGG, SPAWN_EGG, EntityID.ZOMBIE, V1_16_100);
+        registerComplexAlias(CREEPER_SPAWN_EGG, ItemNames.SPAWN_EGG, SPAWN_EGG, EntityID.CREEPER, V1_16_100);
+        registerComplexAlias(SKELETON_SPAWN_EGG, ItemNames.SPAWN_EGG, SPAWN_EGG, EntityID.SKELETON, V1_16_100);
+        registerComplexAlias(SPIDER_SPAWN_EGG, ItemNames.SPAWN_EGG, SPAWN_EGG, EntityID.SPIDER, V1_16_100);
+        registerComplexAlias(ZOMBIE_PIGMAN_SPAWN_EGG, ItemNames.SPAWN_EGG, SPAWN_EGG, EntityID.ZOMBIE_PIGMAN, V1_16_100);
+        registerComplexAlias(SLIME_SPAWN_EGG, ItemNames.SPAWN_EGG, SPAWN_EGG, EntityID.SLIME, V1_16_100);
+        registerComplexAlias(ENDERMAN_SPAWN_EGG, ItemNames.SPAWN_EGG, SPAWN_EGG, EntityID.ENDERMAN, V1_16_100);
+        registerComplexAlias(SILVERFISH_SPAWN_EGG, ItemNames.SPAWN_EGG, SPAWN_EGG, EntityID.SILVERFISH, V1_16_100);
+        registerComplexAlias(CAVE_SPIDER_SPAWN_EGG, ItemNames.SPAWN_EGG, SPAWN_EGG, EntityID.CAVE_SPIDER, V1_16_100);
+        registerComplexAlias(GHAST_SPAWN_EGG, ItemNames.SPAWN_EGG, SPAWN_EGG, EntityID.GHAST, V1_16_100);
+        registerComplexAlias(MAGMA_CUBE_SPAWN_EGG, ItemNames.SPAWN_EGG, SPAWN_EGG, EntityID.MAGMA_CUBE, V1_16_100);
+        registerComplexAlias(BLAZE_SPAWN_EGG, ItemNames.SPAWN_EGG, SPAWN_EGG, EntityID.BLAZE, V1_16_100);
+        registerComplexAlias(ZOMBIE_VILLAGER_SPAWN_EGG, ItemNames.SPAWN_EGG, SPAWN_EGG, EntityID.ZOMBIE_VILLAGER, V1_16_100);
+        registerComplexAlias(WITCH_SPAWN_EGG, ItemNames.SPAWN_EGG, SPAWN_EGG, EntityID.WITCH, V1_16_100);
+        registerComplexAlias(STRAY_SPAWN_EGG, ItemNames.SPAWN_EGG, SPAWN_EGG, EntityID.STRAY, V1_16_100);
+        registerComplexAlias(HUSK_SPAWN_EGG, ItemNames.SPAWN_EGG, SPAWN_EGG, EntityID.HUSK, V1_16_100);
+        registerComplexAlias(WITHER_SKELETON_SPAWN_EGG, ItemNames.SPAWN_EGG, SPAWN_EGG, EntityID.WITHER_SKELETON, V1_16_100);
+        registerComplexAlias(GUARDIAN_SPAWN_EGG, ItemNames.SPAWN_EGG, SPAWN_EGG, EntityID.GUARDIAN, V1_16_100);
+        registerComplexAlias(ELDER_GUARDIAN_SPAWN_EGG, ItemNames.SPAWN_EGG, SPAWN_EGG, EntityID.ELDER_GUARDIAN, V1_16_100);
+        registerComplexAlias(NPC_SPAWN_EGG, ItemNames.SPAWN_EGG, SPAWN_EGG, EntityID.NPC, V1_16_100);
+        registerComplexAlias(SHULKER_SPAWN_EGG, ItemNames.SPAWN_EGG, SPAWN_EGG, EntityID.SHULKER, V1_16_100);
+        registerComplexAlias(ENDERMITE_SPAWN_EGG, ItemNames.SPAWN_EGG, SPAWN_EGG, EntityID.ENDERMITE, V1_16_100);
+        registerComplexAlias(AGENT_SPAWN_EGG, ItemNames.SPAWN_EGG, SPAWN_EGG, EntityID.AGENT, V1_16_100);
+        registerComplexAlias(VINDICATOR_SPAWN_EGG, ItemNames.SPAWN_EGG, SPAWN_EGG, EntityID.VINDICATOR, V1_16_100);
+        registerComplexAlias(PHANTOM_SPAWN_EGG, ItemNames.SPAWN_EGG, SPAWN_EGG, EntityID.PHANTOM, V1_16_100);
+        registerComplexAlias(RAVAGER_SPAWN_EGG, ItemNames.SPAWN_EGG, SPAWN_EGG, EntityID.RAVAGER, V1_16_100);
+        registerComplexAlias(TURTLE_SPAWN_EGG, ItemNames.SPAWN_EGG, SPAWN_EGG, EntityID.TURTLE, V1_16_100);
+        registerComplexAlias(CAT_SPAWN_EGG, ItemNames.SPAWN_EGG, SPAWN_EGG, EntityID.CAT, V1_16_100);
+        registerComplexAlias(EVOKER_SPAWN_EGG, ItemNames.SPAWN_EGG, SPAWN_EGG, EntityID.EVOCATION_ILLAGER, V1_16_100);
+        registerComplexAlias(VEX_SPAWN_EGG, ItemNames.SPAWN_EGG, SPAWN_EGG, EntityID.VEX, V1_16_100);
+        registerComplexAlias(PUFFERFISH_SPAWN_EGG, ItemNames.SPAWN_EGG, SPAWN_EGG, EntityID.PUFFERFISH, V1_16_100);
+        registerComplexAlias(SALMON_SPAWN_EGG, ItemNames.SPAWN_EGG, SPAWN_EGG, EntityID.SALMON, V1_16_100);
+        registerComplexAlias(DROWNED_SPAWN_EGG, ItemNames.SPAWN_EGG, SPAWN_EGG, EntityID.DROWNED, V1_16_100);
+        registerComplexAlias(TROPICAL_FISH_SPAWN_EGG, ItemNames.SPAWN_EGG, SPAWN_EGG, EntityID.TROPICALFISH, V1_16_100);
+        registerComplexAlias(COD_SPAWN_EGG, ItemNames.SPAWN_EGG, SPAWN_EGG, EntityID.COD, V1_16_100);
+        registerComplexAlias(PANDA_SPAWN_EGG, ItemNames.SPAWN_EGG, SPAWN_EGG, EntityID.PANDA, V1_16_100);
+        registerComplexAlias(PILLAGER_SPAWN_EGG, ItemNames.SPAWN_EGG, SPAWN_EGG, EntityID.PILLAGER, V1_16_100);
+        registerComplexAlias(VILLAGER_SPAWN_EGG, ItemNames.SPAWN_EGG, SPAWN_EGG, EntityID.VILLAGER_V2, V1_16_100);
+        registerComplexAlias(ZOMBIE_VILLAGER_SPAWN_EGG, ItemNames.SPAWN_EGG, SPAWN_EGG, EntityID.ZOMBIE_VILLAGER_V2, V1_16_100);
+        registerComplexAlias(WANDERING_TRADER_SPAWN_EGG, ItemNames.SPAWN_EGG, SPAWN_EGG, EntityID.WANDERING_TRADER, V1_16_100);
+        registerComplexAlias(FOX_SPAWN_EGG, ItemNames.SPAWN_EGG, SPAWN_EGG, EntityID.FOX, V1_16_100);
+        registerComplexAlias(BEE_SPAWN_EGG, ItemNames.SPAWN_EGG, SPAWN_EGG, EntityID.BEE, V1_16_100);
+        registerComplexAlias(PIGLIN_SPAWN_EGG, ItemNames.SPAWN_EGG, SPAWN_EGG, EntityID.PIGLIN, V1_16_100);
+        registerComplexAlias(HOGLIN_SPAWN_EGG, ItemNames.SPAWN_EGG, SPAWN_EGG, EntityID.HOGLIN, V1_16_100);
+        registerComplexAlias(STRIDER_SPAWN_EGG, ItemNames.SPAWN_EGG, SPAWN_EGG, EntityID.STRIDER, V1_16_100);
+        registerComplexAlias(ZOGLIN_SPAWN_EGG, ItemNames.SPAWN_EGG, SPAWN_EGG, EntityID.ZOGLIN, V1_16_100);
+        registerComplexAlias(PIGLIN_BRUTE_SPAWN_EGG, ItemNames.SPAWN_EGG, SPAWN_EGG, EntityID.PIGLIN_BRUTE, V1_16_100);
+        registerComplexAlias(GOAT_SPAWN_EGG, ItemNames.SPAWN_EGG, SPAWN_EGG, EntityID.GOAT, V1_17_0);
+        registerComplexAlias(GLOW_SQUID_SPAWN_EGG, ItemNames.SPAWN_EGG, SPAWN_EGG, EntityID.GLOW_SQUID, V1_17_0);
+        registerComplexAlias(AXOLOTL_SPAWN_EGG, ItemNames.SPAWN_EGG, SPAWN_EGG, EntityID.AXOLOTL, V1_17_0);
+        registerComplexAlias(WARDEN_SPAWN_EGG, ItemNames.SPAWN_EGG, SPAWN_EGG, EntityID.WARDEN, V1_19_0);
+        registerComplexAlias(FROG_SPAWN_EGG, ItemNames.SPAWN_EGG, SPAWN_EGG, EntityID.FROG, V1_19_0);
+        registerComplexAlias(TADPOLE_SPAWN_EGG, ItemNames.SPAWN_EGG, SPAWN_EGG, EntityID.TADPOLE, V1_19_0);
+        registerComplexAlias(ALLAY_SPAWN_EGG, ItemNames.SPAWN_EGG, SPAWN_EGG, EntityID.ALLAY, V1_19_0);
+        registerComplexAlias(TRADER_LLAMA_SPAWN_EGG, ItemNames.SPAWN_EGG, SPAWN_EGG, EntityID.TRADER_LLAMA, V1_19_10);
+        registerComplexAlias(IRON_GOLEM_SPAWN_EGG, ItemNames.SPAWN_EGG, SPAWN_EGG, EntityID.IRON_GOLEM, V1_19_60);
+        registerComplexAlias(SNOW_GOLEM_SPAWN_EGG, ItemNames.SPAWN_EGG, SPAWN_EGG, EntityID.SNOW_GOLEM, V1_19_60);
+        registerComplexAlias(WITHER_SPAWN_EGG, ItemNames.SPAWN_EGG, SPAWN_EGG, EntityID.WITHER, V1_19_60);
+        registerComplexAlias(ENDER_DRAGON_SPAWN_EGG, ItemNames.SPAWN_EGG, SPAWN_EGG, EntityID.ENDER_DRAGON, V1_19_60);
+        registerComplexAlias(CAMEL_SPAWN_EGG, ItemNames.SPAWN_EGG, SPAWN_EGG, EntityID.CAMEL, V1_20_0);
+        registerComplexAlias(SNIFFER_SPAWN_EGG, ItemNames.SPAWN_EGG, SPAWN_EGG, EntityID.SNIFFER, V1_20_0);
+        registerComplexAlias(ARMADILLO_SPAWN_EGG, ItemNames.SPAWN_EGG, SPAWN_EGG, EntityID.ARMADILLO, V1_20_80);
+        registerComplexAlias(BREEZE_SPAWN_EGG, ItemNames.SPAWN_EGG, SPAWN_EGG, EntityID.BREEZE, V1_21_0);
+        registerComplexAlias(BOGGED_SPAWN_EGG, ItemNames.SPAWN_EGG, SPAWN_EGG, EntityID.BOGGED, V1_21_0);
+        registerComplexAlias(CREAKING_SPAWN_EGG, ItemNames.SPAWN_EGG, SPAWN_EGG, EntityID.CREAKING, V1_21_50);
+        registerComplexAlias(HAPPY_GHAST_SPAWN_EGG, ItemNames.SPAWN_EGG, SPAWN_EGG, EntityID.HAPPY_GHAST, V1_21_90);
+        registerComplexAlias(COPPER_GOLEM_SPAWN_EGG, ItemNames.SPAWN_EGG, SPAWN_EGG, EntityID.COPPER_GOLEM, V1_21_111);
+        registerComplexAlias(NAUTILUS_SPAWN_EGG, ItemNames.SPAWN_EGG, SPAWN_EGG, EntityID.NAUTILUS, V1_21_130);
+        registerComplexAlias(ZOMBIE_NAUTILUS_SPAWN_EGG, ItemNames.SPAWN_EGG, SPAWN_EGG, EntityID.ZOMBIE_NAUTILUS, V1_21_130);
+        registerComplexAlias(PARCHED_SPAWN_EGG, ItemNames.SPAWN_EGG, SPAWN_EGG, EntityID.PARCHED, V1_21_130);
+        registerComplexAlias(CAMEL_HUSK_SPAWN_EGG, ItemNames.SPAWN_EGG, SPAWN_EGG, EntityID.CAMEL_HUSK, V1_21_130);
+
+        registerComplexAlias(OAK_CHEST_BOAT, ItemNames.CHEST_BOAT, CHEST_BOAT, ItemBoatChest.OAK, V1_19_0);
+        registerComplexAlias(SPRUCE_CHEST_BOAT, ItemNames.CHEST_BOAT, CHEST_BOAT, ItemBoatChest.SPRUCE, V1_19_0);
+        registerComplexAlias(BIRCH_CHEST_BOAT, ItemNames.CHEST_BOAT, CHEST_BOAT, ItemBoatChest.BIRCH, V1_19_0);
+        registerComplexAlias(JUNGLE_CHEST_BOAT, ItemNames.CHEST_BOAT, CHEST_BOAT, ItemBoatChest.JUNGLE, V1_19_0);
+        registerComplexAlias(ACACIA_CHEST_BOAT, ItemNames.CHEST_BOAT, CHEST_BOAT, ItemBoatChest.ACACIA, V1_19_0);
+        registerComplexAlias(DARK_OAK_CHEST_BOAT, ItemNames.CHEST_BOAT, CHEST_BOAT, ItemBoatChest.DARK_OAK, V1_19_0);
+        registerComplexAlias(MANGROVE_CHEST_BOAT, ItemNames.CHEST_BOAT, CHEST_BOAT, ItemBoatChest.MANGROVE, V1_19_0);
+        registerComplexAlias(BAMBOO_CHEST_RAFT, ItemNames.CHEST_BOAT, CHEST_BOAT, ItemBoatChest.RAFT, V1_20_0);
+        registerComplexAlias(CHERRY_CHEST_BOAT, ItemNames.CHEST_BOAT, CHEST_BOAT, ItemBoatChest.CHERRY, V1_20_0);
+        registerComplexAlias(PALE_OAK_CHEST_BOAT, ItemNames.CHEST_BOAT, CHEST_BOAT, ItemBoatChest.PALE_OAK, V1_21_50);
 
         registerComplexAlias(ItemBlockNames.SKELETON_SKULL, SKULL, ItemSkull.HEAD_SKELETON, V1_21_40);
         registerComplexAlias(ItemBlockNames.WITHER_SKELETON_SKULL, SKULL, ItemSkull.HEAD_WITHER_SKELETON, V1_21_40);
@@ -791,7 +946,7 @@ public final class Items {
         if (item instanceof ItemDurable) {
             variantCount = item.getMaxDurability() + 1;
         } else {
-            variantCount = maxAuxVal + 1;
+            variantCount = Math.abs(maxAuxVal) + 1;
         }
 
         Item[] variants = new Item[variantCount];
@@ -831,6 +986,9 @@ public final class Items {
             return null;
         }
         ItemSerializer.registerItem("minecraft:" + name, id);
+
+        registerCommandItemEnum(name);
+
         return registerItem(name, id, clazz, factory);
     }
 
@@ -842,18 +1000,16 @@ public final class Items {
             return null;
         }
         ItemSerializer.registerItem("minecraft:" + name, id, maxAuxVal);
+
+        registerCommandItemEnum(name);
+
         return registerItem(name, id, clazz, factory, maxAuxVal);
     }
 
-    /**
-     * @param version min required base game version
-     */
-    private static void registerNewItemAux(String name, int id, int meta, GameVersion version) {
-        if (!version.isAvailable()) {
-            return;
-        }
-        ItemSerializer.registerItemAux("minecraft:" + name, id, meta);
-        registerComplexAlias(name, id, meta, version);
+    private static void registerCommandItemEnum(String name) {
+        Map<String, Set<CommandEnumConstraint>> enums = CommandEnum.ENUM_ITEM.getValues();
+        enums.put(name, Collections.emptySet());
+        enums.put("minecraft:" + name, Collections.emptySet());
     }
 
     /**
@@ -883,7 +1039,20 @@ public final class Items {
     }
 
     private static void registerComplexAlias(String alias, int id, int meta, GameVersion version) {
-        COMPLEX_ALIASES_MAP.put(alias, Item.getFullId(id, meta));
+        COMPLEX_ALIASES_MAP.put(alias, new int[]{Item.getFullId(id, meta)});
+    }
+
+    private static void registerComplexAlias(int newId, String alias, int id, int meta, GameVersion version) {
+        int[] auxValues = COMPLEX_ALIASES_MAP.getOrDefault(alias, new int[0]);
+        if (auxValues.length <= meta) {
+            auxValues = Arrays.copyOf(auxValues, meta + 1);
+            COMPLEX_ALIASES_MAP.put(alias, auxValues);
+        }
+        auxValues[meta] = Item.getFullId(newId);
+
+        if (version.isAvailable()) {
+            ITEM_CACHE[id][meta] = ITEM_CACHE[newId][0];
+        }
     }
 
     public static void registerItemTag(String itemTag, int itemId) {
@@ -1223,7 +1392,10 @@ public final class Items {
                 }
             }
 
-            return COMPLEX_ALIASES_MAP.getInt(shortName);
+            int[] fullIds = COMPLEX_ALIASES_MAP.get(shortName);
+            if (fullIds != null) {
+                return fullIds[0];
+            }
         }
         return Integer.MIN_VALUE;
     }
@@ -1254,7 +1426,7 @@ public final class Items {
         return SIMPLE_ALIASES_MAP;
     }
 
-    public static Object2IntMap<String> getComplexAliasesMap() {
+    public static Map<String, int[]> getComplexAliasesMap() {
         return COMPLEX_ALIASES_MAP;
     }
 
