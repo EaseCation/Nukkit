@@ -18,6 +18,7 @@ import cn.nukkit.event.entity.EntityDamageByBlockEvent;
 import cn.nukkit.event.entity.EntityDamageEvent;
 import cn.nukkit.event.entity.EntityDamageEvent.DamageCause;
 import cn.nukkit.item.Item;
+import cn.nukkit.item.ItemBlockID;
 import cn.nukkit.level.GameRule;
 import cn.nukkit.level.format.FullChunk;
 import cn.nukkit.level.particle.DestroyBlockParticle;
@@ -184,7 +185,7 @@ public class EntityFallingBlock extends Entity {
                     }
 
                     if (level.getGameRules().getBoolean(GameRule.DO_TILE_DROPS)) {
-                        level.dropItem(this, Item.get(Block.getItemId(Block.POINTED_DRIPSTONE), BlockDripstonePointed.HANGING_BIT));
+                        level.dropItem(this, Item.get(ItemBlockID.POINTED_DRIPSTONE, BlockDripstonePointed.HANGING_BIT));
                     }
                 } else if (this.block.getId() == Block.SNOW_LAYER && floorBlock.getId() == Block.SNOW_LAYER && (floorBlock.getDamage() & 0x7) != 0x7) {
                     int mergedHeight = (floorBlock.getDamage() & 0x7) + 1 + (this.block.getDamage() & 0x7) + 1;
@@ -219,7 +220,7 @@ public class EntityFallingBlock extends Entity {
                     }
                     if (top.getFloorY() >= level.getHeightRange().getMaxY() - 1) {
                         if (level.gameRules.getBoolean(GameRule.DO_ENTITY_DROPS)) {
-                            level.dropItem(this, Item.get(Block.getItemId(this.block.getId()), this.block.getDamage()));
+                            level.dropItem(this, Item.get(ItemBlockID.SCAFFOLDING, this.block.getDamage()));
                         }
                     } else {
                         placeBlock(up, top.clone());
@@ -263,7 +264,7 @@ public class EntityFallingBlock extends Entity {
                 if (level.getGameRules().getBoolean(GameRule.DO_TILE_DROPS)) {
                     int id = block.getId();
                     if (id == Block.POINTED_DRIPSTONE) {
-                        level.dropItem(this, Item.get(Block.getItemId(Block.POINTED_DRIPSTONE), BlockDripstonePointed.HANGING_BIT));
+                        level.dropItem(this, Item.get(ItemBlockID.POINTED_DRIPSTONE, BlockDripstonePointed.HANGING_BIT));
                     } else if (id != Block.SNOW_LAYER && id != Block.SUSPICIOUS_SAND && id != Block.SUSPICIOUS_GRAVEL) {
                         level.dropItem(this, Item.get(Block.getItemId(block.getId()), block.getDamage()));
                     }

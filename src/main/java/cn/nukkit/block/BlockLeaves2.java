@@ -1,6 +1,7 @@
 package cn.nukkit.block;
 
 import cn.nukkit.item.Item;
+import cn.nukkit.item.ItemBlockID;
 
 /**
  * Created on 2015/12/1 by xtypr.
@@ -50,7 +51,7 @@ public class BlockLeaves2 extends BlockLeaves {
 
     @Override
     protected Item getSapling() {
-        return Item.get(BlockID.SAPLING, this.getLeafType() | 0b100);
+        return Item.get(ItemBlockID.SAPLING, this.getLeafType() | 0b100);
     }
 
     @Override

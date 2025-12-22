@@ -1,10 +1,10 @@
 package cn.nukkit.entity.passive;
 
 import cn.nukkit.Player;
-import cn.nukkit.block.Block;
 import cn.nukkit.entity.Entity;
 import cn.nukkit.entity.EntityID;
 import cn.nukkit.item.Item;
+import cn.nukkit.item.ItemBlockID;
 import cn.nukkit.level.format.FullChunk;
 import cn.nukkit.math.Vector3f;
 import cn.nukkit.nbt.tag.CompoundTag;
@@ -77,7 +77,7 @@ public class EntityPanda extends EntityAnimal {
     @Override
     public Item[] getDrops() {
         return new Item[]{
-                Item.get(Block.getItemId(Block.BAMBOO), 0, ThreadLocalRandom.current().nextInt(3)),
+                Item.get(ItemBlockID.BAMBOO, 0, ThreadLocalRandom.current().nextInt(3)),
         };
     }
 

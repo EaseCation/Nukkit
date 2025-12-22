@@ -334,7 +334,7 @@ public abstract class BaseInventory implements Inventory {
     public Item[] removeItem(Item... slots) {
         List<Item> itemSlots = new ObjectArrayList<>();
         for (Item slot : slots) {
-            if (slot.getId() != 0 && slot.getCount() > 0) {
+            if (slot.getId() != Item.AIR && slot.getCount() > 0) {
                 itemSlots.add(slot.clone());
             }
         }
@@ -489,7 +489,7 @@ public abstract class BaseInventory implements Inventory {
         }
 
         for (Item item : this.slots.values()) {
-            if (item == null || item.getId() == 0 || item.getCount() < item.getMaxStackSize() || item.getCount() < this.getMaxStackSize()) {
+            if (item == null || item.getId() == Item.AIR || item.getCount() < item.getMaxStackSize() || item.getCount() < this.getMaxStackSize()) {
                 return false;
             }
         }
@@ -504,7 +504,7 @@ public abstract class BaseInventory implements Inventory {
         }
 
         for (Item item : this.slots.values()) {
-            if (item != null && item.getId() != 0 && item.getCount() > 0) {
+            if (item != null && item.getId() != Item.AIR && item.getCount() > 0) {
                 return false;
             }
         }
@@ -517,7 +517,7 @@ public abstract class BaseInventory implements Inventory {
         int space = (this.getSize() - this.slots.size()) * maxStackSize;
 
         for (Item slot : this.getContents().values()) {
-            if (slot == null || slot.getId() == 0) {
+            if (slot == null || slot.getId() == Item.AIR) {
                 space += maxStackSize;
                 continue;
             }

@@ -2,6 +2,7 @@ package cn.nukkit.block;
 
 import cn.nukkit.Player;
 import cn.nukkit.item.Item;
+import cn.nukkit.item.ItemBlockID;
 import cn.nukkit.level.Level;
 import cn.nukkit.level.generator.object.BasicGenerator;
 import cn.nukkit.level.generator.object.tree.*;
@@ -219,7 +220,7 @@ public class BlockSapling extends BlockFlowable {
 
     @Override
     public Item toItem(boolean addUserData) {
-        return Item.get(BlockID.SAPLING, this.getDamage() & TYPE_MASK);
+        return Item.get(ItemBlockID.SAPLING, this.getDamage() & TYPE_MASK);
     }
 
     @Override

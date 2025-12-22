@@ -1875,6 +1875,10 @@ public class Item implements Cloneable, ItemID {
         return false;
     }
 
+    public boolean isCarpet() {
+        return false;
+    }
+
     public boolean isBannerPattern() {
         return false;
     }

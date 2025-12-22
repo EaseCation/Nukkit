@@ -6,7 +6,6 @@ import cn.nukkit.entity.EntityFullNames;
 import cn.nukkit.entity.EntityID;
 import cn.nukkit.entity.passive.*;
 import cn.nukkit.item.Item;
-import cn.nukkit.item.ItemBlockID;
 import cn.nukkit.item.Items;
 import cn.nukkit.nbt.NBTIO;
 import cn.nukkit.nbt.tag.CompoundTag;
@@ -51,7 +50,7 @@ public class HorseInventory extends ContainerInventory {
                     entity.level.addLevelSoundEvent(entity, LevelSoundEventPacket.SOUND_SADDLE);
                 }
             } else if ((entity instanceof EntityLlama || entity instanceof EntityTraderLlama) && !Objects.equals(before, after)) {
-                if (after != null && after.is(ItemBlockID.CARPET)) {
+                if (after != null && after.isCarpet()) {
                     entity.level.addLevelSoundEvent(entity, LevelSoundEventPacket.SOUND_ARMOR, entity.getIdentifier());
                 }
                 sendArmorContents(getViewers().toArray(new Player[0]));

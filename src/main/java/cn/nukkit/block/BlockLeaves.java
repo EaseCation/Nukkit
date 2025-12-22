@@ -4,6 +4,7 @@ import cn.nukkit.Player;
 import cn.nukkit.Server;
 import cn.nukkit.event.block.LeavesDecayEvent;
 import cn.nukkit.item.Item;
+import cn.nukkit.item.ItemBlockID;
 import cn.nukkit.level.Level;
 import cn.nukkit.math.BlockFace;
 import cn.nukkit.utils.BlockColor;
@@ -278,7 +279,7 @@ public class BlockLeaves extends BlockTransparent {
     }
 
     protected Item getSapling() {
-        return Item.get(BlockID.SAPLING, this.getLeafType());
+        return Item.get(ItemBlockID.SAPLING, this.getLeafType());
     }
 
     @Override

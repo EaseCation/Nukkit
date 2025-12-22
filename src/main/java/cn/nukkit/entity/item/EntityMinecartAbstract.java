@@ -358,14 +358,14 @@ public abstract class EntityMinecartAbstract extends EntityVehicle {
                     double motX = mine.motionX + motionX;
                     double motZ = mine.motionZ + motionZ;
 
-                    if (mine.getType().getId() == 2 && getType().getId() != 2) {
+                    if (mine.getType() == MinecartType.MINECART_FURNACE && getType() != MinecartType.MINECART_FURNACE) {
                         motionX *= 0.20000000298023224D;
                         motionZ *= 0.20000000298023224D;
                         motionX += mine.motionX - motiveX;
                         motionZ += mine.motionZ - motiveZ;
                         mine.motionX *= 0.949999988079071D;
                         mine.motionZ *= 0.949999988079071D;
-                    } else if (mine.getType().getId() != 2 && getType().getId() == 2) {
+                    } else if (mine.getType() != MinecartType.MINECART_FURNACE && getType() == MinecartType.MINECART_FURNACE) {
                         mine.motionX *= 0.20000000298023224D;
                         mine.motionZ *= 0.20000000298023224D;
                         motionX += mine.motionX + motiveX;

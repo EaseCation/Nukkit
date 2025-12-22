@@ -2,6 +2,7 @@ package cn.nukkit.block;
 
 import cn.nukkit.Player;
 import cn.nukkit.item.Item;
+import cn.nukkit.item.ItemBlockID;
 import cn.nukkit.item.ItemTool;
 import cn.nukkit.item.enchantment.Enchantment;
 import cn.nukkit.utils.BlockColor;
@@ -68,17 +69,17 @@ public class BlockMonsterEgg extends BlockSolid {
         if (item.isPickaxe() && item.getTier() >= ItemTool.TIER_WOODEN && item.hasEnchantment(Enchantment.SILK_TOUCH)) {
             switch (getDamage()) {
                 case TYPE_STONE:
-                    return new Item[]{Item.get(Block.STONE)};
+                    return new Item[]{Item.get(ItemBlockID.STONE)};
                 case TYPE_COBBLESTONE:
-                    return new Item[]{Item.get(Block.COBBLESTONE)};
+                    return new Item[]{Item.get(ItemBlockID.COBBLESTONE)};
                 case TYPE_STONE_BRICK:
-                    return new Item[]{Item.get(Block.STONEBRICK, BlockBricksStone.NORMAL)};
+                    return new Item[]{Item.get(ItemBlockID.STONEBRICK, BlockBricksStone.NORMAL)};
                 case TYPE_MOSSY_BRICK:
-                    return new Item[]{Item.get(Block.STONEBRICK, BlockBricksStone.MOSSY)};
+                    return new Item[]{Item.get(ItemBlockID.STONEBRICK, BlockBricksStone.MOSSY)};
                 case TYPE_CRACKED_BRICK:
-                    return new Item[]{Item.get(Block.STONEBRICK, BlockBricksStone.CRACKED)};
+                    return new Item[]{Item.get(ItemBlockID.STONEBRICK, BlockBricksStone.CRACKED)};
                 case TYPE_CHISELED_BRICK:
-                    return new Item[]{Item.get(Block.STONEBRICK, BlockBricksStone.CHISELED)};
+                    return new Item[]{Item.get(ItemBlockID.STONEBRICK, BlockBricksStone.CHISELED)};
             }
         }
         return new Item[0];

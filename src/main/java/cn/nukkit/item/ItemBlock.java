@@ -130,4 +130,9 @@ public class ItemBlock extends Item {
     public boolean isWool() {
         return block.isWool();
     }
+
+    @Override
+    public boolean isCarpet() {
+        return block.isCarpet();
+    }
 }

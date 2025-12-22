@@ -1,9 +1,9 @@
 package cn.nukkit.entity.mob;
 
 import cn.nukkit.Player;
-import cn.nukkit.block.Block;
 import cn.nukkit.entity.EntityID;
 import cn.nukkit.item.Item;
+import cn.nukkit.item.ItemBlockID;
 import cn.nukkit.level.format.FullChunk;
 import cn.nukkit.nbt.tag.CompoundTag;
 
@@ -56,7 +56,7 @@ public class EntityWarden extends EntityMob {
     @Override
     public Item[] getDrops() {
         return new Item[]{
-                Item.get(Block.getItemId(Block.SCULK_CATALYST)),
+                Item.get(ItemBlockID.SCULK_CATALYST),
         };
     }
 

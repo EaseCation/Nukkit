@@ -280,7 +280,7 @@ public class EntityLlama extends EntityAnimal implements EntityInteractable, Ent
             if (!getDataFlag(DATA_FLAG_CHESTED) && player.getInventory().getItemInHand().is(ItemBlockID.CHEST)) {
                 return true;
             }
-            if (inventory.getItem(0).isNull() && player.getInventory().getItemInHand().is(ItemBlockID.CARPET)) {
+            if (inventory.getItem(0).isNull() && player.getInventory().getItemInHand().isCarpet()) {
                 return true;
             }
         }
@@ -296,7 +296,7 @@ public class EntityLlama extends EntityAnimal implements EntityInteractable, Ent
             if (!getDataFlag(DATA_FLAG_CHESTED) && player.getInventory().getItemInHand().is(ItemBlockID.CHEST)) {
                 return "action.interact.attachchest";
             }
-            if (inventory.getItem(0).isNull() && player.getInventory().getItemInHand().is(ItemBlockID.CARPET)) {
+            if (inventory.getItem(0).isNull() && player.getInventory().getItemInHand().isCarpet()) {
                 return "action.interact.equipcarpet";
             }
         }
@@ -321,7 +321,7 @@ public class EntityLlama extends EntityAnimal implements EntityInteractable, Ent
                 return true;
             }
 
-            if (item.is(ItemBlockID.CARPET) && inventory.getItem(0).isNull()) {
+            if (item.isCarpet() && inventory.getItem(0).isNull()) {
                 Item carpet = item.clone();
                 carpet.setCount(1);
                 inventory.setItem(0, carpet);

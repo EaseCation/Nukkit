@@ -153,10 +153,8 @@ public class BlockCactus extends BlockTransparent {
     }
 
     @Override
-    public Item[] getDrops(Item item, Player player) {
-        return new Item[]{
-            Item.get(Item.CACTUS, 0, 1)
-        };
+    public Item toItem(boolean addUserData) {
+        return Item.get(getItemId());
     }
 
     @Override

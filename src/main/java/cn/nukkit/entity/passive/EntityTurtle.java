@@ -1,9 +1,9 @@
 package cn.nukkit.entity.passive;
 
 import cn.nukkit.Player;
-import cn.nukkit.block.Block;
 import cn.nukkit.entity.EntityID;
 import cn.nukkit.item.Item;
+import cn.nukkit.item.ItemBlockID;
 import cn.nukkit.level.format.FullChunk;
 import cn.nukkit.nbt.tag.CompoundTag;
 
@@ -68,7 +68,7 @@ public class EntityTurtle extends EntityAnimal {
             return new Item[0];
         }
         return new Item[]{
-                Item.get(Block.getItemId(Block.SEAGRASS), 0, ThreadLocalRandom.current().nextInt(3)),
+                Item.get(ItemBlockID.SEAGRASS, 0, ThreadLocalRandom.current().nextInt(3)),
         };
     }
 }

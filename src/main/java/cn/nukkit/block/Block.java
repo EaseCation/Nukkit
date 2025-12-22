@@ -957,7 +957,7 @@ public abstract class Block extends Position implements Metadatable, Cloneable, 
                 return this.getLevel().getBlock((int) x + face.getXOffset() * step, (int) y + face.getYOffset() * step, (int) z + face.getZOffset() * step);
             }
         }
-        Block block = Block.get(Item.AIR, 0);
+        Block block = Block.get(AIR);
         block.x = (int) x + face.getXOffset() * step;
         block.y = (int) y + face.getYOffset() * step;
         block.z = (int) z + face.getZOffset() * step;
