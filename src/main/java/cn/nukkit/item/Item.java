@@ -1335,6 +1335,14 @@ public class Item implements Cloneable, ItemID {
         this.block = block;
     }
 
+    public final String getShortName() {
+        return Items.getNameById(getId());
+    }
+
+    public final String getFullName() {
+        return Items.getFullNameById(getId());
+    }
+
     public int getId() {
         return id;
     }

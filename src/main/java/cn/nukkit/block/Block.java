@@ -664,6 +664,22 @@ public abstract class Block extends Position implements Metadatable, Cloneable, 
         return fullId & BLOCK_META_MASK;
     }
 
+    public final String getShortName() {
+        return Blocks.getBlockNameById(getId());
+    }
+
+    public final String getFullName() {
+        return Blocks.getBlockFullNameById(getId());
+    }
+
+    public final String getItemShortName() {
+        return Blocks.getItemNameById(getId());
+    }
+
+    public final String getItemFullName() {
+        return Blocks.getItemFullNameById(getId());
+    }
+
     public void addVelocityToEntity(Entity entity, Vector3 vector) {
 
     }
