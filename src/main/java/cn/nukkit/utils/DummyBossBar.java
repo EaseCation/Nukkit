@@ -2,9 +2,9 @@ package cn.nukkit.utils;
 
 import cn.nukkit.Player;
 import cn.nukkit.entity.Entity;
+import cn.nukkit.entity.EntityID;
 import cn.nukkit.entity.attribute.Attribute;
 import cn.nukkit.entity.data.EntityMetadata;
-import cn.nukkit.entity.mob.EntityCreeper;
 import cn.nukkit.entity.property.EntityPropertyRegistry;
 import cn.nukkit.network.protocol.*;
 import cn.nukkit.network.protocol.BossEventPacket.BossBarColor;
@@ -161,7 +161,7 @@ public class DummyBossBar {
 
     public void createBossEntity() {
         AddEntityPacket pkAdd = new AddEntityPacket();
-        pkAdd.type = EntityCreeper.NETWORK_ID;
+        pkAdd.type = EntityID.CREEPER;
         pkAdd.entityUniqueId = bossBarId;
         pkAdd.entityRuntimeId = bossBarId;
         pkAdd.x = (float) player.x;
