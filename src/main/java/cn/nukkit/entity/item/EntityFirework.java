@@ -135,6 +135,8 @@ public class EntityFirework extends Entity {
                 pk.eid = this.getId();
                 Server.broadcastPacket(getViewers().values(), pk);
 
+                this.level.addLevelSoundEvent(this, LevelSoundEventPacket.SOUND_LARGE_BLAST, -1, NETWORK_ID);
+
                 if (calculateAttack && firework instanceof ItemFirework) {
                     ItemFirework firework = (ItemFirework) this.firework;
                     CompoundTag nbt = firework.getNamedTag();
