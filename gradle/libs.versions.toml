@@ -3,7 +3,7 @@ jackson = "2.20.0"
 jackson3 = "3.0.1"
 log4j = "2.25.2"
 jline = "3.30.6"
-maven = "1.9.24"
+maven = "1.9.25"
 
 [plugins]
 shadow = { id = "com.gradleup.shadow", version = "9.2.2" }
