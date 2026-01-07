@@ -48,6 +48,8 @@ public class EntityFishingHook extends EntityProjectile {
     public boolean reelLineTargetMotionEC = true;
     // Whether to apply pull-back motion on reel (enabled by default). Allows game modes to disable hook pull-back.
     public boolean reelLineDoPullBack = true;
+    // Whether to apply knockback on collision (enabled by default). Set to false for Java vanilla behavior (no collision knockback).
+    public boolean collideKnockbackEnabled = true;
 
     public Vector3 fish = null;
 
@@ -446,12 +448,11 @@ public class EntityFishingHook extends EntityProjectile {
                         // Only apply pull-back motion when enabled
                         if (reelLineDoPullBack) {
                             if (!reelLineTargetMotionEC) {
-                                // vanilla-like pull back
-                                Vector3 diff = this.shootingEntity.add(0, 1, 0).subtract(entity).multiply(0.1);
-                                diff.y = Math.sqrt(diff.length()) * 0.08;
-                                entity.setMotion(diff);
+                                // Java原版拉回：(owner - hook) × 0.1，累加到现有速度
+                                Vector3 diff = this.shootingEntity.subtract(this).multiply(0.1);
+                                entity.setMotion(entity.getMotion().add(diff));
                             } else {
-                                // EC-style stronger pull back
+                                // EC风格强力拉回
                                 entity.setMotion(this.shootingEntity.subtract(entity).divide(8).add(0, 0.3, 0));
                             }
                         }
@@ -520,8 +521,12 @@ public class EntityFishingHook extends EntityProjectile {
             this.setTarget(entity.getId());
 
             if (this.shootingEntity != null) {
-                entity.setMotion(entity.subtract(this.shootingEntity).divide(15).add(0, 0.3, 0)); // 这边还是用EC的特殊钩回motion，营造EC的特殊手感
-                //entity.setMotion(entity.getMotion().add(entity.subtract(this.shootingEntity).multiply(0.1)));
+                // 只有启用碰撞击退时才应用motion（Java原版碰撞时无击退）
+                if (this.collideKnockbackEnabled) {
+                    // EC模式：使用EC的特殊钩回motion，营造EC的特殊手感
+                    entity.setMotion(entity.subtract(this.shootingEntity).divide(15).add(0, 0.3, 0));
+                }
+                // collideKnockbackEnabled=false时，只钩住不击退（Java原版行为）
             }
         } else if (entity instanceof Player && ((Player) entity).getGamemode() == Player.CREATIVE) {
             setTarget(entity.getId());
