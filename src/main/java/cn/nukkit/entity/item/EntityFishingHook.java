@@ -448,9 +448,24 @@ public class EntityFishingHook extends EntityProjectile {
                         // Only apply pull-back motion when enabled
                         if (reelLineDoPullBack) {
                             if (!reelLineTargetMotionEC) {
-                                // Java原版拉回：(owner - hook) × 0.1，累加到现有速度
-                                Vector3 diff = this.shootingEntity.subtract(this).multiply(0.1);
-                                entity.setMotion(entity.getMotion().add(diff));
+                                // Java原版拉回逻辑：(owner - hook) × 0.1，累加到当前真实速度
+                                // 参考 Java 1.21 FishingHook.java:515-521
+                                Vector3 pullback = this.shootingEntity.subtract(this).multiply(0.1);
+
+                                // 获取实体的当前真实速度
+                                // 注意：对于玩家，player.speed = from - to（方向相反），需要取反
+                                // 对于非玩家实体，使用 getMotion() 作为近似值
+                                Vector3 currentVelocity;
+                                if (entity instanceof Player player && player.speed != null) {
+                                    // 玩家：使用 speed 取反获取真实运动方向
+                                    currentVelocity = player.speed.multiply(-1);
+                                } else {
+                                    // 非玩家实体：使用 motion 作为近似值
+                                    currentVelocity = entity.getMotion();
+                                }
+
+                                // 设置新速度：当前真实速度 + 拉回向量
+                                entity.setMotion(currentVelocity.add(pullback));
                             } else {
                                 // EC风格强力拉回
                                 entity.setMotion(this.shootingEntity.subtract(entity).divide(8).add(0, 0.3, 0));
