@@ -7,12 +7,8 @@ import cn.nukkit.utils.DyeColor;
  */
 public class BlockTerracottaGlazedSilver extends BlockTerracottaGlazed {
 
-    public BlockTerracottaGlazedSilver() {
-        this(0);
-    }
+    BlockTerracottaGlazedSilver() {
 
-    public BlockTerracottaGlazedSilver(int meta) {
-        super(meta);
     }
 
     @Override

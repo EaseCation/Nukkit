@@ -10,12 +10,8 @@ import cn.nukkit.math.BlockFace;
 import cn.nukkit.utils.BlockColor;
 
 public class BlockChestCopper extends BlockChest implements CopperBehavior {
-    public BlockChestCopper() {
-        this(0);
-    }
+    BlockChestCopper() {
 
-    public BlockChestCopper(int meta) {
-        super(meta);
     }
 
     @Override

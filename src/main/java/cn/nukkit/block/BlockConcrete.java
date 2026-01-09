@@ -3,6 +3,7 @@ package cn.nukkit.block;
 import cn.nukkit.Player;
 import cn.nukkit.item.Item;
 import cn.nukkit.item.ItemTool;
+import cn.nukkit.utils.BlockColor;
 import cn.nukkit.utils.DyeColor;
 
 /**
@@ -51,6 +52,11 @@ public abstract class BlockConcrete extends BlockSolid {
     @Override
     public boolean isConcrete() {
         return true;
+    }
+
+    @Override
+    public BlockColor getColor() {
+        return getDyeColor().getColor();
     }
 
     public abstract DyeColor getDyeColor();

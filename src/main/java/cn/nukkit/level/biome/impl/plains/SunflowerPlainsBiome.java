@@ -1,5 +1,6 @@
 package cn.nukkit.level.biome.impl.plains;
 
+import cn.nukkit.block.Block;
 import cn.nukkit.block.BlockDoublePlant;
 import cn.nukkit.level.generator.populator.impl.PopulatorDoublePlant;
 
@@ -12,7 +13,7 @@ public class SunflowerPlainsBiome extends PlainsBiome {
     public SunflowerPlainsBiome() {
         super();
 
-        PopulatorDoublePlant sunflower = new PopulatorDoublePlant(BlockDoublePlant.TYPE_SUNFLOWER);
+        PopulatorDoublePlant sunflower = new PopulatorDoublePlant(Block.SUNFLOWER);
         sunflower.setBaseAmount(8);
         sunflower.setRandomAmount(5);
         this.addPopulator(sunflower);

@@ -32,12 +32,8 @@ import static cn.nukkit.GameVersion.*;
  */
 public abstract class BlockPistonBase extends BlockTransparent implements Faceable {
 
-    public BlockPistonBase() {
-        this(0);
-    }
+    BlockPistonBase() {
 
-    public BlockPistonBase(int meta) {
-        super(meta);
     }
 
     @Override
@@ -556,6 +552,11 @@ public abstract class BlockPistonBase extends BlockTransparent implements Faceab
     @Override
     public Item toItem(boolean addUserData) {
         return Item.get(this.getItemId());
+    }
+
+    @Override
+    public int getItemSerializationMeta() {
+        return 1;
     }
 
     @Override

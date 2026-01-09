@@ -4,12 +4,8 @@ import cn.nukkit.item.Item;
 import cn.nukkit.utils.BlockColor;
 
 public class BlockSignPostMangrove extends BlockSignPost {
-    public BlockSignPostMangrove() {
-        this(0);
-    }
+    BlockSignPostMangrove() {
 
-    public BlockSignPostMangrove(int meta) {
-        super(meta);
     }
 
     @Override

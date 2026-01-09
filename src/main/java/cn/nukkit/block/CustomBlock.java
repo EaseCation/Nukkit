@@ -45,8 +45,8 @@ public abstract class CustomBlock extends Block {
     }
 
     @Override
-    public final boolean isStackedByData() {
-        return false;
+    public final int getItemKeepMetaMask() {
+        return 0;
     }
 
     @Override

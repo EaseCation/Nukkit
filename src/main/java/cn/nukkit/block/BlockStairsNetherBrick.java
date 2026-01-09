@@ -7,12 +7,8 @@ import cn.nukkit.utils.BlockColor;
  * Package cn.nukkit.block in project Nukkit .
  */
 public class BlockStairsNetherBrick extends BlockStairs {
-    public BlockStairsNetherBrick() {
-        this(0);
-    }
+    BlockStairsNetherBrick() {
 
-    public BlockStairsNetherBrick(int meta) {
-        super(meta);
     }
 
     @Override

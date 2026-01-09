@@ -4,12 +4,8 @@ import cn.nukkit.item.Item;
 import cn.nukkit.utils.BlockColor;
 
 public class BlockDoorCrimson extends BlockDoorWood {
-    public BlockDoorCrimson() {
-        this(0);
-    }
+    BlockDoorCrimson() {
 
-    public BlockDoorCrimson(int meta) {
-        super(meta);
     }
 
     @Override
@@ -19,7 +15,7 @@ public class BlockDoorCrimson extends BlockDoorWood {
 
     @Override
     public int getId() {
-        return BLOCK_CRIMSON_DOOR;
+        return CRIMSON_DOOR;
     }
 
     @Override

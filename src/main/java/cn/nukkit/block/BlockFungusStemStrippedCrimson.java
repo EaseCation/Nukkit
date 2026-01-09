@@ -3,12 +3,8 @@ package cn.nukkit.block;
 import cn.nukkit.utils.BlockColor;
 
 public class BlockFungusStemStrippedCrimson extends BlockFungusStemStripped {
-    public BlockFungusStemStrippedCrimson() {
-        this(0);
-    }
+    BlockFungusStemStrippedCrimson() {
 
-    public BlockFungusStemStrippedCrimson(int meta) {
-        super(meta);
     }
 
     @Override

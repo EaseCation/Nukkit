@@ -9,9 +9,6 @@ import cn.nukkit.math.BlockFace;
 import static cn.nukkit.GameVersion.*;
 
 public abstract class BlockMultiface extends BlockTransparent {
-    protected BlockMultiface(int meta) {
-        super(meta);
-    }
 
     @Override
     public int getBlockDefaultMeta() {

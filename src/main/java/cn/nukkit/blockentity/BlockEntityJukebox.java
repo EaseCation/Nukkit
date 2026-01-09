@@ -145,7 +145,7 @@ public class BlockEntityJukebox extends BlockEntitySpawnable implements HopperIn
     }
 
     @Override
-    public CompoundTag getSpawnCompound() {
+    public CompoundTag getSpawnCompound(boolean chunkData) {
         CompoundTag nbt = getDefaultCompound(this, JUKEBOX)
                 .putBoolean("FinishedRecording", this.finishedRecording)
                 .putLong("TicksPlaying", this.ticksPlaying);

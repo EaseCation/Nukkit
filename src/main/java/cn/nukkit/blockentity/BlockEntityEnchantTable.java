@@ -25,7 +25,7 @@ public class BlockEntityEnchantTable extends BlockEntitySpawnable implements Blo
     }
 
     @Override
-    public CompoundTag getSpawnCompound() {
+    public CompoundTag getSpawnCompound(boolean chunkData) {
         CompoundTag nbt = getDefaultCompound(this, ENCHANT_TABLE)
                 .putFloat("rott", 0);
 

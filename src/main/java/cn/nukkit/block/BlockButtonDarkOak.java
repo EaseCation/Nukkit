@@ -2,12 +2,8 @@ package cn.nukkit.block;
 
 public class BlockButtonDarkOak extends BlockButtonWooden {
 
-    public BlockButtonDarkOak() {
-        this(0);
-    }
+    BlockButtonDarkOak() {
 
-    public BlockButtonDarkOak(int meta) {
-        super(meta);
     }
 
     @Override

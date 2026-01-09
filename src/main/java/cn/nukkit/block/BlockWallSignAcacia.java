@@ -6,12 +6,8 @@ import cn.nukkit.utils.BlockColor;
 
 public class BlockWallSignAcacia extends BlockWallSign {
 
-    public BlockWallSignAcacia() {
-        this(0);
-    }
+    BlockWallSignAcacia() {
 
-    public BlockWallSignAcacia(int meta) {
-        super(meta);
     }
 
     @Override

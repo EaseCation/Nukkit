@@ -16,12 +16,8 @@ public class BlockDripleafSmall extends BlockTransparent implements Faceable {
     public static final int DIRECTION_MASK = 0b110;
     public static final int DIRECTION_OFFSET = 1;
 
-    public BlockDripleafSmall() {
-        this(0);
-    }
+    BlockDripleafSmall() {
 
-    public BlockDripleafSmall(int meta) {
-        super(meta);
     }
 
     @Override
@@ -66,12 +62,17 @@ public class BlockDripleafSmall extends BlockTransparent implements Faceable {
 
     @Override
     public Item toItem(boolean addUserData) {
-        return Item.get(getItemId(), getItemDefaultMeta());
+        return Item.get(getItemId(), getItemMeta());
     }
 
     @Override
-    public int getItemDefaultMeta() {
+    public int getBlockDefaultMeta() {
         return UPPER_BIT | 0b110;
+    }
+
+    @Override
+    public int getItemSerializationMeta() {
+        return getBlockDefaultMeta();
     }
 
     @Override

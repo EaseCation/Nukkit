@@ -17,8 +17,8 @@ public abstract class BlockStairs extends BlockTransparent implements Faceable {
     public static final int DIRECTION_MASK = 0b11;
     public static final int UPSIDE_DOWN_BIT = 0b100;
 
-    protected BlockStairs(int meta) {
-        super(meta & 0b111);
+    BlockStairs() {
+
     }
 
     @Override

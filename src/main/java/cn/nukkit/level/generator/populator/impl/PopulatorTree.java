@@ -7,7 +7,7 @@ import cn.nukkit.level.HeightRange;
 import cn.nukkit.level.format.FullChunk;
 import cn.nukkit.level.generator.object.tree.ObjectTree;
 import cn.nukkit.level.generator.populator.type.PopulatorCount;
-import cn.nukkit.math.NukkitRandom;
+import cn.nukkit.math.RandomSource;
 
 /**
  * author: DaPorkchop_
@@ -42,7 +42,7 @@ public class PopulatorTree extends PopulatorCount {
     }
 
     @Override
-    public void populateCount(ChunkManager level, int chunkX, int chunkZ, NukkitRandom random, FullChunk chunk) {
+    public void populateCount(ChunkManager level, int chunkX, int chunkZ, RandomSource random, FullChunk chunk) {
         int x = random.nextRange(chunkX << 4, (chunkX << 4) + 15);
         int z = random.nextRange(chunkZ << 4, (chunkZ << 4) + 15);
         int y = getHighestWorkableBlock(level, x, z);

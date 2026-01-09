@@ -13,7 +13,8 @@ import java.util.concurrent.ThreadLocalRandom;
  */
 public class BlockOreEmerald extends BlockSolid {
 
-    public BlockOreEmerald() {
+    BlockOreEmerald() {
+
     }
 
     @Override

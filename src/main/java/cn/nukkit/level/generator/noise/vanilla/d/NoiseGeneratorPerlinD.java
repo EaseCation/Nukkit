@@ -1,6 +1,6 @@
 package cn.nukkit.level.generator.noise.vanilla.d;
 
-import cn.nukkit.math.NukkitRandom;
+import cn.nukkit.math.RandomSource;
 
 import java.util.Arrays;
 
@@ -8,7 +8,7 @@ public class NoiseGeneratorPerlinD {
     private final NoiseGeneratorSimplexD[] noiseLevels;
     private final int levels;
 
-    public NoiseGeneratorPerlinD(NukkitRandom p_i45470_1_, int p_i45470_2_) {
+    public NoiseGeneratorPerlinD(RandomSource p_i45470_1_, int p_i45470_2_) {
         this.levels = p_i45470_2_;
         this.noiseLevels = new NoiseGeneratorSimplexD[p_i45470_2_];
 

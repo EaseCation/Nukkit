@@ -68,7 +68,7 @@ public class BlockEntityLectern extends BlockEntitySpawnable {
     }
 
     @Override
-    public CompoundTag getSpawnCompound() {
+    public CompoundTag getSpawnCompound(boolean chunkData) {
         CompoundTag nbt = getDefaultCompound(this, LECTERN);
 
         if (book != null) {

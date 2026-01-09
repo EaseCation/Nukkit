@@ -1,12 +1,8 @@
 package cn.nukkit.block;
 
 public class BlockSlabBlackstoneBrickPolished extends BlockSlabBlackstone {
-    public BlockSlabBlackstoneBrickPolished() {
-        this(0);
-    }
+    BlockSlabBlackstoneBrickPolished() {
 
-    public BlockSlabBlackstoneBrickPolished(int meta) {
-        super(meta);
     }
 
     @Override

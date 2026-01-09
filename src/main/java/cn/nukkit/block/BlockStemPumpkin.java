@@ -10,12 +10,8 @@ import java.util.concurrent.ThreadLocalRandom;
  */
 public class BlockStemPumpkin extends BlockStem {
 
-    public BlockStemPumpkin() {
-        this(0);
-    }
+    BlockStemPumpkin() {
 
-    public BlockStemPumpkin(int meta) {
-        super(meta);
     }
 
     @Override

@@ -10,12 +10,8 @@ import cn.nukkit.utils.BlockColor;
  */
 public class BlockTrapdoorIron extends BlockTrapdoor {
 
-    public BlockTrapdoorIron() {
-        this(0);
-    }
+    BlockTrapdoorIron() {
 
-    public BlockTrapdoorIron(int meta) {
-        super(meta);
     }
 
     @Override

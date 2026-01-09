@@ -5,7 +5,7 @@ import cn.nukkit.level.ChunkManager;
 import cn.nukkit.level.HeightRange;
 import cn.nukkit.math.BlockFace;
 import cn.nukkit.math.BlockVector3;
-import cn.nukkit.math.NukkitRandom;
+import cn.nukkit.math.RandomSource;
 
 /**
  * Created by CreeperFace on 26. 10. 2016.
@@ -27,7 +27,7 @@ public class NewJungleTree extends TreeGenerator {
     /**
      * The metadata value of the leaves to use in tree generation.
      */
-    private final Block metaLeaves = Block.get(BlockID.LEAVES, BlockLeaves.JUNGLE);
+    private final Block metaLeaves = Block.get(BlockID.JUNGLE_LEAVES);
 
     public NewJungleTree(int minTreeHeight, int maxTreeHeight) {
         this.minTreeHeight = minTreeHeight;
@@ -35,7 +35,7 @@ public class NewJungleTree extends TreeGenerator {
     }
 
     @Override
-    public boolean generate(ChunkManager worldIn, NukkitRandom rand, BlockVector3 vectorPosition) {
+    public boolean generate(ChunkManager worldIn, RandomSource rand, BlockVector3 vectorPosition) {
         BlockVector3 position = new BlockVector3(vectorPosition.getX(), vectorPosition.getY(), vectorPosition.getZ());
 
         int i = rand.nextBoundedInt(maxTreeHeight) + this.minTreeHeight;
@@ -92,8 +92,9 @@ public class NewJungleTree extends TreeGenerator {
                                 if (Math.abs(l1) != j1 || Math.abs(j2) != j1 || rand.nextBoundedInt(2) != 0 && i4 != 0) {
                                     BlockVector3 blockpos = new BlockVector3(k1, i3, i2);
                                     int id = worldIn.getBlockIdAt(0, blockpos.x, blockpos.y, blockpos.z);
+                                    Block ub = Block.getUnsafe(id);
 
-                                    if (id == Block.AIR || id == Block.LEAVES || id == Block.VINE) {
+                                    if (id == Block.AIR || ub.isLeaves() || id == Block.VINE) {
                                         this.setBlockAndNotifyAdequately(worldIn, blockpos, this.metaLeaves);
                                     }
                                 }
@@ -104,8 +105,9 @@ public class NewJungleTree extends TreeGenerator {
                     for (int j3 = 0; j3 < i; ++j3) {
                         BlockVector3 up = position.up(j3);
                         int id = worldIn.getBlockIdAt(0, up.x, up.y, up.z);
+                        Block ub = Block.getUnsafe(id);
 
-                        if (id == Block.AIR || id == Block.LEAVES || id == Block.VINE) {
+                        if (id == Block.AIR || ub.isLeaves() || id == Block.VINE) {
                             this.setBlockAndNotifyAdequately(worldIn, up, this.metaWood);
 
                             if (j3 > 0) {
@@ -137,7 +139,9 @@ public class NewJungleTree extends TreeGenerator {
                             for (int i5 = position.getZ() - k4; i5 <= position.getZ() + k4; ++i5) {
                                 pos2.setComponents(l4, k3, i5);
 
-                                if (worldIn.getBlockIdAt(0, pos2.x, pos2.y, pos2.z) == Block.LEAVES) {
+                                int id = worldIn.getBlockIdAt(0, pos2.x, pos2.y, pos2.z);
+                                Block ub = Block.getUnsafe(id);
+                                if (ub.isLeaves()) {
                                     BlockVector3 blockpos2 = pos2.west();
                                     BlockVector3 blockpos3 = pos2.east();
                                     BlockVector3 blockpos4 = pos2.north();

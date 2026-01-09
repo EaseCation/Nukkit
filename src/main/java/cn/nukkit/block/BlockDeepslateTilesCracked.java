@@ -1,7 +1,8 @@
 package cn.nukkit.block;
 
 public class BlockDeepslateTilesCracked extends BlockDeepslateTiles {
-    public BlockDeepslateTilesCracked() {
+    BlockDeepslateTilesCracked() {
+
     }
 
     @Override

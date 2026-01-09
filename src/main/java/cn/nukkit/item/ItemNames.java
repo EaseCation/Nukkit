@@ -12,7 +12,11 @@ public interface ItemNames extends ItemBlockNames {
     String APPLE = "apple";
     String BOW = "bow";
     String ARROW = "arrow";
-    String COAL = "coal"; //TODO: flattening
+    /**
+     * flattened
+     * @see #CHARCOAL
+     */
+    String COAL = "coal";
     String CHARCOAL = "charcoal";
     String DIAMOND = "diamond";
     String IRON_INGOT = "iron_ingot";
@@ -80,7 +84,20 @@ public interface ItemNames extends ItemBlockNames {
     @Deprecated
     String SIGN = "sign";
     String WOODEN_DOOR = "wooden_door";
-    String BUCKET = "bucket"; //TODO: flattening
+    /**
+     * flattened
+     * @see #MILK_BUCKET
+     * @see #COD_BUCKET
+     * @see #SALMON_BUCKET
+     * @see #TROPICAL_FISH_BUCKET
+     * @see #PUFFERFISH_BUCKET
+     * @see #WATER_BUCKET
+     * @see #LAVA_BUCKET
+     * @see #POWDER_SNOW_BUCKET
+     * @see #AXOLOTL_BUCKET
+     * @see #TADPOLE_BUCKET
+     */
+    String BUCKET = "bucket";
     String MILK_BUCKET = "milk_bucket";
     String COD_BUCKET = "cod_bucket";
     String SALMON_BUCKET = "salmon_bucket";
@@ -94,8 +111,22 @@ public interface ItemNames extends ItemBlockNames {
     String IRON_DOOR = "iron_door";
     String REDSTONE = "redstone";
     String SNOWBALL = "snowball";
-    String BOAT = "boat"; //TODO: flattening
     String OAK_BOAT = "oak_boat";
+    /**
+     * @deprecated flattened
+     * @see #OAK_BOAT
+     * @see #SPRUCE_BOAT
+     * @see #BIRCH_BOAT
+     * @see #JUNGLE_BOAT
+     * @see #ACACIA_BOAT
+     * @see #DARK_OAK_BOAT
+     * @see #MANGROVE_BOAT
+     * @see #BAMBOO_RAFT
+     * @see #CHERRY_BOAT
+     * @see #PALE_OAK_BOAT
+     */
+    @Deprecated
+    String BOAT = "boat";
     String SPRUCE_BOAT = "spruce_boat";
     String BIRCH_BOAT = "birch_boat";
     String JUNGLE_BOAT = "jungle_boat";
@@ -137,8 +168,32 @@ public interface ItemNames extends ItemBlockNames {
      */
     @Deprecated
     String COOKED_FISH = "cooked_fish";
-    String DYE = "dye"; //TODO: flattening
     String INK_SAC = "ink_sac";
+    /**
+     * @deprecated flattened
+     * @see #INK_SAC
+     * @see #RED_DYE
+     * @see #GREEN_DYE
+     * @see #COCOA_BEANS
+     * @see #LAPIS_LAZULI
+     * @see #PURPLE_DYE
+     * @see #CYAN_DYE
+     * @see #LIGHT_GRAY_DYE
+     * @see #GRAY_DYE
+     * @see #PINK_DYE
+     * @see #LIME_DYE
+     * @see #YELLOW_DYE
+     * @see #LIGHT_BLUE_DYE
+     * @see #MAGENTA_DYE
+     * @see #ORANGE_DYE
+     * @see #BONE_MEAL
+     * @see #BLACK_DYE
+     * @see #BROWN_DYE
+     * @see #BLUE_DYE
+     * @see #WHITE_DYE
+     */
+    @Deprecated
+    String DYE = "dye";
     String RED_DYE = "red_dye";
     String GREEN_DYE = "green_dye";
     String COCOA_BEANS = "cocoa_beans";
@@ -204,7 +259,100 @@ public interface ItemNames extends ItemBlockNames {
      */
     @Deprecated
     String SPECKLED_MELON = "speckled_melon";
-    String SPAWN_EGG = "spawn_egg"; //TODO: flattening
+    /**
+     * @deprecated flattened
+     * @see #CHICKEN_SPAWN_EGG
+     * @see #COW_SPAWN_EGG
+     * @see #PIG_SPAWN_EGG
+     * @see #SHEEP_SPAWN_EGG
+     * @see #WOLF_SPAWN_EGG
+     * @see #VILLAGER_SPAWN_EGG
+     * @see #MOOSHROOM_SPAWN_EGG
+     * @see #SQUID_SPAWN_EGG
+     * @see #RABBIT_SPAWN_EGG
+     * @see #BAT_SPAWN_EGG
+     * @see #IRON_GOLEM_SPAWN_EGG
+     * @see #SNOW_GOLEM_SPAWN_EGG
+     * @see #OCELOT_SPAWN_EGG
+     * @see #HORSE_SPAWN_EGG
+     * @see #DONKEY_SPAWN_EGG
+     * @see #MULE_SPAWN_EGG
+     * @see #SKELETON_HORSE_SPAWN_EGG
+     * @see #ZOMBIE_HORSE_SPAWN_EGG
+     * @see #POLAR_BEAR_SPAWN_EGG
+     * @see #LLAMA_SPAWN_EGG
+     * @see #PARROT_SPAWN_EGG
+     * @see #DOLPHIN_SPAWN_EGG
+     * @see #ZOMBIE_SPAWN_EGG
+     * @see #CREEPER_SPAWN_EGG
+     * @see #SKELETON_SPAWN_EGG
+     * @see #SPIDER_SPAWN_EGG
+     * @see #ZOMBIE_PIGMAN_SPAWN_EGG
+     * @see #SLIME_SPAWN_EGG
+     * @see #ENDERMAN_SPAWN_EGG
+     * @see #SILVERFISH_SPAWN_EGG
+     * @see #CAVE_SPIDER_SPAWN_EGG
+     * @see #GHAST_SPAWN_EGG
+     * @see #MAGMA_CUBE_SPAWN_EGG
+     * @see #BLAZE_SPAWN_EGG
+     * @see #ZOMBIE_VILLAGER_SPAWN_EGG
+     * @see #WITCH_SPAWN_EGG
+     * @see #STRAY_SPAWN_EGG
+     * @see #HUSK_SPAWN_EGG
+     * @see #WITHER_SKELETON_SPAWN_EGG
+     * @see #GUARDIAN_SPAWN_EGG
+     * @see #ELDER_GUARDIAN_SPAWN_EGG
+     * @see #NPC_SPAWN_EGG
+     * @see #WITHER_SPAWN_EGG
+     * @see #ENDER_DRAGON_SPAWN_EGG
+     * @see #SHULKER_SPAWN_EGG
+     * @see #ENDERMITE_SPAWN_EGG
+     * @see #AGENT_SPAWN_EGG
+     * @see #VINDICATOR_SPAWN_EGG
+     * @see #PHANTOM_SPAWN_EGG
+     * @see #RAVAGER_SPAWN_EGG
+     * @see #TURTLE_SPAWN_EGG
+     * @see #CAT_SPAWN_EGG
+     * @see #EVOKER_SPAWN_EGG
+     * @see #VEX_SPAWN_EGG
+     * @see #PUFFERFISH_SPAWN_EGG
+     * @see #SALMON_SPAWN_EGG
+     * @see #DROWNED_SPAWN_EGG
+     * @see #TROPICAL_FISH_SPAWN_EGG
+     * @see #COD_SPAWN_EGG
+     * @see #PANDA_SPAWN_EGG
+     * @see #PILLAGER_SPAWN_EGG
+     * @see #WANDERING_TRADER_SPAWN_EGG
+     * @see #FOX_SPAWN_EGG
+     * @see #BEE_SPAWN_EGG
+     * @see #PIGLIN_SPAWN_EGG
+     * @see #HOGLIN_SPAWN_EGG
+     * @see #STRIDER_SPAWN_EGG
+     * @see #ZOGLIN_SPAWN_EGG
+     * @see #PIGLIN_BRUTE_SPAWN_EGG
+     * @see #GOAT_SPAWN_EGG
+     * @see #GLOW_SQUID_SPAWN_EGG
+     * @see #AXOLOTL_SPAWN_EGG
+     * @see #WARDEN_SPAWN_EGG
+     * @see #FROG_SPAWN_EGG
+     * @see #TADPOLE_SPAWN_EGG
+     * @see #ALLAY_SPAWN_EGG
+     * @see #TRADER_LLAMA_SPAWN_EGG
+     * @see #CAMEL_SPAWN_EGG
+     * @see #SNIFFER_SPAWN_EGG
+     * @see #BREEZE_SPAWN_EGG
+     * @see #ARMADILLO_SPAWN_EGG
+     * @see #BOGGED_SPAWN_EGG
+     * @see #CREAKING_SPAWN_EGG
+     * @see #HAPPY_GHAST_SPAWN_EGG
+     * @see #COPPER_GOLEM_SPAWN_EGG
+     * @see #NAUTILUS_SPAWN_EGG
+     * @see #ZOMBIE_NAUTILUS_SPAWN_EGG
+     * @see #PARCHED_SPAWN_EGG
+     * @see #CAMEL_HUSK_SPAWN_EGG
+     */
+    @Deprecated
+    String SPAWN_EGG = "spawn_egg";
     String CHICKEN_SPAWN_EGG = "chicken_spawn_egg";
     String COW_SPAWN_EGG = "cow_spawn_egg";
     String PIG_SPAWN_EGG = "pig_spawn_egg";
@@ -317,6 +465,17 @@ public interface ItemNames extends ItemBlockNames {
     @Deprecated
     String EMPTYMAP = "emptymap";
     String GOLDEN_CARROT = "golden_carrot";
+    /**
+     * @deprecated flattened
+     * @see ItemBlockNames#SKELETON_SKULL
+     * @see ItemBlockNames#WITHER_SKELETON_SKULL
+     * @see ItemBlockNames#ZOMBIE_HEAD
+     * @see ItemBlockNames#PLAYER_HEAD
+     * @see ItemBlockNames#CREEPER_HEAD
+     * @see ItemBlockNames#DRAGON_HEAD
+     * @see ItemBlockNames#PIGLIN_HEAD
+     */
+    @Deprecated
     String SKULL = "skull";
     String CARROT_ON_A_STICK = "carrot_on_a_stick";
     /**
@@ -419,8 +578,20 @@ public interface ItemNames extends ItemBlockNames {
      */
     @Deprecated
     String CHORUS_FRUIT_POPPED = "chorus_fruit_popped";
-    String BANNER_PATTERN = "banner_pattern"; //TODO: flattening
     String CREEPER_BANNER_PATTERN = "creeper_banner_pattern";
+    /**
+     * @deprecated flattened
+     * @see #CREEPER_BANNER_PATTERN
+     * @see #SKULL_BANNER_PATTERN
+     * @see #FLOWER_BANNER_PATTERN
+     * @see #MOJANG_BANNER_PATTERN
+     * @see #FIELD_MASONED_BANNER_PATTERN
+     * @see #BORDURE_INDENTED_BANNER_PATTERN
+     * @see #PIGLIN_BANNER_PATTERN
+     * @see #GLOBE_BANNER_PATTERN
+     */
+    @Deprecated
+    String BANNER_PATTERN = "banner_pattern";
     String SKULL_BANNER_PATTERN = "skull_banner_pattern";
     String FLOWER_BANNER_PATTERN = "flower_banner_pattern";
     String MOJANG_BANNER_PATTERN = "mojang_banner_pattern";
@@ -479,10 +650,10 @@ public interface ItemNames extends ItemBlockNames {
      */
     @Beta
     String TURTLE_SCUTE = "turtle_scute";
-//    /**
-//     * @deprecated use {@link #TURTLE_SCUTE} instead
-//     */
-//    @Deprecated
+    /**
+     * @deprecated use {@link #TURTLE_SCUTE} instead
+     */
+    @Deprecated
     String SCUTE = "scute";
     /**
      * @deprecated use {@link #TURTLE_SCUTE} instead
@@ -699,8 +870,22 @@ public interface ItemNames extends ItemBlockNames {
 
     String COPPER_INGOT = "copper_ingot";
     String GLOW_BERRIES = "glow_berries";
-    String CHEST_BOAT = "chest_boat"; //TODO: flattening
     String OAK_CHEST_BOAT = "oak_chest_boat";
+    /**
+     * @deprecated flattened
+     * @see #OAK_CHEST_BOAT
+     * @see #SPRUCE_CHEST_BOAT
+     * @see #BIRCH_CHEST_BOAT
+     * @see #JUNGLE_CHEST_BOAT
+     * @see #ACACIA_CHEST_BOAT
+     * @see #DARK_OAK_CHEST_BOAT
+     * @see #MANGROVE_CHEST_BOAT
+     * @see #BAMBOO_CHEST_RAFT
+     * @see #CHERRY_CHEST_BOAT
+     * @see #PALE_OAK_CHEST_BOAT
+     */
+    @Deprecated
+    String CHEST_BOAT = "chest_boat";
     String SPRUCE_CHEST_BOAT = "spruce_chest_boat";
     String BIRCH_CHEST_BOAT = "birch_chest_boat";
     String JUNGLE_CHEST_BOAT = "jungle_chest_boat";

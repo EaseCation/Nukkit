@@ -2,7 +2,6 @@ package cn.nukkit.entity.item;
 
 import cn.nukkit.Player;
 import cn.nukkit.block.Block;
-import cn.nukkit.block.BlockPlanks;
 import cn.nukkit.blockentity.BlockEntityPistonArm;
 import cn.nukkit.entity.Entity;
 import cn.nukkit.entity.EntityHanging;
@@ -307,7 +306,7 @@ public class EntityPainting extends EntityHanging {
     @Override
     protected void dropItem(Entity entity) {
         this.level.addLevelEvent(this, LevelEventPacket.EVENT_SOUND_ITEM_FRAME_REMOVED);
-        this.level.addLevelEvent(this, LevelEventPacket.EVENT_PARTICLE_DESTROY_BLOCK_NO_SOUND, Block.getFullId(Block.PLANKS, BlockPlanks.OAK));
+        this.level.addLevelEvent(this, LevelEventPacket.EVENT_PARTICLE_DESTROY_BLOCK_NO_SOUND, Block.getFullId(Block.OAK_PLANKS));
 
         if (!this.level.getGameRules().getBoolean(GameRule.DO_ENTITY_DROPS)) {
             return;

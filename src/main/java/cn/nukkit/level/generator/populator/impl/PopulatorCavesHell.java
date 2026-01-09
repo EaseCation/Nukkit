@@ -10,7 +10,7 @@ import cn.nukkit.math.RandomSource;
 
 public class PopulatorCavesHell extends Populator {
     @Override
-    public void populate(ChunkManager level, int chunkX, int chunkZ, NukkitRandom random, FullChunk chunk) {
+    public void populate(ChunkManager level, int chunkX, int chunkZ, RandomSource random, FullChunk chunk) {
         long seed = level.getSeed();
         RandomSource genRandom = new NukkitRandom(seed);
         long xScale = 2 * (genRandom.nextInt() / 2) + 1;

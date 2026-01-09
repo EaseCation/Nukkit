@@ -45,17 +45,13 @@ public class BlockCauldron extends BlockTransparent {
     public static final int LIQUID_LAVA = 1;
     public static final int LIQUID_POWDER_SNOW = 2;
 
-    public BlockCauldron() {
-        this(0);
-    }
+    BlockCauldron() {
 
-    public BlockCauldron(int meta) {
-        super(meta);
     }
 
     @Override
     public int getId() {
-        return BLOCK_CAULDRON;
+        return CAULDRON;
     }
 
     @Override
@@ -139,7 +135,7 @@ public class BlockCauldron extends BlockTransparent {
 
                 replaceBucket(item, player, ev.getItem());
 
-                this.level.setBlock(this, get(BLOCK_CAULDRON), true);
+                this.level.setBlock(this, get(CAULDRON), true);
 
                 if (cauldron.clearCustomColor()) {
                     cauldron.spawnToAll();
@@ -164,7 +160,7 @@ public class BlockCauldron extends BlockTransparent {
                 }
 
                 if (fillLevel != FILL_LEVEL_FULL) {
-                    this.level.setBlock(this, get(BLOCK_CAULDRON, FILL_LEVEL_FULL), true);
+                    this.level.setBlock(this, get(CAULDRON, FILL_LEVEL_FULL), true);
                 }
 
                 if (cauldron.clearCustomColor()) {
@@ -216,7 +212,7 @@ public class BlockCauldron extends BlockTransparent {
                 if (fillLevel != FILL_LEVEL_FULL) {
                     setCauldronType(LIQUID_POWDER_SNOW);
                     setFillLevel(FILL_LEVEL_FULL);
-                    level.setBlock(this, get(BLOCK_CAULDRON, getDamage()), true);
+                    level.setBlock(this, get(CAULDRON, getDamage()), true);
                 }
 
                 level.addLevelEvent(add(0.5, 0.375 + FILL_LEVEL_FULL * 0.125, 0.5), LevelEventPacket.EVENT_CAULDRON_FILL_POWDER_SNOW);
@@ -367,7 +363,7 @@ public class BlockCauldron extends BlockTransparent {
                 setFillLevel(fillLevel);
                 level.setBlock(this, this, true);
 
-                player.getInventory().setItemInHand(Item.get(getItemId(UNDYED_SHULKER_BOX), 0, 1, item.getCompoundTag()));
+                player.getInventory().setItemInHand(Item.get(ItemBlockID.UNDYED_SHULKER_BOX, 0, 1, item.getCompoundTag()));
 
                 level.addLevelEvent(add(0.5, 0.375 + fillLevel * 0.125, 0.5), LevelEventPacket.EVENT_CAULDRON_CLEAN_ARMOR);
                 break;
@@ -571,7 +567,7 @@ public class BlockCauldron extends BlockTransparent {
     }
 
     protected void mix(BlockEntityCauldron cauldron) {
-        level.setBlock(this, get(BLOCK_CAULDRON), true);
+        level.setBlock(this, get(CAULDRON), true);
 
         cauldron.resetCauldron();
         cauldron.spawnToAll();
@@ -830,6 +826,11 @@ public class BlockCauldron extends BlockTransparent {
     @Override
     public int getLightLevel() {
         return isEmpty() ? 0 : getCauldronType() == LIQUID_LAVA ? 15 : 0;
+    }
+
+    @Override
+    public int getLightBlock() {
+        return isEmpty() ? 3 : getCauldronType() == LIQUID_LAVA ? 14 : 3;
     }
 
     @Override

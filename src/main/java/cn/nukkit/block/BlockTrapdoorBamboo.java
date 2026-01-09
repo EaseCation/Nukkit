@@ -3,12 +3,8 @@ package cn.nukkit.block;
 import cn.nukkit.utils.BlockColor;
 
 public class BlockTrapdoorBamboo extends BlockTrapdoor {
-    public BlockTrapdoorBamboo() {
-        this(0);
-    }
+    BlockTrapdoorBamboo() {
 
-    public BlockTrapdoorBamboo(int meta) {
-        super(meta);
     }
 
     @Override

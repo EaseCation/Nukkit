@@ -3,9 +3,9 @@ package cn.nukkit.block;
 import cn.nukkit.math.BlockFace;
 import cn.nukkit.utils.BlockColor;
 
-public class BlockLeafLitter extends BlockPinkPetals {
-    public BlockLeafLitter() {
-        super(0);
+public class BlockLeafLitter extends BlockSegmentable {
+    BlockLeafLitter() {
+
     }
 
     @Override

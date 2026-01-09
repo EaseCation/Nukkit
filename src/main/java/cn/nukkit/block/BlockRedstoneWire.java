@@ -21,12 +21,8 @@ public class BlockRedstoneWire extends BlockFlowable {
 
     private boolean canProvidePower = true;
 
-    public BlockRedstoneWire() {
-        this(0);
-    }
+    BlockRedstoneWire() {
 
-    public BlockRedstoneWire(int meta) {
-        super(meta);
     }
 
     @Override

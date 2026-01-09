@@ -5,33 +5,26 @@ import cn.nukkit.item.Item;
 import cn.nukkit.math.BlockFace;
 import cn.nukkit.utils.BlockColor;
 
-import static cn.nukkit.GameVersion.*;
-
 /**
  * author: MagicDroidX
  * Nukkit Project
  */
 public class BlockSand extends BlockFallable {
+    public static final int[] SANDS = {
+            SAND,
+            RED_SAND,
+    };
 
     public static final int DEFAULT = 0;
     public static final int RED = 1;
 
-    public BlockSand() {
-        this(0);
-    }
+    BlockSand() {
 
-    public BlockSand(int meta) {
-        super(meta);
     }
 
     @Override
     public int getId() {
         return SAND;
-    }
-
-    @Override
-    public boolean isStackedByData() {
-        return !V1_21_20.isAvailable();
     }
 
     @Override
@@ -51,10 +44,6 @@ public class BlockSand extends BlockFallable {
 
     @Override
     public String getName() {
-        if (this.getDamage() == 0x01) {
-            return "Red Sand";
-        }
-
         return "Sand";
     }
 

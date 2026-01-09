@@ -18,10 +18,6 @@ public abstract class BlockHangingSign extends BlockSignPost {
     public static final int HANGING_BIT = 0b1_0000_000;
     public static final int ATTACHED_BIT = 0b10_0000_000;
 
-    protected BlockHangingSign(int meta) {
-        super(meta);
-    }
-
     @Override
     public abstract int getId();
 
@@ -59,7 +55,7 @@ public abstract class BlockHangingSign extends BlockSignPost {
 
     @Override
     public Item toItem(boolean addUserData) {
-        return Item.get(getItemId(), getItemDefaultMeta());
+        return Item.get(getItemId(), getItemMeta());
     }
 
     @Override

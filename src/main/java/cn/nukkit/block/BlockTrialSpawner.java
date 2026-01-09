@@ -4,15 +4,17 @@ import cn.nukkit.Player;
 import cn.nukkit.blockentity.BlockEntities;
 import cn.nukkit.blockentity.BlockEntity;
 import cn.nukkit.blockentity.BlockEntityTrialSpawner;
+import cn.nukkit.blockentity.BlockEntityTrialSpawner.SpawnData;
 import cn.nukkit.blockentity.BlockEntityType;
 import cn.nukkit.item.Item;
-import cn.nukkit.level.Level;
+import cn.nukkit.item.ItemSpawnEgg;
 import cn.nukkit.math.BlockFace;
 import cn.nukkit.nbt.tag.CompoundTag;
 import cn.nukkit.nbt.tag.Tag;
 import cn.nukkit.utils.BlockColor;
 
 import javax.annotation.Nullable;
+import java.util.List;
 
 public class BlockTrialSpawner extends BlockTransparent {
     public static final int TRIAL_SPAWNER_STATE_MASK = 0b111;
@@ -25,7 +27,8 @@ public class BlockTrialSpawner extends BlockTransparent {
     public static final int STATE_EJECTING_REWARD = 4;
     public static final int STATE_COOLDOWN = 5;
 
-    public BlockTrialSpawner() {
+    BlockTrialSpawner() {
+
     }
 
     @Override
@@ -100,20 +103,49 @@ public class BlockTrialSpawner extends BlockTransparent {
     @Override
     public boolean onActivate(Item item, BlockFace face, float fx, float fy, float fz, Player player) {
         if (item.isSpawnEgg()) {
-            //TODO
+            BlockEntityTrialSpawner blockEntity = getBlockEntity();
+            if (blockEntity == null) {
+                blockEntity = createBlockEntity(null);
+                if (blockEntity == null) {
+                    return true;
+                }
+            }
+
+            blockEntity.spawnToAll(true);
+
+            if (getState() == STATE_INACTIVE) {
+                setState(STATE_WAITING_FOR_PLAYERS);
+                level.setBlock(this, this, true);
+            }
+
+            int entityType = ((ItemSpawnEgg) item).getEntityId();
+
+            List<SpawnData> normalSpawnPotentials = blockEntity.getNormalConfig().getSpawnPotentials();
+            normalSpawnPotentials.clear();
+            SpawnData normalSpawnData = new SpawnData();
+            normalSpawnData.setEntityType(entityType);
+            normalSpawnPotentials.add(normalSpawnData);
+
+            List<SpawnData> ominousSpawnPotentials = blockEntity.getOminousConfig().getSpawnPotentials();
+            ominousSpawnPotentials.clear();
+            SpawnData ominousSpawnData = new SpawnData();
+            ominousSpawnData.setEntityType(entityType);
+            ominousSpawnPotentials.add(ominousSpawnData);
+
+            SpawnData spawnData = new SpawnData();
+            spawnData.setEntityType(entityType);
+            blockEntity.setSpawnData(spawnData);
+
+            blockEntity.setCooldownEndAt(0);
+
+            blockEntity.spawnToAll();
+
+            if (player != null && player.isSurvivalLike()) {
+                item.pop();
+            }
             return true;
         }
         return false;
-    }
-
-    @Override
-    public int onUpdate(int type) {
-        if (type == Level.BLOCK_UPDATE_SCHEDULED) {
-            //TODO
-            return type;
-        }
-
-        return 0;
     }
 
     protected BlockEntityTrialSpawner createBlockEntity(@Nullable Item item) {

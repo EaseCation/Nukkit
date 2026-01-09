@@ -21,7 +21,7 @@ import static cn.nukkit.GameVersion.*;
  */
 public class BlockNoteblock extends BlockSolid {
 
-    public BlockNoteblock() {
+    BlockNoteblock() {
 
     }
 
@@ -101,7 +101,7 @@ public class BlockNoteblock extends BlockSolid {
                         return Instrument.PIGLIN;
                 }
             }
-        } else if (above.is(BLOCK_SKULL) && level.getBlockEntity(above) instanceof BlockEntitySkull skull) {
+        } else if (above.is(SKULL) && level.getBlockEntity(above) instanceof BlockEntitySkull skull) {
             switch (skull.getSkullType()) {
                 case ItemSkull.HEAD_SKELETON:
                     return Instrument.SKELETON;
@@ -125,6 +125,7 @@ public class BlockNoteblock extends BlockSolid {
         if (below.isWool()) {
             return Instrument.GUITAR;
         }
+        //TODO: update me
         switch (below.getId()) {
             case GOLD_BLOCK:
                 return Instrument.GLOCKENSPIEL;
@@ -164,12 +165,12 @@ public class BlockNoteblock extends BlockSolid {
             case JUNGLE_FENCE_GATE:
             case DARK_OAK_FENCE_GATE:
             case ACACIA_FENCE_GATE:
-            case BLOCK_WOODEN_DOOR:
-            case BLOCK_SPRUCE_DOOR:
-            case BLOCK_BIRCH_DOOR:
-            case BLOCK_JUNGLE_DOOR:
-            case BLOCK_ACACIA_DOOR:
-            case BLOCK_DARK_OAK_DOOR:
+            case WOODEN_DOOR:
+            case SPRUCE_DOOR:
+            case BIRCH_DOOR:
+            case JUNGLE_DOOR:
+            case ACACIA_DOOR:
+            case DARK_OAK_DOOR:
             case WOODEN_PRESSURE_PLATE:
             case TRAPDOOR:
             case STANDING_SIGN:
@@ -204,7 +205,10 @@ public class BlockNoteblock extends BlockSolid {
             case COBBLESTONE:
             case MOSSY_COBBLESTONE:
             case BRICK_BLOCK:
-            case STONEBRICK:
+            case STONE_BRICKS:
+            case MOSSY_STONE_BRICKS:
+            case CRACKED_STONE_BRICKS:
+            case CHISELED_STONE_BRICKS:
             case NETHER_BRICK:
             case RED_NETHER_BRICK:
             case QUARTZ_BLOCK:

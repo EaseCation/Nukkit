@@ -3,12 +3,8 @@ package cn.nukkit.block;
 import cn.nukkit.utils.BlockColor;
 
 public class BlockStairsWarped extends BlockStairsWood {
-    public BlockStairsWarped() {
-        this(0);
-    }
+    BlockStairsWarped() {
 
-    public BlockStairsWarped(int meta) {
-        super(meta);
     }
 
     @Override

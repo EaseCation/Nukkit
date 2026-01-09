@@ -37,7 +37,8 @@ public class BlockCrafter extends BlockSolid implements Faceable {
     public static final int ORIENTATION_NORTH_UP = 10;
     public static final int ORIENTATION_SOUTH_UP = 11;
 
-    public BlockCrafter() {
+    BlockCrafter() {
+
     }
 
     @Override
@@ -97,7 +98,65 @@ public class BlockCrafter extends BlockSolid implements Faceable {
 
     @Override
     public boolean place(Item item, Block block, Block target, BlockFace face, float fx, float fy, float fz, Player player) {
-        //TODO: orientation
+        if (player != null) {
+            boolean horizontal = false;
+            if (Math.abs(player.getFloorX() - this.x) <= 1 && Math.abs(player.getFloorZ() - this.z) <= 1) {
+                double y = player.y + player.getEyeHeight();
+                if (y - this.y > 2) {
+                    switch (player.getHorizontalFacing().getOpposite()) {
+                        case SOUTH:
+                            setDamage(ORIENTATION_UP_SOUTH);
+                            break;
+                        case WEST:
+                            setDamage(ORIENTATION_UP_WEST);
+                            break;
+                        case NORTH:
+                            setDamage(ORIENTATION_UP_NORTH);
+                            break;
+                        case EAST:
+                            setDamage(ORIENTATION_UP_EAST);
+                            break;
+                    }
+                } else if (this.y - y > 0) {
+                    switch (player.getHorizontalFacing().getOpposite()) {
+                        case SOUTH:
+                            setDamage(ORIENTATION_DOWN_SOUTH);
+                            break;
+                        case WEST:
+                            setDamage(ORIENTATION_DOWN_WEST);
+                            break;
+                        case NORTH:
+                            setDamage(ORIENTATION_DOWN_NORTH);
+                            break;
+                        case EAST:
+                            setDamage(ORIENTATION_DOWN_EAST);
+                            break;
+                    }
+                } else {
+                    horizontal = true;
+                }
+            } else {
+                horizontal = true;
+            }
+            if (horizontal) {
+                switch (player.getHorizontalFacing().getOpposite()) {
+                    case SOUTH:
+                        setDamage(ORIENTATION_SOUTH_UP);
+                        break;
+                    case WEST:
+                        setDamage(ORIENTATION_WEST_UP);
+                        break;
+                    case NORTH:
+                        setDamage(ORIENTATION_NORTH_UP);
+                        break;
+                    case EAST:
+                        setDamage(ORIENTATION_EAST_UP);
+                        break;
+                }
+            }
+        } else {
+            setDamage(getBlockDefaultMeta());
+        }
 
         if (!super.place(item, block, target, face, fx, fy, fz, player)) {
             return false;

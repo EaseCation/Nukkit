@@ -4,45 +4,55 @@ import cn.nukkit.Player;
 import cn.nukkit.item.Item;
 import cn.nukkit.level.Level;
 import cn.nukkit.math.BlockFace;
-import cn.nukkit.utils.BlockColor;
 import cn.nukkit.utils.Faceable;
 
 import java.util.concurrent.ThreadLocalRandom;
 
-import static cn.nukkit.GameVersion.*;
+public abstract class BlockCoralFanHang extends BlockFlowable implements Faceable {
+    public static final int[] WALL_CORAL_FANS = {
+            TUBE_CORAL_WALL_FAN,
+            BRAIN_CORAL_WALL_FAN,
+            DEAD_TUBE_CORAL_WALL_FAN,
+            DEAD_BRAIN_CORAL_WALL_FAN,
+    };
+    public static final int[] DEAD_WALL_CORAL_FANS = {
+            DEAD_TUBE_CORAL_WALL_FAN,
+            DEAD_BRAIN_CORAL_WALL_FAN,
+    };
+    public static final int[] WALL_CORAL_FANS2 = {
+            BUBBLE_CORAL_WALL_FAN,
+            FIRE_CORAL_WALL_FAN,
+            DEAD_BUBBLE_CORAL_WALL_FAN,
+            DEAD_FIRE_CORAL_WALL_FAN,
+    };
+    public static final int[] DEAD_WALL_CORAL_FANS2 = {
+            DEAD_BUBBLE_CORAL_WALL_FAN,
+            DEAD_FIRE_CORAL_WALL_FAN,
+    };
+    public static final int[] WALL_CORAL_FANS3 = {
+            HORN_CORAL_WALL_FAN,
+            HORN_CORAL_WALL_FAN,
+            DEAD_HORN_CORAL_WALL_FAN,
+            DEAD_HORN_CORAL_WALL_FAN,
+    };
+    public static final int[] DEAD_WALL_CORAL_FANS3 = {
+            DEAD_HORN_CORAL_WALL_FAN,
+            DEAD_HORN_CORAL_WALL_FAN,
+    };
 
-public class BlockCoralFanHang extends BlockFlowable implements Faceable {
-
+    @Deprecated
     public static final int TYPE_BIT = 0b1;
+    @Deprecated
     public static final int DEAD_BIT = 0b10;
-    public static final int TYPE_DEAD_BITS = 2;
-    public static final int DIRECTION_MASK = 0b1100;
+    public static final int DIRECTION_MASK = 0b11;
 
     public static final int BLUE = 0;
     public static final int PINK = 1;
 
-    public BlockCoralFanHang() {
-        this(0);
-    }
+    public static final int PURPLE = 0;
+    public static final int RED = 1;
 
-    public BlockCoralFanHang(int meta) {
-        super(meta);
-    }
-
-    @Override
-    public int getId() {
-        return CORAL_FAN_HANG;
-    }
-
-    @Override
-    public boolean isStackedByData() {
-        return !V1_21_20.isAvailable();
-    }
-
-    @Override
-    public String getName() {
-        return getCoralType() == BLUE ? "Hang Tube Coral Fan" : "Hang Brain Coral Fan";
-    }
+    public static final int YELLOW = 0;
 
     @Override
     public boolean canSilkTouch() {
@@ -50,24 +60,8 @@ public class BlockCoralFanHang extends BlockFlowable implements Faceable {
     }
 
     @Override
-    public BlockColor getColor() {
-        switch (getCoralType()) {
-            default:
-            case BLUE:
-                return BlockColor.BLUE_BLOCK_COLOR;
-            case PINK:
-                return BlockColor.PINK_BLOCK_COLOR;
-        }
-    }
-
-    @Override
     public boolean canContainWater() {
         return true;
-    }
-
-    @Override
-    public Item toItem(boolean addUserData) {
-        return Item.get(getItemId(isDead() ? CORAL_FAN_DEAD : CORAL_FAN), getCoralType() == BLUE ? BlockCoralFan.BLUE : BlockCoralFan.PINK);
     }
 
     @Override
@@ -84,7 +78,7 @@ public class BlockCoralFanHang extends BlockFlowable implements Faceable {
                 return Level.BLOCK_UPDATE_NORMAL;
             }
 
-            if (isDead()) {
+            if (isDeadCoral()) {
                 return 0;
             }
 
@@ -97,8 +91,7 @@ public class BlockCoralFanHang extends BlockFlowable implements Faceable {
                 return 0;
             }
 
-            setDead(true);
-            level.setBlock(this, this, true);
+            level.setBlock(this, get(getDeadBlockId(), getDamage()), true);
             return type;
         }
 
@@ -115,27 +108,13 @@ public class BlockCoralFanHang extends BlockFlowable implements Faceable {
         return BlockFace.fromReversedHorizontalIndex(getDirection()).getOpposite();
     }
 
-    public int getCoralType() {
-        return getDamage() & TYPE_BIT;
-    }
-
-    public void setCoralType(int type) {
-        setDamage((getDamage() & ~TYPE_BIT) | (type & TYPE_BIT));
-    }
-
-    public boolean isDead() {
-        return (getDamage() & DEAD_BIT) == DEAD_BIT;
-    }
-
-    public void setDead(boolean dead) {
-        setDamage(dead ? getDamage() | DEAD_BIT : getDamage() & ~DEAD_BIT);
-    }
-
     public int getDirection() {
-        return (getDamage() & DIRECTION_MASK) >> TYPE_DEAD_BITS;
+        return getDamage();
     }
 
     public void setDirection(int direction) {
-        setDamage((getDamage() & ~DIRECTION_MASK) | ((direction << TYPE_DEAD_BITS) & DIRECTION_MASK));
+        setDamage(direction & DIRECTION_MASK);
     }
+
+    protected abstract int getDeadBlockId();
 }

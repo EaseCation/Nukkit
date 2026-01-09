@@ -35,4 +35,14 @@ public class ItemIceBomb extends ProjectileItem {
     public boolean isChemistryFeature() {
         return true;
     }
+
+    @Override
+    public int getCooldownDuration() {
+        return 10;
+    }
+
+    @Override
+    public CooldownCategory getCooldownCategory() {
+        return CooldownCategory.ICE_BOMB;
+    }
 }

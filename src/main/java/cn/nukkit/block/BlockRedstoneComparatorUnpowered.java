@@ -5,12 +5,8 @@ package cn.nukkit.block;
  */
 public class BlockRedstoneComparatorUnpowered extends BlockRedstoneComparator {
 
-    public BlockRedstoneComparatorUnpowered() {
-        this(0);
-    }
+    BlockRedstoneComparatorUnpowered() {
 
-    public BlockRedstoneComparatorUnpowered(int meta) {
-        super(meta);
     }
 
     @Override

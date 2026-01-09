@@ -15,21 +15,8 @@ import cn.nukkit.utils.Faceable;
  */
 public class BlockLadder extends BlockTransparent implements Faceable {
 
-    private static final int[] FACES = {
-            0, //never use
-            1, //never use
-            3,
-            2,
-            5,
-            4
-    };
+    BlockLadder() {
 
-    public BlockLadder() {
-        this(0);
-    }
-
-    public BlockLadder(int meta) {
-        super(meta);
     }
 
     @Override
@@ -128,7 +115,7 @@ public class BlockLadder extends BlockTransparent implements Faceable {
     @Override
     public int onUpdate(int type) {
         if (type == Level.BLOCK_UPDATE_NORMAL) {
-            if (!this.getSide(BlockFace.fromIndex(FACES[this.getDamage()])).isSolid()) {
+            if (!this.getSide(getBlockFace().getOpposite()).isSolid()) {
                 this.getLevel().useBreakOn(this, true);
                 return Level.BLOCK_UPDATE_NORMAL;
             }

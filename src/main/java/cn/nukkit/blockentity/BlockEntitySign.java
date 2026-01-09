@@ -234,7 +234,7 @@ public class BlockEntitySign extends BlockEntitySpawnable {
     }
 
     @Override
-    public CompoundTag getSpawnCompound() {
+    public CompoundTag getSpawnCompound(boolean chunkData) {
         return getDefaultCompound(this, getBlockEntityId())
                 .putBoolean("IsWaxed", waxed)
                 .putLong("LockedForEditingBy", -1) // editing player actor unique id

@@ -15,14 +15,8 @@ public class BlockEndPortalFrame extends BlockTransparent implements Faceable {
     public static final int DIRECTION_MASK = 0b11;
     public static final int EYE_BIT = 0b100;
 
-    private static final int[] FACES = {2, 3, 0, 1};
+    BlockEndPortalFrame() {
 
-    public BlockEndPortalFrame() {
-        this(0);
-    }
-
-    public BlockEndPortalFrame(int meta) {
-        super(meta);
     }
 
     @Override
@@ -113,7 +107,7 @@ public class BlockEndPortalFrame extends BlockTransparent implements Faceable {
 
     @Override
     public boolean place(Item item, Block block, Block target, BlockFace face, float fx, float fy, float fz, Player player) {
-        this.setDamage(FACES[player != null ? player.getDirection().getHorizontalIndex() : 0]);
+        this.setDamage(player != null ? player.getDirection().getOpposite().getHorizontalIndex() : 0);
         this.getLevel().setBlock(block, this, true);
         return true;
     }

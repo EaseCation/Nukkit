@@ -11,6 +11,7 @@ import cn.nukkit.level.generator.populator.type.Populator;
 import cn.nukkit.level.generator.task.PlaceEntityTask;
 import cn.nukkit.math.Mth;
 import cn.nukkit.math.NukkitRandom;
+import cn.nukkit.math.RandomSource;
 import cn.nukkit.math.Vector3;
 import cn.nukkit.utils.Utils;
 import com.google.common.cache.CacheBuilder;
@@ -38,7 +39,7 @@ public class PopulatorSpike extends Populator {
     }
 
     @Override
-    public void populate(ChunkManager level, int chunkX, int chunkZ, NukkitRandom random, FullChunk chunk) {
+    public void populate(ChunkManager level, int chunkX, int chunkZ, RandomSource random, FullChunk chunk) {
         if (spike.centerX >> 4 != chunkX || spike.centerZ >> 4 != chunkZ) {
             return;
         }

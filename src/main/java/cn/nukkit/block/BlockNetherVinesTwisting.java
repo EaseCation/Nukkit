@@ -7,12 +7,8 @@ import java.util.Random;
 import java.util.concurrent.ThreadLocalRandom;
 
 public class BlockNetherVinesTwisting extends BlockNetherVines {
-    public BlockNetherVinesTwisting() {
-        this(0);
-    }
+    BlockNetherVinesTwisting() {
 
-    public BlockNetherVinesTwisting(int meta) {
-        super(meta);
     }
 
     @Override

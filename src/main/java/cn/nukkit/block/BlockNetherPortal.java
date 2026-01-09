@@ -22,12 +22,8 @@ public class BlockNetherPortal extends BlockTransparent implements Faceable {
     public static final int AXIS_X = 1;
     public static final int AXIS_Z = 2;
 
-    public BlockNetherPortal() {
-        this(0);
-    }
+    BlockNetherPortal() {
 
-    public BlockNetherPortal(int meta) {
-        super(0);
     }
 
     @Override
@@ -88,6 +84,15 @@ public class BlockNetherPortal extends BlockTransparent implements Faceable {
     @Override
     public Item toItem(boolean addUserData) {
         return Items.air();
+    }
+
+    @Override
+    public void onNonPlayerPlace() {
+        if (getDamage() != 0) {
+            return;
+        }
+
+        //TODO
     }
 
     @Override

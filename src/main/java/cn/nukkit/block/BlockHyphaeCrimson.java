@@ -3,12 +3,8 @@ package cn.nukkit.block;
 import cn.nukkit.utils.BlockColor;
 
 public class BlockHyphaeCrimson extends BlockHyphae {
-    public BlockHyphaeCrimson() {
-        this(0);
-    }
+    BlockHyphaeCrimson() {
 
-    public BlockHyphaeCrimson(int meta) {
-        super(meta);
     }
 
     @Override

@@ -1,8 +1,0 @@
-{
-    "minecraft:invisiblebedrock": "minecraft:invisible_bedrock",
-    "minecraft:movingblock": "minecraft:moving_block",
-    "minecraft:pistonarmcollision": "minecraft:piston_arm_collision",
-    "minecraft:sealantern": "minecraft:sea_lantern",
-    "minecraft:stickypistonarmcollision": "minecraft:sticky_piston_arm_collision",
-    "minecraft:tripwire": "minecraft:trip_wire"
-}

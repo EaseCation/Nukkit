@@ -16,12 +16,8 @@ public class BlockLightningRod extends BlockTransparent implements CopperBehavio
     public static final int FACING_DIRECTION_MASK = 0b111;
     public static final int POWERED_BIT = 0b1000;
 
-    public BlockLightningRod() {
-        this(0);
-    }
+    BlockLightningRod() {
 
-    public BlockLightningRod(int meta) {
-        super(meta);
     }
 
     @Override

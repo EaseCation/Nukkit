@@ -1,14 +1,18 @@
 package cn.nukkit.block;
 
-import cn.nukkit.utils.BlockColor;
-
-import static cn.nukkit.GameVersion.*;
-
 /**
  * Created on 2015/12/2 by xtypr.
  * Package cn.nukkit.block in project Nukkit .
  */
-public class BlockSlabWood extends BlockSlab {
+public abstract class BlockSlabWood extends BlockSlab {
+    public static final int[] WOODEN_SLABS = {
+            OAK_SLAB,
+            SPRUCE_SLAB,
+            BIRCH_SLAB,
+            JUNGLE_SLAB,
+            ACACIA_SLAB,
+            DARK_OAK_SLAB,
+    };
 
     public static final int OAK = 0;
     public static final int SPRUCE = 1;
@@ -16,40 +20,6 @@ public class BlockSlabWood extends BlockSlab {
     public static final int JUNGLE = 3;
     public static final int ACACIA = 4;
     public static final int DARK_OAK = 5;
-
-    private static final String[] NAMES = new String[]{
-            "Oak Wood Slab",
-            "Spruce Wood Slab",
-            "Birch Wood Slab",
-            "Jungle Wood Slab",
-            "Acacia Wood Slab",
-            "Dark Oak Wood Slab",
-            "Wood Slab",
-            "Wood Slab",
-    };
-
-    public BlockSlabWood() {
-        this(0);
-    }
-
-    public BlockSlabWood(int meta) {
-        super(meta);
-    }
-
-    @Override
-    public String getName() {
-        return (isTopSlot() ? "Upper " : "") + NAMES[this.getSlabType()];
-    }
-
-    @Override
-    public int getId() {
-        return WOODEN_SLAB;
-    }
-
-    @Override
-    public boolean isStackedByData() {
-        return !V1_20_70.isAvailable();
-    }
 
     @Override
     public float getHardness() {
@@ -77,31 +47,10 @@ public class BlockSlabWood extends BlockSlab {
     }
 
     @Override
-    public BlockColor getColor() {
-        switch (getSlabType()) {
-            default:
-            case OAK:
-                return BlockColor.WOOD_BLOCK_COLOR;
-            case SPRUCE:
-                return BlockColor.PODZOL_BLOCK_COLOR;
-            case BIRCH:
-                return BlockColor.SAND_BLOCK_COLOR;
-            case JUNGLE:
-                return BlockColor.DIRT_BLOCK_COLOR;
-            case ACACIA:
-                return BlockColor.ORANGE_BLOCK_COLOR;
-            case DARK_OAK:
-                return BlockColor.BROWN_BLOCK_COLOR;
-        }
-    }
-
-    @Override
     public int getFuelTime() {
         return 300;
     }
 
     @Override
-    protected int getDoubleSlabBlockId() {
-        return DOUBLE_WOODEN_SLAB;
-    }
+    protected abstract int getDoubleSlabBlockId();
 }

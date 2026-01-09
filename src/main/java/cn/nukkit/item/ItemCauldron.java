@@ -19,6 +19,6 @@ public class ItemCauldron extends Item {
 
     public ItemCauldron(Integer meta, int count) {
         super(CAULDRON, meta, count, "Cauldron");
-        this.block = Block.get(BlockID.BLOCK_CAULDRON);
+        this.block = Block.get(BlockID.CAULDRON);
     }
 }

@@ -4,16 +4,36 @@ import cn.nukkit.Player;
 import cn.nukkit.item.Item;
 import cn.nukkit.level.Level;
 import cn.nukkit.math.BlockFace;
-import cn.nukkit.utils.BlockColor;
 
 import java.util.concurrent.ThreadLocalRandom;
 
-import static cn.nukkit.GameVersion.*;
-import static cn.nukkit.SharedConstants.*;
+public abstract class BlockCoralBlock extends BlockSolid {
+    public static final int[] CORAL_BLOCKS = {
+            TUBE_CORAL_BLOCK,
+            BRAIN_CORAL_BLOCK,
+            BUBBLE_CORAL_BLOCK,
+            FIRE_CORAL_BLOCK,
+            HORN_CORAL_BLOCK,
+            TUBE_CORAL_BLOCK,
+            TUBE_CORAL_BLOCK,
+            TUBE_CORAL_BLOCK,
+            DEAD_TUBE_CORAL_BLOCK,
+            DEAD_BRAIN_CORAL_BLOCK,
+            DEAD_BUBBLE_CORAL_BLOCK,
+            DEAD_FIRE_CORAL_BLOCK,
+            DEAD_HORN_CORAL_BLOCK,
+    };
+    public static final int[] DEAD_CORAL_BLOCKS = {
+            DEAD_TUBE_CORAL_BLOCK,
+            DEAD_BRAIN_CORAL_BLOCK,
+            DEAD_BUBBLE_CORAL_BLOCK,
+            DEAD_FIRE_CORAL_BLOCK,
+            DEAD_HORN_CORAL_BLOCK,
+    };
 
-public class BlockCoralBlock extends BlockSolid {
-
+    @Deprecated
     public static final int COLOR_MASK = 0b111;
+    @Deprecated
     public static final int DEAD_BIT = 0b1000;
 
     public static final int BLUE = 0;
@@ -33,35 +53,9 @@ public class BlockCoralBlock extends BlockSolid {
             "Coral Block",
     };
 
-    public BlockCoralBlock() {
-        this(0);
-    }
-
-    public BlockCoralBlock(int meta) {
-        super(meta);
-    }
-
-    @Override
-    public int getId() {
-        return CORAL_BLOCK;
-    }
-
-    @Override
-    public boolean isStackedByData() {
-        return !V1_21_0.isAvailable();
-    }
-
-    @Override
-    public String getName() {
-        return (isDead() ? "Dead " : "") + NAMES[getCoralColor()];
-    }
-
     @Override
     public float getHardness() {
-        if (ENABLE_BLOCK_DESTROY_SPEED_COMPATIBILITY || V1_20_30.isAvailable()) {
-            return 1.5f;
-        }
-        return 7;
+        return 1.5f;
     }
 
     @Override
@@ -75,24 +69,8 @@ public class BlockCoralBlock extends BlockSolid {
     }
 
     @Override
-    public BlockColor getColor() {
-        if (isDead()) {
-            return BlockColor.GRAY_BLOCK_COLOR;
-        }
-
-        switch (getCoralColor()) {
-            default:
-            case BLUE:
-                return BlockColor.BLUE_BLOCK_COLOR;
-            case PINK:
-                return BlockColor.PINK_BLOCK_COLOR;
-            case PURPLE:
-                return BlockColor.PURPLE_BLOCK_COLOR;
-            case RED:
-                return BlockColor.RED_BLOCK_COLOR;
-            case YELLOW:
-                return BlockColor.YELLOW_BLOCK_COLOR;
-        }
+    public Item toItem(boolean addUserData) {
+        return Item.get(getItemId());
     }
 
     @Override
@@ -101,19 +79,13 @@ public class BlockCoralBlock extends BlockSolid {
             return false;
         }
 
-        if (!isDead()) {
-            level.scheduleUpdate(this, ThreadLocalRandom.current().nextInt(40, 50));
-        }
+        level.scheduleUpdate(this, ThreadLocalRandom.current().nextInt(40, 50));
         return true;
     }
 
     @Override
     public int onUpdate(int type) {
         if (type == Level.BLOCK_UPDATE_NORMAL) {
-            if (isDead()) {
-                return 0;
-            }
-
             level.scheduleUpdate(this, ThreadLocalRandom.current().nextInt(40, 50));
             return type;
         }
@@ -126,27 +98,17 @@ public class BlockCoralBlock extends BlockSolid {
                 }
             }
 
-            setDead(true);
-            level.setBlock(this, this, true);
+            level.setBlock(this, get(getDeadBlockId()), true);
             return type;
         }
 
         return 0;
     }
 
-    public int getCoralColor() {
-        return getDamage() & COLOR_MASK;
+    @Override
+    public boolean isCoralBlock() {
+        return true;
     }
 
-    public void setCoralColor(int color) {
-        setDamage((getDamage() & ~COLOR_MASK) | (color & COLOR_MASK));
-    }
-
-    public boolean isDead() {
-        return (getDamage() & DEAD_BIT) == DEAD_BIT;
-    }
-
-    public void setDead(boolean dead) {
-        setDamage(dead ? getDamage() | DEAD_BIT : getDamage() & ~DEAD_BIT);
-    }
+    protected abstract int getDeadBlockId();
 }

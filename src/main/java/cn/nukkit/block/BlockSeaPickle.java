@@ -17,12 +17,8 @@ public class BlockSeaPickle extends BlockFlowable {
     public static final int CLUSTER_COUNT_MASK = 0b11;
     public static final int DEAD_BIT = 0b100;
 
-    public BlockSeaPickle() {
-        this(0);
-    }
+    BlockSeaPickle() {
 
-    public BlockSeaPickle(int meta) {
-        super(meta);
     }
 
     @Override
@@ -106,7 +102,7 @@ public class BlockSeaPickle extends BlockFlowable {
                 return true;
             }
             Block down = down();
-            if (down.getId() != CORAL_BLOCK || (down.getDamage() & BlockCoralBlock.DEAD_BIT) == BlockCoralBlock.DEAD_BIT) {
+            if (!down.isCoralBlock() || down.isDeadCoral()) {
                 return true;
             }
 
@@ -135,7 +131,7 @@ public class BlockSeaPickle extends BlockFlowable {
                             continue;
                         }
                         Block below = level.getBlock(x, y - 1, z);
-                        if (below.getId() != CORAL_BLOCK) {
+                        if (!below.isCoralBlock()) {
                             continue;
                         }
                         level.setExtraBlock(x, y, z, block, true, false);

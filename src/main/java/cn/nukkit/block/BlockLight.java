@@ -7,27 +7,25 @@ import cn.nukkit.math.AxisAlignedBB;
 import cn.nukkit.math.BlockFace;
 import cn.nukkit.utils.BlockColor;
 
-import static cn.nukkit.GameVersion.*;
-
-public class BlockLight extends BlockTransparent {
-
-    public BlockLight() {
-        this(0);
-    }
-
-    public BlockLight(int meta) {
-        super(meta);
-    }
-
-    @Override
-    public int getId() {
-        return LIGHT_BLOCK;
-    }
-
-    @Override
-    public boolean isStackedByData() {
-        return !V1_21_20.isAvailable();
-    }
+public abstract class BlockLight extends BlockTransparent {
+    public static final int[] LIGHT_BLOCKS = {
+            LIGHT_BLOCK_0,
+            LIGHT_BLOCK_1,
+            LIGHT_BLOCK_2,
+            LIGHT_BLOCK_3,
+            LIGHT_BLOCK_4,
+            LIGHT_BLOCK_5,
+            LIGHT_BLOCK_6,
+            LIGHT_BLOCK_7,
+            LIGHT_BLOCK_8,
+            LIGHT_BLOCK_9,
+            LIGHT_BLOCK_10,
+            LIGHT_BLOCK_11,
+            LIGHT_BLOCK_12,
+            LIGHT_BLOCK_13,
+            LIGHT_BLOCK_14,
+            LIGHT_BLOCK_15,
+    };
 
     @Override
     public String getName() {
@@ -90,11 +88,6 @@ public class BlockLight extends BlockTransparent {
     }
 
     @Override
-    public int getLightLevel() {
-        return getDamage();
-    }
-
-    @Override
     public boolean canBeActivated() {
         return true;
     }
@@ -105,8 +98,7 @@ public class BlockLight extends BlockTransparent {
             return false;
         }
 
-        setDamage((this.getDamage() + 1) & 0xf);
-        level.setBlock(this, this, true);
+        level.setBlock(this, get(getNextLightLevelBlockId()), true);
         return true;
     }
 
@@ -124,4 +116,14 @@ public class BlockLight extends BlockTransparent {
     public boolean canProvideSupport(BlockFace face, SupportType type) {
         return false;
     }
+
+    @Override
+    public boolean isLightBlock() {
+        return true;
+    }
+
+    @Override
+    public abstract int getLightLevel();
+
+    protected abstract int getNextLightLevelBlockId();
 }

@@ -1,7 +1,7 @@
 package cn.nukkit.level.generator.populator.impl;
 
 import cn.nukkit.level.format.FullChunk;
-import cn.nukkit.math.NukkitRandom;
+import cn.nukkit.math.RandomSource;
 
 /**
  * @author Niall Lindsay (Niall7459)
@@ -11,7 +11,7 @@ import cn.nukkit.math.NukkitRandom;
  */
 public class PopulatorTallSugarcane extends PopulatorSugarcane {
     @Override
-    protected void placeBlock(int x, int y, int z, int id, int meta, FullChunk chunk, NukkitRandom random) {
+    protected void placeBlock(int x, int y, int z, int id, int meta, FullChunk chunk, RandomSource random) {
         int height = random.nextBoundedInt(3) + 1;
         if (y + height >= chunk.getHeightRange().getMaxY()) return;
         for (int i = 0; i < height; i++)    {

@@ -4,12 +4,8 @@ import cn.nukkit.utils.BlockColor;
 
 public class BlockPressurePlateAcacia extends BlockPressurePlateWood {
 
-    public BlockPressurePlateAcacia() {
-        this(0);
-    }
+    BlockPressurePlateAcacia() {
 
-    public BlockPressurePlateAcacia(int meta) {
-        super(meta);
     }
 
     @Override

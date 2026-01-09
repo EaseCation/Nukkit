@@ -1,7 +1,8 @@
 package cn.nukkit.block;
 
 public class BlockTuffPolished extends BlockTuff {
-    public BlockTuffPolished() {
+    BlockTuffPolished() {
+
     }
 
     @Override

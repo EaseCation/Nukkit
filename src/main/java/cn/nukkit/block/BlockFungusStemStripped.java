@@ -1,9 +1,6 @@
 package cn.nukkit.block;
 
 public abstract class BlockFungusStemStripped extends BlockRotatedPillar {
-    protected BlockFungusStemStripped(int meta) {
-        super(meta);
-    }
 
     @Override
     public float getHardness() {

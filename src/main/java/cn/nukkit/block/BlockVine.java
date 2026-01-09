@@ -19,12 +19,8 @@ import java.util.concurrent.ThreadLocalRandom;
  */
 public class BlockVine extends BlockFlowable {
 
-    public BlockVine(int meta) {
-        super(meta);
-    }
+    BlockVine() {
 
-    public BlockVine() {
-        this(0);
     }
 
     @Override

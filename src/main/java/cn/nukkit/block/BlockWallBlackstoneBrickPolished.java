@@ -6,12 +6,8 @@ import cn.nukkit.item.ItemTool;
 import cn.nukkit.utils.BlockColor;
 
 public class BlockWallBlackstoneBrickPolished extends BlockWall {
-    public BlockWallBlackstoneBrickPolished() {
-        this(0);
-    }
+    BlockWallBlackstoneBrickPolished() {
 
-    public BlockWallBlackstoneBrickPolished(int meta) {
-        super(meta);
     }
 
     @Override

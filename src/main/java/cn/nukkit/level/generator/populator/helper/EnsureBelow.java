@@ -2,11 +2,17 @@ package cn.nukkit.level.generator.populator.helper;
 
 import cn.nukkit.level.format.FullChunk;
 
+import java.util.function.IntPredicate;
+
 /**
  * @author DaPorkchop_
  */
 public interface EnsureBelow {
     static boolean ensureBelow(int x, int y, int z, int id, FullChunk chunk)    {
         return chunk.getBlockId(0, x, y - 1, z) == id;
+    }
+
+    static boolean ensureBelow(int x, int y, int z, IntPredicate id, FullChunk chunk)    {
+        return id.test(chunk.getBlockId(0, x, y - 1, z));
     }
 }

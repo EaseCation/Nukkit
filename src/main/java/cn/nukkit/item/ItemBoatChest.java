@@ -16,6 +16,8 @@ public abstract class ItemBoatChest extends ItemBoat {
             CHERRY_CHEST_BOAT,
             PALE_OAK_CHEST_BOAT,
     };
+    @SuppressWarnings("unused")
+    private static final int[] BOATS = CHEST_BOATS;
 
     protected ItemBoatChest(int id, Integer meta, int count, String name) {
         super(id, meta, count, name);

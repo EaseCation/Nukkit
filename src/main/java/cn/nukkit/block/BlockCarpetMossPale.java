@@ -17,7 +17,8 @@ public class BlockCarpetMossPale extends BlockCarpetMoss {
     public static final int SIDE_TYPE_SHORT = 0b01;
     public static final int SIDE_TYPE_TALL = 0b10;
 
-    public BlockCarpetMossPale() {
+    BlockCarpetMossPale() {
+
     }
 
     @Override
@@ -103,11 +104,16 @@ public class BlockCarpetMossPale extends BlockCarpetMoss {
             }
 
             int upperSides = calculateSides(above, true, getDamage() >> SIDE_START, true);
-            if (upperSides == 0 || upperSides == aboveMeta) {
+            if (upperSides == 0 || (upperSides << SIDE_START | UPPER_BLOCK_BIT) == aboveMeta) {
                 return true;
             }
 
-            setDamage(calculateSides(this, false, upperSides, true) << SIDE_START);
+            int sides = calculateSides(this, false, upperSides, true);
+            if (getDamage() == sides << SIDE_START) {
+                return true;
+            }
+
+            setDamage(sides << SIDE_START);
             level.setBlock(this, this, true, false);
             level.setBlock(above, get(getId(), (upperSides << SIDE_START) | UPPER_BLOCK_BIT), true);
 
@@ -166,7 +172,7 @@ public class BlockCarpetMossPale extends BlockCarpetMoss {
             }
 
             int oldMeta = getDamage();
-            int newMeta = (oldMeta & UPPER_BLOCK_BIT) | sides;
+            int newMeta = (oldMeta & UPPER_BLOCK_BIT) | sides << SIDE_START;
             if (oldMeta == newMeta) {
                 return 0;
             }

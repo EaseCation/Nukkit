@@ -7,7 +7,7 @@ import cn.nukkit.level.generator.object.tree.ObjectMangroveTree;
 import cn.nukkit.level.particle.BoneMealParticle;
 import cn.nukkit.math.AxisAlignedBB;
 import cn.nukkit.math.BlockFace;
-import cn.nukkit.math.NukkitRandom;
+import cn.nukkit.math.LocalRandom;
 import cn.nukkit.utils.BlockColor;
 
 import java.util.concurrent.ThreadLocalRandom;
@@ -18,12 +18,8 @@ public class BlockMangrovePropagule extends BlockTransparent {
 
     public static final int STAGE_FULLY_GROWN = 4;
 
-    public BlockMangrovePropagule() {
-        this(0);
-    }
+    BlockMangrovePropagule() {
 
-    public BlockMangrovePropagule(int meta) {
-        super(meta);
     }
 
     @Override
@@ -233,7 +229,7 @@ public class BlockMangrovePropagule extends BlockTransparent {
     }
 
     private void growTree() {
-        new ObjectMangroveTree().placeObject(this.level, this.getFloorX(), this.getFloorY(), this.getFloorZ(), NukkitRandom.current());
+        new ObjectMangroveTree().placeObject(this.level, this.getFloorX(), this.getFloorY(), this.getFloorZ(), new LocalRandom());
     }
 
     private boolean canSurvive() {

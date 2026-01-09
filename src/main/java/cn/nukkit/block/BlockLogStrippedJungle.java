@@ -4,12 +4,8 @@ import cn.nukkit.utils.BlockColor;
 
 public class BlockLogStrippedJungle extends BlockLogStripped {
 
-    public BlockLogStrippedJungle() {
-        this(0);
-    }
+    BlockLogStrippedJungle() {
 
-    public BlockLogStrippedJungle(int meta) {
-        super(meta);
     }
 
     @Override

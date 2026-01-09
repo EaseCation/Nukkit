@@ -1,6 +1,6 @@
 package cn.nukkit.level.generator.noise.nukkit.d;
 
-import cn.nukkit.math.NukkitRandom;
+import cn.nukkit.math.RandomSource;
 
 /**
  * author: MagicDroidX
@@ -42,12 +42,12 @@ public class SimplexD extends PerlinD {
         G44 = G4 * 4.0 - 1.0;
     }
 
-    public SimplexD(NukkitRandom random, double octaves, double persistence) {
+    public SimplexD(RandomSource random, double octaves, double persistence) {
         super(random, octaves, persistence);
         this.offsetW = random.nextDouble() * 256;
     }
 
-    public SimplexD(NukkitRandom random, double octaves, double persistence, double expansion) {
+    public SimplexD(RandomSource random, double octaves, double persistence, double expansion) {
         super(random, octaves, persistence, expansion);
         this.offsetW = random.nextDouble() * 256;
     }

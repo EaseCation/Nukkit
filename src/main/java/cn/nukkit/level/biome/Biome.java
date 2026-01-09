@@ -4,7 +4,7 @@ import cn.nukkit.block.BlockID;
 import cn.nukkit.level.ChunkManager;
 import cn.nukkit.level.format.FullChunk;
 import cn.nukkit.level.generator.populator.type.Populator;
-import cn.nukkit.math.NukkitRandom;
+import cn.nukkit.math.RandomSource;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -28,7 +28,7 @@ public abstract class Biome implements BlockID {
         this.populators.add(populator);
     }
 
-    public void populateChunk(ChunkManager level, int chunkX, int chunkZ, NukkitRandom random) {
+    public void populateChunk(ChunkManager level, int chunkX, int chunkZ, RandomSource random) {
         FullChunk chunk = level.getChunk(chunkX, chunkZ);
         for (Populator populator : populators) {
             populator.populate(level, chunkX, chunkZ, random, chunk);

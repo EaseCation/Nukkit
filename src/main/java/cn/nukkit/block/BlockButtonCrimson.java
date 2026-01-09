@@ -1,12 +1,8 @@
 package cn.nukkit.block;
 
 public class BlockButtonCrimson extends BlockButtonWooden {
-    public BlockButtonCrimson() {
-        this(0);
-    }
+    BlockButtonCrimson() {
 
-    public BlockButtonCrimson(int meta) {
-        super(meta);
     }
 
     @Override

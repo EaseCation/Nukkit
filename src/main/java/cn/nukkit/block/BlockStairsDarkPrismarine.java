@@ -4,12 +4,8 @@ import cn.nukkit.utils.BlockColor;
 
 public class BlockStairsDarkPrismarine extends BlockStairs {
 
-    public BlockStairsDarkPrismarine() {
-        this(0);
-    }
+    BlockStairsDarkPrismarine() {
 
-    public BlockStairsDarkPrismarine(int meta) {
-        super(meta);
     }
 
     @Override

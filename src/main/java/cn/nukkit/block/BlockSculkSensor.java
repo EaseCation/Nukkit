@@ -23,12 +23,8 @@ public class BlockSculkSensor extends BlockTransparent {
     public static final int SCULK_SENSOR_PHASE_COOLDOWN = 2;
     public static final int SCULK_SENSOR_PHASE_MASK = 0b11;
 
-    public BlockSculkSensor() {
-        this(0);
-    }
+    BlockSculkSensor() {
 
-    public BlockSculkSensor(int meta) {
-        super(meta);
     }
 
     @Override

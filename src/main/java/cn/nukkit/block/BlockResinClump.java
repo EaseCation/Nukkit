@@ -3,12 +3,8 @@ package cn.nukkit.block;
 import cn.nukkit.utils.BlockColor;
 
 public class BlockResinClump extends BlockMultiface {
-    public BlockResinClump() {
-        this(0);
-    }
+    BlockResinClump() {
 
-    public BlockResinClump(int meta) {
-        super(meta);
     }
 
     @Override

@@ -11,14 +11,8 @@ import static cn.nukkit.SharedConstants.*;
  */
 public class BlockWeightedPressurePlateHeavy extends BlockPressurePlateBase {
 
-    public BlockWeightedPressurePlateHeavy() {
-        this(0);
-    }
+    BlockWeightedPressurePlateHeavy() {
 
-    public BlockWeightedPressurePlateHeavy(int meta) {
-        super(meta);
-        this.onPitch = 0.90000004f;
-        this.offPitch = 0.75f;
     }
 
     @Override

@@ -16,42 +16,32 @@ import cn.nukkit.utils.BlockColor;
 
 import java.util.concurrent.ThreadLocalRandom;
 
-import static cn.nukkit.GameVersion.*;
-
 /**
  * Created on 2015/12/8 by xtypr.
  * Package cn.nukkit.block in project Nukkit .
  */
 public class BlockTNT extends BlockSolid {
-    public static final int EXPLODE_BIT = 0b1;
-    public static final int ALLOW_UNDERWATER_BIT = 0b10;
-
-    private static final String[] NAMES = {
-            "TNT",
-            "Underwater TNT",
+    public static final int[] TNTS = {
+            TNT,
+            UNDERWATER_TNT,
     };
 
-    public BlockTNT() {
-        this(0);
-    }
+    public static final int EXPLODE_BIT = 0b1;
+    @Deprecated
+    public static final int ALLOW_UNDERWATER_BIT = 0b10;
 
-    public BlockTNT(int meta) {
-        super(meta);
+    BlockTNT() {
+
     }
 
     @Override
     public String getName() {
-        return NAMES[(getDamage() & 0b11) >> 1];
+        return "TNT";
     }
 
     @Override
     public int getId() {
         return TNT;
-    }
-
-    @Override
-    public boolean isStackedByData() {
-        return !V1_21_30.isAvailable();
     }
 
     @Override
@@ -97,7 +87,7 @@ public class BlockTNT extends BlockSolid {
         float mot = ThreadLocalRandom.current().nextFloat() * Mth.PI * 2;
         CompoundTag nbt = Entity.getDefaultNBT(x + 0.5, y, z + 0.5, -Mth.sin(mot) * 0.02, 0.2, -Mth.cos(mot) * 0.02)
                 .putByte("Fuse", fuse)
-                .putBoolean("AllowUnderwater", (getDamage() & ALLOW_UNDERWATER_BIT) != 0);
+                .putBoolean("AllowUnderwater", isAllowUnderwater());
         Entity tnt = new EntityPrimedTNT(
                 this.getLevel().getChunk(this.getFloorX() >> 4, this.getFloorZ() >> 4),
                 nbt, source
@@ -150,5 +140,9 @@ public class BlockTNT extends BlockSolid {
     @Override
     public BlockColor getColor() {
         return BlockColor.FIRE_BLOCK_COLOR;
+    }
+
+    protected boolean isAllowUnderwater() {
+        return false;
     }
 }

@@ -6,12 +6,8 @@ import cn.nukkit.math.BlockFace;
 import cn.nukkit.utils.BlockColor;
 
 public class BlockSculkVein extends BlockMultiface {
-    public BlockSculkVein() {
-        this(0);
-    }
+    BlockSculkVein() {
 
-    public BlockSculkVein(int meta) {
-        super(meta);
     }
 
     @Override

@@ -14,12 +14,8 @@ import cn.nukkit.utils.BlockColor;
 import javax.annotation.Nullable;
 
 public class BlockSporeBlossom extends BlockFlowable {
-    public BlockSporeBlossom() {
-        this(0);
-    }
+    BlockSporeBlossom() {
 
-    public BlockSporeBlossom(int meta) {
-        super(0);
     }
 
     @Override

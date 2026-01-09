@@ -28,12 +28,8 @@ import javax.annotation.Nullable;
 public class BlockSignPost extends BlockTransparent implements Faceable {
     private static final Vector3 CENTER = new Vector3(0.5, 0.5, 0.5);
 
-    public BlockSignPost() {
-        this(0);
-    }
+    BlockSignPost() {
 
-    public BlockSignPost(int meta) {
-        super(meta);
     }
 
     @Override

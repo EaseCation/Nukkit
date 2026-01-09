@@ -20,12 +20,8 @@ public class BlockSnowLayer extends BlockFallable {
     public static final int HEIGHT_MASK = 0b111;
     public static final int COVERED_BIT = 0b1000;
 
-    public BlockSnowLayer() {
-        this(0);
-    }
+    BlockSnowLayer() {
 
-    public BlockSnowLayer(int meta) {
-        super(meta);
     }
 
     @Override

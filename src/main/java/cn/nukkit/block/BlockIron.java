@@ -11,7 +11,8 @@ import cn.nukkit.utils.BlockColor;
  */
 public class BlockIron extends BlockSolid {
 
-    public BlockIron() {
+    BlockIron() {
+
     }
 
     @Override

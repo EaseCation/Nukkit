@@ -7,9 +7,7 @@ import cn.nukkit.level.ChunkManager;
 import cn.nukkit.level.HeightRange;
 import cn.nukkit.level.generator.object.BasicGenerator;
 import cn.nukkit.math.BlockVector3;
-import cn.nukkit.math.NukkitRandom;
-
-import static cn.nukkit.GameVersion.*;
+import cn.nukkit.math.RandomSource;
 
 public class BigMushroom extends BasicGenerator {
 
@@ -29,14 +27,14 @@ public class BigMushroom extends BasicGenerator {
         this.mushroomType = -1;
     }
 
-    public boolean generate(ChunkManager level, NukkitRandom rand, BlockVector3 position) {
+    public boolean generate(ChunkManager level, RandomSource rand, BlockVector3 position) {
         int block = this.mushroomType;
         if (block < 0) {
             block = rand.nextBoolean() ? RED : BROWN;
         }
 
         Block mushroom = block == 0 ? Block.get(BlockID.BROWN_MUSHROOM_BLOCK) : Block.get(BlockID.RED_MUSHROOM_BLOCK);
-        Block stem = V1_21_40.isAvailable() ? Block.get(BlockID.MUSHROOM_STEM, BlockHugeMushroom.STEM) : mushroom;
+        Block stem = Block.get(BlockID.MUSHROOM_STEM, BlockHugeMushroom.STEM);
 
         int i = rand.nextBoundedInt(3) + 4;
 
@@ -62,8 +60,9 @@ public class BigMushroom extends BasicGenerator {
                         if (y >= heightRange.getMinY() && y < heightRange.getMaxY()) {
                             pos.setComponents(l, y, i1);
                             int material = level.getBlockIdAt(0, pos.getX(), pos.getY(), pos.getZ());
+                            Block ub = Block.getUnsafe(material);
 
-                            if (material != Block.AIR && material != Block.LEAVES) {
+                            if (material != Block.AIR && !ub.isLeaves()) {
                                 flag = false;
                             }
                         } else {

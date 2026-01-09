@@ -26,12 +26,8 @@ public class BlockTurtleEgg extends BlockTransparent {
     public static final int CRACKED = 1;
     public static final int MAX_CRACKED = 2;
 
-    public BlockTurtleEgg() {
-        this(0);
-    }
+    BlockTurtleEgg() {
 
-    public BlockTurtleEgg(int meta) {
-        super(meta);
     }
 
     @Override

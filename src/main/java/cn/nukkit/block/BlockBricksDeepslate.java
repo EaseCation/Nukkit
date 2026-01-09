@@ -6,7 +6,8 @@ import cn.nukkit.item.ItemTool;
 import cn.nukkit.utils.BlockColor;
 
 public class BlockBricksDeepslate extends BlockSolid {
-    public BlockBricksDeepslate() {
+    BlockBricksDeepslate() {
+
     }
 
     @Override

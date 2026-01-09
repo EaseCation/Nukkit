@@ -1,10 +1,10 @@
 package cn.nukkit.block;
 
-import cn.nukkit.utils.BlockColor;
 import cn.nukkit.utils.DyeColor;
 
 public class BlockConcreteBlack extends BlockConcrete {
-    public BlockConcreteBlack() {
+    BlockConcreteBlack() {
+
     }
 
     @Override
@@ -15,11 +15,6 @@ public class BlockConcreteBlack extends BlockConcrete {
     @Override
     public String getName() {
         return "Black Concrete";
-    }
-
-    @Override
-    public BlockColor getColor() {
-        return DyeColor.BLACK.getColor();
     }
 
     @Override

@@ -6,7 +6,8 @@ import cn.nukkit.utils.DyeColor;
 import static cn.nukkit.GameVersion.*;
 
 public class BlockCarpetMoss extends BlockCarpet {
-    public BlockCarpetMoss() {
+    BlockCarpetMoss() {
+
     }
 
     @Override

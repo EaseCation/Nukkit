@@ -3,15 +3,12 @@ package cn.nukkit.block;
 import cn.nukkit.blockentity.BlockEntity;
 import cn.nukkit.blockentity.BlockEntityType;
 import cn.nukkit.item.Item;
+import cn.nukkit.item.ItemBlockID;
 
 public class BlockFurnaceBlast extends BlockFurnace {
 
-    public BlockFurnaceBlast() {
-        this(0);
-    }
+    BlockFurnaceBlast() {
 
-    public BlockFurnaceBlast(int meta) {
-        super(meta);
     }
 
     @Override
@@ -31,7 +28,7 @@ public class BlockFurnaceBlast extends BlockFurnace {
 
     @Override
     public Item toItem(boolean addUserData) {
-        Item item = Item.get(getItemId(BLAST_FURNACE));
+        Item item = Item.get(ItemBlockID.BLAST_FURNACE);
         if (addUserData) {
             BlockEntity blockEntity = getBlockEntity();
             if (blockEntity != null) {

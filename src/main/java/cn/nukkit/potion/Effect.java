@@ -46,6 +46,7 @@ public class Effect implements EffectID, Cloneable {
     protected int amplifier;
 
     protected int color;
+    protected int soundEvent = -1;
 
     protected boolean show = true;
 
@@ -125,6 +126,11 @@ public class Effect implements EffectID, Cloneable {
 
     public Effect setAmbient(boolean ambient) {
         this.ambient = ambient;
+        return this;
+    }
+
+    Effect setSoundEvent(int soundEvent) {
+        this.soundEvent = soundEvent;
         return this;
     }
 
@@ -257,6 +263,10 @@ public class Effect implements EffectID, Cloneable {
             int add = (this.amplifier + 1) * 4;
             entity.setAbsorption(entity.getAbsorption() + add);
             return true;
+        }
+
+        if (oldEffect == null && soundEvent != -1) {
+            entity.level.addLevelSoundEvent(entity.getEyePosition(), soundEvent);
         }
 
         return true;

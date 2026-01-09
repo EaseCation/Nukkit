@@ -6,7 +6,8 @@ import cn.nukkit.utils.BlockColor;
 
 public class BlockIceBlue extends BlockSolid {
 
-    public BlockIceBlue() {
+    BlockIceBlue() {
+
     }
 
     @Override

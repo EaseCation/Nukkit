@@ -18,12 +18,8 @@ import cn.nukkit.utils.BlockColor;
  */
 public class BlockCactus extends BlockTransparent {
 
-    public BlockCactus(int meta) {
-        super(meta);
-    }
+    BlockCactus() {
 
-    public BlockCactus() {
-        this(0);
     }
 
     @Override

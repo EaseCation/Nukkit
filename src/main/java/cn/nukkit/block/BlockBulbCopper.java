@@ -13,12 +13,8 @@ public class BlockBulbCopper extends BlockSolid implements CopperBehavior {
     public static final int LIT_BIT = 0b1;
     public static final int POWERED_BIT = 0b10;
 
-    public BlockBulbCopper() {
-        this(0);
-    }
+    BlockBulbCopper() {
 
-    public BlockBulbCopper(int meta) {
-        super(meta);
     }
 
     @Override

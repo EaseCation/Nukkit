@@ -12,7 +12,8 @@ import java.util.concurrent.ThreadLocalRandom;
  */
 public class BlockGravel extends BlockFallable {
 
-    public BlockGravel() {
+    BlockGravel() {
+
     }
 
     @Override

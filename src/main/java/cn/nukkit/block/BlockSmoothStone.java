@@ -9,7 +9,8 @@ import static cn.nukkit.GameVersion.*;
 
 public class BlockSmoothStone extends BlockSolid {
 
-    public BlockSmoothStone() {
+    BlockSmoothStone() {
+
     }
 
     @Override

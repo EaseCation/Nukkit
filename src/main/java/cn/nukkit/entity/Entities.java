@@ -172,11 +172,9 @@ public final class Entities {
         registerEntity(EntityID.BREEZE, EntityNames.BREEZE, "Breeze", EntityBreeze.class, EntityBreeze::new, V1_21_0);
         registerTodo(EntityID.BREEZE_WIND_CHARGE_PROJECTILE, EntityNames.BREEZE_WIND_CHARGE_PROJECTILE, "BreezeWindCharge");
 //        registerEntity(EntityID.BREEZE_WIND_CHARGE_PROJECTILE, EntityNames.BREEZE_WIND_CHARGE_PROJECTILE, "BreezeWindCharge", EntityWindChargeBreeze.class, EntityWindChargeBreeze::new, V1_21_0);
-        registerTodo(EntityID.WIND_CHARGE_PROJECTILE, EntityNames.WIND_CHARGE_PROJECTILE, "WindCharge");
-//        registerEntity(EntityID.WIND_CHARGE_PROJECTILE, EntityNames.WIND_CHARGE_PROJECTILE, "WindCharge", EntityWindCharge.class, EntityWindCharge::new, V1_21_0);
+        registerEntity(EntityID.WIND_CHARGE_PROJECTILE, EntityNames.WIND_CHARGE_PROJECTILE, "WindCharge", EntityWindCharge.class, EntityWindCharge::new, V1_21_0);
         registerEntity(EntityID.BOGGED, EntityNames.BOGGED, "Bogged", EntityBogged.class, EntityBogged::new, V1_21_0);
-        registerTodo(EntityID.OMINOUS_ITEM_SPAWNER, EntityNames.OMINOUS_ITEM_SPAWNER, "OminousItemSpawner");
-//        registerEntity(EntityID.OMINOUS_ITEM_SPAWNER, EntityNames.OMINOUS_ITEM_SPAWNER, "OminousItemSpawner", EntityOminousItemSpawner.class, EntityOminousItemSpawner::new, V1_21_0);
+        registerEntity(EntityID.OMINOUS_ITEM_SPAWNER, EntityNames.OMINOUS_ITEM_SPAWNER, "OminousItemSpawner", EntityOminousItemSpawner.class, EntityOminousItemSpawner::new, V1_21_0);
 
         registerEntity(EntityID.CREAKING, EntityNames.CREAKING, "Creaking", EntityCreaking.class, EntityCreaking::new, V1_21_50);
 

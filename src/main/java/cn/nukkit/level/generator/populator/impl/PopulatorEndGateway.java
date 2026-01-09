@@ -11,7 +11,7 @@ import cn.nukkit.level.generator.TheEnd;
 import cn.nukkit.level.generator.populator.type.Populator;
 import cn.nukkit.level.generator.task.PlaceBlockEntityTask;
 import cn.nukkit.math.Mth;
-import cn.nukkit.math.NukkitRandom;
+import cn.nukkit.math.RandomSource;
 
 public class PopulatorEndGateway extends Populator {
     private final TheEnd end;
@@ -21,7 +21,7 @@ public class PopulatorEndGateway extends Populator {
     }
 
     @Override
-    public void populate(ChunkManager level, int chunkX, int chunkZ, NukkitRandom random, FullChunk chunk) {
+    public void populate(ChunkManager level, int chunkX, int chunkZ, RandomSource random, FullChunk chunk) {
         if (Mth.square(chunkX) + Mth.square(chunkZ) <= 4096) {
             return;
         }

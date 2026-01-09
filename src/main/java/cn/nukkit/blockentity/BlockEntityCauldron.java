@@ -104,11 +104,11 @@ public class BlockEntityCauldron extends BlockEntitySpawnable {
 
     @Override
     public boolean isValidBlock(int blockId) {
-        return blockId == Block.BLOCK_CAULDRON || blockId == Block.LAVA_CAULDRON;
+        return blockId == Block.CAULDRON || blockId == Block.LAVA_CAULDRON;
     }
 
     @Override
-    public CompoundTag getSpawnCompound() {
+    public CompoundTag getSpawnCompound(boolean chunkData) {
         CompoundTag nbt = getDefaultCompound(this, CAULDRON)
                 .putShort("PotionId", namedTag.getShort("PotionId"))
                 .putShort("PotionType", namedTag.getShort("PotionType"))

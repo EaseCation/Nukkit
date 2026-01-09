@@ -4,7 +4,7 @@ import cn.nukkit.block.*;
 import cn.nukkit.level.ChunkManager;
 import cn.nukkit.level.HeightRange;
 import cn.nukkit.math.BlockVector3;
-import cn.nukkit.math.NukkitRandom;
+import cn.nukkit.math.RandomSource;
 
 public class ObjectSwampTree extends TreeGenerator {
 
@@ -16,10 +16,10 @@ public class ObjectSwampTree extends TreeGenerator {
     /**
      * The metadata value of the leaves to use in tree generation.
      */
-    private final Block metaLeaves = Block.get(BlockID.LEAVES, BlockLeaves.OAK);
+    private final Block metaLeaves = Block.get(BlockID.OAK_LEAVES);
 
     @Override
-    public boolean generate(ChunkManager worldIn, NukkitRandom rand, BlockVector3 vectorPosition) {
+    public boolean generate(ChunkManager worldIn, RandomSource rand, BlockVector3 vectorPosition) {
         BlockVector3 position = new BlockVector3(vectorPosition.getX(), vectorPosition.getY(), vectorPosition.getZ());
 
         int i = rand.nextBoundedInt(4) + 5;
@@ -76,8 +76,9 @@ public class ObjectSwampTree extends TreeGenerator {
                                 if (Math.abs(k3) != l2 || Math.abs(j1) != l2 || rand.nextBoundedInt(2) != 0 && j2 != 0) {
                                     BlockVector3 blockpos = new BlockVector3(j3, k1, i4);
                                     int id = worldIn.getBlockIdAt(0, blockpos.x, blockpos.y, blockpos.z);
+                                    Block ub = Block.getUnsafe(id);
 
-                                    if (id == Block.AIR || id == Block.LEAVES || id == Block.VINE) {
+                                    if (id == Block.AIR || ub.isLeaves() || id == Block.VINE) {
                                         this.setBlockAndNotifyAdequately(worldIn, blockpos, this.metaLeaves);
                                     }
                                 }
@@ -88,8 +89,9 @@ public class ObjectSwampTree extends TreeGenerator {
                     for (int l1 = 0; l1 < i; ++l1) {
                         BlockVector3 up = position.up(l1);
                         int id = worldIn.getBlockIdAt(0, up.x, up.y, up.z);
+                        Block ub = Block.getUnsafe(id);
 
-                        if (id == Block.AIR || id == Block.LEAVES || id == Block.FLOWING_WATER || id == Block.WATER) {
+                        if (id == Block.AIR || ub.isLeaves() || id == Block.FLOWING_WATER || id == Block.WATER) {
                             this.setBlockAndNotifyAdequately(worldIn, up, this.metaWood);
                         }
                     }
@@ -103,7 +105,9 @@ public class ObjectSwampTree extends TreeGenerator {
                             for (int j4 = position.getZ() - i3; j4 <= position.getZ() + i3; ++j4) {
                                 pos2.setComponents(l3, i2, j4);
 
-                                if (worldIn.getBlockIdAt(0, pos2.x, pos2.y, pos2.z) == Block.LEAVES) {
+                                int id = worldIn.getBlockIdAt(0, pos2.x, pos2.y, pos2.z);
+                                Block ub = Block.getUnsafe(id);
+                                if (ub.isLeaves()) {
                                     BlockVector3 blockpos2 = pos2.west();
                                     BlockVector3 blockpos3 = pos2.east();
                                     BlockVector3 blockpos4 = pos2.north();

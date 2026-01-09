@@ -3,9 +3,6 @@ package cn.nukkit.block;
 import static cn.nukkit.GameVersion.*;
 
 public abstract class BlockHyphaeStripped extends BlockRotatedPillar {
-    protected BlockHyphaeStripped(int meta) {
-        super(meta);
-    }
 
     @Override
     public float getHardness() {

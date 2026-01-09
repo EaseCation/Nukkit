@@ -1,12 +1,8 @@
 package cn.nukkit.block;
 
 public class BlockSkullZombie extends BlockSkull {
-    public BlockSkullZombie() {
-        this(0);
-    }
+    BlockSkullZombie() {
 
-    public BlockSkullZombie(int meta) {
-        super(meta);
     }
 
     @Override

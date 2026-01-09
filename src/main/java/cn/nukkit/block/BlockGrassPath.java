@@ -13,7 +13,8 @@ import cn.nukkit.utils.BlockColor;
  */
 public class BlockGrassPath extends BlockGrass {
 
-    public BlockGrassPath() {
+    BlockGrassPath() {
+
     }
 
     @Override

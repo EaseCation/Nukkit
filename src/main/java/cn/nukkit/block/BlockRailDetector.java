@@ -18,12 +18,8 @@ import javax.annotation.Nullable;
  */
 public class BlockRailDetector extends BlockRail {
 
-    public BlockRailDetector() {
-        this(0);
-    }
+    BlockRailDetector() {
 
-    public BlockRailDetector(int meta) {
-        super(meta);
     }
 
     @Override

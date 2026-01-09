@@ -29,12 +29,7 @@ public class BlockTorch extends BlockFlowable implements Faceable {
             BlockFace.SOUTH, BlockFace.WEST, BlockFace.NORTH, BlockFace.EAST, BlockFace.DOWN, // ordered
     };
 
-    public BlockTorch() {
-        this(0);
-    }
-
-    public BlockTorch(int meta) {
-        super(meta);
+    protected BlockTorch() {
     }
 
     @Override
@@ -102,6 +97,30 @@ public class BlockTorch extends BlockFlowable implements Faceable {
         setBlockFace(facing);
         this.level.setBlock(block, this, true);
         return true;
+    }
+
+    @Override
+    public void onNonPlayerPlace() {
+        if (getDamage() != 0) {
+            return;
+        }
+
+        BlockFace facing = null;
+        for (BlockFace side : CHECK_SIDE) {
+            Block sideBlock = getSide(side);
+            if (!canBeSupportedBy(sideBlock, side.getOpposite())) {
+                continue;
+            }
+
+            facing = side.getOpposite();
+            break;
+        }
+        if (facing == null) {
+            return;
+        }
+
+        setBlockFace(facing);
+        level.setBlock(this, this, true);
     }
 
     @Override

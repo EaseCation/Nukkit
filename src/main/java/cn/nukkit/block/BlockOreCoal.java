@@ -14,7 +14,8 @@ import java.util.concurrent.ThreadLocalRandom;
  */
 public class BlockOreCoal extends BlockSolid {
 
-    public BlockOreCoal() {
+    BlockOreCoal() {
+
     }
 
     @Override

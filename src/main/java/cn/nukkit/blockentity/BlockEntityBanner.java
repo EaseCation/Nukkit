@@ -85,7 +85,7 @@ public class BlockEntityBanner extends BlockEntitySpawnable {
     }
 
     @Override
-    public CompoundTag getSpawnCompound() {
+    public CompoundTag getSpawnCompound(boolean chunkData) {
         return getDefaultCompound(this, BANNER)
                 .putInt("Base", getBaseColor())
                 .putList(this.namedTag.getList("Patterns"))

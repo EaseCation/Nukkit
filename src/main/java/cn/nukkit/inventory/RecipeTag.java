@@ -16,10 +16,10 @@ public enum RecipeTag {
     CARTOGRAPHY_TABLE("cartography_table", BlockID.CARTOGRAPHY_TABLE),
     STONECUTTER("stonecutter", BlockID.STONECUTTER_BLOCK),
     FURNACE("furnace", BlockID.FURNACE, BlockID.LIT_FURNACE),
-    CAMPFIRE("campfire", BlockID.BLOCK_CAMPFIRE),
+    CAMPFIRE("campfire", BlockID.CAMPFIRE),
     BLAST_FURNACE("blast_furnace", BlockID.BLAST_FURNACE, BlockID.LIT_BLAST_FURNACE),
     SMOKER("smoker", BlockID.SMOKER, BlockID.LIT_SMOKER),
-    SOUL_CAMPFIRE("soul_campfire", BlockID.BLOCK_SOUL_CAMPFIRE),
+    SOUL_CAMPFIRE("soul_campfire", BlockID.SOUL_CAMPFIRE),
     SMITHING_TABLE("smithing_table", BlockID.SMITHING_TABLE),
     DEPRECATED("deprecated"),
     ;

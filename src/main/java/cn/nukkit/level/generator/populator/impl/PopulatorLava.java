@@ -4,7 +4,6 @@ import cn.nukkit.block.Block;
 import cn.nukkit.level.ChunkManager;
 import cn.nukkit.level.format.FullChunk;
 import cn.nukkit.level.generator.populator.type.Populator;
-import cn.nukkit.math.NukkitRandom;
 import cn.nukkit.math.RandomSource;
 
 public class PopulatorLava extends Populator {
@@ -21,7 +20,7 @@ public class PopulatorLava extends Populator {
     }
 
     @Override
-    public void populate(ChunkManager level, int chunkX, int chunkZ, NukkitRandom random, FullChunk chunk) {
+    public void populate(ChunkManager level, int chunkX, int chunkZ, RandomSource random, FullChunk chunk) {
         if (random.nextRange(0, 100) < 5) {
             int amount = random.nextRange(0, this.randomAmount + 1) + this.baseAmount;
             int bx = chunkX << 4;

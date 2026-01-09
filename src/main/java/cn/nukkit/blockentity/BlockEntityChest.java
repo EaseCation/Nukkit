@@ -186,7 +186,7 @@ public class BlockEntityChest extends BlockEntityAbstractContainer {
     }
 
     @Override
-    public CompoundTag getSpawnCompound() {
+    public CompoundTag getSpawnCompound(boolean chunkData) {
         CompoundTag nbt = getDefaultCompound(this, CHEST);
 
         if (this.isPaired()) {

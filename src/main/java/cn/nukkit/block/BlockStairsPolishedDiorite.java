@@ -7,12 +7,8 @@ import static cn.nukkit.SharedConstants.*;
 
 public class BlockStairsPolishedDiorite extends BlockStairs {
 
-    public BlockStairsPolishedDiorite() {
-        this(0);
-    }
+    BlockStairsPolishedDiorite() {
 
-    public BlockStairsPolishedDiorite(int meta) {
-        super(meta);
     }
 
     @Override

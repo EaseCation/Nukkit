@@ -2,12 +2,8 @@ package cn.nukkit.block;
 
 public class BlockButtonJungle extends BlockButtonWooden {
 
-    public BlockButtonJungle() {
-        this(0);
-    }
+    BlockButtonJungle() {
 
-    public BlockButtonJungle(int meta) {
-        super(meta);
     }
 
     @Override

@@ -3,12 +3,8 @@ package cn.nukkit.block;
 import cn.nukkit.utils.BlockColor;
 
 public class BlockHangingSignCherry extends BlockHangingSign {
-    public BlockHangingSignCherry() {
-        this(0);
-    }
+    BlockHangingSignCherry() {
 
-    public BlockHangingSignCherry(int meta) {
-        super(meta);
     }
 
     @Override

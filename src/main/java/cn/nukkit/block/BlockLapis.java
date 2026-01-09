@@ -11,8 +11,8 @@ import cn.nukkit.utils.BlockColor;
  */
 public class BlockLapis extends BlockSolid {
 
+    BlockLapis() {
 
-    public BlockLapis() {
     }
 
     @Override

@@ -1,5 +1,6 @@
 package cn.nukkit.block;
 
+import cn.nukkit.utils.BlockColor;
 import cn.nukkit.utils.DyeColor;
 
 /**
@@ -26,7 +27,8 @@ public abstract class BlockWool extends BlockSolid {
             BLACK_WOOL,
     };
 
-    public BlockWool() {
+    BlockWool() {
+
     }
 
     @Override
@@ -52,6 +54,11 @@ public abstract class BlockWool extends BlockSolid {
     @Override
     public int getBurnAbility() {
         return 60;
+    }
+
+    @Override
+    public BlockColor getColor() {
+        return getDyeColor().getColor();
     }
 
     public abstract DyeColor getDyeColor();

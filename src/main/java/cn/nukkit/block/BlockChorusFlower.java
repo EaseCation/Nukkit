@@ -17,12 +17,8 @@ import java.util.concurrent.ThreadLocalRandom;
 public class BlockChorusFlower extends BlockFlowable {
     public static final int MAX_AGE = 5;
 
-    public BlockChorusFlower() {
-        this(0);
-    }
+    BlockChorusFlower() {
 
-    public BlockChorusFlower(int meta) {
-        super(meta);
     }
 
     @Override

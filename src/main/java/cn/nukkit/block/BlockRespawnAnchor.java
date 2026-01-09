@@ -14,12 +14,8 @@ import cn.nukkit.utils.BlockColor;
 public class BlockRespawnAnchor extends BlockSolid {
     public static final int MAX_CHARGE = 4;
 
-    public BlockRespawnAnchor() {
-        this(0);
-    }
+    BlockRespawnAnchor() {
 
-    public BlockRespawnAnchor(int meta) {
-        super(meta);
     }
 
     @Override

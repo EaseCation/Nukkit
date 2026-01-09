@@ -92,7 +92,7 @@ public class BlockEntityShelf extends BlockEntitySpawnable implements HopperInte
     }
 
     @Override
-    public CompoundTag getSpawnCompound() {
+    public CompoundTag getSpawnCompound(boolean chunkData) {
         CompoundTag nbt = getDefaultCompound(this, SHELF);
 
         boolean empty = true;

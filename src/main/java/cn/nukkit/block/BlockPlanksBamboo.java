@@ -2,8 +2,9 @@ package cn.nukkit.block;
 
 import cn.nukkit.utils.BlockColor;
 
-public class BlockPlanksBamboo extends BlockPlanksAbstract {
-    public BlockPlanksBamboo() {
+public class BlockPlanksBamboo extends BlockPlanks {
+    BlockPlanksBamboo() {
+
     }
 
     @Override

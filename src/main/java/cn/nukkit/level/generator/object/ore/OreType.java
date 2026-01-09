@@ -4,9 +4,7 @@ import cn.nukkit.block.Block;
 import cn.nukkit.level.HeightRange;
 import cn.nukkit.level.format.FullChunk;
 import cn.nukkit.math.Mth;
-import cn.nukkit.math.NukkitRandom;
-
-import static cn.nukkit.block.BlockID.STONE;
+import cn.nukkit.math.RandomSource;
 
 /**
  * author: MagicDroidX
@@ -22,7 +20,7 @@ public class OreType {
     public final int replaceBlockId;
 
     public OreType(Block material, int clusterCount, int clusterSize, int minHeight, int maxHeight) {
-        this(material, clusterCount, clusterSize, minHeight, maxHeight, STONE);
+        this(material, clusterCount, clusterSize, minHeight, maxHeight, Block.STONE);
     }
 
     public OreType(Block material, int clusterCount, int clusterSize, int minHeight, int maxHeight, int replaceBlockId) {
@@ -34,7 +32,7 @@ public class OreType {
         this.replaceBlockId = replaceBlockId;
     }
 
-    public boolean spawn(FullChunk chunk, NukkitRandom rand, int x, int y, int z) {
+    public boolean spawn(FullChunk chunk, RandomSource rand, int x, int y, int z) {
         float piScaled = rand.nextFloat() * (float) Math.PI;
         double scaleMaxX = (float) (x + 8) + Mth.sin(piScaled) * (float) clusterSize / 8.0F;
         double scaleMinX = (float) (x + 8) - Mth.sin(piScaled) * (float) clusterSize / 8.0F;

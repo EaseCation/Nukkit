@@ -4,12 +4,8 @@ import cn.nukkit.utils.BlockColor;
 
 public class BlockStairsStone extends BlockStairs {
 
-    public BlockStairsStone() {
-        this(0);
-    }
+    BlockStairsStone() {
 
-    public BlockStairsStone(int meta) {
-        super(meta);
     }
 
     @Override

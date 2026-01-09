@@ -14,12 +14,8 @@ public class BlockLantern extends BlockTransparent {
 
     public static final int HANGING_BIT = 0b1;
 
-    public BlockLantern() {
-        this(0);
-    }
+    BlockLantern() {
 
-    public BlockLantern(int meta) {
-        super(meta);
     }
 
     @Override

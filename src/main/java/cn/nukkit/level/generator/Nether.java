@@ -14,7 +14,7 @@ import cn.nukkit.level.generator.populator.impl.PopulatorGroundFire;
 import cn.nukkit.level.generator.populator.impl.PopulatorLava;
 import cn.nukkit.level.generator.populator.impl.PopulatorOre;
 import cn.nukkit.level.generator.populator.type.Populator;
-import cn.nukkit.math.NukkitRandom;
+import cn.nukkit.math.RandomSource;
 import cn.nukkit.math.Vector3;
 import it.unimi.dsi.fastutil.objects.Object2ObjectOpenHashMap;
 import it.unimi.dsi.fastutil.objects.ObjectArrayList;
@@ -25,7 +25,7 @@ import java.util.concurrent.ThreadLocalRandom;
 public class Nether implements Generator {
     private final Map<String, Object> options;
     private ChunkManager level;
-    private NukkitRandom nukkitRandom;
+    private RandomSource nukkitRandom;
 
     private static final int lavaHeight = 32;
     private static final int bedrockDepth = 5;
@@ -71,7 +71,7 @@ public class Nether implements Generator {
     }
 
     @Override
-    public void init(ChunkManager level, NukkitRandom random, GeneratorOptions generatorOptions) {
+    public void init(ChunkManager level, RandomSource random, GeneratorOptions generatorOptions) {
         this.level = level;
         this.nukkitRandom = random;
         this.nukkitRandom.setSeed(this.level.getSeed());

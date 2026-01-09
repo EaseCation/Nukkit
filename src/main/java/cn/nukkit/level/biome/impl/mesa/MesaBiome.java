@@ -1,6 +1,6 @@
 package cn.nukkit.level.biome.impl.mesa;
 
-import cn.nukkit.block.BlockSand;
+import cn.nukkit.block.BlockTerracottaStained;
 import cn.nukkit.level.biome.type.CoveredBiome;
 import cn.nukkit.level.generator.noise.nukkit.f.SimplexF;
 import cn.nukkit.level.generator.populator.impl.PopulatorCactus;
@@ -57,9 +57,6 @@ public class MesaBiome extends CoveredBiome {
     int randY = 0;
     int redSandThreshold = 0;
     boolean isRedSand = false;
-    //cache this too so we can access it in getSurfaceBlock and getSurfaceMeta without needing to calculate it twice
-    int currMeta = 0;
-    int startY = 0;
 
     public MesaBiome() {
         PopulatorDeadBush deadBush = new PopulatorDeadBush();
@@ -82,7 +79,6 @@ public class MesaBiome extends CoveredBiome {
     @Override
     public int getSurfaceDepth(int y) {
         isRedSand = y < redSandThreshold;
-        startY = y;
         //if true, we'll be generating red sand
         return isRedSand ? 3 : y - 66;
     }
@@ -90,19 +86,10 @@ public class MesaBiome extends CoveredBiome {
     @Override
     public int getSurfaceBlock(int y) {
         if (isRedSand) {
-            return SAND;
+            return RED_SAND;
         } else {
-            currMeta = colorLayer[(y + randY) & 0x3F];
-            return currMeta == -1 ? HARDENED_CLAY : STAINED_HARDENED_CLAY;
-        }
-    }
-
-    @Override
-    public int getSurfaceMeta(int y) {
-        if (isRedSand) {
-            return BlockSand.RED;
-        } else {
-            return Math.max(0, currMeta);
+            int currMeta = colorLayer[(y + randY) & 0x3F];
+            return currMeta < 0 ? HARDENED_CLAY : BlockTerracottaStained.STAINED_TERRACOTTAS[currMeta & 0xf];
         }
     }
 

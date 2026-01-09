@@ -1,12 +1,8 @@
 package cn.nukkit.block;
 
 public class BlockSkullPiglin extends BlockSkull {
-    public BlockSkullPiglin() {
-        this(0);
-    }
+    BlockSkullPiglin() {
 
-    public BlockSkullPiglin(int meta) {
-        super(meta);
     }
 
     @Override

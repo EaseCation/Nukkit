@@ -3,12 +3,8 @@ package cn.nukkit.block;
 import cn.nukkit.utils.BlockColor;
 
 public class BlockFroglightVerdant extends BlockFroglight {
-    public BlockFroglightVerdant() {
-        this(0);
-    }
+    BlockFroglightVerdant() {
 
-    public BlockFroglightVerdant(int meta) {
-        super(meta);
     }
 
     @Override

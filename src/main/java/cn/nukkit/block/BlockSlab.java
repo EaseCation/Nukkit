@@ -10,12 +10,9 @@ import cn.nukkit.math.BlockFace;
  */
 public abstract class BlockSlab extends BlockTransparent {
 
+    @Deprecated
     public static final int TYPE_MASK = 0b111;
     public static final int TOP_SLOT_BIT = 0b1000;
-
-    protected BlockSlab(int meta) {
-        super(meta);
-    }
 
     @Override
     public double getMinY() {
@@ -29,18 +26,16 @@ public abstract class BlockSlab extends BlockTransparent {
 
     @Override
     public boolean place(Item item, Block block, Block target, BlockFace face, float fx, float fy, float fz, Player player) {
-        setDamage(getSlabType());
-
         if (face == BlockFace.DOWN) {
             if (isSameSlabType(target) && ((BlockSlab) target).isTopSlot()) {
                 level.setExtraBlock(target, Blocks.air(), true, false);
-                level.setBlock(target, get(getDoubleSlabBlockId(), getSlabType()), true);
+                level.setBlock(target, get(getDoubleSlabBlockId()), true);
                 return true;
             }
 
             if (isSameSlabType(block)) {
                 level.setExtraBlock(block, Blocks.air(), true, false);
-                level.setBlock(block, get(getDoubleSlabBlockId(), getSlabType()), true);
+                level.setBlock(block, get(getDoubleSlabBlockId()), true);
                 return true;
             }
 
@@ -48,20 +43,20 @@ public abstract class BlockSlab extends BlockTransparent {
                 return false;
             }
 
-            setDamage(getDamage() | getTopSlotBit());
+            setTopSlot(true);
             level.setBlock(block, this, true);
             return true;
         }
         if (face == BlockFace.UP) {
             if (isSameSlabType(target) && !((BlockSlab) target).isTopSlot()) {
                 level.setExtraBlock(target, Blocks.air(), true, false);
-                level.setBlock(target, get(getDoubleSlabBlockId(), getSlabType()), true);
+                level.setBlock(target, get(getDoubleSlabBlockId()), true);
                 return true;
             }
 
             if (isSameSlabType(block)) {
                 level.setExtraBlock(block, Blocks.air(), true, false);
-                level.setBlock(block, get(getDoubleSlabBlockId(), getSlabType()), true);
+                level.setBlock(block, get(getDoubleSlabBlockId()), true);
                 return true;
             }
 
@@ -78,7 +73,7 @@ public abstract class BlockSlab extends BlockTransparent {
 
         if (isSameSlabType(block) && ((BlockSlab) block).isTopSlot() != topSlot) {
             level.setExtraBlock(block, Blocks.air(), true, false);
-            level.setBlock(block, get(getDoubleSlabBlockId(), getSlabType()), true);
+            level.setBlock(block, get(getDoubleSlabBlockId()), true);
             return true;
         }
 
@@ -86,17 +81,14 @@ public abstract class BlockSlab extends BlockTransparent {
             return false;
         }
 
-        if (topSlot) {
-            setDamage(getDamage() | getTopSlotBit());
-        }
-
+        setTopSlot(topSlot);
         level.setBlock(block, this, true);
         return true;
     }
 
     @Override
     public Item toItem(boolean addUserData) {
-        return Item.get(getItemId(), getSlabType());
+        return Item.get(getItemId());
     }
 
     @Override
@@ -130,20 +122,21 @@ public abstract class BlockSlab extends BlockTransparent {
         return true;
     }
 
+    @Deprecated
     public int getSlabType() {
-        return getDamage() & TYPE_MASK;
+        return 0;
     }
 
     public boolean isTopSlot() {
-        return (getDamage() & getTopSlotBit()) != 0;
+        return getDamage() == TOP_SLOT_BIT;
+    }
+
+    public void setTopSlot(boolean upper) {
+        setDamage(upper ? TOP_SLOT_BIT : 0);
     }
 
     private boolean isSameSlabType(Block block) {
-        return getId() == block.getId() && getSlabType() == ((BlockSlab) block).getSlabType();
-    }
-
-    protected int getTopSlotBit() {
-        return TOP_SLOT_BIT;
+        return getId() == block.getId();
     }
 
     protected abstract int getDoubleSlabBlockId();

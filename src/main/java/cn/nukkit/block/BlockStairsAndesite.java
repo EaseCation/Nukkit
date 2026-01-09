@@ -7,12 +7,8 @@ import static cn.nukkit.SharedConstants.*;
 
 public class BlockStairsAndesite extends BlockStairs {
 
-    public BlockStairsAndesite() {
-        this(0);
-    }
+    BlockStairsAndesite() {
 
-    public BlockStairsAndesite(int meta) {
-        super(meta);
     }
 
     @Override

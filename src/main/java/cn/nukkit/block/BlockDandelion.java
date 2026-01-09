@@ -5,12 +5,8 @@ package cn.nukkit.block;
  * Package cn.nukkit.block in project Nukkit .
  */
 public class BlockDandelion extends BlockFlower {
-    public BlockDandelion() {
-        this(0);
-    }
+    BlockDandelion() {
 
-    public BlockDandelion(int meta) {
-        super(0);
     }
 
     @Override
@@ -24,12 +20,7 @@ public class BlockDandelion extends BlockFlower {
     }
 
     @Override
-    public boolean isStackedByData() {
-        return false;
-    }
-
-    @Override
-    protected Block getUncommonFlower() {
-        return get(RED_FLOWER);
+    protected int getUncommonFlowerId() {
+        return POPPY;
     }
 }

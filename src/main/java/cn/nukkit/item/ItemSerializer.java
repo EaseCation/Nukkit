@@ -25,10 +25,6 @@ public class ItemSerializer {
         return INSTANCE.deserialize(tag);
     }
 
-    public static void registerItem(String identifier, int id) {
-        INSTANCE.registerItem(identifier, id);
-    }
-
     public static void registerItem(String identifier, int id, int maxAuxVal) {
         INSTANCE.registerItem(identifier, id, maxAuxVal);
     }
@@ -51,8 +47,6 @@ public class ItemSerializer {
         CompoundTag serializeItemStack(@Nullable Item item, int slot);
 
         Item deserialize(CompoundTag tag);
-
-        void registerItem(String identifier, int id);
 
         void registerItem(String identifier, int id, int maxAuxVal);
 

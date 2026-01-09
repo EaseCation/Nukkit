@@ -11,6 +11,23 @@ import cn.nukkit.math.SimpleAxisAlignedBB;
  * Nukkit Project
  */
 public abstract class BlockWall extends BlockTransparent {
+    public static final int[] WALLS = {
+            COBBLESTONE_WALL,
+            MOSSY_COBBLESTONE_WALL,
+            GRANITE_WALL,
+            DIORITE_WALL,
+            ANDESITE_WALL,
+            SANDSTONE_WALL,
+            BRICK_WALL,
+            STONE_BRICK_WALL,
+            MOSSY_STONE_BRICK_WALL,
+            NETHER_BRICK_WALL,
+            END_STONE_BRICK_WALL,
+            PRISMARINE_WALL,
+            RED_SANDSTONE_WALL,
+            RED_NETHER_BRICK_WALL,
+    };
+
     public static final int POST_BIT = 0b1;
     public static final int NORTH_CONNECTION_TYPE_MASK = 0b11_0;
     public static final int NORTH_CONNECTION_TYPE_OFFSET = 1;
@@ -32,10 +49,6 @@ public abstract class BlockWall extends BlockTransparent {
     private static final AxisAlignedBB WEST_TEST = box(0, 0, 3.5f, 3.5f, 16, 12.5f);
     private static final AxisAlignedBB EAST_TEST = box(12.5f, 0, 3.5f, 16, 16, 12.5f);
     private static final AxisAlignedBB POST_TEST = box(7, 0, 7, 9, 16, 9);
-
-    protected BlockWall(int meta) {
-        super(meta);
-    }
 
     @Override
     public boolean isSolid() {

@@ -4,7 +4,8 @@ import cn.nukkit.utils.BlockColor;
 
 public class BlockDriedKelp extends BlockSolid {
 
-    public BlockDriedKelp() {
+    BlockDriedKelp() {
+
     }
 
     @Override

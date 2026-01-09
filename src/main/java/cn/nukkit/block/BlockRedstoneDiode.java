@@ -17,12 +17,8 @@ import cn.nukkit.utils.Faceable;
 public abstract class BlockRedstoneDiode extends BlockTransparent implements Faceable {
     public static final int DIRECTION_MASK = 0b11;
 
-    public BlockRedstoneDiode() {
-        this(0);
-    }
+    BlockRedstoneDiode() {
 
-    public BlockRedstoneDiode(int meta) {
-        super(meta);
     }
 
     @Override

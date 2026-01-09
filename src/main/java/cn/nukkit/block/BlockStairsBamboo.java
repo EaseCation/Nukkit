@@ -3,12 +3,8 @@ package cn.nukkit.block;
 import cn.nukkit.utils.BlockColor;
 
 public class BlockStairsBamboo extends BlockStairsWood {
-    public BlockStairsBamboo() {
-        this(0);
-    }
+    BlockStairsBamboo() {
 
-    public BlockStairsBamboo(int meta) {
-        super(meta);
     }
 
     @Override

@@ -13,12 +13,8 @@ public class BlockSculkSensorCalibrated extends BlockSculkSensor implements Face
     public static final int DIRECTION_MASK = 0b1100;
     public static final int DIRECTION_START = 2;
 
-    public BlockSculkSensorCalibrated() {
-        this(0);
-    }
+    BlockSculkSensorCalibrated() {
 
-    public BlockSculkSensorCalibrated(int meta) {
-        super(meta);
     }
 
     @Override

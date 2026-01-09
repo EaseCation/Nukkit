@@ -6,7 +6,8 @@ import cn.nukkit.item.ItemTool;
 import cn.nukkit.utils.BlockColor;
 
 public class BlockBricksBlackstonePolished extends BlockSolid {
-    public BlockBricksBlackstonePolished() {
+    BlockBricksBlackstonePolished() {
+
     }
 
     @Override

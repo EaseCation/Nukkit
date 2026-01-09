@@ -25,12 +25,8 @@ public class BlockDripleafBig extends BlockTransparent implements Faceable {
     public static final int TILT_PARTIAL_TILT = 2;
     public static final int TILT_FULL_TILT = 3;
 
-    public BlockDripleafBig() {
-        this(0);
-    }
+    BlockDripleafBig() {
 
-    public BlockDripleafBig(int meta) {
-        super(meta);
     }
 
     @Override
@@ -73,12 +69,17 @@ public class BlockDripleafBig extends BlockTransparent implements Faceable {
 
     @Override
     public Item toItem(boolean addUserData) {
-        return Item.get(getItemId(), getItemDefaultMeta());
+        return Item.get(getItemId(), getItemMeta());
     }
 
     @Override
-    public int getItemDefaultMeta() {
+    public int getBlockDefaultMeta() {
         return HEAD_BIT;
+    }
+
+    @Override
+    public int getItemSerializationMeta() {
+        return getBlockDefaultMeta();
     }
 
     @Override

@@ -15,12 +15,8 @@ import cn.nukkit.utils.BlockColor;
  */
 public class BlockSugarcane extends BlockFlowable {
 
-    public BlockSugarcane() {
-        this(0);
-    }
+    BlockSugarcane() {
 
-    public BlockSugarcane(int meta) {
-        super(meta);
     }
 
     @Override
@@ -30,7 +26,7 @@ public class BlockSugarcane extends BlockFlowable {
 
     @Override
     public int getId() {
-        return BLOCK_REEDS;
+        return REEDS;
     }
 
     @Override
@@ -51,7 +47,7 @@ public class BlockSugarcane extends BlockFlowable {
             for (int i = 1; i <= 2; i++) {
                 int id = this.level.getBlock(this.getFloorX(), this.getFloorY() - i, this.getFloorZ()).getId();
 
-                if (id == BLOCK_REEDS) {
+                if (id == REEDS) {
                     count++;
                 }
             }
@@ -63,14 +59,14 @@ public class BlockSugarcane extends BlockFlowable {
                 for (int i = 1; i <= toGrow; i++) {
                     Block block = this.up(i);
                     if (block.getId() == AIR) {
-                        BlockGrowEvent ev = new BlockGrowEvent(block, Block.get(BlockID.BLOCK_REEDS));
+                        BlockGrowEvent ev = new BlockGrowEvent(block, Block.get(BlockID.REEDS));
                         Server.getInstance().getPluginManager().callEvent(ev);
 
                         if (!ev.isCancelled()) {
                             this.getLevel().setBlock(block, ev.getNewState(), true);
                             success = true;
                         }
-                    } else if (block.getId() != BLOCK_REEDS) {
+                    } else if (block.getId() != REEDS) {
                         break;
                     }
                 }
@@ -99,13 +95,13 @@ public class BlockSugarcane extends BlockFlowable {
         if (type == Level.BLOCK_UPDATE_NORMAL) {
             Block down = this.down();
             int id = down.getId();
-            if (id != BLOCK_REEDS && !canSurvive(id)) {
+            if (id != REEDS && !canSurvive(id)) {
                 this.getLevel().useBreakOn(this, true);
                 return Level.BLOCK_UPDATE_NORMAL;
             }
         } else if (type == Level.BLOCK_UPDATE_RANDOM) {
             Block down = this.down();
-            if (down.getId() != BLOCK_REEDS) {
+            if (down.getId() != REEDS) {
                 if (!hasWaterAround(down)) {
                     level.useBreakOn(this, true);
                     return Level.BLOCK_UPDATE_NORMAL;
@@ -118,14 +114,14 @@ public class BlockSugarcane extends BlockFlowable {
                     for (int y = 1; y < 3; ++y) {
                         Block b = this.getLevel().getBlock(blockX, blockY + y, blockZ);
                         if (b.getId() == AIR) {
-                            BlockGrowEvent ev = new BlockGrowEvent(b, Block.get(BlockID.BLOCK_REEDS));
+                            BlockGrowEvent ev = new BlockGrowEvent(b, Block.get(BlockID.REEDS));
                             Server.getInstance().getPluginManager().callEvent(ev);
 
                             if (!ev.isCancelled()) {
                                 this.getLevel().setBlock(b, ev.getNewState(), true);
                             }
                             break;
-                        } else if (b.getId() != BLOCK_REEDS) {
+                        } else if (b.getId() != REEDS) {
                             break;
                         }
                     }
@@ -148,8 +144,8 @@ public class BlockSugarcane extends BlockFlowable {
 
         Block down = this.down();
         int id = down.getId();
-        if (id == BLOCK_REEDS) {
-            this.getLevel().setBlock(block, Block.get(BlockID.BLOCK_REEDS), true);
+        if (id == REEDS) {
+            this.getLevel().setBlock(block, Block.get(BlockID.REEDS), true);
             return true;
         }
 
@@ -161,7 +157,7 @@ public class BlockSugarcane extends BlockFlowable {
             return false;
         }
 
-        level.setBlock(block, get(BLOCK_REEDS), true);
+        level.setBlock(block, get(REEDS), true);
         return true;
     }
 

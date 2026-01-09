@@ -16,12 +16,8 @@ import cn.nukkit.utils.BlockColor;
  */
 public class BlockWater extends BlockLiquid {
 
-    public BlockWater() {
-        this(0);
-    }
+    BlockWater() {
 
-    public BlockWater(int meta) {
-        super(meta);
     }
 
     @Override
@@ -117,7 +113,7 @@ public class BlockWater extends BlockLiquid {
             if (block.isAir()) {
                 level.setBlock(block, newBlock, true, true);
             } else if (block.canBeFlowedInto()) {
-                level.useBreakOn(block, ItemTool.getUniversalTool(), null, needParticle(block));
+                level.useBreakOn(block, ItemTool.getUniversalTool(), null, false);
 
                 level.setBlock(block, newBlock, true, true);
             } else if (newBlock.isWaterSource() || block.canContainFlowingWater()) {
@@ -130,27 +126,12 @@ public class BlockWater extends BlockLiquid {
                 if (block.getId() == SNOW_LAYER && extra.canContainSnow()) {
                     level.useBreakOn(block, ItemTool.getUniversalTool());
                 }
-                level.useBreakOn(block, ItemTool.getUniversalTool(), null, needParticle(block));
+                level.useBreakOn(block, ItemTool.getUniversalTool(), null, false);
             }
 
             level.setBlock(block, getBlock(newFlowDecay), true, true);
         }
 
         level.scheduleUpdate(block, tickRate());
-    }
-
-    private static boolean needParticle(Block block) {
-        if (block.isCoral()) {
-            return true;
-        }
-        switch (block.getId()) {
-            case CORAL_FAN:
-            case CORAL_FAN_DEAD:
-            case CORAL_FAN_HANG:
-            case CORAL_FAN_HANG2:
-            case CORAL_FAN_HANG3:
-                return true;
-        }
-        return false;
     }
 }

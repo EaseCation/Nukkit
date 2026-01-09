@@ -7,6 +7,7 @@ import cn.nukkit.blockentity.BlockEntityFurnace;
 import cn.nukkit.blockentity.BlockEntityType;
 import cn.nukkit.inventory.ContainerInventory;
 import cn.nukkit.item.Item;
+import cn.nukkit.item.ItemBlockID;
 import cn.nukkit.item.ItemTool;
 import cn.nukkit.math.BlockFace;
 import cn.nukkit.nbt.tag.CompoundTag;
@@ -23,15 +24,10 @@ import java.util.Map;
  * Nukkit Project
  */
 public class BlockFurnaceBurning extends BlockSolid implements Faceable {
+    public static final int DIRECTION_MASK = 0b11;
 
-    private static final int[] FACES = {2, 5, 3, 4};
+    BlockFurnaceBurning() {
 
-    public BlockFurnaceBurning() {
-        this(0);
-    }
-
-    public BlockFurnaceBurning(int meta) {
-        super(meta);
     }
 
     @Override
@@ -42,6 +38,11 @@ public class BlockFurnaceBurning extends BlockSolid implements Faceable {
     @Override
     public int getBlockDefaultMeta() {
         return 3;
+    }
+
+    @Override
+    public int getItemSerializationMeta() {
+        return getBlockDefaultMeta();
     }
 
     @Override
@@ -81,7 +82,7 @@ public class BlockFurnaceBurning extends BlockSolid implements Faceable {
 
     @Override
     public boolean place(Item item, Block block, Block target, BlockFace face, float fx, float fy, float fz, Player player) {
-        this.setDamage(FACES[player != null ? player.getDirection().getHorizontalIndex() : 0]);
+        this.setDamage(player != null ? player.getDirection().getOpposite().getHorizontalIndex() : 0);
         this.getLevel().setBlock(block, this, true, true);
 
         CompoundTag nbt = BlockEntity.getDefaultCompound(this, getBlockEntityId());
@@ -149,7 +150,7 @@ public class BlockFurnaceBurning extends BlockSolid implements Faceable {
 
     @Override
     public Item toItem(boolean addUserData) {
-        Item item = Item.get(getItemId(FURNACE));
+        Item item = Item.get(ItemBlockID.FURNACE);
         if (addUserData) {
             BlockEntity blockEntity = getBlockEntity();
             if (blockEntity != null) {
@@ -194,7 +195,7 @@ public class BlockFurnaceBurning extends BlockSolid implements Faceable {
 
     @Override
     public BlockFace getBlockFace() {
-        return BlockFace.fromHorizontalIndex(this.getDamage() & 0x7);
+        return BlockFace.fromHorizontalIndex(this.getDamage() & DIRECTION_MASK);
     }
 
     @Override

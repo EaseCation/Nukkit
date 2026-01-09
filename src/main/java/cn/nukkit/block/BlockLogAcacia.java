@@ -3,12 +3,8 @@ package cn.nukkit.block;
 import cn.nukkit.utils.BlockColor;
 
 public class BlockLogAcacia extends BlockLog {
-    public BlockLogAcacia() {
-        this(0);
-    }
+    BlockLogAcacia() {
 
-    public BlockLogAcacia(int meta) {
-        super(meta);
     }
 
     @Override

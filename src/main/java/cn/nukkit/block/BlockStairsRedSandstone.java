@@ -7,12 +7,8 @@ import cn.nukkit.utils.BlockColor;
  */
 public class BlockStairsRedSandstone extends BlockStairs {
 
-    public BlockStairsRedSandstone() {
-        this(0);
-    }
+    BlockStairsRedSandstone() {
 
-    public BlockStairsRedSandstone(int meta) {
-        super(meta);
     }
 
     @Override

@@ -44,7 +44,7 @@ public class BlockEntityLodestone extends BlockEntitySpawnable {
     }
 
     @Override
-    public CompoundTag getSpawnCompound() {
+    public CompoundTag getSpawnCompound(boolean chunkData) {
         return getDefaultCompound(this, LODESTONE);
     }
 

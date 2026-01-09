@@ -11,7 +11,8 @@ import java.util.concurrent.ThreadLocalRandom;
 import static cn.nukkit.GameVersion.*;
 
 public class BlockAmethystBudding extends BlockSolid {
-    public BlockAmethystBudding() {
+    BlockAmethystBudding() {
+
     }
 
     @Override

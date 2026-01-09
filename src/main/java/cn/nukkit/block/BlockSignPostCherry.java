@@ -4,12 +4,8 @@ import cn.nukkit.item.Item;
 import cn.nukkit.utils.BlockColor;
 
 public class BlockSignPostCherry extends BlockSignPost {
-    public BlockSignPostCherry() {
-        this(0);
-    }
+    BlockSignPostCherry() {
 
-    public BlockSignPostCherry(int meta) {
-        super(meta);
     }
 
     @Override

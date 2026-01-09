@@ -4,12 +4,8 @@ import cn.nukkit.Player;
 import cn.nukkit.item.Item;
 
 public class BlockHugeMushroomStem extends BlockHugeMushroom {
-    public BlockHugeMushroomStem() {
-        this(0);
-    }
+    BlockHugeMushroomStem() {
 
-    public BlockHugeMushroomStem(int meta) {
-        super(meta);
     }
 
     @Override
@@ -23,18 +19,13 @@ public class BlockHugeMushroomStem extends BlockHugeMushroom {
     }
 
     @Override
-    public boolean isStackedByData() {
-        return false;
-    }
-
-    @Override
     public int getBlockDefaultMeta() {
         return ALL_STEM;
     }
 
     @Override
-    public int getItemDefaultMeta() {
-        return ALL_STEM;
+    public int getItemSerializationMeta() {
+        return getBlockDefaultMeta();
     }
 
     @Override

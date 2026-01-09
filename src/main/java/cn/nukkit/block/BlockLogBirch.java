@@ -3,12 +3,8 @@ package cn.nukkit.block;
 import cn.nukkit.utils.BlockColor;
 
 public class BlockLogBirch extends BlockLog {
-    public BlockLogBirch() {
-        this(0);
-    }
+    BlockLogBirch() {
 
-    public BlockLogBirch(int meta) {
-        super(meta);
     }
 
     @Override

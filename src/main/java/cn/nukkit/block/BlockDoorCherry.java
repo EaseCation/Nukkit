@@ -4,12 +4,8 @@ import cn.nukkit.item.Item;
 import cn.nukkit.utils.BlockColor;
 
 public class BlockDoorCherry extends BlockDoorWood {
-    public BlockDoorCherry() {
-        this(0);
-    }
+    BlockDoorCherry() {
 
-    public BlockDoorCherry(int meta) {
-        super(meta);
     }
 
     @Override
@@ -24,7 +20,7 @@ public class BlockDoorCherry extends BlockDoorWood {
 
     @Override
     public Item toItem(boolean addUserData) {
-        return Item.get(getItemId(), getItemDefaultMeta());
+        return Item.get(getItemId(), getItemMeta());
     }
 
     @Override

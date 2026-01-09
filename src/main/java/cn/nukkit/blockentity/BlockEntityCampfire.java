@@ -77,7 +77,7 @@ public class BlockEntityCampfire extends BlockEntitySpawnable {
 
     @Override
     public boolean isValidBlock(int blockId) {
-        return blockId == Block.BLOCK_CAMPFIRE || blockId == Block.BLOCK_SOUL_CAMPFIRE;
+        return blockId == Block.CAMPFIRE || blockId == Block.SOUL_CAMPFIRE;
     }
 
     @Override
@@ -160,7 +160,7 @@ public class BlockEntityCampfire extends BlockEntitySpawnable {
     }
 
     @Override
-    public CompoundTag getSpawnCompound() {
+    public CompoundTag getSpawnCompound(boolean chunkData) {
         CompoundTag nbt = getDefaultCompound(this, CAMPFIRE);
 
         for (int i = 0; i < SLOT_COUNT; i++) {

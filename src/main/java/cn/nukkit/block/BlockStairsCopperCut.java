@@ -13,12 +13,8 @@ import cn.nukkit.utils.BlockColor;
 import java.util.concurrent.ThreadLocalRandom;
 
 public class BlockStairsCopperCut extends BlockStairs implements CopperBehavior {
-    public BlockStairsCopperCut() {
-        this(0);
-    }
+    BlockStairsCopperCut() {
 
-    public BlockStairsCopperCut(int meta) {
-        super(meta);
     }
 
     @Override

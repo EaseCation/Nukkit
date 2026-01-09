@@ -27,12 +27,8 @@ public class BlockDripstonePointed extends BlockTransparent {
     public static final int THICKNESS_MASK = 0b111;
     public static final int HANGING_BIT = 0b1000;
 
-    public BlockDripstonePointed() {
-        this(0);
-    }
+    BlockDripstonePointed() {
 
-    public BlockDripstonePointed(int meta) {
-        super(meta);
     }
 
     @Override
@@ -62,12 +58,17 @@ public class BlockDripstonePointed extends BlockTransparent {
 
     @Override
     public Item toItem(boolean addUserData) {
-        return Item.get(getItemId(), getItemDefaultMeta());
+        return Item.get(getItemId(), getItemMeta());
     }
 
     @Override
-    public int getItemDefaultMeta() {
+    public int getBlockDefaultMeta() {
         return HANGING_BIT;
+    }
+
+    @Override
+    public int getItemSerializationMeta() {
+        return getBlockDefaultMeta();
     }
 
     @Override

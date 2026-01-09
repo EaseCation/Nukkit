@@ -421,7 +421,7 @@ public class EntityArmorStand extends EntityLiving implements EntityInteractable
             } else if (item.isBoots()) {
                 slot = EQUIPMENT_SLOT_FEET;
             }
-        } else if (item.getId() == ItemID.SKULL || item.getId() == ItemBlockID.CARVED_PUMPKIN) {
+        } else if (item.isSkull() || item.getId() == ItemBlockID.CARVED_PUMPKIN) {
             slot = EQUIPMENT_SLOT_HEAD;
         }
 

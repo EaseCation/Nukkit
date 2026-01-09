@@ -5,12 +5,8 @@ import cn.nukkit.utils.BlockColor;
 import static cn.nukkit.GameVersion.*;
 
 public class BlockStairsPolishedBlackstone extends BlockStairs {
-    public BlockStairsPolishedBlackstone() {
-        this(0);
-    }
+    BlockStairsPolishedBlackstone() {
 
-    public BlockStairsPolishedBlackstone(int meta) {
-        super(meta);
     }
 
     @Override

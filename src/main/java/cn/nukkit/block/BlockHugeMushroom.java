@@ -20,17 +20,8 @@ public abstract class BlockHugeMushroom extends BlockSolid {
     public static final int ALL_OUTSIDE = 14;
     public static final int ALL_STEM = 15;
 
-    protected BlockHugeMushroom(int meta) {
-        super(meta);
-    }
-
     @Override
-    public boolean isStackedByData() {
-        return true;
-    }
-
-    @Override
-    public int getItemDefaultMeta() {
+    public int getItemSerializationMeta() {
         return ALL_OUTSIDE;
     }
 
@@ -68,7 +59,7 @@ public abstract class BlockHugeMushroom extends BlockSolid {
 
     @Override
     public Item toItem(boolean addUserData) {
-        return Item.get(getItemId(), getItemDefaultMeta());
+        return Item.get(getItemId(), getItemMeta());
     }
 
     @Override

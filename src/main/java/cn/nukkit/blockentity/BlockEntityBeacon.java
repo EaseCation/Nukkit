@@ -84,7 +84,7 @@ public class BlockEntityBeacon extends BlockEntitySpawnable {
     }
 
     @Override
-    public CompoundTag getSpawnCompound() {
+    public CompoundTag getSpawnCompound(boolean chunkData) {
         return getDefaultCompound(this, BEACON)
                 .putInt("primary", this.namedTag.getInt("primary"))
                 .putInt("secondary", this.namedTag.getInt("secondary"));

@@ -10,17 +10,13 @@ import java.util.concurrent.ThreadLocalRandom;
  * Package cn.nukkit.block in project Nukkit .
  */
 public class BlockBeetroot extends BlockCrops {
-    public BlockBeetroot() {
-        this(0);
-    }
+    BlockBeetroot() {
 
-    public BlockBeetroot(int meta) {
-        super(meta);
     }
 
     @Override
     public int getId() {
-        return BLOCK_BEETROOT;
+        return BEETROOT;
     }
 
     @Override

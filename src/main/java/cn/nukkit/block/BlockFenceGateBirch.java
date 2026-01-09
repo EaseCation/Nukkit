@@ -7,12 +7,8 @@ import cn.nukkit.utils.BlockColor;
  * Package cn.nukkit.block in project Nukkit .
  */
 public class BlockFenceGateBirch extends BlockFenceGate {
-    public BlockFenceGateBirch() {
-        this(0);
-    }
+    BlockFenceGateBirch() {
 
-    public BlockFenceGateBirch(int meta) {
-        super(meta);
     }
 
     @Override

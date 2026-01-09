@@ -10,12 +10,8 @@ public class BlockBubbleColumn extends BlockTransparent {
 
     public static final int DRAG_DOWN_BIT = 0b1;
 
-    public BlockBubbleColumn() {
-        this(0);
-    }
+    BlockBubbleColumn() {
 
-    public BlockBubbleColumn(int meta) {
-        super(meta);
     }
 
     @Override

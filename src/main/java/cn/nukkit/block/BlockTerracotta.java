@@ -5,24 +5,18 @@ import cn.nukkit.item.Item;
 import cn.nukkit.item.ItemTool;
 import cn.nukkit.utils.BlockColor;
 
-import static cn.nukkit.GameVersion.*;
-
 /**
  * Created on 2015/11/24 by xtypr.
  * Package cn.nukkit.block in project Nukkit .
  */
 public class BlockTerracotta extends BlockSolid {
-    public BlockTerracotta() {
+    BlockTerracotta() {
+
     }
 
     @Override
     public int getId() {
         return HARDENED_CLAY;
-    }
-
-    @Override
-    public boolean isStackedByData() {
-        return !V1_20_30.isAvailable();
     }
 
     @Override

@@ -288,7 +288,7 @@ public final class Items {
         registerItem(ItemNames.HEART_OF_THE_SEA, HEART_OF_THE_SEA, ItemHeartOfTheSea.class, ItemHeartOfTheSea::new, V1_4_0);
 
         registerItem(ItemNames.NAUTILUS_SHELL, NAUTILUS_SHELL, ItemNautilusShell.class, ItemNautilusShell::new, V1_5_0);
-        registerItem(ItemNames.SCUTE, TURTLE_SCUTE, ItemScute.class, ItemScute::new, V1_5_0);
+        registerItem(ItemNames.TURTLE_SCUTE, TURTLE_SCUTE, ItemScute.class, ItemScute::new, V1_5_0);
         registerItem(ItemNames.TURTLE_HELMET, TURTLE_HELMET, ItemTurtleShell.class, ItemTurtleShell::new, V1_5_0);
 
         registerItem(ItemNames.PHANTOM_MEMBRANE, PHANTOM_MEMBRANE, ItemPhantomMembrane.class, ItemPhantomMembrane::new, V1_6_0);
@@ -890,14 +890,13 @@ public final class Items {
         registerComplexAlias(CHERRY_CHEST_BOAT, ItemNames.CHEST_BOAT, CHEST_BOAT, ItemBoatChest.CHERRY, V1_20_0);
         registerComplexAlias(PALE_OAK_CHEST_BOAT, ItemNames.CHEST_BOAT, CHEST_BOAT, ItemBoatChest.PALE_OAK, V1_21_50);
 
-        registerComplexAlias(ItemBlockNames.SKELETON_SKULL, SKULL, ItemSkull.HEAD_SKELETON, V1_21_40);
-        registerComplexAlias(ItemBlockNames.WITHER_SKELETON_SKULL, SKULL, ItemSkull.HEAD_WITHER_SKELETON, V1_21_40);
-        registerComplexAlias(ItemBlockNames.ZOMBIE_HEAD, SKULL, ItemSkull.HEAD_ZOMBIE, V1_21_40);
-        registerComplexAlias(ItemBlockNames.PLAYER_HEAD, SKULL, ItemSkull.HEAD_PLAYER, V1_21_40);
-        registerComplexAlias(ItemBlockNames.CREEPER_HEAD, SKULL, ItemSkull.HEAD_CREEPER, V1_21_40);
-        registerComplexAlias(ItemBlockNames.DRAGON_HEAD, SKULL, ItemSkull.HEAD_DRAGON, V1_21_40);
-        registerComplexAlias(ItemBlockNames.PIGLIN_HEAD, SKULL, ItemSkull.HEAD_PIGLIN, V1_21_40);
-
+        registerComplexAlias(SKELETON_SKULL, ItemBlockNames.SKELETON_SKULL, SKULL, ItemSkull.HEAD_SKELETON, V1_21_40);
+        registerComplexAlias(WITHER_SKELETON_SKULL, ItemBlockNames.SKELETON_SKULL, SKULL, ItemSkull.HEAD_WITHER_SKELETON, V1_21_40);
+        registerComplexAlias(ZOMBIE_HEAD, ItemBlockNames.SKELETON_SKULL, SKULL, ItemSkull.HEAD_ZOMBIE, V1_21_40);
+        registerComplexAlias(PLAYER_HEAD, ItemBlockNames.SKELETON_SKULL, SKULL, ItemSkull.HEAD_PLAYER, V1_21_40);
+        registerComplexAlias(CREEPER_HEAD, ItemBlockNames.SKELETON_SKULL, SKULL, ItemSkull.HEAD_CREEPER, V1_21_40);
+        registerComplexAlias(DRAGON_HEAD, ItemBlockNames.SKELETON_SKULL, SKULL, ItemSkull.HEAD_DRAGON, V1_21_40);
+        registerComplexAlias(PIGLIN_HEAD, ItemBlockNames.SKELETON_SKULL, SKULL, ItemSkull.HEAD_PIGLIN, V1_21_40);
     }
 
     private static Class<? extends Item> registerItem(String name, int id, Class<? extends Item> clazz, ItemFactory factory) {
@@ -985,7 +984,7 @@ public final class Items {
         if (!version.isAvailable()) {
             return null;
         }
-        ItemSerializer.registerItem("minecraft:" + name, id);
+        ItemSerializer.registerItem("minecraft:" + name, id, 0);
 
         registerCommandItemEnum(name);
 
@@ -999,7 +998,7 @@ public final class Items {
         if (!version.isAvailable()) {
             return null;
         }
-        ItemSerializer.registerItem("minecraft:" + name, id, maxAuxVal);
+        ItemSerializer.registerItem("minecraft:" + name, id, Math.max(maxAuxVal, 0));
 
         registerCommandItemEnum(name);
 
@@ -1038,10 +1037,6 @@ public final class Items {
         SIMPLE_ALIASES_MAP.put(oldName, newName);
     }
 
-    private static void registerComplexAlias(String alias, int id, int meta, GameVersion version) {
-        COMPLEX_ALIASES_MAP.put(alias, new int[]{Item.getFullId(id, meta)});
-    }
-
     private static void registerComplexAlias(int newId, String alias, int id, int meta, GameVersion version) {
         int[] auxValues = COMPLEX_ALIASES_MAP.getOrDefault(alias, new int[0]);
         if (auxValues.length <= meta) {
@@ -1051,7 +1046,7 @@ public final class Items {
         auxValues[meta] = Item.getFullId(newId);
 
         if (version.isAvailable()) {
-            ITEM_CACHE[id][meta] = ITEM_CACHE[newId][0];
+            ITEM_CACHE[id][meta] = (newId < 0 ? BLOCK_CACHE[Block.itemIdToBlockId(newId)] : ITEM_CACHE[newId])[0];
         }
     }
 

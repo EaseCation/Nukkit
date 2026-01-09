@@ -1,13 +1,11 @@
 package cn.nukkit.block;
 
+import cn.nukkit.network.protocol.LevelSoundEventPacket;
+
 public class BlockPumpkinCarved extends BlockPumpkin {
 
-    public BlockPumpkinCarved() {
-        this(0);
-    }
+    BlockPumpkinCarved() {
 
-    public BlockPumpkinCarved(int meta) {
-        super(meta);
     }
 
     @Override
@@ -23,5 +21,10 @@ public class BlockPumpkinCarved extends BlockPumpkin {
     @Override
     public boolean canBeActivated() {
         return false;
+    }
+
+    @Override
+    public int getEquippingSound() {
+        return LevelSoundEventPacket.SOUND_ARMOR_EQUIP_GENERIC;
     }
 }

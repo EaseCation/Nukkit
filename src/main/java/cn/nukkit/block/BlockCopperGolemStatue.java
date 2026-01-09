@@ -20,12 +20,8 @@ import javax.annotation.Nullable;
 public class BlockCopperGolemStatue extends BlockTransparent implements CopperBehavior, Faceable {
     public static final int DIRECTION_MASK = 0b11;
 
-    public BlockCopperGolemStatue() {
-        this(0);
-    }
+    BlockCopperGolemStatue() {
 
-    public BlockCopperGolemStatue(int meta) {
-        super(meta);
     }
 
     @Override

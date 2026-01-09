@@ -6,7 +6,8 @@ import cn.nukkit.item.Item;
 
 public class BlockGlassHard extends BlockGlass {
 
-    public BlockGlassHard() {
+    protected BlockGlassHard() {
+
     }
 
     @Override

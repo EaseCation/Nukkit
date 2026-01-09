@@ -64,7 +64,7 @@ public class BlockEntityShulkerBox extends BlockEntityAbstractContainer {
     }
 
     @Override
-    public CompoundTag getSpawnCompound() {
+    public CompoundTag getSpawnCompound(boolean chunkData) {
         CompoundTag c = getDefaultCompound(this, SHULKER_BOX)
                 .putByte("facing", this.namedTag.getByte("facing"));
 

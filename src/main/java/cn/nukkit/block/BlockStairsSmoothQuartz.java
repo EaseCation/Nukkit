@@ -6,12 +6,8 @@ import static cn.nukkit.GameVersion.*;
 
 public class BlockStairsSmoothQuartz extends BlockStairs {
 
-    public BlockStairsSmoothQuartz() {
-        this(0);
-    }
+    BlockStairsSmoothQuartz() {
 
-    public BlockStairsSmoothQuartz(int meta) {
-        super(meta);
     }
 
     @Override

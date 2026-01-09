@@ -19,7 +19,7 @@ public class GroveBiome extends SnowyBiome {
 
         this.addPopulator(new PopulatorOre(
                 new OreType(Block.get(BlockID.EMERALD_ORE), 11, 1, 0, 32),
-                new OreType(Block.get(BlockID.MONSTER_EGG), 7, 9, 0, 63)));
+                new OreType(Block.get(BlockID.INFESTED_STONE), 7, 9, 0, 63)));
 
         this.setBaseHeight(1);
         this.setHeightVariation(0.3f);

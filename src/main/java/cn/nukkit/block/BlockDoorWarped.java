@@ -4,12 +4,8 @@ import cn.nukkit.item.Item;
 import cn.nukkit.utils.BlockColor;
 
 public class BlockDoorWarped extends BlockDoorWood {
-    public BlockDoorWarped() {
-        this(0);
-    }
+    BlockDoorWarped() {
 
-    public BlockDoorWarped(int meta) {
-        super(meta);
     }
 
     @Override
@@ -19,7 +15,7 @@ public class BlockDoorWarped extends BlockDoorWood {
 
     @Override
     public int getId() {
-        return BLOCK_WARPED_DOOR;
+        return WARPED_DOOR;
     }
 
     @Override

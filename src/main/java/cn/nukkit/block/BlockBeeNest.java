@@ -4,12 +4,8 @@ import cn.nukkit.utils.BlockColor;
 
 public class BlockBeeNest extends BlockBeehive {
 
-    public BlockBeeNest() {
-        this(0);
-    }
+    BlockBeeNest() {
 
-    public BlockBeeNest(int meta) {
-        super(meta);
     }
 
     @Override

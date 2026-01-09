@@ -8,8 +8,8 @@ import cn.nukkit.math.BlockFace;
 import cn.nukkit.utils.BlockColor;
 
 public class BlockCactusFlower extends BlockFlowable {
-    public BlockCactusFlower() {
-        super(0);
+    BlockCactusFlower() {
+
     }
 
     @Override

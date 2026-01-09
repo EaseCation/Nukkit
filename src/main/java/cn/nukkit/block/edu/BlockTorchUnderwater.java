@@ -4,12 +4,8 @@ import cn.nukkit.block.BlockTorch;
 
 public class BlockTorchUnderwater extends BlockTorch {
 
-    public BlockTorchUnderwater() {
-        this(0);
-    }
+    protected BlockTorchUnderwater() {
 
-    public BlockTorchUnderwater(int meta) {
-        super(meta);
     }
 
     @Override

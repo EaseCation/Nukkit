@@ -22,12 +22,8 @@ import cn.nukkit.utils.Faceable;
 import javax.annotation.Nullable;
 
 public class BlockChalkboard extends BlockTransparent implements Faceable {
-    public BlockChalkboard() {
-        this(0);
-    }
+    protected BlockChalkboard() {
 
-    public BlockChalkboard(int meta) {
-        super(meta);
     }
 
     @Override

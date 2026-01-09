@@ -2,34 +2,101 @@ package cn.nukkit.block;
 
 // This file is generated automatically, do not edit it manually.
 public interface BlockFullNames {
+    /**
+     * flattened since 1.20.50
+     * @see #GRANITE
+     * @see #POLISHED_GRANITE
+     * @see #DIORITE
+     * @see #POLISHED_DIORITE
+     * @see #ANDESITE
+     * @see #POLISHED_ANDESITE
+     */
     String STONE = "minecraft:" + BlockNames.STONE;
     String GRASS_BLOCK = "minecraft:" + BlockNames.GRASS_BLOCK;
+    /**
+     * @deprecated use {@link #GRASS_BLOCK} instead
+     */
+    @Deprecated
     String GRASS = "minecraft:" + BlockNames.GRASS;
+    /**
+     * flattened since 1.21.20
+     * @see #COARSE_DIRT
+     */
     String DIRT = "minecraft:" + BlockNames.DIRT;
     String COBBLESTONE = "minecraft:" + BlockNames.COBBLESTONE;
-    String OAK_PLANKS = "minecraft:" + BlockNames.OAK_PLANKS; //TODO: 1.20.50 flattening
+    String OAK_PLANKS = "minecraft:" + BlockNames.OAK_PLANKS;
+    /**
+     * @deprecated flattened since 1.20.50
+     * @see #OAK_PLANKS
+     * @see #SPRUCE_PLANKS
+     * @see #BIRCH_PLANKS
+     * @see #JUNGLE_PLANKS
+     * @see #ACACIA_PLANKS
+     * @see #DARK_OAK_PLANKS
+     */
+    @Deprecated
     String PLANKS = "minecraft:" + BlockNames.PLANKS;
-    String OAK_SAPLING = "minecraft:" + BlockNames.OAK_SAPLING; //TODO: 1.20.80 flattening
+    String OAK_SAPLING = "minecraft:" + BlockNames.OAK_SAPLING;
+    /**
+     * @deprecated flattened since 1.20.80
+     * @see #OAK_SAPLING
+     * @see #SPRUCE_SAPLING
+     * @see #BIRCH_SAPLING
+     * @see #JUNGLE_SAPLING
+     * @see #ACACIA_SAPLING
+     * @see #DARK_OAK_SAPLING
+     */
+    @Deprecated
     String SAPLING = "minecraft:" + BlockNames.SAPLING;
     String BEDROCK = "minecraft:" + BlockNames.BEDROCK;
     String FLOWING_WATER = "minecraft:" + BlockNames.FLOWING_WATER;
     String WATER = "minecraft:" + BlockNames.WATER;
     String FLOWING_LAVA = "minecraft:" + BlockNames.FLOWING_LAVA;
     String LAVA = "minecraft:" + BlockNames.LAVA;
+    /**
+     * flattened since 1.21.20
+     * @see #RED_SAND
+     */
     String SAND = "minecraft:" + BlockNames.SAND;
     String GRAVEL = "minecraft:" + BlockNames.GRAVEL;
     String GOLD_ORE = "minecraft:" + BlockNames.GOLD_ORE;
     String IRON_ORE = "minecraft:" + BlockNames.IRON_ORE;
     String COAL_ORE = "minecraft:" + BlockNames.COAL_ORE;
-    String OAK_LOG = "minecraft:" + BlockNames.OAK_LOG; //TODO: 1.19.80 flattening
+    String OAK_LOG = "minecraft:" + BlockNames.OAK_LOG;
+    /**
+     * @deprecated flattened since 1.19.80
+     * @see #OAK_LOG
+     * @see #SPRUCE_LOG
+     * @see #BIRCH_LOG
+     * @see #JUNGLE_LOG
+     */
+    @Deprecated
     String LOG = "minecraft:" + BlockNames.LOG;
     String OAK_LEAVES = "minecraft:" + BlockNames.OAK_LEAVES;
+    /**
+     * @deprecated flattened since 1.20.70
+     * @see #OAK_LEAVES
+     * @see #SPRUCE_LEAVES
+     * @see #BIRCH_LEAVES
+     * @see #JUNGLE_LEAVES
+     */
+    @Deprecated
     String LEAVES = "minecraft:" + BlockNames.LEAVES;
+    /**
+     * flattened since 1.21.30
+     * @see #WET_SPONGE
+     */
     String SPONGE = "minecraft:" + BlockNames.SPONGE;
     String GLASS = "minecraft:" + BlockNames.GLASS;
     String LAPIS_ORE = "minecraft:" + BlockNames.LAPIS_ORE;
     String LAPIS_BLOCK = "minecraft:" + BlockNames.LAPIS_BLOCK;
     String DISPENSER = "minecraft:" + BlockNames.DISPENSER;
+    /**
+     * flattened since 1.21.20
+     * @see #CHISELED_SANDSTONE
+     * @see #CUT_SANDSTONE
+     * @see #SMOOTH_SANDSTONE
+     */
     String SANDSTONE = "minecraft:" + BlockNames.SANDSTONE;
     String NOTEBLOCK = "minecraft:" + BlockNames.NOTEBLOCK;
     String BED = "minecraft:" + BlockNames.BED;
@@ -38,29 +105,114 @@ public interface BlockFullNames {
     String STICKY_PISTON = "minecraft:" + BlockNames.STICKY_PISTON;
     String WEB = "minecraft:" + BlockNames.WEB;
     String SHORT_GRASS = "minecraft:" + BlockNames.SHORT_GRASS;
+    /**
+     * @deprecated flattened since 1.21.0
+     * @see #SHORT_GRASS
+     * @see #FERN
+     */
+    @Deprecated
     String TALLGRASS = "minecraft:" + BlockNames.TALLGRASS;
     String DEADBUSH = "minecraft:" + BlockNames.DEADBUSH;
     String PISTON = "minecraft:" + BlockNames.PISTON;
     String PISTON_ARM_COLLISION = "minecraft:" + BlockNames.PISTON_ARM_COLLISION;
-    String PISTONARMCOLLISION = "minecraft:" + BlockNames.PISTONARMCOLLISION; //TODO: 1.18.30 rename
-    String WHITE_WOOL = "minecraft:" + BlockNames.WHITE_WOOL; //TODO: 1.19.70 flattening
+    /**
+     * @deprecated use {@link #PISTON_ARM_COLLISION} instead
+     */
+    @Deprecated
+    String PISTONARMCOLLISION = "minecraft:" + BlockNames.PISTONARMCOLLISION;
+    String WHITE_WOOL = "minecraft:" + BlockNames.WHITE_WOOL;
+    /**
+     * @deprecated flattened since 1.19.70
+     * @see #WHITE_WOOL
+     * @see #ORANGE_WOOL
+     * @see #MAGENTA_WOOL
+     * @see #LIGHT_BLUE_WOOL
+     * @see #YELLOW_WOOL
+     * @see #LIME_WOOL
+     * @see #PINK_WOOL
+     * @see #GRAY_WOOL
+     * @see #LIGHT_GRAY_WOOL
+     * @see #CYAN_WOOL
+     * @see #PURPLE_WOOL
+     * @see #BLUE_WOOL
+     * @see #BROWN_WOOL
+     * @see #GREEN_WOOL
+     * @see #RED_WOOL
+     * @see #BLACK_WOOL
+     */
+    @Deprecated
     String WOOL = "minecraft:" + BlockNames.WOOL;
     String ELEMENT_0 = "minecraft:" + BlockNames.ELEMENT_0;
     String DANDELION = "minecraft:" + BlockNames.DANDELION;
+    /**
+     * @deprecated use {@link #DANDELION} instead
+     */
+    @Deprecated
     String YELLOW_FLOWER = "minecraft:" + BlockNames.YELLOW_FLOWER;
-    String POPPY = "minecraft:" + BlockNames.POPPY; //TODO: 1.20.80 flattening
+    String POPPY = "minecraft:" + BlockNames.POPPY;
+    /**
+     * @deprecated flattened since 1.20.80
+     * @see #POPPY
+     * @see #BLUE_ORCHID
+     * @see #ALLIUM
+     * @see #AZURE_BLUET
+     * @see #RED_TULIP
+     * @see #ORANGE_TULIP
+     * @see #WHITE_TULIP
+     * @see #PINK_TULIP
+     * @see #OXEYE_DAISY
+     * @see #CORNFLOWER
+     * @see #LILY_OF_THE_VALLEY
+     */
+    @Deprecated
     String RED_FLOWER = "minecraft:" + BlockNames.RED_FLOWER;
     String BROWN_MUSHROOM = "minecraft:" + BlockNames.BROWN_MUSHROOM;
     String RED_MUSHROOM = "minecraft:" + BlockNames.RED_MUSHROOM;
     String GOLD_BLOCK = "minecraft:" + BlockNames.GOLD_BLOCK;
     String IRON_BLOCK = "minecraft:" + BlockNames.IRON_BLOCK;
-    String SMOOTH_STONE_DOUBLE_SLAB = "minecraft:" + BlockNames.SMOOTH_STONE_DOUBLE_SLAB; //TODO: 1.21.20 flattening
-    String DOUBLE_STONE_BLOCK_SLAB = "minecraft:" + BlockNames.DOUBLE_STONE_BLOCK_SLAB; //TODO: 1.19.0 rename
+    String SMOOTH_STONE_DOUBLE_SLAB = "minecraft:" + BlockNames.SMOOTH_STONE_DOUBLE_SLAB;
+    /**
+     * @deprecated flattened since 1.21.20
+     * @see #SMOOTH_STONE_DOUBLE_SLAB
+     * @see #SANDSTONE_DOUBLE_SLAB
+     * @see #PETRIFIED_OAK_DOUBLE_SLAB
+     * @see #COBBLESTONE_DOUBLE_SLAB
+     * @see #BRICK_DOUBLE_SLAB
+     * @see #STONE_BRICK_DOUBLE_SLAB
+     * @see #QUARTZ_DOUBLE_SLAB
+     * @see #NETHER_BRICK_DOUBLE_SLAB
+     */
+    @Deprecated
+    String DOUBLE_STONE_BLOCK_SLAB = "minecraft:" + BlockNames.DOUBLE_STONE_BLOCK_SLAB;
+    /**
+     * @deprecated use {@link #DOUBLE_STONE_BLOCK_SLAB} instead
+     */
+    @Deprecated
     String DOUBLE_STONE_SLAB = "minecraft:" + BlockNames.DOUBLE_STONE_SLAB;
-    String SMOOTH_STONE_SLAB = "minecraft:" + BlockNames.SMOOTH_STONE_SLAB; //TODO: 1.21.0 flattening
-    String STONE_BLOCK_SLAB = "minecraft:" + BlockNames.STONE_BLOCK_SLAB; //TODO: 1.19.0 rename
+    String SMOOTH_STONE_SLAB = "minecraft:" + BlockNames.SMOOTH_STONE_SLAB;
+    /**
+     * @deprecated flattened since 1.21.0
+     * @see #SMOOTH_STONE_SLAB
+     * @see #SANDSTONE_SLAB
+     * @see #PETRIFIED_OAK_SLAB
+     * @see #COBBLESTONE_SLAB
+     * @see #BRICK_SLAB
+     * @see #STONE_BRICK_SLAB
+     * @see #QUARTZ_SLAB
+     * @see #NETHER_BRICK_SLAB
+     */
+    @Deprecated
+    String STONE_BLOCK_SLAB = "minecraft:" + BlockNames.STONE_BLOCK_SLAB;
+    /**
+     * @deprecated use {@link #STONE_BLOCK_SLAB} instead
+     */
+    @Deprecated
     String STONE_SLAB = "minecraft:" + BlockNames.STONE_SLAB;
     String BRICK_BLOCK = "minecraft:" + BlockNames.BRICK_BLOCK;
+    /**
+     * flattened since 1.21.30
+     * @see #UNDERWATER_TNT
+     */
     String TNT = "minecraft:" + BlockNames.TNT;
     String BOOKSHELF = "minecraft:" + BlockNames.BOOKSHELF;
     String MOSSY_COBBLESTONE = "minecraft:" + BlockNames.MOSSY_COBBLESTONE;
@@ -100,7 +252,17 @@ public interface BlockFullNames {
     String CLAY = "minecraft:" + BlockNames.CLAY;
     String REEDS = "minecraft:" + BlockNames.REEDS;
     String JUKEBOX = "minecraft:" + BlockNames.JUKEBOX;
-    String OAK_FENCE = "minecraft:" + BlockNames.OAK_FENCE; //TODO: 1.19.80 flattening
+    String OAK_FENCE = "minecraft:" + BlockNames.OAK_FENCE;
+    /**
+     * @deprecated flattened since 1.19.80
+     * @see #OAK_FENCE
+     * @see #SPRUCE_FENCE
+     * @see #BIRCH_FENCE
+     * @see #JUNGLE_FENCE
+     * @see #ACACIA_FENCE
+     * @see #DARK_OAK_FENCE
+     */
+    @Deprecated
     String FENCE = "minecraft:" + BlockNames.FENCE;
     String PUMPKIN = "minecraft:" + BlockNames.PUMPKIN;
     String NETHERRACK = "minecraft:" + BlockNames.NETHERRACK;
@@ -112,11 +274,33 @@ public interface BlockFullNames {
     String UNPOWERED_REPEATER = "minecraft:" + BlockNames.UNPOWERED_REPEATER;
     String POWERED_REPEATER = "minecraft:" + BlockNames.POWERED_REPEATER;
     String INVISIBLE_BEDROCK = "minecraft:" + BlockNames.INVISIBLE_BEDROCK;
-    String INVISIBLEBEDROCK = "minecraft:" + BlockNames.INVISIBLEBEDROCK; //TODO: 1.18.30 rename
+    /**
+     * @deprecated use {@link #INVISIBLE_BEDROCK} instead
+     */
+    @Deprecated
+    String INVISIBLEBEDROCK = "minecraft:" + BlockNames.INVISIBLEBEDROCK;
     String TRAPDOOR = "minecraft:" + BlockNames.TRAPDOOR;
-    String INFESTED_STONE = "minecraft:" + BlockNames.INFESTED_STONE; //TODO: 1.21.20 flattening
+    String INFESTED_STONE = "minecraft:" + BlockNames.INFESTED_STONE;
+    /**
+     * @deprecated flattened since 1.21.20
+     * @see #INFESTED_STONE
+     * @see #INFESTED_COBBLESTONE
+     * @see #INFESTED_STONE_BRICKS
+     * @see #INFESTED_MOSSY_STONE_BRICKS
+     * @see #INFESTED_CRACKED_STONE_BRICKS
+     * @see #INFESTED_CHISELED_STONE_BRICKS
+     */
+    @Deprecated
     String MONSTER_EGG = "minecraft:" + BlockNames.MONSTER_EGG;
-    String STONE_BRICKS = "minecraft:" + BlockNames.STONE_BRICKS; //TODO: 1.21.20 flattening
+    String STONE_BRICKS = "minecraft:" + BlockNames.STONE_BRICKS;
+    /**
+     * @deprecated flattened since 1.21.20
+     * @see #STONE_BRICKS
+     * @see #MOSSY_STONE_BRICKS
+     * @see #CRACKED_STONE_BRICKS
+     * @see #CHISELED_STONE_BRICKS
+     */
+    @Deprecated
     String STONEBRICK = "minecraft:" + BlockNames.STONEBRICK;
     String BROWN_MUSHROOM_BLOCK = "minecraft:" + BlockNames.BROWN_MUSHROOM_BLOCK;
     String RED_MUSHROOM_BLOCK = "minecraft:" + BlockNames.RED_MUSHROOM_BLOCK;
@@ -152,20 +336,56 @@ public interface BlockFullNames {
     String ENDER_CHEST = "minecraft:" + BlockNames.ENDER_CHEST;
     String TRIPWIRE_HOOK = "minecraft:" + BlockNames.TRIPWIRE_HOOK;
     String TRIP_WIRE = "minecraft:" + BlockNames.TRIP_WIRE;
-    String TRIPWIRE = "minecraft:" + BlockNames.TRIPWIRE; //TODO: 1.18.30 rename
+    /**
+     * @deprecated use {@link #TRIP_WIRE} instead
+     */
+    @Deprecated
+    String TRIPWIRE = "minecraft:" + BlockNames.TRIPWIRE;
     String EMERALD_BLOCK = "minecraft:" + BlockNames.EMERALD_BLOCK;
     String SPRUCE_STAIRS = "minecraft:" + BlockNames.SPRUCE_STAIRS;
     String BIRCH_STAIRS = "minecraft:" + BlockNames.BIRCH_STAIRS;
     String JUNGLE_STAIRS = "minecraft:" + BlockNames.JUNGLE_STAIRS;
     String COMMAND_BLOCK = "minecraft:" + BlockNames.COMMAND_BLOCK;
     String BEACON = "minecraft:" + BlockNames.BEACON;
+    /**
+     * flattened since 1.21.30
+     * @see #MOSSY_COBBLESTONE_WALL
+     * @see #GRANITE_WALL
+     * @see #DIORITE_WALL
+     * @see #ANDESITE_WALL
+     * @see #SANDSTONE_WALL
+     * @see #BRICK_WALL
+     * @see #STONE_BRICK_WALL
+     * @see #MOSSY_STONE_BRICK_WALL
+     * @see #NETHER_BRICK_WALL
+     * @see #END_STONE_BRICK_WALL
+     * @see #PRISMARINE_WALL
+     * @see #RED_SANDSTONE_WALL
+     * @see #RED_NETHER_BRICK_WALL
+     */
     String COBBLESTONE_WALL = "minecraft:" + BlockNames.COBBLESTONE_WALL;
     String FLOWER_POT = "minecraft:" + BlockNames.FLOWER_POT;
     String CARROTS = "minecraft:" + BlockNames.CARROTS;
     String POTATOES = "minecraft:" + BlockNames.POTATOES;
     String WOODEN_BUTTON = "minecraft:" + BlockNames.WOODEN_BUTTON;
-    String SKELETON_SKULL = "minecraft:" + BlockNames.SKELETON_SKULL; //TODO: 1.21.40 flattening
+    String SKELETON_SKULL = "minecraft:" + BlockNames.SKELETON_SKULL;
+    /**
+     * @deprecated flattened since 1.21.40
+     * @see #SKELETON_SKULL
+     * @see #WITHER_SKELETON_SKULL
+     * @see #ZOMBIE_HEAD
+     * @see #PLAYER_HEAD
+     * @see #CREEPER_HEAD
+     * @see #DRAGON_HEAD
+     * @see #PIGLIN_HEAD
+     */
+    @Deprecated
     String SKULL = "minecraft:" + BlockNames.SKULL;
+    /**
+     * flattened since 1.21.20
+     * @see #CHIPPED_ANVIL
+     * @see #DAMAGED_ANVIL
+     */
     String ANVIL = "minecraft:" + BlockNames.ANVIL;
     String TRAPPED_CHEST = "minecraft:" + BlockNames.TRAPPED_CHEST;
     String LIGHT_WEIGHTED_PRESSURE_PLATE = "minecraft:" + BlockNames.LIGHT_WEIGHTED_PRESSURE_PLATE;
@@ -176,46 +396,201 @@ public interface BlockFullNames {
     String REDSTONE_BLOCK = "minecraft:" + BlockNames.REDSTONE_BLOCK;
     String QUARTZ_ORE = "minecraft:" + BlockNames.QUARTZ_ORE;
     String HOPPER = "minecraft:" + BlockNames.HOPPER;
+    /**
+     * flattened since 1.21.20
+     * @see #CHISELED_QUARTZ_BLOCK
+     * @see #QUARTZ_PILLAR
+     * @see #SMOOTH_QUARTZ
+     */
     String QUARTZ_BLOCK = "minecraft:" + BlockNames.QUARTZ_BLOCK;
     String QUARTZ_STAIRS = "minecraft:" + BlockNames.QUARTZ_STAIRS;
-    String OAK_DOUBLE_SLAB = "minecraft:" + BlockNames.OAK_DOUBLE_SLAB; //TODO: 1.20.70 flattening
+    String OAK_DOUBLE_SLAB = "minecraft:" + BlockNames.OAK_DOUBLE_SLAB;
+    /**
+     * @deprecated flattened since 1.20.70
+     * @see #OAK_DOUBLE_SLAB
+     * @see #SPRUCE_DOUBLE_SLAB
+     * @see #BIRCH_DOUBLE_SLAB
+     * @see #JUNGLE_DOUBLE_SLAB
+     * @see #ACACIA_DOUBLE_SLAB
+     * @see #DARK_OAK_DOUBLE_SLAB
+     */
+    @Deprecated
     String DOUBLE_WOODEN_SLAB = "minecraft:" + BlockNames.DOUBLE_WOODEN_SLAB;
-    String OAK_SLAB = "minecraft:" + BlockNames.OAK_SLAB; //TODO: 1.20.70 flattening
+    String OAK_SLAB = "minecraft:" + BlockNames.OAK_SLAB;
+    /**
+     * @deprecated flattened since 1.20.70
+     * @see #OAK_SLAB
+     * @see #SPRUCE_SLAB
+     * @see #BIRCH_SLAB
+     * @see #JUNGLE_SLAB
+     * @see #ACACIA_SLAB
+     * @see #DARK_OAK_SLAB
+     */
+    @Deprecated
     String WOODEN_SLAB = "minecraft:" + BlockNames.WOODEN_SLAB;
-    String WHITE_TERRACOTTA = "minecraft:" + BlockNames.WHITE_TERRACOTTA; //TODO: 1.20.30 flattening
+    String WHITE_TERRACOTTA = "minecraft:" + BlockNames.WHITE_TERRACOTTA;
+    /**
+     * @deprecated flattened since 1.20.30
+     * @see #WHITE_TERRACOTTA
+     * @see #ORANGE_TERRACOTTA
+     * @see #MAGENTA_TERRACOTTA
+     * @see #LIGHT_BLUE_TERRACOTTA
+     * @see #YELLOW_TERRACOTTA
+     * @see #LIME_TERRACOTTA
+     * @see #PINK_TERRACOTTA
+     * @see #GRAY_TERRACOTTA
+     * @see #LIGHT_GRAY_TERRACOTTA
+     * @see #CYAN_TERRACOTTA
+     * @see #PURPLE_TERRACOTTA
+     * @see #BLUE_TERRACOTTA
+     * @see #BROWN_TERRACOTTA
+     * @see #GREEN_TERRACOTTA
+     * @see #RED_TERRACOTTA
+     * @see #BLACK_TERRACOTTA
+     */
+    @Deprecated
     String STAINED_HARDENED_CLAY = "minecraft:" + BlockNames.STAINED_HARDENED_CLAY;
-    String WHITE_STAINED_GLASS_PANE = "minecraft:" + BlockNames.WHITE_STAINED_GLASS_PANE; //TODO: 1.20.20 flattening
+    String WHITE_STAINED_GLASS_PANE = "minecraft:" + BlockNames.WHITE_STAINED_GLASS_PANE;
+    /**
+     * @deprecated flattened since 1.20.20
+     * @see #WHITE_STAINED_GLASS_PANE
+     * @see #ORANGE_STAINED_GLASS_PANE
+     * @see #MAGENTA_STAINED_GLASS_PANE
+     * @see #LIGHT_BLUE_STAINED_GLASS_PANE
+     * @see #YELLOW_STAINED_GLASS_PANE
+     * @see #LIME_STAINED_GLASS_PANE
+     * @see #PINK_STAINED_GLASS_PANE
+     * @see #GRAY_STAINED_GLASS_PANE
+     * @see #LIGHT_GRAY_STAINED_GLASS_PANE
+     * @see #CYAN_STAINED_GLASS_PANE
+     * @see #PURPLE_STAINED_GLASS_PANE
+     * @see #BLUE_STAINED_GLASS_PANE
+     * @see #BROWN_STAINED_GLASS_PANE
+     * @see #GREEN_STAINED_GLASS_PANE
+     * @see #RED_STAINED_GLASS_PANE
+     * @see #BLACK_STAINED_GLASS_PANE
+     */
+    @Deprecated
     String STAINED_GLASS_PANE = "minecraft:" + BlockNames.STAINED_GLASS_PANE;
-    String ACACIA_LEAVES = "minecraft:" + BlockNames.ACACIA_LEAVES; //TODO: 1.20.70 flattening
+    String ACACIA_LEAVES = "minecraft:" + BlockNames.ACACIA_LEAVES;
+    /**
+     * @deprecated flattened since 1.20.70
+     * @see #ACACIA_LEAVES
+     * @see #DARK_OAK_LEAVES
+     */
+    @Deprecated
     String LEAVES2 = "minecraft:" + BlockNames.LEAVES2;
-    String ACACIA_LOG = "minecraft:" + BlockNames.ACACIA_LOG; //TODO: 1.19.80 flattening
+    String ACACIA_LOG = "minecraft:" + BlockNames.ACACIA_LOG;
+    /**
+     * @deprecated flattened since 1.19.80
+     * @see #ACACIA_LOG
+     * @see #DARK_OAK_LOG
+     */
+    @Deprecated
     String LOG2 = "minecraft:" + BlockNames.LOG2;
     String ACACIA_STAIRS = "minecraft:" + BlockNames.ACACIA_STAIRS;
     String DARK_OAK_STAIRS = "minecraft:" + BlockNames.DARK_OAK_STAIRS;
     String SLIME = "minecraft:" + BlockNames.SLIME;
 
     String IRON_TRAPDOOR = "minecraft:" + BlockNames.IRON_TRAPDOOR;
+    /**
+     * flattened since 1.21.20
+     * @see #DARK_PRISMARINE
+     * @see #PRISMARINE_BRICKS
+     */
     String PRISMARINE = "minecraft:" + BlockNames.PRISMARINE;
     String SEA_LANTERN = "minecraft:" + BlockNames.SEA_LANTERN;
-    String SEALANTERN = "minecraft:" + BlockNames.SEALANTERN; //TODO: 1.18.30 rename
+    /**
+     * @deprecated use {@link #SEA_LANTERN} instead
+     */
+    @Deprecated
+    String SEALANTERN = "minecraft:" + BlockNames.SEALANTERN;
     String HAY_BLOCK = "minecraft:" + BlockNames.HAY_BLOCK;
-    String WHITE_CARPET = "minecraft:" + BlockNames.WHITE_CARPET; //TODO: 1.20.0 flattening
+    String WHITE_CARPET = "minecraft:" + BlockNames.WHITE_CARPET;
+    /**
+     * @deprecated flattened since 1.20.0
+     * @see #WHITE_CARPET
+     * @see #ORANGE_CARPET
+     * @see #MAGENTA_CARPET
+     * @see #LIGHT_BLUE_CARPET
+     * @see #YELLOW_CARPET
+     * @see #LIME_CARPET
+     * @see #PINK_CARPET
+     * @see #GRAY_CARPET
+     * @see #LIGHT_GRAY_CARPET
+     * @see #CYAN_CARPET
+     * @see #PURPLE_CARPET
+     * @see #BLUE_CARPET
+     * @see #BROWN_CARPET
+     * @see #GREEN_CARPET
+     * @see #RED_CARPET
+     * @see #BLACK_CARPET
+     */
+    @Deprecated
     String CARPET = "minecraft:" + BlockNames.CARPET;
     String HARDENED_CLAY = "minecraft:" + BlockNames.HARDENED_CLAY;
     String COAL_BLOCK = "minecraft:" + BlockNames.COAL_BLOCK;
     String PACKED_ICE = "minecraft:" + BlockNames.PACKED_ICE;
-    String SUNFLOWER = "minecraft:" + BlockNames.SUNFLOWER; //TODO: 1.21.0 flattening
+    String SUNFLOWER = "minecraft:" + BlockNames.SUNFLOWER;
+    /**
+     * @deprecated flattened since 1.21.0
+     * @see #SUNFLOWER
+     * @see #LILAC
+     * @see #TALL_GRASS
+     * @see #LARGE_FERN
+     * @see #ROSE_BUSH
+     * @see #PEONY
+     */
+    @Deprecated
     String DOUBLE_PLANT = "minecraft:" + BlockNames.DOUBLE_PLANT;
     String STANDING_BANNER = "minecraft:" + BlockNames.STANDING_BANNER;
     String WALL_BANNER = "minecraft:" + BlockNames.WALL_BANNER;
     String DAYLIGHT_DETECTOR_INVERTED = "minecraft:" + BlockNames.DAYLIGHT_DETECTOR_INVERTED;
+    /**
+     * flattened since 1.21.20
+     * @see #CHISELED_RED_SANDSTONE
+     * @see #CUT_RED_SANDSTONE
+     * @see #SMOOTH_RED_SANDSTONE
+     */
     String RED_SANDSTONE = "minecraft:" + BlockNames.RED_SANDSTONE;
     String RED_SANDSTONE_STAIRS = "minecraft:" + BlockNames.RED_SANDSTONE_STAIRS;
-    String RED_SANDSTONE_DOUBLE_SLAB = "minecraft:" + BlockNames.RED_SANDSTONE_DOUBLE_SLAB; //TODO: 1.21.20 flattening
-    String DOUBLE_STONE_BLOCK_SLAB2 = "minecraft:" + BlockNames.DOUBLE_STONE_BLOCK_SLAB2; //TODO: 1.19.0 rename
+    String RED_SANDSTONE_DOUBLE_SLAB = "minecraft:" + BlockNames.RED_SANDSTONE_DOUBLE_SLAB;
+    /**
+     * @deprecated flattened since 1.21.20
+     * @see #RED_SANDSTONE_DOUBLE_SLAB
+     * @see #PURPUR_DOUBLE_SLAB
+     * @see #PRISMARINE_DOUBLE_SLAB
+     * @see #DARK_PRISMARINE_DOUBLE_SLAB
+     * @see #PRISMARINE_BRICK_DOUBLE_SLAB
+     * @see #MOSSY_COBBLESTONE_DOUBLE_SLAB
+     * @see #SMOOTH_SANDSTONE_DOUBLE_SLAB
+     * @see #RED_NETHER_BRICK_DOUBLE_SLAB
+     */
+    @Deprecated
+    String DOUBLE_STONE_BLOCK_SLAB2 = "minecraft:" + BlockNames.DOUBLE_STONE_BLOCK_SLAB2;
+    /**
+     * @deprecated use {@link #DOUBLE_STONE_BLOCK_SLAB2} instead
+     */
+    @Deprecated
     String DOUBLE_STONE_SLAB2 = "minecraft:" + BlockNames.DOUBLE_STONE_SLAB2;
-    String RED_SANDSTONE_SLAB = "minecraft:" + BlockNames.RED_SANDSTONE_SLAB; //TODO: 1.21.20 flattening
-    String STONE_BLOCK_SLAB2 = "minecraft:" + BlockNames.STONE_BLOCK_SLAB2; //TODO: 1.19.0 rename
+    String RED_SANDSTONE_SLAB = "minecraft:" + BlockNames.RED_SANDSTONE_SLAB;
+    /**
+     * @deprecated flattened since 1.21.20
+     * @see #RED_SANDSTONE_SLAB
+     * @see #PURPUR_SLAB
+     * @see #PRISMARINE_SLAB
+     * @see #DARK_PRISMARINE_SLAB
+     * @see #PRISMARINE_BRICK_SLAB
+     * @see #MOSSY_COBBLESTONE_SLAB
+     * @see #SMOOTH_SANDSTONE_SLAB
+     * @see #RED_NETHER_BRICK_SLAB
+     */
+    @Deprecated
+    String STONE_BLOCK_SLAB2 = "minecraft:" + BlockNames.STONE_BLOCK_SLAB2;
+    /**
+     * @deprecated use {@link #STONE_BLOCK_SLAB2} instead
+     */
+    @Deprecated
     String STONE_SLAB2 = "minecraft:" + BlockNames.STONE_SLAB2;
     String SPRUCE_FENCE_GATE = "minecraft:" + BlockNames.SPRUCE_FENCE_GATE;
     String BIRCH_FENCE_GATE = "minecraft:" + BlockNames.BIRCH_FENCE_GATE;
@@ -225,7 +600,27 @@ public interface BlockFullNames {
     String REPEATING_COMMAND_BLOCK = "minecraft:" + BlockNames.REPEATING_COMMAND_BLOCK;
     String CHAIN_COMMAND_BLOCK = "minecraft:" + BlockNames.CHAIN_COMMAND_BLOCK;
     String HARD_GLASS_PANE = "minecraft:" + BlockNames.HARD_GLASS_PANE;
-    String HARD_WHITE_STAINED_GLASS_PANE = "minecraft:" + BlockNames.HARD_WHITE_STAINED_GLASS_PANE; //TODO: 1.20.60 flattening
+    String HARD_WHITE_STAINED_GLASS_PANE = "minecraft:" + BlockNames.HARD_WHITE_STAINED_GLASS_PANE;
+    /**
+     * @deprecated flattened since 1.20.60
+     * @see #HARD_WHITE_STAINED_GLASS_PANE
+     * @see #HARD_ORANGE_STAINED_GLASS_PANE
+     * @see #HARD_MAGENTA_STAINED_GLASS_PANE
+     * @see #HARD_LIGHT_BLUE_STAINED_GLASS_PANE
+     * @see #HARD_YELLOW_STAINED_GLASS_PANE
+     * @see #HARD_LIME_STAINED_GLASS_PANE
+     * @see #HARD_PINK_STAINED_GLASS_PANE
+     * @see #HARD_GRAY_STAINED_GLASS_PANE
+     * @see #HARD_LIGHT_GRAY_STAINED_GLASS_PANE
+     * @see #HARD_CYAN_STAINED_GLASS_PANE
+     * @see #HARD_PURPLE_STAINED_GLASS_PANE
+     * @see #HARD_BLUE_STAINED_GLASS_PANE
+     * @see #HARD_BROWN_STAINED_GLASS_PANE
+     * @see #HARD_GREEN_STAINED_GLASS_PANE
+     * @see #HARD_RED_STAINED_GLASS_PANE
+     * @see #HARD_BLACK_STAINED_GLASS_PANE
+     */
+    @Deprecated
     String HARD_STAINED_GLASS_PANE = "minecraft:" + BlockNames.HARD_STAINED_GLASS_PANE;
     String CHEMICAL_HEAT = "minecraft:" + BlockNames.CHEMICAL_HEAT;
     String SPRUCE_DOOR = "minecraft:" + BlockNames.SPRUCE_DOOR;
@@ -236,11 +631,27 @@ public interface BlockFullNames {
     String GRASS_PATH = "minecraft:" + BlockNames.GRASS_PATH;
     String FRAME = "minecraft:" + BlockNames.FRAME;
     String CHORUS_FLOWER = "minecraft:" + BlockNames.CHORUS_FLOWER;
+    /**
+     * flattened since 1.21.30
+     * @see #PURPUR_PILLAR
+     */
     String PURPUR_BLOCK = "minecraft:" + BlockNames.PURPUR_BLOCK;
-    String COLORED_TORCH_RED = "minecraft:" + BlockNames.COLORED_TORCH_RED; //TODO: 1.21.30 flattening
+    String COLORED_TORCH_RED = "minecraft:" + BlockNames.COLORED_TORCH_RED;
+    /**
+     * @deprecated flattened since 1.21.30
+     * @see #COLORED_TORCH_RED
+     * @see #COLORED_TORCH_GREEN
+     */
+    @Deprecated
     String COLORED_TORCH_RG = "minecraft:" + BlockNames.COLORED_TORCH_RG;
     String PURPUR_STAIRS = "minecraft:" + BlockNames.PURPUR_STAIRS;
-    String COLORED_TORCH_BLUE = "minecraft:" + BlockNames.COLORED_TORCH_BLUE; //TODO: 1.21.30 flattening
+    String COLORED_TORCH_BLUE = "minecraft:" + BlockNames.COLORED_TORCH_BLUE;
+    /**
+     * @deprecated flattened since 1.21.30
+     * @see #COLORED_TORCH_BLUE
+     * @see #COLORED_TORCH_PURPLE
+     */
+    @Deprecated
     String COLORED_TORCH_BP = "minecraft:" + BlockNames.COLORED_TORCH_BP;
     String UNDYED_SHULKER_BOX = "minecraft:" + BlockNames.UNDYED_SHULKER_BOX;
     String END_BRICKS = "minecraft:" + BlockNames.END_BRICKS;
@@ -255,7 +666,27 @@ public interface BlockFullNames {
     String RED_NETHER_BRICK = "minecraft:" + BlockNames.RED_NETHER_BRICK;
     String BONE_BLOCK = "minecraft:" + BlockNames.BONE_BLOCK;
     String STRUCTURE_VOID = "minecraft:" + BlockNames.STRUCTURE_VOID;
-    String WHITE_SHULKER_BOX = "minecraft:" + BlockNames.WHITE_SHULKER_BOX; //TODO: 1.20.10 flattening
+    String WHITE_SHULKER_BOX = "minecraft:" + BlockNames.WHITE_SHULKER_BOX;
+    /**
+     * @deprecated flattened since 1.20.10
+     * @see #WHITE_SHULKER_BOX
+     * @see #ORANGE_SHULKER_BOX
+     * @see #MAGENTA_SHULKER_BOX
+     * @see #LIGHT_BLUE_SHULKER_BOX
+     * @see #YELLOW_SHULKER_BOX
+     * @see #LIME_SHULKER_BOX
+     * @see #PINK_SHULKER_BOX
+     * @see #GRAY_SHULKER_BOX
+     * @see #LIGHT_GRAY_SHULKER_BOX
+     * @see #CYAN_SHULKER_BOX
+     * @see #PURPLE_SHULKER_BOX
+     * @see #BLUE_SHULKER_BOX
+     * @see #BROWN_SHULKER_BOX
+     * @see #GREEN_SHULKER_BOX
+     * @see #RED_SHULKER_BOX
+     * @see #BLACK_SHULKER_BOX
+     */
+    @Deprecated
     String SHULKER_BOX = "minecraft:" + BlockNames.SHULKER_BOX;
     String PURPLE_GLAZED_TERRACOTTA = "minecraft:" + BlockNames.PURPLE_GLAZED_TERRACOTTA;
     String WHITE_GLAZED_TERRACOTTA = "minecraft:" + BlockNames.WHITE_GLAZED_TERRACOTTA;
@@ -274,16 +705,88 @@ public interface BlockFullNames {
     String GREEN_GLAZED_TERRACOTTA = "minecraft:" + BlockNames.GREEN_GLAZED_TERRACOTTA;
     String RED_GLAZED_TERRACOTTA = "minecraft:" + BlockNames.RED_GLAZED_TERRACOTTA;
     String BLACK_GLAZED_TERRACOTTA = "minecraft:" + BlockNames.BLACK_GLAZED_TERRACOTTA;
-    String WHITE_CONCRETE = "minecraft:" + BlockNames.WHITE_CONCRETE; //TODO: 1.20.10 flattening
+    String WHITE_CONCRETE = "minecraft:" + BlockNames.WHITE_CONCRETE;
+    /**
+     * @deprecated flattened since 1.20.10
+     * @see #WHITE_CONCRETE
+     * @see #ORANGE_CONCRETE
+     * @see #MAGENTA_CONCRETE
+     * @see #LIGHT_BLUE_CONCRETE
+     * @see #YELLOW_CONCRETE
+     * @see #LIME_CONCRETE
+     * @see #PINK_CONCRETE
+     * @see #GRAY_CONCRETE
+     * @see #LIGHT_GRAY_CONCRETE
+     * @see #CYAN_CONCRETE
+     * @see #PURPLE_CONCRETE
+     * @see #BLUE_CONCRETE
+     * @see #BROWN_CONCRETE
+     * @see #GREEN_CONCRETE
+     * @see #RED_CONCRETE
+     * @see #BLACK_CONCRETE
+     */
+    @Deprecated
     String CONCRETE = "minecraft:" + BlockNames.CONCRETE;
-    String WHITE_CONCRETE_POWDER = "minecraft:" + BlockNames.WHITE_CONCRETE_POWDER; //TODO: 1.20.30 flattening
+    String WHITE_CONCRETE_POWDER = "minecraft:" + BlockNames.WHITE_CONCRETE_POWDER;
+    /**
+     * @deprecated flattened since 1.20.30
+     * @see #WHITE_CONCRETE_POWDER
+     * @see #ORANGE_CONCRETE_POWDER
+     * @see #MAGENTA_CONCRETE_POWDER
+     * @see #LIGHT_BLUE_CONCRETE_POWDER
+     * @see #YELLOW_CONCRETE_POWDER
+     * @see #LIME_CONCRETE_POWDER
+     * @see #PINK_CONCRETE_POWDER
+     * @see #GRAY_CONCRETE_POWDER
+     * @see #LIGHT_GRAY_CONCRETE_POWDER
+     * @see #CYAN_CONCRETE_POWDER
+     * @see #PURPLE_CONCRETE_POWDER
+     * @see #BLUE_CONCRETE_POWDER
+     * @see #BROWN_CONCRETE_POWDER
+     * @see #GREEN_CONCRETE_POWDER
+     * @see #RED_CONCRETE_POWDER
+     * @see #BLACK_CONCRETE_POWDER
+     */
+    @Deprecated
     String CONCRETE_POWDER = "minecraft:" + BlockNames.CONCRETE_POWDER;
-    String CONCRETEPOWDER = "minecraft:" + BlockNames.CONCRETEPOWDER; //TODO: 1.18.30 rename
-    String COMPOUND_CREATOR = "minecraft:" + BlockNames.COMPOUND_CREATOR; //TODO: 1.21.30 flattening
+    /**
+     * @deprecated use {@link #CONCRETE_POWDER} instead
+     */
+    @Deprecated
+    String CONCRETEPOWDER = "minecraft:" + BlockNames.CONCRETEPOWDER;
+    String COMPOUND_CREATOR = "minecraft:" + BlockNames.COMPOUND_CREATOR;
+    /**
+     * @deprecated flattened since 1.21.30
+     * @see #COMPOUND_CREATOR
+     * @see #MATERIAL_REDUCER
+     * @see #ELEMENT_CONSTRUCTOR
+     * @see #LAB_TABLE
+     */
+    @Deprecated
     String CHEMISTRY_TABLE = "minecraft:" + BlockNames.CHEMISTRY_TABLE;
     String UNDERWATER_TORCH = "minecraft:" + BlockNames.UNDERWATER_TORCH;
     String CHORUS_PLANT = "minecraft:" + BlockNames.CHORUS_PLANT;
-    String WHITE_STAINED_GLASS = "minecraft:" + BlockNames.WHITE_STAINED_GLASS; //TODO: 1.20.20 flattening
+    String WHITE_STAINED_GLASS = "minecraft:" + BlockNames.WHITE_STAINED_GLASS;
+    /**
+     * @deprecated flattened since 1.20.20
+     * @see #WHITE_STAINED_GLASS
+     * @see #ORANGE_STAINED_GLASS
+     * @see #MAGENTA_STAINED_GLASS
+     * @see #LIGHT_BLUE_STAINED_GLASS
+     * @see #YELLOW_STAINED_GLASS
+     * @see #LIME_STAINED_GLASS
+     * @see #PINK_STAINED_GLASS
+     * @see #GRAY_STAINED_GLASS
+     * @see #LIGHT_GRAY_STAINED_GLASS
+     * @see #CYAN_STAINED_GLASS
+     * @see #PURPLE_STAINED_GLASS
+     * @see #BLUE_STAINED_GLASS
+     * @see #BROWN_STAINED_GLASS
+     * @see #GREEN_STAINED_GLASS
+     * @see #RED_STAINED_GLASS
+     * @see #BLACK_STAINED_GLASS
+     */
+    @Deprecated
     String STAINED_GLASS = "minecraft:" + BlockNames.STAINED_GLASS;
     String CAMERA = "minecraft:" + BlockNames.CAMERA;
     String PODZOL = "minecraft:" + BlockNames.PODZOL;
@@ -294,11 +797,35 @@ public interface BlockFullNames {
     String INFO_UPDATE = "minecraft:" + BlockNames.INFO_UPDATE;
     String INFO_UPDATE2 = "minecraft:" + BlockNames.INFO_UPDATE2;
     String MOVING_BLOCK = "minecraft:" + BlockNames.MOVING_BLOCK;
-    String MOVINGBLOCK = "minecraft:" + BlockNames.MOVINGBLOCK; //TODO: 1.18.30 rename
+    /**
+     * @deprecated use {@link #MOVING_BLOCK} instead
+     */
+    @Deprecated
+    String MOVINGBLOCK = "minecraft:" + BlockNames.MOVINGBLOCK;
     String OBSERVER = "minecraft:" + BlockNames.OBSERVER;
     String STRUCTURE_BLOCK = "minecraft:" + BlockNames.STRUCTURE_BLOCK;
     String HARD_GLASS = "minecraft:" + BlockNames.HARD_GLASS;
-    String HARD_WHITE_STAINED_GLASS = "minecraft:" + BlockNames.HARD_WHITE_STAINED_GLASS; //TODO: 1.20.60 flattening
+    String HARD_WHITE_STAINED_GLASS = "minecraft:" + BlockNames.HARD_WHITE_STAINED_GLASS;
+    /**
+     * @deprecated flattened since 1.20.60
+     * @see #HARD_WHITE_STAINED_GLASS
+     * @see #HARD_ORANGE_STAINED_GLASS
+     * @see #HARD_MAGENTA_STAINED_GLASS
+     * @see #HARD_LIGHT_BLUE_STAINED_GLASS
+     * @see #HARD_YELLOW_STAINED_GLASS
+     * @see #HARD_LIME_STAINED_GLASS
+     * @see #HARD_PINK_STAINED_GLASS
+     * @see #HARD_GRAY_STAINED_GLASS
+     * @see #HARD_LIGHT_GRAY_STAINED_GLASS
+     * @see #HARD_CYAN_STAINED_GLASS
+     * @see #HARD_PURPLE_STAINED_GLASS
+     * @see #HARD_BLUE_STAINED_GLASS
+     * @see #HARD_BROWN_STAINED_GLASS
+     * @see #HARD_GREEN_STAINED_GLASS
+     * @see #HARD_RED_STAINED_GLASS
+     * @see #HARD_BLACK_STAINED_GLASS
+     */
+    @Deprecated
     String HARD_STAINED_GLASS = "minecraft:" + BlockNames.HARD_STAINED_GLASS;
     String RESERVED6 = "minecraft:" + BlockNames.RESERVED6;
 
@@ -431,19 +958,87 @@ public interface BlockFullNames {
     String ELEMENT_117 = "minecraft:" + BlockNames.ELEMENT_117;
     String ELEMENT_118 = "minecraft:" + BlockNames.ELEMENT_118;
     String SEAGRASS = "minecraft:" + BlockNames.SEAGRASS;
-    String TUBE_CORAL = "minecraft:" + BlockNames.TUBE_CORAL; //TODO: 1.20.0 flattening
+    String TUBE_CORAL = "minecraft:" + BlockNames.TUBE_CORAL;
+    /**
+     * @deprecated flattened since 1.20.0
+     * @see #TUBE_CORAL
+     * @see #BRAIN_CORAL
+     * @see #BUBBLE_CORAL
+     * @see #FIRE_CORAL
+     * @see #HORN_CORAL
+     * @see #DEAD_TUBE_CORAL
+     * @see #DEAD_BRAIN_CORAL
+     * @see #DEAD_BUBBLE_CORAL
+     * @see #DEAD_FIRE_CORAL
+     * @see #DEAD_HORN_CORAL
+     */
+    @Deprecated
     String CORAL = "minecraft:" + BlockNames.CORAL;
-    String TUBE_CORAL_BLOCK = "minecraft:" + BlockNames.TUBE_CORAL_BLOCK; //TODO: 1.21.0: flattening
+    String TUBE_CORAL_BLOCK = "minecraft:" + BlockNames.TUBE_CORAL_BLOCK;
+    /**
+     * @deprecated flattened since 1.21.0
+     * @see #TUBE_CORAL_BLOCK
+     * @see #BRAIN_CORAL_BLOCK
+     * @see #BUBBLE_CORAL_BLOCK
+     * @see #FIRE_CORAL_BLOCK
+     * @see #HORN_CORAL_BLOCK
+     * @see #DEAD_TUBE_CORAL_BLOCK
+     * @see #DEAD_BRAIN_CORAL_BLOCK
+     * @see #DEAD_BUBBLE_CORAL_BLOCK
+     * @see #DEAD_FIRE_CORAL_BLOCK
+     * @see #DEAD_HORN_CORAL_BLOCK
+     */
+    @Deprecated
     String CORAL_BLOCK = "minecraft:" + BlockNames.CORAL_BLOCK;
-    String TUBE_CORAL_FAN = "minecraft:" + BlockNames.TUBE_CORAL_FAN; //TODO: 1.20.80 flattening
+    String TUBE_CORAL_FAN = "minecraft:" + BlockNames.TUBE_CORAL_FAN;
+    /**
+     * @deprecated flattened since 1.20.80
+     * @see #TUBE_CORAL_FAN
+     * @see #BRAIN_CORAL_FAN
+     * @see #BUBBLE_CORAL_FAN
+     * @see #FIRE_CORAL_FAN
+     * @see #HORN_CORAL_FAN
+     */
+    @Deprecated
     String CORAL_FAN = "minecraft:" + BlockNames.CORAL_FAN;
-    String DEAD_TUBE_CORAL_FAN = "minecraft:" + BlockNames.DEAD_TUBE_CORAL_FAN; //TODO: 1.20.80 flattening
+    String DEAD_TUBE_CORAL_FAN = "minecraft:" + BlockNames.DEAD_TUBE_CORAL_FAN;
+    /**
+     * @deprecated flattened since 1.20.80
+     * @see #DEAD_TUBE_CORAL_FAN
+     * @see #DEAD_BRAIN_CORAL_FAN
+     * @see #DEAD_BUBBLE_CORAL_FAN
+     * @see #DEAD_FIRE_CORAL_FAN
+     * @see #DEAD_HORN_CORAL_FAN
+     */
+    @Deprecated
     String CORAL_FAN_DEAD = "minecraft:" + BlockNames.CORAL_FAN_DEAD;
-    String TUBE_CORAL_WALL_FAN = "minecraft:" + BlockNames.TUBE_CORAL_WALL_FAN; //TODO: 1.21.20: flattening
+    String TUBE_CORAL_WALL_FAN = "minecraft:" + BlockNames.TUBE_CORAL_WALL_FAN;
+    /**
+     * @deprecated flattened since 1.21.20
+     * @see #TUBE_CORAL_WALL_FAN
+     * @see #BRAIN_CORAL_WALL_FAN
+     * @see #DEAD_TUBE_CORAL_WALL_FAN
+     * @see #DEAD_BRAIN_CORAL_WALL_FAN
+     */
+    @Deprecated
     String CORAL_FAN_HANG = "minecraft:" + BlockNames.CORAL_FAN_HANG;
-    String BUBBLE_CORAL_WALL_FAN = "minecraft:" + BlockNames.BUBBLE_CORAL_WALL_FAN; //TODO: 1.21.20: flattening
+    String BUBBLE_CORAL_WALL_FAN = "minecraft:" + BlockNames.BUBBLE_CORAL_WALL_FAN;
+    /**
+     * @deprecated flattened since 1.21.20
+     * @see #BUBBLE_CORAL_WALL_FAN
+     * @see #FIRE_CORAL_WALL_FAN
+     * @see #DEAD_BUBBLE_CORAL_WALL_FAN
+     * @see #DEAD_FIRE_CORAL_WALL_FAN
+     */
+    @Deprecated
     String CORAL_FAN_HANG2 = "minecraft:" + BlockNames.CORAL_FAN_HANG2;
-    String HORN_CORAL_WALL_FAN = "minecraft:" + BlockNames.HORN_CORAL_WALL_FAN; //TODO: 1.21.20: flattening
+    String HORN_CORAL_WALL_FAN = "minecraft:" + BlockNames.HORN_CORAL_WALL_FAN;
+    /**
+     * @deprecated flattened since 1.21.20
+     * @see #HORN_CORAL_WALL_FAN
+     * @see #DEAD_HORN_CORAL_WALL_FAN
+     */
+    @Deprecated
     String CORAL_FAN_HANG3 = "minecraft:" + BlockNames.CORAL_FAN_HANG3;
     String KELP = "minecraft:" + BlockNames.KELP;
     String DRIED_KELP_BLOCK = "minecraft:" + BlockNames.DRIED_KELP_BLOCK;
@@ -469,20 +1064,78 @@ public interface BlockFullNames {
     String TURTLE_EGG = "minecraft:" + BlockNames.TURTLE_EGG;
     String BUBBLE_COLUMN = "minecraft:" + BlockNames.BUBBLE_COLUMN;
     String BARRIER = "minecraft:" + BlockNames.BARRIER;
-    String END_STONE_BRICK_SLAB = "minecraft:" + BlockNames.END_STONE_BRICK_SLAB; //TODO: 1.21.20 flattening
-    String STONE_BLOCK_SLAB3 = "minecraft:" + BlockNames.STONE_BLOCK_SLAB3; //TODO: 1.19.0 rename
+    String END_STONE_BRICK_SLAB = "minecraft:" + BlockNames.END_STONE_BRICK_SLAB;
+    /**
+     * @deprecated flattened since 1.21.20
+     * @see #END_STONE_BRICK_SLAB
+     * @see #SMOOTH_RED_SANDSTONE_SLAB
+     * @see #POLISHED_ANDESITE_SLAB
+     * @see #ANDESITE_SLAB
+     * @see #DIORITE_SLAB
+     * @see #POLISHED_DIORITE_SLAB
+     * @see #GRANITE_SLAB
+     * @see #POLISHED_GRANITE_SLAB
+     */
+    @Deprecated
+    String STONE_BLOCK_SLAB3 = "minecraft:" + BlockNames.STONE_BLOCK_SLAB3;
+    /**
+     * @deprecated use {@link #STONE_BLOCK_SLAB3} instead
+     */
+    @Deprecated
     String STONE_SLAB3 = "minecraft:" + BlockNames.STONE_SLAB3;
     String BAMBOO = "minecraft:" + BlockNames.BAMBOO;
     String BAMBOO_SAPLING = "minecraft:" + BlockNames.BAMBOO_SAPLING;
     String SCAFFOLDING = "minecraft:" + BlockNames.SCAFFOLDING;
-    String MOSSY_STONE_BRICK_SLAB = "minecraft:" + BlockNames.MOSSY_STONE_BRICK_SLAB; //TODO: 1.21.20 flattening
-    String STONE_BLOCK_SLAB4 = "minecraft:" + BlockNames.STONE_BLOCK_SLAB4; //TODO: 1.19.0 rename
+    String MOSSY_STONE_BRICK_SLAB = "minecraft:" + BlockNames.MOSSY_STONE_BRICK_SLAB;
+    /**
+     * @deprecated flattened since 1.21.20
+     * @see #MOSSY_STONE_BRICK_SLAB
+     * @see #SMOOTH_QUARTZ_SLAB
+     * @see #NORMAL_STONE_SLAB
+     * @see #CUT_SANDSTONE_SLAB
+     * @see #CUT_RED_SANDSTONE_SLAB
+     */
+    @Deprecated
+    String STONE_BLOCK_SLAB4 = "minecraft:" + BlockNames.STONE_BLOCK_SLAB4;
+    /**
+     * @deprecated use {@link #STONE_BLOCK_SLAB4} instead
+     */
+    @Deprecated
     String STONE_SLAB4 = "minecraft:" + BlockNames.STONE_SLAB4;
-    String END_STONE_BRICK_DOUBLE_SLAB = "minecraft:" + BlockNames.END_STONE_BRICK_DOUBLE_SLAB; //TODO: 1.21.20 flattening
-    String DOUBLE_STONE_BLOCK_SLAB3 = "minecraft:" + BlockNames.DOUBLE_STONE_BLOCK_SLAB3; //TODO: 1.19.0 rename
+    String END_STONE_BRICK_DOUBLE_SLAB = "minecraft:" + BlockNames.END_STONE_BRICK_DOUBLE_SLAB;
+    /**
+     * @deprecated flattened since 1.21.20
+     * @see #END_STONE_BRICK_DOUBLE_SLAB
+     * @see #SMOOTH_RED_SANDSTONE_DOUBLE_SLAB
+     * @see #POLISHED_ANDESITE_DOUBLE_SLAB
+     * @see #ANDESITE_DOUBLE_SLAB
+     * @see #DIORITE_DOUBLE_SLAB
+     * @see #POLISHED_DIORITE_DOUBLE_SLAB
+     * @see #GRANITE_DOUBLE_SLAB
+     * @see #POLISHED_GRANITE_DOUBLE_SLAB
+     */
+    @Deprecated
+    String DOUBLE_STONE_BLOCK_SLAB3 = "minecraft:" + BlockNames.DOUBLE_STONE_BLOCK_SLAB3;
+    /**
+     * @deprecated use {@link #DOUBLE_STONE_BLOCK_SLAB3} instead
+     */
+    @Deprecated
     String DOUBLE_STONE_SLAB3 = "minecraft:" + BlockNames.DOUBLE_STONE_SLAB3;
-    String MOSSY_STONE_BRICK_DOUBLE_SLAB = "minecraft:" + BlockNames.MOSSY_STONE_BRICK_DOUBLE_SLAB; //TODO: 1.21.20 flattening
-    String DOUBLE_STONE_BLOCK_SLAB4 = "minecraft:" + BlockNames.DOUBLE_STONE_BLOCK_SLAB4; //TODO: 1.19.0 rename
+    String MOSSY_STONE_BRICK_DOUBLE_SLAB = "minecraft:" + BlockNames.MOSSY_STONE_BRICK_DOUBLE_SLAB;
+    /**
+     * @deprecated flattened since 1.21.20
+     * @see #MOSSY_STONE_BRICK_DOUBLE_SLAB
+     * @see #SMOOTH_QUARTZ_DOUBLE_SLAB
+     * @see #NORMAL_STONE_DOUBLE_SLAB
+     * @see #CUT_SANDSTONE_DOUBLE_SLAB
+     * @see #CUT_RED_SANDSTONE_DOUBLE_SLAB
+     */
+    @Deprecated
+    String DOUBLE_STONE_BLOCK_SLAB4 = "minecraft:" + BlockNames.DOUBLE_STONE_BLOCK_SLAB4;
+    /**
+     * @deprecated use {@link #DOUBLE_STONE_BLOCK_SLAB4} instead
+     */
+    @Deprecated
     String DOUBLE_STONE_SLAB4 = "minecraft:" + BlockNames.DOUBLE_STONE_SLAB4;
     String GRANITE_STAIRS = "minecraft:" + BlockNames.GRANITE_STAIRS;
     String DIORITE_STAIRS = "minecraft:" + BlockNames.DIORITE_STAIRS;
@@ -520,21 +1173,66 @@ public interface BlockFullNames {
     String SMITHING_TABLE = "minecraft:" + BlockNames.SMITHING_TABLE;
     String BARREL = "minecraft:" + BlockNames.BARREL;
     String LOOM = "minecraft:" + BlockNames.LOOM;
-    String BELL = "minecraft:" + BlockNames.BELL; //TODO: meta 31
+    String BELL = "minecraft:" + BlockNames.BELL;
+
     String SWEET_BERRY_BUSH = "minecraft:" + BlockNames.SWEET_BERRY_BUSH;
     String LANTERN = "minecraft:" + BlockNames.LANTERN;
     String CAMPFIRE = "minecraft:" + BlockNames.CAMPFIRE;
-    String LAVA_CAULDRON = "minecraft:" + BlockNames.LAVA_CAULDRON; //TODO: 1.20.0 remove
-    String JIGSAW = "minecraft:" + BlockNames.JIGSAW; //TODO: meta 29
-    String OAK_WOOD = "minecraft:" + BlockNames.OAK_WOOD; //TODO: 1.20.70 flattening
+    /**
+     * @deprecated removed since 1.20.0
+     */
+    @Deprecated
+    String LAVA_CAULDRON = "minecraft:" + BlockNames.LAVA_CAULDRON;
+    String JIGSAW = "minecraft:" + BlockNames.JIGSAW;
+    String OAK_WOOD = "minecraft:" + BlockNames.OAK_WOOD;
+    /**
+     * @deprecated flattened since 1.20.70
+     * @see #OAK_WOOD
+     * @see #SPRUCE_WOOD
+     * @see #BIRCH_WOOD
+     * @see #JUNGLE_WOOD
+     * @see #ACACIA_WOOD
+     * @see #DARK_OAK_WOOD
+     * @see #STRIPPED_OAK_WOOD
+     * @see #STRIPPED_SPRUCE_WOOD
+     * @see #STRIPPED_BIRCH_WOOD
+     * @see #STRIPPED_JUNGLE_WOOD
+     * @see #STRIPPED_ACACIA_WOOD
+     * @see #STRIPPED_DARK_OAK_WOOD
+     */
+    @Deprecated
     String WOOD = "minecraft:" + BlockNames.WOOD;
     String COMPOSTER = "minecraft:" + BlockNames.COMPOSTER;
     String LIT_BLAST_FURNACE = "minecraft:" + BlockNames.LIT_BLAST_FURNACE;
-    String LIGHT_BLOCK_0 = "minecraft:" + BlockNames.LIGHT_BLOCK_0; //TODO: 1.21.20 flattening
+    String LIGHT_BLOCK_0 = "minecraft:" + BlockNames.LIGHT_BLOCK_0;
+    /**
+     * @deprecated flattened since 1.21.20
+     * @see #LIGHT_BLOCK_0
+     * @see #LIGHT_BLOCK_1
+     * @see #LIGHT_BLOCK_2
+     * @see #LIGHT_BLOCK_3
+     * @see #LIGHT_BLOCK_4
+     * @see #LIGHT_BLOCK_5
+     * @see #LIGHT_BLOCK_6
+     * @see #LIGHT_BLOCK_7
+     * @see #LIGHT_BLOCK_8
+     * @see #LIGHT_BLOCK_9
+     * @see #LIGHT_BLOCK_10
+     * @see #LIGHT_BLOCK_11
+     * @see #LIGHT_BLOCK_12
+     * @see #LIGHT_BLOCK_13
+     * @see #LIGHT_BLOCK_14
+     * @see #LIGHT_BLOCK_15
+     */
+    @Deprecated
     String LIGHT_BLOCK = "minecraft:" + BlockNames.LIGHT_BLOCK;
     String WITHER_ROSE = "minecraft:" + BlockNames.WITHER_ROSE;
     String STICKY_PISTON_ARM_COLLISION = "minecraft:" + BlockNames.STICKY_PISTON_ARM_COLLISION;
-    String STICKYPISTONARMCOLLISION = "minecraft:" + BlockNames.STICKYPISTONARMCOLLISION; //TODO: 1.18.30 rename
+    /**
+     * @deprecated use {@link #STICKY_PISTON_ARM_COLLISION} instead
+     */
+    @Deprecated
+    String STICKYPISTONARMCOLLISION = "minecraft:" + BlockNames.STICKYPISTONARMCOLLISION;
     String BEE_NEST = "minecraft:" + BlockNames.BEE_NEST;
     String BEEHIVE = "minecraft:" + BlockNames.BEEHIVE;
     String HONEY_BLOCK = "minecraft:" + BlockNames.HONEY_BLOCK;
@@ -565,6 +1263,7 @@ public interface BlockFullNames {
     String WARPED_DOOR = "minecraft:" + BlockNames.WARPED_DOOR;
     String CRIMSON_TRAPDOOR = "minecraft:" + BlockNames.CRIMSON_TRAPDOOR;
     String WARPED_TRAPDOOR = "minecraft:" + BlockNames.WARPED_TRAPDOOR;
+
     String CRIMSON_STANDING_SIGN = "minecraft:" + BlockNames.CRIMSON_STANDING_SIGN;
     String WARPED_STANDING_SIGN = "minecraft:" + BlockNames.WARPED_STANDING_SIGN;
     String CRIMSON_WALL_SIGN = "minecraft:" + BlockNames.CRIMSON_WALL_SIGN;
@@ -602,6 +1301,10 @@ public interface BlockFullNames {
     String POLISHED_BLACKSTONE_BRICK_SLAB = "minecraft:" + BlockNames.POLISHED_BLACKSTONE_BRICK_SLAB;
     String POLISHED_BLACKSTONE_BRICK_DOUBLE_SLAB = "minecraft:" + BlockNames.POLISHED_BLACKSTONE_BRICK_DOUBLE_SLAB;
     String IRON_CHAIN = "minecraft:" + BlockNames.IRON_CHAIN;
+//    /**
+//     * @deprecated use {@link #IRON_CHAIN} instead
+//     */
+//    @Deprecated //TODO:1.21.111
     String CHAIN = "minecraft:" + BlockNames.CHAIN;
     String TWISTING_VINES = "minecraft:" + BlockNames.TWISTING_VINES;
     String NETHER_GOLD_ORE = "minecraft:" + BlockNames.NETHER_GOLD_ORE;
@@ -625,6 +1328,7 @@ public interface BlockFullNames {
     String POWDER_SNOW = "minecraft:" + BlockNames.POWDER_SNOW;
     String SCULK_SENSOR = "minecraft:" + BlockNames.SCULK_SENSOR;
     String POINTED_DRIPSTONE = "minecraft:" + BlockNames.POINTED_DRIPSTONE;
+
     String COPPER_ORE = "minecraft:" + BlockNames.COPPER_ORE;
     String LIGHTNING_ROD = "minecraft:" + BlockNames.LIGHTNING_ROD;
     String CRAFTER = "minecraft:" + BlockNames.CRAFTER;
@@ -769,10 +1473,12 @@ public interface BlockFullNames {
     String RAW_COPPER_BLOCK = "minecraft:" + BlockNames.RAW_COPPER_BLOCK;
     String RAW_GOLD_BLOCK = "minecraft:" + BlockNames.RAW_GOLD_BLOCK;
     String INFESTED_DEEPSLATE = "minecraft:" + BlockNames.INFESTED_DEEPSLATE;
+
     String SCULK = "minecraft:" + BlockNames.SCULK;
     String SCULK_VEIN = "minecraft:" + BlockNames.SCULK_VEIN;
     String SCULK_CATALYST = "minecraft:" + BlockNames.SCULK_CATALYST;
     String SCULK_SHRIEKER = "minecraft:" + BlockNames.SCULK_SHRIEKER;
+
     String CLIENT_REQUEST_PLACEHOLDER_BLOCK = "minecraft:" + BlockNames.CLIENT_REQUEST_PLACEHOLDER_BLOCK;
     String REINFORCED_DEEPSLATE = "minecraft:" + BlockNames.REINFORCED_DEEPSLATE;
     /**
@@ -793,6 +1499,7 @@ public interface BlockFullNames {
     String MUD = "minecraft:" + BlockNames.MUD;
     String MANGROVE_PROPAGULE = "minecraft:" + BlockNames.MANGROVE_PROPAGULE;
     String MUD_BRICKS = "minecraft:" + BlockNames.MUD_BRICKS;
+
     String PACKED_MUD = "minecraft:" + BlockNames.PACKED_MUD;
     String MUD_BRICK_SLAB = "minecraft:" + BlockNames.MUD_BRICK_SLAB;
     String MUD_BRICK_DOUBLE_SLAB = "minecraft:" + BlockNames.MUD_BRICK_DOUBLE_SLAB;

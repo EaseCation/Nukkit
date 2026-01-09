@@ -7,7 +7,7 @@ import cn.nukkit.level.generator.object.tree.ObjectSwampTree;
 import cn.nukkit.level.generator.populator.impl.PopulatorTree;
 import cn.nukkit.level.generator.populator.type.Populator;
 import cn.nukkit.math.BlockVector3;
-import cn.nukkit.math.NukkitRandom;
+import cn.nukkit.math.RandomSource;
 
 public class SwampTreePopulator extends Populator {
     private int randomAmount;
@@ -32,7 +32,7 @@ public class SwampTreePopulator extends Populator {
     }
 
     @Override
-    public void populate(ChunkManager level, int chunkX, int chunkZ, NukkitRandom random, FullChunk chunk) {
+    public void populate(ChunkManager level, int chunkX, int chunkZ, RandomSource random, FullChunk chunk) {
         int amount = random.nextBoundedInt(this.randomAmount + 1) + this.baseAmount;
         BlockVector3 v = new BlockVector3();
 

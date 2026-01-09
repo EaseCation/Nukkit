@@ -14,7 +14,7 @@ import javax.annotation.Nullable;
 
 public class BlockNetherReactor extends BlockSolid {
 
-    public BlockNetherReactor() {
+    BlockNetherReactor() {
 
     }
 

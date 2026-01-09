@@ -31,16 +31,24 @@ public abstract class BlockEntitySpawnable extends BlockEntity {
         this.spawnToAll();
     }
 
-    public CompoundTag getSpawnCompound() {
+    public final CompoundTag getSpawnCompound() {
+        return getSpawnCompound(false);
+    }
+
+    public CompoundTag getSpawnCompound(boolean chunkData) {
         return this.namedTag;
     }
 
     public void spawnTo(Player player) {
+        spawnTo(player, false);
+    }
+
+    public void spawnTo(Player player, boolean empty) {
         if (this.isClosed()) {
             return;
         }
 
-        BlockEntityDataPacket packet = this.getSpawnPacket();
+        BlockEntityDataPacket packet = this.getSpawnPacket(empty);
         if (packet == null) {
             return;
         }
@@ -75,14 +83,31 @@ public abstract class BlockEntitySpawnable extends BlockEntity {
         return pk;
     }
 
+    public BlockEntityDataPacket getSpawnPacket(boolean empty) {
+        if (empty) {
+            BlockEntityDataPacket pk = new BlockEntityDataPacket();
+            pk.x = (int) this.x;
+            pk.y = (int) this.y;
+            pk.z = (int) this.z;
+            pk.namedTag = CompoundTag.EMPTY;
+            return pk;
+        }
+
+        return getSpawnPacket();
+    }
+
     public void spawnToAll() {
+        spawnToAll(false);
+    }
+
+    public void spawnToAll(boolean empty) {
         if (this.isClosed()) {
             return;
         }
 
         for (Player player : this.getLevel().getChunkPlayers(this.chunk.getX(), this.chunk.getZ()).values()) {
             if (player.spawned) {
-                this.spawnTo(player);
+                this.spawnTo(player, empty);
             }
         }
     }

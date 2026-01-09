@@ -8,12 +8,8 @@ import cn.nukkit.utils.BlockColor;
  */
 public class BlockStairsAcacia extends BlockStairsWood {
 
-    public BlockStairsAcacia() {
-        this(0);
-    }
+    BlockStairsAcacia() {
 
-    public BlockStairsAcacia(int meta) {
-        super(meta);
     }
 
     @Override

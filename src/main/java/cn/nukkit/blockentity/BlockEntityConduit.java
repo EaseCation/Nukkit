@@ -77,7 +77,7 @@ public class BlockEntityConduit extends BlockEntitySpawnable {
     }
 
     @Override
-    public CompoundTag getSpawnCompound() {
+    public CompoundTag getSpawnCompound(boolean chunkData) {
         return getDefaultCompound(this, CONDUIT)
                 .putBoolean("Active", this.active)
                 .putLong("Target", this.target != null ? this.target.getId() : -1);

@@ -6,12 +6,8 @@ import cn.nukkit.utils.BlockColor;
 
 public class BlockSignPostJungle extends BlockSignPost {
 
-    public BlockSignPostJungle() {
-        this(0);
-    }
+    BlockSignPostJungle() {
 
-    public BlockSignPostJungle(int meta) {
-        super(meta);
     }
 
     @Override

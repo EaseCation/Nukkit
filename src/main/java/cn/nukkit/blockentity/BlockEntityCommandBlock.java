@@ -179,7 +179,7 @@ public class BlockEntityCommandBlock extends BlockEntitySpawnable {
     }
 
     @Override
-    public CompoundTag getSpawnCompound() {
+    public CompoundTag getSpawnCompound(boolean chunkData) {
         return getDefaultCompound(this, COMMAND_BLOCK)
                 .putBoolean(TAG_POWERED, this.powered)
                 .putBoolean(TAG_AUTO, this.auto)

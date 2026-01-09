@@ -113,7 +113,7 @@ public class BlockEntityJigsawBlock extends BlockEntitySpawnable {
     }
 
     @Override
-    public CompoundTag getSpawnCompound() {
+    public CompoundTag getSpawnCompound(boolean chunkData) {
         return getDefaultCompound(this, JIGSAW_BLOCK)
                 .putString(TAG_NAME, name)
                 .putString(TAG_TARGET, target)

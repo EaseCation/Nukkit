@@ -5,17 +5,13 @@ import cn.nukkit.blockentity.BlockEntityType;
 import cn.nukkit.item.Item;
 
 public class BlockItemFrameGlow extends BlockItemFrame {
-    public BlockItemFrameGlow() {
-        this(0);
-    }
+    BlockItemFrameGlow() {
 
-    public BlockItemFrameGlow(int meta) {
-        super(meta);
     }
 
     @Override
     public int getId() {
-        return BLOCK_GLOW_FRAME;
+        return GLOW_FRAME;
     }
 
     @Override

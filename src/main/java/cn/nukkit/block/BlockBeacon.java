@@ -18,7 +18,8 @@ import javax.annotation.Nullable;
  */
 public class BlockBeacon extends BlockTransparent {
 
-    public BlockBeacon() {
+    BlockBeacon() {
+
     }
 
     @Override

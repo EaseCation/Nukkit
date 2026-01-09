@@ -9,7 +9,8 @@ import static cn.nukkit.GameVersion.*;
 
 public class BlockBricksEndStone extends BlockSolid {
 
-    public BlockBricksEndStone() {
+    BlockBricksEndStone() {
+
     }
 
     @Override

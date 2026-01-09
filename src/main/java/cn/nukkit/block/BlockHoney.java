@@ -4,7 +4,8 @@ import cn.nukkit.utils.BlockColor;
 
 public class BlockHoney extends BlockTransparent {
 
-    public BlockHoney() {
+    BlockHoney() {
+
     }
 
     @Override

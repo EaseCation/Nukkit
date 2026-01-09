@@ -45,7 +45,8 @@ public class BlockShulkerBox extends BlockTransparent {
             BLACK_SHULKER_BOX,
     };
 
-    public BlockShulkerBox() {
+    BlockShulkerBox() {
+
     }
 
     @Override

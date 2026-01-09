@@ -10,12 +10,8 @@ import cn.nukkit.utils.BlockColor;
 public class BlockHangingMossPale extends BlockFlowable {
     public static final int TIP_BIT = 0b1;
 
-    public BlockHangingMossPale() {
-        this(0);
-    }
+    BlockHangingMossPale() {
 
-    public BlockHangingMossPale(int meta) {
-        super(meta);
     }
 
     @Override
@@ -69,9 +65,11 @@ public class BlockHangingMossPale extends BlockFlowable {
             return false;
         }
 
-        if (!canSurvive()) {
+        if (!canSurvive(up())) {
             return false;
         }
+
+        setDamage(TIP_BIT);
 
         return super.place(item, block, target, face, fx, fy, fz, player);
     }
@@ -126,12 +124,24 @@ public class BlockHangingMossPale extends BlockFlowable {
         }
 
         if (type == Level.BLOCK_UPDATE_SCHEDULED) {
-            if (canSurvive()) {
-                return 0;
+            Block above = up();
+            if (!canSurvive(above)) {
+                level.useBreakOn(this, true);
+                return Level.BLOCK_UPDATE_NORMAL;
             }
 
-            level.useBreakOn(this, true);
-            return Level.BLOCK_UPDATE_NORMAL;
+            if (above.is(getId(), TIP_BIT)) {
+                above.setDamage(0);
+                level.setBlock(above, above, true, false);
+            }
+
+            Block below = down();
+            if (!below.is(getId())) {
+                setDamage(TIP_BIT);
+                level.setBlock(this, this, true, false);
+            }
+
+            return type;
         }
         return 0;
     }
@@ -151,8 +161,7 @@ public class BlockHangingMossPale extends BlockFlowable {
         return true;
     }
 
-    protected boolean canSurvive() {
-        Block above = up();
+    protected boolean canSurvive(Block above) {
         return above.getId() == getId() || SupportType.hasFullSupport(above, BlockFace.DOWN);
     }
 

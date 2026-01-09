@@ -2,19 +2,20 @@ package cn.nukkit.block;
 
 import cn.nukkit.Player;
 import cn.nukkit.item.Item;
+import cn.nukkit.item.ItemBlockID;
 import cn.nukkit.level.Level;
 import cn.nukkit.math.BlockFace;
 import cn.nukkit.network.protocol.LevelSoundEventPacket;
 import cn.nukkit.utils.BlockColor;
 
 public class BlockNetherSprouts extends BlockFlowable {
-    public BlockNetherSprouts() {
-        super(0);
+    BlockNetherSprouts() {
+
     }
 
     @Override
     public int getId() {
-        return BLOCK_NETHER_SPROUTS;
+        return NETHER_SPROUTS;
     }
 
     @Override
@@ -52,7 +53,7 @@ public class BlockNetherSprouts extends BlockFlowable {
 
     @Override
     public boolean onActivate(Item item, BlockFace face, float fx, float fy, float fz, Player player) {
-        if (item.is(getItemId(SNOW_LAYER))) {
+        if (item.is(ItemBlockID.SNOW_LAYER)) {
             level.setExtraBlock(this, this, true, false);
             level.setBlock(this, get(SNOW_LAYER, BlockSnowLayer.COVERED_BIT), true);
 

@@ -31,4 +31,14 @@ public class ItemEnderPearl extends ProjectileItem {
     public float getThrowForce() {
         return 1.5f;
     }
+
+    @Override
+    public int getCooldownDuration() {
+        return 20;
+    }
+
+    @Override
+    public CooldownCategory getCooldownCategory() {
+        return CooldownCategory.ENDER_PEARL;
+    }
 }

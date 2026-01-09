@@ -6,6 +6,7 @@ import cn.nukkit.blockentity.BlockEntity;
 import cn.nukkit.blockentity.BlockEntityDaylightDetector;
 import cn.nukkit.blockentity.BlockEntityType;
 import cn.nukkit.item.Item;
+import cn.nukkit.item.ItemBlockID;
 import cn.nukkit.math.BlockFace;
 import cn.nukkit.nbt.tag.CompoundTag;
 import cn.nukkit.utils.BlockColor;
@@ -18,12 +19,8 @@ import javax.annotation.Nullable;
  */
 public class BlockDaylightDetector extends BlockTransparent {
 
-    public BlockDaylightDetector() {
-        this(0);
-    }
+    BlockDaylightDetector() {
 
-    public BlockDaylightDetector(int meta) {
-        super(meta);
     }
 
     @Override
@@ -58,7 +55,7 @@ public class BlockDaylightDetector extends BlockTransparent {
 
     @Override
     public Item toItem(boolean addUserData) {
-        return Item.get(getItemId(DAYLIGHT_DETECTOR));
+        return Item.get(ItemBlockID.DAYLIGHT_DETECTOR);
     }
 
     @Override

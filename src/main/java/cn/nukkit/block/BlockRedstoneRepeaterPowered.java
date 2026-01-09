@@ -9,12 +9,8 @@ import cn.nukkit.math.BlockFace;
  */
 public class BlockRedstoneRepeaterPowered extends BlockRedstoneDiode {
 
-    public BlockRedstoneRepeaterPowered() {
-        this(0);
-    }
+    BlockRedstoneRepeaterPowered() {
 
-    public BlockRedstoneRepeaterPowered(int meta) {
-        super(meta);
     }
 
     @Override

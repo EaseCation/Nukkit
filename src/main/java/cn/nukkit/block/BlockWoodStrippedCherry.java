@@ -3,12 +3,8 @@ package cn.nukkit.block;
 import cn.nukkit.utils.BlockColor;
 
 public class BlockWoodStrippedCherry extends BlockLogStrippedCherry {
-    public BlockWoodStrippedCherry() {
-        this(0);
-    }
+    BlockWoodStrippedCherry() {
 
-    public BlockWoodStrippedCherry(int meta) {
-        super(meta);
     }
 
     @Override
@@ -24,5 +20,10 @@ public class BlockWoodStrippedCherry extends BlockLogStrippedCherry {
     @Override
     public BlockColor getColor() {
         return BlockColor.PINK_TERRACOTA_BLOCK_COLOR;
+    }
+
+    @Override
+    public boolean isWood() {
+        return true;
     }
 }

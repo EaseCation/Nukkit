@@ -8,7 +8,8 @@ import static cn.nukkit.GameVersion.*;
 import static cn.nukkit.SharedConstants.*;
 
 public class BlockSculk extends BlockSolid {
-    public BlockSculk() {
+    BlockSculk() {
+
     }
 
     @Override

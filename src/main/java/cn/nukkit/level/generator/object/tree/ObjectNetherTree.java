@@ -2,7 +2,7 @@ package cn.nukkit.level.generator.object.tree;
 
 import cn.nukkit.block.Block;
 import cn.nukkit.level.ChunkManager;
-import cn.nukkit.math.NukkitRandom;
+import cn.nukkit.math.RandomSource;
 
 import java.util.concurrent.ThreadLocalRandom;
 
@@ -27,7 +27,7 @@ public abstract class ObjectNetherTree extends ObjectTree {
     }
 
     @Override
-    public void placeObject(ChunkManager level, int x, int y, int z, NukkitRandom random) {
+    public void placeObject(ChunkManager level, int x, int y, int z, RandomSource random) {
         int maxBlockY = level.getHeightRange().getMaxY();
 
         if (y + treeHeight >= maxBlockY) {
@@ -125,7 +125,7 @@ public abstract class ObjectNetherTree extends ObjectTree {
     }
 
     @Override
-    protected int placeTrunk(ChunkManager level, int x, int y, int z, NukkitRandom random, int trunkHeight) {
+    protected int placeTrunk(ChunkManager level, int x, int y, int z, RandomSource random, int trunkHeight) {
         int lowest = Integer.MIN_VALUE;
         int maxBlockY = level.getHeightRange().getMaxY() - 1;
 

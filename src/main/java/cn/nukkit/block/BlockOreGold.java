@@ -11,7 +11,8 @@ import cn.nukkit.item.ItemTool;
  */
 public class BlockOreGold extends BlockSolid {
 
-    public BlockOreGold() {
+    BlockOreGold() {
+
     }
 
     @Override

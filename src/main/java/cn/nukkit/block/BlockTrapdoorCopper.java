@@ -8,12 +8,8 @@ import cn.nukkit.math.BlockFace;
 import cn.nukkit.utils.BlockColor;
 
 public class BlockTrapdoorCopper extends BlockTrapdoor implements CopperBehavior {
-    public BlockTrapdoorCopper() {
-        this(0);
-    }
+    BlockTrapdoorCopper() {
 
-    public BlockTrapdoorCopper(int meta) {
-        super(meta);
     }
 
     @Override

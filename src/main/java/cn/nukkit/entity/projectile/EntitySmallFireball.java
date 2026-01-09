@@ -41,7 +41,7 @@ public class EntitySmallFireball extends EntityFireball {
     }
 
     @Override
-    protected double getBaseDamage() {
+    public int getResultDamage() {
         return 5;
     }
 

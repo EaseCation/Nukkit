@@ -5,7 +5,8 @@ import cn.nukkit.utils.BlockColor;
 import java.util.Random;
 
 public class BlockMossPale extends BlockMoss {
-    public BlockMossPale() {
+    BlockMossPale() {
+
     }
 
     @Override
@@ -40,19 +41,19 @@ public class BlockMossPale extends BlockMoss {
         int rand = random.nextInt(60);
         if (rand < 10) {
             if (level.getBlock(x, y + 1, z).isAir()) {
-                block = Block.get(DOUBLE_PLANT, BlockDoublePlant.TYPE_TALL_GRASS);
-                blockAbove = Block.get(DOUBLE_PLANT, BlockDoublePlant.TYPE_TALL_GRASS | BlockDoublePlant.TOP_HALF_BITMASK);
+                block = Block.get(TALL_GRASS);
+                blockAbove = Block.get(TALL_GRASS, BlockDoublePlant.UPPER_BLOCK_BIT);
             } else {
-                block = Block.get(SHORT_GRASS, BlockTallGrass.TYPE_GRASS);
+                block = Block.get(SHORT_GRASS);
             }
         } else if (rand < 35) {
             block = Block.get(PALE_MOSS_CARPET);
         } else {
-            block = Block.get(SHORT_GRASS, BlockTallGrass.TYPE_GRASS);
+            block = Block.get(SHORT_GRASS);
+        }
+        if (blockAbove != null) {
+            level.setBlock(x, y + 1, z, blockAbove, true,false);
         }
         level.setBlock(x, y, z, block, true);
-        if (blockAbove != null) {
-            level.setBlock(x, y + 1, z, blockAbove, true);
-        }
     }
 }

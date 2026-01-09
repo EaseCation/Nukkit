@@ -6,7 +6,8 @@ import static cn.nukkit.GameVersion.*;
 import static cn.nukkit.SharedConstants.*;
 
 public class BlockSoulSoil extends BlockSolid {
-    public BlockSoulSoil() {
+    BlockSoulSoil() {
+
     }
 
     @Override

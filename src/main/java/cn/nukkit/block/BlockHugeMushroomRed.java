@@ -7,12 +7,8 @@ import cn.nukkit.utils.BlockColor;
  */
 public class BlockHugeMushroomRed extends BlockHugeMushroom {
 
-    public BlockHugeMushroomRed() {
-        this(0);
-    }
+    BlockHugeMushroomRed() {
 
-    public BlockHugeMushroomRed(int meta) {
-        super(meta);
     }
 
     @Override

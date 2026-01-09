@@ -4,12 +4,8 @@ import cn.nukkit.item.Item;
 import cn.nukkit.utils.BlockColor;
 
 public class BlockSignPostWarped extends BlockSignPost {
-    public BlockSignPostWarped() {
-        this(0);
-    }
+    BlockSignPostWarped() {
 
-    public BlockSignPostWarped(int meta) {
-        super(meta);
     }
 
     @Override

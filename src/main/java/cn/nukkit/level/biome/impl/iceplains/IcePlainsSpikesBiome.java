@@ -3,7 +3,7 @@ package cn.nukkit.level.biome.impl.iceplains;
 import cn.nukkit.level.ChunkManager;
 import cn.nukkit.level.format.FullChunk;
 import cn.nukkit.level.generator.populator.type.Populator;
-import cn.nukkit.math.NukkitRandom;
+import cn.nukkit.math.RandomSource;
 
 /**
  * author: DaPorkchop_
@@ -43,7 +43,7 @@ public class IcePlainsSpikesBiome extends IcePlainsBiome {
     private static class PopulatorIceSpikes extends Populator {
 
         @Override
-        public void populate(ChunkManager level, int chunkX, int chunkZ, NukkitRandom random, FullChunk chunk) {
+        public void populate(ChunkManager level, int chunkX, int chunkZ, RandomSource random, FullChunk chunk) {
             for (int i = 0; i < 8; i++) {
                 int x = (chunkX << 4) + random.nextBoundedInt(16);
                 int z = (chunkZ << 4) + random.nextBoundedInt(16);

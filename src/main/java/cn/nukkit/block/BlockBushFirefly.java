@@ -1,7 +1,8 @@
 package cn.nukkit.block;
 
 public class BlockBushFirefly extends BlockBush {
-    public BlockBushFirefly() {
+    BlockBushFirefly() {
+
     }
 
     @Override

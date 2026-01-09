@@ -3,6 +3,7 @@ package cn.nukkit.block;
 import cn.nukkit.Player;
 import cn.nukkit.event.block.BlockGrowEvent;
 import cn.nukkit.item.Item;
+import cn.nukkit.item.ItemBlockID;
 import cn.nukkit.level.Level;
 import cn.nukkit.level.particle.BoneMealParticle;
 import cn.nukkit.math.BlockFace;
@@ -14,12 +15,8 @@ public class BlockPitcherCrop extends BlockCrops {
     public static final int GROWTH_MASK = 0b1110;
     public static final int GROWTH_START = 1;
 
-    public BlockPitcherCrop() {
-        this(0);
-    }
+    BlockPitcherCrop() {
 
-    public BlockPitcherCrop(int meta) {
-        super(meta);
     }
 
     @Override
@@ -44,7 +41,7 @@ public class BlockPitcherCrop extends BlockCrops {
         }
 
         return new Item[]{
-                Item.get(getGrowth() >= 4 ? getItemId(PITCHER_PLANT) : Item.PITCHER_POD),
+                Item.get(getGrowth() >= 4 ? ItemBlockID.PITCHER_PLANT : Item.PITCHER_POD),
         };
     }
 

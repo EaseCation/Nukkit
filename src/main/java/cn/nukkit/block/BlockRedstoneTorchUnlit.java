@@ -10,12 +10,8 @@ import cn.nukkit.math.BlockFace;
  */
 public class BlockRedstoneTorchUnlit extends BlockTorch {
 
-    public BlockRedstoneTorchUnlit() {
-        this(0);
-    }
+    BlockRedstoneTorchUnlit() {
 
-    public BlockRedstoneTorchUnlit(int meta) {
-        super(meta);
     }
 
     @Override

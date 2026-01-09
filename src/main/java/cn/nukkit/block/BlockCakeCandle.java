@@ -15,12 +15,8 @@ import cn.nukkit.network.protocol.LevelSoundEventPacket;
 public class BlockCakeCandle extends BlockCake {
     public static final int LIT_BIT = 0b1;
 
-    public BlockCakeCandle() {
-        this(0);
-    }
+    BlockCakeCandle() {
 
-    public BlockCakeCandle(int meta) {
-        super(meta);
     }
 
     @Override
@@ -99,7 +95,7 @@ public class BlockCakeCandle extends BlockCake {
 
             level.dropItem(this, Item.get(getItemId(getCandleBlockId())));
 
-            level.setBlock(this, get(BLOCK_CAKE, 1), true);
+            level.setBlock(this, get(CAKE, 1), true);
             return true;
         }
 

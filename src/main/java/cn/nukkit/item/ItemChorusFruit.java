@@ -22,15 +22,25 @@ public class ItemChorusFruit extends ItemEdible {
 
     @Override
     public boolean onClickAir(Player player, Vector3 directionVector) {
-        return player.getServer().getTick() - player.getLastChorusFruitTeleport() >= 20;
+        return !player.isItemCooling(getCooldownCategory(), getCooldownDuration());
     }
 
     @Override
     public boolean onUse(Player player, int ticksUsed) {
         boolean successful = super.onUse(player, ticksUsed);
         if (successful) {
-            player.onChorusFruitTeleport();
+            player.startItemCooldown(getCooldownCategory());
         }
         return successful;
+    }
+
+    @Override
+    public int getCooldownDuration() {
+        return 20;
+    }
+
+    @Override
+    public CooldownCategory getCooldownCategory() {
+        return CooldownCategory.CHORUS_FRUIT;
     }
 }

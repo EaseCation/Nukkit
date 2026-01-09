@@ -3,12 +3,8 @@ package cn.nukkit.block;
 import cn.nukkit.utils.BlockColor;
 
 public class BlockSlabCopperCutExposed extends BlockSlabCopperCut {
-    public BlockSlabCopperCutExposed() {
-        this(0);
-    }
+    BlockSlabCopperCutExposed() {
 
-    public BlockSlabCopperCutExposed(int meta) {
-        super(meta);
     }
 
     @Override

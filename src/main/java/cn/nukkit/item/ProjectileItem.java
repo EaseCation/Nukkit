@@ -3,10 +3,7 @@ package cn.nukkit.item;
 import cn.nukkit.Player;
 import cn.nukkit.entity.Entity;
 import cn.nukkit.entity.EntityFullNames;
-import cn.nukkit.entity.projectile.EntityEnderPearl;
-import cn.nukkit.entity.projectile.EntityIceBomb;
-import cn.nukkit.entity.projectile.EntityProjectile;
-import cn.nukkit.entity.projectile.ProjectileFactory;
+import cn.nukkit.entity.projectile.*;
 import cn.nukkit.event.entity.ProjectileLaunchEvent;
 import cn.nukkit.math.Vector3;
 import cn.nukkit.nbt.tag.CompoundTag;
@@ -25,6 +22,7 @@ public abstract class ProjectileItem extends Item {
 
     public abstract float getThrowForce();
 
+    @Override
     public boolean onClickAir(Player player, Vector3 directionVector) {
         CompoundTag nbt = Entity.getDefaultNBT(player.x, player.y + player.getEyeHeight() - 0.3, player.z, directionVector, (float) player.yaw, (float) player.pitch);
 
@@ -32,16 +30,10 @@ public abstract class ProjectileItem extends Item {
 
         EntityProjectile projectile = this.getProjectileEntityFactory().create(player.getLevel().getChunk(player.getFloorX() >> 4, player.getFloorZ() >> 4), nbt, player);
         if (projectile != null) {
-            if (projectile instanceof EntityEnderPearl) {
-                if (player.getServer().getTick() - player.getLastEnderPearlThrowingTick() < 20) {
-                    projectile.close();
-                    return false;
-                }
-            } else if (projectile instanceof EntityIceBomb) {
-                if (player.getServer().getTick() - player.getLastIceBombThrowingTick() < 20) {
-                    projectile.close();
-                    return false;
-                }
+            CooldownCategory cooldownCategory = getCooldownCategory();
+            if (cooldownCategory != null && player.isItemCooling(cooldownCategory, getCooldownDuration())) {
+                projectile.close();
+                return false;
             }
 
             projectile.setMotion(projectile.getMotion().multiply(this.getThrowForce()));
@@ -54,12 +46,13 @@ public abstract class ProjectileItem extends Item {
                 if (!player.isCreative()) {
                     this.count--;
                 }
-                if (projectile instanceof EntityEnderPearl) {
-                    player.onThrowEnderPearl();
-                } else if (projectile instanceof EntityIceBomb) {
-                    player.onThrowIceBomb();
+
+                if (cooldownCategory != null) {
+                    player.startItemCooldown(cooldownCategory);
                 }
+
                 projectile.spawnToAll();
+
                 player.getLevel().addLevelSoundEvent(player, LevelSoundEventPacket.SOUND_THROW, EntityFullNames.PLAYER);
             }
         } else {

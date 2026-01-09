@@ -8,33 +8,27 @@ import cn.nukkit.network.protocol.LevelSoundEventPacket;
 import cn.nukkit.potion.Potion;
 import cn.nukkit.utils.BlockColor;
 
-import static cn.nukkit.GameVersion.*;
-
 /**
  * author: MagicDroidX
  * AMAZING COARSE DIRT added by kvetinac97
  * Nukkit Project
  */
 public class BlockDirt extends BlockSolid {
+    public static final int[] DIRTS = {
+            DIRT,
+            COARSE_DIRT,
+    };
+
     public static final int TYPE_NORMAL_DIRT = 0;
     public static final int TYPE_COARSE_DIRT = 1;
 
-    public BlockDirt() {
-        this(0);
-    }
+    BlockDirt() {
 
-    public BlockDirt(int meta){
-        super(meta);
     }
 
     @Override
     public int getId() {
         return DIRT;
-    }
-
-    @Override
-    public boolean isStackedByData() {
-        return !V1_21_20.isAvailable();
     }
 
     @Override
@@ -59,14 +53,14 @@ public class BlockDirt extends BlockSolid {
 
     @Override
     public String getName() {
-        return this.getDamage() == TYPE_NORMAL_DIRT ? "Dirt" : "Coarse Dirt";
+        return "Dirt";
     }
 
     @Override
     public boolean onActivate(Item item, BlockFace face, float fx, float fy, float fz, Player player) {
         if (item.isHoe()) {
             if (this.up().isAir()) {
-                int newId = getDamage() == TYPE_NORMAL_DIRT ? FARMLAND : DIRT;
+                int newId = getHoedBlockId();
                 level.addLevelSoundEvent(blockCenter(), LevelSoundEventPacket.SOUND_ITEM_USE_ON, getFullId(newId));
                 if (player != null) {
                     player.swingArm(SwingSource.USE_ITEM);
@@ -117,13 +111,6 @@ public class BlockDirt extends BlockSolid {
     }
 
     @Override
-    public Item[] getDrops(Item item, Player player) {
-        return new Item[]{
-                Item.get(DIRT)
-        };
-    }
-
-    @Override
     public BlockColor getColor() {
         return BlockColor.DIRT_BLOCK_COLOR;
     }
@@ -131,5 +118,9 @@ public class BlockDirt extends BlockSolid {
     @Override
     public boolean isDirt() {
         return true;
+    }
+
+    protected int getHoedBlockId() {
+        return FARMLAND;
     }
 }

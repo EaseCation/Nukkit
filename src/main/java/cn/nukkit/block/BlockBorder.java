@@ -7,12 +7,8 @@ import cn.nukkit.utils.BlockColor;
 
 public class BlockBorder extends BlockWall {
 
-    public BlockBorder() {
-        this(0);
-    }
+    BlockBorder() {
 
-    public BlockBorder(int meta) {
-        super(meta);
     }
 
     @Override

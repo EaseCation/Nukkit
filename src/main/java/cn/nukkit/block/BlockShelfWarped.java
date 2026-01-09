@@ -3,12 +3,8 @@ package cn.nukkit.block;
 import cn.nukkit.utils.BlockColor;
 
 public class BlockShelfWarped extends BlockShelf {
-    public BlockShelfWarped() {
-        this(0);
-    }
+    BlockShelfWarped() {
 
-    public BlockShelfWarped(int meta) {
-        super(meta);
     }
 
     @Override

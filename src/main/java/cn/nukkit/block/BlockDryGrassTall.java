@@ -4,7 +4,8 @@ import cn.nukkit.Player;
 import cn.nukkit.item.Item;
 
 public class BlockDryGrassTall extends BlockDryGrassShort {
-    public BlockDryGrassTall() {
+    BlockDryGrassTall() {
+
     }
 
     @Override

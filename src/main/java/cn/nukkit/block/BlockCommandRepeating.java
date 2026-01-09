@@ -4,12 +4,8 @@ import cn.nukkit.utils.BlockColor;
 
 public class BlockCommandRepeating extends BlockCommand {
 
-    public BlockCommandRepeating() {
-        this(0);
-    }
+    BlockCommandRepeating() {
 
-    public BlockCommandRepeating(int meta) {
-        super(meta);
     }
 
     @Override

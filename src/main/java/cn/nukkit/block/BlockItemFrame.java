@@ -28,17 +28,13 @@ public class BlockItemFrame extends BlockTransparent implements Faceable {
 
     public static final int[] LEGACY_DIRECTION_BITS_TO_FACING_DIRECTION_BITS = {5, 4, 3, 2}; // 1.12 to 1.13
 
-    public BlockItemFrame() {
-        this(0);
-    }
+    BlockItemFrame() {
 
-    public BlockItemFrame(int meta) {
-        super(meta);
     }
 
     @Override
     public int getId() {
-        return BLOCK_FRAME;
+        return FRAME;
     }
 
     @Override

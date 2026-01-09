@@ -7,7 +7,7 @@ import cn.nukkit.utils.BlockColor;
 
 public class BlockStonecutterLegacy extends BlockSolid {
 
-    public BlockStonecutterLegacy() {
+    BlockStonecutterLegacy() {
 
     }
 

@@ -14,7 +14,7 @@ public class ItemDoorJungle extends Item {
 
     public ItemDoorJungle(Integer meta, int count) {
         super(JUNGLE_DOOR, meta, count, "Jungle Door");
-        this.block = Block.get(BlockID.BLOCK_JUNGLE_DOOR);
+        this.block = Block.get(BlockID.JUNGLE_DOOR);
     }
 
     @Override

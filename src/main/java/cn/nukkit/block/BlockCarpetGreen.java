@@ -4,7 +4,8 @@ import cn.nukkit.utils.BlockColor;
 import cn.nukkit.utils.DyeColor;
 
 public class BlockCarpetGreen extends BlockCarpet {
-    public BlockCarpetGreen() {
+    BlockCarpetGreen() {
+
     }
 
     @Override

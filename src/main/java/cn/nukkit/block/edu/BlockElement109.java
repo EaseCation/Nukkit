@@ -2,7 +2,8 @@ package cn.nukkit.block.edu;
 
 public class BlockElement109 extends BlockElement {
 
-    public BlockElement109() {
+    protected BlockElement109() {
+
     }
 
     @Override

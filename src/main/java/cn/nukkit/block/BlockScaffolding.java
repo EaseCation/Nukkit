@@ -23,12 +23,8 @@ public class BlockScaffolding extends BlockTransparent { // extends BlockFallabl
 
     public static final int UNSTABLE = 7;
 
-    public BlockScaffolding() {
-        this(0);
-    }
+    BlockScaffolding() {
 
-    public BlockScaffolding(int meta) {
-        super(meta);
     }
 
     @Override

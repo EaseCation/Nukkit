@@ -6,12 +6,8 @@ import cn.nukkit.utils.BlockColor;
 
 public class BlockWallSignDarkOak extends BlockWallSign {
 
-    public BlockWallSignDarkOak() {
-        this(0);
-    }
+    BlockWallSignDarkOak() {
 
-    public BlockWallSignDarkOak(int meta) {
-        super(meta);
     }
 
     @Override

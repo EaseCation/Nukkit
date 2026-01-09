@@ -2,8 +2,9 @@ package cn.nukkit.block;
 
 import cn.nukkit.utils.BlockColor;
 
-public class BlockPlanksCherry extends BlockPlanksAbstract {
-    public BlockPlanksCherry() {
+public class BlockPlanksCherry extends BlockPlanks {
+    BlockPlanksCherry() {
+
     }
 
     @Override

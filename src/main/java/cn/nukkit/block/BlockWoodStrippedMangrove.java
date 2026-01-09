@@ -1,12 +1,8 @@
 package cn.nukkit.block;
 
 public class BlockWoodStrippedMangrove extends BlockLogStrippedMangrove {
-    public BlockWoodStrippedMangrove() {
-        this(0);
-    }
+    BlockWoodStrippedMangrove() {
 
-    public BlockWoodStrippedMangrove(int meta) {
-        super(meta);
     }
 
     @Override
@@ -17,5 +13,10 @@ public class BlockWoodStrippedMangrove extends BlockLogStrippedMangrove {
     @Override
     public String getName() {
         return "Stripped Mangrove Wood";
+    }
+
+    @Override
+    public boolean isWood() {
+        return true;
     }
 }

@@ -3,7 +3,8 @@ package cn.nukkit.block;
 import cn.nukkit.utils.BlockColor;
 
 public class BlockNyliumWarped extends BlockNylium {
-    public BlockNyliumWarped() {
+    BlockNyliumWarped() {
+
     }
 
     @Override
@@ -37,6 +38,6 @@ public class BlockNyliumWarped extends BlockNylium {
             return get(WARPED_FUNGUS);
         });
 
-        scatterVegetation(random -> get(BLOCK_NETHER_SPROUTS));
+        scatterVegetation(random -> get(NETHER_SPROUTS));
     }
 }

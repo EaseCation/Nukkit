@@ -10,12 +10,8 @@ import cn.nukkit.utils.BlockColor;
  */
 public class BlockFarmland extends BlockSolid {
 
-    public BlockFarmland() {
-        this(0);
-    }
+    BlockFarmland() {
 
-    public BlockFarmland(int meta) {
-        super(meta);
     }
 
     @Override

@@ -4,12 +4,8 @@ import cn.nukkit.item.Item;
 import cn.nukkit.utils.BlockColor;
 
 public class BlockWallSignPaleOak extends BlockWallSign {
-    public BlockWallSignPaleOak() {
-        this(0);
-    }
+    BlockWallSignPaleOak() {
 
-    public BlockWallSignPaleOak(int meta) {
-        super(meta);
     }
 
     @Override

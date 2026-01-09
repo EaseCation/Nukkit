@@ -1,12 +1,8 @@
 package cn.nukkit.block;
 
 public class BlockCaveVinesBerriesHead extends BlockCaveVinesBerriesBody {
-    public BlockCaveVinesBerriesHead() {
-        this(0);
-    }
+    BlockCaveVinesBerriesHead() {
 
-    public BlockCaveVinesBerriesHead(int meta) {
-        super(meta);
     }
 
     @Override

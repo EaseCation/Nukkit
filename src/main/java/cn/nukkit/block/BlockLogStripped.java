@@ -1,9 +1,6 @@
 package cn.nukkit.block;
 
 public abstract class BlockLogStripped extends BlockRotatedPillar {
-    protected BlockLogStripped(int meta) {
-        super(meta);
-    }
 
     @Override
     public float getHardness() {

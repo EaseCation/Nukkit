@@ -2,46 +2,33 @@ package cn.nukkit.block;
 
 import cn.nukkit.Player;
 import cn.nukkit.item.Item;
-import cn.nukkit.level.Dimension;
 import cn.nukkit.level.particle.DestroyBlockParticle;
 import cn.nukkit.math.BlockFace;
-import cn.nukkit.network.protocol.LevelEventPacket;
 import cn.nukkit.utils.BlockColor;
 
 import java.util.ArrayDeque;
 import java.util.Queue;
-
-import static cn.nukkit.GameVersion.*;
 
 /**
  * author: Angelic47
  * Nukkit Project
  */
 public class BlockSponge extends BlockSolid {
+    public static final int[] SPONGES = {
+            SPONGE,
+            WET_SPONGE,
+    };
 
     public static final int DRY = 0;
     public static final int WET = 1;
-    private static final String[] NAMES = new String[]{
-            "Sponge",
-            "Wet sponge"
-    };
 
-    public BlockSponge() {
-        this(0);
-    }
+    BlockSponge() {
 
-    public BlockSponge(int meta) {
-        super(meta);
     }
 
     @Override
     public int getId() {
         return SPONGE;
-    }
-
-    @Override
-    public boolean isStackedByData() {
-        return !V1_21_30.isAvailable();
     }
 
     @Override
@@ -61,7 +48,7 @@ public class BlockSponge extends BlockSolid {
 
     @Override
     public String getName() {
-        return NAMES[this.getDamage() & 0b1];
+        return "Sponge";
     }
 
     @Override
@@ -71,28 +58,18 @@ public class BlockSponge extends BlockSolid {
 
     @Override
     public boolean place(Item item, Block block, Block target, BlockFace face, float fx, float fy, float fz, Player player) {
-        if (this.getDamage() == WET && level.getDimension() == Dimension.NETHER) {
-            level.setBlock(block, Block.get(BlockID.SPONGE, DRY), true, true);
-
-            this.getLevel().addLevelEvent(block.add(0.5, 0.875, 0.5), LevelEventPacket.EVENT_SOUND_EXPLODE);
-            return true;
-        }
-
-        if (this.getDamage() == DRY && block instanceof BlockWater && performWaterAbsorb(block)) { //TODO: addToRandomTickingQueue(1)
-            level.setBlock(block, Block.get(BlockID.SPONGE, WET), true, true);
+        if (block.isWater() && performWaterAbsorb(block)) { //TODO: addToRandomTickingQueue(1)
+            level.setBlock(block, Block.get(WET_SPONGE), true, true);
 
             level.addParticle(new DestroyBlockParticle(this.add(0.5, 1, 0.5), Block.get(BlockID.WATER)));
             return true;
         }
 
-        return super.place(item, block, target, face, fx, fy, fz, player);
+        return level.setBlock(this, this, true, true);
     }
 
     @Override
     public float getFurnaceXpMultiplier() {
-        if (getDamage() != DRY) {
-            return 0;
-        }
         return 0.15f;
     }
 

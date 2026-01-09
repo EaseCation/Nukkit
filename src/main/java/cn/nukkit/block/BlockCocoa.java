@@ -4,7 +4,6 @@ import cn.nukkit.Player;
 import cn.nukkit.Server;
 import cn.nukkit.event.block.BlockGrowEvent;
 import cn.nukkit.item.Item;
-import cn.nukkit.item.ItemDye;
 import cn.nukkit.level.Level;
 import cn.nukkit.level.particle.BoneMealParticle;
 import cn.nukkit.math.AxisAlignedBB;
@@ -18,6 +17,7 @@ import java.util.concurrent.ThreadLocalRandom;
  * Created by CreeperFace on 27. 10. 2016.
  */
 public class BlockCocoa extends BlockFlowable implements Faceable {
+    public static final int DIRECTION_MASK = 0b11;
 
     protected static final AxisAlignedBB[] EAST = new SimpleAxisAlignedBB[]{new SimpleAxisAlignedBB(0.6875D, 0.4375D, 0.375D, 0.9375D, 0.75D, 0.625D), new SimpleAxisAlignedBB(0.5625D, 0.3125D, 0.3125D, 0.9375D, 0.75D, 0.6875D), new SimpleAxisAlignedBB(0.5625D, 0.3125D, 0.3125D, 0.9375D, 0.75D, 0.6875D)};
     protected static final AxisAlignedBB[] WEST = new SimpleAxisAlignedBB[]{new SimpleAxisAlignedBB(0.0625D, 0.4375D, 0.375D, 0.3125D, 0.75D, 0.625D), new SimpleAxisAlignedBB(0.0625D, 0.3125D, 0.3125D, 0.4375D, 0.75D, 0.6875D), new SimpleAxisAlignedBB(0.0625D, 0.3125D, 0.3125D, 0.4375D, 0.75D, 0.6875D)};
@@ -25,25 +25,8 @@ public class BlockCocoa extends BlockFlowable implements Faceable {
     protected static final AxisAlignedBB[] SOUTH = new SimpleAxisAlignedBB[]{new SimpleAxisAlignedBB(0.375D, 0.4375D, 0.6875D, 0.625D, 0.75D, 0.9375D), new SimpleAxisAlignedBB(0.3125D, 0.3125D, 0.5625D, 0.6875D, 0.75D, 0.9375D), new SimpleAxisAlignedBB(0.3125D, 0.3125D, 0.5625D, 0.6875D, 0.75D, 0.9375D)};
     protected static final AxisAlignedBB[] ALL = new AxisAlignedBB[12];
 
-    private static final int[] FACES = new int[]{
-            0,
-            0,
-            0,
-            2,
-            3,
-            1,
-    };
+    BlockCocoa() {
 
-    private static final int[] FACING = new int[]{
-            3, 4, 2, 5,
-    };
-
-    public BlockCocoa() {
-        this(0);
-    }
-
-    public BlockCocoa(int meta) {
-        super(meta);
     }
 
     @Override
@@ -136,7 +119,7 @@ public class BlockCocoa extends BlockFlowable implements Faceable {
         }
 
         if (canBeSupportedBy(target)) {
-            this.setDamage(FACES[face.getIndex()]);
+            this.setDamage(face.getOpposite().getHorizontalIndex());
             return level.setBlock(block, this, true);
         }
         return false;
@@ -145,7 +128,7 @@ public class BlockCocoa extends BlockFlowable implements Faceable {
     @Override
     public int onUpdate(int type) {
         if (type == Level.BLOCK_UPDATE_NORMAL) {
-            Block side = this.getSide(BlockFace.fromIndex(FACING[this.getDamage() & 0x3]));
+            Block side = this.getSide(getBlockFace());
             if (!canBeSupportedBy(side)) {
                 this.getLevel().useBreakOn(this, true);
                 return Level.BLOCK_UPDATE_NORMAL;
@@ -243,7 +226,7 @@ public class BlockCocoa extends BlockFlowable implements Faceable {
 
     @Override
     public BlockFace getBlockFace() {
-        return BlockFace.fromHorizontalIndex(this.getDamage() & 0x07);
+        return BlockFace.fromHorizontalIndex(this.getDamage() & DIRECTION_MASK);
     }
 
     @Override
@@ -253,12 +236,6 @@ public class BlockCocoa extends BlockFlowable implements Faceable {
 
     private boolean canBeSupportedBy(Block block) {
         int id = block.getId();
-        if (id == JUNGLE_LOG) {
-            return true;
-        }
-        if (id == WOOD) {
-            return (block.getDamage() & BlockWoodBark.TYPE_MASK) == BlockWoodBark.JUNGLE;
-        }
-        return false;
+        return id == JUNGLE_LOG || id == JUNGLE_WOOD || id == STRIPPED_JUNGLE_WOOD;
     }
 }

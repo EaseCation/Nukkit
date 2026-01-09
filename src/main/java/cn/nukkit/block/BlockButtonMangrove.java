@@ -1,12 +1,8 @@
 package cn.nukkit.block;
 
 public class BlockButtonMangrove extends BlockButtonWooden {
-    public BlockButtonMangrove() {
-        this(0);
-    }
+    BlockButtonMangrove() {
 
-    public BlockButtonMangrove(int meta) {
-        super(meta);
     }
 
     @Override

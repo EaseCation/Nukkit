@@ -64,16 +64,6 @@ public class EntityAreaEffectCloud extends Entity {
     }
 
     @Override
-    public float getWidth() {
-        return 0.6f;
-    }
-
-    @Override
-    public float getHeight() {
-        return 1.8f;
-    }
-
-    @Override
     protected void initEntity() {
         super.initEntity();
 
@@ -398,6 +388,11 @@ public class EntityAreaEffectCloud extends Entity {
 
     @Override
     public boolean canBeMovedByCurrents() {
+        return false;
+    }
+
+    @Override
+    public boolean doesTriggerPressurePlate() {
         return false;
     }
 

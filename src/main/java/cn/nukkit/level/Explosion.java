@@ -335,7 +335,7 @@ public class Explosion {
                     }
                     ((InventoryHolder) container).getInventory().clearAll();
                 }
-            } else if (id == Block.BLOCK_BREWING_STAND) {
+            } else if (id == Block.BREWING_STAND) {
                 if (blockDrop && (!dropDecay || random.nextFloat() * 100 < yield)) {
                     for (Item drop : block.getDrops(ItemTool.getUniversalTool())) {
                         this.level.dropItem(block.blockCenter(), drop);
@@ -351,7 +351,7 @@ public class Explosion {
                     }
                     ((InventoryHolder) container).getInventory().clearAll();
                 }
-            } else if (id == Block.BLOCK_HOPPER) {
+            } else if (id == Block.HOPPER) {
                 if (blockDrop && (!dropDecay || random.nextFloat() * 100 < yield)) {
                     for (Item drop : block.getDrops(ItemTool.getUniversalTool())) {
                         this.level.dropItem(block.blockCenter(), drop);

@@ -1,16 +1,8 @@
 package cn.nukkit.block;
 
-import cn.nukkit.item.Item;
-
 public class BlockPitcherPlant extends BlockDoublePlant {
-    public static final int UPPER_BLOCK_BIT = 0b1;
+    BlockPitcherPlant() {
 
-    public BlockPitcherPlant() {
-        this(0);
-    }
-
-    public BlockPitcherPlant(int meta) {
-        super(meta);
     }
 
     @Override
@@ -24,27 +16,12 @@ public class BlockPitcherPlant extends BlockDoublePlant {
     }
 
     @Override
-    public Item toItem(boolean addUserData) {
-        return Item.get(getItemId());
+    public boolean canBeActivated() {
+        return false;
     }
 
     @Override
     public int getCompostableChance() {
         return 85;
-    }
-
-    @Override
-    public int getPlantType() {
-        return -1;
-    }
-
-    @Override
-    protected int getPlantTypeMask() {
-        return 0;
-    }
-
-    @Override
-    protected int getUpperBlockBitMask() {
-        return UPPER_BLOCK_BIT;
     }
 }

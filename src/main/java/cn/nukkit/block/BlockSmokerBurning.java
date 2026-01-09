@@ -3,15 +3,12 @@ package cn.nukkit.block;
 import cn.nukkit.blockentity.BlockEntity;
 import cn.nukkit.blockentity.BlockEntityType;
 import cn.nukkit.item.Item;
+import cn.nukkit.item.ItemBlockID;
 
 public class BlockSmokerBurning extends BlockFurnaceBurning {
 
-    public BlockSmokerBurning() {
-        this(0);
-    }
+    BlockSmokerBurning() {
 
-    public BlockSmokerBurning(int meta) {
-        super(meta);
     }
 
     @Override
@@ -31,7 +28,7 @@ public class BlockSmokerBurning extends BlockFurnaceBurning {
 
     @Override
     public Item toItem(boolean addUserData) {
-        Item item = Item.get(getItemId(SMOKER));
+        Item item = Item.get(ItemBlockID.SMOKER);
         if (addUserData) {
             BlockEntity blockEntity = getBlockEntity();
             if (blockEntity != null) {

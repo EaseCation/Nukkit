@@ -6,12 +6,8 @@ import cn.nukkit.item.ItemTool;
 import cn.nukkit.utils.BlockColor;
 
 public class BlockWallResinBrick extends BlockWall {
-    public BlockWallResinBrick() {
-        this(0);
-    }
+    BlockWallResinBrick() {
 
-    public BlockWallResinBrick(int meta) {
-        super(meta);
     }
 
     @Override

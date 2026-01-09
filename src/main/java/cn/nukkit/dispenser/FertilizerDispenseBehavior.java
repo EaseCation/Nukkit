@@ -11,7 +11,7 @@ public class FertilizerDispenseBehavior extends DefaultDispenseBehavior {
         Block target = block.getSide(face);
 
         if (item.isFertilizer()) {
-            if (!target.isFertilizable() || !target.onActivate(item, face, null)) {
+            if (!target.isFertilizable() || !target.canBeActivated() || !target.onActivate(item, face, null)) {
                 item.count++;
             }
             return null;

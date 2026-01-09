@@ -5,12 +5,13 @@ import cn.nukkit.utils.BlockColor;
 
 public class BlockCamera extends BlockSolid {
 
-    public BlockCamera() {
+    BlockCamera() {
+
     }
 
     @Override
     public int getId() {
-        return BLOCK_CAMERA;
+        return CAMERA;
     }
 
     @Override

@@ -14,12 +14,8 @@ import java.util.concurrent.ThreadLocalRandom;
 
 public class BlockChorusPlant extends BlockFlowable {
 
-    public BlockChorusPlant() {
-        this(0);
-    }
+    BlockChorusPlant() {
 
-    public BlockChorusPlant(int meta) {
-        super(0);
     }
 
     @Override

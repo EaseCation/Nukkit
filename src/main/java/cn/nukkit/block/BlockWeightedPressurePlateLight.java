@@ -11,14 +11,8 @@ import static cn.nukkit.SharedConstants.*;
  */
 public class BlockWeightedPressurePlateLight extends BlockPressurePlateBase {
 
-    public BlockWeightedPressurePlateLight() {
-        this(0);
-    }
+    BlockWeightedPressurePlateLight() {
 
-    public BlockWeightedPressurePlateLight(int meta) {
-        super(meta);
-        this.onPitch = 0.90000004f;
-        this.offPitch = 0.75f;
     }
 
     @Override

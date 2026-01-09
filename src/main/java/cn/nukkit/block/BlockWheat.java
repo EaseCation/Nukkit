@@ -11,12 +11,8 @@ import java.util.concurrent.ThreadLocalRandom;
  */
 public class BlockWheat extends BlockCrops {
 
-    public BlockWheat() {
-        this(0);
-    }
+    BlockWheat() {
 
-    public BlockWheat(int meta) {
-        super(meta);
     }
 
     @Override
@@ -26,7 +22,7 @@ public class BlockWheat extends BlockCrops {
 
     @Override
     public int getId() {
-        return BLOCK_WHEAT;
+        return WHEAT;
     }
 
     @Override

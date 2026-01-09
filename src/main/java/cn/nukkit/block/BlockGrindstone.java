@@ -22,12 +22,8 @@ public class BlockGrindstone extends BlockTransparent implements Faceable {
     public static final int ATTACHMENT_SIDE = 0b10;
     public static final int ATTACHMENT_MULTIPLE = 0b11;
 
-    public BlockGrindstone() {
-        this(0);
-    }
+    BlockGrindstone() {
 
-    public BlockGrindstone(int meta) {
-        super(meta);
     }
 
     @Override

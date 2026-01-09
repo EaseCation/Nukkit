@@ -3,12 +3,8 @@ package cn.nukkit.block;
 import cn.nukkit.utils.BlockColor;
 
 public class BlockCandleRed extends BlockCandle {
-    public BlockCandleRed() {
-        this(0);
-    }
+    BlockCandleRed() {
 
-    public BlockCandleRed(int meta) {
-        super(meta);
     }
 
     @Override

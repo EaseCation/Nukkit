@@ -1,12 +1,8 @@
 package cn.nukkit.block;
 
 public class BlockTorchCopper extends BlockTorch {
-    public BlockTorchCopper() {
-        this(0);
-    }
+    BlockTorchCopper() {
 
-    public BlockTorchCopper(int meta) {
-        super(meta);
     }
 
     @Override

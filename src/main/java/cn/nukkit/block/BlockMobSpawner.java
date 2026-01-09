@@ -19,7 +19,8 @@ import java.util.concurrent.ThreadLocalRandom;
  */
 public class BlockMobSpawner extends BlockSolid {
 
-    public BlockMobSpawner() {
+    BlockMobSpawner() {
+
     }
 
     @Override
@@ -116,8 +117,12 @@ public class BlockMobSpawner extends BlockSolid {
             }
         }
 
-        if (blockEntity.setEntityType(((ItemSpawnEgg) item).getEntityId()) && player != null && !player.isCreative()) {
-            item.count--;
+        if (blockEntity.setEntityType(((ItemSpawnEgg) item).getEntityId())) {
+            blockEntity.spawnToAll();
+
+            if (player != null && player.isSurvivalLike()) {
+                item.count--;
+            }
         }
         return true;
     }

@@ -9,6 +9,8 @@ public class BlockEntityCrafter extends BlockEntityAbstractContainer {
     private CrafterInventory inventory;
     private int disabledSlots;
 
+    private int craftingTicksRemaining;
+
     public BlockEntityCrafter(FullChunk chunk, CompoundTag nbt) {
         super(chunk, nbt);
     }
@@ -40,12 +42,16 @@ public class BlockEntityCrafter extends BlockEntityAbstractContainer {
     }
 
     @Override
-    public CompoundTag getSpawnCompound() {
-        CompoundTag nbt = getDefaultCompound(this, CRAFTER);
+    public CompoundTag getSpawnCompound(boolean chunkData) {
+        CompoundTag nbt = chunkData ? getDefaultCompound(this, CRAFTER) : new CompoundTag();
+
+        nbt.putShort("disabled_slots", disabledSlots);
 
         if (hasName()) {
             nbt.putString("CustomName", getName());
         }
+
+        nbt.putInt("crafting_ticks_remaining", craftingTicksRemaining);
 
         return nbt;
     }
@@ -58,5 +64,21 @@ public class BlockEntityCrafter extends BlockEntityAbstractContainer {
     @Override
     public CrafterInventory getInventory() {
         return inventory;
+    }
+
+    public int getDisabledSlots() {
+        return disabledSlots;
+    }
+
+    public void setDisabledSlots(int slotFlags) {
+        disabledSlots = slotFlags;
+    }
+
+    public int getCraftingTicksRemaining() {
+        return craftingTicksRemaining;
+    }
+
+    public void setCraftingTicksRemaining(int ticks) {
+        craftingTicksRemaining = ticks;
     }
 }

@@ -1,12 +1,8 @@
 package cn.nukkit.block;
 
 public class BlockButtonWarped extends BlockButtonWooden {
-    public BlockButtonWarped() {
-        this(0);
-    }
+    BlockButtonWarped() {
 
-    public BlockButtonWarped(int meta) {
-        super(meta);
     }
 
     @Override

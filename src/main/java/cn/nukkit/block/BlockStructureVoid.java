@@ -9,12 +9,8 @@ public class BlockStructureVoid extends BlockTransparent {
     public static final int TYPE_VOID = 0;
     public static final int TYPE_AIR = 1;
 
-    public BlockStructureVoid() {
-        this(0);
-    }
+    BlockStructureVoid() {
 
-    public BlockStructureVoid(int meta) {
-        super(meta & 0x1);
     }
 
     @Override

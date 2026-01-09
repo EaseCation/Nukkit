@@ -15,12 +15,8 @@ import java.util.concurrent.ThreadLocalRandom;
  */
 public class BlockNetherWart extends BlockFlowable {
 
-    public BlockNetherWart() {
-        this(0);
-    }
+    BlockNetherWart() {
 
-    public BlockNetherWart(int meta) {
-        super(meta);
     }
 
     @Override
@@ -77,7 +73,7 @@ public class BlockNetherWart extends BlockFlowable {
 
     @Override
     public int getId() {
-        return BLOCK_NETHER_WART;
+        return NETHER_WART;
     }
 
     @Override

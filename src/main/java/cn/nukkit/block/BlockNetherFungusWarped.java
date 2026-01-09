@@ -1,11 +1,12 @@
 package cn.nukkit.block;
 
 import cn.nukkit.level.generator.object.tree.ObjectWarpedTree;
-import cn.nukkit.math.NukkitRandom;
+import cn.nukkit.math.LocalRandom;
 import cn.nukkit.utils.BlockColor;
 
 public class BlockNetherFungusWarped extends BlockNetherFungus {
-    public BlockNetherFungusWarped() {
+    BlockNetherFungusWarped() {
+
     }
 
     @Override
@@ -29,7 +30,7 @@ public class BlockNetherFungusWarped extends BlockNetherFungus {
             return false;
         }
 
-        new ObjectWarpedTree().placeObject(this.level, this.getFloorX(), this.getFloorY(), this.getFloorZ(), NukkitRandom.current());
+        new ObjectWarpedTree().placeObject(this.level, this.getFloorX(), this.getFloorY(), this.getFloorZ(), new LocalRandom());
         return true;
     }
 }

@@ -6,13 +6,13 @@ import cn.nukkit.blockentity.BlockEntity;
 import cn.nukkit.blockentity.BlockEntitySkull;
 import cn.nukkit.blockentity.BlockEntityType;
 import cn.nukkit.item.Item;
-import cn.nukkit.item.ItemSkull;
 import cn.nukkit.math.AxisAlignedBB;
 import cn.nukkit.math.BlockFace;
 import cn.nukkit.math.Mth;
 import cn.nukkit.math.SimpleAxisAlignedBB;
 import cn.nukkit.nbt.tag.CompoundTag;
 import cn.nukkit.nbt.tag.Tag;
+import cn.nukkit.network.protocol.LevelSoundEventPacket;
 import cn.nukkit.utils.BlockColor;
 import cn.nukkit.utils.Faceable;
 
@@ -23,20 +23,16 @@ import static cn.nukkit.GameVersion.*;
 /**
  * author: Justin
  */
-public class BlockSkull extends BlockFlowable implements Faceable {
-
-    public BlockSkull() {
-        this(0);
-    }
-
-    public BlockSkull(int meta) {
-        super(meta);
-    }
-
-    @Override
-    public int getId() {
-        return BLOCK_SKULL;
-    }
+public abstract class BlockSkull extends BlockFlowable implements Faceable {
+    public static final int[] SKULLS = {
+            SKELETON_SKULL,
+            WITHER_SKELETON_SKULL,
+            ZOMBIE_HEAD,
+            PLAYER_HEAD,
+            CREEPER_HEAD,
+            DRAGON_HEAD,
+            PIGLIN_HEAD,
+    };
 
     @Override
     public int getBlockDefaultMeta() {
@@ -56,21 +52,6 @@ public class BlockSkull extends BlockFlowable implements Faceable {
     @Override
     public float getResistance() {
         return 5;
-    }
-
-    @Override
-    public String getName() {
-        /*
-        int itemMeta = 0;
-
-        if (this.level != null) {
-            BlockEntity blockEntity = getLevel().getBlockEntity(this);
-            if (blockEntity != null) itemMeta = blockEntity.namedTag.getByte("SkullType");
-        }
-
-        return ItemSkull.getItemSkullName(itemMeta);
-        */
-        return V1_21_40.isAvailable() ? "Skeleton Skull" : "Skull";
     }
 
     @Override
@@ -116,16 +97,7 @@ public class BlockSkull extends BlockFlowable implements Faceable {
 
     @Override
     public Item toItem(boolean addUserData) {
-        if (V1_21_40.isAvailable()) {
-            return Item.get(getItemId());
-        }
-
-        BlockEntity blockEntity = getLevel().getBlockEntity(this);
-        int itemMeta = ItemSkull.HEAD_SKELETON;
-        if (blockEntity != null) {
-            itemMeta = blockEntity.namedTag.getByte("SkullType");
-        }
-        return Item.get(Item.SKULL, itemMeta);
+        return Item.get(getItemId());
     }
 
     @Override
@@ -167,6 +139,11 @@ public class BlockSkull extends BlockFlowable implements Faceable {
     @Override
     public boolean canContainWater() {
         return true;
+    }
+
+    @Override
+    public int getEquippingSound() {
+        return LevelSoundEventPacket.SOUND_ARMOR_EQUIP_GENERIC;
     }
 
     @Override

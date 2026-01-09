@@ -14,7 +14,7 @@ public class ItemDoorBirch extends Item {
 
     public ItemDoorBirch(Integer meta, int count) {
         super(BIRCH_DOOR, meta, count, "Birch Door");
-        this.block = Block.get(BlockID.BLOCK_BIRCH_DOOR);
+        this.block = Block.get(BlockID.BIRCH_DOOR);
     }
 
     @Override

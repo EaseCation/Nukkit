@@ -17,12 +17,8 @@ public class BlockSeagrass extends BlockTransparent {
     public static final int DOUBLE_SEAGRASS_TOP = 1;
     public static final int DOUBLE_SEAGRASS_BOTTOM = 2;
 
-    public BlockSeagrass() {
-        this(0);
-    }
+    BlockSeagrass() {
 
-    public BlockSeagrass(int meta) {
-        super(meta & 0x3);
     }
 
     @Override
@@ -269,7 +265,7 @@ public class BlockSeagrass extends BlockTransparent {
             if (num != 0) {
                 if (--num != 0) {
                     if (num == 1) {
-                        placeBlock = get(CORAL_FAN, random.nextInt(5));
+                        placeBlock = get(BlockCoralFan.CORAL_FANS[random.nextInt(5)]);
                     } else {
                         placeBlock = get(SEAGRASS);
                     }

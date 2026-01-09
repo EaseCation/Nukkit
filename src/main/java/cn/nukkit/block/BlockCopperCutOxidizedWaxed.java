@@ -1,7 +1,8 @@
 package cn.nukkit.block;
 
 public class BlockCopperCutOxidizedWaxed extends BlockCopperOxidizedWaxed {
-    public BlockCopperCutOxidizedWaxed() {
+    BlockCopperCutOxidizedWaxed() {
+
     }
 
     @Override

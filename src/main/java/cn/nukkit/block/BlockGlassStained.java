@@ -3,39 +3,32 @@ package cn.nukkit.block;
 import cn.nukkit.utils.BlockColor;
 import cn.nukkit.utils.DyeColor;
 
-import static cn.nukkit.GameVersion.*;
-
 /**
  * Created by CreeperFace on 7.8.2017.
  */
-public class BlockGlassStained extends BlockGlass {
-
-    public BlockGlassStained() {
-        this(0);
-    }
-
-    public BlockGlassStained(int meta) {
-        super(meta);
-    }
-
-    @Override
-    public int getId() {
-        return STAINED_GLASS;
-    }
-
-    @Override
-    public boolean isStackedByData() {
-        return !V1_20_30.isAvailable();
-    }
-
-    @Override
-    public String getName() {
-        return getDyeColor().getName() + " Stained Glass";
-    }
+public abstract class BlockGlassStained extends BlockGlass {
+    public static final int[] STAINED_GLASSES = {
+            WHITE_STAINED_GLASS,
+            ORANGE_STAINED_GLASS,
+            MAGENTA_STAINED_GLASS,
+            LIGHT_BLUE_STAINED_GLASS,
+            YELLOW_STAINED_GLASS,
+            LIME_STAINED_GLASS,
+            PINK_STAINED_GLASS,
+            GRAY_STAINED_GLASS,
+            LIGHT_GRAY_STAINED_GLASS,
+            CYAN_STAINED_GLASS,
+            PURPLE_STAINED_GLASS,
+            BLUE_STAINED_GLASS,
+            BROWN_STAINED_GLASS,
+            GREEN_STAINED_GLASS,
+            RED_STAINED_GLASS,
+            BLACK_STAINED_GLASS,
+    };
 
     @Override
     public BlockColor getColor() {
-        return DyeColor.getByWoolData(getDamage()).getColor();
+        return getDyeColor().getColor();
     }
 
     @Override
@@ -43,7 +36,10 @@ public class BlockGlassStained extends BlockGlass {
         return 0;
     }
 
-    public DyeColor getDyeColor() {
-        return DyeColor.getByWoolData(getDamage());
+    @Override
+    public boolean isStainedGlass() {
+        return true;
     }
+
+    public abstract DyeColor getDyeColor();
 }

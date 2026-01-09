@@ -15,10 +15,6 @@ public abstract class BlockStem extends BlockCrops implements Faceable {
     public static final int GROWTH_BITS = 3;
     public static final int FACING_DIRECTION_MASK = 0b111000;
 
-    protected BlockStem(int meta) {
-        super(meta);
-    }
-
     @Override
     public int getBlockDefaultMeta() {
         return 3;

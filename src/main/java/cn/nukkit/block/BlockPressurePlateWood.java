@@ -11,14 +11,8 @@ import cn.nukkit.utils.BlockColor;
  */
 public class BlockPressurePlateWood extends BlockPressurePlateBase {
 
-    public BlockPressurePlateWood(int meta) {
-        super(meta);
-        this.onPitch = 0.8f;
-        this.offPitch = 0.7f;
-    }
+    BlockPressurePlateWood() {
 
-    public BlockPressurePlateWood() {
-        this(0);
     }
 
     @Override

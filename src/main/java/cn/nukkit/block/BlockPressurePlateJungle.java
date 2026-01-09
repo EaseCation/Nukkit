@@ -4,12 +4,8 @@ import cn.nukkit.utils.BlockColor;
 
 public class BlockPressurePlateJungle extends BlockPressurePlateWood {
 
-    public BlockPressurePlateJungle() {
-        this(0);
-    }
+    BlockPressurePlateJungle() {
 
-    public BlockPressurePlateJungle(int meta) {
-        super(meta);
     }
 
     @Override

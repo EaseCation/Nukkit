@@ -1,12 +1,8 @@
 package cn.nukkit.block;
 
 public class BlockBasaltPolished extends BlockBasalt {
-    public BlockBasaltPolished() {
-        this(0);
-    }
+    BlockBasaltPolished() {
 
-    public BlockBasaltPolished(int meta) {
-        super(meta);
     }
 
     @Override

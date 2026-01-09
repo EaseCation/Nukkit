@@ -6,7 +6,8 @@ import cn.nukkit.level.particle.BoneMealParticle;
 import cn.nukkit.utils.BlockColor;
 
 public class BlockDryGrassShort extends BlockBush {
-    public BlockDryGrassShort() {
+    BlockDryGrassShort() {
+
     }
 
     @Override

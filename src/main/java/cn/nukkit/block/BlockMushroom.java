@@ -2,11 +2,12 @@ package cn.nukkit.block;
 
 import cn.nukkit.Player;
 import cn.nukkit.item.Item;
+import cn.nukkit.item.ItemBlockID;
 import cn.nukkit.level.Level;
 import cn.nukkit.level.generator.object.mushroom.BigMushroom;
 import cn.nukkit.level.particle.BoneMealParticle;
 import cn.nukkit.math.BlockFace;
-import cn.nukkit.math.NukkitRandom;
+import cn.nukkit.math.LocalRandom;
 import cn.nukkit.network.protocol.LevelSoundEventPacket;
 import cn.nukkit.utils.BlockColor;
 
@@ -14,12 +15,8 @@ import java.util.concurrent.ThreadLocalRandom;
 
 public abstract class BlockMushroom extends BlockFlowable {
 
-    public BlockMushroom() {
-        this(0);
-    }
+    BlockMushroom() {
 
-    public BlockMushroom(int meta) {
-        super(0);
     }
 
     @Override
@@ -67,7 +64,7 @@ public abstract class BlockMushroom extends BlockFlowable {
             return true;
         }
 
-        if (item.is(getItemId(SNOW_LAYER))) {
+        if (item.is(ItemBlockID.SNOW_LAYER)) {
             level.setExtraBlock(this, this, true, false);
             level.setBlock(this, get(SNOW_LAYER, BlockSnowLayer.COVERED_BIT), true);
 
@@ -92,7 +89,7 @@ public abstract class BlockMushroom extends BlockFlowable {
 
         BigMushroom generator = new BigMushroom(getType());
 
-        if (generator.generate(this.level, NukkitRandom.current(), this.asBlockVector3())) {
+        if (generator.generate(this.level, new LocalRandom(), this.asBlockVector3())) {
             return true;
         } else {
             this.level.setBlock(this, this, true, false);

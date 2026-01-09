@@ -23,12 +23,8 @@ public abstract class BlockPressurePlateBase extends BlockTransparent {
     protected float onPitch;
     protected float offPitch;
 
-    protected BlockPressurePlateBase() {
-        this(0);
-    }
+    BlockPressurePlateBase() {
 
-    protected BlockPressurePlateBase(int meta) {
-        super(meta);
     }
 
     @Override

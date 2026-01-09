@@ -7,7 +7,7 @@ import cn.nukkit.level.generator.FlatGeneratorOptions.BlockLayer;
 import cn.nukkit.level.generator.FlatGeneratorOptions.WorldVersion;
 import cn.nukkit.level.generator.populator.impl.PopulatorBonusChest;
 import cn.nukkit.level.generator.populator.type.Populator;
-import cn.nukkit.math.NukkitRandom;
+import cn.nukkit.math.RandomSource;
 import cn.nukkit.math.Vector3;
 import it.unimi.dsi.fastutil.objects.Object2ObjectOpenHashMap;
 
@@ -20,7 +20,7 @@ import java.util.Map;
 public class Flat implements Generator {
     private final Map<String, Object> options;
     private ChunkManager level;
-    private NukkitRandom random;
+    private RandomSource random;
     private GeneratorOptions generatorOptions;
     private FlatGeneratorOptions flatOptions;
 
@@ -53,7 +53,7 @@ public class Flat implements Generator {
     }
 
     @Override
-    public void init(ChunkManager level, NukkitRandom random, GeneratorOptions generatorOptions) {
+    public void init(ChunkManager level, RandomSource random, GeneratorOptions generatorOptions) {
         this.level = level;
         this.random = random;
         this.generatorOptions = generatorOptions;

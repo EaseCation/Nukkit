@@ -33,12 +33,8 @@ public class BlockBell extends BlockTransparent implements Faceable {
     public static final int ATTACHMENT_SIDE = 0b10;
     public static final int ATTACHMENT_MULTIPLE = 0b11;
 
-    public BlockBell() {
-        this(0);
-    }
+    BlockBell() {
 
-    public BlockBell(int meta) {
-        super(meta);
     }
 
     @Override

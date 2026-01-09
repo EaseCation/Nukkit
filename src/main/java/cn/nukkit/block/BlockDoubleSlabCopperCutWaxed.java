@@ -2,17 +2,14 @@ package cn.nukkit.block;
 
 import cn.nukkit.Player;
 import cn.nukkit.item.Item;
+import cn.nukkit.item.ItemBlockID;
 import cn.nukkit.math.BlockFace;
 import cn.nukkit.network.protocol.LevelEventPacket;
 import cn.nukkit.network.protocol.LevelSoundEventPacket;
 
 public class BlockDoubleSlabCopperCutWaxed extends BlockDoubleSlabCopperCut {
-    public BlockDoubleSlabCopperCutWaxed() {
-        this(0);
-    }
+    BlockDoubleSlabCopperCutWaxed() {
 
-    public BlockDoubleSlabCopperCutWaxed(int meta) {
-        super(meta);
     }
 
     @Override
@@ -53,8 +50,8 @@ public class BlockDoubleSlabCopperCutWaxed extends BlockDoubleSlabCopperCut {
     }
 
     @Override
-    protected int getSlabBlockId() {
-        return WAXED_CUT_COPPER_SLAB;
+    public Item toItem(boolean addUserData) {
+        return Item.get(ItemBlockID.WAXED_CUT_COPPER_SLAB);
     }
 
     @Override

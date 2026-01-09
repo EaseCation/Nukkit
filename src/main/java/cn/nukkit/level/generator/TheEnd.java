@@ -13,7 +13,7 @@ import cn.nukkit.level.generator.populator.impl.*;
 import cn.nukkit.level.generator.populator.impl.PopulatorSpike.EndSpike;
 import cn.nukkit.level.generator.populator.type.Populator;
 import cn.nukkit.math.Mth;
-import cn.nukkit.math.NukkitRandom;
+import cn.nukkit.math.RandomSource;
 import cn.nukkit.math.Vector3;
 import it.unimi.dsi.fastutil.objects.Object2ObjectOpenHashMap;
 
@@ -24,7 +24,7 @@ import java.util.Map;
 public class TheEnd implements Generator {
     private final Map<String, Object> options;
     private ChunkManager level;
-    private NukkitRandom random;
+    private RandomSource random;
     private final List<Populator> populators = new ArrayList<>();
     private NoiseGeneratorOctavesF lperlinNoise1;
     private NoiseGeneratorOctavesF lperlinNoise2;
@@ -71,7 +71,7 @@ public class TheEnd implements Generator {
     }
 
     @Override
-    public void init(ChunkManager level, NukkitRandom random, GeneratorOptions generatorOptions) {
+    public void init(ChunkManager level, RandomSource random, GeneratorOptions generatorOptions) {
         this.level = level;
         this.random = random;
         this.random.setSeed(level.getSeed());

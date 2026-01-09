@@ -14,7 +14,8 @@ import java.util.concurrent.ThreadLocalRandom;
 
 public class BlockChemicalHeat extends BlockTransparent {
 
-    public BlockChemicalHeat() {
+    protected BlockChemicalHeat() {
+
     }
 
     @Override

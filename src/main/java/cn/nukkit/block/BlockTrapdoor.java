@@ -21,12 +21,8 @@ public class BlockTrapdoor extends BlockTransparent implements Faceable {
     public static final int TRAPDOOR_TOP_BIT = 0x04;
     public static final int TRAPDOOR_OPEN_BIT = 0x08;
 
-    public BlockTrapdoor() {
-        this(0);
-    }
+    BlockTrapdoor() {
 
-    public BlockTrapdoor(int meta) {
-        super(meta);
     }
 
     @Override

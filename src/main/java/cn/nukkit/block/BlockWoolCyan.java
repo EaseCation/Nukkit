@@ -1,10 +1,10 @@
 package cn.nukkit.block;
 
-import cn.nukkit.utils.BlockColor;
 import cn.nukkit.utils.DyeColor;
 
 public class BlockWoolCyan extends BlockWool {
-    public BlockWoolCyan() {
+    BlockWoolCyan() {
+
     }
 
     @Override
@@ -15,11 +15,6 @@ public class BlockWoolCyan extends BlockWool {
     @Override
     public int getId() {
         return CYAN_WOOL;
-    }
-
-    @Override
-    public BlockColor getColor() {
-        return DyeColor.CYAN.getColor();
     }
 
     @Override

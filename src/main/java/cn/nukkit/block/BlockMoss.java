@@ -10,7 +10,8 @@ import java.util.Random;
 import java.util.concurrent.ThreadLocalRandom;
 
 public class BlockMoss extends BlockSolid {
-    public BlockMoss() {
+    BlockMoss() {
+
     }
 
     @Override
@@ -113,9 +114,9 @@ public class BlockMoss extends BlockSolid {
 
     private static boolean canReplace(int id) {
         switch (id) {
-            case STONE:
             case GRASS_BLOCK:
             case DIRT:
+            case COARSE_DIRT:
             case MYCELIUM:
             case PODZOL:
             case DIRT_WITH_ROOTS:
@@ -125,7 +126,8 @@ public class BlockMoss extends BlockSolid {
             case PALE_MOSS_BLOCK:
                 return true;
         }
-        return false;
+        Block ub = getUnsafe(id);
+        return ub.isStone();
     }
 
     protected void placeVegetation(int x, int y, int z, Random random) {
@@ -138,15 +140,15 @@ public class BlockMoss extends BlockSolid {
             block = Block.get(AZALEA);
         } else if (rand < 21) {
             if (level.getBlock(x, y + 1, z).isAir()) {
-                block = Block.get(DOUBLE_PLANT, BlockDoublePlant.TYPE_TALL_GRASS);
-                blockAbove = Block.get(DOUBLE_PLANT, BlockDoublePlant.TYPE_TALL_GRASS | BlockDoublePlant.TOP_HALF_BITMASK);
+                block = Block.get(TALL_GRASS);
+                blockAbove = Block.get(TALL_GRASS, BlockDoublePlant.UPPER_BLOCK_BIT);
             } else {
-                block = Block.get(SHORT_GRASS, BlockTallGrass.TYPE_GRASS);
+                block = Block.get(SHORT_GRASS);
             }
         } else if (rand < 46) {
             block = Block.get(MOSS_CARPET);
         } else {
-            block = Block.get(SHORT_GRASS, BlockTallGrass.TYPE_GRASS);
+            block = Block.get(SHORT_GRASS);
         }
         if (blockAbove != null) {
             level.setBlock(x, y + 1, z, blockAbove, true, false);

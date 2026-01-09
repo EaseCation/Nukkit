@@ -1,15 +1,13 @@
 package cn.nukkit.block;
 
+import cn.nukkit.Player;
 import cn.nukkit.item.Item;
 
 public abstract class BlockDoubleSlab extends BlockSolid {
 
+    @Deprecated
     public static final int TYPE_MASK = 0b111;
-    public static final int TOP_SLOT_BIT = 0b1000;
-
-    protected BlockDoubleSlab(int meta) {
-        super(meta);
-    }
+    public static final int TOP_SLOT_BIT = 0b1;
 
     @Override
     public boolean isSlab() {
@@ -22,13 +20,9 @@ public abstract class BlockDoubleSlab extends BlockSolid {
     }
 
     @Override
-    public Item toItem(boolean addUserData) {
-        return Item.get(getItemId(getSlabBlockId()), getSlabType());
+    public Item[] getDrops(Item item, Player player) {
+        Item drop = toItem(true);
+        drop.setCount(2);
+        return new Item[]{drop};
     }
-
-    public int getSlabType() {
-        return getDamage() & TYPE_MASK;
-    }
-
-    protected abstract int getSlabBlockId();
 }

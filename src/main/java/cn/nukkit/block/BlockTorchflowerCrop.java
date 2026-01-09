@@ -2,17 +2,14 @@ package cn.nukkit.block;
 
 import cn.nukkit.Player;
 import cn.nukkit.item.Item;
+import cn.nukkit.item.ItemBlockID;
 import cn.nukkit.level.Level;
 
 import java.util.concurrent.ThreadLocalRandom;
 
 public class BlockTorchflowerCrop extends BlockCrops {
-    public BlockTorchflowerCrop() {
-        this(0);
-    }
+    BlockTorchflowerCrop() {
 
-    public BlockTorchflowerCrop(int meta) {
-        super(meta);
     }
 
     @Override
@@ -33,7 +30,7 @@ public class BlockTorchflowerCrop extends BlockCrops {
     @Override
     public Item[] getDrops(Item item, Player player) {
         return new Item[]{
-                Item.get(getDamage() == 7 ? getItemId(TORCHFLOWER) : Item.TORCHFLOWER_SEEDS),
+                Item.get(getDamage() == 7 ? ItemBlockID.TORCHFLOWER : Item.TORCHFLOWER_SEEDS),
         };
     }
 

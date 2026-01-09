@@ -13,12 +13,8 @@ import static cn.nukkit.GameVersion.*;
  */
 public class BlockPistonHead extends BlockTransparent implements Faceable {
 
-    public BlockPistonHead() {
-        this(0);
-    }
+    BlockPistonHead() {
 
-    public BlockPistonHead(int meta) {
-        super(meta);
     }
 
     @Override

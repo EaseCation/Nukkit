@@ -98,6 +98,7 @@ public class BlockLegacy {
 
     @Nullable
     public BlockInstance setStateNullable(BlockState state, int value, int meta) {
+        //TODO: legacy block state mapping
         BlockStateInstance instance = states[state.id];
         if (instance == null) {
             return null;

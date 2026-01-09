@@ -1,6 +1,8 @@
 package cn.nukkit.inventory.transaction;
 
 import cn.nukkit.Player;
+import cn.nukkit.block.Block;
+import cn.nukkit.block.BlockAnvil;
 import cn.nukkit.event.inventory.GrindstoneEvent;
 import cn.nukkit.event.inventory.RepairItemEvent;
 import cn.nukkit.inventory.AnvilInventory;
@@ -107,10 +109,22 @@ public class RepairItemTransaction extends InventoryTransaction {
                 }
             }
 
+            boolean broken = false;
             if (!this.source.isCreative()) {
                 this.source.setExperience(this.source.getExperience(), this.source.getExperienceLevel() - event.getCost(), true);
+
+                if (ThreadLocalRandom.current().nextInt(25) < 3) {
+                    Block block = source.level.getBlock(anvilInventory.getHolder());
+                    if (block instanceof BlockAnvil anvil) {
+                        int newId = anvil.getDamagedBlockId();
+                        source.level.setBlock(block, Block.get(newId), true);
+                        if (newId == Block.AIR) {
+                            broken = true;
+                        }
+                    }
+                }
             }
-            this.source.level.addLevelEvent(anvilInventory.getHolder(), LevelEventPacket.EVENT_SOUND_ANVIL_USE);
+            this.source.level.addLevelEvent(anvilInventory.getHolder(), broken ? LevelEventPacket.EVENT_SOUND_ANVIL_BREAK : LevelEventPacket.EVENT_SOUND_ANVIL_USE);
             return true;
         } else if (inventory instanceof GrindstoneInventory) {
             GrindstoneInventory grindstoneInventory = (GrindstoneInventory) inventory;

@@ -1,19 +1,6 @@
 package cn.nukkit.block;
 
-import cn.nukkit.Player;
-import cn.nukkit.item.Item;
-import cn.nukkit.math.BlockFace;
-
 public abstract class BlockNetherRoots extends BlockFlower {
-    protected BlockNetherRoots() {
-        super(0);
-    }
-
-    @Override
-    public boolean isStackedByData() {
-        return false;
-    }
-
     @Override
     public boolean canBeReplaced() {
         return true;
@@ -25,7 +12,7 @@ public abstract class BlockNetherRoots extends BlockFlower {
     }
 
     @Override
-    public boolean onActivate(Item item, BlockFace face, float fx, float fy, float fz, Player player) {
+    public boolean isFertilizable() {
         return false;
     }
 

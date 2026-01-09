@@ -14,7 +14,8 @@ import javax.annotation.Nullable;
 
 public class BlockConduit extends BlockTransparent {
 
-    public BlockConduit() {
+    BlockConduit() {
+
     }
 
     @Override

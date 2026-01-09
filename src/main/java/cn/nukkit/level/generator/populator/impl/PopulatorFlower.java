@@ -5,10 +5,9 @@ import cn.nukkit.level.format.FullChunk;
 import cn.nukkit.level.generator.populator.helper.EnsureCover;
 import cn.nukkit.level.generator.populator.helper.EnsureGrassBelow;
 import cn.nukkit.level.generator.populator.type.PopulatorSurfaceBlock;
-import cn.nukkit.math.NukkitRandom;
-
-import java.util.ArrayList;
-import java.util.List;
+import cn.nukkit.math.RandomSource;
+import it.unimi.dsi.fastutil.ints.IntArrayList;
+import it.unimi.dsi.fastutil.ints.IntList;
 
 /**
  * @author Angelic47, Niall Lindsay (Niall7459)
@@ -17,26 +16,26 @@ import java.util.List;
  * </p>
  */
 public class PopulatorFlower extends PopulatorSurfaceBlock {
-    private final List<int[]> flowerTypes = new ArrayList<>();
+    private final IntList flowerTypes = new IntArrayList();
 
-    public void addType(int a, int b) {
-        int[] c = new int[2];
-        c[0] = a;
-        c[1] = b;
-        this.flowerTypes.add(c);
+    public void addType(int blockId) {
+        addType(blockId, false);
     }
 
-    public List<int[]> getTypes() {
-        return this.flowerTypes;
+    public void addType(int blockId, boolean doublePlant) {
+        this.flowerTypes.add(doublePlant ? -blockId : blockId);
     }
 
     @Override
-    protected void placeBlock(int x, int y, int z, int id, int meta, FullChunk chunk, NukkitRandom random) {
+    protected void placeBlock(int x, int y, int z, int id, int meta, FullChunk chunk, RandomSource random) {
         if (!flowerTypes.isEmpty()) {
-            int[] type = flowerTypes.get(random.nextBoundedInt(flowerTypes.size()));
-            chunk.setBlock(0, x, y, z, type[0], type[1]);
-            if (type[0] == DOUBLE_PLANT) {
-                chunk.setBlock(0, x, y + 1, z, type[0], type[1] | BlockDoublePlant.TOP_HALF_BITMASK);
+            int type = flowerTypes.getInt(random.nextBoundedInt(flowerTypes.size()));
+            if (type < 0) {
+                type = -type;
+                chunk.setBlock(0, x, y, z, type);
+                chunk.setBlock(0, x, y + 1, z, type, BlockDoublePlant.UPPER_BLOCK_BIT);
+            } else {
+                chunk.setBlock(0, x, y, z, type);
             }
         }
     }
@@ -47,7 +46,7 @@ public class PopulatorFlower extends PopulatorSurfaceBlock {
     }
 
     @Override
-    protected int getBlockId(int x, int z, NukkitRandom random, FullChunk chunk) {
-        return 0;
+    protected int getBlockId(int x, int z, RandomSource random, FullChunk chunk) {
+        return AIR;
     }
 }

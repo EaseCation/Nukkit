@@ -20,12 +20,8 @@ public class BlockBookshelfChiseled extends BlockSolid implements Faceable {
     public static final int BOOKS_STORED_MASK = 0b11111100;
     public static final int BOOKS_STORED_START = 2;
 
-    public BlockBookshelfChiseled(int meta) {
-        super(meta);
-    }
+    BlockBookshelfChiseled() {
 
-    public BlockBookshelfChiseled() {
-        this(0);
     }
 
     @Override

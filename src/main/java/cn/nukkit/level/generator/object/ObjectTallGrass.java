@@ -1,7 +1,7 @@
 package cn.nukkit.level.generator.object;
 
 import cn.nukkit.block.Block;
-import cn.nukkit.block.BlockTallGrass;
+import cn.nukkit.block.BlockFlower;
 import cn.nukkit.level.Level;
 import cn.nukkit.level.biome.BiomeID;
 import cn.nukkit.math.BlockVector3;
@@ -39,11 +39,11 @@ public class ObjectTallGrass {
                                 if (flowerType == 11) {
                                     level.setBlock(x, y, z, Block.get(Block.DANDELION));
                                 } else {
-                                    level.setBlock(x, y, z, Block.get(Block.RED_FLOWER, flowerType));
+                                    level.setBlock(x, y, z, Block.get(BlockFlower.FLOWERS[flowerType]));
                                 }
                             }
                         } else {
-                            level.setBlock(x, y, z, Block.get(Block.SHORT_GRASS, randomValue == 2 ? BlockTallGrass.TYPE_FERN : BlockTallGrass.TYPE_GRASS));
+                            level.setBlock(x, y, z, Block.get(randomValue == 2 ? Block.FERN : Block.SHORT_GRASS));
                         }
                     }
 

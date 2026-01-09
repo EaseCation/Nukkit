@@ -68,7 +68,7 @@ public class BlockEntityBrewingStand extends BlockEntityAbstractContainer {
 
     @Override
     public boolean isValidBlock(int blockId) {
-        return blockId == Block.BLOCK_BREWING_STAND;
+        return blockId == Block.BREWING_STAND;
     }
 
     @Override
@@ -262,7 +262,7 @@ public class BlockEntityBrewingStand extends BlockEntityAbstractContainer {
     }
 
     @Override
-    public CompoundTag getSpawnCompound() {
+    public CompoundTag getSpawnCompound(boolean chunkData) {
         CompoundTag nbt = getDefaultCompound(this, BREWING_STAND)
                 .putShort("FuelTotal", this.fuelTotal)
                 .putShort("FuelAmount", this.fuelAmount);

@@ -4,7 +4,8 @@ import cn.nukkit.math.BlockFace;
 import cn.nukkit.utils.BlockColor;
 
 public class BlockHeavyCore extends BlockTransparent {
-    public BlockHeavyCore() {
+    BlockHeavyCore() {
+
     }
 
     @Override

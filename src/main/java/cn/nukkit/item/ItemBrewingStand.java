@@ -15,7 +15,7 @@ public class ItemBrewingStand extends Item {
 
     public ItemBrewingStand(Integer meta, int count) {
         super(BREWING_STAND, meta, count, "Brewing Stand");
-        this.block = Block.get(BlockID.BLOCK_BREWING_STAND);
+        this.block = Block.get(BlockID.BREWING_STAND);
     }
 
 }

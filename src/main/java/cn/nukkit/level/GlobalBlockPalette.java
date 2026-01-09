@@ -1,25 +1,19 @@
 package cn.nukkit.level;
 
 import cn.nukkit.Server;
-import cn.nukkit.block.Blocks;
 import cn.nukkit.nbt.NBTIO;
 import cn.nukkit.nbt.tag.CompoundTag;
 import cn.nukkit.nbt.tag.ListTag;
 import com.google.common.io.ByteStreams;
-import com.google.gson.Gson;
 import it.unimi.dsi.fastutil.ints.Int2IntMap;
 import it.unimi.dsi.fastutil.ints.Int2IntOpenHashMap;
 import it.unimi.dsi.fastutil.ints.Int2ObjectMap;
 import it.unimi.dsi.fastutil.ints.Int2ObjectOpenHashMap;
-import it.unimi.dsi.fastutil.objects.Object2ObjectMap;
-import it.unimi.dsi.fastutil.objects.Object2ObjectOpenHashMap;
 import lombok.extern.log4j.Log4j2;
 
-import javax.annotation.Nullable;
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.io.InputStream;
-import java.io.InputStreamReader;
 import java.nio.ByteOrder;
 import java.util.List;
 import java.util.NoSuchElementException;
@@ -133,118 +127,4 @@ public class GlobalBlockPalette implements GlobalBlockPaletteInterface {
     public static GlobalBlockPaletteInterface getStaticBlockPalette(StaticVersion version) {
         return instance.getStaticBlockPalette0(version);
     }
-
-//    private static final Object2IntMap<String> stringToId;
-//    private static final String[] idToString = new String[Block.BLOCK_ID_COUNT];
-
-    private static final Object2ObjectMap<String, String> legacyToNew;
-    private static final Object2ObjectMap<String, String> newToLegacy = new Object2ObjectOpenHashMap<>();
-    private static final Object2ObjectMap<String, String> legacyToNewExtend;
-    private static final Object2ObjectMap<String, String> newExtendToLegacy = new Object2ObjectOpenHashMap<>();
-
-    static {
-        Gson gson = new Gson();
-
-/*
-        try (InputStream stream = Server.class.getClassLoader().getResourceAsStream("block_id_map.json");
-             InputStreamReader reader = new InputStreamReader(stream)) {
-            stringToId = gson.fromJson(reader, Object2IntOpenHashMap.class);
-        } catch (NullPointerException | IOException e) {
-            throw new AssertionError("Unable to load block_id_map.json", e);
-        }
-        stringToId.forEach((name, id) -> {
-            if (id >= BlockID.UNDEFINED) {
-                log.debug("Skip unsupported block: {}", id);
-                return;
-            }
-            idToString[id] = name;
-        });
-        stringToId.defaultReturnValue(-1);
-*/
-
-        // 1.18.30+
-        try (InputStream stream = Server.class.getClassLoader().getResourceAsStream("block_rename_map.json");
-             InputStreamReader reader = new InputStreamReader(stream)) {
-            legacyToNew = gson.fromJson(reader, Object2ObjectOpenHashMap.class);
-        } catch (NullPointerException | IOException e) {
-            throw new AssertionError("Unable to load block_rename_map.json", e);
-        }
-        legacyToNew.forEach((oldName, newName) -> newToLegacy.put(newName, oldName));
-
-        // 1.19.0+
-        try (InputStreamReader reader = new InputStreamReader(Server.class.getClassLoader().getResourceAsStream("block_rename_map_extend.json"))) {
-            legacyToNewExtend = gson.fromJson(reader, Object2ObjectOpenHashMap.class);
-        } catch (NullPointerException | IOException e) {
-            throw new AssertionError("Unable to load block_rename_map_extend.json", e);
-        }
-        legacyToNewExtend.forEach((oldName, newName) -> newExtendToLegacy.put(newName, oldName));
-    }
-
-    public static int getBlockIdByName(String blockName) {
-//        int blockId = stringToId.getInt(blockName);
-//        if (blockId == -1) {
-//            throw new NoSuchElementException("Unmapped block name: " + blockName);
-//            return -1;
-//        }
-//        return blockId;
-        return Blocks.getIdByBlockName(blockName, true);
-//        return stringToId.getInt(blockName);
-    }
-
-    public static int getBlockIdByNewName(String blockName) {
-        String legacyBlockName = newToLegacy.get(blockName);
-        return getBlockIdByName(legacyBlockName != null ? legacyBlockName : blockName);
-    }
-
-    public static int getBlockIdByNewName1190(String blockName) {
-        String legacyBlockName = newExtendToLegacy.get(blockName);
-        if (legacyBlockName != null) {
-            return getBlockIdByName(legacyBlockName);
-        }
-        return getBlockIdByNewName(blockName);
-    }
-
-    @Nullable
-    public static String getNameByBlockId(int blockId) {
-/*
-        if (blockId < 0 || blockId >= BlockID.UNDEFINED) {
-            return null;
-        }
-        return idToString[blockId];
-*/
-        return Blocks.getBlockFullNameById(blockId);
-        /*String blockName = idToString[blockId];
-        if (blockName == null) {
-//            throw new NoSuchElementException("Unmapped block id: " + blockId);
-            return null;
-//            return "minecraft:info_update";
-        }
-        return blockName;*/
-    }
-
-    @Nullable
-    public static String getNewNameByBlockId(int blockId) {
-        String legacyBlockName = getNameByBlockId(blockId);
-        if (legacyBlockName == null) {
-            return null;
-        }
-        String newBlockName = legacyToNew.get(legacyBlockName);
-        return newBlockName != null ? newBlockName : legacyBlockName;
-    }
-
-    @Nullable
-    public static String getNewNameByBlockId1190(int blockId) {
-        String legacyBlockName = getNameByBlockId(blockId);
-        if (legacyBlockName == null) {
-            return null;
-        }
-        String newBlockName = legacyToNewExtend.get(legacyBlockName);
-        if (newBlockName != null) {
-            return newBlockName;
-        }
-        newBlockName = legacyToNew.get(legacyBlockName);
-        return newBlockName != null ? newBlockName : legacyBlockName;
-    }
-
-    //TODO: move to BlockConverter
 }

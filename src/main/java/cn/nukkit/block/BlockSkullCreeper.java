@@ -1,12 +1,8 @@
 package cn.nukkit.block;
 
 public class BlockSkullCreeper extends BlockSkull {
-    public BlockSkullCreeper() {
-        this(0);
-    }
+    BlockSkullCreeper() {
 
-    public BlockSkullCreeper(int meta) {
-        super(meta);
     }
 
     @Override

@@ -25,12 +25,8 @@ public class BlockSweetBerryBush extends BlockFlowable {
     public static final int STAGE_BUSH_SOME_BERRIES = 2;
     public static final int STAGE_MATURE = 3;
 
-    public BlockSweetBerryBush() {
-        this(0);
-    }
+    BlockSweetBerryBush() {
 
-    public BlockSweetBerryBush(int meta) {
-        super(meta & 0x7);
     }
 
     @Override

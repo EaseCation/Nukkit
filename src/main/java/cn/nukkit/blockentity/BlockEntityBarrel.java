@@ -31,7 +31,7 @@ public class BlockEntityBarrel extends BlockEntityAbstractContainer {
     }
 
     @Override
-    public CompoundTag getSpawnCompound() {
+    public CompoundTag getSpawnCompound(boolean chunkData) {
         CompoundTag nbt = getDefaultCompound(this, BARREL);
 
         if (this.hasName()) {

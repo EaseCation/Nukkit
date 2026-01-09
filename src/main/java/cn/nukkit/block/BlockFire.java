@@ -30,12 +30,8 @@ import java.util.concurrent.ThreadLocalRandom;
  */
 public class BlockFire extends BlockFlowable {
 
-    public BlockFire() {
-        this(0);
-    }
+    BlockFire() {
 
-    public BlockFire(int meta) {
-        super(meta);
     }
 
     @Override

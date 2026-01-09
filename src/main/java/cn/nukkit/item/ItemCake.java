@@ -19,7 +19,7 @@ public class ItemCake extends Item {
 
     public ItemCake(Integer meta, int count) {
         super(CAKE, meta, count, "Cake");
-        this.block = Block.get(BlockID.BLOCK_CAKE);
+        this.block = Block.get(BlockID.CAKE);
     }
 
     @Override

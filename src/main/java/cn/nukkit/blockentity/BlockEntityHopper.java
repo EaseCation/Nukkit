@@ -52,7 +52,7 @@ public class BlockEntityHopper extends BlockEntityAbstractContainer {
 
     @Override
     public boolean isValidBlock(int blockId) {
-        return blockId == Block.BLOCK_HOPPER;
+        return blockId == Block.HOPPER;
     }
 
     public boolean isOnTransferCooldown() {
@@ -422,7 +422,7 @@ public class BlockEntityHopper extends BlockEntityAbstractContainer {
     }
 
     @Override
-    public CompoundTag getSpawnCompound() {
+    public CompoundTag getSpawnCompound(boolean chunkData) {
         CompoundTag nbt = getDefaultCompound(this, BlockEntity.HOPPER);
 
         if (this.hasName()) {

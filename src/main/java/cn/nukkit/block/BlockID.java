@@ -3,6 +3,15 @@ package cn.nukkit.block;
 // 弃用的名称用于旧版本, 不要移除
 public interface BlockID {
     int AIR = 0;
+    /**
+     * flattened since 1.20.50
+     * @see #GRANITE
+     * @see #POLISHED_GRANITE
+     * @see #DIORITE
+     * @see #POLISHED_DIORITE
+     * @see #ANDESITE
+     * @see #POLISHED_ANDESITE
+     */
     int STONE = 1;
     int GRASS_BLOCK = 2;
     /**
@@ -10,41 +19,97 @@ public interface BlockID {
      */
     @Deprecated
     int GRASS = 2;
+    /**
+     * flattened since 1.21.20
+     * @see #COARSE_DIRT
+     */
     int DIRT = 3;
     int COBBLESTONE = 4;
-    int OAK_PLANKS = 5; //TODO: 1.20.50: flattening
+    int OAK_PLANKS = 5;
+    /**
+     * @deprecated flattened since 1.20.50
+     * @see #OAK_PLANKS
+     * @see #SPRUCE_PLANKS
+     * @see #BIRCH_PLANKS
+     * @see #JUNGLE_PLANKS
+     * @see #ACACIA_PLANKS
+     * @see #DARK_OAK_PLANKS
+     */
+    @Deprecated
     int PLANKS = 5;
-    int OAK_SAPLING = 6; //TODO: 1.20.80 flattening
+    int OAK_SAPLING = 6;
+    /**
+     * @deprecated flattened since 1.20.80
+     * @see #OAK_SAPLING
+     * @see #SPRUCE_SAPLING
+     * @see #BIRCH_SAPLING
+     * @see #JUNGLE_SAPLING
+     * @see #ACACIA_SAPLING
+     * @see #DARK_OAK_SAPLING
+     */
+    @Deprecated
     int SAPLING = 6;
     int BEDROCK = 7;
     int FLOWING_WATER = 8;
     int WATER = 9;
     int FLOWING_LAVA = 10;
     int LAVA = 11;
+    /**
+     * flattened since 1.21.20
+     * @see #RED_SAND
+     */
     int SAND = 12;
     int GRAVEL = 13;
     int GOLD_ORE = 14;
     int IRON_ORE = 15;
     int COAL_ORE = 16;
-    int OAK_LOG = 17; //TODO: 1.19.80: flattening
+    int OAK_LOG = 17;
+    /**
+     * @deprecated flattened since 1.19.80
+     * @see #OAK_LOG
+     * @see #SPRUCE_LOG
+     * @see #BIRCH_LOG
+     * @see #JUNGLE_LOG
+     */
+    @Deprecated
     int LOG = 17;
-    int OAK_LEAVES = 18; //TODO: 1.20.70 flattening
+    int OAK_LEAVES = 18;
+    /**
+     * @deprecated flattened since 1.20.70
+     * @see #OAK_LEAVES
+     * @see #SPRUCE_LEAVES
+     * @see #BIRCH_LEAVES
+     * @see #JUNGLE_LEAVES
+     */
+    @Deprecated
     int LEAVES = 18;
+    /**
+     * flattened since 1.21.30
+     * @see #WET_SPONGE
+     */
     int SPONGE = 19;
     int GLASS = 20;
     int LAPIS_ORE = 21;
     int LAPIS_BLOCK = 22;
     int DISPENSER = 23;
+    /**
+     * flattened since 1.21.20
+     * @see #CHISELED_SANDSTONE
+     * @see #CUT_SANDSTONE
+     * @see #SMOOTH_SANDSTONE
+     */
     int SANDSTONE = 24;
     int NOTEBLOCK = 25;
-    int BLOCK_BED = 26;
+    int BED = 26;
     int GOLDEN_RAIL = 27;
     int DETECTOR_RAIL = 28;
     int STICKY_PISTON = 29;
     int WEB = 30;
     int SHORT_GRASS = 31;
     /**
-     * @deprecated use {@link #SHORT_GRASS} instead
+     * @deprecated flattened since 1.21.0
+     * @see #SHORT_GRASS
+     * @see #FERN
      */
     @Deprecated
     int TALLGRASS = 31;
@@ -56,7 +121,27 @@ public interface BlockID {
      */
     @Deprecated
     int PISTONARMCOLLISION = 34;
-    int WHITE_WOOL = 35; //TODO: 1.19.70: flattening
+    int WHITE_WOOL = 35;
+    /**
+     * @deprecated flattened since 1.19.70
+     * @see #WHITE_WOOL
+     * @see #ORANGE_WOOL
+     * @see #MAGENTA_WOOL
+     * @see #LIGHT_BLUE_WOOL
+     * @see #YELLOW_WOOL
+     * @see #LIME_WOOL
+     * @see #PINK_WOOL
+     * @see #GRAY_WOOL
+     * @see #LIGHT_GRAY_WOOL
+     * @see #CYAN_WOOL
+     * @see #PURPLE_WOOL
+     * @see #BLUE_WOOL
+     * @see #BROWN_WOOL
+     * @see #GREEN_WOOL
+     * @see #RED_WOOL
+     * @see #BLACK_WOOL
+     */
+    @Deprecated
     int WOOL = 35;
     int ELEMENT_0 = 36;
     int DANDELION = 37;
@@ -65,19 +150,70 @@ public interface BlockID {
      */
     @Deprecated
     int YELLOW_FLOWER = 37;
-    int POPPY = 38; //TODO: 1.20.80 flattening
+    int POPPY = 38;
+    /**
+     * @deprecated flattened since 1.20.80
+     * @see #POPPY
+     * @see #BLUE_ORCHID
+     * @see #ALLIUM
+     * @see #AZURE_BLUET
+     * @see #RED_TULIP
+     * @see #ORANGE_TULIP
+     * @see #WHITE_TULIP
+     * @see #PINK_TULIP
+     * @see #OXEYE_DAISY
+     * @see #CORNFLOWER
+     * @see #LILY_OF_THE_VALLEY
+     */
+    @Deprecated
     int RED_FLOWER = 38;
     int BROWN_MUSHROOM = 39;
     int RED_MUSHROOM = 40;
     int GOLD_BLOCK = 41;
     int IRON_BLOCK = 42;
-    int SMOOTH_STONE_DOUBLE_SLAB = 43; //TODO: 1.21.20 flattening
-    int DOUBLE_STONE_BLOCK_SLAB = 43; //TODO: 1.19.0 rename
+    int SMOOTH_STONE_DOUBLE_SLAB = 43;
+    /**
+     * @deprecated flattened since 1.21.20
+     * @see #SMOOTH_STONE_DOUBLE_SLAB
+     * @see #SANDSTONE_DOUBLE_SLAB
+     * @see #PETRIFIED_OAK_DOUBLE_SLAB
+     * @see #COBBLESTONE_DOUBLE_SLAB
+     * @see #BRICK_DOUBLE_SLAB
+     * @see #STONE_BRICK_DOUBLE_SLAB
+     * @see #QUARTZ_DOUBLE_SLAB
+     * @see #NETHER_BRICK_DOUBLE_SLAB
+     */
+    @Deprecated
+    int DOUBLE_STONE_BLOCK_SLAB = 43;
+    /**
+     * @deprecated use {@link #DOUBLE_STONE_BLOCK_SLAB} instead
+     */
+    @Deprecated
     int DOUBLE_STONE_SLAB = 43;
-    int SMOOTH_STONE_SLAB = 44; //TODO: 1.21.0 flattening
-    int STONE_BLOCK_SLAB = 44; //TODO: 1.19.0 rename
+    int SMOOTH_STONE_SLAB = 44;
+    /**
+     * @deprecated flattened since 1.21.0
+     * @see #SMOOTH_STONE_SLAB
+     * @see #SANDSTONE_SLAB
+     * @see #PETRIFIED_OAK_SLAB
+     * @see #COBBLESTONE_SLAB
+     * @see #BRICK_SLAB
+     * @see #STONE_BRICK_SLAB
+     * @see #QUARTZ_SLAB
+     * @see #NETHER_BRICK_SLAB
+     */
+    @Deprecated
+    int STONE_BLOCK_SLAB = 44;
+    /**
+     * @deprecated use {@link #STONE_BLOCK_SLAB} instead
+     */
+    @Deprecated
     int STONE_SLAB = 44;
     int BRICK_BLOCK = 45;
+    /**
+     * flattened since 1.21.30
+     * @see #UNDERWATER_TNT
+     */
     int TNT = 46;
     int BOOKSHELF = 47;
     int MOSSY_COBBLESTONE = 48;
@@ -91,19 +227,19 @@ public interface BlockID {
     int DIAMOND_ORE = 56;
     int DIAMOND_BLOCK = 57;
     int CRAFTING_TABLE = 58;
-    int BLOCK_WHEAT = 59;
+    int WHEAT = 59;
     int FARMLAND = 60;
     int FURNACE = 61;
     int LIT_FURNACE = 62;
     int STANDING_SIGN = 63;
-    int BLOCK_WOODEN_DOOR = 64;
+    int WOODEN_DOOR = 64;
     int LADDER = 65;
     int RAIL = 66;
     int STONE_STAIRS = 67;
     int WALL_SIGN = 68;
     int LEVER = 69;
     int STONE_PRESSURE_PLATE = 70;
-    int BLOCK_IRON_DOOR = 71;
+    int IRON_DOOR = 71;
     int WOODEN_PRESSURE_PLATE = 72;
     int REDSTONE_ORE = 73;
     int LIT_REDSTONE_ORE = 74;
@@ -115,9 +251,19 @@ public interface BlockID {
     int SNOW = 80;
     int CACTUS = 81;
     int CLAY = 82;
-    int BLOCK_REEDS = 83;
+    int REEDS = 83;
     int JUKEBOX = 84;
-    int OAK_FENCE = 85; //TODO: 1.19.80: flattening
+    int OAK_FENCE = 85;
+    /**
+     * @deprecated flattened since 1.19.80
+     * @see #OAK_FENCE
+     * @see #SPRUCE_FENCE
+     * @see #BIRCH_FENCE
+     * @see #JUNGLE_FENCE
+     * @see #ACACIA_FENCE
+     * @see #DARK_OAK_FENCE
+     */
+    @Deprecated
     int FENCE = 85;
     int PUMPKIN = 86;
     int NETHERRACK = 87;
@@ -125,7 +271,7 @@ public interface BlockID {
     int GLOWSTONE = 89;
     int PORTAL = 90;
     int LIT_PUMPKIN = 91;
-    int BLOCK_CAKE = 92;
+    int CAKE = 92;
     int UNPOWERED_REPEATER = 93;
     int POWERED_REPEATER = 94;
     int INVISIBLE_BEDROCK = 95;
@@ -135,9 +281,27 @@ public interface BlockID {
     @Deprecated
     int INVISIBLEBEDROCK = 95;
     int TRAPDOOR = 96;
-    int INFESTED_STONE = 97; //TODO: 1.21.20 flattening
+    int INFESTED_STONE = 97;
+    /**
+     * @deprecated flattened since 1.21.20
+     * @see #INFESTED_STONE
+     * @see #INFESTED_COBBLESTONE
+     * @see #INFESTED_STONE_BRICKS
+     * @see #INFESTED_MOSSY_STONE_BRICKS
+     * @see #INFESTED_CRACKED_STONE_BRICKS
+     * @see #INFESTED_CHISELED_STONE_BRICKS
+     */
+    @Deprecated
     int MONSTER_EGG = 97;
-    int STONE_BRICKS = 98; //TODO: 1.21.20 flattening
+    int STONE_BRICKS = 98;
+    /**
+     * @deprecated flattened since 1.21.20
+     * @see #STONE_BRICKS
+     * @see #MOSSY_STONE_BRICKS
+     * @see #CRACKED_STONE_BRICKS
+     * @see #CHISELED_STONE_BRICKS
+     */
+    @Deprecated
     int STONEBRICK = 98;
     int BROWN_MUSHROOM_BLOCK = 99;
     int RED_MUSHROOM_BLOCK = 100;
@@ -155,10 +319,10 @@ public interface BlockID {
     int NETHER_BRICK = 112;
     int NETHER_BRICK_FENCE = 113;
     int NETHER_BRICK_STAIRS = 114;
-    int BLOCK_NETHER_WART = 115;
+    int NETHER_WART = 115;
     int ENCHANTING_TABLE = 116;
-    int BLOCK_BREWING_STAND = 117;
-    int BLOCK_CAULDRON = 118;
+    int BREWING_STAND = 117;
+    int CAULDRON = 118;
     int END_PORTAL = 119;
     int END_PORTAL_FRAME = 120;
     int END_STONE = 121;
@@ -184,13 +348,45 @@ public interface BlockID {
     int JUNGLE_STAIRS = 136;
     int COMMAND_BLOCK = 137;
     int BEACON = 138;
+    /**
+     * flattened since 1.21.30
+     * @see #MOSSY_COBBLESTONE_WALL
+     * @see #GRANITE_WALL
+     * @see #DIORITE_WALL
+     * @see #ANDESITE_WALL
+     * @see #SANDSTONE_WALL
+     * @see #BRICK_WALL
+     * @see #STONE_BRICK_WALL
+     * @see #MOSSY_STONE_BRICK_WALL
+     * @see #NETHER_BRICK_WALL
+     * @see #END_STONE_BRICK_WALL
+     * @see #PRISMARINE_WALL
+     * @see #RED_SANDSTONE_WALL
+     * @see #RED_NETHER_BRICK_WALL
+     */
     int COBBLESTONE_WALL = 139;
-    int BLOCK_FLOWER_POT = 140;
+    int FLOWER_POT = 140;
     int CARROTS = 141;
     int POTATOES = 142;
     int WOODEN_BUTTON = 143;
-    int SKELETON_SKULL = 144; //TODO: 1.21.40 flattening
-    int BLOCK_SKULL = 144;
+    int SKELETON_SKULL = 144;
+    /**
+     * @deprecated flattened since 1.21.40
+     * @see #SKELETON_SKULL
+     * @see #WITHER_SKELETON_SKULL
+     * @see #ZOMBIE_HEAD
+     * @see #PLAYER_HEAD
+     * @see #CREEPER_HEAD
+     * @see #DRAGON_HEAD
+     * @see #PIGLIN_HEAD
+     */
+    @Deprecated
+    int SKULL = 144;
+    /**
+     * flattened since 1.21.20
+     * @see #CHIPPED_ANVIL
+     * @see #DAMAGED_ANVIL
+     */
     int ANVIL = 145;
     int TRAPPED_CHEST = 146;
     int LIGHT_WEIGHTED_PRESSURE_PLATE = 147;
@@ -200,26 +396,109 @@ public interface BlockID {
     int DAYLIGHT_DETECTOR = 151;
     int REDSTONE_BLOCK = 152;
     int QUARTZ_ORE = 153;
-    int BLOCK_HOPPER = 154;
+    int HOPPER = 154;
+    /**
+     * flattened since 1.21.20
+     * @see #CHISELED_QUARTZ_BLOCK
+     * @see #QUARTZ_PILLAR
+     * @see #SMOOTH_QUARTZ
+     */
     int QUARTZ_BLOCK = 155;
     int QUARTZ_STAIRS = 156;
-    int OAK_DOUBLE_SLAB = 157; //TODO: 1.20.70 flattening
+    int OAK_DOUBLE_SLAB = 157;
+    /**
+     * @deprecated flattened since 1.20.70
+     * @see #OAK_DOUBLE_SLAB
+     * @see #SPRUCE_DOUBLE_SLAB
+     * @see #BIRCH_DOUBLE_SLAB
+     * @see #JUNGLE_DOUBLE_SLAB
+     * @see #ACACIA_DOUBLE_SLAB
+     * @see #DARK_OAK_DOUBLE_SLAB
+     */
+    @Deprecated
     int DOUBLE_WOODEN_SLAB = 157;
-    int OAK_SLAB = 158; //TODO: 1.20.70 flattening
+    int OAK_SLAB = 158;
+    /**
+     * @deprecated flattened since 1.20.70
+     * @see #OAK_SLAB
+     * @see #SPRUCE_SLAB
+     * @see #BIRCH_SLAB
+     * @see #JUNGLE_SLAB
+     * @see #ACACIA_SLAB
+     * @see #DARK_OAK_SLAB
+     */
+    @Deprecated
     int WOODEN_SLAB = 158;
-    int WHITE_TERRACOTTA = 159; //TODO: 1.20.30: flattening
+    int WHITE_TERRACOTTA = 159;
+    /**
+     * @deprecated flattened since 1.20.30
+     * @see #WHITE_TERRACOTTA
+     * @see #ORANGE_TERRACOTTA
+     * @see #MAGENTA_TERRACOTTA
+     * @see #LIGHT_BLUE_TERRACOTTA
+     * @see #YELLOW_TERRACOTTA
+     * @see #LIME_TERRACOTTA
+     * @see #PINK_TERRACOTTA
+     * @see #GRAY_TERRACOTTA
+     * @see #LIGHT_GRAY_TERRACOTTA
+     * @see #CYAN_TERRACOTTA
+     * @see #PURPLE_TERRACOTTA
+     * @see #BLUE_TERRACOTTA
+     * @see #BROWN_TERRACOTTA
+     * @see #GREEN_TERRACOTTA
+     * @see #RED_TERRACOTTA
+     * @see #BLACK_TERRACOTTA
+     */
+    @Deprecated
     int STAINED_HARDENED_CLAY = 159;
-    int WHITE_STAINED_GLASS_PANE = 160; //TODO: 1.20.20: flattening
+    int WHITE_STAINED_GLASS_PANE = 160;
+    /**
+     * @deprecated flattened since 1.20.20
+     * @see #WHITE_STAINED_GLASS_PANE
+     * @see #ORANGE_STAINED_GLASS_PANE
+     * @see #MAGENTA_STAINED_GLASS_PANE
+     * @see #LIGHT_BLUE_STAINED_GLASS_PANE
+     * @see #YELLOW_STAINED_GLASS_PANE
+     * @see #LIME_STAINED_GLASS_PANE
+     * @see #PINK_STAINED_GLASS_PANE
+     * @see #GRAY_STAINED_GLASS_PANE
+     * @see #LIGHT_GRAY_STAINED_GLASS_PANE
+     * @see #CYAN_STAINED_GLASS_PANE
+     * @see #PURPLE_STAINED_GLASS_PANE
+     * @see #BLUE_STAINED_GLASS_PANE
+     * @see #BROWN_STAINED_GLASS_PANE
+     * @see #GREEN_STAINED_GLASS_PANE
+     * @see #RED_STAINED_GLASS_PANE
+     * @see #BLACK_STAINED_GLASS_PANE
+     */
+    @Deprecated
     int STAINED_GLASS_PANE = 160;
-    int ACACIA_LEAVES = 161; //TODO: 1.20.70 flattening
+    int ACACIA_LEAVES = 161;
+    /**
+     * @deprecated flattened since 1.20.70
+     * @see #ACACIA_LEAVES
+     * @see #DARK_OAK_LEAVES
+     */
+    @Deprecated
     int LEAVES2 = 161;
-    int ACACIA_LOG = 162; //TODO: 1.19.80: flattening
+    int ACACIA_LOG = 162;
+    /**
+     * @deprecated flattened since 1.19.80
+     * @see #ACACIA_LOG
+     * @see #DARK_OAK_LOG
+     */
+    @Deprecated
     int LOG2 = 162;
     int ACACIA_STAIRS = 163;
     int DARK_OAK_STAIRS = 164;
     int SLIME = 165;
 
     int IRON_TRAPDOOR = 167;
+    /**
+     * flattened since 1.21.20
+     * @see #DARK_PRISMARINE
+     * @see #PRISMARINE_BRICKS
+     */
     int PRISMARINE = 168;
     int SEA_LANTERN = 169;
     /**
@@ -228,23 +507,91 @@ public interface BlockID {
     @Deprecated
     int SEALANTERN = 169;
     int HAY_BLOCK = 170;
-    int WHITE_CARPET = 171; //TODO: 1.20.0: flattening
+    int WHITE_CARPET = 171;
+    /**
+     * @deprecated flattened since 1.20.0
+     * @see #WHITE_CARPET
+     * @see #ORANGE_CARPET
+     * @see #MAGENTA_CARPET
+     * @see #LIGHT_BLUE_CARPET
+     * @see #YELLOW_CARPET
+     * @see #LIME_CARPET
+     * @see #PINK_CARPET
+     * @see #GRAY_CARPET
+     * @see #LIGHT_GRAY_CARPET
+     * @see #CYAN_CARPET
+     * @see #PURPLE_CARPET
+     * @see #BLUE_CARPET
+     * @see #BROWN_CARPET
+     * @see #GREEN_CARPET
+     * @see #RED_CARPET
+     * @see #BLACK_CARPET
+     */
+    @Deprecated
     int CARPET = 171;
     int HARDENED_CLAY = 172;
     int COAL_BLOCK = 173;
     int PACKED_ICE = 174;
-    int SUNFLOWER = 175; //TODO: 1.21.0 flattening
+    int SUNFLOWER = 175;
+    /**
+     * @deprecated flattened since 1.21.0
+     * @see #SUNFLOWER
+     * @see #LILAC
+     * @see #TALL_GRASS
+     * @see #LARGE_FERN
+     * @see #ROSE_BUSH
+     * @see #PEONY
+     */
+    @Deprecated
     int DOUBLE_PLANT = 175;
     int STANDING_BANNER = 176;
     int WALL_BANNER = 177;
     int DAYLIGHT_DETECTOR_INVERTED = 178;
+    /**
+     * flattened since 1.21.20
+     * @see #CHISELED_RED_SANDSTONE
+     * @see #CUT_RED_SANDSTONE
+     * @see #SMOOTH_RED_SANDSTONE
+     */
     int RED_SANDSTONE = 179;
     int RED_SANDSTONE_STAIRS = 180;
-    int RED_SANDSTONE_DOUBLE_SLAB = 181; //TODO: 1.21.20 flattening
-    int DOUBLE_STONE_BLOCK_SLAB2 = 181; //TODO: 1.19.0 rename
+    int RED_SANDSTONE_DOUBLE_SLAB = 181;
+    /**
+     * @deprecated flattened since 1.21.20
+     * @see #RED_SANDSTONE_DOUBLE_SLAB
+     * @see #PURPUR_DOUBLE_SLAB
+     * @see #PRISMARINE_DOUBLE_SLAB
+     * @see #DARK_PRISMARINE_DOUBLE_SLAB
+     * @see #PRISMARINE_BRICK_DOUBLE_SLAB
+     * @see #MOSSY_COBBLESTONE_DOUBLE_SLAB
+     * @see #SMOOTH_SANDSTONE_DOUBLE_SLAB
+     * @see #RED_NETHER_BRICK_DOUBLE_SLAB
+     */
+    @Deprecated
+    int DOUBLE_STONE_BLOCK_SLAB2 = 181;
+    /**
+     * @deprecated use {@link #DOUBLE_STONE_BLOCK_SLAB2} instead
+     */
+    @Deprecated
     int DOUBLE_STONE_SLAB2 = 181;
-    int RED_SANDSTONE_SLAB = 182; //TODO: 1.21.20 flattening
-    int STONE_BLOCK_SLAB2 = 182; //TODO: 1.19.0 rename
+    int RED_SANDSTONE_SLAB = 182;
+    /**
+     * @deprecated flattened since 1.21.20
+     * @see #RED_SANDSTONE_SLAB
+     * @see #PURPUR_SLAB
+     * @see #PRISMARINE_SLAB
+     * @see #DARK_PRISMARINE_SLAB
+     * @see #PRISMARINE_BRICK_SLAB
+     * @see #MOSSY_COBBLESTONE_SLAB
+     * @see #SMOOTH_SANDSTONE_SLAB
+     * @see #RED_NETHER_BRICK_SLAB
+     */
+    @Deprecated
+    int STONE_BLOCK_SLAB2 = 182;
+    /**
+     * @deprecated use {@link #STONE_BLOCK_SLAB2} instead
+     */
+    @Deprecated
     int STONE_SLAB2 = 182;
     int SPRUCE_FENCE_GATE = 183;
     int BIRCH_FENCE_GATE = 184;
@@ -254,22 +601,58 @@ public interface BlockID {
     int REPEATING_COMMAND_BLOCK = 188;
     int CHAIN_COMMAND_BLOCK = 189;
     int HARD_GLASS_PANE = 190;
-    int HARD_WHITE_STAINED_GLASS_PANE = 191; //TODO: 1.20.60 flattening
+    int HARD_WHITE_STAINED_GLASS_PANE = 191;
+    /**
+     * @deprecated flattened since 1.20.60
+     * @see #HARD_WHITE_STAINED_GLASS_PANE
+     * @see #HARD_ORANGE_STAINED_GLASS_PANE
+     * @see #HARD_MAGENTA_STAINED_GLASS_PANE
+     * @see #HARD_LIGHT_BLUE_STAINED_GLASS_PANE
+     * @see #HARD_YELLOW_STAINED_GLASS_PANE
+     * @see #HARD_LIME_STAINED_GLASS_PANE
+     * @see #HARD_PINK_STAINED_GLASS_PANE
+     * @see #HARD_GRAY_STAINED_GLASS_PANE
+     * @see #HARD_LIGHT_GRAY_STAINED_GLASS_PANE
+     * @see #HARD_CYAN_STAINED_GLASS_PANE
+     * @see #HARD_PURPLE_STAINED_GLASS_PANE
+     * @see #HARD_BLUE_STAINED_GLASS_PANE
+     * @see #HARD_BROWN_STAINED_GLASS_PANE
+     * @see #HARD_GREEN_STAINED_GLASS_PANE
+     * @see #HARD_RED_STAINED_GLASS_PANE
+     * @see #HARD_BLACK_STAINED_GLASS_PANE
+     */
+    @Deprecated
     int HARD_STAINED_GLASS_PANE = 191;
     int CHEMICAL_HEAT = 192;
-    int BLOCK_SPRUCE_DOOR = 193;
-    int BLOCK_BIRCH_DOOR = 194;
-    int BLOCK_JUNGLE_DOOR = 195;
-    int BLOCK_ACACIA_DOOR = 196;
-    int BLOCK_DARK_OAK_DOOR = 197;
+    int SPRUCE_DOOR = 193;
+    int BIRCH_DOOR = 194;
+    int JUNGLE_DOOR = 195;
+    int ACACIA_DOOR = 196;
+    int DARK_OAK_DOOR = 197;
     int GRASS_PATH = 198;
-    int BLOCK_FRAME = 199;
+    int FRAME = 199;
     int CHORUS_FLOWER = 200;
+    /**
+     * flattened since 1.21.30
+     * @see #PURPUR_PILLAR
+     */
     int PURPUR_BLOCK = 201;
-    int COLORED_TORCH_RED = 202; //TODO: 1.21.30 flattening
+    int COLORED_TORCH_RED = 202;
+    /**
+     * @deprecated flattened since 1.21.30
+     * @see #COLORED_TORCH_RED
+     * @see #COLORED_TORCH_GREEN
+     */
+    @Deprecated
     int COLORED_TORCH_RG = 202;
     int PURPUR_STAIRS = 203;
-    int COLORED_TORCH_BLUE = 204; //TODO: 1.21.30 flattening
+    int COLORED_TORCH_BLUE = 204;
+    /**
+     * @deprecated flattened since 1.21.30
+     * @see #COLORED_TORCH_BLUE
+     * @see #COLORED_TORCH_PURPLE
+     */
+    @Deprecated
     int COLORED_TORCH_BP = 204;
     int UNDYED_SHULKER_BOX = 205;
     int END_BRICKS = 206;
@@ -284,7 +667,27 @@ public interface BlockID {
     int RED_NETHER_BRICK = 215;
     int BONE_BLOCK = 216;
     int STRUCTURE_VOID = 217;
-    int WHITE_SHULKER_BOX = 218; //TODO: 1.20.10: flattening
+    int WHITE_SHULKER_BOX = 218;
+    /**
+     * @deprecated flattened since 1.20.10
+     * @see #WHITE_SHULKER_BOX
+     * @see #ORANGE_SHULKER_BOX
+     * @see #MAGENTA_SHULKER_BOX
+     * @see #LIGHT_BLUE_SHULKER_BOX
+     * @see #YELLOW_SHULKER_BOX
+     * @see #LIME_SHULKER_BOX
+     * @see #PINK_SHULKER_BOX
+     * @see #GRAY_SHULKER_BOX
+     * @see #LIGHT_GRAY_SHULKER_BOX
+     * @see #CYAN_SHULKER_BOX
+     * @see #PURPLE_SHULKER_BOX
+     * @see #BLUE_SHULKER_BOX
+     * @see #BROWN_SHULKER_BOX
+     * @see #GREEN_SHULKER_BOX
+     * @see #RED_SHULKER_BOX
+     * @see #BLACK_SHULKER_BOX
+     */
+    @Deprecated
     int SHULKER_BOX = 218;
     int PURPLE_GLAZED_TERRACOTTA = 219;
     int WHITE_GLAZED_TERRACOTTA = 220;
@@ -303,24 +706,92 @@ public interface BlockID {
     int GREEN_GLAZED_TERRACOTTA = 233;
     int RED_GLAZED_TERRACOTTA = 234;
     int BLACK_GLAZED_TERRACOTTA = 235;
-    int WHITE_CONCRETE = 236; //TODO: 1.20.10: flattening
+    int WHITE_CONCRETE = 236;
+    /**
+     * @deprecated flattened since 1.20.10
+     * @see #WHITE_CONCRETE
+     * @see #ORANGE_CONCRETE
+     * @see #MAGENTA_CONCRETE
+     * @see #LIGHT_BLUE_CONCRETE
+     * @see #YELLOW_CONCRETE
+     * @see #LIME_CONCRETE
+     * @see #PINK_CONCRETE
+     * @see #GRAY_CONCRETE
+     * @see #LIGHT_GRAY_CONCRETE
+     * @see #CYAN_CONCRETE
+     * @see #PURPLE_CONCRETE
+     * @see #BLUE_CONCRETE
+     * @see #BROWN_CONCRETE
+     * @see #GREEN_CONCRETE
+     * @see #RED_CONCRETE
+     * @see #BLACK_CONCRETE
+     */
+    @Deprecated
     int CONCRETE = 236;
-    int WHITE_CONCRETE_POWDER = 237; //TODO: 1.20.30: flattening
+    int WHITE_CONCRETE_POWDER = 237;
+    /**
+     * @deprecated flattened since 1.20.30
+     * @see #WHITE_CONCRETE_POWDER
+     * @see #ORANGE_CONCRETE_POWDER
+     * @see #MAGENTA_CONCRETE_POWDER
+     * @see #LIGHT_BLUE_CONCRETE_POWDER
+     * @see #YELLOW_CONCRETE_POWDER
+     * @see #LIME_CONCRETE_POWDER
+     * @see #PINK_CONCRETE_POWDER
+     * @see #GRAY_CONCRETE_POWDER
+     * @see #LIGHT_GRAY_CONCRETE_POWDER
+     * @see #CYAN_CONCRETE_POWDER
+     * @see #PURPLE_CONCRETE_POWDER
+     * @see #BLUE_CONCRETE_POWDER
+     * @see #BROWN_CONCRETE_POWDER
+     * @see #GREEN_CONCRETE_POWDER
+     * @see #RED_CONCRETE_POWDER
+     * @see #BLACK_CONCRETE_POWDER
+     */
+    @Deprecated
     int CONCRETE_POWDER = 237;
     /**
      * @deprecated use {@link #CONCRETE_POWDER} instead
      */
     @Deprecated
     int CONCRETEPOWDER = 237;
-    int COMPOUND_CREATOR = 238; //TODO: 1.21.30 flattening
+    int COMPOUND_CREATOR = 238;
+    /**
+     * @deprecated flattened since 1.21.30
+     * @see #COMPOUND_CREATOR
+     * @see #MATERIAL_REDUCER
+     * @see #ELEMENT_CONSTRUCTOR
+     * @see #LAB_TABLE
+     */
+    @Deprecated
     int CHEMISTRY_TABLE = 238;
     int UNDERWATER_TORCH = 239;
     int CHORUS_PLANT = 240;
-    int WHITE_STAINED_GLASS = 241; //TODO: 1.20.20: flattening
+    int WHITE_STAINED_GLASS = 241;
+    /**
+     * @deprecated flattened since 1.20.20
+     * @see #WHITE_STAINED_GLASS
+     * @see #ORANGE_STAINED_GLASS
+     * @see #MAGENTA_STAINED_GLASS
+     * @see #LIGHT_BLUE_STAINED_GLASS
+     * @see #YELLOW_STAINED_GLASS
+     * @see #LIME_STAINED_GLASS
+     * @see #PINK_STAINED_GLASS
+     * @see #GRAY_STAINED_GLASS
+     * @see #LIGHT_GRAY_STAINED_GLASS
+     * @see #CYAN_STAINED_GLASS
+     * @see #PURPLE_STAINED_GLASS
+     * @see #BLUE_STAINED_GLASS
+     * @see #BROWN_STAINED_GLASS
+     * @see #GREEN_STAINED_GLASS
+     * @see #RED_STAINED_GLASS
+     * @see #BLACK_STAINED_GLASS
+     */
+    @Deprecated
     int STAINED_GLASS = 241;
-    int BLOCK_CAMERA = 242;
+    int CAMERA = 242;
     int PODZOL = 243;
-    int BLOCK_BEETROOT = 244;
+    int BEETROOT = 244;
     int STONECUTTER = 245;
     int GLOWINGOBSIDIAN = 246;
     int NETHERREACTOR = 247;
@@ -335,7 +806,27 @@ public interface BlockID {
     int OBSERVER = 251;
     int STRUCTURE_BLOCK = 252;
     int HARD_GLASS = 253;
-    int HARD_WHITE_STAINED_GLASS = 254; //TODO: 1.20.60 flattening
+    int HARD_WHITE_STAINED_GLASS = 254;
+    /**
+     * @deprecated flattened since 1.20.60
+     * @see #HARD_WHITE_STAINED_GLASS
+     * @see #HARD_ORANGE_STAINED_GLASS
+     * @see #HARD_MAGENTA_STAINED_GLASS
+     * @see #HARD_LIGHT_BLUE_STAINED_GLASS
+     * @see #HARD_YELLOW_STAINED_GLASS
+     * @see #HARD_LIME_STAINED_GLASS
+     * @see #HARD_PINK_STAINED_GLASS
+     * @see #HARD_GRAY_STAINED_GLASS
+     * @see #HARD_LIGHT_GRAY_STAINED_GLASS
+     * @see #HARD_CYAN_STAINED_GLASS
+     * @see #HARD_PURPLE_STAINED_GLASS
+     * @see #HARD_BLUE_STAINED_GLASS
+     * @see #HARD_BROWN_STAINED_GLASS
+     * @see #HARD_GREEN_STAINED_GLASS
+     * @see #HARD_RED_STAINED_GLASS
+     * @see #HARD_BLACK_STAINED_GLASS
+     */
+    @Deprecated
     int HARD_STAINED_GLASS = 254;
     int RESERVED6 = 255;
 
@@ -468,21 +959,89 @@ public interface BlockID {
     int ELEMENT_117 = 383;
     int ELEMENT_118 = 384;
     int SEAGRASS = 385;
-    int TUBE_CORAL = 386; //TODO: 1.20.0: flattening
+    int TUBE_CORAL = 386;
+    /**
+     * @deprecated flattened since 1.20.0
+     * @see #TUBE_CORAL
+     * @see #BRAIN_CORAL
+     * @see #BUBBLE_CORAL
+     * @see #FIRE_CORAL
+     * @see #HORN_CORAL
+     * @see #DEAD_TUBE_CORAL
+     * @see #DEAD_BRAIN_CORAL
+     * @see #DEAD_BUBBLE_CORAL
+     * @see #DEAD_FIRE_CORAL
+     * @see #DEAD_HORN_CORAL
+     */
+    @Deprecated
     int CORAL = 386;
-    int TUBE_CORAL_BLOCK = 387; //TODO: 1.21.0: flattening
+    int TUBE_CORAL_BLOCK = 387;
+    /**
+     * @deprecated flattened since 1.21.0
+     * @see #TUBE_CORAL_BLOCK
+     * @see #BRAIN_CORAL_BLOCK
+     * @see #BUBBLE_CORAL_BLOCK
+     * @see #FIRE_CORAL_BLOCK
+     * @see #HORN_CORAL_BLOCK
+     * @see #DEAD_TUBE_CORAL_BLOCK
+     * @see #DEAD_BRAIN_CORAL_BLOCK
+     * @see #DEAD_BUBBLE_CORAL_BLOCK
+     * @see #DEAD_FIRE_CORAL_BLOCK
+     * @see #DEAD_HORN_CORAL_BLOCK
+     */
+    @Deprecated
     int CORAL_BLOCK = 387;
-    int TUBE_CORAL_FAN = 388; //TODO: 1.20.80 flattening
+    int TUBE_CORAL_FAN = 388;
+    /**
+     * @deprecated flattened since 1.20.80
+     * @see #TUBE_CORAL_FAN
+     * @see #BRAIN_CORAL_FAN
+     * @see #BUBBLE_CORAL_FAN
+     * @see #FIRE_CORAL_FAN
+     * @see #HORN_CORAL_FAN
+     */
+    @Deprecated
     int CORAL_FAN = 388;
-    int DEAD_TUBE_CORAL_FAN = 389; //TODO: 1.20.80 flattening
+    int DEAD_TUBE_CORAL_FAN = 389;
+    /**
+     * @deprecated flattened since 1.20.80
+     * @see #DEAD_TUBE_CORAL_FAN
+     * @see #DEAD_BRAIN_CORAL_FAN
+     * @see #DEAD_BUBBLE_CORAL_FAN
+     * @see #DEAD_FIRE_CORAL_FAN
+     * @see #DEAD_HORN_CORAL_FAN
+     */
+    @Deprecated
     int CORAL_FAN_DEAD = 389;
-    int TUBE_CORAL_WALL_FAN = 390; //TODO: 1.21.20 flattening
+    int TUBE_CORAL_WALL_FAN = 390;
+    /**
+     * @deprecated flattened since 1.21.20
+     * @see #TUBE_CORAL_WALL_FAN
+     * @see #BRAIN_CORAL_WALL_FAN
+     * @see #DEAD_TUBE_CORAL_WALL_FAN
+     * @see #DEAD_BRAIN_CORAL_WALL_FAN
+     */
+    @Deprecated
     int CORAL_FAN_HANG = 390;
-    int BUBBLE_CORAL_WALL_FAN = 391; //TODO: 1.21.20 flattening
+    int BUBBLE_CORAL_WALL_FAN = 391;
+    /**
+     * @deprecated flattened since 1.21.20
+     * @see #BUBBLE_CORAL_WALL_FAN
+     * @see #FIRE_CORAL_WALL_FAN
+     * @see #DEAD_BUBBLE_CORAL_WALL_FAN
+     * @see #DEAD_FIRE_CORAL_WALL_FAN
+     */
+    @Deprecated
     int CORAL_FAN_HANG2 = 391;
-    int HORN_CORAL_WALL_FAN = 392; //TODO: 1.21.20 flattening
+    int HORN_CORAL_WALL_FAN = 392;
+    /**
+     * @deprecated flattened since 1.21.20
+     * @see #HORN_CORAL_WALL_FAN
+     * @see #DEAD_HORN_CORAL_WALL_FAN
+     */
+    @Deprecated
     int CORAL_FAN_HANG3 = 392;
-    int BLOCK_KELP = 393;
+    int KELP = 393;
     int DRIED_KELP_BLOCK = 394;
     int ACACIA_BUTTON = 395;
     int BIRCH_BUTTON = 396;
@@ -502,24 +1061,86 @@ public interface BlockID {
     int CARVED_PUMPKIN = 410;
     int SEA_PICKLE = 411;
     int CONDUIT = 412;
+    /**
+     * use {@link #AIR}
+     * @see #AIR
+     */
     int BLOCK_AIR = 413;
     int TURTLE_EGG = 414;
     int BUBBLE_COLUMN = 415;
     int BARRIER = 416;
-    int END_STONE_BRICK_SLAB = 417; //TODO: 1.21.20 flattening
-    int STONE_BLOCK_SLAB3 = 417; //TODO: 1.19.0 rename
+    int END_STONE_BRICK_SLAB = 417;
+    /**
+     * @deprecated flattened since 1.21.20
+     * @see #END_STONE_BRICK_SLAB
+     * @see #SMOOTH_RED_SANDSTONE_SLAB
+     * @see #POLISHED_ANDESITE_SLAB
+     * @see #ANDESITE_SLAB
+     * @see #DIORITE_SLAB
+     * @see #POLISHED_DIORITE_SLAB
+     * @see #GRANITE_SLAB
+     * @see #POLISHED_GRANITE_SLAB
+     */
+    @Deprecated
+    int STONE_BLOCK_SLAB3 = 417;
+    /**
+     * @deprecated use {@link #STONE_BLOCK_SLAB3} instead
+     */
+    @Deprecated
     int STONE_SLAB3 = 417;
     int BAMBOO = 418;
     int BAMBOO_SAPLING = 419;
     int SCAFFOLDING = 420;
-    int MOSSY_STONE_BRICK_SLAB = 421; //TODO: 1.21.20 flattening
-    int STONE_BLOCK_SLAB4 = 421; //TODO: 1.19.0 rename
+    int MOSSY_STONE_BRICK_SLAB = 421;
+    /**
+     * @deprecated flattened since 1.21.20
+     * @see #MOSSY_STONE_BRICK_SLAB
+     * @see #SMOOTH_QUARTZ_SLAB
+     * @see #NORMAL_STONE_SLAB
+     * @see #CUT_SANDSTONE_SLAB
+     * @see #CUT_RED_SANDSTONE_SLAB
+     */
+    @Deprecated
+    int STONE_BLOCK_SLAB4 = 421;
+    /**
+     * @deprecated use {@link #STONE_BLOCK_SLAB4} instead
+     */
+    @Deprecated
     int STONE_SLAB4 = 421;
-    int END_STONE_BRICK_DOUBLE_SLAB = 422; //TODO: 1.21.20 flattening
-    int DOUBLE_STONE_BLOCK_SLAB3 = 422; //TODO: 1.19.0 rename
+    int END_STONE_BRICK_DOUBLE_SLAB = 422;
+    /**
+     * @deprecated flattened since 1.21.20
+     * @see #END_STONE_BRICK_DOUBLE_SLAB
+     * @see #SMOOTH_RED_SANDSTONE_DOUBLE_SLAB
+     * @see #POLISHED_ANDESITE_DOUBLE_SLAB
+     * @see #ANDESITE_DOUBLE_SLAB
+     * @see #DIORITE_DOUBLE_SLAB
+     * @see #POLISHED_DIORITE_DOUBLE_SLAB
+     * @see #GRANITE_DOUBLE_SLAB
+     * @see #POLISHED_GRANITE_DOUBLE_SLAB
+     */
+    @Deprecated
+    int DOUBLE_STONE_BLOCK_SLAB3 = 422;
+    /**
+     * @deprecated use {@link #DOUBLE_STONE_BLOCK_SLAB3} instead
+     */
+    @Deprecated
     int DOUBLE_STONE_SLAB3 = 422;
-    int MOSSY_STONE_BRICK_DOUBLE_SLAB = 423; //TODO: 1.21.20 flattening
-    int DOUBLE_STONE_BLOCK_SLAB4 = 423; //TODO: 1.19.0 rename
+    int MOSSY_STONE_BRICK_DOUBLE_SLAB = 423;
+    /**
+     * @deprecated flattened since 1.21.20
+     * @see #MOSSY_STONE_BRICK_DOUBLE_SLAB
+     * @see #SMOOTH_QUARTZ_DOUBLE_SLAB
+     * @see #NORMAL_STONE_DOUBLE_SLAB
+     * @see #CUT_SANDSTONE_DOUBLE_SLAB
+     * @see #CUT_RED_SANDSTONE_DOUBLE_SLAB
+     */
+    @Deprecated
+    int DOUBLE_STONE_BLOCK_SLAB4 = 423;
+    /**
+     * @deprecated use {@link #DOUBLE_STONE_BLOCK_SLAB4} instead
+     */
+    @Deprecated
     int DOUBLE_STONE_SLAB4 = 423;
     int GRANITE_STAIRS = 424;
     int DIORITE_STAIRS = 425;
@@ -557,17 +1178,58 @@ public interface BlockID {
     int SMITHING_TABLE = 457;
     int BARREL = 458;
     int LOOM = 459;
-    int BELL = 461; //TODO: meta 31
+    int BELL = 461;
+
     int SWEET_BERRY_BUSH = 462;
     int LANTERN = 463;
-    int BLOCK_CAMPFIRE = 464;
-    int LAVA_CAULDRON = 465; //TODO: 1.20.0 remove
-    int JIGSAW = 466; //TODO: meta 29
-    int OAK_WOOD = 467; //TODO: 1.20.70 flattening
+    int CAMPFIRE = 464;
+    /**
+     * @deprecated removed since 1.20.0
+     */
+    @Deprecated
+    int LAVA_CAULDRON = 465;
+    int JIGSAW = 466;
+    int OAK_WOOD = 467;
+    /**
+     * @deprecated flattened since 1.20.70
+     * @see #OAK_WOOD
+     * @see #SPRUCE_WOOD
+     * @see #BIRCH_WOOD
+     * @see #JUNGLE_WOOD
+     * @see #ACACIA_WOOD
+     * @see #DARK_OAK_WOOD
+     * @see #STRIPPED_OAK_WOOD
+     * @see #STRIPPED_SPRUCE_WOOD
+     * @see #STRIPPED_BIRCH_WOOD
+     * @see #STRIPPED_JUNGLE_WOOD
+     * @see #STRIPPED_ACACIA_WOOD
+     * @see #STRIPPED_DARK_OAK_WOOD
+     */
+    @Deprecated
     int WOOD = 467;
     int COMPOSTER = 468;
     int LIT_BLAST_FURNACE = 469;
-    int LIGHT_BLOCK_0 = 470; //TODO: 1.21.20 flattening
+    int LIGHT_BLOCK_0 = 470;
+    /**
+     * @deprecated flattened since 1.21.20
+     * @see #LIGHT_BLOCK_0
+     * @see #LIGHT_BLOCK_1
+     * @see #LIGHT_BLOCK_2
+     * @see #LIGHT_BLOCK_3
+     * @see #LIGHT_BLOCK_4
+     * @see #LIGHT_BLOCK_5
+     * @see #LIGHT_BLOCK_6
+     * @see #LIGHT_BLOCK_7
+     * @see #LIGHT_BLOCK_8
+     * @see #LIGHT_BLOCK_9
+     * @see #LIGHT_BLOCK_10
+     * @see #LIGHT_BLOCK_11
+     * @see #LIGHT_BLOCK_12
+     * @see #LIGHT_BLOCK_13
+     * @see #LIGHT_BLOCK_14
+     * @see #LIGHT_BLOCK_15
+     */
+    @Deprecated
     int LIGHT_BLOCK = 470;
     int WITHER_ROSE = 471;
     int STICKY_PISTON_ARM_COLLISION = 472;
@@ -596,16 +1258,17 @@ public interface BlockID {
     int POLISHED_BASALT = 490;
     int SOUL_SOIL = 491;
     int SOUL_FIRE = 492;
-    int BLOCK_NETHER_SPROUTS = 493;
+    int NETHER_SPROUTS = 493;
     int TARGET = 494;
     int STRIPPED_CRIMSON_STEM = 495;
     int STRIPPED_WARPED_STEM = 496;
     int CRIMSON_PLANKS = 497;
     int WARPED_PLANKS = 498;
-    int BLOCK_CRIMSON_DOOR = 499;
-    int BLOCK_WARPED_DOOR = 500;
+    int CRIMSON_DOOR = 499;
+    int WARPED_DOOR = 500;
     int CRIMSON_TRAPDOOR = 501;
     int WARPED_TRAPDOOR = 502;
+
     int CRIMSON_STANDING_SIGN = 505;
     int WARPED_STANDING_SIGN = 506;
     int CRIMSON_WALL_SIGN = 507;
@@ -647,11 +1310,11 @@ public interface BlockID {
      * @deprecated use {@link #IRON_CHAIN} instead
      */
     @Deprecated
-    int BLOCK_CHAIN = 541;
+    int CHAIN = 541;
     int TWISTING_VINES = 542;
     int NETHER_GOLD_ORE = 543;
     int CRYING_OBSIDIAN = 544;
-    int BLOCK_SOUL_CAMPFIRE = 545;
+    int SOUL_CAMPFIRE = 545;
     int POLISHED_BLACKSTONE = 546;
     int POLISHED_BLACKSTONE_STAIRS = 547;
     int POLISHED_BLACKSTONE_SLAB = 548;
@@ -670,6 +1333,7 @@ public interface BlockID {
     int POWDER_SNOW = 561;
     int SCULK_SENSOR = 562;
     int POINTED_DRIPSTONE = 563;
+
     int COPPER_ORE = 566;
     int LIGHTNING_ROD = 567;
     int CRAFTER = 568;
@@ -698,7 +1362,7 @@ public interface BlockID {
     int SMALL_DRIPLEAF_BLOCK = 591;
     int AZALEA = 592;
     int FLOWERING_AZALEA = 593;
-    int BLOCK_GLOW_FRAME = 594;
+    int GLOW_FRAME = 594;
     int COPPER_BLOCK = 595;
     int EXPOSED_COPPER = 596;
     int WEATHERED_COPPER = 597;
@@ -814,10 +1478,12 @@ public interface BlockID {
     int RAW_COPPER_BLOCK = 707;
     int RAW_GOLD_BLOCK = 708;
     int INFESTED_DEEPSLATE = 709;
+
     int SCULK = 713;
     int SCULK_VEIN = 714;
     int SCULK_CATALYST = 715;
     int SCULK_SHRIEKER = 716;
+
     int CLIENT_REQUEST_PLACEHOLDER_BLOCK = 720;
     int REINFORCED_DEEPSLATE = 721;
     /**
@@ -838,6 +1504,7 @@ public interface BlockID {
     int MUD = 728;
     int MANGROVE_PROPAGULE = 729;
     int MUD_BRICKS = 730;
+
     int PACKED_MUD = 732;
     int MUD_BRICK_SLAB = 733;
     int MUD_BRICK_DOUBLE_SLAB = 734;
@@ -854,7 +1521,7 @@ public interface BlockID {
     int MANGROVE_PRESSURE_PLATE = 745;
     int MANGROVE_FENCE = 746;
     int MANGROVE_FENCE_GATE = 747;
-    int BLOCK_MANGROVE_DOOR = 748;
+    int MANGROVE_DOOR = 748;
     int MANGROVE_STANDING_SIGN = 749;
     int MANGROVE_WALL_SIGN = 750;
     int MANGROVE_TRAPDOOR = 751;

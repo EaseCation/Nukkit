@@ -14,11 +14,7 @@ import cn.nukkit.nbt.tag.CompoundTag;
  */
 public abstract class BlockFallable extends BlockSolid {
 
-    protected BlockFallable() {
-    }
-
-    protected BlockFallable(int meta) {
-        super(meta);
+    BlockFallable() {
     }
 
     @Override

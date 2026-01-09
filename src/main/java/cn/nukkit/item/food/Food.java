@@ -5,6 +5,7 @@ import cn.nukkit.Player;
 import cn.nukkit.block.Block;
 import cn.nukkit.event.player.PlayerEatFoodEvent;
 import cn.nukkit.item.Item;
+import cn.nukkit.item.ItemBlockID;
 import cn.nukkit.item.ItemMedicine;
 import cn.nukkit.item.ItemSuspiciousStew;
 import cn.nukkit.plugin.Plugin;
@@ -41,30 +42,30 @@ public abstract class Food {
     public static final Food beetroot_soup = registerDefaultFood(new FoodInBowl(6, 7.2F).addRelative(Item.BEETROOT_SOUP));
     public static final Food bread = registerDefaultFood(new FoodNormal(5, 6F).addRelative(Item.BREAD));
     public static final Food cake_slice = registerDefaultFood(new FoodNormal(2, 0.4F)
-            .addRelative(Block.BLOCK_CAKE, 0)
-            .addRelative(Block.BLOCK_CAKE, 1)
-            .addRelative(Block.BLOCK_CAKE, 2)
-            .addRelative(Block.BLOCK_CAKE, 3)
-            .addRelative(Block.BLOCK_CAKE, 4)
-            .addRelative(Block.BLOCK_CAKE, 5)
-            .addRelative(Block.BLOCK_CAKE, 6)
-            .addRelative(Block.CANDLE_CAKE)
-            .addRelative(Block.WHITE_CANDLE_CAKE)
-            .addRelative(Block.ORANGE_CANDLE_CAKE)
-            .addRelative(Block.MAGENTA_CANDLE_CAKE)
-            .addRelative(Block.LIGHT_BLUE_CANDLE_CAKE)
-            .addRelative(Block.YELLOW_CANDLE_CAKE)
-            .addRelative(Block.LIME_CANDLE_CAKE)
-            .addRelative(Block.PINK_CANDLE_CAKE)
-            .addRelative(Block.GRAY_CANDLE_CAKE)
-            .addRelative(Block.LIGHT_GRAY_CANDLE_CAKE)
-            .addRelative(Block.CYAN_CANDLE_CAKE)
-            .addRelative(Block.PURPLE_CANDLE_CAKE)
-            .addRelative(Block.BLUE_CANDLE_CAKE)
-            .addRelative(Block.BROWN_CANDLE_CAKE)
-            .addRelative(Block.GREEN_CANDLE_CAKE)
-            .addRelative(Block.RED_CANDLE_CAKE)
-            .addRelative(Block.BLACK_CANDLE_CAKE));
+            .addRelative(ItemBlockID.BLOCK_CAKE, 0)
+            .addRelative(ItemBlockID.BLOCK_CAKE, 1)
+            .addRelative(ItemBlockID.BLOCK_CAKE, 2)
+            .addRelative(ItemBlockID.BLOCK_CAKE, 3)
+            .addRelative(ItemBlockID.BLOCK_CAKE, 4)
+            .addRelative(ItemBlockID.BLOCK_CAKE, 5)
+            .addRelative(ItemBlockID.BLOCK_CAKE, 6)
+            .addRelative(ItemBlockID.CANDLE_CAKE)
+            .addRelative(ItemBlockID.WHITE_CANDLE_CAKE)
+            .addRelative(ItemBlockID.ORANGE_CANDLE_CAKE)
+            .addRelative(ItemBlockID.MAGENTA_CANDLE_CAKE)
+            .addRelative(ItemBlockID.LIGHT_BLUE_CANDLE_CAKE)
+            .addRelative(ItemBlockID.YELLOW_CANDLE_CAKE)
+            .addRelative(ItemBlockID.LIME_CANDLE_CAKE)
+            .addRelative(ItemBlockID.PINK_CANDLE_CAKE)
+            .addRelative(ItemBlockID.GRAY_CANDLE_CAKE)
+            .addRelative(ItemBlockID.LIGHT_GRAY_CANDLE_CAKE)
+            .addRelative(ItemBlockID.CYAN_CANDLE_CAKE)
+            .addRelative(ItemBlockID.PURPLE_CANDLE_CAKE)
+            .addRelative(ItemBlockID.BLUE_CANDLE_CAKE)
+            .addRelative(ItemBlockID.BROWN_CANDLE_CAKE)
+            .addRelative(ItemBlockID.GREEN_CANDLE_CAKE)
+            .addRelative(ItemBlockID.RED_CANDLE_CAKE)
+            .addRelative(ItemBlockID.BLACK_CANDLE_CAKE));
     public static final Food carrot = registerDefaultFood(new FoodNormal(3, 4.8F).addRelative(Item.CARROT));
     public static final Food carrot_golden = registerDefaultFood(new FoodNormal(6, 14.4F).addRelative(Item.GOLDEN_CARROT));
     public static final Food chicken_raw = registerDefaultFood(new FoodEffective(2, 1.2F)
@@ -227,7 +228,7 @@ public abstract class Food {
 
     public static Food getByRelative(Block block) {
         Objects.requireNonNull(block);
-        return getByRelative(block.getId(), block.getDamage());
+        return getByRelative(block.getItemId(), block.getDamage());
     }
 
     public static Food getByRelative(int relativeID, int meta) {

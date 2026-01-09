@@ -83,7 +83,7 @@ public class BlockEntityBrushableBlock extends BlockEntitySpawnable {
     }
 
     @Override
-    public CompoundTag getSpawnCompound() {
+    public CompoundTag getSpawnCompound(boolean chunkData) {
         CompoundTag nbt = getDefaultCompound(this, BRUSHABLE_BLOCK)
                 .putString("type", type)
                 .putInt("brush_count", brushCount)

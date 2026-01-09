@@ -7,7 +7,7 @@ import cn.nukkit.level.biome.Biome;
 import cn.nukkit.level.biome.type.CoveredBiome;
 import cn.nukkit.level.generator.Normal;
 import cn.nukkit.level.generator.populator.type.Populator;
-import cn.nukkit.math.NukkitRandom;
+import cn.nukkit.math.RandomSource;
 
 /**
  * author: DaPorkchop_
@@ -16,7 +16,7 @@ import cn.nukkit.math.NukkitRandom;
 public class PopulatorGroundCover extends Populator {
 
     @Override
-    public void populate(ChunkManager level, int chunkX, int chunkZ, NukkitRandom random, FullChunk chunk) {
+    public void populate(ChunkManager level, int chunkX, int chunkZ, RandomSource random, FullChunk chunk) {
         int realX = chunkX << 4;
         int realZ = chunkZ << 4;
         for (int x = 0; x < 16; ++x) {

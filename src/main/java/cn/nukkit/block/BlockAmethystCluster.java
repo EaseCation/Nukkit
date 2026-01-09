@@ -12,12 +12,8 @@ import cn.nukkit.utils.Faceable;
 public class BlockAmethystCluster extends BlockTransparent implements Faceable {
     public static final int FACING_DIRECTION_MASK = 0b111;
 
-    public BlockAmethystCluster() {
-        this(0);
-    }
+    BlockAmethystCluster() {
 
-    public BlockAmethystCluster(int meta) {
-        super(meta);
     }
 
     @Override
@@ -52,12 +48,17 @@ public class BlockAmethystCluster extends BlockTransparent implements Faceable {
 
     @Override
     public Item toItem(boolean addUserData) {
-        return Item.get(getItemId(), getItemDefaultMeta());
+        return Item.get(getItemId(), getItemMeta());
     }
 
     @Override
-    public int getItemDefaultMeta() {
+    public int getBlockDefaultMeta() {
         return 1;
+    }
+
+    @Override
+    public int getItemSerializationMeta() {
+        return getBlockDefaultMeta();
     }
 
     @Override

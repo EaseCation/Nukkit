@@ -93,7 +93,7 @@ public class BlockEntityChalkboard extends BlockEntitySpawnable {
     }
 
     @Override
-    public CompoundTag getSpawnCompound() {
+    public CompoundTag getSpawnCompound(boolean chunkData) {
         return getDefaultCompound(this, CHALKBOARD_BLOCK)
                 .putInt(TAG_BASE_X, baseX)
                 .putInt(TAG_BASE_Y, baseY)

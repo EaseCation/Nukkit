@@ -3,12 +3,8 @@ package cn.nukkit.block;
 import cn.nukkit.utils.BlockColor;
 
 public class BlockShelfMangrove extends BlockShelf {
-    public BlockShelfMangrove() {
-        this(0);
-    }
+    BlockShelfMangrove() {
 
-    public BlockShelfMangrove(int meta) {
-        super(meta);
     }
 
     @Override

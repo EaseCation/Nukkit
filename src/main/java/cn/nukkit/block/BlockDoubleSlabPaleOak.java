@@ -1,27 +1,17 @@
 package cn.nukkit.block;
 
+import cn.nukkit.item.Item;
+import cn.nukkit.item.ItemBlockID;
 import cn.nukkit.utils.BlockColor;
 
 public class BlockDoubleSlabPaleOak extends BlockDoubleSlabWood {
-    public static final int TYPE_MASK = 0;
-    public static final int TOP_SLOT_BIT = 0b1;
+    BlockDoubleSlabPaleOak() {
 
-    public BlockDoubleSlabPaleOak() {
-        this(0);
-    }
-
-    public BlockDoubleSlabPaleOak(int meta) {
-        super(meta);
     }
 
     @Override
     public int getId() {
         return PALE_OAK_DOUBLE_SLAB;
-    }
-
-    @Override
-    public boolean isStackedByData() {
-        return false;
     }
 
     @Override
@@ -35,12 +25,7 @@ public class BlockDoubleSlabPaleOak extends BlockDoubleSlabWood {
     }
 
     @Override
-    public int getSlabType() {
-        return 0;
-    }
-
-    @Override
-    protected int getSlabBlockId() {
-        return PALE_OAK_SLAB;
+    public Item toItem(boolean addUserData) {
+        return Item.get(ItemBlockID.PALE_OAK_SLAB);
     }
 }

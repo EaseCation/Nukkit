@@ -7,12 +7,8 @@ import cn.nukkit.math.BlockFace;
 import cn.nukkit.network.protocol.LevelSoundEventPacket;
 
 public class BlockCaveVinesBerriesBody extends BlockCaveVines {
-    public BlockCaveVinesBerriesBody() {
-        this(0);
-    }
+    BlockCaveVinesBerriesBody() {
 
-    public BlockCaveVinesBerriesBody(int meta) {
-        super(meta);
     }
 
     @Override

@@ -5,12 +5,8 @@ package cn.nukkit.block;
  */
 public class BlockPistonSticky extends BlockPistonBase {
 
-    public BlockPistonSticky() {
-        this(0);
-    }
+    BlockPistonSticky() {
 
-    public BlockPistonSticky(int meta) {
-        super(meta);
     }
 
     @Override

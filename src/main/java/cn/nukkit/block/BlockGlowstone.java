@@ -14,7 +14,8 @@ import java.util.concurrent.ThreadLocalRandom;
  * Package cn.nukkit.block in project Nukkit .
  */
 public class BlockGlowstone extends BlockTransparent {
-    public BlockGlowstone() {
+    BlockGlowstone() {
+
     }
 
     @Override

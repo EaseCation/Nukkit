@@ -8,7 +8,8 @@ import cn.nukkit.utils.BlockColor;
 import java.util.concurrent.ThreadLocalRandom;
 
 public class BlockOreCopper extends BlockSolid {
-    public BlockOreCopper() {
+    BlockOreCopper() {
+
     }
 
     @Override

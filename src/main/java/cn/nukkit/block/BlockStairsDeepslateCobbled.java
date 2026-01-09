@@ -3,12 +3,8 @@ package cn.nukkit.block;
 import cn.nukkit.utils.BlockColor;
 
 public class BlockStairsDeepslateCobbled extends BlockStairs {
-    public BlockStairsDeepslateCobbled() {
-        this(0);
-    }
+    BlockStairsDeepslateCobbled() {
 
-    public BlockStairsDeepslateCobbled(int meta) {
-        super(meta);
     }
 
     @Override

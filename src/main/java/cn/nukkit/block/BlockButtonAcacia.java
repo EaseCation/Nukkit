@@ -2,12 +2,8 @@ package cn.nukkit.block;
 
 public class BlockButtonAcacia extends BlockButtonWooden {
 
-    public BlockButtonAcacia() {
-        this(0);
-    }
+    BlockButtonAcacia() {
 
-    public BlockButtonAcacia(int meta) {
-        super(meta);
     }
 
     @Override

@@ -2,6 +2,7 @@ package cn.nukkit.block;
 
 import cn.nukkit.Player;
 import cn.nukkit.item.Item;
+import cn.nukkit.item.ItemBlockID;
 import cn.nukkit.level.HeightRange;
 import cn.nukkit.level.Level;
 import cn.nukkit.level.particle.BoneMealParticle;
@@ -12,13 +13,25 @@ import cn.nukkit.utils.BlockColor;
 
 import java.util.concurrent.ThreadLocalRandom;
 
-import static cn.nukkit.GameVersion.*;
-
 /**
  * Created on 2015/11/23 by xtypr.
  * Package cn.nukkit.block in project Nukkit .
  */
-public class BlockFlower extends BlockFlowable {
+public abstract class BlockFlower extends BlockFlowable {
+    public static final int[] FLOWERS = {
+            POPPY,
+            BLUE_ORCHID,
+            ALLIUM,
+            AZURE_BLUET,
+            RED_TULIP,
+            ORANGE_TULIP,
+            WHITE_TULIP,
+            PINK_TULIP,
+            OXEYE_DAISY,
+            CORNFLOWER,
+            LILY_OF_THE_VALLEY,
+    };
+
     public static final int TYPE_POPPY = 0;
     public static final int TYPE_BLUE_ORCHID = 1;
     public static final int TYPE_ALLIUM = 2;
@@ -30,48 +43,6 @@ public class BlockFlower extends BlockFlowable {
     public static final int TYPE_OXEYE_DAISY = 8;
     public static final int TYPE_CORNFLOWER = 9;
     public static final int TYPE_LILY_OF_THE_VALLEY = 10;
-
-    private static final String[] NAMES = new String[]{
-            "Poppy",
-            "Blue Orchid",
-            "Allium",
-            "Azure Bluet",
-            "Red Tulip",
-            "Orange Tulip",
-            "White Tulip",
-            "Pink Tulip",
-            "Oxeye Daisy",
-            "Cornflower",
-            "Lily of the Valley",
-            "Flower",
-            "Flower",
-            "Flower",
-            "Flower",
-            "Flower",
-    };
-
-    public BlockFlower() {
-        this(0);
-    }
-
-    public BlockFlower(int meta) {
-        super(meta);
-    }
-
-    @Override
-    public int getId() {
-        return RED_FLOWER;
-    }
-
-    @Override
-    public boolean isStackedByData() {
-        return !V1_20_80.isAvailable();
-    }
-
-    @Override
-    public String getName() {
-        return NAMES[this.getDamage() & 0x0f];
-    }
 
     @Override
     public boolean place(Item item, Block block, Block target, BlockFace face, float fx, float fy, float fz, Player player) {
@@ -128,8 +99,9 @@ public class BlockFlower extends BlockFlowable {
                         random.nextInt(-3, 4));
 
                 if (level.getBlock(vec).getId() == AIR && level.getBlock(vec.down()).getId() == GRASS_BLOCK && vec.getY() >= heightRange.getMinY() && vec.getY() < heightRange.getMaxY()) {
-                    if (random.nextInt(10) == 0) {
-                        this.level.setBlock(vec, this.getUncommonFlower(), true);
+                    int blockId = getUncommonFlowerId();
+                    if (blockId != -1 && random.nextInt(10) == 0) {
+                        this.level.setBlock(vec, get(blockId), true);
                     } else {
                         this.level.setBlock(vec, get(this.getId()), true);
                     }
@@ -139,7 +111,7 @@ public class BlockFlower extends BlockFlowable {
             return true;
         }
 
-        if (item.is(getItemId(SNOW_LAYER))) {
+        if (item.is(ItemBlockID.SNOW_LAYER)) {
             level.setExtraBlock(this, this, true, false);
             level.setBlock(this, get(SNOW_LAYER, BlockSnowLayer.COVERED_BIT), true);
 
@@ -184,8 +156,8 @@ public class BlockFlower extends BlockFlowable {
         return true;
     }
 
-    protected Block getUncommonFlower() {
-        return get(DANDELION);
+    protected int getUncommonFlowerId() {
+        return -1;
     }
 
     @Override

@@ -1,7 +1,8 @@
 package cn.nukkit.block;
 
 public class BlockTuffChiseled extends BlockTuff {
-    public BlockTuffChiseled() {
+    BlockTuffChiseled() {
+
     }
 
     @Override

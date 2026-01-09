@@ -13,7 +13,7 @@ import cn.nukkit.level.generator.object.ore.OreType;
 import cn.nukkit.level.generator.populator.impl.*;
 import cn.nukkit.level.generator.populator.type.Populator;
 import cn.nukkit.math.Mth;
-import cn.nukkit.math.NukkitRandom;
+import cn.nukkit.math.RandomSource;
 import cn.nukkit.math.Vector3;
 import it.unimi.dsi.fastutil.objects.Object2ObjectOpenHashMap;
 
@@ -32,7 +32,7 @@ public class LegacyNether implements Generator {
 
     private final Map<String, Object> options;
     private ChunkManager level;
-    private NukkitRandom random;
+    private RandomSource random;
     private long localSeed1;
     private long localSeed2;
     private final List<Populator> populators = new ArrayList<>();
@@ -77,7 +77,7 @@ public class LegacyNether implements Generator {
     }
 
     @Override
-    public void init(ChunkManager level, NukkitRandom random, GeneratorOptions generatorOptions) {
+    public void init(ChunkManager level, RandomSource random, GeneratorOptions generatorOptions) {
         this.level = level;
         this.random = random;
         this.random.setSeed(level.getSeed());

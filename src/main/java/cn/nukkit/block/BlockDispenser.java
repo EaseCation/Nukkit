@@ -30,12 +30,8 @@ import java.util.concurrent.ThreadLocalRandom;
  */
 public class BlockDispenser extends BlockSolid implements Faceable {
 
-    public BlockDispenser() {
-        this(0);
-    }
+    BlockDispenser() {
 
-    public BlockDispenser(int meta) {
-        super(meta);
     }
 
     @Override
@@ -66,6 +62,11 @@ public class BlockDispenser extends BlockSolid implements Faceable {
     @Override
     public float getResistance() {
         return 17.5f;
+    }
+
+    @Override
+    public int getItemSerializationMeta() {
+        return 3;
     }
 
     @Override

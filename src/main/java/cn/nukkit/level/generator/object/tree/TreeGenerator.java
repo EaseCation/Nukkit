@@ -15,18 +15,15 @@ public abstract class TreeGenerator extends BasicGenerator {
      * For example, a tree will not grow into stone.
      */
     protected boolean canGrowInto(int id) {
-        return id == Block.AIR
-                || id == Block.LEAVES
-                || id == Block.GRASS_BLOCK
-                || id == Block.DIRT
-                || id == Block.OAK_LOG
-                || id == Block.SPRUCE_LOG
-                || id == Block.BIRCH_LOG
-                || id == Block.JUNGLE_LOG
-                || id == Block.ACACIA_LOG
-                || id == Block.DARK_OAK_LOG
-                || id == Block.SAPLING
-                || id == Block.VINE;
+        switch (id) {
+            case Block.AIR:
+            case Block.GRASS_BLOCK:
+            case Block.DIRT:
+            case Block.VINE:
+                return true;
+        }
+        Block ub = Block.getUnsafe(id);
+        return ub.isLog() || ub.isLeaves() || ub.isSapling();
     }
 
     public void generateSaplings(Level level, RandomSource random, BlockVector3 pos) {

@@ -2,9 +2,9 @@ package cn.nukkit.block;
 
 import cn.nukkit.utils.BlockColor;
 
-public class BlockWildflowers extends BlockPinkPetals {
-    public BlockWildflowers() {
-        super(0);
+public class BlockWildflowers extends BlockSegmentable {
+    BlockWildflowers() {
+
     }
 
     @Override

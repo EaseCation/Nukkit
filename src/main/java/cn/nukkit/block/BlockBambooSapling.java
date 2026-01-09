@@ -2,6 +2,7 @@ package cn.nukkit.block;
 
 import cn.nukkit.Player;
 import cn.nukkit.item.Item;
+import cn.nukkit.item.ItemBlockID;
 import cn.nukkit.level.Level;
 import cn.nukkit.level.particle.BoneMealParticle;
 import cn.nukkit.math.BlockFace;
@@ -14,12 +15,8 @@ public class BlockBambooSapling extends BlockFlowable {
 
     public static final int AGE_BIT = 0b1;
 
-    public BlockBambooSapling() {
-        this(0);
-    }
+    BlockBambooSapling() {
 
-    public BlockBambooSapling(int meta) {
-        super(meta);
     }
 
     @Override
@@ -71,7 +68,7 @@ public class BlockBambooSapling extends BlockFlowable {
 
     @Override
     public Item toItem(boolean addUserData) {
-        return Item.get(getItemId(BAMBOO));
+        return Item.get(ItemBlockID.BAMBOO);
     }
 
     @Override
@@ -110,7 +107,7 @@ public class BlockBambooSapling extends BlockFlowable {
             return true;
         }
 
-        if (id == getItemId(BAMBOO)) {
+        if (id == ItemBlockID.BAMBOO) {
             if (face.isHorizontal()) {
                 return false;
             }

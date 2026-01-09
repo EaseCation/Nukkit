@@ -6,12 +6,8 @@ import static cn.nukkit.GameVersion.*;
 import static cn.nukkit.SharedConstants.*;
 
 public class BlockStairsMudBrick extends BlockStairs {
-    public BlockStairsMudBrick() {
-        this(0);
-    }
+    BlockStairsMudBrick() {
 
-    public BlockStairsMudBrick(int meta) {
-        super(meta);
     }
 
     @Override

@@ -2,22 +2,21 @@ package cn.nukkit.level.generator.object.tree;
 
 import cn.nukkit.block.Block;
 import cn.nukkit.block.BlockID;
-import cn.nukkit.block.BlockLeaves2;
 import cn.nukkit.level.ChunkManager;
 import cn.nukkit.level.HeightRange;
 import cn.nukkit.math.BlockFace;
 import cn.nukkit.math.BlockVector3;
-import cn.nukkit.math.NukkitRandom;
+import cn.nukkit.math.RandomSource;
 
 /**
  * Created by CreeperFace on 23. 10. 2016.
  */
 public class ObjectDarkOakTree extends TreeGenerator {
     private static final Block DARK_OAK_LOG = Block.get(BlockID.DARK_OAK_LOG);
-    private static final Block DARK_OAK_LEAVES = Block.get(BlockID.LEAVES2, BlockLeaves2.DARK_OAK);
+    private static final Block DARK_OAK_LEAVES = Block.get(BlockID.DARK_OAK_LEAVES);
 
     @Override
-    public boolean generate(ChunkManager level, NukkitRandom rand, BlockVector3 position) {
+    public boolean generate(ChunkManager level, RandomSource rand, BlockVector3 position) {
         int i = rand.nextBoundedInt(3) + rand.nextBoundedInt(2) + 6;
         int j = position.getX();
         int k = position.getY();
@@ -54,8 +53,9 @@ public class ObjectDarkOakTree extends TreeGenerator {
                     int k2 = k + j2;
                     BlockVector3 blockpos1 = new BlockVector3(k1, k2, l1);
                     int material = level.getBlockIdAt(0, blockpos1.getX(), blockpos1.getY(), blockpos1.getZ());
+                    Block ub = Block.getUnsafe(material);
 
-                    if (material == Block.AIR || material == Block.LEAVES) {
+                    if (material == Block.AIR || ub.isLeaves()) {
                         this.placeLogAt(level, blockpos1);
                         this.placeLogAt(level, blockpos1.east());
                         this.placeLogAt(level, blockpos1.south());

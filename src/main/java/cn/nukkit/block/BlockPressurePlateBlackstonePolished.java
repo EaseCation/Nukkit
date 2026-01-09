@@ -3,12 +3,8 @@ package cn.nukkit.block;
 import cn.nukkit.utils.BlockColor;
 
 public class BlockPressurePlateBlackstonePolished extends BlockPressurePlateStone {
-    public BlockPressurePlateBlackstonePolished() {
-        this(0);
-    }
+    BlockPressurePlateBlackstonePolished() {
 
-    public BlockPressurePlateBlackstonePolished(int meta) {
-        super(meta);
     }
 
     @Override

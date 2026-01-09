@@ -7,9 +7,35 @@ import cn.nukkit.network.protocol.AnimatePacket.SwingSource;
 import cn.nukkit.network.protocol.LevelSoundEventPacket;
 import cn.nukkit.utils.BlockColor;
 
-import static cn.nukkit.GameVersion.*;
-
-public class BlockWoodBark extends BlockSolid {
+/**
+ * @deprecated flattened
+ */
+@Deprecated
+public abstract class BlockWoodBark extends BlockSolid {
+    public static final int[] WOODS = {
+            OAK_WOOD,
+            SPRUCE_WOOD,
+            BIRCH_WOOD,
+            JUNGLE_WOOD,
+            ACACIA_WOOD,
+            DARK_OAK_WOOD,
+            OAK_WOOD,
+            OAK_WOOD,
+            STRIPPED_OAK_WOOD,
+            STRIPPED_SPRUCE_WOOD,
+            STRIPPED_BIRCH_WOOD,
+            STRIPPED_JUNGLE_WOOD,
+            STRIPPED_ACACIA_WOOD,
+            STRIPPED_DARK_OAK_WOOD,
+    };
+    public static final int[] STRIPPED_WOODS = {
+            STRIPPED_OAK_WOOD,
+            STRIPPED_SPRUCE_WOOD,
+            STRIPPED_BIRCH_WOOD,
+            STRIPPED_JUNGLE_WOOD,
+            STRIPPED_ACACIA_WOOD,
+            STRIPPED_DARK_OAK_WOOD,
+    };
 
     public static final int OAK = 0;
     public static final int SPRUCE = 1;
@@ -22,15 +48,6 @@ public class BlockWoodBark extends BlockSolid {
     public static final int STRIPPED_BIT = 0b1000;
     public static final int PILLAR_AXIS_MASK = 0b110000;
 
-    private static final int[] FACES = {
-            0,
-            0,
-            0b10_0000,
-            0b10_0000,
-            0b01_0000,
-            0b01_0000,
-    };
-
     private static final String[] NAMES = new String[]{
             "Oak Wood",
             "Spruce Wood",
@@ -41,24 +58,6 @@ public class BlockWoodBark extends BlockSolid {
             "Wood",
             "Wood",
     };
-
-    public BlockWoodBark() {
-        this(0);
-    }
-
-    public BlockWoodBark(int meta) {
-        super(meta);
-    }
-
-    @Override
-    public int getId() {
-        return WOOD;
-    }
-
-    @Override
-    public boolean isStackedByData() {
-        return !V1_20_70.isAvailable();
-    }
 
     @Override
     public String getName() {
@@ -155,8 +154,13 @@ public class BlockWoodBark extends BlockSolid {
     }
 
     @Override
+    public boolean isWood() {
+        return true;
+    }
+
+    @Override
     public boolean place(Item item, Block block, Block target, BlockFace face, float fx, float fy, float fz, Player player) {
-        setDamage((getDamage() & 0b1111) | FACES[face.getIndex()]);
+        setDamage(getDamage() & 0b1111 | face.getAxis().getIndex() << 4);
         return level.setBlock(this, this, true);
     }
 }

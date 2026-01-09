@@ -4,12 +4,8 @@ import cn.nukkit.utils.BlockColor;
 
 public class BlockLogStrippedDarkOak extends BlockLogStripped {
 
-    public BlockLogStrippedDarkOak() {
-        this(0);
-    }
+    BlockLogStrippedDarkOak() {
 
-    public BlockLogStrippedDarkOak(int meta) {
-        super(meta);
     }
 
     @Override

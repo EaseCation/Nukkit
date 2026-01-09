@@ -15,12 +15,8 @@ public class BlockKelp extends BlockTransparent {
 
     public static final int MAX_AGE = 25;
 
-    public BlockKelp() {
-        this(0);
-    }
+    BlockKelp() {
 
-    public BlockKelp(int meta) {
-        super(meta);
     }
 
     @Override
@@ -30,7 +26,7 @@ public class BlockKelp extends BlockTransparent {
 
     @Override
     public int getId() {
-        return BLOCK_KELP;
+        return KELP;
     }
 
     @Override
@@ -138,7 +134,7 @@ public class BlockKelp extends BlockTransparent {
         }
 
         Block below = down();
-        if (below.getId() == BLOCK_KELP) {
+        if (below.getId() == KELP) {
             int meta = below.getDamage();
             if (meta == 0) {
                 return true;
@@ -193,13 +189,13 @@ public class BlockKelp extends BlockTransparent {
         }
 
         level.setExtraBlock(up, Block.get(FLOWING_WATER), true, false);
-        level.setBlock(up, Block.get(BLOCK_KELP, age + 1), true);
+        level.setBlock(up, Block.get(KELP, age + 1), true);
         return true;
     }
 
     private boolean canSurvive() {
         Block below = down();
         int id = below.getId();
-        return id == BLOCK_KELP || id == MOB_SPAWNER || id != MAGMA && id != SOUL_SAND && (!below.isTransparent() || id == SLIME || id == HONEY_BLOCK);
+        return id == KELP || id == MOB_SPAWNER || id != MAGMA && id != SOUL_SAND && (!below.isTransparent() || id == SLIME || id == HONEY_BLOCK);
     }
 }

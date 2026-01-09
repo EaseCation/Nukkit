@@ -7,12 +7,8 @@ import cn.nukkit.utils.BlockColor;
  * Package cn.nukkit.block in project Nukkit .
  */
 public class BlockStairsCobblestone extends BlockStairs {
-    public BlockStairsCobblestone() {
-        this(0);
-    }
+    BlockStairsCobblestone() {
 
-    public BlockStairsCobblestone(int meta) {
-        super(meta);
     }
 
     @Override

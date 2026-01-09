@@ -3,7 +3,6 @@ package cn.nukkit.level.generator.object.tree;
 import cn.nukkit.block.Block;
 import cn.nukkit.block.BlockID;
 import cn.nukkit.level.ChunkManager;
-import cn.nukkit.math.NukkitRandom;
 import cn.nukkit.math.RandomSource;
 
 public class ObjectCherryTree extends ObjectTree {
@@ -41,7 +40,7 @@ public class ObjectCherryTree extends ObjectTree {
     }
 
     @Override
-    public void placeObject(ChunkManager level, int x, int y, int z, NukkitRandom random) {
+    public void placeObject(ChunkManager level, int x, int y, int z, RandomSource random) {
         int treeHeight = random.nextBoundedInt(2) + 9;
 
         int i2 = y + treeHeight;

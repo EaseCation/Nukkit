@@ -8,7 +8,8 @@ import cn.nukkit.utils.BlockColor;
 import static cn.nukkit.GameVersion.*;
 
 public class BlockBlackstonePolished extends BlockSolid {
-    public BlockBlackstonePolished() {
+    BlockBlackstonePolished() {
+
     }
 
     @Override

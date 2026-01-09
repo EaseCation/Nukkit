@@ -89,7 +89,7 @@ public class BlockEntitySkull extends BlockEntitySpawnable {
 
     @Override
     public boolean isValidBlock(int blockId) {
-        return blockId == Block.BLOCK_SKULL
+        return blockId == Block.SKULL
                 //TODO: 1.21.40+ flatten mv -- 09/07/2024
                 ||  blockId == Block.WITHER_SKELETON_SKULL
                 ||  blockId == Block.ZOMBIE_HEAD
@@ -101,7 +101,7 @@ public class BlockEntitySkull extends BlockEntitySpawnable {
     }
 
     @Override
-    public CompoundTag getSpawnCompound() {
+    public CompoundTag getSpawnCompound(boolean chunkData) {
         return getDefaultCompound(this, SKULL)
                 .putByte("SkullType", this.namedTag.getByte("SkullType"))
                 .putFloat("Rotation", namedTag.getFloat("Rotation"))

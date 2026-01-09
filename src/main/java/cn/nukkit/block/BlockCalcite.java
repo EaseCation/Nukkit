@@ -6,7 +6,8 @@ import cn.nukkit.item.ItemTool;
 import cn.nukkit.utils.BlockColor;
 
 public class BlockCalcite extends BlockSolid {
-    public BlockCalcite() {
+    BlockCalcite() {
+
     }
 
     @Override

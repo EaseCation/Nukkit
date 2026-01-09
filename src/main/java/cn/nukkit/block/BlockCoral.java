@@ -15,6 +15,14 @@ public abstract class BlockCoral extends BlockFlowable {
             BUBBLE_CORAL,
             FIRE_CORAL,
             HORN_CORAL,
+            TUBE_CORAL,
+            TUBE_CORAL,
+            TUBE_CORAL,
+            DEAD_TUBE_CORAL,
+            DEAD_BRAIN_CORAL,
+            DEAD_BUBBLE_CORAL,
+            DEAD_FIRE_CORAL,
+            DEAD_HORN_CORAL,
     };
     public static final int[] DEAD_CORALS = {
             DEAD_TUBE_CORAL,
@@ -32,8 +40,8 @@ public abstract class BlockCoral extends BlockFlowable {
     public static final int RED = 3;
     public static final int YELLOW = 4;
 
-    protected BlockCoral() {
-        super(0);
+    BlockCoral() {
+
     }
 
     @Override
@@ -64,7 +72,7 @@ public abstract class BlockCoral extends BlockFlowable {
             return false;
         }
 
-        if (!isDead()) {
+        if (!isDeadCoral()) {
             level.scheduleRandomUpdate(this, ThreadLocalRandom.current().nextInt(40, 50));
         }
         return true;
@@ -78,7 +86,7 @@ public abstract class BlockCoral extends BlockFlowable {
                 return type;
             }
 
-            if (isDead()) {
+            if (isDeadCoral()) {
                 return 0;
             }
 
@@ -113,10 +121,6 @@ public abstract class BlockCoral extends BlockFlowable {
     @Override
     public boolean isCoral() {
         return true;
-    }
-
-    protected boolean isDead() {
-        return false;
     }
 
     protected int getDeadBlockId() {

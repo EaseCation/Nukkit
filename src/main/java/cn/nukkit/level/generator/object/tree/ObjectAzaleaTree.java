@@ -2,7 +2,7 @@ package cn.nukkit.level.generator.object.tree;
 
 import cn.nukkit.block.BlockID;
 import cn.nukkit.level.ChunkManager;
-import cn.nukkit.math.NukkitRandom;
+import cn.nukkit.math.RandomSource;
 
 public class ObjectAzaleaTree extends ObjectTree {
 
@@ -28,7 +28,7 @@ public class ObjectAzaleaTree extends ObjectTree {
     }
 
     @Override
-    public void placeObject(ChunkManager level, int x, int y, int z, NukkitRandom random) {
+    public void placeObject(ChunkManager level, int x, int y, int z, RandomSource random) {
         int treeHeight = random.nextBoundedInt(2) + 2;
 
         int i2 = y + treeHeight;
@@ -91,7 +91,7 @@ public class ObjectAzaleaTree extends ObjectTree {
         }
     }
 
-    private void placeLeafAt(ChunkManager level, int x, int y, int z, NukkitRandom random) {
+    private void placeLeafAt(ChunkManager level, int x, int y, int z, RandomSource random) {
         if (level.getBlockIdAt(0, x, y, z) == BlockID.AIR) {
             if (random.nextBoundedInt(3) == 0) {
                 level.setBlockAt(0, x, y, z, BlockID.AZALEA_LEAVES_FLOWERED, 0);

@@ -2081,7 +2081,7 @@ public abstract class Entity extends Location implements Metadatable, EntityData
         }
 
         Block block = this.level.getBlock(this);
-        if (block.getId() == BlockID.BLOCK_BED) {
+        if (block.getId() == BlockID.BED) {
             damage -= damage * 0.5f;
         } else {
             if (down == null) {

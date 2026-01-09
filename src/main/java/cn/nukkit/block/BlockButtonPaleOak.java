@@ -1,12 +1,8 @@
 package cn.nukkit.block;
 
 public class BlockButtonPaleOak extends BlockButtonWooden {
-    public BlockButtonPaleOak() {
-        this(0);
-    }
+    BlockButtonPaleOak() {
 
-    public BlockButtonPaleOak(int meta) {
-        super(meta);
     }
 
     @Override

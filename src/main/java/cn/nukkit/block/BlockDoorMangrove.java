@@ -4,12 +4,8 @@ import cn.nukkit.item.Item;
 import cn.nukkit.utils.BlockColor;
 
 public class BlockDoorMangrove extends BlockDoorWood {
-    public BlockDoorMangrove() {
-        this(0);
-    }
+    BlockDoorMangrove() {
 
-    public BlockDoorMangrove(int meta) {
-        super(meta);
     }
 
     @Override
@@ -19,7 +15,7 @@ public class BlockDoorMangrove extends BlockDoorWood {
 
     @Override
     public int getId() {
-        return BLOCK_MANGROVE_DOOR;
+        return MANGROVE_DOOR;
     }
 
     @Override

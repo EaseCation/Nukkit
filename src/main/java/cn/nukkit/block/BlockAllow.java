@@ -5,7 +5,8 @@ import cn.nukkit.utils.BlockColor;
 
 public class BlockAllow extends BlockSolid {
 
-    public BlockAllow() {
+    BlockAllow() {
+
     }
 
     @Override

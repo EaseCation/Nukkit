@@ -1,22 +1,13 @@
 package cn.nukkit.block;
 
 public class BlockTorchflower extends BlockFlower {
-    public BlockTorchflower() {
-        this(0);
-    }
+    BlockTorchflower() {
 
-    public BlockTorchflower(int meta) {
-        super(0);
     }
 
     @Override
     public int getId() {
         return TORCHFLOWER;
-    }
-
-    @Override
-    public boolean isStackedByData() {
-        return false;
     }
 
     @Override
@@ -30,12 +21,12 @@ public class BlockTorchflower extends BlockFlower {
     }
 
     @Override
-    public int getCompostableChance() {
-        return 85;
+    public boolean isFertilizable() {
+        return false;
     }
 
     @Override
-    protected Block getUncommonFlower() {
-        return this;
+    public int getCompostableChance() {
+        return 85;
     }
 }

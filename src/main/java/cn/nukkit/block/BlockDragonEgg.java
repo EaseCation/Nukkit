@@ -13,7 +13,8 @@ import static cn.nukkit.SharedConstants.*;
 
 public class BlockDragonEgg extends BlockFallable {
 
-    public BlockDragonEgg() {
+    BlockDragonEgg() {
+
     }
 
     @Override

@@ -1,34 +1,101 @@
 package cn.nukkit.item;
 
 public interface ItemBlockNames {
+    /**
+     * flattened since 1.20.50
+     * @see #GRANITE
+     * @see #POLISHED_GRANITE
+     * @see #DIORITE
+     * @see #POLISHED_DIORITE
+     * @see #ANDESITE
+     * @see #POLISHED_ANDESITE
+     */
     String STONE = "stone";
     String GRASS_BLOCK = "grass_block";
+    /**
+     * @deprecated use {@link #GRASS_BLOCK} instead
+     */
+    @Deprecated
     String GRASS = "grass";
+    /**
+     * flattened since 1.21.20
+     * @see #COARSE_DIRT
+     */
     String DIRT = "dirt";
     String COBBLESTONE = "cobblestone";
-    String OAK_PLANKS = "oak_planks"; //TODO: 1.20.50 flattening
+    String OAK_PLANKS = "oak_planks";
+    /**
+     * @deprecated flattened since 1.20.50
+     * @see #OAK_PLANKS
+     * @see #SPRUCE_PLANKS
+     * @see #BIRCH_PLANKS
+     * @see #JUNGLE_PLANKS
+     * @see #ACACIA_PLANKS
+     * @see #DARK_OAK_PLANKS
+     */
+    @Deprecated
     String PLANKS = "planks";
-    String OAK_SAPLING = "oak_sapling"; //TODO: 1.20.80 flattening
+    String OAK_SAPLING = "oak_sapling";
+    /**
+     * @deprecated flattened since 1.20.80
+     * @see #OAK_SAPLING
+     * @see #SPRUCE_SAPLING
+     * @see #BIRCH_SAPLING
+     * @see #JUNGLE_SAPLING
+     * @see #ACACIA_SAPLING
+     * @see #DARK_OAK_SAPLING
+     */
+    @Deprecated
     String SAPLING = "sapling";
     String BEDROCK = "bedrock";
     String FLOWING_WATER = "flowing_water";
     String WATER = "water";
     String FLOWING_LAVA = "flowing_lava";
     String LAVA = "lava";
+    /**
+     * flattened since 1.21.20
+     * @see #RED_SAND
+     */
     String SAND = "sand";
     String GRAVEL = "gravel";
     String GOLD_ORE = "gold_ore";
     String IRON_ORE = "iron_ore";
     String COAL_ORE = "coal_ore";
-    String OAK_LOG = "oak_log"; //TODO: 1.19.80 flattening
+    String OAK_LOG = "oak_log";
+    /**
+     * @deprecated flattened since 1.19.80
+     * @see #OAK_LOG
+     * @see #SPRUCE_LOG
+     * @see #BIRCH_LOG
+     * @see #JUNGLE_LOG
+     */
+    @Deprecated
     String LOG = "log";
     String OAK_LEAVES = "oak_leaves";
+    /**
+     * @deprecated flattened since 1.20.70
+     * @see #OAK_LEAVES
+     * @see #SPRUCE_LEAVES
+     * @see #BIRCH_LEAVES
+     * @see #JUNGLE_LEAVES
+     */
+    @Deprecated
     String LEAVES = "leaves";
+    /**
+     * flattened since 1.21.30
+     * @see #WET_SPONGE
+     */
     String SPONGE = "sponge";
     String GLASS = "glass";
     String LAPIS_ORE = "lapis_ore";
     String LAPIS_BLOCK = "lapis_block";
     String DISPENSER = "dispenser";
+    /**
+     * flattened since 1.21.20
+     * @see #CHISELED_SANDSTONE
+     * @see #CUT_SANDSTONE
+     * @see #SMOOTH_SANDSTONE
+     */
     String SANDSTONE = "sandstone";
     String NOTEBLOCK = "noteblock";
     String ITEM_BED = "item.bed";
@@ -37,29 +104,114 @@ public interface ItemBlockNames {
     String STICKY_PISTON = "sticky_piston";
     String WEB = "web";
     String SHORT_GRASS = "short_grass";
+    /**
+     * @deprecated flattened since 1.21.0
+     * @see #SHORT_GRASS
+     * @see #FERN
+     */
+    @Deprecated
     String TALLGRASS = "tallgrass";
     String DEADBUSH = "deadbush";
     String PISTON = "piston";
     String PISTON_ARM_COLLISION = "piston_arm_collision";
-    String PISTONARMCOLLISION = "pistonarmcollision"; //TODO: 1.18.30 rename
-    String WHITE_WOOL = "white_wool"; //TODO: 1.19.70 flattening
+    /**
+     * @deprecated use {@link #PISTON_ARM_COLLISION} instead
+     */
+    @Deprecated
+    String PISTONARMCOLLISION = "pistonarmcollision";
+    String WHITE_WOOL = "white_wool";
+    /**
+     * @deprecated flattened since 1.19.70
+     * @see #WHITE_WOOL
+     * @see #ORANGE_WOOL
+     * @see #MAGENTA_WOOL
+     * @see #LIGHT_BLUE_WOOL
+     * @see #YELLOW_WOOL
+     * @see #LIME_WOOL
+     * @see #PINK_WOOL
+     * @see #GRAY_WOOL
+     * @see #LIGHT_GRAY_WOOL
+     * @see #CYAN_WOOL
+     * @see #PURPLE_WOOL
+     * @see #BLUE_WOOL
+     * @see #BROWN_WOOL
+     * @see #GREEN_WOOL
+     * @see #RED_WOOL
+     * @see #BLACK_WOOL
+     */
+    @Deprecated
     String WOOL = "wool";
     String ELEMENT_0 = "element_0";
     String DANDELION = "dandelion";
+    /**
+     * @deprecated use {@link #DANDELION} instead
+     */
+    @Deprecated
     String YELLOW_FLOWER = "yellow_flower";
-    String POPPY = "poppy"; //TODO: 1.20.80 flattening
+    String POPPY = "poppy";
+    /**
+     * @deprecated flattened since 1.20.80
+     * @see #POPPY
+     * @see #BLUE_ORCHID
+     * @see #ALLIUM
+     * @see #AZURE_BLUET
+     * @see #RED_TULIP
+     * @see #ORANGE_TULIP
+     * @see #WHITE_TULIP
+     * @see #PINK_TULIP
+     * @see #OXEYE_DAISY
+     * @see #CORNFLOWER
+     * @see #LILY_OF_THE_VALLEY
+     */
+    @Deprecated
     String RED_FLOWER = "red_flower";
     String BROWN_MUSHROOM = "brown_mushroom";
     String RED_MUSHROOM = "red_mushroom";
     String GOLD_BLOCK = "gold_block";
     String IRON_BLOCK = "iron_block";
-    String SMOOTH_STONE_DOUBLE_SLAB = "smooth_stone_double_slab"; //TODO: 1.21.20 flattening
-    String DOUBLE_STONE_BLOCK_SLAB = "double_stone_block_slab"; //TODO: 1.19.0 rename
+    String SMOOTH_STONE_DOUBLE_SLAB = "smooth_stone_double_slab";
+    /**
+     * @deprecated flattened since 1.21.20
+     * @see #SMOOTH_STONE_DOUBLE_SLAB
+     * @see #SANDSTONE_DOUBLE_SLAB
+     * @see #PETRIFIED_OAK_DOUBLE_SLAB
+     * @see #COBBLESTONE_DOUBLE_SLAB
+     * @see #BRICK_DOUBLE_SLAB
+     * @see #STONE_BRICK_DOUBLE_SLAB
+     * @see #QUARTZ_DOUBLE_SLAB
+     * @see #NETHER_BRICK_DOUBLE_SLAB
+     */
+    @Deprecated
+    String DOUBLE_STONE_BLOCK_SLAB = "double_stone_block_slab";
+    /**
+     * @deprecated use {@link #DOUBLE_STONE_BLOCK_SLAB} instead
+     */
+    @Deprecated
     String REAL_DOUBLE_STONE_SLAB = "real_double_stone_slab";
-    String SMOOTH_STONE_SLAB = "smooth_stone_slab"; //TODO: 1.21.0 flattening
-    String STONE_BLOCK_SLAB = "stone_block_slab"; //TODO: 1.19.0 rename
+    String SMOOTH_STONE_SLAB = "smooth_stone_slab";
+    /**
+     * @deprecated flattened since 1.21.0
+     * @see #SMOOTH_STONE_SLAB
+     * @see #SANDSTONE_SLAB
+     * @see #PETRIFIED_OAK_SLAB
+     * @see #COBBLESTONE_SLAB
+     * @see #BRICK_SLAB
+     * @see #STONE_BRICK_SLAB
+     * @see #QUARTZ_SLAB
+     * @see #NETHER_BRICK_SLAB
+     */
+    @Deprecated
+    String STONE_BLOCK_SLAB = "stone_block_slab";
+    /**
+     * @deprecated use {@link #STONE_BLOCK_SLAB} instead
+     */
+    @Deprecated
     String DOUBLE_STONE_SLAB = "double_stone_slab";
     String BRICK_BLOCK = "brick_block";
+    /**
+     * flattened since 1.21.30
+     * @see #UNDERWATER_TNT
+     */
     String TNT = "tnt";
     String BOOKSHELF = "bookshelf";
     String MOSSY_COBBLESTONE = "mossy_cobblestone";
@@ -99,7 +251,17 @@ public interface ItemBlockNames {
     String CLAY = "clay";
     String ITEM_REEDS = "item.reeds";
     String JUKEBOX = "jukebox";
-    String OAK_FENCE = "oak_fence"; //TODO: 1.19.80 flattening
+    String OAK_FENCE = "oak_fence";
+    /**
+     * @deprecated flattened since 1.19.80
+     * @see #OAK_FENCE
+     * @see #SPRUCE_FENCE
+     * @see #BIRCH_FENCE
+     * @see #JUNGLE_FENCE
+     * @see #ACACIA_FENCE
+     * @see #DARK_OAK_FENCE
+     */
+    @Deprecated
     String FENCE = "fence";
     String PUMPKIN = "pumpkin";
     String NETHERRACK = "netherrack";
@@ -111,11 +273,33 @@ public interface ItemBlockNames {
     String UNPOWERED_REPEATER = "unpowered_repeater";
     String POWERED_REPEATER = "powered_repeater";
     String INVISIBLE_BEDROCK = "invisible_bedrock";
-    String INVISIBLEBEDROCK = "invisiblebedrock"; //TODO: 1.18.30 rename
+    /**
+     * @deprecated use {@link #INVISIBLE_BEDROCK} instead
+     */
+    @Deprecated
+    String INVISIBLEBEDROCK = "invisiblebedrock";
     String TRAPDOOR = "trapdoor";
-    String INFESTED_STONE = "infested_stone"; //TODO: 1.21.20 flattening
+    String INFESTED_STONE = "infested_stone";
+    /**
+     * @deprecated flattened since 1.21.20
+     * @see #INFESTED_STONE
+     * @see #INFESTED_COBBLESTONE
+     * @see #INFESTED_STONE_BRICKS
+     * @see #INFESTED_MOSSY_STONE_BRICKS
+     * @see #INFESTED_CRACKED_STONE_BRICKS
+     * @see #INFESTED_CHISELED_STONE_BRICKS
+     */
+    @Deprecated
     String MONSTER_EGG = "monster_egg";
-    String STONE_BRICKS = "stone_bricks"; //TODO: 1.21.20 flattening
+    String STONE_BRICKS = "stone_bricks";
+    /**
+     * @deprecated flattened since 1.21.20
+     * @see #STONE_BRICKS
+     * @see #MOSSY_STONE_BRICKS
+     * @see #CRACKED_STONE_BRICKS
+     * @see #CHISELED_STONE_BRICKS
+     */
+    @Deprecated
     String STONEBRICK = "stonebrick";
     String BROWN_MUSHROOM_BLOCK = "brown_mushroom_block";
     String RED_MUSHROOM_BLOCK = "red_mushroom_block";
@@ -136,7 +320,11 @@ public interface ItemBlockNames {
     String ITEM_NETHER_WART = "item.nether_wart";
     String ENCHANTING_TABLE = "enchanting_table";
     String ITEM_BREWING_STAND = "item.brewing_stand";
-    String BREWINGSTANDBLOCK = "brewingstandblock"; //TODO: 1.18.30: rename
+    /**
+     * @deprecated use {@link #ITEM_BREWING_STAND} instead
+     */
+    @Deprecated
+    String BREWINGSTANDBLOCK = "brewingstandblock";
     String ITEM_CAULDRON = "item.cauldron";
     String END_PORTAL = "end_portal";
     String END_PORTAL_FRAME = "end_portal_frame";
@@ -152,20 +340,56 @@ public interface ItemBlockNames {
     String ENDER_CHEST = "ender_chest";
     String TRIPWIRE_HOOK = "tripwire_hook";
     String TRIP_WIRE = "trip_wire";
-    String TRIPWIRE = "tripwire"; //TODO: 1.18.30 rename
+    /**
+     * @deprecated use {@link #TRIP_WIRE} instead
+     */
+    @Deprecated
+    String TRIPWIRE = "tripwire";
     String EMERALD_BLOCK = "emerald_block";
     String SPRUCE_STAIRS = "spruce_stairs";
     String BIRCH_STAIRS = "birch_stairs";
     String JUNGLE_STAIRS = "jungle_stairs";
     String COMMAND_BLOCK = "command_block";
     String BEACON = "beacon";
+    /**
+     * flattened since 1.21.30
+     * @see #MOSSY_COBBLESTONE_WALL
+     * @see #GRANITE_WALL
+     * @see #DIORITE_WALL
+     * @see #ANDESITE_WALL
+     * @see #SANDSTONE_WALL
+     * @see #BRICK_WALL
+     * @see #STONE_BRICK_WALL
+     * @see #MOSSY_STONE_BRICK_WALL
+     * @see #NETHER_BRICK_WALL
+     * @see #END_STONE_BRICK_WALL
+     * @see #PRISMARINE_WALL
+     * @see #RED_SANDSTONE_WALL
+     * @see #RED_NETHER_BRICK_WALL
+     */
     String COBBLESTONE_WALL = "cobblestone_wall";
     String ITEM_FLOWER_POT = "item.flower_pot";
     String CARROTS = "carrots";
     String POTATOES = "potatoes";
     String WOODEN_BUTTON = "wooden_button";
-    String SKELETON_SKULL = "skeleton_skull"; //TODO: 1.21.40 flattening
+    String SKELETON_SKULL = "skeleton_skull";
+    /**
+     * @deprecated flattened since 1.21.40
+     * @see #SKELETON_SKULL
+     * @see #WITHER_SKELETON_SKULL
+     * @see #ZOMBIE_HEAD
+     * @see #PLAYER_HEAD
+     * @see #CREEPER_HEAD
+     * @see #DRAGON_HEAD
+     * @see #PIGLIN_HEAD
+     */
+    @Deprecated
     String ITEM_SKULL = "item.skull";
+    /**
+     * flattened since 1.21.20
+     * @see #CHIPPED_ANVIL
+     * @see #DAMAGED_ANVIL
+     */
     String ANVIL = "anvil";
     String TRAPPED_CHEST = "trapped_chest";
     String LIGHT_WEIGHTED_PRESSURE_PLATE = "light_weighted_pressure_plate";
@@ -176,46 +400,201 @@ public interface ItemBlockNames {
     String REDSTONE_BLOCK = "redstone_block";
     String QUARTZ_ORE = "quartz_ore";
     String ITEM_HOPPER = "item.hopper";
+    /**
+     * flattened since 1.21.20
+     * @see #CHISELED_QUARTZ_BLOCK
+     * @see #QUARTZ_PILLAR
+     * @see #SMOOTH_QUARTZ
+     */
     String QUARTZ_BLOCK = "quartz_block";
     String QUARTZ_STAIRS = "quartz_stairs";
-    String OAK_DOUBLE_SLAB = "oak_double_slab"; //TODO: 1.20.70 flattening
+    String OAK_DOUBLE_SLAB = "oak_double_slab";
+    /**
+     * @deprecated flattened since 1.20.70
+     * @see #OAK_DOUBLE_SLAB
+     * @see #SPRUCE_DOUBLE_SLAB
+     * @see #BIRCH_DOUBLE_SLAB
+     * @see #JUNGLE_DOUBLE_SLAB
+     * @see #ACACIA_DOUBLE_SLAB
+     * @see #DARK_OAK_DOUBLE_SLAB
+     */
+    @Deprecated
     String DOUBLE_WOODEN_SLAB = "double_wooden_slab";
-    String OAK_SLAB = "oak_slab"; //TODO: 1.20.70 flattening
+    String OAK_SLAB = "oak_slab";
+    /**
+     * @deprecated flattened since 1.20.70
+     * @see #OAK_SLAB
+     * @see #SPRUCE_SLAB
+     * @see #BIRCH_SLAB
+     * @see #JUNGLE_SLAB
+     * @see #ACACIA_SLAB
+     * @see #DARK_OAK_SLAB
+     */
+    @Deprecated
     String WOODEN_SLAB = "wooden_slab";
-    String WHITE_TERRACOTTA = "white_terracotta"; //TODO: 1.20.30 flattening
+    String WHITE_TERRACOTTA = "white_terracotta";
+    /**
+     * @deprecated flattened since 1.20.30
+     * @see #WHITE_TERRACOTTA
+     * @see #ORANGE_TERRACOTTA
+     * @see #MAGENTA_TERRACOTTA
+     * @see #LIGHT_BLUE_TERRACOTTA
+     * @see #YELLOW_TERRACOTTA
+     * @see #LIME_TERRACOTTA
+     * @see #PINK_TERRACOTTA
+     * @see #GRAY_TERRACOTTA
+     * @see #LIGHT_GRAY_TERRACOTTA
+     * @see #CYAN_TERRACOTTA
+     * @see #PURPLE_TERRACOTTA
+     * @see #BLUE_TERRACOTTA
+     * @see #BROWN_TERRACOTTA
+     * @see #GREEN_TERRACOTTA
+     * @see #RED_TERRACOTTA
+     * @see #BLACK_TERRACOTTA
+     */
+    @Deprecated
     String STAINED_HARDENED_CLAY = "stained_hardened_clay";
-    String WHITE_STAINED_GLASS_PANE = "white_stained_glass_pane"; //TODO: 1.20.20 flattening
+    String WHITE_STAINED_GLASS_PANE = "white_stained_glass_pane";
+    /**
+     * @deprecated flattened since 1.20.20
+     * @see #WHITE_STAINED_GLASS_PANE
+     * @see #ORANGE_STAINED_GLASS_PANE
+     * @see #MAGENTA_STAINED_GLASS_PANE
+     * @see #LIGHT_BLUE_STAINED_GLASS_PANE
+     * @see #YELLOW_STAINED_GLASS_PANE
+     * @see #LIME_STAINED_GLASS_PANE
+     * @see #PINK_STAINED_GLASS_PANE
+     * @see #GRAY_STAINED_GLASS_PANE
+     * @see #LIGHT_GRAY_STAINED_GLASS_PANE
+     * @see #CYAN_STAINED_GLASS_PANE
+     * @see #PURPLE_STAINED_GLASS_PANE
+     * @see #BLUE_STAINED_GLASS_PANE
+     * @see #BROWN_STAINED_GLASS_PANE
+     * @see #GREEN_STAINED_GLASS_PANE
+     * @see #RED_STAINED_GLASS_PANE
+     * @see #BLACK_STAINED_GLASS_PANE
+     */
+    @Deprecated
     String STAINED_GLASS_PANE = "stained_glass_pane";
-    String ACACIA_LEAVES = "acacia_leaves"; //TODO: 1.20.70 flattening
+    String ACACIA_LEAVES = "acacia_leaves";
+    /**
+     * @deprecated flattened since 1.20.70
+     * @see #ACACIA_LEAVES
+     * @see #DARK_OAK_LEAVES
+     */
+    @Deprecated
     String LEAVES2 = "leaves2";
-    String ACACIA_LOG = "acacia_log"; //TODO: 1.19.80 flattening
+    String ACACIA_LOG = "acacia_log";
+    /**
+     * @deprecated flattened since 1.19.80
+     * @see #ACACIA_LOG
+     * @see #DARK_OAK_LOG
+     */
+    @Deprecated
     String LOG2 = "log2";
     String ACACIA_STAIRS = "acacia_stairs";
     String DARK_OAK_STAIRS = "dark_oak_stairs";
     String SLIME = "slime";
 
     String IRON_TRAPDOOR = "iron_trapdoor";
+    /**
+     * flattened since 1.21.20
+     * @see #DARK_PRISMARINE
+     * @see #PRISMARINE_BRICKS
+     */
     String PRISMARINE = "prismarine";
     String SEA_LANTERN = "sea_lantern";
-    String SEALANTERN = "sealantern"; //TODO: 1.18.30 rename
+    /**
+     * @deprecated use {@link #SEA_LANTERN} instead
+     */
+    @Deprecated
+    String SEALANTERN = "sealantern";
     String HAY_BLOCK = "hay_block";
-    String WHITE_CARPET = "white_carpet"; //TODO: 1.20.0 flattening
+    String WHITE_CARPET = "white_carpet";
+    /**
+     * @deprecated flattened since 1.20.0
+     * @see #WHITE_CARPET
+     * @see #ORANGE_CARPET
+     * @see #MAGENTA_CARPET
+     * @see #LIGHT_BLUE_CARPET
+     * @see #YELLOW_CARPET
+     * @see #LIME_CARPET
+     * @see #PINK_CARPET
+     * @see #GRAY_CARPET
+     * @see #LIGHT_GRAY_CARPET
+     * @see #CYAN_CARPET
+     * @see #PURPLE_CARPET
+     * @see #BLUE_CARPET
+     * @see #BROWN_CARPET
+     * @see #GREEN_CARPET
+     * @see #RED_CARPET
+     * @see #BLACK_CARPET
+     */
+    @Deprecated
     String CARPET = "carpet";
     String HARDENED_CLAY = "hardened_clay";
     String COAL_BLOCK = "coal_block";
     String PACKED_ICE = "packed_ice";
-    String SUNFLOWER = "sunflower"; //TODO: 1.21.0 flattening
+    String SUNFLOWER = "sunflower";
+    /**
+     * @deprecated flattened since 1.21.0
+     * @see #SUNFLOWER
+     * @see #LILAC
+     * @see #TALL_GRASS
+     * @see #LARGE_FERN
+     * @see #ROSE_BUSH
+     * @see #PEONY
+     */
+    @Deprecated
     String DOUBLE_PLANT = "double_plant";
     String STANDING_BANNER = "standing_banner";
     String WALL_BANNER = "wall_banner";
     String DAYLIGHT_DETECTOR_INVERTED = "daylight_detector_inverted";
+    /**
+     * flattened since 1.21.20
+     * @see #CHISELED_RED_SANDSTONE
+     * @see #CUT_RED_SANDSTONE
+     * @see #SMOOTH_RED_SANDSTONE
+     */
     String RED_SANDSTONE = "red_sandstone";
     String RED_SANDSTONE_STAIRS = "red_sandstone_stairs";
-    String RED_SANDSTONE_DOUBLE_SLAB = "red_sandstone_double_slab"; //TODO: 1.21.20 flattening
-    String DOUBLE_STONE_BLOCK_SLAB2 = "double_stone_block_slab2"; //TODO: 1.19.0 rename
+    String RED_SANDSTONE_DOUBLE_SLAB = "red_sandstone_double_slab";
+    /**
+     * @deprecated flattened since 1.21.20
+     * @see #RED_SANDSTONE_DOUBLE_SLAB
+     * @see #PURPUR_DOUBLE_SLAB
+     * @see #PRISMARINE_DOUBLE_SLAB
+     * @see #DARK_PRISMARINE_DOUBLE_SLAB
+     * @see #PRISMARINE_BRICK_DOUBLE_SLAB
+     * @see #MOSSY_COBBLESTONE_DOUBLE_SLAB
+     * @see #SMOOTH_SANDSTONE_DOUBLE_SLAB
+     * @see #RED_NETHER_BRICK_DOUBLE_SLAB
+     */
+    @Deprecated
+    String DOUBLE_STONE_BLOCK_SLAB2 = "double_stone_block_slab2";
+    /**
+     * @deprecated use {@link #DOUBLE_STONE_BLOCK_SLAB2} instead
+     */
+    @Deprecated
     String REAL_DOUBLE_STONE_SLAB2 = "real_double_stone_slab2";
-    String RED_SANDSTONE_SLAB = "red_sandstone_slab"; //TODO: 1.21.20 flattening
-    String STONE_BLOCK_SLAB2 = "stone_block_slab2"; //TODO: 1.19.0 rename
+    String RED_SANDSTONE_SLAB = "red_sandstone_slab";
+    /**
+     * @deprecated flattened since 1.21.20
+     * @see #RED_SANDSTONE_SLAB
+     * @see #PURPUR_SLAB
+     * @see #PRISMARINE_SLAB
+     * @see #DARK_PRISMARINE_SLAB
+     * @see #PRISMARINE_BRICK_SLAB
+     * @see #MOSSY_COBBLESTONE_SLAB
+     * @see #SMOOTH_SANDSTONE_SLAB
+     * @see #RED_NETHER_BRICK_SLAB
+     */
+    @Deprecated
+    String STONE_BLOCK_SLAB2 = "stone_block_slab2";
+    /**
+     * @deprecated use {@link #STONE_BLOCK_SLAB2} instead
+     */
+    @Deprecated
     String DOUBLE_STONE_SLAB2 = "double_stone_slab2";
     String SPRUCE_FENCE_GATE = "spruce_fence_gate";
     String BIRCH_FENCE_GATE = "birch_fence_gate";
@@ -225,7 +604,27 @@ public interface ItemBlockNames {
     String REPEATING_COMMAND_BLOCK = "repeating_command_block";
     String CHAIN_COMMAND_BLOCK = "chain_command_block";
     String HARD_GLASS_PANE = "hard_glass_pane";
-    String HARD_WHITE_STAINED_GLASS_PANE = "hard_white_stained_glass_pane"; //TODO: 1.20.60 flattening
+    String HARD_WHITE_STAINED_GLASS_PANE = "hard_white_stained_glass_pane";
+    /**
+     * @deprecated flattened since 1.20.60
+     * @see #HARD_WHITE_STAINED_GLASS_PANE
+     * @see #HARD_ORANGE_STAINED_GLASS_PANE
+     * @see #HARD_MAGENTA_STAINED_GLASS_PANE
+     * @see #HARD_LIGHT_BLUE_STAINED_GLASS_PANE
+     * @see #HARD_YELLOW_STAINED_GLASS_PANE
+     * @see #HARD_LIME_STAINED_GLASS_PANE
+     * @see #HARD_PINK_STAINED_GLASS_PANE
+     * @see #HARD_GRAY_STAINED_GLASS_PANE
+     * @see #HARD_LIGHT_GRAY_STAINED_GLASS_PANE
+     * @see #HARD_CYAN_STAINED_GLASS_PANE
+     * @see #HARD_PURPLE_STAINED_GLASS_PANE
+     * @see #HARD_BLUE_STAINED_GLASS_PANE
+     * @see #HARD_BROWN_STAINED_GLASS_PANE
+     * @see #HARD_GREEN_STAINED_GLASS_PANE
+     * @see #HARD_RED_STAINED_GLASS_PANE
+     * @see #HARD_BLACK_STAINED_GLASS_PANE
+     */
+    @Deprecated
     String HARD_STAINED_GLASS_PANE = "hard_stained_glass_pane";
     String CHEMICAL_HEAT = "chemical_heat";
     String ITEM_SPRUCE_DOOR = "item.spruce_door";
@@ -236,11 +635,27 @@ public interface ItemBlockNames {
     String GRASS_PATH = "grass_path";
     String ITEM_FRAME = "item.frame";
     String CHORUS_FLOWER = "chorus_flower";
+    /**
+     * flattened since 1.21.30
+     * @see #PURPUR_PILLAR
+     */
     String PURPUR_BLOCK = "purpur_block";
-    String COLORED_TORCH_RED = "colored_torch_red"; //TODO: 1.21.30 flattening
+    String COLORED_TORCH_RED = "colored_torch_red";
+    /**
+     * @deprecated flattened since 1.21.30
+     * @see #COLORED_TORCH_RED
+     * @see #COLORED_TORCH_GREEN
+     */
+    @Deprecated
     String COLORED_TORCH_RG = "colored_torch_rg";
     String PURPUR_STAIRS = "purpur_stairs";
-    String COLORED_TORCH_BLUE = "colored_torch_blue"; //TODO: 1.21.30 flattening
+    String COLORED_TORCH_BLUE = "colored_torch_blue";
+    /**
+     * @deprecated flattened since 1.21.30
+     * @see #COLORED_TORCH_BLUE
+     * @see #COLORED_TORCH_PURPLE
+     */
+    @Deprecated
     String COLORED_TORCH_BP = "colored_torch_bp";
     String UNDYED_SHULKER_BOX = "undyed_shulker_box";
     String END_BRICKS = "end_bricks";
@@ -255,7 +670,27 @@ public interface ItemBlockNames {
     String RED_NETHER_BRICK = "red_nether_brick";
     String BONE_BLOCK = "bone_block";
     String STRUCTURE_VOID = "structure_void";
-    String WHITE_SHULKER_BOX = "white_shulker_box"; //TODO: 1.20.10 flattening
+    String WHITE_SHULKER_BOX = "white_shulker_box";
+    /**
+     * @deprecated flattened since 1.20.10
+     * @see #WHITE_SHULKER_BOX
+     * @see #ORANGE_SHULKER_BOX
+     * @see #MAGENTA_SHULKER_BOX
+     * @see #LIGHT_BLUE_SHULKER_BOX
+     * @see #YELLOW_SHULKER_BOX
+     * @see #LIME_SHULKER_BOX
+     * @see #PINK_SHULKER_BOX
+     * @see #GRAY_SHULKER_BOX
+     * @see #LIGHT_GRAY_SHULKER_BOX
+     * @see #CYAN_SHULKER_BOX
+     * @see #PURPLE_SHULKER_BOX
+     * @see #BLUE_SHULKER_BOX
+     * @see #BROWN_SHULKER_BOX
+     * @see #GREEN_SHULKER_BOX
+     * @see #RED_SHULKER_BOX
+     * @see #BLACK_SHULKER_BOX
+     */
+    @Deprecated
     String SHULKER_BOX = "shulker_box";
     /**
      * @deprecated (1.12.0) use {@link #PURPLE_GLAZED_TERRACOTTA} instead
@@ -354,15 +789,83 @@ public interface ItemBlockNames {
     @Deprecated
     String GLAZED_TERRACOTTA_BLACK = "glazedterracotta.black";
     String BLACK_GLAZED_TERRACOTTA = "black_glazed_terracotta";
-    String WHITE_CONCRETE = "white_concrete"; //TODO: 1.20.10 flattening
+    String WHITE_CONCRETE = "white_concrete";
+    /**
+     * @deprecated flattened since 1.20.10
+     * @see #WHITE_CONCRETE
+     * @see #ORANGE_CONCRETE
+     * @see #MAGENTA_CONCRETE
+     * @see #LIGHT_BLUE_CONCRETE
+     * @see #YELLOW_CONCRETE
+     * @see #LIME_CONCRETE
+     * @see #PINK_CONCRETE
+     * @see #GRAY_CONCRETE
+     * @see #LIGHT_GRAY_CONCRETE
+     * @see #CYAN_CONCRETE
+     * @see #PURPLE_CONCRETE
+     * @see #BLUE_CONCRETE
+     * @see #BROWN_CONCRETE
+     * @see #GREEN_CONCRETE
+     * @see #RED_CONCRETE
+     * @see #BLACK_CONCRETE
+     */
+    @Deprecated
     String CONCRETE = "concrete";
-    String WHITE_CONCRETE_POWDER = "white_concrete_powder"; //TODO: 1.20.30 flattening
+    String WHITE_CONCRETE_POWDER = "white_concrete_powder";
+    /**
+     * @deprecated flattened since 1.20.30
+     * @see #WHITE_CONCRETE_POWDER
+     * @see #ORANGE_CONCRETE_POWDER
+     * @see #MAGENTA_CONCRETE_POWDER
+     * @see #LIGHT_BLUE_CONCRETE_POWDER
+     * @see #YELLOW_CONCRETE_POWDER
+     * @see #LIME_CONCRETE_POWDER
+     * @see #PINK_CONCRETE_POWDER
+     * @see #GRAY_CONCRETE_POWDER
+     * @see #LIGHT_GRAY_CONCRETE_POWDER
+     * @see #CYAN_CONCRETE_POWDER
+     * @see #PURPLE_CONCRETE_POWDER
+     * @see #BLUE_CONCRETE_POWDER
+     * @see #BROWN_CONCRETE_POWDER
+     * @see #GREEN_CONCRETE_POWDER
+     * @see #RED_CONCRETE_POWDER
+     * @see #BLACK_CONCRETE_POWDER
+     */
+    @Deprecated
     String CONCRETE_POWDER = "concrete_powder";
-    String COMPOUND_CREATOR = "compound_creator"; //TODO: 1.21.30 flattening
+    String COMPOUND_CREATOR = "compound_creator";
+    /**
+     * @deprecated flattened since 1.21.30
+     * @see #COMPOUND_CREATOR
+     * @see #MATERIAL_REDUCER
+     * @see #ELEMENT_CONSTRUCTOR
+     * @see #LAB_TABLE
+     */
+    @Deprecated
     String CHEMISTRY_TABLE = "chemistry_table";
     String UNDERWATER_TORCH = "underwater_torch";
     String CHORUS_PLANT = "chorus_plant";
-    String WHITE_STAINED_GLASS = "white_stained_glass"; //TODO: 1.20.20 flattening
+    String WHITE_STAINED_GLASS = "white_stained_glass";
+    /**
+     * @deprecated flattened since 1.20.20
+     * @see #WHITE_STAINED_GLASS
+     * @see #ORANGE_STAINED_GLASS
+     * @see #MAGENTA_STAINED_GLASS
+     * @see #LIGHT_BLUE_STAINED_GLASS
+     * @see #YELLOW_STAINED_GLASS
+     * @see #LIME_STAINED_GLASS
+     * @see #PINK_STAINED_GLASS
+     * @see #GRAY_STAINED_GLASS
+     * @see #LIGHT_GRAY_STAINED_GLASS
+     * @see #CYAN_STAINED_GLASS
+     * @see #PURPLE_STAINED_GLASS
+     * @see #BLUE_STAINED_GLASS
+     * @see #BROWN_STAINED_GLASS
+     * @see #GREEN_STAINED_GLASS
+     * @see #RED_STAINED_GLASS
+     * @see #BLACK_STAINED_GLASS
+     */
+    @Deprecated
     String STAINED_GLASS = "stained_glass";
     String ITEM_CAMERA = "item.camera";
     String PODZOL = "podzol";
@@ -373,11 +876,35 @@ public interface ItemBlockNames {
     String INFO_UPDATE = "info_update";
     String INFO_UPDATE2 = "info_update2";
     String MOVING_BLOCK = "moving_block";
-    String MOVINGBLOCK = "movingblock"; //TODO: 1.18.30 rename
+    /**
+     * @deprecated use {@link #MOVING_BLOCK} instead
+     */
+    @Deprecated
+    String MOVINGBLOCK = "movingblock";
     String OBSERVER = "observer";
     String STRUCTURE_BLOCK = "structure_block";
     String HARD_GLASS = "hard_glass";
-    String HARD_WHITE_STAINED_GLASS = "hard_white_stained_glass"; //TODO: 1.20.60 flattening
+    String HARD_WHITE_STAINED_GLASS = "hard_white_stained_glass";
+    /**
+     * @deprecated flattened since 1.20.60
+     * @see #HARD_WHITE_STAINED_GLASS
+     * @see #HARD_ORANGE_STAINED_GLASS
+     * @see #HARD_MAGENTA_STAINED_GLASS
+     * @see #HARD_LIGHT_BLUE_STAINED_GLASS
+     * @see #HARD_YELLOW_STAINED_GLASS
+     * @see #HARD_LIME_STAINED_GLASS
+     * @see #HARD_PINK_STAINED_GLASS
+     * @see #HARD_GRAY_STAINED_GLASS
+     * @see #HARD_LIGHT_GRAY_STAINED_GLASS
+     * @see #HARD_CYAN_STAINED_GLASS
+     * @see #HARD_PURPLE_STAINED_GLASS
+     * @see #HARD_BLUE_STAINED_GLASS
+     * @see #HARD_BROWN_STAINED_GLASS
+     * @see #HARD_GREEN_STAINED_GLASS
+     * @see #HARD_RED_STAINED_GLASS
+     * @see #HARD_BLACK_STAINED_GLASS
+     */
+    @Deprecated
     String HARD_STAINED_GLASS = "hard_stained_glass";
     String RESERVED6 = "reserved6";
 
@@ -510,19 +1037,87 @@ public interface ItemBlockNames {
     String ELEMENT_117 = "element_117";
     String ELEMENT_118 = "element_118";
     String SEAGRASS = "seagrass";
-    String TUBE_CORAL = "tube_coral"; //TODO: 1.20.0 flattening
+    String TUBE_CORAL = "tube_coral";
+    /**
+     * @deprecated flattened since 1.20.0
+     * @see #TUBE_CORAL
+     * @see #BRAIN_CORAL
+     * @see #BUBBLE_CORAL
+     * @see #FIRE_CORAL
+     * @see #HORN_CORAL
+     * @see #DEAD_TUBE_CORAL
+     * @see #DEAD_BRAIN_CORAL
+     * @see #DEAD_BUBBLE_CORAL
+     * @see #DEAD_FIRE_CORAL
+     * @see #DEAD_HORN_CORAL
+     */
+    @Deprecated
     String CORAL = "coral";
-    String TUBE_CORAL_BLOCK = "tube_coral_block"; //TODO: 1.21.0: flattening
+    String TUBE_CORAL_BLOCK = "tube_coral_block";
+    /**
+     * @deprecated flattened since 1.21.0
+     * @see #TUBE_CORAL_BLOCK
+     * @see #BRAIN_CORAL_BLOCK
+     * @see #BUBBLE_CORAL_BLOCK
+     * @see #FIRE_CORAL_BLOCK
+     * @see #HORN_CORAL_BLOCK
+     * @see #DEAD_TUBE_CORAL_BLOCK
+     * @see #DEAD_BRAIN_CORAL_BLOCK
+     * @see #DEAD_BUBBLE_CORAL_BLOCK
+     * @see #DEAD_FIRE_CORAL_BLOCK
+     * @see #DEAD_HORN_CORAL_BLOCK
+     */
+    @Deprecated
     String CORAL_BLOCK = "coral_block";
-    String TUBE_CORAL_FAN = "tube_coral_fan"; //TODO: 1.20.80 flattening
+    String TUBE_CORAL_FAN = "tube_coral_fan";
+    /**
+     * @deprecated flattened since 1.20.80
+     * @see #TUBE_CORAL_FAN
+     * @see #BRAIN_CORAL_FAN
+     * @see #BUBBLE_CORAL_FAN
+     * @see #FIRE_CORAL_FAN
+     * @see #HORN_CORAL_FAN
+     */
+    @Deprecated
     String CORAL_FAN = "coral_fan";
-    String DEAD_TUBE_CORAL_FAN = "dead_tube_coral_fan"; //TODO: 1.20.80 flattening
+    String DEAD_TUBE_CORAL_FAN = "dead_tube_coral_fan";
+    /**
+     * @deprecated flattened since 1.20.80
+     * @see #DEAD_TUBE_CORAL_FAN
+     * @see #DEAD_BRAIN_CORAL_FAN
+     * @see #DEAD_BUBBLE_CORAL_FAN
+     * @see #DEAD_FIRE_CORAL_FAN
+     * @see #DEAD_HORN_CORAL_FAN
+     */
+    @Deprecated
     String CORAL_FAN_DEAD = "coral_fan_dead";
-    String TUBE_CORAL_WALL_FAN = "tube_coral_wall_fan"; //TODO: 1.21.20: flattening
+    String TUBE_CORAL_WALL_FAN = "tube_coral_wall_fan";
+    /**
+     * @deprecated flattened since 1.21.20
+     * @see #TUBE_CORAL_WALL_FAN
+     * @see #BRAIN_CORAL_WALL_FAN
+     * @see #DEAD_TUBE_CORAL_WALL_FAN
+     * @see #DEAD_BRAIN_CORAL_WALL_FAN
+     */
+    @Deprecated
     String CORAL_FAN_HANG = "coral_fan_hang";
-    String BUBBLE_CORAL_WALL_FAN = "bubble_coral_wall_fan"; //TODO: 1.21.20: flattening
+    String BUBBLE_CORAL_WALL_FAN = "bubble_coral_wall_fan";
+    /**
+     * @deprecated flattened since 1.21.20
+     * @see #BUBBLE_CORAL_WALL_FAN
+     * @see #FIRE_CORAL_WALL_FAN
+     * @see #DEAD_BUBBLE_CORAL_WALL_FAN
+     * @see #DEAD_FIRE_CORAL_WALL_FAN
+     */
+    @Deprecated
     String CORAL_FAN_HANG2 = "coral_fan_hang2";
-    String HORN_CORAL_WALL_FAN = "horn_coral_wall_fan"; //TODO: 1.21.20: flattening
+    String HORN_CORAL_WALL_FAN = "horn_coral_wall_fan";
+    /**
+     * @deprecated flattened since 1.21.20
+     * @see #HORN_CORAL_WALL_FAN
+     * @see #DEAD_HORN_CORAL_WALL_FAN
+     */
+    @Deprecated
     String CORAL_FAN_HANG3 = "coral_fan_hang3";
     String ITEM_KELP = "item.kelp";
     String DRIED_KELP_BLOCK = "dried_kelp_block";
@@ -548,20 +1143,78 @@ public interface ItemBlockNames {
     String TURTLE_EGG = "turtle_egg";
     String BUBBLE_COLUMN = "bubble_column";
     String BARRIER = "barrier";
-    String END_STONE_BRICK_SLAB = "end_stone_brick_slab"; //TODO: 1.21.20 flattening
-    String STONE_BLOCK_SLAB3 = "stone_block_slab3"; //TODO: 1.19.0 rename
+    String END_STONE_BRICK_SLAB = "end_stone_brick_slab";
+    /**
+     * @deprecated flattened since 1.21.20
+     * @see #END_STONE_BRICK_SLAB
+     * @see #SMOOTH_RED_SANDSTONE_SLAB
+     * @see #POLISHED_ANDESITE_SLAB
+     * @see #ANDESITE_SLAB
+     * @see #DIORITE_SLAB
+     * @see #POLISHED_DIORITE_SLAB
+     * @see #GRANITE_SLAB
+     * @see #POLISHED_GRANITE_SLAB
+     */
+    @Deprecated
+    String STONE_BLOCK_SLAB3 = "stone_block_slab3";
+    /**
+     * @deprecated use {@link #STONE_BLOCK_SLAB3} instead
+     */
+    @Deprecated
     String DOUBLE_STONE_SLAB3 = "double_stone_slab3";
     String BAMBOO = "bamboo";
     String BAMBOO_SAPLING = "bamboo_sapling";
     String SCAFFOLDING = "scaffolding";
-    String MOSSY_STONE_BRICK_SLAB = "mossy_stone_brick_slab"; //TODO: 1.21.20 flattening
-    String STONE_BLOCK_SLAB4 = "stone_block_slab4"; //TODO: 1.19.0 rename
+    String MOSSY_STONE_BRICK_SLAB = "mossy_stone_brick_slab";
+    /**
+     * @deprecated flattened since 1.21.20
+     * @see #MOSSY_STONE_BRICK_SLAB
+     * @see #SMOOTH_QUARTZ_SLAB
+     * @see #NORMAL_STONE_SLAB
+     * @see #CUT_SANDSTONE_SLAB
+     * @see #CUT_RED_SANDSTONE_SLAB
+     */
+    @Deprecated
+    String STONE_BLOCK_SLAB4 = "stone_block_slab4";
+    /**
+     * @deprecated use {@link #STONE_BLOCK_SLAB4} instead
+     */
+    @Deprecated
     String DOUBLE_STONE_SLAB4 = "double_stone_slab4";
-    String END_STONE_BRICK_DOUBLE_SLAB = "end_stone_brick_double_slab"; //TODO: 1.21.20 flattening
-    String DOUBLE_STONE_BLOCK_SLAB3 = "double_stone_block_slab3"; //TODO: 1.19.0 rename
+    String END_STONE_BRICK_DOUBLE_SLAB = "end_stone_brick_double_slab";
+    /**
+     * @deprecated flattened since 1.21.20
+     * @see #END_STONE_BRICK_DOUBLE_SLAB
+     * @see #SMOOTH_RED_SANDSTONE_DOUBLE_SLAB
+     * @see #POLISHED_ANDESITE_DOUBLE_SLAB
+     * @see #ANDESITE_DOUBLE_SLAB
+     * @see #DIORITE_DOUBLE_SLAB
+     * @see #POLISHED_DIORITE_DOUBLE_SLAB
+     * @see #GRANITE_DOUBLE_SLAB
+     * @see #POLISHED_GRANITE_DOUBLE_SLAB
+     */
+    @Deprecated
+    String DOUBLE_STONE_BLOCK_SLAB3 = "double_stone_block_slab3";
+    /**
+     * @deprecated use {@link #DOUBLE_STONE_BLOCK_SLAB3} instead
+     */
+    @Deprecated
     String REAL_DOUBLE_STONE_SLAB3 = "real_double_stone_slab3";
-    String MOSSY_STONE_BRICK_DOUBLE_SLAB = "mossy_stone_brick_double_slab"; //TODO: 1.21.20 flattening
-    String DOUBLE_STONE_BLOCK_SLAB4 = "double_stone_block_slab4"; //TODO: 1.19.0 rename
+    String MOSSY_STONE_BRICK_DOUBLE_SLAB = "mossy_stone_brick_double_slab";
+    /**
+     * @deprecated flattened since 1.21.20
+     * @see #MOSSY_STONE_BRICK_DOUBLE_SLAB
+     * @see #SMOOTH_QUARTZ_DOUBLE_SLAB
+     * @see #NORMAL_STONE_DOUBLE_SLAB
+     * @see #CUT_SANDSTONE_DOUBLE_SLAB
+     * @see #CUT_RED_SANDSTONE_DOUBLE_SLAB
+     */
+    @Deprecated
+    String DOUBLE_STONE_BLOCK_SLAB4 = "double_stone_block_slab4";
+    /**
+     * @deprecated use {@link #DOUBLE_STONE_BLOCK_SLAB4} instead
+     */
+    @Deprecated
     String REAL_DOUBLE_STONE_SLAB4 = "real_double_stone_slab4";
     String GRANITE_STAIRS = "granite_stairs";
     String DIORITE_STAIRS = "diorite_stairs";
@@ -599,21 +1252,66 @@ public interface ItemBlockNames {
     String SMITHING_TABLE = "smithing_table";
     String BARREL = "barrel";
     String LOOM = "loom";
-    String BELL = "bell"; //TODO: meta 31
+    String BELL = "bell";
+
     String SWEET_BERRY_BUSH = "sweet_berry_bush";
     String LANTERN = "lantern";
     String ITEM_CAMPFIRE = "item.campfire";
-    String LAVA_CAULDRON = "lava_cauldron"; //TODO: 1.20.0 remove
-    String JIGSAW = "jigsaw"; //TODO: meta 29
-    String OAK_WOOD = "oak_wood"; //TODO: 1.20.70 flattening
+    /**
+     * @deprecated removed since 1.20.0
+     */
+    @Deprecated
+    String LAVA_CAULDRON = "lava_cauldron";
+    String JIGSAW = "jigsaw";
+    String OAK_WOOD = "oak_wood";
+    /**
+     * @deprecated flattened since 1.20.70
+     * @see #OAK_WOOD
+     * @see #SPRUCE_WOOD
+     * @see #BIRCH_WOOD
+     * @see #JUNGLE_WOOD
+     * @see #ACACIA_WOOD
+     * @see #DARK_OAK_WOOD
+     * @see #STRIPPED_OAK_WOOD
+     * @see #STRIPPED_SPRUCE_WOOD
+     * @see #STRIPPED_BIRCH_WOOD
+     * @see #STRIPPED_JUNGLE_WOOD
+     * @see #STRIPPED_ACACIA_WOOD
+     * @see #STRIPPED_DARK_OAK_WOOD
+     */
+    @Deprecated
     String WOOD = "wood";
     String COMPOSTER = "composter";
     String LIT_BLAST_FURNACE = "lit_blast_furnace";
-    String LIGHT_BLOCK_0 = "light_block_0"; //TODO: 1.21.20 flattening
+    String LIGHT_BLOCK_0 = "light_block_0";
+    /**
+     * @deprecated flattened since 1.21.20
+     * @see #LIGHT_BLOCK_0
+     * @see #LIGHT_BLOCK_1
+     * @see #LIGHT_BLOCK_2
+     * @see #LIGHT_BLOCK_3
+     * @see #LIGHT_BLOCK_4
+     * @see #LIGHT_BLOCK_5
+     * @see #LIGHT_BLOCK_6
+     * @see #LIGHT_BLOCK_7
+     * @see #LIGHT_BLOCK_8
+     * @see #LIGHT_BLOCK_9
+     * @see #LIGHT_BLOCK_10
+     * @see #LIGHT_BLOCK_11
+     * @see #LIGHT_BLOCK_12
+     * @see #LIGHT_BLOCK_13
+     * @see #LIGHT_BLOCK_14
+     * @see #LIGHT_BLOCK_15
+     */
+    @Deprecated
     String LIGHT_BLOCK = "light_block";
     String WITHER_ROSE = "wither_rose";
     String STICKY_PISTON_ARM_COLLISION = "sticky_piston_arm_collision";
-    String STICKYPISTONARMCOLLISION = "stickypistonarmcollision"; //TODO: 1.18.30 rename
+    /**
+     * @deprecated use {@link #STICKY_PISTON_ARM_COLLISION} instead
+     */
+    @Deprecated
+    String STICKYPISTONARMCOLLISION = "stickypistonarmcollision";
     String BEE_NEST = "bee_nest";
     String BEEHIVE = "beehive";
     String HONEY_BLOCK = "honey_block";
@@ -644,6 +1342,7 @@ public interface ItemBlockNames {
     String ITEM_WARPED_DOOR = "item.warped_door";
     String CRIMSON_TRAPDOOR = "crimson_trapdoor";
     String WARPED_TRAPDOOR = "warped_trapdoor";
+
     String CRIMSON_STANDING_SIGN = "crimson_standing_sign";
     String WARPED_STANDING_SIGN = "warped_standing_sign";
     String CRIMSON_WALL_SIGN = "crimson_wall_sign";
@@ -681,6 +1380,10 @@ public interface ItemBlockNames {
     String POLISHED_BLACKSTONE_BRICK_SLAB = "polished_blackstone_brick_slab";
     String POLISHED_BLACKSTONE_BRICK_DOUBLE_SLAB = "polished_blackstone_brick_double_slab";
     String IRON_CHAIN = "iron_chain";
+//    /**
+//     * @deprecated use {@link #IRON_CHAIN} instead
+//     */
+//    @Deprecated //TODO:1.21.111
     String ITEM_CHAIN = "item.chain";
     String TWISTING_VINES = "twisting_vines";
     String NETHER_GOLD_ORE = "nether_gold_ore";
@@ -704,6 +1407,7 @@ public interface ItemBlockNames {
     String POWDER_SNOW = "powder_snow";
     String SCULK_SENSOR = "sculk_sensor";
     String POINTED_DRIPSTONE = "pointed_dripstone";
+
     String COPPER_ORE = "copper_ore";
     String LIGHTNING_ROD = "lightning_rod";
     String CRAFTER = "crafter";
@@ -848,10 +1552,12 @@ public interface ItemBlockNames {
     String RAW_COPPER_BLOCK = "raw_copper_block";
     String RAW_GOLD_BLOCK = "raw_gold_block";
     String INFESTED_DEEPSLATE = "infested_deepslate";
+
     String SCULK = "sculk";
     String SCULK_VEIN = "sculk_vein";
     String SCULK_CATALYST = "sculk_catalyst";
     String SCULK_SHRIEKER = "sculk_shrieker";
+
     String CLIENT_REQUEST_PLACEHOLDER_BLOCK = "client_request_placeholder_block";
     String REINFORCED_DEEPSLATE = "reinforced_deepslate";
     /**
@@ -872,6 +1578,7 @@ public interface ItemBlockNames {
     String MUD = "mud";
     String MANGROVE_PROPAGULE = "mangrove_propagule";
     String MUD_BRICKS = "mud_bricks";
+
     String PACKED_MUD = "packed_mud";
     String MUD_BRICK_SLAB = "mud_brick_slab";
     String MUD_BRICK_DOUBLE_SLAB = "mud_brick_double_slab";

@@ -13,7 +13,8 @@ import cn.nukkit.utils.BlockColor;
  * Package cn.nukkit.block in project Nukkit .
  */
 public class BlockCraftingTable extends BlockSolid {
-    public BlockCraftingTable() {
+    BlockCraftingTable() {
+
     }
 
     @Override

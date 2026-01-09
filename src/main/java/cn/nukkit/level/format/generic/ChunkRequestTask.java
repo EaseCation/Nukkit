@@ -133,7 +133,7 @@ public class ChunkRequestTask extends AsyncTask<Void> {
                             tagList = new ObjectArrayList<>();
                             tagLists[subChunkIndex] = tagList;
                         }
-                        CompoundTag nbt = ((BlockEntitySpawnable) blockEntity).getSpawnCompound();
+                        CompoundTag nbt = ((BlockEntitySpawnable) blockEntity).getSpawnCompound(true);
                         if (nbt.isEmpty()) {
                             continue;
                         }

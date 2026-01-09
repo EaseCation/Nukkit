@@ -3,7 +3,8 @@ package cn.nukkit.block;
 import cn.nukkit.utils.BlockColor;
 
 public class BlockCopperWeathered extends BlockCopper {
-    public BlockCopperWeathered() {
+    BlockCopperWeathered() {
+
     }
 
     @Override

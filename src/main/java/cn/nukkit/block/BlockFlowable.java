@@ -9,8 +9,8 @@ import cn.nukkit.math.BlockFace;
  */
 public abstract class BlockFlowable extends BlockTransparent {
 
-    protected BlockFlowable(int meta) {
-        super(meta);
+    BlockFlowable() {
+
     }
 
     @Override

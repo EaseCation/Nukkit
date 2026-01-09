@@ -277,11 +277,7 @@ public class Player extends EntityHuman implements CommandSender, InventoryHolde
 
     private Vector3 viewingEnderChest = null;
 
-    //TODO: use itemCooldownMap
-    protected int lastEnderPearl = 20;
-    protected int lastChorusFruitTeleport = 20;
-    protected int lastIceBomb = 20;
-    protected int lastGoatHornPlay = 140;
+    protected final Map<CooldownCategory, Integer> itemCooldown = new EnumMap<>(CooldownCategory.class);
 
     private LoginChainData loginChainData;
 
@@ -366,38 +362,6 @@ public class Player extends EntityHuman implements CommandSender, InventoryHolde
     public void stopAction() {
         this.startAction = -1;
         this.startActionTimestamp = -1;
-    }
-
-    public int getLastEnderPearlThrowingTick() {
-        return lastEnderPearl;
-    }
-
-    public void onThrowEnderPearl() {
-        this.lastEnderPearl = this.server.getTick();
-    }
-
-    public int getLastChorusFruitTeleport() {
-        return lastChorusFruitTeleport;
-    }
-
-    public void onChorusFruitTeleport() {
-        this.lastChorusFruitTeleport = this.server.getTick();
-    }
-
-    public int getLastIceBombThrowingTick() {
-        return lastIceBomb;
-    }
-
-    public void onThrowIceBomb() {
-        this.lastIceBomb = this.server.getTick();
-    }
-
-    public int getLastGoatHornPlay() {
-        return lastGoatHornPlay;
-    }
-
-    public void onGoatHornPlay() {
-        this.lastGoatHornPlay = this.server.getTick();
     }
 
     public Vector3 getViewingEnderChest() {
@@ -954,7 +918,7 @@ public class Player extends EntityHuman implements CommandSender, InventoryHolde
     public Position getSpawn() {
         if (this.spawnBlockPosition != null && this.spawnBlockPosition.level != null && this.spawnBlockPosition.equalsVec(this.spawnPosition) && this.spawnBlockPosition.level == this.spawnPosition.level) {
             Block block = this.spawnBlockPosition.level.getBlock(this.spawnBlockPosition);
-            if (block.getId() == Block.BLOCK_BED && (block.getDamage() & 0x8) == 0x8) {
+            if (block.getId() == Block.BED && (block.getDamage() & 0x8) == 0x8) {
                 return this.spawnPosition.floor().add(0.5, 0.1, 0.5);
             } else {
                 this.setSpawnBlockPosition(null, Cause.RESET);
@@ -2141,7 +2105,7 @@ public class Player extends EntityHuman implements CommandSender, InventoryHolde
 
             if (this.isSleeping() && spawnBlockPosition != null) {
                 Block block = this.spawnBlockPosition.level.getBlock(this.spawnBlockPosition);
-                if (block.getId() != Block.BLOCK_BED || (block.getDamage() & 0x8) != 0x8) {
+                if (block.getId() != Block.BED || (block.getDamage() & 0x8) != 0x8) {
                     this.stopSleep();
                 }
             }
@@ -6347,7 +6311,7 @@ public class Player extends EntityHuman implements CommandSender, InventoryHolde
     }
 
     public List<Item> getCreativeItems() {
-        return Item.getCreativeItems();
+        return Collections.emptyList();
     }
 
     public int getCreativeItemIndex(Item item) {
@@ -6470,6 +6434,19 @@ public class Player extends EntityHuman implements CommandSender, InventoryHolde
      * @since 1.16.100
      */
     public void stopCameraShake() {
+    }
+
+    public boolean isItemCooling(CooldownCategory category, int cooldownDuration) {
+        Integer lastUsedTick = itemCooldown.get(category);
+        if (lastUsedTick == null) {
+            return false;
+        }
+        return server.getTick() - lastUsedTick < cooldownDuration;
+    }
+
+    public void startItemCooldown(CooldownCategory category) {
+        itemCooldown.put(category, server.getTick());
+        //TODO: data-driven
     }
 
     /**
@@ -6996,7 +6973,7 @@ public class Player extends EntityHuman implements CommandSender, InventoryHolde
         }
 
         Item helmet;
-        if (!isAlive() || isSpectator() || hasEffect(Effect.INVISIBILITY) || isSneaking() || (helmet = armorInventory.getHelmet()).is(Item.SKULL) || helmet.is(ItemBlockID.CARVED_PUMPKIN)) {
+        if (!isAlive() || isSpectator() || hasEffect(Effect.INVISIBILITY) || isSneaking() || (helmet = armorInventory.getHelmet()).isSkull() || helmet.is(ItemBlockID.CARVED_PUMPKIN)) {
             if (!hiddenLocator) {
                 hiddenLocator = true;
 

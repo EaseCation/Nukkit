@@ -6,12 +6,8 @@ package cn.nukkit.block;
  */
 public class BlockLavaStill extends BlockLava {
 
-    public BlockLavaStill() {
-        super(0);
-    }
+    BlockLavaStill() {
 
-    public BlockLavaStill(int meta) {
-        super(meta);
     }
 
     @Override

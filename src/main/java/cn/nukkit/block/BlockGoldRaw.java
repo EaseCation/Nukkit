@@ -6,7 +6,8 @@ import cn.nukkit.item.ItemTool;
 import cn.nukkit.utils.BlockColor;
 
 public class BlockGoldRaw extends BlockSolid {
-    public BlockGoldRaw() {
+    BlockGoldRaw() {
+
     }
 
     @Override

@@ -6,17 +6,21 @@ import cn.nukkit.level.Level;
 import cn.nukkit.math.BlockFace;
 import cn.nukkit.math.Mth;
 import cn.nukkit.math.Vector3;
-import cn.nukkit.utils.BlockColor;
 
 import java.util.concurrent.ThreadLocalRandom;
 
-import static cn.nukkit.GameVersion.*;
+public abstract class BlockCoralFan extends BlockFlowable {
+    public static final int[] CORAL_FANS = {
+            TUBE_CORAL_FAN,
+            BRAIN_CORAL_FAN,
+            BUBBLE_CORAL_FAN,
+            FIRE_CORAL_FAN,
+            HORN_CORAL_FAN,
+    };
 
-public class BlockCoralFan extends BlockFlowable {
-
+    @Deprecated
     public static final int COLOR_MASK = 0b111;
-    public static final int COLOR_BITS = 3;
-    public static final int DIRECTION_BIT = 0b1000;
+    public static final int DIRECTION_BIT = 0b1;
 
     public static final int BLUE = 0;
     public static final int PINK = 1;
@@ -24,63 +28,12 @@ public class BlockCoralFan extends BlockFlowable {
     public static final int RED = 3;
     public static final int YELLOW = 4;
 
-    public static final int DIRECTION_X_AXIS = 0;
-    public static final int DIRECTION_Z_AXIS = 1;
-
-    private static final String[] NAMES = new String[]{
-            "Tube Coral Fan",
-            "Brain Coral Fan",
-            "Bubble Coral Fan",
-            "Fire Coral Fan",
-            "Horn Coral Fan",
-            "Coral Fan",
-            "Coral Fan",
-            "Coral Fan",
-    };
-
-    public BlockCoralFan() {
-        this(0);
-    }
-
-    public BlockCoralFan(int meta) {
-        super(meta);
-    }
-
-    @Override
-    public int getId() {
-        return CORAL_FAN;
-    }
-
-    @Override
-    public boolean isStackedByData() {
-        return !V1_20_80.isAvailable();
-    }
-
-    @Override
-    public String getName() {
-        return NAMES[getCoralColor()];
-    }
+    private static final int DIRECTION_X_AXIS = 0;
+    private static final int DIRECTION_Z_AXIS = 1;
 
     @Override
     public boolean canSilkTouch() {
         return true;
-    }
-
-    @Override
-    public BlockColor getColor() {
-        switch (getCoralColor()) {
-            default:
-            case BLUE:
-                return BlockColor.BLUE_BLOCK_COLOR;
-            case PINK:
-                return BlockColor.PINK_BLOCK_COLOR;
-            case PURPLE:
-                return BlockColor.PURPLE_BLOCK_COLOR;
-            case RED:
-                return BlockColor.RED_BLOCK_COLOR;
-            case YELLOW:
-                return BlockColor.YELLOW_BLOCK_COLOR;
-        }
     }
 
     @Override
@@ -90,7 +43,7 @@ public class BlockCoralFan extends BlockFlowable {
 
     @Override
     public Item toItem(boolean addUserData) {
-        return Item.get(getItemId(), getDamage() & COLOR_MASK);
+        return Item.get(getItemId());
     }
 
     @Override
@@ -118,11 +71,7 @@ public class BlockCoralFan extends BlockFlowable {
                     Vector3 direction = subtract(player.floor()).normalize();
                     double angle = Math.toDegrees(Mth.atan2(direction.getZ(), direction.getX()));
                     // vanilla bug see https://bugs.mojang.com/browse/MCPE-125311
-                    if (angle <= 45 || 315 <= angle || (135 <= angle && angle <= 225)) {
-                        setDirection(DIRECTION_Z_AXIS);
-                    } else {
-                        setDirection(DIRECTION_X_AXIS);
-                    }
+                    setDirectionType(angle <= 45 || 315 <= angle || 135 <= angle && angle <= 225);
                 }
 
                 if (block.isWater() || extra != null && extra.isWater() && !extra.isLiquidSource()) {
@@ -130,7 +79,7 @@ public class BlockCoralFan extends BlockFlowable {
                 }
 
                 if (!block.isWater() && (extra == null || !extra.isWater())) {
-                    return level.setBlock(this, get(CORAL_FAN_DEAD, getDamage()), true);
+                    return level.setBlock(this, get(getDeadBlockId(), getDamage()), true);
                 }
 
                 if (!super.place(item, block, target, face, fx, fy, fz, player)) {
@@ -165,13 +114,9 @@ public class BlockCoralFan extends BlockFlowable {
                         break;
                 }
 
-                Block hangBlock = getHangBlock(direction);
-                boolean dead = false;
-                if (!block.isWater() && (extra == null || !extra.isWater())) {
-                    dead = true;
-                    hangBlock.setDamage(hangBlock.getDamage() | BlockCoralFanHang.DEAD_BIT);
-                }
+                boolean dead = !block.isWater() && (extra == null || !extra.isWater());
 
+                Block hangBlock = get(getWallBlockId(dead), direction);
                 if (!level.setBlock(this, hangBlock, true)) {
                     return false;
                 }
@@ -191,7 +136,7 @@ public class BlockCoralFan extends BlockFlowable {
                 return Level.BLOCK_UPDATE_NORMAL;
             }
 
-            if (!needCheckAlive()) {
+            if (isDeadCoral()) {
                 return 0;
             }
 
@@ -204,7 +149,7 @@ public class BlockCoralFan extends BlockFlowable {
                 return 0;
             }
 
-            level.setBlock(this, get(CORAL_FAN_DEAD, getDamage()), true);
+            level.setBlock(this, get(getDeadBlockId(), getDamage()), true);
             return type;
         }
 
@@ -216,39 +161,21 @@ public class BlockCoralFan extends BlockFlowable {
         return true;
     }
 
-    protected boolean needCheckAlive() {
-        return true;
+    protected abstract int getWallBlockId(boolean dead);
+
+    protected abstract int getDeadBlockId();
+
+    /**
+     * @return {@code true} if the direction is Z axis, {@code false} if X axis
+     */
+    public boolean getDirectionType() {
+        return getDamage() == DIRECTION_Z_AXIS;
     }
 
-    protected Block getHangBlock(int direction) {
-        switch (getCoralColor()) {
-            default:
-            case BLUE:
-                return Block.get(CORAL_FAN_HANG, BlockCoralFanHang.BLUE | (direction << BlockCoralFanHang.TYPE_DEAD_BITS));
-            case PINK:
-                return Block.get(CORAL_FAN_HANG, BlockCoralFanHang.PINK | (direction << BlockCoralFanHang.TYPE_DEAD_BITS));
-            case PURPLE:
-                return Block.get(CORAL_FAN_HANG2, BlockCoralFanHang2.PURPLE | (direction << BlockCoralFanHang.TYPE_DEAD_BITS));
-            case RED:
-                return Block.get(CORAL_FAN_HANG2, BlockCoralFanHang2.RED | (direction << BlockCoralFanHang.TYPE_DEAD_BITS));
-            case YELLOW:
-                return Block.get(CORAL_FAN_HANG3, BlockCoralFanHang3.YELLOW | (direction << BlockCoralFanHang.TYPE_DEAD_BITS));
-        }
-    }
-
-    public int getCoralColor() {
-        return getDamage() & COLOR_MASK;
-    }
-
-    public void setCoralColor(int color) {
-        setDamage((getDamage() & ~COLOR_MASK) | (color & COLOR_MASK));
-    }
-
-    public int getDirection() {
-        return (getDamage() & DIRECTION_BIT) >> COLOR_BITS;
-    }
-
-    public void setDirection(int direction) {
-        setDamage((getDamage() & ~DIRECTION_BIT) | ((direction << COLOR_BITS) & DIRECTION_BIT));
+    /**
+     * @param zAxis {@code true} to set Z axis, {@code false} to set X axis
+     */
+    public void setDirectionType(boolean zAxis) {
+        setDamage(zAxis ? DIRECTION_Z_AXIS : DIRECTION_X_AXIS);
     }
 }

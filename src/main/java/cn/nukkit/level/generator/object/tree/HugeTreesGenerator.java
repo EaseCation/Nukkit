@@ -4,7 +4,7 @@ import cn.nukkit.block.Block;
 import cn.nukkit.level.ChunkManager;
 import cn.nukkit.level.HeightRange;
 import cn.nukkit.math.BlockVector3;
-import cn.nukkit.math.NukkitRandom;
+import cn.nukkit.math.RandomSource;
 
 public abstract class HugeTreesGenerator extends TreeGenerator {
     /**
@@ -33,7 +33,7 @@ public abstract class HugeTreesGenerator extends TreeGenerator {
     /*
      * Calculates the height based on this trees base height and its extra random height
      */
-    protected int getHeight(NukkitRandom rand) {
+    protected int getHeight(RandomSource rand) {
         int i = rand.nextBoundedInt(3) + this.baseHeight;
 
         if (this.extraRandomHeight > 1) {
@@ -99,7 +99,7 @@ public abstract class HugeTreesGenerator extends TreeGenerator {
      * returns whether or not a tree can grow at a specific position.
      * If it can, it generates surrounding dirt underneath.
      */
-    protected boolean ensureGrowable(ChunkManager worldIn, NukkitRandom rand, BlockVector3 treePos, int p_175929_4_) {
+    protected boolean ensureGrowable(ChunkManager worldIn, RandomSource rand, BlockVector3 treePos, int p_175929_4_) {
         return this.isSpaceAt(worldIn, treePos, p_175929_4_) && this.ensureDirtsUnderneath(treePos, worldIn);
     }
 
@@ -117,8 +117,9 @@ public abstract class HugeTreesGenerator extends TreeGenerator {
                 if (j * j + k * k <= i || l * l + i1 * i1 <= i || j * j + i1 * i1 <= i || l * l + k * k <= i) {
                     BlockVector3 blockpos = layerCenter.add(j, 0, k);
                     int id = worldIn.getBlockIdAt(0, blockpos.x, blockpos.y, blockpos.z);
+                    Block ub = Block.getUnsafe(id);
 
-                    if (id == Block.AIR || id == Block.LEAVES) {
+                    if (id == Block.AIR || ub.isLeaves()) {
                         this.setBlockAndNotifyAdequately(worldIn, blockpos, this.leavesMetadata);
                     }
                 }
@@ -137,8 +138,9 @@ public abstract class HugeTreesGenerator extends TreeGenerator {
                 if (j * j + k * k <= i) {
                     BlockVector3 blockpos = layerCenter.add(j, 0, k);
                     int id = worldIn.getBlockIdAt(0, blockpos.x, blockpos.y, blockpos.z);
+                    Block ub = Block.getUnsafe(id);
 
-                    if (id == Block.AIR || id == Block.LEAVES) {
+                    if (id == Block.AIR || ub.isLeaves()) {
                         this.setBlockAndNotifyAdequately(worldIn, blockpos, this.leavesMetadata);
                     }
                 }

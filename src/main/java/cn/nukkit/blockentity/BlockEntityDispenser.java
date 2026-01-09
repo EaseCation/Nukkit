@@ -36,7 +36,7 @@ public class BlockEntityDispenser extends BlockEntityAbstractContainer {
     }
 
     @Override
-    public CompoundTag getSpawnCompound() {
+    public CompoundTag getSpawnCompound(boolean chunkData) {
         CompoundTag nbt = getDefaultCompound(this, DISPENSER);
 
         if (this.hasName()) {

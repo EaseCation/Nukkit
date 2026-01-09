@@ -19,12 +19,8 @@ public class BlockSnifferEgg extends BlockTransparent {
     public static final int CRACKED = 1;
     public static final int MAX_CRACKED = 2;
 
-    public BlockSnifferEgg() {
-        this(0);
-    }
+    BlockSnifferEgg() {
 
-    public BlockSnifferEgg(int meta) {
-        super(meta);
     }
 
     @Override

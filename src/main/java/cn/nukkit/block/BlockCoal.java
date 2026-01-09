@@ -10,7 +10,8 @@ import cn.nukkit.utils.BlockColor;
  * Package cn.nukkit.block in project Nukkit .
  */
 public class BlockCoal extends BlockSolid {
-    public BlockCoal() {
+    BlockCoal() {
+
     }
 
     @Override

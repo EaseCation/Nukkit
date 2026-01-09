@@ -13,12 +13,8 @@ import cn.nukkit.utils.Faceable;
  * Package cn.nukkit.block in project Nukkit .
  */
 public class BlockPumpkin extends BlockSolid implements Faceable {
-    public BlockPumpkin() {
-        this(0);
-    }
+    BlockPumpkin() {
 
-    public BlockPumpkin(int meta) {
-        super(meta);
     }
 
     @Override

@@ -13,6 +13,6 @@ public class ItemDoorWarped extends Item {
 
     public ItemDoorWarped(Integer meta, int count) {
         super(WARPED_DOOR, meta, count, "Warped Door");
-        this.block = Block.get(Block.BLOCK_WARPED_DOOR);
+        this.block = Block.get(Block.WARPED_DOOR);
     }
 }

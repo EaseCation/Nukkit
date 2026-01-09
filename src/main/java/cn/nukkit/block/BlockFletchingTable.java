@@ -4,7 +4,8 @@ import cn.nukkit.utils.BlockColor;
 
 public class BlockFletchingTable extends BlockSolid {
 
-    public BlockFletchingTable() {
+    BlockFletchingTable() {
+
     }
 
     @Override

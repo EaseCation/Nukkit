@@ -11,29 +11,25 @@ import cn.nukkit.utils.TerracottaColor;
  * Created on 2015/12/2 by xtypr.
  * Package cn.nukkit.block in project Nukkit .
  */
-public class BlockTerracottaStained extends BlockSolid {
-
-    public BlockTerracottaStained() {
-        this(0);
-    }
-
-    public BlockTerracottaStained(int meta) {
-        super(meta);
-    }
-
-    public BlockTerracottaStained(DyeColor dyeColor) {
-        this(dyeColor.getWoolData());
-    }
-
-    @Override
-    public String getName() {
-        return getDyeColor().getName() + " Terracotta";
-    }
-
-    @Override
-    public int getId() {
-        return STAINED_HARDENED_CLAY;
-    }
+public abstract class BlockTerracottaStained extends BlockSolid {
+    public static final int[] STAINED_TERRACOTTAS = {
+            WHITE_TERRACOTTA,
+            ORANGE_TERRACOTTA,
+            MAGENTA_TERRACOTTA,
+            LIGHT_BLUE_TERRACOTTA,
+            YELLOW_TERRACOTTA,
+            LIME_TERRACOTTA,
+            PINK_TERRACOTTA,
+            GRAY_TERRACOTTA,
+            LIGHT_GRAY_TERRACOTTA,
+            CYAN_TERRACOTTA,
+            PURPLE_TERRACOTTA,
+            BLUE_TERRACOTTA,
+            BROWN_TERRACOTTA,
+            GREEN_TERRACOTTA,
+            RED_TERRACOTTA,
+            BLACK_TERRACOTTA,
+    };
 
     @Override
     public float getHardness() {
@@ -66,12 +62,10 @@ public class BlockTerracottaStained extends BlockSolid {
 
     @Override
     public BlockColor getColor() {
-        return TerracottaColor.getByTerracottaData(getDamage()).getColor();
+        return TerracottaColor.getByTerracottaData(getDyeColor().getWoolData()).getColor();
     }
 
-    public DyeColor getDyeColor() {
-        return DyeColor.getByWoolData(getDamage());
-    }
+    public abstract DyeColor getDyeColor();
 
     @Override
     public boolean isTerracotta() {

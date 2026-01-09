@@ -9,12 +9,8 @@ import static cn.nukkit.GameVersion.*;
 import static cn.nukkit.SharedConstants.*;
 
 public class BlockWallMudBrick extends BlockWall {
-    public BlockWallMudBrick() {
-        this(0);
-    }
+    BlockWallMudBrick() {
 
-    public BlockWallMudBrick(int meta) {
-        super(meta);
     }
 
     @Override

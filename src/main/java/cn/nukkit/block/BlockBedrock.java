@@ -9,12 +9,8 @@ import cn.nukkit.item.Item;
 public class BlockBedrock extends BlockSolid {
     public static final int INFINIBURN_BIT = 0b1;
 
-    public BlockBedrock() {
-        this(0);
-    }
+    BlockBedrock() {
 
-    public BlockBedrock(int meta) {
-        super(meta & 0b1);
     }
 
     @Override

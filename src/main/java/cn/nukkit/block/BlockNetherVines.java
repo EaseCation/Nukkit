@@ -17,10 +17,6 @@ public abstract class BlockNetherVines extends BlockFlowable {
 
     protected static final float FERTILIZER_GROW_PROBABILITY_DECREASE_RATE = 0.826f;
 
-    protected BlockNetherVines(int meta) {
-        super(meta);
-    }
-
     @Override
     public Item toItem(boolean addUserData) {
         return Item.get(getItemId());

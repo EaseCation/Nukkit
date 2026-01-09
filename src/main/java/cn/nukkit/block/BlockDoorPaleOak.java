@@ -4,12 +4,8 @@ import cn.nukkit.item.Item;
 import cn.nukkit.utils.BlockColor;
 
 public class BlockDoorPaleOak extends BlockDoorWood {
-    public BlockDoorPaleOak() {
-        this(0);
-    }
+    BlockDoorPaleOak() {
 
-    public BlockDoorPaleOak(int meta) {
-        super(meta);
     }
 
     @Override
@@ -24,7 +20,7 @@ public class BlockDoorPaleOak extends BlockDoorWood {
 
     @Override
     public Item toItem(boolean addUserData) {
-        return Item.get(getItemId(), getItemDefaultMeta());
+        return Item.get(getItemId(), getItemMeta());
     }
 
     @Override

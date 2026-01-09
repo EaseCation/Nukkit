@@ -10,7 +10,8 @@ import cn.nukkit.item.ItemTool;
  */
 public class BlockCobblestone extends BlockSolid {
 
-    public BlockCobblestone() {
+    BlockCobblestone() {
+
     }
 
     @Override

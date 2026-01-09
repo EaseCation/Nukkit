@@ -4,12 +4,8 @@ import cn.nukkit.utils.BlockColor;
 
 public class BlockTrapdoorDarkOak extends BlockTrapdoor {
 
-    public BlockTrapdoorDarkOak() {
-        this(0);
-    }
+    BlockTrapdoorDarkOak() {
 
-    public BlockTrapdoorDarkOak(int meta) {
-        super(meta);
     }
 
     @Override

@@ -12,7 +12,7 @@ import cn.nukkit.level.generator.object.ore.OreType;
 import cn.nukkit.level.generator.populator.impl.*;
 import cn.nukkit.level.generator.populator.type.Populator;
 import cn.nukkit.math.Mth;
-import cn.nukkit.math.NukkitRandom;
+import cn.nukkit.math.RandomSource;
 import cn.nukkit.math.Vector3;
 import it.unimi.dsi.fastutil.objects.Object2ObjectOpenHashMap;
 import it.unimi.dsi.fastutil.objects.ObjectArrayList;
@@ -121,7 +121,7 @@ public class Normal implements Generator {
     public NoiseGeneratorOctavesF scaleNoise;
     public NoiseGeneratorOctavesF depthNoise;
     private ChunkManager level;
-    private NukkitRandom nukkitRandom;
+    private RandomSource nukkitRandom;
     private long localSeed1;
     private long localSeed2;
     private BiomeSelector selector;
@@ -169,7 +169,7 @@ public class Normal implements Generator {
     }
 
     @Override
-    public void init(ChunkManager level, NukkitRandom random, GeneratorOptions generatorOptions) {
+    public void init(ChunkManager level, RandomSource random, GeneratorOptions generatorOptions) {
         this.level = level;
         this.nukkitRandom = random;
         this.nukkitRandom.setSeed(this.level.getSeed());
@@ -206,9 +206,9 @@ public class Normal implements Generator {
                 new OreType(Block.get(BlockID.DIAMOND_ORE), 1, 8, 0, 15),
                 new OreType(Block.get(BlockID.DIRT), 10, 33, 0, 128),
                 new OreType(Block.get(BlockID.GRAVEL), 8, 33, 0, 128),
-                new OreType(Block.get(BlockID.STONE, BlockStone.TYPE_GRANITE), 10, 33, 0, 80),
-                new OreType(Block.get(BlockID.STONE, BlockStone.TYPE_DIORITE), 10, 33, 0, 80),
-                new OreType(Block.get(BlockID.STONE, BlockStone.TYPE_ANDESITE), 10, 33, 0, 80)
+                new OreType(Block.get(BlockID.GRANITE), 10, 33, 0, 80),
+                new OreType(Block.get(BlockID.DIORITE), 10, 33, 0, 80),
+                new OreType(Block.get(BlockID.ANDESITE), 10, 33, 0, 80)
         );
         this.populators.add(ores);
 

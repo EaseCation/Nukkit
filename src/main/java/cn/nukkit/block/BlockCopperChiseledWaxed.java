@@ -7,7 +7,8 @@ import cn.nukkit.network.protocol.LevelEventPacket;
 import cn.nukkit.network.protocol.LevelSoundEventPacket;
 
 public class BlockCopperChiseledWaxed extends BlockCopperChiseled {
-    public BlockCopperChiseledWaxed() {
+    BlockCopperChiseledWaxed() {
+
     }
 
     @Override

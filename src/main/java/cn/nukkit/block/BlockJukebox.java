@@ -21,7 +21,8 @@ import static cn.nukkit.GameVersion.*;
  */
 public class BlockJukebox extends BlockSolid {
 
-    public BlockJukebox() {
+    BlockJukebox() {
+
     }
 
     @Override

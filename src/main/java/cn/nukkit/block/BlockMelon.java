@@ -15,7 +15,8 @@ import java.util.concurrent.ThreadLocalRandom;
 
 public class BlockMelon extends BlockSolid {
 
-    public BlockMelon() {
+    BlockMelon() {
+
     }
 
     @Override

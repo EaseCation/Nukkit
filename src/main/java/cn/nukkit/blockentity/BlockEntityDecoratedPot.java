@@ -88,7 +88,7 @@ public class BlockEntityDecoratedPot extends BlockEntitySpawnable implements Hop
     }
 
     @Override
-    public CompoundTag getSpawnCompound() {
+    public CompoundTag getSpawnCompound(boolean chunkData) {
         CompoundTag nbt = getDefaultCompound(this, DECORATED_POT)
                 .putCompound("item", NBTIO.putItemHelper(item))
                 .putByte("animation", animation);

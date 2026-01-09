@@ -20,12 +20,8 @@ public class BlockJigsaw extends BlockSolid implements Faceable {
     public static final int FACING_DIRECTION_BITS = 3;
     public static final int ROTATION_MASK = 0b11000;
 
-    public BlockJigsaw() {
-        this(0);
-    }
+    BlockJigsaw() {
 
-    public BlockJigsaw(int meta) {
-        super(meta);
     }
 
     @Override

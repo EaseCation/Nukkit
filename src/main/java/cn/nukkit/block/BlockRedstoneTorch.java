@@ -12,12 +12,8 @@ import cn.nukkit.math.BlockFace;
  */
 public class BlockRedstoneTorch extends BlockTorch {
 
-    public BlockRedstoneTorch() {
-        this(0);
-    }
+    BlockRedstoneTorch() {
 
-    public BlockRedstoneTorch(int meta) {
-        super(meta);
     }
 
     @Override

@@ -3,12 +3,8 @@ package cn.nukkit.block;
 import cn.nukkit.utils.BlockColor;
 
 public class BlockLogSpruce extends BlockLog {
-    public BlockLogSpruce() {
-        this(0);
-    }
+    BlockLogSpruce() {
 
-    public BlockLogSpruce(int meta) {
-        super(meta);
     }
 
     @Override

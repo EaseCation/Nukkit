@@ -1,49 +1,25 @@
 package cn.nukkit.block;
 
-import cn.nukkit.utils.BlockColor;
-
-import static cn.nukkit.GameVersion.*;
-
 /**
  * author: MagicDroidX
  * Nukkit Project
  */
-public class BlockPlanks extends BlockSolid {
+public abstract class BlockPlanks extends BlockSolid {
+    public static final int[] WOODEN_PLANKS = {
+            OAK_PLANKS,
+            SPRUCE_PLANKS,
+            BIRCH_PLANKS,
+            JUNGLE_PLANKS,
+            ACACIA_PLANKS,
+            DARK_OAK_PLANKS,
+    };
+
     public static final int OAK = 0;
     public static final int SPRUCE = 1;
     public static final int BIRCH = 2;
     public static final int JUNGLE = 3;
     public static final int ACACIA = 4;
     public static final int DARK_OAK = 5;
-
-    private static final String[] NAMES = new String[]{
-            "Oak Wood Planks",
-            "Spruce Wood Planks",
-            "Birch Wood Planks",
-            "Jungle Wood Planks",
-            "Acacia Wood Planks",
-            "Dark Oak Wood Planks",
-            "Planks",
-            "Planks",
-    };
-
-    public BlockPlanks() {
-        this(0);
-    }
-
-    public BlockPlanks(int meta) {
-        super(meta);
-    }
-
-    @Override
-    public int getId() {
-        return PLANKS;
-    }
-
-    @Override
-    public boolean isStackedByData() {
-        return !V1_20_50.isAvailable();
-    }
 
     @Override
     public float getHardness() {
@@ -66,31 +42,17 @@ public class BlockPlanks extends BlockSolid {
     }
 
     @Override
-    public String getName() {
-        return NAMES[this.getDamage() & 0x7];
-    }
-
-    @Override
     public int getToolType() {
         return BlockToolType.AXE;
     }
 
     @Override
-    public BlockColor getColor() {
-        switch (getDamage() & 0x07) {
-            default:
-            case OAK:
-                return BlockColor.WOOD_BLOCK_COLOR;
-            case SPRUCE:
-                return BlockColor.PODZOL_BLOCK_COLOR;
-            case BIRCH:
-                return BlockColor.SAND_BLOCK_COLOR;
-            case JUNGLE:
-                return BlockColor.DIRT_BLOCK_COLOR;
-            case ACACIA:
-                return BlockColor.ORANGE_BLOCK_COLOR;
-            case DARK_OAK:
-                return BlockColor.BROWN_BLOCK_COLOR;
-        }
+    public int getFuelTime() {
+        return 300;
+    }
+
+    @Override
+    public boolean isPlanks() {
+        return true;
     }
 }

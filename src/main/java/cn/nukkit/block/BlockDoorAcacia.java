@@ -5,12 +5,8 @@ import cn.nukkit.utils.BlockColor;
 
 public class BlockDoorAcacia extends BlockDoorWood {
 
-    public BlockDoorAcacia() {
-        this(0);
-    }
+    BlockDoorAcacia() {
 
-    public BlockDoorAcacia(int meta) {
-        super(meta);
     }
 
     @Override
@@ -20,7 +16,7 @@ public class BlockDoorAcacia extends BlockDoorWood {
 
     @Override
     public int getId() {
-        return BLOCK_ACACIA_DOOR;
+        return ACACIA_DOOR;
     }
 
     @Override

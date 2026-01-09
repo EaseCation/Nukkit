@@ -1,12 +1,8 @@
 package cn.nukkit.block;
 
 public class BlockAzaleaFlowering extends BlockAzalea {
-    public BlockAzaleaFlowering() {
-        this(0);
-    }
+    BlockAzaleaFlowering() {
 
-    public BlockAzaleaFlowering(int meta) {
-        super(0);
     }
 
     @Override

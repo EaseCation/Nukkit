@@ -4,12 +4,8 @@ import cn.nukkit.item.Item;
 import cn.nukkit.utils.BlockColor;
 
 public class BlockWallSignCrimson extends BlockWallSign {
-    public BlockWallSignCrimson() {
-        this(0);
-    }
+    BlockWallSignCrimson() {
 
-    public BlockWallSignCrimson(int meta) {
-        super(meta);
     }
 
     @Override

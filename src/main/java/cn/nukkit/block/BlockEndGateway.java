@@ -17,7 +17,8 @@ import javax.annotation.Nullable;
  */
 public class BlockEndGateway extends BlockTransparent {
 
-    public BlockEndGateway() {
+    BlockEndGateway() {
+
     }
 
     @Override

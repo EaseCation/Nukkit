@@ -27,7 +27,7 @@ public class BlockEntityEnderChest extends BlockEntitySpawnable {
     }
 
     @Override
-    public CompoundTag getSpawnCompound() {
+    public CompoundTag getSpawnCompound(boolean chunkData) {
         return getDefaultCompound(this, ENDER_CHEST)
                 .putList(new ListTag<>("Items"));
     }

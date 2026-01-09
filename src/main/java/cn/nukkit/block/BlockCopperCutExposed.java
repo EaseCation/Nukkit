@@ -1,7 +1,8 @@
 package cn.nukkit.block;
 
 public class BlockCopperCutExposed extends BlockCopperExposed {
-    public BlockCopperCutExposed() {
+    BlockCopperCutExposed() {
+
     }
 
     @Override

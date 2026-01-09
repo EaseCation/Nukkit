@@ -7,9 +7,6 @@ import cn.nukkit.network.protocol.AnimatePacket.SwingSource;
 import cn.nukkit.network.protocol.LevelSoundEventPacket;
 
 public abstract class BlockFungusStem extends BlockRotatedPillar {
-    protected BlockFungusStem(int meta) {
-        super(meta);
-    }
 
     @Override
     public float getHardness() {

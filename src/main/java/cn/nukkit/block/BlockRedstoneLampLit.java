@@ -9,7 +9,8 @@ import cn.nukkit.level.Level;
  */
 public class BlockRedstoneLampLit extends BlockRedstoneLamp {
 
-    public BlockRedstoneLampLit() {
+    BlockRedstoneLampLit() {
+
     }
 
     @Override

@@ -39,17 +39,13 @@ public class BlockCampfire extends BlockTransparent implements Faceable {
     public static final int DIRECTION_MASK = 0b11;
     public static final int EXTINGUISHED_BIT = 0b100;
 
-    public BlockCampfire() {
-        this(0);
-    }
+    BlockCampfire() {
 
-    public BlockCampfire(int meta) {
-        super(meta);
     }
 
     @Override
     public int getId() {
-        return BLOCK_CAMPFIRE;
+        return CAMPFIRE;
     }
 
     @Override
@@ -301,7 +297,7 @@ public class BlockCampfire extends BlockTransparent implements Faceable {
         }
 
         if (!(entity instanceof Player) || entity.level.gameRules.getBoolean(GameRule.FIRE_DAMAGE)) {
-            entity.attack(new EntityDamageByBlockEvent(this, entity, getId() == BLOCK_SOUL_CAMPFIRE ? DamageCause.SOUL_CAMPFIRE : DamageCause.CAMPFIRE, getEntityDamage()));
+            entity.attack(new EntityDamageByBlockEvent(this, entity, getId() == SOUL_CAMPFIRE ? DamageCause.SOUL_CAMPFIRE : DamageCause.CAMPFIRE, getEntityDamage()));
         }
 
         if (!(entity instanceof EntityArmorStand)) {

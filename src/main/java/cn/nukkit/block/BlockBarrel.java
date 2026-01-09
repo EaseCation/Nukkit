@@ -20,12 +20,8 @@ public class BlockBarrel extends BlockSolid implements Faceable {
     public static final int FACING_DIRECTION_MASK = 0b111;
     public static final int OPEN_BIT = 0b1000;
 
-    public BlockBarrel() {
-        this(0);
-    }
+    BlockBarrel() {
 
-    public BlockBarrel(int meta) {
-        super(meta);
     }
 
     @Override

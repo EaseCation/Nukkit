@@ -5,12 +5,8 @@ package cn.nukkit.block;
  */
 public class BlockMushroomBrown extends BlockMushroom {
 
-    public BlockMushroomBrown() {
-        super();
-    }
+    BlockMushroomBrown() {
 
-    public BlockMushroomBrown(int meta) {
-        super(0);
     }
 
     @Override

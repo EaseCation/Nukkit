@@ -7,6 +7,7 @@ import java.lang.annotation.Target;
 
 import static cn.nukkit.api.API.Definition.UNIVERSAL;
 import static cn.nukkit.api.API.Usage.BLEEDING;
+import static cn.nukkit.api.API.Usage.UNKNOWN;
 
 /**
  * Describes an API element.
@@ -16,7 +17,7 @@ import static cn.nukkit.api.API.Usage.BLEEDING;
  * @see Definition
  */
 @Retention(RetentionPolicy.SOURCE)
-@Target({ElementType.CONSTRUCTOR, ElementType.METHOD, ElementType.ANNOTATION_TYPE, ElementType.TYPE})
+@Target({ElementType.CONSTRUCTOR, ElementType.METHOD, ElementType.ANNOTATION_TYPE, ElementType.TYPE, ElementType.PACKAGE, ElementType.FIELD})
 @API(usage = BLEEDING, definition = UNIVERSAL)
 @SuppressWarnings("unused")
 public @interface API {
@@ -28,7 +29,7 @@ public @interface API {
      * @return The stability
      * @see Usage
      */
-    Usage usage();
+    Usage usage() default UNKNOWN;
 
     /**
      * Indicates definition or the platforms this API element supports.
@@ -36,7 +37,7 @@ public @interface API {
      * @return The definition
      * @see Definition
      */
-    Definition definition();
+    Definition definition() default UNIVERSAL;
 
     /**
      * Enum constant for API usage. Indicates when to use this API element.
@@ -49,6 +50,7 @@ public @interface API {
      * @see #STABLE
      */
     enum Usage {
+        UNKNOWN,
 
         /**
          * Should no longer be used, might disappear in the next minor release.

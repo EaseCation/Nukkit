@@ -22,12 +22,8 @@ import static cn.nukkit.utils.Rail.Orientation.*;
  */
 public class BlockRail extends BlockFlowable {
 
-    public BlockRail() {
-        this(0);
-    }
+    BlockRail() {
 
-    public BlockRail(int meta) {
-        super(meta);
     }
 
     @Override

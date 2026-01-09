@@ -26,7 +26,8 @@ public class BlockVault extends BlockTransparent implements Faceable {
     public static final int STATE_UNLOCKING = 2;
     public static final int STATE_EJECTING = 3;
 
-    public BlockVault() {
+    BlockVault() {
+
     }
 
     @Override

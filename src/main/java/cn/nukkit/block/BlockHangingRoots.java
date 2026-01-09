@@ -9,12 +9,8 @@ import cn.nukkit.utils.BlockColor;
 import static cn.nukkit.GameVersion.*;
 
 public class BlockHangingRoots extends BlockFlowable {
-    public BlockHangingRoots() {
-        this(0);
-    }
+    BlockHangingRoots() {
 
-    public BlockHangingRoots(int meta) {
-        super(0);
     }
 
     @Override

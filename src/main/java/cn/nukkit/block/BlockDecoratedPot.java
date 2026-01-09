@@ -9,24 +9,20 @@ import cn.nukkit.entity.projectile.EntityProjectile;
 import cn.nukkit.item.Item;
 import cn.nukkit.level.MovingObjectPosition;
 import cn.nukkit.math.BlockFace;
+import cn.nukkit.math.Mth;
 import cn.nukkit.nbt.tag.CompoundTag;
 import cn.nukkit.nbt.tag.Tag;
+import cn.nukkit.network.protocol.LevelEventPacket;
 import cn.nukkit.network.protocol.LevelSoundEventPacket;
 import cn.nukkit.utils.BlockColor;
 
 import javax.annotation.Nullable;
 
-import static cn.nukkit.GameVersion.V1_20_50;
-
 public class BlockDecoratedPot extends BlockTransparent {
     public static final int DIRECTION_MASK = 0b11;
 
-    public BlockDecoratedPot() {
-        this(0);
-    }
+    BlockDecoratedPot() {
 
-    public BlockDecoratedPot(int meta) {
-        super(meta);
     }
 
     @Override
@@ -81,7 +77,7 @@ public class BlockDecoratedPot extends BlockTransparent {
 
     @Override
     public boolean canBeActivated() {
-        return V1_20_50.isAvailable();
+        return true;
     }
 
     @Override
@@ -124,7 +120,11 @@ public class BlockDecoratedPot extends BlockTransparent {
         if (success) {
             blockEntity.setItem(slot);
 
-            level.addLevelSoundEvent(this, LevelSoundEventPacket.SOUND_DECORATED_POT_INSERT);
+            level.addLevelEvent(this, LevelEventPacket.EVENT_PARTICLE_DUST_PLUME, new CompoundTag()
+                    .putFloat("x", (float) x + 0.5f)
+                    .putFloat("y", (float) y + 1.25f)
+                    .putFloat("z", (float) z + 0.5f));
+            level.addLevelSoundEvent(this, LevelSoundEventPacket.SOUND_DECORATED_POT_INSERT, 700 + Mth.floor(7.8125f * slot.getCount() * (64f / slot.getMaxStackSize())));
             blockEntity.playAnimation(BlockEntityDecoratedPot.ANIMATION_INSERT_SUCCESS);
         } else {
             level.addLevelSoundEvent(this, LevelSoundEventPacket.SOUND_DECORATED_POT_INSERT_FAILED);

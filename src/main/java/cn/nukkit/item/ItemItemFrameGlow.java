@@ -13,6 +13,6 @@ public class ItemItemFrameGlow extends Item {
 
     public ItemItemFrameGlow(Integer meta, int count) {
         super(GLOW_FRAME, meta, count, "Glow Item Frame");
-        this.block = Block.get(Block.BLOCK_GLOW_FRAME);
+        this.block = Block.get(Block.GLOW_FRAME);
     }
 }

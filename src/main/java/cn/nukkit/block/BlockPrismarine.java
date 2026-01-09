@@ -5,37 +5,24 @@ import cn.nukkit.item.Item;
 import cn.nukkit.item.ItemTool;
 import cn.nukkit.utils.BlockColor;
 
-import static cn.nukkit.GameVersion.*;
-
-
 public class BlockPrismarine extends BlockSolid {
+    public static final int[] PRISMARINES = {
+            PRISMARINE,
+            DARK_PRISMARINE,
+            PRISMARINE_BRICKS,
+    };
 
     public static final int NORMAL = 0;
     public static final int DARK = 1;
     public static final int BRICKS = 2;
 
-    private static final String[] NAMES = new String[]{
-            "Prismarine",
-            "Dark prismarine",
-            "Prismarine bricks"
-    };
+    BlockPrismarine() {
 
-    public BlockPrismarine() {
-        this(0);
-    }
-
-    public BlockPrismarine(int meta) {
-        super(meta);
     }
 
     @Override
     public int getId() {
         return PRISMARINE;
-    }
-
-    @Override
-    public boolean isStackedByData() {
-        return !V1_21_20.isAvailable();
     }
 
     @Override
@@ -55,7 +42,7 @@ public class BlockPrismarine extends BlockSolid {
 
     @Override
     public String getName() {
-        return NAMES[this.getDamage() > 2 ? 0 : this.getDamage()];
+        return "Prismarine";
     }
 
     @Override
@@ -76,13 +63,6 @@ public class BlockPrismarine extends BlockSolid {
 
     @Override
     public BlockColor getColor() {
-        switch (getDamage() & 0x03) {
-            default:
-            case NORMAL:
-                return BlockColor.CYAN_BLOCK_COLOR;
-            case DARK:
-            case BRICKS:
-                return BlockColor.DIAMOND_BLOCK_COLOR;
-        }
+        return BlockColor.CYAN_BLOCK_COLOR;
     }
 }

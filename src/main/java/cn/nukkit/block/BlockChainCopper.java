@@ -6,12 +6,8 @@ import cn.nukkit.level.Level;
 import cn.nukkit.math.BlockFace;
 
 public class BlockChainCopper extends BlockChain implements CopperBehavior {
-    public BlockChainCopper() {
-        this(0);
-    }
+    BlockChainCopper() {
 
-    public BlockChainCopper(int meta) {
-        super(meta);
     }
 
     @Override

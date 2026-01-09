@@ -126,29 +126,29 @@ public class Level implements ChunkManager, Metadatable {
         randomTickBlocks[Block.GRASS_BLOCK] = true;
         randomTickBlocks[Block.FARMLAND] = true;
         randomTickBlocks[Block.MYCELIUM] = true;
-        randomTickBlocks[Block.SAPLING] = true;
-        randomTickBlocks[Block.LEAVES] = true;
-        randomTickBlocks[Block.LEAVES2] = true;
+        randomTickBlocks[Block.OAK_SAPLING] = true;
+        randomTickBlocks[Block.OAK_LEAVES] = true;
+        randomTickBlocks[Block.ACACIA_LEAVES] = true;
         randomTickBlocks[Block.SNOW_LAYER] = true;
         randomTickBlocks[Block.ICE] = true;
         randomTickBlocks[Block.FLOWING_LAVA] = true;
         randomTickBlocks[Block.LAVA] = true;
         randomTickBlocks[Block.CACTUS] = true;
-        randomTickBlocks[Block.BLOCK_BEETROOT] = true;
+        randomTickBlocks[Block.BEETROOT] = true;
         randomTickBlocks[Block.CARROTS] = true;
         randomTickBlocks[Block.POTATOES] = true;
         randomTickBlocks[Block.MELON_STEM] = true;
         randomTickBlocks[Block.PUMPKIN_STEM] = true;
-        randomTickBlocks[Block.BLOCK_WHEAT] = true;
-        randomTickBlocks[Block.BLOCK_REEDS] = true;
+        randomTickBlocks[Block.WHEAT] = true;
+        randomTickBlocks[Block.REEDS] = true;
         randomTickBlocks[Block.RED_MUSHROOM] = true;
         randomTickBlocks[Block.BROWN_MUSHROOM] = true;
-        randomTickBlocks[Block.BLOCK_NETHER_WART] = true;
+        randomTickBlocks[Block.NETHER_WART] = true;
         randomTickBlocks[Block.FIRE] = true;
         randomTickBlocks[Block.LIT_REDSTONE_ORE] = true;
         randomTickBlocks[Block.COCOA] = true;
         randomTickBlocks[Block.VINE] = true;
-        randomTickBlocks[Block.BLOCK_KELP] = true;
+        randomTickBlocks[Block.KELP] = true;
         randomTickBlocks[Block.BAMBOO] = true;
         randomTickBlocks[Block.BAMBOO_SAPLING] = true;
         randomTickBlocks[Block.SWEET_BERRY_BUSH] = true;
@@ -1565,11 +1565,6 @@ public class Level implements ChunkManager, Metadatable {
             Biome biome = Biomes.get(this.getBiomeId(vector.getFloorX(), vector.getFloorZ()));
             if (!biome.canRain()) {
                 return;
-            }
-
-            int bId = this.getBlock(vector).getId();
-            if (bId != Block.SHORT_GRASS && bId != Block.FLOWING_WATER) {
-                vector.y += 1;
             }
 
             CompoundTag nbt = Entity.getDefaultNBT(vector);
@@ -3207,7 +3202,7 @@ public class Level implements ChunkManager, Metadatable {
         }
         AxisAlignedBB boundingBox;
         if (!placement.canPassThrough() && (boundingBox = placement.getBoundingBox()) != null
-                && !placement.isDoor() && !placement.is(Block.BLOCK_BED) && !placement.isSkull() && !placement.isHangingSign()
+                && !placement.isDoor() && !placement.is(Block.BED) && !placement.isSkull() && !placement.isHangingSign()
                 && (!placement.is(Block.BAMBOO) || target.is(Block.BAMBOO) || target.is(Block.BAMBOO_SAPLING)) //TODO: check bamboo boundingBox
         ) {
             Entity[] entities = this.getCollidingEntities(boundingBox);

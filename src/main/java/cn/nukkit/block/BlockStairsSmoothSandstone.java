@@ -4,12 +4,8 @@ import cn.nukkit.utils.BlockColor;
 
 public class BlockStairsSmoothSandstone extends BlockStairs {
 
-    public BlockStairsSmoothSandstone() {
-        this(0);
-    }
+    BlockStairsSmoothSandstone() {
 
-    public BlockStairsSmoothSandstone(int meta) {
-        super(meta);
     }
 
     @Override

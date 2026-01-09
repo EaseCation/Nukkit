@@ -12,7 +12,8 @@ import cn.nukkit.utils.BlockColor;
  */
 public class BlockFenceNetherBrick extends BlockFence {
 
-    public BlockFenceNetherBrick() {
+    BlockFenceNetherBrick() {
+
     }
 
     @Override

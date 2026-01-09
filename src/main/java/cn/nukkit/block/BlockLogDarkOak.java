@@ -3,12 +3,8 @@ package cn.nukkit.block;
 import cn.nukkit.utils.BlockColor;
 
 public class BlockLogDarkOak extends BlockLog {
-    public BlockLogDarkOak() {
-        this(0);
-    }
+    BlockLogDarkOak() {
 
-    public BlockLogDarkOak(int meta) {
-        super(meta);
     }
 
     @Override

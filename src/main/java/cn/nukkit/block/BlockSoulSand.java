@@ -11,7 +11,8 @@ import cn.nukkit.utils.BlockColor;
  */
 public class BlockSoulSand extends BlockSolid {
 
-    public BlockSoulSand() {
+    BlockSoulSand() {
+
     }
 
     @Override

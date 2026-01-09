@@ -14,12 +14,8 @@ import cn.nukkit.utils.Rail;
  */
 public class BlockRailPowered extends BlockRail {
 
-    public BlockRailPowered() {
-        this(0);
-    }
+    BlockRailPowered() {
 
-    public BlockRailPowered(int meta) {
-        super(meta);
     }
 
     @Override

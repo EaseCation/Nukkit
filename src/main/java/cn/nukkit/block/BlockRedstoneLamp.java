@@ -12,7 +12,8 @@ import cn.nukkit.utils.BlockColor;
  */
 public class BlockRedstoneLamp extends BlockSolid {
 
-    public BlockRedstoneLamp() {
+    BlockRedstoneLamp() {
+
     }
 
     @Override

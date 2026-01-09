@@ -8,12 +8,8 @@ import static cn.nukkit.SharedConstants.*;
  */
 public class BlockButtonStone extends BlockButton {
 
-    public BlockButtonStone() {
-        this(0);
-    }
+    BlockButtonStone() {
 
-    public BlockButtonStone(int meta) {
-        super(meta);
     }
 
     @Override

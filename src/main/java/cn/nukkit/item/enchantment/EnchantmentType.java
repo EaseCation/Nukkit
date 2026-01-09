@@ -31,7 +31,7 @@ public enum EnchantmentType {
         if (this == UNKNOWN) {
             return true;
         }
-        if (this == ALL && (item.getMaxDurability() >= 0 || item.is(Item.SKULL) || item.is(ItemBlockID.CARVED_PUMPKIN) || item.is(Item.COMPASS) || item.is(Item.LODESTONE_COMPASS) || item.is(Item.RECOVERY_COMPASS)) && !item.is(Item.WOLF_ARMOR)) {
+        if (this == ALL && (item.getMaxDurability() >= 0 || item.isSkull() || item.is(ItemBlockID.CARVED_PUMPKIN) || item.is(Item.COMPASS) || item.is(Item.LODESTONE_COMPASS) || item.is(Item.RECOVERY_COMPASS)) && !item.is(Item.WOLF_ARMOR)) {
             return true;
         }
         if (this == BREAKABLE && item.getMaxDurability() >= 0 && !item.is(Item.WOLF_ARMOR)) {
@@ -63,7 +63,7 @@ public enum EnchantmentType {
                 case FISHING_ROD:
                     return item.is(Item.FISHING_ROD);
                 case WEARABLE:
-                    return item.is(Item.SKULL) || item.is(ItemBlockID.CARVED_PUMPKIN);
+                    return item.isSkull() || item.is(ItemBlockID.CARVED_PUMPKIN);
                 case TRIDENT:
                     return item.is(Item.TRIDENT);
                 case CROSSBOW:

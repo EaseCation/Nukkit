@@ -20,7 +20,7 @@ import java.util.Map;
 import java.util.Set;
 import java.util.function.Function;
 
-@Builder(builderMethodName = "internalBuilder")
+@Builder
 public class LootTableContext {
     private final float luck;
     @NonNull
@@ -132,8 +132,12 @@ public class LootTableContext {
         visitedTables.remove(table);
     }
 
+    private static LootTableContext.LootTableContextBuilder builder() {
+        return new LootTableContextBuilder();
+    }
+
     public static LootTableContext.LootTableContextBuilder builder(Level level) {
-        return internalBuilder().level(level);
+        return builder().level(level);
     }
 
     @EnumNaming(EnumNamingStrategies.SnakeCaseStrategy.class)

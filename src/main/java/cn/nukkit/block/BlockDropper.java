@@ -13,12 +13,8 @@ import javax.annotation.Nullable;
 public class BlockDropper extends BlockDispenser {
     private static final DispenseBehavior DISPENSE_BEHAVIOR = new DefaultDispenseBehavior();
 
-    public BlockDropper() {
-        this(0);
-    }
+    BlockDropper() {
 
-    public BlockDropper(int meta) {
-        super(meta);
     }
 
     @Override

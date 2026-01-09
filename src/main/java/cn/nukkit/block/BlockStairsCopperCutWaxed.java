@@ -7,12 +7,8 @@ import cn.nukkit.network.protocol.LevelEventPacket;
 import cn.nukkit.network.protocol.LevelSoundEventPacket;
 
 public class BlockStairsCopperCutWaxed extends BlockStairsCopperCut {
-    public BlockStairsCopperCutWaxed() {
-        this(0);
-    }
+    BlockStairsCopperCutWaxed() {
 
-    public BlockStairsCopperCutWaxed(int meta) {
-        super(meta);
     }
 
     @Override

@@ -98,7 +98,7 @@ public class BlockEntityChiseledBookshelf extends BlockEntitySpawnable implement
     }
 
     @Override
-    public CompoundTag getSpawnCompound() {
+    public CompoundTag getSpawnCompound(boolean chunkData) {
         CompoundTag nbt = getDefaultCompound(this, CHISELED_BOOKSHELF);
 /*
         boolean hasBooks = false;

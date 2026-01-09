@@ -1,12 +1,8 @@
 package cn.nukkit.block;
 
 public class BlockGravelSuspicious extends BlockBrushable {
-    public BlockGravelSuspicious() {
-        this(0);
-    }
+    BlockGravelSuspicious() {
 
-    public BlockGravelSuspicious(int meta) {
-        super(meta);
     }
 
     @Override

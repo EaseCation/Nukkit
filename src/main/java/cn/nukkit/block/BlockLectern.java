@@ -25,12 +25,8 @@ public class BlockLectern extends BlockTransparent implements Faceable {
     public static final int DIRECTION_MASK = 0b11;
     public static final int POWERED_BIT = 0b100;
 
-    public BlockLectern() {
-        this(0);
-    }
+    BlockLectern() {
 
-    public BlockLectern(int meta) {
-        super(meta);
     }
 
     @Override

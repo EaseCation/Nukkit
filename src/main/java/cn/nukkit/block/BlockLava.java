@@ -25,12 +25,8 @@ import java.util.concurrent.ThreadLocalRandom;
  */
 public class BlockLava extends BlockLiquid {
 
-    public BlockLava() {
-        this(0);
-    }
+    BlockLava() {
 
-    public BlockLava(int meta) {
-        super(meta);
     }
 
     @Override

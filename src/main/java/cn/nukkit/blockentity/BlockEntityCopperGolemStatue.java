@@ -63,7 +63,7 @@ public class BlockEntityCopperGolemStatue extends BlockEntitySpawnable {
     }
 
     @Override
-    public CompoundTag getSpawnCompound() {
+    public CompoundTag getSpawnCompound(boolean chunkData) {
         return getDefaultCompound(this, COPPER_GOLEM_STATUE)
                 .putInt("Pose", pose);
     }

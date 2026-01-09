@@ -4,12 +4,8 @@ import cn.nukkit.utils.BlockColor;
 
 public class BlockLogStrippedSpruce extends BlockLogStripped {
 
-    public BlockLogStrippedSpruce() {
-        this(0);
-    }
+    BlockLogStrippedSpruce() {
 
-    public BlockLogStrippedSpruce(int meta) {
-        super(meta);
     }
 
     @Override

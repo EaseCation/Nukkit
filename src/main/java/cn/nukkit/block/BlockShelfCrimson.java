@@ -3,12 +3,8 @@ package cn.nukkit.block;
 import cn.nukkit.utils.BlockColor;
 
 public class BlockShelfCrimson extends BlockShelf {
-    public BlockShelfCrimson() {
-        this(0);
-    }
+    BlockShelfCrimson() {
 
-    public BlockShelfCrimson(int meta) {
-        super(meta);
     }
 
     @Override

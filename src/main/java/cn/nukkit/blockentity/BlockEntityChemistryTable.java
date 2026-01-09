@@ -64,11 +64,14 @@ public class BlockEntityChemistryTable extends BlockEntitySpawnable {
 
     @Override
     public boolean isValidBlock(int blockId) {
-        return blockId == BlockID.CHEMISTRY_TABLE;
+        return blockId == BlockID.COMPOUND_CREATOR
+                || blockId == BlockID.MATERIAL_REDUCER
+                || blockId == BlockID.ELEMENT_CONSTRUCTOR
+                || blockId == BlockID.LAB_TABLE;
     }
 
     @Override
-    public CompoundTag getSpawnCompound() {
+    public CompoundTag getSpawnCompound(boolean chunkData) {
         CompoundTag tag = getDefaultCompound(this, CHEMISTRY_TABLE);
         return item == null ? tag : tag.putInt(TAG_ITEM_ID, item.getId())
                 .putShort(TAG_ITEM_AUX, item.getDamage())

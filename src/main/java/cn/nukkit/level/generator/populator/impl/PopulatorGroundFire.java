@@ -7,7 +7,7 @@ import cn.nukkit.level.format.FullChunk;
 import cn.nukkit.level.generator.populator.helper.EnsureBelow;
 import cn.nukkit.level.generator.populator.helper.EnsureCover;
 import cn.nukkit.level.generator.populator.type.PopulatorSurfaceBlock;
-import cn.nukkit.math.NukkitRandom;
+import cn.nukkit.math.RandomSource;
 
 /**
  * @author DaPorkchop_
@@ -19,12 +19,12 @@ public class PopulatorGroundFire extends PopulatorSurfaceBlock {
     }
 
     @Override
-    protected int getBlockId(int x, int z, NukkitRandom random, FullChunk chunk) {
+    protected int getBlockId(int x, int z, RandomSource random, FullChunk chunk) {
         return FIRE;
     }
 
     @Override
-    protected void placeBlock(int x, int y, int z, int id, int meta, FullChunk chunk, NukkitRandom random) {
+    protected void placeBlock(int x, int y, int z, int id, int meta, FullChunk chunk, RandomSource random) {
         int below = chunk.getBlockId(0, x, y - 1, z);
         if (below == SOUL_SAND || below == SOUL_SOIL) {
             id = SOUL_FIRE;

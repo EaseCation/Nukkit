@@ -1,12 +1,8 @@
 package cn.nukkit.block;
 
 public class BlockTorchSoul extends BlockTorch {
-    public BlockTorchSoul() {
-        this(0);
-    }
+    BlockTorchSoul() {
 
-    public BlockTorchSoul(int meta) {
-        super(meta);
     }
 
     @Override

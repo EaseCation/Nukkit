@@ -7,7 +7,8 @@ import cn.nukkit.item.ItemTool;
 import java.util.concurrent.ThreadLocalRandom;
 
 public class BlockOreGoldNether extends BlockSolid {
-    public BlockOreGoldNether() {
+    BlockOreGoldNether() {
+
     }
 
     @Override

@@ -1,7 +1,8 @@
 package cn.nukkit.block;
 
 public class BlockBricksDeepslateCracked extends BlockBricksDeepslate {
-    public BlockBricksDeepslateCracked() {
+    BlockBricksDeepslateCracked() {
+
     }
 
     @Override

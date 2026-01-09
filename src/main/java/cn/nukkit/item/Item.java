@@ -1,7 +1,8 @@
 package cn.nukkit.item;
 
 import cn.nukkit.Player;
-import cn.nukkit.Server;
+import cn.nukkit.api.API;
+import cn.nukkit.api.API.Definition;
 import cn.nukkit.block.Block;
 import cn.nukkit.block.BlockID;
 import cn.nukkit.block.BlockToolType;
@@ -20,8 +21,6 @@ import cn.nukkit.nbt.tag.StringTag;
 import cn.nukkit.nbt.tag.Tag;
 import cn.nukkit.network.protocol.LevelSoundEventPacket;
 import cn.nukkit.utils.Binary;
-import cn.nukkit.utils.Config;
-import cn.nukkit.utils.MainLogger;
 import cn.nukkit.utils.Utils;
 import it.unimi.dsi.fastutil.Pair;
 import it.unimi.dsi.fastutil.objects.ObjectArrayList;
@@ -43,8 +42,6 @@ public class Item implements Cloneable, ItemID {
 
     private static boolean initialized;
     public static final Class<?>[] list = new Class[Short.MAX_VALUE];
-
-    private static final List<Item> creative = new ObjectArrayList<>();
 
     protected Block block = null;
     protected final int id;
@@ -125,6 +122,7 @@ public class Item implements Cloneable, ItemID {
         return false;
     }
 
+    @API(definition = Definition.INTERNAL)
     public static void init() {
         if (initialized) {
             return;
@@ -138,71 +136,6 @@ public class Item implements Cloneable, ItemID {
                 list[i] = Block.list[i];
             }
         }
-
-/*
-        initCreativeItems();
-*/
-    }
-
-    @SuppressWarnings("unchecked")
-    private static void initCreativeItems() {
-        clearCreativeItems();
-
-        Config config = new Config(Config.JSON);
-        config.load(Server.class.getClassLoader().getResourceAsStream("creativeitems.json"));
-        List<Map<?, ?>> list = config.getMapList("items");
-
-        for (Map map : list) {
-            try {
-                Item item = fromJson(map, true);
-                if (item != null) {
-                    addCreativeItem(item);
-                }
-            } catch (Exception e) {
-                MainLogger.getLogger().logException(e);
-            }
-        }
-    }
-
-    public static void clearCreativeItems() {
-        Item.creative.clear();
-    }
-
-    public static List<Item> getCreativeItems() {
-        return new ObjectArrayList<>(Item.creative);
-    }
-
-    public static void addCreativeItem(Item item) {
-        Item.creative.add(item.clone());
-    }
-
-    public static void removeCreativeItem(Item item) {
-        int index = getCreativeItemIndex(item);
-        if (index != -1) {
-            Item.creative.remove(index);
-        }
-    }
-
-    public static boolean isCreativeItem(Item item) {
-        for (Item aCreative : Item.creative) {
-            if (item.equals(aCreative, !item.isTool())) {
-                return true;
-            }
-        }
-        return false;
-    }
-
-    public static Item getCreativeItem(int index) {
-        return (index >= 0 && index < Item.creative.size()) ? Item.creative.get(index) : null;
-    }
-
-    public static int getCreativeItemIndex(Item item) {
-        for (int i = 0; i < Item.creative.size(); i++) {
-            if (item.equals(Item.creative.get(i), !item.isTool())) {
-                return i;
-            }
-        }
-        return -1;
     }
 
     public static Item get(int id) {
@@ -1887,6 +1820,10 @@ public class Item implements Cloneable, ItemID {
         return false;
     }
 
+    public boolean isSkull() {
+        return false;
+    }
+
     public boolean isBannerPattern() {
         return false;
     }
@@ -1981,5 +1918,14 @@ public class Item implements Cloneable, ItemID {
 
     public int getAttackHitSound() {
         return -1;
+    }
+
+    public int getCooldownDuration() {
+        return 0;
+    }
+
+    @Nullable
+    public CooldownCategory getCooldownCategory() {
+        return null;
     }
 }

@@ -11,12 +11,8 @@ import cn.nukkit.utils.BlockColor;
 import static cn.nukkit.GameVersion.*;
 
 public class BlockChain extends BlockRotatedPillar {
-    public BlockChain() {
-        this(0);
-    }
+    BlockChain() {
 
-    public BlockChain(int meta) {
-        super(meta);
     }
 
     @Override

@@ -10,11 +10,11 @@ import cn.nukkit.level.generator.populator.helper.PopulatorHelpers;
 import cn.nukkit.level.generator.populator.type.Populator;
 import cn.nukkit.level.generator.task.PlaceBlockEntityTask;
 import cn.nukkit.loot.LootTableNames;
-import cn.nukkit.math.NukkitRandom;
+import cn.nukkit.math.RandomSource;
 
 public class PopulatorBonusChest extends Populator {
     @Override
-    public void populate(ChunkManager level, int chunkX, int chunkZ, NukkitRandom random, FullChunk chunk) {
+    public void populate(ChunkManager level, int chunkX, int chunkZ, RandomSource random, FullChunk chunk) {
         HeightRange heightRange = level.getHeightRange();
         for (int xx = 3; xx <= 10; xx++) {
             for (int zz = 3; zz <= 10; zz++) {

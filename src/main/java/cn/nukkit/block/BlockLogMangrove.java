@@ -3,12 +3,8 @@ package cn.nukkit.block;
 import cn.nukkit.utils.BlockColor;
 
 public class BlockLogMangrove extends BlockLog {
-    public BlockLogMangrove() {
-        this(0);
-    }
+    BlockLogMangrove() {
 
-    public BlockLogMangrove(int meta) {
-        super(meta);
     }
 
     @Override

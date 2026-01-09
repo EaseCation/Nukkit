@@ -3,12 +3,8 @@ package cn.nukkit.block;
 import cn.nukkit.utils.BlockColor;
 
 public class BlockPressurePlatePaleOak extends BlockPressurePlateWood {
-    public BlockPressurePlatePaleOak() {
-        this(0);
-    }
+    BlockPressurePlatePaleOak() {
 
-    public BlockPressurePlatePaleOak(int meta) {
-        super(meta);
     }
 
     @Override

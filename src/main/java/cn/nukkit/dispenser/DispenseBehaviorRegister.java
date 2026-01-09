@@ -181,9 +181,9 @@ public final class DispenseBehaviorRegister {
         registerBehavior(ItemID.TRADER_LLAMA_SPAWN_EGG, new SpawnEggDispenseBehavior(EntityID.TRADER_LLAMA));
 //        registerBehavior(ItemBlockID.CARVED_PUMPKIN, new PumpkinDispenseBehavior());
 //        registerBehavior(ItemBlockID.LIT_PUMPKIN, new PumpkinDispenseBehavior());
-//        registerBehavior(ItemID.SKULL, new SkullDispenseBehavior());
-        registerBehavior(ItemBlockID.TNT, new TNTDispenseBehavior());
-        registerBehavior(ItemBlockID.UNDERWATER_TNT, new TNTDispenseBehavior());
+//        registerBehavior(ItemBlockID.WITHER_SKELETON_SKULL, new WitherSkullDispenseBehavior());
+        registerBehavior(ItemBlockID.TNT, new TNTDispenseBehavior(false));
+        registerBehavior(ItemBlockID.UNDERWATER_TNT, new TNTDispenseBehavior(true));
         registerBehavior(ItemID.ARROW, new ProjectileDispenseBehavior(EntityArrow::new) {
             @Override
             protected double getMotion() {
@@ -291,7 +291,7 @@ public final class DispenseBehaviorRegister {
             }
         });
         registerBehavior(ItemID.ICE_BOMB, new ProjectileDispenseBehavior(EntityIceBomb::new));
-//        registerBehavior(ItemID.WIND_CHARGE, new ProjectileDispenseBehavior(EntityWindCharge::new));
+        registerBehavior(ItemID.WIND_CHARGE, new ProjectileDispenseBehavior(EntityWindCharge::new));
         registerBehavior(ItemID.FIRE_CHARGE, new FireChargeDispenseBehavior());
         registerBehavior(ItemID.GLASS_BOTTLE, new GlassBottleDispenseBehavior());
         registerBehavior(ItemID.MINECART, new MinecartDispenseBehavior(EntityMinecartEmpty::new));

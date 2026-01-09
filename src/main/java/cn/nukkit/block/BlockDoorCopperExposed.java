@@ -3,12 +3,8 @@ package cn.nukkit.block;
 import cn.nukkit.utils.BlockColor;
 
 public class BlockDoorCopperExposed extends BlockDoorCopper {
-    public BlockDoorCopperExposed() {
-        this(0);
-    }
+    BlockDoorCopperExposed() {
 
-    public BlockDoorCopperExposed(int meta) {
-        super(meta);
     }
 
     @Override

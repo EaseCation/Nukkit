@@ -1,7 +1,8 @@
 package cn.nukkit.block;
 
 public class BlockGrateCopper extends BlockCopper {
-    public BlockGrateCopper() {
+    BlockGrateCopper() {
+
     }
 
     @Override

@@ -19,7 +19,7 @@ public class ItemSeedsBeetroot extends Item {
 
     public ItemSeedsBeetroot(Integer meta, int count) {
         super(BEETROOT_SEEDS, meta, count, "Beetroot Seeds");
-        this.block = Block.get(BlockID.BLOCK_BEETROOT);
+        this.block = Block.get(BlockID.BEETROOT);
     }
 
     @Override

@@ -10,12 +10,8 @@ import java.util.concurrent.ThreadLocalRandom;
  */
 public class BlockCarrot extends BlockCrops {
 
-    public BlockCarrot(int meta) {
-        super(meta);
-    }
+    BlockCarrot() {
 
-    public BlockCarrot() {
-        this(0);
     }
 
     @Override

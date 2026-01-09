@@ -14,12 +14,8 @@ import cn.nukkit.network.protocol.LevelSoundEventPacket;
 import cn.nukkit.utils.BlockColor;
 
 public class BlockSnowPowder extends BlockFlowable {
-    public BlockSnowPowder() {
-        this(0);
-    }
+    BlockSnowPowder() {
 
-    public BlockSnowPowder(int meta) {
-        super(0);
     }
 
     @Override

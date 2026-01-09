@@ -3,12 +3,8 @@ package cn.nukkit.block;
 import cn.nukkit.utils.BlockColor;
 
 public class BlockFenceGateMangrove extends BlockFenceGate {
-    public BlockFenceGateMangrove() {
-        this(0);
-    }
+    BlockFenceGateMangrove() {
 
-    public BlockFenceGateMangrove(int meta) {
-        super(meta);
     }
 
     @Override

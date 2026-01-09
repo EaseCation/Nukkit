@@ -11,6 +11,10 @@ public interface ItemID extends ItemBlockID, ItemRuntimeID {
     int APPLE = 260;
     int BOW = 261;
     int ARROW = 262;
+    /**
+     * flattened
+     * @see #CHARCOAL
+     */
     int COAL = 263;
     int DIAMOND = 264;
     int IRON_INGOT = 265;
@@ -78,6 +82,19 @@ public interface ItemID extends ItemBlockID, ItemRuntimeID {
     @Deprecated
     int SIGN = 323;
     int WOODEN_DOOR = 324;
+    /**
+     * flattened
+     * @see #MILK_BUCKET
+     * @see #COD_BUCKET
+     * @see #SALMON_BUCKET
+     * @see #TROPICAL_FISH_BUCKET
+     * @see #PUFFERFISH_BUCKET
+     * @see #WATER_BUCKET
+     * @see #LAVA_BUCKET
+     * @see #POWDER_SNOW_BUCKET
+     * @see #AXOLOTL_BUCKET
+     * @see #TADPOLE_BUCKET
+     */
     int BUCKET = 325;
 
     int MINECART = 328;
@@ -87,7 +104,17 @@ public interface ItemID extends ItemBlockID, ItemRuntimeID {
     int SNOWBALL = 332;
     int OAK_BOAT = 333;
     /**
-     * @deprecated use {@link #OAK_BOAT} instead (flattened)
+     * @deprecated flattened
+     * @see #OAK_BOAT
+     * @see #SPRUCE_BOAT
+     * @see #BIRCH_BOAT
+     * @see #JUNGLE_BOAT
+     * @see #ACACIA_BOAT
+     * @see #DARK_OAK_BOAT
+     * @see #MANGROVE_BOAT
+     * @see #BAMBOO_RAFT
+     * @see #CHERRY_BOAT
+     * @see #PALE_OAK_BOAT
      */
     @Deprecated
     int BOAT = 333;
@@ -125,7 +152,27 @@ public interface ItemID extends ItemBlockID, ItemRuntimeID {
     int COOKED_FISH = 350;
     int INK_SAC = 351;
     /**
-     * @deprecated use {@link #INK_SAC} instead (flattened)
+     * @deprecated flattened
+     * @see #INK_SAC
+     * @see #RED_DYE
+     * @see #GREEN_DYE
+     * @see #COCOA_BEANS
+     * @see #LAPIS_LAZULI
+     * @see #PURPLE_DYE
+     * @see #CYAN_DYE
+     * @see #LIGHT_GRAY_DYE
+     * @see #GRAY_DYE
+     * @see #PINK_DYE
+     * @see #LIME_DYE
+     * @see #YELLOW_DYE
+     * @see #LIGHT_BLUE_DYE
+     * @see #MAGENTA_DYE
+     * @see #ORANGE_DYE
+     * @see #BONE_MEAL
+     * @see #BLACK_DYE
+     * @see #BROWN_DYE
+     * @see #BLUE_DYE
+     * @see #WHITE_DYE
      */
     @Deprecated
     int DYE = 351;
@@ -175,6 +222,99 @@ public interface ItemID extends ItemBlockID, ItemRuntimeID {
      */
     @Deprecated
     int SPECKLED_MELON = 382;
+    /**
+     * @deprecated flattened
+     * @see #CHICKEN_SPAWN_EGG
+     * @see #COW_SPAWN_EGG
+     * @see #PIG_SPAWN_EGG
+     * @see #SHEEP_SPAWN_EGG
+     * @see #WOLF_SPAWN_EGG
+     * @see #VILLAGER_SPAWN_EGG
+     * @see #MOOSHROOM_SPAWN_EGG
+     * @see #SQUID_SPAWN_EGG
+     * @see #RABBIT_SPAWN_EGG
+     * @see #BAT_SPAWN_EGG
+     * @see #IRON_GOLEM_SPAWN_EGG
+     * @see #SNOW_GOLEM_SPAWN_EGG
+     * @see #OCELOT_SPAWN_EGG
+     * @see #HORSE_SPAWN_EGG
+     * @see #DONKEY_SPAWN_EGG
+     * @see #MULE_SPAWN_EGG
+     * @see #SKELETON_HORSE_SPAWN_EGG
+     * @see #ZOMBIE_HORSE_SPAWN_EGG
+     * @see #POLAR_BEAR_SPAWN_EGG
+     * @see #LLAMA_SPAWN_EGG
+     * @see #PARROT_SPAWN_EGG
+     * @see #DOLPHIN_SPAWN_EGG
+     * @see #ZOMBIE_SPAWN_EGG
+     * @see #CREEPER_SPAWN_EGG
+     * @see #SKELETON_SPAWN_EGG
+     * @see #SPIDER_SPAWN_EGG
+     * @see #ZOMBIE_PIGMAN_SPAWN_EGG
+     * @see #SLIME_SPAWN_EGG
+     * @see #ENDERMAN_SPAWN_EGG
+     * @see #SILVERFISH_SPAWN_EGG
+     * @see #CAVE_SPIDER_SPAWN_EGG
+     * @see #GHAST_SPAWN_EGG
+     * @see #MAGMA_CUBE_SPAWN_EGG
+     * @see #BLAZE_SPAWN_EGG
+     * @see #ZOMBIE_VILLAGER_SPAWN_EGG
+     * @see #WITCH_SPAWN_EGG
+     * @see #STRAY_SPAWN_EGG
+     * @see #HUSK_SPAWN_EGG
+     * @see #WITHER_SKELETON_SPAWN_EGG
+     * @see #GUARDIAN_SPAWN_EGG
+     * @see #ELDER_GUARDIAN_SPAWN_EGG
+     * @see #NPC_SPAWN_EGG
+     * @see #WITHER_SPAWN_EGG
+     * @see #ENDER_DRAGON_SPAWN_EGG
+     * @see #SHULKER_SPAWN_EGG
+     * @see #ENDERMITE_SPAWN_EGG
+     * @see #AGENT_SPAWN_EGG
+     * @see #VINDICATOR_SPAWN_EGG
+     * @see #PHANTOM_SPAWN_EGG
+     * @see #RAVAGER_SPAWN_EGG
+     * @see #TURTLE_SPAWN_EGG
+     * @see #CAT_SPAWN_EGG
+     * @see #EVOKER_SPAWN_EGG
+     * @see #VEX_SPAWN_EGG
+     * @see #PUFFERFISH_SPAWN_EGG
+     * @see #SALMON_SPAWN_EGG
+     * @see #DROWNED_SPAWN_EGG
+     * @see #TROPICAL_FISH_SPAWN_EGG
+     * @see #COD_SPAWN_EGG
+     * @see #PANDA_SPAWN_EGG
+     * @see #PILLAGER_SPAWN_EGG
+     * @see #WANDERING_TRADER_SPAWN_EGG
+     * @see #FOX_SPAWN_EGG
+     * @see #BEE_SPAWN_EGG
+     * @see #PIGLIN_SPAWN_EGG
+     * @see #HOGLIN_SPAWN_EGG
+     * @see #STRIDER_SPAWN_EGG
+     * @see #ZOGLIN_SPAWN_EGG
+     * @see #PIGLIN_BRUTE_SPAWN_EGG
+     * @see #GOAT_SPAWN_EGG
+     * @see #GLOW_SQUID_SPAWN_EGG
+     * @see #AXOLOTL_SPAWN_EGG
+     * @see #WARDEN_SPAWN_EGG
+     * @see #FROG_SPAWN_EGG
+     * @see #TADPOLE_SPAWN_EGG
+     * @see #ALLAY_SPAWN_EGG
+     * @see #TRADER_LLAMA_SPAWN_EGG
+     * @see #CAMEL_SPAWN_EGG
+     * @see #SNIFFER_SPAWN_EGG
+     * @see #BREEZE_SPAWN_EGG
+     * @see #ARMADILLO_SPAWN_EGG
+     * @see #BOGGED_SPAWN_EGG
+     * @see #CREAKING_SPAWN_EGG
+     * @see #HAPPY_GHAST_SPAWN_EGG
+     * @see #COPPER_GOLEM_SPAWN_EGG
+     * @see #NAUTILUS_SPAWN_EGG
+     * @see #ZOMBIE_NAUTILUS_SPAWN_EGG
+     * @see #PARCHED_SPAWN_EGG
+     * @see #CAMEL_HUSK_SPAWN_EGG
+     */
+    @Deprecated
     int SPAWN_EGG = 383;
     int EXPERIENCE_BOTTLE = 384;
     int FIRE_CHARGE = 385;
@@ -199,6 +339,17 @@ public interface ItemID extends ItemBlockID, ItemRuntimeID {
     @Deprecated
     int EMPTYMAP = 395;
     int GOLDEN_CARROT = 396;
+    /**
+     * @deprecated flattened
+     * @see ItemBlockID#SKELETON_SKULL
+     * @see ItemBlockID#WITHER_SKELETON_SKULL
+     * @see ItemBlockID#ZOMBIE_HEAD
+     * @see ItemBlockID#PLAYER_HEAD
+     * @see ItemBlockID#CREEPER_HEAD
+     * @see ItemBlockID#DRAGON_HEAD
+     * @see ItemBlockID#PIGLIN_HEAD
+     */
+    @Deprecated
     int SKULL = 397;
     int CARROT_ON_A_STICK = 398;
     /**
@@ -303,7 +454,15 @@ public interface ItemID extends ItemBlockID, ItemRuntimeID {
     int CHORUS_FRUIT_POPPED = 433;
     int CREEPER_BANNER_PATTERN = 434;
     /**
-     * @deprecated use {@link #CREEPER_BANNER_PATTERN} instead (flattened)
+     * @deprecated flattened
+     * @see #CREEPER_BANNER_PATTERN
+     * @see #SKULL_BANNER_PATTERN
+     * @see #FLOWER_BANNER_PATTERN
+     * @see #MOJANG_BANNER_PATTERN
+     * @see #FIELD_MASONED_BANNER_PATTERN
+     * @see #BORDURE_INDENTED_BANNER_PATTERN
+     * @see #PIGLIN_BANNER_PATTERN
+     * @see #GLOBE_BANNER_PATTERN
      */
     @Deprecated
     int BANNER_PATTERN = 434;

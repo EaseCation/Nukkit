@@ -3,7 +3,8 @@ package cn.nukkit.block;
 import cn.nukkit.utils.BlockColor;
 
 public class BlockEyeblossomOpen extends BlockFlower {
-    public BlockEyeblossomOpen() {
+    BlockEyeblossomOpen() {
+
     }
 
     @Override
@@ -12,18 +13,8 @@ public class BlockEyeblossomOpen extends BlockFlower {
     }
 
     @Override
-    public boolean isStackedByData() {
-        return false;
-    }
-
-    @Override
     public String getName() {
         return "Open Eyeblossom";
-    }
-
-    @Override
-    protected Block getUncommonFlower() {
-        return get(getId());
     }
 
     @Override

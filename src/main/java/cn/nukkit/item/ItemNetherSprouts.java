@@ -13,7 +13,7 @@ public class ItemNetherSprouts extends Item {
 
     public ItemNetherSprouts(Integer meta, int count) {
         super(NETHER_SPROUTS, meta, count, "Nether Sprouts");
-        this.block = Block.get(Block.BLOCK_NETHER_SPROUTS);
+        this.block = Block.get(Block.NETHER_SPROUTS);
     }
 
     @Override

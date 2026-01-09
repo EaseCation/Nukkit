@@ -3,12 +3,8 @@ package cn.nukkit.block;
 import cn.nukkit.utils.BlockColor;
 
 public class BlockHangingSignCrimson extends BlockHangingSign {
-    public BlockHangingSignCrimson() {
-        this(0);
-    }
+    BlockHangingSignCrimson() {
 
-    public BlockHangingSignCrimson(int meta) {
-        super(meta);
     }
 
     @Override

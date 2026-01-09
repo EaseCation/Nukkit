@@ -16,12 +16,8 @@ public class BlockDriedGhast extends BlockTransparent implements Faceable {
 
     public static final int MAX_REHYDRATION_LEVEL = 3;
 
-    public BlockDriedGhast() {
-        this(0);
-    }
+    BlockDriedGhast() {
 
-    public BlockDriedGhast(int meta) {
-        super(meta);
     }
 
     @Override

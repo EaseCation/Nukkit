@@ -5,7 +5,8 @@ import cn.nukkit.item.Items;
 import cn.nukkit.utils.BlockColor;
 
 public class BlockClientRequestPlaceholder extends BlockSolid {
-    public BlockClientRequestPlaceholder() {
+    BlockClientRequestPlaceholder() {
+
     }
 
     @Override

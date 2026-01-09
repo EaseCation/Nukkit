@@ -1,17 +1,17 @@
 package cn.nukkit.level.generator.noise.nukkit.f;
 
-import cn.nukkit.math.NukkitRandom;
+import cn.nukkit.math.RandomSource;
 
 /**
  * author: DaPorkchop_
  * Nukkit Project
  */
 public class PerlinF extends NoiseF {
-    public PerlinF(NukkitRandom random, float octaves, float persistence) {
+    public PerlinF(RandomSource random, float octaves, float persistence) {
         this(random, octaves, persistence, 1);
     }
 
-    public PerlinF(NukkitRandom random, float octaves, float persistence, float expansion) {
+    public PerlinF(RandomSource random, float octaves, float persistence, float expansion) {
         this.octaves = octaves;
         this.persistence = persistence;
         this.expansion = expansion;

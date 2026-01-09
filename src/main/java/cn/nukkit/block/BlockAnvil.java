@@ -8,46 +8,34 @@ import cn.nukkit.math.BlockFace;
 import cn.nukkit.utils.BlockColor;
 import cn.nukkit.utils.Faceable;
 
-import static cn.nukkit.GameVersion.*;
-
 /**
  * Created by Pub4Game on 27.12.2015.
  */
 public class BlockAnvil extends BlockFallable implements Faceable {
-    public static final int DIRECTION_MASK = 0b11;
-    public static final int DIRECTION_BITS = 2;
-    public static final int DAMAGE_MASK = 0b1100;
-
-    public static final int UNDAMAGED = 0 << 2;
-    public static final int SLIGHTLY_DAMAGED = 1 << 2;
-    public static final int VERY_DAMAGED = 2 << 2;
-    public static final int BROKEN = 3 << 2;
-
-    private static final String[] NAMES = new String[]{
-            "Anvil",
-            "Chipped Anvil",
-            "Damaged Anvil",
-            "Anvil",
+    public static final int[] ANVILS = {
+            ANVIL,
+            CHIPPED_ANVIL,
+            DAMAGED_ANVIL,
+            DEPRECATED_ANVIL,
     };
 
-    private static final int[] FACES = {1, 2, 3, 0};
+    public static final int DIRECTION_MASK = 0b11;
+    @Deprecated
+    public static final int DAMAGE_MASK = 0b1100;
+    private static final int DAMAGE_OFFSET = 2;
 
-    public BlockAnvil() {
-        this(0);
-    }
+    public static final int UNDAMAGED = 0 << DAMAGE_OFFSET;
+    public static final int SLIGHTLY_DAMAGED = 1 << DAMAGE_OFFSET;
+    public static final int VERY_DAMAGED = 2 << DAMAGE_OFFSET;
+    public static final int BROKEN = 3 << DAMAGE_OFFSET;
 
-    public BlockAnvil(int meta) {
-        super(meta);
+    BlockAnvil() {
+
     }
 
     @Override
     public int getId() {
         return ANVIL;
-    }
-
-    @Override
-    public boolean isStackedByData() {
-        return !V1_21_20.isAvailable();
     }
 
     @Override
@@ -77,17 +65,17 @@ public class BlockAnvil extends BlockFallable implements Faceable {
 
     @Override
     public String getName() {
-        return NAMES[(this.getDamage() & DAMAGE_MASK) >> DIRECTION_BITS];
+        return "Anvil";
     }
 
     @Override
     public Block getPlacementBlock(Item item, Block block, Block target, BlockFace face, float fx, float fy, float fz, Player player) {
-        return get(getId(), getDamage() & ~DIRECTION_MASK | FACES[player != null ? player.getDirection().getOpposite().getHorizontalIndex() : 0]);
+        return get(getId(), player != null ? player.getDirection().getOpposite().getHorizontalIndex() + 1 & DIRECTION_MASK : 0);
     }
 
     @Override
     public boolean place(Item item, Block block, Block target, BlockFace face, float fx, float fy, float fz, Player player) {
-        setDamage(getDamage() & ~DIRECTION_MASK | FACES[player != null ? player.getDirection().getOpposite().getHorizontalIndex() : 0]);
+        setDamage(player != null ? player.getDirection().getOpposite().getHorizontalIndex() + 1 & DIRECTION_MASK : 0);
         this.getLevel().setBlock(block, this, true);
         return true;
     }
@@ -107,7 +95,7 @@ public class BlockAnvil extends BlockFallable implements Faceable {
 
     @Override
     public Item toItem(boolean addUserData) {
-        return Item.get(this.getItemId(), getDamage() & ~DIRECTION_MASK);
+        return Item.get(this.getItemId());
     }
 
     @Override
@@ -168,5 +156,14 @@ public class BlockAnvil extends BlockFallable implements Faceable {
     @Override
     public boolean canProvideSupport(BlockFace face, SupportType type) {
         return false;
+    }
+
+    @Override
+    public boolean isAnvil() {
+        return true;
+    }
+
+    public int getDamagedBlockId() {
+        return CHIPPED_ANVIL;
     }
 }

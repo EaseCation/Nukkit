@@ -3,12 +3,7 @@ package cn.nukkit.block;
 import cn.nukkit.utils.BlockColor;
 
 public class BlockLanternCopperWeatheredWaxed extends BlockLanternCopperWaxed {
-    public BlockLanternCopperWeatheredWaxed() {
-        this(0);
-    }
-
-    public BlockLanternCopperWeatheredWaxed(int meta) {
-        super(meta);
+    BlockLanternCopperWeatheredWaxed() {
 
     }
 

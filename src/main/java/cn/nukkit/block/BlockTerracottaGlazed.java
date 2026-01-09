@@ -10,15 +10,27 @@ import cn.nukkit.utils.Faceable;
  * Created by CreeperFace on 2.6.2017.
  */
 public abstract class BlockTerracottaGlazed extends BlockSolid implements Faceable {
+    public static final int[] GLAZED_TERRACOTTAS = {
+            WHITE_GLAZED_TERRACOTTA,
+            ORANGE_GLAZED_TERRACOTTA,
+            MAGENTA_GLAZED_TERRACOTTA,
+            LIGHT_BLUE_GLAZED_TERRACOTTA,
+            YELLOW_GLAZED_TERRACOTTA,
+            LIME_GLAZED_TERRACOTTA,
+            PINK_GLAZED_TERRACOTTA,
+            GRAY_GLAZED_TERRACOTTA,
+            SILVER_GLAZED_TERRACOTTA,
+            CYAN_GLAZED_TERRACOTTA,
+            PURPLE_GLAZED_TERRACOTTA,
+            BLUE_GLAZED_TERRACOTTA,
+            BROWN_GLAZED_TERRACOTTA,
+            GREEN_GLAZED_TERRACOTTA,
+            RED_GLAZED_TERRACOTTA,
+            BLACK_GLAZED_TERRACOTTA,
+    };
 
-    private static final int[] FACES = {2, 5, 3, 4};
+    BlockTerracottaGlazed() {
 
-    public BlockTerracottaGlazed() {
-        this(0);
-    }
-
-    public BlockTerracottaGlazed(int meta) {
-        super(meta);
     }
 
     @Override
@@ -48,7 +60,7 @@ public abstract class BlockTerracottaGlazed extends BlockSolid implements Faceab
 
     @Override
     public boolean place(Item item, Block block, Block target, BlockFace face, float fx, float fy, float fz, Player player) {
-        this.setDamage(FACES[player != null ? player.getDirection().getHorizontalIndex() : 0]);
+        this.setDamage(player != null ? player.getDirection().getOpposite().getIndex() : getBlockDefaultMeta());
         return this.getLevel().setBlock(block, this, true, true);
     }
 

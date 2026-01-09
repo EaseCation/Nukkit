@@ -37,8 +37,7 @@ public abstract class BlockLiquid extends BlockTransparent {
     private static final byte CAN_FLOW = 0;
     private static final byte BLOCKED = -1;
 
-    protected BlockLiquid(int meta) {
-        super(meta);
+    BlockLiquid() {
     }
 
     @Override

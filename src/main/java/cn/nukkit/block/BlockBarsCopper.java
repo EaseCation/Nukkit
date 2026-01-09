@@ -7,7 +7,8 @@ import cn.nukkit.math.BlockFace;
 import cn.nukkit.utils.BlockColor;
 
 public class BlockBarsCopper extends BlockIronBars implements CopperBehavior {
-    public BlockBarsCopper() {
+    BlockBarsCopper() {
+
     }
 
     @Override

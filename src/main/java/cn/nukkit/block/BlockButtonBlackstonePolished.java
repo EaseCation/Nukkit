@@ -1,12 +1,8 @@
 package cn.nukkit.block;
 
 public class BlockButtonBlackstonePolished extends BlockButtonStone {
-    public BlockButtonBlackstonePolished() {
-        this(0);
-    }
+    BlockButtonBlackstonePolished() {
 
-    public BlockButtonBlackstonePolished(int meta) {
-        super(meta);
     }
 
     @Override

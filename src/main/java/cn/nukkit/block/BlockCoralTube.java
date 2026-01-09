@@ -3,7 +3,8 @@ package cn.nukkit.block;
 import cn.nukkit.utils.BlockColor;
 
 public class BlockCoralTube extends BlockCoral {
-    public BlockCoralTube() {
+    BlockCoralTube() {
+
     }
 
     @Override

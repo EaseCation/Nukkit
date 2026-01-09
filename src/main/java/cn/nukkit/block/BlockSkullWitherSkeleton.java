@@ -1,12 +1,8 @@
 package cn.nukkit.block;
 
 public class BlockSkullWitherSkeleton extends BlockSkull {
-    public BlockSkullWitherSkeleton() {
-        this(0);
-    }
+    BlockSkullWitherSkeleton() {
 
-    public BlockSkullWitherSkeleton(int meta) {
-        super(meta);
     }
 
     @Override
@@ -16,6 +12,6 @@ public class BlockSkullWitherSkeleton extends BlockSkull {
 
     @Override
     public String getName() {
-        return "Wither Skeleton Head";
+        return "Wither Skeleton Skull";
     }
 }

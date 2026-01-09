@@ -14,7 +14,7 @@ public class ItemDoorSpruce extends Item {
 
     public ItemDoorSpruce(Integer meta, int count) {
         super(SPRUCE_DOOR, meta, count, "Spruce Door");
-        this.block = Block.get(BlockID.BLOCK_SPRUCE_DOOR);
+        this.block = Block.get(BlockID.SPRUCE_DOOR);
     }
 
     @Override

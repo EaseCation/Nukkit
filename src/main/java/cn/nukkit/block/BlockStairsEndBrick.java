@@ -6,12 +6,8 @@ import static cn.nukkit.GameVersion.*;
 
 public class BlockStairsEndBrick extends BlockStairs {
 
-    public BlockStairsEndBrick() {
-        this(0);
-    }
+    BlockStairsEndBrick() {
 
-    public BlockStairsEndBrick(int meta) {
-        super(meta);
     }
 
     @Override

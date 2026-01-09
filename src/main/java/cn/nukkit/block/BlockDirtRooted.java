@@ -2,6 +2,7 @@ package cn.nukkit.block;
 
 import cn.nukkit.Player;
 import cn.nukkit.item.Item;
+import cn.nukkit.item.ItemBlockID;
 import cn.nukkit.level.particle.BoneMealParticle;
 import cn.nukkit.math.BlockFace;
 import cn.nukkit.network.protocol.AnimatePacket.SwingSource;
@@ -10,7 +11,8 @@ import cn.nukkit.potion.Potion;
 import cn.nukkit.utils.BlockColor;
 
 public class BlockDirtRooted extends BlockSolid {
-    public BlockDirtRooted() {
+    BlockDirtRooted() {
+
     }
 
     @Override
@@ -76,7 +78,7 @@ public class BlockDirtRooted extends BlockSolid {
 
             level.setBlock(this, get(DIRT), true);
 
-            level.dropItem(upVec(), Item.get(getItemId(HANGING_ROOTS)));
+            level.dropItem(upVec(), Item.get(ItemBlockID.HANGING_ROOTS));
             return true;
         }
 

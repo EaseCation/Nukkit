@@ -6,7 +6,7 @@ import cn.nukkit.level.format.FullChunk;
 import cn.nukkit.level.generator.TheEnd;
 import cn.nukkit.level.generator.populator.type.Populator;
 import cn.nukkit.math.Mth;
-import cn.nukkit.math.NukkitRandom;
+import cn.nukkit.math.RandomSource;
 
 public class PopulatorEndIsland extends Populator {
     private final TheEnd end;
@@ -16,7 +16,7 @@ public class PopulatorEndIsland extends Populator {
     }
 
     @Override
-    public void populate(ChunkManager level, int chunkX, int chunkZ, NukkitRandom random, FullChunk chunk) {
+    public void populate(ChunkManager level, int chunkX, int chunkZ, RandomSource random, FullChunk chunk) {
         if (Mth.square(chunkX) + Mth.square(chunkZ) <= 4096) {
             return;
         }
@@ -36,7 +36,7 @@ public class PopulatorEndIsland extends Populator {
         }
     }
 
-    private static void place(ChunkManager level, NukkitRandom random, int x, int z) {
+    private static void place(ChunkManager level, RandomSource random, int x, int z) {
         x += random.nextInt(16);
         int y = random.nextInt(16) + 55;
         z += random.nextInt(16);

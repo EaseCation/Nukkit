@@ -6,12 +6,8 @@ import cn.nukkit.item.ItemTool;
 import cn.nukkit.utils.BlockColor;
 
 public class BlockWallDeepslateTile extends BlockWall {
-    public BlockWallDeepslateTile() {
-        this(0);
-    }
+    BlockWallDeepslateTile() {
 
-    public BlockWallDeepslateTile(int meta) {
-        super(meta);
     }
 
     @Override

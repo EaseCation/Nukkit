@@ -13,12 +13,8 @@ import cn.nukkit.utils.BlockColor;
  */
 public class BlockTripWire extends BlockTransparent {
 
-    public BlockTripWire(int meta) {
-        super(meta);
-    }
+    BlockTripWire() {
 
-    public BlockTripWire() {
-        this(0);
     }
 
     @Override

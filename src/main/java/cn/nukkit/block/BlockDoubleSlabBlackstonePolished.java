@@ -1,12 +1,11 @@
 package cn.nukkit.block;
 
-public class BlockDoubleSlabBlackstonePolished extends BlockDoubleSlabBlackstone {
-    public BlockDoubleSlabBlackstonePolished() {
-        this(0);
-    }
+import cn.nukkit.item.Item;
+import cn.nukkit.item.ItemBlockID;
 
-    public BlockDoubleSlabBlackstonePolished(int meta) {
-        super(meta);
+public class BlockDoubleSlabBlackstonePolished extends BlockDoubleSlabBlackstone {
+    BlockDoubleSlabBlackstonePolished() {
+
     }
 
     @Override
@@ -20,7 +19,7 @@ public class BlockDoubleSlabBlackstonePolished extends BlockDoubleSlabBlackstone
     }
 
     @Override
-    protected int getSlabBlockId() {
-        return POLISHED_BLACKSTONE_SLAB;
+    public Item toItem(boolean addUserData) {
+        return Item.get(ItemBlockID.POLISHED_BLACKSTONE_SLAB);
     }
 }

@@ -77,7 +77,7 @@ public class BlockEntityBell extends BlockEntitySpawnable {
     }
 
     @Override
-    public CompoundTag getSpawnCompound() {
+    public CompoundTag getSpawnCompound(boolean chunkData) {
         return getDefaultCompound(this, BELL)
                 .putInt("Ticks", this.ticks)
                 .putBoolean("Ringing", this.ringing)

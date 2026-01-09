@@ -59,7 +59,7 @@ public class BlockEntityModBlock extends BlockEntitySpawnable {
     }
 
     @Override
-    public CompoundTag getSpawnCompound() {
+    public CompoundTag getSpawnCompound(boolean chunkData) {
         return getDefaultCompound(this, MOD_BLOCK)
                 .putLong("_uniqueId", -id)
                 .putString("_blockName", definition.blockName)

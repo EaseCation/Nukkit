@@ -3,12 +3,8 @@ package cn.nukkit.block;
 import cn.nukkit.utils.BlockColor;
 
 public class BlockWoodPaleOak extends BlockLogPaleOak {
-    public BlockWoodPaleOak() {
-        this(0);
-    }
+    BlockWoodPaleOak() {
 
-    public BlockWoodPaleOak(int meta) {
-        super(meta);
     }
 
     @Override
@@ -24,6 +20,11 @@ public class BlockWoodPaleOak extends BlockLogPaleOak {
     @Override
     public BlockColor getColor() {
         return BlockColor.STONE_BLOCK_COLOR;
+    }
+
+    @Override
+    public boolean isWood() {
+        return true;
     }
 
     @Override

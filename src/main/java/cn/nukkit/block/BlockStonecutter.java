@@ -9,13 +9,10 @@ import cn.nukkit.utils.BlockColor;
 import cn.nukkit.utils.Faceable;
 
 public class BlockStonecutter extends BlockTransparent implements Faceable {
+    public static final int DIRECTION_MASK = 0b11;
 
-    public BlockStonecutter() {
-        this(0);
-    }
+    BlockStonecutter() {
 
-    public BlockStonecutter(int meta) {
-        super(meta);
     }
 
     @Override
@@ -26,6 +23,11 @@ public class BlockStonecutter extends BlockTransparent implements Faceable {
     @Override
     public int getBlockDefaultMeta() {
         return 2;
+    }
+
+    @Override
+    public int getItemSerializationMeta() {
+        return getBlockDefaultMeta();
     }
 
     @Override
@@ -87,7 +89,7 @@ public class BlockStonecutter extends BlockTransparent implements Faceable {
     @Override
     public boolean place(Item item, Block block, Block target, BlockFace face, float fx, float fy, float fz, Player player) {
         if (player != null) {
-            setDamage(player.getHorizontalFacing().getOpposite().getIndex());
+            setDamage(player.getHorizontalFacing().getOpposite().getHorizontalIndex());
         }
         return super.place(item, block, target, face, fx, fy, fz, player);
     }
@@ -118,6 +120,6 @@ public class BlockStonecutter extends BlockTransparent implements Faceable {
 
     @Override
     public BlockFace getBlockFace() {
-        return BlockFace.fromIndex(getDamage() & 0b111);
+        return BlockFace.fromHorizontalIndex(getDamage() & DIRECTION_MASK);
     }
 }

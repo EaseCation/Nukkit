@@ -224,7 +224,7 @@ public class BlockEntityMobSpawner extends BlockEntitySpawnable {
     }
 
     @Override
-    public CompoundTag getSpawnCompound() {
+    public CompoundTag getSpawnCompound(boolean chunkData) {
         CompoundTag nbt = getDefaultCompound(this, MOB_SPAWNER)
                 .putString(TAG_ENTITY_IDENTIFIER, entityIdentifier)
                 .putShort(TAG_DELAY, delay)

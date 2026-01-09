@@ -81,11 +81,11 @@ public class BlockEntityFlowerPot extends BlockEntitySpawnable {
 
     @Override
     public boolean isValidBlock(int blockId) {
-        return blockId == Block.BLOCK_FLOWER_POT;
+        return blockId == Block.FLOWER_POT;
     }
 
     @Override
-    public CompoundTag getSpawnCompound() {
+    public CompoundTag getSpawnCompound(boolean chunkData) {
         CompoundTag tag = getDefaultCompound(this, FLOWER_POT);
 
         if (hasPlant()) {

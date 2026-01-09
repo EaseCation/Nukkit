@@ -6,8 +6,7 @@ import cn.nukkit.utils.BlockColor;
 
 public abstract class BlockElement extends BlockSolid {
 
-    protected BlockElement() {
-        // meta has been removed in the latest version
+    BlockElement() {
     }
 
     @Override

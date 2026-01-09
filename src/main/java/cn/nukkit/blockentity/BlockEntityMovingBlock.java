@@ -127,7 +127,7 @@ public class BlockEntityMovingBlock extends BlockEntitySpawnable {
     }
 
     @Override
-    public CompoundTag getSpawnCompound() {
+    public CompoundTag getSpawnCompound(boolean chunkData) {
         CompoundTag tag = getDefaultCompound(this, MOVING_BLOCK)
                 .putInt("pistonPosX", this.piston.getX())
                 .putInt("pistonPosY", this.piston.getY())

@@ -22,12 +22,8 @@ public class BlockSculkShrieker extends BlockTransparent {
     public static final int ACTIVE_BIT = 0b1;
     public static final int CAN_SUMMON_BIT = 0b10;
 
-    public BlockSculkShrieker() {
-        this(0);
-    }
+    BlockSculkShrieker() {
 
-    public BlockSculkShrieker(int meta) {
-        super(meta);
     }
 
     @Override

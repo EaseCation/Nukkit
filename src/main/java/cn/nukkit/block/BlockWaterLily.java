@@ -13,13 +13,8 @@ import cn.nukkit.utils.BlockColor;
  */
 public class BlockWaterLily extends BlockFlowable {
 
-    public BlockWaterLily() {
-        this(0);
-    }
+    BlockWaterLily() {
 
-    public BlockWaterLily(int meta) {
-        // Lily pad can't have meta. Also stops the server from throwing an exception with the block palette.
-        super(0);
     }
 
     @Override

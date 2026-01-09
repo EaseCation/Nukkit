@@ -1,36 +1,29 @@
 package cn.nukkit.block.edu;
 
 import cn.nukkit.block.BlockTorch;
-import cn.nukkit.item.Item;
-import cn.nukkit.math.BlockFace;
-
-import static cn.nukkit.GameVersion.*;
 
 public abstract class BlockTorchColored extends BlockTorch {
+    public static final int[] COLORED_TORCHS_RG = {
+            COLORED_TORCH_RED,
+            COLORED_TORCH_GREEN,
+    };
+    public static final int[] COLORED_TORCHS_BP = {
+            COLORED_TORCH_BLUE,
+            COLORED_TORCH_PURPLE,
+    };
 
+    @Deprecated
     public static final int COLOR_BIT = 0b1000;
+    private static final int COLOR_OFFSET = 3;
 
-    protected BlockTorchColored() {
-        this(0);
-    }
+    public static final int RED = 0;
+    public static final int GREEN = 1 << COLOR_OFFSET;
 
-    protected BlockTorchColored(int meta) {
-        super(meta);
-    }
+    public static final int BLUE = 0;
+    public static final int PURPLE = 1 << COLOR_OFFSET;
 
-    @Override
-    public boolean isStackedByData() {
-        return !V1_21_30.isAvailable();
-    }
+    BlockTorchColored() {
 
-    @Override
-    public Item toItem(boolean addUserData) {
-        return Item.get(getItemId(), getDamage() & COLOR_BIT);
-    }
-
-    @Override
-    protected void setBlockFace(BlockFace face) {
-        setDamage((6 - face.getIndex()) | (getDamage() & COLOR_BIT));
     }
 
     @Override

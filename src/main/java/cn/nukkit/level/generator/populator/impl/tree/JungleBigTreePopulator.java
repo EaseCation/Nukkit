@@ -7,7 +7,7 @@ import cn.nukkit.level.generator.object.tree.ObjectJungleBigTree;
 import cn.nukkit.level.generator.populator.impl.PopulatorTree;
 import cn.nukkit.level.generator.populator.type.Populator;
 import cn.nukkit.math.BlockVector3;
-import cn.nukkit.math.NukkitRandom;
+import cn.nukkit.math.RandomSource;
 
 
 public class JungleBigTreePopulator extends Populator {
@@ -33,7 +33,7 @@ public class JungleBigTreePopulator extends Populator {
     }
 
     @Override
-    public void populate(ChunkManager level, int chunkX, int chunkZ, NukkitRandom random, FullChunk chunk) {
+    public void populate(ChunkManager level, int chunkX, int chunkZ, RandomSource random, FullChunk chunk) {
         int amount = random.nextBoundedInt(this.randomAmount + 1) + this.baseAmount;
         BlockVector3 v = new BlockVector3();
 
@@ -44,7 +44,7 @@ public class JungleBigTreePopulator extends Populator {
             if (y == Integer.MIN_VALUE) {
                 continue;
             }
-            new ObjectJungleBigTree(10, 20, Block.get(JUNGLE_LOG), Block.get(BlockID.LEAVES, BlockLeaves.JUNGLE)).generate(level, random, v.setComponents(x, y, z));
+            new ObjectJungleBigTree(10, 20, Block.get(JUNGLE_LOG), Block.get(BlockID.JUNGLE_LEAVES)).generate(level, random, v.setComponents(x, y, z));
         }
     }
 }

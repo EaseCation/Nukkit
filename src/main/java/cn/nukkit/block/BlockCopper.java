@@ -13,7 +13,8 @@ import cn.nukkit.utils.BlockColor;
 import java.util.concurrent.ThreadLocalRandom;
 
 public class BlockCopper extends BlockSolid implements CopperBehavior {
-    public BlockCopper() {
+    BlockCopper() {
+
     }
 
     @Override

@@ -4,7 +4,8 @@ import cn.nukkit.utils.BlockColor;
 
 public class BlockInfoUpdate2 extends BlockSolid {
 
-    public BlockInfoUpdate2() {
+    BlockInfoUpdate2() {
+
     }
 
     @Override

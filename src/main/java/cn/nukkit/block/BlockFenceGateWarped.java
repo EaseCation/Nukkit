@@ -3,12 +3,8 @@ package cn.nukkit.block;
 import cn.nukkit.utils.BlockColor;
 
 public class BlockFenceGateWarped extends BlockFenceGate {
-    public BlockFenceGateWarped() {
-        this(0);
-    }
+    BlockFenceGateWarped() {
 
-    public BlockFenceGateWarped(int meta) {
-        super(meta);
     }
 
     @Override

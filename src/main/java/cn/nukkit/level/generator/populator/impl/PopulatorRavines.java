@@ -37,7 +37,7 @@ public class PopulatorRavines extends Populator {
     }
 
     @Override
-    public void populate(ChunkManager level, int chunkX, int chunkZ, NukkitRandom random, FullChunk chunk) {
+    public void populate(ChunkManager level, int chunkX, int chunkZ, RandomSource random, FullChunk chunk) {
         RandomSource localRandom = new NukkitRandom(level.getSeed());
         long worldLong1 = localRandom.nextLong();
         long worldLong2 = localRandom.nextLong();

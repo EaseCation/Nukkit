@@ -15,8 +15,6 @@ public class ItemGoatHorn extends Item {
     public static final int DREAM_GOAT_HORN = 7;
     public static final int UNDEFINED_GOAT_HORN = 8;
 
-    private static final int COOLDOWN = 7 * 20;
-
     public ItemGoatHorn() {
         this(0, 1);
     }
@@ -41,41 +39,45 @@ public class ItemGoatHorn extends Item {
 
     @Override
     public boolean onClickAir(Player player, Vector3 directionVector) {
-        return player.getServer().getTick() - player.getLastGoatHornPlay() >= COOLDOWN;
+        if (player.isItemCooling(getCooldownCategory(), getCooldownDuration())) {
+            player.setUsingItem(false);
+            return false;
+        }
+
+        switch (getDamage() & 0x7) {
+            case PONDER_GOAT_HORN:
+                player.level.addLevelSoundEvent(player.getEyePosition(), LevelSoundEventPacket.SOUND_GOAT_CALL_0);
+                break;
+            case SING_GOAT_HORN:
+                player.level.addLevelSoundEvent(player.getEyePosition(), LevelSoundEventPacket.SOUND_GOAT_CALL_1);
+                break;
+            case SEEK_GOAT_HORN:
+                player.level.addLevelSoundEvent(player.getEyePosition(), LevelSoundEventPacket.SOUND_GOAT_CALL_2);
+                break;
+            case FEEL_GOAT_HORN:
+                player.level.addLevelSoundEvent(player.getEyePosition(), LevelSoundEventPacket.SOUND_GOAT_CALL_3);
+                break;
+            case ADMIRE_GOAT_HORN:
+                player.level.addLevelSoundEvent(player.getEyePosition(), LevelSoundEventPacket.SOUND_GOAT_CALL_4);
+                break;
+            case CALL_GOAT_HORN:
+                player.level.addLevelSoundEvent(player.getEyePosition(), LevelSoundEventPacket.SOUND_GOAT_CALL_5);
+                break;
+            case YEARN_GOAT_HORN:
+                player.level.addLevelSoundEvent(player.getEyePosition(), LevelSoundEventPacket.SOUND_GOAT_CALL_6);
+                break;
+            case DREAM_GOAT_HORN:
+                player.level.addLevelSoundEvent(player.getEyePosition(), LevelSoundEventPacket.SOUND_GOAT_CALL_7);
+                break;
+        }
+
+        player.startItemCooldown(getCooldownCategory());
+        player.startItemCooldown("minecraft:goat_horn", getCooldownDuration());
+        return true;
     }
 
     @Override
     public boolean onUse(Player player, int ticksUsed) {
-        player.onGoatHornPlay();
-
-        switch (getDamage() & 0x7) {
-            case PONDER_GOAT_HORN:
-                player.level.addLevelSoundEvent(player, LevelSoundEventPacket.SOUND_GOAT_CALL_0);
-                break;
-            case SING_GOAT_HORN:
-                player.level.addLevelSoundEvent(player, LevelSoundEventPacket.SOUND_GOAT_CALL_1);
-                break;
-            case SEEK_GOAT_HORN:
-                player.level.addLevelSoundEvent(player, LevelSoundEventPacket.SOUND_GOAT_CALL_2);
-                break;
-            case FEEL_GOAT_HORN:
-                player.level.addLevelSoundEvent(player, LevelSoundEventPacket.SOUND_GOAT_CALL_3);
-                break;
-            case ADMIRE_GOAT_HORN:
-                player.level.addLevelSoundEvent(player, LevelSoundEventPacket.SOUND_GOAT_CALL_4);
-                break;
-            case CALL_GOAT_HORN:
-                player.level.addLevelSoundEvent(player, LevelSoundEventPacket.SOUND_GOAT_CALL_5);
-                break;
-            case YEARN_GOAT_HORN:
-                player.level.addLevelSoundEvent(player, LevelSoundEventPacket.SOUND_GOAT_CALL_6);
-                break;
-            case DREAM_GOAT_HORN:
-                player.level.addLevelSoundEvent(player, LevelSoundEventPacket.SOUND_GOAT_CALL_7);
-                break;
-        }
-
-        player.startItemCooldown("goat_horn", COOLDOWN);
         return true;
     }
 
@@ -92,5 +94,15 @@ public class ItemGoatHorn extends Item {
     @Override
     public int getUseDuration() {
         return 20;
+    }
+
+    @Override
+    public int getCooldownDuration() {
+        return 7 * 20;
+    }
+
+    @Override
+    public CooldownCategory getCooldownCategory() {
+        return CooldownCategory.GOAT_HORN;
     }
 }

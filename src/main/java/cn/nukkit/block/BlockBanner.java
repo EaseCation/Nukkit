@@ -23,12 +23,8 @@ import cn.nukkit.utils.Faceable;
  */
 public class BlockBanner extends BlockTransparent implements Faceable {
 
-    public BlockBanner() {
-        this(0);
-    }
+    BlockBanner() {
 
-    public BlockBanner(int meta) {
-        super(meta);
     }
 
     @Override

@@ -9,22 +9,13 @@ import cn.nukkit.potion.Effect;
 
 public class BlockWitherRose extends BlockFlower {
 
-    public BlockWitherRose() {
-        this(0);
-    }
+    BlockWitherRose() {
 
-    public BlockWitherRose(int meta) {
-        super(0);
     }
 
     @Override
     public int getId() {
         return WITHER_ROSE;
-    }
-
-    @Override
-    public boolean isStackedByData() {
-        return false;
     }
 
     @Override
@@ -38,8 +29,8 @@ public class BlockWitherRose extends BlockFlower {
     }
 
     @Override
-    protected Block getUncommonFlower() {
-        return this;
+    public boolean isFertilizable() {
+        return false;
     }
 
     @Override

@@ -7,7 +7,7 @@ import cn.nukkit.level.format.FullChunk;
 import cn.nukkit.level.generator.TheEnd;
 import cn.nukkit.level.generator.populator.type.Populator;
 import cn.nukkit.math.Mth;
-import cn.nukkit.math.NukkitRandom;
+import cn.nukkit.math.RandomSource;
 
 public class PopulatorChorusFlower extends Populator {
     private final TheEnd end;
@@ -17,7 +17,7 @@ public class PopulatorChorusFlower extends Populator {
     }
 
     @Override
-    public void populate(ChunkManager level, int chunkX, int chunkZ, NukkitRandom random, FullChunk chunk) {
+    public void populate(ChunkManager level, int chunkX, int chunkZ, RandomSource random, FullChunk chunk) {
         if (Mth.square(chunkX) + Mth.square(chunkZ) <= 4096) {
             return;
         }
@@ -41,12 +41,12 @@ public class PopulatorChorusFlower extends Populator {
         return chunk.getHeightMap(x & 0xf, z & 0xf);
     }
 
-    private static void generatePlant(ChunkManager level, int x, int y, int z, NukkitRandom random, int maxHorizontalSpread) {
+    private static void generatePlant(ChunkManager level, int x, int y, int z, RandomSource random, int maxHorizontalSpread) {
         level.setBlockAt(0, x, y, z, Block.CHORUS_PLANT);
         growTreeRecursive(level, x, y, z, x, z, random, maxHorizontalSpread, 0);
     }
 
-    private static void growTreeRecursive(ChunkManager level, int currentX, int currentY, int currentZ, int startX, int startZ, NukkitRandom random, int maxHorizontalSpread, int depth) {
+    private static void growTreeRecursive(ChunkManager level, int currentX, int currentY, int currentZ, int startX, int startZ, RandomSource random, int maxHorizontalSpread, int depth) {
         int height = random.nextInt(4) + 1;
         if (depth == 0) {
             ++height;

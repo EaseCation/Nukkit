@@ -5,7 +5,8 @@ import cn.nukkit.utils.DyeColor;
 
 public class BlockShulkerBoxBrown extends BlockShulkerBox {
 
-    public BlockShulkerBoxBrown() {
+    BlockShulkerBoxBrown() {
+
     }
 
     @Override

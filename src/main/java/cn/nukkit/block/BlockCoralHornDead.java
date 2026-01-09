@@ -3,7 +3,8 @@ package cn.nukkit.block;
 import cn.nukkit.utils.BlockColor;
 
 public class BlockCoralHornDead extends BlockCoral {
-    public BlockCoralHornDead() {
+    BlockCoralHornDead() {
+
     }
 
     @Override
@@ -22,7 +23,7 @@ public class BlockCoralHornDead extends BlockCoral {
     }
 
     @Override
-    protected boolean isDead() {
+    public boolean isDeadCoral() {
         return true;
     }
 }

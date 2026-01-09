@@ -4,29 +4,21 @@ import cn.nukkit.Player;
 import cn.nukkit.item.Item;
 import cn.nukkit.item.ItemTool;
 import cn.nukkit.math.BlockFace;
+import cn.nukkit.math.BlockFace.Axis;
 import cn.nukkit.utils.BlockColor;
-import cn.nukkit.utils.Faceable;
 
 /**
  * @author CreeperFace
  */
-public class BlockBone extends BlockSolid implements Faceable {
+public class BlockBone extends BlockSolid {
+    public static final int PILLAR_AXIS_Y = 0b00;
+    public static final int PILLAR_AXIS_X = 0b01;
+    public static final int PILLAR_AXIS_Z = 0b10;
+    public static final int PILLAR_AXIS_OFFSET = 2;
+    public static final int PILLAR_AXIS_MASK = (PILLAR_AXIS_X | PILLAR_AXIS_Z) << PILLAR_AXIS_OFFSET;
 
-    private static final int[] FACES = {
-            0,
-            0,
-            0b1000,
-            0b1000,
-            0b0100,
-            0b0100
-    };
+    BlockBone() {
 
-    public BlockBone() {
-        this(0);
-    }
-
-    public BlockBone(int meta) {
-        super(meta);
     }
 
     @Override
@@ -69,13 +61,8 @@ public class BlockBone extends BlockSolid implements Faceable {
     }
 
     @Override
-    public BlockFace getBlockFace() {
-        return BlockFace.fromHorizontalIndex(this.getDamage() & 0x7);
-    }
-
-    @Override
     public boolean place(Item item, Block block, Block target, BlockFace face, float fx, float fy, float fz, Player player) {
-        this.setDamage(((this.getDamage() & 0x3) | FACES[face.getIndex()]));
+        this.setDamage(face.getAxis().getIndex() << 2);
         this.getLevel().setBlock(block, this, true);
         return true;
     }
@@ -83,5 +70,17 @@ public class BlockBone extends BlockSolid implements Faceable {
     @Override
     public BlockColor getColor() {
         return BlockColor.SAND_BLOCK_COLOR;
+    }
+
+    public int getPillarAxis() {
+        return (getDamage() & PILLAR_AXIS_MASK) >> PILLAR_AXIS_OFFSET;
+    }
+
+    public void setPillarAxis(int axis) {
+        setDamage(axis & PILLAR_AXIS_MASK >> PILLAR_AXIS_OFFSET);
+    }
+
+    public Axis getAxis() {
+        return Axis.fromIndex(getPillarAxis());
     }
 }

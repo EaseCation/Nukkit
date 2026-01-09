@@ -4,12 +4,8 @@ import cn.nukkit.math.AxisAlignedBB;
 import cn.nukkit.math.SimpleAxisAlignedBB;
 
 public class BlockAmethystBudMedium extends BlockAmethystBud {
-    public BlockAmethystBudMedium() {
-        this(0);
-    }
+    BlockAmethystBudMedium() {
 
-    public BlockAmethystBudMedium(int meta) {
-        super(meta);
     }
 
     @Override

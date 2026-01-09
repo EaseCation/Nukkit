@@ -26,12 +26,8 @@ public class BlockWallSign extends BlockSignPost {
         }
     }
 
-    public BlockWallSign() {
-        this(0);
-    }
+    BlockWallSign() {
 
-    public BlockWallSign(int meta) {
-        super(meta);
     }
 
     @Override

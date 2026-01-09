@@ -20,23 +20,13 @@ import java.util.concurrent.ThreadLocalRandom;
  */
 public class BlockGrass extends BlockDirt {
 
-    public BlockGrass() {
-        this(0);
-    }
+    BlockGrass() {
 
-    public BlockGrass(int meta) {
-        // Grass can't have meta.
-        super(0);
     }
 
     @Override
     public int getId() {
         return GRASS_BLOCK;
-    }
-
-    @Override
-    public boolean isStackedByData() {
-        return false;
     }
 
     @Override
@@ -106,7 +96,7 @@ public class BlockGrass extends BlockDirt {
             int y = random.nextInt((int) this.y - 2, (int) this.y + 3);
             int z = random.nextInt((int) this.z - 1, (int) this.z + 2);
             Block block = this.getLevel().getBlock(x, y, z);
-            if (block.getId() == Block.DIRT && block.getDamage() == 0) {
+            if (block.getId() == Block.DIRT) {
                 Block up = block.up();
                 if (!up.isLiquid() && (up.isTransparent() || !up.isSolid()) && !level.getExtraBlock(up).isWater()) {
                     BlockSpreadEvent ev = new BlockSpreadEvent(block, this, Block.get(BlockID.GRASS_BLOCK));

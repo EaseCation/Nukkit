@@ -14,12 +14,8 @@ import static cn.nukkit.SharedConstants.*;
  */
 public class BlockDoorIron extends BlockDoor {
 
-    public BlockDoorIron() {
-        this(0);
-    }
+    BlockDoorIron() {
 
-    public BlockDoorIron(int meta) {
-        super(meta);
     }
 
     @Override
@@ -29,7 +25,7 @@ public class BlockDoorIron extends BlockDoor {
 
     @Override
     public int getId() {
-        return BLOCK_IRON_DOOR;
+        return IRON_DOOR;
     }
 
     @Override

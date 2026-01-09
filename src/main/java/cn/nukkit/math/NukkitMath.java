@@ -39,26 +39,26 @@ public class NukkitMath {
     }
 
     /**
-     * @deprecated use {@link NukkitRandom#nextRange()} instead
+     * @deprecated use {@link RandomSource#nextRange()} instead
      */
     @Deprecated
-    public static int randomRange(NukkitRandom random) {
+    public static int randomRange(RandomSource random) {
         return random.nextRange();
     }
 
     /**
-     * @deprecated use {@link NukkitRandom#nextRange(int)} instead
+     * @deprecated use {@link RandomSource#nextRange(int)} instead
      */
     @Deprecated
-    public static int randomRange(NukkitRandom random, int start) {
+    public static int randomRange(RandomSource random, int start) {
         return random.nextRange(start);
     }
 
     /**
-     * @deprecated use {@link NukkitRandom#nextRange(int, int)} instead
+     * @deprecated use {@link RandomSource#nextRange(int, int)} instead
      */
     @Deprecated
-    public static int randomRange(NukkitRandom random, int start, int end) {
+    public static int randomRange(RandomSource random, int start, int end) {
         return random.nextRange(start, end);
     }
 

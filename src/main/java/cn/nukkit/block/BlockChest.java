@@ -23,15 +23,10 @@ import java.util.Map;
  * Nukkit Project
  */
 public class BlockChest extends BlockTransparent implements Faceable {
+    public static final int DIRECTION_MASK = 0b11;
 
-    protected static final int[] FACES = {2, 5, 3, 4};
+    BlockChest() {
 
-    public BlockChest() {
-        this(0);
-    }
-
-    public BlockChest(int meta) {
-        super(meta);
     }
 
     @Override
@@ -47,6 +42,11 @@ public class BlockChest extends BlockTransparent implements Faceable {
     @Override
     public int getBlockDefaultMeta() {
         return 2;
+    }
+
+    @Override
+    public int getItemSerializationMeta() {
+        return getBlockDefaultMeta();
     }
 
     @Override
@@ -105,16 +105,15 @@ public class BlockChest extends BlockTransparent implements Faceable {
         Block pairBlock = null;
         int pairableId = -1;
 
-        this.setDamage(FACES[player != null ? player.getDirection().getHorizontalIndex() : 0]);
+        BlockFace facing = player != null ? player.getDirection().getOpposite() : BlockFace.NORTH;
+        this.setDamage(facing.getHorizontalIndex());
 
-        for (int side = 2; side <= 5; ++side) {
-            if ((this.getDamage() == 4 || this.getDamage() == 5) && (side == 4 || side == 5)) {
-                continue;
-            } else if ((this.getDamage() == 3 || this.getDamage() == 2) && (side == 2 || side == 3)) {
+        for (BlockFace side : BlockFace.Plane.HORIZONTAL) {
+            if (side.getAxis() == facing.getAxis()) {
                 continue;
             }
 
-            Block c = this.getSide(BlockFace.fromIndex(side));
+            Block c = this.getSide(side);
             int pairableBlockId = getPairableBlockId(c);
             if (pairableBlockId != -1 && c.getDamage() == this.getDamage()) {
                 BlockEntity blockEntity = this.getLevel().getBlockEntity(c);
@@ -255,7 +254,7 @@ public class BlockChest extends BlockTransparent implements Faceable {
 
     @Override
     public BlockFace getBlockFace() {
-        return BlockFace.fromHorizontalIndex(this.getDamage() & 0x7);
+        return BlockFace.fromHorizontalIndex(this.getDamage() & DIRECTION_MASK);
     }
 
     @Override

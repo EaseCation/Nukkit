@@ -16,7 +16,7 @@ import javax.annotation.Nullable;
 
 public class BlockEndPortal extends BlockTransparent {
 
-    public BlockEndPortal() {
+    BlockEndPortal() {
 
     }
 

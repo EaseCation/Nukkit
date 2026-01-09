@@ -19,12 +19,8 @@ public abstract class BlockBrushable extends BlockFallable {
     public static final int BRUSHED_PROGRESS_MASK = 0b110;
     public static final int BRUSHED_PROGRESS_START = 1;
 
-    public BlockBrushable() {
-        this(0);
-    }
+    BlockBrushable() {
 
-    public BlockBrushable(int meta) {
-        super(meta);
     }
 
     @Override
@@ -58,7 +54,18 @@ public abstract class BlockBrushable extends BlockFallable {
     }
 
     @Override
+    public int getBlockDefaultMeta() {
+        return HANGING_BIT;
+    }
+
+    @Override
+    public int getItemSerializationMeta() {
+        return getBlockDefaultMeta();
+    }
+
+    @Override
     public boolean place(Item item, Block block, Block target, BlockFace face, float fx, float fy, float fz, Player player) {
+        setDamage(HANGING_BIT);
         if (!super.place(item, block, target, face, fx, fy, fz, player)) {
             return false;
         }

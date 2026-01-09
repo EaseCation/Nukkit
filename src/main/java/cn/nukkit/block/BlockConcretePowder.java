@@ -7,35 +7,28 @@ import cn.nukkit.math.BlockFace;
 import cn.nukkit.utils.BlockColor;
 import cn.nukkit.utils.DyeColor;
 
-import static cn.nukkit.GameVersion.*;
-
 /**
  * Created by CreeperFace on 2.6.2017.
  */
-public class BlockConcretePowder extends BlockFallable {
-
-    public BlockConcretePowder() {
-        this(0);
-    }
-
-    public BlockConcretePowder(int meta) {
-        super(meta);
-    }
-
-    @Override
-    public int getId() {
-        return CONCRETE_POWDER;
-    }
-
-    @Override
-    public boolean isStackedByData() {
-        return !V1_20_30.isAvailable();
-    }
-
-    @Override
-    public String getName() {
-        return getDyeColor().getName() + " Concrete Powder";
-    }
+public abstract class BlockConcretePowder extends BlockFallable {
+    public static final int[] CONCRETE_POWDERS = {
+            WHITE_CONCRETE_POWDER,
+            ORANGE_CONCRETE_POWDER,
+            MAGENTA_CONCRETE_POWDER,
+            LIGHT_BLUE_CONCRETE_POWDER,
+            YELLOW_CONCRETE_POWDER,
+            LIME_CONCRETE_POWDER,
+            PINK_CONCRETE_POWDER,
+            GRAY_CONCRETE_POWDER,
+            LIGHT_GRAY_CONCRETE_POWDER,
+            CYAN_CONCRETE_POWDER,
+            PURPLE_CONCRETE_POWDER,
+            BLUE_CONCRETE_POWDER,
+            BROWN_CONCRETE_POWDER,
+            GREEN_CONCRETE_POWDER,
+            RED_CONCRETE_POWDER,
+            BLACK_CONCRETE_POWDER,
+    };
 
     @Override
     public float getResistance() {
@@ -62,7 +55,7 @@ public class BlockConcretePowder extends BlockFallable {
             for (int side = 1; side <= 5; side++) {
                 Block block = this.getSide(BlockFace.fromIndex(side));
                 if (block.isWater()) {
-                    this.level.setBlock(this, Block.get(BlockConcrete.CONCRETES[getDamage() & 0xf]), true, true);
+                    this.level.setBlock(this, Block.get(getConcreteBlockId()), true, true);
                 }
             }
 
@@ -84,7 +77,7 @@ public class BlockConcretePowder extends BlockFallable {
         }
 
         if (concrete) {
-            this.level.setBlock(this, Block.get(BlockConcrete.CONCRETES[getDamage() & 0xf]), true, true);
+            this.level.setBlock(this, Block.get(getConcreteBlockId()), true, true);
         } else {
             this.level.setBlock(this, this, true, true);
         }
@@ -97,7 +90,7 @@ public class BlockConcretePowder extends BlockFallable {
         return getDyeColor().getColor();
     }
 
-    public DyeColor getDyeColor() {
-        return DyeColor.getByWoolData(getDamage());
-    }
+    public abstract DyeColor getDyeColor();
+
+    protected abstract int getConcreteBlockId();
 }

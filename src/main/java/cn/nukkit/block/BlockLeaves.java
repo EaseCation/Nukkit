@@ -2,9 +2,10 @@ package cn.nukkit.block;
 
 import cn.nukkit.Player;
 import cn.nukkit.Server;
+import cn.nukkit.api.API;
+import cn.nukkit.api.API.Definition;
 import cn.nukkit.event.block.LeavesDecayEvent;
 import cn.nukkit.item.Item;
-import cn.nukkit.item.ItemBlockID;
 import cn.nukkit.level.Level;
 import cn.nukkit.math.BlockFace;
 import cn.nukkit.utils.BlockColor;
@@ -12,55 +13,52 @@ import cn.nukkit.utils.Hash;
 import it.unimi.dsi.fastutil.longs.LongOpenHashSet;
 import it.unimi.dsi.fastutil.longs.LongSet;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.concurrent.ThreadLocalRandom;
-
-import static cn.nukkit.GameVersion.*;
 
 /**
  * author: Angelic47
  * Nukkit Project
  */
-public class BlockLeaves extends BlockTransparent {
+public abstract class BlockLeaves extends BlockTransparent {
+    public static final int[] LEAVES_1 = {
+            OAK_LEAVES,
+            SPRUCE_LEAVES,
+            BIRCH_LEAVES,
+            JUNGLE_LEAVES,
+    };
+    public static final int[] LEAVES_2 = {
+            ACACIA_LEAVES,
+            DARK_OAK_LEAVES,
+    };
+
     public static final int OAK = 0;
     public static final int SPRUCE = 1;
     public static final int BIRCH = 2;
     public static final int JUNGLE = 3;
 
-    public static final int TYPE_MASK = 0b11;
-    public static final int UPDATE_BIT = 0b100;
-    public static final int PERSISTENT_BIT = 0b1000;
+    public static final int UPDATE_BIT = 0b1;
+    public static final int PERSISTENT_BIT = 0b10;
 
-    public static final int[] NUKKIT_LEGACY_META_TO_NUKKIT_RUNTIME_META = { // different from vanilla...
+    @API(definition = Definition.INTERNAL)
+    public static final int[] LEAVES1_NUKKIT_LEGACY_META_TO_NUKKIT_RUNTIME_META = { // different from vanilla...
             0b0000, 0b0001, 0b0010, 0b0011,
             0b1000, 0b1001, 0b1010, 0b1011,
             0b0100, 0b0101, 0b0110, 0b0111,
             0b1100, 0b1101, 0b1110, 0b1111
     };
 
-    private static final String[] NAMES = new String[]{
-            "Oak Leaves",
-            "Spruce Leaves",
-            "Birch Leaves",
-            "Jungle Leaves",
+    public static final int ACACIA = 0;
+    public static final int DARK_OAK = 1;
+
+    @API(definition = Definition.INTERNAL)
+    public static final int[] LEAVES2_NUKKIT_LEGACY_META_TO_NUKKIT_RUNTIME_META = {
+            0b000, 0b001,  0b000, 0b001,
+            0b100, 0b101,  0b100, 0b101,
+            0b010, 0b011,  0b010, 0b011,
+            0b110, 0b111,  0b110, 0b111
     };
-
-    public BlockLeaves() {
-        this(0);
-    }
-
-    public BlockLeaves(int meta) {
-        super(meta);
-    }
-
-    @Override
-    public int getId() {
-        return LEAVES;
-    }
-
-    @Override
-    public boolean isStackedByData() {
-        return !V1_20_70.isAvailable();
-    }
 
     @Override
     public float getHardness() {
@@ -75,11 +73,6 @@ public class BlockLeaves extends BlockTransparent {
     @Override
     public int getToolType() {
         return BlockToolType.HOE | BlockToolType.SHEARS | BlockToolType.SWORD;
-    }
-
-    @Override
-    public String getName() {
-        return NAMES[this.getLeafType()];
     }
 
     @Override
@@ -101,7 +94,7 @@ public class BlockLeaves extends BlockTransparent {
 
     @Override
     public Item toItem(boolean addUserData) {
-        return Item.get(this.getItemId(), this.getLeafType());
+        return Item.get(this.getItemId());
     }
 
     @Override
@@ -110,26 +103,21 @@ public class BlockLeaves extends BlockTransparent {
             return new Item[]{
                     toItem(true)
             };
-        } else {
-            ThreadLocalRandom random = ThreadLocalRandom.current();
-            if (this.canDropApple() && random.nextInt(200) == 0) {
-                return new Item[]{
-                        Item.get(Item.APPLE)
-                };
-            }
-            if (random.nextInt(20) == 0) {
-                if (random.nextBoolean()) {
-                    return new Item[]{
-                            Item.get(Item.STICK, 0, random.nextInt(1, 3))
-                    };
-                } else if (canDropSapling() && getId() != LEAVES || this.getLeafType() != JUNGLE || random.nextInt(20) == 0) {
-                    return new Item[]{
-                            this.getSapling()
-                    };
-                }
-            }
         }
-        return new Item[0];
+
+        ThreadLocalRandom random = ThreadLocalRandom.current();
+        List<Item> drops = new ArrayList<>(3);
+        int chance = getSaplingDropChance();
+        if (chance > 0 && random.nextInt(chance) == 0) {
+            drops.add(getSapling());
+        }
+        if (canDropApple() && random.nextInt(200) == 0) {
+            drops.add(Item.get(Item.APPLE));
+        }
+        if (random.nextInt(50) == 0) {
+            drops.add(Item.get(Item.STICK, 0, random.nextInt(1, 3)));
+        }
+        return drops.toArray(new Item[0]);
     }
 
     @Override
@@ -146,8 +134,6 @@ public class BlockLeaves extends BlockTransparent {
             setCheckDecay(true);
             getLevel().setBlock(this, this, true, false);
         } else {
-            setDamage(getLeafType());
-
             int check = 0;
             LeavesDecayEvent ev = new LeavesDecayEvent(this);
             Server.getInstance().getPluginManager().callEvent(ev);
@@ -239,10 +225,6 @@ public class BlockLeaves extends BlockTransparent {
         return false;
     }
 
-    public int getLeafType() {
-        return getDamage() & TYPE_MASK;
-    }
-
     public boolean isCheckDecay() {
         return (getDamage() & UPDATE_BIT) != 0;
     }
@@ -266,21 +248,24 @@ public class BlockLeaves extends BlockTransparent {
     }
 
     @Override
+    public boolean isSolid() {
+        return false;
+    }
+
+    @Override
     public boolean canSilkTouch() {
         return true;
     }
 
     protected boolean canDropApple() {
-        return this.getLeafType() == OAK;
+        return false;
     }
 
-    protected boolean canDropSapling() {
-        return true;
+    protected int getSaplingDropChance() {
+        return 20;
     }
 
-    protected Item getSapling() {
-        return Item.get(ItemBlockID.SAPLING, this.getLeafType());
-    }
+    protected abstract Item getSapling();
 
     @Override
     public boolean breaksWhenMoved() {

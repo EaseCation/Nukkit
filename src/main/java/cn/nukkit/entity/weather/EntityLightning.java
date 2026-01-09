@@ -62,6 +62,16 @@ public class EntityLightning extends Entity implements EntityLightningStrike {
     }
 
     @Override
+    public boolean canBeMovedByCurrents() {
+        return false;
+    }
+
+    @Override
+    public boolean doesTriggerPressurePlate() {
+        return false;
+    }
+
+    @Override
     public boolean attack(EntityDamageEvent source) {
         return false;
     }

@@ -17,7 +17,7 @@ public class BlockEntityGlowItemFrame extends BlockEntityItemFrame {
 
     @Override
     public boolean isValidBlock(int blockId) {
-        return blockId == Block.BLOCK_GLOW_FRAME;
+        return blockId == Block.GLOW_FRAME;
     }
 
     @Override

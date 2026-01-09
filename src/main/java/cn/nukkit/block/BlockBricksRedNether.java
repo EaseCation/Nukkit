@@ -2,7 +2,8 @@ package cn.nukkit.block;
 
 public class BlockBricksRedNether extends BlockBricksNether {
 
-    public BlockBricksRedNether() {
+    BlockBricksRedNether() {
+
     }
 
     @Override

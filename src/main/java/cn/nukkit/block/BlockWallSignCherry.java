@@ -4,12 +4,8 @@ import cn.nukkit.item.Item;
 import cn.nukkit.utils.BlockColor;
 
 public class BlockWallSignCherry extends BlockWallSign {
-    public BlockWallSignCherry() {
-        this(0);
-    }
+    BlockWallSignCherry() {
 
-    public BlockWallSignCherry(int meta) {
-        super(meta);
     }
 
     @Override

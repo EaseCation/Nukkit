@@ -2,7 +2,8 @@ package cn.nukkit.block;
 
 public class BlockReserved6 extends BlockSolid {
 
-    public BlockReserved6() {
+    BlockReserved6() {
+
     }
 
     @Override

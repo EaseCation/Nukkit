@@ -31,8 +31,8 @@ public abstract class BlockCarpet extends BlockFlowable {
             BLACK_CARPET,
     };
 
-    protected BlockCarpet() {
-        super(0);
+    BlockCarpet() {
+
     }
 
     @Override

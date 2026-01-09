@@ -3,25 +3,13 @@ package cn.nukkit.block;
 import cn.nukkit.utils.BlockColor;
 
 public class BlockSlabWarped extends BlockSlabWood {
-    public static final int TYPE_MASK = 0;
-    public static final int TOP_SLOT_BIT = 0b1;
+    BlockSlabWarped() {
 
-    public BlockSlabWarped() {
-        this(0);
-    }
-
-    public BlockSlabWarped(int meta) {
-        super(meta);
     }
 
     @Override
     public int getId() {
         return WARPED_SLAB;
-    }
-
-    @Override
-    public boolean isStackedByData() {
-        return false;
     }
 
     @Override
@@ -47,16 +35,6 @@ public class BlockSlabWarped extends BlockSlabWood {
     @Override
     public int getFuelTime() {
         return 0;
-    }
-
-    @Override
-    public int getSlabType() {
-        return 0;
-    }
-
-    @Override
-    protected int getTopSlotBit() {
-        return TOP_SLOT_BIT;
     }
 
     @Override

@@ -14,7 +14,8 @@ import java.util.concurrent.ThreadLocalRandom;
  */
 public class BlockMycelium extends BlockSolid {
 
-    public BlockMycelium() {
+    BlockMycelium() {
+
     }
 
     @Override
@@ -64,7 +65,7 @@ public class BlockMycelium extends BlockSolid {
             int y = random.nextInt((int) this.y - 1, (int) this.y + 2);
             int z = random.nextInt((int) this.z - 1, (int) this.z + 2);
             Block block = this.getLevel().getBlock(x, y, z);
-            if (block.getId() == Block.DIRT && block.getDamage() == 0) {
+            if (block.getId() == Block.DIRT) {
                 Block up = block.up();
                 if ((up.isTransparent() || !up.isSolid()) && !up.isLiquid() && !level.getExtraBlock(up).isWater()) {
                     BlockSpreadEvent ev = new BlockSpreadEvent(block, this, Block.get(BlockID.MYCELIUM));

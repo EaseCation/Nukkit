@@ -10,12 +10,8 @@ import java.util.concurrent.ThreadLocalRandom;
  */
 public class BlockStemMelon extends BlockStem {
 
-    public BlockStemMelon() {
-        this(0);
-    }
+    BlockStemMelon() {
 
-    public BlockStemMelon(int meta) {
-        super(meta);
     }
 
     @Override

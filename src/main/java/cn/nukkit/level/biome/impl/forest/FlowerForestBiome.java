@@ -1,7 +1,6 @@
 package cn.nukkit.level.biome.impl.forest;
 
-import cn.nukkit.block.BlockDoublePlant;
-import cn.nukkit.block.BlockFlower;
+import cn.nukkit.block.Block;
 import cn.nukkit.level.generator.populator.impl.PopulatorFlower;
 
 /**
@@ -19,20 +18,20 @@ public class FlowerForestBiome extends ForestBiome {
         //see https://minecraft.gamepedia.com/Flower#Flower_biomes
         PopulatorFlower flower = new PopulatorFlower();
         flower.setBaseAmount(10);
-        flower.addType(DANDELION, 0);
-        flower.addType(RED_FLOWER, BlockFlower.TYPE_POPPY);
-        flower.addType(RED_FLOWER, BlockFlower.TYPE_ALLIUM);
-        flower.addType(RED_FLOWER, BlockFlower.TYPE_AZURE_BLUET);
-        flower.addType(RED_FLOWER, BlockFlower.TYPE_RED_TULIP);
-        flower.addType(RED_FLOWER, BlockFlower.TYPE_ORANGE_TULIP);
-        flower.addType(RED_FLOWER, BlockFlower.TYPE_WHITE_TULIP);
-        flower.addType(RED_FLOWER, BlockFlower.TYPE_PINK_TULIP);
-        flower.addType(RED_FLOWER, BlockFlower.TYPE_OXEYE_DAISY);
-        flower.addType(RED_FLOWER, BlockFlower.TYPE_CORNFLOWER);
-        flower.addType(RED_FLOWER, BlockFlower.TYPE_LILY_OF_THE_VALLEY);
-        flower.addType(DOUBLE_PLANT, BlockDoublePlant.TYPE_LILAC);
-        flower.addType(DOUBLE_PLANT, BlockDoublePlant.TYPE_ROSE_BUSH);
-        flower.addType(DOUBLE_PLANT, BlockDoublePlant.TYPE_PEONY);
+        flower.addType(Block.DANDELION);
+        flower.addType(Block.POPPY);
+        flower.addType(Block.ALLIUM);
+        flower.addType(Block.AZURE_BLUET);
+        flower.addType(Block.RED_TULIP);
+        flower.addType(Block.ORANGE_TULIP);
+        flower.addType(Block.WHITE_TULIP);
+        flower.addType(Block.PINK_TULIP);
+        flower.addType(Block.OXEYE_DAISY);
+        flower.addType(Block.CORNFLOWER);
+        flower.addType(Block.LILY_OF_THE_VALLEY);
+        flower.addType(Block.LILAC, true);
+        flower.addType(Block.ROSE_BUSH, true);
+        flower.addType(Block.PEONY, true);
         this.addPopulator(flower);
 
         this.setHeightVariation(0.4f);

@@ -20,12 +20,8 @@ import javax.annotation.Nullable;
  */
 public class BlockFlowerPot extends BlockFlowable {
 
-    public BlockFlowerPot() {
-        this(0);
-    }
+    BlockFlowerPot() {
 
-    public BlockFlowerPot(int meta) {
-        super(meta);
     }
 
     private static boolean canPlaceIntoFlowerPot(Block block) {
@@ -42,7 +38,7 @@ public class BlockFlowerPot extends BlockFlowable {
 
     @Override
     public int getId() {
-        return BLOCK_FLOWER_POT;
+        return FLOWER_POT;
     }
 
     @Override

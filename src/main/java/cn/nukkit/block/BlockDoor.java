@@ -22,12 +22,6 @@ public abstract class BlockDoor extends BlockTransparent implements Faceable {
     public static final int DOOR_TOP_BIT = 0b1000;
     public static final int DOOR_HINGE_BIT = 0b10000;
 
-    private static final int[] FACES = {1, 2, 3, 0};
-
-    protected BlockDoor(int meta) {
-        super(meta);
-    }
-
     @Override
     public boolean canBeActivated() {
         return true;
@@ -230,7 +224,7 @@ public abstract class BlockDoor extends BlockTransparent implements Faceable {
             int metaUp = DOOR_TOP_BIT;
             if (player != null) {
                 BlockFace facing = player.getDirection();
-                int direction = FACES[facing.getHorizontalIndex()];
+                int direction = facing.getHorizontalIndex() + 1 & DIRECTION_MASK;
 
                 Block left = this.getSide(facing.rotateYCCW());
                 if (left.getId() == this.getId()) {

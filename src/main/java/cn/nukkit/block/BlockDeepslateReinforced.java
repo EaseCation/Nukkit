@@ -5,7 +5,8 @@ import cn.nukkit.item.Item;
 import cn.nukkit.utils.BlockColor;
 
 public class BlockDeepslateReinforced extends BlockSolid {
-    public BlockDeepslateReinforced() {
+    BlockDeepslateReinforced() {
+
     }
 
     @Override

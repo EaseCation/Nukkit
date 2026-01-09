@@ -17,12 +17,8 @@ import static cn.nukkit.SharedConstants.*;
 
 public class BlockComposter extends BlockTransparent {
 
-    public BlockComposter() {
-        this(0);
-    }
+    BlockComposter() {
 
-    public BlockComposter(int meta) {
-        super(meta);
     }
 
     @Override

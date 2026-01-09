@@ -13,14 +13,8 @@ import static cn.nukkit.SharedConstants.*;
  */
 public class BlockPressurePlateStone extends BlockPressurePlateBase {
 
-    public BlockPressurePlateStone(int meta) {
-        super(meta);
-        this.onPitch = 0.6f;
-        this.offPitch = 0.5f;
-    }
+    BlockPressurePlateStone() {
 
-    public BlockPressurePlateStone() {
-        this(0);
     }
 
     @Override

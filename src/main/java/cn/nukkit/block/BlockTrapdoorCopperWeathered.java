@@ -3,12 +3,8 @@ package cn.nukkit.block;
 import cn.nukkit.utils.BlockColor;
 
 public class BlockTrapdoorCopperWeathered extends BlockTrapdoorCopper {
-    public BlockTrapdoorCopperWeathered() {
-        this(0);
-    }
+    BlockTrapdoorCopperWeathered() {
 
-    public BlockTrapdoorCopperWeathered(int meta) {
-        super(meta);
     }
 
     @Override

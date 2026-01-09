@@ -1,9 +1,6 @@
 package cn.nukkit.block;
 
 public abstract class BlockFroglight extends BlockRotatedPillar {
-    protected BlockFroglight(int meta) {
-        super(meta);
-    }
 
     @Override
     public float getHardness() {

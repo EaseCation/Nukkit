@@ -5,12 +5,8 @@ package cn.nukkit.block;
  * Package cn.nukkit.block in project Nukkit .
  */
 public class BlockStairsStoneBrick extends BlockStairs {
-    public BlockStairsStoneBrick() {
-        this(0);
-    }
+    BlockStairsStoneBrick() {
 
-    public BlockStairsStoneBrick(int meta) {
-        super(meta);
     }
 
     @Override

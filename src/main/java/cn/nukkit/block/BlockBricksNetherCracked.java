@@ -1,7 +1,8 @@
 package cn.nukkit.block;
 
 public class BlockBricksNetherCracked extends BlockBricksNether {
-    public BlockBricksNetherCracked() {
+    BlockBricksNetherCracked() {
+
     }
 
     @Override

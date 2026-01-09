@@ -8,12 +8,8 @@ import cn.nukkit.utils.BlockColor;
 import static cn.nukkit.GameVersion.*;
 
 public class BlockWallBlackstonePolished extends BlockWall {
-    public BlockWallBlackstonePolished() {
-        this(0);
-    }
+    BlockWallBlackstonePolished() {
 
-    public BlockWallBlackstonePolished(int meta) {
-        super(meta);
     }
 
     @Override

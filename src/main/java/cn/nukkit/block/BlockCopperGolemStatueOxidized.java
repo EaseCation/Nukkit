@@ -3,12 +3,7 @@ package cn.nukkit.block;
 import cn.nukkit.utils.BlockColor;
 
 public class BlockCopperGolemStatueOxidized extends BlockCopperGolemStatue {
-    public BlockCopperGolemStatueOxidized() {
-        this(0);
-    }
-
-    public BlockCopperGolemStatueOxidized(int meta) {
-        super(meta);
+    BlockCopperGolemStatueOxidized() {
 
     }
 

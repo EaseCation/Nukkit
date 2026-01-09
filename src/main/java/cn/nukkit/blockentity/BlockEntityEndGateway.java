@@ -69,7 +69,7 @@ public class BlockEntityEndGateway extends BlockEntitySpawnable {
     }
 
     @Override
-    public CompoundTag getSpawnCompound() {
+    public CompoundTag getSpawnCompound(boolean chunkData) {
         CompoundTag tag = getDefaultCompound(this, END_GATEWAY)
                 .putInt(TAG_AGE, age);
 

@@ -136,7 +136,7 @@ public class EntityThrownTrident extends EntityProjectile {
     }
 
     @Override
-    protected double getBaseDamage() {
+    public int getResultDamage() {
         return 8;
     }
 

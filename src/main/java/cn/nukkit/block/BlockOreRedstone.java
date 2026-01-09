@@ -15,7 +15,8 @@ import java.util.concurrent.ThreadLocalRandom;
  */
 public class BlockOreRedstone extends BlockSolid {
 
-    public BlockOreRedstone() {
+    BlockOreRedstone() {
+
     }
 
     @Override

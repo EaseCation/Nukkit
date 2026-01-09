@@ -252,7 +252,7 @@ public class BlockEntityPistonArm extends BlockEntitySpawnable {
         this.namedTag.putBoolean("Sticky", this.sticky);
     }
 
-    public CompoundTag getSpawnCompound() {
+    public CompoundTag getSpawnCompound(boolean chunkData) {
         return getDefaultCompound(this, PISTON_ARM)
                 .putFloat("Progress", this.progress)
                 .putFloat("LastProgress", this.lastProgress)

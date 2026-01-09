@@ -1,12 +1,8 @@
 package cn.nukkit.block;
 
 public class BlockWoodStrippedPaleOak extends BlockLogStrippedPaleOak {
-    public BlockWoodStrippedPaleOak() {
-        this(0);
-    }
+    BlockWoodStrippedPaleOak() {
 
-    public BlockWoodStrippedPaleOak(int meta) {
-        super(meta);
     }
 
     @Override
@@ -17,5 +13,10 @@ public class BlockWoodStrippedPaleOak extends BlockLogStrippedPaleOak {
     @Override
     public String getName() {
         return "Stripped Pale Oak Wood";
+    }
+
+    @Override
+    public boolean isWood() {
+        return true;
     }
 }

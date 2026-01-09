@@ -33,7 +33,7 @@ public class PopulatorCaves extends Populator {
     private static final int worldHeightCap = 128;
 
     @Override
-    public void populate(ChunkManager level, int chunkX, int chunkZ, NukkitRandom random, FullChunk chunk) {
+    public void populate(ChunkManager level, int chunkX, int chunkZ, RandomSource random, FullChunk chunk) {
         RandomSource localRandom = new NukkitRandom(level.getSeed());
         long worldLong1 = localRandom.nextLong();
         long worldLong2 = localRandom.nextLong();
@@ -261,15 +261,14 @@ public class PopulatorCaves extends Populator {
     public static boolean isDiggable(int block, int above) {
         switch (block) {
             case SAND:
+            case RED_SAND:
             case GRAVEL:
                 if (above == WATER) {
                     return false;
                 }
-            case STONE:
             case DIRT:
+            case COARSE_DIRT:
             case GRASS_BLOCK:
-            case HARDENED_CLAY:
-            case STAINED_HARDENED_CLAY:
             case SANDSTONE:
             case RED_SANDSTONE:
             case MYCELIUM:
@@ -277,6 +276,7 @@ public class PopulatorCaves extends Populator {
             case SNOW_LAYER:
                 return true;
         }
-        return false;
+        Block ub = Block.getUnsafe(block);
+        return ub.isStone() || ub.isTerracotta();
     }
 }

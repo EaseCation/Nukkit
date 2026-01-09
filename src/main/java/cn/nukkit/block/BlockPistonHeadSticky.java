@@ -2,12 +2,8 @@ package cn.nukkit.block;
 
 public class BlockPistonHeadSticky extends BlockPistonHead {
 
-    public BlockPistonHeadSticky() {
-        this(0);
-    }
+    BlockPistonHeadSticky() {
 
-    public BlockPistonHeadSticky(int meta) {
-        super(meta);
     }
 
     @Override

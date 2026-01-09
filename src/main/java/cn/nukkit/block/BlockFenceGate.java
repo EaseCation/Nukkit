@@ -19,12 +19,8 @@ public class BlockFenceGate extends BlockTransparent implements Faceable {
     public static final int OPEN_BIT = 0b100;
     public static final int IN_WALL_BIT = 0b1000;
 
-    public BlockFenceGate() {
-        this(0);
-    }
+    BlockFenceGate() {
 
-    public BlockFenceGate(int meta) {
-        super(meta);
     }
 
     @Override

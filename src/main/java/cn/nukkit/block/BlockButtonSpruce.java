@@ -2,12 +2,8 @@ package cn.nukkit.block;
 
 public class BlockButtonSpruce extends BlockButtonWooden {
 
-    public BlockButtonSpruce() {
-        this(0);
-    }
+    BlockButtonSpruce() {
 
-    public BlockButtonSpruce(int meta) {
-        super(meta);
     }
 
     @Override

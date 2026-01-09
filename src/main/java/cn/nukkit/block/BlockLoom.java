@@ -11,12 +11,8 @@ public class BlockLoom extends BlockSolid implements Faceable {
 
     public static final int DIRECTION_MASK = 0b11;
 
-    public BlockLoom() {
-        this(0);
-    }
+    BlockLoom() {
 
-    public BlockLoom(int meta) {
-        super(meta);
     }
 
     @Override

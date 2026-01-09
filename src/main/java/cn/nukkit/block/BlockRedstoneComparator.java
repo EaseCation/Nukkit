@@ -21,12 +21,8 @@ public abstract class BlockRedstoneComparator extends BlockRedstoneDiode {
     public static final int SUBTRACT_BIT = 0b100;
     public static final int LIT_BIT = 0b1000;
 
-    public BlockRedstoneComparator() {
-        this(0);
-    }
+    BlockRedstoneComparator() {
 
-    public BlockRedstoneComparator(int meta) {
-        super(meta);
     }
 
     @Override

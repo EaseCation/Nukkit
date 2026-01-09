@@ -6,12 +6,8 @@ import cn.nukkit.utils.BlockColor;
 
 public class BlockSignPostSpruce extends BlockSignPost {
 
-    public BlockSignPostSpruce() {
-        this(0);
-    }
+    BlockSignPostSpruce() {
 
-    public BlockSignPostSpruce(int meta) {
-        super(meta);
     }
 
     @Override

@@ -13,12 +13,8 @@ import java.util.concurrent.ThreadLocalRandom;
 
 public class BlockIceFrosted extends BlockTransparent {
 
-    public BlockIceFrosted() {
-        this(0);
-    }
+    BlockIceFrosted() {
 
-    public BlockIceFrosted(int meta) {
-        super(meta);
     }
 
     @Override

@@ -1,12 +1,8 @@
 package cn.nukkit.block;
 
 public class BlockDoorCopperWaxed extends BlockDoorCopper {
-    public BlockDoorCopperWaxed() {
-        this(0);
-    }
+    BlockDoorCopperWaxed() {
 
-    public BlockDoorCopperWaxed(int meta) {
-        super(meta);
     }
 
     @Override

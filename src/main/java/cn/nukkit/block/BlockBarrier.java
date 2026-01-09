@@ -5,7 +5,8 @@ import cn.nukkit.utils.BlockColor;
 
 public class BlockBarrier extends BlockTransparent {
 
-    public BlockBarrier() {
+    BlockBarrier() {
+
     }
 
     @Override

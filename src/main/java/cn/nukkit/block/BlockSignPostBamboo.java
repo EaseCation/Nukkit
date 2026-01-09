@@ -4,12 +4,8 @@ import cn.nukkit.item.Item;
 import cn.nukkit.utils.BlockColor;
 
 public class BlockSignPostBamboo extends BlockSignPost {
-    public BlockSignPostBamboo() {
-        this(0);
-    }
+    BlockSignPostBamboo() {
 
-    public BlockSignPostBamboo(int meta) {
-        super(meta);
     }
 
     @Override

@@ -8,7 +8,8 @@ import cn.nukkit.utils.BlockColor;
 
 public class BlockSmithingTable extends BlockSolid {
 
-    public BlockSmithingTable() {
+    BlockSmithingTable() {
+
     }
 
     @Override

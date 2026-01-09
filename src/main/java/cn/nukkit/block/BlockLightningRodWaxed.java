@@ -1,12 +1,7 @@
 package cn.nukkit.block;
 
 public class BlockLightningRodWaxed extends BlockLightningRod {
-    public BlockLightningRodWaxed() {
-        this(0);
-    }
-
-    public BlockLightningRodWaxed(int meta) {
-        super(meta);
+    BlockLightningRodWaxed() {
 
     }
 

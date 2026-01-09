@@ -27,12 +27,8 @@ public class BlockBamboo extends BlockTransparent {
     public static final int SMALL_LEAVES = 1;
     public static final int LARGE_LEAVES = 2;
 
-    public BlockBamboo() {
-        this(0);
-    }
+    BlockBamboo() {
 
-    public BlockBamboo(int meta) {
-        super(meta);
     }
 
     @Override

@@ -12,7 +12,17 @@ public interface ItemRuntimeID {
     int GLOW_BERRIES = BASE_INTERNAL_ID + 2;
     int OAK_CHEST_BOAT = BASE_INTERNAL_ID + 3;
     /**
-     * @deprecated use {@link #OAK_CHEST_BOAT} instead (flattened)
+     * @deprecated flattened
+     * @see #OAK_CHEST_BOAT
+     * @see #SPRUCE_CHEST_BOAT
+     * @see #BIRCH_CHEST_BOAT
+     * @see #JUNGLE_CHEST_BOAT
+     * @see #ACACIA_CHEST_BOAT
+     * @see #DARK_OAK_CHEST_BOAT
+     * @see #MANGROVE_CHEST_BOAT
+     * @see #BAMBOO_CHEST_RAFT
+     * @see #CHERRY_CHEST_BOAT
+     * @see #PALE_OAK_CHEST_BOAT
      */
     @Deprecated
     int CHEST_BOAT = BASE_INTERNAL_ID + 3;

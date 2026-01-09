@@ -1,12 +1,7 @@
 package cn.nukkit.block;
 
 public class BlockCopperGolemStatueWaxed extends BlockCopperGolemStatue {
-    public BlockCopperGolemStatueWaxed() {
-        this(0);
-    }
-
-    public BlockCopperGolemStatueWaxed(int meta) {
-        super(meta);
+    BlockCopperGolemStatueWaxed() {
 
     }
 

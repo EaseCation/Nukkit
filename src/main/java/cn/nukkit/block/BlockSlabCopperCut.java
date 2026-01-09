@@ -13,15 +13,8 @@ import cn.nukkit.utils.BlockColor;
 import java.util.concurrent.ThreadLocalRandom;
 
 public class BlockSlabCopperCut extends BlockSlab implements CopperBehavior {
-    public static final int TYPE_MASK = 0;
-    public static final int TOP_SLOT_BIT = 0b1;
+    BlockSlabCopperCut() {
 
-    public BlockSlabCopperCut() {
-        this(0);
-    }
-
-    public BlockSlabCopperCut(int meta) {
-        super(meta);
     }
 
     @Override
@@ -165,16 +158,6 @@ public class BlockSlabCopperCut extends BlockSlab implements CopperBehavior {
     @Override
     public int getCopperAge() {
         return 0;
-    }
-
-    @Override
-    public int getSlabType() {
-        return 0;
-    }
-
-    @Override
-    protected int getTopSlotBit() {
-        return TOP_SLOT_BIT;
     }
 
     @Override

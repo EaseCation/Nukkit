@@ -19,12 +19,8 @@ public class BlockCommand extends BlockSolid implements Faceable {
     public static final int FACING_DIRECTION_MASK = 0b111;
     public static final int CONDITIONAL_BIT = 0b1000;
 
-    public BlockCommand() {
-        this(0);
-    }
+    BlockCommand() {
 
-    public BlockCommand(int meta) {
-        super(meta);
     }
 
     @Override

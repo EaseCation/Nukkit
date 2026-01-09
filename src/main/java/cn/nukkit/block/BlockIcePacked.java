@@ -10,7 +10,8 @@ import cn.nukkit.utils.BlockColor;
  */
 public class BlockIcePacked extends BlockSolid {
 
-    public BlockIcePacked() {
+    BlockIcePacked() {
+
     }
 
     @Override

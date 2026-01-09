@@ -2,7 +2,7 @@ package cn.nukkit.level.generator.populator.type;
 
 import cn.nukkit.level.ChunkManager;
 import cn.nukkit.level.format.FullChunk;
-import cn.nukkit.math.NukkitRandom;
+import cn.nukkit.math.RandomSource;
 
 /**
  * A populator that generates an object a certain amount of times.
@@ -22,7 +22,7 @@ public abstract class PopulatorCount extends Populator {
     }
 
     @Override
-    public final void populate(ChunkManager level, int chunkX, int chunkZ, NukkitRandom random, FullChunk chunk) {
+    public final void populate(ChunkManager level, int chunkX, int chunkZ, RandomSource random, FullChunk chunk) {
         int count = baseAmount;
         if (randomAmount > 0) {
             count += random.nextInt(randomAmount);
@@ -32,5 +32,5 @@ public abstract class PopulatorCount extends Populator {
         }
     }
 
-    protected abstract void populateCount(ChunkManager level, int chunkX, int chunkZ, NukkitRandom random, FullChunk chunk);
+    protected abstract void populateCount(ChunkManager level, int chunkX, int chunkZ, RandomSource random, FullChunk chunk);
 }

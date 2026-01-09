@@ -1,12 +1,6 @@
 package cn.nukkit.level;
 
-import cn.nukkit.block.Block;
-import cn.nukkit.block.BlockID;
-import cn.nukkit.block.BlockItemFrame;
-import cn.nukkit.block.BlockLeaves;
-import cn.nukkit.block.BlockLeaves2;
-import cn.nukkit.block.BlockWood;
-import cn.nukkit.block.BlockWood2;
+import cn.nukkit.block.*;
 import cn.nukkit.level.biome.Biomes;
 import cn.nukkit.level.format.ChunkSection;
 import cn.nukkit.level.format.FullChunk;
@@ -333,22 +327,22 @@ class LevelProviderConverter {
 
                             // special Log upgrade to Wood
                             if (id == BlockID.LOG) {
-                                if ((meta & BlockWood.PILLAR_AXIS_MASK) == BlockWood.PILLAR_AXIS_MASK && Block.list[BlockID.WOOD] != null) {
+                                if ((meta & 0b1100) == 0b1100 && Block.list[BlockID.WOOD] != null) {
                                     id = BlockID.WOOD;
-                                    meta = meta & BlockWood.TYPE_MASK;
+                                    meta = meta & 0b11;
                                 }
                             } else if (id == BlockID.LOG2) {
-                                if ((meta & BlockWood.PILLAR_AXIS_MASK) == BlockWood.PILLAR_AXIS_MASK && Block.list[BlockID.WOOD] != null) {
+                                if ((meta & 0b1100) == 0b1100 && Block.list[BlockID.WOOD] != null) {
                                     id = BlockID.WOOD;
-                                    meta = 0b100 | (meta & BlockWood2.TYPE_MASK);
+                                    meta = 0b100 | (meta & 0b1);
                                 } else {
-                                    meta = BlockWood2.LEGACY_META_TO_NUKKIT_RUNTIME_META[meta & 0xf];
+                                    meta = BlockLog.LOG2_NUKKIT_LEGACY_META_TO_NUKKIT_RUNTIME_META[meta & 0xf];
                                 }
                             } else if (id == BlockID.LEAVES) {
-                                meta = BlockLeaves.NUKKIT_LEGACY_META_TO_NUKKIT_RUNTIME_META[meta & 0xf];
+                                meta = BlockLeaves.LEAVES1_NUKKIT_LEGACY_META_TO_NUKKIT_RUNTIME_META[meta & 0xf];
                             } else if (id == BlockID.LEAVES2) {
-                                meta = BlockLeaves2.NUKKIT_LEGACY_META_TO_NUKKIT_RUNTIME_META[meta & 0xf];
-                            } else if (id == BlockID.BLOCK_FRAME) {
+                                meta = BlockLeaves.LEAVES2_NUKKIT_LEGACY_META_TO_NUKKIT_RUNTIME_META[meta & 0xf];
+                            } else if (id == BlockID.FRAME) {
                                 // frame 1.13 upgrade
                                 meta = ((meta & ~0b11) << 1) | BlockItemFrame.LEGACY_DIRECTION_BITS_TO_FACING_DIRECTION_BITS[meta & 0b11];
                             } else if (!Block.hasMeta[id]) {

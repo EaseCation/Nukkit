@@ -6,12 +6,8 @@ import cn.nukkit.item.ItemTool;
 import cn.nukkit.utils.BlockColor;
 
 public class BlockBasalt extends BlockRotatedPillar {
-    public BlockBasalt() {
-        this(0);
-    }
+    BlockBasalt() {
 
-    public BlockBasalt(int meta) {
-        super(meta);
     }
 
     @Override

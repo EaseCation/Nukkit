@@ -6,6 +6,7 @@ import cn.nukkit.blockentity.BlockEntity;
 import cn.nukkit.blockentity.BlockEntityEnderChest;
 import cn.nukkit.blockentity.BlockEntityType;
 import cn.nukkit.item.Item;
+import cn.nukkit.item.ItemBlockID;
 import cn.nukkit.math.BlockFace;
 import cn.nukkit.nbt.tag.CompoundTag;
 import cn.nukkit.nbt.tag.StringTag;
@@ -19,15 +20,10 @@ import static cn.nukkit.GameVersion.*;
 import static cn.nukkit.SharedConstants.*;
 
 public class BlockEnderChest extends BlockTransparent implements Faceable {
+    public static final int DIRECTION_MASK = 0b11;
 
-    private static final int[] FACES = {2, 5, 3, 4};
+    BlockEnderChest() {
 
-    public BlockEnderChest() {
-        this(0);
-    }
-
-    public BlockEnderChest(int meta) {
-        super(meta);
     }
 
     @Override
@@ -43,6 +39,11 @@ public class BlockEnderChest extends BlockTransparent implements Faceable {
     @Override
     public int getBlockDefaultMeta() {
         return 2;
+    }
+
+    @Override
+    public int getItemSerializationMeta() {
+        return getBlockDefaultMeta();
     }
 
     @Override
@@ -102,7 +103,7 @@ public class BlockEnderChest extends BlockTransparent implements Faceable {
 
     @Override
     public boolean place(Item item, Block block, Block target, BlockFace face, float fx, float fy, float fz, Player player) {
-        this.setDamage(FACES[player != null ? player.getDirection().getHorizontalIndex() : 0]);
+        this.setDamage(player != null ? player.getDirection().getOpposite().getHorizontalIndex() : 0);
 
         this.getLevel().setBlock(block, this, true, true);
         CompoundTag nbt = BlockEntity.getDefaultCompound(this, BlockEntity.ENDER_CHEST);
@@ -167,7 +168,7 @@ public class BlockEnderChest extends BlockTransparent implements Faceable {
     @Override
     public Item[] getDrops(Item item, Player player) {
         return new Item[]{
-                Item.get(getItemId(OBSIDIAN), 0, 8),
+                Item.get(ItemBlockID.OBSIDIAN, 0, 8),
         };
     }
 
@@ -203,7 +204,7 @@ public class BlockEnderChest extends BlockTransparent implements Faceable {
 
     @Override
     public BlockFace getBlockFace() {
-        return BlockFace.fromHorizontalIndex(this.getDamage() & 0x07);
+        return BlockFace.fromHorizontalIndex(this.getDamage() & DIRECTION_MASK);
     }
 
     @Override

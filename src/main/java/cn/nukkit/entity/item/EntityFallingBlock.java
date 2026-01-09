@@ -62,7 +62,7 @@ public class EntityFallingBlock extends Entity {
 
     @Override
     public boolean canCollide() {
-        return block.getId() == BlockID.ANVIL;
+        return block.isAnvil();
     }
 
     private Block block;
@@ -121,7 +121,7 @@ public class EntityFallingBlock extends Entity {
     }
 
     public boolean canCollideWith(Entity entity) {
-        return block.getId() == BlockID.ANVIL && super.canCollideWith(entity);
+        return block.isAnvil() && super.canCollideWith(entity);
     }
 
     @Override
@@ -239,7 +239,7 @@ public class EntityFallingBlock extends Entity {
                         }
                         placeBlock(pos, event.getTo());
 
-                        if (event.getTo().getId() == Block.ANVIL) {
+                        if (event.getTo().isAnvil()) {
                             getLevel().addLevelEvent(block, LevelEventPacket.EVENT_SOUND_ANVIL_FALL);
 
                             if (highestPosition > y) {

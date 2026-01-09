@@ -25,14 +25,11 @@ public class BlockBeehive extends BlockSolid implements Faceable {
     public static final int MAX_HONEY_LEVEL = 5;
 
     public static final int DIRECTION_MASK = 0b11;
-    public static final int DIRECTION_BITS = 2;
+    public static final int HONEY_LEVEL_MASK = 0b11100;
+    public static final int HONEY_LEVEL_OFFSET = 2;
 
-    public BlockBeehive() {
-        this(0);
-    }
+    BlockBeehive() {
 
-    public BlockBeehive(int meta) {
-        super(meta);
     }
 
     @Override
@@ -82,7 +79,12 @@ public class BlockBeehive extends BlockSolid implements Faceable {
 
     @Override
     public Item toItem(boolean addUserData) {
-        return Item.get(getItemId(), getHoneyLevel() << DIRECTION_BITS);
+        return Item.get(getItemId(), getItemMeta());
+    }
+
+    @Override
+    public int getItemKeepMetaMask() {
+        return HONEY_LEVEL_MASK;
     }
 
     @Override
@@ -143,7 +145,7 @@ public class BlockBeehive extends BlockSolid implements Faceable {
     @Override
     public boolean place(Item item, Block block, Block target, BlockFace face, float fx, float fy, float fz, Player player) {
         if (player != null) {
-            this.setDamage((getHoneyLevel() << DIRECTION_BITS) | player.getHorizontalFacing().getOpposite().getHorizontalIndex());
+            this.setDamage((getHoneyLevel() << HONEY_LEVEL_OFFSET) | player.getHorizontalFacing().getOpposite().getHorizontalIndex());
         }
         level.setBlock(this, this, true);
         createBlockEntity(item);
@@ -196,10 +198,10 @@ public class BlockBeehive extends BlockSolid implements Faceable {
      * @return 0-5
      */
     public int getHoneyLevel() {
-        return getDamage() >> DIRECTION_BITS;
+        return getDamage() >> HONEY_LEVEL_OFFSET;
     }
 
     public void setHoneyLevel(int honeyLevel) {
-        setDamage((Mth.clamp(honeyLevel, 0, MAX_HONEY_LEVEL) << DIRECTION_BITS) | (getDamage() & DIRECTION_MASK));
+        setDamage((Mth.clamp(honeyLevel, 0, MAX_HONEY_LEVEL) << HONEY_LEVEL_OFFSET) | (getDamage() & DIRECTION_MASK));
     }
 }

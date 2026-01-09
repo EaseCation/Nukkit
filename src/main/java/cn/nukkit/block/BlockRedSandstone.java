@@ -7,19 +7,17 @@ import cn.nukkit.utils.BlockColor;
  */
 public class BlockRedSandstone extends BlockSandstone {
 
-    private static final String[] NAMES = new String[]{
-            "Red Sandstone",
-            "Chiseled Red Sandstone",
-            "Cut Red Sandstone",
-            "Smooth Red Sandstone",
+    public static final int[] RED_SANDSTONES = new int[]{
+            RED_SANDSTONE,
+            CHISELED_RED_SANDSTONE,
+            CUT_RED_SANDSTONE,
+            SMOOTH_RED_SANDSTONE,
     };
+    @SuppressWarnings("unused")
+    private static final int[] SANDSTONES = RED_SANDSTONES;
 
-    public BlockRedSandstone() {
-        this(0);
-    }
+    BlockRedSandstone() {
 
-    public BlockRedSandstone(int meta) {
-        super(meta);
     }
 
     @Override
@@ -29,7 +27,7 @@ public class BlockRedSandstone extends BlockSandstone {
 
     @Override
     public String getName() {
-        return NAMES[this.getSandstoneType()];
+        return "Red Sandstone";
     }
 
     @Override

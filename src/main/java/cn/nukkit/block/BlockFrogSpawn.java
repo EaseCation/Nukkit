@@ -9,12 +9,8 @@ import cn.nukkit.utils.BlockColor;
 import java.util.concurrent.ThreadLocalRandom;
 
 public class BlockFrogSpawn extends BlockFlowable {
-    public BlockFrogSpawn() {
-        this(0);
-    }
+    BlockFrogSpawn() {
 
-    public BlockFrogSpawn(int meta) {
-        super(0);
     }
 
     @Override

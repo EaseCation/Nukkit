@@ -25,12 +25,8 @@ public class BlockBrewingStand extends BlockTransparent {
     public static final int HAS_SLOT_1 = 0b10;
     public static final int HAS_SLOT_2 = 0b100;
 
-    public BlockBrewingStand() {
-        this(0);
-    }
+    BlockBrewingStand() {
 
-    public BlockBrewingStand(int meta) {
-        super(meta);
     }
 
     @Override
@@ -60,7 +56,7 @@ public class BlockBrewingStand extends BlockTransparent {
 
     @Override
     public int getId() {
-        return BLOCK_BREWING_STAND;
+        return BREWING_STAND;
     }
 
     @Override

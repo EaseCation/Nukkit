@@ -4,32 +4,27 @@ import cn.nukkit.Player;
 import cn.nukkit.block.BlockGlassPaneStained;
 import cn.nukkit.item.Item;
 
-import static cn.nukkit.GameVersion.*;
-
-public class BlockGlassPaneStainedHard extends BlockGlassPaneStained {
-
-    public BlockGlassPaneStainedHard() {
-        this(0);
-    }
-
-    public BlockGlassPaneStainedHard(int meta) {
-        super(meta);
-    }
-
-    @Override
-    public int getId() {
-        return HARD_STAINED_GLASS_PANE;
-    }
-
-    @Override
-    public boolean isStackedByData() {
-        return !V1_20_60.isAvailable();
-    }
-
-    @Override
-    public String getName() {
-        return "Hardened " + super.getName();
-    }
+public abstract class BlockGlassPaneStainedHard extends BlockGlassPaneStained {
+    public static final int[] HARD_STAINED_GLASS_PANES = {
+            HARD_WHITE_STAINED_GLASS_PANE,
+            HARD_ORANGE_STAINED_GLASS_PANE,
+            HARD_MAGENTA_STAINED_GLASS_PANE,
+            HARD_LIGHT_BLUE_STAINED_GLASS_PANE,
+            HARD_YELLOW_STAINED_GLASS_PANE,
+            HARD_LIME_STAINED_GLASS_PANE,
+            HARD_PINK_STAINED_GLASS_PANE,
+            HARD_GRAY_STAINED_GLASS_PANE,
+            HARD_LIGHT_GRAY_STAINED_GLASS_PANE,
+            HARD_CYAN_STAINED_GLASS_PANE,
+            HARD_PURPLE_STAINED_GLASS_PANE,
+            HARD_BLUE_STAINED_GLASS_PANE,
+            HARD_BROWN_STAINED_GLASS_PANE,
+            HARD_GREEN_STAINED_GLASS_PANE,
+            HARD_RED_STAINED_GLASS_PANE,
+            HARD_BLACK_STAINED_GLASS_PANE,
+    };
+    @SuppressWarnings("unused")
+    private static final int[] STAINED_GLASS_PANES = HARD_STAINED_GLASS_PANES;
 
     @Override
     public float getHardness() {

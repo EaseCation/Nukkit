@@ -6,12 +6,8 @@ package cn.nukkit.block;
 @Deprecated
 public class BlockCauldronLava extends BlockCauldron {
 
-    public BlockCauldronLava() {
-        this(0);
-    }
+    BlockCauldronLava() {
 
-    public BlockCauldronLava(int meta) {
-        super(meta);
     }
 
     @Override
@@ -22,5 +18,10 @@ public class BlockCauldronLava extends BlockCauldron {
     @Override
     public int getLightLevel() {
         return isEmpty() ? 0 : 15;
+    }
+
+    @Override
+    public int getLightBlock() {
+        return isEmpty() ? 3 : 14;
     }
 }

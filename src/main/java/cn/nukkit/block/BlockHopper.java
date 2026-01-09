@@ -24,17 +24,13 @@ public class BlockHopper extends BlockTransparent implements Faceable {
     public static final int FACING_DIRECTION_MASK = 0b111;
     public static final int TOGGLE_BIT = 0b1000;
 
-    public BlockHopper() {
-        this(0);
-    }
+    BlockHopper() {
 
-    public BlockHopper(int meta) {
-        super(meta);
     }
 
     @Override
     public int getId() {
-        return BLOCK_HOPPER;
+        return HOPPER;
     }
 
     @Override

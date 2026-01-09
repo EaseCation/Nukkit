@@ -2,6 +2,7 @@ package cn.nukkit.block;
 
 import cn.nukkit.Player;
 import cn.nukkit.item.Item;
+import cn.nukkit.item.ItemBlockID;
 import cn.nukkit.level.Level;
 import cn.nukkit.level.particle.BoneMealParticle;
 import cn.nukkit.math.BlockFace;
@@ -10,8 +11,8 @@ import cn.nukkit.network.protocol.LevelSoundEventPacket;
 import java.util.concurrent.ThreadLocalRandom;
 
 public abstract class BlockNetherFungus extends BlockFlowable {
-    protected BlockNetherFungus() {
-        super(0);
+    BlockNetherFungus() {
+
     }
 
     @Override
@@ -47,7 +48,7 @@ public abstract class BlockNetherFungus extends BlockFlowable {
             return true;
         }
 
-        if (item.is(getItemId(SNOW_LAYER))) {
+        if (item.is(ItemBlockID.SNOW_LAYER)) {
             level.setExtraBlock(this, this, true, false);
             level.setBlock(this, get(SNOW_LAYER, BlockSnowLayer.COVERED_BIT), true);
 

@@ -6,7 +6,7 @@ import cn.nukkit.level.ChunkManager;
 import cn.nukkit.level.HeightRange;
 import cn.nukkit.level.format.FullChunk;
 import cn.nukkit.level.generator.populator.type.Populator;
-import cn.nukkit.math.NukkitRandom;
+import cn.nukkit.math.RandomSource;
 import cn.nukkit.math.Vector3f;
 
 public class PopulatorEndPodium extends Populator {
@@ -21,7 +21,7 @@ public class PopulatorEndPodium extends Populator {
     }
 
     @Override
-    public void populate(ChunkManager level, int chunkX, int chunkZ, NukkitRandom random, FullChunk chunk) {
+    public void populate(ChunkManager level, int chunkX, int chunkZ, RandomSource random, FullChunk chunk) {
         if (chunkX < -1 || chunkX > 0 || chunkZ < -1 || chunkZ > 0) {
             return;
         }

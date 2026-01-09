@@ -15,46 +15,26 @@ import cn.nukkit.nbt.tag.Tag;
 
 import javax.annotation.Nullable;
 
-import static cn.nukkit.GameVersion.*;
-
-public class BlockChemistryTable extends BlockSolid {
-
-    public static final int DIRECTION_MASK = 0b11;
-    public static final int DIRECTION_BITS = 2;
-
-    public static final int TYPE_COMPOUND_CREATOR = 0;
-    public static final int TYPE_MATERIAL_REDUCER = 1 << DIRECTION_BITS;
-    public static final int TYPE_ELEMENT_CONSTRUCTOR = 2 << DIRECTION_BITS;
-    public static final int TYPE_LAB_TABLE = 3 << DIRECTION_BITS;
-
-    private static final String[] NAMES = {
-            "Compound Creator",
-            "Material Reducer",
-            "Element constructor",
-            "Lab Table",
+public abstract class BlockChemistryTable extends BlockSolid {
+    public static final int[] CHEMISTRY_TABLES = {
+            COMPOUND_CREATOR,
+            MATERIAL_REDUCER,
+            ELEMENT_CONSTRUCTOR,
+            LAB_TABLE,
     };
 
-    public BlockChemistryTable() {
-        this(0);
-    }
+    public static final int DIRECTION_MASK = 0b11;
 
-    public BlockChemistryTable(int meta) {
-        super(meta);
-    }
+    @Deprecated
+    public static final int TYPE_MASK = 0b1100;
+    private static final int TYPE_OFFSET = 2;
+    public static final int TYPE_COMPOUND_CREATOR = 0;
+    public static final int TYPE_MATERIAL_REDUCER = 1 << TYPE_OFFSET;
+    public static final int TYPE_ELEMENT_CONSTRUCTOR = 2 << TYPE_OFFSET;
+    public static final int TYPE_LAB_TABLE = 3 << TYPE_OFFSET;
 
-    @Override
-    public int getId() {
-        return CHEMISTRY_TABLE;
-    }
+    BlockChemistryTable() {
 
-    @Override
-    public boolean isStackedByData() {
-        return !V1_21_30.isAvailable();
-    }
-
-    @Override
-    public String getName() {
-        return NAMES[(getDamage() & 0xf) >> DIRECTION_BITS];
     }
 
     @Override
@@ -79,13 +59,13 @@ public class BlockChemistryTable extends BlockSolid {
 
     @Override
     public Item toItem(boolean addUserData) {
-        return Item.get(getItemId(), (getDamage() >> DIRECTION_BITS) << DIRECTION_BITS);
+        return Item.get(getItemId());
     }
 
     @Override
     public boolean place(Item item, Block block, Block target, BlockFace face, float fx, float fy, float fz, Player player) {
         if (player != null) {
-            setDamage(((getDamage() >> DIRECTION_BITS) << DIRECTION_BITS) | player.getHorizontalFacing().getHorizontalIndex());
+            setDamage(player.getHorizontalFacing().getHorizontalIndex());
         }
         level.setBlock(this, this, true);
         createBlockEntity(item);

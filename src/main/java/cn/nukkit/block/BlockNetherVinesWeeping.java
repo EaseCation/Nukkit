@@ -7,12 +7,8 @@ import java.util.Random;
 import java.util.concurrent.ThreadLocalRandom;
 
 public class BlockNetherVinesWeeping extends BlockNetherVines {
-    public BlockNetherVinesWeeping() {
-        this(0);
-    }
+    BlockNetherVinesWeeping() {
 
-    public BlockNetherVinesWeeping(int meta) {
-        super(meta);
     }
 
     @Override

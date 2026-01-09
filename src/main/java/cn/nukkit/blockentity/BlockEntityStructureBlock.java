@@ -100,7 +100,7 @@ public class BlockEntityStructureBlock extends BlockEntitySpawnable {
     }
 
     @Override
-    public CompoundTag getSpawnCompound() {
+    public CompoundTag getSpawnCompound(boolean chunkData) {
         return getDefaultCompound(this, STRUCTURE_BLOCK)
                 .putInt("data", this.getBlock().getDamage())
                 .putInt("redstoneSaveMode", this.namedTag.getInt("redstoneSaveMode"))

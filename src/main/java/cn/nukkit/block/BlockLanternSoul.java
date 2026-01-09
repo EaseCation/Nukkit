@@ -1,12 +1,8 @@
 package cn.nukkit.block;
 
 public class BlockLanternSoul extends BlockLantern {
-    public BlockLanternSoul() {
-        this(0);
-    }
+    BlockLanternSoul() {
 
-    public BlockLanternSoul(int meta) {
-        super(meta);
     }
 
     @Override

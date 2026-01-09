@@ -8,12 +8,8 @@ import cn.nukkit.utils.BlockColor;
 import static cn.nukkit.GameVersion.*;
 
 public class BlockMangroveRootsMuddy extends BlockRotatedPillar {
-    public BlockMangroveRootsMuddy() {
-        this(0);
-    }
+    BlockMangroveRootsMuddy() {
 
-    public BlockMangroveRootsMuddy(int meta) {
-        super(meta);
     }
 
     @Override

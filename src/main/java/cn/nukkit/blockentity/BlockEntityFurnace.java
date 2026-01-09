@@ -257,7 +257,7 @@ public class BlockEntityFurnace extends BlockEntityAbstractContainer {
     }
 
     @Override
-    public final CompoundTag getSpawnCompound() {
+    public final CompoundTag getSpawnCompound(boolean chunkData) {
         CompoundTag nbt = createSpawnTag();
 
         if (this.hasName()) {

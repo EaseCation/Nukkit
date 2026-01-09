@@ -3,12 +3,8 @@ package cn.nukkit.block;
 import cn.nukkit.utils.BlockColor;
 
 public class BlockHangingSignBamboo extends BlockHangingSign {
-    public BlockHangingSignBamboo() {
-        this(0);
-    }
+    BlockHangingSignBamboo() {
 
-    public BlockHangingSignBamboo(int meta) {
-        super(meta);
     }
 
     @Override

@@ -6,6 +6,7 @@ import cn.nukkit.blockentity.BlockEntity;
 import cn.nukkit.blockentity.BlockEntityCreakingHeart;
 import cn.nukkit.blockentity.BlockEntityType;
 import cn.nukkit.item.Item;
+import cn.nukkit.item.ItemBlockID;
 import cn.nukkit.math.BlockFace;
 import cn.nukkit.nbt.tag.CompoundTag;
 import cn.nukkit.utils.BlockColor;
@@ -17,12 +18,8 @@ public class BlockCreakingHeart extends BlockRotatedPillar {
     public static final int ACTIVE_BIT = 0b100;
     public static final int NATURAL_BIT = 0b1000;
 
-    public BlockCreakingHeart() {
-        this(0);
-    }
+    BlockCreakingHeart() {
 
-    public BlockCreakingHeart(int meta) {
-        super(meta);
     }
 
     @Override
@@ -53,7 +50,7 @@ public class BlockCreakingHeart extends BlockRotatedPillar {
     @Override
     public Item[] getDrops(Item item, Player player) {
         return new Item[]{
-                Item.get(getItemId(RESIN_CLUMP), 0, ThreadLocalRandom.current().nextInt(1, 4)),
+                Item.get(ItemBlockID.RESIN_CLUMP, 0, ThreadLocalRandom.current().nextInt(1, 4)),
         };
     }
 

@@ -34,7 +34,7 @@ public class BlockEntityBed extends BlockEntitySpawnable {
 
     @Override
     public boolean isValidBlock(int blockId) {
-        return blockId == Block.BLOCK_BED;
+        return blockId == Block.BED;
     }
 
     @Override
@@ -44,7 +44,7 @@ public class BlockEntityBed extends BlockEntitySpawnable {
     }
 
     @Override
-    public CompoundTag getSpawnCompound() {
+    public CompoundTag getSpawnCompound(boolean chunkData) {
         return getDefaultCompound(this, BED)
                 .putByte("color", this.color);
     }

@@ -15,9 +15,9 @@ public class BlockUnknown extends Block {
         this(id, 0);
     }
 
-    public BlockUnknown(int id, Integer meta) {
-        super(meta);
+    public BlockUnknown(int id, int meta) {
         this.id = id;
+        init(meta);
     }
 
     @Override

@@ -13,12 +13,8 @@ import java.util.concurrent.ThreadLocalRandom;
 public class BlockCaveVines extends BlockFlowable {
     public static final int MAX_AGE = 25;
 
-    public BlockCaveVines() {
-        this(0);
-    }
+    BlockCaveVines() {
 
-    public BlockCaveVines(int meta) {
-        super(meta);
     }
 
     @Override

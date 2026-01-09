@@ -39,7 +39,7 @@ public class EntityMinecartHopper extends EntityMinecartAbstract implements Inve
 
     public EntityMinecartHopper(FullChunk chunk, CompoundTag nbt) {
         super(chunk, nbt);
-        setDisplayBlock(Block.get(Block.BLOCK_HOPPER), false);
+        setDisplayBlock(Block.get(Block.HOPPER), false);
     }
 
     @Override

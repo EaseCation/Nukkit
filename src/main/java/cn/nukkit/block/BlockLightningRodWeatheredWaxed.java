@@ -3,12 +3,7 @@ package cn.nukkit.block;
 import cn.nukkit.utils.BlockColor;
 
 public class BlockLightningRodWeatheredWaxed extends BlockLightningRodWaxed {
-    public BlockLightningRodWeatheredWaxed() {
-        this(0);
-    }
-
-    public BlockLightningRodWeatheredWaxed(int meta) {
-        super(meta);
+    BlockLightningRodWeatheredWaxed() {
 
     }
 

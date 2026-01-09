@@ -11,19 +11,9 @@ public abstract class BlockRotatedPillar extends BlockSolid {
     public static final int PILLAR_AXIS_Z = 0b10;
     public static final int PILLAR_AXIS_MASK = PILLAR_AXIS_X | PILLAR_AXIS_Z;
 
-    private static final int[] PILLAR_AXIS = {
-            PILLAR_AXIS_X,
-            PILLAR_AXIS_Y,
-            PILLAR_AXIS_Z,
-    };
-
-    protected BlockRotatedPillar(int meta) {
-        super(meta);
-    }
-
     @Override
     public boolean place(Item item, Block block, Block target, BlockFace face, float fx, float fy, float fz, Player player) {
-        setDamage(PILLAR_AXIS[face.getAxis().ordinal()]);
+        setDamage(face.getAxis().getIndex());
         return super.place(item, block, target, face, fx, fy, fz, player);
     }
 
@@ -34,6 +24,10 @@ public abstract class BlockRotatedPillar extends BlockSolid {
 
     public int getPillarAxis() {
         return getDamage() & PILLAR_AXIS_MASK;
+    }
+
+    public void setPillarAxis(int axis) {
+        setDamage(getDamage() & ~PILLAR_AXIS_MASK | axis & PILLAR_AXIS_MASK);
     }
 
     public Axis getAxis() {

@@ -18,12 +18,8 @@ public class BlockCandle extends BlockTransparent {
     public static final int CANDLE_COUNT_MASK = 0b11;
     public static final int LIT_BIT = 0b100;
 
-    public BlockCandle() {
-        this(0);
-    }
+    BlockCandle() {
 
-    public BlockCandle(int meta) {
-        super(meta);
     }
 
     @Override

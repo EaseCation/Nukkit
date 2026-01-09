@@ -5,12 +5,8 @@ package cn.nukkit.block;
  */
 public class BlockButtonWooden extends BlockButton {
 
-    public BlockButtonWooden() {
-        this(0);
-    }
+    BlockButtonWooden() {
 
-    public BlockButtonWooden(int meta) {
-        super(meta);
     }
 
     @Override

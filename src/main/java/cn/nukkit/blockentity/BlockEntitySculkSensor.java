@@ -37,8 +37,6 @@ public class BlockEntitySculkSensor extends BlockEntity {
         vibrationListener = new VibrationListener();
         if (namedTag.contains(VIBRATION_LISTENER_TAG)) {
             vibrationListener.load(namedTag.getCompound(VIBRATION_LISTENER_TAG));
-        } else {
-            vibrationListener.load(new CompoundTag());
         }
 
         super.initBlockEntity();
@@ -91,7 +89,7 @@ public class BlockEntitySculkSensor extends BlockEntity {
          */
         static final String IN_FLIGHT_VIBRATION_INFO_TAG = "pending";
 
-        private VibrationSelector selector;
+        private final VibrationSelector selector = new VibrationSelector();
 
         private int event;
 
@@ -100,7 +98,6 @@ public class BlockEntitySculkSensor extends BlockEntity {
         private VibrationInfo pending;
 
         public void load(CompoundTag tag) {
-            selector = new VibrationSelector();
             if (tag.contains(VIBRATION_SELECTOR_TAG)) {
                 selector.load(tag.getCompound(VIBRATION_SELECTOR_TAG));
             }
@@ -214,7 +211,7 @@ public class BlockEntitySculkSensor extends BlockEntity {
 
         private float distance;
 
-        private BlockVector3 pos = new BlockVector3();
+        private final BlockVector3 pos = new BlockVector3();
 
         /**
          * entity unique id.

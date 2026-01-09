@@ -6,12 +6,8 @@ package cn.nukkit.block;
  */
 public class BlockWaterStill extends BlockWater {
 
-    public BlockWaterStill() {
-        super(0);
-    }
+    BlockWaterStill() {
 
-    public BlockWaterStill(int meta) {
-        super(meta);
     }
 
     @Override

@@ -7,12 +7,8 @@ import cn.nukkit.math.BlockFace;
 import cn.nukkit.utils.BlockColor;
 
 public class BlockLanternCopper extends BlockLantern implements CopperBehavior {
-    public BlockLanternCopper() {
-        this(0);
-    }
+    BlockLanternCopper() {
 
-    public BlockLanternCopper(int meta) {
-        super(meta);
     }
 
     @Override

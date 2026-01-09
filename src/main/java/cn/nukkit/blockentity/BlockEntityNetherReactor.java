@@ -58,7 +58,7 @@ public class BlockEntityNetherReactor extends BlockEntitySpawnable {
     }
 
     @Override
-    public CompoundTag getSpawnCompound() {
+    public CompoundTag getSpawnCompound(boolean chunkData) {
         return getDefaultCompound(this, NETHER_REACTOR)
                 .putBoolean("IsInitialized", initialized)
                 .putShort("Progress", progress)

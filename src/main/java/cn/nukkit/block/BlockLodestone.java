@@ -16,7 +16,8 @@ import javax.annotation.Nullable;
 import static cn.nukkit.GameVersion.*;
 
 public class BlockLodestone extends BlockSolid {
-    public BlockLodestone() {
+    BlockLodestone() {
+
     }
 
     @Override

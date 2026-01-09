@@ -18,12 +18,8 @@ public class BlockLever extends BlockTransparent implements Faceable {
     public static final int LEVER_DIRECTION_MASK = 0b111;
     public static final int OPEN_BIT = 0b1000;
 
-    public BlockLever() {
-        this(0);
-    }
+    BlockLever() {
 
-    public BlockLever(int meta) {
-        super(meta);
     }
 
     @Override

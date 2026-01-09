@@ -1,90 +1,34 @@
 package cn.nukkit.block;
 
+import cn.nukkit.item.Item;
+import cn.nukkit.item.ItemBlockID;
 import cn.nukkit.utils.BlockColor;
-
-import static cn.nukkit.GameVersion.*;
-import static cn.nukkit.SharedConstants.*;
 
 /**
  * Created by CreeperFace on 26. 11. 2016.
  */
 public class BlockDoubleSlabRedSandstone extends BlockDoubleSlabStone {
+    BlockDoubleSlabRedSandstone() {
 
-    public static final int TYPE_RED_SANDSTONE = 0;
-    public static final int TYPE_PURPUR = 1;
-    public static final int TYPE_PRISMARINE_ROUGH = 2;
-    public static final int TYPE_PRISMARINE_DARK = 3;
-    public static final int TYPE_PRISMARINE_BRICK = 4;
-    public static final int TYPE_MOSSY_COBBLESTONE = 5;
-    public static final int TYPE_SMOOTH_SANDSTONE = 6;
-    public static final int TYPE_RED_NETHER_BRICK = 7;
-
-    private static final String[] NAMES = new String[]{
-            "Double Red Sandstone Slab",
-            "Double Purpur Slab",
-            "Double Prismarine Slab",
-            "Double Dark Prismarine Slab",
-            "Double Prismarine Brick Slab",
-            "Double Mossy Cobblestone Slab",
-            "Double Smooth Sandstone Slab",
-            "Double Red Nether Brick Slab",
-    };
-
-    public BlockDoubleSlabRedSandstone() {
-        this(0);
-    }
-
-    public BlockDoubleSlabRedSandstone(int meta) {
-        super(meta);
     }
 
     @Override
     public int getId() {
-        return DOUBLE_STONE_SLAB2;
+        return RED_SANDSTONE_DOUBLE_SLAB;
     }
 
     @Override
     public String getName() {
-        return NAMES[this.getSlabType()];
-    }
-
-    @Override
-    public float getHardness() {
-        if (ENABLE_BLOCK_DESTROY_SPEED_COMPATIBILITY || V1_21_20.isAvailable()) {
-            switch (getSlabType()) {
-                case TYPE_PRISMARINE_ROUGH:
-                case TYPE_PRISMARINE_DARK:
-                case TYPE_PRISMARINE_BRICK:
-                    return 1.5f;
-            }
-        }
-        return super.getHardness();
+        return "Double Red Sandstone Slab";
     }
 
     @Override
     public BlockColor getColor() {
-        switch (this.getSlabType()) {
-            default:
-            case TYPE_RED_SANDSTONE:
-                return BlockColor.ORANGE_BLOCK_COLOR;
-            case TYPE_PURPUR:
-                return BlockColor.PURPLE_BLOCK_COLOR;
-            case TYPE_PRISMARINE_ROUGH:
-                return BlockColor.CYAN_BLOCK_COLOR;
-            case TYPE_PRISMARINE_DARK:
-            case TYPE_PRISMARINE_BRICK:
-                return BlockColor.DIAMOND_BLOCK_COLOR;
-            case TYPE_MOSSY_COBBLESTONE:
-                return BlockColor.STONE_BLOCK_COLOR;
-            case TYPE_SMOOTH_SANDSTONE:
-                return BlockColor.SAND_BLOCK_COLOR;
-            case TYPE_RED_NETHER_BRICK:
-                return BlockColor.NETHER_BLOCK_COLOR;
-        }
+        return BlockColor.ORANGE_BLOCK_COLOR;
     }
 
     @Override
-    protected int getSlabBlockId() {
-        return STONE_SLAB2;
+    public Item toItem(boolean addUserData) {
+        return Item.get(ItemBlockID.RED_SANDSTONE_SLAB);
     }
 }

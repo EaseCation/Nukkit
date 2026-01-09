@@ -11,23 +11,13 @@ import cn.nukkit.utils.BlockColor;
  */
 public class BlockPodzol extends BlockDirt {
 
-    public BlockPodzol() {
-        this(0);
-    }
+    BlockPodzol() {
 
-    public BlockPodzol(int meta) {
-        // Podzol can't have meta.
-        super(0);
     }
 
     @Override
     public int getId() {
         return PODZOL;
-    }
-
-    @Override
-    public boolean isStackedByData() {
-        return false;
     }
 
     @Override

@@ -5,43 +5,31 @@ import cn.nukkit.item.Item;
 import cn.nukkit.item.ItemTool;
 import cn.nukkit.utils.BlockColor;
 
-import static cn.nukkit.GameVersion.*;
-
 /**
  * author: MagicDroidX
  * Nukkit Project
  */
 public class BlockBricksStone extends BlockSolid {
+    public static final int[] STONEBRICKS = {
+            STONE_BRICKS,
+            MOSSY_STONE_BRICKS,
+            CRACKED_STONE_BRICKS,
+            CHISELED_STONE_BRICKS,
+    };
+
     public static final int NORMAL = 0;
     public static final int MOSSY = 1;
     public static final int CRACKED = 2;
     public static final int CHISELED = 3;
     public static final int SMOOTH = 4;
 
-    private static final String[] NAMES = new String[]{
-            "Stone Bricks",
-            "Mossy Stone Bricks",
-            "Cracked Stone Bricks",
-            "Chiseled Stone Bricks",
-            "Smooth Stone Bricks",
-    };
+    BlockBricksStone() {
 
-    public BlockBricksStone() {
-        this(0);
-    }
-
-    public BlockBricksStone(int meta) {
-        super(meta);
     }
 
     @Override
     public int getId() {
-        return STONEBRICK;
-    }
-
-    @Override
-    public boolean isStackedByData() {
-        return !V1_21_20.isAvailable();
+        return STONE_BRICKS;
     }
 
     @Override
@@ -56,14 +44,19 @@ public class BlockBricksStone extends BlockSolid {
 
     @Override
     public String getName() {
-        return NAMES[this.getDamage() & 0x03];
+        return "Stone Bricks";
+    }
+
+    @Override
+    public Item toItem(boolean addUserData) {
+        return Item.get(getItemId());
     }
 
     @Override
     public Item[] getDrops(Item item, Player player) {
         if (item.isPickaxe() && item.getTier() >= ItemTool.TIER_WOODEN) {
             return new Item[]{
-                    Item.get(getItemId(), this.getDamage() & 0x03, 1)
+                    toItem(true)
             };
         } else {
             return new Item[0];
@@ -83,13 +76,5 @@ public class BlockBricksStone extends BlockSolid {
     @Override
     public BlockColor getColor() {
         return BlockColor.STONE_BLOCK_COLOR;
-    }
-
-    @Override
-    public float getFurnaceXpMultiplier() {
-        if (getDamage() != CRACKED) {
-            return 0;
-        }
-        return 0.1f;
     }
 }

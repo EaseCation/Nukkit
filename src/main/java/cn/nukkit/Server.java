@@ -5,8 +5,6 @@ import cn.nukkit.blockentity.*;
 import cn.nukkit.command.*;
 import cn.nukkit.command.exceptions.CommandExceptions;
 import cn.nukkit.console.NukkitConsole;
-import cn.nukkit.data.BlockItemConverter;
-import cn.nukkit.data.ItemIdMap;
 import cn.nukkit.data.ServerConfiguration;
 import cn.nukkit.dispenser.DispenseBehaviorRegister;
 import cn.nukkit.entity.Entities;
@@ -485,8 +483,6 @@ public class Server {
 
         CommandExceptions.init();
 
-        ItemIdMap.init();
-        BlockItemConverter.init();
         Entities.registerVanillaEntities();
         BlockEntities.registerVanillaBlockEntities();
         Block.init();

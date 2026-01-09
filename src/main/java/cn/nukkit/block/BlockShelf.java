@@ -32,10 +32,6 @@ public abstract class BlockShelf extends BlockSolid implements Faceable {
     public static final int TYPE_CENTER = 2;
     public static final int TYPE_RIGHT = 3;
 
-    protected BlockShelf(int meta) {
-        super(meta);
-    }
-
     @Override
     public int getBlockEntityType() {
         return BlockEntityType.SHELF;

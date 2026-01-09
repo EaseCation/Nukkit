@@ -15,14 +15,8 @@ import cn.nukkit.utils.Faceable;
  */
 public class BlockEndRod extends BlockTransparent implements Faceable {
 
-    private static final int[] FACES = {0, 1, 3, 2, 5, 4};
+    BlockEndRod() {
 
-    public BlockEndRod() {
-        this(0);
-    }
-
-    public BlockEndRod(int meta) {
-        super(meta);
     }
 
     @Override
@@ -65,10 +59,15 @@ public class BlockEndRod extends BlockTransparent implements Faceable {
 
     @Override
     public boolean place(Item item, Block block, Block target, BlockFace face, float fx, float fy, float fz, Player player) {
-        this.setDamage(FACES[player != null ? face.getIndex() : 0]);
-        this.getLevel().setBlock(block, this, true, true);
+        BlockFace facing = face.isVertical() ? face : face.getOpposite();
 
-        return true;
+        if (getSide(face.getOpposite()).is(END_ROD, facing.getIndex())) {
+            facing = facing.getOpposite();
+        }
+
+        this.setDamage(facing.getIndex());
+
+        return super.place(item, block, target, face, fx, fy, fz, player);
     }
 
     @Override

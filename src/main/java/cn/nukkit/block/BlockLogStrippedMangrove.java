@@ -3,12 +3,8 @@ package cn.nukkit.block;
 import cn.nukkit.utils.BlockColor;
 
 public class BlockLogStrippedMangrove extends BlockLogStripped {
-    public BlockLogStrippedMangrove() {
-        this(0);
-    }
+    BlockLogStrippedMangrove() {
 
-    public BlockLogStrippedMangrove(int meta) {
-        super(meta);
     }
 
     @Override

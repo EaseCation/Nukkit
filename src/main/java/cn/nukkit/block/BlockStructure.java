@@ -22,12 +22,8 @@ public class BlockStructure extends BlockSolid {
     public static final int TYPE_INVALID = 4;
     public static final int TYPE_EXPORT = 5;
 
-    public BlockStructure() {
-        this(0);
-    }
+    BlockStructure() {
 
-    public BlockStructure(int meta) {
-        super(meta);
     }
 
     @Override

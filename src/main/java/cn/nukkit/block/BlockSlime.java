@@ -7,7 +7,8 @@ import cn.nukkit.utils.BlockColor;
  */
 public class BlockSlime extends BlockSolid {
 
-    public BlockSlime() {
+    BlockSlime() {
+
     }
 
     @Override

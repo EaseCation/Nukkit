@@ -5,6 +5,7 @@ import cn.nukkit.block.Block;
 import javax.annotation.Nullable;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.function.BiConsumer;
 
 public class BlockRegistry {
     private final int version;
@@ -50,5 +51,9 @@ public class BlockRegistry {
             return null;
         }
         return byId[id];
+    }
+
+    public void forEach(BiConsumer<String, BlockLegacy> action) {
+        blocks.forEach(action);
     }
 }

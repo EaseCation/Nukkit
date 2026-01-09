@@ -76,7 +76,7 @@ public class BlockEntityItemFrame extends BlockEntitySpawnable {
 
     @Override
     public boolean isValidBlock(int blockId) {
-        return blockId == Block.BLOCK_FRAME;
+        return blockId == Block.FRAME;
     }
 
     public float getItemRotation() {
@@ -143,7 +143,7 @@ public class BlockEntityItemFrame extends BlockEntitySpawnable {
     }
 
     @Override
-    public CompoundTag getSpawnCompound() {
+    public CompoundTag getSpawnCompound(boolean chunkData) {
         CompoundTag nbt = getDefaultCompound(this, getBlockEntityId());
 
         if (this.hasItem()) {

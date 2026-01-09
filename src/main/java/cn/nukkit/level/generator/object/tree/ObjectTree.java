@@ -3,7 +3,6 @@ package cn.nukkit.level.generator.object.tree;
 import cn.nukkit.block.Block;
 import cn.nukkit.block.BlockSapling;
 import cn.nukkit.level.ChunkManager;
-import cn.nukkit.math.NukkitRandom;
 import cn.nukkit.math.RandomSource;
 import it.unimi.dsi.fastutil.ints.IntArrayList;
 import it.unimi.dsi.fastutil.ints.IntList;
@@ -16,20 +15,14 @@ public abstract class ObjectTree {
     protected boolean overridable(int id) {
         switch (id) {
             case Block.AIR:
-            case Block.SAPLING:
-            case Block.OAK_LOG:
-            case Block.SPRUCE_LOG:
-            case Block.BIRCH_LOG:
-            case Block.JUNGLE_LOG:
-            case Block.LEAVES:
             case Block.SNOW_LAYER:
-            case Block.ACACIA_LOG:
-            case Block.DARK_OAK_LOG:
-            case Block.LEAVES2:
                 return true;
-            default:
-                return false;
         }
+        Block ub = Block.getUnsafe(id);
+        if (ub.isLog() || ub.isLeaves() || ub.isSapling()) {
+            return true;
+        }
+        return false;
     }
 
     public int getType() {
@@ -41,30 +34,30 @@ public abstract class ObjectTree {
     }
 
     public int getLeafBlock() {
-        return Block.LEAVES;
+        return Block.OAK_LEAVES;
     }
 
     public int getTreeHeight() {
         return 7;
     }
 
-    public static void growTree(ChunkManager level, int x, int y, int z, NukkitRandom random) {
+    public static void growTree(ChunkManager level, int x, int y, int z, RandomSource random) {
         growTree(level, x, y, z, random, 0);
     }
 
-    public static void growTree(ChunkManager level, int x, int y, int z, NukkitRandom random, int type) {
+    public static void growTree(ChunkManager level, int x, int y, int z, RandomSource random, int type) {
         growTree(level, x, y, z, random, type, false);
     }
 
-    public static void growTree(ChunkManager level, int x, int y, int z, NukkitRandom random, int type, float beehiveProbability) {
+    public static void growTree(ChunkManager level, int x, int y, int z, RandomSource random, int type, float beehiveProbability) {
         growTree(level, x, y, z, random, type, beehiveProbability, false);
     }
 
-    public static void growTree(ChunkManager level, int x, int y, int z, NukkitRandom random, int type, boolean snowy) {
+    public static void growTree(ChunkManager level, int x, int y, int z, RandomSource random, int type, boolean snowy) {
         growTree(level, x, y, z, random, type, 0, snowy);
     }
 
-    public static void growTree(ChunkManager level, int x, int y, int z, NukkitRandom random, int type, float beehiveProbability, boolean snowy) {
+    public static void growTree(ChunkManager level, int x, int y, int z, RandomSource random, int type, float beehiveProbability, boolean snowy) {
         ObjectTree tree;
         switch (type) {
             case BlockSapling.SPRUCE:
@@ -91,7 +84,7 @@ public abstract class ObjectTree {
         }
     }
 
-    public boolean canPlaceObject(ChunkManager level, int x, int y, int z, NukkitRandom random) {
+    public boolean canPlaceObject(ChunkManager level, int x, int y, int z, RandomSource random) {
         int height = this.getTreeHeight() + 2;
         if (!level.getHeightRange().isValidBlockY(y + height)) {
             return false;
@@ -114,7 +107,7 @@ public abstract class ObjectTree {
         return true;
     }
 
-    public void placeObject(ChunkManager level, int x, int y, int z, NukkitRandom random) {
+    public void placeObject(ChunkManager level, int x, int y, int z, RandomSource random) {
         int lowestLeaves = Integer.MIN_VALUE;
         int lowestLog = this.placeTrunk(level, x, y, z, random, this.getTreeHeight() - 1);
 
@@ -143,7 +136,7 @@ public abstract class ObjectTree {
         }
     }
 
-    protected int placeTrunk(ChunkManager level, int x, int y, int z, NukkitRandom random, int trunkHeight) {
+    protected int placeTrunk(ChunkManager level, int x, int y, int z, RandomSource random, int trunkHeight) {
         int lowest = Integer.MIN_VALUE;
 
         // The base dirt block

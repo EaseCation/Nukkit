@@ -8,7 +8,8 @@ import cn.nukkit.utils.BlockColor;
 
 public class BlockCartographyTable extends BlockSolid {
 
-    public BlockCartographyTable() {
+    BlockCartographyTable() {
+
     }
 
     @Override

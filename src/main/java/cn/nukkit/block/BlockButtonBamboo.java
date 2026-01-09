@@ -1,12 +1,8 @@
 package cn.nukkit.block;
 
 public class BlockButtonBamboo extends BlockButtonWooden {
-    public BlockButtonBamboo() {
-        this(0);
-    }
+    BlockButtonBamboo() {
 
-    public BlockButtonBamboo(int meta) {
-        super(meta);
     }
 
     @Override

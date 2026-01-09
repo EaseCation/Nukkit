@@ -5,7 +5,7 @@ import cn.nukkit.level.ChunkManager;
 import cn.nukkit.level.HeightRange;
 import cn.nukkit.level.format.FullChunk;
 import cn.nukkit.level.generator.populator.type.PopulatorCount;
-import cn.nukkit.math.NukkitRandom;
+import cn.nukkit.math.RandomSource;
 
 public class PopulatorMushroomHell extends PopulatorCount {
     private final int type;
@@ -15,7 +15,7 @@ public class PopulatorMushroomHell extends PopulatorCount {
     }
 
     @Override
-    public void populateCount(ChunkManager level, int chunkX, int chunkZ, NukkitRandom random, FullChunk chunk) {
+    public void populateCount(ChunkManager level, int chunkX, int chunkZ, RandomSource random, FullChunk chunk) {
         HeightRange heightRange = chunk.getHeightRange();
         int x = random.nextInt(16);
         int y = random.nextInt(128);

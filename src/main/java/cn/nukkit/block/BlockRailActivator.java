@@ -11,12 +11,8 @@ import static cn.nukkit.GameVersion.*;
  */
 public class BlockRailActivator extends BlockRail {
 
-    public BlockRailActivator(int meta) {
-        super(meta);
-    }
+    BlockRailActivator() {
 
-    public BlockRailActivator() {
-        this(0);
     }
 
     @Override

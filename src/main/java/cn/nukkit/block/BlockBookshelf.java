@@ -9,7 +9,8 @@ import cn.nukkit.utils.BlockColor;
  */
 public class BlockBookshelf extends BlockSolid {
 
-    public BlockBookshelf() {
+    BlockBookshelf() {
+
     }
 
     @Override

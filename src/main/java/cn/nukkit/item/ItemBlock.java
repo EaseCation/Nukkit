@@ -1,7 +1,6 @@
 package cn.nukkit.item;
 
 import cn.nukkit.block.Block;
-import cn.nukkit.network.protocol.LevelSoundEventPacket;
 
 /**
  * author: MagicDroidX
@@ -17,12 +16,14 @@ public class ItemBlock extends Item {
     }
 
     public ItemBlock(Block block, Integer meta, int count) {
-        super(block.getItemId(), meta == null ? null : block.getDamage(), count, block.getName());
+        super(block.getItemId(), meta == null ? null : block.getItemMeta(), count, block.getName());
         this.block = block;
     }
 
     @Override
     public void setDamage(int meta) {
+        meta &= block.getItemKeepMetaMask();
+
         super.setDamage(meta);
 
         this.block.setDamage(meta);
@@ -30,14 +31,13 @@ public class ItemBlock extends Item {
 
     @Override
     public void setDamage(Integer meta) {
+        if (meta != null) {
+            meta &= block.getItemKeepMetaMask();
+        }
+
         super.setDamage(meta);
 
         this.block.setDamage(meta);
-    }
-
-    @Override
-    public int getDefaultMeta() {
-        return block.getItemDefaultMeta();
     }
 
     @Override
@@ -47,7 +47,7 @@ public class ItemBlock extends Item {
 
     @Override
     public boolean isStackedByData() {
-        return block.isStackedByData();
+        return block.getItemKeepMetaMask() != 0;
     }
 
     @Override
@@ -89,11 +89,7 @@ public class ItemBlock extends Item {
 
     @Override
     public int getEquippingSound() {
-        if (getId() == ItemBlockID.CARVED_PUMPKIN) {
-            return LevelSoundEventPacket.SOUND_ARMOR_EQUIP_GENERIC;
-        }
-
-        return super.getEquippingSound();
+        return block.getEquippingSound();
     }
 
     @Override
@@ -134,5 +130,10 @@ public class ItemBlock extends Item {
     @Override
     public boolean isCarpet() {
         return block.isCarpet();
+    }
+
+    @Override
+    public boolean isSkull() {
+        return block.isSkull();
     }
 }

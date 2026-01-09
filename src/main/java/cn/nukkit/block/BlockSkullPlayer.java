@@ -1,12 +1,8 @@
 package cn.nukkit.block;
 
 public class BlockSkullPlayer extends BlockSkull {
-    public BlockSkullPlayer() {
-        this(0);
-    }
+    BlockSkullPlayer() {
 
-    public BlockSkullPlayer(int meta) {
-        super(meta);
     }
 
     @Override

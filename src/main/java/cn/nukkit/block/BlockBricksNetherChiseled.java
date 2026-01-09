@@ -1,7 +1,8 @@
 package cn.nukkit.block;
 
 public class BlockBricksNetherChiseled extends BlockBricksNether {
-    public BlockBricksNetherChiseled() {
+    BlockBricksNetherChiseled() {
+
     }
 
     @Override

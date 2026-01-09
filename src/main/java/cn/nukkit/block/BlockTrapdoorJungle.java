@@ -4,12 +4,8 @@ import cn.nukkit.utils.BlockColor;
 
 public class BlockTrapdoorJungle extends BlockTrapdoor {
 
-    public BlockTrapdoorJungle() {
-        this(0);
-    }
+    BlockTrapdoorJungle() {
 
-    public BlockTrapdoorJungle(int meta) {
-        super(meta);
     }
 
     @Override

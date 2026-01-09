@@ -3,57 +3,36 @@ package cn.nukkit.block;
 import cn.nukkit.Player;
 import cn.nukkit.item.Item;
 import cn.nukkit.item.ItemTool;
-import cn.nukkit.math.BlockFace;
 import cn.nukkit.utils.BlockColor;
 
-import static cn.nukkit.GameVersion.*;
-
-public class BlockPurpur extends BlockSolid {
+public class BlockPurpur extends BlockRotatedPillar {
+    public static final int[] PURPUR_BLOCKS = {
+            PURPUR_BLOCK,
+            DEPRECATED_PURPUR_BLOCK_1,
+            PURPUR_PILLAR,
+            DEPRECATED_PURPUR_BLOCK_2,
+    };
 
     public static final int NORMAL = 0;
     public static final int CHISELED = 1;
     public static final int PILLAR = 2;
     public static final int SMOOTH = 3;
 
+    @Deprecated
     public static final int TYPE_MASK = 0b11;
 
-    private static final String[] NAMES = new String[]{
-            "Purpur Block",
-            "Purpur Block",
-            "Purpur Pillar",
-            "Purpur Block"
-    };
+    BlockPurpur() {
 
-    private static final short[] FACES = new short[]{
-            0,
-            0,
-            0b1000,
-            0b1000,
-            0b0100,
-            0b0100
-    };
-
-    public BlockPurpur() {
-        this(0);
-    }
-
-    public BlockPurpur(int meta) {
-        super(meta);
     }
 
     @Override
     public String getName() {
-        return NAMES[this.getDamage() & TYPE_MASK];
+        return "Purpur Block";
     }
 
     @Override
     public int getId() {
         return PURPUR_BLOCK;
-    }
-
-    @Override
-    public boolean isStackedByData() {
-        return !V1_21_30.isAvailable();
     }
 
     @Override
@@ -72,16 +51,6 @@ public class BlockPurpur extends BlockSolid {
     }
 
     @Override
-    public boolean place(Item item, Block block, Block target, BlockFace face, float fx, float fy, float fz, Player player) {
-        if (this.getDamage() != NORMAL) {
-            this.setDamage(((this.getDamage() & TYPE_MASK) | FACES[face.getIndex()]));
-        }
-        this.getLevel().setBlock(block, this, true, true);
-
-        return true;
-    }
-
-    @Override
     public Item[] getDrops(Item item, Player player) {
         if (item.isPickaxe() && item.getTier() >= ItemTool.TIER_WOODEN) {
             return new Item[]{
@@ -90,11 +59,6 @@ public class BlockPurpur extends BlockSolid {
         } else {
             return new Item[0];
         }
-    }
-
-    @Override
-    public Item toItem(boolean addUserData) {
-        return Item.get(getItemId(), this.getDamage() & TYPE_MASK);
     }
 
     @Override

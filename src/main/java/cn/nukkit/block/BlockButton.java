@@ -18,12 +18,8 @@ public abstract class BlockButton extends BlockTransparent implements Faceable {
     public static final int FACING_DIRECTION_MASK = 0b111;
     public static final int BUTTON_PRESSED_BIT = 0b1000;
 
-    public BlockButton() {
-        this(0);
-    }
+    BlockButton() {
 
-    public BlockButton(int meta) {
-        super(meta);
     }
 
     @Override

@@ -1,6 +1,6 @@
 package cn.nukkit.item;
 
-import cn.nukkit.block.Block;
+import cn.nukkit.block.*;
 import cn.nukkit.network.protocol.LevelSoundEventPacket;
 
 import static cn.nukkit.GameVersion.*;
@@ -8,7 +8,17 @@ import static cn.nukkit.GameVersion.*;
 /**
  * Created by Snake1999 on 2016/2/3.
  * Package cn.nukkit.item in project Nukkit.
+ * @deprecated flattened
+ * @see BlockSkull
+ * @see BlockSkullSkeleton
+ * @see BlockSkullWitherSkeleton
+ * @see BlockSkullZombie
+ * @see BlockSkullPlayer
+ * @see BlockSkullCreeper
+ * @see BlockSkullDragon
+ * @see BlockSkullPiglin
  */
+@Deprecated
 public class ItemSkull extends Item {
     public static final int HEAD_SKELETON = 0;
     public static final int HEAD_WITHER_SKELETON = 1;
@@ -28,8 +38,8 @@ public class ItemSkull extends Item {
     }
 
     public ItemSkull(Integer meta, int count) {
-        super(SKULL, meta, count, getItemSkullName(meta != null ? meta : 0));
-        this.block = Block.get(Block.BLOCK_SKULL);
+        super(SKULL, meta, count, "Skull");
+//        this.block = Block.get(Block.BLOCK_SKULL);
     }
 
     @Override
@@ -42,7 +52,7 @@ public class ItemSkull extends Item {
         return LevelSoundEventPacket.SOUND_ARMOR_EQUIP_GENERIC;
     }
 
-    public static String getItemSkullName(int meta) {
+    private static String getItemSkullName(int meta) {
         switch (meta) {
             case 1:
                 return "Wither Skeleton Skull";

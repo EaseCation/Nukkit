@@ -12,12 +12,8 @@ import java.util.List;
 import java.util.concurrent.ThreadLocalRandom;
 
 public class BlockGlowLichen extends BlockMultiface {
-    public BlockGlowLichen() {
-        this(0);
-    }
+    BlockGlowLichen() {
 
-    public BlockGlowLichen(int meta) {
-        super(meta);
     }
 
     @Override

@@ -9,9 +9,6 @@ import cn.nukkit.network.protocol.LevelSoundEventPacket;
 import static cn.nukkit.GameVersion.*;
 
 public abstract class BlockHyphae extends BlockRotatedPillar {
-    protected BlockHyphae(int meta) {
-        super(meta);
-    }
 
     @Override
     public float getHardness() {

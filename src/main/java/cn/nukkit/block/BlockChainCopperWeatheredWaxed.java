@@ -1,12 +1,7 @@
 package cn.nukkit.block;
 
 public class BlockChainCopperWeatheredWaxed extends BlockChainCopperWaxed {
-    public BlockChainCopperWeatheredWaxed() {
-        this(0);
-    }
-
-    public BlockChainCopperWeatheredWaxed(int meta) {
-        super(meta);
+    BlockChainCopperWeatheredWaxed() {
 
     }
 

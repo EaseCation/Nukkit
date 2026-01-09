@@ -1,14 +1,12 @@
 package cn.nukkit.block;
 
+import cn.nukkit.item.Item;
+import cn.nukkit.item.ItemBlockID;
 import cn.nukkit.utils.BlockColor;
 
 public class BlockDoubleSlabCopperCutExposedWaxed extends BlockDoubleSlabCopperCutWaxed {
-    public BlockDoubleSlabCopperCutExposedWaxed() {
-        this(0);
-    }
+    BlockDoubleSlabCopperCutExposedWaxed() {
 
-    public BlockDoubleSlabCopperCutExposedWaxed(int meta) {
-        super(meta);
     }
 
     @Override
@@ -32,8 +30,8 @@ public class BlockDoubleSlabCopperCutExposedWaxed extends BlockDoubleSlabCopperC
     }
 
     @Override
-    protected int getSlabBlockId() {
-        return WAXED_EXPOSED_CUT_COPPER_SLAB;
+    public Item toItem(boolean addUserData) {
+        return Item.get(ItemBlockID.WAXED_EXPOSED_CUT_COPPER_SLAB);
     }
 
     @Override

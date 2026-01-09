@@ -14,12 +14,8 @@ public class BlockObserver extends BlockSolid implements Faceable {
     public static final int DIRECTION_MASK = 0x7;
     public static final int POWERED_BIT = 0x8;
 
-    public BlockObserver() {
-        this(0);
-    }
+    BlockObserver() {
 
-    public BlockObserver(int meta) {
-        super(meta);
     }
 
     @Override

@@ -1,11 +1,12 @@
 package cn.nukkit.block;
 
 import cn.nukkit.level.generator.object.tree.ObjectCrimsonTree;
-import cn.nukkit.math.NukkitRandom;
+import cn.nukkit.math.LocalRandom;
 import cn.nukkit.utils.BlockColor;
 
 public class BlockNetherFungusCrimson extends BlockNetherFungus {
-    public BlockNetherFungusCrimson() {
+    BlockNetherFungusCrimson() {
+
     }
 
     @Override
@@ -29,7 +30,7 @@ public class BlockNetherFungusCrimson extends BlockNetherFungus {
             return false;
         }
 
-        new ObjectCrimsonTree().placeObject(this.level, this.getFloorX(), this.getFloorY(), this.getFloorZ(), NukkitRandom.current());
+        new ObjectCrimsonTree().placeObject(this.level, this.getFloorX(), this.getFloorY(), this.getFloorZ(), new LocalRandom());
         return true;
     }
 }

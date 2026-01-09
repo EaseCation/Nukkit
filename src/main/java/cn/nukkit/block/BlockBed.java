@@ -32,17 +32,13 @@ public class BlockBed extends BlockTransparent implements Faceable {
     public static final int OCCUPIED_BIT = 0b100;
     public static final int HEAD_PIECE_BIT = 0b1000;
 
-    public BlockBed() {
-        this(0);
-    }
+    BlockBed() {
 
-    public BlockBed(int meta) {
-        super(meta);
     }
 
     @Override
     public int getId() {
-        return BLOCK_BED;
+        return BED;
     }
 
     @Override
@@ -106,7 +102,7 @@ public class BlockBed extends BlockTransparent implements Faceable {
         } else {
             int direction = meta & DIRECTION_MASK;
             Block pair = getSide(BlockFace.fromHorizontalIndex(direction));
-            if (pair.getId() == BLOCK_BED && (pair.getDamage() & HEAD_PIECE_BIT) != 0 && (pair.getDamage() & DIRECTION_MASK) == direction) {
+            if (pair.getId() == BED && (pair.getDamage() & HEAD_PIECE_BIT) != 0 && (pair.getDamage() & DIRECTION_MASK) == direction) {
                 b = pair;
             } else {
                 if (player != null) {
@@ -148,8 +144,8 @@ public class BlockBed extends BlockTransparent implements Faceable {
             if (head.canBeReplaced() && SupportType.hasFullSupport(head.down(), BlockFace.UP)) {
                 int meta = direction.getHorizontalIndex();
 
-                this.getLevel().setBlock(block, Block.get(BLOCK_BED, meta), true, true);
-                this.getLevel().setBlock(head, Block.get(BLOCK_BED, meta | HEAD_PIECE_BIT), true, true);
+                this.getLevel().setBlock(block, Block.get(BED, meta), true, true);
+                this.getLevel().setBlock(head, Block.get(BED, meta | HEAD_PIECE_BIT), true, true);
 
                 createBlockEntity(this, item.getDamage());
                 createBlockEntity(head, item.getDamage());
@@ -170,7 +166,7 @@ public class BlockBed extends BlockTransparent implements Faceable {
             face = face.getOpposite();
         }
         Block pair = getSide(face);
-        if (pair.getId() == BLOCK_BED && (pair.getDamage() & DIRECTION_MASK) == direction && (pair.getDamage() & HEAD_PIECE_BIT) != headPiece) {
+        if (pair.getId() == BED && (pair.getDamage() & DIRECTION_MASK) == direction && (pair.getDamage() & HEAD_PIECE_BIT) != headPiece) {
             this.getLevel().setBlock(pair, Block.get(BlockID.AIR), true, false);
         }
 

@@ -3,12 +3,8 @@ package cn.nukkit.block;
 import cn.nukkit.utils.BlockColor;
 
 public class BlockFungusStemStrippedWarped extends BlockFungusStemStripped {
-    public BlockFungusStemStrippedWarped() {
-        this(0);
-    }
+    BlockFungusStemStrippedWarped() {
 
-    public BlockFungusStemStrippedWarped(int meta) {
-        super(meta);
     }
 
     @Override

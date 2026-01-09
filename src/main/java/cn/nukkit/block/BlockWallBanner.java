@@ -9,12 +9,8 @@ import cn.nukkit.math.BlockFace;
  */
 public class BlockWallBanner extends BlockBanner {
 
-    public BlockWallBanner() {
-        this(0);
-    }
+    BlockWallBanner() {
 
-    public BlockWallBanner(int meta) {
-        super(meta);
     }
 
     @Override

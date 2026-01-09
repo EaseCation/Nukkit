@@ -1,14 +1,11 @@
 package cn.nukkit.block;
 
 import cn.nukkit.item.Item;
+import cn.nukkit.item.ItemBlockID;
 
 public class BlockLeavesAzaleaFlowered extends BlockLeavesAzalea {
-    public BlockLeavesAzaleaFlowered() {
-        this(0);
-    }
+    BlockLeavesAzaleaFlowered() {
 
-    public BlockLeavesAzaleaFlowered(int meta) {
-        super(meta);
     }
 
     @Override
@@ -22,6 +19,6 @@ public class BlockLeavesAzaleaFlowered extends BlockLeavesAzalea {
 
     @Override
     protected Item getSapling() {
-        return Item.get(getItemId(FLOWERING_AZALEA));
+        return Item.get(ItemBlockID.FLOWERING_AZALEA);
     }
 }

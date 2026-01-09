@@ -6,12 +6,8 @@ import cn.nukkit.math.BlockFace;
 
 public class BlockTrappedChest extends BlockChest {
 
-    public BlockTrappedChest() {
-        this(0);
-    }
+    BlockTrappedChest() {
 
-    public BlockTrappedChest(int meta) {
-        super(meta);
     }
 
     @Override

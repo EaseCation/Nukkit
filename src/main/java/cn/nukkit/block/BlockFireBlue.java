@@ -5,12 +5,8 @@ import cn.nukkit.level.Level;
 import cn.nukkit.utils.BlockColor;
 
 public class BlockFireBlue extends BlockFire {
-    public BlockFireBlue() {
-        this(0);
-    }
+    BlockFireBlue() {
 
-    public BlockFireBlue(int meta) {
-        super(meta);
     }
 
     @Override

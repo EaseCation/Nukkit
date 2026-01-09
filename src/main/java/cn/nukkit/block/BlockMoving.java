@@ -6,7 +6,8 @@ import cn.nukkit.math.BlockFace;
 
 public class BlockMoving extends BlockTransparent {
 
-    public BlockMoving() {
+    BlockMoving() {
+
     }
 
     @Override

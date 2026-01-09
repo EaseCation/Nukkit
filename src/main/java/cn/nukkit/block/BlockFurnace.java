@@ -6,12 +6,8 @@ package cn.nukkit.block;
  */
 public class BlockFurnace extends BlockFurnaceBurning {
 
-    public BlockFurnace() {
-        this(0);
-    }
+    BlockFurnace() {
 
-    public BlockFurnace(int meta) {
-        super(meta);
     }
 
     @Override

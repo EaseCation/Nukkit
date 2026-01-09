@@ -1,5 +1,6 @@
 package cn.nukkit.level.biome.type;
 
+import cn.nukkit.block.Block;
 import cn.nukkit.block.BlockDoublePlant;
 import cn.nukkit.level.generator.populator.impl.PopulatorDoublePlant;
 import cn.nukkit.level.generator.populator.impl.PopulatorGrass;
@@ -14,7 +15,7 @@ public abstract class GrassyBiome extends CoveredBiome {
         grass.setBaseAmount(30);
         this.addPopulator(grass);
 
-        PopulatorDoublePlant tallGrass = new PopulatorDoublePlant(BlockDoublePlant.TYPE_TALL_GRASS);
+        PopulatorDoublePlant tallGrass = new PopulatorDoublePlant(Block.TALL_GRASS);
         tallGrass.setBaseAmount(5);
         this.addPopulator(tallGrass);
     }

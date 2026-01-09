@@ -5,12 +5,8 @@ import cn.nukkit.utils.BlockColor;
 
 public class BlockDoorBirch extends BlockDoorWood {
 
-    public BlockDoorBirch() {
-        this(0);
-    }
+    BlockDoorBirch() {
 
-    public BlockDoorBirch(int meta) {
-        super(meta);
     }
 
     @Override
@@ -20,7 +16,7 @@ public class BlockDoorBirch extends BlockDoorWood {
 
     @Override
     public int getId() {
-        return BLOCK_BIRCH_DOOR;
+        return BIRCH_DOOR;
     }
 
     @Override

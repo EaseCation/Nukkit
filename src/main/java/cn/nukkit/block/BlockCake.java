@@ -15,12 +15,8 @@ import javax.annotation.Nullable;
  */
 public class BlockCake extends BlockTransparent {
 
-    public BlockCake(int meta) {
-        super(meta);
-    }
+    BlockCake() {
 
-    public BlockCake() {
-        this(0);
     }
 
     @Override
@@ -30,7 +26,7 @@ public class BlockCake extends BlockTransparent {
 
     @Override
     public int getId() {
-        return BLOCK_CAKE;
+        return CAKE;
     }
 
     @Override

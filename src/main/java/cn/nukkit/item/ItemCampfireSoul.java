@@ -14,6 +14,6 @@ public class ItemCampfireSoul extends Item {
 
     public ItemCampfireSoul(Integer meta, int count) {
         super(SOUL_CAMPFIRE, meta, count, "Soul Campfire");
-        this.block = Block.get(BlockID.BLOCK_SOUL_CAMPFIRE);
+        this.block = Block.get(BlockID.SOUL_CAMPFIRE);
     }
 }

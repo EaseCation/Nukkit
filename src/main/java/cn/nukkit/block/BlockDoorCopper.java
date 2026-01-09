@@ -7,12 +7,8 @@ import cn.nukkit.math.BlockFace;
 import cn.nukkit.utils.BlockColor;
 
 public class BlockDoorCopper extends BlockDoor implements CopperBehavior {
-    public BlockDoorCopper() {
-        this(0);
-    }
+    BlockDoorCopper() {
 
-    public BlockDoorCopper(int meta) {
-        super(meta);
     }
 
     @Override
@@ -47,7 +43,7 @@ public class BlockDoorCopper extends BlockDoor implements CopperBehavior {
 
     @Override
     public Item toItem(boolean addUserData) {
-        return Item.get(getItemId(), getItemDefaultMeta());
+        return Item.get(getItemId(), getItemMeta());
     }
 
     @Override

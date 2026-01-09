@@ -4,12 +4,8 @@ import cn.nukkit.utils.BlockColor;
 
 public class BlockLogStrippedAcacia extends BlockLogStripped {
 
-    public BlockLogStrippedAcacia() {
-        this(0);
-    }
+    BlockLogStrippedAcacia() {
 
-    public BlockLogStrippedAcacia(int meta) {
-        super(meta);
     }
 
     @Override

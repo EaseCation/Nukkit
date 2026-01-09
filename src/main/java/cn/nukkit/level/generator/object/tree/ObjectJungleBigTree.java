@@ -5,14 +5,14 @@ import cn.nukkit.block.BlockID;
 import cn.nukkit.level.ChunkManager;
 import cn.nukkit.math.BlockVector3;
 import cn.nukkit.math.Mth;
-import cn.nukkit.math.NukkitRandom;
+import cn.nukkit.math.RandomSource;
 
 public class ObjectJungleBigTree extends HugeTreesGenerator {
     public ObjectJungleBigTree(int baseHeightIn, int extraRandomHeight, Block woodMetadata, Block leavesMetadata) {
         super(baseHeightIn, extraRandomHeight, woodMetadata, leavesMetadata);
     }
 
-    public boolean generate(ChunkManager level, NukkitRandom rand, BlockVector3 position) {
+    public boolean generate(ChunkManager level, RandomSource rand, BlockVector3 position) {
         int height = this.getHeight(rand);
 
         if (!this.ensureGrowable(level, rand, position, height)) {
@@ -91,7 +91,7 @@ public class ObjectJungleBigTree extends HugeTreesGenerator {
         }
     }
 
-    private void placeVine(ChunkManager level, NukkitRandom random, BlockVector3 pos, int meta) {
+    private void placeVine(ChunkManager level, RandomSource random, BlockVector3 pos, int meta) {
         if (random.nextBoundedInt(3) > 0 && level.getBlockIdAt(0, pos.x, pos.y, pos.z) == 0) {
             this.setBlockAndNotifyAdequately(level, pos, Block.get(BlockID.VINE, meta));
         }

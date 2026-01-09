@@ -4,6 +4,7 @@ import cn.nukkit.GameVersion;
 import cn.nukkit.entity.attribute.Attribute;
 import cn.nukkit.entity.attribute.AttributeModifier;
 import cn.nukkit.entity.attribute.AttributeModifiers;
+import cn.nukkit.network.protocol.LevelSoundEventPacket;
 import it.unimi.dsi.fastutil.ints.Int2ObjectMaps;
 import it.unimi.dsi.fastutil.objects.Object2ObjectOpenHashMap;
 
@@ -60,17 +61,17 @@ public final class Effects {
 
         registerEffect(SLOW_FALLING, new Effect(SLOW_FALLING, EffectNames.SLOW_FALLING, "%potion.slowFalling", ENABLE_NEW_EFFECT_COLOR ? 243 : 206, ENABLE_NEW_EFFECT_COLOR ? 207 : 255, ENABLE_NEW_EFFECT_COLOR ? 185 : 255), V1_6_0);
 
-        registerEffect(BAD_OMEN, new Effect(BAD_OMEN, EffectNames.BAD_OMEN, "%effect.badOmen", 11, 97, 56).setVisible(false), V1_11_0);
+        registerEffect(BAD_OMEN, new Effect(BAD_OMEN, EffectNames.BAD_OMEN, "%effect.badOmen", 11, 97, 56).setVisible(false).setSoundEvent(LevelSoundEventPacket.SOUND_APPLY_EFFECT_BAD_OMEN), V1_11_0);
         registerEffect(VILLAGE_HERO, new Effect(VILLAGE_HERO, EffectNames.VILLAGE_HERO, "%effect.villageHero", 68, 255, 68), V1_11_0);
 
         registerEffect(DARKNESS, new Effect(DARKNESS, EffectNames.DARKNESS, "%effect.darkness", 41, 39, 33).setVisible(false), V1_19_0);
 
-        registerEffect(TRIAL_OMEN, new Effect(TRIAL_OMEN, EffectNames.TRIAL_OMEN, "%effect.trial_omen", 22, 166, 166), V1_21_0);
+        registerEffect(TRIAL_OMEN, new Effect(TRIAL_OMEN, EffectNames.TRIAL_OMEN, "%effect.trial_omen", 22, 166, 166).setSoundEvent(LevelSoundEventPacket.SOUND_APPLY_EFFECT_TRIAL_OMEN), V1_21_0);
         registerEffect(WIND_CHARGED, new Effect(WIND_CHARGED, EffectNames.WIND_CHARGED, "%effect.wind_charged", 189, 201, 255, true), V1_21_0);
         registerEffect(WEAVING, new Effect(WEAVING, EffectNames.WEAVING, "%effect.weaving", 120, 105, 90, true), V1_21_0);
         registerEffect(OOZING, new Effect(OOZING, EffectNames.OOZING, "%effect.oozing", 153, 255, 163, true), V1_21_0);
         registerEffect(INFESTED, new Effect(INFESTED, EffectNames.INFESTED, "%effect.infested", 140, 155, 140, true), V1_21_0);
-        registerEffect(RAID_OMEN, new Effect(RAID_OMEN, EffectNames.RAID_OMEN, "%effect.raid_omen", 222, 64, 88), V1_21_0);
+        registerEffect(RAID_OMEN, new Effect(RAID_OMEN, EffectNames.RAID_OMEN, "%effect.raid_omen", 222, 64, 88).setSoundEvent(LevelSoundEventPacket.SOUND_APPLY_EFFECT_RAID_OMEN), V1_21_0);
 
         registerEffect(BREATH_OF_THE_NAUTILUS, new Effect(BREATH_OF_THE_NAUTILUS, EffectNames.BREATH_OF_THE_NAUTILUS, "%effect.customNautilus", 0, 255, 238), V1_21_130);
 

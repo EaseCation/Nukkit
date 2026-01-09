@@ -16,12 +16,8 @@ import cn.nukkit.utils.Faceable;
  */
 public class BlockTripWireHook extends BlockTransparent implements Faceable {
 
-    public BlockTripWireHook() {
-        this(0);
-    }
+    BlockTripWireHook() {
 
-    public BlockTripWireHook(int meta) {
-        super(meta);
     }
 
     @Override
@@ -176,7 +172,6 @@ public class BlockTripWireHook extends BlockTransparent implements Faceable {
         BlockTripWireHook hook = (BlockTripWireHook) Block.get(BlockID.TRIPWIRE_HOOK);
         hook.setAttached(canConnect);
         hook.setPowered(nextPowered);
-
 
         if (distance > 0) {
             Vector3 vec = this.getSideVec(facing, distance);

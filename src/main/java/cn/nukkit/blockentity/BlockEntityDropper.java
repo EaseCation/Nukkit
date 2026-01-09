@@ -36,7 +36,7 @@ public class BlockEntityDropper extends BlockEntityAbstractContainer {
     }
 
     @Override
-    public CompoundTag getSpawnCompound() {
+    public CompoundTag getSpawnCompound(boolean chunkData) {
         CompoundTag nbt = getDefaultCompound(this, DROPPER);
 
         if (this.hasName()) {

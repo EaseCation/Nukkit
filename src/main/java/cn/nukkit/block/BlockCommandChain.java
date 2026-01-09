@@ -4,12 +4,8 @@ import cn.nukkit.utils.BlockColor;
 
 public class BlockCommandChain extends BlockCommand {
 
-    public BlockCommandChain() {
-        this(0);
-    }
+    BlockCommandChain() {
 
-    public BlockCommandChain(int meta) {
-        super(meta);
     }
 
     @Override

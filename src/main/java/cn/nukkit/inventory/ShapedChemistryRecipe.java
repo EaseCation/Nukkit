@@ -20,4 +20,9 @@ public class ShapedChemistryRecipe extends ShapedRecipe {
     public RecipeType getType() {
         return RecipeType.SHAPED_CHEMISTRY;
     }
+
+    @Override
+    public boolean isAssumeSymmetry() {
+        return false;
+    }
 }

@@ -2,7 +2,7 @@ package cn.nukkit.level.generator.object.tree;
 
 import cn.nukkit.block.Block;
 import cn.nukkit.level.ChunkManager;
-import cn.nukkit.math.NukkitRandom;
+import cn.nukkit.math.RandomSource;
 
 /**
  * author: DaPorkchop_
@@ -18,7 +18,7 @@ public class ObjectBigSpruceTree extends ObjectSpruceTree {
     }
 
     @Override
-    public void placeObject(ChunkManager level, int x, int y, int z, NukkitRandom random) {
+    public void placeObject(ChunkManager level, int x, int y, int z, RandomSource random) {
         this.treeHeight = random.nextBoundedInt(15) + 20;
 
         if (!level.getHeightRange().isValidBlockY(y + treeHeight)) {
@@ -34,7 +34,7 @@ public class ObjectBigSpruceTree extends ObjectSpruceTree {
     }
 
     @Override
-    protected int placeTrunk(ChunkManager level, int x, int y, int z, NukkitRandom random, int trunkHeight) {
+    protected int placeTrunk(ChunkManager level, int x, int y, int z, RandomSource random, int trunkHeight) {
         int lowest = Integer.MIN_VALUE;
 
         // The base dirt block
@@ -60,7 +60,7 @@ public class ObjectBigSpruceTree extends ObjectSpruceTree {
     }
 
     @Override
-    public void placeLeaves(ChunkManager level, int topSize, int lRadius, int x, int y, int z, NukkitRandom random) {
+    public void placeLeaves(ChunkManager level, int topSize, int lRadius, int x, int y, int z, RandomSource random) {
         int radius = random.nextBoundedInt(2);
         int maxR = 1;
         int minR = 0;
