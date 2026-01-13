@@ -28,4 +28,9 @@ public class BlockDoubleSlabPurpur extends BlockDoubleSlabStone {
     public Item toItem(boolean addUserData) {
         return Item.get(ItemBlockID.PURPUR_SLAB);
     }
+
+    @Override
+    public String getDescriptionId() {
+        return "tile.double_stone_slab2.purpur.name";
+    }
 }

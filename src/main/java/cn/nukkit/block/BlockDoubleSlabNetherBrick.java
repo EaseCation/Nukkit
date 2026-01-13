@@ -28,4 +28,9 @@ public class BlockDoubleSlabNetherBrick extends BlockDoubleSlabStone {
     public Item toItem(boolean addUserData) {
         return Item.get(ItemBlockID.NETHER_BRICK_SLAB);
     }
+
+    @Override
+    public String getDescriptionId() {
+        return "tile.double_stone_slab.nether_brick.name";
+    }
 }

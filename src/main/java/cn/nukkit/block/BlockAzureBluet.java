@@ -14,4 +14,9 @@ public class BlockAzureBluet extends BlockFlower {
     public String getName() {
         return "Azure Bluet";
     }
+
+    @Override
+    public String getDescriptionId() {
+        return "tile.red_flower.houstonia.name";
+    }
 }

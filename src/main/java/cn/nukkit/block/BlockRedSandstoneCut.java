@@ -14,4 +14,9 @@ public class BlockRedSandstoneCut extends BlockRedSandstone {
     public String getName() {
         return "Cut Red Sandstone";
     }
+
+    @Override
+    public String getDescriptionId() {
+        return "tile.red_sandstone.cut.name";
+    }
 }

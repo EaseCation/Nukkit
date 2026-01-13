@@ -22,4 +22,9 @@ public class BlockSaplingOak extends BlockSapling {
     protected void grow() {
         ObjectTree.growTree(level, getFloorX(), getFloorY(), getFloorZ(), new LocalRandom(), OAK);
     }
+
+    @Override
+    public String getDescriptionId() {
+        return "tile.sapling.oak.name";
+    }
 }

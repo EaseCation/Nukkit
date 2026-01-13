@@ -29,4 +29,9 @@ public class BlockFern extends BlockGrassShort {
     protected int getDoublePlantBlockId() {
         return LARGE_FERN;
     }
+
+    @Override
+    public String getDescriptionId() {
+        return "tile.tallgrass.fern.name";
+    }
 }

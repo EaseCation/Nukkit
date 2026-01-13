@@ -21,6 +21,11 @@ public class BlockPodzol extends BlockDirt {
     }
 
     @Override
+    public String getDescriptionId() {
+        return "tile." + getShortName() + ".name";
+    }
+
+    @Override
     public String getName() {
         return "Podzol";
     }

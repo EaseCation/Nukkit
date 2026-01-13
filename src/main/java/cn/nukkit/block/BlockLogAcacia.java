@@ -26,4 +26,9 @@ public class BlockLogAcacia extends BlockLog {
     protected Block getStrippedBlock() {
         return get(STRIPPED_ACACIA_LOG, getDamage());
     }
+
+    @Override
+    public String getDescriptionId() {
+        return "tile.log.acacia.name";
+    }
 }

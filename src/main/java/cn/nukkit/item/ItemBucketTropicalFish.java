@@ -17,6 +17,11 @@ public class ItemBucketTropicalFish extends ItemBucketWater {
     }
 
     @Override
+    public String getDescriptionId() {
+        return "item.bucketTropical.name";
+    }
+
+    @Override
     protected EntityFactory getEntityFactory() {
         return EntityTropicalFish::new;
     }

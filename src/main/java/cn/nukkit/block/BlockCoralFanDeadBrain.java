@@ -19,4 +19,9 @@ public class BlockCoralFanDeadBrain extends BlockCoralFanDead {
     protected int getWallBlockId(boolean dead) {
         return DEAD_BRAIN_CORAL_WALL_FAN;
     }
+
+    @Override
+    public String getDescriptionId() {
+        return "tile.coral_fan_dead.pink_fan.name";
+    }
 }

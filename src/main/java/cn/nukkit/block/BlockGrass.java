@@ -40,6 +40,11 @@ public class BlockGrass extends BlockDirt {
     }
 
     @Override
+    public String getDescriptionId() {
+        return "tile.grass.name";
+    }
+
+    @Override
     public String getName() {
         return "Grass Block";
     }

@@ -19,6 +19,11 @@ public class ItemBucketMilk extends ItemEdible {
     }
 
     @Override
+    public String getDescriptionId() {
+        return "item.milk.name";
+    }
+
+    @Override
     public int getMaxStackSize() {
         return 1;
     }

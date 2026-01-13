@@ -26,4 +26,9 @@ public class BlockLogBirch extends BlockLog {
     protected Block getStrippedBlock() {
         return get(STRIPPED_BIRCH_LOG, getDamage());
     }
+
+    @Override
+    public String getDescriptionId() {
+        return "tile.log.birch.name";
+    }
 }

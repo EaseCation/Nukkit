@@ -14,4 +14,9 @@ public class BlockPurpurChiseled extends BlockPurpur {
     public String getName() {
         return "Chiseled Purpur";
     }
+
+    @Override
+    public String getDescriptionId() {
+        return "tile.purpur_block.chiseled.name";
+    }
 }

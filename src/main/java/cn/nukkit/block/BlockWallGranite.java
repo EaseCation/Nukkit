@@ -54,4 +54,9 @@ public class BlockWallGranite extends BlockWall {
     public BlockColor getColor() {
         return BlockColor.DIRT_BLOCK_COLOR;
     }
+
+    @Override
+    public String getDescriptionId() {
+        return "tile.cobblestone_wall.granite.name";
+    }
 }

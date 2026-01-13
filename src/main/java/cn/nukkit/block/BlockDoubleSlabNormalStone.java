@@ -28,4 +28,9 @@ public class BlockDoubleSlabNormalStone extends BlockDoubleSlabStone {
     public Item toItem(boolean addUserData) {
         return Item.get(ItemBlockID.NORMAL_STONE_SLAB);
     }
+
+    @Override
+    public String getDescriptionId() {
+        return "tile.double_stone_slab4.stone.name";
+    }
 }

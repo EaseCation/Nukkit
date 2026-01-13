@@ -37,8 +37,26 @@ public abstract class ItemBoat extends Item {
             PALE_OAK_BOAT,
     };
 
+    private static final String[] WOOD_TYPE_NAMES = {
+            "oak",
+            "spruce",
+            "birch",
+            "jungle",
+            "acacia",
+            "big_oak",
+            "mangrove",
+            "bamboo",
+            "cherry",
+            "pale_oak",
+    };
+
     protected ItemBoat(int id, Integer meta, int count, String name) {
         super(id, meta, count, name);
+    }
+
+    @Override
+    public String getDescriptionId() {
+        return "item.boat." + getWoodTypeName() + ".name";
     }
 
     @Override
@@ -94,6 +112,14 @@ public abstract class ItemBoat extends Item {
     @Override
     public boolean isBoat() {
         return true;
+    }
+
+    protected String getWoodTypeName() {
+        int type = getBoatType();
+        if (type >= 0 && type < WOOD_TYPE_NAMES.length) {
+            return WOOD_TYPE_NAMES[type];
+        }
+        return WOOD_TYPE_NAMES[OAK];
     }
 
     public abstract int getBoatType();

@@ -3275,6 +3275,9 @@ public class Player extends EntityHuman implements CommandSender, InventoryHolde
                         return;
                     }
                     item = block.pick(pickRequestPacket.addUserData);
+                    if (item.isNull()) {
+                        return;
+                    }
 
                     if (pickRequestPacket.addUserData) {
                         BlockEntity blockEntity = this.getLevel().getBlockEntityIfLoaded(pickRequestPacket.x, pickRequestPacket.y, pickRequestPacket.z);
@@ -3298,8 +3301,8 @@ public class Player extends EntityHuman implements CommandSender, InventoryHolde
                         item = pickEvent.getItem();
 
                         GUIDataPickItemPacket pk = new GUIDataPickItemPacket();
-                        pk.itemName = item.getName();
-                        pk.itemEffectName = "";
+                        pk.itemName = item.getDescriptionId();
+                        pk.itemEffectName = item.getEffectDescriptionName();
 
                         boolean itemExists = false;
                         int itemSlot = -1;

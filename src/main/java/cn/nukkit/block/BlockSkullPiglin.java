@@ -14,4 +14,9 @@ public class BlockSkullPiglin extends BlockSkull {
     public String getName() {
         return "Piglin Head";
     }
+
+    @Override
+    public String getDescriptionId() {
+        return "item.skull.piglin.name";
+    }
 }

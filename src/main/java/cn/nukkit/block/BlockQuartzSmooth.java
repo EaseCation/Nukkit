@@ -29,4 +29,9 @@ public class BlockQuartzSmooth extends BlockQuartz {
     public float getFurnaceXpMultiplier() {
         return 0.1f;
     }
+
+    @Override
+    public String getDescriptionId() {
+        return "tile.quartz_block.smooth.name";
+    }
 }

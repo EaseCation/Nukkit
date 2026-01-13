@@ -33,4 +33,9 @@ public class BlockDoubleSlabDiorite extends BlockDoubleSlabStone {
     public Item toItem(boolean addUserData) {
         return Item.get(ItemBlockID.DIORITE_SLAB);
     }
+
+    @Override
+    public String getDescriptionId() {
+        return "tile.double_stone_slab3.diorite.name";
+    }
 }

@@ -14,4 +14,9 @@ public class BlockRoseBush extends BlockDoublePlant {
     public String getName() {
         return "Rose Bush";
     }
+
+    @Override
+    public String getDescriptionId() {
+        return "tile.double_plant.rose.name";
+    }
 }

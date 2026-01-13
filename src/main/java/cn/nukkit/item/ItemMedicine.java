@@ -11,6 +11,13 @@ public class ItemMedicine extends ItemEdible {
     public static final int ANTIDOTE = 2;
     public static final int ELIXIR = 3;
 
+    private static final String[] MEDICINE_TYPE_NAMES = {
+            "blindness",
+            "nausea",
+            "poison",
+            "weakness",
+    };
+
     private static final String[] NAMES = {
             "Eye Drops",
             "Tonic",
@@ -28,6 +35,15 @@ public class ItemMedicine extends ItemEdible {
 
     public ItemMedicine(Integer meta, int count) {
         super(MEDICINE, meta, count, NAMES[meta != null ? meta & 0x3 : 0]);
+    }
+
+    @Override
+    public String getDescriptionId() {
+        int type = getDamage();
+        if (type >= 0 && type < MEDICINE_TYPE_NAMES.length) {
+            return "item.medicine." + MEDICINE_TYPE_NAMES[type] + ".name";
+        }
+        return "item.medicine.blindness.name";
     }
 
     @Override

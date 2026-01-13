@@ -19,4 +19,9 @@ public class BlockAnvilDamaged extends BlockAnvil {
     public int getDamagedBlockId() {
         return AIR;
     }
+
+    @Override
+    public String getDescriptionId() {
+        return "tile.anvil.veryDamaged.name";
+    }
 }

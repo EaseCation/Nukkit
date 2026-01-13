@@ -14,4 +14,9 @@ public class BlockElementConstructor extends BlockChemistryTable {
     public String getName() {
         return "Element Constructor";
     }
+
+    @Override
+    public String getDescriptionId() {
+        return "tile.elementconstructor.name";
+    }
 }

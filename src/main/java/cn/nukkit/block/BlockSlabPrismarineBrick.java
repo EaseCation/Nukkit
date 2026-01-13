@@ -31,4 +31,9 @@ public class BlockSlabPrismarineBrick extends BlockSlabStone {
     protected int getDoubleSlabBlockId() {
         return PRISMARINE_BRICK_DOUBLE_SLAB;
     }
+
+    @Override
+    public String getDescriptionId() {
+        return "tile.stone_slab2.prismarine.bricks.name";
+    }
 }

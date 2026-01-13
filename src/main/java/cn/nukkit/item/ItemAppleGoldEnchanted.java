@@ -24,4 +24,9 @@ public class ItemAppleGoldEnchanted extends ItemEdible {
     public boolean onClickAir(Player player, Vector3 directionVector) {
         return true;
     }
+
+    @Override
+    public String getDescriptionId() {
+        return "item.appleEnchanted.name";
+    }
 }

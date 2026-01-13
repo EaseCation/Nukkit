@@ -17,6 +17,11 @@ public class ItemBucketSalmon extends ItemBucketWater {
     }
 
     @Override
+    public String getDescriptionId() {
+        return "item.bucketSalmon.name";
+    }
+
+    @Override
     protected EntityFactory getEntityFactory() {
         return EntitySalmon::new;
     }

@@ -24,6 +24,11 @@ public class ItemPotionSplash extends ProjectileItem {
     }
 
     @Override
+    public String getDescriptionId() {
+        return "potion." + ItemPotion.getPotionTypeName(getPotionId()) + ".splash.name";
+    }
+
+    @Override
     public boolean isStackedByData() {
         return true;
     }

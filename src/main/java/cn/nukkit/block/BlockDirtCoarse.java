@@ -19,4 +19,9 @@ public class BlockDirtCoarse extends BlockDirt {
     protected int getHoedBlockId() {
         return DIRT;
     }
+
+    @Override
+    public String getDescriptionId() {
+        return "tile.dirt.coarse.name";
+    }
 }

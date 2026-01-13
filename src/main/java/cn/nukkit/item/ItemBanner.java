@@ -1,7 +1,6 @@
 package cn.nukkit.item;
 
 import cn.nukkit.block.Block;
-import cn.nukkit.blockentity.BlockEntityBanner;
 import cn.nukkit.nbt.tag.CompoundTag;
 import cn.nukkit.nbt.tag.ListTag;
 import cn.nukkit.utils.BannerPattern;
@@ -25,6 +24,14 @@ public class ItemBanner extends Item {
     public ItemBanner(Integer meta, int count) {
         super(BANNER, meta, count, DyeColor.getByWoolData(meta != null ? meta : 0).getName() + " Banner");
         this.block = Block.get(Block.STANDING_BANNER);
+    }
+
+    @Override
+    public String getDescriptionId() {
+        if (getType() == TYPE_ILLAGER) {
+            return "item.banner.illager_captain.name";
+        }
+        return "item.banner." + getColor().getDescriptionName() + ".name";
     }
 
     @Override
@@ -53,7 +60,7 @@ public class ItemBanner extends Item {
     public int getType() {
         CompoundTag tag = this.getNamedTag();
         if (tag == null) {
-            return BlockEntityBanner.TYPE_DEFAULT;
+            return TYPE_NORMAL;
         }
         return tag.getInt("Type");
     }
@@ -65,7 +72,7 @@ public class ItemBanner extends Item {
     }
 
     public boolean isDefaultBanner() {
-        return getType() == BlockEntityBanner.TYPE_DEFAULT;
+        return getType() == TYPE_NORMAL;
     }
 
     public void addPattern(BannerPattern pattern) {

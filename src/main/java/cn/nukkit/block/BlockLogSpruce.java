@@ -26,4 +26,9 @@ public class BlockLogSpruce extends BlockLog {
     protected Block getStrippedBlock() {
         return get(STRIPPED_SPRUCE_LOG, getDamage());
     }
+
+    @Override
+    public String getDescriptionId() {
+        return "tile.log.spruce.name";
+    }
 }

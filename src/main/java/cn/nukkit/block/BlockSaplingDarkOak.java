@@ -49,4 +49,9 @@ public class BlockSaplingDarkOak extends BlockSapling {
             level.setBlock(add(x + 1, 0, z + 1), clone(), true, false);
         }
     }
+
+    @Override
+    public String getDescriptionId() {
+        return "tile.sapling.big_oak.name";
+    }
 }

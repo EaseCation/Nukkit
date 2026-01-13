@@ -26,4 +26,9 @@ public class BlockSlabBirch extends BlockSlabWood {
     protected int getDoubleSlabBlockId() {
         return BIRCH_DOUBLE_SLAB;
     }
+
+    @Override
+    public String getDescriptionId() {
+        return "tile.wooden_slab.birch.name";
+    }
 }

@@ -40,6 +40,11 @@ public abstract class CustomBlock extends Block {
     }
 
     @Override
+    public String getDescriptionId() {
+        return "tile." + getFullName() + ".name";
+    }
+
+    @Override
     public final boolean isBlockItem() {
         return true;
     }

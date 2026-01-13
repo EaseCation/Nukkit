@@ -1,6 +1,7 @@
 package cn.nukkit.item;
 
 import cn.nukkit.network.protocol.LevelSoundEventPacket;
+import cn.nukkit.potion.Potion;
 
 /**
  * author: MagicDroidX
@@ -20,6 +21,22 @@ public class ItemArrow extends Item {
 
     public ItemArrow(Integer meta, int count) {
         super(ARROW, meta, count, "Arrow");
+    }
+
+    @Override
+    public String getDescriptionId() {
+        if (!isTipped()) {
+            return "item.arrow.name";
+        }
+        int potionId = getPotionId();
+        if (potionId == Potion.WATER) {
+            return "tipped_arrow.effect.water";
+        }
+        Potion potion = Potion.getPotion(potionId);
+        if (potion == null) {
+            return "tipped_arrow.effect.empty";
+        }
+        return "tipped_arrow.effect." + potion.getName();
     }
 
     @Override

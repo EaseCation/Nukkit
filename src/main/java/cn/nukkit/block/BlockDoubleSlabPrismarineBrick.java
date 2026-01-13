@@ -33,4 +33,9 @@ public class BlockDoubleSlabPrismarineBrick extends BlockDoubleSlabStone {
     public Item toItem(boolean addUserData) {
         return Item.get(ItemBlockID.PRISMARINE_BRICK_SLAB);
     }
+
+    @Override
+    public String getDescriptionId() {
+        return "tile.double_stone_slab2.prismarine.bricks.name";
+    }
 }

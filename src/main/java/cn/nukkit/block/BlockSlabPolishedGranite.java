@@ -31,4 +31,9 @@ public class BlockSlabPolishedGranite extends BlockSlabStone {
     protected int getDoubleSlabBlockId() {
         return POLISHED_GRANITE_DOUBLE_SLAB;
     }
+
+    @Override
+    public String getDescriptionId() {
+        return "tile.stone_slab3.granite.smooth.name";
+    }
 }

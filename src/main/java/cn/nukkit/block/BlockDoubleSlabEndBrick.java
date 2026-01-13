@@ -38,4 +38,9 @@ public class BlockDoubleSlabEndBrick extends BlockDoubleSlabStone {
     public Item toItem(boolean addUserData) {
         return Item.get(ItemBlockID.END_STONE_BRICK_SLAB);
     }
+
+    @Override
+    public String getDescriptionId() {
+        return "tile.double_stone_slab3.end_brick.name";
+    }
 }

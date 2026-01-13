@@ -17,6 +17,11 @@ public class ItemBucketAxolotl extends ItemBucketWater {
     }
 
     @Override
+    public String getDescriptionId() {
+        return "item.bucketAxolotl.name";
+    }
+
+    @Override
     protected EntityFactory getEntityFactory() {
         return EntityAxolotl::new;
     }

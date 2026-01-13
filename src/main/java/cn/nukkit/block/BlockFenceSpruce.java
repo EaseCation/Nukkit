@@ -21,4 +21,9 @@ public class BlockFenceSpruce extends BlockFence {
     public BlockColor getColor() {
         return BlockColor.PODZOL_BLOCK_COLOR;
     }
+
+    @Override
+    public String getDescriptionId() {
+        return "tile.spruceFence.name";
+    }
 }

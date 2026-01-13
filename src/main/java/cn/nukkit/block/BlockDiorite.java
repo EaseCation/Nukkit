@@ -21,4 +21,9 @@ public class BlockDiorite extends BlockStoneAbstract {
     public BlockColor getColor() {
         return BlockColor.QUARTZ_BLOCK_COLOR;
     }
+
+    @Override
+    public String getDescriptionId() {
+        return "tile.stone.diorite.name";
+    }
 }

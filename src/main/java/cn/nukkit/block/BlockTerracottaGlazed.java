@@ -4,6 +4,7 @@ import cn.nukkit.Player;
 import cn.nukkit.item.Item;
 import cn.nukkit.item.ItemTool;
 import cn.nukkit.math.BlockFace;
+import cn.nukkit.utils.DyeColor;
 import cn.nukkit.utils.Faceable;
 
 /**
@@ -82,5 +83,12 @@ public abstract class BlockTerracottaGlazed extends BlockSolid implements Faceab
     @Override
     public float getFurnaceXpMultiplier() {
         return 0.1f;
+    }
+
+    public abstract DyeColor getDyeColor();
+
+    @Override
+    public String getDescriptionId() {
+        return "tile.glazedTerracotta" + getDyeColor().getDescriptionNamePascalCase() + ".name";
     }
 }

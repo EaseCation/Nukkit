@@ -17,6 +17,11 @@ public class ItemBucketPufferfish extends ItemBucketWater {
     }
 
     @Override
+    public String getDescriptionId() {
+        return "item.bucketPuffer.name";
+    }
+
+    @Override
     protected EntityFactory getEntityFactory() {
         return EntityPufferfish::new;
     }

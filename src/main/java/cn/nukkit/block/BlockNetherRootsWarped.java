@@ -13,6 +13,11 @@ public class BlockNetherRootsWarped extends BlockNetherRoots {
     }
 
     @Override
+    public String getDescriptionId() {
+        return "tile.warped_roots.warpedRoots.name";
+    }
+
+    @Override
     public String getName() {
         return "Warped Roots";
     }

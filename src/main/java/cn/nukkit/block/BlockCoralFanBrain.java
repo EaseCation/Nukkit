@@ -31,4 +31,9 @@ public class BlockCoralFanBrain extends BlockCoralFan {
     protected int getDeadBlockId() {
         return DEAD_BRAIN_CORAL_FAN;
     }
+
+    @Override
+    public String getDescriptionId() {
+        return "tile.coral_fan.pink_fan.name";
+    }
 }

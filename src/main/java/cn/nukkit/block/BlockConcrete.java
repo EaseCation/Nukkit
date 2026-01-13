@@ -60,4 +60,9 @@ public abstract class BlockConcrete extends BlockSolid {
     }
 
     public abstract DyeColor getDyeColor();
+
+    @Override
+    public String getDescriptionId() {
+        return "tile.concrete." + getDyeColor().getDescriptionName() + ".name";
+    }
 }

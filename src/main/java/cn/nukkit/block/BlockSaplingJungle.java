@@ -66,4 +66,9 @@ public class BlockSaplingJungle extends BlockSapling {
             }
         }
     }
+
+    @Override
+    public String getDescriptionId() {
+        return "tile.sapling.jungle.name";
+    }
 }

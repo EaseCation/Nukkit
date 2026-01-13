@@ -54,4 +54,9 @@ public class BlockWallPrismarine extends BlockWall {
     public BlockColor getColor() {
         return BlockColor.CYAN_BLOCK_COLOR;
     }
+
+    @Override
+    public String getDescriptionId() {
+        return "tile.cobblestone_wall.prismarine.name";
+    }
 }

@@ -17,6 +17,11 @@ public class ItemBucketTadpole extends ItemBucketWater {
     }
 
     @Override
+    public String getDescriptionId() {
+        return "item.bucketTadpole.name";
+    }
+
+    @Override
     protected EntityFactory getEntityFactory() {
         return EntityTadpole::new;
     }

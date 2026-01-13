@@ -23,6 +23,11 @@ public class BlockGrassPath extends BlockGrass {
     }
 
     @Override
+    public String getDescriptionId() {
+        return "tile." + getShortName() + ".name";
+    }
+
+    @Override
     public String getName() {
         return "Dirt Path";
     }

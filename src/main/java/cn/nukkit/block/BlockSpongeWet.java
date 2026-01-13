@@ -36,4 +36,9 @@ public class BlockSpongeWet extends BlockSponge {
     public float getFurnaceXpMultiplier() {
         return 0;
     }
+
+    @Override
+    public String getDescriptionId() {
+        return "tile.sponge.wet.name";
+    }
 }

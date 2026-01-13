@@ -31,4 +31,9 @@ public class BlockWoodSpruce extends BlockLogSpruce {
     protected Block getStrippedBlock() {
         return get(STRIPPED_SPRUCE_WOOD, getDamage());
     }
+
+    @Override
+    public String getDescriptionId() {
+        return "tile.wood.spruce.name";
+    }
 }

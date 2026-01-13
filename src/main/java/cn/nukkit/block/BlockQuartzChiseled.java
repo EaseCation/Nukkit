@@ -14,4 +14,9 @@ public class BlockQuartzChiseled extends BlockQuartz {
     public String getName() {
         return "Chiseled Quartz Block";
     }
+
+    @Override
+    public String getDescriptionId() {
+        return "tile.quartz_block.chiseled.name";
+    }
 }

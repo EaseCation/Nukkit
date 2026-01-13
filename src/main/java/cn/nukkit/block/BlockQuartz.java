@@ -74,4 +74,9 @@ public class BlockQuartz extends BlockRotatedPillar {
     public boolean canHarvestWithHand() {
         return false;
     }
+
+    @Override
+    public String getDescriptionId() {
+        return "tile.quartz_block.default.name";
+    }
 }

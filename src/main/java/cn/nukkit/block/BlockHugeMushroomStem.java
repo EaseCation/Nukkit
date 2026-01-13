@@ -9,6 +9,11 @@ public class BlockHugeMushroomStem extends BlockHugeMushroom {
     }
 
     @Override
+    public String getDescriptionId() {
+        return "tile.brown_mushroom_block.stem.name";
+    }
+
+    @Override
     public String getName() {
         return "Mushroom Stem";
     }

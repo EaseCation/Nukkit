@@ -16,6 +16,11 @@ public class BlockCarpetMoss extends BlockCarpet {
     }
 
     @Override
+    public String getDescriptionId() {
+        return "tile." + getShortName() + ".name";
+    }
+
+    @Override
     public String getName() {
         return "Moss Carpet";
     }

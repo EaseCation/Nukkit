@@ -21,4 +21,9 @@ public class BlockPlanksBirch extends BlockPlanks {
     public BlockColor getColor() {
         return BlockColor.SAND_BLOCK_COLOR;
     }
+
+    @Override
+    public String getDescriptionId() {
+        return "tile.planks.birch.name";
+    }
 }

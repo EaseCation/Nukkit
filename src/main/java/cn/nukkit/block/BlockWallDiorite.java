@@ -54,4 +54,9 @@ public class BlockWallDiorite extends BlockWall {
     public BlockColor getColor() {
         return BlockColor.QUARTZ_BLOCK_COLOR;
     }
+
+    @Override
+    public String getDescriptionId() {
+        return "tile.cobblestone_wall.diorite.name";
+    }
 }

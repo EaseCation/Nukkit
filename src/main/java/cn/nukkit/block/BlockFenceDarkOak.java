@@ -21,4 +21,9 @@ public class BlockFenceDarkOak extends BlockFence {
     public BlockColor getColor() {
         return BlockColor.BROWN_BLOCK_COLOR;
     }
+
+    @Override
+    public String getDescriptionId() {
+        return "tile.darkOakFence.name";
+    }
 }

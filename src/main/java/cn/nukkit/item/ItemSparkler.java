@@ -17,6 +17,11 @@ public class ItemSparkler extends ItemChemicalTickable {
     }
 
     @Override
+    public String getDescriptionId() {
+        return "item.sparkler." + getColor().getDescriptionName() + ".name";
+    }
+
+    @Override
     public int getDefaultMeta() {
         return 4;
     }

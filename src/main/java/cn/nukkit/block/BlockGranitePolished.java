@@ -14,4 +14,9 @@ public class BlockGranitePolished extends BlockGranite {
     public String getName() {
         return "Polished Granite";
     }
+
+    @Override
+    public String getDescriptionId() {
+        return "tile.stone.graniteSmooth.name";
+    }
 }

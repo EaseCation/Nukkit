@@ -19,6 +19,14 @@ public class ItemEmptyMap extends Item {
     }
 
     @Override
+    public String getDescriptionId() {
+        if (getDamage() == ENHANCED_EMPTY_MAP) {
+            return "item.emptyLocatorMap.name";
+        }
+        return "item.emptyMap.name";
+    }
+
+    @Override
     public boolean isStackedByData() {
         return true;
     }

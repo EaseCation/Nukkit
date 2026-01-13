@@ -26,4 +26,9 @@ public class BlockSlabSmoothQuartz extends BlockSlabStone {
     protected int getDoubleSlabBlockId() {
         return SMOOTH_QUARTZ_DOUBLE_SLAB;
     }
+
+    @Override
+    public String getDescriptionId() {
+        return "tile.stone_slab4.smooth_quartz.name";
+    }
 }

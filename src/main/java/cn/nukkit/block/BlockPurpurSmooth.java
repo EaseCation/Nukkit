@@ -14,4 +14,9 @@ public class BlockPurpurSmooth extends BlockPurpur {
     public String getName() {
         return "Smooth Purpur";
     }
+
+    @Override
+    public String getDescriptionId() {
+        return "tile.purpur_block.smooth.name";
+    }
 }

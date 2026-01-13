@@ -14,4 +14,9 @@ public class BlockTulipRed extends BlockFlower {
     public String getName() {
         return "Red Tulip";
     }
+
+    @Override
+    public String getDescriptionId() {
+        return "tile.red_flower.tulipRed.name";
+    }
 }

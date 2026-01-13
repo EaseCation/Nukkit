@@ -27,4 +27,9 @@ public class BlockLeavesJungle extends BlockLeaves {
     protected Item getSapling() {
         return Item.get(ItemBlockID.JUNGLE_SAPLING);
     }
+
+    @Override
+    public String getDescriptionId() {
+        return "tile.leaves.jungle.name";
+    }
 }

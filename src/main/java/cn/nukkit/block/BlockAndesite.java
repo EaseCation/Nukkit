@@ -21,4 +21,9 @@ public class BlockAndesite extends BlockStoneAbstract {
     public BlockColor getColor() {
         return BlockColor.STONE_BLOCK_COLOR;
     }
+
+    @Override
+    public String getDescriptionId() {
+        return "tile.stone.andesite.name";
+    }
 }

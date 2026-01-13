@@ -26,4 +26,9 @@ public class BlockCoralBlockTube extends BlockCoralBlock {
     protected int getDeadBlockId() {
         return DEAD_TUBE_CORAL_BLOCK;
     }
+
+    @Override
+    public String getDescriptionId() {
+        return "tile.coral_block.blue.name";
+    }
 }

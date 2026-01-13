@@ -19,4 +19,9 @@ public class BlockWoodStrippedAcacia extends BlockLogStrippedAcacia {
     public boolean isWood() {
         return true;
     }
+
+    @Override
+    public String getDescriptionId() {
+        return "tile.wood.stripped.acacia.name";
+    }
 }

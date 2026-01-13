@@ -16,6 +16,7 @@ import cn.nukkit.nbt.tag.ListTag;
 import cn.nukkit.nbt.tag.Tag;
 import cn.nukkit.utils.BlockColor;
 import cn.nukkit.utils.DyeColor;
+import cn.nukkit.utils.TextFormat;
 
 import java.util.Map;
 
@@ -91,32 +92,34 @@ public class BlockShulkerBox extends BlockTransparent {
     public Item toItem(boolean addUserData) {
         Item item = Item.get(this.getItemId(), this.getDamage());
 
-        BlockEntityShulkerBox t = (BlockEntityShulkerBox) this.getLevel().getBlockEntity(this);
+        if (addUserData) {
+            BlockEntityShulkerBox t = (BlockEntityShulkerBox) this.getLevel().getBlockEntity(this);
 
-        if (t != null) {
-            ShulkerBoxInventory i = t.getInventory();
+            if (t != null) {
+                ShulkerBoxInventory i = t.getInventory();
 
-            if (!i.isEmpty()) {
-                CompoundTag nbt = item.getNamedTag();
-                if (nbt == null)
-                    nbt = new CompoundTag("");
+                if (!i.isEmpty()) {
+                    CompoundTag nbt = item.getNamedTag();
+                    if (nbt == null)
+                        nbt = new CompoundTag("");
 
-                ListTag<CompoundTag> items = new ListTag<>();
+                    ListTag<CompoundTag> items = new ListTag<>();
 
-                for (int it = 0; it < i.getSize(); it++) {
-                    if (i.getItem(it).getId() != Item.AIR) {
-                        CompoundTag d = NBTIO.putItemHelper(i.getItem(it), it);
-                        items.add(d);
+                    for (int it = 0; it < i.getSize(); it++) {
+                        if (i.getItem(it).getId() != Item.AIR) {
+                            CompoundTag d = NBTIO.putItemHelper(i.getItem(it), it);
+                            items.add(d);
+                        }
                     }
+
+                    nbt.put("Items", items);
+
+                    item.setCompoundTag(nbt);
                 }
 
-                nbt.put("Items", items);
-
-                item.setCompoundTag(nbt);
-            }
-
-            if (t.hasName()) {
-                item.setCustomName(t.getName());
+                if (t.hasName()) {
+                    item.setCustomName(t.getName());
+                }
             }
         }
 
@@ -207,6 +210,49 @@ public class BlockShulkerBox extends BlockTransparent {
 
     public DyeColor getDyeColor() {
         return null;
+    }
+
+    @Override
+    public String getDescriptionId() {
+        DyeColor dyeColor = getDyeColor();
+        if (dyeColor == null) {
+            return "tile.shulkerBox.name";
+        }
+        return "tile.shulkerBox" + dyeColor.getDescriptionNamePascalCase() + ".name";
+    }
+
+    @Override
+    public String getEffectDescriptionName(Item item) {
+        CompoundTag nbt = item.getNamedTag();
+        if (nbt == null) {
+            return "";
+        }
+        ListTag<CompoundTag> items = nbt.getList("Items", CompoundTag.class);
+        if (items.isEmpty()) {
+            return "";
+        }
+
+        int itemCount = 0;
+        StringBuilder result = new StringBuilder();
+        for (CompoundTag itemTag : items) {
+            Item itemStack = NBTIO.getItemHelper(itemTag);
+            if (itemStack.isNull()) {
+                continue;
+            }
+            if (itemCount++ < 5) {
+                result.append(TextFormat.GRAY).append('%').append(itemStack.getDescriptionId()).append(" x").append(itemStack.getCount()).append('\n');
+            }
+        }
+        int numOverflow = itemCount - 4;
+        if (numOverflow > 0) {
+            // Util::format(I18n::get("container.shulkerboxContains"), numOverflow)
+            result.append("and ").append(numOverflow).append(" more...") // vanilla l10n issue
+                    .append(TextFormat.RESET);
+        } else if (!result.isEmpty()) {
+            result.setCharAt(result.length() - 1, TextFormat.ESCAPE);
+            result.append(TextFormat.RESET.getChar());
+        }
+        return result.toString();
     }
 
     @Override

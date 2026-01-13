@@ -29,6 +29,16 @@ public class ItemSkull extends Item {
     public static final int HEAD_PIGLIN = 6;
     public static final int HEAD_UNDEFINED = 7;
 
+    private static final String[] SKULL_TYPE_NAMES = {
+            "skeleton",
+            "wither",
+            "zombie",
+            "char",
+            "creeper",
+            "dragon",
+            "piglin",
+    };
+
     public ItemSkull() {
         this(0, 1);
     }
@@ -40,6 +50,15 @@ public class ItemSkull extends Item {
     public ItemSkull(Integer meta, int count) {
         super(SKULL, meta, count, "Skull");
 //        this.block = Block.get(Block.BLOCK_SKULL);
+    }
+
+    @Override
+    public String getDescriptionId() {
+        int type = getDamage();
+        if (type >= 0 && type < SKULL_TYPE_NAMES.length) {
+            return "item.skull." + SKULL_TYPE_NAMES[type] + ".name";
+        }
+        return "item.skull.skeleton.name";
     }
 
     @Override

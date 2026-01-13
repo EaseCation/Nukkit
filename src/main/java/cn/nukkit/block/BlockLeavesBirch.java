@@ -22,4 +22,9 @@ public class BlockLeavesBirch extends BlockLeaves {
     protected Item getSapling() {
         return Item.get(ItemBlockID.BIRCH_SAPLING);
     }
+
+    @Override
+    public String getDescriptionId() {
+        return "tile.leaves.birch.name";
+    }
 }

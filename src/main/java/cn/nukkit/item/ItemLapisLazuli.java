@@ -16,6 +16,11 @@ public class ItemLapisLazuli extends Item {
     }
 
     @Override
+    public String getDescriptionId() {
+        return "item.dye.blue.name";
+    }
+
+    @Override
     public float getFurnaceXpMultiplier() {
         return 0.2f;
     }

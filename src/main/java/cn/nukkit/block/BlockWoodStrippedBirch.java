@@ -19,4 +19,9 @@ public class BlockWoodStrippedBirch extends BlockLogStrippedBirch {
     public boolean isWood() {
         return true;
     }
+
+    @Override
+    public String getDescriptionId() {
+        return "tile.wood.stripped.birch.name";
+    }
 }

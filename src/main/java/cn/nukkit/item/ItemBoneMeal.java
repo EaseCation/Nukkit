@@ -14,6 +14,11 @@ public class ItemBoneMeal extends Item {
     }
 
     @Override
+    public String getDescriptionId() {
+        return "item.dye.white.name";
+    }
+
+    @Override
     public boolean isFertilizer() {
         return true;
     }

@@ -14,4 +14,9 @@ public class BlockDioritePolished extends BlockDiorite {
     public String getName() {
         return "Polished Diorite";
     }
+
+    @Override
+    public String getDescriptionId() {
+        return "tile.stone.dioriteSmooth.name";
+    }
 }

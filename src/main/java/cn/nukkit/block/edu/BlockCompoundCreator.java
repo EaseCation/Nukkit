@@ -14,4 +14,9 @@ public class BlockCompoundCreator extends BlockChemistryTable {
     public String getName() {
         return "Compound Creator";
     }
+
+    @Override
+    public String getDescriptionId() {
+        return "tile.compoundcreator.name";
+    }
 }

@@ -13,6 +13,11 @@ public class BlockNetherRootsCrimson extends BlockNetherRoots {
     }
 
     @Override
+    public String getDescriptionId() {
+        return "tile.crimson_roots.crimsonRoots.name";
+    }
+
+    @Override
     public String getName() {
         return "Crimson Roots";
     }

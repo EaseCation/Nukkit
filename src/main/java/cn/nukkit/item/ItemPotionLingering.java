@@ -20,6 +20,11 @@ public class ItemPotionLingering extends ProjectileItem {
     }
 
     @Override
+    public String getDescriptionId() {
+        return "potion." + ItemPotion.getPotionTypeName(getPotionId()) + ".linger.name";
+    }
+
+    @Override
     public boolean isStackedByData() {
         return true;
     }

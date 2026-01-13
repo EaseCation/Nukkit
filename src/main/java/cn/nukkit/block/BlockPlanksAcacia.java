@@ -21,4 +21,9 @@ public class BlockPlanksAcacia extends BlockPlanks {
     public BlockColor getColor() {
         return BlockColor.ORANGE_BLOCK_COLOR;
     }
+
+    @Override
+    public String getDescriptionId() {
+        return "tile.planks.acacia.name";
+    }
 }

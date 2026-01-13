@@ -31,4 +31,9 @@ public class BlockWoodAcacia extends BlockLogAcacia {
     protected Block getStrippedBlock() {
         return get(STRIPPED_ACACIA_WOOD, getDamage());
     }
+
+    @Override
+    public String getDescriptionId() {
+        return "tile.wood.acacia.name";
+    }
 }

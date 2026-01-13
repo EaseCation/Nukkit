@@ -21,6 +21,7 @@ public class BlockTerracottaGlazedOrange extends BlockTerracottaGlazed {
         return "Orange Glazed Terracotta";
     }
 
+    @Override
     public DyeColor getDyeColor() {
         return DyeColor.ORANGE;
     }

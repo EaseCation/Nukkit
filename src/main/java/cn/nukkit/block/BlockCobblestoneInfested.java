@@ -29,4 +29,9 @@ public class BlockCobblestoneInfested extends BlockMonsterEgg {
                 Item.get(ItemBlockID.COBBLESTONE),
         };
     }
+
+    @Override
+    public String getDescriptionId() {
+        return "tile.monster_egg.cobble.name";
+    }
 }

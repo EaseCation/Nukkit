@@ -21,4 +21,9 @@ public class BlockPlanksDarkOak extends BlockPlanks {
     public BlockColor getColor() {
         return BlockColor.BROWN_BLOCK_COLOR;
     }
+
+    @Override
+    public String getDescriptionId() {
+        return "tile.planks.big_oak.name";
+    }
 }

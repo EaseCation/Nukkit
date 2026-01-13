@@ -14,4 +14,9 @@ public class BlockCornflower extends BlockFlower {
     public String getName() {
         return "Cornflower";
     }
+
+    @Override
+    public String getDescriptionId() {
+        return "tile.red_flower.cornflower.name";
+    }
 }

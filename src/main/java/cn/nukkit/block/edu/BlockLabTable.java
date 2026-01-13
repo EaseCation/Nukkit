@@ -14,4 +14,9 @@ public class BlockLabTable extends BlockChemistryTable {
     public String getName() {
         return "Lab Table";
     }
+
+    @Override
+    public String getDescriptionId() {
+        return "tile.labtable.name";
+    }
 }

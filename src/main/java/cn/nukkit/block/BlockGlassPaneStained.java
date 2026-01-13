@@ -37,4 +37,9 @@ public abstract class BlockGlassPaneStained extends BlockGlassPane {
     }
 
     public abstract DyeColor getDyeColor();
+
+    @Override
+    public String getDescriptionId() {
+        return "tile.stained_glass_pane." + getDyeColor().getDescriptionNameSnakeCase() + ".name";
+    }
 }

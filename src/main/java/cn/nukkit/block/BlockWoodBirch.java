@@ -31,4 +31,9 @@ public class BlockWoodBirch extends BlockLogBirch {
     protected Block getStrippedBlock() {
         return get(STRIPPED_BIRCH_WOOD, getDamage());
     }
+
+    @Override
+    public String getDescriptionId() {
+        return "tile.wood.birch.name";
+    }
 }

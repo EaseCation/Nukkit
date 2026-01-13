@@ -15,4 +15,9 @@ public class BlockElementUnknown extends BlockElement {
     public int getId() {
         return ELEMENT_0;
     }
+
+    @Override
+    public String getDescriptionId() {
+        return "tile.element.unknown.name";
+    }
 }

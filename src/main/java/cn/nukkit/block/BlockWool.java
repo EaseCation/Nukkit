@@ -67,4 +67,9 @@ public abstract class BlockWool extends BlockSolid {
     public boolean isWool() {
         return true;
     }
+
+    @Override
+    public String getDescriptionId() {
+        return "tile.wool." + getDyeColor().getDescriptionName() + ".name";
+    }
 }

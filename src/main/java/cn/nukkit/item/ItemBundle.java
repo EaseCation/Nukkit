@@ -22,6 +22,11 @@ public class ItemBundle extends Item {
         super(id, meta, count, name);
     }
 
+    @Override
+    public String getDescriptionId() {
+        return "item." + getShortName();
+    }
+
     public ItemBundle setBundleWeight(int weight) {
         setNamedTag(getOrCreateNamedTag().putInt("bundle_weight", weight));
         return this;

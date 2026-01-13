@@ -12,6 +12,11 @@ public class BlockHugeMushroomBrown extends BlockHugeMushroom {
     }
 
     @Override
+    public String getDescriptionId() {
+        return "tile.brown_mushroom_block.cap.name";
+    }
+
+    @Override
     public String getName() {
         return "Brown Mushroom Block";
     }

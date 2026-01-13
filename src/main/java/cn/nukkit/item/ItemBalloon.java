@@ -20,6 +20,11 @@ public class ItemBalloon extends Item {
     }
 
     @Override
+    public String getDescriptionId() {
+        return "item.balloon." + getColor().getDescriptionName() + ".name";
+    }
+
+    @Override
     public boolean isStackedByData() {
         return true;
     }

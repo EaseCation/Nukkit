@@ -16,6 +16,11 @@ public class ItemGlowStick extends ItemChemicalTickable {
     }
 
     @Override
+    public String getDescriptionId() {
+        return "item.glow_stick." + getColor().getDescriptionName() + ".name";
+    }
+
+    @Override
     public int getDefaultMeta() {
         return 1;
     }

@@ -19,4 +19,9 @@ public class BlockWoodStrippedSpruce extends BlockLogStrippedSpruce {
     public boolean isWood() {
         return true;
     }
+
+    @Override
+    public String getDescriptionId() {
+        return "tile.wood.stripped.spruce.name";
+    }
 }

@@ -14,4 +14,9 @@ public class BlockAndesitePolished extends BlockAndesite {
     public String getName() {
         return "Polished Andesite";
     }
+
+    @Override
+    public String getDescriptionId() {
+        return "tile.stone.andesiteSmooth.name";
+    }
 }

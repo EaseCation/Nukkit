@@ -31,4 +31,9 @@ public class BlockDoubleSlabRedSandstone extends BlockDoubleSlabStone {
     public Item toItem(boolean addUserData) {
         return Item.get(ItemBlockID.RED_SANDSTONE_SLAB);
     }
+
+    @Override
+    public String getDescriptionId() {
+        return "tile.double_stone_slab2.red_sandstone.name";
+    }
 }

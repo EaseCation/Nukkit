@@ -21,4 +21,9 @@ public class BlockCoralBlockDeadHorn extends BlockCoralBlockDead {
     public BlockColor getColor() {
         return BlockColor.GRAY_BLOCK_COLOR;
     }
+
+    @Override
+    public String getDescriptionId() {
+        return "tile.coral_block.yellow_dead.name";
+    }
 }

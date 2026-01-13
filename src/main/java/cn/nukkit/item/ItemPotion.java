@@ -4,6 +4,7 @@ import cn.nukkit.Player;
 import cn.nukkit.event.player.PlayerItemConsumeEvent;
 import cn.nukkit.math.Vector3;
 import cn.nukkit.potion.Potion;
+import cn.nukkit.potion.PotionID;
 
 public class ItemPotion extends Item {
 
@@ -17,6 +18,11 @@ public class ItemPotion extends Item {
 
     public ItemPotion(Integer meta, int count) {
         super(POTION, meta, count, "Potion");
+    }
+
+    @Override
+    public String getDescriptionId() {
+        return "potion." + getPotionTypeName(getPotionId()) + ".name";
     }
 
     @Override
@@ -81,5 +87,16 @@ public class ItemPotion extends Item {
 
     public int getPotionId() {
         return getDamage();
+    }
+
+    static String getPotionTypeName(int potionId) {
+        if (potionId == PotionID.WATER) {
+            return "emptyPotion";
+        }
+        Potion potion = Potion.getPotion(potionId);
+        if (potion == null) {
+            return "emptyPotion";
+        }
+        return potion.getName();
     }
 }

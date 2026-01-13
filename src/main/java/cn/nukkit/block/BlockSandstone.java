@@ -80,4 +80,9 @@ public class BlockSandstone extends BlockSolid {
     public boolean canHarvestWithHand() {
         return false;
     }
+
+    @Override
+    public String getDescriptionId() {
+        return "tile.sandstone.default.name";
+    }
 }

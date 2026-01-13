@@ -14,4 +14,9 @@ public class BlockLilyOfTheValley extends BlockFlower {
     public String getName() {
         return "Lily of the Valley";
     }
+
+    @Override
+    public String getDescriptionId() {
+        return "tile.red_flower.lilyOfTheValley.name";
+    }
 }

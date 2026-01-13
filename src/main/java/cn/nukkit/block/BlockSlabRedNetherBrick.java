@@ -26,4 +26,9 @@ public class BlockSlabRedNetherBrick extends BlockSlabStone {
     protected int getDoubleSlabBlockId() {
         return RED_NETHER_BRICK_DOUBLE_SLAB;
     }
+
+    @Override
+    public String getDescriptionId() {
+        return "tile.stone_slab2.red_nether_brick.name";
+    }
 }

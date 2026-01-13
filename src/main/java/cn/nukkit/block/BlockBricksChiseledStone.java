@@ -14,4 +14,9 @@ public class BlockBricksChiseledStone extends BlockBricksStone {
     public String getName() {
         return "Chiseled Stone Bricks";
     }
+
+    @Override
+    public String getDescriptionId() {
+        return "tile.stonebrick.chiseled.name";
+    }
 }

@@ -31,4 +31,9 @@ public class BlockSlabDiorite extends BlockSlabStone {
     protected int getDoubleSlabBlockId() {
         return DIORITE_DOUBLE_SLAB;
     }
+
+    @Override
+    public String getDescriptionId() {
+        return "tile.stone_slab3.diorite.name";
+    }
 }

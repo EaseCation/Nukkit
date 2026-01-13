@@ -13,6 +13,11 @@ public class BlockSlabPetrifiedOak extends BlockSlabStone {
     }
 
     @Override
+    public String getDescriptionId() {
+        return "tile.stone_slab.wood.name";
+    }
+
+    @Override
     public String getName() {
         return isTopSlot() ? "Upper Petrified Oak Slab" : "Petrified Oak Slab";
     }

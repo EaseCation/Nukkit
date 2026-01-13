@@ -17,6 +17,11 @@ public class ItemFireworkStar extends Item {
     }
 
     @Override
+    public String getDescriptionId() {
+        return "item.fireworksCharge.name";
+    }
+
+    @Override
     public boolean isStackedByData() {
         return true;
     }

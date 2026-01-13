@@ -31,4 +31,9 @@ public class BlockWoodJungle extends BlockLogJungle {
     protected Block getStrippedBlock() {
         return get(STRIPPED_JUNGLE_WOOD, getDamage());
     }
+
+    @Override
+    public String getDescriptionId() {
+        return "tile.wood.jungle.name";
+    }
 }

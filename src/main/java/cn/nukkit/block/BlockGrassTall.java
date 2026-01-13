@@ -49,4 +49,9 @@ public class BlockGrassTall extends BlockDoublePlant {
     public int getCompostableChance() {
         return 50;
     }
+
+    @Override
+    public String getDescriptionId() {
+        return "tile.double_plant.grass.name";
+    }
 }

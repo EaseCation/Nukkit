@@ -24,4 +24,9 @@ public class BlockBricksMossyStoneInfested extends BlockMonsterEgg {
                 Item.get(ItemBlockID.MOSSY_STONE_BRICKS),
         };
     }
+
+    @Override
+    public String getDescriptionId() {
+        return "tile.monster_egg.mossybrick.name";
+    }
 }

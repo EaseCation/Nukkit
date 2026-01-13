@@ -24,6 +24,11 @@ public abstract class ItemBoatChest extends ItemBoat {
     }
 
     @Override
+    public String getDescriptionId() {
+        return "item.chest_boat." + getWoodTypeName() + ".name";
+    }
+
+    @Override
     protected EntityFactory getEntityFactory() {
         return EntityBoatChest::new;
     }

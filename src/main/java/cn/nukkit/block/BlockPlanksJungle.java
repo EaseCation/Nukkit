@@ -21,4 +21,9 @@ public class BlockPlanksJungle extends BlockPlanks {
     public BlockColor getColor() {
         return BlockColor.DIRT_BLOCK_COLOR;
     }
+
+    @Override
+    public String getDescriptionId() {
+        return "tile.planks.jungle.name";
+    }
 }

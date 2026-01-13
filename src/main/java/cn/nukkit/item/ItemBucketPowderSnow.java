@@ -22,6 +22,11 @@ public class ItemBucketPowderSnow extends Item {
     }
 
     @Override
+    public String getDescriptionId() {
+        return "item.bucketPowderSnow.name";
+    }
+
+    @Override
     public int getMaxStackSize() {
         return 1;
     }

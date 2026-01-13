@@ -19,4 +19,9 @@ public class BlockWoodStrippedDarkOak extends BlockLogStrippedDarkOak {
     public boolean isWood() {
         return true;
     }
+
+    @Override
+    public String getDescriptionId() {
+        return "tile.wood.stripped.dark_oak.name";
+    }
 }

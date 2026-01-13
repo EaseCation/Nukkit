@@ -26,4 +26,9 @@ public class BlockLogJungle extends BlockLog {
     protected Block getStrippedBlock() {
         return get(STRIPPED_JUNGLE_LOG, getDamage());
     }
+
+    @Override
+    public String getDescriptionId() {
+        return "tile.log.jungle.name";
+    }
 }

@@ -667,6 +667,14 @@ public abstract class Block extends Position implements Metadatable, Cloneable, 
         return BlockColor.VOID_BLOCK_COLOR;
     }
 
+    public String getDescriptionId() {
+        return "tile." + getShortName() + ".name";
+    }
+
+    public String getEffectDescriptionName(Item item) {
+        return "";
+    }
+
     public abstract String getName();
 
     public abstract int getId();
@@ -1369,7 +1377,7 @@ public abstract class Block extends Position implements Metadatable, Cloneable, 
     }
 
     public Item pick(boolean addUserData) {
-        return toItem(true);
+        return toItem(addUserData);
     }
 
     public Item[] getSilkTouchResource() {
@@ -1416,7 +1424,7 @@ public abstract class Block extends Position implements Metadatable, Cloneable, 
         return false;
     }
 
-    //TODO: brewing stand, cauldron and composter
+    //TODO: stairs, brewing stand, cauldron and composter
     public AxisAlignedBB[] getCollisionShape() {
         AxisAlignedBB aabb = this.getCollisionBoundingBox();
         if (aabb == null) {

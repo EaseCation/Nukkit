@@ -243,4 +243,9 @@ public class BlockTripWire extends BlockTransparent {
     public boolean canProvideSupport(BlockFace face, SupportType type) {
         return false;
     }
+
+    @Override
+    public String getDescriptionId() {
+        return "tile.tripWire.name";
+    }
 }

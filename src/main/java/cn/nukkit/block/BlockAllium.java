@@ -14,4 +14,9 @@ public class BlockAllium extends BlockFlower {
     public String getName() {
         return "Allium";
     }
+
+    @Override
+    public String getDescriptionId() {
+        return "tile.red_flower.allium.name";
+    }
 }

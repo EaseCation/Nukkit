@@ -2,6 +2,7 @@ package cn.nukkit.item;
 
 import cn.nukkit.Player;
 import cn.nukkit.block.Block;
+import cn.nukkit.entity.Entities;
 import cn.nukkit.entity.Entity;
 import cn.nukkit.event.entity.CreatureSpawnEvent;
 import cn.nukkit.event.entity.CreatureSpawnEvent.SpawnReason;
@@ -32,6 +33,15 @@ public class ItemSpawnEgg extends Item {
 
     protected ItemSpawnEgg(int id, Integer meta, int count, String name) {
         super(id, meta, count, name);
+    }
+
+    @Override
+    public String getDescriptionId() {
+        String entityId = Entities.getIdentifierByType(getEntityId(), /*!isVanilla()*/false);
+        if (entityId == null) {
+            entityId = "unknown";
+        }
+        return "item.spawn_egg.entity." + entityId + ".name";
     }
 
     @Override

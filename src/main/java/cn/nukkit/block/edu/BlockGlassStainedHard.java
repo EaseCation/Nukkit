@@ -52,4 +52,9 @@ public abstract class BlockGlassStainedHard extends BlockGlassStained {
     public boolean isChemistryFeature() {
         return true;
     }
+
+    @Override
+    public String getDescriptionId() {
+        return "tile.hard_stained_glass." + getDyeColor().getDescriptionNameSnakeCase() + ".name";
+    }
 }

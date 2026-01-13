@@ -29,4 +29,9 @@ public class BlockSlabRedSandstone extends BlockSlabStone {
     protected int getDoubleSlabBlockId() {
         return RED_SANDSTONE_DOUBLE_SLAB;
     }
+
+    @Override
+    public String getDescriptionId() {
+        return "tile.stone_slab2.red_sandstone.name";
+    }
 }

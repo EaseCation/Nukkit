@@ -23,4 +23,9 @@ public class BlockDandelion extends BlockFlower {
     protected int getUncommonFlowerId() {
         return POPPY;
     }
+
+    @Override
+    public String getDescriptionId() {
+        return "tile.yellow_flower.dandelion.name";
+    }
 }

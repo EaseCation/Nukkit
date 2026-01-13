@@ -52,4 +52,9 @@ public class BlockDoorWood extends BlockDoor {
     public int getFuelTime() {
         return 200;
     }
+
+    @Override
+    public String getDescriptionId() {
+        return "tile.doorWood.name";
+    }
 }

@@ -54,4 +54,9 @@ public class BlockWallRedSandstone extends BlockWall {
     public BlockColor getColor() {
         return BlockColor.ORANGE_BLOCK_COLOR;
     }
+
+    @Override
+    public String getDescriptionId() {
+        return "tile.cobblestone_wall.red_sandstone.name";
+    }
 }

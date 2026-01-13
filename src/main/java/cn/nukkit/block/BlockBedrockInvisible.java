@@ -73,4 +73,9 @@ public class BlockBedrockInvisible extends BlockSolid {
     public boolean canProvideSupport(BlockFace face, SupportType type) {
         return false;
     }
+
+    @Override
+    public String getDescriptionId() {
+        return "tile.invisibleBedrock.name";
+    }
 }

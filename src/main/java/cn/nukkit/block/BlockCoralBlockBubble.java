@@ -26,4 +26,9 @@ public class BlockCoralBlockBubble extends BlockCoralBlock {
     protected int getDeadBlockId() {
         return DEAD_BUBBLE_CORAL_BLOCK;
     }
+
+    @Override
+    public String getDescriptionId() {
+        return "tile.coral_block.purple.name";
+    }
 }

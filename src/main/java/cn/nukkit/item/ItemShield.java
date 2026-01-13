@@ -23,6 +23,15 @@ public class ItemShield extends ItemTool {
     }
 
     @Override
+    public String getDescriptionId() {
+        int baseColor = getBaseColor();
+        if (baseColor == -1) {
+            return "item.shield.name";
+        }
+        return "item.shield." + DyeColor.getByDyeData(baseColor).getDescriptionName() + ".name";
+    }
+
+    @Override
     public boolean canDualWield() {
         return true;
     }

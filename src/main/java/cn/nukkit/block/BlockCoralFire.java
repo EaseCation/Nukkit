@@ -26,4 +26,9 @@ public class BlockCoralFire extends BlockCoral {
     protected int getDeadBlockId() {
         return DEAD_FIRE_CORAL;
     }
+
+    @Override
+    public String getDescriptionId() {
+        return "tile.coral.red.name";
+    }
 }

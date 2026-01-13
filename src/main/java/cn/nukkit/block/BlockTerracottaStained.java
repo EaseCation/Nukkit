@@ -71,4 +71,9 @@ public abstract class BlockTerracottaStained extends BlockSolid {
     public boolean isTerracotta() {
         return true;
     }
+
+    @Override
+    public String getDescriptionId() {
+        return "tile.stained_hardened_clay." + getDyeColor().getDescriptionName() + ".name";
+    }
 }

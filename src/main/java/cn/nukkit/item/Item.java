@@ -1244,6 +1244,14 @@ public class Item implements Cloneable, ItemID {
         return this.count <= 0 || this.id == AIR;
     }
 
+    public String getDescriptionId() {
+        return "item." + (isVanilla() ? getShortName() : getFullName()) + ".name";
+    }
+
+    public String getEffectDescriptionName() {
+        return "";
+    }
+
     final public String getName() {
         return this.hasCustomName() ? this.getCustomName() : this.name;
     }

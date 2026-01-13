@@ -44,4 +44,9 @@ public class BlockFernLarge extends BlockDoublePlant {
         }
         return new Item[0];
     }
+
+    @Override
+    public String getDescriptionId() {
+        return "tile.double_plant.fern.name";
+    }
 }

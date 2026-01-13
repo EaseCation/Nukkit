@@ -31,4 +31,9 @@ public class BlockWoodDarkOak extends BlockLogDarkOak {
     protected Block getStrippedBlock() {
         return get(STRIPPED_DARK_OAK_WOOD, getDamage());
     }
+
+    @Override
+    public String getDescriptionId() {
+        return "tile.wood.dark_oak.name";
+    }
 }

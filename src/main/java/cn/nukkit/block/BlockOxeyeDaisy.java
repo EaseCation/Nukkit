@@ -14,4 +14,9 @@ public class BlockOxeyeDaisy extends BlockFlower {
     public String getName() {
         return "Oxeye Daisy";
     }
+
+    @Override
+    public String getDescriptionId() {
+        return "tile.red_flower.oxeyeDaisy.name";
+    }
 }

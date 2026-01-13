@@ -115,4 +115,9 @@ public class BlockSponge extends BlockSolid {
             this.distance = distance;
         }
     }
+
+    @Override
+    public String getDescriptionId() {
+        return "tile.sponge.dry.name";
+    }
 }

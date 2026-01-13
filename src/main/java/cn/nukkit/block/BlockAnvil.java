@@ -166,4 +166,9 @@ public class BlockAnvil extends BlockFallable implements Faceable {
     public int getDamagedBlockId() {
         return CHIPPED_ANVIL;
     }
+
+    @Override
+    public String getDescriptionId() {
+        return "tile.anvil.intact.name";
+    }
 }

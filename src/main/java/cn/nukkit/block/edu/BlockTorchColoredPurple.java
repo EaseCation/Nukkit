@@ -14,4 +14,9 @@ public class BlockTorchColoredPurple extends BlockTorchColored {
     public String getName() {
         return "Purple Torch";
     }
+
+    @Override
+    public String getDescriptionId() {
+        return "tile.colored_torch.purple.name";
+    }
 }

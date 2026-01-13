@@ -26,4 +26,9 @@ public class BlockSlabCobblestone extends BlockSlabStone {
     protected int getDoubleSlabBlockId() {
         return COBBLESTONE_DOUBLE_SLAB;
     }
+
+    @Override
+    public String getDescriptionId() {
+        return "tile.stone_slab.cobble.name";
+    }
 }

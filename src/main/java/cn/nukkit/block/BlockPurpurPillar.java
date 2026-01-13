@@ -14,4 +14,9 @@ public class BlockPurpurPillar extends BlockPurpur {
     public String getName() {
         return "Purpur Pillar";
     }
+
+    @Override
+    public String getDescriptionId() {
+        return "tile.purpur_block.lines.name";
+    }
 }

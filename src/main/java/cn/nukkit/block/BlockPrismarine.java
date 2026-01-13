@@ -65,4 +65,9 @@ public class BlockPrismarine extends BlockSolid {
     public BlockColor getColor() {
         return BlockColor.CYAN_BLOCK_COLOR;
     }
+
+    @Override
+    public String getDescriptionId() {
+        return "tile.prismarine.rough.name";
+    }
 }

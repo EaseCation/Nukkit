@@ -54,4 +54,9 @@ public class BlockWallAndesite extends BlockWall {
     public BlockColor getColor() {
         return BlockColor.STONE_BLOCK_COLOR;
     }
+
+    @Override
+    public String getDescriptionId() {
+        return "tile.cobblestone_wall.andesite.name";
+    }
 }

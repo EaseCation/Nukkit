@@ -30,7 +30,7 @@ public class BlockTNT extends BlockSolid {
     @Deprecated
     public static final int ALLOW_UNDERWATER_BIT = 0b10;
 
-    BlockTNT() {
+    protected BlockTNT() {
 
     }
 

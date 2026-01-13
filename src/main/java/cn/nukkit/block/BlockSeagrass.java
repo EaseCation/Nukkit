@@ -22,6 +22,11 @@ public class BlockSeagrass extends BlockTransparent {
     }
 
     @Override
+    public String getDescriptionId() {
+        return "tile.seagrass.seagrass.name";
+    }
+
+    @Override
     public String getName() {
         return "Seagrass";
     }

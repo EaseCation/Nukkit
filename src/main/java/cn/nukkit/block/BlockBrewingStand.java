@@ -30,6 +30,11 @@ public class BlockBrewingStand extends BlockTransparent {
     }
 
     @Override
+    public String getDescriptionId() {
+        return "item.brewing_stand.name";
+    }
+
+    @Override
     public String getName() {
         return "Brewing Stand";
     }

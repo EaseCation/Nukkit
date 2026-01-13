@@ -31,4 +31,9 @@ public class BlockCoralFanTube extends BlockCoralFan {
     protected int getDeadBlockId() {
         return DEAD_TUBE_CORAL_FAN;
     }
+
+    @Override
+    public String getDescriptionId() {
+        return "tile.coral_fan.blue_fan.name";
+    }
 }

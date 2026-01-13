@@ -31,4 +31,9 @@ public class BlockCoralFanBubble extends BlockCoralFan {
     protected int getDeadBlockId() {
         return DEAD_BUBBLE_CORAL_FAN;
     }
+
+    @Override
+    public String getDescriptionId() {
+        return "tile.coral_fan.purple_fan.name";
+    }
 }

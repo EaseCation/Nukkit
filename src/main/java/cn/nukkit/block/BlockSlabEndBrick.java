@@ -36,4 +36,9 @@ public class BlockSlabEndBrick extends BlockSlabStone {
     protected int getDoubleSlabBlockId() {
         return END_STONE_BRICK_DOUBLE_SLAB;
     }
+
+    @Override
+    public String getDescriptionId() {
+        return "tile.stone_slab3.end_brick.name";
+    }
 }

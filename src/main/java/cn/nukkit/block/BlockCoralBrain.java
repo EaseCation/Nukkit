@@ -26,4 +26,9 @@ public class BlockCoralBrain extends BlockCoral {
     protected int getDeadBlockId() {
         return DEAD_BRAIN_CORAL;
     }
+
+    @Override
+    public String getDescriptionId() {
+        return "tile.coral.pink.name";
+    }
 }

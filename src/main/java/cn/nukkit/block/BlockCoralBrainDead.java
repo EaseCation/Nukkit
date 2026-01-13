@@ -26,4 +26,9 @@ public class BlockCoralBrainDead extends BlockCoral {
     public boolean isDeadCoral() {
         return true;
     }
+
+    @Override
+    public String getDescriptionId() {
+        return "tile.coral.pink_dead.name";
+    }
 }

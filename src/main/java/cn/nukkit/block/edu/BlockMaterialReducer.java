@@ -14,4 +14,9 @@ public class BlockMaterialReducer extends BlockChemistryTable {
     public String getName() {
         return "Material Reducer";
     }
+
+    @Override
+    public String getDescriptionId() {
+        return "tile.materialreducer.name";
+    }
 }

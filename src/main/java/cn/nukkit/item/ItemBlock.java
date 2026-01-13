@@ -21,6 +21,16 @@ public class ItemBlock extends Item {
     }
 
     @Override
+    public String getDescriptionId() {
+        return block.getDescriptionId();
+    }
+
+    @Override
+    public String getEffectDescriptionName() {
+        return block.getEffectDescriptionName(this);
+    }
+
+    @Override
     public void setDamage(int meta) {
         meta &= block.getItemKeepMetaMask();
 

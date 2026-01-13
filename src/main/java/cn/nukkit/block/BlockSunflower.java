@@ -14,4 +14,9 @@ public class BlockSunflower extends BlockDoublePlant {
     public String getName() {
         return "Sunflower";
     }
+
+    @Override
+    public String getDescriptionId() {
+        return "tile.double_plant.sunflower.name";
+    }
 }

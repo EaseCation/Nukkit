@@ -18,6 +18,11 @@ public class ItemCarrotOnAStick extends ItemTool {
     }
 
     @Override
+    public String getDescriptionId() {
+        return "item.carrotOnAStick.name";
+    }
+
+    @Override
     public int getMaxDurability() {
         return ItemTool.DURABILITY_CARROT_ON_A_STICK;
     }

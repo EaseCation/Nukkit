@@ -21,4 +21,9 @@ public class BlockFenceOak extends BlockFence {
     public BlockColor getColor() {
         return BlockColor.WOOD_BLOCK_COLOR;
     }
+
+    @Override
+    public String getDescriptionId() {
+        return "tile.fence.name";
+    }
 }

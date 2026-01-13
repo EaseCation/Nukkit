@@ -14,4 +14,9 @@ public class BlockBlueOrchid extends BlockFlower {
     public String getName() {
         return "Blue Orchid";
     }
+
+    @Override
+    public String getDescriptionId() {
+        return "tile.red_flower.blueOrchid.name";
+    }
 }

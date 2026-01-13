@@ -14,4 +14,9 @@ public class BlockSkullDragon extends BlockSkull {
     public String getName() {
         return "Dragon Head";
     }
+
+    @Override
+    public String getDescriptionId() {
+        return "item.skull.dragon.name";
+    }
 }

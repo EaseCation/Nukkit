@@ -24,6 +24,11 @@ public class ItemBucketLava extends Item {
     }
 
     @Override
+    public String getDescriptionId() {
+        return "item.bucketLava.name";
+    }
+
+    @Override
     public int getMaxStackSize() {
         return 1;
     }

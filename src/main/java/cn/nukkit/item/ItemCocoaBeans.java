@@ -16,4 +16,9 @@ public class ItemCocoaBeans extends Item {
         super(COCOA_BEANS, meta, count, "Cocoa Beans");
         this.block = Block.get(BlockID.COCOA);
     }
+
+    @Override
+    public String getDescriptionId() {
+        return "item.dye.brown.name";
+    }
 }

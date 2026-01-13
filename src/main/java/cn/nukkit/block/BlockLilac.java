@@ -14,4 +14,9 @@ public class BlockLilac extends BlockDoublePlant {
     public String getName() {
         return "Lilac";
     }
+
+    @Override
+    public String getDescriptionId() {
+        return "tile.double_plant.syringa.name";
+    }
 }

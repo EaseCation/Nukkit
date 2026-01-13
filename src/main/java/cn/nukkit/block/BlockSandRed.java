@@ -14,4 +14,9 @@ public class BlockSandRed extends BlockSand {
     public String getName() {
         return "Red Sand";
     }
+
+    @Override
+    public String getDescriptionId() {
+        return "tile.sand.red.name";
+    }
 }

@@ -35,7 +35,20 @@ public class BlockChalkboard extends BlockTransparent implements Faceable {
     public int getBlockEntityType() {
         return BlockEntityType.CHALKBOARD_BLOCK;
     }
-
+/*
+    @Override
+    public String getDescriptionId() {
+        BlockEntityChalkboard chalkboard = getBaseBlockEntity();
+        if (chalkboard == null) {
+            return "tile.chalkboard.oneByOne.name";
+        }
+        return switch (chalkboard.getSize()) {
+            case BlockEntityChalkboard.SIZE_2X1 -> "tile.chalkboard.twoByOne.name";
+            case BlockEntityChalkboard.SIZE_3X2 -> "tile.chalkboard.threeByTwo.name";
+            default -> "tile.chalkboard.oneByOne.name";
+        };
+    }
+*/
     @Override
     public String getName() {
         return "Chalkboard";

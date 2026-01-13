@@ -52,4 +52,9 @@ public class BlockSeaLantern extends BlockSolid {
     public boolean canSilkTouch() {
         return true;
     }
+
+    @Override
+    public String getDescriptionId() {
+        return "tile.seaLantern.name";
+    }
 }

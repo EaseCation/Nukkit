@@ -54,4 +54,9 @@ public class BlockWallRedNetherBrick extends BlockWall {
     public BlockColor getColor() {
         return BlockColor.NETHER_BLOCK_COLOR;
     }
+
+    @Override
+    public String getDescriptionId() {
+        return "tile.cobblestone_wall.red_nether_brick.name";
+    }
 }

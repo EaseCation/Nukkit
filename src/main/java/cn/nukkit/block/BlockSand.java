@@ -78,4 +78,9 @@ public class BlockSand extends BlockFallable {
     public boolean isSand() {
         return true;
     }
+
+    @Override
+    public String getDescriptionId() {
+        return "tile.sand.default.name";
+    }
 }

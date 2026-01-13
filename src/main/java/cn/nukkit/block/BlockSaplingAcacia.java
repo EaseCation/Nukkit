@@ -26,4 +26,9 @@ public class BlockSaplingAcacia extends BlockSapling {
             level.setBlock(this, this, true, false);
         }
     }
+
+    @Override
+    public String getDescriptionId() {
+        return "tile.sapling.acacia.name";
+    }
 }

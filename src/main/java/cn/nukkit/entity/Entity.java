@@ -1100,6 +1100,10 @@ public abstract class Entity extends Location implements Metadatable, EntityData
         }
     }
 
+    public String getDescriptionId() {
+        return "entity." + (isVanilla() ? getShortIdentifier() : getIdentifier()) + ".name";
+    }
+
     public String getIdentifier() {
         EntityEntry entry = BY_CLASS.get(this.getClass());
         if (entry == null) {

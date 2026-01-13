@@ -26,4 +26,9 @@ public class BlockSlabQuartz extends BlockSlabStone {
     protected int getDoubleSlabBlockId() {
         return QUARTZ_DOUBLE_SLAB;
     }
+
+    @Override
+    public String getDescriptionId() {
+        return "tile.stone_slab.quartz.name";
+    }
 }

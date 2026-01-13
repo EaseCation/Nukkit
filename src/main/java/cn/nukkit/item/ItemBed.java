@@ -24,6 +24,11 @@ public class ItemBed extends Item {
     }
 
     @Override
+    public String getDescriptionId() {
+        return "item.bed." + getColor().getDescriptionName() + ".name";
+    }
+
+    @Override
     public boolean isStackedByData() {
         return true;
     }

@@ -53,4 +53,9 @@ public class BlockStone extends BlockStoneAbstract {
     public float getFurnaceXpMultiplier() {
         return 0.1f;
     }
+
+    @Override
+    public String getDescriptionId() {
+        return "tile.stone.stone.name";
+    }
 }

@@ -31,4 +31,9 @@ public class BlockSlabPolishedAndesite extends BlockSlabStone {
     protected int getDoubleSlabBlockId() {
         return POLISHED_ANDESITE_DOUBLE_SLAB;
     }
+
+    @Override
+    public String getDescriptionId() {
+        return "tile.stone_slab3.andesite.smooth.name";
+    }
 }

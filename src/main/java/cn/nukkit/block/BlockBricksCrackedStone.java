@@ -19,4 +19,9 @@ public class BlockBricksCrackedStone extends BlockBricksStone {
     public float getFurnaceXpMultiplier() {
         return 0.1f;
     }
+
+    @Override
+    public String getDescriptionId() {
+        return "tile.stonebrick.cracked.name";
+    }
 }

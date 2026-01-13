@@ -28,4 +28,9 @@ public class BlockDoubleSlabDarkOak extends BlockDoubleSlabWood {
     public Item toItem(boolean addUserData) {
         return Item.get(ItemBlockID.DARK_OAK_SLAB);
     }
+
+    @Override
+    public String getDescriptionId() {
+        return "tile.double_wooden_slab.big_oak.name";
+    }
 }

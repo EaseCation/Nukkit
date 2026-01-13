@@ -21,4 +21,9 @@ public class BlockPrismarineDark extends BlockPrismarine {
     public BlockColor getColor() {
         return BlockColor.DIAMOND_BLOCK_COLOR;
     }
+
+    @Override
+    public String getDescriptionId() {
+        return "tile.prismarine.dark.name";
+    }
 }

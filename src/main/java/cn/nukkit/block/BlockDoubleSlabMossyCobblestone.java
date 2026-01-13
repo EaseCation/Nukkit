@@ -28,4 +28,9 @@ public class BlockDoubleSlabMossyCobblestone extends BlockDoubleSlabStone {
     public Item toItem(boolean addUserData) {
         return Item.get(ItemBlockID.MOSSY_COBBLESTONE_SLAB);
     }
+
+    @Override
+    public String getDescriptionId() {
+        return "tile.double_stone_slab2.mossy_cobblestone.name";
+    }
 }

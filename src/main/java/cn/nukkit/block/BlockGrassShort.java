@@ -176,4 +176,9 @@ public class BlockGrassShort extends BlockFlowable {
         int id = down().getId();
         return id == Block.GRASS_BLOCK || id == Block.DIRT || id == COARSE_DIRT || id == Block.PODZOL || id == FARMLAND || id == MYCELIUM || id == DIRT_WITH_ROOTS || id == MOSS_BLOCK || id == PALE_MOSS_BLOCK || id == MUD || id == MUDDY_MANGROVE_ROOTS;
     }
+
+    @Override
+    public String getDescriptionId() {
+        return "tile.tallgrass.grass.name";
+    }
 }

@@ -26,4 +26,9 @@ public class BlockSlabSpruce extends BlockSlabWood {
     protected int getDoubleSlabBlockId() {
         return SPRUCE_DOUBLE_SLAB;
     }
+
+    @Override
+    public String getDescriptionId() {
+        return "tile.wooden_slab.spruce.name";
+    }
 }

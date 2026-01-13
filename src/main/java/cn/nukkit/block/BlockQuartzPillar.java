@@ -14,4 +14,9 @@ public class BlockQuartzPillar extends BlockQuartz {
     public String getName() {
         return "Quartz Pillar";
     }
+
+    @Override
+    public String getDescriptionId() {
+        return "tile.quartz_block.lines.name";
+    }
 }

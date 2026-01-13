@@ -51,7 +51,12 @@ public class BlockBanner extends BlockTransparent implements Faceable {
     public int getToolType() {
         return BlockToolType.AXE;
     }
-
+/*
+    @Override
+    public String getDescriptionId() {
+        return "tile.standing_banner." + getDyeColor().getDescriptionName() + ".name";
+    }
+*/
     @Override
     public String getName() {
         return "Banner";

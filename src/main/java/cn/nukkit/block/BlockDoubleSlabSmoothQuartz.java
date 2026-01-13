@@ -28,4 +28,9 @@ public class BlockDoubleSlabSmoothQuartz extends BlockDoubleSlabStone {
     public Item toItem(boolean addUserData) {
         return Item.get(ItemBlockID.SMOOTH_QUARTZ_SLAB);
     }
+
+    @Override
+    public String getDescriptionId() {
+        return "tile.double_stone_slab4.smooth_quartz.name";
+    }
 }

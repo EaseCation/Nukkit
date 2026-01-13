@@ -9,4 +9,9 @@ public class BlockAnvilBroken extends BlockAnvil {
     public int getId() {
         return DEPRECATED_ANVIL;
     }
+
+    @Override
+    public String getDescriptionId() {
+        return "tile.anvil.name";
+    }
 }

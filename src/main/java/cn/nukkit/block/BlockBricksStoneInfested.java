@@ -24,4 +24,9 @@ public class BlockBricksStoneInfested extends BlockMonsterEgg {
                 Item.get(ItemBlockID.STONE_BRICKS),
         };
     }
+
+    @Override
+    public String getDescriptionId() {
+        return "tile.monster_egg.brick.name";
+    }
 }

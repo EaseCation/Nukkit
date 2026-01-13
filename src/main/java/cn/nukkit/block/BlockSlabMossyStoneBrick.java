@@ -31,4 +31,9 @@ public class BlockSlabMossyStoneBrick extends BlockSlabStone {
     protected int getDoubleSlabBlockId() {
         return MOSSY_STONE_BRICK_DOUBLE_SLAB;
     }
+
+    @Override
+    public String getDescriptionId() {
+        return "tile.stone_slab4.mossy_stone_brick.name";
+    }
 }

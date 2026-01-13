@@ -42,6 +42,24 @@ public class ItemMap extends Item {
     public static final int TRIAL_EXPLORER_MAP = 14;
     public static final int UNDEFINED_MAP = 15;
 
+    private static final String[] EXPLORATION_TYPE_NAMES = {
+            null,
+            null,
+            null,
+            "monument",
+            "mansion",
+            "buried_treasure",
+            null,
+            "village_snowy",
+            "village_taiga",
+            "village_plains",
+            "village_savanna",
+            "village_desert",
+            "jungle_temple",
+            "swamp_hut",
+            "trial_chambers",
+    };
+
     private static final Object2IntMap<String> DESTINATIONS = Utils.make(new Object2IntOpenHashMap<>(), lookup -> {
         lookup.put("monument", OCEAN_EXPLORER_MAP);
         lookup.put("mansion", WOODLAND_EXPLORER_MAP);
@@ -71,6 +89,18 @@ public class ItemMap extends Item {
 
     public ItemMap(Integer meta, int count) {
         super(FILLED_MAP, meta, count, "Map");
+    }
+
+    @Override
+    public String getDescriptionId() {
+        int type = getDamage();
+        if (type >= 0 && type < EXPLORATION_TYPE_NAMES.length) {
+            String typeName = EXPLORATION_TYPE_NAMES[type];
+            if (typeName != null) {
+                return "item.map.exploration." + typeName + ".name";
+            }
+        }
+        return "item.map.name";
     }
 
     @Override

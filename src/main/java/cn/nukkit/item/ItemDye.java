@@ -57,6 +57,11 @@ public abstract class ItemDye extends Item {
     }
 
     @Override
+    public String getDescriptionId() {
+        return "item.dye." + getDyeColor().getDyeDescriptionName() + ".name";
+    }
+
+    @Override
     public boolean isDye() {
         return true;
     }

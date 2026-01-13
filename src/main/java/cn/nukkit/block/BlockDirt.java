@@ -123,4 +123,9 @@ public class BlockDirt extends BlockSolid {
     protected int getHoedBlockId() {
         return FARMLAND;
     }
+
+    @Override
+    public String getDescriptionId() {
+        return "tile.dirt.default.name";
+    }
 }

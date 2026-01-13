@@ -14,4 +14,9 @@ public class BlockBricksMossyStone extends BlockBricksStone {
     public String getName() {
         return "Mossy Stone Bricks";
     }
+
+    @Override
+    public String getDescriptionId() {
+        return "tile.stonebrick.mossy.name";
+    }
 }

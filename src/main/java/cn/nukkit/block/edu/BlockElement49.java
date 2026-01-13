@@ -15,4 +15,9 @@ public class BlockElement49 extends BlockElement {
     public int getId() {
         return ELEMENT_49;
     }
+
+    @Override
+    public String getDescriptionId() {
+        return "tile.element.in.name";
+    }
 }

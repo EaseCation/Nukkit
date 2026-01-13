@@ -21,4 +21,9 @@ public class BlockFenceBirch extends BlockFence {
     public BlockColor getColor() {
         return BlockColor.SAND_BLOCK_COLOR;
     }
+
+    @Override
+    public String getDescriptionId() {
+        return "tile.birchFence.name";
+    }
 }

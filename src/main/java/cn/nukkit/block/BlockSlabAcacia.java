@@ -26,4 +26,9 @@ public class BlockSlabAcacia extends BlockSlabWood {
     protected int getDoubleSlabBlockId() {
         return ACACIA_DOUBLE_SLAB;
     }
+
+    @Override
+    public String getDescriptionId() {
+        return "tile.wooden_slab.acacia.name";
+    }
 }

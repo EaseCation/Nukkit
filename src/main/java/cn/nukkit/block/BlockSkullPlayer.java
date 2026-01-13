@@ -14,4 +14,9 @@ public class BlockSkullPlayer extends BlockSkull {
     public String getName() {
         return "Player Head";
     }
+
+    @Override
+    public String getDescriptionId() {
+        return "item.skull.char.name";
+    }
 }

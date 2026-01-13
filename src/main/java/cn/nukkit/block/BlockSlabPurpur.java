@@ -26,4 +26,9 @@ public class BlockSlabPurpur extends BlockSlabStone {
     protected int getDoubleSlabBlockId() {
         return PURPUR_DOUBLE_SLAB;
     }
+
+    @Override
+    public String getDescriptionId() {
+        return "tile.stone_slab2.purpur.name";
+    }
 }

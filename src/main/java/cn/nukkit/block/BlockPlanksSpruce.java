@@ -21,4 +21,9 @@ public class BlockPlanksSpruce extends BlockPlanks {
     public BlockColor getColor() {
         return BlockColor.PODZOL_BLOCK_COLOR;
     }
+
+    @Override
+    public String getDescriptionId() {
+        return "tile.planks.spruce.name";
+    }
 }

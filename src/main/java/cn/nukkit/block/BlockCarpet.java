@@ -91,6 +91,11 @@ public abstract class BlockCarpet extends BlockFlowable {
     public abstract DyeColor getDyeColor();
 
     @Override
+    public String getDescriptionId() {
+        return "tile.carpet." + getDyeColor().getDescriptionName() + ".name";
+    }
+
+    @Override
     public boolean canContainWater() {
         return true;
     }

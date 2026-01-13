@@ -29,4 +29,9 @@ public class BlockSandstoneSmooth extends BlockSandstone {
     public float getFurnaceXpMultiplier() {
         return 0.1f;
     }
+
+    @Override
+    public String getDescriptionId() {
+        return "tile.sandstone.smooth.name";
+    }
 }

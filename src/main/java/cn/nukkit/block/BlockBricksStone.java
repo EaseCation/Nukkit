@@ -77,4 +77,9 @@ public class BlockBricksStone extends BlockSolid {
     public BlockColor getColor() {
         return BlockColor.STONE_BLOCK_COLOR;
     }
+
+    @Override
+    public String getDescriptionId() {
+        return "tile.stonebrick.default.name";
+    }
 }

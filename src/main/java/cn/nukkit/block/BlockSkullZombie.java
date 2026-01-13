@@ -14,4 +14,9 @@ public class BlockSkullZombie extends BlockSkull {
     public String getName() {
         return "Zombie Head";
     }
+
+    @Override
+    public String getDescriptionId() {
+        return "item.skull.zombie.name";
+    }
 }

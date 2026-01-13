@@ -27,4 +27,9 @@ public class BlockLeavesDarkOak extends BlockLeaves {
     protected Item getSapling() {
         return Item.get(ItemBlockID.DARK_OAK_SAPLING);
     }
+
+    @Override
+    public String getDescriptionId() {
+        return "tile.leaves2.big_oak.name";
+    }
 }

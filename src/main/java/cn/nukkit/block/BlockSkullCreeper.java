@@ -14,4 +14,9 @@ public class BlockSkullCreeper extends BlockSkull {
     public String getName() {
         return "Creeper Head";
     }
+
+    @Override
+    public String getDescriptionId() {
+        return "item.skull.creeper.name";
+    }
 }

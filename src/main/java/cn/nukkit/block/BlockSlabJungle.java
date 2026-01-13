@@ -26,4 +26,9 @@ public class BlockSlabJungle extends BlockSlabWood {
     protected int getDoubleSlabBlockId() {
         return JUNGLE_DOUBLE_SLAB;
     }
+
+    @Override
+    public String getDescriptionId() {
+        return "tile.wooden_slab.jungle.name";
+    }
 }

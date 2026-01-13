@@ -65,4 +65,9 @@ public class BlockPurpur extends BlockRotatedPillar {
     public BlockColor getColor() {
         return BlockColor.MAGENTA_BLOCK_COLOR;
     }
+
+    @Override
+    public String getDescriptionId() {
+        return "tile.purpur_block.default.name";
+    }
 }
