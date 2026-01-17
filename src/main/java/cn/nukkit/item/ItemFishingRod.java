@@ -42,6 +42,11 @@ public class ItemFishingRod extends ItemTool {
     }
 
     @Override
+    public String getInteractText(Player player) {
+        return "action.interact.fishing";
+    }
+
+    @Override
     public int getMaxDurability() {
         return ItemTool.DURABILITY_FISHING_ROD;
     }

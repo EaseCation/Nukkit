@@ -1,5 +1,6 @@
 package cn.nukkit.item;
 
+import cn.nukkit.Player;
 import cn.nukkit.nbt.tag.CompoundTag;
 import cn.nukkit.nbt.tag.ListTag;
 
@@ -28,6 +29,11 @@ public class ItemBookWritten extends ItemBookWritable {
     @Override
     public int getMaxStackSize() {
         return 16;
+    }
+
+    @Override
+    public String getInteractText(Player player) {
+        return "action.interact.read";
     }
 
     public Item writeBook(String author, String title, String... pages) {

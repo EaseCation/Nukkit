@@ -1,5 +1,7 @@
 package cn.nukkit.item;
 
+import cn.nukkit.Player;
+
 public class ItemEmptyMap extends Item {
     public static final int NORMAL_EMPTY_MAP = 0;
     public static final int BASIC_EMPTY_MAP = 1;
@@ -29,6 +31,11 @@ public class ItemEmptyMap extends Item {
     @Override
     public boolean isStackedByData() {
         return true;
+    }
+
+    @Override
+    public String getInteractText(Player player) {
+        return "action.interact.createMap";
     }
 
     @Override

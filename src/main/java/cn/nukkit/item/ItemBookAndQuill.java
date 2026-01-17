@@ -1,5 +1,7 @@
 package cn.nukkit.item;
 
+import cn.nukkit.Player;
+
 public class ItemBookAndQuill extends ItemBookWritable {
 
     public ItemBookAndQuill() {
@@ -17,5 +19,10 @@ public class ItemBookAndQuill extends ItemBookWritable {
     @Override
     public int getMaxStackSize() {
         return 1;
+    }
+
+    @Override
+    public String getInteractText(Player player) {
+        return "action.interact.write";
     }
 }

@@ -136,8 +136,14 @@ public class PlayerInventory extends BaseInventory {
     @Override
     public void onSlotChange(int index, Item before, Item after, boolean send) {
         EntityHuman holder = this.getHolder();
-        if (holder instanceof Player && !((Player) holder).spawned) {
-            return;
+        if (holder instanceof Player player) {
+            if (after != null && index == getHeldItemIndex()) {
+                player.setButtonText(after.getInteractText(player));
+            }
+
+            if (!player.spawned) {
+                return;
+            }
         }
 
         super.onSlotChange(index, before, after, send);

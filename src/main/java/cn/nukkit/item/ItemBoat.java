@@ -70,7 +70,7 @@ public abstract class ItemBoat extends Item {
             return false;
         }
 
-        double y = Double.MIN_VALUE;
+        double y = Double.NEGATIVE_INFINITY;
         if (target.isWater() || target.is(Block.BUBBLE_COLUMN)) {
             y = block.getY() - 0.375;
         } else {

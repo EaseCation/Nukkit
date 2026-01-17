@@ -833,6 +833,9 @@ public class Player extends EntityHuman implements CommandSender, InventoryHolde
     }
 
     public void setButtonText(String text) {
+        if (text == null) {
+            text = "";
+        }
         if (this.buttonText.equals(text)) {
             return;
         }
@@ -2312,7 +2315,7 @@ public class Player extends EntityHuman implements CommandSender, InventoryHolde
             setButtonText(text);
             setDataProperty(new ByteEntityData(DATA_CAN_RIDE_TARGET, onInteract != riding && onInteract instanceof EntityRideable && ("action.interact.mount".equals(text) || text.startsWith("action.interact.ride."))));
         } else {
-            setButtonText("");
+            setButtonText(inventory.getItemInHand().getInteractText(this));
             setDataProperty(new ByteEntityData(DATA_CAN_RIDE_TARGET, false));
         }
     }
@@ -3219,7 +3222,7 @@ public class Player extends EntityHuman implements CommandSender, InventoryHolde
 
                     if (interactPacket.target == 0 && interactPacket.action == InteractPacket.ACTION_MOUSEOVER) {
                         this.lookAtEntity = null;
-                        this.setButtonText("");
+                        this.setButtonText(inventory.getItemInHand().getInteractText(this));
                         setDataProperty(new ByteEntityData(DATA_CAN_RIDE_TARGET, false));
                         break;
                     }

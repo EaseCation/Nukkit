@@ -1496,6 +1496,10 @@ public class Item implements Cloneable, ItemID {
         return false;
     }
 
+    public String getInteractText(Player player) {
+        return "";
+    }
+
     /**
      * @since 1.19.50
      */

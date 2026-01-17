@@ -67,7 +67,7 @@ public class ItemSpawnEgg extends Item {
             return false;
         }
 
-        double y = Double.MIN_VALUE;
+        double y = Double.NEGATIVE_INFINITY;
         AxisAlignedBB[] aabbs = target.getCollisionShape();
         if (aabbs == null || aabbs.length == 0) {
             y = block.getY();
