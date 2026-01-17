@@ -30,11 +30,8 @@ import javax.annotation.Nullable;
 import java.io.IOException;
 import java.io.InputStream;
 import java.lang.reflect.Constructor;
-import java.util.Arrays;
-import java.util.List;
-import java.util.Objects;
-import java.util.Set;
-import java.util.function.Supplier;
+import java.util.*;
+import java.util.function.Function;
 
 import static cn.nukkit.GameVersion.*;
 import static cn.nukkit.SharedConstants.*;
@@ -1100,13 +1097,55 @@ public abstract class Block extends Position implements Metadatable, Cloneable, 
         return super.toString();
     }
 
-    public final boolean collidesWithBB(AxisAlignedBB bb) {
-        return collidesWithBB(bb, false);
+    public boolean collidesWithBB(AxisAlignedBB bb, Function<Block, AxisAlignedBB> aabbGetter) {
+        AxisAlignedBB bb1 = aabbGetter.apply(this);
+        return bb1 != null && bb.intersectsWith(bb1);
     }
 
-    public boolean collidesWithBB(AxisAlignedBB bb, boolean collisionBB) {
-        AxisAlignedBB bb1 = collisionBB ? this.getCollisionBoundingBox() : this.getBoundingBox();
-        return bb1 != null && bb.intersectsWith(bb1);
+    public final boolean collide(AxisAlignedBB bb) {
+        return collide(bb, ClipFlag.NONE);
+    }
+
+    /**
+     * @param clipFlags {@link ClipFlag}
+     */
+    public final boolean collide(AxisAlignedBB bb, int clipFlags) {
+        AxisAlignedBB[] boxes = getCollisionShape(clipFlags);
+        if (boxes == null) {
+            return false;
+        }
+        for (AxisAlignedBB box : boxes) {
+            if (bb.intersectsWith(box)) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    @Nullable
+    public final AxisAlignedBB[] getCollidingCubes(AxisAlignedBB bb) {
+        return getCollidingCubes(bb, ClipFlag.NONE);
+    }
+
+    /**
+     * @param clipFlags {@link ClipFlag}
+     */
+    @Nullable
+    public final AxisAlignedBB[] getCollidingCubes(AxisAlignedBB bb, int clipFlags) {
+        AxisAlignedBB[] boxes = getCollisionShape(clipFlags);
+        if (boxes == null) {
+            return null;
+        }
+        List<AxisAlignedBB> result = new ArrayList<>(boxes.length);
+        for (AxisAlignedBB box : boxes) {
+            if (bb.intersectsWith(box)) {
+                result.add(box);
+            }
+        }
+        if (result.isEmpty()) {
+            return null;
+        }
+        return result.toArray(new AxisAlignedBB[0]);
     }
 
     public void onEntityCollide(Entity entity) {
@@ -1115,14 +1154,26 @@ public abstract class Block extends Position implements Metadatable, Cloneable, 
 
     /**
      * @return physics collision box
+     * @deprecated use {@link #getCollisionShape()} instead
      */
+    @Deprecated
+    @Nullable
     public AxisAlignedBB getBoundingBox() {
         return this.recalculateBoundingBox();
     }
 
     /**
+     * @return clip collision box
+     */
+    @Nullable
+    public AxisAlignedBB getClipBoundingBox() {
+        return this.recalculateClipBoundingBox();
+    }
+
+    /**
      * @return trigger collision box
      */
+    @Nullable
     public AxisAlignedBB getCollisionBoundingBox() {
         return this.recalculateCollisionBoundingBox();
     }
@@ -1130,10 +1181,12 @@ public abstract class Block extends Position implements Metadatable, Cloneable, 
     /**
      * @return selection outline box
      */
+    @Nullable
     public AxisAlignedBB getSelectionBoundingBox() {
         return this.recalculateSelectionBoundingBox();
     }
 
+    @Nullable
     protected AxisAlignedBB recalculateBoundingBox() {
         return this;
     }
@@ -1168,21 +1221,48 @@ public abstract class Block extends Position implements Metadatable, Cloneable, 
         return this.z + 1;
     }
 
+    @Nullable
+    protected AxisAlignedBB recalculateClipBoundingBox() {
+        return getBoundingBox();
+    }
+
+    @Nullable
     protected AxisAlignedBB recalculateCollisionBoundingBox() {
         return getBoundingBox();
     }
 
+    @Nullable
     protected AxisAlignedBB recalculateSelectionBoundingBox() {
         return getBoundingBox();
     }
 
     @Override
     public MovingObjectPosition calculateIntercept(Vector3 pos1, Vector3 pos2) {
-        return clip(pos1, pos2, this::getBoundingBox);
+        return clip(pos1, pos2, ClipFlag.NONE);
     }
 
-    public MovingObjectPosition clip(Vector3 pos1, Vector3 pos2, Supplier<AxisAlignedBB> aabbGetter) {
-        AxisAlignedBB bb = aabbGetter.get();
+    /**
+     * @param clipFlags {@link ClipFlag}
+     */
+    public MovingObjectPosition clip(Vector3 pos1, Vector3 pos2, int clipFlags) {
+        AxisAlignedBB[] boxes = getCollisionShape(clipFlags);
+        if (boxes == null) {
+            return null;
+        }
+        for (AxisAlignedBB box : boxes) {
+            MovingObjectPosition hitResult = clip(pos1, pos2, box);
+            if (hitResult != null) {
+                return hitResult;
+            }
+        }
+        return null;
+    }
+
+    public MovingObjectPosition clip(Vector3 pos1, Vector3 pos2, Function<Block, AxisAlignedBB> aabbGetter) {
+        return clip(pos1, pos2, aabbGetter.apply(this));
+    }
+
+    private MovingObjectPosition clip(Vector3 pos1, Vector3 pos2, AxisAlignedBB bb) {
         if (bb == null) {
             return null;
         }
@@ -1424,9 +1504,21 @@ public abstract class Block extends Position implements Metadatable, Cloneable, 
         return false;
     }
 
-    //TODO: stairs, brewing stand, cauldron and composter
+    /**
+     * @return physics collision boxes
+     */
+    @Nullable
     public AxisAlignedBB[] getCollisionShape() {
-        AxisAlignedBB aabb = this.getCollisionBoundingBox();
+        return getCollisionShape(ClipFlag.NONE);
+    }
+
+    /**
+     * @param flags {@link ClipFlag}
+     * @return physics collision boxes
+     */
+    @Nullable
+    public AxisAlignedBB[] getCollisionShape(int flags) {
+        AxisAlignedBB aabb = this.getBoundingBox();
         if (aabb == null) {
             return null;
         }

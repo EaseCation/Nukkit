@@ -219,7 +219,7 @@ public class EntityBoat extends EntityVehicle {
                     for (int x = boundingBox.getFloorMinX(); x <= boundingBox.getFloorMaxX(); x++) {
                         for (int z = boundingBox.getFloorMinZ(); z <= boundingBox.getFloorMaxZ(); z++) {
                             Block block =  this.level.getBlock(x, y, z, false);
-                            if (block.isAir() || !block.collidesWithBB(boundingBox)) {
+                            if (block.isAir() || !block.collide(boundingBox)) {
                                 continue;
                             }
 

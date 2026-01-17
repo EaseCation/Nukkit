@@ -267,7 +267,7 @@ public class EntityPainting extends EntityHanging {
                     if (block.canPassThrough() || block.canBeFlowedInto()) {
                         continue;
                     }
-                    if (block.collidesWithBB(this.boundingBox)) {
+                    if (block.collide(this.boundingBox)) {
                         return false;
                     }
                 }

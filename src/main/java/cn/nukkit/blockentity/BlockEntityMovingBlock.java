@@ -13,6 +13,9 @@ import cn.nukkit.nbt.NBTIO;
 import cn.nukkit.nbt.tag.CompoundTag;
 
 import javax.annotation.Nullable;
+import java.util.Collections;
+import java.util.HashSet;
+import java.util.Set;
 
 /**
  * Created by CreeperFace on 11.4.2017.
@@ -102,19 +105,22 @@ public class BlockEntityMovingBlock extends BlockEntitySpawnable {
     }
 
     public void moveCollidedEntities(BlockEntityPistonArm piston, BlockFace moveDirection) {
-        AxisAlignedBB bb = block.getBoundingBox();
-
-        if (bb == null) {
+        AxisAlignedBB[] bbs = block.getCollisionShape();
+        if (bbs == null) {
             return;
         }
 
-        bb = bb.getOffsetBoundingBox(
-                this.x + (piston.progress * moveDirection.getXOffset()) - moveDirection.getXOffset(),
-                this.y + (piston.progress * moveDirection.getYOffset()) - moveDirection.getYOffset(),
-                this.z + (piston.progress * moveDirection.getZOffset()) - moveDirection.getZOffset()
-        );
+        Set<Entity> entities = new HashSet<>();
 
-        Entity[] entities = this.level.getCollidingEntities(bb);
+        for (AxisAlignedBB bb : bbs) {
+            bb = bb.getOffsetBoundingBox(
+                    this.x + (piston.progress * moveDirection.getXOffset()) - moveDirection.getXOffset(),
+                    this.y + (piston.progress * moveDirection.getYOffset()) - moveDirection.getYOffset(),
+                    this.z + (piston.progress * moveDirection.getZOffset()) - moveDirection.getZOffset()
+            );
+
+            Collections.addAll(entities, this.level.getCollidingEntities(bb));
+        }
 
         for (Entity entity : entities) {
             piston.moveEntity(entity, moveDirection);

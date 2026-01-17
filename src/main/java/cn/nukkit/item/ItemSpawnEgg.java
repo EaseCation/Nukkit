@@ -8,6 +8,7 @@ import cn.nukkit.event.entity.CreatureSpawnEvent;
 import cn.nukkit.event.entity.CreatureSpawnEvent.SpawnReason;
 import cn.nukkit.level.Level;
 import cn.nukkit.level.format.FullChunk;
+import cn.nukkit.math.AxisAlignedBB;
 import cn.nukkit.math.BlockFace;
 import cn.nukkit.nbt.tag.CompoundTag;
 
@@ -66,7 +67,18 @@ public class ItemSpawnEgg extends Item {
             return false;
         }
 
-        CompoundTag nbt = Entity.getDefaultNBT(block.getX() + 0.5, target.getBoundingBox() == null ? block.getY() : target.getBoundingBox().getMaxY() + 0.0001f, block.getZ() + 0.5, null, ThreadLocalRandom.current().nextFloat() * 360, 0);
+        double y = Double.MIN_VALUE;
+        AxisAlignedBB[] aabbs = target.getCollisionShape();
+        if (aabbs == null || aabbs.length == 0) {
+            y = block.getY();
+        } else {
+            for (AxisAlignedBB aabb : aabbs) {
+                y = Math.max(y, aabb.getMaxY());
+            }
+        }
+        y += 0.0001f;
+
+        CompoundTag nbt = Entity.getDefaultNBT(block.getX() + 0.5, y, block.getZ() + 0.5, null, ThreadLocalRandom.current().nextFloat() * 360, 0);
 
         if (this.hasCustomName()) {
             nbt.putString("CustomName", this.getCustomName());

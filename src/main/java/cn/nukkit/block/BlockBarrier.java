@@ -1,6 +1,7 @@
 package cn.nukkit.block;
 
 import cn.nukkit.item.Item;
+import cn.nukkit.math.AxisAlignedBB;
 import cn.nukkit.utils.BlockColor;
 
 public class BlockBarrier extends BlockTransparent {
@@ -59,4 +60,11 @@ public class BlockBarrier extends BlockTransparent {
         return true;
     }
 
+    @Override
+    public AxisAlignedBB[] getCollisionShape(int flags) {
+        if (ClipFlag.has(flags, ClipFlag.IGNORE_BARRIER)) {
+            return null;
+        }
+        return super.getCollisionShape(flags);
+    }
 }

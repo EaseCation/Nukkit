@@ -3,7 +3,9 @@ package cn.nukkit.block;
 import cn.nukkit.Player;
 import cn.nukkit.item.Item;
 import cn.nukkit.item.Items;
+import cn.nukkit.math.AxisAlignedBB;
 import cn.nukkit.math.BlockFace;
+import cn.nukkit.math.SimpleAxisAlignedBB;
 import cn.nukkit.utils.Faceable;
 
 import static cn.nukkit.GameVersion.*;
@@ -76,6 +78,43 @@ public class BlockPistonHead extends BlockTransparent implements Faceable {
     @Override
     public boolean isSolid() {
         return false;
+    }
+
+    @Override
+    public AxisAlignedBB[] getCollisionShape(int flags) {
+        //TODO: progress translated
+        return switch (getBlockFace()) {
+            case DOWN -> new AxisAlignedBB[]{
+                    new SimpleAxisAlignedBB(x, y, z, x + 1, y + 4 / 16f, z + 1), // front
+                    new SimpleAxisAlignedBB(x + 6 / 16f, y + 4 / 16f, z + 6 / 16f, x + 1 - 6 / 16f, y + 1 - 4 / 16f, z + 1 - 6 / 16f), // arm
+                    new SimpleAxisAlignedBB(x + 5 / 16f, y + 1 - 4 / 16f, z + 5 / 16f, x + 1 - 5 / 16f, y + 1 /*+ 4 / 16f*/, z + 1 - 5 / 16f), // base arm
+            };
+            case UP -> new AxisAlignedBB[]{
+                    new SimpleAxisAlignedBB(x, y + 1 - 4 / 16f, z, x + 1, y + 1, z + 1),
+                    new SimpleAxisAlignedBB(x + 6 / 16f, y + 4 / 16f, z + 6 / 16f, x + 1 - 6 / 16f, y + 1 - 4 / 16f, z + 1 - 6 / 16f),
+                    new SimpleAxisAlignedBB(x + 5 / 16f, y /*- 4 / 16f*/, z + 5 / 16f, x + 1 - 5 / 16f, y + 4 / 16f, z + 1 - 5 / 16f),
+            };
+            case SOUTH -> new AxisAlignedBB[]{
+                    new SimpleAxisAlignedBB(x, y, z + 1 - 4 / 16f, x + 1, y + 1, z + 1),
+                    new SimpleAxisAlignedBB(x + 6 / 16f, y + 6 / 16f, z + 4 / 16f, x + 1 - 6 / 16f, y + 1 - 6 / 16f, z + 1 - 4 / 16f),
+                    new SimpleAxisAlignedBB(x + 5 / 16f, y + 5 / 16f, z /*- 4 / 16f*/, x + 1 - 5 / 16f, y + 1 - 5 / 16f, z + 4 / 16f),
+            };
+            case NORTH -> new AxisAlignedBB[]{
+                    new SimpleAxisAlignedBB(x, y, z, x + 1, y + 1, z + 4 / 16f),
+                    new SimpleAxisAlignedBB(x + 6 / 16f, y + 6 / 16f, z + 4 / 16f, x + 1 - 6 / 16f, y + 1 - 6 / 16f, z + 1 - 4 / 16f),
+                    new SimpleAxisAlignedBB(x + 5 / 16f, y + 5 / 16f, z + 1 - 4 / 16f, x + 1 - 5 / 16f, y + 1 - 5 / 16f, z + 1 /*+ 4 / 16f*/),
+            };
+            case EAST -> new AxisAlignedBB[]{
+                    new SimpleAxisAlignedBB(x + 1 - 4 / 16f, y, z, x + 1, y + 1, z + 1),
+                    new SimpleAxisAlignedBB(x + 4 / 16f, y + 6 / 16f, z + 6 / 16f, x + 1 - 4 / 16f, y + 1 - 6 / 16f, z + 1 - 6 / 16f),
+                    new SimpleAxisAlignedBB(x /*- 4 / 16f*/, y + 5 / 16f, z + 5 / 16f, x + 4 / 16f, y + 1 - 5 / 16f, z + 1 - 5 / 16f),
+            };
+            case WEST -> new AxisAlignedBB[]{
+                    new SimpleAxisAlignedBB(x, y, z, x + 4 / 16f, y + 1, z + 1),
+                    new SimpleAxisAlignedBB(x + 4 / 16f, y + 6 / 16f, z + 6 / 16f, x + 1 - 4 / 16f, y + 1 - 6 / 16f, z + 1 - 6 / 16f),
+                    new SimpleAxisAlignedBB(x + 1 - 4 / 16f, y + 5 / 16f, z + 5 / 16f, x + 1 /*+ 4 / 16f*/, y + 1 - 5 / 16f, z + 1 - 5 / 16f),
+            };
+        };
     }
 
     @Override

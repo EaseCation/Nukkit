@@ -2,6 +2,7 @@ package cn.nukkit.entity.projectile;
 
 import cn.nukkit.Player;
 import cn.nukkit.block.Block;
+import cn.nukkit.block.ClipFlag;
 import cn.nukkit.entity.Entity;
 import cn.nukkit.entity.EntityLiving;
 import cn.nukkit.entity.item.EntityEndCrystal;
@@ -272,7 +273,11 @@ public abstract class EntityProjectile extends Entity {
             MovingObjectPosition blockHitResult = null;
 
             if (!this.isCollided) {
-                blockHitResult = level.clip(copyVec(), moveVector, false, 200, canPassThroughBarrier());
+                int clipFlags = ClipFlag.CLAMP;
+                if (canPassThroughBarrier()) {
+                    clipFlags |= ClipFlag.IGNORE_BARRIER;
+                }
+                blockHitResult = level.clip(copyVec(), moveVector, 200, clipFlags);
                 if (blockHitResult != null) {
                     Vector3 hitPos = blockHitResult.hitVector;
 
@@ -292,7 +297,7 @@ public abstract class EntityProjectile extends Entity {
                 //TODO: hit water sfx
             } else if (shouldStickInGround() && stuckToBlockPos != null) {
                 Block stuckToBlock = level.getBlock(stuckToBlockPos);
-                if (!stuckToBlock.collidesWithBB(boundingBox.grow(0.06))) {
+                if (!stuckToBlock.collide(boundingBox.grow(0.06), ClipFlag.CLAMP)) {
                     stuckToBlockPos = null;
                     onGround = false;
                     isCollided = false;

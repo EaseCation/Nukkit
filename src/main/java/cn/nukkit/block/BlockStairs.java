@@ -1,12 +1,16 @@
 package cn.nukkit.block;
 
 import cn.nukkit.Player;
+import cn.nukkit.block.state.enumeration.MinecraftCornerState;
 import cn.nukkit.item.Item;
 import cn.nukkit.item.ItemTool;
 import cn.nukkit.math.AxisAlignedBB;
 import cn.nukkit.math.BlockFace;
 import cn.nukkit.math.SimpleAxisAlignedBB;
 import cn.nukkit.utils.Faceable;
+
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * author: MagicDroidX
@@ -61,78 +65,89 @@ public abstract class BlockStairs extends BlockTransparent implements Faceable {
     }
 
     @Override
-    public boolean collidesWithBB(AxisAlignedBB bb, boolean collisionBB) {
-        int damage = this.getDamage();
-        int side = damage & DIRECTION_MASK;
-        double f = 0;
-        double f1 = 0.5;
-        double f2 = 0.5;
-        double f3 = 1;
-        if ((damage & UPSIDE_DOWN_BIT) == UPSIDE_DOWN_BIT) {
-            f = 0.5;
-            f1 = 1;
-            f2 = 0;
-            f3 = 0.5;
+    public AxisAlignedBB[] getCollisionShape(int flags) {
+        boolean upsideDown = isUpsideDown();
+        List<AxisAlignedBB> aabbs = new ArrayList<>(3);
+
+        // base
+        if (upsideDown) {
+            aabbs.add(new SimpleAxisAlignedBB(x, y + 0.5f, z, x + 1, y + 1, z + 1));
+        } else {
+            aabbs.add(new SimpleAxisAlignedBB(x, y, z, x + 1, y + 0.5f, z + 1));
         }
 
-        if (bb.intersectsWith(new SimpleAxisAlignedBB(
-                this.x,
-                this.y + f,
-                this.z,
-                this.x + 1,
-                this.y + f1,
-                this.z + 1
-        ))) {
-            return true;
+        // step
+        float bottom = 0.5f;
+        float top = 1;
+        if (upsideDown) {
+            bottom = 0;
+            top = 0.5f;
+        }
+        MinecraftCornerState corner = getCorner();
+        switch (getBlockFace()) {
+            case EAST -> {
+                switch (corner) {
+                    case NONE -> aabbs.add(new SimpleAxisAlignedBB(x + 0.5f, y + bottom, z, x + 1, y + top, z + 1));
+                    case INNER_LEFT -> {
+                        aabbs.add(new SimpleAxisAlignedBB(x + 0.5f, y + bottom, z, x + 1, y + top, z + 1));
+                        aabbs.add(new SimpleAxisAlignedBB(x, y + bottom, z, x + 1, y + top, z + 0.5f)); // inner piece
+                    }
+                    case INNER_RIGHT -> {
+                        aabbs.add(new SimpleAxisAlignedBB(x + 0.5f, y + bottom, z, x + 1, y + top, z + 1));
+                        aabbs.add(new SimpleAxisAlignedBB(x, y + bottom, z + 0.5f, x + 1, y + top, z + 1));
+                    }
+                    case OUTER_LEFT -> aabbs.add(new SimpleAxisAlignedBB(x + 0.5f, y + bottom, z, x + 1, y + top, z + 0.5f));
+                    case OUTER_RIGHT -> aabbs.add(new SimpleAxisAlignedBB(x + 0.5f, y + bottom, z + 0.5f, x + 1, y + top, z + 1));
+                }
+            }
+            case WEST -> {
+                switch (corner) {
+                    case NONE -> aabbs.add(new SimpleAxisAlignedBB(x, y + bottom, z, x + 0.5f, y + top, z + 1));
+                    case INNER_LEFT -> {
+                        aabbs.add(new SimpleAxisAlignedBB(x, y + bottom, z, x + 0.5f, y + top, z + 1));
+                        aabbs.add(new SimpleAxisAlignedBB(x, y + bottom, z + 0.5f, x + 1, y + top, z + 1));
+                    }
+                    case INNER_RIGHT -> {
+                        aabbs.add(new SimpleAxisAlignedBB(x, y + bottom, z, x + 0.5f, y + top, z + 1));
+                        aabbs.add(new SimpleAxisAlignedBB(x, y + bottom, z, x + 1, y + top, z + 0.5f));
+                    }
+                    case OUTER_LEFT -> aabbs.add(new SimpleAxisAlignedBB(x, y + bottom, z + 0.5f, x + 0.5f, y + top, z + 1));
+                    case OUTER_RIGHT -> aabbs.add(new SimpleAxisAlignedBB(x, y + bottom, z, x + 0.5f, y + top, z + 0.5f));
+                }
+            }
+            case SOUTH -> {
+                switch (corner) {
+                    case NONE -> aabbs.add(new SimpleAxisAlignedBB(x, y + bottom, z + 0.5f, x + 1, y + top, z + 1));
+                    case INNER_LEFT -> {
+                        aabbs.add(new SimpleAxisAlignedBB(x, y + bottom, z + 0.5f, x + 1, y + top, z + 1));
+                        aabbs.add(new SimpleAxisAlignedBB(x + 0.5f, y + bottom, z, x + 1, y + top, z + 1));
+                    }
+                    case INNER_RIGHT -> {
+                        aabbs.add(new SimpleAxisAlignedBB(x, y + bottom, z + 0.5f, x + 1, y + top, z + 1));
+                        aabbs.add(new SimpleAxisAlignedBB(x, y + bottom, z, x + 0.5f, y + top, z + 1));
+                    }
+                    case OUTER_LEFT -> aabbs.add(new SimpleAxisAlignedBB(x + 0.5f, y + bottom, z + 0.5f, x + 1, y + top, z + 1));
+                    case OUTER_RIGHT -> aabbs.add(new SimpleAxisAlignedBB(x, y + bottom, z + 0.5f, x + 0.5f, y + top, z + 1));
+                }
+            }
+            case NORTH -> {
+                switch (corner) {
+                    case NONE -> aabbs.add(new SimpleAxisAlignedBB(x, y + bottom, z, x + 1, y + top, z + 0.5f));
+                    case INNER_LEFT -> {
+                        aabbs.add(new SimpleAxisAlignedBB(x, y + bottom, z, x + 1, y + top, z + 0.5f));
+                        aabbs.add(new SimpleAxisAlignedBB(x, y + bottom, z, x + 0.5f, y + top, z + 1));
+                    }
+                    case INNER_RIGHT -> {
+                        aabbs.add(new SimpleAxisAlignedBB(x, y + bottom, z, x + 1, y + top, z + 0.5f));
+                        aabbs.add(new SimpleAxisAlignedBB(x + 0.5f, y + bottom, z, x + 1, y + top, z + 1));
+                    }
+                    case OUTER_LEFT -> aabbs.add(new SimpleAxisAlignedBB(x, y + bottom, z, x + 0.5f, y + top, z + 0.5f));
+                    case OUTER_RIGHT -> aabbs.add(new SimpleAxisAlignedBB(x + 0.5f, y + bottom, z, x + 1, y + top, z + 0.5f));
+                }
+            }
         }
 
-        if (side == 0) {
-            if (bb.intersectsWith(new SimpleAxisAlignedBB(
-                    this.x + 0.5,
-                    this.y + f2,
-                    this.z,
-                    this.x + 1,
-                    this.y + f3,
-                    this.z + 1
-            ))) {
-                return true;
-            }
-        } else if (side == 1) {
-            if (bb.intersectsWith(new SimpleAxisAlignedBB(
-                    this.x,
-                    this.y + f2,
-                    this.z,
-                    this.x + 0.5,
-                    this.y + f3,
-                    this.z + 1
-            ))) {
-                return true;
-            }
-        } else if (side == 2) {
-            if (bb.intersectsWith(new SimpleAxisAlignedBB(
-                    this.x,
-                    this.y + f2,
-                    this.z + 0.5,
-                    this.x + 1,
-                    this.y + f3,
-                    this.z + 1
-            ))) {
-                return true;
-            }
-        } else if (side == 3) {
-            if (bb.intersectsWith(new SimpleAxisAlignedBB(
-                    this.x,
-                    this.y + f2,
-                    this.z,
-                    this.x + 1,
-                    this.y + f3,
-                    this.z + 0.5
-            ))) {
-                return true;
-            }
-        }
-
-        return false;
+        return aabbs.toArray(new AxisAlignedBB[0]);
     }
 
     @Override
@@ -142,7 +157,11 @@ public abstract class BlockStairs extends BlockTransparent implements Faceable {
 
     @Override
     public BlockFace getBlockFace() {
-        return BlockFace.fromReversedHorizontalIndex(this.getDamage() & DIRECTION_MASK);
+        return getBlockFace(this);
+    }
+
+    private static BlockFace getBlockFace(Block block) {
+        return BlockFace.fromReversedHorizontalIndex(block.getDamage() & DIRECTION_MASK);
     }
 
     @Override
@@ -167,11 +186,44 @@ public abstract class BlockStairs extends BlockTransparent implements Faceable {
     }
 
     public boolean isUpsideDown() {
-        return (getDamage() & UPSIDE_DOWN_BIT) == UPSIDE_DOWN_BIT;
+        return isUpsideDown(this);
+    }
+
+    private static boolean isUpsideDown(Block block) {
+        return (block.getDamage() & UPSIDE_DOWN_BIT) != 0;
     }
 
     @Override
     public boolean isStairs() {
         return true;
+    }
+
+    public MinecraftCornerState getCorner() {
+        BlockFace facing = getBlockFace();
+        boolean upsideDown = isUpsideDown();
+
+        Block back = getSide(facing);
+        if (back.isStairs() && isUpsideDown(back) == upsideDown) {
+            BlockFace face = getBlockFace(back);
+            if (face == facing.rotateY()) {
+                return MinecraftCornerState.OUTER_RIGHT;
+            }
+            if (face == facing.rotateYCCW()) {
+                return MinecraftCornerState.OUTER_LEFT;
+            }
+        }
+
+        Block front = getSide(facing.getOpposite());
+        if (front.isStairs() && isUpsideDown(front) == upsideDown) {
+            BlockFace face = getBlockFace(front);
+            if (face == facing.rotateY()) {
+                return MinecraftCornerState.INNER_RIGHT;
+            }
+            if (face == facing.rotateYCCW()) {
+                return MinecraftCornerState.INNER_LEFT;
+            }
+        }
+
+        return MinecraftCornerState.NONE;
     }
 }

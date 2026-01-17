@@ -16,6 +16,7 @@ import cn.nukkit.level.GameRule;
 import cn.nukkit.level.Level;
 import cn.nukkit.math.AxisAlignedBB;
 import cn.nukkit.math.BlockFace;
+import cn.nukkit.math.SimpleAxisAlignedBB;
 import cn.nukkit.nbt.tag.CompoundTag;
 import cn.nukkit.nbt.tag.Tag;
 import cn.nukkit.network.protocol.LevelEventPacket;
@@ -725,6 +726,17 @@ public class BlockCauldron extends BlockTransparent {
         }
 
         return 0;
+    }
+
+    @Override
+    public AxisAlignedBB[] getCollisionShape(int flags) {
+        return new AxisAlignedBB[]{
+                new SimpleAxisAlignedBB(x, y, z, x + 1, y + 5 / 16f, z + 1), // bottom
+                new SimpleAxisAlignedBB(x, y, z, x + 2 / 16f, y + 1, z + 1), // west
+                new SimpleAxisAlignedBB(x, y, z, x + 1, y + 1, z + 2 / 16f), // north
+                new SimpleAxisAlignedBB(x + 1 - 2 / 16f, y, z, x + 1, y + 1, z + 1), // east
+                new SimpleAxisAlignedBB(x, y, z + 1 - 2 / 16f, x + 1, y + 1, z + 1), // south
+        };
     }
 
     @Override

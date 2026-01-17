@@ -2070,7 +2070,7 @@ public class Level implements ChunkManager, Metadatable {
                             return new Block[0];
                         }
                         Block block = this.getBlock(x, y, z, false);
-                        if (block.getId() != BlockID.AIR && block.collidesWithBB(bb)) {
+                        if (block.getId() != BlockID.AIR && block.collide(bb)) {
                             return new Block[]{block};
                         }
                     }
@@ -2087,7 +2087,7 @@ public class Level implements ChunkManager, Metadatable {
                             return collides.toArray(new Block[0]);
                         }
                         Block block = this.getBlock(x, y, z, false);
-                        if (block.getId() != BlockID.AIR && block.collidesWithBB(bb)) {
+                        if (block.getId() != BlockID.AIR && block.collide(bb)) {
                             collides.add(block);
                         }
                     }
@@ -2111,7 +2111,7 @@ public class Level implements ChunkManager, Metadatable {
         if (block.isSolid()) {
             return true;
         }
-        AxisAlignedBB bb = block.getBoundingBox();
+        AxisAlignedBB bb = block.getClipBoundingBox();
         return bb != null && bb.getAverageEdgeLength() > 0.99;
     }
 
@@ -2119,15 +2119,16 @@ public class Level implements ChunkManager, Metadatable {
      * @return block hit result
      */
     @Nullable
-    public MovingObjectPosition clip(Vector3 a, Vector3 b, boolean liquid, int maxDistance) {
-        return clip(a, b, liquid, maxDistance, false);
+    public MovingObjectPosition clip(Vector3 a, Vector3 b, int maxDistance) {
+        return clip(a, b, maxDistance, ClipFlag.NONE);
     }
 
     /**
+     * @param clipFlags {@link ClipFlag}
      * @return block hit result
      */
     @Nullable
-    public MovingObjectPosition clip(Vector3 a, Vector3 b, boolean liquid, int maxDistance, boolean ignoreBarrier) {
+    public MovingObjectPosition clip(Vector3 a, Vector3 b, int maxDistance, int clipFlags) {
         int xBlock0 = Mth.floor(a.x);
         int yBlock0 = Mth.floor(a.y);
         int zBlock0 = Mth.floor(a.z);
@@ -2135,33 +2136,18 @@ public class Level implements ChunkManager, Metadatable {
         int yBlock1 = Mth.floor(b.y);
         int zBlock1 = Mth.floor(b.z);
 
-        MovingObjectPosition hitResult;
+        boolean liquid = ClipFlag.has(clipFlags, ClipFlag.LIQUID);
         if (liquid) {
             Block extraBlock = getExtraBlock(xBlock0, yBlock0, zBlock0, false);
-            if (extraBlock.isLiquid()) {
-                hitResult = extraBlock.clip(a, b, extraBlock::getCollisionBoundingBox);
-            } else if (!extraBlock.isAir()) {
-                hitResult = extraBlock.calculateIntercept(a, b);
-            } else {
-                Block block = getBlock(xBlock0, yBlock0, zBlock0, false);
-                if (block.isLiquid()) {
-                    hitResult = block.clip(a, b, block::getCollisionBoundingBox);
-                } else if (ignoreBarrier && block.is(Block.BARRIER)) {
-                    hitResult = null;
-                } else {
-                    hitResult = block.calculateIntercept(a, b);
-                }
-            }
-        } else {
-            Block block = getBlock(xBlock0, yBlock0, zBlock0, false);
-            if (ignoreBarrier && block.is(Block.BARRIER)) {
-                hitResult = null;
-            } else {
-                hitResult = block.calculateIntercept(a, b);
+            MovingObjectPosition firstHitResult = extraBlock.clip(a, b, clipFlags);
+            if (firstHitResult != null) {
+                return firstHitResult;
             }
         }
-        if (hitResult != null) {
-            return hitResult;
+        Block firstBlock = getBlock(xBlock0, yBlock0, zBlock0, false);
+        MovingObjectPosition firstHitResult = firstBlock.clip(a, b, clipFlags);
+        if (firstHitResult != null) {
+            return firstHitResult;
         }
 
         for (int i = 0; i < maxDistance; i++) {
@@ -2254,24 +2240,13 @@ public class Level implements ChunkManager, Metadatable {
 
             if (liquid) {
                 Block extraBlock = getExtraBlock(xBlock0, yBlock0, zBlock0, false);
-                if (extraBlock.isLiquid()) {
-                    hitResult = extraBlock.clip(a, b, extraBlock::getCollisionBoundingBox);
-                } else if (!extraBlock.isAir()) {
-                    hitResult = extraBlock.calculateIntercept(a, b);
-                } else {
-                    Block block = getBlock(xBlock0, yBlock0, zBlock0, false);
-                    if (block.isLiquid()) {
-                        hitResult = block.clip(a, b, block::getCollisionBoundingBox);
-                    } else if (!ignoreBarrier || !block.is(Block.BARRIER)) {
-                        hitResult = block.calculateIntercept(a, b);
-                    }
-                }
-            } else {
-                Block block = getBlock(xBlock0, yBlock0, zBlock0, false);
-                if (!ignoreBarrier || !block.is(Block.BARRIER)) {
-                    hitResult = block.calculateIntercept(a, b);
+                MovingObjectPosition hitResult = extraBlock.clip(a, b, clipFlags);
+                if (hitResult != null) {
+                    return hitResult;
                 }
             }
+            Block block = getBlock(xBlock0, yBlock0, zBlock0, false);
+            MovingObjectPosition hitResult = block.clip(a, b, clipFlags);
             if (hitResult != null) {
                 return hitResult;
             }
@@ -2306,8 +2281,9 @@ public class Level implements ChunkManager, Metadatable {
                     if (block.getId() == BlockID.BARRIER && entity.canPassThroughBarrier()) {
                         continue;
                     }
-                    if (!block.canPassThrough() && block.collidesWithBB(bb)) {
-                        collides.add(block.getBoundingBox());
+                    AxisAlignedBB[] cubes;
+                    if (!block.canPassThrough() && (cubes = block.getCollidingCubes(bb)) != null) {
+                        Collections.addAll(collides, cubes);
                     }
                 }
             }
@@ -2339,8 +2315,8 @@ public class Level implements ChunkManager, Metadatable {
         for (int z = minZ; z <= maxZ; ++z) {
             for (int x = minX; x <= maxX; ++x) {
                 for (int y = minY; y <= maxY; ++y) {
-                    Block block = this.getBlock(x, y, z);
-                    if (!block.canPassThrough() && block.collidesWithBB(bb)) {
+                    Block block = this.getBlock(x, y, z, false);
+                    if (!block.canPassThrough() && block.collide(bb)) {
                         return true;
                     }
                 }
@@ -3200,27 +3176,29 @@ public class Level implements ChunkManager, Metadatable {
         if (placement != hand) {
             placement.position(block);
         }
-        AxisAlignedBB boundingBox;
-        if (!placement.canPassThrough() && (boundingBox = placement.getBoundingBox()) != null
+        AxisAlignedBB[] boundingBoxes;
+        if (!placement.canPassThrough() && (boundingBoxes = placement.getCollisionShape()) != null
                 && !placement.isDoor() && !placement.is(Block.BED) && !placement.isSkull() && !placement.isHangingSign()
                 && (!placement.is(Block.BAMBOO) || target.is(Block.BAMBOO) || target.is(Block.BAMBOO_SAPLING)) //TODO: check bamboo boundingBox
         ) {
-            Entity[] entities = this.getCollidingEntities(boundingBox);
-            for (Entity e : entities) {
-                if (e instanceof EntityProjectile || e instanceof EntityItem || e instanceof EntityXPOrb || e instanceof EntityFirework || e instanceof EntityPainting
-                        || e == player || (e instanceof Player && ((Player) e).isSpectator())) {
-                    continue;
+            for (AxisAlignedBB boundingBox : boundingBoxes) {
+                Entity[] entities = this.getCollidingEntities(boundingBox);
+                for (Entity e : entities) {
+                    if (e instanceof EntityProjectile || e instanceof EntityItem || e instanceof EntityXPOrb || e instanceof EntityFirework || e instanceof EntityPainting
+                            || e == player || (e instanceof Player && ((Player) e).isSpectator())) {
+                        continue;
+                    }
+                    return null;
                 }
-                return null;
-            }
 
-            if (player != null) {
-                Vector3 diff = player.getNextPosition().subtract(player.getPosition());
-                AxisAlignedBB bb = player.getBoundingBox().getOffsetBoundingBox(diff.x, diff.y, diff.z);
-                bb.expand(-0.01, -0.01, -0.01);
-                if (boundingBox.intersectsWith(bb)) {
-                    // This is a hack to prevent the player from placing blocks inside themselves
-                    return LazyHolder.INVALID_ITEM;
+                if (player != null) {
+                    Vector3 diff = player.getNextPosition().subtract(player.getPosition());
+                    AxisAlignedBB bb = player.getBoundingBox().getOffsetBoundingBox(diff.x, diff.y, diff.z);
+                    bb.expand(-0.01, -0.01, -0.01);
+                    if (boundingBox.intersectsWith(bb)) {
+                        // This is a hack to prevent the player from placing blocks inside themselves
+                        return LazyHolder.INVALID_ITEM;
+                    }
                 }
             }
         }

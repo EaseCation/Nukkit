@@ -5,7 +5,9 @@ import cn.nukkit.item.Item;
 import cn.nukkit.item.ItemID;
 import cn.nukkit.level.GameRule;
 import cn.nukkit.level.Level;
+import cn.nukkit.math.AxisAlignedBB;
 import cn.nukkit.math.BlockFace;
+import cn.nukkit.math.SimpleAxisAlignedBB;
 import cn.nukkit.network.protocol.LevelEventPacket;
 import cn.nukkit.network.protocol.LevelSoundEventPacket;
 import cn.nukkit.utils.BlockColor;
@@ -67,6 +69,23 @@ public class BlockComposter extends BlockTransparent {
     @Override
     public boolean isSolid() {
         return false;
+    }
+
+    @Override
+    public AxisAlignedBB[] getCollisionShape(int flags) {
+        int fillLevel = getDamage();
+        int height = switch (fillLevel) {
+            case 0 -> 2;
+            case 8 -> 15;
+            default -> fillLevel * 2 + 1;
+        };
+        return new AxisAlignedBB[]{
+                new SimpleAxisAlignedBB(x, y, z, x + 1, y + height / 16f, z + 1), // bottom
+                new SimpleAxisAlignedBB(x, y, z, x + 2 / 16f, y + 1, z + 1), // west
+                new SimpleAxisAlignedBB(x, y, z, x + 1, y + 1, z + 2 / 16f), // north
+                new SimpleAxisAlignedBB(x + 1 - 2 / 16f, y, z, x + 1, y + 1, z + 1), // east
+                new SimpleAxisAlignedBB(x, y, z + 1 - 2 / 16f, x + 1, y + 1, z + 1), // south
+        };
     }
 
     @Override

@@ -80,6 +80,14 @@ public class BlockBubbleColumn extends BlockTransparent {
     }
 
     @Override
+    public AxisAlignedBB[] getCollisionShape(int flags) {
+        if (!ClipFlag.has(flags, ClipFlag.LIQUID)) {
+            return null;
+        }
+        return new AxisAlignedBB[]{getCollisionBoundingBox()};
+    }
+
+    @Override
     public boolean canContainWater() {
         return true;
     }

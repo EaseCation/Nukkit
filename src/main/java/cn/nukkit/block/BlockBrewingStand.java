@@ -7,7 +7,9 @@ import cn.nukkit.blockentity.BlockEntityBrewingStand;
 import cn.nukkit.blockentity.BlockEntityType;
 import cn.nukkit.inventory.ContainerInventory;
 import cn.nukkit.item.Item;
+import cn.nukkit.math.AxisAlignedBB;
 import cn.nukkit.math.BlockFace;
+import cn.nukkit.math.SimpleAxisAlignedBB;
 import cn.nukkit.nbt.tag.CompoundTag;
 import cn.nukkit.nbt.tag.ListTag;
 import cn.nukkit.nbt.tag.StringTag;
@@ -159,28 +161,16 @@ public class BlockBrewingStand extends BlockTransparent {
     }
 
     @Override
-    public double getMinX() {
-        return this.x + 7 / 16.0;
-    }
-
-    @Override
-    public double getMinZ() {
-        return this.z + 7 / 16.0;
-    }
-
-    @Override
-    public double getMaxX() {
-        return this.x + 1 - 7 / 16.0;
-    }
-
-    @Override
     public double getMaxY() {
-        return this.y + 1 - 2 / 16.0;
+        return this.y + 2 / 16f;
     }
 
     @Override
-    public double getMaxZ() {
-        return this.z + 1 - 7 / 16.0;
+    public AxisAlignedBB[] getCollisionShape(int flags) {
+        return new AxisAlignedBB[]{
+                new SimpleAxisAlignedBB(x, y, z, x + 1, y + 2 / 16f, z + 1), // base
+                new SimpleAxisAlignedBB(x + 7 / 16f, y, z + 7 / 16f, x + 1 - 7 / 16f, y + 1 - 2 / 16f, z + 1 - 7 / 16f), // rod
+        };
     }
 
     @Override

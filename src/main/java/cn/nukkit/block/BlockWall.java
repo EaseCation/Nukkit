@@ -57,6 +57,10 @@ public abstract class BlockWall extends BlockTransparent {
 
     @Override
     protected AxisAlignedBB recalculateBoundingBox() {
+        return recalculateBoundingBox(false);
+    }
+
+    private AxisAlignedBB recalculateBoundingBox(boolean clamp) {
         boolean north = getNorthConnectionType() != CONNECTION_TYPE_NONE;
         boolean south = getSouthConnectionType() != CONNECTION_TYPE_NONE;
         boolean west = getWestConnectionType() != CONNECTION_TYPE_NONE;
@@ -80,9 +84,22 @@ public abstract class BlockWall extends BlockTransparent {
                 this.y,
                 this.z + n,
                 this.x + e,
-                this.y + 1.5,
+                this.y + (clamp ? 1 : 1.5f),
                 this.z + s
         );
+    }
+
+    @Override
+    protected AxisAlignedBB recalculateClipBoundingBox() {
+        return recalculateBoundingBox(true);
+    }
+
+    @Override
+    public AxisAlignedBB[] getCollisionShape(int flags) {
+        if (!ClipFlag.has(flags, ClipFlag.CLAMP)) {
+            return super.getCollisionShape(flags);
+        }
+        return new AxisAlignedBB[]{getClipBoundingBox()};
     }
 
     private static boolean canConnect(Block block, BlockFace face) {

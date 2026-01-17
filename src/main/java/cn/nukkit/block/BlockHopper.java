@@ -9,7 +9,9 @@ import cn.nukkit.inventory.ContainerInventory;
 import cn.nukkit.item.Item;
 import cn.nukkit.item.ItemTool;
 import cn.nukkit.level.Level;
+import cn.nukkit.math.AxisAlignedBB;
 import cn.nukkit.math.BlockFace;
+import cn.nukkit.math.SimpleAxisAlignedBB;
 import cn.nukkit.nbt.tag.CompoundTag;
 import cn.nukkit.nbt.tag.ListTag;
 import cn.nukkit.nbt.tag.Tag;
@@ -196,6 +198,22 @@ public class BlockHopper extends BlockTransparent implements Faceable {
     @Override
     public boolean canProvideSupport(BlockFace face, SupportType type) {
         return face == BlockFace.UP || face == BlockFace.DOWN && type == SupportType.CENTER && getBlockFace() == BlockFace.DOWN;
+    }
+
+    @Override
+    public boolean isSolid() {
+        return false;
+    }
+
+    @Override
+    public AxisAlignedBB[] getCollisionShape(int flags) {
+        return new AxisAlignedBB[]{
+                new SimpleAxisAlignedBB(x, y, z, x + 1, y + 10 / 16f, z + 1), // bottom
+                new SimpleAxisAlignedBB(x, y, z, x + 2 / 16f, y + 1, z + 1), // west
+                new SimpleAxisAlignedBB(x, y, z, x + 1, y + 1, z + 2 / 16f), // north
+                new SimpleAxisAlignedBB(x + 1 - 2 / 16f, y, z, x + 1, y + 1, z + 1), // east
+                new SimpleAxisAlignedBB(x, y, z + 1 - 2 / 16f, x + 1, y + 1, z + 1), // south
+        };
     }
 
     protected BlockEntityHopper createBlockEntity(@Nullable Item item) {

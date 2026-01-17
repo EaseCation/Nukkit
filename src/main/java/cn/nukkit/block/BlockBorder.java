@@ -50,4 +50,9 @@ public class BlockBorder extends BlockWall {
     protected AxisAlignedBB recalculateBoundingBox() {
         return new SimpleAxisAlignedBB(this.x, this.y, this.z, this.x + 1, this.y + 1.5, this.z + 1);
     }
+
+    @Override
+    protected AxisAlignedBB recalculateClipBoundingBox() {
+        return this;
+    }
 }

@@ -1634,7 +1634,7 @@ public class Player extends EntityHuman implements CommandSender, InventoryHolde
                     for (int y = minY; y <= maxY; ++y) {
                         Block block = this.level.getBlock(x, y, z);
 
-                        if (!block.canPassThrough() && block.collidesWithBB(realBB)) {
+                        if (!block.canPassThrough() && block.collide(realBB)) {
                             onGround = true;
                             break;
                         }

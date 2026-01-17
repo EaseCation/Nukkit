@@ -90,6 +90,14 @@ public abstract class BlockLiquid extends BlockTransparent {
         return this;
     }
 
+    @Override
+    public AxisAlignedBB[] getCollisionShape(int flags) {
+        if (!ClipFlag.has(flags, ClipFlag.LIQUID)) {
+            return null;
+        }
+        return new AxisAlignedBB[]{getCollisionBoundingBox()};
+    }
+
     public float getFluidHeightPercent() {
         int d = this.getDamage();
         if (d >= DOWNWARD_BIT) {

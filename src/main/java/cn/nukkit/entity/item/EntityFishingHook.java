@@ -3,6 +3,7 @@ package cn.nukkit.entity.item;
 import cn.nukkit.Player;
 import cn.nukkit.Server;
 import cn.nukkit.block.Block;
+import cn.nukkit.block.ClipFlag;
 import cn.nukkit.entity.Entity;
 import cn.nukkit.entity.EntityID;
 import cn.nukkit.entity.data.LongEntityData;
@@ -154,7 +155,11 @@ public class EntityFishingHook extends EntityProjectile {
         boolean inWater = false;
 
         Vector3 moveVector = new Vector3(this.x + this.motionX, this.y + this.motionY, this.z + this.motionZ);
-        MovingObjectPosition blockHitResult = level.clip(copyVec(), moveVector, true, 200, canPassThroughBarrier());
+        int clipFlags = ClipFlag.LIQUID | ClipFlag.CLAMP;
+        if (canPassThroughBarrier()) {
+            clipFlags |= ClipFlag.IGNORE_BARRIER;
+        }
+        MovingObjectPosition blockHitResult = level.clip(copyVec(), moveVector, 200, clipFlags);
         if (updateGravity) {
             if (blockHitResult != null) {
                 Vector3 hitPos = blockHitResult.hitVector;
@@ -191,10 +196,10 @@ public class EntityFishingHook extends EntityProjectile {
             } else if (stuckToBlockPos != null) {
                 AxisAlignedBB aabb = boundingBox.grow(0.06);
                 Block stuckToExtraBlock = level.getExtraBlock(stuckToBlockPos);
-                boolean stuck = stuckToExtraBlock.collidesWithBB(aabb, stuckToExtraBlock.isLiquid());
+                boolean stuck = stuckToExtraBlock.collide(aabb, ClipFlag.LIQUID | ClipFlag.CLAMP);
                 if (!stuck) {
                     Block stuckToBlock = level.getBlock(stuckToBlockPos);
-                    stuck = stuckToBlock.collidesWithBB(aabb, stuckToBlock.isLiquid());
+                    stuck = stuckToBlock.collide(aabb, ClipFlag.LIQUID | ClipFlag.CLAMP);
                     if (stuckToBlock.isLava()) {
                         close();
                         return false;

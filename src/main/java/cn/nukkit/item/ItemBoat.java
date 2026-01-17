@@ -70,13 +70,15 @@ public abstract class ItemBoat extends Item {
             return false;
         }
 
-        double y;
+        double y = Double.MIN_VALUE;
         if (target.isWater() || target.is(Block.BUBBLE_COLUMN)) {
             y = block.getY() - 0.375;
         } else {
-            AxisAlignedBB bb = target.getBoundingBox();
-            if (bb != null) {
-                y = bb.getMaxY();
+            AxisAlignedBB[] bbs = target.getCollisionShape();
+            if (bbs != null && bbs.length > 0) {
+                for (AxisAlignedBB bb : bbs) {
+                    y = Math.max(y, bb.getMaxY());
+                }
             } else {
                 y = target.getY() + 0.3;
             }

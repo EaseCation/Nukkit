@@ -497,6 +497,34 @@ public final class Mth {
         return Math.round(a * Math.pow(10, precision)) / Math.pow(10, precision);
     }
 
+    /**
+     * Converts an angle measured in degrees to an approximately
+     * equivalent angle measured in radians.  The conversion from
+     * degrees to radians is generally inexact.
+     *
+     * @param   angdeg   an angle, in degrees
+     * @return  the measurement of the angle {@code angdeg}
+     *          in radians.
+     */
+    public static float toRadians(float angdeg) {
+        return angdeg * DEG_TO_RAD;
+    }
+
+    /**
+     * Converts an angle measured in radians to an approximately
+     * equivalent angle measured in degrees.  The conversion from
+     * radians to degrees is generally inexact; users should
+     * <i>not</i> expect {@code cos(toRadians(90))} to exactly
+     * equal {@code 0}.
+     *
+     * @param   angrad   an angle, in radians
+     * @return  the measurement of the angle {@code angrad}
+     *          in degrees.
+     */
+    public static float toDegrees(float angrad) {
+        return angrad * RAD_TO_DEG;
+    }
+
     private Mth() {
         throw new IllegalStateException();
     }

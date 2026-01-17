@@ -1437,7 +1437,7 @@ public abstract class Entity extends Location implements Metadatable, EntityData
     }
 
     protected boolean checkObstruction(double x, double y, double z) {
-        if (this.level.getCollisionCubes(this, this.getBoundingBox(), false).length == 0) {
+        if (!this.level.hasCollision(this, this.getBoundingBox(), false)) {
             return false;
         }
 
@@ -2250,9 +2250,22 @@ public abstract class Entity extends Location implements Metadatable, EntityData
         double y = this.y + this.getEyeHeight();
         Block block = this.level.getBlock(Mth.floor(this.x), Mth.floor(y), Mth.floor(this.z));
 
-        AxisAlignedBB bb = block.getBoundingBox();
+        if (!block.isSolid() || block.isTransparent()) {
+            return false;
+        }
 
-        return bb != null && block.isSolid() && !block.isTransparent() && bb.intersectsWith(this.getBoundingBox());
+        AxisAlignedBB[] bbs = block.getCollisionShape(ClipFlag.CLAMP);
+        if (bbs == null) {
+            return false;
+        }
+
+        AxisAlignedBB entityBB = this.getBoundingBox();
+        for (AxisAlignedBB bb : bbs) {
+            if (bb.intersectsWith(entityBB)) {
+                return true;
+            }
+        }
+        return false;
     }
 
     public boolean isInsideOfFire() {
@@ -2457,7 +2470,7 @@ public abstract class Entity extends Location implements Metadatable, EntityData
             this.collisionBlocks = new ObjectArrayList<>();
 
             for (Block b : getBlocksAround()) {
-                if (b.collidesWithBB(this.getBoundingBox(), true)) {
+                if (b.collidesWithBB(this.getBoundingBox(), Block::getCollisionBoundingBox)) {
                     this.collisionBlocks.add(b);
                 }
             }

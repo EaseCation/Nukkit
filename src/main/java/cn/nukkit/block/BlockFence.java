@@ -4,6 +4,9 @@ import cn.nukkit.math.AxisAlignedBB;
 import cn.nukkit.math.BlockFace;
 import cn.nukkit.math.SimpleAxisAlignedBB;
 
+import java.util.ArrayList;
+import java.util.List;
+
 /**
  * Created on 2015/12/7 by xtypr.
  * Package cn.nukkit.block in project Nukkit .
@@ -42,6 +45,10 @@ public abstract class BlockFence extends BlockTransparent {
 
     @Override
     protected AxisAlignedBB recalculateBoundingBox() {
+        return recalculateBoundingBox(false);
+    }
+
+    private AxisAlignedBB recalculateBoundingBox(boolean clamp) {
         boolean north = this.canConnect(this.north(), BlockFace.SOUTH);
         boolean south = this.canConnect(this.south(), BlockFace.NORTH);
         boolean west = this.canConnect(this.west(), BlockFace.EAST);
@@ -55,9 +62,37 @@ public abstract class BlockFence extends BlockTransparent {
                 this.y,
                 this.z + n,
                 this.x + e,
-                this.y + 1.5,
+                this.y + (clamp ? 1 : 1.5f),
                 this.z + s
         );
+    }
+
+    @Override
+    protected AxisAlignedBB recalculateClipBoundingBox() {
+        return recalculateBoundingBox(true);
+    }
+
+    @Override
+    public AxisAlignedBB[] getCollisionShape(int flags) {
+        boolean north = canConnect(north(), BlockFace.SOUTH);
+        boolean south = canConnect(south(), BlockFace.NORTH);
+        boolean west = canConnect(west(), BlockFace.EAST);
+        boolean east = canConnect(east(), BlockFace.WEST);
+
+        float height = ClipFlag.has(flags, ClipFlag.CLAMP) ? 1 : 1.5f;
+        List<AxisAlignedBB> aabbs = new ArrayList<>(2);
+
+        if (north || south) {
+            aabbs.add(new SimpleAxisAlignedBB(x + 6 / 16f, y, north ? z : z + 6 / 16f, x + 1 - 6 / 16f, y + height, south ? z + 1 : z + 1 - 6 / 16f));
+        }
+
+        if (west || east) {
+            aabbs.add(new SimpleAxisAlignedBB(west ? x : x + 6 / 16f, y, z + 6 / 16f, east ? x + 1 : x + 1 - 6 / 16f, y + height, z + 1 - 6 / 16f));
+        }
+
+        return aabbs.isEmpty() ? new AxisAlignedBB[]{
+                new SimpleAxisAlignedBB(x + 6 / 16f, y, z + 6 / 16f, x + 1 - 6 / 16f, y + height, z + 1 - 6 / 16f),
+        } : aabbs.toArray(new AxisAlignedBB[0]);
     }
 
     @Override
