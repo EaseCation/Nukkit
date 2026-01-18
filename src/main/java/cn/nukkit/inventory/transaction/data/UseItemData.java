@@ -1,5 +1,6 @@
 package cn.nukkit.inventory.transaction.data;
 
+import cn.nukkit.block.Block;
 import cn.nukkit.item.Item;
 import cn.nukkit.math.BlockFace;
 import cn.nukkit.math.BlockVector3;
@@ -16,6 +17,9 @@ import javax.annotation.Nullable;
 public class UseItemData implements TransactionData {
 
     public int actionType;
+    /**
+     * @since 1.21.20
+     */
     public int triggerType;
     public BlockVector3 blockPos;
     @Nullable
@@ -25,8 +29,12 @@ public class UseItemData implements TransactionData {
     public Vector3 playerPos;
     public Vector3f clickPos;
     /**
-     * Runtime ID.
+     * @since 1.16.0
      */
-    public int blockId;
+    @Nullable
+    public Block block;
+    /**
+     * @since 1.21.20
+     */
     public boolean clientInteractPrediction;
 }

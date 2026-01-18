@@ -34,7 +34,7 @@ public class BlockEntityPistonArm extends BlockEntitySpawnable {
     public boolean extending;
     public boolean sticky;
     public int state;
-    public int newState = 1;
+    public int newState;
     public List<BlockVector3> attachedBlocks;
     public boolean powered;
 
@@ -49,17 +49,12 @@ public class BlockEntityPistonArm extends BlockEntitySpawnable {
 
     @Override
     protected void initBlockEntity() {
-        if (namedTag.contains("Progress")) {
-            this.progress = namedTag.getFloat("Progress");
-        }
-
-        if (namedTag.contains("LastProgress")) {
-            this.lastProgress = (float) namedTag.getInt("LastProgress");
-        } else {
-            this.lastProgress = 1;
-        }
-
+        this.state = namedTag.getByte("State");
+        this.newState = namedTag.getByte("NewState");
+        this.progress = namedTag.getFloat("Progress");
+        this.lastProgress = namedTag.getFloat("LastProgress");
         this.sticky = namedTag.getBoolean("Sticky");
+
         this.extending = namedTag.getBoolean("Extending");
         this.powered = namedTag.getBoolean("powered");
 
@@ -126,7 +121,28 @@ public class BlockEntityPistonArm extends BlockEntitySpawnable {
 
         //TODO: event
 
-        if (entity instanceof Player) {
+        if (entity instanceof Player player) {
+            if (!entity.isRiding()) {
+                double entityX = entity.x;
+                int ux = moveDirection.getXOffset();
+                if (ux != 0) {
+                    entityX = x + 0.5 + ux * 1.8;
+                }
+
+                double entityY = entity.y;
+                int uy = moveDirection.getYOffset();
+                if (uy != 0) {
+                    entityY = y + 0.5 + uy * 1.5;
+                }
+
+                double entityZ = entity.z;
+                int uz = moveDirection.getZOffset();
+                if (uz != 0) {
+                    entityZ = z + 0.5 + uz * 1.8;
+                }
+
+                player.sendPosition(new Vector3(entityX, entityY, entityZ));
+            }
             return;
         }
 
@@ -249,6 +265,7 @@ public class BlockEntityPistonArm extends BlockEntitySpawnable {
         this.namedTag.putBoolean("powered", this.powered);
         this.namedTag.putList(getAttachedBlocks());
         this.namedTag.putInt("facing", this.facing.getIndex());
+        this.namedTag.putBoolean("Extending", this.extending);
         this.namedTag.putBoolean("Sticky", this.sticky);
     }
 

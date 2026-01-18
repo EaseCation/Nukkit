@@ -1652,6 +1652,11 @@ public class Player extends EntityHuman implements CommandSender, InventoryHolde
     }
 
     @Override
+    public boolean canBePushed() {
+        return !isSpectator();
+    }
+
+    @Override
     protected void checkBlockCollision() {
         if (this.isSpectator()) {
             if (this.blocksAround == null) {

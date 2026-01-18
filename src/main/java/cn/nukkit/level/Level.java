@@ -2957,6 +2957,7 @@ public class Level implements ChunkManager, Metadatable {
             return null;
         }
         Block target = this.getBlock(vector);
+        boolean hasCreativeDrops = false;
         Item[] drops;
         int dropExp = target.getDropExp();
 
@@ -2980,7 +2981,8 @@ public class Level implements ChunkManager, Metadatable {
 
             Item[] eventDrops;
             if (!player.isSurvival()) {
-                eventDrops = new Item[0];
+                eventDrops = target.getCreativeDrops();
+                hasCreativeDrops = eventDrops.length != 0;
             } else if (isSilkTouch && target.canSilkTouch() && (target.canHarvestWithHand() || target.isToolCompatible(item))) {
                 eventDrops = target.getSilkTouchResource();
             } else {
@@ -3051,7 +3053,7 @@ public class Level implements ChunkManager, Metadatable {
                 this.dropExpOrb(vector.add(0.5, 0.5, 0.5), dropExp);
             }
 
-            if (player == null || player.isSurvival()) {
+            if (player == null || player.isSurvival() || hasCreativeDrops) {
                 for (Item drop : drops) {
                     if (drop.getCount() > 0) {
                         this.dropItem(vector.add(0.5, 0.5, 0.5), drop);
@@ -3102,6 +3104,14 @@ public class Level implements ChunkManager, Metadatable {
     }
 
     public Item useItemOn(Vector3 vector, Item item, BlockFace face, float fx, float fy, float fz, @Nullable Player player, boolean playSound) {
+        return this.useItemOn(vector, item, face, fx, fy, fz, player, null, playSound);
+    }
+
+    public Item useItemOn(Vector3 vector, Item item, BlockFace face, float fx, float fy, float fz, @Nullable Player player, @Nullable Boolean clientPrediction) {
+        return this.useItemOn(vector, item, face, fx, fy, fz, player, clientPrediction, true);
+    }
+
+    public Item useItemOn(Vector3 vector, Item item, BlockFace face, float fx, float fy, float fz, @Nullable Player player, @Nullable Boolean clientPrediction, boolean playSound) {
         Block target = this.getBlock(vector);
         Block block = target.getSide(face);
 
@@ -3109,13 +3119,21 @@ public class Level implements ChunkManager, Metadatable {
             return null;
         }
 
-        if (target.getId() == Item.AIR) {
+        if (target.isAir()) {
             return null;
         }
 
+        Block extraTarget = null;
+        Block clientBlock = vector instanceof Block b ? b : null;
+        if (clientBlock != null && !clientBlock.isAir() && !Block.equals(target, clientBlock)) {
+            Block extraBlock = this.getExtraBlock(vector);
+            if (!extraBlock.isAir() && Block.equals(extraBlock, clientBlock)) {
+                extraTarget = extraBlock;
+            }
+        }
+
         if (player != null) {
-            PlayerInteractEvent ev = new PlayerInteractEvent(player, item, target, face,
-                    target.getId() == BlockID.AIR ? Action.RIGHT_CLICK_AIR : Action.RIGHT_CLICK_BLOCK);
+            PlayerInteractEvent ev = new PlayerInteractEvent(player, item, target, face, Action.RIGHT_CLICK_BLOCK);
 
             if (player.isSpectator()) {
                 ev.setCancelled();
@@ -3123,12 +3141,15 @@ public class Level implements ChunkManager, Metadatable {
 
             this.server.getPluginManager().callEvent(ev);
             if (!ev.isCancelled()) {
-                target.onUpdate(BLOCK_UPDATE_TOUCH);
-                if ((!player.isSneaking() || item.is(Item.BRUSH) && target instanceof BlockBrushable) && target.canBeActivated() && target.onActivate(item, face, fx, fy, fz, player)) {
+                Block interactTarget = extraTarget != null ? extraTarget : target;
+
+                interactTarget.onUpdate(BLOCK_UPDATE_TOUCH);
+
+                if ((!player.isSneaking() || item.is(Item.BRUSH) && target instanceof BlockBrushable) && interactTarget.canBeActivated() && interactTarget.onActivate(item, face, fx, fy, fz, player)) {
                     return item;
                 }
 
-                if ((!player.isSneaking() || item.is(Item.BRUSH)) && item.canBeActivated()) {
+                if ((!player.isSneaking() || (target.canContainWater() || block.canContainWater()) && (item.is(Item.WATER_BUCKET) || item.is(Item.BUCKET)) || item.is(Item.BRUSH)) && item.canBeActivated()) {
                     int oldCount = item.getCount();
                     int oldDamage = item.getDamage();
                     if (item.onActivate(this, player, block, target, face, fx, fy, fz)) {
@@ -3146,6 +3167,10 @@ public class Level implements ChunkManager, Metadatable {
             }
         } else if (target.canBeActivated() && target.onActivate(item, face, fx, fy, fz, null)) {
             return item;
+        }
+
+        if (clientPrediction != null && !clientPrediction) {
+            return null;
         }
 
         Block hand;

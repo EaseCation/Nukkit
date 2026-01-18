@@ -3,8 +3,8 @@ package cn.nukkit.block;
 import cn.nukkit.Player;
 import cn.nukkit.blockentity.BlockEntities;
 import cn.nukkit.blockentity.BlockEntity;
-import cn.nukkit.blockentity.BlockEntityType;
 import cn.nukkit.blockentity.BlockEntityShulkerBox;
+import cn.nukkit.blockentity.BlockEntityType;
 import cn.nukkit.inventory.ContainerInventory;
 import cn.nukkit.inventory.InventoryHolder;
 import cn.nukkit.inventory.ShulkerBoxInventory;
@@ -18,6 +18,7 @@ import cn.nukkit.utils.BlockColor;
 import cn.nukkit.utils.DyeColor;
 import cn.nukkit.utils.TextFormat;
 
+import javax.annotation.Nullable;
 import java.util.Map;
 
 import static cn.nukkit.GameVersion.*;
@@ -124,6 +125,15 @@ public class BlockShulkerBox extends BlockTransparent {
         }
 
         return item;
+    }
+
+    @Override
+    public Item[] getCreativeDrops() {
+        BlockEntityShulkerBox blockEntity = getBlockEntity();
+        if (blockEntity == null || blockEntity.getInventory().isEmpty()) {
+            return new Item[0];
+        }
+        return new Item[]{toItem(true)};
     }
 
     @Override
@@ -288,5 +298,16 @@ public class BlockShulkerBox extends BlockTransparent {
     @Override
     public int getMaxStackSize() {
         return 1;
+    }
+
+    @Nullable
+    protected BlockEntityShulkerBox getBlockEntity() {
+        if (level == null) {
+            return null;
+        }
+        if (level.getBlockEntity(this) instanceof BlockEntityShulkerBox blockEntity) {
+            return blockEntity;
+        }
+        return null;
     }
 }

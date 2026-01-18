@@ -865,6 +865,13 @@ public abstract class Block extends Position implements Metadatable, Cloneable, 
         this.level = v.level;
     }
 
+    public final void position(BlockVector3 v, Level level) {
+        this.x = v.x;
+        this.y = v.y;
+        this.z = v.z;
+        this.level = level;
+    }
+
     public Item[] getDrops(Item item) {
         return getDrops(item, null);
     }
@@ -873,6 +880,10 @@ public abstract class Block extends Position implements Metadatable, Cloneable, 
         return new Item[]{
                 this.toItem(true)
         };
+    }
+
+    public Item[] getCreativeDrops() {
+        return new Item[0];
     }
 
     private float getDestroySpeed(Item item, boolean correctTool) {
