@@ -3584,11 +3584,31 @@ public class Player extends EntityHuman implements CommandSender, InventoryHolde
                     break;
                 case ProtocolInfo.REQUEST_CHUNK_RADIUS_PACKET:
                     RequestChunkRadiusPacket requestChunkRadiusPacket = (RequestChunkRadiusPacket) packet;
-                    ChunkRadiusUpdatedPacket chunkRadiusUpdatePacket = new ChunkRadiusUpdatedPacket();
                     this.viewDistance = Mth.clamp(requestChunkRadiusPacket.radius, 4, 96);
-                    this.chunkRadius = Math.min(this.viewDistance, this.getMaxViewDistance());
-                    chunkRadiusUpdatePacket.radius = this.chunkRadius;
-                    this.dataPacket(chunkRadiusUpdatePacket);
+                    int requestedRadius = Math.min(this.viewDistance, this.getMaxViewDistance());
+
+                    // 玩家已登录后主动改变视距时触发事件
+                    if (this.spawned) {
+                        PlayerChunkRadiusRequestEvent event = new PlayerChunkRadiusRequestEvent(this, this.chunkRadius, requestedRadius);
+                        this.server.getPluginManager().callEvent(event);
+
+                        ChunkRadiusUpdatedPacket chunkRadiusUpdatePacket = new ChunkRadiusUpdatedPacket();
+                        if (event.isCancelled()) {
+                            // 取消：发送旧视距给客户端
+                            chunkRadiusUpdatePacket.radius = this.chunkRadius;
+                        } else {
+                            // 使用插件设置的最终视距
+                            this.chunkRadius = event.getRadius();
+                            chunkRadiusUpdatePacket.radius = this.chunkRadius;
+                        }
+                        this.dataPacket(chunkRadiusUpdatePacket);
+                    } else {
+                        // 首次请求（登录过程中），直接应用
+                        this.chunkRadius = requestedRadius;
+                        ChunkRadiusUpdatedPacket chunkRadiusUpdatePacket = new ChunkRadiusUpdatedPacket();
+                        chunkRadiusUpdatePacket.radius = this.chunkRadius;
+                        this.dataPacket(chunkRadiusUpdatePacket);
+                    }
                     break;
                 case ProtocolInfo.SET_PLAYER_GAME_TYPE_PACKET:
                     SetPlayerGameTypePacket setPlayerGameTypePacket = (SetPlayerGameTypePacket) packet;
