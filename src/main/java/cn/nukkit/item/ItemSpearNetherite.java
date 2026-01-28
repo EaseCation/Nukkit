@@ -1,5 +1,7 @@
 package cn.nukkit.item;
 
+import cn.nukkit.network.protocol.LevelSoundEventPacket;
+
 public class ItemSpearNetherite extends ItemSpear {
     public ItemSpearNetherite() {
         this(0, 1);
@@ -31,6 +33,16 @@ public class ItemSpearNetherite extends ItemSpear {
     @Override
     public int getSwingDuration() {
         return 23;
+    }
+
+    @Override
+    public int getAttackMissSound() {
+        return LevelSoundEventPacket.SOUND_NETHERITE_SPEAR_ATTACK_MISS;
+    }
+
+    @Override
+    public int getAttackHitSound() {
+        return LevelSoundEventPacket.SOUND_NETHERITE_SPEAR_ATTACK_HIT;
     }
 
     @Override

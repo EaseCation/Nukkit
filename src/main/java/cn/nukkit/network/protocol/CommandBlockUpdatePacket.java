@@ -1,6 +1,7 @@
 package cn.nukkit.network.protocol;
 
 import cn.nukkit.math.BlockVector3;
+import cn.nukkit.network.protocol.types.CommandBlockMode;
 import lombok.ToString;
 
 @ToString
@@ -10,14 +11,26 @@ public class CommandBlockUpdatePacket extends DataPacket {
     public int x;
     public int y;
     public int z;
-    public int commandBlockMode;
+    public CommandBlockMode commandBlockMode;
     public boolean isRedstoneMode;
     public boolean isConditional;
     public long minecartEid;
     public String command;
     public String lastOutput;
     public String name;
+    /**
+     * @since 1.21.60
+     */
+    public String filteredName = "";
     public boolean shouldTrackOutput;
+    /**
+     * @since 1.12.0
+     */
+    public int tickDelay;
+    /**
+     * @since 1.12.0
+     */
+    public boolean executingOnFirstTick;
 
     @Override
     public int pid() {
@@ -32,7 +45,7 @@ public class CommandBlockUpdatePacket extends DataPacket {
             this.x = v.x;
             this.y = v.y;
             this.z = v.z;
-            this.commandBlockMode = (int) this.getUnsignedVarInt();
+            this.commandBlockMode = CommandBlockMode.getValues()[(int) this.getUnsignedVarInt()];
             this.isRedstoneMode = this.getBoolean();
             this.isConditional = this.getBoolean();
         } else {

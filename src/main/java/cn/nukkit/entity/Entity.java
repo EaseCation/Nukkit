@@ -792,7 +792,7 @@ public abstract class Entity extends Location implements Metadatable, EntityData
     }
 
     public static Entity createEntity(String name, FullChunk chunk, CompoundTag nbt) {
-        if (name.startsWith("minecraft:")) {
+        if (name.startsWith("minecraft:") && !BY_NAME.containsKey(name)) {
             name = name.substring(10);
         }
 
@@ -810,7 +810,7 @@ public abstract class Entity extends Location implements Metadatable, EntityData
     }
 
     public static Entity createEntity(String name, FullChunk chunk, CompoundTag nbt, Object... args) {
-        if (name.startsWith("minecraft:")) {
+        if (name.startsWith("minecraft:") && !BY_NAME.containsKey(name)) {
             name = name.substring(10);
         }
 

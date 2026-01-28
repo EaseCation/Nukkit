@@ -32,6 +32,8 @@ import java.nio.ByteOrder;
 import java.util.*;
 import java.util.concurrent.ThreadLocalRandom;
 
+import static cn.nukkit.SharedConstants.*;
+
 /**
  * author: MagicDroidX
  * Nukkit Project
@@ -560,7 +562,7 @@ public class Item implements Cloneable, ItemID {
                         ench.remove(k);
                     } else if (entry.getShort("lvl") != enchantment.getLevel()) {
                         changed = true;
-                        ench.add(k, new CompoundTag()
+                        ench.setOrAdd(k, new CompoundTag()
                                 .putShort("id", enchantment.getId())
                                 .putShort("lvl", enchantment.getLevel())
                         );
@@ -1449,7 +1451,7 @@ public class Item implements Cloneable, ItemID {
 
     @Override
     final public String toString() {
-        return (itemStackId != Integer.MIN_VALUE ? "<" + itemStackId + ">" : "") + "Item " + this.name + " (" + this.id + ":" + (!this.hasMeta ? "?" : this.meta) + ")x" + this.count + (this.hasCompoundTag() ? " tags:0x" + Binary.bytesToHexString(this.getCompoundTag()) : "");
+        return (itemStackId != Integer.MIN_VALUE ? "<" + itemStackId + ">" : "") + "Item " + this.name + " (" + this.id + ":" + (!this.hasMeta ? "?" : this.meta) + ")x" + this.count + (this.hasCompoundTag() ? ITEM_NBT_TO_STRING ? getNamedTag() : " tags:0x" + Binary.bytesToHexString(this.getCompoundTag()) : "");
     }
 
     public boolean canDestroy(Block block) {

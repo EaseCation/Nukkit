@@ -41,8 +41,8 @@ public class SetBookContentsFunction extends LootItemFunction {
             }
             for (int i = 0; i < pages.length; i++) {
                 String page = pages[i];
-                if (page.length() > ItemBookWritten.MAX_PAGE_LENGTHE) {
-                    pages[i] = page.substring(0, ItemBookWritten.MAX_PAGE_LENGTHE);
+                if (page.length() > ItemBookWritten.MAX_PAGE_LENGTH) {
+                    pages[i] = page.substring(0, ItemBookWritten.MAX_PAGE_LENGTH);
                 }
             }
         }

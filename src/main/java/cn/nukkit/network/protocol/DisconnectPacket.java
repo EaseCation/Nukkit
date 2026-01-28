@@ -134,6 +134,17 @@ public class DisconnectPacket extends DataPacket {
     public static final int REASON_CONN_DATA_CHANNEL_CLOSED = 122;
     public static final int REASON_DISCOVERY_ENVIRONMENT_MISMATCH = 123;
     public static final int REASON_HOST_WITHOUT_KEYS = 124;
+    public static final int REASON_HOST_SIGNED_OUT = 125;
+    public static final int REASON_SCRIPT_WATCHDOG_EXCEPTION = 126;
+    public static final int REASON_SCRIPT_MEMORY_LIMIT_EXCEEDED = 127;
+    public static final int REASON_STORAGE_LOW_DURING_GAMEPLAY = 128;
+    public static final int REASON_STORAGE_FULL_DURING_GAMEPLAY = 129;
+    public static final int REASON_LEVEL_STORAGE_CORRUPTION = 130;
+    public static final int REASON_EDITION_MISMATCH_VANILLA_TO_EDU = 131;
+    public static final int REASON_EDITION_MISMATCH_EDU_TO_VANILLA = 132;
+    public static final int REASON_EDITOR_MISMATCH_EDITOR_TO_VANILLA = 133;
+    public static final int REASON_EDITOR_MISMATCH_VANILLA_TO_EDITOR = 134;
+    public static final int REASON_DENY_LISTED = 135;
 
     public int reason = REASON_DISCONNECTED;
     public boolean hideDisconnectionScreen;

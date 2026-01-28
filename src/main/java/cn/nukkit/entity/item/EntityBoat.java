@@ -42,8 +42,8 @@ public class EntityBoat extends EntityVehicle {
 
     public static final int NETWORK_ID = EntityID.BOAT;
 
-    public static final String BUOYANCY_DATA = "{\"apply_gravity\":true,\"base_buoyancy\":1.0,\"big_wave_probability\":0.02999999932944775,\"big_wave_speed\":10.0,\"drag_down_on_buoyancy_removed\":0.0,\"liquid_blocks\":[\"minecraft:water\",\"minecraft:flowing_water\"],\"simulate_waves\":true}";
-    public static final String BUBBLE_COLUMN_BUOYANCY_DATA = "{\"apply_gravity\":true,\"base_buoyancy\":1.0,\"big_wave_probability\":0.02999999932944775,\"big_wave_speed\":10.0,\"drag_down_on_buoyancy_removed\":0.6999999880790710,\"liquid_blocks\":[\"minecraft:water\",\"minecraft:flowing_water\"],\"simulate_waves\":false}";
+    public static final String BUOYANCY_DATA = "{\"apply_gravity\":true,\"base_buoyancy\":1.0,\"big_wave_probability\":0.02999999932944775,\"big_wave_speed\":10.0,\"can_auto_step_from_liquid\":false,\"drag_down_on_buoyancy_removed\":0.0,\"liquid_blocks\":[\"minecraft:water\",\"minecraft:flowing_water\"],\"simulate_waves\":true,\"movement_type\":\"waves\"}";
+    public static final String BUBBLE_COLUMN_BUOYANCY_DATA = "{\"apply_gravity\":true,\"base_buoyancy\":1.0,\"big_wave_probability\":0.02999999932944775,\"big_wave_speed\":10.0,\"can_auto_step_from_liquid\":false,\"drag_down_on_buoyancy_removed\":0.6999999880790710,\"liquid_blocks\":[\"minecraft:water\",\"minecraft:flowing_water\"],\"simulate_waves\":false,\"movement_type\":\"none\"}";
 
     public static final Vector3f PASSENGER_OFFSET = new Vector3f(-0.6f, 0, 0);
     public static final Vector3f RIDER_PASSENGER_OFFSET = new Vector3f(0.2f, 0, 0);

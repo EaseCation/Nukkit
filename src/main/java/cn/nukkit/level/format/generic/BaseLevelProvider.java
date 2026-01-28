@@ -17,12 +17,14 @@ import it.unimi.dsi.fastutil.longs.Long2ObjectMap;
 import it.unimi.dsi.fastutil.longs.Long2ObjectOpenHashMap;
 import it.unimi.dsi.fastutil.objects.Object2ObjectOpenHashMap;
 import it.unimi.dsi.fastutil.objects.ObjectIterator;
+import lombok.extern.log4j.Log4j2;
 
 import java.io.IOException;
 import java.nio.ByteOrder;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.nio.file.StandardCopyOption;
 import java.util.Map;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.atomic.AtomicReference;
@@ -32,6 +34,7 @@ import java.util.regex.Pattern;
  * author: MagicDroidX
  * Nukkit Project
  */
+@Log4j2
 public abstract class BaseLevelProvider implements LevelProvider {
     protected static final Pattern REGEX = Pattern.compile("^.+\\.mc[r|a]$");
 
@@ -313,8 +316,17 @@ public abstract class BaseLevelProvider implements LevelProvider {
 
     @Override
     public void saveLevelData() {
+        Path levelDatPath = Paths.get(this.getPath(), "level.dat");
+        if (Files.isRegularFile(levelDatPath)) {
+            try {
+                Files.copy(levelDatPath, Paths.get(this.getPath(), "level.dat_old"), StandardCopyOption.REPLACE_EXISTING, StandardCopyOption.COPY_ATTRIBUTES);
+            } catch (IOException e) {
+                log.debug("Failed to backup the level.dat file for: {}", path, e);
+            }
+        }
+
         try {
-            NBTIO.writeGZIPCompressed(new CompoundTag().putCompound("Data", this.levelData), Files.newOutputStream(Paths.get(this.getPath(), "level.dat")));
+            NBTIO.writeGZIPCompressed(new CompoundTag().putCompound("Data", this.levelData), Files.newOutputStream(levelDatPath));
         } catch (IOException e) {
             throw new RuntimeException(e);
         }

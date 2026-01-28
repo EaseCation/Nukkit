@@ -20,6 +20,8 @@ public final class SharedConstants {
     public static final boolean EVENT_CREATE_STACK_TRACE = !PRODUCTION_ENVIRONMENT && false;
     public static final boolean EVENT_CANCEL_STACK_TRACE = !PRODUCTION_ENVIRONMENT && false;
 
+    public static final boolean ITEM_NBT_TO_STRING = !PRODUCTION_ENVIRONMENT && true;
+
     public static final boolean DEV_CLIENT_BUILD = !PRODUCTION_ENVIRONMENT && false;
 
     // chunk

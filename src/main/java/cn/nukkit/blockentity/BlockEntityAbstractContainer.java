@@ -141,7 +141,7 @@ public abstract class BlockEntityAbstractContainer extends BlockEntitySpawnable 
                 if (item.isNull()) {
                     items.remove(i);
                 } else {
-                    items.add(i, NBTIO.putItemHelper(item, index));
+                    items.setOrAdd(i, NBTIO.putItemHelper(item, index));
                 }
                 break;
             }
