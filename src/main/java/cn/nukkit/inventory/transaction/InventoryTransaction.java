@@ -4,6 +4,7 @@ import cn.nukkit.Player;
 import cn.nukkit.event.inventory.InventoryClickEvent;
 import cn.nukkit.event.inventory.InventoryTransactionEvent;
 import cn.nukkit.inventory.Inventory;
+import cn.nukkit.inventory.transaction.action.CreativeInventoryAction;
 import cn.nukkit.inventory.transaction.action.InventoryAction;
 import cn.nukkit.inventory.transaction.action.SlotChangeAction;
 import cn.nukkit.item.Item;
@@ -217,6 +218,15 @@ public class InventoryTransaction {
 
     public boolean execute() {
         if (this.hasExecuted() || !this.canExecute()) {
+            //HACK: legacy book edit mess
+            if (source.isSurvivalLike() && actions.size() == /*3*/2) {
+                for (InventoryAction action : actions) {
+                    if (action instanceof CreativeInventoryAction creative && creative.isBookEdit()) {
+                        return true;
+                    }
+                }
+            }
+
             this.sendInventories();
             return false;
         }
@@ -231,6 +241,10 @@ public class InventoryTransaction {
                 this.sendInventories();
                 return true;
             }
+
+//            if (!action.onPreExecuteNoSync(this.source)) {
+//                return true;
+//            }
         }
 
         for (InventoryAction action : this.actions) {

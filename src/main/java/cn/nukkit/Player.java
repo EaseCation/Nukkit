@@ -4141,12 +4141,22 @@ public class Player extends EntityHuman implements CommandSender, InventoryHolde
                     break;
                 case ProtocolInfo.BOOK_EDIT_PACKET:
                     BookEditPacket bookEditPacket = (BookEditPacket) packet;
+
+                    if (isSpectator()) {
+                        return;
+                    }
+
+                    if (isCreative()) {
+                        // handled in InventoryTransactionPacket
+                        return;
+                    }
+
                     Item oldBook = this.inventory.getItem(bookEditPacket.inventorySlot);
                     if (oldBook.getId() != Item.WRITABLE_BOOK) {
                         return;
                     }
 
-                    if (bookEditPacket.text != null && bookEditPacket.text.length() > ItemBookAndQuill.MAX_PAGE_LENGTHE) {
+                    if (bookEditPacket.text != null && bookEditPacket.text.length() > ItemBookAndQuill.MAX_PAGE_LENGTH) {
                         this.getServer().getLogger().debug(this.getName() + ": BookEditPacket with too long text");
                         return;
                     }
@@ -4191,7 +4201,7 @@ public class Player extends EntityHuman implements CommandSender, InventoryHolde
                         PlayerEditBookEvent editBookEvent = new PlayerEditBookEvent(this, oldBook, newBook, bookEditPacket.action);
                         this.server.getPluginManager().callEvent(editBookEvent);
                         if (!editBookEvent.isCancelled()) {
-                            this.inventory.setItem(bookEditPacket.inventorySlot, editBookEvent.getNewBook());
+                            this.inventory.setItem(bookEditPacket.inventorySlot, editBookEvent.getNewBook(), bookEditPacket.action != BookEditPacket.Action.SWAP_PAGES);
                         }
                     }
                     break;
@@ -4543,7 +4553,9 @@ public class Player extends EntityHuman implements CommandSender, InventoryHolde
 
             this.removeAllWindows(true);
 
-            List<Player> needRemovePlayerListFrom = this.getServer().getOnlinePlayers().values().stream().filter(p -> p.sentSkins.contains(this.getUniqueId())).collect(Collectors.toList());
+            List<Player> needRemovePlayerListFrom = this.getServer().getOnlinePlayers().values().stream()
+                    .filter(p -> p != this && p.sentSkins.contains(this.getUniqueId()))
+                    .collect(Collectors.toList());
             needRemovePlayerListFrom.forEach(p -> p.sentSkins.remove(this.getUniqueId()));
             this.getServer().removePlayerListData(this.getUniqueId(), needRemovePlayerListFrom);
 

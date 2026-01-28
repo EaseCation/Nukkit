@@ -1,5 +1,7 @@
 package cn.nukkit.item;
 
+import cn.nukkit.network.protocol.LevelSoundEventPacket;
+
 public class ItemSpearGolden extends ItemSpear {
     public ItemSpearGolden() {
         this(0, 1);
@@ -31,6 +33,16 @@ public class ItemSpearGolden extends ItemSpear {
     @Override
     public int getSwingDuration() {
         return 19;
+    }
+
+    @Override
+    public int getAttackMissSound() {
+        return LevelSoundEventPacket.SOUND_GOLDEN_SPEAR_ATTACK_MISS;
+    }
+
+    @Override
+    public int getAttackHitSound() {
+        return LevelSoundEventPacket.SOUND_GOLDEN_SPEAR_ATTACK_HIT;
     }
 
     @Override

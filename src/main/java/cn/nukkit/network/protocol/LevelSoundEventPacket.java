@@ -615,6 +615,25 @@ public class LevelSoundEventPacket extends DataPacket {
     public static final int SOUND_IMITATE_CAMEL_HUSK = 575;
     public static final int SOUND_SPEAR_USE = 576;
     public static final int SOUND_WOODEN_SPEAR_USE = 577;
+	public static final int SOUND_SADDLE_IN_WATER = 578;
+	public static final int SOUND_STONE_SPEAR_ATTACK_HIT = 579;
+	public static final int SOUND_IRON_SPEAR_ATTACK_HIT = 580;
+	public static final int SOUND_COPPER_SPEAR_ATTACK_HIT = 581;
+	public static final int SOUND_GOLDEN_SPEAR_ATTACK_HIT = 582;
+	public static final int SOUND_DIAMOND_SPEAR_ATTACK_HIT = 583;
+	public static final int SOUND_NETHERITE_SPEAR_ATTACK_HIT = 584;
+	public static final int SOUND_STONE_SPEAR_ATTACK_MISS = 585;
+	public static final int SOUND_IRON_SPEAR_ATTACK_MISS = 586;
+	public static final int SOUND_COPPER_SPEAR_ATTACK_MISS = 587;
+	public static final int SOUND_GOLDEN_SPEAR_ATTACK_MISS = 588;
+	public static final int SOUND_DIAMOND_SPEAR_ATTACK_MISS = 589;
+	public static final int SOUND_NETHERITE_SPEAR_ATTACK_MISS = 590;
+	public static final int SOUND_STONE_SPEAR_USE = 591;
+	public static final int SOUND_IRON_SPEAR_USE = 592;
+	public static final int SOUND_COPPER_SPEAR_USE = 593;
+	public static final int SOUND_GOLDEN_SPEAR_USE = 594;
+	public static final int SOUND_DIAMOND_SPEAR_USE = 595;
+	public static final int SOUND_NETHERITE_SPEAR_USE = 596;
 
 	public int sound;
     public float x;

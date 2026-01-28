@@ -1,5 +1,10 @@
 package cn.nukkit.item;
 
+import cn.nukkit.Player;
+import cn.nukkit.math.Vector3;
+import cn.nukkit.nbt.tag.CompoundTag;
+import cn.nukkit.nbt.tag.ListTag;
+
 public class ItemBookAndQuill extends ItemBookWritable {
 
     public ItemBookAndQuill() {
@@ -17,5 +22,17 @@ public class ItemBookAndQuill extends ItemBookWritable {
     @Override
     public int getMaxStackSize() {
         return 1;
+    }
+
+    @Override
+    public boolean onClickAir(Player player, Vector3 directionVector) {
+        CompoundTag tag = getOrCreateNamedTag();
+        if (tag.contains("pages")) {
+            return false;
+        }
+        tag.putList("pages", new ListTag<>());
+        setNamedTag(tag);
+        player.getInventory().setItemInHand(this);
+        return false;
     }
 }

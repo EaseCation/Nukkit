@@ -57,6 +57,7 @@ import java.nio.ByteOrder;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.nio.file.StandardCopyOption;
 import java.util.*;
 import java.util.Map.Entry;
 import java.util.concurrent.CompletableFuture;
@@ -265,7 +266,15 @@ public class LevelDB implements LevelProvider {
         Options options = new Options()
                 .createIfMissing(true)
                 .compressionType(CompressionType.ZLIB_RAW)
-                .blockSize(64 * 1024);
+                .blockSize(160 * 1024)
+                .cacheSize(80 * 1024 * 1024)
+                .writeBufferSize(4 * 1024 * 1024)
+//                .maxFileSize(2 * 1024 * 1024)
+//                .filterPolicy(new BloomFilterPolicy(10))
+//                .env(((DBStorageEnvironmentChain)&((DBStorage)this)->mEnvChain).getRootEnv())
+//                .logger(NullLogger.INSTANCE)
+                .verifyChecksums(false)
+                ;
         return NATIVE_LEVELDB ? PROVIDER.open(dir, options) : Iq80DBFactory.factory.open(dir, options);
     }
 
@@ -418,7 +427,16 @@ public class LevelDB implements LevelProvider {
         levelData.setName(null);
         updateLevelData(levelData);
 
-        try (OutputStream stream = Files.newOutputStream(Paths.get(path, "level.dat"))) {
+        Path levelDatPath = Paths.get(path, "level.dat");
+        if (Files.isRegularFile(levelDatPath)) {
+            try {
+                Files.copy(levelDatPath, Paths.get(path, "level.dat_old"), StandardCopyOption.REPLACE_EXISTING, StandardCopyOption.COPY_ATTRIBUTES);
+            } catch (IOException e) {
+                log.debug("Failed to backup the level.dat file for: {}", path, e);
+            }
+        }
+
+        try (OutputStream stream = Files.newOutputStream(levelDatPath)) {
             byte[] data = NBTIO.write(levelData, ByteOrder.LITTLE_ENDIAN);
             stream.write(Binary.writeLInt(CURRENT_STORAGE_VERSION));
             stream.write(Binary.writeLInt(data.length));

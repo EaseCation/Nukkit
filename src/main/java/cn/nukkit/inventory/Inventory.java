@@ -87,6 +87,8 @@ public interface Inventory {
 
     boolean isEmpty();
 
+    int getFreeSpace(Item item);
+
     Set<Player> getViewers();
 
     InventoryType getType();

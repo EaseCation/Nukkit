@@ -53,6 +53,10 @@ public abstract class InventoryAction {
         return true;
     }
 
+    public boolean onPreExecuteNoSync(Player source) {
+        return true;
+    }
+
     /**
      * Returns whether this action is currently valid. This should perform any necessary sanity checks.
      */

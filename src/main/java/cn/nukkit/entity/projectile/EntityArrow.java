@@ -17,6 +17,7 @@ import cn.nukkit.nbt.tag.CompoundTag;
 import cn.nukkit.nbt.tag.ListTag;
 import cn.nukkit.network.protocol.EntityEventPacket;
 import cn.nukkit.network.protocol.LevelSoundEventPacket;
+import cn.nukkit.network.protocol.MoveEntityPacket;
 import cn.nukkit.potion.Effect;
 import it.unimi.dsi.fastutil.ints.Int2ObjectMap;
 import it.unimi.dsi.fastutil.ints.Int2ObjectOpenHashMap;
@@ -171,6 +172,20 @@ public class EntityArrow extends EntityProjectile {
         }
 
         player.dataPacket(createAddEntityPacket());
+
+        if (onGround || hadCollision) {
+            //HACK: fix vanilla arrow OnGround state sync bug
+            MoveEntityPacket pk = new MoveEntityPacket();
+            pk.eid = getId();
+            pk.x = (float) x;
+            pk.y = (float) y;
+            pk.z = (float) z;
+            pk.yaw = (float) yaw;
+            pk.headYaw = (float) yaw;
+            pk.pitch = (float) pitch;
+            pk.onGround = true;
+            player.dataPacket(pk);
+        }
 
         super.spawnTo(player);
     }

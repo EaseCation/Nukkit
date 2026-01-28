@@ -512,6 +512,7 @@ public abstract class BaseInventory implements Inventory {
         return true;
     }
 
+    @Override
     public int getFreeSpace(Item item) {
         int maxStackSize = Math.min(item.getMaxStackSize(), this.getMaxStackSize());
         int space = (this.getSize() - this.slots.size()) * maxStackSize;

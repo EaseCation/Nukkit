@@ -118,11 +118,18 @@ public class ListTag<T extends Tag> extends Tag implements Iterable<T> {
     public ListTag<T> add(int index, T tag) {
         type = tag.getId();
         tag.setName("");
-        setOrAdd(index, tag);
+        list.add(index, tag);
         return this;
     }
 
-    private void setOrAdd(int index, T tag) {
+    public ListTag<T> setOrAdd(int index, T tag) {
+        type = tag.getId();
+        tag.setName("");
+        setOrAddTag(index, tag);
+        return this;
+    }
+
+    private void setOrAddTag(int index, T tag) {
         if (index >= list.size()) {
             list.add(index, tag);
         } else {
@@ -140,7 +147,14 @@ public class ListTag<T extends Tag> extends Tag implements Iterable<T> {
     @SuppressWarnings("unchecked")
     public ListTag<T> addByte(int index, int data) {
         type = TAG_Byte;
-        setOrAdd(index, (T) new ByteTag(data));
+        list.add(index, (T) new ByteTag(data));
+        return this;
+    }
+
+    @SuppressWarnings("unchecked")
+    public ListTag<T> setOrAddByte(int index, int data) {
+        type = TAG_Byte;
+        setOrAddTag(index, (T) new ByteTag(data));
         return this;
     }
 
@@ -154,7 +168,14 @@ public class ListTag<T extends Tag> extends Tag implements Iterable<T> {
     @SuppressWarnings("unchecked")
     public ListTag<T> addShort(int index, int data) {
         type = TAG_Short;
-        setOrAdd(index, (T) new ShortTag(data));
+        list.add(index, (T) new ShortTag(data));
+        return this;
+    }
+
+    @SuppressWarnings("unchecked")
+    public ListTag<T> setOrAddShort(int index, int data) {
+        type = TAG_Short;
+        setOrAddTag(index, (T) new ShortTag(data));
         return this;
     }
 
@@ -168,7 +189,14 @@ public class ListTag<T extends Tag> extends Tag implements Iterable<T> {
     @SuppressWarnings("unchecked")
     public ListTag<T> addInt(int index, int data) {
         type = TAG_Int;
-        setOrAdd(index, (T) new IntTag(data));
+        list.add(index, (T) new IntTag(data));
+        return this;
+    }
+
+    @SuppressWarnings("unchecked")
+    public ListTag<T> setOrAddInt(int index, int data) {
+        type = TAG_Int;
+        setOrAddTag(index, (T) new IntTag(data));
         return this;
     }
 
@@ -182,7 +210,14 @@ public class ListTag<T extends Tag> extends Tag implements Iterable<T> {
     @SuppressWarnings("unchecked")
     public ListTag<T> addLong(int index, long data) {
         type = TAG_Long;
-        setOrAdd(index, (T) new LongTag(data));
+        list.add(index, (T) new LongTag(data));
+        return this;
+    }
+
+    @SuppressWarnings("unchecked")
+    public ListTag<T> setOrAddLong(int index, long data) {
+        type = TAG_Long;
+        setOrAddTag(index, (T) new LongTag(data));
         return this;
     }
 
@@ -196,7 +231,14 @@ public class ListTag<T extends Tag> extends Tag implements Iterable<T> {
     @SuppressWarnings("unchecked")
     public ListTag<T> addFloat(int index, float data) {
         type = TAG_Float;
-        setOrAdd(index, (T) new FloatTag(data));
+        list.add(index, (T) new FloatTag(data));
+        return this;
+    }
+
+    @SuppressWarnings("unchecked")
+    public ListTag<T> setOrAddFloat(int index, float data) {
+        type = TAG_Float;
+        setOrAddTag(index, (T) new FloatTag(data));
         return this;
     }
 
@@ -210,7 +252,14 @@ public class ListTag<T extends Tag> extends Tag implements Iterable<T> {
     @SuppressWarnings("unchecked")
     public ListTag<T> addDouble(int index, double data) {
         type = TAG_Double;
-        setOrAdd(index, (T) new DoubleTag(data));
+        list.add(index, (T) new DoubleTag(data));
+        return this;
+    }
+
+    @SuppressWarnings("unchecked")
+    public ListTag<T> setOrAddDouble(int index, double data) {
+        type = TAG_Double;
+        setOrAddTag(index, (T) new DoubleTag(data));
         return this;
     }
 
@@ -224,7 +273,14 @@ public class ListTag<T extends Tag> extends Tag implements Iterable<T> {
     @SuppressWarnings("unchecked")
     public ListTag<T> addString(int index, String data) {
         type = TAG_String;
-        setOrAdd(index, (T) new StringTag("", data));
+        list.add(index, (T) new StringTag("", data));
+        return this;
+    }
+
+    @SuppressWarnings("unchecked")
+    public ListTag<T> setOrAddString(int index, String data) {
+        type = TAG_String;
+        setOrAddTag(index, (T) new StringTag("", data));
         return this;
     }
 
@@ -238,7 +294,14 @@ public class ListTag<T extends Tag> extends Tag implements Iterable<T> {
     @SuppressWarnings("unchecked")
     public ListTag<T> addByteArray(int index, byte[] data) {
         type = TAG_Byte_Array;
-        setOrAdd(index, (T) new ByteArrayTag(data));
+        list.add(index, (T) new ByteArrayTag(data));
+        return this;
+    }
+
+    @SuppressWarnings("unchecked")
+    public ListTag<T> setOrAddByteArray(int index, byte[] data) {
+        type = TAG_Byte_Array;
+        setOrAddTag(index, (T) new ByteArrayTag(data));
         return this;
     }
 
@@ -252,7 +315,14 @@ public class ListTag<T extends Tag> extends Tag implements Iterable<T> {
     @SuppressWarnings("unchecked")
     public ListTag<T> addIntArray(int index, int[] data) {
         type = TAG_Int_Array;
-        setOrAdd(index, (T) new IntArrayTag(data));
+        list.add(index, (T) new IntArrayTag(data));
+        return this;
+    }
+
+    @SuppressWarnings("unchecked")
+    public ListTag<T> setOrAddIntArray(int index, int[] data) {
+        type = TAG_Int_Array;
+        setOrAddTag(index, (T) new IntArrayTag(data));
         return this;
     }
 
@@ -268,7 +338,15 @@ public class ListTag<T extends Tag> extends Tag implements Iterable<T> {
     public ListTag<T> addList(int index, ListTag<? extends Tag> data) {
         type = TAG_List;
         data.setName("");
-        setOrAdd(index, (T) data);
+        list.add(index, (T) data);
+        return this;
+    }
+
+    @SuppressWarnings("unchecked")
+    public ListTag<T> setOrAddList(int index, ListTag<? extends Tag> data) {
+        type = TAG_List;
+        data.setName("");
+        setOrAddTag(index, (T) data);
         return this;
     }
 
@@ -284,7 +362,15 @@ public class ListTag<T extends Tag> extends Tag implements Iterable<T> {
     public ListTag<T> addCompound(int index, CompoundTag data) {
         type = TAG_Compound;
         data.setName("");
-        setOrAdd(index, (T) data);
+        list.add(index, (T) data);
+        return this;
+    }
+
+    @SuppressWarnings("unchecked")
+    public ListTag<T> setOrAddCompound(int index, CompoundTag data) {
+        type = TAG_Compound;
+        data.setName("");
+        setOrAddTag(index, (T) data);
         return this;
     }
 
@@ -294,6 +380,10 @@ public class ListTag<T extends Tag> extends Tag implements Iterable<T> {
 
     public ListTag<T> addBoolean(int index, boolean data) {
         return addByte(index, data ? 1 : 0);
+    }
+
+    public ListTag<T> setOrAddBoolean(int index, boolean data) {
+        return setOrAddByte(index, data ? 1 : 0);
     }
 
     public boolean addAll(ListTag<T> o) {

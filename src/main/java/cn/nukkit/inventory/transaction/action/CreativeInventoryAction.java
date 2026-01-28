@@ -18,11 +18,17 @@ public class CreativeInventoryAction extends InventoryAction {
      */
     public static final int TYPE_CREATE_ITEM = 1;
 
-    protected int actionType;
+    private final int actionType;
+    private final boolean bookEdit;
 
     public CreativeInventoryAction(Item source, Item target, int action) {
+        this(source, target, action, false);
+    }
+
+    public CreativeInventoryAction(Item source, Item target, int action, boolean bookEdit) {
         super(source, target);
         actionType = action;
+        this.bookEdit = bookEdit;
     }
 
     /**
@@ -37,6 +43,11 @@ public class CreativeInventoryAction extends InventoryAction {
                 (this.actionType == TYPE_DELETE_ITEM || source.getCreativeItemIndex(this.sourceItem) != -1)*/;
     }
 
+    @Override
+    public boolean onPreExecuteNoSync(Player source) {
+        return !bookEdit;
+    }
+
     /**
      * Returns the type of the action.
      *
@@ -44,6 +55,10 @@ public class CreativeInventoryAction extends InventoryAction {
      */
     public int getActionType() {
         return actionType;
+    }
+
+    public boolean isBookEdit() {
+        return bookEdit;
     }
 
     /**

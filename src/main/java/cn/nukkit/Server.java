@@ -203,6 +203,7 @@ public class Server {
     private final String filePath;
     private final String dataPath;
     private final String pluginPath;
+    private final Path playerPath;
 
 //    private final Set<UUID> uniquePlayers = new ObjectOpenHashSet<>();
 
@@ -268,6 +269,7 @@ public class Server {
 
         this.dataPath = new File(dataPath).getAbsolutePath() + "/";
         this.pluginPath = new File(pluginPath).getAbsolutePath() + "/";
+        this.playerPath = Paths.get(this.dataPath, "players");
 
         this.console = new NukkitConsole(this);
         this.consoleThread = new ConsoleThread();
@@ -1711,10 +1713,21 @@ public class Server {
     public void saveOfflinePlayerData(String name, CompoundTag tag, boolean async) {
         if (this.shouldSavePlayerData()) {
             try {
+                String playerName = name.toLowerCase();
+                String playerDatName = playerName + ".dat";
                 // EC force async
                 if (async || FORCE_ASYNC_SAVE_PLAYER_DATA) {
                     byte[] bytes = NBTIO.write(tag, ByteOrder.BIG_ENDIAN);
-                    this.getScheduler().scheduleAsyncTask(null, new FileWriteTask(this.getDataPath() + "players/" + name.toLowerCase() + ".dat", () -> {
+                    this.getScheduler().scheduleAsyncTask(null, new FileWriteTask(this.getDataPath() + "players/" + playerDatName, () -> {
+                        Path playerDatPath = playerPath.resolve(playerDatName);
+                        if (Files.isRegularFile(playerDatPath)) {
+                            try {
+                                Files.copy(playerDatPath, playerPath.resolve(playerDatName + "_old"), StandardCopyOption.REPLACE_EXISTING, StandardCopyOption.COPY_ATTRIBUTES);
+                            } catch (IOException e) {
+                                log.debug("Failed to backup the player.dat file for: {}", playerName, e);
+                            }
+                        }
+
                         ByteArrayOutputStream baos = new ByteArrayOutputStream(1024);
                         if (bytes.length != 0) {
                             try (OutputStream os = new GzipCompressorOutputStream(baos, GZIP_PARAMETERS)) {
@@ -1726,7 +1739,16 @@ public class Server {
                         return new ByteArrayInputStream(baos.toByteArray());
                     }));
                 } else {
-                    Utils.writeFile(this.getDataPath() + "players/" + name.toLowerCase() + ".dat", new ByteArrayInputStream(NBTIO.writeGZIPCompressed(tag, ByteOrder.BIG_ENDIAN)));
+                    Path playerDatPath = playerPath.resolve(playerDatName);
+                    if (Files.isRegularFile(playerDatPath)) {
+                        try {
+                            Files.copy(playerDatPath, playerPath.resolve(playerDatName + "_old"), StandardCopyOption.REPLACE_EXISTING, StandardCopyOption.COPY_ATTRIBUTES);
+                        } catch (IOException e) {
+                            log.debug("Failed to backup the player.dat file for: {}", playerName, e);
+                        }
+                    }
+
+                    Utils.writeFile(this.getDataPath() + "players/" + playerDatName, new ByteArrayInputStream(NBTIO.writeGZIPCompressed(tag, ByteOrder.BIG_ENDIAN)));
                 }
             } catch (Exception e) {
                 log.fatal(this.getLanguage().translate("nukkit.data.saveError", name), e);

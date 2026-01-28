@@ -9,7 +9,7 @@ import java.util.List;
 
 public abstract class ItemBookWritable extends Item {
     public static final int MAX_PAGES = 50;
-    public static final int MAX_PAGE_LENGTHE = 256;
+    public static final int MAX_PAGE_LENGTH = 256;
 
     protected ItemBookWritable(int id) {
         super(id);

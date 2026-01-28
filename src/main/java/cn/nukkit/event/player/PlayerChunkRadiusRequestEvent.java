@@ -3,6 +3,7 @@ package cn.nukkit.event.player;
 import cn.nukkit.Player;
 import cn.nukkit.event.Cancellable;
 import cn.nukkit.event.HandlerList;
+import cn.nukkit.math.Mth;
 
 /**
  * 当客户端通过设置-视频主动请求改变视距时触发
@@ -51,6 +52,6 @@ public class PlayerChunkRadiusRequestEvent extends PlayerEvent implements Cancel
      * 设置最终应用的视距（由插件控制）
      */
     public void setRadius(int radius) {
-        this.radius = radius;
+        this.radius = Mth.clamp(radius, 4, 96);
     }
 }

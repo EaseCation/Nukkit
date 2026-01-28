@@ -212,7 +212,9 @@ public class NetworkInventoryAction {
 
                 return new DropItemAction(this.oldItem, this.newItem);
             case SOURCE_CREATIVE:
-                if (!player.isCreative()) {
+                boolean bookEdit = inventorySlot == InventoryTransactionPacket.ACTION_MAGIC_SLOT_CREATIVE_CREATE_ITEM && oldItem.is(Item.WRITABLE_BOOK) && oldItem.hasCompoundTag();
+
+                if (!player.isCreative() && !bookEdit) {
                     return null;
                 }
 
@@ -229,7 +231,7 @@ public class NetworkInventoryAction {
                         return null;
                 }
 
-                return new CreativeInventoryAction(this.oldItem, this.newItem, type);
+                return new CreativeInventoryAction(this.oldItem, this.newItem, type, bookEdit);
             case SOURCE_TODO:
             case SOURCE_CRAFT_SLOT:
                 //These types need special handling.

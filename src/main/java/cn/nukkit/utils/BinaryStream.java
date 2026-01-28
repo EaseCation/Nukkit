@@ -17,10 +17,7 @@ import cn.nukkit.nbt.NBTIO;
 import cn.nukkit.nbt.tag.CompoundTag;
 import cn.nukkit.nbt.tag.Tag;
 import cn.nukkit.network.protocol.BossEventPacket.BossBarColor;
-import cn.nukkit.network.protocol.types.AbilityLayer;
-import cn.nukkit.network.protocol.types.EntityLink;
-import cn.nukkit.network.protocol.types.ItemStackRequest;
-import cn.nukkit.network.protocol.types.ItemStackResponse;
+import cn.nukkit.network.protocol.types.*;
 import it.unimi.dsi.fastutil.io.FastByteArrayInputStream;
 import it.unimi.dsi.fastutil.objects.ObjectArrayList;
 import it.unimi.dsi.fastutil.objects.ObjectOpenHashSet;
@@ -1101,6 +1098,47 @@ public class BinaryStream {
         putUnsignedVarInt(color.getOldId());
     }
 
+    public StructureEditorData getStructureEditorData() {
+        if (helper != null) {
+            return helper.getStructureEditorData(this);
+        }
+
+        StructureEditorData data = new StructureEditorData();
+        data.type = StructureBlockType.getValues()[(int) getUnsignedVarInt()];
+        data.name = getString();
+        data.dataField = getString();
+        BlockVector3 offset = getSignedBlockPosition();
+        BlockVector3 size = getSignedBlockPosition();
+        boolean includeEntities = getBoolean();
+        boolean ignoreBlocks = getBoolean();
+        data.includePlayers = getBoolean();
+        boolean showAir = getBoolean();
+        data.settings = getStructureSettings();
+        data.boundingBoxVisible = getBoolean();
+
+        data.settings.size = size;
+        data.settings.offset = offset;
+        data.settings.ignoreBlocks = ignoreBlocks;
+        return data;
+    }
+
+    public StructureSettings getStructureSettings() {
+        if (helper != null) {
+            return helper.getStructureSettings(this);
+        }
+
+        StructureSettings settings = new StructureSettings();
+        settings.integrityValue = getLFloat();
+        settings.integritySeed = (int) getUnsignedVarInt();
+        settings.mirror = StructureMirror.getValues()[(int) getUnsignedVarInt()];
+        settings.rotation = Rotation.getValues()[(int) getUnsignedVarInt()];
+        settings.ignoreEntities = getBoolean();
+        boolean ignoreStructureBlocks = getBoolean();
+        BlockVector3 boundingBoxMin = getSignedBlockPosition();
+        BlockVector3 boundingBoxMax = getSignedBlockPosition();
+        return settings;
+    }
+
     public BitSet getBitSet(int size) {
         long[] bitSet = new long[Mth.ceil(size / 64f)];
         int index = 0;
@@ -1341,6 +1379,39 @@ public class BinaryStream {
 
         public void putBossBarColor(BinaryStream stream, BossBarColor color) {
             stream.putUnsignedVarInt(color.getOldId());
+        }
+
+        public StructureEditorData getStructureEditorData(BinaryStream stream) {
+            StructureEditorData data = new StructureEditorData();
+            data.type = StructureBlockType.getValues()[(int) stream.getUnsignedVarInt()];
+            data.name = stream.getString();
+            data.dataField = stream.getString();
+            BlockVector3 offset = stream.getSignedBlockPosition();
+            BlockVector3 size = stream.getSignedBlockPosition();
+            boolean includeEntities = stream.getBoolean();
+            boolean ignoreBlocks = stream.getBoolean();
+            data.includePlayers = stream.getBoolean();
+            boolean showAir = stream.getBoolean();
+            data.settings = getStructureSettings(stream);
+            data.boundingBoxVisible = stream.getBoolean();
+
+            data.settings.size = size;
+            data.settings.offset = offset;
+            data.settings.ignoreBlocks = ignoreBlocks;
+            return data;
+        }
+
+        public StructureSettings getStructureSettings(BinaryStream stream) {
+            StructureSettings settings = new StructureSettings();
+            settings.integrityValue = stream.getLFloat();
+            settings.integritySeed = (int) stream.getUnsignedVarInt();
+            settings.mirror = StructureMirror.getValues()[(int) stream.getUnsignedVarInt()];
+            settings.rotation = Rotation.getValues()[(int) stream.getUnsignedVarInt()];
+            settings.ignoreEntities = stream.getBoolean();
+            boolean ignoreStructureBlocks = stream.getBoolean();
+            BlockVector3 boundingBoxMin = stream.getSignedBlockPosition();
+            BlockVector3 boundingBoxMax = stream.getSignedBlockPosition();
+            return settings;
         }
 
         /**

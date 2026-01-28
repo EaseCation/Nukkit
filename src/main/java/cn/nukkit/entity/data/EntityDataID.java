@@ -205,6 +205,21 @@ public interface EntityDataID {
      * @since 1.21.80
      */
     int DATA_SEAT_CAMERA_RELAX_DISTANCE_SMOOTHING = 141;
+    /**
+     * int.
+     * @since 1.26.0
+     */
+    int DATA_AIM_ASSIST_PRIORITY_PRESET_INDEX = 142;
+    /**
+     * int.
+     * @since 1.26.0
+     */
+    int DATA_AIM_ASSIST_PRIORITY_CATEGORY_INDEX = 143;
+    /**
+     * int.
+     * @since 1.26.0
+     */
+    int DATA_AIM_ASSIST_PRIORITY_ENTITY_INDEX = 144;
 
-    int DATA_UNDEFINED = 142;
+    int DATA_UNDEFINED = 145;
 }
