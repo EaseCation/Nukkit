@@ -71,6 +71,7 @@ public class SimpleCommandMap implements CommandMap {
         this.register("nukkit", new WeatherCommand("weather"));
         this.register("nukkit", new XpCommand("xp"));
         this.register("nukkit", new SummonCommand("summon"));
+        this.register("nukkit", new PlayAnimationCommand("playanimation"));
         this.register("nukkit", new SetBlockCommand("setblock"));
         this.register("nukkit", new TestForBlockCommand("testforblock"));
         this.register("nukkit", new CloneCommand("clone"));
