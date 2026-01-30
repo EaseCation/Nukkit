@@ -6426,7 +6426,28 @@ public class Player extends EntityHuman implements CommandSender, InventoryHolde
      * 使用 AnimateEntityPacket 播放动画.
      * @since 1.16.100
      */
+    public void playAnimation(String animation, Entity entity) {
+    }
+
+    /**
+     * 使用 AnimateEntityPacket 播放动画.
+     * @since 1.16.100
+     */
     public void playAnimation(String animation, long entityRuntimeId) {
+    }
+
+    /**
+     * 使用 AnimateEntityPacket 播放动画.
+     * @since 1.16.100
+     */
+    public void playAnimation(String animation, String nextState, String stopExpression, String controller, float blendOutTime, Entity... entities) {
+    }
+
+    /**
+     * 使用 AnimateEntityPacket 播放动画.
+     * @since 1.16.100
+     */
+    public void playAnimation(String animation, String nextState, String stopExpression, String controller, float blendOutTime, long... entityRuntimeIds) {
     }
 
     /**
