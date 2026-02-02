@@ -599,7 +599,10 @@ public class Player extends EntityHuman implements CommandSender, InventoryHolde
         }
         this.hiddenPlayers.remove(player.getUniqueId());
         if (player.isOnline()) {
-            player.spawnTo(this);
+            // 检查玩家是否在entityRadius范围内
+            if (player.isWithinEntityViewDistance(this)) {
+                player.spawnTo(this);
+            }
         }
     }
 
@@ -988,7 +991,10 @@ public class Player extends EntityHuman implements CommandSender, InventoryHolde
         if (this.spawned) {
             for (Entity entity : this.level.getChunkEntities(x, z).values()) {
                 if (this != entity && !entity.closed && entity.isAlive()) {
-                    entity.spawnTo(this);
+                    // 检查实体是否在entityRadius范围内
+                    if (entity.isWithinEntityViewDistance(this)) {
+                        entity.spawnTo(this);
+                    }
                 }
             }
         }
@@ -1018,7 +1024,10 @@ public class Player extends EntityHuman implements CommandSender, InventoryHolde
         if (this.spawned) {
             for (Entity entity : this.level.getChunkEntities(x, z).values()) {
                 if (this != entity && !entity.closed && entity.isAlive()) {
-                    entity.spawnTo(this);
+                    // 检查实体是否在entityRadius范围内
+                    if (entity.isWithinEntityViewDistance(this)) {
+                        entity.spawnTo(this);
+                    }
                 }
             }
         }
@@ -1169,7 +1178,10 @@ public class Player extends EntityHuman implements CommandSender, InventoryHolde
             int chunkZ = Level.getHashZ(index);
             for (Entity entity : this.level.getChunkEntities(chunkX, chunkZ).values()) {
                 if (this != entity && !entity.closed && entity.isAlive()) {
-                    entity.spawnTo(this);
+                    // 检查实体是否在entityRadius范围内
+                    if (entity.isWithinEntityViewDistance(this)) {
+                        entity.spawnTo(this);
+                    }
                 }
             }
         }
@@ -4338,6 +4350,17 @@ public class Player extends EntityHuman implements CommandSender, InventoryHolde
         return this.chunkRadius;
     }
 
+    /**
+     * 获取实体发送半径（区块单位）
+     * 实体发送距离比区块加载距离少2个区块
+     *
+     * @return 实体发送半径
+     */
+    public int getEntityRadius() {
+        return Math.max(1, this.chunkRadius - 2);
+    }
+
+
     @Override
     public void sendMessage(String message) {
         TextPacket pk = new TextPacket();
@@ -5542,21 +5565,68 @@ public class Player extends EntityHuman implements CommandSender, InventoryHolde
             this.chunk = this.level.getChunk((int) this.x >> 4, (int) this.z >> 4, true);
 
             if (!this.justCreated) {
-                Int2ObjectMap<Player> newChunk = this.level.getChunkPlayers((int) this.x >> 4, (int) this.z >> 4);
-                newChunk.remove(this.getLoaderId());
+                int chunkX = (int) this.x >> 4;
+                int chunkZ = (int) this.z >> 4;
 
-                //List<Player> reload = new ObjectArrayList<>();
-                for (Player player : new ObjectArrayList<>(this.hasSpawned.values())) {
-                    if (!newChunk.containsKey(player.getLoaderId())) {
-                        this.despawnFrom(player);
-                    } else {
-                        newChunk.remove(player.getLoaderId());
-                        //reload.add(player);
+                // ===== 新增：清理超出entityRadius的已spawn实体 =====
+                // 遍历所有已spawn给自己的实体（从Entity的角度）
+                // 注意：这里需要收集所有区块中已spawn的实体
+                for (long chunkHash : this.usedChunks.keySet()) {
+                    int cx = Level.getHashX(chunkHash);
+                    int cz = Level.getHashZ(chunkHash);
+
+                    for (Entity entity : this.level.getChunkEntities(cx, cz).values()) {
+                        if (entity == this || entity.closed || !entity.isAlive()) {
+                            continue;
+                        }
+
+                        // 检查实体是否已spawn给自己
+                        if (entity.getViewers().containsKey(this.getLoaderId())) {
+                            // 检查是否超出entityRadius
+                            if (!entity.isWithinEntityViewDistance(this)) {
+                                entity.despawnFrom(this);  // despawn超出范围的实体
+                            }
+                        } else {
+                            // 实体未spawn，但可能现在进入了entityRadius范围
+                            if (entity.isWithinEntityViewDistance(this)) {
+                                entity.spawnTo(this);  // spawn实体（已在if中检查距离）
+                            }
+                        }
                     }
                 }
 
-                for (Player player : newChunk.values()) {
-                    this.spawnTo(player);
+                // ===== 处理自己spawn给其他玩家（统一使用isWithinEntityViewDistance） =====
+                // 1. 检查已spawn的玩家是否超出entityRadius
+                for (Player player : new ObjectArrayList<>(this.getViewers().values())) {
+                    if (player == this) {
+                        continue;
+                    }
+                    // 使用Entity.isWithinEntityViewDistance()检查自己是否在对方的entityRadius内
+                    if (!this.isWithinEntityViewDistance(player)) {
+                        this.despawnFrom(player);
+                    }
+                }
+
+                // 2. 扫描附近区块，spawn给进入范围的玩家
+                // 使用服务器配置的最大视距作为扫描半径
+                int scanRadius = this.level.getServer().getViewDistance();
+                for (int dx = -scanRadius; dx <= scanRadius; dx++) {
+                    for (int dz = -scanRadius; dz <= scanRadius; dz++) {
+                        if (dx * dx + dz * dz > scanRadius * scanRadius) {
+                            continue;  // 圆形扫描
+                        }
+
+                        Int2ObjectMap<Player> chunkPlayers = this.level.getChunkPlayers(chunkX + dx, chunkZ + dz);
+                        for (Player player : chunkPlayers.values()) {
+                            if (player == this || this.getViewers().containsKey(player.getLoaderId())) {
+                                continue;
+                            }
+                            // 使用Entity.isWithinEntityViewDistance()检查自己是否在对方的entityRadius内
+                            if (this.isWithinEntityViewDistance(player)) {
+                                this.spawnTo(player);  // spawn给对方（已在if中检查距离）
+                            }
+                        }
+                    }
                 }
             }
 

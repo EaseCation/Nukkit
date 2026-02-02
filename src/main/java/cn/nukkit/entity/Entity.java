@@ -1125,7 +1125,7 @@ public abstract class Entity extends Location implements Metadatable, EntityData
     }
 
     public void spawnTo(Player player) {
-        if (!this.hasSpawned.containsKey(player.getLoaderId()) && this.chunk != null && player.usedChunks.containsKey(Level.chunkHash(this.getChunkX(), this.getChunkZ()))) {
+        if (!this.hasSpawned.containsKey(player.getLoaderId()) && this.chunk != null) {
             this.hasSpawned.put(player.getLoaderId(), player);
 //            player.dataPacket(createAddEntityPacket());
         }
@@ -1141,6 +1141,28 @@ public abstract class Entity extends Location implements Metadatable, EntityData
 
             player.dataPacket(pkk);
         }*/
+    }
+
+    /**
+     * 检查实体是否在玩家的实体可见距离内
+     *
+     * @param player 玩家
+     * @return 是否在可见范围内
+     */
+    public boolean isWithinEntityViewDistance(Player player) {
+        int entityChunkX = this.getChunkX();
+        int entityChunkZ = this.getChunkZ();
+        int playerChunkX = player.getChunkX();
+        int playerChunkZ = player.getChunkZ();
+
+        int dx = entityChunkX - playerChunkX;
+        int dz = entityChunkZ - playerChunkZ;
+        int distanceSqr = dx * dx + dz * dz;
+
+        int entityRadius = player.getEntityRadius();
+        int entityRadiusSqr = entityRadius * entityRadius;
+
+        return distanceSqr <= entityRadiusSqr;
     }
 
     protected DataPacket createAddEntityPacket() {
@@ -2548,17 +2570,34 @@ public abstract class Entity extends Location implements Metadatable, EntityData
             this.chunk = this.level.getChunk((int) this.x >> 4, (int) this.z >> 4, true);
 
             if (!this.justCreated) {
-                Int2ObjectMap<Player> newChunk = this.level.getChunkPlayers((int) this.x >> 4, (int) this.z >> 4);
+                int chunkX = (int) this.x >> 4;
+                int chunkZ = (int) this.z >> 4;
+
+                // 检查已spawn的玩家是否超出范围
                 for (Player player : new ObjectArrayList<>(this.hasSpawned.values())) {
-                    if (!newChunk.containsKey(player.getLoaderId())) {
+                    if (!isWithinEntityViewDistance(player)) {
                         this.despawnFrom(player);
-                    } else {
-                        newChunk.remove(player.getLoaderId());
                     }
                 }
 
-                for (Player player : newChunk.values()) {
-                    this.spawnTo(player);
+                // 扫描附近区块的玩家,尝试spawn，使用服务器配置的最大视距作为扫描半径
+                int scanRadius = this.level.getServer().getViewDistance();
+                for (int dx = -scanRadius; dx <= scanRadius; dx++) {
+                    for (int dz = -scanRadius; dz <= scanRadius; dz++) {
+                        if (dx * dx + dz * dz > scanRadius * scanRadius) {
+                            continue;  // 圆形扫描
+                        }
+
+                        Int2ObjectMap<Player> chunkPlayers = this.level.getChunkPlayers(chunkX + dx, chunkZ + dz);
+                        for (Player player : chunkPlayers.values()) {
+                            if (!this.hasSpawned.containsKey(player.getLoaderId())) {
+                                // 检查距离后再spawn
+                                if (isWithinEntityViewDistance(player)) {
+                                    this.spawnTo(player);
+                                }
+                            }
+                        }
+                    }
                 }
             }
 
@@ -2703,7 +2742,10 @@ public abstract class Entity extends Location implements Metadatable, EntityData
 
         for (Player player : this.level.getChunkPlayers(this.getChunkX(), this.getChunkZ()).values()) {
             if (player.isOnline()) {
-                this.spawnTo(player);
+                // 检查实体是否在玩家的entityRadius范围内
+                if (isWithinEntityViewDistance(player)) {
+                    this.spawnTo(player);
+                }
             }
         }
     }
