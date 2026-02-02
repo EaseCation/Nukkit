@@ -4357,9 +4357,8 @@ public class Player extends EntityHuman implements CommandSender, InventoryHolde
      * @return 实体发送半径
      */
     public int getEntityRadius() {
-        return Math.max(1, this.chunkRadius - 2);
+        return Math.min(4, this.chunkRadius);
     }
-
 
     @Override
     public void sendMessage(String message) {
