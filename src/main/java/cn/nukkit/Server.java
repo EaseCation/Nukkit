@@ -106,7 +106,14 @@ import java.util.zip.Deflater;
 public class Server {
     private static final boolean FORCE_ASYNC_SAVE_PLAYER_DATA = !Boolean.getBoolean("easecation.debugging");
 
+    /**
+     * Ticks Per Second.
+     */
     public static final int TPS = 20;
+    /**
+     * The world will be ticked this many chunks away from any player. [4-12]
+     */
+    public static final int CHUNK_TICK_DISTANCE = 4;
 
     public static final String BROADCAST_CHANNEL_ADMINISTRATIVE = "nukkit.broadcast.admin";
     public static final String BROADCAST_CHANNEL_USERS = "nukkit.broadcast.user";

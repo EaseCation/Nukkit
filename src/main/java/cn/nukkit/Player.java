@@ -598,7 +598,7 @@ public class Player extends EntityHuman implements CommandSender, InventoryHolde
             return;
         }
         this.hiddenPlayers.remove(player.getUniqueId());
-        if (player.isOnline()) {
+        if (player.isOnline() && player.isWithinEntityViewDistance(this)) {
             player.spawnTo(this);
         }
     }
@@ -987,7 +987,7 @@ public class Player extends EntityHuman implements CommandSender, InventoryHolde
 
         if (this.spawned) {
             for (Entity entity : this.level.getChunkEntities(x, z).values()) {
-                if (this != entity && !entity.closed && entity.isAlive()) {
+                if (this != entity && !entity.closed && entity.isAlive() && entity.isWithinEntityViewDistance(this)) {
                     entity.spawnTo(this);
                 }
             }
@@ -1017,7 +1017,7 @@ public class Player extends EntityHuman implements CommandSender, InventoryHolde
 
         if (this.spawned) {
             for (Entity entity : this.level.getChunkEntities(x, z).values()) {
-                if (this != entity && !entity.closed && entity.isAlive()) {
+                if (this != entity && !entity.closed && entity.isAlive() && entity.isWithinEntityViewDistance(this)) {
                     entity.spawnTo(this);
                 }
             }
@@ -1168,7 +1168,7 @@ public class Player extends EntityHuman implements CommandSender, InventoryHolde
             int chunkX = Level.getHashX(index);
             int chunkZ = Level.getHashZ(index);
             for (Entity entity : this.level.getChunkEntities(chunkX, chunkZ).values()) {
-                if (this != entity && !entity.closed && entity.isAlive()) {
+                if (this != entity && !entity.closed && entity.isAlive() && entity.isWithinEntityViewDistance(this)) {
                     entity.spawnTo(this);
                 }
             }
@@ -4334,8 +4334,18 @@ public class Player extends EntityHuman implements CommandSender, InventoryHolde
         return true;
     }
 
+    /**
+     * @return chunk render radius
+     */
     public int getViewDistance() {
         return this.chunkRadius;
+    }
+
+    /**
+     * @return entity render radius
+     */
+    public int getEntityViewDistance() {
+        return Math.min(Server.CHUNK_TICK_DISTANCE, getViewDistance());
     }
 
     @Override
@@ -5542,21 +5552,54 @@ public class Player extends EntityHuman implements CommandSender, InventoryHolde
             this.chunk = this.level.getChunk((int) this.x >> 4, (int) this.z >> 4, true);
 
             if (!this.justCreated) {
-                Int2ObjectMap<Player> newChunk = this.level.getChunkPlayers((int) this.x >> 4, (int) this.z >> 4);
-                newChunk.remove(this.getLoaderId());
+                int chunkX = (int) this.x >> 4;
+                int chunkZ = (int) this.z >> 4;
 
-                //List<Player> reload = new ObjectArrayList<>();
-                for (Player player : new ObjectArrayList<>(this.hasSpawned.values())) {
-                    if (!newChunk.containsKey(player.getLoaderId())) {
-                        this.despawnFrom(player);
-                    } else {
-                        newChunk.remove(player.getLoaderId());
-                        //reload.add(player);
+                for (long chunkHash : this.usedChunks.keySet()) {
+                    int cx = Level.getHashX(chunkHash);
+                    int cz = Level.getHashZ(chunkHash);
+
+                    for (Entity entity : this.level.getChunkEntities(cx, cz).values()) {
+                        if (entity == this || entity.closed || !entity.isAlive()) {
+                            continue;
+                        }
+
+                        if (entity.getViewers().containsKey(this.getLoaderId())) {
+                            if (!entity.isWithinEntityViewDistance(this)) {
+                                entity.despawnFrom(this);
+                            }
+                        } else if (entity.isWithinEntityViewDistance(this)) {
+                            entity.spawnTo(this);
+                        }
                     }
                 }
 
-                for (Player player : newChunk.values()) {
-                    this.spawnTo(player);
+                for (Player player : new ObjectArrayList<>(this.getViewers().values())) {
+                    if (player == this) {
+                        continue;
+                    }
+                    if (!this.isWithinEntityViewDistance(player)) {
+                        this.despawnFrom(player);
+                    }
+                }
+
+                int scanRadius = Server.CHUNK_TICK_DISTANCE;
+                for (int dx = -scanRadius; dx <= scanRadius; dx++) {
+                    for (int dz = -scanRadius; dz <= scanRadius; dz++) {
+                        if (dx * dx + dz * dz > scanRadius * scanRadius) {
+                            continue;
+                        }
+
+                        Int2ObjectMap<Player> chunkPlayers = this.level.getChunkPlayers(chunkX + dx, chunkZ + dz);
+                        for (Player player : chunkPlayers.values()) {
+                            if (player == this || this.getViewers().containsKey(player.getLoaderId())) {
+                                continue;
+                            }
+                            if (this.isWithinEntityViewDistance(player)) {
+                                this.spawnTo(player);
+                            }
+                        }
+                    }
                 }
             }
 

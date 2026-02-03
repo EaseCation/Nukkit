@@ -1125,7 +1125,7 @@ public abstract class Entity extends Location implements Metadatable, EntityData
     }
 
     public void spawnTo(Player player) {
-        if (!this.hasSpawned.containsKey(player.getLoaderId()) && this.chunk != null && player.usedChunks.containsKey(Level.chunkHash(this.getChunkX(), this.getChunkZ()))) {
+        if (!this.hasSpawned.containsKey(player.getLoaderId()) && this.chunk != null) {
             this.hasSpawned.put(player.getLoaderId(), player);
 //            player.dataPacket(createAddEntityPacket());
         }
@@ -1141,6 +1141,22 @@ public abstract class Entity extends Location implements Metadatable, EntityData
 
             player.dataPacket(pkk);
         }*/
+    }
+
+    public boolean isWithinEntityViewDistance(Player player) {
+        int entityChunkX = this.getChunkX();
+        int entityChunkZ = this.getChunkZ();
+        int playerChunkX = player.getChunkX();
+        int playerChunkZ = player.getChunkZ();
+
+        int dx = entityChunkX - playerChunkX;
+        int dz = entityChunkZ - playerChunkZ;
+        int distanceSqr = dx * dx + dz * dz;
+
+        int entityRadius = player.getEntityViewDistance();
+        int entityRadiusSqr = entityRadius * entityRadius;
+
+        return distanceSqr <= entityRadiusSqr;
     }
 
     protected DataPacket createAddEntityPacket() {
@@ -2548,17 +2564,29 @@ public abstract class Entity extends Location implements Metadatable, EntityData
             this.chunk = this.level.getChunk((int) this.x >> 4, (int) this.z >> 4, true);
 
             if (!this.justCreated) {
-                Int2ObjectMap<Player> newChunk = this.level.getChunkPlayers((int) this.x >> 4, (int) this.z >> 4);
+                int chunkX = (int) this.x >> 4;
+                int chunkZ = (int) this.z >> 4;
+
                 for (Player player : new ObjectArrayList<>(this.hasSpawned.values())) {
-                    if (!newChunk.containsKey(player.getLoaderId())) {
+                    if (!isWithinEntityViewDistance(player)) {
                         this.despawnFrom(player);
-                    } else {
-                        newChunk.remove(player.getLoaderId());
                     }
                 }
 
-                for (Player player : newChunk.values()) {
-                    this.spawnTo(player);
+                int scanRadius = Server.CHUNK_TICK_DISTANCE;
+                for (int dx = -scanRadius; dx <= scanRadius; dx++) {
+                    for (int dz = -scanRadius; dz <= scanRadius; dz++) {
+                        if (dx * dx + dz * dz > scanRadius * scanRadius) {
+                            continue;
+                        }
+
+                        Int2ObjectMap<Player> chunkPlayers = this.level.getChunkPlayers(chunkX + dx, chunkZ + dz);
+                        for (Player player : chunkPlayers.values()) {
+                            if (!this.hasSpawned.containsKey(player.getLoaderId()) && isWithinEntityViewDistance(player)) {
+                                this.spawnTo(player);
+                            }
+                        }
+                    }
                 }
             }
 
@@ -2690,10 +2718,10 @@ public abstract class Entity extends Location implements Metadatable, EntityData
     }
 
     public void respawnToAll() {
-        for (Player player : this.hasSpawned.values()) {
+        for (Player player : new ObjectArrayList<>(this.hasSpawned.values())) {
+            this.despawnFrom(player);
             this.spawnTo(player);
         }
-        //this.hasSpawned = new HashMap<>();
     }
 
     public void spawnToAll() {
@@ -2702,7 +2730,7 @@ public abstract class Entity extends Location implements Metadatable, EntityData
         }
 
         for (Player player : this.level.getChunkPlayers(this.getChunkX(), this.getChunkZ()).values()) {
-            if (player.isOnline()) {
+            if (player.isOnline() && isWithinEntityViewDistance(player)) {
                 this.spawnTo(player);
             }
         }
