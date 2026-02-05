@@ -1448,8 +1448,12 @@ public abstract class Entity extends Location implements Metadatable, EntityData
         return !this.justCreated && this != entity;
     }
 
+    protected AxisAlignedBB[] getCollisionBlockCubes(AxisAlignedBB bb) {
+        return this.level.getCollisionCubes(this, bb, false);
+    }
+
     protected boolean checkObstruction(double x, double y, double z) {
-        if (this.level.getCollisionCubes(this, this.getBoundingBox(), false).length == 0) {
+        if (this.getCollisionBlockCubes(this.getBoundingBox()).length == 0) {
             return false;
         }
 
@@ -2333,7 +2337,7 @@ public abstract class Entity extends Location implements Metadatable, EntityData
 
             AxisAlignedBB axisalignedbb = this.boundingBox.clone();
 
-            AxisAlignedBB[] list = this.level.getCollisionCubes(this, this.boundingBox.addCoord(dx, dy, dz), false);
+            AxisAlignedBB[] list = this.getCollisionBlockCubes(this.boundingBox.addCoord(dx, dy, dz));
 
             for (AxisAlignedBB bb : list) {
                 dy = bb.calculateYOffset(this.boundingBox, dy);
@@ -2367,7 +2371,7 @@ public abstract class Entity extends Location implements Metadatable, EntityData
 
                 this.boundingBox.setBB(axisalignedbb);
 
-                list = this.level.getCollisionCubes(this, this.boundingBox.addCoord(dx, dy, dz), false);
+                list = this.getCollisionBlockCubes(this.boundingBox.addCoord(dx, dy, dz));
 
                 for (AxisAlignedBB bb : list) {
                     dy = bb.calculateYOffset(this.boundingBox, dy);

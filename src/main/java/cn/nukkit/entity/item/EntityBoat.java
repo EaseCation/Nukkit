@@ -31,6 +31,7 @@ import cn.nukkit.network.protocol.SetEntityLinkPacket;
 import cn.nukkit.network.protocol.SetEntityMotionPacket;
 
 import java.util.ArrayList;
+import java.util.List;
 import java.util.concurrent.ThreadLocalRandom;
 
 import static cn.nukkit.GameVersion.*;
@@ -219,7 +220,7 @@ public class EntityBoat extends EntityVehicle {
                     for (int x = boundingBox.getFloorMinX(); x <= boundingBox.getFloorMaxX(); x++) {
                         for (int z = boundingBox.getFloorMinZ(); z <= boundingBox.getFloorMaxZ(); z++) {
                             Block block =  this.level.getBlock(x, y, z, false);
-                            if (block.isAir() || !block.collidesWithBB(boundingBox)) {
+                            if (block.isAir() || !block.collidesWithBB(boundingBox.getOffsetBoundingBox(0, -0.026, 0))) {
                                 continue;
                             }
 
@@ -363,6 +364,7 @@ public class EntityBoat extends EntityVehicle {
         return hasUpdate || !this.onGround || Math.abs(this.motionX) > 0.00001 || Math.abs(this.motionY) > 0.00001 || Math.abs(this.motionZ) > 0.00001;
     }
 
+    @Override
     public void updatePassengers() {
         updatePassengers(false);
     }
@@ -527,6 +529,32 @@ public class EntityBoat extends EntityVehicle {
         if (getDataPropertyFloat(propertyId) != frameSeconds) {
             this.setDataProperty(new FloatEntityData(propertyId, frameSeconds));
         }
+    }
+
+    @Override
+    protected AxisAlignedBB[] getCollisionBlockCubes(AxisAlignedBB bb) {
+        int minX = Mth.floor(bb.getMinX());
+        int minY = Mth.floor(bb.getMinY());
+        int minZ = Mth.floor(bb.getMinZ());
+        int maxX = Mth.floor(bb.getMaxX());
+        int maxY = Mth.floor(bb.getMaxY());
+        int maxZ = Mth.floor(bb.getMaxZ());
+
+        List<AxisAlignedBB> collides = new ArrayList<>();
+        for (int z = minZ; z <= maxZ; ++z) {
+            for (int x = minX; x <= maxX; ++x) {
+                for (int y = minY; y <= maxY; ++y) {
+                    Block block = level.getBlock(x, y, z, false);
+                    if (block.getId() == Block.WATERLILY) {
+                        continue;
+                    }
+                    if (!block.canPassThrough() && block.collidesWithBB(bb)) {
+                        collides.add(block.getBoundingBox());
+                    }
+                }
+            }
+        }
+        return collides.toArray(new AxisAlignedBB[0]);
     }
 
     @Override
