@@ -226,6 +226,7 @@ public class PlayerInventory extends BaseInventory {
         super.onOpen(who);
         ContainerOpenPacket pk = new ContainerOpenPacket();
         pk.windowId = who.getWindowId(this);
+        who.setLastOpenedWindowId(pk.windowId);
         pk.type = this.getType().getNetworkType();
         pk.x = who.getFloorX();
         pk.y = who.getFloorY();
@@ -235,14 +236,17 @@ public class PlayerInventory extends BaseInventory {
 
     @Override
     public void onClose(Player who) {
-        int windowId = who.getWindowId(this);
-        if (windowId != ContainerIds.NONE) {
-            ContainerClosePacket pk = new ContainerClosePacket();
-            pk.windowId = windowId;
-            pk.wasServerInitiated = who.getClosingWindowId() != pk.windowId;
-            who.resetClosingWindowId(windowId);
-            who.dataPacket(pk);
+        if (who.getClosingWindowId() != Integer.MAX_VALUE) {
+            int windowId = who.getWindowId(this);
+            if (windowId != ContainerIds.NONE) {
+                ContainerClosePacket pk = new ContainerClosePacket();
+                pk.windowId = windowId;
+                pk.wasServerInitiated = who.getClosingWindowId() != pk.windowId;
+                who.resetClosingWindowId(windowId);
+                who.dataPacket(pk);
+            }
         }
+
         // player can never stop viewing their own inventory
         if (who != holder) {
             super.onClose(who);

@@ -183,6 +183,7 @@ public class Player extends EntityHuman implements CommandSender, InventoryHolde
     protected int windowCnt = FIRST_AVAILABLE_WINDOW_ID;
 
     protected int closingWindowId = Integer.MIN_VALUE;
+    protected int lastOpenedWindowId = -1;
 
     protected final BiMap<Inventory, Integer> windows = HashBiMap.create();
     protected final BiMap<Integer, Inventory> windowIndex = windows.inverse();
@@ -6036,6 +6037,10 @@ public class Player extends EntityHuman implements CommandSender, InventoryHolde
         this.closingWindowId = Integer.MIN_VALUE;
     }
 
+    public void setLastOpenedWindowId(int windowId) {
+        this.lastOpenedWindowId = windowId;
+    }
+
     @Override
     public void setMetadata(String metadataKey, MetadataValue newMetadataValue) {
         this.server.getPlayerMetadata().setMetadata(this, metadataKey, newMetadataValue);
@@ -6930,6 +6935,7 @@ public class Player extends EntityHuman implements CommandSender, InventoryHolde
         packet.y = y;
         packet.z = z;
         packet.windowId = Math.max(FIRST_AVAILABLE_WINDOW_ID, ++windowCnt % 99);
+        lastOpenedWindowId = packet.windowId;
         dataPacket(packet);
     }
 

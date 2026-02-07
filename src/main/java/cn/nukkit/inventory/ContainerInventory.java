@@ -36,6 +36,7 @@ public abstract class ContainerInventory extends BaseInventory {
         super.onOpen(who);
         ContainerOpenPacket pk = new ContainerOpenPacket();
         pk.windowId = who.getWindowId(this);
+        who.setLastOpenedWindowId(pk.windowId);
         pk.type = this.getType().getNetworkType();
         InventoryHolder holder = this.getHolder();
         if (holder instanceof Vector3) {
@@ -56,14 +57,16 @@ public abstract class ContainerInventory extends BaseInventory {
 
     @Override
     public void onClose(Player who) {
-        ContainerClosePacket pk = new ContainerClosePacket();
-        pk.windowId = who.getWindowId(this);
-        pk.wasServerInitiated = who.getClosingWindowId() != pk.windowId;
-        if (pk.wasServerInitiated) {
-            pk.windowType = getType().getNetworkType();
+        if (who.getClosingWindowId() != Integer.MAX_VALUE) {
+            ContainerClosePacket pk = new ContainerClosePacket();
+            pk.windowId = who.getWindowId(this);
+            pk.wasServerInitiated = who.getClosingWindowId() != pk.windowId;
+            if (pk.wasServerInitiated) {
+                pk.windowType = getType().getNetworkType();
+            }
+            who.resetClosingWindowId(pk.windowId);
+            who.dataPacket(pk);
         }
-        who.resetClosingWindowId(pk.windowId);
-        who.dataPacket(pk);
         super.onClose(who);
     }
 

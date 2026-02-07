@@ -56,6 +56,7 @@ public class BlockCraftingTable extends BlockSolid {
             ContainerOpenPacket pk = new ContainerOpenPacket();
 //            pk.windowId = Player.WORKBENCH_WINDOW_ID;
             pk.windowId = -1;
+            player.setLastOpenedWindowId(-1);
             pk.type = ContainerType.WORKBENCH;
             pk.x = (int) x;
             pk.y = (int) y;

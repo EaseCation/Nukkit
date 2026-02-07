@@ -32,6 +32,7 @@ public class PlayerEnderChestInventory extends BaseInventory {
 
         ContainerOpenPacket containerOpenPacket = new ContainerOpenPacket();
         containerOpenPacket.windowId = who.getWindowId(this);
+        who.setLastOpenedWindowId(containerOpenPacket.windowId);
         containerOpenPacket.type = this.getType().getNetworkType();
         Vector3 chest = who.getViewingEnderChest();
         if (chest != null) {
@@ -63,14 +64,16 @@ public class PlayerEnderChestInventory extends BaseInventory {
 
     @Override
     public void onClose(Player who) {
-        ContainerClosePacket containerClosePacket = new ContainerClosePacket();
-        containerClosePacket.windowId = who.getWindowId(this);
-        containerClosePacket.wasServerInitiated = who.getClosingWindowId() != containerClosePacket.windowId;
-        if (containerClosePacket.wasServerInitiated) {
-            containerClosePacket.windowType = getType().getNetworkType();
+        if (who.getClosingWindowId() != Integer.MAX_VALUE) {
+            ContainerClosePacket containerClosePacket = new ContainerClosePacket();
+            containerClosePacket.windowId = who.getWindowId(this);
+            containerClosePacket.wasServerInitiated = who.getClosingWindowId() != containerClosePacket.windowId;
+            if (containerClosePacket.wasServerInitiated) {
+                containerClosePacket.windowType = getType().getNetworkType();
+            }
+            who.resetClosingWindowId(containerClosePacket.windowId);
+            who.dataPacket(containerClosePacket);
         }
-        who.resetClosingWindowId(containerClosePacket.windowId);
-        who.dataPacket(containerClosePacket);
 
         super.onClose(who);
 
