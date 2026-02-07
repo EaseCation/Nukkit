@@ -472,6 +472,11 @@ public abstract class BaseFullChunk implements FullChunk, ChunkManager {
     }
 
     @Override
+    public Int2ByteMap getBiomeStates() {
+        return Int2ByteMaps.EMPTY_MAP;
+    }
+
+    @Override
     public byte[] getHeightMapArray() {
         return this.heightMap;
     }

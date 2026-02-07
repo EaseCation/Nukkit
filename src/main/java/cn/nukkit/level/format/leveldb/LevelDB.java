@@ -38,6 +38,8 @@ import io.netty.buffer.ByteBuf;
 import io.netty.buffer.Unpooled;
 import it.unimi.dsi.fastutil.bytes.ByteArrayList;
 import it.unimi.dsi.fastutil.bytes.ByteList;
+import it.unimi.dsi.fastutil.ints.Int2ByteMap;
+import it.unimi.dsi.fastutil.ints.Int2ByteOpenHashMap;
 import it.unimi.dsi.fastutil.ints.IntArrayList;
 import it.unimi.dsi.fastutil.ints.IntList;
 import it.unimi.dsi.fastutil.longs.Long2ObjectMap;
@@ -420,6 +422,14 @@ public class LevelDB implements LevelProvider {
         levelData.putCompoundIfAbsent("experiments", new CompoundTag()
                 .putByte("experiments_ever_used", 0)
                 .putByte("saved_with_toggled_experiments", 0));
+        levelData.putByteIfAbsent("cheatsEnabled", 1);
+        levelData.putIntIfAbsent("daylightCycle", 0);
+        levelData.putIntIfAbsent("editorWorldType", 0);
+        levelData.putByteIfAbsent("HasUncompleteWorldFileOnDisk", 0);
+        levelData.putByteIfAbsent("isRandomSeedAllowed", 0);
+        levelData.putByteIfAbsent("IsHardcore", 0);
+        levelData.putByteIfAbsent("PlayerHasDied", 0);
+        levelData.putByteIfAbsent("UseAllowList", 0);
     }
 
     @Override
@@ -623,17 +633,19 @@ public class LevelDB implements LevelProvider {
         byte chunkVersion = versionData[0];
         boolean hasBeenUpgraded = chunkVersion < CURRENT_LEVEL_CHUNK_VERSION;
         boolean biomeOrHeightmapUpgraded = false;
+        boolean biomeStatesUpgraded = false;
 
         LevelDbSubChunk[] subChunks = new LevelDbSubChunk[LevelDbChunk.SECTION_COUNT];
         short[] heightmap = null;
         boolean[] borders = null;
         PalettedSubChunkStorage[] biomes3d = null;
+        Int2ByteMap biomeStates = new Int2ByteOpenHashMap();
 
         int subChunkKeyOffset = chunkVersion >= 24 && chunkVersion <= 26 ? 4 : 0;
 
         switch (chunkVersion) {
-//            case 41: // 1.21.40
-                //TODO: BiomeStates became shorts instead of bytes
+            case 41: // 1.21.40
+                // BiomeStates became shorts instead of bytes
             case 40: // 1.18.30
             case 39: // 1.18.0.25 beta
             case 38: // 1.18.0.24 beta internal_experimental
@@ -967,7 +979,28 @@ public class LevelDB implements LevelProvider {
             finalisation = FINALISATION_DONE; //older versions didn't have this tag
         }
 
-        LevelDbChunk chunk = new LevelDbChunk(this, chunkX, chunkZ, subChunks, heightmap, biomes3d, entities, blockEntities, borders);
+        byte[] biomeStatesData = this.db.get(BIOME_STATES.getKey(chunkX, chunkZ, dimension.getId()));
+        if (biomeStatesData != null && biomeStatesData.length != 0) {
+            BinaryStream stream = new BinaryStream(biomeStatesData);
+            if (chunkVersion < 41) {
+                biomeStatesUpgraded = true;
+                int biomeStateCount = stream.getByte();
+                for (int i = 0; i < biomeStateCount; i++) {
+                    int biomeId = stream.getByte();
+                    byte snowLevel = stream.getSingedByte();
+                    biomeStates.put(biomeId, snowLevel);
+                }
+            } else {
+                int biomeStateCount = stream.getLShort();
+                for (int i = 0; i < biomeStateCount; i++) {
+                    int biomeId = stream.getLShort();
+                    byte snowLevel = stream.getSingedByte();
+                    biomeStates.put(biomeId, snowLevel);
+                }
+            }
+        }
+
+        LevelDbChunk chunk = new LevelDbChunk(this, chunkX, chunkZ, subChunks, heightmap, biomes3d, biomeStates, entities, blockEntities, borders);
 
         if (finalisation == FINALISATION_DONE) {
             chunk.setGenerated();
@@ -982,6 +1015,10 @@ public class LevelDB implements LevelProvider {
         }
         if (biomeOrHeightmapUpgraded || chunkVersion <= 2) {
             chunk.setHeightmapOrBiomesDirty();
+            chunk.setChanged();
+        }
+        if (biomeStatesUpgraded) {
+            chunk.setBiomeStatesDirty();
             chunk.setChanged();
         }
 
@@ -1029,6 +1066,22 @@ public class LevelDB implements LevelProvider {
                 chunk.writeBiomeTo(stream, false, customBiomeRuntimeToPersistent);
 
                 batch.put(HEIGHTMAP_AND_3D_BIOMES.getKey(chunkX, chunkZ, dimension.getId()), stream.getBuffer());
+            }
+
+            if (chunk.isBiomeStatesDirty()) {
+                byte[] biomeStatesKey = BIOME_STATES.getKey(chunkX, chunkZ, dimension.getId());
+                Int2ByteMap biomeStates = chunk.getBiomeStates();
+                if (biomeStates.isEmpty()) {
+                    batch.delete(biomeStatesKey);
+                } else {
+                    stream.reuse();
+                    stream.putLShort(biomeStates.size());
+                    for (Int2ByteMap.Entry entry : biomeStates.int2ByteEntrySet()) {
+                        stream.putLShort(entry.getIntKey());
+                        stream.putByte(entry.getByteValue());
+                    }
+                    batch.put(biomeStatesKey, stream.getBuffer());
+                }
             }
 
             if (chunk.isBordersDirty()) {

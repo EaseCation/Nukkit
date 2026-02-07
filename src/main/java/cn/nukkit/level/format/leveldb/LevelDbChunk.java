@@ -15,6 +15,8 @@ import cn.nukkit.level.util.PalettedSubChunkStorage;
 import cn.nukkit.nbt.tag.CompoundTag;
 import cn.nukkit.utils.BinaryStream;
 import cn.nukkit.utils.ChunkException;
+import it.unimi.dsi.fastutil.ints.Int2ByteMap;
+import it.unimi.dsi.fastutil.ints.Int2ByteOpenHashMap;
 import it.unimi.dsi.fastutil.ints.IntList;
 import it.unimi.dsi.fastutil.ints.IntLists;
 
@@ -33,6 +35,7 @@ public class LevelDbChunk extends BaseChunk {
     protected PalettedSubChunkStorage[] biomes3d;
     protected final Lock biomeReadLock;
     protected final Lock biomeWriteLock;
+    protected Int2ByteMap biomeStates;
 
     protected HeightRange heightRange;
     /**
@@ -48,22 +51,22 @@ public class LevelDbChunk extends BaseChunk {
 
     protected boolean subChunksDirty;
     protected boolean heightmapOrBiomesDirty;
+    protected boolean biomeStatesDirty;
     protected boolean bordersDirty;
     //TODO: more DirtyTicksCounter
 //    protected boolean blockTickingDirty;
 //    protected boolean randomBlockTickingDirty;
 //    protected boolean blockEntitiesDirty;
 //    protected boolean entitiesDirty;
-//    protected boolean borderBlocksDirty;
 
     protected final Lock ioLock;
 
     public LevelDbChunk(@Nullable LevelProvider level, int chunkX, int chunkZ) {
-        this(level, chunkX, chunkZ, null, new short[SUB_CHUNK_2D_SIZE], null, null, null, new boolean[SUB_CHUNK_2D_SIZE]);
+        this(level, chunkX, chunkZ, null, new short[SUB_CHUNK_2D_SIZE], null, null, null, null, new boolean[SUB_CHUNK_2D_SIZE]);
     }
 
     public LevelDbChunk(@Nullable LevelProvider level, int chunkX, int chunkZ, @Nullable LevelDbSubChunk[] sections,
-                        @Nullable short[] heightmap, @Nullable PalettedSubChunkStorage[] biomes,
+                        @Nullable short[] heightmap, @Nullable PalettedSubChunkStorage[] biomes, @Nullable Int2ByteMap biomeStates,
                         @Nullable List<CompoundTag> entities, @Nullable List<CompoundTag> blockEntities,
                         @Nullable boolean[] borders) {
         this.ioLock = new ReentrantLock();
@@ -116,6 +119,12 @@ public class LevelDbChunk extends BaseChunk {
         int bottomIndex = Level.subChunkYtoIndex(heightRange.getMinChunkY());
         if (this.biomes3d[bottomIndex] == null) {
             this.biomes3d[bottomIndex] = PalettedSubChunkStorage.ofBiome(BiomeID.OCEAN);
+        }
+
+        if (biomeStates != null) {
+            this.biomeStates = biomeStates;
+        } else {
+            this.biomeStates = new Int2ByteOpenHashMap();
         }
 
         if (borders != null && borders.length == SUB_CHUNK_2D_SIZE) {
@@ -180,6 +189,11 @@ public class LevelDbChunk extends BaseChunk {
     @Override
     public PalettedSubChunkStorage[] getBiomes() {
         return this.biomes3d;
+    }
+
+    @Override
+    public Int2ByteMap getBiomeStates() {
+        return this.biomeStates;
     }
 
     @Override
@@ -652,6 +666,14 @@ public class LevelDbChunk extends BaseChunk {
 
     public void setHeightmapOrBiomesDirty() {
         this.heightmapOrBiomesDirty = true;
+    }
+
+    public boolean isBiomeStatesDirty() {
+        return this.biomeStatesDirty;
+    }
+
+    public void setBiomeStatesDirty() {
+        this.biomeStatesDirty = true;
     }
 
     public boolean isBordersDirty() {

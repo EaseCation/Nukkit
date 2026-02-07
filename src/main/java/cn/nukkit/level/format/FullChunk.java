@@ -8,6 +8,7 @@ import cn.nukkit.level.biome.Biome;
 import cn.nukkit.level.format.LevelProviderManager.LevelProviderHandle;
 import cn.nukkit.level.util.PalettedSubChunkStorage;
 import cn.nukkit.utils.BinaryStream;
+import it.unimi.dsi.fastutil.ints.Int2ByteMap;
 import it.unimi.dsi.fastutil.ints.Int2IntMap;
 import it.unimi.dsi.fastutil.ints.IntList;
 
@@ -175,6 +176,8 @@ public interface FullChunk extends Cloneable {
     byte[] getBiomeIdArray();
 
     PalettedSubChunkStorage[] getBiomes();
+
+    Int2ByteMap getBiomeStates();
 
     @Deprecated
     byte[] getHeightMapArray();
