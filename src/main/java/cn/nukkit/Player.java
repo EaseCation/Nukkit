@@ -3840,7 +3840,9 @@ public class Player extends EntityHuman implements CommandSender, InventoryHolde
 
                                     Item oldItem = i.clone();
 
-                                    if (this.canInteract(blockVector.add(0.5, 0.5, 0.5), this.isCreative() ? MAX_REACH_DISTANCE_CREATIVE : MAX_REACH_DISTANCE_SURVIVAL) && (i = this.level.useBreakOn(blockVector.asVector3(), i, this, true)) != null) {
+                                    if (isBreakingBlock()
+                                            && this.canInteract(blockVector.add(0.5, 0.5, 0.5), this.isCreative() ? MAX_REACH_DISTANCE_CREATIVE : MAX_REACH_DISTANCE_SURVIVAL)
+                                            && (i = this.level.useBreakOn(blockVector.asVector3(), i, this, true)) != null) {
                                         if (this.isSurvival()) {
                                             this.getFoodData().updateFoodExpLevel(0.005f);
                                             if (!i.equals(oldItem) || i.getCount() != oldItem.getCount()) {
