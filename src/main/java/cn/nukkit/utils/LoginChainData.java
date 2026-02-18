@@ -56,4 +56,12 @@ public interface LoginChainData {
     String getCapeData();
 
     int getUIProfile();
+
+    /**
+     * 获取 ViaProxy 认证令牌，用于判断玩家是否通过 ViaProxy 从 Java 版客户端连接
+     * @return ViaProxy 认证令牌，如果不是 ViaProxy 客户端则返回 null
+     */
+    default String getViaProxyAuthToken() {
+        return null;
+    }
 }
