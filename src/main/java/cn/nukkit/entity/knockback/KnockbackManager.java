@@ -1,4 +1,4 @@
-package cn.nukkit.knockback;
+package cn.nukkit.entity.knockback;
 
 import java.util.Collection;
 import java.util.Collections;

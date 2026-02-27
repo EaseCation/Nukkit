@@ -1,4 +1,4 @@
-package cn.nukkit.knockback;
+package cn.nukkit.entity.knockback;
 
 /**
  * 击退配置 Profile，承载所有击退相关的参数。

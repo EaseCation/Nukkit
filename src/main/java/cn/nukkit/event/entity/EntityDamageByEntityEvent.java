@@ -3,8 +3,8 @@ package cn.nukkit.event.entity;
 import cn.nukkit.entity.Entity;
 import cn.nukkit.entity.EntityLiving;
 import cn.nukkit.item.enchantment.Enchantment;
-import cn.nukkit.knockback.KnockbackManager;
-import cn.nukkit.knockback.KnockbackProfile;
+import cn.nukkit.entity.knockback.KnockbackManager;
+import cn.nukkit.entity.knockback.KnockbackProfile;
 import cn.nukkit.potion.Effect;
 
 import java.util.Map;
