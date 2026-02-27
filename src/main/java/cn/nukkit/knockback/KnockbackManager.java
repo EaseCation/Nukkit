@@ -23,8 +23,11 @@ public class KnockbackManager {
         // 修正版 Profile：使用 player.speed 获取真实速度
         register(new KnockbackProfile("corrected").setUseRealVelocity(true));
 
-        // PC 房间 Profile：更高的基础击退值 + 真实速度
-        register(new KnockbackProfile("pc").setBaseH(0.37f).setBaseV(0.35f).setUseRealVelocity(true));
+        // PC 房间 Profile：更高的基础击退值
+        register(new KnockbackProfile("pc").setBaseH(0.37f).setBaseV(0.35f).setUseRealVelocity(false));
+
+        // PC 修正版
+        register(new KnockbackProfile("pc-corrected").setBaseH(0.37f).setBaseV(0.35f).setUseRealVelocity(true));
     }
 
     public static KnockbackManager get() {
