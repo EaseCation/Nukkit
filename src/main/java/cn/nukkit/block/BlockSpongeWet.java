@@ -3,8 +3,8 @@ package cn.nukkit.block;
 import cn.nukkit.Player;
 import cn.nukkit.item.Item;
 import cn.nukkit.level.Dimension;
+import cn.nukkit.level.Level;
 import cn.nukkit.math.BlockFace;
-import cn.nukkit.network.protocol.LevelEventPacket;
 
 public class BlockSpongeWet extends BlockSponge {
     BlockSpongeWet() {
@@ -24,12 +24,18 @@ public class BlockSpongeWet extends BlockSponge {
     @Override
     public boolean place(Item item, Block block, Block target, BlockFace face, float fx, float fy, float fz, Player player) {
         if (level.getDimension() == Dimension.NETHER) {
-            level.setBlock(block, Block.get(SPONGE), true, true);
-            level.addLevelEvent(block.add(0.5, 0.875, 0.5), LevelEventPacket.EVENT_SOUND_EXPLODE);
+            evaporateWater(false);
             return true;
         }
 
-        return level.setBlock(this, this, true, true);
+        if (!level.setBlock(this, this, true)) {
+            return false;
+        }
+
+        if (isWarmBiome()) {
+            setShouldDry(this);
+        }
+        return true;
     }
 
     @Override
@@ -40,5 +46,23 @@ public class BlockSpongeWet extends BlockSponge {
     @Override
     public String getDescriptionId() {
         return "tile.sponge.wet.name";
+    }
+
+    @Override
+    public int onUpdate(int type) {
+/*
+        if (type == Level.BLOCK_UPDATE_NORMAL) {
+            if (isWarmBiome()) {
+                setShouldDry(this);
+            }
+            return type;
+        }
+*/
+        if (type == Level.BLOCK_UPDATE_SCHEDULED) {
+            evaporateWater(false);
+            return Level.BLOCK_UPDATE_NORMAL;
+        }
+
+        return 0;
     }
 }

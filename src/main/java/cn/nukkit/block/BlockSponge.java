@@ -2,12 +2,17 @@ package cn.nukkit.block;
 
 import cn.nukkit.Player;
 import cn.nukkit.item.Item;
+import cn.nukkit.level.Dimension;
+import cn.nukkit.level.Level;
+import cn.nukkit.level.biome.Biome;
 import cn.nukkit.level.particle.DestroyBlockParticle;
 import cn.nukkit.math.BlockFace;
+import cn.nukkit.network.protocol.LevelEventPacket;
 import cn.nukkit.utils.BlockColor;
 
 import java.util.ArrayDeque;
 import java.util.Queue;
+import java.util.concurrent.ThreadLocalRandom;
 
 /**
  * author: Angelic47
@@ -58,14 +63,12 @@ public class BlockSponge extends BlockSolid {
 
     @Override
     public boolean place(Item item, Block block, Block target, BlockFace face, float fx, float fy, float fz, Player player) {
-        if (block.isWater() && performWaterAbsorb(block)) { //TODO: addToRandomTickingQueue(1)
-            level.setBlock(block, Block.get(WET_SPONGE), true, true);
-
-            level.addParticle(new DestroyBlockParticle(this.add(0.5, 1, 0.5), Block.get(BlockID.WATER)));
-            return true;
+        if (!level.setBlock(this, this, true)) {
+            return false;
         }
 
-        return level.setBlock(this, this, true, true);
+        level.scheduleUpdate(this, 1);
+        return true;
     }
 
     @Override
@@ -104,6 +107,68 @@ public class BlockSponge extends BlockSolid {
             }
         }
         return waterRemoved > 0;
+    }
+
+    @Override
+    public int onUpdate(int type) {
+        if (type == Level.BLOCK_UPDATE_NORMAL) {
+            level.scheduleUpdate(this, 1);
+            return type;
+        }
+
+        if (type == Level.BLOCK_UPDATE_SCHEDULED) {
+            boolean hasWater = false;
+            for (BlockFace face : BlockFace.getValues()) {
+                Block block = getSide(face);
+                if (block.isWater()) {
+                    hasWater = true;
+                    break;
+                }
+            }
+            if (!hasWater) {
+                return 0;
+            }
+
+            if (!performWaterAbsorb(this)) {
+                return 0;
+            }
+
+            if (isWarmBiome()) {
+                evaporateWater(true);
+            } else {
+                Block block = get(WET_SPONGE);
+                level.setBlock(this, block, true, true);
+
+                if (isWarmBiome()) {
+                    setShouldDry(block);
+                }
+            }
+
+            level.addParticle(new DestroyBlockParticle(add(0.5, 1, 0.5), get(WATER)));
+            return type;
+        }
+
+        return 0;
+    }
+
+    protected void evaporateWater(boolean effectOnly) {
+        if (!effectOnly) {
+            level.setBlock(this, get(SPONGE), true);
+        }
+        level.addLevelEvent(add(0.5, 0.875, 0.5), LevelEventPacket.EVENT_SOUND_EXPLODE);
+    }
+
+    protected static void setShouldDry(Block block) {
+        if (block.level.isRandomBlockTickPending(block, block)) {
+            return;
+        }
+        block.level.scheduleRandomUpdate(block, 20 * ThreadLocalRandom.current().nextInt(90, 180));
+    }
+
+    protected boolean isWarmBiome() {
+        Biome biome = level.getBiome(getFloorX(), getFloorY(), getFloorZ());
+//        return biome.getTemperature() >= 1; //TODO
+        return !biome.canRain() && !biome.canSnow() && !biome.isFreezing() && level.getDimension() == Dimension.OVERWORLD;
     }
 
     private static class Entry {
