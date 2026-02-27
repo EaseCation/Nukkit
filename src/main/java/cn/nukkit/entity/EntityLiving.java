@@ -11,6 +11,8 @@ import cn.nukkit.entity.passive.EntityWaterAnimal;
 import cn.nukkit.event.entity.EntityDamageByEntityEvent;
 import cn.nukkit.event.entity.EntityDamageEvent;
 import cn.nukkit.event.entity.EntityDamageEvent.DamageCause;
+import cn.nukkit.knockback.KnockbackManager;
+import cn.nukkit.knockback.KnockbackProfile;
 import cn.nukkit.event.entity.EntityDeathEvent;
 import cn.nukkit.event.entity.EntityResurrectEvent;
 import cn.nukkit.inventory.ArmorInventory;
@@ -64,6 +66,17 @@ public abstract class EntityLiving extends Entity implements EntityDamageable {
     protected long nextAllowAttack = 0;  // EC优化，在低TPS时也确保正确的攻击冷却时间
     protected long nextAllowKnockback;
     protected float lastHurt;
+
+    @Nullable
+    private KnockbackProfile knockbackProfile;
+
+    public KnockbackProfile getKnockbackProfile() {
+        return knockbackProfile != null ? knockbackProfile : KnockbackManager.get().getDefaultProfile();
+    }
+
+    public void setKnockbackProfile(@Nullable KnockbackProfile profile) {
+        this.knockbackProfile = profile;
+    }
 
     protected boolean invisible = false;
 
@@ -241,7 +254,19 @@ public abstract class EntityLiving extends Entity implements EntityDamageable {
                 nextAllowKnockback = nextAllowAttack;
                 double deltaX = this.x - damager.x;
                 double deltaZ = this.z - damager.z;
-                this.knockBack(damager, damage, deltaX, deltaZ, ev.getKnockBackH(), ev.getKnockBackV());
+                KnockbackProfile hitProfile = ev.getKnockbackProfile();
+                this.knockBack(damager, damage, deltaX, deltaZ, hitProfile);
+
+                // 攻击者后处理：疾跑相关（默认关闭，Profile 可开启）
+                if (damager instanceof Player attacker && attacker.isSprinting()) {
+                    if (hitProfile.getSprintSlowdownH() != 1.0f) {
+                        attacker.motionX *= hitProfile.getSprintSlowdownH();
+                        attacker.motionZ *= hitProfile.getSprintSlowdownH();
+                    }
+                    if (hitProfile.isStopSprinting()) {
+                        attacker.setSprinting(false);
+                    }
+                }
             }
         }
 
@@ -344,45 +369,24 @@ public abstract class EntityLiving extends Entity implements EntityDamageable {
     }
 
     public void knockBack(Entity attacker, double damage, double x, double z, double base) {
-        float resistance = getKnockbackResistance();
-        if (resistance >= 1) {
-            return;
-        }
-        float scale = 1 - resistance;
-        base *= scale;
-
-        double f = Math.sqrt(x * x + z * z);
-        if (f <= 0) {
-            return;
-        }
-
-        f = 1 / f;
-
-        Vector3 motion = new Vector3(this.motionX, this.motionY, this.motionZ);
-
-        motion.x /= 2d;
-        motion.y /= 2d;
-        motion.z /= 2d;
-        motion.x += x * f * base;
-        motion.y += base;
-        motion.z += z * f * base;
-
-        if (motion.y > base) {
-            motion.y = base;
-        }
-
-        double length = Math.sqrt(motion.x * motion.x + motion.z * motion.z);
-        length = Math.min(Math.max(length, 0.2), 0.58);
-        Vector2 multiply = new Vector2(x, z).normalize().multiply(length);
-        motion.x = multiply.x;
-        motion.z = multiply.y;
-
-        //this.getServer().getLogger().debug("[knockback] xz=" + new Vector2(motion.x, motion.z).length() + " y=" + motion.y);
-
-        this.setMotion(motion);
+        this.knockBack(attacker, damage, x, z, base, base);
     }
 
     public void knockBack(Entity attacker, double damage, double x, double z, double baseH, double baseV) {
+        knockBackInternal(attacker, damage, x, z, baseH, baseV, getKnockbackProfile());
+    }
+
+    /**
+     * Profile 驱动的击退方法，attack() 使用此版本
+     */
+    public void knockBack(Entity attacker, double damage, double x, double z, KnockbackProfile profile) {
+        double baseH = profile.getEffectiveBaseH();
+        double baseV = profile.getEffectiveBaseV();
+        knockBackInternal(attacker, damage, x, z, baseH, baseV, profile);
+    }
+
+    private void knockBackInternal(Entity attacker, double damage, double x, double z,
+                                    double baseH, double baseV, KnockbackProfile profile) {
         float resistance = getKnockbackResistance();
         if (resistance >= 1) {
             return;
@@ -395,34 +399,60 @@ public abstract class EntityLiving extends Entity implements EntityDamageable {
         if (f <= 0) {
             return;
         }
-
         f = 1 / f;
 
-        Vector3 motion = new Vector3(this.motionX, this.motionY, this.motionZ);
-
-        motion.x /= 2d;
-        motion.y /= 2d;
-        motion.z /= 2d;
-        motion.x += x * f * baseH;
-        motion.y += baseV;
-        motion.z += z * f * baseH;
-
-        if (motion.y > baseV) {
-            motion.y = baseV;
+        // 旧动量来源
+        double oldMotX, oldMotY, oldMotZ;
+        if (profile.isUseRealVelocity() && this instanceof Player player && player.speed != null) {
+            oldMotX = -player.speed.x;
+            oldMotY = -player.speed.y;
+            oldMotZ = -player.speed.z;
+        } else {
+            oldMotX = this.motionX;
+            oldMotY = this.motionY;
+            oldMotZ = this.motionZ;
         }
 
-        // 修正击退方向
-        if (baseH > 0) {
-            double length = Math.sqrt(motion.x * motion.x + motion.z * motion.z);
-            length = Math.min(Math.max(length, 0.2), 0.58);
-            Vector2 multiply = new Vector2(x, z).normalize().multiply(length);
-            motion.x = multiply.x;
-            motion.z = multiply.y;
+        // 旧动量衰减 + 继承比例
+        double motX = profile.isInheritHorizontal() ? oldMotX * profile.getFriction() * profile.getInheritRatioH() : 0;
+        double motY = profile.isInheritVertical() ? oldMotY * profile.getFriction() * profile.getInheritRatioV() : 0;
+        double motZ = profile.isInheritHorizontal() ? oldMotZ * profile.getFriction() * profile.getInheritRatioH() : 0;
+
+        // 叠加新击退
+        motX += x * f * baseH;
+        motY += baseV;
+        motZ += z * f * baseH;
+
+        // 疾跑加成（默认倍率 1.0，无效果）
+        if (attacker instanceof Player p && p.isSprinting()) {
+            motX *= profile.getSprintMultiplierH();
+            motZ *= profile.getSprintMultiplierH();
+            motY *= profile.getSprintMultiplierV();
         }
 
-        //this.getServer().getLogger().debug("[knockback] xz=" + new Vector2(motion.x, motion.z).length() + " y=" + motion.y);
+        // 地面加成（默认倍率 1.0，无效果）
+        if (this.onGround) {
+            motX *= profile.getGroundMultiplierH();
+            motZ *= profile.getGroundMultiplierH();
+            motY *= profile.getGroundMultiplierV();
+        }
 
-        this.setMotion(motion);
+        // 垂直上限
+        float vLimit = profile.getVerticalLimit() >= 0 ? profile.getVerticalLimit() : (float) baseV;
+        if (motY > vLimit) {
+            motY = vLimit;
+        }
+
+        // 水平方向修正
+        if (baseH > 0 && profile.isDirectionCorrection()) {
+            double length = Math.sqrt(motX * motX + motZ * motZ);
+            length = Math.min(Math.max(length, profile.getHorizontalMin()), profile.getHorizontalMax());
+            Vector2 dir = new Vector2(x, z).normalize().multiply(length);
+            motX = dir.x;
+            motZ = dir.y;
+        }
+
+        this.setMotion(new Vector3(motX, motY, motZ));
     }
 
     protected float getKnockbackResistance() {

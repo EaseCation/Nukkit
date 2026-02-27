@@ -5,7 +5,6 @@ import cn.nukkit.Server;
 import cn.nukkit.entity.Entity;
 import cn.nukkit.entity.projectile.EntityArrow;
 import cn.nukkit.entity.projectile.EntityProjectile;
-import cn.nukkit.event.entity.EntityDamageByEntityEvent;
 import cn.nukkit.event.entity.EntityShootBowEvent;
 import cn.nukkit.event.entity.ProjectileLaunchEvent;
 import cn.nukkit.inventory.Inventory;
@@ -85,13 +84,7 @@ public class ItemBow extends ItemTool {
         int flameEnchant = this.getEnchantmentLevel(Enchantment.FLAME);
         boolean flame = flameEnchant > 0;
 
-        float knockbackH = EntityDamageByEntityEvent.GLOBAL_KNOCKBACK_H;
-        float knockbackV = EntityDamageByEntityEvent.GLOBAL_KNOCKBACK_V;
         int knockbackEnchant = this.getEnchantmentLevel(Enchantment.PUNCH);
-        if (knockbackEnchant > 0) {
-            knockbackH += 0.1f * knockbackEnchant;
-            knockbackV += 0.1f * knockbackEnchant;
-        }
 
         ThreadLocalRandom random = ThreadLocalRandom.current();
         Vector3 dir = Vector3.directionFromRotation(player.pitch, player.yaw)
@@ -99,9 +92,11 @@ public class ItemBow extends ItemTool {
         CompoundTag nbt = Entity.getDefaultNBT(player.getEyePosition(), dir.multiply(1.2), (float) dir.yRotFromDirection(), (float) dir.xRotFromDirection()) //TODO: pow
                 .putShort("Fire", flame ? 45 * 60 : 0)
                 .putDouble("damage", damage)
-                .putFloat("KnockbackH", knockbackH)
-                .putFloat("KnockbackV", knockbackV)
                 .putByte("auxValue", matched.getDamage());
+        // 附魔等级单独存储，base 值在命中时从受害者 Profile 获取
+        if (knockbackEnchant > 0) {
+            nbt.putInt("KnockbackEnchantLevel", knockbackEnchant);
+        }
 
         if (matched.getDamage() != ItemArrow.NORMAL_ARROW) {
             Potion potion = Potion.getPotion(matched.getDamage() - ItemArrow.TIPPED_ARROW);

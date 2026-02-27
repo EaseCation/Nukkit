@@ -35,6 +35,8 @@ import cn.nukkit.event.server.DataPacketReceiveEvent;
 import cn.nukkit.event.server.DataPacketSendEvent;
 import cn.nukkit.form.window.FormWindow;
 import cn.nukkit.form.window.FormWindowCustom;
+import cn.nukkit.knockback.KnockbackManager;
+import cn.nukkit.knockback.KnockbackProfile;
 import cn.nukkit.inventory.*;
 import cn.nukkit.inventory.transaction.CraftingTransaction;
 import cn.nukkit.inventory.transaction.EnchantTransaction;
@@ -2289,15 +2291,16 @@ public class Player extends EntityHuman implements CommandSender, InventoryHolde
                     Map<DamageModifier, Float> modifiers = new EnumMap<>(DamageModifier.class);
                     modifiers.put(DamageModifier.BASE, damage);
 
-                    float knockbackH = EntityDamageByEntityEvent.GLOBAL_KNOCKBACK_H;
-                    float knockbackV = EntityDamageByEntityEvent.GLOBAL_KNOCKBACK_V;
+                    // 从被攻击者的 Profile 获取基础击退值（不含附魔）
+                    KnockbackProfile targetProfile = entity instanceof EntityLiving living
+                            ? living.getKnockbackProfile() : KnockbackManager.get().getDefaultProfile();
+                    float knockbackH = targetProfile.getBaseH();
+                    float knockbackV = targetProfile.getBaseV();
                     int knockbackEnchant = !item.is(Item.ENCHANTED_BOOK) ? item.getEnchantmentLevel(Enchantment.KNOCKBACK) : 0;
-                    if (knockbackEnchant > 0) {
-                        knockbackH += knockbackEnchant * 0.1f;
-                        knockbackV += knockbackEnchant * 0.1f;
-                    }
 
-                    if (!entity.attack(new EntityDamageByEntityEvent(this, entity, DamageCause.ENTITY_ATTACK, modifiers, knockbackH, knockbackV, enchantments))) {
+                    EntityDamageByEntityEvent entityDamageEvent = new EntityDamageByEntityEvent(this, entity, DamageCause.ENTITY_ATTACK, modifiers, knockbackH, knockbackV, enchantments);
+                    entityDamageEvent.getKnockbackProfile().setEnchantLevel(knockbackEnchant);
+                    if (!entity.attack(entityDamageEvent)) {
                         continue;
                     }
 
@@ -3983,15 +3986,15 @@ public class Player extends EntityHuman implements CommandSender, InventoryHolde
                                     Map<DamageModifier, Float> damage = new EnumMap<>(DamageModifier.class);
                                     damage.put(DamageModifier.BASE, itemDamage);
 
-                                    float knockBackH = EntityDamageByEntityEvent.GLOBAL_KNOCKBACK_H;
-                                    float knockBackV = EntityDamageByEntityEvent.GLOBAL_KNOCKBACK_V;
+                                    // 从被攻击者的 Profile 获取基础击退值（不含附魔）
+                                    KnockbackProfile targetProfile = target instanceof EntityLiving living
+                                            ? living.getKnockbackProfile() : KnockbackManager.get().getDefaultProfile();
+                                    float knockBackH = targetProfile.getBaseH();
+                                    float knockBackV = targetProfile.getBaseV();
                                     int knockBackEnchantment = !item.is(Item.ENCHANTED_BOOK) ? item.getEnchantmentLevel(Enchantment.KNOCKBACK) : 0;
-                                    if (knockBackEnchantment > 0) {
-                                        knockBackH += knockBackEnchantment * 0.1f;
-                                        knockBackV += knockBackEnchantment * 0.1f;
-                                    }
 
                                     EntityDamageByEntityEvent entityDamageByEntityEvent = new EntityDamageByEntityEvent(this, target, DamageCause.ENTITY_ATTACK, damage, knockBackH, knockBackV, enchantments);
+                                    entityDamageByEntityEvent.getKnockbackProfile().setEnchantLevel(knockBackEnchantment);
                                     if (this.isSpectator()) entityDamageByEntityEvent.setCancelled();
                                     if ((target instanceof Player) && !this.level.getGameRules().getBoolean(GameRule.PVP)) {
                                         entityDamageByEntityEvent.setCancelled();

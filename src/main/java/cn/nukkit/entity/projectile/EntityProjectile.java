@@ -48,6 +48,8 @@ public abstract class EntityProjectile extends Entity {
 
     protected float knockBackH;
     protected float knockBackV;
+    protected boolean hasCustomKnockback;
+    protected int knockbackEnchantLevel;
 
     public static final int PICKUP_NONE = 0;
     public static final int PICKUP_ANY = 1;
@@ -107,10 +109,17 @@ public abstract class EntityProjectile extends Entity {
         if (dealImpactDamage()) {
             EntityDamageEvent ev;
             if (this.shootingEntity == null) {
-                ev = new EntityDamageByEntityEvent(this, entity, DamageCause.PROJECTILE, damage, knockBackH, knockBackV);
+                ev = new EntityDamageByEntityEvent(this, entity, DamageCause.PROJECTILE, damage);
             } else {
                 ev = new EntityDamageByChildEntityEvent(this.shootingEntity, this, entity, DamageCause.PROJECTILE, damage);
-                ((EntityDamageByChildEntityEvent) ev).setKnockBack(knockBackH, knockBackV);
+            }
+            // 只在有自定义击退值时覆盖（兼容旧 NBT 格式中非 GLOBAL 的值）
+            if (this.hasCustomKnockback) {
+                ((EntityDamageByEntityEvent) ev).setKnockBack(knockBackH, knockBackV);
+            }
+            // 附魔等级单独设置到 per-hit Profile
+            if (this.knockbackEnchantLevel > 0) {
+                ((EntityDamageByEntityEvent) ev).getKnockbackProfile().setEnchantLevel(this.knockbackEnchantLevel);
             }
             dealDamage = entity.attack(ev);
         } else {
@@ -183,6 +192,7 @@ public abstract class EntityProjectile extends Entity {
 
         entityHitCount = namedTag.getByte("PierceLevel") + 1;
 
+        // 兼容旧 NBT 格式（含 Knockback/KnockbackH/KnockbackV）
         boolean knockbackSet = false;
         if (this.namedTag.contains("Knockback")) {
             this.knockBackH = this.namedTag.getFloat("Knockback");
@@ -200,6 +210,14 @@ public abstract class EntityProjectile extends Entity {
         if (!knockbackSet) {
             this.knockBackH = EntityDamageByEntityEvent.GLOBAL_KNOCKBACK_H;
             this.knockBackV = EntityDamageByEntityEvent.GLOBAL_KNOCKBACK_V;
+        }
+        // 只有非 GLOBAL 默认值才标记为自定义击退
+        this.hasCustomKnockback = knockbackSet
+                && (knockBackH != EntityDamageByEntityEvent.GLOBAL_KNOCKBACK_H
+                || knockBackV != EntityDamageByEntityEvent.GLOBAL_KNOCKBACK_V);
+        // 新格式：附魔等级单独存储
+        if (this.namedTag.contains("KnockbackEnchantLevel")) {
+            this.knockbackEnchantLevel = this.namedTag.getInt("KnockbackEnchantLevel");
         }
     }
 
