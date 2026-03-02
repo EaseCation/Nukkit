@@ -48,6 +48,8 @@ public class EntityFishingHook extends EntityProjectile {
     public boolean reelLineTargetMotionEC = true;
     // Whether to apply pull-back motion on reel (enabled by default). Allows game modes to disable hook pull-back.
     public boolean reelLineDoPullBack = true;
+    // Whether to apply knockback on collision (enabled by default). Set to false for Java vanilla behavior (no collision knockback).
+    public boolean collideKnockbackEnabled = true;
 
     public Vector3 fish = null;
 
@@ -446,12 +448,26 @@ public class EntityFishingHook extends EntityProjectile {
                         // Only apply pull-back motion when enabled
                         if (reelLineDoPullBack) {
                             if (!reelLineTargetMotionEC) {
-                                // vanilla-like pull back
-                                Vector3 diff = this.shootingEntity.add(0, 1, 0).subtract(entity).multiply(0.1);
-                                diff.y = Math.sqrt(diff.length()) * 0.08;
-                                entity.setMotion(diff);
+                                // Java原版拉回逻辑：(owner - hook) × 0.1，累加到当前真实速度
+                                // 参考 Java 1.21 FishingHook.java:515-521
+                                Vector3 pullback = this.shootingEntity.subtract(this).multiply(0.1);
+
+                                // 获取实体的当前真实速度
+                                // 注意：对于玩家，player.speed = from - to（方向相反），需要取反
+                                // 对于非玩家实体，使用 getMotion() 作为近似值
+                                Vector3 currentVelocity;
+                                if (entity instanceof Player player && player.speed != null) {
+                                    // 玩家：使用 speed 取反获取真实运动方向
+                                    currentVelocity = player.speed.multiply(-1);
+                                } else {
+                                    // 非玩家实体：使用 motion 作为近似值
+                                    currentVelocity = entity.getMotion();
+                                }
+
+                                // 设置新速度：当前真实速度 + 拉回向量
+                                entity.setMotion(currentVelocity.add(pullback));
                             } else {
-                                // EC-style stronger pull back
+                                // EC风格强力拉回
                                 entity.setMotion(this.shootingEntity.subtract(entity).divide(8).add(0, 0.3, 0));
                             }
                         }
@@ -520,8 +536,12 @@ public class EntityFishingHook extends EntityProjectile {
             this.setTarget(entity.getId());
 
             if (this.shootingEntity != null) {
-                entity.setMotion(entity.subtract(this.shootingEntity).divide(15).add(0, 0.3, 0)); // 这边还是用EC的特殊钩回motion，营造EC的特殊手感
-                //entity.setMotion(entity.getMotion().add(entity.subtract(this.shootingEntity).multiply(0.1)));
+                // 只有启用碰撞击退时才应用motion（Java原版碰撞时无击退）
+                if (this.collideKnockbackEnabled) {
+                    // EC模式：使用EC的特殊钩回motion，营造EC的特殊手感
+                    entity.setMotion(entity.subtract(this.shootingEntity).divide(15).add(0, 0.3, 0));
+                }
+                // collideKnockbackEnabled=false时，只钩住不击退（Java原版行为）
             }
         } else if (entity instanceof Player && ((Player) entity).getGamemode() == Player.CREATIVE) {
             setTarget(entity.getId());
