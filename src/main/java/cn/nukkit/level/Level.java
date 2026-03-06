@@ -3222,7 +3222,8 @@ public class Level implements ChunkManager, Metadatable {
             if (player != null) {
                 Vector3 diff = player.getNextPosition().subtract(player.getPosition());
                 AxisAlignedBB bb = player.getBoundingBox().getOffsetBoundingBox(diff.x, diff.y, diff.z);
-                bb.expand(-0.01, -0.01, -0.01);
+                // 由于已经在SynapsePlayer116中，使用了this.newPosition = useItemData.playerPos.subtract(0, this.getBaseOffset(), 0); 所以能够准确使用客户端坐标计算
+                //bb.expand(-0.01, -0.01, -0.01);
                 if (boundingBox.intersectsWith(bb)) {
                     // This is a hack to prevent the player from placing blocks inside themselves
                     return LazyHolder.INVALID_ITEM;
