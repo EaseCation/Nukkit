@@ -54,11 +54,10 @@ public record MatchToolCondition(
                 }
             }
         }
-/*      //TODO: match item tags
         if (itemTagsAny != null) {
             boolean found = false;
             for (String tag : itemTagsAny) {
-                if (item.hasItemTag(tag)) {
+                if (tool.hasItemTag(tag)) {
                     found = true;
                     break;
                 }
@@ -69,19 +68,18 @@ public record MatchToolCondition(
         }
         if (itemTagsAll != null) {
             for (String tag : itemTagsAll) {
-                if (!item.hasItemTag(tag)) {
+                if (!tool.hasItemTag(tag)) {
                     return false;
                 }
             }
         }
         if (itemTagsNone != null) {
             for (String tag : itemTagsNone) {
-                if (item.hasItemTag(tag)) {
+                if (tool.hasItemTag(tag)) {
                     return false;
                 }
             }
         }
-*/
         return false;
     }
 
