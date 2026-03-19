@@ -130,6 +130,8 @@ public abstract class DefaultPermissions {
         registerPermission(new Permission(ROOT + ".command.sound.stop", " "), sound);
         sound.recalculatePermissibles();
 
+        registerPermission(new Permission(ROOT + ".command.playanimation", " ", Permission.DEFAULT_OP), commands);
+
         commands.recalculatePermissibles();
 
         parent.recalculatePermissibles();

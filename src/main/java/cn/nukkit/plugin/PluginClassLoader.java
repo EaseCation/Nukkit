@@ -43,25 +43,27 @@ public class PluginClassLoader extends URLClassLoader {
         if (name.startsWith("cn.nukkit.")) {
             throw new ClassNotFoundException(name);
         }
-        Class<?> result = classes.get(name);
-
-        if (result == null) {
-            if (checkGlobal) {
-                result = loader.getClassByName(name);
-            }
+        synchronized (getClassLoadingLock(name)) {
+            Class<?> result = classes.get(name);
 
             if (result == null) {
-                result = super.findClass(name);
-
-                if (result != null) {
-                    loader.setClass(name, result);
+                if (checkGlobal) {
+                    result = loader.getClassByName(name);
                 }
 
-                classes.put(name, result);
-            }
-        }
+                if (result == null) {
+                    result = super.findClass(name);
 
-        return result;
+                    if (result != null) {
+                        loader.setClass(name, result);
+                    }
+
+                    classes.put(name, result);
+                }
+            }
+
+            return result;
+        }
     }
 
     Set<String> getClasses() {

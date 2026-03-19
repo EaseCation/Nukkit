@@ -17,6 +17,8 @@ import cn.nukkit.entity.attribute.Attribute;
 import cn.nukkit.entity.attribute.AttributeModifiers;
 import cn.nukkit.entity.data.*;
 import cn.nukkit.entity.item.*;
+import cn.nukkit.entity.knockback.KnockbackManager;
+import cn.nukkit.entity.knockback.KnockbackProfile;
 import cn.nukkit.entity.projectile.EntityArrow;
 import cn.nukkit.entity.projectile.EntityProjectile;
 import cn.nukkit.entity.projectile.EntityThrownTrident;
@@ -183,6 +185,7 @@ public class Player extends EntityHuman implements CommandSender, InventoryHolde
     protected int windowCnt = FIRST_AVAILABLE_WINDOW_ID;
 
     protected int closingWindowId = Integer.MIN_VALUE;
+    protected int lastOpenedWindowId = -1;
 
     protected final BiMap<Inventory, Integer> windows = HashBiMap.create();
     protected final BiMap<Integer, Inventory> windowIndex = windows.inverse();
@@ -562,7 +565,7 @@ public class Player extends EntityHuman implements CommandSender, InventoryHolde
             return;
         }
         this.hiddenPlayers.remove(player.getUniqueId());
-        if (player.isOnline()) {
+        if (player.isOnline() && player.isWithinEntityViewDistance(this)) {
             player.spawnTo(this);
         }
     }
@@ -954,7 +957,7 @@ public class Player extends EntityHuman implements CommandSender, InventoryHolde
 
         if (this.spawned) {
             for (Entity entity : this.level.getChunkEntities(x, z).values()) {
-                if (this != entity && !entity.closed && entity.isAlive()) {
+                if (this != entity && !entity.closed && entity.isAlive() && entity.isWithinEntityViewDistance(this)) {
                     entity.spawnTo(this);
                 }
             }
@@ -984,7 +987,7 @@ public class Player extends EntityHuman implements CommandSender, InventoryHolde
 
         if (this.spawned) {
             for (Entity entity : this.level.getChunkEntities(x, z).values()) {
-                if (this != entity && !entity.closed && entity.isAlive()) {
+                if (this != entity && !entity.closed && entity.isAlive() && entity.isWithinEntityViewDistance(this)) {
                     entity.spawnTo(this);
                 }
             }
@@ -1135,7 +1138,7 @@ public class Player extends EntityHuman implements CommandSender, InventoryHolde
             int chunkX = Level.getHashX(index);
             int chunkZ = Level.getHashZ(index);
             for (Entity entity : this.level.getChunkEntities(chunkX, chunkZ).values()) {
-                if (this != entity && !entity.closed && entity.isAlive()) {
+                if (this != entity && !entity.closed && entity.isAlive() && entity.isWithinEntityViewDistance(this)) {
                     entity.spawnTo(this);
                 }
             }
@@ -2260,15 +2263,16 @@ public class Player extends EntityHuman implements CommandSender, InventoryHolde
                     Map<DamageModifier, Float> modifiers = new EnumMap<>(DamageModifier.class);
                     modifiers.put(DamageModifier.BASE, damage);
 
-                    float knockbackH = EntityDamageByEntityEvent.GLOBAL_KNOCKBACK_H;
-                    float knockbackV = EntityDamageByEntityEvent.GLOBAL_KNOCKBACK_V;
+                    // 从被攻击者的 Profile 获取基础击退值（不含附魔）
+                    KnockbackProfile targetProfile = entity instanceof EntityLiving living
+                            ? living.getKnockbackProfile() : KnockbackManager.get().getDefaultProfile();
+                    float knockbackH = targetProfile.getBaseH();
+                    float knockbackV = targetProfile.getBaseV();
                     int knockbackEnchant = !item.is(Item.ENCHANTED_BOOK) ? item.getEnchantmentLevel(Enchantment.KNOCKBACK) : 0;
-                    if (knockbackEnchant > 0) {
-                        knockbackH += knockbackEnchant * 0.1f;
-                        knockbackV += knockbackEnchant * 0.1f;
-                    }
 
-                    if (!entity.attack(new EntityDamageByEntityEvent(this, entity, DamageCause.ENTITY_ATTACK, modifiers, knockbackH, knockbackV, enchantments))) {
+                    EntityDamageByEntityEvent entityDamageEvent = new EntityDamageByEntityEvent(this, entity, DamageCause.ENTITY_ATTACK, modifiers, knockbackH, knockbackV, enchantments);
+                    entityDamageEvent.getKnockbackProfile().setEnchantLevel(knockbackEnchant);
+                    if (!entity.attack(entityDamageEvent)) {
                         continue;
                     }
 
@@ -3814,7 +3818,9 @@ public class Player extends EntityHuman implements CommandSender, InventoryHolde
 
                                     Item oldItem = i.clone();
 
-                                    if (this.canInteract(blockVector.add(0.5, 0.5, 0.5), this.isCreative() ? MAX_REACH_DISTANCE_CREATIVE : MAX_REACH_DISTANCE_SURVIVAL) && (i = this.level.useBreakOn(blockVector.asVector3(), i, this, true)) != null) {
+                                    if (isBreakingBlock()
+                                            && this.canInteract(blockVector.add(0.5, 0.5, 0.5), this.isCreative() ? MAX_REACH_DISTANCE_CREATIVE : MAX_REACH_DISTANCE_SURVIVAL)
+                                            && (i = this.level.useBreakOn(blockVector.asVector3(), i, this, true)) != null) {
                                         if (this.isSurvival()) {
                                             this.getFoodData().updateFoodExpLevel(0.005f);
                                             if (!i.equals(oldItem) || i.getCount() != oldItem.getCount()) {
@@ -3955,15 +3961,15 @@ public class Player extends EntityHuman implements CommandSender, InventoryHolde
                                     Map<DamageModifier, Float> damage = new EnumMap<>(DamageModifier.class);
                                     damage.put(DamageModifier.BASE, itemDamage);
 
-                                    float knockBackH = EntityDamageByEntityEvent.GLOBAL_KNOCKBACK_H;
-                                    float knockBackV = EntityDamageByEntityEvent.GLOBAL_KNOCKBACK_V;
+                                    // 从被攻击者的 Profile 获取基础击退值（不含附魔）
+                                    KnockbackProfile targetProfile = target instanceof EntityLiving living
+                                            ? living.getKnockbackProfile() : KnockbackManager.get().getDefaultProfile();
+                                    float knockBackH = targetProfile.getBaseH();
+                                    float knockBackV = targetProfile.getBaseV();
                                     int knockBackEnchantment = !item.is(Item.ENCHANTED_BOOK) ? item.getEnchantmentLevel(Enchantment.KNOCKBACK) : 0;
-                                    if (knockBackEnchantment > 0) {
-                                        knockBackH += knockBackEnchantment * 0.1f;
-                                        knockBackV += knockBackEnchantment * 0.1f;
-                                    }
 
                                     EntityDamageByEntityEvent entityDamageByEntityEvent = new EntityDamageByEntityEvent(this, target, DamageCause.ENTITY_ATTACK, damage, knockBackH, knockBackV, enchantments);
+                                    entityDamageByEntityEvent.getKnockbackProfile().setEnchantLevel(knockBackEnchantment);
                                     if (this.isSpectator()) entityDamageByEntityEvent.setCancelled();
                                     if ((target instanceof Player) && !this.level.getGameRules().getBoolean(GameRule.PVP)) {
                                         entityDamageByEntityEvent.setCancelled();
@@ -4309,8 +4315,18 @@ public class Player extends EntityHuman implements CommandSender, InventoryHolde
         return true;
     }
 
+    /**
+     * @return chunk render radius
+     */
     public int getViewDistance() {
         return this.chunkRadius;
+    }
+
+    /**
+     * @return entity render radius
+     */
+    public int getEntityViewDistance() {
+        return Math.min(Server.CHUNK_TICK_DISTANCE, getViewDistance());
     }
 
     @Override
@@ -5517,21 +5533,54 @@ public class Player extends EntityHuman implements CommandSender, InventoryHolde
             this.chunk = this.level.getChunk((int) this.x >> 4, (int) this.z >> 4, true);
 
             if (!this.justCreated) {
-                Int2ObjectMap<Player> newChunk = this.level.getChunkPlayers((int) this.x >> 4, (int) this.z >> 4);
-                newChunk.remove(this.getLoaderId());
+                int chunkX = (int) this.x >> 4;
+                int chunkZ = (int) this.z >> 4;
 
-                //List<Player> reload = new ObjectArrayList<>();
-                for (Player player : new ObjectArrayList<>(this.hasSpawned.values())) {
-                    if (!newChunk.containsKey(player.getLoaderId())) {
-                        this.despawnFrom(player);
-                    } else {
-                        newChunk.remove(player.getLoaderId());
-                        //reload.add(player);
+                for (long chunkHash : this.usedChunks.keySet()) {
+                    int cx = Level.getHashX(chunkHash);
+                    int cz = Level.getHashZ(chunkHash);
+
+                    for (Entity entity : this.level.getChunkEntities(cx, cz).values()) {
+                        if (entity == this || entity.closed || !entity.isAlive()) {
+                            continue;
+                        }
+
+                        if (entity.getViewers().containsKey(this.getLoaderId())) {
+                            if (!entity.isWithinEntityViewDistance(this)) {
+                                entity.despawnFrom(this);
+                            }
+                        } else if (entity.isWithinEntityViewDistance(this)) {
+                            entity.spawnTo(this);
+                        }
                     }
                 }
 
-                for (Player player : newChunk.values()) {
-                    this.spawnTo(player);
+                for (Player player : new ObjectArrayList<>(this.getViewers().values())) {
+                    if (player == this) {
+                        continue;
+                    }
+                    if (!this.isWithinEntityViewDistance(player)) {
+                        this.despawnFrom(player);
+                    }
+                }
+
+                int scanRadius = Server.CHUNK_TICK_DISTANCE;
+                for (int dx = -scanRadius; dx <= scanRadius; dx++) {
+                    for (int dz = -scanRadius; dz <= scanRadius; dz++) {
+                        if (dx * dx + dz * dz > scanRadius * scanRadius) {
+                            continue;
+                        }
+
+                        Int2ObjectMap<Player> chunkPlayers = this.level.getChunkPlayers(chunkX + dx, chunkZ + dz);
+                        for (Player player : chunkPlayers.values()) {
+                            if (player == this || this.getViewers().containsKey(player.getLoaderId())) {
+                                continue;
+                            }
+                            if (this.isWithinEntityViewDistance(player)) {
+                                this.spawnTo(player);
+                            }
+                        }
+                    }
                 }
             }
 
@@ -5968,6 +6017,10 @@ public class Player extends EntityHuman implements CommandSender, InventoryHolde
         this.closingWindowId = Integer.MIN_VALUE;
     }
 
+    public void setLastOpenedWindowId(int windowId) {
+        this.lastOpenedWindowId = windowId;
+    }
+
     @Override
     public void setMetadata(String metadataKey, MetadataValue newMetadataValue) {
         this.server.getPlayerMetadata().setMetadata(this, metadataKey, newMetadataValue);
@@ -6398,28 +6451,76 @@ public class Player extends EntityHuman implements CommandSender, InventoryHolde
     }
 
     /**
-     * 使用 AnimateEntityPacket 播放动画.
+     * 使用 AnimateEntityPacket 播放动画
+     * @see #playAnimation(String, String, String, String, float, long...)
      * @since 1.16.100
      */
     public void playAnimation(String animation, Entity entity) {
     }
 
     /**
-     * 使用 AnimateEntityPacket 播放动画.
+     * 使用 AnimateEntityPacket 播放动画
+     * @see #playAnimation(String, String, String, String, float, long...)
      * @since 1.16.100
      */
     public void playAnimation(String animation, long entityRuntimeId) {
     }
 
     /**
-     * 使用 AnimateEntityPacket 播放动画.
+     * 使用 AnimateEntityPacket 播放动画
+     * @see #playAnimation(String, String, String, String, float, long...)
      * @since 1.16.100
      */
     public void playAnimation(String animation, String nextState, String stopExpression, String controller, float blendOutTime, Entity... entities) {
     }
 
     /**
-     * 使用 AnimateEntityPacket 播放动画.
+     * 使用 AnimateEntityPacket 播放动画
+     *
+     * <p><b>重要说明：</b></p>
+     * <ul>
+     *   <li>此方法仅向客户端发送动画请求，服务器端不处理动画。</li>
+     *   <li>如果目标实体未在客户端加载，客户端无法接收动画请求。</li>
+     *   <li>客户端基于其资源包的内容处理请求，因此同一服务器中使用不同资源包的玩家可能看到不同的动画。</li>
+     *   <li>无法使用这个方法删除客户端已有的动画控制器、状态，但是可以让特定的动画控制器切换到新的状态，播放新的动画。</li>
+     *   <li>单个实体可以有多个动画控制器同时运行，每个控制器管理自己的当前状态。</li>
+     * </ul>
+     *
+     * <p><b>动画控制器（Animation Controller）：</b></p>
+     * <p>动画控制器是状态机。状态机是一种特殊的逻辑管理方式，依赖于一系列状态。每个状态具有三个属性：</p>
+     * <ul>
+     *   <li>在当前状态下播放哪个动画（运行哪个子动画控制器）</li>
+     *   <li>转换项有序列表</li>
+     *   <li>转换到另一个状态时的淡出持续时间</li>
+     * </ul>
+     *
+     * <p>状态机同时只能处于一个状态。例如，如果你在玩家的动画控制器 controller.animation.player.root 上播放动画，
+     * 那么该玩家的其他动画（如潜行、行走、手部移动、游泳、睡觉、跳跃等）将不会播放，直到此控制器返回到原版状态。</p>
+     *
+     * <p><b>转换项有序列表（Transitions）：</b></p>
+     * <p>转换项位于有序列表中，较早的转换项在每个tick中较早检查，当有多个转换项的条件都满足时，只执行第一个满足条件的转换项。每个转换项具有两个属性：</p>
+     *
+     * <ul>
+     *   <li>要转换到的目标状态</li>
+     *   <li>转换到目标状态的条件</li>
+     * </ul>
+     *
+     * @param animation 指定动画名称。必须是资源包中定义的有效动画名称（如 "animation.player.sneaking"）或动画快捷方式（如 "sneaking"）。
+     *                  会根据给定名称，在指定的动画控制器下创建一个包含这个动画的新状态，或者修改之前创建的状态。
+     *                  注意因为当前状态的名称只能由这个参数控制，而且具体的动画也由这个参数控制，所以使用上会受到限制。
+     *                  特别注意因为当前客户端实现的限制，这里只能使用动画，而不能使用动画控制器。
+     * @param nextState 指定下一个状态，当前状态结束后（"stopExpression"条件为真后），会切换到这个状态
+     *                  具体实现是在当前状态的有序列表中，新增一个"nextState"所指定的状态，然后条件是"stopExpression"
+     *                  可以是动画名称或资源包定义的状态名称，如果不存在这个状态则会创建一个不包含任何动画的新状态。
+     *                  默认可以填 "default"；如果传入空字符串，则不会创建新状态。
+     * @param stopExpression 指定转换到下一个状态的条件。必须是 Molang 表达式。
+     *                       默认可以填 "query.any_animation_finished"；如果传入空字符串，则不会在当前状态的有序列表中添加转换项。
+     * @param controller 指定目标实体上的控制器名称，可以为自定义控制器名称，或者资源包中定义的有效动画控制器名称（如 "controller.animation.player.root“）。
+     *                   如果为自定义名称，且对应名称的控制器不存在，则会创建新的动画控制器，否则会新增、修改目标控制器的状态。
+     *                   注意不会对目标控制器的其他不相关的状态进行删除、修改，只是在执行后会自动切换当前状态到要播放的状态。
+     *                   默认可以填 "__runtime_controller"（没有任何特殊含义，和自定义控制器名称如"my_controller"没有区别），空字符串没有特殊含义。
+     * @param blendOutTime 指定转换到另一个状态时的淡出持续时间。默认为 0
+     * @param entityRuntimeIds 目标实体的运行时ID
      * @since 1.16.100
      */
     public void playAnimation(String animation, String nextState, String stopExpression, String controller, float blendOutTime, long... entityRuntimeIds) {
@@ -6827,6 +6928,7 @@ public class Player extends EntityHuman implements CommandSender, InventoryHolde
         packet.y = y;
         packet.z = z;
         packet.windowId = Math.max(FIRST_AVAILABLE_WINDOW_ID, ++windowCnt % 99);
+        lastOpenedWindowId = packet.windowId;
         dataPacket(packet);
     }
 
