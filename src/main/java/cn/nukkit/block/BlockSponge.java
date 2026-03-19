@@ -3,6 +3,7 @@ package cn.nukkit.block;
 import cn.nukkit.Player;
 import cn.nukkit.item.Item;
 import cn.nukkit.level.Dimension;
+import cn.nukkit.level.Level;
 import cn.nukkit.level.particle.DestroyBlockParticle;
 import cn.nukkit.math.BlockFace;
 import cn.nukkit.network.protocol.LevelEventPacket;
@@ -94,6 +95,16 @@ public class BlockSponge extends BlockSolid {
             return 0;
         }
         return 0.15f;
+    }
+
+    @Override
+    public int onUpdate(int type) {
+        // 处理普通方块更新：当邻近方块变化（如水流过来）时，触发干海绵的吸水逻辑
+        if (type == Level.BLOCK_UPDATE_NORMAL && this.getDamage() == DRY && performWaterAbsorb(this)) {
+            level.setBlock(this, Block.get(BlockID.SPONGE, WET), true, true);
+            level.addParticle(new DestroyBlockParticle(this.add(0.5, 1, 0.5), Block.get(BlockID.WATER)));
+        }
+        return type;
     }
 
     private boolean performWaterAbsorb(Block block) {
