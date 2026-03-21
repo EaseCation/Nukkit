@@ -3216,7 +3216,7 @@ public class Level implements ChunkManager, Metadatable {
                     return null;
                 }
 
-                if (player != null) {
+                if (player != null && clientPrediction == null) {
                     Vector3 diff = player.getNextPosition().subtract(player.getPosition());
                     AxisAlignedBB bb = player.getBoundingBox().getOffsetBoundingBox(diff.x, diff.y, diff.z);
                     bb.expand(-0.01, -0.01, -0.01);
