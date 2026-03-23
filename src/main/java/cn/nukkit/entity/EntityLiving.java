@@ -189,32 +189,32 @@ public abstract class EntityLiving extends Entity implements EntityDamageable {
         long time = 0;
         if (notSuicide) {
             time = System.currentTimeMillis();
-            // 冷却中
-            if (time < this.nextAllowAttack) {
-                if (damage > 0) {
-                    if (damage <= this.lastHurt) {
-                        return false;
-                    }
-                    source.setDamage(damage - lastHurt);
-                    if (!damageEntity0(source)) {
-                        return false;
-                    }
-                    this.lastHurt = damage;
-                    // 这边不修改冷却时间，因为只是补上了冷却期间的伤害差
-                    // 冷却时的伤害补充，不应该造成击退
-                    knockback = false;
-                    // 冷却时的伤害补充，不应该变红、发出音效
-                    hurtAnimationSelf = false;
-                } else {
-                    // EC特性：伤害为0的攻击，无冷却，并且造成击退（但是不修改lastHurt，确保有伤害的攻击是继续冷却的）
-                    if (!damageEntity0(source)) {
-                        return false;
-                    }
-                    // 这种情况下也应该变红和音效，以及击退
-                    knockback = true;
-                    hurtAnimationSelf = false;
+            if (damage == 0) {
+                // EC特性：0伤害攻击（如雪球、鸡蛋、钓鱼竿），不修改伤害冷却时间和lastHurt，防止：
+                // 1. 通过0伤害攻击将lastHurt重置为0后立即造成全额"冷却补差"伤害的连击漏洞
+                // 2. 连续0伤害攻击叠加击退将玩家击飞（击退改由nextAllowKnockback独立控制频率）
+                if (!damageEntity0(source)) {
+                    return false;
                 }
+                knockback = false; // 通过 nextAllowKnockback 决定是否击退，防止连续叠加
+                hurtAnimationSelf = false;
+            } else if (time < this.nextAllowAttack) {
+                // 冷却中，处理更高伤害的冷却补差
+                if (damage <= this.lastHurt) {
+                    return false;
+                }
+                source.setDamage(damage - lastHurt);
+                if (!damageEntity0(source)) {
+                    return false;
+                }
+                this.lastHurt = damage;
+                // 这边不修改冷却时间，因为只是补上了冷却期间的伤害差
+                // 冷却时的伤害补充，不应该造成击退
+                knockback = false;
+                // 冷却时的伤害补充，不应该变红、发出音效
+                hurtAnimationSelf = false;
             } else {
+                // 正常攻击（冷却外）
                 if (!damageEntity0(source)) {
                     return false;
                 }
@@ -251,7 +251,8 @@ public abstract class EntityLiving extends Entity implements EntityDamageable {
 
             // 击退
             if ((knockback || time >= nextAllowKnockback) && ev.hasKnockBack()) {
-                nextAllowKnockback = nextAllowAttack;
+                // 0伤害攻击的击退冷却独立维护，防止连续叠加；有伤害攻击与攻击冷却同步
+                nextAllowKnockback = damage > 0 ? nextAllowAttack : time + ev.getAttackCooldown() * 50L;
                 double deltaX = this.x - damager.x;
                 double deltaZ = this.z - damager.z;
                 KnockbackProfile hitProfile = ev.getKnockbackProfile();
