@@ -99,6 +99,8 @@ public interface ParticleID {
     int EYEBLOSSOM_OPEN = 96;
     int EYEBLOSSOM_CLOSE = 97;
     int GREEN_FLAME = 98;
+    int PAUSE_MOB_GROWTH = 99;
+    int RESET_MOB_GROWTH = 100;
 
-    int UNDEFINED = 99;
+    int UNDEFINED = 101;
 }

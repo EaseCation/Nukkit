@@ -213,7 +213,7 @@ public class Skin implements Cloneable {
                 if (!piece.productId.isEmpty()) {
                     return false;
                 }
-            } else if (!Utils.isUUID(piece.productId)) {
+            } else if (!piece.productId.isEmpty() && !Utils.isUUID(piece.productId)) {
                 return false;
             }
         }

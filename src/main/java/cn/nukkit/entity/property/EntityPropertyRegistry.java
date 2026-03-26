@@ -94,6 +94,24 @@ public final class EntityPropertyRegistry {
                         VARIANT_DEFAULT,
                         VARIANT_CORAL));
 
+        registerProperties(V1_26_10, EntityID.CAT, EntityFullNames.CAT,
+                new EnumEntityProperty(SOUND_VARIANT,
+                        SOUND_VARIANT_DEFAULT,
+                        SOUND_VARIANT_ROYAL));
+        registerProperties(V1_26_10, EntityID.CHICKEN, EntityFullNames.CHICKEN,
+                new EnumEntityProperty(SOUND_VARIANT,
+                        SOUND_VARIANT_DEFAULT,
+                        SOUND_VARIANT_PICKY));
+        registerProperties(V1_26_10, EntityID.COW, EntityFullNames.COW,
+                new EnumEntityProperty(SOUND_VARIANT,
+                        SOUND_VARIANT_DEFAULT,
+                        SOUND_VARIANT_MOODY));
+        registerProperties(V1_26_10, EntityID.PIG, EntityFullNames.PIG,
+                new EnumEntityProperty(SOUND_VARIANT,
+                        SOUND_VARIANT_DEFAULT,
+                        SOUND_VARIANT_BIG,
+                        SOUND_VARIANT_MINI));
+
     }
 
     private static void registerProperties(int entityType, String entityIdentifier, EntityProperty... properties) {

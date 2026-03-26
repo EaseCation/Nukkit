@@ -1402,4 +1402,5 @@ public interface BlockFullNames {
     String WAXED_EXPOSED_COPPER_LANTERN = "minecraft:" + BlockNames.WAXED_EXPOSED_COPPER_LANTERN;
     String WAXED_WEATHERED_COPPER_LANTERN = "minecraft:" + BlockNames.WAXED_WEATHERED_COPPER_LANTERN;
     String WAXED_OXIDIZED_COPPER_LANTERN = "minecraft:" + BlockNames.WAXED_OXIDIZED_COPPER_LANTERN;
+    String GOLDEN_DANDELION = "minecraft:" + BlockNames.GOLDEN_DANDELION;
 }

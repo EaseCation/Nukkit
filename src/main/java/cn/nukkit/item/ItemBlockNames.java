@@ -1481,4 +1481,5 @@ public interface ItemBlockNames {
     String WAXED_EXPOSED_COPPER_LANTERN = "waxed_exposed_copper_lantern";
     String WAXED_WEATHERED_COPPER_LANTERN = "waxed_weathered_copper_lantern";
     String WAXED_OXIDIZED_COPPER_LANTERN = "waxed_oxidized_copper_lantern";
+    String GOLDEN_DANDELION = "golden_dandelion";
 }

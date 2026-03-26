@@ -877,6 +877,10 @@ public class BinaryStream {
     }
 
     public BlockVector3 getBlockVector3() {
+        if (this.helper != null) {
+            return this.helper.getBlockVector3(this);
+        }
+
         return new BlockVector3(this.getVarInt(), (int) this.getUnsignedVarInt(), this.getVarInt());
     }
 
@@ -899,6 +903,11 @@ public class BinaryStream {
     }
 
     public void putBlockVector3(int x, int y, int z) {
+        if (this.helper != null) {
+            this.helper.putBlockVector3(this, x, y, z);
+            return;
+        }
+
         this.putVarInt(x);
         this.putUnsignedVarInt(y);
         this.putVarInt(z);
@@ -1418,6 +1427,16 @@ public class BinaryStream {
          * @since 1.19.10
          */
         public void putAbilityLayer(BinaryStream stream, AbilityLayer layer) {
+        }
+
+        public BlockVector3 getBlockVector3(BinaryStream stream) {
+            return new BlockVector3(stream.getVarInt(), (int) stream.getUnsignedVarInt(), stream.getVarInt());
+        }
+
+        public void putBlockVector3(BinaryStream stream, int x, int y, int z) {
+            stream.putVarInt(x);
+            stream.putUnsignedVarInt(y);
+            stream.putVarInt(z);
         }
     }
 }

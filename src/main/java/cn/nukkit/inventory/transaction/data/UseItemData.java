@@ -29,4 +29,5 @@ public class UseItemData implements TransactionData {
      */
     public int blockId;
     public boolean clientInteractPrediction;
+    public int clientCooldownState;
 }

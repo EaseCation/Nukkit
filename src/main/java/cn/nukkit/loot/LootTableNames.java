@@ -113,6 +113,7 @@ public interface LootTableNames {
     String ENTITIES_GUARDIAN = "loot_tables/entities/guardian.json";
     String ENTITIES_HOGLIN = "loot_tables/entities/hoglin.json";
     String ENTITIES_HORSE = "loot_tables/entities/horse.json";
+    String ENTITIES_HUSK_RIDER = "loot_tables/entities/husk_rider.json";
     String ENTITIES_IRON_GOLEM = "loot_tables/entities/iron_golem.json";
     String ENTITIES_LLAMA = "loot_tables/entities/llama.json";
     String ENTITIES_MAGMA_CUBE = "loot_tables/entities/magma_cube.json";

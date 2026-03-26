@@ -137,6 +137,10 @@ public class BlockLectern extends BlockTransparent implements Faceable {
 
     @Override
     public boolean onActivate(Item item, BlockFace face, float fx, float fy, float fz, Player player) {
+        if (false || item.hasLock()) {
+            return true;
+        }
+
         BlockEntityLectern blockEntity = getBlockEntity();
         if (blockEntity == null) {
             blockEntity = createBlockEntity(null);

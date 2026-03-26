@@ -35,8 +35,6 @@ import it.unimi.dsi.fastutil.ints.Int2ObjectMap;
 import java.util.Iterator;
 import java.util.concurrent.ThreadLocalRandom;
 
-import static cn.nukkit.GameVersion.*;
-
 public abstract class EntityAbstractHorse extends EntityAnimal implements EntityInteractable, EntityRideable, InventoryHolder {
 
     public static final int HORSE_TYPE_DEFAULT = 0;
@@ -325,7 +323,7 @@ public abstract class EntityAbstractHorse extends EntityAnimal implements Entity
 
     @Override
     public void applyEntityCollision(Entity entity) {
-        if (isClientPredictedMovement() && getPassenger() instanceof Player player && V1_21_130.isNewerThan(player.getProtocol())) {
+        if (isClientPredictedMovement() && getPassenger() instanceof Player player && !EntityRideable.isServerAuthoritativeRide(player.getProtocol())) {
             return;
         }
         super.applyEntityCollision(entity);
@@ -342,7 +340,7 @@ public abstract class EntityAbstractHorse extends EntityAnimal implements Entity
 
     @Override
     public void onPlayerInput(Player player, double motionX, double motionY) {
-        if (V1_21_130.isNewerThan(player.getProtocol())) {
+        if (!EntityRideable.isServerAuthoritativeRide(player.getProtocol())) {
             return;
         }
 
@@ -394,7 +392,7 @@ public abstract class EntityAbstractHorse extends EntityAnimal implements Entity
 
     @Override
     public void onPlayerInput(Player player, double x, double y, double z, double yaw, double pitch) {
-        if (V1_21_130.isOlderThanOrEqual(player.getProtocol())) {
+        if (EntityRideable.isServerAuthoritativeRide(player.getProtocol())) {
             return;
         }
 
@@ -504,7 +502,7 @@ public abstract class EntityAbstractHorse extends EntityAnimal implements Entity
 
         standIfPossible();
 
-        if (!isClientPredictedMovement() || V1_21_130.isOlderThanOrEqual(player.getProtocol())) {
+        if (!isClientPredictedMovement() || EntityRideable.isServerAuthoritativeRide(player.getProtocol())) {
             float jumpScale = jumpTicks < 10 ? jumpTicks * 0.1f : 0.8f + 2f / (jumpTicks - 9) * 0.1f;
             motionY += getJumpStrength() * (jumpScale >= 0.9f ? 1 : 0.4f + 0.4f * jumpScale / 0.9f);
 

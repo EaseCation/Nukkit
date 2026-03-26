@@ -24,6 +24,7 @@ public interface BlockStateIntegerValues {
     int MAX_HUGE_MUSHROOM_BITS = 15;
     int MAX_KELP_AGE = 25;
     int MAX_LIQUID_DEPTH = 15;
+    int MAX_MINECRAFT_MULTI_BLOCK_PART = 3;
     int MAX_MOISTURIZED_AMOUNT = 7;
     int MAX_MULTI_FACE_DIRECTION_BITS = 63;
     int MAX_POWERED_SHELF_TYPE = 3;

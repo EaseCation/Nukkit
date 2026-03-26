@@ -350,6 +350,10 @@ public class BlockNoteblock extends BlockSolid {
         CREEPER(SoundEnum.NOTE_CREEPER),
         ENDER_DRAGON(SoundEnum.NOTE_ENDERDRAGON),
         PIGLIN(SoundEnum.NOTE_PIGLIN),
+        TRUMPET(SoundEnum.NOTE_TRUMPET),
+        TRUMPET_EXPOSED(SoundEnum.NOTE_TRUMPET_EXPOSED),
+        TRUMPET_WEATHERED(SoundEnum.NOTE_TRUMPET_WEATHERED),
+        TRUMPET_OXIDIZED(SoundEnum.NOTE_TRUMPET_OXIDIZED),
         ;
 
         private final SoundEnum sound;
