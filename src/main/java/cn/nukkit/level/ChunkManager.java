@@ -10,6 +10,8 @@ public interface ChunkManager {
 
     int getBlockIdAt(int layer, int x, int y, int z);
 
+    int getBlockFullIdAt(int layer, int x, int y, int z);
+
     void setBlockFullIdAt(int layer, int x, int y, int z, int fullId);
 
     void setBlockIdAt(int layer, int x, int y, int z, int id);
@@ -19,10 +21,6 @@ public interface ChunkManager {
     }
 
     void setBlockAt(int layer, int x, int y, int z, int id, int data);
-
-    int getBlockDataAt(int layer, int x, int y, int z);
-
-    void setBlockDataAt(int layer, int x, int y, int z, int data);
 
     HeightRange getHeightRange();
 

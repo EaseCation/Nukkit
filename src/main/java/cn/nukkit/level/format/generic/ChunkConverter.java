@@ -8,7 +8,7 @@ import it.unimi.dsi.fastutil.objects.ObjectArrayList;
 
 public class ChunkConverter {
 
-    private BaseFullChunk chunk;
+    private cn.nukkit.level.format.mcregion.Chunk chunk;
     private Class<? extends FullChunk> toClass;
     private final LevelProvider provider;
 
@@ -17,10 +17,10 @@ public class ChunkConverter {
     }
 
     public ChunkConverter from(BaseFullChunk chunk) {
-        if (!(chunk instanceof cn.nukkit.level.format.mcregion.Chunk)) {
+        if (!(chunk instanceof cn.nukkit.level.format.mcregion.Chunk mcr)) {
             throw new IllegalArgumentException("From type can be only McRegion");
         }
-        this.chunk = chunk;
+        this.chunk = mcr;
         return this;
     }
 

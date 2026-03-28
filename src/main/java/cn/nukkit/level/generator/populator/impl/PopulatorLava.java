@@ -77,10 +77,11 @@ public class PopulatorLava extends Populator {
     }
 
     private int getFlowDecay(ChunkManager level, int x1, int y1, int z1, int x2, int y2, int z2) {
-        if (level.getBlockIdAt(0, x1, y1, z1) != level.getBlockIdAt(0, x2, y2, z2)) {
+        int fullId = level.getBlockFullIdAt(0, x2, y2, z2);
+        if (level.getBlockIdAt(0, x1, y1, z1) != Block.getIdFromFullId(fullId)) {
             return -1;
         } else {
-            return level.getBlockDataAt(0, x2, y2, z2);
+            return Block.getDamageFromFullId(fullId);
         }
     }
 
@@ -190,7 +191,7 @@ public class PopulatorLava extends Populator {
                 }
                 if (!this.canFlowInto(level, x, y, z)) {
                     continue;
-                } else if (this.canFlowInto(level, x, y, z) && level.getBlockDataAt(0, x, y, z) == 0) {
+                } else if (this.canFlowInto(level, x, y, z) && Block.getDamageFromFullId(level.getBlockFullIdAt(0, x, y, z)) == 0) {
                     continue;
                 } else if (this.canFlowInto(level, x, y - 1, z)) {
                     return accumulatedCost;

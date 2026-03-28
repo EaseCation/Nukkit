@@ -443,11 +443,6 @@ public class LevelDbChunk extends BaseChunk {
     }
 
     @Override
-    public int getBlockData(int layer, int x, int y, int z) {
-        return this.sections[Level.subChunkYtoIndex(y >> 4)].getBlockData(layer, x, y & 0xf, z);
-    }
-
-    @Override
     public void setBlockData(int layer, int x, int y, int z, int data) {
         int index = Level.subChunkYtoIndex(y >> 4);
         try {

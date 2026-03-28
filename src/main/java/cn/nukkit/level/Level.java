@@ -2518,6 +2518,24 @@ public class Level implements ChunkManager, Metadatable {
         return Block.get(fullState, this, x, y, z);
     }
 
+    @Override
+    public int getBlockFullIdAt(int layer, int x, int y, int z) {
+        int fullState;
+        if (heightRange.isValidBlockY(y)) {
+            int cx = x >> 4;
+            int cz = z >> 4;
+            BaseFullChunk chunk = getChunk(cx, cz);
+            if (chunk != null) {
+                fullState = chunk.getFullBlock(layer, x & 0xF, y, z & 0xF);
+            } else {
+                fullState = 0;
+            }
+        } else {
+            fullState = 0;
+        }
+        return fullState;
+    }
+
     public void updateAllLight(Vector3 pos) {
         this.updateAllLight(pos.getFloorX(), pos.getFloorY(), pos.getFloorZ());
     }
@@ -3486,50 +3504,6 @@ public class Level implements ChunkManager, Metadatable {
             return;
         }
         chunk.setBlockId(layer, x & 0x0f, y, z & 0x0f, id);
-        chunk.setBlockData(layer, x & 0x0f, y, z & 0x0f, data);
-        addBlockChange(x, y, z);
-
-        if (!server.isPrimaryThread()) {
-            return;
-        }
-
-        temporalVector.setComponents(x, y, z);
-        for (ChunkLoader loader : this.getChunkLoaders(x >> 4, z >> 4)) {
-            loader.onBlockChanged(temporalVector);
-        }
-    }
-
-    /*@Deprecated
-    public int getBlockExtraDataAt(int x, int y, int z) {
-        FullChunk chunk = this.getChunk(x >> 4, z >> 4, true);
-        return chunk == null ? 0 : chunk.getBlockExtraData(0, x & 0x0f, y, z & 0x0f);
-    }
-
-    @Deprecated
-    public void setBlockExtraDataAt(int x, int y, int z, int id, int data) {
-        FullChunk chunk = this.getChunk(x >> 4, z >> 4, true);
-        if (chunk == null) {
-            return;
-        }
-        chunk.setBlockExtraData(0, x & 0x0f, y, z & 0x0f, (data << 8) | id);
-
-        this.sendBlockExtraData(x, y, z, id, data);
-    }*/
-
-    @Deprecated
-    @Override
-    public int getBlockDataAt(int layer, int x, int y, int z) {
-        FullChunk chunk = this.getChunk(x >> 4, z >> 4, true);
-        return chunk == null ? 0 : chunk.getBlockData(layer, x & 0x0f, y, z & 0x0f);
-    }
-
-    @Deprecated
-    @Override
-    public void setBlockDataAt(int layer, int x, int y, int z, int data) {
-        FullChunk chunk = this.getChunk(x >> 4, z >> 4, true);
-        if (chunk == null) {
-            return;
-        }
         chunk.setBlockData(layer, x & 0x0f, y, z & 0x0f, data);
         addBlockChange(x, y, z);
 

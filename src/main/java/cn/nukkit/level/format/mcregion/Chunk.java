@@ -159,7 +159,6 @@ public class Chunk extends BaseFullChunk {
         setChanged();
     }
 
-    @Override
     public int getBlockData(int layer, int x, int y, int z) {
         int b = this.data[(x << 10) | (z << 6) | (y >> 1)] & 0xff;
         if ((y & 1) == 0) {

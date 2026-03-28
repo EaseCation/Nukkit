@@ -40,29 +40,20 @@ public abstract class SimpleChunkManager implements ChunkManager {
         }
     }
 
+    @Override
+    public int getBlockFullIdAt(int layer, int x, int y, int z) {
+        FullChunk chunk = this.getChunk(x >> 4, z >> 4);
+        if (chunk != null) {
+            return chunk.getFullBlock(layer, x & 0xf, y, z & 0xf);
+        }
+        return 0;
+    }
 
     @Override
     public void setBlockFullIdAt(int layer, int x, int y, int z, int fullId) {
         FullChunk chunk = this.getChunk(x >> 4, z >> 4);
         if (chunk != null) {
             chunk.setFullBlockId(layer, x & 0xf, y, z & 0xf, fullId);
-        }
-    }
-
-    @Override
-    public int getBlockDataAt(int layer, int x, int y, int z) {
-        FullChunk chunk = this.getChunk(x >> 4, z >> 4);
-        if (chunk != null) {
-            return chunk.getBlockData(layer, x & 0xf, y, z & 0xf);
-        }
-        return 0;
-    }
-
-    @Override
-    public void setBlockDataAt(int layer, int x, int y, int z, int data) {
-        FullChunk chunk = this.getChunk(x >> 4, z >> 4);
-        if (chunk != null) {
-            chunk.setBlockData(layer, x & 0xf, y, z & 0xf, data);
         }
     }
 

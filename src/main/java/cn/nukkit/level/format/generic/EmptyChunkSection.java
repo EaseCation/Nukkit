@@ -102,11 +102,6 @@ public final class EmptyChunkSection implements ChunkSection {
     }
 
     @Override
-    public int getBlockData(int layer, int x, int y, int z) {
-        return 0;
-    }
-
-    @Override
     public void setBlockData(int layer, int x, int y, int z, int data) throws ChunkException {
         if (data != 0) throw new ChunkException("Attempted to modify an empty Chunk");
     }

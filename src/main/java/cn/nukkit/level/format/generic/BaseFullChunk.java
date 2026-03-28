@@ -544,6 +544,14 @@ public abstract class BaseFullChunk implements FullChunk, ChunkManager {
     }
 
     @Override
+    public int getBlockFullIdAt(int layer, int x, int y, int z) {
+        if (x >> 4 == getX() && z >> 4 == getZ()) {
+            return getFullBlock(0, x & 15, y, z & 15);
+        }
+        return BlockID.AIR;
+    }
+
+    @Override
     public void setBlockFullIdAt(int layer, int x, int y, int z, int fullId) {
         if (x >> 4 == getX() && z >> 4 == getZ()) {
             setFullBlockId(0, x & 15, y, z & 15, fullId);
@@ -561,21 +569,6 @@ public abstract class BaseFullChunk implements FullChunk, ChunkManager {
     public void setBlockAt(int layer, int x, int y, int z, int id, int data) {
         if (x >> 4 == getX() && z >> 4 == getZ()) {
             setBlock(0, x & 15, y, z & 15, id, data);
-        }
-    }
-
-    @Override
-    public int getBlockDataAt(int layer, int x, int y, int z) {
-        if (x >> 4 == getX() && z >> 4 == getZ()) {
-            return getBlockIdAt(0, x & 15, y, z & 15);
-        }
-        return 0;
-    }
-
-    @Override
-    public void setBlockDataAt(int layer, int x, int y, int z, int data) {
-        if (x >> 4 == getX() && z >> 4 == getZ()) {
-            setBlockData(0, x & 15, y, z & 15, data);
         }
     }
 

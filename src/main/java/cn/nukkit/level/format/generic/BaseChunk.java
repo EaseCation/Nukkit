@@ -135,11 +135,6 @@ public abstract class BaseChunk extends BaseFullChunk implements Chunk {
     }
 
     @Override
-    public int getBlockData(int layer, int x, int y, int z) {
-        return this.sections[y >> 4].getBlockData(layer, x, y & 0x0f, z);
-    }
-
-    @Override
     public void setBlockData(int layer, int x, int y, int z, int data) {
         int Y = y >> 4;
         try {

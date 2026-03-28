@@ -17,8 +17,6 @@ public interface ChunkSection {
 
     void setBlockId(int layer, int x, int y, int z, int id);
 
-    int getBlockData(int layer, int x, int y, int z);
-
     void setBlockData(int layer, int x, int y, int z, int data);
 
     int getFullBlock(int layer, int x, int y, int z);

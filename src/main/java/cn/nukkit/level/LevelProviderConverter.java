@@ -317,13 +317,14 @@ class LevelProviderConverter {
                 if (oldSection.isEmpty()) {
                     continue;
                 }
+                cn.nukkit.level.format.anvil.ChunkSection oldSubChunk = (cn.nukkit.level.format.anvil.ChunkSection) oldSection;
 
                 LevelDbSubChunk subChunk = (LevelDbSubChunk) chunk.getSection(oldSection.getY());
                 for (int y = 0; y < 16; y++) {
                     for (int x = 0; x < 16; x++) {
                         for (int z = 0; z < 16; z++) {
                             int id = oldSection.getBlockId(0, x, y, z);
-                            int meta = oldSection.getBlockData(0, x, y, z);
+                            int meta = oldSubChunk.getBlockData(0, x, y, z);
 
                             // special Log upgrade to Wood
                             if (id == BlockID.LOG) {

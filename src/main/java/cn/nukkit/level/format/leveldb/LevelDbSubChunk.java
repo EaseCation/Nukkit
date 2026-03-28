@@ -149,21 +149,6 @@ public class LevelDbSubChunk implements ChunkSection {
     }
 
     @Override
-    public int getBlockData(int layer, int x, int y, int z) {
-        try {
-            this.readLock.lock();
-
-            if (!this.hasLayerUnsafe(layer)) {
-                return 0;
-            }
-
-            return (this.storages[layer].get(x, y, z)) & Block.BLOCK_META_MASK;
-        } finally {
-            this.readLock.unlock();
-        }
-    }
-
-    @Override
     public void setBlockData(int layer, int x, int y, int z, int data) {
         try {
             this.writeLock.lock();
