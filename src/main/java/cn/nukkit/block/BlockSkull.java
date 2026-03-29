@@ -120,9 +120,9 @@ public class BlockSkull extends BlockFlowable implements Faceable {
             return Item.get(getItemId());
         }
 
-        BlockEntity blockEntity = getLevel().getBlockEntity(this);
+        BlockEntity blockEntity;
         int itemMeta = ItemSkull.HEAD_SKELETON;
-        if (blockEntity != null) {
+        if (level != null && (blockEntity = level.getBlockEntity(this)) != null) {
             itemMeta = blockEntity.namedTag.getByte("SkullType");
         }
         return Item.get(Item.SKULL, itemMeta);

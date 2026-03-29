@@ -90,9 +90,7 @@ public class BlockShulkerBox extends BlockTransparent {
     public Item toItem(boolean addUserData) {
         Item item = Item.get(this.getItemId(), this.getDamage());
 
-        BlockEntityShulkerBox t = (BlockEntityShulkerBox) this.getLevel().getBlockEntity(this);
-
-        if (t != null) {
+        if (level != null && level.getBlockEntity(this) instanceof BlockEntityShulkerBox t) {
             ShulkerBoxInventory i = t.getInventory();
 
             if (!i.isEmpty()) {
