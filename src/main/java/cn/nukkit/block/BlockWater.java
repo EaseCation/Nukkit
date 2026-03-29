@@ -96,16 +96,16 @@ public class BlockWater extends BlockLiquid {
     }
 
     @Override
-    protected void flowIntoBlock(Block block, int newFlowDecay) {
+    protected boolean flowIntoBlock(Block block, int newFlowDecay) {
         Block extra = level.getExtraBlock(block);
         if (!canFlowInto(block) || block.isLiquid() || extra.isLiquid()) {
-            return;
+            return true;
         }
 
         LiquidFlowEvent event = new LiquidFlowEvent(block, extra, this, newFlowDecay);
         level.getServer().getPluginManager().callEvent(event);
         if (event.isCancelled()) {
-            return;
+            return true;
         }
 
         if (block.canContainWater()) {
@@ -119,7 +119,7 @@ public class BlockWater extends BlockLiquid {
             } else if (newBlock.isWaterSource() || block.canContainFlowingWater()) {
                 level.setExtraBlock(block, newBlock, true, true);
             } else {
-                return;
+                return false;
             }
         } else {
             if (!block.isAir()) {
@@ -133,5 +133,6 @@ public class BlockWater extends BlockLiquid {
         }
 
         level.scheduleUpdate(block, tickRate());
+        return true;
     }
 }

@@ -190,12 +190,13 @@ public class BlockLava extends BlockLiquid {
     }
 
     @Override
-    protected void flowIntoBlock(Block block, int newFlowDecay) {
+    protected boolean flowIntoBlock(Block block, int newFlowDecay) {
         if (block.isWater()) {
             ((BlockLiquid) block).liquidCollide(this, Block.get(BlockID.STONE), 0);
         } else {
             super.flowIntoBlock(block, newFlowDecay);
         }
+        return true;
     }
 
     @Override

@@ -306,11 +306,12 @@ public abstract class BlockLiquid extends BlockTransparent {
                 BlockStairs stairs = container instanceof BlockStairs ? (BlockStairs) container : null;
 
                 Block bottomBlock = this.level.getBlock(x, y - 1, z);
+                boolean result = true;
                 if ((stairs == null || stairs.isUpsideDown()) && (!(container instanceof BlockSlab slab) || slab.isTopSlot())) {
-                    this.flowIntoBlock(bottomBlock, decay | DOWNWARD_BIT);
+                    result = this.flowIntoBlock(bottomBlock, decay | DOWNWARD_BIT);
                 }
 
-                if (decay == 0 || !isLiquidContainer(bottomBlock)) {
+                if (decay == 0 || !result || !isLiquidContainer(bottomBlock)) {
                     int adjacentDecay;
                     if (decay >= DOWNWARD_BIT) {
                         adjacentDecay = 1;
@@ -352,7 +353,7 @@ public abstract class BlockLiquid extends BlockTransparent {
         return EnumSet.of(facing, neighborFacing);
     }
 
-    protected void flowIntoBlock(Block block, int newFlowDecay) {
+    protected boolean flowIntoBlock(Block block, int newFlowDecay) {
         Block extra = level.getExtraBlock(block);
         if (this.canFlowInto(block) && !block.isLiquid() && !extra.isLiquid()) {
             LiquidFlowEvent event = new LiquidFlowEvent(block, extra, this, newFlowDecay);
@@ -367,6 +368,7 @@ public abstract class BlockLiquid extends BlockTransparent {
                 this.level.scheduleUpdate(block, this.tickRate());
             }
         }
+        return true;
     }
 
     private int calculateFlowCost(int blockX, int blockY, int blockZ, int accumulatedCost, int maxCost, int originOpposite, int lastOpposite, Long2ByteMap flowCostVisited) {
@@ -394,7 +396,7 @@ public abstract class BlockLiquid extends BlockTransparent {
             byte status = flowCostVisited.get(hash);
             if (status == Byte.MIN_VALUE) {
                 Block blockSide = this.level.getBlock(x, y, z);
-                if (!this.canFlowInto(blockSide) || this.level.getExtraBlock(x, y, z).isLiquid()) {
+                if (!blockSide.canContainFlowingWater() || !this.canFlowInto(blockSide) || this.level.getExtraBlock(x, y, z).isLiquid()) {
                     status = BLOCKED;
                     flowCostVisited.put(hash, status);
                 } else if (isLiquidContainer(this.level.getBlock(x, y - 1, z))) {
