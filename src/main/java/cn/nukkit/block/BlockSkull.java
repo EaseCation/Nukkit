@@ -6,6 +6,7 @@ import cn.nukkit.blockentity.BlockEntity;
 import cn.nukkit.blockentity.BlockEntitySkull;
 import cn.nukkit.blockentity.BlockEntityType;
 import cn.nukkit.item.Item;
+import cn.nukkit.item.ItemSkull;
 import cn.nukkit.math.AxisAlignedBB;
 import cn.nukkit.math.BlockFace;
 import cn.nukkit.math.Mth;

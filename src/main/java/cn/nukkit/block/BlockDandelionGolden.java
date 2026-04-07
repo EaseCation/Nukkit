@@ -30,7 +30,7 @@ public class BlockDandelionGolden extends BlockDandelion {
     }
 
     @Override
-    protected Block getUncommonFlower() {
-        return this;
+    protected int getUncommonFlowerId() {
+        return this.getId();
     }
 }
