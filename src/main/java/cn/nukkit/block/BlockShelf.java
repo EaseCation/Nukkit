@@ -96,7 +96,12 @@ public abstract class BlockShelf extends BlockSolid implements Faceable {
         if (player == null) {
             return false;
         }
+
         if (face != getBlockFace()) {
+            return false;
+        }
+
+        if (item.hasLock()) {
             return false;
         }
 

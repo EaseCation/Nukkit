@@ -634,6 +634,8 @@ public class LevelSoundEventPacket extends DataPacket {
 	public static final int SOUND_GOLDEN_SPEAR_USE = 594;
 	public static final int SOUND_DIAMOND_SPEAR_USE = 595;
 	public static final int SOUND_NETHERITE_SPEAR_USE = 596;
+	public static final int SOUND_PAUSE_GROWTH = 597;
+	public static final int SOUND_RESET_GROWTH = 598;
 
 	public int sound;
     public float x;

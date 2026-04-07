@@ -93,34 +93,30 @@ public class BlockShulkerBox extends BlockTransparent {
     public Item toItem(boolean addUserData) {
         Item item = Item.get(this.getItemId(), this.getDamage());
 
-        if (addUserData) {
-            BlockEntityShulkerBox t = (BlockEntityShulkerBox) this.getLevel().getBlockEntity(this);
+        if (addUserData && level != null && level.getBlockEntity(this) instanceof BlockEntityShulkerBox t) {
+            ShulkerBoxInventory i = t.getInventory();
 
-            if (t != null) {
-                ShulkerBoxInventory i = t.getInventory();
+            if (!i.isEmpty()) {
+                CompoundTag nbt = item.getNamedTag();
+                if (nbt == null)
+                    nbt = new CompoundTag("");
 
-                if (!i.isEmpty()) {
-                    CompoundTag nbt = item.getNamedTag();
-                    if (nbt == null)
-                        nbt = new CompoundTag("");
+                ListTag<CompoundTag> items = new ListTag<>();
 
-                    ListTag<CompoundTag> items = new ListTag<>();
-
-                    for (int it = 0; it < i.getSize(); it++) {
-                        if (i.getItem(it).getId() != Item.AIR) {
-                            CompoundTag d = NBTIO.putItemHelper(i.getItem(it), it);
-                            items.add(d);
-                        }
+                for (int it = 0; it < i.getSize(); it++) {
+                    if (i.getItem(it).getId() != Item.AIR) {
+                        CompoundTag d = NBTIO.putItemHelper(i.getItem(it), it);
+                        items.add(d);
                     }
-
-                    nbt.put("Items", items);
-
-                    item.setCompoundTag(nbt);
                 }
 
-                if (t.hasName()) {
-                    item.setCustomName(t.getName());
-                }
+                nbt.put("Items", items);
+
+                item.setCompoundTag(nbt);
+            }
+
+            if (t.hasName()) {
+                item.setCustomName(t.getName());
             }
         }
 

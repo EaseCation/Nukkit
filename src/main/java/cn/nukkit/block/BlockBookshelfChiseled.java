@@ -109,6 +109,10 @@ public class BlockBookshelfChiseled extends BlockSolid implements Faceable {
             return false;
         }
 
+        if (false || item.hasLock()) {
+            return true;
+        }
+
         BlockEntityChiseledBookshelf blockEntity = getBlockEntity();
         if (blockEntity == null) {
             blockEntity = createBlockEntity(null);

@@ -3,10 +3,7 @@ package cn.nukkit.entity.item;
 import cn.nukkit.Player;
 import cn.nukkit.block.Block;
 import cn.nukkit.block.BlockBubbleColumn;
-import cn.nukkit.entity.Entity;
-import cn.nukkit.entity.EntityHuman;
-import cn.nukkit.entity.EntityID;
-import cn.nukkit.entity.EntityLiving;
+import cn.nukkit.entity.*;
 import cn.nukkit.entity.data.ByteEntityData;
 import cn.nukkit.entity.data.FloatEntityData;
 import cn.nukkit.entity.data.StringEntityData;
@@ -33,8 +30,6 @@ import cn.nukkit.network.protocol.SetEntityMotionPacket;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.ThreadLocalRandom;
-
-import static cn.nukkit.GameVersion.*;
 
 /**
  * Created by yescallop on 2016/2/13.
@@ -186,7 +181,7 @@ public class EntityBoat extends EntityVehicle {
 
             float invFriction = 0.05f;
 
-            boolean simulateWaves = (!(getPassenger() instanceof Player player) || V1_21_130.isOlderThanOrEqual(player.getProtocol())) && !getDataFlag(DATA_FLAG_OUT_OF_CONTROL);
+            boolean simulateWaves = (!(getPassenger() instanceof Player player) || EntityRideable.isServerAuthoritativeRide(player.getProtocol())) && !getDataFlag(DATA_FLAG_OUT_OF_CONTROL);
             double waterDiff = getWaterLevel();
             if (simulateWaves) {
                 if (waterDiff > SINKING_DEPTH && !sinking) {
@@ -559,7 +554,7 @@ public class EntityBoat extends EntityVehicle {
 
     @Override
     public void applyEntityCollision(Entity entity) {
-        if (getPassenger() instanceof Player player && V1_21_130.isNewerThan(player.getProtocol())) {
+        if (getPassenger() instanceof Player player && !EntityRideable.isServerAuthoritativeRide(player.getProtocol())) {
             return;
         }
         if (entity instanceof EntityArmorStand) {
@@ -631,7 +626,7 @@ public class EntityBoat extends EntityVehicle {
 
     @Override
     public void onPlayerInput(Player player, double motionX, double motionY) {
-        if (V1_21_130.isNewerThan(player.getProtocol())) {
+        if (!EntityRideable.isServerAuthoritativeRide(player.getProtocol())) {
             return;
         }
 
@@ -665,7 +660,7 @@ public class EntityBoat extends EntityVehicle {
 
     @Override
     public void onPlayerInput(Player player, double x, double y, double z, double yaw, double pitch) {
-        if (V1_21_130.isOlderThanOrEqual(player.getProtocol())) {
+        if (EntityRideable.isServerAuthoritativeRide(player.getProtocol())) {
             return;
         }
 
@@ -693,7 +688,7 @@ public class EntityBoat extends EntityVehicle {
         pk.motionY = (float) motionY;
         pk.motionZ = (float) motionZ;
         for (Player player : getViewers().values()) {
-            if (passengers.indexOf(player) == RIDER_INDEX && V1_21_130.isNewerThan(player.getProtocol())) {
+            if (passengers.indexOf(player) == RIDER_INDEX && !EntityRideable.isServerAuthoritativeRide(player.getProtocol())) {
                 continue;
             }
             player.dataPacket(pk);

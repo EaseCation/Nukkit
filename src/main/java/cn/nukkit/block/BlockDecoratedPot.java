@@ -95,8 +95,10 @@ public class BlockDecoratedPot extends BlockTransparent {
         }
 
         boolean success = false;
-        Item slot = blockEntity.getItem();
-        if (slot == null) {
+        Item slot;
+        if (item.hasLock()) {
+            slot = null;
+        } else if ((slot = blockEntity.getItem()) == null) {
             if (!item.isNull()) {
                 success = true;
 

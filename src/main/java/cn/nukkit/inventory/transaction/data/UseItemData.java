@@ -37,4 +37,5 @@ public class UseItemData implements TransactionData {
      * @since 1.21.20
      */
     public boolean clientInteractPrediction;
+    public int clientCooldownState;
 }

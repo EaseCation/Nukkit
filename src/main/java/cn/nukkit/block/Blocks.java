@@ -927,6 +927,8 @@ public final class Blocks {
         registerBlock(BlockNames.WAXED_WEATHERED_COPPER_LANTERN, ItemBlockNames.WAXED_WEATHERED_COPPER_LANTERN, WAXED_WEATHERED_COPPER_LANTERN, BlockLanternCopperWeatheredWaxed.class, V1_21_111);
         registerBlock(BlockNames.WAXED_OXIDIZED_COPPER_LANTERN, ItemBlockNames.WAXED_OXIDIZED_COPPER_LANTERN, WAXED_OXIDIZED_COPPER_LANTERN, BlockLanternCopperOxidizedWaxed.class, V1_21_111);
 
+        registerBlock(BlockNames.GOLDEN_DANDELION, ItemBlockNames.GOLDEN_DANDELION, GOLDEN_DANDELION, BlockDandelionGolden.class, V1_26_10);
+
         registerFlattenedBlocks();
 
         registerBlockAliases();

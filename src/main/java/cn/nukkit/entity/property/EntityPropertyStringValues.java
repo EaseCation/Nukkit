@@ -34,7 +34,11 @@ public interface EntityPropertyStringValues {
     String SOUND_VARIANT_DEFAULT = "default";
     String SOUND_VARIANT_GRUMPY = "grumpy";
     String SOUND_VARIANT_MAD = "mad";
+    String SOUND_VARIANT_MINI = "mini";
+    String SOUND_VARIANT_MOODY = "moody";
+    String SOUND_VARIANT_PICKY = "picky";
     String SOUND_VARIANT_PUGLIN = "puglin";
+    String SOUND_VARIANT_ROYAL = "royal";
     String SOUND_VARIANT_SAD = "sad";
 
     String VARIANT_CORAL = "coral";

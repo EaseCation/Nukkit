@@ -129,10 +129,8 @@ public class BlockBanner extends BlockTransparent implements Faceable {
 
     @Override
     public Item toItem(boolean addUserData) {
-        BlockEntity blockEntity = this.getLevel().getBlockEntity(this);
         Item item = Item.get(Item.BANNER);
-        if (blockEntity instanceof BlockEntityBanner) {
-            BlockEntityBanner banner = (BlockEntityBanner) blockEntity;
+        if (level != null && level.getBlockEntity(this) instanceof BlockEntityBanner banner) {
             item.setDamage(banner.getBaseColor() & 0xf);
             int type = banner.namedTag.getInt("Type");
             if (type > 0) {
@@ -144,7 +142,7 @@ public class BlockBanner extends BlockTransparent implements Faceable {
                 item.setNamedTag((item.hasCompoundTag() ? item.getNamedTag() : new CompoundTag())
                         .putList(patterns));
             }
-            item.setCustomName(blockEntity.getName());
+            item.setCustomName(banner.getName());
         }
         return item;
     }

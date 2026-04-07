@@ -97,7 +97,16 @@ public abstract class BlockSkull extends BlockFlowable implements Faceable {
 
     @Override
     public Item toItem(boolean addUserData) {
-        return Item.get(getItemId());
+        if (V1_21_40.isAvailable()) {
+            return Item.get(getItemId());
+        }
+
+        BlockEntity blockEntity;
+        int itemMeta = ItemSkull.HEAD_SKELETON;
+        if (level != null && (blockEntity = level.getBlockEntity(this)) != null) {
+            itemMeta = blockEntity.namedTag.getByte("SkullType");
+        }
+        return Item.get(Item.SKULL, itemMeta);
     }
 
     @Override

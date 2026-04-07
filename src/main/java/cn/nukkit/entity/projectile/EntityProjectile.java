@@ -304,12 +304,6 @@ public abstract class EntityProjectile extends Entity {
                     this.motionX = hitPos.x - this.x;
                     this.motionY = hitPos.y - this.y;
                     this.motionZ = hitPos.z - this.z;
-
-                    this.isCollided = true;
-                    onGround = true;
-                    stuckToBlockPos = new BlockVector3(blockHitResult.blockX, blockHitResult.blockY, blockHitResult.blockZ);
-
-                    blockHitResult.block.onProjectileHit(this, blockHitResult);
                 }
 
                 //TODO: hit water sfx
@@ -349,6 +343,10 @@ public abstract class EntityProjectile extends Entity {
                     continue;
                 }
 
+                if (blockHitResult != null && entity.boundingBox.calculateIntercept(this, moveVector) == null) {
+                    continue;
+                }
+
                 double distance = this.distanceSquared(ob.hitVector);
 
                 if (distance < nearDistance) {
@@ -359,6 +357,14 @@ public abstract class EntityProjectile extends Entity {
 
             if (nearEntity != null && onCollideWithEntity(nearEntity)) {
                 return true;
+            }
+
+            if (blockHitResult != null) {
+                this.isCollided = true;
+                onGround = true;
+                stuckToBlockPos = new BlockVector3(blockHitResult.blockX, blockHitResult.blockY, blockHitResult.blockZ);
+
+                blockHitResult.block.onProjectileHit(this, blockHitResult);
             }
 
             this.move(this.motionX, this.motionY, this.motionZ);
