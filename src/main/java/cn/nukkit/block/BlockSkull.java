@@ -6,7 +6,6 @@ import cn.nukkit.blockentity.BlockEntity;
 import cn.nukkit.blockentity.BlockEntitySkull;
 import cn.nukkit.blockentity.BlockEntityType;
 import cn.nukkit.item.Item;
-import cn.nukkit.item.ItemSkull;
 import cn.nukkit.math.AxisAlignedBB;
 import cn.nukkit.math.BlockFace;
 import cn.nukkit.math.Mth;
@@ -98,16 +97,7 @@ public abstract class BlockSkull extends BlockFlowable implements Faceable {
 
     @Override
     public Item toItem(boolean addUserData) {
-        if (V1_21_40.isAvailable()) {
-            return Item.get(getItemId());
-        }
-
-        BlockEntity blockEntity;
-        int itemMeta = ItemSkull.HEAD_SKELETON;
-        if (level != null && (blockEntity = level.getBlockEntity(this)) != null) {
-            itemMeta = blockEntity.namedTag.getByte("SkullType");
-        }
-        return Item.get(Item.SKULL, itemMeta);
+        return Item.get(getItemId());
     }
 
     @Override
