@@ -10,9 +10,7 @@ import cn.nukkit.math.BlockFace;
  */
 public abstract class BlockSlab extends BlockTransparent {
 
-    @Deprecated
-    public static final int TYPE_MASK = 0b111;
-    public static final int TOP_SLOT_BIT = 0b1000;
+    public static final int TOP_SLOT_BIT = 0b1;
 
     @Override
     public double getMinY() {
