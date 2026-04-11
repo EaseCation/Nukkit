@@ -3239,8 +3239,8 @@ public class Level implements ChunkManager, Metadatable {
                     AxisAlignedBB bb = player.getBoundingBox().getOffsetBoundingBox(diff.x, diff.y, diff.z);
                     bb.expand(-0.01, -0.01, -0.01);
                     if (boundingBox.intersectsWith(bb)) {
-                        // This is a hack to prevent the player from placing blocks inside themselves
-                        return LazyHolder.INVALID_ITEM;
+                        // prevent the player from placing blocks inside themselves
+                        return null;
                     }
                 }
             }
@@ -5656,9 +5656,5 @@ public class Level implements ChunkManager, Metadatable {
      * @param light light level
      */
     private record LightUpdateEntry(int x, int y, int z, int light) {
-    }
-
-    private static class LazyHolder {
-        static final Item INVALID_ITEM = new Item(10000); //HACK
     }
 }
