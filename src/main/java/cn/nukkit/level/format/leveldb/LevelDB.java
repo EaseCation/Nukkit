@@ -66,6 +66,7 @@ import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ThreadLocalRandom;
 import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantLock;
+import java.util.function.Consumer;
 import java.util.function.Predicate;
 
 import static cn.nukkit.GameVersion.*;
@@ -265,6 +266,10 @@ public class LevelDB implements LevelProvider {
     }
 
     public static DB openDB(File dir) throws IOException {
+        return openDB(dir, null);
+    }
+
+    public static DB openDB(File dir, Consumer<? super Options> optionsOverride) throws IOException {
         Options options = new Options()
                 .createIfMissing(true)
                 .compressionType(CompressionType.ZLIB_RAW)
@@ -277,6 +282,9 @@ public class LevelDB implements LevelProvider {
 //                .logger(NullLogger.INSTANCE)
                 .verifyChecksums(false)
                 ;
+        if (optionsOverride != null) {
+            optionsOverride.accept(options);
+        }
         return NATIVE_LEVELDB ? PROVIDER.open(dir, options) : Iq80DBFactory.factory.open(dir, options);
     }
 
