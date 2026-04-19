@@ -446,7 +446,7 @@ public class LevelDB implements LevelProvider {
         updateLevelData(levelData);
 
         Path levelDatPath = Paths.get(path, "level.dat");
-        if (Files.isRegularFile(levelDatPath)) {
+        if (Server.getInstance().getConfiguration().isBackupLevelData() && Files.isRegularFile(levelDatPath)) {
             try {
                 Files.copy(levelDatPath, Paths.get(path, "level.dat_old"), StandardCopyOption.REPLACE_EXISTING, StandardCopyOption.COPY_ATTRIBUTES);
             } catch (IOException e) {
@@ -1402,7 +1402,7 @@ public class LevelDB implements LevelProvider {
                     } catch (IOException e) {
                         throw new RuntimeException("Unload LevelDB exception: " + path, e);
                     }
-                }, getServer().getScheduler().getAsyncPool());
+                }, Server.getInstance().getScheduler().getAsyncPool());
             } else {
                 if (saveChunksOnClose) {
                     saveCustomBiomeIds();
@@ -1449,10 +1449,6 @@ public class LevelDB implements LevelProvider {
     @Override
     public String getPath() {
         return path;
-    }
-
-    public Server getServer() {
-        return this.level.getServer();
     }
 
     @Override

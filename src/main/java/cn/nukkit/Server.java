@@ -379,6 +379,8 @@ public class Server {
                 .savePlayerData(getConfig("player.save-player-data", true))
                 .disableRaknet(getPropertyBoolean("disable-raknet", false))
                 .compressionAlgorithm(Compressor.getAlgorithmByName(getPropertyString("compression-algorithm", "snappy")))
+                .backupPlayerData(getConfig("settings.backup-player-data", true))
+                .backupLevelData(getConfig("level-settings.backup-level-data", true))
                 .build();
 
         this.forceLanguage = this.getConfig("settings.force-language", false);
@@ -1722,8 +1724,8 @@ public class Server {
                 if (async || FORCE_ASYNC_SAVE_PLAYER_DATA) {
                     byte[] bytes = NBTIO.write(tag, ByteOrder.BIG_ENDIAN);
                     this.getScheduler().scheduleAsyncTask(null, new FileWriteTask(this.getDataPath() + "players/" + playerDatName, () -> {
-                        Path playerDatPath = playerPath.resolve(playerDatName);
-                        if (Files.isRegularFile(playerDatPath)) {
+                        Path playerDatPath;
+                        if (configuration.isBackupPlayerData() && Files.isRegularFile(playerDatPath = playerPath.resolve(playerDatName))) {
                             try {
                                 Files.copy(playerDatPath, playerPath.resolve(playerDatName + "_old"), StandardCopyOption.REPLACE_EXISTING, StandardCopyOption.COPY_ATTRIBUTES);
                             } catch (IOException e) {
@@ -1742,8 +1744,8 @@ public class Server {
                         return new ByteArrayInputStream(baos.toByteArray());
                     }));
                 } else {
-                    Path playerDatPath = playerPath.resolve(playerDatName);
-                    if (Files.isRegularFile(playerDatPath)) {
+                    Path playerDatPath;
+                    if (configuration.isBackupPlayerData() && Files.isRegularFile(playerDatPath = playerPath.resolve(playerDatName))) {
                         try {
                             Files.copy(playerDatPath, playerPath.resolve(playerDatName + "_old"), StandardCopyOption.REPLACE_EXISTING, StandardCopyOption.COPY_ATTRIBUTES);
                         } catch (IOException e) {

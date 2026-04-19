@@ -35,4 +35,6 @@ public class ServerConfiguration {
     boolean cacheChunks;
     boolean lightUpdates;
     boolean savePlayerData;
+    boolean backupPlayerData;
+    boolean backupLevelData;
 }
