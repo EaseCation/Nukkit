@@ -111,4 +111,15 @@ public abstract class BlockChemistryTable extends BlockSolid {
     public boolean isChemistryFeature() {
         return true;
     }
+
+/*  //TODO: can only contain flowing water
+    public boolean canContainWater() {
+        return false;
+    }
+
+    @Override
+    public boolean canContainFlowingWater() {
+        return true;
+    }
+*/
 }

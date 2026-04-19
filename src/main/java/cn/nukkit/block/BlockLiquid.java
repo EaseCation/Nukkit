@@ -396,7 +396,7 @@ public abstract class BlockLiquid extends BlockTransparent {
             byte status = flowCostVisited.get(hash);
             if (status == Byte.MIN_VALUE) {
                 Block blockSide = this.level.getBlock(x, y, z);
-                if (!blockSide.canContainFlowingWater() || !this.canFlowInto(blockSide) || this.level.getExtraBlock(x, y, z).isLiquid()) {
+                if (!this.canFlowInto(blockSide) || this.level.getExtraBlock(x, y, z).isLiquid()) {
                     status = BLOCKED;
                     flowCostVisited.put(hash, status);
                 } else if (isLiquidContainer(this.level.getBlock(x, y - 1, z))) {
@@ -466,8 +466,7 @@ public abstract class BlockLiquid extends BlockTransparent {
                 ++z;
             }
 
-            Block block;
-            if (occlusions.contains(side) || !(block = this.level.getBlock(x, y, z)).canContainFlowingWater() || !this.canFlowInto(block) || this.level.getExtraBlock(x, y, z).isLiquid()) {
+            if (occlusions.contains(side) || !this.canFlowInto(this.level.getBlock(x, y, z)) || this.level.getExtraBlock(x, y, z).isLiquid()) {
                 flowCostVisited.put(Hash.hashBlockPos(x, y, z), BLOCKED);
             } else if (isLiquidContainer(this.level.getBlock(x, y - 1, z))) {
                 flowCostVisited.put(Hash.hashBlockPos(x, y, z), CAN_FLOW_DOWN);

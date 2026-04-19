@@ -1,5 +1,6 @@
 package cn.nukkit.block;
 
+import cn.nukkit.Player;
 import cn.nukkit.item.Item;
 import cn.nukkit.utils.BlockColor;
 
@@ -35,7 +36,17 @@ public class BlockCamera extends BlockSolid {
     }
 
     @Override
+    public Item[] getDrops(Item item, Player player) {
+        return new Item[0];
+    }
+
+    @Override
     public BlockColor getColor() {
         return BlockColor.WOOD_BLOCK_COLOR;
+    }
+
+    @Override
+    public boolean canContainWater() {
+        return true;
     }
 }

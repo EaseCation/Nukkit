@@ -92,7 +92,7 @@ public class BlockWater extends BlockLiquid {
 
     @Override
     protected boolean isLiquidContainer(Block block) {
-        return block.canBeFlowedInto() || block.canContainWater() && !block.isWater(); //fixme
+        return block.canBeFlowedInto() || block.canContainFlowingWater() && !block.isWater();
     }
 
     @Override
