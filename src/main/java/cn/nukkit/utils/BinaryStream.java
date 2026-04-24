@@ -1163,12 +1163,12 @@ public class BinaryStream {
             int nextShift = shift + 7;
             if (nextShift >= 64) {
                 nextShift -= 64;
-                bitSet[++index] = bits >> (7 - nextShift);
+                bitSet[++index] = bits >>> 7 - nextShift;
             }
+            num += 7;
             if ((b & 0x80) == 0) {
                 break;
             }
-            num += shift;
             shift = nextShift;
         }
         return BitSet.valueOf(bitSet);

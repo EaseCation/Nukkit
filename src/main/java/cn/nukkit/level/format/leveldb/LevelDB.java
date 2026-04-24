@@ -269,7 +269,7 @@ public class LevelDB implements LevelProvider {
         return openDB(dir, null);
     }
 
-    public static DB openDB(File dir, Consumer<? super Options> optionsOverride) throws IOException {
+    public static DB openDB(File dir, Consumer<Options> optionsOverride) throws IOException {
         Options options = new Options()
                 .createIfMissing(true)
                 .compressionType(CompressionType.ZLIB_RAW)
