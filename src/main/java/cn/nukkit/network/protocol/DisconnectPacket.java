@@ -145,6 +145,10 @@ public class DisconnectPacket extends DataPacket {
     public static final int REASON_EDITOR_MISMATCH_EDITOR_TO_VANILLA = 133;
     public static final int REASON_EDITOR_MISMATCH_VANILLA_TO_EDITOR = 134;
     public static final int REASON_DENY_LISTED = 135;
+    public static final int REASON_NONCE_MISSING = 136;
+    public static final int REASON_NONCE_NOT_FOUND = 137;
+    public static final int REASON_NONCE_EXPIRED = 138;
+    public static final int REASON_NONCE_NOT_VALID = 139;
 
     public int reason = REASON_DISCONNECTED;
     public boolean hideDisconnectionScreen;

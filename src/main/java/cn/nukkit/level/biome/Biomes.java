@@ -7,6 +7,7 @@ import cn.nukkit.level.biome.impl.beach.ColdBeachBiome;
 import cn.nukkit.level.biome.impl.cave.DeepDarkBiome;
 import cn.nukkit.level.biome.impl.cave.DripstoneCavesBiome;
 import cn.nukkit.level.biome.impl.cave.LushCavesBiome;
+import cn.nukkit.level.biome.impl.cave.SulfurCavesBiome;
 import cn.nukkit.level.biome.impl.desert.DesertBiome;
 import cn.nukkit.level.biome.impl.desert.DesertHillsBiome;
 import cn.nukkit.level.biome.impl.desert.DesertMBiome;
@@ -152,6 +153,9 @@ public final class Biomes {
     public static final Biome MANGROVE_SWAMP = registerBiome(BiomeID.MANGROVE_SWAMP, BiomeNames.MANGROVE_SWAMP, new MangroveSwampBiome(), V1_19_0);
     public static final Biome CHERRY_GROVE = registerBiome(BiomeID.CHERRY_GROVE, BiomeNames.CHERRY_GROVE, new CherryGroveBiome(), V1_20_0);
     public static final Biome PALE_GARDEN = registerBiome(BiomeID.PALE_GARDEN, BiomeNames.PALE_GARDEN, new PaleGardenBiome(), V1_21_50);
+/*
+    public static final Biome SULFUR_CAVES = registerBiome(BiomeID.SULFUR_CAVES, BiomeNames.SULFUR_CAVES, new SulfurCavesBiome(), V1_26_30);
+*/
 
     private static Biome registerBiome(int id, String name, Biome biome) {
         return registerBiome(id, name, "minecraft:" + name, biome);

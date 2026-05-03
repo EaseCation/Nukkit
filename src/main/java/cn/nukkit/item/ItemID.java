@@ -313,6 +313,7 @@ public interface ItemID extends ItemBlockID, ItemRuntimeID {
      * @see #ZOMBIE_NAUTILUS_SPAWN_EGG
      * @see #PARCHED_SPAWN_EGG
      * @see #CAMEL_HUSK_SPAWN_EGG
+     * @see #SULFUR_CUBE_SPAWN_EGG
      */
     @Deprecated
     int SPAWN_EGG = 383;

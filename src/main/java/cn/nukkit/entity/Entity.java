@@ -87,6 +87,7 @@ public abstract class Entity extends Location implements Metadatable, EntityData
     protected final EntityMetadata dataProperties = new EntityMetadata()
             .putLong(DATA_FLAGS, 0)
             .putLong(DATA_FLAGS_EXTENDED, 0)
+            .putLong(DATA_FLAGS_3, 0)
             .putByte(DATA_COLOR, 0)
             .putShort(DATA_AIR, 300)
             .putShort(DATA_MAX_AIR, 300)
@@ -2792,7 +2793,21 @@ public abstract class Entity extends Location implements Metadatable, EntityData
         if (send) {
             EntityMetadata metadata = new EntityMetadata();
             metadata.put(data);
+            if (data.getId() == DATA_FLAGS_3) {
+                EntityData<?> flags2 = this.dataProperties.get(DATA_FLAGS_EXTENDED);
+                if (flags2 != null) {
+                    metadata.put(flags2);
+                }
+                EntityData<?> flags1 = this.dataProperties.get(DATA_FLAGS);
+                if (flags1 != null) {
+                    metadata.put(flags1);
+                }
+            }
             if (data.getId() == DATA_FLAGS_EXTENDED) {
+                EntityData<?> flags3 = this.dataProperties.get(DATA_FLAGS_3);
+                if (flags3 != null) {
+                    metadata.put(flags3);
+                }
                 EntityData<?> flags1 = this.dataProperties.get(DATA_FLAGS);
                 if (flags1 != null) {
                     metadata.put(flags1);
@@ -2800,6 +2815,10 @@ public abstract class Entity extends Location implements Metadatable, EntityData
             }
             if (data.getId() == DATA_FLAGS) {
                 // for multi-version conversion
+                EntityData<?> flags3 = this.dataProperties.get(DATA_FLAGS_3);
+                if (flags3 != null) {
+                    metadata.put(flags3);
+                }
                 EntityData<?> flags2 = this.dataProperties.get(DATA_FLAGS_EXTENDED);
                 if (flags2 != null) {
                     metadata.put(flags2);
@@ -2899,7 +2918,7 @@ public abstract class Entity extends Location implements Metadatable, EntityData
     }
 
     public static int getFlagDataId(int flagId) {
-        return flagId >= 64 ? DATA_FLAGS_EXTENDED : DATA_FLAGS;
+        return flagId >= 128 ? DATA_FLAGS_3 : flagId >= 64 ? DATA_FLAGS_EXTENDED : DATA_FLAGS;
     }
 
     public boolean setPlayerFlag(int playerFlagId, boolean value) {

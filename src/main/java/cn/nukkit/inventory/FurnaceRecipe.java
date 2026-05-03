@@ -3,20 +3,38 @@ package cn.nukkit.inventory;
 import cn.nukkit.item.Item;
 import lombok.ToString;
 
+import javax.annotation.Nullable;
+import java.util.UUID;
+
 /**
  * author: MagicDroidX
  * Nukkit Project
  */
 @ToString
 public class FurnaceRecipe implements Recipe {
+    @Nullable
+    private final String vanillaRecipeId;
+
+    private String recipeId;
+
+    private UUID uuid;
 
     private final Item output;
 
     private Item ingredient;
 
+    private final int priority;
+
     private final RecipeTag tag;
 
     public FurnaceRecipe(Item result, Item ingredient, RecipeTag tag) {
+        this(null, null, 0, result, ingredient, tag);
+    }
+
+    public FurnaceRecipe(@Nullable String vanillaRecipeId, String recipeId, int priority, Item result, Item ingredient, RecipeTag tag) {
+        this.vanillaRecipeId = vanillaRecipeId;
+        this.recipeId = recipeId;
+        this.priority = priority;
         this.output = result.clone();
         this.ingredient = ingredient.clone();
         this.tag = tag;
@@ -48,5 +66,30 @@ public class FurnaceRecipe implements Recipe {
     @Override
     public RecipeTag getTag() {
         return tag;
+    }
+
+    @Nullable
+    public String getVanillaRecipeId() {
+        return this.vanillaRecipeId;
+    }
+
+    public String getRecipeId() {
+        return this.recipeId;
+    }
+
+    public UUID getId() {
+        return uuid;
+    }
+
+    public void setId(UUID uuid) {
+        this.uuid = uuid;
+
+        if (this.recipeId == null) {
+            this.recipeId = getId().toString();
+        }
+    }
+
+    public int getPriority() {
+        return this.priority;
     }
 }

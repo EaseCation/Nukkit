@@ -95,4 +95,5 @@ public interface BiomeFullNames {
     String MANGROVE_SWAMP = "minecraft:" + BiomeNames.MANGROVE_SWAMP;
     String CHERRY_GROVE = "minecraft:" + BiomeNames.CHERRY_GROVE;
     String PALE_GARDEN = "minecraft:" + BiomeNames.PALE_GARDEN;
+    String SULFUR_CAVES = "minecraft:" + BiomeNames.SULFUR_CAVES;
 }

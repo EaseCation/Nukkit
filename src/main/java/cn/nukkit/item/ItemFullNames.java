@@ -106,6 +106,7 @@ public interface ItemFullNames extends ItemBlockFullNames {
     String PUFFERFISH_BUCKET = "minecraft:" + ItemNames.PUFFERFISH_BUCKET;
     String WATER_BUCKET = "minecraft:" + ItemNames.WATER_BUCKET;
     String LAVA_BUCKET = "minecraft:" + ItemNames.LAVA_BUCKET;
+    String SULFUR_CUBE_BUCKET = "minecraft:" + ItemNames.SULFUR_CUBE_BUCKET;
 
     String MINECART = "minecraft:" + ItemNames.MINECART;
     String SADDLE = "minecraft:" + ItemNames.SADDLE;
@@ -442,6 +443,7 @@ public interface ItemFullNames extends ItemBlockFullNames {
     String ZOMBIE_NAUTILUS_SPAWN_EGG = "minecraft:" + ItemNames.ZOMBIE_NAUTILUS_SPAWN_EGG;
     String PARCHED_SPAWN_EGG = "minecraft:" + ItemNames.PARCHED_SPAWN_EGG;
     String CAMEL_HUSK_SPAWN_EGG = "minecraft:" + ItemNames.CAMEL_HUSK_SPAWN_EGG;
+    String SULFUR_CUBE_SPAWN_EGG = "minecraft:" + ItemNames.SULFUR_CUBE_SPAWN_EGG;
     String TRADER_LLAMA_SPAWN_EGG = "minecraft:" + ItemNames.TRADER_LLAMA_SPAWN_EGG;
     String EXPERIENCE_BOTTLE = "minecraft:" + ItemNames.EXPERIENCE_BOTTLE;
     String FIRE_CHARGE = "minecraft:" + ItemNames.FIRE_CHARGE;

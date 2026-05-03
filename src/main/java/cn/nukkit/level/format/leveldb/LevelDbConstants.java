@@ -34,8 +34,8 @@ public final class LevelDbConstants {
 
     public static final List<IntTag> CURRENT_COMPATIBLE_CLIENT_VERSION = Collections.unmodifiableList(ObjectArrayList.of(
             new IntTag("", 1), // major
-            new IntTag("", 20), // minor
-            new IntTag("", 10), // patch
+            new IntTag("", 21), // minor
+            new IntTag("", 50), // patch
             new IntTag("", 0), // revision
             new IntTag("", 0))); // beta
 

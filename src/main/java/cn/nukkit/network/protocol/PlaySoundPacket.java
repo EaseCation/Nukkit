@@ -2,6 +2,8 @@ package cn.nukkit.network.protocol;
 
 import lombok.ToString;
 
+import javax.annotation.Nullable;
+
 @ToString
 public class PlaySoundPacket extends DataPacket {
 
@@ -13,6 +15,8 @@ public class PlaySoundPacket extends DataPacket {
     public int z;
     public float volume;
     public float pitch;
+    @Nullable
+    public Long serverSoundHandle;
 
     @Override
     public int pid() {

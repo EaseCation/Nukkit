@@ -98,6 +98,10 @@ public final class BlockEntities {
 
         registerBlockEntity(BlockEntityType.COPPER_GOLEM_STATUE, COPPER_GOLEM_STATUE, BlockEntityCopperGolemStatue::new, V1_21_111);
         registerBlockEntity(BlockEntityType.SHELF, SHELF, BlockEntityShelf::new, V1_21_111);
+/*
+        registerBlockEntity(BlockEntityType.POTENT_SULFUR_BLOCK, POTENT_SULFUR_BLOCK, BlockEntityPotentSulfur::new, V1_26_30);
+*/
+
     }
 
     private static boolean registerBlockEntity(int type, String name, BlockEntityFactory factory) {

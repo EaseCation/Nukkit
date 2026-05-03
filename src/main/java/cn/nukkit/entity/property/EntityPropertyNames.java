@@ -12,5 +12,6 @@ public interface EntityPropertyNames {
     String HAS_NECTAR = "minecraft:has_nectar";
     String OXIDATION_LEVEL = "minecraft:oxidation_level";
     String SOUND_VARIANT = "minecraft:sound_variant";
+    String SULFUR_CUBE_ARCHETYPE = "minecraft:sulfur_cube_archetype";
     String VARIANT = "minecraft:variant";
 }

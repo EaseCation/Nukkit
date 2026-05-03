@@ -118,6 +118,7 @@ public final class BlockStates {
     public static final BooleanBlockState PERSISTENT_BIT = register(new BooleanBlockState(BlockStateNames.PERSISTENT_BIT));
     public static final EnumBlockState<PillarAxisState> PILLAR_AXIS = register(new EnumBlockState<>(BlockStateNames.PILLAR_AXIS, PillarAxisState.values()));
     public static final EnumBlockState<PortalAxisState> PORTAL_AXIS = register(new EnumBlockState<>(BlockStateNames.PORTAL_AXIS, PortalAxisState.values()));
+    public static final EnumBlockState<PotentSulfurState> POTENT_SULFUR_STATE = register(new EnumBlockState<>(BlockStateNames.POTENT_SULFUR_STATE, PotentSulfurState.values()));
     public static final BooleanBlockState POWERED_BIT = register(new BooleanBlockState(BlockStateNames.POWERED_BIT));
     public static final IntegerBlockState POWERED_SHELF_TYPE = register(new IntegerBlockState(BlockStateNames.POWERED_SHELF_TYPE, MAX_POWERED_SHELF_TYPE + 1));
     public static final EnumBlockState<PrismarineBlockTypeState> PRISMARINE_BLOCK_TYPE = register(new EnumBlockState<>(BlockStateNames.PRISMARINE_BLOCK_TYPE, PrismarineBlockTypeState.values()));

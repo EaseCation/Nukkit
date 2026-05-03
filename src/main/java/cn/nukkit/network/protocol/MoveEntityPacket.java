@@ -21,6 +21,7 @@ public class MoveEntityPacket extends DataPacket {
     public boolean onGround;
     public boolean teleport;
     public boolean forceMoveLocalEntity;
+    public boolean forceCompletion;
 
     @Override
     public int pid() {

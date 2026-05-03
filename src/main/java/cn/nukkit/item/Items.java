@@ -408,6 +408,9 @@ public final class Items {
         registerNewItem(ItemNames.POWDER_SNOW_BUCKET, POWDER_SNOW_BUCKET, ItemBucketPowderSnow.class, ItemBucketPowderSnow::new, V1_17_0);
         registerNewItem(ItemNames.AXOLOTL_BUCKET, AXOLOTL_BUCKET, ItemBucketAxolotl.class, ItemBucketAxolotl::new, V1_17_0);
         registerNewItem(ItemNames.TADPOLE_BUCKET, TADPOLE_BUCKET, ItemBucketTadpole.class, ItemBucketTadpole::new, V1_19_0);
+/*
+        registerNewItem(ItemNames.SULFUR_CUBE_BUCKET, SULFUR_CUBE_BUCKET, ItemBucketSulfurCube.class, ItemBucketSulfurCube::new, V1_26_30);
+*/
 
         registerNewItem(ItemNames.CHARCOAL, CHARCOAL, ItemCharcoal.class, ItemCharcoal::new, V1_16_100);
 
@@ -521,6 +524,9 @@ public final class Items {
         registerNewItem(ItemNames.ZOMBIE_NAUTILUS_SPAWN_EGG, ZOMBIE_NAUTILUS_SPAWN_EGG, ItemSpawnEggZombieNautilus.class, ItemSpawnEggZombieNautilus::new, V1_21_130);
         registerNewItem(ItemNames.PARCHED_SPAWN_EGG, PARCHED_SPAWN_EGG, ItemSpawnEggParched.class, ItemSpawnEggParched::new, V1_21_130);
         registerNewItem(ItemNames.CAMEL_HUSK_SPAWN_EGG, CAMEL_HUSK_SPAWN_EGG, ItemSpawnEggCamelHusk.class, ItemSpawnEggCamelHusk::new, V1_21_130);
+/*
+        registerNewItem(ItemNames.SULFUR_CUBE_SPAWN_EGG, SULFUR_CUBE_SPAWN_EGG, ItemSpawnEggSulfurCube.class, ItemSpawnEggSulfurCube::new, V1_26_30);
+*/
 
         registerNewItem(ItemNames.COPPER_INGOT, COPPER_INGOT, ItemIngotCopper.class, ItemIngotCopper::new, V1_17_0);
         registerNewItem(ItemNames.GLOW_BERRIES, GLOW_BERRIES, ItemGlowBerries.class, ItemGlowBerries::new, V1_17_0);
@@ -763,6 +769,9 @@ public final class Items {
         registerComplexAlias(POWDER_SNOW_BUCKET, ItemNames.BUCKET, BUCKET, ItemBucket.TYPE_POWDER_SNOW_BUCKET, V1_17_0);
         registerComplexAlias(AXOLOTL_BUCKET, ItemNames.BUCKET, BUCKET, ItemBucket.TYPE_AXOLOTL_BUCKET, V1_17_0);
         registerComplexAlias(TADPOLE_BUCKET, ItemNames.BUCKET, BUCKET, ItemBucket.TYPE_TADPOLE_BUCKET, V1_19_0);
+/*
+        registerComplexAlias(SULFUR_CUBE_BUCKET, ItemNames.BUCKET, BUCKET, ItemBucket.TYPE_SULFUR_CUBE_BUCKET, V1_26_30);
+*/
 
         registerComplexAlias(CHARCOAL, ItemNames.COAL, COAL, ItemCoal.TYPE_CHARCOAL, V1_16_100);
 
@@ -878,6 +887,9 @@ public final class Items {
         registerComplexAlias(ZOMBIE_NAUTILUS_SPAWN_EGG, ItemNames.SPAWN_EGG, SPAWN_EGG, EntityID.ZOMBIE_NAUTILUS, V1_21_130);
         registerComplexAlias(PARCHED_SPAWN_EGG, ItemNames.SPAWN_EGG, SPAWN_EGG, EntityID.PARCHED, V1_21_130);
         registerComplexAlias(CAMEL_HUSK_SPAWN_EGG, ItemNames.SPAWN_EGG, SPAWN_EGG, EntityID.CAMEL_HUSK, V1_21_130);
+/*
+        registerComplexAlias(SULFUR_CUBE_SPAWN_EGG, ItemNames.SPAWN_EGG, SPAWN_EGG, EntityID.SULFUR_CUBE, V1_26_30);
+*/
 
         registerComplexAlias(OAK_CHEST_BOAT, ItemNames.CHEST_BOAT, CHEST_BOAT, ItemBoatChest.OAK, V1_19_0);
         registerComplexAlias(SPRUCE_CHEST_BOAT, ItemNames.CHEST_BOAT, CHEST_BOAT, ItemBoatChest.SPRUCE, V1_19_0);

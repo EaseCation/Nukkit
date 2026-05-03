@@ -2,6 +2,7 @@ package cn.nukkit.dispenser;
 
 import cn.nukkit.entity.EntityID;
 import cn.nukkit.entity.item.*;
+import cn.nukkit.entity.mob.EntitySulfurCube;
 import cn.nukkit.entity.passive.*;
 import cn.nukkit.entity.projectile.*;
 import cn.nukkit.entity.property.EntityPropertyNames;
@@ -68,6 +69,7 @@ public final class DispenseBehaviorRegister {
         registerBehavior(ItemID.PUFFERFISH_BUCKET, new WaterBucketDispenseBehavior(EntityPufferfish::new));
         registerBehavior(ItemID.AXOLOTL_BUCKET, new WaterBucketDispenseBehavior(EntityAxolotl::new));
         registerBehavior(ItemID.TADPOLE_BUCKET, new WaterBucketDispenseBehavior(EntityTadpole::new));
+        registerBehavior(ItemID.SULFUR_CUBE_BUCKET, new EntityBucketDispenseBehavior(EntitySulfurCube::new));
         registerBehavior(ItemID.LAVA_BUCKET, new LavaBucketDispenseBehavior());
         registerBehavior(ItemID.POWDER_SNOW_BUCKET, new PowderSnowBucketDispenseBehavior());
         registerBehavior(ItemID.BONE_MEAL, new FertilizerDispenseBehavior());
@@ -179,6 +181,7 @@ public final class DispenseBehaviorRegister {
         registerBehavior(ItemID.PARCHED_SPAWN_EGG, new SpawnEggDispenseBehavior(EntityID.PARCHED));
         registerBehavior(ItemID.CAMEL_HUSK_SPAWN_EGG, new SpawnEggDispenseBehavior(EntityID.CAMEL_HUSK));
         registerBehavior(ItemID.TRADER_LLAMA_SPAWN_EGG, new SpawnEggDispenseBehavior(EntityID.TRADER_LLAMA));
+        registerBehavior(ItemID.SULFUR_CUBE_SPAWN_EGG, new SpawnEggDispenseBehavior(EntityID.SULFUR_CUBE));
 //        registerBehavior(ItemBlockID.CARVED_PUMPKIN, new PumpkinDispenseBehavior());
 //        registerBehavior(ItemBlockID.LIT_PUMPKIN, new PumpkinDispenseBehavior());
 //        registerBehavior(ItemBlockID.WITHER_SKELETON_SKULL, new WitherSkullDispenseBehavior());

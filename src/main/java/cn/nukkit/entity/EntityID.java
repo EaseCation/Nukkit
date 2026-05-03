@@ -143,6 +143,7 @@ public interface EntityID {
     int ZOMBIE_NAUTILUS = 150;
     int PARCHED = 151;
     int CAMEL_HUSK = 152;
+    int SULFUR_CUBE = 153;
 
     int TRADER_LLAMA = 157;
 

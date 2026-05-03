@@ -186,6 +186,9 @@ public final class Entities {
         registerEntity(EntityID.ZOMBIE_NAUTILUS, EntityNames.ZOMBIE_NAUTILUS, "ZombieNautilus", EntityZombieNautilus.class, EntityZombieNautilus::new, V1_21_130);
         registerEntity(EntityID.PARCHED, EntityNames.PARCHED, "Parched", EntityParched.class, EntityParched::new, V1_21_130);
         registerEntity(EntityID.CAMEL_HUSK, EntityNames.CAMEL_HUSK, "CamelHusk", EntityCamelHusk.class, EntityCamelHusk::new, V1_21_130);
+/*
+        registerEntity(EntityID.SULFUR_CUBE, EntityNames.SULFUR_CUBE, "SulfurCube", EntitySulfurCube.class, EntitySulfurCube::new, V1_26_30);
+*/
 
         EntityPropertyRegistry.registerVanillaProperties();
     }

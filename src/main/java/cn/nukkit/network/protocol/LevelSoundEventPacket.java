@@ -3,6 +3,8 @@ package cn.nukkit.network.protocol;
 import cn.nukkit.math.Vector3f;
 import lombok.ToString;
 
+import javax.annotation.Nullable;
+
 @ToString
 public class LevelSoundEventPacket extends DataPacket {
     public static final int NETWORK_ID = ProtocolInfo.LEVEL_SOUND_EVENT_PACKET;
@@ -636,6 +638,8 @@ public class LevelSoundEventPacket extends DataPacket {
 	public static final int SOUND_NETHERITE_SPEAR_USE = 596;
 	public static final int SOUND_PAUSE_GROWTH = 597;
 	public static final int SOUND_RESET_GROWTH = 598;
+	public static final int SOUND_PUSHED_BY_PLAYER = 599;
+	public static final int SOUND_BOUNCE = 600;
 
 	public int sound;
     public float x;
@@ -651,6 +655,11 @@ public class LevelSoundEventPacket extends DataPacket {
 	 * @since 1.21.70
 	 */
 	public long entityUniqueId = -1;
+	/**
+	 * @since 1.26.20
+	 */
+	@Nullable
+	public Vector3f fireAtPosition;
 
     @Override
     public void decode() {

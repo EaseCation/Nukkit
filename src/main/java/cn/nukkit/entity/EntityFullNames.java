@@ -144,6 +144,7 @@ public interface EntityFullNames {
     String ZOMBIE_NAUTILUS = "minecraft:" + EntityNames.ZOMBIE_NAUTILUS;
     String PARCHED = "minecraft:" + EntityNames.PARCHED;
     String CAMEL_HUSK = "minecraft:" + EntityNames.CAMEL_HUSK;
+    String SULFUR_CUBE = "minecraft:" + EntityNames.SULFUR_CUBE;
 
     String TRADER_LLAMA = "minecraft:" + EntityNames.TRADER_LLAMA;
 

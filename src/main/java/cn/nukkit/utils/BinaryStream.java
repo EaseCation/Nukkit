@@ -238,6 +238,10 @@ public class BinaryStream {
         Binary.writeLInt(i, this.buffer, index);
     }
 
+    public short getSignedShort() {
+        return Binary.readSignedShort(this.get(2));
+    }
+
     public int getShort() {
         return Binary.readShort(this.get(2));
     }
@@ -245,6 +249,10 @@ public class BinaryStream {
     public void putShort(int s) {
         int index = this.prepareWriterIndex(2);
         Binary.writeShort(s, this.buffer, index);
+    }
+
+    public short getLSignedShort() {
+        return Binary.readSignedLShort(this.get(2));
     }
 
     public int getLShort() {
@@ -318,7 +326,7 @@ public class BinaryStream {
         this.putByte((byte) (bool ? 1 : 0));
     }
 
-    public byte getSingedByte() {
+    public byte getSignedByte() {
         return this.buffer[this.offset++];
     }
 
@@ -472,6 +480,21 @@ public class BinaryStream {
         int height = this.getLInt();
         byte[] data = this.getByteArray();
         return new SerializedImage(width, height, data);
+    }
+
+    public Item getItemStack() {
+        if (this.helper != null) {
+            return this.helper.getItemStack(this);
+        }
+        return this.getSlot();
+    }
+
+    public void putItemStack(Item item) {
+        if (this.helper != null) {
+            this.helper.putItemStack(this, item);
+            return;
+        }
+        this.putSlot(item);
     }
 
     public Item getSlot() {
@@ -1157,7 +1180,7 @@ public class BinaryStream {
             if (num >= size) {
                 throw new IllegalArgumentException("VarBitSet was too large: " + size);
             }
-            byte b = getSingedByte();
+            byte b = getSignedByte();
             long bits = b & 0x7f;
             bitSet[index] |= bits << shift; // extra bits will be discarded
             int nextShift = shift + 7;
@@ -1275,6 +1298,14 @@ public class BinaryStream {
                 stream.putString(gameRule.getBedrockName());
                 value.write(stream, network);
             });
+        }
+
+        public Item getItemStack(BinaryStream stream) {
+            return this.getSlot(stream);
+        }
+
+        public void putItemStack(BinaryStream stream, Item item) {
+            this.putSlot(stream, item);
         }
 
         public Item getSlot(BinaryStream stream) {

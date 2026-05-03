@@ -25,6 +25,7 @@ public class ItemBucket extends Item {
     static final int TYPE_POWDER_SNOW_BUCKET = 11;
     static final int TYPE_AXOLOTL_BUCKET = 12;
     static final int TYPE_TADPOLE_BUCKET = 13;
+    static final int TYPE_SULFUR_CUBE_BUCKET = 14;
 
     public static final int[] BUCKETS = {
             BUCKET,

@@ -23,6 +23,7 @@ public final class LevelDBSpecialKey {
     public static final byte[] BIOME_IDS_TABLE = {'B', 'i', 'o', 'm', 'e', 'I', 'd', 's', 'T', 'a', 'b', 'l', 'e'};
     public static final byte[] DYNAMIC_PROPERTIES = {'D', 'y', 'n', 'a', 'm', 'i', 'c', 'P', 'r', 'o', 'p', 'e', 'r', 't', 'i', 'e', 's'};
     public static final byte[] WORLD_CLOCKS = {'W', 'o', 'r', 'l', 'd', 'C', 'l', 'o', 'c', 'k', 's'};
+    public static final byte[] DIMENSION_NAME_ID_TABLE = {'D', 'i', 'm', 'e', 'n', 's', 'i', 'o', 'n', 'N', 'a', 'm', 'e', 'I', 'd', 'T', 'a', 'b', 'l', 'e'};
     public static final byte[] LOCAL_PLAYER = {'~', 'l', 'o', 'c', 'a', 'l', '_', 'p', 'l', 'a', 'y', 'e', 'r'};
 
     private static byte[] prefix(byte[] prefix, byte[] key) {

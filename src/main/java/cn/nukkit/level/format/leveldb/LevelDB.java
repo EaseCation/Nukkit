@@ -29,6 +29,7 @@ import cn.nukkit.math.Vector3f;
 import cn.nukkit.nbt.NBTIO;
 import cn.nukkit.nbt.stream.NBTInputStream;
 import cn.nukkit.nbt.tag.CompoundTag;
+import cn.nukkit.nbt.tag.IntTag;
 import cn.nukkit.nbt.tag.ListTag;
 import cn.nukkit.nbt.tag.Tag;
 import cn.nukkit.scheduler.AsyncTask;
@@ -44,6 +45,7 @@ import it.unimi.dsi.fastutil.ints.IntArrayList;
 import it.unimi.dsi.fastutil.ints.IntList;
 import it.unimi.dsi.fastutil.longs.Long2ObjectMap;
 import it.unimi.dsi.fastutil.longs.Long2ObjectOpenHashMap;
+import it.unimi.dsi.fastutil.objects.Object2IntMap;
 import it.unimi.dsi.fastutil.objects.Object2ObjectOpenHashMap;
 import it.unimi.dsi.fastutil.objects.ObjectArrayList;
 import lombok.extern.log4j.Log4j2;
@@ -352,6 +354,29 @@ public class LevelDB implements LevelProvider {
             }
             customBiomePersistentToRuntime.add(runtimeId);
             customBiomeRuntimeToPersistent.set(runtimeIndex, persistentId);
+        }
+    }
+
+    private static void readCustomDimensionIds(DB db, Object2IntMap<String> customDimensionNameToIndex, List<String> customDimensionIndexToName) {
+        byte[] data = db.get(DIMENSION_NAME_ID_TABLE);
+        if (data == null || data.length == 0) {
+            return;
+        }
+
+        try {
+            CompoundTag tag = NBTIO.read(data, ByteOrder.LITTLE_ENDIAN);
+            for (Entry<String, Tag> entry : tag.getCompound("entries").getTagsUnsafe().entrySet()) {
+                String name = entry.getKey();
+                int persistentId = ((IntTag) entry.getValue()).data;
+                int runtimeIndex = persistentId - 1000;
+                customDimensionNameToIndex.put(name, runtimeIndex);
+                while (customDimensionIndexToName.size() <= runtimeIndex) {
+                    customDimensionIndexToName.add(null);
+                }
+                customDimensionIndexToName.set(runtimeIndex, name);
+            }
+        } catch (Exception e) {
+            log.warn("Unable to read DimensionNameIdTable", e);
         }
     }
 
@@ -720,7 +745,7 @@ public class LevelDB implements LevelProvider {
                             int storageCount = stream.getByte();
 
                             if (subChunkVersion >= 9) {
-                                int indexY = stream.getSingedByte();
+                                int indexY = stream.getSignedByte();
                                 if (indexY != y) {
                                     throw new ChunkException("Unexpected Y index (" + indexY + ") for subchunk " + y + " (" + chunkX + "," + chunkZ + ") in " + path);
                                 }
@@ -995,14 +1020,14 @@ public class LevelDB implements LevelProvider {
                 int biomeStateCount = stream.getByte();
                 for (int i = 0; i < biomeStateCount; i++) {
                     int biomeId = stream.getByte();
-                    byte snowLevel = stream.getSingedByte();
+                    byte snowLevel = stream.getSignedByte();
                     biomeStates.put(biomeId, snowLevel);
                 }
             } else {
                 int biomeStateCount = stream.getLShort();
                 for (int i = 0; i < biomeStateCount; i++) {
                     int biomeId = stream.getLShort();
-                    byte snowLevel = stream.getSingedByte();
+                    byte snowLevel = stream.getSignedByte();
                     biomeStates.put(biomeId, snowLevel);
                 }
             }

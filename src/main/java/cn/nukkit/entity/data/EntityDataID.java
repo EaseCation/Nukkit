@@ -220,6 +220,16 @@ public interface EntityDataID {
      * @since 1.26.0
      */
     int DATA_AIM_ASSIST_PRIORITY_ENTITY_INDEX = 144;
+    /**
+     * long.
+     * @since 1.26.20
+     */
+    int DATA_FLAGS_3 = 145;
+    /**
+     * float.
+     * @since 1.26.20
+     */
+    int DATA_NAMEPLATE_RENDER_DISTANCE_MAX = 146;
 
-    int DATA_UNDEFINED = 145;
+    int DATA_UNDEFINED = 147;
 }

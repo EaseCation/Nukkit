@@ -101,6 +101,7 @@ public interface ParticleID {
     int GREEN_FLAME = 98;
     int PAUSE_MOB_GROWTH = 99;
     int RESET_MOB_GROWTH = 100;
+    int SULFUR_CUBE = 101;
 
-    int UNDEFINED = 101;
+    int UNDEFINED = 102;
 }

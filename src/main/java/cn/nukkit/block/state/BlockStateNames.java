@@ -104,6 +104,7 @@ public interface BlockStateNames {
     String PERSISTENT_BIT = "persistent_bit";
     String PILLAR_AXIS = "pillar_axis";
     String PORTAL_AXIS = "portal_axis";
+    String POTENT_SULFUR_STATE = "potent_sulfur_state";
     String POWERED_BIT = "powered_bit";
     String POWERED_SHELF_TYPE = "powered_shelf_type";
     String PRISMARINE_BLOCK_TYPE = "prismarine_block_type";

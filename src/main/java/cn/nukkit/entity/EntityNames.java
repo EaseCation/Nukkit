@@ -143,6 +143,7 @@ public interface EntityNames {
     String ZOMBIE_NAUTILUS = "zombie_nautilus";
     String PARCHED = "parched";
     String CAMEL_HUSK = "camel_husk";
+    String SULFUR_CUBE = "sulfur_cube";
 
     String TRADER_LLAMA = "trader_llama";
 

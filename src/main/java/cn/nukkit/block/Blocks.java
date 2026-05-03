@@ -928,6 +928,42 @@ public final class Blocks {
         registerBlock(BlockNames.WAXED_OXIDIZED_COPPER_LANTERN, ItemBlockNames.WAXED_OXIDIZED_COPPER_LANTERN, WAXED_OXIDIZED_COPPER_LANTERN, BlockLanternCopperOxidizedWaxed.class, V1_21_111);
 
         registerBlock(BlockNames.GOLDEN_DANDELION, ItemBlockNames.GOLDEN_DANDELION, GOLDEN_DANDELION, BlockDandelionGolden.class, V1_26_10);
+/*
+        registerBlock(BlockNames.SULFUR, ItemBlockNames.SULFUR, SULFUR, BlockSulfur.class, V1_26_30);
+        registerBlock(BlockNames.SULFUR_SLAB, ItemBlockNames.SULFUR_SLAB, SULFUR_SLAB, BlockSlabSulfur.class, V1_26_30);
+        registerBlock(BlockNames.SULFUR_DOUBLE_SLAB, ItemBlockNames.SULFUR_DOUBLE_SLAB, SULFUR_DOUBLE_SLAB, BlockSlabSulfur.class, V1_26_30);
+        registerBlock(BlockNames.SULFUR_STAIRS, ItemBlockNames.SULFUR_STAIRS, SULFUR_STAIRS, BlockStairsSulfur.class, V1_26_30);
+        registerBlock(BlockNames.SULFUR_WALL, ItemBlockNames.SULFUR_WALL, SULFUR_WALL, BlockWallSulfur.class, V1_26_30);
+        registerBlock(BlockNames.POLISHED_SULFUR, ItemBlockNames.POLISHED_SULFUR, POLISHED_SULFUR, BlockSulfurPolished.class, V1_26_30);
+        registerBlock(BlockNames.POLISHED_SULFUR_SLAB, ItemBlockNames.POLISHED_SULFUR_SLAB, POLISHED_SULFUR_SLAB, BlockSlabSulfurPolished.class, V1_26_30);
+        registerBlock(BlockNames.POLISHED_SULFUR_DOUBLE_SLAB, ItemBlockNames.POLISHED_SULFUR_DOUBLE_SLAB, POLISHED_SULFUR_DOUBLE_SLAB, BlockSlabSulfurPolished.class, V1_26_30);
+        registerBlock(BlockNames.POLISHED_SULFUR_STAIRS, ItemBlockNames.POLISHED_SULFUR_STAIRS, POLISHED_SULFUR_STAIRS, BlockStairsSulfurPolished.class, V1_26_30);
+        registerBlock(BlockNames.POLISHED_SULFUR_WALL, ItemBlockNames.POLISHED_SULFUR_WALL, POLISHED_SULFUR_WALL, BlockWallSulfurPolished.class, V1_26_30);
+        registerBlock(BlockNames.SULFUR_BRICKS, ItemBlockNames.SULFUR_BRICKS, SULFUR_BRICKS, BlockSulfurBricks.class, V1_26_30);
+        registerBlock(BlockNames.SULFUR_BRICK_SLAB, ItemBlockNames.SULFUR_BRICK_SLAB, SULFUR_BRICK_SLAB, BlockSlabSulfurBrick.class, V1_26_30);
+        registerBlock(BlockNames.SULFUR_BRICK_DOUBLE_SLAB, ItemBlockNames.SULFUR_BRICK_DOUBLE_SLAB, SULFUR_BRICK_DOUBLE_SLAB, BlockSlabSulfurBrick.class, V1_26_30);
+        registerBlock(BlockNames.SULFUR_BRICK_STAIRS, ItemBlockNames.SULFUR_BRICK_STAIRS, SULFUR_BRICK_STAIRS, BlockStairsSulfurBrick.class, V1_26_30);
+        registerBlock(BlockNames.SULFUR_BRICK_WALL, ItemBlockNames.SULFUR_BRICK_WALL, SULFUR_BRICK_WALL, BlockWallSulfurBrick.class, V1_26_30);
+        registerBlock(BlockNames.CHISELED_SULFUR, ItemBlockNames.CHISELED_SULFUR, CHISELED_SULFUR, BlockSulfurChiseled.class, V1_26_30);
+        registerBlock(BlockNames.POTENT_SULFUR, ItemBlockNames.POTENT_SULFUR, POTENT_SULFUR, BlockSulfurPotent.class, V1_26_30);
+        registerBlock(BlockNames.CINNABAR, ItemBlockNames.CINNABAR, CINNABAR, BlockCinnabar.class, V1_26_30);
+        registerBlock(BlockNames.CINNABAR_SLAB, ItemBlockNames.CINNABAR_SLAB, CINNABAR_SLAB, BlockSlabCinnabar.class, V1_26_30);
+        registerBlock(BlockNames.CINNABAR_DOUBLE_SLAB, ItemBlockNames.CINNABAR_DOUBLE_SLAB, CINNABAR_DOUBLE_SLAB, BlockSlabCinnabar.class, V1_26_30);
+        registerBlock(BlockNames.CINNABAR_STAIRS, ItemBlockNames.CINNABAR_STAIRS, CINNABAR_STAIRS, BlockStairsCinnabar.class, V1_26_30);
+        registerBlock(BlockNames.CINNABAR_WALL, ItemBlockNames.CINNABAR_WALL, CINNABAR_WALL, BlockWallCinnabar.class, V1_26_30);
+        registerBlock(BlockNames.POLISHED_CINNABAR, ItemBlockNames.POLISHED_CINNABAR, POLISHED_CINNABAR, BlockCinnabarPolished.class, V1_26_30);
+        registerBlock(BlockNames.POLISHED_CINNABAR_SLAB, ItemBlockNames.POLISHED_CINNABAR_SLAB, POLISHED_CINNABAR_SLAB, BlockSlabCinnabarPolished.class, V1_26_30);
+        registerBlock(BlockNames.POLISHED_CINNABAR_DOUBLE_SLAB, ItemBlockNames.POLISHED_CINNABAR_DOUBLE_SLAB, POLISHED_CINNABAR_DOUBLE_SLAB, BlockSlabCinnabarPolished.class, V1_26_30);
+        registerBlock(BlockNames.POLISHED_CINNABAR_STAIRS, ItemBlockNames.POLISHED_CINNABAR_STAIRS, POLISHED_CINNABAR_STAIRS, BlockStairsCinnabarPolished.class, V1_26_30);
+        registerBlock(BlockNames.POLISHED_CINNABAR_WALL, ItemBlockNames.POLISHED_CINNABAR_WALL, POLISHED_CINNABAR_WALL, BlockWallCinnabarPolished.class, V1_26_30);
+        registerBlock(BlockNames.CINNABAR_BRICKS, ItemBlockNames.CINNABAR_BRICKS, CINNABAR_BRICKS, BlockCinnabarBricks.class, V1_26_30);
+        registerBlock(BlockNames.CINNABAR_BRICK_SLAB, ItemBlockNames.CINNABAR_BRICK_SLAB, CINNABAR_BRICK_SLAB, BlockSlabCinnabarBrick.class, V1_26_30);
+        registerBlock(BlockNames.CINNABAR_BRICK_DOUBLE_SLAB, ItemBlockNames.CINNABAR_BRICK_DOUBLE_SLAB, CINNABAR_BRICK_DOUBLE_SLAB, BlockSlabCinnabarBrick.class, V1_26_30);
+        registerBlock(BlockNames.CINNABAR_BRICK_STAIRS, ItemBlockNames.CINNABAR_BRICK_STAIRS, CINNABAR_BRICK_STAIRS, BlockStairsCinnabarBrick.class, V1_26_30);
+        registerBlock(BlockNames.CINNABAR_BRICK_WALL, ItemBlockNames.CINNABAR_BRICK_WALL, CINNABAR_BRICK_WALL, BlockWallCinnabarBrick.class, V1_26_30);
+        registerBlock(BlockNames.CHISELED_CINNABAR, ItemBlockNames.CHISELED_CINNABAR, CHISELED_CINNABAR, BlockCinnabarChiseled.class, V1_26_30);
+        registerBlock(BlockNames.SULFUR_SPIKE, ItemBlockNames.SULFUR_SPIKE, SULFUR_SPIKE, BlockSulfurSpike.class, V1_26_30);
+*/
 
         registerFlattenedBlocks();
 

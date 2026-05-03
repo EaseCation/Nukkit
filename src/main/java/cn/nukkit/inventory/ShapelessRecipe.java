@@ -20,7 +20,7 @@ public class ShapelessRecipe implements CraftingRecipe {
 
     private final Item output;
 
-    private long least, most;
+    private UUID uuid;
 
     private final List<Item> ingredients;
     private final List<Item> ingredientsAggregate;
@@ -84,13 +84,12 @@ public class ShapelessRecipe implements CraftingRecipe {
 
     @Override
     public UUID getId() {
-        return new UUID(least, most);
+        return uuid;
     }
 
     @Override
     public void setId(UUID uuid) {
-        this.least = uuid.getLeastSignificantBits();
-        this.most = uuid.getMostSignificantBits();
+        this.uuid = uuid;
 
         if (this.recipeId == null) {
             this.recipeId = this.getId().toString();

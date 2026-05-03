@@ -105,6 +105,7 @@ public interface ItemNames extends ItemBlockNames {
     String PUFFERFISH_BUCKET = "pufferfish_bucket";
     String WATER_BUCKET = "water_bucket";
     String LAVA_BUCKET = "lava_bucket";
+    String SULFUR_CUBE_BUCKET = "sulfur_cube_bucket";
 
     String MINECART = "minecart";
     String SADDLE = "saddle";
@@ -441,6 +442,7 @@ public interface ItemNames extends ItemBlockNames {
     String ZOMBIE_NAUTILUS_SPAWN_EGG = "zombie_nautilus_spawn_egg";
     String PARCHED_SPAWN_EGG = "parched_spawn_egg";
     String CAMEL_HUSK_SPAWN_EGG = "camel_husk_spawn_egg";
+    String SULFUR_CUBE_SPAWN_EGG = "sulfur_cube_spawn_egg";
     String TRADER_LLAMA_SPAWN_EGG = "trader_llama_spawn_egg";
     String EXPERIENCE_BOTTLE = "experience_bottle";
     String FIRE_CHARGE = "fire_charge";

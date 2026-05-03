@@ -401,6 +401,11 @@ public class CraftingManager {
             UUID id = new UUID(Hash.xxh64(runtimeId), runtimeId);
             ((CraftingRecipe) recipe).setId(id);
             this.recipes.add(recipe);
+        } else if (recipe instanceof FurnaceRecipe furnace) {
+//            UUID id = Utils.dataToUUID(String.valueOf(++RECIPE_COUNT), String.valueOf(recipe.getResult().getId()), String.valueOf(recipe.getResult().getDamage()), String.valueOf(recipe.getResult().getCount()), Arrays.toString(recipe.getResult().getCompoundTag()));
+            int runtimeId = ++RECIPE_COUNT;
+            UUID id = new UUID(Hash.xxh64(runtimeId), runtimeId);
+            furnace.setId(id);
         }
 
         recipe.registerToCraftingManager(this);

@@ -6,7 +6,6 @@ import cn.nukkit.block.BlockSerializer;
 import cn.nukkit.block.BlockUpgrader;
 import cn.nukkit.block.Blocks;
 import cn.nukkit.level.biome.BiomeID;
-import cn.nukkit.level.biome.Biomes;
 import cn.nukkit.math.BlockVector3;
 import cn.nukkit.nbt.NBTIO;
 import cn.nukkit.nbt.tag.CompoundTag;
@@ -70,7 +69,7 @@ public class PalettedSubChunkStorage {
 
     @Nullable
     public static PalettedSubChunkStorage ofBlock(BinaryStream stream) {
-        byte header = stream.getSingedByte();
+        byte header = stream.getSignedByte();
 
         if (header == -1) {
             return null;
@@ -124,7 +123,7 @@ public class PalettedSubChunkStorage {
 
     @Nullable
     public static PalettedSubChunkStorage ofBiome(BinaryStream stream, IntList customBiomePersistentToRuntime) {
-        byte header = stream.getSingedByte();
+        byte header = stream.getSignedByte();
 
         if (header == -1) {
             return null;

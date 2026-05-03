@@ -283,7 +283,9 @@ public interface ItemRuntimeID {
     int PARCHED_SPAWN_EGG = BASE_INTERNAL_ID + 258;
     int CAMEL_HUSK_SPAWN_EGG = BASE_INTERNAL_ID + 259;
     int TRADER_LLAMA_SPAWN_EGG = BASE_INTERNAL_ID + 260;
+    int SULFUR_CUBE_SPAWN_EGG = BASE_INTERNAL_ID + 261;
+    int SULFUR_CUBE_BUCKET = BASE_INTERNAL_ID + 262;
 
 
-    int CUSTOM_ITEM = Mth.smallestEncompassingPowerOfTwo(BASE_INTERNAL_ID + 261); //2048
+    int CUSTOM_ITEM = Mth.smallestEncompassingPowerOfTwo(BASE_INTERNAL_ID + 263); //2048
 }

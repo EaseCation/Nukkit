@@ -41,6 +41,18 @@ public interface EntityPropertyStringValues {
     String SOUND_VARIANT_ROYAL = "royal";
     String SOUND_VARIANT_SAD = "sad";
 
+    String SULFUR_CUBE_ARCHETYPE_BOUNCY = "bouncy";
+    String SULFUR_CUBE_ARCHETYPE_EXPLOSIVE = "explosive";
+    String SULFUR_CUBE_ARCHETYPE_FAST_FLAT = "fast_flat";
+    String SULFUR_CUBE_ARCHETYPE_FAST_SLIDING = "fast_sliding";
+    String SULFUR_CUBE_ARCHETYPE_HIGH_RESISTANCE = "high_resistance";
+    String SULFUR_CUBE_ARCHETYPE_LIGHT = "light";
+    String SULFUR_CUBE_ARCHETYPE_NONE = "none";
+    String SULFUR_CUBE_ARCHETYPE_REGULAR = "regular";
+    String SULFUR_CUBE_ARCHETYPE_SLOW_FLAT = "slow_flat";
+    String SULFUR_CUBE_ARCHETYPE_SLOW_SLIDING = "slow_sliding";
+    String SULFUR_CUBE_ARCHETYPE_STICKY = "sticky";
+
     String VARIANT_CORAL = "coral";
     String VARIANT_DEFAULT = "default";
 }

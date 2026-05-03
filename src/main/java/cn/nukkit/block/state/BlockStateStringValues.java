@@ -194,6 +194,11 @@ public interface BlockStateStringValues {
     String PORTAL_AXIS_X = "x";
     String PORTAL_AXIS_Z = "z";
 
+    String POTENT_SULFUR_STATE_DRY = "dry";
+    String POTENT_SULFUR_STATE_WET = "wet";
+    String POTENT_SULFUR_STATE_DORMANT = "dormant";
+    String POTENT_SULFUR_STATE_ERUPTING = "erupting";
+
     String PRISMARINE_BLOCK_TYPE_BRICKS = "bricks";
     String PRISMARINE_BLOCK_TYPE_DARK = "dark";
     String PRISMARINE_BLOCK_TYPE_DEFAULT = "default";

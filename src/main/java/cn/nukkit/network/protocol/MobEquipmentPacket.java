@@ -24,8 +24,8 @@ public class MobEquipmentPacket extends DataPacket {
 
     @Override
     public void decode() {
-        this.eid = this.getEntityRuntimeId(); //EntityRuntimeID
-        this.item = this.getSlot();
+        this.eid = this.getEntityRuntimeId();
+        this.item = this.getItemStack();
         this.inventorySlot = this.getByte();
         this.hotbarSlot = this.getByte();
         this.windowId = this.getByte();
@@ -34,10 +34,10 @@ public class MobEquipmentPacket extends DataPacket {
     @Override
     public void encode() {
         this.reset();
-        this.putEntityRuntimeId(this.eid); //EntityRuntimeID
-        this.putSlot(this.item);
-        this.putByte((byte) this.inventorySlot);
-        this.putByte((byte) this.hotbarSlot);
-        this.putByte((byte) this.windowId);
+        this.putEntityRuntimeId(this.eid);
+        this.putItemStack(this.item);
+        this.putByte(this.inventorySlot);
+        this.putByte(this.hotbarSlot);
+        this.putByte(this.windowId);
     }
 }

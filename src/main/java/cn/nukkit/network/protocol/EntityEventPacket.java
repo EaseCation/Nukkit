@@ -1,6 +1,9 @@
 package cn.nukkit.network.protocol;
 
+import cn.nukkit.math.Vector3f;
 import lombok.ToString;
+
+import javax.annotation.Nullable;
 
 /**
  * author: MagicDroidX
@@ -73,6 +76,7 @@ public class EntityEventPacket extends DataPacket {
     public static final int DRINK_MILK = 78;
     public static final int SHAKE_WETNESS_STOP = 79;
     public static final int KINETIC_DAMAGE_DEALT = 80;
+    public static final int HURT_WITHOUT_RECEIVING_DAMAGE = 81;
 
     @Override
     public int pid() {
@@ -82,6 +86,8 @@ public class EntityEventPacket extends DataPacket {
     public long eid;
     public int event;
     public int data;
+    @Nullable
+    public Vector3f fireAtPosition;
 
     @Override
     public void decode() {

@@ -22,7 +22,7 @@ public class ShapedRecipe implements CraftingRecipe {
 
     private final List<Item> ingredientsAggregate;
 
-    private long least,most;
+    private UUID uuid;
 
     private final String[] shape;
     private final int priority;
@@ -136,13 +136,13 @@ public class ShapedRecipe implements CraftingRecipe {
 
     @Override
     public UUID getId() {
-        return new UUID(least, most);
+        return uuid;
     }
 
     @Override
     public void setId(UUID uuid) {
-        this.least = uuid.getLeastSignificantBits();
-        this.most = uuid.getMostSignificantBits();
+        this.uuid = uuid;
+
         if (this.recipeId == null) {
             this.recipeId = getId().toString();
         }

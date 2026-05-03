@@ -1637,6 +1637,10 @@ public class Server {
         return commandMap;
     }
 
+    public Player getOnlinePlayer(UUID uuid) {
+        return playerList.get(uuid);
+    }
+
     public Map<UUID, Player> getOnlinePlayers() {
         return new HashMap<>(playerList);
     }
