@@ -49,7 +49,7 @@ import cn.nukkit.network.*;
 import cn.nukkit.network.protocol.BatchPacket;
 import cn.nukkit.network.protocol.BatchPacket.Track;
 import cn.nukkit.network.protocol.DataPacket;
-import cn.nukkit.network.protocol.PlayerListPacket;
+import cn.nukkit.network.protocol.PlayerEntitySkinSender;
 import cn.nukkit.network.protocol.ProtocolInfo;
 import cn.nukkit.network.query.QueryHandler;
 import cn.nukkit.network.rcon.RCON;
@@ -1057,11 +1057,7 @@ public class Server {
             return;
         }
         if (this.playerList.remove(player.getUniqueId()) != null) {
-            PlayerListPacket pk = new PlayerListPacket();
-            pk.type = PlayerListPacket.TYPE_REMOVE;
-            pk.entries = new PlayerListPacket.Entry[]{new PlayerListPacket.Entry(player.getUniqueId())};
-
-            Server.broadcastPacket(this.playerList.values(), pk);
+            PlayerEntitySkinSender.sendRemove(this.playerList.values(), player.getUniqueId());
         }
     }
 
@@ -1078,38 +1074,17 @@ public class Server {
     }
 
     public void updatePlayerListData(UUID uuid, long entityId, String name, Skin skin, String xboxUserId, Player[] players) {
-        Set<Player> playersSet = null;
         for (Player player : players) {
             SendPlayerListDataEvent event = new SendPlayerListDataEvent(player, uuid, entityId, name, skin, xboxUserId);
             event.call();
             if (event.isCancelled()) {
-                if (playersSet == null) {
-                    playersSet = new HashSet<>(Arrays.asList(players));
-                }
-                playersSet.remove(player);
-            } else if (event.isDirty()) {
-                if (playersSet == null) {
-                    playersSet = new HashSet<>(Arrays.asList(players));
-                }
-                playersSet.remove(player);
-                PlayerListPacket pk = new PlayerListPacket();
-                pk.type = PlayerListPacket.TYPE_ADD;
-                pk.entries = new PlayerListPacket.Entry[]{new PlayerListPacket.Entry(event.getUuid(), event.getEntityId(), event.getName(), event.getSkin(), event.getXboxUserId())};
-                player.dataPacket(pk);
+                continue;
             }
-        }
-        if (playersSet != null) {
-            if (!playersSet.isEmpty()) {
-                PlayerListPacket pk = new PlayerListPacket();
-                pk.type = PlayerListPacket.TYPE_ADD;
-                pk.entries = new PlayerListPacket.Entry[]{new PlayerListPacket.Entry(uuid, entityId, name, skin, xboxUserId)};
-                Server.broadcastPacket(playersSet, pk);
+            if (event.isDirty()) {
+                PlayerEntitySkinSender.sendInitialSkin(player, event.getUuid(), event.getEntityId(), event.getName(), event.getSkin(), event.getXboxUserId());
+            } else {
+                PlayerEntitySkinSender.sendInitialSkin(player, uuid, entityId, name, skin, xboxUserId);
             }
-        } else {
-            PlayerListPacket pk = new PlayerListPacket();
-            pk.type = PlayerListPacket.TYPE_ADD;
-            pk.entries = new PlayerListPacket.Entry[]{new PlayerListPacket.Entry(uuid, entityId, name, skin, xboxUserId)};
-            Server.broadcastPacket(players, pk);
         }
     }
 
@@ -1123,10 +1098,7 @@ public class Server {
     }
 
     public void removePlayerListData(UUID uuid, Player[] players) {
-        PlayerListPacket pk = new PlayerListPacket();
-        pk.type = PlayerListPacket.TYPE_REMOVE;
-        pk.entries = new PlayerListPacket.Entry[]{new PlayerListPacket.Entry(uuid)};
-        Server.broadcastPacket(players, pk);
+        PlayerEntitySkinSender.sendRemove(players, uuid);
     }
 
     public void removePlayerListData(UUID uuid, Collection<Player> players) {
@@ -1134,18 +1106,16 @@ public class Server {
     }
 
     public void sendFullPlayerListData(Player player) {
-        PlayerListPacket pk = new PlayerListPacket();
-        pk.type = PlayerListPacket.TYPE_ADD;
-        pk.entries = this.playerList.values().stream()
-                .map(p -> new PlayerListPacket.Entry(
-                p.getUniqueId(),
-                p.getId(),
-                p.getDisplayName(),
-                p.getSkin(),
-                p.getLoginChainData().getXUID()))
-                .toArray(PlayerListPacket.Entry[]::new);
-
-        player.dataPacket(pk);
+        for (Player target : this.playerList.values()) {
+            PlayerEntitySkinSender.sendInitialSkin(
+                    player,
+                    target.getUniqueId(),
+                    target.getId(),
+                    target.getDisplayName(),
+                    target.getSkin(),
+                    target.getLoginChainData().getXUID());
+            player.sentSkins.add(target.getUniqueId());
+        }
     }
 
     /* 魔改迁移至Player::sendRecipeList

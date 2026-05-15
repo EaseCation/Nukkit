@@ -357,12 +357,14 @@ public class EntityHuman extends EntityHumanType {
             }
 
             if (!player.sentSkins.contains(this.getUniqueId())) {
-                if (this instanceof Player) {
-                    String uid = ((Player) this).getLoginChainData().getNetEaseUID();
-                    if (uid == null || uid.isEmpty()) uid = ((Player) this).getLoginChainData().getXUID();
-                    this.server.updatePlayerListData(this.getUniqueId(), this.getId(), ((Player) this).getDisplayName(), this.skin, uid, new Player[]{player});
+                if (this instanceof Player target) {
+                    String uid = target.getLoginChainData().getNetEaseUID();
+                    if (uid == null || uid.isEmpty()) {
+                        uid = target.getLoginChainData().getXUID();
+                    }
+                    PlayerEntitySkinSender.sendInitialSkin(player, this.getUniqueId(), this.getId(), target.getDisplayName(), this.skin, uid);
                 } else {
-                    this.server.updatePlayerListData(this.getUniqueId(), this.getId(), this.getNameTag(), this.skin, new Player[]{player});
+                    PlayerEntitySkinSender.sendInitialSkin(player, this.getUniqueId(), this.getId(), this.getNameTag(), this.skin);
                 }
 
                 player.sentSkins.add(this.getUniqueId());
