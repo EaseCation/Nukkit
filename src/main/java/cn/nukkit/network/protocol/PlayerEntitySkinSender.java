@@ -22,6 +22,17 @@ public final class PlayerEntitySkinSender {
         sendInitialSkin(viewer, uuid, entityId, name, skin, "");
     }
 
+    public static void sendInitialSkin(Player viewer, PlayerEntitySkinSource source) {
+        Objects.requireNonNull(source, "source");
+        sendInitialSkin(
+                viewer,
+                source.getPlayerEntitySkinUuid(),
+                source.getPlayerEntitySkinEntityId(),
+                source.getPlayerEntitySkinName(viewer),
+                source.getPlayerEntitySkin(viewer),
+                source.getPlayerEntitySkinXboxUserId(viewer));
+    }
+
     public static void sendInitialSkin(Player viewer, UUID uuid, long entityId, String name, Skin skin, String xboxUserId) {
         Objects.requireNonNull(viewer, "viewer");
         Objects.requireNonNull(uuid, "uuid");
@@ -34,6 +45,24 @@ public final class PlayerEntitySkinSender {
 
         sendPlayerListAdd(viewer, uuid, entityId, name, EMPTY_PLAYER_LIST_SKIN.clone(), xboxUserId);
         sendSkinUpdate(viewer, uuid, skin);
+    }
+
+    public static boolean sendInitialSkinIfAbsent(Player viewer, PlayerEntitySkinSource source) {
+        Objects.requireNonNull(viewer, "viewer");
+        Objects.requireNonNull(source, "source");
+
+        UUID uuid = source.getPlayerEntitySkinUuid();
+        if (viewer.sentSkins.contains(uuid)) {
+            return false;
+        }
+        sendInitialSkin(viewer, source);
+        viewer.sentSkins.add(uuid);
+        return true;
+    }
+
+    public static void sendSkinUpdate(Player viewer, PlayerEntitySkinSource source) {
+        Objects.requireNonNull(source, "source");
+        sendSkinUpdate(viewer, source.getPlayerEntitySkinUuid(), source.getPlayerEntitySkin(viewer));
     }
 
     public static void sendSkinUpdate(Player viewer, UUID uuid, Skin skin) {
@@ -65,9 +94,23 @@ public final class PlayerEntitySkinSender {
         }
     }
 
+    public static void sendRemoveAndClear(Collection<? extends Player> viewers, UUID uuid) {
+        for (Player viewer : viewers) {
+            sendRemove(viewer, uuid);
+            viewer.sentSkins.remove(uuid);
+        }
+    }
+
     public static void sendRemove(Player[] viewers, UUID uuid) {
         for (Player viewer : viewers) {
             sendRemove(viewer, uuid);
+        }
+    }
+
+    public static void sendRemoveAndClear(Player[] viewers, UUID uuid) {
+        for (Player viewer : viewers) {
+            sendRemove(viewer, uuid);
+            viewer.sentSkins.remove(uuid);
         }
     }
 
