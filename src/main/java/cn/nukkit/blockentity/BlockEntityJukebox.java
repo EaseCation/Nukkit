@@ -105,6 +105,8 @@ public class BlockEntityJukebox extends BlockEntitySpawnable implements HopperIn
             player.sendJukeboxPopup(new TranslationContainer("record.nowPlaying", "%item." + recordItem.getTranslationIdentifier() + ".desc"));
         }
 
+        spawnToAll();
+
         this.scheduleUpdate();
     }
 
@@ -116,6 +118,8 @@ public class BlockEntityJukebox extends BlockEntitySpawnable implements HopperIn
         if (level.isRedstoneEnabled()) {
             level.updateAroundRedstone(this, null);
         }
+
+        spawnToAll();
     }
 
     public void dropItem() {
@@ -156,7 +160,17 @@ public class BlockEntityJukebox extends BlockEntitySpawnable implements HopperIn
 
         return nbt;
     }
+/*
+    @Override
+    public void spawnTo(Player player, boolean empty) {
+        super.spawnTo(player, empty);
 
+        if (recordItem == null) {
+            return;
+        }
+        level.addLevelSoundEvent(blockCenter(), recordItem.getSoundEvent(), player);
+    }
+*/
     @Override
     public boolean onUpdate() {
         if (isClosed()) {
@@ -185,5 +199,10 @@ public class BlockEntityJukebox extends BlockEntitySpawnable implements HopperIn
 
     public boolean isRecordPlaying() {
         return !finishedRecording;
+    }
+
+    @Override
+    public void onBreak() {
+        dropItem();
     }
 }

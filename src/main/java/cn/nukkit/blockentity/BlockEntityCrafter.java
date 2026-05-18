@@ -2,6 +2,7 @@ package cn.nukkit.blockentity;
 
 import cn.nukkit.block.Block;
 import cn.nukkit.inventory.CrafterInventory;
+import cn.nukkit.item.Item;
 import cn.nukkit.level.format.FullChunk;
 import cn.nukkit.nbt.tag.CompoundTag;
 
@@ -64,6 +65,29 @@ public class BlockEntityCrafter extends BlockEntityAbstractContainer {
     @Override
     public CrafterInventory getInventory() {
         return inventory;
+    }
+
+    public boolean isSlotDisabled(int slot) {
+        if (slot < 0 || slot >= getSize()) {
+            return false;
+        }
+        return (disabledSlots & 1 << slot) != 0;
+    }
+
+    public boolean setSlotDisabled(int slot, boolean disabled) {
+        if (slot < 0 || slot >= getSize()) {
+            return false;
+        }
+        Item item = inventory.getItem(slot);
+        if (!item.isNull()) {
+            return false;
+        }
+        if (disabled) {
+            disabledSlots |= 1 << slot;
+        } else {
+            disabledSlots &= ~(1 << slot);
+        }
+        return true;
     }
 
     public int getDisabledSlots() {

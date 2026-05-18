@@ -55,6 +55,16 @@ public class BlockCreakingHeart extends BlockRotatedPillar {
     }
 
     @Override
+    public boolean canBePushed() {
+        return false;
+    }
+
+    @Override
+    public boolean canBePulled() {
+        return false;
+    }
+
+    @Override
     public BlockColor getColor() {
         return BlockColor.ORANGE_BLOCK_COLOR;
     }

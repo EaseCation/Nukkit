@@ -7,6 +7,8 @@ import cn.nukkit.blockentity.BlockEntityDecoratedPot;
 import cn.nukkit.blockentity.BlockEntityType;
 import cn.nukkit.entity.projectile.EntityProjectile;
 import cn.nukkit.item.Item;
+import cn.nukkit.item.Items;
+import cn.nukkit.level.GameRule;
 import cn.nukkit.level.MovingObjectPosition;
 import cn.nukkit.math.BlockFace;
 import cn.nukkit.math.Mth;
@@ -17,6 +19,8 @@ import cn.nukkit.network.protocol.LevelSoundEventPacket;
 import cn.nukkit.utils.BlockColor;
 
 import javax.annotation.Nullable;
+import java.util.HashMap;
+import java.util.Map;
 
 public class BlockDecoratedPot extends BlockTransparent {
     public static final int DIRECTION_MASK = 0b11;
@@ -51,6 +55,16 @@ public class BlockDecoratedPot extends BlockTransparent {
     }
 
     @Override
+    public boolean breaksWhenMoved() {
+        return true;
+    }
+
+    @Override
+    public boolean sticksToPiston() {
+        return false;
+    }
+
+    @Override
     public boolean canSilkTouch() {
         return true;
     }
@@ -58,6 +72,27 @@ public class BlockDecoratedPot extends BlockTransparent {
     @Override
     public Item toItem(boolean addUserData) {
         return Item.get(getItemId());
+    }
+
+    @Override
+    public Item[] getDrops(Item item, @Nullable Player player) {
+        if (!item.isPickaxe() && !item.isAxe() && !item.isSword() && !item.isShovel() && !item.isHoe()) {
+            return super.getDrops(item, player);
+        }
+
+        BlockEntityDecoratedPot blockEntity = getBlockEntity();
+        String[] sherds;
+        if (blockEntity == null || (sherds = blockEntity.getSherds()) == null) {
+            return new Item[]{
+                    Item.get(Item.BRICK, 0, 4)
+            };
+        }
+
+        Map<String, Item> items = new HashMap<>();
+        for (String sherd : sherds) {
+            items.computeIfAbsent(sherd, name -> Item.get(Items.getIdByName(name), 0, 0)).grow(1);
+        }
+        return items.values().toArray(new Item[0]);
     }
 
     @Override
@@ -137,7 +172,10 @@ public class BlockDecoratedPot extends BlockTransparent {
 
     @Override
     public void onProjectileHit(EntityProjectile projectile, MovingObjectPosition hitResult) {
-        level.useBreakOn(this, true);
+        if (!level.gameRules.getBoolean(GameRule.PROJECTILES_CAN_BREAK_BLOCKS)) {
+            return;
+        }
+        level.useBreakOn(this, LazyHolder.TOOL_ITEM, true);
     }
 
     protected BlockEntityDecoratedPot createBlockEntity(@Nullable Item item) {
@@ -161,5 +199,9 @@ public class BlockDecoratedPot extends BlockTransparent {
             return blockEntity;
         }
         return null;
+    }
+
+    private static class LazyHolder {
+        private static final Item TOOL_ITEM = Item.get(Item.WOODEN_SWORD);
     }
 }

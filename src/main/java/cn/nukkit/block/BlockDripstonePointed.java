@@ -3,9 +3,13 @@ package cn.nukkit.block;
 import cn.nukkit.Player;
 import cn.nukkit.entity.Entity;
 import cn.nukkit.entity.item.EntityFallingBlock;
+import cn.nukkit.entity.projectile.EntityProjectile;
+import cn.nukkit.entity.projectile.EntityThrownTrident;
 import cn.nukkit.event.block.BlockFallEvent;
 import cn.nukkit.item.Item;
+import cn.nukkit.level.GameRule;
 import cn.nukkit.level.Level;
+import cn.nukkit.level.MovingObjectPosition;
 import cn.nukkit.math.AxisAlignedBB;
 import cn.nukkit.math.BlockFace;
 import cn.nukkit.math.Mth;
@@ -213,11 +217,6 @@ public class BlockDripstonePointed extends BlockTransparent {
 
     @Override
     public void onEntityCollide(Entity entity) {
-        if (entity.getNetworkId() == EntityID.THROWN_TRIDENT) {
-            level.useBreakOn(this);
-            return;
-        }
-
         if (!isHanging() && getThickness() == THICKNESS_TIP) {
             return;
         }
@@ -234,6 +233,17 @@ public class BlockDripstonePointed extends BlockTransparent {
         entity.attack(new EntityDamageByBlockEvent(this, entity, DamageCause.FALL, damage));
         //TODO: move to Entity::fall
     }*/
+
+    @Override
+    public void onProjectileHit(EntityProjectile projectile, MovingObjectPosition hitResult) {
+        if (!(projectile instanceof EntityThrownTrident)) {
+            return;
+        }
+        if (!level.gameRules.getBoolean(GameRule.PROJECTILES_CAN_BREAK_BLOCKS)) {
+            return;
+        }
+        level.useBreakOn(this, true);
+    }
 
     @Override
     public boolean canProvideSupport(BlockFace face, SupportType type) {

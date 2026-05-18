@@ -109,6 +109,16 @@ public abstract class BlockBrushable extends BlockFallable {
     }
 
     @Override
+    public boolean breaksWhenMoved() {
+        return true;
+    }
+
+    @Override
+    public boolean sticksToPiston() {
+        return false;
+    }
+
+    @Override
     public BlockColor getColor() {
         return BlockColor.TRANSPARENT_BLOCK_COLOR;
     }

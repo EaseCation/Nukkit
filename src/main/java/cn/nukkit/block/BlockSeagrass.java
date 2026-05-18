@@ -224,9 +224,6 @@ public class BlockSeagrass extends BlockTransparent {
 
     static boolean trySpawnSeaGrass(Block fertilized, Item item, @Nullable Player player) {
         Block up = fertilized.up();
-        if (!up.isWaterSource()) {
-            return false;
-        }
 
         if (player != null && !player.isCreative()) {
             item.count--;
@@ -260,9 +257,7 @@ public class BlockSeagrass extends BlockTransparent {
                 continue;
             }
             Block above = level.getBlock(x, y + 1, z);
-            if (!above.isWaterSource()) {
-                continue;
-            }
+            boolean aboveWater = above.isWaterSource();
 
             Block placeBlock;
             Block placeAbove = null;
@@ -277,9 +272,11 @@ public class BlockSeagrass extends BlockTransparent {
                 } else {
                     placeBlock = get(BlockCoral.CORALS[random.nextInt(5)]);
                 }
-            } else {
+            } else if (aboveWater) {
                 placeBlock = get(SEAGRASS, BlockSeagrass.DOUBLE_SEAGRASS_BOTTOM);
                 placeAbove = get(SEAGRASS, BlockSeagrass.DOUBLE_SEAGRASS_TOP);
+            } else {
+                placeBlock = get(SEAGRASS);
             }
 
             if (placeAbove != null) {

@@ -71,7 +71,9 @@ public class BlockJukebox extends BlockSolid {
                 level.updateAroundRedstone(this, null);
             }
 
-            player.getInventory().decreaseCount(player.getInventory().getHeldItemIndex());
+            if (player != null && player.isSurvivalLike()) {
+                item.pop();
+            }
         }
 
         return false;
@@ -81,20 +83,6 @@ public class BlockJukebox extends BlockSolid {
     public boolean place(Item item, Block block, Block target, BlockFace face, float fx, float fy, float fz, Player player) {
         if (super.place(item, block, target, face, fx, fy, fz, player)) {
             createBlockEntity(item);
-            return true;
-        }
-
-        return false;
-    }
-
-    @Override
-    public boolean onBreak(Item item, Player player) {
-        if (super.onBreak(item, player)) {
-            BlockEntity blockEntity = this.level.getBlockEntity(this);
-
-            if (blockEntity instanceof BlockEntityJukebox) {
-                ((BlockEntityJukebox) blockEntity).dropItem();
-            }
             return true;
         }
 

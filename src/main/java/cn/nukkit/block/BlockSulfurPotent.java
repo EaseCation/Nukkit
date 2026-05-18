@@ -16,6 +16,7 @@ public class BlockSulfurPotent extends BlockSulfur {
     public static final int WET = 1;
     public static final int DORMANT = 2;
     public static final int ERUPTING = 3;
+    public static final int CONTINUOUS = 4;
 
     BlockSulfurPotent() {
     }

@@ -1,8 +1,11 @@
 package cn.nukkit.block;
 
 import cn.nukkit.Player;
+import cn.nukkit.entity.projectile.EntityProjectile;
 import cn.nukkit.item.Item;
+import cn.nukkit.level.GameRule;
 import cn.nukkit.level.Level;
+import cn.nukkit.level.MovingObjectPosition;
 import cn.nukkit.math.AxisAlignedBB;
 import cn.nukkit.math.BlockFace;
 import cn.nukkit.math.BlockFace.Plane;
@@ -48,7 +51,7 @@ public class BlockChorusFlower extends BlockFlowable {
 
     @Override
     public Item[] getDrops(Item item, Player player) {
-        if (player == null || !player.isSurvivalLike()) {
+        if (item == LazyHolder.EMPTY_ITEM || player != null && !player.isSurvivalLike()) {
             return new Item[0];
         }
         return new Item[]{toItem()};
@@ -93,6 +96,14 @@ public class BlockChorusFlower extends BlockFlowable {
     }
 
     @Override
+    public void onProjectileHit(EntityProjectile projectile, MovingObjectPosition hitResult) {
+        if (!level.gameRules.getBoolean(GameRule.PROJECTILES_CAN_BREAK_BLOCKS)) {
+            return;
+        }
+        level.useBreakOn(this, true);
+    }
+
+    @Override
     public int onUpdate(int type) {
         if (type == Level.BLOCK_UPDATE_NORMAL) {
             level.scheduleUpdate(this, 1);
@@ -104,7 +115,7 @@ public class BlockChorusFlower extends BlockFlowable {
                 return 0;
             }
 
-            level.useBreakOn(this, true);
+            level.useBreakOn(this, LazyHolder.EMPTY_ITEM, true);
             return Level.BLOCK_UPDATE_NORMAL;
         }
 
@@ -251,5 +262,9 @@ public class BlockChorusFlower extends BlockFlowable {
             }
         }
         return hasNeighbor;
+    }
+
+    private static class LazyHolder {
+        private static final Item EMPTY_ITEM = Item.get(Item.AIR);
     }
 }
