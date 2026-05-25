@@ -62,6 +62,7 @@ public class GameRules {
         gameRules.gameRules.put(TNT_EXPLOSION_DROP_DECAY, new Value<>(Type.BOOLEAN, false));
         gameRules.gameRules.put(SHOW_DAYS_PLAYED, new Value<>(Type.BOOLEAN, false));
         gameRules.gameRules.put(LOCATOR_BAR, new Value<>(Type.BOOLEAN, false));
+        gameRules.gameRules.put(PLAYER_WAYPOINTS, new EnumValue<>(PlayerWaypointsMode.OFF, PlayerWaypointsMode.getValues()));
 
         return gameRules;
     }
@@ -98,6 +99,14 @@ public class GameRules {
         stale = true;
     }
 
+    public void setGameRule(GameRule gameRule, Enum<?> value) {
+        if (!gameRules.containsKey(gameRule)) {
+            throw new IllegalArgumentException("Gamerule does not exist");
+        }
+        gameRules.get(gameRule).setValue(value.ordinal(), Type.INTEGER);
+        stale = true;
+    }
+
     public void setGameRule(GameRule gameRule, float value) {
         if (!gameRules.containsKey(gameRule)) {
             throw new IllegalArgumentException("Gamerule does not exist");
@@ -110,7 +119,8 @@ public class GameRules {
         Preconditions.checkNotNull(gameRule, "gameRule");
         Preconditions.checkNotNull(value, "value");
 
-        switch (getGameRuleType(gameRule)) {
+        Value wrapper = gameRules.get(gameRule);
+        switch (wrapper.getType()) {
             case BOOLEAN:
                 if (value.equalsIgnoreCase("true") || value.equalsIgnoreCase("1")) {
                     setGameRule(gameRule, true);
@@ -121,10 +131,20 @@ public class GameRules {
                 }
                 break;
             case INTEGER:
+                if (wrapper instanceof EnumValue enumWrapper) {
+                    for (Enum<?> element : enumWrapper.values) {
+                        if (element.toString().equalsIgnoreCase(value)) {
+                            setGameRule(gameRule, element);
+                            return;
+                        }
+                    }
+                    throw new IllegalArgumentException("Invalid enum value");
+                }
                 setGameRule(gameRule, Integer.parseInt(value));
                 break;
             case FLOAT:
                 setGameRule(gameRule, Float.parseFloat(value));
+                break;
         }
     }
 
@@ -144,7 +164,7 @@ public class GameRules {
 
     public String getString(GameRule gameRule) {
         Preconditions.checkNotNull(gameRule, "gameRule");
-        return gameRules.get(gameRule).value.toString();
+        return gameRules.get(gameRule).toString();
     }
 
     public Type getGameRuleType(GameRule gameRule) {
@@ -257,7 +277,7 @@ public class GameRules {
     @Override
     public String toString() {
         StringJoiner joiner = new StringJoiner(", ");
-        gameRules.forEach((rule, value) -> joiner.add(rule.getBedrockName() + " = " + value.value.toString()));
+        gameRules.forEach((rule, value) -> joiner.add(rule.getName() + " = " + value.toString()));
         return joiner.toString();
     }
 
@@ -295,9 +315,9 @@ public class GameRules {
 
     public static class Value<T> {
         private final Type type;
-        private T value;
+        protected T value;
 
-        public Value(Type type, T value) {
+        private Value(Type type, T value) {
             this.type = type;
             this.value = value;
         }
@@ -346,6 +366,24 @@ public class GameRules {
         @Override
         public String toString() {
             return value.toString();
+        }
+    }
+
+    public static class EnumValue<E extends Enum<E>> extends Value<Integer> {
+        private final E[] values;
+
+        private EnumValue(E defaultValue, E... values) {
+            super(Type.INTEGER, defaultValue.ordinal());
+            this.values = values;
+        }
+
+        public E[] getValues() {
+            return values;
+        }
+
+        @Override
+        public String toString() {
+            return values[value].toString();
         }
     }
 }

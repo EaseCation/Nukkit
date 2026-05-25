@@ -89,4 +89,9 @@ public class BlockCobweb extends BlockFlowable {
     public boolean canContainWater() {
         return true;
     }
+
+    @Override
+    public boolean isBrewingIngredient() {
+        return true;
+    }
 }

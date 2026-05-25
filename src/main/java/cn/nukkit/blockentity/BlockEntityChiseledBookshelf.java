@@ -1,6 +1,8 @@
 package cn.nukkit.blockentity;
 
 import cn.nukkit.block.Block;
+import cn.nukkit.block.BlockBookshelfChiseled;
+import cn.nukkit.inventory.Inventory;
 import cn.nukkit.item.Item;
 import cn.nukkit.level.format.FullChunk;
 import cn.nukkit.nbt.NBTIO;
@@ -134,5 +136,56 @@ public class BlockEntityChiseledBookshelf extends BlockEntitySpawnable implement
 
     public int getLastInteractedSlot() {
         return lastInteractedSlot;
+    }
+
+    @Override
+    public boolean pull(BlockEntityHopper hopper) {
+        Inventory inventory = hopper.getInventory();
+        for (int i = 0; i < SLOT_COUNT; i++) {
+            Item item = getItem(i);
+            if (item == null) {
+                continue;
+            }
+
+            if (!inventory.canAddItem(item)) {
+                continue;
+            }
+
+            inventory.addItem(item);
+
+            items[i] = null;
+
+            Block block = level.getBlock(this);
+            if (block.is(Block.CHISELED_BOOKSHELF)) {
+                block.setDamage(block.getDamage() & ~(1 << i << BlockBookshelfChiseled.BOOKS_STORED_START));
+                level.setBlock(this, block, true);
+            }
+            return true;
+        }
+        return false;
+    }
+
+    @Override
+    public boolean push(Item item) {
+        if (!item.isBook()) {
+            return false;
+        }
+
+        for (int i = 0; i < SLOT_COUNT; i++) {
+            Item slot = getItem(i);
+            if (slot != null) {
+                continue;
+            }
+
+            items[i] = item.split(1);
+
+            Block block = level.getBlock(this);
+            if (block.is(Block.CHISELED_BOOKSHELF)) {
+                block.setDamage(block.getDamage() | 1 << i << BlockBookshelfChiseled.BOOKS_STORED_START);
+                level.setBlock(this, block, true);
+            }
+            return true;
+        }
+        return false;
     }
 }

@@ -111,12 +111,13 @@ public final class EntityPropertyRegistry {
                         SOUND_VARIANT_DEFAULT,
                         SOUND_VARIANT_BIG,
                         SOUND_VARIANT_MINI));
-/*
+
         registerProperties(V1_26_30, EntityID.SULFUR_CUBE, EntityFullNames.SULFUR_CUBE,
                 new EnumEntityProperty(SULFUR_CUBE_ARCHETYPE,
                         SULFUR_CUBE_ARCHETYPE_NONE,
                         SULFUR_CUBE_ARCHETYPE_BOUNCY,
                         SULFUR_CUBE_ARCHETYPE_REGULAR,
+                        SULFUR_CUBE_ARCHETYPE_SLOW_BOUNCY,
                         SULFUR_CUBE_ARCHETYPE_SLOW_FLAT,
                         SULFUR_CUBE_ARCHETYPE_FAST_FLAT,
                         SULFUR_CUBE_ARCHETYPE_LIGHT,
@@ -124,8 +125,9 @@ public final class EntityPropertyRegistry {
                         SULFUR_CUBE_ARCHETYPE_SLOW_SLIDING,
                         SULFUR_CUBE_ARCHETYPE_STICKY,
                         SULFUR_CUBE_ARCHETYPE_HIGH_RESISTANCE,
-                        SULFUR_CUBE_ARCHETYPE_EXPLOSIVE));
-*/
+                        SULFUR_CUBE_ARCHETYPE_EXPLOSIVE,
+                        SULFUR_CUBE_ARCHETYPE_HOT));
+
 
     }
 

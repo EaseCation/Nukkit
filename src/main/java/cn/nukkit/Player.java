@@ -4024,7 +4024,7 @@ public class Player extends EntityHuman implements CommandSender, InventoryHolde
                                             //int ticksUsed = this.server.getTick() - this.startAction;
                                             int ticksUsed = (int) (System.currentTimeMillis() - this.startActionTimestamp) / 50;
 
-                                            if (item.onRelease(this, ticksUsed)) {
+                                            if (item.onRelease(this, ticksUsed, releaseItemData.headRot)) {
                                                 this.inventory.setItemInHand(item);
                                             }
                                         } else {

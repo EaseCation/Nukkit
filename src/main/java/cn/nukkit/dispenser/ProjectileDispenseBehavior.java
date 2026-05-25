@@ -55,6 +55,8 @@ public class ProjectileDispenseBehavior extends DefaultDispenseBehavior {
         ((EntityProjectile) projectile).updateRotation();
 
         projectile.spawnToAll();
+
+        item.pop();
         return null;
     }
 

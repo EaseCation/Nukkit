@@ -95,7 +95,8 @@ public class ItemSpawnEgg extends Item {
 
         if (entity != null) {
             if (player.isSurvival()) {
-                player.getInventory().decreaseCount(player.getInventory().getHeldItemIndex());
+                pop();
+                player.getInventory().setItemInHand(this);
             }
             entity.spawnToAll();
             return true;

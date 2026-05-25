@@ -41,6 +41,21 @@ public class Vector3f implements Cloneable {
         this.z = vec.z;
     }
 
+    public Vector3f setX(float x) {
+        this.x = x;
+        return this;
+    }
+
+    public Vector3f setY(float y) {
+        this.y = y;
+        return this;
+    }
+
+    public Vector3f setZ(float z) {
+        this.z = z;
+        return this;
+    }
+
     public float getX() {
         return this.x;
     }

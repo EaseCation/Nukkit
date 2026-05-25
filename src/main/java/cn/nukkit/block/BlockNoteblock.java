@@ -336,7 +336,7 @@ public class BlockNoteblock extends BlockSolid {
         BASS_DRUM(SoundEnum.NOTE_BD),
         DRUM(SoundEnum.NOTE_SNARE),
         STICKS(SoundEnum.NOTE_HAT),
-        BASS(SoundEnum.NOTE_BASS),
+        BASS(SoundEnum.NOTE_BASSATTACK),
         GLOCKENSPIEL(SoundEnum.NOTE_BELL),
         FLUTE(SoundEnum.NOTE_FLUTE),
         CHIME(SoundEnum.NOTE_CHIME),

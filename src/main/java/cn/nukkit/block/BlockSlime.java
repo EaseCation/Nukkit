@@ -35,4 +35,9 @@ public class BlockSlime extends BlockSolid {
     public BlockColor getColor() {
         return BlockColor.GRASS_BLOCK_COLOR;
     }
+
+    @Override
+    public boolean isBrewingIngredient() {
+        return true;
+    }
 }

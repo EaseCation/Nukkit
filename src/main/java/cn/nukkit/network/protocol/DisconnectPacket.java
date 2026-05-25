@@ -149,6 +149,8 @@ public class DisconnectPacket extends DataPacket {
     public static final int REASON_NONCE_NOT_FOUND = 137;
     public static final int REASON_NONCE_EXPIRED = 138;
     public static final int REASON_NONCE_NOT_VALID = 139;
+    public static final int REASON_HOST_DISCONNECTED = 140;
+    public static final int REASON_EDITOR_JOIN_INTENT_POLICY_FAILURE = 141;
 
     public int reason = REASON_DISCONNECTED;
     public boolean hideDisconnectionScreen;

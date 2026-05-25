@@ -1,8 +1,9 @@
 package cn.nukkit.inventory;
 
-
+import cn.nukkit.Player;
 import cn.nukkit.blockentity.BlockEntityBrewingStand;
 import cn.nukkit.item.Item;
+import cn.nukkit.network.protocol.ContainerSetDataPacket;
 
 public class BrewingInventory extends ContainerInventory {
     public BrewingInventory(BlockEntityBrewingStand brewingStand) {
@@ -39,5 +40,31 @@ public class BrewingInventory extends ContainerInventory {
         }
 
         this.getHolder().scheduleUpdate();
+    }
+
+    @Override
+    public void onOpen(Player who) {
+        super.onOpen(who);
+
+        BlockEntityBrewingStand holder = getHolder();
+        int windowId = who.getWindowId(this);
+
+        ContainerSetDataPacket pk0 = new ContainerSetDataPacket();
+        pk0.windowId = windowId;
+        pk0.property = ContainerSetDataPacket.PROPERTY_BREWING_STAND_BREW_TIME;
+        pk0.value = holder.isBrewing() ? holder.brewTime : 0;
+        who.dataPacket(pk0);
+
+        ContainerSetDataPacket pk1 = new ContainerSetDataPacket();
+        pk1.windowId = windowId;
+        pk1.property = ContainerSetDataPacket.PROPERTY_BREWING_STAND_FUEL_AMOUNT;
+        pk1.value = holder.getFuel();
+        who.dataPacket(pk1);
+
+        ContainerSetDataPacket pk2 = new ContainerSetDataPacket();
+        pk2.windowId = windowId;
+        pk2.property = ContainerSetDataPacket.PROPERTY_BREWING_STAND_FUEL_TOTAL;
+        pk2.value = holder.fuelTotal;
+        who.dataPacket(pk2);
     }
 }

@@ -57,7 +57,7 @@ public class ItemBow extends ItemTool {
     }
 
     @Override
-    public boolean onRelease(Player player, int ticksUsed) {
+    public boolean onRelease(Player player, int ticksUsed, Vector3 rotation) {
         Item matched;
 
         Inventory inventory = player.getOffhandInventory();

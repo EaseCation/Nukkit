@@ -4,6 +4,7 @@ import cn.nukkit.Player;
 import cn.nukkit.block.Block;
 import cn.nukkit.level.Level;
 import cn.nukkit.math.BlockFace;
+import cn.nukkit.math.Vector3;
 import cn.nukkit.network.protocol.LevelSoundEventPacket;
 
 public class ItemBrush extends ItemTool {
@@ -60,7 +61,7 @@ public class ItemBrush extends ItemTool {
     }
 
     @Override
-    public boolean onRelease(Player player, int ticksUsed) {
+    public boolean onRelease(Player player, int ticksUsed, Vector3 rotation) {
         return true;
     }
 

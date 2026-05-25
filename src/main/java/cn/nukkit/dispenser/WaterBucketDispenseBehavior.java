@@ -37,6 +37,7 @@ public class WaterBucketDispenseBehavior extends DefaultDispenseBehavior {
                 entityFactory.create(target.getChunk(), Entity.getDefaultNBT(target.add(0.5, 0, 0.5), null, face.getHorizontalAngle(), 0)).spawnToAll();
             }
 
+            item.pop();
             return Item.get(ItemID.BUCKET);
         }
         return super.dispense(block, face, item);

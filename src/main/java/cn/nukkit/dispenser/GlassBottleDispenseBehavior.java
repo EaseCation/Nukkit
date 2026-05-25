@@ -13,6 +13,7 @@ public class GlassBottleDispenseBehavior extends DefaultDispenseBehavior {
         Block target = block.getSide(face);
 
         if (target.isWaterSource()) {
+            item.pop();
             return Item.get(Item.POTION);
         }
 
@@ -20,6 +21,7 @@ public class GlassBottleDispenseBehavior extends DefaultDispenseBehavior {
             beehive.setHoneyLevel(0);
             beehive.level.setBlock(beehive, beehive, true);
 
+            item.pop();
             return Item.get(Item.HONEY_BOTTLE);
         }
 

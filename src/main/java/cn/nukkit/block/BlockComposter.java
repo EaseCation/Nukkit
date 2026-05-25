@@ -160,11 +160,14 @@ public class BlockComposter extends BlockTransparent {
             return true;
         }
 
-        if (player != null && !player.isCreative()) {
-            item.count--;
+        if (player != null) {
+            if (player.isSurvivalLike()) {
+                item.pop();
+            }
+
+            level.addLevelEvent(this.add(0, 0.75, 0), LevelEventPacket.EVENT_PARTICLE_BONEMEAL);
         }
 
-        level.addLevelEvent(this.add(0, 0.75, 0), LevelEventPacket.EVENT_PARTICLE_BONEMEAL);
         if (chance <= ThreadLocalRandom.current().nextInt(100)) {
             level.addLevelSoundEvent(this.blockCenter(), LevelSoundEventPacket.SOUND_BLOCK_COMPOSTER_FILL);
             return true;

@@ -19,10 +19,11 @@ import cn.nukkit.nbt.tag.CompoundTag;
 import cn.nukkit.nbt.tag.Tag;
 import cn.nukkit.network.protocol.LevelEventPacket;
 import cn.nukkit.utils.Faceable;
+import it.unimi.dsi.fastutil.ints.Int2ObjectMap;
+import it.unimi.dsi.fastutil.ints.IntObjectPair;
+import it.unimi.dsi.fastutil.objects.ObjectBooleanPair;
 
 import javax.annotation.Nullable;
-import java.util.Map.Entry;
-import java.util.Random;
 import java.util.concurrent.ThreadLocalRandom;
 
 /**
@@ -222,47 +223,34 @@ public class BlockDispenser extends BlockSolid implements Faceable {
 
     public void dispense() {
         InventoryHolder blockEntity = getBlockEntity();
-
         if (blockEntity == null) {
             return;
         }
 
-        Random rand = ThreadLocalRandom.current();
-        int r = 1;
-        int slot = -1;
-        Item target = null;
-
         Inventory inv = blockEntity.getInventory();
-        for (Entry<Integer, Item> entry : inv.getContents().entrySet()) {
-            Item item = entry.getValue();
-
-            if (!item.isNull() && rand.nextInt(r++) == 0) {
-                target = item;
-                slot = entry.getKey();
-            }
-        }
-
+        IntObjectPair<Item> itemStack = selectItemStack(inv);
         BlockFace facing = getBlockFace();
-
         Vector3 pos = add(0.5f + facing.getXOffset() * 0.7f, 0.3f + facing.getYOffset() * 0.7f, 0.5f + facing.getZOffset() * 0.7f);
 
-        if (target == null) {
-            this.level.addLevelEvent(pos, LevelEventPacket.EVENT_SOUND_CLICK_FAIL, 1200);
+        if (itemStack == null) {
+            onDispenseFail(pos);
             return;
-        } else {
-            this.level.addLevelEvent(pos, LevelEventPacket.EVENT_SOUND_CLICK, 1000);
         }
 
-        this.level.addLevelEvent(pos, LevelEventPacket.EVENT_PARTICLE_SHOOT, 3 * (facing.getZOffset() + 1) + facing.getXOffset() + 1);
-
-        Item origin = target;
-        target = target.clone();
+        Item origin = itemStack.right();
+        Item target = origin.clone();
 
         DispenseBehavior behavior = getDispenseBehavior(target);
-        Item result = behavior.dispense(this, facing, target);
+        ObjectBooleanPair<Item> resultAndVfx = behavior.drop(this, facing, target);
+        Item result = resultAndVfx.left();
 
-        target.count--;
-        inv.setItem(slot, target);
+        if (result != null && result.is(Item.AIR)) {
+            onDispenseFail(pos);
+            return;
+        }
+
+        int slot = itemStack.leftInt();
+        onDispenseSuccess(pos, resultAndVfx.rightBoolean() ? facing : null, inv, slot, target);
 
         if (result != null) {
             if (result.getId() != origin.getId() || result.getDamage() != origin.getDamage()) {
@@ -275,6 +263,37 @@ public class BlockDispenser extends BlockSolid implements Faceable {
                 inv.setItem(slot, result);
             }
         }
+    }
+
+    protected IntObjectPair<Item> selectItemStack(Inventory inventory) {
+        int slot = -1;
+        Item target = null;
+
+        ThreadLocalRandom random = ThreadLocalRandom.current();
+        int rand = 1;
+        for (Int2ObjectMap.Entry<Item> entry : inventory.getContents().int2ObjectEntrySet()) {
+            Item item = entry.getValue();
+            if (!item.isNull() && random.nextInt(rand++) == 0) {
+                target = item;
+                slot = entry.getIntKey();
+            }
+        }
+
+        return target != null ? IntObjectPair.of(slot, target) : null;
+    }
+
+    protected void onDispenseFail(Vector3 pos) {
+        level.addLevelEvent(pos, LevelEventPacket.EVENT_SOUND_CLICK_FAIL, 1200);
+    }
+
+    protected void onDispenseSuccess(Vector3 pos, @Nullable BlockFace facing, Inventory inventory, int slot, Item result) {
+        level.addLevelEvent(pos, LevelEventPacket.EVENT_SOUND_CLICK, 1000);
+
+        if (facing != null) {
+            level.addLevelEvent(pos, LevelEventPacket.EVENT_PARTICLE_SHOOT, 3 * (facing.getZOffset() + 1) + facing.getXOffset() + 1);
+        }
+
+        inventory.setItem(slot, result);
     }
 
     protected DispenseBehavior getDispenseBehavior(Item item) {

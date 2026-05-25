@@ -640,6 +640,16 @@ public class LevelSoundEventPacket extends DataPacket {
 	public static final int SOUND_RESET_GROWTH = 598;
 	public static final int SOUND_PUSHED_BY_PLAYER = 599;
 	public static final int SOUND_BOUNCE = 600;
+	public static final int SOUND_SLIME_LANDING = 601;
+	public static final int SOUND_ABSORB_BLOCK = 602;
+	public static final int SOUND_EJECT_BLOCK = 603;
+	public static final int SOUND_GEYSER_ERUPTION_START = 604;
+	public static final int SOUND_GEYSER_ERUPTION_ACTIVE = 605;
+	public static final int SOUND_RECORD_BOUNCE = 606;
+	public static final int SOUND_BUCKET_FILL_LAND_ANIMAL = 607;
+	public static final int SOUND_BUCKET_EMPTY_LAND_ANIMAL = 608;
+	public static final int SOUND_GEYSER_CONTINUOUS_ERUPTION_START = 609;
+	public static final int SOUND_GEYSER_CONTINUOUS_ERUPTION_ACTIVE = 610;
 
 	public int sound;
     public float x;

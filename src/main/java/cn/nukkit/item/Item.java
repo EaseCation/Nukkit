@@ -1445,7 +1445,7 @@ public class Item implements Cloneable, ItemID {
         return false;
     }
 
-    public boolean onRelease(Player player, int ticksUsed) {
+    public boolean onRelease(Player player, int ticksUsed, Vector3 rotation) {
         return false;
     }
 
@@ -1537,6 +1537,10 @@ public class Item implements Cloneable, ItemID {
 
     public float getFurnaceXpMultiplier() {
         return 0;
+    }
+
+    public boolean isBrewingIngredient() {
+        return false;
     }
 
     public int getCompostableChance() {
@@ -1672,6 +1676,12 @@ public class Item implements Cloneable, ItemID {
         } catch (CloneNotSupportedException e) {
             return null;
         }
+    }
+
+    public Item clone(int count) {
+        Item copy = clone();
+        copy.setCount(count);
+        return copy;
     }
 
     public CompoundTag save() {

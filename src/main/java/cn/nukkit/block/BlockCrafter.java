@@ -1,25 +1,25 @@
 package cn.nukkit.block;
 
 import cn.nukkit.Player;
-import cn.nukkit.blockentity.BlockEntities;
 import cn.nukkit.blockentity.BlockEntity;
 import cn.nukkit.blockentity.BlockEntityCrafter;
 import cn.nukkit.blockentity.BlockEntityType;
+import cn.nukkit.dispenser.CrafterBehavior;
+import cn.nukkit.dispenser.DispenseBehavior;
+import cn.nukkit.inventory.Inventory;
 import cn.nukkit.item.Item;
-import cn.nukkit.item.ItemTool;
-import cn.nukkit.level.Level;
 import cn.nukkit.math.BlockFace;
-import cn.nukkit.nbt.tag.CompoundTag;
-import cn.nukkit.nbt.tag.Tag;
-import cn.nukkit.utils.BlockColor;
-import cn.nukkit.utils.Faceable;
+import cn.nukkit.math.Vector3;
+import cn.nukkit.network.protocol.LevelEventPacket;
+import cn.nukkit.network.protocol.LevelSoundEventPacket;
+import it.unimi.dsi.fastutil.ints.IntObjectPair;
 
 import javax.annotation.Nullable;
 
 import static cn.nukkit.GameVersion.*;
 import static cn.nukkit.SharedConstants.*;
 
-public class BlockCrafter extends BlockSolid implements Faceable {
+public class BlockCrafter extends BlockDispenser {
     public static final int ORIENTATION_MASK = 0b1111;
     public static final int TRIGGERED_BIT = 0b1_0000;
     public static final int CRAFTING_BIT = 0b10_0000;
@@ -36,6 +36,8 @@ public class BlockCrafter extends BlockSolid implements Faceable {
     public static final int ORIENTATION_EAST_UP = 9;
     public static final int ORIENTATION_NORTH_UP = 10;
     public static final int ORIENTATION_SOUTH_UP = 11;
+
+    private static final CrafterBehavior CRAFTER_BEHAVIOR = new CrafterBehavior();
 
     BlockCrafter() {
 
@@ -62,38 +64,18 @@ public class BlockCrafter extends BlockSolid implements Faceable {
     }
 
     @Override
-    public float getResistance() {
-        return 17.5f;
-    }
-
-    @Override
-    public int getToolType() {
-        return BlockToolType.PICKAXE;
-    }
-
-    @Override
     public boolean canHarvestWithHand() {
         return ENABLE_BLOCK_DESTROY_SPEED_COMPATIBILITY || V1_21_50.isAvailable();
     }
 
     @Override
+    public int getItemSerializationMeta() {
+        return 0;
+    }
+
+    @Override
     public Item[] getDrops(Item item, Player player) {
-        if (item.isPickaxe() && item.getTier() >= ItemTool.TIER_WOODEN) {
-            return new Item[]{
-                    toItem(true),
-            };
-        }
-        return new Item[0];
-    }
-
-    @Override
-    public Item toItem(boolean addUserData) {
-        return Item.get(getItemId());
-    }
-
-    @Override
-    public BlockColor getColor() {
-        return BlockColor.STONE_BLOCK_COLOR;
+        return new Item[]{toItem(true)};
     }
 
     @Override
@@ -158,7 +140,7 @@ public class BlockCrafter extends BlockSolid implements Faceable {
             setDamage(getBlockDefaultMeta());
         }
 
-        if (!super.place(item, block, target, face, fx, fy, fz, player)) {
+        if (!level.setBlock(block, this, true)) {
             return false;
         }
         createBlockEntity(item);
@@ -166,33 +148,20 @@ public class BlockCrafter extends BlockSolid implements Faceable {
     }
 
     @Override
-    public boolean canBeActivated() {
-        return true;
-    }
-
-    @Override
-    public boolean onActivate(Item item, BlockFace face, float fx, float fy, float fz, Player player) {
-        //TODO: UI
-        return true;
-    }
-
-    @Override
-    public boolean hasUI() {
-        return true;
-    }
-
-    @Override
-    public int onUpdate(int type) {
-        if (!level.isRedstoneEnabled()) {
+    public int getComparatorInputOverride() {
+        BlockEntityCrafter blockEntity = getBlockEntity();
+        if (blockEntity == null) {
             return 0;
         }
+        Inventory inventory = blockEntity.getInventory();
 
-        if (type == Level.BLOCK_UPDATE_REDSTONE) {
-            //TODO
-            return type;
+        int count = 0;
+        for (int slot = 0; slot < inventory.getSize(); ++slot) {
+            if (blockEntity.isSlotDisabled(slot) || !inventory.getItem(slot).isNull()) {
+                count++;
+            }
         }
-
-        return 0;
+        return count;
     }
 
     @Override
@@ -207,24 +176,7 @@ public class BlockCrafter extends BlockSolid implements Faceable {
         };
     }
 
-    protected BlockEntityCrafter createBlockEntity(@Nullable Item item) {
-        CompoundTag nbt = BlockEntity.getDefaultCompound(this, BlockEntity.CRAFTER);
-
-        if (item != null) {
-            if (item.hasCustomName()) {
-                nbt.putString("CustomName", item.getCustomName());
-            }
-
-            if (item.hasCustomBlockData()) {
-                for (Tag tag : item.getCustomBlockData().getAllTags()) {
-                    nbt.put(tag.getName(), tag);
-                }
-            }
-        }
-
-        return (BlockEntityCrafter) BlockEntities.createBlockEntity(BlockEntityType.CRAFTER, getChunk(), nbt);
-    }
-
+    @Override
     @Nullable
     protected BlockEntityCrafter getBlockEntity() {
         if (level == null) {
@@ -240,10 +192,12 @@ public class BlockCrafter extends BlockSolid implements Faceable {
         return getDamage() & ORIENTATION_MASK;
     }
 
+    @Override
     public boolean isTriggered() {
         return (getDamage() & TRIGGERED_BIT) != 0;
     }
 
+    @Override
     public void setTriggered(boolean triggered) {
         setDamage(triggered ? getDamage() | TRIGGERED_BIT : getDamage() & ~TRIGGERED_BIT);
     }
@@ -254,5 +208,45 @@ public class BlockCrafter extends BlockSolid implements Faceable {
 
     public void setCrafting(boolean crafting) {
         setDamage(crafting ? getDamage() | CRAFTING_BIT : getDamage() & ~CRAFTING_BIT);
+    }
+
+    @Override
+    protected DispenseBehavior getDispenseBehavior(Item item) {
+        return CRAFTER_BEHAVIOR;
+    }
+
+    @Override
+    protected String getBlockEntityId() {
+        return BlockEntity.DROPPER;
+    }
+
+    @Override
+    protected IntObjectPair<Item> selectItemStack(Inventory inventory) {
+        //TODO: match crafting recipe
+        return null;
+        //TODO: multiple output recipe
+    }
+
+    @Override
+    protected void onDispenseFail(Vector3 pos) {
+        level.addLevelSoundEvent(this, LevelSoundEventPacket.SOUND_CRAFTER_FAILED, getFullId());
+    }
+
+    @Override
+    protected void onDispenseSuccess(Vector3 pos, @Nullable BlockFace facing, Inventory inventory, int slot, Item result) {
+        if (facing != null) {
+            level.addLevelEvent(pos, LevelEventPacket.EVENT_PARTICLE_SHOOT_WHITE_SMOKE, 3 * (facing.getZOffset() + 1) + facing.getXOffset() + 1);
+        }
+
+        level.addLevelSoundEvent(this, LevelSoundEventPacket.SOUND_CRAFTER_CRAFT, getFullId());
+
+        for (int i = 0; i < inventory.getSize(); i++) {
+            Item item = inventory.getItem(i);
+            if (item.isNull()) {
+                continue;
+            }
+            item.pop();
+            inventory.setItem(i, item);
+        }
     }
 }

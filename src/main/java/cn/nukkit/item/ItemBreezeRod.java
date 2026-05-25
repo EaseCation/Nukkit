@@ -12,4 +12,9 @@ public class ItemBreezeRod extends Item {
     public ItemBreezeRod(Integer meta, int count) {
         super(BREEZE_ROD, meta, count, "Breeze Rod");
     }
+
+    @Override
+    public boolean isBrewingIngredient() {
+        return true;
+    }
 }

@@ -16,7 +16,6 @@ import cn.nukkit.math.*;
 import cn.nukkit.nbt.NBTIO;
 import cn.nukkit.nbt.tag.CompoundTag;
 import cn.nukkit.nbt.tag.Tag;
-import cn.nukkit.network.protocol.BossEventPacket.BossBarColor;
 import cn.nukkit.network.protocol.types.*;
 import it.unimi.dsi.fastutil.io.FastByteArrayInputStream;
 import it.unimi.dsi.fastutil.objects.ObjectArrayList;
@@ -845,19 +844,6 @@ public class BinaryStream {
         this.put(b);
     }
 
-    public byte[] getLByteArray() {
-        int len = this.getLInt();
-        if (!isReadable(len)) {
-            throw new IndexOutOfBoundsException("array length mismatch");
-        }
-        return this.get(len);
-    }
-
-    public void putLByteArray(byte[] b) {
-        this.putLInt(b.length);
-        this.put(b);
-    }
-
     public String getString() {
         return new String(this.getByteArray(), StandardCharsets.UTF_8);
     }
@@ -1111,23 +1097,6 @@ public class BinaryStream {
 
         putBoolean(true);
         consumer.accept(this, obj);
-    }
-
-    public BossBarColor getBossBarColor() {
-        if (this.helper != null) {
-            return this.helper.getBossBarColor(this);
-        }
-
-        return BossBarColor.fromOldId((int) this.getUnsignedVarInt());
-    }
-
-    public void putBossBarColor(BossBarColor color) {
-        if (this.helper != null) {
-            this.helper.putBossBarColor(this, color);
-            return;
-        }
-
-        putUnsignedVarInt(color.getOldId());
     }
 
     public StructureEditorData getStructureEditorData() {
@@ -1411,14 +1380,6 @@ public class BinaryStream {
 
         public final int getCommandParameterTypeId(CommandParamType type, int defaultValue) {
             return this.commandParameterType2Id.getOrDefault(type, defaultValue);
-        }
-
-        public BossBarColor getBossBarColor(BinaryStream stream) {
-            return BossBarColor.fromOldId((int) stream.getUnsignedVarInt());
-        }
-
-        public void putBossBarColor(BinaryStream stream, BossBarColor color) {
-            stream.putUnsignedVarInt(color.getOldId());
         }
 
         public StructureEditorData getStructureEditorData(BinaryStream stream) {

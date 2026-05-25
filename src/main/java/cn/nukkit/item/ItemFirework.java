@@ -82,7 +82,8 @@ public class ItemFirework extends Item {
             this.spawnFirework(level, block.blockCenter());
 
             if (!player.isCreative()) {
-                player.getInventory().decreaseCount(player.getInventory().getHeldItemIndex());
+                pop();
+                player.getInventory().setItemInHand(this);
             }
 
             return true;

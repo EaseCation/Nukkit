@@ -62,7 +62,7 @@ public class ItemTrident extends ItemTool {
     }
 
     @Override
-    public boolean onRelease(Player player, int ticksUsed) {
+    public boolean onRelease(Player player, int ticksUsed, Vector3 rotation) {
         if (!canUse()) {
             return false;
         }

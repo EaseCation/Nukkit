@@ -17,4 +17,8 @@ public class ItemGhastTear extends Item {
         super(GHAST_TEAR, meta, count, "Ghast Tear");
     }
 
+    @Override
+    public boolean isBrewingIngredient() {
+        return true;
+    }
 }

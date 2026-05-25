@@ -16,6 +16,8 @@ public class HoneycombDispenseBehaviour extends DefaultDispenseBehavior {
             if (target.level.setBlock(target, Block.get(copper.getWaxedBlockId(), copper.getDamage()), true)) {
                 target.level.addLevelEvent(target.blockCenter(), LevelEventPacket.EVENT_PARTICLE_WAX_ON);
             }
+
+            item.pop();
             return null;
         }
 

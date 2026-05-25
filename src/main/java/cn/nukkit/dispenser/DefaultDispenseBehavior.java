@@ -37,14 +37,8 @@ public class DefaultDispenseBehavior implements DispenseBehavior {
         motion.y += rand.nextGaussian() * 0.007499999832361937 * 6;
         motion.z += rand.nextGaussian() * 0.007499999832361937 * 6;
 
-        Item clone = item.clone();
-        clone.count = 1;
-
+        Item clone = item.split(1);
         block.level.dropItem(dispensePos, clone, motion);
         return null;
-    }
-
-    private int getParticleMetadataForFace(BlockFace face) {
-        return face.getXOffset() + 1 + (face.getZOffset() + 1) * 3;
     }
 }

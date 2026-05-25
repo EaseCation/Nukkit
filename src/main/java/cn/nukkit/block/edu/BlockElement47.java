@@ -20,4 +20,9 @@ public class BlockElement47 extends BlockElement {
     public String getDescriptionId() {
         return "tile.element.ag.name";
     }
+
+    @Override
+    public boolean isBrewingIngredient() {
+        return true;
+    }
 }

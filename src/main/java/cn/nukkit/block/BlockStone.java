@@ -55,6 +55,11 @@ public class BlockStone extends BlockStoneAbstract {
     }
 
     @Override
+    public boolean isBrewingIngredient() {
+        return true;
+    }
+
+    @Override
     public String getDescriptionId() {
         return "tile.stone.stone.name";
     }

@@ -9,14 +9,9 @@ public class FertilizerDispenseBehavior extends DefaultDispenseBehavior {
     @Override
     public Item dispense(BlockDispenser block, BlockFace face, Item item) {
         Block target = block.getSide(face);
-
-        if (item.isFertilizer()) {
-            if (!target.isFertilizable() || !target.canBeActivated() || !target.onActivate(item, face, null)) {
-                item.count++;
-            }
-            return null;
+        if (target.isFertilizable() && target.canBeActivated() && target.onActivate(item, face.getOpposite(), null)) {
+            item.pop();
         }
-
-        return super.dispense(block, face, item);
+        return null;
     }
 }

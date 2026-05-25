@@ -53,12 +53,14 @@ public class ChunkPosition implements Cloneable {
         return this.z;
     }
 
-    public void setX(int x) {
+    public ChunkPosition setX(int x) {
         this.x = x;
+        return this;
     }
 
-    public void setZ(int z) {
+    public ChunkPosition setZ(int z) {
         this.z = z;
+        return this;
     }
 
     public int getMinBlockX() {

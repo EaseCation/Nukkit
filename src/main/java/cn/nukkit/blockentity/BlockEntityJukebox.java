@@ -2,6 +2,7 @@ package cn.nukkit.blockentity;
 
 import cn.nukkit.Player;
 import cn.nukkit.block.Block;
+import cn.nukkit.inventory.Inventory;
 import cn.nukkit.item.Item;
 import cn.nukkit.item.ItemRecord;
 import cn.nukkit.lang.TranslationContainer;
@@ -204,5 +205,65 @@ public class BlockEntityJukebox extends BlockEntitySpawnable implements HopperIn
     @Override
     public void onBreak() {
         dropItem();
+    }
+
+    @Override
+    public boolean pull(BlockEntityHopper hopper) {
+        Item item = recordItem;
+        if (item == null) {
+            return false;
+        }
+
+        Inventory inventory = hopper.getInventory();
+        if (!inventory.canAddItem(item)) {
+            return false;
+        }
+        inventory.addItem(item);
+
+        recordItem = null;
+        stop();
+        return true;
+    }
+
+    @Override
+    public boolean push(BlockEntityHopper hopper) {
+        if (recordItem != null) {
+            return false;
+        }
+
+        Inventory inventory = hopper.getInventory();
+        for (int i = 0; i < inventory.getSize(); i++) {
+            Item item = inventory.getItem(i);
+            if (item.isNull()) {
+                continue;
+            }
+
+            if (!pushItem(item)) {
+                continue;
+            }
+
+            inventory.setItem(i, item);
+            return true;
+        }
+        return false;
+    }
+
+    @Override
+    public boolean push(Item item) {
+        if (recordItem != null) {
+            return false;
+        }
+
+        return pushItem(item);
+    }
+
+    private boolean pushItem(Item item) {
+        if (!item.isRecord()) {
+            return false;
+        }
+
+        setRecordItem((ItemRecord) item.split(1));
+        play();
+        return true;
     }
 }

@@ -17,6 +17,8 @@ public class GlowstoneDispenseBehaviour extends DefaultDispenseBehavior {
             if (target.level.setBlock(target, target, true)) {
                 target.level.addLevelSoundEvent(target, LevelSoundEventPacket.SOUND_RESPAWN_ANCHOR_CHARGE);
             }
+
+            item.pop();
             return null;
         }
 

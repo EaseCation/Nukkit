@@ -37,7 +37,7 @@ public abstract class ItemSpear extends ItemTool {
     }
 
     @Override
-    public boolean onRelease(Player player, int ticksUsed) {
+    public boolean onRelease(Player player, int ticksUsed, Vector3 rotation) {
         return true;
     }
 

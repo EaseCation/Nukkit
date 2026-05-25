@@ -928,7 +928,7 @@ public final class Blocks {
         registerBlock(BlockNames.WAXED_OXIDIZED_COPPER_LANTERN, ItemBlockNames.WAXED_OXIDIZED_COPPER_LANTERN, WAXED_OXIDIZED_COPPER_LANTERN, BlockLanternCopperOxidizedWaxed.class, V1_21_111);
 
         registerBlock(BlockNames.GOLDEN_DANDELION, ItemBlockNames.GOLDEN_DANDELION, GOLDEN_DANDELION, BlockDandelionGolden.class, V1_26_10);
-/*
+
         registerBlock(BlockNames.SULFUR, ItemBlockNames.SULFUR, SULFUR, BlockSulfur.class, V1_26_30);
         registerBlock(BlockNames.SULFUR_SLAB, ItemBlockNames.SULFUR_SLAB, SULFUR_SLAB, BlockSlabSulfur.class, V1_26_30);
         registerBlock(BlockNames.SULFUR_DOUBLE_SLAB, ItemBlockNames.SULFUR_DOUBLE_SLAB, SULFUR_DOUBLE_SLAB, BlockSlabSulfur.class, V1_26_30);
@@ -963,7 +963,7 @@ public final class Blocks {
         registerBlock(BlockNames.CINNABAR_BRICK_WALL, ItemBlockNames.CINNABAR_BRICK_WALL, CINNABAR_BRICK_WALL, BlockWallCinnabarBrick.class, V1_26_30);
         registerBlock(BlockNames.CHISELED_CINNABAR, ItemBlockNames.CHISELED_CINNABAR, CHISELED_CINNABAR, BlockCinnabarChiseled.class, V1_26_30);
         registerBlock(BlockNames.SULFUR_SPIKE, ItemBlockNames.SULFUR_SPIKE, SULFUR_SPIKE, BlockSulfurSpike.class, V1_26_30);
-*/
+
 
         registerFlattenedBlocks();
 

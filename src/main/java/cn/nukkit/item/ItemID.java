@@ -723,6 +723,12 @@ public interface ItemID extends ItemBlockID, ItemRuntimeID {
      */
     @Deprecated
     int RECORD_LAVA_CHICKEN = 787;
+    int MUSIC_DISC_BOUNCE = 788;
+    /**
+     * @deprecated use {@link #MUSIC_DISC_BOUNCE} instead
+     */
+    @Deprecated
+    int RECORD_BOUNCE = 788;
 
     int SOUL_CAMPFIRE = 801;
 

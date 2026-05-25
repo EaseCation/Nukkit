@@ -23,6 +23,8 @@ public class WaterBottleDispenseBehaviour extends DefaultDispenseBehavior {
         if (target.level.setBlock(target, Block.get(Block.MUD), true)) {
             target.level.addLevelSoundEvent(target, LevelSoundEventPacket.SOUND_SPLASH, (int) (0.5f * 0xffffff));
         }
+
+        item.pop();
         return Item.get(Item.GLASS_BOTTLE);
     }
 }

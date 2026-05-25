@@ -3,8 +3,10 @@ package cn.nukkit.level.sound;
 import java.util.Arrays;
 
 /**
+ * ./resource_pack/sounds/sound_definitions.json
  * @author CreeperFace
  */
+// This file is generated automatically, do not edit it manually.
 public enum SoundEnum {
     AMBIENT_BASALT_DELTAS_ADDITIONS("ambient.basalt_deltas.additions"),
     AMBIENT_BASALT_DELTAS_LOOP("ambient.basalt_deltas.loop"),
@@ -178,6 +180,10 @@ public enum SoundEnum {
     BLOCK_POTENT_SULFUR_AMBIENT("block.potent_sulfur.ambient"),
     BLOCK_POTENT_SULFUR_BREAK("block.potent_sulfur.break"),
     BLOCK_POTENT_SULFUR_FALL("block.potent_sulfur.fall"),
+    BLOCK_POTENT_SULFUR_GEYSER_CONTINUOUS_ERUPTION_ACTIVE("block.potent_sulfur.geyser_continuous_eruption_active"),
+    BLOCK_POTENT_SULFUR_GEYSER_CONTINUOUS_ERUPTION_START("block.potent_sulfur.geyser_continuous_eruption_start"),
+    BLOCK_POTENT_SULFUR_GEYSER_ERUPTION_ACTIVE("block.potent_sulfur.geyser_eruption_active"),
+    BLOCK_POTENT_SULFUR_GEYSER_ERUPTION_START("block.potent_sulfur.geyser_eruption_start"),
     BLOCK_POTENT_SULFUR_HIT("block.potent_sulfur.hit"),
     BLOCK_POTENT_SULFUR_PLACE("block.potent_sulfur.place"),
     BLOCK_POTENT_SULFUR_STEP("block.potent_sulfur.step"),
@@ -573,6 +579,8 @@ public enum SoundEnum {
     ITEM_SPEAR_USE("item.spear.use"),
     ITEM_SPYGLASS_STOP_USING("item.spyglass.stop_using"),
     ITEM_SPYGLASS_USE("item.spyglass.use"),
+    ITEM_SULFUR_CUBE_EMPTY("item.sulfur_cube.empty"),
+    ITEM_SULFUR_CUBE_FILL("item.sulfur_cube.fill"),
     ITEM_TRIDENT_HIT("item.trident.hit"),
     ITEM_TRIDENT_HIT_GROUND("item.trident.hit_ground"),
     ITEM_TRIDENT_RETURN("item.trident.return"),
@@ -1233,12 +1241,16 @@ public enum SoundEnum {
     MOB_SULFUR_CUBE_BOUNCY_PUSH("mob.sulfur_cube.bouncy.push"),
     MOB_SULFUR_CUBE_DEATH("mob.sulfur_cube.death"),
     MOB_SULFUR_CUBE_EJECT("mob.sulfur_cube.eject"),
+    MOB_SULFUR_CUBE_EXPLOSIVE_HIT("mob.sulfur_cube.explosive.hit"),
+    MOB_SULFUR_CUBE_EXPLOSIVE_PUSH("mob.sulfur_cube.explosive.push"),
     MOB_SULFUR_CUBE_FAST_FLAT_HIT("mob.sulfur_cube.fast_flat.hit"),
     MOB_SULFUR_CUBE_FAST_FLAT_PUSH("mob.sulfur_cube.fast_flat.push"),
     MOB_SULFUR_CUBE_FAST_SLIDING_HIT("mob.sulfur_cube.fast_sliding.hit"),
     MOB_SULFUR_CUBE_FAST_SLIDING_PUSH("mob.sulfur_cube.fast_sliding.push"),
     MOB_SULFUR_CUBE_HIGH_RESISTANCE_HIT("mob.sulfur_cube.high_resistance.hit"),
     MOB_SULFUR_CUBE_HIGH_RESISTANCE_PUSH("mob.sulfur_cube.high_resistance.push"),
+    MOB_SULFUR_CUBE_HOT_HIT("mob.sulfur_cube.hot.hit"),
+    MOB_SULFUR_CUBE_HOT_PUSH("mob.sulfur_cube.hot.push"),
     MOB_SULFUR_CUBE_HURT("mob.sulfur_cube.hurt"),
     MOB_SULFUR_CUBE_JUMP("mob.sulfur_cube.jump"),
     MOB_SULFUR_CUBE_LANDING("mob.sulfur_cube.landing"),
@@ -1246,6 +1258,8 @@ public enum SoundEnum {
     MOB_SULFUR_CUBE_LIGHT_PUSH("mob.sulfur_cube.light.push"),
     MOB_SULFUR_CUBE_REGULAR_HIT("mob.sulfur_cube.regular.hit"),
     MOB_SULFUR_CUBE_REGULAR_PUSH("mob.sulfur_cube.regular.push"),
+    MOB_SULFUR_CUBE_SLOW_BOUNCY_HIT("mob.sulfur_cube.slow_bouncy.hit"),
+    MOB_SULFUR_CUBE_SLOW_BOUNCY_PUSH("mob.sulfur_cube.slow_bouncy.push"),
     MOB_SULFUR_CUBE_SLOW_FLAT_HIT("mob.sulfur_cube.slow_flat.hit"),
     MOB_SULFUR_CUBE_SLOW_FLAT_PUSH("mob.sulfur_cube.slow_flat.push"),
     MOB_SULFUR_CUBE_SLOW_SLIDING_HIT("mob.sulfur_cube.slow_sliding.hit"),
@@ -1253,6 +1267,7 @@ public enum SoundEnum {
     MOB_SULFUR_CUBE_SMALL_DEATH("mob.sulfur_cube.small.death"),
     MOB_SULFUR_CUBE_SMALL_HURT("mob.sulfur_cube.small.hurt"),
     MOB_SULFUR_CUBE_SMALL_JUMP("mob.sulfur_cube.small.jump"),
+    MOB_SULFUR_CUBE_SMALL_LANDING("mob.sulfur_cube.small.landing"),
     MOB_SULFUR_CUBE_STICKY_HIT("mob.sulfur_cube.sticky.hit"),
     MOB_SULFUR_CUBE_STICKY_PUSH("mob.sulfur_cube.sticky.push"),
     MOB_TADPOLE_CONVERT_TO_FROG("mob.tadpole.convert_to_frog"),
@@ -1437,8 +1452,10 @@ public enum SoundEnum {
     MUSIC_OVERWORLD_JUNGLE_EDGE("music.overworld.jungle_edge"),
     MUSIC_OVERWORLD_LUSH_CAVES("music.overworld.lush_caves"),
     MUSIC_OVERWORLD_MESA("music.overworld.mesa"),
+    MUSIC_OVERWORLD_OLD_GROWTH_TAIGA("music.overworld.old_growth_taiga"),
     MUSIC_OVERWORLD_SNOWY_SLOPES("music.overworld.snowy_slopes"),
     MUSIC_OVERWORLD_STONY_PEAKS("music.overworld.stony_peaks"),
+    MUSIC_OVERWORLD_SULFUR_CAVES("music.overworld.sulfur_caves"),
     NOTE_BANJO("note.banjo"),
     NOTE_BASS("note.bass"),
     NOTE_BASSATTACK("note.bassattack"),
@@ -1619,6 +1636,7 @@ public enum SoundEnum {
     RECORD_13("record.13"),
     RECORD_5("record.5"),
     RECORD_BLOCKS("record.blocks"),
+    RECORD_BOUNCE("record.bounce"),
     RECORD_CAT("record.cat"),
     RECORD_CHIRP("record.chirp"),
     RECORD_CREATOR("record.creator"),

@@ -1,8 +1,6 @@
 package cn.nukkit.level;
 
-import cn.nukkit.math.Mth;
-import cn.nukkit.math.NukkitMath;
-import cn.nukkit.math.Vector3;
+import cn.nukkit.math.*;
 import cn.nukkit.utils.LevelException;
 
 /**
@@ -96,6 +94,75 @@ public class Location extends Position {
 
     public String debugTextWithRot() {
         return "(" + NukkitMath.round(x, 2) + "," + NukkitMath.round(y, 2) + "," + NukkitMath.round(z, 2) + " " + NukkitMath.round(pitch, 2) + "," + NukkitMath.round(yaw, 2) + ")";
+    }
+
+    @Override
+    public Location setX(double x) {
+        this.x = x;
+        return this;
+    }
+
+    @Override
+    public Location setY(double y) {
+        this.y = y;
+        return this;
+    }
+
+    @Override
+    public Location setZ(double z) {
+        this.z = z;
+        return this;
+    }
+
+    @Override
+    public Location setComponents(double x, double y, double z) {
+        this.x = x;
+        this.y = y;
+        this.z = z;
+        return this;
+    }
+
+    public Location setComponents(Location other) {
+        this.x = other.x;
+        this.y = other.y;
+        this.z = other.z;
+        this.level = other.level;
+        this.yaw = other.yaw;
+        this.pitch = other.pitch;
+        return this;
+    }
+
+    @Override
+    public Location setComponents(Position other) {
+        this.x = other.x;
+        this.y = other.y;
+        this.z = other.z;
+        this.level = other.level;
+        return this;
+    }
+
+    @Override
+    public Location setComponents(Vector3 other) {
+        this.x = other.x;
+        this.y = other.y;
+        this.z = other.z;
+        return this;
+    }
+
+    @Override
+    public Location setComponents(Vector3f other) {
+        this.x = other.x;
+        this.y = other.y;
+        this.z = other.z;
+        return this;
+    }
+
+    @Override
+    public Location setComponents(BlockVector3 other) {
+        this.x = other.x;
+        this.y = other.y;
+        this.z = other.z;
+        return this;
     }
 
     @Override

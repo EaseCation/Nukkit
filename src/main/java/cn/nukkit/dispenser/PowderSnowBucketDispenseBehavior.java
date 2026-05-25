@@ -12,6 +12,8 @@ public class PowderSnowBucketDispenseBehavior extends DefaultDispenseBehavior {
         Block target = block.getSide(face);
         if (target.isAir()) {
             target.level.setBlock(target, Block.get(Block.POWDER_SNOW), true);
+
+            item.pop();
             return Item.get(ItemID.BUCKET);
         }
         return super.dispense(block, face, item);

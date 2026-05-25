@@ -40,6 +40,7 @@ public class BoatDispenseBehavior extends DefaultDispenseBehavior {
 
         boat.spawnToAll();
 
+        item.pop();
         return null;
     }
 

@@ -13,6 +13,8 @@ public class LavaBucketDispenseBehavior extends DefaultDispenseBehavior {
         if (target.canBeFlowedInto()) {
             target.level.setExtraBlock(target, Block.get(Block.AIR), true, false);
             target.level.setBlock(target, Block.get(Block.FLOWING_LAVA), true);
+
+            item.pop();
             return Item.get(ItemID.BUCKET);
         }
         return super.dispense(block, face, item);

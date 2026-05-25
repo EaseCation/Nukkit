@@ -3,9 +3,7 @@ package cn.nukkit.level;
 import cn.nukkit.Player;
 import cn.nukkit.block.Block;
 import cn.nukkit.level.format.FullChunk;
-import cn.nukkit.math.BlockFace;
-import cn.nukkit.math.Mth;
-import cn.nukkit.math.Vector3;
+import cn.nukkit.math.*;
 import cn.nukkit.utils.LevelException;
 import it.unimi.dsi.fastutil.ints.Int2ObjectMap;
 import it.unimi.dsi.fastutil.ints.Int2ObjectMaps;
@@ -65,14 +63,6 @@ public class Position extends Vector3 {
         return this.level != null;
     }
 
-    public boolean setStrong() {
-        return false;
-    }
-
-    public boolean setWeak() {
-        return false;
-    }
-
     public Position getSide(BlockFace face) {
         return this.getSide(face, 1);
     }
@@ -98,10 +88,60 @@ public class Position extends Vector3 {
     }
 
     @Override
+    public Position setX(double x) {
+        this.x = x;
+        return this;
+    }
+
+    @Override
+    public Position setY(double y) {
+        this.y = y;
+        return this;
+    }
+
+    @Override
+    public Position setZ(double z) {
+        this.z = z;
+        return this;
+    }
+
+    @Override
     public Position setComponents(double x, double y, double z) {
         this.x = x;
         this.y = y;
         this.z = z;
+        return this;
+    }
+
+    public Position setComponents(Position other) {
+        this.x = other.x;
+        this.y = other.y;
+        this.z = other.z;
+        this.level = other.level;
+        return this;
+    }
+
+    @Override
+    public Position setComponents(Vector3 other) {
+        this.x = other.x;
+        this.y = other.y;
+        this.z = other.z;
+        return this;
+    }
+
+    @Override
+    public Position setComponents(Vector3f other) {
+        this.x = other.x;
+        this.y = other.y;
+        this.z = other.z;
+        return this;
+    }
+
+    @Override
+    public Position setComponents(BlockVector3 other) {
+        this.x = other.x;
+        this.y = other.y;
+        this.z = other.z;
         return this;
     }
 

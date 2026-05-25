@@ -22,6 +22,7 @@ public class TNTDispenseBehavior extends DefaultDispenseBehavior {
                 Entity.getDefaultNBT(pos).putBoolean("AllowUnderwater", allowUnderwater));
         tnt.spawnToAll();
 
+        item.pop();
         return null;
     }
 

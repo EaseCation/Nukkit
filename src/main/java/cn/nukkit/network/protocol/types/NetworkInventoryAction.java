@@ -127,6 +127,44 @@ public class NetworkInventoryAction {
         return this;
     }
 
+    public NetworkInventoryAction readCereal(DataPacket packet, InventoryTransactionPacketInterface interfaze) {
+        this.sourceType = (int) packet.getUnsignedVarInt();
+
+        if (packet.getBoolean() && packet.getBoolean()) {
+            this.windowId = packet.getByte();
+        }
+        if (packet.getBoolean() && packet.getBoolean()) {
+            this.sourceFlags = (int) packet.getUnsignedVarInt();
+        }
+
+        this.inventorySlot = (int) packet.getUnsignedVarInt();
+        this.oldItem = packet.getItemStack();
+        this.newItem = packet.getItemStack();
+
+        switch (this.sourceType) {
+            case SOURCE_TODO:
+            case SOURCE_CRAFT_SLOT:
+                switch (this.windowId) {
+                    case SOURCE_TYPE_CRAFTING_RESULT:
+                    case SOURCE_TYPE_CRAFTING_USE_INGREDIENT:
+                        if (interfaze != null) interfaze.setCraftingPart(true);
+                        break;
+                    case SOURCE_TYPE_ENCHANT_INPUT:
+                    case SOURCE_TYPE_ENCHANT_OUTPUT:
+                    case SOURCE_TYPE_ENCHANT_MATERIAL:
+                        if (interfaze != null) interfaze.setEnchantingPart(true);
+                        break;
+                    case SOURCE_TYPE_ANVIL_INPUT:
+                    case SOURCE_TYPE_ANVIL_MATERIAL:
+                    case SOURCE_TYPE_ANVIL_RESULT:
+                        if (interfaze != null) interfaze.setRepairItemPart(true);
+                        break;
+                }
+                break;
+        }
+        return this;
+    }
+
     public void write(DataPacket packet, InventoryTransactionPacketInterface interfaze) {
         packet.putUnsignedVarInt(this.sourceType);
 
@@ -154,6 +192,35 @@ public class NetworkInventoryAction {
         if (interfaze.hasNetworkIds()) {
             packet.putVarInt(this.stackNetworkId);
         }
+    }
+
+    public void writeCereal(DataPacket packet) {
+        packet.putUnsignedVarInt(this.sourceType);
+
+        switch (this.sourceType) {
+            case SOURCE_CONTAINER:
+            case SOURCE_TODO:
+            case SOURCE_CRAFT_SLOT:
+                packet.putBoolean(true); // typeBranchHasContainerIdField
+                packet.putBoolean(true); // optional<int8>
+                packet.putByte(this.windowId);
+                packet.putBoolean(false); // typeBranchHasFlagsField
+                break;
+            case SOURCE_WORLD:
+                packet.putBoolean(false); // typeBranchHasContainerIdField
+                packet.putBoolean(true); // typeBranchHasFlagsField
+                packet.putBoolean(true); // optional<varuint32>
+                packet.putUnsignedVarInt(this.sourceFlags);
+                break;
+            default:
+                packet.putBoolean(false); // typeBranchHasContainerIdField
+                packet.putBoolean(false); // typeBranchHasFlagsField
+                break;
+        }
+
+        packet.putUnsignedVarInt(this.inventorySlot);
+        packet.putItemStack(this.oldItem);
+        packet.putItemStack(this.newItem);
     }
 
     public InventoryAction createInventoryAction(Player player) {

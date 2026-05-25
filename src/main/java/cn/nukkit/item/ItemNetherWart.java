@@ -21,4 +21,8 @@ public class ItemNetherWart extends Item {
         this.block = Block.get(BlockID.NETHER_WART);
     }
 
+    @Override
+    public boolean isBrewingIngredient() {
+        return true;
+    }
 }

@@ -1,6 +1,7 @@
 package cn.nukkit.blockentity;
 
 import cn.nukkit.block.Block;
+import cn.nukkit.inventory.Inventory;
 import cn.nukkit.item.Item;
 import cn.nukkit.item.ItemFullNames;
 import cn.nukkit.level.format.FullChunk;
@@ -143,5 +144,37 @@ public class BlockEntityDecoratedPot extends BlockEntitySpawnable implements Hop
         this.animation = animation;
         spawnToAll();
         this.animation = ANIMATION_NONE;
+    }
+
+    @Override
+    public boolean pull(BlockEntityHopper hopper) {
+        Item item = this.item;
+        if (item == null) {
+            return false;
+        }
+
+        Inventory inventory = hopper.getInventory();
+        if (!inventory.canAddItem(item)) {
+            return false;
+        }
+
+        inventory.addItem(item);
+        this.item = null;
+        return true;
+    }
+
+    @Override
+    public boolean push(Item item) {
+        if (this.item != null) {
+            if (this.item.getCount() >= this.item.getMaxStackSize() || !this.item.equals(item)) {
+                return false;
+            }
+
+            this.item.grow(1);
+            item.pop();
+        } else {
+            this.item = item.split(1);
+        }
+        return true;
     }
 }

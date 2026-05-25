@@ -22,7 +22,8 @@ public enum GameRule {
     MOB_GRIEFING("mobGriefing"),
     PVP("pvp"),
     SHOW_COORDINATES("showCoordinates"),
-    LOCATOR_BAR("locatorBar", V1_21_80.getProtocol()),
+    PLAYER_WAYPOINTS("playerWaypoints", V1_26_30.getProtocol()),
+    LOCATOR_BAR("locatorBar", V1_21_80.getProtocol(), V1_26_30.getProtocol()),
     SHOW_DAYS_PLAYED("showDaysPlayed", V1_21_0.getProtocol()),
     NATURAL_REGENERATION("naturalRegeneration"),
     TNT_EXPLODES("tntExplodes"),
@@ -50,15 +51,21 @@ public enum GameRule {
     private final String name;
     private final String bedrockName;
     private final int protocol;
+    private final int protocolDeprecated;
 
     GameRule(String name) {
         this(name, 0);
     }
 
     GameRule(String name, int protocol) {
+        this(name, protocol, Integer.MAX_VALUE);
+    }
+
+    GameRule(String name, int protocol, int protocolDeprecated) {
         this.name = name;
         this.bedrockName = name.toLowerCase();
         this.protocol = protocol;
+        this.protocolDeprecated = protocolDeprecated;
     }
 
     public static Optional<GameRule> parseString(String gameRuleString) {
@@ -80,6 +87,10 @@ public enum GameRule {
 
     public int getProtocol() {
         return this.protocol;
+    }
+
+    public int getProtocolDeprecated() {
+        return this.protocolDeprecated;
     }
 
     public static GameRule[] getValues() {

@@ -29,6 +29,8 @@ public class SpawnEggDispenseBehavior extends DefaultDispenseBehavior {
             }
 
             entity.spawnToAll();
+
+            item.pop();
             return null;
         }
 

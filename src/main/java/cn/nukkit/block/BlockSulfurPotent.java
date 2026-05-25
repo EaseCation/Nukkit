@@ -37,6 +37,16 @@ public class BlockSulfurPotent extends BlockSulfur {
     }
 
     @Override
+    public boolean canBePushed() {
+        return false;
+    }
+
+    @Override
+    public boolean canBePulled() {
+        return false;
+    }
+
+    @Override
     public Item toItem(boolean addUserData) {
         return Item.get(getItemId());
     }

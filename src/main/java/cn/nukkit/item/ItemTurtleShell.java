@@ -41,4 +41,9 @@ public class ItemTurtleShell extends ItemArmor {
     public int getToughness() {
         return 2;
     }
+
+    @Override
+    public boolean isBrewingIngredient() {
+        return true;
+    }
 }

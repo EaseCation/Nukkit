@@ -9,7 +9,6 @@ public class BrushDispenseBehaviour extends DefaultDispenseBehavior {
     public Item dispense(BlockDispenser block, BlockFace face, Item item) {
         //TODO: armadillo scute
 
-        item.count++;
         return null;
     }
 }

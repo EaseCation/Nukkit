@@ -20,6 +20,7 @@ public class FireworksDispenseBehavior extends DefaultDispenseBehavior {
                         .putCompound("FireworkItem", NBTIO.putItemHelper(item)), true);
         firework.spawnToAll();
 
+        item.pop();
         return null;
     }
 }

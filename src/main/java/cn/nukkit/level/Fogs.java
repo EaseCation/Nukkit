@@ -1,5 +1,8 @@
 package cn.nukkit.level;
 
+/**
+ * ./resource_pack/fogs/
+ */
 // This file is generated automatically, do not edit it manually.
 public interface Fogs {
     String BAMBOO_JUNGLE = "minecraft:fog_bamboo_jungle";
@@ -71,6 +74,7 @@ public interface Fogs {
     String SEMI_HUMID = "minecraft:fog_semi_humid";
     String SOULSAND_VALLEY = "minecraft:fog_soulsand_valley";
     String STONE_BEACH = "minecraft:fog_stone_beach";
+    String SULFUR_CAVE = "minecraft:fog_sulfur_caves";
     String SUNFLOWER_PLAINS = "minecraft:fog_sunflower_plains";
     String SWAMPLAND = "minecraft:fog_swampland";
     String SWAMPLAND_MUTATED = "minecraft:fog_swampland_mutated";

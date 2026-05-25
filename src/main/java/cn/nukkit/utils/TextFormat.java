@@ -135,6 +135,10 @@ public enum TextFormat {
      * @since 1.21.50
      */
     MATERIAL_RESIN('v'),
+    /**
+     * @since 1.26.30
+     */
+    PARTY_BLUE('w'),
 
     // Formatting codes
     /**
@@ -160,7 +164,7 @@ public enum TextFormat {
      */
     public static final char ESCAPE = '\u00A7';
 
-    private static final Pattern CLEAN_PATTERN = Pattern.compile("(?i)" + ESCAPE + "[0-9A-V]");
+    private static final Pattern CLEAN_PATTERN = Pattern.compile("(?i)" + ESCAPE + "[0-9A-W]");
     private final static Char2ObjectMap<TextFormat> BY_CHAR = new Char2ObjectOpenHashMap<>();
 
     static {
@@ -256,7 +260,7 @@ public enum TextFormat {
         char[] b = textToTranslate.toCharArray();
         for (int i = 0; i < b.length - 1; i++) {
             int x = i + 1;
-            if (b[i] == altFormatChar && "0123456789AaBbCcDdEeFfGgHhIiJjKkLlMmNnOoPpQqRrSsTtUu".indexOf(b[x]) > -1) {
+            if (b[i] == altFormatChar && "0123456789AaBbCcDdEeFfGgHhIiJjKkLlMmNnOoPpQqRrSsTtUuVvWw".indexOf(b[x]) > -1) {
                 b[i] = TextFormat.ESCAPE;
                 b[x] = Character.toLowerCase(b[x]);
             }

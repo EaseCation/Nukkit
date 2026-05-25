@@ -26,6 +26,7 @@ public class FireChargeDispenseBehavior extends DefaultDispenseBehavior {
                 Entity.getDefaultNBT(pos, dir.multiply(1.3), (float) dir.yRotFromDirection(), (float) dir.xRotFromDirection()));
         fireball.spawnToAll();
 
+        item.pop();
         return null;
     }
 }

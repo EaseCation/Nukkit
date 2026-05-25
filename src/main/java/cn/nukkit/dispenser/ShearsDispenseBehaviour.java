@@ -10,14 +10,12 @@ public class ShearsDispenseBehaviour extends DefaultDispenseBehavior {
     public Item dispense(BlockDispenser block, BlockFace face, Item item) {
         Block target = block.getSide(face);
 
-        if (target.isBeehive() && target.onActivate(item, face, null)) {
-            if (item.hurtAndBreak(1) >= 0) {
-                item.count++;
+        if (target.isBeehive() && target.onActivate(item, face.getOpposite(), null)) {
+            if (item.hurtAndBreak(1) < 0) {
+                item.pop();
             }
-            return null;
         }
 
-        item.count++;
         return null;
     }
 }

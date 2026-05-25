@@ -46,6 +46,21 @@ public class Vector3 implements Cloneable {
         this.z = vec.z;
     }
 
+    public Vector3 setX(double x) {
+        this.x = x;
+        return this;
+    }
+
+    public Vector3 setY(double y) {
+        this.y = y;
+        return this;
+    }
+
+    public Vector3 setZ(double z) {
+        this.z = z;
+        return this;
+    }
+
     public double getX() {
         return this.x;
     }

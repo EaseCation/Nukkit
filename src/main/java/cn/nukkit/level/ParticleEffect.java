@@ -1,5 +1,9 @@
 package cn.nukkit.level;
 
+/**
+ * ./resource_pack/particles/
+ */
+// This file is generated automatically, do not edit it manually.
 public enum ParticleEffect {
     ARROWSPELL("minecraft:arrow_spell_emitter"),
     BALLOON_GAS("minecraft:balloon_gas_particle"),

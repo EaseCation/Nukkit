@@ -862,6 +862,12 @@ public interface ItemFullNames extends ItemBlockFullNames {
      */
     @Deprecated
     String RECORD_LAVA_CHICKEN = "minecraft:" + ItemNames.RECORD_LAVA_CHICKEN;
+    String MUSIC_DISC_BOUNCE = "minecraft:" + ItemNames.MUSIC_DISC_BOUNCE;
+    /**
+     * @deprecated use {@link #MUSIC_DISC_BOUNCE} instead
+     */
+    @Deprecated
+    String RECORD_BOUNCE = "minecraft:" + ItemNames.RECORD_BOUNCE;
 
     String SOUL_CAMPFIRE = "minecraft:" + ItemNames.SOUL_CAMPFIRE;
 

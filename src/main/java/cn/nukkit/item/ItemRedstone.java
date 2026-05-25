@@ -29,6 +29,11 @@ public class ItemRedstone extends Item {
     }
 
     @Override
+    public boolean isBrewingIngredient() {
+        return true;
+    }
+
+    @Override
     public String getTrimMaterialName() {
         return TrimMaterialNames.REDSTONE;
     }

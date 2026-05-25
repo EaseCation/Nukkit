@@ -113,6 +113,11 @@ public class ItemBlock extends Item {
     }
 
     @Override
+    public boolean isBrewingIngredient() {
+        return block.isBrewingIngredient();
+    }
+
+    @Override
     public int getCompostableChance() {
         return block.getCompostableChance();
     }

@@ -81,6 +81,7 @@ public interface BlockStateNames {
     String MINECRAFT_CORNER = "minecraft:corner";
     String MINECRAFT_FACING_DIRECTION = "minecraft:facing_direction";
     String MINECRAFT_MULTI_BLOCK_PART = "minecraft:multi_block_part";
+    String MINECRAFT_SIXTEEN_WAY_ROTATION = "minecraft:sixteen_way_rotation";
     String MINECRAFT_VERTICAL_HALF = "minecraft:vertical_half";
     String MOISTURIZED_AMOUNT = "moisturized_amount";
     String MONSTER_EGG_STONE_TYPE = "monster_egg_stone_type";

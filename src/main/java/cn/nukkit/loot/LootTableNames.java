@@ -1,5 +1,8 @@
 package cn.nukkit.loot;
 
+/**
+ * ./behavior_pack/loot_tables/
+ */
 // This file is generated automatically, do not edit it manually.
 public interface LootTableNames {
     String CHESTS_ABANDONED_MINESHAFT = "loot_tables/chests/abandoned_mineshaft.json";

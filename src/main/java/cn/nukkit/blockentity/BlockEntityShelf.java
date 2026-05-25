@@ -173,4 +173,48 @@ public class BlockEntityShelf extends BlockEntitySpawnable implements HopperInte
         }
         return itemsStored;
     }
+
+    @Override
+    public boolean pull(BlockEntityHopper hopper) {
+        Inventory inventory = hopper.getInventory();
+        for (int i = 0; i < SLOT_COUNT; i++) {
+            Item item = getItem(i);
+            if (item == null) {
+                continue;
+            }
+
+            if (!inventory.canAddItem(item)) {
+                continue;
+            }
+
+            inventory.addItem(item);
+
+            items[i] = null;
+            return true;
+        }
+        return false;
+    }
+
+    @Override
+    public boolean push(Item item) {
+        for (int i = 0; i < SLOT_COUNT; i++) {
+            Item slot = getItem(i);
+
+            if (slot == null) {
+                items[i] = item.split(1);
+                return true;
+            }
+
+            if (slot.getCount() >= slot.getMaxStackSize()) {
+                continue;
+            }
+
+            if (slot.equals(item)) {
+                slot.grow(1);
+                item.pop();
+                return true;
+            }
+        }
+        return false;
+    }
 }

@@ -24,6 +24,8 @@ public class BucketDispenseBehavior extends DefaultDispenseBehavior {
         }
         if (resultItemId != -1) {
             target.level.setBlock(target, Block.get(Block.AIR), true);
+
+            item.pop();
             return Item.get(resultItemId);
         }
 
@@ -31,6 +33,8 @@ public class BucketDispenseBehavior extends DefaultDispenseBehavior {
             Block extra = target.level.getExtraBlock(target);
             if (extra.isWaterSource()) {
                 target.level.setExtraBlock(target, Block.get(Block.AIR), true);
+
+                item.pop();
                 return Item.get(Item.WATER_BUCKET);
             }
         }

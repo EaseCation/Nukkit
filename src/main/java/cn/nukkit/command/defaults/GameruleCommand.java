@@ -9,11 +9,11 @@ import cn.nukkit.command.data.CommandParameter;
 import cn.nukkit.lang.TranslationContainer;
 import cn.nukkit.level.GameRule;
 import cn.nukkit.level.GameRules;
+import cn.nukkit.level.GameRules.EnumValue;
 import it.unimi.dsi.fastutil.objects.ObjectOpenHashSet;
 
-import java.util.Arrays;
-import java.util.Optional;
-import java.util.Set;
+import java.util.*;
+import java.util.Map.Entry;
 
 public class GameruleCommand extends VanillaCommand {
 
@@ -26,6 +26,7 @@ public class GameruleCommand extends VanillaCommand {
         GameRules rules = GameRules.getDefault();
         Set<String> boolGameRules = new ObjectOpenHashSet<>();
         Set<String> intGameRules = new ObjectOpenHashSet<>();
+        Map<String, EnumValue<? extends Enum<?>>> enumGameRules = new HashMap<>();
         Set<String> floatGameRules = new ObjectOpenHashSet<>();
         Set<String> unknownGameRules = new ObjectOpenHashSet<>();
 
@@ -35,6 +36,10 @@ public class GameruleCommand extends VanillaCommand {
                     boolGameRules.add(rule.getBedrockName());
                     break;
                 case INTEGER:
+                    if (value instanceof EnumValue<? extends Enum<?>> enumValue) {
+                        enumGameRules.put(rule.getBedrockName(), enumValue);
+                        break;
+                    }
                     intGameRules.add(rule.getBedrockName());
                     break;
                 case FLOAT:
@@ -69,6 +74,13 @@ public class GameruleCommand extends VanillaCommand {
             this.commandParameters.put("unknownGameRules", new CommandParameter[]{
                     CommandParameter.newEnum("rule", new CommandEnum("UnknownGameRule", unknownGameRules)),
                     CommandParameter.newType("value", true, CommandParamType.STRING)
+            });
+        }
+        for (Entry<String, EnumValue<?>> entry : enumGameRules.entrySet()) {
+            String ruleName = entry.getKey();
+            this.commandParameters.put("enumGameRules", new CommandParameter[]{
+                    CommandParameter.newEnum("rule", new CommandEnum(ruleName + "Rule", ruleName)),
+                    CommandParameter.newEnum("value", new CommandEnum(ruleName + "Values", entry.getValue().getValues())),
             });
         }
     }

@@ -95,6 +95,7 @@ public final class BlockStates {
     public static final EnumBlockState<MinecraftCornerState> MINECRAFT_CORNER = register(new EnumBlockState<>(BlockStateNames.MINECRAFT_CORNER, MinecraftCornerState.values()));
     public static final EnumBlockState<MinecraftFacingDirectionState> MINECRAFT_FACING_DIRECTION = register(new EnumBlockState<>(BlockStateNames.MINECRAFT_FACING_DIRECTION, MinecraftFacingDirectionState.values()));
     public static final IntegerBlockState MINECRAFT_MULTI_BLOCK_PART = register(new IntegerBlockState(BlockStateNames.MINECRAFT_MULTI_BLOCK_PART, MAX_MINECRAFT_MULTI_BLOCK_PART + 1));
+    public static final EnumBlockState<MinecraftSixteenWayRotationState> MINECRAFT_SIXTEEN_WAY_ROTATION = register(new EnumBlockState<>(BlockStateNames.MINECRAFT_SIXTEEN_WAY_ROTATION, MinecraftSixteenWayRotationState.values()));
     public static final EnumBlockState<MinecraftVerticalHalfState> MINECRAFT_VERTICAL_HALF = register(new EnumBlockState<>(BlockStateNames.MINECRAFT_VERTICAL_HALF, MinecraftVerticalHalfState.values()));
     public static final IntegerBlockState MOISTURIZED_AMOUNT = register(new IntegerBlockState(BlockStateNames.MOISTURIZED_AMOUNT, MAX_MOISTURIZED_AMOUNT + 1));
     public static final EnumBlockState<MonsterEggStoneTypeState> MONSTER_EGG_STONE_TYPE = register(new EnumBlockState<>(BlockStateNames.MONSTER_EGG_STONE_TYPE, MonsterEggStoneTypeState.values()));

@@ -19,6 +19,8 @@ public class EntityBucketDispenseBehavior extends DefaultDispenseBehavior {
     public Item dispense(BlockDispenser block, BlockFace face, Item item) {
         Vector3 target = block.getSideVec(face);
         entityFactory.create(block.level.getChunk(target.getChunkX(), target.getChunkZ()), Entity.getDefaultNBT(target.add(0.5, 0, 0.5), null, face.getHorizontalAngle(), 0)).spawnToAll();
+
+        item.pop();
         return Item.get(ItemID.BUCKET);
     }
 }

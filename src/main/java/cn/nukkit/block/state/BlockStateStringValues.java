@@ -131,6 +131,13 @@ public interface BlockStateStringValues {
     String MINECRAFT_FACING_DIRECTION_UP = "up";
     String MINECRAFT_FACING_DIRECTION_WEST = "west";
 
+    String MINECRAFT_SIXTEEN_WAY_ROTATION_DOWN = "down";
+    String MINECRAFT_SIXTEEN_WAY_ROTATION_EAST = "east";
+    String MINECRAFT_SIXTEEN_WAY_ROTATION_NORTH = "north";
+    String MINECRAFT_SIXTEEN_WAY_ROTATION_SOUTH = "south";
+    String MINECRAFT_SIXTEEN_WAY_ROTATION_UP = "up";
+    String MINECRAFT_SIXTEEN_WAY_ROTATION_WEST = "west";
+
     String MINECRAFT_VERTICAL_HALF_BOTTOM = "bottom";
     String MINECRAFT_VERTICAL_HALF_TOP = "top";
 
@@ -194,10 +201,11 @@ public interface BlockStateStringValues {
     String PORTAL_AXIS_X = "x";
     String PORTAL_AXIS_Z = "z";
 
-    String POTENT_SULFUR_STATE_DRY = "dry";
-    String POTENT_SULFUR_STATE_WET = "wet";
+    String POTENT_SULFUR_STATE_CONTINUOUS = "continuous";
     String POTENT_SULFUR_STATE_DORMANT = "dormant";
+    String POTENT_SULFUR_STATE_DRY = "dry";
     String POTENT_SULFUR_STATE_ERUPTING = "erupting";
+    String POTENT_SULFUR_STATE_WET = "wet";
 
     String PRISMARINE_BLOCK_TYPE_BRICKS = "bricks";
     String PRISMARINE_BLOCK_TYPE_DARK = "dark";

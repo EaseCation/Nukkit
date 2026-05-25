@@ -20,14 +20,13 @@ public class FlintAndSteelDispenseBehavior extends DefaultDispenseBehavior {
         } else if (target.isCampfire()) {
             ((BlockCampfire) target).tryLightFire(block, null, BlockIgniteCause.FLINT_AND_STEEL);
         } else if (target.getId() == BlockID.TNT) {
-            target.onActivate(item, face, null);
+            target.onActivate(item, face.getOpposite(), null);
         } else {
-            item.count++;
             return null;
         }
 
-        if (item.hurtAndBreak(1) >= 0) {
-            item.count++;
+        if (item.hurtAndBreak(1) < 0) {
+            item.pop();
         }
         return null;
     }

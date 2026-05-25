@@ -36,7 +36,7 @@ public class ItemSpyglass extends Item {
     }
 
     @Override
-    public boolean onRelease(Player player, int ticksUsed) {
+    public boolean onRelease(Player player, int ticksUsed, Vector3 rotation) {
         return true;
     }
 

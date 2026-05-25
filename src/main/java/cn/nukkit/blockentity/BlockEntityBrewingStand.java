@@ -96,11 +96,11 @@ public class BlockEntityBrewingStand extends BlockEntityAbstractContainer {
 
         boolean hasUpdate = false;
 
-        Item ingredient = this.inventory.getIngredient();
+        Item ingredient = null;
         boolean canBrew = false;
 
-        Item fuel = this.getInventory().getFuel();
-        if (this.fuelAmount <= 0 && fuel.getId() == Item.BLAZE_POWDER && fuel.getCount() > 0) {
+        Item fuel;
+        if (this.fuelAmount <= 0 && (fuel = this.getInventory().getFuel()).getId() == Item.BLAZE_POWDER && fuel.getCount() > 0) {
             fuel.count--;
             this.fuelAmount = 20;
             this.fuelTotal = 20;
@@ -109,7 +109,7 @@ public class BlockEntityBrewingStand extends BlockEntityAbstractContainer {
             this.sendFuel();
         }
 
-        if (this.fuelAmount > 0 && this.brewTime <= MAX_BREW_TIME && !ingredient.isNull()) {
+        if (this.fuelAmount > 0 && this.brewTime <= MAX_BREW_TIME && !(ingredient = this.inventory.getIngredient()).isNull()) {
             for (int i = 1; i <= 3; i++) {
                 Item potion = this.inventory.getItem(i);
                 if (!potion.isPotion()) {
@@ -147,7 +147,6 @@ public class BlockEntityBrewingStand extends BlockEntityAbstractContainer {
             if (this.brewTime <= 0) { //20 seconds
                 BrewEvent e = new BrewEvent(this);
                 this.server.getPluginManager().callEvent(e);
-
                 if (!e.isCancelled()) {
                     for (int i = 1; i <= 3; i++) {
                         Item potion = this.inventory.getItem(i);
@@ -243,8 +242,7 @@ public class BlockEntityBrewingStand extends BlockEntityAbstractContainer {
         for (int i = 1; i <= 3; ++i) {
             Item potion = this.inventory.getItem(i);
 
-            int id = potion.getId();
-            if ((id == Item.POTION || id == Item.SPLASH_POTION || id == Item.LINGERING_POTION) && potion.getCount() > 0) {
+            if ((potion.isPotion() || potion.getId() == Item.GLASS_BOTTLE) && potion.getCount() > 0) {
                 meta |= 1 << (i - 1);
             }
         }
@@ -276,5 +274,9 @@ public class BlockEntityBrewingStand extends BlockEntityAbstractContainer {
         }
 
         return nbt;
+    }
+
+    public boolean isBrewing() {
+        return brewing;
     }
 }

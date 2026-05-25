@@ -216,12 +216,22 @@ public final class DispenseBehaviorRegister {
                 nbt.putCompound("properties", new CompoundTag()
                         .putString(EntityPropertyNames.CLIMATE_VARIANT, EntityPropertyStringValues.CLIMATE_VARIANT_TEMPERATE));
             }
+
+            @Override
+            protected float getAccuracy() {
+                return 0;
+            }
         });
         registerBehavior(ItemID.BLUE_EGG, new ProjectileDispenseBehavior(EntityEgg::new) {
             @Override
             protected void correctNBT(CompoundTag nbt, Item item) {
                 nbt.putCompound("properties", new CompoundTag()
                         .putString(EntityPropertyNames.CLIMATE_VARIANT, EntityPropertyStringValues.CLIMATE_VARIANT_COLD));
+            }
+
+            @Override
+            protected float getAccuracy() {
+                return 0;
             }
         });
         registerBehavior(ItemID.BROWN_EGG, new ProjectileDispenseBehavior(EntityEgg::new) {
@@ -230,12 +240,22 @@ public final class DispenseBehaviorRegister {
                 nbt.putCompound("properties", new CompoundTag()
                         .putString(EntityPropertyNames.CLIMATE_VARIANT, EntityPropertyStringValues.CLIMATE_VARIANT_WARM));
             }
+
+            @Override
+            protected float getAccuracy() {
+                return 0;
+            }
         });
-        registerBehavior(ItemID.SNOWBALL, new ProjectileDispenseBehavior(EntitySnowball::new));
+        registerBehavior(ItemID.SNOWBALL, new ProjectileDispenseBehavior(EntitySnowball::new) {
+            @Override
+            protected float getAccuracy() {
+                return 0;
+            }
+        });
         registerBehavior(ItemID.EXPERIENCE_BOTTLE, new ProjectileDispenseBehavior(EntityExpBottle::new) {
             @Override
             protected float getAccuracy() {
-                return super.getAccuracy() * 0.5f;
+                return 0;
             }
 
             @Override
@@ -246,7 +266,7 @@ public final class DispenseBehaviorRegister {
         registerBehavior(ItemID.SPLASH_POTION, new ProjectileDispenseBehavior(EntityPotion::new) {
             @Override
             protected float getAccuracy() {
-                return super.getAccuracy() * 0.5f;
+                return 0;
             }
 
             @Override
@@ -263,7 +283,7 @@ public final class DispenseBehaviorRegister {
         registerBehavior(ItemID.LINGERING_POTION, new ProjectileDispenseBehavior(EntityLingeringPotion::new) {
             @Override
             protected float getAccuracy() {
-                return super.getAccuracy() * 0.5f;
+                return 0;
             }
 
             @Override
@@ -293,7 +313,12 @@ public final class DispenseBehaviorRegister {
                 nbt.putCompound("Trident", NBTIO.putItemHelper(item));
             }
         });
-        registerBehavior(ItemID.ICE_BOMB, new ProjectileDispenseBehavior(EntityIceBomb::new));
+        registerBehavior(ItemID.ICE_BOMB, new ProjectileDispenseBehavior(EntityIceBomb::new) {
+            @Override
+            protected float getAccuracy() {
+                return 0;
+            }
+        });
         registerBehavior(ItemID.WIND_CHARGE, new ProjectileDispenseBehavior(EntityWindCharge::new));
         registerBehavior(ItemID.FIRE_CHARGE, new FireChargeDispenseBehavior());
         registerBehavior(ItemID.GLASS_BOTTLE, new GlassBottleDispenseBehavior());

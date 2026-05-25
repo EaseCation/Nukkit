@@ -1,7 +1,9 @@
 package cn.nukkit.inventory;
 
+import cn.nukkit.Player;
 import cn.nukkit.blockentity.BlockEntityFurnace;
 import cn.nukkit.item.Item;
+import cn.nukkit.network.protocol.ContainerSetDataPacket;
 
 /**
  * author: MagicDroidX
@@ -56,5 +58,25 @@ public class FurnaceInventory extends ContainerInventory {
         }
 
         furnace.scheduleUpdate();
+    }
+
+    @Override
+    public void onOpen(Player who) {
+        super.onOpen(who);
+
+        BlockEntityFurnace holder = getHolder();
+        int windowId = who.getWindowId(this);
+
+        ContainerSetDataPacket pk0 = new ContainerSetDataPacket();
+        pk0.windowId = windowId;
+        pk0.property = ContainerSetDataPacket.PROPERTY_FURNACE_SMELT_PROGRESS;
+        pk0.value = holder.getCookTime();
+        who.dataPacket(pk0);
+
+        ContainerSetDataPacket pk1 = new ContainerSetDataPacket();
+        pk1.windowId = windowId;
+        pk1.property = ContainerSetDataPacket.PROPERTY_FURNACE_REMAINING_FUEL_TIME;
+        pk1.value = holder.getBurnDuration();
+        who.dataPacket(pk1);
     }
 }
