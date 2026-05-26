@@ -272,4 +272,9 @@ public class BlockFenceGate extends BlockTransparent implements Faceable {
     public int getFuelTime() {
         return 300;
     }
+
+    @Override
+    public Instrument getInstrument() {
+        return Instrument.BASS;
+    }
 }

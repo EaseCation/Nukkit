@@ -2,6 +2,7 @@ package cn.nukkit.block;
 
 import cn.nukkit.Player;
 import cn.nukkit.item.Item;
+import cn.nukkit.math.BlockFace;
 
 public class BlockHugeMushroomStem extends BlockHugeMushroom {
     BlockHugeMushroomStem() {
@@ -31,6 +32,17 @@ public class BlockHugeMushroomStem extends BlockHugeMushroom {
     @Override
     public int getItemSerializationMeta() {
         return getBlockDefaultMeta();
+    }
+
+    @Override
+    public int getItemKeepMetaMask() {
+        return 0;
+    }
+
+    @Override
+    public boolean place(Item item, Block block, Block target, BlockFace face, float fx, float fy, float fz, Player player) {
+        setDamage(getBlockDefaultMeta());
+        return super.place(item, block, target, face, fx, fy, fz, player);
     }
 
     @Override

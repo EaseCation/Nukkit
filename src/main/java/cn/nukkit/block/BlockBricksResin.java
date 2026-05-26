@@ -54,4 +54,9 @@ public class BlockBricksResin extends BlockSolid {
     public BlockColor getColor() {
         return BlockColor.ORANGE_TERRACOTA_BLOCK_COLOR;
     }
+
+    @Override
+    public Instrument getInstrument() {
+        return Instrument.BASS_DRUM;
+    }
 }

@@ -178,4 +178,9 @@ public abstract class BlockCoralFan extends BlockFlowable {
     public void setDirectionType(boolean zAxis) {
         setDamage(zAxis ? DIRECTION_Z_AXIS : DIRECTION_X_AXIS);
     }
+
+    @Override
+    public Instrument getInstrument() {
+        return Instrument.BASS_DRUM;
+    }
 }

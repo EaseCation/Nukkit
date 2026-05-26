@@ -221,4 +221,9 @@ public class BlockEnderChest extends BlockTransparent implements Faceable {
     public boolean canProvideSupport(BlockFace face, SupportType type) {
         return face == BlockFace.DOWN && type == SupportType.CENTER;
     }
+
+    @Override
+    public Instrument getInstrument() {
+        return Instrument.BASS_DRUM;
+    }
 }

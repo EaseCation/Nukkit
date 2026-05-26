@@ -73,4 +73,9 @@ public class BlockClay extends BlockSolid {
     public boolean isFertilizable() {
         return true;
     }
+
+    @Override
+    public Instrument getInstrument() {
+        return Instrument.FLUTE;
+    }
 }

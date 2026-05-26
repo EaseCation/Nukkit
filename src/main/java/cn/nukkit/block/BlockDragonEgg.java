@@ -121,4 +121,9 @@ public class BlockDragonEgg extends BlockFallable {
     public boolean canHarvestWithHand() {
         return ENABLE_BLOCK_DESTROY_SPEED_COMPATIBILITY || V1_21_50.isAvailable();
     }
+
+    @Override
+    public Instrument getInstrument() {
+        return Instrument.BASS_DRUM;
+    }
 }

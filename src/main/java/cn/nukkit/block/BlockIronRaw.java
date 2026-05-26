@@ -54,4 +54,9 @@ public class BlockIronRaw extends BlockSolid {
     public BlockColor getColor() {
         return BlockColor.RAW_IRON_BLOCK_COLOR;
     }
+
+    @Override
+    public Instrument getInstrument() {
+        return Instrument.BASS_DRUM;
+    }
 }

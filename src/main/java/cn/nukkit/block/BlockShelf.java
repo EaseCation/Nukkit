@@ -379,4 +379,9 @@ public abstract class BlockShelf extends BlockSolid implements Faceable {
     public void setPowered(boolean powered) {
         setDamage(powered ? getDamage() | POWERED_BIT : getDamage() & ~POWERED_BIT);
     }
+
+    @Override
+    public Instrument getInstrument() {
+        return Instrument.BASS;
+    }
 }

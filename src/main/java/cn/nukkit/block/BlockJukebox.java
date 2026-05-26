@@ -162,4 +162,9 @@ public class BlockJukebox extends BlockSolid {
         }
         return null;
     }
+
+    @Override
+    public Instrument getInstrument() {
+        return Instrument.BASS;
+    }
 }

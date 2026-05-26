@@ -54,4 +54,9 @@ public abstract class BlockHyphae extends BlockRotatedPillar {
     }
 
     protected abstract Block getStrippedBlock();
+
+    @Override
+    public Instrument getInstrument() {
+        return Instrument.BASS;
+    }
 }

@@ -148,4 +148,9 @@ public class BlockBeacon extends BlockTransparent {
         }
         return null;
     }
+
+    @Override
+    public Instrument getInstrument() {
+        return Instrument.STICKS;
+    }
 }

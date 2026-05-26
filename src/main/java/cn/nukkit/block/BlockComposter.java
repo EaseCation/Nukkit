@@ -207,4 +207,9 @@ public class BlockComposter extends BlockTransparent {
     public int getFuelTime() {
         return 300;
     }
+
+    @Override
+    public Instrument getInstrument() {
+        return Instrument.BASS;
+    }
 }

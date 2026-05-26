@@ -45,4 +45,9 @@ public abstract class BlockDoubleSlabWood extends BlockDoubleSlab {
     public int getToolType() {
         return BlockToolType.AXE;
     }
+
+    @Override
+    public Instrument getInstrument() {
+        return Instrument.BASS;
+    }
 }

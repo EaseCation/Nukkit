@@ -148,4 +148,8 @@ public class BlockDaylightDetector extends BlockTransparent {
 
     //todo redstone
 
+    @Override
+    public Instrument getInstrument() {
+        return Instrument.BASS;
+    }
 }

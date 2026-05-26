@@ -19,4 +19,9 @@ public class BlockSkullSkeleton extends BlockSkull {
     public String getDescriptionId() {
         return "item.skull.skeleton.name";
     }
+
+    @Override
+    public Instrument getTopInstrument() {
+        return Instrument.SKELETON;
+    }
 }

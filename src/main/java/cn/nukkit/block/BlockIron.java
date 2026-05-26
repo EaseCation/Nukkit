@@ -60,4 +60,9 @@ public class BlockIron extends BlockSolid {
     public boolean canHarvestWithHand() {
         return false;
     }
+
+    @Override
+    public Instrument getInstrument() {
+        return Instrument.VIBRAPHONE;
+    }
 }

@@ -53,4 +53,9 @@ public abstract class BlockSlabWood extends BlockSlab {
 
     @Override
     protected abstract int getDoubleSlabBlockId();
+
+    @Override
+    public Instrument getInstrument() {
+        return Instrument.BASS;
+    }
 }

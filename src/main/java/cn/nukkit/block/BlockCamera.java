@@ -49,4 +49,9 @@ public class BlockCamera extends BlockSolid {
     public boolean canContainWater() {
         return true;
     }
+
+    @Override
+    public Instrument getInstrument() {
+        return Instrument.BASS;
+    }
 }

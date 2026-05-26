@@ -155,4 +155,9 @@ public abstract class BlockBrushable extends BlockFallable {
     public void setBrushedProgress(int progress) {
         setDamage((getDamage() & ~BRUSHED_PROGRESS_MASK) | (progress << BRUSHED_PROGRESS_START));
     }
+
+    @Override
+    public Instrument getInstrument() {
+        return Instrument.DRUM;
+    }
 }

@@ -28,4 +28,9 @@ public class BlockButtonWooden extends BlockButton {
     public int getFuelTime() {
         return 300;
     }
+
+    @Override
+    public Instrument getInstrument() {
+        return Instrument.BASS;
+    }
 }

@@ -105,4 +105,9 @@ public class BlockTrapdoorCopper extends BlockTrapdoor implements CopperBehavior
     public int getDecrementAgeBlockId() {
         throw new UnsupportedOperationException();
     }
+
+    @Override
+    public Instrument getInstrument() {
+        return Instrument.PIANO;
+    }
 }

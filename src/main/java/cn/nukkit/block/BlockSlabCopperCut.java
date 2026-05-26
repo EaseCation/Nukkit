@@ -181,4 +181,9 @@ public class BlockSlabCopperCut extends BlockSlab implements CopperBehavior {
     public int getDecrementAgeBlockId() {
         throw new UnsupportedOperationException();
     }
+
+    @Override
+    public Instrument getInstrument() {
+        return CopperBehavior.getInstrument(this);
+    }
 }

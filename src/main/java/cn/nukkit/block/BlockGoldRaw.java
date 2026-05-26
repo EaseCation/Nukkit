@@ -54,4 +54,9 @@ public class BlockGoldRaw extends BlockSolid {
     public BlockColor getColor() {
         return BlockColor.GOLD_BLOCK_COLOR;
     }
+
+    @Override
+    public Instrument getInstrument() {
+        return Instrument.BASS_DRUM;
+    }
 }

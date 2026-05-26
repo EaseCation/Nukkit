@@ -122,4 +122,9 @@ public class BlockStonecutter extends BlockTransparent implements Faceable {
     public BlockFace getBlockFace() {
         return BlockFace.fromHorizontalIndex(getDamage() & DIRECTION_MASK);
     }
+
+    @Override
+    public Instrument getInstrument() {
+        return Instrument.BASS_DRUM;
+    }
 }

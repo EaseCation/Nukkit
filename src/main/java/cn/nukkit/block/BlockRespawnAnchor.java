@@ -144,4 +144,9 @@ public class BlockRespawnAnchor extends BlockSolid {
     private int getScaledChargeLevel() {
         return Mth.floor(getDamage() / 4f * 15);
     }
+
+    @Override
+    public Instrument getInstrument() {
+        return Instrument.BASS_DRUM;
+    }
 }

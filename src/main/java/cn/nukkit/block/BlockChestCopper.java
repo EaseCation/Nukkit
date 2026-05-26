@@ -147,4 +147,9 @@ public class BlockChestCopper extends BlockChest implements CopperBehavior {
         }
         return newer.getId();
     }
+
+    @Override
+    public Instrument getInstrument() {
+        return Instrument.PIANO;
+    }
 }

@@ -135,4 +135,9 @@ public class BlockChorusPlant extends BlockFlowable {
         int id = block.getId();
         return id == CHORUS_PLANT || id == END_STONE;
     }
+
+    @Override
+    public Instrument getInstrument() {
+        return Instrument.BASS;
+    }
 }

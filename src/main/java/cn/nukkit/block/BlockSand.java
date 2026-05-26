@@ -83,4 +83,9 @@ public class BlockSand extends BlockFallable {
     public String getDescriptionId() {
         return "tile.sand.default.name";
     }
+
+    @Override
+    public Instrument getInstrument() {
+        return Instrument.DRUM;
+    }
 }

@@ -47,4 +47,9 @@ public class BlockGlassPane extends BlockThin {
     public boolean canSilkTouch() {
         return true;
     }
+
+    @Override
+    public Instrument getInstrument() {
+        return Instrument.STICKS;
+    }
 }

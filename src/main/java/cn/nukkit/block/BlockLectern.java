@@ -287,4 +287,9 @@ public class BlockLectern extends BlockTransparent implements Faceable {
         level.updateAroundRedstone(this, null);
         level.updateAroundRedstone(downVec(), null);
     }
+
+    @Override
+    public Instrument getInstrument() {
+        return Instrument.BASS;
+    }
 }

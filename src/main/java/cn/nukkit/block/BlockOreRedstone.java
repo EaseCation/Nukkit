@@ -92,4 +92,9 @@ public class BlockOreRedstone extends BlockSolid {
     protected int getLitBlockId() {
         return LIT_REDSTONE_ORE;
     }
+
+    @Override
+    public Instrument getInstrument() {
+        return Instrument.BASS_DRUM;
+    }
 }

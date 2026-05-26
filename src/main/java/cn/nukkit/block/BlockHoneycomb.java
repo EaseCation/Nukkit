@@ -32,4 +32,9 @@ public class BlockHoneycomb extends BlockSolid {
     public BlockColor getColor() {
         return BlockColor.ORANGE_BLOCK_COLOR;
     }
+
+    @Override
+    public Instrument getInstrument() {
+        return Instrument.FLUTE;
+    }
 }

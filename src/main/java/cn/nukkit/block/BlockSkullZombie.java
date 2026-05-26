@@ -19,4 +19,9 @@ public class BlockSkullZombie extends BlockSkull {
     public String getDescriptionId() {
         return "item.skull.zombie.name";
     }
+
+    @Override
+    public Instrument getTopInstrument() {
+        return Instrument.ZOMBIE;
+    }
 }

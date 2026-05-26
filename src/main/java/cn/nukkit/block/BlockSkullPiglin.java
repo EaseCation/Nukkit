@@ -19,4 +19,9 @@ public class BlockSkullPiglin extends BlockSkull {
     public String getDescriptionId() {
         return "item.skull.piglin.name";
     }
+
+    @Override
+    public Instrument getTopInstrument() {
+        return Instrument.PIGLIN;
+    }
 }

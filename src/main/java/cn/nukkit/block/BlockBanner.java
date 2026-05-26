@@ -188,4 +188,9 @@ public class BlockBanner extends BlockTransparent implements Faceable {
     public boolean canProvideSupport(BlockFace face, SupportType type) {
         return false;
     }
+
+    @Override
+    public Instrument getInstrument() {
+        return Instrument.BASS;
+    }
 }

@@ -297,4 +297,9 @@ public class BlockChest extends BlockTransparent implements Faceable {
         int id = block.getId();
         return getId() == id ? id : -1;
     }
+
+    @Override
+    public Instrument getInstrument() {
+        return Instrument.BASS;
+    }
 }

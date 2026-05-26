@@ -19,4 +19,9 @@ public class BlockSkullWitherSkeleton extends BlockSkull {
     public String getDescriptionId() {
         return "item.skull.wither.name";
     }
+
+    @Override
+    public Instrument getTopInstrument() {
+        return Instrument.WITHER_SKELETON;
+    }
 }

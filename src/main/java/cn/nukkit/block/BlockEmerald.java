@@ -60,4 +60,9 @@ public class BlockEmerald extends BlockSolid {
     public boolean canHarvestWithHand() {
         return false;
     }
+
+    @Override
+    public Instrument getInstrument() {
+        return Instrument.SQUARE_WAVE;
+    }
 }

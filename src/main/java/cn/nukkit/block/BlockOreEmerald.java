@@ -79,4 +79,9 @@ public class BlockOreEmerald extends BlockSolid {
     public boolean canSilkTouch() {
         return true;
     }
+
+    @Override
+    public Instrument getInstrument() {
+        return Instrument.BASS_DRUM;
+    }
 }

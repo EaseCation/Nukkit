@@ -21,8 +21,13 @@ public abstract class BlockHugeMushroom extends BlockSolid {
     public static final int ALL_STEM = 15;
 
     @Override
-    public int getItemSerializationMeta() {
+    public int getBlockDefaultMeta() {
         return ALL_OUTSIDE;
+    }
+
+    @Override
+    public int getItemKeepMetaMask() {
+        return 0b1111;
     }
 
     @Override
@@ -73,4 +78,9 @@ public abstract class BlockHugeMushroom extends BlockSolid {
     }
 
     protected abstract int getSmallMushroomId();
+
+    @Override
+    public Instrument getInstrument() {
+        return Instrument.BASS;
+    }
 }

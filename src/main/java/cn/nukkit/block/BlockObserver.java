@@ -129,4 +129,9 @@ public class BlockObserver extends BlockSolid implements Faceable {
     public boolean isPowered() {
         return (getDamage() & POWERED_BIT) != 0;
     }
+
+    @Override
+    public Instrument getInstrument() {
+        return Instrument.BASS_DRUM;
+    }
 }

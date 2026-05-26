@@ -65,4 +65,9 @@ public class BlockDeepslate extends BlockRotatedPillar {
     public float getFurnaceXpMultiplier() {
         return 0.1f;
     }
+
+    @Override
+    public Instrument getInstrument() {
+        return Instrument.BASS_DRUM;
+    }
 }

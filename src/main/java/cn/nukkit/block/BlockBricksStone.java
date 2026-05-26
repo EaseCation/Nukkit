@@ -82,4 +82,9 @@ public class BlockBricksStone extends BlockSolid {
     public String getDescriptionId() {
         return "tile.stonebrick.default.name";
     }
+
+    @Override
+    public Instrument getInstrument() {
+        return Instrument.BASS_DRUM;
+    }
 }

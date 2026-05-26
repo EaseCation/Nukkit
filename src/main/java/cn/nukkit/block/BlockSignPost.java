@@ -374,4 +374,9 @@ public class BlockSignPost extends BlockTransparent implements Faceable {
         }
         return null;
     }
+
+    @Override
+    public Instrument getInstrument() {
+        return Instrument.BASS;
+    }
 }

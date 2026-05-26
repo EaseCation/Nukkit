@@ -54,4 +54,9 @@ public class BlockCobblestone extends BlockSolid {
     public boolean canHarvestWithHand() {
         return false;
     }
+
+    @Override
+    public Instrument getInstrument() {
+        return Instrument.BASS_DRUM;
+    }
 }

@@ -34,4 +34,9 @@ public class BlockGrateCopper extends BlockCopper {
     public int getIncrementAgeBlockId() {
         return EXPOSED_COPPER_GRATE;
     }
+
+    @Override
+    public Instrument getInstrument() {
+        return Instrument.PIANO;
+    }
 }

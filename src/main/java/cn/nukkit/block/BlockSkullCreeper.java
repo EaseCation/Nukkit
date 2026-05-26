@@ -19,4 +19,9 @@ public class BlockSkullCreeper extends BlockSkull {
     public String getDescriptionId() {
         return "item.skull.creeper.name";
     }
+
+    @Override
+    public Instrument getTopInstrument() {
+        return Instrument.CREEPER;
+    }
 }

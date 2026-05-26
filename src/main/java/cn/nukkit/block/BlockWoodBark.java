@@ -163,4 +163,9 @@ public abstract class BlockWoodBark extends BlockSolid {
         setDamage(getDamage() & 0b1111 | face.getAxis().getIndex() << 4);
         return level.setBlock(this, this, true);
     }
+
+    @Override
+    public Instrument getInstrument() {
+        return Instrument.BASS;
+    }
 }

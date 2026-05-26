@@ -97,4 +97,9 @@ public abstract class BlockLog extends BlockRotatedPillar {
     }
 
     protected abstract Block getStrippedBlock();
+
+    @Override
+    public Instrument getInstrument() {
+        return Instrument.BASS;
+    }
 }

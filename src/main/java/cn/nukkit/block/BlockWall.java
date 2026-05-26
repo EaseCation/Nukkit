@@ -273,4 +273,9 @@ public abstract class BlockWall extends BlockTransparent {
     protected void setConnectionType(int bitOffset, int type) {
         setDamage((getDamage() & ~(CONNECTION_TYPE_MASK << bitOffset)) | ((type & CONNECTION_TYPE_MASK) << bitOffset));
     }
+
+    @Override
+    public Instrument getInstrument() {
+        return Instrument.BASS_DRUM;
+    }
 }

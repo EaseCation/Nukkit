@@ -184,4 +184,9 @@ public class BlockBarrel extends BlockSolid implements Faceable {
     public void setOpen(boolean open) {
         setDamage(open ? getDamage() | OPEN_BIT : getDamage() & FACING_DIRECTION_MASK);
     }
+
+    @Override
+    public Instrument getInstrument() {
+        return Instrument.BASS;
+    }
 }

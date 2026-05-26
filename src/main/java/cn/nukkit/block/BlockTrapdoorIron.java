@@ -53,4 +53,9 @@ public class BlockTrapdoorIron extends BlockTrapdoor {
     public boolean canHarvestWithHand() {
         return false;
     }
+
+    @Override
+    public Instrument getInstrument() {
+        return Instrument.PIANO;
+    }
 }

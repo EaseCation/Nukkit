@@ -176,4 +176,9 @@ public class BlockEndPortalFrame extends BlockTransparent implements Faceable {
         }
         return (block.getDamage() & DIRECTION_MASK) == direction.getHorizontalIndex();
     }
+
+    @Override
+    public Instrument getInstrument() {
+        return Instrument.BASS_DRUM;
+    }
 }

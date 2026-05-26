@@ -267,4 +267,9 @@ public class BlockChorusFlower extends BlockFlowable {
     private static class LazyHolder {
         private static final Item EMPTY_ITEM = Item.get(Item.AIR);
     }
+
+    @Override
+    public Instrument getInstrument() {
+        return Instrument.BASS;
+    }
 }

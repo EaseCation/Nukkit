@@ -109,4 +109,9 @@ public abstract class BlockSlabStone extends BlockSlab {
     public boolean canHarvestWithHand() {
         return false;
     }
+
+    @Override
+    public Instrument getInstrument() {
+        return Instrument.BASS_DRUM;
+    }
 }

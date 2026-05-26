@@ -90,4 +90,9 @@ public class BlockHayBale extends BlockSolid {
     public Axis getAxis() {
         return Axis.fromIndex(getPillarAxis());
     }
+
+    @Override
+    public Instrument getInstrument() {
+        return Instrument.BANJO;
+    }
 }

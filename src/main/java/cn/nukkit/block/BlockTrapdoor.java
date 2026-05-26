@@ -272,4 +272,9 @@ public class BlockTrapdoor extends BlockTransparent implements Faceable {
     public boolean isTrapdoor() {
         return true;
     }
+
+    @Override
+    public Instrument getInstrument() {
+        return Instrument.BASS;
+    }
 }

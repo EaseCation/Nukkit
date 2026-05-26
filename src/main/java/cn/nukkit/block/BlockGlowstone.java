@@ -64,6 +64,11 @@ public class BlockGlowstone extends BlockTransparent {
     }
 
     @Override
+    public Instrument getInstrument() {
+        return Instrument.ELECTRIC_PIANO;
+    }
+
+    @Override
     public boolean canSilkTouch() {
         return true;
     }

@@ -72,4 +72,9 @@ public abstract class BlockWool extends BlockSolid {
     public String getDescriptionId() {
         return "tile.wool." + getDyeColor().getDescriptionName() + ".name";
     }
+
+    @Override
+    public Instrument getInstrument() {
+        return Instrument.GUITAR;
+    }
 }

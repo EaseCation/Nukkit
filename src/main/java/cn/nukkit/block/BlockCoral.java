@@ -126,4 +126,9 @@ public abstract class BlockCoral extends BlockFlowable {
     protected int getDeadBlockId() {
         return getId();
     }
+
+    @Override
+    public Instrument getInstrument() {
+        return Instrument.BASS_DRUM;
+    }
 }

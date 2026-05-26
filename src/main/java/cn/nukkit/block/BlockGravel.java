@@ -81,4 +81,9 @@ public class BlockGravel extends BlockFallable {
     public boolean isGravel() {
         return true;
     }
+
+    @Override
+    public Instrument getInstrument() {
+        return Instrument.DRUM;
+    }
 }

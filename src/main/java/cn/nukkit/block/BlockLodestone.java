@@ -109,4 +109,9 @@ public class BlockLodestone extends BlockSolid {
         }
         return null;
     }
+
+    @Override
+    public Instrument getInstrument() {
+        return Instrument.BASS_DRUM;
+    }
 }

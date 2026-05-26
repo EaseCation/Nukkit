@@ -59,4 +59,9 @@ public class BlockBasaltSmooth extends BlockSolid {
     public float getFurnaceXpMultiplier() {
         return 0.1f;
     }
+
+    @Override
+    public Instrument getInstrument() {
+        return Instrument.BASS_DRUM;
+    }
 }

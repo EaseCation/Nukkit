@@ -19,4 +19,9 @@ public class BlockSkullDragon extends BlockSkull {
     public String getDescriptionId() {
         return "item.skull.dragon.name";
     }
+
+    @Override
+    public Instrument getTopInstrument() {
+        return Instrument.ENDER_DRAGON;
+    }
 }

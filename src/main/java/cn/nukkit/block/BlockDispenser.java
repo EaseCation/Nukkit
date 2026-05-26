@@ -337,4 +337,9 @@ public class BlockDispenser extends BlockSolid implements Faceable {
         }
         return new Item[0];
     }
+
+    @Override
+    public Instrument getInstrument() {
+        return Instrument.BASS_DRUM;
+    }
 }

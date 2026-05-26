@@ -57,4 +57,9 @@ public class BlockDoorWood extends BlockDoor {
     public String getDescriptionId() {
         return "tile.doorWood.name";
     }
+
+    @Override
+    public Instrument getInstrument() {
+        return Instrument.BASS;
+    }
 }

@@ -177,4 +177,9 @@ public class BlockGrindstone extends BlockTransparent implements Faceable {
     public int getAttachment() {
         return (getDamage() & ATTACHMENT_MASK) >> DIRECTION_BITS;
     }
+
+    @Override
+    public Instrument getInstrument() {
+        return Instrument.BASS_DRUM;
+    }
 }

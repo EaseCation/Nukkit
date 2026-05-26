@@ -179,4 +179,9 @@ public class BlockCopper extends BlockSolid implements CopperBehavior {
     public int getDecrementAgeBlockId() {
         throw new UnsupportedOperationException();
     }
+
+    @Override
+    public Instrument getInstrument() {
+        return CopperBehavior.getInstrument(this);
+    }
 }

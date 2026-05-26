@@ -64,4 +64,9 @@ public class BlockPressurePlateStone extends BlockPressurePlateBase {
 
         return 0;
     }
+
+    @Override
+    public Instrument getInstrument() {
+        return Instrument.BASS_DRUM;
+    }
 }

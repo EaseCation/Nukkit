@@ -49,4 +49,9 @@ public abstract class BlockFungusStem extends BlockRotatedPillar {
     }
 
     protected abstract Block getStrippedBlock();
+
+    @Override
+    public Instrument getInstrument() {
+        return Instrument.BASS;
+    }
 }

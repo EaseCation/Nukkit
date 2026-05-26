@@ -150,4 +150,9 @@ public class BlockMobSpawner extends BlockSolid {
         }
         return null;
     }
+
+    @Override
+    public Instrument getInstrument() {
+        return Instrument.BASS_DRUM;
+    }
 }

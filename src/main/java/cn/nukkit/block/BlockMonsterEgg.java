@@ -50,4 +50,9 @@ public abstract class BlockMonsterEgg extends BlockSolid {
     public BlockColor getColor() {
         return BlockColor.STONE_BLOCK_COLOR;
     }
+
+    @Override
+    public Instrument getInstrument() {
+        return Instrument.FLUTE;
+    }
 }

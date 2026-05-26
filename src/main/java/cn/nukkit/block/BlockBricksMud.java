@@ -60,4 +60,9 @@ public class BlockBricksMud extends BlockSolid {
     public BlockColor getColor() {
         return BlockColor.LIGHT_GRAY_TERRACOTA_BLOCK_COLOR;
     }
+
+    @Override
+    public Instrument getInstrument() {
+        return Instrument.BASS_DRUM;
+    }
 }

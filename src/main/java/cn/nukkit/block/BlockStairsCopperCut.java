@@ -176,4 +176,9 @@ public class BlockStairsCopperCut extends BlockStairs implements CopperBehavior 
     public int getDecrementAgeBlockId() {
         throw new UnsupportedOperationException();
     }
+
+    @Override
+    public Instrument getInstrument() {
+        return CopperBehavior.getInstrument(this);
+    }
 }

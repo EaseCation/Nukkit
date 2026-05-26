@@ -204,4 +204,9 @@ public class BlockBeehive extends BlockSolid implements Faceable {
     public void setHoneyLevel(int honeyLevel) {
         setDamage((Mth.clamp(honeyLevel, 0, MAX_HONEY_LEVEL) << HONEY_LEVEL_OFFSET) | (getDamage() & DIRECTION_MASK));
     }
+
+    @Override
+    public Instrument getInstrument() {
+        return Instrument.BASS;
+    }
 }

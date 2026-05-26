@@ -60,4 +60,9 @@ public class BlockOreGoldNether extends BlockSolid {
     public int getDropExp() {
         return ThreadLocalRandom.current().nextInt(2);
     }
+
+    @Override
+    public Instrument getInstrument() {
+        return Instrument.BASS_DRUM;
+    }
 }

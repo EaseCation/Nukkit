@@ -82,4 +82,9 @@ public class BlockHeavyCore extends BlockTransparent {
     public boolean canContainWater() {
         return true;
     }
+
+    @Override
+    public Instrument getInstrument() {
+        return Instrument.DRUM;
+    }
 }

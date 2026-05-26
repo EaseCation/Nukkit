@@ -192,4 +192,9 @@ public class BlockEnchantingTable extends BlockTransparent {
         }
         return null;
     }
+
+    @Override
+    public Instrument getInstrument() {
+        return Instrument.BASS_DRUM;
+    }
 }

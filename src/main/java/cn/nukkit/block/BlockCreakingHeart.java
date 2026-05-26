@@ -94,4 +94,9 @@ public class BlockCreakingHeart extends BlockRotatedPillar {
         }
         return null;
     }
+
+    @Override
+    public Instrument getInstrument() {
+        return Instrument.BASS;
+    }
 }

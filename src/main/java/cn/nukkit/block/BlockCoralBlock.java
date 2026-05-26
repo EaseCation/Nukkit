@@ -111,4 +111,9 @@ public abstract class BlockCoralBlock extends BlockSolid {
     }
 
     protected abstract int getDeadBlockId();
+
+    @Override
+    public Instrument getInstrument() {
+        return Instrument.BASS_DRUM;
+    }
 }

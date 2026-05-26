@@ -98,4 +98,9 @@ public abstract class BlockConcretePowder extends BlockFallable {
     public String getDescriptionId() {
         return "tile.concretePowder." + getDyeColor().getDescriptionName() + ".name";
     }
+
+    @Override
+    public Instrument getInstrument() {
+        return Instrument.DRUM;
+    }
 }

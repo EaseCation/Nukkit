@@ -138,4 +138,9 @@ public abstract class BlockFence extends BlockTransparent {
     public boolean isFence() {
         return true;
     }
+
+    @Override
+    public Instrument getInstrument() {
+        return Instrument.BASS;
+    }
 }

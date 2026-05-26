@@ -54,4 +54,9 @@ public abstract class BlockStoneAbstract extends BlockSolid {
     public boolean isStone() {
         return true;
     }
+
+    @Override
+    public Instrument getInstrument() {
+        return Instrument.BASS_DRUM;
+    }
 }

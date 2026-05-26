@@ -16,4 +16,9 @@ public abstract class BlockFungusStemStripped extends BlockRotatedPillar {
     public int getToolType() {
         return BlockToolType.AXE;
     }
+
+    @Override
+    public Instrument getInstrument() {
+        return Instrument.BASS;
+    }
 }

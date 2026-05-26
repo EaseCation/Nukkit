@@ -2,6 +2,7 @@ package cn.nukkit.block.edu;
 
 import cn.nukkit.Player;
 import cn.nukkit.block.Block;
+import cn.nukkit.block.Instrument;
 import cn.nukkit.block.BlockToolType;
 import cn.nukkit.block.BlockTransparent;
 import cn.nukkit.item.Item;
@@ -88,5 +89,10 @@ public class BlockChemicalHeat extends BlockTransparent {
     @Override
     public boolean isChemistryFeature() {
         return true;
+    }
+
+    @Override
+    public Instrument getInstrument() {
+        return Instrument.BASS_DRUM;
     }
 }

@@ -1547,6 +1547,16 @@ public abstract class Block extends Position implements Metadatable, Cloneable, 
         return true;
     }
 
+    @Nullable
+    public Instrument getInstrument() {
+        return Instrument.PIANO;
+    }
+
+    @Nullable
+    public Instrument getTopInstrument() {
+        return null;
+    }
+
     public void playPlaceSound(Block target) {
         level.addLevelSoundEvent(blockCenter(), LevelSoundEventPacket.SOUND_PLACE, getFullId());
     }

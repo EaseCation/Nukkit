@@ -70,4 +70,9 @@ public class BlockPrismarine extends BlockSolid {
     public String getDescriptionId() {
         return "tile.prismarine.rough.name";
     }
+
+    @Override
+    public Instrument getInstrument() {
+        return Instrument.BASS_DRUM;
+    }
 }

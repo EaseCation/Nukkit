@@ -222,4 +222,9 @@ public class BlockBookshelfChiseled extends BlockSolid implements Faceable {
         }
         return null;
     }
+
+    @Override
+    public Instrument getInstrument() {
+        return Instrument.BASS;
+    }
 }

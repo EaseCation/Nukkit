@@ -81,4 +81,9 @@ public class BlockFenceNetherBrick extends BlockFence {
     public int getFuelTime() {
         return 0;
     }
+
+    @Override
+    public Instrument getInstrument() {
+        return Instrument.BASS_DRUM;
+    }
 }

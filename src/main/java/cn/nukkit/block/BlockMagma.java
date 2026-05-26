@@ -146,4 +146,9 @@ public class BlockMagma extends BlockSolid {
 
         return 0;
     }
+
+    @Override
+    public Instrument getInstrument() {
+        return Instrument.BASS_DRUM;
+    }
 }

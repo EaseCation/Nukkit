@@ -53,4 +53,9 @@ public class BlockCinnabar extends BlockSolid {
     public BlockColor getColor() {
         return BlockColor.RED_BLOCK_COLOR;
     }
+
+    @Override
+    public Instrument getInstrument() {
+        return Instrument.BASS_DRUM;
+    }
 }

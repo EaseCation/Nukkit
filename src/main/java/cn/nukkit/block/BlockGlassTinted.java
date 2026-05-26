@@ -36,4 +36,9 @@ public class BlockGlassTinted extends BlockTransparent {
     public boolean isGlass() {
         return true;
     }
+
+    @Override
+    public Instrument getInstrument() {
+        return Instrument.STICKS;
+    }
 }

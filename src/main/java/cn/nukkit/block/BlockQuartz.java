@@ -79,4 +79,9 @@ public class BlockQuartz extends BlockRotatedPillar {
     public String getDescriptionId() {
         return "tile.quartz_block.default.name";
     }
+
+    @Override
+    public Instrument getInstrument() {
+        return Instrument.BASS_DRUM;
+    }
 }

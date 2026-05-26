@@ -65,4 +65,9 @@ public abstract class BlockConcrete extends BlockSolid {
     public String getDescriptionId() {
         return "tile.concrete." + getDyeColor().getDescriptionName() + ".name";
     }
+
+    @Override
+    public Instrument getInstrument() {
+        return Instrument.BASS_DRUM;
+    }
 }

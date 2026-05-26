@@ -306,4 +306,9 @@ public class BlockShulkerBox extends BlockTransparent {
         }
         return null;
     }
+
+    @Override
+    public Instrument getInstrument() {
+        return Instrument.BASS_DRUM;
+    }
 }

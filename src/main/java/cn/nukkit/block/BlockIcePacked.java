@@ -58,4 +58,9 @@ public class BlockIcePacked extends BlockSolid {
     public Item[] getDrops(Item item, Player player) {
         return new Item[0];
     }
+
+    @Override
+    public Instrument getInstrument() {
+        return Instrument.CHIME;
+    }
 }

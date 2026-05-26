@@ -91,4 +91,9 @@ public abstract class BlockTerracottaGlazed extends BlockSolid implements Faceab
     public String getDescriptionId() {
         return "tile.glazedTerracotta" + getDyeColor().getDescriptionNamePascalCase() + ".name";
     }
+
+    @Override
+    public Instrument getInstrument() {
+        return Instrument.BASS_DRUM;
+    }
 }

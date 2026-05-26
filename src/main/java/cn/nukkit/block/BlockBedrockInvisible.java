@@ -78,4 +78,9 @@ public class BlockBedrockInvisible extends BlockSolid {
     public String getDescriptionId() {
         return "tile.invisibleBedrock.name";
     }
+
+    @Override
+    public Instrument getInstrument() {
+        return Instrument.BASS_DRUM;
+    }
 }

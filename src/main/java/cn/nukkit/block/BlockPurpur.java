@@ -70,4 +70,9 @@ public class BlockPurpur extends BlockRotatedPillar {
     public String getDescriptionId() {
         return "tile.purpur_block.default.name";
     }
+
+    @Override
+    public Instrument getInstrument() {
+        return Instrument.BASS_DRUM;
+    }
 }

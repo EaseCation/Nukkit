@@ -57,6 +57,11 @@ public class BlockGold extends BlockSolid {
     }
 
     @Override
+    public Instrument getInstrument() {
+        return Instrument.GLOCKENSPIEL;
+    }
+
+    @Override
     public boolean canHarvestWithHand() {
         return false;
     }

@@ -57,4 +57,9 @@ public class BlockBedrock extends BlockSolid {
     public Item toItem(boolean addUserData) {
         return Item.get(getItemId());
     }
+
+    @Override
+    public Instrument getInstrument() {
+        return Instrument.BASS_DRUM;
+    }
 }

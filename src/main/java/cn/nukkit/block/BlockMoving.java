@@ -64,4 +64,9 @@ public class BlockMoving extends BlockTransparent {
     public float getResistance() {
         return 18000000;
     }
+
+    @Override
+    public Instrument getInstrument() {
+        return Instrument.BASS_DRUM;
+    }
 }

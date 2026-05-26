@@ -85,4 +85,9 @@ public class BlockOreCoal extends BlockSolid {
     public BlockColor getColor() {
         return BlockColor.BLACK_BLOCK_COLOR;
     }
+
+    @Override
+    public Instrument getInstrument() {
+        return Instrument.BASS_DRUM;
+    }
 }

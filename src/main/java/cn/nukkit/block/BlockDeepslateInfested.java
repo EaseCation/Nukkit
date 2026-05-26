@@ -3,8 +3,6 @@ package cn.nukkit.block;
 import cn.nukkit.Player;
 import cn.nukkit.item.Item;
 import cn.nukkit.item.ItemBlockID;
-import cn.nukkit.item.ItemTool;
-import cn.nukkit.item.enchantment.Enchantment;
 
 public class BlockDeepslateInfested extends BlockDeepslate {
     BlockDeepslateInfested() {
@@ -33,16 +31,23 @@ public class BlockDeepslateInfested extends BlockDeepslate {
 
     @Override
     public Item[] getDrops(Item item, Player player) {
-        if (item.isPickaxe() && item.getTier() >= ItemTool.TIER_WOODEN && item.hasEnchantment(Enchantment.SILK_TOUCH)) {
-            return new Item[]{
-                    Item.get(ItemBlockID.DEEPSLATE),
-            };
-        }
         return new Item[0];
+    }
+
+    @Override
+    public Item[] getSilkTouchResource() {
+        return new Item[]{
+                Item.get(ItemBlockID.DEEPSLATE),
+        };
     }
 
     @Override
     public boolean canHarvestWithHand() {
         return true;
+    }
+
+    @Override
+    public Instrument getInstrument() {
+        return Instrument.FLUTE;
     }
 }

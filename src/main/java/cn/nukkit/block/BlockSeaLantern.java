@@ -57,4 +57,9 @@ public class BlockSeaLantern extends BlockSolid {
     public String getDescriptionId() {
         return "tile.seaLantern.name";
     }
+
+    @Override
+    public Instrument getInstrument() {
+        return Instrument.STICKS;
+    }
 }

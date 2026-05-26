@@ -227,4 +227,9 @@ public class BlockFurnaceBurning extends BlockSolid implements Faceable {
     public String getBlockEntityId() {
         return BlockEntity.FURNACE;
     }
+
+    @Override
+    public Instrument getInstrument() {
+        return Instrument.BASS_DRUM;
+    }
 }

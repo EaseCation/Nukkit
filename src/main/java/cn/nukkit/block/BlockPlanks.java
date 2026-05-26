@@ -55,4 +55,9 @@ public abstract class BlockPlanks extends BlockSolid {
     public boolean isPlanks() {
         return true;
     }
+
+    @Override
+    public Instrument getInstrument() {
+        return Instrument.BASS;
+    }
 }

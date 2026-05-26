@@ -54,4 +54,9 @@ public class BlockDripstone extends BlockSolid {
     public BlockColor getColor() {
         return BlockColor.BROWN_TERRACOTA_BLOCK_COLOR;
     }
+
+    @Override
+    public Instrument getInstrument() {
+        return Instrument.BASS_DRUM;
+    }
 }

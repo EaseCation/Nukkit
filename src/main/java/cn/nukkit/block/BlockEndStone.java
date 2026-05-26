@@ -60,4 +60,9 @@ public class BlockEndStone extends BlockSolid {
     public BlockColor getColor() {
         return BlockColor.SAND_BLOCK_COLOR;
     }
+
+    @Override
+    public Instrument getInstrument() {
+        return Instrument.BASS_DRUM;
+    }
 }

@@ -27,6 +27,16 @@ public interface CopperBehavior {
     default void updatePairedBlock(Block newBlock) {
     }
 
+    static Instrument getInstrument(CopperBehavior behavior) {
+        return switch (behavior.getCopperAge()) {
+            case 0 -> Instrument.TRUMPET;
+            case 1 -> Instrument.TRUMPET_EXPOSED;
+            case 2 -> Instrument.TRUMPET_WEATHERED;
+            case 3 -> Instrument.TRUMPET_OXIDIZED;
+            default -> Instrument.PIANO;
+        };
+    }
+
     static boolean use(CopperBehavior behavior, Position target, Item item, Player player) {
         if (behavior.isWaxed()) {
             if (item.isAxe()) {

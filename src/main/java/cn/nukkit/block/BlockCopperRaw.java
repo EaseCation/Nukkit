@@ -54,4 +54,9 @@ public class BlockCopperRaw extends BlockSolid {
     public BlockColor getColor() {
         return BlockColor.ORANGE_BLOCK_COLOR;
     }
+
+    @Override
+    public Instrument getInstrument() {
+        return Instrument.BASS_DRUM;
+    }
 }

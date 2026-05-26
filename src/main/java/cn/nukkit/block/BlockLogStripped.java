@@ -36,4 +36,9 @@ public abstract class BlockLogStripped extends BlockRotatedPillar {
     public boolean isLog() {
         return true;
     }
+
+    @Override
+    public Instrument getInstrument() {
+        return Instrument.BASS;
+    }
 }

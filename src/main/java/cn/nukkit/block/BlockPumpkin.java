@@ -114,4 +114,9 @@ public class BlockPumpkin extends BlockSolid implements Faceable {
     public boolean isPumpkin() {
         return true;
     }
+
+    @Override
+    public Instrument getInstrument() {
+        return Instrument.DIDGERIDOO;
+    }
 }

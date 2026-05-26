@@ -56,4 +56,9 @@ public class BlockStonecutterLegacy extends BlockSolid {
     public BlockColor getColor() {
         return BlockColor.STONE_BLOCK_COLOR;
     }
+
+    @Override
+    public Instrument getInstrument() {
+        return Instrument.BASS_DRUM;
+    }
 }

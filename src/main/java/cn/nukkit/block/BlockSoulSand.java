@@ -86,4 +86,9 @@ public class BlockSoulSand extends BlockSolid {
 
         return 0;
     }
+
+    @Override
+    public Instrument getInstrument() {
+        return Instrument.COW_BELL;
+    }
 }

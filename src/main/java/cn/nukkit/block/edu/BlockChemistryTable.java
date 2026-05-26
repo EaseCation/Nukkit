@@ -4,6 +4,7 @@ import cn.nukkit.Player;
 import cn.nukkit.block.Block;
 import cn.nukkit.block.BlockSolid;
 import cn.nukkit.block.BlockToolType;
+import cn.nukkit.block.Instrument;
 import cn.nukkit.blockentity.BlockEntities;
 import cn.nukkit.blockentity.BlockEntity;
 import cn.nukkit.blockentity.BlockEntityChemistryTable;
@@ -110,6 +111,11 @@ public abstract class BlockChemistryTable extends BlockSolid {
     @Override
     public boolean isChemistryFeature() {
         return true;
+    }
+
+    @Override
+    public Instrument getInstrument() {
+        return Instrument.BASS_DRUM;
     }
 
 /*  //TODO: can only contain flowing water

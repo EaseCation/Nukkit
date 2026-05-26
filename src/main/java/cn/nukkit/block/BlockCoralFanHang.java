@@ -117,4 +117,9 @@ public abstract class BlockCoralFanHang extends BlockFlowable implements Faceabl
     }
 
     protected abstract int getDeadBlockId();
+
+    @Override
+    public Instrument getInstrument() {
+        return Instrument.BASS_DRUM;
+    }
 }

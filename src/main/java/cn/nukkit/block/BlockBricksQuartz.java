@@ -54,4 +54,9 @@ public class BlockBricksQuartz extends BlockSolid {
     public BlockColor getColor() {
         return BlockColor.QUARTZ_BLOCK_COLOR;
     }
+
+    @Override
+    public Instrument getInstrument() {
+        return Instrument.BASS_DRUM;
+    }
 }

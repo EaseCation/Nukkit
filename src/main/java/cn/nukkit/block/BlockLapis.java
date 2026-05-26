@@ -61,4 +61,8 @@ public class BlockLapis extends BlockSolid {
         return false;
     }
 
+    @Override
+    public Instrument getInstrument() {
+        return Instrument.BASS_DRUM;
+    }
 }

@@ -69,4 +69,9 @@ public class BlockTerracotta extends BlockSolid {
     public boolean isTerracotta() {
         return true;
     }
+
+    @Override
+    public Instrument getInstrument() {
+        return Instrument.BASS_DRUM;
+    }
 }

@@ -226,4 +226,9 @@ public abstract class BlockStairs extends BlockTransparent implements Faceable {
 
         return MinecraftCornerState.NONE;
     }
+
+    @Override
+    public Instrument getInstrument() {
+        return Instrument.BASS_DRUM;
+    }
 }
