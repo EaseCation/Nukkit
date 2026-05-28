@@ -637,6 +637,24 @@ public class Vector3 implements Cloneable {
                 && Double.compare(vec.z, this.z) == 0;
     }
 
+    public final boolean equalsVec(Vector3f vec) {
+        if (vec == null) {
+            return false;
+        }
+        return this.equals(vec.x, vec.y, vec.z);
+    }
+
+    public final boolean equalsVec(BlockVector3 vec) {
+        if (vec == null) {
+            return false;
+        }
+        return vec.x == this.getFloorX() && vec.y == this.getFloorY() && vec.z == this.getFloorZ();
+    }
+
+    public final boolean equalsVec(int x, int y, int z) {
+        return x == this.getFloorX() && y == this.getFloorY() && z == this.getFloorZ();
+    }
+
     @Override
     public int hashCode() {
         int hash = Double.hashCode(this.x);

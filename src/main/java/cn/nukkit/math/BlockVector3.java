@@ -464,6 +464,20 @@ public class BlockVector3 implements Cloneable {
         return this.x == vec.x && this.y == vec.y && this.z == vec.z;
     }
 
+    public final boolean equalsVec(Vector3 vec) {
+        if (vec == null) {
+            return false;
+        }
+        return this.x == vec.getFloorX() && this.y == vec.getFloorY() && this.z == vec.getFloorZ();
+    }
+
+    public final boolean equalsVec(Vector3f vec) {
+        if (vec == null) {
+            return false;
+        }
+        return this.x == vec.getFloorX() && this.y == vec.getFloorY() && this.z == vec.getFloorZ();
+    }
+
     @Override
     public final int hashCode() {
         return (x ^ (z << 12)) ^ (y << 24);

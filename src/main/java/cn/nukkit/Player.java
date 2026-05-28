@@ -3171,7 +3171,7 @@ public class Player extends EntityHuman implements CommandSender, InventoryHolde
                             dataPacket(pk);
                             break packetswitch;
                         case PlayerActionPacket.ACTION_CONTINUE_BREAK:
-                            if (this.isBreakingBlock()) {
+                            if (this.isBreakingBlock(pos)) {
                                 block = this.level.getBlock(pos, false);
                                 face = BlockFace.fromIndex(playerActionPacket.data);
                                 Vector3 blockCenter = pos.blockCenter();
@@ -3817,9 +3817,10 @@ public class Player extends EntityHuman implements CommandSender, InventoryHolde
 
                                     Item oldItem = i.clone();
 
-                                    if (isBreakingBlock()
+                                    if (isBreakingBlock(blockVector)
                                             && this.canInteract(blockVector.add(0.5, 0.5, 0.5), this.isCreative() ? MAX_REACH_DISTANCE_CREATIVE : MAX_REACH_DISTANCE_SURVIVAL)
                                             && (i = this.level.useBreakOn(blockVector.asVector3(), i, this, true)) != null) {
+                                        this.breakingBlock = null;
                                         if (this.isSurvival()) {
                                             this.getFoodData().updateFoodExpLevel(0.005f);
                                             if (!i.equals(oldItem) || i.getCount() != oldItem.getCount()) {
@@ -6316,6 +6317,10 @@ public class Player extends EntityHuman implements CommandSender, InventoryHolde
 
     public boolean isBreakingBlock() {
         return this.breakingBlock != null;
+    }
+
+    public boolean isBreakingBlock(BlockVector3 pos) {
+        return pos.equalsVec(this.breakingBlock);
     }
 
     /**
