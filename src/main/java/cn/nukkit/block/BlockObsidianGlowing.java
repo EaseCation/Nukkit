@@ -25,6 +25,11 @@ public class BlockObsidianGlowing extends BlockSolid {
     }
 
     @Override
+    public int getToolTier() {
+        return ItemTool.TIER_DIAMOND;
+    }
+
+    @Override
     public String getName() {
         return "Glowing Obsidian";
     }
@@ -51,7 +56,7 @@ public class BlockObsidianGlowing extends BlockSolid {
 
     @Override
     public Item[] getDrops(Item item, Player player) {
-        if (item.isPickaxe() && item.getTier() > ItemTool.DIAMOND_PICKAXE) {
+        if (item.isPickaxe() && item.getTier() >= ItemTool.TIER_DIAMOND) {
             return new Item[]{
                     toItem(true)
             };

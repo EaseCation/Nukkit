@@ -43,6 +43,11 @@ public class BlockOreDiamond extends BlockSolid {
     }
 
     @Override
+    public int getToolTier() {
+        return ItemTool.TIER_IRON;
+    }
+
+    @Override
     public Item[] getDrops(Item item, Player player) {
         if (item.isPickaxe() && item.getTier() >= ItemTool.TIER_IRON) {
             int count = 1;

@@ -42,6 +42,11 @@ public class BlockObsidianCrying extends BlockSolid {
     }
 
     @Override
+    public int getToolTier() {
+        return ItemTool.TIER_DIAMOND;
+    }
+
+    @Override
     public Item[] getDrops(Item item, Player player) {
         if (item.isPickaxe() && item.getTier() >= ItemTool.TIER_DIAMOND) {
             return new Item[]{

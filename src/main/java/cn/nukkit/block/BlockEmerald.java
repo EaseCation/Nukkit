@@ -41,8 +41,13 @@ public class BlockEmerald extends BlockSolid {
     }
 
     @Override
+    public int getToolTier() {
+        return ItemTool.TIER_IRON;
+    }
+
+    @Override
     public Item[] getDrops(Item item, Player player) {
-        if (item.isPickaxe() && item.getTier() >= ItemTool.TIER_WOODEN) {
+        if (item.isPickaxe() && item.getTier() >= ItemTool.TIER_IRON) {
             return new Item[]{
                     toItem(true)
             };

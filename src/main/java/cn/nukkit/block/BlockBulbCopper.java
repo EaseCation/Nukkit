@@ -48,6 +48,11 @@ public class BlockBulbCopper extends BlockSolid implements CopperBehavior {
     }
 
     @Override
+    public int getToolTier() {
+        return ItemTool.TIER_STONE;
+    }
+
+    @Override
     public Item[] getDrops(Item item, Player player) {
         if (item.isPickaxe() && item.getTier() >= ItemTool.TIER_STONE) {
             return new Item[]{

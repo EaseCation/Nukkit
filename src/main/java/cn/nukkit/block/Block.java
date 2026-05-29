@@ -583,6 +583,10 @@ public abstract class Block extends Position implements Metadatable, Cloneable, 
         return BlockToolType.NONE;
     }
 
+    public int getToolTier() {
+        return 0;
+    }
+
     public float getFrictionFactor() {
         return 0.6f;
     }
@@ -950,37 +954,37 @@ public abstract class Block extends Position implements Metadatable, Cloneable, 
             return 0;
         }
 
-        int toolType = getToolType();
-        boolean correctTool = isToolCompatible(toolType, item.getBlockToolType());
-        float baseTime = (correctTool || canHarvestWithHand() ? 1.5f : 5) * blockHardness;
+        boolean correctTool = isToolCompatible(item);
+        float baseTime = (canHarvestWithHand() || correctTool && item.getTier() >= getToolTier() ? 1.5f : 5) * blockHardness;
         float speed = 1 / baseTime;
 
-        float destroySpeedBonus = 0;
+        float destroySpeed = getDestroySpeed(item, correctTool);
         if (correctTool) {
             int efficiency = item.getEnchantmentLevel(Enchantment.EFFICIENCY);
             if (efficiency > 0) {
-                destroySpeedBonus = efficiency * efficiency + 1;
+                destroySpeed += efficiency * efficiency + 1;
             }
         }
+        speed *= destroySpeed;
 
-        speed *= getDestroySpeed(item, correctTool) + destroySpeedBonus;
-
-        int amp = 0;
+        int digSpeedLevel = 0;
         Effect digSpeed = player.getEffect(Effect.HASTE);
         if (digSpeed != null) {
-            amp = digSpeed.getAmplifier() + 1;
+            digSpeedLevel = digSpeed.getAmplifier() + 1;
         }
         Effect conduitPower = player.getEffect(Effect.CONDUIT_POWER);
         if (conduitPower != null) {
-            amp = Math.max(amp, conduitPower.getAmplifier() + 1);
+            digSpeedLevel = Math.max(digSpeedLevel, conduitPower.getAmplifier() + 1);
         }
-        if (amp > 0) {
-            speed *= 1 + 0.2f * amp;
+        if (digSpeedLevel > 0) {
+            speed *= 1 + 0.2f * digSpeedLevel;
         }
 
+        int digSlowdownLevel = 0;
         Effect digSlowdown = player.getEffect(Effect.MINING_FATIGUE);
         if (digSlowdown != null) {
-            speed *= Math.pow(0.3f, digSlowdown.getAmplifier() + 1);
+            digSlowdownLevel = digSlowdown.getAmplifier() + 1;
+            speed *= Math.pow(0.3f, digSlowdownLevel);
         }
 
         if (player.isRiding() || !player.isOnGround() && !player.getAdventureSettings().get(AdventureSettings.Type.NO_CLIP) && !player.getAdventureSettings().get(AdventureSettings.Type.FLYING)) {
@@ -988,6 +992,13 @@ public abstract class Block extends Position implements Metadatable, Cloneable, 
         }
         if (player.isInsideOfWater() && !player.getArmorInventory().getHelmet().hasEnchantment(Enchantment.AQUA_AFFINITY)) {
             speed *= 0.2f;
+        }
+
+        if (digSpeedLevel > 0) {
+            speed *= Math.pow(1.2f, digSpeedLevel);
+        }
+        if (digSlowdownLevel > 0) {
+            speed *= Math.pow(0.7f, digSlowdownLevel);
         }
 
         return 1 / speed;
