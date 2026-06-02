@@ -470,19 +470,35 @@ public final class Mth {
     }
 
     public static float length(float x, float y) {
-        return (float) Math.sqrt(x * x + y * y);
+        return (float) Math.sqrt(lengthSquared(x, y));
     }
 
     public static double length(double x, double y) {
-        return Math.sqrt(x * x + y * y);
+        return Math.sqrt(lengthSquared(x, y));
     }
 
     public static float length(float x, float y, float z) {
-        return (float) Math.sqrt(x * x + y * y + z * z);
+        return (float) Math.sqrt(lengthSquared(x, y, z));
     }
 
     public static double length(double x, double y, double z) {
-        return Math.sqrt(x * x + y * y + z * z);
+        return Math.sqrt(lengthSquared(x, y, z));
+    }
+
+    public static float lengthSquared(float x, float y) {
+        return x * x + y * y;
+    }
+
+    public static double lengthSquared(double x, double y) {
+        return x * x + y * y;
+    }
+
+    public static float lengthSquared(float x, float y, float z) {
+        return x * x + y * y + z * z;
+    }
+
+    public static double lengthSquared(double x, double y, double z) {
+        return x * x + y * y + z * z;
     }
 
     public static int quantize(float a, int b) {

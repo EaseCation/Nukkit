@@ -62,6 +62,7 @@ public interface ParticleID {
     int BUBBLE_COLUMN_UP = 59;
     int BUBBLE_COLUMN_DOWN = 60;
     int SNEEZE = 61;
+//    int COMMON_PARTICLE = 62; // netease
     int SHULKER_BULLET = 62;
     int BLEACH = 63;
     int DRAGON_DESTROY_BLOCK = 64;
@@ -103,5 +104,5 @@ public interface ParticleID {
     int RESET_MOB_GROWTH = 100;
     int SULFUR_CUBE = 101;
 
-    int UNDEFINED = 102;
+    int UNDEFINED = 102 + 1;
 }

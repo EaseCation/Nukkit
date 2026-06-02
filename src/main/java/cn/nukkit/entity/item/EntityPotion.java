@@ -13,6 +13,7 @@ import cn.nukkit.item.Item;
 import cn.nukkit.item.ItemID;
 import cn.nukkit.level.format.FullChunk;
 import cn.nukkit.level.particle.SpellParticle;
+import cn.nukkit.math.AxisAlignedBB;
 import cn.nukkit.math.BlockFace;
 import cn.nukkit.math.BlockFace.Plane;
 import cn.nukkit.nbt.NBTIO;
@@ -166,7 +167,8 @@ public class EntityPotion extends EntityProjectile {
             return;
         }
 
-        Entity[] entities = this.getLevel().getNearbyEntities(this.getBoundingBox().grow(4.125, 2.125, 4.125), this);
+        AxisAlignedBB aabb = this.getBoundingBox();
+        Entity[] entities = this.getLevel().getNearbyEntities(aabb.grow(4.125, 2.125, 4.125), this);
         for (Entity entity : entities) {
             if (!entity.isAlive()) {
                 continue;
@@ -176,7 +178,7 @@ public class EntityPotion extends EntityProjectile {
                 continue;
             }
 
-            double distance = this.distanceSquared(entity.x, entity.y + entity.getHeight(), entity.z);
+            double distance = aabb.distanceSquared(entity.getBoundingBox());
             if (distance >= 16) {
                 continue;
             }
@@ -191,8 +193,7 @@ public class EntityPotion extends EntityProjectile {
             }
 
             float d = entity == collidedWith ? 1 : (float) (1 - Math.sqrt(distance) / 4);
-            potion.applyPotion(entity, item, Math.min(0.75f, d), d);
-            //TODO: 1.21.0 parity duration
+            potion.applyPotion(entity, item, d, d);
         }
     }
 

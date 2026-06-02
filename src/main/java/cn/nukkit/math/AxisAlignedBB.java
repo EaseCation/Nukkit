@@ -307,6 +307,44 @@ public interface AxisAlignedBB extends Cloneable {
         return MovingObjectPosition.fromBlock(0, 0, 0, face, vector);
     }
 
+    default double distanceBB(Vector3 point) {
+        return distanceBB(point.getX(), point.getY(), point.getZ());
+    }
+
+    default double distanceBB(double x, double y, double z) {
+        return Math.sqrt(distanceBBSquared(x, y, z));
+    }
+
+    default double distanceBBSquared(Vector3 point) {
+        return distanceBBSquared(point.getX(), point.getY(), point.getZ());
+    }
+
+    default double distanceBBSquared(double x, double y, double z) {
+        double dx = Math.max(Math.max(getMinX() - x, x - getMaxX()), 0);
+        double dy = Math.max(Math.max(getMinY() - y, y - getMaxY()), 0);
+        double dz = Math.max(Math.max(getMinZ() - z, z - getMaxZ()), 0);
+        return Mth.lengthSquared(dx, dy, dz);
+    }
+
+    default double distance(AxisAlignedBB aabb) {
+        return distance(aabb.getMinX(), aabb.getMinY(), aabb.getMinZ(), aabb.getMaxX(), aabb.getMaxY(), aabb.getMaxZ());
+    }
+
+    default double distance(double minX, double minY, double minZ, double maxX, double maxY, double maxZ) {
+        return Math.sqrt(distanceSquared(minX, minY, minZ, maxX, maxY, maxZ));
+    }
+
+    default double distanceSquared(AxisAlignedBB aabb) {
+        return distanceSquared(aabb.getMinX(), aabb.getMinY(), aabb.getMinZ(), aabb.getMaxX(), aabb.getMaxY(), aabb.getMaxZ());
+    }
+
+    default double distanceSquared(double minX, double minY, double minZ, double maxX, double maxY, double maxZ) {
+        double dx = Math.max(Math.max(getMinX() - maxX, minX - getMaxX()), 0);
+        double dy = Math.max(Math.max(getMinY() - maxY, minY - getMaxY()), 0);
+        double dz = Math.max(Math.max(getMinZ() - maxZ, minZ - getMaxZ()), 0);
+        return Mth.lengthSquared(dx, dy, dz);
+    }
+
     default Vector3 getCenter() {
         return new Vector3(Mth.lerp(0.5, getMinX(), getMaxX()), Mth.lerp(0.5, getMinY(), getMaxY()), Mth.lerp(0.5, getMinZ(), getMaxZ()));
     }

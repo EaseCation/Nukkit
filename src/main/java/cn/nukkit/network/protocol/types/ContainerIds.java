@@ -15,6 +15,7 @@ public interface ContainerIds {
     int HOTBAR = 122;
     int FIXED_INVENTORY = 123;
     int UI = 124;
-    int CONTAINER_ID_REGISTRY = 125;
-    int CONTAINER_ID_REGISTRY_INVENTORY = 126;
+    int REGISTRY = 125;
+    int REGISTRY_INVENTORY = 126;
+    int NETEASE_UI = 127;
 }
