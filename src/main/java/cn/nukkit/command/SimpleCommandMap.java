@@ -13,8 +13,6 @@ import java.util.*;
 import java.util.Map.Entry;
 import java.util.stream.Collectors;
 
-import static cn.nukkit.SharedConstants.*;
-
 /**
  * author: MagicDroidX
  * Nukkit Project
@@ -92,10 +90,6 @@ public class SimpleCommandMap implements CommandMap {
         this.register("nukkit", new GarbageCollectorCommand("gc"));
         //this.register("nukkit", new DumpMemoryCommand("dumpmemory"));
 //        }
-
-        if (ENABLE_TEST_COMMAND) {
-            this.register("nukkit", new DeveloperCommand("developer"));
-        }
     }
 
     @Override

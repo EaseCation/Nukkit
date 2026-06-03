@@ -89,8 +89,7 @@ public class BlockEntitySkull extends BlockEntitySpawnable {
 
     @Override
     public boolean isValidBlock(int blockId) {
-        return blockId == Block.SKULL
-                //TODO: 1.21.40+ flatten mv -- 09/07/2024
+        return blockId == Block.SKELETON_SKULL
                 ||  blockId == Block.WITHER_SKELETON_SKULL
                 ||  blockId == Block.ZOMBIE_HEAD
                 ||  blockId == Block.PLAYER_HEAD
@@ -108,9 +107,5 @@ public class BlockEntitySkull extends BlockEntitySpawnable {
                 .putBoolean("MouthMoving", namedTag.getBoolean("MouthMoving"))
                 .putInt("MouthTickCount", namedTag.getInt("MouthTickCount"))
                 .putBoolean("DoingAnimation", namedTag.getBoolean("DoingAnimation"));
-    }
-
-    public int getSkullType() {
-        return namedTag.getByte("SkullType");
     }
 }
