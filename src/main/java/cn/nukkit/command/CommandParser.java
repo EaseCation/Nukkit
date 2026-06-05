@@ -1046,7 +1046,7 @@ public class CommandParser {
                 states = this.next();
             }
         } else {
-            int index = arg.indexOf("[");
+            int index = arg.indexOf('[');
             if (index > 0) {
                 blockName = arg.substring(0, index);
                 states = arg.substring(index);
@@ -1131,8 +1131,14 @@ public class CommandParser {
                 setErrorMessage(new TranslationContainer("%commands.blockstate.invalidState", name));
                 throw CommandExceptions.COMMAND_SYNTAX_EXCEPTION;
             }
-            BlockState state = stateList.getFirst();
-            if (!block.hasState(state)) {
+            BlockState state = null;
+            for (BlockState blockState : stateList) {
+                if (block.hasState(blockState)) {
+                    state = blockState;
+                    break;
+                }
+            }
+            if (state == null) {
                 //TODO: backward compatibility
                 setErrorMessage(new TranslationContainer("%commands.blockstate.stateError", name, Blocks.getBlockNameById(block.getId())));
                 throw CommandExceptions.COMMAND_SYNTAX_EXCEPTION;
