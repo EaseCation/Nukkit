@@ -423,7 +423,7 @@ public class Vector3f implements Cloneable {
         float xDiff = v.x - this.x;
         float yDiff = v.y - this.y;
         float zDiff = v.z - this.z;
-        if (xDiff * xDiff < 0.0000001) {
+        if (xDiff * xDiff < Mth.EPSILON) {
             return null;
         }
         float f = (x - this.x) / xDiff;
@@ -443,7 +443,7 @@ public class Vector3f implements Cloneable {
         float xDiff = v.x - this.x;
         float yDiff = v.y - this.y;
         float zDiff = v.z - this.z;
-        if (yDiff * yDiff < 0.0000001) {
+        if (yDiff * yDiff < Mth.EPSILON) {
             return null;
         }
         float f = (y - this.y) / yDiff;
@@ -463,7 +463,7 @@ public class Vector3f implements Cloneable {
         float xDiff = v.x - this.x;
         float yDiff = v.y - this.y;
         float zDiff = v.z - this.z;
-        if (zDiff * zDiff < 0.0000001) {
+        if (zDiff * zDiff < Mth.EPSILON) {
             return null;
         }
         float f = (z - this.z) / zDiff;

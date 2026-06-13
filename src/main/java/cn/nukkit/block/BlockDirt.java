@@ -111,6 +111,13 @@ public class BlockDirt extends BlockSolid {
     }
 
     @Override
+    public Item[] getDrops(Item item, Player player) {
+        return new Item[]{
+                Item.get(DIRT)
+        };
+    }
+
+    @Override
     public BlockColor getColor() {
         return BlockColor.DIRT_BLOCK_COLOR;
     }

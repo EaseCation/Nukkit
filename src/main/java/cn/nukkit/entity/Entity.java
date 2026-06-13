@@ -2039,12 +2039,41 @@ public abstract class Entity extends Location implements Metadatable, EntityData
             fallDistance = (float) (this.highestPosition - this.y);
 
             if (fallDistance > 0) {
-                if (this instanceof EntityLiving && !this.isInsideOfWater(false)) {
+                if (this instanceof EntityLiving && !this.isInsideClimbableBlock()) {
                     this.fall(fallDistance);
                 }
                 this.resetFallDistance();
             }
         }
+    }
+
+    private boolean isInsideClimbableBlock() {
+        AxisAlignedBB boundingBox = this.boundingBox;
+        int minX = Mth.floor(boundingBox.getMinX());
+        int minY = Mth.floor(boundingBox.getMinY());
+        int minZ = Mth.floor(boundingBox.getMinZ());
+        int maxX = Mth.floor(boundingBox.getMaxX());
+        int maxY = Mth.floor(boundingBox.getMaxY());
+        int maxZ = Mth.floor(boundingBox.getMaxZ());
+
+        for (int z = minZ; z <= maxZ; ++z) {
+            for (int x = minX; x <= maxX; ++x) {
+                for (int y = minY; y <= maxY; ++y) {
+                    Block block = level.getBlock(x, y, z);
+                    if (block.isWater() || block.canBeClimbed() && block.collidesWithBB(boundingBox, Block::getCollisionBoundingBox)) {
+                        return true;
+                    }
+
+                    if (!block.isAir() && block.canContainWater()) {
+                        Block extraBlock = level.getExtraBlock(x, y, z);
+                        if (extraBlock.isWater()) {
+                            return true;
+                        }
+                    }
+                }
+            }
+        }
+        return false;
     }
 
     public AxisAlignedBB getBoundingBox() {

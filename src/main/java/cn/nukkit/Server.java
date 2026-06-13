@@ -341,7 +341,7 @@ public class Server {
                 put("level-seed", "");
                 put("level-type", "DEFAULT");
                 put("enable-upnp", false);
-                put("enable-query", true);
+                put("enable-query", false);
                 put("enable-rcon", false);
                 put("rcon.password", Base64.getEncoder().encodeToString(UUID.randomUUID().toString().replace("-", "").getBytes()).substring(3, 13));
                 put("auto-save", true);
@@ -349,7 +349,7 @@ public class Server {
                 put("bug-report", true);
                 put("enable-jmx-monitoring", false);
                 put("compression-algorithm", "snappy");
-                put("disable-raknet", false);
+                put("disable-raknet", true);
             }
         });
 
@@ -377,7 +377,7 @@ public class Server {
                 .cacheChunks(getConfig("chunk-sending.cache-chunks", false))
                 .lightUpdates(getConfig("chunk-ticking.light-updates", false))
                 .savePlayerData(getConfig("player.save-player-data", true))
-                .disableRaknet(getPropertyBoolean("disable-raknet", false))
+                .disableRaknet(getPropertyBoolean("disable-raknet", true))
                 .compressionAlgorithm(Compressor.getAlgorithmByName(getPropertyString("compression-algorithm", "snappy")))
                 .backupPlayerData(getConfig("settings.backup-player-data", true))
                 .backupLevelData(getConfig("level-settings.backup-level-data", true))
@@ -407,7 +407,7 @@ public class Server {
         this.networkZlibProvider = this.getConfig("network.zlib-provider", 2);
         Zlib.setProvider(this.networkZlibProvider);
 
-        this.networkCompressionLevel = Mth.clamp(this.getConfig("network.compression-level", 7), Deflater.BEST_SPEED, Deflater.BEST_COMPRESSION);
+        this.networkCompressionLevel = Mth.clamp(this.getConfig("network.compression-level", 1), Deflater.BEST_SPEED, Deflater.BEST_COMPRESSION);
         this.networkCompressionAsync = this.getConfig("network.async-compression", true);
 
         this.compressor = Compressor.get(configuration.getCompressionAlgorithm());
@@ -947,7 +947,7 @@ public class Server {
             log.debug(this.getLanguage().translate("nukkit.server.upnp.disabled"));
         }
 
-        if (this.getPropertyBoolean("enable-query", true)) {
+        if (this.getPropertyBoolean("enable-query", false)) {
             this.queryHandler = new QueryHandler();
         }
 

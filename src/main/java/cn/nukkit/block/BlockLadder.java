@@ -1,6 +1,7 @@
 package cn.nukkit.block;
 
 import cn.nukkit.Player;
+import cn.nukkit.entity.Entity;
 import cn.nukkit.item.Item;
 import cn.nukkit.level.Level;
 import cn.nukkit.math.AxisAlignedBB;
@@ -90,6 +91,12 @@ public class BlockLadder extends BlockTransparent implements Faceable {
     @Override
     protected AxisAlignedBB recalculateCollisionBoundingBox() {
         return new SimpleAxisAlignedBB(x, y, z, x + 1, y + 1, z + 1);
+    }
+
+    @Override
+    public void onEntityCollide(Entity entity) {
+        entity.resetFallDistance();
+        entity.onGround = true;
     }
 
     @Override

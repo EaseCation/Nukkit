@@ -28,6 +28,7 @@ import cn.nukkit.network.protocol.SetEntityLinkPacket;
 import cn.nukkit.network.protocol.SetEntityMotionPacket;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.util.concurrent.ThreadLocalRandom;
 
@@ -543,8 +544,9 @@ public class EntityBoat extends EntityVehicle {
                     if (block.getId() == Block.WATERLILY) {
                         continue;
                     }
-                    if (!block.canPassThrough() && block.collide(bb)) {
-                        collides.add(block.getBoundingBox());
+                    AxisAlignedBB[] cubes;
+                    if (!block.canPassThrough() && (cubes = block.getCollidingCubes(bb)) != null) {
+                        Collections.addAll(collides, cubes);
                     }
                 }
             }
