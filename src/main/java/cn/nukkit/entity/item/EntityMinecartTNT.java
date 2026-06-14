@@ -144,7 +144,7 @@ public class EntityMinecartTNT extends EntityMinecartAbstract implements EntityE
     public void saveNBT() {
         super.saveNBT();
 
-        super.namedTag.putInt("TNTFuse", this.fuse);
+        super.namedTag.putByte("TNTFuse", this.fuse);
     }
 
     @Override
