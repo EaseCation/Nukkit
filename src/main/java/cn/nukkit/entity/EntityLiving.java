@@ -418,27 +418,45 @@ public abstract class EntityLiving extends Entity implements EntityDamageable {
         double motY = profile.isInheritVertical() ? oldMotY * profile.getFriction() * profile.getInheritRatioV() : 0;
         double motZ = profile.isInheritHorizontal() ? oldMotZ * profile.getFriction() * profile.getInheritRatioH() : 0;
 
-        // 叠加新击退
-        motX += x * f * baseH;
-        motY += baseV;
-        motZ += z * f * baseH;
+        // 决定本次有效基础击退值（支持疾跑绝对值替换）
+        boolean attackerSprinting = attacker instanceof Player p && p.isSprinting();
+        boolean useSprintReplace = attackerSprinting
+                && (profile.getSprintBaseH() >= 0 || profile.getSprintBaseV() >= 0);
+        double effBaseH = baseH;
+        double effBaseV = baseV;
+        if (useSprintReplace) {
+            // 疾跑时用绝对值替换基础击退（保留附魔加成与抗性），未配置的轴回退到 normal base
+            float sH = profile.getSprintBaseH() >= 0 ? profile.getSprintBaseH() : profile.getBaseH();
+            float sV = profile.getSprintBaseV() >= 0 ? profile.getSprintBaseV() : profile.getBaseV();
+            effBaseH = (sH + profile.getEnchantLevel() * profile.getEnchantBonusH()) * scale;
+            effBaseV = (sV + profile.getEnchantLevel() * profile.getEnchantBonusV()) * scale;
+        }
 
-        // 疾跑加成（默认倍率 1.0，无效果）
-        if (attacker instanceof Player p && p.isSprinting()) {
+        // 叠加新击退
+        motX += x * f * effBaseH;
+        motY += effBaseV;
+        motZ += z * f * effBaseH;
+
+        // 疾跑乘数加成（仅在未启用绝对值替换时生效，保持原有行为；默认倍率 1.0，无效果）
+        if (attackerSprinting && !useSprintReplace) {
             motX *= profile.getSprintMultiplierH();
             motZ *= profile.getSprintMultiplierH();
             motY *= profile.getSprintMultiplierV();
         }
 
-        // 地面加成（默认倍率 1.0，无效果）
+        // 地面 / 空中加成（默认倍率 1.0，无效果）
         if (this.onGround) {
             motX *= profile.getGroundMultiplierH();
             motZ *= profile.getGroundMultiplierH();
             motY *= profile.getGroundMultiplierV();
+        } else {
+            motX *= profile.getAirMultiplierH();
+            motZ *= profile.getAirMultiplierH();
+            motY *= profile.getAirMultiplierV();
         }
 
-        // 垂直上限
-        float vLimit = profile.getVerticalLimit() >= 0 ? profile.getVerticalLimit() : (float) baseV;
+        // 垂直上限（基于本次有效垂直值，避免疾跑垂直被 normal baseV 截断）
+        float vLimit = profile.getVerticalLimit() >= 0 ? profile.getVerticalLimit() : (float) effBaseV;
         if (motY > vLimit) {
             motY = vLimit;
         }

@@ -36,10 +36,17 @@ public class KnockbackProfile {
     private float sprintMultiplierV = 1.0f;
     private boolean stopSprinting = false;
     private float sprintSlowdownH = 1.0f;
+    // 疾跑绝对值替换：攻击者疾跑时直接用此基础值替换 baseH/baseV（-1 表示不启用，沿用 sprintMultiplier 乘数逻辑）
+    private float sprintBaseH = -1;
+    private float sprintBaseV = -1;
 
     // === 地面状态 ===
     private float groundMultiplierH = 1.0f;
     private float groundMultiplierV = 1.0f;
+
+    // === 空中状态（受害者不在地面时的乘数，默认 1.0 无效果） ===
+    private float airMultiplierH = 1.0f;
+    private float airMultiplierV = 1.0f;
 
     // === 高度差限制 ===
     private boolean limitYDifference = false;
@@ -86,8 +93,12 @@ public class KnockbackProfile {
         copy.sprintMultiplierV = this.sprintMultiplierV;
         copy.stopSprinting = this.stopSprinting;
         copy.sprintSlowdownH = this.sprintSlowdownH;
+        copy.sprintBaseH = this.sprintBaseH;
+        copy.sprintBaseV = this.sprintBaseV;
         copy.groundMultiplierH = this.groundMultiplierH;
         copy.groundMultiplierV = this.groundMultiplierV;
+        copy.airMultiplierH = this.airMultiplierH;
+        copy.airMultiplierV = this.airMultiplierV;
         copy.limitYDifference = this.limitYDifference;
         copy.yDifferenceLimit = this.yDifferenceLimit;
         copy.bowBaseH = this.bowBaseH;
@@ -284,6 +295,24 @@ public class KnockbackProfile {
         return this;
     }
 
+    public float getSprintBaseH() {
+        return sprintBaseH;
+    }
+
+    public KnockbackProfile setSprintBaseH(float sprintBaseH) {
+        this.sprintBaseH = sprintBaseH;
+        return this;
+    }
+
+    public float getSprintBaseV() {
+        return sprintBaseV;
+    }
+
+    public KnockbackProfile setSprintBaseV(float sprintBaseV) {
+        this.sprintBaseV = sprintBaseV;
+        return this;
+    }
+
     public float getGroundMultiplierH() {
         return groundMultiplierH;
     }
@@ -299,6 +328,24 @@ public class KnockbackProfile {
 
     public KnockbackProfile setGroundMultiplierV(float groundMultiplierV) {
         this.groundMultiplierV = groundMultiplierV;
+        return this;
+    }
+
+    public float getAirMultiplierH() {
+        return airMultiplierH;
+    }
+
+    public KnockbackProfile setAirMultiplierH(float airMultiplierH) {
+        this.airMultiplierH = airMultiplierH;
+        return this;
+    }
+
+    public float getAirMultiplierV() {
+        return airMultiplierV;
+    }
+
+    public KnockbackProfile setAirMultiplierV(float airMultiplierV) {
+        this.airMultiplierV = airMultiplierV;
         return this;
     }
 
