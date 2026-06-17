@@ -2416,6 +2416,15 @@ public class Player extends EntityHuman implements CommandSender, InventoryHolde
         }
     }
 
+    /**
+     * Adjusts the player bounding box used when checking whether a block placement would intersect
+     * the player itself. The default applies a small shrink; subclasses may override to tune the
+     * check for specific clients.
+     */
+    public AxisAlignedBB adjustPlacementSelfCollisionBox(AxisAlignedBB bb) {
+        return bb.expand(-0.01, -0.01, -0.01);
+    }
+
     public boolean canInteract(Vector3 pos, double maxDistance) {
         return this.canInteract(pos, maxDistance, Mth.SQRT_OF_THREE / 2);
     }
