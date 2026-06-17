@@ -2,6 +2,7 @@ package cn.nukkit.block;
 
 import cn.nukkit.Player;
 import cn.nukkit.item.Item;
+import cn.nukkit.item.ItemBlockID;
 import cn.nukkit.math.BlockFace;
 import cn.nukkit.network.protocol.AnimatePacket.SwingSource;
 import cn.nukkit.network.protocol.LevelSoundEventPacket;
@@ -113,7 +114,7 @@ public class BlockDirt extends BlockSolid {
     @Override
     public Item[] getDrops(Item item, Player player) {
         return new Item[]{
-                Item.get(DIRT)
+                Item.get(ItemBlockID.DIRT)
         };
     }
 

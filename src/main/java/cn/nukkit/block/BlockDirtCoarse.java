@@ -2,6 +2,7 @@ package cn.nukkit.block;
 
 import cn.nukkit.Player;
 import cn.nukkit.item.Item;
+import cn.nukkit.item.ItemBlockID;
 
 public class BlockDirtCoarse extends BlockDirt {
     BlockDirtCoarse() {
@@ -31,7 +32,7 @@ public class BlockDirtCoarse extends BlockDirt {
     @Override
     public Item[] getDrops(Item item, Player player) {
         return new Item[]{
-                Item.get(COARSE_DIRT)
+                Item.get(ItemBlockID.COARSE_DIRT)
         };
     }
 }
