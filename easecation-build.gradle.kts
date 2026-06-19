@@ -20,13 +20,6 @@ gitProperties {
 tasks.shadowJar {
     manifest.attributes["Enable-Native-Access"] = "ALL-UNNAMED"
     manifest.attributes["Add-Opens"] = "java.base/jdk.internal.misc=ALL-UNNAMED java.base/java.nio=ALL-UNNAMED java.base/java.lang=ALL-UNNAMED"
-    exclude("freebsd/**/*")
-    exclude("aix/**/*")
-    arrayOf("arm", "armv6", "armv7", "ppc64", "ppc64le", "i386", "riscv64", "s390x", "loongarch64").forEach {
-        exclude("darwin/$it/**/*")
-        exclude("linux/$it/**/*")
-        exclude("win/$it/**/*")
-    }
 }
 
 tasks.withType<JavaCompile> {
@@ -65,6 +58,7 @@ dependencies {
     api(libs.maven.connector)
     api(libs.maven.http)
     api(libs.minecrell.console)
+    api(libs.netty.all)
     api(libs.org.cloudburstmc.upnp)
     api(libs.slf4j.api)
     api(libs.snakeyaml)

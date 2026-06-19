@@ -1,6 +1,7 @@
 package cn.nukkit.entity.mob;
 
 import cn.nukkit.Player;
+import cn.nukkit.entity.Entity;
 import cn.nukkit.entity.EntityID;
 import cn.nukkit.entity.attribute.Attribute;
 import cn.nukkit.event.entity.EntityDamageEvent;
@@ -113,6 +114,26 @@ public class EntityEnderDragon extends EntityMob {
         if (source.getCause() == DamageCause.FALL) {
             return false;
         }
+        if (source.getCause() == DamageCause.PROJECTILE && isSitting()) {
+            return false;
+        }
         return super.attack(source);
+    }
+
+    @Override
+    public boolean bounceProjectile(Entity projectile) {
+        if (!isSitting()) {
+            return false;
+        }
+        projectile.setOnFire(1);
+        return true;
+    }
+
+    public boolean isSitting() {
+        return getDataFlag(DATA_FLAG_SITTING);
+    }
+
+    public boolean setSitting(boolean value) {
+        return setDataFlag(DATA_FLAG_SITTING, value);
     }
 }

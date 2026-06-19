@@ -1982,6 +1982,9 @@ public class Player extends EntityHuman implements CommandSender, InventoryHolde
                 movementSpeedAttribute.copy().setValue(movementSpeedAttribute.getModifiedValue()),
                 Attribute.getAttribute(Attribute.UNDERWATER_MOVEMENT),
                 Attribute.getAttribute(Attribute.LAVA_MOVEMENT),
+                Attribute.getAttribute(Attribute.FRICTION_MODIFIER),
+                Attribute.getAttribute(Attribute.BOUNCINESS),
+                Attribute.getAttribute(Attribute.AIR_DRAG_MODIFIER),
                 Attribute.getAttribute(Attribute.PLAYER_LEVEL).setValue(this.getExperienceLevel()),
                 Attribute.getAttribute(Attribute.PLAYER_EXPERIENCE).setValue(Mth.clamp(((float) this.getExperience()) / calculateRequireExperience(this.getExperienceLevel()), 0, 1))
         );
@@ -5469,6 +5472,11 @@ public class Player extends EntityHuman implements CommandSender, InventoryHolde
     @Override
     public boolean canDisableShield() {
         return inventory.getItemInHand().isAxe();
+    }
+
+    @Override
+    public boolean bounceProjectile(Entity projectile) {
+        return gamemode == CREATIVE || isBlocking();
     }
 
     /**

@@ -3363,6 +3363,10 @@ public abstract class Entity extends Location implements Metadatable, EntityData
         return false;
     }
 
+    public boolean bounceProjectile(Entity projectile) {
+        return false;
+    }
+
     public void resetFrozenState() {
         if (frozenTicks == 0) {
             return;

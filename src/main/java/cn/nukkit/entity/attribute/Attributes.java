@@ -12,7 +12,7 @@ public final class Attributes {
     public static final String DEPRECATED_FALL_DAMAGE = "minecraft:fall_damage"; // see SharedAttributes::checkIsDeprecated()
 
     private static final Attribute[] ATTRIBUTE_BY_ID = new Attribute[COUNT];
-    private static final Object2ObjectMap<String, Attribute> ATTRIBUTE_BY_NAME = new Object2ObjectOpenHashMap<>(COUNT);
+    private static final Object2ObjectMap<String, Attribute> ATTRIBUTE_BY_NAME = new Object2ObjectOpenHashMap<>();
 
     public static void registerVanillaAttributes() {
         registerAttribute(HEALTH, "minecraft:health", 0, 20, 20, RedefinitionMode.KEEP_CURRENT);
@@ -23,6 +23,9 @@ public final class Attributes {
         registerAttribute(LAVA_MOVEMENT, "minecraft:lava_movement", 0, Float.MAX_VALUE, 0.02f, RedefinitionMode.UPDATE_TO_NEW_DEFAULT);
         registerAttribute(LUCK, "minecraft:luck", -1024, 1024, 0, RedefinitionMode.UPDATE_TO_NEW_DEFAULT);
         registerAttribute(FOLLOW_RANGE, "minecraft:follow_range", 0, 2048, 16, RedefinitionMode.UPDATE_TO_NEW_DEFAULT, false);
+        registerAttribute(FRICTION_MODIFIER, "minecraft:friction_modifier", 0, 256, 1, RedefinitionMode.UPDATE_TO_NEW_DEFAULT);
+        registerAttribute(BOUNCINESS, "minecraft:bounciness", 0, 1, 0, RedefinitionMode.UPDATE_TO_NEW_DEFAULT);
+        registerAttribute(AIR_DRAG_MODIFIER, "minecraft:air_drag_modifier", 0, 256, 1, RedefinitionMode.UPDATE_TO_NEW_DEFAULT);
 
         registerAttribute(ATTACK_DAMAGE, "minecraft:attack_damage", 0, 1, 1, RedefinitionMode.UPDATE_TO_NEW_DEFAULT, false);
         registerAttribute(PLAYER_HUNGER, "minecraft:player.hunger", 0, 20, 20, RedefinitionMode.KEEP_CURRENT);

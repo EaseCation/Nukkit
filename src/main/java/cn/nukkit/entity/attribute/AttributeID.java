@@ -23,6 +23,10 @@ public interface AttributeID {
     // mob special attributes
     int HORSE_JUMP_STRENGTH = 14; // see SharedAttributes::JUMP_STRENGTH
     int ZOMBIE_SPAWN_REINFORCEMENTS = 15; // see Zombie::SPAWN_REINFORCEMENTS_CHANCE
+    // mob generic attributes
+    int FRICTION_MODIFIER = 16;
+    int BOUNCINESS = 17;
+    int AIR_DRAG_MODIFIER = 18;
 
-    int COUNT = 16;
+    int COUNT = 19;
 }

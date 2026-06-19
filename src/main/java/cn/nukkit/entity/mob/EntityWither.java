@@ -1,9 +1,11 @@
 package cn.nukkit.entity.mob;
 
 import cn.nukkit.Player;
+import cn.nukkit.entity.Entity;
 import cn.nukkit.entity.EntityID;
 import cn.nukkit.entity.EntitySmite;
 import cn.nukkit.entity.attribute.Attribute;
+import cn.nukkit.entity.data.ShortEntityData;
 import cn.nukkit.event.entity.EntityDamageEvent;
 import cn.nukkit.event.entity.EntityDamageEvent.DamageCause;
 import cn.nukkit.item.Item;
@@ -23,6 +25,8 @@ import it.unimi.dsi.fastutil.ints.Int2IntMap;
 public class EntityWither extends EntityMob implements EntitySmite {
 
     public static final int NETWORK_ID = EntityID.WITHER;
+
+    public static final int INVULNERABLE_TICKS = 200;
 
     @Override
     public int getNetworkId() {
@@ -47,6 +51,8 @@ public class EntityWither extends EntityMob implements EntitySmite {
     protected void initEntity() {
         super.initEntity();
         this.setMaxHealth(600);
+        dataProperties.putShort(DATA_AERIAL_ATTACK, getHealth() < getMaxHealth() * 0.5f ? 0 : 1);
+        dataProperties.putInt(DATA_WITHER_INVULNERABLE_TICKS, 0);
         fireProof = true;
     }
 
@@ -123,6 +129,25 @@ public class EntityWither extends EntityMob implements EntitySmite {
         if (source.getCause() == DamageCause.FALL) {
             return false;
         }
+        if (source.getCause() == DamageCause.PROJECTILE && !isAerialAttack()) {
+            return false;
+        }
+        if (source.getCause() != DamageCause.SUICIDE && dataProperties.getInt(DATA_WITHER_INVULNERABLE_TICKS) > 0) {
+            return false;
+        }
         return super.attack(source);
+    }
+
+    @Override
+    public boolean bounceProjectile(Entity projectile) {
+        return !isAerialAttack();
+    }
+
+    public boolean isAerialAttack() {
+        return dataProperties.getShort(DATA_AERIAL_ATTACK) == 1;
+    }
+
+    public boolean setAerialAttack(boolean value) {
+        return setDataProperty(new ShortEntityData(DATA_AERIAL_ATTACK, value ? 1 : 0));
     }
 }

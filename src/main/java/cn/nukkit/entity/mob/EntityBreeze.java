@@ -1,7 +1,10 @@
 package cn.nukkit.entity.mob;
 
 import cn.nukkit.Player;
+import cn.nukkit.entity.Entity;
 import cn.nukkit.entity.EntityID;
+import cn.nukkit.event.entity.EntityDamageByChildEntityEvent;
+import cn.nukkit.event.entity.EntityDamageByEntityEvent;
 import cn.nukkit.event.entity.EntityDamageEvent;
 import cn.nukkit.event.entity.EntityDamageEvent.DamageCause;
 import cn.nukkit.level.format.FullChunk;
@@ -45,6 +48,12 @@ public class EntityBreeze extends EntityMob {
         if (source.getCause() == DamageCause.FALL) {
             return false;
         }
+        if (source.getCause() == DamageCause.PROJECTILE && source instanceof EntityDamageByEntityEvent event) {
+            Entity projectile = source instanceof EntityDamageByChildEntityEvent ev ? ev.getChild() : event.getDamager();
+            if (bounceProjectile(projectile)) {
+                return false;
+            }
+        }
         return super.attack(source);
     }
 
@@ -57,5 +66,10 @@ public class EntityBreeze extends EntityMob {
         player.dataPacket(createAddEntityPacket());
 
         super.spawnTo(player);
+    }
+
+    @Override
+    public boolean bounceProjectile(Entity projectile) {
+        return projectile.getNetworkId() != EntityID.WIND_CHARGE_PROJECTILE && projectile.getNetworkId() != EntityID.BREEZE_WIND_CHARGE_PROJECTILE;
     }
 }

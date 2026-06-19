@@ -142,7 +142,7 @@ public abstract class EntityProjectile extends Entity {
             if (piercing && piercedCount < entityHitCount) {
                 return false;
             }
-        } else if (shouldBounce()) {
+        } else if (shouldBounce() && entity.bounceProjectile(this)) {
             motionX *= -0.1;
             motionY *= -0.1;
             motionZ *= -0.1;

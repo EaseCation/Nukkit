@@ -96,13 +96,6 @@ tasks.shadowJar {
     transform(Log4j2PluginsCacheFileTransformer::class.java) {}
     mergeServiceFiles()
     exclude("**/module-info.class")
-    exclude("freebsd/**/*")
-    exclude("aix/**/*")
-    arrayOf("arm", "armv6", "armv7", "ppc64", "ppc64le", "i386", "riscv64", "s390x", "loongarch64").forEach {
-        exclude("darwin/$it/**/*")
-        exclude("linux/$it/**/*")
-        exclude("win/$it/**/*")
-    }
 }
 
 val javaLanguageVersion = JavaLanguageVersion.of(21)

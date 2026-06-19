@@ -1,6 +1,7 @@
 package cn.nukkit.entity.mob;
 
 import cn.nukkit.Player;
+import cn.nukkit.entity.Entity;
 import cn.nukkit.entity.EntityID;
 import cn.nukkit.event.entity.EntityDamageEvent;
 import cn.nukkit.event.entity.EntityDamageEvent.DamageCause;
@@ -100,7 +101,7 @@ public class EntityShulker extends EntityMob {
 
     @Override
     public int getBaseArmorValue() {
-        if (getDataPropertyInt(DATA_SHULKER_PEEK_ID) == 0) {
+        if (!isPeeking()) {
             return 20;
         }
         return 0;
@@ -111,6 +112,18 @@ public class EntityShulker extends EntityMob {
         if (source.getCause() == DamageCause.FALL) {
             return false;
         }
+        if (source.getCause() == DamageCause.PROJECTILE && !isPeeking()) {
+            return false;
+        }
         return super.attack(source);
+    }
+
+    @Override
+    public boolean bounceProjectile(Entity projectile) {
+        return !isPeeking();
+    }
+
+    public boolean isPeeking() {
+        return getDataPropertyInt(DATA_SHULKER_PEEK_ID) != 0;
     }
 }
