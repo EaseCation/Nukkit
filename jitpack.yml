@@ -3,7 +3,7 @@
 
 # JDK 版本配置
 jdk:
-  - openjdk21
+  - openjdk25
 
 # 构建前准备：克隆 Network 依赖项目
 before_install:

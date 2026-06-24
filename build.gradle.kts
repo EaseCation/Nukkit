@@ -98,7 +98,7 @@ tasks.shadowJar {
     exclude("**/module-info.class")
 }
 
-val javaLanguageVersion = JavaLanguageVersion.of(21)
+val javaLanguageVersion = JavaLanguageVersion.of(25)
 the<JavaPluginExtension>().apply {
     toolchain {
         languageVersion = javaLanguageVersion

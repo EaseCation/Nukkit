@@ -50,7 +50,7 @@ public class Permission {
 
     private String description;
 
-    private final Object2BooleanMap<String> children;
+    private final Map<String, Boolean> children;
 
     private String defaultValue;
 
@@ -66,7 +66,7 @@ public class Permission {
         this(name, description, defaultValue, new Object2BooleanOpenHashMap<>());
     }
 
-    public Permission(String name, String description, String defaultValue, Object2BooleanMap<String> children) {
+    public Permission(String name, String description, String defaultValue, Map<String, Boolean> children) {
         this.name = name;
         this.description = description != null ? description : "";
         this.defaultValue = defaultValue != null ? defaultValue : DEFAULT_PERMISSION;
@@ -79,7 +79,7 @@ public class Permission {
         return name;
     }
 
-    public Object2BooleanMap<String> getChildren() {
+    public Map<String, Boolean> getChildren() {
         return children;
     }
 

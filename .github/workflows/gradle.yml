@@ -11,18 +11,17 @@ jobs:
       matrix:
         java:
           [
-            21,
             25,
           ]
     steps:
       # Checkout side by side
       - name: Checkout Nukkit
-        uses: actions/checkout@v6
+        uses: actions/checkout@v7
         with:
           path: Nukkit
           submodules: true
       - name: Checkout Network repo
-        uses: actions/checkout@v6
+        uses: actions/checkout@v7
         with:
           repository: EaseCation/Network
           path: Network
@@ -33,7 +32,7 @@ jobs:
           distribution: oracle
           cache: gradle
       - name: Setup Gradle
-        uses: gradle/actions/setup-gradle@v5
+        uses: gradle/actions/setup-gradle@v6
         with:
           cache-read-only: false
           cache-overwrite-existing: true
@@ -44,7 +43,7 @@ jobs:
         env:
           GRADLE_OPTS: "-Dorg.gradle.daemon=false -Dorg.gradle.welcome=never"
       - name: Archive artifacts
-        uses: actions/upload-artifact@v5
+        uses: actions/upload-artifact@v7
         if: success()
         with:
           name: Nukkit-${{ matrix.java }}

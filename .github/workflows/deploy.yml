@@ -1,0 +1,13 @@
+name: Publish
+
+on:
+  push:
+  workflow_dispatch:
+
+jobs:
+  publish:
+    runs-on: ubuntu-latest
+    steps:
+      - run: |
+          ref_name="${GITHUB_REF_NAME//\//~}"
+          curl "https://jitpack.io/com/github/${GITHUB_REPOSITORY}/${ref_name}-SNAPSHOT/build.log"

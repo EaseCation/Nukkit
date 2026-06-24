@@ -2,7 +2,6 @@ package cn.nukkit.permission;
 
 import cn.nukkit.plugin.Plugin;
 import cn.nukkit.utils.PluginException;
-import it.unimi.dsi.fastutil.objects.Object2BooleanMap;
 import it.unimi.dsi.fastutil.objects.Object2BooleanOpenHashMap;
 
 import java.util.List;
@@ -16,7 +15,7 @@ public class PermissionAttachment {
 
     private PermissionRemovedExecutor removed = null;
 
-    private final Object2BooleanMap<String> permissions = new Object2BooleanOpenHashMap<>();
+    private final Map<String, Boolean> permissions = new Object2BooleanOpenHashMap<>();
 
     private final Permissible permissible;
 
@@ -42,7 +41,7 @@ public class PermissionAttachment {
         return removed;
     }
 
-    public Object2BooleanMap<String> getPermissions() {
+    public Map<String, Boolean> getPermissions() {
         return permissions;
     }
 
@@ -62,7 +61,7 @@ public class PermissionAttachment {
 
     public void unsetPermissions(List<String> permissions) {
         for (String node : permissions) {
-            this.permissions.removeBoolean(node);
+            this.permissions.remove(node);
         }
         this.permissible.recalculatePermissions();
     }
@@ -73,7 +72,7 @@ public class PermissionAttachment {
 
     public void setPermission(String name, boolean value) {
         if (this.permissions.containsKey(name)) {
-            if (this.permissions.getBoolean(name) == value) {
+            if (this.permissions.get(name) == value) {
                 return;
             }
         }
@@ -81,13 +80,24 @@ public class PermissionAttachment {
         this.permissible.recalculatePermissions();
     }
 
+    public void unsetPermission(Permission permission) {
+        this.unsetPermission(permission.getName());
+    }
+
+    public void unsetPermission(String name) {
+        if (this.permissions.remove(name) != null) {
+            this.permissible.recalculatePermissions();
+        }
+    }
+
     public void unsetPermission(Permission permission, boolean value) {
         this.unsetPermission(permission.getName(), value);
     }
 
     public void unsetPermission(String name, boolean value) {
-        if (this.permissions.containsKey(name)) {
-            this.permissions.removeBoolean(name);
+        Boolean currentValue = this.permissions.get(name);
+        if (currentValue != null && currentValue == value) {
+            this.permissions.remove(name);
             this.permissible.recalculatePermissions();
         }
     }

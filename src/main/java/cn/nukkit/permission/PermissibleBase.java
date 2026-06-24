@@ -4,7 +4,6 @@ import cn.nukkit.Server;
 import cn.nukkit.plugin.Plugin;
 import cn.nukkit.utils.PluginException;
 import cn.nukkit.utils.ServerException;
-import it.unimi.dsi.fastutil.objects.Object2BooleanMap;
 import it.unimi.dsi.fastutil.objects.Object2ObjectOpenHashMap;
 import it.unimi.dsi.fastutil.objects.ObjectOpenHashSet;
 
@@ -147,11 +146,11 @@ public class PermissibleBase implements Permissible {
         this.permissions.clear();
     }
 
-    private void calculateChildPermissions(Object2BooleanMap<String> children, boolean invert, PermissionAttachment attachment) {
-        for (Object2BooleanMap.Entry<String> entry : children.object2BooleanEntrySet()) {
+    private void calculateChildPermissions(Map<String, Boolean> children, boolean invert, PermissionAttachment attachment) {
+        for (Map.Entry<String, Boolean> entry : children.entrySet()) {
             String name = entry.getKey();
             Permission perm = Server.getInstance().getPluginManager().getPermission(name);
-            boolean v = entry.getBooleanValue();
+            boolean v = entry.getValue();
             boolean value = (v ^ invert);
             this.permissions.put(name, new PermissionAttachmentInfo(this.parent != null ? this.parent : this, name, attachment, value));
             Server.getInstance().getPluginManager().subscribeToPermission(name, this.parent != null ? this.parent : this);
