@@ -2,7 +2,7 @@
 jackson = "2.21.4"
 jackson3 = "3.1.4"
 log4j = "2.26.0"
-jline = "4.2.1"
+jline = "4.3.1"
 maven = "1.9.27"
 
 [plugins]
