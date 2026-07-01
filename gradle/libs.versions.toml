@@ -27,7 +27,7 @@ jline-reader = { module = "org.jline:jline-reader", version.ref = "jline" }
 jline-terminal = { module = "org.jline:jline-terminal-jni", version.ref = "jline" }
 jline-terminal-ffm = { module = "org.jline:jline-terminal-ffm", version.ref = "jline" }
 jopt = { module = "net.sf.jopt-simple:jopt-simple", version = "5.0.4" }
-jupiter-engine = { module = "org.junit.jupiter:junit-jupiter-engine", version = "6.1.0" }
+jupiter-engine = { module = "org.junit.jupiter:junit-jupiter-engine", version = "6.1.1" }
 jwt = { module = "com.nimbusds:nimbus-jose-jwt", version = "10.9.1" }
 leveldb-mcpe-jni = { module = "net.daporkchop:leveldb-mcpe-jni", version = "0.0.10-SNAPSHOT" }
 leveldb-natives = { module = "net.daporkchop.lib:natives", version = "0.5.8-SNAPSHOT" }
