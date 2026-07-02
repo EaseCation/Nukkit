@@ -2265,9 +2265,8 @@ public class Player extends EntityHuman implements CommandSender, InventoryHolde
                     Map<DamageModifier, Float> modifiers = new EnumMap<>(DamageModifier.class);
                     modifiers.put(DamageModifier.BASE, damage);
 
-                    // 从被攻击者的 Profile 获取基础击退值（不含附魔）
-                    KnockbackProfile targetProfile = entity instanceof EntityLiving living
-                            ? living.getKnockbackProfile() : KnockbackManager.get().getDefaultProfile();
+                    // 从攻击者的 Profile 获取基础击退值（不含附魔）
+                    KnockbackProfile targetProfile = this.getKnockbackProfile();
                     float knockbackH = targetProfile.getBaseH();
                     float knockbackV = targetProfile.getBaseV();
                     int knockbackEnchant = !item.is(Item.ENCHANTED_BOOK) ? item.getEnchantmentLevel(Enchantment.KNOCKBACK) : 0;
@@ -3973,9 +3972,8 @@ public class Player extends EntityHuman implements CommandSender, InventoryHolde
                                     Map<DamageModifier, Float> damage = new EnumMap<>(DamageModifier.class);
                                     damage.put(DamageModifier.BASE, itemDamage);
 
-                                    // 从被攻击者的 Profile 获取基础击退值（不含附魔）
-                                    KnockbackProfile targetProfile = target instanceof EntityLiving living
-                                            ? living.getKnockbackProfile() : KnockbackManager.get().getDefaultProfile();
+                                    // 从攻击者的 Profile 获取基础击退值（不含附魔）
+                                    KnockbackProfile targetProfile = this.getKnockbackProfile();
                                     float knockBackH = targetProfile.getBaseH();
                                     float knockBackV = targetProfile.getBaseV();
                                     int knockBackEnchantment = !item.is(Item.ENCHANTED_BOOK) ? item.getEnchantmentLevel(Enchantment.KNOCKBACK) : 0;

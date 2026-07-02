@@ -25,17 +25,17 @@ public class EntityDamageByEntityEvent extends EntityDamageEvent {
     private Enchantment[] enchantments;
 
     public EntityDamageByEntityEvent(Entity damager, Entity entity, DamageCause cause, float damage) {
-        this(damager, entity, cause, damage, profileBaseH(entity), profileBaseV(entity));
+        this(damager, entity, cause, damage, profileBaseH(damager), profileBaseV(damager));
     }
 
     public EntityDamageByEntityEvent(Entity damager, Entity entity, DamageCause cause, Map<DamageModifier, Float> modifiers) {
-        this(damager, entity, cause, modifiers, profileBaseH(entity), profileBaseV(entity));
+        this(damager, entity, cause, modifiers, profileBaseH(damager), profileBaseV(damager));
     }
 
     public EntityDamageByEntityEvent(Entity damager, Entity entity, DamageCause cause, float damage, float knockBackH, float knockBackV) {
         super(entity, cause, damage);
         this.damager = damager;
-        this.knockbackProfile = createPerHitProfile(entity, knockBackH, knockBackV);
+        this.knockbackProfile = createPerHitProfile(damager, knockBackH, knockBackV);
         this.addAttackerModifiers(damager);
     }
 
@@ -46,7 +46,7 @@ public class EntityDamageByEntityEvent extends EntityDamageEvent {
     public EntityDamageByEntityEvent(Entity damager, Entity entity, DamageCause cause, Map<DamageModifier, Float> modifiers, float knockBackH, float knockBackV, Enchantment[] enchantments) {
         super(entity, cause, modifiers);
         this.damager = damager;
-        this.knockbackProfile = createPerHitProfile(entity, knockBackH, knockBackV);
+        this.knockbackProfile = createPerHitProfile(damager, knockBackH, knockBackV);
         this.enchantments = enchantments;
         if (cause == DamageCause.ENTITY_ATTACK) {
             this.addAttackerModifiers(damager);
@@ -54,21 +54,21 @@ public class EntityDamageByEntityEvent extends EntityDamageEvent {
     }
 
     /**
-     * 从受害者实体的 Profile 创建 per-hit 副本，并设置传入的基础击退值
+     * 从攻击者（damager）的 Profile 创建 per-hit 副本，并设置传入的基础击退值
      */
-    private static KnockbackProfile createPerHitProfile(Entity entity, float knockBackH, float knockBackV) {
-        KnockbackProfile source = entity instanceof EntityLiving living
+    private static KnockbackProfile createPerHitProfile(Entity damager, float knockBackH, float knockBackV) {
+        KnockbackProfile source = damager instanceof EntityLiving living
                 ? living.getKnockbackProfile() : KnockbackManager.get().getDefaultProfile();
         return source.copy().setBaseH(knockBackH).setBaseV(knockBackV);
     }
 
-    private static float profileBaseH(Entity entity) {
-        return entity instanceof EntityLiving living
+    private static float profileBaseH(Entity damager) {
+        return damager instanceof EntityLiving living
                 ? living.getKnockbackProfile().getBaseH() : GLOBAL_KNOCKBACK_H;
     }
 
-    private static float profileBaseV(Entity entity) {
-        return entity instanceof EntityLiving living
+    private static float profileBaseV(Entity damager) {
+        return damager instanceof EntityLiving living
                 ? living.getKnockbackProfile().getBaseV() : GLOBAL_KNOCKBACK_V;
     }
 
@@ -89,7 +89,7 @@ public class EntityDamageByEntityEvent extends EntityDamageEvent {
     }
 
     /**
-     * 获取 per-hit 击退 Profile（实体 Profile 的副本，可在事件处理中修改算法参数）
+     * 获取 per-hit 击退 Profile（攻击者 Profile 的副本，可在事件处理中修改算法参数）
      */
     public KnockbackProfile getKnockbackProfile() {
         return knockbackProfile;
