@@ -253,7 +253,7 @@ public class RepairItemTransaction extends InventoryTransaction {
 
     private boolean checkRenameValid() {
         return this.inputItem.getCustomName().equals(this.outputItem.getCustomName())
-                || this.outputItem.getCustomName().length() <= 30 && (this.cost > 0 || this.source.isCreative());
+                || this.outputItem.getCustomName().length() <= 30 && (this.cost >= 0 || this.source.isCreative()); //FIXME: temporary workaround, need server authoritative xp level cost -- 06/21/2026
     }
 
     private boolean isEnchantedBookCombine() {

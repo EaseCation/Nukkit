@@ -131,7 +131,7 @@ public class NetworkInventoryAction {
         this.sourceType = (int) packet.getUnsignedVarInt();
 
         if (packet.getBoolean() && packet.getBoolean()) {
-            this.windowId = packet.getByte();
+            this.windowId = packet.getSignedByte();
         }
         if (packet.getBoolean() && packet.getBoolean()) {
             this.sourceFlags = (int) packet.getUnsignedVarInt();
