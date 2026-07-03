@@ -74,38 +74,45 @@ public class KnockbackProfile {
      */
     public KnockbackProfile copy(String newName) {
         KnockbackProfile copy = new KnockbackProfile(newName);
-        copy.baseH = this.baseH;
-        copy.baseV = this.baseV;
-        copy.enchantBonusH = this.enchantBonusH;
-        copy.enchantBonusV = this.enchantBonusV;
-        copy.enchantLevel = this.enchantLevel;
-        copy.friction = this.friction;
-        copy.inheritHorizontal = this.inheritHorizontal;
-        copy.inheritVertical = this.inheritVertical;
-        copy.inheritRatioH = this.inheritRatioH;
-        copy.inheritRatioV = this.inheritRatioV;
-        copy.useRealVelocity = this.useRealVelocity;
-        copy.verticalLimit = this.verticalLimit;
-        copy.horizontalMin = this.horizontalMin;
-        copy.horizontalMax = this.horizontalMax;
-        copy.directionCorrection = this.directionCorrection;
-        copy.sprintMultiplierH = this.sprintMultiplierH;
-        copy.sprintMultiplierV = this.sprintMultiplierV;
-        copy.stopSprinting = this.stopSprinting;
-        copy.sprintSlowdownH = this.sprintSlowdownH;
-        copy.sprintBaseH = this.sprintBaseH;
-        copy.sprintBaseV = this.sprintBaseV;
-        copy.groundMultiplierH = this.groundMultiplierH;
-        copy.groundMultiplierV = this.groundMultiplierV;
-        copy.airMultiplierH = this.airMultiplierH;
-        copy.airMultiplierV = this.airMultiplierV;
-        copy.limitYDifference = this.limitYDifference;
-        copy.yDifferenceLimit = this.yDifferenceLimit;
-        copy.bowBaseH = this.bowBaseH;
-        copy.bowBaseV = this.bowBaseV;
-        copy.rodBaseH = this.rodBaseH;
-        copy.rodBaseV = this.rodBaseV;
-        return copy;
+        return copy.copyFrom(this);
+    }
+
+    /**
+     * 从另一个 Profile 复制全部可变参数，保留当前 Profile 名称。
+     */
+    public KnockbackProfile copyFrom(KnockbackProfile source) {
+        this.baseH = source.baseH;
+        this.baseV = source.baseV;
+        this.enchantBonusH = source.enchantBonusH;
+        this.enchantBonusV = source.enchantBonusV;
+        this.enchantLevel = source.enchantLevel;
+        this.friction = source.friction;
+        this.inheritHorizontal = source.inheritHorizontal;
+        this.inheritVertical = source.inheritVertical;
+        this.inheritRatioH = source.inheritRatioH;
+        this.inheritRatioV = source.inheritRatioV;
+        this.useRealVelocity = source.useRealVelocity;
+        this.verticalLimit = source.verticalLimit;
+        this.horizontalMin = source.horizontalMin;
+        this.horizontalMax = source.horizontalMax;
+        this.directionCorrection = source.directionCorrection;
+        this.sprintMultiplierH = source.sprintMultiplierH;
+        this.sprintMultiplierV = source.sprintMultiplierV;
+        this.stopSprinting = source.stopSprinting;
+        this.sprintSlowdownH = source.sprintSlowdownH;
+        this.sprintBaseH = source.sprintBaseH;
+        this.sprintBaseV = source.sprintBaseV;
+        this.groundMultiplierH = source.groundMultiplierH;
+        this.groundMultiplierV = source.groundMultiplierV;
+        this.airMultiplierH = source.airMultiplierH;
+        this.airMultiplierV = source.airMultiplierV;
+        this.limitYDifference = source.limitYDifference;
+        this.yDifferenceLimit = source.yDifferenceLimit;
+        this.bowBaseH = source.bowBaseH;
+        this.bowBaseV = source.bowBaseV;
+        this.rodBaseH = source.rodBaseH;
+        this.rodBaseV = source.rodBaseV;
+        return this;
     }
 
     // === 有效击退值 ===

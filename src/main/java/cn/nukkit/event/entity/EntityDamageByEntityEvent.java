@@ -109,8 +109,16 @@ public class EntityDamageByEntityEvent extends EntityDamageEvent {
     /**
      * 设置水平击退总值（清零附魔等级，使 effectiveBase = knockBackH）
      */
-    public void setKnockBackH(float knockBackH) {
+    public void setKnockbackBaseH(float knockBackH) {
         knockbackProfile.setBaseH(knockBackH).setEnchantLevel(0);
+    }
+
+    /**
+     * 旧击退入口，仅作为 Profile 兼容层保留。新代码请使用 {@link #setKnockbackBaseH(float)}。
+     */
+    @Deprecated
+    public void setKnockBackH(float knockBackH) {
+        this.setKnockbackBaseH(knockBackH);
     }
 
     /**
@@ -123,23 +131,62 @@ public class EntityDamageByEntityEvent extends EntityDamageEvent {
     /**
      * 设置垂直击退总值（清零附魔等级，使 effectiveBase = knockBackV）
      */
-    public void setKnockBackV(float knockBackV) {
+    public void setKnockbackBaseV(float knockBackV) {
         knockbackProfile.setBaseV(knockBackV).setEnchantLevel(0);
     }
 
+    /**
+     * 旧击退入口，仅作为 Profile 兼容层保留。新代码请使用 {@link #setKnockbackBaseV(float)}。
+     */
+    @Deprecated
+    public void setKnockBackV(float knockBackV) {
+        this.setKnockbackBaseV(knockBackV);
+    }
+
+    public void setKnockbackBase(float knockBack) {
+        this.setKnockbackBase(knockBack, knockBack);
+    }
+
+    /**
+     * 旧击退入口，仅作为 Profile 兼容层保留。新代码请使用 {@link #setKnockbackBase(float)}。
+     */
+    @Deprecated
     public void setKnockBack(float knockBack) {
-        this.setKnockBack(knockBack, knockBack);
+        this.setKnockbackBase(knockBack, knockBack);
     }
 
     /**
      * 设置击退总值（清零附魔等级，使 effectiveBase = 传入值）
      */
-    public void setKnockBack(float knockBackH, float knockBackV) {
+    public void setKnockbackBase(float knockBackH, float knockBackV) {
         knockbackProfile.setBaseH(knockBackH).setBaseV(knockBackV).setEnchantLevel(0);
     }
 
+    /**
+     * 旧击退入口，仅作为 Profile 兼容层保留。新代码请使用 {@link #setKnockbackBase(float, float)}。
+     */
+    @Deprecated
+    public void setKnockBack(float knockBackH, float knockBackV) {
+        this.setKnockbackBase(knockBackH, knockBackV);
+    }
+
+    public void clearKnockback() {
+        this.setKnockbackBase(0, 0);
+    }
+
+    /**
+     * 旧击退入口，仅作为 Profile 兼容层保留。新代码请使用 {@link #clearKnockback()}。
+     */
+    @Deprecated
     public void clearKnockBack() {
-        this.setKnockBack(0, 0);
+        this.clearKnockback();
+    }
+
+    /**
+     * 复制另一个事件的 per-hit Profile，适用于转发伤害事件时保持击退语义。
+     */
+    public void copyKnockbackProfileFrom(EntityDamageByEntityEvent source) {
+        this.knockbackProfile.copyFrom(source.getKnockbackProfile());
     }
 
     public boolean isDefaultKnockback() {

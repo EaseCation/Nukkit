@@ -116,7 +116,7 @@ public abstract class EntityProjectile extends Entity {
             }
             // 只在有自定义击退值时覆盖（兼容旧 NBT 格式中非 GLOBAL 的值）
             if (this.hasCustomKnockback) {
-                ((EntityDamageByEntityEvent) ev).setKnockBack(knockBackH, knockBackV);
+                ((EntityDamageByEntityEvent) ev).setKnockbackBase(knockBackH, knockBackV);
             }
             // 附魔等级单独设置到 per-hit Profile
             if (this.knockbackEnchantLevel > 0) {
