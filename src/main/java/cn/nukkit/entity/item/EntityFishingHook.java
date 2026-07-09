@@ -6,7 +6,11 @@ import cn.nukkit.block.Block;
 import cn.nukkit.block.ClipFlag;
 import cn.nukkit.entity.Entity;
 import cn.nukkit.entity.EntityID;
+import cn.nukkit.entity.EntityLiving;
 import cn.nukkit.entity.data.LongEntityData;
+import cn.nukkit.entity.knockback.KnockbackManager;
+import cn.nukkit.entity.knockback.KnockbackProfile;
+import cn.nukkit.entity.knockback.KnockbackSourceType;
 import cn.nukkit.entity.projectile.EntityProjectile;
 import cn.nukkit.event.entity.*;
 import cn.nukkit.event.entity.EntityDamageEvent.DamageCause;
@@ -47,8 +51,16 @@ public class EntityFishingHook extends EntityProjectile {
     public int caughtTimer = 0;
     public boolean canCollide = true;
     public boolean reelLineTargetMotionEC = true;
-    // Whether to apply pull-back motion on reel (enabled by default). Allows game modes to disable hook pull-back.
+    // 是否在收竿时应用拉回 motion，玩法可在发射事件中覆盖。
     public boolean reelLineDoPullBack = true;
+    public boolean hitTargetMotion = true;
+    public float hitTargetMotionDivisor = 15.0f;
+    public float hitTargetMotionVertical = 0.3f;
+    public float reelLineECMotionDivisor = 8.0f;
+    public float reelLineECMotionVertical = 0.3f;
+    public float reelLineVanillaMotionMultiplier = 0.1f;
+    public float reelLineVanillaVerticalMultiplier = 0.08f;
+    public float reelLineVanillaShooterYOffset = 1.0f;
 
     public Vector3 fish = null;
 
@@ -65,6 +77,30 @@ public class EntityFishingHook extends EntityProjectile {
             ownerId = this.shootingEntity.getId();
         }
         this.dataProperties.putLong(DATA_OWNER_EID, ownerId);
+        this.applyKnockbackProfileDefaults();
+    }
+
+    private void applyKnockbackProfileDefaults() {
+        KnockbackProfile profile = this.shootingEntity instanceof EntityLiving living
+                ? living.getKnockbackProfile() : KnockbackManager.get().getDefaultProfile();
+        this.hitTargetMotion = profile.isRodHitMotion();
+        this.hitTargetMotionDivisor = profile.getRodHitMotionDivisor();
+        this.hitTargetMotionVertical = profile.getRodHitMotionVertical();
+        this.reelLineDoPullBack = profile.isRodReelPullBack();
+        this.reelLineTargetMotionEC = profile.isRodReelMotionEC();
+        this.reelLineECMotionDivisor = profile.getRodReelECMotionDivisor();
+        this.reelLineECMotionVertical = profile.getRodReelECMotionVertical();
+        this.reelLineVanillaMotionMultiplier = profile.getRodReelVanillaMotionMultiplier();
+        this.reelLineVanillaVerticalMultiplier = profile.getRodReelVanillaVerticalMultiplier();
+        this.reelLineVanillaShooterYOffset = profile.getRodReelVanillaShooterYOffset();
+    }
+
+    private static boolean isFinite(float value) {
+        return Float.isFinite(value);
+    }
+
+    private static boolean canDivideMotion(float divisor) {
+        return isFinite(divisor) && divisor != 0.0f;
     }
 
     @Override
@@ -448,16 +484,18 @@ public class EntityFishingHook extends EntityProjectile {
                     }
 
                     if (!riding) {
-                        // Only apply pull-back motion when enabled
                         if (reelLineDoPullBack) {
                             if (!reelLineTargetMotionEC) {
-                                // vanilla-like pull back
-                                Vector3 diff = this.shootingEntity.add(0, 1, 0).subtract(entity).multiply(0.1);
-                                diff.y = Math.sqrt(diff.length()) * 0.08;
-                                entity.setMotion(diff);
-                            } else {
-                                // EC-style stronger pull back
-                                entity.setMotion(this.shootingEntity.subtract(entity).divide(8).add(0, 0.3, 0));
+                                if (isFinite(reelLineVanillaShooterYOffset)
+                                        && isFinite(reelLineVanillaMotionMultiplier)
+                                        && isFinite(reelLineVanillaVerticalMultiplier)) {
+                                    Vector3 diff = this.shootingEntity.add(0, reelLineVanillaShooterYOffset, 0)
+                                            .subtract(entity).multiply(reelLineVanillaMotionMultiplier);
+                                    diff.y = Math.sqrt(diff.length()) * reelLineVanillaVerticalMultiplier;
+                                    entity.setMotion(diff);
+                                }
+                            } else if (canDivideMotion(reelLineECMotionDivisor) && isFinite(reelLineECMotionVertical)) {
+                                entity.setMotion(this.shootingEntity.subtract(entity).divide(reelLineECMotionDivisor).add(0, reelLineECMotionVertical, 0));
                             }
                         }
                     }
@@ -515,17 +553,16 @@ public class EntityFishingHook extends EntityProjectile {
 
         EntityDamageEvent ev;
         if (this.shootingEntity == null) {
-            ev = new EntityDamageByEntityEvent(this, entity, DamageCause.PROJECTILE, damage, 0f, 0f);
+            ev = new EntityDamageByEntityEvent(this, entity, DamageCause.PROJECTILE, damage, KnockbackSourceType.ROD);
         } else {
-            ev = new EntityDamageByChildEntityEvent(this.shootingEntity, this, entity, DamageCause.PROJECTILE, damage);
-            ((EntityDamageByChildEntityEvent) ev).clearKnockback();
+            ev = new EntityDamageByChildEntityEvent(this.shootingEntity, this, entity, DamageCause.PROJECTILE, damage, KnockbackSourceType.ROD);
         }
 
         if (entity.attack(ev)) {
             this.setTarget(entity.getId());
 
-            if (this.shootingEntity != null) {
-                entity.setMotion(entity.subtract(this.shootingEntity).divide(15).add(0, 0.3, 0)); // 这边还是用EC的特殊钩回motion，营造EC的特殊手感
+            if (this.shootingEntity != null && hitTargetMotion && canDivideMotion(hitTargetMotionDivisor) && isFinite(hitTargetMotionVertical)) {
+                entity.setMotion(entity.subtract(this.shootingEntity).divide(hitTargetMotionDivisor).add(0, hitTargetMotionVertical, 0)); // 这边还是用EC的特殊钩回motion，营造EC的特殊手感
                 //entity.setMotion(entity.getMotion().add(entity.subtract(this.shootingEntity).multiply(0.1)));
             }
         } else if (entity instanceof Player && ((Player) entity).getGamemode() == Player.CREATIVE) {

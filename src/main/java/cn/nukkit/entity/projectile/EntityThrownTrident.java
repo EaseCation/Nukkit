@@ -4,6 +4,7 @@ import cn.nukkit.Player;
 import cn.nukkit.entity.Entity;
 import cn.nukkit.entity.EntityID;
 import cn.nukkit.entity.data.LongEntityData;
+import cn.nukkit.entity.knockback.KnockbackSourceType;
 import cn.nukkit.entity.weather.EntityLightning;
 import cn.nukkit.event.entity.EntityDamageByChildEntityEvent;
 import cn.nukkit.event.entity.EntityDamageByEntityEvent;
@@ -170,9 +171,9 @@ public class EntityThrownTrident extends EntityProjectile {
 
         EntityDamageEvent ev;
         if (this.shootingEntity == null) {
-            ev = new EntityDamageByEntityEvent(this, entity, DamageCause.PROJECTILE, damage);
+            ev = new EntityDamageByEntityEvent(this, entity, DamageCause.PROJECTILE, damage, KnockbackSourceType.TRIDENT);
         } else {
-            ev = new EntityDamageByChildEntityEvent(this.shootingEntity, this, entity, DamageCause.PROJECTILE, damage);
+            ev = new EntityDamageByChildEntityEvent(this.shootingEntity, this, entity, DamageCause.PROJECTILE, damage, KnockbackSourceType.TRIDENT);
         }
         entity.attack(ev);
         this.hadCollision = true;

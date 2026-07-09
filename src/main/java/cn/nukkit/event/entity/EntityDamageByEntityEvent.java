@@ -4,6 +4,7 @@ import cn.nukkit.entity.Entity;
 import cn.nukkit.entity.EntityLiving;
 import cn.nukkit.entity.knockback.KnockbackManager;
 import cn.nukkit.entity.knockback.KnockbackProfile;
+import cn.nukkit.entity.knockback.KnockbackSourceType;
 import cn.nukkit.item.enchantment.Enchantment;
 import cn.nukkit.potion.Effect;
 
@@ -25,11 +26,19 @@ public class EntityDamageByEntityEvent extends EntityDamageEvent {
     private Enchantment[] enchantments;
 
     public EntityDamageByEntityEvent(Entity damager, Entity entity, DamageCause cause, float damage) {
-        this(damager, entity, cause, damage, profileBaseH(damager), profileBaseV(damager));
+        this(damager, entity, cause, damage, KnockbackSourceType.GENERIC);
+    }
+
+    public EntityDamageByEntityEvent(Entity damager, Entity entity, DamageCause cause, float damage, KnockbackSourceType sourceType) {
+        this(damager, entity, cause, damage, profileBaseH(damager, sourceType), profileBaseV(damager, sourceType));
     }
 
     public EntityDamageByEntityEvent(Entity damager, Entity entity, DamageCause cause, Map<DamageModifier, Float> modifiers) {
-        this(damager, entity, cause, modifiers, profileBaseH(damager), profileBaseV(damager));
+        this(damager, entity, cause, modifiers, KnockbackSourceType.GENERIC);
+    }
+
+    public EntityDamageByEntityEvent(Entity damager, Entity entity, DamageCause cause, Map<DamageModifier, Float> modifiers, KnockbackSourceType sourceType) {
+        this(damager, entity, cause, modifiers, profileBaseH(damager, sourceType), profileBaseV(damager, sourceType));
     }
 
     public EntityDamageByEntityEvent(Entity damager, Entity entity, DamageCause cause, float damage, float knockBackH, float knockBackV) {
@@ -63,13 +72,23 @@ public class EntityDamageByEntityEvent extends EntityDamageEvent {
     }
 
     private static float profileBaseH(Entity damager) {
+        return profileBaseH(damager, KnockbackSourceType.GENERIC);
+    }
+
+    private static float profileBaseH(Entity damager, KnockbackSourceType sourceType) {
         return damager instanceof EntityLiving living
-                ? living.getKnockbackProfile().getBaseH() : GLOBAL_KNOCKBACK_H;
+                ? living.getKnockbackProfile().getBaseH(sourceType)
+                : KnockbackManager.get().getDefaultProfile().getBaseH(sourceType);
     }
 
     private static float profileBaseV(Entity damager) {
+        return profileBaseV(damager, KnockbackSourceType.GENERIC);
+    }
+
+    private static float profileBaseV(Entity damager, KnockbackSourceType sourceType) {
         return damager instanceof EntityLiving living
-                ? living.getKnockbackProfile().getBaseV() : GLOBAL_KNOCKBACK_V;
+                ? living.getKnockbackProfile().getBaseV(sourceType)
+                : KnockbackManager.get().getDefaultProfile().getBaseV(sourceType);
     }
 
     protected void addAttackerModifiers(Entity damager) {

@@ -8,6 +8,7 @@ import cn.nukkit.entity.EntityLiving;
 import cn.nukkit.entity.item.EntityEndCrystal;
 import cn.nukkit.entity.item.EntityPainting;
 import cn.nukkit.entity.item.EntityVehicle;
+import cn.nukkit.entity.knockback.KnockbackSourceType;
 import cn.nukkit.event.entity.*;
 import cn.nukkit.event.entity.EntityDamageEvent.DamageCause;
 import cn.nukkit.level.MovingObjectPosition;
@@ -110,9 +111,9 @@ public abstract class EntityProjectile extends Entity {
         if (dealImpactDamage()) {
             EntityDamageEvent ev;
             if (this.shootingEntity == null) {
-                ev = new EntityDamageByEntityEvent(this, entity, DamageCause.PROJECTILE, damage);
+                ev = new EntityDamageByEntityEvent(this, entity, DamageCause.PROJECTILE, damage, getKnockbackSourceType());
             } else {
-                ev = new EntityDamageByChildEntityEvent(this.shootingEntity, this, entity, DamageCause.PROJECTILE, damage);
+                ev = new EntityDamageByChildEntityEvent(this.shootingEntity, this, entity, DamageCause.PROJECTILE, damage, getKnockbackSourceType());
             }
             // 只在有自定义击退值时覆盖（兼容旧 NBT 格式中非 GLOBAL 的值）
             if (this.hasCustomKnockback) {
@@ -160,6 +161,10 @@ public abstract class EntityProjectile extends Entity {
     }
 
     protected void postHurt(Entity entity) {
+    }
+
+    protected KnockbackSourceType getKnockbackSourceType() {
+        return KnockbackSourceType.PROJECTILE;
     }
 
     protected void onHitBlock(MovingObjectPosition blockHitResult) {

@@ -52,11 +52,27 @@ public class KnockbackProfile {
     private boolean limitYDifference = false;
     private float yDifferenceLimit = 1.2f;
 
-    // === 弓箭/钓竿独立参数（-1 表示使用 baseH/baseV） ===
+    // === 来源分类基础值（-1 表示使用 baseH/baseV） ===
     private float bowBaseH = -1;
     private float bowBaseV = -1;
-    private float rodBaseH = -1;
-    private float rodBaseV = -1;
+    private float projectileBaseH = -1;
+    private float projectileBaseV = -1;
+    private float tridentBaseH = -1;
+    private float tridentBaseV = -1;
+    private float rodBaseH = 0;
+    private float rodBaseV = 0;
+
+    // === 鱼竿 motion 参数 ===
+    private boolean rodHitMotion = true;
+    private float rodHitMotionDivisor = 15.0f;
+    private float rodHitMotionVertical = 0.3f;
+    private boolean rodReelPullBack = true;
+    private boolean rodReelMotionEC = true;
+    private float rodReelECMotionDivisor = 8.0f;
+    private float rodReelECMotionVertical = 0.3f;
+    private float rodReelVanillaMotionMultiplier = 0.1f;
+    private float rodReelVanillaVerticalMultiplier = 0.08f;
+    private float rodReelVanillaShooterYOffset = 1.0f;
 
     public KnockbackProfile(String name) {
         this.name = name;
@@ -110,8 +126,22 @@ public class KnockbackProfile {
         this.yDifferenceLimit = source.yDifferenceLimit;
         this.bowBaseH = source.bowBaseH;
         this.bowBaseV = source.bowBaseV;
+        this.projectileBaseH = source.projectileBaseH;
+        this.projectileBaseV = source.projectileBaseV;
+        this.tridentBaseH = source.tridentBaseH;
+        this.tridentBaseV = source.tridentBaseV;
         this.rodBaseH = source.rodBaseH;
         this.rodBaseV = source.rodBaseV;
+        this.rodHitMotion = source.rodHitMotion;
+        this.rodHitMotionDivisor = source.rodHitMotionDivisor;
+        this.rodHitMotionVertical = source.rodHitMotionVertical;
+        this.rodReelPullBack = source.rodReelPullBack;
+        this.rodReelMotionEC = source.rodReelMotionEC;
+        this.rodReelECMotionDivisor = source.rodReelECMotionDivisor;
+        this.rodReelECMotionVertical = source.rodReelECMotionVertical;
+        this.rodReelVanillaMotionMultiplier = source.rodReelVanillaMotionMultiplier;
+        this.rodReelVanillaVerticalMultiplier = source.rodReelVanillaVerticalMultiplier;
+        this.rodReelVanillaShooterYOffset = source.rodReelVanillaShooterYOffset;
         return this;
     }
 
@@ -123,6 +153,44 @@ public class KnockbackProfile {
 
     public float getEffectiveBaseV() {
         return baseV + enchantLevel * enchantBonusV;
+    }
+
+    public float getBaseH(KnockbackSourceType sourceType) {
+        return resolveBase(getSourceBaseH(sourceType), baseH);
+    }
+
+    public float getBaseV(KnockbackSourceType sourceType) {
+        return resolveBase(getSourceBaseV(sourceType), baseV);
+    }
+
+    private float getSourceBaseH(KnockbackSourceType sourceType) {
+        if (sourceType == null) {
+            return baseH;
+        }
+        return switch (sourceType) {
+            case BOW -> bowBaseH;
+            case PROJECTILE -> projectileBaseH;
+            case TRIDENT -> tridentBaseH;
+            case ROD -> rodBaseH;
+            case GENERIC -> baseH;
+        };
+    }
+
+    private float getSourceBaseV(KnockbackSourceType sourceType) {
+        if (sourceType == null) {
+            return baseV;
+        }
+        return switch (sourceType) {
+            case BOW -> bowBaseV;
+            case PROJECTILE -> projectileBaseV;
+            case TRIDENT -> tridentBaseV;
+            case ROD -> rodBaseV;
+            case GENERIC -> baseV;
+        };
+    }
+
+    private static float resolveBase(float sourceBase, float defaultBase) {
+        return sourceBase >= 0 ? sourceBase : defaultBase;
     }
 
     // === getter + 链式 setter ===
@@ -392,6 +460,42 @@ public class KnockbackProfile {
         return this;
     }
 
+    public float getProjectileBaseH() {
+        return projectileBaseH;
+    }
+
+    public KnockbackProfile setProjectileBaseH(float projectileBaseH) {
+        this.projectileBaseH = projectileBaseH;
+        return this;
+    }
+
+    public float getProjectileBaseV() {
+        return projectileBaseV;
+    }
+
+    public KnockbackProfile setProjectileBaseV(float projectileBaseV) {
+        this.projectileBaseV = projectileBaseV;
+        return this;
+    }
+
+    public float getTridentBaseH() {
+        return tridentBaseH;
+    }
+
+    public KnockbackProfile setTridentBaseH(float tridentBaseH) {
+        this.tridentBaseH = tridentBaseH;
+        return this;
+    }
+
+    public float getTridentBaseV() {
+        return tridentBaseV;
+    }
+
+    public KnockbackProfile setTridentBaseV(float tridentBaseV) {
+        this.tridentBaseV = tridentBaseV;
+        return this;
+    }
+
     public float getRodBaseH() {
         return rodBaseH;
     }
@@ -407,6 +511,96 @@ public class KnockbackProfile {
 
     public KnockbackProfile setRodBaseV(float rodBaseV) {
         this.rodBaseV = rodBaseV;
+        return this;
+    }
+
+    public boolean isRodHitMotion() {
+        return rodHitMotion;
+    }
+
+    public KnockbackProfile setRodHitMotion(boolean rodHitMotion) {
+        this.rodHitMotion = rodHitMotion;
+        return this;
+    }
+
+    public float getRodHitMotionDivisor() {
+        return rodHitMotionDivisor;
+    }
+
+    public KnockbackProfile setRodHitMotionDivisor(float rodHitMotionDivisor) {
+        this.rodHitMotionDivisor = rodHitMotionDivisor;
+        return this;
+    }
+
+    public float getRodHitMotionVertical() {
+        return rodHitMotionVertical;
+    }
+
+    public KnockbackProfile setRodHitMotionVertical(float rodHitMotionVertical) {
+        this.rodHitMotionVertical = rodHitMotionVertical;
+        return this;
+    }
+
+    public boolean isRodReelPullBack() {
+        return rodReelPullBack;
+    }
+
+    public KnockbackProfile setRodReelPullBack(boolean rodReelPullBack) {
+        this.rodReelPullBack = rodReelPullBack;
+        return this;
+    }
+
+    public boolean isRodReelMotionEC() {
+        return rodReelMotionEC;
+    }
+
+    public KnockbackProfile setRodReelMotionEC(boolean rodReelMotionEC) {
+        this.rodReelMotionEC = rodReelMotionEC;
+        return this;
+    }
+
+    public float getRodReelECMotionDivisor() {
+        return rodReelECMotionDivisor;
+    }
+
+    public KnockbackProfile setRodReelECMotionDivisor(float rodReelECMotionDivisor) {
+        this.rodReelECMotionDivisor = rodReelECMotionDivisor;
+        return this;
+    }
+
+    public float getRodReelECMotionVertical() {
+        return rodReelECMotionVertical;
+    }
+
+    public KnockbackProfile setRodReelECMotionVertical(float rodReelECMotionVertical) {
+        this.rodReelECMotionVertical = rodReelECMotionVertical;
+        return this;
+    }
+
+    public float getRodReelVanillaMotionMultiplier() {
+        return rodReelVanillaMotionMultiplier;
+    }
+
+    public KnockbackProfile setRodReelVanillaMotionMultiplier(float rodReelVanillaMotionMultiplier) {
+        this.rodReelVanillaMotionMultiplier = rodReelVanillaMotionMultiplier;
+        return this;
+    }
+
+    public float getRodReelVanillaVerticalMultiplier() {
+        return rodReelVanillaVerticalMultiplier;
+    }
+
+    public KnockbackProfile setRodReelVanillaVerticalMultiplier(float rodReelVanillaVerticalMultiplier) {
+        this.rodReelVanillaVerticalMultiplier = rodReelVanillaVerticalMultiplier;
+        return this;
+    }
+
+    public float getRodReelVanillaShooterYOffset() {
+        return rodReelVanillaShooterYOffset;
+    }
+
+    public KnockbackProfile setRodReelVanillaShooterYOffset(float rodReelVanillaShooterYOffset) {
+        this.rodReelVanillaShooterYOffset = rodReelVanillaShooterYOffset;
         return this;
     }
 }

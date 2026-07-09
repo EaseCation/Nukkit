@@ -6,6 +6,7 @@ import cn.nukkit.entity.Entity;
 import cn.nukkit.entity.EntityID;
 import cn.nukkit.entity.EntitySmite;
 import cn.nukkit.entity.data.LongEntityData;
+import cn.nukkit.entity.knockback.KnockbackSourceType;
 import cn.nukkit.event.entity.EntityDamageByEntityEvent;
 import cn.nukkit.event.entity.EntityDamageEvent;
 import cn.nukkit.event.entity.EntityDamageEvent.DamageCause;
@@ -123,6 +124,11 @@ public class EntityArrow extends EntityProjectile {
         }
 
         return base;
+    }
+
+    @Override
+    protected KnockbackSourceType getKnockbackSourceType() {
+        return KnockbackSourceType.BOW;
     }
 
     @Override
