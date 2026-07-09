@@ -109,20 +109,7 @@ public abstract class EntityProjectile extends Entity {
 
         boolean dealDamage;
         if (dealImpactDamage()) {
-            EntityDamageEvent ev;
-            if (this.shootingEntity == null) {
-                ev = new EntityDamageByEntityEvent(this, entity, DamageCause.PROJECTILE, damage, getKnockbackSourceType());
-            } else {
-                ev = new EntityDamageByChildEntityEvent(this.shootingEntity, this, entity, DamageCause.PROJECTILE, damage, getKnockbackSourceType());
-            }
-            // 只在有自定义击退值时覆盖（兼容旧 NBT 格式中非 GLOBAL 的值）
-            if (this.hasCustomKnockback) {
-                ((EntityDamageByEntityEvent) ev).setKnockbackBase(knockBackH, knockBackV);
-            }
-            // 附魔等级单独设置到 per-hit Profile
-            if (this.knockbackEnchantLevel > 0) {
-                ((EntityDamageByEntityEvent) ev).getKnockbackProfile().setEnchantLevel(this.knockbackEnchantLevel);
-            }
+            EntityDamageEvent ev = this.createProjectileDamageEvent(entity, DamageCause.PROJECTILE, damage);
             dealDamage = entity.attack(ev);
         } else {
             dealDamage = false;
@@ -165,6 +152,27 @@ public abstract class EntityProjectile extends Entity {
 
     protected KnockbackSourceType getKnockbackSourceType() {
         return KnockbackSourceType.PROJECTILE;
+    }
+
+    protected EntityDamageByEntityEvent createProjectileDamageEvent(Entity entity, DamageCause cause, float damage) {
+        EntityDamageByEntityEvent ev;
+        if (this.shootingEntity == null) {
+            ev = new EntityDamageByEntityEvent(this, entity, cause, damage, getKnockbackSourceType());
+        } else {
+            ev = new EntityDamageByChildEntityEvent(this.shootingEntity, this, entity, cause, damage, getKnockbackSourceType());
+        }
+        applyProjectileKnockbackOverrides(ev);
+        return ev;
+    }
+
+    protected void applyProjectileKnockbackOverrides(EntityDamageByEntityEvent ev) {
+        // 兼容旧 NBT 格式中的自定义击退值，并保留新格式的附魔等级。
+        if (this.hasCustomKnockback) {
+            ev.setKnockbackBase(knockBackH, knockBackV);
+        }
+        if (this.knockbackEnchantLevel > 0) {
+            ev.getKnockbackProfile().setEnchantLevel(this.knockbackEnchantLevel);
+        }
     }
 
     protected void onHitBlock(MovingObjectPosition blockHitResult) {

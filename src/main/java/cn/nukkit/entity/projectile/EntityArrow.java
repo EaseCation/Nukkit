@@ -128,7 +128,7 @@ public class EntityArrow extends EntityProjectile {
 
     @Override
     protected KnockbackSourceType getKnockbackSourceType() {
-        return KnockbackSourceType.BOW;
+        return KnockbackSourceType.ARROW;
     }
 
     @Override

@@ -93,7 +93,7 @@ public class ItemBow extends ItemTool {
                 .putShort("Fire", flame ? 45 * 60 : 0)
                 .putDouble("damage", damage)
                 .putByte("auxValue", matched.getDamage());
-        // 附魔等级单独存储，base 值在命中时从受害者 Profile 获取
+        // 附魔等级单独存储，base 值在命中时从射手 Profile 获取
         if (knockbackEnchant > 0) {
             nbt.putInt("KnockbackEnchantLevel", knockbackEnchant);
         }

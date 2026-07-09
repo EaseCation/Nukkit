@@ -76,9 +76,13 @@ public class EntityDamageByEntityEvent extends EntityDamageEvent {
     }
 
     private static float profileBaseH(Entity damager, KnockbackSourceType sourceType) {
-        return damager instanceof EntityLiving living
-                ? living.getKnockbackProfile().getBaseH(sourceType)
-                : KnockbackManager.get().getDefaultProfile().getBaseH(sourceType);
+        if (damager instanceof EntityLiving living) {
+            return living.getKnockbackProfile().getBaseH(sourceType);
+        }
+        if (sourceType == null || sourceType == KnockbackSourceType.GENERIC) {
+            return GLOBAL_KNOCKBACK_H;
+        }
+        return KnockbackManager.get().getDefaultProfile().getBaseH(sourceType);
     }
 
     private static float profileBaseV(Entity damager) {
@@ -86,9 +90,13 @@ public class EntityDamageByEntityEvent extends EntityDamageEvent {
     }
 
     private static float profileBaseV(Entity damager, KnockbackSourceType sourceType) {
-        return damager instanceof EntityLiving living
-                ? living.getKnockbackProfile().getBaseV(sourceType)
-                : KnockbackManager.get().getDefaultProfile().getBaseV(sourceType);
+        if (damager instanceof EntityLiving living) {
+            return living.getKnockbackProfile().getBaseV(sourceType);
+        }
+        if (sourceType == null || sourceType == KnockbackSourceType.GENERIC) {
+            return GLOBAL_KNOCKBACK_V;
+        }
+        return KnockbackManager.get().getDefaultProfile().getBaseV(sourceType);
     }
 
     protected void addAttackerModifiers(Entity damager) {

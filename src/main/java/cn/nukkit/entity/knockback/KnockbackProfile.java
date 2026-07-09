@@ -52,27 +52,27 @@ public class KnockbackProfile {
     private boolean limitYDifference = false;
     private float yDifferenceLimit = 1.2f;
 
-    // === 来源分类基础值（-1 表示使用 baseH/baseV） ===
-    private float bowBaseH = -1;
-    private float bowBaseV = -1;
+    // === 来源分类基础值（-1 表示使用 baseH/baseV，鱼钩事件默认 0 以保留旧手感） ===
+    private float arrowBaseH = -1;
+    private float arrowBaseV = -1;
     private float projectileBaseH = -1;
     private float projectileBaseV = -1;
     private float tridentBaseH = -1;
     private float tridentBaseV = -1;
-    private float rodBaseH = 0;
-    private float rodBaseV = 0;
+    private float fishingHookHitEventBaseH = 0;
+    private float fishingHookHitEventBaseV = 0;
 
     // === 鱼竿 motion 参数 ===
-    private boolean rodHitMotion = true;
-    private float rodHitMotionDivisor = 15.0f;
-    private float rodHitMotionVertical = 0.3f;
-    private boolean rodReelPullBack = true;
-    private boolean rodReelMotionEC = true;
-    private float rodReelECMotionDivisor = 8.0f;
-    private float rodReelECMotionVertical = 0.3f;
-    private float rodReelVanillaMotionMultiplier = 0.1f;
-    private float rodReelVanillaVerticalMultiplier = 0.08f;
-    private float rodReelVanillaShooterYOffset = 1.0f;
+    private boolean fishingHookHitMotion = true;
+    private float fishingHookHitMotionDivisor = 15.0f;
+    private float fishingHookHitMotionVertical = 0.3f;
+    private boolean fishingHookReelPullBack = true;
+    private boolean fishingHookReelMotionEC = true;
+    private float fishingHookReelECMotionDivisor = 8.0f;
+    private float fishingHookReelECMotionVertical = 0.3f;
+    private float fishingHookReelVanillaMotionMultiplier = 0.1f;
+    private float fishingHookReelVanillaVerticalMultiplier = 0.08f;
+    private float fishingHookReelVanillaShooterYOffset = 1.0f;
 
     public KnockbackProfile(String name) {
         this.name = name;
@@ -124,24 +124,24 @@ public class KnockbackProfile {
         this.airMultiplierV = source.airMultiplierV;
         this.limitYDifference = source.limitYDifference;
         this.yDifferenceLimit = source.yDifferenceLimit;
-        this.bowBaseH = source.bowBaseH;
-        this.bowBaseV = source.bowBaseV;
+        this.arrowBaseH = source.arrowBaseH;
+        this.arrowBaseV = source.arrowBaseV;
         this.projectileBaseH = source.projectileBaseH;
         this.projectileBaseV = source.projectileBaseV;
         this.tridentBaseH = source.tridentBaseH;
         this.tridentBaseV = source.tridentBaseV;
-        this.rodBaseH = source.rodBaseH;
-        this.rodBaseV = source.rodBaseV;
-        this.rodHitMotion = source.rodHitMotion;
-        this.rodHitMotionDivisor = source.rodHitMotionDivisor;
-        this.rodHitMotionVertical = source.rodHitMotionVertical;
-        this.rodReelPullBack = source.rodReelPullBack;
-        this.rodReelMotionEC = source.rodReelMotionEC;
-        this.rodReelECMotionDivisor = source.rodReelECMotionDivisor;
-        this.rodReelECMotionVertical = source.rodReelECMotionVertical;
-        this.rodReelVanillaMotionMultiplier = source.rodReelVanillaMotionMultiplier;
-        this.rodReelVanillaVerticalMultiplier = source.rodReelVanillaVerticalMultiplier;
-        this.rodReelVanillaShooterYOffset = source.rodReelVanillaShooterYOffset;
+        this.fishingHookHitEventBaseH = source.fishingHookHitEventBaseH;
+        this.fishingHookHitEventBaseV = source.fishingHookHitEventBaseV;
+        this.fishingHookHitMotion = source.fishingHookHitMotion;
+        this.fishingHookHitMotionDivisor = source.fishingHookHitMotionDivisor;
+        this.fishingHookHitMotionVertical = source.fishingHookHitMotionVertical;
+        this.fishingHookReelPullBack = source.fishingHookReelPullBack;
+        this.fishingHookReelMotionEC = source.fishingHookReelMotionEC;
+        this.fishingHookReelECMotionDivisor = source.fishingHookReelECMotionDivisor;
+        this.fishingHookReelECMotionVertical = source.fishingHookReelECMotionVertical;
+        this.fishingHookReelVanillaMotionMultiplier = source.fishingHookReelVanillaMotionMultiplier;
+        this.fishingHookReelVanillaVerticalMultiplier = source.fishingHookReelVanillaVerticalMultiplier;
+        this.fishingHookReelVanillaShooterYOffset = source.fishingHookReelVanillaShooterYOffset;
         return this;
     }
 
@@ -168,10 +168,10 @@ public class KnockbackProfile {
             return baseH;
         }
         return switch (sourceType) {
-            case BOW -> bowBaseH;
+            case ARROW -> arrowBaseH;
             case PROJECTILE -> projectileBaseH;
             case TRIDENT -> tridentBaseH;
-            case ROD -> rodBaseH;
+            case FISHING_HOOK -> fishingHookHitEventBaseH;
             case GENERIC -> baseH;
         };
     }
@@ -181,10 +181,10 @@ public class KnockbackProfile {
             return baseV;
         }
         return switch (sourceType) {
-            case BOW -> bowBaseV;
+            case ARROW -> arrowBaseV;
             case PROJECTILE -> projectileBaseV;
             case TRIDENT -> tridentBaseV;
-            case ROD -> rodBaseV;
+            case FISHING_HOOK -> fishingHookHitEventBaseV;
             case GENERIC -> baseV;
         };
     }
@@ -442,21 +442,21 @@ public class KnockbackProfile {
         return this;
     }
 
-    public float getBowBaseH() {
-        return bowBaseH;
+    public float getArrowBaseH() {
+        return arrowBaseH;
     }
 
-    public KnockbackProfile setBowBaseH(float bowBaseH) {
-        this.bowBaseH = bowBaseH;
+    public KnockbackProfile setArrowBaseH(float arrowBaseH) {
+        this.arrowBaseH = arrowBaseH;
         return this;
     }
 
-    public float getBowBaseV() {
-        return bowBaseV;
+    public float getArrowBaseV() {
+        return arrowBaseV;
     }
 
-    public KnockbackProfile setBowBaseV(float bowBaseV) {
-        this.bowBaseV = bowBaseV;
+    public KnockbackProfile setArrowBaseV(float arrowBaseV) {
+        this.arrowBaseV = arrowBaseV;
         return this;
     }
 
@@ -496,111 +496,111 @@ public class KnockbackProfile {
         return this;
     }
 
-    public float getRodBaseH() {
-        return rodBaseH;
+    public float getFishingHookHitEventBaseH() {
+        return fishingHookHitEventBaseH;
     }
 
-    public KnockbackProfile setRodBaseH(float rodBaseH) {
-        this.rodBaseH = rodBaseH;
+    public KnockbackProfile setFishingHookHitEventBaseH(float fishingHookHitEventBaseH) {
+        this.fishingHookHitEventBaseH = fishingHookHitEventBaseH;
         return this;
     }
 
-    public float getRodBaseV() {
-        return rodBaseV;
+    public float getFishingHookHitEventBaseV() {
+        return fishingHookHitEventBaseV;
     }
 
-    public KnockbackProfile setRodBaseV(float rodBaseV) {
-        this.rodBaseV = rodBaseV;
+    public KnockbackProfile setFishingHookHitEventBaseV(float fishingHookHitEventBaseV) {
+        this.fishingHookHitEventBaseV = fishingHookHitEventBaseV;
         return this;
     }
 
-    public boolean isRodHitMotion() {
-        return rodHitMotion;
+    public boolean isFishingHookHitMotion() {
+        return fishingHookHitMotion;
     }
 
-    public KnockbackProfile setRodHitMotion(boolean rodHitMotion) {
-        this.rodHitMotion = rodHitMotion;
+    public KnockbackProfile setFishingHookHitMotion(boolean fishingHookHitMotion) {
+        this.fishingHookHitMotion = fishingHookHitMotion;
         return this;
     }
 
-    public float getRodHitMotionDivisor() {
-        return rodHitMotionDivisor;
+    public float getFishingHookHitMotionDivisor() {
+        return fishingHookHitMotionDivisor;
     }
 
-    public KnockbackProfile setRodHitMotionDivisor(float rodHitMotionDivisor) {
-        this.rodHitMotionDivisor = rodHitMotionDivisor;
+    public KnockbackProfile setFishingHookHitMotionDivisor(float fishingHookHitMotionDivisor) {
+        this.fishingHookHitMotionDivisor = fishingHookHitMotionDivisor;
         return this;
     }
 
-    public float getRodHitMotionVertical() {
-        return rodHitMotionVertical;
+    public float getFishingHookHitMotionVertical() {
+        return fishingHookHitMotionVertical;
     }
 
-    public KnockbackProfile setRodHitMotionVertical(float rodHitMotionVertical) {
-        this.rodHitMotionVertical = rodHitMotionVertical;
+    public KnockbackProfile setFishingHookHitMotionVertical(float fishingHookHitMotionVertical) {
+        this.fishingHookHitMotionVertical = fishingHookHitMotionVertical;
         return this;
     }
 
-    public boolean isRodReelPullBack() {
-        return rodReelPullBack;
+    public boolean isFishingHookReelPullBack() {
+        return fishingHookReelPullBack;
     }
 
-    public KnockbackProfile setRodReelPullBack(boolean rodReelPullBack) {
-        this.rodReelPullBack = rodReelPullBack;
+    public KnockbackProfile setFishingHookReelPullBack(boolean fishingHookReelPullBack) {
+        this.fishingHookReelPullBack = fishingHookReelPullBack;
         return this;
     }
 
-    public boolean isRodReelMotionEC() {
-        return rodReelMotionEC;
+    public boolean isFishingHookReelMotionEC() {
+        return fishingHookReelMotionEC;
     }
 
-    public KnockbackProfile setRodReelMotionEC(boolean rodReelMotionEC) {
-        this.rodReelMotionEC = rodReelMotionEC;
+    public KnockbackProfile setFishingHookReelMotionEC(boolean fishingHookReelMotionEC) {
+        this.fishingHookReelMotionEC = fishingHookReelMotionEC;
         return this;
     }
 
-    public float getRodReelECMotionDivisor() {
-        return rodReelECMotionDivisor;
+    public float getFishingHookReelECMotionDivisor() {
+        return fishingHookReelECMotionDivisor;
     }
 
-    public KnockbackProfile setRodReelECMotionDivisor(float rodReelECMotionDivisor) {
-        this.rodReelECMotionDivisor = rodReelECMotionDivisor;
+    public KnockbackProfile setFishingHookReelECMotionDivisor(float fishingHookReelECMotionDivisor) {
+        this.fishingHookReelECMotionDivisor = fishingHookReelECMotionDivisor;
         return this;
     }
 
-    public float getRodReelECMotionVertical() {
-        return rodReelECMotionVertical;
+    public float getFishingHookReelECMotionVertical() {
+        return fishingHookReelECMotionVertical;
     }
 
-    public KnockbackProfile setRodReelECMotionVertical(float rodReelECMotionVertical) {
-        this.rodReelECMotionVertical = rodReelECMotionVertical;
+    public KnockbackProfile setFishingHookReelECMotionVertical(float fishingHookReelECMotionVertical) {
+        this.fishingHookReelECMotionVertical = fishingHookReelECMotionVertical;
         return this;
     }
 
-    public float getRodReelVanillaMotionMultiplier() {
-        return rodReelVanillaMotionMultiplier;
+    public float getFishingHookReelVanillaMotionMultiplier() {
+        return fishingHookReelVanillaMotionMultiplier;
     }
 
-    public KnockbackProfile setRodReelVanillaMotionMultiplier(float rodReelVanillaMotionMultiplier) {
-        this.rodReelVanillaMotionMultiplier = rodReelVanillaMotionMultiplier;
+    public KnockbackProfile setFishingHookReelVanillaMotionMultiplier(float fishingHookReelVanillaMotionMultiplier) {
+        this.fishingHookReelVanillaMotionMultiplier = fishingHookReelVanillaMotionMultiplier;
         return this;
     }
 
-    public float getRodReelVanillaVerticalMultiplier() {
-        return rodReelVanillaVerticalMultiplier;
+    public float getFishingHookReelVanillaVerticalMultiplier() {
+        return fishingHookReelVanillaVerticalMultiplier;
     }
 
-    public KnockbackProfile setRodReelVanillaVerticalMultiplier(float rodReelVanillaVerticalMultiplier) {
-        this.rodReelVanillaVerticalMultiplier = rodReelVanillaVerticalMultiplier;
+    public KnockbackProfile setFishingHookReelVanillaVerticalMultiplier(float fishingHookReelVanillaVerticalMultiplier) {
+        this.fishingHookReelVanillaVerticalMultiplier = fishingHookReelVanillaVerticalMultiplier;
         return this;
     }
 
-    public float getRodReelVanillaShooterYOffset() {
-        return rodReelVanillaShooterYOffset;
+    public float getFishingHookReelVanillaShooterYOffset() {
+        return fishingHookReelVanillaShooterYOffset;
     }
 
-    public KnockbackProfile setRodReelVanillaShooterYOffset(float rodReelVanillaShooterYOffset) {
-        this.rodReelVanillaShooterYOffset = rodReelVanillaShooterYOffset;
+    public KnockbackProfile setFishingHookReelVanillaShooterYOffset(float fishingHookReelVanillaShooterYOffset) {
+        this.fishingHookReelVanillaShooterYOffset = fishingHookReelVanillaShooterYOffset;
         return this;
     }
 }

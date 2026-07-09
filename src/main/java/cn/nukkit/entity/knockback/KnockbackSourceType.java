@@ -5,8 +5,8 @@ package cn.nukkit.entity.knockback;
  */
 public enum KnockbackSourceType {
     GENERIC,
-    BOW,
+    ARROW,
     PROJECTILE,
     TRIDENT,
-    ROD
+    FISHING_HOOK
 }

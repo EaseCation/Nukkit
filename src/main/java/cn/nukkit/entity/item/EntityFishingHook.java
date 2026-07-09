@@ -53,6 +53,8 @@ public class EntityFishingHook extends EntityProjectile {
     public boolean reelLineTargetMotionEC = true;
     // 是否在收竿时应用拉回 motion，玩法可在发射事件中覆盖。
     public boolean reelLineDoPullBack = true;
+    public float hitEventKnockbackH = 0.0f;
+    public float hitEventKnockbackV = 0.0f;
     public boolean hitTargetMotion = true;
     public float hitTargetMotionDivisor = 15.0f;
     public float hitTargetMotionVertical = 0.3f;
@@ -65,6 +67,8 @@ public class EntityFishingHook extends EntityProjectile {
     public Vector3 fish = null;
 
     public Item rod = null;
+
+    private KnockbackProfile hitEventKnockbackProfile;
 
     public EntityFishingHook(FullChunk chunk, CompoundTag nbt) {
         this(chunk, nbt, null);
@@ -83,16 +87,19 @@ public class EntityFishingHook extends EntityProjectile {
     private void applyKnockbackProfileDefaults() {
         KnockbackProfile profile = this.shootingEntity instanceof EntityLiving living
                 ? living.getKnockbackProfile() : KnockbackManager.get().getDefaultProfile();
-        this.hitTargetMotion = profile.isRodHitMotion();
-        this.hitTargetMotionDivisor = profile.getRodHitMotionDivisor();
-        this.hitTargetMotionVertical = profile.getRodHitMotionVertical();
-        this.reelLineDoPullBack = profile.isRodReelPullBack();
-        this.reelLineTargetMotionEC = profile.isRodReelMotionEC();
-        this.reelLineECMotionDivisor = profile.getRodReelECMotionDivisor();
-        this.reelLineECMotionVertical = profile.getRodReelECMotionVertical();
-        this.reelLineVanillaMotionMultiplier = profile.getRodReelVanillaMotionMultiplier();
-        this.reelLineVanillaVerticalMultiplier = profile.getRodReelVanillaVerticalMultiplier();
-        this.reelLineVanillaShooterYOffset = profile.getRodReelVanillaShooterYOffset();
+        this.hitEventKnockbackProfile = profile.copy("fishing-hook-hit");
+        this.hitEventKnockbackH = profile.getFishingHookHitEventBaseH();
+        this.hitEventKnockbackV = profile.getFishingHookHitEventBaseV();
+        this.hitTargetMotion = profile.isFishingHookHitMotion();
+        this.hitTargetMotionDivisor = profile.getFishingHookHitMotionDivisor();
+        this.hitTargetMotionVertical = profile.getFishingHookHitMotionVertical();
+        this.reelLineDoPullBack = profile.isFishingHookReelPullBack();
+        this.reelLineTargetMotionEC = profile.isFishingHookReelMotionEC();
+        this.reelLineECMotionDivisor = profile.getFishingHookReelECMotionDivisor();
+        this.reelLineECMotionVertical = profile.getFishingHookReelECMotionVertical();
+        this.reelLineVanillaMotionMultiplier = profile.getFishingHookReelVanillaMotionMultiplier();
+        this.reelLineVanillaVerticalMultiplier = profile.getFishingHookReelVanillaVerticalMultiplier();
+        this.reelLineVanillaShooterYOffset = profile.getFishingHookReelVanillaShooterYOffset();
     }
 
     private static boolean isFinite(float value) {
@@ -101,6 +108,19 @@ public class EntityFishingHook extends EntityProjectile {
 
     private static boolean canDivideMotion(float divisor) {
         return isFinite(divisor) && divisor != 0.0f;
+    }
+
+    private EntityDamageByEntityEvent createFishingHookDamageEvent(Entity entity, float damage) {
+        EntityDamageByEntityEvent ev;
+        if (this.shootingEntity == null) {
+            ev = new EntityDamageByEntityEvent(this, entity, DamageCause.PROJECTILE, damage, KnockbackSourceType.FISHING_HOOK);
+        } else {
+            ev = new EntityDamageByChildEntityEvent(this.shootingEntity, this, entity, DamageCause.PROJECTILE, damage, KnockbackSourceType.FISHING_HOOK);
+        }
+        float baseH = hitTargetMotion ? 0.0f : hitEventKnockbackH;
+        float baseV = hitTargetMotion ? 0.0f : hitEventKnockbackV;
+        ev.getKnockbackProfile().copyFrom(hitEventKnockbackProfile).setBaseH(baseH).setBaseV(baseV).setEnchantLevel(0);
+        return ev;
     }
 
     @Override
@@ -551,12 +571,7 @@ public class EntityFishingHook extends EntityProjectile {
         this.server.getPluginManager().callEvent(new ProjectileHitEvent(this, MovingObjectPosition.fromEntity(entity)));
         float damage = this.getResultDamage();
 
-        EntityDamageEvent ev;
-        if (this.shootingEntity == null) {
-            ev = new EntityDamageByEntityEvent(this, entity, DamageCause.PROJECTILE, damage, KnockbackSourceType.ROD);
-        } else {
-            ev = new EntityDamageByChildEntityEvent(this.shootingEntity, this, entity, DamageCause.PROJECTILE, damage, KnockbackSourceType.ROD);
-        }
+        EntityDamageEvent ev = this.createFishingHookDamageEvent(entity, damage);
 
         if (entity.attack(ev)) {
             this.setTarget(entity.getId());

@@ -6,9 +6,7 @@ import cn.nukkit.entity.EntityID;
 import cn.nukkit.entity.data.LongEntityData;
 import cn.nukkit.entity.knockback.KnockbackSourceType;
 import cn.nukkit.entity.weather.EntityLightning;
-import cn.nukkit.event.entity.EntityDamageByChildEntityEvent;
 import cn.nukkit.event.entity.EntityDamageByEntityEvent;
-import cn.nukkit.event.entity.EntityDamageEvent;
 import cn.nukkit.event.entity.EntityDamageEvent.DamageCause;
 import cn.nukkit.event.entity.ProjectileHitEvent;
 import cn.nukkit.event.weather.LightningStrikeEvent;
@@ -169,12 +167,7 @@ public class EntityThrownTrident extends EntityProjectile {
             }
         }
 
-        EntityDamageEvent ev;
-        if (this.shootingEntity == null) {
-            ev = new EntityDamageByEntityEvent(this, entity, DamageCause.PROJECTILE, damage, KnockbackSourceType.TRIDENT);
-        } else {
-            ev = new EntityDamageByChildEntityEvent(this.shootingEntity, this, entity, DamageCause.PROJECTILE, damage, KnockbackSourceType.TRIDENT);
-        }
+        EntityDamageByEntityEvent ev = this.createProjectileDamageEvent(entity, DamageCause.PROJECTILE, damage);
         entity.attack(ev);
         this.hadCollision = true;
         this.getLevel().addLevelSoundEvent(this, LevelSoundEventPacket.SOUND_ITEM_TRIDENT_HIT);
@@ -200,6 +193,11 @@ public class EntityThrownTrident extends EntityProjectile {
         newTrident.setFavoredSlot(this.favoredSlot);
         newTrident.spawnToAll();
         return true;
+    }
+
+    @Override
+    protected KnockbackSourceType getKnockbackSourceType() {
+        return KnockbackSourceType.TRIDENT;
     }
 
     @Override
