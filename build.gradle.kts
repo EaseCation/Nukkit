@@ -1,5 +1,8 @@
 import com.github.jengelman.gradle.plugins.shadow.tasks.ShadowJar
 import com.github.jengelman.gradle.plugins.shadow.transformers.Log4j2PluginsCacheFileTransformer
+import groovy.json.JsonOutput
+import groovy.json.JsonParserType
+import groovy.json.JsonSlurper
 import org.gradle.api.publish.maven.MavenPublication
 
 plugins {
@@ -80,6 +83,15 @@ if (gradle.parent != null) {
             into(File(root, "deploy"))
             rename { fileName }
             dependsOn(shadowJarTask)
+        }
+    }
+}
+
+tasks.processResources {
+    doLast {
+        val jsonSlurper = JsonSlurper().setType(JsonParserType.LAX)
+        outputs.files.asFileTree.matching { include("**/*.json") }.forEach { file ->
+            file.writeText(JsonOutput.toJson(jsonSlurper.parse(file)))
         }
     }
 }

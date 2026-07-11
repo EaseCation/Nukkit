@@ -1,12 +1,12 @@
 [versions]
-jackson = "2.21.4"
-jackson3 = "3.1.4"
-log4j = "2.26.0"
-jline = "4.2.1"
+jackson = "2.21.5"
+jackson3 = "3.1.5"
+log4j = "2.26.1"
+jline = "4.3.1"
 maven = "1.9.27"
 
 [plugins]
-shadow = { id = "com.gradleup.shadow", version = "9.4.2" }
+shadow = { id = "com.gradleup.shadow", version = "9.5.1" }
 git = { id = "com.gorylenko.gradle-git-properties", version = "4.0.1" }
 versions = { id = "com.github.ben-manes.versions", version = "0.54.0" }
 
@@ -27,18 +27,18 @@ jline-reader = { module = "org.jline:jline-reader", version.ref = "jline" }
 jline-terminal = { module = "org.jline:jline-terminal-jni", version.ref = "jline" }
 jline-terminal-ffm = { module = "org.jline:jline-terminal-ffm", version.ref = "jline" }
 jopt = { module = "net.sf.jopt-simple:jopt-simple", version = "5.0.4" }
-jupiter-engine = { module = "org.junit.jupiter:junit-jupiter-engine", version = "6.1.0" }
+jupiter-engine = { module = "org.junit.jupiter:junit-jupiter-engine", version = "6.1.1" }
 jwt = { module = "com.nimbusds:nimbus-jose-jwt", version = "10.9.1" }
 leveldb-mcpe-jni = { module = "net.daporkchop:leveldb-mcpe-jni", version = "0.0.10-SNAPSHOT" }
 leveldb-natives = { module = "net.daporkchop.lib:natives", version = "0.5.8-SNAPSHOT" }
 lmax-disruptor = { module = "com.lmax:disruptor", version = "4.0.0" }
-lmbda = { group = "org.lanternpowered", name = "lmbda", version = "3.0.0" }
+lmbda = { module = "org.lanternpowered:lmbda", version = "3.0.0" }
 log4j-core = { module = "org.apache.logging.log4j:log4j-core", version.ref = "log4j" }
 log4j-slf4j2 = { module = "org.apache.logging.log4j:log4j-slf4j2-impl", version.ref = "log4j" }
 lombok = { module = "org.projectlombok:lombok", version = "1.18.46" }
-maven-provider = { group = "org.apache.maven", name = "maven-resolver-provider", version = "3.9.16" }
-maven-connector = { group = "org.apache.maven.resolver", name = "maven-resolver-connector-basic", version.ref = "maven" }
-maven-http = { group = "org.apache.maven.resolver", name = "maven-resolver-transport-http", version.ref = "maven" }
+maven-provider = { module = "org.apache.maven:maven-resolver-provider", version = "3.9.16" }
+maven-connector = { module = "org.apache.maven.resolver:maven-resolver-connector-basic", version.ref = "maven" }
+maven-http = { module = "org.apache.maven.resolver:maven-resolver-transport-http", version.ref = "maven" }
 minecrell-console = { module = "net.minecrell:terminalconsoleappender", version = "1.3.0" }
 org-cloudburstmc-upnp = { module = "org.cloudburstmc:upnp", version = "1.1.1" }
 slf4j-api = { module = "org.slf4j:slf4j-api", version = "2.0.18" }
