@@ -7,6 +7,7 @@ import cn.nukkit.entity.projectile.EntityProjectile;
 import cn.nukkit.entity.projectile.EntityThrownTrident;
 import cn.nukkit.event.entity.EntityShootBowEvent;
 import cn.nukkit.event.entity.ProjectileLaunchEvent;
+import cn.nukkit.inventory.ItemUseHand;
 import cn.nukkit.item.enchantment.Enchantment;
 import cn.nukkit.math.Vector3;
 import cn.nukkit.nbt.tag.CompoundTag;
@@ -93,7 +94,9 @@ public class ItemTrident extends ItemTool {
         CompoundTag nbt = Entity.getDefaultNBT(player.getEyePosition(), dir, (float) dir.yRotFromDirection(), (float) dir.xRotFromDirection());
 
         EntityThrownTrident trident = new EntityThrownTrident(player.getChunk(), nbt, player);
-        trident.setFavoredSlot(player.getInventory().getHeldItemIndex());
+        trident.setFavoredSlot(player.getItemInteractionHand() == ItemUseHand.OFF_HAND
+                ? EntityThrownTrident.FAVORED_SLOT_OFFHAND
+                : player.getInventory().getHeldItemIndex());
         trident.setItem(this);
 
         double p = (double) ticksUsed / 20;
