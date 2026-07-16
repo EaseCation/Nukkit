@@ -1,10 +1,12 @@
 package cn.nukkit.inventory.transaction.action;
 
 import cn.nukkit.Player;
+import cn.nukkit.inventory.ArmorInventory;
 import cn.nukkit.inventory.FurnaceInventory;
 import cn.nukkit.inventory.Inventory;
 import cn.nukkit.inventory.transaction.InventoryTransaction;
 import cn.nukkit.item.Item;
+import cn.nukkit.item.ItemBlockID;
 import lombok.ToString;
 
 import java.util.HashSet;
@@ -53,7 +55,28 @@ public class SlotChangeAction extends InventoryAction {
     public boolean isValid(Player source) {
         Item check = inventory.getItem(this.inventorySlot);
 
-        return check.equalsExact(this.sourceItem) && targetItem.getCount() <= targetItem.getMaxStackSize() && targetItem.getCount() <= inventory.getMaxStackSize();
+        return check.equalsExact(this.sourceItem)
+                && targetItem.getCount() <= targetItem.getMaxStackSize()
+                && targetItem.getCount() <= inventory.getMaxStackSize()
+                && (!(inventory instanceof ArmorInventory)
+                || isItemValidForArmorSlot(this.inventorySlot, this.targetItem));
+    }
+
+    static boolean isItemValidForArmorSlot(int inventorySlot, Item item) {
+        if (item.isNull()) {
+            return true;
+        }
+        if (item.getCount() != 1) {
+            return false;
+        }
+
+        return switch (inventorySlot) {
+            case ArmorInventory.SLOT_HEAD -> item.isHelmet() || item.isSkull() || item.is(ItemBlockID.CARVED_PUMPKIN);
+            case ArmorInventory.SLOT_TORSO -> item.isChestplate();
+            case ArmorInventory.SLOT_LEGS -> item.isLeggings();
+            case ArmorInventory.SLOT_FEET -> item.isBoots();
+            default -> false;
+        };
     }
 
     /**
