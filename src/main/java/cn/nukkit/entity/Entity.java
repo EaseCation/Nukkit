@@ -1287,6 +1287,10 @@ public abstract class Entity extends Location implements Metadatable, EntityData
         }
     }
 
+    public void onQuit(Player player) {
+        this.hasSpawned.remove(player.getLoaderId());
+    }
+
     public boolean attack(EntityDamageEvent source) {
         if ((source.getCause() == DamageCause.FIRE || source.getCause() == DamageCause.FIRE_TICK
                 || source.getCause() == DamageCause.CAMPFIRE || source.getCause() == DamageCause.SOUL_CAMPFIRE

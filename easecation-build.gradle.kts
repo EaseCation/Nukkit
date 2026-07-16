@@ -54,6 +54,7 @@ dependencies {
     api(libs.lmbda)
     api(libs.log4j.core)
     api(libs.log4j.slf4j2)
+    api(libs.lz4)
     api(libs.maven.provider)
     api(libs.maven.connector)
     api(libs.maven.http)

@@ -4568,7 +4568,7 @@ public class Player extends EntityHuman implements CommandSender, InventoryHolde
 
                 for (Entity entity : level.getChunkEntities(chunkX, chunkZ).values()) {
                     if (entity != this) {
-                        entity.getViewers().remove(getLoaderId());
+                        entity.onQuit(this);
                     }
                 }
             }

@@ -21,6 +21,8 @@ import static cn.nukkit.SharedConstants.*;
  */
 @Log4j2
 public class Utils {
+    public static final UUID INVALID_UUID = new UUID(0, 0);
+
     private static Consumer<String> PAUSER = message -> {
     };
 

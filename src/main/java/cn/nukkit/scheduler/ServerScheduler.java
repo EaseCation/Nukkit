@@ -237,9 +237,7 @@ public class ServerScheduler {
         }
         for (Map.Entry<Integer, TaskHandler> entry : taskMap.entrySet()) {
             TaskHandler taskHandler = entry.getValue();
-            // TODO: Remove the "taskHandler.getPlugin() == null" check
-            // It is only there for backwards compatibility!
-            if (taskHandler.getPlugin() == null || plugin.equals(taskHandler.getPlugin())) {
+            if (plugin.equals(taskHandler.getPlugin())) {
                 try {
                     taskHandler.cancel(); /* It will remove from task map automatic in next main heartbeat. */
                 } catch (RuntimeException ex) {

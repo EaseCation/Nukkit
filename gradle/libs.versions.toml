@@ -36,6 +36,7 @@ lmbda = { module = "org.lanternpowered:lmbda", version = "3.0.0" }
 log4j-core = { module = "org.apache.logging.log4j:log4j-core", version.ref = "log4j" }
 log4j-slf4j2 = { module = "org.apache.logging.log4j:log4j-slf4j2-impl", version.ref = "log4j" }
 lombok = { module = "org.projectlombok:lombok", version = "1.18.46" }
+lz4 = { module = "at.yawk.lz4:lz4-java", version = "1.11.1" }
 maven-provider = { module = "org.apache.maven:maven-resolver-provider", version = "3.9.16" }
 maven-connector = { module = "org.apache.maven.resolver:maven-resolver-connector-basic", version.ref = "maven" }
 maven-http = { module = "org.apache.maven.resolver:maven-resolver-transport-http", version.ref = "maven" }

@@ -793,10 +793,8 @@ public class Level implements ChunkManager, Metadatable {
             }
         } else {
             if (packets != null) {
-                if (packets.length == 1) {
-                    Server.broadcastPacket(players, packets[0]);
-                } else {
-                    this.server.batchPackets(players, packets, false);
+                for (DataPacket packet : packets) {
+                    Server.broadcastPacket(players, packet);
                 }
             }
         }
@@ -1087,10 +1085,8 @@ public class Level implements ChunkManager, Metadatable {
             }
         } else {
             if (packets != null) {
-                if (packets.length == 1) {
-                    Server.broadcastPacket(players, packets[0]);
-                } else {
-                    this.server.batchPackets(players, packets, false);
+                for (DataPacket packet : packets) {
+                    Server.broadcastPacket(players, packet);
                 }
             }
         }
