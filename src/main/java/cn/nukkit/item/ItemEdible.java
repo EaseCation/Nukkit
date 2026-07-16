@@ -50,12 +50,31 @@ public abstract class ItemEdible extends Item {
         }
 
         Food food = Food.getByRelative(this);
-        if (food != null && food.eatenBy(player)) {
-            if (player.isSurvivalLike()) {
+        boolean eaten;
+        if (player.isOffhandItemInteraction()) {
+            Food.Consumption consumption = food != null ? food.consume(player) : null;
+            eaten = consumption != null && consumption.eaten();
+            if (eaten && player.isSurvivalLike()) {
+                --this.count;
+                Item containerItem = consumption.containerItem();
+                if (this.count <= 0 && containerItem != null) {
+                    player.getInventory().setItemInHand(containerItem);
+                } else {
+                    player.getInventory().setItemInHand(this);
+                    if (containerItem != null) {
+                        player.getInventory().addItemOrDrop(containerItem);
+                    }
+                }
+            }
+        } else {
+            eaten = food != null && food.eatenBy(player);
+            if (eaten && player.isSurvivalLike()) {
                 --this.count;
                 player.getInventory().setItemInHand(this);
             }
+        }
 
+        if (eaten) {
             int sound = getSoundEvent();
             if (sound != -1) {
                 player.level.addLevelSoundEvent(player.getEyePosition(), sound);

@@ -1,6 +1,5 @@
 package cn.nukkit.item.food;
 
-import cn.nukkit.Player;
 import cn.nukkit.item.Item;
 
 public class FoodInBottle extends Food {
@@ -10,14 +9,7 @@ public class FoodInBottle extends Food {
     }
 
     @Override
-    protected boolean onEatenBy(Player player) {
-        super.onEatenBy(player);
-
-        if (!player.isSurvivalLike()) {
-            return true;
-        }
-
-        player.getInventory().addItem(Item.get(Item.GLASS_BOTTLE));
-        return true;
+    public Item getContainerItem() {
+        return Item.get(Item.GLASS_BOTTLE);
     }
 }

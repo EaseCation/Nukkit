@@ -197,8 +197,7 @@ public abstract class BlockShelf extends BlockSolid implements Faceable {
         if (player.isCreativeLike()) {
             storedItem = null;
         } else {
-            PlayerInventory inventory = player.getInventory();
-            inventory.setItem(inventory.getHeldItemIndex(), storedItem != null ? storedItem : Items.air());
+            player.getInventory().setItemInHand(storedItem != null ? storedItem : Items.air());
         }
 
         if (storedItem != null && !emptyHand) {

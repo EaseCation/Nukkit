@@ -58,8 +58,18 @@ public class ItemPotion extends Item {
 
         if (player.isSurvivalLike()) {
             --this.count;
-            player.getInventory().setItemInHand(this);
-            player.getInventory().addItem(get(GLASS_BOTTLE));
+            if (player.isOffhandItemInteraction()) {
+                Item glassBottle = get(GLASS_BOTTLE);
+                if (this.count <= 0) {
+                    player.getInventory().setItemInHand(glassBottle);
+                } else {
+                    player.getInventory().setItemInHand(this);
+                    player.getInventory().addItemOrDrop(glassBottle);
+                }
+            } else {
+                player.getInventory().setItemInHand(this);
+                player.getInventory().addItem(get(GLASS_BOTTLE));
+            }
         }
 
         return true;

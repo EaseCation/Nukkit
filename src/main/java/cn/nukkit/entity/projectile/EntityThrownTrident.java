@@ -32,6 +32,7 @@ import java.util.concurrent.ThreadLocalRandom;
 public class EntityThrownTrident extends EntityProjectile {
 
     public static final int NETWORK_ID = EntityID.THROWN_TRIDENT;
+    public static final int FAVORED_SLOT_OFFHAND = -2;
 
     protected int favoredSlot;
     protected Item trident;
@@ -246,7 +247,13 @@ public class EntityThrownTrident extends EntityProjectile {
 
                         if (pickupMode == PICKUP_ANY) {
                             Inventory inventory = ((InventoryHolder) this.shootingEntity).getInventory();
-                            if (favoredSlot != -1) {
+                            if (favoredSlot == FAVORED_SLOT_OFFHAND && this.shootingEntity instanceof Player player) {
+                                if (player.getOffhandInventory().getItem().isNull()) {
+                                    player.getOffhandInventory().setItem(this.trident);
+                                } else {
+                                    inventory.addItem(this.trident);
+                                }
+                            } else if (favoredSlot != -1) {
                                 Item item = inventory.getItem(favoredSlot);
                                 if (item.isNull()) {
                                     inventory.setItem(favoredSlot, trident);

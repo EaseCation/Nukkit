@@ -87,6 +87,10 @@ public class PlayerInventory extends BaseInventory {
     }
 
     public Item getItemInHand() {
+        Player offhandPlayer = this.getOffhandInteractionPlayer();
+        if (offhandPlayer != null) {
+            return offhandPlayer.getOffhandInventory().getItem();
+        }
         Item item = this.getItem(this.getHeldItemIndex());
         if (item != null) {
             return item;
@@ -95,6 +99,10 @@ public class PlayerInventory extends BaseInventory {
     }
 
     public boolean setItemInHand(Item item) {
+        Player offhandPlayer = this.getOffhandInteractionPlayer();
+        if (offhandPlayer != null) {
+            return offhandPlayer.getOffhandInventory().setItem(0, item);
+        }
         return this.setItem(this.getHeldItemIndex(), item);
     }
 
@@ -103,6 +111,11 @@ public class PlayerInventory extends BaseInventory {
     }
 
     public void sendHeldItem(boolean forceEquip, Player... players) {
+        Player offhandPlayer = this.getOffhandInteractionPlayer();
+        if (offhandPlayer != null) {
+            offhandPlayer.getOffhandInventory().sendContents(players);
+            return;
+        }
         Item item = this.getItemInHand();
         long entityId = this.getHolder().getId();
 
@@ -166,6 +179,11 @@ public class PlayerInventory extends BaseInventory {
 
     @Override
     public void sendContents(Player[] players) {
+        Player offhandPlayer = this.getOffhandInteractionPlayer();
+        if (offhandPlayer != null) {
+            offhandPlayer.getOffhandInventory().sendContents(players);
+            return;
+        }
         Item[] slots = new Item[this.getSize()];
         for (int i = 0; i < this.getSize(); ++i) {
             slots[i] = this.getItem(i);
@@ -264,5 +282,12 @@ public class PlayerInventory extends BaseInventory {
             EntityHuman holder = getHolder();
             holder.level.dropItem(holder, drop);
         }
+    }
+
+    private Player getOffhandInteractionPlayer() {
+        if (this.getHolder() instanceof Player player && player.isOffhandItemInteraction()) {
+            return player;
+        }
+        return null;
     }
 }

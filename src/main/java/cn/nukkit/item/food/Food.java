@@ -249,15 +249,32 @@ public abstract class Food {
     protected final List<NodeIDMeta> relativeIDs = new ArrayList<>();
 
     public final boolean eatenBy(Player player) {
+        Consumption consumption = this.consume(player);
+        if (consumption.eaten() && player.isSurvivalLike() && consumption.containerItem() != null) {
+            player.getInventory().addItem(consumption.containerItem());
+        }
+        return consumption.eaten();
+    }
+
+    public final Consumption consume(Player player) {
         PlayerEatFoodEvent event = new PlayerEatFoodEvent(player, this);
         player.getServer().getPluginManager().callEvent(event);
-        if (event.isCancelled()) return false;
-        return event.getFood().onEatenBy(player);
+        if (event.isCancelled()) {
+            return new Consumption(false, null);
+        }
+        Food food = event.getFood();
+        boolean eaten = food.onEatenBy(player);
+        return new Consumption(eaten, eaten ? food.getContainerItem() : null);
     }
 
     protected boolean onEatenBy(Player player) {
         player.getFoodData().addFoodLevel(this);
         return true;
+    }
+
+    @Nullable
+    public Item getContainerItem() {
+        return null;
     }
 
     public Food addRelative(int relativeID) {
@@ -313,6 +330,9 @@ public abstract class Food {
     public Food setEatingTickSupplier(IntSupplier eatingTickSupplier) {
         this.eatingTickSupplier = eatingTickSupplier;
         return this;
+    }
+
+    public record Consumption(boolean eaten, @Nullable Item containerItem) {
     }
 
     static class NodeIDMeta {
