@@ -13,12 +13,11 @@ public class FoodMilk extends Food {
         super.onEatenBy(player);
 
         player.removeAllEffects();
-
-        if (!player.isSurvivalLike()) {
-            return true;
-        }
-
-        player.getInventory().addItem(Item.get(Item.BUCKET));
         return true;
+    }
+
+    @Override
+    public Item getContainerItem() {
+        return Item.get(Item.BUCKET);
     }
 }

@@ -226,6 +226,8 @@ public class Player extends EntityHuman implements CommandSender, InventoryHolde
 
     protected int startAction = -1;
     protected long startActionTimestamp = -1;
+    private final ItemUseHandState itemUseHandState = new ItemUseHandState();
+    private Item usingItemSnapshot = Items.air();
 
     protected Vector3 sleeping = null;
     protected Long clientID;
@@ -827,7 +829,40 @@ public class Player extends EntityHuman implements CommandSender, InventoryHolde
     public void setUsingItem(boolean value) {
         this.startAction = value ? this.server.getTick() : -1;
         this.startActionTimestamp = value ? System.currentTimeMillis() : -1;
+        this.itemUseHandState.setUsing(value);
+        this.usingItemSnapshot = value && this.itemUseHandState.isUsingOffhand()
+                ? this.inventory.getItemInHand().clone()
+                : Items.air();
         this.setDataFlag(DATA_FLAG_ACTION, value);
+    }
+
+    public boolean supportsExplicitItemUseHand() {
+        return this instanceof ExplicitItemUseHandAccess access
+                && access.isExplicitItemUseHandAllowed();
+    }
+
+    public ItemUseHand getItemInteractionHand() {
+        return this.itemUseHandState.interactionHand();
+    }
+
+    public ItemUseHand setItemInteractionHand(ItemUseHand hand) {
+        return this.itemUseHandState.setInteractionHand(hand);
+    }
+
+    public ItemUseHand getUsingItemHand() {
+        return this.itemUseHandState.usingHand();
+    }
+
+    public boolean isUsingOffhandItem() {
+        return this.itemUseHandState.isUsingOffhand();
+    }
+
+    public boolean isOffhandItemInteraction() {
+        return this.itemUseHandState.interactionHand() == ItemUseHand.OFF_HAND;
+    }
+
+    public boolean isUsingSameItem(Item item) {
+        return this.isUsingItem() && this.usingItemSnapshot.equalsExact(item);
     }
 
     public String getButtonText() {
@@ -2002,6 +2037,12 @@ public class Player extends EntityHuman implements CommandSender, InventoryHolde
             return true;
         }
 
+        if (ExplicitItemUseHandPolicy.shouldCancelActiveOffhandUse(
+                this.supportsExplicitItemUseHand(), this.isUsingItem(), this.getUsingItemHand())) {
+            this.setUsingItem(false);
+            this.setItemInteractionHand(ItemUseHand.MAIN_HAND);
+        }
+
         this.messageCounter = 2;
 
         this.lastUpdate = currentTick;
@@ -2151,52 +2192,66 @@ public class Player extends EntityHuman implements CommandSender, InventoryHolde
             boolean isSwinging;
             if (isUsingItem()) {
                 isSwinging = true;
+                ItemUseHand previousHand = null;
+                if (this.isUsingOffhandItem()) {
+                    previousHand = this.setItemInteractionHand(ItemUseHand.OFF_HAND);
+                }
+                try {
+                    Item item = inventory.getItemInHand();
+                    if (this.isUsingOffhandItem() && !this.isUsingSameItem(item)) {
+                        this.setUsingItem(false);
+                    } else if (item.canRelease()) {
+                        int ticksUsed = this.server.getTick() - this.startAction;
+                        int timeUsedTicks = (int) (System.currentTimeMillis() - this.startActionTimestamp) / 50;
+                        if (!isSpectator()) {
+                            item.onUsing(this, timeUsedTicks);
+                        }
 
-                Item item = inventory.getItemInHand();
-                if (item.canRelease()) {
-                    int ticksUsed = this.server.getTick() - this.startAction;
-                    int timeUsedTicks = (int) (System.currentTimeMillis() - this.startActionTimestamp) / 50;
-                    if (!isSpectator()) {
-                        item.onUsing(this, timeUsedTicks);
+                        int useDuration = item.getUseDuration();
+                        if (useDuration > 0 && ticksUsed > useDuration) {
+                            // client bug fixes: left click when using an item
+                            Vector3 directionVector = this.getDirectionVector();
+                            PlayerInteractEvent event = new PlayerInteractEvent(this, item, directionVector, null, PlayerInteractEvent.Action.RIGHT_CLICK_AIR);
+                            if (isSpectator()) {
+                                event.setCancelled();
+                            }
+                            event.call();
+                            if (event.isCancelled()) {
+                                this.inventory.sendHeldItem(this);
+                            } else if (item.onClickAir(this, directionVector)) {
+                                if (this.isSurvivalLike()) {
+                                    this.inventory.setItemInHand(item);
+                                }
+
+                                if (!this.isUsingItem()) {
+                                    this.setUsingItem(item.canRelease());
+                                } else {
+                                    this.setUsingItem(false);
+
+                                    if (!item.onUse(this, ticksUsed)) {
+                                        this.inventory.sendContents(this);
+                                    }
+
+                                    if (item.canRelease() && !item.isNull()) {
+                                        this.setUsingItem(true);
+                                    }
+                                }
+                            }
+                        }
                     }
-
-                    int useDuration = item.getUseDuration();
-                    if (useDuration > 0 && ticksUsed > useDuration) {
-                        // client bug fixes: left click when using an item
-                        Vector3 directionVector = this.getDirectionVector();
-                        PlayerInteractEvent event = new PlayerInteractEvent(this, item, directionVector, null, PlayerInteractEvent.Action.RIGHT_CLICK_AIR);
-                        if (isSpectator()) {
-                            event.setCancelled();
-                        }
-                        event.call();
-                        if (event.isCancelled()) {
-                            this.inventory.sendHeldItem(this);
-                        } else if (item.onClickAir(this, directionVector)) {
-                            if (this.isSurvivalLike()) {
-                                this.inventory.setItemInHand(item);
-                            }
-
-                            if (!this.isUsingItem()) {
-                                this.setUsingItem(item.canRelease());
-                            } else {
-                                this.setUsingItem(false);
-
-                                if (!item.onUse(this, ticksUsed)) {
-                                    this.inventory.sendContents(this);
-                                }
-
-                                if (item.canRelease() && !item.isNull()) {
-                                    this.setUsingItem(true);
-                                }
-                            }
-                        }
+                } finally {
+                    if (previousHand != null) {
+                        this.setItemInteractionHand(previousHand);
                     }
                 }
             } else {
                 isSwinging = this.swinging;
             }
 
-            boolean blocking = !isSwinging && shieldCooldown < server.getTick() && (isRiding() || isSneaking() && !getDataFlag(DATA_FLAG_IN_SCAFFOLDING) && !getDataFlag(DATA_FLAG_OVER_SCAFFOLDING)) && !isSwimming();
+            boolean usingExplicitShield = this.supportsExplicitItemUseHand() && getUsingShield() != null;
+            boolean blocking = shieldCooldown < server.getTick()
+                    && (usingExplicitShield || !isSwinging && (isRiding() || isSneaking() && !getDataFlag(DATA_FLAG_IN_SCAFFOLDING) && !getDataFlag(DATA_FLAG_OVER_SCAFFOLDING)))
+                    && !isSwimming();
             if (getDataFlag(DATA_FLAG_BLOCKED_USING_SHIELD)) {
                 setDataFlag(DATA_FLAG_BLOCKED_USING_SHIELD, false);
             }
@@ -2994,7 +3049,9 @@ public class Player extends EntityHuman implements CommandSender, InventoryHolde
 
                     Item item = inv.getItem(mobEquipmentPacket.hotbarSlot);
 
-                    if (!item.equals(mobEquipmentPacket.item, !(item instanceof ItemDurable))) {
+                    boolean equipmentItemMatches = item.equals(
+                            mobEquipmentPacket.item, !(item instanceof ItemDurable));
+                    if (!equipmentItemMatches) {
                         log.debug(this.getName() + " tried to equip " + mobEquipmentPacket.item + " but have " + item + " in target slot");
                         inv.sendContents(this);
                         return;
@@ -3004,7 +3061,14 @@ public class Player extends EntityHuman implements CommandSender, InventoryHolde
                         ((PlayerInventory) inv).equipItem(mobEquipmentPacket.hotbarSlot);
                     }
 
-                    this.setDataFlag(DATA_FLAG_ACTION, false);
+                    boolean harmlessOffhandEcho = ExplicitItemUseHandPolicy.isHarmlessOffhandEquipmentEcho(
+                            this.supportsExplicitItemUseHand(), this.isUsingItem(), this.getUsingItemHand(),
+                            mobEquipmentPacket.windowId, mobEquipmentPacket.hotbarSlot,
+                            mobEquipmentPacket.inventorySlot,
+                            item.equalsExact(mobEquipmentPacket.item), this.isUsingSameItem(item));
+                    if (!harmlessOffhandEcho) {
+                        this.setDataFlag(DATA_FLAG_ACTION, false);
+                    }
 
                     break;
                 case ProtocolInfo.PLAYER_ACTION_PACKET:
@@ -5456,6 +5520,12 @@ public class Player extends EntityHuman implements CommandSender, InventoryHolde
 
     @Nullable
     public Pair<Inventory, Item> getCurrentActiveShield() {
+        if (this.supportsExplicitItemUseHand()) {
+            Pair<Inventory, Item> usingShield = getUsingShield();
+            if (usingShield != null) {
+                return usingShield;
+            }
+        }
         Item offhand = offhandInventory.getItem();
         if (offhand.getId() == Item.SHIELD) {
             return Pair.of(offhandInventory, offhand);
@@ -5465,6 +5535,19 @@ public class Player extends EntityHuman implements CommandSender, InventoryHolde
             return Pair.of(inventory, mainhand);
         }
         return null;
+    }
+
+    @Nullable
+    private Pair<Inventory, Item> getUsingShield() {
+        if (!isUsingItem()) {
+            return null;
+        }
+        if (getUsingItemHand() == ItemUseHand.OFF_HAND) {
+            Item offhand = offhandInventory.getItem();
+            return offhand.getId() == Item.SHIELD ? Pair.of(offhandInventory, offhand) : null;
+        }
+        Item mainhand = inventory.getItem(inventory.getHeldItemIndex());
+        return mainhand.getId() == Item.SHIELD ? Pair.of(inventory, mainhand) : null;
     }
 
     @Override
