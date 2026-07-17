@@ -10,6 +10,11 @@ public final class ExplicitItemUseHandPolicy {
     private ExplicitItemUseHandPolicy() {
     }
 
+    public static boolean isOffhandInventoryMutationAllowed(boolean explicitHandClient,
+                                                             boolean capabilityAllowed) {
+        return !explicitHandClient || capabilityAllowed;
+    }
+
     public static boolean isHarmlessOffhandEquipmentEcho(boolean capabilityAllowed,
                                                           boolean usingItem,
                                                           ItemUseHand usingHand,
