@@ -121,6 +121,10 @@ tasks.withType<JavaCompile> {
     options.encoding = "UTF-8"
 }
 
+tasks.test {
+    useJUnitPlatform()
+}
+
 tasks.withType<Javadoc> {
     options.encoding = "UTF-8"
     // 忽略 javadoc 警告和错误，避免构建失败
@@ -250,6 +254,8 @@ dependencies {
     api(libs.zero.allocation.hashing)
     api(libs.zstd)
     testImplementation(libs.jupiter.engine)
+    testImplementation(libs.mockito.core)
+    testRuntimeOnly(libs.junit.launcher)
     annotationProcessor(libs.lombok)
     annotationProcessor(libs.log4j.core)
     compileOnly(libs.lombok)
