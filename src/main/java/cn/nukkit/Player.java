@@ -2037,8 +2037,7 @@ public class Player extends EntityHuman implements CommandSender, InventoryHolde
             return true;
         }
 
-        if (ExplicitItemUseHandPolicy.shouldCancelActiveOffhandUse(
-                this.supportsExplicitItemUseHand(), this.isUsingItem(), this.getUsingItemHand())) {
+        if (ExplicitItemUseHandPolicy.shouldCancelActiveOffhandUse(this)) {
             this.setUsingItem(false);
             this.setItemInteractionHand(ItemUseHand.MAIN_HAND);
         }
@@ -3061,12 +3060,8 @@ public class Player extends EntityHuman implements CommandSender, InventoryHolde
                         ((PlayerInventory) inv).equipItem(mobEquipmentPacket.hotbarSlot);
                     }
 
-                    boolean harmlessOffhandEcho = ExplicitItemUseHandPolicy.isHarmlessOffhandEquipmentEcho(
-                            this.supportsExplicitItemUseHand(), this.isUsingItem(), this.getUsingItemHand(),
-                            mobEquipmentPacket.windowId, mobEquipmentPacket.hotbarSlot,
-                            mobEquipmentPacket.inventorySlot,
-                            item.equalsExact(mobEquipmentPacket.item), this.isUsingSameItem(item));
-                    if (!harmlessOffhandEcho) {
+                    if (!ExplicitItemUseHandPolicy.isActiveOffhandEquipmentEcho(
+                            this, mobEquipmentPacket, item)) {
                         this.setDataFlag(DATA_FLAG_ACTION, false);
                     }
 

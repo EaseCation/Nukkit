@@ -3,7 +3,6 @@ package cn.nukkit.inventory.transaction.action;
 import cn.nukkit.Player;
 import cn.nukkit.inventory.ArmorInventory;
 import cn.nukkit.inventory.FurnaceInventory;
-import cn.nukkit.inventory.ExplicitItemUseHandAccess;
 import cn.nukkit.inventory.ExplicitItemUseHandPolicy;
 import cn.nukkit.inventory.Inventory;
 import cn.nukkit.inventory.PlayerOffhandInventory;
@@ -57,9 +56,7 @@ public class SlotChangeAction extends InventoryAction {
     @Override
     public boolean isValid(Player source) {
         if (inventory instanceof PlayerOffhandInventory
-                && source instanceof ExplicitItemUseHandAccess access
-                && !ExplicitItemUseHandPolicy.isOffhandInventoryMutationAllowed(
-                        access.isExplicitItemUseHandClient(), access.isExplicitItemUseHandAllowed())) {
+                && !ExplicitItemUseHandPolicy.isOffhandSlotChangeAllowed(source, targetItem)) {
             return false;
         }
         Item check = inventory.getItem(this.inventorySlot);
@@ -67,7 +64,6 @@ public class SlotChangeAction extends InventoryAction {
         return check.equalsExact(this.sourceItem)
                 && targetItem.getCount() <= targetItem.getMaxStackSize()
                 && targetItem.getCount() <= inventory.getMaxStackSize()
-                && (!(inventory instanceof PlayerOffhandInventory) || targetItem.canDualWield() || targetItem.isNull())
                 && (!(inventory instanceof ArmorInventory)
                 || isItemValidForArmorSlot(this.inventorySlot, this.targetItem));
     }
