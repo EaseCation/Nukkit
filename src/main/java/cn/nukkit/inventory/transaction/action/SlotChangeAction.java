@@ -4,6 +4,7 @@ import cn.nukkit.Player;
 import cn.nukkit.inventory.ArmorInventory;
 import cn.nukkit.inventory.FurnaceInventory;
 import cn.nukkit.inventory.Inventory;
+import cn.nukkit.inventory.PlayerOffhandInventory;
 import cn.nukkit.inventory.transaction.InventoryTransaction;
 import cn.nukkit.item.Item;
 import cn.nukkit.item.ItemBlockID;
@@ -58,6 +59,7 @@ public class SlotChangeAction extends InventoryAction {
         return check.equalsExact(this.sourceItem)
                 && targetItem.getCount() <= targetItem.getMaxStackSize()
                 && targetItem.getCount() <= inventory.getMaxStackSize()
+                && (!(inventory instanceof PlayerOffhandInventory) || targetItem.canDualWield() || targetItem.isNull())
                 && (!(inventory instanceof ArmorInventory)
                 || isItemValidForArmorSlot(this.inventorySlot, this.targetItem));
     }
