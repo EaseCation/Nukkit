@@ -5,5 +5,9 @@ package cn.nukkit.inventory;
  */
 public interface ExplicitItemUseHandAccess {
 
+    default boolean isExplicitItemUseHandClient() {
+        return false;
+    }
+
     boolean isExplicitItemUseHandAllowed();
 }
