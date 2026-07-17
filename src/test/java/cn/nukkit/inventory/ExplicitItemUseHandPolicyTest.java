@@ -9,6 +9,18 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 class ExplicitItemUseHandPolicyTest {
 
     @Test
+    void allowsNativeBedrockOffhandInventoryMutationRegardlessOfJavaCapability() {
+        assertTrue(ExplicitItemUseHandPolicy.isOffhandInventoryMutationAllowed(false, false));
+        assertTrue(ExplicitItemUseHandPolicy.isOffhandInventoryMutationAllowed(false, true));
+    }
+
+    @Test
+    void gatesJavaOffhandInventoryMutationByCapability() {
+        assertFalse(ExplicitItemUseHandPolicy.isOffhandInventoryMutationAllowed(true, false));
+        assertTrue(ExplicitItemUseHandPolicy.isOffhandInventoryMutationAllowed(true, true));
+    }
+
+    @Test
     void acceptsOnlyAnExactHarmlessOffhandEquipmentEcho() {
         assertTrue(ExplicitItemUseHandPolicy.isHarmlessOffhandEquipmentEcho(
                 true, true, ItemUseHand.OFF_HAND,
