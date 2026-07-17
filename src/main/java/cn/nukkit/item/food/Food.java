@@ -249,11 +249,12 @@ public abstract class Food {
     protected final List<NodeIDMeta> relativeIDs = new ArrayList<>();
 
     public final boolean eatenBy(Player player) {
-        Consumption consumption = this.consume(player);
-        if (consumption.eaten() && player.isSurvivalLike() && consumption.containerItem() != null) {
-            player.getInventory().addItem(consumption.containerItem());
+        PlayerEatFoodEvent event = new PlayerEatFoodEvent(player, this);
+        player.getServer().getPluginManager().callEvent(event);
+        if (event.isCancelled()) {
+            return false;
         }
-        return consumption.eaten();
+        return event.getFood().onEatenBy(player);
     }
 
     public final Consumption consume(Player player) {
