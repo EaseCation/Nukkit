@@ -94,9 +94,8 @@ public class ItemTrident extends ItemTool {
         CompoundTag nbt = Entity.getDefaultNBT(player.getEyePosition(), dir, (float) dir.yRotFromDirection(), (float) dir.xRotFromDirection());
 
         EntityThrownTrident trident = new EntityThrownTrident(player.getChunk(), nbt, player);
-        trident.setFavoredSlot(player.getItemInteractionHand() == ItemUseHand.OFF_HAND
-                ? EntityThrownTrident.FAVORED_SLOT_OFFHAND
-                : player.getInventory().getHeldItemIndex());
+        trident.setFavoredSlot(resolveFavoredSlot(
+                player.getItemInteractionHand(), player.getInventory().getHeldItemIndex()));
         trident.setItem(this);
 
         double p = (double) ticksUsed / 20;
@@ -133,6 +132,12 @@ public class ItemTrident extends ItemTool {
         }
 
         return true;
+    }
+
+    static int resolveFavoredSlot(ItemUseHand interactionHand, int heldItemIndex) {
+        return interactionHand == ItemUseHand.OFF_HAND
+                ? EntityThrownTrident.FAVORED_SLOT_OFFHAND
+                : heldItemIndex;
     }
 
     @Override

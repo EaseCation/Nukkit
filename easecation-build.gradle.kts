@@ -68,6 +68,7 @@ dependencies {
     api(libs.zero.allocation.hashing)
     api(libs.zstd)
     testImplementation(libs.jupiter.engine)
+    testImplementation(libs.mockito.core)
     testAnnotationProcessor(libs.lombok)
     annotationProcessor(libs.lombok)
     annotationProcessor(libs.log4j.core)
