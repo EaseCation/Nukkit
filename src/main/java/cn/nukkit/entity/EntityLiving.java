@@ -189,8 +189,15 @@ public abstract class EntityLiving extends Entity implements EntityDamageable {
         long time = 0;
         if (notSuicide) {
             time = System.currentTimeMillis();
-            // 冷却中
-            if (time < this.nextAllowAttack) {
+            if (source.isBypassAttackCooldown()) {
+                // 独立追加伤害不读取或改写普通攻击的差额伤害状态。
+                if (!damageEntity0(source)) {
+                    return false;
+                }
+                knockback = true;
+                hurtAnimationSelf = true;
+            } else if (time < this.nextAllowAttack) {
+                // 冷却中
                 if (damage > 0) {
                     if (damage <= this.lastHurt) {
                         return false;

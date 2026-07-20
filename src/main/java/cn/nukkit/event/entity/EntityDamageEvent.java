@@ -22,6 +22,7 @@ public class EntityDamageEvent extends EntityEvent implements Cancellable {
     }
 
     private int attackCooldown = 10;
+    private boolean bypassAttackCooldown;
     private final DamageCause cause;
 
     private final Map<DamageModifier, Float> modifiers;
@@ -114,6 +115,19 @@ public class EntityDamageEvent extends EntityEvent implements Cancellable {
 
     public void setAttackCooldown(int attackCooldown) {
         this.attackCooldown = attackCooldown;
+    }
+
+    /**
+     * 是否让本次独立伤害不参与连续攻击的 lastHurt/nextAllowAttack 门控。
+     * 默认关闭；开启后仍会经过事件、无敌帧、护甲和正常受伤回调。
+     * 必须在调用实体的 attack 方法前设置，事件监听器内再修改无法绕过已经执行的门控。
+     */
+    public boolean isBypassAttackCooldown() {
+        return bypassAttackCooldown;
+    }
+
+    public void setBypassAttackCooldown(boolean bypassAttackCooldown) {
+        this.bypassAttackCooldown = bypassAttackCooldown;
     }
 
     public boolean canBeReducedByArmor() {
