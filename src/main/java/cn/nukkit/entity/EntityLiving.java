@@ -171,6 +171,10 @@ public abstract class EntityLiving extends Entity implements EntityDamageable {
                 return false;
             }
         }
+        if (source instanceof EntityDamageByEntityEvent damageByEntityEvent
+                && damageByEntityEvent.getDamager() instanceof EntityDamageEventPreprocessor preprocessor) {
+            preprocessor.prepareDamageEvent(source);
+        }
 
         boolean notSuicide = source.getCause() != DamageCause.SUICIDE;
         if (notSuicide) {

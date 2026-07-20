@@ -120,7 +120,7 @@ public class EntityDamageEvent extends EntityEvent implements Cancellable {
     /**
      * 是否让本次独立伤害不参与连续攻击的 lastHurt/nextAllowAttack 门控。
      * 默认关闭；开启后仍会经过事件、无敌帧、护甲和正常受伤回调。
-     * 必须在调用实体的 attack 方法前设置，事件监听器内再修改无法绕过已经执行的门控。
+     * 必须在 lastHurt/nextAllowAttack 门控前设置，普通伤害事件监听器内再修改已经太晚。
      */
     public boolean isBypassAttackCooldown() {
         return bypassAttackCooldown;
