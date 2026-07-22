@@ -29,6 +29,7 @@ import cn.nukkit.lang.TranslationContainer;
 import cn.nukkit.level.Dimension;
 import cn.nukkit.level.Level;
 import cn.nukkit.level.LevelCreationOptions;
+import cn.nukkit.level.LevelOptimizationSettings;
 import cn.nukkit.level.Position;
 import cn.nukkit.level.biome.Biomes;
 import cn.nukkit.level.format.LevelProvider;
@@ -381,6 +382,7 @@ public class Server {
                 .compressionAlgorithm(Compressor.getAlgorithmByName(getPropertyString("compression-algorithm", "snappy")))
                 .backupPlayerData(getConfig("settings.backup-player-data", true))
                 .backupLevelData(getConfig("level-settings.backup-level-data", true))
+                .defaultLevelOptimizationSettings(readDefaultLevelOptimizationSettings())
                 .build();
 
         this.forceLanguage = this.getConfig("settings.force-language", false);
@@ -2115,6 +2117,20 @@ public class Server {
     public <T> T getConfig(String variable, T defaultValue) {
         Object value = this.config.get(variable);
         return value == null ? defaultValue : (T) value;
+    }
+
+    private LevelOptimizationSettings readDefaultLevelOptimizationSettings() {
+        LevelOptimizationSettings settings = LevelOptimizationSettings.defaults();
+        settings.getLiquidFlow()
+                .setEquivalentOptimizationEnabled(getConfig("optimization.liquid-flow.equivalent-optimization", false))
+                .setVisibilitySchedulingEnabled(getConfig("optimization.liquid-flow.visibility-scheduling", false))
+                .setNormalUpdateDeduplicationEnabled(getConfig("optimization.liquid-flow.normal-update-deduplication", false))
+                .setLiquidUpdateAroundSuppressionEnabled(getConfig("optimization.liquid-flow.liquid-update-around-suppression", false))
+                .setMaxLiquidNormalUpdatesPerTick(getConfig("optimization.liquid-flow.max-liquid-normal-updates-per-tick", -1))
+                .setMaxLiquidScheduledUpdatesPerTick(getConfig("optimization.liquid-flow.max-liquid-scheduled-updates-per-tick", -1))
+                .setVisibilityChunkRadius(getConfig("optimization.liquid-flow.visibility-chunk-radius", 1))
+                .setVisibilitySubChunkRadius(getConfig("optimization.liquid-flow.visibility-sub-chunk-radius", -1));
+        return settings;
     }
 
     public Config getProperties() {

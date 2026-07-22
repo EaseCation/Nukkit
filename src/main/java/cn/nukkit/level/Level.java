@@ -297,8 +297,11 @@ public class Level implements ChunkManager, Metadatable {
 
     private final BlockUpdateScheduler updateQueue;
     private final BlockUpdateScheduler randomUpdateQueue;
+    private LevelOptimizationSettings optimizationSettings = LevelOptimizationSettings.defaults();
 
     private final Queue<Vector3> normalUpdateQueue = new ConcurrentLinkedDeque<>();
+    private final Queue<Vector3> deferredNormalUpdateQueue = new ArrayDeque<>();
+    private final LongSet normalUpdateQueueIndex = new LongOpenHashSet();
 //    private final TreeSet<BlockUpdateEntry> updateQueue = new TreeSet<>();
 //    private final List<BlockUpdateEntry> nextTickUpdates = Lists.newArrayList();
     //private final Map<BlockVector3, Integer> updateQueueIndex = new HashMap<>();
@@ -393,6 +396,7 @@ public class Level implements ChunkManager, Metadatable {
         this.levelId = levelIdCounter.getAndIncrement();
         this.blockMetadata = new BlockMetadataStore(this);
         this.server = server;
+        this.optimizationSettings = server.getConfiguration().getDefaultLevelOptimizationSettings().copy();
         this.autoSave = server.getAutoSave();
         this.autoCompaction = server.isAutoCompactionEnabled();
         this.folderName = name;
@@ -532,6 +536,7 @@ public class Level implements ChunkManager, Metadatable {
         this.levelId = levelIdCounter.getAndIncrement();
         this.blockMetadata = new BlockMetadataStore(this);
         this.server = parent.server;
+        this.optimizationSettings = parent.getOptimizationSettings().copy();
         this.autoSave = parent.autoSave;
         this.autoCompaction = parent.autoCompaction;
         this.folderName = parent.folderName;
@@ -739,6 +744,17 @@ public class Level implements ChunkManager, Metadatable {
 
     public Server getServer() {
         return server;
+    }
+
+    public LevelOptimizationSettings getOptimizationSettings() {
+        return optimizationSettings;
+    }
+
+    public void setOptimizationSettings(LevelOptimizationSettings optimizationSettings) {
+        this.optimizationSettings = optimizationSettings == null ? LevelOptimizationSettings.defaults() : optimizationSettings.copy();
+        this.updateQueue.refreshOptimizationSettings();
+        this.randomUpdateQueue.refreshOptimizationSettings();
+        this.refreshNormalUpdateQueueIndex();
     }
 
     final public LevelProvider getProvider() {
@@ -1248,6 +1264,29 @@ public class Level implements ChunkManager, Metadatable {
         }
     }
 
+    public boolean hasChunkPlayersNear(int chunkX, int chunkZ, int chunkRadius, int blockY, int subChunkRadius) {
+        int safeChunkRadius = Math.max(0, chunkRadius);
+        int centerSubChunkY = blockY >> 4;
+        for (int x = chunkX - safeChunkRadius; x <= chunkX + safeChunkRadius; x++) {
+            for (int z = chunkZ - safeChunkRadius; z <= chunkZ + safeChunkRadius; z++) {
+                Int2ObjectMap<Player> loaders = this.playerLoaders.get(Level.chunkHash(x, z));
+                if (loaders == null || loaders.isEmpty()) {
+                    continue;
+                }
+                if (subChunkRadius < 0) {
+                    return true;
+                }
+                for (Player player : loaders.values()) {
+                    int playerSubChunkY = player.getFloorY() >> 4;
+                    if (Math.abs(playerSubChunkY - centerSubChunkY) <= subChunkRadius) {
+                        return true;
+                    }
+                }
+            }
+        }
+        return false;
+    }
+
     public ChunkLoader[] getChunkLoaders(int chunkX, int chunkZ) {
         long index = Level.chunkHash(chunkX, chunkZ);
         Int2ObjectMap<ChunkLoader> loaders = this.chunkLoaders.get(index);
@@ -1417,26 +1456,46 @@ public class Level implements ChunkManager, Metadatable {
             randomUpdateQueue.tick(getCurrentTick());
         }
 
+        int maxLiquidNormalUpdates = getMaxLiquidNormalUpdatesPerTick();
+        int liquidNormalUpdates = 0;
         Vector3 pos;
         while ((pos = this.normalUpdateQueue.poll()) != null) {
+            removeNormalUpdateQueueIndex(pos);
             Block block = getBlock(pos);
+            if (shouldDeferLiquidNormalUpdate(block, liquidNormalUpdates, maxLiquidNormalUpdates)) {
+                deferNormalUpdate(pos);
+                continue;
+            }
+
             BlockUpdateEvent event = new BlockUpdateEvent(block, 0);
             this.server.getPluginManager().callEvent(event);
 
             if (!event.isCancelled()) {
+                if (block instanceof BlockLiquid) {
+                    liquidNormalUpdates++;
+                }
                 block.onUpdate(BLOCK_UPDATE_NORMAL);
             }
 
             block = getExtraBlock(block);
             if (!block.isAir()) {
+                if (shouldDeferLiquidNormalUpdate(block, liquidNormalUpdates, maxLiquidNormalUpdates)) {
+                    deferNormalUpdate(pos);
+                    continue;
+                }
+
                 event = new BlockUpdateEvent(block, 1);
                 server.getPluginManager().callEvent(event);
 
                 if (!event.isCancelled()) {
+                    if (block instanceof BlockLiquid) {
+                        liquidNormalUpdates++;
+                    }
                     block.onUpdate(BLOCK_UPDATE_NORMAL);
                 }
             }
         }
+        flushDeferredNormalUpdates();
 
         if (!this.updateEntities.isEmpty()) {
             for (long id : new ObjectArrayList<>(this.updateEntities.keySet())) {
@@ -1925,13 +1984,110 @@ public class Level implements ChunkManager, Metadatable {
     }
 
     public void updateAround(Vector3 pos) {
-        for (BlockFace face : BlockFace.getValues()) {
-            normalUpdateQueue.add(pos.getSideVec(face));
-        }
+        updateAround(pos.getFloorX(), pos.getFloorY(), pos.getFloorZ());
     }
 
     public void updateAround(int x, int y, int z) {
-        updateAround(new Vector3(x, y, z));
+        enqueueNormalUpdate(x, y - 1, z);
+        enqueueNormalUpdate(x, y + 1, z);
+        enqueueNormalUpdate(x, y, z - 1);
+        enqueueNormalUpdate(x, y, z + 1);
+        enqueueNormalUpdate(x - 1, y, z);
+        enqueueNormalUpdate(x + 1, y, z);
+    }
+
+    private boolean isNormalUpdateDeduplicationEnabled() {
+        return this.optimizationSettings.getLiquidFlow().isNormalUpdateDeduplicationEnabled();
+    }
+
+    private int getMaxLiquidNormalUpdatesPerTick() {
+        return this.optimizationSettings.getLiquidFlow().getMaxLiquidNormalUpdatesPerTick();
+    }
+
+    private boolean shouldDeferLiquidNormalUpdate(Block block, int liquidNormalUpdates, int maxLiquidNormalUpdates) {
+        return maxLiquidNormalUpdates > 0 && liquidNormalUpdates >= maxLiquidNormalUpdates && block instanceof BlockLiquid;
+    }
+
+    private void enqueueNormalUpdate(int x, int y, int z) {
+        if (isNormalUpdateDeduplicationEnabled()) {
+            long hash = Hash.hashBlockPos(x, y, z);
+            synchronized (this.normalUpdateQueueIndex) {
+                if (!this.normalUpdateQueueIndex.add(hash)) {
+                    return;
+                }
+            }
+        }
+        this.normalUpdateQueue.add(new Vector3(x, y, z));
+    }
+
+    private void deferNormalUpdate(Vector3 pos) {
+        if (isNormalUpdateDeduplicationEnabled()) {
+            long hash = Hash.hashBlockPos(pos.getFloorX(), pos.getFloorY(), pos.getFloorZ());
+            synchronized (this.normalUpdateQueueIndex) {
+                if (!this.normalUpdateQueueIndex.add(hash)) {
+                    return;
+                }
+            }
+        }
+        this.deferredNormalUpdateQueue.add(pos);
+    }
+
+    private void flushDeferredNormalUpdates() {
+        Vector3 pos;
+        while ((pos = this.deferredNormalUpdateQueue.poll()) != null) {
+            this.normalUpdateQueue.add(pos);
+        }
+    }
+
+    private void removeNormalUpdateQueueIndex(Vector3 pos) {
+        if (!isNormalUpdateDeduplicationEnabled()) {
+            return;
+        }
+
+        long hash = Hash.hashBlockPos(pos.getFloorX(), pos.getFloorY(), pos.getFloorZ());
+        synchronized (this.normalUpdateQueueIndex) {
+            this.normalUpdateQueueIndex.remove(hash);
+        }
+    }
+
+    private void refreshNormalUpdateQueueIndex() {
+        synchronized (this.normalUpdateQueueIndex) {
+            this.normalUpdateQueueIndex.clear();
+            if (!isNormalUpdateDeduplicationEnabled()) {
+                return;
+            }
+            for (Vector3 pos : this.normalUpdateQueue) {
+                this.normalUpdateQueueIndex.add(Hash.hashBlockPos(pos.getFloorX(), pos.getFloorY(), pos.getFloorZ()));
+            }
+            for (Vector3 pos : this.deferredNormalUpdateQueue) {
+                this.normalUpdateQueueIndex.add(Hash.hashBlockPos(pos.getFloorX(), pos.getFloorY(), pos.getFloorZ()));
+            }
+        }
+    }
+
+    private boolean isLiquidUpdateAroundSuppressed(Block blockPrevious, Block block) {
+        return this.optimizationSettings.getLiquidFlow().isLiquidUpdateAroundSuppressionEnabled()
+                && (blockPrevious instanceof BlockLiquid || block instanceof BlockLiquid);
+    }
+
+    private void updateAroundLiquid(int x, int y, int z) {
+        enqueueNormalUpdateIfLiquid(x, y - 1, z);
+        enqueueNormalUpdateIfLiquid(x, y + 1, z);
+        enqueueNormalUpdateIfLiquid(x, y, z - 1);
+        enqueueNormalUpdateIfLiquid(x, y, z + 1);
+        enqueueNormalUpdateIfLiquid(x - 1, y, z);
+        enqueueNormalUpdateIfLiquid(x + 1, y, z);
+    }
+
+    private void enqueueNormalUpdateIfLiquid(int x, int y, int z) {
+        if (!this.heightRange.isValidBlockY(y)) {
+            return;
+        }
+
+        Block block = getBlock(0, x, y, z);
+        if (block instanceof BlockLiquid || getExtraBlock(block) instanceof BlockLiquid) {
+            enqueueNormalUpdate(x, y, z);
+        }
     }
 
     public void scheduleUpdate(Block pos, int delay) {
@@ -2847,6 +3003,7 @@ public class Level implements ChunkManager, Metadatable {
                 addLightUpdate(x, y, z);
             }
 
+            boolean suppressLiquidUpdateAround = isLiquidUpdateAroundSuppressed(blockPrevious, block);
             BlockUpdateEvent ev = new BlockUpdateEvent(block, layer);
             this.server.getPluginManager().callEvent(ev);
             if (!ev.isCancelled()) {
@@ -2866,7 +3023,11 @@ public class Level implements ChunkManager, Metadatable {
                     anotherBlock.onUpdate(BLOCK_UPDATE_NORMAL);
                 }
 
-                this.updateAround(x, y, z);
+                if (!suppressLiquidUpdateAround) {
+                    this.updateAround(x, y, z);
+                } else {
+                    this.updateAroundLiquid(x, y, z);
+                }
 
                 if (block.hasComparatorInputOverride()) {
                     this.updateComparatorOutputLevel(block);

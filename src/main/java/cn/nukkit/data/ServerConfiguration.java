@@ -1,5 +1,6 @@
 package cn.nukkit.data;
 
+import cn.nukkit.level.LevelOptimizationSettings;
 import cn.nukkit.network.CompressionAlgorithm;
 import lombok.Builder;
 import lombok.Builder.Default;
@@ -24,6 +25,8 @@ public class ServerConfiguration {
     boolean disableRaknet;
     @Default
     byte compressionAlgorithm = CompressionAlgorithm.SNAPPY;
+    @Default
+    LevelOptimizationSettings defaultLevelOptimizationSettings = LevelOptimizationSettings.defaults();
 
     int chunkSpawnThreshold;
     int chunkSendingPerTick;
