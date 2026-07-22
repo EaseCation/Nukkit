@@ -1,6 +1,6 @@
 [versions]
 jackson = "2.21.5"
-jackson3 = "3.1.5"
+jackson3 = "3.2.1"
 log4j = "2.26.1"
 jline = "4.3.1"
 maven = "1.9.27"
