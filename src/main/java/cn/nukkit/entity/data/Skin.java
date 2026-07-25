@@ -1,5 +1,6 @@
 package cn.nukkit.entity.data;
 
+import cn.nukkit.Server;
 import cn.nukkit.nbt.stream.FastByteArrayOutputStream;
 import cn.nukkit.utils.*;
 import com.google.common.base.Preconditions;
@@ -44,6 +45,21 @@ public class Skin implements Cloneable {
 
     public static final String GEOMETRY_CUSTOM = convertLegacyGeometryName("geometry.humanoid.custom");
     public static final String GEOMETRY_CUSTOM_SLIM = convertLegacyGeometryName("geometry.humanoid.customSlim");
+
+    public static final Skin STEVE = Utils.make(() -> {
+        try (InputStream inputStream = Server.class.getClassLoader().getResourceAsStream("skins/steve.png")) {
+            return new Skin(inputStream).setGeometryName(GEOMETRY_CUSTOM).generateSkinId("Steve").setPlayerSkin(false);
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
+    });
+    public static final Skin ALEX = Utils.make(() -> {
+        try (InputStream inputStream = Server.class.getClassLoader().getResourceAsStream("skins/alex.png")) {
+            return new Skin(inputStream).setGeometryName(GEOMETRY_CUSTOM_SLIM).generateSkinId("Alex").setPlayerSkin(false);
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
+    });
 
     private boolean playerSkin = false; //如果是玩家皮肤，那么需要根据中国版规则进行皮肤反作弊检测
     private String fullSkinId;

@@ -49,7 +49,7 @@ public class PlayerListPacket extends DataPacket {
     }
 
     @ToString
-    public static class Entry {
+    public static class Entry implements Cloneable {
 
         public final UUID uuid;
         public long entityId;
@@ -68,19 +68,21 @@ public class PlayerListPacket extends DataPacket {
         }
 
         public Entry(UUID uuid, long entityId, String name, Skin skin) {
-            this(uuid, entityId, name, skin, "");
-        }
-
-        public Entry(UUID uuid, long entityId, String name, Skin skin, String xboxUserId) {
             this.uuid = uuid;
             this.entityId = entityId;
             this.name = name;
             this.skin = skin;
-            this.xboxUserId = xboxUserId == null ? "" : xboxUserId;
         }
 
-        public Entry copy() {
-            return new Entry(uuid, entityId, name, skin, xboxUserId);
+        @Override
+        public Entry clone() {
+            try {
+                Entry clone = (Entry) super.clone();
+                clone.skin = skin.clone();
+                return clone;
+            } catch (CloneNotSupportedException e) {
+                throw new AssertionError();
+            }
         }
     }
 

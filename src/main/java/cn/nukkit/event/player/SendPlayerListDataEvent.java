@@ -33,9 +33,6 @@ public class SendPlayerListDataEvent extends PlayerEvent implements Cancellable 
     private Skin skin;
 
     @Getter
-    private String xboxUserId;
-
-    @Getter
     private boolean dirty = false;
 
     /**
@@ -45,13 +42,11 @@ public class SendPlayerListDataEvent extends PlayerEvent implements Cancellable 
      * @param entityId 实体ID
      * @param name 名字
      * @param skin 皮肤
-     * @param xboxUserId Xbox用户ID
      */
-    public SendPlayerListDataEvent(Player player, UUID uuid, long entityId, String name, Skin skin, String xboxUserId) {
+    public SendPlayerListDataEvent(Player player, UUID uuid, long entityId, String name, Skin skin) {
         this.uuid = uuid;
         this.entityId = entityId;
         this.name = name;
-        this.xboxUserId = xboxUserId;
         this.player = player;
         this.skin = skin;
     }
@@ -63,11 +58,6 @@ public class SendPlayerListDataEvent extends PlayerEvent implements Cancellable 
 
     public void setName(String name) {
         this.name = name;
-        this.dirty = true;
-    }
-
-    public void setXboxUserId(String xboxUserId) {
-        this.xboxUserId = xboxUserId;
         this.dirty = true;
     }
 
