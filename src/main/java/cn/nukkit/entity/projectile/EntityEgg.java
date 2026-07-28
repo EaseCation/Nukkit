@@ -3,6 +3,7 @@ package cn.nukkit.entity.projectile;
 import cn.nukkit.Player;
 import cn.nukkit.entity.Entity;
 import cn.nukkit.entity.EntityID;
+import cn.nukkit.entity.knockback.KnockbackSource;
 import cn.nukkit.item.Item;
 import cn.nukkit.level.MovingObjectPosition;
 import cn.nukkit.level.format.FullChunk;
@@ -19,6 +20,11 @@ public class EntityEgg extends EntityProjectile {
     @Override
     public int getNetworkId() {
         return NETWORK_ID;
+    }
+
+    @Override
+    protected KnockbackSource getKnockbackSource() {
+        return KnockbackSource.THROWN_PROJECTILE;
     }
 
     @Override

@@ -6,6 +6,7 @@ import cn.nukkit.entity.Entity;
 import cn.nukkit.entity.EntityID;
 import cn.nukkit.entity.EntitySmite;
 import cn.nukkit.entity.data.LongEntityData;
+import cn.nukkit.entity.knockback.KnockbackSource;
 import cn.nukkit.event.entity.EntityDamageByEntityEvent;
 import cn.nukkit.event.entity.EntityDamageEvent;
 import cn.nukkit.event.entity.EntityDamageEvent.DamageCause;
@@ -41,6 +42,11 @@ public class EntityArrow extends EntityProjectile {
     @Override
     public int getNetworkId() {
         return NETWORK_ID;
+    }
+
+    @Override
+    protected KnockbackSource getKnockbackSource() {
+        return KnockbackSource.ARROW;
     }
 
     @Override

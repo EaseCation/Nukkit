@@ -3,12 +3,13 @@ package cn.nukkit.entity.knockback;
 /**
  * 击退配置 Profile，承载所有击退相关的参数。
  * <p>
- * 每个实体可绑定一个 Profile，决定该实体被攻击时的击退行为。
- * 事件系统中的 per-hit Profile 是实体 Profile 的副本，可在事件处理中进一步修改。
+ * 每个攻击实体可绑定一个 Profile，作为其默认命中的击退规则来源。
+ * 事件系统中的 per-hit Profile 是攻击者 Profile 的副本，可在事件处理中进一步修改。
  */
 public class KnockbackProfile {
 
     private final String name;
+    private KnockbackAlgorithm algorithm = KnockbackAlgorithm.LEGACY;
 
     // === 基础击退值 ===
     private float baseH = 0.29f;
@@ -57,6 +58,7 @@ public class KnockbackProfile {
     private float bowBaseV = -1;
     private float rodBaseH = -1;
     private float rodBaseV = -1;
+    private float rodDistanceLift = 0.08f;
 
     public KnockbackProfile(String name) {
         this.name = name;
@@ -81,6 +83,7 @@ public class KnockbackProfile {
      * 从另一个 Profile 复制全部可变参数，保留当前 Profile 名称。
      */
     public KnockbackProfile copyFrom(KnockbackProfile source) {
+        this.algorithm = source.algorithm;
         this.baseH = source.baseH;
         this.baseV = source.baseV;
         this.enchantBonusH = source.enchantBonusH;
@@ -112,6 +115,7 @@ public class KnockbackProfile {
         this.bowBaseV = source.bowBaseV;
         this.rodBaseH = source.rodBaseH;
         this.rodBaseV = source.rodBaseV;
+        this.rodDistanceLift = source.rodDistanceLift;
         return this;
     }
 
@@ -129,6 +133,43 @@ public class KnockbackProfile {
 
     public String getName() {
         return name;
+    }
+
+    public KnockbackAlgorithm getAlgorithm() {
+        return algorithm;
+    }
+
+    public KnockbackProfile setAlgorithm(KnockbackAlgorithm algorithm) {
+        if (this.algorithm != algorithm && algorithm == KnockbackAlgorithm.JAVA_EDITION_1_8) {
+            this.applyJavaEdition1_8Defaults();
+        }
+        this.algorithm = algorithm;
+        return this;
+    }
+
+    private void applyJavaEdition1_8Defaults() {
+        this.baseH = 0.4f;
+        this.baseV = 0.4f;
+        this.enchantBonusH = 0.5f;
+        this.enchantBonusV = 0.1f;
+        this.friction = 0.5f;
+        this.inheritHorizontal = true;
+        this.inheritVertical = true;
+        this.inheritRatioH = 1.0f;
+        this.inheritRatioV = 1.0f;
+        this.useRealVelocity = false;
+        this.verticalLimit = 0.4f;
+        this.stopSprinting = true;
+        this.sprintSlowdownH = 0.6f;
+        this.groundMultiplierH = 1.0f;
+        this.groundMultiplierV = 1.0f;
+        this.airMultiplierH = 1.0f;
+        this.airMultiplierV = 1.0f;
+        this.bowBaseH = 0.6f;
+        this.bowBaseV = 0.1f;
+        this.rodBaseH = 0.1f;
+        this.rodBaseV = 0.1f;
+        this.rodDistanceLift = 0.08f;
     }
 
     public float getBaseH() {
@@ -407,6 +448,15 @@ public class KnockbackProfile {
 
     public KnockbackProfile setRodBaseV(float rodBaseV) {
         this.rodBaseV = rodBaseV;
+        return this;
+    }
+
+    public float getRodDistanceLift() {
+        return rodDistanceLift;
+    }
+
+    public KnockbackProfile setRodDistanceLift(float rodDistanceLift) {
+        this.rodDistanceLift = rodDistanceLift;
         return this;
     }
 }

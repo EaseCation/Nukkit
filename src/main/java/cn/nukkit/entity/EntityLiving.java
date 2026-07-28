@@ -7,8 +7,10 @@ import cn.nukkit.block.BlockID;
 import cn.nukkit.block.BlockWater;
 import cn.nukkit.entity.data.FloatEntityData;
 import cn.nukkit.entity.data.ShortEntityData;
+import cn.nukkit.entity.knockback.JavaEdition1_8Knockback;
 import cn.nukkit.entity.knockback.KnockbackManager;
 import cn.nukkit.entity.knockback.KnockbackProfile;
+import cn.nukkit.entity.knockback.KnockbackSource;
 import cn.nukkit.entity.passive.EntityWaterAnimal;
 import cn.nukkit.event.entity.EntityDamageByEntityEvent;
 import cn.nukkit.event.entity.EntityDamageEvent;
@@ -186,6 +188,9 @@ public abstract class EntityLiving extends Entity implements EntityDamageable {
             }
         }
 
+        double motionBeforeDamageX = this.motionX;
+        double motionBeforeDamageY = this.motionY;
+        double motionBeforeDamageZ = this.motionZ;
         float damage = source.getDamage();
         boolean knockback;
         // 偷偷扣血+击退, 不要让玩家知道自己被打红了
@@ -217,6 +222,11 @@ public abstract class EntityLiving extends Entity implements EntityDamageable {
                     // 冷却时的伤害补充，不应该变红、发出音效
                     hurtAnimationSelf = false;
                 } else {
+                    if (source instanceof EntityDamageByEntityEvent event
+                            && event.usesJavaEdition1_8Knockback()) {
+                        // Java 1.8 中，0 伤害投射物同样受受伤无敌帧限制。
+                        return false;
+                    }
                     // EC特性：伤害为0的攻击，无冷却，并且造成击退（但是不修改lastHurt，确保有伤害的攻击是继续冷却的）
                     if (!damageEntity0(source)) {
                         return false;
@@ -260,28 +270,166 @@ public abstract class EntityLiving extends Entity implements EntityDamageable {
             }*/
             damager.onAttackSuccess(ev);
 
-            // 击退
-            if ((knockback || time >= nextAllowKnockback) && ev.hasKnockBack()) {
-                nextAllowKnockback = nextAllowAttack;
-                double deltaX = this.x - damager.x;
-                double deltaZ = this.z - damager.z;
-                KnockbackProfile hitProfile = ev.getKnockbackProfile();
-                this.knockBack(damager, damage, deltaX, deltaZ, hitProfile);
+            if (ev.usesJavaEdition1_8Knockback()) {
+                if (knockback) {
+                    nextAllowKnockback = nextAllowAttack;
+                }
+                this.applyJavaEdition1_8Knockback(ev, damager, knockback,
+                        motionBeforeDamageX, motionBeforeDamageY, motionBeforeDamageZ);
+            } else {
+                // 旧算法继续保留原有门控与事件覆盖语义。
+                if ((knockback || time >= nextAllowKnockback) && ev.hasKnockBack()) {
+                    nextAllowKnockback = nextAllowAttack;
+                    double deltaX = this.x - damager.x;
+                    double deltaZ = this.z - damager.z;
+                    KnockbackProfile hitProfile = ev.getKnockbackProfile();
+                    this.knockBack(damager, damage, deltaX, deltaZ, hitProfile);
 
-                // 攻击者后处理：疾跑相关（默认关闭，Profile 可开启）
-                if (damager instanceof Player attacker && attacker.isSprinting()) {
-                    if (hitProfile.getSprintSlowdownH() != 1.0f) {
-                        attacker.motionX *= hitProfile.getSprintSlowdownH();
-                        attacker.motionZ *= hitProfile.getSprintSlowdownH();
-                    }
-                    if (hitProfile.isStopSprinting()) {
-                        attacker.setSprinting(false);
+                    if (damager instanceof Player attacker && attacker.isSprinting()) {
+                        if (hitProfile.getSprintSlowdownH() != 1.0f) {
+                            attacker.motionX *= hitProfile.getSprintSlowdownH();
+                            attacker.motionZ *= hitProfile.getSprintSlowdownH();
+                        }
+                        if (hitProfile.isStopSprinting()) {
+                            attacker.setSprinting(false);
+                        }
                     }
                 }
             }
         }
 
         return true;
+    }
+
+    private void applyJavaEdition1_8Knockback(EntityDamageByEntityEvent event, Entity damager,
+                                               boolean regularAllowed, double motionBeforeDamageX,
+                                               double motionBeforeDamageY, double motionBeforeDamageZ) {
+        if (!event.willApplyKnockback()) {
+            return;
+        }
+
+        KnockbackProfile profile = event.getKnockbackProfile();
+        // Strict JE 1.8 必须读取服务端 motion ledger；player.speed 是反向客户端位移，仅供 legacy corrected 使用。
+        Vector3 currentMotion = this.getMotion();
+        Vector3 resultMotion = currentMotion;
+        boolean motionChanged = false;
+
+        double resistance = Mth.clamp(this.getKnockbackResistance(), 0, 1);
+        boolean velocityChanged = false;
+        boolean regularApplied = false;
+        double deltaX = this.x - damager.x;
+        double deltaZ = this.z - damager.z;
+        if (regularAllowed) {
+            ThreadLocalRandom random = ThreadLocalRandom.current();
+            velocityChanged = JavaEdition1_8Knockback.shouldApplyKnockback(
+                    resistance, random.nextDouble());
+            // 原版会在 regular 抗性随机之前先解决完全重叠的方向。
+            while (deltaX * deltaX + deltaZ * deltaZ < 1.0E-4D) {
+                deltaX = (random.nextDouble() - random.nextDouble()) * 0.01D;
+                deltaZ = (random.nextDouble() - random.nextDouble()) * 0.01D;
+            }
+            regularApplied = JavaEdition1_8Knockback.shouldApplyKnockback(
+                    resistance, random.nextDouble());
+        }
+
+        if (regularApplied) {
+            resultMotion = JavaEdition1_8Knockback.applyRegular(resultMotion, deltaX, deltaZ, profile);
+            motionChanged = true;
+        }
+
+        boolean playerMelee = event.getKnockbackSource() == KnockbackSource.MELEE
+                && damager instanceof Player;
+        if (playerMelee) {
+            int extraLevel = Math.max(profile.getEnchantLevel(), 0) + (event.wasAttackerSprinting() ? 1 : 0);
+            if (extraLevel > 0) {
+                resultMotion = JavaEdition1_8Knockback.applyMeleeExtra(
+                        resultMotion, event.getAttackerYaw(), extraLevel, profile);
+                motionChanged = true;
+
+                Player attacker = (Player) damager;
+                attacker.motionX *= profile.getSprintSlowdownH();
+                attacker.motionZ *= profile.getSprintSlowdownH();
+                if (profile.isStopSprinting()) {
+                    attacker.setSprinting(false);
+                }
+            }
+        } else if (event.getKnockbackSource() == KnockbackSource.ARROW
+                && event.hasKnockbackSourceMotion()
+                && Mth.length(event.getKnockbackSourceMotionX(), event.getKnockbackSourceMotionZ()) > 0.0D
+                && profile.getEnchantLevel() > 0) {
+            resultMotion = JavaEdition1_8Knockback.applyArrowExtra(
+                    resultMotion,
+                    event.getKnockbackSourceMotionX(),
+                    event.getKnockbackSourceMotionZ(),
+                    profile.getEnchantLevel(),
+                    profile);
+            motionChanged = true;
+        }
+
+        if (motionChanged) {
+            resultMotion = JavaEdition1_8Knockback.applyTargetStateMultiplier(
+                    resultMotion, this.onGround, profile);
+            this.onKnockbackApplied();
+        }
+
+        boolean targetPlayer = this.shouldUseJavaEdition1_8PlayerVelocityTransport();
+        boolean sendAndRestore = targetPlayer && playerMelee && velocityChanged;
+        if (!motionChanged && !velocityChanged) {
+            return;
+        }
+
+        if (sendAndRestore) {
+            this.sendJavaEdition1_8MeleeMotionAndRestore(resultMotion,
+                    motionBeforeDamageX, motionBeforeDamageY, motionBeforeDamageZ);
+        } else if (targetPlayer && velocityChanged) {
+            this.setMotion(resultMotion);
+        } else if (targetPlayer) {
+            // 1.8 不跟踪玩家的常规 motion，velocityChanged 未通过时只保留服务端状态。
+            this.applyJavaEdition1_8PlayerMotion(resultMotion);
+        } else if (motionChanged) {
+            this.setMotion(resultMotion);
+        } else {
+            // velocityChanged 与 regular 是独立随机，即使冲量未变也可能需要同步当前 motion。
+            this.addMotion(resultMotion.x, resultMotion.y, resultMotion.z);
+        }
+    }
+
+    private void sendJavaEdition1_8MeleeMotionAndRestore(Vector3 resultMotion,
+                                                         double originalMotionX,
+                                                         double originalMotionY,
+                                                         double originalMotionZ) {
+        if (!this.setMotionToSelfOnly(resultMotion)) {
+            return;
+        }
+        this.motionX = originalMotionX;
+        this.motionY = originalMotionY;
+        this.motionZ = originalMotionZ;
+    }
+
+    private void applyJavaEdition1_8PlayerMotion(Vector3 motion) {
+        this.motionX = motion.x;
+        this.motionY = motion.y;
+        this.motionZ = motion.z;
+    }
+
+    /**
+     * 仿真玩家可覆盖此方法，避免把发给真实客户端的 1.8 速度特例用在服务端 Bot 上。
+     */
+    protected boolean shouldUseJavaEdition1_8PlayerVelocityTransport() {
+        return this instanceof Player;
+    }
+
+    /**
+     * 玩家覆盖此入口，以便仅向自身发送 motion，同时保留 setMotion 的完整副作用。
+     */
+    protected boolean setMotionToSelfOnly(Vector3 motion) {
+        return false;
+    }
+
+    /**
+     * 在击退冲量已计算时通知实体 AI，防止寻路逻辑立即覆盖 motion。
+     */
+    protected void onKnockbackApplied() {
     }
 
     /**

@@ -8,6 +8,9 @@ import cn.nukkit.entity.EntityLiving;
 import cn.nukkit.entity.item.EntityEndCrystal;
 import cn.nukkit.entity.item.EntityPainting;
 import cn.nukkit.entity.item.EntityVehicle;
+import cn.nukkit.entity.knockback.KnockbackAlgorithm;
+import cn.nukkit.entity.knockback.KnockbackProfile;
+import cn.nukkit.entity.knockback.KnockbackSource;
 import cn.nukkit.event.entity.*;
 import cn.nukkit.event.entity.EntityDamageEvent.DamageCause;
 import cn.nukkit.level.MovingObjectPosition;
@@ -32,6 +35,9 @@ import java.util.concurrent.ThreadLocalRandom;
 public abstract class EntityProjectile extends Entity {
 
     public Entity shootingEntity;
+
+    @Nullable
+    private final KnockbackProfile launchKnockbackProfile;
 
     protected double getDamage() {
         return namedTag.contains("damage") ? namedTag.getDouble("damage") : getBaseDamage();
@@ -70,6 +76,13 @@ public abstract class EntityProjectile extends Entity {
     public EntityProjectile(FullChunk chunk, CompoundTag nbt, Entity shootingEntity) {
         super(chunk, nbt);
         this.shootingEntity = shootingEntity;
+        if (shootingEntity instanceof EntityLiving living) {
+            KnockbackProfile profile = living.getKnockbackProfile();
+            this.launchKnockbackProfile = profile.getAlgorithm() == KnockbackAlgorithm.JAVA_EDITION_1_8
+                    ? profile.copy("projectile-launch") : null;
+        } else {
+            this.launchKnockbackProfile = null;
+        }
     }
 
     public int getResultDamage() {
@@ -108,20 +121,7 @@ public abstract class EntityProjectile extends Entity {
 
         boolean dealDamage;
         if (dealImpactDamage()) {
-            EntityDamageEvent ev;
-            if (this.shootingEntity == null) {
-                ev = new EntityDamageByEntityEvent(this, entity, DamageCause.PROJECTILE, damage);
-            } else {
-                ev = new EntityDamageByChildEntityEvent(this.shootingEntity, this, entity, DamageCause.PROJECTILE, damage);
-            }
-            // 只在有自定义击退值时覆盖（兼容旧 NBT 格式中非 GLOBAL 的值）
-            if (this.hasCustomKnockback) {
-                ((EntityDamageByEntityEvent) ev).setKnockbackBase(knockBackH, knockBackV);
-            }
-            // 附魔等级单独设置到 per-hit Profile
-            if (this.knockbackEnchantLevel > 0) {
-                ((EntityDamageByEntityEvent) ev).getKnockbackProfile().setEnchantLevel(this.knockbackEnchantLevel);
-            }
+            EntityDamageByEntityEvent ev = this.createProjectileDamageEvent(entity, damage);
             this.prepareDamageEvent(ev);
             dealDamage = entity.attack(ev);
         } else {
@@ -167,6 +167,43 @@ public abstract class EntityProjectile extends Entity {
      * 允许专用投射物在伤害提交前补充事件语义；默认不改变原版投射物行为。
      */
     protected void prepareDamageEvent(EntityDamageEvent event) {
+    }
+
+    protected KnockbackSource getKnockbackSource() {
+        return KnockbackSource.GENERIC;
+    }
+
+    protected EntityDamageByEntityEvent createProjectileDamageEvent(Entity entity, float damage) {
+        EntityDamageByEntityEvent event;
+        if (this.shootingEntity == null) {
+            event = new EntityDamageByEntityEvent(
+                    this, entity, DamageCause.PROJECTILE, damage, this.getKnockbackSource());
+        } else {
+            event = new EntityDamageByChildEntityEvent(
+                    this.shootingEntity, this, entity, DamageCause.PROJECTILE, damage, this.getKnockbackSource());
+        }
+
+        if (launchKnockbackProfile != null && this.getKnockbackSource() != KnockbackSource.GENERIC) {
+            event.getKnockbackProfile().copyFrom(launchKnockbackProfile);
+        }
+        // 兼容旧 NBT 中的显式击退，并让原生附魔元数据保持独立。
+        if (this.hasCustomKnockback) {
+            event.setKnockbackBase(knockBackH, knockBackV);
+        }
+        if (this.knockbackEnchantLevel > 0) {
+            event.getKnockbackProfile().setEnchantLevel(this.knockbackEnchantLevel);
+        }
+        return event;
+    }
+
+    protected boolean usesJavaEdition1_8KnockbackAtLaunch() {
+        return launchKnockbackProfile != null
+                && launchKnockbackProfile.getAlgorithm() == KnockbackAlgorithm.JAVA_EDITION_1_8;
+    }
+
+    @Nullable
+    protected KnockbackProfile getLaunchKnockbackProfile() {
+        return launchKnockbackProfile;
     }
 
     protected void onHitBlock(MovingObjectPosition blockHitResult) {

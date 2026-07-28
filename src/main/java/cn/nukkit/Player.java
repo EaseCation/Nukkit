@@ -19,6 +19,7 @@ import cn.nukkit.entity.data.*;
 import cn.nukkit.entity.item.*;
 import cn.nukkit.entity.knockback.KnockbackManager;
 import cn.nukkit.entity.knockback.KnockbackProfile;
+import cn.nukkit.entity.knockback.KnockbackSource;
 import cn.nukkit.entity.projectile.EntityArrow;
 import cn.nukkit.entity.projectile.EntityProjectile;
 import cn.nukkit.entity.projectile.EntityThrownTrident;
@@ -255,6 +256,8 @@ public class Player extends EntityHuman implements CommandSender, InventoryHolde
 
     protected int inAirTicks = 0;
     protected int startAirTicks = 5;
+
+    private boolean selfOnlyMotion;
 
     protected AdventureSettings adventureSettings;
 
@@ -1989,14 +1992,22 @@ public class Player extends EntityHuman implements CommandSender, InventoryHolde
     @Override
     public boolean setMotion(Vector3 motion) {
         if (super.setMotion(motion)) {
+            // 普通 setMotion 保持旧返回语义；target-only 必须确认自身速度包已被接受。
+            boolean selfOnlyMotionSent = !this.selfOnlyMotion;
             if (this.chunk != null) {
-                this.getLevel().addEntityMotion(this.getChunkX(), this.getChunkZ(), this.getId(), this.motionX, this.motionY, this.motionZ);  //Send to others
+                if (!this.selfOnlyMotion) {
+                    this.getLevel().addEntityMotion(this.getChunkX(), this.getChunkZ(), this.getId(),
+                            this.motionX, this.motionY, this.motionZ);  //Send to others
+                }
                 SetEntityMotionPacket pk = new SetEntityMotionPacket();
                 pk.eid = this.id;
                 pk.motionX = (float) motion.x;
                 pk.motionY = (float) motion.y;
                 pk.motionZ = (float) motion.z;
-                this.dataPacket(pk);  //Send to self
+                boolean packetSent = this.dataPacket(pk);  //Send to self
+                if (this.selfOnlyMotion) {
+                    selfOnlyMotionSent = packetSent;
+                }
             }
 
             if (this.motionY > 0) {
@@ -2004,10 +2015,26 @@ public class Player extends EntityHuman implements CommandSender, InventoryHolde
                 this.startAirTicks = (int) ((-(Math.log(this.getGravity() / (this.getGravity() + this.getDrag() * this.motionY))) / this.getDrag()) * 2 + 5);
             }
 
-            return true;
+            return selfOnlyMotionSent;
         }
 
         return false;
+    }
+
+    @Override
+    protected boolean shouldUpdateMovementAfterMotion() {
+        return !this.selfOnlyMotion;
+    }
+
+    @Override
+    protected boolean setMotionToSelfOnly(Vector3 motion) {
+        boolean previous = this.selfOnlyMotion;
+        this.selfOnlyMotion = true;
+        try {
+            return this.setMotion(motion);
+        } finally {
+            this.selfOnlyMotion = previous;
+        }
     }
 
     public void sendAttributes() {
@@ -4034,13 +4061,10 @@ public class Player extends EntityHuman implements CommandSender, InventoryHolde
                                     Map<DamageModifier, Float> damage = new EnumMap<>(DamageModifier.class);
                                     damage.put(DamageModifier.BASE, itemDamage);
 
-                                    // 从攻击者的 Profile 获取基础击退值（不含附魔）
-                                    KnockbackProfile targetProfile = this.getKnockbackProfile();
-                                    float knockBackH = targetProfile.getBaseH();
-                                    float knockBackV = targetProfile.getBaseV();
                                     int knockBackEnchantment = !item.is(Item.ENCHANTED_BOOK) ? item.getEnchantmentLevel(Enchantment.KNOCKBACK) : 0;
 
-                                    EntityDamageByEntityEvent entityDamageByEntityEvent = new EntityDamageByEntityEvent(this, target, DamageCause.ENTITY_ATTACK, damage, knockBackH, knockBackV, enchantments);
+                                    EntityDamageByEntityEvent entityDamageByEntityEvent = new EntityDamageByEntityEvent(
+                                            this, target, DamageCause.ENTITY_ATTACK, damage, enchantments, KnockbackSource.MELEE);
                                     entityDamageByEntityEvent.getKnockbackProfile().setEnchantLevel(knockBackEnchantment);
                                     if (this.isSpectator()) entityDamageByEntityEvent.setCancelled();
                                     if ((target instanceof Player) && !this.level.getGameRules().getBoolean(GameRule.PVP)) {

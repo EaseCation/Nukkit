@@ -2692,10 +2692,17 @@ public abstract class Entity extends Location implements Metadatable, EntityData
         this.motionY = motion.y;
         this.motionZ = motion.z;
 
-        if (!this.justCreated) {
+        if (!this.justCreated && this.shouldUpdateMovementAfterMotion()) {
             this.updateMovement();
         }
 
+        return true;
+    }
+
+    /**
+     * 允许玩家的 target-only motion 路径保留 setMotion 副作用，但不向观察者广播。
+     */
+    protected boolean shouldUpdateMovementAfterMotion() {
         return true;
     }
 

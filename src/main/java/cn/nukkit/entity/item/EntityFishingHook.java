@@ -7,9 +7,10 @@ import cn.nukkit.block.ClipFlag;
 import cn.nukkit.entity.Entity;
 import cn.nukkit.entity.EntityID;
 import cn.nukkit.entity.data.LongEntityData;
+import cn.nukkit.entity.knockback.JavaEdition1_8Knockback;
+import cn.nukkit.entity.knockback.KnockbackSource;
 import cn.nukkit.entity.projectile.EntityProjectile;
 import cn.nukkit.event.entity.*;
-import cn.nukkit.event.entity.EntityDamageEvent.DamageCause;
 import cn.nukkit.event.player.PlayerFishEvent;
 import cn.nukkit.item.Item;
 import cn.nukkit.item.Items;
@@ -65,6 +66,11 @@ public class EntityFishingHook extends EntityProjectile {
             ownerId = this.shootingEntity.getId();
         }
         this.dataProperties.putLong(DATA_OWNER_EID, ownerId);
+    }
+
+    @Override
+    protected KnockbackSource getKnockbackSource() {
+        return KnockbackSource.FISHING_HOOK;
     }
 
     @Override
@@ -455,6 +461,10 @@ public class EntityFishingHook extends EntityProjectile {
                                 Vector3 diff = this.shootingEntity.add(0, 1, 0).subtract(entity).multiply(0.1);
                                 diff.y = Math.sqrt(diff.length()) * 0.08;
                                 entity.setMotion(diff);
+                            } else if (this.usesJavaEdition1_8KnockbackAtLaunch()) {
+                                entity.setMotion(JavaEdition1_8Knockback.applyFishingReel(
+                                        entity.getMotion(), this.shootingEntity, this,
+                                        this.getLaunchKnockbackProfile()));
                             } else {
                                 // EC-style stronger pull back
                                 entity.setMotion(this.shootingEntity.subtract(entity).divide(8).add(0, 0.3, 0));
@@ -513,21 +523,23 @@ public class EntityFishingHook extends EntityProjectile {
         this.server.getPluginManager().callEvent(new ProjectileHitEvent(this, MovingObjectPosition.fromEntity(entity)));
         float damage = this.getResultDamage();
 
-        EntityDamageEvent ev;
-        if (this.shootingEntity == null) {
-            ev = new EntityDamageByEntityEvent(this, entity, DamageCause.PROJECTILE, damage, 0f, 0f);
-        } else {
-            ev = new EntityDamageByChildEntityEvent(this.shootingEntity, this, entity, DamageCause.PROJECTILE, damage);
-            ((EntityDamageByChildEntityEvent) ev).clearKnockback();
+        EntityDamageByEntityEvent ev = this.createProjectileDamageEvent(entity, damage);
+        boolean useManualLegacyMotion = !ev.usesJavaEdition1_8Knockback();
+        if (useManualLegacyMotion) {
+            ev.clearKnockback();
         }
 
         if (entity.attack(ev)) {
             this.setTarget(entity.getId());
 
-            if (this.shootingEntity != null) {
+            if (this.shootingEntity != null && useManualLegacyMotion
+                    && !ev.usesJavaEdition1_8Knockback()) {
                 entity.setMotion(entity.subtract(this.shootingEntity).divide(15).add(0, 0.3, 0)); // 这边还是用EC的特殊钩回motion，营造EC的特殊手感
                 //entity.setMotion(entity.getMotion().add(entity.subtract(this.shootingEntity).multiply(0.1)));
             }
+        } else if (ev.usesJavaEdition1_8Knockback()) {
+            // Java 1.8 中被无敌帧或事件拒绝的鱼钩会继续飞行。
+            return false;
         } else if (entity instanceof Player && ((Player) entity).getGamemode() == Player.CREATIVE) {
             setTarget(entity.getId());
         } else {
