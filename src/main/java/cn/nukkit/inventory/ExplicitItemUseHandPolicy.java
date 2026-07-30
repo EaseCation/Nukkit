@@ -1,5 +1,8 @@
 package cn.nukkit.inventory;
 
+import cn.nukkit.Player;
+import cn.nukkit.item.Item;
+import cn.nukkit.network.protocol.MobEquipmentPacket;
 import cn.nukkit.network.protocol.types.ContainerIds;
 
 public final class ExplicitItemUseHandPolicy {
@@ -10,32 +13,30 @@ public final class ExplicitItemUseHandPolicy {
     private ExplicitItemUseHandPolicy() {
     }
 
-    public static boolean isOffhandInventoryMutationAllowed(boolean explicitHandClient,
-                                                             boolean capabilityAllowed) {
-        return !explicitHandClient || capabilityAllowed;
+    public static boolean isOffhandSlotChangeAllowed(Player source, Item newItem) {
+        if (source instanceof ExplicitItemUseHandAccess access
+                && access.isExplicitItemUseHandClient()) {
+            return access.isExplicitItemUseHandAllowed();
+        }
+        return newItem.canDualWield() || newItem.isNull();
     }
 
-    public static boolean isHarmlessOffhandEquipmentEcho(boolean capabilityAllowed,
-                                                          boolean usingItem,
-                                                          ItemUseHand usingHand,
-                                                          int windowId,
-                                                          int hotbarSlot,
-                                                          int inventorySlot,
-                                                          boolean equipmentItemExactlyMatches,
-                                                          boolean snapshotMatches) {
-        return capabilityAllowed
-                && usingItem
-                && usingHand == ItemUseHand.OFF_HAND
-                && windowId == ContainerIds.OFFHAND
-                && hotbarSlot == OFFHAND_HOTBAR_SLOT
-                && inventorySlot == OFFHAND_INVENTORY_SLOT
-                && equipmentItemExactlyMatches
-                && snapshotMatches;
+    public static boolean isActiveOffhandEquipmentEcho(Player source,
+                                                        MobEquipmentPacket packet,
+                                                        Item authoritativeItem) {
+        return source.supportsExplicitItemUseHand()
+                && source.isUsingItem()
+                && source.getUsingItemHand() == ItemUseHand.OFF_HAND
+                && packet.windowId == ContainerIds.OFFHAND
+                && packet.hotbarSlot == OFFHAND_HOTBAR_SLOT
+                && packet.inventorySlot == OFFHAND_INVENTORY_SLOT
+                && authoritativeItem.equalsExact(packet.item)
+                && source.isUsingSameItem(authoritativeItem);
     }
 
-    public static boolean shouldCancelActiveOffhandUse(boolean capabilityAllowed,
-                                                        boolean usingItem,
-                                                        ItemUseHand usingHand) {
-        return !capabilityAllowed && usingItem && usingHand == ItemUseHand.OFF_HAND;
+    public static boolean shouldCancelActiveOffhandUse(Player source) {
+        return !source.supportsExplicitItemUseHand()
+                && source.isUsingItem()
+                && source.getUsingItemHand() == ItemUseHand.OFF_HAND;
     }
 }
