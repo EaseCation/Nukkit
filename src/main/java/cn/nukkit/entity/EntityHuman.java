@@ -358,7 +358,7 @@ public class EntityHuman extends EntityHumanType {
 
             if (player.sentSkins.add(this.getUniqueId())) {
                 if (this instanceof Player) {
-                    this.server.updatePlayerListData(true, this.getUniqueId(), this.getId(), this.getName(), this.skin, player);
+                    this.server.updatePlayerListData(true, this.getUniqueId(), this.getId(), ((Player) this).getDisplayName(), this.skin, player);
                 } else {
                     this.server.updatePlayerListData(true, this.getUniqueId(), this.getId(), this.getNameTag(), this.skin, player);
                 }

@@ -1031,7 +1031,7 @@ public class Server {
         //在EntityHuman中会发送各自的皮肤的，这里不需要发送全部
         //this.sendFullPlayerListData(player);
         // 发给自己自己的皮肤
-        this.updatePlayerListData(player.getUniqueId(), player.getId(), player.getName(), player.getSkin(), player);
+        this.updatePlayerListData(player.getUniqueId(), player.getId(), player.getDisplayName(), player.getSkin(), player);
         player.sentSkins.add(player.getUniqueId());
     }
 
@@ -1159,7 +1159,7 @@ public class Server {
                 .map(p -> new PlayerListPacket.Entry(
                 p.getUniqueId(),
                 p.getId(),
-                p.getName(),
+                p.getDisplayName(),
                 p.getSkin()))
                 .toArray(PlayerListPacket.Entry[]::new);
 
