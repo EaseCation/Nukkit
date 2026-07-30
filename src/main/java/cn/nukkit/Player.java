@@ -321,7 +321,7 @@ public class Player extends EntityHuman implements CommandSender, InventoryHolde
     protected boolean isNetEaseClient = false;
 
     // EC：确保在一个服务器中，每个玩家的皮肤只发一遍
-    public final List<UUID> sentSkins = new ObjectArrayList<>();
+    public final Set<UUID> sentSkins = new HashSet<>();
 
     protected Entity lookAtEntity;
 
@@ -788,7 +788,10 @@ public class Player extends EntityHuman implements CommandSender, InventoryHolde
     public void setSkin(Skin skin) {
         super.setSkin(skin);
         if (this.spawned) {
-            this.server.updatePlayerListData(this.getUniqueId(), this.getId(), this.getDisplayName(), skin, this.getLoginChainData().getXUID(), this.getServer().getOnlinePlayers().values().stream().filter(p -> p.sentSkins.contains(this.getUniqueId())).collect(Collectors.toList()));
+            this.server.updatePlayerListData(this.getUniqueId(), this.getId(), this.getDisplayName(), skin,
+                    this.getServer().getOnlinePlayers().values().stream()
+                            .filter(p -> p.sentSkins.contains(this.getUniqueId()))
+                            .collect(Collectors.toList()));
         }
     }
 
@@ -7413,5 +7416,9 @@ public class Player extends EntityHuman implements CommandSender, InventoryHolde
      * @since 1.21.130
      */
     public void resetSunGlareShape(String... biomeIdentifiers) {
+    }
+
+    public boolean isJavaClient() {
+        return false;
     }
 }

@@ -122,6 +122,7 @@ public abstract class EntityProjectile extends Entity {
             if (this.knockbackEnchantLevel > 0) {
                 ((EntityDamageByEntityEvent) ev).getKnockbackProfile().setEnchantLevel(this.knockbackEnchantLevel);
             }
+            this.prepareDamageEvent(ev);
             dealDamage = entity.attack(ev);
         } else {
             dealDamage = false;
@@ -160,6 +161,12 @@ public abstract class EntityProjectile extends Entity {
     }
 
     protected void postHurt(Entity entity) {
+    }
+
+    /**
+     * 允许专用投射物在伤害提交前补充事件语义；默认不改变原版投射物行为。
+     */
+    protected void prepareDamageEvent(EntityDamageEvent event) {
     }
 
     protected void onHitBlock(MovingObjectPosition blockHitResult) {

@@ -1,5 +1,6 @@
 package cn.nukkit.entity.data;
 
+import cn.nukkit.Server;
 import cn.nukkit.nbt.stream.FastByteArrayOutputStream;
 import cn.nukkit.utils.*;
 import com.google.common.base.Preconditions;
@@ -42,8 +43,32 @@ public class Skin implements Cloneable {
 
     public static final byte[] FULL_WHITE_SKIN = new byte[DOUBLE_SKIN_SIZE];
 
-    public static final String GEOMETRY_CUSTOM = convertLegacyGeometryName("geometry.humanoid.custom");
-    public static final String GEOMETRY_CUSTOM_SLIM = convertLegacyGeometryName("geometry.humanoid.customSlim");
+    public static final String CUSTOM_GEOMETRY_NAME = "geometry.humanoid.custom";
+    public static final String CUSTOM_SLIM_GEOMETRY_NAME = "geometry.humanoid.customSlim";
+    public static final String GEOMETRY_CUSTOM = convertLegacyGeometryName(CUSTOM_GEOMETRY_NAME);
+    public static final String GEOMETRY_CUSTOM_SLIM = convertLegacyGeometryName(CUSTOM_SLIM_GEOMETRY_NAME);
+
+    public static final Skin STEVE = Utils.make(() -> {
+        try (InputStream inputStream = Server.class.getClassLoader().getResourceAsStream("skins/steve.png")) {
+            return new Skin(inputStream)
+                    .setGeometryName(CUSTOM_GEOMETRY_NAME)
+                    .generateSkinId("Steve")
+                    .setPlayerSkin(false);
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
+    });
+    public static final Skin ALEX = Utils.make(() -> {
+        try (InputStream inputStream = Server.class.getClassLoader().getResourceAsStream("skins/alex.png")) {
+            return new Skin(inputStream)
+                    .setGeometryName(CUSTOM_SLIM_GEOMETRY_NAME)
+                    .setArmSize("slim")
+                    .generateSkinId("Alex")
+                    .setPlayerSkin(false);
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
+    });
 
     private boolean playerSkin = false; //如果是玩家皮肤，那么需要根据中国版规则进行皮肤反作弊检测
     private String fullSkinId;
@@ -477,16 +502,18 @@ public class Skin implements Cloneable {
         return this;
     }
 
-    public void setPrimaryUser(boolean primaryUser) {
+    public Skin setPrimaryUser(boolean primaryUser) {
         this.primaryUser = primaryUser;
+        return this;
     }
 
     public boolean isPrimaryUser() {
         return primaryUser;
     }
 
-    public void setGeometryDataEngineVersion(String geometryDataEngineVersion) {
+    public Skin setGeometryDataEngineVersion(String geometryDataEngineVersion) {
         this.geometryDataEngineVersion = geometryDataEngineVersion;
+        return this;
     }
 
     public String getGeometryDataEngineVersion() {
@@ -497,30 +524,34 @@ public class Skin implements Cloneable {
         return trusted;
     }
 
-    public void setTrusted(boolean trusted) {
+    public Skin setTrusted(boolean trusted) {
         this.trusted = trusted;
+        return this;
     }
 
     public String getSkinColor() {
         return skinColor;
     }
 
-    public void setSkinColor(String skinColor) {
+    public Skin setSkinColor(String skinColor) {
         Objects.requireNonNull(skinColor, "skinColor");
         this.skinColor = skinColor;
+        return this;
     }
 
     public String getArmSize() {
         return armSize;
     }
 
-    public void setArmSize(String armSize) {
+    public Skin setArmSize(String armSize) {
         Objects.requireNonNull(armSize, "armSize");
         this.armSize = armSize;
+        return this;
     }
 
-    public void setFullSkinId(String fullSkinId) {
+    public Skin setFullSkinId(String fullSkinId) {
         this.fullSkinId = fullSkinId;
+        return this;
     }
 
     public String getFullSkinId() {
@@ -534,8 +565,9 @@ public class Skin implements Cloneable {
         return fullSkinId;
     }
 
-    public void setPlayFabId(String playFabId) {
+    public Skin setPlayFabId(String playFabId) {
         this.playFabId = playFabId;
+        return this;
     }
 
     public String getPlayFabId() {
@@ -564,8 +596,9 @@ public class Skin implements Cloneable {
         return this.playFabId;
     }
 
-    public void setOverridingPlayerAppearance(boolean override) {
+    public Skin setOverridingPlayerAppearance(boolean override) {
         this.overridingPlayerAppearance = override;
+        return this;
     }
 
     public boolean isOverridingPlayerAppearance() {

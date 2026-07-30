@@ -46,11 +46,8 @@ import cn.nukkit.nbt.NBTIO;
 import cn.nukkit.nbt.tag.CompoundTag;
 import cn.nukkit.nbt.tag.ListTag;
 import cn.nukkit.network.*;
-import cn.nukkit.network.protocol.BatchPacket;
+import cn.nukkit.network.protocol.*;
 import cn.nukkit.network.protocol.BatchPacket.Track;
-import cn.nukkit.network.protocol.DataPacket;
-import cn.nukkit.network.protocol.PlayerListPacket;
-import cn.nukkit.network.protocol.ProtocolInfo;
 import cn.nukkit.network.query.QueryHandler;
 import cn.nukkit.network.rcon.RCON;
 import cn.nukkit.permission.BanEntry;
@@ -95,6 +92,8 @@ import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.zip.Deflater;
+
+import static cn.nukkit.SharedConstants.*;
 
 /**
  * @author MagicDroidX
@@ -1032,7 +1031,7 @@ public class Server {
         //在EntityHuman中会发送各自的皮肤的，这里不需要发送全部
         //this.sendFullPlayerListData(player);
         // 发给自己自己的皮肤
-        this.updatePlayerListData(player.getUniqueId(), player.getId(), player.getDisplayName(), player.getSkin(), player.getLoginChainData().getXUID(), new Player[]{player});
+        this.updatePlayerListData(player.getUniqueId(), player.getId(), player.getDisplayName(), player.getSkin(), player);
         player.sentSkins.add(player.getUniqueId());
     }
 
@@ -1066,21 +1065,17 @@ public class Server {
     }
 
     public void updatePlayerListData(UUID uuid, long entityId, String name, Skin skin) {
-        this.updatePlayerListData(uuid, entityId, name, skin, "", this.playerList.values());
+        this.updatePlayerListData(uuid, entityId, name, skin, this.playerList.values());
     }
 
-    public void updatePlayerListData(UUID uuid, long entityId, String name, Skin skin, String xboxUserId) {
-        this.updatePlayerListData(uuid, entityId, name, skin, xboxUserId, this.playerList.values());
+    public void updatePlayerListData(UUID uuid, long entityId, String name, Skin skin, Player... players) {
+        this.updatePlayerListData(false, uuid, entityId, name, skin, players);
     }
 
-    public void updatePlayerListData(UUID uuid, long entityId, String name, Skin skin, Player[] players) {
-        this.updatePlayerListData(uuid, entityId, name, skin, "", players);
-    }
-
-    public void updatePlayerListData(UUID uuid, long entityId, String name, Skin skin, String xboxUserId, Player[] players) {
+    public void updatePlayerListData(boolean fullPlayerList, UUID uuid, long entityId, String name, Skin skin, Player... players) {
         Set<Player> playersSet = null;
         for (Player player : players) {
-            SendPlayerListDataEvent event = new SendPlayerListDataEvent(player, uuid, entityId, name, skin, xboxUserId);
+            SendPlayerListDataEvent event = new SendPlayerListDataEvent(player, uuid, entityId, name, skin);
             event.call();
             if (event.isCancelled()) {
                 if (playersSet == null) {
@@ -1092,30 +1087,54 @@ public class Server {
                     playersSet = new HashSet<>(Arrays.asList(players));
                 }
                 playersSet.remove(player);
-                PlayerListPacket pk = new PlayerListPacket();
-                pk.type = PlayerListPacket.TYPE_ADD;
-                pk.entries = new PlayerListPacket.Entry[]{new PlayerListPacket.Entry(event.getUuid(), event.getEntityId(), event.getName(), event.getSkin(), event.getXboxUserId())};
-                player.dataPacket(pk);
+                if (!VANILLA_SKIN_FLOW && !player.isJavaClient() || fullPlayerList || player.sentSkins.add(event.getUuid())) {
+                    PlayerListPacket pk = new PlayerListPacket();
+                    pk.type = PlayerListPacket.TYPE_ADD;
+                    pk.entries = new PlayerListPacket.Entry[]{new PlayerListPacket.Entry(event.getUuid(), event.getEntityId(), event.getName(), event.getSkin())};
+                    player.dataPacket(pk);
+                } else {
+                    PlayerSkinPacket packet = new PlayerSkinPacket();
+                    packet.uuid = event.getUuid();
+                    packet.skin = event.getSkin();
+                    player.dataPacket(packet);
+                }
             }
         }
         if (playersSet != null) {
             if (!playersSet.isEmpty()) {
-                PlayerListPacket pk = new PlayerListPacket();
-                pk.type = PlayerListPacket.TYPE_ADD;
-                pk.entries = new PlayerListPacket.Entry[]{new PlayerListPacket.Entry(uuid, entityId, name, skin, xboxUserId)};
-                Server.broadcastPacket(playersSet, pk);
+                for (Player player : playersSet) {
+                    if (!VANILLA_SKIN_FLOW && !player.isJavaClient() || fullPlayerList || player.sentSkins.add(uuid)) {
+                        PlayerListPacket pk = new PlayerListPacket();
+                        pk.type = PlayerListPacket.TYPE_ADD;
+                        pk.entries = new PlayerListPacket.Entry[]{new PlayerListPacket.Entry(uuid, entityId, name, skin)};
+                        player.dataPacket(pk);
+                    } else {
+                        PlayerSkinPacket packet = new PlayerSkinPacket();
+                        packet.uuid = uuid;
+                        packet.skin = skin;
+                        player.dataPacket(packet);
+                    }
+                }
             }
         } else {
-            PlayerListPacket pk = new PlayerListPacket();
-            pk.type = PlayerListPacket.TYPE_ADD;
-            pk.entries = new PlayerListPacket.Entry[]{new PlayerListPacket.Entry(uuid, entityId, name, skin, xboxUserId)};
-            Server.broadcastPacket(players, pk);
+            for (Player player : players) {
+                if (!VANILLA_SKIN_FLOW && !player.isJavaClient() || fullPlayerList || player.sentSkins.add(uuid)) {
+                    PlayerListPacket pk = new PlayerListPacket();
+                    pk.type = PlayerListPacket.TYPE_ADD;
+                    pk.entries = new PlayerListPacket.Entry[]{new PlayerListPacket.Entry(uuid, entityId, name, skin)};
+                    player.dataPacket(pk);
+                } else {
+                    PlayerSkinPacket packet = new PlayerSkinPacket();
+                    packet.uuid = uuid;
+                    packet.skin = skin;
+                    player.dataPacket(packet);
+                }
+            }
         }
     }
 
-    public void updatePlayerListData(UUID uuid, long entityId, String name, Skin skin, String xboxUserId, Collection<Player> players) {
-        this.updatePlayerListData(uuid, entityId, name, skin, xboxUserId,
-                players.toArray(new Player[0]));
+    public void updatePlayerListData(UUID uuid, long entityId, String name, Skin skin, Collection<Player> players) {
+        this.updatePlayerListData(uuid, entityId, name, skin, players.toArray(new Player[0]));
     }
 
     public void removePlayerListData(UUID uuid) {
@@ -1141,8 +1160,7 @@ public class Server {
                 p.getUniqueId(),
                 p.getId(),
                 p.getDisplayName(),
-                p.getSkin(),
-                p.getLoginChainData().getXUID()))
+                p.getSkin()))
                 .toArray(PlayerListPacket.Entry[]::new);
 
         player.dataPacket(pk);

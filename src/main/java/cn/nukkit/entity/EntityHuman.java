@@ -356,16 +356,12 @@ public class EntityHuman extends EntityHumanType {
                 throw new IllegalStateException(this.getClass().getSimpleName() + " must have a valid skin set");
             }
 
-            if (!player.sentSkins.contains(this.getUniqueId())) {
+            if (player.sentSkins.add(this.getUniqueId())) {
                 if (this instanceof Player) {
-                    String uid = ((Player) this).getLoginChainData().getNetEaseUID();
-                    if (uid == null || uid.isEmpty()) uid = ((Player) this).getLoginChainData().getXUID();
-                    this.server.updatePlayerListData(this.getUniqueId(), this.getId(), ((Player) this).getDisplayName(), this.skin, uid, new Player[]{player});
+                    this.server.updatePlayerListData(true, this.getUniqueId(), this.getId(), ((Player) this).getDisplayName(), this.skin, player);
                 } else {
-                    this.server.updatePlayerListData(this.getUniqueId(), this.getId(), this.getNameTag(), this.skin, new Player[]{player});
+                    this.server.updatePlayerListData(true, this.getUniqueId(), this.getId(), this.getNameTag(), this.skin, player);
                 }
-
-                player.sentSkins.add(this.getUniqueId());
             }
 
             AddPlayerPacket pk = new AddPlayerPacket();
