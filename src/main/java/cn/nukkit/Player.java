@@ -17,7 +17,6 @@ import cn.nukkit.entity.attribute.Attribute;
 import cn.nukkit.entity.attribute.AttributeModifiers;
 import cn.nukkit.entity.data.*;
 import cn.nukkit.entity.item.*;
-import cn.nukkit.entity.knockback.KnockbackManager;
 import cn.nukkit.entity.knockback.KnockbackProfile;
 import cn.nukkit.entity.projectile.EntityArrow;
 import cn.nukkit.entity.projectile.EntityProjectile;
@@ -127,9 +126,10 @@ public class Player extends EntityHuman implements CommandSender, InventoryHolde
     public static final int SPECTATOR = 3;
     public static final int VIEWER = SPECTATOR;
 
-    public static final int MAX_REACH_DISTANCE_CREATIVE = 13 + 1;
-    public static final int MAX_REACH_DISTANCE_SURVIVAL = 7 + 1;
-    public static final int MAX_REACH_DISTANCE_ENTITY_INTERACTION = 8;
+    public static final float MAX_REACH_DISTANCE_CREATIVE = 12 + 1;
+    public static final float MAX_REACH_DISTANCE_SURVIVAL = 7 + 1;
+    public static final float MAX_REACH_DISTANCE_CREATIVE_ENTITY_INTERACTION = 6;
+    public static final float MAX_REACH_DISTANCE_SURVIVAL_ENTITY_INTERACTION = 3;
 
     public static final int SURVIVAL_SLOTS = 36;
 
@@ -2500,6 +2500,22 @@ public class Player extends EntityHuman implements CommandSender, InventoryHolde
         return (targetDot - eyeDot) >= -maxDiff;
     }
 
+    public boolean canInteract(Vector3 pos, AxisAlignedBB target, double maxDistance) {
+        return this.canInteract(pos, target, maxDistance, Mth.SQRT_OF_THREE / 2);
+    }
+
+    public boolean canInteract(Vector3 pos, AxisAlignedBB target, double maxDistance, double maxDiff) {
+        Vector3 eyePos = this.getEyePosition();
+        if (target.distanceBBSquared(eyePos) > maxDistance * maxDistance) {
+            return false;
+        }
+
+        Vector3 dV = this.getDirectionVector();
+        double eyeDot = dV.dot(eyePos);
+        double targetDot = dV.dot(pos);
+        return (targetDot - eyeDot) >= -maxDiff;
+    }
+
     public void setOfflinePlayerData(CompoundTag nbt) {
         offlinePlayerData = nbt;
     }
@@ -3978,7 +3994,7 @@ public class Player extends EntityHuman implements CommandSender, InventoryHolde
 
                             switch (type) {
                                 case InventoryTransactionPacket.USE_ITEM_ON_ENTITY_ACTION_INTERACT:
-                                    if (!this.canInteract(target, isCreative() ? MAX_REACH_DISTANCE_ENTITY_INTERACTION : 5)) {
+                                    if (!this.canInteract(target, target.getBoundingBox(), isCreative() ? MAX_REACH_DISTANCE_CREATIVE_ENTITY_INTERACTION : MAX_REACH_DISTANCE_SURVIVAL_ENTITY_INTERACTION)) {
                                         break;
                                     }
 
@@ -4008,7 +4024,7 @@ public class Player extends EntityHuman implements CommandSender, InventoryHolde
                                     }
                                     break;
                                 case InventoryTransactionPacket.USE_ITEM_ON_ENTITY_ACTION_ATTACK:
-                                    if (!this.canInteract(target, isCreative() ? MAX_REACH_DISTANCE_ENTITY_INTERACTION : 5)) {
+                                    if (!this.canInteract(target, target.getBoundingBox(), isCreative() ? MAX_REACH_DISTANCE_CREATIVE_ENTITY_INTERACTION : MAX_REACH_DISTANCE_SURVIVAL_ENTITY_INTERACTION)) {
                                         break;
                                     } else if (target instanceof Player) {
                                         if ((((Player) target).getGamemode() & 0x01) > 0) {
