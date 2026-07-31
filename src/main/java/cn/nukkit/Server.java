@@ -1031,7 +1031,7 @@ public class Server {
         //在EntityHuman中会发送各自的皮肤的，这里不需要发送全部
         //this.sendFullPlayerListData(player);
         // 发给自己自己的皮肤
-        this.updatePlayerListData(player.getUniqueId(), player.getId(), player.getDisplayName(), player.getSkin(), player);
+        this.updatePlayerListData(player.getUniqueId(), player.getId(), player.getName(), player.getDisplayName(), player.getSkin(), player);
         player.sentSkins.add(player.getUniqueId());
     }
 
@@ -1065,17 +1065,29 @@ public class Server {
     }
 
     public void updatePlayerListData(UUID uuid, long entityId, String name, Skin skin) {
-        this.updatePlayerListData(uuid, entityId, name, skin, this.playerList.values());
+        this.updatePlayerListData(uuid, entityId, name, name, skin);
+    }
+
+    public void updatePlayerListData(UUID uuid, long entityId, String name, String jeName, Skin skin) {
+        this.updatePlayerListData(uuid, entityId, name, jeName, skin, this.playerList.values());
     }
 
     public void updatePlayerListData(UUID uuid, long entityId, String name, Skin skin, Player... players) {
-        this.updatePlayerListData(false, uuid, entityId, name, skin, players);
+        this.updatePlayerListData(uuid, entityId, name, name, skin, players);
+    }
+
+    public void updatePlayerListData(UUID uuid, long entityId, String name, String jeName, Skin skin, Player... players) {
+        this.updatePlayerListData(false, uuid, entityId, name, jeName, skin, players);
     }
 
     public void updatePlayerListData(boolean fullPlayerList, UUID uuid, long entityId, String name, Skin skin, Player... players) {
+        this.updatePlayerListData(fullPlayerList, uuid, entityId, name, name, skin, players);
+    }
+
+    public void updatePlayerListData(boolean fullPlayerList, UUID uuid, long entityId, String name, String jeName, Skin skin, Player... players) {
         Set<Player> playersSet = null;
         for (Player player : players) {
-            SendPlayerListDataEvent event = new SendPlayerListDataEvent(player, uuid, entityId, name, skin);
+            SendPlayerListDataEvent event = new SendPlayerListDataEvent(player, uuid, entityId, name, jeName, skin);
             event.call();
             if (event.isCancelled()) {
                 if (playersSet == null) {
@@ -1087,10 +1099,10 @@ public class Server {
                     playersSet = new HashSet<>(Arrays.asList(players));
                 }
                 playersSet.remove(player);
-                if (!VANILLA_SKIN_FLOW && !player.isJavaClient() || fullPlayerList || player.sentSkins.add(event.getUuid())) {
+                if (!VANILLA_SKIN_FLOW || fullPlayerList || player.sentSkins.add(event.getUuid())) {
                     PlayerListPacket pk = new PlayerListPacket();
                     pk.type = PlayerListPacket.TYPE_ADD;
-                    pk.entries = new PlayerListPacket.Entry[]{new PlayerListPacket.Entry(event.getUuid(), event.getEntityId(), event.getName(), event.getSkin())};
+                    pk.entries = new PlayerListPacket.Entry[]{new PlayerListPacket.Entry(event.getUuid(), event.getEntityId(), player.isJavaClient() ? event.getJeName() : event.getName(), event.getSkin())};
                     player.dataPacket(pk);
                 } else {
                     PlayerSkinPacket packet = new PlayerSkinPacket();
@@ -1103,10 +1115,10 @@ public class Server {
         if (playersSet != null) {
             if (!playersSet.isEmpty()) {
                 for (Player player : playersSet) {
-                    if (!VANILLA_SKIN_FLOW && !player.isJavaClient() || fullPlayerList || player.sentSkins.add(uuid)) {
+                    if (!VANILLA_SKIN_FLOW || fullPlayerList || player.sentSkins.add(uuid)) {
                         PlayerListPacket pk = new PlayerListPacket();
                         pk.type = PlayerListPacket.TYPE_ADD;
-                        pk.entries = new PlayerListPacket.Entry[]{new PlayerListPacket.Entry(uuid, entityId, name, skin)};
+                        pk.entries = new PlayerListPacket.Entry[]{new PlayerListPacket.Entry(uuid, entityId, player.isJavaClient() ? jeName : name, skin)};
                         player.dataPacket(pk);
                     } else {
                         PlayerSkinPacket packet = new PlayerSkinPacket();
@@ -1118,10 +1130,10 @@ public class Server {
             }
         } else {
             for (Player player : players) {
-                if (!VANILLA_SKIN_FLOW && !player.isJavaClient() || fullPlayerList || player.sentSkins.add(uuid)) {
+                if (!VANILLA_SKIN_FLOW || fullPlayerList || player.sentSkins.add(uuid)) {
                     PlayerListPacket pk = new PlayerListPacket();
                     pk.type = PlayerListPacket.TYPE_ADD;
-                    pk.entries = new PlayerListPacket.Entry[]{new PlayerListPacket.Entry(uuid, entityId, name, skin)};
+                    pk.entries = new PlayerListPacket.Entry[]{new PlayerListPacket.Entry(uuid, entityId, player.isJavaClient() ? jeName : name, skin)};
                     player.dataPacket(pk);
                 } else {
                     PlayerSkinPacket packet = new PlayerSkinPacket();
@@ -1134,7 +1146,11 @@ public class Server {
     }
 
     public void updatePlayerListData(UUID uuid, long entityId, String name, Skin skin, Collection<Player> players) {
-        this.updatePlayerListData(uuid, entityId, name, skin, players.toArray(new Player[0]));
+        this.updatePlayerListData(uuid, entityId, name, name, skin, players);
+    }
+
+    public void updatePlayerListData(UUID uuid, long entityId, String name, String jeName, Skin skin, Collection<Player> players) {
+        this.updatePlayerListData(uuid, entityId, name, jeName, skin, players.toArray(new Player[0]));
     }
 
     public void removePlayerListData(UUID uuid) {
@@ -1159,7 +1175,7 @@ public class Server {
                 .map(p -> new PlayerListPacket.Entry(
                 p.getUniqueId(),
                 p.getId(),
-                p.getDisplayName(),
+                p.getName(),
                 p.getSkin()))
                 .toArray(PlayerListPacket.Entry[]::new);
 
