@@ -7,7 +7,7 @@ public abstract class FormWindow {
 
     private static final Gson GSON = new Gson();
 
-    protected boolean closed = false;
+    protected transient boolean closed = false;
 
     public String getJSONData() {
         return FormWindow.GSON.toJson(this);
