@@ -1,7 +1,9 @@
 package cn.nukkit.block;
 
+import cn.nukkit.Player;
 import cn.nukkit.event.block.BlockFromToEvent;
-import cn.nukkit.level.Level;
+import cn.nukkit.item.Item;
+import cn.nukkit.level.HeightRange;
 import cn.nukkit.math.BlockFace;
 import cn.nukkit.network.protocol.LevelEventPacket;
 import cn.nukkit.utils.BlockColor;
@@ -58,17 +60,33 @@ public class BlockDragonEgg extends BlockFallable {
     }
 
     @Override
-    public int onUpdate(int type) {
-        if (type == Level.BLOCK_UPDATE_TOUCH) {
-            this.teleport();
+    public boolean canBeActivated() {
+        return true;
+    }
+
+    @Override
+    public boolean onActivate(Item item, BlockFace face, float fx, float fy, float fz, Player player) {
+        if (player == null) {
+            return false;
         }
-        return super.onUpdate(type);
+        this.teleport();
+        return true;
     }
 
     public void teleport() {
+        int minYDelta = -16;
+        int maxYDelta = 16;
+        int y = getFloorY();
+        HeightRange heightRange = level.getHeightRange();
+        if (y + minYDelta < heightRange.getMinY()) {
+            minYDelta = heightRange.getMinY() - y;
+        }
+        if (y + maxYDelta > heightRange.getMaxY()) {
+            maxYDelta = heightRange.getMaxY() - y;
+        }
         ThreadLocalRandom random = ThreadLocalRandom.current();
         for (int i = 0; i < 1000; ++i) {
-            Block to = this.getLevel().getBlock(this.add(random.nextInt(-16, 16), random.nextInt(-16, 16), random.nextInt(-16, 16)));
+            Block to = this.getLevel().getBlock(this.add(random.nextInt(-16, 16), random.nextInt(minYDelta, maxYDelta), random.nextInt(-16, 16)));
             if (to.getId() == AIR) {
                 BlockFromToEvent event = new BlockFromToEvent(this, 0, to);
                 this.level.getServer().getPluginManager().callEvent(event);

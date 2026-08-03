@@ -3160,7 +3160,7 @@ public class Level implements ChunkManager, Metadatable {
 
                 interactTarget.onUpdate(BLOCK_UPDATE_TOUCH);
 
-                if ((!player.isSneaking() || item.is(Item.BRUSH) && target instanceof BlockBrushable) && interactTarget.canBeActivated() && interactTarget.onActivate(item, face, fx, fy, fz, player)) {
+                if ((!player.isSneaking() || item.isNull() || item.is(Item.BRUSH) && target instanceof BlockBrushable) && interactTarget.canBeActivated() && interactTarget.onActivate(item, face, fx, fy, fz, player)) {
                     return item;
                 }
 

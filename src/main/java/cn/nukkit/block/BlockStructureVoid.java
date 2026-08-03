@@ -54,6 +54,11 @@ public class BlockStructureVoid extends BlockTransparent {
     }
 
     @Override
+    public boolean isSolid() {
+        return false;
+    }
+
+    @Override
     public boolean canPassThrough() {
         return true;
     }
