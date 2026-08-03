@@ -13,7 +13,7 @@ import cn.nukkit.lang.TranslationContainer;
 import cn.nukkit.level.Level;
 import cn.nukkit.level.Location;
 import cn.nukkit.level.Position;
-import cn.nukkit.math.NukkitMath;
+import cn.nukkit.math.Mth;
 import cn.nukkit.math.Vector3;
 
 import java.util.Collections;
@@ -24,6 +24,8 @@ import java.util.List;
  * Package cn.nukkit.command.defaults in project Nukkit .
  */
 public class TeleportCommand extends VanillaCommand {
+    private static final int MAX_COORDINATE = 30_000_000;
+
     public TeleportCommand(String name) {
         super(name, "%commands.tp.description", "%nukkit.command.tp.usage");
         this.setPermission("nukkit.command.teleport");
@@ -69,13 +71,13 @@ public class TeleportCommand extends VanillaCommand {
                 }
                 unresolvedVictim = ex;
 
-                if (!(sender instanceof Entity)) {
+                if (!(sender instanceof Entity entity)) {
                     parser.setErrorMessage(new TranslationContainer("%commands.generic.noTargetMatch"));
                     throw CommandExceptions.NO_TARGET;
                 }
 
                 parser.back();
-                victims = Collections.singletonList((Entity) sender);
+                victims = Collections.singletonList(entity);
             }
 
             destination = parser.parseVector3TargetOrDefault((Vector3) null);
@@ -84,7 +86,7 @@ public class TeleportCommand extends VanillaCommand {
                     throw unresolvedVictim;
                 }
 
-                if (!(sender instanceof Entity)) {
+                if (!(sender instanceof Entity entity)) {
                     parser.setErrorMessage(new TranslationContainer("%commands.generic.noTargetMatch"));
                     throw CommandExceptions.NO_TARGET;
                 }
@@ -93,26 +95,29 @@ public class TeleportCommand extends VanillaCommand {
                     throw CommandExceptions.TOO_MANY_TARGETS;
                 }
 
-                destination = victims.get(0);
-                victims = Collections.singletonList((Entity) sender);
+                destination = victims.getFirst();
+                victims = Collections.singletonList(entity);
             }
 
-            float yRot = parser.parseFloatOrDefault(Float.NaN) % 180;
-            float xRot = parser.parseFloatOrDefault(Float.NaN) % 180;
+            float yRot = parser.parseFloatOrDefault(Float.NaN);
+            float xRot = parser.parseFloatOrDefault(Float.NaN);
 
-            Level level = destination instanceof Position ? ((Position) destination).level : parser.getTargetLevel();
+            Level level = destination instanceof Position pos ? pos.level : parser.getTargetLevel();
             boolean isCoordinates = !(destination instanceof Entity);
+            Vector3 destPos = new Vector3(Mth.clamp(destination.x, -MAX_COORDINATE, MAX_COORDINATE), Mth.clamp(destination.y, -MAX_COORDINATE, MAX_COORDINATE), Mth.clamp(destination.z, -MAX_COORDINATE, MAX_COORDINATE));
+            float yaw = Float.isNaN(yRot) ? yRot : Mth.wrapDegrees(yRot);
+            float pitch = Float.isNaN(xRot) ? xRot : Mth.clamp(xRot, -90, 90);
 
             final Vector3 dest = destination;
             victims.forEach(victim -> {
-                victim.teleport(Location.fromObject(dest, level, Float.isNaN(yRot) ? victim.yaw : yRot, Float.isNaN(xRot) ? victim.pitch : xRot), TeleportCause.COMMAND);
+                victim.teleport(Location.fromObject(destPos, level, Float.isNaN(yaw) ? victim.yaw : yaw, Float.isNaN(pitch) ? victim.pitch : pitch), TeleportCause.COMMAND);
 
-                if (!isCoordinates && victim instanceof Player) {
-                    ((Player) victim).sendMessage(new TranslationContainer("commands.tp.successVictim", ((Entity) dest).getName()));
+                if (!isCoordinates && victim instanceof Player player) {
+                    player.sendMessage(new TranslationContainer("commands.tp.successVictim", ((Entity) dest).getName()));
                 }
 
                 broadcastCommandMessage(sender, isCoordinates ?
-                        new TranslationContainer("commands.tp.success.coordinates", victim.getName(), NukkitMath.round(dest.x, 2), NukkitMath.round(dest.y, 2), NukkitMath.round(dest.z, 2)) :
+                        new TranslationContainer("commands.tp.success.coordinates", victim.getName(), Mth.round(destPos.x, 2), Mth.round(destPos.y, 2), Mth.round(destPos.z, 2)) :
                         new TranslationContainer("commands.tp.success", victim.getName(), ((Entity) dest).getName()));
             });
             return true;
