@@ -376,6 +376,7 @@ public class Level implements ChunkManager, Metadatable {
     private boolean redstoneEnabled = true;
     private boolean extinguishFireIgnoreGameRule;
     private boolean newArmorMechanics = true;
+    private float maxEntityInteractionReachDistanceInSurvival;
 
     private boolean autoCompaction;
 
@@ -5371,6 +5372,18 @@ public class Level implements ChunkManager, Metadatable {
 
     public void setNewArmorMechanics(boolean enable) {
         this.newArmorMechanics = enable;
+    }
+
+    public float getMaxEntityInteractionReachDistanceInSurvival() {
+        float value = this.maxEntityInteractionReachDistanceInSurvival;
+        if (value <= 0) {
+            return Player.MAX_REACH_DISTANCE_SURVIVAL_ENTITY_INTERACTION;
+        }
+        return value;
+    }
+
+    public void setMaxEntityInteractionReachDistanceInSurvival(float value) {
+        this.maxEntityInteractionReachDistanceInSurvival = value;
     }
 
     public BatchPacket getChunkCacheFromData(Compressor compressor, int x, int z, int subChunkCount, byte[] payload) {

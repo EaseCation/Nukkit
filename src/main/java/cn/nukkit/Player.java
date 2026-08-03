@@ -3994,7 +3994,7 @@ public class Player extends EntityHuman implements CommandSender, InventoryHolde
 
                             switch (type) {
                                 case InventoryTransactionPacket.USE_ITEM_ON_ENTITY_ACTION_INTERACT:
-                                    if (!this.canInteract(target, target.getBoundingBox(), isCreative() ? MAX_REACH_DISTANCE_CREATIVE_ENTITY_INTERACTION : MAX_REACH_DISTANCE_SURVIVAL_ENTITY_INTERACTION)) {
+                                    if (!this.canInteract(target, target.getBoundingBox(), isCreative() ? MAX_REACH_DISTANCE_CREATIVE_ENTITY_INTERACTION : this.level.getMaxEntityInteractionReachDistanceInSurvival())) {
                                         break;
                                     }
 
@@ -4024,7 +4024,7 @@ public class Player extends EntityHuman implements CommandSender, InventoryHolde
                                     }
                                     break;
                                 case InventoryTransactionPacket.USE_ITEM_ON_ENTITY_ACTION_ATTACK:
-                                    if (!this.canInteract(target, target.getBoundingBox(), isCreative() ? MAX_REACH_DISTANCE_CREATIVE_ENTITY_INTERACTION : MAX_REACH_DISTANCE_SURVIVAL_ENTITY_INTERACTION)) {
+                                    if (!this.canInteract(target, target.getBoundingBox(), isCreative() ? MAX_REACH_DISTANCE_CREATIVE_ENTITY_INTERACTION : this.level.getMaxEntityInteractionReachDistanceInSurvival())) {
                                         break;
                                     } else if (target instanceof Player) {
                                         if ((((Player) target).getGamemode() & 0x01) > 0) {
