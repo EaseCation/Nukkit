@@ -126,10 +126,12 @@ public class Player extends EntityHuman implements CommandSender, InventoryHolde
     public static final int SPECTATOR = 3;
     public static final int VIEWER = SPECTATOR;
 
-    public static final float MAX_REACH_DISTANCE_CREATIVE = 12 + 1;
-    public static final float MAX_REACH_DISTANCE_SURVIVAL = 7 + 1;
-    public static final float MAX_REACH_DISTANCE_CREATIVE_ENTITY_INTERACTION = 6;
-    public static final float MAX_REACH_DISTANCE_SURVIVAL_ENTITY_INTERACTION = 3;
+    public static final float REACH_DISTANCE_TOLERANCE = 1;
+    public static final float MAX_REACH_DISTANCE_CREATIVE = 12 + REACH_DISTANCE_TOLERANCE;
+    public static final float MAX_REACH_DISTANCE_SURVIVAL = 7 + REACH_DISTANCE_TOLERANCE;
+    public static final float REACH_DISTANCE_TOLERANCE_ENTITY_INTERACTION = 0.3f;
+    public static final float MAX_REACH_DISTANCE_CREATIVE_ENTITY_INTERACTION = 6 + REACH_DISTANCE_TOLERANCE_ENTITY_INTERACTION;
+    public static final float MAX_REACH_DISTANCE_SURVIVAL_ENTITY_INTERACTION = 3 + REACH_DISTANCE_TOLERANCE_ENTITY_INTERACTION;
 
     public static final int SURVIVAL_SLOTS = 36;
 
