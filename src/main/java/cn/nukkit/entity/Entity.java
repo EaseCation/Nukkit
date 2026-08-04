@@ -2628,7 +2628,7 @@ public abstract class Entity extends Location implements Metadatable, EntityData
                     }
                 }
 
-                int scanRadius = Server.CHUNK_TICK_DISTANCE;
+                int scanRadius = Server.ENTITY_VIEW_DISTANCE;
                 for (int dx = -scanRadius; dx <= scanRadius; dx++) {
                     for (int dz = -scanRadius; dz <= scanRadius; dz++) {
                         if (dx * dx + dz * dz > scanRadius * scanRadius) {

@@ -129,7 +129,7 @@ public class Player extends EntityHuman implements CommandSender, InventoryHolde
     public static final float REACH_DISTANCE_TOLERANCE = 1;
     public static final float MAX_REACH_DISTANCE_CREATIVE = 12 + REACH_DISTANCE_TOLERANCE;
     public static final float MAX_REACH_DISTANCE_SURVIVAL = 7 + REACH_DISTANCE_TOLERANCE;
-    public static final float REACH_DISTANCE_TOLERANCE_ENTITY_INTERACTION = 0.3f;
+    public static final float REACH_DISTANCE_TOLERANCE_ENTITY_INTERACTION = 1;
     public static final float MAX_REACH_DISTANCE_CREATIVE_ENTITY_INTERACTION = 6 + REACH_DISTANCE_TOLERANCE_ENTITY_INTERACTION;
     public static final float MAX_REACH_DISTANCE_SURVIVAL_ENTITY_INTERACTION = 3 + REACH_DISTANCE_TOLERANCE_ENTITY_INTERACTION;
 
@@ -4416,7 +4416,7 @@ public class Player extends EntityHuman implements CommandSender, InventoryHolde
      * @return entity render radius
      */
     public int getEntityViewDistance() {
-        return Math.min(Server.CHUNK_TICK_DISTANCE, getViewDistance());
+        return Math.min(Server.ENTITY_VIEW_DISTANCE, getViewDistance());
     }
 
     @Override
@@ -5678,7 +5678,7 @@ public class Player extends EntityHuman implements CommandSender, InventoryHolde
                     }
                 }
 
-                int scanRadius = Server.CHUNK_TICK_DISTANCE;
+                int scanRadius = Server.ENTITY_VIEW_DISTANCE;
                 for (int dx = -scanRadius; dx <= scanRadius; dx++) {
                     for (int dz = -scanRadius; dz <= scanRadius; dz++) {
                         if (dx * dx + dz * dz > scanRadius * scanRadius) {
