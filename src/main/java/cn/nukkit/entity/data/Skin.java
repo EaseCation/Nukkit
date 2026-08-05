@@ -52,8 +52,7 @@ public class Skin implements Cloneable {
         try (InputStream inputStream = Server.class.getClassLoader().getResourceAsStream("skins/steve.png")) {
             return new Skin(inputStream)
                     .setGeometryName(CUSTOM_GEOMETRY_NAME)
-                    .generateSkinId("Steve")
-                    .setPlayerSkin(false);
+                    .generateSkinId("Steve");
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
@@ -63,8 +62,7 @@ public class Skin implements Cloneable {
             return new Skin(inputStream)
                     .setGeometryName(CUSTOM_SLIM_GEOMETRY_NAME)
                     .setArmSize("slim")
-                    .generateSkinId("Alex")
-                    .setPlayerSkin(false);
+                    .generateSkinId("Alex");
         } catch (IOException e) {
             throw new RuntimeException(e);
         }

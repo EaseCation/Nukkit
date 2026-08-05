@@ -787,12 +787,13 @@ public class Player extends EntityHuman implements CommandSender, InventoryHolde
     }
 
     @Override
-    public void setSkin(Skin skin) {
-        super.setSkin(skin);
+    public void setSkin(Skin skin, boolean selfUpdate) {
+        super.setSkin(skin, selfUpdate);
         if (this.spawned) {
-            this.server.updatePlayerListData(this.getUniqueId(), this.getId(), this.getName(), this.getDisplayName(), skin,
+            UUID uid = getUniqueId();
+            this.server.updatePlayerListData(uid, this.getId(), this.getName(), this.getDisplayName(), skin,
                     this.getServer().getOnlinePlayers().values().stream()
-                            .filter(p -> p.sentSkins.contains(this.getUniqueId()))
+                            .filter(p -> p.sentSkins.contains(uid) && (selfUpdate || !uid.equals(p.getUniqueId())))
                             .collect(Collectors.toList()));
         }
     }
@@ -7429,6 +7430,10 @@ public class Player extends EntityHuman implements CommandSender, InventoryHolde
      * @since 1.21.130
      */
     public void resetSunGlareShape(String... biomeIdentifiers) {
+    }
+
+    public boolean isFirstTimeLogin() {
+        return true;
     }
 
     public boolean isJavaClient() {

@@ -98,6 +98,10 @@ public class EntityHuman extends EntityHumanType {
     }
 
     public void setSkin(Skin skin) {
+        setSkin(skin, true);
+    }
+
+    public void setSkin(Skin skin, boolean selfUpdate) {
         this.skin = skin;
     }
 
