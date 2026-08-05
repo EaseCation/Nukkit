@@ -123,7 +123,7 @@ public class BlockEntityMovingBlock extends BlockEntitySpawnable {
         }
 
         for (Entity entity : entities) {
-            piston.moveEntity(entity, moveDirection);
+            piston.moveEntity(entity, moveDirection, false);
         }
     }
 

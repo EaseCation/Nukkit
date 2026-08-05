@@ -110,11 +110,11 @@ public class BlockEntityPistonArm extends BlockEntitySpawnable {
         Entity[] entities = this.level.getCollidingEntities(bb);
 
         for (Entity entity : entities) {
-            moveEntity(entity, pushDir);
+            moveEntity(entity, pushDir, true);
         }
     }
 
-    void moveEntity(Entity entity, BlockFace moveDirection) {
+    void moveEntity(Entity entity, BlockFace moveDirection, boolean arm) {
         if (!entity.canBePushed()) {
             return;
         }
@@ -122,7 +122,7 @@ public class BlockEntityPistonArm extends BlockEntitySpawnable {
         //TODO: event
 
         if (entity instanceof Player player) {
-            if (!entity.isRiding()) {
+            if (arm && !entity.isRiding()) {
                 double entityX = entity.x;
                 int ux = moveDirection.getXOffset();
                 if (ux != 0) {
