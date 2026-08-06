@@ -3984,41 +3984,63 @@ public class Level implements ChunkManager, Metadatable {
                         }
                     }
 
-                    if (!requestFullChunk) {
+                    if (!requestFullChunk && !requestSubChunks) {
                         it.remove();
                         this.chunkSendTasks.remove(index);
-
-                        if (!requestSubChunks) {
-                            continue;
-                        }
+                        continue;
                     }
                 }
             }
 
-            AsyncTask<?> task = provider != null ? this.provider.requestChunkTask(x, z) : null;
-            if (task != null) {
-                this.server.getScheduler().scheduleAsyncTask(null, task);
-            } else { // no such chunk
-                if (requestFullChunk) {
-                    it.remove();
-                    this.chunkSendTasks.remove(index);
+            AsyncTask<?> task;
+            try {
+                task = provider != null ? this.provider.requestChunkTask(x, z) : null;
+                if (task != null) {
+                    this.server.getScheduler().scheduleAsyncTask(null, task);
+                    continue;
                 }
-
-                if (requestSubChunks) {
-                    Int2ObjectMap<Pair<Player, IntSet>> loaders = this.subChunkSendQueue.remove(index);
-                    if (loaders != null) {
-                        for (Pair<Player, IntSet> pair : loaders.values()) {
-                            Player player = pair.left();
-                            pair.right().forEach(dimension -> player.onSubChunkRequestFail(dimension, x, z));
-                        }
-                    }
-                }
+            } catch (RuntimeException e) {
+                it.remove();
+                this.failChunkRequest(index, x, z);
+                log.error("Failed to start chunk network serialization: [{},{}] {}", x, z, this.getFolderName(), e);
+                continue;
             }
+
+            // no such chunk
+            it.remove();
+            this.failChunkRequest(index, x, z);
+        }
+    }
+
+    private void failChunkRequest(long index, int x, int z) {
+        if (!this.chunkSendTasks.remove(index)) {
+            return;
+        }
+        this.chunkSendQueue.remove(index);
+        this.failSubChunkRequests(index, x, z);
+    }
+
+    private void failSubChunkRequests(long index, int x, int z) {
+        Int2ObjectMap<Pair<Player, IntSet>> loaders = this.subChunkSendQueue.remove(index);
+        if (loaders == null) {
+            return;
+        }
+        for (Pair<Player, IntSet> pair : loaders.values()) {
+            Player player = pair.left();
+            pair.right().forEach(dimension -> player.onSubChunkRequestFail(dimension, x, z));
         }
     }
 
     public boolean isCacheChunks() {
         return cacheChunks;
+    }
+
+    /**
+     * 在主线程结算失败的异步区块网络序列化任务。
+     */
+    public void chunkRequestFailureCallback(int x, int z) {
+        long index = Level.chunkHash(x, z);
+        this.failChunkRequest(index, x, z);
     }
 
     /**

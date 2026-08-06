@@ -365,6 +365,7 @@ public class ChunkRequestTask extends AsyncTask<Void> {
     @Override
     public void onCompletion(Server server) {
         if (chunkCachedData == null) {
+            level.chunkRequestFailureCallback(chunkX, chunkZ);
             return;
         }
         level.chunkRequestCallback(timestamp, chunkX, chunkZ, chunkCachedData, fullChunkPayloads, subRequestModeFullChunkPayload, subRequestModeFullChunkPayloadLegacy, subChunkPayloads);
