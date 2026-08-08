@@ -7,8 +7,6 @@ import com.google.common.base.Preconditions;
 import com.google.common.base.Strings;
 import it.unimi.dsi.fastutil.objects.Object2IntMap;
 import it.unimi.dsi.fastutil.objects.Object2IntOpenHashMap;
-import lombok.Getter;
-import lombok.Setter;
 import lombok.ToString;
 import org.apache.commons.lang3.RandomStringUtils;
 import tools.jackson.core.JacksonException;
@@ -91,22 +89,22 @@ public class Skin implements Cloneable {
     private boolean trusted = true;
     private String geometryDataEngineVersion = "0.0.0";
     private boolean overridingPlayerAppearance = true;
+    private String profileHash = "";
 
     // netease
     @Nullable
-    @Setter
-    @Getter
+    private byte[] bloomData;
+    @Nullable
     private String skinMd5;
     @Nullable
-    @Setter
-    @Getter
     private String skinGeoMd5;
 
     static {
         Arrays.fill(FULL_WHITE_SKIN, (byte) 0xff);
     }
 
-    public Skin() { }
+    public Skin() {
+    }
 
     public Skin(InputStream inputStream) {
         this.setSkinData(inputStream);
@@ -438,10 +436,8 @@ public class Skin implements Cloneable {
 
     public Skin setGeometryData(String geometryData) {
         Preconditions.checkNotNull(geometryData, "geometryData");
-        if (!geometryData.equals(this.geometryData)) {
-            if (!geometryData.startsWith("null")) {
-                this.geometryData = geometryData;
-            }
+        if (!geometryData.startsWith("null")) {
+            this.geometryData = geometryData;
         }
         return this;
     }
@@ -455,9 +451,7 @@ public class Skin implements Cloneable {
 
     public Skin setAnimationData(String animationData) {
         Preconditions.checkNotNull(animationData, "animationData");
-        if (!animationData.equals(this.animationData)) {
-            this.animationData = animationData;
-        }
+        this.animationData = animationData;
         return this;
     }
 
@@ -603,6 +597,47 @@ public class Skin implements Cloneable {
         return this.overridingPlayerAppearance;
     }
 
+    public String getProfileHash() {
+        return profileHash;
+    }
+
+    public Skin setProfileHash(String profileHash) {
+        Objects.requireNonNull(profileHash, "profileHash");
+        this.profileHash = profileHash;
+        return this;
+    }
+
+    public byte[] getBloomData() {
+        byte[] bloomData = this.bloomData;
+        if (bloomData == null) {
+            return new byte[0];
+        }
+        return bloomData;
+    }
+
+    public Skin setBloomData(byte[] bloomData) {
+        this.bloomData = bloomData;
+        return this;
+    }
+
+    public String getSkinMd5() {
+        return skinMd5;
+    }
+
+    public Skin setSkinMd5(String skinMd5) {
+        this.skinMd5 = skinMd5;
+        return this;
+    }
+
+    public String getSkinGeoMd5() {
+        return skinGeoMd5;
+    }
+
+    public Skin setSkinGeoMd5(String skinGeoMd5) {
+        this.skinGeoMd5 = skinGeoMd5;
+        return this;
+    }
+
     public static SerializedImage parseBufferedImage(BufferedImage image) {
         FastByteArrayOutputStream outputStream = new FastByteArrayOutputStream();
         for (int y = 0; y < image.getHeight(); y++) {
@@ -648,6 +683,8 @@ public class Skin implements Cloneable {
         skin.trusted = trusted;
         skin.geometryDataEngineVersion = geometryDataEngineVersion;
         skin.overridingPlayerAppearance = overridingPlayerAppearance;
+        skin.profileHash = profileHash;
+        skin.bloomData = bloomData;
 
         skin.cachedGeometryName = cachedGeometryName;
         skin.skinMd5 = skinMd5;

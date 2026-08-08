@@ -17,6 +17,8 @@ public interface LoginChainData {
 
     String getNetEaseSid();
 
+    String getNetEaseDataVersion();
+
     String getNetEasePlatform();
 
     String getNetEaseClientOsName();
@@ -28,6 +30,8 @@ public interface LoginChainData {
     String getNetEaseClientPatchVersion();
 
     String getNetEaseEnv();
+
+    String getNetEaseGameType();
 
     long getClientId();
 
@@ -53,9 +57,49 @@ public interface LoginChainData {
 
     int getDefaultInputMode();
 
-    String getCapeData();
-
     int getUIProfile();
+
+    String getPlatformOfflineId();
+
+    String getPlatformOnlineId();
+
+    boolean isEditorMode();
+
+    boolean isEditorCapable();
+
+    int isEditorConnectionIntent();
+
+    boolean isSupportClientChunkGeneration();
+
+    int getPlatformType();
+
+    int getMemoryTier();
+
+    int getMaxViewDistance();
+
+    int getGraphicsMode();
+
+    String getPartyId();
+
+    boolean isPartyLeader();
+
+    boolean isFilterProfanity();
+
+    boolean isNetEaseReconnect();
+
+    String getNetEaseSkinIID();
+
+    int getNetEaseGrowthLevel();
+
+    String getSubject();
+
+    String getPlayFabId();
+
+    Integer getPfcd();
+
+    String getTitleId();
+
+    String getSandboxId();
 
     /**
      * 获取 ViaProxy 认证令牌，用于判断玩家是否通过 ViaProxy 从 Java 版客户端连接
