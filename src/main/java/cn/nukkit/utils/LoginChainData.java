@@ -1,5 +1,7 @@
 package cn.nukkit.utils;
 
+import javax.annotation.Nullable;
+
 import java.util.UUID;
 
 /**
@@ -106,6 +108,14 @@ public interface LoginChainData {
      * @return ViaProxy 认证令牌，如果不是 ViaProxy 客户端则返回 null
      */
     default String getViaProxyAuthToken() {
+        return null;
+    }
+
+    /**
+     * 获取 Java 客户端与 ViaProxy 协商的登录会话密钥，其内容使用标准 Base64 编码。
+     */
+    @Nullable
+    default String getJavaClientEncryptionKey() {
         return null;
     }
 }

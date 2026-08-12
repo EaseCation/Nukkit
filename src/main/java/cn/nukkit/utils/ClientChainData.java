@@ -5,6 +5,7 @@ import com.google.gson.Gson;
 import com.google.gson.JsonObject;
 import com.google.gson.reflect.TypeToken;
 
+import javax.annotation.Nullable;
 import java.nio.charset.StandardCharsets;
 import java.util.*;
 
@@ -324,6 +325,8 @@ public final class ClientChainData implements LoginChainData {
     private boolean filterProfanity;
 
     private String viaProxyAuthToken;
+    @Nullable
+    private String javaClientEncryptionKey;
 
     private final transient BinaryStream bs = new BinaryStream();
 
@@ -381,11 +384,18 @@ public final class ClientChainData implements LoginChainData {
         if (skinToken.has("ClientIsEditorCapable")) this.editorCapable = skinToken.get("ClientIsEditorCapable").getAsBoolean();
         if (skinToken.has("ClientEditorConnectionIntent")) this.editorConnectionIntent = skinToken.get("ClientEditorConnectionIntent").getAsInt();
         if (skinToken.has("ViaProxyAuthToken")) this.viaProxyAuthToken = skinToken.get("ViaProxyAuthToken").getAsString();
+        if (skinToken.has("JavaClientEncryptionKey")) this.javaClientEncryptionKey = skinToken.get("JavaClientEncryptionKey").getAsString();
     }
 
     @Override
     public String getViaProxyAuthToken() {
         return viaProxyAuthToken;
+    }
+
+    @Nullable
+    @Override
+    public String getJavaClientEncryptionKey() {
+        return javaClientEncryptionKey;
     }
 
     private JsonObject decodeToken(String token) {
