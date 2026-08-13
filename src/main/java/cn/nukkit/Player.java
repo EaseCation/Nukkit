@@ -1250,6 +1250,13 @@ public class Player extends EntityHuman implements CommandSender, InventoryHolde
         return true;
     }
 
+    /**
+     * 请求在下一次网络检查时按玩家当前位置重新排序区块。
+     */
+    public void requestChunkOrder() {
+        this.nextChunkOrderRun = 0;
+    }
+
     @Deprecated
     public boolean batchDataPacket(DataPacket packet) {
         return this.dataPacket(packet);
