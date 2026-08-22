@@ -118,8 +118,8 @@ public class BlockTypes {
     public static final BlockLegacy BAMBOO_MOSAIC_SLAB = REGISTRY.registerBlock(BlockFullNames.BAMBOO_MOSAIC_SLAB, BlockID.BAMBOO_MOSAIC_SLAB)
             .addState(BlockStates.MINECRAFT_VERTICAL_HALF);
     public static final BlockLegacy BAMBOO_MOSAIC_STAIRS = REGISTRY.registerBlock(BlockFullNames.BAMBOO_MOSAIC_STAIRS, BlockID.BAMBOO_MOSAIC_STAIRS)
-            .addState(BlockStates.UPSIDE_DOWN_BIT)
-            .addState(BlockStates.WEIRDO_DIRECTION);
+            .addState(BlockStates.WEIRDO_DIRECTION)
+            .addState(BlockStates.UPSIDE_DOWN_BIT);
     public static final BlockLegacy BAMBOO_PLANKS = REGISTRY.registerBlock(BlockFullNames.BAMBOO_PLANKS, BlockID.BAMBOO_PLANKS);
     public static final BlockLegacy BAMBOO_PRESSURE_PLATE = REGISTRY.registerBlock(BlockFullNames.BAMBOO_PRESSURE_PLATE, BlockID.BAMBOO_PRESSURE_PLATE)
             .addState(BlockStates.REDSTONE_SIGNAL);
@@ -266,10 +266,10 @@ public class BlockTypes {
     public static final BlockLegacy BOOKSHELF = REGISTRY.registerBlock(BlockFullNames.BOOKSHELF, BlockID.BOOKSHELF);
     public static final BlockLegacy BORDER_BLOCK = REGISTRY.registerBlock(BlockFullNames.BORDER_BLOCK, BlockID.BORDER_BLOCK)
             .addState(BlockStates.WALL_POST_BIT)
-            .addState(BlockStates.WALL_CONNECTION_TYPE_SOUTH)
             .addState(BlockStates.WALL_CONNECTION_TYPE_NORTH)
-            .addState(BlockStates.WALL_CONNECTION_TYPE_WEST)
-            .addState(BlockStates.WALL_CONNECTION_TYPE_EAST);
+            .addState(BlockStates.WALL_CONNECTION_TYPE_EAST)
+            .addState(BlockStates.WALL_CONNECTION_TYPE_SOUTH)
+            .addState(BlockStates.WALL_CONNECTION_TYPE_WEST);
     public static final BlockLegacy BRAIN_CORAL = REGISTRY.registerBlock(BlockFullNames.BRAIN_CORAL, BlockID.BRAIN_CORAL);
     public static final BlockLegacy BRAIN_CORAL_BLOCK = REGISTRY.registerBlock(BlockFullNames.BRAIN_CORAL_BLOCK, BlockID.BRAIN_CORAL_BLOCK);
     public static final BlockLegacy BRAIN_CORAL_FAN = REGISTRY.registerBlock(BlockFullNames.BRAIN_CORAL_FAN, BlockID.BRAIN_CORAL_FAN)
@@ -443,10 +443,10 @@ public class BlockTypes {
             .addState(BlockStates.UPSIDE_DOWN_BIT);
     public static final BlockLegacy COBBLED_DEEPSLATE_WALL = REGISTRY.registerBlock(BlockFullNames.COBBLED_DEEPSLATE_WALL, BlockID.COBBLED_DEEPSLATE_WALL)
             .addState(BlockStates.WALL_POST_BIT)
-            .addState(BlockStates.WALL_CONNECTION_TYPE_SOUTH)
             .addState(BlockStates.WALL_CONNECTION_TYPE_NORTH)
-            .addState(BlockStates.WALL_CONNECTION_TYPE_WEST)
-            .addState(BlockStates.WALL_CONNECTION_TYPE_EAST);
+            .addState(BlockStates.WALL_CONNECTION_TYPE_EAST)
+            .addState(BlockStates.WALL_CONNECTION_TYPE_SOUTH)
+            .addState(BlockStates.WALL_CONNECTION_TYPE_WEST);
     public static final BlockLegacy COBBLESTONE = REGISTRY.registerBlock(BlockFullNames.COBBLESTONE, BlockID.COBBLESTONE);
     public static final BlockLegacy COBBLESTONE_DOUBLE_SLAB = REGISTRY.registerBlock(BlockFullNames.COBBLESTONE_DOUBLE_SLAB, BlockID.COBBLESTONE_DOUBLE_SLAB)
             .addState(BlockStates.MINECRAFT_VERTICAL_HALF);
@@ -634,8 +634,8 @@ public class BlockTypes {
     public static final BlockLegacy DARK_PRISMARINE_SLAB = REGISTRY.registerBlock(BlockFullNames.DARK_PRISMARINE_SLAB, BlockID.DARK_PRISMARINE_SLAB)
             .addState(BlockStates.MINECRAFT_VERTICAL_HALF);
     public static final BlockLegacy DARK_PRISMARINE_STAIRS = REGISTRY.registerBlock(BlockFullNames.DARK_PRISMARINE_STAIRS, BlockID.DARK_PRISMARINE_STAIRS)
-            .addState(BlockStates.UPSIDE_DOWN_BIT)
-            .addState(BlockStates.WEIRDO_DIRECTION);
+            .addState(BlockStates.WEIRDO_DIRECTION)
+            .addState(BlockStates.UPSIDE_DOWN_BIT);
     public static final BlockLegacy DARKOAK_STANDING_SIGN = REGISTRY.registerBlock(BlockFullNames.DARKOAK_STANDING_SIGN, BlockID.DARKOAK_STANDING_SIGN)
             .addState(BlockStates.GROUND_SIGN_DIRECTION);
     public static final BlockLegacy DARKOAK_WALL_SIGN = REGISTRY.registerBlock(BlockFullNames.DARKOAK_WALL_SIGN, BlockID.DARKOAK_WALL_SIGN)
@@ -1304,13 +1304,13 @@ public class BlockTypes {
     public static final BlockLegacy MANGROVE_SLAB = REGISTRY.registerBlock(BlockFullNames.MANGROVE_SLAB, BlockID.MANGROVE_SLAB)
             .addState(BlockStates.MINECRAFT_VERTICAL_HALF);
     public static final BlockLegacy MANGROVE_STAIRS = REGISTRY.registerBlock(BlockFullNames.MANGROVE_STAIRS, BlockID.MANGROVE_STAIRS)
-            .addState(BlockStates.UPSIDE_DOWN_BIT)
-            .addState(BlockStates.WEIRDO_DIRECTION);
+            .addState(BlockStates.WEIRDO_DIRECTION)
+            .addState(BlockStates.UPSIDE_DOWN_BIT);
     public static final BlockLegacy MANGROVE_STANDING_SIGN = REGISTRY.registerBlock(BlockFullNames.MANGROVE_STANDING_SIGN, BlockID.MANGROVE_STANDING_SIGN)
             .addState(BlockStates.GROUND_SIGN_DIRECTION);
     public static final BlockLegacy MANGROVE_TRAPDOOR = REGISTRY.registerBlock(BlockFullNames.MANGROVE_TRAPDOOR, BlockID.MANGROVE_TRAPDOOR)
-            .addState(BlockStates.UPSIDE_DOWN_BIT)
             .addState(BlockStates.DIRECTION)
+            .addState(BlockStates.UPSIDE_DOWN_BIT)
             .addState(BlockStates.OPEN_BIT);
     public static final BlockLegacy MANGROVE_WALL_SIGN = REGISTRY.registerBlock(BlockFullNames.MANGROVE_WALL_SIGN, BlockID.MANGROVE_WALL_SIGN)
             .addState(BlockStates.FACING_DIRECTION);
@@ -1741,8 +1741,8 @@ public class BlockTypes {
     public static final BlockLegacy QUARTZ_SLAB = REGISTRY.registerBlock(BlockFullNames.QUARTZ_SLAB, BlockID.QUARTZ_SLAB)
             .addState(BlockStates.MINECRAFT_VERTICAL_HALF);
     public static final BlockLegacy QUARTZ_STAIRS = REGISTRY.registerBlock(BlockFullNames.QUARTZ_STAIRS, BlockID.QUARTZ_STAIRS)
-            .addState(BlockStates.UPSIDE_DOWN_BIT)
-            .addState(BlockStates.WEIRDO_DIRECTION);
+            .addState(BlockStates.WEIRDO_DIRECTION)
+            .addState(BlockStates.UPSIDE_DOWN_BIT);
     public static final BlockLegacy RAIL = REGISTRY.registerBlock(BlockFullNames.RAIL, BlockID.RAIL)
             .addState(BlockStates.RAIL_DIRECTION);
     public static final BlockLegacy RAW_COPPER_BLOCK = REGISTRY.registerBlock(BlockFullNames.RAW_COPPER_BLOCK, BlockID.RAW_COPPER_BLOCK);
@@ -2321,8 +2321,8 @@ public class BlockTypes {
     public static final BlockLegacy WEATHERED_CUT_COPPER_SLAB = REGISTRY.registerBlock(BlockFullNames.WEATHERED_CUT_COPPER_SLAB, BlockID.WEATHERED_CUT_COPPER_SLAB)
             .addState(BlockStates.MINECRAFT_VERTICAL_HALF);
     public static final BlockLegacy WEATHERED_CUT_COPPER_STAIRS = REGISTRY.registerBlock(BlockFullNames.WEATHERED_CUT_COPPER_STAIRS, BlockID.WEATHERED_CUT_COPPER_STAIRS)
-            .addState(BlockStates.UPSIDE_DOWN_BIT)
-            .addState(BlockStates.WEIRDO_DIRECTION);
+            .addState(BlockStates.WEIRDO_DIRECTION)
+            .addState(BlockStates.UPSIDE_DOWN_BIT);
     public static final BlockLegacy WEATHERED_DOUBLE_CUT_COPPER_SLAB = REGISTRY.registerBlock(BlockFullNames.WEATHERED_DOUBLE_CUT_COPPER_SLAB, BlockID.WEATHERED_DOUBLE_CUT_COPPER_SLAB)
             .addState(BlockStates.MINECRAFT_VERTICAL_HALF);
     public static final BlockLegacy WEB = REGISTRY.registerBlock(BlockFullNames.WEB, BlockID.WEB);
@@ -2332,8 +2332,8 @@ public class BlockTypes {
     public static final BlockLegacy WHEAT = REGISTRY.registerBlock(BlockFullNames.WHEAT, BlockID.WHEAT)
             .addState(BlockStates.GROWTH);
     public static final BlockLegacy WHITE_CANDLE = REGISTRY.registerBlock(BlockFullNames.WHITE_CANDLE, BlockID.WHITE_CANDLE)
-            .addState(BlockStates.LIT)
-            .addState(BlockStates.CANDLES);
+            .addState(BlockStates.CANDLES)
+            .addState(BlockStates.LIT);
     public static final BlockLegacy WHITE_CANDLE_CAKE = REGISTRY.registerBlock(BlockFullNames.WHITE_CANDLE_CAKE, BlockID.WHITE_CANDLE_CAKE)
             .addState(BlockStates.LIT);
     public static final BlockLegacy WHITE_CARPET = REGISTRY.registerBlock(BlockFullNames.WHITE_CARPET, BlockID.WHITE_CARPET);
