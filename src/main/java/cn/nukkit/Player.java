@@ -6958,6 +6958,24 @@ public class Player extends EntityHuman implements CommandSender, InventoryHolde
     public void sendMotionPredictionHints(long entityRuntimeId, float motionX, float motionY, float motionZ, boolean onGround) {
     }
 
+    /**
+     * @since 1.16.100
+     */
+    public void correctPlayerMovePrediction(float x, float y, float z, float deltaX, float deltaY, float deltaZ, boolean onGround, long tick) {
+    }
+
+    /**
+     * @since 1.20.60
+     */
+    public void correctVehicleMovePrediction(float x, float y, float z, float deltaX, float deltaY, float deltaZ, float pitch, float yaw, boolean onGround, long tick) {
+    }
+
+    /**
+     * @since 1.21.20
+     */
+    public void correctVehicleMovePrediction(float x, float y, float z, float deltaX, float deltaY, float deltaZ, float pitch, float yaw, @Nullable Float angularVelocity, boolean onGround, long tick) {
+    }
+
     @Nullable
     public StaticVersion getBlockVersion() {
         return blockVersion;
