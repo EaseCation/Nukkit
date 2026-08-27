@@ -11,6 +11,7 @@ import cn.nukkit.inventory.Inventory;
 import cn.nukkit.inventory.SmithingTableInventory;
 import cn.nukkit.inventory.transaction.action.InventoryAction;
 import cn.nukkit.inventory.transaction.action.RepairItemAction;
+import cn.nukkit.inventory.transaction.action.SlotChangeAction;
 import cn.nukkit.item.Item;
 import cn.nukkit.item.ItemDurable;
 import cn.nukkit.item.ItemID;
@@ -18,6 +19,7 @@ import cn.nukkit.item.enchantment.Enchantment;
 import cn.nukkit.math.Mth;
 import cn.nukkit.network.protocol.LevelEventPacket;
 import cn.nukkit.network.protocol.types.NetworkInventoryAction;
+import it.unimi.dsi.fastutil.objects.ObjectArrayList;
 
 import java.util.Arrays;
 import java.util.List;
@@ -91,7 +93,7 @@ public class RepairItemTransaction extends InventoryTransaction {
 
         Inventory inventory = getSource().getWindowById(Player.ANVIL_WINDOW_ID);
         if (inventory instanceof AnvilInventory) {
-            AnvilInventory anvilInventory = (AnvilInventory) getSource().getWindowById(Player.ANVIL_WINDOW_ID);
+            AnvilInventory anvilInventory = (AnvilInventory) inventory;
 
             RepairItemEvent event = new RepairItemEvent(anvilInventory, this.inputItem, this.outputItem, this.materialItem, this.cost, this.source);
             this.source.getServer().getPluginManager().callEvent(event);
@@ -101,13 +103,24 @@ public class RepairItemTransaction extends InventoryTransaction {
                 return true;
             }
 
+            Item materialBefore = anvilInventory.getMaterialSlot();
+            List<InventoryAction> executed = new ObjectArrayList<>();
             for (InventoryAction action : this.actions) {
                 if (action.execute(this.source)) {
                     action.onExecuteSuccess(this.source);
-                } else {
-                    action.onExecuteFail(this.source);
+                    executed.add(action);
+                    continue;
                 }
+                action.onExecuteFail(this.source);
+                // 半成功会留下改名新物品，必须整单回滚，不要继续扣经验和消耗槽位
+                this.rollbackExecutedSlotChanges(executed);
+                this.source.removeAllWindows(false);
+                this.sendInventories();
+                return false;
             }
+
+            // RepairItemAction 是空操作，改名结果由客户端当成新物品放入背包；这里权威消耗输入/材料，避免关窗退回原物造成复制
+            anvilInventory.consumeResultIngredients(this.hasMaterial() ? this.materialItem : null, materialBefore);
 
             boolean broken = false;
             if (!this.source.isCreative()) {
@@ -233,6 +246,19 @@ public class RepairItemTransaction extends InventoryTransaction {
         return (this.hasMaterial() && (!(this.materialItem instanceof ItemDurable) || this.materialItem.getId() == this.inputItem.getId()
                 && this.materialItem.getCount() == 1 && this.inputItem.getCount() == 1) || this.inputItem.equals(this.outputItem, true, false)
                 && this.inputItem.getCount() == this.outputItem.getCount()) && (this.cost < 40 || this.source.isCreative());
+    }
+
+    /**
+     * 按相反顺序把已成功的槽位变更还原，避免铁砧交易半成功时背包里留下改名新物品。
+     */
+    private void rollbackExecutedSlotChanges(List<InventoryAction> executed) {
+        for (int i = executed.size() - 1; i >= 0; i--) {
+            InventoryAction action = executed.get(i);
+            if (!(action instanceof SlotChangeAction slotChange)) {
+                continue;
+            }
+            slotChange.getInventory().setItem(slotChange.getSlot(), slotChange.getSourceItem(), false);
+        }
     }
 
     private boolean hasInput() {
