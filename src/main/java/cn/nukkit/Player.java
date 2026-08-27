@@ -780,9 +780,13 @@ public class Player extends EntityHuman implements CommandSender, InventoryHolde
     }
 
     public void setDisplayName(String displayName) {
+        boolean changed = !Objects.equals(this.displayName, displayName);
         this.displayName = displayName;
-        if (this.spawned) {
-            //TODO this.server.updatePlayerListData(this.getUniqueId(), this.getId(), this.getDisplayName(), this.getSkin(), this.getLoginChainData().getXUID());
+        if (this.spawned && changed) {
+            this.server.updatePlayerListData(true, this.getUniqueId(), this.getId(), this.getName(),
+                    displayName, this.getSkin(), this.server.getOnlinePlayers().values().stream()
+                            .filter(Player::isJavaClient)
+                            .toArray(Player[]::new));
         }
     }
 
