@@ -87,6 +87,9 @@ public class CraftingTransaction extends InventoryTransaction {
 
     @Override
     public boolean canExecute() {
+        if (this.source.isSpectator()) {
+            return false;
+        }
         recipe = source.getServer().getCraftingManager().matchRecipe(inputs, this.primaryOutput, this.secondaryOutputs, source.recipeTag);
         return this.recipe != null && super.canExecute();
     }

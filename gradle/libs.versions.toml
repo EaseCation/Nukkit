@@ -49,5 +49,6 @@ slf4j-api = { module = "org.slf4j:slf4j-api", version = "2.0.18" }
 snakeyaml = { module = "org.yaml:snakeyaml", version = "2.6" }
 snakeyaml-engine = { module = "org.snakeyaml:snakeyaml-engine", version = "3.0.1" }
 snappy = { module = "org.xerial.snappy:snappy-java", version = "1.1.10.8" }
+xz = { module = "org.tukaani:xz", version = "1.12" }
 zero-allocation-hashing = { module = "net.openhft:zero-allocation-hashing", version = "2026.0" }
 zstd = { module = "com.github.luben:zstd-jni", version = "1.5.7-11" }

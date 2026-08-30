@@ -22,6 +22,10 @@ public abstract class FakeBlockUIComponent extends PlayerUIComponent {
         return (FakeBlockMenu) this.holder;
     }
 
+    public int getNetworkType() {
+        return this.type.getNetworkType();
+    }
+
     @Override
     public boolean open(Player who) {
         InventoryOpenEvent ev = new InventoryOpenEvent(this, who);
@@ -48,7 +52,7 @@ public abstract class FakeBlockUIComponent extends PlayerUIComponent {
         ContainerOpenPacket pk = new ContainerOpenPacket();
         pk.windowId = who.getWindowId(this);
         who.setLastOpenedWindowId(pk.windowId);
-        pk.type = type.getNetworkType();
+        pk.type = this.getNetworkType();
         InventoryHolder holder = this.getHolder();
         if (holder != null) {
             pk.x = (int) ((Vector3) holder).getX();
@@ -70,7 +74,7 @@ public abstract class FakeBlockUIComponent extends PlayerUIComponent {
             pk.windowId = who.getWindowId(this);
             pk.wasServerInitiated = who.getClosingWindowId() != pk.windowId;
             if (pk.wasServerInitiated) {
-                pk.windowType = getType().getNetworkType();
+                pk.windowType = this.getNetworkType();
             }
             who.resetClosingWindowId(pk.windowId);
             who.dataPacket(pk);

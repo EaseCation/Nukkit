@@ -30,7 +30,6 @@ public class LoomInventory extends FakeBlockUIComponent {
         super.onClose(who);
         who.craftingType = Player.CRAFTING_SMALL;
         who.recipeTag = RecipeTag.CRAFTING_TABLE;
-        who.resetCraftingGridType();
 
         for (int i = 0; i < SIZE; i++) {
             for (Item drop : who.getInventory().addItem(getItem(i))) {
@@ -38,6 +37,8 @@ public class LoomInventory extends FakeBlockUIComponent {
             }
             clear(i);
         }
+
+        who.resetCraftingGridType();
     }
 
     @Override

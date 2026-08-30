@@ -407,6 +407,15 @@ public class NetworkInventoryAction {
     public InventoryAction createInventoryActionLegacy(Player player) {
         switch (this.sourceType) {
             case SOURCE_CONTAINER:
+                if (this.windowId == ContainerIds.UI && (this.inventorySlot == ANVIL_INPUT || this.inventorySlot == ANVIL_INGREDIENT)) {
+                    Inventory anvilWindow = player.getWindowById(Player.ANVIL_WINDOW_ID);
+                    if (!(anvilWindow instanceof AnvilInventory)) {
+                        log.debug("Player {} does not have anvil window open", player.getName());
+                        return null;
+                    }
+                    return new SlotChangeAction(anvilWindow, this.inventorySlot == ANVIL_INPUT ? AnvilInventory.INPUT_SLOT : AnvilInventory.INGREDIENT_SLOT, this.oldItem, this.newItem);
+                }
+
                 Inventory window = player.getWindowById(this.windowId);
                 if (window != null) {
                     return new SlotChangeAction(window, this.inventorySlot, this.oldItem, this.newItem);

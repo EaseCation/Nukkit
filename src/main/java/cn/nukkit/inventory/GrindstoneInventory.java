@@ -26,10 +26,10 @@ public class GrindstoneInventory extends FakeBlockUIComponent {
 
     @Override
     public void onClose(Player who) {
+        who.resetRepairItemTransaction();
         super.onClose(who);
         who.craftingType = Player.CRAFTING_SMALL;
         who.recipeTag = RecipeTag.CRAFTING_TABLE;
-        who.resetCraftingGridType();
 
         for (int i = 0; i < SIZE; ++i) {
             for (Item drop : who.getInventory().addItem(getItem(i))) {
@@ -37,6 +37,8 @@ public class GrindstoneInventory extends FakeBlockUIComponent {
             }
             this.clear(i);
         }
+
+        who.resetCraftingGridType();
     }
 
     public Item getInputSlot() {

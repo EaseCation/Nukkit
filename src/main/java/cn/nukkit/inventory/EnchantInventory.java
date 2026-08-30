@@ -33,7 +33,6 @@ public class EnchantInventory extends FakeBlockUIComponent {
         super.onClose(who);
         who.craftingType = Player.CRAFTING_SMALL;
         who.recipeTag = RecipeTag.CRAFTING_TABLE;
-        who.resetCraftingGridType();
 
         for (int i = 0; i < SIZE; i++) {
             for (Item drop : who.getInventory().addItem(getItem(i))) {
@@ -41,6 +40,8 @@ public class EnchantInventory extends FakeBlockUIComponent {
             }
             clear(i);
         }
+
+        who.resetCraftingGridType();
     }
 
     public Item getInputSlot() {

@@ -26,6 +26,9 @@ public class EnchantTransaction extends InventoryTransaction {
 
     @Override
     public boolean canExecute() {
+        if (this.source.isSpectator()) {
+            return false;
+        }
         Inventory inv = getSource().getWindowById(Player.ENCHANT_WINDOW_ID);
         if (inv == null) return false;
         EnchantInventory eInv = (EnchantInventory) inv;

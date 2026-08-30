@@ -187,6 +187,10 @@ public class Player extends EntityHuman implements CommandSender, InventoryHolde
 
     protected int closingWindowId = Integer.MIN_VALUE;
     protected int lastOpenedWindowId = -1;
+    @Nullable
+    protected Inventory inventoryCloseInProgress;
+    @Nullable
+    protected Inventory inventoryCloseRemovalAllowed;
 
     protected final BiMap<Inventory, Integer> windows = HashBiMap.create();
     protected final BiMap<Integer, Inventory> windowIndex = windows.inverse();
@@ -3621,15 +3625,10 @@ public class Player extends EntityHuman implements CommandSender, InventoryHolde
                         break;
                     }
                     this.craftingType = CRAFTING_SMALL;
-                    this.resetCraftingGridType();
-
-                    Inventory windowInventory = this.windowIndex.get(containerClosePacket.windowId);
-                    if (windowInventory != null) {
-                        this.server.getPluginManager().callEvent(new InventoryCloseEvent(windowInventory, this));
-                        this.removeWindow(this.windowIndex.get(containerClosePacket.windowId));
-                    } else {
+                    if (!this.closeWindowFromClient(containerClosePacket.windowId)) {
                         this.windowIndex.remove(containerClosePacket.windowId);
                     }
+                    this.resetCraftingGridType();
                     break;
                 case ProtocolInfo.CRAFTING_EVENT_PACKET:
                     break;
@@ -3789,13 +3788,16 @@ public class Player extends EntityHuman implements CommandSender, InventoryHolde
                     break;
                 case ProtocolInfo.INVENTORY_TRANSACTION_PACKET:
                     InventoryTransactionPacket transactionPacket = (InventoryTransactionPacket) packet;
+                    if (this.rejectSpectatorInventoryPart(transactionPacket)) {
+                        return;
+                    }
 
                     List<InventoryAction> actions = new ObjectArrayList<>();
                     for (NetworkInventoryAction networkInventoryAction : transactionPacket.actions) {
                         InventoryAction a = networkInventoryAction.createInventoryActionLegacy(this);
 
                         if (a == null) {
-                            log.debug("Unmatched inventory action from " + this.getName() + ": " + networkInventoryAction);
+                            log.debug("Unmatched inventory action from {}: {}", this.getName(), networkInventoryAction);
                             this.sendAllInventories();
                             break packetswitch;
                         }
@@ -3803,7 +3805,11 @@ public class Player extends EntityHuman implements CommandSender, InventoryHolde
                         actions.add(a);
                     }
 
-                    if (!this.isSpectator() && transactionPacket.isCraftingPart) {
+                    if (this.rejectSpectatorCraftingContinuation(actions)) {
+                        return;
+                    }
+
+                    if (transactionPacket.isCraftingPart) {
                         if (this.craftingTransaction == null) {
                             this.craftingTransaction = new CraftingTransaction(this, actions);
                         } else {
@@ -3820,9 +3826,29 @@ public class Player extends EntityHuman implements CommandSender, InventoryHolde
                         }
 
                         return;
+                    } else if (transactionPacket.isRepairItemPart) {
+                        if (this.repairItemTransaction == null) {
+                            this.repairItemTransaction = new RepairItemTransaction(this, actions);
+                        } else {
+                            for (InventoryAction action : actions) {
+                                this.repairItemTransaction.addAction(action);
+                            }
+                        }
+
+                        if (this.repairItemTransaction.canExecute()) {
+                            this.repairItemTransaction.execute();
+                            this.repairItemTransaction = null;
+                        } else if (this.repairItemTransaction.isInvalid() || this.repairItemTransaction.isComplete()) {
+                            this.repairItemTransaction.execute();
+                            this.repairItemTransaction = null;
+                        }
+                        return;
                     } else if (this.craftingTransaction != null) {
-                        log.debug("Got unexpected normal inventory action with incomplete crafting transaction from " + this.getName() + ", refusing to execute crafting");
+                        log.debug("Got unexpected normal inventory action with incomplete crafting transaction from {}, refusing to execute crafting", this.getName());
                         this.craftingTransaction = null;
+                    } else if (this.repairItemTransaction != null) {
+                        log.debug("Got unexpected normal inventory action with incomplete repair item transaction from {}, refusing to execute repair item", this.getName());
+                        this.repairItemTransaction = null;
                     }
 
                     switch (transactionPacket.transactionType) {
@@ -5998,6 +6024,10 @@ public class Player extends EntityHuman implements CommandSender, InventoryHolde
         return this.windowIndex.get(id);
     }
 
+    public boolean deferWindowOpen(Runnable opener) {
+        return false;
+    }
+
     public int addWindow(Inventory inventory) {
         return this.addWindow(inventory, null);
     }
@@ -6043,11 +6073,131 @@ public class Player extends EntityHuman implements CommandSender, InventoryHolde
     }
 
     public void removeWindow(Inventory inventory) {
-        inventory.close(this);
-        Integer id = this.windows.get(inventory);
-        if (id != null) {
-            this.windows.remove(this.windowIndex.remove(id));
+        if (!this.beginInventoryWindowRemoval(inventory)) {
+            return;
         }
+        this.closeAndRemoveWindow(inventory);
+    }
+
+    protected void closeAndRemoveWindow(Inventory inventory) {
+        Inventory previousInventoryCloseInProgress = this.inventoryCloseInProgress;
+        this.inventoryCloseInProgress = inventory;
+        try {
+            inventory.close(this);
+            this.windows.remove(inventory);
+        } finally {
+            this.inventoryCloseInProgress = previousInventoryCloseInProgress;
+        }
+    }
+
+    protected boolean closeWindowFromClient(int windowId) {
+        Inventory inventory = this.getWindowById(windowId);
+        if (inventory == null) {
+            return false;
+        }
+        this.closeWindowFromClient(inventory);
+        return true;
+    }
+
+    protected void closeWindowFromClient(Inventory inventory) {
+        int windowId = this.getWindowId(inventory);
+        int windowType = this.getNetworkWindowType(inventory);
+        int previousClosingWindowId = this.closingWindowId;
+        Inventory previousInventoryCloseInProgress = this.inventoryCloseInProgress;
+        Inventory previousInventoryCloseRemovalAllowed = this.inventoryCloseRemovalAllowed;
+        this.closingWindowId = Integer.MAX_VALUE;
+        this.inventoryCloseInProgress = inventory;
+        try {
+            if (this.lastOpenedWindowId == windowId) {
+                this.lastOpenedWindowId = ContainerIds.NONE;
+            }
+            this.sendContainerCloseResponse(windowId, windowType);
+            this.callInventoryCloseEventIfNeeded(inventory);
+            this.inventoryCloseRemovalAllowed = inventory;
+            this.removeWindowFromClient(inventory);
+        } finally {
+            this.inventoryCloseRemovalAllowed = previousInventoryCloseRemovalAllowed;
+            this.inventoryCloseInProgress = previousInventoryCloseInProgress;
+            this.closingWindowId = previousClosingWindowId;
+        }
+    }
+
+    protected void callInventoryCloseEventIfNeeded(Inventory inventory) {
+        if (inventory instanceof FakeBlockUIComponent) {
+            return;
+        }
+
+        Inventory previousInventoryCloseInProgress = this.inventoryCloseInProgress;
+        this.inventoryCloseInProgress = inventory;
+        try {
+            this.getServer().getPluginManager().callEvent(new InventoryCloseEvent(inventory, this));
+        } finally {
+            this.inventoryCloseInProgress = previousInventoryCloseInProgress;
+        }
+    }
+
+    protected void removeWindowFromClient(Inventory inventory) {
+        this.removeWindow(inventory);
+    }
+
+    protected boolean isInventoryCloseInProgress(Inventory inventory) {
+        return this.inventoryCloseInProgress == inventory;
+    }
+
+    protected boolean beginInventoryWindowRemoval(Inventory inventory) {
+        if (!this.isInventoryCloseInProgress(inventory)) {
+            return true;
+        }
+        if (this.inventoryCloseRemovalAllowed != inventory) {
+            return false;
+        }
+        this.inventoryCloseRemovalAllowed = null;
+        return true;
+    }
+
+    protected int getNetworkWindowType(Inventory inventory) {
+        if (inventory instanceof FakeBlockUIComponent component) {
+            return component.getNetworkType();
+        }
+        return inventory.getType().getNetworkType();
+    }
+
+    protected void sendContainerCloseResponse(int windowId, int windowType) {
+        ContainerClosePacket packet = new ContainerClosePacket();
+        packet.windowId = windowId;
+        packet.windowType = windowType;
+        packet.wasServerInitiated = false;
+        this.dataPacket(packet);
+    }
+
+    protected boolean rejectSpectatorInventoryPart(InventoryTransactionPacketInterface transactionPacket) {
+        if (!this.isSpectator() || !(transactionPacket.isCraftingPart() || transactionPacket.isEnchantingPart() || transactionPacket.isRepairItemPart())) {
+            return false;
+        }
+
+        this.resetSpecialInventoryTransactions();
+        this.sendAllInventories();
+        return true;
+    }
+
+    protected boolean rejectSpectatorCraftingContinuation(List<InventoryAction> actions) {
+        if (!this.isSpectator() || this.craftingTransaction == null || !CraftingTransaction.checkForCraftingPart(actions)) {
+            return false;
+        }
+
+        this.resetSpecialInventoryTransactions();
+        this.sendAllInventories();
+        return true;
+    }
+
+    private void resetSpecialInventoryTransactions() {
+        this.craftingTransaction = null;
+        this.enchantTransaction = null;
+        this.repairItemTransaction = null;
+    }
+
+    public void resetRepairItemTransaction() {
+        this.repairItemTransaction = null;
     }
 
     public void sendAllInventories() {

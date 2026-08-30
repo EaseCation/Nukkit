@@ -251,6 +251,7 @@ dependencies {
     api(libs.snakeyaml)
     api(libs.snakeyaml.engine)
     api(libs.snappy)
+    api(libs.xz)
     api(libs.zero.allocation.hashing)
     api(libs.zstd)
     testImplementation(libs.jupiter.engine)

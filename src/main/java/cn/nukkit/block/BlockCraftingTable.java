@@ -50,21 +50,27 @@ public class BlockCraftingTable extends BlockSolid {
     @Override
     public boolean onActivate(Item item, BlockFace face, float fx, float fy, float fz, Player player) {
         if (player != null) {
-            player.craftingType = Player.CRAFTING_BIG;
-            player.recipeTag = RecipeTag.CRAFTING_TABLE;
-            player.setCraftingGrid(player.getUIInventory().getBigCraftingGrid());
-
-            ContainerOpenPacket pk = new ContainerOpenPacket();
-//            pk.windowId = Player.WORKBENCH_WINDOW_ID;
-            pk.windowId = -1;
-            player.setLastOpenedWindowId(-1);
-            pk.type = ContainerType.WORKBENCH;
-            pk.x = (int) x;
-            pk.y = (int) y;
-            pk.z = (int) z;
-            player.dataPacket(pk);
+            if (!player.deferWindowOpen(() -> this.openCraftingTable(player))) {
+                this.openCraftingTable(player);
+            }
         }
         return true;
+    }
+
+    private void openCraftingTable(Player player) {
+        player.craftingType = Player.CRAFTING_BIG;
+        player.recipeTag = RecipeTag.CRAFTING_TABLE;
+        player.setCraftingGrid(player.getUIInventory().getBigCraftingGrid());
+
+        ContainerOpenPacket packet = new ContainerOpenPacket();
+//        packet.windowId = Player.WORKBENCH_WINDOW_ID;
+        packet.windowId = -1;
+        player.setLastOpenedWindowId(-1);
+        packet.type = ContainerType.WORKBENCH;
+        packet.x = (int) x;
+        packet.y = (int) y;
+        packet.z = (int) z;
+        player.dataPacket(packet);
     }
 
     @Override
