@@ -160,6 +160,12 @@ public class DummyBossBar {
     }
 
     public void createBossEntity() {
+        // ViaBedrock projects entityless Bedrock boss IDs directly to Java BossBar UUIDs.
+        if (player.isJavaClient()) {
+            this.spawned = true;
+            return;
+        }
+
         AddEntityPacket pkAdd = new AddEntityPacket();
         pkAdd.type = EntityID.CREEPER;
         pkAdd.entityUniqueId = bossBarId;
@@ -194,6 +200,10 @@ public class DummyBossBar {
     }
 
     private void sendAttributes() {
+        if (player.isJavaClient()) {
+            return;
+        }
+
         UpdateAttributesPacket pkAttributes = new UpdateAttributesPacket();
         pkAttributes.entityId = bossBarId;
         Attribute attr = Attribute.getAttribute(Attribute.HEALTH);
@@ -250,6 +260,10 @@ public class DummyBossBar {
      * Update boss entity's position when teleport and each 5s.
      */
     public void updateBossEntityPosition() {
+        if (player.isJavaClient()) {
+            return;
+        }
+
         if (!spawned) {
             create();
             return;
@@ -267,6 +281,10 @@ public class DummyBossBar {
     }
 
     private void updateBossEntityNameTag() {
+        if (player.isJavaClient()) {
+            return;
+        }
+
         SetEntityDataPacket pk = new SetEntityDataPacket();
         pk.eid = this.bossBarId;
         pk.metadata = new EntityMetadata().putString(Entity.DATA_NAMETAG, this.text);
@@ -274,6 +292,11 @@ public class DummyBossBar {
     }
 
     private void removeBossEntity() {
+        if (player.isJavaClient()) {
+            this.spawned = false;
+            return;
+        }
+
         RemoveEntityPacket pkRemove = new RemoveEntityPacket();
         pkRemove.eid = bossBarId;
         player.dataPacket(pkRemove);
@@ -281,6 +304,10 @@ public class DummyBossBar {
     }
 
     private void updateEntityLink(byte type) {
+        if (player.isJavaClient()) {
+            return;
+        }
+
         SetEntityLinkPacket packet = new SetEntityLinkPacket();
         packet.vehicleUniqueId = player.getId();
         packet.riderUniqueId = bossBarId;
