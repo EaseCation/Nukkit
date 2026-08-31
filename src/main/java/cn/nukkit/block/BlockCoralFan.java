@@ -86,7 +86,9 @@ public abstract class BlockCoralFan extends BlockFlowable {
                     return false;
                 }
 
-                level.scheduleRandomUpdate(this, ThreadLocalRandom.current().nextInt(40, 50));
+                if (!this.level.isNaturalBlockUpdatesDisabled()) {
+                    level.scheduleRandomUpdate(this, ThreadLocalRandom.current().nextInt(40, 50));
+                }
                 return true;
             default:
                 if (!SupportType.hasFullSupport(target, face)) {
@@ -121,7 +123,7 @@ public abstract class BlockCoralFan extends BlockFlowable {
                     return false;
                 }
 
-                if (!dead) {
+                if (!dead && !this.level.isNaturalBlockUpdatesDisabled()) {
                     level.scheduleRandomUpdate(hangBlock, this, ThreadLocalRandom.current().nextInt(40, 50));
                 }
                 return true;
@@ -130,6 +132,9 @@ public abstract class BlockCoralFan extends BlockFlowable {
 
     @Override
     public int onUpdate(int type) {
+        if (this.level.isNaturalBlockUpdatesDisabled()) {
+            return 0;
+        }
         if (type == Level.BLOCK_UPDATE_NORMAL) {
             if (!SupportType.hasFullSupport(down(), BlockFace.UP)) {
                 level.useBreakOn(this, true);

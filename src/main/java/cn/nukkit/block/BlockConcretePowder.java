@@ -47,6 +47,9 @@ public abstract class BlockConcretePowder extends BlockFallable {
     
     @Override
     public int onUpdate(int type) {
+        if (this.level.isNaturalBlockUpdatesDisabled()) {
+            return 0;
+        }
         if (type == Level.BLOCK_UPDATE_NORMAL) {
             if (super.onUpdate(type) == type) {
                 return type;
@@ -66,6 +69,10 @@ public abstract class BlockConcretePowder extends BlockFallable {
 
     @Override
     public boolean place(Item item, Block b, Block target, BlockFace face, float fx, float fy, float fz, Player player) {
+        if (this.level.isNaturalBlockUpdatesDisabled()) {
+            this.level.setBlock(this, this, true, false);
+            return true;
+        }
         boolean concrete = false;
 
         for (int side = 1; side <= 5; side++) {
