@@ -72,7 +72,7 @@ public abstract class BlockCoral extends BlockFlowable {
             return false;
         }
 
-        if (!isDeadCoral() && !this.level.isNaturalBlockUpdatesDisabled()) {
+        if (!isDeadCoral()) {
             level.scheduleRandomUpdate(this, ThreadLocalRandom.current().nextInt(40, 50));
         }
         return true;
@@ -80,9 +80,6 @@ public abstract class BlockCoral extends BlockFlowable {
 
     @Override
     public int onUpdate(int type) {
-        if (this.level.isNaturalBlockUpdatesDisabled()) {
-            return 0;
-        }
         if (type == Level.BLOCK_UPDATE_NORMAL) {
             if (!SupportType.hasFullSupport(down(), BlockFace.UP)) {
                 level.useBreakOn(this, true);

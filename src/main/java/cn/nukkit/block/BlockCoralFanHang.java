@@ -71,9 +71,6 @@ public abstract class BlockCoralFanHang extends BlockFlowable implements Faceabl
 
     @Override
     public int onUpdate(int type) {
-        if (this.level.isNaturalBlockUpdatesDisabled()) {
-            return 0;
-        }
         if (type == Level.BLOCK_UPDATE_NORMAL) {
             BlockFace face = getBlockFace();
             if (!SupportType.hasFullSupport(getSide(face.getOpposite()), face)) {

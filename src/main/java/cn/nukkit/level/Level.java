@@ -374,7 +374,6 @@ public class Level implements ChunkManager, Metadatable {
     private Difficulty difficulty;
 
     private boolean redstoneEnabled = true;
-    private boolean naturalBlockUpdatesDisabled = false;
     private boolean extinguishFireIgnoreGameRule;
     private boolean newArmorMechanics = true;
     private float maxEntityInteractionReachDistanceInSurvival;
@@ -5375,14 +5374,6 @@ public class Level implements ChunkManager, Metadatable {
 
     public boolean isRedstoneEnabled() {
         return this.server.isRedstoneEnabled() && this.redstoneEnabled;
-    }
-
-    public boolean isNaturalBlockUpdatesDisabled() {
-        return naturalBlockUpdatesDisabled;
-    }
-
-    public void setNaturalBlockUpdatesDisabled(boolean naturalBlockUpdatesDisabled) {
-        this.naturalBlockUpdatesDisabled = naturalBlockUpdatesDisabled;
     }
 
     public void setRedstoneEnabled(boolean redstoneEnabled) {

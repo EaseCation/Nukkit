@@ -79,17 +79,12 @@ public abstract class BlockCoralBlock extends BlockSolid {
             return false;
         }
 
-        if (!this.level.isNaturalBlockUpdatesDisabled()) {
-            level.scheduleUpdate(this, ThreadLocalRandom.current().nextInt(40, 50));
-        }
+        level.scheduleUpdate(this, ThreadLocalRandom.current().nextInt(40, 50));
         return true;
     }
 
     @Override
     public int onUpdate(int type) {
-        if (this.level.isNaturalBlockUpdatesDisabled()) {
-            return 0;
-        }
         if (type == Level.BLOCK_UPDATE_NORMAL) {
             level.scheduleUpdate(this, ThreadLocalRandom.current().nextInt(40, 50));
             return type;

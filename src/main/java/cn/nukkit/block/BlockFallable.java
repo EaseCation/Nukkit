@@ -19,9 +19,6 @@ public abstract class BlockFallable extends BlockSolid {
 
     @Override
     public int onUpdate(int type) {
-        if (this.level.isNaturalBlockUpdatesDisabled() && (this instanceof BlockSand || this instanceof BlockConcretePowder)) {
-            return 0;
-        }
         if (type == Level.BLOCK_UPDATE_NORMAL) {
             if (canSlide(down())) {
                 BlockFallEvent event = new BlockFallEvent(this);
