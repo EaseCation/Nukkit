@@ -97,8 +97,12 @@ public class BlockWater extends BlockLiquid {
 
     @Override
     protected boolean flowIntoBlock(Block block, int newFlowDecay) {
+        if (!canFlowInto(block) || block.isLiquid()) {
+            return true;
+        }
+
         Block extra = level.getExtraBlock(block);
-        if (!canFlowInto(block) || block.isLiquid() || extra.isLiquid()) {
+        if (extra.isLiquid()) {
             return true;
         }
 

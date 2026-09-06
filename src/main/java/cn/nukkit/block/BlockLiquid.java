@@ -17,7 +17,6 @@ import cn.nukkit.network.protocol.LevelSoundEventPacket;
 import cn.nukkit.utils.Hash;
 import it.unimi.dsi.fastutil.longs.Long2ByteMap;
 import it.unimi.dsi.fastutil.longs.Long2ByteOpenHashMap;
-import org.apache.commons.lang3.mutable.MutableInt;
 
 import java.util.Collections;
 import java.util.EnumSet;
@@ -36,6 +35,10 @@ public abstract class BlockLiquid extends BlockTransparent {
     private static final byte CAN_FLOW_DOWN = 1;
     private static final byte CAN_FLOW = 0;
     private static final byte BLOCKED = -1;
+    private static final int FLOW_WEST = 1;
+    private static final int FLOW_EAST = 1 << 1;
+    private static final int FLOW_NORTH = 1 << 2;
+    private static final int FLOW_SOUTH = 1 << 3;
 
     BlockLiquid() {
     }
@@ -114,6 +117,13 @@ public abstract class BlockLiquid extends BlockTransparent {
         return block.getDamage();
     }
 
+    private int getFlowDecay(int fullId) {
+        if (!isSameLiquidFullId(fullId)) {
+            return -1;
+        }
+        return Block.getDamageFromFullId(fullId);
+    }
+
     protected int getEffectiveFlowDecay(Block block) {
         if (!isSameLiquid(block)) {
             return -1;
@@ -123,6 +133,53 @@ public abstract class BlockLiquid extends BlockTransparent {
             decay = 0;
         }
         return decay;
+    }
+
+    private int getFullBlockFast(int layer, int x, int y, int z) {
+        if (!level.getHeightRange().isValidBlockY(y)) {
+            return Block.getFullId(BlockID.AIR);
+        }
+        return level.getBlockFullIdAt(layer, x, y, z);
+    }
+
+    private boolean isSameLiquidFullId(int fullId) {
+        return isWater() ? isWaterFullId(fullId) : isLavaFullId(fullId);
+    }
+
+    private static boolean isAirFullId(int fullId) {
+        return Block.getIdFromFullId(fullId) == BlockID.AIR;
+    }
+
+    private static boolean isWaterFullId(int fullId) {
+        int id = Block.getIdFromFullId(fullId);
+        return id == BlockID.FLOWING_WATER || id == BlockID.WATER;
+    }
+
+    private static boolean isLavaFullId(int fullId) {
+        int id = Block.getIdFromFullId(fullId);
+        return id == BlockID.FLOWING_LAVA || id == BlockID.LAVA;
+    }
+
+    private static boolean isLiquidFullId(int fullId) {
+        return isWaterFullId(fullId) || isLavaFullId(fullId);
+    }
+
+    private static boolean isWaterSourceFullId(int fullId) {
+        return isWaterFullId(fullId) && Block.getDamageFromFullId(fullId) == 0;
+    }
+
+    private static int getSimpleCanFlowInto(int fullId) {
+        if (isAirFullId(fullId)) {
+            return 1;
+        }
+        if (isLiquidFullId(fullId)) {
+            return Block.getDamageFromFullId(fullId) == 0 ? 0 : 1;
+        }
+        return -1;
+    }
+
+    private static int getSimpleLiquidContainer(int fullId) {
+        return isAirFullId(fullId) || isLiquidFullId(fullId) ? 1 : -1;
     }
 
     public Vector3 getFlowVector() {
@@ -218,24 +275,85 @@ public abstract class BlockLiquid extends BlockTransparent {
             int x = getFloorX();
             int y = getFloorY();
             int z = getFloorZ();
+            boolean equivalentOptimization = this.level.getOptimizationSettings().getLiquidFlow().isEquivalentOptimizationEnabled();
 
             int decay = this.getFlowDecay(this);
             int multiplier = this.getFlowDecayPerBlock();
+            Block cachedBottomBlock = null;
+            Block cachedWestBlock = null;
+            Block cachedEastBlock = null;
+            Block cachedNorthBlock = null;
+            Block cachedSouthBlock = null;
 
             if (decay > 0) {
                 int smallestFlowDecay = -100;
-                MutableInt adjacentSources = new MutableInt();
+                int adjacentSources = 0;
 
-                for (BlockFace side : Plane.HORIZONTAL) {
-                    Block block = getSide(side);
-                    if (!isSameLiquid(block)) {
-                        Block block0 = block;
-                        block = level.getExtraBlock(block);
-                        if (block.isWater() && block0 instanceof BlockStairs stairs && calculateStairsHorizontalOcclusions(stairs).contains(side.getOpposite())) {
-                            continue;
+                if (equivalentOptimization) {
+                    int westFlowDecay = this.getFlowDecay(this.getFullBlockFast(0, x - 1, y, z));
+                    if (westFlowDecay >= 0) {
+                        adjacentSources += this.getAdjacentSourceCount(westFlowDecay);
+                        smallestFlowDecay = this.getSmallestFlowDecay(westFlowDecay, smallestFlowDecay);
+                    } else {
+                        cachedWestBlock = this.level.getBlock(x - 1, y, z);
+                        Block westFlowBlock = this.getHorizontalFlowDecayBlock(cachedWestBlock, BlockFace.WEST);
+                        if (westFlowBlock != null) {
+                            adjacentSources += this.getAdjacentSourceCount(westFlowBlock);
+                            smallestFlowDecay = this.getSmallestFlowDecay(westFlowBlock, smallestFlowDecay);
                         }
                     }
-                    smallestFlowDecay = this.getSmallestFlowDecay(block, smallestFlowDecay, adjacentSources);
+
+                    int eastFlowDecay = this.getFlowDecay(this.getFullBlockFast(0, x + 1, y, z));
+                    if (eastFlowDecay >= 0) {
+                        adjacentSources += this.getAdjacentSourceCount(eastFlowDecay);
+                        smallestFlowDecay = this.getSmallestFlowDecay(eastFlowDecay, smallestFlowDecay);
+                    } else {
+                        cachedEastBlock = this.level.getBlock(x + 1, y, z);
+                        Block eastFlowBlock = this.getHorizontalFlowDecayBlock(cachedEastBlock, BlockFace.EAST);
+                        if (eastFlowBlock != null) {
+                            adjacentSources += this.getAdjacentSourceCount(eastFlowBlock);
+                            smallestFlowDecay = this.getSmallestFlowDecay(eastFlowBlock, smallestFlowDecay);
+                        }
+                    }
+
+                    int northFlowDecay = this.getFlowDecay(this.getFullBlockFast(0, x, y, z - 1));
+                    if (northFlowDecay >= 0) {
+                        adjacentSources += this.getAdjacentSourceCount(northFlowDecay);
+                        smallestFlowDecay = this.getSmallestFlowDecay(northFlowDecay, smallestFlowDecay);
+                    } else {
+                        cachedNorthBlock = this.level.getBlock(x, y, z - 1);
+                        Block northFlowBlock = this.getHorizontalFlowDecayBlock(cachedNorthBlock, BlockFace.NORTH);
+                        if (northFlowBlock != null) {
+                            adjacentSources += this.getAdjacentSourceCount(northFlowBlock);
+                            smallestFlowDecay = this.getSmallestFlowDecay(northFlowBlock, smallestFlowDecay);
+                        }
+                    }
+
+                    int southFlowDecay = this.getFlowDecay(this.getFullBlockFast(0, x, y, z + 1));
+                    if (southFlowDecay >= 0) {
+                        adjacentSources += this.getAdjacentSourceCount(southFlowDecay);
+                        smallestFlowDecay = this.getSmallestFlowDecay(southFlowDecay, smallestFlowDecay);
+                    } else {
+                        cachedSouthBlock = this.level.getBlock(x, y, z + 1);
+                        Block southFlowBlock = this.getHorizontalFlowDecayBlock(cachedSouthBlock, BlockFace.SOUTH);
+                        if (southFlowBlock != null) {
+                            adjacentSources += this.getAdjacentSourceCount(southFlowBlock);
+                            smallestFlowDecay = this.getSmallestFlowDecay(southFlowBlock, smallestFlowDecay);
+                        }
+                    }
+                } else {
+                    for (BlockFace side : Plane.HORIZONTAL) {
+                        Block block = getSide(side);
+                        if (!isSameLiquid(block)) {
+                            Block block0 = block;
+                            block = level.getExtraBlock(block);
+                            if (block.isWater() && block0 instanceof BlockStairs stairs && calculateStairsHorizontalOcclusions(stairs).contains(side.getOpposite())) {
+                                continue;
+                            }
+                        }
+                        adjacentSources += this.getAdjacentSourceCount(block);
+                        smallestFlowDecay = this.getSmallestFlowDecay(block, smallestFlowDecay);
+                    }
                 }
 
                 int newDecay = smallestFlowDecay + multiplier;
@@ -243,25 +361,54 @@ public abstract class BlockLiquid extends BlockTransparent {
                     newDecay = -1;
                 }
 
-                Block above = this.level.getBlock(x, y + 1, z);
-                int topFlowDecay = this.getFlowDecay(above);
-                if (topFlowDecay == -1) {
-                    topFlowDecay = this.getFlowDecay(this.level.getExtraBlock(above));
-                    if (topFlowDecay >= 0 && (above instanceof BlockStairs stairs && !stairs.isUpsideDown() || above instanceof BlockSlab slab && !slab.isTopSlot())) {
-                        // fix https://bugs.mojang.com/browse/MCPE-45071
-                        topFlowDecay = -1;
+                Block above = null;
+                int topFlowDecay;
+                if (equivalentOptimization) {
+                    topFlowDecay = this.getFlowDecay(this.getFullBlockFast(0, x, y + 1, z));
+                    if (topFlowDecay == -1) {
+                        topFlowDecay = this.getFlowDecay(this.getFullBlockFast(1, x, y + 1, z));
+                        if (topFlowDecay >= 0) {
+                            above = this.level.getBlock(x, y + 1, z);
+                            if (above instanceof BlockStairs stairs && !stairs.isUpsideDown() || above instanceof BlockSlab slab && !slab.isTopSlot()) {
+                                // fix https://bugs.mojang.com/browse/MCPE-45071
+                                topFlowDecay = -1;
+                            }
+                        }
+                    }
+                } else {
+                    above = this.level.getBlock(x, y + 1, z);
+                    topFlowDecay = this.getFlowDecay(above);
+                    if (topFlowDecay == -1) {
+                        topFlowDecay = this.getFlowDecay(this.level.getExtraBlock(above));
+                        if (topFlowDecay >= 0 && (above instanceof BlockStairs stairs && !stairs.isUpsideDown() || above instanceof BlockSlab slab && !slab.isTopSlot())) {
+                            // fix https://bugs.mojang.com/browse/MCPE-45071
+                            topFlowDecay = -1;
+                        }
                     }
                 }
                 if (topFlowDecay >= 0) {
                     newDecay = topFlowDecay | DOWNWARD_BIT;
                 }
 
-                if (adjacentSources.intValue() >= 2 && this.isWater()) {
-                    Block bottomBlock = this.level.getBlock(x, y - 1, z);
-                    if (bottomBlock.isSolid()) {
-                        newDecay = 0;
-                    } else if (bottomBlock.isWaterSource() || this.level.getExtraBlock(bottomBlock).isWaterSource()) {
-                        newDecay = 0;
+                if (adjacentSources >= 2 && this.isWater()) {
+                    if (equivalentOptimization) {
+                        int bottomFullId = this.getFullBlockFast(0, x, y - 1, z);
+                        if (isWaterSourceFullId(bottomFullId) || isWaterSourceFullId(this.getFullBlockFast(1, x, y - 1, z))) {
+                            newDecay = 0;
+                        } else if (!isAirFullId(bottomFullId) && !isLiquidFullId(bottomFullId)) {
+                            Block bottomBlock = this.level.getBlock(x, y - 1, z);
+                            cachedBottomBlock = bottomBlock;
+                            if (bottomBlock.isSolid()) {
+                                newDecay = 0;
+                            }
+                        }
+                    } else {
+                        Block bottomBlock = this.level.getBlock(x, y - 1, z);
+                        if (bottomBlock.isSolid()) {
+                            newDecay = 0;
+                        } else if (bottomBlock.isWaterSource() || this.level.getExtraBlock(bottomBlock).isWaterSource()) {
+                            newDecay = 0;
+                        }
                     }
                 }
 
@@ -291,6 +438,11 @@ public abstract class BlockLiquid extends BlockTransparent {
 
                     BlockFromToEvent event = new BlockFromToEvent(this, layer, to);
                     level.getServer().getPluginManager().callEvent(event);
+                    cachedBottomBlock = null;
+                    cachedWestBlock = null;
+                    cachedEastBlock = null;
+                    cachedNorthBlock = null;
+                    cachedSouthBlock = null;
                     if (!event.isCancelled()) {
                         this.level.setBlock(event.getLayer(), this, event.getTo(), true);
 
@@ -305,7 +457,7 @@ public abstract class BlockLiquid extends BlockTransparent {
                 Block container = isWaterSource() ? level.getBlock(this) : null;
                 BlockStairs stairs = container instanceof BlockStairs ? (BlockStairs) container : null;
 
-                Block bottomBlock = this.level.getBlock(x, y - 1, z);
+                Block bottomBlock = cachedBottomBlock != null ? cachedBottomBlock : this.level.getBlock(x, y - 1, z);
                 boolean result = true;
                 if ((stairs == null || stairs.isUpsideDown()) && (!(container instanceof BlockSlab slab) || slab.isTopSlot())) {
                     result = this.flowIntoBlock(bottomBlock, decay | DOWNWARD_BIT);
@@ -321,18 +473,18 @@ public abstract class BlockLiquid extends BlockTransparent {
 
                     if (adjacentDecay < DOWNWARD_BIT) {
                         Set<BlockFace> occlusions = stairs != null ? calculateStairsHorizontalOcclusions(stairs) : Collections.emptySet();
-                        boolean[] flags = this.getOptimalFlowDirections(occlusions);
-                        if (flags[0] && !occlusions.contains(BlockFace.WEST)) {
-                            this.flowIntoBlock(this.level.getBlock(x - 1, y, z), adjacentDecay);
+                        int flowDirectionMask = this.getOptimalFlowDirections(occlusions, equivalentOptimization);
+                        if ((flowDirectionMask & FLOW_WEST) != 0 && !occlusions.contains(BlockFace.WEST)) {
+                            this.flowIntoBlock(cachedWestBlock != null ? cachedWestBlock : this.level.getBlock(x - 1, y, z), adjacentDecay);
                         }
-                        if (flags[1] && !occlusions.contains(BlockFace.EAST)) {
-                            this.flowIntoBlock(this.level.getBlock(x + 1, y, z), adjacentDecay);
+                        if ((flowDirectionMask & FLOW_EAST) != 0 && !occlusions.contains(BlockFace.EAST)) {
+                            this.flowIntoBlock(cachedEastBlock != null ? cachedEastBlock : this.level.getBlock(x + 1, y, z), adjacentDecay);
                         }
-                        if (flags[2] && !occlusions.contains(BlockFace.NORTH)) {
-                            this.flowIntoBlock(this.level.getBlock(x, y, z - 1), adjacentDecay);
+                        if ((flowDirectionMask & FLOW_NORTH) != 0 && !occlusions.contains(BlockFace.NORTH)) {
+                            this.flowIntoBlock(cachedNorthBlock != null ? cachedNorthBlock : this.level.getBlock(x, y, z - 1), adjacentDecay);
                         }
-                        if (flags[3] && !occlusions.contains(BlockFace.SOUTH)) {
-                            this.flowIntoBlock(this.level.getBlock(x, y, z + 1), adjacentDecay);
+                        if ((flowDirectionMask & FLOW_SOUTH) != 0 && !occlusions.contains(BlockFace.SOUTH)) {
+                            this.flowIntoBlock(cachedSouthBlock != null ? cachedSouthBlock : this.level.getBlock(x, y, z + 1), adjacentDecay);
                         }
                     }
                 }
@@ -354,8 +506,17 @@ public abstract class BlockLiquid extends BlockTransparent {
     }
 
     protected boolean flowIntoBlock(Block block, int newFlowDecay) {
+        if (!this.canFlowInto(block) || block.isLiquid()) {
+            return true;
+        }
+
+        if (isEquivalentLiquidOptimizationEnabled()
+                && isLiquidFullId(this.getFullBlockFast(1, block.getFloorX(), block.getFloorY(), block.getFloorZ()))) {
+            return true;
+        }
+
         Block extra = level.getExtraBlock(block);
-        if (this.canFlowInto(block) && !block.isLiquid() && !extra.isLiquid()) {
+        if (!extra.isLiquid()) {
             LiquidFlowEvent event = new LiquidFlowEvent(block, extra, this, newFlowDecay);
             level.getServer().getPluginManager().callEvent(event);
             if (!event.isCancelled()) {
@@ -372,6 +533,10 @@ public abstract class BlockLiquid extends BlockTransparent {
     }
 
     private int calculateFlowCost(int blockX, int blockY, int blockZ, int accumulatedCost, int maxCost, int originOpposite, int lastOpposite, Long2ByteMap flowCostVisited) {
+        return calculateFlowCost(blockX, blockY, blockZ, accumulatedCost, maxCost, originOpposite, lastOpposite, flowCostVisited, false);
+    }
+
+    private int calculateFlowCost(int blockX, int blockY, int blockZ, int accumulatedCost, int maxCost, int originOpposite, int lastOpposite, Long2ByteMap flowCostVisited, boolean equivalentOptimization) {
         int cost = 1000;
         for (int j = 0; j < 4; ++j) {
             if (j == originOpposite || j == lastOpposite) {
@@ -395,17 +560,19 @@ public abstract class BlockLiquid extends BlockTransparent {
             long hash = Hash.hashBlockPos(x, y, z);
             byte status = flowCostVisited.get(hash);
             if (status == Byte.MIN_VALUE) {
-                Block blockSide = this.level.getBlock(x, y, z);
-                if (!this.canFlowInto(blockSide) || this.level.getExtraBlock(x, y, z).isLiquid()) {
-                    status = BLOCKED;
-                    flowCostVisited.put(hash, status);
-                } else if (isLiquidContainer(this.level.getBlock(x, y - 1, z))) {
-                    status = CAN_FLOW_DOWN;
-                    flowCostVisited.put(hash, status);
+                if (equivalentOptimization) {
+                    status = this.getFlowCostStatus(x, y, z);
                 } else {
-                    status = CAN_FLOW;
-                    flowCostVisited.put(hash, status);
+                    Block blockSide = this.level.getBlock(x, y, z);
+                    if (!this.canFlowInto(blockSide) || this.level.getExtraBlock(x, y, z).isLiquid()) {
+                        status = BLOCKED;
+                    } else if (isLiquidContainer(this.level.getBlock(x, y - 1, z))) {
+                        status = CAN_FLOW_DOWN;
+                    } else {
+                        status = CAN_FLOW;
+                    }
                 }
+                flowCostVisited.put(hash, status);
             }
 
             if (status == BLOCKED) {
@@ -418,7 +585,7 @@ public abstract class BlockLiquid extends BlockTransparent {
                 continue;
             }
 
-            int realCost = this.calculateFlowCost(x, y, z, accumulatedCost + 1, maxCost, originOpposite, j ^ 0x01, flowCostVisited);
+            int realCost = this.calculateFlowCost(x, y, z, accumulatedCost + 1, maxCost, originOpposite, j ^ 0x01, flowCostVisited, equivalentOptimization);
             if (realCost < cost) {
                 cost = realCost;
             }
@@ -436,19 +603,18 @@ public abstract class BlockLiquid extends BlockTransparent {
         return 500;
     }
 
-    private boolean[] getOptimalFlowDirections(Set<BlockFace> occlusions) {
-        int[] flowCost = new int[]{
-                1000,
-                1000,
-                1000,
-                1000
-        };
+    private int getOptimalFlowDirections(Set<BlockFace> occlusions, boolean equivalentOptimization) {
+        int westFlowCost = 1000;
+        int eastFlowCost = 1000;
+        int northFlowCost = 1000;
+        int southFlowCost = 1000;
 
         Long2ByteMap flowCostVisited = new Long2ByteOpenHashMap();
         flowCostVisited.defaultReturnValue(Byte.MIN_VALUE);
         int maxCost = 4 / this.getFlowDecayPerBlock();
         for (int j = 0; j < 4; ++j) {
             BlockFace side;
+            int currentFlowCost = 1000;
             int x = (int) this.x;
             int y = (int) this.y;
             int z = (int) this.z;
@@ -466,42 +632,117 @@ public abstract class BlockLiquid extends BlockTransparent {
                 ++z;
             }
 
-            if (occlusions.contains(side) || !this.canFlowInto(this.level.getBlock(x, y, z)) || this.level.getExtraBlock(x, y, z).isLiquid()) {
-                flowCostVisited.put(Hash.hashBlockPos(x, y, z), BLOCKED);
-            } else if (isLiquidContainer(this.level.getBlock(x, y - 1, z))) {
-                flowCostVisited.put(Hash.hashBlockPos(x, y, z), CAN_FLOW_DOWN);
-                flowCost[j] = maxCost = 0;
-            } else if (maxCost > 0) {
-                flowCostVisited.put(Hash.hashBlockPos(x, y, z), CAN_FLOW);
-                flowCost[j] = this.calculateFlowCost(x, y, z, 1, maxCost, j ^ 0x01, j ^ 0x01, flowCostVisited);
-                maxCost = Math.min(maxCost, flowCost[j]);
+            long hash = Hash.hashBlockPos(x, y, z);
+            byte status;
+            if (occlusions.contains(side)) {
+                status = BLOCKED;
+            } else if (equivalentOptimization) {
+                status = this.getFlowCostStatus(x, y, z);
+            } else {
+                Block blockSide = this.level.getBlock(x, y, z);
+                if (!this.canFlowInto(blockSide) || this.level.getExtraBlock(x, y, z).isLiquid()) {
+                    status = BLOCKED;
+                } else if (isLiquidContainer(this.level.getBlock(x, y - 1, z))) {
+                    status = CAN_FLOW_DOWN;
+                } else {
+                    status = CAN_FLOW;
+                }
+            }
+
+            flowCostVisited.put(hash, status);
+            if (status == CAN_FLOW_DOWN) {
+                currentFlowCost = maxCost = 0;
+            } else if (status == CAN_FLOW && maxCost > 0) {
+                currentFlowCost = this.calculateFlowCost(x, y, z, 1, maxCost, j ^ 0x01, j ^ 0x01, flowCostVisited, equivalentOptimization);
+                maxCost = Math.min(maxCost, currentFlowCost);
+            }
+
+            if (j == 0) {
+                westFlowCost = currentFlowCost;
+            } else if (j == 1) {
+                eastFlowCost = currentFlowCost;
+            } else if (j == 2) {
+                northFlowCost = currentFlowCost;
+            } else {
+                southFlowCost = currentFlowCost;
             }
         }
 
-        int minCost = Integer.MAX_VALUE;
-        for (int i = 0; i < 4; i++) {
-            int d = flowCost[i];
-            if (d < minCost) {
-                minCost = d;
-            }
-        }
+        int minCost = Math.min(Math.min(westFlowCost, eastFlowCost), Math.min(northFlowCost, southFlowCost));
 
-        boolean[] isOptimalFlowDirection = new boolean[4];
-        for (int i = 0; i < 4; ++i) {
-            isOptimalFlowDirection[i] = (flowCost[i] == minCost);
+        int optimalFlowDirectionMask = 0;
+        if (westFlowCost == minCost) {
+            optimalFlowDirectionMask |= FLOW_WEST;
         }
-        return isOptimalFlowDirection;
+        if (eastFlowCost == minCost) {
+            optimalFlowDirectionMask |= FLOW_EAST;
+        }
+        if (northFlowCost == minCost) {
+            optimalFlowDirectionMask |= FLOW_NORTH;
+        }
+        if (southFlowCost == minCost) {
+            optimalFlowDirectionMask |= FLOW_SOUTH;
+        }
+        return optimalFlowDirectionMask;
     }
 
-    private int getSmallestFlowDecay(Block block, int decay, MutableInt adjacentSources) {
+    private byte getFlowCostStatus(int x, int y, int z) {
+        int fullId = this.getFullBlockFast(0, x, y, z);
+        int canFlowInto = getSimpleCanFlowInto(fullId);
+        if (canFlowInto == 0) {
+            return BLOCKED;
+        }
+
+        int extraFullId = this.getFullBlockFast(1, x, y, z);
+        if (isLiquidFullId(extraFullId) || !isAirFullId(extraFullId) && this.level.getExtraBlock(x, y, z).isLiquid()) {
+            return BLOCKED;
+        }
+
+        if (canFlowInto < 0 && !this.canFlowInto(this.level.getBlock(x, y, z))) {
+            return BLOCKED;
+        }
+
+        int bottomContainer = getSimpleLiquidContainer(this.getFullBlockFast(0, x, y - 1, z));
+        if (bottomContainer > 0 || bottomContainer < 0 && isLiquidContainer(this.level.getBlock(x, y - 1, z))) {
+            return CAN_FLOW_DOWN;
+        }
+        return CAN_FLOW;
+    }
+
+    private boolean isEquivalentLiquidOptimizationEnabled() {
+        return this.level.getOptimizationSettings().getLiquidFlow().isEquivalentOptimizationEnabled();
+    }
+
+    private Block getHorizontalFlowDecayBlock(Block block, BlockFace side) {
+        if (!isSameLiquid(block)) {
+            Block block0 = block;
+            block = level.getExtraBlock(block);
+            if (block.isWater() && block0 instanceof BlockStairs stairs && calculateStairsHorizontalOcclusions(stairs).contains(side.getOpposite())) {
+                return null;
+            }
+        }
+        return block;
+    }
+
+    private int getAdjacentSourceCount(Block block) {
+        return this.getFlowDecay(block) == 0 ? 1 : 0;
+    }
+
+    private int getAdjacentSourceCount(int blockDecay) {
+        return blockDecay == 0 ? 1 : 0;
+    }
+
+    private int getSmallestFlowDecay(Block block, int decay) {
         int blockDecay = this.getFlowDecay(block);
+        return this.getSmallestFlowDecay(blockDecay, decay);
+    }
+
+    private int getSmallestFlowDecay(int blockDecay, int decay) {
         if (blockDecay < 0) {
             return decay;
         }
 
-        if (blockDecay == 0) {
-            adjacentSources.increment();
-        } else if (blockDecay >= DOWNWARD_BIT) {
+        if (blockDecay >= DOWNWARD_BIT) {
             blockDecay = 0;
         }
         return (decay >= 0 && blockDecay >= decay) ? decay : blockDecay;
