@@ -182,13 +182,7 @@ public abstract class BlockDoor extends BlockTransparent implements Faceable {
     public int onUpdate(int type) {
         if (type == Level.BLOCK_UPDATE_NORMAL) {
             if (!isTop() && !SupportType.hasFullSupport(this.down(), BlockFace.UP)) {
-                Block up = this.up();
-
-                if (up instanceof BlockDoor) {
-                    level.addParticle(new DestroyBlockParticle(up, up));
-                    this.getLevel().setBlock(up, Block.get(BlockID.AIR), true, false);
-                }
-
+                // 上半扇门由 onBreak 一并移除，避免在破坏事件获准前修改世界。
                 this.getLevel().useBreakOn(this, Item.get(Item.WOODEN_PICKAXE), true);
                 return Level.BLOCK_UPDATE_NORMAL;
             }
