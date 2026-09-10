@@ -14,6 +14,7 @@ import cn.nukkit.entity.item.EntityXPOrb;
 import cn.nukkit.entity.projectile.EntityProjectile;
 import cn.nukkit.entity.weather.EntityLightning;
 import cn.nukkit.event.block.BlockBreakEvent;
+import cn.nukkit.event.block.BlockNaturalBreakEvent;
 import cn.nukkit.event.block.BlockPlaceEvent;
 import cn.nukkit.event.block.BlockUpdateEvent;
 import cn.nukkit.event.level.*;
@@ -2973,6 +2974,13 @@ public class Level implements ChunkManager, Metadatable {
         }
         Block target = this.getBlock(vector);
         boolean hasCreativeDrops = false;
+        if (player == null) {
+            BlockNaturalBreakEvent event = new BlockNaturalBreakEvent(target);
+            getServer().getPluginManager().callEvent(event);
+            if (event.isCancelled()) {
+                return null;
+            }
+        }
         Item[] drops;
         int dropExp = target.getDropExp();
 
@@ -3012,7 +3020,7 @@ public class Level implements ChunkManager, Metadatable {
                 ev.setCancelled();
             }
 
-            this.server.getPluginManager().callEvent(ev);
+            getServer().getPluginManager().callEvent(ev);
             if (ev.isCancelled()) {
                 return null;
             }
@@ -3063,7 +3071,7 @@ public class Level implements ChunkManager, Metadatable {
             }
         }
 
-        if (this.gameRules.getBoolean(GameRule.DO_TILE_DROPS)) {
+        if (getGameRules().getBoolean(GameRule.DO_TILE_DROPS)) {
             if (!isSilkTouch && player != null && player.isSurvival() && dropExp > 0 && drops.length != 0) {
                 this.dropExpOrb(vector.add(0.5, 0.5, 0.5), dropExp);
             }
