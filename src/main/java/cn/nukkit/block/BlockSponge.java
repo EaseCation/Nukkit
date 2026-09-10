@@ -1,6 +1,7 @@
 package cn.nukkit.block;
 
 import cn.nukkit.Player;
+import cn.nukkit.event.block.SpongeAbsorbEvent;
 import cn.nukkit.item.Item;
 import cn.nukkit.level.Dimension;
 import cn.nukkit.level.Level;
@@ -77,6 +78,12 @@ public class BlockSponge extends BlockSolid {
     }
 
     private boolean performWaterAbsorb(Block block) {
+        SpongeAbsorbEvent event = new SpongeAbsorbEvent(block);
+        level.getServer().getPluginManager().callEvent(event);
+        if (event.isCancelled()) {
+            return false;
+        }
+
         Queue<Entry> entries = new ArrayDeque<>();
 
         entries.add(new Entry(block, 0));
