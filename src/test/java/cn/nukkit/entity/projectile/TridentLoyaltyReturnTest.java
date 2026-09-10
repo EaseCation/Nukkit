@@ -62,6 +62,41 @@ class TridentLoyaltyReturnTest {
     }
 
     @Test
+    void picksUpAGlancingReturnAtTheOwnersCurrentPosition() {
+        TestTrident trident = returningTrident(2, 2);
+        trident.z = 2.9;
+        trident.motionX = -6;
+        trident.shootingEntity.z = 4;
+        trident.onUpdate(1);
+        assertTrue(trident.closed);
+        verify(((Player) trident.shootingEntity).getInventory(), times(1)).setItem(eq(0), same(trident.trident));
+    }
+
+    @Test
+    void doesNotPickUpOutsideTheExpandedRange() {
+        TestTrident trident = returningTrident(2, 2);
+        trident.z = 2.4;
+        trident.motionX = -6;
+        trident.shootingEntity.z = 4;
+        trident.onUpdate(1);
+        assertFalse(trident.closed);
+        verify(((Player) trident.shootingEntity).getInventory(), never()).setItem(anyInt(), any(Item.class));
+    }
+
+    @Test
+    void retargetsMovingOwnerEveryTick() {
+        TestTrident trident = returningTrident(2, 30);
+        trident.onUpdate(1);
+        assertEquals(0, trident.motionZ, 1e-9);
+        trident.shootingEntity.z = 10;
+        trident.onUpdate(2);
+        assertTrue(trident.motionZ > 0);
+        trident.shootingEntity.z = -10;
+        trident.onUpdate(3);
+        assertTrue(trident.motionZ < 0);
+    }
+
+    @Test
     void fullInventoryKeepsReturningUntilSpaceIsAvailable() {
         TestTrident trident = returningTrident(2, 0.1);
         PlayerInventory inventory = ((Player) trident.shootingEntity).getInventory();
@@ -155,8 +190,9 @@ class TridentLoyaltyReturnTest {
         owner.level = level;
         when(owner.isOnline()).thenReturn(true);
         when(owner.isAlive()).thenReturn(true);
-        when(owner.getEyePosition()).thenReturn(new Vector3(0, 2, 0));
-        when(owner.getBoundingBox()).thenReturn(new SimpleAxisAlignedBB(-0.3, 0, -0.3, 0.3, 2, 0.3));
+        when(owner.getEyePosition()).thenAnswer(invocation -> new Vector3(owner.x, owner.y + 2, owner.z));
+        when(owner.getBoundingBox()).thenAnswer(invocation ->
+            new SimpleAxisAlignedBB(owner.x - 0.3, owner.y, owner.z - 0.3, owner.x + 0.3, owner.y + 2, owner.z + 0.3));
         PlayerInventory inventory = mock(PlayerInventory.class);
         when(owner.getInventory()).thenReturn(inventory);
         Item empty = mock(Item.class);

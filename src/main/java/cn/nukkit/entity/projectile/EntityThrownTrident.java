@@ -329,7 +329,7 @@ public class EntityThrownTrident extends EntityProjectile {
         yaw = (yaw + 180) % 360;
         updateMovement();
 
-        AxisAlignedBB pickupBox = shootingEntity.getBoundingBox().grow(0.5, 0.5, 0.5);
+        AxisAlignedBB pickupBox = shootingEntity.getBoundingBox().grow(1.0, 0.5, 1.0);
         if (pickupBox.isVectorInside(previous) || pickupBox.isVectorInside(next)
                 || pickupBox.calculateIntercept(previous, next) != null) {
             tryReturnToOwner();
