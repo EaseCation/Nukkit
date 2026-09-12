@@ -170,6 +170,38 @@ class TridentLoyaltyReturnTest {
         assertFalse(trident.closed);
     }
 
+    @Test
+    void restingProjectileStaysScheduledUntilLoyaltyStarts() {
+        TestTrident trident = returningTrident(2, 30);
+        trident.onHitBlock(null);
+        doReturn(false).when(trident).entityBaseTick(anyInt());
+        doReturn(true).when(trident).isAlive();
+        trident.isCollided = true;
+        trident.hadCollision = true;
+        trident.boundingBox = new SimpleAxisAlignedBB(29.8, 2, -0.2, 30.2, 2.4, 0.2);
+        when(trident.level.getCollidingEntities(any(), eq(trident))).thenReturn(new Entity[0]);
+        for (int tick = 1; tick < 5; tick++) {
+            assertTrue(trident.onUpdate(tick), "Loyalty must remain in the level update queue");
+            assertEquals(30, trident.x);
+        }
+        assertTrue(trident.onUpdate(5));
+        assertTrue(trident.x < 30);
+    }
+
+    @Test
+    void fallingIntoVoidStartsReturnEvenWhenImpactDelayHasNotExpired() {
+        TestTrident trident = returningTrident(2, 30);
+        trident.setLoyaltyReturnDelayTicks(1000);
+        trident.finishEntityHit();
+        trident.y = -20;
+        for (int tick = 1; tick <= 200 && !trident.closed; tick++) {
+            assertTrue(trident.onUpdate(tick) || trident.closed);
+            assertFalse(trident.attack(new EntityDamageEvent(trident, EntityDamageEvent.DamageCause.VOID, 4)));
+        }
+        assertTrue(trident.closed);
+        verify(((Player) trident.shootingEntity).getInventory(), times(1)).setItem(eq(0), same(trident.trident));
+    }
+
     private int ticksUntilReturned(int loyalty, double distance) {
         TestTrident trident = returningTrident(loyalty, distance);
         for (int tick = 1; tick <= 200; tick++) {
