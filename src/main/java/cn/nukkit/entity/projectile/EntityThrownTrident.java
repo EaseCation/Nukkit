@@ -271,7 +271,9 @@ public class EntityThrownTrident extends EntityProjectile {
             level.addLevelSoundEvent(this, LevelSoundEventPacket.SOUND_ITEM_TRIDENT_RETURN);
         }
         if (!returning) {
-            return super.onUpdate(currentTick);
+            // 撞墙/落地时父类可能返回 false；忠诚还需等待返航，不能被 Level 移出更新队列。
+            super.onUpdate(currentTick);
+            return !closed;
         }
 
         int tickDiff = Math.max(1, currentTick - lastUpdate);
