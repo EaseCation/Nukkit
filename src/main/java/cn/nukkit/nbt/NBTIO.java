@@ -29,6 +29,7 @@ import java.util.zip.GZIPInputStream;
  */
 public class NBTIO {
     public static int MAX_DEPTH = 16; // 512 in vanilla
+    public static final long MAX_READ_SIZE = 128L * 1024 * 1024;
 
     public static CompoundTag putItemHelper(@Nullable Item item) {
         return ItemSerializer.serializeItem(item);

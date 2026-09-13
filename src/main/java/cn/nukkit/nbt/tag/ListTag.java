@@ -5,6 +5,7 @@ import cn.nukkit.math.Vector3;
 import cn.nukkit.nbt.stream.NBTInputStream;
 import cn.nukkit.nbt.stream.NBTOutputStream;
 import cn.nukkit.utils.DataDepthException;
+import cn.nukkit.utils.DataLengthException;
 import it.unimi.dsi.fastutil.objects.ObjectArrayList;
 
 import java.io.IOException;
@@ -47,14 +48,14 @@ public class ListTag<T extends Tag> extends Tag implements Iterable<T> {
         this.list = list;
 
         if (!list.isEmpty()) {
-            type = list.get(0).getId();
+            type = list.getFirst().getId();
         }
     }
 
     @Override
     void write(NBTOutputStream dos) throws IOException {
         if (!list.isEmpty()) {
-            type = list.get(0).getId();
+            type = list.getFirst().getId();
         } else {
             type = TAG_Byte;
         }
@@ -77,6 +78,15 @@ public class ListTag<T extends Tag> extends Tag implements Iterable<T> {
         int size = dis.readInt();
 
         list.clear();
+        if (type == TAG_End) {
+            if (size > 0) {
+                throw new DataLengthException("NBT end list cannot have a positive length: " + size);
+            }
+            return;
+        }
+        if (type < TAG_Byte || type >= TAG_TYPE_COUNT) {
+            throw new DataLengthException("Unknown NBT list element type: " + type);
+        }
         for (int i = 0; i < size; i++) {
             Tag tag = Tag.newTag(type, null);
             tag.load(dis, maxDepth);

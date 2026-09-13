@@ -36,6 +36,7 @@ public class IntArrayTag extends Tag {
     @Override
     void load(NBTInputStream dis, int maxDepth) throws IOException {
         int length = dis.readInt();
+        dis.tryReadArray(length, Integer.BYTES);
         data = new int[length];
         for (int i = 0; i < length; i++) {
             data[i] = dis.readInt();

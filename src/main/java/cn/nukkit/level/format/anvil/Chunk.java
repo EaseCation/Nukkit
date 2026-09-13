@@ -26,7 +26,6 @@ import it.unimi.dsi.fastutil.objects.Object2IntOpenHashMap;
 import it.unimi.dsi.fastutil.objects.ObjectArrayList;
 
 import java.io.ByteArrayInputStream;
-import java.io.DataInputStream;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.nio.ByteOrder;
@@ -261,7 +260,7 @@ public class Chunk extends BaseChunk {
 
     public static Chunk fromFastBinary(byte[] data, LevelProvider provider) {
         try {
-            CompoundTag chunk = NBTIO.read(new DataInputStream(new ByteArrayInputStream(data)), ByteOrder.BIG_ENDIAN);
+            CompoundTag chunk = NBTIO.read(data, ByteOrder.BIG_ENDIAN);
             if (!chunk.contains("Level") || !(chunk.get("Level") instanceof CompoundTag)) {
                 return null;
             }
