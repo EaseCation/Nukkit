@@ -3138,7 +3138,7 @@ public class Level implements ChunkManager, Metadatable {
         Block target = this.getBlock(vector);
         Block block = target.getSide(face);
 
-        if (!heightRange.isValidBlockY(block.y)) {
+        if (!getHeightRange().isValidBlockY(block.y)) {
             return null;
         }
 
@@ -3162,8 +3162,11 @@ public class Level implements ChunkManager, Metadatable {
                 ev.setCancelled();
             }
 
-            this.server.getPluginManager().callEvent(ev);
+            getServer().getPluginManager().callEvent(ev);
             if (!ev.isCancelled()) {
+                if (ev.isBlockPlacementServerAuthoritative()) {
+                    clientPrediction = null;
+                }
                 Block interactTarget = extraTarget != null ? extraTarget : target;
 
                 interactTarget.onUpdate(BLOCK_UPDATE_TOUCH);
@@ -3257,7 +3260,7 @@ public class Level implements ChunkManager, Metadatable {
             }
 
             BlockPlaceEvent event = new BlockPlaceEvent(player, hand, block, target, item);
-            this.server.getPluginManager().callEvent(event);
+            getServer().getPluginManager().callEvent(event);
             if (event.isCancelled()) {
                 return null;
             }

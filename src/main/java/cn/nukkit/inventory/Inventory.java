@@ -37,6 +37,9 @@ public interface Inventory {
 
     Item[] addItem(Item... slots);
 
+    /** 从指定槽位开始堆叠和插入物品，返回未装入的物品。 */
+    Item[] addItemFrom(int startSlot, Item... slots);
+
     boolean canAddItem(Item item);
 
     Item[] removeItem(Item... slots);

@@ -36,6 +36,8 @@ public class PlayerInteractEvent extends PlayerEvent implements Cancellable {
 
     protected long unkownEntityId = -1;
 
+    private boolean blockPlacementServerAuthoritative;
+
     public PlayerInteractEvent(Player player, Item item, Vector3 block, BlockFace face) {
         this(player, item, block, face, Action.RIGHT_CLICK_BLOCK);
     }
@@ -68,6 +70,15 @@ public class PlayerInteractEvent extends PlayerEvent implements Cancellable {
 
     public Block getBlock() {
         return blockTouched;
+    }
+
+    public boolean isBlockPlacementServerAuthoritative() {
+        return blockPlacementServerAuthoritative;
+    }
+
+    /** 仅忽略客户端放置失败预测，仍执行服务端权限、碰撞及放置事件校验。 */
+    public void setBlockPlacementServerAuthoritative(boolean authoritative) {
+        blockPlacementServerAuthoritative = authoritative;
     }
 
     public Vector3 getTouchVector() {

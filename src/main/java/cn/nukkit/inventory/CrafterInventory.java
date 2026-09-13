@@ -58,7 +58,7 @@ public class CrafterInventory extends ContainerInventory {
     }
 
     @Override
-    public Item[] addItem(Item... slots) {
+    public Item[] addItemFrom(int startSlot, Item... slots) {
         List<Item> itemSlots = new ObjectArrayList<>();
         for (Item slot : slots) {
             if (!slot.isNull()) {
@@ -66,7 +66,7 @@ public class CrafterInventory extends ContainerInventory {
             }
         }
 
-        for (int i = 0; i < this.getSize(); ++i) {
+        for (int i = Math.max(0, startSlot); i < this.getSize(); ++i) {
             if (itemSlots.isEmpty()) {
                 break;
             }

@@ -302,7 +302,7 @@ public abstract class EntityProjectile extends Entity {
                 if (canPassThroughBarrier()) {
                     clipFlags |= ClipFlag.IGNORE_BARRIER;
                 }
-                blockHitResult = level.clip(copyVec(), moveVector, 200, clipFlags);
+                blockHitResult = clipBlocks(copyVec(), moveVector, clipFlags);
                 if (blockHitResult != null) {
                     Vector3 hitPos = blockHitResult.hitVector;
 
@@ -315,7 +315,7 @@ public abstract class EntityProjectile extends Entity {
 
                 //TODO: hit water sfx
             } else if (shouldStickInGround() && stuckToBlockPos != null) {
-                Block stuckToBlock = level.getBlock(stuckToBlockPos);
+                Block stuckToBlock = getCollisionBlock(stuckToBlockPos);
                 if (!stuckToBlock.collide(boundingBox.grow(0.06), ClipFlag.CLAMP)) {
                     stuckToBlockPos = null;
                     onGround = false;
@@ -408,6 +408,16 @@ public abstract class EntityProjectile extends Entity {
         }
 
         return hasUpdate;
+    }
+
+    /** 允许玩法使用同一方块视图处理飞行命中和附着检测。 */
+    @Nullable
+    protected MovingObjectPosition clipBlocks(Vector3 from, Vector3 to, int clipFlags) {
+        return level.clip(from, to, 200, clipFlags);
+    }
+
+    protected Block getCollisionBlock(BlockVector3 pos) {
+        return level.getBlock(pos);
     }
 
     @Override

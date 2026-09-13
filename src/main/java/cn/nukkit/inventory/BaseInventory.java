@@ -275,6 +275,11 @@ public abstract class BaseInventory implements Inventory {
 
     @Override
     public Item[] addItem(Item... slots) {
+        return addItemFrom(0, slots);
+    }
+
+    @Override
+    public Item[] addItemFrom(int startSlot, Item... slots) {
         List<Item> itemSlots = new ObjectArrayList<>();
         for (Item slot : slots) {
             if (!slot.isNull()) {
@@ -284,7 +289,7 @@ public abstract class BaseInventory implements Inventory {
 
         IntList emptySlots = new IntArrayList();
 
-        for (int i = 0; i < this.getSize(); ++i) {
+        for (int i = Math.max(0, startSlot); i < this.getSize(); ++i) {
             Item item = this.getItem(i);
             if (item.isNull()) {
                 emptySlots.add(i);
