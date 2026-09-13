@@ -95,6 +95,8 @@ public class FormWindowCustom extends FormWindow {
     }
 
     public void setResponse(String data, int protocol) {
+        this.response = null;
+        this.closed = false;
         if (data.equals("null")) {
             this.closed = true;
             return;

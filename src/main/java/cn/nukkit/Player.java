@@ -6496,7 +6496,7 @@ public class Player extends EntityHuman implements CommandSender, InventoryHolde
                             return false;
                         }
 
-                        Item[] drops = ev.getInventory().addItem(copy);
+                        Item[] drops = ev.getInventory().addItemFrom(ev.getStartSlot(), copy);
                         if (drops.length != 0 && !isCreative()) {
                             item.setCount(drops[0].getCount());
                         } else {
