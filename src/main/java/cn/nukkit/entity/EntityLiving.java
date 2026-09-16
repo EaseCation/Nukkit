@@ -66,6 +66,7 @@ public abstract class EntityLiving extends Entity implements EntityDamageable {
     protected long nextAllowAttack = 0;  // EC优化，在低TPS时也确保正确的攻击冷却时间
     protected long nextAllowKnockback;
     protected float lastHurt;
+    private boolean rejectAttackCooldownSupplement;
 
     @Nullable
     private KnockbackProfile knockbackProfile;
@@ -201,6 +202,9 @@ public abstract class EntityLiving extends Entity implements EntityDamageable {
                 knockback = true;
                 hurtAnimationSelf = true;
             } else if (time < this.nextAllowAttack) {
+                if (this.rejectAttackCooldownSupplement) {
+                    return false;
+                }
                 // 冷却中
                 if (damage > 0) {
                     if (damage <= this.lastHurt) {
@@ -862,6 +866,15 @@ public abstract class EntityLiving extends Entity implements EntityDamageable {
 
     public EntityLiving setNextAllowAttack(long nextAllowAttack) {
         this.nextAllowAttack = nextAllowAttack;
+        return this;
+    }
+
+    public boolean rejectsAttackCooldownSupplement() {
+        return this.rejectAttackCooldownSupplement;
+    }
+
+    public EntityLiving setRejectAttackCooldownSupplement(boolean value) {
+        this.rejectAttackCooldownSupplement = value;
         return this;
     }
 }
