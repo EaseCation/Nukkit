@@ -22,6 +22,7 @@ public class FormWindowModal extends FormWindow {
         this.button2 = falseButtonText;
     }
 
+    @Override
     public String getTitle() {
         return title;
     }
@@ -54,19 +55,26 @@ public class FormWindowModal extends FormWindow {
         this.button2 = button2;
     }
 
+    @Override
     public FormResponseModal getResponse() {
         return response;
     }
 
-    public void setResponse(String data, int protocol) {
-        this.response = null;
+    @Override
+    public boolean setResponse(Object data, int protocol) {
         this.closed = false;
-        if (data.equals("null")) {
-            closed = true;
-            return;
+        this.response = null;
+
+        if (data == null) {
+            this.closed = true;
+            return true;
         }
-        if (data.equals("true")) response = new FormResponseModal(0, button1);
-        else response = new FormResponseModal(1, button2);
+        if (!(data instanceof Boolean selected)) {
+            return false;
+        }
+
+        this.response = selected ? new FormResponseModal(0, button1) : new FormResponseModal(1, button2);
+        return true;
     }
 
 }

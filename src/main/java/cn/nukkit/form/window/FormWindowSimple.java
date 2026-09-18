@@ -47,6 +47,7 @@ public class FormWindowSimple extends FormWindow {
         this.elements = elements;
     }
 
+    @Override
     public String getTitle() {
         return title;
     }
@@ -83,28 +84,31 @@ public class FormWindowSimple extends FormWindow {
         this.elements.add(element);
     }
 
+    @Override
     public FormResponseSimple getResponse() {
         return response;
     }
 
-    public void setResponse(String data, int protocol) {
-        this.response = null;
+    @Override
+    public boolean setResponse(Object data, int protocol) {
         this.closed = false;
-        if (data.equals("null")) {
+        this.response = null;
+
+        if (data == null) {
             this.closed = true;
-            return;
+            return true;
         }
-        int buttonID;
-        try {
-            buttonID = Integer.parseInt(data);
-        } catch (Exception e) {
-            return;
+
+        if (!(data instanceof Integer buttonId)) {
+            return false;
         }
+        int buttonID = buttonId;
         if (buttonID < 0 || buttonID >= this.buttons.size()) {
-            this.response = new FormResponseSimple(buttonID, null);
-            return;
+            return false;
         }
+
         this.response = new FormResponseSimple(buttonID, buttons.get(buttonID));
+        return true;
     }
 
 }

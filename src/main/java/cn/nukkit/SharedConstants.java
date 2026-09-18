@@ -51,6 +51,10 @@ public final class SharedConstants {
      */
     public static final boolean ENABLE_NEW_EFFECT_COLOR = true;
 
+    // limit
+
+    public static final int MAX_MODAL_FORM_RESPONSE_DATA_LENGTH = 64 * 1024;
+
     // experimental
 
     public static final boolean EXPERIMENTAL_COMBAT_KNOCKBACK_TEST = false;
