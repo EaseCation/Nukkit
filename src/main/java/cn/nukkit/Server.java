@@ -15,7 +15,6 @@ import cn.nukkit.event.HandlerList;
 import cn.nukkit.event.level.LevelInitEvent;
 import cn.nukkit.event.level.LevelLoadEvent;
 import cn.nukkit.event.player.SendPlayerListDataEvent;
-import cn.nukkit.event.server.BatchPacketsEvent;
 import cn.nukkit.event.server.QueryRegenerateEvent;
 import cn.nukkit.inventory.CraftingManager;
 import cn.nukkit.inventory.Recipe;
@@ -182,7 +181,6 @@ public class Server {
 
     private final Network network;
 
-    private final boolean networkCompressionAsync;
     public int networkCompressionLevel;
     private final int networkZlibProvider;
     private final Compressor compressor;
@@ -408,7 +406,6 @@ public class Server {
         Zlib.setProvider(this.networkZlibProvider);
 
         this.networkCompressionLevel = Mth.clamp(this.getConfig("network.compression-level", 1), Deflater.BEST_SPEED, Deflater.BEST_COMPRESSION);
-        this.networkCompressionAsync = this.getConfig("network.async-compression", true);
 
         this.compressor = Compressor.get(configuration.getCompressionAlgorithm());
         if (compressor != Compressor.SNAPPY) {
@@ -711,55 +708,6 @@ public class Server {
 
     public Compressor getCompressor() {
         return compressor;
-    }
-
-    @Deprecated
-    public void batchPackets(Player[] players, DataPacket[] packets) {
-        this.batchPackets(players, packets, false);
-    }
-
-    @Deprecated
-    public void batchPackets(Player[] players, DataPacket[] packets, boolean forceSync) {
-        if (players == null || packets == null || players.length == 0 || packets.length == 0) {
-            return;
-        }
-
-        BatchPacketsEvent ev = new BatchPacketsEvent(players, packets, forceSync);
-        getPluginManager().callEvent(ev);
-        if (ev.isCancelled()) {
-            return;
-        }
-
-        Track[] tracks = new Track[packets.length];
-
-        byte[][] payload = new byte[packets.length * 2][];
-        for (int i = 0; i < packets.length; i++) {
-            DataPacket p = packets[i];
-            int idx = i * 2;
-            p.tryEncode();
-            byte[] buf = p.getBuffer();
-            payload[idx] = Binary.writeUnsignedVarInt(buf.length);
-            payload[idx + 1] = buf;
-
-            tracks[i] = new Track(p.pid(), p.getCount());
-        }
-
-        List<InetSocketAddress> targets = new ArrayList<>();
-        for (Player p : players) {
-            if (p.isConnected()) {
-                targets.add(p.getSocketAddress());
-            }
-        }
-
-        if (!forceSync && this.networkCompressionAsync) {
-            this.getScheduler().scheduleAsyncTask(null, new CompressBatchedTask(Binary.appendBytes(payload), targets, compressor, this.networkCompressionLevel, tracks));
-        } else {
-            try {
-                this.broadcastPacketsCallback(compressor.compress(payload, this.networkCompressionLevel), targets, tracks);
-            } catch (Exception e) {
-                throw new RuntimeException(e);
-            }
-        }
     }
 
     public void broadcastPacketsCallback(byte[] data, List<InetSocketAddress> targets) {
