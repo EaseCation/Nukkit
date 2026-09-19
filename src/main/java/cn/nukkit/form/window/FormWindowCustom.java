@@ -3,10 +3,6 @@ package cn.nukkit.form.window;
 import cn.nukkit.form.element.*;
 import cn.nukkit.form.response.FormResponseCustom;
 import cn.nukkit.form.response.FormResponseData;
-import cn.nukkit.math.Mth;
-import com.google.gson.Gson;
-import com.google.gson.JsonSyntaxException;
-import com.google.gson.reflect.TypeToken;
 import it.unimi.dsi.fastutil.ints.*;
 import it.unimi.dsi.fastutil.ints.Int2ObjectMap.Entry;
 import lombok.ToString;
@@ -19,7 +15,6 @@ import static cn.nukkit.GameVersion.*;
 
 @ToString
 public class FormWindowCustom extends FormWindow {
-    private static final Gson GSON = new Gson();
 
     @SuppressWarnings("unused")
     private final String type = "custom_form"; //This variable is used for JSON import operations. Do NOT delete :) -- @Snake1999
@@ -62,6 +57,7 @@ public class FormWindowCustom extends FormWindow {
         return submit;
     }
 
+    @Override
     public String getTitle() {
         return title;
     }
@@ -90,25 +86,45 @@ public class FormWindowCustom extends FormWindow {
         this.icon = icon;
     }
 
+    @Override
     public FormResponseCustom getResponse() {
         return response;
     }
 
-    public void setResponse(String data, int protocol) {
-        this.response = null;
+    @Override
+    public boolean setResponse(Object data, int protocol) {
         this.closed = false;
-        if (data.equals("null")) {
+        this.response = null;
+
+        if (data == null) {
             this.closed = true;
-            return;
+            return true;
+        }
+        if (!(data instanceof List<?> elementResponses)) {
+            return false;
         }
 
-        List<String> elementResponses;
-        try {
-            elementResponses = GSON.fromJson(data, new TypeToken<List<String>>() {
-            }.getType());
-        } catch (JsonSyntaxException e) {
-            this.closed = true;
-            return;
+        boolean includesStaticResponses = protocol != V1_21_70.getProtocol();
+        int expectedResponseCount = 0;
+        for (Element element : content) {
+            if (element instanceof ElementDropdown
+                    || element instanceof ElementInput
+                    || element instanceof ElementSlider
+                    || element instanceof ElementStepSlider
+                    || element instanceof ElementToggle) {
+                expectedResponseCount++;
+            } else if (element instanceof ElementLabel
+                    || element instanceof ElementHeader
+                    || element instanceof ElementDivider) {
+                if (includesStaticResponses) {
+                    expectedResponseCount++;
+                }
+            } else {
+                return false;
+            }
+        }
+        if (elementResponses.size() != expectedResponseCount) {
+            return false;
         }
 
         Int2ObjectMap<Object> responses = new Int2ObjectOpenHashMap<>();
@@ -123,56 +139,84 @@ public class FormWindowCustom extends FormWindow {
         Int2ObjectMap<String> headerResponses = new Int2ObjectOpenHashMap<>();
         Int2ObjectMap<String> dividerResponses = new Int2ObjectOpenHashMap<>();
 
-        boolean not12170 = protocol != V1_21_70.getProtocol();
-
         int responseIndex = 0;
         for (int i = 0; i < content.size(); i++) {
-            Element e = content.get(i);
-            String elementData = responseIndex >= elementResponses.size() ? "" : elementResponses.get(responseIndex);
-            if (e instanceof ElementLabel) {
-                labelResponses.put(i, ((ElementLabel) e).getText());
-                responses.put(i, ((ElementLabel) e).getText());
-                if (not12170) {
+            Element element = content.get(i);
+            if (element instanceof ElementLabel label) {
+                labelResponses.put(i, label.getText());
+                responses.put(i, label.getText());
+                if (includesStaticResponses) {
+                    if (elementResponses.get(responseIndex) != null) {
+                        return false;
+                    }
                     responseIndex++;
                 }
-            } else if (e instanceof ElementDropdown) {
-                int index = Integer.parseInt(elementData);
-                List<String> options = ((ElementDropdown) e).getOptions();
-                String answer = options.isEmpty() ? "" : options.get(Mth.clamp(index, 0, options.size() - 1));
+            } else if (element instanceof ElementDropdown dropdown) {
+                Object elementData = elementResponses.get(responseIndex++);
+                if (!(elementData instanceof Integer index)) {
+                    return false;
+                }
+                List<String> options = dropdown.getOptions();
+                if (index < 0 || index >= options.size()) {
+                    return false;
+                }
+                String answer = options.get(index);
                 dropdownResponses.put(i, new FormResponseData(index, answer));
                 responses.put(i, answer);
-                responseIndex++;
-            } else if (e instanceof ElementInput) {
-                inputResponses.put(i, elementData);
-                responses.put(i, elementData);
-                responseIndex++;
-            } else if (e instanceof ElementSlider) {
-                float answer = Float.parseFloat(elementData);
+            } else if (element instanceof ElementInput) {
+                Object elementData = elementResponses.get(responseIndex++);
+                if (!(elementData instanceof String answer)) {
+                    return false;
+                }
+                inputResponses.put(i, answer);
+                responses.put(i, answer);
+            } else if (element instanceof ElementSlider slider) {
+                Object elementData = elementResponses.get(responseIndex++);
+                if (!(elementData instanceof Number number)) {
+                    return false;
+                }
+                float answer = number.floatValue();
+                if (!Float.isFinite(answer) || answer < slider.getMin() || answer > slider.getMax()) {
+                    return false;
+                }
                 sliderResponses.put(i, answer);
                 responses.put(i, Float.valueOf(answer));
-                responseIndex++;
-            } else if (e instanceof ElementStepSlider) {
-                int index = Integer.parseInt(elementData);
-                List<String> steps = ((ElementStepSlider) e).getSteps();
-                String answer = steps.isEmpty() ? "" : steps.get(Mth.clamp(index, 0, steps.size() - 1));
+            } else if (element instanceof ElementStepSlider stepSlider) {
+                Object elementData = elementResponses.get(responseIndex++);
+                if (!(elementData instanceof Integer index)) {
+                    return false;
+                }
+                List<String> steps = stepSlider.getSteps();
+                if (index < 0 || index >= steps.size()) {
+                    return false;
+                }
+                String answer = steps.get(index);
                 stepSliderResponses.put(i, new FormResponseData(index, answer));
                 responses.put(i, answer);
-                responseIndex++;
-            } else if (e instanceof ElementToggle) {
-                boolean answer = Boolean.parseBoolean(elementData);
-                toggleResponses.put(i, answer);
-                responses.put(i, Boolean.valueOf(answer));
-                responseIndex++;
-            } else if (e instanceof ElementHeader header) {
+            } else if (element instanceof ElementToggle) {
+                Object elementData = elementResponses.get(responseIndex++);
+                if (!(elementData instanceof Boolean answer)) {
+                    return false;
+                }
+                boolean selected = answer;
+                toggleResponses.put(i, selected);
+                responses.put(i, Boolean.valueOf(selected));
+            } else if (element instanceof ElementHeader header) {
                 headerResponses.put(i, header.getText());
                 responses.put(i, header.getText());
-                if (not12170) {
+                if (includesStaticResponses) {
+                    if (elementResponses.get(responseIndex) != null) {
+                        return false;
+                    }
                     responseIndex++;
                 }
-            } else if (e instanceof ElementDivider divider) {
+            } else if (element instanceof ElementDivider divider) {
                 dividerResponses.put(i, divider.getText());
                 responses.put(i, divider.getText());
-                if (not12170) {
+                if (includesStaticResponses) {
+                    if (elementResponses.get(responseIndex) != null) {
+                        return false;
+                    }
                     responseIndex++;
                 }
             }
@@ -180,6 +224,7 @@ public class FormWindowCustom extends FormWindow {
 
         this.response = new FormResponseCustom(responses, dropdownResponses, inputResponses,
                 sliderResponses, stepSliderResponses, toggleResponses, labelResponses, headerResponses, dividerResponses);
+        return true;
     }
 
     /**

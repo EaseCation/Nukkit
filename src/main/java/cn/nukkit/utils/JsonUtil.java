@@ -1,6 +1,7 @@
 package cn.nukkit.utils;
 
 import tools.jackson.core.StreamReadConstraints;
+import tools.jackson.core.StreamReadFeature;
 import tools.jackson.core.StreamWriteConstraints;
 import tools.jackson.core.json.JsonFactory;
 import tools.jackson.core.json.JsonReadFeature;
@@ -15,9 +16,31 @@ import tools.jackson.databind.json.JsonMapper;
 import tools.jackson.datatype.guava.GuavaModule;
 
 public class JsonUtil {
+    private static final long UNTRUSTED_JSON_MAX_DOCUMENT_LENGTH = 16 * 1024 * 1024;
+    private static final long UNTRUSTED_JSON_MAX_TOKEN_COUNT = 100_000;
+    private static final int UNTRUSTED_JSON_MAX_NESTING_DEPTH = 64;
+    private static final int UNTRUSTED_JSON_MAX_NUMBER_LENGTH = 128;
+    private static final int UNTRUSTED_JSON_MAX_STRING_LENGTH = 8 * 1024 * 1024;
+    private static final int UNTRUSTED_JSON_MAX_NAME_LENGTH = 1024;
+
     public static final Indenter PRETTY_INDENTER = new DefaultIndenter("    ", "\n");
 
     public static final JsonMapper COMMON_JSON_MAPPER = configure(JsonMapper.builder()).build();
+    public static final JsonMapper UNTRUSTED_JSON_MAPPER = configure(JsonMapper.builder(
+            JsonFactory.builder()
+                    .streamReadConstraints(StreamReadConstraints.builder()
+                            .maxDocumentLength(UNTRUSTED_JSON_MAX_DOCUMENT_LENGTH)
+                            .maxTokenCount(UNTRUSTED_JSON_MAX_TOKEN_COUNT)
+                            .maxNestingDepth(UNTRUSTED_JSON_MAX_NESTING_DEPTH)
+                            .maxNumberLength(UNTRUSTED_JSON_MAX_NUMBER_LENGTH)
+                            .maxStringLength(UNTRUSTED_JSON_MAX_STRING_LENGTH)
+                            .maxNameLength(UNTRUSTED_JSON_MAX_NAME_LENGTH)
+                            .build())
+                    .enable(StreamReadFeature.STRICT_DUPLICATE_DETECTION)
+                    .build()))
+            .enable(DeserializationFeature.FAIL_ON_NULL_FOR_PRIMITIVES)
+            .disable(JsonReadFeature.ALLOW_JAVA_COMMENTS)
+            .build();
     public static final JsonMapper TRUSTED_JSON_MAPPER = configure(JsonMapper.builder(
             JsonFactory.builder()
                     .streamReadConstraints(StreamReadConstraints.builder()
