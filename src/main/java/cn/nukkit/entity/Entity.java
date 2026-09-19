@@ -219,6 +219,13 @@ public abstract class Entity extends Location implements Metadatable, EntityData
         return 0;
     }
 
+    /**
+     * 向外部物理求解器提供实体实际的跨步高度，保留子类的高度策略。
+     */
+    public final double getMovementStepHeight() {
+        return getStepHeight();
+    }
+
     public boolean canCollide() {
         return true;
     }
@@ -2479,6 +2486,39 @@ public abstract class Entity extends Location implements Metadatable, EntityData
             //TODO: vehicle collision events (first we need to spawn them!)
             return true;
         }
+    }
+
+    /**
+     * 提交外部求解器已经完成碰撞裁剪的相对位移。
+     *
+     * <p>调用者负责碰撞检测和接地语义；本方法统一维护碰撞箱、区块、速度和摔落生命周期，
+     * 不再执行 {@link #checkGroundState(double, double, double, double, double, double)} 的平台猜测。
+     *
+     * @return 实体仍可移动且结果有效时返回 true
+     */
+    public boolean applyResolvedMovement(double dx, double dy, double dz,
+                                         boolean collidedX, boolean collidedY, boolean collidedZ,
+                                         boolean onGround) {
+        if (closed || !Double.isFinite(dx) || !Double.isFinite(dy) || !Double.isFinite(dz)) {
+            return false;
+        }
+
+        boundingBox.offset(dx, dy, dz);
+        x = (boundingBox.getMinX() + boundingBox.getMaxX()) * 0.5;
+        y = boundingBox.getMinY();
+        z = (boundingBox.getMinZ() + boundingBox.getMaxZ()) * 0.5;
+        ySize = 0;
+        checkChunks();
+
+        isCollidedHorizontally = collidedX || collidedZ;
+        isCollidedVertically = collidedY;
+        isCollided = isCollidedHorizontally || isCollidedVertically;
+        this.onGround = onGround;
+        if (collidedX) motionX = 0;
+        if (collidedY) motionY = 0;
+        if (collidedZ) motionZ = 0;
+        updateFallState(onGround);
+        return true;
     }
 
     protected void checkGroundState(double movX, double movY, double movZ, double dx, double dy, double dz) {
