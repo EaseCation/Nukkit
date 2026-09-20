@@ -1284,7 +1284,7 @@ public class Player extends EntityHuman implements CommandSender, InventoryHolde
             return false;
         }
 
-        this.interfaz.putPacket(this, packet, false, true);
+        this.interfaz.putPacket(this, ev.getFinalPacket(), false, true);
         return true;
     }
 
