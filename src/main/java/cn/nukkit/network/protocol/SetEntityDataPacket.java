@@ -25,6 +25,7 @@ public class SetEntityDataPacket extends DataPacket {
 
     public Int2IntMap intProperties = new Int2IntOpenHashMap();
     public Int2FloatMap floatProperties = new Int2FloatOpenHashMap();
+    public long frame;
 
     @Override
     public void decode() {

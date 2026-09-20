@@ -15,6 +15,7 @@ public class SetEntityMotionPacket extends DataPacket {
     public float motionX;
     public float motionY;
     public float motionZ;
+    public long tick;
 
     @Override
     public int pid() {

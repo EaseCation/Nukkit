@@ -34,6 +34,7 @@ public class MovePlayerPacket extends DataPacket {
     public long ridingEid;
     public int teleportCause = TELEPORT_CAUSE_UNKNOWN;
     public int entityType = 0;
+    public long frame;
 
     @Override
     public void decode() {
