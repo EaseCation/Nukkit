@@ -39,7 +39,7 @@ jobs:
           dependency-graph: generate-and-submit
       - name: Build with Gradle
         working-directory: Nukkit
-        run: gradle shadowJar
+        run: ./gradlew clean build publishToMavenLocal -x test
         env:
           GRADLE_OPTS: "-Dorg.gradle.daemon=false -Dorg.gradle.welcome=never"
       - name: Archive artifacts

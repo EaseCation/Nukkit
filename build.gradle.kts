@@ -140,6 +140,8 @@ tasks.withType<Javadoc> {
 // 创建源码 JAR 任务
 tasks.register<Jar>("sourcesJar") {
     archiveClassifier.set("sources")
+    // allSource 包含生成的 Git 资源，发布源码包前必须完成生成。
+    dependsOn(tasks.named("generateGitProperties"))
     from(sourceSets["main"].allSource)
 }
 
