@@ -7,7 +7,14 @@ on:
 jobs:
   publish:
     runs-on: ubuntu-latest
+    timeout-minutes: 15
     steps:
-      - run: |
-          ref_name="${GITHUB_REF_NAME//\//~}"
-          curl "https://jitpack.io/com/github/${GITHUB_REPOSITORY}/${ref_name}-SNAPSHOT/build.log"
+      - name: Verify JitPack artifacts for this commit
+        shell: bash
+        run: |
+          set -euo pipefail
+          artifact="${GITHUB_REPOSITORY##*/}"
+          base="https://jitpack.io/com/github/${GITHUB_REPOSITORY}/${GITHUB_SHA}/${artifact}-${GITHUB_SHA}"
+          # 请求精确提交会触发构建；必须确认制品可取，不能把下载失败日志当成发布成功。
+          curl --fail --show-error --location --retry 5 --retry-all-errors --retry-delay 10 --retry-max-time 600 --max-time 90 "${base}.pom" --output /tmp/jitpack.pom
+          curl --fail --show-error --location --head --retry 3 --retry-all-errors --retry-delay 10 --retry-max-time 180 --max-time 60 "${base}.jar"
