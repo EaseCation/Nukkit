@@ -379,6 +379,7 @@ public class Server {
                 .compressionAlgorithm(Compressor.getAlgorithmByName(getPropertyString("compression-algorithm", "snappy")))
                 .backupPlayerData(getConfig("settings.backup-player-data", true))
                 .backupLevelData(getConfig("level-settings.backup-level-data", true))
+                .rawPlayerListName(getConfig("debug.raw-player-list-name", false))
                 .build();
 
         this.forceLanguage = this.getConfig("settings.force-language", false);
@@ -987,7 +988,7 @@ public class Server {
             player.dataPacket(packet);
             return;
         }
-        this.updatePlayerListData(player.getUniqueId(), player.getId(), player.getName(), player.getDisplayName(), player.getSkin(), player);
+        this.updatePlayerListData(player.getUniqueId(), player.getId(), configuration.isRawPlayerListName() ? player.getName() : player.getDisplayName(), player.getDisplayName(), player.getSkin(), player);
         player.sentSkins.add(player.getUniqueId());
     }
 

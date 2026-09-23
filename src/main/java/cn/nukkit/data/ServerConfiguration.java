@@ -24,6 +24,7 @@ public class ServerConfiguration {
     boolean disableRaknet;
     @Default
     byte compressionAlgorithm = CompressionAlgorithm.SNAPPY;
+    boolean rawPlayerListName;
 
     int chunkSpawnThreshold;
     int chunkSendingPerTick;
