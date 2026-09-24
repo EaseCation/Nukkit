@@ -166,6 +166,7 @@ public class DummyBossBar {
             return;
         }
 
+        long flags = 1L << Entity.DATA_FLAG_INVISIBLE;
         AddEntityPacket pkAdd = new AddEntityPacket();
         pkAdd.type = EntityID.CREEPER;
         pkAdd.entityUniqueId = bossBarId;
@@ -178,14 +179,14 @@ public class DummyBossBar {
         pkAdd.speedZ = 0;
         pkAdd.metadata = new EntityMetadata()
                 // Default Metadata tags
-                .putLong(Entity.DATA_FLAGS, 0)
+                .putLong(Entity.DATA_FLAGS, flags)
                 .putShort(Entity.DATA_AIR, 300)
                 .putShort(Entity.DATA_MAX_AIR, 300)
                 .putLong(Entity.DATA_LEAD_HOLDER_EID, -1)
                 .putString(Entity.DATA_NAMETAG, text) // Set the entity name
                 .putFloat(Entity.DATA_SCALE, 0.001f) // And make it invisible
-                .putFloat(Entity.DATA_BOUNDING_BOX_HEIGHT, 0.01f)
-                .putFloat(Entity.DATA_BOUNDING_BOX_WIDTH, 0.01f);
+                .putFloat(Entity.DATA_BOUNDING_BOX_HEIGHT, 0f)
+                .putFloat(Entity.DATA_BOUNDING_BOX_WIDTH, 0f);
         Pair<Int2IntMap, Int2FloatMap> propertyValues = EntityPropertyRegistry.getProperties(pkAdd.type).getDefaultValues();
         if (propertyValues != null) {
             pkAdd.intProperties = propertyValues.left();
