@@ -68,6 +68,7 @@ import cn.nukkit.utils.*;
 import cn.nukkit.utils.bugreport.ExceptionHandler;
 import com.dosse.upnp.UPnP;
 import com.google.common.base.Preconditions;
+import com.nukkitx.network.util.LatencyTrace;
 import io.netty.buffer.ByteBuf;
 import it.unimi.dsi.fastutil.objects.Object2ObjectOpenHashMap;
 import lombok.Getter;
@@ -89,6 +90,7 @@ import java.nio.file.StandardCopyOption;
 import java.util.*;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.zip.Deflater;
 
@@ -239,6 +241,8 @@ public class Server {
     private Level tickingLevel;
 
     private final Thread currentThread;
+    @Nullable
+    private final MainThreadIdleTasks networkIdleTasks;
 
     private Watchdog watchdog;
 
@@ -348,8 +352,12 @@ public class Server {
                 put("enable-jmx-monitoring", false);
                 put("compression-algorithm", "snappy");
                 put("disable-raknet", true);
+                put("network-ping-pong-wakeup-experiment", false);
             }
         });
+
+        this.networkIdleTasks = getPropertyBoolean("network-ping-pong-wakeup-experiment", false)
+                ? new MainThreadIdleTasks(currentThread) : null;
 
         this.configuration = ServerConfiguration.builder()
                 .serverIp(getPropertyString("server-ip", "0.0.0.0"))
@@ -955,6 +963,14 @@ public class Server {
         }
     }
 
+    public boolean isPingPongWakeupExperimentEnabled() {
+        return networkIdleTasks != null;
+    }
+
+    public boolean tryExecuteNetworkTaskBetweenTicks(Runnable task) {
+        return networkIdleTasks != null && isRunning.get() && networkIdleTasks.offer(task);
+    }
+
     public void tickProcessor() {
         this.nextTick = System.currentTimeMillis();
         try {
@@ -967,7 +983,11 @@ public class Server {
                     long next = this.nextTick;
                     long current = System.currentTimeMillis();
                     if (next - 0.1 > current) {
-                        Thread.sleep(next - current - 1, 900000);
+                        if (networkIdleTasks != null) {
+                            networkIdleTasks.awaitUntil(System.nanoTime() + TimeUnit.MILLISECONDS.toNanos(next - current), isRunning::get);
+                        } else {
+                            Thread.sleep(next - current - 1, 900000);
+                        }
                     }
                 }
             }
@@ -1227,6 +1247,9 @@ public class Server {
         }
 
         ++this.tickCounter;
+        if (LatencyTrace.enabled()) {
+            LatencyTrace.record("backend.tick", "", Integer.toString(tickCounter), "", 0, -1);
+        }
 
         this.network.processInterfaces();
 
