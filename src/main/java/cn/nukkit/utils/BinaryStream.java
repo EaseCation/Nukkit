@@ -1141,7 +1141,7 @@ public class BinaryStream {
     }
 
     public BitSet getBitSet(int size) {
-        long[] bitSet = new long[Mth.ceil(size / 64f)];
+        long[] bitSet = new long[Math.ceilDiv(size, Long.SIZE)];
         int index = 0;
         int shift = 0;
         int num = 0;
@@ -1151,17 +1151,24 @@ public class BinaryStream {
             }
             byte b = getSignedByte();
             long bits = b & 0x7f;
-            bitSet[index] |= bits << shift; // extra bits will be discarded
+            bitSet[index] |= bits << shift;
             int nextShift = shift + 7;
             if (nextShift >= 64) {
                 nextShift -= 64;
-                bitSet[++index] = bits >>> 7 - nextShift;
+                if (++index < bitSet.length) {
+                    bitSet[index] = bits >>> (7 - nextShift);
+                }
             }
             num += 7;
             if ((b & 0x80) == 0) {
                 break;
             }
             shift = nextShift;
+        }
+        // Discard high bits beyond the declared size to match vanilla behavior.
+        int lastWordBits = size % Long.SIZE;
+        if (lastWordBits != 0) {
+            bitSet[bitSet.length - 1] &= -1L >>> (Long.SIZE - lastWordBits);
         }
         return BitSet.valueOf(bitSet);
     }

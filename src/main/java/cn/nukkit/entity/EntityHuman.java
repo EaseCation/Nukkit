@@ -270,6 +270,12 @@ public class EntityHuman extends EntityHumanType {
                 if (skinTag.contains("BloomData")) {
                     newSkin.setBloomData(skinTag.getByteArray("BloomData"));
                 }
+                if (skinTag.contains("SkinIID")) {
+                    newSkin.setItemId(skinTag.getString("SkinIID"));
+                }
+                if (skinTag.contains("SkinUDID")) {
+                    newSkin.setUdid(skinTag.getString("SkinUDID"));
+                }
                 this.setSkin(newSkin);
             }
 
@@ -313,7 +319,9 @@ public class EntityHuman extends EntityHumanType {
                     .putBoolean("IsTrustedSkin", this.getSkin().isTrusted())
                     .putBoolean("OverrideSkin", this.getSkin().isOverridingPlayerAppearance())
                     .putString("ProfileHash", this.getSkin().getProfileHash())
-                    .putByteArray("BloomData", this.getSkin().getBloomData());
+                    .putByteArray("BloomData", this.getSkin().getBloomData())
+                    .putString("SkinIID", this.getSkin().getItemId())
+                    .putString("SkinUDID", this.getSkin().getUdid());
 
             List<SkinAnimation> animations = this.getSkin().getAnimations();
             if (!animations.isEmpty()) {

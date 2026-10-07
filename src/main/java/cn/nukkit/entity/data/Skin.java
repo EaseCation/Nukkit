@@ -95,6 +95,10 @@ public class Skin implements Cloneable {
     @Nullable
     private byte[] bloomData;
     @Nullable
+    private String itemId;
+    @Nullable
+    private String udid;
+    @Nullable
     private String skinMd5;
     @Nullable
     private String skinGeoMd5;
@@ -160,6 +164,9 @@ public class Skin implements Cloneable {
                 && getCapeId().length() < 100
                 && getFullSkinId().length() < 200
                 && (Strings.isNullOrEmpty(getPlayFabId()) || getPlayFabId().length() <= 16)
+                && getProfileHash().length() < 100
+                && getItemId().length() < 100
+                && getUdid().length() < 100
                 && (skinColor == null || skinColor.length() < 10)
                 && (armSize == null || armSize.length() < 5)
                 && (geometryDataEngineVersion == null || geometryDataEngineVersion.length() >= 5 && geometryDataEngineVersion.length() <= 8);
@@ -620,6 +627,32 @@ public class Skin implements Cloneable {
         return this;
     }
 
+    public String getItemId() {
+        String itemId = this.itemId;
+        if (itemId == null) {
+            itemId = "";
+        }
+        return itemId;
+    }
+
+    public Skin setItemId(String itemId) {
+        this.itemId = itemId;
+        return this;
+    }
+
+    public String getUdid() {
+        String udid = this.udid;
+        if (udid == null) {
+            udid = "";
+        }
+        return udid;
+    }
+
+    public Skin setUdid(String udid) {
+        this.udid = udid;
+        return this;
+    }
+
     public String getSkinMd5() {
         return skinMd5;
     }
@@ -685,6 +718,8 @@ public class Skin implements Cloneable {
         skin.overridingPlayerAppearance = overridingPlayerAppearance;
         skin.profileHash = profileHash;
         skin.bloomData = bloomData;
+        skin.itemId = itemId;
+        skin.udid = udid;
 
         skin.cachedGeometryName = cachedGeometryName;
         skin.skinMd5 = skinMd5;

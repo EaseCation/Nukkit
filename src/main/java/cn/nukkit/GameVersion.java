@@ -174,6 +174,7 @@ public enum GameVersion {
             int next = i + 1;
             GameVersion nextVersion = next < VALUES.length ? VALUES[next] : null;
             if (nextVersion == null) {
+                BY_PROTOCOL[version.protocol] = version;
                 continue;
             }
             for (int j = version.protocol; j < nextVersion.protocol; j++) {

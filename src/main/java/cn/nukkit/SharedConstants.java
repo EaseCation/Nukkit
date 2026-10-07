@@ -64,6 +64,7 @@ public final class SharedConstants {
     public static final boolean NEXT_UPDATE_EVENT_POOLING_PREVIEW = !PRODUCTION_ENVIRONMENT && false;
 
     public static final boolean VANILLA_SKIN_FLOW = false;
+    public static final boolean NETEASE_SKIN_FLOW = false;
 
     // temporary
 

@@ -22,7 +22,7 @@ public class ModalFormResponsePacket extends DataPacket {
 
     @Override
     public void decode() {
-        this.formId = this.getVarInt();
+        this.formId = (int) this.getUnsignedVarInt();
         this.data = this.getJson(); //Data will be null if player close form without submit (by cross button or ESC)
     }
 
@@ -33,7 +33,7 @@ public class ModalFormResponsePacket extends DataPacket {
 
     @Nullable
     private Object getJson() {
-        int length =  (int) this.getUnsignedVarInt();
+        int length = (int) this.getUnsignedVarInt();
         if (length < 0 || length > MAX_MODAL_FORM_RESPONSE_DATA_LENGTH) {
             throw new IllegalArgumentException("Form response exceeds maximum length");
         }

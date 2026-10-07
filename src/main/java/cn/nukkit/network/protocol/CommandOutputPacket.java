@@ -1,5 +1,6 @@
 package cn.nukkit.network.protocol;
 
+import cn.nukkit.command.data.CommandOutputType;
 import cn.nukkit.network.protocol.types.CommandOriginData;
 import cn.nukkit.network.protocol.types.CommandOutputMessage;
 import lombok.ToString;
@@ -8,13 +9,8 @@ import lombok.ToString;
 public class CommandOutputPacket extends DataPacket {
     public static final int NETWORK_ID = ProtocolInfo.COMMAND_OUTPUT_PACKET;
 
-    public static final int TYPE_LAST = 1;
-    public static final int TYPE_SILENT = 2;
-    public static final int TYPE_ALL = 3;
-    public static final int TYPE_DATA_SET = 4;
-
     public CommandOriginData originData;
-    public int outputType;
+    public CommandOutputType outputType = CommandOutputType.NONE;
     public int successCount;
     public CommandOutputMessage[] messages;
     public String data;
@@ -39,7 +35,7 @@ public class CommandOutputPacket extends DataPacket {
             this.putEntityUniqueId(originData.playerEntityUniqueId);
         }
 
-        this.putByte((byte) this.outputType);
+        this.putByte(this.outputType.ordinal());
         this.putUnsignedVarInt(this.successCount);
 
         this.putUnsignedVarInt(this.messages.length);
@@ -53,7 +49,7 @@ public class CommandOutputPacket extends DataPacket {
             }
         }
 
-        if (outputType == TYPE_DATA_SET) {
+        if (outputType == CommandOutputType.DATA_SET) {
             this.putString(this.data);
         }
     }

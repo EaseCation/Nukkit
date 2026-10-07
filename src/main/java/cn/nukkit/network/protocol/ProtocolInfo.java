@@ -220,33 +220,39 @@ public interface ProtocolInfo {
 
     //NetEase Common Mod
     int PACKET_PY_RPC = 0xc8; // 200 cs
-    int PACKET_CHANGE_MODEL = 0xc9; // 201
+    int PACKET_CHANGE_MODEL = 0xc9; // 201 c
     int PACKET_STORE_BUY_SUCC = 0xca; // 202 s
     int PACKET_NETEASE_JSON = 0xcb; // 203 cs
-    int PACKET_CHANGE_MODEL_TEXTURE = 0xcc; // 204
-    int PACKET_CHANGE_MODEL_OFFSET = 0xcd; // 205
-    int PACKET_CHANGE_MODEL_BIND = 0xce; // 206
-    int PACKET_HUNGER_ATTR = 0xcf; // 207
-    int PACKET_SET_DIMENSION_LOCAL_TIME = 0xd0; // 208
-    int PACKET_WITHDRAW_FURNACE_XP = 0xd1; // 209
-    int PACKET_SET_DIMENSION_LOCAL_WEATHER = 0xd2; // 210
+    int PACKET_CHANGE_MODEL_TEXTURE = 0xcc; // 204 c
+    int PACKET_CHANGE_MODEL_OFFSET = 0xcd; // 205 c
+    int PACKET_CHANGE_MODEL_BIND = 0xce; // 206 c
+    int PACKET_HUNGER_ATTR = 0xcf; // 207 c
+    int PACKET_SET_DIMENSION_LOCAL_TIME = 0xd0; // 208 c
+    int PACKET_WITHDRAW_FURNACE_XP = 0xd1; // 209 s
+    int PACKET_SET_DIMENSION_LOCAL_WEATHER = 0xd2; // 210 c
+    int PACKET_REQUEST_REPLAY_RECORD_STATUS = 0xd3; // 211
+    int PACKET_CLIENT_INPUT_RECORD = 0xd4; // 212
+    int PACKET_CLIENT_ADDITIONAL_REPLAY_SAVE_DATA = 0xd5; // 213
+    int PACKET_CLIENT_LOCAL_REPLAY_OPERATIONS = 0xd6; // 214
 
-    //int PACKET_CUSTOM = 0xdf; // 223
+    int PACKET_ADDICTION = 0xdf; // 223 s
     int PACKET_COMBINE = 0xe0; // 224
     int PACKET_V_CONNECTION = 0xe1; // 225
     int PACKET_TRANSPORT = 0xe2; // 226
-    //int PACKET_CUSTOM = 0xe3; // 227
+    int PACKET_CUSTOM = 0xe3; // 227
     int PACKET_CONFIRM_SKIN = 0xe4; // 228 c
     int PACKET_TRANSPORT_NO_COMPRESS = 0xe5; // 229
-    int PACKET_MOD_EFFECT = 0xe6; // 230
-    int PACKET_MOD_BLOCK_ACTOR_CHANGED = 0xe7; // 231
-    int PACKET_CHANGE_ACTOR_MOTION = 0xe8; // 232
-    int PACKET_ANIMATE_EMOTE_ENTITY = 0xe9; // 233
-    int PACKET_CHANGE_BIOME = 0xea; // 234
-    int PACKET_UPDATE_BIOME = 0xeb; // 235
-    int PACKET_SYNC_SKIN = 0xec; // 236
+    int PACKET_MOD_EFFECT = 0xe6; // 230 c
+    int PACKET_MOD_BLOCK_ACTOR_CHANGED = 0xe7; // 231 c
+    int PACKET_CHANGE_ACTOR_MOTION = 0xe8; // 232 c
+    int PACKET_ANIMATE_EMOTE_ENTITY = 0xe9; // 233 c
+    int PACKET_CHANGE_BIOME = 0xea; // 234 c
+    int PACKET_UPDATE_BIOME = 0xeb; // 235 c
+    int PACKET_SYNC_SKIN = 0xec; // 236 cs
 
     int BATCH_PACKET = 0xfe; // 254
+
+    int PACKET_SEND_ZIP_FILES = 0xff; // 255 C
 
     int CAMERA_INSTRUCTION_PACKET = 0x12c; // 300 c
     int COMPRESSED_BIOME_DEFINITION_LIST_PACKET = 0x12d; // 301 c d

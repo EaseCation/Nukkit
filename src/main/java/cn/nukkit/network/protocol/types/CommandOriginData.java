@@ -71,6 +71,10 @@ public final class CommandOriginData {
             return name;
         }
 
+        public String getNameOrDefault(Origin defaultValue) {
+            return name != null ? name : defaultValue.name;
+        }
+
         @Nullable
         public static Origin byName(String name) {
             return BY_NAME.get(name);

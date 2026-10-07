@@ -74,15 +74,15 @@ public class Binary {
 
     //LTriad: {0x01,0x00,0x00}<=>1
     public static int readLTriad(byte[] bytes) {
-        return ((bytes[2] & 0xff) << 24) |
-                ((bytes[1] & 0xff) << 16) |
-                ((bytes[0] & 0xff) << 8);
+        return ((bytes[2] & 0xff) << 16) |
+                ((bytes[1] & 0xff) << 8) |
+                (bytes[0] & 0xff);
     }
 
     public static int readLTriad(byte[] bytes, int offset) {
-        return ((bytes[2 + offset] & 0xff) << 24) |
-                ((bytes[1 + offset] & 0xff) << 16) |
-                ((bytes[offset] & 0xff) << 8);
+        return ((bytes[2 + offset] & 0xff) << 16) |
+                ((bytes[1 + offset] & 0xff) << 8) |
+                (bytes[offset] & 0xff);
     }
 
     public static byte[] writeLTriad(int value) {
@@ -337,7 +337,7 @@ public class Binary {
     }
 
     public static boolean readBool(byte b) {
-        return b == 0;
+        return b != 0;
     }
 
     public static byte writeBool(boolean b) {
@@ -345,6 +345,10 @@ public class Binary {
     }
 
     public static int readSignedByte(byte b) {
+        return b;
+    }
+
+    public static int readByte(byte b) {
         return b & 0xFF;
     }
 
