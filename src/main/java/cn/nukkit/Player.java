@@ -6223,10 +6223,14 @@ public class Player extends EntityHuman implements CommandSender, InventoryHolde
     }
 
     public void sendPosition(Vector3 pos, double yaw, double pitch, int mode, Player[] targets) {
+        @Nullable MovementCommit publication = targets != null && this.isMainThreadInputEnabled() && this.server.isPrimaryThread()
+                ? MovementCommit.capture(this, MovementCommitResult.UNCHANGED, this.getMovementEpoch()) : null;
+        boolean acceptingInput = publication != null && this.isAcceptingInputPackets();
+        float baseOffset = this.getBaseOffset();
         MovePlayerPacket pk = new MovePlayerPacket();
         pk.eid = this.getId();
         pk.x = (float) pos.x;
-        pk.y = (float) (pos.y + this.getBaseOffset());
+        pk.y = (float) (pos.y + baseOffset);
         pk.z = (float) pos.z;
         pk.headYaw = (float) yaw;
         pk.pitch = (float) pitch;
@@ -6238,7 +6242,16 @@ public class Player extends EntityHuman implements CommandSender, InventoryHolde
         pk.setChannel(DataPacket.CHANNEL_PLAYER_MOVING);
 
         if (targets != null) {
-            Server.broadcastPacket(targets, pk);
+            if (publication == null) {
+                Server.broadcastPacket(targets, pk);
+            } else {
+                // 同一广播共用来源，后续接收者不能以新状态重新认可外层旧位置。
+                for (Player target : targets) {
+                    if (!publication.isCurrent(this) || this.getBaseOffset() != baseOffset
+                            || this.isAcceptingInputPackets() != acceptingInput) return;
+                    target.dataPacket(pk);
+                }
+            }
         } else {
             pk.eid = this.id;
             this.dataPacket(pk);
