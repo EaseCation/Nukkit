@@ -19,6 +19,7 @@ import it.unimi.dsi.fastutil.ints.IntList;
 import it.unimi.dsi.fastutil.objects.ObjectArrayList;
 import lombok.extern.log4j.Log4j2;
 
+import javax.annotation.Nullable;
 import java.util.*;
 
 /**
@@ -145,11 +146,18 @@ public abstract class BaseInventory implements Inventory {
 
     @Override
     public boolean setItem(int index, Item item, boolean send) {
+        return this.setItem(index, item, send, null);
+    }
+
+    boolean setItem(int index, Item item, boolean send, @Nullable InventorySlotReference source) {
         if (index < 0 || index >= this.size) {
             return false;
         }
+        if (source != null && !source.isCurrent()) {
+            return false;
+        }
         if (item.isNull()) {
-            return this.clear(index, send);
+            return source == null ? this.clear(index, send) : this.clear(index, send, source);
         }
 
         InventoryHolder holder = this.getHolder();
@@ -164,6 +172,10 @@ public abstract class BaseInventory implements Inventory {
             item = ev.getNewItem();
         }
 
+        // 库存事件可能嵌套替换原槽，旧动作不得覆盖事件留下的新物品。
+        if (source != null && !source.isCurrent()) {
+            return false;
+        }
         Item old = this.getItem(index);
         Item newItem = item.clone();
         this.slots.put(index, newItem);
@@ -373,6 +385,13 @@ public abstract class BaseInventory implements Inventory {
 
     @Override
     public boolean clear(int index, boolean send) {
+        return this.clear(index, send, null);
+    }
+
+    private boolean clear(int index, boolean send, @Nullable InventorySlotReference source) {
+        if (source != null && !source.isCurrent()) {
+            return false;
+        }
         Item old = this.slots.get(index);
         if (old != null) {
             Item item = Items.air();
@@ -387,6 +406,9 @@ public abstract class BaseInventory implements Inventory {
                 item = ev.getNewItem();
             }
 
+            if (source != null && !source.isCurrent()) {
+                return false;
+            }
             Item newItem;
             if (!item.isNull()) {
                 newItem = item.clone();
@@ -591,5 +613,19 @@ public abstract class BaseInventory implements Inventory {
         }
 
         return Items.air();
+    }
+
+    /** 与 peek 保持相同槽位顺序及匹配规则，但持有本次动作的具体来源。 */
+    @Nullable
+    public InventorySlotReference captureFirstItem(Item target) {
+        boolean checkAux = target.hasMeta() && target.getDamage() >= 0;
+        boolean checkNbt = target.getCompoundTag() != null;
+        for (int slot = 0; slot < this.getSize(); slot++) {
+            Item item = this.getItem(slot);
+            if (!item.isNull() && target.equals(item, checkAux, checkNbt)) {
+                return new InventorySlotReference(this, slot);
+            }
+        }
+        return null;
     }
 }

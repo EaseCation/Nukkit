@@ -38,6 +38,12 @@ public class PlayerInventory extends BaseInventory {
 
         if (this.getHolder() instanceof Player) {
             Player player = (Player) this.getHolder();
+            boolean inputMode = player.isMainThreadInputEnabled();
+            int previousSlot = this.getHeldItemIndex();
+            long movementEpoch = inputMode ? player.getMovementEpoch() : 0;
+            if (inputMode && previousSlot == slot) {
+                return true;
+            }
             PlayerItemHeldEvent ev = new PlayerItemHeldEvent(player, this.getItem(slot), slot);
             this.getHolder().getLevel().getServer().getPluginManager().callEvent(ev);
 
@@ -45,11 +51,20 @@ public class PlayerInventory extends BaseInventory {
                 this.sendContents(this.getViewers());
                 return false;
             }
+            // 事件可以关闭、传送或再次选槽，不能在返回后覆盖新的玩家状态。
+            if (inputMode && (!player.isOnline() || !player.isAlive()
+                    || player.getMovementEpoch() != movementEpoch || this.getHeldItemIndex() != previousSlot)) {
+                return false;
+            }
 
             if (player.fishing != null) {
                 if (!(this.getItem(slot).equals(player.fishing.rod))) {
                     player.stopFishing(false);
                 }
+            }
+            // 对齐 JE：只有实际换槽才结束主手使用，同槽装备回声不重置蓄力。
+            if (inputMode && player.getUsingItemHand() == ItemUseHand.MAIN_HAND) {
+                player.setUsingItem(false);
             }
         }
 
@@ -104,6 +119,21 @@ public class PlayerInventory extends BaseInventory {
             return offhandPlayer.getOffhandInventory().setItem(0, item);
         }
         return this.setItem(this.getHeldItemIndex(), item);
+    }
+
+    /** 在协议动作取得服务端物品时捕获，不能在网络解码时提前冻结库存。 */
+    public InventorySlotReference captureHeldItem() {
+        Player offhandPlayer = this.getOffhandInteractionPlayer();
+        return offhandPlayer == null
+                ? new InventorySlotReference(this, this.getHeldItemIndex())
+                : new InventorySlotReference(offhandPlayer.getOffhandInventory(), 0);
+    }
+
+    boolean isHeldItemSource(BaseInventory inventory, int slot) {
+        Player offhandPlayer = this.getOffhandInteractionPlayer();
+        return offhandPlayer == null
+                ? inventory == this && slot == this.getHeldItemIndex()
+                : inventory == offhandPlayer.getOffhandInventory() && slot == 0;
     }
 
     public void sendHeldItem(Player... players) {

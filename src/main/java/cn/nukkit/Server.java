@@ -45,6 +45,8 @@ import cn.nukkit.nbt.NBTIO;
 import cn.nukkit.nbt.tag.CompoundTag;
 import cn.nukkit.nbt.tag.ListTag;
 import cn.nukkit.network.*;
+import cn.nukkit.network.input.ServerInputDispatcher;
+import cn.nukkit.network.input.PlayerInputProcessor;
 import cn.nukkit.network.protocol.*;
 import cn.nukkit.network.protocol.BatchPacket.Track;
 import cn.nukkit.network.query.QueryHandler;
@@ -220,6 +222,13 @@ public class Server {
     private final ServerConfiguration configuration;
     private final Config properties;
     private final Config config;
+
+    @Nullable
+    private final ServerInputDispatcher inputDispatcher;
+    @Nullable
+    private PlayerInputProcessor playerInputProcessor;
+    private final long inputNormalBudgetNanos;
+    private final long inputIdleBudgetNanos;
 
     private final Map<InetSocketAddress, Player> players = new ConcurrentHashMap<>();
 
@@ -418,6 +427,21 @@ public class Server {
         this.alwaysTickPlayers = this.getConfig("level-settings.always-tick-players", false);
         this.baseTickRate = this.getConfig("level-settings.base-tick-rate", 1);
         this.redstoneEnabled = this.getConfig("level-settings.tick-redstone", true);
+
+        if (this.getConfig("network.input-dispatcher.enabled", false)) {
+            this.inputNormalBudgetNanos = Mth.clamp(this.getConfig("network.input-dispatcher.normal-budget-us", 5000), 1, 50000) * 1000L;
+            this.inputIdleBudgetNanos = Mth.clamp(this.getConfig("network.input-dispatcher.idle-budget-us", 5000), 1, 50000) * 1000L;
+            this.inputDispatcher = new ServerInputDispatcher(this.currentThread,
+                    Math.max(1, this.getConfig("network.input-dispatcher.max-tasks", 65536)),
+                    Math.max(1, this.getConfig("network.input-dispatcher.max-bytes", 64 * 1024 * 1024)),
+                    Math.max(1, this.getConfig("network.input-dispatcher.session-max-tasks", 8192)),
+                    Math.max(1, this.getConfig("network.input-dispatcher.session-max-bytes", 12 * 1024 * 1024)),
+                    exception -> log.error("Network input handler failed", exception));
+        } else {
+            this.inputNormalBudgetNanos = 0;
+            this.inputIdleBudgetNanos = 0;
+            this.inputDispatcher = null;
+        }
 
         this.autoCompaction = this.getConfig("level-settings.auto-compression", true);
         this.autoCompactionTicks = Math.max(1, this.getConfig("ticks-per.auto-compaction", 30 * 60 * 20));
@@ -816,6 +840,9 @@ public class Server {
 
     public void shutdown() {
         isRunning.compareAndSet(true, false);
+        if (this.inputDispatcher != null) {
+            this.inputDispatcher.close();
+        }
     }
 
     public void forceShutdown() {
@@ -825,6 +852,10 @@ public class Server {
 
         try {
             isRunning.compareAndSet(true, false);
+
+            if (this.inputDispatcher != null) {
+                this.inputDispatcher.close();
+            }
 
             this.hasStopped = true;
 
@@ -967,7 +998,15 @@ public class Server {
                     long next = this.nextTick;
                     long current = System.currentTimeMillis();
                     if (next - 0.1 > current) {
-                        Thread.sleep(next - current - 1, 900000);
+                        if (this.inputDispatcher == null) {
+                            Thread.sleep(next - current - 1, 900000);
+                        } else {
+                            long deadlineNanos = System.nanoTime() + (next - current) * 1_000_000L;
+                            this.inputDispatcher.awaitUntil(deadlineNanos, this.inputIdleBudgetNanos, this.tickCounter);
+                            if (Thread.interrupted()) {
+                                throw new InterruptedException("Server input wait was interrupted");
+                            }
+                        }
                     }
                 }
             }
@@ -1229,6 +1268,10 @@ public class Server {
         ++this.tickCounter;
 
         this.network.processInterfaces();
+
+        if (this.inputDispatcher != null) {
+            this.inputDispatcher.drain(false, this.tickCounter, System.nanoTime() + this.inputNormalBudgetNanos);
+        }
 
         if (this.rcon != null) {
             this.rcon.check();
@@ -2329,6 +2372,32 @@ public class Server {
      */
     public boolean isPrimaryThread() {
         return Thread.currentThread() == currentThread;
+    }
+
+    @Nullable
+    public ServerInputDispatcher getInputDispatcher() {
+        return this.inputDispatcher;
+    }
+
+    @Nullable
+    public PlayerInputProcessor getPlayerInputProcessor() {
+        return this.playerInputProcessor;
+    }
+
+    public void registerPlayerInputProcessor(PlayerInputProcessor processor) {
+        if (!this.isPrimaryThread() || processor == null || this.playerInputProcessor != null) {
+            throw new IllegalStateException("The input processor must have one main-thread owner");
+        }
+        this.playerInputProcessor = processor;
+    }
+
+    public void unregisterPlayerInputProcessor(PlayerInputProcessor processor) {
+        if (!this.isPrimaryThread()) {
+            throw new IllegalStateException("Input processor removal requires the main thread");
+        }
+        if (this.playerInputProcessor == processor) {
+            this.playerInputProcessor = null;
+        }
     }
 
     public Thread getPrimaryThread() {

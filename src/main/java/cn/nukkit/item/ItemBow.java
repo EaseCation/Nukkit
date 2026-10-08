@@ -7,7 +7,8 @@ import cn.nukkit.entity.projectile.EntityArrow;
 import cn.nukkit.entity.projectile.EntityProjectile;
 import cn.nukkit.event.entity.EntityShootBowEvent;
 import cn.nukkit.event.entity.ProjectileLaunchEvent;
-import cn.nukkit.inventory.Inventory;
+import cn.nukkit.inventory.BaseInventory;
+import cn.nukkit.inventory.InventorySlotReference;
 import cn.nukkit.item.enchantment.Enchantment;
 import cn.nukkit.math.Vector3;
 import cn.nukkit.nbt.tag.CompoundTag;
@@ -58,13 +59,24 @@ public class ItemBow extends ItemTool {
 
     @Override
     public boolean onRelease(Player player, int ticksUsed, Vector3 rotation) {
+        // 仅持有本次释放的来源，不把物品对象身份锁定到整段蓄力。
+        InventorySlotReference source = player.isMainThreadInputEnabled() ? player.getInventory().captureHeldItem() : null;
+        long movementEpoch = source == null ? 0 : player.getMovementEpoch();
+        if (source != null && (!player.canContinueItemUse(movementEpoch)
+                || !player.getInventory().getItemInHand().equalsExact(this))) {
+            return false;
+        }
         Item matched;
 
-        Inventory inventory = player.getOffhandInventory();
-        matched = inventory.peek(LazyHolder.ARROW);
+        BaseInventory inventory = player.getOffhandInventory();
+        InventorySlotReference ammoSource = source == null ? null : inventory.captureFirstItem(LazyHolder.ARROW);
+        matched = source == null ? inventory.peek(LazyHolder.ARROW)
+                : ammoSource == null ? Items.air() : ammoSource.getSnapshot();
         if (matched.isNull()) {
             inventory = player.getInventory();
-            matched = inventory.peek(LazyHolder.ARROW);
+            ammoSource = source == null ? null : inventory.captureFirstItem(LazyHolder.ARROW);
+            matched = source == null ? inventory.peek(LazyHolder.ARROW)
+                    : ammoSource == null ? Items.air() : ammoSource.getSnapshot();
             if (matched.isNull() && !player.isCreative()) {
                 player.getOffhandInventory().sendContents(player);
                 inventory.sendContents(player);
@@ -128,6 +140,15 @@ public class ItemBow extends ItemTool {
             player.getOffhandInventory().sendContents(player);
         } else {
             entityShootBowEvent.getProjectile().setMotion(entityShootBowEvent.getProjectile().getMotion().multiply(entityShootBowEvent.getForce()));
+            // 射箭与motion事件都能换槽或转服，开始扣箭前再次确认本次来源。
+            if (source != null && (!player.canContinueItemUse(movementEpoch)
+                    || !source.isSelectedBy(player.getInventory()) || !source.isCurrent()
+                    || ammoSource != null && !ammoSource.isCurrent())) {
+                entityShootBowEvent.getProjectile().close();
+                source.sendContents(player);
+                inventory.sendContents(player);
+                return false;
+            }
             int infinityEnchant = this.getEnchantmentLevel(Enchantment.INFINITY);
             boolean infinity = infinityEnchant > 0 && matched.getDamage() == ItemArrow.NORMAL_ARROW;
             EntityProjectile projectile;
@@ -136,7 +157,17 @@ public class ItemBow extends ItemTool {
             }
             if (player.isSurvivalLike()) {
                 if (!infinity) {
-                    inventory.removeItem(matched);
+                    if (source == null) {
+                        inventory.removeItem(matched);
+                    } else if (ammoSource == null || !ammoSource.consume(1)) {
+                        entityShootBowEvent.getProjectile().close();
+                        inventory.sendContents(player);
+                        return false;
+                    }
+                }
+                if (source != null && !player.canContinueItemUse(movementEpoch)) {
+                    entityShootBowEvent.getProjectile().close();
+                    return false;
                 }
                 int itemDamaged = hurtAndBreak(1);
                 if (itemDamaged != 0) {
@@ -144,15 +175,23 @@ public class ItemBow extends ItemTool {
                         pop();
                         player.level.addLevelSoundEvent(player, LevelSoundEventPacket.SOUND_BREAK);
                     }
-                    player.getInventory().setItemInHand(this);
+                    if (source == null) {
+                        player.getInventory().setItemInHand(this);
+                    } else if (!source.setItem(this)) {
+                        source.sendContents(player);
+                    }
                 } else if (!player.isServerAuthoritativeInventoryEnabled()) {
                     player.getInventory().sendHeldItem(player); // sync durability to correct client predictions
                 }
             }
             if (entityShootBowEvent.getProjectile() != null) {
+                if (source != null && !player.canContinueItemUse(movementEpoch)) {
+                    entityShootBowEvent.getProjectile().close();
+                    return false;
+                }
                 ProjectileLaunchEvent projectev = new ProjectileLaunchEvent(entityShootBowEvent.getProjectile());
                 Server.getInstance().getPluginManager().callEvent(projectev);
-                if (projectev.isCancelled()) {
+                if (projectev.isCancelled() || source != null && !player.canContinueItemUse(movementEpoch)) {
                     entityShootBowEvent.getProjectile().close();
                 } else {
                     entityShootBowEvent.getProjectile().spawnToAll();

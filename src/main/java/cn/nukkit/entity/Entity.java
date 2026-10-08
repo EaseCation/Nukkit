@@ -58,6 +58,7 @@ import java.util.Map;
 import java.util.Objects;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ThreadLocalRandom;
+import java.util.function.BooleanSupplier;
 
 /**
  * @author MagicDroidX
@@ -1270,16 +1271,23 @@ public abstract class Entity extends Location implements Metadatable, EntityData
             }
         }
 
+        @Nullable BooleanSupplier publication = this instanceof Player actor
+                ? actor.captureMetadataPublication(pk) : null;
         for (Player player : players) {
+            if (publication != null && !publication.getAsBoolean()) return;
             if (player == this) {
                 continue;
             }
             player.dataPacket(pk.clone());
         }
+        if (publication != null && !publication.getAsBoolean()) return;
         if (this instanceof Player) {
             ((Player) this).dataPacket(pk);
         }
     }
+
+    @Nullable
+    private IntSet pendingViewRemovals;
 
     public void despawnFrom(Player player) {
         if (player.riding == this && !dismountEntity(player)) {
@@ -1287,7 +1295,29 @@ public abstract class Entity extends Location implements Metadatable, EntityData
             Utils.pauseInIde();
         }
 
-        if (this.hasSpawned.remove(player.getLoaderId()) != null) {
+        if (player.isMainThreadInputEnabled() && this.server.isPrimaryThread()) {
+            int loaderId = player.getLoaderId();
+            if (this.hasSpawned.get(loaderId) != player) return;
+            if (this.pendingViewRemovals == null) this.pendingViewRemovals = new IntOpenHashSet(1);
+            if (!this.pendingViewRemovals.add(loaderId)) return;
+            try {
+                long epoch = player.getMovementEpoch();
+                Level recipientLevel = player.getLevel();
+                boolean accepting = player.isAcceptingInputPackets();
+                RemoveEntityPacket packet = new RemoveEntityPacket();
+                packet.eid = this.getId();
+                player.dataPacket(packet);
+                // 同世界的新视野保留；已关闭或确实离开旧世界的关系必须清理。
+                if (this.hasSpawned.get(loaderId) == player && (this.closed || !player.isOnline()
+                        || this.level != player.getLevel()
+                        || player.getLevel() == recipientLevel && player.getMovementEpoch() == epoch
+                        && player.isAcceptingInputPackets() == accepting)) {
+                    this.hasSpawned.remove(loaderId);
+                }
+            } finally {
+                this.pendingViewRemovals.remove(loaderId);
+            }
+        } else if (this.hasSpawned.remove(player.getLoaderId()) != null) {
             RemoveEntityPacket pk = new RemoveEntityPacket();
             pk.eid = this.getId();
             player.dataPacket(pk);
@@ -2243,12 +2273,19 @@ public abstract class Entity extends Location implements Metadatable, EntityData
         }
 
         if (this.isValid()) {
+            @Nullable Player inputPlayer = this instanceof Player player && player.isMainThreadInputEnabled() ? player : null;
+            Level origin = this.level;
+            long epoch = inputPlayer == null ? 0 : inputPlayer.getMovementEpoch();
             EntityLevelChangeEvent ev = new EntityLevelChangeEvent(this, this.level, targetLevel);
             this.server.getPluginManager().callEvent(ev);
-            if (ev.isCancelled()) {
+            if (ev.isCancelled() || inputPlayer != null && !inputPlayer.isTeleportStateCurrent(origin, epoch)) {
                 return false;
             }
 
+            this.onLevelChangeAccepted(targetLevel);
+            if (inputPlayer != null && !inputPlayer.isTeleportStateCurrent(origin, epoch)) {
+                return false;
+            }
             this.level.removeEntity(this);
             if (this.chunk != null) {
                 this.chunk.removeEntity(this);
@@ -2261,6 +2298,10 @@ public abstract class Entity extends Location implements Metadatable, EntityData
         this.chunk = null;
 
         return true;
+    }
+
+    /** 可取消事件已接受，旧世界实体与区块尚未移除。 */
+    protected void onLevelChangeAccepted(Level targetLevel) {
     }
 
     public Position getPosition() {
@@ -2732,11 +2773,16 @@ public abstract class Entity extends Location implements Metadatable, EntityData
         this.motionY = motion.y;
         this.motionZ = motion.z;
 
+        this.onMotionChanged();
+
+        return true;
+    }
+
+    /** 服务端 motion 变更后的发布入口，默认沿用实体移动更新。 */
+    protected void onMotionChanged() {
         if (!this.justCreated) {
             this.updateMovement();
         }
-
-        return true;
     }
 
     public boolean isOnGround() {
@@ -2794,9 +2840,16 @@ public abstract class Entity extends Location implements Metadatable, EntityData
 
         this.ySize = 0;
 
-        this.setMotion(this.temporalVector.setComponents(0, 0, 0));
+        boolean guardedTeleport = this instanceof Player player && player.isMainThreadInputEnabled();
+        if (!guardedTeleport) {
+            this.setMotion(this.temporalVector.setComponents(0, 0, 0));
+        }
 
         if (this.setPositionAndRotation(to, yaw, pitch)) {
+            // 换世界事件仍可能拒绝 setPosition，成功前不能清除玩家原有速度。
+            if (guardedTeleport) {
+                this.setMotion(this.temporalVector.setComponents(0, 0, 0));
+            }
             this.resetFallDistance();
             this.onGround = true;
 
