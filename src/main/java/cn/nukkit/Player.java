@@ -2333,7 +2333,7 @@ public class Player extends EntityHuman implements CommandSender, InventoryHolde
         if (this.inputMovementStatistics == null) {
             return;
         }
-        this.updateInputMovementSpeed();
+        // 最终提交和位置纠正已更新速度；空周期不覆盖原入口保留的兼容缓存。
         float exhaustion = this.inputMovementStatistics.exhaustion();
         boolean movedHorizontally = this.inputMovementStatistics.movedHorizontally();
         // 在可能触发插件回调之前消费本周期，防止重入重复执行。
